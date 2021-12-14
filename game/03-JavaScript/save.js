@@ -534,7 +534,6 @@ window.settingsObjects = function (type) {
 				slimedisable: { boolLetter: true, bool: true },
 				voredisable: { boolLetter: true, bool: true },
 				tentacledisable: { boolLetter: true, bool: true },
-				plantdisable: { boolLetter: true, bool: true },
 				analdisable: { boolLetter: true, bool: true },
 				analdoubledisable: { boolLetter: true, bool: true },
 				analingusdisablegiving: { boolLetter: true, bool: true },
