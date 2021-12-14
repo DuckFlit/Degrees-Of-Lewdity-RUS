@@ -2659,11 +2659,14 @@
 	<!-- Jimmy: Reset NPC slots if necessary by checking .type === 0 
 			Old versions prior to 3.4.* did not have empty slots properly set to baseNPC. -->
 	<<for $_i = 0; $_i < $NPCList.length; $_i++>>
-		<<if $NPCList[$_i].type is 0>>
-			<<set $NPCList[$_i] to clone(setup.baseNPC)>>
+		<<if $combat isnot 1>>
+			<<if $NPCList[$_i].type is 0>>
+				<<set $NPCList[$_i] to clone(setup.baseNPC)>>
+			<</if>>
+		<<elseif $NPCList[$_i].active is "active">>
+			<<set $NPCList[$_i].type to (typeof $NPCList[$_i].type isnot "string" ? "human" : $NPCList[$_i].type)>>
 		<</if>>
 	<</for>>
-	<<unset $_i>>
 
 	<<if $player.virginity.vaginal is "Harper" or $player.virginity.penile is "Harper">>
 		<<earnFeat "Harper the Hypnotist">>
@@ -2682,5 +2685,14 @@
 			V.actionDefaults = DefaultActions.check(DefaultActions.setup())
 		}
 	>>
+
+	<<set $_per_keys to Object.keys($per_npc)>>
+	<<if $_per_keys.length gt 0>>
+		<<for $_per_ctrl range $_per_keys>>
+			<<if !$per_npc[$_per_ctrl].type>>
+				<<set $per_npc[$_per_ctrl].type to "human">>
+			<</if>>
+		<</for>>
+	<</if>>
 
 <</widget>>
