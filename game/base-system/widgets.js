@@ -27,8 +27,8 @@ function addfemininityfromfactor(femininity_boost, factor_description, no_overwe
 DefineMacro("addfemininityfromfactor", addfemininityfromfactor);
 
 function addfemininityofclothingarticle(slot, clothing_article, no_overwear_check) {
-	if (setup.clothes[slot][clothing_article.index].femininity) {
-		addfemininityfromfactor(setup.clothes[slot][clothing_article.index].femininity, setup.clothes[slot][clothing_article.index].name_cap, no_overwear_check);
+	if (setup.clothes[slot][clothesIndex(slot,clothing_article)].femininity) {
+		addfemininityfromfactor(setup.clothes[slot][clothesIndex(slot,clothing_article)].femininity, setup.clothes[slot][clothesIndex(slot,clothing_article)].name_cap, no_overwear_check);
 	}
 }
 DefineMacro("addfemininityofclothingarticle", addfemininityofclothingarticle);
@@ -54,8 +54,8 @@ function genderappearancecheck() {
 		T.bulge_size = Math.clamp(V.penissize * T.erection_state, 0, Infinity);
 	}
 	/* Determine how visible the player's bottom is */
-	if ((setup.clothes.lower[V.worn.lower.index].skirt === 1 && V.worn.lower.skirt_down === 1 && V.worn.lower.state === "waist") ||
-		(setup.clothes.over_lower[V.worn.over_lower.index].skirt === 1 && V.worn.over_lower.skirt_down === 1 && V.worn.over_lower.state === "waist")) {
+	if ((setup.clothes.lower[clothesIndex('lower',V.worn.lower)].skirt === 1 && V.worn.lower.skirt_down === 1 && V.worn.lower.state === "waist") ||
+		(setup.clothes.over_lower[clothesIndex('over_lower',V.worn.over_lower)].skirt === 1 && V.worn.over_lower.skirt_down === 1 && V.worn.over_lower.state === "waist")) {
 		T.bottom_visibility = 0;
 	} else {
 		T.bottom_visibility = 1;
@@ -95,9 +95,9 @@ function genderappearancecheck() {
 	T.under_lower_protected = !V.worn.under_lower.exposed;
 	T.apparent_femininity_noow = T.apparent_femininity;
 	T.gender_appearance_factors_noow = clone(T.gender_appearance_factors);
-	T.over_lower_femininity = (setup.clothes.over_lower[V.worn.over_lower.index].femininity ? setup.clothes.over_lower[V.worn.over_lower.index].femininity : 0);
-	T.lower_femininity = (setup.clothes.lower[V.worn.lower.index].femininity ? setup.clothes.lower[V.worn.lower.index].femininity : 0);
-	T.under_lower_femininity = (setup.clothes.under_lower[V.worn.under_lower.index].femininity ? setup.clothes.under_lower[V.worn.under_lower.index].femininity : 0);;
+	T.over_lower_femininity = (setup.clothes.over_lower[clothesIndex('over_lower',V.worn.over_lower)].femininity ? setup.clothes.over_lower[clothesIndex('over_lower',V.worn.over_lower)].femininity : 0);
+	T.lower_femininity = (setup.clothes.lower[clothesIndex('lower',V.worn.lower)].femininity ? setup.clothes.lower[clothesIndex('lower',V.worn.lower)].femininity : 0);
+	T.under_lower_femininity = (setup.clothes.under_lower[clothesIndex('under_lower',V.worn.under_lower)].femininity ? setup.clothes.under_lower[clothesIndex('under_lower',V.worn.under_lower)].femininity : 0);;
 	/* find maximum possible femininity of the last lower piece you can strip down to, and add it to the counter */
 	addfemininityfromfactor(Math.max(T.over_lower_femininity, T.lower_femininity, T.under_lower_femininity), "Lower clothes", "noow");
 	/* bulge and genitals checks for topless gender */

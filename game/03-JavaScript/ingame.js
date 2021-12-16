@@ -785,7 +785,7 @@ window.transferClothing = function(slot, index, newWardrobe){
 
 window.clothingData = function(slot, item, data){
 	if(item[data] !== undefined) return item[data];
-	return setup.clothes[slot][item.index][data];
+	return setup.clothes[slot][clothesIndex(slot,item)][data];
 }
 
 window.clothesDataTrimmerLoop = function(){
@@ -891,6 +891,20 @@ window.clothesReturnLocation = function(item, type){
 			}
 	}
 	return "wardrobe";
+}
+
+//the 'modder' variable is specifically for modders name, should be kept as a short string
+window.clothesIndex = function(slot, itemToIndex) {
+	if(!slot || !itemToIndex || !itemToIndex.name) {
+		console.log(`clothesIndex - slot or valid object not provided`);
+		return 0;
+	}
+	let index = setup.clothes[slot].findIndex((item) => item.variable === itemToIndex.variable && item.modder === itemToIndex.modder)
+	if(index === -1){
+		console.log(`clothesIndex - ${slot} clothing item index not found for the '${itemToIndex.name}' with the modder set to '${itemToIndex.modder}'`);
+		return 0;
+	}
+	return index;
 }
 
 // Runs before a passage load, returning a string redirects to the new passage name.

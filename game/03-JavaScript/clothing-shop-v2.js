@@ -51,7 +51,7 @@ window.getTrueWarmth = function (item) {
 		// outfitPrimary looks like this {'lower': 'item_name', 'head': 'item_name'}
 		warmth += Object.keys(item.outfitPrimary) // loop through secondary items list
 		.filter(x => item.outfitPrimary[x] != "broken") // filter out broken pieces
-		.map(x => setup.clothes[x].find(z => z.name == item.outfitPrimary[x])) // find items in setup.clothes
+		.map(x => setup.clothes[x].find(z => z.name == item.outfitPrimary[x] && z.modder === item.modder)) // find items in setup.clothes
 		.reduce((sum, x) => sum + (x.warmth || 0), 0); // calculate sum of their warmth field
 	}
 
@@ -62,7 +62,7 @@ window.getTrueWarmth = function (item) {
 		// outfitSecondary looks like this ['upper', 'item_name', 'head', 'item_name']
 		item.outfitSecondary.forEach((x, i) => {
 			if (i % 2 == 0 && item.outfitSecondary[i + 1] != "broken") {
-				warmth += setup.clothes[x].find(z => z.name == item.outfitSecondary[i + 1]).warmth || 0;
+				warmth += setup.clothes[x].find(z => z.name == item.outfitSecondary[i + 1] && z.modder === item.modder).warmth || 0;
 			}
 		});
 	}
