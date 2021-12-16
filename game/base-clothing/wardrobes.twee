@@ -633,7 +633,7 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 	Currently equipped:
 	<<if $worn[_wardrobe_list].name isnot "naked">>
 		<<set _wornItem to $worn[_wardrobe_list]>>
-		<<set _wornItemData to setup.clothes[_wardrobe_list][_wornItem.index]>>
+		<<set _wornItemData to setup.clothes[_wardrobe_list][clothesIndex(_wardrobe_list,_wornItem)]>>
 		<<clothingicon _wornItem _wardrobe_list>>
 		<<print _wornItemData.name_cap>>
 		<<if _wornItem.colour isnot 0>>
@@ -731,7 +731,7 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 
 	<<for _i to 0; _i lt _selectedWardrobe[_wardrobe_list].length; _i++>>
 		<<set _item to _selectedWardrobe[_wardrobe_list][_i]>>
-		<<set _itemData to setup.clothes[_wardrobe_list][_item.index]>>
+		<<set _itemData to setup.clothes[_wardrobe_list][clothesIndex(_wardrobe_list,_item)]>>
 		<<if _item.outfitSecondary isnot undefined>>
 			<<if _item.outfitSecondary[1] isnot "broken">>
 				<<continue>>
@@ -846,7 +846,7 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 
 <<widget "oldWardrobeListDisplay">>
 <<wardrobeClothingOptions>>
-<<if $worn.lower.name isnot "naked" and $worn.upper.outfitPrimary is undefined and !setup.clothes.upper[$worn.upper.index].notuck>>
+<<if $worn.lower.name isnot "naked" and $worn.upper.outfitPrimary is undefined and !setup.clothes.upper[clothesIndex('upper', $worn.upper)].notuck>>
 	<<if $upperTucked>>
 		<<link [["Untuck " + $worn.upper.name|$passage]]>><<set $upperTucked = 0>><</link>>
 	<<else>>
@@ -939,7 +939,7 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 	<<if (_item.outfitPrimary isnot undefined and _showType is "non-outfits") or (_item.outfitPrimary is undefined and _showType is "outfits")>>
 		<<continue>>
 	<</if>>
-	<li class="no-numberify">/*<<clothingicon _item>>*/<<wearlink_norefresh setup.clothes[_wardrobe_list][_item.index].name_cap _i _wear>>
+	<li class="no-numberify">/*<<clothingicon _item>>*/<<wearlink_norefresh setup.clothes[_wardrobe_list][clothesIndex(_wardrobe_list,_item)].name_cap _i _wear>>
 	<<if _selectedWardrobe[_wardrobe_list][_i].colour isnot 0>>
 		<span @class="_selectedWardrobe[_wardrobe_list][_i].colour">(_item.colour)</span>
 	<</if>>
@@ -1549,7 +1549,7 @@ to the crate and send them to be sold? Might be best to go shopping shortly afte
 <<set _value to 0>>
 <<for _label, _items range $wardrobe>>
 	<<for _i to 0; _i lt _items.length; _i++>>
-		<<if setup.clothes[_label][_items[_i].index].shop.length is 0>>
+		<<if setup.clothes[_label][clothesIndex(_label,_items[_i])].shop.length is 0>>
 			<<continue>>
 		<</if>>
 		<<if _items[_i].outfitSecondary isnot undefined>>
@@ -1578,7 +1578,7 @@ It will earn you <<printmoney `_value + 5000`>>.
 <<for $_i to 0; $_i lt _equip.length; $_i++>>
 	<<set _toDelete to []>>
 	<<for $_j to 0; $_j lt $wardrobe[_equip[$_i]].length; $_j++>>
-		<<if setup.clothes[_equip[$_i]][$wardrobe[_equip[$_i]][$_j].index].shop.length is 0>>
+		<<if setup.clothes[_equip[$_i]][clothesIndex(_equip[$_i],$wardrobe[_equip[$_i]][$_j])].shop.length is 0>>
 			<<continue>>
 		<</if>>
 		<<if $wardrobe[_equip[$_i]][$_j].outfitSecondary isnot undefined>>
@@ -1667,7 +1667,7 @@ It will cost you
 			<<set $wardrobeRepair[_equip[$_i]] to []>>
 		<</if>>
 		<<set _itemStats to [
-				clone($wardrobe[_equip[$_i]][$_j].index),
+				clone(clothesIndex(_equip[$_i],$wardrobe[_equip[$_i]][$_j])),
 				clone($wardrobe[_equip[$_i]][$_j].colour),
 				clone($wardrobe[_equip[$_i]][$_j].colourCustom),
 				clone($wardrobe[_equip[$_i]][$_j].accessory_colour),

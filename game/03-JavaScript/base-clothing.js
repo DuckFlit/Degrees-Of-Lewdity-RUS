@@ -57,9 +57,9 @@ function debugColourContainerClasses(color) {
 window.debugColourContainerClasses = debugColourContainerClasses; // export function
 
 window.getClothingCost = function (item, slot) {
-	let cost = setup.clothes[slot][item.index].cost * V.clothesPrice;
+	let cost = setup.clothes[slot][clothesIndex(slot, item)].cost * V.clothesPrice;
 
-	if (setup.clothes.under_lower.findIndex(x => x.name == item.name) >= 0 || setup.clothes.under_upper.findIndex(x => x.name == item.name) >= 0)
+	if (setup.clothes.under_lower.findIndex(x => x.name == item.name && x.modder === item.modder) >= 0 || setup.clothes.under_upper.findIndex(x => x.name == item.name && x.modder === item.modder) >= 0)
 		cost *= V.clothesPriceUnderwear;
 	else if (item.type.includes('school'))
 		cost *= V.clothesPriceSchool;

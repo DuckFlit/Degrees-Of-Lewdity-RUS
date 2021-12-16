@@ -495,14 +495,14 @@
 
 		/*Re-buy*/
 		<<if $args[0] isnot "genitals">>
-			<<if $carried[$args[0]].name isnot "naked" and $clothingrebuy is 1 and $carried[$args[0]].one_piece isnot "broken" and setup.clothes[$args[0]][$carried[$args[0]].index].shop.length gt 0>>
+			<<if $carried[$args[0]].name isnot "naked" and $clothingrebuy is 1 and $carried[$args[0]].one_piece isnot "broken" and setup.clothes[$args[0]][clothesIndex($args[0],$carried[$args[0]])].shop.length gt 0>>
 				<<if $carried[$args[0]].colourCustom isnot undefined>><<set _colourCustom to $carried[$args[0]].colourCustom>><</if>>
 				<<if $carried[$args[0]].accessory_colourCustom isnot undefined>><<set _accessory_colourCustom to $carried[$args[0]].accessory_colourCustom>><</if>>
 				<<set $_return to clothesReturnLocation($carried[$args[0]],"rebuy")>>
 				<<if $carried[$args[0]].outfitSecondary isnot undefined>>
 					<<set _outfitSecondaryRebuy to $carried[$args[0]].outfitSecondary>>
 					<<if $money gte Math.trunc(getClothingCost($carried[_outfitSecondaryRebuy[0]],_outfitSecondaryRebuy[0]) * 1.5)>>
-						<<generalSend $_return _outfitSecondaryRebuy[0] $carried[_outfitSecondaryRebuy[0]].index $carried[_outfitSecondaryRebuy[0]].colour $carried[_outfitSecondaryRebuy[0]].accessory_colour>>
+						<<generalSend $_return _outfitSecondaryRebuy[0] `clothesIndex(_outfitSecondaryRebuy[0],$carried[_outfitSecondaryRebuy[0]])` $carried[_outfitSecondaryRebuy[0]].colour $carried[_outfitSecondaryRebuy[0]].accessory_colour>>
 						<<set $money -= Math.trunc(getClothingCost($carried[_outfitSecondaryRebuy[0]],_outfitSecondaryRebuy[0]) * 1.5)>>
 						<<set $effectsmessage to 1>><<run $rebuy_success.push([clone($carried[_outfitSecondaryRebuy[0]].name),$_return])>>
 					<<else>>
@@ -510,20 +510,20 @@
 					<</if>>
 					<<unset _outfitSecondaryRebuy>>
 				<<elseif $money gte Math.trunc(getClothingCost($carried[$args[0]],$args[0]) * 1.5)>>
-					<<generalSend `clothesReturnLocation($carried[$args[0]],"rebuy")` $args[0] $carried[$args[0]].index $carried[$args[0]].colour $carried[$args[0]].accessory_colour>>
+					<<generalSend `clothesReturnLocation($carried[$args[0]],"rebuy")` $args[0] `clothesIndex(_outfitSecondaryRebuy[0],$carried[_outfitSecondaryRebuy[0]])` $carried[$args[0]].colour $carried[$args[0]].accessory_colour>>
 					<<set $money -= Math.trunc(getClothingCost($carried[$args[0]],$args[0]) * 1.5)>>
 					<<set $effectsmessage to 1>><<run $rebuy_success.push([clone($carried[$args[0]].name), $_return])>>
 				<<else>>
 					<<set $effectsmessage to 1>><<run $rebuy_failure.push(clone($carried[$args[0]].name))>>
 				<</if>>
-			<<elseif $clothingrebuy is 1 and $worn[$args[0]].one_piece isnot "broken" and setup.clothes[$args[0]][$worn[$args[0]].index].shop.length gt 0>>
+			<<elseif $clothingrebuy is 1 and $worn[$args[0]].one_piece isnot "broken" and setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].shop.length gt 0>>
 				<<if $worn[$args[0]].colourCustom isnot undefined>><<set _colourCustom to $worn[$args[0]].colourCustom>><</if>>
 				<<if $worn[$args[0]].accessory_colourCustom isnot undefined>><<set _accessory_colourCustom to $worn[$args[0]].accessory_colourCustom>><</if>>
 				<<if $worn[$args[0]].outfitSecondary isnot undefined>>
 					<<set _outfitSecondaryRebuy to $worn[$args[0]].outfitSecondary>>
 					<<if $money gte Math.trunc(getClothingCost($worn[_outfitSecondaryRebuy[0]],_outfitSecondaryRebuy[0]) * 1.5)>>
 						<<set $_return to clothesReturnLocation($worn[_outfitSecondaryRebuy[0]],"rebuy")>>
-						<<generalSend $_return _outfitSecondaryRebuy[0] $worn[_outfitSecondaryRebuy[0]].index $worn[_outfitSecondaryRebuy[0]].colour $worn[_outfitSecondaryRebuy[0]].accessory_colour>>
+						<<generalSend $_return _outfitSecondaryRebuy[0] `clothesIndex(_outfitSecondaryRebuy[0],$worn[_outfitSecondaryRebuy[0]])` $worn[_outfitSecondaryRebuy[0]].colour $worn[_outfitSecondaryRebuy[0]].accessory_colour>>
 						<<set $money -= Math.trunc(getClothingCost($worn[_outfitSecondaryRebuy[0]],_outfitSecondaryRebuy[0]) * 1.5)>>
 						<<set $effectsmessage to 1>><<run $rebuy_success.push([clone($worn[_outfitSecondaryRebuy[0]].name),$_return])>>
 					<<else>>
@@ -532,7 +532,7 @@
 					<<unset _outfitSecondaryRebuy>>
 				<<elseif $money gte Math.trunc(getClothingCost($worn[$args[0]],$args[0]) * 1.5)>>
 					<<set $_return to clothesReturnLocation($worn[$args[0]],"rebuy")>>
-					<<generalSend $_return $args[0] $worn[$args[0]].index $worn[$args[0]].colour $worn[$args[0]].accessory_colour>>
+					<<generalSend $_return $args[0] `clothesIndex($args[0],$worn[$args[0]])` $worn[$args[0]].colour $worn[$args[0]].accessory_colour>>
 					<<set $money -= Math.trunc(getClothingCost($worn[$args[0]],$args[0]) * 1.5)>>
 					<<set $effectsmessage to 1>><<run $rebuy_success.push([clone($worn[$args[0]].name),$_return])>>
 				<<else>>
@@ -750,32 +750,32 @@
 
 	/*Resets status of existing clothing*/
 	<<if _slots.includes("upper") or _onSlot is "upper">>
-		<<set $worn.upper.exposed to setup.clothes.upper[$worn.upper.index].exposed_base>>
-		<<set $worn.upper.state to setup.clothes.upper[$worn.upper.index].state_base>>
-		<<set $worn.upper.state_top to setup.clothes.upper[$worn.upper.index].state_top_base>>
+		<<set $worn.upper.exposed to setup.clothes.upper[clothesIndex('upper', $worn.upper)].exposed_base>>
+		<<set $worn.upper.state to setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base>>
+		<<set $worn.upper.state_top to setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
 	<</if>>
 	<<if _slots.includes("lower") or _onSlot is "lower">>
-		<<set $worn.lower.exposed to setup.clothes.lower[$worn.lower.index].exposed_base>>
-		<<set $worn.lower.vagina_exposed to setup.clothes.lower[$worn.lower.index].vagina_exposed_base>>
-		<<set $worn.lower.anus_exposed to setup.clothes.lower[$worn.lower.index].anus_exposed_base>>
-		<<set $worn.lower.state to setup.clothes.lower[$worn.lower.index].state_base>>
-		<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
+		<<set $worn.lower.exposed to setup.clothes.lower[clothesIndex('lower', $worn.lower)].exposed_base>>
+		<<set $worn.lower.vagina_exposed to setup.clothes.lower[clothesIndex('lower', $worn.lower)].vagina_exposed_base>>
+		<<set $worn.lower.anus_exposed to setup.clothes.lower[clothesIndex('lower', $worn.lower)].anus_exposed_base>>
+		<<set $worn.lower.state to setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base>>
+		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 			<<set $worn.lower.skirt_down to 1>>
 		<</if>>
 	<</if>>
 	<<if _slots.includes("under_upper") or _onSlot is "under_upper">>
-		<<set $worn.under_upper.exposed to setup.clothes.under_upper[$worn.under_upper.index].exposed_base>>
-		<<set $worn.under_upper.state to setup.clothes.under_upper[$worn.under_upper.index].state_base>>
-		<<set $worn.under_upper.state_top to setup.clothes.under_upper[$worn.under_upper.index].state_top_base>>
+		<<set $worn.under_upper.exposed to setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].exposed_base>>
+		<<set $worn.under_upper.state to setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base>>
+		<<set $worn.under_upper.state_top to setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_top_base>>
 	<</if>>
 	<<if _slots.includes("under_lower") or _onSlot is "under_lower">>
-		<<set $worn.under_lower.state to setup.clothes.under_lower[$worn.under_lower.index].state_base>>
-		<<set $worn.under_lower.exposed to setup.clothes.under_lower[$worn.under_lower.index].exposed_base>>
-		<<set $worn.under_lower.vagina_exposed to setup.clothes.under_lower[$worn.under_lower.index].vagina_exposed_base>>
-		<<set $worn.under_lower.anus_exposed to setup.clothes.under_lower[$worn.under_lower.index].anus_exposed_base>>
+		<<set $worn.under_lower.state to setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base>>
+		<<set $worn.under_lower.exposed to setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].exposed_base>>
+		<<set $worn.under_lower.vagina_exposed to setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].vagina_exposed_base>>
+		<<set $worn.under_lower.anus_exposed to setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].anus_exposed_base>>
 	<</if>>
 	<<if _slots.includes("legs") or _onSlot is "legs">>
-		<<set $worn.legs.state to setup.clothes.legs[$worn.legs.index].state_base>>
+		<<set $worn.legs.state to setup.clothes.legs[clothesIndex('legs', $worn.legs)].state_base>>
 	<</if>>
 <</if>>
 <</widget>>
@@ -783,20 +783,20 @@
 <<widget "overupperon">>
 <<generalOn "over_upper">>
 <<if $worn.over_upper.name isnot "naked">>
-	<<set $worn.over_upper.exposed to setup.clothes.over_upper[$worn.over_upper.index].exposed_base>>
-	<<set $worn.over_upper.state to setup.clothes.over_upper[$worn.over_upper.index].state_base>>
-	<<set $worn.over_upper.state_top to setup.clothes.over_upper[$worn.over_upper.index].state_top_base>>
+	<<set $worn.over_upper.exposed to setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].exposed_base>>
+	<<set $worn.over_upper.state to setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base>>
+	<<set $worn.over_upper.state_top to setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
 <</if>>
 <</widget>>
 
 <<widget "overloweron">>
 <<generalOn "over_lower">>
 <<if $worn.over_lower.name isnot "naked">>
-	<<set $worn.over_lower.exposed to setup.clothes.over_lower[$worn.over_lower.index].exposed_base>>
-	<<set $worn.over_lower.vagina_exposed to setup.clothes.over_lower[$worn.over_lower.index].vagina_exposed_base>>
-	<<set $worn.over_lower.anus_exposed to setup.clothes.over_lower[$worn.over_lower.index].anus_exposed_base>>
-	<<set $worn.over_lower.state to setup.clothes.over_lower[$worn.over_lower.index].state_base>>
-	<<if setup.clothes.over_lower[$worn.over_lower.index].skirt is 1>>
+	<<set $worn.over_lower.exposed to setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].exposed_base>>
+	<<set $worn.over_lower.vagina_exposed to setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].vagina_exposed_base>>
+	<<set $worn.over_lower.anus_exposed to setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].anus_exposed_base>>
+	<<set $worn.over_lower.state to setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base>>
+	<<if setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
 		<<set $worn.over_lower.skirt_down to 1>>
 	<</if>>
 <</if>>
@@ -805,20 +805,20 @@
 <<widget "upperon">>
 <<generalOn "upper">>
 <<if $worn.upper.name isnot "naked">>
-	<<set $worn.upper.exposed to setup.clothes.upper[$worn.upper.index].exposed_base>>
-	<<set $worn.upper.state to setup.clothes.upper[$worn.upper.index].state_base>>
-	<<set $worn.upper.state_top to setup.clothes.upper[$worn.upper.index].state_top_base>>
+	<<set $worn.upper.exposed to setup.clothes.upper[clothesIndex('upper', $worn.upper)].exposed_base>>
+	<<set $worn.upper.state to setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base>>
+	<<set $worn.upper.state_top to setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
 <</if>>
 <</widget>>
 
 <<widget "loweron">>
 <<generalOn "lower">>
 <<if $worn.lower.name isnot "naked">>
-	<<set $worn.lower.exposed to setup.clothes.lower[$worn.lower.index].exposed_base>>
-	<<set $worn.lower.vagina_exposed to setup.clothes.lower[$worn.lower.index].vagina_exposed_base>>
-	<<set $worn.lower.anus_exposed to setup.clothes.lower[$worn.lower.index].anus_exposed_base>>
-	<<set $worn.lower.state to setup.clothes.lower[$worn.lower.index].state_base>>
-	<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
+	<<set $worn.lower.exposed to setup.clothes.lower[clothesIndex('lower', $worn.lower)].exposed_base>>
+	<<set $worn.lower.vagina_exposed to setup.clothes.lower[clothesIndex('lower', $worn.lower)].vagina_exposed_base>>
+	<<set $worn.lower.anus_exposed to setup.clothes.lower[clothesIndex('lower', $worn.lower)].anus_exposed_base>>
+	<<set $worn.lower.state to setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base>>
+	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 		<<set $worn.lower.skirt_down to 1>>
 	<</if>>
 <</if>>
@@ -827,19 +827,19 @@
 <<widget "underupperon">>
 <<generalOn "under_upper">>
 <<if $worn.under_upper.name isnot "naked">>
-	<<set $worn.under_upper.exposed to setup.clothes.under_upper[$worn.under_upper.index].exposed_base>>
-	<<set $worn.under_upper.state to setup.clothes.under_upper[$worn.under_upper.index].state_base>>
-	<<set $worn.under_upper.state_top to setup.clothes.under_upper[$worn.under_upper.index].state_top_base>>
+	<<set $worn.under_upper.exposed to setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].exposed_base>>
+	<<set $worn.under_upper.state to setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base>>
+	<<set $worn.under_upper.state_top to setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_top_base>>
 <</if>>
 <</widget>>
 
 <<widget "underloweron">>
 <<generalOn "under_lower">>
 <<if $worn.under_lower.name isnot "naked">>
-	<<set $worn.under_lower.state to setup.clothes.under_lower[$worn.under_lower.index].state_base>>
-	<<set $worn.under_lower.exposed to setup.clothes.under_lower[$worn.under_lower.index].exposed_base>>
-	<<set $worn.under_lower.vagina_exposed to setup.clothes.under_lower[$worn.under_lower.index].vagina_exposed_base>>
-	<<set $worn.under_lower.anus_exposed to setup.clothes.under_lower[$worn.under_lower.index].anus_exposed_base>>
+	<<set $worn.under_lower.state to setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base>>
+	<<set $worn.under_lower.exposed to setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].exposed_base>>
+	<<set $worn.under_lower.vagina_exposed to setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].vagina_exposed_base>>
+	<<set $worn.under_lower.anus_exposed to setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].anus_exposed_base>>
 <</if>>
 <</widget>>
 
@@ -1672,23 +1672,23 @@
 
 <<widget "resetClothingState">>
 <<if $args[0] and $args[0] isnot "genitals">>
-	<<if setup.clothes[$args[0]][$worn[$args[0]].index].state_base>>
-		<<set $worn[$args[0]].state to setup.clothes[$args[0]][$worn[$args[0]].index].state_base>>
+	<<if setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].state_base>>
+		<<set $worn[$args[0]].state to setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].state_base>>
 	<</if>>
-	<<if setup.clothes[$args[0]][$worn[$args[0]].index].state_top_base>>
-		<<set $worn[$args[0]].state_top to setup.clothes[$args[0]][$worn[$args[0]].index].state_top_base>>
+	<<if setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].state_top_base>>
+		<<set $worn[$args[0]].state_top to setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].state_top_base>>
 	<</if>>
-	<<if setup.clothes[$args[0]][$worn[$args[0]].index].exposed_base>>
-		<<set $worn[$args[0]].exposed to setup.clothes[$args[0]][$worn[$args[0]].index].exposed_base>>
+	<<if setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].exposed_base>>
+		<<set $worn[$args[0]].exposed to setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].exposed_base>>
 	<</if>>
-	<<if setup.clothes[$args[0]][$worn[$args[0]].index].skirt>>
+	<<if setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].skirt>>
 		<<set $worn[$args[0]].skirt_down to 1>>
 	<</if>>
-	<<if setup.clothes[$args[0]][$worn[$args[0]].index].vagina_exposed_base>>
-		<<set $worn[$args[0]].vagina_exposed to setup.clothes[$args[0]][$worn[$args[0]].index].vagina_exposed_base>>
+	<<if setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].vagina_exposed_base>>
+		<<set $worn[$args[0]].vagina_exposed to setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].vagina_exposed_base>>
 	<</if>>
-	<<if setup.clothes[$args[0]][$worn[$args[0]].index].anus_exposed_base>>
-		<<set $worn[$args[0]].anus_exposed to setup.clothes[$args[0]][$worn[$args[0]].index].anus_exposed_base>>
+	<<if setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].anus_exposed_base>>
+		<<set $worn[$args[0]].anus_exposed to setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].anus_exposed_base>>
 	<</if>>
 <</if>>
 <</widget>>
