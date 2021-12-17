@@ -377,8 +377,248 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "speechWraith">><<silently>>
-<<if $wraith.state is "">>
-	<<set _speechWraith to ["The <<person>> holds its necklace tightly.", "The <<person>> whispers incoherently.","The <<person>> giggles quietly.","The <<person>> speaks in a language you don't understand.","The <<person>> opens <<his>> mouth, and your ears begin ringing.","The <<person>> says something, but you immediately forget what it was."].pluck()>>
+<<if $possessed>>
+	<<set _speakPool to ["speak","grunt","giggle","whisper","sneer","laugh","yell","spit","speak in an eerily calm tone"]>>
+	<<if $wolfgirl gte 4>>
+		<<run _speakPool.pushUnique(
+			"bark","growl","howl"
+		)>>
+	<</if>>
+	<<if $cat gte 4>>
+		<<run _speakPool.pushUnique(
+			"meow","purr","hiss"
+		)>>
+	<</if>>
+	<<if $cow gte 4>>
+		<<run _speakPool.pushUnique(
+			"moo","snort","huff"
+		)>>
+	<</if>>
+	<<if $harpy gte 4>>
+		<<run _speakPool.pushUnique(
+			"chirp","screech","sing"
+		)>>
+	<</if>>
+
+	<<set _linePool to [
+		"Me.",
+		"Stay.",
+		"Give in.",
+		"Not yet.",
+		"Abandoned.",
+		"Pretender.",
+		"Take a bow.",
+		"And so do we.",
+		"Know your place.",
+		"Maelstrom, tirade.",
+		"A corpse can't speak.",
+		"Why don't we find out?",
+		"Just a little further.",
+		"The strings comfort me.",
+		"Our heaven, made of twigs.",
+		"Never to see the moon again.",
+		"Step aside, or be cast aside.",
+		"A corpse should stay in its coffin.",
+		"Don't repeat yourself. Don't bother.",
+		"We were never here. That's why we left.",
+		"Like sand slipping through our fingers.",
+		"Even if I have to drag you there myself.",
+		"Run. Forget that you have nowhere to go. Run.",
+		"Come to my parlor, said the fly to the spider.",
+		"What is within always conquers what is without.",
+		"Steel yourself all you like. You'll eventually rust.",
+		"History swallows the victims and spits out their bones.",
+		"Desolate. Disappear. Drown. We'll come back to find you.",
+		"It would be maddening, to only know the other end of the ordeal.",
+		"Carve. Into. You. Our. Name. Perfection. Wash. Away. All. You. Are."
+	]>>
+	<<if $npc.includes("Sydney")>>
+		<<NPCStatusCheck "Sydney">>
+		<<run _linePool.pushUnique(
+			"Liar.",
+			"Again.",
+			"Sydney?",
+			"Alone at last.",
+			"I've lost ourself.",
+			"Let us sleep forever.",
+			"Can the innocent repent?",
+			"You know why we're here.",
+			"I'm sorry you put your trust in me.",
+			"It's hilarious. Why aren't you laughing?",
+			"It's okay now, Sydney. I'm back to normal.",
+			"Block me out all you like. I am still here.",
+			"Do you remember your <<sydneyOtherParent>>?",
+			"They never stopped, because they never began.",
+			"The light will consume you, slowly, painfully.",
+			"We're glad to see you again. We missed you, you know.",
+			"Do you remember? Of course you do. Of course you don't.",
+			"What a terrible song, and you're not the one playing it.",
+			"<<nnpc_He \"Harper\">> was so sure of <<nnpc_himself \"Harper\">>.",
+			"The pure and the corrupt are at ends, but the end itself remains the same.",
+			"As Two will emerge from One will emerge from Two <span class=\"tentacle\">As One</span>."
+		)>>
+		<<if $templePromised is "Sydney">>
+			<<run _linePool.pushUnique("Calamity rings.")>>
+		<</if>>
+		<<if _sydneyStatus.includes("Pure")>>
+			<<run _linePool.pushUnique(
+				"You'll understand once you fly.",
+				"Baptisms with water of the womb.",
+				"Every life has sin. Every sin has life."
+			)>>
+		<<elseif _sydneyStatus.includes("neutral")>>
+			<<run _linePool.pushUnique(
+				"Tipped with a void.",
+				"And so long as that's true, it will never go away.",
+				"Balance. Indecisiveness. Fear. There's a lot of words."
+			)>>
+		<<elseif _sydneyStatus.includes("corrupt")>>
+			<<run _linePool.pushUnique(
+				"No one will answer.",
+				"What you fear, you have become.",
+				"Was it worth it? Of course it was."
+			)>>
+		<</if>>
+	<<else>>
+		<<run _linePool.pushUnique("We stand <span class=\"tentacle\">As One</span>, and you'll never be a part.")>>
+	<</if>>
+	<<if $npc.includes("Robin")>>
+		<<run _linePool.pushUnique(
+			"The wing-clipped are better smothered.",
+			"How far would go you? How far can you run?",
+			"You've accepted your cage, songbird. Lie in it."
+		)>>
+		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 1>>
+			<<run _linePool.pushUnique("Scion of a salted deluge.")>>
+		<</if>>
+	<</if>>
+	<<if $npc.includes("Whitney")>>
+		<<run _linePool.pushUnique(
+			"Tormentor.",
+			"Drown in smoke. Drown in flame.",
+			"A suit of armor made of bodies. They're not here now."
+		)>>
+		<<if $NPCName[$NPCNameList.indexOf("Whitney")].state is "rescued">>
+			<<run _linePool.pushUnique("Betrayed by your worst enemy. Do you love <<phim>>?")>>
+		<</if>>
+	<</if>>
+	<<if $npc.includes("Kylar")>>
+		<<run _linePool.pushUnique(
+			"A shadow, just as faithless.",
+			"Were your grip a little stronger.",
+			"Blistering emerald green, blinding the world. Such is your envy."
+		)>>
+		<<if $wraith.offspring is "dead">>
+			<<run _linePool.pushUnique("You failed them. You failed us.")>>
+		<</if>>
+	<</if>>
+	<<if $npc.includes("Eden")>>
+		<<run _linePool.pushUnique(
+			"You never should have stopped running.",
+			"Like a long lost friend you never knew.",
+			"You'll never be far enough. It never leaves."
+		)>>
+		<<if $syndromeeden is 1>>
+			<<run _linePool.pushUnique("You found a home, in collar and chains.")>>
+		<</if>>
+	<</if>>
+	<<if $npc.includes("Avery")>>
+		<<run _linePool.pushUnique(
+			"Not all stains wash out.",
+			"Money. Material. Meaningless noise.",
+			"You still wouldn't be able to afford it."
+		)>>
+		<<if $averyragerevealed is 1>>
+			<<run _linePool.pushUnique("Wine mixes with blood, shed from the glass shattered.")>>
+		<</if>>
+	<</if>>
+	<<if $npc.includes("Alex")>>
+		<<run _linePool.pushUnique(
+			"You would be nothing.",
+			"One of thirteen. Indistinguishable.",
+			"Water down your mind, until you destroy all you love."
+		)>>
+	<</if>>
+	<<if $farm.aggro gte 60>>
+			<<run _linePool.pushUnique("The locusts will have a new feast.")>>
+		<</if>>
+	<<if $npc.includes("Black Wolf")>>
+		<<run _linePool.pushUnique(
+			"Wait your turn.",
+			"The howl, too, drips with red.",
+			"Dare to hunt. Be made to heel."
+		)>>
+		<<if $wolfpackleader is 1>>
+			<<run _linePool.pushUnique("Bite the hand that feeds.")>>
+		<</if>>
+	<</if>>
+	<<if $npc.includes("Great Hawk")>>
+		<<run _linePool.pushUnique(
+			"Wise to fear your reflection.",
+			"Fly to the sun or sink in the mud.",
+			"The song never stopped. Did it ever begin?"
+		)>>
+		<<if $birdFly is 1>>
+			<<run _linePool.pushUnique("Count the feathers. Uncountable feathers.")>>
+		<</if>>
+	<</if>>
+
+	<!-- Ideally, this part would be a for loop. I can't figure out how to generate a new temporary variable for each loop iteration,
+	and if I use the same temp variable for each loop, only the last named NPC's name and title will be added to the pool.
+	Temp arrays don't work either. -->
+	<<if $npc[0]>>
+		<<set _npc0 to clone($npc[0])>>
+		<<run _linePool.pushUnique(
+			"_npc0 _npc0 _npc0 _npc0 _npc0 _npc0 _npc0 _npc0.",
+			"<<nnpc_Title _npc0>> <<nnpc_title _npc0>> <<nnpc_title _npc0>> <<nnpc_title _npc0>> <<nnpc_title _npc0>> <<nnpc_title _npc0>> <<nnpc_title _npc0>> <<nnpc_title _npc0>>."
+		)>>
+	<</if>>
+	<<if $npc[1]>>
+		<<set _npc1 to clone($npc[1])>>
+		<<run _linePool.pushUnique(
+			"_npc1 _npc1 _npc1 _npc1 _npc1 _npc1 _npc1 _npc1.",
+			"<<nnpc_Title _npc1>> <<nnpc_title _npc1>> <<nnpc_title _npc1>> <<nnpc_title _npc1>> <<nnpc_title _npc1>> <<nnpc_title _npc1>> <<nnpc_title _npc1>> <<nnpc_title _npc1>>."
+		)>>
+	<</if>>
+	<<if $npc[2]>>
+		<<set _npc2 to clone($npc[2])>>
+		<<run _linePool.pushUnique(
+			"_npc2 _npc2 _npc2 _npc2 _npc2 _npc2 _npc2 _npc2.",
+			"<<nnpc_Title _npc2>> <<nnpc_title _npc2>> <<nnpc_title _npc2>> <<nnpc_title _npc2>> <<nnpc_title _npc2>> <<nnpc_title _npc2>> <<nnpc_title _npc2>> <<nnpc_title _npc2>>."
+		)>>
+	<</if>>
+	<<if $npc[3]>>
+		<<set _npc3 to clone($npc[3])>>
+		<<run _linePool.pushUnique(
+			"_npc3 _npc3 _npc3 _npc3 _npc3 _npc3 _npc3 _npc3.",
+			"<<nnpc_Title _npc3>> <<nnpc_title _npc3>> <<nnpc_title _npc3>> <<nnpc_title _npc3>> <<nnpc_title _npc3>> <<nnpc_title _npc3>> <<nnpc_title _npc3>> <<nnpc_title _npc3>>."
+		)>>
+	<</if>>
+	<<if $npc[4]>>
+		<<set _npc4 to clone($npc[4])>>
+		<<run _linePool.pushUnique(
+			"_npc4 _npc4 _npc4 _npc4 _npc4 _npc4 _npc4 _npc4.",
+			"<<nnpc_Title _npc4>> <<nnpc_title _npc4>> <<nnpc_title _npc4>> <<nnpc_title _npc4>> <<nnpc_title _npc4>> <<nnpc_title _npc4>> <<nnpc_title _npc4>> <<nnpc_title _npc4>>."
+		)>>
+	<</if>>
+	<<if $npc[5]>>
+		<<set _npc5 to clone($npc[5])>>
+		<<run _linePool.pushUnique(
+			"_npc5 _npc5 _npc5 _npc5 _npc5 _npc5 _npc5 _npc5.",
+			"<<nnpc_Title _npc5>> <<nnpc_title _npc5>> <<nnpc_title _npc5>> <<nnpc_title _npc5>> <<nnpc_title _npc5>> <<nnpc_title _npc5>> <<nnpc_title _npc5>> <<nnpc_title _npc5>>."
+		)>>
+	<</if>>
+
+	<<set _speak to _speakPool.pluck()>>
+	<<set _line1 to "<span class=\"wraith\">" + _linePool.pluck() + "</span>">>
+	<<set _line2 to "<span class=\"wraith\">" + _linePool.pluck() + "</span>">>
+	<<if random(0,2)>>
+		<<set _speechWraith to "You _speak. \"_line1 _line2\"">>
+	<<else>>
+		<<set _speechWraith to "You _speak. \"_line1\"">>
+	<</if>>
+<<elseif $wraith.state is "">>
+	<<set _speechWraith to ["The <<person>> holds <<his>> necklace tightly.", "The <<person>> whispers incoherently.","The <<person>> giggles quietly.","The <<person>> speaks in a language you don't understand.","The <<person>> opens <<his>> mouth, and your ears begin ringing.","The <<person>> says something, but you immediately forget what it was.","The <<person>> doesn't speak."].pluck()>>
 <<elseif $wraith.mimic isnot "" and $wraith.revealed is false>>
 	<<switch $wraith.mimic>>
 		<<case "Sydney">>
@@ -420,6 +660,7 @@
 		<<set $alarm to 0>>
 		<<set _speaks to "repeats your screams for help in a mocking tone, in your own voice">>
 	<</if>>
+
 	<<set _linePool to [
 		"You.",
 		"Give in.",
@@ -436,6 +677,7 @@
 		"With a dream that casts a shadow.",
 		"Join me, why don't you? It's not far.",
 		"Like sand slipping through your fingers.",
+		"All that matters is the blissful present.",
 		"You don't have enough. You never had enough.",
 		"Let's see how you like being the puppet, hmm?",
 		"One million, two million, three million, four.",
@@ -538,6 +780,7 @@
 	<<elseif $demon gte 6>>
 		<<run _linePool.pushUnique("You think you've found the bottom. You've barely breached the surface.")>>
 	<</if>>
+
 	<<set _line1 to "<span class=\"wraith\">" + _linePool.pluck() + "</span>">>
 	<<set _line2 to "<span class=\"wraith\">" + _linePool.pluck() + "</span>">>
 	<<if random(0,2)>>
