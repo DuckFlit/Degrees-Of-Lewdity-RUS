@@ -997,12 +997,12 @@ Renderer.CanvasModels["main"] = {
 			z: ZIndices.fronthair,
 			animation: "idle"
 		},
-		"hair_extra": { // Extra layer for thighs+ long hair in default style
+		"hair_extra": { // Extra layer for thighs+ long hair for certain styles
 			srcfn(options) {
-				if (options.hair_sides_length === "thighs" && options.hair_sides_type === "default") {
-					return "img/hair/red/backhairthighsred.png"
-				} else if (options.hair_sides_length === "feet" && options.hair_sides_type === "default") {
-					return"img/hair/red/backhairfeetred.png"
+				if (options.hair_sides_length === "feet" && ["default","loose","straight","curl","defined curl","neat"].includes(options.hair_sides_type)) {
+					return "img/hair/back/" + options.hair_sides_type + '/' + "feet.png"
+				} else if (options.hair_sides_length === "thighs" && ["default","loose","curl","defined curl","neat"].includes(options.hair_sides_type)) {
+					return "img/hair/back/" + options.hair_sides_type + '/' + "thighs.png"
 				} else {
 					return ""
 				}
