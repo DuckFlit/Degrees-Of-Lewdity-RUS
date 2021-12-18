@@ -288,6 +288,18 @@
 <<widget "generate_veteran_guard">>
 <<if $prison_intro is 1>>
     <<loadNPC $args[0] "veteran_guard">>
+	<<if $per_npc.veteran_guard and !$per_npc.veteran_guard.description>>
+		<!-- Fix for the veteran guard being saved over as an empty NPCList object in some saves -->
+		<<set $_id to $args[0]>>
+		<<clearsinglenpc $args[0]>>
+		<<generateRole $_id "veteran" "guard">>
+		<<if $per_npc.veteran_guard.name_known is 1>>
+			<<set $NPCList[$_id].name_known to 1>>
+			<<set $NPCList[$_id].fullDescription to $NPCList[0].name>>
+		<</if>>
+		<<clearNPC "veteran_guard">>
+		<<saveNPC $_id "veteran_guard">>
+	<</if>>
 <<else>>
     <<generateRole 2 "veteran" "guard">>
     <<saveNPC 2 "veteran_guard">>
