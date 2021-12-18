@@ -98,6 +98,58 @@
 <<pushEventNPC _n>>
 <</widget>>
 
+<<widget "generateRole">>
+	<!-- Argument 1: The slot the new NPC should fill in $NPCList. Slot one would be "0" -->
+	<!-- Argument 2: The description of the NPC. To generate a default description, use 0
+	To make a description that changes based on NPC gender, split the male/female descriptions with "/"-->
+	<!-- Argument 3: The role of the NPC. To generate with no role, use 0. Do not set role to "normal"
+	To make a role that changes based on NPC gender, split the male/female roles with "/"-->
+	<!-- Argument 4: The status of the NPC. Defaults to adult; use "t" for student -->
+	<!-- Example: <<generateRole 0 "curious" "scientist">> would generate the first NPC as adult "curious scientist" -->
+	<!-- Example: <<generateRole 1 "arrogant" 0 t>> would generate the second NPC as "arrogant boy/girl"-->
+	<!-- Example: <<generateRole 2 "starstruck" "fanboy/fangirl">> would generate the third NPC as adult "starstruck fanboy" or "starstruck fangirl" -->
+	<<set _slot to $args[0]>>
+	<<set _desc to $args[1] ? $args[1] : 0>>
+	<<set _role to $args[2] ? $args[2] : 0>>
+	<<set _status to $args[3] is "t" ? "t" : "a">>
+
+	<<generateNPC _slot+1 _status>>
+
+	<<if _desc>>
+		<<if _desc.includes("/")>>
+			<<set _descBreak to _desc.indexOf("/")>>
+			<<set _descM to _desc.substring(0,_descBreak)>>
+			<<set _descF to _desc.substring(_descBreak+1,_desc.length)>>
+			<<set $NPCList[_slot].description to $NPCList[_slot].pronoun is "m" ? _descM : _descF>>
+		<<else>>
+			<<set $NPCList[_slot].description to _desc>>
+		<</if>>
+	<</if>>
+	<<if _role>>
+		<<if _role.includes("/")>>
+			<<set _roleBreak to _role.indexOf("/")>>
+			<<set _roleM to _role.substring(0,_roleBreak)>>
+			<<set _roleF to _role.substring(_roleBreak+1,_role.length)>>
+			<<set $NPCList[_slot].role to $NPCList[_slot].pronoun is "m" ? _roleM : _roleF>>
+		<<else>>
+			<<set $NPCList[_slot].role to _role>>
+		<</if>>
+	<</if>>
+
+	<<set $NPCList[_n].fullDescription to $NPCList[_n].description + " ">>
+	<<if $NPCList[_slot].role isnot "normal">>
+		<<set $NPCList[_n].fullDescription += $NPCList[_slot].role>>
+	<<elseif $NPCList[_n].pronoun is "m" and $NPCList[_n].teen is 1>>
+		<<set $NPCList[_n].fullDescription += "boy">>
+	<<elseif $NPCList[_n].pronoun is "m">>
+		<<set $NPCList[_n].fullDescription += "man">>
+	<<elseif $NPCList[_n].pronoun is "f" and $NPCList[_n].teen is 1>>
+		<<set $NPCList[_n].fullDescription += "girl">>
+	<<elseif $NPCList[_n].pronoun is "f">>
+		<<set $NPCList[_n].fullDescription += "woman">>
+	<</if>>
+<</widget>>
+
 <<widget "generate1">>
 <<generateNPC 1>>
 <</widget>>
