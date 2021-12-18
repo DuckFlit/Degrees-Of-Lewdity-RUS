@@ -1195,7 +1195,9 @@ in dev alternative to current "breasts" widget
 
 <<widget "personsimple">><<silently>>
 	<<set _text_output to (!$NPCList[$index].type or $NPCList[$index].type is "human" or $args[0] is "normal" ? "" : $NPCList[$index].type)>>
-	<<if $npcadult is 1>>
+	<<if $role isnot "normal">>
+		<<set _text_output += $role>>
+	<<elseif $npcadult is 1>>
 		<<set _text_output += ($pronoun is "m" ? "man" : "woman")>>
 	<<else>>
 		<<set _text_output += ($pronoun is "m" ? "boy" : "girl")>>
@@ -1210,7 +1212,7 @@ in dev alternative to current "breasts" widget
 	<<if $npc_named is 1 or $description is "pale figure">>
 		<<set _text_output to $description>>
 	<<elseif $role isnot "normal">>
-		<<set _text_output to $description + " " + $role>>
+		<<set _text_output += $role>>
 	<<elseif $pronoun is "m">>
 		<<set _text_output += ($npcadult is 1 ? "man" : "boy")>>
 	<<elseif $pronoun is "f">>
@@ -1226,10 +1228,12 @@ in dev alternative to current "breasts" widget
 <<widget "combatperson">><<silently>>
 <<if $npc_named is 1>>
 	<<set _text_output to $NPCList[$index].fullDescription>>
+<<elseif $NPCList[$index].name_known is 1>>
+	<<set _text_output to $NPCList[$index].name>>
 <<elseif $enemytype is "beast">>
 	<<set _text_output to "the " + $NPCList[$index].type>>
 <<elseif $role isnot "normal">>
-	<<set _text_output to $description + " " + $role>>
+	<<set _text_output to "the " + $description + " " + $role>>
 <<elseif $npcadult is 1>>
 	<<if $pronoun is "m">>
 		<<set _text_output to "the " + $description+" man">>
@@ -1261,6 +1265,7 @@ in dev alternative to current "breasts" widget
 <<set $pronoun to $NPCList[_n].pronoun>>
 <<if $npcrow.includes(_n)>>
 	<<set $description to $NPCName[$npcnum[$npcrow.indexOf(_n)]].title>>
+	<<set $role to "normal">>
 	<<set $npc_named to 1>>
 <<else>>
 	<<set $description to $NPCList[_n].description>>

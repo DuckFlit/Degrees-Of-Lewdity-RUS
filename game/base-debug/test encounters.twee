@@ -681,7 +681,7 @@ Add the NPCs you want.<br>
 <br>
 <<clotheson>>
 <<if _possess>>
-	<<link [[Go again|Possessed Fight Test]]>><<endcombat>><<set $possessed to 1>><<set $control to 0>><</link>><<lllcontrol>> | <span class="wraith">+ Wraith</span><br>
+	<<link [[Go again|Possessed Fight Test]]>><<endcombat>><<set $possessed to true>><<set $control to 0>><</link>><<lllcontrol>> | <span class="wraith">+ Wraith</span><br>
 <<else>>
 	<<link [[Select NPCs|Named NPC Gangbang Select]]>><<endcombat>><</link>><br>
 <</if>>
@@ -1036,9 +1036,120 @@ You open your mouth to scream, but it is already inside you.
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>
-	<<link [[Fight again|Possessed Fight]]>><<set $possessed to 1>><<set $control to 0>><<set $fightstart to 1>><<endevent phaseless>><</link>><<lllcontrol>> | <span class="wraith">+ Wraith</span><br>
-	<<link [[Freshen up, then fight again|Possessed Fight]]>><<set $possessed to 1>><<set $control to 0>><<set $fightstart to 1>><<endevent phaseless>><<set $pain to 0>><<set $arousal to 0>><</link>><<lpain>><<larousal>><<lllcontrol>> | <span class="wraith">+ Wraith</span><br>
-	<<link [[Decision room|Possessed Fight Test]]>><<set $possessed to 1>><<set $control to 0>><</link>><<lllcontrol>> | <span class="wraith">Also + Wraith</span>
+	<<link [[Fight again|Possessed Fight]]>><<set $possessed to true>><<set $control to 0>><<set $fightstart to 1>><<endevent phaseless>><</link>><<lllcontrol>> | <span class="wraith">+ Wraith</span><br>
+	<<link [[Freshen up, then fight again|Possessed Fight]]>><<set $possessed to true>><<set $control to 0>><<set $fightstart to 1>><<endevent phaseless>><<set $pain to 0>><<set $arousal to 0>><</link>><<lpain>><<larousal>><<lllcontrol>> | <span class="wraith">+ Wraith</span><br>
+	<<link [[Decision room|Possessed Fight Test]]>><<set $possessed to true>><<set $control to 0>><</link>><<lllcontrol>> | <span class="wraith">Also + Wraith</span>
 <</if>>
 <br><br>
 <<link [[Back home|Bedroom]]>><<set $possessed to 0>><<endevent>><<unset $opponent>><</link>>
+
+:: NPC Role Select
+<br>
+The lights flash on. You find yourself in a strange chamber, completely smooth and featureless. There is a sign on the wall that says <span class="orange">DEBUG</span> in bright orange letters. A large, opaque tube reaches to the ceiling, The words <span class="blue">CUSTOM CONSTRUCT</span> are labelled on the front.
+<br>
+A terminal is attached to the tube. You look at the prompts.
+<br><br>
+<i>Please select the construct's descriptor. Leave blank for default generation.</i>
+<br>
+
+<<if $npcselectdesc is undefined>><<set $npcselectdesc to "custom">><</if>>
+<<textbox "$npcselectdesc" $npcselectdesc>>
+<br><br>
+
+<i>Please select the construct's role. Leave blank for default generation.</i>
+<br>
+
+<<if $npcselectrole is undefined>><<set $npcselectrole to "construct">><</if>>
+<<textbox "$npcselectrole" $npcselectrole>>
+<br><br>
+
+<<link [[Sex|NPC Role Fight]]>><<set $sexstart to 1>>
+	<<if $npcselectdesc is undefined>><<set $npcselectdesc to "custom">><</if>>
+	<<if $npcselectrole is undefined>><<set $npcselectrole to "construct">><</if>>
+	<<set $npcselectdesc to $npcselectdesc.replace(/[^a-zA-Z 0-9,.!()£/]+/g,"")>>
+	<<set $npcselectrole to $npcselectrole.replace(/[^a-zA-Z 0-9,.!()£/]+/g,"")>>
+	<<generateRole 0 $npcselectdesc $npcselectrole>><<person1>>
+	<<unset $npcselectdesc>><<unset $npcselectrole>>
+<</link>><br>
+<<link [[Fight|NPC Role Fight]]>><<set $fightstart to 1>>
+	<<if $npcselectdesc is undefined>><<set $npcselectdesc to "custom">><</if>>
+	<<if $npcselectrole is undefined>><<set $npcselectrole to "construct">><</if>>
+	<<set $npcselectdesc to $npcselectdesc.replace(/[^a-zA-Z 0-9,.!()£/]+/g,"")>>
+	<<set $npcselectrole to $npcselectrole.replace(/[^a-zA-Z 0-9,.!()£/]+/g,"")>>
+	<<generateRole 0 $npcselectdesc $npcselectrole>><<person1>>
+	<<unset $npcselectdesc>><<unset $npcselectrole>>
+<</link>>
+<br><br>
+<<link [[Back home|Bedroom]]>><<unset $npcselectdesc>><<unset $npcselectrole>><</link>>
+
+:: NPC Role Fight
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	With a hiss of steam, the tube retracts to the ceiling. A figure walks out, a <<if $pronoun is "m">>man<<else>>woman<</if>>. You recognize <<him>> as the <<person>> you selected.
+	<br><br>
+
+	"Beginning sex encounter," the <<person>> says in a flat tone, before <<his>> face morphs into a lavicious smile. <<catcall>>
+<<elseif $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	With a hiss of steam, the tube retracts to the ceiling. A figure walks out, a <<if $pronoun is "m">>man<<else>>woman<</if>>. You recognize <<him>> as the <<person>> you selected.
+	<br><br>
+
+	"Beginning combat encounter," the <<person>> says in a flat tone, before <<his>> face morphs into an angry scowl. "Oh, you're in for it now!"
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $finish is 1>>
+	<span id="next"><<link [[FINISH|NPC Role Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[HEALTH|NPC Role Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[ORGASM|NPC Role Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $pain gte 100 and $willpowerpain is 0>>
+	<span id="next"><<link [[PAIN|NPC Role Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|NPC Role Fight]]>><</link>></span><<nexttext>>
+<</if>>
+<br>
+<<link [[Emergency exit|NPC Role Fight Finish]]>><<set $finish to 1>><</link>>
+<br><br><br><br>
+
+:: NPC Role Fight Finish
+<<if $finish is 1>>
+	"Test concluded," the <<person>> says in a flat tone, abruptly stepping back. "Restoring state to default."
+<<elseif $enemyhealth lte 0>>
+	"Test concluded," the <<person>> says in a flat tone, stepping away from you as if <<he>> weren't hurt at all. "Restoring state to default."
+<<elseif $pain gte 100 and $willpowerpain is 0>>
+	"Test concluded," the <<person>> says in a flat tone, stepping away from you. "Restoring state to default."
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	"Test concluded," the <<person>> says in a flat tone, stepping away from you. "Restoring state to default."
+<</if>>
+<br><br>
+
+<<He>> walks back to the terminal and flicks a switch. <<He>> steps past it, and the tube descends from the ceiling over <<him>> again. Once the tube touches the floor, the lights switch off.
+<br><br>
+
+<<tearful>> you wonder what to do next.
+<br><br>
+
+<<endcombat>><<clotheson>>
+
+<<link [[Create another construct|NPC Role Select]]>><</link>><br>
+<<link [[Back home|Bedroom]]>><</link>>
