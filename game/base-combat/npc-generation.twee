@@ -10,41 +10,30 @@
 <<checkEventNPC `$args[0] - 1`>>
 
 <<set _n to $args[0]-1>>
-<<set _stat to $args[1]>>
-<<set _pro to $args[2]>>
-<<set _gen to $args[3]>>
+<<set _status to $args[1]>> /* "t" for teen or "a" for adult */
+<<set _pronoun to $args[2]>>
+<<set _gender to $args[3]>>
 <<set _lvl to $args[4]>>
 
-<<if _pro is "m" or _pro is "f">>
-	<<set $NPCList[_n].pronoun to _pro>>
+<<if _pronoun is "m" or _pronoun is "f">>
+	<<set $NPCList[_n].pronoun to _pronoun>>
 <<else>>
 	<<set $rng to random(1, 100)>>
 	<<if _generate_victim is 1>>
 		<<unset _generate_victim>>
-		<<if $malevictimchance lt $rng>>
-			<<set $NPCList[_n].gender to "f">><<set $NPCList[_n].pronoun to "f">>
-		<<else>>
-			<<set $NPCList[_n].gender to "m">><<set $NPCList[_n].pronoun to "m">>
-		<</if>>
+		<<set $NPCList[_n].pronoun to ($rng lte $malevictimchance ? "m" : "f")>>
 	<<elseif _generate_partner is 1>>
 		<<unset _generate_partner>>
-		<<if $homochance lt random(1, 100)>>
-			<<if $NPCList[0].gender is "f">>
-				<<set $NPCList[_n].gender to "m">><<set $NPCList[_n].pronoun to "m">>
-			<<else>>
-				<<set $NPCList[_n].gender to "f">><<set $NPCList[_n].pronoun to "f">>
-			<</if>>
-		<<else>>
-			<<set $NPCList[_n].gender to $NPCList[0].gender>><<set $NPCList[_n].pronoun to $NPCList[0].pronoun>>
-		<</if>>
+		<!-- This uses NPCList[0] to determine if the couple is homo or not. Maybe change it to be n-1? What if the partners are in slots 1 and 2? -->
+		<<set $NPCList[_n].pronoun to ($rng lte $homochance ? $NPCList[0].pronoun : ($NPCList[0].pronoun is "f" ? "m" : "f"))>>
 	<<else>>
-		<<if $malechance lt $rng>>
-			<<set $NPCList[_n].gender to "f">><<set $NPCList[_n].pronoun to "f">>
-		<<else>>
-			<<set $NPCList[_n].gender to "m">><<set $NPCList[_n].pronoun to "m">>
-		<</if>>
+		<<set $NPCList[_n].pronoun to ($rng lte $malechance ? "m" : "f")>>
 	<</if>>
 <</if>>
+
+<!-- This doesn't need to be set here, but that's how it's been done in the past, so we'll set it just in case. -->
+<!-- NPC gender gets properly set according to player settings in the npcattribute widget. -->
+<<set $NPCList[_n].gender to $NPCList[_n].pronoun>>
 
 <<set $NPCList[_n].lefthand to 0>>
 <<set $NPCList[_n].righthand to 0>>
@@ -53,34 +42,13 @@
 <<set $NPCList[_n].location.head to 0>>
 <<set $NPCList[_n].location.genitals to 0>>
 <<set $NPCList[_n].bold to 0>>
-<<if $NPCList[_n].pronoun is "f">>
-	<<set $NPCList[_n].name to $NPC_names_f.random()>>
-<<else>>
-	<<set $NPCList[_n].name to $NPC_names_m.random()>>
-<</if>>
+<<set $NPCList[_n].name to ($NPCList[_n].pronoun is "f" ? $NPC_names_f.random() : $NPC_names_m.random())>>
 
-<<set $NPCList[_n].chastity to {penis:"", vagina:"", anus:""}>>
 <<generatePronouns $NPCList[_n]>>
 
-<<if _npcChastity is 1>>
-	<<set _graceCheck to ($grace ? $grace : 25)>>
-	<<if random(-100, 120) lte _graceCheck>>
-		<<if $NPCList[_n].gender is "f">>
-			<<set $NPCList[_n].chastity.vagina to "chastity belt">>
-		<<else>>
-			<<if random (1, 3) is 1>>
-				<<set $NPCList[_n].chastity.penis to "chastity belt">>
-			<<else>>
-				<<set $NPCList[_n].chastity.penis to "chastity cage">>
-			<</if>>
-		<</if>>
-		<<if $analdisable is "f" and random(-100, 150) lte _graceCheck and ($NPCList[_n].chastity.penis is "chastity belt" or $NPCList[_n].chastity.vagina is "chastity belt")>>
-			<<set $NPCList[_n].chastity.anus to "anal shield">>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if _stat is "t">>
+<!-- TODO: remove either .teen or .adult; all adults are not teens, and all teens are not adults. -->
+<!-- Having two separate variables means having twice as much code to accomplish the same thing, and STILL possibly introducing bugs if you do it wrong. -->
+<<if _status is "t">>
 	<<set $NPCList[_n].teen to 1>>
 	<<set $NPCList[_n].adult to 0>>
 <<else>>
@@ -93,7 +61,7 @@
 
 <<if $enemyno lt 6>><<set $enemyno += 1>><</if>>
 
-<<npcattribute _n _gen _lvl>>
+<<npcattribute _n _gender _lvl>>
 
 <<pushEventNPC _n>>
 <</widget>>
@@ -117,9 +85,7 @@
 
 	<<if _desc>>
 		<<if _desc.includes("/")>>
-			<<set _descBreak to _desc.indexOf("/")>>
-			<<set _descM to _desc.substring(0,_descBreak)>>
-			<<set _descF to _desc.substring(_descBreak+1,_desc.length)>>
+			<<set [_descM, _descF] to _desc.split("/")>>
 			<<set $NPCList[_slot].description to $NPCList[_slot].pronoun is "m" ? _descM : _descF>>
 		<<else>>
 			<<set $NPCList[_slot].description to _desc>>
@@ -127,9 +93,7 @@
 	<</if>>
 	<<if _role>>
 		<<if _role.includes("/")>>
-			<<set _roleBreak to _role.indexOf("/")>>
-			<<set _roleM to _role.substring(0,_roleBreak)>>
-			<<set _roleF to _role.substring(_roleBreak+1,_role.length)>>
+			<<set [_roleM, _roleF] to _role.split("/")>>
 			<<set $NPCList[_slot].role to $NPCList[_slot].pronoun is "m" ? _roleM : _roleF>>
 		<<else>>
 			<<set $NPCList[_slot].role to _role>>
@@ -139,14 +103,10 @@
 	<<set $NPCList[_n].fullDescription to $NPCList[_n].description + " ">>
 	<<if $NPCList[_slot].role isnot "normal">>
 		<<set $NPCList[_n].fullDescription += $NPCList[_slot].role>>
-	<<elseif $NPCList[_n].pronoun is "m" and $NPCList[_n].teen is 1>>
-		<<set $NPCList[_n].fullDescription += "boy">>
 	<<elseif $NPCList[_n].pronoun is "m">>
-		<<set $NPCList[_n].fullDescription += "man">>
-	<<elseif $NPCList[_n].pronoun is "f" and $NPCList[_n].teen is 1>>
-		<<set $NPCList[_n].fullDescription += "girl">>
+		<<set $NPCList[_n].fullDescription += ($NPCList[_n].teen is 1 ? "boy" : "man")>>
 	<<elseif $NPCList[_n].pronoun is "f">>
-		<<set $NPCList[_n].fullDescription += "woman">>
+		<<set $NPCList[_n].fullDescription += ($NPCList[_n].teen is 1 ? "girl" : "woman")>>
 	<</if>>
 <</widget>>
 
@@ -642,53 +602,86 @@
 <<generateNPC 6 t>>
 <</widget>>
 
+<<widget "generateChastity">>
+	<<set _npcChastity to 1>>
+	<<generateNPC $args[0]>>
+<</widget>>
+
+<<widget "generatePlant">>
+	<<set _npcPlant to 1>><<set _strapIgnore to 1>>
+	<<generateNPC $args[0] "t">>
+<</widget>>
+
 <<widget "npcattribute">>
 <!-- V2.4 Widget set NPC attributes. $arg[0] calls NPC number (0 - 5) to be generated. NG-->
-<!-- For transgender, $NPCList.pronoun sets appearance, including breasts. NPCList.gender sets genitals, including pp -->
+<!-- $NPCList.pronoun sets appearance, including breasts. NPCList.gender sets genitals, including pp -->
 <!-- Future work this should call addns args to set pronoun, gender, and size of NPC(0-18) where larger number is more robust. This would eliminate much of the NPC calls from above and push to code. -->
 <!-- Added thug Vulgar/Brutish as NPC19, can only be called with $arg[2] -->
 <!-- Added strap-on functionality v2.8 -->
 
+<!-- check if this npc has seen the player while the player was pantiless; doesn't matter if they knew it or not. -->
 <<nounderwearcheck>>
 
 <<set _n to $args[0]>>
-<<set _gen to $args[1]>>
+<<set _gender to $args[1]>>
 <<set _lvl to $args[2]>>
 
-<!-- This sets transgender. -->
+<!-- This sets genitals. -->
 <!-- v2.6 adding herm demon as gender "h", must be directly called NG -->
-<<if _gen is "m" or _gen is "f" or _gen is "h">>
-	<<set $NPCList[_n].gender to _gen>>
-	<<if _gen is "m">>
+<<set $NPCList[_n].vagina to "none">>
+<<set $NPCList[_n].penis to "none">>
+
+<<if _gender is "m" or _gender is "f" or _gender is "h">>
+	<<set $NPCList[_n].gender to _gender>>
+	<<if _gender is "m">>
 		<<set $NPCList[_n].penis to "clothed">>
-		<<set $NPCList[_n].vagina to "none">>
-	<<elseif _gen is "f">>
+	<<elseif _gender is "f">>
 		<<set $NPCList[_n].vagina to "clothed">>
-		<<set $NPCList[_n].penis to "none">>
-	<<elseif _gen is "h">>
-		<<set $NPCList[_n].vagina to 0>>
-		<<set $NPCList[_n].penis to 0>>
+	<<elseif _gender is "h">>
+		<<set $NPCList[_n].vagina to "clothed">>
+		<<set $NPCList[_n].penis to "clothed">>
 	<</if>>
 <<else>>
 	<<if $NPCList[_n].pronoun is "m">>
 		<<if random(0, 99) gte $cbchance>>
 			<<set $NPCList[_n].penis to "clothed">>
-			<<set $NPCList[_n].vagina to "none">>
 			<<set $NPCList[_n].gender to "m">>
 		<<else>>
 			<<set $NPCList[_n].vagina to "clothed">>
-			<<set $NPCList[_n].penis to "none">>
 			<<set $NPCList[_n].gender to "f">>
 		<</if>>
 	<<elseif $NPCList[_n].pronoun is "f">>
 		<<if random(0, 99) gte $dgchance>>
 			<<set $NPCList[_n].vagina to "clothed">>
-			<<set $NPCList[_n].penis to "none">>
 			<<set $NPCList[_n].gender to "f">>
 		<<else>>
 			<<set $NPCList[_n].penis to "clothed">>
-			<<set $NPCList[_n].vagina to "none">>
 			<<set $NPCList[_n].gender to "m">>
+		<</if>>
+	<</if>>
+<</if>>
+
+/* _lvl 20 is herm demon. demons don't wear clothes. */
+<<if _lvl is 20>>
+	<<set $NPCList[_n].vagina to 0>>
+	<<set $NPCList[_n].penis to 0>>
+<</if>>
+
+<<set $NPCList[_n].chastity to {penis:"", vagina:"", anus:""}>>
+<<if _npcChastity is 1>>
+	<<unset _npcChastity>>
+	<<set _graceCheck to ($grace ? $grace : 25)>>
+	<<if random(-100, 120) lte _graceCheck>>
+		<<if $NPCList[_n].penis isnot "none">>
+			<<set $NPCList[_n].chastity.penis to (random (1, 3) is 1 ? "chastity belt" : "chastity cage")>>
+		<</if>>
+		<<if $NPCList[_n].vagina isnot "none">>
+			<!-- if npc has both, give them the same chastity type on both. -->
+			<<set $NPCList[_n].chastity.vagina to ($NPCList[_n].chastity.penis isnot "" ? $NPCList[_n].chastity.penis : "chastity belt")>>
+		<</if>>
+		<<set $_beltPresent to ($NPCList[_n].chastity.penis is "chastity belt" or $NPCList[_n].chastity.vagina is "chastity belt")>>
+		<<if $analdisable is "f" and random(-100, 150) lte _graceCheck and $_beltPresent>>
+			<<set $NPCList[_n].chastity.anus to "anal shield">>
 		<</if>>
 	<</if>>
 <</if>>
@@ -708,17 +701,15 @@
 <</if>>
 
 <<set $rng to random(1, 100)>>
-<<if $rng gte 91>>
-	<<if $NPCList[_n].penis isnot "none">>
+<<if $rng gte 81>>
+	<<if $NPCList[_n].vagina isnot "none" and $NPCList[_n].penis isnot "none">>
+		<<set $NPCList[_n].insecurity to ["penis","vagina"].random()>>
+	<<elseif $NPCList[_n].penis isnot "none">>
 		<<set $NPCList[_n].insecurity to "penis">>
-	<<else>>
-		<<set $NPCList[_n].insecurity to "vagina">>
-	<</if>>
-<<elseif $rng gte 81>>
-	<<if $NPCList[_n].vagina isnot "none">>
+	<<elseif $NPCList[_n].vagina isnot "none">>
 		<<set $NPCList[_n].insecurity to "vagina">>
 	<<else>>
-		<<set $NPCList[_n].insecurity to "penis">>
+		<<set $NPCList[_n].insecurity to "perfectly smooth crotch">> /* default case, shouldn't happen. */
 	<</if>>
 <<elseif $rng gte 61>>
 	<<set $NPCList[_n].insecurity to "ethics">>
@@ -739,69 +730,71 @@
 
 <<if $NPCList[_n].teen is 1>>
 	<<if $NPCList[_n].pronoun is "f">> <!-- female appearing student -->
-		<<set _h to [125,175,150,150,150,175,150,200,200,200,125,200,250,125,250,200,250,250,200,300,400]>>
-		<<set _d to ["slight","lithe","lean","thin","slender","lissome","slim","taut","graceful","trim","mousy","cute","fit","petite","toned","shapely","robust","plump","wide-eyed","vulgar","minor demon"]>>
-		<<set _blo to [0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,5,5,8,3,10,12]>>
-		<<set _bhi to [4,4,4,4,4,4,7,7,7,7,8,8,8,8,8,11,11,12,10,12,12]>>
+		<<set $_hpMax to [125,175,150,150,150,175,150,200,200,200,125,200,250,125,250,200,250,250,200,300,400]>>
+		<<set $_desc to ["slight","lithe","lean","thin","slender","lissome","slim","taut","graceful","trim","mousy","cute","fit","petite","toned","shapely","robust","plump","wide-eyed","vulgar","minor demon"]>>
+		<<set $_breastMin to [0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,5,5,8,3,10,12]>>
+		<<set $_breastMax to [4,4,4,4,4,4,7,7,7,7,8,8,8,8,8,11,11,12,10,12,12]>>
 	<<else>> <!-- male appearing student -->
-		<<set _h to [125,175,150,150,150,175,150,200,200,200,125,200,250,125,250,200,250,250,200,300,400]>>
-		<<set _d to ["slight","lithe","lean","thin","slender","lissome","slim","taut","graceful","trim","mousy","cute","fit","petite","toned","shapely","robust","plump","wide-eyed","brutish","minor demon"]>>
+		<<set $_hpMax to [125,175,150,150,150,175,150,200,200,200,125,200,250,125,250,200,250,250,200,300,400]>>
+		<<set $_desc to ["slight","lithe","lean","thin","slender","lissome","slim","taut","graceful","trim","mousy","cute","fit","petite","toned","shapely","robust","plump","wide-eyed","brutish","minor demon"]>>
 	<</if>>
 <<else>>
 	<<if $NPCList[_n].pronoun is "f">> <!-- female appearing adult -->
-		<<set _h to [125,175,150,150,150,175,150,200,125,200,275,200,250,250,200,200,250,200,200,350,600]>>
-		<<set _d to ["slight","lithe","lean","thin","slender","lissome","slim","taut","petite","trim","muscular","curvy","toned","plump","plush","shapely","robust","voluptuous","lush","vulgar","demon"]>>
-		<<set _blo to [0,0,0,0,2,2,2,2,2,5,5,5,5,5,5,5,8,8,9,10,12]>>
-		<<set _bhi to [4,4,4,4,4,4,7,7,8,9,9,9,9,12,10,11,10,11,11,12,12]>>
+		<<set $_hpMax to [125,175,150,150,150,175,150,200,125,200,275,200,250,250,200,200,250,200,200,350,600]>>
+		<<set $_desc to ["slight","lithe","lean","thin","slender","lissome","slim","taut","petite","trim","muscular","curvy","toned","plump","plush","shapely","robust","voluptuous","lush","vulgar","demon"]>>
+		<<set $_breastMin to [0,0,0,0,2,2,2,2,2,5,5,5,5,5,5,5,8,8,9,10,12]>>
+		<<set $_breastMax to [4,4,4,4,4,4,7,7,8,9,9,9,9,12,10,11,10,11,11,12,12]>>
 	<<else>> <!-- male appearing adult -->
-		<<set _h to [125,125,150,150,150,150,175,175,200,200,200,200,250,250,250,250,275,275,275,400,600]>>
-		<<set _d to ["petite","slight","slim","thin","slender","lanky","lissome","lithe","trim","lean","taut","plump","toned","bulky","broad","robust","rugged","muscular","burly","brutish","demon"]>>
+		<<set $_hpMax to [125,125,150,150,150,150,175,175,200,200,200,200,250,250,250,250,275,275,275,400,600]>>
+		<<set $_desc to ["petite","slight","slim","thin","slender","lanky","lissome","lithe","trim","lean","taut","plump","toned","bulky","broad","robust","rugged","muscular","burly","brutish","demon"]>>
 	<</if>>
 <</if>>
 
-<!-- Set pp size separately to allow for transgender NPCs. Changes should track with physical descriptions above, in order. -->
-<<if $NPCList[_n].teen is 1>>
-	<<if $NPCList[_n].gender is "m">> <!-- male genitals student, pronoun M or F -->
-		<<set _plo to [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8]>>
-		<<set _phi to [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8]>>
-	<</if>>
-<<else>>
-	<<if $NPCList[_n].gender is "m">> <!-- male genitals student, pronoun M or F -->
-		<<set _plo to [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8]>>
-		<<set _phi to [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8]>>
+<!-- Setting pp size limits separately. Changes should track with physical descriptions above, in order. -->
+<!-- Brutes and demons always have the largest penis size. -->
+<!-- $_penisMin is "smallest possible penis size", $_penisMax is "largest possible penis size" -->
+<<if $NPCList[_n].penis isnot "none">>
+	<<if $NPCList[_n].teen is 1>>
+		<<set $_penisMin to [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8]>>
+		<<set $_penisMax to [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8]>>
+	<<else>>
+		<<set $_penisMin to [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8]>>
+		<<set $_penisMax to [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8]>>
 	<</if>>
 <</if>>
 
 <<set _brdes to ["nipple","budding","tiny","small","pert","modest","full","large","ample","massive","huge","gigantic","enormous"]>>
 
-<<set $NPCList[_n].healthmax to _h[_i]>>
+<<set $NPCList[_n].healthmax to $_hpMax[_i]>>
 <<set $NPCList[_n].health to $NPCList[_n].healthmax>>
-<<set $NPCList[_n].description to _d[_i]>>
+<<set $NPCList[_n].description to $_desc[_i]>>
 
-<<if $NPCList[_n].gender is "m">><!-- set pp on size based on MODs for male genitals -->
-	<<if $penis_mod gte _plo[_i]>><<set _plo[_i] to $penis_mod>><</if>>
-	<<if $penis_mod gte _phi[_i]>><<set _phi[_i] to $penis_mod>><</if>>
-	<<if $penis_mod lt 0>><<set _plo[_i] to Math.clamp(_plo[_i]+$penis_mod, 0, 8)>><<set _phi[_i] to Math.clamp(_phi[_i]+$penis_mod, 0, 8)>><</if>>
+<<if $NPCList[_n].penis isnot "none">><!-- set pp size based on the upper and lower bounds for the selected description -->
+	<<if $penis_mod gte $_penisMin[_i]>><<set $_penisMin[_i] to $penis_mod>><</if>>
+	<<if $penis_mod gte $_penisMax[_i]>><<set $_penisMax[_i] to $penis_mod>><</if>>
+	<<if $penis_mod lt 0>> <!-- Why is this only when $penis_mod is negative? -->
+		<<set $_penisMin[_i] to Math.clamp($_penisMin[_i]+$penis_mod, 0, 8)>>
+		<<set $_penisMax[_i] to Math.clamp($_penisMax[_i]+$penis_mod, 0, 8)>>
+	<</if>>
 <</if>>
 
-<<if $NPCList[_n].pronoun is "f">><!-- set breast on size based on MODs for female appearance-->
-	<<if $breast_mod gte _blo[_i]>><<set _blo[_i] to $breast_mod>><</if>>
-	<<if $breast_mod gte _bhi[_i]>><<set _bhi[_i] to $breast_mod>><</if>>
-	<<if $breast_mod lt 0>><<set _blo[_i] to Math.clamp(_blo[_i]+$breast_mod, 0, 12)>><<set _bhi[_i] to Math.clamp(_bhi[_i]+$breast_mod, 0, 12)>><</if>>
+<<if $NPCList[_n].pronoun is "f">><!-- set breast size based on the upper and lower bounds for the selected description-->
+	<<if $breast_mod gte $_breastMin[_i]>><<set $_breastMin[_i] to $breast_mod>><</if>>
+	<<if $breast_mod gte $_breastMax[_i]>><<set $_breastMax[_i] to $breast_mod>><</if>>
+	<<if $breast_mod lt 0>> <!-- Why is this only when $breast_mod is negative? -->
+		<<set $_breastMin[_i] to Math.clamp($_breastMin[_i]+$breast_mod, 0, 12)>>
+		<<set $_breastMax[_i] to Math.clamp($_breastMax[_i]+$breast_mod, 0, 12)>>
+	<</if>>
 <</if>>
 
-<<if $NPCList[_n].pronoun is "f">><<set _rngbr to random(_blo[_i], _bhi[_i])>><</if>>
-<<if $NPCList[_n].gender is "m">><<set _rngpp to random(_plo[_i], _phi[_i])>><</if>>
+<<if $NPCList[_n].pronoun is "f">><<set _rngbr to random($_breastMin[_i], $_breastMax[_i])>><</if>>
+<<if $NPCList[_n].penis isnot "none">><<set _rngpp to random($_penisMin[_i], $_penisMax[_i])>><</if>>
 
 <<set $NPCList[_n].fullDescription to $NPCList[_n].description + " ">>
-<<if $NPCList[_n].pronoun is "m" and $NPCList[_n].teen is 1>>
-	<<set $NPCList[_n].fullDescription += "boy">>
-<<elseif $NPCList[_n].pronoun is "m">>
-	<<set $NPCList[_n].fullDescription += "man">>
-<<elseif $NPCList[_n].pronoun is "f" and $NPCList[_n].teen is 1>>
-	<<set $NPCList[_n].fullDescription += "girl">>
+<<if $NPCList[_n].pronoun is "m">>
+	<<set $NPCList[_n].fullDescription += ($NPCList[_n].teen is 1 ? "boy" : "man")>>
 <<elseif $NPCList[_n].pronoun is "f">>
-	<<set $NPCList[_n].fullDescription += "woman">>
+	<<set $NPCList[_n].fullDescription += ($NPCList[_n].teen is 1 ? "girl" : "woman")>>
 <</if>>
 
 <<set $NPCList[_n].role to "normal">>
