@@ -1,33 +1,27 @@
 :: Widgets Debug Event [widget]
 
-/*  Any widget with the goal to bug-purge events goes here.
-Since I didn't find an appropriate file to put this in, I decided to make my own.
-Feel free to delete this coment at leisure.
-*/
+<!-- Any widget with the goal to bug-purge events goes here.
+	Since I didn't find an appropriate file to put this in, I decided to make my own.
+	Feel free to delete this coment at leisure. -->
 <<widget "checkEventNPC">>
-	<<if ($eventslot isnot undefined and $eventslot.includes($args[0])) or $enemyno gte 6>>
+	<<if (EventSystem.IsSlotTaken($args[0]) and !EventSystem.Disable) or $enemynomax gte 6 or $enemyno gte 6>>
 		<<set $endeventerror to $lastgenerated>>
-		<<endevent phaseless>>
+		<<clearsinglenpc $args[0]>>
+		<!-- <<endevent phaseless>> -->
 	<</if>>
 	<<set $lastgenerated to $passage>>
-	<!-- <<if $enemyno gte 1 and $args[0] is 1>>
-		<<set $endeventerror to $lastgenerated>>
-		<<endevent phaseless>>
-	<</if>> -->
-<</widget>>
-
-<<widget "pushEventNPC">>
-	<<set $event to ensure($event, [])>>
-	<<set $eventslot to ensure($eventslot, [])>>
-	<<set $eventtime to ensure($eventtime, [])>>
-	<<run 
-		ensureIsArray($event).push($passage);
-		ensureIsArray($eventslot).push($args[0]);
-		ensureIsArray($eventtime).push($time);
-	>>
 <</widget>>
 
 <<widget "eventExtraInfo">>
+<!-- Setup useful variables -->
+<<set $_passages = (V.event is undefined 
+	? [] 
+	: V.event.buffer.reduce((prev, cur) => {
+		prev.pushUnique(cur.area[0]);
+		return prev;
+	}, [])
+)>>
+
 <<if _eventalertmajorarea is true>>
 	<span class="red">You are in a major area, which means an NPC escaped!</span>
 	<<if $cheatdisable is "f">>
@@ -37,14 +31,17 @@ Feel free to delete this coment at leisure.
 	<</if>>
 	<<set _eventreason to true>>
 <<elseif _eventalertmajorarea is false>>
-	<span class="green">This NPC was defined in this passage, and is being tested for Debug.</span><<set _eventreason to true>>
+	<span class="green">This NPC was defined in this passage</span><<set _eventreason to true>>
 <<else>>
 	<<if $passage.includes("Street Stalk")>>
 		<span class="green">You are being stalked. Usually this means everything is in order.</span>
 		<<set _eventreason to true>>
 	<</if>>
 	<<if $event isnot undefined>>
-		<<if $passage.includes($event.toString()) or $event.includes($passage)>>
+		<<if $_passages.includes($passage)>>
+			<span class="green">You are in a passage where NPCs were generated.</span>
+			<<set _eventreason to true>>
+		<<elseif $passage.includes($_passages)>>
 			<span class="green">You are in a subpassage from where NPCs were generated. Usually this means they are still in use.</span>
 			<<set _eventreason to true>>
 		<</if>>
@@ -57,19 +54,18 @@ Feel free to delete this coment at leisure.
 <</if>>
 <br><br>
 <h3>NPC information</h3><br>
-$enemyno NPC<<if $enemyno gt 1>>s are<<else>> is<</if>> currently active. Them being:<br><br>
+$enemyno NPC<<if $enemyno gt 1>>s are<<else>> is<</if>> currently active. Max: $enemynomax. Them being:<br><br>
 
 <div class="debug-event-container">
 <<for $_i to 0; $_i lt $NPCList.length; $_i++>>
-	<<if $NPCList[$_i].fullDescription isnot undefined>>
+	<<set $_npc to $NPCList[$_i]>>
+	<<set $_eventNPC to EventSystem.Get($_i)>>
+	<<if $_npc.type isnot undefined and $_eventNPC isnot undefined>>
 		<div class="debug-event-item debug-event-success">
-			ID: $_i | $NPCList[$_i].fullDescription<br>
-			Sex: $NPCList[$_i].gender | Gender: $NPCList[$_i].pronouns.man<br>
-			Description: $NPCList[$_i].description | Role: $NPCList[$_i].role<br>
-			<<if $event isnot undefined>>
-				<hr>
-				Source: <<print $event[$_i]>>, at: <<ampm `Math.floor($eventtime[$_i]/60)` `$eventtime[$_i]%60`>>.<br>
-			<</if>>
+			ID: $_i | $_npc.fullDescription<br>
+			Sex: $_npc.gender | Gender: $_npc.pronouns.man<br>
+			Description: $_npc.description<<if $_npc.role>> | Role: $_npc.role<</if>><br>
+			Source: <<print $_eventNPC.area[0]>>, at: <<ampm `Math.floor($_eventNPC.time / 60)` `$_eventNPC.time % 60`>>.<br>
 		</div>
 	<<else>>
 		<div class="debug-event-item debug-event-empty">
@@ -81,25 +77,37 @@ $enemyno NPC<<if $enemyno gt 1>>s are<<else>> is<</if>> currently active. Them b
 
 <<if $event isnot undefined>>
 	<br>Extra debugging:<br>
-	<<for $_i to 0; $_i lt $event.length; $_i++>>
-		<<print ensure($NPCList[$eventslot[$_i]]?.fullDescription, "No description.")>><br>
-		Defined in passage <<print $event[$_i]>>, at <<ampm `Math.floor($eventtime[$_i]/60)` `$eventtime[$_i]%60`>>.<br>
-		<<for $_j to 0; $_j lt $event.length; $_j++>>
-			<<if $event[$_j] is $event[$_i] and $_i isnot $_j>>
+	<<for $_i to 0; $_i lt $event.buffer.length; $_i++>>
+		<<set $_eventNPC to $event.buffer[$_i]>>
+		<<print ensure($NPCList[$_eventNPC.slot]?.fullDescription, "No description.")>><br>
+		Defined in passage <<print $_eventNPC.area[0]>>, at <<ampm `Math.floor($_eventNPC.time / 60)` `$_eventNPC.time % 60`>>.<br>
+		<<if $_eventNPC.area.length gt 1>>
+			Widget Stack:
+			<<set $_widgetStack to $_eventNPC.area.slice(1)>>
+			<<for $_iStack = 0; $_iStack lt $_widgetStack.length; $_iStack++>>
+				<<print "<<$_widgetStack[$_iStack]>>">><<if $_iStack isnot $_widgetStack.length - 1>>, <</if>>
+			<</for>>
+			<br>
+		<</if>>
+		<!-- Check other event NPCs for linked passages -->
+		<<for $_j to 0; $_j lt $event.buffer.length; $_j++>>
+			<<set $_eventNPC2 to $event.buffer[$_j]>>
+			<<if $_i isnot $_j and $_eventNPC.area[0] is $_eventNPC2.area[0]>>
 				<<if _eventnumberinpassage is undefined>>
 					<<set _eventnumberinpassage to 0>>
 				<</if>>
 				<<set _eventnumberinpassage += 1>>
 			<</if>>
 		<</for>>
+		<!-- Check other event NPCs for linked passages -->
 		<<if _eventnumberinpassage isnot undefined>>
-			<<print _eventnumberinpassage>> other NPC<<if _eventnumberinpassage isnot 1>>s<</if>> have also been defined in passage <<print $event[$_i]>>.<br>
+			<<print _eventnumberinpassage>> other NPC<<if _eventnumberinpassage isnot 1>>s<</if>> have also been defined in passage <<print $_eventNPC.area[0]>>.<br>
 			<<unset _eventnumberinpassage>>
 		<</if>>
-		Set in slot <<print $eventslot[$_i]>> of $$NPCList.<br>
-		<<for $_j to 0; $_j lt $event.length; $_j++>>
-			<<if $eventslot[$_j] is $eventslot[$_i] and $_i isnot $_j>>
-				<span class="red">This NPC has been overwritten or overwrote another one in slot <<print $eventslot[$eventslot[$_i]]>>!</span><br>
+		Set in slot <<print $_eventNPC.slot>> of $$NPCList.<br>
+		<<for $_j to 0; $_j lt $event.buffer.length; $_j++>>
+			<<if $_i isnot $_j and $_eventNPC.slot is $_eventNPC.slot[$_j]>>
+				<span class="red">This NPC has been overwritten or overwrote another one in slot <<print $event.slot[$_eventNPC.slot]>>!</span><br>
 				<<break>>
 			<</if>>
 		<</for>>

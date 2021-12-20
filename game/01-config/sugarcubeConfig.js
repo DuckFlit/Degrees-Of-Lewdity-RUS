@@ -93,6 +93,7 @@ function widgetHandler(widgetName, contents) {
 	let argsCache;
 	trace('declaring fn', widgetName);
 	return function () {
+		DOL.Stack.push(widgetName);
 		const context = devOptions.invocationId
 			? `${State.passage}:${widgetName}:${uniqueInvocation++}`
 			: `${State.passage}:${widgetName}`;
@@ -159,6 +160,7 @@ function widgetHandler(widgetName, contents) {
 		}
 		finally {
 			// Custom code
+			DOL.Stack.pop();
 			vStack.pop();
 			vContext.pop();
 			State.variables[VIRTUAL_CURRENT] = priorFrame
