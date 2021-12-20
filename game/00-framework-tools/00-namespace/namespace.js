@@ -24,6 +24,10 @@ window.DOL = {
 	 */
 	Versions: {},
 	Perflog: {},
+	/**
+	 * General purpose call stack containing the widget names as they are called.
+	 */
+	Stack: [],
 
 	/** Patch to make javascript execution more consistent (see comment below) */
 	State: State,

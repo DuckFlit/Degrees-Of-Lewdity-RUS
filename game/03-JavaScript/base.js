@@ -92,9 +92,9 @@ Macro.add('time', {
 	}
 });
 
-window.ensureIsArray = function (x) {
+window.ensureIsArray = function(x, check = false) {
+	if (check) x = ensure(x, []);
 	if (Array.isArray(x)) return x;
-
 	return [x];
 }
 

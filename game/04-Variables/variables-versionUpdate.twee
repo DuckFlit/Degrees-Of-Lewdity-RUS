@@ -2654,16 +2654,34 @@
 		<<earnFeat "Morgan the Lost">>
 	<</if>>
 
-	<!-- DefaultActions JS routine for error correction. -->
+	<!-- Jimmy: DefaultActions JS routine for error correction. -->
 	<<run
-		/* Test 1 - If regrab[0] is an object, there was a failure. */
-		let temp = DefaultActions.get('rape', 'Everyone', 'regrab')[0];
-		if (typeof temp === 'object') {
-			/* Reset everything as a final step, the error is consumed. */
-			V.actionDefaults = temp;
-			V.actionDefaults = DefaultActions.check(DefaultActions.setup())
+		/* Perform check for broken default action structures. */
+		if ($actionDefaults != undefined) {
+			/* Test 1 - If regrab[0] is an object, there was a failure. */
+			let temp = DefaultActions.get('rape', 'Everyone', 'regrab')[0];
+			if (typeof temp === 'object') {
+				/* Reset everything as a final step, the error is consumed. */
+				V.actionDefaults = temp;
+				V.actionDefaults = DefaultActions.check(DefaultActions.setup())
+			}
 		}
 	>>
+	
+	<!-- Jimmy: Run updater for EventSystem.
+				Only runs if behind on schema, and if $event exists. -->
+	<<run EventSystem.Update()>>
+
+	<!-- Jimmy: Updater for NNPCs that lack pronouns structures. 
+				Based off of $perNPCFix located in VVU -->
+	<<if $pronounsNPCFix isnot 1>>
+		<<for $_npc range $NPCName>>
+			<<if $_npc.pronouns is undefined>>
+				<<generatePronouns $_npc>>
+			<</if>>
+		<</for>>
+		<<set $pronounsNPCFix = 1>>
+	<</if>>
 
 	<<set $_per_keys to Object.keys($per_npc)>>
 	<<if $_per_keys.length gt 0>>
