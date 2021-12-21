@@ -60,7 +60,7 @@
 <<else>>
 	<<set $debugdisable to "t">>
 <</if>>
-	<<set $cheatdisable to "t">>
+<<set $cheatdisable to "t">>
 <<set $watersportsdisable to "f">>
 <<set $timestyle to "military">>
 <<set $saveName to "">>
@@ -284,7 +284,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<</if>>
 	<<updatehistorycontrols>>
 	<<initnpcgender>>
-	<<updatePronouns>>
+	<<updatePersistentNPCs>>
 	<<hirsuteHideCheck>>
 	<<generateTipsList>>
 	<<tanned 0 "ignoreCoverage">>
@@ -1287,16 +1287,19 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 <</if>>
 <<link "Generate all genders based on game settings">>
 	<<initnpcgender "genders">>
+	<<updatePersistentNPCs "genders">>
 	<<displaySettings>>
 <</link>>
 <br>
 <<link "Generate all penis sizes based on game settings">>
 	<<initnpcgender "penis">>
+	<<updatePersistentNPCs "penis">>
 	<<displaySettings>>
 <</link>>
 <br>
 <<link "Generate all breast sizes based on game settings">>
 	<<initnpcgender "breasts">>
+	<<updatePersistentNPCs "breasts">>
 	<<displaySettings>>
 <</link>>
 <<if $debug is 1>>
@@ -1335,6 +1338,30 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<<npcSettingsMenu>>
 </div>
 
+<<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
+	<<run
+		if (!T.perNPCLock) {
+			$("#passages").on('change', '#perNPCSettingsMenu .macro-listbox', function (e) {
+				new Wikifier(null, '<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>');
+			});
+
+			T.keys = {};
+			T.keyNames = [];
+			Object.keys(V.per_npc).forEach(k => {
+				if (k.includes('steed') || k.includes('guard') || k.includes('inmate') || k.includes('panty_thief') || k.includes('tower_creature') || k.includes('wraith')) {
+					T.keyNames.push(k);
+					T.keys[k.toUpperFirst().replaceAll('_', ' ')] = k;
+				}
+			});
+			T.perNPCLock = true;
+		}
+	>>
+
+	<div id="perNPCSettingsMenu">
+		<<perNPCSettingsMenu>>
+	</div>
+<</if>>
+
 <<if _listActive isnot true>>
 	<<NPCSettingsReset>>
 	<<set _listActive to true>>
@@ -1344,134 +1371,213 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 
 <<widget "exportsettings">>
 
-<span class="yellow">Will also import/export settings found in the "SAVE/OPTIONS" overlay.</span>
+	<span class="yellow">Will also import/export settings found in the "SAVE/OPTIONS" overlay.</span>
 
-<h4>Settings File Import/Export</h4>
+	<h4>Settings File Import/Export</h4>
 
-<<if SugarCube.Browser.isMobile.any() is true>>
-	Note that saving and loading from file does not work on Android currently.
-<<else>>
-	Load from file: <input id="saveImport" type="file" value="Load from file" onchange="importSettings(this.files, 'file')">
+	<<if SugarCube.Browser.isMobile.any() is true>>
+		Note that saving and loading from file does not work on Android currently.
+	<<else>>
+		Load from file: <input id="saveImport" type="file" value="Load from file" onchange="importSettings(this.files, 'file')">
+		<br><br>
+		<input type="button" value="Save to file" onclick="exportSettings(null,'file')">
+	<</if>>
+
+	<h4>Settings Text Import/Export</h4>
+
+	To save your current settings, click on "Get Settings Data", then copy and paste the save data where required.
+	<br>
+	To load your current settings, paste in the settings data then click "Load Settings Data".
+	<br>
+	To transfer to and from Android, it is recommended to use email or a service such as pastebin. Please ensure that the start and the end of the save is exact to prevent issues.
+	<br>
+	Click on "Copy Text Area" to copy the current contents for you. The button name will change to "Copying Error" if your device or browser does not support it.
 	<br><br>
-	<input type="button" value="Save to file" onclick="exportSettings(null,'file')">
-<</if>>
+	<textarea id="settingsDataInput" rows="4" cols="40" onClick="if(V.disableAutoSelect == false)this.select();" onfocus="V.tempDisable = true;" onblur="V.tempDisable = false;"></textarea>
+	<br>
+	<input type="button" value="Clear Text Box" onclick="clearTextBox('settingsDataInput')"/>
+	<input type="button" value="Top of Text Box" onclick="topTextArea('settingsDataInput')"/>
+	<input type="button" value="Bottom of Text Box" onclick="bottomTextArea('settingsDataInput')"/>
+	<input type="button" value="Get Settings Data" onclick="exportSettings(null,'text')"/>
+	<input type="button" value="Load Settings Data" onclick="importSettings(null,'text')"/>
+	<input id="CopyTextArea" type="button" value="Copy Text Area" onclick="copySavedata('settingsDataInput')">
+	<input id="LoadExternalExportFile" type="button" value="Load External Export File" onclick="loadExternalExportFile()">
 
-<h4>Settings Text Import/Export</h4>
+	<br><br>
 
-To save your current settings, click on "Get Settings Data", then copy and paste the save data where required.
-<br>
-To load your current settings, paste in the settings data then click "Load Settings Data".
-<br>
-To transfer to and from Android, it is recommended to use email or a service such as pastebin. Please ensure that the start and the end of the save is exact to prevent issues.
-<br>
-Click on "Copy Text Area" to copy the current contents for you. The button name will change to "Copying Error" if your device or browser does not support it.
-<br><br>
-<textarea id="settingsDataInput" rows="4" cols="40" onClick="if(V.disableAutoSelect == false)this.select();" onfocus="V.tempDisable = true;" onblur="V.tempDisable = false;"></textarea>
-<br>
-<input type="button" value="Clear Text Box" onclick="clearTextBox('settingsDataInput')"/>
-<input type="button" value="Top of Text Box" onclick="topTextArea('settingsDataInput')"/>
-<input type="button" value="Bottom of Text Box" onclick="bottomTextArea('settingsDataInput')"/>
-<input type="button" value="Get Settings Data" onclick="exportSettings(null,'text')"/>
-<input type="button" value="Load Settings Data" onclick="importSettings(null,'text')"/>
-<input id="CopyTextArea" type="button" value="Copy Text Area" onclick="copySavedata('settingsDataInput')">
-<input id="LoadExternalExportFile" type="button" value="Load External Export File" onclick="loadExternalExportFile()">
-
-<br><br>
-
-<label>
-	<<checkbox "$disableAutoSelect" false true autocheck>>
-	Disables auto select.
-</label>
+	<label>
+		<<checkbox "$disableAutoSelect" false true autocheck>>
+		Disables auto select.
+	</label>
 
 <</widget>>
 
 <<widget "npcSettingsMenu">>
-<<listbox "_npcId" autoselect>>
-	<<optionsfrom _npcList>>
-<</listbox>>
-| <<link Previous>>
-	<<if _npcId is 0>>
-		<<set _npcId to $NPCNameList.length - 1>>
+	<<listbox "_npcId" autoselect>>
+		<<optionsfrom _npcList>>
+	<</listbox>>
+	| <<link Previous>>
+		<<if _npcId is 0>>
+			<<set _npcId to $NPCNameList.length - 1>>
+		<<else>>
+			<<set _npcId-->>
+		<</if>>
+		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
+	<</link>> |
+	<<link Next>>
+		<<set _npcId++>>
+		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
+	<</link>>
+	<br><br>
+	<span class="gold">$NPCName[_npcId].nam the $NPCName[_npcId].title</span>
+	<br>
+	<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> Female</label> |
+	<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> Male</label>
+	<br>
+	<<if $NPCName[_npcId].pregnancy[0] is null>>
+		<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> Vagina</label> |
+		<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> Penis</label>
+		<<run settingsNamedNpcGenderUpdate()>>
 	<<else>>
-		<<set _npcId-->>
+		Unable to change the npc genitals due to their pregnancy.
 	<</if>>
-	<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
-<</link>> |
-<<link Next>>
-	<<set _npcId++>>
-	<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
-<</link>>
-<br><br>
-<span class="gold">$NPCName[_npcId].nam the $NPCName[_npcId].title</span>
-<br>
-<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> Female</label> |
-<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> Male</label>
-<br>
-<<if $NPCName[_npcId].pregnancy[0] is null>>
-	<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> Vagina</label> |
-	<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> Penis</label>
-	<<run settingsNamedNpcGenderUpdate()>>
-<<else>>
-	Unable to change the npc genitals due to their pregnancy.
-<</if>>
-<br><br>
-Penis size - if applicable:
-<br>
-<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
-<<for _j to 1; _j lt _penisNames.length; _j++>>
-	<label>
-		<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
-		<<print _penisNames[_j]>>
-	</label>
-	<<if _j isnot _penisNames.length -1>>|<</if>>
-<</for>>
-<br><br>
-
-<div class="settingsToggle" style="display: inline-flex;">
-Breast size
-<<numberslider "$NPCName[_npcId].breastsize" $NPCName[_npcId].breastsize 0 12 1>>
-<<run settingsNamedNpcBreastSize()>>
-</div>
-<div style="clear:both;">/*Keep at end of toggles*/</div>
-
-<<if $NPCName[_npcId].nam is "Black Wolf">>
-	Beast Type:
-	<br>
-	<label><<radiobutton "$blackwolfmonster" 0 autocheck>> Always a beast</label> |
-	<label><<radiobutton "$blackwolfmonster" 1 autocheck>> Monster girl or boy when requirements met</label> |
-	<label><<radiobutton "$blackwolfmonster" 2 autocheck>> Always a monster girl or boy</label>
 	<br><br>
-<<elseif $NPCName[_npcId].nam is "Great Hawk">>
-	Beast Type:
+	Penis size - if applicable:
 	<br>
-	<label><<radiobutton "$greathawkmonster" 0 autocheck>> Always a beast</label> |
-	<label><<radiobutton "$greathawkmonster" 1 autocheck>> Monster girl or boy when requirements met</label> |
-	<label><<radiobutton "$greathawkmonster" 2 autocheck>> Always a monster girl or boy</label>
-	<br><br>
-<</if>>
-<<if $debug is 1>>
-	Hair Colour:
-	<br>
-	<<for _j to 0; _j lt _hairColorNPC.length; _j++>>
+	<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
+	<<for _j to 1; _j lt _penisNames.length; _j++>>
 		<label>
-			<<print '<<radiobutton "$NPCName['+_npcId+'].hairColour" "'+_hairColorNPCData[_j]+'" ' + ($NPCName[_npcId].hairColour is _hairColorNPCData[_j] ? "checked" : "") + '>>'>>
-			<span @class="_hairColorNPCText[_j]">_hairColorNPC[_j]</span>
-		</label> |
+			<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
+			<<print _penisNames[_j]>>
+		</label>
+		<<if _j isnot _penisNames.length -1>>|<</if>>
 	<</for>>
 	<br><br>
 
-	Eye Colour:
+	<div class="settingsToggle" style="display: inline-flex;">
+	Breast size
+	<<numberslider "$NPCName[_npcId].breastsize" $NPCName[_npcId].breastsize 0 12 1>>
+	<<run settingsNamedNpcBreastSize(Util.slugify('$NPCName[_npcId].breastsize'), false)>>
+	</div>
+	<div style="clear:both;">/*Keep at end of toggles*/</div>
 	<br>
-	<<for _j to 0; _j lt _eyeColorNPC.length; _j++>>
-		<label>
-			<<print '<<radiobutton "$NPCName['+_npcId+'].eyeColour" "'+_eyeColorNPCData[_j]+'" ' + ($NPCName[_npcId].eyeColour is _eyeColorNPCData[_j] ? "checked" : "") + '>>'>>
-			<span @class="_eyeColorNPCText[_j]">_eyeColorNPC[_j]</span>
-		</label> |
-	<</for>>
-	<br><br>
-<</if>>
 
+	<<if $NPCName[_npcId].nam is "Black Wolf">>
+		Beast Type:
+		<br>
+		<label><<radiobutton "$blackwolfmonster" 0 autocheck>> Always a beast</label> |
+		<label><<radiobutton "$blackwolfmonster" 1 autocheck>> Monster girl or boy when requirements met</label> |
+		<label><<radiobutton "$blackwolfmonster" 2 autocheck>> Always a monster girl or boy</label>
+		<br><br>
+	<<elseif $NPCName[_npcId].nam is "Great Hawk">>
+		Beast Type:
+		<br>
+		<label><<radiobutton "$greathawkmonster" 0 autocheck>> Always a beast</label> |
+		<label><<radiobutton "$greathawkmonster" 1 autocheck>> Monster girl or boy when requirements met</label> |
+		<label><<radiobutton "$greathawkmonster" 2 autocheck>> Always a monster girl or boy</label>
+		<br><br>
+	<</if>>
+	<<if $debug is 1>>
+		Hair Colour:
+		<br>
+		<<for _j to 0; _j lt _hairColorNPC.length; _j++>>
+			<label>
+				<<print '<<radiobutton "$NPCName['+_npcId+'].hairColour" "'+_hairColorNPCData[_j]+'" ' + ($NPCName[_npcId].hairColour is _hairColorNPCData[_j] ? "checked" : "") + '>>'>>
+				<span @class="_hairColorNPCText[_j]">_hairColorNPC[_j]</span>
+			</label> |
+		<</for>>
+		<br><br>
+
+		Eye Colour:
+		<br>
+		<<for _j to 0; _j lt _eyeColorNPC.length; _j++>>
+			<label>
+				<<print '<<radiobutton "$NPCName['+_npcId+'].eyeColour" "'+_eyeColorNPCData[_j]+'" ' + ($NPCName[_npcId].eyeColour is _eyeColorNPCData[_j] ? "checked" : "") + '>>'>>
+				<span @class="_eyeColorNPCText[_j]">_eyeColorNPC[_j]</span>
+			</label> |
+		<</for>>
+		<br><br>
+	<</if>>
 <</widget>>
+
+<<widget "perNPCSettingsMenu">>
+	<span class="gold">Persistent NPCs:</span>
+	<br>
+	<<listbox "_pNPCId" autoselect>>
+		<<optionsfrom _keys>>
+	<</listbox>>
+	<<switch _pNPCId>>
+		<<case "scarred_inmate">>
+			<<if $per_npc[_pNPCId].description isnot "scarred">>
+				<<generate_scarred_inmate 0>>
+				<<clearsinglenpc 0>>
+			<</if>>
+		<<case "veteran_guard">>
+			<<if $per_npc[_pNPCId].description isnot "veteran">>
+				<<generate_veteran_guard 0>>
+				<<clearsinglenpc 0>>
+			<</if>>
+	<</switch>>
+	<<set _index to _keyNames.indexOf(_pNPCId)>>
+	| <<link Previous>>
+		<<set _index to (_index is 0 ? _keyNames.length - 1 : --_index)>>
+		<<set _pNPCId to _keyNames[_index]>>
+		<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
+	<</link>> |
+	<<link Next>>
+		<<set _index++>>
+		<<set _pNPCId to _keyNames[_index]>>
+		<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
+	<</link>>
+	<br><br>
+	<<if $per_npc[_pNPCId].name_known>>
+		<span class="gold">$per_npc[_pNPCId].name the <<print _pNPCId.replaceAll('_', ' ')>></span>
+	<<elseif $per_npc[_pNPCId].name is "Ivory Wraith">>
+		<span class="wraith">The Ivory Wraith</span>
+	<<elseif _pNPCId is "tower_creature">>
+		<span class="gold">The Night Monster</span>
+	<<else>>
+		<span class="gold"><<print _pNPCId.toUpperFirst().replaceAll('_', ' ')>></span>
+	<</if>>
+	<<if $per_npc[_pNPCId].name_known and $debug is 1>>
+		| <<link Rename>>
+			<<if $per_npc[_pNPCId].pronoun is "f">>
+				<<set $per_npc[_pNPCId].name to $NPC_names_f.random()>>
+			<<else>>
+				<<set $per_npc[_pNPCId].name to $NPC_names_m.random()>>
+			<</if>>
+			<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
+		<</link>>
+	<</if>>
+	<br>
+	<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
+	<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
+	<br>
+	<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
+	<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
+	<<run settingsPersistentNpcGenderUpdate()>>
+	<br><br>
+	Penis size - if applicable:
+	<br>
+	<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
+	<<for _j to 1; _j lt _penisNames.length; _j++>>
+		<label>
+			<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
+			<<print _penisNames[_j]>>
+		</label>
+		<<if _j isnot _penisNames.length -1>>|<</if>>
+	<</for>>
+	<br><br>
+	<div class="settingsToggle" style="display: inline-flex;">
+		Breast size
+		<<numberslider "$per_npc[_pNPCId].breastsize" $per_npc[_pNPCId].breastsize 0 12 1>>
+		<<run settingsNamedNpcBreastSize(Util.slugify('$per_npc[_pNPCId].breastsize'), true)>>
+	</div>
+	<div style="clear:both;">
+		/*Keep at end of toggles*/
+	</div>
+<</widget>>
+
 
 :: Settings
 <<settings>>

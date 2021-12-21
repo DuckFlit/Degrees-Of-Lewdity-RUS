@@ -38,12 +38,154 @@
 <<if $args[0]>>
 	<<set _temp0 to $args[0]>>
 	/*Adds name back into name pool */
-	<<if $per_npc[_temp0].pronoun is "f">>
-		<<set $NPC_names_f.pushUnique($per_npc[_temp0].name)>>
-	<<else>>
-		<<set $NPC_names_m.pushUnique($per_npc[_temp0].name)>>
+	<<if $per_npc[_temp0].name>>
+		<<if $per_npc[_temp0].pronoun is "f">>
+			<<set $NPC_names_f.pushUnique($per_npc[_temp0].name)>>
+		<<else>>
+			<<set $NPC_names_m.pushUnique($per_npc[_temp0].name)>>
+		<</if>>
 	<</if>>
 	<<run delete $per_npc[_temp0]>>
+<</if>>
+<</widget>>
+
+<<widget "updatePersistentNPCs">>
+<<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
+	<<for $_i, $_value range $per_npc>>
+		<!-- Set Pronoun -->
+		<<if $per_npc[$_i].pronoun is "none" or $args[0] is "genders">>
+			<<if $malechance lt random(1, 100)>>
+				<<set $per_npc[$_i].pronoun to "f">><<set $test to $per_npc[$_i].pronoun>>
+			<<else>>
+				<<set $per_npc[$_i].pronoun to "m">>
+			<</if>>
+		<</if>>
+		<!-- Set Gender -->
+		<<if $per_npc[$_i].gender is "none" or $args[0] is "genders">>
+			<<if $per_npc[$_i].pronoun is "m">>
+				<<if random(0, 99) gte $cbchance>>
+					<<set $per_npc[$_i].gender to "m">>
+				<<else>>
+					<<set $per_npc[$_i].gender to "f">>
+				<</if>>
+			<<elseif $per_npc[$_i].pronoun is "f">>
+				<<if random(0, 99) gte $dgchance>>
+					<<set $per_npc[$_i].gender to "f">>
+				<<else>>
+					<<set $per_npc[$_i].gender to "m">>
+				<</if>>
+			<</if>>
+		<</if>>
+
+		<!-- Set Genital Existence -->
+		<<if $per_npc[$_i].type isnot "human">>
+			<<set $per_npc[$_i].penis to  ($per_npc[$_i].gender !== "f" ? 0 : "none")>>
+			<<set $per_npc[$_i].vagina to ($per_npc[$_i].gender !== "m" ? 0 : "none")>>
+		<<else>>
+			<<set $per_npc[$_i].penis to  ($per_npc[$_i].gender !== "f" ? "clothed" : "none")>>
+			<<set $per_npc[$_i].vagina to ($per_npc[$_i].gender !== "m" ? "clothed" : "none")>>
+		<</if>>
+
+		<!-- Set breast defaults-->
+
+		<<set _b_mod_lower to Math.clamp($breast_mod, 0, 12)>>
+		<<set _b_mod_upper to Math.clamp($breast_mod + 12, 0, 12)>>
+
+		<!-- can't use breastsize, since that would either break the numberslider
+		or make one of the sizes always be randomized,
+		but can use breastdesc not being changed from 0 as a substitute -->
+		<<if $per_npc[$_i].breastdesc is 0 or $args[0] is "breasts">>
+			<<if $per_npc[$_i].pronoun is "m">>
+				<<set $per_npc[$_i].breastsize to 0>>
+			<<else>>
+				<<set $per_npc[$_i].breastsize to random (_b_mod_lower, _b_mod_upper)>>
+			<</if>>
+		<</if>>
+		<<if $per_npc[$_i].breastsize gt 0>>
+			<<set _brdes to ["nipple","budding","tiny","small","pert","modest","full","large","ample","massive","huge","gigantic","enormous"]>>
+			<<set $per_npc[$_i].breastdesc to _brdes[$per_npc[$_i].breastsize]+" breast">>
+		<<else>>
+			<<set $per_npc[$_i].breastdesc to "nipple">>
+		<</if>>
+		<<set $per_npc[$_i].breastsdesc to $per_npc[$_i].breastdesc + "s">>
+
+		<!-- Set pp to defaults-->
+
+		/* New way to set upper and lower bounds.
+		* This method makes use of all other slider positions, but does nothing when slider is between -1 and 1, 
+		* for a total of 15 unique positions vs the current method's 9. (max would be 17)
+		* Changing the penis_mod slider to range from -7 to 7 would work to make every slider position unique here, but potentially affects unnamed npc generation. 
+		*/
+
+		/*
+		<<set _p_mod_upper to 8>><<set _p_mod_lower to 1>>
+		<<if $penis_mod gt 0>>
+			<<set _p_mod_lower += $penis_mod - 1>>
+		<<elseif $penis_mod lt 0>>
+			<<set _p_mod_upper += $penis_mod + 1>>
+		<</if>>
+
+		alternative way to write that:
+		<<set _p_mod_lower to ($penis_mod > 0 ? $penis_mod : 1)>>
+		<<set _p_mod_upper to ($penis_mod < 0 ? 9 + $penis_mod : 8)>>
+		*/
+
+		<<if $penis_mod is 8>>
+			<<set _p_mod_upper to 8>><<set _p_mod_lower to 8>>
+		<<elseif $penis_mod gte 6>>
+			<<set _p_mod_upper to 8>><<set _p_mod_lower to 7>>
+		<<elseif $penis_mod gte 4>>
+			<<set _p_mod_upper to 8>><<set _p_mod_lower to 5>>
+		<<elseif $penis_mod gte 2>>
+			<<set _p_mod_upper to 8>><<set _p_mod_lower to 3>>
+		<<elseif $penis_mod gte 0>>
+			<<set _p_mod_upper to 8>><<set _p_mod_lower to 1>>
+		<<elseif $penis_mod gte -2>>
+			<<set _p_mod_upper to 7>><<set _p_mod_lower to 1>>
+		<<elseif $penis_mod gte -4>>
+			<<set _p_mod_upper to 5>><<set _p_mod_lower to 1>>
+		<<elseif $penis_mod gte -6>>
+			<<set _p_mod_upper to 3>><<set _p_mod_lower to 1>>
+		<<else>>
+			<<set _p_mod_upper to 1>><<set _p_mod_lower to 1>>
+		<</if>>
+
+		<<if $per_npc[$_i].penissize is 0 or $args[0] is "penis">>
+			<<if $per_npc[$_i].gender is "f">>
+				<<set $per_npc[$_i].penissize to 0>>
+				<<set $per_npc[$_i].penisdesc to "none">>
+			<<else>>
+				<<switch random (_p_mod_lower, _p_mod_upper)>>
+				<<case 8>>
+					<<set $per_npc[$_i].penisdesc to either("massive cock","huge cock","humongous cock","immense cock","gigantic cock","enormous cock")>>
+					<<set $per_npc[$_i].penissize to 4>>
+				<<case 5 6 7>>
+					<<set $per_npc[$_i].penisdesc to either("thick cock","hefty cock","big cock","large cock","veiny cock","meaty cock")>>
+					<<set $per_npc[$_i].penissize to 3>>
+				<<case 2 3 4>>
+					<<set $per_npc[$_i].penisdesc to "penis">>
+					<<set $per_npc[$_i].penissize to 2>>
+				<<default>>
+					<<set $per_npc[$_i].penisdesc to either("tiny penis","pathetic cock","little penis","small penis","mini penis","micro penis")>>
+					<<set $per_npc[$_i].penissize to 1>>
+				<</switch>>
+			<</if>>
+		<</if>>
+		<!-- Set pp to size in case PC selected it-->
+		<<if $per_npc[$_i].penissize isnot 0>>
+			<<switch $per_npc[$_i].penissize>>
+			<<case 4>>
+				<<set $per_npc[$_i].penisdesc to either("massive cock","huge cock","humongous cock","immense cock","gigantic cock","enormous cock")>>
+			<<case 3>>
+				<<set $per_npc[$_i].penisdesc to either("thick cock","hefty cock","big cock","large cock","veiny cock","meaty cock")>>
+			<<case 1>>
+				<<set $per_npc[$_i].penisdesc to either("tiny penis","pathetic cock","little penis","small penis","mini penis","micro penis")>>
+			<<default>>
+				<<set $per_npc[$_i].penisdesc to "penis">>
+			<</switch>>
+		<</if>>
+		<<generatePronouns $per_npc[$_i]>>
+	<</for>>
 <</if>>
 <</widget>>
 
