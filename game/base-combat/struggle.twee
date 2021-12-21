@@ -10,7 +10,6 @@
 		done: 0,
 		enemy: {}
 	}>>
-	<<resetLastOptions>>
 	<<set $feetaction to "evade">>
 <</widget>>
 
@@ -49,8 +48,13 @@
 <</widget>>
 
 <<widget "struggle_part_init">>
+	<<if ["mouth", "vagina", "penis", "anus", "chest"].includes($args[0])>>
+		<<set $_part to $args[0]>>
+	<<else>>
+		<span class="error">struggle_part_init error: invalid arguments: $args</span>
+	<</if>>
 	<!-- reset bodypart states -->
-	<<set $struggle[$args[0]] to {
+	<<set $struggle[$_part] to {
 		grip: 0,
 		creature: 0,
 		progress: 0,
@@ -60,13 +64,34 @@
 		damage: 0
 	}>>
 	<<if !$struggle_start>>
-		<!-- also clean all creatures stuck to bodypart -->
+		<!-- clean all creatures stuck to bodypart -->
 		<<for _i to 0; _i lt $struggle.number; _i++>>
-			<<if $struggle.enemy[_i].location is $args[0]>>
+			<<if $struggle.enemy[_i].location is $_part>>
 				<<set $struggle.enemy[_i].location to "fleeing">>
 				<<set $struggle.enemy[_i].health -= 1>>
 			<</if>>
 		<</for>>
+
+		<!-- clean hand states -->
+		<<set $_actions to [$_part + '_strengthen', $_part + '_pull', $_part + '_spray', $_part + '_grasp', $_part + '_stroke']>>
+		<<if $_actions.includes($leftactiondefault)>>
+			<<if $carryblock>>
+				<<set $leftactioncarry to "rest">>
+			<<else>>
+				<<set $leftactiondefault to "rest">>
+			<</if>>
+			<<set $leftarmstate to 0>>
+			<<set $leftarm to 0>>
+		<</if>>
+		<<if $_actions.includes($rightactiondefault)>>
+			<<if $carryblock>>
+				<<set $rightactioncarry to "rest">>
+			<<else>>
+				<<set $rightactiondefault to "rest">>
+			<</if>>
+			<<set $rightarmstate to 0>>
+			<<set $rightarm to 0>>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -1075,7 +1100,11 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<br>
 				<<neutral 5>><<submission 2>>
 
+				<<set V[_hand + 'arm'] to "struggle">>
+				<<set V[_hand + 'armstate'] to _actionpart + '_struggle'>>
 				<<if $leftaction is $rightaction>>
+					<<set $rightarmstate to _actionpart + '_struggle'>>
+					<<set $rightarm to "struggle">>
 					<<submission 2>>
 					<<break>>
 				<</if>>
@@ -1086,7 +1115,6 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<<set $struggle[_actionpart].grip++>>
 
 				<<if $leftaction is $rightaction>>
-					<<set $leftaction to _actionpart + '_strengthen'>>
 					<<set $rightaction to _actionpart + '_strengthen'>>
 					<<set $rightarm to "struggle">>
 					<<set $rightarmstate to _actionpart + '_struggle'>>
@@ -1133,6 +1161,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 					<!-- TODO: maybe add some skill and random checks, with possibilities (and corresponding flavor text) to retain the grip, or lessen it instead of outright resetting it to 0 -->
 					You can't maintain your grip, and <span class="red">your fingers pull away without the creature.</span>
 					<<set $struggle[_actionpart].grip to 0>>
+					<<set V[_hand + 'action'] to _actionpart + '_grasp'>>
 				<</if>>
 
 				<<if $leftaction is $rightaction>>
