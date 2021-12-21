@@ -287,11 +287,11 @@
 
 <<widget "generate_veteran_guard">>
 <<if $prison_intro is 1>>
-    <<loadNPC $args[0] "veteran_guard">>
+    <<set $_id to $args[0]>>
+    <<loadNPC $_id "veteran_guard">>
 	<<if $per_npc.veteran_guard and !$per_npc.veteran_guard.description>>
 		<!-- Fix for the veteran guard being saved over as an empty NPCList object in some saves -->
-		<<set $_id to $args[0]>>
-		<<clearsinglenpc $args[0]>>
+		<<clearsinglenpc $_id>>
 		<<generateRole $_id "veteran" "guard">>
 		<<if $per_npc.veteran_guard.name_known is 1>>
 			<<set $NPCList[$_id].name_known to 1>>
@@ -317,7 +317,19 @@
 
 <<widget "generate_scarred_inmate">>
 <<if $prison_intro is 1>>
-    <<loadNPC $args[0] "scarred_inmate">>
+    <<set $_id to $args[0]>>
+    <<loadNPC $_id "scarred_inmate">>
+	<<if $per_npc.scarred_inmate and !$per_npc.scarred_inmate.description>>
+		<!-- Fix for the scarred inmate being saved over as an empty NPCList object in some saves -->
+		<<clearsinglenpc $_id>>
+        <<generateRole $_id "scarred" "inmate">>
+		<<if $per_npc.scarred_inmate.name_known is 1>>
+			<<set $NPCList[$_id].name_known to 1>>
+			<<set $NPCList[$_id].fullDescription to $NPCList[0].name>>
+		<</if>>
+		<<clearNPC "scarred_inmate">>
+		<<saveNPC $_id "scarred_inmate">>
+	<</if>>
 <<else>>
     <<generateRole 4 "scarred" "inmate">>
     <<saveNPC 4 "scarred_inmate">>
@@ -372,17 +384,21 @@
 <</widget>>
 
 <<widget "save_scarred_inmate">>
-<<set $NPCList[0].fullDescription to $NPCList[0].name>>
-<<clearNPC "scarred_inmate">>
-<<saveNPC 0 "scarred_inmate">>
-<<prison_feat_check>>
+<<if $NPCList[0].role is "inmate">>
+    <<set $NPCList[0].fullDescription to $NPCList[0].name>>
+    <<clearNPC "scarred_inmate">>
+    <<saveNPC 0 "scarred_inmate">>
+    <<prison_feat_check>>
+<</if>>
 <</widget>>
 
 <<widget "save_tattooed_inmate">>
-<<set $NPCList[0].fullDescription to $NPCList[0].name>>
-<<clearNPC "tattooed_inmate">>
-<<saveNPC 0 "tattooed_inmate">>
-<<prison_feat_check>>
+<<if $NPCList[0].role is "inmate">>
+    <<set $NPCList[0].fullDescription to $NPCList[0].name>>
+    <<clearNPC "tattooed_inmate">>
+    <<saveNPC 0 "tattooed_inmate">>
+    <<prison_feat_check>>
+<</if>>
 <</widget>>
 
 <<widget "prison_feat_check">>
