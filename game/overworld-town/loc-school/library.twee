@@ -26,6 +26,9 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 There are several shelves with typical academic literature. You see books on engineering, biology, social sciences and language learning. Everything that is useful in catching up.
 <br>
 Next to it is a small basket with returned and not yet sorted books.
+<<if ($month is "november" and $monthday gte 24) or $month is "december">>
+	You notice a strange, olive-coloured book tucked amidst the rest.
+<</if>>
 <<if $english lt 200>>
 	You wonder if there may be something more interesting here if you were one of those bookworms.
 <</if>>
@@ -206,6 +209,10 @@ Next to it is a small basket with returned and not yet sorted books.
 			<br>
 		<<elseif $english gte 200>>
 			<<link [[Take the medium-sized scarlet book from the basket (0:01)|ScarletBook1]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
+		<<if ($month is "november" and $monthday gte 24) or $month is "december">>
+			<<link [[Take the olive-coloured book from the basket (0:01)|Olive Book 1]]>><<set $oliveExitPassage to "School Library">><<pass 1>><</link>>
 			<br>
 		<</if>>
 	<br>
@@ -721,11 +728,19 @@ You
 <<switch $bookRent>>
 	<<case "return">>
 		return the<<if $book_rent_timer lt 0>><<set $recentReturnTimer to 14>> overdue<</if>>
-		<<if $phase is 5>>
-			copy of "Raul and Janet".
-		<<else>>
-			$studyBooks.rented textbook.
-		<</if>>
+		<<switch $phase>>
+			<<case 6>>
+				<<if $per_npc.pinch isnot undefined>>
+					copy of "How <<if $per_npc.pinch.pronoun is "m">>Mr<<else>>Ms<</if>>. Pinch Groped Christmas"
+					<<clearNPC pinch>>
+				<<else>>
+					olive-coloured book.
+				<</if>>
+			<<case 5>>
+				copy of "Raul and Janet".
+			<<default>>
+				$studyBooks.rented textbook.
+		<</switch>>
 		<<set $studyBooks.rented to "none">>
 		<<if _sydney_location is "library">>
 			<<if $book_rent_timer lt 0>>
@@ -761,9 +776,19 @@ You
 			<br>
 		<</if>>
 	<<case "rent">>
-		rent a
-		<<if $phase is 5>>
-			copy of "Raul and Janet".
+		rent
+		<<if $phase is 6>>
+			the strange, olive-coloured book.
+			<<switch _sydneyStatus>>
+				<<case "corrupt" "corruptLust">>
+					Sydney snickers. "I thought this book was for kids. Dunno what it's doing here. But hey, knock yourself out."
+				<<default>>
+					Sydney smiles. "Oh, I love this old book! <<nnpc_Brother "Jordan">> Jordan used to read it to me every year around Christmastime."
+			<</switch>>
+			<br><br>
+			<<He>> slides the book towards you, but stops, staring down at the cover with a frown. "That's weird..." <<He>> starts to thumb through the pages, before shaking <<his>> head and handing it to you. "Enjoy."
+		<<elseif $phase is 5>>
+			a copy of "Raul and Janet".
 			<<switch _sydneyStatus>>
 				<<case "pure">>
 					<<if $sydneyromance is 1>>
@@ -781,7 +806,7 @@ You
 					Sydney looks down at the book and frowns. "A story full of love and sin." <<if $temple_rank>><<He>> leans in and whispers. "Jordan's actually a big fan of this book, but don't tell <<nnpc_him "Jordan">> I told you! <<nnpc_He "Jordan">> says it's a good cautionary tale of the consequences of lust."<</if>> <<He>> hands the book back to you. "Enjoy."
 			<</switch>>			
 		<<else>>
-			$studyBooks.rented textbook.
+			a $studyBooks.rented textbook.
 			<<if $sydneyromance is 1>>
 				Sydney smiles at you. "Look at you, putting the extra work in! I'm proud of you."
 			<<else>>
@@ -795,6 +820,8 @@ You
 		renew your rented
 		<<if $studyBooks.rented is "Raul and Janet">>
 			copy of "Raul and Janet".
+		<<elseif $studyBooks.rented is "Pinch">>
+			olive-coloured book.
 		<<else>>
 			$studyBooks.rented textbook.
 		<</if>>
@@ -803,11 +830,13 @@ You
 		<br><br>
 		<<sydneyOptions>>
 	<<case "steal">>
-		steal a
-		<<if $phase is 5>>
-			copy of "Raul and Janet".
+		steal
+		<<if $phase is 6>>
+			an olive-coloured book.
+		<<elseif $phase is 5>>
+			a copy of "Raul and Janet".
 		<<else>>
-			$studyBooks.stolen textbook.
+			a $studyBooks.stolen textbook.
 		<</if>>
 		<<set $bookStolen to 1>>
 		<br><br>
@@ -824,7 +853,14 @@ You
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 <<sydneySchedule>><<NPCStatusCheck "Sydney">>
 You return the stolen
-<<if $phase is 5>>
+<<if $phase is 6>>
+	<<if $per_npc.pinch isnot undefined>>
+		copy of "How <<if $per_npc.pinch.pronoun is "m">>Mr<<else>>Ms<</if>>. Pinch Groped Christmas"
+		<<clearNPC pinch>>
+	<<else>>
+		olive-coloured book.
+	<</if>>
+<<elseif $phase is 5>>
 	copy of "Raul and Janet".
 <<else>>
 	$studyBooks.stolen textbook.
