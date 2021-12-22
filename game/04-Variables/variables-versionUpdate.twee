@@ -2683,11 +2683,28 @@
 		<<set $pronounsNPCFix = 1>>
 	<</if>>
 
-	<<set $_per_keys to Object.keys($per_npc)>>
-	<<if $_per_keys.length gt 0>>
+	<!-- persistent npc fix v3 -->
+	<<if $perNPCFix isnot 3>>
+		<<set $perNPCFix to 3>>
+		<<set $_per_keys to Object.keys($per_npc)>>
 		<<for $_per_ctrl range $_per_keys>>
-			<<if !$per_npc[$_per_ctrl].type>>
+			<<if !$per_npc[$_per_ctrl]>>
+				<!-- remove null and undefined -->
+				<<run delete $per_npc[$_per_ctrl]>>
+			<<elseif !$per_npc[$_per_ctrl].type>>
+				<!-- type fix -->
 				<<set $per_npc[$_per_ctrl].type to "human">>
+			<</if>>
+		<</for>>
+
+		<!-- prison npcs -->
+		<<for $_npc range ["anxious_guard", "methodical_guard", "relaxed_guard", "veteran_guard", "scarred_inmate"]>>
+			<<if $per_npc[$_npc]>>
+				<<if $per_npc[$_npc].name_known>>
+					<<set $per_npc[$_npc].fullDescription to $per_npc[$_npc].name>>
+				<<else>>
+					<<set $per_npc[$_npc].fullDescription to $_npc.replace('_', ' ')>>
+				<</if>>
 			<</if>>
 		<</for>>
 	<</if>>
@@ -2695,39 +2712,4 @@
 	/* v0.3.5.4: pubic hair was accidentally disabled on new saves bc it wasn't initialized properly. */
 	<<pbhairinit>>
 
-	<<if $per_npc.anxious_guard and $per_npc.anxious_guard.fullDescription isnot "anxious guard" and $per_npc.anxious_guard.fullDescription isnot $per_npc.anxious_guard.name>>
-		<<if $per_npc.anxious_guard.name_known is 1>>
-			<<set $per_npc.anxious_guard.fullDescription to $per_npc.anxious_guard.name>>
-		<<else>>
-			<<set $per_npc.anxious_guard.fullDescription to "anxious guard">>
-		<</if>>
-	<</if>>
-	<<if $per_npc.methodical_guard and $per_npc.methodical_guard.fullDescription isnot "methodical guard" and $per_npc.methodical_guard.fullDescription isnot $per_npc.methodical_guard.name>>
-		<<if $per_npc.methodical_guard.name_known is 1>>
-			<<set $per_npc.methodical_guard.fullDescription to $per_npc.methodical_guard.name>>
-		<<else>>
-			<<set $per_npc.methodical_guard.fullDescription to "methodical guard">>
-		<</if>>
-	<</if>>
-	<<if $per_npc.relaxed_guard and $per_npc.relaxed_guard.fullDescription isnot "relaxed guard" and $per_npc.relaxed_guard.fullDescription isnot $per_npc.relaxed_guard.name>>
-		<<if $per_npc.relaxed_guard.name_known is 1>>
-			<<set $per_npc.relaxed_guard.fullDescription to $per_npc.relaxed_guard.name>>
-		<<else>>
-			<<set $per_npc.relaxed_guard.fullDescription to "relaxed guard">>
-		<</if>>
-	<</if>>
-	<<if $per_npc.veteran_guard and $per_npc.veteran_guard.fullDescription isnot "veteran guard" and $per_npc.veteran_guard.fullDescription isnot $per_npc.veteran_guard.name>>
-		<<if $per_npc.veteran_guard.name_known is 1>>
-			<<set $per_npc.veteran_guard.fullDescription to $per_npc.veteran_guard.name>>
-		<<else>>
-			<<set $per_npc.veteran_guard.fullDescription to "veteran guard">>
-		<</if>>
-	<</if>>
-	<<if $per_npc.scarred_inmate and $per_npc.scarred_inmate.fullDescription isnot "scarred inmate" and $per_npc.scarred_inmate.fullDescription isnot $per_npc.scarred_inmate.name>>
-		<<if $per_npc.scarred_inmate.name_known is 1>>
-			<<set $per_npc.scarred_inmate.fullDescription to $per_npc.scarred_inmate.name>>
-		<<else>>
-			<<set $per_npc.scarred_inmate.fullDescription to "scarred inmate">>
-		<</if>>
-	<</if>>
 <</widget>>
