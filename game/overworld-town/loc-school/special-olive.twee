@@ -1090,15 +1090,12 @@ You liked it,
 	<<set $real_hairlength to $hairlength>>
 	<<set $real_breastsize to $breastsize>>
 	<<set $real_penissize to $penissize>>
+	<<set $real_ballsexist to $player.ballsExist>>
 
 	<<set $real_goooutsidecount to $goooutsidecount>>
 	<<set $real_semenoutsidecount to $semenoutsidecount>>
-	<<set $real_vaginagoo to $player.bodyliquid.vagina.goo>>
-	<<set $real_vaginasemen to $player.bodyliquid.vagina.semen >>
-	<<set $real_anusgoo to $player.bodyliquid.anus.goo>>
-	<<set $real_anussemen to $player.bodyliquid.anus.semen >>
-	<<set $real_mouthgoo to $player.bodyliquid.mouth.goo>>
-	<<set $real_mouthsemen to $player.bodyliquid.mouth.semen >>
+	<<set $real_bodyliquid to clone($player.bodyliquid)>>
+	<<set $real_parasite to clone($parasite)>>
 	<<set $real_virginity to clone($player.virginity)>>
 	<<set $real_pain to $pain>>
 	<<set $real_arousal to $arousal>>
@@ -1186,6 +1183,13 @@ You liked it,
 		<<lowerwear 33>>
 		<<underlowerwear 30>>
 	<</if>>
+	<<for _bodypart range setup.bodyliquid.bodyparts>>
+		<<set $player.bodyliquid[_bodypart].goo to 0>>
+		<<set $player.bodyliquid[_bodypart].semen to 0>>
+	<</for>>
+	<<for _bodypart range $parasite.bodyparts>>
+		<<set $parasite[_bodypart] to {}>>
+	<</for>>
 	<<bodywriting_init>>
 
 	<<set $pain to 0>>
@@ -1234,14 +1238,11 @@ You liked it,
 	<<set $hairlength to $real_hairlength>>
 	<<set $breastsize to $real_breastsize>>
 	<<set $penissize to $real_penissize>>
+	<<set $player.ballsExist to $real_ballsexist>>
 	<<set $goooutsidecount to $real_goooutsidecount>>
 	<<set $semenoutsidecount to $real_semenoutsidecount>>
-	<<set $player.bodyliquid.vagina.goo to $real_vaginagoo>>
-	<<set $player.bodyliquid.vagina.semen to $real_vaginasemen>>
-	<<set $player.bodyliquid.anus.goo to $real_anusgoo>>
-	<<set $player.bodyliquid.anus.semen to $real_anussemen>>
-	<<set $player.bodyliquid.mouth.goo to $real_mouthgoo>>
-	<<set $player.bodyliquid.mouth.semen to $real_mouthsemen>>
+	<<set $player.bodyliquid to clone($real_bodyliquid)>>
+	<<set $parasite to clone($real_parasite)>>
 	<<set $player.virginity to clone($real_virginity)>>
 	<<set $pain to $real_pain>>
 	<<set $arousal to $real_arousal>>
@@ -1319,7 +1320,7 @@ You liked it,
 		<<unset $pinchPronoun>>
 	<</if>>
 
-	<<if $studyBooks.rented isnot "Pinch" and $studyBooks.stolen isnot "Pinch">>
+	<<if ($studyBooks and $studyBooks.rented isnot "Pinch" and $studyBooks.stolen isnot "Pinch") or $studyBooks is undefined>>
 		<<clearNPC pinch>>
 	<</if>>
 
