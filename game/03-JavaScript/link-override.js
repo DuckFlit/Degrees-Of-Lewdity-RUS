@@ -77,8 +77,15 @@ Macro.add(['button', 'link'], {
 					? () => { if (!(passage && V.nextPassage)) {Wikifier.wikifyEval(this.payload[0].contents.trim())} }
 					: null,
 				passage != null // lazy equality for null
-					/* check V.nextPassage and redirect all links to it if present */
-					? () => { if (V.nextPassage){ V.nextPassageIntended = passage; passage = V.nextPassage; delete V.nextPassage }; Engine.play(passage) }
+					? () => { 
+						//check V.nextPassage and redirect all links to it if present
+						if (V.nextPassage){ V.nextPassageIntended = passage; passage = V.nextPassage; delete V.nextPassage };
+						//save sidebar scrolling position
+						window.scroll_uibar = document.querySelector("#storyCaptionDiv").scrollTop;
+						//if passage hasn't changed (i.e. during combat), store scrolling position
+						window.scroll_main = (V.passage === V.passagePrev ? document.scrollingElement.scrollTop : 0);
+						//finally, play the passage
+						Engine.play(passage) }
 					: null
 			))
 			.appendTo(this.output);
@@ -150,11 +157,16 @@ function createInternalLink(destination, passage, text, callback){
 			if (typeof callback === 'function') {
 				callback();
 			}
+			//check V.nextPassage and redirect all links to it if present
 			if (V.nextPassage){
 				V.nextPassageIntended = passage;
 				passage = V.nextPassage;
 				delete V.nextPassage;
 			}
+			//save sidebar scrolling position
+			window.scroll_uibar = document.querySelector("#storyCaptionDiv").scrollTop;
+			//if passage hasn't changed (i.e. during combat), store scrolling position
+			window.scroll_main = (V.passage === V.passagePrev ? document.scrollingElement.scrollTop : 0);
 			Engine.play(passage);
 		});
 	}
