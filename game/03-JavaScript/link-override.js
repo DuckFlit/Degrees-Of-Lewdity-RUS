@@ -81,9 +81,10 @@ Macro.add(['button', 'link'], {
 						//check V.nextPassage and redirect all links to it if present
 						if (V.nextPassage){ V.nextPassageIntended = passage; passage = V.nextPassage; delete V.nextPassage };
 						//save sidebar scrolling position
-						window.scroll_uibar = document.querySelector("#storyCaptionDiv").scrollTop;
+						let target = document.querySelector("#storyCaptionDiv");
+						window.scroll_uibar = target ? target.scrollTop : null;
 						//if passage hasn't changed (i.e. during combat), store scrolling position
-						window.scroll_main = (V.passage === V.passagePrev ? document.scrollingElement.scrollTop : 0);
+						window.scroll_main = document.scrollingElement.scrollTop;
 						//finally, play the passage
 						Engine.play(passage) }
 					: null

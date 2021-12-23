@@ -3,7 +3,7 @@
 $(document).on(":passageend", function (event) {
 	//simplified fix, iteration 2
 	if (window.scroll_uibar) document.querySelector("#storyCaptionDiv").scroll(0, window.scroll_uibar);
-	if (window.scroll_main) document.scrollingElement.scroll(0, window.scroll_main);
+	if (V.scroll_remember && V.passage === V.passagePrev) document.scrollingElement.scroll(0, window.scroll_main);
 	/*previous version
 	//get sidebar dom element, assign it to variable for convenience
 	let sidebar = document.querySelector("#storyCaptionDiv");
