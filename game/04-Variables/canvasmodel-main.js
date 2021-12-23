@@ -668,7 +668,7 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return !!options.nipples_parasite;
 			},
-			z: ZIndices.breasts,
+			z: ZIndices.breastsparasite,
 			animation: "idle"
 		},
 		"leftarm": {

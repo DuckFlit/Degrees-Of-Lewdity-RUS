@@ -21,6 +21,7 @@ window.ZIndices = {
 	armsidle: 30,
 	handsidle: 31.5,
 	breasts: 35,
+	breastsparasite: 36,
 	tanbreasts: 30,
 	blush: 50,
 	freckles: 51,
