@@ -519,28 +519,44 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 	</label>
 	<br>
 <</if>>
+<<if $savedHairStyles>>
+	<div>
+		<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
+		Hair Style:
+		<<listbox '_hairStyle' autoselect>>
+			<<option "Not set" undefined>>
+			<<optionsfrom _savedHairStylesKeys>>
+		<</listbox>>
+		<mouse class="tooltip linkBlue">(?)<span>'Not set' will not change the current hairstyle.</span></mouse>
+	</div>
+<<else>>
+	<div>
+		Hair Style: No sets saved (Check mirror)
+	</div>
+<</if>>
+<br>
 <div class="wardrobe-action">
 	<<link "Add current clothes as new set">>
 		<<script>>
 			V.outfit_name = document.getElementById("outfitName").value.replace(/[^a-zA-Z 0-9.!()]+/g,"");
 		<</script>>
-		<<set $outfit.push(
-			{index: $outfit.length,
-			name: $outfit_name,
-			over_upper: clone($worn.over_upper.name),
-			over_lower: clone($worn.over_lower.name),
-			upper: clone($worn.upper.name),
-			lower: clone($worn.lower.name),
-			under_upper: clone($worn.under_upper.name),
-			under_lower: clone($worn.under_lower.name),
-			over_head: clone($worn.over_head.name),
-			head: clone($worn.head.name),
-			face: clone($worn.face.name),
-			neck: clone($worn.neck.name),
-			hands: clone($worn.hands.name),
-			legs: clone($worn.legs.name),
-			feet: clone($worn.feet.name),
-			type: ["normal"]
+		<<set $outfit.push({
+				index: $outfit.length,
+				name: $outfit_name,
+				over_upper: clone($worn.over_upper.name),
+				over_lower: clone($worn.over_lower.name),
+				upper: clone($worn.upper.name),
+				lower: clone($worn.lower.name),
+				under_upper: clone($worn.under_upper.name),
+				under_lower: clone($worn.under_lower.name),
+				over_head: clone($worn.over_head.name),
+				head: clone($worn.head.name),
+				face: clone($worn.face.name),
+				neck: clone($worn.neck.name),
+				hands: clone($worn.hands.name),
+				legs: clone($worn.legs.name),
+				feet: clone($worn.feet.name),
+				type: ["normal"]
 			},
 		)>>
 
@@ -565,6 +581,9 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 		<</if>>
 		<<if _saveLocation>>
 			<<set $outfit.last().location to $wardrobe_location>>
+		<</if>>
+		<<if _hairStyle>>
+			<<set $outfit.last().hairStyle to _hairStyle>>
 		<</if>>
 		<<updatewardrobe "outfits">>
 	<</link>>
