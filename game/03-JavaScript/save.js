@@ -483,52 +483,53 @@ window.settingsObjects = function (type) {
 	switch (type) {
 		case "starting":
 			result = {
-				bodysize: { min: 0, max: 3, decimals: 0 },
-				penissize: { min: 0, max: 3, decimals: 0 },
-				breastsize: { min: 0, max: 4, decimals: 0 },
-				bottomsize: { min: 0, max: 3, decimals: 0 },
-				breastsensitivity: { min: 0, max: 5, decimals: 0 },
-				genitalsensitivity: { min: 0, max: 5, decimals: 0 },
-				eyeselect: { strings: ["purple", "dark blue", "light blue", "amber", "hazel", "green", "red", "pink", "grey", "random"] },
-				hairselect: { strings: ["red", "jetblack", "black", "brown", "softbrown", "lightbrown", "burntorange", "blond", "softblond", "platinumblond", "ashyblond", "strawberryblond", "ginger", "random"] },
-				hairlength: { min: 0, max: 400, decimals: 0 },
-				awareselect: { strings: ["innocent", "knowledgeable"] },
-				background: { strings: ["waif", "nerd", "athlete", "delinquent", "promiscuous", "exhibitionist", "deviant", "beautiful", "crossdresser", "lustful", "greenthumb", "plantlover"] },
+				bodysize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
+				penissize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
+				breastsize: { min: 0, max: 4, decimals: 0, randomize: "characterAppearance"  },
+				bottomsize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
+				breastsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
+				genitalsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
+				eyeselect: { strings: ["purple", "dark blue", "light blue", "amber", "hazel", "green", "red", "pink", "grey", "random"], randomize: "characterAppearance" },
+				hairselect: { strings: ["red", "jetblack", "black", "brown", "softbrown", "lightbrown", "burntorange", "blond", "softblond", "platinumblond", "ashyblond", "strawberryblond", "ginger", "random"], randomize: "characterAppearance" },
+				hairlength: { min: 0, max: 400, decimals: 0, randomize: "characterAppearance" },
+				awareselect: { strings: ["innocent", "knowledgeable"], randomize: "characterTrait" },
+				background: { strings: ["waif", "nerd", "athlete", "delinquent", "promiscuous", "exhibitionist", "deviant", "beautiful", "crossdresser", "lustful", "greenthumb", "plantlover"], randomize: "characterTrait" },
 				gamemode: { strings: ["normal", "soft", "hard"] },
 				player: {
-					gender: { strings: ["m", "f", "h"] },
-					gender_body: { strings: ["m", "f", "a"] },
-					ballsExist: { bool: true },
-					freckles: { bool: true, strings: ["random"] },
+					gender: { strings: ["m", "f", "h"], randomize: "characterAppearance" },
+					gender_body: { strings: ["m", "f", "a"], randomize: "characterAppearance" },
+					ballsExist: { bool: true, randomize: "characterAppearance" },
+					freckles: { bool: true, strings: ["random"], randomize: "characterAppearance" },
 				},
 				skinColor: {
-					natural: { strings: ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"] },
-					range: { min: 0, max: 100, decimals: 0 },
+					natural: { strings: ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"], randomize: "characterAppearance" },
+					range: { min: 0, max: 100, decimals: 0, randomize: "characterAppearance" },
 				}
 			};
 			break;
 		case "general":
 			result = {
-				malechance: { min: 0, max: 100, decimals: 0 },
-				dgchance: { min: 0, max: 100, decimals: 0 },
-				cbchance: { min: 0, max: 100, decimals: 0 },
-				malevictimchance: { min: 0, max: 100, decimals: 0 },
-				homochance: { min: 0, max: 100, decimals: 0 },
-				breast_mod: { min: -12, max: 12, decimals: 0 },
-				penis_mod: { min: -8, max: 8, decimals: 0 },
-				whitechance: { min: 0, max: 100, decimals: 0 },
-				blackchance: { min: 0, max: 100, decimals: 0 },
-				straponchance: { min: 0, max: 100, decimals: 0 },
-				alluremod: { min: 0.2, max: 2, decimals: 1 },
-				clothesPrice: { min: 1, max: 10, decimals: 1 },
-				clothesPriceUnderwear: { min: 1, max: 2, decimals: 1 },
-				clothesPriceSchool: { min: 1, max: 2, decimals: 1 },
-				clothesPriceLewd: { min: 0.1, max: 2, decimals: 1 },
-				rentmod: { min: 0.1, max: 3, decimals: 1 },
-				beastmalechance: { min: 0, max: 100, decimals: 0 },
-				monsterchance: { min: 0, max: 100, decimals: 0 },
-				monsterhallucinations: { boolLetter: true, bool: true },
-				blackwolfmonster: { min: 0, max: 2, decimals: 0 },
+				malechance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				dgchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				cbchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				malevictimchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				homochance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				breast_mod: { min: -12, max: 12, decimals: 0, randomize: "encounter" },
+				penis_mod: { min: -8, max: 8, decimals: 0, randomize: "encounter" },
+				whitechance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				blackchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				straponchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				alluremod: { min: 0.2, max: 2, decimals: 1, randomize: "gameplay" },
+				clothesPrice: { min: 1, max: 10, decimals: 1, randomize: "gameplay" },
+				clothesPriceUnderwear: { min: 1, max: 2, decimals: 1, randomize: "gameplay" },
+				clothesPriceSchool: { min: 1, max: 2, decimals: 1, randomize: "gameplay" },
+				clothesPriceLewd: { min: 0.1, max: 2, decimals: 1, randomize: "gameplay" },
+				rentmod: { min: 0.1, max: 3, decimals: 1, randomize: "gameplay" },
+				beastmalechance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				monsterchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				monsterhallucinations: { boolLetter: true, bool: true, randomize: "encounter" },
+				blackwolfmonster: { min: 0, max: 2, decimals: 0, randomize: "encounter" },
+				greathawkmonster: { min: 0, max: 2, decimals: 0, randomize: "encounter" },
 				bestialitydisable: { boolLetter: true, bool: true },
 				swarmdisable: { boolLetter: true, bool: true },
 				slimedisable: { boolLetter: true, bool: true },
@@ -580,7 +581,7 @@ window.settingsObjects = function (type) {
 				halfcloseddisable: { boolLetter: true, bool: true },
 				numberify_enabled: { min: 0, max: 1, decimals: 0 },
 				timestyle: { strings: ["military", "ampm"] },
-				checkstyle: { strings: ["percentage", "words", "skillname"] },
+				checkstyle: { strings: ["percentage", "words", "skillname"], randomize: "gameplay" },
 				tipdisable: { boolLetter: true, bool: true },
 				debugdisable: { boolLetter: true, bool: true },
 				statdisable: { boolLetter: true, bool: true },
@@ -700,6 +701,60 @@ window.loadExternalExportFile = function () {
 			var button = document.getElementById("LoadExternalExportFile");
 			button.value = "Error Loading";
 		});
+}
+
+window.randomizeSettings = function (filter) {
+	let settingsResult = {};
+	const settingContainers = ['player','skinColor'];
+	const randomizeSettingLoop = function (settingsObject, mainObject, subObject) {
+		if(mainObject && !settingsResult[mainObject]){
+			settingsResult[mainObject] = {};
+		}
+		if(subObject){
+			if(!settingsResult[mainObject][subObject]) settingsResult[mainObject][subObject] = {};
+		}
+		Object.entries(settingsObject).forEach((setting) => {
+			if(settingContainers.includes(setting[0])) {
+				randomizeSettingLoop(setting[1],mainObject,setting[0]);
+			} else if((!filter && setting[1].randomize) || (filter && filter === setting[1].randomize)){
+				if(subObject){
+					settingsResult[mainObject][subObject][setting[0]] = randomizeSettingSet(setting[1]);
+				} else {
+					settingsResult[mainObject][setting[0]] = randomizeSettingSet(setting[1]);
+				}
+			}
+		})
+	}
+	const randomNumber = function(min,max,decimals = 0) {
+		let decimalsMult = Math.pow(10,decimals);
+		let minMult = min * decimalsMult;
+		let maxMult = max * decimalsMult;
+		let rn = (Math.floor(Math.random() * (maxMult - minMult)) + minMult) / decimalsMult;
+		return parseFloat(rn.toFixed(decimals));
+	}
+	const randomizeSettingSet = function (setting) {
+		let result;
+		var keys = Object.keys(setting);
+		if(keys.includes('min')){
+			result = randomNumber(setting.min, setting.max, setting.decimals);
+		}
+		if(keys.includes('strings')){
+			result = setting.strings.pluck();
+		}
+		if(keys.includes('boolLetter')){
+			result = ['t','f'].pluck();
+		}
+		if(keys.includes('bool')){
+			result = [true,false].pluck();
+		}
+		return result;
+	}
+	if(V.passage === "Start"){
+		randomizeSettingLoop(settingsObjects('starting'),'starting');
+	}
+	randomizeSettingLoop(settingsObjects('general'),'general');
+
+	return JSON.stringify(settingsResult);
 }
 
 // !!Hack warning!! Don't use it maybe?

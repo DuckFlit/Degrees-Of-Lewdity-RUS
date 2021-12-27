@@ -1049,13 +1049,30 @@ __Body Writing__<br>
 <br><br>
 __Hair__
 <br>
-<a onclick="V.hairtype='default';V.fringetype='default';SugarCube.State.display(SugarCube.State.active.title, null)">Natural</a> (changes both sides and fringe)
-<br><br>
-Your sides are in the "$hairtype" style, and positioned <<if $hairposition is "front">>in front of<<else>>behind<</if>> your body.
-
-<br>
+<<if !$savedHairStyles>>
+	<<set $savedHairStyles to {
+		Default: {hairType:$hairType, fringetype:$fringetype, hairposition:$hairposition}
+	}>>
+<</if>>
 <<set _hairTypeByName to {"Braid left": "braid left", "Braid right": "braid right", "Flat ponytail": "flat ponytail", "Loose": "loose", "Messy": "messy", "Pigtails": "pigtails", "Ponytail": "ponytail", "Short": "short", "Side tail left": "side tail left", "Side tail right": "side tail right", "Straight": "straight", "Swept left": "swept left", "Twin braids": "twin braids", "Twintails": "twintails", "Curl": "curl", "Defined curl": "defined curl", "Neat": "neat"}>>
 <<set _fringeTypeByName to {"Thin flaps": "thin flaps", "Wide flaps": "wide flaps", "Hime": "hime", "Loose": "loose", "Messy": "messy", "Overgrown": "overgrown", "Ringlets": "ringlets", "Split": "split", "Straight": "straight", "Swept left": "swept left", "Back": "back", "Parted": "parted", "Flat": "flat", "Quiff": "quiff", "Straight curl": "straight curl", "Ringlet curl": "ringlet curl", "Curtain": "curtain"}>>
+
+<div class="no-numberify">
+	<<link [[Natural|$passage]]>>
+		<<set $hairtype to "default">>
+		<<set $fringetype to "default">>
+	<</link>> |
+	<<link [[Randomize|$passage]]>>
+		<<set _hairType to Object.values(_hairTypeByName)>>
+		<<set $hairtype to _hairType[random(0,_hairType.length - 1)]>>
+		<<set _fringeType to Object.values(_fringeTypeByName)>>
+		<<set $fringetype to _fringeType[random(0,_fringeType.length - 1)]>>
+		<<set $hairposition to ["front","back"][random(0,1)]>>
+	<</link>> | (changes both sides and fringe)
+</div>
+<br>
+Your sides are in the "$hairtype" style, and positioned <<if $hairposition is "front">>in front of<<else>>behind<</if>> your body.
+<br>
 
 <<linkradiogroup "$hairtype" _hairTypeByName>>
 
@@ -1067,16 +1084,51 @@ Your sides are in the "$hairtype" style, and positioned <<if $hairposition is "f
 }`>>
 <br><br>
 Your fringe is in the "$fringetype" style.
-
+<br>
 /*<<if $fringetype is "default">>
  *	Changing your fringe from natural will set your sides to messy.
  *<</if>>
 */
-<br>
-
 <<linkradiogroup "$fringetype" _fringeTypeByName>>
-
 <br><br>
+
+<div class="no-numberify">
+	<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
+	<<if _savedHairStylesKeys.length gt 0>>
+		<<listbox '_selectedSavedHairStyle'>>
+			<<optionsfrom _savedHairStylesKeys>>
+		<</listbox>> |
+		<<link [[Set to current|$passage]]>>
+			<<set $hairtype to $savedHairStyles[_selectedSavedHairStyle].hairtype>>
+			<<set $fringetype to $savedHairStyles[_selectedSavedHairStyle].fringetype>>
+			<<set $hairposition to $savedHairStyles[_selectedSavedHairStyle].hairposition>>
+		<</link>> |
+		<<link [[Update with current|$passage]]>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].hairtype to $hairtype>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].fringetype to $fringetype>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].hairposition to $hairposition>>
+		<</link>> |
+		<<link [[Delete|$passage]]>>
+			<<if _selectedSavedHairStyle isnot "Default">>
+				<<run $outfit.forEach((o) => {
+					if(o.hairStyle === T.selectedSavedHairStyle){
+						o.hairStyle = undefined;
+					}
+				})>>
+				<<run delete $savedHairStyles[_selectedSavedHairStyle]>>
+			<</if>>
+		<</link>> |
+		<br><br>
+	<</if>>
+	<label>Name: <<textbox "_hairStyleName" "">></label>
+	<mouse class="tooltip linkBlue">(?)<span>Duplicate names will overwrite existing entries. 30 character max, only letters, numbers, dashes and underscores may be used</span></mouse>
+	<br>
+	<<link [["Save Current Hairstyle"|$passage]]>>
+		<<set _hairStyleName to _hairStyleName.replace(/[^a-zA-Z0-9_-]+/g,"").substring(0,30)>>
+		<<set $savedHairStyles[_hairStyleName] to {hairType:$hairType, fringetype:$fringetype, hairposition:$hairposition}>>
+	<</link>>
+</div>
+
 <</widget>>
 
 <<widget "mirrorMakeupPart">>
