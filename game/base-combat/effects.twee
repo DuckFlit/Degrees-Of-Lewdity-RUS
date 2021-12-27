@@ -191,7 +191,7 @@
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftstruggle">><<set $rightactiondefault to "rightstruggle">>
 	You struggle with all your might.
 	<<defiance 2 $lefttarget $righttarget>><<set $speechstruggle to 1>>
-	<<if $physique gte random(1, 32000)>>
+	<<if $physique gte random(1, 32000) and !$robinRentEvent>>
 		<span class="teal">You manage to twist your arms free.</span>
 		<<defiance 5 $lefttarget $righttarget>>
 		<<set $leftarm to 0>><<set $rightarm to 0>>
@@ -217,7 +217,7 @@
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftstruggle">>
 	You struggle.
 	<<set $speechstruggle to 1>><<defiance 1 $lefttarget>>
-	<<if $physique gte random(1, 64000)>>
+	<<if $physique gte random(1, 64000) and !$robinRentEvent>>
 		<span class="teal">You manage to twist your arms free.</span>
 		<<defiance 5 $lefttarget>>
 		<<set $leftarm to 0>><<set $rightarm to 0>>
@@ -236,7 +236,7 @@
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightstruggle">>
 	You struggle.
 	<<defiance 1 $righttarget>><<set $speechstruggle to 1>>
-	<<if $physique gte random(1, 64000)>>
+	<<if $physique gte random(1, 64000) and !$robinRentEvent>>
 		<span class="teal">You manage to twist your arms free.</span>
 		<<defiance 5 $righttarget>>
 		<<set $leftarm to 0>><<set $rightarm to 0>>
@@ -1986,10 +1986,10 @@
 			<</if>>
 		<</if>>
 		<<brat 10>><<set $alarm to 1>><<set $mouthactiondefault to "scream">><<set $speechscream to 1>>
-		<<if $NPCList[0].lefthand is 0 and $mouthuse is 0 and $position isnot "wall">>
+		<<if $NPCList[0].lefthand is 0 and $mouthuse is 0 and $position isnot "wall" and !$robinRentEvent>>
 			<<set $NPCList[0].lefthand to "mouth">><<He>> clasps <<his>> hand over your mouth to silence you.
 			<<set $enemytrust -= 40>><<set $mouthuse to "lefthand">>
-		<<elseif $NPCList[0].righthand is 0 and $mouthuse is 0 and $position isnot "wall">>
+		<<elseif $NPCList[0].righthand is 0 and $mouthuse is 0 and $position isnot "wall" and !$robinRentEvent>>
 			<<set $NPCList[0].righthand to "mouth">><<He>> clasps <<his>> hand over your mouth to silence you.
 			<<set $enemytrust -= 40>><<set $mouthuse to "righthand">>
 		<</if>>
@@ -2016,15 +2016,20 @@
 			<<set $speechapologiseno to 1>>
 		<</if>>
 	<<else>>
-		You tell <<him>> you're sorry for being bad.
-		<<set $mouthactiondefault to "plead">>
-		<<if $apologised is 0>>
-			<<His>> face softens.
-			<<set $apologised to 1>><<set $speechapologise to 1>>
-			<<set $enemyanger -= 50 * (1 + $englishtrait)>>
-		<<else>>
-			<<He>> ignores you.
+		<<if $robinRentEvent is 1 and $combatPhase is "Robin">>
+			You tell <<him>> you're sorry for not paying <<him>>.
 			<<set $speechapologiseno to 1>>
+		<<else>>
+			You tell <<him>> you're sorry for being bad.
+			<<set $mouthactiondefault to "plead">>
+			<<if $apologised is 0>>
+				<<His>> face softens.
+				<<set $apologised to 1>><<set $speechapologise to 1>>
+				<<set $enemyanger -= 50 * (1 + $englishtrait)>>
+			<<else>>
+				<<He>> ignores you.
+				<<set $speechapologiseno to 1>>
+			<</if>>
 		<</if>>
 	<</if>>
 <</if>>
@@ -2734,6 +2739,29 @@
 			]>>
 			They pause a moment before responding,
 			<span class="red">"<<print _response.pluck()>>"</span>
+		<</if>>
+	<</if>>
+<</if>>
+
+<<if $mouthaction is "pay">>
+	<<set $mouthaction to 0>><<set $mouthactiondefault to "rest">>
+	<<if $money gte $rentmoney>>
+		<<set $speechpay to 1>>
+		<<if $submissive gte 1150>>
+			"S-stop!" you shout. "I'll pay you so... j-just let Robin go."
+		<<elseif $submissive lte 850>>
+			"I'll pay you," you say through gritted teeth. "So get your hands off <<nnpc_him "Robin">>."
+		<<else>>
+			"Let go of <<nnpc_him "Robin">>!" you shout. "I have your money. I'll pay."
+		<</if>>
+	<<else>>
+		<<set $speechpay to -1>>
+		<<if $submissive gte 1150>>
+			"S-stop!" you shout. "I don't have enough, b-but... just let <<nnpc_him "Robin">> go, please!"
+		<<elseif $submissive lte 850>>
+			"I'll don't have enough," you say through gritted teeth. "So get your hands off <<nnpc_him "Robin">>."
+		<<else>>
+			"Let go of <<nnpc_him "Robin">>!" you shout. "I don't have your money. I can't pay."
 		<</if>>
 	<</if>>
 <</if>>

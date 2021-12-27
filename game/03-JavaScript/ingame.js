@@ -122,7 +122,7 @@ window.combatListColor = function (name, value, type) {
 			case "leftcurl": case "rightcurl":
 			/*mouthaction*/
 			case "grasp": case "plead": case "forgive": case "down":
-			case "letout": case "letoutorgasm": case "noises":
+			case "letout": case "letoutorgasm": case "noises": case "pay":
 			/*penisaction*/
 			case "thighbay": case "bay": case "otheranusbay":
 			/*vaginaaction*/
