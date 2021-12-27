@@ -833,7 +833,11 @@
 			</span>
 		<</if>>
 		<<set _mouthOptions to "free">>
-		<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is free.</span>
+		<<if $robinRentEvent is 1 and $combatPhase is "pay">>
+			<span class="gold">Your words are all you have.</span>
+		<<else>>
+			<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true or $robinRentEvent is 1 and $combatPhase is `Robin`?'gold':'')">Your mouth is free.</span>
+		<</if>>
 		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
 			Target: <span onchange="actionsreplace('mouth')">
 			<<listbox "$mouthtarget" autoselect>>
@@ -915,7 +919,7 @@
 		<</switch>>
 	<</switch>>
 <</if>>
-<<if $lastOptions.mouth isnot _mouthOptions>>
+<<if $lastOptions.mouth isnot _mouthOptions or $robinRentEvent is 1 and $combatPhase is "Robin">>
 	<<set _mouthGold to true>>
 <</if>>
 <<if $_changetype isnot true>>
@@ -1009,14 +1013,16 @@
 <<else>>
 	<<switch _mouthOptions>>
 		<<case "free">>
-			<<if $head isnot "grappled" and $head isnot "bound">>
-				<<if $chestuse is "penis">>
-					<<set _mouthaction["Kiss"] to "peniskiss">>
-				<<else>>
-					<<set _mouthaction["Kiss"] to "kiss">>
+			<<if !$robinRentEvent>>
+				<<if $head isnot "grappled" and $head isnot "bound">>
+					<<if $chestuse is "penis">>
+						<<set _mouthaction["Kiss"] to "peniskiss">>
+					<<else>>
+						<<set _mouthaction["Kiss"] to "kiss">>
+					<</if>>
 				<</if>>
+				<<oralnew>>
 			<</if>>
-			<<oralnew>>
 			<<speak>>
 			<<combatApologise>>
 		<<case "othervagina" "facesit">>
