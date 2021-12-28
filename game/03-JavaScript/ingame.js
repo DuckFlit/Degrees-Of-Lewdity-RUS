@@ -975,7 +975,7 @@ Config.navigation.override = function (dest) {
 
 window.currentSkillValue = function(skill){
     let result = V[skill];
-    if(!result) {
+    if(!result && result !== 0) {
         console.log(`currentSkillValue - skill '${skill}' unknown`);
         return 0;
     };
@@ -990,4 +990,20 @@ window.currentSkillValue = function(skill){
         break;
     }
     return result;
+}
+
+window.getTimeString = function(minutes = 0){
+	if (minutes < 0){
+		// come on don't try negative numbers, that's silly
+		return "0:00";
+	}
+	if (minutes < 10){
+		return "0:0" + minutes;
+	} else if (minutes < 60){
+		return "0:" + minutes;
+	} else {
+		let hours = Math.round(minutes / 60);
+		minutes = ("" + minutes % 60).padStart(2, '0');
+		return hours + ":" + minutes;
+	}
 }
