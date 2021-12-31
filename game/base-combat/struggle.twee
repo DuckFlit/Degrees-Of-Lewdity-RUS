@@ -643,9 +643,11 @@
 	<</switch>>
 	<<if $_changetype isnot true>>
 		<<set _mouthaction to {}>>
-		<<if $mouthstate is "struggle">>
+		<<if $mouthstate is "struggle" and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 			<<set _mouthaction["Keep closed"] to "rest">>
 			<<set _mouthaction["Open"] to "open">>
+		<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+			<<set _mouthaction["Rest"] to "rest">>
 		<<elseif $mouthstate is "struggle_pen">>
 			<<set _mouthaction["Rest"] to "rest">>
 			<<set _mouthaction["Suck"] to "suck">>
@@ -1262,13 +1264,21 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<case 0>>
 				<<if $struggle.mouth.legs is "tentacles">>
 					The <<print $struggle.mouth.creature>>'s tentacles wrap around your neck.<<neutral 2>>
+				<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+					The <<print $struggle.mouth.creature>>'s <<struggle_appendage mouth>> rubs against your $worn.face.name.<<neutral 1>>
 				<<else>>
 					The <<print $struggle.mouth.creature>>'s <<struggle_appendage mouth>> rubs against your face.<<neutral 1>>
 				<</if>>
 			<<case 1>>
-				The <<print $struggle.mouth.creature>> plays with your lips, <span class="blue">searching for a way in.</span><<neutral 2>>
+				<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+					The <<print $struggle.mouth.creature>> plays with your $worn.face.name, <span class="blue">searching for a way in.</span><<neutral 2>>
+					/*<<struggle_clothes mouth>>*/
+				<<else>>
+					The <<print $struggle.mouth.creature>> plays with your lips, <span class="blue">searching for a way in.</span><<neutral 2>>
+				<</if>>
 			<<case 2>>
-				The <<print $struggle.mouth.creature>>'s <<struggle_appendage mouth>> <span class="purple">pushes against your lips.</span><<neutral 4>>
+				<<struggle_clothes mouth>>
+				/*The <<print $struggle.mouth.creature>>'s <<struggle_appendage mouth>> <span class="purple">pushes against your lips.</span><<neutral 4>>*/
 			<<case 3>>
 				The tip of the <<print $struggle.mouth.creature>>'s <<struggle_appendage mouth>> begins to part your lips. <span class="pink">It's about to penetrate fully.</span><<neutral 5>>
 			<<case 4>>
@@ -1874,6 +1884,12 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 	<<else>>
 		<<set _struggle_exposed to "naked">>
 	<</if>>
+<<elseif $args[0] is "mouth">>
+	<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+		<<set _struggle_exposed to "mask">>
+	<<else>>
+		<<set _struggle_exposed to "naked">>
+	<</if>>
 <</if>>
 
 
@@ -2049,6 +2065,27 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<set $struggle[$args[0]].damage += 1>>
 		<</if>>
 	<</if>>
+<<elseif _struggle_exposed is "mask">>
+	<<set $struggle[$args[0]].progress -= 1>>
+	<<if $struggle[$args[0]].legs is "tentacles">>
+		The <<print $struggle[$args[0]].creature>>'s tentacles worm their way inside your $worn.face.name, trying to get to the <<struggle_bodypart $args[0]>> beneath.<<neutral 2>><<damageFaceCover 5 struggle>>
+	<<else>>
+		The <<print $struggle[$args[0]].creature>> tears at your $worn.face.name, trying to get to the <<struggle_bodypart $args[0]>> beneath.<<neutral 1>>
+	<</if>>
+	<<damageFaceCover 5 struggle>>
+	<<if $struggle[$args[0]].creature is "slime">>
+		<span class="purple">The fabric hisses as it dissolves in the slime.</span><<damageFaceCover 20 struggle>>
+	<<elseif $struggle[$args[0]].creature is "pale slime">>
+		<span class="purple">The fabric violently hisses as it dissolves in the pale slime.</span><<damageFaceCover 30 struggle>>
+	<</if>>
+	<<if $worn.face.integrity lte 0>>
+		<<if $struggle[$args[0]].legs is "tentacles">>
+			Its tentacles worm their way into the fabric, and <span class="pink">tear it off your body with a flick, exposing your mouth.</span>
+		<<else>>
+			Its appendage pierces the fabric, and <span class="pink">tears it off your body with a flick, exposing your mouth.</span>
+		<</if>>
+		<<faceruined>><<set $worn.face.type.push("broken")>>
+	<</if>>
 <<elseif _struggle_exposed is "naked">>
 	<<if $args[0] is "vagina">>
 		The <<print $struggle[$args].creature>>'s appendage <span class="purple">presses against your <<pussy>>.</span><<neutral 4>>
@@ -2058,6 +2095,8 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 		The <<print $struggle[$args].creature>>'s appendage <span class="purple">presses against your <<bottom>>.</span><<neutral 4>>
 	<<elseif $args[0] is "chest">>
 		The <<print $struggle[$args].creature>>'s appendage <span class="purple">presses against your <<breasts>>.</span><<neutral 4>>
+	<<elseif $args[0] is "mouth">>
+		The <<print $struggle[$args].creature>>'s appendage <span class="purple">presses against your mouth.</span><<neutral 4>>
 	<</if>>
 <</if>>
 
@@ -2073,6 +2112,8 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<bottom>>
 		<<case "chest">>
 			<<breasts>>
+		<<case "mouth">>
+			mouth
 	<</switch>>
 <</silently>><<print _text_output>>
 <</widget>>
