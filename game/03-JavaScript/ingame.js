@@ -982,7 +982,85 @@ window.currentSkillValue = function(skill){
     if(['skulduggery','physique','danceskill','swimmingskill','athletics','willpower','tending','english'].includes(skill) && V.moorLuck > 0){
         result = Math.floor(result * (1 + (V.moorLuck / 100)));
     }
+	if(['physique','danceskill','swimmingskill','athletics'].includes(skill) && V.sexStats.vagina.pregnancy.bellySize >= 10){
+		switch(V.pregnancyStats.mother){
+			case 0: T.pregnancyModifier = 30;
+			break;
+			case 1: T.pregnancyModifier = 40;
+			break;
+			case 2: T.pregnancyModifier = 50;
+			break;
+			case 3: T.pregnancyModifier = 65;
+			break;
+			case 4: T.pregnancyModifier = 100;
+			break;
+		}
+		result = Math.floor(result * (1 - (V.sexStats.vagina.pregnancy.bellySize / T.pregnancyModifier)));
+	}
     switch(skill){
+		case 'skulduggery':
+			if(V.worn.hands.type.includes("sticky_fingers")){
+				result = Math.floor(result * 1.05);
+			}
+			if(V.harpy >= 2 || V.cat >= 2){
+				result = Math.floor(result * 1.05);
+			}
+		break;
+		case 'physique':
+			if(["forest", "moor", "farm"].includes(V.location)){
+				if(V.worn.feet.type.includes("heels")){
+					result = Math.floor(result * (1 - (V.worn.feet.reveal / 5000)));
+				}
+				if(V.worn.feet.type.includes("rugged")){
+					result = Math.floor(result * (1 + (V.feetskill / 10000)));
+				}
+			}
+		break;
+		case 'danceskill':
+			if(V.worn.under_upper.type.includesAny("dance", "naked") && V.worn.under_lower.type.includesAny("dance", "naked") && V.worn.upper.type.includesAny("dance", "naked") && V.worn.lower.type.includesAny("dance", "naked")){
+				result = Math.floor(result * 1.05);
+			}
+			if(V.worn.feet.type.includes("shackle")){
+				result = Math.floor(result * 0.5);
+			}
+		break;
+		case 'swimmingskill':
+			let heels = 0;
+			if(V.worn.under_upper.type.includesAny("swim", "naked") && V.worn.under_lower.type.includesAny("swim", "naked") && V.worn.upper.type.includesAny("swim", "naked") && V.worn.lower.type.includesAny("swim", "naked")){
+				result = Math.floor(result * 1.05);
+			}
+			if(V.worn.feet.type.includes("swim")){
+				result = Math.floor(result * (1 + (V.feetskill / 10000)));
+			} else if(!V.worn.feet.type.includes("naked")){
+				if($worn.feet.type.includes("heels")){
+					heels = 0.1;
+				} else {
+					heels = 0;
+				}
+				result = Math.floor(result * (0.9 + (V.feetskill / 10000) - heels));
+			}
+			if(V.worn.feet.type.includes("shackle")){
+				result = Math.floor(result * 0.5);
+			}
+		break;
+		case 'athletics':
+			if(["forest", "moor", "farm"].includes(V.location)){
+				if(V.worn.feet.type.includes("heels")){
+					result = Math.floor(result * (1 - (V.worn.feet.reveal / 5000)));
+				}
+				if(V.worn.feet.type.includes("rugged")){
+					result = Math.floor(result * (1 + (V.feetskill / 10000)));
+				}
+			}
+			if(V.worn.feet.type.includes("shackle")){
+				result = 0;
+			}			
+		break;
+		case 'willpower':
+			if(V.parasite.left_ear.name == "slime" && V.parasite.right_ear.name == "slime"){
+				result = Math.floor(result * 0.9);
+			}
+		break;
         case 'tending':
             if(V.backgroundTraits.includes("plantlover")){
                 result = Math.floor(result * (1 + (V.trauma / (V.traumamax * 2))));
