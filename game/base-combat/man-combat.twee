@@ -1165,7 +1165,21 @@
 
 <<widget "combat-hand-on-head_breasts">>
 	<<set $rng to random(1, 100)>>
-	<<if $rng gte 70>>
+	<<if $rng gte 69 and $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+		<<He>> pushes your mouth against <<hisselect _n>> $NPCList[_n].breastdesc, but it's blocked by your $worn.face.name.
+		<<set $speechheadbreasts to 1>>
+		<<if $NPCList[_n].type is "plant" and $NPCList[_n].pronoun is "f" and $breastfeedingdisable is "f">>
+			<span class="pink">Nectar leaks from <<hisselect _n>> bud.</span>
+			<<damageFaceCover 1>>
+		<<elseif $NPCList[_n].lactation is 1 and $breastfeedingdisable is "f">>
+			<span class="pink">Milk leaks from <<hisselect _n>> bud.</span>
+			<<set $speechheadsuckleclosed to 1>>
+			<<damageFaceCover 1>>
+		<<else>>
+			<<set $speechheadnippleclosed to 1>>
+		<</if>>
+		<<damageFaceCover 1>>
+	<<elseif $rng gte 70>>
 		<<sex 3 _n>>
 		<<combat-set-hand-target $args[0] "head_nipples">>
 		<<if $mouthstate isnot "nipple">>
@@ -1201,13 +1215,18 @@
 
 <!-- pass "left", "right" or "both" as the first argument, and "hand" or "hands" for the second argument -->
 <<widget "combat-hand-on-mask">>
-	<<if $worn.face.type.includes("mask")>>
+	<<if $worn.face.type.includes("mask") or $worn.face.type.includes("covered")>>
 		<<set $_hishand to ($args[0] isnot "both" ? "<<his>> " : "") + $args[0] + " " + $args[1]>>
 		<<if $face is "covered">>
 			<<He>> tries to pull your $worn.face.name off your face with $_hishand, <span class="lblue">but you grip it tight.</span>
 			<<if random(1, 3) is 3>>
 				<span class="lblue"><<He>> releases it with a frustrated sigh.</span>
 				<<combat-reset-hand $args[0]>>
+			<<else>>
+				<<if $enemyanger gt ($enemyangermax / 2)>>
+					<span class="red"><<He>> tries to force your $worn.face.name off!</span>
+					<<damageFaceCover 4>>
+				<</if>>
 			<</if>>
 		<<else>>
 			<<He>> pulls your $worn.face.name off your face with $_hishand, <span class="pink">revealing your identity.</span>
@@ -1527,7 +1546,7 @@
 			<<else>>
 				<<bodypart_admire_chance right_thigh>>
 			<</if>>
-		<<elseif $worn.face.type.includes("mask")>>
+		<<elseif $worn.face.type.includes("mask") or $worn.face.type.includes("gag")>>
 			<span class="purple"><<He>> grasps your $worn.face.name with <<his>> $args[0] hand.</span>
 			<<neutral 1 _n>><<combat-set-hand-target $args[0] "mask">>
 		<<else>>
@@ -2461,6 +2480,7 @@
 		<<elseif _npcB is _n>>
 			<<set _dvp to ($NPCList[_npcA].penis isnot "anusdouble" ? 1 : 2)>>
 		<</if>>
+		<<set $_n to _n>> /* backup _n so that we can use personselect widget without errors */
 
 		<<if $rng gte 101>>
 			<span class="blue"><<He>> stops pressing <<his>> $NPCList[_n].penisdesc against your pussy.</span>
@@ -2471,13 +2491,13 @@
 					<<set _pain to Math.floor($vaginalPain * (1.5 / (5 - ($NPCList[_n].penissize or 1))))>>
 					<<if $player.virginity.vaginal isnot true>>
 						<<if $enemyanger gte 80>>
-							<span class="pink"><<He>> furiously thrusts <<his>> $NPCList[_n].penisdesc deep into your <<pussy>>, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>>.</span>
+							<span class="pink"><<He>> furiously thrusts <<his>> $NPCList[_n].penisdesc deep into your <<pussy>>, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>>.</span><<set _n to $_n>>
 							<<personselect _npcA>><<set _pain *= 1.5>>
 						<<elseif $enemyanger gte 20>>
-							<span class="pink"><<He>> thrusts <<his>> $NPCList[_n].penisdesc deep into your <<pussy>>, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>>.</span>
+							<span class="pink"><<He>> thrusts <<his>> $NPCList[_n].penisdesc deep into your <<pussy>>, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>>.</span><<set _n to $_n>>
 							<<personselect _npcA>>
 						<<else>>
-							<span class="pink"><<He>> glides <<his>> $NPCList[_n].penisdesc deep into your <<pussy>>, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>>.</span>
+							<span class="pink"><<He>> glides <<his>> $NPCList[_n].penisdesc deep into your <<pussy>>, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>>.</span><<set _n to $_n>>
 							<<personselect _npcA>>
 						<</if>>
 						<<switch $NPCList[_n].penissize>>
@@ -2494,13 +2514,13 @@
 						<<else>>
 							<<switch $NPCList[_n].penissize>>
 							<<case 4 5>>
-								<span class="red"><<His>> $NPCList[_n].penisdesc thrusts deep into your virgin pussy, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>><<personselect _npcA>>, obliterating your hymen and forever robbing you of your purity. You scream out as your <<pussy>> struggles to accommodate <<his>> cock.</span>
+								<span class="red"><<His>> $NPCList[_n].penisdesc thrusts deep into your virgin pussy, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>><<personselect _npcA>>, obliterating your hymen and forever robbing you of your purity. You scream out as your <<pussy>> struggles to accommodate <<his>> cock.</span><<set _n to $_n>>
 								<<violence 200>>
 							<<case 1>>
-								<span class="red"><<His>> $NPCList[_n].penisdesc pushes into your virgin pussy, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>><<personselect _npcA>>, breaking your hymen and forever robbing you of your purity.</span> <span class="green"> While technically no longer a virgin, you can barely feel it.</span>
+								<span class="red"><<His>> $NPCList[_n].penisdesc pushes into your virgin pussy, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>><<personselect _npcA>>, breaking your hymen and forever robbing you of your purity.</span> <span class="green"> While technically no longer a virgin, you can barely feel it.</span><<set _n to $_n>>
 								<<violence 25>>
 							<<default>>
-								<span class="pink"><<His>> $NPCList[_n].penisdesc thrusts deep into your virgin pussy, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>><<personselect _npcA>>,</span><span class="red"> tearing your hymen and forever robbing you of your purity.</span>
+								<span class="pink"><<His>> $NPCList[_n].penisdesc thrusts deep into your virgin pussy, joining <<personselect _npcB>><<combatperson>>'s <<npcPenisSimple _npcB>><<personselect _npcA>>,</span><span class="red"> tearing your hymen and forever robbing you of your purity.</span><<set _n to $_n>>
 								<<violence 100>>
 							<</switch>>
 						<</if>>
@@ -2828,6 +2848,7 @@
 			<<set _dap to ($NPCList[$anustarget].penis isnot "anusdouble" ? 1 : 2)>>
 			<<set _otherNPCindex to $anustarget>>
 		<</if>>
+		<<set $_n to _n>> /* backup _n so that we can use personselect widget without errors */
 
 		<<if $rng gte 101>>
 			<span class="blue"><<He>> stops pressing <<his>> $NPCList[_n].penisdesc against your anus.</span>
@@ -2837,7 +2858,7 @@
 				<<if $noanal is 0>>
 					<<set _pain to Math.floor($analPain * (1.5 / (5 - ($NPCList[_n].penissize or 1))))>>
 					<<if $player.virginity.anal isnot true>>
-						<span class="pink"><<He>> thrusts <<his>> $NPCList[_n].penisdesc deep into your <<bottom>>, joining <<personselect _otherNPCindex>><<combatpersons _otherNPCindex>> <<npcPenisSimple _otherNPCindex>>.</span><<personselect _n>>
+						<span class="pink"><<He>> thrusts <<his>> $NPCList[_n].penisdesc deep into your <<bottom>>, joining <<personselect _otherNPCindex>><<combatpersons _otherNPCindex>> <<npcPenisSimple _otherNPCindex>>.</span><<set _n to $_n>><<personselect _n>>
 						<<switch $NPCList[_n].penissize>>
 							<<case 4>>
 								<span class="red"> You whimper as your ass stretches to accommodate <<his>> cock.</span>
@@ -3093,6 +3114,20 @@
 			<<elseif $NPCList[_n].chastity.penis.includes("chastity")>>
 				<span class="purple"><<if $npcSub>>You pull<<else>><<He>> pushes<</if>> <<his>> $NPCList[_n].chastity.penis against your mouth.</span>
 				<<sex 25 _n>><<set $speechNPCChastity to 1>>
+			<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+				<<if $enemyanger lt $enemyangermax/2>>
+					<span class="lblue"><<He>> moves <<his>> penis away from your mouth.</span>
+					<<set $NPCList[_n].penis to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
+				<<else>>
+					<<switch random(0,2)>>
+						<<case 0 1>>
+							<<He>> pushes <<his>> $NPCList[_n].penisdesc against your $worn.face.name. <<He>> seems frustrated.
+							<<damageFaceCover 2>>
+						<<case 2>>
+							<span class="lblue"><<He>> moves <<his>> penis away from your mouth.</span>
+							<<set $NPCList[_n].penis to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
+					<</switch>>
+				<</if>>
 			<<elseif $rng gte 1 and !$npcSub>>
 				<span class="purple"><<He>> pushes <<his>> $NPCList[_n].penisdesc against your lips.</span>
 				<<if $NPCList[_n].type is "plant" and !["peniskiss","penislick"].includes($mouthactiondefault)>>
@@ -3795,6 +3830,22 @@
 		<<if $consensual is 0 and $underwater isnot 1>>
 			<<if ($oxygen gt 150 and $enemyanger gte 30) or $enemyanger gte (($enemyangermax / 5) * 4)>>
 				<<oxygen -150>>
+				
+				<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+					<<if $enemyanger lt $enemyangermax/2>>
+						<span class="lblue"><<He>> moves <<his>> pussy away from your mouth.</span>
+						<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+					<<else>>
+						<<switch random(0,2)>>
+							<<case 0 1>>
+								<<He>> continues to sit down full weight on your $worn.face.name.
+								<<damageFaceCover 2>>
+							<<case 2>>
+								<span class="lblue"><<He>> moves <<his>> pussy away from your mouth.</span>
+								<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+						<</switch>>
+					<</if>>
+				<<else>>
 				<<print either(
 					"<<He>> covers your face with <<his>> pussy and ass.",
 					"<<His>> pussy and ass press down on your face.",
@@ -3802,6 +3853,7 @@
 					"<<He>> smothers you under <<him>>.",
 					"<<His>> pussy and ass press down on your mouth and nose."
 				)>>
+				<</if>>
 				<<sex 1 _n>><<bruise face>><<bruise face>>
 
 				<<if $suffocationPhase isnot 2>>
@@ -3840,6 +3892,21 @@
 			<<He>> shifts <<his>> position on your face, pressing <<his>> ass onto your mouth.
 			<<set $mouthstate to "anal">><<set $NPCList[_n].vagina to "facesitanal">>
 			<<set $speechmouthotheranus to 1>>
+		
+		<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+			<<if $enemyanger lt $enemyangermax/2>>
+				<span class="lblue"><<He>> moves <<his>> pussy away from your mouth.</span>
+				<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+			<<else>>
+				<<switch random(0,2)>>
+					<<case 0 1>>
+						<<He>> grinds <<his>> ?vulva against your $worn.face.name.
+						<<damageFaceCover 2>>
+					<<case 2>>
+						<span class="lblue"><<He>> moves <<his>> pussy away from your mouth.</span>
+						<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+				<</switch>>
+			<</if>>
 		<<elseif $rng gte 0>>
 			<<if $mouthactiondefault is "vaginalick" and random(1) is 0>>
 				<<if !$npcSub>>
@@ -3871,7 +3938,15 @@
 	<<set $rng to random(1, 100)>>
 	<<if $NPCList[_n].vagina is "facesitanal">>
 		<<if $rng gt 10 or ($rng gt 5 and $enemyanger gte $enemyangermax / 10)>>
-			<<if $enemyarousal gte (($enemyarousalmax / 5) * 3)>>
+			<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+				<<switch random(0,2)>>
+					<<case 0 1>>
+						<<He>> grinds <<his>> ass against your $worn.face.name.
+					<<case 2>>
+						<span class="lblue"><<He>> moves <<his>> ass away from your mouth.</span>
+						<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+				<</switch>>
+			<<elseif $enemyarousal gte (($enemyarousalmax / 5) * 3)>>
 				<<He>> grinds <<his>> ass against your mouth.
 			<<else>>
 				<<He>> slowly moves <<his>> ass against your lips.
@@ -4249,6 +4324,21 @@
 				<span class="lblue"><<He>> pulls <<his>> mouth away from yours.</span>
 				<<set $NPCList[_n].mouth to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
 				<<set $NPCList[_n].location.head to 0>>
+			<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+				<<switch random(0,2)>>
+					<<case 0 1>>
+						<<He>> pushes <<his>> lips against your $worn.face.name. <<He>> seems disappointed.
+						<<damageFaceCover 2>>
+						<<if $consensual isnot 1>>
+							<<brat 2>>
+						<</if>>
+					<<case 2>>
+						<span class="lblue"><<He>> moves <<his>> penis away from your mouth.</span>
+						<<set $NPCList[_n].penis to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
+						<<if $consensual isnot 1>>
+							<<brat 2>>
+						<</if>>
+				<</switch>>
 			<<elseif $rng lte 100>>
 				<<He>> pushes <<his>> tongue between your lips.
 				<<set $NPCList[_n].mouth to "kiss">><<set $mouthstate to "kiss">><<sex 2 _n>>
@@ -4599,7 +4689,7 @@
 						<<bodypart_admire right_thigh>>
 					<</if>>
 				<<else>>
-					<<if $mouthuse is 0>>
+					<<if $mouthuse is 0 and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 						<<if $NPCList[_n].penis is "chest">>
 							<<combatspeech _n>><<neutral 1 _n>>
 						<<elseif $NPCList[_n].location.genitals isnot "head">>
@@ -5059,6 +5149,24 @@
 			There are two primary states; in sync and out of sync. While out of sync, they typically display text more or less the same as their singular versions. 
 				While in sync, they display the double version text and combat outcomes.
 			-->
+
+			/* Error handling for escaped penises. Divert to regular penetration */
+			/* Essentially, NPC's penis has been set to 0 somehow, yet the player's states have not been reset. */
+			<<set $vaginadoubletarget to _n>>
+			<<if $vaginatarget is $vaginadoubletarget>>
+				<<set $_error to "[" + $NPCList[$vaginatarget].fullDescription + "] " + "penis has escaped. It is set to [" + $NPCList[$vaginatarget].penis + "] but player state remains ["+$vaginastate + "]">>
+				/*<<printError>>*/
+				<br><br><span class="red"><<print $_error>></span><br><br>
+				<<He>> teases your <<pussy>> with <<his>> $NPCList[$vaginatarget].penisdesc.
+				<<set $NPCList[$vaginatarget].penis to "vaginaentrance">>
+
+				<<if $vaginastate is "entrance">><<set $NPCList[$vaginatarget].penis to "vaginaentrance">>
+				<<elseif $vaginastate is "imminent">><<set $NPCList[$vaginatarget].penis to "vaginaimminent">>
+				<<elseif $vaginastate is "penetrated">><<set $NPCList[$vaginatarget].penis to "vagina">>
+				<</if>>
+			<<else>>
+			/* End error catch */
+
 			<<if $condomUse is false>>
 			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
 				<<equipCondom _n>>
@@ -5075,7 +5183,9 @@
 			<<elseif $NPCList[$vaginatarget].penis is "vaginaentrance">>
 				<<set $NPCList[$vaginatarget].penis to "vaginadoubleentrance">>
 			<</if>>
-			
+
+			<</if>>
+
 		<<elseif $analdisable is "f" and $anususe is 0>>
 			<<if $condomUse is false>>
 			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
@@ -5100,6 +5210,33 @@
 			There are two primary states; in sync and out of sync. While out of sync, they typically display text more or less the same as their singular versions. 
 				While in sync, they display the double version text and combat outcomes.
 			-->
+			
+			/* Error handling for escaped penises. Divert to regular penetration */
+			/* Essentially, NPC's penis has been set to 0 somehow, yet the player's states have not been reset. */
+			<<set $anusdoubletarget to _n>>
+			<<if $anustarget is $anusdoubletarget>>
+				<<set $_error to "[" + $NPCList[$anustarget].fullDescription + "] " + "penis has escaped. It is set to [" + $NPCList[$anustarget].penis + "] but player state remains ["+$anusstate + "]">>
+				/*<<printError>>*/
+				<br><br><span class="red"><<print $_error>></span><br><br>
+				<<He>> teases your <<bottom>> with <<his>> $NPCList[$anustarget].penisdesc.
+				<<set $NPCList[$vaginatarget].penis to "anusentrance">>
+				<<if $anusstate is "entrance">>
+					<<set $NPCList[$anustarget].penis to "anusentrance">>
+					<<He>> tries to penetrate, but slips away.
+				<<elseif $vaginastate is "imminent">>
+					<<set $NPCList[$vaginatarget].penis to "anusimminent">>
+					<<He>> pushes <<his>> cock against your opening, teasing what's to come.
+				<<elseif $vaginastate is "penetrated">>
+					<<set $NPCList[$vaginatarget].penis to "anus">>
+					<<He>> continues thrusting into your <<bottom>>.
+				<</if>>
+			<<else>>
+				/*<br>
+				<span class="red">Penis escaped. Please inform Vrelnir. Enjoy the "feature" ;).</span>
+				<br>
+				<span class="pink"><<He>> dons a double penetrator strap-on, pressing it against your ass.</span>*/
+			/* End error catch */
+
 			<<if $condomUse is false>>
 			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
 				<<equipCondom _n>>
@@ -5116,13 +5253,16 @@
 			<<elseif $NPCList[$anustarget].penis is "anusentrance">>
 				<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
 			<</if>>
+
+			<</if>>
 		<</if>>
 	<<elseif $enemyanger + $rng lte 120>>
 		<<if $analingusdisablegiving is "f" and $enemyno gte 2 and $position isnot "wall"
 				and $mouthuse is 0 and $NPCList[_n].location.head isnot "head" and $NPCList[_n].location.genitals is 0
 				and (!$player.vaginaExist or $vaginause isnot 0)
 				and (!$player.penisExist or $penisuse isnot 0)
-				and ($analdisable is "t" or $anususe isnot 0)>>
+				and ($analdisable is "t" or $anususe isnot 0)
+				and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 			<span class="purple"><<He>> turns around and moves <<his>> ass in front of your face.</span>
 			<<submission 5 _n>><<set $mouthuse to "otheranus">><<set $mouthstate to "otheranus">><<set $NPCList[_n].penis to "mouthotheranus">>
 			<<set $NPCList[_n].location.genitals = "head">><<set $speechmouthotheranus to 1>><<set $mouthtarget to _n>>
@@ -5133,7 +5273,7 @@
 	<<elseif $enemyanger + $rng lte 140>>
 		<<if $penisbitten is 0>>
 			<<if $position isnot "wall">>
-				<<if $mouthuse is 0 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head">>
+				<<if $mouthuse is 0 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head"and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 					<<if $NPCList[_n].condom isnot false>>
 						<<removeCondom _n>>
 						<<He>> removes the condom from <<his>> penis.
@@ -5276,7 +5416,7 @@
 		<span class="blue"><<He>> straddles you, rubbing <<his>> ass against your <<penis>>.</span>
 		<<neutral 5>><<set $penisuse to "otheranus">><<set $NPCList[_n].vagina to "otheranusentrance">><<set $penisstate to "otheranusentrance">><<set $speechotheranusentrance to 1>><<set $penistarget to _n>>
 		<<set $NPCList[_n].location.genitals = "genitals">>
-	<<elseif $enemyanger + $rng lte 60 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $mouthuse is 0 and ($position isnot "wall" or $walltype is "front")>>
+	<<elseif $enemyanger + $rng lte 60 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $mouthuse is 0 and ($position isnot "wall" or $walltype is "front") and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 		<<if $rng % 5 is 0>>
 			<<if $position is "doggy">>
 				<<He>> gently rolls you onto your back.
@@ -5396,7 +5536,7 @@
 					<<He>> kicks your <<pussy>>.
 					<<violence 20>><<hitstat>><<bruise vagina>><<set $speechbeat to 1>>
 				<</if>>
-			<<elseif $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $mouthuse is 0>>
+			<<elseif $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $mouthuse is 0 and and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 				<<if $rng % 2 is 0>>
 					<<if $position is "doggy">>
 						<<He>> turns you onto your back.
