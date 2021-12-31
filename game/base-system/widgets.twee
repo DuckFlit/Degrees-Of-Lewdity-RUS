@@ -46,83 +46,97 @@
 <</widget>>
 
 <<widget "wateraction">>
-	<<if $swimmingskill lt 100>>
+	<<if currentSkillValue('swimmingskill') lt 100>>
 		<<set $seconds += 18>><<set $oxygen -= 180>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 18>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 200>>
+	<<elseif currentSkillValue('swimmingskill') lt 200>>
 		<<set $seconds += 15>><<set $oxygen -= 150>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 15>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 300>>
+	<<elseif currentSkillValue('swimmingskill') lt 300>>
 		<<set $seconds += 12>><<set $oxygen -= 120>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 12>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 400>>
+	<<elseif currentSkillValue('swimmingskill') lt 400>>
 		<<set $seconds += 10>><<set $oxygen -= 100>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 10>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 500>>
+	<<elseif currentSkillValue('swimmingskill') lt 500>>
 		<<set $seconds += 8>><<set $oxygen -= 80>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 8>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 600>>
+	<<elseif currentSkillValue('swimmingskill') lt 600>>
 		<<set $seconds += 8>><<set $oxygen -= 80>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 8>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 700>>
+	<<elseif currentSkillValue('swimmingskill') lt 700>>
 		<<set $seconds += 7>><<set $oxygen -= 70>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 7>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 800>>
+	<<elseif currentSkillValue('swimmingskill') lt 800>>
 		<<set $seconds += 7>><<set $oxygen -= 70>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 7>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 900>>
+	<<elseif currentSkillValue('swimmingskill') lt 900>>
 		<<set $seconds += 6>><<set $oxygen -= 60>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 6>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<elseif $swimmingskill lt 1000>>
+	<<elseif currentSkillValue('swimmingskill') lt 1000>>
 		<<set $seconds += 6>><<set $oxygen -= 60>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 6>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
-	<<else>>
+	<<elseif currentSkillValue('swimmingskill') lt 1100>>
 		<<set $seconds += 5>><<set $oxygen -= 50>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 5>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
+	<<elseif currentSkillValue('swimmingskill') lt 1200>>
+		<<set $seconds += 4>><<set $oxygen -= 40>>
+		<<if $lake_ice_broken gte 1>>
+			<<if random(1, 120) lte 4>>
+				<<unset $lake_ice_broken>>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<set $seconds += 3>><<set $oxygen -= 30>>
+		<<if $lake_ice_broken gte 1>>
+			<<if random(1, 120) lte 3>>
+				<<unset $lake_ice_broken>>
+			<</if>>
+		<</if>>	
 	<</if>>
 <</widget>>
 
@@ -4064,7 +4078,7 @@ __Map__<br>
 
 <<widget "willpowerpain">>
 	<<if $pain gte 100 and $willpowerpain is undefined and _willpowerpainchecked isnot true>>
-		<<if ($willpower / 10) gte (($pain - 100) + random(1, 100))>>
+		<<if (currentSkillValue('willpower') / 10) gte (($pain - 100) + random(1, 100))>>
 			<span class="green">The pain threatens to overwhelm, but you endure it.</span>
 			<<gwillpower>><<willpower 1>>
 			<br>
@@ -4082,7 +4096,7 @@ __Map__<br>
 
 <<widget "willpowerorgasm">>
 	<<if $orgasmdown gte 1 and _willpowerorgasmchecked isnot true>>
-		<<if ($willpower / 10) gte (($orgasmdown * 30) + random(1, 80))>>
+		<<if (currentSkillValue('willpower') / 10) gte (($orgasmdown * 30) + random(1, 80))>>
 			<span class="green">You endure the orgasmic shivers running through you.</span>
 			<<gwillpower>><<willpower 1>><<set $orgasmdown to 0>>
 			<br>
@@ -5106,17 +5120,7 @@ __Map__<br>
 	<<set _variation to 0>>
 <</if>>
 <<if $args[2]>>
-	<<set _skulduggery to clone($skulduggery)>>
-	<<if $moorLuck gt 0>>
-		<<set _skulduggery to Math.floor(_skulduggery * (1 + ($moorLuck / 100)))>>
-	<</if>>
-	<<if $worn.hands.type.includes("sticky_fingers")>>
-		<<set _skulduggery to Math.floor(_skulduggery * 1.05)>>
-	<</if>>
-	<<if $harpy gte 2 or $cat gte 2>>
-		<<set _skulduggery to Math.floor(_skulduggery * 1.05)>>
-	<</if>>
-	<<set _skulduggeryMulti to (1 + (_skulduggery / 2000))>>
+	<<set _skulduggeryMulti to (1 + (currentSkillValue('skulduggery') / 2000))>>
 <<else>>
 	<<set _skulduggeryMulti to 1>>
 <</if>>
@@ -5143,17 +5147,7 @@ __Map__<br>
 	<<set _variation to 0>>
 <</if>>
 <<if $args[2]>>
-	<<set _skulduggery to clone($skulduggery)>>
-	<<if $moorLuck gt 0>>
-		<<set _skulduggery to Math.floor(_skulduggery * (1 + ($moorLuck / 100)))>>
-	<</if>>
-	<<if $worn.hands.type.includes("sticky_fingers")>>
-		<<set _skulduggery to Math.floor(_skulduggery * 1.05)>>
-	<</if>>
-	<<if $harpy gte 2 or $cat gte 2>>
-		<<set _skulduggery to Math.floor(_skulduggery * 1.05)>>
-	<</if>>
-	<<set _skulduggeryMulti to (1 + (_skulduggery / 2000))>>
+	<<set _skulduggeryMulti to (1 + (currentSkillValue('skulduggery') / 2000))>>
 <<else>>
 	<<set _skulduggeryMulti to 1>>
 <</if>>
