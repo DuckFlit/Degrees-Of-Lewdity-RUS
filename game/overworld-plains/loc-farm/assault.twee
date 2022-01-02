@@ -825,53 +825,60 @@ You hear shouting outside.
 <<else>>
 	<<set _assault_keys to Object.keys($farm_assault.teams)>>
 	<<for _s to 0; _s lt _assault_keys.length; _s++>>
-		<<if $bus is $farm_assault.teams[_assault_keys[_s]].location>>
+		<<set $_key to _assault_keys[_s]>>
+		<<set $_team to $farm_assault.teams[$_key]>>
+		<<set $_isBaileyTeam to $_team.type is "bailey">>
+		<<if $bus is $_team.location>>
 			<<if $bus is "tower">>
-				<<if $farm_assault.teams[_assault_keys[_s]].state is "approach">>
+				<<if $_team.state is "approach">>
 					<span class="blue"><<farm_assault_thugs>> approach.</span>
 					<br><br>
 					<<farm_assault_attack_options>>
-				<<elseif $farm_assault.teams[_assault_keys[_s]].state is "climb">>
+				<<elseif $_team.state is "climb">>
 					<span class="purple">You see <<farm_assault_thugs>> entering the tower.</span>
 					<br><br>
 
 					<<link [[Defend the watchtower (0:05)|Farm Assault Tower Defend]]>><<pass 5>><</link>>
 					<br>
-				<<elseif $farm_assault.teams[_assault_keys[_s]].state is "fight">>
+				<<elseif $_team.state is "fight">>
 					<span class="pink">You hear $farm.tower_guard fighting <<farm_assault_thugs>> at the top of the tower!</span>
 					<br><br>
 
 					<<link [[Defend the watchtower (0:05)|Farm Assault Tower Defend]]>><<pass 5>><</link>>
 					<br>
 				<</if>>
-			<<elseif $farm_assault.teams[_assault_keys[_s]].state is "wall">>
+			<<elseif $_team.state is "wall">>
 				<<if $farm.wall gte 3>>
 					You see <<farm_assault_thugs>> sawing through the fence.
 				<<else>>
 					You see <<farm_assault_thugs>> climbing over the wall.
 				<</if>>
-				<<if $farm_assault.teams[_assault_keys[_s]].number is 1>>
+				<<if $_team.number is 1>>
 					There's only one here.
 				<<else>>
-					There are <<number $farm_assault.teams[_assault_keys[_s]].number>> of them.
+					There are <<number $_team.number>> of them.
 				<</if>>
-				<<if $farm_assault.teams[_assault_keys[_s]].type is "bailey">>
+				<<if $_isBaileyTeam>>
 					<span class="red">They move with surety.</span>
 				<</if>>
 				<br>
-				<<if $farm_assault.alex is _assault_keys[_s]>>
+				<<if $farm_assault.alex is $_key>>
 					<<link [[Throw rocks with Alex (0:05)|Farm Assault Rocks Alex]]>><<pass 5>><</link>>
 					<br>
 				<<else>>
-					<<link [[Throw rocks (0:05)|Farm Assault Rocks]]>><<pass 5>><</link>><<if $farm_assault.teams[_assault_keys[_s]].type is "bailey">><<physiquedifficulty 6000 20000>><<else>><<physiquedifficulty 1 16000>><</if>>
-					<br>
-					<<link [[Threaten (0:05)|Farm Assault Threaten]]>><<pass 5>><</link>><<if $farm_assault.teams[_assault_keys[_s]].type is "bailey">><<skill_difficulty famescrap "Combat Fame" 3000 3000>><<else>><<skill_difficulty famescrap "Combat Fame" 200 1000>><</if>>
+					<<set $_min to ($_isBaileyTeam ? 6000 : 1)>>
+					<<set $_max to ($_isBaileyTeam ? 20000 : 16000)>>
+					<<link [[Throw rocks (0:05)|Farm Assault Rocks]]>><<pass 5>><</link>><<physiquedifficulty $_min $_max>>
 					<br>
 				<</if>>
-			<<elseif $farm_assault.teams[_assault_keys[_s]].state is "entry">>
-				<<if $farm_assault.teams[_assault_keys[_s]].type is "bailey">>
-					<<if $farm_assault.teams[_assault_keys[_s]].number gte 2>>
-						You see <<number $farm_assault.teams[_assault_keys[_s]].number>> of <<farm_assault_thugs>> rush into the farm. They ignore you, instead heading into the fields.
+				<<set $_min to ($_isBaileyTeam ? 3000 : 200)>>
+				<<set $_max to ($_isBaileyTeam ? 3000 : 1000)>>
+				<<link [[Threaten (0:05)|Farm Assault Threaten]]>><<pass 5>><</link>><<skill_difficulty famescrap "Combat Fame" $_min $_max>>
+				<br>
+			<<elseif $_team.state is "entry">>
+				<<if $_isBaileyTeam>>
+					<<if $_team.number gte 2>>
+						You see <<number $_team.number>> of <<farm_assault_thugs>> rush into the farm. They ignore you, instead heading into the fields.
 						<br>
 						<<farm_assault_attack_options>>
 					<<else>>
@@ -880,8 +887,8 @@ You hear shouting outside.
 						<<farm_assault_attack_options>>
 					<</if>>
 				<<else>>
-					<<if $farm_assault.teams[_assault_keys[_s]].number gte 2>>
-						You see <<number $farm_assault.teams[_assault_keys[_s]].number>> of <<farm_assault_thugs>> rush into the farm. They ignore you, instead heading into the fields.
+					<<if $_team.number gte 2>>
+						You see <<number $_team.number>> of <<farm_assault_thugs>> rush into the farm. They ignore you, instead heading into the fields.
 						<br><br>
 
 						<<farm_assault_attack_options>>
@@ -892,12 +899,12 @@ You hear shouting outside.
 						<<farm_assault_attack_options>>
 					<</if>>
 				<</if>>
-			<<elseif $farm_assault.teams[_assault_keys[_s]].state is "dogs">>
+			<<elseif $_team.state is "dogs">>
 				<span class="green">Your <<farm_text_many dog>> emerge from the dark, and set upon <<farm_assault_thugs>>!</span>
 				<br><br>
-			<<elseif $farm_assault.teams[_assault_keys[_s]].state is "dogs_recover">>
-				<<if $farm_assault.teams[_assault_keys[_s]].type is "bailey">>
-					<<if $farm_assault.teams[_assault_keys[_s]].number gte 2>>
+			<<elseif $_team.state is "dogs_recover">>
+				<<if $_isBaileyTeam>>
+					<<if $_team.number gte 2>>
 						<<if $farm_assault.dogs gte 2>>
 							<<farm_assault_thugs>> seem unperturbed, and meet the hounds head-on. The first <<farm_text dog>> receives a solid kick to the face, and rolls away, whimpering, but the others manage to sink teeth into arms and legs. The thugs shake them free, but are left bloodied. <span class="green">A <<generate1>><<person1>><<person>> limps from the field,</span> too hurt to continue the assault.
 							<br><br>
@@ -920,7 +927,7 @@ You hear shouting outside.
 						<</if>>
 					<</if>>
 				<<else>>
-					<<if $farm_assault.teams[_assault_keys[_s]].number gte 2>>
+					<<if $_team.number gte 2>>
 						<<if $farm_assault.dogs gte 2>>
 							<<farm_assault_thugs>> panic, <span class="green">and run.</span> The hounds pursue them to the <<farm_fence>>, and howl triumphant into the night.
 						<<else>>
@@ -939,12 +946,12 @@ You hear shouting outside.
 				<</if>>
 				<<endevent>>
 				<<farm_assault_attack_options>>
-			<<elseif $farm_assault.teams[_assault_keys[_s]].state is "field">>
-				<<if $farm_assault.teams[_assault_keys[_s]].field_progress gte 4>>
+			<<elseif $_team.state is "field">>
+				<<if $_team.field_progress gte 4>>
 					<span class="pink">You see <<farm_assault_thugs>> lighting matches!</span>
-				<<elseif $farm_assault.teams[_assault_keys[_s]].field_progress gte 3>>
+				<<elseif $_team.field_progress gte 3>>
 					<span class="purple">You see <<farm_assault_thugs>> covering the field in petrol.</span>
-				<<elseif $farm_assault.teams[_assault_keys[_s]].field_progress gte 2>>
+				<<elseif $_team.field_progress gte 2>>
 					<span class="blue">You see <<farm_assault_thugs>> opening petrol canisters.</span>
 				<<else>>
 					<span class="lblue">You see <<farm_assault_thugs>> prowling through the field.</span>
