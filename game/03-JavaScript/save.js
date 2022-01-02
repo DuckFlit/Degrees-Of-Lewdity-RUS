@@ -489,7 +489,7 @@ window.settingsObjects = function (type) {
 				bottomsize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
 				breastsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
 				genitalsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
-				eyeselect: { strings: ["purple", "dark blue", "light blue", "amber", "hazel", "green", "red", "pink", "grey", "random"], randomize: "characterAppearance" },
+				eyeselect: { strings: ["purple", "dark blue", "light blue", "amber", "hazel", "green", "lime green", "red", "pink", "grey", "light grey", "random"], randomize: "characterAppearance" },
 				hairselect: { strings: ["red", "jetblack", "black", "brown", "softbrown", "lightbrown", "burntorange", "blond", "softblond", "platinumblond", "ashyblond", "strawberryblond", "ginger", "random"], randomize: "characterAppearance" },
 				hairlength: { min: 0, max: 400, decimals: 0, randomize: "characterAppearance" },
 				awareselect: { strings: ["innocent", "knowledgeable"], randomize: "characterTrait" },
