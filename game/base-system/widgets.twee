@@ -3727,7 +3727,7 @@ __Map__<br>
 			<<if $images is 1 and _config.icon>>
 				<img class="characteristic-icon" @src="'img/' + _config.icon + '.png'" />
 			<</if>>
-			<span class="characteristic-title">_config.name<<characteristic-box-modifier `clone(_config.modifier)`>></span>
+			<span class="characteristic-title">_config.name<<characteristic-box-modifier `clone(_config.modifier)` `clone(_config.modTypes)` `clone(_config.name)`>></span>
 			<<if _config.states>>
 				<<if _config.displayType eq "level">>
 					<span @class="'characteristic-level ' + _config.color">
@@ -3767,7 +3767,22 @@ __Map__<br>
 		<<set $_result to " <small class='red characteristic-modifier'>("+$_modifier+"%)</small>">>
 	<</if>>
 <</if>>
-<</silently>><<if $_result>><<print $_result>><</if>>
+<</silently>>
+<<if $_result>>
+	<<set $_good to $args[1].good>>
+	<<set $_bad to $args[1].bad>>
+	<<set $_stat to $args[2].toLowerCase()>>
+	<span @class="$_modifier gt 0 ? 'green' : 'red'"><mouse class = "tooltip-small">
+		$_result
+		<<if $_good.length gt 0 and $_bad.length gt 0>>
+			<span class="green">Increasing your $_stat: <<print $_good>> <span class="red">Decreasing your $_stat: <<print $_bad>></span></span>
+		<<elseif $_good.length gt 0>>
+			<span class="green">Increasing your $_stat: <<print $_good>></span>
+		<<elseif $_bad.length gt 0>>
+			<span class="red">Decreasing your $_stat: <<print $_bad>></span>
+		<</if>>
+	</mouse></span>
+<</if>>
 <</widget>>
 
 <<widget "relation-text">>
