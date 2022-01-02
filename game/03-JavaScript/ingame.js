@@ -1032,7 +1032,7 @@ window.currentSkillValue = function(skill){
 			if(V.worn.feet.type.includes("swim")){
 				result = Math.floor(result * (1 + (V.feetskill / 10000)));
 			} else if(!V.worn.feet.type.includes("naked")){
-				if($worn.feet.type.includes("heels")){
+				if(V.worn.feet.type.includes("heels")){
 					heels = 0.1;
 				} else {
 					heels = 0;
