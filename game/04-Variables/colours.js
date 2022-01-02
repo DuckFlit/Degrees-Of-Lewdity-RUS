@@ -561,7 +561,19 @@ setup.colours.eyes = [{
 	canvasfilter: {
 		blend: "#95b521"
 	}
-}, {
+},{
+	variable: "lime green",
+	name: "lime green",
+	name_cap: "Lime Green",
+	csstext: "green",
+	natural: true,
+	lens: true,
+	canvasfilter: {
+		blend: "#3ae137",
+		brightness: +0.2
+	}
+},
+ {
 	variable: "light green",
 	name: "light green",
 	name_cap: "Light Green",
@@ -602,7 +614,19 @@ setup.colours.eyes = [{
 	canvasfilter: {
 		blend: "#a9a9a9"
 	}
-}, {
+},{
+	variable: "light grey",
+	name: "light grey",
+	name_cap: "Light Grey",
+	csstext: "grey",
+	natural: true,
+	lens: true,
+	canvasfilter: {
+		blend: "#d1d1d1",
+		brightness: +0.2
+	}
+},
+ {
 	variable: "red possessed",
 	name: "red possessed",
 	name_cap: "Red Possessed",
