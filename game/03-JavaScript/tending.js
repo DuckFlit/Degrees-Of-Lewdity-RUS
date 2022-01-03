@@ -9,6 +9,7 @@ window.setPlotToHarvest = function(plot){
 window.plantSeedsInPlot = function(plot, plantType){
 	plot.plant = plantType;
 	plot.stage = 1;
+	plot.days = 0;
 	V.tendingvars.plot_planted = 1;
 	if (V.weather === "rain")
 		plot.water = 1;
