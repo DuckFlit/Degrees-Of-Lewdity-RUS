@@ -355,6 +355,9 @@
 	<<if _lurker_net_possible is true>>
 		<<set _leftaction["Hurl net"] to "capture">>
 	<</if>>
+
+	<<leftclothesnew>>
+
 	<<if $combatControls isnot "radio">>
 		<<for $_part range ["mouth", "vagina", "penis", "anus", "chest"]>>
 			<<if V[$_part + 'use'] is "struggle" and $struggle[$_part].creature>>
@@ -502,6 +505,9 @@
 	<<if _lurker_net_possible is true>>
 		<<set _rightaction["Hurl net"] to "capture">>
 	<</if>>
+
+	<<rightclothesnew>>
+
 	<<if $combatControls isnot "radio">>
 		<<for $_part range ["mouth", "vagina", "penis", "anus", "chest"]>>
 			<<if V[$_part + 'use'] is "struggle" and $struggle[$_part].creature>>
@@ -1066,6 +1072,10 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<<set _action to "grasp">>
 			<<elseif _handaction.includes("spray")>>
 				<<set _action to "spray">>
+			<<elseif _handaction.includes("upper")>>
+				<<set _action to "clothes">>
+			<<elseif _handaction.includes("lower")>>
+				<<set _action to "clothes">>
 			<<else>>
 				<<set _action to _handaction>>
 			<</if>>
@@ -1186,8 +1196,32 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<<if $leftaction is $rightaction>>
 					<<break>>
 				<</if>>
+
+				<<if $spray gte 1>>
+					You spray the <<print $struggle[_actionpart].creature>>. <span class="green">It leaps off your <<struggle_region _actionpart>>.</span>
+					<<set $spraystat++>><<spray -1>>
+					<<set V[_actionpart + 'use'] to 0>>
+					<<set V[_actionpart + 'state'] to 0>>
+					<<struggle_part_init _actionpart>>
+					<<set $struggle.warded++>>
+					<<struggleClearActions _actionpart>>
+				<<else>>
+					You try to spray the <<print $struggle[_actionpart].creature>> clinging to your <<struggle_region _actionpart>>, <span class="purple">but your spray is empty!</span>
+				<</if>>
+				<br>
+				<<if $leftaction is $rightaction>>
+					<<break>>
+				<</if>>
+
+			<<case "clothes">>
+		        <<effectshandsclothes>>
+		        <br>
+		        <<if _hand is "left" and ($rightaction.toString().includes("upper") or $rightaction.toString().includes("lower"))>>
+		          <<break>>
+		        <</if>>
 		<</switch>>
 	<</for>>
+
 
 	/* lose grasp on the lurkers that you have no contact with */
 	<<if !$carryblock>>
