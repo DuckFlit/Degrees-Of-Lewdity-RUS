@@ -152,8 +152,11 @@
 		<<for _i to 0; _i lt _valueKeys.length; _i++>>
 			<<set _nnpc[_valueKeys[_i]] to _values[_valueKeys[_i]]>>
 		<</for>>
+		<<if !_nnpc.description>><<set _nnpc.description to _nnpc.nam>><</if>>
 		<<set $NPCName.push(clone(_nnpc))>>
 		<<set $NPCNameList.push(clone(_nnpc.nam))>>
+		<<InitNPCVirginity $NPCName.length-1>>
+		<<initnpcgendersingle $NPCName.length-1>>
 	<</if>>
 <</if>>
 <</widget>>
@@ -161,24 +164,23 @@
 <<widget "updateNewNamedNpcs">>
 <<if $npcListVersion gte 1>>
 	<<set _newNNPCs to {
-		"blackwolf": {nam : "Black Wolf", penis : 0, vagina: 0, gender: "none", description: "Black Wolf", title: "alpha", insecurity: "weak", pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 0, adult: 1, init: 0, intro: 0, type: "wolf", trust: 0, love: 0, dom: 0, lust: 0, rage: 0, state: 0, trauma: 0, purity: 0, corruption: 0},
-		"niki": {nam : "Niki", penis : 0, vagina: 0, gender: "none", description: "Niki", title: "photographer", insecurity: "skill", pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 0, adult: 1, init: 0, intro: 0, type: "human", trust: 0, love: 0, dom: 0, lust: 0, rage: 0, state: 0, trauma: 0, purity: 0, corruption: 0},
-		"quinn": {nam : "Quinn", penis : 0, vagina: 0, gender: "none", description: "Quinn", title: "mayor", insecurity: "looks", pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 0, adult: 1, init: 0, intro: 0, type: "human", trust: 0, love: 0, dom: 0, lust: 0, rage: 0, state: 0, trauma: 0, purity: 0, corruption: 0},
-		"remy": {nam : "Remy", penis : 0, vagina: 0, gender: "none", description: "Remy", title: "farmer", insecurity: "looks", pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 0, adult: 1, init: 0, intro: 0, type: "human", trust: 0, love: 0, dom: 0, lust: 0, rage: 0, state: 0, trauma: 0, purity: 0, corruption: 0},
-		"alex": {nam : "Alex", penis : 0, vagina: 0, gender: "none", description: "Alex", title: "farmhand", insecurity: "weak", pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 1, adult: 0, init: 0, intro: 0, type: "human", trust: 0, love: 0, dom: 0, lust: 0, rage: 0, state: 0, trauma: 0, purity: 0, corruption: 0},
-		"greathawk": {nam : "Great Hawk", penis : 0, vagina: 0, gender: "none", description: "Great Hawk", title: "terror", insecurity: "looks", pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 0, adult: 1, init: 0, intro: 0, type: "hawk", trust: 0, love: 0, dom: 100, lust: 0, rage: 0, state: 0, trauma: 0, purity: 0, corruption: 0},
-		"wren": {nam : "Wren", penis : 0, vagina: 0, gender: "none", description: "Wren", title: "smuggler", insecurity: "ethics", pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 0, adult: 1, init: 0, intro: 0, type: "human", trust: 0, love: 0, dom: 0, lust: 0, rage: 0, state: 0, trauma: 0, purity: 0, corruption: 0},
-		"sydney": {nam : "Sydney", penis : 0, vagina: 0, gender: "none", description: "Sydney", title: "faithful", insecurity: "skill", pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 1, adult: 0, init: 0, intro: 0, type: "human", trust: 0, love: 0, dom: 0, lust: 0, rage: 0, state: 0, trauma: 0, purity: 0, corruption: 0}
+		"blackwolf": {nam : "Black Wolf", title: "alpha", insecurity: "weak", adult: 1, type: "wolf"},
+		"niki": {nam : "Niki", title: "photographer", insecurity: "skill", adult: 1},
+		"quinn": {nam : "Quinn", title: "mayor", insecurity: "looks", adult: 1},
+		"remy": {nam : "Remy", title: "farmer", insecurity: "looks", adult: 1},
+		"alex": {nam : "Alex", title: "farmhand", insecurity: "weak", teen: 1},
+		"greathawk": {nam : "Great Hawk", title: "terror", insecurity: "looks", adult: 1, type: "hawk"},
+		"wren": {nam : "Wren", title: "smuggler", insecurity: "ethics", adult: 1},
+		"sydney": {nam : "Sydney", title: "faithful", insecurity: "skill", teen: 1}
 	}>>
-	<<set _npcs to Object.keys(_newNNPCs)>>
-	<<for _j to 0; _j lt _npcs.length; _j++>>
-		<<if _newNNPCs[_npcs[_j]].nam isnot undefined and !$NPCNameList.includes(_newNNPCs[_npcs[_j]].nam)>>
-			<<newNamedNpc _newNNPCs[_npcs[_j]]>>
+	<<for _npc range Object.keys(_newNNPCs)>>
+		<<if !$NPCNameList.includes(_newNNPCs[_npc].nam)>>
+			<<newNamedNpc _newNNPCs[_npc]>>
 			<<set _npcsAdded to true>>
 		<</if>>
 	<</for>>
 	<<if _npcsAdded is true>>
-		<<initnpcgender>>
+		<<generateNPCNameHairAndEyeColors>>
 	<</if>>
 <</if>>
 <</widget>>
