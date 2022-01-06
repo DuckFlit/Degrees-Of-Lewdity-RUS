@@ -53,6 +53,7 @@ Macro.add(['button', 'link'], {
 
 			if (Story.has(passage)) {
 				$link.addClass('link-internal');
+				T.link = true;
 
 				if (Config.addVisitedLinkClass && State.hasPlayed(passage)) {
 					$link.addClass('link-visited');
