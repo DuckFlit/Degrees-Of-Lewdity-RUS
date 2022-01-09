@@ -895,7 +895,7 @@ window.clothesReturnLocation = function(item, type){
 
 //the 'modder' variable is specifically for modders name, should be kept as a short string
 window.clothesIndex = function(slot, itemToIndex) {
-	if(!slot || !itemToIndex || !itemToIndex.name) {
+	if(!slot || !itemToIndex || !itemToIndex.name || !itemToIndex.variable) {
 		console.log(`clothesIndex - slot or valid object not provided`);
 		return 0;
 	}
