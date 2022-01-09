@@ -203,17 +203,17 @@
 				<<set $underupperwet -= $pass>>
 			<</if>>
 		<</if>>
-	<<elseif $outside is 1 and $weather is "rain">>
-		<<if !$worn.upper.type.includes("naked") and !$worn.upper.type.includes("swim") and !$worn.head.type.includes("rainproof") and !$worn.upper.type.includes("stealthy")>>
+	<<elseif $outside is 1 and $weather is "rain" and !$worn.head.type.includes("rainproof")>>
+		<<if !$worn.upper.type.includes("naked") and !waterproofCheck($worn.upper) and !waterproofCheck($worn.over_upper)>>
 			<<set $upperwet += $pass>>
 		<</if>>
-		<<if !$worn.lower.type.includes("naked") and !$worn.lower.type.includes("swim") and !$worn.head.type.includes("rainproof") and !$worn.lower.type.includes("stealthy")>>
+		<<if !$worn.lower.type.includes("naked") and !waterproofCheck($worn.lower) and !waterproofCheck($worn.over_lower)>>
 			<<set $lowerwet += $pass>>
 		<</if>>
-		<<if !$worn.under_lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.head.type.includes("rainproof") and !$worn.under_lower.type.includes("stealthy")>>
+		<<if !$worn.under_lower.type.includes("naked") and !waterproofCheck($worn.under_lower) and !waterproofCheck($worn.lower) and !waterproofCheck($worn.over_lower)>>
 			<<set $underlowerwet += $pass>>
 		<</if>>
-		<<if !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("swim") and !$worn.head.type.includes("rainproof") and !$worn.under_upper.type.includes("stealthy")>>
+		<<if !$worn.under_upper.type.includes("naked") and !waterproofCheck($worn.under_upper) and !waterproofCheck($worn.upper) and !waterproofCheck($worn.over_upper)>>
 			<<set $underupperwet += $pass>>
 		<</if>>
 	<<else>>
@@ -1662,129 +1662,117 @@
 <</widget>>
 
 <<widget "raped">>
-<<if $rapeavoid is 1 and $consensual is 0 and $gamemode isnot "soft">>
-<<set $rapeavoid to 0>><<set $rapestat += 1>>
-	<<if $enemytype is "man" and !($npc.length is 1 and $npc[0] is "Eden")>>
-		<<famerape $enemynomax>>
+	<<if $rapeavoid is 1 and $consensual is 0 and $gamemode isnot "soft">>
+		<<set $rapeavoid to 0>><<set $rapestat += 1>>
+		<<if $enemytype is "man" and !($npc.length is 1 and $npc[0] is "Eden")>>
+			<<famerape $enemynomax>>
+		<</if>>
+		<<if $awareness lte 200>>
+			<<awareness 5>>
+		<<elseif $awareness lte 400>>
+			<<awareness 1>>
+		<</if>>
+		<<if $enemytype is "beast" or $enemytype is "struggle">>
+			<<set $beastrapestat += 1>>
+			<<if $awareness lte 300>>
+				<<awareness 1>>
+			<</if>>
+		<</if>>
+		<<if $enemytype is "tentacles">>
+			<<set $tentaclerapestat += 1>>
+		<</if>>
+		<<if $enemytype is "tentacles" or $enemytype is "struggle">>
+			<<if $awareness lte 400>>
+				<<awareness 1>>
+			<</if>>
+		<</if>>
+		<<controlloss>>
+	<<elseif $sexavoid is 1 and $consensual is 1>>
+		<<set $sexavoid to 0>>
+		<<if $enemytype is "man" and !($npc.length is 1 and $npc[0] is "Eden")>>
+			<<famesex $enemynomax>>
+		<</if>>
+		<<controlloss>>
 	<</if>>
+<</widget>>
+
+<<widget "molested">>
+	<<if $gamemode is "soft">>
+		<<set $consensual to 1>>
+	<<elseif $molestavoid is 1 and $consensual is 0>>
+		<<set $molestavoid to 0>>
+		<<moleststat>>
+
+		<<if $flashbacks gte 1>>
+			<<switch $location>>
+				<<case "town">><<if $flashbacktown is 0>><<set $flashbacktown to 14>><</if>>
+				<<case "home">><<if $flashbackhome is 0>><<set $flashbackhome to 14>><</if>>
+				<<case "beach">><<if $flashbackbeach is 0>><<set $flashbackbeach to 14>><</if>>
+				<<case "school">><<if $flashbackschool is 0>><<set $flashbackschool to 14>><</if>>
+				<<case "underground">><<if $flashbackunderground is 0>><<set $flashbackunderground to 14>><</if>>
+			<</switch>>
+		<</if>>
+		<<if $awareness lte 200>>
+			<<awareness 5>>
+		<<elseif $awareness lte 400>>
+			<<awareness 1>>
+		<</if>>
+		<<if $enemytype is "beast" or $enemytype is "struggle">>
+			<<if $awareness lte 300>>
+				<<awareness 1>>
+			<</if>>
+		<</if>>
+		<<if $enemytype is "tentacles" or $enemytype is "struggle">>
+			<<if $awareness lte 400>>
+				<<awareness 1>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "consensual">>
 	<<if $awareness lte 200>>
-	<<awareness 5>>
+		<<awareness 5>>
 	<<elseif $awareness lte 400>>
-	<<awareness 1>>
+		<<awareness 1>>
 	<</if>>
 	<<if $enemytype is "beast" or $enemytype is "struggle">>
-	<<set $beastrapestat += 1>>
 		<<if $awareness lte 300>>
-		<<awareness 1>>
+			<<awareness 1>>
 		<</if>>
 	<</if>>
 	<<if $enemytype is "tentacles">>
-		<<set $tentaclerapestat += 1>>
-	<</if>>
-	<<if $enemytype is "tentacles" or $enemytype is "struggle">>
 		<<if $awareness lte 400>>
 			<<awareness 1>>
 		<</if>>
 	<</if>>
-<<controlloss>>
-<<elseif $sexavoid is 1 and $consensual is 1>>
-<<set $sexavoid to 0>>
-	<<if $enemytype is "man" and !($npc.length is 1 and $npc[0] is "Eden")>>
-		<<famesex $enemynomax>>
-	<</if>>
-<<controlloss>>
-<</if>>
-<</widget>>
-
-<<widget "molested">>
-<<if $gamemode is "soft">>
-<<set $consensual to 1>>
-<</if>>
-<<if $molestavoid is 1 and $consensual is 0 and $gamemode isnot "soft">>
-<<set $molestavoid to 0>>
-<<moleststat>>
-
-	<<if $flashbacks gte 1>>
-		<<if $location is "town" and $flashbacktown is 0>>
-		<<set $flashbacktown to 14>>
-		<</if>>
-		<<if $location is "home" and $flashbackhome is 0>>
-		<<set $flashbackhome to 14>>
-		<</if>>
-		<<if $location is "beach" and $flashbackbeach is 0>>
-		<<set $flashbackbeach to 14>>
-		<</if>>
-		<<if $location is "school" and $flashbackschool is 0>>
-		<<set $flashbackschool to 14>>
-		<</if>>
-		<<if $location is "underground" and $flashbackunderground is 0>>
-		<<set $flashbackunderground to 14>>
-		<</if>>
-	<</if>>
-	<<if $awareness lte 200>>
-	<<awareness 5>>
-	<<elseif $awareness lte 400>>
-	<<awareness 1>>
-	<</if>>
-	<<if $enemytype is "beast" or $enemytype is "struggle">>
-		<<if $awareness lte 300>>
-		<<awareness 1>>
-		<</if>>
-	<</if>>
-	<<if $enemytype is "tentacles" or $enemytype is "struggle">>
-		<<if $awareness lte 400>>
-		<<awareness 1>>
-		<</if>>
-	<</if>>
-<</if>>
-<</widget>>
-
-<<widget "consensual">>
-
-	<<if $awareness lte 200>>
-	<<awareness 5>>
-	<<elseif $awareness lte 400>>
-	<<awareness 1>>
-	<</if>>
-	<<if $enemytype is "beast" or $enemytype is "struggle">>
-		<<if $awareness lte 300>>
-		<<awareness 1>>
-		<</if>>
-	<</if>>
-	<<if $enemytype is "tentacles">>
-		<<if $awareness lte 400>>
-		<<awareness 1>>
-		<</if>>
-	<</if>>
-<<set $trueconsensual to 1>>
-<<if $npc.length isnot 0>>
+	<<set $trueconsensual to 1>>
 	<<if $npc.length is 1 and ($npc[0] is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].dom lte 10 and $debug is 1) or ($npc[0] is "Sydney" and $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 50)>>
 		<<npc_submissive>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "controlloss">>
 <<if $gamemode is "soft">>
 <<elseif $consensual is 0>>
-<<set $pullaway to 0>>
-<<set $novaginal to 0>>
-<<set $noanal to 0>>
-<<set $nopenile to 0>>
+	<<set $pullaway to 0>>
+	<<set $novaginal to 0>>
+	<<set $noanal to 0>>
+	<<set $nopenile to 0>>
 	<<if $control gt 1>>
 		<<if $molesttrait gte 1 and $rapeavoid is 1>>
 		<<else>>
-		<<set $controlstart to $control>><<control -25>>
+			<<set $controlstart to $control>><<control -25>>
 			<<if $control gte ($controlmax * 0.74)>>
-			<span class="purple">Your sense of control wavers.</span>
+				<span class="purple">Your sense of control wavers.</span>
 			<<elseif $control gte ($controlmax * 0.49)>>
-			<span class="purple">Your sense of control falters.</span>
+				<span class="purple">Your sense of control falters.</span>
 			<<elseif $control gte ($controlmax * 0.24)>>
-			<span class="pink">Your sense of control cracks.</span>
+				<span class="pink">Your sense of control cracks.</span>
 			<<elseif $control gte 1>>
-			<span class="pink">Your sense of control breaks down.</span>
+				<span class="pink">Your sense of control breaks down.</span>
 			<<else>>
-			<span class="red">Your sense of control shatters.</span>
+				<span class="red">Your sense of control shatters.</span>
 			<</if>>
 		<</if>>
 	<</if>>
@@ -1792,7 +1780,15 @@
 <</widget>>
 
 <<widget "beastescape">>
-<<trauma 12>><<pain 6>><<stress 12>><<set $worn.over_lower.integrity -= 20>><<set $worn.over_upper.integrity -= 20>><<set $worn.lower.integrity -= 20>><<set $worn.upper.integrity -= 20>><<set $worn.under_lower.integrity -= 20>><<set $worn.under_upper.integrity -= 20>><<bruise full>><<gpain>><<gstress>><<gtrauma>>
+	<<trauma 12>><<pain 6>><<stress 12>>
+	<<set $worn.over_lower.integrity -= 20>>
+	<<set $worn.over_upper.integrity -= 20>>
+	<<set $worn.lower.integrity -= 20>>
+	<<set $worn.upper.integrity -= 20>>
+	<<set $worn.under_lower.integrity -= 20>>
+	<<set $worn.under_upper.integrity -= 20>>
+	<<bruise full>>
+	<<gtrauma>><<gpain>><<gstress>>
 <</widget>>
 
 <<widget "weatherdisplay">>
@@ -1808,6 +1804,7 @@
 		<<else>>
 		<img id="daystate" src="img/misc/day.png">
 		<</if>>
+		
 		<<if $location is "tentworld">>
 		<img id="weather" src="img/misc/tentskyday.png">
 		<<elseif $weather is "clear">>
@@ -1819,6 +1816,7 @@
 		<<elseif $weather is "snow">>
 		<img id="weather" src="img/misc/winter/snowday.gif">
 		<</if>>
+
 		<<switch $location>>
 		<<case beach>>
 		<img id="location" @src="'img/misc/' + _weather_display + '/beachday.gif'">
@@ -1943,6 +1941,7 @@
 		<<else>>
 		<img id="daystate" src="img/misc/night.png">
 		<</if>>
+
 		<<if $location is "tentworld">>
 		<img id="weather" src="img/misc/tentskynight.png">
 		<<elseif $weather is "clear">>
@@ -1954,6 +1953,7 @@
 		<<elseif $weather is "snow">>
 		<img id="weather" src="img/misc/winter/snownight.gif">
 		<</if>>
+
 		<<switch $location>>
 		<<case beach>>
 		<img id="location" @src="'img/misc/' + _weather_display + '/beachnight.gif'">
@@ -2112,6 +2112,7 @@
 		<<else>>
 		<img id="daystate" src="img/misc/dawn.png">
 		<</if>>
+
 		<<if $location is "tentworld">>
 		<img id="weather" src="img/misc/tentskydawn.png">
 		<<elseif $weather is "clear">>
@@ -2123,6 +2124,7 @@
 		<<elseif $weather is "snow">>
 		<img id="weather" src="img/misc/winter/snowdawn.gif">
 		<</if>>
+		
 		<<switch $location>>
 		<<case beach>>
 		<img id="location" @src="'img/misc/' + _weather_display + '/beachdawn.gif'">
@@ -2245,6 +2247,7 @@
 		<<else>>
 		<img id="daystate" src="img/misc/dusk.png">
 		<</if>>
+
 		<<if $location is "tentworld">>
 		<img id="weather" src="img/misc/tentskydusk.png">
 		<<elseif $weather is "clear">>
@@ -2256,6 +2259,7 @@
 		<<elseif $weather is "snow">>
 		<img id="weather" src="img/misc/winter/snowdusk.gif">
 		<</if>>
+
 		<<switch $location>>
 		<<case beach>>
 		<img id="location" @src="'img/misc/' + _weather_display + '/beachdusk.gif'">
@@ -2375,65 +2379,38 @@
 	<</if>>
 
 <<else>>
-
-<<if $daystate is "day">>
-	<<if $weather is "clear">>
-		It's a bright and sunny day.
-		<br>
-	<<elseif $weather is "rain">>
-		It's a rainy day.
-		<br>
-	<<elseif $weather is "overcast">>
-		Clouds are hiding the sun.
-		<br>
-	<<elseif $weather is "snow">>
-		It's a snowy day.
-	<</if>>
-<<elseif $daystate is "night">>
-	<<if $weather is "clear">>
-		The stars are shining.
-		<br>
-	<<elseif $weather is "rain">>
-		It's a rainy night.
-		<br>
-	<<elseif $weather is "overcast">>
-		All starlight is blocked by the clouds.
-		<br>
-	<<elseif $weather is "snow">>
-		It's a snowy night.
-	<</if>>
-<<elseif $daystate is "dawn">>
-	<<if $weather is "clear">>
-		The sun is rising.
-		<br>
-	<<elseif $weather is "rain">>
-		It's a rainy morning.
-		<br>
-	<<elseif $weather is "overcast">>
-		It's a cloudy morning.
-		<br>
-	<<elseif $weather is "snow">>
-		It's a snowy morning.
-	<</if>>
-<<elseif $daystate is "dusk">>
-	<<if $weather is "clear">>
-		The sun is setting.
-		<br>
-	<<elseif $weather is "rain">>
-		It's a rainy evening.
-		<br>
-	<<elseif $weather is "overcast">>
-		It's cloudy evening.
-		<br>
-	<<elseif $weather is "snow">>
-		It's a snowy evening.
-	<</if>>
+	<<switch $daystate>>
+		<<case "day">>
+			<<switch $weather>>
+				<<case "clear">>It's a bright and sunny day.
+				<<case "rain">>It's a rainy day.
+				<<case "overcast">>Clouds are hiding the sun.
+				<<case "snow">>It's a snowy day.
+			<</switch>>
+		<<case "night">>
+			<<switch $weather>>
+				<<case "clear">>The stars are shining.
+				<<case "rain">>It's a rainy night.
+				<<case "overcast">>All starlight is blocked by the clouds.
+				<<case "snow">>It's a snowy night.
+			<</switch>>
+		<<case "dawn">>
+			<<switch $weather>>
+				<<case "clear">>The sun is rising.
+				<<case "rain">>It's a rainy morning.
+				<<case "overcast">>It's a cloudy morning.
+				<<case "snow">>It's a snowy morning.
+			<</switch>>
+		<<case "dusk">>
+			<<switch $weather>>
+				<<case "clear">>The sun is setting.
+				<<case "rain">>It's a rainy evening.
+				<<case "overcast">>It's cloudy evening.
+				<<case "snow">>It's a snowy evening.
+			<</switch>>
+	<</switch>>
+	<br>
 <</if>>
-
-<</if>>
-
-
-
 <</widget>>
 
 <<widget "wearandtear">>
@@ -2794,17 +2771,17 @@ or $args[0] is "force">>
 <</widget>>
 
 <<widget "water">>
-<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked") and $args[0] isnot "waist">>
+<<if !waterproofCheck($worn.upper) and !$worn.upper.type.includes("naked") and $args[0] isnot "waist">>
 	<<set $upperwet to 200>>
 <</if>>
-<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+<<if !waterproofCheck($worn.lower) and !$worn.lower.type.includes("naked")>>
 	<<set $lowerwet to 200>>
 <</if>>
-<<if !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked")>>
-	<<set $underlowerwet to 200>>
-<</if>>
-<<if !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked") and $args[0] isnot "waist">>
+<<if !waterproofCheck($worn.upper) and !waterproofCheck($worn.under_upper) and !$worn.under_upper.type.includes("naked") and $args[0] isnot "waist">>
 	<<set $underupperwet to 200>>
+<</if>>
+<<if !waterproofCheck($worn.lower) and !waterproofCheck($worn.under_lower) and !$worn.under_lower.type.includes("naked")>>
+	<<set $underlowerwet to 200>>
 <</if>>
 
 <<waterwash>>
@@ -2843,55 +2820,53 @@ or $args[0] is "force">>
 <</widget>>
 
 <<widget "arousalpass">>
-<<if _arousal is undefined>>
-	<<set _arousal to 0>>
-<</if>>
-<<if $penilechastityparasite isnot 0>>
-	<<set _arousal += $pass * 10 * $genitalsensitivity>>
-<</if>>
-<<if $vaginalchastityparasite isnot 0>>
-	<<set _arousal += $pass * 10 * $genitalsensitivity>>
-<</if>>
-<<if $analchastityparasite isnot 0>>
-	<<set _arousal += $pass * 10>>
-<</if>>
-<<if $parasite.nipples.name>>
-	<<set _arousal += $pass * 10 * $breastsensitivity>>
-<</if>>
-<<if $parasite.penis.name>>
-	<<set _arousal += $pass * 10 * $genitalsensitivity>>
-<</if>>
-<<if $parasite.clit.name>>
-	<<set _arousal += $pass * 10 * $genitalsensitivity>>
-<</if>>
-<<if $parasite.bottom.name>>
-	<<set _arousal += $pass * 10>>
-<</if>>
-<<if $parasite.tummy.name>>
-	<<set _arousal += $pass * 10>>
-<</if>>
-<<if $parasite.left_arm.name>>
-	<<set _arousal += $pass * 10>>
-<</if>>
-<<if $parasite.right_arm.name>>
-	<<set _arousal += $pass * 10>>
-<</if>>
-<<if $parasite.left_thigh.name>>
-	<<set _arousal += $pass * 10>>
-<</if>>
-<<if $parasite.right_thigh.name>>
-	<<set _arousal += $pass * 10>>
-<</if>>
-<<if $drugged gt 1>>
-	<<set _arousal += $pass * 10>>
-<</if>>
-<<if $parasite.left_ear.name is "slime" and random(1, 100) gte 90>>
-	<<drugs $pass>>
-<</if>>
-<<if $parasite.right_ear.name is "slime" and random(1, 100) gte 90>>
-	<<drugs $pass>>
-<</if>>
-<<arousal _arousal>>
+	<<set $_arousal to 0>>
+	<<if $penilechastityparasite isnot 0>>
+		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
+	<</if>>
+	<<if $vaginalchastityparasite isnot 0>>
+		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
+	<</if>>
+	<<if $analchastityparasite isnot 0>>
+		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if $parasite.nipples.name>>
+		<<set $_arousal += $pass * 10 * $breastsensitivity>>
+	<</if>>
+	<<if $parasite.penis.name>>
+		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
+	<</if>>
+	<<if $parasite.clit.name>>
+		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
+	<</if>>
+	<<if $parasite.bottom.name>>
+		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if $parasite.tummy.name>>
+		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if $parasite.left_arm.name>>
+		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if $parasite.right_arm.name>>
+		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if $parasite.left_thigh.name>>
+		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if $parasite.right_thigh.name>>
+		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if $drugged gt 1>>
+		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if $parasite.left_ear.name is "slime" and random(1, 100) gte 90>>
+		<<drugs $pass>>
+	<</if>>
+	<<if $parasite.right_ear.name is "slime" and random(1, 100) gte 90>>
+		<<drugs $pass>>
+	<</if>>
+	<<arousal $_arousal>>
 <</widget>>
 
 <<widget "undiestrauma">>

@@ -6,7 +6,6 @@
 
 <<widget "sleephour">>
 	<<set $sleepHoursTotal to 0>>
-	<<set _equip to ["over_upper", "over_lower", "upper", "lower", "over_head", "head", "face", "neck", "hands", "legs", "feet"]>>
 	<<set _sleepTraitEffect to 10>>
 	<<if $worn.upper.type.includes("sleep") or $worn.lower.type.includes("sleep")>>
 		<<set _sleepTraitEffect += 5>>
@@ -14,13 +13,9 @@
 	<<if $robinbed is 1 or $kylarbed is 1 or $wolfbed is 1>>
 		<<set _sleepTraitEffect += 5>>
 	<</if>>
-	<<for $_i to 0; $_i lt _equip.length; $_i++>>
-		<<if $worn[_equip[$_i]].type.includes("naked") or $worn[_equip[$_i]].type.includes("sleep") or $worn[_equip[$_i]].type.includes("eerie")>>
-			<<continue>>
-		<</if>>
+	<<if !Object.values($worn).every(clothes => clothes.type.includes("naked") || clothes.type.includes("sleep") || clothes.type.includes("eerie"))>>
 		<<set _sleepTraitEffect to 0>>
-		<<break>>
-	<</for>>
+	<</if>>
 	<<for $sleephour gte 1 or $sleephour lte -1>><<set $sleephour -= 1>><<set $sleepStat++>>
 		<<effectstime>>
 		<<if $location is "asylum">>
@@ -98,32 +93,32 @@
 			<<set $slimeWake to 1>>
 			<<break>>
 		<</if>>
-		<<if $schoolwake isnot 1>>
-			<<set $sleepHoursTotal += 1>>
-			<<if $sleeptrouble is 1 and $controlled is 0>>
-				<<set $tiredness -= 200>>
-			<<else>>
-				<<set $tiredness -= 250>>
-			<</if>>
-			<<if _sleepTraitEffect>>
-				<<set $tiredness -= _sleepTraitEffect>>
-			<</if>>
-			<<if $location isnot "tower">>
-				<<pass 1 hour>>
-			<<else>>
-				<<bird_pass 60>>
-			<</if>>
-			<<if $nightmares gte 1 and $controlled is 0>>
-				<<stress 6>>
-			<</if>>
-			<<if ($sleephour lte -1 and $tiredness lte 0) or $sleephour lte (-1 - 10)>>
-				<<set $sleephour to 0>>
-			<</if>>
+
+		<<if $schoolwake is 1>>
+			<<break>>
+		<</if>>
+
+		<<set $sleepHoursTotal += 1>>
+		<<if $sleeptrouble is 1 and $controlled is 0>>
+			<<set $tiredness -= 200>>
 		<<else>>
+			<<set $tiredness -= 250>>
+		<</if>>
+		<<set $tiredness -= _sleepTraitEffect>>
+		<<if $location isnot "tower">>
+			<<pass 60>>
+		<<else>>
+			<<bird_pass 60>>
+		<</if>>
+		<<if $nightmares gte 1 and $controlled is 0>>
+			<<stress 6>>
+		<</if>>
+		<<if $sleephour lte -1 and ($tiredness lte 0 or $sleephour lte -11)>>
 			<<break>>
 		<</if>>
 	<</for>>
 <</widget>>
+
 <<widget "sleepeffects">>
 	<<if $sleeptransform is 1>>
 		<<if $wolfgirl is 0 and $wolfbuild gte 5>>

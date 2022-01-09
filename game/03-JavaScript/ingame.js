@@ -1085,3 +1085,16 @@ window.getTimeString = function(minutes = 0){
 		return hours + ":" + minutes;
 	}
 }
+
+window.getWeekDay = function(day){
+	// NOTE: This function takes an argument from 1 to 7. Avoid off-by-1 errors! It is NOT 0-6.
+	if (day && day >= 1 && day <= 7){
+		return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][day-1];
+	} else {
+		throw new Error("INVALID DAY, day index: ["+day+"]");
+	}
+}
+
+window.waterproofCheck = function(clothing){
+	return clothing.type.includes("swim") || clothing.type.includes("stealthy");
+}

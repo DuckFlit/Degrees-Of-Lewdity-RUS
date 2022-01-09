@@ -2,7 +2,9 @@
 
 <<widget "earnFeat">>
 <<if $args[0] and $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1>>
-	<<featsData>>
+	<<if _feats is undefined>>
+		<<featsData>>
+	<</if>>
 	<<if $feats.currentSave[$args[0]] is undefined and ($feats.soft isnot true or _feats[$args[0]].softLockable isnot true)>>
 		<<set $feats.currentSave[$args[0]] to Date()>>
 
@@ -12,7 +14,9 @@
 <</widget>>
 
 <<widget "updateFeats">>
-	<<featsData>>
+	<<if _feats is undefined>>
+		<<featsData>>
+	<</if>>
 	<<if _passageCheck is "Start">>
 		<<set _recalledFeats to JSON.parse(localStorage.getItem("dolFeats"))>>
 	<</if>>
@@ -408,31 +412,35 @@
 
 <<widget "earnAllFeats">>
 <<if $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1 and $replayScene is undefined>>
-	<<featsData>>
+	<!-- Save a widget call by checking _feats outside the widget -->
+	<<if _feats is undefined>>
+		<<featsData>>
+	<</if>>
 	<<if $args[0] is true>>
 		/*Rarely occuring feats*/
-		<<if $player.gender is "m" and $days gte 50>>
-			<<earnFeat "Being a Boy">>
-		<</if>>
-		<<if $player.gender is "f" and $days gte 50>>
-			<<earnFeat "Being a Girl">>
-		<</if>>
-		<<if $player.gender is "h" and $days gte 50>>
-			<<earnFeat "Being a Hermaphrodite">>
-		<</if>>
-		<<if $days gte 150>>
-			<<earnFeat "Being an Orphan">>
-		<</if>>
-		<<if $days gte 50 and $passoutstat is 0>>
-			<<earnFeat "Stressful Challenge">>
-		<</if>>
-		<<if $days gte 150 and $passoutstat is 0>>
-			<<earnFeat "Long Stressful Challenge">>
+		<<if $days gte 50>>
+			<<if $player.gender is "m">>
+				<<earnFeat "Being a Boy">>
+			<<elseif $player.gender is "f">>
+				<<earnFeat "Being a Girl">>
+			<<elseif $player.gender is "h">>
+				<<earnFeat "Being a Hermaphrodite">>
+			<</if>>
+
+			<<if $days gte 150>>
+				<<earnFeat "Being an Orphan">>
+			<</if>>
+			
+			<<if $passoutstat is 0>>
+				<<earnFeat "Stressful Challenge">>
+				<<if $days gte 150>>
+					<<earnFeat "Long Stressful Challenge">>
+				<</if>>
+			<</if>>
 		<</if>>
 		<<if $awareness gte 500>>
 			<<earnFeat "Most Aware">>
-		<</if>>
-		<<if $awareness lte -199>>
+		<<elseif $awareness lte -199>>
 			<<earnFeat "Most Innocent">>
 		<</if>>
 		<<if $promiscuity gte 100 and $deviancy gte 100 and $exhibitionism gte 100>>
@@ -445,8 +453,7 @@
 		<</if>>
 		<<if $submissive gte 2000>>
 			<<earnFeat "Perfect Sub">>
-		<</if>>
-		<<if $submissive lte 0>>
+		<<elseif $submissive lte 0>>
 			<<earnFeat "Defying the Odds">>
 		<</if>>
 		<<if $museumAntiques.museumCount is $museumAntiques.maxCount>>
@@ -502,8 +509,7 @@
 		<</if>>
 		<<if $delinquency lte 0>>
 			<<earnFeat "Teachers Pet">>
-		<</if>>
-		<<if $delinquency gte 1000>>
+		<<elseif $delinquency gte 1000>>
 			<<earnFeat "Teachers Nightmare">>
 		<</if>>
 		<<if $feats.allSaves.points gte 150>>
@@ -560,8 +566,8 @@
 		<<earnFeat "Millionaire">>
 	<</if>>
 	<<if $goooutsidecount + $semenoutsidecount gte 100
-	and (setup.bodyliquid.combined("anus") gte 5 or $analdisable is "t")
-	and (setup.bodyliquid.combined("vagina") gte 5 or !$player.vaginaExist)
+	and ($analdisable is "t" or setup.bodyliquid.combined("anus") gte 5)
+	and (!$player.vaginaExist or setup.bodyliquid.combined("vagina") gte 5)
 	and setup.bodyliquid.combined("mouth") gte 5>>
 		<<earnFeat "Fully Covered">>
 	<</if>>

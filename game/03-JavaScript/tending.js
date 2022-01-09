@@ -1,11 +1,3 @@
-window.setPlotToHarvest = function(plot){
-	V.tendingvars.harvest = true;
-	V.tendingvars.harvest_size = plot.size;
-	V.tendingvars.harvest_name = plot.plant;
-	V.tendingvars.harvest_quality = plot.quality;
-	V.tendingvars.plot = plot;
-}
-
 window.plantSeedsInPlot = function(plot, plantType){
 	plot.plant = plantType;
 	plot.stage = 1;
