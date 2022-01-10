@@ -1071,20 +1071,23 @@ setup.colours.mascara = [
  * Maps to easily access colour record by its variable code, ex. setup.colours.hair_map[$haircolour]
  */
 
-function buildColourMap(name) {
-	let array = setup.colours[name];
+function buildColourMap(name, mode) {
+	let array = (mode == "custom_eyecolours" ? V.custom_eyecolours : setup.colours[name]);
 	let map = setup.colours[name+"_map"];
 	let defaultFilter = setup.colours[name+"_default"];
 	for (let item of array) {
 		if (defaultFilter) Renderer.mergeLayerData(item.canvasfilter, defaultFilter);
 		let key = item.variable;
 		if (key in map) {
-			console.error("Duplicate "+name+" '"+key+"'");
+			if (mode != "custom_eyecolours")
+				console.error("Duplicate "+name+" '"+key+"'");
 		}
 		map[key] = item;
 	}
 	return map;
 }
+
+window.buildColourMap = buildColourMap
 
 buildColourMap("hair");
 buildColourMap("eyes");
