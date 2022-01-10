@@ -61,19 +61,34 @@
 		<br><br>
 	<</if>>
 	<<link [[Take a look at the contact lenses display|Pharmacy Lenses]]>><</link>>
+	<<if V.left_before_nurse_returned < 3 and V.lenses_ordered.length > 0>>
+		<<link [[Ask if your custom contact lenses arrived|Pharmacy Ask If Lenses Delivered]]>><</link>>
+	<</if>>
 	<br><br>
 	<<link [[Return to foyer|Hospital Foyer]]>><<endevent>><</link>>
 <</if>>
 
 :: Pharmacy Lenses
 An assortment of colourful contact lenses is displayed behind the glass. You can purchase lenses to change the colour of your eyes.
-<<if $makeup.owned.eyelenses.length gt 0>>
+<<if $makeup.owned.eyelenses.length + V.makeup.owned.custom_eyelenses.length gt 0>>
 	<br>
 	You already own lenses of the following colours:
+	<span style="display: inline-block;">
 	<<for _i, _colour range $makeup.owned.eyelenses>>
 		<span @class="'eye-' + _colour.replace(/ /g, '-')"><span class="colour-eye" style="color:#6E4E11;">_colour</span></span>
-		<<if _i < $makeup.owned.eyelenses.length - 1>>, <</if>>
+		<<if _i < $makeup.owned.eyelenses.length - 1 or $makeup.owned.custom_eyelenses.length > 0>>, <</if>>
+	<</for>>
+	<<for _i = 0; _i < $makeup.owned.custom_eyelenses.length; _i++>>
+		<<set _colour to window.colorNameTranslate(V.makeup.owned.custom_eyelenses[_i], "spaced name")>>
+		<<for _e = 0; _e < $custom_eyecolours.length; _e++>>
+			<<if $custom_eyecolours[_e].name == _colour>>
+				<<run _background_colour = V.custom_eyecolours[_e].canvasfilter.blend>>
+				<span class="eye-custom"><span @style="'color:'+_background_colour">_colour</span></span>
+			<</if>>
+		<</for>>
+		<<if _i < $makeup.owned.custom_eyelenses.length - 1>>, <</if>>
 	<</for>>.
+	</span>
 <</if>>
 <br><br>
 
@@ -97,7 +112,98 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 		<span class="purple">You can't afford the purchase.</span><br>
 	<</if>>
 <</if>>
+<<if V.left_before_nurse_returned == 2>>
+	"Who do we have here," says the nurse nervously laughing, "Get out, you wasted enough of my time already. Try again tomorrow if you're done with your little game"
+	<<set V.left_before_nurse_returned to 3>>
+<<elseif V.left_before_nurse_returned > 2>>
+<<else>>
+	<<link [[Ask for custom-coloured contact ones|Pharmacy Ask Custom Lenses]]>><</link>><br>
+<</if>>
 <<link [[Go back|Pharmacy]]>><</link>>
+
+:: Pharmacy Ask Custom Lenses
+<<if V.custom_lenses_already_ordered is 1>>
+	"I hope the ones you ordered last time please you," the nurse asks, "You know the prices, <<printmoney 45000>> for the product, plus <<printmoney 5000>> for the delivery"
+<<else>>
+	"Not pleased with the ones available?", the nurse says
+	"I could place an order for ones with a colour of your choosing, but this will double the cost. Count about <<printmoney 45000>> for the product, plus <<printmoney 5000>> for the delivery which takes about a day."
+<</if>>
+<br><br>
+<<if $money gte 45000>>
+	<<link [[Choose your custom colour|Pharmacy Select Custom Lenses]]>><</link>><br>
+<<else>>
+	<span class="purple">You can't afford the purchase.</span><br>
+<</if>>
+<<link [[Go back|Pharmacy Lenses]]>><</link>>
+
+:: Pharmacy Select Custom Lenses
+"Here, on this tablet there's a colour palett, pick the one you want then I will place the order."
+<br><br><br>
+<div id="picker"></div>
+<<set _color_lenses_temp>> <!-- used inside colorWheelContactLenses() --> 
+<<run colorWheelContactLenses()>>
+<br><br>
+<<link [[Order it|Pharmacy Order Custom Lenses]]>><<set $money -= 50000>><<set V.custom_lenses_already_ordered to 1>><<run V.lenses_ordered.push([window.colorNamer(T.color_lenses_temp[0].hexString), V.monthday.toString() + V.month + V.year.toString(), [T.color_lenses_temp[0].hexString, T.color_lenses_temp[0].hsl["l"] / 500]])>><</link>>
+<br>
+<<link [[Go back|Pharmacy]]>><</link>>
+
+:: Pharmacy Order Custom Lenses
+"Here is your receipt.", the nurse says handing you the ticket. "It's likely to arrive by tomorrow, you come back anytime with your receipt and whoever is on duty that day will hand it over to you."
+<br><br>
+<<link [[Next|Pharmacy]]>><</link>>
+
+:: Pharmacy Ask If Lenses Delivered
+<<if V.left_before_nurse_returned == 1>>
+	"Hello how can I he-", she frowns, "Don't you think I forgot last time. It's not cool, you can't just send me looking for your package and just leave. Don't do that again please."
+	<br>You apologize, and she then goes check if your package arrived.
+<<elseif V.left_before_nurse_returned == 2>>
+	"Who do we have here," says the nurse a rictus on her face, "Get out, you wasted enough of my time already. Try again tomorrow if you're done with your little game"
+	<<set V.left_before_nurse_returned to 3>>
+<<else>>
+	"How can I h-", she stops. "Oh, you're the one who ordered the contact lenses, hold on a second sweetheart I'll check if we received them already". You watch as she disappears in a back room.
+<</if>>
+<br><br>
+<<if V.left_before_nurse_returned < 2>><<link [[Wait (0:15)|Pharmacy Ask If Lenses Delivered 2]]>><<set V.left_before_nurse_returned to 0>><<pass 15>><</link>><br><</if>>
+<<link [[Leave|Pharmacy]]>><<set V.left_before_nurse_returned to V.left_before_nurse_returned + 1>><</link>>
+
+:: Pharmacy Ask If Lenses Delivered 2
+<<set _received to 0>>
+<<set _tmp_length to clone($lenses_ordered.length)>>
+<<for _i = 0; _i < $lenses_ordered.length; _i++>>
+	<<if V.monthday.toString() + V.month + V.year.toString() != $lenses_ordered[_i][1]>>
+		<<set _received += 1>>
+		<<set _spaced_colour_name = window.colorNameTranslate(V.lenses_ordered[_i][0], "spaced name")>>
+		<<run V.makeup.owned.custom_eyelenses.push(clone(V.lenses_ordered[_i][0]))>>
+		<<run $custom_eyecolours.push({
+			variable: V.lenses_ordered[_i][0],
+			name: T.spaced_colour_name,
+			name_cap: T.spaced_colour_name.toUpperFirst(),
+			csstext: V.lenses_ordered[_i][0],
+			natural: false,
+			lens: true,
+			canvasfilter: {
+				blend: V.lenses_ordered[_i][2][0],
+				brightness: +V.lenses_ordered[_i][2][1]
+			}
+		})>>
+		<<run $lenses_ordered.deleteAt(_i)>>
+		<<run _i-->>
+	<</if>>
+<</for>>
+<<if _received > 0>>
+	<<run window.initCustomLenses()>>	/* push custom eyelenses inside setup.colours.eyes */
+	<<if _received != _tmp_length>>
+		She returns a little while later, noticably panting. "We receive the <<if _received > 1>><<print _received>><</if>> contact lenses you ordered, but for the other <<print (_tmp_length - _received == 1) ? 'one' : _tmp_length - _received>> you'll have to try again tomorrow", she says while handing you the package.
+	<<else>>
+		You see the nurse coming back from the room, with a small package in the hands, "Here it is," she says handing it to you.<br>"If anything's wrong you just come back here sweety and we'll sort a solution out."
+	<</if>>
+	<br><br><span class="gold">You pick up the package containing your contact lenses.</span>
+<<else>>
+	A few moments later she returns, "It hasn't arrived yet, sorry honey. Try again tomorrow I'm sure it'll have arrived by then"
+<</if>>
+<br><br>
+<<link [[Leave|Pharmacy]]>><</link>>
+
 
 :: Pharmacy Sale
 <<set $outside to 0>><<set $location to "hospital">><<effects>>

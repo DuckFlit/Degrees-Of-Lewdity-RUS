@@ -1254,10 +1254,10 @@ __Makeup__
 
 <<if !$simpleMirror>>
 	/* CONTACT LENSES */
-	<<if $makeup.owned.eyelenses.length == 0>>
+	<<if $makeup.owned.eyelenses.length == 0 and $makeup.owned.custom_eyelenses.length == 0>>
 		You don't own any contact lenses.<br>
 	<<else>>
-		Wear contact lenses:<br>
+		Wear contact lenses:<br> /* NON CUSTOMIZED ONES */
 		<<if $makeup.eyelenses != 0>>
 			<span class="no-numberify">
 			<<link "None">>
@@ -1274,6 +1274,34 @@ __Makeup__
 			<<run Engine.show()>>
 			<</link>></span>
 			<span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes colour-eye"></span></span>
+			<<print " | ">>
+			<</capture>>
+		<</for>>
+		<br>
+				Custom contact lenses:<br> /* CUSTOMIZED ONES */
+		<<if $makeup.eyelenses != 0>>
+			<span class="no-numberify">
+			<<link "None">>
+			<<set $makeup.eyelenses = 0>>
+			<<run Engine.show()>>
+			<</link>></span>
+			<<print " | ">>
+		<</if>>
+		<<for _i = 0; _i < $makeup.owned.custom_eyelenses.length; _i++>>
+			<<run _colour = $makeup.owned.custom_eyelenses[_i]>>
+			<<for _e = 0; _e < $custom_eyecolours.length; _e++>>
+				<<if $custom_eyecolours[_e].variable == $makeup.owned.custom_eyelenses[_i]>>
+					<<run _background_colour = V.custom_eyecolours[_e].canvasfilter.blend>>
+				<</if>>
+			<</for>>
+			<<capture _colour _background_colour>>
+			<span class="capitalize no-numberify">
+			<<set _colour_name_with_space = window.colorNameTranslate(_colour, "spaced name")>>
+			<<link _colour_name_with_space>>
+			<<set $makeup.eyelenses = _colour>>
+			<<run Engine.show()>>
+			<</link>></span>
+			<span class="eye-custom"><span @style="'background:'+_background_colour" class="colour-sample"></span></span>
 			<<print " | ">>
 			<</capture>>
 		<</for>>
@@ -1370,6 +1398,8 @@ Preset: <<print $args[0]>>
 				<<set $makeup[_makeupNames[$_i]] to 0>>
 			<<elseif $makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]])>>
 				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
+			<<elseif $makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]])>>
+				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
 			<</if>>
 		<<elseif _presetChosen[_makeupNames[$_i]] is 0 and _makeupNames[$_i] is "hairdye">>
 			/*Do Nothing*/
@@ -1399,7 +1429,7 @@ Preset: <<print $args[0]>>
 		<span class="green">Remove.</span>
 	<<else>>
 		<<if $args[0] is "eyelenses">>
-			<<if $makeup.owned.eyelenses.includes($args[1])>>
+			<<if $makeup.owned.eyelenses.includes($args[1]) or $makeup.owned.custom_eyelenses.includes($args[1])>>
 				<span class="green"><<print $args[1]>> (Owned).</span>
 			<<else>>
 				<span class="red"><<print $args[1]>> (Not Owned).</span>
