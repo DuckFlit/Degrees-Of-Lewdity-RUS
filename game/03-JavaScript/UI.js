@@ -473,3 +473,7 @@ window.settingsDoubleAnalToggleGreyOut = function() {
         jQuery('[id*=checkbox-analdisable]').on('change', function (e) { updateButtonsActive(); });
     });
 }
+
+$(document).on('click', '#cbtToggleMenu .cbtToggle', function (e) {
+	$('#cbtToggleMenu').toggleClass('visible');
+});
