@@ -230,12 +230,15 @@
 	<<if $orgasmdown gte 1>>
 		<<set _leftOptions to "orgasm">>
 		<span class="lewd">Your left arm is free, but you can't stop the spasms.</span>
-	<<elseif $pain gte 100 and $willpowerpain is 0>>
+	<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
 		<<set _leftOptions to "pain">>
 		<span class="red">Your left arm is free, but hurts to move.</span>
-	<<elseif $dissociation gte 2>>
+	<<elseif $dissociation gte 2 and !$possessed>>
 		<<set _leftOptions to "unreal">>
 		<span class="pink">Your left arm is free, but doesn't feel real.</span>
+	<<elseif $possessed>>
+		<<set _leftOptions to "possessed">>
+		Your left arm is free, <span class="pink">but not under your control.</span>
 	<<else>>
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
@@ -273,6 +276,9 @@
 	<<elseif $dissociation gte 2>>
 		<<set _leftOptions to "bothBound">>
 		<span class="pink">Your left arm lies limp in their grip.</span>
+	<<elseif $possessed>>
+		<<set _leftOptions to "possessedBound">>
+		Your left arm writhes in their grip, unbidden.
 	<<else>>
 		<<set _leftOptions to "grappled">>
 		<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left arm is being held down.</span>
@@ -285,6 +291,8 @@
 		<span class="red">Your left arm is held in a painful bind.</span>
 	<<elseif $dissociation gte 2>>
 		<span class="pink">Your left arm lies limp in its bonds.</span>
+	<<elseif $possessed>>
+		Your left arm writhes in its bounds, unbidden.
 	<<else>>
 		<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your arms are helplessly bound.</span>
 	<</if>>
@@ -429,6 +437,12 @@
 		<<case "unreal">>
 			<<set _leftaction["Poke yourself"] to "leftpoke">>
 			<<set _leftaction["Keep your arms out of the way"] to "leftcurl">>
+		<<case "possessed">>
+			<<set _leftaction["Accept it"] to "leftacceptW">>
+			<<set _leftaction["Hold it still"] to "leftresistW">>
+		<<case "possessedBound">>
+			<<set _leftaction["Struggle"] to "leftstruggleW">>
+			<<set _leftaction["Hold it still"] to "leftstillW">>
 	<</switch>>
 <</if>>
 <</widget>>
@@ -439,12 +453,15 @@
 	<<if $orgasmdown gte 1>>
 		<<set _rightOptions to "orgasm">>
 		<span class="lewd">Your right arm is free, but you can't stop the spasms.</span>
-	<<elseif $pain gte 100 and $willpowerpain is 0>>
-		<<set _rightOptions to "pain">>
+	<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
+		<<set _rightOptions to "pain" and !$possessed>>
 		<span class="red">Your right arm is free, but hurts to move.</span>
 	<<elseif $dissociation gte 2>>
 		<<set _rightOptions to "unreal">>
 		<span class="pink">Your right arm is free, but doesn't feel real.</span>
+	<<elseif $possessed>>
+		<<set _rightOptions to "possessed">>
+		Your right arm is free, <span class="pink">but not under your control.</span>
 	<<else>>
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
@@ -482,6 +499,9 @@
 	<<elseif $dissociation gte 2>>
 		<<set _rightOptions to "bothBound">>
 		<span class="pink">Your right arm lies limp in their grip.</span>
+	<<elseif $possessed>>
+		<<set _rightOptions to "possessedBound">>
+		Your right arm writhes in their grip, unbidden.
 	<<else>>
 		<<set _rightOptions to "grappled">>
 		<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right arm is being held down.</span>
@@ -494,6 +514,8 @@
 		<span class="red">Your right arm is held in a painful bind.</span>
 	<<elseif $dissociation gte 2>>
 		<span class="pink">Your right arm lies limp in its bonds.</span>
+	<<elseif $possessed>>
+		Your left arm writhes in its bounds, unbidden.
 	<<else>>
 		<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your arms are helplessly bound.</span>
 	<</if>>
@@ -638,54 +660,65 @@
 		<<case "unreal">>
 			<<set _rightaction["Poke yourself"] to "rightpoke">>
 			<<set _rightaction["Keep your arms out of the way"] to "rightcurl">>
+		<<case "possessed">>
+			<<set _rightaction["Accept it"] to "rightacceptW">>
+			<<set _rightaction["Hold it still"] to "rightresistW">>
+		<<case "possessedBound">>
+			<<set _rightaction["Struggle"] to "rightstruggleW">>
+			<<set _rightaction["Hold it still"] to "rightstillW">>
 	<</switch>>
 <</if>>
 <</widget>>
 
 <<widget "feetActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined or $possessed)>>
 	<<switch $feetuse>>
 	<<case 0>>
-		<<if _targetYourself is true and _targetnumber gt 1>>
-			<<set _targetlistall["Yourself"] to "self">>
-		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			<<if !(($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound"))>>
+		<<if $possessed>>
+			<<set _feetOptions to "possessed">>
+			Your legs are free, <span class="pink">but you can't feel them beneath you.</span>
+		<<else>>
+			<<if _targetYourself is true and _targetnumber gt 1>>
+				<<set _targetlistall["Yourself"] to "self">>
+			<</if>>
+			<<if $combatControls isnot "radio" and _targetnumber gt 1>>
+				<<if !(($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound"))>>
+					Target: <span onchange="actionsreplace('feet')">
+					<<listbox "$feettarget" autoselect>>
+						<<optionsfrom _targetlistall>>
+					<</listbox>>
+					</span>
+				<</if>>
+			<</if>>
+			<<if $leftleg is 0 and $rightleg is 0>>
+				<<set _feetOptions to "free">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your legs are free.</span>
+			<<elseif $leftleg is 0>>
+				<<set _feetOptions to "leftFree">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your left leg is free.</span>
+			<<elseif $rightleg is 0>>
+				<<set _feetOptions to "rightFree">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your right leg is free.</span>
+			<<elseif $leftleg is "grappled" and $rightleg is "grappled">>
+				<<set _feetOptions to "grappled">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your legs are entangled and forced apart, leaving you less able to protect your <<genitals>>.</span>
+			<<elseif $leftleg is "bound" and $rightleg is "bound">>
+				<<set _feetOptions to "bound">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your legs are bound and forced apart, leaving you less able to protect your <<genitals>>.</span>
+			<<else>>
+				<<set _feetOptions to "free">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free.</span>
+			<</if>>
+			<<if $combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
 				Target: <span onchange="actionsreplace('feet')">
 				<<listbox "$feettarget" autoselect>>
 					<<optionsfrom _targetlistall>>
 				<</listbox>>
 				</span>
 			<</if>>
-		<</if>>
-		<<if $leftleg is 0 and $rightleg is 0>>
-			<<set _feetOptions to "free">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your legs are free.</span>
-		<<elseif $leftleg is 0>>
-			<<set _feetOptions to "leftFree">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your left leg is free.</span>
-		<<elseif $rightleg is 0>>
-			<<set _feetOptions to "rightFree">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your right leg is free.</span>
-		<<elseif $leftleg is "grappled" and $rightleg is "grappled">>
-			<<set _feetOptions to "grappled">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your legs are entangled and forced apart, leaving you less able to protect your <<genitals>>.</span>
-		<<elseif $leftleg is "bound" and $rightleg is "bound">>
-			<<set _feetOptions to "bound">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your legs are bound and forced apart, leaving you less able to protect your <<genitals>>.</span>
-		<<else>>
-			<<set _feetOptions to "free">>
-			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free.</span>
-		<</if>>
-		<<if $combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
-			Target: <span onchange="actionsreplace('feet')">
-			<<listbox "$feettarget" autoselect>>
-				<<optionsfrom _targetlistall>>
-			<</listbox>>
-			</span>
-		<</if>>
-		<<if _targetnumber is 1>>
-			<<set $feettarget to _firsttarget>>
+			<<if _targetnumber is 1>>
+				<<set $feettarget to _firsttarget>>
+			<</if>>
 		<</if>>
 	<<case "penis">>
 		<<set _feetOptions to "penis">>
@@ -694,8 +727,12 @@
 		<<set _feetOptions to "othervagina">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "feet">><<set $feettarget to _j>>Your feet are <<if $NPCList[_j].chastity.vagina.includes("chastity")>>pressed against<<else>>holding back<</if>> <<combatpersons>> <<npcVagina _j>>.</span>
 	<<case "bound">>
-		<<set _feetOptions to "bound">>
-		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your legs are bound.</span>
+		<<if $possessed>>
+			Your legs thrash in their shackles, unbidden.
+		<<else>>
+			<<set _feetOptions to "bound">>
+			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your legs are bound.</span>
+		<</if>>
 	<<case "walk">>
 		<<set _feetOptions to "walk">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">You are walking.</span>
@@ -778,18 +815,22 @@
 <<else>>
 	<<set _feetaction["Rest"] to "rest">>
 	<<switch _feetOptions>>
-	<<case "free">>
-		<<feetgrabnew>>
-		<<feetKick>>
-		<<feetshoes>>
-		<<feetsocks>>
-	<<case "leftfree" "rightFree">>
-		<<feetgrabnew>>
-		<<feetKick>>
-	<<case "penis">>
-		<<feetGrabRub>>
-	<<case "othervagina">>
-		<<feetOthervagina>>
+		<<case "free">>
+			<<feetgrabnew>>
+			<<feetKick>>
+			<<feetshoes>>
+			<<feetsocks>>
+		<<case "leftfree" "rightFree">>
+			<<feetgrabnew>>
+			<<feetKick>>
+		<<case "penis">>
+			<<feetGrabRub>>
+		<<case "othervagina">>
+			<<feetOthervagina>>
+		<<case "possessed">>
+			<<set _feetaction to {}>>
+			<<set _feetaction["Accept it"] to "feetacceptW">>
+			<<set _feetaction["Hold it still"] to "feetresistW">>
 	<</switch>>
 <</if>>
 <</widget>>
@@ -804,7 +845,7 @@
 			<<run jQuery("#mouthaction").remove();>>
 		<</timed>>
 	<</if>>
-<<elseif $pain gte 100 and $willpowerpain is 0>>
+<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
 	<<if $mouthuse is 0>>
 		<<set _mouthOptions to "pain">>
 		<span class="red">Your mouth is free, but involuntary sobs and cries prevent speaking.</span>
@@ -813,10 +854,22 @@
 			<<run jQuery("#mouthaction").remove();>>
 		<</timed>>
 	<</if>>
-<<elseif $dissociation gte 2>>
+<<elseif $dissociation gte 2 and !$possessed>>
 	<<if $mouthuse is 0>>
 		<<set _mouthOptions to "unreal">>
 		<span class="pink">Your mouth is free, but you don't know why.</span>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#mouthaction").remove();>>
+		<</timed>>
+	<</if>>
+<<elseif $possessed>>
+	<<if $mouthuse is 0>>
+		<<set _mouthOptions to "possessed">>
+		Your mouth is free, <span class="pink">but unfamiliar words spill from your tongue.</span>
+	<<elseif $mouthuse is "lefthand" or $mouthuse is "righthand">>
+		<<set _mouthOptions to "possessedBound">>
+		Your mouth is blocked, muffling the foreign words that well up within you.
 	<<else>>
 		<<timed 100ms>>
 			<<run jQuery("#mouthaction").remove();>>
@@ -999,7 +1052,7 @@
 <<widget "mouthActions">>
 /*Generate Actions*/
 <<set _mouthaction to {}>>
-<<if !(["orgasm", "pain", "unreal"].includes(_mouthOptions))>>
+<<if !(["orgasm", "pain", "unreal", "possessed"].includes(_mouthOptions))>>
 	<<set _mouthaction["Rest"] to "rest">>
 <</if>>
 <<if $position is "stalk">>
@@ -1058,12 +1111,18 @@
 		<<case "unreal">>
 			<<set _mouthaction["Try to speak"] to "speak">>
 			<<set _mouthaction["Make soft noises"] to "noises">>
+		<<case "possessed">>
+			<<set _mouthaction["Accept it"] to "mouthacceptW">>
+			<<set _mouthaction["Clamp your mouth shut"] to "mouthresistW">>
+		<<case "possessedBound">>
+			<<set _mouthaction["Bite"] to "handbiteW">>
+			<<set _mouthaction["Clamp your mouth shut"] to "handcloseW">>
 	<</switch>>
 <</if>>
 <</widget>>
 
 <<widget "penisActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $penisstate>>
 	<<case 0>>
 		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
@@ -1255,7 +1314,7 @@
 <</widget>>
 
 <<widget "vaginaActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $vaginastate>>
 	<<case 0>>
 		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
@@ -1354,7 +1413,7 @@
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">Their cocks hover near your <<pussy>>.</span>
 		<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadoubleentrance") or ($NPCList[$vaginatarget].penis is "vaginadoubleentrance" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
-			<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> presses against your <<vulva>> while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> hovers nearby.
+			<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> presses against your ?vulva while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> hovers nearby.
 			</span>
 		<<else>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">Their cocks hover near your <<pussy>>.</span>
@@ -1367,11 +1426,11 @@
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">Their cocks press against your <<pussy>>.</span>
 		<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadoubleimminent") or ($NPCList[$vaginatarget].penis is "vaginadoubleimminent" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
-			<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> penetrates your vagina while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> presses against your <<vulva>>.
+			<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> penetrates your vagina while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> presses against your ?vulva.
 			</span>
 		<<else>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
-			<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> presses against your <<vulva>> while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> hovers nearby.
+			<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> presses against your ?vulva while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> hovers nearby.
 			</span>
 		<</if>>
 	<<case "doublepenetrated">>
@@ -1382,7 +1441,7 @@
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">Their cocks penetrate your <<pussy>>.</span>
 		<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadoubleimminent") or ($NPCList[$vaginatarget].penis is "vaginadoubleimminent" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
-			<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> penetrates your vagina while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> presses against your <<vulva>>.
+			<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> penetrates your vagina while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> presses against your ?vulva.
 			</span>
 		<<else>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
@@ -1511,7 +1570,7 @@
 <</widget>>
 
 <<widget "anusActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<if $bottomuse is "mouth">>
 		<<set _anusOptions to "faceAgainstAnus">><<selectNpcWithPartInPosition "mouth" "bottom">><<set $anustarget to _j>>
 		<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">You press your <<bottom>> against <<combatpersons>> face.</span>
@@ -1727,7 +1786,7 @@
 <</widget>>
 
 <<widget "chestActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $chestuse>>
 	<<case "penis">>
 		<<set _chestOptions to "penis">><<selectNpcWithPartInPosition "penis" "chest">><<set $chesttarget to _j>>
@@ -1789,7 +1848,7 @@
 <</widget>>
 
 <<widget "thighActionInit">>
-	<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+	<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 		<<switch $thighuse>>
 		<<case "mouth">>
 			<<set _thighOptions to "mouth">><<selectNpcWithPartInPosition "mouth" "thigh">><<set $thightarget to _j>>

@@ -91,12 +91,14 @@ window.combatListColor = function (name, value, type) {
 			case "rightunderpull": case "rightskirtpull": case "rightlowerpull": case "rightupperpull": case "rightUndressOther": case "leftUndressOther":
 			case "stopchoke": case "clench": case "shacklewhack": case "leftfold": case "rightfold":
 			case "leftstruggleweak": case "rightstruggleweak":
+			case "leftresistW": case "rightresistW": case "leftstillW": case "rightstillW":
 			/*feetaction*/
-			case "run": case "hide": case "confront":
+			case "run": case "hide": case "confront": case "feetresistW":
 			/*mouthaction*/
 			case "pullaway": case "pullawayvagina": case "finish": case "novaginal": case "nopenile": case "noanal": case "scream":
 			case "mock": case "breastclosed": case "breastpull": case "pullawaykiss": case "noupper":
 			case "up": case "stifleorgasm": case "stifle":
+			case "mouthresistW": case "handcloseW":
 			/*penisaction*/
 			case "othermouthescape": case "escape": case "otheranusescape": case "fencingescape" :
 			/*vaginaaction*/
@@ -155,6 +157,15 @@ window.combatListColor = function (name, value, type) {
 			/*doubleanusaction*/
 			case "anustopenisdouble": case "anuspenisdoublefuck": case "penisdoubletease": case "penisDoubleEdging": case "doublecooperate": case "penisanusdouble":
 				color = "sub";
+				break;
+			
+			/*leftaction or rightaction*/
+			case "leftacceptW": case "rightacceptW": case "leftstruggleW": case "rightstruggleW":
+			/*feetaction*/
+			case "feetacceptW":
+			/*mouthaction*/
+			case "mouthacceptW": case "handbiteW":
+				color = "wraith";
 				break;
 
 			default:
