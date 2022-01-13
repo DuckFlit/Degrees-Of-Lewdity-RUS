@@ -1,4 +1,4 @@
-window.overlayShowHide = function (elementId) {
+window.overlayShowHide = function (elementId, mode) {
 	var div = document.getElementById(elementId);
 	if (div != undefined) {
 		div.classList.toggle("hidden");
@@ -6,25 +6,29 @@ window.overlayShowHide = function (elementId) {
 			V.debugMenu[0] = !V.debugMenu[0];
 		}
 	}
+	window.cacheDebugDiv()
 }
 
 window.overlayMenu = function (elementId, type) {
-	switch (type) {
-		case "debug":
-			var debug = ["debugMain", "debugCharacter", "debugEvents"]
-			for (var i = 0, l = debug.length; i < l; i++) {
-				var div = document.getElementById(debug[i]);
-				if (div != undefined) {
-					V.debugMenu[1] = elementId;
-					if (elementId === debug[i]) {
-						div.classList.remove("hidden");
-					} else {
-						div.classList.add("hidden");
-					}
-				}
-			}
-			break;
+	if (type == "debug"){
+		window.toggleClassDebug(elementId+"Button", "bg-color")
+		V.debugMenu[1] = elementId;
+		if (document.getElementById(elementId) != undefined) {
+			if (V.debugMenu[2].length > 0)
+				window.toggleClassDebug(elementId, "hideWhileSearching")
+			else 
+				window.toggleClassDebug(elementId, "classicHide")
+		}
+		if (elementId == "debugFavourites" && V.debugMenu[2] != undefined && V.debugMenu[2].length > 0){
+			V.debugMenu[2] = "";
+			document.getElementById('searchEvents').value = ""
+			window.researchEvents("")
+		}
+		if (elementId == "debugFavourites"){
+			window.patchFavouriteAndLinks()
+		}
 	}
+	window.cacheDebugDiv()
 }
 
 /*Sidebar swipe*/
