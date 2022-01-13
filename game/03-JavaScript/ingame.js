@@ -971,7 +971,7 @@ Config.navigation.override = function (dest) {
 			return 'Moor Plant Sex';
 
 		case 'Moor Plant Sex No Tentacles Finish':
-			return 'Moor Plant Sex Finish'
+			return 'Moor Plant Sex Finish';
 
 		case 'Underground Plant Molestation No Tentacles':
 			return 'Underground Plant Molestation';
@@ -979,8 +979,11 @@ Config.navigation.override = function (dest) {
 		case 'Underground Plant Molestation No Tentacles Finish':
 			return 'Underground Plant Molestation Finish';
 
+		case 'Evens Swimming Endure':
+			return 'Events Swimming Swim Endure';
+
 		default:
-			return dest;
+			return false;
 	}
 }
 
