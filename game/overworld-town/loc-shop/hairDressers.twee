@@ -310,13 +310,14 @@ You hand over the money and <<he>> gets to work.
 <</widget>>
 
 <<widget "hairDressersOptionsSydney">>
+<<set $_sydney to $NPCName[$NPCNameList.indexOf("Sydney")]>>
 <<set _currentCost to 0>>
-Encourage Sydney to have <<his>> hair styled:
-<br>
+<<set _currentCost += ($sydneyHairOption isnot $sydney.hair ? 3000 : 0)>>
+<<set _currentCost += ($dyeOption is "removeDye" ? 3000 : ($dyeOption isnot "noChange" ? 6000 : 0))>>
+
 <<if ($money gte _currentCost + 3000 or $sydneyHairOption isnot $sydney.hair)>>
-	<<if $sydneyHairOption isnot $sydney.hair>>
-		<<set _currentCost += 3000>>
-	<</if>>
+	Encourage Sydney to have <<his>> hair styled:
+	<br>
 	<<set _hairOptions to {"As it is":$sydney.hair}>>
 	<<if $sydney.hair is "ponytail">>
 		<<set _hairOptions["Loose"] to "loose">>
@@ -329,20 +330,16 @@ Encourage Sydney to have <<his>> hair styled:
 	<span class="grey">(Click to change)
 	<br>
 	Current style: $sydney.hair</span>
-	<br><br>
+<<else>>
+	You don't have enough money to change Sydney's hair.
 <</if>>
+<br><br>
 
-<<if $money gte _currentCost + 3000 or $dyeOption isnot "noChange">>
-	<<if $dyeOption is "removeDye">>
-		<<set _currentCost += 3000>>
-	<<elseif $dyeOption isnot "noChange">>
-		<<set _currentCost += 6000>>
-	<</if>>
-	Encourage Sydney to dye <<his>> hair<<if $NPCName[$NPCNameList.indexOf("Sydney")].hairColour isnot "strawberryblond">> or cleared of hair dye<</if>>:
+<<if $money gte _currentCost + ($_sydney.hairColour isnot "strawberryblond" ? 3000 : 6000) or $dyeOption isnot "noChange">>
+	Encourage Sydney to dye <<his>> hair<<if $_sydney.hairColour isnot "strawberryblond">> or cleared of hair dye<</if>>:
 	<br>
-
 	<<set _dyeOptions to {"Don't dye":"noChange"}>>
-	<<if $NPCName[$NPCNameList.indexOf("Sydney")].hairColour isnot "strawberryblond">>
+	<<if $_sydney.hairColour isnot "strawberryblond">>
 		<<set _dyeOptions["Remove dye"] to "removeDye">>
 	<<else>>
 		<<set _dyeOptions["Black"] to "black">>

@@ -134,3 +134,51 @@ Errors.report = (message, copyData) => {
 		}, 5000)
 	}
 }
+
+/** Jimmy: Uses SugarCube's source code, modified for use as a macro.
+ *         Likely should be updated after SugarCube updates their error system. */
+Errors.inlineReport = (message, source) => {
+	const $wrapper = jQuery(document.createElement('div'));
+	const $toggle  = jQuery(document.createElement('button'));
+	const $source  = jQuery(document.createElement('pre'));
+	const mesg     = `${L10n.get('errorTitle')}: ${message || 'unknown error'}`;
+
+	$toggle
+		.addClass('error-toggle')
+		.ariaClick({
+			label : L10n.get('errorToggle')
+		}, () => {
+			if ($toggle.hasClass('enabled')) {
+				$toggle.removeClass('enabled');
+				$source.attr({
+					'aria-hidden' : true,
+					hidden        : 'hidden'
+				});
+			}
+			else {
+				$toggle.addClass('enabled');
+				$source.removeAttr('aria-hidden hidden');
+			}
+		})
+		.appendTo($wrapper);
+	jQuery(document.createElement('span'))
+		.addClass('dol-error')
+		.text(mesg)
+		.appendTo($wrapper);
+	jQuery(document.createElement('code'))
+		.text(source)
+		.appendTo($source);
+	$source
+		.addClass('error-source')
+		.attr({
+			'aria-hidden' : true,
+			hidden        : 'hidden'
+		})
+		.appendTo($wrapper);
+	$wrapper
+		.addClass('error-view');
+
+	console.warn(`${mesg}\n\t${source.replace(/\n/g, '\n\t')}`);
+
+	return $wrapper;
+}
