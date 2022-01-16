@@ -33,6 +33,36 @@ function addfemininityofclothingarticle(slot, clothing_article, no_overwear_chec
 }
 DefineMacro("addfemininityofclothingarticle", addfemininityofclothingarticle);
 
+const hairStyleCap = {
+	hairtype:{
+		"flat ponytail":300,
+		"messy":200,
+		"pigtails":300,
+		"ponytail":300,
+		"short":100,
+	},
+	fringetype:{
+		"default":100,
+		"thin flaps":300,
+		"wide flaps":300,
+		"hime":300,
+		"loose":300,
+		"messy":200,
+		"overgrown":200,
+		"ringlets":300,
+		"split":300,
+		"straight":300,
+		"swept left":200,
+		"back":100,
+		"parted":100,
+		"flat":100,
+		"quiff":100,
+		"straight curl":200,
+		"ringlet curl":300,
+		"curtain":200,
+	}
+}	
+
 /** Calculate the player's gender appearance */
 function genderappearancecheck() {
 	/* Calculate bulge size */
@@ -74,7 +104,17 @@ function genderappearancecheck() {
 	addfemininityofclothingarticle('feet',V.worn.feet);
 	/* Hair length */
 	if ((V.worn.over_head.hood !== 1 && V.worn.head.hood !== 1) || V.hoodDown == 1) {
-		addfemininityfromfactor(Math.trunc((V.hairlength - 200) / 2), "Hair length");
+		let lengthCap;
+		/* Set Hair Style cap */
+		if(hairStyleCap.hairtype[V.hairtype] && hairStyleCap.fringetype[V.fringetype]){
+			lengthCap = Math.max(hairStyleCap.hairtype[V.hairtype],hairStyleCap.fringetype[V.fringetype]);
+		}
+		let femininityfactor = Math.trunc((V.hairlength - 200) / 2);
+		if(lengthCap && femininityfactor >= lengthCap){
+			addfemininityfromfactor(lengthCap, "Hair length (capped due to hair style)");
+		} else {
+			addfemininityfromfactor(femininityfactor, "Hair length");
+		}
 	}
 	/* Makeup */
 	addfemininityfromfactor(V.makeup.lipstick == 0 ? 0 : 50, "Lipstick");
