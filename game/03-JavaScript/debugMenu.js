@@ -2667,7 +2667,7 @@ window.changeBorderColor = function(){
 }
 
 var categories = ["debugEventsMain", "debugEventsCharacter", "debugEventsEvents"]
-var categories2 = ["debugMain", "debugCharacter", "debugEvents"]
+var categories2 = ["debugMain", "debugCharacter", "debugEvents", "debugFavourites", "debugAdd"]
 
 window.researchEvents = function(default_value){
     $(function(){
@@ -2695,12 +2695,18 @@ window.researchEvents = function(default_value){
             document.getElementById("debugCharacter").classList.remove("hidden")
             document.getElementById("debugEvents").classList.remove("hidden")
             document.getElementById("debugFavourites").classList.add("hidden")
+            document.getElementById("debugAdd").classList.add("hidden")
         }
         else if (V.debugMenu[2] != undefined && V.debugMenu[2].length > 0 && needle.length == 0) {
             for (let divToHide of categories2){
                 if (divToHide != V.debugMenu[1])
                     document.getElementById(divToHide).classList.add("hidden")
+                else
+                    document.getElementById(divToHide).classList.remove("hidden")
             }
+        }
+        if ((V.debugMenu[1] == "debugAdd" || V.debugMenu[1] == "debugFavourites") && (needle == "" || needle == undefined)){
+            document.getElementById(V.debugMenu[1]).classList.remove("hidden")
         }
         V.debugMenu[2] = needle
         window.toggleClassDebug(V.debugMenu[1]+"Button", "bg-color")
@@ -2779,8 +2785,10 @@ window.syncFavourites = function(){
 
 window.cacheDebugDiv = function(){
     $(function(){
-    let div = document.getElementById("debugOverlay").outerHTML
-    setup.debugMenu.cache_debug_div.debugOverlay = div;
+    if (document.getElementById("debugOverlay") != null){
+        let div = document.getElementById("debugOverlay").outerHTML
+        setup.debugMenu.cache_debug_div.debugOverlay = div;
+    }
     });
 }
 
@@ -2788,7 +2796,7 @@ window.loadCachedDebugDiv = function (){
     $(function(){
     if (typeof setup.debugMenu.cache_debug_div.debugOverlay != undefined)
         document.getElementById("debugWindow").innerHTML += setup.debugMenu.cache_debug_div.debugOverlay
-    window.patchFavouriteAndLinks()
+    window.patchDebugMenu()
     });
 }
 
@@ -2818,7 +2826,9 @@ window.addonClickDivPassage = function (section, index, id){
 
 window.toggleClassDebug = function(selected, mode) {
     $(function(){
-    var list = ["debugMain", "debugCharacter", "debugEvents", "debugFavourites"]
+    if (document.getElementById(selected) == null)
+        return
+    var list = ["debugMain", "debugCharacter", "debugEvents", "debugFavourites", "debugAdd"]
     if (mode == "bg-color"){
         for (let div of list){
             if (div+"Button" == selected)
@@ -2828,13 +2838,13 @@ window.toggleClassDebug = function(selected, mode) {
         }
     }
     else if (mode == "hideWhileSearching"){
-        if (selected == "debugFavourites"){
+        if (selected == "debugFavourites" || selected == "debugAdd"){
             for (let div of list)
-                (div != "debugFavourites") ? document.getElementById(div).classList.add("hidden") : document.getElementById(div).classList.remove("hidden");
+                (div != "debugFavourites" || div != "debugAdd") ? document.getElementById(div).classList.add("hidden") : document.getElementById(div).classList.remove("hidden");
         }
         else{
             for (let div of list)
-                (div == "debugFavourites") ? document.getElementById(div).classList.add("hidden") : document.getElementById(div).classList.remove("hidden");
+                (div == "debugFavourites" || div == "debugAdd") ? document.getElementById(div).classList.add("hidden") : document.getElementById(div).classList.remove("hidden");
         }
     }
     else if (mode == "classicHide"){
@@ -2844,7 +2854,7 @@ window.toggleClassDebug = function(selected, mode) {
 });
 }
 
-window.patchFavouriteAndLinks = function (){
+window.patchDebugMenu = function (){
     $(function(){
         let catg = ["debugEventsMain", "debugEventsCharacter", "debugEventsEvents", "debugEventsFavourites"]
         let break_if_all_good;
@@ -2873,6 +2883,8 @@ window.patchFavouriteAndLinks = function (){
                     break
             }
         }
+        document.getElementById("MainDebugInfo").innerHTML =
+        "Allure: "+V.allure+"<br>Rng: "+V.rng+"<br>Danger: "+V.danger+"<br>Passage: "+V.passage+"<br>"
         window.cacheDebugDiv()
     });
 }
@@ -2891,4 +2903,142 @@ window.checkEventCondition = function(){
             }
         }
     });
+}
+
+window.addDebugForm = function(){
+    $(function(){
+    let op = ''
+    if (V.debug_custom_events == undefined)
+        V.debug_custom_events = {Main:[], Character:[], Events:[]}
+    for (let section of ["Main", "Character", "Events"]){
+        for (let ev of V.debug_custom_events[section])
+            op += "<option value=" +'"'+ev.link[0]+'" '+">"+ev.link[0]+"</option>";
+    }
+    if (document.getElementById("debugEventsAdd") != null)
+        document.getElementById("debugEventsAdd").innerHTML = `
+        <abbr>Event Title:</abbr>
+        <div class="addevent-content-search-content" id="formChangeColor2" style="">
+            <input name="addEvents" id="addEventsTitle" placeholder="Event Title..." onfocusout="" onfocus="" oninput="" />
+        </div>
+        <abbr title="For dynamic allocation, you can enter a function that will be saved !\nFor example function(){return V.passage}">Passage Name*:</abbr>
+        <div class="addevent-content-search-content" id="formChangeColor3" style="">
+            <input name="addEvents" id="addEventsPassage" placeholder="Passage name..." onfocusout="" onfocus="" oninput="" />
+        </div>
+        <span>Widgets:</span>
+        <div class="addevent-content-search-content" style="max-height:unset;" id="formChangeColor4" style="">
+            <input name="addEvents" id="addEventsWidgets" placeholder="<<set $allure = 5>><<set $rng to 3>>..." onfocusout="" onfocus="" oninput="">
+        </div>
+        <span>Category:</span><br>
+        <select name="catlist" id="debugCatList">
+            <option value="Events">Events</option>
+            <option value="Main">Main</option>
+            <option value="Character">Character</option>
+        </select><br><br>
+        <button type="button" onclick="window.submitNewDebugPassage()">Submit</button><br><br>
+        <div id="debugAddResult"></div>
+        <div id="debugRemovePassage">
+            <h3>Remove passages from the Menu</h3>
+            <select name="catlist" id="debugEvList">
+            `+
+            op
+            +
+            `</select><br><br>
+            <button type="button" id="button-remove" onclick="window.removeDebugCustomPassage()">Remove</button><br><br>
+            <div id="debugRemoveResult"></div>
+        </div>
+    `
+    });
+}
+
+window.submitNewDebugPassage = function() {
+    let input_list = [document.getElementById("addEventsTitle"), document.getElementById("addEventsPassage"), document.getElementById("addEventsWidgets"), document.getElementById("debugCatList")]
+    let sigerror = 0;
+
+    for (let element of input_list){
+        if ((element.id == "addEventsTitle" || element.id == "addEventsPassage" || element.id == "debugCatList") && element.value.length < 1){
+            element.setCustomValidity("Fill this value!");
+            element.reportValidity();
+            document.getElementById("debugAddResult").innerHTML = ''
+            sigerror = 1
+        }
+        if (element.id == "addEventsWidgets" && element.value.length > 0){
+            let match = element.value.match('<<.+>>{0,}')
+
+            if (match == null || match[0] != match.input){
+                element.setCustomValidity("Unvalid widget format. Valid : <<widget @params>>");
+                element.reportValidity();
+                document.getElementById("debugAddResult").innerHTML = ''
+                sigerror = 1
+            }
+        }
+    }
+    for (let section of ["Character", "Events", "Favourites", "Main"]){
+        for (let ev of setup.debugMenu.event_list[section]){
+            if (ev.hasOwnProperty("link") && ev.link[0] == input_list[0].value){
+                input_list[0].setCustomValidity("This event title already exists. It needs to be unique!");
+                input_list[0].reportValidity();
+                document.getElementById("debugAddResult").innerHTML = ''
+                sigerror = 1
+            }
+        }
+    }
+    if (sigerror == 0){
+        if (V.debug_custom_events == undefined)
+            V.debug_custom_events = {Main:[], Character:[], Events:[]}
+        let event_title = input_list[0].value
+        let passage_name = input_list[1].value.match(/function{1}[ \t]{0,1}\(\)[ \t]{0,2}{.*return.*}[;]{0,1}/g) == null ? input_list[1].value : eval("("+input_list[1].value.match(/function{1}[ \t]{0,1}\(\)[ \t]{0,2}{.*return.*}[;]{0,1}/g)[0]+")")
+        let new_obj = {
+            link: [
+                event_title, passage_name
+            ],
+            widgets: [
+                input_list[2].value
+            ]
+        }
+        V.debug_custom_events[input_list[3].value].unshift(new_obj)
+        setup.debugMenu.event_list[input_list[3].value].unshift(new_obj)
+        document.getElementById("debugAddResult").innerHTML = '<span style="color: #5eac5e;">Event Added<br>Click any blue regular link in-game<br>for changes to apply.<br>(No reload, No links in debug menu)</span>'
+        setup.debugMenu.cache_debug_div = {}
+    }
+}
+
+window.syncDebugAddedEvents = function(){
+    if (V.debug_custom_events == undefined)
+        V.debug_custom_events = {Main:[], Character:[], Events:[]}
+    for (let section of ["Main", "Character", "Events"]){
+        if (V.debug_custom_events.hasOwnProperty(section) == false)
+            V.debug_custom_events[section] = []
+        for (let ev of V.debug_custom_events[section])
+            setup.debugMenu.event_list[section].unshift(ev)
+    }
+}
+
+window.removeDebugCustomPassage = function() {
+    let selected_for_removal = document.getElementById("debugEvList").value
+    let exit_code = 0
+    for (let section of ["Main", "Character", "Events"]){
+        for (let ev in V.debug_custom_events[section]){
+            if (V.debug_custom_events[section][ev].link[0] == selected_for_removal)
+                V.debug_custom_events[section].splice(ev, 1)
+            for (let ev2 in setup.debugMenu.event_list[section]){
+                if (setup.debugMenu.event_list[section][ev2].hasOwnProperty("link") && setup.debugMenu.event_list[section][ev2].link[0] == selected_for_removal){
+                    setup.debugMenu.event_list[section].splice(ev2, 1)
+                    document.getElementById("debugRemoveResult").innerHTML = '<span style="color: #5eac5e;">Event Removed<br>Click any blue regular link in-game<br>for changes to apply.<br>(No reload, No links in debug menu)</span>'
+                    let op = '<br>'
+                    for (let section of ["Main", "Character", "Events"]){
+                        for (let ev of V.debug_custom_events[section])
+                            op += "<option value=" +'"'+ev.link[0]+'" '+">"+ev.link[0]+"</option>";
+                    }
+                    document.getElementById("debugEvList").innerHTML = op
+                    setup.debugMenu.cache_debug_div = {}
+                    exit_code = 1
+                    break
+                }
+            }
+            if (exit_code == 1)
+                break
+        }
+        if (exit_code == 1)
+            break
+    }
 }

@@ -1,4 +1,4 @@
-window.overlayShowHide = function (elementId, mode) {
+window.overlayShowHide = function (elementId) {
 	var div = document.getElementById(elementId);
 	if (div != undefined) {
 		div.classList.toggle("hidden");
@@ -19,13 +19,13 @@ window.overlayMenu = function (elementId, type) {
 			else 
 				window.toggleClassDebug(elementId, "classicHide")
 		}
-		if (elementId == "debugFavourites" && V.debugMenu[2] != undefined && V.debugMenu[2].length > 0){
+		if ((elementId == "debugFavourites" || elementId == "debugAdd") && V.debugMenu[2] != undefined && V.debugMenu[2].length > 0){
 			V.debugMenu[2] = "";
 			document.getElementById('searchEvents').value = ""
 			window.researchEvents("")
 		}
 		if (elementId == "debugFavourites"){
-			window.patchFavouriteAndLinks()
+			window.patchDebugMenu()
 		}
 	}
 	window.cacheDebugDiv()
