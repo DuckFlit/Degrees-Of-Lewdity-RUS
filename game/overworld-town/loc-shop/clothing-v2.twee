@@ -6,7 +6,7 @@
 			<<link "Back">>
 				<<unset $clothes_choice>><<updateclotheslist>><</link>>
 		<<else>>
-			<<link "Back to shop">><<unset $clothes_choice>><<updateclothingshop>><</link>>
+			<<link "Back to shop">><<unset $clothes_choice>><<updateclothingshop>><<set _shopNameFilter to "">><</link>>
 		<</if>>
 	</div>
 <</widget>>
@@ -54,21 +54,23 @@
 	<<if !_shopNameFilter>>
 		<<set _shopNameFilter to "">>
 	<</if>>
-	Search: <<textbox "_shopNameFilter" _shopNameFilter>>
-	<<button Clear>>
-		<<set _shopNameFilter to "">>
-		<<shopCategoryReplace `clothingSlotToIconName($clothingShopSlot, _outfits)`>>
-	<</button>>
-	<<run $(() => {
+	<span class="searchButtons">
+		Search: <<textbox "_shopNameFilterTextbox" _shopNameFilter>>
+		<<button Clear>>
+			<<set _shopNameFilter to "">>
+			<<shopCategoryReplace `clothingSlotToIconName($clothingShopSlot, _outfits)`>>
+		<</button>>
+	</span>
+		<<run $(() => {
 		var shopTimer = null;
-		$('#textbox--shopnamefilter').on('input change', e => {
+		$('#textbox--shopnamefiltertextbox').on('input change', e => {
 			T.shopNameFilter = shopSearchReplacer(e.target.value);
-			console.log(shopSearchReplacer(e.target.value));
 			clearTimeout(shopTimer);
-			shopTimer = setTimeout(updateShop, 500);
+			shopTimer = setTimeout(updateShop, 300);
 		});
 		var updateShop = () => {
 			new Wikifier (null, "<<shopCategoryReplace `clothingSlotToIconName($clothingShopSlot, _outfits)`>>");
+			$('#textbox--shopnamefiltertextbox').focus();
 		}
 	})>>
 
