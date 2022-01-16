@@ -2788,6 +2788,123 @@
 			Do not correct hours, that is done automatically. -->
 		<<set $minute to $time - ($hour * 60)>>
 	<</if>>
+
+	<!-- v0.3.6.2: Giving Robin clothes if their outfits array is already defined, but they lack the proper normal clothes -->
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].outfits isnot undefined and !$NPCName[$NPCNameList.indexOf("Robin")].outfits.includes("maleSchool")>>
+		<<set $_robin to $NPCName[$NPCNameList.indexOf("Robin")]>>
+		<<if $_robin.outfits.includes("shirt")>>
+			<<run $_robin.outfits.delete("shirt")>>
+			<<set $_robin.outfits.pushUnique("robinGiftShirt")>>
+		<</if>>
+		<<if $_robin.outfits.includes("sundress")>>
+			<<run $_robin.outfits.delete("sundress")>>
+			<<set $_robin.outfits.pushUnique("robinGiftSundress")>>
+		<</if>>
+		<<if $_robin.outfits.includes("kimono")>>
+			<<run $_robin.outfits.delete("kimono")>>
+			<<set $_robin.outfits.pushUnique("robinGiftKimono")>>
+		<</if>>
+		<<if $_robin.outfits.includes("tuxedo")>>
+			<<run $_robin.outfits.delete("tuxedo")>>
+			<<set $_robin.outfits.pushUnique("robinGiftTux")>>
+		<</if>>
+		<<if $_robin.outfits.includes("gothic gown")>>
+			<<run $_robin.outfits.delete("gothic gown")>>
+			<<set $_robin.outfits.pushUnique("robinGiftGown")>>
+		<</if>>
+		<<if $_robin.outfits.includes("christmas")>>
+			<<run $_robin.outfits.delete("christmas")>>
+			<<set $_robin.outfits.pushUnique("robinGiftChristmas")>>
+		<</if>>
+		<<initNNPCClothes "Robin" "update">>
+		<<set $_robin.outfits.pushUnique("naked", "maleDefault", "femaleDefault")>>
+		<<if $_robin.currentOutfit>>
+			<<switch $_robin.currentOutfit>>
+				<<case "shirt">><<set $_clothesReplace to "robinGiftShirt">>
+				<<case "sundress">><<set $_clothesReplace to "robinGiftSundress">>
+				<<case "kimono">><<set $_clothesReplace to "robinGiftKimono">>
+				<<case "tuxedo">><<set $_clothesReplace to "robinGiftTuxedo">>
+				<<case "gothic gown">><<set $_clothesReplace to "robinGiftGown">>
+				<<case "christmas">><<set $_clothesReplace to "robinGiftChristmas">>
+			<</switch>>
+			<<npcClothesName $_robin $_clothesReplace>>
+			<<run delete $_robin.currentOutfit>>
+		<</if>>	
+	<</if>>
+
+	<!-- v0.3.6.2: Updating NPC clothing when needed -->
+	<<if $objectVersion.npcClothes lt 1 or $objectVersion.npcClothes is undefined>>
+		<<set $objectVersion.npcClothes to 1>>
+		<<if $halloween is 1 and $robinmissing isnot 1 and $hour gte 16 and $hour lt 19 and $monthday is 31 and $halloween_robin_costume and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+			<<if !$NPCName[$NPCNameList.indexOf("Robin")].outfits>>
+				<<initNNPCClothes "Robin">>
+			<</if>>
+			<<if !$NPCName[$NPCNameList.indexOf("Robin")].outfits.includes($halloween_robin_costume)>>
+				<<addNNPCOutfit "Robin" $halloween_robin_costume>>
+			<</if>>
+		<</if>>
+		<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison">>
+			<<if !$NPCName[$NPCNameList.indexOf("Kylar")].outfits>>
+				<<initNNPCClothes "Kylar">>
+			<</if>>	
+			<<if !$NPCName[$NPCNameList.indexOf("Kylar")].outfits.includes("prisonJumpsuit")>>
+				<<addNNPCOutfit "Kylar" "prisonJumpsuit">>
+			<</if>>
+		<</if>>
+		<!-- Bestow clothing to any active NPCs-->
+		<<if $NPCList isnot undefined and !$NPCList[0].clothes>>
+			<<for _i = 0; _i < $NPCList.length; _i++>>
+				<<if $NPCList[_i].type>>
+					<<if $NPCList[_i].type is "human">>
+						<<npcClothesType $NPCList[_i] "default">>
+					<<else>>
+						<<npcClothesType $NPCList[_i] "naked">>
+					<</if>>
+				<</if>>
+			<</for>>
+		<</if>>
+		<<for $_key, $_npc range $per_npc>>
+			<<if $_npc>>
+				<!-- Bestow clothing to persistent NPCs-->
+				<<if !$_npc.clothes>>
+					<<if ["anxious_guard", "methodical_guard", "relaxed_guard", "veteran_guard"].includes($_key)>>
+						<<npcClothesType $per_npc[$_key] "security">>
+					<<elseif ["scarred_inmate", "tattooed_inmate"].includes($_key)>>
+						<<npcClothesType $per_npc[$_key] "prison">>
+					<<elseif ["tower_creature"].includes($_key)>>
+						<<npcClothesType $per_npc[$_key] "naked">>
+					<<elseif ["farm_tower_guard"].includes($_key)>>
+						<<npcClothesName $per_npc[$_key] "wildsFlannel">>
+					<<elseif ["prison_intro_officer"].includes($_key)>>
+						<<npcClothesType $per_npc[$_key] "police">>
+					<<elseif ["pinch"].includes($_key)>>
+						<<npcClothesType $per_npc[$_key] "robinGiftChristmas">>
+					<<elseif ["wraith"].includes($_key)>>
+						<<npcClothesType $per_npc[$_key] "Wraith">>
+					<<else>>
+						<<npcClothesType $per_npc[$_key] "default">>
+					<</if>>
+				<</if>>
+			<</if>>
+		<</for>>
+	<</if>>
+
+	<!-- v0.3.6.2: Fixing undefined animations, printing one-time notification for any who had them disabled. -->
+	<<if $objectVersion.animations lt 1 or $objectVersion.animations is undefined>>
+		<<set $objectVersion.animations to 1>>
+		<<if $combatAnimations is false and $sidebarAnimations is false>>
+			<div id="animWarning" @class="'no-numberify '">
+				<span class='teal'>Animations are currently disabled. This may have been caused by a one-time bug. You can re-enable animations immediately, or in the "general" tab of the settings menu.</span> |
+				<<link "Enable all animations">><<addclass #animWarning "hidden">><<set $combatAnimations to true>><<set $sidebarAnimations to true>><</link>> |
+				<<link "Disable this message">><<addclass #animWarning "hidden">><</link>>
+			</div>
+		<</if>>
+		<<if $combatAnimations is undefined>>
+			<<set $combatAnimations to true>>
+			<<set $sidebarAnimations to true>>
+		<</if>>
+	<</if>>
+
 	<<if $debug_favourite is undefined>> /* add favourites constant variable */
 		<<set $debug_favourite = []>>
 	<</if>>
@@ -2795,6 +2912,7 @@
 		<<set setup.debugMenu = {}>>
 		<<set setup.debugMenu.cache_debug_div = {}>>
 	<</if>>
+
 	<!-- v0.3.6.3: Init variables necessary for custom contact lenses -->
 	<<if ndef $left_before_nurse_returned>>
 		<<set $left_before_nurse_returned to 0>>

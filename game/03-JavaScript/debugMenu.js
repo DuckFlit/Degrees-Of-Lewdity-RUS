@@ -799,6 +799,14 @@ setup.debugMenu.event_list = {
         },
         {
             link: [
+                `NPC clothing select`, `NPC Clothing Select`
+            ],
+            widgets: [
+                `<<endcombat>>`
+            ]
+        },
+        {
+            link: [
                 `Plantperson test`, `Plantperson Test`
             ],
             widgets: [

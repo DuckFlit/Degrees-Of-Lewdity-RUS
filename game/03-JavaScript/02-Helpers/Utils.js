@@ -1,10 +1,10 @@
 class Utils {
     GetStack() {
-        let stack = "";
+        let output = `:: ${V.passage}`;
         if (DOL.Stack.length >= 1) {
-            stack = ", " + DOL.Stack.join(", ");
+            output += ` [${DOL.Stack.join(", ")}]`;
         }
-        return V.passage + stack;
+        return output;
     }
 }
 

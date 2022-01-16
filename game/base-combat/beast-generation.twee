@@ -75,7 +75,8 @@
 	<<set $NPCList[_n].penis to "none">>
 <</if>>
 
-<<set $NPCList[_n].chest to "">>
+<<npcClothesType $NPCList[_n] "naked">>
+<<set $NPCList[_n].chest to "none">>
 
 <<set $NPCList[_n].insecurity to "none">>
 
@@ -134,6 +135,39 @@
 <<if $NPCList[_n].monster is "monster">>
 	<<set $NPCList[_n].lefthand to 0>>
 	<<set $NPCList[_n].righthand to 0>>
+	<!-- female monster people mammals have an accessible chest and might be able to lactate. -->
+	<<if $NPCList[_n].pronoun is "f" and ["catgirl", "doggirl", "wolfgirl", "beargirl", "foxgirl", "cowgirl"].includes($NPCList[_n].type)>>
+		<<set $NPCList[_n].chest to 0>>
+		<<if ["beargirl", "cowgirl"].includes($NPCList[_n].type)>> <!-- Bigger monsters = Bigger booba -->
+			<<set $_breastMin to [0,0,0,0,2,2,2,2,2,5,5,5,5,5,5,5,8,8,9,10,12]>>
+			<<set $_breastMax to [4,4,4,4,4,4,7,7,8,9,9,9,9,12,10,11,10,11,11,12,12]>>
+		<<else>>
+			<<set $_breastMin to [0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,5,5,8,3,10,12]>>
+			<<set $_breastMax to [4,4,4,4,4,4,7,7,7,7,8,8,8,8,8,11,11,12,10,12,12]>>
+		<</if>>
+		<<set _brdes to ["nipple","budding","tiny","small","pert","modest","full","large","ample","massive","huge","gigantic","enormous"]>>	
+		<<if $breast_mod gte $_breastMin[_i]>><<set $_breastMin[_i] to $breast_mod>><</if>>
+		<<if $breast_mod gte $_breastMax[_i]>><<set $_breastMax[_i] to $breast_mod>><</if>>
+		<<if $breast_mod lt 0>>
+			<<set $_breastMin[_i] to Math.clamp($_breastMin[_i]+$breast_mod, 0, 12)>>
+			<<set $_breastMax[_i] to Math.clamp($_breastMax[_i]+$breast_mod, 0, 12)>>
+		<</if>>
+		<<set _rngbr to random($_breastMin[_i], $_breastMax[_i])>>
+		<<set $NPCList[_n].breastsize to _rngbr>>
+		<<switch _rngbr>>
+		<<case 0>>
+			<<set $NPCList[_n].breastsdesc to "nipples">>
+			<<set $NPCList[_n].breastdesc to "nipple">>
+		<<default>>
+			<<set $NPCList[_n].breastsdesc to _brdes[_rngbr]+" breasts">>
+			<<set $NPCList[_n].breastdesc to _brdes[_rngbr]+" breast">>
+		<</switch>>
+		<<if random(1, 100) gte 81>>
+			<<set $NPCList[_n].lactation to 1>>
+		<<else>>
+			<<set $NPCList[_n].lactation to 0>>
+		<</if>>
+	<</if>>
 <</if>>
 
 

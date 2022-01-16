@@ -49,34 +49,34 @@
 <<else>>
 	<<set _Robin to $NPCName[$NPCNameList.indexOf("Robin")]>>
 	<!-- note: changes to _Robin *will* affect $NPCName[$NPCNameList.indexOf("Robin")] -->
+	<!-- does not use the new NPC clothes system completely, needs Robin crosdressing events to better determine when Robin will crossdress -->
 	<<if _Robin.outfits isnot undefined>>
-		<<if _Robin.outfits.length gt 0>>
-			<<set _Robin.currentOutfit to _Robin.outfits.random()>>
-		<<else>>
-			<<set _Robin.currentOutfit to undefined>>
+		<<if _Robin.outfits.length gt 0 and _Robin.outfits.some(x => x.includes("robinGift"))>>
+			<<set _robinOutfits to clone(_Robin.outfits)>>
+			<<set _robinOutfits to _robinOutfits.filter(x => x.includes("robinGift")).random()>>
+			<<npcClothesName _Robin _robinOutfits>><<npcClothesName $NPCList[0] _Robin.clothes.set>>
 		<</if>>
 	<</if>>
 	<<set $robinwalk to 2>><<set $money -= 1500>>
-	<<if (["tuxedo", "shirt"].includes(_Robin.currentOutfit) and _Robin.pronoun is "m") or (["sundress", "gothic gown"].includes(_Robin.currentOutfit) and _Robin.pronoun is "f") or ["clothes", "kimono"].includes(_Robin.currentOutfit)>>
-		<<His>> eyes light up and <<he>> jumps to <<his>> feet. "Let me get changed first", as <<he>> pulls out <<his>> <<print _Robin.currentOutfit>>.
+	<<if (["robinGiftTuxedo", "robinGiftShirt"].includes(_Robin.clothes.set) and _Robin.pronoun is "m") or (["robinGiftSundress", "robinGiftGown"].includes(_Robin.clothes.set) and _Robin.pronoun is "f") or ["robinGiftKimono"].includes(_Robin.clothes.set)>>
+		<<His>> eyes light up and <<he>> jumps to <<his>> feet. "Let me get changed first", as <<he>> pulls out <<his>> <<print _Robin.clothes.upper.name>>.
 		<<if $robinromance is 1>>
 			<<He>> looks at you, blushing, "I don't mind if you want to watch me change."<<glust>><<npcincr Robin lust 1>>
 		<<else>>
 			<<He>> looks at you, blushing, "Can you turn around while I change, please?"
 		<</if>>
 		<br><br>
-	<<elseif ((["tuxedo", "shirt"].includes(_Robin.currentOutfit) and _Robin.pronoun is "f") or (["sundress", "gothic gown"].includes(_Robin.currentOutfit) and _Robin.pronoun is "m")) and $robinromance is 1>>
+	<<elseif ((["robinGiftTuxedo", "robinGiftShirt"].includes(_Robin.clothes.set) and _Robin.pronoun is "f") or (["robinGiftSundress", "robinGiftGown"].includes(_Robin.clothes.set) and _Robin.pronoun is "m")) and $robinromance is 1>>
 		<<if _Robin.crossdress is undefined>>
 			<<set _Robin.crossdress to 1>>
 		<<else>>
 			<<set _Robin.crossdress += 1>>
 		<</if>>
-		<<His>> eyes light up and <<he>> jumps to <<his>> feet. "Let me get changed first," <<he>> says as <<he>> pulls out <<his>> <<print _Robin.currentOutfit>>.
+		<<His>> eyes light up and <<he>> jumps to <<his>> feet. "Let me get changed first," <<he>> says as <<he>> pulls out <<his>> <<print _Robin.clothes.upper.name>>.
 		<br><br>
 		"I wonder if anyone will recognise me." <<He>> looks at you, blushing. "I don't mind if you want to watch me change."<<glust>><<npcincr Robin lust 1>>
 		<br><br>
 	<<else>>
-		<<set _Robin.currentOutfit to undefined>>
 		<<His>> eyes light up and <<he>> jumps to <<his>> feet.
 	<</if>>
 	"What will we see?" <<he>> asks. <<His>> smile falters a moment. "Nothing scary I hope."
@@ -121,23 +121,7 @@ The film soon starts. It's pretty good. Robin enjoys it, and laughs along with t
 <<set $outside to 0>><<set $location to "town">><<effects>>
 
 You spill popcorn on Robin's lap. You clean the mess off <<him>>, and feel around <<his>> thighs for any you missed. In a moment of daring, you
-
-<<if $NPCName[$NPCNameList.indexOf("Robin")].currentOutfit is undefined>>
-	<<if $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "m">>
-		pull down <<his>> shorts
-	<<else>>
-		pull up <<his>> skirt
-	<</if>>
-<<else>>
-	<<switch $NPCName[$NPCNameList.indexOf("Robin")].currentOutfit>>
-		<<case "shirt">>pull down <<his>> shorts
-		<<case "sundress">>pull up <<his>> sundress
-		<<case "kimono">>pull up <<his>> kimono
-		<<case "tuxedo">>pull down <<his>> tuxedo trousers
-		<<case "gothic gown">>pull up <<his>> gothic gown
-	<</switch>>
-<</if>>
-and
+<<npcUndressText $NPCName[$NPCNameList.indexOf("Robin")] "lower">> and
 <<if $NPCList[0].penis isnot "none">>
 	fondle <<his>> penis through <<his>> underwear. <<Hes>> soon erect under your attention.
 <<else>>
@@ -668,22 +652,7 @@ You pounce onto <<him>>. <<He>> yelps, face awash with confused arousal. In one 
 
 :: Robin Cinema Wet 2
 <<set $outside to 0>><<set $location to "town">><<effects>>
-<<if $NPCName[$NPCNameList.indexOf("Robin")].currentOutfit is undefined>>
-	<<if $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "m">>
-		You pull down <<his>> shorts
-	<<else>>
-		You pull up <<his>> skirt
-	<</if>>
-<<else>>
-	<<switch $NPCName[$NPCNameList.indexOf("Robin")].currentOutfit>>
-		<<case "shirt">>You pull down <<his>> shorts
-		<<case "sundress">>You pull up <<his>> sundress
-		<<case "kimono">>You pull up <<his>> kimono
-		<<case "tuxedo">>You pull down <<his>> tuxedo trousers
-		<<case "gothic gown">>You pull up <<his>> gothic gown
-	<</switch>>
-<</if>>
-and
+You <<npcUndressText $NPCName[$NPCNameList.indexOf("Robin")] "lower">> and
 <<if $NPCList[0].penis isnot "none">>
 	pull down <<his>> underwear.
 <<else>>
@@ -807,11 +776,14 @@ The film starts. It's quite frightening. You think you're getting used to it whe
 	It's less wet under the protective branches of the trees. "The ground is too muddy for a picnic," Robin says. <<He>> looks at the nearby trees. "Look at that one! I bet I can climb it." <<He>> runs over to it and starts hauling <<himself>> up.
 	<br><br>
 
-	<<if $pronoun is "m">>
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].clothes.lower.name.includes("skirt")>>
+		You'd be able to see right up <<his>> skirt if you stood closer.
+		<br><br>
+	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].clothes.lower.name.includes("shorts")>>
 		<<His>> shorts are baggy. You'd be able to see right up them if you stood closer.
 		<br><br>
 	<<else>>
-		You'd be able to see right up <<his>> skirt if you stood closer.
+		<<His>> <<npcClothesText $NPCName[$NPCNameList.indexOf("Robin")] "lower">> are baggy, and snag on a branch. <<He>> doesn't seem to notice. You'd be able to see right up them if you stood closer.
 		<br><br>
 	<</if>>
 
@@ -826,11 +798,14 @@ The film starts. It's quite frightening. You think you're getting used to it whe
 	"We can't have a proper picnic in the snow though," Robin says. <<He>> looks at the nearby trees. "Look at that one! I bet I can climb it." <<He>> runs over to it and starts hauling <<himself>> up.
 	<br><br>
 
-	<<if $pronoun is "m">>
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].clothes.lower.name.includes("skirt")>>
+		You'd be able to see right up <<his>> skirt if you stood closer.
+		<br><br>
+	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].clothes.lower.name.includes("shorts")>>
 		<<His>> shorts are baggy. You'd be able to see right up them if you stood closer.
 		<br><br>
 	<<else>>
-		You'd be able to see right up <<his>> skirt if you stood closer.
+		<<His>> <<npcClothesText $NPCName[$NPCNameList.indexOf("Robin")] "lower">> are baggy, and snag on a branch. <<He>> doesn't seem to notice. You'd be able to see right up them if you stood closer.
 		<br><br>
 	<</if>>
 
@@ -1181,10 +1156,17 @@ Robin clings to your arm and gazes on you with awe. "You fought off a giant snak
 
 <<location "forest">><<effects>>
 You stand right beneath <<him>>.
-<<if $pronoun is "m">>
-	You see right up <<his>> shorts. <<Hes>> wearing blue underwear.
+<<if $NPCName[$NPCNameList.indexOf("Robin")].clothes.lower.name.includes("skirt")>>
+	You see right up <<his>> skirt.
+<<elseif $NPCName[$NPCNameList.indexOf("Robin")].clothes.lower.name.includes("shorts")>>
+	You see right up <<his>> shorts. 
 <<else>>
-	You see right up <<his>> skirt. <<Hes>> wearing pink underwear.
+	You see right up <<his>> <<npcClothesText $NPCName[$NPCNameList.indexOf("Robin")] "lower">>.
+<</if>>
+<<if $pronoun is "m">>
+	<<Hes>> wearing blue underwear.
+<<else>>
+	<<Hes>> wearing pink underwear.
 <</if>>
 <<promiscuity1>>
 <br><br>
