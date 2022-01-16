@@ -4,9 +4,6 @@
 <!-- "FOR" loops work by counting backward from highest numbered combatant to lowest e.g. 5 to 0. -->
 <!-- In case of train combat, count stops after 1, e.g. 5 to 5. -->
 <!-- Lots of further opportunity to reduce code using <<for>><</for>> loops with NPC objects NG 2.8-->
-<<set _ppbigreaction to ["Your body feels weak at the sight.","You shudder at the sight.","You moan involuntarily at its size.","You gasp at its massive girth.","Your thighs feel weak as you look on."]>>
-<<set _ppsmallreaction to ["You stifle a laugh at the sight.","You smirk at the sight.","You stifle a chuckle at the sight.","You stifle a giggle at the sight.","You try not to laugh."]>>
-<<set _pprng to random(0, 4)>>
 
 /*ToDo: Pregnancy, remove to properly enable*/
 <<if $pregnancyTesting is undefined>>
@@ -1139,94 +1136,101 @@
 	<</if>>
 <</if>>
 
-<<if $rightaction is "rightUndressOther" and $leftaction is "leftUndressOther" and $lefttarget is $righttarget>>
-	<<set $rightaction to 0>><<set $rightactiondefault to "rightUndressOther">><<set $leftaction to 0>><<set $leftactiondefault to "leftUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 2 $lefttarget>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 5) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<if $NPCList[$lefttarget].penis is "clothed">>
-			<<if $npcSub and $NPCList[$lefttarget].fullDescription is "Sydney">>
-				<span class="lblue">You <<handtext>> undress $NPCList[$lefttarget].pronouns.him with both hands.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">You <<handtext>> undress $NPCList[$lefttarget].pronouns.him with both hands, revealing <<his>> $NPCList[$lefttarget].penisdesc, <<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>>inside of a $NPCList[$lefttarget].chastity.penis<<else>>fully erect<</if>>.</span>
-			<</if>>
-			<<switch $NPCList[$lefttarget].penissize>>
-			<<case 4>>
-				<span class="red"> _ppbigreaction[_pprng]</span>
-			<<case 1>>
-				<span class="green"> _ppsmallreaction[_pprng]</span>
+<<if $rightaction is "rightUndressOther" and $leftaction is "leftUndressOther" and $lefttarget is $righttarget and $undressLeftTarget is $undressRightTarget and $undressLeftTarget isnot "rest">>
+	<<set $rightaction to 0>><<set $leftaction to 0>><<set $rightactiondefault to "rightUndressOther">><<set $leftactiondefault to "leftUndressOther">>
+	<<handskilluse>><<combatpromiscuity2>><<brat 2 $righttarget>>
+	<<set $_npc to $NPCList[$righttarget]>><<set $_clothesTarget to $undressRightTarget>>
+	<<personselect $righttarget>>
+	<<if (700 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * $_npc.clothes[$_clothesTarget].integrity)>>
+		<!-- Using a switch to make it easier to add more NPC clothes types later -->
+		<<switch $_clothesTarget>>
+			<<case "upper">>
+				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>> with both hands, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<set $_npc.chest to 0>>
+			<<case "lower">>
+				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>> with both hands, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<if $_npc.fullDescription is "Sydney">>
+					<<sydneyExpose>>
+				<</if>>				
+				<<if $_npc.penis is "clothed">>
+					<<npcGenitalReaction $_npc>>
+					<<set $_npc.penis to 0>>
+				<</if>>
+				<<if $_npc.vagina is "clothed">>
+					<<set $_npc.vagina to 0>>
+				<</if>>
 			<<default>>
-			<</switch>>
-			<<set $NPCList[$lefttarget].penis to 0>>
-		<<elseif $NPCList[$lefttarget].vagina is "clothed">>
-			<<if $npcSub and $NPCList[$lefttarget].fullDescription is "Sydney">>
-				<span class="lblue">You <<handtext>> undress $NPCList[$lefttarget].pronouns.him with both hands.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">You <<handtext>> undress $NPCList[$lefttarget].pronouns.him with both hands, revealing <<his>> pussy<<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>> behind a $NPCList[$lefttarget].chastity.vagina<</if>>.</span>
-			<</if>>
-			<<set $NPCList[$lefttarget].vagina to 0>>
-		<</if>>
+				You try to undress <<him>>, but grab nothing but the air. <span class="red">Improper clothes target: $_clothesTarget. Please report this bug.</span>
+		<</switch>>
 	<<else>>
-		You try to undress $NPCList[$lefttarget].pronouns.him with both hands, but <<personselect $lefttarget>><<he>> holds $NPCList[$lefttarget].pronouns.his clothing up.
+		You try to <<npcUndressText $_npc $_clothesTarget>>, but <<he>> holds on to <<his>> clothes.
+		<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor(($handskill / 100) * 1.5)>>
 	<</if>>
+	<<unset $undressLeftTarget>><<unset $undressRightTarget>>
 <</if>>
 
-<<if $rightaction is "rightUndressOther">>
-	<<set $rightaction to 0>><<set $rightactiondefault to "rightUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 1 $lefttarget>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<if $NPCList[$lefttarget].penis is "clothed">>
-			<<if $npcSub and $NPCList[$lefttarget].fullDescription is "Sydney">>
-				<span class="lblue">You <<handtext>> undress $NPCList[$lefttarget].pronouns.him.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">You <<handtext>> undress $NPCList[$lefttarget].pronouns.him, revealing <<his>> $NPCList[$lefttarget].penisdesc, <<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>>inside of a $NPCList[$lefttarget].chastity.penis<<else>>fully erect<</if>>.</span>
-			<</if>>
-			<<switch $NPCList[$lefttarget].penissize>>
-			<<case 4>>
-				<span class="red"> _ppbigreaction[_pprng]</span>
-			<<case 1>>
-				<span class="green"> _ppsmallreaction[_pprng]</span>
+<<if $rightaction is "rightUndressOther" and $undressRightTarget isnot "rest">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 1 $righttarget>>
+	<<set $_npc to $NPCList[$righttarget]>><<set $_clothesTarget to $undressRightTarget>>
+	<<personselect $righttarget>>
+	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * $_npc.clothes[$_clothesTarget].integrity)>>
+		<!-- Using a switch to make it easier to add more NPC clothes types later -->
+		<<switch $_clothesTarget>>
+			<<case "upper">>
+				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<set $_npc.chest to 0>>
+			<<case "lower">>
+				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<if $_npc.fullDescription is "Sydney">>
+					<<sydneyExpose>>
+				<</if>>				
+				<<if $_npc.penis is "clothed">>
+					<<npcGenitalReaction $_npc>>
+					<<set $_npc.penis to 0>>
+				<</if>>
+				<<if $_npc.vagina is "clothed">>
+					<<set $_npc.vagina to 0>>
+				<</if>>
 			<<default>>
-			<</switch>>
-			<<set $NPCList[$lefttarget].penis to 0>>
-		<<elseif $NPCList[$lefttarget].vagina is "clothed">>
-			<<if $npcSub and $NPCList[$lefttarget].fullDescription is "Sydney">>
-				<span class="lblue">You <<handtext>> undress $NPCList[$lefttarget].pronouns.him.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">You <<handtext>> undress $NPCList[$lefttarget].pronouns.him, revealing <<his>> pussy<<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>> behind a $NPCList[$lefttarget].chastity.vagina<</if>>.</span>
-			<</if>>
-			<<set $NPCList[$lefttarget].vagina to 0>>
-		<</if>>
+				You try to undress <<him>>, but grab nothing but the air. <span class="red">Improper clothes target: $_clothesTarget. Please report this bug.</span>
+		<</switch>>
 	<<else>>
-		You try to undress $NPCList[$lefttarget].pronouns.him, but <<personselect $lefttarget>><<he>> holds $NPCList[$lefttarget].pronouns.his clothing up.
+		You try to <<npcUndressText $_npc $_clothesTarget>>, but <<he>> holds on to <<his>> clothes.
+		<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor($handskill / 100)>>
 	<</if>>
+	<<unset $undressRightTarget>>
 <</if>>
 
-<<if $leftaction is "leftUndressOther">>
-	<<set $leftaction to 0>><<set $leftactiondefault to "leftUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 1 $righttarget>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<if $NPCList[$righttarget].penis is "clothed">>
-			<<if $npcSub and $NPCList[$righttarget].fullDescription is "Sydney">>
-				<span class="lblue">You <<handtext>> undress $NPCList[$righttarget].pronouns.him.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">You <<handtext>> undress $NPCList[$righttarget].pronouns.him, revealing <<his>> $NPCList[$righttarget].penisdesc, <<if $NPCList[$righttarget].chastity.penis.includes("chastity")>>inside of a $NPCList[$righttarget].chastity.penis<<else>>fully erect<</if>>.</span>
-			<</if>>
-			<<switch $NPCList[$righttarget].penissize>>
-			<<case 4>>
-				<span class="red"> _ppbigreaction[_pprng]</span>
-			<<case 1>>
-				<span class="green"> _ppsmallreaction[_pprng]</span>
+<<if $leftaction is "leftUndressOther" and $undressLeftTarget isnot "rest">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 1 $lefttarget>>
+	<<set $_npc to $NPCList[$lefttarget]>><<set $_clothesTarget to $undressLeftTarget>>
+	<<personselect $lefttarget>>
+	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * $_npc.clothes[$_clothesTarget].integrity)>>
+		<!-- Using a switch to make it easier to add more NPC clothes types later -->
+		<<switch $_clothesTarget>>
+			<<case "upper">>
+				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<set $_npc.chest to 0>>
+			<<case "lower">>
+				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<if $_npc.fullDescription is "Sydney">>
+					<<sydneyExpose>>
+				<</if>>				
+				<<if $_npc.penis is "clothed">>
+					<<npcGenitalReaction $_npc>>
+					<<set $_npc.penis to 0>>
+				<</if>>
+				<<if $_npc.vagina is "clothed">>
+					<<set $_npc.vagina to 0>>
+				<</if>>
 			<<default>>
-			<</switch>>
-			<<set $NPCList[$righttarget].penis to 0>>
-		<<elseif $NPCList[$righttarget].vagina is "clothed">>
-			<<if $npcSub and $NPCList[$righttarget].fullDescription is "Sydney">>
-				<span class="lblue">You <<handtext>> undress $NPCList[$righttarget].pronouns.him.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">You <<handtext>> undress $NPCList[$righttarget].pronouns.him, revealing <<his>> pussy<<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>> behind a $NPCList[$righttarget].chastity.vagina<</if>>.</span>
-			<</if>>
-			<<set $NPCList[$righttarget].vagina to 0>>
-		<</if>>
+				You try to undress <<him>>, but grab nothing but the air. <span class="red">Improper clothes target: $_clothesTarget. Please report this bug.</span>
+		<</switch>>
 	<<else>>
-		You try to undress $NPCList[$righttarget].pronouns.him, but <<personselect $righttarget>><<he>> holds $NPCList[$righttarget].pronouns.his clothing up.
+		You try to <<npcUndressText $_npc $_clothesTarget>>, but <<he>> holds on to <<his>> clothes.
+		<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor($handskill / 100)>>
 	<</if>>
+	<<unset $undressLeftTarget>>
 <</if>>
 
 <<if $leftaction is "peniscondom" or $rightaction is "peniscondom">>
@@ -1947,7 +1951,7 @@
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "breastsuck" and $NPCList[$mouthtarget].chest is "mouthentrance">>
+<<if $mouthaction is "breastsuck" and $NPCList[$mouthtarget].chest.toString().includes("mouth")>>
 	<<set $mouthactiondefault to "breastsuck">><<set $mouthaction to 0>><<submission 3 $mouthtarget>>
 	<<set $mouthstate to "nipple">>
 	<<set $NPCList[$mouthtarget].chest to "mouth">>
@@ -2159,16 +2163,16 @@
 
 <<if $mouthaction is "pullawaykiss" and $NPCList[$mouthtarget].mouth.toString().includes("kiss")>>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "pullawaykiss">><<personselect $mouthtarget>>
-	You try to pull your head away from their lips.
+	You try to pull your head away from <<his>> lips.
 	<<oralskilluse>><<brat 1 $mouthtarget>>
 	<<set _nectarDifficulty to Math.clamp($drugged, 0, 500) + Math.clamp($nectar_addiction, 0, 500)>>
 	<<willpowerdifficulty _nectarDifficulty $willpowermax "silent">>
 	<<if $NPCList[$mouthtarget].type is "plant" and $mouthstate isnot "kissentrance" and !$willpowerSuccess>>
 		<span class="red">However, you can't tear yourself from the sweet nectar.</span>
 		<<if $mouthstate is "kissimminent">>
-			You kiss them back, parting their lips with your tongue.
+			You kiss them back, parting <<his>> lips with your tongue.
 		<<elseif $mouthstate is "kiss">>
-			You kiss them back, caressing their tongue with your own.
+			You kiss them back, caressing <<his>> tongue with your own.
 		<</if>>
 		<<willpower 1>>
 	<<else>>

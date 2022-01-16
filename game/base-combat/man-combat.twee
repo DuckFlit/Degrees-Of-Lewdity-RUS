@@ -298,7 +298,7 @@
 	<<set $_clothing_lower to $worn[$_lowerslot]>>
 
 
-	<<combat-pull-clothing-state $_upperslot "down" $_lowerslot>>
+	<<combat-pull-clothing-state $_upperslot "down" $_hand $_lowerslot>>
 
 	<<set _origin to $_clothing_upper.state_top>>
 	<<set _dest to setup.clothingStateNextDown[_origin]>>
@@ -379,7 +379,7 @@
 		<<set $_lowerStateSame to setup.clothingStateIndex[$_clothing_lower.state] gte setup.clothingStateIndex[_origin]>>
 		/* <<set $_clothing_upper.state to _dest>> */
 
-		<<combat-pull-clothing-state $_upperslot "up">>
+		<<combat-pull-clothing-state $_upperslot "up" $_hand>>
 
 		/* if the base of the outfit is below the original top of the upper portion, pull the upper portion's top up as well */
 		<<if $_upperStateSame or setup.clothingStateIndex[$_clothing_upper.state_top_base] gte setup.clothingStateIndex[_origin]>>
@@ -441,7 +441,7 @@
 	<<set $_origin to $_clothing.state>>
 
 
-	<<combat-pull-clothing-state $_slot "down">>
+	<<combat-pull-clothing-state $_slot "down" $_hand>>
 	
 	<<switch $_origin>>
 		<<case "chest">>
@@ -484,7 +484,7 @@
 
 
 	<<if $position isnot "wall">>
-		<<combat-pull-clothing-state $_slot "up">>
+		<<combat-pull-clothing-state $_slot "up" $_hand>>
 		<<switch _dest>>
 			<<case "midriff">>
 				<<He>> lifts up your $_clothing.name with <<his>> $_hand hand, exposing your midriff.
@@ -523,8 +523,9 @@
 	<<set $_slot to $args[0]>>
 	<<set $_clothing to $worn[$_slot]>>
 	<<set $_up to $args[1] is "up">>
-	<<if $args[2]>>
-		<<set $_otherOutfitSlot to $args[2]>>
+	<<set $_hand to $args[2]>>
+	<<if $args[3]>>
+		<<set $_otherOutfitSlot to $args[3]>>
 		<<set $_otherClothing to $worn[$_otherOutfitSlot]>>
 	<</if>>
 
@@ -845,7 +846,7 @@
 
 <<widget "combat-hand-on-head_breasts">>
 	<<set $rng to random(1, 100)>>
-	<<if $rng gte 69 and $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+	<<if $rng gte 69 and ($worn.face.type.includes("covered") or $worn.face.type.includes("gag"))>>
 		<<He>> pushes your mouth against <<hisselect _n>> $NPCList[_n].breastdesc, but it's blocked by your $worn.face.name.
 		<<set $speechheadbreasts to 1>>
 		<<if $NPCList[_n].type is "plant" and $NPCList[_n].pronoun is "f" and $breastfeedingdisable is "f">>
@@ -1261,8 +1262,13 @@
 			<<neutral 4 _n>><<playWithBreasts>>
 			<<bodypart_admire_chance breasts>>
 		<</if>>
-	<<elseif $enemyanger + $rng lte 70 and $pronoun is "f" and $position isnot "wall" and ($head is 0 or $NPCList[_n].chest is "head") and ($mouthuse is 0 or $mouthuse is "breasts") and $NPCList[_n].chest is 0 and $NPCList[_n].location.genitals isnot "head">>
-		<<He>> cradles the back of your head in <<his>> $args[0] hand, and <span class="pink">pushes your face against <<his>> $NPCList[_n].breastsdesc.</span>
+	<<elseif $enemyanger + $rng lte 70 and $pronoun is "f" and $position isnot "wall" and $head is 0 and ($mouthuse is 0 or $mouthuse is "breasts") and ($NPCList[_n].chest is 0 or $NPCList[_n].chest is "clothed") and $NPCList[_n].location.genitals isnot "head">>
+		<<if $NPCList[_n].chest is "clothed">>
+			<span class="blue"><<He>> <<npcUndressText $NPCList[_n] "upper" "self">>,</span> and <span class="pink">pushes your face against <<his>> $NPCList[_n].breastsdesc</span> with <<his>> $args[0] hand.
+			<<set $NPCList[_n].chest to 0>>
+		<<else>>
+			<<He>> cradles the back of your head in <<his>> $args[0] hand, and <span class="pink">pushes your face against <<his>> $NPCList[_n].breastsdesc.</span>
+		<</if>>
 		<<if $NPCList[_n].type is "plant" and $breastfeedingdisable is "f">>
 			<span class="purple">It carries a sweet scent.</span>
 		<<elseif $NPCList[_n].lactation is 1 and $breastfeedingdisable is "f">>
@@ -1771,9 +1777,7 @@
 <<set _n to $args[0]>>
 <!-- Converted his1-6 to hisselect #. Person1-6 to personselect #. $intro1-6 as array $NPCList[_n].intro -->
 <!-- Converted man1-6speech to manspeech #. Randomized penissize reaction.-->
-<<set _ppbigreaction to ["Your body feels weak at the sight.","You shudder at the sight.","You moan involuntarily at its size.","You gasp at its massive girth.","Your thighs feel weak as you look on."]>>
-<<set _ppsmallreaction to ["You stifle a laugh at the sight.","You smirk at the sight.","You stifle a chuckle at the sight.","You stifle a giggle at the sight.","You try not to laugh."]>>
-<<set _pprng to random(0, 4)>>
+
 <<if ["m", "f", "i", "n", "t"].includes($NPCList[_n].pronoun)>>
 	<<set $pronoun to $NPCList[_n].pronoun>>
 <<elseif $debugdisable is "f">>
@@ -1803,29 +1807,12 @@
 
 	<<set $rng to random(1, 100)>>
 	<<if $NPCList[_n].penis is "clothed" and $npcSub isnot 1>>
-		<<if $pronoun is "m">>
-			<<if $enemyarousal gte 40>>
-				<<He>> unzips <<his>> fly, <span class="blue">revealing <<his>> $NPCList[_n].penisdesc<<if $NPCList[_n].chastity.penis.includes("chastity")>>, inside of a $NPCList[_n].chastity.penis<<elseif $NPCList[_n].penisdesc.includes("strap-on")>><<else>>, fully erect<</if>>.</span>
-				<<switch $NPCList[_n].penissize>>
-				<<case 4>>
-					<span class="red"> _ppbigreaction[_pprng]</span>
-				<<case 1>>
-					<span class="green"> _ppsmallreaction[_pprng]</span>
-				<<default>>
-				<</switch>>
-				<<set $NPCList[_n].penis to 0>>
-			<</if>>
-		<<else>>
-			<<if $enemyarousal gte 40>>
-				<<He>> pulls up <<his>> skirt, <span class="blue">revealing <<his>> $NPCList[_n].penisdesc<<if $NPCList[_n].chastity.penis.includes("chastity")>>, inside of a $NPCList[_n].chastity.penis<<elseif $NPCList[_n].penisdesc.includes("strap-on")>><<else>>, fully erect<</if>>.</span>
-				<<switch $NPCList[_n].penissize>>
-				<<case 4>>
-					<span class="red"> You gasp at its massive girth.</span>
-				<<case 1>>
-					<span class="green"> You stifle a giggle.</span>
-				<<default>>
-				<</switch>>
-				<<set $NPCList[_n].penis to 0>>
+		<<if $enemyarousal gte 40>>
+			<span class="blue"><<He>> <<npcUndressText $NPCList[_n] "lower" "self">>, <<npcRevealText $NPCList[_n] "lower">>.</span>
+			<<npcGenitalReaction $NPCList[_n]>>
+			<<set $NPCList[_n].penis to 0>>
+			<<if $NPCList[_n].vagina isnot "none">>
+				<<set $NPCList[_n].vagina to 0>>
 			<</if>>
 		<</if>>
 		<<if $NPCList[_n].fullDescription is "Sydney">>
@@ -3056,15 +3043,12 @@
 
 	<<set $rng to random(1, 100)>>
 	<<if $NPCList[_n].vagina is "clothed" and $npcSub isnot 1>>
-		<<if $pronoun is "f">>
-			<<if $enemyarousal gte 40>>
-				<span class="blue"><<He>> lifts up <<his>> skirt, revealing <<his>> moistened pussy<<if $NPCList[_n].chastity.vagina.includes("chastity")>> behind a $NPCList[_n].chastity.vagina<</if>>.</span>
-				<<set $NPCList[_n].vagina to 0>>
-			<</if>>
-		<<else>>
-			<<if $enemyarousal gte 40>>
-				<span class="blue"><<He>> unzips <<his>> fly, revealing <<his>> moistened pussy<<if $NPCList[_n].chastity.vagina.includes("chastity")>> behind a $NPCList[_n].chastity.vagina<</if>>.</span>
-				<<set $NPCList[_n].vagina to 0>>
+		<<if $enemyarousal gte 40>>
+			<span class="blue"><<He>> <<npcUndressText $NPCList[_n] "lower" "self">>, <<npcRevealText $NPCList[_n] "lower">>.</span>
+			<<set $NPCList[_n].vagina to 0>>
+			<<if $NPCList[_n].penis isnot "none">>
+				<<npcGenitalReaction $NPCList[_n]>>
+				<<set $NPCList[_n].penis to 0>>
 			<</if>>
 		<</if>>
 		<<if $NPCList[_n].fullDescription is "Sydney">>
@@ -3663,6 +3647,18 @@
 	<<elseif $NPCList[_n].penis is 0>>
 		<<penisinit>>
 	<</if>>
+
+	<!-- CHEST START -->
+
+	<<set $rng to random(1, 100)>>
+	<<if $NPCList[_n].chest is "clothed" and $npcSub isnot 1>>
+		<<if ($NPCList[_n].pronoun is "f" and ($NPCList[_n].lactation is 1 or $rng lte ($enemyarousal - 80))) or 
+		($rng lte 15 and $enemyarousal gte 105)>>
+			<span class="blue"><<He>> <<npcUndressText $NPCList[_n] "upper" "self">>, <<npcRevealText $NPCList[_n] "upper">>.</span>
+			<<set $NPCList[_n].chest to 0>>
+		<</if>>
+	<</if>>
+	<<chest_section>>
 
 	<!-- MOUTH START -->
 
@@ -5258,6 +5254,108 @@
 	<</if>>
 <</widget>>
 
+<<widget "chest_section">>
+<<if $NPCList[_n].chest isnot "none">>
+	<<if $NPCList[_n].breastsize lte 1>>
+		<<set $_NPCBreastDesc to "chest">>
+	<<else>>
+		<<set $_NPCBreastDesc to ($NPCList[_n].chest is "clothed" ? "clothed" : either("bare", "exposed")) + " $NPCList[_n].breastsdesc">>
+	<</if>>
+<</if>>
+<<if $NPCList[_n].chest is 0 or $NPCList[_n].chest is "clothed">>
+	<<if $NPCList[_n].pronoun is "f" and ($NPCList[_n].location.genitals is "genitals" or $NPCList[_n].stance is "top")>>
+		<!-- Doggy -->
+		<<if $position is "doggy">>
+			<!-- Being under the player -->
+			<<if $NPCList[_n].vagina.toString().includes("penis")
+			or $NPCList[_n].vagina is "frot"
+			or $NPCList[_n].vagina.toString().includes("vagina")
+			or $NPCList[_n].penis.toString().includes("otheranus")
+			or $NPCList[_n].penis is "vaginadouble">>
+				<<if $NPCList[_n].mouth is "kiss">>
+					<<if $NPCList[_n].breastsize lte 1>>
+						<<His>> nipples graze your own.
+					<<else>>
+						<<His>> $_NPCBreastDesc squish against <<if $NPCList[_n].breastsize is $breastsize>>yours<<else>>your <<breasts>><</if>>.
+					<</if>>
+				<<else>>
+					<<if $NPCList[_n].breastsize gte 6>>
+						<<if $NPCList[_n].righthand is 0 and $NPCList[_n].lefthand is 0>>
+							<<He>> hugs you between <<his>> $_NPCBreastDesc.
+						<<else>>
+							<<His>> $NPCList[_n].breastsdesc bounce <<if $NPCList[_n].chest is "clothed">>beneath you in <<his>> $NPCList[_n].clothes.upper.name<<else>>freely beneath you with <<his>> movements<</if>>.
+						<</if>>
+					<<else>>
+						<<His>> $_NPCBreastDesc lay open beneath you.
+					<</if>>
+				<</if>>
+			<!-- Being above/behind the player -->		
+			<<else>>
+				<<if $NPCList[_n].breastsize gte 8>>
+					You feel <<his>> $_NPCBreastDesc weighing down on your back.
+				<<else>>
+					You feel <<his>> $_NPCBreastDesc pressing into your back.
+				<</if>>
+			<</if>>
+		<!-- Missionary -->
+		<<else>>
+			<!-- Being under the player -->
+			<<if $NPCList[_n].penis.toString().includes("anus") or
+			$NPCList[_n].penis is "vaginadouble">>
+				<<if $NPCList[_n].breastsize gte 10>>
+					<<if $NPCList[_n].righthand is 0 and $NPCList[_n].lefthand is 0>>
+						<<He>> hugs you between <<his>> $_NPCBreastDesc.
+					<<else>>
+						<<His>> $_NPCBreastDesc bounce around you as you lay between them.
+					<</if>>
+				<<else>>
+					You feel <<his>> $_NPCBreastDesc pressing into your back.
+				<</if>>
+			<!-- Being above/riding the player -->
+			<<else>>
+				<<if $NPCList[_n].mouth is "kiss">>
+					<<if $NPCList[_n].breastsize lte 1>>
+						<<His>> nipples graze your own.
+					<<else>>
+						<<His>> $_NPCBreastDesc squish against <<if $NPCList[_n].breastsize is $breastsize>>yours<<else>>your <<breasts>><</if>>.
+					<</if>>
+				<<else>>
+					<<if $NPCList[_n].breastsize gte 6>>
+						<<His>> $NPCList[_n].breastsdesc bounce <<if $NPCList[_n].chest is "clothed">>above you in <<his>> $NPCList[_n].clothes.upper.name<<else>>freely above you with <<his>> movements<</if>>.
+					<<else>>
+						<<His>> $_NPCBreastDesc lay open above you.
+					<</if>>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+<<elseif $NPCList[_n].chest.toString().includes("mouth")>>
+	<<if $mouthstate is "breasts">>
+		<<if $enemyarousal gte (($enemyarousalmax / 10) * 6)>>
+			<<if $NPCList[_n].breastsize lte 1>>
+				<<His>> heart beats rapidly against your cheek.
+			<<else>>
+				You can feel <<his>> heartbeat quickening through <<his>> $_NPCBreastDesc.
+			<</if>>
+		<<else>>
+			<<if $NPCList[_n].breastsize lte 1>>
+				<<His>> chest rubs against your face.
+			<<else>>
+				<<His>> chest swells with each breath, <<his>> $_NPCBreastDesc rhythmically rubbing against your face.
+			<</if>>
+		<</if>>
+	<<elseif $mouthstate is "nipple">>
+		<<if $enemyarousal gte (($enemyarousalmax / 10) * 6)>>
+			<<if $NPCList[_n].breastsize lte 1>>
+				<<His>> chest heaves erratically. <<He>> struggles to keep your mouth latched to <<his>> nipple.
+			<<else>>
+				<<His>> breaths are quick and heavy, jostling your head against <<his>> breast.
+			<</if>>	
+		<</if>>
+	<</if>>
+<</if>>
+<</widget>>
+
 <<widget "mancombat_strangle">>
 <<set _left = $NPCList[_n].lefthand is "throat">>
 <<set _right = $NPCList[_n].righthand is "throat">>
@@ -5441,10 +5539,10 @@
 
 :: Man combat suffocated
 <<if $npc.includes("Sydney")>>
-    <<NPCStatusCheck "Sydney">>
+	<<NPCStatusCheck "Sydney">>
 <</if>>
 <<if $npc.includes("Kylar")>>
-    <<NPCStatusCheck "Kylar">>
+	<<NPCStatusCheck "Kylar">>
 <</if>>
 <<if $suffocationPhase lte 1>>
 	<span class='red'>You suffocate.</span><br>

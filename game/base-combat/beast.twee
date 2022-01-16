@@ -9,6 +9,7 @@
 <!-- SKIPPED .claws (0, 1) replacing $claws. Claws are rarely removed (only for dolphins). This could be revisited depending on new beast types added -->
 <!-- TODO New widgets: growling, whimpering, jaws, claws, teeth -->
 <!-- TODO Create train-combat functionality for human NPCs -->
+<!-- Any instances of .location used are to prevent weirdness with monsterperson chest play.-->
 <<widget "beast">>
 <div @class="($debugLines ? 'debugLines-beast' : '')">
 <<outfitChecks>>
@@ -82,6 +83,11 @@
 	<<hand_section>>
 
 	/* End Hand Section */
+
+	<!-- CHEST START -->
+
+	<<chest_section>>
+	
 <</if>>
 
 
@@ -90,7 +96,7 @@
 	<<if $enemyanger + $rng lte 50>>
 		<span class="blue"><<bHe>> releases your hair.</span>
 		<<set $NPCList[_n].mouth to 0>>
-	<<else>>
+	<<elseif $mouthuse isnot "breasts">>
 		<<bHe>> pulls on your hair, jerking your head back.
 		<<violence 1>>
 	<</if>>
@@ -1350,7 +1356,7 @@
 	<<if $NPCList[_n].mouth is 0>>
 		<<if $NPCList[_n].monster is "monster" and random(1, 5) is 5>>
 			<<beastspeech _n>>
-		<<elseif $enemyanger + $rng lte 20>>
+		<<elseif $enemyanger + $rng lte 20 and $NPCList[_n].location.head is 0>>
 			<<if $NPCList[_n].penis is 0 or $NPCList[_n].vagina is 0>>
 				Curious, <<bhe>> sniffs your groin.
 				<<neutral 5>><<set $enemyarousal += 10>>
@@ -1358,9 +1364,9 @@
 				Curious, <<bhe>> sniffs your face.
 				<<neutral 1>><<set $enemyarousal += 10>>
 			<</if>>
-		<<elseif $enemyanger + $rng lte 40>>
+		<<elseif $enemyanger + $rng lte 40 and $NPCList[_n].location.head is 0>>
 			<<beastlick>>
-		<<elseif $enemyanger + $rng lte 160>>
+		<<elseif $enemyanger + $rng lte 160 and $NPCList[_n].location.head is 0>>
 			<<if $worn.over_lower.name isnot "naked" or $worn.lower.name isnot "naked">>
 				<<if setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.over_lower.skirt_down is 1>>
 					<span class="blue"><<bHe>> lifts up your $worn.over_lower.name with <<bhis>> <<beast_teeth_text>>.</span>
@@ -1408,7 +1414,7 @@
 	<<if $NPCList[_n].penis is 0 or $NPCList[_n].vagina is 0>>
 		<<if $enemyarousal gte (($enemyarousalmax / 10) * 3)>>
 			<<if $NPCList[_n].gender is "f" and !$player.penisExist>>
-				<<if $rng gte 51 and $position isnot "wall">>
+				<<if $rng gte 51 and $position isnot "wall" and $NPCList[_n].location.head is 0>>
 					<<if $water is 0>>
 						<span class="blue"><<bHe>> jumps on top of you, mounting your face and pinning you down.</span>
 						<<set $NPCList[_n].stance to "topface">><<violence 5>><<set $NPCList[_n].mouth to 0>>
@@ -1426,7 +1432,7 @@
 					<</if>>
 				<</if>>
 			<<else>>
-				<<if $rng gte 71 and $position isnot "wall">>
+				<<if $rng gte 71 and $position isnot "wall" and $NPCList[_n].location.head is 0>>
 					<<if $water is 0>>
 						<span class="blue"><<bHe>> jumps on top of you, mounting your face and pinning you down.</span>
 						<<set $NPCList[_n].stance to "topface">><<violence 5>><<set $NPCList[_n].mouth to 0>>
@@ -1452,13 +1458,13 @@
 	<<if $NPCList[_n].mouth is 0>>
 		<<if $NPCList[_n].monster is "monster" and random(1, 5) is 5>>
 			<<beastspeech _n>>
-		<<elseif ($enemyanger + $rng) lte 20 and $position isnot "wall">>
+		<<elseif ($enemyanger + $rng) lte 20 and $position isnot "wall" and $NPCList[_n].location.head isnot "head">>
 			<<bHe>> licks your face.
 			<<neutral 2>>
-		<<elseif ($enemyanger + $rng) lte 40 and $position isnot "wall">>
+		<<elseif ($enemyanger + $rng) lte 40 and $position isnot "wall" and $NPCList[_n].location.head isnot "head">>
 			<<bHe>> licks your neck.
 			<<neutral 2>>
-		<<elseif $enemyanger + $rng lte 60>>
+		<<elseif $enemyanger + $rng lte 60 and $NPCList[_n].location.head isnot "head">>
 			<<if $worn.upper.name isnot "naked">>
 				<<bHe>> tears at your $worn.upper.name.
 				<<neutral 3>><<set $worn.upper.integrity -= 10>>
@@ -1475,16 +1481,16 @@
 		<<elseif $enemyanger + $rng lte 120>>
 			<<bHe>> <<beast_growls_text>> menacingly.
 			<<violence 1>>
-		<<elseif ($enemyanger + $rng) lte 140 and $position isnot "wall">>
+		<<elseif ($enemyanger + $rng) lte 140 and $position isnot "wall" and $NPCList[_n].location.head isnot "head">>
 			<<bHe>> bites your face.
 			<<violence 5>><<bruise face>><<hitstat>>
-		<<elseif ($enemyanger + $rng) lte 160 and $position isnot "wall">>
+		<<elseif ($enemyanger + $rng) lte 160 and $position isnot "wall" and $NPCList[_n].location.head isnot "head">>
 			<<bHe>> bites your neck.
 			<<violence 5>><<bruise neck>><<hitstat>>
-		<<elseif $position isnot "wall">>
+		<<elseif $position isnot "wall" and $NPCList[_n].location.head isnot "head">>
 			<<bHe>> grabs your neck in <<bhis>> <<beast_teeth_text>>.
 			<<violence 5>><<bruise neck>><<set $NPCList[_n].mouth to "neck">><<hitstat>>
-		<<else>>
+		<<elseif and $NPCList[_n].location.head isnot "head">>
 			<<bHe>> bites your waist.
 			<<violence 5>><<bruise tummy>><<hitstat>>
 		<</if>>

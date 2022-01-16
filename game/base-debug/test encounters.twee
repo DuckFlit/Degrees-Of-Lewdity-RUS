@@ -18,10 +18,10 @@
 <br>
 <span class="orange">DEBUG BROTHEL EVENT:</span> Enemy current of $enemynomax (1 - 6): $enemyno
 <br>
-<span class="green">DEBUG: Enemy #: Health Descr Gen Pro PP Vag Mouth LH RH</span>
+<span class="green">DEBUG: Enemy #: Health Descr Gen Pro PP Vag Mouth LH RH Clothes</span>
 <br>
 <<for _ii = 0; _ii < $enemynomax; _ii++>>
-	DEBUG: _ii: <<print Math.trunc($NPCList[_ii].health)>> $NPCList[_ii].description $NPCList[_ii].gender $NPCList[_ii].pronoun $NPCList[_ii].penis $NPCList[_ii].vagina $NPCList[_ii].mouth $NPCList[_ii].lefthand $NPCList[_ii].righthand
+	DEBUG: _ii: <<print Math.trunc($NPCList[_ii].health)>> $NPCList[_ii].description $NPCList[_ii].gender $NPCList[_ii].pronoun $NPCList[_ii].penis $NPCList[_ii].vagina $NPCList[_ii].mouth $NPCList[_ii].lefthand $NPCList[_ii].righthand $NPCList[_ii].clothes.upper.name $NPCList[_ii].clothes.lower.name
 	<br>
 <</for>>
 DEBUG PC (P/V/A/M/LARM): $penisstate $vaginastate $anusstate $mouthstate $leftarm
@@ -1152,6 +1152,122 @@ A terminal is attached to the tube. You look at the prompts.
 <<endcombat>><<clotheson>>
 
 <<link [[Create another construct|NPC Role Select]]>><</link>><br>
+<<link [[Back home|Bedroom]]>><</link>>
+
+:: NPC Clothing Select
+<br>
+The lights flash on. You find yourself in a strange chamber, completely smooth and featureless. There is a sign on the wall that says <span class="orange">DEBUG</span> in bright orange letters. A large, opaque tube reaches to the ceiling, The words <span class="blue">CUSTOM CONSTRUCT</span> are labelled on the front.
+<br>
+A terminal is attached to the tube. You look at the prompts.
+<br><br>
+<i>Please select the construct's outfit.</i>
+<br>
+
+<<set _clothesOptions to setup.npcClothesSets.map(c => c.name)>>
+
+<<listbox "$npcClothesSelect" autoselect>>
+	<<optionsfrom _clothesOptions>>
+<</listbox>>
+<br><br>
+
+<i>Please select the construct's configuration.</i>
+<br>
+<label>Male <<radiobutton "_npcPronoun" "m">></label> |
+<label>Female <<radiobutton "_npcPronoun" "f">></label> |
+<label>Use Settings <<radiobutton "_npcPronoun" "" checked>></label>
+<br>
+
+<label>Penis <<radiobutton "_npcGender" "m">></label> |
+<label>Vagina <<radiobutton "_npcGender" "f">></label> |
+<label>Both <<radiobutton "_npcGender" "h">></label> |
+<label>Use Settings <<radiobutton "_npcGender" "" checked>></label>
+<br>
+
+<label>Teen <<radiobutton "_npcType" "t">></label> |
+<label>Adult <<radiobutton "_npcType" "a">></label> |
+<label>Random <<radiobutton "_npcType" "r" checked>></label>
+<br><br>
+
+<<link [[Sex|NPC Clothing Fight]]>><<set $sexstart to 1>>
+	<<if $npcClothesSelect is undefined>><<set $npcClothesSelect to "naked">><</if>>
+	<<generateNPC 1 _npcType _npcPronoun _npcGender>><<person1>><<run npcEquipSet($NPCList[0], setup.npcClothesSets.find(n => n.name === V.npcClothesSelect))>>
+	<<unset $npcClothesSets>>
+<</link>><br>
+<<link [[Rape|NPC Clothing Fight]]>><<set $fightstart to 1>>
+	<<if $npcClothesSelect is undefined>><<set $npcClothesSelect to "naked">><</if>>
+	<<generateNPC 1 _npcType _npcPronoun _npcGender>><<person1>><<run npcEquipSet($NPCList[0], setup.npcClothesSets.find(n => n.name === V.npcClothesSelect))>>
+	<<unset $npcClothesSets>>
+<</link>>
+<br><br>
+<<link [[Back home|Bedroom]]>><<unset $npcClothesSets>><</link>>
+
+:: NPC Clothing Fight
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	With a hiss of steam, the tube retracts to the ceiling. A figure walks out, a <<personsimple>>. You recognize <<him>> as the <<person>> you selected.
+	<br><br>
+
+	"Beginning sex encounter," the <<person>> says in a flat tone, before <<his>> face morphs into a lavicious smile. <<catcall>>
+<<elseif $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+
+	<<maninit>>
+	With a hiss of steam, the tube retracts to the ceiling. A figure walks out, a <<personsimple>>. You recognize <<him>> as the <<person>> you selected.
+	<br><br>
+
+	"Beginning combat encounter," the <<person>> says in a flat tone, before <<his>> face morphs into an angry scowl. "Oh, you're in for it now!"
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $finish is 1>>
+	<span id="next"><<link [[FINISH|NPC Clothing Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[HEALTH|NPC Clothing Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[ORGASM|NPC Clothing Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $pain gte 100 and $willpowerpain is 0>>
+	<span id="next"><<link [[PAIN|NPC Clothing Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|NPC Clothing Fight]]>><</link>></span><<nexttext>>
+<</if>>
+<br>
+<<link [[Emergency exit|NPC Clothing Fight Finish]]>><<set $finish to 1>><</link>>
+<br><br><br><br>
+
+:: NPC Clothing Fight Finish
+<<if $finish is 1>>
+	"Test concluded," the <<person>> says in a flat tone, abruptly stepping back. "Restoring state to default."
+<<elseif $enemyhealth lte 0>>
+	"Test concluded," the <<person>> says in a flat tone, stepping away from you as if <<he>> weren't hurt at all. "Restoring state to default."
+<<elseif $pain gte 100 and $willpowerpain is 0>>
+	"Test concluded," the <<person>> says in a flat tone, stepping away from you. "Restoring state to default."
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	"Test concluded," the <<person>> says in a flat tone, stepping away from you. "Restoring state to default."
+<</if>>
+<br><br>
+
+<<He>> walks back to the terminal and flicks a switch. <<He>> steps past it, and the tube descends from the ceiling over <<him>> again. Once the tube touches the floor, the lights switch off.
+<br><br>
+
+<<tearful>> you wonder what to do next.
+<br><br>
+
+<<endcombat>><<clotheson>>
+
+<<link [[Create another construct|NPC Clothing Select]]>><</link>><br>
 <<link [[Back home|Bedroom]]>><</link>>
 
 :: NPCInsertionAssert

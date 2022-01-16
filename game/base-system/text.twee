@@ -6747,6 +6747,106 @@ $worn.genitals.name
 <<print _text_output>>
 <</widget>>
 
+<!-- Argument 0 is the appropriate NPCName or NPCList object. 
+Argument 1 should be "upper", "lower", or "both" 
+Argument 2, where appropriate, determines whether it's the player undressing the NPC or the NPC undressing themselves-->
+<<widget "npcClothesText">><<silently>>
+<<if $args[0]>>
+	<<set $_npc to $args[0]>>
+	<<set $_part to ($args[1] ? $args[1] : "both")>>
+	<<switch $_part>>
+		<<case "both">>
+			<<set _text_output to setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).desc>>
+		<<case "upper">>
+			<<set _text_output to $_npc.clothes.upper.name>>
+		<<case "lower">>
+			<<set _text_output to $_npc.clothes.lower.name>>
+		<<default>>
+			<<set _text_output to '<span class="red">ERROR: Invalid NPC clothing case. (NPC: $_npc.fullDescription, part called: $_part) Please inform PurityGuy</span>'>>
+	<</switch>>
+<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "npcUndressText">><<silently>>
+<<if $args[0]>>
+	<<set $_npc to $args[0]>>
+	<<set $_part to ($args[1] ? $args[1] : "both")>>
+	<<set $_self to ($args[2] ? true : false)>>
+	<<set _text_output to "">>
+	<<if !$_npc.clothes>>
+		<<set _text_output += '<span class="red">ERROR: NPC ($_npc.fullDescription) clothes are undefined! Please inform PurityGuy</span>'>>
+	<<elseif $_part is "both">>
+		<<set _text_output += ($_self ? "removes" : "remove")>>
+		<<set _text_output += " <<hisselect $index>> setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).desc">>
+	<<else>>
+		<<set $_clothesAction to setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).clothes[$_part].action>>
+		<<switch $_clothesAction>>
+			<<case "lift">><<set _actionText to ($_self ? "lifts" : "lift")>>
+			<<case "pull">><<set _actionText to ($_self ? "pulls down" : "pull down")>>
+			<<case "unbutton">><<set _actionText to ($_self ? "unbuttons" : "unbutton")>>
+			<<case "unzip">><<set _actionText to ($_self ? "unzips" : "unzip")>>
+			<<case "aside">><<set _actionText to ($_self ? "pushes aside" : "push aside")>>
+			<<case "open">><<set _actionText to ($_self ? "opens" : "open")>>
+			<<case "unwrap">><<set _actionText to ($_self ? "unwraps" : "unwrap")>>
+			<<default>><<set _actionText to '<span class="red">ERROR: Invalid NPC clothing action. (NPC: $_npc.fullDescription, part called: $_part, action: $_clothesAction) Please inform PurityGuy</span>'>>
+		<</switch>>
+		<<set _text_output += _actionText + " <<hisselect $index>> $_npc.clothes[$_part].name">>
+	<</if>>
+<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "npcRevealText">><<silently>>
+	<<set $_npc to $args[0]>>
+	<<set $_part to $args[1]>> /* can be "upper" or "lower" */
+	<<set _text_output to "revealing <<his>> ">>
+	<<if $_part is "both">>
+		<!-- placeholder -->
+	<<elseif $_part is "lower">>
+		<<if $_npc.penis isnot "none" and $_npc.vagina isnot "none">>
+			<<set _text_output += "$_npc.penisdesc and <<his>> ">>
+			<<set _text_output += $enemyarousal gte 40 ? "moistened pussy" : "pussy">>
+			<<if $_npc.chastity.penis.includes("chastity")>>
+				<<set _text_output += ", inside of a $_npc.chastity.penis">>
+			<</if>>
+		<<elseif $_npc.penis isnot "none">>
+			<<set _text_output += $_npc.penisdesc>>
+			<<if $_npc.penisdesc.includes("strap-on")>>
+				<!-- placeholder -->
+			<<else>>
+				<<if $_npc.chastity.penis.includes("chastity")>>
+					<<set _text_output += ", inside of a $_npc.chastity.penis">>
+				<<else>>
+					<<set _text_output += ", fully erect">>
+				<</if>>
+			<</if>>
+		<<elseif $_npc.vagina isnot "none">>
+			<<set _text_output += $enemyarousal gte 40 ? "moistened pussy" : "pussy">>
+			<<if $_npc.chastity.vagina.includes("chastity")>>
+				<<set _text_output += " behind a $_npc.chastity.vagina">>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<set _text_output += "$_npc.breastsdesc">>
+	<</if>>
+	<!-- intentionally omitting a period, for flexibility; do not forget to add one after you use this widget -->
+<</silently>>_text_output<</widget>>
+
+<<widget "npcGenitalReaction">>
+	<<set $_npc to $args[0]>>
+	<<if $_npc.penis isnot "none">>
+		<<switch $_npc.penissize>>
+			<<case 4>>
+				<span class="red"> <<print setup.npcPenisRemarks["big"].random()>></span>
+			<<case 1>>
+				<span class="green"> <<print setup.npcPenisRemarks["small"].random()>></span>
+			<<default>>
+		<</switch>>
+	<</if>>
+	<<if $_npc.vagina isnot "none">>
+		<!-- Placeholder -->
+	<</if>>
+<</widget>>
+
 <<widget "gbeauty">>
 	<<if $statdisable is "f">> |
 		<span class="green">+ Beauty</span>

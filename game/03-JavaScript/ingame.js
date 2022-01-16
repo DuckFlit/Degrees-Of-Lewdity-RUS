@@ -538,9 +538,9 @@ window.pregnancyBellyVisible = function(){
 
 
 window.toTitleCase = function(str) {
-    return str.replace(/\w\S*/g, function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
+	return str.replace(/\w\S*/g, function(txt){
+		return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+	});
 }
 
 window.getRobinLocation = function(){
@@ -988,14 +988,14 @@ Config.navigation.override = function (dest) {
 }
 
 window.currentSkillValue = function(skill){
-    let result = V[skill];
-    if(!result && result !== 0) {
-        console.log(`currentSkillValue - skill '${skill}' unknown`);
-        return 0;
-    };
-    if(['skulduggery','physique','danceskill','swimmingskill','athletics','willpower','tending','english'].includes(skill) && V.moorLuck > 0){
-        result = Math.floor(result * (1 + (V.moorLuck / 100)));
-    }
+	let result = V[skill];
+	if(!result && result !== 0) {
+		console.log(`currentSkillValue - skill '${skill}' unknown`);
+		return 0;
+	};
+	if(['skulduggery','physique','danceskill','swimmingskill','athletics','willpower','tending','english'].includes(skill) && V.moorLuck > 0){
+		result = Math.floor(result * (1 + (V.moorLuck / 100)));
+	}
 	if(['physique','danceskill','swimmingskill','athletics'].includes(skill) && V.sexStats.vagina.pregnancy.bellySize >= 10){
 		switch(V.pregnancyStats.mother){
 			case 0: T.pregnancyModifier = 30;
@@ -1011,7 +1011,7 @@ window.currentSkillValue = function(skill){
 		}
 		result = Math.floor(result * (1 - (V.sexStats.vagina.pregnancy.bellySize / T.pregnancyModifier)));
 	}
-    switch(skill){
+	switch(skill){
 		case 'skulduggery':
 			if(V.worn.hands.type.includes("sticky_fingers")){
 				result = Math.floor(result * 1.05);
@@ -1075,13 +1075,13 @@ window.currentSkillValue = function(skill){
 				result = Math.floor(result * 0.9);
 			}
 		break;
-        case 'tending':
-            if(V.backgroundTraits.includes("plantlover")){
-                result = Math.floor(result * (1 + (V.trauma / (V.traumamax * 2))));
-            }
-        break;
-    }
-    return result;
+		case 'tending':
+			if(V.backgroundTraits.includes("plantlover")){
+				result = Math.floor(result * (1 + (V.trauma / (V.traumamax * 2))));
+			}
+		break;
+	}
+	return result;
 }
 
 window.getTimeString = function(minutes = 0){
@@ -1098,6 +1098,66 @@ window.getTimeString = function(minutes = 0){
 		minutes = ("" + minutes % 60).padStart(2, '0');
 		return hours + ":" + minutes;
 	}
+}
+
+window.npcAssignClothesToSet = function(upper, lower){
+	return {"upper":T.npcClothesItems.upper[upper], "lower":T.npcClothesItems.lower[lower]}
+}
+
+window.npcEquipSet = function(npc, set) {
+	npc.clothes = {set: set.name};
+	Object.entries(set.clothes).forEach((item) => {
+		let itemData = setup.clothes[item[0]].find(c => c.name === item[1].name);
+		if(!itemData){
+			npc.clothes[item[0]] = {
+				name: item[1].name,
+				integrity: item[1].integrity_max,
+			};
+		} else {
+			npc.clothes[item[0]] = {
+				name: itemData.name,
+				integrity: itemData.integrity_max,
+			};
+		}
+	});
+}
+
+window.npcSpecifiedClothes = function (npc, name){
+	let clothingItem = setup.npcClothesSets.filter((set) => set.name === name);
+	if(clothingItem.length > 0){
+		npcEquipSet(npc, clothingItem[0]);
+	} else {
+		console.log(`npcSpecifiedClothes - unable to find a clothing item with the name '${name}' for '${npc.fullDescription}'`)
+	}
+}
+
+/*npc.crossdressing: 0 - doesnt at all, 1 - sometimes, 2 - always*/
+window.npcClothes = function (npc, type){
+	let crossdressing = npc.crossdressing || 0;
+	let gender = ['n'];
+	/* if you dont want those always crossdressing to wear neutral clothes
+	let gender = [];
+	if(crossdressing !== 2) gender.push('n');
+	*/
+
+	if(crossdressing < 2) gender.push(npc.pronoun);
+	if(crossdressing > 0) gender.push(npc.pronoun === "m" ? "f" : "m");
+	let clothingOptions = setup.npcClothesSets.filter((set) => (set.type === type || !type) && gender.includes(set.gender));
+
+	if(npc.outfits){
+		let namedNpcClothing = clothingOptions.filter((set) => npc.outfits.includes(set.name));
+		if(namedNpcClothing.length > 0){
+			clothingOptions = namedNpcClothing;
+		}
+	}
+	if(clothingOptions.length > 0){
+		let clothesSet = clothingOptions.pluck();
+		npcEquipSet(npc, clothesSet);
+		//Allows you to record the clothing set selected
+		return clothesSet.name;
+	} else {
+		console.log(`npcClothes - unable to find a clothing set with the options for '${npc.fullDescription}' with type '${type}'`)
+	}	
 }
 
 window.getWeekDay = function(day){
