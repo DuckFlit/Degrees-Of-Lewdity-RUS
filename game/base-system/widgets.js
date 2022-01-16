@@ -327,3 +327,72 @@ function updatehistorycontrols(){
 	}
 }
 DefineMacro("updatehistorycontrols", updatehistorycontrols);
+
+
+/** Jimmy: A potential improvement is to not wikify the hints that are appended to the ends of the links,
+ *         I chose to keep this format for now to keep <<promiscuous>>, <<exhibitionist>> and <<deviant>> centralised.
+ * 		   If someone wants to change those widgets, this won't need updating. */
+Macro.add('reqSkill', {
+	tags: ['reqE', 'reqElse'],
+	reqs: [0, 1, 15, 35, 55, 75, 95],
+	handler() {
+		/* The function below (some) will immediately end and not iterate further if TRUE is returned, it will continue to iterate if FALSE is returned. */
+		this.payload.some(section => {
+			if (section.args.length === 0) {
+				/* If <<reqSkill>> has no arguments, report an error.
+				   However, if <<reqElse>> had none, print out the section as normal, no need to add skill hints to the links. */
+				if (section.name === 'reqSkill') {
+					Errors.inlineReport(`Missing arguments for <<${section.name}>>`, `${this.source}`).appendTo(this.output);
+				} else {
+					new Wikifier(this.output, section.contents);
+				}
+				return true;
+			}
+			/* Output variable to store what will be appended to EVERY link in the section. */
+			let output = "";
+			const cancel = section.args.some(arg => {
+				/* Splits up the arguments so that everything but the last character goes into type, and the last character goes into tier. 
+				   If arg is "deviancy5", type would be "deviancy" and tier would be 5. */
+				const type = arg.slice(0, -1);
+				const tier = Number.parseInt(arg.slice(-1));
+				/* Check if parseInt returned an actual number, and not NaN. */
+				if (!Number.isInteger(tier)) {
+					Errors.inlineReport(`Invalid argument (${arg}) for <<${section.name}>> | Tier`, `${this.source}`).appendTo(this.output);
+					return true;
+				}
+				switch (type) {
+					case 'promiscuity':
+					case 'p':
+						if (V.promiscuity < this.self.reqs[tier]) return true;
+						output += `<<promiscuous${tier}>>`;
+						return false;
+					case 'exhibitionism':
+					case 'e':
+						if (V.exhibitionism < this.self.reqs[tier]) return true;
+						output += `<<exhibitionist${tier}>>`;
+						return false;
+					case 'deviancy':
+					case 'd':
+						if (V.deviancy < this.self.reqs[tier]) return true;
+						output += `<<deviant${tier}>>`;
+						return false;
+					default:
+						Errors.inlineReport(`Invalid argument (${arg}) for <<${section.name}>> | Type`, `${this.source}`).appendTo(this.output);
+						return true;
+				}
+			});
+			/* If cancel signals true, exit but continue next payloads. */
+			if (cancel) return false;
+			/* Final render, and insertion of elements. 
+			   Renders the section defined within the block that was successful.*/
+			new Wikifier(this.output, section.contents);
+			/* Renders the HTML elements that are inserted after every link. */
+			const wikiOutput = new Wikifier(null, output);
+			/* Scan through macro outfit for valid links to append hints to. */
+			jQuery(this.output).children().filter('a.link-internal, a.link-external')
+				.after(wikiOutput.output);
+			/* Successful render, no need to process anymore segments. */
+			return true;
+		});
+	}
+});
