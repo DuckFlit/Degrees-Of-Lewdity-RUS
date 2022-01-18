@@ -174,7 +174,7 @@ setup.debugMenu.event_list = {
                 `Super Stroke`, function(){return V.passage}
             ],
             widgets: [
-                function(){return (`<<set $enemyarousal to ` + V.enemyarousalmax)}
+                function(){return (`<<set $enemyarousal to ` + V.enemyarousalmax + `>>`)}
             ]
         },
         {
@@ -222,7 +222,7 @@ setup.debugMenu.event_list = {
                 `Roll over`, function(){return V.passage}
             ],
             widgets: [
-                function(){return (`<<set $position to ` + (V.position == "doggy") ? "doggy" : "missionary")}
+                function(){return (`<<set $position to ` + (V.position == "doggy") ? "doggy" : "missionary" ) + `>>`}
             ],
             condition: function (){return (V.position == "doggy" || V.position == "missionary") ? 1 : 0}
         },
@@ -2903,10 +2903,16 @@ window.checkEventCondition = function(){
             let ev = setup.debugMenu.event_list[section]
             for (let i in ev){
                 if (ev[i].hasOwnProperty("condition")){
-                    if ((typeof ev[i].condition == "function" && ev[i].condition() == 1) || ((typeof ev[i].condition != "function" && ev[i].condition == 1)))
+                    if ((typeof ev[i].condition == "function" && ev[i].condition() == 1) || ((typeof ev[i].condition != "function" && ev[i].condition == 1))){
+                        if (document.getElementById(section+'-'+i) == null)
+                            return
                         document.getElementById(section+'-'+i).classList.remove("condhide")
-                    else
+                    }
+                    else{
+                        if (document.getElementById(section+'-'+i) == null)
+                            return
                         document.getElementById(section+'-'+i).classList.add("condhide")
+                    }
                 }
             }
         }
