@@ -1,12 +1,41 @@
 :: Widgets NPC Damage [widget]
 <<widget "npcdamage">>
-<!-- Calculates damage inflicted by PC on NPCs and removes highest number NPC from group combat NG v2.8-->
-<<set _thenpc to $args[0]>>
-
-<<if $NPCList[_thenpc].stance isnot "defeated" and $NPCList[_thenpc].health lte 0>>
-	<<defeatnpc _thenpc>>
+/*
+* Deducts the true damage dealt by the PC from each individual NPC's health,
+* and prevent excess damage from reaching $enemyhealth.
+* args[0] is the target passed through widget "defiance".
+* _thedamage is also calculated at widget "defiance".
+*/
+<<if $args[0] isnot undefined>>
+	/* args[0] could very well be undefined. When it's not, we calculate as normal. */
+	<<set $NPCList[$args[0]].health -= _thedamage>>
+	<<if $NPCList[$args[0]].health lte 0>>
+		<<defeatnpc $args[0]>>
+	<</if>>
+<<else>>
+	<<set _npctodefeat to []>>/* An array for later use. */
+	/* When args[0] is undefined, that means the action has no target and inflicts damage to all NPCs. */
+	<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
+		<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated">>
+			/* Divide damage by all current active enemies. */
+			<<set $NPCList[_npctodamage].health -= (_thedamage/$enemyno)>>
+			/* Lookout for any NPCs whose healths were reduced to 0 by splash damage. */
+			<<if $enemyno gte 2 and $NPCList[_npctodamage].health lte 0>>
+				<<set _npctodefeat.push(_npctodamage)>>
+			<</if>>
+		<</if>>
+	<</for>>
+	/* Then purge any and all NPCs defeated by splash damage. */
+	<<for $_defeatcontroller to 0; $_defeatcontroller lt _npctodefeat.length; $_defeatcontroller++>>
+		<<if $enemyno gte 2>>
+			<<defeatnpc _npctodefeat[$_defeatcontroller]>>
+		<</if>>
+	<</for>>
 <</if>>
 
+<<if $newtarget isnot undefined>>
+	<<setnewtarget>>
+<</if>>
 <</widget>>
 
 <<widget "defeatnpc">>
@@ -69,6 +98,8 @@
 		<<set $thighuse to 0>>
 	<<case "cheeks">>
 		<<set $bottomuse to 0>>
+	<<case "chest">>
+		<<set $chestuse to 0>>
 	<<case "leftarm">>
 		<<set $leftarm to 0>><<set $leftactiondefault to "leftgrab">>
 	<<case "rightarm">>
@@ -93,7 +124,7 @@
 			<<set $vaginause to 0>>
 		<</if>>
 	<<case "anusdouble" "anusdoubleentrance" "anusdoubleimminent">>
-		<<set $NPCList[_i].penis to 0>>
+		<<set $NPCList[_i].penis to "none">>
 		<<for $_k = 0; $_k lt $NPCList.length; $_k++>>
 			<<if $NPCList[$_k].penis.includes("anusdouble")>>
 				<<switch $NPCList[$_k].penis>>
@@ -115,7 +146,7 @@
 			<</if>>
 		<</for>>
 	<<case "vaginadouble" "vaginadoubleimminent" "vaginadoubleentrance">>
-		<<set $NPCList[_i].penis to 0>>
+		<<set $NPCList[_i].penis to "none">>
 		<<for $_k = 0; $_k lt $NPCList.length; $_k++>>
 			<<if $NPCList[$_k].penis.includes("vaginadouble")>>
 				<<switch $NPCList[$_k].penis>>
@@ -200,18 +231,22 @@
 <<set $enemyarousalmax to 500 * $enemyno>>
 <<set $enemyarousal to $enemyarousal * ($enemyno / ($enemyno +1))>>
 <<set $enemyhealthmax -= $NPCList[_i].healthmax>>
-<<set $_excessdamage to (0-$NPCList[_i].health)>><<if $debug is 1>><br> Excess damage: $_excessdamage<br><</if>>
+<<set $_excessdamage to (0-$NPCList[_i].health)>>
+
+<!-- Debug message -->
+<<if $debug is 1>><br><span class="yellow">Total damage: _thedamage</span> | <span class="blue">Excess damage: $_excessdamage</span> |<</if>>
+
+<<set _thedamage -= $_excessdamage>>
+
+<!-- Debug message -->
+<<if $debug is 1>><span class="pink">enemyhealth damage: _thedamage</span><br><</if>>
+
 <<set $NPCList[_i].health to 0>>
-<<set $enemyhealth to 0>>
 <<set $oldtarget to _i>>
-<<for _returnHP to 0; _returnHP lt $enemynomax; _returnHP++>>
-	<<if $NPCList[_returnHP].active is "active" and $NPCList[_returnHP].stance isnot "defeated">>
-		<<set $NPCList[_returnHP].health -= $_excessdamage>>
-		<<if $newtarget is undefined>>
-			<<set $newtarget to _returnHP>>
-		<</if>>
-		<<set $_excessdamage to 0>>
-		<<set $enemyhealth += $NPCList[_returnHP].health>>
+<<for $_newtarget to 0; $_newtarget lt $enemynomax; $_newtarget++>>
+	<<if $NPCList[$_newtarget].active is "active" and $NPCList[$_newtarget].stance isnot "defeated">>
+		<<set $newtarget to $_newtarget>>
+		<<break>>
 	<</if>>
 <</for>>
 <!-- Give PC stats uptick. -->
