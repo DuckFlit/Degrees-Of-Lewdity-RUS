@@ -1170,6 +1170,7 @@ setup.debugMenu.event_list = {
                 `<<set $monthday to 31>>`,
                 `<<set $daystate to "night">>`,
                 `<<set $hour to 21>>`,
+                `<<set $minute to 0>>`,
                 `<<set $time to 1260>>`,
                 `<<set $moonstate to "evening">>`
             ]
@@ -1446,6 +1447,7 @@ setup.debugMenu.event_list = {
                 `<<set $monthday to 31>>`,
                 `<<set $daystate to "night">>`,
                 `<<set $hour to 21>>`,
+                `<<set $minute to 0>>`,
                 `<<set $time to 1260>>`,
                 `<<set $moonstate to "evening">>`
             ]

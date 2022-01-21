@@ -108,6 +108,26 @@
 <<elseif $leftarm is "bound">>
 	Your left arm is bound.
 	<br>
+<<elseif $leftarm is "possessed">>
+	<<if $lactating and $breastfeedingdisable is "f">>
+		<<if $leftaction is "mbreastW">>
+			You pinch and squeeze your <<breasts>> with your left hand, unbidden.
+		<<else>>
+			Your left hand hovers over your <<breasts>>.
+		<</if>>
+		<br>
+		| <label><<radiobutton "$leftaction" "mbreastW" autocheck>> <span class="wraith">Fondle your chest</span></label>
+		| <label><<radiobutton "$leftaction" "mbreaststopW" autocheck>> <Span class="brat">Hold your arm still</span></label>
+	<<else>>
+		<<if $leftaction is "mpenisW">>
+			You stroke your <<penis>> with your left hand, unbidden.
+		<<else>>
+			Your left hand hovers over your <<penis>>.
+		<</if>>
+		<br>
+		| <label><<radiobutton "$leftaction" "mpenisW" autocheck>> <span class="wraith">Rub the shaft</span></label>
+		| <label><<radiobutton "$leftaction" "mpenisstopW" autocheck>> <Span class="brat">Hold your arm still</span></label>
+	<</if>>
 <</if>>
 <<if $leftarm isnot "bound">>
 	<<if $worn.over_upper.exposed lte 1>>
@@ -133,7 +153,9 @@
 	<</if>>
 <</if>>
 
-| <label><<radiobutton "$leftaction" "mrest" autocheck>> Rest</label>
+<<if !$possessed>>
+	| <label><<radiobutton "$leftaction" "mrest" autocheck>> Rest</label>
+<</if>>
 
 <br><br>
 
@@ -240,6 +262,26 @@
 <<elseif $rightarm is "bound">>
 	Your right arm is bound.
 	<br>
+<<elseif $rightarm is "possessed">>
+	<<if $player.penisExist>>
+		<<if $rightaction is "mpenisW">>
+			You stroke your <<penis>> with your right hand, unbidden.
+		<<else>>
+			Your right hand hovers over your <<penis>>.
+		<</if>>
+		<br>
+		| <label><<radiobutton "$rightaction" "mpenisW" autocheck>> <span class="wraith">Rub the shaft</span></label>
+		| <label><<radiobutton "$rightaction" "mpenisstopW" autocheck>> <Span class="brat">Hold your arm still</span></label>
+	<<else>>
+		<<if $rightaction is "mbreastW">>
+			You pinch and squeeze your <<breasts>> with your right hand, unbidden.
+		<<else>>
+			Your right hand hovers over your <<breasts>>.
+		<</if>>
+		<br>
+		| <label><<radiobutton "$rightaction" "mbreastW" autocheck>> <span class="wraith">Fondle your chest</span></label>
+		| <label><<radiobutton "$rightaction" "mbreaststopW" autocheck>> <Span class="brat">Hold your arm still</span></label>
+	<</if>>
 <</if>>
 <<if $rightarm isnot "bound">>
 	<<if $worn.over_upper.exposed lte 1>>
@@ -265,7 +307,9 @@
 	<</if>>
 <</if>>
 
-| <label><<radiobutton "$rightaction" "mrest" autocheck>> Rest</label>
+<<if !$possessed>>
+	| <label><<radiobutton "$rightaction" "mrest" autocheck>> Rest</label>
+<</if>>
 
 /* Mouth Actions */
 <<if $moorPhallusPlant or $awareness gte 200>>
@@ -417,7 +461,7 @@
 
 <br><br><br><br>
 
-<<if $arousal gte $arousalmax>>
+<<if $arousal gte $arousalmax and !$possessed>>
 	<<orgasm>>
 	<<promiscuity1>>
 	<<set $masturbationorgasmstat += 1>>
@@ -432,5 +476,11 @@
 	<<set $seconds to 0>>
 	<<pass 1>>
 	<<set $masturbationtimestat += 1>>
+<</if>>
+<<if $possessed>>
+	/* Updates the control caption at the top of the screen to include any control gained through the rest of the passage */
+	<<run $(()=>{
+		Dynamic.render("control-caption")
+	})>>
 <</if>>
 <</widget>>
