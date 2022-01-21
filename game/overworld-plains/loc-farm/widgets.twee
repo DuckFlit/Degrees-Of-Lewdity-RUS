@@ -2636,7 +2636,7 @@ Weekly wage: <<printmoney $farm.tower_guard_wage>>
 	<<elseif $farm.beasts.horses lt 0 and $horsedisable is "f" and ($monster is 1 or $bestialitydisable is "f")>><!-- Modified for Beast People -->
 		The <<beasttype>> pulls to a stop, and refuses to take a step further.
 		<<if $monster is 1>>
-			"I'm frustrated," <<bhe>> says. "It's your job to fix it.""
+			"I'm frustrated," <<bhe>> says. "It's your job to fix it."
 		<<else>>
 			It neighs in frustration.
 		<</if>>
@@ -2741,7 +2741,7 @@ Weekly wage: <<printmoney $farm.tower_guard_wage>>
 <<if _farm_damage is 0 and $farm_stage gte 12>>
 	<<earnFeat "Heroic Victory">>
 <</if>>
-<<damage_farm _farm_damage>>
+<<damage_farm "loop" _farm_damage >>
 <<set $farm_attack_timer to random(17, 24)>>
 <<set $farm_attacked to 1>>
 <</widget>>
@@ -2750,15 +2750,18 @@ Weekly wage: <<printmoney $farm.tower_guard_wage>>
 <<if $fields_damaged is undefined>>
 	<<set $fields_damaged to 0>>
 <</if>>
-<<if $args[0] gt 0>>
-	<<set _field_number to $args[0]>>
-	<<for _i to 0; _i lt _field_number; _i ++>>
+<<if $args[0] is "target">>
+	<<clear_plot farm $args[1]>>
+	<<set $fields_damaged++>>
+<<elseif $args[0] is "loop">>
+	<<set _field_number to $args[1]>>
+	<<for _i to 0; _i lt _field_number; _i++>>
 		<<if $plots.farm[_i]>>
 			<<if $plots.farm[_i].stage gte 1>>
 				<<clear_plot farm _i>>
-				<<set $fields_damaged += 1>>
+				<<set $fields_damaged++>>
 			<<else>>
-				<<set _field_number ++>>
+				<<set _field_number++>>
 			<</if>>
 		<<else>>
 			<<set $farm_destroyed to true>>
@@ -2772,21 +2775,17 @@ Weekly wage: <<printmoney $farm.tower_guard_wage>>
 <<if $fields_damaged is 0>>
 	<<if $farm_destroyed is true>>
 		The farm was attacked while you were gone, <span class="blue">but there were no fields to burn.</span>
-		<br><br>
 	<<else>>
 		The farm was attacked while you were gone, <span class="green">but the defenders fought valiantly, and not a single field was lost.</span>
-		<br><br>
 	<</if>>
 <<elseif $field_damaged is 1>>
 	The farm was attacked while you were gone, <span class="purple">and a field torched</span> before the defenders drove them off.<<gtrauma>><<trauma 6>>
-	<br><br>
 <<elseif $fields_damaged is 9>>
 	The farm was attacked while you were gone, the defenders defeated, <span class="red">and all the fields torched.</span><<gggtrauma>><<trauma 24>>
-	<br><br>
 <<else>>
 	The farm was attacked while you were gone, <span class="pink">and <<number $fields_damaged>> fields torched</span> before the defenders drove them off.<<ggtrauma>><<trauma 12>>
-	<br><br>
 <</if>>
+<br><br>
 <<unset $fields_damaged>>
 <<unset $farm_destroyed>>
 <<unset $farm_attacked>>
@@ -2864,7 +2863,7 @@ Weekly wage: <<printmoney $farm.tower_guard_wage>>
 		<<if $farm.build_timer is 1>>
 			It'll be finished tomorrow.
 		<<else>>
-			It'll be finished in $farm.build_timer days.
+			It'll be finished in <<number $farm.build_timer>> days.
 		<</if>>
 		<br><br>
 	<</if>>
