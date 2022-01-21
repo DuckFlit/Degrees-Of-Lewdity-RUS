@@ -1094,7 +1094,7 @@ window.getTimeString = function(minutes = 0){
 	} else if (minutes < 60){
 		return "0:" + minutes;
 	} else {
-		let hours = Math.round(minutes / 60);
+		const hours = Math.trunc(minutes / 60);
 		minutes = ("" + minutes % 60).padStart(2, '0');
 		return hours + ":" + minutes;
 	}
