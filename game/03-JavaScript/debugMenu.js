@@ -862,7 +862,7 @@ setup.debugMenu.event_list = {
         },
         {
             link: [
-                `Beast Rape Me`, "Monster Test"
+                `Beast Rape Me`, "Street Dogs"
             ],
             widgets: [
                 `<<endcombat>>`,

@@ -34,7 +34,7 @@
 	OR
 	First argument: the plot to operate on.
 	*/
-	<<if $args[1]>>
+	<<if $args[1] isnot undefined>>
 		<<set $_plot to $plots[$args[0]][$args[1]]>>
 	<<else>>
 		<<set $_plot to $args[0]>>
@@ -167,9 +167,16 @@
 		<<run _plotsToWater.forEach(plot => _totalTimeToWater += setup.tending.wateringTimes[plot.size])>>
 		<<set $_time to getTimeString(_totalTimeToWater)>>
 
-		<<link "Water all dry beds ($_time)" $passage>>
-			<<tendingWaterAllDryBeds _plotsToWater>><<tiredness _water_needed>><<physique _water_needed>><<tending _water_needed>>
-		<</link>><<gtiredness>><<gtending>>
+		<<if $farm_attack_timer is 0>>
+			<<set $_hoursUntilAttack to (24 - $hour)>>
+		<</if>>
+		<<if $location is "alex_farm" and _plotsToWater.length gte $_hoursUntilAttack>>
+			<span class="pink">You won't have enough time to water all your fields before Remy's arrival.</span>
+		<<else>>
+			<<link "Water all dry beds ($_time)" $passage>>
+				<<tendingWaterAllDryBeds _plotsToWater>><<tiredness _water_needed>><<physique _water_needed>><<tending _water_needed>>
+			<</link>><<gtiredness>><<gtending>>
+		<</if>>
 		<br>
 
 	<</if>>
@@ -272,17 +279,24 @@
 
 	<<set _timeString to getTimeString(_baseTime)>>
 
-	<<capture _baseTiredsness _baseTime _plantbed>>
-		<<link "Till (_timeString)" $passage>>
-			<<set $tendingvars.plot_tilled to true>>
-			<<tiredness _baseTiredsness>><<physique _baseTiredsness>>
-			<<pass _baseTime>>
-			<<if $location is "farm">>
-				<<farm_count _baseTime>>
-			<</if>>
-			<<set _plantbed.till to 1>>
-		<</link>><<gtiredness>>
-	<</capture>>
+	<<if $farm_attack_timer is 0>>
+		<<set $_timeUntilAttack to ((23 - $hour) * 60) + (60 - $minute)>>
+	<</if>>
+	<<if $location is "alex_farm" and _baseTime gte $_timeUntilAttack>>
+		<span class="pink">Not enough time to till the field before Remy's arrival.</span>
+	<<else>>
+		<<capture _baseTiredsness _baseTime _plantbed>>
+			<<link "Till (_timeString)" $passage>>
+				<<set $tendingvars.plot_tilled to true>>
+				<<tiredness _baseTiredsness>><<physique _baseTiredsness>>
+				<<pass _baseTime>>
+				<<if $location is "farm">>
+					<<farm_count _baseTime>>
+				<</if>>
+				<<set _plantbed.till to 1>>
+			<</link>><<gtiredness>>
+		<</capture>>
+	<</if>>
 	<br>
 	<<if $fertiliser.current gte 1 and _plantbed.quality lt 4 and $tending gte 400>>
 		<<set _baseTimeFert to Math.floor(_baseTime * 1.5)>>
