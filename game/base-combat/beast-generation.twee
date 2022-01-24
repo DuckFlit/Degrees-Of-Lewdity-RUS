@@ -84,12 +84,12 @@
 <!-- v2.7 $BeastList is 0-7: "dog", "cat", "pig", "wolf", "dolphin", "lizard", "bear", "creature" -->
 <!-- v2.13 "horse" added to $BeastList -->
 
-<<set _h to [200,150,200,300,200,250,500,300,200,500,200,150]>>
-<<set _t to ["dog","cat","pig","wolf","dolphin","lizard","bear","boar","creature","horse","fox","hawk"]>>
-<<set _d to ["large","large","fat","enormous","bottlenose","scaly","brown","hairy","strange","huge","large","fierce"]>>
-<<set _pd to ["knotted penis","spiked penis","penis","knotted penis","strange penis","penis","penis","penis","penis","equine cock","knotted penis","avian cock"]>>
+<<set _h to [200,150,200,300,200,250,500,300,200,500,200,150,400]>>
+<<set _t to ["dog","cat","pig","wolf","dolphin","lizard","bear","boar","creature","horse","fox","hawk","cow"]>>
+<<set _d to ["large","large","fat","enormous","bottlenose","scaly","brown","hairy","strange","huge","large","fierce","huge"]>>
+<<set _pd to ["knotted penis","spiked penis","penis","knotted penis","strange penis","penis","penis","penis","penis","equine cock","knotted penis","avian cock","bovine cock"]>>
 /% <<set _cla to [1,1,1,1,0,1,1,1]>> %/
-<<set _ps to [2,2,2,3,2,2,3,3,2,5,2,2]>>
+<<set _ps to [2,2,2,3,2,2,3,3,2,5,2,2,4]>>
 
 <<set _i to $BeastList.indexOf(_type)>>
 <<set $NPCList[_n].healthmax to _h[_i]>>
@@ -101,20 +101,13 @@
 <<set $NPCList[_n].breastsdesc to "nipples">>
 <<set $NPCList[_n].breastdesc to "nipple">>
 
-<<set $NPCList[_n].fullDescription to $NPCList[_n].description + " ">>
-<<if $NPCList[_n].pronoun is "m">>
-	<<set $NPCList[_n].fullDescription += "male ">>
-<<elseif $NPCList[_n].pronoun is "f">>
-	<<set $NPCList[_n].fullDescription += "female ">>
-<</if>>
-<<set $NPCList[_n].fullDescription += $NPCList[_n].type>>
-
 
 <<if $NPCList[_n].type is "horse">>
 	<<set $NPCList[_n].hair to either("appaloosa","bay","black","brown","buckskin","chestnut","cremello","dun","grey","overo","palomino","piebald","roan","skewbald","spotted","tobiano")>>
 <</if>>
 
 <!-- Set hallucination creatures to always be monsters. Shadow types could be .monster = "shadow" -->
+<<set $rng to random(1, 100)>>
 <<if $NPCList[_n].type is "creature" and !_tower_creature>>
 	<<set $NPCList[_n].monster to "monster">>
 <<elseif ($monsterchance gte $rng and $hallucinations gte 1) or ($monsterchance gte $rng and $monsterhallucinations is "f") or (_beast_monster is "monster") or ($bestialitydisable is "t" and $NPCList[0].monster is "monster")>>
@@ -123,6 +116,12 @@
 		<<set $NPCList[_n].type to "centaur">>
 	<<elseif $NPCList[_n].type is "hawk">>
 		<<set $NPCList[_n].type to "harpy">>
+	<<elseif $NPCList[_n].type is "cow">>
+		<<if $NPCList[_n].gender is "f">>
+			<<set $NPCList[_n].type to "cowgirl">>
+		<<else>>
+			<<set $NPCList[_n].type to "bullboy">>
+		<</if>>
 	<<elseif $NPCList[_n].gender is "f">>
 		<<set $NPCList[_n].type to $NPCList[_n].type + "girl">>
 	<<else>>
@@ -130,6 +129,9 @@
 	<</if>>
 <<else>>
 	<<set $NPCList[_n].monster to 0>>
+	<<if $NPCList[_n].type is "cow" and $NPCList[_n].gender is "m">>
+		<<set $NPCList[_n].type to "bull">>
+	<</if>>
 <</if>>
 
 <<if $NPCList[_n].monster is "monster">>
@@ -145,14 +147,15 @@
 			<<set $_breastMin to [0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,5,5,8,3,10,12]>>
 			<<set $_breastMax to [4,4,4,4,4,4,7,7,7,7,8,8,8,8,8,11,11,12,10,12,12]>>
 		<</if>>
-		<<set _brdes to ["nipple","budding","tiny","small","pert","modest","full","large","ample","massive","huge","gigantic","enormous"]>>	
-		<<if $breast_mod gte $_breastMin[_i]>><<set $_breastMin[_i] to $breast_mod>><</if>>
-		<<if $breast_mod gte $_breastMax[_i]>><<set $_breastMax[_i] to $breast_mod>><</if>>
+		<<set _brdes to ["nipple","budding","tiny","small","pert","modest","full","large","ample","massive","huge","gigantic","enormous"]>>
+		<<set _brlvl to random(0,20)>> <!-- select a random index in the arrays -->
+		<<if $breast_mod gte $_breastMin[_brlvl]>><<set $_breastMin[_brlvl] to $breast_mod>><</if>>
+		<<if $breast_mod gte $_breastMax[_brlvl]>><<set $_breastMax[_brlvl] to $breast_mod>><</if>>
 		<<if $breast_mod lt 0>>
-			<<set $_breastMin[_i] to Math.clamp($_breastMin[_i]+$breast_mod, 0, 12)>>
-			<<set $_breastMax[_i] to Math.clamp($_breastMax[_i]+$breast_mod, 0, 12)>>
+			<<set $_breastMin[_brlvl] to Math.clamp($_breastMin[_brlvl]+$breast_mod, 0, 12)>>
+			<<set $_breastMax[_brlvl] to Math.clamp($_breastMax[_brlvl]+$breast_mod, 0, 12)>>
 		<</if>>
-		<<set _rngbr to random($_breastMin[_i], $_breastMax[_i])>>
+		<<set _rngbr to random($_breastMin[_brlvl], $_breastMax[_brlvl])>>
 		<<set $NPCList[_n].breastsize to _rngbr>>
 		<<switch _rngbr>>
 		<<case 0>>
@@ -162,13 +165,25 @@
 			<<set $NPCList[_n].breastsdesc to _brdes[_rngbr]+" breasts">>
 			<<set $NPCList[_n].breastdesc to _brdes[_rngbr]+" breast">>
 		<</switch>>
-		<<if random(1, 100) gte 81>>
+		<<if random(1, 100) gte 81 or $NPCList[_n].type is "cowgirl">>
 			<<set $NPCList[_n].lactation to 1>>
 		<<else>>
 			<<set $NPCList[_n].lactation to 0>>
 		<</if>>
 	<</if>>
 <</if>>
+
+<<set $NPCList[_n].fullDescription to $NPCList[_n].description + " ">>
+<<if $NPCList[_n].monster is 0>>
+	<<if $NPCList[_n].type isnot "cow" and $NPCList[_n].type isnot "bull">>
+		<<if $NPCList[_n].pronoun is "m">>
+			<<set $NPCList[_n].fullDescription += "male ">>
+		<<elseif $NPCList[_n].pronoun is "f">>
+			<<set $NPCList[_n].fullDescription += "female ">>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $NPCList[_n].fullDescription += $NPCList[_n].type>>
 
 
 <!-- Gender-swap monsters if needed -->
@@ -200,7 +215,7 @@
 	<<set $NPCList[_n].penissize to 0>>
 <</if>>
 
-<<if $NPCList[_n].type is "horse" or $NPCList[_n].type is "centaur" or $NPCList[_n].type is "dolphin" or $NPCList[_n].type is "dolphinboy" or $NPCList[_n].type is "dolphingirl">>
+<<if $NPCList[_n].type is "horse" or $NPCList[_n].type is "centaur" or $NPCList[_n].type is "dolphin" or $NPCList[_n].type is "dolphinboy" or $NPCList[_n].type is "dolphingirl" or $NPCList[_n].type is "cow" or $NPCList[_n].type is "bull" or $NPCList[_n].type is "bullboy" or $NPCList[_n].type is "cowgirl">>
 	<<set $claws to 0>>
 <</if>>
 

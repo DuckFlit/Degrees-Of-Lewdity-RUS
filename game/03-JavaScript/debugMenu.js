@@ -899,6 +899,15 @@ setup.debugMenu.event_list = {
         },
         {
             link: [
+                `Cow Test`, `Cow Test Sex`
+            ],
+            widgets: [
+                `<<endcombat>>`,
+                `<<set $sexstart to 1>>`
+            ]
+        },
+        {
+            link: [
                 `Tentacle Rape Me`, `Sea Tentacles`
             ],
             widgets: [
