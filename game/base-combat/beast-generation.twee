@@ -21,13 +21,10 @@
 <<if _gen is "m" or _gen is "f">>
 	<<set $NPCList[_n].gender to _gen>><<set $NPCList[_n].pronoun to _gen>>
 <<else>>
-	<<set $rng to random(1, 100)>>
-	<<if $beastmalechance lt $rng>>
-		<<set $NPCList[_n].gender to "f">>
-		<<set $NPCList[_n].pronoun to "f">>
+	<<if random(1, 100) lte $beastmalechance>>
+		<<set $NPCList[_n].gender to "f">><<set $NPCList[_n].pronoun to "f">>
 	<<else>>
-		<<set $NPCList[_n].gender to "m">>
-		<<set $NPCList[_n].pronoun to "m">>
+		<<set $NPCList[_n].gender to "m">><<set $NPCList[_n].pronoun to "m">>
 	<</if>>
 <</if>>
 
@@ -61,18 +58,23 @@
 
 <!-- Set genitals active -->
 <<set _gen to $NPCList[_n].gender>>
+<<set $NPCList[_n].vagina to "none">>
+<<set $NPCList[_n].penis to "none">>
+
 <<if _beast_genitals is "penis">>
 	<<set $NPCList[_n].penis to 0>>
-	<<set $NPCList[_n].vagina to "none">>
 <<elseif _beast_genitals is "vagina">>
 	<<set $NPCList[_n].vagina to 0>>
-	<<set $NPCList[_n].penis to "none">>
-<<elseif _gen is "m">>
-	<<set $NPCList[_n].penis to 0>>
-	<<set $NPCList[_n].vagina to "none">>
-<<elseif _gen is "f">>
-	<<set $NPCList[_n].vagina to 0>>
-	<<set $NPCList[_n].penis to "none">>
+<<elseif ["m", "f", "h"].contains(_gen)>>
+	<<switch _gen>>
+		<<case "m">>
+			<<set $NPCList[_n].penis to 0>>
+		<<case _gen "f">>
+			<<set $NPCList[_n].vagina to 0>>
+		<<case _gen "h">>
+			<<set $NPCList[_n].penis to 0>>
+			<<set $NPCList[_n].vagina to 0>>
+	<</switch>>
 <</if>>
 
 <<npcClothesType $NPCList[_n] "naked">>
@@ -106,11 +108,12 @@
 	<<set $NPCList[_n].hair to either("appaloosa","bay","black","brown","buckskin","chestnut","cremello","dun","grey","overo","palomino","piebald","roan","skewbald","spotted","tobiano")>>
 <</if>>
 
+<<set $rng to random(1,100)>>
 <!-- Set hallucination creatures to always be monsters. Shadow types could be .monster = "shadow" -->
 <<set $rng to random(1, 100)>>
 <<if $NPCList[_n].type is "creature" and !_tower_creature>>
 	<<set $NPCList[_n].monster to "monster">>
-<<elseif ($monsterchance gte $rng and $hallucinations gte 1) or ($monsterchance gte $rng and $monsterhallucinations is "f") or (_beast_monster is "monster") or ($bestialitydisable is "t" and $NPCList[0].monster is "monster")>>
+<<elseif ($monsterchance gte $rng and ($hallucinations gte 1 or $monsterhallucinations is "f")) or (_beast_monster is "monster") or ($bestialitydisable is "t" and $NPCList[0].monster is "monster")>>
 	<<set $NPCList[_n].monster to "monster">>
 	<<if $NPCList[_n].type is "horse">>
 		<<set $NPCList[_n].type to "centaur">>
@@ -188,21 +191,27 @@
 
 <!-- Gender-swap monsters if needed -->
 <<if $NPCList[_n].monster is "monster" and _beast_genitals is undefined>>
+	<<set $NPCList[_n].penis to "none">>
+	<<set $NPCList[_n].vagina to "none">>
+	
+	<<set $rng to random(1,100)>>
 	<<if $NPCList[_n].gender is "m">>
-		<<if random(0, 99) gte $cbchance>>
+		<<if $rng lte $cbchance and $debugEnableHerms>>
 			<<set $NPCList[_n].penis to 0>>
-			<<set $NPCList[_n].vagina to "none">>
+			<<set $NPCList[_n].vagina to 0>>
+		<<elseif $rng lte $cbchance>>
+			<<set $NPCList[_n].penis to 0>>
 		<<else>>
 			<<set $NPCList[_n].vagina to 0>>
-			<<set $NPCList[_n].penis to "none">>
 		<</if>>
 	<<elseif $NPCList[_n].gender is "f">>
-		<<if random(0, 99) gte $dgchance>>
+		<<if $rng lte $dgchance and $debugEnableHerms>>
 			<<set $NPCList[_n].vagina to 0>>
-			<<set $NPCList[_n].penis to "none">>
+			<<set $NPCList[_n].penis to 0>>
+		<<elseif $rng lte $dgchance>>
+			<<set $NPCList[_n].vagina to 0>>
 		<<else>>
 			<<set $NPCList[_n].penis to 0>>
-			<<set $NPCList[_n].vagina to "none">>
 		<</if>>
 	<</if>>
 <</if>>

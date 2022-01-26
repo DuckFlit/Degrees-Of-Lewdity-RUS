@@ -264,12 +264,7 @@ function genderappearancecheck() {
 	} else if (T.apparent_femininity < 0) {
 		T.gender_appearance = "m";
 	} else if (V.player.gender == "h") { // if herm pc and perfect 0 apparent_femininity
-		if (["m", "f"].includes(V.player.gender_body)) // use natural features as a tie breaker if not androgynous
-			T.gender_appearance = V.player.gender_body;
-		else if (["m", "f"].includes(V.player.gender_posture)) // use gender posture as a tie breaker if not acting naturally
-			T.gender_appearance = V.player.gender_posture;
-		else
-			T.gender_appearance = "f"; // you've done it. you've broken me. default to "f".
+		T.gender_appearance = genderAppearanceHermTiebreak();
 	} else {
 		T.gender_appearance = V.player.gender;
 	}
@@ -278,14 +273,24 @@ function genderappearancecheck() {
 	} else if (T.apparent_femininity_noow < 0) {
 		T.gender_appearance_noow = "m";
 	} else if (V.player.gender == "h") {
-		if (["m", "f"].includes(V.player.gender_body))
-			T.gender_appearance_noow = V.player.gender_body;
-		else if (["m", "f"].includes(V.player.gender_posture))
-			T.gender_appearance_noow = V.player.gender_posture;
-		else
-			T.gender_appearance_noow = "f";
+		T.gender_appearance_noow = genderAppearanceHermTiebreak();
 	} else {
 		T.gender_appearance_noow = V.player.gender;
+	}
+}
+
+function genderAppearanceHermTiebreak() {
+	// Reminder: this is only if the player has an *exactly* 0 femininity score. This should be nearly impossible to reach, but we still need to handle it.
+
+	// The general principle here is that these factors are things that indicate which gender is the player's preference for this character.
+	// We rely on as many manually-chosen details as possible to break the tie in a way that favors the player's preference.
+
+	if (["m", "f"].includes(V.player.gender_body)) { 
+		return V.player.gender_body; // break the tie with natural features, if player has masculine or feminine features.
+	} else if (["m", "f"].includes(V.player.gender_posture)) { 
+		return V.player.gender_posture; // break the tie with gender posture, if gender posture is "m" or "f"
+	} else {
+		return "f"; // you've done it. you've broken me. default to "f".
 	}
 }
 
