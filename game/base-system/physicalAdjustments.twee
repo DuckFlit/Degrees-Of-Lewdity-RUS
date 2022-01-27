@@ -20,43 +20,24 @@
 			}
 		},
 		"pills":{
-			"type": ["penis", "breast", "bottom"],
-			"penis": {
-				"type": null,
-				"doseTaken": null,
-				"autoTake": null,
-				"overdose": {
-					"growth":0,
-					"reduction":0},
-				"owned": {
-					"growth": 0,
-					"reduction": 0,
-					"blocker": 0,
-				}
-			},
-			"breast": {
-				"type": null,
-				"doseTaken": null,
-				"autoTake": null,
-				"overdose": {},
-				"owned": {
-					"growth": 0,
-					"reduction": 0,
-					"blocker": 0,
-				}
-			},
-			"bottom": {
-				"type": null,
-				"doseTaken": null,
-				"autoTake": null,
-				"overdose": {},
-				"owned": {
-					"growth": 0,
-					"reduction": 0,
-					"blocker": 0,
-				}
+			"pills":{
+				'bottom reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'bottom growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'bottom blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'breast reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'breast growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'breast blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'penis reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'penis growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'penis blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'fertility booster':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'contraceptive':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'asylum\'s prescription':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
+				'Dr Harper\'s prescription':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0}
 			},
 			"boughtOnce": false,
+			"lastTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''},
+			"mostTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''}
 		}
 	}>>
 <</if>>
@@ -83,7 +64,7 @@
 		}
 	}>>
 <</if>>
-
+/*
 <<if $sexStats.pills.type is undefined or $sexStats.pills.type.length lt 3>>
 	<<set _quantity to [0,0,0,0,0,0,0,0,0]>>
 	<<if $sexStats.pills.breastOwned isnot undefined and $sexStats.pills.boughtOnce is true>>
@@ -179,7 +160,7 @@
 <<set _pills.bottom.owned.blocker to Math.clamp(_pills.bottom.owned.blocker, 0, 1000)>>
 <<set _pills.pregnancy.owned.fertility to Math.clamp(_pills.pregnancy.owned.fertility, 0, 1000)>>
 <<set _pills.pregnancy.owned.contraceptive to Math.clamp(_pills.pregnancy.owned.contraceptive, 0, 1000)>>
-
+*/
 <<if $sexStats.vagina is undefined>>
 	<<set _baseDays to random(24,38)>>
 	<<if _baseDays lt 26>>
@@ -273,17 +254,16 @@
 <<widget "physicalAdjustments">>
 
 /*Breasts*/
-<<switch $sexStats.pills.breast.type>>
+<<switch $sexStats.pills.mostTaken["breast"]>>
 	<<case "growth">>
-		<<set _breastMulti to 1 + (2.25 * $sexStats.pills.breast.doseTaken)>>
+		<<set _breastMulti to 1 + (2.25 * $sexStats.pills["pills"]["breast growth"].doseTaken)>>
 	<<case "reduction">>
-		<<set _breastMulti to -1 + (-2.25 * $sexStats.pills.breast.doseTaken)>>
+		<<set _breastMulti to -1 + (-2.25 * $sexStats.pills["pills"]["breast reduction"].doseTaken)>>
 	<<case "blocker">>
 		<<set _breastMulti to 0>>
 	<<default>>
 		<<set _breastMulti to 1>>
 <</switch>>
-
 <<if _breastMulti isnot 0>>
 	<<switch $player.gender>>
 	<<case "m">>
@@ -329,25 +309,26 @@
 <</if>>
 
 /*Penis*/
-<<if $sexStats.pills.penis.overdose.growth gt 0>>
-	<<set $sexStats.pills.penis.overdose.growth to Math.clamp($sexStats.pills.penis.overdose.growth - 1, 0, 100)>>
+<<if $sexStats.pills["pills"]["penis growth"].overdose gt 0>>
+	<<set $sexStats.pills["pills"]["penis growth"].overdose to Math.clamp($sexStats.pills["pills"]["penis growth"].overdose - 1, 0, 100)>>
 <</if>>
-<<if $sexStats.pills.penis.overdose.reduction gt 0>>
-	<<set $sexStats.pills.penis.overdose.reduction to Math.clamp($sexStats.pills.penis.overdose.reduction - 1, 0, 100)>>
+<<if $sexStats.pills["pills"]["penis reduction"].overdose gt 0>>
+	<<set $sexStats.pills["pills"]["penis reduction"].overdose to Math.clamp($sexStats.pills["pills"]["penis reduction"].overdose - 1, 0, 100)>>
 <</if>>
 
-<<switch $sexStats.pills.penis.type>>
+<<switch $sexStats.pills.mostTaken["penis"]>>
 	<<case "growth">>
-		<<set _penisMulti to 1 + (2.25 * $sexStats.pills.penis.doseTaken)>>
-		<<set $sexStats.pills.penis.overdose.growth += $sexStats.pills.penis.doseTaken>>
+		<<set _penisMulti to 1 + (2.25 * $sexStats.pills["pills"]["penis growth"].doseTaken)>>
+		<<set $sexStats.pills["pills"]["penis growth"].overdose += $sexStats.pills["pills"]["penis grownth"].doseTaken>>
 	<<case "reduction">>
-		<<set _penisMulti to -1 + (-2.25 * $sexStats.pills.penis.doseTaken)>>
-		<<set $sexStats.pills.penis.overdose.reduction += $sexStats.pills.penis.doseTaken>>
+		<<set _penisMulti to -1 + (-2.25 * $sexStats.pills["pills"]["penis reduction"].doseTaken)>>
+		<<set $sexStats.pills["pills"]["penis reduction"].overdose += $sexStats.pills["pills"]["penis reduction"].doseTaken>>
 	<<case "blocker">>
 		<<set _penisMulti to 0>>
 	<<default>>
 		<<set _penisMulti to 1>>
 <</switch>>
+
 <<if $player.penisExist and _penisMulti isnot 0>>
 	<<set _totalReduction to ($sexStats.creampie.self.anus + $sexStats.creampie.self.mouth) * 2>>
 	<<set _totalIncrease to ($sexStats.creampie.npc.anus + $sexStats.creampie.npc.mouth + $sexStats.creampie.npc.vagina) * 2>>
@@ -367,8 +348,8 @@
 	<<set _purityBoost to (_totalChange lt 0 ? 2 + ($purity / 500) : 2 + ((1000 - $purity) / 500))>>
 	<<set $penisgrowthtimer -= _purityBoost * _totalChange>>
 
-	<<set $penisgrowthtimer -= $sexStats.pills.penis.overdose.growth>>
-	<<set $penisgrowthtimer += $sexStats.pills.penis.overdose.reduction>>
+	<<set $penisgrowthtimer -= $sexStats.pills["pills"]["penis growth"].overdose>>
+	<<set $penisgrowthtimer += $sexStats.pills["pills"]["penis reduction"].overdose>>
 
 	<<if $penissize lt 0>>
 		<<set $penisgrowthtimer -= 50>>
@@ -376,13 +357,13 @@
 
 	<<if $parasite.penis.name is "urchin">>
 		<<set $penisgrowthtimer -= 250>>
-		<<set $sexStats.pills.penis.overdose.growth += random(1,2)>>
+		<<set $sexStats.pills["pills"]["penis growth"].overdose += random(1,2)>>
 	<</if>>
 	<<if $parasite.penis.name is "slime">>
 		<<set $penisgrowthtimer += 250>>
-		<<set $sexStats.pills.penis.overdose.reduction += random(1,2)>>
+		<<set $sexStats.pills["pills"]["penis reduction"].overdose += random(1,2)>>
 	<</if>>
-	<<set _overdose to $sexStats.pills.penis.overdose.growth - $sexStats.pills.penis.overdose.reduction>>
+	<<set _overdose to $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose>>
 	<<if $penisgrowthtimer lte 0 and $penissize lt $penissizemax and $penissize gte -1>>
 		<<set $penissize += 1>>
 		<<set $penisgrowthtimer += 700>>
@@ -409,17 +390,16 @@
 <</if>>
 
 /*Bottom*/
-<<switch $sexStats.pills.bottom.type>>
+<<switch $sexStats.pills.mostTaken["bottom"]>>
 	<<case "growth">>
-		<<set _bottomMulti to 1 + (2.25 * $sexStats.pills.bottom.doseTaken)>>
+		<<set _bottomMulti to 1 + (2.25 * $sexStats.pills["pills"]["bottom growth"].doseTaken)>>
 	<<case "reduction">>
-		<<set _bottomMulti to -1 + (-2.25 * $sexStats.pills.bottom.doseTaken)>>
+		<<set _bottomMulti to -1 + (-2.25 * $sexStats.pills["pills"]["bottom reduction"].doseTaken)>>
 	<<case "blocker">>
 		<<set _bottomMulti to 0>>
 	<<default>>
 		<<set _bottomMulti to 1>>
 <</switch>>
-
 <<if _bottomMulti isnot 0>>
 	<<set _totalReduction to $workouts /2>>
 	<<set _totalIncrease to $sexStats.creampie.self.anus * 2>>
@@ -476,33 +456,33 @@
 <<set $workouts to 0>>
 
 <<set _pills to $sexStats.pills>>
+<<run window.resetAllDoseTaken()>>
 <<if $location is "home" or $location is "alex_cottage" or $location is "cabin">>
-	<<for _i to 0; _i lt _pills.type.length; _i++>>
-		<<set _type to _pills.type[_i]>>
-		<<set _autoTake to _pills[_type].autoTake>>
-		<<if _autoTake isnot null and _pills[_type].owned[_autoTake] gt 0>>
-			<<set $pillsconsumed++>>
-			<<set _pills[_type].owned[_autoTake]-->>
-			<<set _pills[_type].type to clone(_autoTake)>>
-			<<set _pills[_type].doseTaken to 1>>
-			<<set $pillsTaken to true>><<set $effectsmessage to 1>>
-			<<if _pills[_type].owned[_autoTake] is 0>>
-				<<set _pills[_type].autoTake to null>>
+	<<set _keys to Object.keys(_pills.lastTaken)>> /* "lastTaken" will induce you in error here, it's only to retrieve the pills type list*/
+	<<for _i, _key range _keys>>
+		<<run window.determineAutoTakePill(_key)>>
+		<<if _autoTakeDetermined != null and _pills["pills"][_autoTakeDetermined].owned > 0>>
+			<<set $pillsconsumed++>> /* to keep track of overall pill consumption (stats) */
+			<<set _pills["pills"][_autoTakeDetermined].owned-->>
+			<<set _pills["pills"][_autoTakeDetermined].doseTaken to 1>>
+			<<run window.redetermineMostTaken(0, 0, _autoTakeDetermined)>>
+			<<run window.setLastTaken(null, null, _autoTakeDetermined)>>
+			<<set $pillsTaken to true>>
+			<<set $effectsmessage to 1>>
+			<<if _pills["pills"][_autoTakeDetermined].owned == 0>>
+				<<set _pills["pills"][_autoTakeDetermined].autoTake to false>>
 				<<set $pillsTakenLast to true>>
 			<</if>>
-		<<else>>
-			<<set _pills[_type].autoTake to null>>
-			<<set _pills[_type].type to null>>
-			<<set _pills[_type].doseTaken to 0>>
+		<<elseif _autoTakeDetermined != null>>
+			<<set _pills["pills"][_autoTakeDetermined].autoTake to false>>
+			<<set _pills["pills"][_autoTakeDetermined].doseTaken to 0>>
+			<<set _pills.lastTaken[_key] to ''>>
+			<<set _pills.mostTaken[_key] to ''>>
 		<</if>>
 	<</for>>
 <<else>>
-	<<set _pills.penis.type to null>>
-	<<set _pills.penis.doseTaken to 0>>
-	<<set _pills.breast.type to null>>
-	<<set _pills.breast.doseTaken to 0>>
-	<<set _pills.bottom.type to null>>
-	<<set _pills.bottom.doseTaken to 0>>
+	<<run window.resetLastTaken()>>
+	<<run window.resetMostTaken()>>
 <</if>>
 <</widget>>
 
