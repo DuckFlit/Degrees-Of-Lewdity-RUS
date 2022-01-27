@@ -514,6 +514,8 @@ window.settingsObjects = function (type) {
 				cbchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
 				malevictimchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
 				homochance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				npcVirginityChance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
+				npcVirginityChanceAdult: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
 				breast_mod: { min: -12, max: 12, decimals: 0, randomize: "encounter" },
 				penis_mod: { min: -8, max: 8, decimals: 0, randomize: "encounter" },
 				whitechance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },

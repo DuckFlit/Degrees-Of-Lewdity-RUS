@@ -960,6 +960,9 @@
 <<else>>
 	<<set $NPCList[_n].type to "human">>
 <</if>>
+
+<<generateNPCvirginity $NPCList[_n]>>
+
 <</widget>>
 
 <<widget "npcstrapon">>
@@ -1156,5 +1159,44 @@
 	<<set _npcClothes to _npcClothingOptions.random()>>
 	<<run npcClothes($_npc, _npcClothes)>>
 <</if>>
+<</widget>>
+
+
+<<widget "generateNPCvirginity">>
+
+	<<set $_npc to $args[0]>>
+
+	<<set $_npc.virginity to {
+		"anal": true,
+		"oral": true,
+		"penile": true,
+		"vaginal": true,
+		"handholding": false,
+		"temple": false,
+		"kiss": false
+	}>>
+
+	<<set $_virginChance to ($_npc.adult is 1 ? $npcVirginityChanceAdult : $npcVirginityChance)>>
+
+	<<set $_npc.virginity.penile to  (random(1,100) lte $_virginChance)>>
+	<<set $_npc.virginity.vaginal to (random(1,100) lte $_virginChance)>>
+
+	<!-- Can't lose virginity if you don't have the part. -->
+	<!-- Also, futureproofing for strapons; this runs before strapons are assigned, so they should not generate with both penile virginity AND a strapon. -->
+	<<if $_npc.penis is "none">>
+		<<set $_npc.virginity.penile to  false>>
+	<</if>>
+	<<if $_npc.vagina is "none">>
+		<<set $_npc.virginity.vaginal to false>>
+	<</if>>
+
+	<!-- this is quadratic, but basically it approaches 100% faster than regular virgin chance. -->
+	<<set $_uncommonVirginChance to $_virginChance * (2 - ($_virginChance/100))>>
+
+	<<if $analdisable is "f">>
+		<<set $_npc.virginity.anal to (random(1,100) lte $_uncommonVirginChance)>>
+	<</if>>
+
+	<<set $_npc.virginity.oral to (random(1,100) lte $_uncommonVirginChance)>>
 <</widget>>
 

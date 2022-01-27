@@ -56,7 +56,7 @@
 	<<switch $args[1]>>
 		<<case "loveInterest">>
 			<span class="lewd">You're happy your first kiss went to a love interest.</span><<arousal 3000>><<stress -12>><<trauma -12>><<ggarousal>><<llstress>>
-			<<if (!$wraith or $wraith and $wraith.mimic isnot $args[0])>><<earnFeat "First Kiss">><</if>>
+			<<if (!$wraith or $wraith.mimic isnot $args[0])>><<earnFeat "First Kiss">><</if>>
 		<<case "romantic">>
 			<span class="lewd">You're happy your first kiss was taken in such a romantic way.</span><<arousal 1500>><<stress -6>><<trauma -6>><<garousal>><<lstress>>
 		<<case "rape">>
@@ -127,39 +127,64 @@
  * Argument 0 is the npc, argument 1 is their virginity.
 */
 <<widget "takeNPCVirginity">>
-<<if $NPCNameList.indexOf($args[0]) >= 0 and $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] is true and (!$wraith or $wraith and $wraith.mimic isnot $args[0])>>
-    <<set $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] to "player">>
-	<<run $virginTaken[$args[1]].pushUnique($args[0])>>
-	<<if $args[0] is "Sydney" and ($args[1] is "vaginal" or $args[1] is "penile")>>
-		<<earnFeat "Sydney the Pure Hearted">>
+	<!-- if the first argument is a name, find which npc has that name, else assume it is an index. -->
+	<<if typeof $args[0] is "string">>
+		<<set $_npc to $NPCList.find(npc => npc.fullDescription === $args[0])>>
+	<<elseif $args[0] isnot undefined>>
+		<<set $_npc to $NPCList[$args[0]]>>
 	<</if>>
-	<<if $enemytype isnot "beast" and $enemytype isnot "tentacle">>
-		<<switch $args[1]>>
-			<<case "vaginal">>
-				<<set $speechNPCVaginaVirgin to 1>>
-				<span class="pink">You feel <<his>> hymen tear, forever robbing <<him>> of <<his>> purity.</span> <<if $demon gte 6>><span class="lewd">You feel a surge of pleasure unlike any other as you defile <<him>> and spread your impurity.</span> <<stress -50>><<trauma -50>><<lllstress>><<llltrauma>><<else>><<arousal 2000>><<ggarousal>><</if>><br>
-			<<case "penile">>
-				<<set $speechNPCPenisVirgin to 1>>
-				<span class="pink">You feel <<his>> foreskin separate from <<his>> glans, forever robbing <<him>> of <<his>> purity.</span> <<if $demon gte 6>><span class="lewd">You feel a surge of pleasure unlike any other as you defile <<him>> and spread your impurity.</span> <<stress -50>><<trauma -50>><<lllstress>><<llltrauma>><<else>><<arousal 2000>><<ggarousal>><</if>><br>
-			<<case "anal">>
-				<<set $speechNPCAnusVirgin to 1>>
-				<span class="pink">It's a tight fit. This is probably <<his>> first time doing this.</span> <<arousal 2000>><<ggarousal>><br>
-			<<case "oral">>
-				<<set $speechNPCOralVirgin to 1>>
-				<span class="pink"><<He>> looks surprised, as if <<he>> wasn't expecting the taste. This is probably <<his>> first time.</span> <<arousal 1500>><<ggarousal>><br>
-			<<case "kiss">>
-				<<set $speechNPCKissVirgin to 1>>
-				<<set _npcKissVirginTemp to 1>>
-			<<case "handholding">>
-				<<set $speechNPCHandholdingVirgin to 1>>
-				<span class="green"><<His>> hand clenches, and <<he>> looks slightly nervous.</span>
-			<<default>>
-		<</switch>>
+
+	<<set $_vType to $args[1]>>
+	<<if $_npc and $_vType and (!$wraith or $wraith.mimic isnot $_npc.nam) and $enemytype isnot "beast" and $enemytype isnot "tentacle">>
+		<<if $_npc.virginity[$_vType] is true>>
+			<<set $_npc.virginity[$_vType] to "player">>
+			<<switch $_vType>>
+				<<case "vaginal">>
+					<<set $speechNPCVaginaVirgin to 1>>
+					<span class="pink">You feel <<his>> hymen tear, forever robbing <<him>> of <<his>> purity.</span>
+					<<if $demon gte 6>>
+						<span class="lewd">You feel a surge of pleasure unlike any other as you defile <<him>> and spread your impurity.</span>
+						<<stress -50>><<trauma -50>><<lllstress>><<llltrauma>>
+					<</if>>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "penile">>
+					<<set $speechNPCPenisVirgin to 1>>
+					<span class="pink">You feel <<his>> foreskin separate from <<his>> glans, forever robbing <<him>> of <<his>> purity.</span>
+					<<if $demon gte 6>>
+						<span class="lewd">You feel a surge of pleasure unlike any other as you defile <<him>> and spread your impurity.</span>
+						<<stress -50>><<trauma -50>><<lllstress>><<llltrauma>>
+					<</if>>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "anal">>
+					<<set $speechNPCAnusVirgin to 1>>
+					<span class="pink">It's a tight fit. This is probably <<his>> first time doing this.</span>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "oral">>
+					<<set $speechNPCOralVirgin to 1>>
+					<span class="pink"><<He>> looks surprised, as if <<he>> wasn't expecting the taste. This is probably <<his>> first time.</span>
+					<<arousal 1500>><<ggarousal>>
+					<br>
+				<<case "kiss">>
+					<<set $speechNPCKissVirgin to 1>>
+					<<set _npcKissVirginTemp to 1>>
+				<<case "handholding">>
+					<<set $speechNPCHandholdingVirgin to 1>>
+					<span class="green"><<His>> hand clenches, and <<he>> looks slightly nervous.</span>
+				<<default>>
+			<</switch>>
+
+			<<run $virginTaken[$_vType].pushUnique($_npc.fullDescription)>>
+			<<if $_isNamed>>
+				<<if $_npc.nam is "Sydney" and ($_vType is "vaginal" or $_vType is "penile")>>
+					<<earnFeat "Sydney the Pure Hearted">>
+				<</if>>
+				<<set $_namedNPC.virginity to $_npc.virginity>>
+			<</if>>
+		<</if>>
 	<</if>>
-<</if>>
-<<if $NPCNameList.indexOf($args[0]) >= 0 and ($args[1] is "vaginal" or $args[1] is "penile") and $NPCName[$NPCNameList.indexOf($args[0])].virginity.temple is true and $templePromised isnot $args[0]>>
-    <<set $NPCName[$NPCNameList.indexOf($args[0])].virginity.temple to false>>
-<</if>>
 <</widget>>
 
 <<widget "setupMidOrgasm">>
