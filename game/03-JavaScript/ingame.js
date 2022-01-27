@@ -547,7 +547,7 @@ window.getRobinLocation = function(){
 	if (V.NPCName[V.NPCNameList.indexOf("Robin")].init !== 1){
 		return;
 
-	} else if (V.robinlocationoverride && V.robinlocationoverride.during.contains(V.hour)){
+	} else if (V.robinlocationoverride && V.robinlocationoverride.during.includes(V.hour)){
 		return T.robin_location = V.robinlocationoverride.location;
 
 	} else if (V.robinmissing === 1){
