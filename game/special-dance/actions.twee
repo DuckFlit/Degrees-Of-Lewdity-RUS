@@ -4,7 +4,7 @@
 	<<exposure>>
 	<<if $danceevent is 0>>
 		<<if $exposed gte 2 and $exhibitionism lte 74 and $forceddance isnot 1 and ($corruptionDancing is undefined or $dancelocation isnot "brothel")>>
-		<<elseif $exposed gte 1 and $exhibitionism lte 34 and $forceddance isnot 1 and ($corruptionDancing is undefined or $dancelocation isnot "brothel")>>
+		<<elseif $exposed gte 1 and $exhibitionism lte 34 and $forceddance isnot 1 and ($corruptionDancing is undefined or $dancelocation isnot "brothel") and !$worn.under_lower.type.includes("dance")>>
 		<<else>>
 			<<if $danceactiondefault is "cool">>
 				<label>Cool Dance (0:01) <<radiobutton "$danceaction" "cool" checked>></label> |
@@ -116,6 +116,22 @@
 	<<elseif $danceevent is "robin">>
 		<<link [[Ignore|$passage]]>><<set $danceaction to "robinignore">><<npcincr Robin love -5>><<npcincr Robin dom -20>><</link>>
 		<br>
+	<<elseif $danceevent is "drink">>
+		<<link [[Drink|$passage]]>><<set $danceaction to "drink">><</link>><<dancedifficulty 1 `800 + $drunk`>>
+		<br>
+		<<link [[Drink carefully|$passage]]>><<set $danceaction to "drink_careful">><</link>>
+		<br>
+		<<link [[Ignore|$passage]]>><<set $danceaction to "drink_ignore">><</link>>
+		<br>
+	<<elseif $danceevent is "light">>
+		<<if $exhibitionism gte 75>>
+			<<link [[Flaunt|$passage]]>><<set $danceaction to "light_flaunt">><</link>><<ginterest>>
+			<br>
+		<</if>>
+		<<if $forceddance is 1>>
+			<<link [[Cover yourself|$passage]]>><<set $danceaction to "light_cover">><</link>>
+			<br>
+		<</if>>
 	<<elseif $danceevent is "corruptionDance">>
 		<<if $promiscuity gte 75 and $submissive gte 1900>>
 			<<link [[Submit willingly|$passage]]>>
@@ -434,10 +450,72 @@
 						<<set $danceevent to "smuggler_rescue">>
 					<</if>>
 				<</if>>
+			<<elseif $dancelocation is "party">>
+				<<if $audiencearousal gte 90>>
+					<<dancepull>>
+				<<elseif $drunk gte random(1, 1000)>>
+					You <span class="purple">drunkenly</span> trip and stumble, falling from the table. The <<person>> catches you. Someone cops a feel of your <<bottom>> as you climb back up.
+				<<else>>
+					<<if $audiencearousal gte 41>>
+						<<if $rng gte 51>>
+							<<dancedrink>>
+						<<else>>
+							<<dancelonging>>
+						<</if>>
+					<</if>>
+				<</if>>
+			<<elseif $dancelocation is "stage">>
+				<<if $audiencearousal gte 100>>
+					<<if $rng gte 91>>
+						<<dancerape>>
+					<<elseif $rng gte 71>>
+						<<dancemolest>>
+					<<elseif $rng gte 51>>
+						<<dancestrip>>
+					<<elseif $rng gte 31>>
+						<<dancelight>>
+					<</if>>
+				<<elseif $audiencearousal gte 81>>
+					<<if $rng gte 91>>
+						<<dancemolest>>
+					<<elseif $rng gte 71>>
+						<<dancestrip>>
+					<<elseif $rng gte 51>>
+						<<dancelight>>
+					<</if>>
+				<<elseif $audiencearousal gte 41>>
+					<<if $rng gte 91>>
+						<<dancestrip>>
+					<<elseif $rng gte 71>>
+						<<dancelight>>
+					<</if>>
+				<</if>>
 			<</if>>
 		<</if>>
 	<</if>>
 	<br><br>
+<</widget>>
+
+<<widget "dancelight">>
+<<if $exposed gte 2>>
+	The spotlight changes hue and brightens, forcing you to squint.
+<<else>>
+	<<set $danceevent to "light">>
+	The spotlight changes hue, piercing the fabric of your clothes, and illuminating the skin beneath. <span class="lewd">It's as if you're naked!</span>
+<</if>>
+<</widget>>
+
+<<widget "dancedrink">>
+	<<set $danceevent to "drink">>
+	<<person1>>The <<person>> offers you a glass of wine.
+	<<if $drunk gte $danceskill - 800>>
+		You feel unsteady already.
+	<</if>>
+<</widget>>
+
+<<widget "dancepull">>
+	<<set $danceevent to "dancepull">>
+	Driven mad with lust, <span class="pink">the <<person1>><<person>> grasps your leg, and tries to pull you off the stage.</span>
 <</widget>>
 
 <<widget "dancerape">>

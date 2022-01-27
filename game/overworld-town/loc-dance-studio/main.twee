@@ -34,9 +34,23 @@ You are in the dance studio. Here you can pay for lessons to improve your dancin
 		<br><br>
 	<</if>>
 	<<if $openinghours is 1 and $exposed lt 1>>
-		<<if $money gte 1200 and $exposed lt 1>>
-			<<link [[Take a dance lesson (£12 1:00)|Dancing Lesson]]>><<set $phase to 0>><<set $money -= 1200>><<set $dancestage to 0>><</link>><<gtiredness>><<ggdanceskill>>
-			<br>
+		<<if $dance_job_intro>>
+			<<if $dance_job is "done">>
+				<span class="blue">Charlie will have another job for you next week.</span>
+				<br>
+			<<else>>
+				<<link [[Ask for work|Dance Job Ask]]>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+		<<if $exposed lt 1>>
+			<<if $money gte 1200>>
+				<<link [[Take a dance lesson (£12 1:00)|Dancing Lesson]]>><<set $phase to 0>><<set $money -= 1200>><<set $dancestage to 0>><</link>><<gtiredness>> | <span class="green">+ + Dancing Skill</span>
+				<br>
+			<<else>>
+				<span class="blue">You can't afford a dance lesson.</span>
+				<br>
+			<</if>>
 		<</if>>
 		<<if ($weekday is 3 or $weekday is 5) and $worn.feet.type.includes("heels")>>
 			<<if $money gte 1200 and $exposed lt 1>>
@@ -158,9 +172,20 @@ Your heart beats faster as you walk away from the dance studio, and away from re
 <<effects>>
 <<if $dancestudiointro is 1 and $phase is 0>><<pass 20>><</if>>
 <<set $outside to 0>><<set $location to "dance_studio">><<effects>>
-<<if $dancestudiointro isnot 1>>
+<<if $danceskill gte 800 and $dance_job_intro is undefined>>
+	<<generate1>><<person1>>
+	You try to pay the receptionist, but <<he>> interrupts. "Charlie wanted to see you," <<he>> says. "Go right in. No need to pay."
+	<br><br>
+	<<endevent>>
+	<<npc Charlie>><<person1>>
+	Charlie stands in front of the class, explaining the importance of proper warm up exercises. <<He>> glances at you and smiles. "I'll be right back," <<he>> tells the class. "Keep practising!"
+	<br><br>
+
+	<<link [[Next|Dancing Job Intro]]>><<set $dance_job_intro to 1>><</link>>
+	<br>
+<<elseif $dancestudiointro isnot 1>>
 	<<set $dancestudiointro to 1>>
-	<<npc Charlie>><<person1>>You pay the receptionist who ushers you through the door to her left. You enter into a large room with wood panel floors and mirrors lining the walls. A dozen people are already inside. It's easy to pick out the instructor. Hands on hips, <<he>> stands addressing the class, explaining the importance of proper warm up exercises.
+	<<npc Charlie>><<person1>>You pay the receptionist who ushers you through the door to the left. You enter into a large room with wood panel floors and mirrors lining the walls. A dozen people are already inside. It's easy to pick out the instructor. Hands on hips, <<he>> stands addressing the class, explaining the importance of proper warm up exercises.
 	<br><br>
 	The door closes behind you, alerting <<him>> to your presence. <<He>> turns <<his>> emerald eyes to you and smiles. "We have a new student! Welcome." Short ginger hair crowns <<his>> freckled face. <<His>> skintight outfit shows off <<his>> toned and athletic body.
 	<<if $pronoun is "m">>
@@ -179,11 +204,11 @@ Your heart beats faster as you walk away from the dance studio, and away from re
 	<br><br>
 	If <<he>> noticed your lewd gaze, <<he>> gives no sign. You should introduce yourself, but how?
 	<br><br>
-	<<link [[Timidly|Dancing Lesson]]>><<npcincr Charlie love 20>><<set $phase to 1>><</link>>
+	<<link [[Timidly|Dancing Lesson]]>><<npcincr Charlie love 20>><<set $phase to 1>><</link>><<ggglove>>
 	<br>
 	<<link [[Confidently|Dancing Lesson]]>><<set $phase to 2>><</link>>
 	<br>
-	<<link [[Flirtatiously|Dancing Lesson]]>><<npcincr Charlie love -10>><<stress -12>><<trauma -6>><<set $phase to 3>><</link>><<promiscuous1>><<lstress>><<ltrauma>>
+	<<link [[Flirtatiously|Dancing Lesson]]>><<npcincr Charlie love -10>><<stress -12>><<trauma -6>><<set $phase to 3>><</link>><<promiscuous1>><<lllove>><<lstress>><<ltrauma>>
 	<br>
 <<elseif $phase is 1>>
 	<<set $phase to 0>>
@@ -224,11 +249,11 @@ Your heart beats faster as you walk away from the dance studio, and away from re
 		You feel a thrill at your exposure, and let the others take a quick peek of your body.
 		<br>
 		You cover yourself, trying to feign decency as Charlie rushes over to you with some towels.
-		<<towelup>><<garousal>><<gstress>><<gtrauma>><<arousal 100>><<npcincr Charlie love 1>>
+		<<towelup>><<garousal>><<gstress>><<gtrauma>><<arousal 100>><<npcincr Charlie love 1>><<glove>>
 		<br><br>
 		<<else>>
 		Yelping, you cover yourself as Charlie rushes over to you with some towels.
-		<<towelup>><<garousal>><<gstress>><<gtrauma>><<arousal 100>><<stress 1>><<trauma 1>><<npcincr Charlie love 1>>
+		<<towelup>><<garousal>><<gstress>><<gtrauma>><<arousal 100>><<stress 1>><<trauma 1>><<npcincr Charlie love 1>><<glove>>
 		<br><br>
 		<</if>>
 	<</if>>
@@ -458,7 +483,7 @@ Your heart beats faster as you walk away from the dance studio, and away from re
 <<He>> yells out and falls to the ground. <span class="green"><<tearful>> you use the opportunity to flee the room and escape back to the studio.</span>
 <br><br>
 <<endcombat>>
-<<npc Charlie>><<person1>><<npcincr Charlie love 2>>
+<<npc Charlie>><<person1>><<npcincr Charlie love 2>><<glove>>
 Charlie immediately recognises that something is wrong. <<He>> pulls you aside and gently inquires. Wanting to put your ordeal behind you, you tell <<him>> that everything is fine. Charlie continues the lesson, but still looks concerned.
 <br><br>
 <<clothesontowel>>
@@ -490,7 +515,7 @@ Charlie immediately recognises that something is wrong. <<He>> pulls you aside a
 	You turn your head to look at <<him>>. "I hope to be as good as you someday." You avert your eyes meekly when <<he>> tries to meet your gaze.
 	<br>
 	<<He>> squeezes your hands slightly, "You will be, and sooner than you think." You swear <<he>> gives you more attention than the other students for the rest of the lesson.
-	<<npcincr Charlie love 2>> <<danceskilluse>>
+	<<npcincr Charlie love 2>><<glove>> <<danceskilluse>>
 	<br><br>
 	<span class="pink">The other students notice too, many give you jealous looks.</span>
 	<<set $dancestudioanger += 1>>
@@ -502,7 +527,7 @@ Charlie immediately recognises that something is wrong. <<He>> pulls you aside a
 	You rub your butt against <<his>> crotch. "You're so fit and well formed, I don't know how you do it."
 	<br>
 	<<He>> moves <<his>> pelvis away from you, blood rushing to <<his>> face. "Y-yes. I mean, no, I mean... you're doing OK, I need to go check on someone else." <<He>> avoids looking in your direction for the rest of the lesson.
-	<<npcincr Charlie love -2>><<promiscuity2>>
+	<<npcincr Charlie love -2>><<promiscuity2>><<llove>>
 <</if>>
 <br><br>
 <<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
@@ -584,11 +609,11 @@ If you're interested, the shopping centre sells them."
 
 	If <<he>> noticed your lewd gaze, <<he>> gives no sign. You should introduce yourself, but how?
 	<br><br>
-	<<link [[Timidly|Heel Lesson]]>><<npcincr Charlie love 20>><<set $phase to 1>><</link>>
+	<<link [[Timidly|Heel Lesson]]>><<npcincr Charlie love 20>><<set $phase to 1>><</link>><<ggglove>>
 	<br>
 	<<link [[Confidently|Heel Lesson]]>><<set $phase to 2>><</link>>
 	<br>
-	<<link [[Flirtatiously|Heel Lesson]]>><<npcincr Charlie love -10>><<stress -12>><<trauma -6>><<set $phase to 3>><</link>><<promiscuous1>><<lstress>><<ltrauma>>
+	<<link [[Flirtatiously|Heel Lesson]]>><<npcincr Charlie love -10>><<stress -12>><<trauma -6>><<set $phase to 3>><</link>><<promiscuous1>><<lllove>><<lstress>><<ltrauma>>
 	<br>
 
 <<elseif $phase is 1>>
