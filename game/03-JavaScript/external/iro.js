@@ -1857,12 +1857,12 @@ var colorPicker = new iro.ColorPicker('#picker', {
         if (setup.colours.eyes[eye_colors].variable == ((V.makeup.eyelenses == 0) ? V.eyecolour : V.makeup.eyelenses)){
           let tmp_blend, tmp_brightness;
           check_condition = 1
-          tmp_blend = setup.colours.eyes[eye_colors].canvasfilter.blend
+          tmp_blend = setup.colours.eyes[eye_colors].canvasfilter.blend // save current eye colours to temp variable. So we can re-apply it later when user is over with trying custom lenses at
           tmp_brightness = setup.colours.eyes[eye_colors].canvasfilter.brightness
           setup.colours.eyes[eye_colors].canvasfilter.blend = color.hexString
           setup.colours.eyes[eye_colors].canvasfilter.brightness = color.hsl["l"] <= 0 ? 0 : color.hsl["l"] / 500
-          /*console.log(setup.colours.eyes[eye_colors].canvasfilter.blend)
-          console.log(window.colorNamer(color.hexString))*/
+          console.log(setup.colours.eyes[eye_colors].canvasfilter.blend)
+          console.log(window.colorNamer(color.hexString))
           for (eye_colors2 in V.custom_eyecolours){
             if (V.custom_eyecolours.length != 0 && V.custom_eyecolours[eye_colors2].variable == V.makeup.eyelenses){
               V.custom_eyecolours[eye_colors2].canvasfilter.blend = color.hexString
@@ -1882,4 +1882,9 @@ var colorPicker = new iro.ColorPicker('#picker', {
   });
   /* adding button */
 });
+}
+
+window.patchCorruptLensesColors = function() {
+	for (let index in V.custom_eyecolours)
+		V.custom_eyecolours[index].canvasfilter.blend = window.colorNameTranslate(V.custom_eyecolours[index].variable, "hex")
 }
