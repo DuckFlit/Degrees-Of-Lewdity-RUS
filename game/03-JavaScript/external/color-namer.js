@@ -186,7 +186,7 @@ window.colorNamer = function(hex, color_map) {
 }
 
 window.colorNameTranslate = function(name, mode) {
-  return (mode == "spaced name") ? colors[name][2] : colors[name][1]
+  return (mode == "spaced name") ? colors[name][2] : (mode == "hex") ? colors[name][0] : colors[name][1]
 }
 
 /**
