@@ -1144,7 +1144,7 @@
 				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>> with both hands, <<npcRevealText $_npc $_clothesTarget>>.</span>
 				<<if $_npc.fullDescription is "Sydney">>
 					<<sydneyExpose>>
-				<</if>>				
+				<</if>>
 				<<if $_npc.penis is "clothed">>
 					<<npcGenitalReaction $_npc>>
 					<<set $_npc.penis to 0>>
@@ -1176,7 +1176,7 @@
 				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>>, <<npcRevealText $_npc $_clothesTarget>>.</span>
 				<<if $_npc.fullDescription is "Sydney">>
 					<<sydneyExpose>>
-				<</if>>				
+				<</if>>
 				<<if $_npc.penis is "clothed">>
 					<<npcGenitalReaction $_npc>>
 					<<set $_npc.penis to 0>>
@@ -1208,7 +1208,7 @@
 				<span class="lblue">You <<handtext>> <<npcUndressText $_npc $_clothesTarget>>, <<npcRevealText $_npc $_clothesTarget>>.</span>
 				<<if $_npc.fullDescription is "Sydney">>
 					<<sydneyExpose>>
-				<</if>>				
+				<</if>>
 				<<if $_npc.penis is "clothed">>
 					<<npcGenitalReaction $_npc>>
 					<<set $_npc.penis to 0>>
@@ -2223,7 +2223,7 @@
 		<</if>>
 	<<else>>
 		<<control -5>>
-		<span class="purple">It remains over your mouth.</span> 
+		<span class="purple">It remains over your mouth.</span>
 	<</if>>
 <</if>>
 
@@ -3120,7 +3120,7 @@
 	<</if>>
 	<<if $NPCList[_npcB].penis is "vaginadoubleimminent">>
 		<<set $NPCList[_npcB].penis to "vaginadoubleentrance">><<set $NPCList[_npcB].speechvaginaescape to 1>>
-		
+
 	<<elseif $NPCList[_npcB].penis is "vaginadoubleentrance" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular vaginal */
 		<<set _otherNPCindex to _npcA>><<set $NPCList[_npcB].location.genitals to 0>><<set $NPCList[_npcB].speechanusescape to 1>><<set $enemyanger += 15>>
 		<<set $NPCList[_npcB].penis to 0>>
@@ -3283,7 +3283,7 @@
 				<<personselect _j>>
 				<<submission 2>><<set $vaginause to "penisdouble">><<set $NPCList[_j].penis to "vaginadoubleentrance">><<set $anususe to 0>><<set $vaginastate to "doubleentrance">><<set $anusstate to 0>>
 				<span class="lblue">You spread your thighs, giving clear access to your pussy, and <<combatperson>> takes advantage and moves <<his>> penis away from your butt to join the phallus in front of your pussy.</span>
-				
+
 				<<set $vaginatarget to _n>>
 				<<set $vaginadoubletarget to "f">>
 				<<for _k = 0; _k lt $enemyno; _k++>>
@@ -3301,7 +3301,7 @@
 						<<break>>
 					<</if>>
 				<</for>>
-				
+
 				<<break>>
 			<</if>>
 		<</for>>
@@ -3442,7 +3442,7 @@
 
 	<<if $NPCList[_npcA].penis is "anusdoubleimminent">>
 		<<set $NPCList[$anustarget].penis to "anusdoubleentrance">><<set $NPCList[$anustarget].speechanusescape to 1>>
-		
+
 	<<elseif $NPCList[_npcA].penis is "anusdoubleentrance" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular anal */
 		<<set _otherNPCindex to _npcB>><<set $NPCList[_npcA].location.genitals to 0>><<set $NPCList[_npcA].speechanusescape to 1>><<set $enemyanger += 15>>
 		<<set $NPCList[_npcA].penis to 0>>
@@ -3450,7 +3450,7 @@
 	<</if>>
 	<<if $NPCList[_npcB].penis is "anusdoubleimminent">>
 		<<set $NPCList[_npcB].penis to "anusdoubleentrance">><<set $NPCList[_npcB].speechanusescape to 1>>
-		
+
 	<<elseif $NPCList[_npcB].penis is "anusdoubleentrance" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular anal */
 		<<set _otherNPCindex to _npcA>><<set $NPCList[_npcB].location.genitals to 0>><<set $NPCList[_npcB].speechanusescape to 1>><<set $enemyanger += 15>>
 		<<set $NPCList[_npcB].penis to 0>>
@@ -3989,6 +3989,66 @@
 	<<else>>
 		You give your <<bottom>> a little wiggle, but you just receive a slap.
 		<<violence 2 $penistarget>><<hitstat>><<bruise bottom>>
+	<</if>>
+<</if>>
+
+<<if $penisaction is "penispussy">>
+	<!-- Check the player is not attempting to straddle and offer pussy at the same time. If so, switch to double or fail correctly -->
+	<<if $vaginastate isnot 0 and !$vaginastate.includes("double") and ($vaginastate is "entrance" or $vaginastate is "imminent" or $vaginastate is "penetrated")>>
+		<!-- Note that this action requires "penispussydouble" to come after "penispussy", else it will not work as expected -->
+		<<if random(0,2) isnot 0 and $vaginaldoubledisable is "f">>
+			<<set $penisaction to "penispussydouble">>
+		<<else>>
+			You spread your thighs, but fail to garner further interest.
+		<</if>>
+	<<elseif $vaginastate isnot 0 and $vaginastate.includes("double")>>
+		You spread your thighs, but just receive a slap. "Settle down, <<bitch>>."
+		<<violence 2>><<hitstat>><<bruise bottom>>
+	<<elseif ["penisentrance", "penisimminent"].includes($NPCList[$penistarget].penis)>>
+		<<set $penisaction to 0>><<meek 10 $penistarget>><<penileskill>><<set $penisactiondefault to "penispussy">>
+		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $vaginalskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+			<<personselect $penistarget>>
+			<<submission 2 $penistarget>><<set $vaginause to "penis">><<set $NPCList[$penistarget].penis to "vaginaentrance">><<set $penisuse to 0>>
+			<<set $vaginastate to "entrance">><<set $penisstate to 0>><<set $vaginatarget to $penistarget>><<set $penistarget to 0>>
+			<span class="lblue">You spread your thighs, giving clear access to your pussy, and <<combatperson>> takes advantage and moves <<his>> penis away from your <<penis>>.</span>
+		<<else>>
+			You spread your thighs, but fail to garner interest.
+		<</if>>
+	<</if>>
+<</if>>
+
+<<set $rng to random(1, 100)>>
+<<if $penisaction is "penispussydouble">>
+	<<set $penisaction to 0>><<meek 10>><<penileskilluse>><<set $penisactiondefault to "penispussydouble">>
+	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $vaginalskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<for _j = 0; _j lt $enemyno; _j++>>
+			<<if $NPCList[_j].penis is "penisentrance" or $NPCList[_j].penis is "penisimminent">>
+				<<personselect _j>>
+				<<submission 2>><<set $vaginause to "penisdouble">><<set $NPCList[_j].penis to "vaginadoubleentrance">><<set $penisuse to 0>><<set $vaginastate to "doubleentrance">><<set $penisstate to 0>>
+				<span class="lblue">You spread your thighs, giving clear access to your pussy, and <<combatperson>> takes advantage and moves <<his>> penis away from your <<penis>> to join the phallus in front of your pussy.</span>
+
+				<<set $vaginatarget to _n>>
+				<<set $vaginadoubletarget to "f">>
+				<<for _k = 0; _k lt $enemyno; _k++>>
+					<<if $NPCList[_k].penis is "vagina">>
+						<<set $NPCList[_k].penis to "vaginadouble">>
+						<<set $vaginadoubletarget to _k>>
+						<<break>>
+					<<elseif $NPCList[_k].penis is "vaginaimminent">>
+						<<set $NPCList[_k].penis to "vaginadoubleimminent">>
+						<<set $vaginadoubletarget to _k>>
+						<<break>>
+					<<elseif $NPCList[_k].penis is "vaginaentrance">>
+						<<set $NPCList[_k].penis to "vaginadoubleentrance">>
+						<<set $vaginadoubletarget to _k>>
+						<<break>>
+					<</if>>
+				<</for>>
+				<<break>>
+			<</if>>
+		<</for>>
+	<<else>>
+		You spread your thighs, but fail to garner interest.
 	<</if>>
 <</if>>
 
