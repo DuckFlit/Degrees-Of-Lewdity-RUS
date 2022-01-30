@@ -200,7 +200,7 @@ setup.pills = [
 	},
 	{
 		name:'asylum\'s prescription',
-		description: '[No data]',
+		description: 'A powerful antipsychotic.',
 		onTakeMessage: 'You take the pills prescribed in the asylum. You feel hazy.',
 		warning_label: '<span class="hpi_notice_label">Notice: No side effects could be determined during the experimental stage of this drug, and it passed all safety regulations. \
 						<span class="hpi_blur unselectable">I think this drug company is about to be the end of me. No side effects ? Who do they think they\'re kidding ?!</span></span>',		autoTake: false,
@@ -225,7 +225,7 @@ setup.pills = [
 	},
 	{
 		name:'Dr Harper\'s prescription',
-		description: '[No data]',
+		description: 'Antipsychotic medication.',
 		onTakeMessage: 'You take the pills Doctor Harper prescribed. You feel dizzy.',
 		warning_label: 'Warning: The side effects upon reaching maximum dosage have not been studied enough. Proceed with caution. \
 		<span class="hpi_blur"></span>',
