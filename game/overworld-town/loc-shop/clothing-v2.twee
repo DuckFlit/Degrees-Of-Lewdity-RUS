@@ -3,8 +3,7 @@
 <<widget "exitclothingshop">>
 	<div class="button-back-to-shop div-link">
 		<<if $clothes_choice and $shopDefaults.alwaysBackToShopButton is false>>
-			<<link "Back">>
-				<<unset $clothes_choice>><<updateclotheslist>><</link>>
+			<<link "Back">><<unset $clothes_choice>><<updateclotheslist>><</link>>
 		<<else>>
 			<<link "Back to shop">><<unset $clothes_choice>><<updateclothingshop>><<set _shopNameFilter to "">><</link>>
 		<</if>>
@@ -268,7 +267,8 @@
 	<div @class="'clothing-shop-page page-' + _page + _hidden">
 		<<for _itemTemp range _itemsOnPage>>
 			<<set _item = clone(_itemTemp)>>
-			<<set _itemData = setup.clothes[$clothingShopSlot][clothesIndex($clothingShopSlot,_item)]>>
+			<<set $_realSlot to ($clothingShopSlot is "all" ? _item.realSlot : $clothingShopSlot)>>
+			<<set _itemData = setup.clothes[$_realSlot][clothesIndex($_realSlot,_item)]>>
 			<<set _locked = $specialClothes[_item.name.replace(/ /g,"")] is "locked">>
 			<<set _unlocked = $specialClothes[_item.name.replace(/ /g,"")] is "unlocked">>
 			<div class="clothing-item div-link">
@@ -297,7 +297,7 @@
 								<</if>>
 							<</if>>
 						<</if>>
-						<<clothingicon _item $clothingShopSlot>>
+						<<clothingicon _item $_realSlot>>
 						<!-- Gender icon -->
 						<<if _item.gender isnot "n">>
 							<span class="clothing-gender">
@@ -335,7 +335,7 @@
 						<<if _locked>>
 							<span class="lblue">_itemData.name_cap</span><span class="black">&nbsp;| Locked</span>
 						<<else>>
-							<<set _csslot = $clothingShopSlot>>
+							<<set _csslot = $_realSlot>>
 							<<capture _item _itemData _shopLocation _csslot _outfits>>
 								<<link _itemData.name_cap>>
 									<<set $clothes_choice = clothesIndex(_csslot,_item)>>
@@ -444,18 +444,8 @@
 
 	<<elseif $clothes_choice>>
 		<<set _temp_choice to clone(setup.clothes[$clothingShopSlot][$clothes_choice])>>
-		<<set _realSlot to $clothingShopSlot>>
+		<<set _realSlot to ($clothingShopSlot is "all" ? _item.realSlot : $clothingShopSlot)>>
 		<<set _realIndex to _temp_choice.index>>
-		<<if $clothingShopSlot is 'all'>>
-			<<for $_slot range setup.clothes_all_slots>>
-				<<if setup.clothes[$_slot][_temp_choice.index]>>
-					<<if setup.clothes[$_slot][_temp_choice.index].name is _temp_choice.name>>
-						<<set _realSlot to $_slot>>
-						<<break>>
-					<</if>>
-				<</if>>
-			<</for>>
-		<</if>>
 		
 		<!-- Unlocked text -->
 		<<if $specialClothes[_temp_choice.name.replace(/ /g,"")] is "unlocked">>
