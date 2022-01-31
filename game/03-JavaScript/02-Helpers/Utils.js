@@ -6,6 +6,14 @@ class Utils {
         }
         return output;
     }
+
+    Defer(func, ...params) {
+        if (Engine.isIdle()) {
+            $(() => func(...params));
+        } else {
+            $(document).one(':passageend', () => func(...params));
+        }
+    }
 }
 
 window.Utils = new Utils();
