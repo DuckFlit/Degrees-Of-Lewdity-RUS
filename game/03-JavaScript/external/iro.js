@@ -1861,8 +1861,6 @@ var colorPicker = new iro.ColorPicker('#picker', {
           tmp_brightness = setup.colours.eyes[eye_colors].canvasfilter.brightness
           setup.colours.eyes[eye_colors].canvasfilter.blend = color.hexString
           setup.colours.eyes[eye_colors].canvasfilter.brightness = color.hsl["l"] <= 0 ? 0 : color.hsl["l"] / 500
-          console.log(setup.colours.eyes[eye_colors].canvasfilter.blend)
-          console.log(window.colorNamer(color.hexString))
           for (eye_colors2 in V.custom_eyecolours){
             if (V.custom_eyecolours.length != 0 && V.custom_eyecolours[eye_colors2].variable == V.makeup.eyelenses){
               V.custom_eyecolours[eye_colors2].canvasfilter.blend = color.hexString
@@ -1885,6 +1883,8 @@ var colorPicker = new iro.ColorPicker('#picker', {
 }
 
 window.patchCorruptLensesColors = function() {
-	for (let index in V.custom_eyecolours)
-		V.custom_eyecolours[index].canvasfilter.blend = window.colorNameTranslate(V.custom_eyecolours[index].variable, "hex")
+	if (V.custom_eyecolours != undefined){
+		for (let index in V.custom_eyecolours)
+			V.custom_eyecolours[index].canvasfilter.blend = window.colorNameTranslate(V.custom_eyecolours[index].variable, "hex")
+	}
 }
