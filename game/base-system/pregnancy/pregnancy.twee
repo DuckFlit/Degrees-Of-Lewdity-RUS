@@ -275,6 +275,7 @@
 <<if $sexStats.vagina.menstruation.running is true and $player.vaginaExist>>
 	<<set _menstruation to $sexStats.vagina.menstruation>>
 	<<set _pills to $sexStats.pills>>
+	<<set $_last_preg_pill to clone(_pills["lastTaken"].pregnancy)>>
 	<<if $sexStats.vagina.menstruation.currentState is "normal">>
 		<<if _menstruation.currentDay lt _menstruation.currentDaysMax>>
 			/*Continue the cycle again*/
@@ -282,16 +283,16 @@
 			<</if>>
 			<<if _menstruation.currentDay lt _menstruation.stages[1]>>
 				/*Menstrual phase - period occurs right at the start of this part*/
-				<<if _pills.pregnancy.type is "fertility" and pills.pregnancy.doseTaken gte 2>>
+				<<if $_last_preg_pill is "fertility" and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
 					<<set _menstruation.currentDay += 0.5>>
 				<</if>>
-				<<if _pills.pregnancy.type is "contraceptive" and (random(0,100) gte 50 or _pills.pregnancy.doseTaken gte 2)>>
+				<<if $_last_preg_pill is "contraceptive" and (random(0,100) gte 50 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
 				<<else>>
 					<<set _menstruation.currentDay += 0.5>>
 				<</if>>
 			<<elseif _menstruation.currentDay lt _menstruation.stages[2]>>
 				/*Follicular phase*/
-				<<if _pills.pregnancy.type is "fertility" and pills.pregnancy.doseTaken gte 2 and _menstruation.currentDay lt _menstruation.stages[2]>>
+				<<if $_last_preg_pill is "fertility" and _pills.pills[$_last_preg_pill].doseTakenn gte 2 and _menstruation.currentDay lt _menstruation.stages[2]>>
 					<<set _menstruation.currentDay += 0.5>>
 				<</if>>
 				<<if _menstruation.currentDay lt _menstruation.stages[2]>>
@@ -318,15 +319,15 @@
 						<</for>>
 					<</for>>
 				<</for>>
-				<<if _pills.pregnancy.type is "fertility">>
+				<<if $_last_preg_pill is "fertility">>
 					<<set _fertility to true>>
-					<<switch _pills.pregnancy.doseTaken>>
+					<<switch _pills.pills[$_last_preg_pill].doseTaken>>
 						<<case 1>><<set _fertilityBoost to 0.8>>
 						<<case 2>><<set _fertilityBoost to 0.6>>
 						<<case 3>><<set _fertilityBoost to 0.4>>
 						<<case 4>><<set _fertilityBoost to 0.3>>
 					<</switch>>
-				<<elseif _pills.pregnancy.type is "contraceptive">>
+				<<elseif $_last_preg_pill is "contraceptive">>
 					<<set _contraceptive to true>>
 					<<set _fertilityBoost to 1>>
 				<<else>>
@@ -334,7 +335,7 @@
 				<</if>>
 				<<set _baseChance to Math.floor((100 - $baseVaginalPregnancyChance) * _fertilityBoost)>>
 				<<set _rng to random(0,(_index gte _baseChance ? _index : _baseChance))>>
-				<<if _contraceptive and (random(0,100) gte 10 or _pills.pregnancy.doseTaken gte 2)>>
+				<<if _contraceptive and (random(0,100) gte 10 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
 					/*Player doesn't get pregnant due to contraceptive*/
 				<<elseif _sperm2[_rng] isnot undefined>>
 					<<set _fatherKnown to Object.keys(_sperm).length is 1>>
@@ -356,10 +357,10 @@
 				<</if>>
 			<<else>>
 				/*Luteal phase*/
-				<<if _pills.pregnancy.type is "fertility" and pills.pregnancy.doseTaken gte 2>>
+				<<if $_last_preg_pill and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
 					<<set _menstruation.currentDay += 0.5>>
 				<</if>>
-				<<if _pills.pregnancy.type is "contraceptive" and (random(0,100) gte 50 or _pills.pregnancy.doseTaken gte 2)>>
+				<<if $_last_preg_pill is "contraceptive" and (random(0,100) gte 50 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
 				<<else>>
 					<<set _menstruation.currentDay += 0.5>>
 				<</if>>
@@ -427,8 +428,8 @@
 	<<elseif $sexStats.vagina.menstruation.currentState is "recovering">>
 		<<set _pregnancy to $sexStats.vagina.pregnancy>>
 		<<set _menstruation.recoveryTime -= 0.5>>
-		<<if _pills.pregnancy.type is "fertility">>
-			<<switch _pills.pregnancy.doseTaken>>
+		<<if $_last_preg_pill is "fertility">>
+			<<switch _pills.pills[$_last_preg_pill].doseTaken>>
 				<<case 1>><<set _menstruation.recoveryTime -= 0.5>>
 				<<case 2 3 4>><<set _menstruation.recoveryTime -= 1>>
 			<</switch>>
@@ -820,6 +821,7 @@
 
 <<widget "wakingEffects">><<silently>>
 /*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
+<<set $_last_preg_pill to clone(_pills["lastTaken"].pregnancy)>>
 <<if $pregnancyTesting is undefined>>
 <<elseif $args[0] and $sexStats.vagina.menstruation.currentState is "pregnant" or ($sexStats.vagina.menstruation.currentState is "normal" and ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f"))>>
 	<<set _pregnancy to $sexStats.vagina.pregnancy>>
@@ -851,9 +853,9 @@
 			<<set _wakingEffects to "morningSicknessPills">>
 		<</if>>
 		<<set _pregnancy.morningSicknessGeneral to 0>>
-	<<elseif (["contraceptive","fertility"].includes(_pills.pregnancy.type) and _pills.pregnancy.doseTaken gte 2 and random(0,100) gte 75)>>
+	<<elseif (["contraceptive","fertility"].includes($_last_preg_pill) and _pills.pills[$_last_preg_pill].doseTaken gte 2 and random(0,100) gte 75)>>
 		<<set _wakingEffects to "morningSicknessPills">>
-	<<elseif (["contraceptive","fertility"].includes(_pills.pregnancy.type) and _pills.pregnancy.doseTaken gte 1 and random(0,100) gte 75) or random(0,100) gte 90>>
+	<<elseif (["contraceptive","fertility"].includes($_last_preg_pill) and _pills.pills[$_last_preg_pill].doseTaken gte 1 and random(0,100) gte 75) or random(0,100) gte 90>>
 		<<set _wakingEffects to "mildIssues">>
 	<</if>>
 	<<switch _wakingEffects>>
@@ -923,6 +925,7 @@
 	<<set _ranPregnancyDailyEvent to true>>
 	<<set _pregnancy to $sexStats.vagina.pregnancy>>
 	<<set _pills to $sexStats.pills>>
+	<<set $_last_preg_pill to clone(_pills["lastTaken"].pregnancy)>>
 	<<if _pregnancy.timerStart isnot null>>
 		<<set _current to _pregnancy.timer>>
 		<<set _start to _pregnancy.timerStart>>
@@ -941,9 +944,9 @@
 			<<set _dailyEvents to "morningSicknessPills">>
 		<</if>>
 		<<set _pregnancy.morningSicknessGeneral to 0>>
-	<<elseif (["contraceptive","fertility"].includes(_pills.pregnancy.type) and _pills.pregnancy.doseTaken gte 2 and random(0,100) gte 75)>>
+	<<elseif (["contraceptive","fertility"].includes($_last_preg_pill) and _pills.pills[$_last_preg_pill].doseTaken gte 2 and random(0,100) gte 75)>>
 		<<set _dailyEvents to "morningSicknessPills">>
-	<<elseif (["contraceptive","fertility"].includes(_pills.pregnancy.type) and _pills.pregnancy.doseTaken gte 1 and random(0,100) gte 75)>>
+	<<elseif (["contraceptive","fertility"].includes($_last_preg_pill) and _pills.pills[$_last_preg_pill].doseTaken gte 1 and random(0,100) gte 75)>>
 		<<set _dailyEvents to "mildIssues">>
 	<</if>>
 	<<if $sexStats.vagina.menstruation.currentState is "normal" and _dailyEvents is undefined and random(0,100) gte 97>>
@@ -1244,7 +1247,7 @@
 			<<if _npc.pills is "fertility">>
 				<<set _fertility to true>>
 				<<set _fertilityBoost to 0.8>>
-			<<elseif _pills.pregnancy.type is "contraceptive">>
+			<<elseif $_last_preg_pill is "contraceptive">>
 				<<set _contraceptive to true>>
 				<<set _fertilityBoost to 1>>
 			<<else>>
@@ -1311,7 +1314,7 @@
 		<<if !$player.vaginaExist or $_pregnancy[0] isnot null>>
 			<<set _prevent to true>>
 		<</if>>
-		<<if _pills.pregnancy.type is "fertility">>
+		<<if $_last_preg_pill is "fertility">>
 			<<set $_fertility to true>>
 		<</if>>
 	<<else>>
@@ -1354,7 +1357,7 @@
 		<<set $_pregnancy[0].features.clothes to "naked">>
 		<<set $_pregnancy[0].features.skinColour to $skinColor.natural>>
 		<<if $_fertility and $args[0] is "pc">>
-			<<set _twinBoost to 6 * _pills.pregnancy.doseTaken>>
+			<<set _twinBoost to 6 * _pills.pills[$_last_preg_pill].doseTaken>>
 		<<elseif $_fertility>>
 			<<set _twinBoost to 6>>
 		<<else>>
@@ -1391,7 +1394,7 @@
 			<</if>>
 		<</if>>
 		<<if $_fertility and $args[0] is "pc">>
-			<<set _tripletBoost to 2 * _pills.pregnancy.doseTaken>>
+			<<set _tripletBoost to 2 * _pills.pills[$_last_preg_pill].doseTaken>>
 		<<elseif $_fertility>>
 			<<set _tripletBoost to 2>>
 		<<else>>

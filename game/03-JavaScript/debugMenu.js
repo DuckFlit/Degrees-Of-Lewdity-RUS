@@ -2655,6 +2655,14 @@ setup.debugMenu.event_list = {
 				`<<run unlockAllSeeds()>>`
 			]
 		},
+		{
+			link: [
+				`Unlock all pills`, function(){return V.passage}
+			],
+			widgets: [
+				`<<run window.getAllPills()>>`
+			]
+		}
 	],
 	Favourites: []
 };

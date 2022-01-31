@@ -6,10 +6,6 @@
  * take_condition == 1 means the "Take Pill" button is not greyed out and is clickable
 */
 
-Array.prototype.random = function () {
-	return this[Math.floor((Math.random()*this.length))];
-}
-
 setup.pills = [
 	{
 		name:'bottom reduction',
@@ -341,6 +337,13 @@ window.setLastTaken = function(type, subtype, fullname=null) {
 	V.sexStats.pills.lastTaken[type] = subtype
 }
 
+window.pickRandomItemInArray = function(array) {
+	if (array != null && array.length > 0 && typeof array == 'object')
+		return(array[window.getRandomIntInclusive(0, array.length-1)]);
+	console.log(array)
+	throw 'Error in bedroomPills.js line 243 : parameter is either empty/null or not an object'; //intentional, so the person using that function knows his stuff is not valid
+}
+
 window.redetermineMostTaken = function(type, subtype, fullname=null) {
 	let result = {"blocker":0,"growth":0,"reduction":0};
 	let ret;
@@ -364,7 +367,7 @@ window.redetermineMostTaken = function(type, subtype, fullname=null) {
 		if (result.blocker > 0)
 			return (V.sexStats.pills.mostTaken[type] = "blocker")
 		else
-			return (V.sexStats.pills.mostTaken[type] = ["growth", "reduction"].random())
+			return (pickRandomItemInArray(V.sexStats.pills.mostTaken[type] = ["growth", "reduction"]))
 	}
 	else if (ret == 0 && result.blocker > 0) // we enter here when player didn't take any growth/blocker but took blockers
 		return (V.sexStats.pills.mostTaken[type] = "blocker")
@@ -536,4 +539,9 @@ window.resetLastTaken = function () {
 
 window.resetMostTaken = function() {
 	V.sexStats.pills.mostTaken = {"bottom":'', "breast":'', "penis":'', "pregnancy":''}
+}
+
+window.getAllPills = function () {
+	for (let item of Object.keys(V.sexStats.pills.pills))
+		V.sexStats.pills.pills[item].owned = 14
 }
