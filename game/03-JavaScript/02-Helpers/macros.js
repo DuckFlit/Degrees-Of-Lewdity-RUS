@@ -17,7 +17,7 @@ Macro.add('checkTimeSystem', {
 		if (V.time != undefined && V.hour != undefined && V.minute != undefined) {
 			if (V.time !== V.hour * 60 + V.minute) {
 				const message = `$time: ${V.time} desynchronised from $hour: ${V.hour} and $minute: ${V.minute}. Total: ${(V.hour * 60 + V.minute)}.`;
-				const source = `Caught in passage footer. ${V.passage}, <<checkTimeSystem>>.`;
+				const source = `Caught in Passage ${this.args[0]}. ${V.passage}, <<checkTimeSystem>>.`;
 				Errors.inlineReport(message, source).appendTo(this.output);
 			}
 		}
@@ -25,5 +25,24 @@ Macro.add('checkTimeSystem', {
 		{
 			console.debug(`One of the time variables is not accessible yet: ${V.passage}: ${DOL.Stack}.`);
 		}
+	}
+});
+
+/** Jimmy: defer Macro, to be used to defer execution of the provided contents until after the passage has been processed.
+ * 		   For example, let's say you create <div id="myDiv"></div> in a widget. And you want to use $('#myDiv') in that
+ * 		   same widget, to manipulate your HTML elements... You cannot, as these HTML elements do not actually exist yet.
+ * 		   
+ * 		   This is where <<defer>> comes in, it will hold off on executing $('#myDiv'), if you specify, so that when it does
+ * 		   execute, you can rest assured that your HTML elements are loaded into the document, rather than being in their
+ * 		   fragment. */
+Macro.add('defer', {
+	tags: null,
+	handler() {
+		const handler = this.createShadowWrapper(function() {
+			new Wikifier('#passages .passage', this.payload[0].contents);
+		});
+		$(document).one(':passageend', function() {
+			handler.apply(this, arguments);
+		});
 	}
 });
