@@ -1192,7 +1192,7 @@ A terminal is attached to the tube. You look at the prompts.
 
 <<set _clothesOptions to setup.npcClothesSets.map(c => c.name)>>
 
-<<listbox "$npcClothesSelect" autoselect>>
+<<listbox "_npcClothes" autoselect>>
 	<<optionsfrom _clothesOptions>>
 <</listbox>>
 <br><br>
@@ -1215,21 +1215,26 @@ A terminal is attached to the tube. You look at the prompts.
 <label>Random <<radiobutton "_npcType" "r" checked>></label>
 <br><br>
 
-<<link [[Sex|NPC Clothing Fight]]>><<set $sexstart to 1>>
-	<<if $npcClothesSelect is undefined>><<set $npcClothesSelect to "naked">><</if>>
-	<<generateNPC 1 _npcType _npcPronoun _npcGender>><<person1>><<run npcEquipSet($NPCList[0], setup.npcClothesSets.find(n => n.name === V.npcClothesSelect))>>
-	<<unset $npcClothesSets>>
-<</link>><br>
-<<link [[Rape|NPC Clothing Fight]]>><<set $fightstart to 1>>
-	<<if $npcClothesSelect is undefined>><<set $npcClothesSelect to "naked">><</if>>
-	<<generateNPC 1 _npcType _npcPronoun _npcGender>><<person1>><<run npcEquipSet($NPCList[0], setup.npcClothesSets.find(n => n.name === V.npcClothesSelect))>>
-	<<unset $npcClothesSets>>
+<!-- storing the values and then generating the npc in the next passage is a bit more convenient for debugging. -->
+<<link [[Sex|NPC Clothing Fight]]>>
+	<<set $sexstart to 1>>
+	<<set $npcOptions to {"type": _npcType, "pronoun": _npcPronoun, "gender": _npcGender, "clothes": _npcClothes}>>
+<</link>>
+<br>
+<<link [[Rape|NPC Clothing Fight]]>>
+	<<set $fightstart to 1>>
+	<<set $npcOptions to {"type": _npcType, "pronoun": _npcPronoun, "gender": _npcGender, "clothes": _npcClothes}>>
 <</link>>
 <br><br>
-<<link [[Back home|Bedroom]]>><<unset $npcClothesSets>><</link>>
+
+<<link [[Back home|Bedroom]]>><</link>>
 
 :: NPC Clothing Fight
 <<if $sexstart is 1>>
+	<<generateNPC 1 $npcOptions.type $npcOptions.pronoun $npcOptions.gender>><<person1>>
+	<<run npcEquipSet($NPCList[0], setup.npcClothesSets.find(n => n.name === V.npcOptions.clothes))>>
+	<<unset $npcOptions>>
+
 	<<set $sexstart to 0>>
 	<<consensual>>
 	<<set $consensual to 1>>
@@ -1239,8 +1244,12 @@ A terminal is attached to the tube. You look at the prompts.
 	With a hiss of steam, the tube retracts to the ceiling. A figure walks out, a <<personsimple>>. You recognize <<him>> as the <<person>> you selected.
 	<br><br>
 
-	"Beginning sex encounter," the <<person>> says in a flat tone, before <<his>> face morphs into a lavicious smile. <<catcall>>
+	"Beginning sexual encounter," the <<person>> says in a flat tone, before <<his>> face morphs into a lavicious smile. <<catcall>>
 <<elseif $fightstart is 1>>
+	<<generateNPC 1 $npcOptions.type $npcOptions.pronoun $npcOptions.gender>><<person1>>
+	<<run npcEquipSet($NPCList[0], setup.npcClothesSets.find(n => n.name === V.npcOptions.clothes))>>
+	<<unset $npcOptions>>
+
 	<<set $fightstart to 0>>
 	<<neutral 1>>
 

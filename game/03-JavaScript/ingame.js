@@ -1104,9 +1104,21 @@ window.npcAssignClothesToSet = function(upper, lower){
 	return {"upper":T.npcClothesItems.upper[upper], "lower":T.npcClothesItems.lower[lower]}
 }
 
+window.npcMakeNaked = function (npc, slot){
+	if (slot === "upper") {
+		npc.chest = 0;
+	} else if (slot === "lower") {
+		if (npc.penis !== "none") npc.penis = 0;
+		if (npc.vagina !== "none") npc.vagina = 0;
+	}
+}
+
 window.npcEquipSet = function(npc, set) {
 	npc.clothes = {set: set.name};
 	Object.entries(set.clothes).forEach((item) => {
+		if (item[1].name === "naked"){
+			npcMakeNaked(npc, item[0]);
+		}
 		let itemData = setup.clothes[item[0]].find(c => c.name === item[1].name);
 		if(!itemData){
 			npc.clothes[item[0]] = {
