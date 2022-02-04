@@ -13,6 +13,7 @@
 <<if $replayScene isnot undefined>>
 	<<if $replayScene.startPassage is $passage or $passage is "Scene Viewer End">>
 	<<elseif !$replayScene.passages.includes($passage)>>
+		<!-- todo: replace goto with something that doesn't have a potential to fuck up the history -->
 		<<goto "Scene Viewer End">>
 	<</if>>
 	<<if $replayScene is undefined>>
@@ -58,4 +59,10 @@
 	<br><br><br>
 	<<set _exit to $safePassage ? $safePassage : "Bedroom">>
 	<span id="next"><<link [[Back to safety|_exit]]>><<endcombat>><<clotheson>><</link>></span>
+<</if>>
+
+<!-- handle autosaves in the footer, so the description getter don't have to guess what happened in the passage -->
+<<if _autosavehere and !_preventUpdate and !$autosavedisabled>>
+	<<run Save.autosave.save(null, {"saveId":$saveId, "saveName":$saveName})>>
+	<<run setSaveDetail("autosave",{"saveId":$saveId,"saveName":$saveName},Story.get($passage).description())>>
 <</if>>
