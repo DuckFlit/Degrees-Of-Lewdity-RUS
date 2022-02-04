@@ -982,6 +982,9 @@ Config.navigation.override = function (dest) {
 		case 'Evens Swimming Endure':
 			return 'Events Swimming Swim Endure';
 
+		case 'Domus House Work':
+			return 'Domus Gutters Intro';
+
 		default:
 			return false;
 	}
