@@ -587,8 +587,15 @@ You haul yourself over the fence and drop down on the other side.
 		<</if>>
 		<<trauma 6>><<set $stress -= 2000>>
 	<<else>>
-		<<link [[Next|School Passout Infirmary]]>><</link>>
-		<br>
+		<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 96 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+			<<link [[Wake up|Kylar Basement]]>><<pass 1 hour>><</link>>
+			<br>
+		<<elseif $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+			<<link [[Next|School Passout Infirmary]]>><</link>>
+			<br>
+		<<else>>
+			<<ambulance>>
+		<</if>>
 		<<trauma 6>><<set $stress -= 2000>>
 	<</if>>
 <</if>>
@@ -742,7 +749,11 @@ A minute passes before a <<generatey1>><<generatey2>><<person1>><<person>> and <
 		<<set $position to "missionary">>
 	<</if>>
 	<br><br>
-	<<if $pillory_tenant.special.name isnot "Leighton">><<enable_rescue>><</if>>
+	<<if $drugged lte 0 and $pillory_tenant.special.name isnot "Whitney" and $whitneyromance is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].dom gte random(10, 25)>>
+		<<set $rescue to 2>>
+	<<elseif $pillory_tenant.special.name isnot "Leighton">>
+		<<enable_rescue>>
+	<</if>>
 <</if>>
 
 <<effects>>
@@ -756,7 +767,7 @@ A minute passes before a <<generatey1>><<generatey2>><<person1>><<person>> and <
 	<span id="next"><<link [[Next|School Passout Rape Finish]]>><</link>></span><<nexttext>>
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<span id="next"><<link [[Next|School Passout Rape Finish]]>><</link>></span><<nexttext>>
-<<elseif $rescue is 1 and $alarm is 1>>
+<<elseif $rescue gte 1 and $alarm is 1>>
 	<span id="next"><<link [[Next|School Passout Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|School Passout Rape]]>><</link>></span><<nexttext>>
@@ -812,15 +823,50 @@ The <<group>> recoil in pain. <<tearful>> you seize the opportunity and escape f
 
 <<link [[Next|School Rear Playground]]>><</link>>
 
-<<elseif $rescue is 1 and $alarm is 1>><<set $rescued += 1>>
-<<endevent>>
-<<npc Leighton>>Leighton barges into the shed. Eyes wide with panic, the <<group>> stumble over their words as they try to explain themselves. Leighton is having none of it, and drags them from the building by the scruff of their necks. <<tearful>> you gather yourself.
-<br><br>
+<<elseif $rescue gte 1 and $alarm is 1>><<set $rescued += 1>>
+	<<if $rescue is 2>>
+		The door flies open. Whitney barges in, <<nnpc_his "Whitney">> buddies stood behind <<nnpc_him "Whitney">>.
+		<<if $pillory_tenant.special.name isnot "Leighton">>
+			<<nnpc_He "Whitney">> looks between you and the two students, then scowls. You can't tell who <<nnpc_his "Whitney">> anger is directed at.<<status 1>><<gcool>>
+			<br><br>
 
-<<clotheson>>
-<<endcombat>>
+			Before things can escalate, another figure steps into the doorway. It's Leighton.
+			<<npc Leighton 3>>
+			"Whatever's going on here, it's over. I expect the lot of you in my office-"
+			<br><br>
 
-<<link [[Next|School Rear Playground]]>><</link>>
+			Whitney slugs the <<person1>><<person>> in the face before Leighton can finish. Egged on by <<nnpc_his "Whitney">> friends, a brawl quickly ensues, with Leighton angrily trying to reign them all in.
+			<br><br>
+
+			<<tearful>> you take advantage of the confusion and slip outside.
+			<br><br>
+
+			<<clotheson>>
+			<<endcombat>>
+
+			<<link [[Next|School Rear Playground]]>><</link>>
+			<br>
+		<<else>>
+			The <<person1>><<person>> and <<person2>><<person>> cry out as Whitney's goons descend on them. You seize the opportunity to scurry outside.<<status 1>><<gcool>>
+			<br><br>
+
+			<<clotheson>>
+			<<endcombat>>
+			<<npc Whitney>><<person1>>
+
+			<<link [[Next|Whitney Rescue 2]]>><<set $whitneyRescueExit to "playground">><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<endevent>>
+		<<npc Leighton>>Leighton barges into the shed. Eyes wide with panic, the <<group>> stumble over their words as they try to explain themselves. Leighton is having none of it, and drags them from the building by the scruff of their necks. <<tearful>> you gather yourself.
+		<br><br>
+
+		<<clotheson>>
+		<<endcombat>>
+
+		<<link [[Next|School Rear Playground]]>><</link>>
+	<</if>>
 <</if>>
 
 :: School Passout Gang Rape Finish

@@ -152,6 +152,9 @@ You feign confusion. "Your locker? I thought this was mine. Silly me."
 	<<neutral 1>>
 
 	<<maninit>>
+	<<if $pillory_tenant.special.name isnot "Whitney" and $whitneyromance is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].dom gte random(10, 25)>>
+		<<enable_rescue>>
+	<</if>>
 	<<set $enemytrust -= 100>>
 	<<set $enemyhealthmax -= 100>>
 	<<set $enemyhealth -= 100>>
@@ -171,10 +174,12 @@ You feign confusion. "Your locker? I thought this was mine. Silly me."
 
 <<if $timer lte 0>>
 	<span id="next"><<link [[Next|School Lockers Fight Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[Next|School Lockers Fight Finish]]>><</link>></span><<nexttext>>
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<span id="next"><<link [[Next|School Lockers Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[Next|School Lockers Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $alarm is 1 and $rescue gte 1>>
+	<span id="next"><<link [[Next|Whitney Rescue]]>><<set $whitneyRescueExit to "hallways">><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|School Lockers Fight]]>><</link>></span><<nexttext>>
 <</if>>
@@ -198,9 +203,15 @@ You feign confusion. "Your locker? I thought this was mine. Silly me."
 	<<clotheson>>
 	<<endcombat>>
 <<elseif $timer lte 0>>
-	<<endevent>>
-
-	<<npc Leighton>><<person1>>Leighton storms onto the scene, and physically separates the two of you. "This is completely unacceptable," <<he>> says, looking at you. "I'll see you in my office after school, perhaps I can teach you how to act civil."
+	<<if $pillory_tenant.special.name isnot "Leighton">>
+		Leighton storms onto the scene, and physically separates the two of you.
+		<<endevent>><<npc Leighton>><<person1>>
+		"This is completely unacceptable," <<he>> says, looking at you. "I'll see you in my office after school, perhaps I can teach you how to act civil."
+	<<else>>
+		Winter storms onto the scene. The <<person1>><<person>> flees at <<nnpc_his "Winter">> arrival.
+		<<endevent>><<npc Winter>><<person1>>
+		"How barbaric," <<he>> tuts, looking at you. "I've half a mind to take your punishment into my own hands, but I'll let the <<nnpc_title "Leighton">> sort you out once <<nnpc_hes "Leighton">> back."
+	<</if>>
 	<<gdelinquency>><<detention 4>>
 	<br><br>
 
