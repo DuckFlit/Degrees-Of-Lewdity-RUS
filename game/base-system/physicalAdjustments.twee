@@ -455,34 +455,43 @@
 <<set $sexStats.breasts.playedWith to 0>>
 <<set $workouts to 0>>
 
-<<set _pills to $sexStats.pills>>
-<<run window.resetAllDoseTaken()>>
-<<if $location is "home" or $location is "alex_cottage" or $location is "cabin">>
-	<<set _keys to Object.keys(_pills.lastTaken)>> /* "lastTaken" will induce you in error here, it's only to retrieve the pills type list*/
-	<<for _i, _key range _keys>>
-		<<run window.determineAutoTakePill(_key)>>
-		<<if _autoTakeDetermined != null and _pills["pills"][_autoTakeDetermined].owned > 0>>
-			<<set $pillsconsumed++>> /* to keep track of overall pill consumption (stats) */
-			<<set _pills["pills"][_autoTakeDetermined].owned-->>
-			<<set _pills["pills"][_autoTakeDetermined].doseTaken to 1>>
-			<<run window.redetermineMostTaken(0, 0, _autoTakeDetermined)>>
-			<<run window.setLastTaken(null, null, _autoTakeDetermined)>>
-			<<set $pillsTaken to true>>
-			<<set $effectsmessage to 1>>
-			<<if _pills["pills"][_autoTakeDetermined].owned == 0>>
+<<autoTakePillCheck>>
+
+<</widget>>
+
+<<widget "autoTakePillCheck">>
+
+<<if $pillsTakenOn != (V.monthday.toString() + V.month + V.year.toString())>>
+	<<set _pills to $sexStats.pills>>
+	<<run window.resetAllDoseTaken()>>
+	<<if $location is "home" or $location is "alex_cottage" or $location is "cabin">>
+		<<set _keys to Object.keys(_pills.lastTaken)>> /* "lastTaken" will induce you in error here, it's only to retrieve the pills type list*/
+		<<for _i, _key range _keys>>
+			<<run window.determineAutoTakePill(_key)>>
+			<<if _autoTakeDetermined != null and _pills["pills"][_autoTakeDetermined].owned > 0>>
+				<<set $pillsconsumed++>> /* to keep track of overall pill consumption (stats) */
+				<<set _pills["pills"][_autoTakeDetermined].owned-->>
+				<<set _pills["pills"][_autoTakeDetermined].doseTaken to 1>>
+				<<run window.redetermineMostTaken(0, 0, _autoTakeDetermined)>>
+				<<run window.setLastTaken(null, null, _autoTakeDetermined)>>
+				<<set $pillsTaken to true>>
+				<<set $pillsTakenOn to (V.monthday.toString() + V.month + V.year.toString())>>
+				<<set $effectsmessage to 1>>
+				<<if _pills["pills"][_autoTakeDetermined].owned == 0>>
+					<<set _pills["pills"][_autoTakeDetermined].autoTake to false>>
+					<<set $pillsTakenLast to true>>
+				<</if>>
+			<<elseif _autoTakeDetermined != null>>
 				<<set _pills["pills"][_autoTakeDetermined].autoTake to false>>
-				<<set $pillsTakenLast to true>>
+				<<set _pills["pills"][_autoTakeDetermined].doseTaken to 0>>
+				<<set _pills.lastTaken[_key] to ''>>
+				<<set _pills.mostTaken[_key] to ''>>
 			<</if>>
-		<<elseif _autoTakeDetermined != null>>
-			<<set _pills["pills"][_autoTakeDetermined].autoTake to false>>
-			<<set _pills["pills"][_autoTakeDetermined].doseTaken to 0>>
-			<<set _pills.lastTaken[_key] to ''>>
-			<<set _pills.mostTaken[_key] to ''>>
-		<</if>>
-	<</for>>
-<<else>>
-	<<run window.resetLastTaken()>>
-	<<run window.resetMostTaken()>>
+		<</for>>
+	<<else>>
+		<<run window.resetLastTaken()>>
+		<<run window.resetMostTaken()>>
+	<</if>>
 <</if>>
 <</widget>>
 
