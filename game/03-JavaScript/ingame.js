@@ -158,7 +158,7 @@ window.combatListColor = function (name, value, type) {
 			case "anustopenisdouble": case "anuspenisdoublefuck": case "penisdoubletease": case "penisDoubleEdging": case "doublecooperate": case "penisanusdouble":
 				color = "sub";
 				break;
-			
+
 			/*leftaction or rightaction*/
 			case "leftacceptW": case "rightacceptW": case "leftstruggleW": case "rightstruggleW":
 			/*feetaction*/
@@ -263,7 +263,7 @@ window.combatListColor = function (name, value, type) {
 			case "leftprotect": case "rightprotect": case "leftgrip": case "rightgrip": case "leftcurl": case "rightcurl":
 				color = "meek";
 				break;
-	
+
 			case "swim":
 				color = "teal";
 				break;
@@ -283,7 +283,7 @@ window.combatListColor = function (name, value, type) {
 			case "leftfold": case "rightfold": case "leftstruggleweak": case "rightstruggleweak":
 				color = "brat";
 				break;
-			
+
 			/*leftaction or rightaction*/
 			case "leftprotect": case "rightprotect": case "leftgrip": case "rightgrip": case "leftcurl": case "rightcurl":
 			case "rest":
@@ -318,7 +318,7 @@ window.combatListColor = function (name, value, type) {
 			case "leftfold": case "rightfold": case "leftstruggleweak": case "rightstruggleweak": case "vaginal_push": case "anal_push":
 				color = "brat";
 				break;
-			
+
 			case "chain_struggle": case "whack": case "vaginal_whack": case "anal_whack":
 				color = "def";
 				break;
@@ -565,7 +565,7 @@ window.getRobinLocation = function(){
 		} else {
 			return T.robin_location = "beach";
 		}
-		
+
 	} else if (V.halloween === 1 && between(V.hour, 16, 18) && V.monthday === 31){
 		return T.robin_location = "halloween";
 
@@ -960,10 +960,10 @@ Config.navigation.override = function (dest) {
 
 		case 'Forest Plant Sex No Tentacles':
 			return 'Forest Plant Sex';
-		
+
 		case 'Forest Plant Sex No Tentacles Finish':
 			return 'Forest Plant Sex Finish';
-		
+
 		case 'Forest Plant Passout No Tentacles':
 			return 'Forest';
 
@@ -1071,7 +1071,7 @@ window.currentSkillValue = function(skill){
 			}
 			if(V.worn.feet.type.includes("shackle")){
 				result = 0;
-			}			
+			}
 		break;
 		case 'willpower':
 			if(V.parasite.left_ear.name == "slime" && V.parasite.right_ear.name == "slime"){
@@ -1085,6 +1085,17 @@ window.currentSkillValue = function(skill){
 		break;
 	}
 	return result;
+}
+
+window.playerHasStrapon = function(){
+	return (V.worn.under_lower.type.includes("strap-on") && V.worn.under_lower.state == "waist")
+}
+
+window.npcHasStrapon = function(index){
+	// index is 0 to 5
+	return (V.NPCList[index].penisdesc != undefined && V.NPCList[index].penisdesc.contains("strap-on"))
+	// For refactoring in the future
+	//return (V.NPCList[index].penisdesc != undefined && V.NPCList[index].strapon != undefined && V.NPCList[index].strapon.state == "worn")
 }
 
 window.getTimeString = function(minutes = 0){
@@ -1172,7 +1183,7 @@ window.npcClothes = function (npc, type){
 		return clothesSet.name;
 	} else {
 		console.log(`npcClothes - unable to find a clothing set with the options for '${npc.fullDescription}' with type '${type}'`)
-	}	
+	}
 }
 
 window.getWeekDay = function(day){
@@ -1186,4 +1197,105 @@ window.getWeekDay = function(day){
 
 window.waterproofCheck = function(clothing){
 	return clothing.type.includes("swim") || clothing.type.includes("stealthy");
+}
+
+window.getSexToysofType = function (toyType){
+	var sexToys = ["dildo","whip","onahole","vibrator","all"];
+	sexToys["dildo"] = ["dildo","length of anal beads"];
+	sexToys["whip"] = ["riding crop","flog"];
+	sexToys["onahole"] = ["onahole"];
+	sexToys["vibrator"] = ["vibrator","bullet vibe"];
+	sexToys["all"] = sexToys["dildo"].concat(sexToys["whip"],sexToys["onahole"],sexToys["vibrator"]);
+
+	if (toyType != undefined){
+		if (toyType == "dildo"){
+			var dildos = sexToys["dildo"].concat(sexToys["vibrator"]);
+			return dildos;
+		}
+		else if (toyType == "onahole"){
+			return sexToys["onahole"];
+		}
+		else if (toyType == "whip"){
+			return sexToys["whip"];
+		}
+		else if (toyType == "vibrator"){
+			return sexToys["vibrator"];
+		}
+		else if (toyType == "dildos and onaholes"){
+			var dildos = sexToys["dildo"].concat(sexToys["vibrator"],sexToys["onahole"]);
+			return dildos;
+		}
+		else if (toyType == "dildos and whips"){
+			var dildos = sexToys["dildo"].concat(sexToys["vibrator"],sexToys["whip"]);
+			return dildos;
+		}
+		else {
+			return sexToys["all"];
+		}
+	}
+	else {
+		//console.log("All sex toys. Length = "+sexToys["all"].length+ " and I contain: " +sexToys["all"]);
+		return sexToys["all"];
+	}
+}
+
+window.npcHasSexToyOfType = function(npcIndex,toyType){
+	var npc = V.NPCList[npcIndex];
+	if (npc.righttool != undefined || npc.lefttool != undefined){
+		var sexToys = ["dildo","whip","onahole","all"];
+		sexToys["dildo"] = getSexToysofType("dildo");
+		sexToys["whip"] = getSexToysofType("whip");
+		sexToys["onahole"] = getSexToysofType("onahole");
+		sexToys["vibrator"] = getSexToysofType("vibrator");
+		sexToys["all"] = getSexToysofType("all");
+		console.log("sex toys: "+sexToys.all);
+
+		return sexToys[toyType].contains(V.NPCList[npcIndex].righttool) || sexToys[toyType].contains(V.NPCList[npcIndex].lefttool)
+	}
+	else {
+		return false;
+	}
+}
+
+window.randomSexToy = function(toyType){
+
+	if (toyType != undefined){
+		if (toyType == "dildo"){
+			var dildos = getSexToysofType("dildo");
+			return dildos[random(0,dildos.length-1)];
+		}
+		else if (toyType == "onahole"){
+			var onaholes = getSexToysofType("onahole");
+			return onaholes[random(0,onaholes.length-1)];
+		}
+		else if (toyType == "whip"){
+			var whips = getSexToysofType("whip");
+			return whips[random(0,whips.length-1)];
+		}
+		else if (toyType == "vibrator"){
+			var vibrators = getSexToysofType("vibrator");
+			return vibrators[random(0,vibrators.length-1)];
+		}
+		else if (toyType == "dildos and onaholes"){
+			var dildos = getSexToysofType("dildos and onaholes");
+			return dildos[random(0,dildos.length-1)];
+		}
+		else if (toyType == "dildos and whips"){
+			var dildos = getSexToysofType("dildos and whips");
+			return dildos[random(0,dildos.length-1)];
+		}
+		else {
+			var sexToys = getSexToysofType("all")
+			return sexToys[random(0,sexToys.length-1)];
+		}
+	}
+	else {
+		//console.log("All sex toys. Length = "+sexToys["all"].length+ " and I contain: " +sexToys["all"]);
+		var sexToys = getSexToysofType("all")
+		return sexToys[random(0,sexToys.length-1)];
+	}
+}
+
+window.playerHasButtPlug = function(){
+	return (V.worn.butt_plug != undefined && V.worn.butt_plug.state == "worn")
 }

@@ -1834,6 +1834,13 @@
 					<img id="location" @src="'img/misc/' + _weather_display + '/poolday.gif'">
 				<<case "landfill">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/landfillday.png'">
+				<<case adult_shop>>
+					<<getadultshopstate>>
+					<<if $adultshopstate is "closed">>
+						<img id="location" @src="'img/misc/' + _weather_display + '/sex_shop_day.png'">
+					<<else>>
+						<img id="location" @src="'img/misc/' + _weather_display + '/sex_shop_day_open.gif'">
+					<</if>>
 				<<case "temple">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/templeday.png'">
 				<<case "strip_club">>
@@ -1969,6 +1976,8 @@
 					<</if>>
 				<<case "pool">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/poolnight.gif'">
+				<<case adult_shop>>
+				<img id="location" @src="'img/misc/' + _weather_display + '/sex_shop_night.gif'">
 				<<case "landfill">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/landfillnight.png'">
 				<<case "temple">>
@@ -2105,6 +2114,8 @@
 					<img id="location" @src="'img/misc/' + _weather_display + '/pooldawn.gif'">
 				<<case "landfill">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/landfilldawn.png'">
+				<<case adult_shop>>
+				<img id="location" @src="'img/misc/' + _weather_display + '/sex_shop_dawn.png'">
 				<<case "temple">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/templedawn.png'">
 				<<case "strip_club">>
@@ -2239,6 +2250,8 @@
 					<img id="location" @src="'img/misc/' + _weather_display + '/pooldusk.gif'">
 				<<case "landfill">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/landfilldusk.png'">
+				<<case adult_shop>>
+				<img id="location" @src="'img/misc/' + _weather_display + '/sex_shop_dusk.gif'">
 				<<case "temple">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/templedusk.png'">
 				<<case "strip_club">>
@@ -2796,6 +2809,9 @@ or $args[0] is "force">>
 	<</if>>
 	<<if $drugged gt 1>>
 		<<set $_arousal += $pass * 10>>
+	<</if>>
+	<<if playerHasButtPlug()>>
+		<<set $_arousal += $pass * 12>>
 	<</if>>
 	<<if $parasite.left_ear.name is "slime" and random(1, 100) gte 90>>
 		<<drugs $pass>>
@@ -5055,4 +5071,39 @@ __Map__<br>
 <<if $args[0]>>
 	<<set $hypnotised += $args[0]>>
 <</if>>
+<</widget>>
+
+<<widget "getstraponcolor">>
+	<<set $phalluscolorA to "fleshy">>
+	<<set $phalluscolorB to "fleshy">>
+
+	<<if $args[0] isnot undefined and $args[1] isnot undefined>>
+		<<if npcHasStrapon($args[0])>>
+			<<set $phalluscolorA to "strapon-"+$NPCList[$args[0]].strapon.color>>
+		<</if>>
+		<<if npcHasStrapon($args[1])>>
+			<<set $phalluscolorB to "strapon-"+$NPCList[$args[1]].strapon.color>>
+		<</if>>
+	<<elseif $args[0] isnot undefined>>
+		<<if npcHasStrapon($args[0])>>
+			<<set $phalluscolorA to "strapon-"+$NPCList[$args[0]].strapon.color>>
+		<</if>>
+	<<else>>
+		<<set $phalluscolorA to "strapon-fleshy">>
+	<</if>>
+<</widget>>
+
+<<widget "giftStrapon">>
+	<!--
+	$args[0] is the named NPC.
+	$args[1] is the state of the gift. "held" when purchased from the shop, and "given" when the NPC has accepted the gift.
+	-->
+	<<if $args[0] isnot undefined and $NPCNameList.includes($args[0])>>
+		<<if $giftStrapon is undefined>>
+			<<set $giftStrapon to []>>
+		<</if>>
+		<<if $args[1] is "held" or $args[1] is "given">>
+			<<set $giftStrapon[$args[0]] to $args[1]>>
+		<</if>>
+	<</if>>
 <</widget>>

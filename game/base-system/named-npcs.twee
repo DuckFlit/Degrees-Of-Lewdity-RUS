@@ -379,6 +379,7 @@ alternative way to write that:
 	<<set $NPCName[_i].chastity to {penis:"", vagina:"", anus:""}>>
 	<<generatePronouns $NPCName[_i]>>
 	<<initNNPCClothes _nam>>
+	<<initNNPCstrapon $NPCName[_i]>>
 
 	<!-- Special Cases NNPC Variables, Introductions, Adjustments -->
 	<<switch _nam>>
@@ -687,6 +688,42 @@ alternative way to write that:
 <</if>>
 <</widget>>
 
+<!-- generates the strapon that the NNPC will use if the scene or rng calls for it. doesn't guarantee they will have it 100% of the time. -->
+<<widget "initNNPCstrapon">>
+	<<set $_npcName to $args[0]>>
+	<<set $_name to $_npcName.nam>>
+	<<switch $_name>>
+		<<case "Whitney">>
+			<<set $_npcName.strapons to [{"state": "worn", "color": "dark red", "size": 3, "description":"large dark red strap-on cock"}]>>
+		<<default>>
+			<<set $_npcName.strapons to []>>
+	<</switch>>
+<</widget>>
+
+<!-- give an NNPC a *new* strapon -->
+<!-- <<giveNNPCnewstrapon _npcNameSelect _straponSize _straponColour _straponShape _modifierOptions>> -->
+<<widget "giveNNPCnewstrapon">>
+	<<set $_name to $args[0]>>
+	<<set $_npcName to $NPCName.find(npc => npc.nam === $_name)>>
+	<<set $_index to $NPCName.findIndex(npc => npc.nam === $_name)>>
+	<<if _newStrapon is undefined>>
+		<<run throw new Error("giveNNPCnewstrapon was run when _newStrapon was undefined! Call generateNewStrapon first!")>>
+	<<else>>
+		<<set $_strapon to clone(_newStrapon)>>
+		<!-- unset _newStrapon so that we can't accidentally dupe strapons. That's right, we're forcing you to generate multiple if you want identical ones. -->
+		<<unset _newStrapon>>
+	<</if>>
+
+	<!-- if the nnpc's name is in the following list, they will refuse to accept a new strapon -->
+	<<if !["Whitney"].includes($_name)>>
+		<<if $_npcName.strapons is undefined or $_npcName.strapons.length is 0>>
+			<<set $NPCName[$_index].strapons to [$_strapon]>>
+		<<else>>
+			<<set $NPCName[$_index].strapons.push($_strapon)>>
+		<</if>>
+	<</if>>
+<</widget>>
+
 <<widget "npc">>
 /* Prepare the call for multiple Named NPCs at the same time.
 * We do this by changing all $NPCList[0] calls to $NPCList[x] in which x can be any temporary variable. In this case, we'll use _npcno.
@@ -737,6 +774,9 @@ alternative way to write that:
 	<<getNNPCClothes _nam>>
 <</if>>
 
+<<if !$NPCName[_i].strapons>>
+	<<initNNPCstrapon $NPCName[_i]>>
+<</if>>
 <<set $NPCList[_npcno].virginity to $NPCName[_i].virginity>>
 
 <!-- Set global variables -->
@@ -826,6 +866,11 @@ alternative way to write that:
 <</if>>
 <<if $NPCList[_npcno].pregnancyAvoidance gt 0>>
 	<<set $npcCondoms to "normal">>
+<</if>>
+
+/* Whitney and Avery should wear strap-ons based on strap-on chance */
+<<if $NPCList[_npcno].penis is "none" and (_nam is "Whitney" or _nam is "Avery") and !_strapIgnore and random(0,99) lt  $straponchance>>
+	<<npcstrapon _npcno>>
 <</if>>
 
 <!-- Adjust for Beast type NNPCs: Black Wolf -->

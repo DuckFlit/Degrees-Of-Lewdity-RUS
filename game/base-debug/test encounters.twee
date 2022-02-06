@@ -1326,6 +1326,175 @@ $$hour * 60 + $$minute = <<= $hour * 60 + $minute>>
 <br>
 <<link [[Go back|$prevPassage]]>><<run delete V.timeDistortion>><</link>>
 
+:: NNPC Strapon Generator Widgets [widget]
+
+<<widget "straponGeneratorOptions">>
+
+	<i>Size:</i>
+	<<listbox "_straponSize" autoselect>>
+		<<option "regular" 2>>
+		<<option "large" 3>>
+		<<option "massive" 4>>
+	<</listbox>>
+
+	<i>Colour:</i>
+	<<set _colourOptions to ["black","red","pink","purple","fleshy","blue","green"]>>
+
+	<<listbox "_straponColour" autoselect>>
+		<<optionsfrom _colourOptions>>
+	<</listbox>>
+
+	<i>Shape:</i>
+	<<set _shapeOptions to ["dildo","penis","beaded dildo","horse cock","knotted cock","tentacle","dolphin cock","studded cock","fist dildo"]>>
+
+	<<listbox "_straponShape" autoselect>>
+		<<optionsfrom _shapeOptions>>
+	<</listbox>>
+
+	<i>Additional Modifier:</i>
+	<<set _modifierOptions to ["","floppy","transparent","sparkly"]>>
+	<<listbox "_straponModifier" autoselect>>
+		<<optionsfrom _modifierOptions>>
+	<</listbox>>
+	<br><br>
+
+<</widget>>
+
+
+:: NNPC Strapon Generator
+The lights flash on. You find yourself in a strange chamber, completely smooth and featureless.
+There is a sign on the wall that says <span class="orange">DEBUG</span> in bright orange letters.
+A large, opaque tube reaches to the ceiling, The words <span class="blue">CUSTOM CONSTRUCT</span> are labelled on the front.
+<br>
+
+<<set _nnpcOptions to $NPCName.filter(npc => npc.penis === "none")>>
+<<set _nnpcOptions to _nnpcOptions.map(npc => npc.nam)>>
+
+A terminal is attached to the tube.
+
+<<if _nnpcOptions.length gte 1>>
+	Its screen is a monochrome green. You look at the prompts. The first one surprises you. It's a list of the names of people you recognise, how peculiar...
+	<br><br>
+	<i>Please select the construct's model.</i>
+	<br>
+
+
+	<<listbox "_npcNameSelect" autoselect>>
+		<<optionsfrom _nnpcOptions>>
+	<</listbox>>
+	<br><br>
+
+	<i>Please design the construct's strap-on.</i>
+	<br>
+	<<set _straponSize to 3>>
+	<span id="straponOptions">
+	<<straponGeneratorOptions>>
+	</span>
+
+	<<button "<i>Randomize</i>">>
+		<<set _straponSize to [2,3,4].random()>> 
+		<<set _straponColour to ["black","red","pink","purple","fleshy","blue","green"].random()>> 
+		<<set _straponShape to ["dildo","penis","beaded dildo","horse cock","knotted cock","tentacle","dolphin cock","studded cock","fist dildo"].random()>> 
+		<<set _straponModifier to ["","","floppy","transparent","sparkly"].random()>>
+		<<replace "#straponOptions">><<straponGeneratorOptions>><</replace>>
+	<</button>><br><br>
+
+	Having selected the desired options, your finger hovers over the "Create" button. You really have no idea what this strange device is about to do...
+	<br><br>
+
+	<<link [[Create Construct|NNPC Strapon Generator Sex]]>>
+		<<npc _npcNameSelect>><<npcexpose>><<person1>>
+		<<generateNewStrapon _straponSize _straponColour _straponShape _straponModifier>>
+		<<npcstrapon 0>>
+		<<setNPCStrapon $NPCList[0] _newStrapon>>
+		<<set $sexstart to 1>>
+	<</link>>
+	<br><br>
+
+<<else>>
+	Its screen is a solid red colour, and it displays a message.
+	<br><br>
+	<span class="red"><i>Subject has no compatible candidates for construct in memory.</i></span>
+	<br>
+	<span class="red"><i>No actions available at this time.</i></span>
+	<br><br>
+
+<</if>>
+
+<<link [[Back home|Bedroom]]>><</link>>
+
+
+:: NNPC Strapon Generator Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	With a hiss of steam, the tube retracts to the ceiling.
+	A figure walks out, looking identical to <<print $NPCList[0].fullDescription>>,
+	<<if $NPCList[0].fullDescription is "Whitney">>
+		although fully nude and holding a <<print $NPCList[0].strapon.description>> in <<his>> hand. 
+		<br><br>
+		<<setNPCStrapon $NPCList[0] $NPCName[$NPCNameList.indexOf("Whitney")].strapons[0]>>
+		"This thing is cute and all, but I've already got one", <<he>> says,
+		throwing it away and pulling <<his>> favorite <<print $NPCList[0].strapon.description>> out of nowhere.
+	<<else>>
+		although fully nude and wearing a <<print $NPCList[0].strapon.description>>.
+	<</if>>
+	<br><br>
+
+	"Beginning sex encounter," the <<personsimple>> says in a flat tone, before <<his>> face morphs into a lavicious smile. <<catcall>>
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $finish is 1>>
+	<span id="next"><<link [[FINISH|NNPC Strapon Generator Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[HEALTH|NNPC Strapon Generator Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[ORGASM|NNPC Strapon Generator Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $pain gte 100 and $willpowerpain is 0>>
+	<span id="next"><<link [[PAIN|NNPC Strapon Generator Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|NNPC Strapon Generator Sex]]>><</link>></span><<nexttext>>
+<</if>>
+<br>
+<<link [[Emergency exit|NNPC Strapon Generator Sex Finish]]>><<set $finish to 1>><</link>>
+<br><br><br><br>
+
+:: NNPC Strapon Generator Sex Finish
+<<if $finish is 1>>
+	"Test concluded," the <<personsimple>> says in a flat tone, abruptly stepping back. "Restoring state to default."
+<<elseif $enemyhealth lte 0>>
+	"Test concluded," the <<personsimple>> says in a flat tone, stepping away from you as if <<he>> weren't hurt at all. "Restoring state to default."
+<<elseif $pain gte 100 and $willpowerpain is 0>>
+	"Test concluded," the <<personsimple>> says in a flat tone, stepping away from you. "Restoring state to default."
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	"Test concluded," the <<personsimple>> says in a flat tone, stepping away from you. "Restoring state to default."
+<</if>>
+<br><br>
+
+<<He>> walks back to the terminal and flicks a switch. <<He>> steps past it, and the tube descends from the ceiling over <<him>> again.
+Once the tube touches the floor, the lights switch off.
+<br><br>
+
+<<tearful>> you wonder what to do next.
+<br><br>
+
+<<endcombat>><<clotheson>>
+
+<<link [[Create another construct|NNPC Strapon Generator]]>><</link>><br>
+<<link [[Back home|Bedroom]]>><</link>>
+
 :: Cow Test Sex
 <<if $sexstart is 1>>
 	<<beastNEWinit 1 cow>>

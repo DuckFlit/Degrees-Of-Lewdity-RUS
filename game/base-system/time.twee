@@ -1301,6 +1301,25 @@
 	<<else>>
 		<<set $clothingShop.banExtension to false>>
 	<</if>>
+	<<if $adultShop isnot undefined>>
+		<<if $adultShop.ban gt 0>>
+			<<set $adultShop.ban-->>
+		<<else>>
+			<<set $adultShop.banExtension to false>>
+		<</if>>
+	<<else>>
+		<<if $adultShop is undefined>>
+			<<set $adultShop to {
+				ban: 0,
+				banExtension: false,
+				spotted: false,
+				stolenClothes: 0,
+				totalStolenClothes: 0,
+				banCount: 0,
+				rng: random(0,1000)
+			}>>
+		<</if>>
+	<</if>>
 	<<unset $slimeFarmNaked>>
 	<<if $farm>>
 		<<if $farm.milking.catchChance gt random(10,1000)/10>>
@@ -1325,6 +1344,16 @@
 	<<if $wolfcavepatrol is 1>>
 		<<set $wolfcavepatrolchance to random(1,3)>>
 	<</if>>
+
+	<<if $randomNNPCStraponsToClear>>
+		<!-- Clear any strapons that were randomly generated for the NNPCs -->
+		<<run $NPCName.forEach(npc => {
+			if (npc.strapons && npc.strapons.length >= 1){
+				/* This removes all strapons that have the temp tag, and ignores any that lack this variable */
+				npc.strapons = npc.strapons.filter(strapon => !strapon.temp)
+			}
+		})>>
+	<</if>>
 <</if>>
 <</widget>>
 
@@ -1336,6 +1365,7 @@
 	<<clearNPC bartend>>
 <</if>>
 <<set $clothingShop.spotted to false>>
+<<set $adultShop.spotted to false>>
 <<dailySellProduce>>
 <<if $lake_ice_broken gte 1>>
 	<<set $lake_ice_broken -= 1>>
@@ -1566,6 +1596,7 @@
 <<unset $oceanbreezetheft>>
 <<unset $stripclubtheft>>
 <<unset $clothingshoptheft>>
+<<unset $adultshoptheft>>
 <<unset $hairdresserstheft>>
 <<unset $tailortheft>>
 <<unset $petshoptheft>>
@@ -1611,6 +1642,8 @@
 	<</if>>
 	<<set $photo.shoot to 0>>
 <</if>>
+
+<<unset $adultShopWhitney>>
 
 <</widget>>
 
