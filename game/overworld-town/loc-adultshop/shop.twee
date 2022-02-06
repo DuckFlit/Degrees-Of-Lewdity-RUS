@@ -1,0 +1,545 @@
+:: Adult clothing shop widgets [widget]
+
+<<widget "adultShop-main">>
+	<<if $tryOn.autoReset isnot false>><<tryOnReset>><</if>><<unset $tempDisable>>
+	<<set $outside to 0>><<set $location to "adult_shop">><<effects>>
+	<<set $shopName = "adult">>
+
+	You are in the adult shop. It has a large selection of fetish clothing and strap-ons.
+	<br><br>
+
+	<<if $stress gte $stressmax>>
+	<<passoutshop>>
+	<<else>>
+		<<if $hour is 21 and $minute lt 10>>
+			It's closing time. Sirris is herding everyone outside. <<if $exposed gte 1>>Panic swells within you as you realise how exposed you'll be should Sirris find you in this state of dress.<</if>>
+			<br><br>
+
+			<<set $adultshopstate to "closed">>
+			<<if $exposed lte 0>>
+				<<link [[Go outside|Elk Street]]>><<clearadultshopvariables>><</link>>
+				<br>
+			<<else>>
+				<<link [[Hide until it's over (1:00)|Adult Shop]]>><<pass 1 hour>><</link>>
+			<</if>>
+		<<else>>
+			<div id="tryonstats-div"><<tryOnStats>></div>
+			<<unset $shopListStartCount>>
+			<<unset $clothes_choice>>
+			<<set $shopPage = 0>>
+
+			<<if $daystate is "night">>
+				You are alone in the darkness.
+				<br><br>
+			<<elseif $exposed gte 1>>
+				You are hiding within a gimp suit stand to protect your dignity.
+				<br><br>
+			<</if>>
+
+			<span>Warmth:</span>
+			<<warmthscale>>
+			<div id="warmth-description">
+				<<warmth_description>>
+			</div>
+			<br><br>
+			<<if $debug is 1>>
+				<<clothingcategoryicon "overoutfit">>
+				<<link "View over outfits">><<replace "#clothingShop-div">><<OverOutfitShop>><</replace>><</link>>
+				<br>
+				<<clothingcategoryicon "overoutfit">>
+				<<link "View over tops">><<replace "#clothingShop-div">><<OverTopShop>><</replace>><</link>>
+				<br><br>
+			<</if>>
+			<<clothingcategoryicon "outfit">>
+			<<link "View outfits">><<replace "#clothingShop-div">><<OutfitShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "upper">>
+			<<link "View tops">><<replace "#clothingShop-div">><<TopShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "lower">>
+			<<link "View bottoms">><<replace "#clothingShop-div">><<BottomShop>><</replace>><</link>>
+			<br><br>
+			<<clothingcategoryicon "underoutfit">>
+			<<link "View under outfits">><<replace "#clothingShop-div">><<UnderOutfitShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "underupper">>
+			<<link "View under tops">><<replace "#clothingShop-div">><<UnderTopShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "underlower">>
+			<<link "View under bottoms">><<replace "#clothingShop-div">><<UnderBottomShop>><</replace>><</link>>
+			/* Left here for future expansion */
+			/*<br>
+			<<clothingcategoryicon "genitals">>
+			<<link "View Genital wear">><<replace "#clothingShop-div">><<GenitalShop>><</replace>><</link>>*/
+			<br><br>
+			<<clothingcategoryicon "head">>
+			<<link "View Head Accessories">><<replace "#clothingShop-div">><<HeadShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "face">>
+			<<link "View Face Accessories">><<replace "#clothingShop-div">><<FaceShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "neck">>
+			<<link "View Neck Accessories">><<replace "#clothingShop-div">><<NeckShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "hand">>
+			<<link "View Hand Accessories">><<replace "#clothingShop-div">><<HandsShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "legs">>
+			<<link "View Legwear">><<replace "#clothingShop-div">><<LegsShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "feet">>
+			<<link "View Shoes">><<replace "#clothingShop-div">><<FeetShop>><</replace>><</link>>
+			<br><br>
+			<<run linkifyDivs('.button-back-to-shop')>>
+
+			/*<<if $clothingrebuy is 1>>
+				[[Disable automatic clothing rebuy|Rebuy Shop]]
+				<br>
+			<<else>>
+				[[Enable automatic clothing rebuy|Rebuy Shop]]
+				<br>
+			<</if>>*/
+
+			<<if $daystate is "night" and $hour isnot $closinghour and $adultshoptheft isnot 1>>
+				<<link [[Examine the cash register|Adult Shop Register]]>><</link>>
+				<br>
+			<</if>>
+
+			<br>
+
+			<<if $daystate is "night" or $tryOn.value is 0>>
+				<<if $daystate is "night" and $adultShop.spotted is true and $adultShop.stolenClothes gt 0>>
+					<<link[[Leave|Adult Shop Night Guard Found]]>>
+						<<shopClothingFilterReset>>
+						<<ShowUnderEquip "normal">>
+						<<ShowUnderEquip "over">>
+						<<set $tryOn.autoReset to true>>
+						<<crimeup `$tryOn.value / 100`>>
+						<<set $adultshopstate to "closed">>
+					<</link>>
+				<<else>>
+					<<link[[Leave|Adult Shop]]>>
+						<<shopClothingFilterReset>>
+						<<ShowUnderEquip "normal">>
+						<<ShowUnderEquip "over">>
+						<<set $tryOn.autoReset to true>>
+						<<crimeup `$tryOn.value / 100`>>
+						<<set $adultshopstate to "closed">>
+					<</link>>
+				<</if>>
+				<<if $tryOn.value gt 0>>
+					<<crime>>
+				<</if>>
+				<br><br>
+			<<elseif $tryOn.value gt 0>>
+				<<link "Return clothes">><<clothingReset>>
+					<<updatesidebarimg>>
+					<<updatesidebardescription>>
+					<<updateallure>>
+					<<updatewarmthscale>>
+					<<updatewarmthdescription>>
+					<<updateclothingshop>>
+					<<run updateMoment()>>
+				<</link>>
+				<br>
+				<<if $tryOn.value lt $money>>
+					<<sendItemsToDropdown>>
+					<<link "Buy clothes">><<buyTryOnClothes "wear">><<updateclothingshop>><</link>>
+					<br>
+					<<link "Buy clothes and send to wardrobe">>
+						<<buyTryOnClothes "wardrobe">>
+						<<updatesidebarmoney>>
+						<<updatesidebarimg>>
+						<<updatesidebardescription>>
+						<<updateallure>>
+						<<updatewarmthscale>>
+						<<updatewarmthdescription>>
+						<<updateclothingshop>>
+						<<run updateMoment()>>
+					<</link>>
+					<br>
+				<</if>>
+				<<link [[Leave with stolen clothes|Stolen Adult Shop Result]]>><<shopClothingFilterReset>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+
+:: Stolen Adult Shop Result
+<<effects>>
+<<ShowUnderEquip "over">>
+<<ShowUnderEquip "normal">>
+<<if $skulduggery lt 90>>
+	Sirris watches the entrance out of the corner of <<nnpc_his "Sirris">> eye. There's no other way out, so you put everything back before leaving.
+	<<clothingReset>>
+<<else>>
+	<<set $rng to random(0,100)>>
+	<<if $crime gte 50000 or ($crime gte 40000 and $rng * 20 gte $skulduggery) or ($crime gte 25000 and $rng * 10 gte $skulduggery)
+	or ($crime gte 10000 and $rng * 5 gte $skulduggery)>>
+		<<generate1>><<person1>>
+		Sirris watches the entrance out of the corner of <<nnpc_his "Sirris">> eye, and as you try to stroll past, <<he>> stops you.
+		<br><br>
+		"So. I've been keeping an eye on you," <<he>> continues, "I'm letting you go this time, but you're going to be
+		banned from the premises for a while. Hopefully this will help you learn why you shouldn't steal merchandise."
+		<<if $adultShop.banCount lt 4>>
+			<<set $adultShop.ban to 7>>
+		<<elseif $adultShop.banCount lt 8>>
+			<<set $adultShop.ban to 10>>
+		<<else>>
+			<<set $adultShop.ban to 14>>
+		<</if>>
+		<<crime>>
+		<<set $adultShop.banCount++>>
+	<<else>>
+		Sirris watches the entrance out of the corner of <<nnpc_his "Sirris">> eye, but you leave without arousing suspicion.
+		<<crime>>
+	<</if>>
+	<<set _crime to ($tryOn.value / 100)>>
+	<<crimeup _crime>>
+<</if>>
+<br><br>
+<<link [[Next|Elk Street]]>><<set $tryOn.autoReset to true>><<clearadultshopvariables>><<endevent>><</link>>
+
+:: Adult Shop Guard
+<<effects>>
+<<generate1>><<person1>>
+Sirris watches the entrance out of the corner of <<nnpc_his "Sirris">> eye and spots you. <<He>> says a few words to someone you can't see, then approaches you.
+<br><br>
+"Sorry, can't let you pass," <<he>> says. "You still have <<if $adultShop.ban gt 1>><<number $adultShop.ban>> days<<else>>another day<</if>>
+till your ban is lifted."
+<br><br>
+
+<<link [[Next|Elk Street]]>><<endevent>><<clearadultshopvariables>><</link>>
+
+:: Adult Shop Sneak Guard
+<<effects>>
+You spot Sirris right by the entrance. It doesn't look like you'll be able to sneak past.
+
+<<link [[Next|Elk Street]]>><<clearadultshopvariables>><</link>>
+
+:: Adult Shop Night Guard Found
+<<effects>>
+<<generate1>><<person1>>
+<<set $adultShop.banCount++>>
+<<set $adultShop.spotted to false>>
+After making sure that you close the shop's door as quietly as you can, you turn around and are shocked to
+find a <<person>> face to face with you. <<He>> places a hand on your shoulder before you can even think of running.
+<br><br>
+"What do we have here? A little rat thief, trying to make off with some fuck toys?" <<He>> says with a
+disapproving expression, "I'll be informing the owners of this situation."
+<br><br>
+<<He>> pulls out <<his>> phone and seems to call to Sirris.
+<<if $adultShop.ban gt 0>>
+	<<set $adultShop.banExtension to true>>
+	<<set $adultShop.ban += 7>>
+	"Aha! So you already have a ban in place," <<he>> continues, "They do have a rather strict banning policy,
+	so it's going to be a good while before you're going to be able to shop here."
+<<else>>
+	<<if $adultShop.banCount lt 4>>
+		<<set $adultShop.ban to 7>>
+	<<elseif $adultShop.banCount lt 8>>
+		<<set $adultShop.ban to 10>>
+	<<else>>
+		<<set $adultShop.ban to 14>>
+	<</if>>
+	"That should do it," <<he>> continues, "Well. You won't be entering this establishment for quite some time.
+	Hopefully this will teach you a lesson."
+<</if>>
+<br><br>
+"Now follow me, I'll be escorting you away from here. You're lucky that I don't just take you straight to the pillory."
+
+<br><br>
+<<link [[Run|Adult Shop Night Guard Found Run]]>><</link>><<athleticsdifficulty 500>>
+<br>
+<<link [[Follow the guard|Adult Shop Night Guard Found Follow]]>><</link>>
+
+:: Adult Shop Night Guard Found Run
+<<effects>>
+You decide to run and hide.
+<<if $athleticsSuccess>>
+	The <<combatperson>> attempts to fully grab you, but you're able to avoid <<him>> just enough to get away.
+	You run through an alleyway with <<him>> shouting in the distance.
+	<br><br>
+	<<link [[Run|Elk Street]]>><<endevent>><<clearadultshopvariables>><</link>>
+<<else>>
+	However, before being able to get past the <<combatperson>>, <<he>> pulls on you hard enough for you to fall right on your ass.
+	<br><br>
+	"You'll regret trying to run from me," <<he>> says with a grin on <<his>> face. "There aren't any cameras here."
+	<br><br>
+	<<link [[Next|Adult Shop Night Guard Molestation]]>><<set $molestationstart to 1>><</link>>
+<</if>>
+
+:: Adult Shop Night Guard Found Follow
+<<effects>>
+<<He>> directs you towards the exit.
+<<if random(0,100) gte 50>>
+	"You know what?" <<he>> questions, "There aren't any cameras in this spot."
+	<br><br>
+	You look at <<him>> with a worried expression just before <<he>> grabs hold of you.
+	<br><br>
+	<<link [[Next|Adult Shop Night Guard Molestation]]>><<set $molestationstart to 1>><</link>>
+<<else>>
+	You walk down the street in silence and as you reach the corner of Elk street,
+	the <<combatperson>>> turns to you.
+	<br><br>
+	"I hope this is a good lesson for you," <<He>> smiles, "You should look for more honest ways of
+	earning money. Less trouble that way for everyone."
+	<br><br>
+	<<He>> flips you the bird as you leave.
+	<br><br>
+	<<link [[Leave|Elk Street]]>><<endevent>><<clearadultshopvariables>><</link>>
+<</if>>
+
+:: Adult Shop Night Guard Molestation
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+
+	<<maninit>>
+	<<set $enemytrust -= 40>>
+	<<set $enemyanger += 40>>
+	<<set $NPCList[0].lefthand to "arms">>
+	<<set $leftarm to "grappled">>
+	<<set $rightarm to "grappled">>
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[Next|Adult Shop Night Guard Molestation Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[Next|Adult Shop Night Guard Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Adult Shop Night Guard Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Adult Shop Night Guard Molestation Finish
+
+<<if $enemyhealth lte 0>>
+	You're able to hurt <<him>> enough to get away. <<tearful>> you flee the shop.
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Escape|Elk Street]]>><<endevent>><<unset adultshopintro>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	"Well, that was fun," <<he>> says, "But I think it's time for you to leave."
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Leave|Elk Street]]>><<endevent>><<unset adultshopintro>><</link>>
+<</if>>
+
+:: Adult Shop Register
+
+<<set $outside to 0>><<effects>><<set $lock to 250>>
+A standard cash register sits on a counter. It's locked tight.
+<br><br>
+<<if $skulduggery gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Adult Shop Register Sneak]]>><<pass 10>><<crimeup 1>><</link>><<crime>>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+<<ind>><<link [[Leave|Adult Shop]]>><</link>>
+<br>
+
+:: Adult Shop Register Sneak
+
+<<set $outside to 0>><<effects>><<set $lock to 200>>
+<<set $adultshoptheft to 1>>
+<<set $tip to random(4000, 10000)>>
+<<set $tip to Math.round($tip)>>
+You deftly open the cash register and count out the money inside.
+There's <<printmoney $tip>>.
+<br><br>
+<<if $skulduggery lt 300>>
+	<<skulduggeryskilluse>>
+<<else>>
+	<span class="blue">There's nothing more you can learn from locks this simple.</span>
+<</if>>
+<br><br>
+<<if $rng gte 86>>
+	<<skulshopevents>>
+<<else>>
+	<<link [[Take it|Adult Shop]]>><<set $money += 2*$tip>><<set $crime += ($tip / 100)>><</link>><<crime>>
+	<br>
+	<<link [[Leave it|Adult Shop]]>><</link>>
+	<br>
+<</if>>
+
+
+:: Adult Shop Toys
+
+<label><span class="lblue">Toys owned:</span></label>
+<label>
+	<<if $playerToys isnot undefined>>
+		<<set $_playertoys to []>>
+		<<for $_i = 0; $_i lt $playerToys.length; $_i++>>
+			<<set $_playertoys.push($playerToys[$_i].namecap)>>
+		<</for>>
+		<<listbox "$_playerownedtoy">>
+			<<optionsfrom $_playertoys>>
+		<</listbox>>
+	<<else>>
+		<<listbox "$_playerownedtoy">>
+			<<option "none">>
+		<</listbox>>
+	<</if>>
+</label>
+<br><br>
+<label><span class="green"><u>Toys available:</u></span></label>
+
+<head>
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-columns: 500px;
+  grid-template-rows: auto auto;
+  padding: 15px;
+}
+.grid-item {
+  background-color: rgba(0, 0, 0, 0);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  text-align: center;
+}
+</style>
+</head>
+
+<<if $playerToys is undefined or $playerToys.length lte 10>>
+<div class="grid-container">
+	<<set $shopItems to []>>
+	<<set $_shopindex to 0>>
+	<div class="grid-item">
+		<<set _dildo to clone(setup.sextoys[0])>>
+		<<set _icon to _dildo.icon>>
+		<<set $_index to random(0,_dildo.colour_options.length-1)>>
+		<<set _dildo.colour to "strapon-"+_dildo.colour_options[$_index]>>
+		<<set _ppcolor to "strapon-pink">>
+		<<set $shoppurchase to _dildo.name>>
+		<<set $shopItems.push(_dildo)>>
+		/*<img id="icon" @src="'img/misc/icon/sex toys/'+_icon" @style="'filter:brightness(140%) hue-rotate(300deg) saturate(150%)'" @class="_ppcolor"><<ind>><<print _dildo.namecap>> £<<print (_dildo.cost/100)>><<ind>>*/
+		<img id="icon" @src="'img/misc/icon/sex toys/'+_icon" @class="_ppcolor"><<ind>><<print _dildo.namecap>> £<<print (_dildo.cost/100)>><<ind>>
+		<<if $money gte _dildo.cost>>
+			<<link [[Buy|Buy Toy]]>>
+				<<pass 1>>
+				<<if $playerToys is undefined>><<set $playerToys to []>><</if>>
+				<<set $playerToys.push($shopItems[0])>>
+				<<set $shoppurchase to $shopItems[0]>>
+				<<set $money -=_dildo.cost>>
+			<</link>>
+		<</if>>
+	</div>
+	<div class="grid-item">
+		<<set _dildo to clone(setup.sextoys[1])>>
+		<<set _icon to _dildo.icon>>
+		<<set $_index to random(0,_dildo.colour_options.length-1)>>
+		<<set _dildo.colour to "strapon-"+_dildo.colour_options[$_index]>>
+		<<set _ppcolor to "strapon-pink">>
+		<<set $shoppurchase to _dildo.name>>
+		<<set $shopItems.push(_dildo)>>
+		<img id="icon" @src="'img/misc/icon/sex toys/'+_icon" @class="_ppcolor"><<ind>><<print _dildo.namecap>> £<<print (_dildo.cost/100)>><<ind>>
+		<<if $money gte _dildo.cost>>
+			<<link [[Buy|Buy Toy]]>>
+				<<pass 1>>
+				<<if $playerToys is undefined>><<set $playerToys to []>><</if>>
+				<<set $playerToys.push($shopItems[1])>>
+				<<set $shoppurchase to $shopItems[1]>>
+				<<set $money -=_dildo.cost>>
+			<</link>>
+		<</if>>
+	</div>
+	<div class="grid-item">
+		<<set _dildo to clone(setup.sextoys[2])>>
+		<<set _icon to _dildo.icon>>
+		<<set _ppcolor to "strapon-purple">>
+		<<set $shoppurchase to _dildo.name>>
+		<<set $shopItems.push(_dildo)>>
+		<img id="icon" @src="'img/misc/icon/sex toys/'+_icon" @style="'filter:brightness(180%) hue-rotate(290deg) saturate(160%)'" @class="_ppcolor"><<ind>><<print _dildo.namecap>> £<<print (_dildo.cost/100)>><<ind>>
+		<<if $money gte _dildo.cost>>
+			<<link [[Buy|Buy Toy]]>>
+				<<pass 1>>
+				<<if $playerToys is undefined>><<set $playerToys to []>><</if>>
+				<<set $playerToys.push($shopItems[2])>>
+				<<set $shoppurchase to $shopItems[2]>>
+				<<set $money -=_dildo.cost>>
+			<</link>>
+		<</if>>
+	</div>
+	<div class="grid-item">
+		<<set _dildo to clone(setup.sextoys[3])>>
+		<<set _icon to _dildo.icon>>
+		<<set _ppcolor to "strapon-purple">>
+		<<set $shoppurchase to _dildo.name>>
+		<<set $shopItems.push(_dildo)>>
+		<img id="icon" @src="'img/misc/icon/sex toys/'+_icon"><<ind>><<print _dildo.namecap>> £<<print (_dildo.cost/100)>><<ind>>
+		<<if $money gte _dildo.cost>>
+			<<link [[Buy|Buy Toy]]>>
+				<<pass 1>>
+				<<if $playerToys is undefined>><<set $playerToys to []>><</if>>
+				<<set $playerToys.push($shopItems[3])>>
+				<<set $shoppurchase to $shopItems[3]>>
+				<<set $money -=_dildo.cost>>
+			<</link>>
+		<</if>>
+	</div>
+</div>
+<<else>>
+	You have too many sex toys already.
+<</if>>
+<<if $money gte 8000 and ($loveInterest.primary is "Alex" or $loveInterest.secondary is "Alex") and $giftStrapo["Alex"] is undefined>>
+	<br>
+	<<link [[Buy Alex a strap-on: £80|$passage]]>>
+		<<giftStrapon "Alex" "held">>
+	<</link>>
+<</if>>
+<<if $money gte 8000 and ($loveInterest.primary is "Eden" or $loveInterest.secondary is "Eden") and $syndromeeden is 1 and $giftStrapon["Eden"] is undefined>>
+	<br>
+	<<link [[Buy Eden a strap-on: £80|$passage]]>>
+		<<giftStrapon "Eden" "held">>
+	<</link>>
+<</if>>
+<<if $money gte 8000 and ($loveInterest.primary is "Kylar" or $loveInterest.secondary is "Kylar") and $giftStrapon["Kylar"] is undefined>>
+	<br>
+	<<link [[Buy Kylar a strap-on: £80|$passage]]>>
+		<<giftStrapon "Kylar" "held">>
+	<</link>>
+<</if>>
+<<if  $money gte 8000 and ($loveInterest.primary is "Robin" or $loveInterest.secondary is "Robin") and $giftStrapon["Robin"] is undefined>>
+	<br>
+	<<link [[Buy Robin a strap-on: £80|$passage]]>>
+		<<giftStrapon "Robin" "held">>
+	<</link>>
+<</if>>
+<<if  $money gte 8000 and $sydneyromance is 1 and ($loveInterest.primary is "Sydney" or $loveInterest.secondary is "Sydney") and $adultshopstate is "sirris" and $giftStrapon["Sydney"] is undefined>>
+	<br>
+	<<link [[Buy Sydney a strap-on: £80|$passage]]>>
+		<<giftStrapon "Sydney" "held">>
+	<</link>>
+<</if>>
+<br><br>
+<<link [[Back|Adult Shop]]>><<pass 1>><<unset $shoppurchase>><</link>>
+
+:: Buy strap-on gift
+
+
+<<link [[Back|Adult Shop]]>><<pass 1>><</link>>
+
+:: Buy Toy
+You purchase the <<print $shoppurchase.name>>.
+<br><br>
+<<link [[Back|Adult Shop Toys]]>><<pass 1>><</link>>

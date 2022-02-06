@@ -919,7 +919,7 @@
 <<generateNPCvirginity $NPCList[_n]>>
 
 <!-- Sets females with strap-ons as adjustment-->
-<<if $NPCList[_n].gender is "f" and !_strapIgnore>>
+<<if $NPCList[_n].gender is "f" and !_strapIgnore and !npcHasStrapon(_n)>>
 	<<if random(0, 99) lt $straponchance>>
 		<<npcstrapon _n>>
 	<</if>>
@@ -966,29 +966,104 @@
 <</widget>>
 
 <<widget "npcstrapon">>
-<!-- NG Converts NPCs to strap-on -->
-<<switch $args[0]>>
-<<case 0 1 2 3 4 5>>
-	<<set _xx to $args[0]>>
-<<default>>
-	<span class="red">NPCSTRAPON Error: No NPC Identifier</span>
-	<br><br>
-<</switch>>
+	<!-- NG Converts NPCs to strap-on -->
+	<<switch $args[0]>>
+	<<case 0 1 2 3 4 5>>
+		<<set _xx to $args[0]>>
+	<<default>>
+		<span class="red">NPCSTRAPON Error: No NPC Identifier</span>
+		<br><br>
+	<</switch>>
 
-<<set $NPCList[_xx].penis to "clothed">>
-<<set $NPCList[_xx].vagina to "none">>
-<<set $NPCList[_xx].chest to "clothed">>
-<<set $NPCList[_xx].gender to "m">>
+	<<if !$NPCList[_xx].strapon>>
+		<!-- set .penis to clothed if vagina was clothed, or nude if vagina was nude -->
+		<<if $NPCList[_xx].vagina isnot "none">>
+			<<set $NPCList[_xx].penis to $NPCList[_xx].vagina>>
+			<<set $NPCList[_xx].vagina to "none">>
+			<<set $NPCList[_xx].gender to "m">>
+		<</if>>
 
-<<switch random(1, 4)>>
-<<case 1 2 3>>
-	<<set $NPCList[_xx].penisdesc to "large "+either("black","red","blue","pink","purple","fleshy")+" strap-on cock">>
-	<<set $NPCList[_xx].penissize to 3>>
-<<default>>
-	<<set $NPCList[_xx].penisdesc to "massive "+either("black","red","blue","pink","purple","fleshy")+" strap-on cock">>
-	<<set $NPCList[_xx].penissize to 4>>
-<</switch>>
+		<!-- NPC strap-on descriptors added: 0.3.6.2 -->
+		/* Other names: anal beads, barbed, ribbed, corkscrew, butt plug, unicorn horn, bovine */
+		<<set $_i to $NPCNameList.indexOf($NPCList[_xx].fullDescription)>>
+		<<if $args[1]>>
+			<<run console.log("assign strapon from args", $args[1])>>
+			<<set $_strapon to $args[1]>>
+			<<setNPCStrapon $NPCList[_xx] $_strapon>>
+			<<set $NPCList[_xx].strapon.temp to true>>
+		<<elseif $_i isnot -1 and $NPCName[$_i].strapons and $NPCName[$_i].strapons.length gte 1>>
+			<!-- If the NPC owns at least one strapon, they'll choose one they own and put it on. -->
+			<<run console.log("assign strapon from collection", $NPCName[$_i].strapons)>>
+			<<set $_strapon to clone($NPCName[$_i].strapons.random())>>
+			<<setNPCStrapon $NPCList[_xx] $_strapon>>
+		<<else>>
+			/* Generate random */
+			<<run console.log("generate random strapon")>>
+			<<set _dildoType to either("dildo","penis","beaded dildo","horse cock","knotted cock", "tentacle","dolphin cock","studded cock","fist dildo")>>
+			<<set _straponColor to either("black","red","pink","purple","fleshy","blue","green")>>
+			<<set _bonusdescriptor to either("","","floppy","transparent","sparkly")>>
 
+			<<switch random(1, 6)>>
+			<<case 1>>
+				<<set $NPCList[_xx].penisdesc to _bonusdescriptor +" "+_straponColor+" strap-on "+_dildoType>>
+				<<set $NPCList[_xx].penissize to 2>>
+			<<case 2 3>>
+				<<set $NPCList[_xx].penisdesc to "large "+_straponColor+" strap-on cock">>
+				<<set $NPCList[_xx].penissize to 3>>
+			<<case 4>>
+				<<set $NPCList[_xx].penisdesc to "large "+_straponColor+" strap-on "+_dildoType>>
+				<<set $NPCList[_xx].penissize to 3>>
+			<<case 5>>
+				<<set $NPCList[_xx].penisdesc to "massive "+_straponColor+" strap-on "+_dildoType>>
+				<<set $NPCList[_xx].penissize to 4>>
+			<<default>>
+				<<set $NPCList[_xx].penisdesc to "massive "+_straponColor+" strap-on cock">>
+				<<set $NPCList[_xx].penissize to 4>>
+			<</switch>>
+			<!-- Set up like this for futureproofing -->
+			<<set $NPCList[_xx].strapon to {state:"worn",color:_straponColor,description:$NPCList[_xx].penisdesc,size:$NPCList[_xx].penissize}>>
+		
+			<<if $_i isnot -1>>
+				<!-- Give this named npc this strapon temporarily so that they will use it in future appearances (note: they are removed in the <<day>> widget) -->
+				<<set $NPCList[_xx].strapon.temp to true>>
+				<<set $randomNNPCStraponsToClear to true>>
+				<<if !$NPCName[$_i].strapons or $NPCName[$_i].strapons.length is 0>>
+					<<set $NPCName[$_i].strapons to [$NPCList[_xx].strapon]>>
+				<<else>>
+					<!-- This may not make sense? Why would a strapon be randomly generated if they already had one? -->
+					<<run console.debug("Random strapon added to "+$NPCName[$_i].nam+"'s strapon collection when they already had one")>>
+					<<set $NPCName[$_i].strapons.push($NPCList[_xx].strapon)>>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<set $NPCList[_xx].strapon.state to "worn">>
+	<</if>>
+<</widget>>
+
+<<widget "generateNewStrapon">>
+	<<set $_straponSize to $args[0]>>
+	<<set $_straponSizeDesc to {2: "", 3: "large", 4: "massive"}[$args[0]]>>
+	<<set $_straponColour to $args[1]>>
+	<<set $_straponShape to $args[2]>>
+	<<set $_modifier to ($args[3] ? $args[3] : "")>>
+	<<set $_straponDesc to `${$_straponSizeDesc} ${$_modifier} ${$_straponColour} strap-on ${$_straponShape}`.trim().replace(/\s\s+/, " ")>>
+	<<set _newStrapon to {
+		color: $_straponColour,
+		size: $_straponSize,
+		description: $_straponDesc,
+	}>>
+<</widget>>
+
+<<widget "setNPCStrapon">>
+	<<if $args[0] and $args[1]>>
+		<<set $_npc to $args[0]>>
+		<<set $_strapon to $args[1]>>
+
+		<<set $_npc.strapon to clone($_strapon)>>
+		<<set $_npc.strapon.state to "worn">>
+		<<set $_npc.penisdesc to $_npc.strapon.description>>
+		<<set $_npc.penissize to $_npc.strapon.size>>	
+	<</if>>
 <</widget>>
 
 <<widget "generate_npc_traits">>

@@ -86,6 +86,7 @@
 <<effectspenwhack>>
 <<effectsshacklewhack>>
 <<effectshandsfreeface>>
+<<effectsdildowhack>>
 
 <<if $bodyaction is "doggy">>
 	<<set $bodyaction to 0>>
@@ -2130,12 +2131,17 @@
 
 <<if $mouthaction is "bite" and $NPCList[$mouthtarget].penis is "mouth">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "bite">><<personselect $mouthtarget>>
-	You bite down on the penis, <<he>> <<if $enemytype is "man">>yelps<<elseif $enemytype is "beast">>growls<<else>>shrieks<</if>> and recoils in agony.
-	<<set $NPCList[$mouthtarget].penis to 0>><<set $NPCList[$mouthtarget].location.genitals to 0>>
-	<<defiance 20 $mouthtarget>><<attackstat>><<control 15>><<set $mouthuse to 0>><<set $penisbitten to 1>><<set $mouthstate to 0>>
-	<<if $transformationParts.traits.fangs isnot "disabled">>
-		<<defiance 20 $mouthtarget>><<defiance 20 $mouthtarget>>
-		You lick your fangs clean.
+	You bite down on <<his>> <<npcPenisSimple $mouthtarget>>,
+	<<if npcHasStrapon($mouthtarget)>>
+		but it has no effect.
+	<<else>>
+		<<he>> <<if $enemytype is "man">>yelps<<elseif $enemytype is "beast">>growls<<else>>shrieks<</if>> and recoils in agony.
+		<<set $NPCList[$mouthtarget].penis to 0>><<set $NPCList[$mouthtarget].location.genitals to 0>>
+		<<defiance 20 $mouthtarget>><<attackstat>><<control 15>><<set $mouthuse to 0>><<set $penisbitten to 1>><<set $mouthstate to 0>>
+		<<if $transformationParts.traits.fangs isnot "disabled">>
+			<<defiance 20 $mouthtarget>><<defiance 20 $mouthtarget>>
+			You lick your fangs clean.
+		<</if>>
 	<</if>>
 <</if>>
 
@@ -2799,6 +2805,32 @@
 	<</if>>
 <</if>>
 
+<<if $mouthaction is "ask" and $askAction is "wearStrapon">>
+	<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
+	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
+		<<wheeze "ask <<him>> to wear <<his>> strap-on">><<meek 1>>
+	<<else>>
+		<<brat 5>>
+		<<set $mouthactiondefault to "rest">>
+		You ask <<him>> to wear <<his>> strap-on.
+		<<if ($npc[$npcrow.indexOf(_n)] is "Eden"    and $NPCName[$NPCNameList.indexOf("Eden")].love lte 100)
+		  or ($npc[$npcrow.indexOf(_n)] is "Whitney" and $NPCName[$NPCNameList.indexOf("Whitney")].love lte 10)>>
+			<<print either("I'll do what I want, bitch.","Shut up slut, I'm in control here.")>>
+			<<violence 5>><<brat 2>>
+		<<else>>
+			<<npcDonStrapon $mouthtarget>>
+		<</if>>
+	<</if>>
+<</if>>
+
+<<widget "npcDonStrapon">>
+	<<set $_target to $args[0]>>
+	<<personselect $_target>>
+	<<He>> nods and moves to don <<his>> strap-on.
+	<<npcstrapon $_target>>
+	<<set $NPCList[$_target].penis to "strap-on">>
+<</widget>>
+
 /*Stalked actions */
 <<if !$stalk_end>>
 	<<if $mouthaction is "up">>
@@ -2932,7 +2964,7 @@
 		<<set $vaginaaction to 0>><<meek 5 $vaginatarget>><<analskilluse>><<set $vaginaactiondefault to "penisanus">>
 		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $analskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
 			<<personselect $vaginatarget>>
-			<span class="blue">You give your <<bottom>> a little wiggle, <<combatperson>> responds to the provocation and moves <<his>> penis in front of your butt.</span>
+			<span class="blue">You give your <<bottom>> a little wiggle, <<combatperson>> responds to the provocation and moves <<his>> <<npcPenisSimple $vaginatarget>> in front of your butt.</span>
 			<<if $NPCList[$vaginatarget].type is "plant" and $NPCList[$vaginatarget].penissize gte 4>>
 				<span class="red">Something about it scares you.</span>
 			<</if>>
@@ -3915,11 +3947,11 @@
 		<<personselect $penistarget>>
 		<<if $NPCList[$penistarget].vagina is "otheranusfrot">>
 			<<set $NPCList[$penistarget].vagina to "otheranusentrance">>
-			<span class="blue">You rub your penis between <<hisselect $penistarget>> cheeks, but <<he>> would prefer the main course and presses <<his>> anus against your tip.</span>
+			<span class="blue">You rub your <<cock>> between <<hisselect $penistarget>> cheeks, but <<he>> would prefer the main course and presses <<his>> anus against your tip.</span>
 		<</if>>
 		<<if $NPCList[$penistarget].penis is "otheranusfrot">>
 			<<set $NPCList[$penistarget].penis to "otheranusentrance">>
-			<span class="blue">You rub your penis between <<hisselect $penistarget>> cheeks, but <<he>> would prefer the main course and presses <<his>> anus against your tip.</span>
+			<span class="blue">You rub your <<cock>> between <<hisselect $penistarget>> cheeks, but <<he>> would prefer the main course and presses <<his>> anus against your tip.</span>
 		<</if>>
 	<</if>>
 <</if>>

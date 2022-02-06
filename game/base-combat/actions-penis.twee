@@ -28,7 +28,7 @@
 <</widget>>
 
 <<widget "actionspenistovaginanew">>
-<<if !$worn.genitals.type.includes("chastity")>>
+<<if !$worn.genitals.type.includes("chastity") or playerHasStrapon()>>
 	<<set $_target to $NPCList[$penistarget]>>
 	<<if $_target.vagina is 0>>
 		<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore>>
@@ -53,12 +53,14 @@
 		<<set _pp to "">>
 		<<if $_target.chastity.penis.includes("chastity")>>
 			<<set _pp to "caged penis">>
-		<<elseif $_target.penisdesc.includes("strap-on")>>
+		<<elseif npcHasStrapon($penistarget)>>
 			<<set _pp to "strap-on cock">>
 		<<else>>
 			<<set _pp to "penis">>
 		<</if>>
-		<<if $worn.genitals.type.includes("chastity")>>
+		<<if playerHasStrapon()>>
+			<<set _penisaction["Push your strap-on against " + $_target.pronouns.his + " " + _pp] to "penistopenisfuck">>
+		<<elseif $worn.genitals.type.includes("chastity")>>
 			<<set _penisaction["Push your chastity against " + $_target.pronouns.his + " " + _pp] to "penistopenisfuck">>
 		<<else>>
 			<<set _penisaction["Push your penis against " + $_target.pronouns.his + " " + _pp] to "penistopenisfuck">>
@@ -75,6 +77,8 @@
 	<<elseif $_target.stance isnot "topface" and ($enemytype isnot "man" or ($_target.location.genitals is 0 and $_target.location.head isnot "genitals"))>>
 		<<if $_target.chastity.penis.includes("chastity")>>
 			<<set _penisaction["Frot " + $_target.pronouns.his + " " + $_target.chastity.penis] to "penistopenis">>
+		<<elseif npcHasStrapon($penistarget)>>
+			<<set _penisaction["Frot " + $_target.pronouns.his + " strap-on"] to "penistopenis">>
 		<<else>>
 			<<set _penisaction["Frot " + $_target.pronouns.his + " penis"] to "penistopenis">>
 		<</if>>
@@ -155,7 +159,7 @@
 
 <<widget "actionspenistoanusnew">>
 <<set $_target to $NPCList[$penistarget]>>
-<<if !$worn.genitals.type.includes("chastity")>>
+<<if !$worn.genitals.type.includes("chastity") or playerHasStrapon()>>
 	<<if $_target.stance isnot "topface">>
 		<<if $_target.vagina is 0 or $_target.penis is 0>>
 			<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore>>
@@ -201,7 +205,7 @@
 <</widget>>
 
 <<widget "actionspenisvaginafucknew">>
-<<if !$worn.genitals.type.includes("chastity") and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+<<if (!$worn.genitals.type.includes("chastity") or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
 	<<set $_target to $NPCList[$penistarget]>>
 	<<if $_target.vagina is "penisentrance" or $_target.vagina is "penisimminent">>
 		<<if $consensual is 1 and (($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore) or $_target.chastity.vagina.includes("chastity")>>
@@ -243,7 +247,7 @@
 <</widget>>
 
 <<widget "actionspenisanusfucknew">>
-<<if !$worn.genitals.type.includes("chastity") and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+<<if (!$worn.genitals.type.includes("chastity") or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
 	<<set $_target to $NPCList[$penistarget]>>
 	<<if $_target.vagina is "otheranusentrance" or $_target.vagina is "otheranusimminent" or $_target.penis is "otheranusentrance" or $_target.penis is "otheranusimminent">>
 		<<if $_target.chastity.anus.includes("shield") or ($consensual is 1 and !$promiscuityIgnore and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74)>>
@@ -457,7 +461,7 @@
 	<<if random(0,1) is 1 or ($penisWetness + ($penileskill / 10)) gte ($penissize * 15) + random(1, 40)>>
 		<<set $_target to $NPCList[$penistarget]>>
 		<<set $_target.vagina to "penis">><<set $penisactiondefault to "cooperate">>
-		<<if $player.virginity.penile isnot true>>
+		<<if $player.virginity.penile isnot true or playerHasStrapon()>>
 			<<penis_lube_text>> <span class="pink">you <<peniletext>> thrust deep into <<combatpersons>> pussy.</span>
 			<<sex 30 $penistarget>>
 		<<elseif $player.virginity.penile is true>>
@@ -492,7 +496,7 @@
 			<<set $_target.penis to "otheranus">>
 		<</if>>
 		<<set $penisactiondefault to "otheranuscooperate">>
-		<<if $player.virginity.penile isnot true>>
+		<<if $player.virginity.penile isnot true or playerHasStrapon()>>
 			<<penis_lube_text>> <span class="pink">you <<peniletext>> thrust deep into <<combatpersons>> ass.</span>
 			<<sex 30 $penistarget>>
 		<<elseif $player.virginity.penile is true>>
@@ -529,7 +533,7 @@
 			<<if $rightarm is "coverpenis">>
 				<<set $rightarm to 0>>
 			<</if>>
-			<span class="lblue">You caress <<combatpersons>> <<npcPenisSimple $penistarget>> with your penis<<if $worn.genitals.type.includes("chastity")>>, through your $worn.genitals.name<</if>>.</span>
+			<span class="lblue">You caress <<combatpersons>> <<npcPenisSimple $penistarget>> with your <<cock>><<if $worn.genitals.type.includes("chastity")>>, through your $worn.genitals.name<</if>>.</span>
 			<<if $enemytype is "beast">>
 				<<set $_target.stance to "top">>
 			<</if>>
