@@ -60,7 +60,7 @@ setup.pills = [
 	},
 	{
 		name:'breast reduction',
-		description: 'Each pill contains 500mg of Praberrhol-NG2, a derived molecule crafted specifically to attach to the triglyceride present in your breast and dissolve them over time.',
+		description: 'Each pill contains 500mg of Praberrhol (NG2), a derived molecule crafted specifically to attach to the triglyceride present in your breast and dissolve them over time.',
 		onTakeMessage: 'You take the pills intended to reduce your breasts\' size. You hope it will be as effective as advertised.',
 		warning_label: 'Warning: Severe side effects upon exceeding the maximum doses per day. Refer to your doctor if in doubts. Not to be associated with any other hormonal treatment.',
 		autoTake: function(){return V.sexStats.pills["pills"][this.name].autoTake},
@@ -77,7 +77,7 @@ setup.pills = [
 	},
 	{
 		name:'breast growth',
-		description: 'An estrogen therapy-pill containing 1mg of estradiol. Aiming at increasing the growth rate of breast',
+		description: 'An estrogen therapy-pill. The 5mg of Dipardyn present in it will help your body naturally start secreting the hormones in cause of breasts growth.',
 		onTakeMessage: 'You take the pills intended to boost your breasts\' growth. You hope it will be as effective as advertised.',
 		warning_label: 'Warning: Severe side effects upon exceeding the maximum doses per day. Refer to your doctor if in doubts. Not to be associated with any other hormonal treatment.',
 		autoTake: function(){return V.sexStats.pills["pills"][this.name].autoTake},
