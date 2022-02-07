@@ -1655,7 +1655,7 @@
 	<<set $makeup.owned.mascara = []>>
 	<<set $makeup.lipstick = 0>>
 	<<set $makeup.eyeshadow = 0>>
-	<<set $makeup.eyelenses = 0>>
+	<<set $makeup.eyelenses = {"left":0, "right":0}>>
 	<<set $makeup.mascara = 0>>
 	<<set $makeup.pbcolour = 0>>
 	<<set $makeup.browscolour = 0>>
@@ -3021,15 +3021,27 @@
 		<<set $npcVirginityChance to 50>>
 		<<set $npcVirginityChanceAdult to 10>>
 	<</if>>
-	<<if _version lte 30701>> <!-- for v0.3.7.1 and earlier versions -->
+	<!-- for v0.3.7.1 and earlier versions -->
+	<<if _version lte 30701>>
 		<<run window.patchCorruptLensesColors()>> /* custom contact lenses fix corrupt colours */
 	<</if>>
-	<<if _version lte 30704>> <!-- for v0.3.7.4 and earlier versions -->
+	<!-- for v0.3.7.4 and earlier versions -->
+	<<if _version lte 30704>>
 		<<if ndef $pillsTakenOn>>
 			<<set $pillsTakenOn to (V.monthday.toString() + V.month + V.year.toString())>>
 		<</if>>
 		<<if ndef $famemodel>>
 			<<set $famemodel to 0>>
+		<</if>>
+		<<if ndef $heterochromia>>
+			<<set $heterochromia to 0>>
+			<<if $cat > 6>>
+				<<set $cat to 6>>
+			<</if>>
+			<<run window.restructureEyeColourVariable()>> /* update V.eyecolour and V.makeup.eyelenses to adapt to the new system allowing to set a different eye colour for each eye*/
+			<<if V.passage == "Pharmacy Select Custom Lenses">>
+				<<run Engine.play("Pharmacy Ask Custom Lenses")>>
+			<</if>>
 		<</if>>
 		<<if $robinDaily is undefined>> <!-- v0.3.7.4 Robindaily update -->
 			<<set $robinDaily to {}>>

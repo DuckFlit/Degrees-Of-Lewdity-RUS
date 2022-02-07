@@ -4,6 +4,7 @@
  * place the widgets that need to be run inside effects array
  * if you feel lost just ask away :)
  * take_condition == 1 means the "Take Pill" button is not greyed out and is clickable
+ * display_condition controls wether or not pill should be displayed in the pill menu
 */
 
 setup.pills = [
@@ -77,7 +78,7 @@ setup.pills = [
 	},
 	{
 		name:'breast growth',
-		description: 'An estrogen therapy-pill. The 5mg of Dipardyn present in it will help your body naturally start secreting the hormones in cause of breasts growth.',
+		description: 'An hormonal mRNA therapy-pill. The 5mg of Dipardyn present aim at triggering natural secretion of the specific hormones in cause in breasts growth. While the mRNA will help have your cells produce a new kind of hormone increasing the tissue production in your breasts, and their capabilities to store fat, effectively making your breasts grow faster.',
 		onTakeMessage: 'You take the pills intended to boost your breasts\' growth. You hope it will be as effective as advertised.',
 		warning_label: 'Warning: Severe side effects upon exceeding the maximum doses per day. Refer to your doctor if in doubts. Not to be associated with any other hormonal treatment.',
 		autoTake: function(){return V.sexStats.pills["pills"][this.name].autoTake},

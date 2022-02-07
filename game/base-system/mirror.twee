@@ -1218,7 +1218,7 @@ __Makeup__
 	<<set $makeup.lipstick to 0>>
 	<<set $makeup.eyeshadow to 0>>
 	<<set $makeup.mascara to 0>>
-	<<set $makeup.eyelenses to 0>>
+	<<set $makeup.eyelenses = {"left":0, "right":0}>>
 <</link>> |
 <<link [["Randomise"|$passage]]>>
 	<<for $_i to 0; $_i lt _makeupNames.length; $_i++>>
@@ -1276,11 +1276,17 @@ __Makeup__
 	<<if $makeup.owned.eyelenses.length == 0 and $makeup.owned.custom_eyelenses.length == 0>>
 		You don't own any contact lenses.<br>
 	<<else>>
+		<<set _contact_eye_selected to "Both">>
 		Wear contact lenses:<br> /* NON CUSTOMIZED ONES */
-		<<if $makeup.eyelenses != 0>>
+		Select eye : <<listbox "_contact_eye_selected" autoselect>>
+			<<option "Both">>
+			<<option "Left eye">>
+			<<option "Right eye">>
+		<</listbox>><br>
+		<<if $makeup.eyelenses.left != 0 || $makeup.eyelenses.right != 0>>
 			<span class="no-numberify">
 			<<link "None">>
-			<<set $makeup.eyelenses = 0>>
+			<<set $makeup.eyelenses = {"left":0, "right":0}>>
 			<<run Engine.show()>>
 			<</link>></span>
 			<<print " | ">>
@@ -1289,19 +1295,31 @@ __Makeup__
 			<<capture _colour>>
 			<span class="capitalize no-numberify">
 			<<link _colour>>
-			<<set $makeup.eyelenses = _colour>>
+			<<if _contact_eye_selected == "Both">>
+				<<set $makeup.eyelenses = {"left":_colour, "right":_colour}>>
+			<<elseif _contact_eye_selected == "Left eye">>
+				<<set $makeup.eyelenses["left"] = _colour>>
+			<<elseif _contact_eye_selected == "Right eye">>
+				<<set $makeup.eyelenses["right"] = _colour>>
+			<</if>>
 			<<run Engine.show()>>
 			<</link>></span>
-			<span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes colour-eye"></span></span>
+				<span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes left-iris"></span></span>
 			<<print " | ">>
 			<</capture>>
 		<</for>>
 		<br>
 				Custom contact lenses:<br> /* CUSTOMIZED ONES */
-		<<if $makeup.eyelenses != 0>>
+		<<set _custom_eye_selected to "Both">>
+		Select eye : <<listbox "_custom_eye_selected" autoselect>>
+			<<option "Both">>
+			<<option "Left eye">>
+			<<option "Right eye">>
+		<</listbox>><br>
+		<<if $makeup.eyelenses.left != 0 || $makeup.eyelenses.right != 0>>
 			<span class="no-numberify">
 			<<link "None">>
-			<<set $makeup.eyelenses = 0>>
+			<<set $makeup.eyelenses = {"left":0, "right":0}>>
 			<<run Engine.show()>>
 			<</link>></span>
 			<<print " | ">>
@@ -1317,7 +1335,13 @@ __Makeup__
 			<span class="capitalize no-numberify">
 			<<set _colour_name_with_space = window.colorNameTranslate(_colour, "spaced name")>>
 			<<link _colour_name_with_space>>
-			<<set $makeup.eyelenses = _colour>>
+			<<if _custom_eye_selected == "Both">>
+				<<set $makeup.eyelenses = {"left":_colour, "right":_colour}>>
+			<<elseif _custom_eye_selected == "Left eye">>
+				<<set $makeup.eyelenses["left"] = _colour>>
+			<<elseif _custom_eye_selected == "Right eye">>
+				<<set $makeup.eyelenses["right"] = _colour>>
+			<</if>>
 			<<run Engine.show()>>
 			<</link>></span>
 			<span class="eye-custom"><span @style="'background:'+_background_colour" class="colour-sample"></span></span>

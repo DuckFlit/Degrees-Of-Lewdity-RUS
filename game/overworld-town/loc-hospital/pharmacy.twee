@@ -75,18 +75,21 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 	You already own lenses of the following colours:
 	<span style="display: inline-block;">
 	<<for _i, _colour range $makeup.owned.eyelenses>>
-		<span @class="'eye-' + _colour.replace(/ /g, '-')"><span class="colour-eye" style="color:#6E4E11;">_colour</span></span>
+		<span @class="'eye-' + _colour.replace(/ /g, '-')"><span class="left-iris" style="color:#6E4E11;">_colour</span></span>
 		<<if _i < $makeup.owned.eyelenses.length - 1 or $makeup.owned.custom_eyelenses.length > 0>>, <</if>>
 	<</for>>
-	<<for _i = 0; _i < $makeup.owned.custom_eyelenses.length; _i++>>
-		<<set _colour to window.colorNameTranslate(V.makeup.owned.custom_eyelenses[_i], "spaced name")>>
+	<<set _unique_temp_custom_eyelenses to 0>>
+	<<script>>if (V.makeup.owned.custom_eyelenses.length > 0)T.unique_temp_custom_eyelenses = [...new Set(V.makeup.owned.custom_eyelenses)];<</script>>
+	<<for _i = 0; _i < T.unique_temp_custom_eyelenses.length; _i++>>
+		<<set _colour to window.colorNameTranslate(T.unique_temp_custom_eyelenses[_i], "spaced name")>>
 		<<for _e = 0; _e < $custom_eyecolours.length; _e++>>
 			<<if $custom_eyecolours[_e].name == _colour>>
 				<<set _background_colour to clone(V.custom_eyecolours[_e].canvasfilter.blend)>>
 				<span class="eye-custom"><span @style="'color:'+_background_colour">_colour</span></span>
+				<<break>>
 			<</if>>
 		<</for>>
-		<<if _i < $makeup.owned.custom_eyelenses.length - 1>>, <</if>>
+		<<if _i < T.unique_temp_custom_eyelenses.length - 1>>, <</if>>
 	<</for>>.
 	</span>
 <</if>>
@@ -107,34 +110,38 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 
 	<<if $money gte 20000>>
 		<<link [[Buy and send home|Pharmacy Lenses]]>><<set $money -= 20000>><<set $makeup.owned.eyelenses.push(_lensChoice)>><</link>><br>
-		<<link [[Buy and wear|Pharmacy]]>><<set $money -= 20000>><<set $makeup.owned.eyelenses.push(_lensChoice)>><<set $makeup.eyelenses = _lensChoice>><</link>><br>
+		<<link [[Buy and wear|Pharmacy]]>><<set $money -= 20000>><<set $makeup.owned.eyelenses.push(_lensChoice)>><<set $makeup.eyelenses = {"left":_lensChoice, "right":_lensChoice}>><</link>><br>
 	<<else>>
 		<span class="purple">You can't afford the purchase.</span><br>
 	<</if>>
 <</if>>
-<<if V.left_before_nurse_returned == 2>>
-	"Who do we have here," says the nurse nervously laughing, "Get out, you wasted enough of my time already. Try again tomorrow if you're done with your little game"
-	<<set V.left_before_nurse_returned to 3>>
-<<elseif V.left_before_nurse_returned > 2>>
-<<else>>
-	<<link [[Ask for custom-coloured contact ones|Pharmacy Ask Custom Lenses]]>><</link>><br>
-<</if>>
+<<link [[Ask for custom-coloured contact ones|Pharmacy Ask Custom Lenses]]>><</link>><br>
 <<link [[Go back|Pharmacy]]>><</link>>
 
 :: Pharmacy Ask Custom Lenses
-<<if V.custom_lenses_already_ordered is 1>>
-	"I hope the ones you ordered last time please you," the nurse asks, "You know the prices, <<printmoney 45000>> for the product, plus <<printmoney 5000>> for the delivery"
+<<if V.left_before_nurse_returned > 2>>
+	"Who do we have here," says the nurse a rictus on <<his>> face, "Get out, you wasted enough of my time already. Try again tomorrow if you're done with your little game"
+	<br><br><<link [[Leave|Pharmacy Lenses]]>><</link>>
 <<else>>
-	"Not pleased with the ones available?", the nurse says
-	"I could place an order for ones with a colour of your choosing, but this will double the cost. Count about <<printmoney 45000>> for the product, plus <<printmoney 5000>> for the delivery which takes about a day."
+	<<if V.custom_lenses_already_ordered is 1>>
+		"I hope the ones you ordered last time please you," the nurse asks, "You know the prices, <<printmoney 45000>> for the product, plus <<printmoney 5000>> for the delivery. <<printmoney 95000>> total if you pick two different colours for each eye"
+	<<else>>
+		"Not pleased with the ones available?", the nurse asks
+		"I could place an order for ones with a colour of your choosing, but this will double the cost. Count about <<printmoney 45000>> for the product, plus <<printmoney 5000>> for the delivery which takes about a day. If you wish to choose two different colours for each eye, it will be <<printmoney 95000>> total"
+	<</if>>
+	<br><br>
+	<<if $money gte 50000>>
+		<<link [[Choose your custom colour|Pharmacy Select Custom Lenses]]>><<set $pharmacy_order_colours to 1>><</link>><br>
+	<<else>>
+		<span class="purple">You can't afford the purchase.</span><br>
+	<</if>>
+	<<if $money gte 95000>>
+		<<link [[Choose a different colour for each eye|Pharmacy Select Custom Lenses]]>><<set $pharmacy_order_colours to 2>><</link>><br>
+	<<elseif $money gte 50000>>
+		<span style="color:#566a9b; cursor:pointer">Choose a different colour for each eye</span> <span class="purple">You can't afford to purchase.</span><br>
+	<</if>>
+	<<link [[Go back|Pharmacy Lenses]]>><</link>>
 <</if>>
-<br><br>
-<<if $money gte 45000>>
-	<<link [[Choose your custom colour|Pharmacy Select Custom Lenses]]>><</link>><br>
-<<else>>
-	<span class="purple">You can't afford the purchase.</span><br>
-<</if>>
-<<link [[Go back|Pharmacy Lenses]]>><</link>>
 
 :: Pharmacy Select Custom Lenses
 "Here," <<he>> says, handing you a tablet. "You can use the colour palette to help you. Pick any colour you like and I'll place the order for you."
@@ -143,7 +150,14 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 <<set _color_lenses_temp>> <!-- used inside colorWheelContactLenses() --> 
 <<run colorWheelContactLenses()>>
 <br><br>
-<<link [[Order it|Pharmacy Order Custom Lenses]]>><<set $money -= 50000>><<set V.custom_lenses_already_ordered to 1>><<run V.lenses_ordered.push([window.colorNamer(T.color_lenses_temp[0].hexString), V.monthday.toString() + V.month + V.year.toString(), [T.color_lenses_temp[0].hexString, T.color_lenses_temp[0].hsl["l"] / 500]])>><</link>>
+<<link [[Order it|Pharmacy Order Custom Lenses]]>>
+	<<set $money -= 50000>><<set V.custom_lenses_already_ordered to 1>>
+	<<run V.lenses_ordered.push([window.colorNamer(T.color_lenses_temp[0].hexString), V.monthday.toString() + V.month + V.year.toString(), [T.color_lenses_temp[0].hexString, T.color_lenses_temp[0].hsl["l"] / 500]])>>
+	<<if V.pharmacy_order_colours == 2>>
+		<<set $money -= 45000>>
+		<<run V.lenses_ordered.push([window.colorNamer(T.color_lenses_temp[1].hexString), V.monthday.toString() + V.month + V.year.toString(), [T.color_lenses_temp[1].hexString, T.color_lenses_temp[1].hsl["l"] / 500]])>>
+	<</if>>
+<</link>>
 <br>
 <<link [[Go back|Pharmacy]]>><</link>>
 

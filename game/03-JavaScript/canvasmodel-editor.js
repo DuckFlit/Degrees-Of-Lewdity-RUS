@@ -32,11 +32,22 @@ Macro.add('canvasColoursEditor', {
 				exportPrefix: 'setup.colours.hair = ',
 				exportSuffix: ';'
 			}, {
-				name: 'Eyes',
+				name: 'Left eye',
 				colours: setup.colours.eyes,
 				default: setup.colours.eyes_default,
 				setVars(variable) {
-					V.eyecolour = variable;
+					V.leftEyeColour = variable;
+					redrawImg();
+				},
+				exportPrefix: 'setup.colours.eyes = ',
+				exportSuffix: ';'
+			},
+			{
+				name: 'Right eye',
+				colours: setup.colours.eyes,
+				default: setup.colours.eyes_default,
+				setVars(variable) {
+					V.rightEyeColour = variable;
 					redrawImg();
 				},
 				exportPrefix: 'setup.colours.eyes = ',

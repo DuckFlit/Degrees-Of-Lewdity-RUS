@@ -414,7 +414,7 @@ function hairdressersResetAlt() {
 DefineMacroS("hairdressersResetAlt", hairdressersResetAlt);
 
 function browsDyeReset() {
-	jQuery(document).on('change', '.macro-listbox', function (e) {
+	jQuery(document).on('change', '#listbox-browsdyeoption', function (e) {
 		new Wikifier(null, '<<replace #browsColourPreview>><<browsColourPreview>><</replace>>');
 	});
 	return "";
