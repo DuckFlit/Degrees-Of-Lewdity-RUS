@@ -7,7 +7,7 @@
     You could always run or hide, but failing will increase the chance of being assaulted. Looking over your shoulder will give an idea of how hard they are to outrun or deceive.
     <br><br></i>
 <</if>>
-<<if _n is 0 and $stalk_end isnot "escaped" and $stalk_end isnot "hide">>/*Only triggers on first NPC in a group. */
+<<if _n is 0 and $stalk_end isnot "escaped" and $stalk_end isnot "hide" and $stalk_end isnot "confront">>/*Only triggers on first NPC in a group. */
     <<if $NPCList[_n].legs is "walk">>
         <<set $NPCList[_n].distance -= 1>>
         <<if $NPCList[_n].distance is 3>>
@@ -32,24 +32,46 @@
         <<if !$stalk_end>>
             <<if $NPCList[_n].legs is "run" or $NPCList[0].bold gte random(1, 1000)>>
                 <span class="red">You are accosted.</span>
-                <br><br>
-                <<events_stalk>>
+				<<if $npcrow.includes(0)>>
+					<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
+					<<if !$stalk_assess>>
+						<span class="pink">It's <<print $npc[$npcrow.indexOf(0)]>>.</span>
+					<</if>>
+					<br><br>
+					<<events_stalk_nnpc $NPCList[0].fullDescription>>
+				<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+					<<stalk_nnpc_text_attack "Wraith">>
+					<<if !$stalk_assess>>
+						<span class="red">A<<if $wraith.seen gte 3>> familiar<</if>> pale figure stares down at you, eyes flashing <<wraithEyes>>.</span>
+					<</if>>
+					<br><br>
+					<<events_stalk_nnpc "Wraith">>
+				<<else>>
+					<br><br>
+					 <<events_stalk>>
+				<</if>>
             <<else>>
-                A <<person1>><<person>>
-                <<switch $enemyno>>
-                <<case 6>>
-                    and five others pass by. <span class="teal">They don't glance at you.</span>
-                <<case 5>>
-                    and four others pass by. <span class="teal">They don't glance at you.</span>
-                <<case 4>>
-                    and three others pass by. <span class="teal">They don't glance at you.</span>
-                <<case 3>>
-                    and two others pass by. <span class="teal">They don't glance at you.</span>
-                <<case 2>>
-                    and <<person2>><<person>> pass by. <span class="teal">They don't glance at you.</span>
-                <<default>>
-                    passes by. <span class="teal"><<He>> doesn't glance at you.</span>
-                <</switch>>
+				<<if $npcrow.includes(0)>>
+					<<stalk_nnpc_text_passed $NPCList[0].fullDescription>>
+				<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+					<<stalk_nnpc_text_passed "Wraith" "passed">>
+				<<else>>
+					A <<person1>><<person>>
+					<<switch $enemyno>>
+					<<case 6>>
+						and five others pass by. <span class="teal">They don't glance at you.</span>
+					<<case 5>>
+						and four others pass by. <span class="teal">They don't glance at you.</span>
+					<<case 4>>
+						and three others pass by. <span class="teal">They don't glance at you.</span>
+					<<case 3>>
+						and two others pass by. <span class="teal">They don't glance at you.</span>
+					<<case 2>>
+						and <<person2>><<person>> pass by. <span class="teal">They don't glance at you.</span>
+					<<default>>
+						passes by. <span class="teal"><<He>> doesn't glance at you.</span>
+					<</switch>>
+				<</if>>
                 <<set $stalk_end to "passed">>
             <</if>>
         <</if>>
@@ -530,97 +552,121 @@
 <</widget>>
 
 <<widget "events_stalk">>
-<<switch $enemyno>>
-<<case 1>>
-    <<set _rng to random(1, 100)>>
-    <<if $worn.upper.name is "large towel" and $worn.upper.set is $worn.lower.set>>
-        A <<person>> <span class="purple">snatches the towel from your body,</span> <span class="pink">exposing your <<undertop>> and <<undies>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
-        <<set $stalk_clothes to $worn.upper.name>>
-        <<upperstrip>>
-        <<exposure>>
-        <<stalk_pursuit>>
-        <br><br>
-    <<elseif $worn.upper.name is "large towel">>
-        A <<person>> <span class="purple">snatches the towel from your chest,</span> <span class="pink">exposing your <<undertop>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
-        <<set $stalk_clothes to $worn.upper.name>>
-        <<upperstrip>>
-        <<exposure>>
-        <<stalk_pursuit>>
-        <br><br>
-    <<elseif $worn.lower.name is "large towel bottom">>
-        A <<person>> <span class="purple">snatches the towel from your waist,</span> <span class="pink">exposing your <<undies>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
-        <<set $stalk_clothes to $worn.lower.name>>
-        <<lowerstrip>>
-        <<exposure>>
-        <<stalk_pursuit>>
-        <br><br>
-    <<elseif $worn.upper.name is "towel top">>
-        A <<person>> <span class="purple">snatches the towel from your chest,</span> <span class="pink">exposing your <<undertop>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
-        <<set $stalk_clothes to $worn.upper.name>>
-        <<upperstrip>>
-        <<exposure>>
-        <<stalk_pursuit>>
-        <br><br>
-    <<elseif $worn.lower.name is "towel skirt">>
-        A <<person>> <span class="purple">snatches the towel from your waist,</span> <span class="pink">exposing your <<undies>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
-        <<set $stalk_clothes to $worn.lower.name>>
-        <<lowerstrip>>
-        <<exposure>>
-        <<stalk_pursuit>>
-        <br><br>
-    <<elseif _rng gte 81 and $exposed lt 2>>
-        You hear a <<person>> behind you. <<catcall>> Before you can respond, a pair of intruding hands grasp your clothes!
-        <<npcstrip>>
-        <<npcidlegenitals>>
-        <<stalk_attack>>
-        <br><br>
-    <<elseif $leftarm is "bound" or $rightarm is "bound">>
-	    Someone grabs your bound arms from behind. "All wrapped up like a present," says a <<person>> as <<he>> swivels you around. "How could I resist?"
-        <<stalk_attack>>
-        <br><br>
-    <<else>>
-        You hear a <<person>> behind you. <<catcall>> Before you can respond, a pair of intruding hands grasp you!
-        <<stalk_attack>>
-        <br><br>
-    <</if>>
-<<case 2>>
-    You hear a <<person1>><<person>> behind you. Before you can respond, <<he>> seizes you by the arms and mouth.
-    <<if $location is "alley">>
-        <<He>> drags you into a shadowed alley, where <<his>> friend awaits.
-    <<elseif $location is "town">>
-        <<He>> drags you into an alley, where <<his>> friend awaits.
-    <<else>>
-        <<He>> drags you into the shadows, where <<his>> friend awaits.
-    <</if>>
-    <<stalk_attack>>
-    <<set $leftarm to "grappled">><<set $rightarm to "grappled">><<hand_gag 0 left>><<set $NPCList[0].righthand to "arms">>
-    <br><br>
-<<case 3>>
-    <<if $worn.upper.name is "large towel" or $worn.lower.name is "large towel bottom" or $worn.upper.name is "towel top" or $worn.lower.name is "towel skirt">>
-        A <<person1>><<person>> steps in front of you, while two other figures move in from behind, penning you between them. "That's an odd thing to walk around in during the night," says the <<person1>><<person>> as <<he>> strokes your towel. "I think I know exactly what you want."
-        <br><br>
-        <<set $combat_end_text to '"Dress like a slut, get treated like one," says the <<person>>. They leave you lying on the pavement.'>>
-        <<stalk_attack>>
-    <<else>>
-        A <<person1>><<person>> steps in front of you, while other figures move in from behind, penning you between them.
-        <br><br>
-        <<stalk_attack>>
-    <</if>>
-<<case 4>>
-    A <<person1>><<person>>'s hand grasps your shoulder and three other figures block your path. "You're going nowhere <<lass>>," the <<person>> says. "Not til we're done."
-    <br><br>
-    <<stalk_attack>>
-<<case 5>>
-    A <<person1>><<person>> steps in front of you while <<person2>><<person>> rests <<his>> hands on your hips. Three others are with them. They aren't going to let you go.
-    <br><br>
-    <<person1>>
-    <<stalk_attack>>
-<<default>>
-    A <<person1>><<person>> and <<person2>><<person>> step in front of you as several others press in from behind, penning you in.
-    <br><br>
-    <<person1>>
-    <<stalk_attack>>
-<</switch>>
+<<if $combatgoal is "confront">>
+	<<if $npcrow.includes(0)>>
+		<<stalk_nnpc_text_confront $NPCList[0].fullDescription>>
+	<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+		<<stalk_nnpc_text_confront "Wraith">>
+	<<else>>
+		<span class="purple">You're grabbed by the arm and pulled back to face your assailant.</span>
+	<</if>>
+	<<set $stalk_end to "confront">>
+<<else>>
+	<<switch $enemyno>>
+	<<case 1>>
+		<<set _rng to random(1, 100)>>
+		<<if $worn.upper.name is "large towel" and $worn.upper.set is $worn.lower.set>>
+			A <<person>> <span class="purple">snatches the towel from your body,</span> <span class="pink">exposing your <<undertop>> and <<undies>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
+			<<set $stalk_clothes to $worn.upper.name>>
+			<<upperstrip>>
+			<<exposure>>
+			<<stalk_pursuit>>
+			<br><br>
+		<<elseif $worn.upper.name is "large towel">>
+			A <<person>> <span class="purple">snatches the towel from your chest,</span> <span class="pink">exposing your <<undertop>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
+			<<set $stalk_clothes to $worn.upper.name>>
+			<<upperstrip>>
+			<<exposure>>
+			<<stalk_pursuit>>
+			<br><br>
+		<<elseif $worn.lower.name is "large towel bottom">>
+			A <<person>> <span class="purple">snatches the towel from your waist,</span> <span class="pink">exposing your <<undies>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
+			<<set $stalk_clothes to $worn.lower.name>>
+			<<lowerstrip>>
+			<<exposure>>
+			<<stalk_pursuit>>
+			<br><br>
+		<<elseif $worn.upper.name is "towel top">>
+			A <<person>> <span class="purple">snatches the towel from your chest,</span> <span class="pink">exposing your <<undertop>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
+			<<set $stalk_clothes to $worn.upper.name>>
+			<<upperstrip>>
+			<<exposure>>
+			<<stalk_pursuit>>
+			<br><br>
+		<<elseif $worn.lower.name is "towel skirt">>
+			A <<person>> <span class="purple">snatches the towel from your waist,</span> <span class="pink">exposing your <<undies>>.</span> <<He>> runs ahead, leaving you exposed in the middle of the <<location_text>>.
+			<<set $stalk_clothes to $worn.lower.name>>
+			<<lowerstrip>>
+			<<exposure>>
+			<<stalk_pursuit>>
+			<br><br>
+		<<elseif _rng gte 81 and $exposed lt 2>>
+			You hear a <<person>> behind you. <<catcall>> Before you can respond, a pair of intruding hands grasp your clothes!
+			<<npcstrip>>
+			<<npcidlegenitals>>
+			<<stalk_attack>>
+			<br><br>
+		<<elseif $leftarm is "bound" or $rightarm is "bound">>
+			Someone grabs your bound arms from behind. "All wrapped up like a present," says a <<person>> as <<he>> swivels you around. "How could I resist?"
+			<<stalk_attack>>
+			<br><br>
+		<<else>>
+			You hear a <<person>> behind you. <<catcall>> Before you can respond, a pair of intruding hands grasp you!
+			<<stalk_attack>>
+			<br><br>
+		<</if>>
+	<<case 2>>
+		You hear a <<person1>><<person>> behind you. Before you can respond, <<he>> seizes you by the arms and mouth.
+		<<if $location is "alley">>
+			<<He>> drags you into a shadowed alley, where <<his>> friend awaits.
+		<<elseif $location is "town">>
+			<<He>> drags you into an alley, where <<his>> friend awaits.
+		<<else>>
+			<<He>> drags you into the shadows, where <<his>> friend awaits.
+		<</if>>
+		<<stalk_attack>>
+		<<set $leftarm to "grappled">><<set $rightarm to "grappled">><<hand_gag 0 left>><<set $NPCList[0].righthand to "arms">>
+		<br><br>
+	<<case 3>>
+		<<if $worn.upper.name is "large towel" or $worn.lower.name is "large towel bottom" or $worn.upper.name is "towel top" or $worn.lower.name is "towel skirt">>
+			A <<person1>><<person>> steps in front of you, while two other figures move in from behind, penning you between them. "That's an odd thing to walk around in during the night," says the <<person1>><<person>> as <<he>> strokes your towel. "I think I know exactly what you want."
+			<br><br>
+			<<set $combat_end_text to '"Dress like a slut, get treated like one," says the <<person>>. They leave you lying on the pavement.'>>
+			<<stalk_attack>>
+		<<else>>
+			A <<person1>><<person>> steps in front of you, while other figures move in from behind, penning you between them.
+			<br><br>
+			<<stalk_attack>>
+		<</if>>
+	<<case 4>>
+		A <<person1>><<person>>'s hand grasps your shoulder and three other figures block your path. "You're going nowhere <<lass>>," the <<person>> says. "Not til we're done."
+		<br><br>
+		<<stalk_attack>>
+	<<case 5>>
+		A <<person1>><<person>> steps in front of you while <<person2>><<person>> rests <<his>> hands on your hips. Three others are with them. They aren't going to let you go.
+		<br><br>
+		<<person1>>
+		<<stalk_attack>>
+	<<default>>
+		A <<person1>><<person>> and <<person2>><<person>> step in front of you as several others press in from behind, penning you in.
+		<br><br>
+		<<person1>>
+		<<stalk_attack>>
+	<</switch>>
+<</if>>
+<</widget>>
+
+<<widget "events_stalk_nnpc">>
+	<<switch $args[0]>>
+		<<case "Avery">>
+			<<He>> drags you into an alley and shoves you against a wall. You feel <<his>> breath on your neck.
+			<br><br>
+			<<person1>>
+			<<set $location to "alley">><<set $bus to "commercial">>
+			<<stalk_attack>>
+		<<default>>
+			<<events_stalk>>
+	<</switch>>
 <</widget>>
 
 <<widget "stalk_athletics_difficulty">>
@@ -703,6 +749,311 @@
                 You weave between parked cars.
         <</switch>>
 <</switch>>
+<</widget>>
+
+<!-- Named NPC response widgets. $args[0] = npc name -->
+<!-- Default responses should be inaccessible and are only here as a failsafe. Any named (and maybe persistent) NPCs that don't have responses should be given them before they're written into a stalking scene. -->
+
+<!-- Player is accosted after failing to run, hide or confront -->
+<<widget "stalk_nnpc_text_attack">>
+	<<switch $args[0]>>
+		<<case "Avery">>
+			<<switch random(1, 4)>>
+				<<case 4>>"That's enough, brat."
+				<<case 3>>"When I say come, you come."
+				<<case 2>>"Who do you think you are, wasting my time?"
+				<<case 1>>"Making me run all over town for you," <<he>> spits. "You've earned this."
+			<</switch>>
+		<<case "Bailey">>
+			<<switch random(1, 4)>>
+				<<case 4>>"Time to pay up."
+				<<case 3>>"I'm done playing games with you."
+				<<case 2>>"Thanks for wasting my time," <<he>> sneers. "Now hold still."
+				<<case 1>>"You're almost more trouble than you're worth." <<He>> smiles. "Almost."
+			<</switch>>
+		<<case "Briar">>
+			<<switch random(1, 4)>>
+				<<case 4>>"Let me show you who's boss around here."
+				<<case 3>>"One way or another, you're paying me back."
+				<<case 2>>"There <<pshe>> is. The little thorn in my side."
+				<<case 1>>"No one pisses me off. You're about to find out why."
+			<</switch>>
+		<<case "Eden">>
+			<<if $syndromeeden is 1>>
+				<<switch random(1, 4)>>
+					<<case 4>>"Time to go home."
+					<<case 3>>"Quiet. I've got you."
+					<<case 2>>"I knew I'd get you back."
+					<<case 1>>"Thought you could run away?"
+				<</switch>>
+			<<else>>
+				<<switch random(1, 4)>>
+					<<case 4>>"Don't struggle."
+					<<case 3>>"No more running."
+					<<case 2>>"I've got you now."
+					<<case 1>>"I always get my prey."
+				<</switch>>
+			<</if>>
+		<<case "Harper">>
+			<<if $cow gte 6>>
+				<<switch random(1, 4)>>
+					<<case 4>>"Remy's waiting."
+					<<case 3>>"We've missed you."
+					<<case 2>>"Let's get you home."
+					<<case 1>>"You'll be at peace again."
+				<</switch>>
+			<<else>>
+				<<switch random(1, 4)>>
+					<<case 4>>"Shh. Just relax."
+					<<case 3>>"Close your eyes."
+					<<case 2>>"Take a deep breath."
+					<<case 1>>"You're too tense," <<he>> whispers. "It's unhealthy."
+				<</switch>>
+			<</if>>
+		<<case "Kylar">>
+			<<switch random(1, 4)>>
+				<<case 4>>"D-don't worry! It's just me!"
+				<<case 3>>"I won't let you get away," <<he>> whispers. "Ever."
+				<<case 2>>"Looking for me?" <<he>> giggles. "I'm right here, silly!"
+				<<case 1>>"I-I couldn't help myself." <<He>> licks <<his>> lips. "I need you."
+			<</switch>>
+		<<case "Leighton">>
+			<<switch random(1, 4)>>
+				<<case 4>>"Time for your discipline."
+				<<case 3>>"Good <<girls>> obey their superiors."
+				<<case 2>>"Best keep quiet," <<he>> whispers. "If you know what's good for you."
+				<<case 1>>"You should be honoured," <<he>> whispers. "Most <<girls>> are beneath my notice."
+			<</switch>>
+		<<case "Morgan">>
+			<<switch random(1, 4)>>
+				<<case 4>>"<<charles>>!"
+				<<case 3>>"There you are, you little sneak!"
+				<<case 2>>"I've found you," <<he>> whispers. "At last."
+				<<case 1>>"Don't worry, darling," <<he>> coos. "I'm here, now."
+			<</switch>>
+		<<case "Whitney">>
+			<<switch random(1, 4)>>
+				<<case 4>>"Guess who?"
+				<<case 3>>"Surprise, slut."
+				<<case 2>>"Thought you were safe? Guess again."
+				<<case 1>>"My favourite <<bitch>>, all by <<pherself>>." <<He>> grins. "Lucky me."
+			<</switch>>
+		<<case "Wraith">>
+			<<if $wraith.state is "haunt">>
+				<<switch random(1, 4)>>
+					<<case 4>><span class="wraith">"Give it back."</span>
+					<<case 3>><span class="wraith">"I am everywhere."</span>
+					<<case 2>><span class="wraith">"Where can you go but down?"</span>
+					<<case 1>><span class="wraith">"Run from your sins, into empty arms."</span>
+				<</switch>>
+			<<elseif $wraith.offspring is "dead">>
+				<<switch random(1, 4)>>
+					<<case 4>><span class="wraith">"Coward."</span>
+					<<case 3>><span class="wraith">"All your fault."</span>
+					<<case 2>><span class="wraith">"Afraid. Alone. You'll share that pain."</span>
+					<<case 1>><span class="wraith">"You've dug their grave. Now lie with them."</span>
+				<</switch>>
+			<<else>>
+				<<switch random(1, 4)>>
+						<<case 4>><span class="wraith">"Find you."</span>
+						<<case 3>><span class="wraith">"Why run from fate?"</span>
+						<<case 2>><span class="wraith">"You can run. But where will you go?"</span>
+						<<case 1>><span class="wraith">"Fly while you can, before your wings are clipped."</span>
+				<</switch>>
+			<</if>>
+		<<default>>
+			"Best play along," <<he>> says. "It'll be easier for you."
+	<</switch>>
+<</widget>>
+
+<!-- Successfully used the "confront" action -->
+<<widget "stalk_nnpc_text_threat">>
+	<<switch $args[0]>>
+		<<case "Avery">>
+			<<if $averyragerevealed is 1 and $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>>
+				<<switch random(1, 3)>>
+					<<case 3>><<He>> looks you up and down, <span class="green">then rolls <<his>> eyes.</span> "I've no time to waste on you."
+					<<case 2>><<He>> narrows <<his>> eyes before <span class="green">turning away with a scoff.</span> "Not worth the effort."
+					<<case 1>><<He>> stops, fixing you with a glare. "I'm a busy <<personsimple>>. <span class="green">Lucky for you, I have places to be."</span>
+				<</switch>>
+				<br><br>
+				<<He>> walks on. You feel tense.<<stress 2>><<gstress>>
+			<<else>>
+				<<switch random(1, 3)>>
+					<<case 3>><span class="green"><<He>> raises an eyebrow,</span> smirking. "Is that your idea of a proper greeting?"<br><br> <<He>> laughs as <<he>> walks on.
+					<<case 2>><<He>> stops and stares at you, brow furrowed. <span class="green"><<He>> brushes past you without a word.</span><br><br>
+					<<case 1>><<He>> crosses <<his>> arms and holds up <<his>> phone. "Do you mind?"<br><br> <<He>> walks on, trying to pick up <<his>> conversation.
+				<</switch>>
+				You feel a little silly.
+			<</if>>
+		<<case "Bailey">>
+			<<switch random(1, 3)>>
+				<<case 3>><<He>> doesn't break eye contact as <<he>> passes, <span class="green">but ultimately leaves you alone.</span>
+				<<case 2>><<He>> stops in front of you, stares in silence, <span class="green">then continues on <<his>> way.</span>
+				<<case 1>><<He>> stands in front of you and raises <<his>> phone. You hear a click. <span class="green"><<He>> leaves without a word.</span>
+			<</switch>>
+			<br><br>
+			You let out a shaky breath as <<he>> walks on.<<stress 6>><<gstress>>
+		<<case "Briar">>
+			<<switch random(1, 3)>>
+				<<case 3>><<He>> smirks, eyes you up and down, <span class="green">then walks right past you.</span>
+				<<case 2>><span class="green"><<He>> bursts out laughing.</span> "You? That's rich."
+				<<case 1>><span class="green"><<He>> lets out a sharp bark of laughter.</span> "Cute. Now get out of my way."
+			<</switch>>
+			<br><br>
+			<<He>> peers at you over <<his>> shoulder as <<he>> walks on. You feel tense.<<stress 2>><<gstress>>
+		<<case "Eden">>
+			<<He>> stares for a moment, <span class="teal">then silently slinks <<if $location is "forest">>between the trees<<elseif $location is "moor">>into the fog<<else>>into an alley<</if>>.</span>
+			<br><br>
+			You let out a shaky breath.<<stress 4>><<gstress>>
+		<<case "Harper">>
+			<span class="green"><<He>> stops.</span> <<His>> polite smile doesn't falter.
+			<<switch random(1, 3)>>
+				<<case 3>>"Lashing out at innocent passersby is a sure sign of stress, you know."
+				<<case 2>>"For some people, anger is just a cry for help. Please, be well."
+				<<case 1>>"You look troubled. Don't be afraid to ask for help."
+			<</switch>>
+			<br><br>
+			<<He>> walks on. You feel tense.<<stress 2>><<gstress>>
+		<<case "Kylar">>
+			<<switch random(1, 3)>>
+				<<case 3>><<He>> mutters something under <<his>> breath. You can't make it out. <span class="green"><<He>> scurries past you.</span>
+				<<case 2>><<He>> tenses as you turn around, barely managing an awkward smile and a wave <span class="green">before hurrying past you.</span>
+				<<case 1>><<He>> freezes up, <span class="green">before bolting in the opposite direction.</span> You're left bewildered.
+			<</switch>>
+		<<case "Leighton">>
+			<<switch random(1, 3)>>
+				<<case 3>><<He>> tuts. <span class="green">"How uncouth. If I weren't so busy, I'd discipline you myself."</span>
+				<<case 2>><<He>> raises an eyebrow, <span class="green">then turns away.</span> "I'll overlook that remark."
+				<<case 1>><span class="green"><<He>> looks down at you with contempt,</span> muttering under <<his>> breath. "Disrespectful brats."
+			<</switch>>
+			<br><br>
+			<<He>> walks on. You feel a little silly.
+		<<case "Morgan">>
+			<<switch random(1, 3)>>
+				<<case 3>><<He>> stops in <<his>> tracks and gasps. "You're right! I forgot the scones!"<br><br> <span class="green"><<He>> runs off in the opposite direction,</span> leaving you bewildered.
+				<<case 2>><span class="green"><<He>> stumbles past you as if you weren't there.</span><br><br> You watch <<him>> leave, babbling to <<himself>> all the while.
+				<<case 1>><span class="green"><<He>> smiles and waves as <<he>> walks past you.</span><br><br> You feel silly, and more than a little confused.
+			<</switch>>
+		<<case "Whitney">>
+			<<switch random(1, 3)>>
+				<<case 3>><span class="green"><<He>> shoves past you,</span> almost knocking you over.<br><br> You dust yourself off, thankful nothing worse became of it.
+				<<case 2>><span class="green"><<He>> throws <<his>> hands up,</span> smiling innocently. "Just admiring the view from back here."<br><br> <<He>> smacks your <<bottom>> as <<he>> walks on.<<stress 2>><<arousal 150>><<gstress>><<garousal>>
+				<<case 1>>Just as <<he>> draws near, <<he>> jumps at you with a loud "Boo!" You flinch on instinct.<br><br> "Wuss," <<he>> laughs <span class="green">as <<he>> leaves you behind.</span><<stress 4>><<gstress>>
+			<</switch>>
+		<<case "Wraith">>
+			It cackles, <span class="teal">before dissipating into a thick, cool mist.</span> Its voice echoes around you.
+			<<switch random(1, 3)>>
+				<<case 3>><span class="wraith">"Bask while you can. The night comes quickly."</span>
+				<<case 2>><span class="wraith">"For what little comfort it's worth."</span>
+				<<case 1>><span class="wraith">"Hold it close."</span>
+			<</switch>>
+			<br><br>
+			You shiver as the haze clears around you, revealing an empty <<if $location is "forest">>clearing<<elseif $location is "moor">>field<<else>>street<</if>>.
+			<<trauma 2>><<stress 4>><<gtrauma>><<gstress>>
+		<<default>>
+			<span class="green"><<He>> throws up <<his>> hands.</span> "Easy <<girl>>," <<he>> says, giving you a wide berth. "I didn't mean to frighten you."
+			<br><br>
+			<<He>> walks ahead.
+	<</switch>>
+<</widget>>
+
+<!-- NPC walks by due to lack of boldness -->
+<<widget "stalk_nnpc_text_passed">>
+	<<switch $args[0]>>
+		<<case "Avery">>
+			<<switch random(1, 3)>>
+				<<case 3>><<stalk_nnpc_name>> chats on <<his>> phone as <<he>> passes. <span class="teal"><<He>> ignores you.</span>
+				<<case 2>><<stalk_nnpc_name>> peers at you from the corner of <<his>> eye as <<he>> passes. <span class="teal"><<He>> leaves you alone.</span>
+				<<case 1>><<stalk_nnpc_name>> walks by. <span class="teal"><<He>> doesn't glance at you.</span>
+			<</switch>>
+		<<case "Bailey">>
+			<<switch random(1, 3)>>
+				<<case 3>><<stalk_nnpc_name>> walks by, <span class="teal">too busy on the phone to acknowledge you.</span>
+				<<case 2>><<stalk_nnpc_name>> peers at you from the corner of <<his>> eye as <<he>> passes. <span class="teal"><<He>> leaves you alone.</span>
+				<<case 1>><<stalk_nnpc_name>> thumps <<his>> shoulder against yours as <<he>> passes. <span class="teal"><<He>> doesn't look up.</span>
+			<</switch>>
+			<<if $stalk_assess>>
+				You let out a shaky breath.
+				<<stress 4>><<gstress>>
+			<</if>>
+		<<case "Briar">>
+			<<switch random(1, 3)>>
+				<<case 3>><<stalk_nnpc_name>> winks over <<his>> shoulder <span class="teal">as <<he>> walks on by.</span>
+				<<case 2>><<stalk_nnpc_name>> stops, stares at you over <<his>> shoulder, <span class="teal">then continues on <<his>> way.</span>
+				<<case 1>><<stalk_nnpc_name>> walks by. <span class="teal"><<He>> doesn't so much as glance at you.</span>
+			<</switch>>
+		<<case "Eden">>
+			<<switch random(1, 3)>>
+				<<case 3>>Suddenly seized by primal fear, you turn around. <span class="teal">You're alone.</span><<stress 4>><<gstress>>
+				<<case 2>><span class="teal"><<stalk_nnpc_name>> stomps past you,</span> almost shoving you to the ground in <<his>> haste.
+				<<case 1>>You hear movement behind you. You turn to catch a glimpse of <<if $stalk_assess>>Eden<<else>>a large figure<</if>> <span class="teal">disappearing <<if $location is "forest">>between the trees<<elseif $location is "moor">>into the fog<<else>>into an alley<</if>>.</span>
+			<</switch>>
+		<<case "Harper">>
+			<<switch random(1, 3)>>
+				<<case 3>><<stalk_nnpc_name>> jots notes in a journal as <<he>> passes. <span class="teal"><<He>> ignores you.</span>
+				<<case 2>><<stalk_nnpc_name>> peers at you from the corner of <<his>> eye as <<he>> passes. <span class="teal"><<He>> leaves you alone.</span>
+				<<case 1>><<stalk_nnpc_name>> walks by. <span class="teal"><<He>> doesn't glance at you.</span>
+			<</switch>>
+		<<case "Kylar">>
+			<<switch random(1, 3)>>
+				<<case 3>><span class="teal"><<stalk_nnpc_name>> walks right by you,</span> <<his>> gaze fixed to the floor.
+				<<case 2>>You feel a tug on your arm from behind. When you turn, <span class="teal">nobody's there.</span><<stress 4>><<gstress>>
+				<<case 1>><<stalk_nnpc_name>> passes without looking up, <span class="teal">leaving you alone.</span>
+			<</switch>>
+		<<case "Leighton">>
+			<<switch random(1, 3)>>
+				<<case 3>><<stalk_nnpc_name>> leers as <<he>> passes, <span class="teal">but otherwise leaves you alone.</span>
+				<<case 2>><<stalk_nnpc_name>> gives you a passing nod. <span class="teal"><<He>> continues on <<his>> way.</span>
+				<<case 1>><<stalk_nnpc_name>> walks by, <span class="teal">too busy tinkering with <<his>> watch to notice you.</span>
+			<</switch>>
+		<<case "Morgan">>
+			<<switch random(1, 3)>>
+				<<case 3>><<stalk_nnpc_name>> cheerfully hums as <<he>> passes, <span class="teal">all but ignoring you.</span>
+				<<case 2>><span class="teal"><<stalk_nnpc_name>> stumbles past you as if you weren't there.</span>
+				<<case 1>>You hear a gasp behind you. <span class="teal">You turn in time to catch a fleeting glimpse of <<if $stalk_assess>>Morgan<<else>>a figure<</if>> scurrying away.</span>
+			<</switch>>
+		<<case "Whitney">>
+			<<switch random(1, 3)>>
+				<<case 3>><span class="teal"><<stalk_nnpc_name>> flicks a cigarette butt over <<his>> shoulder as <<he>> passes.</span> It bounces off your cheek.
+				<<case 2>><<stalk_nnpc_name>> smacks your <<bottom>> as <<he>> passes.<<if $stalk_assess>><<He>> flashes a smug smirk over <<his>> shoulder.<<else>><<Hes>> gone before you can get a good look at <<him>>.<</if>><<stress 2>><<arousal 150>><<gstress>><<garousal>>
+				<<case 1>><<stalk_nnpc_name>> picks at <<his>> nails as <<he>> passes. <span class="teal"><<Hes>> too engrossed to notice you.</span>
+			<</switch>>
+		<<case "Wraith">>
+			<<switch random(1, 3)>>
+				<<case 3>>A cold chill blows over you, <span class="teal">but it vanishes just as quickly.</span>
+				<<case 2>>A cold, clammy hand grabs your shoulder. You turn, <span class="teal">but no one's there.</span>
+				<<case 1>>You feel a presence. Someone breathes in your ear. <span class="wraith">"Not yet."</span> A warm breeze washes over you, <span class="teal">taking the unwelcome presence with it.</span>
+			<</switch>>
+			You think you're alone.<<trauma 2>><<stress 4>><<gtrauma>><<gstress>>
+		<<default>>
+			A <<personsimple>> passes by. <span class="teal"><<He>> doesn't glance at you.</span>
+	<</switch>>
+<</widget>>
+
+<!-- For specific encounters where $combatgoal is "confront" -->
+<<widget "stalk_nnpc_text_confront">>
+	<<switch $args[0]>>
+		<<case "Kylar">>
+			You feel a tug on your arm. You turn around to face
+			<<if $stalk_assess>>
+				<<print $NPCList[0].fullDescription>>.
+			<<else>>
+				the culprit.
+			<</if>>
+		<<case "Wraith">>
+			The air chills around you. Animated by instinct, you turn around to find a pair of <<wraithEyes>> eyes staring back.
+		<<default>>
+			You're grabbed by the arm and pulled back to face your assailant.
+	<</switch>>
+<</widget>>
+
+<<widget "stalk_nnpc_name">>
+	<<if $stalk_assess>>
+		<<print $NPCList[0].fullDescription>>
+	<<else>>
+		A <<personsimple>>
+	<</if>>
 <</widget>>
 
 <<widget "stalk_img">>

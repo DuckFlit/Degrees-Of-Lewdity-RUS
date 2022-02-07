@@ -1,3 +1,125 @@
+:: Street Stalk Eden
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<violence 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	<<stalk_init>>
+	<<set $combatgoal to "confront">>
+	<<set $NPCList[0].bold to 10000>>
+<</if>>
+
+<<effects>>
+
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $stalk_end>>
+	<span id="next"><<link [[Next|Street Stalk Eden Finish]]>><<if $feetaction is "confront">><<set $phase to 1>><<else>><<set $phase to 0>><</if>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Street Stalk Eden]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Street Stalk Eden Finish
+<<set $outside to 1>><<set $location to "town">><<effects>>
+
+<<person1>>
+<<if $stalk_end is "confront">>
+	<<if $phase is 1>>
+		Eden grabs you by the arm, <<his>> grip painful. <<He>> looks mad.
+	<<else>>
+		<<if $stalk_assess>>
+			Eden's grip on your arm remains painfully tight turns as <<he>> turns you around to face <<him>>. <<He>> looks mad.
+		<<else>>
+			You're spun around, and come face-to-face with a large figure. It's Eden. <<He>> looks mad.
+		<</if>>
+	<</if>>
+	<br><br>
+
+	<<endcombat>>
+	<<npc Eden>><<person1>>
+
+	<<if $edenCagedEscape>>
+		"Told you I'd find you again, didn't I?" <<he>> snarls, pulling you close. "Looks like you still haven't learnt your place. Come on."
+	<<else>>
+		"Where the fuck have you been?" <<he>> snarls, pulling you close.
+		<<if $allure gte (3000 * $alluremod)>>
+			"I've been worried sick and you've been prancing around town like a slut!"
+		<<else>>
+			"I've been worried sick, and you're just prancing around town!"
+		<</if>>
+		<<if $NPCName[$NPCNameList.indexOf("Eden")].love gte 70>>
+			<<set $NPCName[$NPCNameList.indexOf("Eden")].love to 70>>
+			<<llllove>>
+		<</if>>
+		<br><br>
+
+		Before you can speak, Eden begins to drag you away. "I don't want to hear your excuses, either." <<He>> looks uncomfortable, eyes shifting as <<he>> walks. The corner of <<his>> lip curls in disgust. "And you made me come out here to get you. Things aren't going to be pretty when we get home."
+	<</if>>
+	<br><br>
+
+	<<link [[Fight|Eden Caged Caught Resist]]>><<set $fightstart to 1>><<def 1>><</link>>
+	<br>
+	<<link [[Try to pull away|Eden Caged Caught Pull]]>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>
+	<br>
+	<<link [[Submit (0:30)|Eden Caged Caught]]>><<set $phase to 1>><<pass 30>><<sub 1>><<npcincr Eden dom 1>><</link>><<gdom>>
+	<br>
+<<elseif $stalk_end is "hide">>
+	You emerge from your hiding place. <<if $stalk_assess>>Eden<<else>>Whoever was following you<</if>> is nowhere to be found. <<tearful>> you continue on your way.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<<else>>
+	<<if $stalk_assess>>Eden's<<else>>A familiar<</if>> voice shouts after you as you escape into the <<if $daystate is "night">>darkness<<else>>crowds<</if>>, but you keep running. Finally, it fades into the distance. <<tearful>> you slow to a walk, and continue on your way.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<</if>>
+
+:: Eden Caged Caught Pull
+<<effects>>
+
+Fearing whatever Eden has in store for you, you pull hard.
+<<if $physiqueSuccess>><<set $edenCagedEscape to true>>
+	<<He>> resists, turning to you with a warning glare. After some back and forth, <span class="green"><<his>> grasp loosens enough for you to slip out and begin a full-sprint away.</span> Your arm stings, but you push past the feeling.<<pain 2>><<gpain>>
+	<br><br>
+
+	Eden gives chase, narrowly on your heels for a few minutes. <<He>> calls after you as you pull ahead, <<his>> anger palpable.
+	<br><br>
+
+	After a few minutes, the sounds of <<his>> voice fades away, until it disappears completely.
+	<br><br>
+
+	<<if $location is "forest">>
+		You're in the clear, but you know Eden's already on your trail. <span class="red">Something is hunting you.</span>
+		<<set $foresthunt to 1>>
+
+		<<link [[Next|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		<<endevent>>
+		<<destinationeventend>>
+	<</if>>
+<<else>>
+	<<His>> grip remains almost bone-crunching. <span class="red">You can't tear away.</span> Eden silently glares as <<he>> tightens <<his>> hold on you.<<pain 4>><<gpain>>
+	<br><br>
+
+	<<link [[Fight|Eden Caged Caught Resist]]>><<set $fightstart to 1>><<def 1>><</link>>
+	<br>
+	<<link [[Submit (0:30)|Eden Caged Caught]]>><<set $phase to 0>><<pass 30>><<stress 6>><<sub 1>><<npcincr Eden dom 1>><</link>><<gstress>><<gdom>>
+	<br>
+<</if>>
+
 :: Forest Eden Rage
 <<set $outside to 1>><<set $location to "forest">><<effects>>
 
@@ -70,23 +192,25 @@
 <<effects>>
 <<effectsman>><<man>>
 
-<<if $alarm is 1 and $rescue is 0 and $forest lte 20 and $gwylan_aborted isnot 1>>
-	<<set $alarm to 0>>
-	<<set $gwylan_aborted to 1>>
-	<<if $forest_shop_intro isnot 1 and $gwylan_rescue isnot 1>>
-		You see a <<nnpc_gendery "Gwylan">> burst through the treeline, alarmed by your shout. <<nnpc_He "Gwylan">> takes one look at the assailant, <span class="red">then turns and runs away.</span>
-		<br><br>
-	<<else>>
-		You see Gwylan burst through the treeline, alarmed by your shout. <<nnpc_He "Gwylan">> takes one look at the assailant, <span class="red">then turns and runs away.</span>
+<<if $location is "forest">>
+	<<if $alarm is 1 and $rescue is 0 and $forest lte 20 and $gwylan_aborted isnot 1>>
+		<<set $alarm to 0>>
+		<<set $gwylan_aborted to 1>>
+		<<if $forest_shop_intro isnot 1 and $gwylan_rescue isnot 1>>
+			You see a <<nnpc_gendery "Gwylan">> burst through the treeline, alarmed by your shout. <<nnpc_He "Gwylan">> takes one look at the assailant, <span class="red">then turns and runs away.</span>
+			<br><br>
+		<<else>>
+			You see Gwylan burst through the treeline, alarmed by your shout. <<nnpc_He "Gwylan">> takes one look at the assailant, <span class="red">then turns and runs away.</span>
+			<br><br>
+		<</if>>
+	<<elseif $alarm is 1 and $rescue is 0 and $forest gte 21>>
+		<<if $gwylan_rescue is 1>>
+			<span class="red">You're too deep into the forest for Gwylan to hear you.</span>
+		<<else>>
+			<span class="red">You're too far from town for anyone to hear you.</span>
+		<</if>>
 		<br><br>
 	<</if>>
-<<elseif $alarm is 1 and $rescue is 0 and $forest gte 21>>
-	<<if $gwylan_rescue is 1>>
-		<span class="red">You're too deep into the forest for Gwylan to hear you.</span>
-	<<else>>
-		<span class="red">You're too far from town for anyone to hear you.</span>
-	<</if>>
-	<br><br>
 <</if>>
 
 <<stateman>>
@@ -104,55 +228,84 @@
 <</if>>
 
 :: Eden Caged Caught Resist Finish
-<<set $outside to 1>><<set $location to "forest">><<effects>>
+<<set $outside to 1>><<effects>>
 
 <<if $enemyarousal gte $enemyarousalmax>><<if $foresthunt gte 1>><<set $foresthunt to 0>><</if>>
 	<<ejaculation>>
-	Eden collapses against a nearby tree.
+	Eden collapses against a nearby <<if $location is "forest">>tree<<else>>streetlamp<</if>>.
 	<br><br>
 
-	<<tearful>> you seize the chance, and escape into the woods.
+	<<tearful>> you seize the chance, and escape into the <<if $location is "forest">>woods<<else>>streets<</if>>.
 	<br><br>
 
 	<<clotheson>>
 	<<endcombat>>
+	<<set $edenCagedEscape to true>>
 
-	<<link [[Next|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
-	<br>
+	<<if $location is "forest">>
+		<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		<<destinationeventend>>
+	<</if>>
 <<elseif $enemyhealth lte 0>><<if $foresthunt gte 1>><<set $foresthunt to 0>><</if>>
-	Eden falls against a nearby tree.
+	Eden falls against a nearby <<if $location is "forest">>tree<<else>>streetlamp<</if>>.
 	<br><br>
 
-	<<tearful>> you seize the chance, and escape into the woods.
+	<<tearful>> you seize the chance, and escape into the <<if $location is "forest">>woods<<else>>streets<</if>>.
 	<br><br>
 
 	<<clotheson>>
 	<<endcombat>>
+	<<set $edenCagedEscape to true>>
 
-	<<link [[Next|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
-	<br>
+	<<if $location is "forest">>
+		<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		<<destinationeventend>>
+	<</if>>
 <<else>>
 	You fall to the ground, too hurt to continue.
 	<br><br>
 
 	<<clotheson>>
 	<<endcombat>>
+	<<npc Eden>><<person1>>
 
-	<<link [[Next|Eden Caged Caught]]>><<set $phase to 1>><<pass 30>><<npc Eden>><<person1>><</link>>
+	<<link [[Next|Eden Caged Caught]]>><<set $phase to 0>><</if>><<pass 30>><</link>>
 <</if>>
 
 :: Eden Caged Caught
-<<set $outside to 1>><<set $location to "forest">><<effects>>
+<<set $outside to 1>><<effects>>
 
-Eden roughly pulls you by your wrist,
 <<if $phase is 1>>
-	forcing you to stumble after <<him>> as <<he>> makes <<his>> way home.
-<<else>>
-	ignoring your struggles as <<he>> makes <<his>> way home.
-<</if>>
-<br><br>
+	Eden's right. You've been away for far too long. You probably couldn't break free, anyway.
+	<br><br>
 
-The usual familiarity and comfort of the cabin is disrupted by a foreboding feeling in your stomach. Your dread is reinforced when you see the cage in the corner. 
+	<<if $location is "forest">>
+		<<He>> doesn't loosen <<his>> grip, but <<he>> eases up on <<his>> handling of you as you march through the forest.
+	<<else>>
+		<<He>> guides you towards the forest. Most people ignore you. It's a struggle to keep up with <<his>> quick steps.
+	<</if>>
+	<br><br>
+
+	You're pulled into the cabin. Eden slams the door shut behind you. Everything is as you left it. Apart from the cage near the sleeping area.
+	<br><br>
+<<else>>
+	<<if $location is "forest">>
+		Eden roughly pulls you by your wrist, forcing you to stumble after <<him>> as <<he>> makes <<his>> way home.
+	<<else>>
+		Eden's grip remains almost bone-crunching as <<he>> guides you towards the forest. People look on as you pass, but none intervene, despite your cries for help.<<trauma 3>><<gtrauma>>
+		<br><br>
+
+		Eden doesn't relax as <<he>> drags you through the woods, even once you're past the outskirts of town. The sounds of civilisation gradually give way to nature's deathly silence.
+	<</if>>
+	<br><br>
+
+	The usual familiarity and comfort of the cabin is disrupted by a foreboding feeling in your stomach. Your dread is reinforced when you see the cage in the corner. 
+<</if>>
+<<set $outside to 0>><<set $location to "cabin">>
 <br><br>
 
 <<link [[Struggle|Eden Caged Intro]]>><<set $phase to 0>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>

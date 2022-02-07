@@ -1444,6 +1444,16 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
+				`Named NPC stalk test`,
+				`Named NPC Stalk Select`
+			],
+			widgets: [
+				`<<endcombat>>`,
+				`<<set $phase to 0>>`
+			]
+		},
+		{
+			link: [
 				`Bailey selling Robin`, `Orphanage`
 			],
 			widgets: [

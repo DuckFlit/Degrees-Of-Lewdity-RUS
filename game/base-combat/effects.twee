@@ -1629,7 +1629,24 @@
 			<</switch>>
 			<span class="red">Then you feel a presence.</span>
 			<<set $mouthaction to 0>><<set $mouthactiondefault to "rest">>
-			<<events_stalk>>
+			<<if $npcrow.includes(0)>>
+				<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
+				<<if !$stalk_assess>>
+					<span class="pink">It's <<print $npc[$npcrow.indexOf(0)]>>.</span>
+				<</if>>
+				<br><br>
+				<<events_stalk_nnpc $NPCList[0].fullDescription>>
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<stalk_nnpc_text_attack "Wraith">>
+				<<if !$stalk_assess>>
+					<span class="red">A<<if $wraith.seen gte 3>> familiar<</if>> pale figure stares down at you, eyes flashing <<wraithEyes>>.</span>
+				<</if>>
+				<br><br>
+				<<events_stalk_nnpc "Wraith">>
+			<<else>>
+				<br><br>
+				 <<events_stalk>>
+			<</if>>
 		<<else>>
 			<<switch $location>>
 			<<case alley>>
@@ -1647,42 +1664,90 @@
 
 	<<if $feetaction is "confront">>
 		<<famescrap 1>>
-		You swivel around, and come face to face with the
+		You swivel around, and come face to face with
 		<<person1>>
-		<<if $enemyno gte 2>>
-			<<person>> and <<his>> companions.
+		<<if $npcrow.includes(0)>>
+			<<if $stalk_assess>>
+				<<if $enemyno gte 3>>
+					<<print $NPCList[0].fullDescription>> and <<his>> companions.
+				<<elseif $enemyno is 2>>
+					<<print $NPCList[0].fullDescription>> and <<his>> companion.
+				<<else>>
+					<<print $NPCList[0].fullDescription>>.
+				<</if>>
+			<<else>>
+				<<if $enemyno gte 3>>
+					a <<personsimple>> and <<his>> companions.
+				<<elseif $enemyno is 2>>
+					a <<personsimple>> and <<his>> companion.
+				<<else>>
+					a <<personsimple>>.
+				<</if>>
+				<span class="pink">It's <<print $NPCList[0].fullDescription>>.</span>
+			<</if>>
+		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+			<<if $stalk_assess>>
+				the pale figure.
+			<<else>>
+				a<<if $wraith.seen gte 3>> familiar<</if>> pale figure.
+			<</if>>
+		<<elseif $enemyno gte 3>>
+			the <<person>> and <<his>> companions.
+		<<elseif $enemyno is 2>>
+			the <<person>> and <<his>> companion.
 		<<else>>
-			<<person>>.
+			the <<person>>.
 		<</if>>
+		<<set $stalk_assess to true>>
 		<<actionsconfront>>
 		<br><br>
-		<<if $NPCList[0].bold * 2 gte random(1, 1000)>>
-			<span class="red"><<He>> marches towards you.</span>
-			<<if $NPCList[0].traits.includes("relaxed")>>
-				"Best play along," <<he>> says. "It'll be easier for you."
-			<<elseif $NPCList[0].traits.includes("sociable")>>
-				"That's no way to talk to a <<if $pronoun is "m">>gentleman<<else>>lady<</if>> like me," <<he>> says. "I know how you can make it up to me."
-			<<elseif $NPCList[0].traits.includes("brooding")>>
-				"This is the way of the world," <<he>> says. "It'll be over soon."
+		<<if $combatgoal is "confront">>
+			<span class="purple"><<He>> comes to a stop in front of you.</span>
+			<br><br>
+			<<set $stalk_end to "confront">>
+		<<elseif $NPCList[0].bold * 2 gte random(1, 1000)>>
+			<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+				You blink. When you open your eyes, <span class="red">the pale figure is inches from your face.</span>
 			<<else>>
-				"You're such a hot piece," <<he>> says. "You're gonna get jumped sooner or later. I might as well benefit."
+				<span class="red"><<He>> marches towards you.</span>
+			<</if>>
+			<<if $npcrow.includes(0)>>
+				<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<stalk_nnpc_text_attack "Wraith">>
+			<<else>>
+				<<if $NPCList[0].traits.includes("relaxed")>>
+					"Best play along," <<he>> says. "It'll be easier for you."
+				<<elseif $NPCList[0].traits.includes("sociable")>>
+					"That's no way to talk to a <<if $pronoun is "m">>gentleman<<else>>lady<</if>> like me," <<he>> says. "I know how you can make it up to me."
+				<<elseif $NPCList[0].traits.includes("brooding")>>
+					"This is the way of the world," <<he>> says. "It'll be over soon."
+				<<else>>
+					"You're such a hot piece," <<he>> says. "You're gonna get jumped sooner or later. I might as well benefit."
+				<</if>>
 			<</if>>
 			<br><br>
 			<<stalk_attack>>
 		<<else>>
-			<span class="green"><<He>> throws up <<his>> hands.</span>
-			<<if $NPCList[0].traits.includes("relaxed")>>
-				"Easy <<girl>>," <<he>> says, giving you a wide berth. "I didn't mean to frighten you."
-			<<elseif $NPCList[0].traits.includes("sociable")>>
-				"Damn <<girl>>," <<he>> says. "I am that ugly?" <<He>> gives you a wide berth.
-			<<elseif $NPCList[0].traits.includes("brooding")>>
-				The <<person>> laughs. "The streets that rough for you?" <<he>> asks. "I'll give you space."
+			<<if $npcrow.includes(0)>>
+				<<stalk_nnpc_text_threat $NPCList[0].fullDescription>>
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<stalk_nnpc_text_threat "Wraith">>
 			<<else>>
-				"I was only looking!" <<he>> says. "Wasn't gonna try anything, honest." <<He>> gives you a wide berth.
-			<</if>>
-			<br><br>
+				<span class="green"><<He>> throws up <<his>> hands.</span>
+				<<if $NPCList[0].traits.includes("relaxed")>>
+					"Easy <<girl>>," <<he>> says, giving you a wide berth. "I didn't mean to frighten you."
+				<<elseif $NPCList[0].traits.includes("sociable")>>
+					"Damn <<girl>>," <<he>> says. "I am that ugly?" <<He>> gives you a wide berth.
+				<<elseif $NPCList[0].traits.includes("brooding")>>
+					The <<person>> laughs. "The streets that rough for you?" <<he>> asks. "I'll give you space."
+				<<else>>
+					"I was only looking!" <<he>> says. "Wasn't gonna try anything, honest." <<He>> gives you a wide berth.
+				<</if>>
+				<br><br>
 
-			<<He>> walks ahead. You feel a little silly.
+				<<He>> walks ahead. You feel a little silly.
+			<</if>>
 			<br><br>
 			<<set $stalk_end to "passed">>
 			<<set $NPCList[_n].distance to 1>>
@@ -2872,8 +2937,38 @@
 	<<if $mouthaction is "turn">>
 		<<set $mouthaction to 0>><<set $mouthactiondefault to "turn">>
 		You glance over your shoulder.
-		You see a <<person1>><<person>> following you.
-		<<He>> moves with
+		<<if $stalk_assess>>
+			<<if $npcrow.includes(0)>>
+				<<print $NPCList[0].fullDescription>> is still following you.
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+					The pale figure continues to stalk you.
+				<<else>>
+					The pale figure continues to drift along.
+				<</if>>
+			<<else>>
+				The <<person1>><<person>> is still following you.
+			<</if>>
+		<<else>>
+			<<if $npcrow.includes(0)>>
+				You see a <<person1>><<personsimple>> following you. <span class="pink">It's <<print $NPCList[0].fullDescription>>.</span>
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+					A<<if $wraith.seen gte 3>> familiar<</if>> pale figure lurks behind you, <span class="red">its eerie <<wraithEyes>> gaze locked on you.</span>
+				<<else>>
+					A<<if $wraith.seen gte 3>> familiar<</if>> pale figure drifts behind you, seeming unaware of your presence.
+				<</if>>
+			<<else>>
+				You see a <<person1>><<person>> following you.
+			<</if>>
+		<</if>>
+		<<if $npcrow.includes(0)>>
+			<<nnpc_He $NPCList[0].fullDescription>> moves with
+		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+			It moves with
+		<<else>>
+			<<He>> moves with
+		<</if>>
 		<<if $NPCList[0].skills.athletics gte 800>>
 			<span class="pink">an energetic stride</span>
 		<<elseif $NPCList[0].skills.athletics gte 600>>
@@ -2896,6 +2991,17 @@
 			<span class="lblue">seems distracted.</span>
 		<<else>>
 			<span class="teal">appears to be daydreaming.</span>
+		<</if>>
+		<<if $enemyno is 2>>
+			A <<person2>><<person>> follows <<him>>.
+		<<elseif $enemyno gte 3>>
+			<<switch $enemyno>>
+				<<case 6>>Five
+				<<case 5>>Four
+				<<case 4>>Three
+				<<case 3>>Two
+			<</switch>>
+			others follow <<him>>.
 		<</if>>
 		<<set $stalk_assess to true>>
 	<</if>>
