@@ -594,14 +594,39 @@
 	<<else>>
 		<<set _half = "">>
 	<</if>>
+
+	<<run window.defineCustomEyeColourStyle()>> /* define Filter: css style for eyes for old renderer */
+
 	<<if $possessed>>
 		<<set _colourEye to ($wraith.state is "haunt" and !$schism ? "eye-redPossessed" : "eye-bluePossessed")>>		
 	<<else>>
-		<<set _colourEye to "colour-eye">>
+		<<set _colourEye to "">>
+		<<if $passage == "Start">>
+			<<set _colourEyeLeft to "eye-" + V.eyeselect>>
+			<<set _colourEyeRight to "eye-" + V.eyeselect>>
+			<<script>>T.colourEyeLeft = T.colourEyeLeft.replace(/\s/g, '-')<</script>>
+			<<script>>T.colourEyeRight = T.colourEyeRight.replace(/\s/g, '-')<</script>>
+		<<else>>
+			<<if V.makeup.eyelenses.left == 0>>
+				<<set _colourEyeLeft to "eye-" + V.leftEyeColour>>
+				<<script>>T.colourEyeLeft = T.colourEyeLeft.replace(/\s/g, '-')<</script>>
+			<<else>>
+				<<set _colourEyeLeft to "eye-" + V.makeup.eyelenses.left>>
+				<<script>>T.colourEyeLeft = T.colourEyeLeft.replace(/\s/g, '-')<</script>>
+			<</if>>
+			<<if V.makeup.eyelenses.right == 0>>
+				<<set _colourEyeRight to "eye-" + V.rightEyeColour>>
+				<<script>>T.colourEyeRight = T.colourEyeRight.replace(/\s/g, '-')<</script>>
+			<<else>>
+				<<set _colourEyeRight to "eye-" + V.makeup.eyelenses.right>>
+				<<script>>T.colourEyeRight = T.colourEyeRight.replace(/\s/g, '-')<</script>>
+			<</if>>
+		<</if>>
 	<</if>>
 	<img class="layer-eyes" @src="'img/face/' + $facestyle + _red + '/eyes.png'" @style="'filter: '+_filters.body">
 	<img class="layer-sclera" @src="'img/face/' + $facestyle + '/' + _sclera + '.png'">
-	<img @class="'layer-iris '+_colourEye+' ' + _animIdle" @src="'img/face/' + $facestyle + '/' + _iris + _half + '.png'">
+	<img @style="_custom_eyelenses_left_style" @class="'layer-iris' + _colourEye + ' left-iris ' + _colourEyeLeft + ' ' + _animIdle" @src="'img/face/' + $facestyle + '/' + _iris + _half + '_left.png'">
+	<img @style="_custom_eyelenses_right_style" @class="'layer-iris' + _colourEye + ' right-iris ' + _colourEyeRight + ' ' + _animIdle" @src="'img/face/' + $facestyle + '/' + _iris + _half + '_right.png'">
 	<img @class="'layer-eyelids ' + _blink" @src="'img/face/' + $facestyle + _red + '/eyelids' + _half + '.png'" @style="'filter: '+_filters.body">
 	<img @class="'layer-lashes ' + _blink" @src="'img/face/' + $facestyle + '/lashes' + _half + '.png'">
 
@@ -680,6 +705,10 @@
 				<img @class="'layer-lashes ' + _blink + ' mascara-' + $makeup.mascara.replace(/ /g, '-')" @src="'img/face/' + $facestyle + '/' + 'makeup/mascara' + Math.floor(Math.clamp($pain, 0, 99) / 20) + '.png'">
 			<</if>>
 		<</if>>
+	<</if>>
+	<<if $passage == "Pharmacy Select Custom Lenses">>
+		<<unset _custom_eyelenses_right_style>>
+		<<unset _custom_eyelenses_left_style>>
 	<</if>>
 <</widget>>
 

@@ -626,6 +626,30 @@ setup.colours.eyes = [{
 		brightness: +0.2
 	}
 },
+{
+	variable: "colorWheelTemporary0",
+	name: "colorWheelTemporary0",
+	name_cap: "colorWheelTemporary0",
+	csstext: "colorWheelTemporary0",
+	natural: false,
+	lens: true,
+	canvasfilter: {
+		blend: "#d1d1d1",
+		brightness: +0.2
+	}
+},
+{
+	variable: "colorWheelTemporary1",
+	name: "colorWheelTemporary1",
+	name_cap: "colorWheelTemporary1",
+	csstext: "colorWheelTemporary1",
+	natural: false,
+	lens: true,
+	canvasfilter: {
+		blend: "#d1d1d1",
+		brightness: +0.2
+	}
+},
  {
 	variable: "red possessed",
 	name: "red possessed",
@@ -647,7 +671,7 @@ setup.colours.eyes = [{
 	canvasfilter: {
 		blend: "#0F52BA",
 		brightness: +0.4,
-		}
+	}
 }];
 
 /**

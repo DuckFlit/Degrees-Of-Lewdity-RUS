@@ -1,6 +1,5 @@
 function colourContainerClasses() {
 	return 'hair-' + (V.haircolour || '').replace(/ /g, '-') +
-		' ' + 'eye-' + (V.makeup.eyelenses != 0 ? V.makeup.eyelenses : (V.eyecolour || '')).replace(/ /g, '-') +
 		' ' + 'upper-' + (V.upperwet > 100 ? 'wet' : '') + (V.worn.upper.colour_combat || V.worn.upper.colour || '').replace(/ /g, '-') +
 		' ' + 'lower-' + (V.lowerwet > 100 ? 'wet' : '') + (V.worn.lower.colour_combat || V.worn.lower.colour || '').replace(/ /g, '-') +
 		' ' + 'under_lower-' + (V.underlowerwet > 100 ? 'wet' : '') + (V.worn.under_lower.colour || '').replace(/ /g, '-') +
@@ -25,14 +24,12 @@ function colourContainerClasses() {
 window.colourContainerClasses = colourContainerClasses; // export function
 
 function limitedColourContainerClasses() {
-	return 'hair-' + (V.haircolour || '').replace(/ /g, '-') +
-		' ' + 'eye-' + (V.makeup.eyelenses != 0 ? V.makeup.eyelenses : (V.eyecolour || '')).replace(/ /g, '-')
+	return 'hair-' + (V.haircolour || '').replace(/ /g, '-')
 }
 window.limitedColourContainerClasses = limitedColourContainerClasses; // export function
 
 function debugColourContainerClasses(color) {
 	return 'hair-' + (color.hair || '').replace(/ /g, '-') +
-		' ' + 'eye-' + (color.eyes || '').replace(/ /g, '-') +
 		' ' + 'upper-' + (color.upper[0] || '').replace(/ /g, '-') +
 		' ' + 'lower-' + (color.lower[0] || '').replace(/ /g, '-') +
 		' ' + 'under_lower-' + (color.under_lower[0] || '').replace(/ /g, '-') +
