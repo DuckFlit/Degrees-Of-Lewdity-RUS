@@ -913,7 +913,19 @@ window.clothesIndex = function(slot, itemToIndex) {
 	let index = setup.clothes[slot].findIndex((item) => item.variable === itemToIndex.variable && item.modder === itemToIndex.modder)
 	if(index === -1){
 		console.log(`clothesIndex - ${slot} clothing item index not found for the '${itemToIndex.name}' with the modder set to '${itemToIndex.modder}'`);
-		return 0;
+		/* try and correct .modder mismatches */
+		let matches = setup.clothes[slot].filter((item) => item.variable === itemToIndex.variable);
+		if (matches.length === 1) {
+			let recovery = setup.clothes[slot].find((item) => item.variable === itemToIndex.variable);
+			itemToIndex.modder = recovery.modder;
+			index = recovery.index;
+			console.log(`attempting to recover the mismatch, new modder is '${recovery.modder}'`);
+			return index;
+		}
+		else {
+			console.log("recovery failed, matches: " + matches);
+			return 0;
+		}
 	}
 	return index;
 }
