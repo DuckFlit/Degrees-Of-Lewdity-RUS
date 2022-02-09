@@ -1309,5 +1309,5 @@ window.randomSexToy = function(toyType){
 }
 
 window.playerHasButtPlug = function(){
-	return (V.worn.butt_plug != undefined && V.worn.butt_plug.state == "worn")
+	return (V.worn.butt_plug != undefined && V.worn.butt_plug.combat_state == "worn" && V.worn.butt_plug.worn == 1) // V.worn.butt_plug.worn == 1 is just as a safeguard for now
 }

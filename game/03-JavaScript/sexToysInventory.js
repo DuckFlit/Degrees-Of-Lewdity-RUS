@@ -1,0 +1,181 @@
+window.sexToysInventoryInit = function() {
+	$(function(){
+		var min_cells = 12; // we generate a minimum of 12 cells to display.
+		var main_grid = document.getElementById("sti_grid")
+		for (var item_category of Object.keys(V.inventory.sextoys)){ // for each type of sextoys
+			for (var item in V.inventory.sextoys[item_category]){ 	 // look for each items owned of a particular type
+				for (let i in setup.sextoys){						 // then browse setup.sextoys to find the icon path of that item
+					if (setup.sextoys[i].name == item_category){
+						main_grid.innerHTML += `<div id="sti_item_` + item_category.replace(/\s/g, '_') + "_" + item + `" class="sti_cell sti_full" onclick="window.sexToysInventoryOnItemClick(` + item + `,` + "`" + item_category + "`" + `)" class="` + `">
+													<div style="position:relative;z-index: 1;">
+														<div class="sti_already_owned">` +
+															`<span data-category="` + item_category + `" data-index="` + item + `" id= "sti_already_owned_` + item_category.replace(/\s/g, '_') + "_" + item + `" class="sti_owned_text">` + (setup.sextoys[i].isWorn() != 0 ? "worn" : setup.sextoys[i].isCarried() != 0 ? "carried" : "" ) + `</span>
+														</div>
+													</div>
+													<img id="sti_item_icon_` + item_category.replace(/\s/g, '_') + "_" + item +`" src="` + setup.sextoys[i].icon  + `" class="` + ((setup.sextoys[i].colour == 1) ? "clothes-" + V.inventory.sextoys[item_category][item].colour : "") + `"></img>
+													</div>
+												</div>`
+					}
+				}
+			}
+		}
+		while ((main_grid.childElementCount - 1) < min_cells || (main_grid.childElementCount - 1) % 4 != 0) // minimum of 12 cells. minimum 4 cells per row
+			main_grid.innerHTML += `<div class="sti_cell sti_empty"></div>`
+	});
+}
+
+window.sexToysInventoryOnItemClick = function (index, category) {
+	for (var obj of setup.sextoys){
+		if (obj.name == category)
+			var item = obj
+	}
+	/* grid item box class changes */
+	try{
+		document.getElementsByClassName("sti_selected")[0].classList.remove("sti_selected")
+	}catch{;}
+	$("#sti_item_"+item.name_underscore+"_"+index)[0].classList.add("sti_selected")
+	/* description box */
+	document.getElementById("sti_descContainer").innerHTML = `
+	<div id="sti_desc_img" class="` + document.getElementById("sti_item_icon_" + item.name_underscore + "_" + index).className + `">
+		<img style="" src="` + item.icon + `">
+	</div>
+	<div class="sti_desc_border">
+		<div id="sti_desc">
+			<div class="sti_closeContainer">
+				<div class="sti_close" id="sti_close1" title="close" onclick="window.sextoysOnCloseDesc(` + "`stiDescPillContainer`" + `)">x
+				</div>
+			</div>
+			<span style="color:#bcbcbc">` + item.description + `</span>
+			<div id="sti_desc_action">` + `
+				<br>	
+				` + 
+				`<a id="stiCarryButton" onclick="window.sexToysInventoryOnCarryClick(` +  index + `,` + "`" + category + "`" + `)" class="sti_carry_button">
+					` + (V.inventory.sextoys[category][index].carried == false ? "Carry it" : "Put back in the cupboard") + `
+				</a>` +
+				(setup.sextoys[V.inventory.sextoys[category][index].index].wearable == 1 ? "<br>" : "") + `<a style="` + (setup.sextoys[V.inventory.sextoys[category][index].index].wearable == 1 ? "" : "display: none;") + `" id="stiWearButton" onclick="window.sexToysInventoryOnWearClick(` +  index + `,` + "`" + category + "`" + `)" class="sti_wear_button">
+					` + (V.inventory.sextoys[category][index].worn == false ? "Wear it" : "Take off") + `
+				</a>` +
+				`<br><a id="stiThrowButton" onclick="window.sexToysInventoryOnThrowClick(` +  index + `,` + "`" + category + "`" + `)" class="sti_throw_button">
+					` + "Throw away" +
+					
+					`
+				</a>
+			</div>
+		</div>
+	</div>
+	`
+	document.getElementById("stiDescPillContainer").style.display = ""
+}
+
+window.sexToysInventoryOnCarryClick = function (index, category) {
+	V.inventory.sextoys[category][index].carried = !V.inventory.sextoys[category][index].carried
+	if (V.inventory.sextoys[category][index].worn == true)
+		V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category] = undefined
+	if (V.inventory.sextoys[category][index].carried == false) // if player chose "Put back in the cupboard"
+		V.inventory.sextoys[category][index].worn = false // also unwear the item
+	document.getElementById("stiWearButton").textContent = (V.inventory.sextoys[category][index].worn) ? "Take off" : "Wear it" // update button text value
+	document.getElementById("stiCarryButton").textContent = (V.inventory.sextoys[category][index].carried != true ? "Carry it" : "Put back in the cupboard") // update button text value
+	// update worn/carried tag on cell
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (V.inventory.sextoys[category][index].worn == true ? "worn" : V.inventory.sextoys[category][index].carried == true ? "carried" : "")
+}
+
+window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" / "Take off"
+	if (V.inventory.sextoys[category][index].worn == true)
+		V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category] = undefined
+	if (V.inventory.sextoys[category][index].worn == false){ // If player chose "Wear it"
+		for (let s_item of setup.sextoys){ // retrieve main category of our item in setup.sextoys
+			if (s_item.name == category)
+				var cat = s_item.category
+		}
+		for (let s_item of setup.sextoys){// search for items with same main category
+			if (s_item.category == cat) { // we find item with same main category than the item we try to wear
+				for (let i_item in V.inventory.sextoys[s_item.name]) // we go through each of this item owned in player inventory
+					V.inventory.sextoys[s_item.name][i_item].worn = false // we unwear each of them.
+			}
+		}
+	}
+	V.inventory.sextoys[category][index].worn = !V.inventory.sextoys[category][index].worn // then wear chose item.
+	V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category] = V.inventory.sextoys[category][index]
+	V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category].combat_state = "worn"
+	V.inventory.sextoys[category][index].carried = true // also carry the item if not done alreadys
+	document.getElementById("stiWearButton").textContent = (V.inventory.sextoys[category][index].worn) ? "Take off" : "Wear it" // update button text value
+	document.getElementById("stiCarryButton").textContent = (V.inventory.sextoys[category][index].carried != true ? "Carry it" : "Put back in the cupboard") // update button text value
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (V.inventory.sextoys[category][index].worn ? "worn" : V.inventory.sextoys[category][index].carried ? "carried" : "" )
+	$("[id*='sti_already_owned_']").each(function(i, element){
+		let c = element.getAttribute("data-category")
+		let ind = element.getAttribute("data-index")
+		element.textContent = (V.inventory.sextoys[c][ind].worn ? "worn" : V.inventory.sextoys[c][ind].carried ? "carried" : "" )
+	})
+}
+
+window.sexToysInventoryOnThrowClick = function(index, category){
+	/* remove div */
+	document.getElementById("sti_item_" + category.replace(/\s/g, '_') + "_" + index).remove()
+	/* add new empty div */
+	document.getElementById("sti_grid").innerHTML += `<div class="sti_cell sti_empty"></div>`
+	/* close description */
+	window.sextoysOnCloseDesc("stiDescPillContainer")
+	/* remove item from inventory object */
+	if (V.inventory.sextoys[category][index].worn == true)
+		V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category] = undefined
+	console.log(category)
+	V.inventory.sextoys[category].splice(index, 1)
+	$("[id*='sti_item']").each(function(i, element){updateNumberInString(element, element.id, index, category.replace(/\s/g, '_'))})
+	$("[id*='sti_already_owned']").each(function(i, element){updateNumberInString(element, element.id, index, category.replace(/\s/g, '_'))})
+}
+
+window.sextoysOnCloseDesc = function (elem_id) {
+	document.getElementById(elem_id).style.display = 'none'
+	/* grid item box class changes */
+	try{
+		document.getElementsByClassName("sti_selected")[0].classList.remove("sti_selected")
+	}catch{;}
+}
+
+function updateNumberInString(element, string, index_min, category){
+	let r = /\d+/;
+	let match = string.match(r)
+	let update_number;
+
+	if (!match || !string.contains(category))
+		return
+	update_number = parseInt(match[0]);
+	if (update_number < index_min)
+		return
+	update_number--;
+	let words = string.split("_");
+	string = ""
+	for (let word in words){
+		if (word < words.length - 1)
+			string += (words[word] + "_");
+	}
+	element.id = (string + update_number)
+	if (element.getAttribute("onclick"))
+		element.setAttribute("onclick", ("window.sexToysInventoryOnItemClick(" + update_number + "," + "`" + category.replace(/_/g, ' ') + "`" + ")"))
+}
+
+window.checkSextoysGift = function (npc_name) {
+	npc_name = npc_name.toLowerCase()
+	for (let inv of V.inventory){
+		if (inv == npc_name){
+			for (let cat in V.inventory[npc_name].sextoys){
+				for (let item in V.inventory[npc_name].sextoys[cat]){
+					if (V.inventory[npc_name].sextoys[cat][item].gift_state == "held")
+						return 1
+				}
+			}
+		}
+	}
+	return 0
+}
+
+window.listUniqueCarriedSextoys = function () {
+	var list = []
+	for (let cat in V.inventory.sextoys){
+		for (let item of V.inventory.sextoys[cat]){
+			if (item.carried == true)
+				list.push(item)
+		}
+	}
+	return (list.length > 0 ? list : 0)
+}
