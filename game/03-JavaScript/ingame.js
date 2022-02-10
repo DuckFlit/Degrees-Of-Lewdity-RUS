@@ -1212,7 +1212,7 @@ window.waterproofCheck = function(clothing){
 }
 
 window.getSexToysofType = function (toyType){
-	var sexToys = ["dildo","whip","onahole","vibrator","all"];
+	var sexToys = ["dildo","whip","cocksleeve","vibrator","all"];
 	sexToys["dildo"] = ["dildo","length of anal beads"];
 	sexToys["whip"] = ["riding crop","flog"];
 	sexToys["onahole"] = ["onahole"];

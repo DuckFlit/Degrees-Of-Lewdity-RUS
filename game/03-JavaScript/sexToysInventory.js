@@ -156,7 +156,7 @@ function updateNumberInString(element, string, index_min, category){
 
 window.checkSextoysGift = function (npc_name) {
 	npc_name = npc_name.toLowerCase()
-	for (let inv of V.inventory){
+	for (let inv in V.inventory){
 		if (inv == npc_name){
 			for (let cat in V.inventory[npc_name].sextoys){
 				for (let item in V.inventory[npc_name].sextoys[cat]){
