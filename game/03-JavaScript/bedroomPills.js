@@ -456,7 +456,7 @@ window.onSecondDoseTakenSetVars = function() { // If player take two doses of an
 
 			doseTaken[i] = doseTaken[i + 1]
 			doseTaken[i + 1] = tmp;
-			i = 0
+			i = -1
 		}
 	}
 	i = (doseTaken[0][1] > doseTaken[1][1]) ? 1 : (doseTaken[0][1] == doseTaken[1][1]) ? 2 : (doseTaken[0][1] == doseTaken[2][1]) ? 3 : 1 // determine how many have same value
