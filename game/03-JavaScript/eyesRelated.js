@@ -15,9 +15,9 @@ window.buildEyeDetails = function() {
 		if (V.leftEyeColour != 0 && V.rightEyeColour != 0 && V.rightEyeColour != V.leftEyeColour)
 			sentence += setup.colours.eyes_map[V.leftEyeColour].name + " and " + setup.colours.eyes_map[V.rightEyeColour].name + " eyes "
 		else
-			sentence += (V.leftEyeColour != 0 ? setup.colours.eyes_map[V.leftEyeColour] : setup.colours.eyes_map[V.rightEyeColour]) + " eyes "
+			sentence += (V.leftEyeColour != 0 ? setup.colours.eyes_map[V.leftEyeColour].name : setup.colours.eyes_map[V.rightEyeColour].name) + " eyes "
 	}
-	return sentence
+	return sentence.slice(0, -1) + '.';
 }
 
 window.restructureEyeColourVariable = function() {
