@@ -1,3 +1,5 @@
+var max_carried = 5; // maximum player can carry
+
 window.sexToysInventoryInit = function() {
 	$(function(){
 		var min_cells = 12; // we generate a minimum of 12 cells to display.
@@ -21,6 +23,10 @@ window.sexToysInventoryInit = function() {
 		}
 		while ((main_grid.childElementCount - 1) < min_cells || (main_grid.childElementCount - 1) % 4 != 0) // minimum of 12 cells. minimum 4 cells per row
 			main_grid.innerHTML += `<div class="sti_cell sti_empty"></div>`
+		main_grid.innerHTML += `<div style="position: relative;">
+									<div id="carryCount" class="sti_grid_carried_count"></div>
+								</div>`
+		window.updateCarryCountUI()
 	});
 }
 
@@ -65,23 +71,47 @@ window.sexToysInventoryOnItemClick = function (index, category) {
 	</div>
 	`
 	document.getElementById("stiDescPillContainer").style.display = ""
+	window.greyButtonsIfCarryLimitReached(index, category)
 }
 
 window.sexToysInventoryOnCarryClick = function (index, category) {
+	let shortcut_category = setup.sextoys[V.inventory.sextoys[category][index].index].category
+
+	if (V.inventory.sextoys[category][index].carried == false && window.countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
+		return
 	V.inventory.sextoys[category][index].carried = !V.inventory.sextoys[category][index].carried
-	if (V.inventory.sextoys[category][index].worn == true)
-		V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category] = undefined
+	if (V.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")
+		V.worn[shortcut_category] = undefined
 	if (V.inventory.sextoys[category][index].carried == false) // if player chose "Put back in the cupboard"
 		V.inventory.sextoys[category][index].worn = false // also unwear the item
 	document.getElementById("stiWearButton").textContent = (V.inventory.sextoys[category][index].worn) ? "Take off" : "Wear it" // update button text value
 	document.getElementById("stiCarryButton").textContent = (V.inventory.sextoys[category][index].carried != true ? "Carry it" : "Put back in the cupboard") // update button text value
 	// update worn/carried tag on cell
 	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (V.inventory.sextoys[category][index].worn == true ? "worn" : V.inventory.sextoys[category][index].carried == true ? "carried" : "")
+	if (shortcut_category == "strap-on"){ // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
+		if (V.inventory.sextoys[category][index].worn == true){
+			let tmp = V.wardrobe.under_lower.find(c_item => (c_item.index == V.inventory.sextoys[category][index].clothes_index && c_item.colour == V.inventory.sextoys[category][index].colour))
+			Wikifier.wikifyEval(' <<underlowerwear ' + tmp.index + ' ' + tmp.colour + '>>');
+		}
+		else
+			Wikifier.wikifyEval(' <<underlowerundress "wardrobe">>');
+		Wikifier.wikifyEval(' <<updatesidebarimg>>');
+	}
+	window.updateCarryCountUI()
+	window.greyButtonsIfCarryLimitReached(index, category)
 }
 
 window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" / "Take off"
-	if (V.inventory.sextoys[category][index].worn == true)
-		V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category] = undefined
+	let shortcut_category = setup.sextoys[V.inventory.sextoys[category][index].index].category
+
+	if (shortcut_category == "strap-on" && V.worn.under_lower.cursed == 1){ // if player tries to wear a strapon but that under_lower is cursed
+		document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">You try to remove the ` + V.worn.under_lower.name + ` but fail</div>`
+		return
+	}
+	if (V.inventory.sextoys[category][index].carried == false && window.countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
+		return
+	if (V.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")
+		V.worn[shortcut_category] = undefined
 	if (V.inventory.sextoys[category][index].worn == false){ // If player chose "Wear it"
 		for (let s_item of setup.sextoys){ // retrieve main category of our item in setup.sextoys
 			if (s_item.name == category)
@@ -95,8 +125,10 @@ window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" /
 		}
 	}
 	V.inventory.sextoys[category][index].worn = !V.inventory.sextoys[category][index].worn // then wear chose item.
-	V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category] = V.inventory.sextoys[category][index]
-	V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category].combat_state = "worn"
+	if (shortcut_category != "strap-on"){
+		V.worn[shortcut_category] = V.inventory.sextoys[category][index]
+		V.worn[shortcut_category].combat_state = "worn"
+	}
 	V.inventory.sextoys[category][index].carried = true // also carry the item if not done alreadys
 	document.getElementById("stiWearButton").textContent = (V.inventory.sextoys[category][index].worn) ? "Take off" : "Wear it" // update button text value
 	document.getElementById("stiCarryButton").textContent = (V.inventory.sextoys[category][index].carried != true ? "Carry it" : "Put back in the cupboard") // update button text value
@@ -106,22 +138,40 @@ window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" /
 		let ind = element.getAttribute("data-index")
 		element.textContent = (V.inventory.sextoys[c][ind].worn ? "worn" : V.inventory.sextoys[c][ind].carried ? "carried" : "" )
 	})
+	if (shortcut_category == "strap-on"){ // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
+		if (V.inventory.sextoys[category][index].worn == true){
+			let tmp = V.wardrobe.under_lower.find(c_item => (c_item.index == V.inventory.sextoys[category][index].clothes_index && c_item.colour == V.inventory.sextoys[category][index].colour))
+			Wikifier.wikifyEval(' <<underlowerwear ' + tmp.index + ' ' + tmp.colour + '>>');
+		}
+		else
+			Wikifier.wikifyEval(' <<underlowerundress "wardrobe">>');
+		Wikifier.wikifyEval(' <<updatesidebarimg>>');
+	}
+	window.updateCarryCountUI()
+	window.greyButtonsIfCarryLimitReached(index, category)
 }
 
 window.sexToysInventoryOnThrowClick = function(index, category){
+	let shortcut_category = setup.sextoys[V.inventory.sextoys[category][index].index].category
 	/* remove div */
 	document.getElementById("sti_item_" + category.replace(/\s/g, '_') + "_" + index).remove()
 	/* add new empty div */
 	document.getElementById("sti_grid").innerHTML += `<div class="sti_cell sti_empty"></div>`
 	/* close description */
 	window.sextoysOnCloseDesc("stiDescPillContainer")
+	if (V.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")
+		V.worn[shortcut_category] = undefined
+	/* handle strapons */
+	if (shortcut_category == "strap-on") {
+		V.wardrobe.under_lower.splice(V.wardrobe.under_lower.indexOf(V.wardrobe.under_lower.find(c_item => (c_item.index == V.inventory.sextoys[category][index].clothes_index && c_item.colour == V.inventory.sextoys[category][index].colour))), 1)
+		Wikifier.wikifyEval(' <<underlowerundress "wardrobe">>');
+		Wikifier.wikifyEval(' <<updatesidebarimg>>');
+	}
 	/* remove item from inventory object */
-	if (V.inventory.sextoys[category][index].worn == true)
-		V.worn[setup.sextoys[V.inventory.sextoys[category][index].index].category] = undefined
-	console.log(category)
 	V.inventory.sextoys[category].splice(index, 1)
 	$("[id*='sti_item']").each(function(i, element){updateNumberInString(element, element.id, index, category.replace(/\s/g, '_'))})
 	$("[id*='sti_already_owned']").each(function(i, element){updateNumberInString(element, element.id, index, category.replace(/\s/g, '_'))})
+	window.updateCarryCountUI()
 }
 
 window.sextoysOnCloseDesc = function (elem_id) {
@@ -156,11 +206,11 @@ function updateNumberInString(element, string, index_min, category){
 
 window.checkSextoysGift = function (npc_name) {
 	npc_name = npc_name.toLowerCase()
-	for (let inv in V.inventory){
-		if (inv == npc_name){
-			for (let cat in V.inventory[npc_name].sextoys){
-				for (let item in V.inventory[npc_name].sextoys[cat]){
-					if (V.inventory[npc_name].sextoys[cat][item].gift_state == "held")
+	for (let inv in V.NPCName){
+		if (V.NPCName[inv].nam.toLowerCase() == npc_name){
+			for (let cat in V.NPCName[inv].sextoys){
+				for (let item in V.NPCName[inv].sextoys[cat]){
+					if (V.NPCName[inv].sextoys[cat][item].gift_state == "held")
 						return 1
 				}
 			}
@@ -178,4 +228,90 @@ window.listUniqueCarriedSextoys = function () {
 		}
 	}
 	return (list.length > 0 ? list : 0)
+}
+
+window.straponExceptionWearOff = function(){
+	for (let s_list in V.inventory.sextoys){
+		for (let strapon in V.inventory.sextoys[s_list]){
+			if (V.inventory.sextoys[s_list][strapon].name == V.worn.under_lower.name)
+				V.inventory.sextoys[s_list][strapon].worn = false
+		}
+	}
+}
+
+window.patchStraponsWearStatus = function () {
+	for (let s_list in V.inventory.sextoys){
+		for (let strapon in V.inventory.sextoys[s_list]){
+			if (V.inventory.sextoys[s_list][strapon].name != V.worn.under_lower.name && V.inventory.sextoys[s_list][strapon].type.includes("strap-on"))
+				V.inventory.sextoys[s_list][strapon].worn = false
+		}
+	}
+}
+
+
+
+window.checkIfNPCHasCategorySextoy = function (npc_name, category){
+	let found_list = []
+	let item_list = []
+	let recipient;
+
+	npc_name = npc_name.toLowerCase()
+	for (let s_item of setup.sextoys){
+		if (s_item.category == category)
+			item_list.push(s_item.name)
+	}
+	recipient = window.findIndexInNPCNameVar(npc_name);
+	for (let i_list in V.NPCName[recipient].sextoys){
+		if (item_list.includes(i_list)){
+			for (let item of V.NPCName[recipient].sextoys[i_list]){
+				if (item.gift_state != "held")
+				found_list.push(item)
+			}
+		}
+	}
+	return (found_list.length > 0 ? found_list : 0)
+}
+
+window.handSextoysGiftToNPC = function (npc_name){
+	let recipient = window.findIndexInNPCNameVar(npc_name);
+
+	npc_name = npc_name.toLowerCase()
+	for (let cat in V.NPCName[recipient].sextoys){
+		for (let item in V.NPCName[recipient].sextoys[cat]){
+			if (V.NPCName[recipient].sextoys[cat][item].gift_state == "held")
+			V.NPCName[recipient].sextoys[cat][item].gift_state = "received"
+		}
+	}
+}
+
+window.findIndexInNPCNameVar = function(npc_name) {
+	for (let npc in V.NPCName){
+		if (V.NPCName[npc].nam.toLowerCase() == npc_name.toLowerCase())
+			return npc
+	}
+}
+
+window.countCarriedSextoys = function() {
+	let count = 0;
+
+	for (let cat in V.inventory.sextoys){
+		for (let item of V.inventory.sextoys[cat]){
+			if (item.carried)
+				count++
+		}
+	}
+	return count;
+}
+
+window.updateCarryCountUI = function() {
+	document.getElementById("carryCount").outerHTML = `<div id="carryCount" class="sti_grid_carried_count">Items carried: <span class="`+ (window.countCarriedSextoys() >= max_carried ? "red" : "") + ` "> ` + window.countCarriedSextoys() + `/` + max_carried + `</span></div>`
+}
+
+window.greyButtonsIfCarryLimitReached = function(index, category) {
+	if (window.countCarriedSextoys() >= max_carried){
+		if (V.inventory.sextoys[category][index].worn == false && V.inventory.sextoys[category][index].carried == false)
+			document.getElementById("stiWearButton").classList.add("sti_carry_limit_reached")
+		if (V.inventory.sextoys[category][index].carried == false)
+			document.getElementById("stiCarryButton").classList.add("sti_carry_limit_reached")
+	}
 }
