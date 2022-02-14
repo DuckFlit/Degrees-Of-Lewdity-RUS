@@ -202,10 +202,6 @@ setup.sextoys = [
     }*/
 ];
 
-Array.prototype.random = function () {
-	return this[Math.floor((Math.random()*this.length))];
-}
-
 window.sexShopGridInit = function(){
 	$(function(){
 		for (let item of setup.sextoys){
