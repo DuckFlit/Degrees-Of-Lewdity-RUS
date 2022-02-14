@@ -1,4 +1,4 @@
-class Utils {
+window.Utils = new class {
     GetStack() {
         let output = `:: ${V.passage}`;
         if (DOL.Stack.length >= 1) {
@@ -15,5 +15,3 @@ class Utils {
         }
     }
 }
-
-window.Utils = new Utils();
