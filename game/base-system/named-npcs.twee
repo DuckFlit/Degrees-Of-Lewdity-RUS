@@ -4,8 +4,8 @@
 * The way we want to do this is: if an argument is passed (the argument being the Named NPC's name) we clearnpc the specific NPC in question.
 * If no argument is passed, we clear all the Named NPCs.
 */
-<<if $args[0]>>
-	<<set _passargs to $args[0]>>
+<<if _args[0]>>
+	<<set _passargs to _args[0]>>
 	<<set _leindex to $npc.indexOf(_passargs)>>
 	<<set $NPCName[$NPCNameList.indexOf(_passargs)].trust += ($enemytrust / 100)>>
 	<<for _temp to 0; _temp lt $NPCList.length; _temp++>>
@@ -209,15 +209,15 @@ Zohar
 
 <<widget "initnpcgender">>
 	<<for _i to 0; _i lt $NPCName.length; _i++>>
-		<<initnpcgendersingle _i $args[0]>>
+		<<initnpcgendersingle _i _args[0]>>
 	<</for>>
 <</widget>>
 
 <<widget "initnpcgendersingle">>
-<<set _i to $args[0]>>
+<<set _i to _args[0]>>
 
 <!-- Set Pronoun -->
-<<if !$NPCName[_i].pronoun or $NPCName[_i].pronoun is "none" or $args[1] is "genders">>
+<<if !$NPCName[_i].pronoun or $NPCName[_i].pronoun is "none" or _args[1] is "genders">>
 	<<if $malechance lt random(1, 100)>>
 		<<set $NPCName[_i].pronoun to "f">><<set $test to $NPCName[_i].pronoun>>
 	<<else>>
@@ -225,7 +225,7 @@ Zohar
 	<</if>>
 <</if>>
 <!-- Set Gender -->
-<<if !$NPCName[_i].gender or $NPCName[_i].gender is "none" or $args[1] is "genders">>
+<<if !$NPCName[_i].gender or $NPCName[_i].gender is "none" or _args[1] is "genders">>
 	<<if $NPCName[_i].pronoun is "m">>
 		<<if random(0, 99) gte $cbchance>>
 			<<set $NPCName[_i].gender to "m">>
@@ -258,7 +258,7 @@ Zohar
 <!-- can't use breastsize, since that would either break the numberslider
  or make one of the sizes always be randomized,
  but can use breastdesc not being changed from 0 as a substitute -->
-<<if $NPCName[_i].breastdesc is 0 or $args[1] is "breasts">>
+<<if $NPCName[_i].breastdesc is 0 or _args[1] is "breasts">>
 	<<if $NPCName[_i].pronoun is "m">>
 		<<set $NPCName[_i].breastsize to 0>>
 	<<else>>
@@ -314,7 +314,7 @@ alternative way to write that:
 	<<set _p_mod_upper to 1>><<set _p_mod_lower to 1>>
 <</if>>
 
-<<if $NPCName[_i].penissize is 0 or $args[1] is "penis">>
+<<if $NPCName[_i].penissize is 0 or _args[1] is "penis">>
 	<<if $NPCName[_i].gender is "f">>
 		<<set $NPCName[_i].penissize to 0>>
 		<<set $NPCName[_i].penisdesc to "none">>
@@ -361,7 +361,7 @@ alternative way to write that:
 <</widget>>
 
 <<widget "initnpc">>
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
 <<if $NPCName[_i].init is 0>> <!-- This prevents double-init from wiping variables -->
 	<<set $NPCName[_i].init to 1>>
@@ -504,9 +504,9 @@ alternative way to write that:
 <</widget>>
 
 <<widget "initNNPCClothes">>
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
-<<set $_generation to ($args[1] ? $args[1] : "none")>>
+<<set $_generation to (_args[1] ? _args[1] : "none")>>
 <<if !$NPCName[_i].outfits or $_generation is "reset" or $_generation is "update">>
 	<<if $_generation isnot "update">>
 		<<set $NPCName[_i].outfits to ["naked", "maleDefault", "femaleDefault"]>>
@@ -564,7 +564,7 @@ alternative way to write that:
 <</widget>>
 
 <<widget "getNNPCClothes">>
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
 <<if !$NPCName[_i].outfits>>
 	<<generateNPCClothes $NPCName[_i]>>
@@ -644,10 +644,10 @@ alternative way to write that:
 
 <!-- addNNPCOutfit and removeNNPCOutfit should only ever be used on named NPCs! -->
 <<widget "addNNPCOutfit">>
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
-<<set $_newNPCOutfit to $args[1]>>
-<<if $args[0] and $args[1]>>
+<<set $_newNPCOutfit to _args[1]>>
+<<if _args[0] and _args[1]>>
 	<<set $_src to Utils.GetStack()>>
 	<<if !setup.npcClothesSets.some(set => set.name.includes($_newNPCOutfit))>>
 		<<set $_msg to `NPC (${_nam}) was given invalid outfit (Outfit name: ${$_newNPCOutfit}). Please inform PurityGuy.`>>
@@ -665,10 +665,10 @@ alternative way to write that:
 <</widget>>
 
 <<widget "removeNNPCOutfit">>
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
-<<set $_newNPCOutfit to $args[1]>>
-<<if $args[0] and $args[1]>>
+<<set $_newNPCOutfit to _args[1]>>
+<<if _args[0] and _args[1]>>
 	<<set $_src to Utils.GetStack()>>
 	<<if _i lt 0>>
 		<<set $_msg to `NPC (${_nam}) ${"is"} invalid (Must be a named NPC. Check for typos!). Please inform PurityGuy.`>>
@@ -690,7 +690,7 @@ alternative way to write that:
 
 <!-- generates the strapon that the NNPC will use if the scene or rng calls for it. doesn't guarantee they will have it 100% of the time. -->
 <<widget "initNNPCstrapon">>
-	<<set $_npcName to $args[0]>>
+	<<set $_npcName to _args[0]>>
 	<<set $_name to $_npcName.nam>>
 	<<switch $_name>>
 		<<case "Whitney">>
@@ -703,7 +703,7 @@ alternative way to write that:
 <!-- give an NNPC a *new* strapon -->
 <!-- <<giveNNPCnewstrapon _npcNameSelect _straponSize _straponColour _straponShape _modifierOptions>> -->
 <<widget "giveNNPCnewstrapon">>
-	<<set $_name to $args[0]>>
+	<<set $_name to _args[0]>>
 	<<set $_npcName to $NPCName.find(npc => npc.nam === $_name)>>
 	<<set $_index to $NPCName.findIndex(npc => npc.nam === $_name)>>
 	<<if _newStrapon is undefined>>
@@ -727,11 +727,11 @@ alternative way to write that:
 <<widget "npc">>
 /* Prepare the call for multiple Named NPCs at the same time.
 * We do this by changing all $NPCList[0] calls to $NPCList[x] in which x can be any temporary variable. In this case, we'll use _npcno.
-* We also give the option to set the Named NPC in any available row if so desired, by calling a second argument $args[1]. In case no $args[1] is passed, it will default to the first row.
-* We also now have the option to have the Named NPC be set into the first available slot instead, by setting the secent argument $args[1] to a negative number, such as -1. However this will bypass the check for npcs that have broken free from a previous passage.
+* We also give the option to set the Named NPC in any available row if so desired, by calling a second argument _args[1]. In case no _args[1] is passed, it will default to the first row.
+* We also now have the option to have the Named NPC be set into the first available slot instead, by setting the secent argument _args[1] to a negative number, such as -1. However this will bypass the check for npcs that have broken free from a previous passage.
 * Remember: available rows go from 0 to 5 ($NPCList[0] to $NPCList[5]). No more than that.
 */
-<<if $args[1] lt 0>>
+<<if _args[1] lt 0>>
 	<<for _controller to 0; _controller lte $NPCList.length; _controller++>>
 		<<if _controller gte 6>>
 			<!-- Since 6 is past our limit, we want to alert the user something went wrong. For simplicity, we'll set _npcno to 0 and overwrite $NPCList[0] -->
@@ -747,8 +747,8 @@ alternative way to write that:
 			<<break>> <!-- Always remember to break the for loop when the condition is met -->
 		<</if>>
 	<</for>>
-<<elseif $args[1]>>
-	<<set _npcno to $args[1] - 1>>
+<<elseif _args[1]>>
+	<<set _npcno to _args[1] - 1>>
 <<else>>
 	<<set _npcno to 0>>
 <</if>>
@@ -759,7 +759,7 @@ alternative way to write that:
 
 <<set $lastgenerated to $passage>>
 
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
 
 <!-- Initialise NPC on first time called, introducing them to PC -->
@@ -961,7 +961,7 @@ alternative way to write that:
 
 <<widget "npcrelationship">>
 <!-- Robin, Avery, Kylar are unique and are treated differently -->
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
 <<if $NPCName[_i].init is 1>>
 	<<set $npctextlove to $NPCName[_i].love>>
@@ -976,9 +976,9 @@ alternative way to write that:
 <<widget "npcincr">>
 	<!-- Arguments passed are NNPC name, variable type, and value (+/-)-->
 
-	<<set _nam to $args[0]>>
-	<<set _var to $args[1]>>
-	<<set _val to $args[2]>>
+	<<set _nam to _args[0]>>
+	<<set _var to _args[1]>>
+	<<set _val to _args[2]>>
 
 	<<set _i to $NPCNameList.indexOf(_nam)>>
 
@@ -1045,9 +1045,9 @@ alternative way to write that:
 <!-- Sets selected NNPC variables using NNPC name-->
 <!-- Arguements passed are NNPC name, variable type, value -->
 
-<<set _nam to $args[0]>>
-<<set _var to $args[1]>>
-<<set _val to $args[2]>>
+<<set _nam to _args[0]>>
+<<set _var to _args[1]>>
+<<set _val to _args[2]>>
 
 <<set _i to $NPCNameList.indexOf(_nam)>>
 
@@ -1080,7 +1080,7 @@ alternative way to write that:
 <</widget>>
 
 <<widget "relationshiptext">>
-<<set _npc to $args[0]>>
+<<set _npc to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_npc)>>
 <!-- Special cases for Robin, Avery, Kylar -->
 <<switch _npc>>
@@ -1317,9 +1317,9 @@ alternative way to write that:
 
 <<widget "push_nnpc_genderknown">>
 <!-- Can be used in any situation to let all active named NPCs known the player's gender -->
-<!-- Use $args[0] to ignore clothing -->
+<!-- Use _args[0] to ignore clothing -->
 <!-- Won't ignore the chastity belt's "hidden" property (for now) -->
-<<if $args[0]>>
+<<if _args[0]>>
 	<<if !$worn.genitals.type.includes("hidden")>>
 		<<if $npc.length gt 0>>
 			<<for _i to 0; _i lt $npc.length; _i++>>
@@ -1341,10 +1341,10 @@ alternative way to write that:
 <<widget "NPCStatusCheck">>
 <!-- When NPCs are updated and made compatible with statusCheck-style widgets, add them to here. Make a new if statement, NOT an elseif -->
 <!-- Usage: call a SINGLE argument with every relevant NPC. <<NPCStatusCheck "Kylar Sydney">> will call <<kylarStatusCheck>> and <<sydneyStatusCheck>> -->
-<<if $args[0].includes("Kylar") and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1>>
+<<if _args[0].includes("Kylar") and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1>>
 	<<kylarStatusCheck>>
 <</if>>
-<<if $args[0].includes("Sydney") and $NPCName[$NPCNameList.indexOf("Sydney")].init is 1>>
+<<if _args[0].includes("Sydney") and $NPCName[$NPCNameList.indexOf("Sydney")].init is 1>>
 	<<sydneyStatusCheck>>
 <</if>>
 <</widget>>
