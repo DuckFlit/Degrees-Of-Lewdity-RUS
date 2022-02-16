@@ -1,28 +1,28 @@
 :: Pregnancy [widget]
 <<widget "impregnate">>
-<<if $args[0] and $analpregdisable is "f">>
+<<if _args[0] and $analpregdisable is "f">>
 	<<set _pregnancy to $sexStats.anus.pregnancy>>
 	<<if _pregnancy.count lt _pregnancy.maxCount>>
-		<<set $calc to [random(0,100), (1 + $args[1]) / (_pregnancy.count + 1)]>>
-		<<if $calc[0] lte $calc[1] or $args[2]>>
+		<<set $calc to [random(0,100), (1 + _args[1]) / (_pregnancy.count + 1)]>>
+		<<if $calc[0] lte $calc[1] or _args[2]>>
 			<<for _i to 0; _i lt _pregnancy.maxCount; _i++>>
 				<<if _pregnancy[_i] is null>>
-					<<switch $args[0]>>
+					<<switch _args[0]>>
 						<<case "slimes" "eels" "worms" "snakes" "spiders" "slugs" "maggots">>
-							<<set _creatureType to toTitleCase($args[0])>>
+							<<set _creatureType to toTitleCase(_args[0])>>
 							<<set _creatureType to _creatureType.substring(0,_creatureType.length - 1)>>
 						<<default>>
-							<<set _creatureType to toTitleCase($args[0])>>
+							<<set _creatureType to toTitleCase(_args[0])>>
 					<</switch>>
-					<<if $args[2]>>
+					<<if _args[2]>>
 						<<set _egg to {
-							"creature": $args[0],
+							"creature": _args[0],
 							"fertilised": true,
-							"daysLeft": Math.floor($args[2].stats.growth * 0.8),
+							"daysLeft": Math.floor(_args[2].stats.growth * 0.8),
 							"timeLeft": null,
 							"stats":{
-								"growth": Math.floor($args[2].stats.growth * 0.8),
-								"speed": Math.floor($args[2].stats.speed * 0.8)
+								"growth": Math.floor(_args[2].stats.growth * 0.8),
+								"speed": Math.floor(_args[2].stats.speed * 0.8)
 							}
 						}>>
 					<<else>>
@@ -70,7 +70,7 @@
 					<<set _pregnancy[_i] to clone(_egg)>>
 					<<set _pregnancy.count++>>
 
-					<<if $args[2] is undefined>>
+					<<if _args[2] is undefined>>
 						<<set _pregnancy.fertile to true>>
 						<<set _impreg to true>>
 					<</if>>
@@ -144,7 +144,7 @@
 <</widget>>
 
 <<widget "pregProgressTime">>
-<<if $args[0] and $analpregdisable is "f">>
+<<if _args[0] and $analpregdisable is "f">>
 	<<set _pregnancy to $sexStats.anus.pregnancy>>
 	<<set _pregnancy.lowestDaysLeft to null>>
 	<<for _i to 0; _i lt _pregnancy.maxCount; _i++>>
@@ -153,7 +153,7 @@
 				<<if _pregnancy[_i].timeLeft is null>>
 					<<set _pregnancy[_i].timeLeft to _pregnancy[_i].stats.speed>>
 				<<else>>
-					<<set _pregnancy[_i].timeLeft -= $args[0]>>
+					<<set _pregnancy[_i].timeLeft -= _args[0]>>
 				<</if>>
 				<<if _pregnancy[_i].timeLeft lte 0>>
 					<<set _pregnancy[_i].timeLeft to _pregnancy[_i].stats.speed>>
@@ -191,45 +191,45 @@
 /*0 -> _pregnancy[_i] or location (any but portable)*/
 /*1 -> Type*/
 /*2 -> locationId*/
-<<if $args[0] isnot null and $args[1]>>
+<<if _args[0] isnot null and _args[1]>>
 	<<set _portable to $container.portable>>
 	<<set _container to $container[$location]>>
 	<<set _pregnancy to $sexStats.anus.pregnancy>>
 
-	<<set _result to $args[1]>>
-	<<switch $args[0]>>
+	<<set _result to _args[1]>>
+	<<switch _args[0]>>
 		<<case 0 1 2 3>>
-			<<set _creature to clone(_pregnancy[$args[0]])>>
+			<<set _creature to clone(_pregnancy[_args[0]])>>
 		<<default>>
-			<<if $args[2] isnot null>>
-				<<set _creature to clone($container[$args[0]].creatures[$args[2]])>>
+			<<if _args[2] isnot null>>
+				<<set _creature to clone($container[_args[0]].creatures[_args[2]])>>
 			<</if>>
 	<</switch>>
 
 	<<if _creature>>
 		<<if _result is "destroy">>
 			<<set _creature to null>>
-			<<removeCreature $args[0] $args[2]>>
+			<<removeCreature _args[0] _args[2]>>
 		<<elseif _result is "portable">>
 			<<set _portable.creatures.push(clone(_creature))>>
 			<<set _value to Math.floor(1000 / _creature.stats.growth)>>
 			<<set _portable.value += _value>>
-			<<removeCreature $args[0] $args[2]>>
-		<<elseif _result is "replace" and $args[2] isnot null and $args[0] gte 0 and $args[0] lte 3>>
+			<<removeCreature _args[0] _args[2]>>
+		<<elseif _result is "replace" and _args[2] isnot null and _args[0] gte 0 and _args[0] lte 3>>
 			<<if _container.creatures[_i] isnot undefined>>
 				<<if _container.creatures[_i] isnot null>>
-					<<set _portable.creatures.push(clone(_container.creatures[$args[2]]))>>
-					<<set _value to Math.floor(1000 / _container.creatures[$args[2]].stats.growth)>>
+					<<set _portable.creatures.push(clone(_container.creatures[_args[2]]))>>
+					<<set _value to Math.floor(1000 / _container.creatures[_args[2]].stats.growth)>>
 					<<set _portable.value += _value>>
-					<<set _container.creatures[$args[2]] to clone(_creature)>>
+					<<set _container.creatures[_args[2]] to clone(_creature)>>
 					<<set _replaced to true>>
 				<</if>>
 			<</if>>
 			<<if _replaced isnot true>>
-				<<set _container.creatures[$args[2]] to clone(_creature)>>
+				<<set _container.creatures[_args[2]] to clone(_creature)>>
 				<<set _container.count += 1>>
 			<</if>>
-			<<removeCreature $args[0]>>
+			<<removeCreature _args[0]>>
 		<<elseif _result is "container">>
 			<<set _moveTo to false>>
 			<<for _containerSlot to 0; _containerSlot lt _container.maxCount; _containerSlot++>>
@@ -241,7 +241,7 @@
 				<<if _moveTo is true>>
 					<<set $container[$location].creatures[_containerSlot] to clone(_creature)>>
 					<<set $container[$location].count += 1>>
-					<<removeCreature $args[0] $args[2]>>
+					<<removeCreature _args[0] _args[2]>>
 					<<break>>
 				<</if>>
 			<</for>>
@@ -251,11 +251,11 @@
 <</widget>>
 
 <<widget "removeCreature">>
-	<<if $args[0] isnot null>>
+	<<if _args[0] isnot null>>
 		<<set _pregnancy to $sexStats.anus.pregnancy>>
-		<<switch $args[0]>>
+		<<switch _args[0]>>
 			<<case 0 1 2 3>>
-				<<set _pregnancy[$args[0]] to null>>
+				<<set _pregnancy[_args[0]] to null>>
 				<<set _pregnancy.count -= 1>>
 				<<set _pregnancy.givenBirth += 1>>
 				<<if _pregnancy.motherStatus is 0 and _pregnancy.givenBirth gte 3>>
@@ -263,9 +263,9 @@
 					<<set _pregnancy.maxCount to 2>>
 				<</if>>
 			<<default>>
-				<<if $args[1] isnot null>>
-					<<set $container[$args[0]].creatures[$args[1]] to null>>
-					<<set $container[$args[0]].count -= 1>>
+				<<if _args[1] isnot null>>
+					<<set $container[_args[0]].creatures[_args[1]] to null>>
+					<<set $container[_args[0]].count -= 1>>
 				<</if>>
 		<</switch>>
 	<</if>>
@@ -473,34 +473,34 @@
 <</for>>
 <</widget>>
 
-/*args[0] - potential mother, args[1] - npc fullDescription or "pc", $args[2] - type of pregnancy, $args[3] - _daysTillRemoval override for specific events*/
+/*args[0] - potential mother, args[1] - npc fullDescription or "pc", _args[2] - type of pregnancy, _args[3] - _daysTillRemoval override for specific events*/
 <<widget "recordVaginalSperm">>
 /*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-<<if $args[0] and $args[1] and $args[2] and $pregnancyTesting>>
-	<<if $args[0] is "pc">>
+<<if _args[0] and _args[1] and _args[2] and $pregnancyTesting>>
+	<<if _args[0] is "pc">>
 		<<set $_sperm to $sexStats.vagina.sperm>>
-	<<elseif $NPCNameList.includes($args[0])>>
-		<<if $NPCName[$NPCNameList.indexOf($args[0])].cycleEnabled is true>>
-			<<set $_sperm to $NPCName[$NPCNameList.indexOf($args[0])].sperm>>
+	<<elseif $NPCNameList.includes(_args[0])>>
+		<<if $NPCName[$NPCNameList.indexOf(_args[0])].cycleEnabled is true>>
+			<<set $_sperm to $NPCName[$NPCNameList.indexOf(_args[0])].sperm>>
 		<</if>>
 	<</if>>
 	<<if $_sperm>>
-		<<if $_sperm[$args[1]] is undefined>>
-			<<set $_sperm[$args[1]] to {"type":$args[2], count:[]}>>
+		<<if $_sperm[_args[1]] is undefined>>
+			<<set $_sperm[_args[1]] to {"type":_args[2], count:[]}>>
 		<</if>>
-		<<if $args[3]>>
-			<<set _daysTillRemoval to $args[3]>>
+		<<if _args[3]>>
+			<<set _daysTillRemoval to _args[3]>>
 		<<else>>
 			<<set _daysTillRemoval to random(6,10) * 0.5>>
 		<</if>>
-		<<for $_i to 0; $_i lt $_sperm[$args[1]].count.length;$_i++>>
-			<<if $_sperm[$args[1]].count[$_i][0] is _daysTillRemoval>>
-				<<set $_sperm[$args[1]].count[$_i][1] += 1>>
+		<<for $_i to 0; $_i lt $_sperm[_args[1]].count.length;$_i++>>
+			<<if $_sperm[_args[1]].count[$_i][0] is _daysTillRemoval>>
+				<<set $_sperm[_args[1]].count[$_i][1] += 1>>
 				<<set $_found to true>>
 			<</if>>
 		<</for>>
 		<<if $_found isnot true>>
-			<<set $_sperm[$args[1]].count.push([_daysTillRemoval, 1])>>
+			<<set $_sperm[_args[1]].count.push([_daysTillRemoval, 1])>>
 		<</if>>
 	<</if>>
 <</if>>
@@ -517,23 +517,23 @@
 <<set _hairColour to [$naturalhaircolour, $naturalhaircolour, $naturalhaircolour, $naturalhaircolour,"red","jetblack","black","brown","burntorange","platinumblond","strawberryblond","ginger","ashyblond","blond"]>>
 <</widget>>
 
-/*args[0] - pc or npc, args[1] - child #, $args[2] - location*/
+/*args[0] - pc or npc, args[1] - child #, _args[2] - location*/
 <<widget "giveBirthToChild">>
-<<if $args[0] and $args[1] isnot undefined and $args[2]>>
-	<<if $args[0] is "pc">>
+<<if _args[0] and _args[1] isnot undefined and _args[2]>>
+	<<if _args[0] is "pc">>
 		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
 	<<else>>
-		<<set $_pregnancy to $NPCName[$NPCNameList.indexOf($args[0])].pregnancy>>
+		<<set $_pregnancy to $NPCName[$NPCNameList.indexOf(_args[0])].pregnancy>>
 	<</if>>
-	<<set _child to clone($_pregnancy[$args[1]])>>
+	<<set _child to clone($_pregnancy[_args[1]])>>
 	<<set _child.born to {"day":clone($monthday), "month":clone($month[0].toUpperCase() + $month.substring(1)), "year":clone($year)}>>
 	<<getUsedChildrenNames>>
 	<<set _child.name to generateBabyName(_child.name, _child.gender, _usedChildrenNames)>>
 	<<set $_pregnancy.givenBirth++>>
 	<<set $_pregnancy[0].birthId to $_pregnancy.totalBirthEvents + $pregnancyStats.npcTotalBirthEvents + 1>>
 	<<set _child.childId to $pregnancyStats.playerChildren + $pregnancyStats.npcChildren + $pregnancyStats.npcChildrenUnrelatedToPlayer + 1>>
-	<<set _child.location to $args[2]>>
-	<<set _child.birthLocation to $args[2]>>
+	<<set _child.location to _args[2]>>
+	<<set _child.birthLocation to _args[2]>>
 	<<set $children[_child.childId] to clone(_child)>>
 	<<if _child.mother is "pc">>
 		<<set $pregnancyStats.playerChildren++>>
@@ -594,7 +594,7 @@
 
 /*Only run after npc has given birth to all children*/
 <<widget "npcEndPregnancy">>
-<<set $_pregnancy to $NPCName[$NPCNameList.indexOf($args[0])].pregnancy>>
+<<set $_pregnancy to $NPCName[$NPCNameList.indexOf(_args[0])].pregnancy>>
 <<if $_pregnancy>>
 	<<if $_pregnancy[0].father is "pc">>
 		<<switch $_pregnancy[0].type>>
@@ -635,12 +635,12 @@
 <<set _menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
 <</widget>>
 
-/*args[0] - birth location, $args[1] - next passage, $args[2] - time passage, $args[3] - debug*/
+/*args[0] - birth location, _args[1] - next passage, _args[2] - time passage, _args[3] - debug*/
 <<widget "birthUi">>
 <<set _pregnancy to $sexStats.vagina.pregnancy>>
 /*Debug Code*/
-<<if $args[3]>>
-	<<if $args[3] is "human">>
+<<if _args[3]>>
+	<<if _args[3] is "human">>
 		<<set _pregnancy[0] to {
 			"type": "human",
 			"mother": "PurityGuy",
@@ -694,7 +694,7 @@
 		}>>
 		<<set _pregnancy.type to "human">>
 	<</if>>
-	<<if $args[3] is "wolf">>
+	<<if _args[3] is "wolf">>
 		<<set _babyBase to {
 			"type": "wolf",
 			"mother": "pc",
@@ -751,18 +751,18 @@
 	<</for>>
 </div>
 <br>
-<<if $args[2]>>
-	<<set _hours to Math.floor($args[2] / 60)>>
-	<<set _minutes to $args[2] % 60>>
+<<if _args[2]>>
+	<<set _hours to Math.floor(_args[2] / 60)>>
+	<<set _minutes to _args[2] % 60>>
 	<<set _timeString to " (" + (_hours lt 10 ? "0": "") +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
 <</if>>
-<<link [["Next" + ($args[2] ? _timeString : "")|$args[1]]]>>
+<<link [["Next" + (_args[2] ? _timeString : "")|_args[1]]]>>
 	<<for _i to 0; _i lt 8; _i++>>
 		<<capture _i>>
 			<<if _pregnancy[_i] is null>>
 				<<break>>
 			<</if>>
-			<<giveBirthToChild "pc" _i $args[0]>>
+			<<giveBirthToChild "pc" _i _args[0]>>
 		<</capture>>
 	<</for>>
 	<<endPregnancy>>
@@ -770,45 +770,45 @@
 <</widget>>
 
 <<widget "birthChildElement">>
-<<capture $args>>
-	<<if _pregnancy[$args[0]].type isnot "human">>
-		Type: <<print _pregnancy[$args[0]].type[0].toUpperCase() + _pregnancy[$args[0]].type.substring(1)>> |
+<<capture _args>>
+	<<if _pregnancy[_args[0]].type isnot "human">>
+		Type: <<print _pregnancy[_args[0]].type[0].toUpperCase() + _pregnancy[_args[0]].type.substring(1)>> |
 	<</if>>
 	Gender:
-	<<switch _pregnancy[$args[0]].gender>>
+	<<switch _pregnancy[_args[0]].gender>>
 		<<case "m">>Male
 		<<case "f">>Female
 		<<case "h">>Hermaphrodite
 	<</switch>>
 	<br>
 	Mother: 
-	<<if _pregnancy[$args[0]].motherKnown>>
-		<<print _pregnancy[$args[0]].mother>>
+	<<if _pregnancy[_args[0]].motherKnown>>
+		<<print _pregnancy[_args[0]].mother>>
 	<<else>>
 		????
 	<</if>>
 	| Father: 
-	<<if _pregnancy[$args[0]].fatherKnown>>
-		<<print _pregnancy[$args[0]].father>>
+	<<if _pregnancy[_args[0]].fatherKnown>>
+		<<print _pregnancy[_args[0]].father>>
 	<<else>>
 		????
 	<</if>>
 	<br>
-	Size: <<print _pregnancy[$args[0]].features.size>> | Hair Colour: <<print _pregnancy[$args[0]].features.hairColour>>
-	<<if _pregnancy[$args[0]].features.skinColour isnot null>>
-		| Skin Colour: <<print _pregnancy[$args[0]].features.skinColour>>
+	Size: <<print _pregnancy[_args[0]].features.size>> | Hair Colour: <<print _pregnancy[_args[0]].features.hairColour>>
+	<<if _pregnancy[_args[0]].features.skinColour isnot null>>
+		| Skin Colour: <<print _pregnancy[_args[0]].features.skinColour>>
 	<</if>>
 	<br>
-	<<if _pregnancy[$args[0]].features.identical isnot null>>
-		Identical: <<print _pregnancy[$args[0]].features.identical>>
+	<<if _pregnancy[_args[0]].features.identical isnot null>>
+		Identical: <<print _pregnancy[_args[0]].features.identical>>
 		<br>
 	<</if>>
-	<label><<print '<<textbox "_pregnancy['+$args[0]+'].name" _pregnancy['+$args[0]+'].name>>'>></label>
+	<label><<print '<<textbox "_pregnancy['+_args[0]+'].name" _pregnancy['+_args[0]+'].name>>'>></label>
 	<br>
 	<span class="no-numberify"><<link "Random Name">>
 		<<getUsedChildrenNames>>
-		<<set _pregnancy[$args[0]].name to generateBabyName(undefined, _pregnancy[$args[0]].gender, _usedChildrenNames)>>
-		<<replace `"#child-" + $args[0]`>><<birthChildElement $args[0]>><</replace>>
+		<<set _pregnancy[_args[0]].name to generateBabyName(undefined, _pregnancy[_args[0]].gender, _usedChildrenNames)>>
+		<<replace `"#child-" + _args[0]`>><<birthChildElement _args[0]>><</replace>>
 	<</link>></span>
 	<small class="right">
 		saveId: <<print $saveId>>
@@ -822,7 +822,7 @@
 <<widget "wakingEffects">><<silently>>
 /*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
 <<if $pregnancyTesting is undefined>>
-<<elseif $args[0] and $sexStats.vagina.menstruation.currentState is "pregnant" or ($sexStats.vagina.menstruation.currentState is "normal" and ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f"))>>
+<<elseif _args[0] and $sexStats.vagina.menstruation.currentState is "pregnant" or ($sexStats.vagina.menstruation.currentState is "normal" and ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f"))>>
 	<<set _pregnancy to $sexStats.vagina.pregnancy>>
 	<<set _pills to $sexStats.pills>>
 	<<set $_last_preg_pill to clone(_pills["lastTaken"].pregnancy)>>
@@ -999,7 +999,7 @@
 
 <<widget "pregnancyWatersBrokenPassout">>
 /*Area specific passout text for alternative pregnancy birth events*/
-<<switch $args[0]>>
+<<switch _args[0]>>
 	<<case "asylum">>
 	<<case "forest">>
 		<<if _pregnancy.type is "wolf">>
@@ -1056,7 +1056,7 @@
 <</switch>>
 <br><br>
 /*Link for alternative pregnancy birth events*/
-<<switch $args[0]>>
+<<switch _args[0]>>
 	<<case "forest">>
 		<<if _pregnancy.type is "wolf">>
 			/*wolves help you if the pc is pregnanct with wolves?*/
@@ -1285,20 +1285,20 @@
 
 <</widget>>
 
-/*args[0] - mother, $args[1] - father, $args[2] - father known, $args[3] - birthId*/
+/*args[0] - mother, _args[1] - father, _args[2] - father known, _args[3] - birthId*/
 <<widget "pregnancyBabyBase">>
 <<set _babyBase to {
 	"type": null,
-	"mother": $args[0],
+	"mother": _args[0],
 	"motherKnown": true,
-	"father": $args[1] or false,
-	"fatherKnown": $args[2],
+	"father": _args[1] or false,
+	"fatherKnown": _args[2],
 	"born": {"day":null, "month":null, "year":null},
 	"concieved": {"day":clone($monthday), "month":clone($month[0].toUpperCase() + $month.substring(1)), "year":clone($year)},
 	"gender": null,
 	"features": {"size":null, "hairColour":null, "identical":null, "monster":null, "clothes":null, "skinColour": null},
 	"name":null,
-	"birthId": $args[3],
+	"birthId": _args[3],
 	"childId": null,
 	"location": null,
 	"birthLocation": null,
@@ -1306,11 +1306,11 @@
 }>>
 <</widget>>
 
-/*args[0] - mother, $args[1] - father, $args[2] - father known*/
+/*args[0] - mother, _args[1] - father, _args[2] - father known*/
 <<widget "humanPregnancy">>
-<<if $args[0] and $args[1]>>
-	<<if $args[0] is "pc">>
-		<<pregnancyBabyBase $args[0] $args[1] $args[2]>>
+<<if _args[0] and _args[1]>>
+	<<if _args[0] is "pc">>
+		<<pregnancyBabyBase _args[0] _args[1] _args[2]>>
 		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
 		<<if !$player.vaginaExist or $_pregnancy[0] isnot null>>
 			<<set _prevent to true>>
@@ -1319,12 +1319,12 @@
 			<<set $_fertility to true>>
 		<</if>>
 	<<else>>
-		<<pregnancyBabyBase $args[0] $args[1] $args[2] true>>
-		<<set $_pregnancy to $NPCName[$NPCNameList.indexOf($args[0])].pregnancy>>
-		<<if $NPCName[$NPCNameList.indexOf($args[0])].vagina is 0 or $NPCName[$NPCNameList.indexOf($args[0])].cycleEnabled isnot true or $_pregnancy[0] isnot null>>
+		<<pregnancyBabyBase _args[0] _args[1] _args[2] true>>
+		<<set $_pregnancy to $NPCName[$NPCNameList.indexOf(_args[0])].pregnancy>>
+		<<if $NPCName[$NPCNameList.indexOf(_args[0])].vagina is 0 or $NPCName[$NPCNameList.indexOf(_args[0])].cycleEnabled isnot true or $_pregnancy[0] isnot null>>
 			<<set _prevent to true>>
 		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf($args[0])].pills is "fertility">>
+		<<if $NPCName[$NPCNameList.indexOf(_args[0])].pills is "fertility">>
 			<<set $_fertility to true>>
 		<</if>>
 	<</if>>
@@ -1357,7 +1357,7 @@
 		<</if>>
 		<<set $_pregnancy[0].features.clothes to "naked">>
 		<<set $_pregnancy[0].features.skinColour to $skinColor.natural>>
-		<<if $_fertility and $args[0] is "pc">>
+		<<if $_fertility and _args[0] is "pc">>
 			<<set _twinBoost to 6 * _pills.pills[$_last_preg_pill].doseTaken>>
 		<<elseif $_fertility>>
 			<<set _twinBoost to 6>>
@@ -1394,7 +1394,7 @@
 				<<set $_pregnancy[1].features.identical to false>>
 			<</if>>
 		<</if>>
-		<<if $_fertility and $args[0] is "pc">>
+		<<if $_fertility and _args[0] is "pc">>
 			<<set _tripletBoost to 2 * _pills.pills[$_last_preg_pill].doseTaken>>
 		<<elseif $_fertility>>
 			<<set _tripletBoost to 2>>
@@ -1439,28 +1439,28 @@
 			<<set $_pregnancy.timer -= 10>>
 		<</if>>
 		<<set $_pregnancy.timerStart to clone($_pregnancy.timer)>>
-		<<if $args[0] is "pc">>
+		<<if _args[0] is "pc">>
 			<<playerPregStatSetup>>
 		<<else>>
-			<<set $_pregnancy.potentialFathers to [$args[1]]>>
+			<<set $_pregnancy.potentialFathers to [_args[1]]>>
 		<</if>>
 		<<set $_pregnancy.awareOf to false>>
 	<</if>>
 <</if>>
 <</widget>>
 
-/*args[0] - mother, $args[1] - father, $args[2] - father known, $args[3] - monster*/
+/*args[0] - mother, _args[1] - father, _args[2] - father known, _args[3] - monster*/
 <<widget "wolfPregnancy">>
-<<if $args[0] and $args[1]>>
-	<<pregnancyBabyBase $args[0] $args[1] $args[2]>>
-	<<if $args[0] is "pc">>
+<<if _args[0] and _args[1]>>
+	<<pregnancyBabyBase _args[0] _args[1] _args[2]>>
+	<<if _args[0] is "pc">>
 		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
 		<<if !$player.vaginaExist or $_pregnancy[0] isnot null>>
 			<<set _prevent to true>>
 		<</if>>
 	<<else>>
-		<<set $_pregnancy to $NPCName[$NPCNameList.indexOf($args[0])].pregnancy>>
-		<<if $NPCName[$NPCNameList.indexOf($args[0])].vagina is 0 or $NPCName[$NPCNameList.indexOf($args[0])].cycleEnabled isnot true or $_pregnancy[0] isnot null>>
+		<<set $_pregnancy to $NPCName[$NPCNameList.indexOf(_args[0])].pregnancy>>
+		<<if $NPCName[$NPCNameList.indexOf(_args[0])].vagina is 0 or $NPCName[$NPCNameList.indexOf(_args[0])].cycleEnabled isnot true or $_pregnancy[0] isnot null>>
 			<<set _prevent to true>>
 		<</if>>
 	<</if>>
@@ -1470,7 +1470,7 @@
 			<<set $_pregnancy.currentCount++>>
 			<<set $_pregnancy[$_i] to clone(_babyBase)>>
 			<<set $_pregnancy[$_i].type to "wolf">>
-			<<if $args[3] is true>>
+			<<if _args[3] is true>>
 				<<set $_pregnancy[$_i].features.monster to "monster">>
 			<<else>>
 				<<set $_pregnancy[$_i].features.monster to 0>>
@@ -1492,10 +1492,10 @@
 			<</if>>
 		<</for>>
 		<<set $_pregnancy.timer to random(70,110)>>
-		<<if $args[0] is "pc">>
+		<<if _args[0] is "pc">>
 			<<playerPregStatSetup>>
 		<<else>>
-			<<set $_pregnancy.potentialFathers to [$args[1]]>>
+			<<set $_pregnancy.potentialFathers to [_args[1]]>>
 		<</if>>
 		<<set $_pregnancy.awareOf to false>>
 	<</if>>

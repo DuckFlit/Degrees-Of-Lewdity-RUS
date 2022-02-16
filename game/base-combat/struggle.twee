@@ -14,10 +14,10 @@
 <</widget>>
 
 <<widget "struggle_creatures">>
-	<<set $struggle.number to $args[0]>>
+	<<set $struggle.number to _args[0]>>
 	<<set $struggle.descriptions to ["twisting", "slimy", "chittering", "slippery", "darting", "mesmerising", "big", "small", "colourful", "dull", "jittering", "shuddering", "pulsating", "wide", "thin", "thick", "buzzing", "glistening"]>>
 	<<for _i to 0; _i lt $struggle.number; _i++>>
-		<<generate_struggle_creature _i $args[1]>>
+		<<generate_struggle_creature _i _args[1]>>
 	<</for>>
 	<<for _part range ["mouth", "vagina", "penis", "anus", "chest"]>>
 		<<struggle_part_init _part>>
@@ -26,16 +26,16 @@
 
 <<widget "struggle_add">>
 	<<set _i to $struggle_number>>
-	<<set $struggle_number += $args[0]>>
+	<<set $struggle_number += _args[0]>>
 	<<for _i to _i; _i lt $struggle.number; _i++>>
-		<<generate_struggle_creature _i $args[1]>>
+		<<generate_struggle_creature _i _args[1]>>
 	<</for>>
 <</widget>>
 
 <<widget "generate_struggle_creature">>
-	<<set	_slot = $args[0];
-			_health = $args[1];
-			_type = $args[2] ? $args[2] : $struggle.creature
+	<<set	_slot = _args[0];
+			_health = _args[1];
+			_type = _args[2] ? _args[2] : $struggle.creature
 	>>
 	<<set $struggle.enemy[_slot] to {
 		location: "lurking",
@@ -48,10 +48,10 @@
 <</widget>>
 
 <<widget "struggle_part_init">>
-	<<if ["mouth", "vagina", "penis", "anus", "chest"].includes($args[0])>>
-		<<set $_part to $args[0]>>
+	<<if ["mouth", "vagina", "penis", "anus", "chest"].includes(_args[0])>>
+		<<set $_part to _args[0]>>
 	<<else>>
-		<span class="error">struggle_part_init error: invalid arguments: $args</span>
+		<span class="error">struggle_part_init error: invalid arguments: _args</span>
 	<</if>>
 	<!-- reset bodypart states -->
 	<<set $struggle[$_part] to {
@@ -97,12 +97,12 @@
 
 <<widget "struggle_name">><<silently>>
 <!-- prints full description of an enemy in specified slot or location -->
-	<<set $_loc to $args[0]>>
+	<<set $_loc to _args[0]>>
 	<<if $_loc lt $struggle.number>>
-	<!-- when $args[0] is a slot number -->
+	<!-- when _args[0] is a slot number -->
 		<<set _fulldesc to $struggle.enemy[$_loc].description + ' ' + $struggle.enemy[$_loc].name>>
 	<<elseif ["mouth", "vagina", "penis", "anus", "chest"].includes($_loc)>>
-	<!-- when $args[0] is a location -->
+	<!-- when _args[0] is a location -->
 		<<if $struggle[$_loc].description>>
 		<!-- description doesn't exist in older versions -->
 			<<set _fulldesc to $struggle[$_loc].description + ' ' + $struggle[$_loc].creature>>
@@ -913,7 +913,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 <</widget>>
 
 <<widget "handsActionsStruggleRadio">>
-	<<set _hpart to $args[0]>>
+	<<set _hpart to _args[0]>>
 	<<set V[_hpart + 'target'] to "struggle">>
 	<<if V[_hpart + 'use'] is "struggle">>
 		<br>
@@ -940,7 +940,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 <</widget>>
 
 <<widget "handsActionsStruggleRadiobkp">>
-	<<set _hpart to $args[0]>>
+	<<set _hpart to _args[0]>>
 	<<set V[_hpart + 'target'] to "struggle">>
 	<<if V[_hpart + 'use'] is "struggle">>
 		<br>
@@ -1818,7 +1818,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 
 <<widget "struggle_difficulty">>/*Unused for now*/
 <!-- can be slapped at the end of _pull actions to show difficulty -->
-	<<set $_chance to $struggle[$args[0]].success>>
+	<<set $_chance to $struggle[_args[0]].success>>
 	<<struggle_difficulty_set>>
 
 	| Success Chance :
@@ -1864,10 +1864,10 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 <</widget>>
 
 <<widget "struggle_fluid">>
-	<<if ["mouth", "vagina", "anus"].includes($args[0])>>
-		<<if $struggle[$args[0]].creature is "lurker" or $struggle.mouth.creature is "slime">>
+	<<if ["mouth", "vagina", "anus"].includes(_args[0])>>
+		<<if $struggle[_args[0]].creature is "lurker" or $struggle.mouth.creature is "slime">>
 			<<drugs 25>>
-		<<elseif $struggle[$args[0]].creature is "pale slime">>
+		<<elseif $struggle[_args[0]].creature is "pale slime">>
 			<<drugs 50>>
 			<<set $hallucinogen += 40>>
 		<</if>>
@@ -1876,7 +1876,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 
 <<widget "struggle_clothes">>
 
-<<if $args[0] is "vagina" or $args[0] is "penis">>
+<<if _args[0] is "vagina" or _args[0] is "penis">>
 	<<if $worn.over_lower.vagina_exposed is 0 or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.over_lower.skirt_down is 1)>>
 		<<set _struggle_exposed to "over">>
 	<<elseif $worn.lower.vagina_exposed is 0 or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.skirt_down is 1)>>
@@ -1888,7 +1888,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 	<<else>>
 		<<set _struggle_exposed to "naked">>
 	<</if>>
-<<elseif $args[0] is "anus">>
+<<elseif _args[0] is "anus">>
 	<<if (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.over_lower.skirt_down is 1) or $worn.over_lower.anus_exposed is 0>>
 		<<set _struggle_exposed to "over">>
 	<<elseif $worn.lower.anus_exposed is 0 or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.skirt_down is 1)>>
@@ -1900,7 +1900,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 	<<else>>
 		<<set _struggle_exposed to "naked">>
 	<</if>>
-<<elseif $args[0] is "chest">>
+<<elseif _args[0] is "chest">>
 	<<if !$worn.over_upper.type.includes("naked") and $worn.over_upper.exposed lt 2>>
 		<<set _struggle_exposed to "over_top">>
 	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.exposed lt 2>>
@@ -1910,7 +1910,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 	<<else>>
 		<<set _struggle_exposed to "naked">>
 	<</if>>
-<<elseif $args[0] is "mouth">>
+<<elseif _args[0] is "mouth">>
 	<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
 		<<set _struggle_exposed to "mask">>
 	<<else>>
@@ -1920,160 +1920,160 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 
 
 <<if _struggle_exposed is "over_top">>
-	<<set $struggle[$args[0]].progress -= 1>>
-	<<if $struggle[$args[0]].legs is "tentacles">>
-		The <<print $struggle[$args[0]].creature>>'s tentacles tear your $worn.over_upper.name as they search for a way in.<<neutral 2>><<set $worn.over_upper.integrity -= 10>>
+	<<set $struggle[_args[0]].progress -= 1>>
+	<<if $struggle[_args[0]].legs is "tentacles">>
+		The <<print $struggle[_args[0]].creature>>'s tentacles tear your $worn.over_upper.name as they search for a way in.<<neutral 2>><<set $worn.over_upper.integrity -= 10>>
 	<<else>>
-		The <<print $struggle[$args[0]].creature>>'s appendage prods your <<struggle_bodypart $args[0]>> through your $worn.over_upper.name.<<neutral 1>>
+		The <<print $struggle[_args[0]].creature>>'s appendage prods your <<struggle_bodypart _args[0]>> through your $worn.over_upper.name.<<neutral 1>>
 	<</if>>
 	<<set $worn.over_upper.integrity -= 10>>
-	<<if $struggle[$args[0]].creature is "slime">>
+	<<if $struggle[_args[0]].creature is "slime">>
 		<span class="purple">The fabric hisses as it dissolves in the slime.</span><<set $worn.over_upper.integrity -= 30>>
-	<<elseif $struggle[$args[0]].creature is "pale slime">>
+	<<elseif $struggle[_args[0]].creature is "pale slime">>
 		<span class="purple">The fabric violently hisses as it dissolves in the pale slime.</span><<set $worn.over_upper.integrity -= 50>>
 	<</if>>
 	<<if $worn.over_upper.integrity lte 0>>
 		<<integritycheck no_text>><<exposure>>
-		<<if $struggle[$args[0]].legs is "tentacles">>
+		<<if $struggle[_args[0]].legs is "tentacles">>
 			The tentacles wrap around the fabric, and <span class="pink">tear it off your body with a flick, exposing your <<top>>.</span>
 		<<else>>
 			Its appendage pierces the fabric, and <span class="pink">tears it off your body with a flick, exposing your <<top>>.</span>
 		<</if>>
 	<</if>>
 <<elseif _struggle_exposed is "main_top">>
-	<<set $struggle[$args[0]].progress -= 1>>
-	<<if $struggle[$args[0]].legs is "tentacles">>
-		The <<print $struggle[$args[0]].creature>>'s tentacles tear your $worn.upper.name as they search for a way in.<<neutral 2>><<set $worn.upper.integrity -= 10>>
+	<<set $struggle[_args[0]].progress -= 1>>
+	<<if $struggle[_args[0]].legs is "tentacles">>
+		The <<print $struggle[_args[0]].creature>>'s tentacles tear your $worn.upper.name as they search for a way in.<<neutral 2>><<set $worn.upper.integrity -= 10>>
 	<<else>>
-		The <<print $struggle[$args[0]].creature>>'s appendage prods your <<struggle_bodypart $args[0]>> through your $worn.upper.name.<<neutral 1>>
+		The <<print $struggle[_args[0]].creature>>'s appendage prods your <<struggle_bodypart _args[0]>> through your $worn.upper.name.<<neutral 1>>
 	<</if>>
 	<<set $worn.upper.integrity -= 10>>
-	<<if $struggle[$args[0]].creature is "slime">>
+	<<if $struggle[_args[0]].creature is "slime">>
 		<span class="purple">The fabric hisses as it dissolves in the slime.</span><<set $worn.upper.integrity -= 30>>
-	<<elseif $struggle[$args[0]].creature is "pale slime">>
+	<<elseif $struggle[_args[0]].creature is "pale slime">>
 		<span class="purple">The fabric violently hisses as it dissolves in the pale slime.</span><<set $worn.upper.integrity -= 50>>
 	<</if>>
 	<<if $worn.upper.integrity lte 0>>
 		<<integritycheck no_text>><<exposure>>
-		<<if $struggle[$args[0]].legs is "tentacles">>
+		<<if $struggle[_args[0]].legs is "tentacles">>
 			The tentacles wrap around the fabric, and <span class="pink">tear it off your body with a flick, exposing your <<undertop>>.</span>
 		<<else>>
 			Its appendage pierces the fabric, and <span class="pink">tears it off your body with a flick, exposing your <<undertop>>.</span>
 		<</if>>
 	<</if>>
 <<elseif _struggle_exposed is "under_top">>
-	<<set $struggle[$args[0]].progress -= 1>>
-	<<if $struggle[$args[0]].legs is "tentacles">>
-		The <<print $struggle[$args[0]].creature>>'s tentacles tear your $worn.under_upper.name as they search for a way in.<<neutral 3>><<set $worn.under_upper.integrity -= 10>>
+	<<set $struggle[_args[0]].progress -= 1>>
+	<<if $struggle[_args[0]].legs is "tentacles">>
+		The <<print $struggle[_args[0]].creature>>'s tentacles tear your $worn.under_upper.name as they search for a way in.<<neutral 3>><<set $worn.under_upper.integrity -= 10>>
 	<<else>>
-		The <<print $struggle[$args[0]].creature>>'s appendage prods your $worn.under_upper.name.
+		The <<print $struggle[_args[0]].creature>>'s appendage prods your $worn.under_upper.name.
 	<</if>>
 	<<set $worn.under_upper.integrity -= 10>>
-	<<if $struggle[$args[0]].creature is "slime">>
+	<<if $struggle[_args[0]].creature is "slime">>
 		<span class="purple">The fabric hisses as it dissolves in the slime.</span><<set $worn.under_upper.integrity -= 30>>
-	<<elseif $struggle[$args[0]].creature is "pale slime">>
+	<<elseif $struggle[_args[0]].creature is "pale slime">>
 		<span class="purple">The fabric violently hisses as it dissolves in the pale slime.</span><<set $worn.under_upper.integrity -= 50>>
 	<</if>>	
 	<<if $worn.under_upper.integrity lte 0>>
 		<<integritycheck no_text>><<exposure>>
-		<<if $struggle[$args[0]].legs is "tentacles">>
+		<<if $struggle[_args[0]].legs is "tentacles">>
 			The tentacles wrap around the fabric, and <span class="pink">tear it off your body with a flick, exposing your <<breasts>>.</span>
 		<<else>>
 			Its appendage pierces the fabric, and <span class="pink">tears it off your body with a flick, exposing your <<breasts>>.</span>
 		<</if>>
 	<</if>>
 <<elseif _struggle_exposed is "over">>
-	<<set $struggle[$args[0]].progress -= 1>>
-	<<if $struggle[$args[0]].legs is "tentacles">>
-		The <<print $struggle[$args[0]].creature>>'s tentacles tear at your $worn.over_lower.name, trying to reach the <<struggle_bodypart $args[0]>> beneath.<<neutral 2>><<set $worn.over_lower.integrity -= 10>>
+	<<set $struggle[_args[0]].progress -= 1>>
+	<<if $struggle[_args[0]].legs is "tentacles">>
+		The <<print $struggle[_args[0]].creature>>'s tentacles tear at your $worn.over_lower.name, trying to reach the <<struggle_bodypart _args[0]>> beneath.<<neutral 2>><<set $worn.over_lower.integrity -= 10>>
 	<<else>>
-		The <<print $struggle[$args[0]].creature>> tears at your $worn.over_lower.name, trying to reach the <<struggle_bodypart $args[0]>> beneath.<<neutral 1>>
+		The <<print $struggle[_args[0]].creature>> tears at your $worn.over_lower.name, trying to reach the <<struggle_bodypart _args[0]>> beneath.<<neutral 1>>
 	<</if>>
 	<<set $worn.over_lower.integrity -= 10>>
-	<<if $struggle[$args[0]].creature is "slime">>
+	<<if $struggle[_args[0]].creature is "slime">>
 		<span class="purple">The fabric hisses as it dissolves in the slime.</span><<set $worn.over_lower.integrity -= 30>>
-	<<elseif $struggle[$args[0]].creature is "pale slime">>
+	<<elseif $struggle[_args[0]].creature is "pale slime">>
 		<span class="purple">The fabric violently hisses as it dissolves in the pale slime.</span><<set $worn.over_lower.integrity -= 50>>
 	<</if>>
 	<<if $worn.over_lower.integrity lte 0>>
 		<<integritycheck no_text>><<exposure>>
-		<<if $struggle[$args[0]].legs is "tentacles">>
+		<<if $struggle[_args[0]].legs is "tentacles">>
 			Its tentacles wrap around the fabric, and <span class="pink">tear it off your body with a flick, exposing your <<crotch>>.</span>
 		<<else>>
 			Its appendage pierces the fabric, and <span class="pink">tears it off your body with a flick, exposing your <<crotch>>.</span>
 		<</if>>
 	<</if>>
 <<elseif _struggle_exposed is "main">>
-	<<set $struggle[$args[0]].progress -= 1>>
-	<<if $struggle[$args[0]].legs is "tentacles">>
-		The <<print $struggle[$args[0]].creature>>'s tentacles tear at your $worn.lower.name, trying to reach the <<struggle_bodypart $args[0]>> beneath.<<neutral 2>><<set $worn.lower.integrity -= 10>>
+	<<set $struggle[_args[0]].progress -= 1>>
+	<<if $struggle[_args[0]].legs is "tentacles">>
+		The <<print $struggle[_args[0]].creature>>'s tentacles tear at your $worn.lower.name, trying to reach the <<struggle_bodypart _args[0]>> beneath.<<neutral 2>><<set $worn.lower.integrity -= 10>>
 	<<else>>
-		The <<print $struggle[$args[0]].creature>> tears at your $worn.lower.name, trying to reach the <<struggle_bodypart $args[0]>> beneath.<<neutral 1>>
+		The <<print $struggle[_args[0]].creature>> tears at your $worn.lower.name, trying to reach the <<struggle_bodypart _args[0]>> beneath.<<neutral 1>>
 	<</if>>
 	<<set $worn.lower.integrity -= 10>>
-	<<if $struggle[$args[0]].creature is "slime">>
+	<<if $struggle[_args[0]].creature is "slime">>
 		<span class="purple">The fabric hisses as it dissolves in the slime.</span><<set $worn.lower.integrity -= 30>>
-	<<elseif $struggle[$args[0]].creature is "pale slime">>
+	<<elseif $struggle[_args[0]].creature is "pale slime">>
 		<span class="purple">The fabric violently hisses as it dissolves in the pale slime.</span><<set $worn.lower.integrity -= 50>>
 	<</if>>
 	<<if $worn.lower.integrity lte 0>>
 		<<integritycheck no_text>><<exposure>>
-		<<if $struggle[$args[0]].legs is "tentacles">>
+		<<if $struggle[_args[0]].legs is "tentacles">>
 			Its tentacles wrap around the fabric, and <span class="pink">tear it off your body with a flick, exposing your <<undies>>.</span>
 		<<else>>
 			Its appendage pierces the fabric, and <span class="pink">tears it off your body with a flick, exposing your <<undies>>.</span>
 		<</if>>
 	<</if>>
 <<elseif _struggle_exposed is "under">>
-	<<set $struggle[$args[0]].progress -= 1>>
-	<<if $struggle[$args[0]].legs is "tentacles">>
-		The <<print $struggle[$args[0]].creature>>'s tentacles worm their way inside your $worn.under_lower.name, trying to get to the <<struggle_bodypart $args[0]>> beneath.<<neutral 2>><<set $worn.under_lower.integrity -= 10>>
+	<<set $struggle[_args[0]].progress -= 1>>
+	<<if $struggle[_args[0]].legs is "tentacles">>
+		The <<print $struggle[_args[0]].creature>>'s tentacles worm their way inside your $worn.under_lower.name, trying to get to the <<struggle_bodypart _args[0]>> beneath.<<neutral 2>><<set $worn.under_lower.integrity -= 10>>
 	<<else>>
-		The <<print $struggle[$args[0]].creature>> tears at your $worn.under_lower.name, trying to get to the <<struggle_bodypart $args[0]>> beneath.<<neutral 1>>
+		The <<print $struggle[_args[0]].creature>> tears at your $worn.under_lower.name, trying to get to the <<struggle_bodypart _args[0]>> beneath.<<neutral 1>>
 	<</if>>
 	<<set $worn.under_lower.integrity -= 10>>
-	<<if $struggle[$args[0]].creature is "slime">>
+	<<if $struggle[_args[0]].creature is "slime">>
 		<span class="purple">The fabric hisses as it dissolves in the slime.</span><<set $worn.under_lower.integrity -= 30>>
-	<<elseif $struggle[$args[0]].creature is "pale slime">>
+	<<elseif $struggle[_args[0]].creature is "pale slime">>
 		<span class="purple">The fabric violently hisses as it dissolves in the pale slime.</span><<set $worn.under_lower.integrity -= 50>>
 	<</if>>
 	<<if $worn.under_lower.integrity lte 0>>
 		<<integritycheck no_text>><<exposure>>
-		<<if $struggle[$args[0]].legs is "tentacles">>
+		<<if $struggle[_args[0]].legs is "tentacles">>
 			Its tentacles worm their way into the fabric, and <span class="pink">tear it off your body with a flick, exposing your <<genitals>>.</span>
 		<<else>>
 			Its appendage pierces the fabric, and <span class="pink">tears it off your body with a flick, exposing your <<genitals>>.</span>
 		<</if>>
 	<</if>>
 <<elseif _struggle_exposed is "genitals">>
-	<<set $struggle[$args[0]].progress -= 1>>
-	<<if $struggle[$args[0]].legs is "tentacles">>
-		The <<print $struggle[$args[0]].creature>>'s tentacles worm behind your $worn.genitals.name, brushing against your <<struggle_bodypart $args[0]>> as they search for a way in.<<neutral 2>><<set $worn.genitals.integrity -= 10>>
+	<<set $struggle[_args[0]].progress -= 1>>
+	<<if $struggle[_args[0]].legs is "tentacles">>
+		The <<print $struggle[_args[0]].creature>>'s tentacles worm behind your $worn.genitals.name, brushing against your <<struggle_bodypart _args[0]>> as they search for a way in.<<neutral 2>><<set $worn.genitals.integrity -= 10>>
 	<<else>>
-		The <<print $struggle[$args[0]].creature>> tears at your $worn.genitals.name, trying to get to your <<struggle_bodypart $args[0]>> beneath.<<neutral 1>><<set $worn.genitals.integrity -= 10>>
+		The <<print $struggle[_args[0]].creature>> tears at your $worn.genitals.name, trying to get to your <<struggle_bodypart _args[0]>> beneath.<<neutral 1>><<set $worn.genitals.integrity -= 10>>
 	<</if>>
-	<<if $struggle[$args[0]].creature is "slime">>
+	<<if $struggle[_args[0]].creature is "slime">>
 		<span class="purple">The material hisses as it dissolves in the slime.</span><<set $worn.genitals.integrity -= 30>>
-	<<elseif $struggle[$args[0]].creature is "pale slime">>
+	<<elseif $struggle[_args[0]].creature is "pale slime">>
 		<span class="purple">The material violently hisses as it dissolves in the pale slime.</span><<set $worn.genitals.integrity -= 50>>
 	<</if>>
 	<<if $worn.genitals.integrity lte 0>>
 		<<integritycheck no_text>><<exposure>>
-		<<if $struggle[$args[0]].legs is "tentacles">>
-			Its tentacles wrap around the material, and pull. The material groans <span class="pink">as the <<print $struggle[$args[0]].creature>> tears it off your body with a flick, exposing your <<genitals>>.</span>
+		<<if $struggle[_args[0]].legs is "tentacles">>
+			Its tentacles wrap around the material, and pull. The material groans <span class="pink">as the <<print $struggle[_args[0]].creature>> tears it off your body with a flick, exposing your <<genitals>>.</span>
 		<<else>>
-			Its appendage pierces the material, and pulls. The material groans <span class="pink">as the <<print $struggle[$args[0]].creature>> tears it off your body with a flick, exposing your <<genitals>>.</span>
+			Its appendage pierces the material, and pulls. The material groans <span class="pink">as the <<print $struggle[_args[0]].creature>> tears it off your body with a flick, exposing your <<genitals>>.</span>
 		<</if>>
 	<<else>>
-		<<if $struggle[$args[0]].damage gte 10>>
+		<<if $struggle[_args[0]].damage gte 10>>
 			It hurts itself against the material, <span class="green">and leaps away.</span>
-			<<if $args[0] is "vagina">>
+			<<if _args[0] is "vagina">>
 				<<set $vaginause to 0>>
 				<<set $vaginastate to 0>>
 				<<struggle_part_init "vagina">>
 				<<set $struggle.warded += 1>>
 				<<struggleClearActions "vagina_">>
-			<<elseif $args[0] is "penis">>
+			<<elseif _args[0] is "penis">>
 				<<set $penisuse to 0>>
 				<<set $penisstate to 0>>
 				<<struggle_part_init "penis">>
@@ -2088,24 +2088,24 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<</if>>
 		<<else>>
 			It hurts itself against the material.
-			<<set $struggle[$args[0]].damage += 1>>
+			<<set $struggle[_args[0]].damage += 1>>
 		<</if>>
 	<</if>>
 <<elseif _struggle_exposed is "mask">>
-	<<set $struggle[$args[0]].progress -= 1>>
-	<<if $struggle[$args[0]].legs is "tentacles">>
-		The <<print $struggle[$args[0]].creature>>'s tentacles worm their way inside your $worn.face.name, trying to get to the <<struggle_bodypart $args[0]>> beneath.<<neutral 2>><<damageFaceCover 5 struggle>>
+	<<set $struggle[_args[0]].progress -= 1>>
+	<<if $struggle[_args[0]].legs is "tentacles">>
+		The <<print $struggle[_args[0]].creature>>'s tentacles worm their way inside your $worn.face.name, trying to get to the <<struggle_bodypart _args[0]>> beneath.<<neutral 2>><<damageFaceCover 5 struggle>>
 	<<else>>
-		The <<print $struggle[$args[0]].creature>> tears at your $worn.face.name, trying to get to the <<struggle_bodypart $args[0]>> beneath.<<neutral 1>>
+		The <<print $struggle[_args[0]].creature>> tears at your $worn.face.name, trying to get to the <<struggle_bodypart _args[0]>> beneath.<<neutral 1>>
 	<</if>>
 	<<damageFaceCover 5 struggle>>
-	<<if $struggle[$args[0]].creature is "slime">>
+	<<if $struggle[_args[0]].creature is "slime">>
 		<span class="purple">The fabric hisses as it dissolves in the slime.</span><<damageFaceCover 20 struggle>>
-	<<elseif $struggle[$args[0]].creature is "pale slime">>
+	<<elseif $struggle[_args[0]].creature is "pale slime">>
 		<span class="purple">The fabric violently hisses as it dissolves in the pale slime.</span><<damageFaceCover 30 struggle>>
 	<</if>>
 	<<if $worn.face.integrity lte 0>>
-		<<if $struggle[$args[0]].legs is "tentacles">>
+		<<if $struggle[_args[0]].legs is "tentacles">>
 			Its tentacles worm their way into the fabric, and <span class="pink">tear it off your body with a flick, exposing your mouth.</span>
 		<<else>>
 			Its appendage pierces the fabric, and <span class="pink">tears it off your body with a flick, exposing your mouth.</span>
@@ -2113,23 +2113,23 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 		<<faceruined>><<set $worn.face.type.push("broken")>>
 	<</if>>
 <<elseif _struggle_exposed is "naked">>
-	<<if $args[0] is "vagina">>
-		The <<print $struggle[$args].creature>>'s appendage <span class="purple">presses against your <<pussy>>.</span><<neutral 4>>
-	<<elseif $args[0] is "penis">>
-		The <<print $struggle[$args].creature>> <span class="purple">presses an aperture against your <<penis>>.</span><<neutral 4>>
-	<<elseif $args[0] is "anus">>
-		The <<print $struggle[$args].creature>>'s appendage <span class="purple">presses against your <<bottom>>.</span><<neutral 4>>
-	<<elseif $args[0] is "chest">>
-		The <<print $struggle[$args].creature>>'s appendage <span class="purple">presses against your <<breasts>>.</span><<neutral 4>>
-	<<elseif $args[0] is "mouth">>
-		The <<print $struggle[$args].creature>>'s appendage <span class="purple">presses against your mouth.</span><<neutral 4>>
+	<<if _args[0] is "vagina">>
+		The <<print $struggle[_args].creature>>'s appendage <span class="purple">presses against your <<pussy>>.</span><<neutral 4>>
+	<<elseif _args[0] is "penis">>
+		The <<print $struggle[_args].creature>> <span class="purple">presses an aperture against your <<penis>>.</span><<neutral 4>>
+	<<elseif _args[0] is "anus">>
+		The <<print $struggle[_args].creature>>'s appendage <span class="purple">presses against your <<bottom>>.</span><<neutral 4>>
+	<<elseif _args[0] is "chest">>
+		The <<print $struggle[_args].creature>>'s appendage <span class="purple">presses against your <<breasts>>.</span><<neutral 4>>
+	<<elseif _args[0] is "mouth">>
+		The <<print $struggle[_args].creature>>'s appendage <span class="purple">presses against your mouth.</span><<neutral 4>>
 	<</if>>
 <</if>>
 
 <</widget>>
 
 <<widget "struggle_bodypart">><<silently>>
-	<<switch $args[0]>>
+	<<switch _args[0]>>
 		<<case "vagina">>
 			<<pussy>>
 		<<case "penis">>
@@ -2145,7 +2145,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 <</widget>>
 
 <<widget "struggle_appendage">><<silently>>
-	<<switch $struggle[$args[0]].creature>>
+	<<switch $struggle[_args[0]].creature>>
 		<<case "wasp" "bee">>
 			<<set $_text_output to "stinger">>
 		<<case "squid">>
@@ -2177,38 +2177,38 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 <</widget>>
 
 <<widget "struggle_attach">>
-	<<set $struggle[$args[0]].creature to $struggle.enemy[_i].name>>
-	<<set $struggle[$args[0]].description to $struggle.enemy[_i].description>>
-	<<set $struggle[$args[0]].legs to $struggle.enemy[_i].legs>>
-	<<set $struggle.enemy[_i].location to $args[0]>>
+	<<set $struggle[_args[0]].creature to $struggle.enemy[_i].name>>
+	<<set $struggle[_args[0]].description to $struggle.enemy[_i].description>>
+	<<set $struggle[_args[0]].legs to $struggle.enemy[_i].legs>>
+	<<set $struggle.enemy[_i].location to _args[0]>>
 	<!-- temp var to highlight newly attached lurkers -->
-	<<set T['gold_' + $args[0]] to true>>
+	<<set T['gold_' + _args[0]] to true>>
 <</widget>>
 
 
 <<widget "struggleClearActions">>
-	<<if $args[0]>>
-		<<if ($mouthaction).toString().includes($args[0])>>
+	<<if _args[0]>>
+		<<if ($mouthaction).toString().includes(_args[0])>>
 			<<set $mouthactiondefault to $mouthaction>><<set $mouthaction to 0>>
 		<</if>>
-		<<if ($leftaction).toString().includes($args[0])>>
+		<<if ($leftaction).toString().includes(_args[0])>>
 			<<set $leftactiondefault to $leftaction>><<set $leftaction to 0>>
 		<</if>>
-		<<if ($rightaction).toString().includes($args[0])>>
+		<<if ($rightaction).toString().includes(_args[0])>>
 			<<set $rightactiondefault to $rightaction>><<set $rightaction to 0>>
 		<</if>>
-		<<if ($leftarmstate).toString().includes($args[0])>>
+		<<if ($leftarmstate).toString().includes(_args[0])>>
 			<<set $leftarm to 0>><<set $leftarmstate to 0>>
 		<</if>>
-		<<if ($rightarmstate).toString().includes($args[0])>>
+		<<if ($rightarmstate).toString().includes(_args[0])>>
 			<<set $rightarm to 0>><<set $rightarmstate to 0>>
 		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "struggle_region">><<silently>>
-	<<if ["mouth","vagina","penis","anus","chest"].includes($args[0])>>
-		<<switch $args[0]>>
+	<<if ["mouth","vagina","penis","anus","chest"].includes(_args[0])>>
+		<<switch _args[0]>>
 			<<case "mouth">><<set _text_output to "head">>
 			<<case "vagina">><<set _text_output to "pelvis">>
 			<<case "penis">><<set _text_output to "tummy">>

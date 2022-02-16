@@ -1,15 +1,15 @@
 :: Widgets Combat [widget]
 
 <<widget "takeVirginity">>
-<<if $args[1]>>
-	<<if $args[1] is "penile" and playerHasStrapon()>>
+<<if _args[1]>>
+	<<if _args[1] is "penile" and playerHasStrapon()>>
 		<!-- Do nothing -->
 	<<else>>
-		<<if $player.virginity[$args[1]] is true>>
-			<<if $wraith and $wraith.mimic is $args[0]>>
-				<<set $args[0] to "Ivory Wraith">>
-			<<elseif $args[1] is "vaginal" or $args[1] is "penile">>
-				<<switch $args[0]>>
+		<<if $player.virginity[_args[1]] is true>>
+			<<if $wraith and $wraith.mimic is _args[0]>>
+				<<set _args[0] to "Ivory Wraith">>
+			<<elseif _args[1] is "vaginal" or _args[1] is "penile">>
+				<<switch _args[0]>>
 					<<case "Robin">><<earnFeat "Robin the Lover">>
 					<<case "Kylar">><<earnFeat "Kylar the Obsessed">>
 					<<case "Eden">><<earnFeat "Eden the Lonely">>
@@ -24,14 +24,14 @@
 					<<case "Morgan">><<earnFeat "Morgan the Lost">>
 				<</switch>>
 			<</if>>
-			<<if $args[0] isnot undefined and $args[0] isnot 0>>
-				<<set $player.virginity[$args[1]] to $args[0]>>
+			<<if _args[0] isnot undefined and _args[0] isnot 0>>
+				<<set $player.virginity[_args[1]] to _args[0]>>
 			<<else>>
-				<<set $player.virginity[$args[1]] to false>>
+				<<set $player.virginity[_args[1]] to false>>
 			<</if>>
 		<</if>>
 
-		<<if $player.virginity.temple is true and ($args[1] is "vaginal" or $args[1] is "penile") and $templePromised isnot $args[0]>>
+		<<if $player.virginity.temple is true and (_args[1] is "vaginal" or _args[1] is "penile") and $templePromised isnot _args[0]>>
 			<<set $player.virginity.temple to false>>
 		<</if>>
 	<</if>>
@@ -40,7 +40,7 @@
 
 <<widget "takeHandholdingVirginity">>
 <<if $player.virginity.handholding is true>>
-	<<switch $args[1]>>
+	<<switch _args[1]>>
 		<<case "romantic">>
 			<span class="lewd">You aren't used to this kind of romantic handholding.</span><<arousal 2000>><<ggarousal>>
 		<<case "rape">>
@@ -50,17 +50,17 @@
 		<<default>>
 			<span class="blue">You feel nervous holding the hands of someone you're not close to.</span><<stress 20>><<gstress>>
 	<</switch>>
-	<<takeVirginity $args[0] "handholding">>
+	<<takeVirginity _args[0] "handholding">>
 <</if>>
-<<takeNPCVirginity $args[0] "handholding">>
+<<takeNPCVirginity _args[0] "handholding">>
 <</widget>>
 
 <<widget "takeKissVirginity">>
 <<if $player.virginity.kiss is true>>
-	<<switch $args[1]>>
+	<<switch _args[1]>>
 		<<case "loveInterest">>
 			<span class="lewd">You're happy your first kiss went to a love interest.</span><<arousal 3000>><<stress -12>><<trauma -12>><<ggarousal>><<llstress>>
-			<<if (!$wraith or $wraith.mimic isnot $args[0])>><<earnFeat "First Kiss">><</if>>
+			<<if (!$wraith or $wraith.mimic isnot _args[0])>><<earnFeat "First Kiss">><</if>>
 		<<case "romantic">>
 			<span class="lewd">You're happy your first kiss was taken in such a romantic way.</span><<arousal 1500>><<stress -6>><<trauma -6>><<garousal>><<lstress>>
 		<<case "rape">>
@@ -72,13 +72,13 @@
 		<<default>>
 			<span class="blue">You feel conflicted about giving them your first kiss.</span><<stress 20>><<ggstress>>
 	<</switch>>
-	<<takeVirginity $args[0] "kiss">>
+	<<takeVirginity _args[0] "kiss">>
 <</if>>
-<<takeNPCVirginity $args[0] "kiss">>
+<<takeNPCVirginity _args[0] "kiss">>
 <</widget>>
 
 <<widget "takeKissVirginityNamed">>
-<<switch $args[0]>>
+<<switch _args[0]>>
 	<<case "Robin">>
 		<<if $robinromance is 1>>
 			<<set _loveInterest to true>>
@@ -118,12 +118,12 @@
 	<<default>>
 		<<set _loveInterest to false>>
 <</switch>>
-<<if _loveInterest is true and ($consensual is 1 or $args[2])>>
-	<<takeKissVirginity $args[0] "loveInterest">>
-<<elseif ($consensual is 1 or $args[2])>>
-	<<takeKissVirginity $args[0] "consensual">>
+<<if _loveInterest is true and ($consensual is 1 or _args[2])>>
+	<<takeKissVirginity _args[0] "loveInterest">>
+<<elseif ($consensual is 1 or _args[2])>>
+	<<takeKissVirginity _args[0] "consensual">>
 <<else>>
-	<<takeKissVirginity $args[0] "rape">>
+	<<takeKissVirginity _args[0] "rape">>
 <</if>>
 <</widget>>
 
@@ -131,16 +131,17 @@
  * Argument 0 is the npc, argument 1 is their virginity.
 */
 <<widget "takeNPCVirginity">>
+	<<set $_npcId to _args[0]>>
+	<<set $_vType to _args[1]>>
 	<!-- if the first argument is a name, find which npc has that name, else assume it is an index. -->
-	<<if typeof $args[0] is "string">>
-		<<set $_npc to $NPCList.find(npc => npc.fullDescription === $args[0])>>
-		<<set $_straponvirginityIgnore to ($args[1] is "penile" and npcHasStrapon($NPCList.findIndex(npc => npc.fullDescription === $args[0])))>>
-	<<elseif $args[0] isnot undefined>>
-		<<set $_npc to $NPCList[$args[0]]>>
-    	<<set $_straponvirginityIgnore to ($args[1] is "penile" and npcHasStrapon($args[0]))>>
+	<<if typeof $_npcId is "string">>
+		<<set $_npc to $NPCList.find(npc => npc.fullDescription === $_npcId)>>
+		<<set $_straponvirginityIgnore to ($_vType is "penile" and npcHasStrapon($NPCList.findIndex(npc => npc.fullDescription === $_npcId)))>>
+	<<elseif $_npcId isnot undefined>>
+		<<set $_npc to $NPCList[$_npcId]>>
+    	<<set $_straponvirginityIgnore to ($_vType is "penile" and npcHasStrapon($_npcId))>>
 	<</if>>
 
-	<<set $_vType to $args[1]>>
     <<if $_npc and $_vType and $_npc.virginity and $_npc.virginity[$_vType] and (!$wraith or $wraith.mimic isnot $_npc.nam) and !_straponvirginityIgnore>>
         /* note: virginity must be exactly equal to true; only true means that they still have their virginity. */
         <<if $_npc.virginity[$_vType] is true>>
@@ -271,22 +272,22 @@
 /* Selects the NPC that has the given body part (chest, mouth, vagina) set to the given value */
 /* Useful when you know one of them is in a given position by looking at the PC, but aren't sure which */
 <<widget "selectNpcWithPartInPosition">>
-	<<if $args[0] and $args[1]>>
+	<<if _args[0] and _args[1]>>
 		<<unset _npc>>
 		<<for _j = 0; _j lt $enemynomax; _j++>>
-			<<if $args[0] is "hand">>
-				<<if $NPCList[_j]["lefthand"] is $args[1]>>
+			<<if _args[0] is "hand">>
+				<<if $NPCList[_j]["lefthand"] is _args[1]>>
 					<<personselect _j>>
 					<<set _npc to $NPCList[_j]>>
 					<<break>>
 				<</if>>
-				<<if $NPCList[_j]["righthand"] is $args[1]>>
+				<<if $NPCList[_j]["righthand"] is _args[1]>>
 					<<personselect _j>>
 					<<set _npc to $NPCList[_j]>>
 					<<break>>
 				<</if>>
 			<<else>>
-				<<if $NPCList[_j][$args[0]] is $args[1]>>
+				<<if $NPCList[_j][_args[0]] is _args[1]>>
 					<<personselect _j>>
 					<<set _npc to $NPCList[_j]>>
 					<<break>>
@@ -297,10 +298,10 @@
 <</widget>>
 
 <<widget "selectNpcWithPartInPositionAnus">>
-	<<if $args[0]>>
+	<<if _args[0]>>
 		<<unset _npc>>
 		<<for _j = 0; _j lt $enemynomax; _j++>>
-			<<if $NPCList[_j].penis is $args[0] or $NPCList[_j].vagina is $args[0]>>
+			<<if $NPCList[_j].penis is _args[0] or $NPCList[_j].vagina is _args[0]>>
 				<<personselect _j>>
 				<<set _npc to $NPCList[_j]>>
 				<<break>>
@@ -331,18 +332,18 @@
 
 /* args[0] - 1-6 for npc, args[1] for type */
 <<widget "equipCondom">>
-<<if $args[0] isnot undefined>>
-	<<switch $args[1]>>
-		<<case "damaged">><<set $NPCList[$args[1]].condom to {damaged:true,cum:false}>>
+<<if _args[0] isnot undefined>>
+	<<switch _args[1]>>
+		<<case "damaged">><<set $NPCList[_args[1]].condom to {damaged:true,cum:false}>>
 		<<default>>
 			<<if $npcCondoms is "damagedCondoms" and random(0,100) gte 50>>
-				<<set $NPCList[$args[0]].condom to {damaged:true,cum:false}>>
+				<<set $NPCList[_args[0]].condom to {damaged:true,cum:false}>>
 			<<else>>
-				<<set $NPCList[$args[0]].condom to {damaged:false,cum:false}>>
+				<<set $NPCList[_args[0]].condom to {damaged:false,cum:false}>>
 			<</if>>
 	<</switch>>
 <<else>>
-	<<switch $args[0]>>
+	<<switch _args[0]>>
 		<<case "damaged">><<set $player.condom to {damaged:true,cum:false}>>
 		<<default>><<set $player.condom to {damaged:false,cum:false}>>
 	<</switch>>
@@ -351,8 +352,8 @@
 
 /* args[0] - 1-6 for npc */
 <<widget "removeCondom">>
-<<if $args[0]>>
-	<<set $NPCList[$args[0]].condom to false>>
+<<if _args[0]>>
+	<<set $NPCList[_args[0]].condom to false>>
 <<else>>
 	<<set $player.condom to false>>
 <</if>>

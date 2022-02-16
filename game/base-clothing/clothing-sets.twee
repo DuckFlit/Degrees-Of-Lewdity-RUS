@@ -20,7 +20,7 @@
 <</widget>>
 
 <<widget "listoutfitsPassage">>
-<<set $wardrobe_location to $args[0]>>
+<<set $wardrobe_location to _args[0]>>
 <<wardrobeSelection true>>
 <<for _i to 0; _i lt $outfit.length; _i++>>
 	<<if $outfit[_i].location and $outfit[_i].location isnot $wardrobe_location>>
@@ -34,9 +34,9 @@
 <</widget>>
 
 <<widget "listsleepoutfits">>
-<<switch $args[0]>>
+<<switch _args[0]>>
 	<<case "Farm Bed">>
-		<<set _passage to $args[0]>>
+		<<set _passage to _args[0]>>
 		<<set $wardrobe_location to "alexFarm">>
 		<<set $storeLocation to "Farm Bed">>
 	<<case "prison bed">>
@@ -68,14 +68,14 @@
 <</widget>>
 
 <<widget "listswimoutfits">>
-<<set $wardrobe_location to $args[0]>>
+<<set $wardrobe_location to _args[0]>>
 <<wardrobeSelection true>>
 <<for _i to 0; _i lt $outfit.length; _i++>>
 	<<if $outfit[_i].location and $outfit[_i].location isnot $wardrobe_location>>
 		<<continue>>
 	<</if>>
 	<<if $outfit[_i].type.includes("swim")>>
-		<<print '<<link [["Wear "+$outfit[_i].name+($outfit[_i].colors is false? "" : " [C]")|$passage]]>><<set $eventskip to 1>><<set $wear_outfit to ' + _i + '>><<set $storeLocation to "'+$args[0]+'">><</link>>'>>
+		<<print '<<link [["Wear "+$outfit[_i].name+($outfit[_i].colors is false? "" : " [C]")|$passage]]>><<set $eventskip to 1>><<set $wear_outfit to ' + _i + '>><<set $storeLocation to "'+_args[0]+'">><</link>>'>>
 		<br>
 	<</if>>
 <</for>>
@@ -633,11 +633,11 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 <</widget>>
 
 <<widget "outfitEditorItem">>
-<<capture $args[0]>>
-	<<set _subState[$args[0]] to "">>
+<<capture _args[0]>>
+	<<set _subState[_args[0]] to "">>
 	<div class="name">
-		<<set $_name to "$outfit["+$args[0]+"].name">>
-		<label>Name: <<textbox $_name $outfit[$args[0]].name>></label>
+		<<set $_name to "$outfit["+_args[0]+"].name">>
+		<label>Name: <<textbox $_name $outfit[_args[0]].name>></label>
 		<!--Runs too many times for some reason, needs to be improved-->
 		<<run $(() => { $('.outfitEditorItem .name .macro-textbox').on('input change', e => {
 			let index = e.target.name.replace(/\D/g,'');
@@ -645,7 +645,7 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 		}).trigger('input change') })>>
 	</div>
 	<div>
-		<<set $_type to "$outfit["+$args[0]+"].type[0]">>
+		<<set $_type to "$outfit["+_args[0]+"].type[0]">>
 		<label>
 			Type:
 			<<listbox $_type autoselect>>
@@ -657,7 +657,7 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 		</label>
 	</div>
 	<div>
-		<<set $_location to "$outfit["+$args[0]+"].location">>
+		<<set $_location to "$outfit["+_args[0]+"].location">>
 		<<set $_locations to {}>>
 		<<for $_label, $_value range $wardrobes>>
 			<<if $_value.unlocked>>
@@ -680,38 +680,38 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 	<div>
 		Items:
 		<<link "View">>
-			<<set _subId to "#outfitItemSub-" + $args[0]>>
-			<<if _subState[$args[0]] is "itemEdit">>
-				<<set _subState[$args[0]] to "">>
+			<<set _subId to "#outfitItemSub-" + _args[0]>>
+			<<if _subState[_args[0]] is "itemEdit">>
+				<<set _subState[_args[0]] to "">>
 				<<replace _subId>><</replace>>
 			<<else>>
-				<<set _subState[$args[0]] to "itemEdit">>
-				<<replace _subId>><<outfitEditorItemClothes $args[0]>><</replace>>
+				<<set _subState[_args[0]] to "itemEdit">>
+				<<replace _subId>><<outfitEditorItemClothes _args[0]>><</replace>>
 			<</if>>
 		<</link>>
 	</div>
 	<div>
-		Colours: <<print $outfit[$args[0]].colors ? "Enabled" : "Disabled">> |
-		<<if $outfit[$args[0]].colors>>
+		Colours: <<print $outfit[_args[0]].colors ? "Enabled" : "Disabled">> |
+		<<if $outfit[_args[0]].colors>>
 			<<link "Disable">>
-				<<set $outfit[$args[0]].colors to false>>
-				<<set _id to "#outfitItem-" + $args[0]>>
-				<<replace `_id`>><<outfitEditorItem $args[0]>><</replace>>
+				<<set $outfit[_args[0]].colors to false>>
+				<<set _id to "#outfitItem-" + _args[0]>>
+				<<replace `_id`>><<outfitEditorItem _args[0]>><</replace>>
 			<</link>> |
 			<<link "Edit">>
-				<<set _subId to "#outfitItemSub-" + $args[0]>>
-				<<if _subState[$args[0]] is "colourView">>
-					<<set _subState[$args[0]] to "">>
+				<<set _subId to "#outfitItemSub-" + _args[0]>>
+				<<if _subState[_args[0]] is "colourView">>
+					<<set _subState[_args[0]] to "">>
 					<<replace _subId>><</replace>>
 				<<else>>
-					<<set _subState[$args[0]] to "colourView">>
-					<<replace _subId>><<outfitEditorItemColour $args[0]>><</replace>>
+					<<set _subState[_args[0]] to "colourView">>
+					<<replace _subId>><<outfitEditorItemColour _args[0]>><</replace>>
 				<</if>>
 			<</link>>
 		<<else>>
 			<<link "Enable">>
-				<<set $outfit[$args[0]].colors to {}>>
-				<<set _outfitIndex to $args[0]>>
+				<<set $outfit[_args[0]].colors to {}>>
+				<<set _outfitIndex to _args[0]>>
 				<<for _label, _value range setup.clothes>>
 					<<set _item to setup.clothes[_label].filter((item) => item.name === V.outfit[T.outfitIndex][T.label])[0]>>
 					<<set _colors to [0,0]>>
@@ -723,10 +723,10 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 							<<set _colors[1] to _item.accessory_colour_options[0]>>
 						<</if>>
 					<</if>>
-					<<set $outfit[$args[0]].colors[_label] to clone(_colors)>>
+					<<set $outfit[_args[0]].colors[_label] to clone(_colors)>>
 				<</for>>
-				<<set _id to "#outfitItem-" + $args[0]>>
-				<<replace `_id`>><<outfitEditorItem $args[0]>><</replace>>
+				<<set _id to "#outfitItem-" + _args[0]>>
+				<<replace `_id`>><<outfitEditorItem _args[0]>><</replace>>
 			<</link>>
 		<</if>>
 	</div>
@@ -734,7 +734,7 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 		<div>
 			<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
 			Hair Style:
-			<<set $_hairStyle to "$outfit["+$args[0]+"].hairStyle">>
+			<<set $_hairStyle to "$outfit["+_args[0]+"].hairStyle">>
 			<<listbox $_hairStyle autoselect>>
 				<<option "Not set" undefined>>
 				<<optionsfrom _savedHairStylesKeys>>
@@ -745,14 +745,14 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 			Hair Style: No sets saved (Check mirror)
 		</div>
 	<</if>>
-	<div @id="'outfitItemSub-' + $args[0]"></div>
+	<div @id="'outfitItemSub-' + _args[0]"></div>
 <</capture>>
 <</widget>>
 
 <<widget "outfitEditorItemClothes">>
-<<capture $args[0]>>
+<<capture _args[0]>>
 	<<for $_label, $_value range setup.clothes>>
-		<<set $_itemName to $outfit[$args[0]][$_label]>>
+		<<set $_itemName to $outfit[_args[0]][$_label]>>
 		<<if $_itemName and !["over_upper","over_lower","over_head"].includes($_label)>>
 			<label class="outfitEditorItemClothes">
 				<<set $_options to []>>
@@ -760,7 +760,7 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 					<<run $_options.push($_value2.name)>>
 				<</for>>
 				<<print $_label>> -
-				<<set $_var to "$outfit[" + $args[0] + "]['" + $_label + "']">>
+				<<set $_var to "$outfit[" + _args[0] + "]['" + $_label + "']">>
 				<<listbox `$_var` autoselect>>
 					<<optionsfrom $_options>>
 				<</listbox>>
@@ -793,22 +793,22 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 <</widget>>
 
 <<widget "outfitEditorItemColour">>
-<<capture $args[0]>>
+<<capture _args[0]>>
 	<<for $_label, $_value range setup.clothes>>
 		<<set _colourLabel to $_label>>
-		<<set _colourOutfit to $args[0]>>
+		<<set _colourOutfit to _args[0]>>
 		<<set $_item to setup.clothes[$_label].filter((item) => item.name === V.outfit[T.colourOutfit][T.colourLabel])[0]>>
 		<<if $_item>>
 			<<if $_item.colour_options.length gt 0 or $_item.accessory_colour_options.length gt 0>>
 				<<print $_label>> - <<print $_item.name>>:
 				<<if $_item.colour_options.length gt 0>>
-					<<set $_colour_options to "$outfit["+$args[0]+"].colors['"+$_label+"'][0]">>
+					<<set $_colour_options to "$outfit["+_args[0]+"].colors['"+$_label+"'][0]">>
 					<<listbox `$_colour_options` autoselect>>
 						<<optionsfrom $_item.colour_options>>
 					<</listbox>>
 				<</if>>
 				<<if $_item.accessory_colour_options.length gt 0>>
-					<<set $_accessory_colour_options to "$outfit["+$args[0]+"].colors['"+$_label+"'][1]">>
+					<<set $_accessory_colour_options to "$outfit["+_args[0]+"].colors['"+$_label+"'][1]">>
 					<<listbox `$_accessory_colour_options` autoselect>>
 						<<optionsfrom $_item.accessory_colour_options>>
 					<</listbox>>

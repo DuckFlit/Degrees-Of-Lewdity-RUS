@@ -1,9 +1,9 @@
 :: Widgets Wraith [widget]
 <<widget "generateWraith">>
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _w to 1>>
 <<else>>
-	<<set _w to $args[0]>>
+	<<set _w to _args[0]>>
 <</if>>
 <<set _n to (_w -1)>>
 <<if !$per_npc.wraith>>
@@ -27,7 +27,7 @@
 	<<loadNPC _n "wraith">>
 	<<checkWraith>>
 <</if>>
-<<if $args[1]>>
+<<if _args[1]>>
 	<<set $wraith.seen ++>>
 <</if>>
 <<personselect _n>>
@@ -35,8 +35,8 @@
 
 <!-- Recursive. With no argument, picks one at random. If option is disabled, runs as another argument. Can not infinite loop. -->
 <<widget "initWraith">>
-<<if $args[0]>>
-	<<set $wraith.gen to $args.random()>>
+<<if _args[0]>>
+	<<set $wraith.gen to _args.random()>>
 	<<set $pronoun to "i">>
 	<<switch $wraith.gen>>
 		<<case "man">>
@@ -277,7 +277,7 @@
 	<<set $real_weather to $weather>>
 	<<if $season is "winter">>
 		<<set $weather to "snow">>
-		<<if $args[0]>>
+		<<if _args[0]>>
 			<<print either(
 				"You don't remember when it started snowing. It's already hard to see.",
 				"The wind picks up, and visibility drops as a snow squall rolls in.",
@@ -286,7 +286,7 @@
 		<</if>>
 	<<else>>
 		<<set $weather to "rain">>
-		<<if $args[0]>>
+		<<if _args[0]>>
 			<<print either(
 				"You don't remember when it started raining.",
 				"The wind picks up, and it starts to rain.",
@@ -299,7 +299,7 @@
 
 <<widget "endRainWraith">>
 <<if $real_weather>>
-	<<if $args[0]>>
+	<<if _args[0]>>
 		<<if $weather is "rain">>
 			<<print either(
 				"The rain suddenly stops.",
@@ -329,7 +329,7 @@
 		<<set $wraith.state to "haunt">>
 	<</if>>
 <</if>>
-<<if $args[0]>>
+<<if _args[0]>>
 	<<if $wraith.state isnot "" and !$wraithCheck and $wraith.nightmare is 0 and (random(0,2) is 2 or $wraith.state is "haunt" or $wraith.offspring is "dead")>>
 		<<set $wraith.nightmare to 1>>
 		<<set $wraithCheck to true>>
@@ -392,7 +392,7 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "speechWraith">><<silently>>
-<<if $possessed and $args[0] isnot "lines">>
+<<if $possessed and _args[0] isnot "lines">>
 	<<set _speakPool to ["speak","grunt","giggle","whisper","sneer","laugh","yell","spit","speak in an eerily calm tone"]>>
 	<<if $wolfgirl gte 4>>
 		<<run _speakPool.pushUnique(
@@ -632,9 +632,9 @@
 	<<else>>
 		<<set _speechWraith to "You _speak. \"_line1\"">>
 	<</if>>
-<<elseif $wraith.state is "" and $args[0] isnot "lines">>
+<<elseif $wraith.state is "" and _args[0] isnot "lines">>
 	<<set _speechWraith to ["The <<person>> holds <<his>> necklace tightly.", "The <<person>> whispers incoherently.","The <<person>> giggles quietly.","The <<person>> speaks in a language you don't understand.","The <<person>> opens <<his>> mouth, and your ears begin ringing.","The <<person>> says something, but you immediately forget what it was.","The <<person>> doesn't speak."].pluck()>>
-<<elseif $wraith.mimic isnot "" and $wraith.revealed is false and $args[0] isnot "lines">>
+<<elseif $wraith.mimic isnot "" and $wraith.revealed is false and _args[0] isnot "lines">>
 	<<switch $wraith.mimic>>
 		<<case "Sydney">>
 			<<set _speechWraith to either(
@@ -667,7 +667,7 @@
 			)>>
 		<<default>>
 	<</switch>>
-<<elseif $wraith.state isnot "haunt" and $rng lte 8 and $args[0] isnot "lines">>
+<<elseif $wraith.state isnot "haunt" and $rng lte 8 and _args[0] isnot "lines">>
 	<<set _speechWraith to "<<He>> holds <<his>> necklace close.">>
 <<else>>
 	<<set _speaks to ["snarls","growls","cackles","purrs","hisses","emanates","speaks","grunts","giggles","whispers","speaks in an eerily calm tone"].pluck()>>
@@ -960,7 +960,7 @@
 <</widget>>
 
 <<widget "kissWraith">>
-    <<if $args[0] is "stress" and $stress gte $stressmax>>
+    <<if _args[0] is "stress" and $stress gte $stressmax>>
         <<set $_wraithStress to true>>
     <</if>>
     <<if $wraith.type is "tentacles" or $wraith.gen is "abomination">>
@@ -987,7 +987,7 @@
 <</widget>>
 
 <<widget "wHunt">>
-<<switch $args[0]>>
+<<switch _args[0]>>
 	<<case "town">>
 		<<if ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and $wraith.hunt is 0 and $wraith.timer gte (random(0, 50))>>
 			<br><br>
@@ -1116,7 +1116,7 @@
 <<widget "wPersist">>
 <<if $wraith>>
 	<<if $wraith.hunt and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5)>>
-		<<if $args[0] is "forest">>
+		<<if _args[0] is "forest">>
 			<<if $foresthunt gte 1>>
 				<<set $wraith.hunt to $foresthunt>>
 				<<if !$wPersist>>
@@ -1216,21 +1216,21 @@
 		<<link [[Portal to the bedroom|Bedroom]]>><<endevent>><<set $eventskip to 1>><<set $hallucinogen += 180>><</link>><<gghallucinogens>>
 		<br>
 <</switch>>
-<<if !$args[0]>>
+<<if !_args[0]>>
 	<<endWraith>>
 <</if>>
 <</widget>>
 
 <<widget "rngWraith">>
 <<if $wraith and $wraith.state isnot "">>
-	<<if $args[1] is "night" and $daystate isnot "night">>
+	<<if _args[1] is "night" and $daystate isnot "night">>
 		<<set _wraithEvent to false>>
 	<<else>>
 		<<set _rngWraith to ($wraith.state is "haunt" or $wraith.offspring is "dead") ? 4 : 2>>
 		<<if $daystate is "night">>
 			<<set _rngWraith += 2>>
 		<</if>>
-		<<set _wraithHallucinations to ($args[0] is 1 or $args[0] is 2 ? $args[0] : 0)>>
+		<<set _wraithHallucinations to (_args[0] is 1 or _args[0] is 2 ? _args[0] : 0)>>
 		<<if ($hallucinations gte _wraithHallucinations and _rngWraith gte random(1,100)) or ($moonstate is "evening" and $hour gte 21) or ($moonstate is "morning" and $hour lt 6)>>
 			<<set _wraithEvent to true>>
 		<</if>>
@@ -1555,17 +1555,17 @@ A beautiful pale figure floats just above the ground, wearing translucent white 
 <</widget>>
 
 <<widget "wraith_pass">>
-<<if $args[0]>>
-	<<pass $args[0]>>
-	<<set $wraithPrison.timer -= $args[0]>>
+<<if _args[0]>>
+	<<pass _args[0]>>
+	<<set $wraithPrison.timer -= _args[0]>>
 	<<if $wraithPrison.timer lte 0 and $wraithPrison.state isnot "gone">>
 		<<set $wraithPrison.state to "present">>
 	<<elseif $wraithPrison.state isnot "gone">>
 		<<set $wraithPrison.state to "recovering">>
 	<</if>>
-	<<set $wraithPrison.timePassed += $args[0]>>
-	<<set $hallucinogen += ($args[0] * 3)>>
-	<<set $arousal += ($args[0] * 3)>>
+	<<set $wraithPrison.timePassed += _args[0]>>
+	<<set $hallucinogen += (_args[0] * 3)>>
+	<<set $arousal += (_args[0] * 3)>>
 <</if>>
 <</widget>>
 
@@ -1573,15 +1573,15 @@ A beautiful pale figure floats just above the ground, wearing translucent white 
 	<<set $possessed to true>>
 	<<set $controlSaved to $control>><<set $control to 0>>
 
-	<<if $args[0]>>
-		<<set $wraith.exit to $args[0]>>
+	<<if _args[0]>>
+		<<set $wraith.exit to _args[0]>>
 	<</if>>
 <</widget>>
 
 <<widget "wraithExorcise">>
 	<<unset $possessed>>
 
-	<<if $args[0]>>
+	<<if _args[0]>>
 		<<if $wraith.possessCount is undefined>>
 			<<set $wraith.possessCount to 1>>
 		<<else>>
@@ -1589,7 +1589,7 @@ A beautiful pale figure floats just above the ground, wearing translucent white 
 		<</if>>
 	<</if>>
 
-	<<if $args[1]>>
+	<<if _args[1]>>
 		<<set $control to $controlSaved>><<unset $control>>
 	<</if>>
 <</widget>>

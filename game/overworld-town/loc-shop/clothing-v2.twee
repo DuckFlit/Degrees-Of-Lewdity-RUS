@@ -17,13 +17,13 @@
 */
 <<widget "clothingShopv2">>
 	<<exitclothingshop>>
-	<<if $args[0]>>
-		<<set _shopLocation to $args[0]>>
+	<<if _args[0]>>
+		<<set _shopLocation to _args[0]>>
 	<</if>>
-	<<if $args[1]>>
-		<<set $clothingShopSlot to $args[1]>>
+	<<if _args[1]>>
+		<<set $clothingShopSlot to _args[1]>>
 	<</if>>
-	<<set _outfits to $args[2] == "outfits" or $args[2] == true>>
+	<<set _outfits to _args[2] == "outfits" or _args[2] == true>>
 
 	<<if $shopClothingFilter is undefined>>
 		<<shopClothingFilterReset>>
@@ -256,7 +256,7 @@
 <</widget>>
 
 <<widget "generateshoppage">>
-	<<set _page = $args[0]>>
+	<<set _page = _args[0]>>
 	<<set _itemsOnPage = _items.slice(_page * $shopItemsPerPage, (_page + 1) * $shopItemsPerPage)>>
 	<<set _hidden = _page == $shopPage ? "" : " hidden">>
 	<<set _compact = $shopDefaults.compactMode ? "compact" : "">>
@@ -425,15 +425,15 @@
 <</widget>>
 
 <<widget "updateclotheslist">>
-	<<set _shop = $args[0] or _shopLocation>>
-	<<set _slot = $args[1] or $clothingShopSlot>>
-	<<set _outf = $args[2] or _outfits>>
+	<<set _shop = _args[0] or _shopLocation>>
+	<<set _slot = _args[1] or $clothingShopSlot>>
+	<<set _outf = _args[2] or _outfits>>
 	<<replace "#clothes-list">><<clothingShopv2 _shop _slot _outf>><</replace>>
 <</widget>>
 
 <<widget "clothingtrait">>
-	<<if $images is 1 and ($args[1] or $args[0] isnot "normal")>>
-		<img @src="'img/misc/icon/clothes/traits/' + $args[0] + '.png'" class="clothing-trait">
+	<<if $images is 1 and (_args[1] or _args[0] isnot "normal")>>
+		<img @src="'img/misc/icon/clothes/traits/' + _args[0] + '.png'" class="clothing-trait">
 	<</if>>
 <</widget>>
 
@@ -715,15 +715,15 @@
 <</widget>>
 
 <<widget "printShopColourOptions">>
-	<<set _colourType = $args[0] == "secondary" ? "accessory_colour_options" : "colour_options">>
+	<<set _colourType = _args[0] == "secondary" ? "accessory_colour_options" : "colour_options">>
 
 	<!-- Reset colour to default if invalid -->
-	<<if $args[0] == "secondary" and !$accessorycolouraction and setup.clothes[$clothingShopSlot][$clothes_choice][_colourType].includes($shopDefaults.secColor)>>
+	<<if _args[0] == "secondary" and !$accessorycolouraction and setup.clothes[$clothingShopSlot][$clothes_choice][_colourType].includes($shopDefaults.secColor)>>
 		<<set $accessorycolouraction = $shopDefaults.secColor>>
 	<<elseif !$colouraction and setup.clothes[$clothingShopSlot][$clothes_choice][_colourType].includes($shopDefaults.color)>>
 		<<set $colouraction = $shopDefaults.color>>
 	<</if>>
-	<<set _acc = $args[0] == "secondary" ? "secondary" : "primary">>
+	<<set _acc = _args[0] == "secondary" ? "secondary" : "primary">>
 
 	<!-- Generate button for each colour -->
 	<<set _highContrast = $shopDefaults.highContrast ? "colour-name-span-highcontrast" : "colour-name-span">>
@@ -741,7 +741,7 @@
 						<</if>>
 					<</if>>
 					<span @class="'capitalize ' + _highContrast">_buttonName</span>
-					<<capture _buttonName $args[0] _acc $clothingShopSlot>>
+					<<capture _buttonName _args[0] _acc $clothingShopSlot>>
 						<<link "">>
 							<<if _buttonName == "random">>
 								<<set _col_array = setup.clothes[$clothingShopSlot][$clothes_choice][_colourType]>>
@@ -749,7 +749,7 @@
 							<<else>>
 								<<set _colour = _buttonName>>
 							<</if>>
-							<<if $args[0] == "secondary">>
+							<<if _args[0] == "secondary">>
 								<<set $accessorycolouraction = _colour>>
 							<<else>>
 								<<set $colouraction = _colour>>
@@ -780,7 +780,7 @@
 	</div>
 
 	<!-- Custom colour sliders -->
-	<<if $args[0] == "secondary">>
+	<<if _args[0] == "secondary">>
 		<<set _hidden = $accessorycolouraction == "custom" ? "" : " hidden">>
 	<<else>>
 		<<set _hidden = $colouraction == "custom" ? "" : " hidden">>
@@ -839,11 +839,11 @@
 
 
 <<widget "shopbuyv2">>
-	<<set _slot to $args[0]>>
-	<<set _action to $args[1]>>
-	<<set _subaction to $args[2]>>
-	<<set _choice_index to $args[3]>>
-	<<set _amount to $args[4]>>
+	<<set _slot to _args[0]>>
+	<<set _action to _args[1]>>
+	<<set _subaction to _args[2]>>
+	<<set _choice_index to _args[3]>>
+	<<set _amount to _args[4]>>
 	<<set $clothes_choice_previous to $clothes_choice>>
 
 	<<if _choice_index isnot undefined>>
@@ -902,17 +902,17 @@
 
 <<widget "mannequin">>
 	<<if $images is 1>>
-		<<set _slot = $args[0] or _realSlot>>
-		<<set _index = $args[1] or _realIndex>>
+		<<set _slot = _args[0] or _realSlot>>
+		<<set _index = _args[1] or _realIndex>>
 		<<set _item = setup.clothes[_slot][_index]>>
 
 		<<if _item.colour_options.length > 0>>
-			<<set _col = $args[2] or $colouraction or (_item.colour_options.includes($shopDefaults.color) ? $shopDefaults.color : _item.colour_options[0])>>
+			<<set _col = _args[2] or $colouraction or (_item.colour_options.includes($shopDefaults.color) ? $shopDefaults.color : _item.colour_options[0])>>
 		<<else>>
 			<<set _col = "">>
 		<</if>>
 		<<if _item.accessory_colour_options.length > 0>>
-			<<set _acc_col = $args[3] or $accessorycolouraction or (_item.accessory_colour_options.includes($shopDefaults.secColor) ? $shopDefaults.secColor : _item.accessory_colour_options[0])>>
+			<<set _acc_col = _args[3] or $accessorycolouraction or (_item.accessory_colour_options.includes($shopDefaults.secColor) ? $shopDefaults.secColor : _item.accessory_colour_options[0])>>
 		<<else>>
 			<<set _acc_col = "">>
 		<</if>>
@@ -1135,7 +1135,7 @@
 <</widget>>
 
 <<widget "updatemannequin">>
-	<<replace "#mannequin">><<mannequin $args[0] $args[1]>><</replace>>
+	<<replace "#mannequin">><<mannequin _args[0] _args[1]>><</replace>>
 	<<run linkifyDivs('#mannequin')>>
 <</widget>>
 
@@ -1426,7 +1426,7 @@
 
 <<widget "warmthscale">>
 	<div class="warmth-scale-container">
-		<<warmthscale-internal $args[0]>>
+		<<warmthscale-internal _args[0]>>
 	</div>
 <</widget>>
 
@@ -1440,8 +1440,8 @@
 <</widget>>
 
 <<widget "warmthscale-internal">>
-	<<if $args[0]>>
-		<<set _newWarmth = $args[0]>>
+	<<if _args[0]>>
+		<<set _newWarmth = _args[0]>>
 	<<elseif $clothes_choice>>
 		<<set _newWarmth = getWarmthWithOtherClothing(_realSlot, _realIndex)>>
 	<</if>>
@@ -1454,13 +1454,13 @@
 		<div @class="'warm ' + _warmthData.nohot" @style="'width: ' + _warmthData.warm"></div>
 		<div class="hot" @style="'width: ' + _warmthData.hot"></div>
 
-		<<if $clothes_choice or $args[0]>>
+		<<if $clothes_choice or _args[0]>>
 			<div @class="'diff ' + _warmthData.diffUpDown" @style="'left: ' + _warmthData.diffStart + '; width: ' + _warmthData.diffWidth"></div>
 		<</if>>
 	</div>
 
 	<img src="img/misc/icon/warmth_indicator.png" class="warmth-indicator" @style="'left: ' + _warmthData.player">
-	<<if $clothes_choice or $args[0]>>
+	<<if $clothes_choice or _args[0]>>
 		<img src="img/misc/icon/small_uarrow.png" class="warmth-indicator" @style="'left: ' + _warmthData.playerNew">
 	<</if>>
 <</widget>>

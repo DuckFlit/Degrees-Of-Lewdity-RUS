@@ -7,30 +7,30 @@ Third argument - worn or send
 Forth argument - item index*/
 
 <<widget "shopbuy">>
-<<set _shop_temp to $args[3]>>
+<<set _shop_temp to _args[3]>>
 <<set $clothes_choice_previous to $clothes_choice>>
 
-<<if _shop_temp isnot undefined and ($randomLock isnot true or $args[1] is "try")>>
-	<<clothingShopColorSet $args[0]>>
+<<if _shop_temp isnot undefined and ($randomLock isnot true or _args[1] is "try")>>
+	<<clothingShopColorSet _args[0]>>
 <</if>>
 
-<<if $args[0] is "upper" or $args[0] is "lower">>
+<<if _args[0] is "upper" or _args[0] is "lower">>
 	<<ShowUnderEquip "normal">>
 <</if>>
-<<if $args[0] is "over_upper" or $args[0] is "over_lower" or $args[0] is "over_head">>
+<<if _args[0] is "over_upper" or _args[0] is "over_lower" or _args[0] is "over_head">>
 	<<ShowUnderEquip "over">>
 <</if>>
-<<if $args[1] is "buy">>
-	You buy the <<print setup.clothes[$args[0]][_shop_temp].name>>.
+<<if _args[1] is "buy">>
+	You buy the <<print setup.clothes[_args[0]][_shop_temp].name>>.
 	<br><br>
-<<elseif $args[1] is "steal">>
-	You steal the <<print setup.clothes[$args[0]][_shop_temp].name>>.
+<<elseif _args[1] is "steal">>
+	You steal the <<print setup.clothes[_args[0]][_shop_temp].name>>.
 	<br><br>
-<<elseif $args[1] is "try">>
-	<<tryOnWear $args[0] _shop_temp>>
-<<elseif $args[1] is "return">>
-	<<clothingReset $args[0]>>
-<<elseif $args[1] is "reset">>
+<<elseif _args[1] is "try">>
+	<<tryOnWear _args[0] _shop_temp>>
+<<elseif _args[1] is "return">>
+	<<clothingReset _args[0]>>
+<<elseif _args[1] is "reset">>
 	<<unset $colouraction>>
 	<<unset $colouraction2>>
 	<<unset $accessorycolouraction>>
@@ -40,17 +40,17 @@ Forth argument - item index*/
 	<<unset $randomLock>>
 <</if>>
 
-<<if $args[2] is "wear">>
-	<<generalWear $args[0] _shop_temp $colouraction2 $accessorycolouraction2>>
-	<<updateOwned $args[0]>>
-<<elseif $args[2] is "send">>
-	<<set _loop to $args[4]>>
+<<if _args[2] is "wear">>
+	<<generalWear _args[0] _shop_temp $colouraction2 $accessorycolouraction2>>
+	<<updateOwned _args[0]>>
+<<elseif _args[2] is "send">>
+	<<set _loop to _args[4]>>
 	<<if _loop is undefined>>
 		<<set _loop to 1>>
 	<</if>>
 	<<for _s to 0; _s lt _loop; _s++>>
-		<<generalSend "wardrobe" $args[0] _shop_temp $colouraction2 $accessorycolouraction2>>
-		<<clothingShopColorSet $args[0]>>
+		<<generalSend "wardrobe" _args[0] _shop_temp $colouraction2 $accessorycolouraction2>>
+		<<clothingShopColorSet _args[0]>>
 	<</for>>
 <</if>>
 
@@ -58,14 +58,14 @@ Forth argument - item index*/
 
 <<widget "clothingShopColorSet">>
 <<if $colouraction is "random">>
-	<<set _colouractionChoices to clone(setup.clothes[$args[0]][_shop_temp].colour_options)>>
+	<<set _colouractionChoices to clone(setup.clothes[_args[0]][_shop_temp].colour_options)>>
 	<<run _colouractionChoices.delete("custom")>>
 	<<set $colouraction2 to _colouractionChoices.pluck()>>
 <<else>>
 	<<set $colouraction2 to clone($colouraction)>>
 <</if>>
 <<if $accessorycolouraction is "random">>
-	<<set _accessorycolouractionChoices to clone(setup.clothes[$args[0]][_shop_temp].accessory_colour_options)>>
+	<<set _accessorycolouractionChoices to clone(setup.clothes[_args[0]][_shop_temp].accessory_colour_options)>>
 	<<run _accessorycolouractionChoices.delete("custom")>>
 	<<set $accessorycolouraction2 to _accessorycolouractionChoices.pluck()>>
 <<else>>
@@ -74,8 +74,8 @@ Forth argument - item index*/
 <</widget>>
 
 <<widget "clothingShop">>
-<<if $args[0]>>
-	<<set $clothingShopSlot to $args[0]>>
+<<if _args[0]>>
+	<<set $clothingShopSlot to _args[0]>>
 <</if>>
 <input type="button" value="DEFAULT OPTIONS" onclick="Wikifier.wikifyEval('<<shopDefaultOptionsToggle>>');">
 <input type="button" value="FILTERS" onclick="Wikifier.wikifyEval('<<shopClothingFilterToggle>>');">
@@ -303,8 +303,8 @@ Forth argument - item index*/
 		<<if !_item.shop.includes(_shopLocation) or _item.outfitSecondary isnot undefined>>
 			<<continue>>
 		<</if>>
-		<<if (_item.outfitPrimary is undefined and $args[1] is "outfits")
-		or (_item.outfitPrimary isnot undefined and $args[1] is "non-outfits")>>
+		<<if (_item.outfitPrimary is undefined and _args[1] is "outfits")
+		or (_item.outfitPrimary isnot undefined and _args[1] is "non-outfits")>>
 			<<continue>>
 		<</if>>
 
@@ -416,7 +416,7 @@ Forth argument - item index*/
 <<widget "shopTraitDescription">>
 
 <<unset $noTraitDescription>>
-<<switch $args[0]>>
+<<switch _args[0]>>
 	<<case "normal">>
 		Normal - Suitable for everyday use.
 	<<case "formal">>
@@ -736,13 +736,13 @@ Sepia:
 <</widget>>
 
 <<widget "shopCustomColorsSet">>
-<<if $args[0] and $args[1]>>
-	<<switch $args[0]>>
-		<<case "color">><<set $customColors.color[$customColors.currentType] to $args[1]>>
-		<<case "saturation">><<set $customColors.saturation[$customColors.currentType] to $args[1]>>
-		<<case "brightness">><<set $customColors.brightness[$customColors.currentType] to $args[1]>>
-		<<case "contrast">><<set $customColors.contrast[$customColors.currentType] to $args[1]>>
-		<<case "sepia">><<set $customColors.sepia[$customColors.currentType] to $args[1]>>
+<<if _args[0] and _args[1]>>
+	<<switch _args[0]>>
+		<<case "color">><<set $customColors.color[$customColors.currentType] to _args[1]>>
+		<<case "saturation">><<set $customColors.saturation[$customColors.currentType] to _args[1]>>
+		<<case "brightness">><<set $customColors.brightness[$customColors.currentType] to _args[1]>>
+		<<case "contrast">><<set $customColors.contrast[$customColors.currentType] to _args[1]>>
+		<<case "sepia">><<set $customColors.sepia[$customColors.currentType] to _args[1]>>
 	<</switch>>
 	<<replace #shopCustomColorsDisplay>><<shopCustomColorsDisplay>><</replace>>
 <</if>>
@@ -778,7 +778,7 @@ Name: <input id="colorName" type="text" value="Custom" maxlength="30" onfocus="V
 
 <<widget "shopCustomColorsPresetsLoad">>
 <<set _presets to Object.keys($customColors.presets)>>
-<<set _preset to _presets[$args[0]]>>
+<<set _preset to _presets[_args[0]]>>
 <<if $customColors.action is "set">>
 	<<set $customColors.color.primary to $customColors.presets[_preset].color.primary>>
 	<<set $customColors.color.secondary to $customColors.presets[_preset].color.secondary>>
@@ -810,7 +810,7 @@ Name: <input id="colorName" type="text" value="Custom" maxlength="30" onfocus="V
 
 /*Args: slots used in an array*/
 <<widget "shopBuyItemStatus">>
-<<if $args[0]>>
+<<if _args[0]>>
 	<<if $wardrobes.shopReturn is "wardrobe" or $wardrobes[$wardrobes.shopReturn] is undefined>>
 		<<set _returnWardrobe to $wardrobe>>
 	<<else>>
@@ -820,13 +820,13 @@ Name: <input id="colorName" type="text" value="Custom" maxlength="30" onfocus="V
 	<<set _damagedCount to 0>>
 	<<set _space to _returnWardrobe.space>>
 	<<set _spaceLeft to clone(_space)>>
-	<<for _i to 0; _i lt $args[0].length; _i++>>
+	<<for _i to 0; _i lt _args[0].length; _i++>>
 		<<if _i is 0>>
-			<<for _j to 0; _j lt _returnWardrobe[$args[0][0]].length; _j++>>
-				<<if _returnWardrobe[$args[0][0]][_j].name is _temp_choice.name>>
+			<<for _j to 0; _j lt _returnWardrobe[_args[0][0]].length; _j++>>
+				<<if _returnWardrobe[_args[0][0]][_j].name is _temp_choice.name>>
 					<<set _undamagedCount++>>
-					<<if _returnWardrobe[$args[0][0]][_j].outfitPrimary isnot undefined>>
-						<<for _valueShop range _returnWardrobe[$args[0][0]][_j].outfitPrimary>>
+					<<if _returnWardrobe[_args[0][0]][_j].outfitPrimary isnot undefined>>
+						<<for _valueShop range _returnWardrobe[_args[0][0]][_j].outfitPrimary>>
 							<<if _valueShop is "broken">>
 								<<set _damagedCount++>>
 								<<set _undamagedCount-->>
@@ -839,10 +839,10 @@ Name: <input id="colorName" type="text" value="Custom" maxlength="30" onfocus="V
 				<</if>>
 			<</for>>
 		<</if>>
-		<<if _space - _returnWardrobe[$args[0][_i]].length lt _spaceLeft>>
-			<<set _spaceLeft to _space - _returnWardrobe[$args[0][_i]].length>>
+		<<if _space - _returnWardrobe[_args[0][_i]].length lt _spaceLeft>>
+			<<set _spaceLeft to _space - _returnWardrobe[_args[0][_i]].length>>
 		<</if>>
-		Wardrobe <<print ($args[0][_i]).replace("_"," ")>> slots used: <<print _returnWardrobe[$args[0][_i]].length>> / _space.
+		Wardrobe <<print (_args[0][_i]).replace("_"," ")>> slots used: <<print _returnWardrobe[_args[0][_i]].length>> / _space.
 		<br>
 	<</for>>
 	<<if _undamagedCount gt 0>>
@@ -858,24 +858,24 @@ Name: <input id="colorName" type="text" value="Custom" maxlength="30" onfocus="V
 
 /*Args: slot, itemName, outfit*/
 <<widget "shopFullImage">>
-<<if $args[0] and $args[1] isnot undefined>>
-	<<set _shopFullImageVar to [$args[0], $args[1]]>>
+<<if _args[0] and _args[1] isnot undefined>>
+	<<set _shopFullImageVar to [_args[0], _args[1]]>>
 	<a value="Refresh" onclick="Wikifier.wikifyEval('<<replace #shopFullImage>><<shopFullImage $clothingShopSlot $clothes_choice>><</replace>>');">Refresh</a>
 	<br>
 	<div class="hideImageOverflow">
 		<div class="shopImg">
 			<<set _customPrimary to customColour($customColors.color.primary, $customColors.saturation.primary, $customColors.brightness.primary, $customColors.contrast.primary, $customColors.sepia.primary)>>
 			<<set _customSecondary to customColour($customColors.color.secondary, $customColors.saturation.secondary, $customColors.brightness.secondary, $customColors.contrast.secondary, $customColors.sepia.secondary)>>
-			<<shopFullImageSlot $args[0] $args[1]>>
+			<<shopFullImageSlot _args[0] _args[1]>>
 		</div>
 	</div>
 <</if>>
 <</widget>>
 
 <<widget "shopFullImageSlot">>
-<<if $args[0] and $args[1]>>
-	<<set $_slot to $args[0]>>
-	<<set $_item to $args[1]>>
+<<if _args[0] and _args[1]>>
+	<<set $_slot to _args[0]>>
+	<<set $_item to _args[1]>>
 	<<if setup.clothes[$_slot][$_item].mainImage isnot 0>>
 		<<shopFullImagePart $_slot $_item "full" $colouraction _customPrimary>>
 	<</if>>
@@ -923,9 +923,9 @@ Name: <input id="colorName" type="text" value="Custom" maxlength="30" onfocus="V
 <</if>>
 <</widget>>
 
-/*$args[0] - slot, $args[1] - itemNo, $args[2] - file, $args[3] - colour, $args[4] - custom colour*/
+/*_args[0] - slot, _args[1] - itemNo, _args[2] - file, _args[3] - colour, _args[4] - custom colour*/
 <<widget "shopFullImagePart">>
-<img @class="'clothes-'+ (typeof($args[3]) == 'string' ? $args[3].replace(/ /g, '-') : '') + ' layer-' + $args[0]" @src="'img/clothes/' + $args[0] + '/' + setup.clothes[$args[0]][$args[1]].variable + '/' + $args[2] + '.png'" @style="($args[3] is 'custom'? $args[4]:'')">
+<img @class="'clothes-'+ (typeof(_args[3]) == 'string' ? _args[3].replace(/ /g, '-') : '') + ' layer-' + _args[0]" @src="'img/clothes/' + _args[0] + '/' + setup.clothes[_args[0]][_args[1]].variable + '/' + _args[2] + '.png'" @style="(_args[3] is 'custom'? _args[4]:'')">
 <</widget>>
 
 <<widget "shopFullImageToggle">>

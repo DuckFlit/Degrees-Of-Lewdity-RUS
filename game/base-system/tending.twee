@@ -8,23 +8,23 @@
 	* Fifth argument: plot size */
 	/* Note: if you plan to add a new plot size, make sure to update all the places where plot size is hardcoded. */
 	<<set $_plotsInLocation to []>>
-	<<for _i to 0; _i lt $args[1]; _i++>>
+	<<for _i to 0; _i lt _args[1]; _i++>>
 		<<set $_plotsInLocation[_i] to clone(setup.tending.plot_base)>>
-		<<set $_plotsInLocation[_i].bed to $args[2]>>
-		<<set $_plotsInLocation[_i].quality to $args[3]>>
-		<<set $_plotsInLocation[_i].size to $args[4]>>
+		<<set $_plotsInLocation[_i].bed to _args[2]>>
+		<<set $_plotsInLocation[_i].quality to _args[3]>>
+		<<set $_plotsInLocation[_i].size to _args[4]>>
 	<</for>>
-	<<set $plots[$args[0]] to $_plotsInLocation>>
+	<<set $plots[_args[0]] to $_plotsInLocation>>
 <</widget>>
 
 <<widget "add_plot">>
 	/*Adds a plot to an existing location. Arguments are as in the plots_init widget, but the second argument and beyond are shifted down one.*/
-	<<set $_plotsInLocation to $plots[$args[0]]>>
+	<<set $_plotsInLocation to $plots[_args[0]]>>
 	<<set $_last to $_plotsInLocation.length>>
 	<<set $_plotsInLocation.push(clone(setup.tending.plot_base))>>
-	<<set $_plotsInLocation[$_last].bed to $args[1]>>
-	<<set $_plotsInLocation[$_last].quality to $args[2]>>
-	<<set $_plotsInLocation[$_last].size to $args[3]>>
+	<<set $_plotsInLocation[$_last].bed to _args[1]>>
+	<<set $_plotsInLocation[$_last].quality to _args[2]>>
+	<<set $_plotsInLocation[$_last].size to _args[3]>>
 <</widget>>
 
 <<widget "clear_plot">>
@@ -34,10 +34,10 @@
 	OR
 	First argument: the plot to operate on.
 	*/
-	<<if $args[1] isnot undefined>>
-		<<set $_plot to $plots[$args[0]][$args[1]]>>
+	<<if _args[1] isnot undefined>>
+		<<set $_plot to $plots[_args[0]][_args[1]]>>
 	<<else>>
-		<<set $_plot to $args[0]>>
+		<<set $_plot to _args[0]>>
 	<</if>>
 
 	<<if $_plot.baseQuality isnot undefined and !$backgroundTraits.includes("greenthumb")>>
@@ -65,7 +65,7 @@
 <</widget>>
 
 <<widget "display_quality">><<silently>>
-	<<set $_plot to $args[0]>>
+	<<set $_plot to _args[0]>>
 	<<switch $_plot.bed>>
 		<<case "water">><<set _bedType to "water">>
 		<<case "earth">><<set _bedType to "soil">>
@@ -82,7 +82,7 @@
 <</silently>><<print $_result>><</widget>>
 
 <<widget "display_plot">>/*Argument is the plot location you want to display.*/
-	<<set _location to $args[0]>>
+	<<set _location to _args[0]>>
 	<<set $_plotsHere to $plots[_location]>>
 	<<set _water_needed to 0>>
 	There are <<number $_plotsHere.length>> tillable
@@ -189,7 +189,7 @@
 <</widget>>
 
 <<widget "tendingWaterPlot">>
-	<<set _plantbed to $args[0]>>
+	<<set _plantbed to _args[0]>>
 
 	<<set _water_needed += 1>>
 	<<switch _plantbed.size>>
@@ -206,7 +206,7 @@
 <</widget>>
 
 <<widget "tendingWaterAllDryBeds">>
-	<<set $_plotsToWater to $args[0]>>
+	<<set $_plotsToWater to _args[0]>>
 
 	<<for $_plot range $_plotsToWater>>
 		<<set $_plot.water to 1>>
@@ -218,8 +218,8 @@
 <</widget>>
 
 <<widget "tendingPlantSeedsOptions">>
-	<<set _location to $args[0]>>
-	<<set _plantbed to $args[1]>>
+	<<set _location to _args[0]>>
+	<<set _plantbed to _args[1]>>
 	
 	<<if $plants_known.length is 0>>
 		Search wild areas for seeds to plant.
@@ -258,7 +258,7 @@
 <</widget>>
 
 <<widget "tendingTillOptions">>
-	<<set _plantbed to $args[0]>>
+	<<set _plantbed to _args[0]>>
 
 	<<if currentSkillValue('tending') gte 1500>>
 		<<set _baseTime to 3>>
@@ -396,7 +396,7 @@
 
 <<widget "tending_harvest">>
 	/* Argument is the plot you want to harvest */
-	<<set $_plot to $args[0]>>
+	<<set $_plot to _args[0]>>
 	<<set $_type to $_plot.plant>>
 	<<if $plants[$_type] is undefined>>
 		<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": 0}>>
@@ -439,15 +439,15 @@
 	* Second argument: minimum number picked.
 	* Third argument: maximum number picked.
 	*/
-	<<set $_type to $args[0]>>
+	<<set $_type to _args[0]>>
 	<<if $plants[$_type] is undefined>>
 		<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": 0}>>
 	<<elseif $plants[$_type].name is undefined>>
 		<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": $plants[$_type].amount}>>
 	<</if>>
 
-	<<if $args[2] gte 1>>
-		<<set _tending_amount to random($args[1], $args[2])>>
+	<<if _args[2] gte 1>>
+		<<set _tending_amount to random(_args[1], _args[2])>>
 	<<else>>
 		<<set _tending_amount to random(1, 5)>>
 	<</if>>
@@ -471,20 +471,20 @@
 <</widget>>
 
 <<widget "tending_give">>
-	<<if $args[0]>>
-		<<set $_type to $args[0]>>
+	<<if _args[0]>>
+		<<set $_type to _args[0]>>
 		<<if $plants[$_type] is undefined>>
 			<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": 0}>>
 		<<elseif $plants[$_type].name is undefined>>
 			<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": $plants[$_type].amount}>>
 		<</if>>
 		
-		<<set $plants[$_type].amount += ($args[1] ? $args[1] : 1)>>
+		<<set $plants[$_type].amount += (_args[1] ? _args[1] : 1)>>
 	<</if>>
 <</widget>>
 
 <<widget "tending_season_notice">>
-	<<set $_plant to $args[0]>>
+	<<set $_plant to _args[0]>>
 	<span class="blue">	
 		<<print $_plant.plural.toLocaleUpperFirst()>> can only be planted in
 		<<switch $_plant.season.length>>
