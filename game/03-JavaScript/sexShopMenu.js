@@ -115,9 +115,9 @@ setup.sextoys = [
     },
     {
         index:5,
-        name:"strap-on",
-        namecap:"Strap-on",
-		name_underscore:"strap-on",
+        name:"strap-on cock",
+        namecap:"Strap-on cock",
+		name_underscore:"strapon_cock",
 		clothes_index:33,
 		description:"Worn on your hips. Used for penetrative sex.",
         cost:8000,
@@ -127,6 +127,7 @@ setup.sextoys = [
         type:["strap-on","fetish"],
         icon:"img/misc/icon/clothes/strap-on.png",
         colour: 1,
+		shape:"cock",
 		owned: function(){if (V.inventory.sextoys[this.name] != undefined){return V.inventory.sextoys[this.name].length}else return 0},
 		isCarried: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item of V.inventory.sextoys[this.name]){if(item.carried==!0) return item} return 0}},
 		isWorn: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item of V.inventory.sextoys[this.name]){if(V.worn.under_lower.type.includes("strap-on")) return item} return 0}},
@@ -147,8 +148,9 @@ setup.sextoys = [
 		size:4,
 		category:"strap-on",
         type:["strap-on","fetish"],
-        icon:"img/misc/icon/clothes/horsestraponicon.png",
+        icon:"img/misc/icon/clothes/horsestrapon.png",
         colour: 1,
+		shape:"horse cock",
 		owned: function(){if (V.inventory.sextoys[this.name] != undefined){return V.inventory.sextoys[this.name].length}else return 0},
 		isCarried: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item of V.inventory.sextoys[this.name]){if(item.carried==!0) return item} return 0}},
 		isWorn: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item of V.inventory.sextoys[this.name]){if(V.worn.under_lower.type.includes("strap-on")) return item} return 0}},
@@ -171,6 +173,7 @@ setup.sextoys = [
         type:["strap-on","fetish"],
         icon:"img/misc/icon/clothes/knottedstrapon.png",
         colour: 1,
+		shape:"knotted cock",
 		owned: function(){if (V.inventory.sextoys[this.name] != undefined){return V.inventory.sextoys[this.name].length}else return 0},
 		isCarried: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item of V.inventory.sextoys[this.name]){if(item.carried==!0) return item} return 0}},
 		isWorn: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item of V.inventory.sextoys[this.name]){if(V.worn.under_lower.type.includes("strap-on")) return item} return 0}},
@@ -241,6 +244,10 @@ window.sexShopOnItemClick = function (index) {
 	let coloring_div = "";
 
 	/* clear "Bought!/Buy it" fade in setTimeout from window.sexShopOnBuyClick  */
+	if (window.sexShopOnGiftClick.counter != undefined && window.sexShopOnGiftClick.counter != "off"){
+        clearTimeout(window.sexShopOnGiftClick.counter)
+        window.sexShopOnGiftClick.counter = "off"
+    }
 	if (window.sexShopOnBuyClick.counter != undefined && window.sexShopOnBuyClick.counter != "off"){
 		clearTimeout(window.sexShopOnBuyClick.counter)
 		window.sexShopOnBuyClick.counter = "off"
@@ -282,7 +289,7 @@ window.sexShopOnItemClick = function (index) {
 				` + (V.money >= item.cost ? `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` +  item.index + `)" class="ssm_buy_button">
 					Buy it
 				</a> (<span class="gold">£` + item.cost / 100 + `</span>)` : `<span class="ssm_not_enough_money">Not enough money</span>` ) +
-				(V.dev == 1 ? window.determineRecipient(item.index) : "")
+				(item.name.includes("strap-on") ? window.determineRecipient(item.index) : "")
 				+
 				`
 				</div>
@@ -352,7 +359,8 @@ window.sexShopOnGiftClick = function (index) {
 	//	"desc":(this.sizeDesc + " " + this.colour + " " + this.name),
 		"carried": false,
 		"combat_state":"worn",
-		"gift_state": "held"
+		"gift_state": "held",
+		"shape":item.shape
 	}
 	if (item.category == "strap-on")
 		obj.clothes_index = item.clothes_index
