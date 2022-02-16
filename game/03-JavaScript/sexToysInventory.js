@@ -108,6 +108,10 @@ window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" /
 		document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">You try to remove the ` + V.worn.under_lower.name + ` but fail</div>`
 		return
 	}
+	if (shortcut_category == "butt_plug" && V.worn.genitals.cursed ==1 && V.worn.genitals.anal_shield ==1){ // if player tries to wear a butt plug but there is a cursed chastity belt fitted with an anal shield
+		document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">You can't push the `+V.inventory.sextoys[category][index].name + ` past the ` + V.worn.genitals.name + `'s anal shield</div>`
+		return
+	}
 	if (V.inventory.sextoys[category][index].carried == false && window.countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
 		return
 	if (V.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")

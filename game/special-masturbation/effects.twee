@@ -1246,25 +1246,28 @@
 
 
 <<if $leftaction is "mvaginaentrance_dildo" and $rightaction is "mvaginaentrance_dildo">>
-	<<set $_actiondefault to ($player.penisExist ? "mvaginarub" : "mvaginaclit")>>
+	<<set $_actiondefault to ($player.penisExist ? "manusentrance_dildo" : "mvaginaentrance_dildo")>>
 	<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mvaginaentrance_dildo">>
 	<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mvaginaentrance_dildo">>
 	<<arousal 400>>
-	<<if $_genitals_exposed>>
-		<span class="blue">You run your $_lefttoycolour $_lefttoy over your exposed <<pussy>> and shiver in anticipation.</span>
+	<<if $_genitals_exposed and $worn.genitals.vagina_exposed gte 1>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your exposed <<pussy>> and shiver in anticipation.</span>
 		<<addVaginalWetness 2>>
-	<<elseif $worn.under_lower.vagina_exposed is 1>>
-		<span class="blue">You run your $_lefttoycolour $_lefttoy over your <<pussy>>, feeling its shape beneath your $worn.lower.name.</span>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<pussy>>, feeling its shape beneath your $worn.genitals.name.</span>
 		<<addVaginalWetness 1>>
-	<<elseif $worn.lower.vagina_exposed is 1>>
-		<span class="blue">You run your $_lefttoycolour $_lefttoy over your <<pussy>>, feeling its shape beneath your $worn.under_lower.name.</span>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<pussy>>, feeling its shape beneath your $worn.lower.name.</span>
+		<<addVaginalWetness 1>>
+	<<elseif $worn.lower.vagina_exposed is 0>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<pussy>>, feeling its shape beneath your $worn.under_lower.name.</span>
 		<<addVaginalWetness 1>>
 	<<else>>
-		<span class="blue">You run your $_lefttoycolour $_lefttoy over your <<pussy>>, feeling its shape beneath your clothing.</span>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<pussy>>, feeling its shape beneath your clothing.</span>
 		<<addVaginalWetness 0>>
 	<</if>>
 <<elseif $leftaction is "mvaginaentrance_dildo">>
-	<<set $_actiondefault to ($player.penisExist ? "mvaginarub" : "mvaginaclit")>>
+	<<set $_actiondefault to ($player.penisExist ? "manusentrance_dildo" : "mvaginaentrance_dildo")>>
 	<<if $leftaction is "mvaginaentrance_dildo">>
 		<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mvaginaentrance_dildo">>
 	<</if>>
@@ -1285,7 +1288,7 @@
 		<</if>>
 	</span>
 <<elseif $rightaction is "mvaginaentrance_dildo">>
-	<<set $_actiondefault to ($player.penisExist ? "mvaginarub" : "mvaginaclit")>>
+	<<set $_actiondefault to ($player.penisExist ? "manusentrance_dildo" : "mvaginaentrance_dildo")>>
 	<<if $rightaction is "mvaginaentrance_dildo">>
 		<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mvaginaentrance_dildo">>
 	<</if>>
@@ -1309,46 +1312,73 @@
 
 
 <<if $leftaction is "mpickupdildo" or $rightaction is "mpickupdildo">>
-	<<set $_actiondefault to ($player.penisExist ? "mvaginarub" : "mvaginaclit")>>
-	<<if $leftaction is "mpickupdildo">>
-		<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mpickupdildo">>
-		<<arousal 200>>
-		You pick up your $_playerToys[$currentToyLeft].colour $_playerToys[$currentToyLeft].name.
-	<</if>>
-	<<if $rightaction is "mpickupdildo">>
-		<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mpickupdildo">>
-		<<arousal 200>>
-		You pick up your $_playerToys[$currentToyRight].colour $_playerToys[$currentToyRight].name.
+	<<set $_actiondefault to ($player.penisExist ? "manusentrance_dildo" : "mvaginaentrance_dildo")>>
+
+	<<if $leftaction is "mpickupdildo" and $rightaction is "mpickupdildo">>
+		<<if $selectedToyLeft is $selectedToyRight>>
+			You tried to pickup the same toy in both hands.
+			<<set $leftaction to 0>><<set $rightaction to 0>>
+		<<else>>
+			<<set $currentToyLeft to $selectedToyLeft>>
+			<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mpickupdildo">>
+			<<arousal 200>>
+			You pick up your $_playerToys[$currentToyLeft].colour $_playerToys[$currentToyLeft].name.
+
+			
+			<<set $currentToyRight to $selectedToyRight>>
+			<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mpickupdildo">>
+			<<arousal 200>>
+			You pick up your $_playerToys[$currentToyRight].colour $_playerToys[$currentToyRight].name.
+		<</if>>
+
+	<<elseif $leftaction is "mpickupdildo">>
+		<<if $selectedToyLeft is $currentToyRight>>
+			You tried to pickup the same toy in both hands. You release the toy from your left hand.
+			<<set $leftaction to 0>>
+		<<else>>
+			<<set $currentToyLeft to $selectedToyLeft>>
+			<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mpickupdildo">>
+			<<arousal 200>>
+			You pick up your $_playerToys[$currentToyLeft].colour $_playerToys[$currentToyLeft].name.
+		<</if>>
+
+	<<elseif $rightaction is "mpickupdildo">>
+		<<if $selectedToyRight is $currentToyLeft>>
+			You tried to pickup the same toy in both hands. You release the toy from your right hand.
+			<<set $rightaction to 0>>
+		<<else>>
+			<<set $currentToyRight to $selectedToyRight>>
+			<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mpickupdildo">>
+			<<arousal 200>>
+			You pick up your $_playerToys[$currentToyRight].colour $_playerToys[$currentToyRight].name.
+		<</if>>
 	<</if>>
 <</if>>
 
 
 /* Dildo */
 <<if $leftaction is "mvagina_dildo" and $rightaction is "mvagina_dildo">>
-	<<set $rightaction to "mvaginarub_dildo">>
+	/*<<set $rightaction to "mvaginarub_dildo">>*/
 <</if>>
 
 <<if $leftaction is "mvagina_dildo" or $rightaction is "mvagina_dildo">>
-	/*<<set $fingersInVagina += 1>>*/
 	<<if $leftaction is "mvagina_dildo">>
+		<<set $_toy to $_lefttoycolour +" "+$_lefttoy>>
 		<<set $leftactiondefault to "mvagina_dildo">><<set $leftaction to 0>><<set $leftarm to "mvagina_dildo">>
 		<<set $semenInVagina to ($leftFingersSemen gte 1)>>
 		<<set _lubricated to ($leftFingersSemen gte 1 ? "semen-lubricated" : "")>>
 	<</if>>
 	<<if $rightaction is "mvagina_dildo">>
+		<<set $_toy to $_righttoycolour +" "+$_righttoy>>
 		<<set $rightactiondefault to "mvagina_dildo">><<set $rightaction to 0>><<set $rightarm to "mvagina_dildo">>
 		<<set $semenInVagina to ($rightFingersSemen gte 1)>>
 		<<set _lubricated to ($rightFingersSemen gte 1 ? "semen-lubricated" : "")>>
 	<</if>>
-	<<arousal 200>>
-	<<set $_toy to $currentToyLeft>>
-	<<if $currentToyLeft isnot "none" and $currentToyRight isnot "none" and $leftaction is "mvagina_dildo" and $rightaction is "mvagina_dildo">>
+	<<if $rightarm is "mvagina_dildo" and $leftarm is "mvagina_dildo">>
 		<<set $_toy to ""+ $_lefttoy + " and " + $_righttoy>>
-	<<elseif $currentToyLeft isnot "none">>
-		<<set $_toy to $_lefttoycolour +" "+ $_lefttoy>>
-	<<elseif $currentToyRight isnot "none">>
-		<<set $_toy to $_righttoycolour +" "+$_righttoy>>
+		<<arousal 50>>
 	<</if>>
+	<<arousal 250>>
 	<<if $_hymenIntact>>
 		<span class="purple">You push the _lubricated $_toy into your <<pussy>> until you poke your unblemished hymen.</span>
 	<<elseif $bugsinside is 1>>
@@ -1478,6 +1508,14 @@
 <</if>>
 
 <<if $leftaction is "mvaginatease_dildo" or $rightaction is "mvaginatease_dildo">>
+	/* set toy or toys */
+	<<set $_toy to $_playerToys[$currentToyLeft].name>>
+	<<if $leftaction is "mvaginatease_dildo" and $rightaction is "mvaginatease_dildo">>
+		<<set $_toy to ($currentToyLeft is $currentToyRight ? $_playerToys[$currentToyLeft].name+"s" : $_playerToys[$currentToyLeft].name + " and " + $_playerToys[$currentToyRight].name)>>
+	<<elseif $rightaction is "mvaginatease_dildo">>
+		<<set $_toy to $playerToys[$currentToyRight].name>>
+	<</if>>
+	/* set actions */
 	<<if $leftaction is "mvaginatease_dildo">>
 		<<set $leftactiondefault to $leftaction>><<set $leftaction to 0>>
 	<</if>>
@@ -1509,40 +1547,19 @@
 	<<elseif $vaginaArousalWetness gte 20>>
 		<<set $_wet to "slick">>
 	<</if>>
-	/* set toy or toys */
-	<<set $_toy to $_playerToys[$currentToyLeft].name>>
-	<<if $currentToyLeft isnot "none" and $currentToyRight isnot "none" and $leftaction is "mvaginatease_dildo" and $rightaction is "mvaginatease_dildo">>
-		<<set $_toy to ($currentToyLeft is $currentToyRight ? $_playerToys[$currentToyLeft].name+"s" : $_playerToys[$currentToyLeft].name + " and " + $_playerToys[$currentToyRight].name)>>
-	<<elseif $rightaction is "mvaginatease_dildo" and $currentToyRight isnot "none">>
-		<<set $_toy to $playerToys[$currentToyRight].name>>
-	<</if>>
 	/* display action text */
-	<<if $bugsinside is 1>>
-		<<if $arousal gte ($arousalmax / 5) * 4>>
-			<<if $vaginaArousalWetness gte 60>>
-				<<vaginaFluidActive>>
-				You pump <<number $fingersInVagina>> $_fingers in and out of your $_wet <<pussy>>, coaxing out lewd fluid, along with some bugs and insects.
-			<<else>>
-				You pump <<number $fingersInVagina>> $_fingers in and out of your $_wet <<pussy>>, coaxing out some bugs and insects.
-			<</if>>
-		<<elseif $arousal gte ($arousalmax / 5) * 2>>
-			You push <<number $fingersInVagina>> $_fingers in and out of your $_wet <<pussy>>, feeling the insects and bugs inside of you.
+
+	<<if $arousal gte ($arousalmax / 5) * 4>>
+		<<if $vaginaArousalWetness gte 60>>
+			<<vaginaFluidActive>>
+			You pump your $_toy in and out of your $_wet <<pussy>>, coaxing out lewd fluid.
 		<<else>>
-			You gently fuck the entrance of your $_wet <<pussy>> with <<number $fingersInVagina>> $_fingers, pushing some of the bugs around.
+			You pump your $_toy in and out of your $_wet <<pussy>>, pushing as deep as you can reach.
 		<</if>>
+	<<elseif $arousal gte ($arousalmax / 5) * 2>>
+		You push your $_toy in and out of your $_wet <<pussy>>, feeling a thrill even without going too deep.
 	<<else>>
-		<<if $arousal gte ($arousalmax / 5) * 4>>
-			<<if $vaginaArousalWetness gte 60>>
-				<<vaginaFluidActive>>
-				You pump your $_toy in and out of your $_wet <<pussy>>, coaxing out lewd fluid.
-			<<else>>
-				You pump your $_toy in and out of your $_wet <<pussy>>, pushing as deep as you can reach.
-			<</if>>
-		<<elseif $arousal gte ($arousalmax / 5) * 2>>
-			You push your $_toy in and out of your $_wet <<pussy>>, feeling a thrill even without going too deep.
-		<<else>>
-			You gently fuck the entrance of your $_wet <<pussy>> with your $_toy.
-		<</if>>
+		You gently fuck the entrance of your $_wet <<pussy>> with your $_toy.
 	<</if>>
 <</if>>
 
