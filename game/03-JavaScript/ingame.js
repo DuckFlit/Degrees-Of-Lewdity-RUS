@@ -136,8 +136,8 @@ window.combatListColor = function (name, value, type) {
 
 			/*leftaction or rightaction*/
 			case "leftplay": case "leftgrab": case "leftstroke": case "leftchest": case "rightplay": case "rightgrab": case "rightstroke": case "rightchest":
-			case "leftchest": case "rightchest": case "leftwork": case "rightwork": case "leftclit": case "rightclit":
-			case "keepchoke":
+			case "leftchest": case "rightchest": case "leftwork": case "rightwork": case "leftclit": case "rightclit": case "leftmasturbatepussy" : case "rightmasturbatepussy" : case "leftmasturbatepenis" : case "rightmasturbatepenis" :
+			case "keepchoke": case "lubeanus": case "lubepussy": case "lubepenis":
 			/*feetaction*/
 			case "grab": case "vaginagrab": case "grabrub": case "vaginagrabrub": case "rub":
 			/*mouthaction*/
@@ -355,6 +355,10 @@ window.combatListColor = function (name, value, type) {
 			/*feetaction*/
 			case "evade": case "plant":
 				color = "meek";
+				break;
+			
+			case "leftmasturbatepenis" : case "rightmasturbatepenis" : case "leftmasturbatepussy" : case "rightmasturbatepussy" :
+				color = "sub";
 				break;
 
 			case "swim":
