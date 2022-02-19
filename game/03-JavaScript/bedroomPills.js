@@ -44,7 +44,7 @@ setup.pills = [
 	},
 	{
 		name:'bottom blocker',
-		description: 'Each pill contains 200mg of Praberrhol-NG2, a derived molecule crafted specifically to attach to the triglyceride present in your breast and dissolve them over time. The right dosage allowing to keep a balance between gained fat and dissolved fat.',
+		description: 'Each pill contains 200mg of Praberrhol-NG2, a derived molecule crafted specifically to attach to the triglyceride present in your buttocks and dissolve them over time. The right dosage allowing to keep a balance between gained fat and dissolved fat.',
 		onTakeMessage: 'You take the pills intended to block your butt\'s growth. You hope it will be as effective as advertised.',
 		warning_label: '<span class="hpi_notice_label">Notice: No side effects were determined during the trials for this drug. Taking more than 1 pill per 24 hours is ineffective</span>',
 		autoTake: function(){return V.sexStats.pills["pills"][this.name].autoTake},

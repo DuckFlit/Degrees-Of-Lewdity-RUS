@@ -157,10 +157,11 @@ window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" /
 
 window.sexToysInventoryOnThrowClick = function(index, category){
 	let shortcut_category = setup.sextoys[V.inventory.sextoys[category][index].index].category
+	let last_index = document.getElementById("sti_grid").childElementCount - 1
 	/* remove div */
 	document.getElementById("sti_item_" + category.replace(/\s/g, '_') + "_" + index).remove()
 	/* add new empty div */
-	document.getElementById("sti_grid").innerHTML += `<div class="sti_cell sti_empty"></div>`
+	document.getElementById("sti_grid").children[last_index - 2].outerHTML += `<div class="sti_cell sti_empty"></div>`
 	/* close description */
 	window.sextoysOnCloseDesc("stiDescPillContainer")
 	if (V.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")
@@ -232,6 +233,16 @@ window.listUniqueCarriedSextoys = function () {
 		}
 	}
 	return (list.length > 0 ? list : 0)
+}
+
+window.playerHasSexToys = function () {
+	var list = []
+	for (let cat in V.inventory.sextoys){
+		for (let item of V.inventory.sextoys[cat]){
+			list.push(item)
+		}
+	}
+	return (list.length > 0 ? 1 : 0)
 }
 
 window.straponExceptionWearOff = function(){
