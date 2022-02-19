@@ -85,14 +85,54 @@ window.resetSaveMenu = function () {
 	new Wikifier(null, '<<resetSaveMenu>>');
 }
 
+window.ironmanAutoSave = function() {
+	$(function(){
+		let saveSlot = 8;
+
+		updateSavesCount();
+		SugarCube.Save.slots.save(saveSlot, null, { "saveId": V.saveId, "saveName": V.saveName, "ironman":V.ironmanmode})
+		let sD = window.getStateDelta(saveSlot)
+		setSaveDetail(saveSlot, { "saveId": V.saveId, "saveName": V.saveName, "ironman":V.ironmanmode, "ironman_signature":(V.ironmanmode ? md5(JSON.stringify(sD.state.delta[0])) : false)})
+	})
+}
+
+window.getStateDelta = function (saveSlot) {
+	let saveDetails = getSaveDetails()
+	if (saveDetails == undefined)
+		saveDetails = returnSaveDetails()
+	else if(saveDetails.autosave == undefined || saveDetails.slots == undefined)
+		saveDetails = returnSaveDetails()
+	return saveDetails.slots[saveSlot];
+}
+
 window.loadSave = function (saveSlot, confirm) {
+	var saveDetails = JSON.parse(localStorage.getItem("dolSaveDetails"));
+	let sD = window.getStateDelta(saveSlot)
 	if (V.confirmLoad === true && confirm === undefined) {
 		new Wikifier(null, '<<loadConfirm ' + saveSlot + '>>');
 	} else {
 		if (saveSlot === "auto") {
 			Save.autosave.load();
 		} else {
+			if (saveDetails.slots[saveSlot].metadata.ironman){ // (if ironman mode enabled) following checks md5 signature of the save to see if the variables have been modified
+				console.log(md5(JSON.stringify(sD.state.delta[0])), saveDetails.slots[saveSlot].metadata.ironman_signature)
+				if (md5(JSON.stringify(sD.state.delta[0])) != saveDetails.slots[saveSlot].metadata.ironman_signature) {
+					new Wikifier(null, '<<loadIronmanCheater ' + saveSlot + '>>');
+					return
+				}
+			}
 			Save.slots.load(saveSlot);
+			if (V.ironmanmode == true){ // (ironman) remove all saves(except auto-save) with the same saveId than loaded save
+				for (let slotno of [0,1,2,3,4,5,6,7]){ // 0 to 7, ignoring index 8 because it's the one of the auto-save which shouldn't get removed
+					let tmp = window.getStateDelta(slotno)
+					if (tmp){
+						if (tmp.metadata.saveId == sD.metadata.saveId){
+							Save.slots.delete(slotno);
+							deleteSaveDetails(slotno)
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -105,10 +145,13 @@ window.save = function (saveSlot, confirm, saveId, saveName) {
 	} else {
 		if (saveSlot != undefined) {
 			updateSavesCount();
-			Save.slots.save(saveSlot, null, { "saveId": saveId, "saveName": saveName });
-			setSaveDetail(saveSlot, { "saveId": saveId, "saveName": saveName })
+			Save.slots.save(saveSlot, null, { "saveId": saveId, "saveName": saveName, "ironman":V.ironmanmode});
+			let sD = window.getStateDelta(saveSlot)
+			setSaveDetail(saveSlot, { "saveId": saveId, "saveName": saveName, "ironman":V.ironmanmode, "ironman_signature":(V.ironmanmode ? md5(JSON.stringify(sD.state.delta[0])) : false)})
 			V.currentOverlay = null;
 			overlayShowHide("customOverlay");
+			if (V.ironmanmode == true)
+				$(function(){SugarCube.Engine.restart()})
 		}
 	}
 }
@@ -165,6 +208,7 @@ window.getSaveData = function () {
 window.loadSaveData = function () {
 	var input = document.getElementById("saveDataInput");
 	var result = Save.deserialize(input.value);
+	console.log(result)
 	if (result === null) {
 		input.value = "Invalid Save."
 	}
@@ -495,6 +539,8 @@ window.settingsObjects = function (type) {
 				awareselect: { strings: ["innocent", "knowledgeable"], randomize: "characterTrait" },
 				background: { strings: ["waif", "nerd", "athlete", "delinquent", "promiscuous", "exhibitionist", "deviant", "beautiful", "crossdresser", "lustful", "greenthumb", "plantlover"], randomize: "characterTrait" },
 				gamemode: { strings: ["normal", "soft", "hard"] },
+				ironmanmode: {bool: false, bool:true},
+				maxStates: {min: 1, max:20, decimals: 0},
 				player: {
 					gender: { strings: ["m", "f", "h"], randomize: "characterAppearance" },
 					gender_body: { strings: ["m", "f", "a"], randomize: "characterAppearance" },
@@ -526,6 +572,7 @@ window.settingsObjects = function (type) {
 				clothesPriceUnderwear: { min: 1, max: 2, decimals: 1, randomize: "gameplay" },
 				clothesPriceSchool: { min: 1, max: 2, decimals: 1, randomize: "gameplay" },
 				clothesPriceLewd: { min: 0.1, max: 2, decimals: 1, randomize: "gameplay" },
+				tending_yield_factor: { min: 1, max: 10, decimals: 1, randomize: "gameplay" },
 				rentmod: { min: 0.1, max: 3, decimals: 1, randomize: "gameplay" },
 				beastmalechance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
 				monsterchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },

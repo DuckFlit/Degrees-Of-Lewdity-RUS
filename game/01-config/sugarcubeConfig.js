@@ -1,5 +1,5 @@
 Config.history.controls = false;
-
+Config.saves.slots = 9;
 Config.history.maxStates = 1;
 
 State.prng.init()
