@@ -181,9 +181,31 @@ setup.sextoys = [
 		unCarry: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item in V.inventory.sextoys[this.name]){if(V.inventory.sextoys[this.name][item].carry==!0){ V.inventory.sextoys[this.name][item].worn = 0; V.inventory.sextoys[this.name][item].carried = 0}}}},
 		colour_options: ["black", "blue", "green", "pink", "purple", "red", "white", "yellow", "tan", "brown"],
 		display_condition: function(){return 1}
-    }/*,
+    },
     {
         index:8,
+        name:"lube",
+        namecap:"Lube",
+		name_underscore:"lube",
+		description:"Lubricant suitable for sexual purposes. 3 uses per bottle.",
+        cost:2000,
+		wearable:0,
+		size:3,
+		category:"lube",
+        type:["lube"],
+        icon:"img/misc/icon/sex toys/lube.png",
+        colour: 1,
+		uses:3,
+		owned: function(){if (V.inventory.sextoys[this.name] != undefined){return V.inventory.sextoys[this.name].length}else return 0},
+		isCarried: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item of V.inventory.sextoys[this.name]){if(item.carried==!0) return item} return 0}},
+		isWorn: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item of V.inventory.sextoys[this.name]){if(item.worn==!0) return item} return 0}},
+		unWear: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item in V.inventory.sextoys[this.name]){if(V.inventory.sextoys[this.name][item].worn==!0) V.inventory.sextoys[this.name][item].worn = 0}}},
+		unCarry: function(){if(V.inventory.sextoys[this.name] != undefined){for(let item in V.inventory.sextoys[this.name]){if(V.inventory.sextoys[this.name][item].carry==!0){ V.inventory.sextoys[this.name][item].worn = 0; V.inventory.sextoys[this.name][item].carried = 0}}}},
+		colour_options: ["black", "blue", "green", "pink", "purple", "red", "white", "yellow"],
+		display_condition: function(){return 1},
+    }/*,
+    {
+        index:9,
         name:"onahole",
         namecap:"Onahole",
 		name_underscore:"onahole",
@@ -289,7 +311,7 @@ window.sexShopOnItemClick = function (index) {
 				` + (V.money >= item.cost ? `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` +  item.index + `)" class="ssm_buy_button">
 					Buy it
 				</a> (<span class="gold">£` + item.cost / 100 + `</span>)` : `<span class="ssm_not_enough_money">Not enough money</span>` ) +
-				(item.name.includes("strap-on") ? window.determineRecipient(item.index) : "")
+				(item.type.includes("strap-on") ? window.determineRecipient(item.index) : "")
 				+
 				`
 				</div>
@@ -360,7 +382,7 @@ window.sexShopOnGiftClick = function (index) {
 		"carried": false,
 		"combat_state":"worn",
 		"gift_state": "held",
-		"shape":item.shape
+		"uses":(item.uses ? item.uses : undefined)
 	}
 	if (item.category == "strap-on")
 		obj.clothes_index = item.clothes_index
@@ -399,7 +421,9 @@ window.sexShopOnBuyClick = function (index) {
 	//	"sizeDesc": {0:"", 1:"", 2: "", 3: "large", 4: "massive"}[item.size],
 	//	"desc":(this.sizeDesc + " " + this.colour + " " + this.name),
 		"carried": false,
-		"combat_state":"removed"
+		"combat_state":"removed",
+		"shape":item.shape,
+		"uses":(item.uses ? item.uses : undefined)
 	}
 	if (item.category == "strap-on"){
 		let obj2 = setup.clothes.under_lower[item.clothes_index]
