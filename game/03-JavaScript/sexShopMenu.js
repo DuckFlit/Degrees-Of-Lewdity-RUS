@@ -117,7 +117,7 @@ setup.sextoys = [
         index:5,
         name:"strap-on cock",
         namecap:"Strap-on cock",
-		name_underscore:"strapon_cock",
+		name_underscore:"strap-on_cock",
 		clothes_index:33,
 		description:"Worn on your hips. Used for penetrative sex.",
         cost:8000,
@@ -312,10 +312,6 @@ window.determineRecipient = function(index) { // conditions for gifting items to
 	
 	for (let li of ["Alex", "Eden", "Kylar", "Robin", "Sydney"]){
 		if (V.loveInterest.primary == li || V.loveInterest.secondary == li){
-			if (li == "Eden" && V.syndromeeden != 1)
-				continue
-			if (li == "Sydney" && sydneyromance != 1)
-				continue
 			option_builder += (`<option value="` + li + `">` + li + `</option>`)
 		}
 	}
