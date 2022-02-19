@@ -930,9 +930,20 @@ window.clothesIndex = function(slot, itemToIndex) {
 	return index;
 }
 
+var pageLoading = false;
+
+Save.onLoad.add(function(save) {
+	pageLoading = true
+});
+
 // Runs before a passage load, returning a string redirects to the new passage name.
 Config.navigation.override = function (dest) {
+	const isLoading = pageLoading; // if page is freshly loading (after a refresh etc), we hold its value in a temporary variable
+	
+	pageLoading = false
 	switch (dest) {
+		case 'Pharmacy Select Custom Lenses':
+			return isLoading ? 'Pharmacy Ask Custom Lenses' : false;
 		case 'Forest Shop Outfit':
 		case 'Forest Shop Upper':
 		case 'Forest Shop Lower':
@@ -1344,4 +1355,17 @@ window.handSextoysGiftToNPC = function (npc_name){
             }
         }
     }
+}
+
+window.ironmanScheduledSaves = function() {
+	let date = new Date(V.month +' '+V.monthday+', ' + V.year)
+
+	if (!V.ironmanautosaveschedule)
+		V.ironmanautosaveschedule = (date.getTime()).toString(8)
+	if (parseInt(V.ironmanautosaveschedule, 8) < date.getTime()){
+		//autosave
+		window.ironmanAutoSave()
+		//
+		V.ironmanautosaveschedule = (date.getTime() + (window.getRandomIntInclusive(432000, 777600) * 1000)).toString(8)
+	}
 }

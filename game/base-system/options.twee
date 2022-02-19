@@ -43,8 +43,13 @@ Passage Line Height: <<link "1.75">><<unset $reducedLineHeight>><<removeclass "#
 </label>
 <br>
 <label>
-	<<checkbox "$autosavedisabled" false true autocheck>>
-	Disable autosave on sleeping
+	<<if $ironmanmode is true>>
+		<<print '<input id="checkbox-autosavedisabled" name="checkbox-autosavedisabled" type="checkbox" tabindex="0" class="macro-checkbox" disabled checked>'>>
+		<span style="color: #7e7e7e;">Disable autosave on sleeping</span>
+	<<else>>
+		<<checkbox "$autosavedisabled" false true autocheck>>
+		Disable autosave on sleeping
+	<</if>>
 </label>
 <br>
 <label>
@@ -156,7 +161,11 @@ Combat Controls:
 		Please load a save before trying to export a save file.
 	<<elseif ($dancing is 0 and $combat is 0 and $replayScene is undefined) or $debug is 1>>
 		<<set _exportName to "'degrees-of-lewdity"+($saveName isnot ''?'-'+$saveName:'')+ "'">>
-		<input type="button" value="Save to file" @onclick="'updateExportDay();SugarCube.Save.export('+_exportName+')'">
+		<<if $ironmanmode is true>>
+			<input type="button" value="Save to file" disabled>
+		<<else>>
+			<input type="button" value="Save to file" @onclick="'updateExportDay();SugarCube.Save.export('+_exportName+')'">
+		<</if>>
 	<<else>>
 		Unable to save to file currently.
 	<</if>>
@@ -181,7 +190,11 @@ Combat Controls:
 	<input type="button" value="Clear Text Box" onclick="clearTextBox('saveDataInput')"/>
 	<input type="button" value="Top of Text Box" onclick="topTextArea('saveDataInput')"/>
 	<input type="button" value="Bottom of Text Box" onclick="bottomTextArea('saveDataInput')"/>
-	<input type="button" value="Get Save Data" onclick="getSaveData()"/>
+	<<if $ironmanmode is true>>
+		<input type="button" value="Get Save Data" disabled>
+	<<else>>
+		<input type="button" value="Get Save Data" onclick="getSaveData()"/>
+	<</if>>
 	<input type="button" value="Load Save Data" onclick="loadSaveData()"/>
 	<input id="CopyTextArea" type="button" value="Copy Text Area" onclick="copySavedata('saveDataInput')">
 <br><br>
@@ -218,103 +231,118 @@ Combat Controls:
 		</div>
 		<div class="deleteButton"></div>
 	</div>
-	<<for _i to 0; _i lt 10; _i++>>
-		<div class="savesListRow">
-			<<if _i is 0>>
-				<<if _saveDetails.autosave isnot null>>
-					<div class="saveGroup">
-						<div class="saveId">A</div>
-						<div class="saveButton">
-							<input type="button" class="saveMenuButton" value="Load" onclick="loadSave('auto')"/>
-						</div>
+	<<for _i to 0; _i lt 11; _i++>>
+		<<if _i != 9 or (_i == 9 and _saveDetails.slots[_i - 1] != null)>>
+			<div class="savesListRow">
+				<<if _i is 0>>
+					<<if _saveDetails.autosave isnot null>>
+						<div class="saveGroup">
+							<div class="saveId">A</div>
+							<div class="saveButton">
+								<input type="button" class="saveMenuButton" value="Load" onclick="loadSave('auto')"/>
+							</div>
 
-						<<if _saveDetails.autosave.metadata isnot undefined>>
-							<div @class="'saveName' + ($saveId is _saveDetails.autosave.metadata.saveId ? ' gold' : '')">
-								<<if _saveDetails.autosave.metadata.saveName isnot "">>
-									<<print _saveDetails.autosave.metadata.saveName.slice(0,10)>>
+							<<if _saveDetails.autosave.metadata isnot undefined>>
+								<div @class="'saveName' + ($saveId is _saveDetails.autosave.metadata.saveId ? ' gold' : '')">
+									<<if _saveDetails.autosave.metadata.saveName isnot "">>
+										<<print _saveDetails.autosave.metadata.saveName.slice(0,10)>>
+									<<else>>
+										<<print _saveDetails.autosave.metadata.saveId>>
+									<</if>>
+								</div>
+							<<else>>
+								<div class="saveName"></div>
+							<</if>>
+							<div class="saveDetails">
+								<span><<print _saveDetails.autosave.title.replace(/</g, "< ")>></span>
+								<span @class="'datestamp' + (_saveDetails.autosave.date gte _currentTime - 1800000 ? ' gold':'')"><<print new Date(_saveDetails.autosave.date).toLocaleString()>></span>
+							</div>
+						</div>
+						<div class="deleteButton">
+							<input type="button" class="saveMenuButton right" value="Delete" onclick="deleteSave('auto')"/>
+						</div>
+					<<else>>
+						<div class="saveGroup">
+							<div class="saveId">A</div>
+							<div class="saveButton">
+								<input type="button" value="Load" disabled/>
+							</div>
+							<div class="saveName"></div>
+							<div class="saveDetails"></div>
+						</div>
+						<div class="deleteButton">
+							<input class="right" type="button" value="Delete" disabled/>
+						</div>
+					<</if>>
+				<<elseif _i lt 10>>
+					<<set _slot to _i - 1>>
+					<<if _saveDetails.slots[_slot] isnot null>>
+						<div class="saveGroup">
+							<<if _saveDetails.slots[_slot].metadata.ironman == true>>
+								<div class="saveId" style="width: 10px;">
+									<img @id="'saveSlot'+_slot" src="img/ui/SilverCoin.gif" style="max-width: 16px;filter: brightness(2.2);" click-count=0 @onclick="'window.ironManDebugExportButton('+_slot+')'">
+								</div>
+							<<else>>
+								<div class="saveId" style="width: 10px;">
+									<<print _i>>
+								</div>
+							<</if>>
+							<div class="saveButton">
+								<<if _i lt 9>>
+									<<if _saveUnlock>>
+										<<set _onclick to "save("+_slot+", false, "+_saveDetails.slots[_slot].metadata.saveId+", `"+$saveName+"`)">>
+										<input type="button" class="saveMenuButton" value="Save" @onclick="clone(_onclick)"/>
+									<<else>>
+										<input type="button" value="Save" disabled/>
+									<</if>>
+								<</if>>
+								<input type="button" class="saveMenuButton" value="Load" @onclick="'loadSave('+ _slot +')'"/>
+							</div>
+							<div @class="'saveName' + ($saveId is _saveDetails.slots[_slot].metadata.saveId ? ' gold' : '')">
+								<<if _saveDetails.slots[_slot].metadata.saveName isnot "">>
+									<<print _saveDetails.slots[_slot].metadata.saveName.slice(0,10)>>
 								<<else>>
-									<<print _saveDetails.autosave.metadata.saveId>>
+									<<print _saveDetails.slots[_slot].metadata.saveId>>
 								<</if>>
 							</div>
-						<<else>>
-							<div class="saveName"></div>
+							<div class="saveDetails">
+								<span><<print _saveDetails.slots[_slot].title.replace(/</g, "< ")>></span>
+								<span @class="'datestamp' + (_saveDetails.slots[_slot].date gte _currentTime - 1800000 ? ' gold':'')"><<print new Date(_saveDetails.slots[_slot].date).toLocaleString()>></span>
+							</div>
+						</div>
+						<<if _i == 9>>
+							<div id="exportButton" class="exportButton"><input type="button" class="saveMenuButton right" value="Export" onclick="window.ironManExportButton()"/></div>
 						<</if>>
-						<div class="saveDetails">
-							<span><<print _saveDetails.autosave.title.replace(/</g, "< ")>></span>
-							<span @class="'datestamp' + (_saveDetails.autosave.date gte _currentTime - 1800000 ? ' gold':'')"><<print new Date(_saveDetails.autosave.date).toLocaleString()>></span>
-						</div>
-					</div>
-					<div class="deleteButton">
-						<input type="button" class="saveMenuButton right" value="Delete" onclick="deleteSave('auto')"/>
-					</div>
-				<<else>>
-					<div class="saveGroup">
-						<div class="saveId">A</div>
-						<div class="saveButton">
-							<input type="button" value="Load" disabled/>
-						</div>
-						<div class="saveName"></div>
-						<div class="saveDetails"></div>
-					</div>
-					<div class="deleteButton">
-						<input class="right" type="button" value="Delete" disabled/>
-					</div>
-				<</if>>
-			<<elseif _i lt 9>>
-				<<set _slot to _i - 1>>
-				<<if _saveDetails.slots[_slot] isnot null>>
-					<div class="saveGroup">
-						<div class="saveId"><<print _i>></div>
-						<div class="saveButton">
-							<<if _saveUnlock>>
-								<<set _onclick to "save("+_slot+", false, "+_saveDetails.slots[_slot].metadata.saveId+", `"+$saveName+"`)">>
-								<input type="button" class="saveMenuButton" value="Save" @onclick="clone(_onclick)"/>
-							<<else>>
-								<input type="button" value="Save" disabled/>
-							<</if>>
-							<input type="button" class="saveMenuButton" value="Load" @onclick="'loadSave('+ _slot +')'"/>
-						</div>
-						<div @class="'saveName' + ($saveId is _saveDetails.slots[_slot].metadata.saveId ? ' gold' : '')">
-							<<if _saveDetails.slots[_slot].metadata.saveName isnot "">>
-								<<print _saveDetails.slots[_slot].metadata.saveName.slice(0,10)>>
-							<<else>>
-								<<print _saveDetails.slots[_slot].metadata.saveId>>
-							<</if>>
-						</div>
-						<div class="saveDetails">
-							<span><<print _saveDetails.slots[_slot].title.replace(/</g, "< ")>></span>
-							<span @class="'datestamp' + (_saveDetails.slots[_slot].date gte _currentTime - 1800000 ? ' gold':'')"><<print new Date(_saveDetails.slots[_slot].date).toLocaleString()>></span>
-						</div>
-					</div>
-					<div class="deleteButton"><input type="button" class="saveMenuButton right" value="Delete" @onclick="'deleteSave('+ _slot +')'"/></div>
-				<<else>>
-					<div class="saveGroup">
-						<div class="saveId"><<print _i>></div>
-						<div class="saveButton">
-							<<if _saveUnlock>>
+						<div class="deleteButton"><input type="button" class="saveMenuButton right" value="Delete" @onclick="'deleteSave('+ _slot +')'"/></div>
+					<<else>>
+						<div class="saveGroup">
+							<div class="saveId"></div>
+							<div class="saveButton">
+							<<if $passage != "Start">>
 								<input type="button" class="saveMenuButton" value="Save" @onclick="'save('+ _slot +',true,'+$saveId+', `'+$saveName+'`)'"/>
 							<<else>>
-								<input type="button" value="Save" disabled/>
+								<input type="button" class="saveMenuButton" value="Save" @onclick="'save('+ _slot +',true,'+$saveId+', `'+$saveName+'`)'" disabled/>
 							<</if>>
-							<input type="button" value="Load" disabled/>
+								<input type="button" value="Load" disabled/>
+							</div>
+							<div class="saveName"></div>
+							<div class="saveDetails"></div>
 						</div>
+						<div class="deleteButton">
+							<input class="right" type="button" value="Delete" disabled/>
+						</div>
+					<</if>>
+				<<else>>
+					<div class="saveGroup">
+						<div class="saveId"></div>
+						<div class="saveButton"></div>
 						<div class="saveName"></div>
 						<div class="saveDetails"></div>
 					</div>
-					<div class="deleteButton">
-						<input class="right" type="button" value="Delete" disabled/>
-					</div>
+					<div class="saveButton"><input type="button" class="saveMenuButton right" value="Delete All" onclick="deleteSave('all')"/></div>
 				<</if>>
-			<<else>>
-				<div class="saveGroup">
-					<div class="saveId"></div>
-					<div class="saveButton"></div>
-					<div class="saveName"></div>
-					<div class="saveDetails"></div>
-				</div>
-				<div class="saveButton"><input type="button" class="saveMenuButton right" value="Delete All" onclick="deleteSave('all')"/></div>
-			<</if>>
-		</div>
+			</div>
+		<</if>>
 	<</for>>
 </div>
 <label>
@@ -464,10 +492,29 @@ Combat Controls:
 </div>
 <</widget>>
 
+<<widget "loadBoxIronmanCheater">>
+<div class="saveBorder">
+	<h4 class="red">Cheating detected</h4>
+	<ul>
+		<li>You enabled Ironman mode for this save as to prevent yourself from cheating and savescumming.</li>
+		<li>Even if a situation in-game seems unfair or frustrating, you chose to accept it by enabling this mode.</li>
+		<li>Revert any variable changes you made, and you will be able to resume this run. You can ask us on Discord if you're having troubles</li>
+	</ul>
+	<<print _saveDetails.slots[$args[0]].title>>
+	<br>
+	<<print new Date(_saveDetails.slots[$args[0]].date).toLocaleString()>>
+	<br>
+	<input type="button" class="saveMenuButton saveMenuConfirm" value="Cancel" onclick="resetSaveMenu();"/>
+	<br>
+</div>
+<</widget>>
+
 <<widget "resetSaveMenu">>
-	<<replace #saveList>>
-		<<saveList>>
-	<</replace>>
+	<<if document.getElementById("saveList") != null>>
+		<<replace #saveList>>
+			<<saveList>>
+		<</replace>>
+	<</if>>
 <</widget>>
 
 <<widget "clearSaveMenu">>
@@ -485,6 +532,12 @@ Combat Controls:
 <<widget "loadConfirm">>
 	<<replace #saveList>>
 		<<loadWarning _args[0]>>
+	<</replace>>
+<</widget>>
+
+<<widget "loadIronmanCheater">>
+	<<replace #saveList>>
+		<<loadBoxIronmanCheater $args[0]>>
 	<</replace>>
 <</widget>>
 
