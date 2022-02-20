@@ -914,6 +914,14 @@
 <<if $farm_work.alex is "relax" and ($exposed lt 2 or $exhibitionism gte 75)>>
 	<<ind>><<link [[Join Alex (0:20)|Farm Rest]]>><<farm_count 20>><<trauma -2>><<stress -2>><<npcincr Alex love 1>><<set $phase to 1>><<pass 20>><</link>><<glove>><<ltrauma>><<lstress>>
 	<br>
+<<if $farm_stage gte 4 and $milkshake gte 2>>
+			<<ind>><<link [[Offer milkshake (0:20)|Alex Give Milkshake]]>><<farm_count 20>><<pass 20>><<set $milkshake -= 2>><<set $alexDaily.milkshake to true>><<npcincr Alex love 1>><<stress -5>><</link>><<lstress>><<glove>>
+			<br>
+<</if>>
+<<if $farm_stage gte 7 and $alex_countdown is undefined and $milkshake gte 1>>
+			<<ind>><<link [[Share milkshake (0:20)|Alex Share Milkshake]]>><<farm_count 20>><<pass 20>><<set $milkshake -= 1>><<set $alexDaily.milkshake to true>><<npcincr Alex love 2>><<stress -10>><</link>><<lstress>><<gglove>>
+			<br>
+<</if>>
 <</if>>
 <<if $farm_stage gte 7>>
 	/*The PC tends the field in more detail via the tending system after this point.*/
@@ -2380,7 +2388,15 @@
 <</widget>>
 
 <<widget "farm_cottage_tv_options">>
-
+<<if $alex_countdown is undefined>>
+	<<link [[Cuddle Alex (0:20)|Farm Breakfast Cuddle]]>><<npc Alex>><<npcincr Alex love 1>><<pass 20>><</link>><<glove>>
+	<br>
+	<<link [[Watch TV with Alex (0:20)|Farm Breakfast TV]]>><<npc Alex>><<stress -2>><<pass 20>><</link>><<lstress>>
+	<br>
+<<else>>
+	<<link [[Watch TV with Alex (0:20)|Farm Breakfast TV]]>><<npc Alex>><<stress -2>><<pass 20>><</link>><<lstress>>
+	<br>
+<</if>>
 <</widget>>
 
 <<widget "destination_farm">>
@@ -2867,5 +2883,103 @@ Weekly wage: <<printmoney $farm.tower_guard_wage>>
 			It'll be finished in <<number $farm.build_timer>> days.
 		<</if>>
 		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "farm_upgrades_status">>
+	<<set _upgrade_count to 0>>
+	Wall:
+	<<if $farm.wall gte 4 or $farm.build is "wall 4">>
+		<span class="green">As sturdy as can be</span>
+		<<set _upgrade_count += 1>>
+	<<elseif $farm.wall is 3 or $farm.build is "wall 3">>
+		<<link [[Barbed wire|Farm Upgrades Wall 4]]>><</link>>
+	<<elseif $farm.wall is 2 or $farm.build is "wall 2">>
+		<<link [[Metal fence|Farm Upgrades Wall 3]]>><</link>>
+	<<elseif $farm.wall is 1 or $farm.build is "wall 1">>
+		<<link [[Reinforce|Farm Upgrades Wall 2]]>><</link>>
+	<<else>>
+		<<link [[Full repair|Farm Upgrades Wall 1]]>><</link>>
+	<</if>>
+	<br>
+	<<if $farm_stage gte 8>>
+		Security:
+		<<if $farm.tower is 2 or $farm.build is "tower 2">>
+			<span class="green">As watchful as can be</span>
+			<<set _upgrade_count += 1>>
+		<<elseif $farm.tower is 1 or $farm.build is "tower 1">>
+			<<link [[Searchlights|Farm Upgrades Tower 2]]>><</link>>
+		<<else>>
+			<<link [[Watchtower|Farm Upgrades Tower]]>><</link>>
+		<</if>>
+		<br>
+		Woodland:
+		<<if $farm.woodland gte 3 or $farm.build is "woodland 3">>
+			<span class="green">Annexed by the farm</span>
+			<<set _upgrade_count += 1>>
+		<<elseif $farm.woodland gte 2 or $farm.build is "woodland 2">>
+			<<link [[Purchase even more|Farm Upgrades Woodland 3]]>><</link>>
+		<<elseif $farm.woodland gte 1 or $farm.build is "woodland 1">>
+			<<link [[Purchase more|Farm Upgrades Woodland 2]]>><</link>>
+		<<else>>
+			<<link [[Purchase|Farm Upgrades Woodland 1]]>><</link>>
+		<</if>>
+		<br>
+		Kennel:
+		<<if $farm.kennel gte 1 or $farm.build is "kennel 1">>
+			<span class="green">State of the art</span>
+			<<set _upgrade_count += 1>>
+		<<else>>
+			<<link [[Outfit with training facilities|Farm Upgrades Kennel 1]]>><</link>>
+		<</if>>
+		<br>
+		Barn:
+		<<if $farm.barn gte 2 or $farm.build is "barn 2">>
+			<span class="green">As robust as can be</span>
+			<<set _upgrade_count += 1>>
+		<<elseif $farm.barn gte 1 or $farm.build is "barn 1">>
+			<<link [[Expand|Farm Upgrades Barn 2]]>><</link>>
+		<<else>>
+			<<link [[Outfit with new milking equipment|Farm Upgrades Barn 1]]>><</link>>
+		<</if>>
+		<br>
+		Stable:
+		<<if $farm.stable gte 1 or $farm.build is "stable 1">>
+			<span class="green">As sophisticated as can be</span>
+			<<set _upgrade_count += 1>>
+		<<else>>
+			<<link [[Expand|Farm Upgrades Stable 1]]>><</link>>
+		<</if>>
+		<br>
+		Coop:
+		<<if $farm.coop gte 2 or $farm.build is "coop 2">>
+			<span class="green">As big as can be</span>
+			<<set _upgrade_count += 1>>
+		<<elseif $farm.coop gte 1 or $farm.build is "coop 1">>
+			<<link [[Expand again|Farm Upgrades Coop 2]]>><</link>>
+		<<else>>
+			<<link [[Expand|Farm Upgrades Coop 1]]>><</link>>
+		<</if>>
+		<br>
+		Farm Irrigation:
+		<<if $farm.irrigation gte 9>>
+			<span class="green">Every field has irrigation</span>
+			<<set _upgrade_count += 1>>
+		<<elseif $farm.irrigation is $plots.farm.length>>
+			<span class="green">Every current field has irrigation</span>
+		<<else>>
+			<<link [[Build field irrigation|Farm Upgrades Irrigation]]>><</link>>
+		<</if>>
+		<br>
+		<<if $sexStats.anus.pregnancy.motherStatus gte 1 and ($farm.parasitebarn gte 1 or $farm.build is "parasites 1")>>
+			Parasite Barn:
+			<<if $farm.parasitebarn gte 2 or $farm.build is "parasites 2">>
+				<span class="green">As big as can be</span>
+			<<else>>
+				<<link [[Expand|Farm Upgrades Parasite Barn 2]]>><</link>>
+			<</if>>
+			<br>
+		<</if>>
+		<br>
 	<</if>>
 <</widget>>
