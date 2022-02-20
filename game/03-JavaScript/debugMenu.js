@@ -674,6 +674,18 @@ setup.debugMenu.event_list = {
 	Events:[
 		{
 			link: [
+				`Sex Shop`, `Adult Shop Menu`
+			],
+			widgets: []
+		},
+		{
+			link: [
+				`Sextoys Inventory`, `Sextoys Inventory`
+			],
+			widgets: []
+		},
+		{
+			link: [
 				`Imprison Me`, `Underground Intro2`
 			],
 			widgets: [
