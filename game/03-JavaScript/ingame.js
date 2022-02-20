@@ -1336,9 +1336,9 @@ window.checkIfNPCHasCategorySextoy = function (npc_name, category){
         if (s_item.category == category)
             item_list.push(s_item.name)
     }
-    for (let i_list in V.inventory[npc_name].sextoys){
+    for (let i_list in V.player.inventory[npc_name].sextoys){
         if (item_list.includes(i_list)){
-            for (let item of V.inventory[npc_name].sextoys[i_list]){
+            for (let item of V.player.inventory[npc_name].sextoys[i_list]){
                 if (item.gift_state != "held")
                 found_list.push(item)
             }
@@ -1349,12 +1349,12 @@ window.checkIfNPCHasCategorySextoy = function (npc_name, category){
 
 window.handSextoysGiftToNPC = function (npc_name){
     npc_name = npc_name.toLowerCase()
-    for (let inv in V.inventory){
+    for (let inv in V.player.inventory){
         if (inv == npc_name){
-            for (let cat in V.inventory[npc_name].sextoys){
-                for (let item in V.inventory[npc_name].sextoys[cat]){
-                    if (V.inventory[npc_name].sextoys[cat][item].gift_state == "held")
-                        V.inventory[npc_name].sextoys[cat][item].gift_state = "received"
+            for (let cat in V.player.inventory[npc_name].sextoys){
+                for (let item in V.player.inventory[npc_name].sextoys[cat]){
+                    if (V.player.inventory[npc_name].sextoys[cat][item].gift_state == "held")
+                        V.player.inventory[npc_name].sextoys[cat][item].gift_state = "received"
                 }
             }
         }
