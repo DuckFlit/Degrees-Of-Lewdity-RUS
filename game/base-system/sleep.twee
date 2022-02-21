@@ -6,118 +6,138 @@
 
 <<widget "sleephour">>
 	<<set $sleepHoursTotal to 0>>
-	<<set _sleepTraitEffect to 10>>
+	<<set $_bonusFatigueLoss to 10>>
+	<!-- wearing sleep clothes -->
 	<<if $worn.upper.type.includes("sleep") or $worn.lower.type.includes("sleep")>>
-		<<set _sleepTraitEffect += 5>>
+		<<set $_bonusFatigueLoss += 5>>
 	<</if>>
+	<!-- sleeping with others -->
 	<<if $robinbed is 1 or $kylarbed is 1 or $wolfbed is 1>>
-		<<set _sleepTraitEffect += 5>>
+		<<set $_bonusFatigueLoss += 5>>
 	<</if>>
+	<!-- wearing any non-sleep clothing disables the sleep bonus -->
 	<<if !Object.values($worn).every(clothes => clothes.type.includes("naked") || clothes.type.includes("sleep") || clothes.type.includes("eerie"))>>
-		<<set _sleepTraitEffect to 0>>
+		<<set $_bonusFatigueLoss to 0>>
 	<</if>>
-	<<for $sleephour gte 1 or $sleephour lte -1>><<set $sleephour -= 1>><<set $sleepStat++>>
-		<<effectstime>>
-		<<if $location is "asylum">>
-			<<asylumeffects>>
+	<!-- note: every hour of sleep gives a standard 250 fatigue reduction, so this bonus may not be all that much. -->
+
+	<!-- sleephour repeats this until you have slept for the selected number of hours -->
+	<!-- if you select "just sleep", then you wake up when tiredness hits 0, or after 10 hours. -->
+	<<for $sleephour gte 1 or $sleephour lte -1>>
+		<<set $sleephour -= 1>>
+		
+		<<if $location isnot "asylum">>
+			<<effectstime>>
 		<</if>>
 		<<switch $location>>
 			<<case "home">>
 				<<if $robinromance is 1 and $NPCName[$NPCNameList.indexOf("Robin")].lust gte 20 and $robinbed isnot 1 and $robinwakeday isnot 1 and $kylarbed isnot 1>>
+					<!-- Robin climbs into bed with you -->
 					<<if $hour gte 18 or $hour lte 6>>
-						<<set $schoolwake to 1>>
+						<<set _sleepinterrupt to 1>>
 						<<set $NPCName[$NPCNameList.indexOf("Robin")].lovewake to 1>>
 						<<set $robinwakeday to 1>>
 					<</if>>
 				<<elseif $NPCName[$NPCNameList.indexOf("Robin")].love gte 100 and $robindebtknown isnot 1 and $kylarbed isnot 1>>
 					<<if $hour gte 18 or $hour lte 6>>
-						<<set $schoolwake to 1>>
+						<<set _sleepinterrupt to 1>>
 						<<set $robindebtwake to 1>>
 					<</if>>
-				<<elseif $wraith and $wraith.state isnot "" and $wraith.nightmare is 1 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5)>>
+				<<elseif wraithSleepEventCheck()>>
 					<<wraithEvent>>
 				<<elseif $baileydefeatedchain gte 1 and ($rng * 100) gte (9900 - ($allure / 5))>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 					<<set $baileyrapewake to 1>>
 				<<elseif $christmas is 1 and $monthday is 25 and $hour lte 6 and $christmas_kylar is undefined and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 					<<set $christmas_kylar to 1>>
 				<<elseif $schoolday is 1 and $hour is 7 and !$bailey_wake_day>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 					<<set $bailey_wake_day to true>>
 				<<elseif $corruption_slime gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and $daystate is "night" and $slimeSleepEvent is 0 and $kylarbed isnot 1>>
 					<<set $slimeWake to 1>>
 					<<break>>
 				<</if>>
 			<<case "asylum">>
+				<<asylumeffects>>
 				<<if $hour is 6 or ($asylumstate is "firsttreatment" and $asylumfirsttreatment isnot 1) or ($asylumstate is "secondtreatment" and $asylumsecondtreatment isnot 1) or ($asylumstate is "assessment" and $asylumassessment isnot 1)>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 				<<elseif $hour is 6 and $location is "asylum" or $asylumstate is "firsttreatment" and $asylumfirsttreatment isnot 1 and $location is "asylum" or $asylumstate is "secondtreatment" and $asylumsecondtreatment isnot 1 and $location is "asylum" or $asylumstate is "assessment" and $asylumassessment isnot 1 and $location is "asylum">>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 				<<elseif $suspicion gte 80 and random(1, 10) gte 10>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 					<<set $rapewake to 1>>
 				<</if>>
 			<<case "prison">>
 				<<if $hour is 6>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 					<<set $prisonwake to 1>>
 				<</if>>
 			<<case "alex_cottage">>
-				<<if $wraith and $wraith.state isnot "" and $wraith.nightmare is 1 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5)>>
+				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
 				<<elseif ($hour gte 21 or $hour lte 5) and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and $alexwake isnot 1>>
 					<<set $alexwake to 1>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 				<<elseif $farm_attack_timer is 0 and $hour gte 21>>
 					<<set $remywake to 1>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 				<</if>>
 			<<case "cabin">>
-				<<if $wraith and $wraith.state isnot "" and $wraith.nightmare is 1 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5)>>
+				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
 				<<elseif $hour lte 6 and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and $edenwake isnot 1>>
 					<<set $edenwake to 1>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 				<</if>>
 			<<case "forest">>
 				<<if $location is "forest" and $wolfpackferocity gte 10 and $wolfwake isnot 1>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 					<<set $wolfwake to 1>>
 				<</if>>
 			<<case "tower">>
-				<<if $wraith and $wraith.state isnot "" and $wraith.nightmare is 1 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $bird and $bird.mirror is 1>>
+				<<if wraithSleepEventCheck() and $bird and $bird.mirror is 1>>
 					<<wraithEvent>>
 				<<elseif $bird.state is "hunting" and $bird.timer lte 0>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 				<<elseif $bird.state is "home" and $bird.satisfied isnot true and random(1, 10) is 10>>
-					<<set $schoolwake to 1>>
+					<<set _sleepinterrupt to 1>>
 				<</if>>
 			<<case "wolf_cave">>
-				<<if $wraith and $wraith.state isnot "" and $wraith.nightmare is 1 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5)>>
+				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
 				<</if>>
 		<</switch>>
 		
-		<<if $schoolwake is 1>>
+		<!-- this will stop sleep from happening, meaning no fatigue reduction or time passing -->
+		<<if _sleepinterrupt>>
 			<<break>>
 		<</if>>
 
-		<<set $sleepHoursTotal += 1>>
-		<<if $sleeptrouble is 1 and $controlled is 0>>
-			<<set $tiredness -= 200>>
-		<<else>>
-			<<set $tiredness -= 250>>
+		<<set $sleepHoursTotal += 1>><<set $sleepStat++>>
+		
+		<!-- fatigue is lowered by 200 for every hour slept, and another 50 more if the player has no trauma. -->
+		<<set $tiredness -= 200>>
+		<<if !($sleeptrouble is 1 and $controlled is 0)>>
+			<<set $tiredness -= 50>>
 		<</if>>
-		<<set $tiredness -= _sleepTraitEffect>>
-		<<if $location isnot "tower">>
-			<<pass 60>>
-		<<else>>
+		<<set $tiredness -= $_bonusFatigueLoss>>
+
+		<<if $location is "tower">>
 			<<bird_pass 60>>
+		<<else>>
+			<<pass 60>>
 		<</if>>
+
+		<<if _wraithinterrupt is 1>>
+			<<set _sleepinterrupt to 1>>
+			<<break>>
+		<</if>>
+
 		<<if $nightmares gte 1 and $controlled is 0>>
 			<<stress 6>>
 		<</if>>
+		<!-- for "just sleep" option, if sleep is no longer required OR the player has slept for 10 hours, interrupt it. -->
 		<<if $sleephour lte -1 and ($tiredness lte 0 or $sleephour lte -11)>>
 			<<break>>
 		<</if>>
@@ -290,27 +310,14 @@
 <</widget>>
 
 <<widget "wraithEvent">>
-<<set $schoolwake to 1>>
-<<set $wraith.nightmare to 2>>
-<<set $sleepHoursTotal to 1>>
-<<if $sleeptrouble is 1 and $controlled is 0>>
-	<<set $tiredness -= 200>>
-<<else>>
-	<<set $tiredness -= 250>>
-<</if>>
-<<if _sleepTraitEffect>>
-	<<set $tiredness -= _sleepTraitEffect>>
-<</if>>
-<<if $location isnot "tower">>
-	<<pass 1 hour>>
-<<else>>
-	<<bird_pass 60>>
-<</if>>
-<<if ($sleephour lte -1 and $tiredness lte 0) or $sleephour lte (-1 - 10)>>
-	<<set $sleephour to 0>>
-<</if>>
-<<set $wraith.hunt to 0>>
-<<set $foresthunt to 0>>
+	
+	<!-- this is because this event wakes the player up AFTER they have slept for an hour. -->
+	<<unset _sleepinterrupt>>
+
+	<<set _wraithinterrupt to 1>>
+	<<set $wraith.nightmare to 2>>
+	<<set $wraith.hunt to 0>>
+	<<set $foresthunt to 0>>
 <</widget>>
 
 :: SleepSlimeEventObey

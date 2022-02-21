@@ -1373,3 +1373,8 @@ window.ironmanScheduledSaves = function() {
 		V.ironmanautosaveschedule = (date.getTime() + (window.getRandomIntInclusive(432000, 777600) * 1000)).toString(8)
 	}
 }
+
+window.wraithSleepEventCheck = function(){
+	return V.wraith && V.wraith.state !== "" && V.wraith.nightmare === 1 && (V.moonstate === "evening" && V.hour >= 21 || V.moonstate === "morning" && V.hour < 5);
+}
+
