@@ -1124,6 +1124,7 @@ You've pushed yourself too much.
 
 :: Orphanage
 <<set $outside to 0>><<set $location to "home">><<home_effects>><<effects>>
+<<set _robin to $NPCName[$NPCNameList.indexOf("Robin")]>>
 
 You are in the main hall of the orphanage.
 
@@ -1270,6 +1271,19 @@ You are in the main hall of the orphanage.
 <<elseif $home_event is 1 and $hour gte 6 and $hour lte 21>>
 	<<set $home_event to 0>>
 	<<homeevent>>
+
+<<elseif $hour gte 16 and $hour lte 21 and getRobinLocation() is "orphanage"
+and !$fromRobinRoom and _robin.cdquest is 2 and _robin.trauma lte 20 and !$robinDaily.cdevent>>
+	<<set $robinDaily.cdevent to 1>>
+	<<npc Robin>><<person1>>
+	<<generatey2>><<person2>>
+
+	You see Robin talking with a <<person2>><<person>>. Robin waves you over.
+	<br><br>
+
+	<<link [[Go over|Robin CD Socialise]]>><</link>>
+	<br>
+	<<link [[Ignore|Orphanage]]>><<endevent>><</link>>
 <<else>>
 	<<if ndef $police_hack>><<set $police_hack to 0>><</if>><<if ndef $pub_hack_job>><<set $pub_hack_job to 0>><</if>>
 	<<if $police_hack is 2 and ($pub_hack_job is 1 or $pub_hack_job is 2)>>
@@ -1321,6 +1335,9 @@ You are in the main hall of the orphanage.
 	<</if>>
 	<<home_outside>>
 	<br>
+<</if>>
+<<if $fromRobinRoom>>
+	<<unset $fromRobinRoom>>
 <</if>>
 
 :: Orphanage Handheld

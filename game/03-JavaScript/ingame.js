@@ -591,6 +591,34 @@ window.setRobinLocationOverride = function(loc, hour){
 	return;
 }
 
+window.getRobinCrossdressingStatus = function(crossdressLevel){
+	//Note returns 2 if Robin is crossdressing or 0 if not comfortable enough at that location
+	if (V.NPCName[V.NPCNameList.indexOf("Robin")].init !== 1){
+		return;
+	}
+	T.robin_cd = 0;
+
+	switch (getRobinLocation()){
+		case "orphanage":
+		case "sleep":
+			if (crossdressLevel >= 2) T.robin_cd = 2;
+			break;
+		case "park":
+		case "beach":
+			if (crossdressLevel >= 4) T.robin_cd = 2;
+			break;
+		case "school":
+			if (crossdressLevel >= 5) T.robin_cd = 2;
+			break;
+		case "missing":
+			T.robin_cd = 0;
+			break;
+		default:
+			T.robin_cd = 0;
+	}
+	return T.robin_cd;
+}
+
 window.DefaultActions = {
 	create:  function (isMinimal = false, preload = false) {
 		let storage = {};
@@ -1186,7 +1214,7 @@ window.npcSpecifiedClothes = function (npc, name){
 
 /*npc.crossdressing: 0 - doesnt at all, 1 - sometimes, 2 - always*/
 window.npcClothes = function (npc, type){
-	let crossdressing = npc.crossdressing || 0;
+    let crossdressing = npc.crossdressing || 0;
 	let gender = ['n'];
 	/* if you dont want those always crossdressing to wear neutral clothes
 	let gender = [];
