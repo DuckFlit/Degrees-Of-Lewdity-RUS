@@ -528,9 +528,6 @@ window.settingsObjects = function (type) {
 		case "starting":
 			result = {
 				bodysize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
-				penissize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
-				breastsize: { min: 0, max: 4, decimals: 0, randomize: "characterAppearance"  },
-				bottomsize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
 				breastsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
 				genitalsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
 				eyeselect: { strings: ["purple", "dark blue", "light blue", "amber", "hazel", "green", "lime green", "red", "pink", "grey", "light grey", "random"], randomize: "characterAppearance" },
@@ -546,6 +543,9 @@ window.settingsObjects = function (type) {
 					gender_body: { strings: ["m", "f", "a"], randomize: "characterAppearance" },
 					ballsExist: { bool: true, randomize: "characterAppearance" },
 					freckles: { bool: true, strings: ["random"], randomize: "characterAppearance" },
+					breastsize: { min: 0, max: 4, decimals: 0, randomize: "characterAppearance"  },
+					penissize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
+					bottomsize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" }
 				},
 				skinColor: {
 					natural: { strings: ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"], randomize: "characterAppearance" },

@@ -2077,7 +2077,7 @@ setup.debugMenu.event_list = {
 				`Breasts up`, function(){return V.passage}
 			],
 			widgets: [
-				`<<set $breastsize += 1>>`
+				`<<set $player.breastsize += 1>>`
 			]
 		},
 		{
@@ -2085,7 +2085,7 @@ setup.debugMenu.event_list = {
 				`Breasts down`, function(){return V.passage}
 			],
 			widgets: [
-				`<<set $breastsize -= 1>>`
+				`<<set $player.breastsize -= 1>>`
 			]
 		},
 		{
@@ -2093,7 +2093,7 @@ setup.debugMenu.event_list = {
 				`Butt up`, function(){return V.passage}
 			],
 			widgets: [
-				`<<set $bottomsize -= 1>>`
+				`<<set $player.bottomsize -= 1>>`
 			]
 		},
 		{
@@ -2101,7 +2101,7 @@ setup.debugMenu.event_list = {
 				`Penis up`, function(){return V.passage}
 			],
 			widgets: [
-				`<<set $penissize += 1>>`
+				`<<set $player.penissize += 1>>`
 			]
 		},
 		{
@@ -2109,7 +2109,7 @@ setup.debugMenu.event_list = {
 				`Penis down`, function(){return V.passage}
 			],
 			widgets: [
-				`<<set $penissize -= 1>>`
+				`<<set $player.penissize -= 1>>`
 			]
 		},
 		{
