@@ -586,7 +586,6 @@ window.ironManDebugExportButton = function(slot) {
 		let click_value = parseInt(div.getAttribute("click-count"))
 		if (click_value && click_value % 3 == 0){
 			let tmp = div.parentElement.parentElement.parentElement.getElementsByClassName("deleteButton")[0]
-			console.log(click_value, click_value % 6, click_value % 3)
 			if (click_value % 6 == 0)
 				document.getElementById("exportDebugButton"+slot).remove()
 			else if (click_value % 6 == 3)
