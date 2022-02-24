@@ -126,7 +126,7 @@ window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" /
 	V.player.inventory.sextoys[category][index].worn = !V.player.inventory.sextoys[category][index].worn // then wear chose item.
 	if (shortcut_category != "strap-on"){
 		V.worn[shortcut_category] = V.player.inventory.sextoys[category][index]
-		V.worn[shortcut_category].combat_state = "worn"
+		V.worn[shortcut_category].state = "worn"
 	}
 	V.player.inventory.sextoys[category][index].carried = true // also carry the item if not done alreadys
 	document.getElementById("stiWearButton").textContent = (V.player.inventory.sextoys[category][index].worn) ? "Take off" : "Wear it" // update button text value
