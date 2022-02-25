@@ -11,7 +11,7 @@ window.sexToysInventoryInit = function() {
 						main_grid.innerHTML += `<div id="sti_item_` + item_category.replace(/\s/g, '_') + "_" + item + `" class="sti_cell sti_full" onclick="window.sexToysInventoryOnItemClick(` + item + `,` + "`" + item_category + "`" + `)" class="` + `">
 													<div style="position:relative;z-index: 1;">
 														<div class="sti_already_owned">` +
-															`<span data-category="` + item_category + `" data-index="` + item + `" id= "sti_already_owned_` + item_category.replace(/\s/g, '_') + "_" + item + `" class="sti_owned_text">` + (setup.sextoys[i].isWorn() != 0 ? "worn" : setup.sextoys[i].isCarried() != 0 ? "carried" : "" ) + `</span>
+														`<span data-category="` + item_category + `" data-index="` + item + `" id= "sti_already_owned_` + item_category.replace(/\s/g, '_') + "_" + item + `" class="sti_owned_text">` + (V.player.inventory.sextoys[item_category][item].worn != false ? "worn" : V.player.inventory.sextoys[item_category][item].carried != false ? "carried" : "" ) + `</span>
 														</div>
 													</div>
 													<img id="sti_item_icon_` + item_category.replace(/\s/g, '_') + "_" + item +`" src="` + setup.sextoys[i].icon  + `" class="` + ((setup.sextoys[i].colour == 1) ? "clothes-" + V.player.inventory.sextoys[item_category][item].colour : "") + `"></img>
