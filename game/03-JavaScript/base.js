@@ -307,6 +307,11 @@ function genitalsintegrity() {
 }
 DefineMacroS("genitalsintegrity", genitalsintegrity);
 
+function faceintegrity() {
+	return integrityWord(V.worn.face,'face');
+}
+DefineMacroS("faceintegrity", faceintegrity);
+
 /**
  * @param worn clothing article, State.variables.worn.XXXX
  * @return {string} printable clothing colour
