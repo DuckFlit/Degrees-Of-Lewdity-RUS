@@ -6,7 +6,6 @@
 		creature: "lurker",
 		number: 1,
 		warded: 0,
-		satisfied: 0,
 		done: 0,
 		enemy: {}
 	}>>
@@ -33,8 +32,8 @@
 <</widget>>
 
 <<widget "struggle_add">>
-	<<set _i to $struggle_number>>
-	<<set $struggle_number += _args[0]>>
+	<<set _i to $struggle.number>>
+	<<set $struggle.number += _args[0]>>
 	<<for _i to _i; _i lt $struggle.number; _i++>>
 		<<generate_struggle_creature _i _args[1]>>
 	<</for>>
@@ -48,6 +47,7 @@
 	<<set $struggle.enemy[_slot] to {
 		location: "lurking",
 		health: _health,
+		satisfied: 0,
 		name: _type,
 		description: $struggle.descriptions.pluck(),
 		motion: {wasp: "flying", bee: "flying", squid: "swimming"}[_type] || "jumping",
@@ -76,7 +76,12 @@
 		<<for _i to 0; _i lt $struggle.number; _i++>>
 			<<if $struggle.enemy[_i].location is $_part>>
 				<<set $struggle.enemy[_i].location to "fleeing">>
-				<<set $struggle.enemy[_i].health -= 1>>
+
+				<<if _args[1] is "cum">>
+					<<set $struggle.enemy[_i].satisfied += 1>>
+				<<else>>
+					<<set $struggle.enemy[_i].health -= 1>>
+				<</if>>
 			<</if>>
 		<</for>>
 
@@ -1350,9 +1355,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				The <<print $struggle.mouth.creature>> shudders, <span class="blue">and withdraws its <<struggle_appendage mouth>> from your throat.</span> It leaps from your face.<<neutral 5>><<struggle_fluid mouth>>
 				<<set $mouthuse to 0>>
 				<<set $mouthstate to 0>>
-				<<struggle_part_init "mouth">>
-
-				<<set $struggle.satisfied += 1>>
+				<<struggle_part_init "mouth" "cum">>
 			<<default>>
 				The <<print $struggle.mouth.creature>> pumps a sweet fluid down your throat.<<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<set $player.bodyliquid.mouth.goo += 1>>
 		<</switch>>
@@ -1416,9 +1419,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				The <<print $struggle.vagina.creature>> shudders, <span class="blue">and withdraws its <<struggle_appendage vagina>> from your <<pussy>>.</span> It leaps from your pelvis.<<neutral 5>><<struggle_fluid vagina>>
 				<<set $vaginause to 0>>
 				<<set $vaginastate to 0>>
-				<<struggle_part_init "vagina">>
-
-				<<set $struggle.satisfied += 1>>
+				<<struggle_part_init "vagina" "cum">>
 			<<default>>
 				The <<print $struggle.vagina.creature>> pumps a warm fluid into your <<pussy>>.<<neutral 5>><<struggle_fluid vagina>><<purity -1>><<internalejac>><<set $player.bodyliquid.vagina.goo += 1>>
 			<</switch>>
@@ -1464,9 +1465,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				The <<print $struggle.penis.creature>> shudders, <span class="blue">and releases your <<penis>>.</span> It leaps from your tummy.<<neutral 5>>
 				<<set $penisuse to 0>>
 				<<set $penisstate to 0>>
-				<<struggle_part_init "penis">>
-
-				<<set $struggle.satisfied += 1>>
+				<<struggle_part_init "penis" "cum">>
 			<<default>>
 				The <<print $struggle.penis.creature>> thrusts against your <<penis>>.<<neutral 5>><<set $player.bodyliquid.penis.goo += 1>>
 		<</switch>>
@@ -1519,9 +1518,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			The <<print $struggle.anus.creature>> shudders <span class="blue">and withdraws its <<struggle_appendage anus>>,</span> leaping from your <<bottom>><<neutral 5>><<struggle_fluid anus>>
 			<<set $anususe to 0>>
 			<<set $anusstate to 0>>
-			<<struggle_part_init "anus">>
-
-			<<set $struggle.satisfied += 1>>
+			<<struggle_part_init "anus" "cum">>
 		<<default>>
 			The <<print $struggle.anus.creature>>'s <<struggle_appendage anus>> thrusts into your <<bottom>>.<<neutral 5>><<set $player.bodyliquid.anus.goo += 1>><<struggle_fluid anus>><<purity -1>><<internalejac>><<set $player.bodyliquid.anus.goo += 1>>
 		<</switch>>
@@ -1682,9 +1679,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<</if>>
 				<<set $chestuse to 0>>
 				<<set $cheststate to 0>>
-				<<struggle_part_init "chest">>
-
-				<<set $struggle.satisfied += 1>>
+				<<struggle_part_init "chest" "cum">>
 			<<default>>
 				<<if $player.breastsize gte 3>>
 					<<if $struggle.chest.legs is "tentacles">>
