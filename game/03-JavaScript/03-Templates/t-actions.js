@@ -10,5 +10,5 @@ Template.add('stroke', function() {
 	return `${adjective} ${verb}`;
 });
 
-Template.add('alongside',
+Template.add('alongside', () =>
 	either("alongside","alongside","in time with","heedless of","in rhythm with","pounding away against","thrusting against"));
