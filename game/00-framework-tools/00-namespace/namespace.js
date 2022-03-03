@@ -35,6 +35,8 @@ window.DOL = {
 	setup: setup,
 	/** Patch to make javascript execution more consistent (see comment below) */
 	Wikifier: Wikifier,
+	/** Patch to make javascript execution more consistent (see comment below) */
+	Template: Template
 }
 /* Make each of these namespaces available at the top level as well */
 window.defineGlobalNamespaces = (namespaces) => {

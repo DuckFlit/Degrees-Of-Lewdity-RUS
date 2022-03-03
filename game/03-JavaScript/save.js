@@ -208,7 +208,6 @@ window.getSaveData = function () {
 window.loadSaveData = function () {
 	var input = document.getElementById("saveDataInput");
 	var result = Save.deserialize(input.value);
-	console.log(result)
 	if (result === null) {
 		input.value = "Invalid Save."
 	}
