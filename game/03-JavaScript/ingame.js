@@ -1040,6 +1040,9 @@ Config.navigation.override = function (dest) {
 		case 'Domus House Work':
 			return 'Domus Gutters Intro';
 
+		case 'Lake Underwater Tentacles Finish Figure':
+			return 'Lake Underwater Tentacles Finish';
+
 		default:
 			return false;
 	}

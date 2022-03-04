@@ -356,26 +356,33 @@ Over a dozen tentacles curl up the side of the plinth, forming a prison around y
 The creature recoils from you and disappears into darkness. <<tearful>> you look around, but see no other threats.
 <<clotheson>>
 <<endcombat>>
-<<link [[Next|Lake Ruin Plinth]]>><</link>>
+<<link [[Next|Lake Ruin Plinth]]>><<set $phase to 1>><</link>>
 <br>
 
 :: Lake Ruin Plinth
 
 <<set $outside to 0>><<set $location to "lake_ruin">><<underwater>><<effects>><<lakeeffects>>
 You are deep in the lake ruin, in a small room with a plinth.
-<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
+<<set _leave to 1>>
+<<set _bmoon to (($moonstate is "evening" and $hour gte 21) or ($moonstate is "morning" and $hour lt 6))>>
+<<set _parasite to ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime")>>
+<<if _bmoon>>
+	/* Display these on every blood moon entry */
 	<<if $wraith and $wraith.hunt>>
 		You sense the presence following you come to a stop. <span class="blue">It can't reach you in here.</span>
 		<<set $wraith.hunt to 0>><<set $foresthunt to 0>><<set $wraith.timer += 5>>
 	<</if>>
 	Red moonlight filters down from cracks in the ceiling. There isn't much, but the plinth seems to glow where the light hits it.
-	<<if $moonEvent is true and $parasite.left_ear.name is undefined and $parasite.right_ear.name is undefined and $worn.genitals.name is "gold chastity belt">>
+	<<if $moonEvent and !_parasite and $worn.genitals.name is "gold chastity belt">>
+		/* Moon event if no parasites and has gold cb */
 		<<unset $moonEvent>><<set $worn.genitals.integrity *= 0.5>><<control 50>>
 		You're drawn to the plinth, and feel an odd sense of peace.
-		<<gggcontrol>>
+		<<gggcontrol>><br><br>
+		<<set $phase to 1>>
 	<</if>>
 <</if>>
-<<if $moonstate is "evening" and $hour gte 21 and ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") or $moonstate is "morning" and $hour lt 6 and ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime")>>
+<<if _bmoon and _parasite>>
+	/* Clear the possibility of the other moon event, but this event can be revisited if it is skipped */
 	<<unset $moonEvent>>
 	You feel it pull to you.
 	<br><br>
@@ -385,18 +392,36 @@ You are deep in the lake ruin, in a small room with a plinth.
 <<elseif $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
 	An ivory necklace sits atop it. It's studded with blue jewels.
 	<br><br>
+
 	<<link [[Take it|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
 	<br>
-<<elseif $tentacledisable is "f" and $hallucinations gte 2>>
+<<elseif $tentacledisable is "f" and $hallucinations gte 2 and !_bmoon>>
 	You look around the barren room. You don't see anything besides the plinth, but you hear a faint slithering sound. <span class="blue">Something's watching you.</span>
 	<br><br>
+
 	<<link [[Search|Lake Ruin Deep Offer]]>><<loxygen>><</link>>
 	<br>
+<<elseif $tentacledisable is "f" and _bmoon and $phase isnot 1>>
+	<<set _leave to 0>>
+	<br><br>
+	You feel the water stirring around you, growing more agitated as you look around. From the darkness, thinly illuminated by the red moonlight, tentacles lash out. <span class="red">Two of them wrap around your ankles, beginning to pull you further into the room!</span>
+	<br><br>
+
+	<<link [[Submit|Lake Ruin Deep NonConsentacles]]>><<set $molestationstart to 1>><</link>>
+	<br>
+	<<link [[Escape|Lake Ruin Deep Consentacles Leave]]>><<loxygen>><</link>><<swimmingdifficulty 600 1200>>
+	<br>
+<<elseif _bmoon and ($phase is 1 or $tentacledisable isnot "f")>>
+	The water around you is eerily silent, and deathly still, the room barely illuminated in the red glow.
+	<br><br>
 <<else>>
+	The water sways with your movements in the dark room.
 	<br><br>
 <</if>>
-<<link [[Leave|Lake Ruin Deep]]>><</link>>
-<br>
+<<if _leave>>
+	<<link [[Leave|Lake Ruin Deep]]>><<set $phase to 0>><</link>>
+	<br>
+<</if>>
 
 :: Lake Ruin Ivory
 <<effects>>
@@ -845,7 +870,7 @@ A warmth spreads through your fingers, up your arm and into the rest of your bod
 <<tentacles>>
 <<actionstentacles>>
 <<if $tentacles.active lte ($tentacles.max / 2)>>
-	<span id="next"><<link [[Next|Lake Underwater Tentacles Finish Figure]]>><<set $phase2 to 1>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Lake Underwater Tentacles Finish]]>><<set $phase2 to 1>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Lake Underwater Tentacles]]>><</link>></span><<nexttext>>
 <</if>>
@@ -862,10 +887,17 @@ The creature recoils from you and disappears into darkness. <<tearful>> you turn
 :: Lake Underwater Tentacles Finish
 
 <<underwater>><<effects>>
-The creature recoils from you and disappears into darkness. <<tearful>> you turn to the exit.
+<<set _phase to $phase2>>
+<<if $bus is "lake_ruin_deep">>
+	<<set _nextroom to "Lake Ruin Deep">>
+<<elseif $bus is "lake_ruin">>
+	<<set _nextroom to "Lake Ruin">>
+<</if>>
+The creature recoils from you and disappears into darkness. <<tearful>> you turn to the exit. <<if _phase is 1>>When you look back, the pale figure has vanished.<</if>>
 <<clotheson>>
 <<endcombat>>
-<<link [[Next|Lake Ruin]]>><</link>>
+<<if _phase is 1>><<endWraith>><</if>>
+<<link [[Next|_nextroom]]>><</link>>
 <br>
 
 :: Lake Underwater Rape
