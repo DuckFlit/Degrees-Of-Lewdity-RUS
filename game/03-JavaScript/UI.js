@@ -6,7 +6,7 @@ window.overlayShowHide = function (elementId) {
 			V.debugMenu[0] = !V.debugMenu[0];
 		}
 	}
-	window.cacheDebugDiv()
+	window.cacheDebugDiv();
 }
 
 window.overlayMenu = function (elementId, type) {
@@ -25,10 +25,10 @@ window.overlayMenu = function (elementId, type) {
 			window.researchEvents("")
 		}
 		if (elementId == "debugFavourites"){
-			window.patchDebugMenu()
+			window.patchDebugMenu();
 		}
 	}
-	window.cacheDebugDiv()
+	window.cacheDebugDiv();
 }
 
 /*Sidebar swipe*/

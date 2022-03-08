@@ -528,7 +528,6 @@ window.saveDataCompare = function(save1, save2){
 
 /*For the optional numpad to the right of the screen*/
 window.mobclick = function mobclick(index){
-	console.log('input：'.index)
 	$(Links.currentLinks[index-1]).click();
 }
 window.mobBtnHide = function mobBtnHide(){

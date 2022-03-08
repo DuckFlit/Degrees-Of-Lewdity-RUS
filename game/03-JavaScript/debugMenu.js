@@ -1,5 +1,5 @@
 setup.debugMenu = {
-	cache_debug_div: {}
+	cacheDebugDiv: {}
 }
 
 setup.debugMenu.event_list = {
@@ -2854,24 +2854,24 @@ window.syncFavourites = function(){
 	setup.debugMenu.event_list.Favourites = V.debug_favourite
 }
 
-window.cacheDebugDiv = function(){
-	$(function(){
-	if (document.getElementById("debugOverlay") != null){
-		let div = document.getElementById("debugOverlay").outerHTML
-		setup.debugMenu.cache_debug_div.debugOverlay = div;
+window.cacheDebugDiv = function() {
+	$(() => {
+		const overlay = document.getElementById("debugOverlay");
+		if (overlay instanceof HTMLElement){
+			let div = overlay.outerHTML
+			setup.debugMenu.cacheDebugDiv.debugOverlay = div;
+		}
+	});
+}
+
+window.loadCachedDebugDiv = function() {
+	if (typeof setup.debugMenu.cacheDebugDiv.debugOverlay != undefined) {
+		document.getElementById("debugOverlay").outerHTML = setup.debugMenu.cacheDebugDiv.debugOverlay;
 	}
-	});
+	window.patchDebugMenu();
 }
 
-window.loadCachedDebugDiv = function (){
-	$(function(){
-	if (typeof setup.debugMenu.cache_debug_div.debugOverlay != undefined)
-		document.getElementById("debugWindow").innerHTML += setup.debugMenu.cache_debug_div.debugOverlay
-	window.patchDebugMenu()
-	});
-}
-
-window.debugCreateLinkAndRedirect = function (section, index, id){
+window.debugCreateLinkAndRedirect = function(section, index, id) {
 	$(function(){
 	let target = document.getElementById(id).children[0]
 	if (typeof $._data($(target).get(0), "events") == "undefined" || $._data($(target).get(0), "events").length == 0){
@@ -2887,10 +2887,9 @@ window.debugCreateLinkAndRedirect = function (section, index, id){
 	});
 }
 
-window.addonClickDivPassage = function (section, index, id){
-	$(function(){
+window.addonClickDivPassage = function(section, index, id) {
+	$(function() {
 		let target = document.getElementById(id).children[0]
-
 		target.setAttribute("onclick", "window.debugCreateLinkAndRedirect("+"'"+section+"'"+","+index+","+"'"+section+"-"+index+"'"+");");
 	});
 }
@@ -2925,43 +2924,40 @@ window.toggleClassDebug = function(selected, mode) {
 });
 }
 
-window.patchDebugMenu = function (){
-	$(function(){
-		let catg = ["debugEventsMain", "debugEventsCharacter", "debugEventsEvents", "debugEventsFavourites"]
-		let break_if_all_good;
+window.patchDebugMenu = function() {
+	let catg = ["debugEventsMain", "debugEventsCharacter", "debugEventsEvents", "debugEventsFavourites"]
+	let break_if_all_good;
 
-		for (let cat of catg){
-			let haystack = document.getElementById(cat);
-			if (haystack == null)
-				return;
+	for (let cat of catg){
+		let haystack = document.getElementById(cat);
+		if (haystack == null)
+			return;
+		else
+			haystack = haystack.children
+		for (let i = 0; i < haystack.length; i++){
+			let value = haystack[i].id
+			
+			break_if_all_good = 0;
+			if (haystack[i].children.length < 1)
+				break
+			if (haystack[i].children.length < 2)
+				window.addFavouriteIcon(value.split('-')[0],value.split('-')[1],value)
 			else
-				haystack = haystack.children
-			for (let i = 0; i < haystack.length; i++){
-				let value = haystack[i].id
-				
-				break_if_all_good = 0;
-				if (haystack[i].children.length < 1)
-					break
-				if (haystack[i].children.length < 2)
-					window.addFavouriteIcon(value.split('-')[0],value.split('-')[1],value)
-				else
-					break_if_all_good += 1;
-				if (haystack[i].children[0].getAttribute("onclick") == null)
-					haystack[i].children[0].setAttribute("onclick","window.debugCreateLinkAndRedirect('"+value.split('-')[0]+"',"+value.split('-')[1]+",'"+value+"');");
-				else
-					break_if_all_good += 1;
-				if (break_if_all_good == 2)
-					break
-			}
+				break_if_all_good += 1;
+			if (haystack[i].children[0].getAttribute("onclick") == null)
+				haystack[i].children[0].setAttribute("onclick","window.debugCreateLinkAndRedirect('"+value.split('-')[0]+"',"+value.split('-')[1]+",'"+value+"');");
+			else
+				break_if_all_good += 1;
+			if (break_if_all_good == 2)
+				break
 		}
-		document.getElementById("MainDebugInfo").innerHTML =
-		"Allure: "+V.allure+"<br>Rng: "+V.rng+"<br>Danger: "+V.danger+"<br>Passage: "+V.passage+"<br>"
-		window.cacheDebugDiv()
-	});
+	}
+	document.getElementById("MainDebugInfo").innerHTML = "Allure: "+V.allure+"<br>Rng: "+V.rng+"<br>Danger: "+V.danger+"<br>Passage: "+V.passage+"<br>";
+	window.cacheDebugDiv();
 }
 
-window.checkEventCondition = function(){
-	$(function(){
+window.checkEventCondition = function() {
+	$(function() {
 		for (let section of ["Character", "Events", "Favourites", "Main"]){
 			let ev = setup.debugMenu.event_list[section]
 			for (let i in ev){
@@ -2982,8 +2978,8 @@ window.checkEventCondition = function(){
 	});
 }
 
-window.addDebugForm = function(){
-	$(function(){
+window.addDebugForm = function() {
+	$(function() {
 	let op = ''
 	if (V.debug_custom_events == undefined)
 		V.debug_custom_events = {Main:[], Character:[], Events:[]}
@@ -3049,17 +3045,17 @@ window.submitNewDebugPassage = function() {
 			}
 		}
 	}
-	for (let section of ["Character", "Events", "Favourites", "Main"]){
-		for (let ev of setup.debugMenu.event_list[section]){
-			if (ev.hasOwnProperty("link") && ev.link[0] == input_list[0].value){
+	for (let section of ["Character", "Events", "Favourites", "Main"]) {
+		for (let ev of setup.debugMenu.event_list[section]) {
+			if (ev.hasOwnProperty("link") && ev.link[0] == input_list[0].value) {
 				input_list[0].setCustomValidity("This event title already exists. It needs to be unique!");
 				input_list[0].reportValidity();
-				document.getElementById("debugAddResult").innerHTML = ''
-				sigerror = 1
+				document.getElementById("debugAddResult").innerHTML = '';
+				sigerror = 1;
 			}
 		}
 	}
-	if (sigerror == 0){
+	if (sigerror == 0) {
 		if (V.debug_custom_events == undefined)
 			V.debug_custom_events = {Main:[], Character:[], Events:[]}
 		let event_title = input_list[0].value
@@ -3075,18 +3071,18 @@ window.submitNewDebugPassage = function() {
 		V.debug_custom_events[input_list[3].value].unshift(new_obj)
 		setup.debugMenu.event_list[input_list[3].value].unshift(new_obj)
 		document.getElementById("debugAddResult").innerHTML = '<span style="color: #5eac5e;">Event Added<br>Click any blue regular link in-game<br>for changes to apply.<br>(No reload, No links in debug menu)</span>'
-		setup.debugMenu.cache_debug_div = {}
+		setup.debugMenu.cacheDebugDiv = {};
 	}
 }
 
-window.syncDebugAddedEvents = function(){
+window.syncDebugAddedEvents = function() {
 	if (V.debug_custom_events == undefined)
-		V.debug_custom_events = {Main:[], Character:[], Events:[]}
-	for (let section of ["Main", "Character", "Events"]){
+		V.debug_custom_events = {Main:[], Character:[], Events:[]};
+	for (let section of ["Main", "Character", "Events"]) {
 		if (V.debug_custom_events.hasOwnProperty(section) == false)
-			V.debug_custom_events[section] = []
+			V.debug_custom_events[section] = [];
 		for (let ev of V.debug_custom_events[section])
-			setup.debugMenu.event_list[section].unshift(ev)
+			setup.debugMenu.event_list[section].unshift(ev);
 	}
 }
 
@@ -3107,15 +3103,15 @@ window.removeDebugCustomPassage = function() {
 							op += "<option value=" +'"'+ev.link[0]+'" '+">"+ev.link[0]+"</option>";
 					}
 					document.getElementById("debugEvList").innerHTML = op
-					setup.debugMenu.cache_debug_div = {}
-					exit_code = 1
-					break
+					setup.debugMenu.cacheDebugDiv = {};
+					exit_code = 1;
+					break;
 				}
 			}
 			if (exit_code == 1)
-				break
+				break;
 		}
 		if (exit_code == 1)
-			break
+			break;
 	}
 }
