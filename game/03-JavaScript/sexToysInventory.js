@@ -254,6 +254,8 @@ window.patchStraponsWearStatus = function () {
 		for (let strapon in V.player.inventory.sextoys[s_list]){
 			if (V.player.inventory.sextoys[s_list][strapon].name != V.worn.under_lower.name && V.player.inventory.sextoys[s_list][strapon].type.includes("strap-on"))
 				V.player.inventory.sextoys[s_list][strapon].worn = false
+			if (V.player.inventory.sextoys[s_list][strapon].name == V.worn.under_lower.name && V.player.inventory.sextoys[s_list][strapon].type.includes("strap-on") && V.player.inventory.sextoys[s_list][strapon].colour == V.worn.under_lower.colour)
+				V.player.inventory.sextoys[s_list][strapon].worn = true
 		}
 	}
 }
