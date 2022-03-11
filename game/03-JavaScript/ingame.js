@@ -121,7 +121,7 @@ window.combatListColor = function (name, value, type) {
 			case "leftcovervaginameek": case "leftcoverpenismeek": case "leftcoveranusmeek":
 			case "rightcovervaginameek": case "rightcoverpenismeek": case "rightcoveranusmeek":
 			case "leftprotect": case "rightprotect": case "leftgrip": case "rightgrip":
-			case "leftcurl": case "rightcurl":
+			case "leftcurl": case "rightcurl": case "pickupSexToy":
 			/*mouthaction*/
 			case "grasp": case "plead": case "forgive": case "down":
 			case "letout": case "letoutorgasm": case "noises": case "pay":
@@ -136,8 +136,11 @@ window.combatListColor = function (name, value, type) {
 
 			/*leftaction or rightaction*/
 			case "leftplay": case "leftgrab": case "leftstroke": case "leftchest": case "rightplay": case "rightgrab": case "rightstroke": case "rightchest":
-			case "leftchest": case "rightchest": case "leftwork": case "rightwork": case "leftclit": case "rightclit": case "leftmasturbatepussy" : case "rightmasturbatepussy" : case "leftmasturbatepenis" : case "rightmasturbatepenis" :
-			case "keepchoke": case "lubeanus": case "lubepussy": case "lubepenis":
+			case "leftchest": case "rightchest": case "leftwork": case "rightwork": case "leftclit": case "rightclit": case "keepchoke":
+			case "leftmasturbatepussy" : case "rightmasturbatepussy" : case "leftmasturbatepenis" : case "rightmasturbatepenis" :
+			case "lubeanus": case "lubepussy": case "lubepenis": case "removebuttplug":
+			case "dildoOtherPussyTease": case "dildoOtherPussyFuck": case "dildoOtherAnusTease": case "dildoOtherAnusFuck": case "strokerOtherPenisTease": case "strokerOtherPenisFuck":
+			case "dildoSelfPussyEntrance": case "dildoSelfAnusEntrance": case "dildoSelfPussy": case "dildoSelfAnus": case "strokerSelfPenisEntrance": case "strokerSelfPenis":
 			/*feetaction*/
 			case "grab": case "vaginagrab": case "grabrub": case "vaginagrabrub": case "rub":
 			/*mouthaction*/
@@ -351,13 +354,16 @@ window.combatListColor = function (name, value, type) {
 
 			/*leftaction or rightaction*/
 			case "leftprotect": case "rightprotect": case "leftgrip": case "rightgrip": case "leftcurl":
-			case "rightcurl": case "behind":
+			case "rightcurl": case "behind": case "pickupSexToy":
 			/*feetaction*/
 			case "evade": case "plant":
 				color = "meek";
 				break;
-			
+
+			/* Masturbate */
 			case "leftmasturbatepenis" : case "rightmasturbatepenis" : case "leftmasturbatepussy" : case "rightmasturbatepussy" :
+			case "dildoSelfPussyEntrance": case "dildoSelfAnusEntrance": case "strokerSelfPenisEntrance": case "strokerSelfPenis":
+			case "lubepussy": case "lubepenis": case "lubeanus": case "removebuttplug":
 				color = "sub";
 				break;
 
@@ -1258,20 +1264,20 @@ window.waterproofCheck = function(clothing){
 }
 
 window.getSexToysofType = function (toyType){
-	var sexToys = ["dildo","whip","cocksleeve","vibrator","all"];
+	var sexToys = ["dildo","whip","stroker","vibrator","all"];
 	sexToys["dildo"] = ["dildo","length of anal beads"];
 	sexToys["whip"] = ["riding crop","flog"];
-	sexToys["onahole"] = ["onahole"];
+	sexToys["stroker"] = ["stroker"];
 	sexToys["vibrator"] = ["vibrator","bullet vibe"];
-	sexToys["all"] = sexToys["dildo"].concat(sexToys["whip"],sexToys["onahole"],sexToys["vibrator"]);
+	sexToys["all"] = sexToys["dildo"].concat(sexToys["whip"],sexToys["stroker"],sexToys["vibrator"]);
 
 	if (toyType != undefined){
 		if (toyType == "dildo"){
 			var dildos = sexToys["dildo"].concat(sexToys["vibrator"]);
 			return dildos;
 		}
-		else if (toyType == "onahole"){
-			return sexToys["onahole"];
+		else if (toyType == "stroker"){
+			return sexToys["stroker"];
 		}
 		else if (toyType == "whip"){
 			return sexToys["whip"];
@@ -1279,8 +1285,8 @@ window.getSexToysofType = function (toyType){
 		else if (toyType == "vibrator"){
 			return sexToys["vibrator"];
 		}
-		else if (toyType == "dildos and onaholes"){
-			var dildos = sexToys["dildo"].concat(sexToys["vibrator"],sexToys["onahole"]);
+		else if (toyType == "dildos and strokers"){
+			var dildos = sexToys["dildo"].concat(sexToys["vibrator"],sexToys["stroker"]);
 			return dildos;
 		}
 		else if (toyType == "dildos and whips"){
@@ -1300,10 +1306,10 @@ window.getSexToysofType = function (toyType){
 window.npcHasSexToyOfType = function(npcIndex,toyType){
 	var npc = V.NPCList[npcIndex];
 	if (npc.righttool != undefined || npc.lefttool != undefined){
-		var sexToys = ["dildo","whip","onahole","all"];
+		var sexToys = ["dildo","whip","stroker","all"];
 		sexToys["dildo"] = getSexToysofType("dildo");
 		sexToys["whip"] = getSexToysofType("whip");
-		sexToys["onahole"] = getSexToysofType("onahole");
+		sexToys["stroker"] = getSexToysofType("stroker");
 		sexToys["vibrator"] = getSexToysofType("vibrator");
 		sexToys["all"] = getSexToysofType("all");
 		console.log("sex toys: "+sexToys.all);
@@ -1322,9 +1328,9 @@ window.randomSexToy = function(toyType){
 			var dildos = getSexToysofType("dildo");
 			return dildos[random(0,dildos.length-1)];
 		}
-		else if (toyType == "onahole"){
-			var onaholes = getSexToysofType("onahole");
-			return onaholes[random(0,onaholes.length-1)];
+		else if (toyType == "stroker"){
+			var strokers = getSexToysofType("stroker");
+			return strokers[random(0,strokers.length-1)];
 		}
 		else if (toyType == "whip"){
 			var whips = getSexToysofType("whip");
@@ -1334,8 +1340,8 @@ window.randomSexToy = function(toyType){
 			var vibrators = getSexToysofType("vibrator");
 			return vibrators[random(0,vibrators.length-1)];
 		}
-		else if (toyType == "dildos and onaholes"){
-			var dildos = getSexToysofType("dildos and onaholes");
+		else if (toyType == "dildos and strokers"){
+			var dildos = getSexToysofType("dildos and strokers");
 			return dildos[random(0,dildos.length-1)];
 		}
 		else if (toyType == "dildos and whips"){
