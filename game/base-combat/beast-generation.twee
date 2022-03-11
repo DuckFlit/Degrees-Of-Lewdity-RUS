@@ -86,54 +86,60 @@
 <!-- v2.7 $BeastList is 0-7: "dog", "cat", "pig", "wolf", "dolphin", "lizard", "bear", "creature" -->
 <!-- v2.13 "horse" added to $BeastList -->
 
-<<set _h to [200,150,200,300,200,250,500,300,200,500,200,150,400]>>
-<<set _t to ["dog","cat","pig","wolf","dolphin","lizard","bear","boar","creature","horse","fox","hawk","cow"]>>
-<<set _d to ["large","large","fat","enormous","bottlenose","scaly","brown","hairy","strange","huge","large","fierce","huge"]>>
-<<set _pd to ["knotted penis","spiked penis","penis","knotted penis","strange penis","penis","penis","penis","penis","equine cock","knotted penis","avian cock","bovine cock"]>>
+<<set _h to [200,150,200,300,200,250,500,300,200,500,200,150,400]>> <!-- Health Max per type -->
+<<set _t to ["dog","cat","pig","wolf","dolphin","lizard","bear","boar","creature","horse","fox","hawk","cow"]>> <!-- Name of each type -->
+<<set _d to ["large","large","fat","enormous","bottlenose","scaly","brown","hairy","strange","huge","large","fierce","huge"]>> <!-- Descriptor of each type -->
+<<set _pd to ["knotted penis","spiked penis","penis","knotted penis","strange penis","penis","penis","penis","penis","equine cock","knotted penis","avian cock","bovine cock"]>> <!-- Descriptor of Penises -->
 /% <<set _cla to [1,1,1,1,0,1,1,1]>> %/
-<<set _ps to [2,2,2,3,2,2,3,3,2,5,2,2,4]>>
+<<set _ps to [2,2,2,3,2,2,3,3,2,5,2,2,4]>> <!-- Size of penises -->
 
 <<set _i to $BeastList.indexOf(_type)>>
 <<set $NPCList[_n].healthmax to _h[_i]>>
 <<set $NPCList[_n].health to $NPCList[_n].healthmax>>
 <<set $NPCList[_n].description to _d[_i]>>
 <<set $NPCList[_n].type to _t[_i]>>
-/% <<set $NPCList[_n].claws to _cla[_i]>> %/
+<!-- <<set $NPCList[_n].claws to _cla[_i]>> -->
 <<set $NPCList[_n].breastsize to 0>>
 <<set $NPCList[_n].breastsdesc to "nipples">>
 <<set $NPCList[_n].breastdesc to "nipple">>
+<<set $NPCList[_n].monster to 0>> <!-- Default to assuming not a monster -->
+<<set $NPCList[_n].claws to "claws">>
 
-
+<!-- Check for beast-type specific changes -->
 <<if $NPCList[_n].type is "horse">>
 	<<set $NPCList[_n].hair to either("appaloosa","bay","black","brown","buckskin","chestnut","cremello","dun","grey","overo","palomino","piebald","roan","skewbald","spotted","tobiano")>>
+	<<set $NPCList[_n].claws to "hooves">> <!-- Horses have hooves -->
+<<elseif $NPCList[_n].type is "cow">>>>
+	<<if $NPCList[_n].gender is "m">>
+		<<set $NPCList[_n].type to "bull">> <!-- male cows are called bulls (or bullboys for monsters) -->
+	<</if>>
+	<<set $NPCList[_n].claws to "hooves">> <!-- Cattle have hooves -->
+<<elseif $NPCList[_n].type is "dolphin">>
+	<<set $NPCList[_n].claws to "flippers">> <!-- Dolphins have flippers -->
+<<elseif $NPCList[_n].type is "hawk">>
+	<<set $NPCList[_n].claws to "talons">> <!-- Hawks have talons -->
+<<elseif $NPCList[_n].type is "pig" or $NPCList[_n].type is "boar">>
+	<<set $NPCList[_n].claws to "hooves">> <!-- Pigs and boars have hooves -->
 <</if>>
 
+<!-- Monster generation code -->
 <<set $rng to random(1,100)>>
 <!-- Set hallucination creatures to always be monsters. Shadow types could be .monster = "shadow" -->
-<<set $rng to random(1, 100)>>
 <<if $NPCList[_n].type is "creature" and !_tower_creature>>
 	<<set $NPCList[_n].monster to "monster">>
 <<elseif ($monsterchance gte $rng and ($hallucinations gte 1 or $monsterhallucinations is "f")) or (_beast_monster is "monster") or ($bestialitydisable is "t" and $NPCList[0].monster is "monster")>>
 	<<set $NPCList[_n].monster to "monster">>
+	<<if ["dog","pig","wolf","dolphin","boar","fox","hawk","cow"].includes($NPCList[_n].type)>> <!-- Remove claws from many monster types -->
+		<<unset $NPCList[_n].claws>> <!-- It can't have claws - using undefined to maintain back compat with previous saves mid-combat ($claws) -->
+	<</if>>
 	<<if $NPCList[_n].type is "horse">>
 		<<set $NPCList[_n].type to "centaur">>
 	<<elseif $NPCList[_n].type is "hawk">>
 		<<set $NPCList[_n].type to "harpy">>
-	<<elseif $NPCList[_n].type is "cow">>
-		<<if $NPCList[_n].gender is "f">>
-			<<set $NPCList[_n].type to "cowgirl">>
-		<<else>>
-			<<set $NPCList[_n].type to "bullboy">>
-		<</if>>
 	<<elseif $NPCList[_n].gender is "f">>
 		<<set $NPCList[_n].type to $NPCList[_n].type + "girl">>
 	<<else>>
 		<<set $NPCList[_n].type to $NPCList[_n].type + "boy">>
-	<</if>>
-<<else>>
-	<<set $NPCList[_n].monster to 0>>
-	<<if $NPCList[_n].type is "cow" and $NPCList[_n].gender is "m">>
-		<<set $NPCList[_n].type to "bull">>
 	<</if>>
 <</if>>
 
@@ -222,10 +228,6 @@
 <<else>>
 	<<set $NPCList[_n].penisdesc to "none">>
 	<<set $NPCList[_n].penissize to 0>>
-<</if>>
-
-<<if $NPCList[_n].type is "horse" or $NPCList[_n].type is "centaur" or $NPCList[_n].type is "dolphin" or $NPCList[_n].type is "dolphinboy" or $NPCList[_n].type is "dolphingirl" or $NPCList[_n].type is "cow" or $NPCList[_n].type is "bull" or $NPCList[_n].type is "bullboy" or $NPCList[_n].type is "cowgirl">>
-	<<set $claws to 0>>
 <</if>>
 
 <</widget>>
