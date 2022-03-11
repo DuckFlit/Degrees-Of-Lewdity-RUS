@@ -204,28 +204,27 @@ setup.sextoys = [
 		colour_options: ["pink"],
 		default_colour: "pink",
 		display_condition: function(){return 1},
-    }/*,
+    },
     {
         index:9,
-        name:"onahole",
-        namecap:"Onahole",
-		name_underscore:"onahole",
+        name:"stroker",
+        namecap:"stroker",
+		name_underscore:"stroker",
 		description:"This is an item description. Try to keep it short, about two or three lines is fine. This is more text to fill the space.",
         cost:8000,
 		wearable:0,
-		size:0,
-		category:"onahole",
-        type:["onahole"],
-        icon:"img/misc/icon/sexToys/dildo.png",
+		category:"stroker",
+        type:["stroker"],
+        icon:"img/misc/icon/sexToys/onahole.png",
         colour: 1,
 		owned: function(){if (V.player.inventory.sextoys[this.name] != undefined){return V.player.inventory.sextoys[this.name].length}else return 0},
 		isCarried: function(){if(V.player.inventory.sextoys[this.name] != undefined){for(let item of V.player.inventory.sextoys[this.name]){if(item.carried==!0) return item} return 0}},
 		isWorn: function(){if(V.player.inventory.sextoys[this.name] != undefined){for(let item of V.player.inventory.sextoys[this.name]){if(item.worn==!0) return item} return 0}},
-		unWear: function(){if(V.player.inventory.sextoys[this.name] != undefined){for(let item in V.player.inventory.sextoys[this.name]){if(V.player.inventory.sextoys[this.name][item].worn==!0) V.player.inventory.sextoys[this.name][item].worn = 0}}},
-		unCarry: function(){if(V.player.inventory.sextoys[this.name] != undefined){for(let item in V.player.inventory.sextoys[this.name]){if(V.player.inventory.sextoys[this.name][item].carry==!0){ V.player.inventory.sextoys[this.name][item].worn = 0; V.player.inventory.sextoys[this.name][item].carried = 0}}}},
+		unWear: function(){if(V.player.inventory.sextoys[this.name] != undefined){for(let item in V.player.inventory.sextoys[this.name]){V.player.inventory.sextoys[this.name][item].worn = 0}}},
+		unCarry: function(){if(V.player.inventory.sextoys[this.name] != undefined){for(let item in V.player.inventory.sextoys[this.name]){V.player.inventory.sextoys[this.name][item].worn = 0; V.player.inventory.sextoys[this.name][item].carried = 0}}},
 		colour_options: ["black","blue","teal","lime-green","light-pink","purple","tan","brown","red"],
 		display_condition: function(){return 1}
-    }*/
+    }
 ];
 
 window.sexShopGridInit = function(){

@@ -680,7 +680,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Sextoys Inventory`, `Sextoys Inventory`
+				`Sextoys Inventory`, `Sextoys Inventory Home`
 			],
 			widgets: []
 		},
