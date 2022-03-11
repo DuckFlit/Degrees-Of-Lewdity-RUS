@@ -7,6 +7,31 @@
  * display_condition controls wether or not pill should be displayed in the pill menu
 */
 
+/*
+--- Please change this comment as needed when the format of setup.pills changes ---
+This is the setup.pills array.
+It contains a list of all the possible pills.
+A single pill object contains multiple 'properties' which define the pill.
+
+ * name:'example pill' - The name displayed in the medicine drawer screen. Auto-capitalizes first word. Capitalize other words if desired.
+ * description: 'this pill is green.' - The description displayed when the pill is selected.
+ * onTakeMessage: 'You swallow the green pill.' - Text displayed when a pill is taken.
+ * warning_label: 'Warning: example pill may cause explosive decompression.' - Warning label displayed in text box. <span class="hpi_notice_label"> is used in several of these.
+ * indicators: - Array of indicators.  Example: `<span class="hpi_indic_green">+ Control</span>`
+ * icon: 'img/misc...blahblah' - file path of the png icon for this pill.
+ * 
+ * autoTake: - Code or statement that determines if this pill is set to auto-take ??? **
+ * doseTaken: - Code or statement showing how many doses were taken already. **
+ * owned: - Code or statement to determined the number owned. **
+ * overdose: - Code or statement to determine overdose. **
+ * display_condition: - Code or statement to determine if the pill displays in list. **
+ * take_condition: - Code or statement to determine if the take button displays for this pill - can a dose currently be taken. **
+ * 
+ * type: "various" - Type of pill. Pill code uses this to determine what the effects are and where they apply.  Example: "bottom" or "breast"
+ * subtype: "various" - Action the pill has on bodypart 'type'. Optional for the asylum & harper meds apparently. Example: "reduction" or "growth"
+ * shape: "pill" or "galenic" - Helps to properly space the icon.
+ * effects: - Array of effects - can be used to issue quick macros for setting results.  Example: `<<control 25>>`
+*/
 setup.pills = [
 	{
 		name:'bottom reduction',
@@ -200,7 +225,8 @@ setup.pills = [
 		description: 'A powerful antipsychotic.',
 		onTakeMessage: 'You take the pills prescribed in the asylum. You feel hazy.',
 		warning_label: '<span class="hpi_notice_label">Notice: No side effects could be determined during the experimental stage of this drug, and it passed all safety regulations. \
-						<span class="hpi_blur unselectable">I think this drug company is about to be the end of me. No side effects ? Who do they think they\'re kidding ?!</span></span>',		autoTake: false,
+						<span class="hpi_blur unselectable">I think this drug company is about to be the end of me. No side effects ? Who do they think they\'re kidding ?!</span></span>',
+		autoTake: false,
 		indicators: [
 			`<span class="hpi_indic_green">++ Control</span>`,
 			`<span class="hpi_indic_blue">- Awareness</span>`
