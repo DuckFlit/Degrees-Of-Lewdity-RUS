@@ -293,7 +293,6 @@
 
 <<widget "clearadultshopvariables">>
 	<<unset $adultshopintro>>
-	<<unset $sydneypout>>
 	<<endnpc>>
 	<<endevent>>
 <</widget>>
@@ -302,37 +301,31 @@
 	/* Events which take you to a specific passage instead of the usual store */
 	<<endevent>><<cleareventpool>><<getadultshopstate>>
 
-	<<if $adultshopstate is "closed">>
-		<<addinlineevent "entershopclosed" 100>>
-			<<adultshopicon>><<link [[Adult Shop (0:01)|Adult Shop Closed]]>><<pass 1>><</link>>
-		<</addinlineevent>>
-	<<else>>
-		<<addinlineevent "entershop" 100>>
-			<<adultshopicon>><<link [[Adult Shop (0:01)|Adult Shop]]>><<pass 1>><</link>>
-		<</addinlineevent>>
-	<</if>>
+	<<addinlineevent "entershop">>
+		<<adultshopicon>><<link [[Adult Shop (0:01)|Adult Shop]]>><<pass 1>><</link>>
+	<</addinlineevent>>
 
 	<<if $adultshopstate is "sirris">>
-		<<addinlineevent "sirrisshopassist" 5>>
+		<<addinlineevent "sirrisshopassist">>
 			<<adultshopicon>><<link [[Adult Shop (0:01)|Sirris Shop Assistant 1]]>><<pass 1>><</link>>
 		<</addinlineevent>>
 	<</if>>
 
 	<<if $adultshopstate is "sydney" and ($NPCName[$NPCNameList.indexOf("Whitney")].state is "active" or $NPCName[$NPCNameList.indexOf("Whitney")].state is "rescued")>>
-		<<addinlineevent "whitneydildothief" 1>>
+		<<addinlineevent "whitneydildothief">>
 			<<adultshopicon>><<link [[Adult Shop (0:01)|Whitney Dildo Thief]]>><<pass 1>><</link>>
 		<</addinlineevent>>
 	<</if>>
 
 	<<if $adultshopstate is "sydney">>
-		<<addinlineevent "customerdildoflirtingsydney" 2>>
+		<<addinlineevent "customerdildoflirtingsydney">>
 			<<adultshopicon>><<link [[Adult Shop (0:01)|Adult Shop Customer Dildo Flirt Sydney]]>><<pass 1>><</link>>
 		<</addinlineevent>>
 	<</if>>
 
-	<<if $adultshopstate is "sydney" and $dev is 1>>
-		<<addinlineevent "sydneybackroominvitation" 1>>
-			<<adultshopicon>><<link [[Adult Shop (0:01)|Sydney Backroom Invitation]]>><<pass 1>><</link>>
+	<<if $adultshopstate is "sydney" and !$sydneyDaily.adultshop>>
+		<<addinlineevent "sydneybackroominvitation">>
+			<<adultshopicon>><<link [[Adult Shop (0:01)|Sydney Backroom Invitation Enter]]>><<pass 1>><</link>>
 		<</addinlineevent>>
 	<</if>>
 
@@ -384,13 +377,13 @@
 	<<cleareventpool>>
 	<<adultShopWage>>
 
-	<<addinlineevent "uneventful" 3>>
+	<<addinlineevent "uneventful" 0.5>>
 		The shift passes uneventfully. You earn <<moneyGain _wage>><<glove "Sirris">><<npcincr Sirris love 1>>
 		<br><br>
 		<<link [[Return|Adult Shop]]>><</link>>
 	<</addinlineevent>>
 
-	<<addinlineevent "uneventful2" 1>>
+	<<addinlineevent "uneventful2" 0.5>>
 		<<set $_tip to _wage>>
 		<<if $awareness gte 300 and $promiscuity gte 74>>
 			You provide good advice to customers and converse with ease.<<control 1>><<stress -1>><<gcontrol>><<lstress>><<glove "Sirris">><<npcincr Sirris love 1>>
@@ -524,7 +517,7 @@
 
 	<<if $cool lt 80 or $debug is 1>>
 		/* school status event */
-		<<addinlineevent "studentbully" 0.1>>
+		<<addinlineevent "studentbully" 1>>
 			<<endevent>>
 			<<generatey1>><<person1>>
 			A <<person>> motions you over.
@@ -546,7 +539,7 @@
 	<</if>>
 
 	<<if $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon" and $whitneyromance gte 1 and !$adultShopWhitney and $adultshopstate isnot "sydney" and $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 10>>
-		<<addinlineevent "whitneytoysex" 0.1>>
+		<<addinlineevent "whitneytoysex" 1>>
 			/*Whitney arm locks you, forces you outside, spanks you with a flog.*/
 			<<set $adultShopWhitney to true>> /* this event will only happen once a week */
 			<<npc "Whitney">>
@@ -570,11 +563,12 @@
 	<</if>>
 
 	<<if $adultshopstate is "sydney">>
-		<<addevent "sydneyEvent1AnalBeads" 0.1>>
-		<<addevent "sydneyEvent2CuffedSydney" 0.1>>
-		<<addevent "sydneyEvent3HumblePeddlerofHonestWares" 0.1>>
+		<<addevent "sydneyEvent1AnalBeads" 1>>
+		<<addevent "sydneyEvent2CuffedSydney" 1>>
+		<<addevent "sydneyEvent3HumblePeddlerofHonestWares" 1>>
+		<<addevent "sydneyEvent4Backrooms" 1>>
 
-		<<addinlineevent "whitneydildothief" 0.1>>
+		<<addinlineevent "whitneydildothief" 1>>
 			<<endevent>>
 			As you step into the store you hear Sydney yelling. "Hey, put that down and get out of here!"
 			<br><br>
@@ -587,7 +581,7 @@
 			<</if>>
 		<</addinlineevent>>
 
-		<<addinlineevent "sydneyCustomerDildoFlirt" 0.1>>
+		<<addinlineevent "sydneyCustomerDildoFlirt" 1>>
 			<<generate_adultshopcustomer>><<person1>>
 			<<sydneyStatusCheck>>
 			<<npc "Sydney" 2>>
@@ -619,7 +613,7 @@
 	<</if>>
 
 	<<if $weekday is 7 or $weekday is 6>>
-		<<addinlineevent "adultshopleighton" 0.1>>
+		<<addinlineevent "adultshopleighton" 1>>
 			Leighton walks into the store.
 			<<npc "Leighton">><<person1>>
 			You think <<he>> recognises you but <<he>> simply busies himself browsing the <<print either("magazines","videos","lubricants")>>. <<He>> waits until Sirris is at the counter before making <<his>> purchase.
@@ -646,7 +640,7 @@
 
 	<</addinlineevent>>
 
-	<<addinlineevent "customerassistance" 0.2>>
+	<<addinlineevent "customerassistance" 1>>
 		<<generate_adultshopcustomer>><<person1>>
 		A <<person>> approaches the counter looking confused and embarrassed.
 		"Uh, hi. Can you help me find a…" Lost for words, <<he>> resorts to gestures.
