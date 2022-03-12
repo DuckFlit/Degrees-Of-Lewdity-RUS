@@ -593,7 +593,7 @@ setup.debugMenu.event_list = {
 			],
 			widgets: [
 				`<<unset $container>>`,
-				`<<unset $sexStats.anus>>`,
+				`<<run delete $sexStats.anus>>`,
 				`<<physicalAdjustmentsInit>>`,
 				`<<containersInit>>`
 			]
