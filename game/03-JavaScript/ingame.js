@@ -138,6 +138,7 @@ window.combatListColor = function (name, value, type) {
 			case "leftplay": case "leftgrab": case "leftstroke": case "leftchest": case "rightplay": case "rightgrab": case "rightstroke": case "rightchest":
 			case "leftchest": case "rightchest": case "leftwork": case "rightwork": case "leftclit": case "rightclit": case "keepchoke":
 			case "leftmasturbatepussy" : case "rightmasturbatepussy" : case "leftmasturbatepenis" : case "rightmasturbatepenis" :
+			case "lefthandholdkeep" : case "righthandholdkeep" : case "lefthandholdnew" : case "righthandholdnew" :
 			case "lubeanus": case "lubepussy": case "lubepenis": case "removebuttplug":
 			case "dildoOtherPussyTease": case "dildoOtherPussyFuck": case "dildoOtherAnusTease": case "dildoOtherAnusFuck": case "strokerOtherPenisTease": case "strokerOtherPenisFuck":
 			case "dildoSelfPussyEntrance": case "dildoSelfAnusEntrance": case "dildoSelfPussy": case "dildoSelfAnus": case "strokerSelfPenisEntrance": case "strokerSelfPenis":
