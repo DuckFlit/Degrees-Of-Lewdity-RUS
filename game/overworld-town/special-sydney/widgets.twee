@@ -278,14 +278,29 @@
 			<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
 		<<case "shop">>
-			<<if $sydneySeen.includes("shop")>> /*After the shop's official opening. Unfinished.*/
+			<<if $adultshopgrandopening is true>>
+				<<set $adultshopopeningsydney to true>>
+				"It's closing time.
+				<<if _sydneyStatus.includes("corrupt") or _sydneyStatus.includes("corruptLust")>>
+					Come on, we're missing the grand opening of the shop!"
+					<br><br>
+				<<elseif _sydneyStatus.includes("pure") or _sydneyStatus.includes("pureLust")>>
+					I'm wanted at the grand opening at the adult shop. Would you like to accompany me? I'd feel less awkward with company."
+					<br><br>
+				<<else>>
+					I'm off to the grand opening at the adult shop. Wanna come along? It might be fun."
+					<br><br>
+				<</if>>
+				<<link [[Go with Sydney (1:00)|Adult Shop Opening Walk]]>><<pass 10>><</link>>
+				<br>
+			<<elseif $sydneySeen.includes("shop")>>
 				"It's closing time. I'm off to help my <<sydneymum>> with the shop. You can come too, if you want." 
 				<<He>> gathers <<his>> things,<<if $sydneyromance is 1>> kisses you on the cheek,<</if>> and starts to lead any lingering students out of the library.
-					<<if $NPCName[$NPCNameList.indexOf("Sydney")].love gte 20>>
-						<<elkicon>><<link [[Walk with Sydney (0:30)|Sydney Shop Help]]>><<pass 30>><<npcincr Sydney love 1>><<stress -3>><<trauma -3>><</link>><<lstress>><<ltrauma>><<glove>>
-					<<else>>
-						<<elkicon>><<link [[Walk with Sydney (0:30)|Sydney Shop Help]]>><<pass 30>><<npcincr Sydney love 1>><</link>><<glove>>
-					<</if>>
+				<<if $NPCName[$NPCNameList.indexOf("Sydney")].love gte 20>>
+					<<elkicon>><<link [[Walk with Sydney (0:30)|Elk Sydney Walk]]>><<pass 30>><<npcincr Sydney love 1>><<stress -3>><<trauma -3>><</link>><<lstress>><<ltrauma>><<glove>>
+				<<else>>
+					<<elkicon>><<link [[Walk with Sydney (0:30)|Elk Sydney Walk]]>><<pass 30>><<npcincr Sydney love 1>><</link>><<glove>>
+				<</if>>
 			<<else>>
 				"It's closing time. I'm off to help my <<sydneymum>> with some work." <<He>> gathers <<his>> things,<<if $sydneyromance is 1>> kisses you on the cheek,<</if>> and starts to lead any lingering students out of the library. <<if $sydneySeen.includes("mass") or $sydneySeen.includes("initiate")>>Once <<he>> exits, you notice that <<hes>> not heading towards the temple, and instead towards Elk Street.<</if>>
 			<</if>>
@@ -343,20 +358,35 @@
 				<br>
 			<</if>>
 		<<case "shop">>
-			<<if $sydneySeen.includes("shop")>>
-				<!-- Currently Unobtainable, will be able to help set up shop in the future. -->
-				Sydney stretches. "I'm off to help set up the shop... You can come too, if you want." <<He>> gathers <<his>> things<<if $sydneyromance is 1>>, and kisses you on the cheek before leaving<</if>>.
+			<<if $adultshopgrandopening is true>>
+				<<set $adultshopopeningsydney to true>>
+				Sydney stretches.
+				<br><br>
+				<<if _sydneyStatus.includes("corrupt") or _sydneyStatus.includes("corruptLust")>>
+					"Come on, we're missing the grand opening!"
+					<br><br>
+				<<elseif _sydneyStatus.includes("pure") or _sydneyStatus.includes("pureLust")>>
+					"I'm wanted at the grand opening at the adult shop. Would you like to accompany me? I'd feel less awkward with company."
+					<br><br>
+				<<else>>
+					"I'm off to the grand opening at the adult shop. Wanna come along? It might be fun."
+					<br><br>
+				<</if>>
+				<<link [[Go with Sydney (1:00)|Adult Shop Opening Walk]]>><<pass 10>><</link>>
+				<br>
+			<<elseif $sydneySeen.includes("shop")>>
+				Sydney stretches. "I'm off to <<if $adultshopunlocked is undefined>>help set up<<else>>work at<</if>> the shop... You can come too, if you want." <<He>> gathers <<his>> things<<if $sydneyromance is 1>>, and kisses you on the cheek before leaving<</if>>.
 				<br><br>
 				<<if $NPCName[$NPCNameList.indexOf("Sydney")].love gte 20>>
-					<<elkicon>><<link [[Walk with Sydney (0:30)|Sydney Shop Help]]>><<pass 30>><<npcincr Sydney love 1>><<stress -3>><<trauma -3>><</link>><<lstress>><<ltrauma>><<glove>>
+					<<elkicon>><<link [[Walk with Sydney (0:30)|Elk Sydney Walk]]>><<pass 30>><<npcincr Sydney love 1>><<stress -3>><<trauma -3>><</link>><<lstress>><<ltrauma>><<glove>>
 				<<else>>
-					<<elkicon>><<link [[Walk with Sydney (0:30)|Sydney Shop Help]]>><<pass 30>><<npcincr Sydney love 1>><</link>><<glove>>
+					<<elkicon>><<link [[Walk with Sydney (0:30)|Elk Sydney Walk]]>><<pass 30>><<npcincr Sydney love 1>><</link>><<glove>>
 				<</if>>
 			<<else>>
 				Sydney stretches. "I'm off to help my <<sydneymum>> with some work." <<He>> gathers <<his>> things<<if $sydneyromance is 1>>, and kisses you on the cheek before leaving<</if>>.
 			<</if>>
 			<br><br>
-			<<link [[Next|Temple]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<<link [[Leave|Temple]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
 		<<default>>
 			Sydney stretches. "Time to get back to work. I'll be around." <<if $sydneyromance is 1>><<He>> kisses you on the cheek before leaving.<</if>>
@@ -385,7 +415,7 @@
 				<<link [[Gift Sydney a strap-on|Gift Strap-on Sydney Temple]]>><</link>>
 				<br>
 			<</if>>
-			<<link[[Back|Adult Shop]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<<link [[Back|Adult Shop]]>><<endevent>><<set $eventskip to 1>><</link>>
 	<</switch>>
 <</if>>
 <</widget>>
@@ -574,7 +604,7 @@
 	<<else>>
 		<<set _sydney_location to "shop">>
 	<</if>>
-<<elseif $sydneySeen isnot undefined and $NPCName[$NPCNameList.indexOf("Sydney")].corruption gt 10 and $hour gte 16 and $hour lt 20>>
+<<elseif $sydneySeen isnot undefined and $adultshopunlocked and $NPCName[$NPCNameList.indexOf("Sydney")].corruption gt 10 and $hour gte 16 and $hour lt 20>>
 	<<set $_corruption to $NPCName[$NPCNameList.indexOf("Sydney")].corruption>>
 	<<if $adultshophelped is 1>>
 		<<set _sydney_location to "temple">>
