@@ -1152,6 +1152,10 @@ window.currentSkillValue = function(skill){
 	return result;
 }
 
+window.playerIsPenetrated = function(){
+	return [V.mouthstate, V.vaginastate, V.anusstate].some(s => ["penetrated","doublepenetrated","tentacle","tentacledeep"].includes(s))
+}
+
 window.playerHasStrapon = function(){
 	return (V.worn.under_lower.type.includes("strap-on") && V.worn.under_lower.state == "waist")
 }
