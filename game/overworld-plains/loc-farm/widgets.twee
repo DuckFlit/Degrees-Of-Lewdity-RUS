@@ -1300,6 +1300,35 @@
 <</if>>
 <</widget>>
 
+<<widget "farm_relax_chat">>
+<<switch random(1, 10)>>
+	<<case 1>>
+		Alex chats with you, and talks about <<his>> family. "I've twelve siblings," <<he>> says at one point. "<<if $pronoun is "m">>Mum<<else>>Dad<</if>> doesn't know what to do with us all."
+	<<case 2>>
+		Alex chats with you, and talks about the farm's pigs. "Hauling all their food over is rough," <<he>> says at one point. "The truffles are worth it though."
+	<<case 3>>
+		Alex chats with you, and talks about the farm's horses. "Most of their owners are rich townies," <<he>> says. "They need to be kept active and healthy."
+	<<case 4>>
+		Alex chats with you, and talks about the farm's cattle. "They're big buggers," <<he>> says at one point. "But docile. Wish the other animals were as easy to manage."
+	<<case 5>>
+		Alex chats with you, and talks about the farm's dogs. "They aren't pets," <<he>> says at one point. "Don't be afraid to keep them in line."
+	<<case 6>>
+		<<if $farm_stage gte 12>>
+			Alex chats with you, and talks about the fields. "No one thought we'd clear all nine," <<he>> says at one point. "The forest grows fast, so we'll need to keep on top of it."
+		<<else>>
+			Alex chats with you, and talks about the fields. "There are nine in total," <<he>> says at one point. "Or were. The forest has reclaimed most of them. It's almost like trees have sprung up over night." <<He>> laughs.
+		<</if>>
+	<<case 7>>
+		Alex chats with you, and asks about life in the town. "I don't think I'd like the noise," <<he>> says at one point. "I guess you get used to it."
+	<<case 8>>
+		Alex chats with you, and asks about school. "Parents taught me," <<he>> says at one point. "Sometimes my older siblings helped."
+	<<case 9>>
+		Alex chats with you, and talks about the moor. "Don't go there at night," <<he>> warns. "Or at all if you can help it. People have disappeared."
+	<<case 10>>
+		Alex chats with you, and talks about the sea. "You don't need to walk far," <<he>> says. "If you know the paths."
+<</switch>>
+<</widget>>
+
 <<widget "farm_relax_end">>
 <<farm_work_update>>
 <<if $farm_work.alex_relax lt 3>>
@@ -1979,89 +2008,99 @@
 <</widget>>
 
 <<widget "farm_tending_alex_events">>
-<<if $season is "summer" and $weather is "clear">>
-	<<set $rng to random(1, 5)>>
-<<else>>
-	<<set $rng to random(1, 4)>>
-<</if>>
+	<<cleareventpool>>
 
-<<if $rng is 5>>
-	<<npc Alex>><<person1>>
+	/* seasonal events */
+	<<if $season is "summer" and $weather is "clear">>
+		<<addinlineevent "farm_tending_alex_summer_1">>
+			<<npc Alex>><<person1>>
 
-	Alex fans <<his>> face and wipes <<his>> forehead. <<He>> squints up at the sky and huffs. "It's too hot."
-	<br><br>
+			Alex fans <<his>> face and wipes <<his>> forehead. <<He>> squints up at the sky and huffs. "It's too hot."
+			<br><br>
 
-	<<He>> starts to undo <<his>> shirt buttons, one by one, seemingly oblivious to your gaze.
-	<br><br>
+			<<He>> starts to undo <<his>> shirt buttons, one by one, seemingly oblivious to your gaze.
+			<br><br>
 
-	<<if $promiscuity gte 15>>
-		<<link [["Touch " + $NPCList[0].pronouns.him|Farm Tending Alex Summer]]>><<set $phase to 2>><<if $farm_stage lt 7 or ($farm_stage gte 7 and $alex_countdown isnot undefined)>><<npcincr Alex love -1>><</if>><<npcincr Alex dom -1>><<npcincr Alex lust 3>><</link>><<promiscuous2>><<if $farm_stage lt 7 or ($farm_stage gte 7 and $alex_countdown isnot undefined)>><<llove>><</if>><<ldom>><<gglust>>
-		<br>
+			<<if $promiscuity gte 15>>
+				<<link [["Touch " + $NPCList[0].pronouns.him|Farm Tending Alex Summer]]>><<set $phase to 2>><<if $farm_stage lt 7 or ($farm_stage gte 7 and $alex_countdown isnot undefined)>><<npcincr Alex love -1>><</if>><<npcincr Alex dom -1>><<npcincr Alex lust 3>><</link>><<promiscuous2>><<if $farm_stage lt 7 or ($farm_stage gte 7 and $alex_countdown isnot undefined)>><<llove>><</if>><<ldom>><<gglust>>
+				<br>
+			<</if>>
+			<<link [[Peek|Farm Tending Alex Summer]]>><<set $phase to 1>><<arousal 300>><<npcincr Alex lust 1>><</link>><<garousal>><<glust>>
+			<br>
+			<<link [[Ignore|Farm Tending Alex Summer]]>><<set $phase to 0>><</link>>
+			<br>
+		<</addinlineevent>>
 	<</if>>
-	<<link [[Peek|Farm Tending Alex Summer]]>><<set $phase to 1>><<arousal 300>><<npcincr Alex lust 1>><</link>><<garousal>><<glust>>
-	<br>
-	<<link [[Ignore|Farm Tending Alex Summer]]>><<set $phase to 0>><</link>>
-	<br>
-<<elseif $rng is 4>>
-	<<npc Alex>><<person1>>
-	You hear Alex shout in surprise. You rush over, and find <<him>> lying on <<his>> back.
-	<br><br>
-	"Blighter startled me," <<he>> says.
-	<br><br>
 
-
-	<<link [[Offer your arm|Farm Tending Alex Arm]]>><<npcincr Alex love 1>><<npcincr Alex dom -1>><</link>><<ldom>><<glove>>
-	<br>
-	<<link [[Get back to work|Farm Tending Alex Back]]>><</link>>
-	<br>
-<<elseif $rng is 3>>
-	<<npc Alex>><<person1>>
-	<<if $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and random(1, 2) is 2>>
-		You catch Alex sneaking glances at you when <<he>> thinks you're not looking.
+	/* general events */
+	<<addinlineevent "farm_tending_alex_general_1">>
+		<<npc Alex>><<person1>>
+		You hear Alex shout in surprise. You rush over, and find <<him>> lying on <<his>> back.
+		<br><br>
+		"Blighter startled me," <<he>> says.
 		<br><br>
 
-		<<link [[Flirt|Farm Tending Alex Flirt]]>><</link>><<promiscuous1>>
-		<br>
-		<<link [[Ignore|Farm Tending Alex Ignore]]>><</link>>
-		<br>
-	<<elseif $exposed gte 1>>
-		You catch Alex sneaking glances at you when <<he>> thinks you're not looking.<<garousal>><<arousal 600>>
-		<br><br>
 
-		<<link [[Ignore|Farm Tending Alex Ignore]]>><<npcincr Alex lust 1>><</link>><<glust>>
+		<<link [[Offer your arm|Farm Tending Alex Arm]]>><<npcincr Alex love 1>><<npcincr Alex dom -1>><</link>><<ldom>><<glove>>
 		<br>
-		<<link [[Tease|Farm Tending Alex Tease]]>><<npcincr Alex lust 1>><<arousal 1800>><<trauma -6>><<npcincr Alex dom 1>><</link>><<glust>><<ldom>><<ggarousal>><<ltrauma>>
+		<<link [["Laugh at " + $NPCList[0].pronouns.his " expense"|Farm Tending Alex Laugh Expense]]>><<npcincr Alex dom -1>><<stress -6>><</link>><<ldom>><<lstress>>
 		<br>
-	<<else>>
-		Alex waves at you from across the field. You wave back.<<lstress>><<stress -6>>
+		<<link [[Get back to work|Farm Tending Alex Back]]>><</link>>
+		<br>
+	<</addinlinevent>>
+
+	<<addinlineevent "farm_tending_alex_general_2">>
+		<<npc Alex>><<person1>>
+		<<if $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and random(1, 2) is 2>>
+			You catch Alex sneaking glances at you when <<he>> thinks you're not looking.
+			<br><br>
+
+			<<link [[Flirt|Farm Tending Alex Flirt]]>><</link>><<promiscuous1>>
+			<br>
+			<<link [[Ignore|Farm Tending Alex Ignore]]>><</link>>
+			<br>
+		<<elseif $exposed gte 1>>
+			You catch Alex sneaking glances at you when <<he>> thinks you're not looking.<<garousal>><<arousal 600>>
+			<br><br>
+
+			<<link [[Ignore|Farm Tending Alex Ignore]]>><<npcincr Alex lust 1>><</link>><<glust>>
+			<br>
+			<<link [[Tease|Farm Tending Alex Tease]]>><<npcincr Alex lust 1>><<arousal 1800>><<trauma -6>><<npcincr Alex dom 1>><</link>><<glust>><<ldom>><<ggarousal>><<ltrauma>>
+			<br>
+		<<else>>
+			Alex waves at you from across the field. You wave back.<<lstress>><<stress -6>>
+			<br><br>
+
+			<<destination_farm>>
+			<br>
+		<</if>>
+	<</addinlinevent>>
+
+	<<addinlineevent "farm_tending_alex_general_3">>
+		You work beside Alex, chatting all the while.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
 		<br><br>
 
 		<<destination_farm>>
 		<br>
-	<</if>>
-<<elseif $rng is 2>>
-	You work beside Alex, chatting all the while.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
-	<br><br>
+	<</addinlinevent>>
 
-	<<destination_farm>>
-	<br>
+	<<addinlineevent "farm_tending_alex_general_4">>
+		<<npc Alex>><<person1>>
+		You chat with Alex as you work. <<Hes>> keen to share <<his>> farming techniques.
+		<br><br>
 
-<<else>>
-	<<npc Alex>><<person1>>
-	You chat with Alex as you work. <<Hes>> keen to share <<his>> farming techniques.
-	<br><br>
-
-	<<if $tending lt 1000>>
-		<<link [[Listen (0:10)|Farm Tending Alex Listen]]>><<farm_count 10>><<tending 6>><<pass 10>><<npcincr Alex dom 1>><</link>><<gdom>><<gtending>>
+		<<if $tending lt 1000>>
+			<<link [[Listen (0:10)|Farm Tending Alex Listen]]>><<farm_count 10>><<tending 6>><<pass 10>><<npcincr Alex dom 1>><</link>><<gdom>><<gtending>>
+			<br>
+		<<else>>
+			<<link [[Teach Alex instead (0:10)|Farm Tending Alex Teach]]>><<pass 10>><<farm_count 10>><<npcincr Alex love 1>><<npcincr Alex dom -1>><</link>><<ldom>><<glove>>
+			<br>
+		<</if>>
+		<<link [[Focus on working|Farm Tending Alex Focus]]>><</link>>
 		<br>
-	<<else>>
-		<<link [[Teach Alex instead (0:10)|Farm Tending Alex Teach]]>><<pass 10>><<farm_count 10>><<npcincr Alex love 1>><<npcincr Alex dom -1>><</link>><<ldom>><<glove>>
-		<br>
-	<</if>>
-	<<link [[Focus on working|Farm Tending Alex Focus]]>><</link>>
-	<br>
+	<</addinlinevent>>
 
-<</if>>
+	<<runeventpool>>
 <</widget>>
 
 <<widget "barn_img">>
@@ -2371,6 +2410,79 @@
 	<<link [[Climb out of bed|Farm Bedroom]]>><<storeon "Farm Bed">><<set $wardrobe_location to "alexFarm">><<loadTempHairStyle>><<wardrobeSelection>><<loadTempHairStyle>><</link>>
 <</if>>
 <br><br>
+<</widget>>
+
+<<widget "farm_tell_alex">>
+<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<if random(1, 14) is 14 and $famemodel gte 30>>
+	You talk about your modelling gig.
+	<<if $rng gte 60 and $alex_countdown is undefined and $farm_stage gte 7>>
+		"You model? I bet." <<He>> blushes. "You're quite the looker."
+	<<elseif $rng gte 30 and $farm_stage gte 6>>
+		"Hope you don't get too big," <<he>> says. "I'd never hear the end of it from my <<if $pronoun is "m">>dad<<else>>mum<</if>>."
+	<<else>>
+		"Don't let it get to your head," <<he>> teases. "You bet I'm giving a shout, if I catch you on TV."
+	<</if>>
+<<elseif random(1, 14) is 13 and $famescrap gte 30>>
+	You tell <<him>> that you know how to defend yourself. 
+	<<if $loveInterest.primary is "Alex" or $loveInterest.secondary is "Alex">>
+		"I knew my <<girl>>'s a tough one," <<he>> grins. "I'm your support, no matter what."
+	<<elseif $bodysize lte 0>>
+		"I'm surprised to hear, coming from a runt like you," <<he>> laughs. "No offence."
+	<<else>>
+		<<He>> nods in approval. "It's a good skill anyone should have," <<he>> says. "Perverts need to fuck off."
+	<</if>>
+<<elseif random(1, 14) is 12 and $famegood gte 30>>
+	You tell <<him>> that you go out of your way to help others. Some call you an angel.
+	<<if _alex.love lte -10>>
+		"Something just doesn't add up," <<he>> says, sounding annoyed. "Sorry, I didn't mean to be rude. But you could be a little nicer to me."
+	<<elseif $alex_countdown is undefined and $farm_stage gte 7>>
+		"You're my angel," <<he>> coos and beams. "And my <<if $player.gender_appearance is "f">>wo<</if>>man."
+	<<elseif $angel gte 6 and $transformationParts.angel.halo isnot "hidden" and $transformationParts.angel.wings isnot "hidden">>
+		"I'm glad I'm no exception," <<he>> smiles at you. "You sure do look the part."
+	<<elseif $demon gte 2>>
+		"Never took you for the righteous type," <<he>> teases. "With that devilish grin of yours."
+	<<else>>
+		"I don't know about that," <<he>> says, pretending to roll <<his>> eyes. "I'm joking. I could tell you had a good heart ever since we first met."
+	<</if>>
+<<elseif random(1, 14) is 11 and $famebusiness gte 30>>
+	You tell <<him>> that you're an entrepeneur.
+	<<if $farm_stage gte 7>>
+		"You put in a good effort," <<he>> grins, gesturing to the fields. "Making you co-owner was one of the best decisions I've made."
+	<<else>>
+		<<He>> nods and smiles. "I like what you've done so far. Keep at it."
+	<</if>>
+<<elseif random(1, 14) is 10 and $famesocialite gte 30>>
+	You tell <<him>> that you schmooze in town. "It's nice that a townie elite can still get <<pher>> hands dirty with a country<<nnpc_gendery "Alex">> like me," <<he>> says teasingly.
+<<elseif random(1, 14) is 9 and $adultshopclerk>>
+	You tell <<him>> that you also work as an adult shop clerk. "Do you get an employee discount? I could use more-" <<He>> cuts <<himself>> off. "Nevermind."
+<<elseif random(1, 14) is 8 and $spa_job gte 1>>
+	You tell <<him>> that you massage clients at the spa in town. "I'm overdue for one," <<he>> says. "Ever had a mud bath? I'd recommend it."
+<<elseif random(1, 14) is 7 and $oceanbreezejob is 1>>
+	You tell <<him>> that you also wait tables at the town's cafe. "I'd probably be fired on my first day," <<he>> says. "I don't take kindly to harrassment."
+<<elseif random(1, 14) is 6 and $chef_state gte 1>>
+	You tell <<him>> that you also work as a chef at the town's cafe. "Sounds like a good hustle," <<he>> smiles. "We should have a cook-off sometime."
+<<elseif random(1, 14) is 5 and $dockwork is 1>>
+	You tell <<him>> that you're also a dock worker. "Be careful with your spine," <<he>> warns. "Trust me. I'd know from experience."
+<<elseif random(1, 14) is 4 and $stripclubbartendingintro is 1>> 
+	You tell <<him>> that you moonlight as a bartender. "You fix up drinks? Why didn't you say something sooner?" <<His>> face lights up, and <<he>> proceeds to rave about liquor.
+<<elseif random(1, 14) is 3 and $stripclubdancingintro is 1 or $dance_job_intro is 1>>
+	You tell <<him>> that you're also a dancer. <<He>> laughs for a good while. "I think I'm pretty good at it myself. Drew up quite the crowd." You don't think <<he>> meant the same kind of dancing you do.
+<<elseif random(1, 14) is 2 and $brotheljob is 1 and $fameprostitution gte 30>>
+	"I heard the rumours about you in the brothel. I'm surprised you still show up here. With the amount of bank you must be making." <<He>> eyes you up and down, then looks away, laughing.
+	<<if $uncomfortable.lewd is true>>
+		<<stress 6>><<gstress>>
+	<</if>>
+<<elseif random(1, 14) is 1 and $famesex gte 400>>
+	"Rumours say you've racked up quite the body count," <<he>> smiles in awe.
+	<<if $alex_countdown is undefined and $farm_stage gte 7>>
+		"You're a <<if $player.gender_appearance is "f">>wo<</if>>man after my own heart, y'know that?"
+	<<else>>
+		"Takes some serious hustle. I respect it."
+	<</if>>
+<<else>>
+	You shrug and gaze <<if $hour is 5>>out the window.<<else>>up at the sky.<</if>> <<He>> does likewise. 
+<</if>>
 <</widget>>
 
 <<widget "farm_cottage_options">>
