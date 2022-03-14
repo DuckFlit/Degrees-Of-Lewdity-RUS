@@ -595,6 +595,7 @@ window.settingsObjects = function (type) {
 				breastfeedingdisable: { boolLetter: true, bool: true },
 				analpregdisable: { boolLetter: true, bool: true },
 				watersportsdisable: { boolLetter: true, bool: true },
+				facesitdisable: { boolLetter: true, bool: true },
 				spiderdisable: { boolLetter: true, bool: true },
 				bodywritingdisable: { boolLetter: true, bool: true },
 				parasitedisable: { boolLetter: true, bool: true},
