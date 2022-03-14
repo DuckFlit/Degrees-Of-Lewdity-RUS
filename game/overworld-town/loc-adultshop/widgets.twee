@@ -1,7 +1,7 @@
 :: Adult Shop Widgets [widget]
 
 <<widget "adultShopEvents">>
-	<<endevent>><<generate_adultshopcustomer>>
+	<<endevent>><<generateAdultShopCustomer 1>>
 
 	<<set _reactTone to either("scoffs","exclaims","laments quitely","facepalms","glares and rolls <<his>> eyes")>>
 	<<set _reactSpeech to ["That's not appropriate."]>>
@@ -72,7 +72,7 @@
 <</widget>>
 
 <<widget "adultShopBackgroundEvent">>
-	<<generate_adultshopcustomer>>
+	<<generateAdultShopCustomer 1>>
 	/*<<set _reactTone to $args[0]>>
 	<<set _reactSpeech to $args[1]>>
 	<<set _reactPerson to $args[2]>>
@@ -121,7 +121,7 @@
 				<<set $_purityLoss to true>>
 			<</if>>
 		<<case 8 9>>
-			A couple are comparing dildos. The <<person1>><<person>> smacks the <<generate_adultshopcustomer 2 "couple">><<person2>><<person>> in the face playfully.
+			A couple are comparing dildos. The <<person1>><<person>> smacks the <<generateAdultShopCustomer 2 "couple">><<person2>><<person>> in the face playfully.
 		<<case 10 11>>
 			A <<person1>><<person>>, engrossed in a magazine, knocks over a shelf full of dildos.
 
@@ -156,7 +156,7 @@
 <</widget>>
 
 <<widget "adultShopPersonEvent">>
-	<<generate_adultshopcustomer>>
+	<<generateAdultShopCustomer 1>>
 	<<if _reactPerson is "Sirris">>
 		<<switch random(0,8)>>
 		<<case 0>>
@@ -164,7 +164,7 @@
 			<<if random(1) is 0>>
 			_reactPerson discusses the merits of $_topic with a <<person1>><<person>>.
 			<<else>>
-			<<generate_adultshopcustomer 2 "partner">>
+			<<generateAdultShopCustomer 2 "partner">>
 			_reactPerson discusses the merits of $_topic with a <<person1>><<person>> and a <<person2>><<person>>.
 			<</if>>
 		<<case 1 2 3>>
@@ -172,7 +172,7 @@
 		<<case 4 5>>
 			_reactPerson is showing customers various <<print either("dildos","strap-ons","butt plugs","lubricants","ball gags","latex outfits","chastity devices")>>.
 		<<case 6>>
-			<<generate_adultshopcustomer>><<generate_adultshopcustomer 2 "partner">>
+			<<generateAdultShopCustomer 2 "partner">>
 			_reactPerson discusses couples <<print either("strap-ons","roleplay","costumes","dildos","bondage wear")>> with a <<person1>><<person>> and a <<person2>><<person>>.
 		<<case 7>>
 			_reactPerson signs for a package.
@@ -215,79 +215,56 @@
 	<</if>>
 <</widget>>
 
-<<widget "generate_adultshopcustomer">>
-	/* Generates up to 3 random customers with descriptors unique to the store. Takes args[0] for more than 1 person */
+<<widget "generateAdultShopCustomer">>
+	/* Generates random customers with descriptors unique to the store. _args[1] turns the NPC into a partner */
 
 	<<set $_customertype to [{description:"vulgar",hp:220},{description:"shady",hp:220},{description:"shifty",hp:220},{description:"rotund",hp:250},{description:"slick-haired",hp:200},{description:"muscular",hp:275},{description:"senior",hp:175},{description:"flamboyant",hp:200},{description:"mouth-breathing",hp:200},{description:"creepy",hp:250},{description:"slender",hp:200},{description:"giggly",hp:200},{description:"boney",hp:175}]>>
 
-	<<generate1>>
-	<<if $NPCList[0].pronoun is "m">>
+	<<switch _args[0]>>
+		<<case 1>> <<generate1>>
+		<<case 2>>
+			<<if _args[1] isnot undefined>>
+				<<generatep2>>
+			<<else>>
+				<<generate2>>
+			<</if>>
+		<<case 3>>
+			<<if _args[1] isnot undefined>>
+				<<generatep3>>
+			<<else>>
+				<<generate3>>
+			<</if>>
+		<<case 4>>
+			<<if _args[1] isnot undefined>>
+				<<generatep4>>
+			<<else>>
+				<<generate4>>
+			<</if>>
+		<<case 5>>
+			<<if _args[1] isnot undefined>>
+				<<generatep5>>
+			<<else>>
+				<<generate5>>
+			<</if>>
+		<<case 6>>
+			<<if _args[1] isnot undefined>>
+				<<generatep6>>
+			<<else>>
+				<<generate6>>
+			<</if>>
+	<</switch>>
+
+	<<set $_npc to $NPCList[_args[0]-1]>>
+	<<if $_npc.pronoun is "m">>
 		<<set $_customertype.push({description:"handsome",hp:200},{description:"rugged",hp:250},{description:"brutish",hp:275},{description:"foppish",hp:175},{description:"toned",hp:250})>>
-		<<set $NPCList[0].description to $_customertype[random(0,$_customertype.length-1)].description>>
-		<<set $NPCList[0].fullDescription to $NPCList[0].description + " man">>
-		<<set $NPCList[0].healthmax to $_customertype[random(0,$_customertype.length-1)].hp>>
+		<<set $_npc.description to $_customertype[random(0,$_customertype.length-1)].description>>
+		<<set $_npc.fullDescription to $NPCList[0].description + " man">>
+		<<set $_npc.healthmax to $_customertype[random(0,$_customertype.length-1)].hp>>
 	<<else>>
 		<<set $_customertype.push({description:"pretty",hp:200},{description:"cute",hp:200},{description:"plush",hp:250},{description:"busty",hp:220},{description:"curvy",hp:220})>>
-		<<set $NPCList[0].description to $_customertype[random(0,$_customertype.length-1)].description>>
-		<<set $NPCList[0].fullDescription to $NPCList[0].description + " woman">>
-		<<set $NPCList[0].healthmax to $_customertype[random(0,$_customertype.length-1)].hp>>
-	<</if>>
-
-	<<if _args[0] and _args[0] is 2>>
-		<<if _args[1] isnot undefined>>
-			<<generatep2>>
-		<<else>>
-			<<generate2>>
-		<</if>>
-		<<set $_customertype to [{description:"vulgar",hp:220},{description:"shady",hp:220},{description:"shifty",hp:220},{description:"rotund",hp:250},{description:"slick-haired",hp:200},{description:"muscular",hp:275},{description:"senior",hp:175},{description:"flamboyant",hp:200},{description:"mouth-breathing",hp:200},{description:"creepy",hp:250},{description:"slender",hp:200},{description:"giggly",hp:200},{description:"boney",hp:175}]>>
-		/*<<set $_customerDescription to ["vulgar","shady","shifty","corpulent","greasy","muscular","elderly","flamboyant","mouth-breathing","creepy","slender","giggly","skeletal"]>>*/
-		<<set $_rng to random(0,$_customertype.length-1)>>
-		<<if $NPCList[1].pronoun is "m">>
-			<<set $_customertype.push({description:"handsome",hp:200},{description:"rugged",hp:250},{description:"brutish",hp:275},{description:"foppish",hp:175},{description:"toned",hp:250},{description:"cross-dressing",hp:175})>>
-			<<set $NPCList[0].description to $_customertype[$_rng].description>>
-			<<set $NPCList[0].fullDescription to $NPCList[0].description + " man">>
-			<<set $NPCList[0].healthmax to $_customertype[$_rng].hp>>
-		<<else>>
-			<<set $_customertype.push({description:"pretty",hp:200},{description:"cute",hp:200},{description:"plush",hp:250},{description:"busty",hp:220},{description:"curvy",hp:220})>>
-			<<set $NPCList[0].description to $_customertype[$_rng].description>>
-			<<set $NPCList[0].fullDescription to $NPCList[0].description + " woman">>
-			<<set $NPCList[0].healthmax to $_customertype[$_rng].hp>>
-		<</if>>
-	<<elseif _args[0] and _args[0] is 3>>
-		<<if _args[1] isnot undefined>>
-			<<generatep2>>
-		<<else>>
-			<<generate2>>
-		<</if>>
-		<<set $_customertype to [{description:"vulgar",hp:220},{description:"shady",hp:220},{description:"shifty",hp:220},{description:"rotund",hp:250},{description:"slick-haired",hp:200},{description:"muscular",hp:275},{description:"senior",hp:175},{description:"flamboyant",hp:200},{description:"mouth-breathing",hp:200},{description:"creepy",hp:250},{description:"slender",hp:200},{description:"giggly",hp:200},{description:"boney",hp:175}]>>
-		<<if $NPCList[1].pronoun is "m">>
-			<<set $_customertype.push({description:"handsome",hp:200},{description:"rugged",hp:250},{description:"brutish",hp:275},{description:"foppish",hp:175},{description:"toned",hp:250},{description:"cross-dressing",hp:175})>>
-			<<set $_rng to random(0,$_customertype.length-1)>>
-			<<set $NPCList[1].description to $_customertype[random(0,$_customertype.length-1)].description>>
-			<<set $NPCList[1].fullDescription to $NPCList[1].description + " man">>
-			<<set $NPCList[1].healthmax to $_customertype[random(0,$_customertype.length-1)].hp>>
-		<<else>>
-			<<set $_customertype.push({description:"pretty",hp:200},{description:"cute",hp:200},{description:"plush",hp:250},{description:"busty",hp:220},{description:"curvy",hp:220})>>
-			<<set $_rng to random(0,$_customertype.length-1)>>
-			<<set $NPCList[1].description to $_customertype[$_rng].description>>
-			<<set $NPCList[1].fullDescription to $NPCList[0].description + " woman">>
-			<<set $NPCList[1].healthmax to $_customertype[$_rng].hp>>
-		<</if>>
-		<<generate3>>
-		<<set $_customertype to [{description:"vulgar",hp:220},{description:"shady",hp:220},{description:"shifty",hp:220},{description:"rotund",hp:250},{description:"slick-haired",hp:200},{description:"muscular",hp:275},{description:"senior",hp:175},{description:"flamboyant",hp:200},{description:"mouth-breathing",hp:200},{description:"creepy",hp:250},{description:"slender",hp:200},{description:"giggly",hp:200},{description:"boney",hp:175}]>>
-		<<if $NPCList[2].pronoun is "m">>
-			<<set $_customertype.push({description:"handsome",hp:200},{description:"rugged",hp:250},{description:"brutish",hp:275},{description:"foppish",hp:175},{description:"toned",hp:250},{description:"cross-dressing",hp:175})>>
-			<<set $_rng to random(0,$_customertype.length-1)>>
-			<<set $NPCList[2].description to $_customertype[$_rng].description>>
-			<<set $NPCList[2].fullDescription to $NPCList[2].description + " man">>
-			<<set $NPCList[2].healthmax to $_customertype[$_rng].hp>>
-		<<else>>
-			<<set $_customertype.push({description:"pretty",hp:200},{description:"cute",hp:200},{description:"plush",hp:250},{description:"busty",hp:220},{description:"curvy",hp:220})>>
-			<<set $_rng to random(0,$_customertype.length-1)>>
-			<<set $NPCList[2].description to $_customertype[$_rng].description>>
-			<<set $NPCList[2].fullDescription to $NPCList[2].description + " woman">>
-			<<set $NPCList[2].healthmax to $_customertype[$_rng].hp>>
-		<</if>>
+		<<set $_npc.description to $_customertype[random(0,$_customertype.length-1)].description>>
+		<<set $_npc.fullDescription to $NPCList[0].description + " woman">>
+		<<set $_npc.healthmax to $_customertype[random(0,$_customertype.length-1)].hp>>
 	<</if>>
 <</widget>>
 
@@ -335,19 +312,26 @@
 
 <<widget "giveNPCsextoy">>
     /* args[0] = NPC index */
-    /* args[1] = toy name */
-    /* possible toys: ("dildo","length of anal beads","riding crop","flog") */
+    /* args[1] = Toy name. Possible toys: ("dildo","length of anal beads","riding crop","flog") */
+	/* args[2] = Hand. Left blank it will select a random hand */
+
     <<if _args[0] isnot undefined and _args[1]>>
-        <<set $_temp to _args[0]>>
-        <<set $_temp2 to _args[1]>>
-        <<if random(0,1) is 0 and $NPCList[$_temp].lefthand isnot "hair">>
-            <<set $NPCList[$_temp].lefttool to $_temp2>>
-            <<set $NPCList[$_temp].lefthand to "dildo_reveal">>
-        <<else>>
-            <<set $NPCList[$_temp].righttool to $_temp2>>
-            <<set $NPCList[$_temp].righthand to "dildo_reveal">>
-        <</if>>
-    <</if>>
+        <<set $_npc to _args[0]>>
+        <<set $_toy to _args[1]>>
+
+		<<if _args[2] isnot undefined>>
+			<<set $NPCList[$_npc][_args[2]+"tool"] to $_toy>>
+            <<set $NPCList[$_npc][_args[2]+"hand"] to "dildo_reveal">>
+		<<else>>
+			<<if random(0,1) is 0>>
+				<<set $NPCList[$_npc].lefttool to $_toy>>
+				<<set $NPCList[$_npc].lefthand to "dildo_reveal">>
+			<<else>>
+				<<set $NPCList[$_npc].righttool to $_toy>>
+				<<set $NPCList[$_npc].righthand to "dildo_reveal">>
+			<</if>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "adultShopOpeningProgressJournal">>
@@ -373,7 +357,7 @@
 <</widget>>
 
 <<widget "adultshopclerkevents">>
-	<<generate_adultshopcustomer>>
+	<<generateAdultShopCustomer 1>>
 	<<cleareventpool>>
 	<<adultShopWage>>
 
@@ -423,7 +407,7 @@
 
 	<<addinlineevent "outfitcompliment" 1>>
 		/*Customer compliments you on your costume/fetish wear/school uniform/formal outfit/compliments your service skills*/
-		<<generate_adultshopcustomer>><<person1>>
+		<<generateAdultShopCustomer 1>><<person1>>
 		<<if $worn.upper.type.includes("fetish") or $worn.upper.type.includes("costume") or ($worn.upper.type.includes("school") and random(0,3) is 0)>>
 			"Nice outfit you're wearing. Very <<cute>>," a <<person>> says, leering at your $worn.upper.name and <<breasts>>.<<gstress>><<gcontrol>><<control 5>><<stress 3>>
 		<<elseif $worn.upper.type.includes("school")>>
@@ -456,7 +440,7 @@
 
 	<<addinlineevent "customerthankyoutip" 1>>
 		/*tip is based on maths tip chance \$_shoptip*=random(1,10)+($mathstrait / 4)+($allure/4000)*/
-		<<generate_adultshopcustomer>><<person1>>
+		<<generateAdultShopCustomer 1>><<person1>>
 		You spend some time with a <<person>>, helping <<him>> select a range of products. <<He>> thanks you profusely and tries to get handsy, but you manage to deflect <<him>>.<<gstress>><<gtiredness>>
 		<br><br>
 		<<set $_tip to _wage+random(1,5)*(random(1,10)+($mathstrait / 4)+($allure/4000))>>
@@ -499,7 +483,7 @@
 	<</addinlineevent>>
 
 	<<addinlineevent "gimp1" 1>>
-		<<generate_adultshopcustomer>><<generateyv2>>
+		<<generateAdultShopCustomer 1>><<generateyv2>>
 		A <<person2>><<person>> has downcast eyes as <<hes>> led around the shop on a leash. A <<person1>><<person>> takes delight in yanking the chain when the <<person2>><<personsimple>> isn't expecting it.
 		<br>
 		The <<person1>><<person>> purchases several <<print either("huge dildos","large dildos","dildos","whips and flogs","very large butt plugs and anal beads")>>. <<He>> grins at <<his>> companion lecherously as you complete the sale.
@@ -582,7 +566,7 @@
 		<</addinlineevent>>
 
 		<<addinlineevent "sydneyCustomerDildoFlirt" 1>>
-			<<generate_adultshopcustomer>><<person1>>
+			<<generateAdultShopCustomer 1>><<person1>>
 			<<sydneyStatusCheck>>
 			<<npc "Sydney" 2>>
 			<<set _toy to randomSexToy("dildos and whips")>><<set $shoptoy to _toy>>
@@ -625,7 +609,7 @@
 	<</if>>
 
 	<<addinlineevent "dildolesson" 1>>
-		<<generate_adultshopcustomer>><<person1>>
+		<<generateAdultShopCustomer 1>><<person1>>
 		A <<person>> approaches the counter with a handful of dildos. "Hey <<girl>>. I haven't used one of these things before. I need a demonstration."
 		<br><br>
 		<<if $promiscuity gte 35 and $awareness gte 200>>
@@ -641,7 +625,7 @@
 	<</addinlineevent>>
 
 	<<addinlineevent "customerassistance" 1>>
-		<<generate_adultshopcustomer>><<person1>>
+		<<generateAdultShopCustomer 1>><<person1>>
 		A <<person>> approaches the counter looking confused and embarrassed.
 		"Uh, hi. Can you help me find a…" Lost for words, <<he>> resorts to gestures.
 
@@ -679,7 +663,7 @@
 
 	<<if $demon gte 6 or $angel gte 6 or $fallenangel gte 2>>
 		<<addinlineevent "divineconfrontation" 0.5>>
-			<<generate_adultshopcustomer>><<person1>>
+			<<generateAdultShopCustomer 1>><<person1>>
 
 			A <<person>> enters the shop. <<He>> peruses the shop carefully for several minutes before making selections. When the <<personsimple>> sees you however, <<he>> <span class="purple">stops and stares with wide eyes.</span>
 			<br><br>
@@ -726,7 +710,7 @@
 						<<set _sheila to "big gal">>
 					<</if>>
 			<</switch>>
-			<<generate_adultshopcustomer>><<person1>>
+			<<generateAdultShopCustomer 1>><<person1>>
 			<<set _toy to randomSexToy("dildos and whips")>>
 			<<giveNPCsextoy 0 _toy>>
 			A  <<person>> enters the shop. <<He>> glances in your direction, then stops and has a double take. You can practically see <<him>> salivate as <<he>> ogles you. <<gstress>><<stress 2>>
