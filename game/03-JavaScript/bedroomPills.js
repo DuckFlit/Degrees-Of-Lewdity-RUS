@@ -497,51 +497,85 @@ window.getRandomIntInclusive = function(min, max) { // return a random number be
 	return Math.floor(Math.random() * (max - min +1)) + min;
 }
 
-window.backCompPillsInventory = function (){ // for back compatibility
-	if (typeof V.sexStats != undefined){
-		if (typeof V.sexStats.pills == undefined) // if the variable doesnt exist, we set it, with everything to 0
-			V.sexStats.pills = {
-				"pills":{
-					'bottom reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'bottom growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'bottom blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'breast reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'breast growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'breast blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'penis reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'penis growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'penis blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'fertility booster':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'contraceptive':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'asylum\'s prescription':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'Dr Harper\'s prescription':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0}
-				},
-				"boughtOnce": false,
-				"lastTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''},
-				"mostTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''}
-			}
-		else if (V.sexStats.pills.hasOwnProperty("mostTaken") == false){
-			V.sexStats.pills = { // if the variable already exist, and is not of the new version(new version has "mostTaken" property that's why we check it), then we try to  port the old one to the new one
-				"pills":{
-					'bottom reduction':{autoTake: (V.sexStats.pills.bottom.autoTake == "reduction") ? true : false, doseTaken: 0, owned: V.sexStats.pills.bottom.owned.reduction, overdose: 0},
-					'bottom growth':{autoTake: (V.sexStats.pills.bottom.autoTake == "growth") ? true : false, doseTaken: 0, owned: V.sexStats.pills.bottom.owned.growth, overdose: 0},
-					'bottom blocker':{autoTake: (V.sexStats.pills.bottom.autoTake == "blocker") ? true : false, doseTaken: 0, owned: V.sexStats.pills.bottom.owned.blocker, overdose: 0},
-					'breast reduction':{autoTake: (V.sexStats.pills.breast.autoTake == "reduction") ? true : false, doseTaken: 0, owned: V.sexStats.pills.breast.owned.reduction, overdose: 0},
-					'breast growth':{autoTake: (V.sexStats.pills.breast.autoTake == "growth") ? true : false, doseTaken: 0, owned: V.sexStats.pills.breast.owned.growth, overdose: 0},
-					'breast blocker':{autoTake: (V.sexStats.pills.breast.autoTake == "blocker") ? true : false, doseTaken: 0, owned: V.sexStats.pills.breast.owned.blocker, overdose: 0},
-					'penis reduction':{autoTake: (V.sexStats.pills.penis.autoTake == "reduction") ? true : false, doseTaken: 0, owned: V.sexStats.pills.penis.owned.reduction, overdose: 0},
-					'penis growth':{autoTake: (V.sexStats.pills.penis.autoTake == "growth") ? true : false, doseTaken: 0, owned: V.sexStats.pills.penis.owned.growth, overdose: 0},
-					'penis blocker':{autoTake: (V.sexStats.pills.penis.autoTake == "blocker") ? true : false, doseTaken: 0, owned: V.sexStats.pills.penis.owned.blocker, overdose: 0},
-					'fertility booster':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'contraceptive':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'asylum\'s prescription':{autoTake: false, doseTaken: 0, owned: Number.isInteger(V.asylumpills) ? V.asylumpills : 0, overdose: 0},
-					'Dr Harper\'s prescription':{autoTake: false, doseTaken: 0, owned: Number.isInteger(V.pills) ? V.pills : 0, overdose: 0}
-				},
-				"boughtOnce": (V.sexStats.pills.boughtOnce == true) ? true : false,
-				"lastTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''},
-				"mostTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''}
-			}
+window.backCompPillsInventory = function() {
+	/* Return immediately if $sexStats doesn't exist. */
+	if (typeof V.sexStats == 'undefined') return;
+	const oPills = V.sexStats.pills;
+	const pills = {};
+	if (typeof oPills === 'object') {
+		/* If our $sexStats.pills is an object and has this property, it is ready for production. */
+		if (oPills.hasOwnProperty('mostTaken')) return;
+		try {
+			pillsObjectRepair(oPills, pills);
+		} catch (error) {
+			Errors.report('Compatibility patch for pills object failed: ' + error, { oPills, pills });
 		}
+	}
+	Object.assign(pills, {
+		'bottom reduction' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'bottom growth' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'bottom blocker' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'breast reduction' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'breast growth' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'breast blocker' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'penis reduction' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'penis growth' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'penis blocker' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'fertility booster' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'contraceptive' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		"asylum's prescription" : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		"Dr Harper's prescription" : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 }
+	});
+	if (typeof oPills === 'undefined') {
+		/* If our $sexStats.pills was empty, simply set the object in preparation to assign. */
+		V.sexStats.pills = {};
+	}
+	Object.assign(V.sexStats.pills, {
+		"boughtOnce": pills.boughtOnce == true,
+		"lastTaken" : { "bottom":'', "breast":'', "penis":'', "pregnancy":'' },
+		"mostTaken" : { "bottom":'', "breast":'', "penis":'', "pregnancy":''},
+		"pills" : pills,
+	});
+}
+
+function pillsObjectRepair(oPills, pills) {
+	/* if the variable already exist, and is not of the new version(new version has "mostTaken" property that's why we check it), 
+	then we try to  port the old one to the new one */
+	if (typeof oPills.bottom === 'object') {
+		Object.assign(pills, {
+			'bottom reduction' : { autoTake: oPills.bottom.autoTake === "reduction", owned: oPills.bottom.owned.reduction },
+			'bottom growth' : { autoTake: oPills.bottom.autoTake === "growth", owned: oPills.bottom.owned.growth },
+			'bottom blocker' : { autoTake: oPills.bottom.autoTake === "blocker", owned: oPills.bottom.owned.blocker }
+		});
+		delete oPills.bottom;
+	}
+	if (typeof oPills.breast === 'object') {
+		Object.assign(pills, {
+			'breast reduction' : { autoTake: oPills.breast.autoTake === "reduction", owned: oPills.breast.owned.reduction },
+			'breast growth' : { autoTake: oPills.breast.autoTake === "growth", owned: oPills.breast.owned.growth },
+			'breast blocker' : { autoTake: oPills.breast.autoTake === "blocker", owned: oPills.breast.owned.blocker }
+		});
+		delete oPills.breast;
+	}
+	if (typeof oPills.penis === 'object') {
+		Object.assign(pills, {
+			'penis reduction' : { autoTake: oPills.penis.autoTake === "reduction", owned: oPills.penis.owned.reduction },
+			'penis growth' : { autoTake: oPills.penis.autoTake === "growth", owned: oPills.penis.owned.growth },
+			'penis blocker' : { autoTake: oPills.penis.autoTake === "blocker", owned: oPills.penis.owned.blocker }
+		});
+		delete oPills.penis;
+	}
+	if (typeof V.asylumpills === 'number') {
+		Object.assign(pills, {
+			"asylum's prescription" : { owned: Number.isInteger(V.asylumpills) ? V.asylumpills : 0 }
+		});
+		delete V.asylumpills;
+	}
+	if (typeof V.pills === 'number') {
+		Object.assign(pills, {
+			"Dr Harper's prescription" : { owned: Number.isInteger(V.pills) ? V.pills : 0 }
+		});
+		delete V.pills;
 	}
 }
 
