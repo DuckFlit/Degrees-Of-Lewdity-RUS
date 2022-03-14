@@ -423,9 +423,9 @@
 			<<He>> lets go of your throat. "Sorry, <<girl>>, what was that?."
 			<<set _npc = $NPCList.find(x => x.lefthand == "throat" || x.righthand == "throat")>>
 			<<run if (_npc != undefined) {
-				  if (_npc.lefthand == "throat") _npc.lefthand = 0;
-				  if (_npc.righthand == "throat") _npc.righthand = 0;
-				  $neckuse = 0; }>>
+				if (_npc.lefthand == "throat") _npc.lefthand = 0;
+				if (_npc.righthand == "throat") _npc.righthand = 0;
+				$neckuse = 0; }>>
 		<</if>>
 	<<elseif $enemyanger lte 100>>
 		<<if $rng lte 20>>
@@ -5428,14 +5428,14 @@
 			<<set $_text_output to `<<He>> smiles. "Town <<girls>> are so cute."`>>
 		<<elseif $speechnamedrop is 1>>
 			<<set $speechnamedrop to 0>>
-			<<if $loveInterest.primary is "Alex" or $loveInterest.secondary is "Alex">>
+			<<if $alex_countdown is undefined and $farm_stage gte 7>>
 				<<switch _loveInterest>>
 					<<case "Black Wolf">>
-						<<set $_text_output to `<<He>> deflates. "Y-you're two-timing me with a vicious animal? I need another drink..."`>>
+						<<set $_text_output to `<<He>> deflates. "You're two-timing me with an animal? I need another drink..."`>>
 					<<case "Great Hawk">>
-						<<set $_text_output to `<<He>> glares. "I tried warning you about the moor. Seems like your brain got pecked out."`>>
+						<<set $_text_output to `<<He>> glares. "Did your brain get pecked in the moor? Stay out of there."`>>
 					<<default>>
-						<<set $_text_output to `<<He>> deflates. "Y-you're two-timing me? I need another drink..."`>>
+						<<set $_text_output to `<<He>> glares. "You're two-timing me?"`>>
 				<</switch>>
 			<<else>>
 				<<switch _loveInterest>>
@@ -5467,17 +5467,17 @@
 				<<case "Kylar">>
 					<<set $_text_output to `<<He>> frowns. "Kylar? That explains a lot of things."`>>
 				<<case "Whitney">>
-					<<set $_text_output to `<<He>> frowns. "You and that delinquent? I'm not surprised."`>>
+					<<set $_text_output to `<<He>> frowns. "You <<printAnd>> that delinquent? I'm not surprised."`>>
 				<<case "Sydney">>
 					<<if $sydneySeen.includes("spank")>>
-						<<set $_text_output to `He smirks. "Sydney? We could do <<nnpc_his "Sydney">> punishment in my office next time."`>>
+						<<set $_text_output to `<<He>> smirks. "Sydney? We could do <<nnpc_his "Sydney">> punishment in my office next time."`>>
 					<<else>>
-						<<set $_text_output to `He smirks. "Sydney? I plan to have <<nnpc_him "Sydney">> in my office soon."`>>
+						<<set $_text_output to `<<He>> smirks. "Sydney? I plan to have <<nnpc_him "Sydney">> in my office soon."`>>
 					<</if>>
 				<<case "Black Wolf" "Great Hawk">>
-					<<set $_text_output to `"An animal?” <<He>> frowns. “This requires extra discipline."`>>
+					<<set $_text_output to `<<He>> frowns. "An animal? This requires extra discipline."`>>
 				<<default>>
-					<<set $_text_output to `"I'm not familiar," <<he>> smirks. "This is a private matter, anyway."`>>
+					<<set $_text_output to `<<He>> smirks. "I'm not familiar. This is a private matter, anyway."`>>
 			<</switch>>
 		<<elseif $speechsextoy is 1>>
 			<<set $speechsextoy to 0>>
@@ -5499,7 +5499,13 @@
 				<<default>>
 					<<set $_text_output to `<<He>> snarls. "<<charles>>, you belong <<printTo>> <<if $pronoun is "m">>daddy<<else>>mummy<</if>>!"`>>
 			<</switch>>
-		<</if>>
+		<<elseif $NPCList[_nn].vagina is "feet" or $NPCList[_nn].penis is "feet">>
+			<<set $_text_output to `<<He>> moans. "Oh, <<charles>>, your feet...!"`>>
+		<<elseif $speechsextoy is 1>>
+			<<set $speechsextoy to 0>>
+			<<set $_sexToy to ($rightarm is "heldSexToy" and $leftarm is "heldSexToy" ? "sex toys" : "sex toy")>>
+			<<set $_text_output to `<<He>> looks at your $_sexToy and speaks. "<<charles>>, what is that?"`>>
+		<</if>> 
 	<<case "Bailey">>
 		<<set $_stringsPre to ($enemyanger lte 60 ? "<<He>> snickers. ":"<<He>> snarls. ")>>
 		<<if ($speechpenisvirgin is 1 and $player.virginity.penile is _args[0]) or ($speechvaginavirgin is 1 and $player.virginity.vaginal is _args[0])>>
@@ -5513,7 +5519,7 @@
 		<<elseif $speechnamedrop is 1>>
 			<<set $speechnamedrop to 0>>
 			<<switch _loveInterest>>
-				<<case "Robin" >> 
+				<<case "Robin">>
 					<<set $_text_output to $_stringsPre + `"That worthless brat can't save you."`>>
 				<<case "Black Wolf" "Great Hawk">>
 					<<set $_text_output to $_stringsPre + `"People would pay extra to see you <<if $player.penisExist>>fuck<<else>>get fucked by<</if>> some beast."`>>
@@ -5558,8 +5564,15 @@
 			<<if $rng gte 90 and $enemyanger lte 70>>
 				<<set $_text_output to $_stringsPre + `"Maybe I should inspect you before we go."`>>
 			<<else>>
-				<<set $_strings to [`"Why do you shits have to make it harder on yourselves?"`,`"I told you to hold still."`,`"You're making it harder on both of us."`,`"You chose this."`,`"Are you going to listen to me now?"`,`"You're going to a bu..."`,`"You're coming with me, and that's that."`,`"Maybe I should inspect you before we go."`]>>
-				<<set $_text_output to $_stringsPre + $_strings.pluck()>>
+				<<set $_strings to [`Why do you shits have to make it harder on yourselves?`,
+									`I told you to hold still.`,
+									`You're making it harder on both of us.`,
+									`You chose this.`,
+									`Are you going to listen to me now?`,
+									`You're going to a bu...`,
+									`You're coming with me, and that's that.`,
+									`Maybe I should inspect you before we go.`]>>
+				<<set $_text_output to $_stringsPre + '"' + $_strings.pluck() + '"'>>
 			<</if>>
 		<</if>>
 	<<case "Sydney">>
