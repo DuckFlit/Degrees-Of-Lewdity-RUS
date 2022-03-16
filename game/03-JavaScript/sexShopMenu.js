@@ -210,7 +210,7 @@ setup.sextoys = [
         name:"stroker",
         namecap:"stroker",
 		name_underscore:"stroker",
-		description:"This is an item description. Try to keep it short, about two or three lines is fine. This is more text to fill the space.",
+		description:"A penile masturbator sleeve. Made with a material with a flesh-like feel.",
         cost:8000,
 		wearable:0,
 		category:"stroker",
@@ -379,7 +379,8 @@ window.sexShopOnGiftClick = function (index) {
 		"state":"worn",
 		"state_base":"worn",
 		"gift_state": "held",
-		"uses":(item.uses ? item.uses : undefined)
+		"uses":(item.uses ? item.uses : undefined),
+		"shape":(item.shape ? item.shape : undefined)
 	}
 	if (item.category == "strap-on")
 		obj.clothes_index = item.clothes_index
@@ -420,7 +421,7 @@ window.sexShopOnBuyClick = function (index) {
 		"carried": false,
 		"state":"removed",
 		"state_base":"worn",
-		"shape":item.shape,
+		"shape":(item.shape ? item.shape : undefined),
 		"uses":(item.uses ? item.uses : undefined)
 	}
 	if (item.category == "strap-on")	
