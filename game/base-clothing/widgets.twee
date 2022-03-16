@@ -1703,7 +1703,14 @@
 <<widget "updateWornClothingLocation">>
 <<if $wardrobes[_args[0]]>>
 	<<for $_label, $_value range $worn>>
-		<<set $worn[$_label].lastTaken to _args[0]>>
+		<<if typeof $_value is "object">>
+			<<set $_value.lastTaken to _args[0]>>
+		<<else>>
+			<!-- Expanded error handling here to help with understanding an intermittent issue. If a bug is squashed relating to an undefined $worn entry, this error handler may become redundant. -->
+			<<set $_msg to `Expected an object in $worn[${$_label}], export and report this to developers.`>>
+			<<set $_src to `Location: ${Utils.GetStack()}.\nLabel: ${$_label}. Value: ${$_value}. Wardrobe: ${_args[0]}.`>>
+			<<error $_msg $_src>>
+		<</if>>
 	<</for>>
 <</if>>
 <</widget>>
