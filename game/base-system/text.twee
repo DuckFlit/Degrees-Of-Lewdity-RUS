@@ -5780,31 +5780,30 @@ School finishes on the first Monday of December.
 	<</if>>
 <</widget>>
 
-<<widget "laughs">>
+<<widget "laughs">><<silently>>
 <<set $rng to random(1, 100)>>
 <<if $npcadult isnot 1>>
 	<<if $rng gte 51>>
-		giggles
+		<<set _text_output to "giggles">>
 	<<else>>
-		laughs
+		<<set _text_output to "laughs">>
 	<</if>>
 <<elseif $pronoun is "f">>
 	<<if $rng gte 67>>
-		giggles
+		<<set _text_output to "giggles">>
 	<<elseif $rng gte 33>>
-		chuckles
+		<<set _text_output to "chuckles">>
 	<<else>>
-		laughs
+		<<set _text_output to "laughs">>
 	<</if>>
 <<else>>
 	<<if $rng gte 51>>
-		chuckles
+		<<set _text_output to "chuckles">>
 	<<else>>
-		laughs
+		<<set _text_output to "laughs">>
 	<</if>>
 <</if>>
-
-<</widget>>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "cursedtext">>
 <<if (_args[0] or _args[1]) is "collar">>
@@ -6855,12 +6854,13 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 	<<set $_npc to _args[0]>>
 	<<set $_part to (_args[1] ? _args[1] : "both")>>
 	<<set $_self to (_args[2] ? true : false)>>
+	<<set $_his to ($combat is 1 ? "<<hisselect $index>>" : "<<his>>")>>
 	<<set _text_output to "">>
 	<<if !$_npc.clothes>>
 		<<set _text_output += '<span class="red">ERROR: NPC ($_npc.fullDescription) clothes are undefined! Please inform PurityGuy</span>'>>
 	<<elseif $_part is "both">>
 		<<set _text_output += ($_self ? "removes" : "remove")>>
-		<<set _text_output += " <<hisselect $index>> setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).desc">>
+		<<set _text_output += " $_his setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).desc">>
 	<<else>>
 		<<set $_clothesAction to setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).clothes[$_part].action>>
 		<<switch $_clothesAction>>
@@ -6874,7 +6874,7 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 			<<case "unwrap">><<set _actionText to ($_self ? "unwraps" : "unwrap")>>
 			<<default>><<set _actionText to '<span class="red">ERROR: Invalid NPC clothing action. (NPC: $_npc.fullDescription, part called: $_part, action: $_clothesAction) Please inform PurityGuy</span>'>>
 		<</switch>>
-		<<set _text_output += _actionText + " <<hisselect $index>> $_npc.clothes[$_part].name">>
+		<<set _text_output += _actionText + " $_his $_npc.clothes[$_part].name">>
 	<</if>>
 <</if>>
 <</silently>><<print _text_output>><</widget>>
