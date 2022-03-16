@@ -20,16 +20,33 @@ window.buildEyeDetails = function() {
 	return sentence.slice(0, -1) + '.';
 }
 
-window.restructureEyeColourVariable = function() {
+/**
+ * Attempts to extrapolate $eyecolour and $makeup.lenses into distinct units.
+ * $makeup.lenses gets turned into an object { left : 0, right : 0 }, where the values are 0 or a string.
+ * $eyecolour gets assigned to both $leftEyeColour and $rightEyeColour
+ * @returns Nothing
+ */
+function restructureEyeColourVariable() {
 	if (V.eyecolour != undefined){
 		V.leftEyeColour = V.eyecolour
 		V.rightEyeColour = V.eyecolour
+		delete V.eyecolour;
 	}
-	if (V.makeup && Array.isArray(V.makeup.eyelenses) && typeof V.makeup.eyelenses == "object")
-		V.makeup.eyelenses = {"left":V.makeup.eyelenses,"right":V.makeup.eyelenses}
-	if (!V.makeup.eyelenses)
-		V.makeup.eyelenses = {"left":0,"right":0}
+	if (V.makeup == undefined) return;
+	const lenses = V.makeup.eyelenses;
+	if (typeof lenses === 'string' || typeof lenses === 'number') {
+		V.makeup.eyelenses = {
+			'left' : lenses,
+			'right' : lenses
+		};
+	} else if (lenses == undefined) {
+		V.makeup.eyelenses = {
+			'left' : 0,
+			'right' : 0
+		};
+	}
 }
+window.restructureEyeColourVariable = restructureEyeColourVariable;
 
 window.patchCorruptLensesColors = function() {
 	if (V.custom_eyecolours != undefined){
