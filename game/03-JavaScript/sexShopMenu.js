@@ -333,7 +333,7 @@ window.determineRecipient = function(index) { // conditions for gifting items to
 		return ""
 	
 	for (let li of ["Alex", "Eden", "Kylar", "Robin", "Sydney"]){
-		if (V.loveInterest.primary == li || V.loveInterest.secondary == li){
+		if (V.loveInterest.primary == li || V.loveInterest.secondary == li || V.loveInterest.tertiary == li){
 			option_builder += (`<option value="` + li + `">` + li + `</option>`)
 		}
 	}
