@@ -496,92 +496,96 @@ function sliderPerc(e){
 		valSpan.css('color', 'unset');
 }
 
-window.ironManCheckBox = function (mode="normal") {
-	$(function(){
-		let checkbox = document.getElementById("checkbox-ironmanmode");
-
+window.ironManCheckBox = function(mode="normal") {
+	$(function() {
+		const checkbox = document.getElementById("checkbox-ironmanmode");
 		if (mode=="normal") {
-			V.ironmanmode = checkbox.checked
+			V.ironmanmode = checkbox.checked;
 			if (checkbox.checked == true){
 				if (V.alluremod < 1)
-					V.alluremod = 1
+					V.alluremod = 1;
 				if (V.rentmod < 1)
-					V.rentmod = 1
+					V.rentmod = 1;
 				if (V.tending_yield_factor > 5)
-					V.tending_yield_factor = 5
+					V.tending_yield_factor = 5;
 				if (document.getElementById("sliderTendingYieldFactor"))
 					new Wikifier(null, '<<replace #sliderTendingYieldFactor>><<numberslider "$tending_yield_factor" $tending_yield_factor 1 10 1 $ironmanmode>><</replace>>')
 				if (document.getElementById("sliderRentMode"))
 					new Wikifier(null, '<<replace #sliderRentMode>><<numberslider "$rentmod" $rentmod 0.1 3 0.1 $ironmanmode>><</replace>>')
 				if (document.getElementById("sliderAllureMode"))
 					new Wikifier(null, '<<replace #sliderAllureMode>><<numberslider "$alluremod" $alluremod 0.2 2 0.1 $ironmanmode>><</replace>>')
-				V.maxStates = 1
-				V.cheatdisabletoggle = "t"
-				V.autosavedisabled = true
-				$('.ironman-slider input').on('input change', e => sliderPerc(e)).trigger('change')
-			}
-			else{
+				V.maxStates = 1;
+				V.cheatdisabletoggle = "t";
+				V.autosavedisabled = true;
+				$('.ironman-slider input').on('input change', e => sliderPerc(e)).trigger('change');
+			} else {
 				if (document.getElementById("numberslider-input-alluremod"))
-					document.getElementById("numberslider-input-alluremod").disabled = false
+					document.getElementById("numberslider-input-alluremod").disabled = false;
 				if (document.getElementById("numberslider-input-rentmod"))
-					document.getElementById("numberslider-input-rentmod").disabled = false
+					document.getElementById("numberslider-input-rentmod").disabled = false;
 				if (document.getElementById("numberslider-input-tending-yield-factor"))
-					document.getElementById("numberslider-input-tending-yield-factor").disabled = false
+					document.getElementById("numberslider-input-tending-yield-factor").disabled = false;
 			}
-		}
-		else {
-			checkbox.checked = (V.ironmanmode == true ? true : false)
+		} else {
+			checkbox.checked = V.ironmanmode == true;
 			if (V.passage != "Start")
-				checkbox.disabled = true
+				checkbox.disabled = true;
 		}
-	})
+	});
 }
 
 window.ironmanSaveSignature = function() {
 	var res;
-
-	for (let va of [V.debug, V["\x61\x75\x74\x6F\x73\x61\x76\x65\x64\x69\x73\x61\x62\x6C\x65\x64"], V.virginity,
+	for (const va of [V.debug, V.autosavedisabled, V.virginity,
 					V.player, V.enemyhealth, V.enemyarousal, V.enemytrust, V.enemystrength, V.passage, V.money])
 		res += JSON.stringify(va)
 	return md5(res)
 }
 
-window.ironmanDisablingPrevention = function() {
-	// ironmn disable prevention. Obfuscated to not let players know how to circumvent it.
-	$(function(){
-		if (V.passage != "Start"){
-			Object.defineProperty(V, "ironmanmode", {value: V["ironmanmode"], writable: false, configurable: false});
-			if (V["ironmanmode"]){
-				Object.defineProperty(V, "cheatdisable", {value: 't', writable: false,configurable: false});
-				Object.defineProperty(V, "ironmanautosaveschedule", {value: V["ironmanautosaveschedule"], writable: false,configurable: false});
-				Object.defineProperty(V, "debug", {value: false, writable: false,configurable: false});
-				Object.defineProperty(V, "autosavedisabled", {value: true, writable: false,configurable: false});
-				Object.defineProperty(V["player"], "virginity", {value: V["player"]["virginity"],configurable: false,writable: false});
-				if (V.combat == 1){
-					for (let item of ["enemyhealth", "enemyarousal", "enemytrust", "enemystrength"])
-						Object.defineProperty(V, item, {value: V[item],configurable: false,writable: false});
-				}
-				for (let virginity in V["player"]["virginity"]){
-					if (V["player"]["virginity"][virginity] != true && virginity != "temple"){
-						try{
-							Object.defineProperty(V["player"]["virginity"], "player", {value: V["player"]["virginity"][virginity],configurable: false,writable: false});
-						}catch(e){;}
-					}
+function ironmanDisablingPrevention() {
+	/* Immediately exit if on the starting passage. */
+	if (['Start', 'Clothes Testing', 'Renderer Test Page', 'Tips'].includes(V.passage)) return;
+	/* Immediately exit if the game is in debug mode or test mode. */
+	if (V.debug || Config.debug) return;
+	const readonly = { writable: false, configurable: false };
+	Object.defineProperty(V, "ironmanmode", { ...readonly, value: V.ironmanmode });
+	if (V.ironmanmode) {
+		Object.defineProperties(V, {
+			"cheatdisable": 			{ ...readonly, value: 't' },
+			"ironmanautosaveschedule":	{ ...readonly, value: V.ironmanautosaveschedule },
+			"autosavedisabled": 		{ ...readonly, value: true },
+			"debug": 					{ ...readonly, value: 0 },
+			"virginity": 				{ ...readonly, value: V.player.virginity }
+		});
+		if (V.combat == 1) {
+			for (const item of ["enemyhealth", "enemyarousal", "enemytrust", "enemystrength"])
+				Object.defineProperty(V, item, { ...readonly, value: V[item] });
+		}
+		for (const type in V.player.virginity) {
+			if (V.player.virginity[type] != true && type != "temple") {
+				try {
+					Object.defineProperty(V.player.virginity, type, { ...readonly, value: V.player.virginity[type] });
+				} catch(e) { /* Not sure why lifeanime put this catch here, isn't it better to check the values properly? */
+					console.debug(e);
 				}
 			}
 		}
-	})
+	}
 }
 
-window.ironManExportButton = function () {
-	let export_name = "degrees-of-lewdity"+(V.saveName != ''?'-'+V.saveName:'')
+/*  IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
+	IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
+ - This runs at the end of the passage processing pipeline. Check docs for SugarCube.md for more information about the pipeline. */
+$(document).on(':passageend', ironmanDisablingPrevention);
+
+window.ironManExportButton = function() {
+	let export_name = "degrees-of-lewdity" + (V.saveName != '' ? '-' + V.saveName : '');
 	updateExportDay();
-	SugarCube.Save.export(export_name)
+	SugarCube.Save.export(export_name);
 }
 
 window.ironManDebugExportButton = function(slot) {
-	let div = document.getElementById("saveSlot"+slot)
-
+	const div = document.getElementById("saveSlot"+slot);
 	if (div){
 		let click_value = parseInt(div.getAttribute("click-count"))
 		if (click_value && click_value % 3 == 0){
@@ -597,10 +601,9 @@ window.ironManDebugExportButton = function(slot) {
 }
 
 window.ironManDebugExport = function(slot) {
-	let save = SugarCube.Save.slots.get(slot);
-
+	const save = SugarCube.Save.slots.get(slot);
 	if (!save)
-		return
+		return;
 	let compress = LZString.compressToBase64(JSON.stringify({"id":save.id, "state":save.state}));
 	compress = window.btoa(compress)
 	new Wikifier(null, `<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>`)

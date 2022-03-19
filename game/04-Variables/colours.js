@@ -1097,7 +1097,7 @@ setup.colours.mascara = [
 
 function buildColourMap(name, mode) {
 	let array = (mode == "custom_eyecolours" ? V.custom_eyecolours : setup.colours[name]);
-	let map = setup.colours[name+"_map"];
+	const map = setup.colours[name+"_map"];
 	let defaultFilter = setup.colours[name+"_default"];
 	for (let item of array) {
 		if (defaultFilter) Renderer.mergeLayerData(item.canvasfilter, defaultFilter);

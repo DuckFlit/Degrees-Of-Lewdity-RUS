@@ -1,24 +1,44 @@
-window.buildEyeDetails = function() {
+function buildEyeDetails() {
 	let sentence = "";
+	let concatFlag = false;
+	const lenses = V.makeup.eyelenses;
+	const colourMap = setup.colours.eyes_map;
 
-	if (V.makeup.eyelenses.right != 0 || V.makeup.eyelenses.left != 0){
-		sentence += "You wear "
-		if (V.makeup.eyelenses.left != 0 && V.makeup.eyelenses.left != 0 && V.makeup.eyelenses.left != V.makeup.eyelenses.right)
-			sentence += setup.colours.eyes_map[V.makeup.eyelenses.left].name + " and " + setup.colours.eyes_map[V.makeup.eyelenses.right].name  + " eye lenses "
-		else
-			sentence += (V.makeup.eyelenses.left != 0 ? setup.colours.eyes_map[V.makeup.eyelenses.left].name : setup.colours.eyes_map[V.makeup.eyelenses.right].name) + " eye lenses "
-		sentence += "on top of your "
+	if (lenses.right !== 0 || lenses.left !== 0) {
+		sentence += "You wear ";
+		if (typeof lenses.left === 'string') {
+			sentence += setup.colours.eyes_map[lenses.left].name;
+			concatFlag = true;
+		}
+		if (typeof lenses.right === 'string') {
+			if (concatFlag) sentence += ' and ';
+			sentence += setup.colours.eyes_map[lenses.right].name;
+			concatFlag = true;
+		}
+		if (concatFlag) {
+			sentence += ' eye lenses ';
+		}
+		sentence += "on top of your ";
+	} else {
+		sentence += "You have ";
 	}
-	else
-		sentence += "You have "
-	if (V.leftEyeColour != 0 || V.rightEyeColour != 0){
-		if (V.leftEyeColour != 0 && V.rightEyeColour != 0 && V.rightEyeColour != V.leftEyeColour)
-			sentence += setup.colours.eyes_map[V.leftEyeColour].name + " and " + setup.colours.eyes_map[V.rightEyeColour].name + " eyes "
-		else
-			sentence += (V.leftEyeColour != 0 ? setup.colours.eyes_map[V.leftEyeColour].name : setup.colours.eyes_map[V.rightEyeColour].name) + " eyes "
+	concatFlag = false;
+
+	const leftEyeColour = colourMap[V.leftEyeColour];
+	const rightEyeColour = colourMap[V.rightEyeColour];
+	if (typeof leftEyeColour === 'object') {
+		sentence += leftEyeColour.name;
+		concatFlag = true;
 	}
-	return sentence.slice(0, -1) + '.';
+	if (typeof rightEyeColour === 'object' && V.leftEyeColour !== V.rightEyeColour) {
+		if (concatFlag) sentence += ' and ';
+		sentence += rightEyeColour.name;
+		concatFlag = true;
+	}
+	if (concatFlag) sentence += ' eyes';
+	return sentence += '.';
 }
+window.buildEyeDetails = buildEyeDetails;
 
 /**
  * Attempts to extrapolate $eyecolour and $makeup.lenses into distinct units.
@@ -27,23 +47,49 @@ window.buildEyeDetails = function() {
  * @returns Nothing
  */
 function restructureEyeColourVariable() {
-	if (V.eyecolour != undefined){
-		V.leftEyeColour = V.eyecolour
-		V.rightEyeColour = V.eyecolour
-		delete V.eyecolour;
+	if (V.objectVersion.eyeRepair === undefined) {
+		V.objectVersion.eyeRepair = 0;
 	}
-	if (V.makeup == undefined) return;
-	const lenses = V.makeup.eyelenses;
-	if (typeof lenses === 'string' || typeof lenses === 'number') {
-		V.makeup.eyelenses = {
-			'left' : lenses,
-			'right' : lenses
-		};
-	} else if (lenses == undefined) {
-		V.makeup.eyelenses = {
-			'left' : 0,
-			'right' : 0
-		};
+	switch (V.objectVersion.eyeRepair) {
+		case 0:
+			/* Both $leftEyeColour and $rightEyeColour should be the original colours for a character's eyes.
+				This functon below sets it to $eyecolour, if that fails, $eyeselect, then defaults to purple, the default.
+				For it to fail, it must be undefined, it is unlikely that $eyeselect is undefined, but it's likely possible. */
+			const getColour = () => (typeof V.eyecolour === 'string' ? V.eyecolour : V.eyeselect) || 'purple';
+			if (!V.leftEyeColour) {
+				V.leftEyeColour = getColour();
+			}
+			if (!V.rightEyeColour) {
+				V.rightEyeColour = getColour();
+			}
+			delete V.eyecolour;
+			if (V.makeup == undefined) return;
+			const lenses = V.makeup.eyelenses;
+			/* If the lens variable is a string or number, we need to generate an object, with the value appended to both .right and .left 
+				As the heterochromia introduced forces us to define both eye colours. */
+			if (typeof lenses === 'string' || typeof lenses === 'number') {
+				V.makeup.eyelenses = {
+					'left' : lenses,
+					'right' : lenses
+				};
+			/* Captures at least partially correct forms, that may have been generated over time, as well as the correct objects. */
+			} else if (lenses !== null && typeof lenses === 'object') {
+				/* If the properties of the lenses aren't the right typing at all, default them to 0. */
+				if (typeof lenses.left !== 'string' && lenses.left !== 0) {
+					lenses.left = 0;
+				}
+				if (typeof lenses.right !== 'string' && lenses.right !== 0) {
+					lenses.right = 0;
+				}
+			} else {
+				/* Finally, if the lens object is beyond repair, we create it anew. */
+				V.makeup.eyelenses = {
+					'left' : 0,
+					'right' : 0
+				};
+			}
+			V.objectVersion.eyeRepair = 1;
+			break;
 	}
 }
 window.restructureEyeColourVariable = restructureEyeColourVariable;

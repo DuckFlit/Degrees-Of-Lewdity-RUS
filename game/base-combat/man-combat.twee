@@ -3060,7 +3060,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<elseif $enemyanger gte 20>>
 				<<if $enemyarousal gte (($enemyarousalmax / 5) * 4)>>
 					<<if npcHasStrapon(_n)>>
-					You feel <<his>> pace quicken as <<he>> fucks your <<bottom>> with <<his>> $NPCList[_n].penisdesc$_andbuttplug.
+					You feel <<his>> pace quicken as <<he>> fucks your <<bottom>> with <<his>> <<print $NPCList[_n].penisdesc>>$_andbuttplug.
 					<<else>>
 					You feel <<his>> $NPCList[_n].penisdesc throb within you as <<he>> fucks your <<bottom>>$_andbuttplug.
 					<</if>>
@@ -3333,7 +3333,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<elseif $enemyanger gte 20>>
 					<<if $enemyarousal gte (($enemyarousalmax / 5) * 4)>>
 						<<if npcHasStrapon(_n)>>
-						You feel <<his>> pace quicken as <<he>> fucks your <<bottom>> with <<his>> $NPCList[_n].penisdesc$_andbuttplug.
+						You feel <<his>> pace quicken as <<he>> fucks your <<bottom>> with <<his>> <<print $NPCList[_n].penisdesc>>$_andbuttplug.
 						<<else>>
 						You feel <<his>> $NPCList[_n].penisdesc throb within you as <<he>> fucks your <<bottom>>$_andbuttplug.
 						<</if>>
@@ -6594,7 +6594,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 <</if>>
 <</widget>>
 
-:: Man combat suffocated [exitCheckBypass]
+:: Man combat suffocated
 <<if $npc.includes("Sydney")>>
 	<<NPCStatusCheck "Sydney">>
 <</if>>
@@ -6638,26 +6638,41 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<span class="red">You are unconscious.</span><br>
 	<!-- Simulate 30 seconds of sex while passed out -->
 	<<set _simTurns to 3>>
-	<<set _turn to 0>>
-	<<repeat 1.5s>>
+	<<for _turn to 0; _turn lte _simTurns; _turn++>>
 		<<if _turn lt _simTurns>>
-			<div class="unconscious shimmering">
-			<<if $enemytype is "man">><<man>><<else>><<beast $enemyno>><br><</if>>
-			<<integritycheck>>
+			<div class="unconscious shimmering" hidden="">
+				<<if $enemytype is "man">>
+					<<man>>
+				<<else>>
+					<<beast $enemyno>><br>
+				<</if>>
+				<<integritycheck>>
 			</div>
 		<<else>>
-			<div class="fade-in">
-			You regain consciousness with a long gasp. Your body is still being used.
-			<<oxygenrefresh>>
-			<<set $suffocating to 0>>
-			<<unset $suffocated>>
-			<<unset $suffocationPhase>>
-			<br><br>
-			<span id="nextlink"><<link [[Next|$previousPassage]]>><</link>></span>
+			<div class="fade-in" hidden="">
+				You regain consciousness with a long gasp. Your body is still being used.
+				<<oxygenrefresh>>
+				<<set $suffocating to 0>>
+				<<unset $suffocated>>
+				<<unset $suffocationPhase>>
+				<br><br>
+				<span id="next"><<link [[Next|$previousPassage]]>><</link>></span>
 			</div>
-			<<numberify '#nextlink'>>
-			<<stop>>
 		<</if>>
-		<<set _turn += 1>>
-	<</repeat>>
+	<</for>>
+	<<script>>
+		$(document).one(':passageend', function(ev) {
+			const targets = [ ...document.getElementsByClassName('unconscious'), ...document.getElementsByClassName('fade-in') ];
+			let delay = 1500;
+			targets.forEach(ele => {
+				if (ele instanceof HTMLElement) {
+					/* Element is prepared and ready to be unhidden, leave a 1.5 timeout per iteration */
+					setTimeout(() => {
+						ele.hidden = false;
+					}, delay);
+					delay += 1500;
+				}
+			});
+		});
+	<</script>>
 <</if>>
