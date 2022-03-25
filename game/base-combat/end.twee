@@ -2,6 +2,16 @@
 
 <<widget "endcombat">>
 
+<!-- Need to defer execution of this until the next passage.
+	Because <<endcombat>> can be called in a link. -->
+<<if $ironmanmode>>
+	<<run IronMan.addSetter(function(v) {
+		v.enemytrust = 0;
+	})>>
+<<else>>
+	<<set $enemytrust to 0>>
+<</if>>
+
 <<if $enemyhealth lte 0>>
 	<<if $enemytype is "man">>
 		<<famescrap $enemynomax>>
@@ -179,7 +189,6 @@
 <<set $upperstruggle to 0>>
 <<set $overlowerstruggle to 0>>
 <<set $overupperstruggle to 0>>
-<<set $enemytrust to 0>>
 <<set $alarm to 0>>
 <<set $rescue to 0>>
 <<set $phase to 0>>
@@ -697,6 +706,20 @@
 
 <<widget "turnend">>
 
+<<if $ironmanmode>>
+	<!-- Need to defer execution of this until the next passage.
+		Because <<endcombat>> can be called in a link. -->
+	<<run IronMan.addSetter(function(v) {
+		if (v.enemyarousal < 0) {
+			v.enemyarousal = 0;
+		}
+	})>>
+<<else>>
+	<<if $enemyarousal lt 0>>
+		<<set $enemyarousal to 0>>
+	<</if>>
+<</if>>
+
 <<set $speechcum to 0>>
 <<set $speechorgasmrepeat to 0>>
 
@@ -767,10 +790,6 @@
 	<<set $speechhermdisappointed to 1>>
 <<elseif $speechhermdisappointed is 1>>
 	<<unset $speechhermdisappointed>>
-<</if>>
-
-<<if $enemyarousal lt 0>>
-	<<set $enemyarousal to 0>>
 <</if>>
 
 <</widget>>

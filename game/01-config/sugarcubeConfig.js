@@ -38,6 +38,16 @@ Config.saves.isAllowed = function () {
 	return true;
 };
 
+$(document).on(':passagestart', function(ev) {
+	if (ev.passage.title === 'Start2') {
+		jQuery.event.trigger({
+			type    : ':start2',
+			content : ev.content,
+			passage : ev.passage
+		});
+	}
+});
+
 importStyles("style.css")
 	.then(function () {
 		console.log("External Style Sheet Active")
