@@ -604,27 +604,19 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<</if>>
 
 	<<set $rng to random(1, 100)>>
-	<<if $rng gte 101>>
+	<<if $rng gte 96>>
 		<span class="blue"><<He>> moves the $_toy in <<his>> _args[0] hand away from your <<penis>>.</span>
 		<<combat-reset-hand _args[0]>><<set $NPCList[_n][$_hand + "tool"] to 0>>
-		<<set $penisuse to 0>>
-	<<elseif $rng gte 51>>
-		<<He>> <<strokes>> your shaft using the $_toy in <<his>> _args[0] hand.
-		<<neutral 10 _n>>
-		<<bodypart_admire_chance pubic>>
-	<<elseif $rng gte 21>>
-		<<He>> <<print either("slaps","smacks","teases")>> your glans with the $_toy in <<his>> _args[0] hand<<if $_clothing isnot "none">>, through your $_clothing<</if>>.
-		<<neutral 10 _n>><<set $speechglans to 1>>
-		<<bodypart_admire_chance pubic>>
-	<<elseif $rng lte 20
-	and $worn.under_lower.state isnot "naked" and ($worn.under_lower.state isnot "waist" or $worn.under_lower.vagina_exposed gte 1)
-	and $worn.lower.state isnot "naked" and ($worn.lower.state isnot "waist" or $worn.lower.vagina_exposed gte 1)
-	and $worn.over_lower.state isnot "naked" and ($worn.over_lower.state isnot "waist" or $worn.over_lower.vagina_exposed gte 1)>>
+	<<elseif $rng gte 61 and $penisuse is 0 and $worn.under_lower.state isnot "naked" and ($worn.under_lower.state isnot "waist" or $worn.under_lower.vagina_exposed gte 1) and $worn.lower.state isnot "naked" and ($worn.lower.state isnot "waist" or $worn.lower.vagina_exposed gte 1) and $worn.over_lower.state isnot "naked" and ($worn.over_lower.state isnot "waist" or $worn.over_lower.vagina_exposed gte 1)>>
 		<span class="pink"><<He>> plunges the $_toy in <<his>> _args[0] hand onto your penis.</span>
 		<<set $penisuse to "stroker">><<set $penisstate to "stroker">>
 		<<neutral 15 _n>>
 		<<set $speechpenis to 1>>
 		<<combat-set-hand-target _args[0] "penisstroker">>
+		<<bodypart_admire_chance pubic>>
+	<<else>>
+		<<He>> teases your glans with the $_toy in <<his>> _args[0] hand<<if $_clothing isnot "none">>, through your $_clothing<</if>>.
+		<<neutral 10 _n>><<set $speechglans to 1>>
 		<<bodypart_admire_chance pubic>>
 	<</if>>
 <</widget>>
@@ -1621,7 +1613,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<span class="purple"><<He>> <<print either("pats","strokes","fondles")>> your hair with <<his>> _args[0] hand.</span>
 			<<set $speechhair to 1>>
 			<<bodypart_admire_chance forehead>>
-		<<elseif ["Robin", "Kylar","Great Hawk","Black Wolf", "Bailey"].includes($npc[$npcrow.indexOf(_n)]) or ($npc[$npcrow.indexOf(_n)] is "Sydney" and !_sydneyStatus.includes("corrupt")) or ($NPCList[_n].teen is 1 and !["Alex","Whitney","Sydney"].includes($npc[$npcrow.indexOf(_n)]) and random(0,4) isnot 0)>>
+		<<elseif ["Robin", "Kylar","Great Hawk","Black Wolf","Eden","Bailey","Alex", "Bailey"].includes($npc[$npcrow.indexOf(_n)]) or ($npc[$npcrow.indexOf(_n)] is "Sydney" and !_sydneyStatus.includes("corrupt")) or ($NPCList[_n].teen is 1 and !["Alex","Whitney","Sydney"].includes($npc[$npcrow.indexOf(_n)]) and random(0,9) isnot 0)>>
 			/* Skip toys for certain NPCs */
 			<<set $handtarget to 0>>
 			<<if $worn.over_lower.name isnot "naked">>
@@ -1665,12 +1657,12 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<set $_palm to ($_freehand is true ? either("palm","palm","palm","thigh","thigh","shoulder") : either("thigh","shoulder"))>>
 			<<set $_eagerly to ($consensual is 1 ? "eagerly" : "menacingly")>>
 
-			<<if $_freehand is true and random(0,2) is 0 or random(0,4) is 0>>
+			<<if random(0,4) is 0>>
 				<span class="purple"><<He>> pulls a <span class="blue">$_dildo</span> from <<his>> pocket, slapping it against <<his>> <<print $_palm>> <<print $_eagerly>>.</span>
 			<<else>>
 				<span class="purple"><<He>> pulls a <span class="blue">$_dildo</span> from <<his>> pocket.</span>
 			<</if>>
-			
+
 			<<if getSexToysofType("stroker").includes($_dildo)>>
 				<<set $NPCList[_n][$_hand+"tool"] to $_dildo>>
 				<<set $NPCList[_n][$_hand+"hand"] to "stroker">>
@@ -5880,7 +5872,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			NPCs and player actions happen more or less the same way as existing actions.
 			Initiation/escape actions will add or remove one NPC and switch the other one to single/double as appropriate.
 			There are two primary states; in sync and out of sync. While out of sync, they typically display text more or less the same as their singular versions.
-				While in sync, they display the double version text and combat outcomes.
+			While in sync, they display the double version text and combat outcomes.
 			-->
 
 			/* Error handling for escaped penises. Divert to regular penetration */
@@ -5898,24 +5890,29 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<elseif $vaginastate is "penetrated">><<set $NPCList[$vaginatarget].penis to "vagina">>
 				<</if>>
 			<<else>>
-
-			<<if $condomUse is false>>
-			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
-				<<equipCondom _n>>
-				<span class="green"><<He>> slips a condom on <<his>> penis.</span>
-			<</if>>
-			<span class="blue"><<He>> moves <<his>> $NPCList[_n].penisdesc between your legs, joining the other cock in front of your <<pussy>>.</span>
-			<<neutral 5>><<set $vaginause to "penisdouble">><<set $NPCList[_n].penis to "vaginadoubleentrance">><<if $vaginastate isnot "doublepenetration" and $vaginastate isnot "doubleimminent">><<set $vaginastate to "doubleentrance">><</if>><<set $speechvaginaentrance to 1>>
-			<<set $NPCList[_n].location.genitals = "genitals">>
-			<<set $vaginadoubletarget to _n>>
-			<<if $NPCList[$vaginatarget].penis is "vagina">>
-				<<set $NPCList[$vaginatarget].penis to "vaginadouble">>
-			<<elseif $NPCList[$vaginatarget].penis is "vaginaimminent">>
-				<<set $NPCList[$vaginatarget].penis to "vaginadoubleimminent">>
-			<<elseif $NPCList[$vaginatarget].penis is "vaginaentrance">>
-				<<set $NPCList[$vaginatarget].penis to "vaginadoubleentrance">>
-			<</if>>
-
+				/* Do intended function. Switch player into DP state and set NPC state */
+				<<if $condomUse is false>>
+					/* Do nothing */
+				<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
+					<<equipCondom _n>>
+					<span class="green"><<He>> slips a condom on <<his>> penis.</span>
+				<</if>>
+				<span class="blue"><<He>> moves <<his>> $NPCList[_n].penisdesc between your legs, joining the other cock in front of your <<pussy>>.</span>
+				<<neutral 5>>
+				/* Player */
+				<<set $vaginause to "penisdouble">>
+				<<set $vaginastate to ($vaginastate.includesAny("doublepenetration","doubleimminent") ? $vaginastate : "doubleentrance")>>
+				/* NPC */
+				<<set $speechvaginaentrance to 1>>
+				<<set $NPCList[_n].penis to "vaginadoubleentrance">>
+				<<set $NPCList[_n].location.genitals = "genitals">>
+				<<if $NPCList[$vaginatarget].penis is "vagina">>
+					<<set $NPCList[$vaginatarget].penis to "vaginadouble">>
+				<<elseif $NPCList[$vaginatarget].penis is "vaginaimminent">>
+					<<set $NPCList[$vaginatarget].penis to "vaginadoubleimminent">>
+				<<elseif $NPCList[$vaginatarget].penis is "vaginaentrance">>
+					<<set $NPCList[$vaginatarget].penis to "vaginadoubleentrance">>
+				<</if>>
 			<</if>>
 
 		<<elseif $analdisable is "f" and $anususe is 0>>
@@ -5940,7 +5937,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			NPCs and player actions happen more or less the same way as existing actions.
 			Initiation/escape actions will add or remove one NPC and switch the other one to single/double as appropriate.
 			There are two primary states; in sync and out of sync. While out of sync, they typically display text more or less the same as their singular versions.
-				While in sync, they display the double version text and combat outcomes.
+			While in sync, they display the double version text and combat outcomes.
 			-->
 
 			/* Error handling for escaped penises. Divert to regular penetration */
@@ -5963,29 +5960,32 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<He>> continues thrusting into your <<bottom>>.
 				<</if>>
 			<<else>>
-				/*<br>
-				<span class="red">Penis escaped. Please inform Vrelnir. Enjoy the "feature" ;).</span>
-				<br>
-				<span class="pink"><<He>> dons a double penetrator strap-on, pressing it against your ass.</span>*/
-			/* End error catch */
+			/* Otherwise do the intended function */
+				<<if $condomUse is false>>
+					/* Do nothing */
+				<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
+					<<equipCondom _n>>
+					<span class="green"><<He>> puts a condom on <<his>> penis.</span>
+				<</if>>
+				<span class="blue"><<He>> moves between your legs, joining the cock in front of your <<bottom>>.</span>
+				<<neutral 5 _n>>
 
-			<<if $condomUse is false>>
-			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
-				<<equipCondom _n>>
-				<span class="green"><<He>> puts a condom on <<his>> penis.</span>
-			<</if>>
-			<span class="blue"><<He>> moves between your legs, joining the cock in front of your <<bottom>>.</span>
-			<<neutral 5 _n>><<set $anususe to "penisdouble">><<set $NPCList[_n].penis to "anusdoubleentrance">><<if $anusstate isnot "doublepenetration" and $anusstate isnot "doubleimminent">><<set $anusstate to "doubleentrance">><</if>><<set $speechanusentrance to 1>>
-			<<set $NPCList[_n].location.genitals = "genitals">>
-			<<set $anusdoubletarget to _n>>
-			<<if $NPCList[$anustarget].penis is "anus">>
-				<<set $NPCList[$anustarget].penis to "anusdouble">>
-			<<elseif $NPCList[$anustarget].penis is "anusimminent">>
-				<<set $NPCList[$anustarget].penis to "anusdoubleimminent">>
-			<<elseif $NPCList[$anustarget].penis is "anusentrance">>
-				<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
-			<</if>>
+				/* Player */
+				<<set $anusdoubletarget to _n>>
+				<<set $anususe to "penisdouble">>
+				<<if $anusstate isnot "doublepenetration" and $anusstate isnot "doubleimminent">>
+					<<set $anusstate to "doubleentrance">>
+				<</if>>
 
+				/* NPC */
+				<<set $NPCList[_n].penis to "anusdoubleentrance">><<set $NPCList[_n].location.genitals = "genitals">><<set $speechanusentrance to 1>>
+				<<if $NPCList[$anustarget].penis is "anus">>
+					<<set $NPCList[$anustarget].penis to "anusdouble">>
+				<<elseif $NPCList[$anustarget].penis is "anusimminent">>
+					<<set $NPCList[$anustarget].penis to "anusdoubleimminent">>
+				<<elseif $NPCList[$anustarget].penis is "anusentrance">>
+					<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
+				<</if>>
 			<</if>>
 		<</if>>
 	<<elseif $enemyanger + $rng lte 120>>

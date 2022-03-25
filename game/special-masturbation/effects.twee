@@ -3,7 +3,7 @@
 <<widget "masturbationeffects">>
 <<set $_playerToys to window.listUniqueCarriedSextoys()>>
 <<if $_playerToys isnot 0>>
-	<<set $_playerToys to window.listUniqueCarriedSextoys().filter(toy => toy.type.includes("dildo"))>>
+	<<set $_playerToys to window.listUniqueCarriedSextoys().filter(toy => toy.type.includesAny("dildo","stroker"))>>
 <<else>>
 	<<set $_playerToys to []>>
 <</if>>
@@ -1201,8 +1201,49 @@
 	<span class="red">Your legs fail to lift you off of the plant, as if your body isn't obeying you.</span>
 <</if>>
 
-/* Dildo */
-<<if $leftaction is "mpickupdildo" or $rightaction is "mpickupdildo">>
+/* Sex toy pick up actions */
+<<if $leftaction is "mpickupdildo" and $_playerToys[$currentToyLeft].type.includes("stroker") or $rightaction is "mpickupdildo" and $_playerToys[$currentToyRight].type.includes("stroker")>>
+	<<set $_actiondefault to "mpenisentrancestroker">>
+
+	<<if $leftaction is "mpickupdildo" and $rightaction is "mpickupdildo">>
+		<<if $selectedToyLeft is $selectedToyRight>>
+			You tried to pickup the same toy in both hands.
+			<<set $leftaction to 0>><<set $rightaction to 0>>
+		<<else>>
+			<<set $currentToyLeft to $selectedToyLeft>>
+			<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mpickupdildo">>
+			<<arousal 200>>
+			You pick up your $_playerToys[$currentToyLeft].colour $_playerToys[$currentToyLeft].name.
+			
+			<<set $currentToyRight to $selectedToyRight>>
+			<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mpickupdildo">>
+			<<arousal 200>>
+			You pick up your $_playerToys[$currentToyRight].colour $_playerToys[$currentToyRight].name.
+		<</if>>
+
+	<<elseif $leftaction is "mpickupdildo">>
+		<<if $selectedToyLeft is $currentToyRight>>
+			You tried to pickup the same toy in both hands. You release the toy from your left hand.
+			<<set $leftaction to 0>>
+		<<else>>
+			<<set $currentToyLeft to $selectedToyLeft>>
+			<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mpickupdildo">>
+			<<arousal 200>>
+			You pick up your $_playerToys[$currentToyLeft].colour $_playerToys[$currentToyLeft].name.
+		<</if>>
+
+	<<elseif $rightaction is "mpickupdildo">>
+		<<if $selectedToyRight is $currentToyLeft>>
+			You tried to pickup the same toy in both hands. You release the toy from your right hand.
+			<<set $rightaction to 0>>
+		<<else>>
+			<<set $currentToyRight to $selectedToyRight>>
+			<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mpickupdildo">>
+			<<arousal 200>>
+			You pick up your $_playerToys[$currentToyRight].colour $_playerToys[$currentToyRight].name.
+		<</if>>
+	<</if>>
+<<elseif $leftaction is "mpickupdildo" or $rightaction is "mpickupdildo">>
 	<<set $_actiondefault to ($player.penisExist ? "manusentrancedildo" : "mvaginaentrancedildo")>>
 
 	<<if $leftaction is "mpickupdildo" and $rightaction is "mpickupdildo">>
@@ -1259,6 +1300,92 @@
 	<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>>
 	<span class="lblue">You let go of the $_lefttoycolour $_lefttoy in your right hand.</span>
 	<<set $currentToyRight to "none">>
+<</if>>
+
+/* Stroker actions*/
+
+<<if $leftaction is "mpenisentrancestroker" and $rightaction is "mpenisentrancestroker">>
+	<<set $_actiondefault to "mpenisentrancestroker">>
+	<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mpenisentrancestroker">>
+	<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mpenisentrancestroker">>
+	<<arousal 50>>
+	<<if $_genitals_exposed and $worn.genitals.vagina_exposed gte 1>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your exposed <<penis>> and shiver in anticipation.</span>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<penis>>, feeling its shape beneath your $worn.genitals.name.</span>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<penis>>, feeling its shape beneath your $worn.lower.name.</span>
+	<<elseif $worn.lower.vagina_exposed is 0>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<penis>>, feeling its shape beneath your $worn.under_lower.name.</span>
+	<<else>>
+		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<penis>>, feeling its shape beneath your clothing.</span>
+	<</if>>
+<<elseif $leftaction is "mpenisentrancestroker">>
+	<<set $_actiondefault to "mpenisentrancestroker">>
+	<<if $leftaction is "mpenisentrancestroker">>
+		<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mpenisentrancestroker">>
+	<</if>>
+	<<arousal 50>>
+	<span class="blue">You pick up your $_lefttoycolour $_lefttoy and run it over your <<penis>>,
+		<<if $_genitals_exposed>>
+			shivering in anticipation.
+		<<elseif $worn.lower.vagina_exposed is 0>>
+			feeling its shape beneath your $worn.lower.name.
+		<<elseif $worn.under_lower.vagina_exposed is 0>>
+			feeling its shape beneath your $worn.under_lower.name.
+		<<else>>
+			feeling its shape beneath your clothing.
+		<</if>>
+	</span>
+<<elseif $rightaction is "mpenisentrancestroker">>
+	<<set $_actiondefault to "mpenisentrancestroker">>
+	<<if $rightaction is "mpenisentrancestroker">>
+		<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mpenisentrancestroker">>
+	<</if>>
+	<<arousal 50>>
+	<span class="blue">You pick up your $_righttoycolour $_righttoy and run it over your <<penis>>,
+		<<if $_genitals_exposed>>
+			shivering in anticipation.
+		<<elseif $worn.lower.vagina_exposed is 0>>
+			feeling its shape beneath your $worn.lower.name.
+		<<elseif $worn.under_lower.vagina_exposed is 0>>
+			feeling its shape beneath your $worn.under_lower.name.
+		<<else>>
+			feeling its shape beneath your clothing.
+		<</if>>
+	</span>
+<</if>>
+
+<<if $leftaction is "mpenisstroker" or $rightaction is "mpenisstroker">>
+	<<if $leftaction is "mpenisstroker">>
+		<<set $_toy to $_lefttoycolour +" "+$_lefttoy>>
+		<<set $leftactiondefault to "mpenisstroker">><<set $leftaction to 0>><<set $leftarm to "mpenisstroker">>
+	<</if>>
+	<<if $rightaction is "mpenisstroker">>
+		<<set $_toy to $_righttoycolour +" "+$_righttoy>>
+		<<set $rightactiondefault to "mpenisstroker">><<set $rightaction to 0>><<set $rightarm to "mpenisstroker">>
+	<</if>>
+	<<if $rightarm is "mpenisstroker" and $leftarm is "mpenisstroker">>
+		<<set $_toy to $_lefttoycolour +" "+ $_lefttoy + " and " +$_righttoycolour +" "+ $_righttoy>>
+		<<arousal 50>>
+	<</if>>
+	<<arousal 400>>
+	<span class="purple">You fuck your <<penis>> with the $_toy.</span>
+	<<set $penisuse to "stroker">>
+<</if>>
+
+<<if $leftaction is "mpenisstopstroker" and $rightaction is "mpenisstopstroker">>
+	<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftarm to 0>><<set $penisuse to 0>>
+	<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>>
+	<span class="purple">You move your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy away from your <<penis>>.</span>
+
+<<elseif $leftaction is "mpenisstopstroker">>
+	<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftarm to 0>><<set $penisuse to 0>>
+	<span class="purple">You move your $_playerToys[$currentToyLeft].name in your left hand away from your <<penis>>.</span>
+
+<<elseif $rightaction is "mpenisstopstroker">>
+	<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>><<set $penisuse to 0>>
+	<span class="purple">You move your $_playerToys[$currentToyRight].name in your right hand away from your <<penis>>.</span>
 <</if>>
 
 /* Hand on Vagina Actions */

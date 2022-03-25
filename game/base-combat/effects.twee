@@ -4693,31 +4693,6 @@
 	<</if>>
 <</if>>
 
-<<set $rng to random(1, 100)>>
-<<if $penisaction is "penisanusdouble">>
-	<<set $penisaction to 0>><<meek 5 $penistarget>><<analskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $analskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<personselect $penistarget>><<set $penisactiondefault to "rest">>
-		<span class="blue">You give your <<bottom>> a little wiggle, <<combatperson>> responds to the provocation and moves <<his>> penis to join the phallus in front of your butt.</span>
-		<<submission 2 $penistarget>><<set $anususe to "penisdouble">><<set $NPCList[$penistarget].penis to "anusdoubleentrance">><<set $penisuse to 0>><<set $anusstate to "doubleentrance">><<set $penisstate to 0>>
-		<<set $anusdoubletarget to $penistarget>>
-		<<if $NPCList[$anustarget].penis is "anus">>
-			<<set $NPCList[$anustarget].penis to "anusdouble">>
-		<<elseif $NPCList[$anustarget].penis is "anusimminent">>
-			<<set $NPCList[$anustarget].penis to "anusdoubleimminent">>
-		<<elseif $NPCList[$anustarget].penis is "anusentrance">>
-			<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
-		<<elseif $NPCList[$anustarget].penis is "cheeks">>
-			<<set $NPCList[$anustarget].penis to "anusentrance">>
-			<<set $bottomuse to 0>> /* Issues with ass cheeks likely stem from this culprit right here */
-		<</if>>
-		<<set $NPCList[$anustarget].location.genitals to "genitals">>
-	<<else>>
-		You give your <<bottom>> a little wiggle, but you just receive a slap.
-		<<violence 2>><<hitstat>><<bruise bottom>><<set $penisactiondefault to "penisanusdouble">>
-	<</if>>
-<</if>>
-
 <<if $penisaction is "clitrub">><<set $penisaction to 0>><<set $penisactiondefault to "rub">><<penileskilluse>>
 	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $penileskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
 		<<set $penisactiondefault to "rub">><<sex 5 $penistarget>>
@@ -4935,6 +4910,31 @@
 	<</if>>
 <</if>>
 
+<<set $rng to random(1, 100)>>
+<<if $penisaction is "penisanusdouble">>
+	<<set $penisaction to 0>><<meek 5 $penistarget>><<analskilluse>>
+	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $analskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<personselect $penistarget>><<set $penisactiondefault to "rest">>
+		<span class="blue">You give your <<bottom>> a little wiggle, <<combatperson>> responds to the provocation and moves <<his>> penis to join the phallus in front of your butt.</span>
+		<<submission 2 $penistarget>><<set $anususe to "penisdouble">><<set $NPCList[$penistarget].penis to "anusdoubleentrance">><<set $penisuse to 0>><<set $anusstate to "doubleentrance">><<set $penisstate to 0>>
+		<<set $anusdoubletarget to $penistarget>>
+		<<if $NPCList[$anustarget].penis is "anus">>
+			<<set $NPCList[$anustarget].penis to "anusdouble">>
+		<<elseif $NPCList[$anustarget].penis is "anusimminent">>
+			<<set $NPCList[$anustarget].penis to "anusdoubleimminent">>
+		<<elseif $NPCList[$anustarget].penis is "anusentrance">>
+			<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
+		<<elseif $NPCList[$anustarget].penis is "cheeks">>
+			<<set $NPCList[$anustarget].penis to "anusentrance">>
+			<<set $bottomuse to 0>> /* Issues with ass cheeks likely stem from this culprit right here */
+		<</if>>
+		<<set $NPCList[$anustarget].location.genitals to "genitals">>
+	<<else>>
+		You give your <<bottom>> a little wiggle, but you just receive a slap.
+		<<violence 2>><<hitstat>><<bruise bottom>><<set $penisactiondefault to "penisanusdouble">>
+	<</if>>
+<</if>>
+
 <<if $penisaction is "penispussy">>
 	<!-- Check the player is not attempting to straddle and offer pussy at the same time. If so, switch to double or fail correctly -->
 	<<if $vaginastate isnot 0 and !$vaginastate.includes("double") and ($vaginastate is "entrance" or $vaginastate is "imminent" or $vaginastate is "penetrated")>>
@@ -4993,6 +4993,13 @@
 	<<else>>
 		You spread your thighs, but fail to garner interest.
 	<</if>>
+<</if>>
+
+<<if $penisaction is "strokerCooperate">>
+	<<set $penisaction to 0>><<set $penisactiondefault to "strokerCooperate">><<actionsStrokerCooperate $penistarget>><<submission 20 $penistarget>>
+<</if>>
+<<if $penisaction is "strokerRest">>
+	<<set $penisaction to 0>><<set $penisactiondefault to "strokerRest">><<actionsStrokerRest $penistarget>><<neutral 5>>
 <</if>>
 
 /***
@@ -5067,6 +5074,7 @@
 <</widget>>
 
 <<widget "effectsinsertions">>
+	/* Check anal toy insertions */
 	<<set _insertions to []>>
 	<<for _i = 0; _i < $NPCList.length; _i++>>
 		<<if $NPCList[_i].lefthand is "anusdildo">>
@@ -5095,7 +5103,7 @@
 			Your anus is fucked by _insertions[0]<<if playerHasButtPlug()>>, rubbing against your $worn.butt_plug.name<</if>>.
 		<</if>>
 	<</if>>
-
+	/* Check vaginal toy insertions */
 	<<if $player.vaginaExist>>
 		<<set _insertions to []>>
 		<<for _i = 0; _i < $NPCList.length; _i++>>
@@ -5120,15 +5128,15 @@
 			<</if>>
 		<</if>>
 	<</if>>
-
 	<<if $player.penisExist>>
+		/* Dildo rubbing on penis */
 		<<for _i = 0; _i < $NPCList.length; _i++>>
-			<<if $NPCList[_i].lefthand is "penisstroker">>
-				Your <<penis>> is fucked by the $NPCList[_i].lefttool.
+			<<if $NPCList[_i].lefthand is "penisdildo">>
+				Your <<penis>> is rubbed by the $NPCList[_i].lefttool.
 				<<break>>
 			<</if>>
-			<<if $NPCList[_i].righthand is "penisstroker">>
-				Your <<penis>> is fucked by the $NPCList[_i].righttool.
+			<<if $NPCList[_i].righthand is "penisdildo">>
+				Your <<penis>> is rubbed by the $NPCList[_i].righttool.
 				<<break>>
 			<</if>>
 		<</for>>
