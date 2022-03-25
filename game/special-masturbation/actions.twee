@@ -6,19 +6,19 @@
 <<if $currentToyRight is undefined>><<set $currentToyRight to "none">><</if>>
 <<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1>>
 <<set $_balls_exposed to $_genitals_exposed and !($worn.genitals.type.includes("chastity") and $worn.genitals.type.includes("belt"))>>
-<<set $_playerToys to window.listUniqueCarriedSextoys()>>
-<<if $_playerToys isnot 0>>
-	<<set $_playerToys to window.listUniqueCarriedSextoys().filter(toy => toy.type.includes("dildo"))>>
+<<set _playerToys to window.listUniqueCarriedSextoys()>>
+<<if _playerToys isnot 0>>
+	<<set _playerToys to window.listUniqueCarriedSextoys().filter(toy => toy.type.includesAny("dildo","stroker"))>>
 <<else>>
-	<<set $_playerToys to []>>
+	<<set _playerToys to []>>
 <</if>>
 <<if $currentToyLeft isnot undefined and $currentToyLeft isnot "none">>
-	<<set $_lefttoy to $_playerToys[$currentToyLeft].name>>
-	<<set $_lefttoycolour to $_playerToys[$currentToyLeft].colour>>
+	<<set $_lefttoy to _playerToys[$currentToyLeft].name>>
+	<<set $_lefttoycolour to _playerToys[$currentToyLeft].colour>>
 <</if>>
 <<if $currentToyRight isnot undefined and $currentToyRight isnot "none">>
-	<<set $_righttoy to $_playerToys[$currentToyRight].name>>
-	<<set $_righttoycolour to $_playerToys[$currentToyRight].colour>>
+	<<set $_righttoy to _playerToys[$currentToyRight].name>>
+	<<set $_righttoycolour to _playerToys[$currentToyRight].colour>>
 <</if>>
 
 /* Left Arm Actions */
@@ -62,12 +62,12 @@
 		| <label><<radiobutton "$leftaction" "manusentrance" autocheck>> <span class="sub">Stroke your anus</span></label>
 	<</if>>
 	<<if $awareness gte 200 and ["home","brothel","cafe"].includes($location)>> <!-- v0.3.6.2: Player sex toys -->
-		<<if $_playerToys.length gte 1>>
-			<<set $_playertoysLeft to {}>>
-			<<for $_i = 0; $_i lt $_playerToys.length; $_i++>>
-				<<set $_playertoysLeft[($_playerToys[$_i].colour + " " + $_playerToys[$_i].name)] to $_i>>
+		<<if _playerToys.length gte 1>>
+			<<set _playerToysLeft to {}>>
+			<<for $_i = 0; $_i lt _playerToys.length; $_i++>>
+				<<set _playerToysLeft[(_playerToys[$_i].colour + " " + _playerToys[$_i].name)] to $_i>>
 			<</for>>
-			<<set $_toyoptions to $_playertoysLeft>>
+			<<set $_toyoptions to _playerToysLeft>>
 			<label><<radiobutton "$leftaction" "mpickupdildo" autocheck>> <span class="green">Use Toy:</span></label>
 			<label>
 				<<listbox "$selectedToyLeft" autoselect>>
@@ -200,14 +200,36 @@
 	<</if>>
 	| <label><<radiobutton "$leftaction" "manusstopdildo" autocheck>> Move your hand away</label>
 
+<<elseif $leftarm is "mpenisentrancestroker">>
+	You tease your glans with the $_lefttoycolour $_lefttoy your left hand.
+	<br>
+	<<if $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $penisuse is 0>>
+		| <label><<radiobutton "$leftaction" "mpenisstroker" autocheck>> <span class="sub">Penetrate your $_lefttoycolour $_lefttoy</span></label>
+		| <label><<radiobutton "$leftaction" "mpenisentrancestroker" autocheck>> <span class="sub">Tease your glans with your $_lefttoycolour $_lefttoy</span></label>
+	<</if>>
+	| <label><<radiobutton "$leftaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
+
+<<elseif $leftarm is "mpenisstroker">>
+	Your <<penis>> penetrates the $_lefttoycolour $_lefttoy in your left hand.
+	<br>
+	| <label><<radiobutton "$leftaction" "mpenisstroker" autocheck>> <span class="sub">Masturbate</span></label>
+	| <label><<radiobutton "$leftaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
+
 <<elseif $leftarm is "mpickupdildo">>
 	You pick up your $_lefttoycolour $_lefttoy in your left hand.
 	<br>
-	<<if $player.vaginaExist>>
-		| <label><<radiobutton "$leftaction" "mvaginaentrancedildo" autocheck>> <span class="sub">Move to your vagina</span></label>
+	<<if _playerToys[$currentToyLeft].type.includes("stroker")>>
+		<<if $player.penisExist and _playerToys[$currentToyLeft].type.includes("stroker")>>
+			| <label><<radiobutton "$leftaction" "mpenisentrancestroker" autocheck>> <span class="sub">Move to your penis</span></label>
+		<</if>>
+	| <label><<radiobutton "$leftaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
+	<<else>>
+		<<if $player.vaginaExist>>
+			| <label><<radiobutton "$leftaction" "mvaginaentrancedildo" autocheck>> <span class="sub">Move to your vagina</span></label>
+		<</if>>
+		| <label><<radiobutton "$leftaction" "manusentrancedildo" autocheck>> <span class="sub">Move to your anus</span></label>
+		| <label><<radiobutton "$leftaction" "mvaginastopdildo" autocheck>> Move your hand away</label>
 	<</if>>
-	| <label><<radiobutton "$leftaction" "manusentrancedildo" autocheck>> <span class="sub">Move to your anus</span></label>
-	| <label><<radiobutton "$leftaction" "mvaginastopdildo" autocheck>> Move your hand away</label>
 
 <<elseif $leftarm is "mballs">>
 	You hold <<if $ballssize gte 1>>one of <</if>> your $ballsText with your left hand.
@@ -310,13 +332,13 @@
 		| <label><<radiobutton "$rightaction" "manusentrance" autocheck>> <span class="sub">Stroke your anus</span></label>
 	<</if>>
 	<<if $awareness gte 200 and ["home","brothel","cafe"].includes($location)>> /* Player sex toys */
-		<<if $_playerToys.length gte 1>>
-			<<set $_playertoysRight to {}>>
-			<<for $_i = 0; $_i lt $_playerToys.length; $_i++>>
-				/*<<set $_playertoysRight.push($_playerToys[$_i].namecap)>>*/
-				<<set $_playertoysRight[($_playerToys[$_i].colour + " " + $_playerToys[$_i].name)] to $_i>>
+		<<if _playerToys.length gte 1>>
+			<<set _playerToysRight to {}>>
+			<<for $_i = 0; $_i lt _playerToys.length; $_i++>>
+				/*<<set _playerToysRight.push(_playerToys[$_i].namecap)>>*/
+				<<set _playerToysRight[(_playerToys[$_i].colour + " " + _playerToys[$_i].name)] to $_i>>
 			<</for>>
-			<<set $_toyoptions to $_playertoysRight>>
+			<<set $_toyoptions to _playerToysRight>>
 			<label><<radiobutton "$rightaction" "mpickupdildo" autocheck>> <span class="green">Use Toy:</span></label>
 			<label>
 				<<listbox "$selectedToyRight" autoselect>>
@@ -446,14 +468,36 @@
 	<</if>>
 	| <label><<radiobutton "$rightaction" "manusstopdildo" autocheck>> Move your hand away</label>
 
+<<elseif $rightarm is "mpenisentrancestroker">>
+	You tease your glans with the $_righttoycolour $_righttoy your right hand.
+	<br>
+	<<if $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $penisuse is 0>>
+		| <label><<radiobutton "$rightaction" "mpenisstroker" autocheck>> <span class="sub">Penetrate your $_righttoycolour $_righttoy</span></label>
+		| <label><<radiobutton "$rightaction" "mpenisentrancestroker" autocheck>> <span class="sub">Tease your glans with your $_righttoycolour $_righttoy</span></label>
+	<</if>>
+	| <label><<radiobutton "$rightaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
+
+<<elseif $rightarm is "mpenisstroker">>
+	Your <<penis>> penetrates the $_righttoycolour $_righttoy in your left hand.
+	<br>
+	| <label><<radiobutton "$rightaction" "mpenisstroker" autocheck>> <span class="sub">Masturbate</span></label>
+	| <label><<radiobutton "$rightaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
+
 <<elseif $rightarm is "mpickupdildo">>
 	You pick up your $_righttoycolour $_righttoy in your right hand.
 	<br>
-	<<if $player.vaginaExist>>
-		| <label><<radiobutton "$rightaction" "mvaginaentrancedildo" autocheck>> <span class="sub">Move to your vagina</span></label>
+	<<if _playerToys[$currentToyRight].type.includes("stroker")>>
+		<<if $player.penisExist>>
+			| <label><<radiobutton "$rightaction" "mpenisentrancestroker" autocheck>> <span class="sub">Move to your penis</span></label>
+		<</if>>
+		| <label><<radiobutton "$rightaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
+	<<else>>
+		<<if $player.vaginaExist>>
+			| <label><<radiobutton "$rightaction" "mvaginaentrancedildo" autocheck>> <span class="sub">Move to your vagina</span></label>
+		<</if>>
+		| <label><<radiobutton "$rightaction" "manusentrancedildo" autocheck>> <span class="sub">Move to your anus</span></label>
+		| <label><<radiobutton "$rightaction" "mvaginastopdildo" autocheck>> Move your hand away</label>
 	<</if>>
-	| <label><<radiobutton "$rightaction" "manusentrancedildo" autocheck>> <span class="sub">Move to your anus</span></label>
-	| <label><<radiobutton "$rightaction" "mvaginastopdildo" autocheck>> Move your hand away</label>
 
 <<elseif $rightarm is "mballs">>
 	You hold <<if $ballssize gte 1>>one of <</if>> your $ballsText with your right hand.
