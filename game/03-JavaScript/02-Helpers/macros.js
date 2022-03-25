@@ -20,9 +20,7 @@ Macro.add('checkTimeSystem', {
 				const source = `Caught in Passage ${this.args[0]}. ${V.passage}, <<checkTimeSystem>>.`;
 				Errors.inlineReport(message, source).appendTo(this.output);
 			}
-		}
-		else
-		{
+		} else {
 			console.debug(`One of the time variables is not accessible yet: ${V.passage}: ${DOL.Stack}.`);
 		}
 	}

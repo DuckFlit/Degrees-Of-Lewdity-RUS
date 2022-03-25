@@ -63,6 +63,7 @@ function restructureEyeColourVariable() {
 				V.rightEyeColour = getColour();
 			}
 			delete V.eyecolour;
+		case 1:
 			if (V.makeup == undefined) return;
 			const lenses = V.makeup.eyelenses;
 			/* If the lens variable is a string or number, we need to generate an object, with the value appended to both .right and .left 
@@ -88,7 +89,7 @@ function restructureEyeColourVariable() {
 					'right' : 0
 				};
 			}
-			V.objectVersion.eyeRepair = 1;
+			V.objectVersion.eyeRepair = 2;
 			break;
 	}
 }

@@ -1010,7 +1010,7 @@ __Body Writing__<br>
 	<<set $bodywritingSet to "General">>
 <</if>>
 <<for _i to 0; _i lt _keys.length; _i++>>
-	<<capture _i>>
+	<<capture _i _keys>>
 		<span @id="'link-'+_keys[_i].replace(/ /g,'-')" @class="(_keys[_i] is $bodywritingSet ? 'selected' : '')">
 		<<link _keys[_i]>>
 			<<removeclass `'#link-'+$bodywritingSet.replace(/ /g,'-')` "selected">>
@@ -1218,33 +1218,30 @@ __Makeup__
 	<<set $makeup.lipstick to 0>>
 	<<set $makeup.eyeshadow to 0>>
 	<<set $makeup.mascara to 0>>
-	<<set $makeup.eyelenses = {"left":0, "right":0}>>
+	<<set $makeup.eyelenses to { "left": 0, "right": 0 }>>
 <</link>> |
-<<link [["Randomise"|$passage]]>>
-	<<for $_i to 0; $_i lt _makeupNames.length; $_i++>>
-		<<if _makeupNames[$_i] is "eyelenses">>
-			<<set _rng to random(0, $makeup.owned[_makeupData[$_i]].length)>>
-			<<if _rng is $makeup.owned[_makeupData[$_i]].length>>
-				<<set $makeup[_makeupNames[$_i]] to 0>>
-			<<else>>
-				<<set $makeup[_makeupNames[$_i]] to $makeup.owned[_makeupData[$_i]][_rng]>>
-			<</if>>
+<<link [[Randomise|$passage]]>>
+	<<for _i to 0; _i lt _makeupNames.length; _i++>>
+		<<set _ownedMakeup to $makeup.owned[_makeupData[_i]]>>
+		<<if _makeupNames[_i] is "eyelenses">>
+			<<set _rng to random(0, _ownedMakeup.length)>>
+			<<set $makeup[_makeupNames[_i]] to (_rng is _ownedMakeup.length ? { "left": 0, "right": 0 } : _ownedMakeup[_rng])>>
 		<<else>>
 			<<set _rngset to []>>
-			<<for $_label, $_value range $makeup.owned[_makeupData[$_i]]>>
-				<<if $_value.count gt 0>>
-					<<run _rngset.push($_label)>>
+			<<for _label, _value range _ownedMakeup>>
+				<<if _value.count gt 0>>
+					<<run _rngset.push(_label)>>
 				<</if>>
 			<</for>>
-			<<run _rngset.push($makeup.owned[_makeupData[$_i]].length)>>
+			<<run _rngset.push(_ownedMakeup.length)>>
 			<<set _rng to _rngset[random(0, _rngset.length - 1)]>>
-			<<if _rng is $makeup.owned[_makeupData[$_i]].length and _makeupNames[$_i] is "browscolour">>
+			<<if _rng is _ownedMakeup.length and _makeupNames[_i] is "browscolour">>
 				/*Do Nothing*/
-			<<elseif _rng is $makeup.owned[_makeupData[$_i]].length>>
-				<<set $makeup[_makeupNames[$_i]] to 0>>
-			<<elseif $makeup.owned[_makeupData[$_i]][_rng].count gt 0 and $makeup[_makeupNames[$_i]] isnot $makeup.owned[_makeupData[$_i]][_rng].colour>>
-				<<set $makeup[_makeupNames[$_i]] to $makeup.owned[_makeupData[$_i]][_rng].colour>>
-				<<set $makeup.owned[_makeupData[$_i]][_rng].count-->>
+			<<elseif _rng is _ownedMakeup.length>>
+				<<set $makeup[_makeupNames[_i]] to 0>>
+			<<elseif _ownedMakeup[_rng].count gt 0 and $makeup[_makeupNames[_i]] isnot _ownedMakeup[_rng].colour>>
+				<<set $makeup[_makeupNames[_i]] to _ownedMakeup[_rng].colour>>
+				<<set _ownedMakeup[_rng].count-->>
 			<</if>>
 		<</if>>
 	<</for>>

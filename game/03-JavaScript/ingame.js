@@ -1410,7 +1410,7 @@ window.ironmanScheduledSaves = function() {
 		V.ironmanautosaveschedule = (date.getTime()).toString(8)
 	if (parseInt(V.ironmanautosaveschedule, 8) < date.getTime()){
 		//autosave
-		window.ironmanAutoSave()
+		ironmanAutoSave();
 		//
 		V.ironmanautosaveschedule = (date.getTime() + (window.getRandomIntInclusive(432000, 777600) * 1000)).toString(8)
 	}
