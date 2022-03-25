@@ -225,6 +225,7 @@ Renderer.CanvasModels["main"] = {
 			"show_tf": true,
 			"show_clothes": true,
 			// body
+			"fools": setup.isFools(),
 			"mannequin": false,
 			"breasts": "",
 			"breast_size": 1,
@@ -606,6 +607,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"base": {
 			srcfn(options) {
+				if (options.fools) return "img/body/fools/basenoarms.png";
 				if (options.mannequin) return "img/body/mannequin/basenoarms.png"
 				return "img/body/basenoarms.png"
 			},
