@@ -1088,10 +1088,12 @@ Renderer.CanvasModels["main"] = {
 					return "img/body/mannequin/penis.png"
 				} else if (options.genitals_chastity) {
 					return "img/body/penis/penis_chastity.png"
-				} else {
+				} else if (!playerHasStrapon()) {
 					return "img/body/" +
 						(options.balls ? 'penis/':'penisnoballs/') +
 						(options.penis === "virgin" ? "penis_virgin" : "penis") +options.penis_size + ".png"
+				} else {
+					return; //if the player has a strapon, then we want to hide their penis
 				}
 			},
 			showfn(options) {

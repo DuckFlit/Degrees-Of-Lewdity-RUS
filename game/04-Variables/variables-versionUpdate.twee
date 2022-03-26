@@ -3132,7 +3132,7 @@
 		<<set $vaginaldoublestat to 0>>
 	<</if>>
 
-	<!-- v.0.3.7.4: underground brothel cleanup -->
+	<!-- v0.3.7.4: underground brothel cleanup -->
 	<<if $undergroundtime isnot undefined>>
 		<<set $undergroundbrothel to {
 			"time": $undergroundtime,
@@ -3181,6 +3181,31 @@
 	<</if>>
 
 
+	<!-- v0.3.8.2: sextoy inventory code cleanup -->
+	<<if $passage.startsWith("Sextoys Inventory ") and ["Sextoys Inventory Home","Sextoys Inventory Brothel","Sextoys Inventory Cottage","Sextoys Inventory Cabin"].includes($passage)>>
+		<<set $sextoyInvReturnLink to {
+			"Sextoys Inventory Home": "Bedroom",
+			"Sextoys Inventory Brothel": "Brothel Dressing Room",
+			"Sextoys Inventory Cottage": "Farm Bedroom",
+			"Sextoys Inventory Cabin": "Cabin Actions"
+		}[$passage]>>
+	<</if>>
+
+	<!-- v0.3.8.2: fix for cursed clothing being present in the player's wardrobes -->
+	<<if Object.keys($wardrobe).some(slot => Object.values($wardrobe[slot]).some(clothing => clothing.cursed))>>
+		<<run Object.keys($wardrobe).forEach(slot => {
+			if (slot is "space") return;
+			$wardrobe[slot] = $wardrobe[slot].filter(clothing => clothing.cursed is 0);
+		})>>
+		<<run Object.keys($wardrobes).forEach(location =>{
+			if (location is "shopReturn" || location is "wardrobe") return;
+			Object.keys($wardrobes[location]).forEach(slot => {
+				if (["isolated", "name", "shopSend", "space", "transfer", "unlocked"].includes(slot)) return;
+				$wardrobes[location][slot] = $wardrobes[location][slot].filter(clothing => clothing.cursed === 0);
+			})
+		})>>
+	<</if>>
+
 	<!-- v.0.3.8.2: undefined $control -->
 	<<if $control is undefined>>
 		<<if $controlSaved>>
@@ -3189,4 +3214,8 @@
 			<<set $control to $controlmax>>
 		<</if>>
 	<</if>>
+
+
+
+
 <</widget>>

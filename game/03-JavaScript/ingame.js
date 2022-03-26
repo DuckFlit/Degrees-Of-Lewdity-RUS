@@ -1050,6 +1050,12 @@ Config.navigation.override = function (dest) {
 		case 'Lake Underwater Tentacles Finish Figure':
 			return 'Lake Underwater Tentacles Finish';
 
+		case 'Sextoys Inventory Home':
+		case 'Sextoys Inventory Brothel':
+		case 'Sextoys Inventory Cottage':
+		case 'Sextoys Inventory Cabin':
+			return 'Sextoys Inventory';
+
 		default:
 			return false;
 	}
@@ -1367,40 +1373,6 @@ window.randomSexToy = function(toyType){
 
 window.playerHasButtPlug = function(){
 	return (V.worn.butt_plug != undefined && V.worn.butt_plug.state == "worn" && V.worn.butt_plug.worn == 1) // V.worn.butt_plug.worn == 1 is just as a safeguard for now
-}
-
-window.checkIfNPCHasCategorySextoy = function (npc_name, category){
-    let found_list = []
-    let item_list = []
-
-    npc_name = npc_name.toLowerCase()
-    for (let s_item of setup.sextoys){
-        if (s_item.category == category)
-            item_list.push(s_item.name)
-    }
-    for (let i_list in V.player.inventory[npc_name].sextoys){
-        if (item_list.includes(i_list)){
-            for (let item of V.player.inventory[npc_name].sextoys[i_list]){
-                if (item.gift_state != "held")
-                found_list.push(item)
-            }
-        }
-    }
-    return (found_list.length > 0 ? found_list : 0)
-}
-
-window.handSextoysGiftToNPC = function (npc_name){
-    npc_name = npc_name.toLowerCase()
-    for (let inv in V.player.inventory){
-        if (inv == npc_name){
-            for (let cat in V.player.inventory[npc_name].sextoys){
-                for (let item in V.player.inventory[npc_name].sextoys[cat]){
-                    if (V.player.inventory[npc_name].sextoys[cat][item].gift_state == "held")
-                        V.player.inventory[npc_name].sextoys[cat][item].gift_state = "received"
-                }
-            }
-        }
-    }
 }
 
 window.ironmanScheduledSaves = function() {
