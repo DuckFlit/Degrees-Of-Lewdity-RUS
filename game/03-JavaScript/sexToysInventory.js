@@ -87,7 +87,7 @@ window.sexToysInventoryOnCarryClick = function (index, category) {
 		toy.carried = true;
 	} else {
 		if (toy.worn && setupCategory != "strap-on") {
-			V.worn[setupCategory] = undefined;
+			delete V.worn[setupCategory];
 		}
 		toy.carried = false;
 		toy.worn = false;
@@ -120,7 +120,7 @@ window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" /
 	if (!item.carried && window.countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
 		return
 	if (item.worn && setupCategory != "strap-on")
-		V.worn[setupCategory] = undefined
+		delete V.worn[setupCategory];
 	if (!item.worn){ // If player chose "Wear it"
 		const cat = setup.sextoys.find(i => i.name === category); // retrieve main category of our item in setup.sextoys
 
@@ -133,7 +133,7 @@ window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" /
 		})
 	}
 	item.worn = !item.worn
-	if (setupCategory != "strap-on"){
+	if (item.worn && setupCategory != "strap-on"){
 		V.worn[setupCategory] = item
 		V.worn[setupCategory].state = "worn"
 	}
@@ -172,7 +172,7 @@ window.sexToysInventoryOnThrowClick = function(index, category){
 	/* close description */
 	window.sextoysOnCloseDesc("stiDescPillContainer")
 	if (playerItem.worn && setupCategory != "strap-on") {
-		V.worn[setupCategory] = undefined
+		delete V.worn[setupCategory];
 	}
 	/* handle strapons */
 	if (setupCategory === "strap-on") {
@@ -244,7 +244,7 @@ window.patchStraponsWearStatus = function () {
 
 window.checkIfNPCHasCategorySextoy = function (npc_name, category){
 	const setupToys = Object.values(setup.sextoys).map(n => (n.category === category ? n.name : false)).filter(Boolean);
-	if (setupToys.length() === 0){
+	if (setupToys.length === 0){
 		throw new Error("Invalid sex toy category given!");
 	}
 
