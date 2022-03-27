@@ -243,24 +243,24 @@ window.patchStraponsWearStatus = function () {
 }
 
 window.checkIfNPCHasCategorySextoy = function (npc_name, category){
-	const setupToys = Object.values(setup.sextoys).map(n => (n.category === category ? n.name : false)).filter(Boolean);
-	if (setupToys.length === 0){
-		throw new Error("Invalid sex toy category given!");
-	}
-
 	const npc = V.NPCName.find(n => n.nam === npc_name);
 	if (!npc){
 		throw new Error("Invalid NPC name given!");
 	}
 
-	const npcSextoys = [];
-	Object.values(npc.sextoys).forEach(category => {
-		if (setupToys.includes(category)) category.forEach(item => {
-			if (item.gift_state != "held") npcSextoys.push(item);
-		})
-	});
+	const categoryToyNames = Object.values(setup.sextoys).filter(n => n.category === category).map(n => n.name);
+	if (categoryToyNames.length === 0){
+		throw new Error("Invalid sex toy category given!");
+	}
 
-	return npcSextoys;
+	const npcSexToys = []
+	Object.values(npc.sextoys).forEach(category => {
+		category.forEach(item => {
+			if (categoryToyNames.includes(item.name) && item.gift_state != "held")
+				npcSexToys.push(item);
+		})
+	})
+	return npcSexToys;
 }
 
 window.handSextoysGiftToNPC = function (npc_name){
@@ -268,7 +268,7 @@ window.handSextoysGiftToNPC = function (npc_name){
 	if (!npc){
 		throw new Error("Invalid NPC name given!");
 	}
-	npc.sextoys.forEach(category => {
+	Object.values(npc.sextoys).forEach(category => {
 		category.forEach(item => {
 			if (item.gift_state === "held") item.gift_state = "received";
 		})
