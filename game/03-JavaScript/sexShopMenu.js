@@ -7,30 +7,30 @@
 */
 
 setup.sextoyFunctions = {
-	notExists: (name) => V.inventory.sextoys[name] === undefined,
-	owned: (name) => {
-		if (this.notExists(name)) return 0;
-		return V.inventory.sextoys[name].length();
+	notExists: (name) => V.player.inventory.sextoys[name] === undefined,
+	owned: function (name) {
+		if (setup.sextoyFunctions.notExists(name)) return 0;
+		return V.player.inventory.sextoys[name].length();
 	},
-	isCarried: (name) => {
-		if (this.notExists(name)) return false;
-		return V.inventory.sextoys[name].some(item => item.carried);
+	isCarried: function (name) {
+		if (setup.sextoyFunctions.notExists(name)) return false;
+		return V.player.inventory.sextoys[name].some(item => item.carried);
 	},
-	isWorn: (name) => {
-		if (this.notExists(name)) return false;
-		if (V.inventory.sextoys[name].type.includes("strap-on")){
+	isWorn: function (name) {
+		if (setup.sextoyFunctions.notExists(name)) return false;
+		if (V.player.inventory.sextoys[name].type.includes("strap-on")){
 			return V.worn.under_lower.type.includes("strap-on")
 		} else {
-			return V.inventory.sextoys[name].some(item => item.worn);
+			return V.player.inventory.sextoys[name].some(item => item.worn);
 		}
 	},
-	unWear: (name) => {
-		if (this.notExists(name)) return;
-		V.inventory.sextoys[name].forEach(item => item.worn = 0);
+	unWear: function (name) {
+		if (setup.sextoyFunctions.notExists(name)) return;
+		V.player.inventory.sextoys[name].forEach(item => item.worn = 0);
 	},
-	unCarry: (name) => {
-		if (this.notExists(name)) return;
-		V.inventory.sextoys[name].forEach(item => item.worn = 0, item.carried = 0);
+	unCarry: function (name) {
+		if (setup.sextoyFunctions.notExists(name)) return;
+		V.player.inventory.sextoys[name].forEach(item => item.worn = 0, item.carried = 0);
 	},
 }
 
@@ -54,6 +54,7 @@ setup.sextoys = [
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
+		display_condition: () => 1
 	}, {
 		index: 1,
 		name: "small dildo",

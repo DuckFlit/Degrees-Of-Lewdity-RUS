@@ -253,6 +253,7 @@ window.checkIfNPCHasCategorySextoy = function (npc_name, category){
 		throw new Error("Invalid NPC name given!");
 	}
 
+	const npcSextoys = [];
 	Object.values(npc.sextoys).forEach(category => {
 		if (setupToys.includes(category)) category.forEach(item => {
 			if (item.gift_state != "held") npcSextoys.push(item);
