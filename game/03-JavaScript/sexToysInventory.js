@@ -313,7 +313,6 @@ window.tempHideLower = function() {
 }
 
 window.setLowerVisibility = function(desiredVisibility){
-	const elem = document.querySelector("#stiShowUnderwear > .link-internal");
 	T.lowerVisible = desiredVisibility;
 	if (!T.lowerVisible){
 		const tmp = V.worn.lower;
@@ -324,6 +323,9 @@ window.setLowerVisibility = function(desiredVisibility){
 		Wikifier.wikifyEval('<<updatesidebarimg>>');
 	}
 
-	elem.text = (!T.lowerVisible ? "Show lower clothing" : "Hide lower clothing");
+	const elem = document.querySelector("#stiShowUnderwear > .link-internal");
+	if (elem !== null)
+		elem.text = (!T.lowerVisible ? "Show lower clothing" : "Hide lower clothing");
+
 	Links.generateLinkNumbers($(".passage"));
 }
