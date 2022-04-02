@@ -1166,11 +1166,15 @@ window.playerHasStrapon = function(){
 	return (V.worn.under_lower.type.includes("strap-on") && V.worn.under_lower.state == "waist")
 }
 
-window.npcHasStrapon = function(index){
+window.npcHasStrapon = function(index) {
+	if (index < 0 || index > 5) {
+		if (V.debugdisable === 'f')
+			Errors.report('npcHasStrapon called with an index outside of our NPC list range: ' + index, { index });
+		return false;
+	}
 	// index is 0 to 5
-	return (V.NPCList[index].penisdesc != undefined && V.NPCList[index].penisdesc.contains("strap-on"))
-	// For refactoring in the future
-	//return (V.NPCList[index].penisdesc != undefined && V.NPCList[index].strapon != undefined && V.NPCList[index].strapon.state == "worn")
+	const npc = V.NPCList[index];
+	return (npc && npc.strapon && npc.strapon.state === "worn");
 }
 
 window.getTimeString = function(minutes = 0){
