@@ -389,6 +389,7 @@ alternative way to write that:
 	<<case Robin>>
 		<<set $NPCName[_i].virginity to clone(setup.NPCVirginityTypesVirgin)>>
 		<<set $robinDaily to {}>>
+		<<set $robinSeen to []>>
 		<<set $NPCName[_i].cdquest to 0>>
 	<<case River>>
 		<<if $NPCName[_i].pronoun is "m">>
@@ -592,7 +593,7 @@ alternative way to write that:
 		<<case Robin>>
 			<<run getRobinCrossdressingStatus($NPCName[_i].crossdress)>>
 			<<set $NPCName[_i].crossdressing to _robin_cd>>
-			<<run getRobinLocation()>>
+			<<NPCStatusCheck "Robin">>
 			<<switch _robin_location>>
 				<<case "sleep">>
 					<<npcClothesType $NPCName[_i] "sleep">>
@@ -1028,7 +1029,17 @@ alternative way to write that:
 	<<case init>>
 		<<set $NPCName[_i].init to _val>>
 	<<case trauma>>
-		<<set $NPCName[_i].trauma += _val>>
+		<<if _nam is "Robin" and _val lt 0>>
+			<<set $NPCName[_i].trauma += Math.round(_val * $robinTraumaMultiplier)>>
+			<<if $NPCName[_i].trauma lt 0>>
+				<<set $NPCName[_i].trauma = 0>>
+			<</if>>
+		<<else>>
+			<<set $NPCName[_i].trauma += _val>>
+			<<if $NPCName[_i].trauma gt 100>>
+				<<set $NPCName[_i].trauma = 100>>
+			<</if>>
+		<</if>>
 	<<case purity>>
 		<<if $NPCName[_i].corruption gt 0>>
 			<<set $NPCName[_i].corruption -= _val>>
@@ -1114,9 +1125,19 @@ alternative way to write that:
 <!-- Special cases for Robin, Avery, Kylar -->
 <<switch _npc>>
 	<<case Robin>>
-		Robin
-		<<if $robinromance is 1>>
-			<span class="lewd">loves you.</span>
+        Robin
+        <<if $robinromance is 1>>
+            <<if $NPCName[_i].trauma gte 80>>
+                <<if $NPCName[_i].lust gte 50>>
+                    <span class="red">is lost in need for you.</span>
+                <<else>>
+                    <span class="red">is nothing without you.</span>
+                <</if>>
+            <<elseif $NPCName[_i].dom gte 40>>
+                <span class="lewd">cherishes you.</span>
+            <<else>>
+                <span class="lewd">loves you.</span>
+            <</if>>
 		<<elseif $NPCName[_i].trauma gte 80>>
 			<span class="red">is traumatised.</span>
 		<<elseif $NPCName[_i].trauma gte 40>>
@@ -1420,10 +1441,22 @@ alternative way to write that:
 <<widget "NPCStatusCheck">>
 <!-- When NPCs are updated and made compatible with statusCheck-style widgets, add them to here. Make a new if statement, NOT an elseif -->
 <!-- Usage: call a SINGLE argument with every relevant NPC. <<NPCStatusCheck "Kylar Sydney">> will call <<kylarStatusCheck>> and <<sydneyStatusCheck>> -->
-<<if _args[0].includes("Kylar") and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1>>
-	<<kylarStatusCheck>>
+<<if _args[0].includes("Robin")>>
+	<<set _robin to clone($NPCName[$NPCNameList.indexOf("Robin")])>>
+	<<if _robin.init is 1>>
+		<<robinStatusCheck>>
+	<</if>>
 <</if>>
-<<if _args[0].includes("Sydney") and $NPCName[$NPCNameList.indexOf("Sydney")].init is 1>>
-	<<sydneyStatusCheck>>
+<<if _args[0].includes("Kylar")>>
+	<<set _kylar to clone($NPCName[$NPCNameList.indexOf("Kylar")])>>
+	<<if _kylar.init is 1>>
+		<<kylarStatusCheck>>
+	<</if>>
+<</if>>
+<<if _args[0].includes("Sydney")>>
+	<<set _sydney to clone($NPCName[$NPCNameList.indexOf("Sydney")])>>
+	<<if _sydney.init is 1>>
+		<<sydneyStatusCheck>>
+	<</if>>
 <</if>>
 <</widget>>

@@ -16,24 +16,33 @@ You awaken on your back, surrounded by mountains of rubbish. You're in a landfil
 <<set $location to "landfill">><<set $outside to 1>><<effects>>
 
 You are in the landfill on Elk Street.
-	<<if $trash gte 100>>
+<<if $trash gte 100>>
 	You're in the depths of the complex. A colossal compactor sits in a clearing, fed by several conveyor belts.
-	<<elseif $trash gte 50>>
+<<elseif $trash gte 50>>
 	Mountains of rubbish pile all around.
-	<<elseif $trash gte 30>>
+<<elseif $trash gte 30>>
 	Some of the piles of rubbish tower over you.
-	<<elseif $trash gte 10>>
+<<elseif $trash gte 10>>
 	The piles of rubbish get taller the further you move from the street.
-	<<else>>
+<<else>>
 	You're at the front gate. You can see Elk Street on the other side. A sign reads: "These premises and all objects within are private property."
-	<</if>>
+<</if>>
+
+<<if $robinmissing is "landfill" and $robinmistknown>>
+	<<print either(
+		"You call out Robin's name. There's no response.",
+		"You scan the area for Robin, to no avail.",
+		"You try to climb a nearby trash pile for a better view, but you can't see Robin.",
+		"Your voice echoes throughout the landfill as you call for Robin."
+	)>>
+<</if>>
 
 <br><br>
 <<set $danger to random(1, 10000)>>
 <<if $stress gte $stressmax>>
-<<passouttrash>>
+	<<passouttrash>>
 <<elseif $arousal gte $arousalmax>>
-The warmth growing within you passes the point of no return. Your knees buckle. <<orgasm>>
+	The warmth growing within you passes the point of no return. Your knees buckle. <<orgasm>>
 
 	<<if $rng gte 51 and $parasitedisable is "f" and ($parasite.left_ear.name is undefined or $parasite.right_ear.name is undefined) and $slimedisable is "f" and $hallucinations gte 1>>
 		Attracted by your orgasm, something stirs within the detritus. It oozes out from deep within one of the mountains, and squirms across the concrete. You see it just before it reaches you, a living slime. It leaps on your back, and squirms up your neck. You try to reach for it, but it's too fast.
@@ -57,14 +66,14 @@ The warmth growing within you passes the point of no return. Your knees buckle. 
 		<<link [[Next|Trash Slime]]>><</link>>
 		<br>
 	<<else>>
-	To have cum in such a place!<<llcontrol>><<gtrauma>><<trauma 6>><<control -25>>
-	<br><br>
+		To have cum in such a place!<<llcontrol>><<gtrauma>><<trauma 6>><<control -25>>
+		<br><br>
 
-	<<link [[Next|Trash]]>><<set $eventskip to 1>><</link>>
-	<br>
+		<<link [[Next|Trash]]>><<set $eventskip to 1>><</link>>
+		<br>
 	<</if>>
 <<elseif $danger gte (9900 - $allure) and $eventskip is 0>>
-<<eventstrash>>
+	<<eventstrash>>
 <<else>>
 
 	<<link [[Search for valuables (1:00)|Trash Search]]>><<pass 60>><</link>><<crime>>
@@ -76,23 +85,25 @@ The warmth growing within you passes the point of no return. Your knees buckle. 
 			<br>
 		<<else>>
 			<<if $trash_key is 1>>
-			<<link [[Use the key (0:10)|Trash Leave]]>><<pass 10>><<set $trash_unlocked to 1>><</link>>
-			<br>
+				<<link [[Use the key (0:10)|Trash Leave]]>><<pass 10>><<set $trash_unlocked to 1>><</link>>
+				<br>
 			<<else>>
-			<<link [[Try the gate (0:05)|Trash Gate Leave]]>><<pass 5>><</link>>
-			<br>
+				<<link [[Try the gate (0:05)|Trash Gate Leave]]>><<pass 5>><</link>>
+				<br>
 			<</if>>
 		<</if>>
 	<</if>>
 	<<if $trash gte 1>>
-	<<link [[Go towards the sound of traffic (0:10)|Trash]]>><<pass 10>><<set $trash -= 10>><</link>>
-	<br>
+		<<link [[Go towards the sound of traffic (0:10)|Trash]]>><<pass 10>><<set $trash -= 10>><</link>>
+		<br>
 	<</if>>
 	<<if $trash lte 99>>
-	<<link [[Go towards the sound of heavy machinery (0:10)|Trash]]>><<pass 10>><<set $trash += 10>><</link>>
-	<br>
+		<<link [[Go towards the sound of heavy machinery (0:10)|Trash]]>><<pass 10>><<set $trash += 10>><</link>>
+		<br>
+	<<elseif $trash gte 100 and $robinmissing is "landfill" and $robinmistknown>>
+		<<link [[Go towards the sound of heavy machinery (0:10)|Robin Mist Intro]]>><<pass 10>><</link>>
+		<br>
 	<</if>>
-
 <</if>>
 <<set $eventskip to 0>>
 
@@ -101,24 +112,33 @@ The warmth growing within you passes the point of no return. Your knees buckle. 
 
 The gate is barred by a heavy-duty padlock.
 <br><br>
-<<set $lock to 800>>
-<<if $trash_key is 1>>
-	<span class="green">It looks like a perfect fit for the key you found.</span>
+
+<<if $robinmissing is "landfill" and $robinmistknown>>
+	On closer inspection the padlock is unlocked. Someone must want you to be here.
 	<br><br>
 
-	<<link [[Use the key (0:05)|Trash Enter]]>><<set $trash_unlocked to 1>><<pass 5>><</link>>
-	<br>
-<<elseif currentSkillValue('skulduggery') gte $lock>>
-	<span class="green">The lock looks easy to pick.</span>
-	<br><br>
-
-	<<link [[Pick lock (0:05)|Trash Lock Enter]]>><<pass 5>><<crimeup 1>><</link>><<crime>>
+	<<link [[Enter|Trash]]>><<set $trash to 0>><</link>>
 	<br>
 <<else>>
-	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
-	<br><br>
-	<span class="blue"><i>There must be a key, but you haven't any idea where you could find one.</i></span>
-	<br><br>
+	<<set $lock to 800>>
+	<<if $trash_key is 1>>
+		<span class="green">It looks like a perfect fit for the key you found.</span>
+		<br><br>
+
+		<<link [[Use the key (0:05)|Trash Enter]]>><<set $trash_unlocked to 1>><<pass 5>><</link>>
+		<br>
+	<<elseif currentSkillValue('skulduggery') gte $lock>>
+		<span class="green">The lock looks easy to pick.</span>
+		<br><br>
+
+		<<link [[Pick lock (0:05)|Trash Lock Enter]]>><<pass 5>><<crimeup 1>><</link>><<crime>>
+		<br>
+	<<else>>
+		<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+		<br><br>
+		<span class="blue"><i>There must be a key, but you haven't any idea where you could find one.</i></span>
+		<br><br>
+	<</if>>
 <</if>>
 
 <<link [[Leave|Elk Street]]>><</link>>

@@ -25,7 +25,7 @@ setup.debugMenu.event_list = {
 				`Home`, `Bedroom`
 			],
 			widgets: [
-				``
+				`<<endcombat>>`
 			]
 		},
 		{
@@ -333,7 +333,7 @@ setup.debugMenu.event_list = {
 				`<<run random(1,100)>>`,
 				`<<run random(1,100)>>`,
 				`<<run random(1,100)>>`,
-				`<<set $rng to random(1,100)>>` 
+				`<<set $rng to random(1,100)>>`
 			]
 		},
 		{
@@ -686,11 +686,20 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Imprison Me`, `Underground Intro2`
+				`Imprison Me`, `Underground Intro`
 			],
 			widgets: [
 				`<<generate1>>`,
+				`<<generate2>>`,
 				`<<person1>>`
+			]
+		},
+		{
+			link: [
+				`Imprison Me with Robin`, `Underground Intro`
+			],
+			widgets: [
+				`<<set $phase to 1>>`
 			]
 		},
 		{
@@ -1472,7 +1481,7 @@ setup.debugMenu.event_list = {
 				`<<set $renttime to 0>>`,
 				`<<set $baileydefeatedchain to 3>>`,
 				`<<set $robinpaid to 1>>`,
-				`<<set $robinRentTest to 1>>`,
+				`<<set $robinromance to 1>>`,
 				`<<set $bus to "home">>`,
 				`<<set $location to "home">>`
 			]
@@ -2751,7 +2760,7 @@ window.researchEvents = function(default_value){
 		for (let i1 = 0; i1 < list_events.length; i1++){
 			for (let i2 = 0; i2 < list_events[i1].length; i2++){
 				let haystack = list_events[i1][i2].getAttribute("name")
-				
+
 				if (haystack != null){
 					haystack = haystack.toLowerCase()
 					if (haystack.contains(needle) == false)
@@ -2793,7 +2802,7 @@ window.addFavouriteIcon = function(section, index, id){
 		window.syncFavourites()
 		var input = document.createElement("input");
 		var parent = document.getElementById(id);
-		
+
 		input.type = "image"
 		input.className = "heart"
 		input.src = "img/ui/heart_favourite.svg"
@@ -2904,7 +2913,7 @@ window.toggleClassDebug = function(selected, mode) {
 			if (div+"Button" == selected)
 				document.getElementById(selected).classList.add("bg-color-debug-selected");
 			else
-				document.getElementById(div+"Button").classList.remove("bg-color-debug-selected");	
+				document.getElementById(div+"Button").classList.remove("bg-color-debug-selected");
 		}
 	}
 	else if (mode == "hideWhileSearching"){
@@ -2936,7 +2945,7 @@ window.patchDebugMenu = function() {
 			haystack = haystack.children
 		for (let i = 0; i < haystack.length; i++){
 			let value = haystack[i].id
-			
+
 			break_if_all_good = 0;
 			if (haystack[i].children.length < 1)
 				break

@@ -8,6 +8,9 @@
 	<<earnAllFeats true>>
 	<<set $noon_check to 0>>
 	<<set $dawn_check to 0>>
+	<<if $renttime lte 0>>
+		<<set $baileyOverdue++>>
+	<</if>>
 	<<set $renttime -= 1>>
 	<<set $motherwake to 0>>
 	<<if $gamemode isnot "hard" and $uncomfortable.lewd is true>>
@@ -64,6 +67,18 @@
 	<<set $schooleventtimer -= 1>>
 	<<if $robindebtevent gt 0>>
 		<<set $robindebtevent -= 1>>
+		<<switch $robinmissing>>
+			<<case "dinner">>
+				<<npcincr Robin trauma 40>>
+			<<case "docks">>
+				<<npcincr Robin trauma 15>>
+			<<case "landfill">>
+				<<if $robindebtevent gte 1>>
+					<<npcincr Robin trauma 10>>
+				<<else>>
+					<<npcincr Robin trauma 25>>
+				<</if>>
+		<</switch>>
 	<</if>>
 	<<unset $robin_tending>>
 	<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gt 0>>
@@ -684,10 +699,8 @@
 	<<if $bell_timer>>
 		<<set $bell_timer -= 1>>
 	<</if>>
-	<<if $weekday isnot 1>>
-		<<if $robindebtevent is 0>>
-			<<set $robinmissing to 0>>
-		<</if>>
+	<<if $robindebtevent is 0>>
+		<<set $robinmissing to 0>>
 	<</if>>
 
 	<<if $birthmonth is $month and $birthday is $monthday>>
@@ -755,7 +768,7 @@
 	<<if $purity lte 0>>
 		<<if $fallenangel gte 2>>
 			<<fallenDescend>> /* Moved to transformations.twee */
-		
+
 		<</if>>
 		<<transform demon 1>>
 	<<else>>
@@ -785,7 +798,7 @@
 	<<else>>
 		<<set $angelBanish to 0>>
 	<</if>>
-	
+
 	<<transform angel -1>>
 
 	<<if $fallenangel gte 2>>
@@ -1076,11 +1089,11 @@
 	<<if $sydneyScience isnot 1 and $days gte random(7, 12)>>
 		/*<<set $sydneyLate to 1>><<set $sydneyScience to 1>>*/ <!-- Uncomment this when Sydney can show up in Science Class -->
 	<</if>>
-	
+
 	<<if $adultshopprogress lt 22 and $weekday is 6>>
 		<<set $adultshopprogress += 1>>
 	<<elseif $adultshopgrandopening is true>>
-		<<unlockAdultShop>>	
+		<<unlockAdultShop>>
 	<<elseif $adultshopprogress gte 22 and $adultshopunlocked isnot true>>
 		<<set $adultshopgrandopening to true>>
 	<<elseif $adultshopdegree lt 15>>
@@ -1110,7 +1123,7 @@
 				<<set $sydneyLeightonConfront to 1>>
 				<<set $sydneyLeightonWhitneyGuilty to 1>>
 			<<elseif $libraryMoneyStolen gte 100 or $sydneyStolenKnown>>
-				<<set $sydneyLeightonConfront to 1>>		
+				<<set $sydneyLeightonConfront to 1>>
 				<<set $sydneyLeightonPlayerGuilty to 1>>
 			<</if>>
 		<<elseif $sydneyLeightonConfrontTimer>>
@@ -1472,7 +1485,7 @@
 	<<if $wolfevent is 0>>
 		<<set $wolfevent to 1>>
 	<</if>>
-	
+
 	/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
 	<<if $pregnancyTesting is undefined>>
 	<<elseif $sexStats.vagina.menstruation.currentState is "pregnant" or ($sexStats.vagina.menstruation.currentState is "normal" and ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f"))>>
@@ -1507,6 +1520,9 @@
 		<<set $wolfpatrolsent++>>
 	<</if>>
 
+	<<if $robinPillory and $robinPillory.danger isnot undefined>>
+		<<robinPilloryHour>>
+	<</if>>
 <</if>>
 <</widget>>
 
@@ -1593,7 +1609,8 @@
 	<</if>>
 <</if>>
 <<if $robinpaid isnot 1 and $robindebt gte $robindebtlimit and $robindebtevent lte 0>>
-	<<set $NPCName[$NPCNameList.indexOf("Robin")].trauma to 100>><<set $robin_injured to 1>><<set $robineventnote to 1>><<set $robinmissing to 1>>
+	<<robinPunishment "docks">>
+	<<set $robineventnote to 1>>
 <</if>>
 <<set $robinmoney += 300>>
 <<unset $robinBrothelWeekly>>

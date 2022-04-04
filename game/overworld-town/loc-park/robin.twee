@@ -1,15 +1,13 @@
 :: Robin Chocolate
 <<set $outside to 0>><<set $location to "park">><<effects>>
-
 <<npc Robin>><<person1>>
 <<if $robinchocolateintro isnot 1>>
 	<<set $robinchocolateintro to 1>>
-
+	
 	Robin waves when <<he>> sees you. <<He>> stirs a steaming pot with <<his>> other hand. "Hey," <<he>> says. "People don't buy much lemonade when it's so cold. I'm selling hot chocolate instead. Here." <<He>> mixes warm milk from the pot with cocoa powder and sugar, then hands you the mug. It's very sweet.<<lstress>><<stress -6>>
 	<br><br>
 
 <<else>>
-
 	You see Robin stood behind <<his>> hot chocolate stand, wrapped up warm against the cold. <<He>> waves when <<he>> sees you.
 	<br><br>
 
@@ -17,20 +15,25 @@
 
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
 
 :: Robin Chocolate Help
-<<effects>>
 <<npc Robin>><<person1>>
+<<NPCStatusCheck "Robin">>
+<<effects>>
 <<if $leftarm is "bound" or $rightarm is "bound">>
 	<<He>> looks at your arms. "Oh. You can't help like that. Here." <<He>> walks behind you, and undoes your bindings with deft hands.<<unbind>>
 	<br><br>
 <</if>>
 <<if $hour gte 17>>
-	"I'd like help carrying my stuff home," Robin says. "It's getting nippy."
+	<<if _robin.trauma gte 40>>
+		"I think I want to go home," Robin says, shivering. "This is too much right now."
+	<<else>>
+		"I'd like help carrying my stuff home," Robin says. "It's getting nippy."
+	<</if>>
 	<br><br>
 	You walk with Robin back to the orphanage.
 	<br><br>
@@ -40,7 +43,11 @@
 <<else>>
 	<<He>> smiles.
 	<<if $rng gte 81 and $cow gte 6 and $livestock_intro isnot undefined>>
-		"I have everything I need. You're welcome to stay though. I would like the company."
+		<<if _robin.trauma gte 40>>
+			"I think I'm okay right now, but could you please stay with me?" Robin asks you as <<he>> fidgets.
+		<<else>>
+			"I have everything I need. You're welcome to stay though. I would like the company."
+		<</if>>
 		<br><br>
 		You keep Robin company while <<he>> runs the stand, and chat with <<him>> while there are no customers.
 		<<npcincr Robin love 1>><<glove>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>>
@@ -48,7 +55,11 @@
 
 		<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 60>>
 			<<generate2>><<person2>>
-			A <<person>> approaches the stand. "Welcome," Robin says. "Two pounds for a warm mug of chocolate."
+			<<if _robin.trauma gte 40>>
+				"Hi," Robin says, looking down. "T-two pounds for chocolate if that's okay."
+			<<else>>
+				A <<person>> approaches the stand. "Welcome," Robin says. "Two pounds for a warm mug of chocolate."
+			<</if>>
 			<br><br>
 			"Sure, sweetie," the <<person>> says before turning to you. They sprout a lecherous, crooked smile. "I remember you. From the farm. Why don't you come with me? I'll bring you home." They hold their hand out.
 			<br><br>
@@ -59,7 +70,11 @@
 
 		<<else>>
 			<<generate2>><<person2>>
-			A <<person>> approaches the stand. "Welcome," Robin says. "Two pounds for a warm mug of chocolate."
+			<<if _robin.trauma gte 40>>
+				"Hi," Robin says, looking down. "T-two pounds for chocolate if that's okay."
+			<<else>>
+				A <<person>> approaches the stand. "Welcome," Robin says. "Two pounds for a warm mug of chocolate."
+			<</if>>
 			<br><br>
 			"Sure, sweetie," the <<person>> says before turning to you. They sprout a lecherous, crooked smile. "I remember you. From the farm. Why don't you come with me? I'll bring you home." They hold their hand out.
 			<br><br>
@@ -71,13 +86,16 @@
 			<br><br>
 
 			<<endevent>>
-			<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+			<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 			<br>
 			<<link [[Leave|Park]]>><</link>>
 			<br>
 		<</if>>
 	<<elseif $rng gte 61>>
 		"I'd like to give out free samples. Could you take this tray around the park, and offer them to anyone who looks cold? I hope it's not too heavy."
+		<<if _robin.trauma gte 40>>
+			<<He>> pauses before handing you the tray. "Hurry back please," <<he>> adds in a quiet voice.
+		<</if>>
 		<br><br>
 		You take the tray, and walk through the park. You find no shortage of cold and thirsty hands, and make sure to mention Robin's stand.
 		<<set $robinmoney += 5>>
@@ -119,16 +137,25 @@
 			<</if>>
 			<br><br>
 			<<person1>>
-			Robin smiles when you return to <<him>>. "Business has improved a lot," <<he>> says. "Thank you."
+			Robin smiles when you return to <<him>>.
+			<<if _robin.trauma gte 40>>
+				<<He>> hugs you the moment you place the tray down. "Thank you."
+			<<else>>
+				"Business has improved a lot," <<he>> says. "Thank you."
+			<</if>>
 			<br><br>
 			<<endevent>>
-			<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+			<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 			<br>
 			<<link [[Leave|Park]]>><</link>>
 			<br>
 		<</if>>
 	<<elseif $rng gte 21>>
-		"I need to start heating another pot of milk. I don't like asking because it's heavy, but could you buy some more? You'll need to go to Harvest Street for the fresh stuff." <<He>> hands you £5 and a large bottle. "That should be enough to fill it."
+		<<if _robin.trauma gte 40>>
+			"I need some more milk. I'm sorry. I know its heavy, but could you buy some more?" <<He>> shivers even through <<his>> warm attire. "Harvest street has some." <<He>> hands you £5 and a large bottle. "That should be enough."
+		<<else>>
+			"I need to start heating another pot of milk. I don't like asking because it's heavy, but could you buy some more? You'll need to go to Harvest Street for the fresh stuff." <<He>> hands you £5 and a large bottle. "That should be enough to fill it."
+		<</if>>
 		<br><br>
 		<<if $breastfeedingdisable is "f" and $lactating is 1 and $promiscuity gte 35 and $awareness gte 100>>
 			A thought strikes as you pass the toilets. There's a closer source of fresh milk.
@@ -150,7 +177,11 @@
 			<br>
 		<</if>>
 	<<else>>
-		"I have everything I need. You're welcome to stay though. I would like the company."
+		<<if _robin.trauma gte 40>>
+			"I think I'm okay right now, but could you please stay with me?" Robin asks you as <<he>> fidgets.
+		<<else>>
+			"I have everything I need. You're welcome to stay though. I would like the company."
+		<</if>>
 		<br><br>
 		You keep Robin company while <<he>> runs the stand, and chat with <<him>> while there are no customers.
 		<<npcincr Robin love 1>><<glove>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>>
@@ -159,9 +190,16 @@
 		<<if $danger gte (9900 - $allure)>>
 			<<generatey2>><<generatey3>><<generatey4>><<generatey5>>
 			<<set $robinparksnow to 1>>
-			A snowball hurtles through the air. Robin ducks just in time, then pulls you down by the arm. Another snowball soars overhead. You hear juvenile laughter.
-			<br><br>
-			"They'll get bored and leave," Robin says, sitting on the snow. "We just need to be patient."
+			A snowball hurtles through the air.
+			<<if _robin.trauma gte 40>>
+				Robin sees the snowball but freezes, only managing to flinch before <<he>>'s hit with a faceful of snow. You duck and pull <<him>> down.
+				<br><br>
+				Robin wipes the snow from <<his>> face and shivers. "Let's just w-wait," <<he>> says. "They'll leave us alone eventually."
+			<<else>>
+				Robin ducks just in time, then pulls you down by the arm. Another snowball soars overhead. You hear juvenile laughter.
+				<br><br>
+				"They'll get bored and leave," Robin says, sitting on the snow. "We just need to be patient."
+			<</if>>
 			<br><br>
 			<<link [[Wait|Robin Chocolate Wait]]>><</link>>
 			<br>
@@ -177,7 +215,7 @@
 			"Thank you for spending time with me," <<he>> says after a while.
 			<br><br>
 			<<endevent>>
-			<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+			<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 			<br>
 			<<link [[Leave|Park]]>><</link>>
 			<br>
@@ -188,11 +226,18 @@
 
 :: Robin Chocolate Set
 <<set $outside to 1>><<set $location to "park">><<effects>>
+<<NPCStatusCheck "Robin">>
 
-You help Robin carry <<his>> equipment to the park. "Thank you for the help," <<he>> says. "It's hard carrying it all on my own." <<He>> lights <<his>> portable stove.
+You help Robin carry <<his>> equipment to the park. "Thank you for the help," <<he>> says. 
+<<if _robin.trauma gte 40>>
+	"I don't know what I'd do if I was by myself."
+<<else>>
+	"It's hard carrying it all on my own."
+<</if>>
+<<He>> lights <<his>> portable stove.
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -212,39 +257,71 @@ Robin spots you exiting the alley. "A-Are you okay?" <<he>> asks, with a worried
 You nod, pick up <<his>> dropped equipment and continue to walk to the park with Robin. The rest of the trip is uneventful.
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
 
 :: Robin Chocolate Cow
 <<effects>>
+<<NPCStatusCheck "Robin">>
 
-Before your hand meets the <<persons>>, someone pulls your arm back. Robin pushes you behind <<person1>><<him>>. "I need to ask you to leave," <<He>> says, handing the <<person2>><<person>> <<his>> cup.
+Before your hand meets the <<persons>>, someone pulls your arm back. Robin pushes you behind <<person1>><<him>>.
+<<if _robin.trauma gte 40>>
+	"Y-you're not taking <<phim>>!" <<he>> says, handing the <<person2>><<person>> <<his>> cup with a shaky hand.
+	<br><br>
+
+	"Careful, <<person1>><<nnpc_gendery "Robin">>," the <<person2>><<person>> says. "Your friend is worth a lot. I'd hate to see you wind up like them."
+	<br><br>
+
+	Robin flinches, but holds <<person1>><<his>> ground. "Leave before I call the police."
+	<br><br>
+
+	The <<person>> laughs and pours the chocolate into the snow. "Keep the money. Better keep an eye on your friend." <<He>> leaves.
+	<br><br><<person1>>
+
+	You turn to Robin, tilt your head, and give a worried moo.
+	<br><br>
+
+	"Everything's okay," Robin says. "Here." <<He>> mixes another mug of hot chocolate, and hands it to you.
+	<br><br>
+
+	"This should make you feel better." <<Hes>> right.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
+<<else>>
+	"I need to ask you to leave," <<He>> says, handing the <<person2>><<person>> <<his>> cup.
+	<br><br>
+
+	"Careful, <<person1>><<nnpc_gendery "Robin">>," the <<person2>><<person>> says. "Your friend is worth a lot. I'd hate to see you wind up like them."
+	<br><br>
+
+	Robin frowns. "I'm asking you to leave one last time before I call the police."
+	<br><br>
+
+	The <<person>> laughs and pours the chocolate into the snow. "Keep the money. Better keep an eye on your friend." <<He>> leaves.
+	<br><br><<person1>>
+
+	You turn to Robin, tilt your head, and give a worried moo.
+	<br><br>
+
+	"It's okay," Robin says. "Here." <<He>> mixes another mug of hot chocolate, and hands it to you.
+	<br><br>
+
+	"This should make you feel better." <<Hes>> right.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
+<</if>>
 <br><br>
-"Careful, <<person1>><<nnpc_gendery "Robin">>," the <<person2>><<person>> says. "Your friend is worth a lot. I'd hate to see you wind up like them."
-<br><br>
-Robin frowns. "I'm asking you to leave one last time before I call the police."
-<br><br>
-The <<person>> laughs and pours the chocolate into the snow. "Keep the money. Better keep an eye on your friend." <<He>> leaves.
-<br><br><<person1>>
-You turn to Robin, tilt your head, and give a worried moo.
-<br><br>
-"It's okay," Robin says. "Here." <<He>> mixes another mug of hot chocolate, and hands it to you.
-<br><br>
-"This should make you feel better." <<Hes>> right.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
-<br><br>
+
 The other customers are less creepy.
 <br><br>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
 
 :: Robin Chocolate Slap
 <<effects>>
+<<NPCStatusCheck "Robin">>
 
 <<if $danceSuccess>>
 	You throw the tray in the air, spin, and smack the <<person>> across the face. <<He>> skids on the icy ground, and falls on <<his>> ass.<<ltrauma>><<trauma -6>>
@@ -252,10 +329,15 @@ The other customers are less creepy.
 	You whirl around, <span class="green">and catch the tray,</span> the mugs unspilled.<<lstress>><<stress -6>>
 	<br><br>
 	<<person1>>
-	Robin smiles when you return to <<him>>. "Business has improved a lot," <<he>> says. "Thank you."
+	Robin smiles when you return to <<him>>.
+	<<if _robin.trauma gte 40>>
+		<<He>> hugs you the moment you place the tray down. "Thank you."
+	<<else>>
+		"Business has improved a lot," <<he>> says. "Thank you."
+	<</if>>
 	<br><br>
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Park]]>><</link>>
 	<br>
@@ -265,12 +347,17 @@ The other customers are less creepy.
 	You try to catch the tray, <span class="red">but you're too slow.</span> It clatters to the ground, spilling hot chocolate over the snow.<<gstress>><<stress 6>>
 	<br><br>
 	<<person1>>
-	Robin smiles when you return to <<him>>. "Business has improved a lot," <<he>> says. "Thank you."
+	Robin smiles when you return to <<him>>.
+	<<if _robin.trauma gte 40>>
+		<<He>> hugs you the moment you place the tray down. "Thank you."
+	<<else>>
+		"Business has improved a lot," <<he>> says. "Thank you."
+	<</if>>
 	<br><br>
 
 	<<link [[Confess about spilling the chocolate|Robin Chocolate Confess]]>><<npcincr Robin dom 1>><</link>><<gdom>>
 	<br>
-	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Park]]>><<endevent>><</link>>
 	<br>
@@ -280,6 +367,8 @@ The other customers are less creepy.
 
 :: Robin Chocolate Confess
 <<effects>>
+<<NPCStatusCheck "Robin">>
+
 
 <<if $submissive gte 1150>>
 	"I-I'm sorry," you say. "I spilled some of the hot chocolate."
@@ -290,18 +379,21 @@ The other customers are less creepy.
 <</if>>
 <br><br>
 
-"That's okay," Robin laughs. "Just be careful not to slip. The ground can get icy."
+<<if _robin.trauma gte 40>>
+	"It's fine," Robin mumbles. "As long as you're not hurt."
+<<else>>
+	"That's okay," Robin laughs. "Just be careful not to slip. The ground can get icy."
+<</if>>
 <br><br>
 
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><<endevent>><</link>>
 <br>
 
-
-
 :: Robin Chocolate Endure
 <<effects>>
+<<NPCStatusCheck "Robin">>
 
 <<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 	<<if $worn.under_lower.type.includes("naked")>>
@@ -377,10 +469,15 @@ The other customers are less creepy.
 <</if>>
 <<set $robinmoney += 5>>
 <<person1>>
-Robin smiles when you return to <<him>>. "Business has improved a lot," <<he>> says. "Thank you."
+Robin smiles when you return to <<him>>.
+<<if _robin.trauma gte 40>>
+	<<He>> hugs you the moment you place the tray down. "Thank you."
+<<else>>
+	"Business has improved a lot," <<he>> says. "Thank you."
+<</if>>
 <br><br>
 
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><<endevent>><</link>>
 <br>
@@ -433,11 +530,19 @@ Robin smiles when you return to <<him>>. "Business has improved a lot," <<he>> s
 <<endcombat>>
 <<clothesontowel>>
 <<npc Robin>><<person1>>
+<<NPCStatusCheck "Robin">>
 <<if $masturbation_fluid gte 500>>
 
 	<span class="green">The bottle filled with milk,</span> you leave the toilets.
 	<br><br>
-	Robin smiles when <<he>> sees you. "You were quick," <<he>> says. <<He>> takes the milk. "It's still warm! I didn't know you could get it so fresh." <<He>> pours it into a pot while you quietly leave <<his>> £5 on the counter.<<gglove>><<npcincr Robin love 3>>
+	Robin smiles when <<he>> sees you.
+	<<if _robin.trauma gte 40>>
+		"Thanks for coming back so quickly,"
+	<<else>>
+		"You were quick,"
+	<</if>>
+	 <<he>> says. <<He>> takes the milk. "It's still warm! I didn't know you could get it so fresh." <<He>> pours it into a pot while you quietly leave <<his>> £5 on the counter.
+	 <<gglove>><<npcincr Robin love 3>>
 	<br><br>
 
 <<else>>
@@ -477,7 +582,7 @@ Robin smiles when you return to <<him>>. "Business has improved a lot," <<he>> s
 <</if>>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -541,7 +646,7 @@ You arrive at Harvest Street, and enter a rustic shop. The proprietor, a <<perso
 	<br><br>
 
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Park]]>><</link>>
 	<br>
@@ -553,7 +658,7 @@ You arrive at Harvest Street, and enter a rustic shop. The proprietor, a <<perso
 	You return to Robin. <<He>> smiles when <<he>> sees you. <<He>> takes the milk and pours it into a pot.
 	<br><br>
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Park]]>><</link>>
 	<br>
@@ -580,7 +685,7 @@ Milk from the surrounding farms is processed in a factory on the corner of Harve
 	<br><br>
 
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Park]]>><</link>>
 	<br>
@@ -601,7 +706,7 @@ Milk from the surrounding farms is processed in a factory on the corner of Harve
 	<br><br>
 
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Park]]>><</link>>
 	<br>
@@ -618,7 +723,7 @@ You return to the park. Robin smiles when <<he>> sees you, and pours the milk in
 <br><br>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -632,7 +737,7 @@ You wait behind the stand until the deliquents find someone else to harass.
 
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -673,7 +778,7 @@ They hold fire as a <<person2>><<person>> steps forward. "You don't know what yo
 <br><br>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -687,7 +792,7 @@ You dive behind the stand as a volley of snowballs sail overhead. More snowballs
 <br><br>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -724,7 +829,7 @@ You finish first. You hurl the snowball at your opponent. <<He>> flinches, cover
 
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -754,17 +859,18 @@ You focus on making the snowball as sturdy as possible, until the <<person2>><<p
 
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
 
 :: Robin Chocolate Take
 <<effects>>
+<<NPCStatusCheck "Robin">>
 
 You start preparing your ammunition.
 
-<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 60>>
+<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 60 and _robin.trauma lte 39>>
 	Robin watches, <span class="green">then joins in.</span> Together you soon have enough snowballs.<<if $statdisable is "f">> | <span class="green"> + Preparedness</span><</if>>
 	<br><br>
 	You need to draw fire away from Robin's apparatus, so you bundle them in an arm, and spring from your hiding place.
@@ -775,7 +881,7 @@ You start preparing your ammunition.
 	<br>
 	<<link [[Patiently|Robin Chocolate Patient]]>><<set $phase to 0>><</link>><<dancedifficulty 1 1200>>
 	<br>
-<<elseif $NPCName[$NPCNameList.indexOf("Robin")].dom gte 20>>
+<<elseif $NPCName[$NPCNameList.indexOf("Robin")].dom gte 20 and _robin.trauma lte 39>>
 	Robin watches, <span class="green">then joins in.</span> Together you soon have enough snowballs.<<if $statdisable is "f">> | <span class="green"> + Preparedness</span><</if>>
 	<br><br>
 	You need to draw fire away from Robin's apparatus, so you bundle them in an arm, and spring from your hiding place.
@@ -842,7 +948,7 @@ The delinquents are surprised by your sally. They're stood together in the open.
 <</if>>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -893,7 +999,7 @@ The element of surprise gone, you slip behind a hedge while your adversaries are
 <</if>>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>
@@ -902,17 +1008,25 @@ The element of surprise gone, you slip behind a hedge while your adversaries are
 
 :: Robin Chocolate Kiss
 <<effects>>
+<<NPCStatusCheck "Robin">>
 
 "I know how we can pass the time," you say, crawling on top of Robin. <<He>> laughs at first, then gasps as you kiss <<his>> neck.
 <br><br>
+<<if _robin.trauma gte 40>>
+	<<He>> spends most of <<his>> time holding you close, rather than reciprocating. You eventually stop kissing and embrace <<him>> back.
+	<<npcincr Robin trauma -2>><<lrtrauma>>
+<</if>>
 <<generate2>>
 The delinquents find someone else to harass as predicated. Robin and you are too busy to care, until you hear a voice close by. "Hello?" a <<person2>><<personsimple>> says. "The hot chocolate smells good. Is anyone around?"
 <br><br>
 <<person1>>
-You let Robin stand, surprising the customer with <<his>> sudden appearance. You decide to hide until the customer departs. <<person2>><<He>> would work out what you were up to, and Robin would be terribly embarrassed.
+You let Robin stand, surprising the customer with <<his>> sudden appearance. You decide to hide until the customer departs.
+<<if _robin.trauma lte 39>>
+	<<person2>><<He>> would work out what you were up to, and Robin would be terribly embarrassed.
+<</if>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Park]]>><</link>>
 <br>

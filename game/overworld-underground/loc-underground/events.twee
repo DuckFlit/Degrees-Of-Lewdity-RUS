@@ -34,7 +34,7 @@
 	The <<person>> recoils from you in pain and hobbles over to where <<he>> entered. <<He>> slams <<his>> fist into the door.
 	"Let me out," <<he>> shouts. "You locked me in with a psycho." The door opens and <<he>> leaves.
 	<br><br>
-	
+
 	<<endevent>>
 	<<generate1>><<person1>>
 	<<if $undergroundbrothel.water gte 1>>
@@ -45,15 +45,15 @@
 		"Fine. We'll see how stubborn you are without water." <<He>> slams the door shut.
 		<<set $undergroundbrothel.water to 1>>
 	<</if>>
-	<<undergroundReturnToCell>>
+	<<undergroundReturnToCell "skip">>
 
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>><<set $forcedprostitutionstat += 1>><<fameprostitution 1>>
 	Satisfied, <<he>> leaves you on the mattress and exits the way <<he>> came in.
 	<<undergroundReturnToCell false>>
 
-	<<generate1>><<person1>>
 	<<if $undergroundbrothel.water gte 22>>
+		<<generate1>><<person1>>
 		The door opens again, and a <<person>> stands in the doorway. "Good <<girl>>," <<he>> says, smiling.
 		<<if $undergroundbrothel.water gte 6>>
 			<<if $NPCList[0].penis isnot "none">>
@@ -65,16 +65,16 @@
 				"We'll turn your tap back on. You're gonna make us lots of money." <<He>> shuts the door, once more plunging you into darkness.
 				<<set $undergroundbrothel.water to 0>>
 				<br><br>
-				<<link [[Next|Underground Cell]]>><</link>>
+				<<link [[Next|Underground Cell]]>><<set $eventskip to 1>><</link>>
 			<</if>>
 		<<else>> <!-- unreachable because water is always greater than 6, if water is greater than 22. -->
 			"We're not gonna give you back your water just yet, you haven't suffered enough for your disobedience. Keep up the good work though."
 			<<He>> slams the door shut.
 			<br><br>
-			<<link [[Next|Underground Cell]]>><</link>>
+			<<link [[Next|Underground Cell]]>><<set $eventskip to 1>><</link>>
 		<</if>>
 	<<else>>
-		<<link [[Next|Underground Cell]]>><</link>>
+		<<link [[Next|Underground Cell]]>><<set $eventskip to 1>><</link>>
 	<</if>>
 <</if>>
 
@@ -114,7 +114,7 @@
 	<<set $undergroundbrothel.water to 0>>
 <</if>>
 The door slams shut behind <<him>>, plunging you into darkness.
-<<undergroundReturnToCell>>
+<<undergroundReturnToCell "skip">>
 
 :: Underground Dance Intro
 <<set $outside to 0>><<set $location to "underground">><<effects>>
@@ -200,19 +200,44 @@ All eyes are on you as you are led up to the central platform. There's music pla
 	You're too badly beaten to put up a fight. The <<person>> drags your helpless body from the cell.
 	<br><br>
 
-	<<if $phase is 1>>
-		<<link [[Next|Underground Dance Intro]]>><</link>>
-	<<elseif $phase is 2>>
-		<<link [[Next|Underground Presentation]]>><</link>>
-	<<elseif $phase is 3>>
-		<<link [[Next|Underground Stage Intro]]>><</link>>
-	<<elseif $phase is 4>>
-		<<link [[Next|Underground Film Intro]]>><</link>>
-	<<elseif $phase is 5>>
-		<<link [[Next|Underground Hunt Intro]]>><</link>>
-	<</if>>
-	<br>
 	<<endcombat>>
+	<<set $phase to $phaselast>>
+	
+	<<if $phase is 1>>
+		<<if $undergroundbrothel.robin>>
+			<<link [[Next|Underground Robin Dice Intro]]>><</link>>
+		<<else>>
+			<<link [[Next|Underground Dance Intro]]>><</link>>
+		<</if>>
+	<<elseif $phase is 2>>
+		<<if $undergroundbrothel.robin>>
+			<<if $tentacledisable is "t">>
+				<<link [[Go quietly|Underground Robin Stage Intro]]>><</link>>
+			<<else>>
+				<<link [[Go quietly|Underground Robin Tentacles Intro]]>><</link>>
+			<</if>>
+		<<else>>
+			<<link [[Next|Underground Presentation]]>><</link>>
+		<</if>>
+	<<elseif $phase is 3>>
+		<<if $undergroundbrothel.robin>>
+			<<link [[Next|Underground Robin Machine Intro]]>><</link>>
+		<<else>>
+			<<link [[Next|Underground Stage Intro]]>><</link>>
+		<</if>>
+	<<elseif $phase is 4>>
+		<<if $undergroundbrothel.robin>>
+			<<link [[Go quietly|Underground Robin Kiss Intro]]>><</link>>
+		<<else>>
+			<<link [[Next|Underground Film Intro]]>><</link>>
+		<</if>>
+	<<elseif $phase is 5>>
+		<<if $undergroundbrothel.robin>>
+			<<link [[Next|Underground Robin Hunt Intro]]>><</link>>
+		<<else>>
+			<<link [[Next|Underground Hunt Intro]]>><</link>>
+		<</if>>
+	<</if>>
 <</if>>
 
 :: Underground Dance
@@ -492,7 +517,6 @@ You are led once more to the stage, where the crowd awaits. <<covered>>
 	<br>
 
 <<else>>
-	You are led once more to the stage, where the crowd awaits. <<covered>>
 	There's a <<generate1>><<person1>><<person>> already waiting for you. <<He>> takes hold of you leash and pulls you closer while looking at the audience.
 	"What shall I do with <<phim>> my friends?"
 	<br><br>
@@ -641,7 +665,7 @@ It looks like you're in a forest clearing.
 <<if $rng gte 51 and $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
 	<<generatePlant1>><<generate2>><<generate3>>
 	<<saveNPC 0 underground_plant>><<saveNPC 1 underground_guard_1>><<saveNPC 2 underground_guard_2>>
-	
+
 	You see a <<person2>><<person>> and a <<person1>><<person "normal">> talking up ahead, with a <<person3>><<person>> nearby smoking while watching the door.
 	The <<person2>><<person>> cuts <<himself>> off as you approach, gesturing to you. "See, <<pshes>> right here. We upheld our end."
 	<br><br>
@@ -653,25 +677,15 @@ It looks like you're in a forest clearing.
 	The <<person>> prances toward you and smiles. "Hey! Do you want to have sex with me?"
 	<br><br>
 
-	<<widget "undergroundplantfakechoice">>
-		"Did you hit your head?" the <<person2>><<person>> grunts. "It doesn't matter if <<pshe>> wants to or not. <<pShes>> yours."
-		<br><br>
-
-		"Oh yeah! I forgot this place worked like that!" The <<person1>><<person>> claps <<his>> hands together and lunges for you.
-		<br><br>
-
-		<<link [[Next|Underground Plant Molestation]]>><<set $molestationstart to 1>><</link>>
-	<</widget>>
-
 	<<set _link to true>>
 	<span id="choice">
 		<<if $deviancy gte 35>>
-			<<link "Yes">><<replace "#choice">><<undergroundplantfakechoice>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>><<deviant3>>
+			<<link "Yes">><<replace "#choice">><<undergroundPlantFakeChoice>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>><<deviant3>>
 		<<else>>
 			<span class="blue">You are not deviant enough to agree to sex with a <<personsimple>>.</span>
 		<</if>>
 		<br>
-		<<link "No">><<replace "#choice">><<undergroundplantfakechoice>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>>
+		<<link "No">><<replace "#choice">><<undergroundPlantFakeChoice>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>>
 	</span>
 
 <<else>>
@@ -682,8 +696,8 @@ It looks like you're in a forest clearing.
 		<<remove_shackle>>
 	<</if>>
 	<br><br>
-	<<generate2>>
 	<<beastNEWinit 1 dog>>
+	<<generate2>>
 	<<person2>> A <<person>> in a waistcoat enters the clearing, holding three <<beasttype 0>>s on leashes.
 	They strain against <<person2>><<him>>, practically pulling <<him>> along. "We're ready," <<he>> says, brandishing a pistol.
 	"First shot, the prey run. Second shot, we hunt!" The crowd cheers. You hear one of the <<victimgirls>> sob.
@@ -698,12 +712,10 @@ It looks like you're in a forest clearing.
 The pistol sounds off, and you run.
 <br><br>
 
-You've barely reached the trees when the second shot rings out.
+You've barely reached the trees when the second shot rings out. You run as fast you can. You hear the <<victimgirls>> scream as they are caught, one by one.
 
 <<if $athleticsSuccess>>
 	<<set $rng to random(1, 100)>>
-
-	You run as fast you can. You hear the <<victimgirls>> scream as they are caught, one by one.
 	Eventually your legs give out and you collapse against a tree. You hear nothing but your beating heart and the wind rustling through leaves.
 	You got away.
 	<<pass 5>>
@@ -713,12 +725,8 @@ You've barely reached the trees when the second shot rings out.
 	<<dungeonescape>>
 
 	<<link [[Next|Forest]]>><<set $forest to 1>><</link>>
-	<br>
-
 <<else>>
-
-	<<if $rng gte 51>><!-- Modified for BeastPeople -->
-		You run as fast you can. You hear the <<victimgirls>> scream as they are caught, one by one.
+	<<if $rng gte 51 and ($monster is 1 or $bestialitydisable is "f")>><!-- Modified for BeastPeople -->
 		You hear something running through the grass behind you, and feel <<print ($monster is 1 ? "hands" : "paws")>> on your back as you are forced to your knees.
 		The <<beasttype 0>> starts humping<<if $NPCList[0].penis isnot "none">>, you feel <<bhis 0>> penis prodding your <<bottom>><</if>>.
 		<br><br>
@@ -728,9 +736,7 @@ You've barely reached the trees when the second shot rings out.
 		<br><br>
 
 		<<link [[Next|Underground Hunt Dog]]>><<set $molestationstart to 1>><</link>>
-		<br>
 	<<else>>
-
 		You run as fast you can. You hear the <<victimgirls>> scream as they are caught, one by one.
 		You hear something running through the grass behind you right before you are tackled to the ground.
 		<br><br>
@@ -744,8 +750,6 @@ You've barely reached the trees when the second shot rings out.
 		<<clearNPC "underground_hunt_1">>
 
 		<<link [[Next|Underground Hunt Molestation]]>><<set $molestationstart to 1>><</link>>
-		<br>
-
 	<</if>>
 <</if>>
 
@@ -1166,7 +1170,7 @@ They leave the room, taking their machine with them. You're once more plunged in
 	<<set $apologised to 1>>
 	<<set _randomtentacles to random(6, 10)>>
 	<<makeAbomination _randomtentacles 6 "vine" "vine" true>>
-	<<set $timer to 5>><<set $plantFame to 0>>
+	<<set $timer to 3>><<set $plantFame to 0>>
 <</if>>
 
 <<if $timer is 3>>
@@ -1395,29 +1399,3 @@ A bush nearby rustles and you tense up. Somebody pops their head out the top. <s
 
 	<<link [[Next|Forest]]>><<endevent>><</link>>
 <</if>>
-
-:: Widgets Underground Events [widget]
-
-<<widget "undergroundEscapeForestStart">>
-	<<clotheson>>
-	<<endcombat>>
-
-	A chill runs up your spine, a warning from some primal instinct. <span class="red">Something is hunting you.</span>
-	<<set $foresthunt to 1>><<dungeonescape>>
-	<br><br>
-
-	<<link [[Next|Forest]]>><<set $forest to 40>><</link>>
-<</widget>>
-
-<<widget "undergroundReturnToCell">>
-	<<tearful>> you sit on the mattress.
-	<br><br>
-
-	<<clotheson>>
-	<<endcombat>>
-
-	<<if _args[0] is undefined or _args[0]>>
-		<<link [[Next|Underground Cell]]>><</link>>
-		<br>
-	<</if>>
-<</widget>>

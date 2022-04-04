@@ -37,23 +37,38 @@ There's a path leading down to the beach.
 	<</if>>
 <</if>>
 
-<<if ndef $pillory_tenant>><<setup_pillory>><</if>>
-<<if $pillory_tenant.exists is 1>> /* If someone is in pillory... */
-	<<if $days gt $pillory_tenant.endday>>/* If sentence finished before today. */
-		<<setup_pillory>>
-	<<elseif ($days is $pillory_tenant.endday)>>
-		<<if $hour gt $pillory_tenant.endhour>> /* If ended earlier today */
+<<if $robinmissing is "pillory">> <!-- Robin is in pillory, or is scheduled to be -->
+	<<if $hour lt 15>>
+		<<if $robinPillory.known is 1>>
+			Robin will be locked in the pillory today at <<ampm 15 00>>.
+			<br><br>
+		<<else>>
+			The pillory is empty, but a crowd is starting to gather regardless.
+		<</if>>
+	<<else>>
+		You see Robin in the pillory. You are unsure when <<nnpc_he "Robin">> is scheduled for release.
+		<<set $robinPillory.known to 1>> <!-- known means you know that robin is in the pillory -->
+		<br><br>
+	<</if>>
+<<else>>
+	<<if ndef $pillory_tenant>><<setup_pillory>><</if>>
+	<<if $pillory_tenant.exists is 1>> /* If someone is in pillory... */
+		<<if $days gt $pillory_tenant.endday>>/* If sentence finished before today. */
 			<<setup_pillory>>
-		<<elseif $hour is $pillory_tenant.endhour>> /* If ending now? */
-			<<end_npc_pillory>>
-		<<else>> /* Sentence ongoing. */
+		<<elseif ($days is $pillory_tenant.endday)>>
+			<<if $hour gt $pillory_tenant.endhour>> /* If ended earlier today */
+				<<setup_pillory>>
+			<<elseif $hour is $pillory_tenant.endhour>> /* If ending now? */
+				<<end_npc_pillory>>
+			<<else>> /* Sentence ongoing. */
+				<<npc_pillory>>
+			<</if>>
+		<<else>> /* Sentence ongoing to tomorrow. */
 			<<npc_pillory>>
 		<</if>>
-	<<else>> /* Sentence ongoing to tomorrow. */
-		<<npc_pillory>>
+	<<elseif $rng %10 is 0>> /* Pillory empty gives 10% chance of new person */
+		<<new_npc_pillory>>
 	<</if>>
-<<elseif $rng %10 is 0>> /* Pillory empty gives 10% chance of new person */
-	<<new_npc_pillory>>
 <</if>>
 
 <<if $arousal gte $arousalmax>>
@@ -112,7 +127,14 @@ There's a path leading down to the beach.
 			<<mathicon>><<link [[Attend maths competition|Maths Competition]]>><</link>>
 			<br>
 		<</if>>
-		<<if $pillory_tenant.exists is 1 and $exposed lte 0>>
+		<<if $robinmissing is "pillory" and $exposed lte 0>>
+			<<if $hour gte 15 and $hour lte 22>>
+				<<pilloryicon>><<link [[Watch pillory (0:10)|Robin Pillory Watch]]>><<pass 10>><</link>>
+			<<elseif $hour gte 23>>
+				<<pilloryicon>><<link [[Watch pillory (0:10)|Robin Pillory Failure]]>><<pass 10>><</link>>
+			<</if>>
+			<br>
+		<<elseif $pillory_tenant.exists is 1 and $exposed lte 0>>
 			<<pilloryicon>><<link [[Watch pillory (0:10)|Cliff Street Pillory]]>><<pass 10>><</link>>
 			<br>
 		<</if>>

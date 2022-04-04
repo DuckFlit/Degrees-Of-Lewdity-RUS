@@ -1115,6 +1115,9 @@
 <</widget>>
 
 <<widget "mouthActionInit">>
+<<if $robinRentEvent is 1 and ["pay","still"].includes($combatPhase)>>
+	<<set _mouthGold to true>>
+<</if>>
 <<if $orgasmdown gte 1>>
 	<<if $mouthuse is 0>>
 		<<set _mouthOptions to "orgasm">>
@@ -1362,8 +1365,10 @@
 			<<combatMouthOtherAnus>>
 		<<case "kiss">>
 			<<set _mouthaction["Kiss"] to "kissback">>
-			<<set _mouthaction["Pull away"] to "pullawaykiss">>
-			<<if $consensual isnot 1>>
+			<<if $head isnot "grappled" and $head isnot "bound">>
+				<<set _mouthaction["Pull away"] to "pullawaykiss">>
+			<</if>>
+			<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($mouthtaget))>>
 				<<set _mouthaction["Headbutt"] to "headbutt">>
 			<</if>>
 			<<if $mouthstate isnot "kiss" and $mouthstate isnot "kissimminent">>
@@ -1380,10 +1385,10 @@
 			<<combatBreast>>
 		<<case "nipple">>
 			<<combatNipple>>
-		<<case "lefthand">>
-			<<set _mouthaction["Bite"] to "handbite">>
-		<<case "righthand">>
-			<<set _mouthaction["Bite"] to "handbite">>
+		<<case "lefthand" "righthand">>
+			<<if $fightTargets is undefined or $fightTargets.includes($mouthtaget)>>
+				<<set _mouthaction["Bite"] to "handbite">>
+			<</if>>
 		<<case "orgasm">>
 			<<set _mouthaction["Stifle"] to "stifleorgasm">>
 			<<set _mouthaction["Let it out"] to "letoutorgasm">>
@@ -2674,7 +2679,7 @@
 	<<set $rightaction to $rightactiondefault>>
 	<<set _textColor to combatListColor('rightaction', (Object.values(_rightaction).includes($rightaction) ? $rightaction : Object.values(_rightaction)[0]), "Self")>>
 	<<generateCombatActionOthers _rightaction "rightaction" _textColor $rightaction "Self">>
-	
+
 	<<if $combatControls.includes("ists")>>
 		<div id="rightactionDifficulty">
 			<<rightactionDifficulty>>

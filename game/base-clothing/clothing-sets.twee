@@ -43,6 +43,10 @@
 		<<set _passage to 'Prison Bed'>>
 		<<set $wardrobe_location to "prison">>
 		<<set $storeLocation to "prison bed">>
+	<<case "Robin Bed">>
+		<<set _passage to "Robin Room Bed">>
+		<<set $wardrobe_location to "wardrobe">>
+		<<set $storeLocation to "bed">>
 	<<default>>
 		<<set _passage to "Bed">>
 		<<set $wardrobe_location to "wardrobe">>
@@ -52,7 +56,10 @@
 <<if $alwaysSleepNaked isnot true>>
 	<<for _i to 0; _i lt $outfit.length; _i++>>
 		<<if $outfit[_i].type.includes("sleep")>>
-			<<bedicon>><<print '<<link [["Wear "+$outfit[_i].name+($outfit[_i].colors is false? "" : " [C]") + " and climb in bed"|"'+_passage+'"]]>><<set $wear_outfit to ' + _i + '>><<saveTempHairStyle>><</link>>'>>
+			<<capture _i>>
+				<<set _outfitname to $outfit[_i].name + ($outfit[_i].colors is false? "" : " [C]")>>
+				<<bedicon>><<link [["Wear "+_outfitname+" and climb in bed"|_passage]]>><<set $wear_outfit to _i>><<saveTempHairStyle>><</link>>
+			<</capture>>
 			<br>
 		<</if>>
 	<</for>>
@@ -353,7 +360,7 @@
 	<</if>>
 <</if>>
 
-<<if $wear_outfit isnot "none">>
+<<if $wear_outfit isnot "none" and _notEquipped>>
 	<<set _keys to Object.keys(_notEquipped)>>
 	<<if _keys.length gt 0>>
 		<<set _resultStrings to {}>>
