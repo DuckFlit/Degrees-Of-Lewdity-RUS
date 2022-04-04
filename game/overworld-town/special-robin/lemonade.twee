@@ -1,7 +1,7 @@
 :: Robin's Lemonade
 
 <<location "beach">><<effects>>
-<<set _robin to $NPCName[$NPCNameList.indexOf("Robin")]>>
+<<NPCStatusCheck "Robin">>
 
 <<if $robinlemonadeintro isnot 1>><<set $robinlemonadeintro to 1>>
 	<<npc Robin>><<person1>>You see Robin stood behind <<his>> lemonade stand. <<He>> waves when <<he>> sees you.
@@ -9,9 +9,14 @@
 
 	"Hey," <<he>> says as you draw close. <<He>> beams. "It's nice to see you. I want you to try my lemonade." <<He>> mixes together water, lemon juice and sugar and hands you the glass. "On the house." It's very sweet.
 	<br><br>
-
 	<<else>>
-	<<npc Robin>><<person1>>You see Robin stood behind <<his>> lemonade stand. <<He>> waves when <<he>> sees you.
+	<<npc Robin>><<person1>>
+	<<if _robin.trauma gte 40>>
+		You see Robin stood behind <<his>> lemonade stand. <<He>> flinches whenever somebody passes <<him>>.
+		When <<he>> sees you, <<he>> gives a timid wave.
+	<<else>>
+		You see Robin stood behind <<his>> lemonade stand. <<He>> waves when <<he>> sees you.
+	<</if>>
 	<<if _robin.crossdressing is 2>>
 		<<if _robin.pronoun is "f">>
 			<<if _robin.breastsize gte 9>> /* massive, huge, gigantic, enormous */
@@ -22,7 +27,7 @@
 				but you can see the swell of <<his>> breasts when you look for it.
 			<<elseif _robin.breastsize gte 3>> /* small, pert, modest */
 				Robin's normally <<breastsizedesc _robin.breastsize>> breasts are nearly undetectable under <<his>> chest binding.
-			<<elseif _robin.breastsize gte 1>> /* budding, tiny */
+			<<elseif _robin.breastsize gte 0>> /* budding, tiny */
 				Robin's normally <<breastsizedesc _robin.breastsize>> breasts are completely undetectable under <<his>> chest binding.
 			<</if>>
 			<<He>> looks happy though.
@@ -34,7 +39,7 @@
 
 <</if>>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><<endevent>><</link>>
 <br>
@@ -43,37 +48,53 @@
 
 <<location "beach">><<effects>>
 <<npc Robin>><<person1>>
+<<NPCStatusCheck "Robin">>
+
 <<if $leftarm is "bound" or $rightarm is "bound">>
 	<<He>> looks at your arms. "Oh. You can't help like that. Here." <<He>> walks behind you, and undoes your bindings with deft hands.<<unbind>>
 	<br><br>
 <</if>>
 <<if $hour gte 17>>
-	"I'd like help carrying my stuff home," Robin says. "People don't buy much lemonade once it's this late."
+	<<if _robin.trauma gte 40>>
+		"Hey, do you think you can walk me home?" Robin says, shivering. "I don't think I can handle any more of this."
+	<<else>>
+		"I'd like help carrying my stuff home," Robin says. "People don't buy much lemonade once it's this late."
+	<</if>>
 	<br><br>
+
 	You walk with Robin back to the orphanage.
 	<br><br>
+
 	<<if $arousal gte $arousalmax>>
 		You're almost back when your body finally betrays you.
 		<<orgasm>>
 		Robin politely looks away, but can't help but be affected.<<npcincr Robin lust 1>>
 		<br>
 	<</if>>
-
 	<<endevent>>
 	<<link [[Next|Orphanage]]>><</link>>
 	<br>
 <<else>>
-	<<He>> smiles.
+	<<He>> smiles<<if _robin.trauma gte 40>> weakly<</if>>.
 	<<if $rng gte 81 and $cow gte 6 and $livestock_intro isnot undefined>>
-		"I have everything I need. You're welcome to stay though. I would like the company."
+		<<if _robin.trauma gte 40>>
+			"I think I'm okay right now, but could you please stay with me?" Robin asks you as <<he>> fidgets.
+		<<else>>
+			"I have everything I need. You're welcome to stay though. I would like the company."
+		<</if>>
 		<br><br>
 		You keep Robin company while <<he>> runs the stand, and chat with <<him>> while there are no customers.
 		<<npcincr Robin love 1>><<glove>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>>
 		<br><br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 60>>
+		<<if _robin.dom gte 60>>
 			<<generate2>><<person2>>
-			A <<person>> approaches the stand. "Welcome," Robin says. "One pound for fresh lemonade."
+			A <<person>> approaches the stand.
+			<<if _robin.trauma gte 40>>
+				"Hi," Robin says, looking down. "O-one pound for lemonade if that's okay."
+			<<else>>
+				"Welcome," Robin says. "One pound for fresh lemonade."
+			<</if>>
 			<br><br>
 			"Sure, sweetie," the <<person>> says before turning to you. They sprout a lecherous, crooked smile. "I remember you. From the farm. Why don't you come with me? I'll bring you home." They hold their hand out.
 			<br><br>
@@ -84,7 +105,12 @@
 
 		<<else>>
 			<<generate2>><<person2>>
-			A <<person>> approaches the stand. "Welcome," Robin says. "One pound for fresh lemonade."
+			A <<person>> approaches the stand.
+			<<if _robin.trauma gte 40>>
+				"Hi," Robin says, looking down. "O-one pound for lemonade if that's okay."
+			<<else>>
+				"Welcome," Robin says. "One pound for fresh lemonade."
+			<</if>>
 			<br><br>
 			"Sure, sweetie," the <<person>> says before turning to you. They sprout a lecherous, crooked smile. "I remember you. From the farm. Why don't you come with me? I'll bring you home." They hold their hand out.
 			<br><br>
@@ -96,7 +122,7 @@
 			<br><br>
 
 			<<endevent>>
-			<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+			<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 			<br>
 			<<link [[Leave|Beach]]>><</link>>
 			<br>
@@ -104,7 +130,12 @@
 	<<elseif $rng gte 61>>
 		<<if $robinsignintro isnot 1>>
 			<<set $robinsignintro to 1>>
-			<<He>> crouches behind the stand, and emerges holding a sign. It has "Robin's Lemonade" written on it, with directions beneath. "Could you walk across the beach carrying this? More customers would help a lot."
+			<<He>> crouches behind the stand, and emerges holding a sign. It has "Robin's Lemonade" written on it, with directions beneath.
+			<<if _robin.trauma gte 40>>
+				"Hey... can you hold this sign and walk around a bit? Just to help get some more customers."
+			<<else>>
+				"Could you walk across the beach carrying this? More customers would help a lot."
+			<</if>>
 			<br><br>
 		<<else>>
 			"Could you advertise my stand again? It really helped last time."
@@ -122,25 +153,47 @@
 			<br>
 		<</if>>
 	<<elseif $rng gte 21>>
-		"I need more water. I go through it so quickly. I don't like asking because it's heavy, but could you buy some more? You'll need to go to the High Street to find it cheap. They charge too much nearby." <<He>> hands you £2. "That's enough for a large bottle."
+		<<if _robin.trauma gte 40>>
+			"I'm out of water. I don't want to be alone but could you buy some more?" Robin says nervously. "There's some on High Street that's cheap, but there's some nearby and I don't want you to be away very long..."
+			<<He>> places <<his>> hand in yours, giving you £20. <<His>> hand lingers longer than necessary. "Please, hurry back."
+			<<set _extramoney to true>>
+		<<else>>
+			"I need more water. I go through it so quickly. I don't like asking because it's heavy, but could you buy some more? You'll need to go to the High Street to find it cheap. They charge too much nearby." <<He>> hands you £2. "That's enough for a large bottle."
+		<</if>>
 		<br><br>
-		As you leave the beach you see a shop selling large bottles of water. Robin was right, it's expensive here. It would be much harder to carry the water all the way from the High Street though.
+		<<if _robin.trauma gte 40>>
+			As you leave the beach you see a shop selling large bottles of water. Robin's money is just enough to cover four. You could get some from High Street, but you worry about leaving Robin alone for too long.
+		<<else>>
+			As you leave the beach you see a shop selling large bottles of water. Robin was right, it's expensive here. It would be much harder to carry the water all the way from the High Street though.
+		<</if>>
 		<br><br>
 		<<link [[Go to the High Street|Robin's Lemonade High]]>><</link>>
 		<br>
 		<<if $money gte 2000>>
-			<<link [[Buy water with your own money (£20)|Robin's Lemonade Buy]]>><<set $money -= 2000>><</link>>
+			<<link [[Buy water with your own money (£20)|Robin's Lemonade Buy]]>><<set $phase to 0>><<set $money -= 2000>><</link>>
+			<br>
+		<</if>>
+		<<if _extramoney>>
+			<<link [[Buy water with Robin's money|Robin's Lemonade Buy]]>><<set $phase to 1>><</link>>
 			<br>
 		<</if>>
 		<<set $skulduggerydifficulty to 200>>
 		<<link [[Steal the water|Robin's Lemonade Steal]]>><<crimeup 20>><</link>><<skulduggerydifficulty>><<crime>>
 		<br>
 		<<if $promiscuity gte 15>>
-			<<link [[Flirt for cheaper water|Robin's Lemonade Seduction]]>><</link>><<promiscuous2>>
+			<<if _extramoney>>
+				<<link [[Flirt for cheaper water|Robin's Lemonade Seduction]]>><<set $phase to 1>><</link>><<promiscuous2>>
+			<<else>>
+				<<link [[Flirt for cheaper water|Robin's Lemonade Seduction]]>><<set $phase to 0>><</link>><<promiscuous2>>
+			<</if>>
 			<br>
 		<</if>>
 	<<else>>
-		"I have everything I need. You're welcome to stay though. I would like the company."
+		<<if _robin.trauma gte 40>>
+			"I think I'm okay right now, but could you please stay with me?" Robin asks you as <<he>> fidgets.
+		<<else>>
+			"I have everything I need. You're welcome to stay though. I would like the company."
+		<</if>>
 		<br><br>
 		You keep Robin company while <<he>> runs the stand, and chat with <<him>> while there are no customers.
 		<<npcincr Robin love 1>><<glove>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>>
@@ -148,7 +201,12 @@
 		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 		<<if $danger gte (9900 - $allure) and $robinbeachpolice isnot 1>>
 			<<set $robinbeachpolice to 1>>
-			<<endevent>><<generatePolice 1>><<generatePolice 2>><<person1>>A <<person>> and <<person2>><<person>>, both dressed in police uniforms, approach the stand. "Welcome," Robin begins. "One pound for fresh-"
+			<<endevent>><<generatePolice 1>><<generatePolice 2>><<person1>>A <<person>> and <<person2>><<person>>, both dressed in police uniforms, approach the stand.
+			<<if _robin.trauma gte 40>>
+				Robin looks intimidated by them, "O-one pound fo-"
+			<<else>>
+				"Welcome," Robin begins. "One pound for fresh-"
+			<</if>>
 			<br><br>
 			"Shush," <<person1>>the <<person>> interrupts. "We're here to see your permit."
 			<br><br>
@@ -187,7 +245,7 @@
 			<</if>>
 			<br>
 			<<endevent>>
-			<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+			<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 			<br>
 			<<link [[Leave|Beach]]>><</link>>
 			<br>
@@ -199,17 +257,40 @@
 
 <<location "beach">><<effects>>
 <<generate2>><<person2>>
+<<NPCStatusCheck "Robin">>
+
 You walk to the other end of the populated part of the beach, and then back to Robin. <<person1>><<Hes>> servicing a <<person2>><<person>>.
 <br><br>
-"That'll be one pound please."
-<br><br>
-"Thanks," the <<person>> says. "You interested in making a little extra? I know a quiet place we could go."
-<br><br>
-Robin looks confused. "But I need my stand in a busy place so people can see it. Thanks for trying to help though."
-<br><br>
-"No," the <<person>> says. "You know what, forget it."
-<br><br>
-Robin notices you as the <<person>> leaves.<<person1>> "Business has improved a lot," <<he>> says. "Thank you."
+<<if _robin.trauma gte 40>>
+	"One pound please, if that's ok."
+	<br><br>
+
+	"Here," the <<person>> says. "You interested in making a little extra? I love the shy ones."
+	<br><br>
+
+	Robin's eyes go wide. "No! No, I-I'm alright." <<person1>><<He>> takes a deep breath and tries to hand the <<person2>><<person>> <<his>> lemonade, but
+	<<person1>><<his>> shaking hands slip. Lemonade spills all over the table and on the <<person2>><<personsimple>>'s shoes.
+	<br><br>
+
+	"Hey! Watch it, brat!" the <<person2>><<person>> fumes. Robin flinches and holds <<person1>><<his>> hands over <<his>> face.
+	<br><br>
+
+	Robin notices you as the <<person2>><<person>> storms off. <<person1>><<He>> sniffles but tries to smile at you. "Thanks for helping."
+<<else>>
+	"That'll be one pound please."
+	<br><br>
+
+	"Thanks," the <<person>> says. "You interested in making a little extra? I know a quiet place we could go."
+	<br><br>
+
+	Robin looks confused. "But I need my stand in a busy place so people can see it. Thanks for trying to help though."
+	<br><br>
+
+	"No," the <<person>> says. "You know what, forget it."
+	<br><br>
+
+	Robin notices you as the <<person>> leaves.<<person1>> "Business has improved a lot," <<he>> says. "Thank you."
+<</if>>
 <br><br>
 <<if $arousal gte $arousalmax>>
 	You try to reply, but you can't concentrate.
@@ -218,7 +299,7 @@ Robin notices you as the <<person>> leaves.<<person1>> "Business has improved a 
 	<br><br>
 <</if>>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>
@@ -226,6 +307,7 @@ Robin notices you as the <<person>> leaves.<<person1>> "Business has improved a 
 :: Robin's Lemonade Flirt
 
 <<location "beach">><<effects>>
+<!-- I feel like this can be turned into a function -->
 <<set $seductiondifficulty to 4000>>
 <<seductioncheck>>
 <br><br>
@@ -240,7 +322,7 @@ Robin notices you as the <<person>> leaves.<<person1>> "Business has improved a 
 	<<glove>><<npcincr Robin love 1>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>><<set $robinmoney += 5>>
 	<br><br>
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Beach]]>><</link>>
 	<br>
@@ -248,18 +330,39 @@ Robin notices you as the <<person>> leaves.<<person1>> "Business has improved a 
 	<<generate2>><<person2>>
 	You turn on the charm, but still can't get anyone interested. You return to Robin. <<person1>><<Hes>> servicing a <<person2>><<person>>.
 	<br><br>
-	"That'll be one pound please."
-	<br><br>
-	"Thanks," the <<person>> says. "You interested in making a little extra? I know a quiet place we could go."
-	<br><br>
-	Robin looks confused. "But I need my stand in a busy place so people can see it. Thanks for trying to help though."
-	<br><br>
-	"That's not what I-," the <<person>> says. "You know what, forget it."
-	<br><br>
-	Robin notices you as the <<person>> leaves.<<person1>>"Business has improved a lot," <<he>> says. "Thank you."
+		<<if _robin.trauma gte 40>>
+		"One pound please, if that's ok."
+		<br><br>
+
+		"Here," the <<person>> says. "You interested in making a little extra? I love the shy ones."
+		<br><br>
+
+		Robin's eyes go wide. "No! No, I-I'm alright." <<person1>><<He>> takes a deep breath and tries to hand the <<person2>><<person>> <<his>> lemonade, but
+		<<person1>><<his>> shaking hands slip. Lemonade spills all over the table and on the <<person2>><<personsimple>>'s shoes.
+		<br><br>
+
+		"Hey! Watch it, brat!" the <<person2>><<person>> fumes. Robin flinches and holds <<person1>><<his>> hands over <<his>> face.
+		<br><br>
+
+		Robin notices you as the <<person2>><<person>> storms off. <<person1>><<He>> sniffles but tries to smile at you. "Thanks for helping."
+	<<else>>
+		"That'll be one pound please."
+		<br><br>
+
+		"Thanks," the <<person>> says. "You interested in making a little extra? I know a quiet place we could go."
+		<br><br>
+
+		Robin looks confused. "But I need my stand in a busy place so people can see it. Thanks for trying to help though."
+		<br><br>
+
+		"No," the <<person>> says. "You know what, forget it."
+		<br><br>
+
+		Robin notices you as the <<person>> leaves.<<person1>> "Business has improved a lot," <<he>> says. "Thank you."
+	<</if>>
 	<br><br>
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Beach]]>><</link>>
 	<br>
@@ -268,17 +371,28 @@ Robin notices you as the <<person>> leaves.<<person1>> "Business has improved a 
 :: Robin's Lemonade High
 
 <<location "beach">><<effects>>
-You walk to the High Street and buy a large bottle of water. You return to the beach. Robin waves at you. "Thank you. I'd need to close the stand if not for you." <<He>> hugs you.
-<br>
+<<NPCStatusCheck "Robin">>
+
+You walk to the High Street and buy a large bottle of water. You return to the beach.
+<<if _robin.trauma gte 40>>
+	Robin waves you over. <<He>>'s shaking. "I was so worried that something happened to you!" <<He>> hugs you tightly. <<npcincr Robin trauma 1>><<grtrauma>>
+<<else>>
+	Robin waves at you. "Thank you. I'd need to close the stand if not for you." <<He>> hugs you.
+<</if>>
+<br><br>
 <<if $arousal gte $arousalmax>>
 	The hug pushed your aroused body over the edge.
 	<<orgasm>>
 	Robin releases you in surprise, and can't help but be affected.<<npcincr Robin lust 1>>
-	<br>
+	<br><br>
 <</if>>
-<br>
+<<if _robin.trauma gte 40>>
+	You quietly put Robin's change back on <<his>> table.
+	<<set $robinmoney += 2>>
+	<br><br>
+<</if>>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>
@@ -286,20 +400,35 @@ You walk to the High Street and buy a large bottle of water. You return to the b
 :: Robin's Lemonade Buy
 
 <<location "beach">><<effects>>
+<<NPCStatusCheck "Robin">>
 
-You buy four large bottles of water and haul them back to Robin. Their weight makes it slow going as you need to take frequent breaks, but it's not too far. Robin rushes over to help when <<he>> sees you. "How did you-" <<he>> pauses. "You can't have carried these all that way."
-<br><br>
+You buy four large bottles of water and haul them back to Robin. Their weight makes it slow going as you need to take frequent breaks, but it's not too far. Robin rushes over to help when <<he>> sees you.
+<<if _robin.trauma gte 40>>
+	"Thank you so much! I'm glad you weren't gone that long, I was starting to get worried." Robin looks like a load has been taken off <<his>> back.
+	When you get back to <<his>> stand <<he>> hugs you tightly.
+	<<if $phase is 0>>
+		<br><br>
 
-"I found it discounted at a closer shop," you say.
-<br><br>
+		You quietly leave the £20 <<he>> gave you on the stand.
+		<<set $robinmoney += 2>>
+	<<else>>
+		<<set $robinmoney -= 2>>
+	<</if>>
+<<else>>
+	"How did you-" <<he>> pauses. "You can't have carried these all that way."
+	<br><br>
 
-"You're so good with money. Thank you." You quietly leave the £2 <<he>> gave you on the stand.
+	"I found it discounted at a closer shop," you say.
+	<br><br>
+
+	"You're so good with money. Thank you." You quietly leave the £2 <<he>> gave you on the stand.
+<</if>>
 <<npcincr Robin love 1>><<glove>>
 <br><br>
 
 <<endevent>>
 
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>
@@ -308,17 +437,26 @@ You buy four large bottles of water and haul them back to Robin. Their weight ma
 
 <<location "beach">><<effects>>
 <<endevent>><<generate1>><<person1>>
+<<NPCStatusCheck "Robin">>
 <<skulduggerycheck>>
+
 <<if $skulduggerysuccess is 1>>
 	You enter the shop and start loading up a trolley with large bottles of water. Once done, you pretend to browse and wait. A talkative customer strikes up a conversation with the <<person>> behind the counter, giving you your chance. You push the trolley from the shop.
 	<br><br>
 	<<endevent>><<npc Robin>><<person1>>
-	You keep pushing it all the way back to Robin. <<His>> eyes widen when <<he>> sees you. "I've never thought of that," <<he>> says. "You're so clever." You quietly leave the £2 <<he>> gave you on the counter.
+	You keep pushing it all the way back to Robin. <<His>> eyes widen when <<he>> sees you.
+	<<if _robin.trauma gte 40>>
+		"Thank you so much! I'm glad you weren't gone that long, I was starting to get worried." Robin looks like a load has been taken off <<his>> back.
+		When you get back to <<his>> stand <<he>> hugs you tightly. You quietly leave the £20 <<he>> gave you on the counter.
+		<<set $robinmoney += 2>>
+	<<else>>
+		"I've never thought of that," <<he>> says. "You're so clever." You quietly leave the £2 <<he>> gave you on the counter.
+	<</if>>
 	<<npcincr Robin love 1>><<glove>>
 	<br><br>
 	<<skulduggeryuse>>
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[Leave|Beach]]>><</link>>
 	<br>
@@ -362,6 +500,10 @@ You buy four large bottles of water and haul them back to Robin. Their weight ma
 		<<link [[Buy water with your own money (£20)|Robin's Lemonade Buy]]>><<set $money -= 2000>><</link>>
 		<br>
 	<</if>>
+	<<if $phase is 1>>
+		<<link [[Buy water with Robin's money|Robin's Lemonade Buy]]>><<set $phase to 1>><</link>>
+		<br>
+	<</if>>
 <</if>>
 
 :: Robin's Lemonade Steal Molestation
@@ -402,6 +544,8 @@ You buy four large bottles of water and haul them back to Robin. Their weight ma
 :: Robin's Lemonade Steal Molestation Finish
 
 <<location "beach">><<effects>>
+<<NPCStatusCheck "Robin">>
+
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
 	"You can have the water," <<he>> says. "Fair price for a whore."
@@ -420,20 +564,30 @@ You buy four large bottles of water and haul them back to Robin. Their weight ma
 <<clothesontowel>>
 <<endcombat>>
 <<npc Robin>><<person1>>
-<<tearful>> you walk back to Robin, who rushes over to help when <<he>> sees you. "How did you-" <<he>> pauses. "You can't have carried these all that way."
+<<tearful>> you walk back to Robin, who rushes over to help when <<he>> sees you.
+<<if _robin.trauma gte 40>>
+	"Thank you so much! I'm glad you weren't gone that long, I was starting to get worried." Robin looks like a load has been taken off <<his>> back.
+<<else>>
+	"How did you-" <<he>> pauses. "You can't have carried these all that way."
+<</if>>
 <br><br>
 <<if $pain gte 40>>
 	<<He>> sees your tears. "What's wrong?" <<he>> asks, putting <<his>> arms around you. You sob into <<his>> shoulder and feel a little better.
+	<<npcincr Robin dom 1>><<gdom>>
 	<<lpain>><<set $pain -= 20>>
 	<br><br>
 <</if>>
-"I found it discounted at a closer shop," you say.
-<br><br>
-"You're so good with money. Thank you." You quietly leave the £2 <<he>> gave you on the stand.
+<<if _robin.trauma gte 40>>
+	You quietly leave the £20 <<he>> gave you on the stand.
+<<else>>
+	"I found it discounted at a closer shop," you say.
+	<br><br>
+	"You're so good with money. Thank you." You quietly leave the £2 <<he>> gave you on the stand.
+<</if>>
 <<npcincr Robin love 1>><<glove>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>
@@ -445,9 +599,10 @@ You buy four large bottles of water and haul them back to Robin. Their weight ma
 You put your arm around Robin's shoulders, which steadies <<him>> a bit. The crooked police take the money and leave.
 <br><br>
 Once they're gone, Robin bursts into tears and buries <<his>> head in your shoulder. "W-what am I going to do?" <<he>> sobs. You hold <<him>> tight until <<he>> calms down. "Th-thank you."
+<<npcincr Robin trauma 3>><<grtrauma>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>
@@ -460,8 +615,9 @@ Once they're gone, Robin bursts into tears and buries <<his>> head in your shoul
 <br><br>
 Once they're gone, Robin bursts into tears and buries <<his>> head in your shoulder. "I-I," <<he>> sobs. "I was so scared. Thank you." <<He>> calms down a bit as <<he>> puts the money back beneath the stand.
 <br><br>
+<<npcincr Robin trauma -3>><<lrtrauma>>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>
@@ -469,12 +625,18 @@ Once they're gone, Robin bursts into tears and buries <<his>> head in your shoul
 :: Robin's Lemonade Offer
 
 <<location "beach">><<effects>>
+<<NPCStatusCheck "Robin">>
+
 You gently push Robin to the side and lean forward. "Wouldn't you rather have some fun with me?" you whisper.
 They smile. "Sure," the <<person1>><<person>> says. "That'd work."
 <br><br>
 Robin looks confused. "I'm going to work this out with them," you say. "I'll be back later."
 <br><br>
-Robin hugs you. "Okay. See you soon."
+<<if _robin.dom gte 40>>
+	Robin hugs you tightly. "Be careful, I don't like the look of those guys."
+<<else>>
+	Robin hugs you. "Okay. See you soon."
+<</if>>
 <br><br>
 You walk off the beach with the police. Their car is parked in a nearby alley. "Get in," the <<person2>><<person>> says. You climb in the back seat and <<he>> follows close behind. The <<person1>><<person>> gets in on the other side.
 <br><br>
@@ -496,9 +658,10 @@ The <<person1>><<person>> laughs. "Don't pretend anyone cares." <<He>> looks bac
 <br><br>
 <<endevent>><<npc Robin>><<person1>>
 Robin bursts into tears and buries <<his>> head in your shoulder. "I-I," <<he>> sobs. "I was so scared. Thank you." Once <<he>> calms down a bit as <<he>> puts the money back beneath the stand.
+<<npcincr Robin trauma -3>><<lrtrauma>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>
@@ -529,6 +692,8 @@ Robin bursts into tears and buries <<his>> head in your shoulder. "I-I," <<he>> 
 :: Robin's Lemonade Offer Molestation Finish
 
 <<location "beach">><<effects>>
+<<NPCStatusCheck "Robin">>
+
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
 	"Cheaper than the brothel," the <<person1>><<person>> says. <<He>> opens the car door. "Go back to your friend."
@@ -545,16 +710,20 @@ Robin bursts into tears and buries <<his>> head in your shoulder. "I-I," <<he>> 
 <br><br>
 <<if $pain gte 40>>
 	<<He>> sees your tears and hugs you.
+	<<if _robin.dom gte 60>>
+		"If they hurt you..." <<he>> says.
+	<<else>>
+		"I hope they didn't hurt you," <<he>> says.
+	<</if>>
 <<else>>
-	<<He>> hugs you.
+	<<He>> hugs you. "I hope they didn't hurt you," <<he>> says.
 <</if>>
-"I hope they didn't hurt you," <<he>> says.
 <br><br>
 "N-no," you say. "Everything's fine."
-<<npcincr Robin love 1>><<glove>>
+<<npcincr Robin love 1>><<glove>><<npcincr Robin trauma -3>><<lrtrauma>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>
@@ -562,10 +731,18 @@ Robin bursts into tears and buries <<his>> head in your shoulder. "I-I," <<he>> 
 :: Robin's Lemonade Set
 
 <<location "beach">><<effects>>
-You help Robin carry <<his>> equipment to the beach. "Thank you for the help," <<he>> says. "It's hard carrying it all on my own." <<He>> starts juicing lemons.
+<<NPCStatusCheck "Robin">>
+
+You help Robin carry <<his>> equipment to the beach.
+<<if _robin.trauma gte 40>>
+	"Thank you, I don't know what I'd do if you weren't here." <<He>> starts juicing lemons, flinching when other people draw near.
+<<else>>
+	"Thank you for the help," <<he>> says. "It's hard carrying it all on my own." <<He>> starts juicing lemons.
+<</if>>
+
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><<endevent>><</link>>
 <br>
@@ -585,33 +762,62 @@ Robin spots you exiting the alley. "A-Are you okay?" <<he>> asks, with a worried
 You nod, pick up <<his>> dropped equipment and continue to walk to the beach with Robin. The rest of the trip is uneventful.
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><<endevent>><</link>>
 <br>
 
 :: Robin's Lemonade Cow
 <<effects>>
+<<NPCStatusCheck "Robin">>
 
-Before your hand meets the <<persons>>, someone pulls your arm back. Robin pushes you behind <<person1>><<him>>. "I need to ask you to leave," <<He>> says, handing the <<person2>><<person>> <<his>> cup.
-<br><br>
-"Careful, <<nnpc_gendery "Robin">>," the <<person>> says. "Your friend is worth a lot. I'd hate to see you wind up like them."
-<br><br>
-Robin frowns. "I'm asking you to leave one last time before I call the police."
-<br><br>
-The <<person>> laughs and pours the lemonade onto the sand. "Keep the quid. Better keep an eye on your friend." <<He>> leaves.
-<br><br><<person1>>
-You turn to Robin, tilt your head, and give a worried moo.
-<br><br>
-"It's okay," Robin says. "Here." <<He>> squeezes together a mix of lemon juice, water, and sugar before handing it to you.
-<br><br>
-"This should make you feel better." <<Hes>> right.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
+Before your hand meets the <<persons>>, someone pulls your arm back. Robin pushes you behind <<person1>><<him>>.
+<<if _robin.trauma gte 40>>
+	"Y-you're not taking <<phim>>!" <<he>> says, handing the <<person2>><<person>> <<his>> cup with a shaky hand.
+	<br><br>
+
+	"Careful, <<nnpc_gendery "Robin">>," the <<person>> says. "Your friend is worth a lot. I'd hate to see you wind up like them."
+	<br><br>
+
+	Robin flinches, but holds <<person1>><<his>> ground. "Leave before I call the police."
+
+	The <<person>> laughs and pours the lemonade onto the sand. "Keep the quid. Better keep an eye on your friend." <<He>> leaves.
+	<br><br><<person1>>
+
+	You turn to Robin, tilt your head, and give a worried moo.
+	<br><br>
+
+	"Everything's okay," Robin says, taking a deep breath. "Here." <<He>> squeezes together a mix of lemon juice, water, and sugar before handing it to you.
+	<br><br>
+
+	"This should make you feel better." <<Hes>> right.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
+<<else>>
+	"I need to ask you to leave," <<He>> says, handing the <<person2>><<person>> <<his>> cup.
+	<br><br>
+
+	"Careful, <<nnpc_gendery "Robin">>," the <<person>> says. "Your friend is worth a lot. I'd hate to see you wind up like them."
+	<br><br>
+
+	Robin frowns. "I'm asking you to leave one last time before I call the police."
+	<br><br>
+
+	The <<person>> laughs and pours the lemonade onto the sand. "Keep the quid. Better keep an eye on your friend." <<He>> leaves.
+	<br><br><<person1>>
+
+	You turn to Robin, tilt your head, and give a worried moo.
+	<br><br>
+
+	"It's okay," Robin says. "Here." <<He>> squeezes together a mix of lemon juice, water, and sugar before handing it to you.
+	<br><br>
+
+	"This should make you feel better." <<Hes>> right.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
+<</if>>
 <br><br>
 The other customers are less creepy.
 <br><br>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[Leave|Beach]]>><</link>>
 <br>

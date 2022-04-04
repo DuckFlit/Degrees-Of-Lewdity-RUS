@@ -328,7 +328,7 @@ window.combatListColor = function (name, value, type) {
 				break;
 
 			case "leftprotect": case "rightprotect": case "leftgrip": case "rightgrip": case "leftcurl": case "rightcurl":
-				color = "sub";
+				color = "meek";
 				break;
 
 			default:
@@ -554,6 +554,8 @@ window.toTitleCase = function(str) {
 	});
 }
 
+window.numbersBetween = (start, end, step = 1) => Array.from({ length: (end - start) / step + 1}, (_, i) => start + (i * step));
+
 window.getRobinLocation = function(){
 	if (V.NPCName[V.NPCNameList.indexOf("Robin")].init !== 1){
 		return;
@@ -561,8 +563,17 @@ window.getRobinLocation = function(){
 	} else if (V.robinlocationoverride && V.robinlocationoverride.during.includes(V.hour)){
 		return T.robin_location = V.robinlocationoverride.location;
 
-	} else if (V.robinmissing === 1){
-		return T.robin_location = "missing";
+	} else if (V.robinmissing === "docks"){
+		return T.robin_location = "docks";
+
+	} else if (V.robinmissing === "landfill"){
+		return T.robin_location = "landfill";
+
+	} else if (V.robinmissing === "dinner"){
+		return T.robin_location = "dinner";
+	
+	} else if (V.robinmissing === "pillory"){
+		return T.robin_location = "pillory";
 
 	} else if (!between(V.hour, 7, 20)){ //if hour is 6 or lower, or 21 or higher
 		return T.robin_location = "sleep";
@@ -600,11 +611,14 @@ window.setRobinLocationOverride = function(loc, hour){
 
 window.getRobinCrossdressingStatus = function(crossdressLevel){
 	//Note returns 2 if Robin is crossdressing or 0 if not comfortable enough at that location
+	//Traumatised Robin will not crossdress.
 	if (V.NPCName[V.NPCNameList.indexOf("Robin")].init !== 1){
 		return;
 	}
 	T.robin_cd = 0;
-
+	if (V.NPCName[V.NPCNameList.indexOf("Robin")].trauma >= 40){
+		return;
+	}
 	switch (getRobinLocation()){
 		case "orphanage":
 		case "sleep":

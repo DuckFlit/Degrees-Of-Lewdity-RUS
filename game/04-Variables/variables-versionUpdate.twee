@@ -2509,7 +2509,7 @@
 <</if>>
 
 <<if !$NPC_names_m>>
-	<<init_names>>	
+	<<init_names>>
 <</if>>
 
 <<if $prison and $prison.kylar is undefined>>
@@ -2658,7 +2658,7 @@
 		<<set $nectar_addiction to 0>>
 		<<set $nectar_timer to 0>>
 	<</if>>
-	
+
 	<<if $hypnotised is undefined>>
 		<<set $hypnotised to 0>>
 		<<set $famemodel to 0>>
@@ -2680,7 +2680,7 @@
 		<</if>>
 	<</for>>
 
-	<!-- Jimmy: Reset NPC slots if necessary by checking .type === 0 
+	<!-- Jimmy: Reset NPC slots if necessary by checking .type === 0
 			Old versions prior to 3.4.* did not have empty slots properly set to baseNPC. -->
 	<<for $_i = 0; $_i < $NPCList.length; $_i++>>
 		<<if $combat isnot 1>>
@@ -2712,12 +2712,12 @@
 			}
 		}
 	>>
-	
+
 	<!-- Jimmy: Run updater for EventSystem.
 				Only runs if behind on schema, and if $event exists. -->
 	<<run EventSystem.Update()>>
 
-	<!-- Jimmy: Updater for NNPCs that lack pronouns structures. 
+	<!-- Jimmy: Updater for NNPCs that lack pronouns structures.
 				Based off of $perNPCFix located in VVU -->
 	<<if $pronounsNPCFix isnot 1>>
 		<<for $_npc range $NPCName>>
@@ -2763,7 +2763,7 @@
 		<</for>>
 	<</if>>
 
-	<!-- v0.3.5.4: pubic hair was accidentally disabled on new saves bc it wasn't initialized properly. --> 
+	<!-- v0.3.5.4: pubic hair was accidentally disabled on new saves bc it wasn't initialized properly. -->
 	<<pbhairinit>>
 
 	<!-- v0.3.6.2: blind stats mode -->
@@ -2803,7 +2803,7 @@
 		<<if $per_npc.wraith.gender is "m">><<set $per_npc.wraith.vagina to "none">><</if>>
 		<<if $per_npc.wraith.gender is "f">><<set $per_npc.wraith.penis to "none">><</if>>
 	<</if>>
-	
+
 	<!-- v0.3.6.2: namednpcs update -->
 	<<updateNewNamedNpcs>>
 
@@ -2854,13 +2854,13 @@
 			<</switch>>
 			<<npcClothesName $_robin $_clothesReplace>>
 			<<run delete $_robin.currentOutfit>>
-		<</if>>	
+		<</if>>
 	<</if>>
 
 	<!-- v0.3.6.2: Updating NPC clothing when needed -->
 	<<if $objectVersion.npcClothes lt 1 or $objectVersion.npcClothes is undefined>>
 		<<set $objectVersion.npcClothes to 1>>
-		<<if $halloween is 1 and $robinmissing isnot 1 and $hour gte 16 and $hour lt 19 and $monthday is 31 and $halloween_robin_costume and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+		<<if $halloween is 1 and $robinmissing is 0 and $hour gte 16 and $hour lt 19 and $monthday is 31 and $halloween_robin_costume and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
 			<<if !$NPCName[$NPCNameList.indexOf("Robin")].outfits>>
 				<<initNNPCClothes "Robin">>
 			<</if>>
@@ -2871,7 +2871,7 @@
 		<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison">>
 			<<if !$NPCName[$NPCNameList.indexOf("Kylar")].outfits>>
 				<<initNNPCClothes "Kylar">>
-			<</if>>	
+			<</if>>
 			<<if !$NPCName[$NPCNameList.indexOf("Kylar")].outfits.includes("prisonJumpsuit")>>
 				<<addNNPCOutfit "Kylar" "prisonJumpsuit">>
 			<</if>>
@@ -2938,7 +2938,7 @@
 		<<set setup.debugMenu = {}>>
 		<<set setup.debugMenu.cacheDebugDiv = {}>>
 	<</if>>
-	
+
 	<!-- v0.3.6.2: Init variables necessary for custom contact lenses -->
 	<<if ndef $left_before_nurse_returned>>
 		<<set $left_before_nurse_returned to 0>>
@@ -2955,7 +2955,7 @@
 	<<if ndef $makeup.owned.custom_eyelenses>>
 		<<set $makeup.owned.custom_eyelenses to []>> /* pharmacy custom eye lenses */
 	<</if>>
-	
+
 	<<if $adultShop is undefined>>
 		<<set $adultShop to {
 			ban: 0,
@@ -3084,7 +3084,7 @@
 	<<if $NPCName[$NPCNameList.indexOf("Robin")].cdquest is undefined>>
 		<<set $NPCName[$NPCNameList.indexOf("Robin")].cdquest to 0>>
 	<</if>>
-	
+
 	<!-- v0.3.7.4: sleep code readability update -->
 	<<if $schoolwake isnot undefined>>
 		<<unset $schoolwake>>
@@ -3145,7 +3145,7 @@
 		<<unset $undergroundescape>>
 		<<set $undergroundbrothelescaped to true>>
 	<</if>>
-	
+
 	<<if $adultshopprogress is undefined>>
 		<<set $adultshopprogress to 0>>
 	<</if>>
@@ -3174,7 +3174,7 @@
 		<</script>>
 		<<set $objectVersion.sexToys to 1>>
 	<</if>>
-	
+
 	<!-- v0.3.8.2: sex toy and double penetration stats-->
 	<<if $toymultiplepenetration is undefined>>
 		<<set $toymultiplepenetration to "f">>
@@ -3215,12 +3215,48 @@
 		<</if>>
 	<</if>>
 
-
-
-
 	<!-- 0.3.8.2: starting season backwards compatibility check -->
 	<<if $startingseason is undefined>>
 		<<set $startingseason to "autumn">>
+	<</if>>
+
+	<!-- v0.3.9.0 Traubin overhaul -->
+	<<if $robinTraumaMultiplier is undefined>>
+		<<set $robinTraumaMultiplier to 1>>
+	<</if>>
+
+	<<if $robinSeen is undefined>>
+		<<set $robinSeen to []>>
+	<</if>>
+
+	<<if !$robinTattoo>>
+		<<set $robinTattoo to []>>
+	<</if>>
+
+	<<if $robinPunishments is undefined>>
+		<<set $robinPunishments to []>>
+		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gt 0>>
+			<<set $robinPunishments.pushUnique("docks")>>
+			<<set $robinLastPunishment to "docks">>
+		<</if>>
+	<</if>>
+
+	<<if $robinmissing is undefined>>
+		<<set $robinmissing to 0>>
+	<<elseif $robinmissing is 1>>
+		<<set $robinmissing to "docks">>
+		<<set $robinLastPunishment to "docks">>
+	<</if>>
+
+	<<if $baileyOverdue is undefined>>
+		<<set $baileyOverdue to 0>>
+		<<set $baileypaychain to 0>>
+	<</if>>
+
+	<<if $NPCList[0].index is undefined>>
+		<<for _i to 0; _i lt $NPCList.length; _i++>>
+			<<set $NPCList[_i].index to _i>>
+		<</for>>
 	<</if>>
 
 <</widget>>

@@ -494,14 +494,19 @@ Second arg: tool */
 	<i><span class="pink">A picture of a <<print $skin[_args[0]].writing>></span></i>.
 <</if>>
 <<if $skin[_args[0]].arrow is 1>>
+	<<if _args[1] is "machine">>
+		<<set $_He to "It">>
+	<<else>>
+		<<set $_He to "<<He>>">>
+	<</if>>
 	<<switch _args[0]>>
 		<<case "left_cheek" "right_cheek">>
-			<<He>> draws an arrow beside it, <span class="red">pointing at your mouth.</span>
+			$_He draws an arrow beside it, <span class="red">pointing at your mouth.</span>
 		<<case "pubic" "left_thigh" "right_thigh">>
-			<<He>> draws an arrow beside it, <span class="red">pointing at your <<genitals 1>>.</span>
+			$_He draws an arrow beside it, <span class="red">pointing at your <<genitals 1>>.</span>
 		<<case "back" "left_bottom" "right_bottom">>
 			<<if $analdisable is "f">>
-				<<He>> draws an arrow beside it, <span class="red">pointing at your <<bottom>>.</span>
+				$_He draws an arrow beside it, <span class="red">pointing at your <<bottom>>.</span>
 			<</if>>
 	<</switch>>
 <</if>>
@@ -2520,9 +2525,11 @@ The artist explains how to care for your skin while the tattoo is still raw. You
 <</widget>>
 
 <<widget "bodywriting_dungeon_select">>
-<<if random(1, 2) is 2>>
-	<<add_bodywriting _args[0] slave>>
-<<else>>
-	<<add_bodywriting _args[0] one_six_three>>
-<</if>>
+	<<if !Object.values($skin).some(p => p.writing is "163") or random(0,2) is 2>>
+		<<add_bodywriting _args[0] one_six_three>>
+	<<elseif random(0,2) is 1>>
+		<<bodywriting_rape_select _args[0]>>
+	<<else>>
+		<<add_bodywriting _args[0] slave>>
+	<</if>>
 <</widget>>

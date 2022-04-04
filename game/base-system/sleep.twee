@@ -12,7 +12,7 @@
 		<<set $_bonusFatigueLoss += 5>>
 	<</if>>
 	<!-- sleeping with others -->
-	<<if $robinbed is 1 or $kylarbed is 1 or $wolfbed is 1>>
+	<<if $robinbed isnot undefined or $kylarbed is 1 or $wolfbed is 1>>
 		<<set $_bonusFatigueLoss += 5>>
 	<</if>>
 	<!-- wearing any non-sleep clothing disables the sleep bonus -->
@@ -31,14 +31,15 @@
 		<</if>>
 		<<switch $location>>
 			<<case "home">>
-				<<if $robinromance is 1 and $NPCName[$NPCNameList.indexOf("Robin")].lust gte 20 and $robinbed isnot 1 and $robinwakeday isnot 1 and $kylarbed isnot 1>>
+				<<NPCStatusCheck "Robin">>
+				<<if (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0>>
 					<!-- Robin climbs into bed with you -->
 					<<if $hour gte 18 or $hour lte 6>>
 						<<set _sleepinterrupt to 1>>
-						<<set $NPCName[$NPCNameList.indexOf("Robin")].lovewake to 1>>
+						<<set _robin.lovewake to 1>>
 						<<set $robinwakeday to 1>>
 					<</if>>
-				<<elseif $NPCName[$NPCNameList.indexOf("Robin")].love gte 100 and $robindebtknown isnot 1 and $kylarbed isnot 1>>
+				<<elseif _robin.love gte 100 and $robinbed is undefined and $robindebtknown isnot 1 and $kylarbed isnot 1 and $robinmissing is 0>>
 					<<if $hour gte 18 or $hour lte 6>>
 						<<set _sleepinterrupt to 1>>
 						<<set $robindebtwake to 1>>
@@ -310,7 +311,7 @@
 <</widget>>
 
 <<widget "wraithEvent">>
-	
+
 	<!-- this is because this event wakes the player up AFTER they have slept for an hour. -->
 	<<unset _sleepinterrupt>>
 

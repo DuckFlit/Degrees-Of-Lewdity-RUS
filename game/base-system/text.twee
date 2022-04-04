@@ -765,6 +765,22 @@
 <</if>>
 <</silently>><<print _text_output>><</widget>>
 
+<<widget "fullGroup">><<silently>>
+	<<set $_person to []>>
+	<<for _fg to 0; _fg lt $enemyno; _fg++>>
+		<<personselect _fg>><<person>>
+		<<set $_person.push(_text_output)>>
+		<<if _fg is 0>>
+			<<set $_text_output to $_person[_fg]>>
+		<<elseif _fg is $enemyno-1>>
+			<<set $_text_output += " and " + $_person[_fg]>>
+		<<else>>
+			<<set $_text_output += ", " + $_person[_fg]>>
+		<</if>>
+	<</for>>
+	<<if _args[0] is "cap">><<capitalise>><</if>>
+<</silently>><<print $_text_output>><</widget>>
+
 <<widget "gendercheck">>
 	<<if !["m", "f"].includes($player.gender_appearance)>><<set _text_output to "<span class=\"red\">ERROR: Unexpected $$player.gender_appearance: [$player.gender_appearance]</span>">><</if>>
 <</widget>>
@@ -1154,13 +1170,13 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "combatPerson">><<silently>>
-	<<combatperson>><<capitalise>>	
+	<<combatperson>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "genderswap">>
 	<!-- Changes the current pronoun, without modifying the NPC it's referencing. Useful for crossdressing NPC dialogue. -->
 	<!-- Usage: <<person1>><<genderswap>><<he>> -->
-	
+
 	<!-- Cannot use genderswap when pronoun is anything other than "m" or "f". -->
 	<<switch $pronoun>>
 		<<case "m">> <<set $pronoun to "f">>
@@ -1559,37 +1575,37 @@
 <</widget>>
 
 <<widget "lrtrauma">>
-	<<if $statdisable is "f">> |
+	<<if $statdisable is "f" and ($NPCName[$NPCNameList.indexOf("Robin")].trauma gt 0 or _args[0] is true)>> |
 		<span class="green">- Robin's Trauma</span>
 	<</if>>
 <</widget>>
 
 <<widget "llrtrauma">>
-	<<if $statdisable is "f">> |
+	<<if $statdisable is "f" and ($NPCName[$NPCNameList.indexOf("Robin")].trauma gt 0 or _args[0] is true)>> |
 		<span class="green">- - Robin's Trauma</span>
 	<</if>>
 <</widget>>
 
 <<widget "lllrtrauma">>
-	<<if $statdisable is "f">> |
+	<<if $statdisable is "f" and ($NPCName[$NPCNameList.indexOf("Robin")].trauma gt 0 or _args[0] is true)>> |
 		<span class="green">- - - Robin's Trauma</span>
 	<</if>>
 <</widget>>
 
 <<widget "grtrauma">>
-	<<if $statdisable is "f">> |
+	<<if $statdisable is "f" and ($NPCName[$NPCNameList.indexOf("Robin")].trauma gte 20 or _args[0] is true)>> |
 		<span class="red">+ Robin's Trauma</span>
 	<</if>>
 <</widget>>
 
 <<widget "ggrtrauma">>
-	<<if $statdisable is "f">> |
+	<<if $statdisable is "f" and ($NPCName[$NPCNameList.indexOf("Robin")].trauma gte 20 or _args[0] is true)>> |
 		<span class="red">+ + Robin's Trauma</span>
 	<</if>>
 <</widget>>
 
 <<widget "gggrtrauma">>
-	<<if $statdisable is "f">> |
+	<<if $statdisable is "f" and ($NPCName[$NPCNameList.indexOf("Robin")].trauma gte 20 or _args[0] is true)>> |
 		<span class="red">+ + + Robin's Trauma</span>
 	<</if>>
 <</widget>>
@@ -5700,7 +5716,7 @@ School finishes on the first Monday of December.
 	<</if>>
 <</widget>>
 
-/* Does not currently support named NPCs having their virginity taken by something other than the player. 
+/* Does not currently support named NPCs having their virginity taken by something other than the player.
  * Argument 0 is the npc, argument 1 is their virginity.
 */
 <<widget "NPCvirginitywarning">>
@@ -6737,7 +6753,7 @@ $worn.genitals.name
 <</widget>>
 
 <<widget "npcPenis">>
-<<set $_npcGen to (_args[0] ? _args[0] : 0)>>
+<<set $_npcGen to (_args[0] ? _args[0] : $index)>>
 <<if $NPCList[$_npcGen].chastity.penis is "chastity cage">>
 	<<set _text_output to "caged penis">>
 <<elseif $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
@@ -6752,7 +6768,7 @@ $worn.genitals.name
 	<<if $enemynomax is 1>>
 		<<set _args[0] to 0>>
 	<</if>>
-	<<set $_npcGen to (_args[0] ? _args[0] : 0)>>
+	<<set $_npcGen to (_args[0] ? _args[0] : $index)>>
 	<<if $NPCList[$_npcGen].chastity.penis is "chastity cage">>
 		<<set _text_output to "caged penis">>
 	<<elseif $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
@@ -6766,7 +6782,7 @@ $worn.genitals.name
 <</widget>>
 
 <<widget "npcPenisColored">>
-	<<set $_npcGen to (_args[0] ? _args[0] : 0)>>
+	<<set $_npcGen to (_args[0] ? _args[0] : $index)>>
 	<<set $_ppcolor to "tan">>
 	<<if $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
 		<<set $_ppcolor to "gray">>
@@ -6829,8 +6845,8 @@ $worn.genitals.name
 <<print _text_output>>
 <</widget>>
 
-<!-- Argument 0 is the appropriate NPCName or NPCList object. 
-Argument 1 should be "upper", "lower", or "both" 
+<!-- Argument 0 is the appropriate NPCName or NPCList object.
+Argument 1 should be "upper", "lower", or "both"
 Argument 2, where appropriate, determines whether it's the player undressing the NPC or the NPC undressing themselves-->
 <<widget "npcClothesText">><<silently>>
 <<if _args[0]>>

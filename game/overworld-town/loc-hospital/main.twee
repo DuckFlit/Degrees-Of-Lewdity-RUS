@@ -25,6 +25,11 @@ You feel yourself being lifted onto a stretcher before passing out again.
 <<set $outside to 1>><<set $location to "hospital">><<effects>>
 
 You are in front of the hospital. It is open at all hours.
+<<if $companion is "Robinrent">>
+	Robin hugs you tightly. "Thanks for saving me," <<nnpc_he "Robin">> says. "I think I'm going to go home. I need a rest."
+	Robin then waves you goodbye and starts walking towards home.
+	<<unset $companion>>
+<</if>>
 <br><br>
 
 <<if $stress gte $stressmax>>
@@ -526,10 +531,15 @@ You've pushed yourself too much.
 
 <<set $bus to "hospital">>
 
-As you walk down an empty corridor a door beside you opens and a pair of arms drag you through. <span class="red">It's Bailey.</span> The heavy doors slam shut. You're at the top of a staircase leading down into darkness.
+As you walk down an empty corridor a door beside you opens and a pair of arms drag you through. <span class="red">It's Bailey.</span>
+The heavy doors slam shut. You're at the top of a staircase leading down into darkness.
 <br><br>
 
-<<rentdue>>
+<<if $robinfirstrentfight and ($baileypaychain lt 2 or $baileyOverdue gte 1)>>
+	<<rentduerobin 0>>
+<<else>>
+	<<rentdue 0>>
+<</if>>
 
 :: Rent Hospital Fight
 <<if $fightstart is 1>>
@@ -559,6 +569,92 @@ As you walk down an empty corridor a door beside you opens and a pair of arms dr
 	<span id="next"><<link [[Next|Rent Hospital Fight Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Rent Hospital Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Rent Hospital Fight Robin
+<<NPCStatusCheck "Robin">>
+<<if $fightstart is 1>>
+	<<if $baileydefeatedchain gte 3>>
+		<<set $enemyno to 3>>
+		<<set $enemynomax to 3>>
+	<<elseif $baileydefeatedchain gte 1>>
+		<<set $enemyno to 2>>
+		<<set $enemynomax to 2>>
+	<<else>>
+		<<set $enemyno to 1>>
+		<<set $enemynomax to 1>>
+	<</if>>
+	<<set $fightstart to 0>>
+
+	<<neutral 1>>
+
+	<<maninit>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	"Keep the other one under control, one of you," Bailey says.
+	The <<personselect $enemynomax>><<person>> nods and grabs at Robin, while Bailey returns <<person1>><<his>> gaze to you.
+	<br><br>
+
+	<<set $phase to 1>>
+	<<if _robin.dom gte 80>>
+		<<set $timer to 4>>
+	<<elseif _robin.dom gte 60>>
+		<<set $timer to 3>>
+	<<elseif _robin.dom gte 40>>
+		<<set $timer to 2>>
+	<<else>>
+		<<set $timer to 1>>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+
+<<personselect $enemynomax>>
+<<if $timer gt 1>>
+	<span class="green">
+	<<if $rng gte 81>>
+		Robin struggles in <<nnpc_his "Robin">> restraints.
+	<<elseif $rng gte 61>>
+		Robin tells you not to give up.
+	<<elseif $rng gte 41>>
+		Robin is kicking at the <<person>>'s heels.
+	<<elseif $rng gte 21>>
+		Robin tells you not to worry about <<nnpc_him "Robin">>.
+	<<else>>
+		Robin bites the <<person>>'s hand holding <<nnpc_him "Robin">>.
+	<</if>></span>
+<<elseif $timer is 1>>
+	The <<person>> manages to wrap <<his>> arm around Robin's throat. <span class="red">Robin cries out in pain.</span>
+<<else>>
+	<span class="red">
+	<<if $rng gte 81>>
+		The <<person>> has Robin in a stranglehold.
+	<<elseif $rng gte 61>>
+		You can hear Robin choking.
+	<<elseif $rng gte 41>>
+		The <<person>> spits at Robin's eye while strangling <<nnpc_him "Robin">>.
+	<<elseif $rng gte 21>>
+		Robin tries to surrender, but the <<person>> doesn't lighten up.
+	<<else>>
+		The <<person>> punches Robin while choking <<nnpc_him "Robin">>.
+	<</if>>
+	</span>
+	<<npcincr Robin trauma 2>><<grtrauma true>>
+<</if>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $enemyhealth lte 0>>
+	<span id="next"><<link [[Next|Rent Hospital Robin Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[Next|Rent Hospital Robin Fight Finish]]>><</link>></span><<nexttext>>
+<<elseif $pain gte 100 and $willpowerpain is 0>>
+	<span id="next"><<link [[Next|Rent Hospital Robin Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Rent Hospital Fight Robin]]>><</link>></span><<nexttext>>
 <</if>>
 
 :: Rent Hospital Fight Finish
@@ -613,6 +709,65 @@ As you walk down an empty corridor a door beside you opens and a pair of arms dr
 
 
 	<<link [[Next|Rent Intro]]>><</link>>
+<</if>>
+
+:: Rent Hospital Robin Fight Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>><<set $baileydefeatedlewd += 1>><<set $baileydefeatedchain += 1>><<earnFeat "Bailey's Trouble Maker">>
+
+	<<He>> grips the bannister as the orgasm wracks <<his>> body. It's all the chance you need to grab Robin and escape back into the hospital proper.
+	That won't be the last of it, but for now you're in the clear.
+	<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
+	<<set $companion to "Robinrent">>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<if $crime gte 1000>>
+		<<link [[Next|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next->Hospital front]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<elseif $enemyhealth lte 0>>
+	<<set $baileydefeated += 1>><<set $baileydefeatedchain += 1>>
+
+	<<He>> trips and tumbles down the stairs, shouting profanities as <<he>> falls. You waste no time grabbing Robin and escaping back into the hospital proper.
+	That won't be the last of it, but for now you're in the clear.
+	<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
+	<<set $companion to "Robinrent">>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<if $crime gte 1000>>
+		<<link [[Next|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next->Hospital front]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<set $baileydefeatedchain to 0>>
+	<<unset $bailey_encroach>>
+
+	You fall to the ground, too hurt to move.
+	You hear Robin struggling until Bailey hits <<nnpc_him "Robin">> hard on the head and <<nnpc_he "Robin">> falls to the ground as well.
+	<br><br>
+
+	<<set $upperoff to 0>>
+	<<set $loweroff to 0>>
+	<<set $underloweroff to 0>>
+	<<set $underupperoff to 0>>
+	<<endcombat>>
+
+
+	<<link [[Next|Rent Intro]]>><<set $phase to 1>><</link>>
 <</if>>
 
 :: Hospital Journey Home
@@ -1191,7 +1346,7 @@ The receptionist taps something into <<his>> computer and instructs you to take 
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 
 <<strip>>
-Harper accepts the payment. "Please undress," <<he>> says as <<he>> stands to leave the room. "Everything. The presence of clothing interferes with the delicate apparatus." 
+Harper accepts the payment. "Please undress," <<he>> says as <<he>> stands to leave the room. "Everything. The presence of clothing interferes with the delicate apparatus."
 You remove your clothing and stand waiting, feeling more than a little exposed.
 <<if $worn.genitals.type.includes("chastity")>>You can't remove your $worn.genitals.name, you hope it won't be a problem.<</if>>
 <<He>> soon returns, carrying a medical gown.
@@ -1283,7 +1438,7 @@ You feel yourself being lifted onto a stretcher. You're holding onto something. 
 <<if $player.virginity.penile isnot true or $player.virginity.vaginal isnot true>>
 	<<if $templePromised is "Sydney">>
 		You've gained the <span class="blue">Rite of Promise: Sydney</span> trait.
-		<br><br>		
+		<br><br>
 	<<else>>
 		You've gained the <span class="blue">Chastity Vow</span> trait.
 		<br><br>

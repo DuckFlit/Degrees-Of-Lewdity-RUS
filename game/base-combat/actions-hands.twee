@@ -2,7 +2,7 @@
 <<widget "leftdefault">>
 <<if $lefttarget isnot "self">>
 	<<set _leftaction["Stroke"] to "leftchest">>
-	<<if $consensual isnot 1>>
+	<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($lefttarget))>>
 		<<set _leftaction["Punch"] to "lefthit">>
 	<</if>>
 <</if>>
@@ -212,7 +212,7 @@
 
 <<widget "leftspraynew">>
 <<if $lefttarget isnot "self">>
-	<<if $consensual isnot 1 and $spray gte 1>>
+	<<if $consensual isnot 1 and $spray gte 1 and $NPCList.some(npc => npc.health >= 0 && (!$fightTargets || $fightTargets.includes(npc.index)))>>
 		<<set _leftaction["Pepper spray"] to "spray">>
 	<</if>>
 <</if>>
@@ -451,7 +451,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<widget "rightdefault">>
 <<if $righttarget isnot "self">>
 	<<set _rightaction["Stroke"] to "rightchest">>
-	<<if $consensual isnot 1>>
+	<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($righttarget))>>
 		<<set _rightaction["Punch"] to "righthit">>
 	<</if>>
 <</if>>
@@ -657,7 +657,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 
 <<widget "rightspraynew">>
 <<if $righttarget isnot "self">>
-	<<if $consensual isnot 1 and $spray gte 1>>
+	<<if $consensual isnot 1 and $spray gte 1 and $NPCList.some(npc => npc.health >= 0 && (!$fightTargets || $fightTargets.includes(npc.index)))>>
 		<<set _rightaction["Pepper spray"] to "spray">>
 	<</if>>
 <</if>>
@@ -1042,10 +1042,10 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 		<<if _args[0] is "left">>
 			/* rest */
 			<<set _leftaction["Rest"] to "heldSexToy">>
-			
+
 			/* Drop sex toy */
 			<<set _leftaction["Drop your "+$currentSexToyLeft.name] to "dildoDrop">>
-			
+
 			/* NPC fuck */
 			<<if $lefttarget isnot undefined and $lefttarget isnot "self">>
 				<<if $NPCList[$lefttarget].vagina isnot "none" and $NPCList[$lefttarget].vagina is 0 and $currentSexToyLeft.type.includes("dildo")>>
@@ -1059,7 +1059,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 				<<if $analdisable is "f" and $NPCList[$lefttarget].vagina isnot "none" and $NPCList[$lefttarget].vagina is 0 and $currentSexToyLeft.type.includes("dildo")>>
 					<<set _leftaction["Move your "+$currentSexToyLeft.name+" to "+$NPCList[$lefttarget].pronouns.his+" anus"] to "dildoOtherAnusTease">>
 				<</if>>
-				
+
 				<<if $analdisable is "f" and $NPCList[$lefttarget].penis isnot "none" and $NPCList[$lefttarget].penis is 0 and $currentSexToyLeft.type.includes("dildo")>>
 					<<set _leftaction["Move your "+$currentSexToyLeft.name+" to "+$NPCList[$lefttarget].pronouns.his+" anus"] to "dildoOtherAnusTease">>
 				<</if>>
@@ -1080,7 +1080,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 				<</if>>
 			<</if>>
 		<</if>>
-		
+
 		<<if _args[0] is "right">>
 			/* rest */
 			<<set _rightaction["Rest"] to "heldSexToy">>
@@ -1313,7 +1313,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<if $leftaction is "under_lower" or $rightaction is "under_lower">>
 	<<if $leftaction is "under_lower">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
 	<<if $rightaction is "under_lower">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
-	
+
 	<<set $worn.under_lower.anus_exposed to 1>><<set $worn.under_lower.vagina_exposed to 1>><<set $worn.under_lower.exposed to 2>>
 	<<set $worn.under_lower.state to "thighs">>
 	/* Strapon code is here, if needed to move to the genital-clothing section */
@@ -1351,8 +1351,10 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<<if $spray gte 2>>
 		<<set $enemyhealth -= 400>>
 		<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
-			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated">>
-				<<set $NPCList[_npctodamage].health -= (400/$enemyno)>>/* Divide damage by all current active enemies. */
+			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
+				<<set _enemydivide to $fightTargets ? $enemyno-$fightTargets.length : $enemyno>> /* Divide damage by all current active enemies. */
+				<<set _thedamage to 400/_enemydivide>>
+				<<set $NPCList[_npctodamage].health -= _thedamage>>
 				<<if $enemyno gte 2>>
 					<<npcdamage _npctodamage>>
 				<</if>>
@@ -1375,8 +1377,10 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<<elseif $spray gte 1>>
 		<<set $enemyhealth -= 200>>
 		<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
-			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated">>
-				<<set $NPCList[_npctodamage].health -= (200/$enemyno)>>/* Divide damage by all current active enemies. */
+			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
+				<<set _enemydivide to $fightTargets ? $enemyno-$fightTargets.length : $enemyno>> /* Divide damage by all current active enemies. */
+				<<set _thedamage to 200/_enemydivide>>
+				<<set $NPCList[_npctodamage].health -= _thedamage>>
 				<<if $enemyno gte 2>>
 					<<npcdamage _npctodamage>>
 				<</if>>
@@ -1410,8 +1414,10 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<<if $spray gte 1>>
 		<<set $enemyhealth -= 200>>
 		<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
-			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated">>
-				<<set $NPCList[_npctodamage].health -= (200/$enemyno)>>/* Divide damage by all current active enemies. */
+			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
+				<<set _enemydivide to $fightTargets ? $enemyno-$fightTargets.length : $enemyno>> /* Divide damage by all current active enemies. */
+				<<set _thedamage to 200/_enemydivide>>
+				<<set $NPCList[_npctodamage].health -= _thedamage>>
 				<<if $enemyno gte 2>>
 					<<npcdamage _npctodamage>>
 				<</if>>
@@ -1445,7 +1451,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<<if $spray gte 1>>
 		<<set $enemyhealth -= 200>>
 		<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
-			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated">>
+			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
 				<<set $NPCList[_npctodamage].health -= (200/$enemyno)>>/* Divide damage by all current active enemies. */
 				<<if $enemyno gte 2>>
 					<<npcdamage _npctodamage>>
@@ -1935,8 +1941,8 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<<set $rng to random(1, 100)>>
 	<<set $_hand to _args[0]>>
 	<<set $_npcHand to $NPCList[_n][$_hand + "hand"]>>
-	
-	<!-- Note for future coders: this is an EXCEPTION, because there are a LOT of pen_x states, and this is the best way to handle it. --> 
+
+	<!-- Note for future coders: this is an EXCEPTION, because there are a LOT of pen_x states, and this is the best way to handle it. -->
 	<!-- If you are adding new states, add them to the switch. Do your BEST to NOT ADD EXTRA CODE TO THIS WIDGET outside of the switch. -->
 	<<if $_npcHand isnot 0 and $_npcHand.startsWith("pen_")>>
 		<<set $_penbodypart to $_npcHand.slice(4)>>
@@ -2025,7 +2031,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 			You retrieve your $currentSexToyRight.name with your right hand.
 		<</if>>
 	<</if>>
-	
+
 <</widget>>
 
 <<widget "effectsDropSexToy">>
