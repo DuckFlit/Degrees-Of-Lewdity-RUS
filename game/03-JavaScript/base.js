@@ -319,7 +319,7 @@ DefineMacroS("faceintegrity", faceintegrity);
 window.clothesColour = function(worn){
 	if (!worn.colour) return T.text_output = "";
 	if (worn.colour.startsWith("wet")){ //this might not be used anymore
-		return T.text_output = worn.colour.slice(3); 
+		return T.text_output = worn.colour.slice(3);
 	}
 	if (worn.colour_sidebar){
 		if (worn.colour == "custom") return T.text_output = getCustomColourName(worn.colourCustom);
@@ -329,7 +329,7 @@ window.clothesColour = function(worn){
 }
 
 /**
- * @return {void} 
+ * @return {void}
  */
 window.outfitChecks = function(){
 	T.underOutfit = ((V.worn.under_lower.outfitSecondary) && V.worn.under_lower.outfitSecondary[1] === V.worn.under_upper.name);
@@ -509,7 +509,7 @@ $(document).on(':passagedisplay', function (ev) {
 		}, Math.random()*1000 + 500);
 	  }
 	}
-	
+
 	setTimeout(checkFadingSpans, 1000);
 });
 

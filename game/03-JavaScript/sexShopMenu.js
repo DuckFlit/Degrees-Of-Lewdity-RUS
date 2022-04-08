@@ -326,7 +326,7 @@ window.sexShopOnItemClick = function (index) {
 			</div>
 			<span style="color: #bcbcbc">${item.description}</span>
 			<div id="ssm_desc_action">${coloring_div}<div style="text-align: center;">
-				<br>	
+				<br>
 				` + (V.money >= item.cost ? `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(${item.index})" class="ssm_buy_button">
 					Buy it
 				</a> (<span class="gold">£` + item.cost / 100 + `</span>)` : `<span class="ssm_not_enough_money">Not enough money</span>` ) +
@@ -348,7 +348,7 @@ window.determineRecipient = function(index) { // conditions for gifting items to
 		document.getElementById("giftBr").remove()
 	if (V.money < (item.cost + (15 * 100))) // Add 15$ for gifting paperwrap
 		return ""
-	
+
 	["Alex", "Eden", "Kylar", "Robin", "Sydney"].forEach(li => {
 		if (V.loveInterest.primary == li || V.loveInterest.secondary == li || V.loveInterest.tertiary == li){
 			option_builder += (`<option value="${li}">${li}</option>`)
@@ -379,7 +379,7 @@ window.sexShopOnGiftClick = function (index) {
 
 	recipient = V.NPCName[V.NPCNameList.indexOf(recipient)]
 	window.sexShopOnGiftClick.counter = window.sexShopOnGiftClick.counter || "off"
-	
+
 	/* add item to NPC's inventory */
 	if (recipient.sextoys === undefined)
 		recipient.sextoys = {}
@@ -409,10 +409,10 @@ window.sexShopOnGiftClick = function (index) {
 
 	/* withdraw money from player */
 	V.money -= (item.cost + (15 * 100))
-	
+
 	/* update sidebar money */
 	window.updateSideBarMoney()
-	
+
 	/* fade in/out bought green text indicator */
 	document.getElementById("ssmGiftButton").outerHTML = `<span class="ssm_gift_button ssm_fade_in" id="ssmGiftButton" style="color: #97de97">Bought!</span>`
 	document.getElementById("recipientList").remove()

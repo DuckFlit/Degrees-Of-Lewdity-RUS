@@ -3,13 +3,13 @@
  *      buffer = [] : EventNPC, refer to below
  *      schema = 1 : Integer, defines the current version on the save, useful for update tracking.
  *  }
- * 
+ *
  *  EventNPC = {
- *      slot: Where the NPC is positioned in NPCList.   
+ *      slot: Where the NPC is positioned in NPCList.
  *              EG: 0       $NPCList[0]
- *      time: The time the NPC was generated.           
+ *      time: The time the NPC was generated.
  *              EG: 805     13:48 / 1:48pm
- *      area: Where it was generated.                   
+ *      area: Where it was generated.
  *              EG: ['::Alleyways', 'eventsstreet', 'eventday', 'street8']
  *                      Passage        Widget 1      Widget 2    Widget 3
  *  }
@@ -77,7 +77,7 @@ class EventData {
                 return;
             default:
                 // Update to newer schema (1 atm).
-                // .event ['Farm Work', 'Farm Work', 'Farm Work', 'Farm Work'] 
+                // .event ['Farm Work', 'Farm Work', 'Farm Work', 'Farm Work']
                 // .eventtime [497, 497, 497, 497]
                 // .eventslot [0, 1, 2, 3]
                 const event = [...V.event];

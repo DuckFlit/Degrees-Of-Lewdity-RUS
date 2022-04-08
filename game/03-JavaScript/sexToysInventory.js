@@ -11,7 +11,7 @@ window.sexToysInventoryInit = function() {
 					const item_class_name = category.replace(/\s/g, '_') + "_" + index;
 					const itemStatus = (item.worn ? "worn" : item.carried ? "carried" : "" );
 					const itemColour = (setupItem.colour === 1 ? "clothes-" + item.colour : "");
-					main_grid.innerHTML += 
+					main_grid.innerHTML +=
 						`<div id="sti_item_${item_class_name}" class="sti_cell sti_full" onclick="window.sexToysInventoryOnItemClick(${index},\`${category}\`)" class="">
 							<div style="position:relative;z-index: 1;">
 								<div class="sti_already_owned">
@@ -27,7 +27,7 @@ window.sexToysInventoryInit = function() {
 		while ((main_grid.childElementCount - 1) < min_cells || (main_grid.childElementCount - 1) % 4 != 0) { // minimum of 12 cells. minimum 4 cells per row
 			main_grid.innerHTML += `<div class="sti_cell sti_empty"></div>`
 		}
-		main_grid.innerHTML += 
+		main_grid.innerHTML +=
 			`<div style="position: relative;">
 				<div id="carryCount" class="sti_grid_carried_count"></div>
 			</div>`
@@ -46,7 +46,7 @@ window.sexToysInventoryOnItemClick = function (index, category) {
 
 	const invItem = V.player.inventory.sextoys[category][index];
 	const invItemClassName = document.getElementById(`sti_item_icon_${item.name_underscore}_${index}`).className;
-	
+
 	$(`#sti_item_${item.name_underscore}_${index}`)[0].classList.add("sti_selected")
 	/* description box */
 	document.getElementById("sti_descContainer").innerHTML = `
@@ -200,7 +200,7 @@ function updateNumberInString(element, index_min, category){
 
 	if (index === NaN) throw new Error(`Misconfigured sex toy ID: ${element.id}`);
 	if (index < index_min || index <= 0) return; //No need to update, this element comes BEFORE the removed item, so its index is unaffected.
-	
+
 	element.id = element.id.replace(/\d+/, index-1);
 	if (element.getAttribute("onclick"))
 		element.setAttribute("onclick", `window.sexToysInventoryOnItemClick(${index-1},\`${category}\`)`)
@@ -286,7 +286,7 @@ window.countCarriedSextoys = function() {
 
 window.updateCarryCountUI = function() {
 	const colour = (window.countCarriedSextoys() >= max_carried ? "red" : "");
-	document.getElementById("carryCount").outerHTML = 
+	document.getElementById("carryCount").outerHTML =
 	`<div id="carryCount" class="sti_grid_carried_count">
 		Items carried: <span class="${colour}">${window.countCarriedSextoys()}/${max_carried}</span>
 	</div>`

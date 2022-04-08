@@ -92,7 +92,7 @@ window.ironmanAutoSave = function() {
 	if (success) {
 		const save = Save.slots.get(saveSlot);
 		setSaveDetail(saveSlot, {
-			"saveId": V.saveId, "saveName": V.saveName, 
+			"saveId": V.saveId, "saveName": V.saveName,
 			"ironman": V.ironmanmode, "ironman_signature": (V.ironmanmode ? md5(JSON.stringify(save.state.delta[0])) : false)
 		});
 	}
@@ -154,7 +154,7 @@ window.save = function(saveSlot, confirm, saveId, saveName) {
 			if (success) {
 				const save = Save.slots.get(saveSlot);
 				setSaveDetail(saveSlot, {
-					"saveId": saveId, "saveName": saveName, 
+					"saveId": saveId, "saveName": saveName,
 					"ironman": V.ironmanmode, "ironman_signature": (V.ironmanmode ? md5(JSON.stringify(save.state.delta[0])) : false)
 				});
 				V.currentOverlay = null;

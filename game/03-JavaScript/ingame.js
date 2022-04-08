@@ -992,7 +992,7 @@ Save.onLoad.add(function(save) {
 // Runs before a passage load, returning a string redirects to the new passage name.
 Config.navigation.override = function (dest) {
 	const isLoading = pageLoading; // if page is freshly loading (after a refresh etc), we hold its value in a temporary variable
-	
+
 	pageLoading = false
 	switch (dest) {
 		case 'Pharmacy Select Custom Lenses':

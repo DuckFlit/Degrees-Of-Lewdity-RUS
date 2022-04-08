@@ -32,14 +32,14 @@ Macro.add("doubleslider", {
 
 			//label visibility mod
 			leftLabel.css('visibility', "visible");
-			if (data.from <= 0) leftLabel.css('visibility', "hidden"); 
+			if (data.from <= 0) leftLabel.css('visibility', "hidden");
 
 			middleLabel.css('visibility', "visible");
 			if (data.to - data.from <= 0) middleLabel.css('visibility', "hidden");
 
 			rightLabel.css('visibility', "visible");
-			if (100 - data.to <= 0) rightLabel.css('visibility', "hidden"); 
-			
+			if (100 - data.to <= 0) rightLabel.css('visibility', "hidden");
+
 			//set the label content
 			middleLabel.html(V[var2]+"%");
 			rightLabel.html(V[var3]+"%");

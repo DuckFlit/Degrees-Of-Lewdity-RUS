@@ -10,13 +10,13 @@ var activeNPCList = [];
 
 
 var insertListener = async function(event){
-    
+
 	if (event.animationName == "nodeInserted") {
         updateState();
-	}	
+	}
 }
 
-async function updateState(msPerLoop, infoDiv) { 
+async function updateState(msPerLoop, infoDiv) {
     //console.log("BATTLE BEGIN! ", event, event.target);
         globals = SugarCube.State.variables;
         if(playerDoll == null) {
@@ -29,16 +29,16 @@ async function updateState(msPerLoop, infoDiv) {
         }
 
         var canvasElem = document.querySelector("#divsex");
-        canvasElem.innerHTML = '';    
+        canvasElem.innerHTML = '';
         cleanSlate();
         playerDoll.setLoopSpeed(msPerLoop);
         for(var i = 0; i<activeNPCList.length; i++ ) {
             activeNPCList[i].setLoopSpeed(msPerLoop);
         }
         await initNPCs(infoDiv);
-        await updatePlayerDraw(); 
+        await updatePlayerDraw();
         await updateNPCs(activeNPCList);
-        drawAll();
+    drawAll();
 }
 
 
@@ -68,7 +68,7 @@ async function initNPCs(infoDiv) {
             await updateEnemyState(human);
             //human.renderTo(canvasElem);
         }
-    }      
+    }
 }
 
 async function updateNPCs(activeNPCList) {
@@ -86,7 +86,7 @@ function drawAll() {
             (activeNPCList[i]).renderTo(canvasElem);
         }
     });
-    
+
 }
 
 
@@ -109,7 +109,7 @@ async function getOrCreateBeastFromCache(beastsRequested, type, infoDiv) {
         var anAwaiter = defer();
         var newBeast = new FDoll("dolls/beast/beast.js", type, anAwaiter, null, infoDiv);
         var wait = await anAwaiter;
-        beastCache.push(newBeast);        
+        beastCache.push(newBeast);
         return newBeast;
     }
 }

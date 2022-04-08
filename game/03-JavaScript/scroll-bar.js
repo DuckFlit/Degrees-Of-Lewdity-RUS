@@ -7,7 +7,7 @@ $(document).on(":passageend", function (event) {
 	/*previous version
 	//get sidebar dom element, assign it to variable for convenience
 	let sidebar = document.querySelector("#storyCaptionDiv");
-	
+
 	//if the sidebar was not found, quit before causing errors.
 	if (sidebar == undefined) return;
 

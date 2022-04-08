@@ -66,7 +66,7 @@ function restructureEyeColourVariable() {
 		case 1:
 			if (V.makeup == undefined) return;
 			const lenses = V.makeup.eyelenses;
-			/* If the lens variable is a string or number, we need to generate an object, with the value appended to both .right and .left 
+			/* If the lens variable is a string or number, we need to generate an object, with the value appended to both .right and .left
 				As the heterochromia introduced forces us to define both eye colours. */
 			if (typeof lenses === 'string' || typeof lenses === 'number') {
 				V.makeup.eyelenses = {

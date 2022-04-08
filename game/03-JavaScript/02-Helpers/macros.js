@@ -10,7 +10,7 @@ Macro.add('error', {
 	}
 });
 
-/** Jimmy: checkTimeSystem macro to print a message if time desynchronises. 
+/** Jimmy: checkTimeSystem macro to print a message if time desynchronises.
  *  	   Potential to place time correction code here instead of in backComp. */
 Macro.add('checkTimeSystem', {
 	handler() {
@@ -29,7 +29,7 @@ Macro.add('checkTimeSystem', {
 /** Jimmy: defer Macro, to be used to defer execution of the provided contents until after the passage has been processed.
  * 		   For example, let's say you create <div id="myDiv"></div> in a widget. And you want to use $('#myDiv') in that
  * 		   same widget, to manipulate your HTML elements... You cannot, as these HTML elements do not actually exist yet.
- * 		   
+ *
  * 		   This is where <<defer>> comes in, it will hold off on executing $('#myDiv'), if you specify, so that when it does
  * 		   execute, you can rest assured that your HTML elements are loaded into the document, rather than being in their
  * 		   fragment. */

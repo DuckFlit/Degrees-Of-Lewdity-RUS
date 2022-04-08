@@ -78,7 +78,7 @@ Macro.add(['button', 'link'], {
 					? () => { if (!(passage && V.nextPassage)) {Wikifier.wikifyEval(this.payload[0].contents.trim())} }
 					: null,
 				passage != null // lazy equality for null
-					? () => { 
+					? () => {
 						//check V.nextPassage and redirect all links to it if present
 						if (V.nextPassage){ V.nextPassageIntended = passage; passage = V.nextPassage; delete V.nextPassage };
 						//save sidebar scrolling position
@@ -95,7 +95,7 @@ Macro.add(['button', 'link'], {
 });
 
 
-/* required change is within Wikifier class, but since redefining it entirely would not be feasible, 
+/* required change is within Wikifier class, but since redefining it entirely would not be feasible,
 * we have to redirect `Wikifier.createInternalLink` to a local modified version
 * ideally, this should be handled within sugarcube itself */
 Wikifier.Parser.delete('link')
