@@ -259,13 +259,13 @@ window.getTimeNumber = function (t) {
 
 window.extendStats = function () {
 	V.extendedStats = !V.extendedStats;
-	var captionDiv = document.getElementById('storyCaptionDiv'),
+	var captionDiv = document.getElementById('storyCaptionContent'),
 		statsDiv = document.getElementById('stats');
 	if (V.extendedStats === true) {
-		captionDiv.classList.add("storyCaptionDivExtended");
+		captionDiv.classList.add("storyCaptionContentExtended");
 		statsDiv.classList.add("statsExtended");
 	} else {
-		captionDiv.classList.remove("storyCaptionDivExtended");
+		captionDiv.classList.remove("storyCaptionContentExtended");
 		statsDiv.classList.remove("statsExtended");
 	}
 	new Wikifier(null, '<<replace #stats>><<statsCaption>><</replace>>');
