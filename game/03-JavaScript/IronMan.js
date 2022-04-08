@@ -46,7 +46,7 @@ const IronMan = (() => {
 	/*  -------------------------------------
 		Integral IronMan mode core functions.
 		------------------------------------- */
-	
+
 	function freezeImportantVars() {
 		/* Immediately exit if on the starting passage. */
 		if (['Start', 'Clothes Testing', 'Renderer Test Page', 'Tips'].includes(V.passage)) return;
@@ -196,7 +196,7 @@ const IronMan = (() => {
 
 	/*  IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
 		IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
-		
+
 		This runs at the end of the passage processing pipeline. Check docs for SugarCube.md for more information about the pipeline. */
 	$(document).on(':passageend', function() {
 		freezeImportantVars();

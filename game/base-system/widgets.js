@@ -61,7 +61,7 @@ const hairStyleCap = {
 		"ringlet curl":300,
 		"curtain":200,
 	}
-}	
+}
 
 /** Calculate the player's gender appearance */
 function genderappearancecheck() {
@@ -285,9 +285,9 @@ function genderAppearanceHermTiebreak() {
 	// The general principle here is that these factors are things that indicate which gender is the player's preference for this character.
 	// We rely on as many manually-chosen details as possible to break the tie in a way that favors the player's preference.
 
-	if (["m", "f"].includes(V.player.gender_body)) { 
+	if (["m", "f"].includes(V.player.gender_body)) {
 		return V.player.gender_body; // break the tie with natural features, if player has masculine or feminine features.
-	} else if (["m", "f"].includes(V.player.gender_posture)) { 
+	} else if (["m", "f"].includes(V.player.gender_posture)) {
 		return V.player.gender_posture; // break the tie with gender posture, if gender posture is "m" or "f"
 	} else {
 		return "f"; // you've done it. you've broken me. default to "f".
@@ -310,7 +310,7 @@ function apparentbottomsizecheck(){
 	V.player.perceived_bottomsize = Math.clamp( V.bottomsizemin, T.tempbutt, V.bottomsizemax );
 }
 
-function exposedcheck() { 
+function exposedcheck() {
 	if ( !V.combat || V.args[0] === true ){
 		genderappearancecheck();
 		V.player.gender_appearance = T.gender_appearance;
@@ -396,7 +396,7 @@ Macro.add('reqSkill', {
 			/* Output variable to store what will be appended to EVERY link in the section. */
 			let output = "";
 			const cancel = section.args.some(arg => {
-				/* Splits up the arguments so that everything but the last character goes into type, and the last character goes into tier. 
+				/* Splits up the arguments so that everything but the last character goes into type, and the last character goes into tier.
 				   If arg is "deviancy5", type would be "deviancy" and tier would be 5. */
 				const type = arg.slice(0, -1);
 				const tier = Number.parseInt(arg.slice(-1));
@@ -428,7 +428,7 @@ Macro.add('reqSkill', {
 			});
 			/* If cancel signals true, exit but continue next payloads. */
 			if (cancel) return false;
-			/* Final render, and insertion of elements. 
+			/* Final render, and insertion of elements.
 			   Renders the section defined within the block that was successful.*/
 			new Wikifier(this.output, section.contents);
 			/* Renders the HTML elements that are inserted after every link. */

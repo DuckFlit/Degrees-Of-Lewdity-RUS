@@ -16,7 +16,7 @@ window.overlayMenu = function (elementId, type) {
 		if (document.getElementById(elementId) != undefined) {
 			if (V.debugMenu[2].length > 0)
 				window.toggleClassDebug(elementId, "hideWhileSearching")
-			else 
+			else
 				window.toggleClassDebug(elementId, "classicHide")
 		}
 		if ((elementId == "debugFavourites" || elementId == "debugAdd") && V.debugMenu[2] != undefined && V.debugMenu[2].length > 0){
@@ -341,7 +341,7 @@ window.settingsAsphyxiation = function () {
 		}
 		jQuery('#numberslider-value-asphyxialvl').text('').append(text).addClass('small-description');
 	};
-	
+
 	jQuery(document).ready(() => {
 		updateText();
 		jQuery('#numberslider-input-asphyxialvl').on('input change', function (e) { updateText(); });

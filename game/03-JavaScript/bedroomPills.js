@@ -19,14 +19,14 @@ A single pill object contains multiple 'properties' which define the pill.
  * warning_label: 'Warning: example pill may cause explosive decompression.' - Warning label displayed in text box. <span class="hpi_notice_label"> is used in several of these.
  * indicators: - Array of indicators.  Example: `<span class="hpi_indic_green">+ Control</span>`
  * icon: 'img/misc...blahblah' - file path of the png icon for this pill.
- * 
+ *
  * autoTake: - Code or statement that determines if this pill is set to auto-take ??? **
  * doseTaken: - Code or statement showing how many doses were taken already. **
  * owned: - Code or statement to determined the number owned. **
  * overdose: - Code or statement to determine overdose. **
  * display_condition: - Code or statement to determine if the pill displays in list. **
  * take_condition: - Code or statement to determine if the take button displays for this pill - can a dose currently be taken. **
- * 
+ *
  * type: "various" - Type of pill. Pill code uses this to determine what the effects are and where they apply.  Example: "bottom" or "breast"
  * subtype: "various" - Action the pill has on bodypart 'type'. Optional for the asylum & harper meds apparently. Example: "reduction" or "growth"
  * shape: "pill" or "galenic" - Helps to properly space the icon.
@@ -290,7 +290,7 @@ window.onMouseEventDisableGridClick = function(code) {
 window.addElementToGrid = function(item) {
 	$(function(){
 		let hpi_gridContainer = document.getElementById("homeMainPillContainer");
-		
+
 		let item_name = item.name[0].toUpperCase() + item.name.slice(1)
 		hpi_gridContainer.innerHTML = hpi_gridContainer.innerHTML +
 		`
@@ -454,7 +454,7 @@ window.syncAutoTakeDisplayedState = function() { // Add or remove [Auto] tag fro
 	}
 }
 
-window.onSecondDoseTakenSetVars = function() { // If player take two doses of anything but blocker/pregnancy/harper/asylum pills, determine the risk stat and 
+window.onSecondDoseTakenSetVars = function() { // If player take two doses of anything but blocker/pregnancy/harper/asylum pills, determine the risk stat and
 	let doseTaken = {"bottom":0, "penis":0, "breast":0}
 	let chosen;
 	let doseTaken_sum;
@@ -539,7 +539,7 @@ window.backCompPillsInventory = function() {
 }
 
 function pillsObjectRepair(oPills, pills) {
-	/* if the variable already exist, and is not of the new version(new version has "mostTaken" property that's why we check it), 
+	/* if the variable already exist, and is not of the new version(new version has "mostTaken" property that's why we check it),
 	then we try to  port the old one to the new one */
 	if (typeof oPills.bottom === 'object') {
 		Object.assign(pills, {
