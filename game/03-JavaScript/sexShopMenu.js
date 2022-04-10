@@ -348,12 +348,12 @@ window.determineRecipient = function(index) { // conditions for gifting items to
 		document.getElementById("giftBr").remove()
 	if (V.money < (item.cost + (15 * 100))) // Add 15$ for gifting paperwrap
 		return ""
-
-	["Alex", "Eden", "Kylar", "Robin", "Sydney"].forEach(li => {
+	
+	for (let li of ["Alex", "Eden", "Kylar", "Robin", "Sydney"]){
 		if (V.loveInterest.primary == li || V.loveInterest.secondary == li || V.loveInterest.tertiary == li){
 			option_builder += (`<option value="${li}">${li}</option>`)
 		}
-	});
+	}
 	if (option_builder == "") // if no possible recipient, return.
 		return ""
 	builder = `<br id="giftBr"><a id="ssmGiftButton" onclick="window.sexShopOnGiftClick(${item.index})" class="ssm_gift_button">
@@ -362,30 +362,20 @@ window.determineRecipient = function(index) { // conditions for gifting items to
 	return builder
 }
 
-window.sexShopOnCloseDesc = function (elem_id) {
-	document.getElementById(elem_id).style.display = 'none'
-	/* grid item box class changes */
-	try{
-		document.getElementsByClassName("ssm_selected_a")[0].classList.remove("ssm_selected_a")
-		document.getElementsByClassName("ssm_selected_b")[0].classList.remove("ssm_selected_b")
-		document.getElementsByClassName("ssm_selected_c")[0].classList.remove("ssm_selected_c")
-	}catch{;}
-}
-
 window.sexShopOnGiftClick = function (index) {
 	let item = setup.sextoys[index];
 	let icon_class_name = document.getElementById("ssm_desc_img").className
 	let recipient = document.getElementById("recipientList").value.toLowerCase();
 
-	recipient = V.NPCName[V.NPCNameList.indexOf(recipient)]
+	recipient = window.findIndexInNPCNameVar(recipient)
+	if (recipient == undefined ) return;
+	
 	window.sexShopOnGiftClick.counter = window.sexShopOnGiftClick.counter || "off"
-
 	/* add item to NPC's inventory */
-	if (recipient.sextoys === undefined)
-		recipient.sextoys = {}
-	if (recipient.sextoys[item.name] === undefined) {
-		recipient.sextoys[item.name] = []
-	}
+	if (V.NPCName[recipient].sextoys == undefined)
+		V.NPCName[recipient].sextoys = {}
+	if (V.NPCName[recipient].sextoys[item.name] == undefined)
+		V.NPCName[recipient].sextoys[item.name] = []
 	let obj = {
 		"index": item.index,
 		"name": item.name,
@@ -393,8 +383,6 @@ window.sexShopOnGiftClick = function (index) {
 		"colour": (icon_class_name == '' ? item.default_colour : icon_class_name.substring(icon_class_name.indexOf("-") + 1)),
 		"worn": false,
 		"size": item.size,
-	//	"sizeDesc": {0: "", 1: "", 2: "", 3: "large", 4: "massive"}[item.size],
-	//	"desc": (this.sizeDesc + " " + this.colour + " " + this.name),
 		"carried": false,
 		"state": "worn",
 		"state_base": "worn",
@@ -405,8 +393,7 @@ window.sexShopOnGiftClick = function (index) {
 	if (item.category == "strap-on") {
 		obj.clothes_index = item.clothes_index
 	}
-	recipient.sextoys[item.name].push(obj);
-
+	V.NPCName[recipient].sextoys[item.name].push(obj);
 	/* withdraw money from player */
 	V.money -= (item.cost + (15 * 100))
 
@@ -414,13 +401,13 @@ window.sexShopOnGiftClick = function (index) {
 	window.updateSideBarMoney()
 
 	/* fade in/out bought green text indicator */
-	document.getElementById("ssmGiftButton").outerHTML = `<span class="ssm_gift_button ssm_fade_in" id="ssmGiftButton" style="color: #97de97">Bought!</span>`
+	document.getElementById("ssmGiftButton").outerHTML = `<span class="ssm_gift_button ssm_fade_in" id="ssmGiftButton" style="color:#97de97">Bought!</span>`
 	document.getElementById("recipientList").remove()
 	document.getElementById("spanGift").remove()
 	if (window.sexShopOnGiftClick.counter == "off"){
-		window.sexShopOnGiftClick.counter = window.setTimeout(() => {
+		window.sexShopOnGiftClick.counter = window.setTimeout(function(){
 			document.getElementById("ssmGiftButton").outerHTML = window.determineRecipient(index);
-			window.sexShopOnGiftClick.counter = "off";
+		window.sexShopOnGiftClick.counter = "off"
 		}, 1400)
 	}
 }
@@ -430,9 +417,8 @@ window.sexShopOnBuyClick = function (index) {
 	let icon_class_name = document.getElementById("ssm_desc_img").className
 	window.sexShopOnBuyClick.counter = window.sexShopOnBuyClick.counter || "off"
 	/* add item to player inventory */
-	if (V.player.inventory.sextoys[item.name] === undefined) {
+	if (V.player.inventory.sextoys[item.name] == undefined)
 		V.player.inventory.sextoys[item.name] = []
-	}
 	let obj = {
 		"index": item.index,
 		"colour": (icon_class_name == '' ? item.default_colour : icon_class_name.substring(icon_class_name.indexOf("-") + 1)),
@@ -458,13 +444,13 @@ window.sexShopOnBuyClick = function (index) {
 	/* update sidebar money */
 	window.updateSideBarMoney()
 	/* fade in "owned" icon */
-	document.getElementById("ssm_item_" + item.name_underscore).getElementsByClassName("ssm_already_owned")[0].innerHTML = `<span class="ssm_owned_text ssm_fade_in">owned</span>`;
+	document.getElementById("ssm_item_" + item.name_underscore).getElementsByClassName("ssm_already_owned")[0].innerHTML = `<span class="ssm_owned_text ssm_fade_in">owned</span>`
 	/* fade in/out bought green text indicator */
-	document.getElementById("ssmBuyButton").outerHTML = `<span class="ssm_buy_button ssm_fade_in" id="ssmBuyButton" style="color: #97de97">Bought!</span>`
+	document.getElementById("ssmBuyButton").outerHTML = `<span class="ssm_buy_button ssm_fade_in" id="ssmBuyButton" style="color:#97de97">Bought!</span>`
 	if (window.sexShopOnBuyClick.counter == "off"){
-		window.sexShopOnBuyClick.counter = window.setTimeout(() => {
+		window.sexShopOnBuyClick.counter = window.setTimeout(function(){
 			if (document.getElementById("ssmBuyButton"))
-			document.getElementById("ssmBuyButton").outerHTML = `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(${index})" class="ssm_buy_button ssm_fade_in_fast">
+			document.getElementById("ssmBuyButton").outerHTML = `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` + index + `)" class="ssm_buy_button ssm_fade_in_fast">
 			Buy it
 		</a>`;
 		window.sexShopOnBuyClick.counter = "off"
@@ -473,19 +459,17 @@ window.sexShopOnBuyClick = function (index) {
 }
 
 window.createInventoryObject = function(){ // create Inventory object if it doesn't exist
-	if (V.player.inventory === undefined)
-		V.player.inventory = {
-			"sextoys": {}
-		};
-	if (V.player.inventory.sextoys === undefined){
+	var recipient;
+
+	if (V.player.inventory == undefined)
+		V.player.inventory = {}
+	if (V.player.inventory.sextoys == undefined)
 		V.player.inventory.sextoys = {}
+	for (let li of ["alex", "eden", "kylar", "robin", "sydney"]){
+		recipient = window.findIndexInNPCNameVar(li)
+		if (V.NPCName[recipient].sextoys == undefined)
+			V.NPCName[recipient].sextoys = {}
 	}
-	["Alex", "Eden", "Kylar", "Robin", "Sydney"].forEach(li => {
-		const recipient = V.NPCName[V.NPCNameList.indexOf(li)]
-		if (recipient.sextoys === undefined){
-			recipient.sextoys = {}
-		}
-	})
 }
 
 window.updateSideBarMoney = function(){
