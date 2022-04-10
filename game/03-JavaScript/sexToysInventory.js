@@ -105,59 +105,81 @@ window.sexToysInventoryOnCarryClick = function (index, category) {
 	window.greyButtonsIfCarryLimitReached(index, category)
 }
 
-window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" / "Take it off"
-	const item = V.player.inventory.sextoys[category][index];
-	const setupCategory = setup.sextoys[item.index].category;
+window.sexToysInventoryOnCarryClick = function (index, category) {
+	let shortcut_category = setup.sextoys[V.player.inventory.sextoys[category][index].index].category
 
-	if (setupCategory == "strap-on" && V.worn.under_lower.cursed == 1){ // if player tries to wear a strapon but that under_lower is cursed
-		document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">You try to remove the ${V.worn.under_lower.name}, but fail.</div>`
+	if (V.player.inventory.sextoys[category][index].carried == false && window.countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
 		return
+	V.player.inventory.sextoys[category][index].carried = !V.player.inventory.sextoys[category][index].carried
+	if (V.player.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")
+		V.worn[shortcut_category] = undefined
+	if (V.player.inventory.sextoys[category][index].carried == false) // if player chose "Put back in the cupboard"
+		V.player.inventory.sextoys[category][index].worn = false // also unwear the item
+	document.getElementById("stiWearButton").textContent = (V.player.inventory.sextoys[category][index].worn) ? "Take off" : "Wear it" // update button text value
+	document.getElementById("stiCarryButton").textContent = (V.player.inventory.sextoys[category][index].carried != true ? "Carry it" : "Put back in the cupboard") // update button text value
+	// update worn/carried tag on cell
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (V.player.inventory.sextoys[category][index].worn == true ? "worn" : V.player.inventory.sextoys[category][index].carried == true ? "carried" : "")
+	if (shortcut_category == "strap-on" && V.player.inventory.sextoys[category][index].worn == false){ // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
+		V.worn.under_lower = setup.clothes.under_lower[0]
+		Wikifier.wikifyEval(' <<updatesidebarimg>>');
 	}
-	if (setupCategory == "butt_plug" && V.worn.genitals.cursed == 1 && V.worn.genitals.anal_shield == 1){ // if player tries to wear a butt plug but there is a cursed chastity belt fitted with an anal shield
-		document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">You can't push the ${item.name} past the ${V.worn.genitals.name}'s anal shield</div>`
-		return
-	}
-	if (!item.carried && window.countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
-		return
-	if (item.worn && setupCategory != "strap-on")
-		delete V.worn[setupCategory];
-	if (!item.worn){ // If player chose "Wear it"
-		const cat = setup.sextoys.find(i => i.name === category); // retrieve main category of our item in setup.sextoys
-
-		setup.sextoys.forEach(setup_item => {
-			if (setup_item.category === cat) {
-				V.player.inventory.sextoys[setup_item.name].forEach(i_item => {
-					if (i_item.worn) i_item.worn = false;
-				});
-			}
-		})
-	}
-	item.worn = !item.worn
-	if (item.worn && setupCategory != "strap-on"){
-		V.worn[setupCategory] = item
-		V.worn[setupCategory].state = "worn"
-	}
-	item.carried = true // also carry the item if not done already
-	document.getElementById("stiWearButton").textContent = (item.worn ? "Take it off" : "Wear it") // update button text value
-	document.getElementById("stiCarryButton").textContent = (item.carried ? "Put it back" : "Carry it") // update button text value
-	document.getElementById(`sti_already_owned_${category.replace(/\s/g, '_')}_${index}`).textContent = (item.worn ? "worn" : item.carried ? "carried" : "" )
-	if (setupCategory == "strap-on"){ // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
-		if (item.worn){
-			Wikifier.wikifyEval('<<underlowerundress "wardrobe">>');
-			V.worn.under_lower = {...setup.clothes.under_lower[item.clothes_index],
-								  ...{colour:item.colour}}
-			item.worn = true; //underlowerundress unsets this value, so it must be set again.
-		} else {
-			V.worn.under_lower = setup.clothes.under_lower[0]
-		}
-		window.setLowerVisibility(!item.worn);
-	}
-	$("[id*='sti_already_owned_']").each(function(i, element){
-		const data_item = V.player.inventory.sextoys[element.getAttribute("data-category")][element.getAttribute("data-index")];
-		element.textContent = (data_item.worn ? "worn" : data_item.carried ? "carried" : "" )
-	})
 	window.updateCarryCountUI()
-	window.greyButtonsIfCarryLimitReached(index, category);
+	window.greyButtonsIfCarryLimitReached(index, category)
+}
+
+window.sexToysInventoryOnWearClick = function (index, category) { // "Wear it" / "Take off"
+	let shortcut_category = setup.sextoys[V.player.inventory.sextoys[category][index].index].category
+
+	if (shortcut_category == "strap-on" && V.worn.under_lower.cursed == 1){ // if player tries to wear a strapon but that under_lower is cursed
+		document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">You try to remove the ` + V.worn.under_lower.name + ` but fail</div>`
+		return
+	}
+	if (shortcut_category == "butt_plug" && V.worn.genitals.cursed ==1 && V.worn.genitals.anal_shield ==1){ // if player tries to wear a butt plug but there is a cursed chastity belt fitted with an anal shield
+		document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">You can't push the `+V.player.inventory.sextoys[category][index].name + ` past the ` + V.worn.genitals.name + `'s anal shield</div>`
+		return
+	}
+	if (V.player.inventory.sextoys[category][index].carried == false && window.countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
+		return
+	if (V.player.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")
+		V.worn[shortcut_category] = undefined
+	if (V.player.inventory.sextoys[category][index].worn == false){ // If player chose "Wear it"
+		for (let s_item of setup.sextoys){ // retrieve main category of our item in setup.sextoys
+			if (s_item.name == category)
+				var cat = s_item.category
+		}
+		for (let s_item of setup.sextoys){// search for items with same main category
+			if (s_item.category == cat) { // we find item with same main category than the item we try to wear
+				for (let i_item in V.player.inventory.sextoys[s_item.name]) // we go through each of this item owned in player inventory
+					V.player.inventory.sextoys[s_item.name][i_item].worn = false // we unwear each of them.
+			}
+		}
+	}
+	V.player.inventory.sextoys[category][index].worn = !V.player.inventory.sextoys[category][index].worn // then wear chose item.
+	if (shortcut_category != "strap-on"){
+		V.worn[shortcut_category] = V.player.inventory.sextoys[category][index]
+		V.worn[shortcut_category].state = "worn"
+	}
+	V.player.inventory.sextoys[category][index].carried = true // also carry the item if not done alreadys
+	document.getElementById("stiWearButton").textContent = (V.player.inventory.sextoys[category][index].worn) ? "Take off" : "Wear it" // update button text value
+	document.getElementById("stiCarryButton").textContent = (V.player.inventory.sextoys[category][index].carried != true ? "Carry it" : "Put back in the cupboard") // update button text value
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (V.player.inventory.sextoys[category][index].worn ? "worn" : V.player.inventory.sextoys[category][index].carried ? "carried" : "" )
+	$("[id*='sti_already_owned_']").each(function(i, element){
+		let c = element.getAttribute("data-category")
+		let ind = element.getAttribute("data-index")
+		element.textContent = (V.player.inventory.sextoys[c][ind].worn ? "worn" : V.player.inventory.sextoys[c][ind].carried ? "carried" : "" )
+	})
+	if (shortcut_category == "strap-on"){ // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
+		if (V.player.inventory.sextoys[category][index].worn == true){
+			Wikifier.wikifyEval(' <<underlowerundress "wardrobe">>');
+			V.worn.under_lower = {...setup.clothes.under_lower[V.player.inventory.sextoys[category][index].clothes_index],
+								  ...{colour:V.player.inventory.sextoys[category][index].colour}}
+		}
+		else
+			V.worn.under_lower = setup.clothes.under_lower[0]
+		Wikifier.wikifyEval(' <<updatesidebarimg>>');
+	}
+	window.updateCarryCountUI()
+	window.greyButtonsIfCarryLimitReached(index, category)
 }
 
 window.sexToysInventoryOnThrowClick = function(index, category){
@@ -273,6 +295,13 @@ window.handSextoysGiftToNPC = function (npc_name){
 			if (item.gift_state === "held") item.gift_state = "received";
 		})
 	})
+}
+
+window.findIndexInNPCNameVar = function(npc_name) {
+	for (let npc in V.NPCName){
+		if (V.NPCName[npc].nam.toLowerCase() == npc_name.toLowerCase())
+			return npc
+	}
 }
 
 window.countCarriedSextoys = function() {
