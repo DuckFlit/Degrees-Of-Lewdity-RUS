@@ -2,7 +2,84 @@
 
 <<bedclotheson "bed">>
 <<set $outside to 0>><<set $location to "home">><<home_effects>><<effects>><<getTarget true>>
-You are in your bedroom.
+You are in your bedroom. 
+
+<<set _furniture to $furniture.bedroom>>
+<<if _furniture.wallpaper>>
+	<<switch _furniture.wallpaper.name>>
+		<<case "vines">>
+			Lewd green vines writhe on the walls. 
+			<<if $backgroundTraits.includes("plantlover")>>
+				These remind you of the beloved nectar.
+			<</if>>
+		<<case "tentacles">>
+			Purple tentacles slither on the walls. 
+			<<if $demon gte 6>>
+				Thoughts of pleasure cross your mind.
+			<</if>>
+		<<case "plainwhite">>
+			Plain white wallpapers cover the walls.
+		<<case "wavywhite">>
+			The white wallpapers gradient to black in a wavy pattern. Is there a lewd subtext? 
+		<<case "hearts">>
+			Pink hearts cover the walls.
+		<<case "toast">>
+			Cowgirls dance on the walls.
+		<<case "trees">>
+			Green trees bring you a feeling of being in a forest.
+		<<case "crosses">>
+			Golden crosses cover the walls.
+		<<default>> /* Custom */
+			Images of _furniture.wallpaper.name cover the walls.
+			<<if ['Vrel', 'DoL', 'Degrees of Lewdity', 'Kegdo'].some(e => _furniture.wallpaper.name.includes(e))>>
+				Somehow, they look familiar.
+			<</if>>
+	<</switch>>
+<<else>>
+	Bleak walls of the room protect you from the outside.
+<</if>>
+<br>
+
+<<set _deco to Furniture.get('decoration')>>
+<<if _deco>>
+	<<switch _deco.name>>
+		<<case "bearplushie">>
+			<<furnitureicon _deco.iconFile>>The _deco.name is sitting in a corner.
+		<<default>>
+			<<furnitureicon _deco.iconFile>>The _deco.name is hanging on a wall.
+	<</switch>>
+<</if>>
+
+<<set _windowsill to Furniture.get('windowsill')>>
+<<if _windowsill>>
+	<<switch _windowsill.name>> /* can be expanded further */
+		<<case "ominous jar">>
+			<br>
+			<<furnitureicon _windowsill.iconFile>>_windowsill.nameCap stands on the windowsill menacingly.
+			<br>
+		<<default>>
+			<br>
+			<<furnitureicon _windowsill.iconFile>> Your _windowsill.name is placed on the windowsill.
+			<br>
+	<</switch>>
+<</if>>
+
+<<if _furniture.poster>>
+	<<switch _furniture.poster.name>>
+		<<case "cowgirl">>
+			A cowgirl poster bangles to a wall.
+		<<case "cat">>
+			A poster of a cat bangles to a wall, with the text below: "Hang in there!". 
+		<<case "puppy">>
+			A puppy poster bangles to a wall.
+		<<default>> /* Custom */
+			A poster of _furniture.poster bangles to a wall. 
+			<<if ['Vrel', 'DoL', 'Degrees of Lewdity', 'Kegdo'].some(e => _furniture.poster.name.includes(e))>>
+				You feel an odd sense of familiarity. /* Why, yes, I am selfish. - K */
+			<</if>>
+	<</switch>>
+<</if>>
+
 <br><br>
 <<if $robinbed is "yours" and !$possessed>>
 	<<unset $robinbed>>
@@ -94,21 +171,31 @@ You are in your bedroom.
 		<span class="green">Debugging end here</span>
 		<br><br>
 	<</if>>
-	Your bed takes up most of the room.
+	<<set _bed to Furniture.get('bed')>>
+	<<if _bed>>
+		Your _bed.name takes up most of the room.
+	<</if>>
 	<<if $nextPassageCheck is "Bed">>
 		<br>
 		<<if $robinbed is "yours">>
-			<span class="nextLink"><<bedicon>><<link [[Robin.|Bed]]>><</link>></span>
+			<span class="nextLink"><<furnitureicon _bed.iconFile>><<link [[Robin.|Bed]]>><</link>></span>
 		<<else>>
-			<span class="nextLink"><<bedicon>><<link [[Kylar.|Bed]]>><</link>></span>
+			<span class="nextLink"><<furnitureicon _bed.iconFile>><<link [[Kylar.|Bed]]>><</link>></span>
 		<</if>>
 		<br>
 		<<listsleepoutfits>>
 	<<elseif $slimeEvent is undefined>>
 		<br>
-		<<bedicon>><<link [[Strip and get in bed|Bed]]>><<undressSleep "bed">><</link>>
+		<<furnitureicon _bed.iconFile>><<link [[Strip and get in bed|Bed]]>><<undressSleep "bed">><</link>>
 		<br>
 		<<listsleepoutfits>>
+		
+		<<if _bed.type.includes("comfy")>>
+			<<furnitureicon _bed.iconFile>><<link [[Masturbate in bed|Home Masturbation]]>><<set $masturbationstart to 1>><</link>>
+		<<else>>
+			Your bed is too uncomfortable to masturbate in.
+		<</if>>
+		<br>
 	<<else>>
 		<br>
 		<<if $possessed>>
@@ -120,13 +207,12 @@ You are in your bedroom.
 	<</if>>
 	<<roomoptions>>
 	<br>
-	<<if $arousal gte $arousalmax / 5 and !$worn.genitals.type.includes("chastity") and $homemasturbationtest is 1>>
-		<<link [[Masturbate (0:05)|Home Masturbation]]>><<pass 5>><<set $masturbationstart to 1>><</link>>
+	<<set _wardrobe to Furniture.get('wardrobe')>>
+	<<if _wardrobe>>
+		Your clothes are kept in the _wardrobe.name.
 	<</if>>
 	<br>
-	Your clothes are kept in the corner.
-	<br>
-	<<wardrobeicon>><<link [[Wardrobe|Wardrobe]]>><</link>>
+	<<furnitureicon _wardrobe.iconFile>><<link [[Wardrobe|Wardrobe]]>><</link>>
 	<br>
 	<<if playerHasSexToys()>>
 		<<sextoysicon>><<link [[Sex toys|Sextoys Inventory]]>><<set $sextoyInvReturnLink to $passage>><</link>>
@@ -152,8 +238,17 @@ You are in your bedroom.
 		<br>
 	<</if>>
 
-
-
+	<<set _table to Furniture.get('table')>>
+	<<set _chair to Furniture.get('chair')>>
+	<<if _table>>
+		<br>
+		Your _table.name <<if _chair>>and a pair of _chair.name are <<else>>is <</if>> situated next to a wall.
+		<br>
+		<<if $debug>>
+			<<bedroomtablechairicon>><<link [[Table (Debug)|Bedroom Table]]>><</link>>
+			<br><br>
+		<</if>>
+	<</if>>
 
 	<<if $sexStats.anus.pregnancy.seenDoctor gte 2>>
 		<<set $container.lastLocation to $location>>

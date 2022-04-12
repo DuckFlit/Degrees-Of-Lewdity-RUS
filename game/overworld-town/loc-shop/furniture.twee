@@ -1,0 +1,319 @@
+:: Furniture Shop
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+
+/* TODO: Turn this shop into an actual megastore where you can get lost and encounter tentacles. Tentakea?*/
+
+You enter the furniture megastore.
+<br>
+Most of the things you see would be too big to fit in your room.
+<br><br>
+
+<<if $daystate is "night">>
+	You are alone in the darkness.
+<<elseif $exposed gte 1>>
+	You hide in a cupboard to protect your dignity.
+<<else>>
+	There is a large "No refunds!" sign beside the counter.
+<</if>>
+<br><br>
+<<if $stress gte $stressmax>>
+	<<passoutshop>>
+<<else>>
+	<<if $hour is 21>>
+		It's closing time. Security is herding everyone outside.
+		<<if $exposed gte 1>>
+			Panic swells within you as you realise how embarassed you'll be should security find you exposed like this.
+		<</if>>
+		<br><br>
+		<<if $exposed lte 0>>
+			<<link [[Go outside|High Street]]>><</link>>
+			<br>
+		<<else>>
+			<<link [[Hide until it's over (1:00)|Furniture Shop]]>><<pass 1 hour>><</link>>
+		<</if>>
+	<<else>>
+		<<if $daystate is "night" and $hour isnot 21 and $furnitureshoptheft isnot 1>>
+			<<link [[Examine the cash register|Furniture Shop Register]]>><</link>>
+			<br>
+		<</if>>
+		<<if $exposed lte 0 and $daystate isnot "night" and $hour isnot 21>>
+			<<link [[Catalogue|Furniture Shop Catalogue]]>><</link>>
+			<br>
+		<</if>>
+		<<if ($exposed lte 0 and $daystate isnot "night" and $hour isnot 21) or ($hour gte 21 and $furnitureshoptheft isnot 1)>>
+			<br>
+			Various posters and wallpapers are stacked in a corner.
+			<br>
+			<<link [[Paperhangings|Furniture Shop Papers]]>><</link>>
+			<br>
+		<</if>>
+		<<link [[Leave|Shopping Centre]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Furniture Shop Papers
+
+<<run Furniture.in('bedroom')>>
+You approach the paperhangings corner.
+
+There is a poor selection of posters.
+<br><br>
+<<set _posterCost to Furniture.get('poster', true).cost()>>
+<<if $daystate is "night" and $hour isnot 21 and $furnitureshoptheft isnot 1>>
+	<<if $furnitureshoptheft isnot 1>>
+		It's a good thing you can just steal them for free!
+		<br>
+		<<listbox "_chosenPoster" autoselect>>
+			<<optionsfrom { "Cowgirl" : "cowgirl", "Cat" : "cat", "Puppy" : "puppy" }>>
+		<</listbox>>
+		<<link [[Steal|Furniture Shop Papers]]>>
+			<<run Furniture.set('poster', 'poster', {
+				name	: _chosenPoster,
+				nameCap	: _chosenPoster.toUpperFirst()
+			})>>
+			<<crimeup 5>>
+		<</link>><<gcrime>>
+		<br>
+	<<else>>
+		You already stole something from this store.
+		<br>
+	<</if>>
+<<elseif $money gte _posterCost>>
+	Select one of the premade posters.
+	<br>
+	<<listbox "_chosenPoster" autoselect>>
+		<<optionsfrom { "Cowgirl" : "cowgirl", "Cat" : "cat", "Puppy" : "puppy" }>>
+	<</listbox>>
+	<<link [['Buy (£' + _posterCost / 100 + ')'|Furniture Shop Papers]]>>
+		<<set $money -= _posterCost>>
+		<<run Furniture.set('poster', 'poster', {
+			name	: _chosenPoster,
+			nameCap	: _chosenPoster.toUpperFirst()
+		})>>
+	<</link>>
+	<br>
+	<br>
+	<<if $money gte _posterCost * 2>>
+		What should be on your custom poster?
+		<br>
+		<<textbox "_chosenPosterCustom" "">>
+		<<link [['Buy (£' + _posterCost / 50 + ')'|Furniture Shop Papers]]>>
+			<<set $money -= _posterCost * 2>>
+			<<set _normalisedName to _chosenPosterCustom.toLowerCase()>>
+			<<run Furniture.set('poster', 'poster', {
+				name	: _normalisedName,
+				nameCap	: _normalisedName.toUpperFirst()
+			})>>
+		<</link>>
+		<br>
+	<</if>>
+	
+	<br>
+<<else>>
+	You don't have enough.
+	<br>
+<</if>>
+<br><br>
+
+<<set _availableWallpapers to {
+	"Toast"			: "toast",
+	"Vines"			: "vines",
+	"Tentacles"		: "tentacles",
+	"Plainwhite"	: "plainwhite",
+	"Wavywhite"		: "wavywhite",
+	"Hearts"		: "hearts",
+	"Trees"			: "trees",
+	"Crosses"		: "crosses"
+}>>
+
+A wide variety of wallpapers take up a lot of space.
+<br><br>
+<<set _wallpaperCost to Furniture.get('wallpaper', true).cost()>>
+<<if $daystate is "night" and $hour isnot 21 and $furnitureshoptheft isnot 1>>
+	<<if $furnitureshoptheft isnot 1>>
+		Thankfully, you have an option that won't hurt your wallet.
+		<br>
+		<<listbox "_chosenWallpaper" autoselect>>
+			<<optionsfrom _availableWallpapers>>
+		<</listbox>>
+		<br>
+		<<link [[Steal|Furniture Shop Papers]]>>
+			<<run Furniture.set('wallpaper', 'wallpaper', {
+				name	: _chosenWallpaper,
+				nameCap	: _chosenWallpaper.toUpperFirst()
+			})>>
+			<<crimeup 5>>
+		<</link>><<gcrime>>
+		<br>
+	<<else>>
+		You already stole something from this store.
+		<br>
+	<</if>>
+<<elseif $money gte _wallpaperCost>>
+	<<listbox "_chosenWallpaper" autoselect>>
+		<<optionsfrom _availableWallpapers>>
+	<</listbox>>
+	<<link [['Buy (£' + _wallpaperCost / 100 + ')'|Furniture Shop Papers]]>>
+		<<set $money -= _wallpaperCost>>
+		<<run Furniture.set('wallpaper', 'wallpaper', {
+			name	: _chosenWallpaper,
+			nameCap	: _chosenWallpaper.toUpperFirst()
+		})>>
+	<</link>>
+	<br>
+	<br>
+	<<if $money gte _wallpaperCost * 2>>
+		What should be on your custom wallpaper?
+		<br>
+		<<textbox "_chosenWallpaperCustom" "">>
+		<<link [['Buy (£' + _wallpaperCost / 50 + ')'|Furniture Shop Papers]]>>
+			<<set $money -= _wallpaperCost * 2>>
+			<<set _normalisedName to _chosenWallpaperCustom.toLowerCase()>>
+			<<run Furniture.set('wallpaper', 'wallpaper', {
+				name	: _normalisedName,
+				nameCap	: _normalisedName.toUpperFirst()
+			})>>
+		<</link>>
+		<br>
+		<br>
+	<</if>>
+	<br>
+<<else>>
+	You don't have enough.
+	<br>
+	<br>
+<</if>>
+
+<<link [[Back|Furniture Shop]]>><</link>>
+<br>
+
+/* Further down is no man's land. When I was coding this, only God knew how it works. Now, none know. - K */
+/* The comment above is cringe. - J */
+/* We are both cringe. - K */
+:: Furniture Shop Catalogue [exitCheckBypass]
+<<effects>>
+You browse the catalogue of the megastore.
+<br>
+<<set $chosenFurnitureCategory to $chosenFurnitureCategory || "bed">>
+<<dynamic "furnitureUpdate" "furniture-update-container">>
+<br><br>
+<<link [[Back|Furniture Shop]]>>
+	<<run delete $chosenFurnitureCategory>>
+<</link>>
+<br><br>
+<<furnitureCatalogue>>
+<br>
+
+:: Widgets Furniture [widget]
+
+<<widget "furnitureUpdate">>
+	<<if $boughtfurniturename isnot undefined>>
+		You buy the $boughtfurniturename. It will be delivered to your room in the orphanage for free.
+		<br>
+		<<run delete $boughtfurniturename>>
+	<</if>>
+
+	<<switch $chosenFurnitureCategory>>
+		<<case "bed">>
+			You browse the bed column. Some of these are sold as double beds, but they'd barely pass as single for a middle-aged adult.
+		<<case "table">>
+			You browse the table column. Most of them are really huge, but you find a couple of corner tables that would fit in your room.
+		<<case "chair">>
+			You browse the chairs column. A pair of those probably can find a place in your bedroom, if you find a small enough table for them.
+		<<case "wardrobe">>
+			You browse the wardrobe column. The sizes of some are near-identical to your old wardrobe, you shouldn't have any problems with replacing it.
+		<<case "decoration">>
+			You browse the decorations column. You spot a rather funny statue, but pout upon the realisation that it would be too big to fit in your room.
+		<<case "windowsill">>
+			You browse the miscellaneous column. Something extremely menacing and oddly familiar catches your eye, making you shiver.
+		<<default>>
+			/* Do nothing */
+	<</switch>>
+<</widget>>
+
+<<widget "furnitureCatalogue">>
+	<hr>
+	__Furniture__
+	<br>
+	<<dynamic "furnitureLinks" "furniture-category-container">>
+	<<dynamic "furnitureList" "furniture-menu-container">>
+<</widget>>
+
+<<widget "furnitureLinks">>
+	<<set _furnitureLinks to [
+		{ id: 'bed', label: 'Bed' },
+		{ id: 'table', label: 'Table' },
+		{ id: 'chair', label: 'Chairs' },
+		{ id: 'wardrobe', label: 'Wardrobe' },
+		{ id: 'decoration', label: 'Decorations' },
+		{ id: 'windowsill', label: 'Miscellaneous' }
+	]>>
+	<<for _i = 0; _i < _furnitureLinks.length; _i++>>
+		<<set _furniLink = _furnitureLinks[_i]>>
+		<a
+			@class="($chosenFurnitureCategory is _furniLink.id ? 'selected' : '')"
+			@id="Dynamic.eventBinder(_furniLink.id)"
+			onclick="(id) => $chosenFurnitureCategory = id"
+		>_furniLink.label</a><<if _i < _furnitureLinks.length - 1>> | <</if>>
+	<</for>>
+<</widget>>
+
+<<widget "furnitureList">>
+	<<set $currentFurnishing to Furniture.get($chosenFurnitureCategory)>>
+	Currently installed in your bedroom:
+	<<if $currentFurnishing>>
+		<<furnitureicon $currentFurnishing.iconFile>>
+		$currentFurnishing.nameCap
+		<a onclick="document.getElementById('furnitureDetails').classList.toggle('hidden')">Extra Info</a>
+		<div id="furnitureDetails" class="hidden">
+			$currentFurnishing.description
+			<br><br>
+			<<if $currentFurnishing.type>>
+				<<if $currentFurnishing.type.includes('comfy')>> Improves sleep quality. <</if>>
+				<<if $currentFurnishing.type.includes('double')>> Has enough space for a proper sleepover. <</if>>
+			<</if>>
+		</div>
+	<<else>>
+		Nothing.
+	<</if>>
+	<br><br>
+
+	<<generateFurnitureShopStock>>
+<</widget>>
+
+<<widget "generateFurnitureShopStock">>
+	<!-- TODO: Cache items beloning to a particular category. -->
+	<<for $_key, $_furnishing range setup.furniture>>
+		<<set $_isInCategory to $_furnishing.category.includes($chosenFurnitureCategory)>>
+		<<set $_isDefault to $_furnishing.type.includes('starter')>>
+		<<set $_isCurrent to !(!$currentFurnishing or $_key isnot $currentFurnishing.id)>>
+		<<set $_isShowing to $_furnishing.hasOwnProperty('showFn') ? $_furnishing.showFn() : true>>
+		<<if $_isInCategory and !$_isDefault and !$_isCurrent and $_isShowing>>
+			<div class="furnitureBlock no-numberify">
+				<<furnitureicon $_furnishing.iconFile>>  $_furnishing.nameCap | 
+				<<if $_furnishing.type>>
+					<<if $_furnishing.type.includes('comfy')>> Comfortable | <</if>> 
+					<<if $_furnishing.type.includes('single')>> Single | <</if>>
+					<<if $_furnishing.type.includes('double')>> Double | <</if>>
+					<<if $_furnishing.type.includes('spacious')>> Spacious | <</if>>
+					<<if $_furnishing.type.includes('organiser')>> Organiser | <</if>>
+				<</if>>
+				<<set $_cost to $_furnishing.cost()>>
+				<<set $_name to $_furnishing.name>>
+				<<if $money gte $_cost>>
+					<<capture $_key $_cost $_name>>
+						<<link [["£" + $_cost/100|Furniture Shop Catalogue]]>>
+							<<set $money -= $_cost>>
+							<<run Furniture.set($_key, $chosenFurnitureCategory)>>
+							<<set $boughtfurniturename to $_name>>
+							<<run Furniture.wardrobeUpdate()>>
+						<</link>>
+					<</capture>>
+				<<else>>
+					<span class="red"><<print "£"+$_cost/100>></span>
+				<</if>>
+			</div>
+		<</if>>
+	<</for>>
+<</widget>>
