@@ -74,23 +74,23 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 	<br>
 	You already own lenses of the following colours:
 	<span style="display: inline-block;">
-	<<for _i, _colour range $makeup.owned.eyelenses>>
-		<span @class="'eye-' + _colour.replace(/ /g, '-')"><span class="left-iris" style="color:#6E4E11;">_colour</span></span>
-		<<if _i < $makeup.owned.eyelenses.length - 1 or $makeup.owned.custom_eyelenses.length > 0>>, <</if>>
-	<</for>>
-	<<set _unique_temp_custom_eyelenses to 0>>
-	<<script>>if (V.makeup.owned.custom_eyelenses.length > 0)T.unique_temp_custom_eyelenses = [...new Set(V.makeup.owned.custom_eyelenses)];<</script>>
-	<<for _i = 0; _i < _unique_temp_custom_eyelenses.length; _i++>>
-		<<set _colour to window.colorNameTranslate(_unique_temp_custom_eyelenses[_i], "spaced name")>>
-		<<for _e = 0; _e < $custom_eyecolours.length; _e++>>
-			<<if $custom_eyecolours[_e].name == _colour>>
-				<<set _background_colour to clone($custom_eyecolours[_e].canvasfilter.blend)>>
-				<span class="eye-custom"><span @style="'color:'+_background_colour">_colour</span></span>
-				<<break>>
-			<</if>>
-		<</for>>
-		<<if _i < _unique_temp_custom_eyelenses.length - 1>>, <</if>>
-	<</for>>.
+	<<set _lenses to []>>
+	<<run $makeup.owned.eyelenses.forEach(colour => {
+		const colourClass = colour.replace(/ /g, '-')
+		_lenses.push(`<span @class="'eye-${colourClass}'"><span class="left-iris" style="color:#6E4E11;">${colour}</span></span>`);
+	})>>
+	<<if ($makeup.owned.custom_eyelenses.length gt 0)>>
+		<<set _uniqueCustomLenses to [...new Set($makeup.owned.custom_eyelenses)]>> /* Filter out non-unique lenses */
+		<<run _uniqueCustomLenses.forEach(lens => {
+			const colour = window.colorNameTranslate(lens, "spaced name");
+			const colourClass = $custom_eyecolours.find(c => c.name is colour)?.canvasfilter.blend;
+			if (colourClass){
+				_lenses.push(`<span class="eye-custom"><span @style="'color:${colourClass}'">${colour}</span></span>`);
+			}
+		})>>
+	<</if>>
+
+	<<print _lenses.join(", ")>>. /* Print the list */
 	</span>
 <</if>>
 <br><br>
