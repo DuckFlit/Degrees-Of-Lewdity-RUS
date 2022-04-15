@@ -299,3 +299,9 @@ window.allClothesSetup = function(){
 window.shopSearchReplacer = function(name){
 	return name.replace(/[^a-zA-Z0-9' -]+/g,"");
 }
+
+function getOwnedClothingCount(index, type) {
+	const wardrobe = V.wardrobes.shopReturn === "wardrobe" ? V.wardrobe : V.wardrobes[V.wardrobes.shopReturn] || V.wardrobe;
+	return wardrobe[type].reduce((p, c) => p + Number(c.index === index), 0);
+}
+window.getOwnedClothingCount = getOwnedClothingCount;

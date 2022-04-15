@@ -208,7 +208,7 @@
 <</widget>>
 
 <<widget "sydneyOptions">>
-<<sydneySchedule>><<NPCStatusCheck "Sydney">>
+<<sydneySchedule>><<run statusCheck("Sydney")>>
 <<if $bus is "schoollibrary" or $location is "school">>
 	<<switch _sydney_location>>
 		<<case "library">>
@@ -684,26 +684,27 @@
 <</widget>>
 
 <<widget "sydneyStatusCheck">>
-<<set _sydneyStatus to "">>
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 50 and $NPCName[$NPCNameList.indexOf("Sydney")].lust gte 60>>
-	<<set _sydneyStatus to "pureLust">>
-<<elseif $NPCName[$NPCNameList.indexOf("Sydney")].corruption gte 10 and $NPCName[$NPCNameList.indexOf("Sydney")].lust gte 20>>
-	<<set _sydneyStatus to "corruptLust">>
-<<elseif $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 50>>
-	<<set _sydneyStatus to "pure">>
-<<elseif $NPCName[$NPCNameList.indexOf("Sydney")].corruption gte 10>>
-	<<set _sydneyStatus to "corrupt">>
-<<elseif $NPCName[$NPCNameList.indexOf("Sydney")].lust gte 40>>
-	<<set _sydneyStatus to "neutralLust">>
-<<else>>
-	<<set _sydneyStatus to "neutral">>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].chastity.penis.includes("chastity") or $NPCName[$NPCNameList.indexOf("Sydney")].chastity.vagina.includes("chastity")>>
-	<<set _sydneyChastity to 1>>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].virginity.vaginal is true and $NPCName[$NPCNameList.indexOf("Sydney")].virginity.penile is true>>
-	<<set _sydneyVirgin to 1>>
-<</if>>
+	<<set $_sydney to $NPCName[$NPCNameList.indexOf("Sydney")]>>
+	<<set _sydneyStatus to "">>
+	<<if $_sydney.purity gte 50 and $_sydney.lust gte 60>>
+		<<set _sydneyStatus to "pureLust">>
+	<<elseif $_sydney.corruption gte 10 and $_sydney.lust gte 20>>
+		<<set _sydneyStatus to "corruptLust">>
+	<<elseif $_sydney.purity gte 50>>
+		<<set _sydneyStatus to "pure">>
+	<<elseif $_sydney.corruption gte 10>>
+		<<set _sydneyStatus to "corrupt">>
+	<<elseif $_sydney.lust gte 40>>
+		<<set _sydneyStatus to "neutralLust">>
+	<<else>>
+		<<set _sydneyStatus to "neutral">>
+	<</if>>
+	<<if $_sydney.chastity.penis.includes("chastity") or $_sydney.chastity.vagina.includes("chastity")>>
+		<<set _sydneyChastity to 1>>
+	<</if>>
+	<<if $_sydney.virginity.vaginal is true and $_sydney.virginity.penile is true>>
+		<<set _sydneyVirgin to 1>>
+	<</if>>
 <</widget>>
 
 <<widget "sydneyGreeting">>
@@ -736,7 +737,7 @@
 <<widget "bookCriminal">>
 <<if !$sydneyDaily.overdueMessage>>
 	<<bodywriting_exposure_check>>
-	<<NPCStatusCheck "Sydney">>
+	<<run statusCheck("Sydney")>>
 	<<if _bodywriting_exposed gte 1 and ($skin[_bodypart].writing is "Book Criminal >:(" or $skin[_bodypart].writing is "Book Criminal <3")>>
 		<<if $skin[_bodypart].pen is "tattoo">>
 			<<if $bookTattoo is undefined>>
@@ -859,7 +860,7 @@
 <</widget>>
 
 <<widget "sydneyBodywritingLocation">>
-<<NPCStatusCheck "Sydney">>
+<<run statusCheck("Sydney")>>
 <<set _targets to []>>
 <<set _targets.pushUnique("forehead")>>
 <<if !$worn.face.type.includes("mask")>>

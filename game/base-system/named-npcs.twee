@@ -593,7 +593,7 @@ alternative way to write that:
 		<<case Robin>>
 			<<run getRobinCrossdressingStatus($NPCName[_i].crossdress)>>
 			<<set $NPCName[_i].crossdressing to _robin_cd>>
-			<<NPCStatusCheck "Robin">>
+			<<run statusCheck("Robin")>>
 			<<switch _robin_location>>
 				<<case "sleep">>
 					<<npcClothesType $NPCName[_i] "sleep">>
@@ -653,13 +653,16 @@ alternative way to write that:
 <<set _i to $NPCNameList.indexOf(_nam)>>
 <<set $_newNPCOutfit to _args[1]>>
 <<if _args[0] and _args[1]>>
-	<<set $_src to Utils.GetStack()>>
 	<<if !setup.npcClothesSets.some(set => set.name.includes($_newNPCOutfit))>>
-		<<set $_msg to `NPC (${_nam}) was given invalid outfit (Outfit name: ${$_newNPCOutfit}). Please inform PurityGuy.`>>
-		<<error $_msg $_src>>
+		<<error {
+			message	: `NPC (${_nam}) was given invalid outfit (Outfit name: ${$_newNPCOutfit}). Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
 	<<elseif _i lt 0>>
-		<<set $_msg to `NPC (${_nam}) ${"is"} invalid (Must be a named NPC. check for typos!). Please inform PurityGuy.`>>
-		<<error $_msg $_src>>
+		<<error {
+			message	: `NPC (${_nam}) ${"is"} invalid (Must be a named NPC. check for typos!). Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
 	<<else>>
 		<<if !$NPCName[_i].outfits>>
 			<<set $NPCName[_i].outfits to ["naked", "maleDefault", "femaleDefault"]>>
@@ -674,16 +677,21 @@ alternative way to write that:
 <<set _i to $NPCNameList.indexOf(_nam)>>
 <<set $_newNPCOutfit to _args[1]>>
 <<if _args[0] and _args[1]>>
-	<<set $_src to Utils.GetStack()>>
 	<<if _i lt 0>>
-		<<set $_msg to `NPC (${_nam}) ${"is"} invalid (Must be a named NPC. Check for typos!). Please inform PurityGuy.`>>
-		<<error $_msg $_src>>
+		<<error {
+			message	: `NPC (${_nam}) ${"is"} invalid (Must be a named NPC. Check for typos!). Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
 	<<elseif !$NPCName[_i].outfits>>
-		<<set $_msg to `NPC (${_nam}) attempted to remove outfit (Outfit name: ${$_newNPCOutfit}) while having no outfits. Why don't you remove that pesky skin of yours? Please inform PurityGuy.`>>
-		<<error $_msg $_src>>
+		<<error {
+			message	: `NPC (${_nam}) attempted to remove outfit (Outfit name: ${$_newNPCOutfit}) while having no outfits. Why don't you remove that pesky skin of yours? Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
 	<<elseif !$NPCName[_i].outfits.some(x => x.includes($_newNPCOutfit))>>
-		<<set $_msg to `NPC (${_nam}) had non-existant outfit removed (Outfit name: ${$_newNPCOutfit}). Please inform PurityGuy.`>>
-		<<error $_msg $_src>>
+		<<error {
+			message	: `NPC (${_nam}) had non-existant outfit removed (Outfit name: ${$_newNPCOutfit}). Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
 	<<else>>
 		<<set $NPCName[_i].outfits.delete($_newNPCOutfit)>>
 		<<if $NPCName[_i].outfits.length is 0>>
@@ -1440,7 +1448,7 @@ alternative way to write that:
 
 <<widget "NPCStatusCheck">>
 <!-- When NPCs are updated and made compatible with statusCheck-style widgets, add them to here. Make a new if statement, NOT an elseif -->
-<!-- Usage: call a SINGLE argument with every relevant NPC. <<NPCStatusCheck "Kylar Sydney">> will call <<kylarStatusCheck>> and <<sydneyStatusCheck>> -->
+<!-- Usage: call a SINGLE argument with every relevant NPC. <<run statusCheck("Kylar Sydney">> will call <<kylarStatusCheck>> and <<sydneyStatusCheck>> -->
 <<if _args[0].includes("Robin")>>
 	<<set _robin to clone($NPCName[$NPCNameList.indexOf("Robin")])>>
 	<<if _robin.init is 1>>
