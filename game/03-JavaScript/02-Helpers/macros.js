@@ -2,8 +2,21 @@
  * 		   Leaving the second argument out will grab a snippet of the code before it, up to 128 characters.
  * 		   Will not trigger the widget handler's error capturing system as it uses a different class (.dol-error instead of .error) */
 Macro.add('error', {
+	skipArgs : true,
 	handler() {
-		if (this.args.length < 1) return this.error(`Missing <<error>> arguments. ${this.args}`);
+		const exp = this.args.full;
+		const result = Scripting.evalJavaScript(exp[0] === '{' ? `(${exp})` : exp);
+		const { message, source } = Object.assign({
+			message: 'Message not set.',
+			source: this.parser.source.slice(0, this.parser.matchStart).slice(-128)
+		}, result);
+		Errors.inlineReport(message, source).appendTo(this.output);
+	}
+});
+
+Macro.add('errorp', {
+	handler() {
+		if (this.args.length < 1) return this.error(`Missing <<errorP>> arguments. ${this.args}`);
 		const message = this.args[0];
 		const source = this.args[1] || this.parser.source.slice(0, this.parser.matchStart).slice(-128);
 		Errors.inlineReport(message, source).appendTo(this.output);

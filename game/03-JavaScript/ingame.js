@@ -1180,10 +1180,14 @@ window.playerHasStrapon = function(){
 	return (V.worn.under_lower.type.includes("strap-on") && V.worn.under_lower.state == "waist")
 }
 
-window.npcHasStrapon = function(index) {
-	if (index < 0 || index > 5) {
+window.npcHasStrapon = function(index, metadata = {}) {
+	if (typeof index !== 'number') {
 		if (V.debugdisable === 'f')
-			Errors.report('npcHasStrapon called with an index outside of our NPC list range: ' + index, { index });
+			Errors.report(`[npcHasStrapon]: index must be a number, was ${typeof index}.`, { index, metadata });
+		return false;
+	} else if (index < 0 || index > 5) {
+		if (V.debugdisable === 'f')
+			Errors.report(`[npcHasStrapon]: index must be between 0 and 5 inclusive, was ${index}.`, { index, metadata });
 		return false;
 	}
 	// index is 0 to 5

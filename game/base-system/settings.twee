@@ -1663,49 +1663,56 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
 	<</link>>
 	<br><br>
-	<<if $per_npc[_pNPCId].name_known>>
-		<span class="gold">$per_npc[_pNPCId].name the <<print _pNPCId.replace(/_/g, ' ')>></span>
-	<<elseif $per_npc[_pNPCId].name is "Ivory Wraith">>
-		<span class="wraith">The Ivory Wraith</span>
-	<<elseif _pNPCId is "tower_creature">>
-		<span class="gold">The Night Monster</span>
+	<<if $per_npc[_pNPCId] eq null>>
+		<<error {
+			message	: `The given ID for pNPCs failed to match any available pNPC: ${_pNPCId}.`,
+			source	: _pNPCId
+		}>>
 	<<else>>
-		<span class="gold"><<print _pNPCId.toUpperFirst().replace(/_/g, ' ')>></span>
+		<<if $per_npc[_pNPCId].name_known>>
+			<span class="gold">$per_npc[_pNPCId].name the <<print _pNPCId.replace(/_/g, ' ')>></span>
+		<<elseif $per_npc[_pNPCId].name is "Ivory Wraith">>
+			<span class="wraith">The Ivory Wraith</span>
+		<<elseif _pNPCId is "tower_creature">>
+			<span class="gold">The Night Monster</span>
+		<<else>>
+			<span class="gold"><<print _pNPCId.toUpperFirst().replace(/_/g, ' ')>></span>
+		<</if>>
+		<<if $per_npc[_pNPCId].name_known and $debug is 1>>
+			| <<link "Rename">>
+				<<if $per_npc[_pNPCId].pronoun is "f">>
+					<<set $per_npc[_pNPCId].name to $NPC_names_f.random()>>
+				<<else>>
+					<<set $per_npc[_pNPCId].name to $NPC_names_m.random()>>
+				<</if>>
+				<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
+			<</link>>
+		<</if>>
+		<br>
+		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
+		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
+		<br>
+		<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
+		<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
+		<<run settingsPersistentNpcGenderUpdate()>>
+		<br><br>
+		Penis size - if applicable:
+		<br>
+		<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
+		<<for _j to 1; _j lt _penisNames.length; _j++>>
+			<label>
+				<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
+				<<print _penisNames[_j]>>
+			</label>
+			<<if _j isnot _penisNames.length -1>>|<</if>>
+		<</for>>
+		<br><br>
+		<div class="settingsToggle" style="display: inline-flex;">
+			Breast size
+			<<numberslider "$per_npc[_pNPCId].breastsize" $per_npc[_pNPCId].breastsize 0 12 1>>
+			<<run settingsNamedNpcBreastSize(Util.slugify('$per_npc[_pNPCId].breastsize'), true)>>
+		</div>
 	<</if>>
-	<<if $per_npc[_pNPCId].name_known and $debug is 1>>
-		| <<link "Rename">>
-			<<if $per_npc[_pNPCId].pronoun is "f">>
-				<<set $per_npc[_pNPCId].name to $NPC_names_f.random()>>
-			<<else>>
-				<<set $per_npc[_pNPCId].name to $NPC_names_m.random()>>
-			<</if>>
-			<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
-		<</link>>
-	<</if>>
-	<br>
-	<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
-	<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
-	<br>
-	<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
-	<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
-	<<run settingsPersistentNpcGenderUpdate()>>
-	<br><br>
-	Penis size - if applicable:
-	<br>
-	<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
-	<<for _j to 1; _j lt _penisNames.length; _j++>>
-		<label>
-			<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
-			<<print _penisNames[_j]>>
-		</label>
-		<<if _j isnot _penisNames.length -1>>|<</if>>
-	<</for>>
-	<br><br>
-	<div class="settingsToggle" style="display: inline-flex;">
-		Breast size
-		<<numberslider "$per_npc[_pNPCId].breastsize" $per_npc[_pNPCId].breastsize 0 12 1>>
-		<<run settingsNamedNpcBreastSize(Util.slugify('$per_npc[_pNPCId].breastsize'), true)>>
-	</div>
 	<div style="clear:both;">
 		/*Keep at end of toggles*/
 	</div>
