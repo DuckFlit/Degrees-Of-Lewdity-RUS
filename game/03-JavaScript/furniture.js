@@ -2,11 +2,11 @@ const Furniture = (() => {
 	setup.furniture = new Map();
 
 	/* Keep set to false, unless during developer testing. If on true, set to false unless in use. */
-	const FORCE_UPDATE = false;
+	const FORCE_UPDATE = true; /* IMPORTANT: Switch to false before the next update. */
 
-	const Categories = Object.freeze({ 
-		bed			: 'bed', 
-		table		: 'table', 
+	const Categories = Object.freeze({
+		bed			: 'bed',
+		table		: 'table',
 		chair		: 'chair',
 		wardrobe	: 'wardrobe',
 		decoration	: 'decoration',
@@ -15,9 +15,9 @@ const Furniture = (() => {
 		wallpaper	: 'wallpaper'
 	});
 
-	const Locations = Object.freeze({ 
-		bedroom: "bedroom", 
-		cabin: "cabin", 
+	const Locations = Object.freeze({
+		bedroom: "bedroom",
+		cabin: "cabin",
 		cottage: "cottage"
 	});
 
@@ -28,13 +28,13 @@ const Furniture = (() => {
 
 		/*
 		mapper.chairs.set('name', {
-			name: "stools", // name in lowercase
-			nameCap: "Wooden stools", // capitalized name
-			category: ["chair"], // used in the shop interface
-			type: ["chair", "expensive"], // traits, can be multiple, shouldn't be shown because I'm too lazy to make a description /j
-			cost: 69, //cost, 100 is one quid
-			description: "Yo mom", // description for the shop interface to show
-			iconFile: "stool.png", // used in image widgets; <img id="icon" @src="'img/misc/icon/' + $_chair.iconFile">
+			name: "stools",					Name in lowercase.
+			nameCap: "Wooden stools",		Capitalised name.
+			category: ["chair"],			Used in the shop interface.
+			type: ["chair", "expensive"],	Traits, can be multiple, shouldn't be shown because I'm too lazy to make a description /j
+			cost: 160,						Cost, 100 is one pound.
+			description: "A set of stools on which to sit on.",			Description for the shop interface to show.
+			iconFile: "stool.png",			Used in image widgets; <img id="icon" @src="'img/misc/icon/furniture/' + $_chair.iconFile">
 		});
 		
 		Egg armchairs are here to stay.
@@ -46,7 +46,7 @@ const Furniture = (() => {
 			name: "stools",
 			nameCap: "Wooden stools",
 			category: ["chair"],
-			type: [""],
+			type: [],
 			cost: setPrice(460),
 			description: "A set of stools on which to sit. Not very comfortable, but better than nothing. Probably.",
 			iconFile: "stool.png",
@@ -55,7 +55,7 @@ const Furniture = (() => {
 			name: "wooden chairs",
 			nameCap: "Wooden chairs",
 			category: ["chair"],
-			type: [""],
+			type: [],
 			cost: setPrice(1280),
 			description: "A set of regular wooden chairs.",
 			iconFile: "chair.png",
@@ -64,7 +64,7 @@ const Furniture = (() => {
 			name: "armchairs",
 			nameCap: "Armchairs",
 			category: ["chair"],
-			type: [""],
+			type: [],
 			cost: setPrice(1970),
 			description: "A set of armchairs, soft and relaxing. And expensive.",
 			iconFile: "armchair.png",
@@ -73,8 +73,8 @@ const Furniture = (() => {
 			name: "egg armchairs",
 			nameCap: "Egg armchairs",
 			category: ["chair"],
-			type: [""],
-			cost: setPrice(2420, 69),
+			type: [],
+			cost: setPrice(2420, 50),
 			description: "A set of armchairs with a rounded back, in rather exotic colours. An absolute monstrosity to have in your room.",
 			iconFile: "armchairegg.png",
 		});
@@ -84,7 +84,7 @@ const Furniture = (() => {
 			name: "wooden table",
 			nameCap: "Wooden table",
 			category: ["table"],
-			type: [""],
+			type: [],
 			cost: setPrice(1100),
 			description: "Can be used as a working or gathering spot. Just add chairs.",
 			iconFile: "table.png",
@@ -93,21 +93,21 @@ const Furniture = (() => {
 			name: "marble-topped table",
 			nameCap: "Marble-topped table",
 			category: ["table"],
-			type: [""],
-			cost: setPrice(1420),
+			type: [],
+			cost: setPrice(1430),
 			description: "A regular wooden table with a twist.",
 			iconFile: "marbletable.png",
 		});
 	
 		/* ------------- BEDS ------------- */
-		mapper.set('poorbed', {
-			name: "poor bed",
-			nameCap: "Poor bed",
+		mapper.set('bed', {
+			name: "basic bed",
+			nameCap: "Basic bed",
 			category: ["bed"],
 			type: ["single", "starter"],
 			cost: setPrice(0),
 			description: "An old, poor bed. Uncomfortable to sleep on.",
-			iconFile: "poorbed.png",
+			iconFile: "bed.png",
 		});
 		mapper.set('singlebed', {
 			name: "single bed",
@@ -123,7 +123,7 @@ const Furniture = (() => {
 			nameCap: "Deluxe single bed",
 			category: ["bed"],
 			type: ["single", "comfy"],
-			cost: setPrice(2420),
+			cost: setPrice(2400),
 			description: "An ergonomically designed bed. Very comfortable.",
 			iconFile: "singlebeddeluxe.png",
 		});
@@ -181,19 +181,19 @@ const Furniture = (() => {
 			name: "plant pot",
 			nameCap: "Plant pot",
 			category: ["windowsill"],
-			type: [""],
+			type: [],
 			cost: setPrice(680),
 			description: "A clay pot with good soil, flowers come pre-planted. Can be put on your windowsill.",
 			iconFile: "flower.png",
 			});
 		mapper.set('jar', {
-			name: "ominous jar",
-			nameCap: "Ominous jar",
+			name: "jar",
+			nameCap: "Jar",
 			category: ["windowsill"],
-			type: [""],
+			type: [],
 			cost: setPrice(1380),
-			description: "A menacingly looking jar. Can be put on your windowsill...",
-			iconFile: "JAR.png",
+			description: "A cylindrical jar. Can be put on your windowsill.",
+			iconFile: "jar.png",
 		});
 
 		/* ------------- DECORATIONS ------------- */
@@ -201,7 +201,7 @@ const Furniture = (() => {
 			name: "calendar",
 			nameCap: "Calendar",
 			category: ["decoration"],
-			type: [""],
+			type: [],
 			cost: setPrice(360),
 			description: "The days of this calendar are numbered.",
 			iconFile: "calendar.png",
@@ -210,17 +210,26 @@ const Furniture = (() => {
 			name: "painting",
 			nameCap: "Painting",
 			category: ["decoration"],
-			type: [""],
+			type: [],
 			cost: setPrice(680),
 			description: "It's not actually a painting. It's an illustration. ",
 			iconFile: "painting.png",
 		});
 		mapper.set('banner', {
-			name: "lewd",
+			name: "banner",
+			nameCap: "Banner",
+			category: ["decoration"],
+			type: [],
+			cost: setPrice(620),
+			description: "A figure from an old movie is poised in the centre.",
+			iconFile: "banner.png",
+		});
+		mapper.set('bannerlewd', {
+			name: "lewd banner",
 			nameCap: "Lewd banner",
 			category: ["decoration"],
-			type: [""],
-			cost: setPrice(620),
+			type: [],
+			cost: setPrice(790),
 			description: "A banner with a tentacle. Looks oddly familiar.",
 			iconFile: "banner.png",
 		});
@@ -228,8 +237,8 @@ const Furniture = (() => {
 			name: "festive banner",
 			nameCap: "Festive banner",
 			category: ["decoration"],
-			type: [""],
-			cost: setPrice(620),
+			type: [],
+			cost: setPrice(670),
 			description: "It may or may not be in season, but it still looks cool.",
 			iconFile: "bannerfestive.png",
 		});
@@ -237,23 +246,23 @@ const Furniture = (() => {
 			name: "large bear plushie",
 			nameCap: "Large bear plushie",
 			category: ["decoration"],
-			type: [""],
+			type: [],
 			cost: setPrice(1380),
-			description: "Why.",
+			description: "Soft, cuddly and forever loyal.",
 			iconFile: "bearplushie.png",
 		});
 		/* ------------- WARDROBES ------------- */
 		/*  starter - 20 clothing slots for every type
 			spacious - 30 clothing slots for every type
 			organised - 40 clothing slots for every type */
-		mapper.set('wardrobeold', {
+		mapper.set('wardrobe', {
 			name: "creaky wardrobe",
 			nameCap: "Creaky wardrobe",
 			category: ["wardrobe"],
 			type: ["starter"],
 			cost: setPrice(0),
 			description: "Old, creaky wardrobe. Doesn't hold much.",
-			iconFile: "wardrobeold.png",
+			iconFile: "wardrobe.png",
 			showFn: () => false
 		});
 		mapper.set('wardrobebasic', {
@@ -306,8 +315,8 @@ const Furniture = (() => {
 		});
 		/* --------------- POSTERS --------------- */
 		mapper.set('poster', {
-			name: "empty",
-			nameCap: "Empty",
+			name: "blank poster",
+			nameCap: "Blank poster",
 			category: ["poster"],
 			type: ["poster", "starter"],
 			cost: setPrice(135),
@@ -316,8 +325,8 @@ const Furniture = (() => {
 		});
 		/* ------------- WALLPAPERS -------------- */
 		mapper.set('wallpaper', {
-			name: "empty",
-			nameCap: "Empty",
+			name: "blank wallpaper",
+			nameCap: "Blank wallpaper",
 			category: ["wallpaper"],
 			type: ["wallpaper", "starter"],
 			cost: setPrice(135),
@@ -389,10 +398,10 @@ const Furniture = (() => {
 				V.furniture = {
 					bedroom	: {
 						bed	: {
-							id: 'poorbed'
+							id: 'bed'
 						},
 						wardrobe : {
-							id: fromBackComp ? 'organiser' : 'wardrobeold'
+							id: fromBackComp ? 'organiser' : 'wardrobe'
 						}
 					}
 				}
@@ -441,7 +450,7 @@ const Furniture = (() => {
 
 	$(document).on(':start2', function() {
 		furnitureUpdate();
-	})
+	});
 
 	/* Call the initiator function immediately. This happens when the game starts up and is loading. (Spinny wheel) */
 	furnitureInit();
