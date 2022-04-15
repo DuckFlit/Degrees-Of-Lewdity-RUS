@@ -1,5 +1,1418 @@
 # CHANGELOG
 
+## 0.3.8.6
+
+- Stopped the journal trying to load the world map in the text-only version.
+- Fixed a couple of bugs that left phantom butt plugs in place after they were removed. Thanks to Jimmy.
+- Fixed another issue with sex toy code. Thanks to Jimmy.
+
+## 0.3.8.5
+
+- Fixed a bug that broke the adult shop. Thanks to hwp.
+
+## 0.3.8.4
+
+- Thanks to hwp for code improvements.
+
+### Bug Fixes
+
+- Fixed an issue with combat. Thanks to Jimmy.
+- Fixed a debug issue. Thanks to Jimmy.
+- Fixed a bug that prevented sex toys being used when masturbating. Thanks to hwp.
+- Cursed items should be removed from the PC's inventory on old saves, should they have acquired them due to bugs. Thanks to hwp.
+- Thanks to Jimmy and hwp for formatting fixes.
+
+## 0.3.8.3
+
+- Added a toggle to enable/disable toy multiple penetration. Thanks to Bathory666.
+- Reworked ironman code, fixing a number of issues. Thanks to Jimmy.
+- Added combat sprites for the cow socks, cow sleeves, arm warmers, gold bracelets and ankle socks. Thanks to anonymous.
+- Thanks to Jimmy for an April 1st present.
+- Added sex toy toggles. Thanks to Bathory666.
+- Rewrote text for stroker NPC actions. Thanks to Bathory666.
+- Adjusted the sex toy inventory icon. Thanks to Bathory666.
+
+### Balance changes
+
+- Drinking Morgan's milk will now increase the "Breast milk drank" stat. Thanks to oyea.
+- Holding Sydney's hands when photographed during the adult shop's opening now takes handholding virginity. Thanks to oyea.
+
+Thanks to Bathory666 for the following balance changes:
+
+- NPCs are now more likely to fuck you with dildos and slap you with whips.
+- NPCs will now smack themselves around with toys less often.
+- Teens will no longer get sex toys.
+- NPCs now have a small chance to drop their toys.
+- NPCs are now less likely to pull out toys.
+- NPCs are now more likely to envelop with a stroker, but have a small chance of moving the toy away.
+- Alex, Eden, and Bailey no longer have sex toys.
+
+### Bug Fixes
+
+- Cats on the moor should no longer appear if beasts and monsters are disabled.
+- Fixed a bug that prevented Avery from being considered a love interest for the purpose of kissing.
+- Fixed an issue that could appear when attempting to delete saves. Thanks to note leven.
+
+Thanks to Bathory666 for the following fixes:
+
+- Sydney will now remove your cursed gags at the shop if needed.
+- Sirris will now remove cursed gags in addition to your bound arms, rather than one or the other.
+- Added missing sprites for the fetish muzzle.
+- Fixed an issue found when masturbating your clit with a sex toy during masturbation.
+- Fixed a bug that prevented pulling out a toy when you only have one.
+- Fixed issues found when NPCs use strokers on the PC, and when the PC uses them during masturbation.
+- Typo and formatting fixes.
+
+Thanks to Jimmy for the following fixes:
+
+- Lying still when threatened by a tattoo machine in the underground brothel now has appropriate text. Thanks to Chubbs.
+- Cat TF heterochromia now appears correctly in combat encounters.
+- Fixed an error found in combat.
+- Adjusted some text in the brothel. Thanks to Crimson Tide.
+- Fixed a bug with lenses.
+- The PC will no longer take their daily pills if they're held at Eden's cabin without Stockholm syndrome.
+- Alex will no longer appear outside after 21:00 if they're already asleep in their room.
+- Formatting fixes.
+- Typo fixes.
+
+Thanks to anonymous for the following fixes:
+
+- When flirting with Robin, they'll no longer mention how good their school day was if they haven't actually gone to school that day.
+- Adjusted an adult shop scene to be more consistent with its options, and to be more respectful of the facesitting toggle.
+- Jordan will now actually remove your chastity belt after passing an exam during Sydney's Rite of Promise, as they claim to.
+- You will no longer automatically wear the stone pendant if you're equipped with a collar when you discover it.
+- Audience members will no longer comment on your pussy when taking pictures if you're fully clothed.
+- Sirris will no longer ask for your help at their shop after it's already been unlocked.
+- Briar will no longer confront you on Connudatus Street while you're possessed.
+- Fixed an issue with NPCs repeating each other's orgasm lines after combat.
+- Sirris will now properly unbind you following a scene in the adult shop.
+- You will no longer take your daily pills while reading the olive book.
+- Fixed only being able to give Eden a strap-on if they have a penis.
+- Fixed an error during the Robin/Whitney canteen event.
+- Fixed an error when cumming while dancing.
+- Fixed an image issue with the jockstrap.
+- Fixed an error in the adult shop.
+- Typo fixes.
+
+## 0.3.8.2
+
+- Improved the combat suffocation code. Thanks to Jimmy.
+- Improved the heterochromia code. Thanks to Jimmy.
+- Thanks to Jimmy for other code improvements.
+
+### Bug Fixes
+
+- Fixed an error found when wearing a damaged muzzle.
+- If Sirris' adult shop grand opening is taking place, the journal will now indicate such.
+- Captured some rogue NPCs in the adult shop.
+- Fixed some transformation issues caused by the fallen angel transformation.
+
+Thanks to Bathory666 for the following fixes.:
+
+- Typos for NPCs commenting on strap-ons
+- Hidden purchasable chastity items have had the adult shop tag removed so that they don't show up in the new "show all" option at the shop.
+- Fixed a pronoun in an Alex link. Thanks to Cord and hwp
+- Fix for leotard bottom sprites messed up. Thanks to oyea
+- Brothel settings menu takes you back to the brothel instead of the bedroom. Cheers to oyea
+- missing quote marks in Sydney sex toy reaction line
+- fixed a pronoun issue with a Leighton scene
+- fix for dropping strokers in your right hand when used on an NPC
+- fix for dropping stokers when used on yourself
+- fix for strokers on penises showing the code name instead of text
+- reworked the Kylar strap-on gifting scene. Written by Cord and oyea
+- Sirris will now remove cursed gags at the adult shop.
+- Typo Fixes.
+
+Thanks to anonymous for the following fixes:
+
+- Having your leg bindings removed in prison will no longer read as if you're wearing a ball and chain if you're actually wearing ankle cuffs.
+- A group of perverts on the street will no longer be surprised by a crossdressing PC's genitals after already seeing them naked.
+- Leighton will no longer be surprised by the PC's hermaphroditism should they already know about it during penis inspection.
+- Fixed the Black Wolf incessantly hounding the PC at the lake when they're meant to be accosted by the ancient threat.
+- When masturbating during encounters, you will no longer feel your genitals beneath your clothing while naked.
+- The characteristics tab will now properly acknowledge the PC's swimwear with regards to their swimming skill.
+- You will no longer look over your shoulder after confronting stalkers when they're already assaulting you.
+- You may no longer set your birdie-ness to absurdly high or absurdly low values using the cheat menu.
+- The brothel's sex machine show will no longer have two non-participating humans in the encounter.
+- Winter will no longer pick up your leash when inspecting your collar if you aren't wearing one.
+- Fixed missing image errors for the pompoms, cow sleeves, and cow socks during combat.
+- Fixed a couple of endlessly looping encounters after passing out at the hospital.
+- Cursed clothing items should no longer trigger automatic clothing rebuy.
+- Fixed some mixed-up options during the adult shop's opening.
+- You may no longer kiss NPCs whose mouths are already in use.
+- Fixed an eye colour issue in one of the ancient threat's scenes.
+- Fixed issues with Sydney's status during an adult shop scene.
+- Fixed an error when cuddling with Alex as a fallen angel.
+- Fixed an error during one of Whitney's street events.
+- Fixed pronoun issues with a scene in the adult shop.
+- Fixed an issue with Leighton's brothel scenes.
+- Hid unfinished code.
+- Typo fixes.
+
+Thanks to Jimmy for the following fixes:
+
+- Ironman mode can now save and load.
+- Ironman mode now properly autosaves.
+- Fixed a number of images that would break on some devices.
+- Other minor fixes.
+
+Thanks to braymann for the following fixes:
+
+- Avery will no longer let the player go on a date with them while their underwear or genitals are fully exposed.
+- Seduction checks will work properly again when you have the "Blind Stats" option enabled.
+- Fixed an error when the cat transformation decays.
+- Fixed some NPCs breaking free during Robin's crossdressing scenes.
+
+## 0.3.8.1
+
+- The PC can now initiate kissing on the lips during consensual human encounters. Thanks to Kegdo.
+- Added location images for the factory. Art courtesy of pauloc.
+- Added text for stroker toys at the shop. Thanks to Bathory666.
+- Added some new lines for Alex reacting to sex toys. Written by Cord and coded by Bathory666.
+- Added the "Robin's Song" feat.
+- Thanks to Bathory666 for code improvements.
+
+Bug Fixes
+
+- Fixed an error found when Avery refers to the PC by a pet name. Thanks to shun.
+- Fixed an error found at Alex's farm.
+- Fixed an error found in the temple.
+- It should no longer be possible to repeat the adult shop grand opening.
+- Fixed a bug that prevented toy use among NPCs increasing over time once the adult shop opens. Thanks to anonymous.
+- Using a strap on will no longer rob you of the angel transformation.
+- Fixed an issue that broke strap-ons names on some saves. Thanks to Jimmy and Bathory666.
+
+Thanks to Jimmy for the following fixes:
+
+- Adds a gray texture for the undershirt right sleeve when covering.
+- Fixed some issues with heterochromia.
+- Fixed a couple of issues preventing Whitney taking the PC's first kiss.
+- Fixed an error found when the PC gains exhibitionism fame.
+- Typo fixes.
+
+Thanks to Bathory666 for the following fixes:
+
+- Fixed an issue with strap-ons giving you a 3hed. Thanks to anonymous.
+- Fixed an issue found when applying lube to your penis.
+- Fixed an issue found when gifting strap-ons.
+- NPCs will no longer slap their face silly with dildos.
+- Fixed a bug that changed the shape of strap-ons gifted to NPCs.
+- Fixed an issue with heterochromia text.
+
+Thanks to anonymous for the following fixes:
+
+- Restored the options to finger your vagina and move your hand away while masturbating with your left hand.
+- You may no longer ask Sirris for work at their shop after already accepting the job.
+- Fixed an issue with the "Cover your penis" action when using list combat controls.
+- Fixed softlocks when reading Raul and Janet, and when using the scene viewer.
+- Fixed the player's right eye colour being overwritten after certain scenes.
+- Fixed some time desynchronisation errors when reading Raul and Janet.
+- Made some changes to some of Alex's new dialogue at the writer's request.
+- Offering Whitney a milkshake now properly consumes it.
+- Fixed an error when tending fields with Alex.
+- Fixed a case of Robin duplication.
+- Sydney and Sirris can no longer work the till at the adult shop at the same time.
+- Fixed human NPCs sometimes being referred to as "it" when undressing.
+- Fixed some dead-end passages when working at the adult shop.
+- Fixed issues with the adult shop passing out event.
+- Fixed the PC's handholding virginity being "taken by unknown" after holding hands during combat.
+- NPCs will no longer cum instantly upon contact with a strap-on.
+- Fixed Sydney contorting themselves during an adult shop scene.
+- Fixed Morgan's feet line breaking the game.
+- Fixed Robin getting their crossdressing clothes mixed with their usual wardrobe.
+- Confiscated a nun's strap-on.
+- Fixed an issue with handholding in combat. Thanks to Kegdo.
+- Typo fixes.
+
+## 0.3.8.0
+
+- Added sex toys, and Sirris' adult shop. Thanks to Bathory666.
+- Added a Robin crossdressing questline, including many new events. Can trigger after giving Robin a crossdressing outfit on Halloween or Christmas. Written and coded by RobinFanatic, with help from hwp and b0mbyx.
+- Robin will start crossdressing in more locations as the questline is completed.
+- Added Robin crossdressing scenes to the scene viewer. Thanks to hwp.
+- Added ironman mode. Saving in ironman mode will send the player back to the start screen. Loading an ironman save will delete the save. It disables cheats, the debug menu, and save exporting, and sets the "rate that events are triggered by allure", crop value, Bailey's payments to their default values if they had been lowered. It also sets history depth to 1 if it had been raised. It can only be chosen at the game's start, and cannot be disabled. Thanks to lifeAnime.
+- Autosaves in ironman mode will trigger every 5-8 days, or when the PC loses a virginity, as a backup.
+- Taunting Leighton while performing the car wash detention naked now has a small chance of triggering retribution from Leighton. Requires beasts be enabled. Thanks to shun.
+- You can now share milkshake with Whitney in the park. Thanks to b0mbyx, with help from cord, hwp and RobinFanatic.
+- Thanks to Kegdo and anonymous for one of the scenes found when working at the adult shop.
+- Added the option to hold hands during encounters. Thanks to Kegdo.
+- Added a scarecrow costume to the forest shop. Coded by anonymous, with spritework by Allo.
+- Added a waitress uniform, split dress, and see-through swimsuit to the adult shop. Coded by anonymous, with spritework by Turkeh.
+- Added icons for the belly dancer's veil, baseball shirt, baseball shorts, undershirt, and baseball cap. Thanks to anonymous.
+- Added combat sprites for thongs. Thanks to anonymous.
+- Added a facesitting toggle. Does not disable cunnilingus.
+- Added events found by helping Sydney and Sirris prepare the adult shop.
+- Added a grand opening event for the adult shop.
+- Thanks to lifeAnime for the adult shop menu, and for a sex toy inventory.
+- You can now by separate coloured contacts for each eye, allowing heterochromia. Thanks to lifeAnime.
+- Added a way to ask around for Sydney if they're absent from the Temple at their normal times. Thanks to PurityGuy.
+- Gave Sirris and Sydney the ability to unbind your arms at the adult shop. Thanks to PurityGuy.
+- Whitney can now rescue the PC when they scream at school in some locations. Teachers will take priority if applicable. Thanks to anonymous.
+- Initial comments during Domus Street modelling events now take model fame into account. Thanks to shun.
+- Added a couple of events to the town's streets, enabled by high modelling fame. One can escalate if the PC has sufficient stats, or have been hypnotised by Harper. Thanks to shun.
+- Added four new events found when flirting with Robin. Thanks to RobinFanatic.
+- Thanks to nesokax for several strap-on improvements.
+- Mask integrity now displays in the sidebar. Also added a cheat for mask integrity. Thanks to TonyFox.
+- Thanks to TonyFox for minor changes to Eden's intro sequence. Thanks to TonyFox.
+- Added some new synonyms for fluid dripping. Thanks to TonyFox.
+- Added unique lines for moaning at love interests during encounters. Code and Eden line by Kegdo. Robin lines by RobinFanatic. Black Wolf, Great Hawk, Sydney, Kylar, Avery, Alex, Whitney lines by Crimson Tide.
+- Clothing traits now have mouseover descriptions in the shop filter overlay. Thanks to Crimson Tide.
+- Added descriptions for the naked, athletic, maid, riding, event, chastity, cage, hidden, gag and leash clothing traits. Thanks to Crimson Tide.
+- Added the alternative "pink" demon transformation. Recolour by thewitchmaker, and coded by Lollipop Scythe.
+- Added Charlie's love to the cheat menu.
+- Added the dreads sides hairstyle. Art courtesy of 3hp.
+- Added icons for the bus station and factory. Art courtesy of pauloc.
+- The suspicious van at the bus station now appears again, though only when cheats are enabled, allowing easy access to the livestock bad end.
+- The PC can now can now insert their entire hand into their vagina during masturbation with enough practice. Coded by hwp and written by Stale Sandwich.
+- Improved error reporting. Thanks to hwp.
+- Thanks to Jimmy, hwp, TonyFox, Crimson Tide, and Kegdo for code improvements.
+- Thanks to PurityGuy for debugging the adult shop setup and grand opening scenes.
+
+Thanks to Bathory666 for the following additions and improvements:
+
+- Added an adult shop to Elk Street, complete with background events and customers.
+- Added a clerk job to the adult shop. Some scenes written by anonymous.
+- Includes a Whitney scene written with assistance from Kiyo and anonymous.
+- Includes five scenes written by WildUntamedFluffy.
+- Added a pass out scene written by anonymous.
+- Gave the ancient threat a new weapon.
+- Added purchasable sex toys that can be used during masturbation.
+- NPCs can use sex toys themselves during encounters, including dildos, anal beads, vibrators, flogs, riding crops, and onaholes.
+- The PC can use dildo and onahole-type sex toys on themselves and others during consensual single encounters and consensual gang bangs. Love interests will react appropriate to their personalities. Written in collaboration with Crimson Tide and RobinFanatic.
+- NPCs can react with excitement, revulsion or disappointment to sex toys.
+- The PC can pick up and drop sex toys during encounters.
+- The PC can now use strap-ons. Includes close-up, combat, and sidebar sprites. Sidebar strap-on sprite courtesy of Lantern.
+- Thanks to lantern for the strap-on clothing type icon.
+- Sydney can work at the adult shop. They work there more frequently as corruption increases.
+- Reworked NPC strap-ons. Thanks to hwp.
+- Added sprites for strap-ons, horse cock strap-ons, and knotted cock strap-ons.
+- NPCs can be given customised strap-ons, and will randomly select one when asked during sex. Thanks to hwp and lifeAnime.
+- Added unique descriptions to NPC strap-ons.
+- Added unique speech lines for NPCs with strap-ons. Written with help from Kiyo.
+- NPC action descriptions now take strap-ons into account.
+- Added x-ray sprites for NPC. Art courtesy of Ruby.
+- Eden, Robin, Alex, Kylar and Sydney can be gifted strap-ons. Written in collaboration with Kiyo and anonymous. Thanks to hwp for code.
+- Added a toggle for NPC sex toys.
+- Avery and Whitney now wear strap-ons based on strap-on chance.
+- Thanks to 3hp for the onahole inventory icon sprite.
+- The PC can now wear a butt plug.
+- The PC can now purchase lube from the adult shop. It can be used on their pussy, penis or anus during combat.
+- The PC can now masturbate their pussy or penis during combat as a promiscuity 2 action. NPCs will react.
+- Thanks to Mochi for the bullet vibe, shibari rope, ball gag and muzzle sprites.
+- Targeting yourself now displays combat radio action difficulties. Thanks to Rukarin.
+- Thanks to nesokax for fixing an issue with masturbation.
+- Thanks to PurityGuy and hwp for repository help.
+
+Thanks to anonymous for the following additions and improvements:
+
+- Whitney now roams the town's alleyways with their gang on non-school days. Similar to their appearances at school, they're more likely to seek out the PC the more time has passed since the last event.
+- Added unique text for the "Confront" action if being stalked by Eden or Whitney.
+- Added a low dominance, high love variant of Whitney's docks event.
+- Added a high lust variant of Whitney's cigarette theft event, and a variant if beasts and monsters are disabled.
+- Made Whitney a little rougher when demanding oral in the hallways at high dominance.
+- Code improvements.
+
+Thanks to Cord for the following additions and improvements:
+
+- Whitney not reacts to Christmas outfits, prison jumpsuits, and cheerleading outfits on Halloween.
+- Added Alex milkshake scenes.
+- Added shaving to the farm. You can now enter the shower shed and shave or choose to shower when Alex is not there.
+- Added more dom/sub lines to Alex.
+- You can now cuddle Alex on the sofa, and when they're on the phone.
+- Alex now reacts if you orgasm in bed while they're sleeping or on the phone. They also thank you for helping with maths, have more variety when chatting at breakfast, and talk more when watching TV.
+- Unique lines for when PC orgasms in the meadow.
+- Added dialogue for Alex, Bailey, Leighton, and Morgan if you namedrop other love interests.
+- Added some flavour text when sleeping with Alex.
+- Added the option to flaunt when Alex checks out the PC.
+- Added the option to laugh when Alex is startled by lurkers.
+- Alex may now join you when relaxing by the stables once unlocked as a love interest, if they're not busy.
+- Added a couple of Morgan lines.
+- Code and UI improvements at Alex's farm.
+
+### Balance Changes
+
+- Model fame now lowers allure. Thanks to shun.
+- Modeling events on Domus Street now contribute to model fame. Thanks to shun.
+- Pills will now be auto-taken when you arrive home, if you were absent at midnight. Thanks to lifeAnime.
+- The PC will no longer be taken to the school infirmary while school's out. Thanks to anonymous.
+- Biting strap-ons no longer causes pain to NPCs. Thanks to PurityGuy.
+- Increasing wolf pack harmony or ferocity when capped will now have a small "overflow" into the other stat. Thanks to shun.
+- Acceptance now decreases when insecurity decreases, prior to developing immunity. Thanks to shun.
+- Lurkers and similar creatures will now be satisfied by cumming once.
+- Leighton's class inspections now repeat each term. Thanks to shun.
+- Inspecting the cell door in the underground brothel no longer takes an hour or triggers a random event, if you don't even try to lockpick it. Thanks to hwp.
+- Added Settings and Attitudes menus to the brothel dressing room. Thanks to Jimmy.
+- Repeated orgasms now have a different impact depending on where the PC is penetrated.
+- Some clothes have been moved from the clothing shop to the adult shop.
+
+### Bug Fixes
+
+- Fixed an issue with autosaves. Thanks to note leven.
+- Fixed a bug that prevented the gothic gown displaying properly in the Character preview tool. Thanks to lifeAnime.
+- Fixed a bug that broke modelling fame on old saves. Thanks to lifeAnime.
+- Fixed an issue with modded clothes on old saves. Thanks to note leven.
+- Thanks to lifeAnime and hwp for typo fixes.
+- NPC strap-ons no longer cum inside you. Thanks to Bathory666.
+- Fixed an error where eye colours would be printed as [object Object] in the characteristics tab.
+- Fixed apostrophes in save files' name causing them to break.
+- Fixed a pill-related issue.
+- Fixed some strap-on issues. Thanks to Bathory666 and hwp.
+- Adjusted time progression during the blood moon underwater ruin sequence.
+- Hand virginity is now taken when Alex takes your hand in the woodlands. Thanks to Cord.
+- Fixed an issue with the consistency of milkshake scenes. Thanks to Cord.
+- Fixed an error found when having your bindings removed at the asylum. Thanks to PurityGuy.
+- Fixed a grammar issue with underwear. Thanks to Bathory666 and anonymous.
+- The PC's vagina will no longer be described as "dry" when self-lubricated. Thanks to shun.
+- Fixed an error involving beast trains. Thanks to Rukarin.
+- Adjusted the monster hoodie so the skirt better fits around the PC's waist.
+- Futa sanity checks and fixes in backcomp for parasitical pregnancies.
+- Fix spa lewd event not using random correctly, meaning Spa Lewd event now should get a more varied, but lower income.
+- Typo correction: flahes to flashes.
+- Minor change in park, added a <br> so the Travel section is properly formatted.
+- Thanks to PurityGuy for typo and minor fixes.
+- Thanks to hwp for minor fixes.
+- Thanks to Bathory666 and TonyFox for typo fixes.
+
+Thanks to Jimmy for the following fixes:
+
+- Fixed a bug that prevented Avery being cleared properly when leaving a date early.
+- Fixed a pronoun issue with Robin.
+- Fixed a bug that caused zoom to reset on load.
+- Fixed phantom pregnancies found on ancient saves.
+- Fixed a beast generation issue found when following a dog down an alley.
+- Fixed old save compatibility issues with parasitic pregnancies.
+- Fixed an error at the spa that made events trigger at unintended rates.
+- Typo and formatting fixes.
+
+Thanks to anonymous for the following fixes:
+
+- Alex will no longer wear their work clothes to bed.
+- Avery will no longer get in the hot tub fully clothed, and will strip to their underwear before bed.
+- Fixed a text issue found when named NPCs admire body-writing with arrows.
+- Fixed an error found when entering the school infirmary.
+- The skimpy leotard provided during the Danube Street dancing job will no longer trigger automatic clothing rebuy.
+- Fixed a dog that was always female regardless of settings.
+- Remy's steeds will now occasionally be referred to as mares if settings allow.
+- Increased the accuracy of a tooltip in the characteristics menu. Thanks to Crimson Tide.
+- Passing out and being taken to the school infirmary no longer overrides Kylar's kidnapping of the PC.
+- Fixed some encounters that allowed Leighton to rescue the PC while imprisoned in the pillory.
+- Fixed Whitney breaking out of the school infirmary.
+- Fixed some leftover bugs with Eden's cage punishment.
+- The rival dancer during one of Avery's dates no longer brings their strap-on to the dance floor.
+- You will no longer "plant your feet"/"remain light on your feet" when performing certain actions during aquatic struggle encounters.
+- Fixed a bug that prevented NPCs from fingering the PC.
+- The game no longer treats the PC's genitals as if they're not in use while being fingered or receiving a handjob.
+- Fixed the PC using a second charge of pepper spray during struggle encounters after the target has already fled.
+- Robin no longer leaves in the middle of an emotional cow scene to set up their lemonade stand.
+- Fixed a softlock caused when cumming while forced to dance.
+- The PC will no longer rip off their clothes after cumming while dancing if their arms are bound.
+- Alex now reacts to the PC's arms being bound during their introduction.
+- Fixed the lake's nighttime location art not showing up.
+- Whitney will now actually strip during the Connudatus Street theft event.
+- The PC will no longer be trapped in a "front" during certain stuck-in-a-wall encounters.
+- Fixed apostrophes in save files' name causing them to break. Thanks to lifeAnime.
+- Fixed a pill-related issue. Thanks to lifeAnime.
+- Fixed the PC taking home the rag top and skirt after agreeing to demonstrate the wooden horse.
+- The option to approach Eden at Remy's farm is no longer simply "Eden."
+- Fixed the accessory layer for the belly dancer top and bottoms not appearing, and allowed it to come in colour variants other than red.
+- Fixed an issue that caused the overalls, prison jumpsuit, diving suit and lederhosen to make the encounter sprite appear naked.
+- The cow onesie now appears white during encounters, rather than red.
+- Moved one of Eden's orgasm lines that incorrectly referred to the PC eating Eden out instead of the other way around, and replaced it with one more appropriate for the circumstances.
+- Eden will no longer move their foot way from the PC's nonexistent penis after cumming.
+- Fixed the PC being able to speak during a prison scene when they're gagged, and being unable to do so when they aren't.
+- You can no longer perform feet actions while shackled and mouth actions while gagged during struggle encounters.
+- Leighton will no longer refer to a female PC's nonexistent penis during detention.
+- Fixed NPCs pulling on the PC's underwear when they're supposed to be targeting their lowerwear.
+- Fixed the option to travel appearing with no usable links when exposed at the beach.
+- The PC will no longer get dressed while still taking a bath in the orphanage.
+- Fixed an error caused by defeating an NPC engaged in double penetration.
+- Fixed some text that implied the PC wears their undies over their skirt.
+- Fixed the skulduggery mask causing missing image errors when damaged.
+- Fixed an inconsistent line when sparring with the wolves.
+- Caught a rogue 0 during combat. Thanks to Crimson Tide.
+- Fixed a bug causing divine TFs to break. Thanks to note leven.
+- Fixed an issue with players losing their genitals when updating old saves. Thanks to note leven.
+- Fixed an issue with the PC's oral virginity being "taken by unknown" after milking cattle with their mouth. Thanks to note leven.
+- Fixed the oral virginity warning from milking with your mouth appearing when it shouldn't, and not appearing when it should. Thanks to note leven.
+- Fixed some issues with NPC roles in the prison.
+- Corrected some mixed-up text during an encounter in the changing rooms.
+- Fixed Sydney appearing before being met when the PC climaxes in the library.
+- Raul will no longer be shocked by Janet's pussy when reading the scarlet book.
+- Fixed persistent NPCs' names not displaying properly with the targeting system.
+- NPCs will no longer press their breasts against the PC's back through gloryholes.
+- Body-writing in lipstick and mud can now be turned into tattoos at the tattoo parlour.
+- Investigating the mirror in the Great Hawk's tower will no longer automatically bring it upstairs if the player chooses to leave it alone.
+- Typo fixes.
+
+Thanks to braymann for the following fixes:
+
+- Fixed the Athlete background so that it will lower your starting grades as advertised.
+- The scene where you're attacked by dogs after failing to cross high street naked will now have 3 dogs as intended, instead of 1.
+- Outfits that have already been broken will no longer trigger automatic rebuy when they break again.
+- Alex will no longer be wearing two pairs of underwear when they spank you.
+- Fixed a bug that prevented additional struggle creatures appearing in the middle of a struggle encounter.
+- Fixed a bug that caused struggle creatures to always be finished after being pulled off once.
+- Fixed a bug where having the "Fangs" or "Sharp Eyes" trait will make the game think you're hiding part of a transformation.
+- Fixed an error in the scene with the high ranking and low ranking wolves in the wolf cave.
+- Female NPCs will no longer somehow press their breasts into your back when you're giving anal.
+- Fixed a bug with gags in female beast encounters.
+- A number of small bugs.
+
+Thanks to hwp for the following fixes:
+
+- Made the Domus Street's shy virgin and the pub's virgin bar patron into actual virgins.
+- Fixed a bug with the cheat that resets a named NPC's virginity.
+- Escaping the underground brothel now unlocks the slut shirt regardless of how you escaped.
+- Fixed a bug where most forms of NPC facesitting resulted in the player being unable to successfully perform mouth actions.
+- Fixed some issues with plantperson code.
+- Fixed an issue where new additions to the cat TF caused autofellatio to break.
+- A bug found in combat.
+- Formatting improvements.
+
+Thanks to TonyFox for the following fixes:
+
+- Fixed a bug that prevented beasts ejaculating on the PC's ass while wearing an anal shield.
+- The NPC on the beach with their child can no longer be a virgin.
+- Displacing underwear without displacing skirt no longer exposes genitals.
+- Clothing stripped during Eden's initial molestations are now properly disposed of.
+- Tentacles are now more agitated and dangerous during the Blood Moon.
+- Certain sequences now properly exit the player into the correct location.
+- Removed claws from some beast types.
+- Typo fixes.
+
+## 0.3.7.4
+
+- NPCs will no longer lose their virginity by penetrating someone with a strap-on. Thanks to hwp.
+- NPCs will no longer try to remove their "naked". Thanks to hwp.
+- NPCs should no longer generate as naked, with bodyparts considered clothed. Thanks hwp.
+
+Thanks to note leven for the following fixes:
+Made sleep more comfy by removing big red error about pills and nulls.
+Fixed a layering issue found during tentacle and swarm encounters.
+Fixed a couple of issues with old saves.
+Fixed a couple of issues with new saves.
+Code adjustments.
+Typo fixes, thanks to oyea.
+
+## 0.3.7.3
+
+- Thanks to lifeAnime for code improvements, and a debug feature.
+- Thanks to Jimmy and note leven for code improvements.
+
+### Balance Changes
+
+- Tentacles will deal less damage to masks when moving to the PC's mouth. Thanks to Bathory666.
+
+### Bug Fixes
+
+- The Danube dance job will now correctly describe the level of audience interest needed to remain safe.
+- The PC will now dress properly after stripping on the stage during the Danube dance job
+- Fixed issue with the insecurity increase display, if the PC had max insecurity of 1000. Thanks to Jimmy.
+- Fixed an issue with beast characters. Thanks to note leven.
+- Fixed an issue that prevented chest binders displaying correctly on some systems. Thanks to note leven.
+- Phalluses should no longer phase through masks. Thanks to Bathory666.
+- Fixed a layering issue with beast handjobs for muzzles, gags, and facemasks. Thanks to Bathory666.
+- Fixed an undefined penis description at the strip club. Thanks to Bathory666.
+- Fixed a broken link found during the Domus dance job.
+- Thanks to Jimmy for pronoun corrections and typo fixes.
+
+Thanks to lifeAnime for the following fixes:
+
+- Fixed an issue that caused slowdown on some devices.
+- Fixed an image path issue.
+- Fixed an issue with penis growth pills.
+- Fixed a text issue when certain named NPCs admire the PC's body-writing. Thanks to oyea.
+- The school nurse will prescribe more than one pill during a playthrough. Thanks to oyea.
+
+## 0.3.7.2
+
+- Adjusted Robin's new flirting events. Thanks to PurityGuy.
+- Added a rose hair accessory to the clothing shop. Thanks to oyea.
+- Adjusted the "back to safety" feature, and expanded it to wardrobes and shops. Thanks to Lollipop Scythe.
+
+### Bug Fixes
+
+- Prescribed pills will now refresh when visiting Harper on Fridays.
+- Fixed an issue with custom contact lenses. Thanks to lifeAnime.
+- Fixed a formatting issue. Thanks to lifeAnime.
+- Fixed an error found when whacking away pens. Thanks to PurityGuy.
+- Fixed an error caused by NPCs taking virginities outside combat. Thanks to hwp.
+- Fixed an issue that caused the shop All category to reference incorrect items. Thanks to Lollipop Scythe.
+
+Thanks to oyea for the following fixes:
+
+- Charlie will no longer recognise the player's dancing prowess before they've ever taken a lesson.
+- The guests at the Danube party event will now dress properly for the occasion.
+- The player will now properly lose their clothes after the new ritual event.
+- Fixed issues with the olive-coloured book.
+- Moved the belly dancer's veil to the forest shop, with the same unlock requirements as the top and bottoms.
+- Checking your pills will no longer teleport you to the orphanage if you checked them somewhere else.
+- Fixed the player being treated as if they weren't wearing underwear during a scene in maths class.
+- Typo fixes.
+
+## 0.3.7.1
+
+- Hermaphrodites can now offer their pussy and initiate double vaginal while fencing. Thanks to Bathory666.
+- Added new dance dialogue for a few specific situations, written by oyea and coded by Crimson Tide.
+- Added the option to flirt with Robin in their bedroom once love has climbed high enough, with various outcomes. Thanks to RobinFanatic.
+
+### Bug Fixes
+
+- NPCs will no longer be able to determine the PC's genitals through chastity belts in the school changing rooms, and during the maths competition wardrobe malfunction.
+- Crossdressing and hermaphrodite fame should no longer increase when the PC's chastity belt is revealed at school.
+- Sirris, Doren, Whitney, Remy, and Leighton can no longer determine the PC's gender if they're wearing a chastity belt.
+- The Danube party now only specifics "ladies" or "gentlemen" if generic NPC generation is set to generate only one gender, as opposed to "ladies and gentlemen" every time. Thanks to Crimson Tide.
+- You can now give thighjobs again. Thanks to braymann.
+- Fixed an error that sometimes happens when you ask a group of people to stop. Thanks to braymann.
+- Fixed a softlock that can happen if you choose to eavesdrop on Sydney during the rite of promise. Thanks to braymann.
+- Thanks to Crimson Tide for typo and other minor fixes.
+
+Thanks to note leven for the following fixes:
+
+- Fixed a debug issue.
+- Fixed a bug that ate link numbers.
+- Added a failsafe to museum antique hint display in the journal.
+- Eden will now generate properly after preparing a cage for you.
+- Fixed a soft lock at the buffet on Domus Street.
+- You can now properly smash.
+
+Thanks to hwp for the following fixes:
+
+- Fixed a beast generation bug.
+- Fixed a bug that made NPCs generate with undefined virginities.
+- NPCs in the dance studio and during dance jobs should now generate clothing correctly.
+- Fixed a bug that prevented NPC virginities being taken outside combat.
+- Typos and minor code cleanup.
+
+## 0.3.7.0
+
+- Charlie will now offer work to accomplished dancers. They give a different job if they dislike the PC.
+- Added a couple of location-dependant dance events.
+- Added a quest at the temple.
+- Added setting randomisation to the Quick Start/Quick Edit tab in settings, extending the preset system. Thanks to Lollipop Scythe.
+- Added hair randomisation and saved sets. Saved sets can be added to new and existing outfit sets, allowing the player to change their hairstyle with each outfit. Thanks to Lollipop Scythe.
+- Nicknames now take modelling fame into account. Thanks to oyea.
+- Added a combat menu adjacent to the next button during combat. Thanks to Jimmy.
+- Tired PCs will now half-close their eyes. Thanks to lifeAnime.
+- Added lime green and light grey eye colour/contacts. Thanks to lifeAnime.
+- The nurse at the pharmacy now sells custom contact lenses. Thanks to lifeAnime.
+- Overhauled the pill code and bedroom pill UI. Thanks to lifeAnime.
+- Added an antique.
+- Added the search bar and "All" shop category. Thanks to Lollipop Scythe.
+- Clothes can now be displaced in swarm, tentacle and struggle encounters. Thanks to Quin2k.
+- Clarified the unlock requirements for feat boosts. Thanks to Quin2k.
+- Maxing arousal while dancing will now cause the PC to orgasm, with outcomes depending on the PC's skill, shoes, lewdity, and traits. Can be dangerous in some locations. Thanks to Nicky Lassandri.
+- The PC's limbs should now reset more intelligently when an NPC is defeated. Thanks to Rukarin.
+- Added seasonal beer choice to the café, and a beer icon. Thanks to Luna.
+- Added "tending yield factor" to settings, which controls the amount of produce grown with the tending skill. Thanks to shun.
+- Anal fingering of the PC by NPCs now has more involved mechanics, and can be prevented. Thanks to Combat_wombat.
+- Leighton can now react to the PC's arousal during pussy inspection. Thanks to TreeFrogSoup.
+- Added the curly pigtails and sailor buns side hairstyles. Thanks to Mira.
+- The curtain fringe style is now represented on encounter sprites. Thanks to Myoran.
+- Added a stat counter for pills taken. Thanks to khovel.
+- Added the undershirt, baseball shirt, baseball shorts, and baseball cap to the clothing shop. Art courtesy of namelessone.
+- Generic NPCs can now be virgins. Thanks to hwp.
+- Adjusted the art for the belly dancer's bottoms, belly dancer's top, board shorts, booty jorts, breeches, catsuit bottoms, chapette breeches, chinos, long cut skirt, short cut skirt, cycle shorts, diving bottoms, gothic trousers, jorts, keyhole skirt, long skirt, maid skirt, miniskirt, moon pajama bottoms, star pajama bottoms, retro trousers, Christmas skirt, Christmas trousers, chastity belt, and gold chastity belt, adding damage states where missing and fixing clipping issues, with more significant changes to the belly dancer set. Art courtesy of KG.
+- Added the belly dancer's veil to the clothing shop. Art courtesy of KG.
+- The Characteristics overlay now describes how large your breasts appear after taking clothing into account. Thanks to hwp.
+- Adjusted and reimplemented the Cum dump/Cumoisseur scene at Remy's estate.
+- Added winter variants for the promenade, alley, industrial alley, and night monster lair location art. Art courtesy of Swaggy Bookshelf.
+- Added a cheat to the cheats menu to reset an NPC's virginity. Thanks to hwp.
+- Added the "Life of the Party," "Belle of the Ball," and "Breaking the Stone" feats.
+- Thanks to braymann for preparing code for the inclusion of cows and bulls in the future.
+- Thanks to hwp and Lollipop Scythe for performance improvements.
+- Thanks to lifeAnime for a debug tool.
+- Thanks to Jimmy, note leven, Lollipop Scythe, khovel, and Rukarin for code improvements.
+- Improved tending code, and the code responsible for NPCs interacting with your clothes during encounters, among other code improvements. Thanks to hwp.
+
+Thanks to Bathory666 for the following additions and improvements:
+
+- Face masks can now protect the mouth, as appropriate to the item.
+- Added the "ask to keep your mask on" and "remove mask" actions.
+- Surgical masks and gags now have the "covered" trait, protecting them against penetration, kissing and breast sucking.
+- NPCs can thrust against your mask, damaging it.
+- Added surgical mask sprites for damage states, and combat sprites.
+- Angry NPCs might damage your mask if you prevent them from removing it.
+
+Thanks to oyea for coding the following scenes:
+
+- Added an infirmary to the school. The player will be taken here instead of the hospital after passing out on school grounds. They can also visit it during the day for medical assistance, or sneak in at night to steal drugs. Written by YetAnotherUser.
+- Added an alternate ending to Harper's lap kissing scene at the asylum. Written by Mist.
+- Added a scene when working the fields with Alex in the summer. Written by DMGM69.
+- Added a scene with Whitney to the school hallways, and a new option when they grope the player during an exam.
+- Eden will no longer be as forgiving upon catching the player after they've been away from the cabin for too long. Written by Necro.
+- Some named NPCs now have more unique responses to certain body-writing. Written by Necro and Conhue.
+
+Thanks to PurityGuy for the following additions and improvements.:
+
+- NPC clothing is now properly simulated, with NPCs dressing more appropriately to their location, role, and the weather.
+- The PC can attempt to undress NPCs during encounters. Requires promiscuity 2 during consensual encounters.
+- Updated scenes that referenced NPCs unzipping their flies or lifting their skirts, to take the new clothes into account
+- Added support for NPC crossdressing.
+- The PC can now interact with female monster's breasts, and some may even lactate should lactation be involved. Wolfgirl milk progresses the wolf transformation.
+- NPC chests now begin most encounters clothed, and their clothes must be displaced before their chests can be interacted with.
+- Added some action flavour text for female NPCs relating to their breasts.
+- Entering the plinth room while being hunted by the ancient threat will now reset the Wraith's hunt, so you don't need to wait around.
+- Brought non-bodypart skill checks to the same level at tending, making temporary bonuses and modifiers impact more than just skill changes.
+- Thanks to hwp, oyea, and Lollipop Scythe for help with NPC clothes.
+- Minor code improvements.
+
+Thanks to Crimson Tide for the following additions and improvements:
+
+- Added a new "difficulty" option that hides all stats text, like + Stress. Affects skill checks, warnings, comments and reminders. Disabled by default.
+- Added tooltips to the characteristics menu, giving details on what is causing specific skill modifiers.
+- Added an escape button should the PC find themselves in a bugged passage, which would previously result in a softlock.
+- Added a forced masturbation scene to the underwater prison.
+- The ancient threat can now assault the farm during Remy's raids.
+- The chatting students in the library can mention blood moons, and also have a small chance of hiding an ancient secret.
+- Bailey's thugs now acknowledge your underground nickname if you have one.
+- Added the number of times you've been possessed to the statistics menu.
+- Code improvements.
+
+### Balance Changes
+
+- One of Whitney's friends now assists them in the parasite event. Thanks to PurityGuy.
+- Changes to Charlie's love will now be indicated.
+- Non-consensual encounters will no longer give you an "ask to leave on" option for tops. Thanks to Bathory666.
+- You can no longer perform mouth actions while wearing a mask, other than speaking. Thanks to Bathory666.
+- Adjusted the triggers for whether the PC smiles or not. Thanks to lifeAnime.
+- Quickened the speed of suffocation by one turn. Thanks to Jimmy.
+- Masks no longer block fame gain during Niki's photoshoot. Thanks to Jimmy and PurityGuy.
+- Eden now gains lust daily, rather than hourly. Robin and Alex now also gain lust over time. Thanks to Quin2k.
+- Reduced the rate at that defiance and submissiveness are gained.
+- Made waterproof clothes protect the clothing underneath them from water. Thanks to hwp.
+- Stripping down to underwear with the dance trait will no longer force dancing PCs with low exhibitionism off the stage.
+- The bunny leotard now has the dance trait.
+- Eden's rescue of the PC from the asylum and Remy's farm now has a minimum love requirement. Thanks to oyea.
+- Tending now produces more produce by default. Thanks to shun.
+- Added a cap to the femininity provided by shorter hair and fringe styles. Thanks to Lollipop Scythe.
+- Excess damage inflicted by the PC will no longer overflow onto the next target in group encounters. Thanks to Rukarin.
+- The ancient threat is now easier to resist during the first possession. Thanks to Crimson Tide.
+- Added a feat boost for the athletics skill. Thanks to khovel.
+- Helping Robin at their stand will now increase their funds a little. Thanks to shun.
+- Clothes with the "dance" trait now take no damage when an NPC attempts to pull them off while the PC dances.
+
+### Bug Fixes
+
+- Fixed a bug that confused pens and penises. Thanks to note leven.
+- Added the great hawk's monster status to settings presets. Thanks to Lollipop Scythe.
+- Agreeing to the museum horse demonstration will now use the correct outfit. Thanks to hwp.
+- Fixed incorrect lines from Sydney if Sydney knows your PC's gender, PC is crossdressing and is not the same gender as Sydney. Thanks to Kamikaza404.
+- Fixed a bug with irrigation. Thanks to hwp.
+- Fixed a bug that allowed fitting an arbitrary number of fingers in your pussy while masturbating. Thanks to hwp.
+- Fixed a bug that turned the ancient threat into a hermaphrodite. Thanks to hwp.
+- Fixed a bug that allowed endlessly penetrating and pulling out of double penetration. Thanks to Bathory666.
+- Added tracking support for penises escaping and attempting to double penetration. Thanks to Bathory666 and Jimmy.
+- Fixes a bug that created phantoms limbs and genitals if an action is taken right before a target is defeated. Thanks to Rukarin.
+- Guards should no longer reappear right after being defeated in the estate. Thanks to PurityGuy and Jimmy.
+- Fixed a spa exhibitionism scene that displayed the wrong requirement. Thanks to hwp.
+- Fixed a bug that prevented pronouns from generating. Thanks to note leven.
+- Fixed some body bugs found after defeating NPCs in group encounters. Thanks to Rukarin.
+- Fixed a bug that prevented the "Grab between breasts" action working. Thanks to Rukarin.
+- Fixed some sprite layering issues with angel wings and oral shadows while in a pillory, and with long leather gloves while giving handjobs in the missionary position. Thanks to Bathory666.
+- Women with strap-ons met while working as a bartender will no longer have testes to cup. Thanks to Bathory666.
+- Fixed a bug that prevented the beast encounter behind the school triggering unless a monster spawns.
+- Fixed a bug that caused the lower half of a swimsuit to be lost despite it being connected to the upper half. Thanks to hwp.
+- Minor change to the sidebar caption for those with images disabled. Thanks to hwp.
+- Fixed an issue found when wearing scarfs. Thanks to Lollipop Scythe.
+- Negotiated and dancing tips will no longer round to the nearest penny. Thanks to shun.
+- Fixed an issue with the doggy encounter sprite's hair. Thanks to sseshess.
+- Fixed a bug that caused penile multiplication. Thanks to Rukarin.
+- Fixed some bugs with NPC clothing. Thanks to hwp.
+- Fixes a bug where fallen angel isn't saved when entering scenes like the Schism, the Prayer Room or the library books.
+- Thanks to Luna for a typo fix.
+- Thanks to Bathory666 for typo and minor code fixes.
+- Thanks to hwp for typo fixes.
+
+Thanks to oyea for the following fixes:
+
+- Fixed NPCs acquiring the wrong genitals after reading body-writing with arrows. Thanks to oyea.
+- Fixed some issues with my previous MR, thanks to note leven. Thanks to oyea.
+- Fixed an issue when biting someone's pussy after defeating someone else. Thanks to Bathory666 and oyea.
+- Prevented an NPC from bypassing the barbed wire on Alex's farm to assault the player.
+- Added post-orgasm finishing moves for Alex, Avery and Whitney, similar to the existing ones for Eden, Leighton and generic NPCs.
+- Fixed Kylar breaking free from the orphanage cuddling scene after having their heart broken.
+- Typo fixes.
+
+Thanks to PurityGuy for the following fixes:
+
+- Whitney no longer forces their tongue into their own mouth to kiss you.
+- Fixed some issues with the Whitney parasite event.
+- Fixed Bailey having a bit too much health when fought while refusing rent.
+- Adjusted the chastity belt and gold chastity belt to no longer poke out from some undamaged clothing. Thanks to KG.
+- The ancient threat will no longer compliment the player with normal NPC dialogue in very rare circumstances.
+- When written on by NPCs, their writing will no longer always transmogrify into pen writing from marker, mud, lipstick, etc.
+- Plantpeople's writing will now properly stay on the player.
+- Fighting off all tentacles in a vore encounter will no longer disable any bodyparts that were targeting tentacles.
+- Fixed an issue with the <<group>> widget only displaying one NPC due to the changes to \$enemyno.
+- Fixed an issue with taking Robin's oral virginity outside of encounters.
+- Fixed only getting money from stealing from the donation plate if the player couldn't learn anything from stealing.
+- Robin, Kylar, and Sydney can no longer increase the player's rape fame. Robin and Sydney will no longer increase the player's sex fame, either. Kylar still does because they brag about it.
+- Fixed an error with some skill checks.
+- Fixed a stray pixel in the game's banner.
+- Fixed a case of sucking breasts acting as though you had kept your mouth closed, or taken no action at all.
+- Fixed an issue with NPCs interacting with face coverings.
+- Fixed an issue with the PC's hands. Thanks to hwp.
+- Fixed an issue with animation settings being automatically disabled on some saves, and added a one-time notification with options to fix it if triggered.
+- Fixed an error that happens when the player tries to intimidate a farm assault team.
+- Fix for the game attempting to generate pronouns for nonexistent NPCs.
+- Fixed an issue with encounters involving multiple NPCs.
+- Adjusted the wording on the Sydney-Leighton punishment so students will no longer vanish mid-scene.
+- Made the ancient threat's text and link pointers more distinct. Thanks in part to Conhue.
+- Typo fixes.
+
+Thanks to Crimson Tide for the following fixes:
+
+- The game will now keep better track of Sydney and Kylar while the PC is being suffocated.
+- Stress should no longer exceed its boundaries during events involving the ancient threat.
+- The game should now properly remember Kylar's status during their Halloween event.
+- Machine encounters now use proper combat links, rather than standard links.
+- Fixed a bug that destroyed the wrong fields during farm raids.
+- Minor code improvements.
+
+Thanks to Jimmy for the following fixes:
+
+- DoL should no longer force browsers into dark mode.
+- Fixed an issue with the homeschooling event.
+- Fixed a compatibility issue with older browser versions.
+- Fixed a pronoun issue found in the prison spire while there's a lockdown.
+- Fixed a softlock found when fighting off 6 classmates during science class.
+- Fixed some issues with rape and sex fame.
+- The PC can no longer go for a run at the park or beach if legs are bound.
+- Fixed broken time.
+- Bailey and Avery can now co-exist it in the same scene.
+- Kylar, Sydney and Robin will now contribute to the PC's statistics when they finish them off with oral after an encounter.
+- River will no longer confiscate cool glasses after school. They've places to be.
+- Fixed an error in the outfit editor.
+- Fixed a text error found while masturbating in the park toilets.
+- Fixed an NPC generation error during the Brutus event.
+- Fixed a bug that caused Wren to escape during inmate flirting.
+- Combat will now scroll back to the stop as a default mechanism for new saves.
+- Lust no longer automatically increases while Alex spies on the PC in the shower.
+- Fixed some issues found after a failed wolf hunt.
+- Sydney's hairdresser no longer lets you go into negative wealth.
+- Fixed a bug that caused chest skill to improve automatically when working at the spa.
+- Fixed some issues with saved hairstyles. Thanks to mcn.
+- Fixed some issues in the kennel, including several cases where events would not end properly, causing NPC errors.
+- Leighton should now generate properly when intervening in the canteen fight.
+- Fixed an issue found when tutoring on Danube street.
+- Typo fixes.
+
+Thanks to braymann for the following fixes.
+
+- If Remy is about to attack the farm, you will no longer be allowed to tend to the fields and somehow miss the entire raid happening.
+- Fixed an error when one of the fields get torched.
+- Choosing to endure while getting humped by a dog on Alex's farm will no longer lower stress and trauma instead of raising it.
+- Fixed an error when choosing to leave your clothes behind when a slime gets stuck to it in the sewers.
+
+## 0.3.6.2
+
+- Improved scroll position restore and added a toggle to enable/disable the feature. Thanks to note leven.
+- Made an error message less alarming. Thanks to hwp.
+- Built a little upon one of the scenes found when breaking down while hugging Robin. Thanks to hwp.
+
+### Bug Fixes
+
+- The PC will no longer get stuck in a wall during a riding lesson should receiving analingus be disabled.
+- The Black Wolf will no longer notice your human ears if you actually possess bovine ears instead. Thanks to Crimson Tide.
+- Plantpeople will be properly enabled at the start of the game. Thanks to Crimson Tide.
+- The PC mentally acknowledges that Kylar is wearing undies during the Christmas scene if they previously asked Kylar to go commando. For their kindness, for their jewel, PC forgives the broken rule. Thanks to Crimson Tide.
+- Fixed the PC's uncoolness causing a time loop in history class. Thanks to oyea.
+- Fixed an NPC generation issue when receiving comfort from Robin. Thanks to oyea.
+- Fixed a patron at the strip club pressing someone else's penis against the player's butt. Thanks to oyea.
+- Fixed some issues related to trousers and skirts during missionary sex. Your trousers will no longer be floating in the wrong position during some actions. Thanks to braymann.
+- Fixed an issue that discoloured your leg when giving a tentacle a footjob. Thanks to braymann.
+- Fixed a bug that caused tan lines to make parasites on your breasts disappear. Thanks to braymann.
+- Fixed an issue with NPC data. Thanks to note leven.
+- Fixed an issue with the prison guards' names. Thanks to note leven.
+- Fixed a bug that caused compatibility code to trigger when not intended. Thanks to note leven.
+- This fixes a bug where clicking on the same full-body outfit twice in the shop would cause the game to present a different item due to an index mismatch. Thanks to hwp.
+- Fixed an issue with star pyjama bottoms. Thanks to hwp.
+- Fixed the frottage promiscuity requirement. Thanks to Bathory666 and hwp.
+- Thanks to oyea for a typo fix.
+- Thanks to Crimson Tide for a typo fix.
+
+## 0.3.6.1
+
+- Added winter variants of the castle location art. Thanks to Azyle.
+- Added a sprite for the cow onesie hood being pulled down. Thanks to oyea.
+- Added icons for the scarlet and olive books in the library. Thanks to oyea.
+
+### Bug Fixes
+
+- Fixed an issue with the castle location art. Thanks to Azyle.
+- Fixed a number of typos and other errors found during the blackjack cum addict scene.
+- Fixed an issue with persistent NPC settings breaking, and added Pinch to the list. Thanks to note leven.
+- Fixed an issue found when your clothes are stolen on the moor. Thanks to note leven.
+- Fixed a compatibility issue with old saves. Thanks to note leven.
+- Fixed an issue found when harvesting crops. Thanks to Macilien and note leven.
+- Fixed a number of issues with the denim shorts and booty jorts combat images. Thanks to lifeAnime.
+- Fixed a bug that prevented some combat images from displaying correctly. Thanks to hwp and lifeAnime.
+- Penises and butt should now synchronise in the double anal penetration close up animations. Thanks to Bathory666.
+- Adjusted the size of the double anal penetration, and close up double vaginal penetration sprites. Thanks to Bathory666.
+
+Thanks to oyea for the following fixes:
+
+- Fixed a softlock caused when reading the olive-coloured book without visiting the rental counter.
+- Fixed an issue that prevented the player from returning the olive-coloured book after stealing it.
+- The player will no longer steal Pinch's testes after reading the olive-coloured book.
+- The player will no longer bring their parasites or lewd fluids into the olive and scarlet books.
+- Fixed the player gaining Status and Delinquency during detention without performing the required action.
+- Typo fixes.
+
+## 0.3.6.0
+
+- Kylar can now drop by the orphanage early Christmas morning. Written in collaboration with Kiyo.
+- Added an olive-coloured book to the school library, available during the last week of November and through December. Written by Fangi, with help from Harcher and oyea. Coded by oyea.
+- Added a small scene involving the ancient threat on Christmas. Thanks to PurityGuy, written in collaboration with Crimson Tide.
+- Important persistent NPCs can now be modified in the named NPC settings tab, once met. This includes all the prison guards and inmates, the panty thief, night monster, watchtower guards, and the ancient threat. Thanks to PurityGuy and Jimmy.
+- Added the cow onesie, cow print chaps, and cowboy boots to the clothing shop. Art courtesy of KG.
+- Adjusting the clothing system to make the addition of new clothes easier for modders. Thanks to Lollipop Scythe.
+- Improved the formatting of the school changing room links. Thanks to StickyLizard.
+- Thanks to Crimson Tide for expanding combat mechanics to allow encounters while possessed. Dialogue written with PurityGuy.
+- Stroking Robin in their room is now more reactive to their stats. Thanks to hwp.
+- Headbutting Sydney now breaks their glasses. Thanks to Crimson Tide.
+- Added a framework that allows for the generation of NPCs with custom descriptions and roles. Thanks to Crimson Tide.
+- Various waiters and waitresses have been turned into custom NPCs, as well as the janitor that pulls you out of the gloryhole at school. Thanks to Crimson Tide.
+- Added location art for the promenade, which currently appears during an event with Sydney. Art courtesy of Mochi.
+- Added location art for the moor castle. Art courtesy of Azyle.
+- Added combat sprites for denim shorts and booty jorts. Art courtesy of Azyle.
+- Added combat sprites for the hime fringe style. Art courtesy of Myoran.
+- Thanks to Myoran for adjusting the hime fringe style.
+- Gave turtleneck jumpers unique combat sprites. Thanks to lifeAnime.
+- Added back layers for the loose, straight, curl, defined curl and neat hairstyles. Thanks to oyea.
+- Added icons for the landfill, and for buying milkshake at the café. Art courtesy of Kami.
+- Double vaginal now has a cum sprite. Thanks to Bathory666. Art courtesy of Ruby9036.
+- Double vaginal now shows cum inside your pussy left over from previous sexual encounters. Art thanks to Ruby9036.
+- Improved the clothing re-buy code. Thanks to Lollipop Scythe.
+- Improved NPC generation code. Thanks to hwp.
+- Touched up the curl and straight hairstyles. Thanks to oyea.
+- Thanks to Jimmy for a debug tool.
+- Thanks to Suggestalot for creative assistance.
+- Thanks to Crimson Tide, braymann, hwp and Jimmy for code improvements.
+
+### Balance Changes
+
+- Defeating an NPC in a multi-NPC encounter no longer reduces pain to 0. Thanks to Crimson Tide.
+- School status now increases should other students witness Avery arrive to pick you up.
+- Penis fencing has been reduced from promiscuity 5 to promiscuity 4. Thanks to Bathory666.
+
+### Bug Fixes
+
+- Fixed a number of issues with persistent NPCs. Thanks to Rukarin.
+- Fixed a couple of bugs that caused typos. Thanks to Rukarin.
+- Fixed a bug that prevented pubic hair growth on old saves. Thanks to hwp.
+- Fixed a bug that could crash combat should you try to straddle a second penis while wearing a chastity belt. Thanks to Nicky Lassandri.
+- NPCs can no longer pinch your clit while you're wearing a chastity belt. Thanks to Nicky Lassandri.
+- Fixed a couple of errors that appeared on the feat boosts page. Thanks to PurityGuy.
+- Fixed an issue with arousal gained while fondling your breasts. Thanks to braymann.
+- Submitting to the rival pack will no longer indicate an increase to Stockholm syndrome.
+- Fixed a bug that prevented the straightjacket being removed when receiving a gown, which could cause a softlock.
+- Fixed a bug that erased the veteran guard from existence when attempting to learn their name. Thanks to Jimmy for this, and to PurityGuy for restoring them to life on afflicted saves with progress intact.
+- Fixed a bug that broke chastity belt-wearing NPC's genitals. Thanks to hwp.
+- Fixed a bug with pronoun generation. Thanks to hwp.
+- Swarms should no longer be amnesiac about selected actions. Thanks to note leven.
+- Fixed errors with swarm events initiated before entering other types of combat. Thanks to note leven.
+- Fixed improperly generated critters during struggle encounters. Thanks to note leven.
+- It's now possible to whack pens until writing is completed, not just on the turn when the NPC pulls out the tool. Thanks to note leven.
+- Fixed some issues with breast and nipple flavour text. Thanks to Rukarin.
+- Fixed a bug that caused breast images to overlap the Next link on high zoom settings and mobile. Thanks to Rukarin.
+- Being rescued by a lifeguard should no longer regenerate the aggressor NPC.
+- Fix for bug that allowed both double anal and double vaginal. Thanks to Bathory666.
+- You can no longer offer double penetration if you have the appropriate settings disabled. Thanks to Bathory666.
+- Fixed a number of issues with turtleneck encounter sprites. Thanks to lifeanime.
+- "Dead" persistent NPCs should now be resurrected when viewing them in the settings menu. Thanks to PurityGuy and Jimmy.
+- Fixed issues with turtleneck combat sprites. Thanks to lifeanime.
+- Fixed a bug that could prevent accepting the pill from the pub date. Thanks to PurityGuy.
+- Thanks to PurityGuy for typo fixes.
+- Thanks to hwp for minor fixes.
+
+Thanks to oyea for the following fixes:
+
+- Changed the icons for the utility vest and utility vest w/ shirt to better fit the style of other clothing icons.
+- The player can once again perform the pig and horse shows at the brothel if beasts are disabled, provided their settings allow for monster-people.
+- Fixed issues with sleeves not displaying properly in combat.
+- NPCs in certain scenes that were meant to be victims will now be generated as such.
+- The player can now stop masturbating during detention.
+- The player will no longer look over their shoulder during stalking encounters when they're already being assaulted.
+- The player may no longer approach the Black Wolf while it's supposed to be out hunting.
+- Nurses at the asylum will now provide the player with a replacement straightjacket should theirs get damaged, preventing softlocks for low Exhibitionism players.
+- Fixed an issue preventing the icon for moon pyjama bottoms from appearing.
+- Fixed a combat bug. Thanks to Rukarin.
+- Stopped the defined curl and neat hairstyles rendering above the PC in unnatural ways.
+- The defined curl hairstyle should now show up in the debug renderer.
+- Fixed a bug that let the genitals of NPCs ignore their chastity belt if angry enough.
+- Typo fixes.
+
+Thanks to Crimson Tide for the following fixes:
+
+- The willpower check to pull away from mouth actions against plantpeople now takes nectar addiction into account.
+- The plantperson encounter in the forest has a different outcome if you're addicted to nectar and suffering from withdrawals.
+- You can now properly think about Remy's attacks on the farm at the Great Hawk's tower.
+- You can now only kiss Kylar once after walking in the park with them.
+- Crawling under the table on a ship leads to oral sex, rather than regular sex.
+- Persistent NPCs will now be referenced by their names more often during encounters, if known.
+- The persistent prison NPCs are now referred to by name in the virginity menu, if known.
+- Defeating a named NPC in a multi-NPC encounter now uses their name, rather than their title.
+- Typo and minor code fixes.
+
+Thanks to Jimmy for the following fixes:
+
+- The pharmacy event should now end properly.
+- Fixed a bug that cleared NPC data prematurely during a scarred prisoner event.
+- Fixed a minor issue with the clothing system.
+- River will now provide maths competition help on subsequent years.
+- Fixed an issue with beast generation in a house on Danube Street.
+- Removed a duplicate NPC found when passing out at the docks.
+- Fixed an issue with NPC generation at the prison spire.
+- Wren should no longer lurk in the background after leaving their shop.
+- Fixed a duplicated Leighton.
+- Leighton should no longer lurk in the background after the high fame event in the school hallways.
+- Resting the urge to spank a student under hypnosis will now properly end the event.
+- Fixed a duplicated NPC bug during the wolf mating rank event.
+- Fixed some issues with the hunt event in the underground brothel.
+- The dog encountered during the beach abduction now only generates if needed.
+- Fixed with the money gained display during Brutus' scene.
+- NPC data should now be properly cleared after prison shower events.
+- Fixed some pronoun issues.
+- Typo fixes.
+
+## 0.3.5.4
+
+- Students can now comment on PCs with Sydney as their love interest during stalk encounters. Thanks to Crimson Tide.
+
+### Bug Fixes
+
+- Fixed a handful of minor errors.
+- The forest bear event can now trigger with beasts disabled, if the bear generated as a monster.
+- Fixed some forest wolf events that could generated monsters regardless of settings.
+- The black wolf will no longer appear should beasts and monsters be disabled.
+- The black wolf should no longer manifest as a monster if bestiality is disabled
+- Making your steed feel a foal on the road between town and the farmlands will now increase respect as intended.
+- Minor code and typo fixes. Thanks to Crimson Tide.
+- Fixed an error with old Android version saves. Thanks to Jimmy.
+
+Thanks to braymann for the following fixes:
+
+- Centaurs will no longer lose trust when you calm them down while riding to/from the farm.
+- Added some highlighting to the price when you sell your parasites to Harper.
+- Fixed some issues related to double vaginal penetration sprites.
+- Added another fix for the social menu completely erroring out.
+
+Thanks to Jimmy for the following fixes:
+
+- Corrected the passing of time in the Spire.
+- Alex should no longer expect the PC to leave the farm if they're welcome at the cottage.
+- Fixed an issue with an NPC failing to generate properly when you're caught having an orgasm in public.
+- Fixed a Gwylan pronoun issue.
+- Improved the formatting of Alex's wake up scene.
+- Fixed an issue found when referencing NPCs during detention. Thanks to oyea.
+
+## 0.3.5.3
+
+- Added icons for the Café, Watching the Pillory, and Docks. Art courtesy of Myoran, and coded by PurityGuy.
+- Added clothing icons for Boxers, Gold Bracelets, Gold Chain, Iron Chain, Monster Hoodie, Moon Pyjama Bottoms, Retro Shorts, Retro Top, Retro Trousers, Scarf, Star Pyjama Shorts, Tape, Vest, Cropped Hoodie, Long Johns, School Swim Bottoms, and School Swim Top. Art courtesy of Myoran, and coded by PurityGuy.
+- Thanks to Crimson Tide for code improvements.
+
+Thanks to Bathory666 for the following additions and improvements.
+
+- Added x-ray double vaginal white sprites. Art courtesy of Ruby9036.
+- Recoloured x-ray double vaginal sprites for dark skin.
+- Normal vaginal and anal x-rays now show the right NPC's penis, rather than the first generated.
+- Dark skin variants of normal vaginal and anal x-rays are now available.
+
+Balance Changes
+Admitting you stole the book now adds delinquency. Does not give the PC detention, since they're about to be punished anyway. Thanks to Crimson Tide.
+
+### Bug Fixes
+
+- Docker reputation is now visible in the social widget. Thanks to readthemanual.
+- Some events will no longer print "This event may/will corrupt Sydney" if Sydney is already corrupt. Thanks to Crimson Tide.
+- Fixed a bug that prevented Leighton's penis from being properly described during one scene. Thanks to Crimson Tide.
+- Fixed issues with the combat sprites found when giving a chestjob or oral. Thanks to lifeAnime.
+- Fixed the clothes display at the forest shop. Thanks to lifeAnime.
+- The "Morgan the Lost" and "Harper the Hypnotist" feats should now trigger on old saves.
+- Fixed a bug that prevented events from triggering on the streets while blindfolded.
+- Fixed a versioning issue with NPCs generated on old saves. Thanks to Jimmy and braymann.
+
+Thanks to PurityGuy for the following fixes:
+
+- Sydney will no longer clear someone else's throat when climaxing in the library.
+- The PC will no longer get glances from down the hallway while in the library.
+- Clothes with 0 warmth will no longer be described as "light and cool."
+- The icons for Cow Bra, Cow Panties, Cow Sleeves, Cow Socks, Utility Vest, and Utility Shirt, and Mini Snowman now appear properly.
+- Sleepstat is no longer undefined on new saves.
+- Fixed a broken event at the pub.
+- Removed a stray writer's note in an orgasm event.
+- The mirror no longer states that changing your fringe from natural will set your sides to messy, as this is no longer true.
+- Niki will no longer be described as your breast size while remaining professional.
+- Fixed some cases of confused Sirris gender.
+- You will no longer be stared at by an undefined undefined when orgasming at the docks or arcade.
+- Fixed an error when orgasming in the pool changing rooms.
+- The player will no longer be described as "fleeing the scene" while orgasming in locations with nowhere to flee.
+- Alex will no longer be a 0 while watching you orgasm.
+- Many typos and grammatical fixes for public orgasm events.
+- More general fixes.
+
+Thanks to note leven for the following fixes:
+
+- Fixed an issue with save versioning.
+- Fixed a bug that could break old saves.
+- Fixed .0000000001 precision in the stats menu.
+- Fixed a rogue ' in the cropped hoodie's description.
+- "Brown" and "soft brown" should no longer be switched at the hairdresser's.
+- Hearing Wren's voice in the smuggler's cave will no longer reveal their identity in the social menu.
+- NPCs should no longer generate twice during prison laundry events.
+- Fixed an issue with card covers.
+- NPCs should no longer mention nonexistent chastity when ejaculating.
+- Other fixes.
+
+Thanks to braymann for the following fixes:
+
+- It's no longer possible for multiple people to be pinning your arms down at the same time.
+- Defeating all but one person in multi-person encounters will not cause the NPC status messages to use the pronouns of the first person in the encounter, even if they were already beaten.
+- Fixed some typos in swarm encounters.
+- There will no longer be a little ">" pointing at the mini snowman during combat.
+- Fixed an issue where body-writing could appear over clothing during combat.
+- Fixed shorts again so they will no longer look like trousers in combat.
+- The game will no longer tell you that you have two cocks pressed against your anus when they are actually against your vagina.
+- You will no longer get an error if you try to start a game with an anal herm parasite when you have anal parasitic pregnancy disabled.
+- Going into the character viewer before making a new character will no longer cause the social menu to completely error out. Added a fix for existing saves that have the error.
+- Fixed an error when you give someone a footjob while wearing ankle socks.
+- Stealing cosmetics will no longer make you the most wanted criminal in town.
+- Fixed an error when choosing "cooperate" when frotting someone else.
+
+## 0.3.5.2
+
+- The description above actions now consistently state the NPC's name/description. Thanks to Rukarin.
+- Targeting the same NPC's penis or pussy with multiple body parts will no longer spawn additional genitals. Thanks to Rukarin.
+- It's no longer possible for herms to penetrate and NPC's ass while their pussy is in use. Thanks to Rukarin.
+- The dog you can follow into an alley is no longer able to speak.
+- Fixed an issue found when straddling a second penis for double vaginal and anal penetration. Thanks to Bathory666.
+- Settings now exports pubic hair setting. Thanks to Bathory666.
+
+Thanks to oyea for the following fixes:
+
+- Adjusted the shading on the keyhole dress for larger breast sizes.
+- The player will no longer be told they're about to pass out when an NPC is sitting on their face if they're already unconscious.
+- The person offering the tutoring job on Danube Street will no longer expect the PC to be in school on non-school days.
+- The cropped hoodie can no longer be tucked in.
+- Stopped Kylar from breaking free when sleeping with them at the orphanage.
+- Stripping at the photography studio will no longer trigger automatic clothing rebuy.
+- Fixed an issue when assaulted for entering the wrong toilets at the park.
+- The game will no longer forget the player's hypnosis progress when a save is loaded.
+- Fixed a text issue found when ejaculating on a tentacle. Thanks to braymann.
+- Fixed a bug found when working as a chef. Thanks to Jimmy.
+- Fixed NPCs breaking free from the farm. Thanks to Jimmy.
+
+## 0.3.5.1
+
+- Added a short event to the photo studio.
+- Added combat sprites for lace arm warmers. Art courtesy of lifeAnime.
+- Added an icon for Bailey's office. Art courtesy of Conhue.
+- Added a couple of short events outside the strip club.
+
+Thanks to Bathory666 for the following additions and improvements:
+
+- Added a frottage missionary sprite.
+- Added a black variant for the double anal penetration close-up sprite.
+- Added an icon to the photography studio. Art courtesy of 3hp.
+
+### Balance Changes
+
+- Entering the photo studio now takes one minute. Thanks to Bathory666.
+
+### Bug Fixes
+
+- Fixed an issue with the winter residential dusk location image. Thanks to Swaggy Bookshelf.
+- Fixed a bug that prevented an encounter found while modelling from triggering. Thanks to oyea.
+- Orderlies should now always dress you in a gown after removing a straightjacket, rather than towels.
+- Fixed an error found when wearing a bathrobe with a flat chest.
+- Adjusted the descriptions of the "Morgan the Lost" and "Harper the Hypnotist" feats.
+- Fixed a softlock found when following a dog into an alley. Thanks to Crimson Tide and braymann.
+
+Thanks to Crimson Tide for the following fixes:
+
+- Going to the prisoner's cell for teeth now actually gives you teeth.
+- The clothing rebuy message now properly accounts for plurals.
+- You can encounter the night monster as a monsterperson more than once.
+- Doren's introduction text will now display appropriately should your first meeting with them be during a hypnosis event.
+- Typo fixes.
+
+Thanks to PurityGuy for the following fixes:
+
+- Pressing "Next" on the Tending grade feat boost boost or "Previous" on the seduction feat boost will no longer move the list back to the money boost selection.
+- Cleaned up some weirdness when kissing a plantperson outside of combat.
+- Passing out at school and being rescued by Sydney no longer causes a brief blank passage.
+
+Thanks to Rukarin for the following fixes:
+
+- Improved the way pronouns are presented during encounters with multiple NPCs.
+- Fixed some errors found during encounters.
+- Fixed a bug that could make named NPCs invincible, among other issues.
+- Fixed a bug that caused the "Ask" action to display the wrong text in front of its options.
+- Fixed an issue with NPC descriptions.
+
+Thanks to braymann for the following fixes:
+
+- Cumming in a pool changing room while no one is there will no longer mention how it caught everyone's attention.
+- The journal will now tell you what's being built when you're doing the second barn upgrade.
+- Fixed an error when having sex with pure Sydney.
+- You will no longer wear your socks over your shoes in combat.
+- Rewarding a wolf after sparring and losing will now say that it requires deviancy.
+- Typo fixes
+
+Thanks to Bathory666 for the following fixes:
+
+- Fixed a bug that broke double vaginal.
+- Fixed an issue with double vaginal sprites.
+- Fixed a bug that caused the wrong text to display during double vaginal.
+- Fixed an issue with the doggy sprite during frottage.
+
+## 0.3.5.0
+
+- Niki's photo studio can now be visited for modelling work once discovered.
+- NPCs can now be targeted individually during encounters with multiple NPCs. They have individual pain bars, and can be knocked out of combat one by one, but still share arousal. Defeating an NPC reduces pain and arousal. Thanks to Rukarin.
+- Added some lewd options to the prison yard while the inmates exercise.
+- Added a few events to school that can trigger after the PC has been hypnotised by Harper.
+- Added new orgasm locations to the school. Written by Kinky_One and coded by Lollipop Scythe.
+- Adjusted the residential alleyway dog event to take arm bindings into account. Thanks to Jimmy.
+- Added the cropped hoodie to the clothing shop. Art courtesy of 3hp.
+- Added encounter sprite art for longer skirts, sweaters, turtlenecks, and scarfs. Art courtesy of 3hp.
+- Disabling beasts will now prevent lewd events with beasts from triggering, rather than forcing them into monstergirl/boy form. Events will proceed as normal if the beast generated as a monster due to other settings.
+- Added a fountain to the park location image. Art courtesy of Kami.
+- Replaced the body-writing toggle with a slider, letting you choose between self-body-writing only, consensual body-writing, consensual and forced body-writing, and the previous but with the addition of forced tattoos.
+- Added new location art for the landfill, and new winter variants for the landfill, prison, Alex's cottage, Alex's farm, the café, Remy's farm, forest, lake, moor, museum, park, pool, pub, riding school, ruins, spa, residential alleys, and town streets. Art courtesy of Swaggy Bookshelf.
+- The prison will now shackle the PC with a ball and chain, rather than regular shackles. Art courtesy of PurityGuy.
+- Added a full view of the prison, which highlights your current location. Art courtesy of 3hp.
+- Also added a view of the rut once discovered.
+- Added light-up trainers to the clothing shop, including icons and encounter images. Art courtesy of Lantern.
+- Added the mini snowman to the forest shop, including encounter images. Available from 15th December. Art courtesy of lantern.
+- Added the curtain fringe hairstyle, and neat sides hairstyle. Art courtesy of Lantern.
+- Added icons for the shopping centre, hospital, and beach. Art courtesy of Myoran.
+- Added encounter images for nipple tape. Art courtesy of Mist.
+- Added a patient gown to the asylum. The staff there will provide them instead of towels.
+- Tips regarding disabled content no longer appear. Thanks to hwp.
+- The combat sprites can now display both trousers or shorts, depending on the item worn.
+- Added times hypnotised to the statistics overlay.
+- The PC may now refuse Avery's hand at the start of the restaurant date. Thanks to PurityGuy.
+- Added icons for the main hall and front doors of the orphanage, as well as the plaque, canteen, laundry room, medical room, and large door in prison. Also added icons for the run and lift options in the prison yard. Art courtesy of Turkeh (Formerly SlimeFox).
+- The sidebar should now stick to the bottom should it change length while scrolled to the bottom. Thanks to hwp.
+- Added the "Harper the Hypnotist" and "Morgan the Lost" feats.
+- The prison canteen now takes bound arms and gags into account.
+- Hair should now display beneath hoods. Thanks to aimozg and lifeAnime.
+- Added gold highlights to newly attached creatures during struggle encounters. Thanks to note leven.
+- Bailey now has a different greeting for the player upon their return from the underground brothel, should they escape quickly. Written by Harcher and coded by oyea.
+- Using the cheat menu to change transformations will now have immediate effect, rather than requiring a wait until midnight. Thanks to Beat.
+- Thanks to Rukarin for lots of code improvements under the hood.
+- Thanks to Lollipop Scythe for major improvements to the clothing system.
+- Thanks to Jimmy, hwp, Crimson Tide and note leven for code improvements.
+
+Thanks to oyea for the following additions and improvements:
+
+- Gave the night monster a monster-person variant, and added new scenes to its lair. Written by Mist.
+- Fleshed out the night monster, giving it an obsession with shiny and pretty things.
+- The night monster now persists between appearances, rather than being freshly generated each time.
+
+Thanks to PurityGuy for the following additions and improvements:
+
+- The owners of the pet shop may now get word of the player's beast fame, and comment accordingly. Requires beasts to be enabled and non-monster beasts to be possible. Written by Charming.
+- Added an event with another orphan to Domus and Danube street. Written by Charming, with some additions.
+- Trying to tutor a student on Domus street while school is in session now has some unique text. Written and coded by House.
+- The Great Hawk now has its penile/vaginal virginity intact. Does not require a new save, it will apply retroactively. Raptors mate for life!
+- Added two tips for blood moons.
+- Added a subtle hint for players that have already gone through a possession to help avoid it in the future.
+- Sleeping over with a traumatised Robin will no longer protect the player from strange forces.
+- Added tooltips, used to make the Settings page neater.
+- Added some new magic CSS. Thanks to aimozg.
+- Green thumb is now a feat boost, rather than a background trait, unlocked upon getting the feat for reaching max tending. Green Thumb can still be obtained through gameplay, and saves made before this version will be unaffected.
+- In Green Thumb's place in the backgrounds menu is the new "Dendrophile/Plant Lover" trait. It gives the player a bonus to tending as they gain trauma, causes plantpeople and plant-based tentacles to no longer require hallucinations, makes the player more vulnerable to aphrodisiacs and alcohol, and gives the PC an addiction to nectar. This trait can be gained in-game by drinking lots of nectar, and lost by abstaining from nectar completely for a long time.
+- Boosting the tending skill above S rank will now provide further bonuses to crop yield, ability to pick wild plants, selling at your stand, and other areas as skill improves.
+- All plant-based tentacles now use nectar.
+- Added the Plant Lover/Dendrophile trait to the cheats menu.
+- For herm players, the "Crossdresser" option is now greyed out, as it doesn't do anything for them.
+- You can now refuse Avery's hand when on a date with them.
+
+Thanks to Bathory666 for the following additions and improvements:
+
+- Added double vaginal, including NPC and PC initiation.
+- Added x-ray and encounter sprites for double vaginal, including NPC silhouettes.
+- Added NPC speech for double anal and vaginal moaning.
+- Added ejaculation text for chastity blocked double anal and double vaginal.
+- Added double tease for double anal and double vaginal.
+- Updated the brothel gangbang scene to take double vaginal into account.
+- Added a new toggle that covers both double vaginal and anal, complete with a tooltip. Double anal greys out if anal is disabled. Thanks to note leven for help with the grey-out effect.
+- Pussies can now be bitten, similar to penises.
+- Added a penis fencing encounter sprite.
+- Added icons for the school playground, entrance, and exit.
+
+Thanks to Crimson Tide for coding the following scenes:
+
+- The PC can now relax with the Black Wolf. Written by Burnt Toast.
+- The PC can now encounter a rival wolf pack while hunting. Written by Burnt Toast.
+- The Black Wolf can now challenge the PC for position of alpha, if ferocity is high and harmony is low. Written by Burnt Toast.
+- The Black Wolf can now lead the pack in a group howl, with the PC able to join in. Impacted by transformations. Written by Burnt Toast.
+- The wolves may now sleep beside the PC in the wolf cave, increasing sleep quality and reducing stress and trauma. Written by Charming.
+- Added the ability to challenge the wolves at the cave to a fight. Written by yetanotheruser.
+- Added night patrol scene with the Black Wolf. Written by Necro.
+
+### Balance Changes
+
+- The night monster's behaviour in their lair is now influenced by the PC's allure. Thanks to oyea.
+- It's now possible to outrun the night monster via an athletics check. Thanks to oyea.
+- Asphyxiophilia will now give the "A Special Trait" feat, but is also required for the "A Special Trait Collector" feat.
+- Increased the thigh skill gained at the riding school.
+- The PC can no longer steal tulips while exposed. Thanks to note leven.
+- Removed awareness requirement for double anal penetration. Lowered chance of NPCs attempting to double penetration to compensate. Thanks to Bathory666.
+- Jordan can now take the PC's handholding virginity during the temple sneaking scenes. Thanks to Jimmy.
+- Feet skill and dance skill now have a lower impact on dodging. Added a penalty for wearing heels. Thanks to note leven.
+- Grabbing a creature no longer locks off other options. However, switching hands to another creature will reset grip progress. Thanks to note leven.
+- Failing a dodge now has a 66% chance to attach to any available bodypart per creature. Thanks to note leven.
+- Successfully making Robin a flower crown will now increase their love. Thanks to oyea.
+- The PC can now move their poked at or penetrated anus to another penis and start double anal penetration if requirements are met. Thanks to Rukarin.
+
+Thanks to PurityGuy for the following balance changes:
+
+- The ancient threat is now easier to resist with willpower if the PC hasn't robbed them.
+- The PC can now prevent the ancient threat giving them an ear slime by fighting them off.
+- The ancient threat no longer catches the PC so fast at the lake.
+- The ancient threat can now be encountered around town during blood moons without running in circles for over an hour.
+- The ancient threat is now less likely to appear outside blood moons, and the more dangerous events can only trigger at night.
+
+### Bug Fixes
+
+- Fixed a bug that made monsters transform into beasts when reloaded.
+- Fixed an error found during combat. Thanks to Raahs.
+- Adjusted the "back" hairstyle, so it doesn't clip through headwear as much. Thanks to Ppspray.
+- The option to slap Kylar in the canteen will no longer incorrectly indicate that it reduces Kylar's dominance.
+- Fixed some issues with the missionary shorts sprite.
+- NPCs will no longer grasp your "naked" at the town pillory should you be wearing nothing beneath your top.
+- Fixed issue where the sidebar's vertical position would reset back to the top each time you change passages. Thanks to hwp.
+- The PC will no longer clip through undamaged long skirts.
+- Fixed a bug that sometimes broke missionary encounter sprite clothes.
+- Fixed a bug that prevented wedge sandals displaying on the combat sprite.
+- Fixed a minor bug involving outfits with multiple types. Thanks to Lollipop Scythe.
+- Text will no longer be repeated for the second hand should NPCs tug at your chastity belt with both. Thanks to lifeAnime.
+- Thanks to lewddude for fixing some hand target issues.
+- Plantpeople can no longer be encountered separately from tentacles. Thanks to Crimson Tide.
+- Plantpeople now require hallucinations to encounter. Thanks to Crimson Tide.
+- Fixed a bug that resulted in plantpeople impregnating you with "vine vines", rather than vines. Thanks to Crimson Tide.
+- Thanks to Crimson Tide for formatting and typo fixes.
+
+Thanks to note leven for the following fixes:
+
+- The journal should no longer become polluted with multiple copies of the same museum hint. New hints will also appear at the top of the list.
+- The "shots fired" stat will now only appear once Eden is met.
+- Fixed a bug at the prison wardrobe that could prevent hotkeys working.
+- Fixed a bug that prevented the side from being toggled.
+- Asking to go to the cinema too early no longer wastes 15 minutes.
+- The "go somewhere together" link no longer shows on the next page after clicking it.
+- Visiting the forest with Robin no longer blocks cinema and Halloween costume visits.
+- Robin no longer wears outfits of the opposite gender to the cinema when not crossdressing.
+- Fixed an error found during a Halloween event.
+- Fixed an issue with the tentacles generated along the road in the farmlands.
+- Formatting and minor code improvements.
+- Science grade no longer requires masochism to reduce pain.
+- Soothing pain is no longer reduced by science, and doesn't lower arousal with high masochism.
+- Being forcibly footstooled will now indicate a pain increase.
+- Fixed various small issues.
+
+Thanks to PurityGuy for the following fixes:
+
+- The ancient threat will no longer show up on the first blood moon.
+- Fixed some jank when this isn't Kylar.
+- Fixed a looping message at the lake.
+- The ancient threat can now hunt and catch the PC in water or on the ice at the lake.
+- The PC will no longer be able to look at their reflection in a nonexistent window when possessed in the storm drains.
+- The notification that a corruption bar has appeared in characteristics will no longer appear if the bar is already present.
+- Fixed some faulty logic in the lake ruin.
+- Fixed a bug that could stop time passing properly when sleeping with traumatised Robin.
+- Fixed some errors found when checking your offspring while under the ancient threat's influence.
+- The swimming bonus from the Athlete background and the swimming feat boost now stack properly.
+
+Thanks to Jimmy for the following fixes:
+
+- Fixed some errors found during the flashing scene in the café.
+- Fixed a bug that prevented exhibitionism fame from accruing as intended.
+- Adjusted Robin's debt dialogue to take a missing console into account.
+- Fixed a bug that could prevent clothing rebuy from working correctly on new saves.
+- Fixed a Sirris-Sydney pronoun mix-up.
+- Fixed an issue found while livestock on Remy's farm.
+- The "Dry your clothes" option will no longer display if all clothes are dry.
+- It should no longer be possible to increment Kylar's stats without advancing time.
+- Whitney should now be specified as the target of a dominance stat change during their scene with Kylar in the canteen.
+- Showering in prison should now always advance time.
+- Fixed some issues caused by NPCs hanging around the park toilets.
+- The description and effect of flaunting in prison should now match.
+- Added an exhibitionism requirement to the landfill milkshake scene.
+- All NPCs should now properly generate after fighting Bailey's goons during a farm assault.
+- Fixed some rogue NPCs at the farm kennel.
+- Fixed an issue with the clothing system.
+- Fixed a pronoun issue during the school detention paddle scene.
+- Removed an unnecessary NPC found when breaking into houses on Danube Street.
+- Added bratty colouring to the strife action.
+- Fixed some text errors found when encountering plantpeople.
+- Offering your body after stripping on the street should now increase prostitution fame.
+- The PC will now wait a minute longer when waiting for students to leave the changing rooms, lining up with 3:05.
+- Fixed an issue with the clothing system. Thanks to Lollipop Scythe.
+- Robin should no longer lurk the tutorial encounter.
+- Cleared some rogue NPCs found when picking pockets on Connudatus Street.
+- Fixed some rogue NPCs released when eating pancakes at the café.
+- Adjusted and optimised some clothing shop code.
+- Fixed an NPC error found in the park toilets.
+- Fixed a surplus of pigs found when encountering a horde of them in the farmlands.
+- Fixed some issues found during the hunt scene in the underground brothel.
+- Clothing should now dry instantly when choosing the "dry clothing" option at the wardrobe.
+- Fixed a reference to the wrong guard during a Kylar prison scene.
+- There should no longer be a queue outside the café while it is closed.
+- Fixed a bug that could cause tentacles to be described as pussies.
+- Added "Hold behind back", "Stop holding behind", and "Kiss" to selectable default actions.
+- Kylar can no longer be soft-locked out of the game in the prison showers.
+- Thanks to Oyea for minor text improvements
+- Thanks to hwp for fixing an issue found during a masturbation scene.
+- Thanks to Crimson Tide for fixing an issue found when cuddling Kylar in bed.
+- Whitney should no longer be able to appear outside school after you dunk them in the pool. Thanks to Talrea.
+- Fixed an error found on some Android devices.
+- Minor code and typo fixes.
+
+Thanks to Bathory666 for the following fixes:
+
+- Fixed an old bug that occurred when trying to offer pussy or ass at the same time you straddle with the same part. It will now initiate double penetration if appropriate, and fail if not.
+- Teasing penises with your ass now involves your anal skill.
+- Fixed a bug that caused the brothel gangbang show to fail to display double penetration.
+- Kink presets, saves, and settings exports now update double anal penetration and plant people toggles. Thanks to Bathory666.
+- Fixed an issue with the new renderer displaying chastity devices beneath clothing. Thanks to aimozg.
+- Minor code and typo fixes.
+
+Thanks to note leven for the following struggle encounter fixes:
+
+- Struggle encounters will now start with feet evading.
+- The "Hurl net" actions now prioritises staggered opponents.
+- The "stroke it" action should no longer reset to rest every turn.
+- Fixed a red wall of text found if the tutorial man hasn't been met yet.
+- Oxygen no longer restores on turns where you can't breathe.
+- Other small fixes.
+
+Thanks to braymann for the following fixes:
+
+- Trauma will now build up properly when the player has innocence.
+- The game will now mention when you orgasm into someone's bowels if they have a vagina.
+- Removed some unnecessary line breaks when an audience comments on you in a swarm encounter.
+- When wearing nipple tape, students that try to undo your bra will no longer say you're wearing some kind of vest.
+- Fixed a bug with fertiliser decay.
+- You can no longer go into debt by paying your watchtower guard more money than you currently have.
+- Fixed some missing quotations and typos in the brothel shows. Thanks to Jimmy.
+- People should now only write "Walking Dildo" and "Cum Rag" on you when appropriate. Thanks to Jimmy.
+- Typo fixes.
+
+Thanks to oyea for the following fixes:
+
+- Darryl will no longer appear in the social tab before the player has properly met them.
+- The passed-out prostitute/unwary pickpocket harassed by street cops will no longer always be female.
+- Fixed an issue when having sex with Eden after masturbating in the spring.
+- Fixed an issue with the player not getting dressed after one of the nighttime street exhibitionism events.
+- Typo fixes.
+
 ## 0.3.4.8
 
 - Fixed an error that appeared when gaining exhibitionism fame. Thanks to Jimmy.
@@ -400,7 +1813,7 @@ Thanks to Bathory666 for the following additions and improvements.
 - Players can lose virginity to two NPCs at the same time.
 - Added audience reactions to double penetration.
 - Added an additional reward when receiving double penetration during Briar's brothel shows.
-- Added xray animations for double penetration.
+- Added x-ray animations for double penetration.
 - Added a double penetration toggle to Settings. Disabled by default.
 
 Thanks to hwp for help, and to braymann for bug fixes.
@@ -438,7 +1851,7 @@ Thanks to oyea for coding the following scenes:
 - Passing the temple punishment with Sydney will now put them back in the temple's good graces.
 - Fixed a softlock with Whitney in the park.
 - Fixed an issue that bloated save file size. Thanks to Lollipop Scythe.
-- FIxed a bug that caused the adjective for penis size to be printed twice. Thanks to hwp.
+- Fixed a bug that caused the adjective for penis size to be printed twice. Thanks to hwp.
 - The change to bodypart size will on happen at the appropriate moment during hospital procedures. Thanks to hwp.
 - Thanks to Lollipop Scythe for typo and minor code fixes.
 - Fixed a bug that allowed NPCs to remove legwear without first removing shoes, and prevented them from removing shoes at all.
@@ -462,7 +1875,7 @@ Thanks to oyea for coding the following scenes:
 - Striking with both hands during combat should now be described as such.
 - You will no longer gain defiance when apologising to Remy after a failed escape. Thanks to oyea.
 - Fixed an issue when having sex with a shady fan on the streets. Thanks to oyea.
-- NPCs can now only comment on one body-wirting per turn. Thanks to oyea.
+- NPCs can now only comment on one body-writing per turn. Thanks to oyea.
 - Revealed strap-ons are no longer described as "fully erect." Thanks to Bathory666.
 - Net skill will now increase when failing to catch lurkers during farm events, rather than when succeeding, and will be properly marked as doing so.
 - Fixed a bug that hid legwear on the back leg.
@@ -512,14 +1925,14 @@ Thanks to Crimson Tide for the following fixes:
 - NPCs will now react to taking the PC's first kiss if the PC initiated the kiss.
 - Pens can now be properly whacked out of named NPC hands during encounters with multiple named NPCs.
 - NPCs reacting to an arrow on your pubic region will now attempt to fuck your pussy, rather than your ass.
-- Image body-writing wil no longer be described in quotation marks as if it were text.
+- Image body-writing will no longer be described in quotation marks as if it were text.
 - Typo and minor fixes.
 
 Thanks to braymann for the following fixes:
 
 - Insecurity can now be gained like usual again.
-- Fixed some broken text when two npcs try to write on the player in the same place at the same time.
-- Fixed an error when the player is about to penetrate a vagina in multi-npc encounters.
+- Fixed some broken text when two NPCs try to write on the player in the same place at the same time.
+- Fixed an error when the player is about to penetrate a vagina in multi-NPC encounters.
 - One of the other criminals in community service will no longer try to press someone else's penis against you.
 - Great hawk will no longer occasionally look like a dog.
 - The "Ejaculated on/in" stat will no longer increase multiple times from a single ejaculation.
@@ -546,15 +1959,15 @@ Thanks to braymann for the following fixes:
 - Added some more text highlighting to the market stall where it was missing.
 - The hooded couple that talk about the player's good fames will no longer always mention the same type of fame.
 - Masturbating in the temple will now give exhibitionism.
-- Fixed a bug where npcs weren't actually grabbing your clothes when the game says they are.
+- Fixed a bug where NPCs weren't actually grabbing your clothes when the game says they are.
 - Fixed an error when refusing to give Avery a kiss.
 - Fixed a softlock when passing out in the park bathrooms.
 - Irrigated fields will no longer need watering right after the player plants something in them.
 - Great Hawk will no longer be able to bring back clothing that can't be bought in the store.
 - Removed some corrupted text when dying pubic hair.
 - Fixed some text that was overlapping the closeup images at the end of encounters.
-- Fixed an error when wearing damaged armsleeves.
-- Fixed a bug that caused npcs to try to pull down your panties before they even moved your pants.
+- Fixed an error when wearing damaged arm sleeves.
+- Fixed a bug that caused NPCs to try to pull down your panties before they even moved your pants.
 - During Blackjack, the round will now end immediately if Wren was dealt a natural Blackjack.
 - You will now get the Anal Mother trait as soon as you birth a third parasite, instead of the next time you get impregnated after that.
 - The game will now properly tell you what farm upgrade is currently happening when looking in the journal or at Alex's desk.
@@ -564,7 +1977,7 @@ Thanks to braymann for the following fixes:
 - NPCs starting encounters by making you give them oral will no longer allow them to contort their bodies.
 - The watchtower guard will now ask for the correct amount of money if you missed some payments.
 - Fixed a bug that sometimes caused there to be absolutely no text at the end of an encounter in the park toilets.
-- Fixed a couple bugs that can happen when beating people up in gangbangs.
+- Fixed a couple bugs that can happen when beating people up in gang bangs.
 - NPCs are no longer able to give you footjobs when your genitals are being used by someone else already.
 - Fixed some issues with suffocation during combat.
 - You are no longer forced to buy at least one dog treat when you examine them in the pet store.
@@ -573,7 +1986,7 @@ Thanks to braymann for the following fixes:
 - Fixed some bugs that could prevent you from writing certain body-writings on yourself.
 - NPCs will no longer immediately forget that they just wrote something on you and react to it like they've never seen it before.
 - The random solo tentacle in the streets will no longer be named "Large Tentacle" if it isn't able to impregnate the player.
-- Fixed a problem where beasts aren't able to trigger the "npc has broken free" error message.
+- Fixed a problem where beasts aren't able to trigger the "NPC has broken free" error message.
 - Fixed a dog that breaks free from the beach.
 - You will no longer be able to get an extra raise from the docks to reach £21 an hour.
 - NPCs will no longer try to remove your mask if someone else already removed it on the same turn.
@@ -662,7 +2075,7 @@ Thanks to bsmith for the following fixes:
 
 Thanks to braymann for the following fixes:
 
-- Fixed another potential bug with named npc generation.
+- Fixed another potential bug with named NPC generation.
 - Fixed a bug where sometimes monster people would have a default dog sprite.
 - Fixed a bug where delinquency decay would happen on the wrong days.
 - Glory holes will once again require promiscuity 4 to enter.
@@ -998,12 +2411,12 @@ Thanks to braymann for the following fixes:
 - Added the option to meekly hold your arms behind your back during normal human encounters.
 - Expanded the penis and pussy inspection scenes with new options and reactivity, including the ability to join the line or remain seated in spite of gender appearance. Crossdresser and hermaphrodite fame will now interact with the scene. Thanks to hwp, with writing help from oyea and anon.
 - Monster boys and girls can now use their hands during combat.
-- NPCs with penises will now make the PC give them a boobjob under their own initiative, should the PC's breasts be large enough.
+- NPCs with penises will now make the PC give them a boob job under their own initiative, should the PC's breasts be large enough.
 - NPCs can now dislocate the PC's top and fondle their chest during the pillory punishment on Cliff Street.
 - Added plain thigh highs to the clothing shop.
 - Added a feet toggle to Settings.
 - Added the option to tell Robin you like being a cow. Thanks to anon.
-- Added body size and asphyxiophila to the cheat menu.
+- Added body size and asphyxiophilia to the cheat menu.
 - Added the option to submit when the PC's ass is groped on the streets. Requires high submissiveness. Thanks to larsrand.
 - The PC can now write more slutty and submissive lines on their skin at the mirror, if they meet the requirements. Thanks to larsrand.
 - Added the option to flirt when a student squeezes your bottom in the school hallways. Requires promiscuity and submissiveness. Thanks to larsrand.
@@ -1174,8 +2587,8 @@ Thanks to braymann for the following fixes:
 - Any purity gained or lost by taking care of your parasites is now affected by any holy clothing you're wearing.
 - Fixed a bug where choosing to wear random clothing will sometimes break outfits in half.
 - Slime parasites on your clit will no longer look like an urchin parasite.
-- Fixed a problem when an npc initiates a titfuck.
-- Fixed some npcs that would refer to your nonexistent chastity belt after they orgasm.
+- Fixed a problem when an NPC initiates a titfuck.
+- Fixed some NPCs that would refer to your nonexistent chastity belt after they orgasm.
 - The tower security guard's security skill now has a cap and will no longer increase infinitely.
 - Typo fixes.
 
@@ -1272,7 +2685,7 @@ Thanks to braymann for the following fixes:
 - Fixed a bug that sometimes caused plants to grow at super high speeds.
 - Moved the beehives back into the deep forest where they belong.
 - Fixed a problem with one of the ambient events.
-- Fixed a bug with the landfill passout scene.
+- Fixed a bug with the landfill passing out scene.
 - Removed the duplicate link to check your pills in Alex's cottage.
 - The random clothing feat boost will no longer give you just the bottoms or hoods of some outfits.
 - Fixed a problem where invisible broken hoods in the wardrobe would stay invisible forever and could never be removed.
@@ -1296,7 +2709,7 @@ Thanks to braymann for the following fixes:
 - Added the monster hoodie, school swim top and school swim bottoms to the clothing shop. Art courtesy of lifeAnime.
 - Added a keyhole dress to the clothing shop. Art, including the icon, courtesy of Harto.
 - Added new images for larger breast sizes to the chest window. Art courtesy of sseshess.
-- Boobjobs are now displayed in the chest window for the remaining sizes. Art courtesy of sseshess.
+- Boob jobs are now displayed in the chest window for the remaining sizes. Art courtesy of sseshess.
 - Added icons for swimming, walking, and running to the forest, moor, park and beach. Also added icons for the lake, the orphanage flower patch, beds, and wardrobes. Art courtesy of anon.
 - Added new art for cycle shorts, breeches, cowboy chaps, gym bloomers, jeans, denim shorts, khakis, sailor shorts, sailor trousers, school shorts, school trousers, shorts, sweatpants, and trousers. Includes damage variants and icons. Art courtesy of Anon.
 - Added booty jorts to the clothing shop. Art courtesy of Anon.
@@ -1381,7 +2794,7 @@ Thanks to Lollipop Scythe for the following additions and improvements:
 - Getting angry after Alex pulls you onto the dirt in the fields should now decrease love rather than increase it.
 - Tentacles should no longer be able to attack at the orphanage flower beds while tentacles are disabled.
 - Fixed an issue with Eden not catching you while you have a solo session in the spring. Thanks to Khau.
-- Fixed some npc widget issues with Eden. Thanks to Khau.
+- Fixed some NPC widget issues with Eden. Thanks to Khau.
 - Avery's hot tub will now wash off lewd fluids and such.
 - Points towards the cow transformation should now cap in the cheat menu.
 - The initiate being disciplined at the temple will now follow the victim slider.
@@ -1570,7 +2983,7 @@ Thanks to Lollipop Scythe for the following fixes:
 
 Thanks to Khau for the following fixes:
 
-- Stopped many npcs from breaking free.
+- Stopped many NPCs from breaking free.
 - Stopped the massage scene from disappearing at 11:30pm.
 - The fifth massage cycle will no longer take 33 minutes instead of 30.
 - Massaging now increases more of Eden's lust.
@@ -2377,7 +3790,7 @@ Thanks to Lollipop Scythe for the following fixes:
 
 - Eels, spiders, worms and maggots now have art during swarm encounters. Art courtesy of ΩMEGA.
 - Urchin and slime parasites will now display beneath chastity cages. Art courtesy of Karshton.
-- The player may now strip at the new npc's tower. Thanks to PurityGuy.
+- The player may now strip at the new NPC's tower. Thanks to PurityGuy.
 - Added the bird TF info to the statistics tab. Thanks to PurityGuy.
 
 ### Bug Fixes
@@ -2419,7 +3832,7 @@ Thanks to PurityGuy for the following fixes:
 - Fix for an arousal increase that is only supposed to happen if the new NPC is a monster.
 - Fix for the bird TFs eyes layering in front of eyelids when blinking.
 - Removed some leftover debug code for stripping under upper clothing.
-- Fixed pronoun errors for the new npc.
+- Fixed pronoun errors for the new NPC.
 - Fixed some bugged submissiveness checks.
 - Made the feathered hair clip obtainable.
 - Robin's soft bad end message will no longer trigger if you've already taken their debt.
@@ -2526,7 +3939,7 @@ Thanks to Lollipop Scythe for the following fixes:
 - Fixed some layout issues with the encounter UI on mobile.
 - Fixed a bug that prevented some tips from displaying.
 - Fixed many old drug lines that were incorrectly referencing intoxication.
-- Fixed some events where the player or npc reference clothing when none are worn.
+- Fixed some events where the player or NPC reference clothing when none are worn.
 - Typo and other minor fixes.
 
 Thanks to braymann for the following fixes:
@@ -2959,7 +4372,7 @@ Thanks to braymann for the following fixes:
 - You will now put your clothes back on after escaping rapists at the beach party.
 - You can no longer gain sexual fame or have your anal parasites fertilised by reading Raul and Janet in the library.
 - Automatic Rebuy will no longer buy the clothes Janet was wearing in the book.
-- Virginities taken by the tutorial npc will now show as being taken by "Tutorial Woman" if they were, in fact, a woman.
+- Virginities taken by the tutorial NPC will now show as being taken by "Tutorial Woman" if they were, in fact, a woman.
 
 ## 0.2.21.5
 
