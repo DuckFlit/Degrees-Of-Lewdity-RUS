@@ -284,7 +284,7 @@ window.sexShopOnItemClick = function (index) {
 	let item = setup.sextoys[index]
 	let coloring_div = "";
 
-	/* clear "Bought!/Buy it" fade in setTimeout from window.sexShopOnBuyClick  */
+	/* clear "Bought!/Buy it" fade in setTimeout from window.sexShopOnBuyClick */
 	if (window.sexShopOnGiftClick.counter !== undefined && window.sexShopOnGiftClick.counter != "off"){
 		clearTimeout(window.sexShopOnGiftClick.counter)
 		window.sexShopOnGiftClick.counter = "off"

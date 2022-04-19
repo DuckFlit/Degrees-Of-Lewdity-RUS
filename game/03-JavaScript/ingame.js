@@ -641,7 +641,7 @@ window.getRobinCrossdressingStatus = function(crossdressLevel){
 }
 
 window.DefaultActions = {
-	create:  function (isMinimal = false, preload = false) {
+	create: function (isMinimal = false, preload = false) {
 		let storage = {};
 		setup.actionsTypes.combatTypes.forEach(type => {
 			storage[type] = {};
@@ -1254,11 +1254,11 @@ window.npcSpecifiedClothes = function (npc, name){
 	}
 }
 
-/*npc.crossdressing: 0 - doesnt at all, 1 - sometimes, 2 - always*/
+/*npc.crossdressing: 0 - doesn't at all, 1 - sometimes, 2 - always*/
 window.npcClothes = function (npc, type){
-    let crossdressing = npc.crossdressing || 0;
+	let crossdressing = npc.crossdressing || 0;
 	let gender = ['n'];
-	/* if you dont want those always crossdressing to wear neutral clothes
+	/* if you don't want those always crossdressing to wear neutral clothes
 	let gender = [];
 	if(crossdressing !== 2) gender.push('n');
 	*/

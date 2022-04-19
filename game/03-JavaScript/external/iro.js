@@ -968,7 +968,7 @@
 	return dist(cx - x, cy - y) < r;
   }
   /**
-	* @desc Get the point as the center of the wheel
+	* @desc Get the point as the centre of the wheel
 	* @param props - wheel props
 	*/
 
@@ -989,7 +989,7 @@
 
   function translateWheelAngle(props, angle, invert) {
 	var wheelAngle = props.wheelAngle;
-	var wheelDirection = props.wheelDirection; // inverted and clockwisee
+	var wheelDirection = props.wheelDirection; // inverted and clockwise
 
 	if (invert && wheelDirection === 'clockwise') { angle = wheelAngle + angle; } // clockwise (input handling)
 	else if (wheelDirection === 'clockwise') { angle = 360 - wheelAngle + angle; } // inverted and anticlockwise
@@ -1035,7 +1035,7 @@
 	x = cx - x;
 	y = cy - y; // Calculate the hue by converting the angle to radians
 
-	var hue = translateWheelAngle(props, Math.atan2(-y, -x) * (360 / TAU)); // Find the point's distance from the center of the wheel
+	var hue = translateWheelAngle(props, Math.atan2(-y, -x) * (360 / TAU)); // Find the point's distance from the centre of the wheel
 	// This is used to show the saturation level
 
 	var handleDist = Math.min(dist(x, y), handleRange);

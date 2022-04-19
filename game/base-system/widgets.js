@@ -283,7 +283,7 @@ function genderAppearanceHermTiebreak() {
 	// Reminder: this is only if the player has an *exactly* 0 femininity score. This should be nearly impossible to reach, but we still need to handle it.
 
 	// The general principle here is that these factors are things that indicate which gender is the player's preference for this character.
-	// We rely on as many manually-chosen details as possible to break the tie in a way that favors the player's preference.
+	// We rely on as many manually-chosen details as possible to break the tie in a way that favours the player's preference.
 
 	if (["m", "f"].includes(V.player.gender_body)) {
 		return V.player.gender_body; // break the tie with natural features, if player has masculine or feminine features.

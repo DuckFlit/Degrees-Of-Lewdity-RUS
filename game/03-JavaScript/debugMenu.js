@@ -926,15 +926,15 @@ setup.debugMenu.event_list = {
 				`<<set $bus to "sea">>`
 			]
 		},
-        {
-            link: [
-                `Cow Test`, `Cow Test Sex`
-            ],
-            widgets: [
-                `<<endcombat>>`,
-                `<<set $sexstart to 1>>`
-            ]
-        },
+		{
+			link: [
+				`Cow Test`, `Cow Test Sex`
+			],
+			widgets: [
+				`<<endcombat>>`,
+				`<<set $sexstart to 1>>`
+			]
+		},
 		{
 			link: [
 				`Tentacle Rape Me`, `Sea Tentacles`
@@ -1632,7 +1632,7 @@ setup.debugMenu.event_list = {
 			],
 			widgets: [
 				`<<set $molestationstart to 1>>`,
-			   `<<swarminit "slimes" "slime mass" "moving towards you" "encircle you" "fend off" 8 0>>`
+				`<<swarminit "slimes" "slime mass" "moving towards you" "encircle you" "fend off" 8 0>>`
 			]
 		},
 		{
@@ -2694,20 +2694,20 @@ setup.debugMenu.event_list = {
 				`<<run unlockAllSeeds()>>`
 			]
 		},
-        {
-            link: [
-                `Super Debug Character`, function(){return V.passage}
-            ],
-            widgets: [
-                `<<set $school += 4000>>`,`<<set $science += 1000>>`,`<<set $maths += 1000>>`,`<<set $english += 1000>>`,`<<set $history += 1000>>`,`<<set $sciencetrait to 4>>`,
-                `<<set $mathstrait to 4>>`,`<<set $englishtrait to 4>>`,`<<set $historytrait to 4>>`,`<<set $skulduggery += 1000>>`,`<<set $danceskill += 1000>>`,
-                `<<set $swimmingskill += 1000>>`,`<<set $bottomskill += 1000>>`,`<<set $seductionskill += 1000>>`,`<<set $handskill += 1000>>`,`<<set $feetskill += 1000>>`,
-                `<<set $chestskill += 1000>>`,`<<set $thighskill += 1000>>`,`<<set $oralskill += 1000>>`,`<<set $analskill += 1000>>`,`<<set $vaginalskill += 1000>>`,
-                `<<set $penileskill += 1000>>`,`<<set $promiscuity += 100>>`,`<<set $exhibitionism += 100>>`,`<<set $deviancy += 100>>`,`<<set $awareness to 1000>>`,
-                `<<set $willpower to 1000>>`,`<<set $physique to 12000>>`,`<<set $orgasmtrait to 1>>`,`<<set $ejactrait to 1>>`,`<<set $molesttrait to 1>>`,
-                `<<set $rapetrait to 1>>`,`<<set $bestialitytrait to 1>>`,`<<set $tentacletrait to 1>>`,`<<set $choketrait to 1>>`
-            ]
-        },
+		{
+			link: [
+				`Super Debug Character`, function(){return V.passage}
+			],
+			widgets: [
+				`<<set $school += 4000>>`,`<<set $science += 1000>>`,`<<set $maths += 1000>>`,`<<set $english += 1000>>`,`<<set $history += 1000>>`,`<<set $sciencetrait to 4>>`,
+				`<<set $mathstrait to 4>>`,`<<set $englishtrait to 4>>`,`<<set $historytrait to 4>>`,`<<set $skulduggery += 1000>>`,`<<set $danceskill += 1000>>`,
+				`<<set $swimmingskill += 1000>>`,`<<set $bottomskill += 1000>>`,`<<set $seductionskill += 1000>>`,`<<set $handskill += 1000>>`,`<<set $feetskill += 1000>>`,
+				`<<set $chestskill += 1000>>`,`<<set $thighskill += 1000>>`,`<<set $oralskill += 1000>>`,`<<set $analskill += 1000>>`,`<<set $vaginalskill += 1000>>`,
+				`<<set $penileskill += 1000>>`,`<<set $promiscuity += 100>>`,`<<set $exhibitionism += 100>>`,`<<set $deviancy += 100>>`,`<<set $awareness to 1000>>`,
+				`<<set $willpower to 1000>>`,`<<set $physique to 12000>>`,`<<set $orgasmtrait to 1>>`,`<<set $ejactrait to 1>>`,`<<set $molesttrait to 1>>`,
+				`<<set $rapetrait to 1>>`,`<<set $bestialitytrait to 1>>`,`<<set $tentacletrait to 1>>`,`<<set $choketrait to 1>>`
+			]
+		},
 		{
 			link: [
 				`Unlock all pills`, function(){return V.passage}

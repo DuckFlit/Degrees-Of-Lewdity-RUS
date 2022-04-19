@@ -20,7 +20,7 @@ Renderer.CanvasModels["sexdemo"] = {
 
 	/**
 	 * Default option values.
-	 * All possible options should be initialized to some non-crashing values here.
+	 * All possible options should be initialised to some non-crashing values here.
 	 * Should also have a `filter:{}` option for model filters
 	 */
 	defaultOptions() {
