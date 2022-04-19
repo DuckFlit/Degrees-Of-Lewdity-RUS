@@ -1060,6 +1060,48 @@ Config.navigation.override = function (dest) {
 
 		case 'Domus House Work':
 			return 'Domus Gutters Intro';
+		
+		case 'Trash Boys':
+			return 'Trash Compare';
+
+		case 'Trash Boys Spy':
+			return 'Trash Compare Spy';
+
+		case 'Trash Boys Greet':
+			return 'Trash Compare Greet';
+	
+		case 'Trash Boys Refuse':
+			return 'Trash Compare Refuse';
+
+		case 'Trash Boys Compare':
+			return 'Trash Compare Others';
+
+		case 'Trash Boys Back Out':
+			return 'Trash Compare Back Out';
+	
+		case 'Trash Boys Show':
+			return 'Trash Compare Show';
+
+		case 'Trash Boys Offer Secret':
+			return 'Trash Compare Penis Secret';
+	
+		case 'Trash Boys Wrap It Up':
+			return 'Trash Compare Wrap It Up';
+
+		case 'Trash Boys Crossdressing Refuse':
+			return 'Trash Compare Breast Refuse';
+	
+		case 'Trash Boys Crossdressing Show All':
+			return 'Trash Compare Breast Show All';
+
+		case 'Trash Boys Forced Strip':
+			return 'Trash Compare Forced Strip';
+	
+		case 'Trash Boys Combat Win':
+			return 'Trash Compare Combat Win';
+
+		case 'Trash Boys Combat Loss':
+			return 'Trash Compare Combat Loss';
 
 		case 'Lake Underwater Tentacles Finish Figure':
 			return 'Lake Underwater Tentacles Finish';
