@@ -17,8 +17,8 @@ JSON.debug.parse = JSON.parse.bind(JSON);
 JSON.debug.stringify = JSON.stringify.bind(JSON);
 
 // We use this to prevent us from spamming the log if a
-// specific class isn't able to be found in the serializer
-// Also contains a count of the number of non-serialized object
+// specific class isn't able to be found in the serialiser
+// Also contains a count of the number of non-serialised object
 // for a given classname/path
 JSON.debug.stringifyMissingClasses = {}
 JSON.debug.stringifyClasses = {}

@@ -21,7 +21,7 @@ Macro.add("radiovar", {
 				tabindex: 0,
 				type: "radio"
 			})
-			.prop("checked", State.getVar(varname) ==  value)
+			.prop("checked", State.getVar(varname) == value)
 			.addClass("macro-radiovar")
 			.on('change.macros', function () {
 				if (this.checked) {

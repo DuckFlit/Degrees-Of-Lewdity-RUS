@@ -4,7 +4,7 @@
  * place the widgets that need to be run inside effects array
  * if you feel lost just ask away :)
  * take_condition == 1 means the "Take Pill" button is not greyed out and is clickable
- * display_condition controls wether or not pill should be displayed in the pill menu
+ * display_condition controls whether or not pill should be displayed in the pill menu
 */
 
 /*
@@ -13,11 +13,11 @@ This is the setup.pills array.
 It contains a list of all the possible pills.
 A single pill object contains multiple 'properties' which define the pill.
 
- * name:'example pill' - The name displayed in the medicine drawer screen. Auto-capitalizes first word. Capitalize other words if desired.
+ * name:'example pill' - The name displayed in the medicine drawer screen. Auto-capitalises first word. Capitalise other words if desired.
  * description: 'this pill is green.' - The description displayed when the pill is selected.
  * onTakeMessage: 'You swallow the green pill.' - Text displayed when a pill is taken.
  * warning_label: 'Warning: example pill may cause explosive decompression.' - Warning label displayed in text box. <span class="hpi_notice_label"> is used in several of these.
- * indicators: - Array of indicators.  Example: `<span class="hpi_indic_green">+ Control</span>`
+ * indicators: - Array of indicators. Example: `<span class="hpi_indic_green">+ Control</span>`
  * icon: 'img/misc...blahblah' - file path of the png icon for this pill.
  *
  * autoTake: - Code or statement that determines if this pill is set to auto-take ??? **
@@ -27,10 +27,10 @@ A single pill object contains multiple 'properties' which define the pill.
  * display_condition: - Code or statement to determine if the pill displays in list. **
  * take_condition: - Code or statement to determine if the take button displays for this pill - can a dose currently be taken. **
  *
- * type: "various" - Type of pill. Pill code uses this to determine what the effects are and where they apply.  Example: "bottom" or "breast"
+ * type: "various" - Type of pill. Pill code uses this to determine what the effects are and where they apply. Example: "bottom" or "breast"
  * subtype: "various" - Action the pill has on bodypart 'type'. Optional for the asylum & harper meds apparently. Example: "reduction" or "growth"
  * shape: "pill" or "galenic" - Helps to properly space the icon.
- * effects: - Array of effects - can be used to issue quick macros for setting results.  Example: `<<control 25>>`
+ * effects: - Array of effects - can be used to issue quick macros for setting results. Example: `<<control 25>>`
 */
 setup.pills = [
 	{
@@ -390,7 +390,7 @@ window.redetermineMostTaken = function(type, subtype, fullname=null) {
 			result[pill.subtype] = pill.doseTaken()
 	}
 	ret = result.growth - result.reduction;
-	if (ret == 0 && (result.growth > 0 || result.reduction > 0)){ // We enter here when growth and reduction pills neutralized each others
+	if (ret == 0 && (result.growth > 0 || result.reduction > 0)){ // We enter here when growth and reduction pills neutralised each others
 		if (result.blocker > 0)
 			return (V.sexStats.pills.mostTaken[type] = "blocker")
 		else

@@ -468,14 +468,14 @@ window.settingsPCGenderUpdate = function () {
 }
 
 window.settingsDoubleAnalToggleGreyOut = function() {
-    let updateButtonsActive = () => {
-        jQuery('[id*=checkbox-analdoubledisable]').prop("disabled", V.analdisable == "t");
-    };
+	let updateButtonsActive = () => {
+		jQuery('[id*=checkbox-analdoubledisable]').prop("disabled", V.analdisable == "t");
+	};
 
-    jQuery(document).ready(() => {
-        updateButtonsActive();
-        jQuery('[id*=checkbox-analdisable]').on('change', function (e) { updateButtonsActive(); });
-    });
+	jQuery(document).ready(() => {
+		updateButtonsActive();
+		jQuery('[id*=checkbox-analdisable]').on('change', function (e) { updateButtonsActive(); });
+	});
 }
 
 $(document).on('click', '#cbtToggleMenu .cbtToggle', function (e) {

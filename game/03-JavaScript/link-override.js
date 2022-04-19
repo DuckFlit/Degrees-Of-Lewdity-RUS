@@ -115,8 +115,8 @@ Wikifier.Parser.add({
 		w.nextMatch = markup.pos;
 
 		// text=(text), forceInternal=(~), link=link, setter=(setter)
-		const link  = Wikifier.helpers.evalPassageId(markup.link);
-		const text  = markup.hasOwnProperty('text') ? Wikifier.helpers.evalText(markup.text) : link;
+		const link = Wikifier.helpers.evalPassageId(markup.link);
+		const text = markup.hasOwnProperty('text') ? Wikifier.helpers.evalText(markup.text) : link;
 		const setFn = markup.hasOwnProperty('setter')
 			? Wikifier.helpers.createShadowSetterCallback(Scripting.parse(markup.setter))
 			: null
