@@ -960,7 +960,8 @@ window.clothesReturnLocation = function(item, type){
 //the 'modder' variable is specifically for modders name, should be kept as a short string
 window.clothesIndex = function(slot, itemToIndex) {
 	if(!slot || !itemToIndex || !itemToIndex.name || !itemToIndex.variable) {
-		console.log(`clothesIndex - slot or valid object not provided`);
+		/* console.log(`clothesIndex - slot or valid object not provided`); */
+		Errors.report(`[clothesIndex]: slot or valid object not provided`, { 'Stacktrace' : Utils.GetStack(), slot, itemToIndex });
 		return 0;
 	}
 	let index = setup.clothes[slot].findIndex((item) => item.variable === itemToIndex.variable && item.modder === itemToIndex.modder)
@@ -1120,7 +1121,8 @@ Config.navigation.override = function (dest) {
 window.currentSkillValue = function(skill){
 	let result = V[skill];
 	if(!result && result !== 0) {
-		console.log(`currentSkillValue - skill '${skill}' unknown`);
+		/* console.log(`currentSkillValue - skill '${skill}' unknown`); */
+		Errors.report(`[currentSkillValue]: skill '${skill}' unknown.`, { 'Stacktrace' : Utils.GetStack(), skill });
 		return 0;
 	};
 	if(['skulduggery','physique','danceskill','swimmingskill','athletics','willpower','tending','english'].includes(skill) && V.moorLuck > 0){
