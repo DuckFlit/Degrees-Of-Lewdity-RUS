@@ -730,7 +730,7 @@ window.settingsObjects = function (type) {
 	return result;
 }
 
-/*Converts specific settings to so they dont look so chaotic to players*/
+/*Converts specific settings to so they don't look so chaotic to players*/
 window.settingsConvert = function(exportType, type, settings) {
 	const listObject = settingsObjects(type);
 	const result = settings;

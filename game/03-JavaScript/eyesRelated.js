@@ -53,7 +53,7 @@ function restructureEyeColourVariable() {
 	switch (V.objectVersion.eyeRepair) {
 		case 0:
 			/* Both $leftEyeColour and $rightEyeColour should be the original colours for a character's eyes.
-				This functon below sets it to $eyecolour, if that fails, $eyeselect, then defaults to purple, the default.
+				This function below sets it to $eyecolour, if that fails, $eyeselect, then defaults to purple, the default.
 				For it to fail, it must be undefined, it is unlikely that $eyeselect is undefined, but it's likely possible. */
 			const getColour = () => (typeof V.eyecolour === 'string' ? V.eyecolour : V.eyeselect) || 'purple';
 			if (!V.leftEyeColour) {
@@ -149,12 +149,12 @@ window.eyeColorGradiant = function (rgb_beginning, rgb_end, p){ // rgb can be RG
 
 /* Randomize array in-place using Durstenfeld shuffle algorithm */
 function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
+	for (var i = array.length - 1; i > 0; i--) {
+		var j = Math.floor(Math.random() * (i + 1));
+		var temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
 	return array;
 }
 
@@ -166,7 +166,7 @@ var orange = "#f59b25"
 window.determineCatEyeStages = function () { // to change the amount of changes, you only need to change the stages variable. same for target_colours
 	let target_colours = shuffleArray([green, yellow, blue, orange]) // can add or edit colours
 	let stages = 4; // amount of stages we'll have before reaching final colour
-	let total_percentage = 0.5 +  (Math.random() / 4) // Represent how much of the targeted_colour, the current eye_colours will need to adapt into. 0-1 value, where 1 == 100%;
+	let total_percentage = 0.5 + (Math.random() / 4) // Represent how much of the targeted_colour, the current eye_colours will need to adapt into. 0-1 value, where 1 == 100%;
 	var index = 0;
 	let base_colour = [setup.colours.eyes_map[V.leftEyeColour].canvasfilter.blend, setup.colours.eyes_map[V.rightEyeColour].canvasfilter.blend] // base eye colours [left, right]
 

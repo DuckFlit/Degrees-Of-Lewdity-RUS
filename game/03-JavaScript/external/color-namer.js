@@ -163,26 +163,26 @@ var colors = {
  * @api public
  */
 window.colorNamer = function(hex, color_map) {
-  color_map = color_map || colors;
-  var rgb = h2r(hex);
-  var min = Infinity;
-  var closest = null;
+	color_map = color_map || colors;
+	var rgb = h2r(hex);
+	var min = Infinity;
+	var closest = null;
 
-  for (var color in color_map) {
-    var rgb2 = h2r(color_map[color][0])
+	for (var color in color_map) {
+		var rgb2 = h2r(color_map[color][0])
 
-    // distance formula
-    var dist = Math.pow((rgb.r - rgb2.r) * .299, 2)
-      + Math.pow((rgb.g - rgb2.g) * .587, 2)
-      + Math.pow((rgb.b - rgb2.b) * .114, 2);
+		// distance formula
+		var dist = Math.pow((rgb.r - rgb2.r) * .299, 2)
+			+ Math.pow((rgb.g - rgb2.g) * .587, 2)
+			+ Math.pow((rgb.b - rgb2.b) * .114, 2);
 
-    if (dist <= min) {
-      closest = color;
-      min = dist;
-    }
-  }
+		if (dist <= min) {
+			closest = color;
+			min = dist;
+		}
+	}
 
-  return closest;
+	return closest;
 }
 
 window.colorNameTranslate = function(name, mode) {

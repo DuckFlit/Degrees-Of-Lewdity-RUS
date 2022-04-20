@@ -641,7 +641,7 @@ window.getRobinCrossdressingStatus = function(crossdressLevel){
 }
 
 window.DefaultActions = {
-	create:  function (isMinimal = false, preload = false) {
+	create: function (isMinimal = false, preload = false) {
 		let storage = {};
 		setup.actionsTypes.combatTypes.forEach(type => {
 			storage[type] = {};
@@ -960,7 +960,8 @@ window.clothesReturnLocation = function(item, type){
 //the 'modder' variable is specifically for modders name, should be kept as a short string
 window.clothesIndex = function(slot, itemToIndex) {
 	if(!slot || !itemToIndex || !itemToIndex.name || !itemToIndex.variable) {
-		console.log(`clothesIndex - slot or valid object not provided`);
+		/* console.log(`clothesIndex - slot or valid object not provided`); */
+		Errors.report(`[clothesIndex]: slot or valid object not provided`, { 'Stacktrace' : Utils.GetStack(), slot, itemToIndex });
 		return 0;
 	}
 	let index = setup.clothes[slot].findIndex((item) => item.variable === itemToIndex.variable && item.modder === itemToIndex.modder)
@@ -1060,6 +1061,48 @@ Config.navigation.override = function (dest) {
 
 		case 'Domus House Work':
 			return 'Domus Gutters Intro';
+		
+		case 'Trash Boys':
+			return 'Trash Compare';
+
+		case 'Trash Boys Spy':
+			return 'Trash Compare Spy';
+
+		case 'Trash Boys Greet':
+			return 'Trash Compare Greet';
+	
+		case 'Trash Boys Refuse':
+			return 'Trash Compare Refuse';
+
+		case 'Trash Boys Compare':
+			return 'Trash Compare Others';
+
+		case 'Trash Boys Back Out':
+			return 'Trash Compare Back Out';
+	
+		case 'Trash Boys Show':
+			return 'Trash Compare Show';
+
+		case 'Trash Boys Offer Secret':
+			return 'Trash Compare Penis Secret';
+	
+		case 'Trash Boys Wrap It Up':
+			return 'Trash Compare Wrap It Up';
+
+		case 'Trash Boys Crossdressing Refuse':
+			return 'Trash Compare Breast Refuse';
+	
+		case 'Trash Boys Crossdressing Show All':
+			return 'Trash Compare Breast Show All';
+
+		case 'Trash Boys Forced Strip':
+			return 'Trash Compare Forced Strip';
+	
+		case 'Trash Boys Combat Win':
+			return 'Trash Compare Combat Win';
+
+		case 'Trash Boys Combat Loss':
+			return 'Trash Compare Combat Loss';
 
 		case 'Lake Underwater Tentacles Finish Figure':
 			return 'Lake Underwater Tentacles Finish';
@@ -1078,7 +1121,8 @@ Config.navigation.override = function (dest) {
 window.currentSkillValue = function(skill){
 	let result = V[skill];
 	if(!result && result !== 0) {
-		console.log(`currentSkillValue - skill '${skill}' unknown`);
+		/* console.log(`currentSkillValue - skill '${skill}' unknown`); */
+		Errors.report(`[currentSkillValue]: skill '${skill}' unknown.`, { 'Stacktrace' : Utils.GetStack(), skill });
 		return 0;
 	};
 	if(['skulduggery','physique','danceskill','swimmingskill','athletics','willpower','tending','english'].includes(skill) && V.moorLuck > 0){
@@ -1254,11 +1298,11 @@ window.npcSpecifiedClothes = function (npc, name){
 	}
 }
 
-/*npc.crossdressing: 0 - doesnt at all, 1 - sometimes, 2 - always*/
+/*npc.crossdressing: 0 - doesn't at all, 1 - sometimes, 2 - always*/
 window.npcClothes = function (npc, type){
-    let crossdressing = npc.crossdressing || 0;
+	let crossdressing = npc.crossdressing || 0;
 	let gender = ['n'];
-	/* if you dont want those always crossdressing to wear neutral clothes
+	/* if you don't want those always crossdressing to wear neutral clothes
 	let gender = [];
 	if(crossdressing !== 2) gender.push('n');
 	*/

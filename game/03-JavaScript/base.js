@@ -538,3 +538,47 @@ window.mobBtnShow = function mobBtnShow(){
 	$('.mob-btn').show()
 	$('.mob-btn-h').hide()
 }
+ 
+/**
+ * This function creates a random float 0.0-1.0, weighted by exponential curve.
+ * 
+ * A value of 1.0 returns 1 every time.
+ * 
+ * Values between 1.0 and 2.0 return a curve favoring higher results (closer to 1)
+ * 
+ * A value of 2.0 will return a flat line distribution, and is identical to random()
+ * 
+ * Values greater than 2.0 return a curve favoring lower results (closer to 0), reaching to 0 at infinity.
+ * 
+ * For example, see:
+ * https://www.desmos.com/calculator/o3rxbwzvdu
+
+ * @param {number} exp Exponent used to generate the curve
+ * @returns {number} random number weighted against exponential curve
+ */
+function randomExp(exp) {
+    const x = State.random();
+    return ( x ** exp ) / x;
+}
+window.randomExp = randomExp;
+
+/**
+ * Normalises value to a decimal number 0.0-1.0, a percentage of the range specified in min and max.
+ * @param {number} value The value to be normalised
+ * @param {number} max - The highest value of the range
+ * @param {number} min The lowest value of the range, default 0
+ * @returns {number} Normalised value
+ */
+function normalise(value, max, min = 0) {
+    const denominator = max - min;
+    if (denominator === 0) {
+        Errors.report('[normalise]: min and max params must be different.', { value, max, min });
+        return 0;
+    }
+    if (value < min || value > max) {
+        Errors.report('[normalise]: value must be within the bounds provided.', { value, max, min });
+        return 0;
+    }
+    return (value - min) / denominator;
+}
+window.normalise = normalise;

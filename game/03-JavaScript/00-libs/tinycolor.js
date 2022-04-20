@@ -799,7 +799,7 @@
 	};
 
 
-	// Big List of Colors
+	// Big List of Colours
 	// ------------------
 	// <http://www.w3.org/TR/css3-color/#svg-color>
 	var names = tinycolor.names = {
@@ -1056,7 +1056,7 @@
 		// <http://www.w3.org/TR/css3-values/#number-value>
 		var CSS_NUMBER = "[-\\+]?\\d*\\.\\d+%?";
 
-		// Allow positive/negative integer/number.  Don't capture the either/or, just the entire outcome.
+		// Allow positive/negative integer/number. Don't capture the either/or, just the entire outcome.
 		var CSS_UNIT = "(?:" + CSS_NUMBER + ")|(?:" + CSS_INTEGER + ")";
 
 		// Actual matching.
@@ -1088,8 +1088,8 @@
 	}
 
 	// `stringInputToObject`
-	// Permissive string parsing.  Take in a number of formats, and output an object
-	// based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
+	// Permissive string parsing. Take in a number of formats, and output an object
+	// based on detected format. Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
 	function stringInputToObject(color) {
 
 		color = color.replace(trimLeft,'').replace(trimRight, '').toLowerCase();
@@ -1105,7 +1105,7 @@
 		// Try to match string input using regular expressions.
 		// Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
 		// Just return an object and let the conversion functions handle that.
-		// This way the result will be the same whether the tinycolor is initialized with string or object.
+		// This way the result will be the same whether the tinycolor is initialised with string or object.
 		var match;
 		if ((match = matchers.rgb.exec(color))) {
 			return { r: match[1], g: match[2], b: match[3] };

@@ -3,7 +3,7 @@
  *
  * <<doubleslider VAR1 VAR2 VAR3 LEFTCOLOR MIDDLECOLOR RIGHTCOLOR>>
  *
- * The vars should be the variable name WITHOUT the "$", while the colors can be any css-compatible color string, like "#00FF00" or "rgb(0,255,0)".
+ * The vars should be the variable name WITHOUT the "$", while the colors can be any css-compatible colour string, like "#00FF00" or "rgb(0,255,0)".
  *
  * Additional macros, or additional arguments, can be implemented to allow for different skins or different presentation styles.
  *
@@ -44,7 +44,7 @@ Macro.add("doubleslider", {
 			middleLabel.html(V[var2]+"%");
 			rightLabel.html(V[var3]+"%");
 
-			//set the label positions to be centered on the bars
+			//set the label positions to be centred on the bars
 			let a = (data.max-data.min);
 			var midbar = data.slider.find('.irs-bar');
 
