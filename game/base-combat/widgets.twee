@@ -271,43 +271,43 @@
 <</widget>>
 
 <<widget "combatTrainAdvance">>/*For use after a beast/monster in a train is finished with their turn. Loads next in line into $NPCList[0]. Loads them all back into $NPCList if at the end of the train.*/
-<<clearnpc>>
-<<if $combatTrain.length gt 0>>
-	<<set $combatTrain.length-->>
-	<<set $combatTrain.active += 1>>
-	<<loadNPC 0 `"beast_" + $combatTrain.active`>>
-	<<if $NPCList[0].monster is "monster">>
-		<<set $monster to 1>>
+	<<clearnpc>>
+	<<if $combatTrain.length gt 0>>
+		<<set $combatTrain.length-->>
+		<<set $combatTrain.active += 1>>
+		<<loadNPC 0 `"beast_" + $combatTrain.active`>>
+		<<if $NPCList[0].monster is "monster">>
+			<<set $monster to 1>>
+		<<else>>
+			<<set $monster to 0>>
+		<</if>>
 	<<else>>
-		<<set $monster to 0>>
+		<<for _e_n to 0; _e_n lt $combatTrain.total_length + 1; _e_n++>>
+			<<loadNPC _e_n `"beast_" + _e_n`>>
+			<<clearNPC `"beast_" + _e_n`>>
+		<</for>>
 	<</if>>
-<<else>>
-	<<for _e_n to 0; _e_n lt $combatTrain.total_length + 1; _e_n++>>
-		<<loadNPC _e_n `"beast_" + _e_n`>>
-		<<clearNPC `"beast_" + _e_n`>>
-	<</for>>
-<</if>>
-<<set $active_enemy to 0>>
+	<<set $active_enemy to 0>>
 <</widget>>
 
 <<widget "beastTrainGenerate">>/*Saves all beasts/monsters in $NPCList, then loads the first into slot 0.*/
-<<set _enemyno to $enemyno - 1>>
-<<set $combatTrain to {
-	length: _enemyno,
-	total_length: _enemyno,
-	active: 0,
-	pronouns: [],
-	monsters: [],
-	beastTypes: []
-}>>
-<<for _e_n to 0; _e_n lt $enemyno; _e_n++>>
-	<<saveNPC _e_n `"beast_" + _e_n`>>
-	<<set $combatTrain.beastTypes.push($NPCList[_e_n].type)>>
-	<<set $combatTrain.pronouns.push($NPCList[_e_n].pronoun)>>
-	<<set $combatTrain.monsters.push($NPCList[_e_n].monster)>>
-<</for>>
-<<clearnpc>>
-<<loadNPC 0 beast_0>>
+	<<set _enemyno to $enemyno - 1>>
+	<<set $combatTrain to {
+		length: _enemyno,
+		total_length: _enemyno,
+		active: 0,
+		pronouns: [],
+		monsters: [],
+		beastTypes: []
+	}>>
+	<<for _e_n to 0; _e_n lt $enemyno; _e_n++>>
+		<<saveNPC _e_n `"beast_" + _e_n`>>
+		<<set $combatTrain.beastTypes.push($NPCList[_e_n].type)>>
+		<<set $combatTrain.pronouns.push($NPCList[_e_n].pronoun)>>
+		<<set $combatTrain.monsters.push($NPCList[_e_n].monster)>>
+	<</for>>
+	<<clearnpc>>
+	<<loadNPC 0 beast_0>>
 <</widget>>
 
 
@@ -328,27 +328,27 @@
 /* Useful when you know one of them is in a given position by looking at the PC, but aren't sure which */
 <<widget "selectNpcWithPartInPosition">>
 	<<if _args[0] and _args[1]>>
+		<<set $_part to _args[0]>>
+		<<set $_position to _args[1]>>
 		<<unset _npc>>
 		<<for _j = 0; _j lt $enemynomax; _j++>>
-			<<if _args[0] is "hand">>
-				<<if $NPCList[_j]["lefthand"] is _args[1]>>
-					<<personselect _j>>
-					<<set _npc to $NPCList[_j]>>
-					<<break>>
-				<</if>>
-				<<if $NPCList[_j]["righthand"] is _args[1]>>
-					<<personselect _j>>
-					<<set _npc to $NPCList[_j]>>
-					<<break>>
-				<</if>>
-			<<else>>
-				<<if $NPCList[_j][_args[0]] is _args[1]>>
-					<<personselect _j>>
-					<<set _npc to $NPCList[_j]>>
-					<<break>>
-				<</if>>
+			<<if $_part is "hand" and ($NPCList[_j]["lefthand"] is $_position or $NPCList[_j]["righthand"] is $_position)>>
+				<<personselect _j>>
+				<<set _npc to $NPCList[_j]>>
+				<<break>>
+			<<elseif $NPCList[_j][$_part] is $_position>>
+				<<personselect _j>>
+				<<set _npc to $NPCList[_j]>>
+				<<break>>
 			<</if>>
 		<</for>>
+		<<if _index isnot undefined>>
+			<<personselect _j>>
+		<<else>>
+			<!-- Should we throw an error? If we suspect an NPC part is in this position and don't find one, is that a bug? -->
+		<</if>>
+	<<else>>
+		<<run throw new Error("selectNpcWithPartInPosition used with incorrect number of variables (or one is undefined)")>>
 	<</if>>
 <</widget>>
 
@@ -364,25 +364,17 @@
 		<</for>>
 	<</if>>
 <</widget>>
+
 <<widget "cover_end">>
-<<if $leftarm is "vagina">>
-	<<set $vaginause to 0>>
-<<elseif $leftarm is "coverpenis">>
-	<<set $penisuse to 0>>
-<<elseif $leftarm is "anus">>
-	<<set $anususe to 0>>
-<<elseif $leftarm is "face">>
-	<<set $face to 0>>
-<</if>>
-<<if $rightarm is "vagina">>
-	<<set $vaginause to 0>>
-<<elseif $rightarm is "coverpenis">>
-	<<set $penisuse to 0>>
-<<elseif $rightarm is "anus">>
-	<<set $anususe to 0>>
-<<elseif $rightarm is "face">>
-	<<set $face to 0>>
-<</if>>
+	<<if $leftarm is "vagina" or $rightarm is "vagina">>
+		<<set $vaginause to 0>>
+	<<elseif $leftarm is "coverpenis" or $rightarm is "coverpenis">>
+		<<set $penisuse to 0>>
+	<<elseif $leftarm is "anus" or $rightarm is "anus">>
+		<<set $anususe to 0>>
+	<<elseif $leftarm is "face" or $rightarm is "face">>
+		<<set $face to 0>>
+	<</if>>
 <</widget>>
 
 /* args[0] - 1-6 for npc, args[1] for type */
@@ -407,11 +399,11 @@
 
 /* args[0] - 1-6 for npc */
 <<widget "removeCondom">>
-<<if _args[0]>>
-	<<set $NPCList[_args[0]].condom to false>>
-<<else>>
-	<<set $player.condom to false>>
-<</if>>
+	<<if _args[0]>>
+		<<set $NPCList[_args[0]].condom to false>>
+	<<else>>
+		<<set $player.condom to false>>
+	<</if>>
 <</widget>>
 
 <<widget "pickupSexToy">>
