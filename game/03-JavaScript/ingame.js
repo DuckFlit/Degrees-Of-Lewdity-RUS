@@ -1224,14 +1224,14 @@ window.playerHasStrapon = function(){
 	return (V.worn.under_lower.type.includes("strap-on") && V.worn.under_lower.state == "waist")
 }
 
-window.npcHasStrapon = function(index, metadata = {}) {
+window.npcHasStrapon = function(index) {
 	if (typeof index !== 'number') {
-		if (V.debugdisable === 'f')
-			Errors.report(`[npcHasStrapon]: index must be a number, was ${typeof index}.`, { index, metadata });
+		if (V.debugdisable === 'f' || V.debug === 1)
+			Errors.report(`[npcHasStrapon]: index must be a number, was ${typeof index}.`, { index });
 		return false;
 	} else if (index < 0 || index > 5) {
-		if (V.debugdisable === 'f')
-			Errors.report(`[npcHasStrapon]: index must be between 0 and 5 inclusive, was ${index}.`, { index, metadata });
+		if (V.debugdisable === 'f' || V.debug === 1)
+			Errors.report(`[npcHasStrapon]: index must be between 0 and 5 inclusive, was ${index}.`, { index });
 		return false;
 	}
 	// index is 0 to 5
