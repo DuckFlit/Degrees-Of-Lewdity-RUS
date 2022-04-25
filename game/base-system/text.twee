@@ -796,6 +796,26 @@
 	<<if _args[0] is "cap">><<capitalise>><</if>>
 <</silently>><<print $_text_output>><</widget>>
 
+<<widget "enumeratedGroup">><<silently>>
+	<<set $_menCount to $NPCList.countWith(npc => npc.pronoun is "m")>>
+	<<set $_womenCount to $NPCList.countWith(npc => npc.pronoun is "f")>>
+	<<silently>>
+		<<number $_menCount>><<set $_men to _text_output + " " + ($_menCount is 1 ? "man" : "men")>>
+		<<number $_womenCount>><<set $_women to _text_output + " " + ($_womenCount is 1 ? "woman" : "women")>>
+	<</silently>>
+
+	<<set [$_first, $_second, $_secondCount] to ($_menCount gte $_womenCount ? [$_men, $_women, $_womenCount] : [$_women, $_men, $_menCount])>>
+
+	<<set _text_output to $_first>>
+	<<if $_secondCount gt 0>>
+		<<set _text_output += " and " + $_second>>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "EnumeratedGroup">><<silently>>
+	<<enumeratedGroup>><<capitalise>>
+<</silently>><<print _text_output>><</widget>>
+
 <<widget "gendercheck">>
 	<<if !["m", "f"].includes($player.gender_appearance)>><<set _text_output to "<span class=\"red\">ERROR: Unexpected $$player.gender_appearance: [$player.gender_appearance]</span>">><</if>>
 <</widget>>
