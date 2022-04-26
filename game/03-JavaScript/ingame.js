@@ -571,7 +571,7 @@ window.getRobinLocation = function(){
 
 	} else if (V.robinmissing === "dinner"){
 		return T.robin_location = "dinner";
-	
+
 	} else if (V.robinmissing === "pillory"){
 		return T.robin_location = "pillory";
 
@@ -1061,7 +1061,7 @@ Config.navigation.override = function (dest) {
 
 		case 'Domus House Work':
 			return 'Domus Gutters Intro';
-		
+
 		case 'Trash Boys':
 			return 'Trash Compare';
 
@@ -1070,7 +1070,7 @@ Config.navigation.override = function (dest) {
 
 		case 'Trash Boys Greet':
 			return 'Trash Compare Greet';
-	
+
 		case 'Trash Boys Refuse':
 			return 'Trash Compare Refuse';
 
@@ -1079,25 +1079,25 @@ Config.navigation.override = function (dest) {
 
 		case 'Trash Boys Back Out':
 			return 'Trash Compare Back Out';
-	
+
 		case 'Trash Boys Show':
 			return 'Trash Compare Show';
 
 		case 'Trash Boys Offer Secret':
 			return 'Trash Compare Penis Secret';
-	
+
 		case 'Trash Boys Wrap It Up':
 			return 'Trash Compare Wrap It Up';
 
 		case 'Trash Boys Crossdressing Refuse':
 			return 'Trash Compare Breast Refuse';
-	
+
 		case 'Trash Boys Crossdressing Show All':
 			return 'Trash Compare Breast Show All';
 
 		case 'Trash Boys Forced Strip':
 			return 'Trash Compare Forced Strip';
-	
+
 		case 'Trash Boys Combat Win':
 			return 'Trash Compare Combat Win';
 
@@ -1458,3 +1458,16 @@ window.wraithSleepEventCheck = function(){
 	return V.wraith && V.wraith.state !== "" && V.wraith.nightmare === 1 && (V.moonstate === "evening" && V.hour >= 21 || V.moonstate === "morning" && V.hour < 5);
 }
 
+window.fameTotal = function() {
+	let result = 0;
+	for (const key in V.fame) {
+		result += V.fame[key];
+	}
+	return result;
+}
+
+window.fameSum = function(...fameTypes) {
+	let result = 0;
+	fameTypes.forEach(fameType => result += V.fame[fameType]);
+	return result;
+}
