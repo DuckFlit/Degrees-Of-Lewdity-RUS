@@ -1747,16 +1747,18 @@ setup.debugMenu.event_list = {
 				`All Fame`, function(){return V.passage}
 			],
 			widgets: [
-				`<<set $fame += 4000>>`,
-				`<<famescrap 1000>>`,
-				`<<famebusiness 1000>>`,
-				`<<famegood 1000>>`,
-				`<<famepimp 1000>>`,
-				`<<set $fameexhibitionism += 1000>>`,
-				`<<set $famesex += 1000>>`,
-				`<<set $famerape += 1000>>`,
-				`<<set $famebestiality += 1000>>`,
-				`<<set $fameprostitution += 1000>>`
+				`<<fameexhibitionism 1000 "none" true>>`,
+				`<<fameprostitution 1000 "none" true>>`,
+				`<<famebestiality 1000 "none" true>>`,
+				`<<famerape 1000 "none" true>>`,
+				`<<famesex 1000 "none" true>>`,
+				`<<famepregnancy 1000 "none" true>>`,
+				`<<famegood 1000 "none" true>>`,
+				`<<famebusiness 1000 "none" true>>`,
+				`<<famepimp 1000 "none" true>>`,
+				`<<famescrap 1000 "none" true>>`,
+				`<<famesocial 1000 "none" true>>`,
+				`<<famemodel 1000 "none" true>>`
 			]
 		},
 		{
@@ -1764,8 +1766,7 @@ setup.debugMenu.event_list = {
 				`Fame Sex`, function(){return V.passage}
 			],
 			widgets: [
-				`<<set $fame += 4000>>`,
-				`<<set $famesex += 4000>>`
+				`<<famesex 2000 "none" true>>`
 			]
 		},
 		{
