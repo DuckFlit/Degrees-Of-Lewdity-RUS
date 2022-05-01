@@ -404,6 +404,65 @@ function combatDefaults() {
 
 DefineMacroS("combatDefaults", combatDefaults);
 
+/*
+* Explanation for the actionsSuccessPerSkill() function:
+* The following formula shows the old skill chance calculation.
+* (1000 - ($rng * 10) - ($enemytrust * 10) - $skill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)
+* Rearranged to
+* $skill + ($enemytrust * 10) + (($enemyarousalmax / ($enemyarousal + 1)) * 100) + ($rng * 10) gte 1000 + $enemyanger
+* The first half of the formula must be higher than the second half. So the higher the left values, the easier the action. The higher the right values, the harder the action.
+* $skill is the skill being used. That could be $handskill, $vaginalskill, $seductionskill, etc.
+* ($enemytrust * 10) is simply how much the NPC trust the player. Since $enemytrust can be negative, a bad trust can result in an increase in difficulty.
+* (($enemyarousalmax / ($enemyarousal + 1)) * 100) is the relative NPC arousal. This value can never be 100, except on the last turn.
+* The current arousal being divided by the max arousal means the higher the arousal (and by consequence the arousal percentage) the more difficult the action becomes (since the value will be lower).
+* This also means actions are more likely to succeed during the start of the combat, and get harder as the combat goes on.
+* ($rng * 10) is simply the random part of the equation, so the chance is not always locked into one result. This value varies between 0 and 1000, at a base 10 (so it can't be anything that's not a multiple of 10).
+* 1000 is the base difficulty. This rules how high the skill needs to be if all other values are 0. The higher the base difficulty, the harder the action. This is usually the main factor determining the success of the action.
+* $enemyanger is just like the trust part, but not multiplied. This means anger has 10x less impact in the action than trust, however $enemyanger cannot be negative and could be much higher than trust.
+*
+* Another form of the formula is written as
+* (700 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * $_npc.clothes[$_clothesTarget].integrity)
+* This is the difficulty to undress an NPC. The base difficulty is lower, but the arousal multiplier is different. The 100 multiplier is replaced by the NPC's clothes' integrity, which is often higher than 100. The more tattered the clothes, the harder to succeed in the action (the arousal side becomes lower).
+* 
+* The function uses the following formula:
+* skill + trust + (arousalfactor * multiplier) + rng >= basedifficulty + anger
+* Which is the same as the previous formula, just renamed.
+* trust will always be $enemytrust * 10
+* arousalfactor will always be $enemyarousalmax / ($enemyarousal + 1)
+* multiplier, if not passed as an argument, will always be 100 (to complement the ($enemyarousalmax / ($enemyarousal + 1) * 100 format).
+* rng will always be $rng * 100
+* basedifficulty, if not passed as an argument, will always be 1000
+* anger is simply $enemyanger, renamed to fit in the format.
+* skill will be the selected skill. The function uses a required string argument which is skillname, being "hand", "vaginal", "seduction", etc. Whichever string is passed will be added to "skill" to make the skill variable.
+* E.g. the function passes "anal" as the only argument (and thus skillname is "anal"). skill will become the value of $analskill used in calculation.
+* So skillname is a string, and skill is an integer. Why not simply pass the skill value as the argument? Because of possible future variants, such as moor luck, affecting some variable and not the other.
+* targetid is an optional value, that doesn't see use currently but can possibly be required in the future in case any of the "enemy" variables (such as $enemyarousal or $enemytrust) become individual values ("per NPC", as health currently is).
+* 
+* The output is simply: true if the action is a success, and false if the action fails.
+*/
+/**
+ * Checks skill value against combat math to determine success of an action
+ * @param {string} skillName - Simple skill name, "anus" "hand" "feet" etc
+ * @param {number} targetid - The targetted NPC's id
+ * @param {number} difficulty - Difficulty of the check, default 1000
+ * @param {number} multiplier - Multiplier on enemy arousal, default 100
+ * @returns {boolean}
+ */
+ function combatSkillCheck(skillname, targetid = 0, basedifficulty = 1000, multiplier = 100){
+	let skill = V[skillname + "skill"];
+	let rng = V.rng * 10;
+	let arousalfactor = V.enemyarousalmax / (V.enemyarousal + 1);
+	let trust = V.enemytrust * 10;
+	let anger = V.enemyanger;
+
+	if (skill + trust + (arousalfactor * multiplier) + rng >= basedifficulty + anger){
+		return true;
+	}else{
+		return false;
+	}
+}
+window.combatSkillCheck = combatSkillCheck;
+
 function hairdressersReset() {
 	jQuery(document).on('change', '.macro-listbox', function (e) {
 		new Wikifier(null, '<<replace #hairDressers>><<hairDressersOptions>><</replace>>');
