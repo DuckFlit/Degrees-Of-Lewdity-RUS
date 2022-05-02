@@ -3,19 +3,17 @@
 
 /* TODO: Turn this shop into an actual megastore where you can get lost and encounter tentacles. Tentakea?*/
 
-You enter the furniture megastore.
-<br>
-Most of the things you see would be too big to fit in your room.
+You are in the furniture shop. Most of its stock is too large for your room.
 <br><br>
 
 <<if $daystate is "night">>
 	You are alone in the darkness.
+	<br><br>
 <<elseif $exposed gte 1>>
 	You hide in a cupboard to protect your dignity.
-<<else>>
-	There is a large "No refunds!" sign beside the counter.
+	<br><br>
 <</if>>
-<br><br>
+
 <<if $stress gte $stressmax>>
 	<<passoutshop>>
 <<else>>
@@ -42,7 +40,7 @@ Most of the things you see would be too big to fit in your room.
 		<</if>>
 		<<if ($exposed lte 0 and $daystate isnot "night" and $hour isnot 21) or ($hour gte 21 and $furnitureshoptheft isnot 1)>>
 			<br>
-			Various posters and wallpapers are stacked in a corner.
+			Wallpaper and posters are stacked in a corner.
 			<br>
 			<<link [[Paperhangings|Furniture Shop Papers]]>><</link>>
 			<br>
@@ -55,7 +53,8 @@ Most of the things you see would be too big to fit in your room.
 :: Furniture Shop Papers
 
 <<run Furniture.in('bedroom')>>
-You approach the paperhangings corner.
+You approach the paperhangings corner. Samples of pre-made posters and wallpaper are on display. For an additional fee, you can have a custom design imprinted instead.
+<br><br>
 
 <<set _availablePosters to {
 	"Cowgirl"	: "cowgirl",
@@ -63,30 +62,24 @@ You approach the paperhangings corner.
 	"Puppy"		: "puppy"
 }>>
 
-There is a poor selection of posters.
-<br><br>
 <<set _posterCost to Furniture.get('poster', true).cost()>>
 <<if $daystate is "night" and $hour isnot 21 and $furnitureshoptheft isnot 1>>
-	<<if $furnitureshoptheft isnot 1>>
-		It's a good thing you can just steal them for free!
-		<br>
-		<<listbox "_chosenPoster" autoselect>>
-			<<optionsfrom _availablePosters>>
-		<</listbox>>
-		<<link [[Steal|Furniture Shop Papers]]>>
-			<<run Furniture.set('poster', 'poster', {
-				name	: _chosenPoster,
-				nameCap	: _chosenPoster.toUpperFirst()
-			})>>
-			<<crimeup 5>>
-		<</link>><<gcrime>>
-		<br>
-	<<else>>
-		You already stole something from this store.
-		<br>
-	<</if>>
+	<<listbox "_chosenPoster" autoselect>>
+		<<optionsfrom _availablePosters>>
+	<</listbox>>
+	<<link [[Steal|Furniture Shop Papers]]>>
+		<<run Furniture.set('poster', 'poster', {
+			name	: _chosenPoster,
+			nameCap	: _chosenPoster.toUpperFirst()
+		})>>
+		<<crimeup 5>>
+	<</link>><<gcrime>>
+	<br>
+<<elseif $daystate is "night">>
+	<span class="purple">You've already stolen from the store.</span> You should wait before taking anything else.
+	<br>
 <<elseif $money gte _posterCost>>
-	Select one of the premade posters.
+	Select a pre-made poster:
 	<br>
 	<<listbox "_chosenPoster" autoselect>>
 		<<optionsfrom _availablePosters>>
@@ -98,10 +91,9 @@ There is a poor selection of posters.
 			nameCap	: _chosenPoster.toUpperFirst()
 		})>>
 	<</link>>
-	<br>
-	<br>
+	<br><br>
 	<<if $money gte _posterCost * 2>>
-		What should be on your custom poster?
+		Request a custom poster design:
 		<br>
 		<<textbox "_chosenPosterCustom" "">>
 		<<link [['Buy (£' + _posterCost / 50 + ')'|Furniture Shop Papers]]>>
@@ -117,7 +109,7 @@ There is a poor selection of posters.
 
 	<br>
 <<else>>
-	You don't have enough.
+	You can't afford a poster.
 	<br>
 <</if>>
 <br><br>
@@ -133,30 +125,23 @@ There is a poor selection of posters.
 	"Crosses"		: "crosses"
 }>>
 
-A wide variety of wallpapers take up a lot of space.
-<br><br>
 <<set _wallpaperCost to Furniture.get('wallpaper', true).cost()>>
 <<if $daystate is "night" and $hour isnot 21 and $furnitureshoptheft isnot 1>>
-	<<if $furnitureshoptheft isnot 1>>
-		Thankfully, you have an option that won't hurt your wallet.
-		<br>
-		<<listbox "_chosenWallpaper" autoselect>>
-			<<optionsfrom _availableWallpapers>>
-		<</listbox>>
-		<br>
-		<<link [[Steal|Furniture Shop Papers]]>>
-			<<run Furniture.set('wallpaper', 'wallpaper', {
-				name	: _chosenWallpaper,
-				nameCap	: _chosenWallpaper.toUpperFirst()
-			})>>
-			<<crimeup 5>>
-		<</link>><<gcrime>>
-		<br>
-	<<else>>
-		You already stole something from this store.
-		<br>
-	<</if>>
+	<<listbox "_chosenWallpaper" autoselect>>
+		<<optionsfrom _availableWallpapers>>
+	<</listbox>>
+	<br>
+	<<link [[Steal|Furniture Shop Papers]]>>
+		<<run Furniture.set('wallpaper', 'wallpaper', {
+			name	: _chosenWallpaper,
+			nameCap	: _chosenWallpaper.toUpperFirst()
+		})>>
+		<<crimeup 5>>
+	<</link>><<gcrime>>
+	<br>
 <<elseif $money gte _wallpaperCost>>
+	Select a pre-made wallpaper:
+	<br>
 	<<listbox "_chosenWallpaper" autoselect>>
 		<<optionsfrom _availableWallpapers>>
 	<</listbox>>
@@ -170,7 +155,7 @@ A wide variety of wallpapers take up a lot of space.
 	<br>
 	<br>
 	<<if $money gte _wallpaperCost * 2>>
-		What should be on your custom wallpaper?
+		Request a custom wallpaper design:
 		<br>
 		<<textbox "_chosenWallpaperCustom" "">>
 		<<link [['Buy (£' + _wallpaperCost / 50 + ')'|Furniture Shop Papers]]>>
@@ -186,7 +171,7 @@ A wide variety of wallpapers take up a lot of space.
 	<</if>>
 	<br>
 <<else>>
-	You don't have enough.
+	You can't afford new wallpaper.
 	<br>
 	<br>
 <</if>>
@@ -196,8 +181,7 @@ A wide variety of wallpapers take up a lot of space.
 
 :: Furniture Shop Catalogue [exitCheckBypass]
 <<effects>>
-You browse the catalogue of the megastore.
-<br>
+
 <<set $chosenFurnitureCategory to $chosenFurnitureCategory || "bed">>
 <<dynamic "furnitureUpdate" "furniture-update-container">>
 <br><br>
@@ -212,24 +196,27 @@ You browse the catalogue of the megastore.
 
 <<widget "furnitureUpdate">>
 	<<if $boughtfurniturename isnot undefined>>
-		You buy the $boughtfurniturename. It will be delivered to your room in the orphanage for free.
+		You buy the $boughtfurniturename. It'll be delivered by the time you get home.
 		<br>
 		<<run delete $boughtfurniturename>>
+	<<else>>
+		You skim through the furniture catalogue. "No Refunds!" is printed along the top.
 	<</if>>
+	<br><br>
 
 	<<switch $chosenFurnitureCategory>>
 		<<case "bed">>
-			You browse the bed column. Some of these are sold as double beds, but they'd barely pass as single for a middle-aged adult.
+			You browse the beds. Some are sold as double beds, but they'd barely pass as single for a middle-aged adult.
 		<<case "table">>
-			You browse the table column. Most of them are really huge, but you find a couple of corner tables that would fit in your room.
+			You browse the tables. They're huge, but some of the corner tables might fit in your room.
 		<<case "chair">>
-			You browse the chairs column. A pair of those probably can find a place in your bedroom, if you find a small enough table for them.
+			You browse the chairs. A pair could fit in your room, if you find a small enough table.
 		<<case "wardrobe">>
-			You browse the wardrobe column. The sizes of some are near-identical to your old wardrobe, you shouldn't have any problems with replacing it.
+			You browse the wardrobes. Some are near-identical to your old wardrobe in size.
 		<<case "decoration">>
-			You browse the decorations column. You spot a rather funny statue, but pout upon the realisation that it would be too big to fit in your room.
+			You browse the decorations. You struggle to find anything suitable for your room.
 		<<case "windowsill">>
-			You browse the miscellaneous column. Something extremely menacing and oddly familiar catches your eye, making you shiver.
+			You browse the miscellaneous goods. Odds and ends of dubious utility line the page.
 		<<default>>
 			/* Do nothing */
 	<</switch>>

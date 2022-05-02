@@ -48,7 +48,7 @@ const Furniture = (() => {
 			category: ["chair"],
 			type: [],
 			cost: setPrice(460),
-			description: "A set of stools on which to sit. Not very comfortable, but better than nothing. Probably.",
+			description: "A set of stools. Uncomfortable, but better than nothing.",
 			iconFile: "stool.png",
 		});
 		mapper.set('chair', {
@@ -66,7 +66,7 @@ const Furniture = (() => {
 			category: ["chair"],
 			type: [],
 			cost: setPrice(1970),
-			description: "A set of armchairs, soft and relaxing. And expensive.",
+			description: "A set of armchairs. Soft, relaxing and expensive.",
 			iconFile: "armchair.png",
 		});
 		mapper.set('egg', {
@@ -75,7 +75,7 @@ const Furniture = (() => {
 			category: ["chair"],
 			type: [],
 			cost: setPrice(2420, 50),
-			description: "A set of armchairs with a rounded back, in rather exotic colours. An absolute monstrosity to have in your room.",
+			description: "A set of armchairs with a rounded back, in exotic colours. A chore to set up.",
 			iconFile: "armchairegg.png",
 		});
 	
@@ -106,7 +106,7 @@ const Furniture = (() => {
 			category: ["bed"],
 			type: ["single", "starter"],
 			cost: setPrice(0),
-			description: "An old, poor bed. Uncomfortable to sleep on.",
+			description: "An old, poor bed. Uncomfortable.",
 			iconFile: "bed.png",
 		});
 		mapper.set('singlebed', {
@@ -115,7 +115,7 @@ const Furniture = (() => {
 			category: ["bed"],
 			type: ["single"],
 			cost: setPrice(1680),
-			description: "A bed for one person.",
+			description: "A bed for one.",
 			iconFile: "singlebed.png",
 		});
 		mapper.set('singlebeddeluxe', {
@@ -133,7 +133,7 @@ const Furniture = (() => {
 			category: ["bed"],
 			type: ["double"],
 			cost: setPrice(3400),
-			description: "A simple bed that fits two people.",
+			description: "A simple bed. Fits two.",
 			iconFile: "doublebed.png",
 			showFn() {
 				return target !== 'bedroom';
@@ -145,7 +145,7 @@ const Furniture = (() => {
 			category: ["bed"],
 			type: ["double", "comfy"],
 			cost: setPrice(2840),
-			description: "A beautiful bed with a soft matress. Very comfortable to sleep on, and fits two.",
+			description: "A beautiful bed with a soft mattress. Very comfortable, fits two.",
 			iconFile: "doublebeddeluxe.png",
 			showFn() {
 				return target !== 'bedroom';
@@ -157,7 +157,7 @@ const Furniture = (() => {
 			category: ["bed"],
 			type: ["double", "comfy"],
 			cost: setPrice(4884),
-			description: "A bed made in a contemporary, minimalist style. This monstrosity is very comfortable to sleep on, and fits two.",
+			description: "A bed made in a contemporary, minimalist style. Very comfortable, fits two.",
 			iconFile: "doublebedexotic.png",
 			showFn() {
 				return target !== 'bedroom';
@@ -169,7 +169,7 @@ const Furniture = (() => {
 			category: ["bed"],
 			type: ["double", "comfy"],
 			cost: setPrice(4860),
-			description: "An authentic bed on a rattan frame. Very comfortable to sleep on, and fits two.",
+			description: "An authentic bed on a rattan frame. Very comfortable, fits two.",
 			iconFile: "doublebedwicker.png",
 			showFn() {
 				return target !== 'bedroom';
@@ -183,7 +183,7 @@ const Furniture = (() => {
 			category: ["windowsill"],
 			type: [],
 			cost: setPrice(680),
-			description: "A clay pot with good soil, flowers come pre-planted. Can be put on your windowsill.",
+			description: "A clay pot with good soil. Flowers come pre-planted. Can be put on your windowsill.",
 			iconFile: "flower.png",
 			});
 		mapper.set('jar', {
@@ -230,7 +230,7 @@ const Furniture = (() => {
 			category: ["decoration"],
 			type: [],
 			cost: setPrice(790),
-			description: "A banner with a tentacle. Looks oddly familiar.",
+			description: "A banner with a tentacle.",
 			iconFile: "banner.png",
 		});
 		mapper.set('bannerfestive', {
@@ -261,7 +261,7 @@ const Furniture = (() => {
 			category: ["wardrobe"],
 			type: ["starter"],
 			cost: setPrice(0),
-			description: "Old, creaky wardrobe. Doesn't hold much.",
+			description: "An old, creaky wardrobe. Doesn't hold much.",
 			iconFile: "wardrobe.png",
 			showFn: () => false
 		});
@@ -307,7 +307,7 @@ const Furniture = (() => {
 			category: ["wardrobe"],
 			type: ["organiser"],
 			cost: setPrice(4620),
-			description: "The exterior of this armoire was carved by hand, and it has a lot of drawers and garment rods.",
+			description: "Carved by hand, it holds several drawers and garment rods.",
 			iconFile: "armoirecarved.png",
 			showFn() {
 				return isWardrobeHigherTier(this);
