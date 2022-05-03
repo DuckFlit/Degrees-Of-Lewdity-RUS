@@ -347,7 +347,7 @@ window.determineRecipient = function(index) { // conditions for gifting items to
 	if (document.getElementById("giftBr"))
 		document.getElementById("giftBr").remove()
 	if (V.money < (item.cost + (15 * 100))) // Add 15$ for gifting paperwrap
-		return ""
+		return "";
 	
 	for (let li of ["Alex", "Eden", "Kylar", "Robin", "Sydney"]){
 		if (V.loveInterest.primary == li || V.loveInterest.secondary == li || V.loveInterest.tertiary == li){
