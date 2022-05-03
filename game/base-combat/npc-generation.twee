@@ -731,19 +731,21 @@
 
 <<generateNPCClothes $NPCList[_n]>>
 
+/* Sex toy init rework */
 /* Sex toys become more popular over time after the adult shop opens */
-<<if $adultshopunlocked and !_strapIgnore and $NPCList[_n].teen isnot 1>>
-	<<if $adultshopdegree gte random(0, 100)>>
+<<if !_strapIgnore and $enemytype isnot "beast" and ($NPCList[_n].teen isnot 1 or random(1,20) is 1) and ($position isnot "wall" or $walltype isnot "front")>>
+	<<if $adultshopdegree gte random(0, 100) or random(0,100) lt 5>>
 		<<if $toywhipdisable is "f" and $toydildodisable is "f" and $player.gender_appearance isnot "f">>
-			<<giveNPCsextoy _n `randomSexToy()`>>
+			<<set _sexToy to randomSexToy()>>
 		<<elseif $toywhipdisable is "f" and $toydildodisable is "f">>
-			<<giveNPCsextoy _n `randomSexToy("dildos and whips")`>>
+			<<set _sexToy to randomSexToy("dildos and whips")>>
 		<<elseif $toywhipdisable is "f" and $toydildodisable is "t">>
-			<<giveNPCsextoy _n `randomSexToy("whip")`>>
+			<<set _sexToy to randomSexToy("whip")>>
 		<<elseif $toywhipdisable is "t" and $toydildodisable is "f">>
-			<<giveNPCsextoy _n `randomSexToy("dildo")`>>
-		<<else>>
-			/* Do nothing */
+			<<set _sexToy to randomSexToy("dildo")>>
+		<</if>>
+		<<if _sexToy isnot undefined>>
+			<<set $NPCList[_n].heldSexToy to _sexToy>>
 		<</if>>
 	<</if>>
 <</if>>

@@ -357,6 +357,35 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<span class="blue"><<He>> moves <<his>> hand away from your ass.</span>
 		<<combat-reset-hand _args[0]>>
 		<<set $anususe to 0>>
+	<<elseif playerHasButtPlug()>>
+		<<if $rng gte 21 or $noanal is 1 or $cheekaction is "handrub">>
+			<<print either(
+				`<<He>> teases your anus with your $worn.butt_plug.name, sliding it in and out.`,
+				`<<He>> teases your anus with your $worn.butt_plug.name, sliding it in and out.`,
+				`<<He>> slaps your ass and $worn.butt_plug.name.`
+			)>>
+			<<set $anususe to "hand">>
+			<<set $anusstate to "handentrance">>
+		<<else>>
+			<<set $worn.butt_plug.state to "removed">>
+			With <<his>> _args[0] hand,
+			<<if random(0,2) isnot 0>>
+				<<he>> removes your $worn.butt_plug.name.
+				<<set $anususe to "hand">>
+				<<set $anusstate to "handentrance">>
+			<<else>>
+				<<he>> removes your $worn.butt_plug.name and moves <<his>> hand away.
+				<<combat-reset-hand $_hand>><<neutral 5 _n>>
+			<</if>>
+		<</if>>
+		<<set $anususe to "hand">>
+		<<set $anusstate to "handentrance">>
+		<<neutral 10 _n>>
+		<<if random(1, 2) is 2>>
+			<<bodypart_admire_chance left_bottom>>
+		<<else>>
+			<<bodypart_admire_chance right_bottom>>
+		<</if>>
 	<<elseif $rng gte 21 or $noanal is 1 or $cheekaction is "handrub">>
 		<<He>> <<strokes>> your anus.
 		<<set $anususe to "hand">>
@@ -562,26 +591,31 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<combat-set-hand-target _args[0] "dildo">><<set $NPCList[_n][$_hand + "tool"] to 0>>
 		<<neutral 15 _n>>
 	<<elseif $rng lte 100>>
-		<<switch $penisstate>>
-			<<case "otheranus">><<set $_teased to "anus">><<set $_fucking to "penetrating">>
-			<<case "penetrated">><<set $_teased to "vagina">><<set $_fucking to "penetrating">>
-			<<case "penispenetrated">><<set $_teased to "cock">><<set $_fucking to "rubbing">>
-		<</switch>>
-		<<He>> <<print either("massages","rubs","fences","frots")>> the length of your <<penis>> with the $_toy in <<his>> _args[0] hand,<<if $penisstate is "otheranus" or $penisstate is "penetrated">><<set $_n to _n>> $_fucking <<personselect $penistarget>><<combatperson>>'s $_teased,<<personselect $_n>><</if>>
-		<<neutral 20 _n>><<set $speechpenis to 1>>
-		<<if !playerHasStrapon()>>
-			<<if $arousal gte ($arousalmax / 5) * 4>>
-				causing you involuntary shudders.
-			<<elseif $arousal gte $arousalmax / 5>>
-				coaxing out lewd fluid.
-			<<else>>
-				exploiting your body's natural reactions in a most sordid manner.
-			<</if>>
+		<<if ["otheranus","penetrated","penispenetrated"].includes($penisstate)>>
+			<<switch $penisstate>>
+				<<case "otheranus">><<set $_teased to "anus">><<set $_fuck to "penetrate">>
+				<<case "penetrated">><<set $_teased to "vagina">><<set $_fuck to "fuck">>
+				<<case "penispenetrated">><<set $_teased to "cock">><<set $_fuck to "frot">>
+			<</switch>>
+			With <<his>> _args[0] hand, <<he>> <<print either("massages","rubs","fences","frots")>> the length of your <<penis>>
+			as you $_fuck <<set $_n to _n>><<personselect $penistarget>><<combatpersons>> $_teased.<<personselect $_n>>
 		<<else>>
-			<<if $arousal gte ($arousalmax / 5) * 4>>
-				causing you involuntary shudders.
+			<<He>> <<print either("massages","rubs","fences","frots")>> the length of your <<penis>> with the $_toy in <<his>> _args[0] hand,
+			<<neutral 20 _n>><<set $speechpenis to 1>>
+			<<if !playerHasStrapon()>>
+				<<if $arousal gte ($arousalmax / 5) * 4>>
+					causing you involuntary shudders.
+				<<elseif $arousal gte $arousalmax / 5>>
+					coaxing out lewd fluid.
+				<<else>>
+					exploiting your body's natural reactions in a most sordid manner.
+				<</if>>
 			<<else>>
-				strangely arousing you.
+				<<if $arousal gte ($arousalmax / 5) * 4>>
+					causing you involuntary shudders.
+				<<else>>
+					strangely arousing you.
+				<</if>>
 			<</if>>
 		<</if>>
 		<<bodypart_admire_chance pubic>>
@@ -723,22 +757,24 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 <<widget "combat-hand-on-sextoy">>
 	/* used for both dildo types and whip types */
 	<<set $_hand to _args[0]>>
-	<<set $_dildotypes to ["dildo","length of anal beads"]>>
-	<<set $_whiptypes to ["riding crop","flog"]>>
 	<<set $_toy to $_hand + "tool">>
 	<<set $_rand to random(0,9)>>
-
-	<<if $_rand lte 8 and npcHasSexToyOfType(_n,"dildo") or $_rand lte 1 and npcHasSexToyOfType(_n,"whip")>>
+	
+	<<if $_rand lte 8 and npcHasSexToyOfType(_n,"dildo") or $_rand lt 1 and npcHasSexToyOfType(_n,"whip")>>
 		/* find orifice to penetrate */
-		<<if random(0,1) is 0 or $analdisable is "t">>
+		<<if $analdisable is "t" or random(0,2) isnot 0>>
 			<<if $player.penisExist and $player.vaginaExist>>
-				<<if (random(0,1) is 0 or (playerHasStrapon() and random(0,9) is 0))>>
+				<<if random(0,3) is 0>>
 					<<combat-dildo-on-penisentrance $_hand>>
 				<<else>>
 					<<combat-dildo-on-vaginaentrance $_hand>>
 				<</if>>
-			<<elseif $player.penisExist or (playerHasStrapon() and random(0,9) is 0)>>
-				<<combat-dildo-on-penisentrance $_hand>>
+			<<elseif $player.penisExist>>
+				<<if random(0,2) is 0>>
+					<<combat-dildo-on-penisentrance $_hand>>
+				<<else>>
+					<<combat-dildo-on-anusentrance $_hand>>
+				<</if>>
 			<<elseif $player.vaginaExist>>
 				<<combat-dildo-on-vaginaentrance $_hand>>
 			<</if>>
@@ -1567,7 +1603,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<span class="purple"><<He>> grasps your $worn.under_lower.name with <<his>> _args[0] hand.</span>
 			<<neutral 1 _n>>
 			<<set $handtarget to "underlowerclothes">>
-		<<elseif $analdisable is "f" and playerHasButtPlug() and random(0,1 is 0)>>
+		<<elseif $analdisable is "f" and playerHasButtPlug() and random(0,1) is 0>>
 			<span class="purple"><<He>> places <<his>> hand on your $worn.butt_plug.name.</span>
 			<<neutral 1 _n>><<set $handtarget to "buttplug">>
 		<<elseif $worn.genitals.name isnot "naked" and $walltype isnot "front">>
@@ -1582,6 +1618,11 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<set _stripped to true>>
 		<</if>>
 		<<combat-set-hand-target _args[0] $handtarget>>
+
+	<<elseif $NPCList[_n].heldSexToy isnot undefined and $rng lt 25 and !getSexToysofType("all").includes($NPCList[_n].lefttool) and !getSexToysofType("all").includes($NPCList[_n].righttool)>>
+		<<giveNPCsextoy _n $NPCList[_n].heldSexToy _args[0]>>
+		<<combat-reveal-sextoy _args[0]>>
+
 	<<elseif $rng lte 7 and ($consensual isnot 1 or ["Whitney", "Kylar", "Sydney"].includes($npc[$npcrow.indexOf(_n)])) and $bodywritingLvl gte 2 and $enemytype isnot "beast" and !$noBodyWriting>>
 		<<set _rng to random(1, 5)>>
 		<<if (_rng is 5 and $NPCList[_n].type isnot "plant") or $npc.includes("Sydney")>>
@@ -1605,72 +1646,6 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<set $NPCList[_n].righthand to "pen">>
 		<</if>>
 		<<neutral 1 _n>>
-
-	<<elseif $enemyanger + $rng lte 8 and $toydildodisable is "f" and !getSexToysofType("dildos and strokers").includes($NPCList[_n].lefttool) and !getSexToysofType("dildos and strokers").includes($NPCList[_n].righttool) and $enemytype isnot "beast" and $NPCList[_n].type isnot "plant" and $NPCList[0].fullDescription isnot "Ivory Wraith">>
-		/* Sex toys, dildo types and strokers specifically */
-		<<run statusCheck("Sydney")>>
-		<<if $position is "wall" and $walltype is "front">>
-			<span class="purple"><<He>> <<print either("pats","strokes","fondles")>> your hair with <<his>> _args[0] hand.</span>
-			<<set $speechhair to 1>>
-			<<bodypart_admire_chance forehead>>
-		<<elseif ["Robin", "Kylar","Great Hawk","Black Wolf","Eden","Bailey","Alex", "Bailey"].includes($npc[$npcrow.indexOf(_n)]) or ($npc[$npcrow.indexOf(_n)] is "Sydney" and !_sydneyStatus.includes("corrupt")) or ($NPCList[_n].teen is 1 and !["Alex","Whitney","Sydney"].includes($npc[$npcrow.indexOf(_n)]) and random(0,9) isnot 0)>>
-			/* Skip toys for certain NPCs */
-			<<set $handtarget to 0>>
-			<<if $worn.over_lower.name isnot "naked">>
-				<span class="purple"><<He>> grasps your $worn.over_lower.name with <<his>> _args[0] hand.</span>
-				<<set $handtarget to "overlowerclothes">><<neutral 1 _n>>
-			<<elseif $worn.lower.name isnot "naked">>
-				<span class="purple"><<He>> grasps your $worn.lower.name with <<his>> _args[0] hand.</span>
-				<<set $handtarget to "lowerclothes">><<neutral 1 _n>>
-			<<elseif $worn.genitals.type.includes("chastity")>>
-				<<He>> <<strokes>> your inner thigh and brushes <<his>> fingers against your $worn.genitals.name.
-				<<neutral 10 _n>><<set $speechchastity to 1>>
-			<<elseif $analdisable is "f" and random(0,1) is 0 and playerHasButtPlug()>>
-				<span class="purple"><<He>> places <<his>> hand on your $worn.butt_plug.name.</span>
-				<<neutral 1 _n>><<set $handtarget to "buttplug">>
-			<<elseif $player.penisExist and $player.vaginaExist>>
-				<<if $player.ballsExist and random(0,1) is 1>>
-					<<He>> <<strokes>> your <<testicles>> and teases your glans.
-					<<neutral 10 _n>><<set $speechglans to 1>>
-				<<else>>
-					<<He>> strokes the base of your <<penis>> where it meets your <<pussy>>.
-					<<neutral 10 _n>><<set $speechfutapenis to 1>>
-				<</if>>
-			<<elseif $player.penisExist and $player.ballsExist>>
-				<<He>> <<strokes>> your <<testicles>> and teases your glans.
-				<<neutral 10 _n>><<set $speechglans to 1>>
-			<<elseif $player.vaginaExist>>
-				<<He>> <<strokes>> your pubic mound and teases your clit.
-				<<neutral 10 _n>><<set $speechclit to 1>>
-			<<else>>
-				<<He>> <<strokes>> your <<print either("thigh","butt","hip")>>.
-			<</if>>
-			<<combat-set-hand-target _args[0] $handtarget>>
-		<<else>>
-			<<set $_dildo to randomSexToy("dildo")>>
-			<<if $NPCList[_n].penis isnot 0 and $NPCList[_n].penis isnot "none" and !$NPCList[_n].penisdesc.includes("strap-on") and $player.penisExist>>
-				<<set $_dildo to randomSexToy("dildos and strokers")>>
-			<</if>>
-			<<set $_hand to _args[0]>>
-			<<set $_otherhand to ($_hand is "left" ? "right" : "left" )>>
-			<<set $_freehand to ($NPCList[_n][$_otherhand+"hand"] is 0 ? true : false)>>
-			<<set $_palm to ($_freehand is true ? either("palm","palm","palm","thigh","thigh","shoulder") : either("thigh","shoulder"))>>
-			<<set $_eagerly to ($consensual is 1 ? "eagerly" : "menacingly")>>
-
-			<<if random(0,4) is 0>>
-				<span class="purple"><<He>> pulls a <span class="blue">$_dildo</span> from <<his>> pocket, slapping it against <<his>> <<print $_palm>> <<print $_eagerly>>.</span>
-			<<else>>
-				<span class="purple"><<He>> pulls a <span class="blue">$_dildo</span> from <<his>> pocket.</span>
-			<</if>>
-
-			<<if getSexToysofType("stroker").includes($_dildo)>>
-				<<set $NPCList[_n][$_hand+"tool"] to $_dildo>>
-				<<set $NPCList[_n][$_hand+"hand"] to "stroker">>
-			<<else>>
-				<<set $NPCList[_n][$_hand+"tool"] to $_dildo>>
-				<<set $NPCList[_n][$_hand+"hand"] to "dildo">>
-			<</if>>
-		<</if>>
 
 	<<elseif $enemyanger + $rng lte 20>>
 		<<if $walltype is "front">>
@@ -1713,6 +1688,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<elseif $worn.lower.name isnot "naked">>
 				<span class="purple"><<He>> grasps your $worn.lower.name with <<his>> _args[0] hand.</span>
 				<<set $handtarget to "lowerclothes">><<neutral 1 _n>>
+			<<elseif playerHasStrapon()>>
+				<<He>> <<strokes>> your inner thigh and brushes <<his>> fingers against your $worn.under_lower.name.
+				<<neutral 10 _n>>
 			<<elseif $worn.genitals.type.includes("chastity")>>
 				<<He>> <<strokes>> your inner thigh and brushes <<his>> fingers against your $worn.genitals.name.
 				<<neutral 10 _n>><<set $speechchastity to 1>>
@@ -1749,7 +1727,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<combat-set-hand-target _args[0] $handtarget>>
 			<<bodypart_admire_chance breasts>>
 		<</if>>
-	<<elseif $enemyanger + $rng lte 35>>
+	<<elseif $enemyanger + $rng lte 435>>
 		<<if $walltype is "front">>
 			<<He>> cups your chin with <<his>> _args[0] hand.
 			<<neutral 2 _n>>
@@ -2073,6 +2051,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<elseif $worn.lower.name isnot "naked">>
 			<span class="purple"><<He>> grasps your $worn.lower.name with <<his>> _args[0] hand.</span>
 			<<combat-set-hand-target _args[0] "lowerclothes">><<neutral 1 _n>>
+		<<elseif playerHasStrapon()>>
+			<<He>> smacks your hip.
+			<<neutral 15 _n>>
 		<<elseif $player.penisExist>>
 			/*$penis use need to be checked inside of $player.penisExist check to prevent mention of the clitoris*/
 			<<if $penisuse is 0>>
@@ -2211,58 +2192,6 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 		<<bodypart_admire_chance pubic>>
 
-	<<elseif $enemyanger + $rng lte 132 and $toywhipdisable is "f" and !getSexToysofType("whip").includes($NPCList[_n].lefttool) and !getSexToysofType("whip").includes($NPCList[_n].righttool) and ($NPCList[_n].teen isnot 1 or random(0,4) isnot 0) and $enemytype isnot "beast" and $NPCList[_n].type isnot "plant" and $NPCList[0].fullDescription isnot "Ivory Wraith">>
-		<<run statusCheck("Sydney")>>
-		/* Leather crop start */
-		<<if $position is "wall" and $walltype is "front">>
-			<span class="purple"><<He>> seizes your hair with <<his>> _args[0] hand.</span>
-			<<combat-set-hand-target _args[0] "hair">><<violence 2>><<set $speechhair to 1>>
-			<<bodypart_admire_chance forehead>>
-		<<elseif ($npc[$npcrow.indexOf(_n)] is "Sydney" and !_sydneyStatus.includes("corrupt")) or ["Robin", "Kylar","Great Hawk","Black Wolf"].includes($npc[$npcrow.indexOf(_n)])>>
-			/* Named NPCs excluded */
-			<<set $_smacks to either("smacks","slaps","pinches")>>
-			<<switch random(0,3)>>
-				<<case 0>><span class="red"><<He>> <<print $_smacks>> your <<bottom>>.</span>
-					<<violence 1>><<bruise bottom>><<hitstat>>
-				<<case 1>>
-					<<if $player.penisExist and $player.vaginaExist>>
-						<span class="red"><<He>> <<print $_smacks>> your shaft and labia.</span>
-					<<elseif $player.penisExist>>
-						<span class="red"><<He>> <<print $_smacks>> your <<penis>>.</span>
-					<<elseif $player.vaginaExist>>
-						<span class="red"><<He>> <<print $_smacks>> your <<pussy>>.</span>
-					<</if>>
-				<<case 2>>
-						<span class="red"><<He>> <<print either("squeezes","grasps","throttles","chokes","strangles")>> your neck in a vice grip, but relents.</span>
-				<<case 3>>
-					<span class="purple"><<He>> seizes your hair with <<his>> _args[0] hand.</span>
-					<<combat-set-hand-target _args[0] "hair">><<violence 2>><<set $speechhair to 1>>
-					<<bodypart_admire_chance forehead>>
-			<</switch>>
-		<<else>>
-			/* Use crops, flogs, whips, whatever */
-			<<set $_whip to randomSexToy("whip")>>
-			<<set $_smacking to either("smacking","smacking","slapping","whacking")>>
-
-			<<set $_hand to _args[0]>>
-			<<set $_otherhand to ($_hand is "left" ? "right" : "left" )>>
-			<<set $_freehand to ($NPCList[_n][$_otherhand+"hand"] is 0 ? true : false)>>
-
-			<span class="purple"><<He>> pulls a <span class="red">leather $_whip</span> from <<his>> pocket,
-			<<if $_freehand is true>>
-			$_smacking it against <<his>> palm.
-			<<else>>
-			$_smacking it against <<his>> <<print either("shoulder","thigh")>>.
-			<</if>>
-			</span>
-			<<if _args[0] is "left">>
-				<<set $NPCList[_n].lefttool to $_whip>>
-				<<set $NPCList[_n].lefthand to "dildo">>
-			<<elseif _args[0] is "right">>
-				<<set $NPCList[_n].righttool to $_whip>>
-				<<set $NPCList[_n].righthand to "dildo">>
-			<</if>>
-		<</if>>
 	<<elseif $enemyanger + $rng lte 140>>
 		<<if $position is "wall" and $walltype isnot "front">>
 			<<He>> slaps your <<bottom>>.
@@ -3738,7 +3667,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<</if>>
 		<<else>>
 			<<if $penisuse is "feet">>
-				<<He>> presses your <<penis>> against your stomach with <<his>> foot and rubs your glans between <<his>> toes.
+				<<He>> presses your <<penis>> against your stomach with <<his>> foot and rubs your <<glans>> between <<his>> toes.
 				<<set $speechpenisfoot to 1>><<neutral 5 _n>><<violence 1 _n>>
 			<<elseif $vaginause is "feet">>
 				<<He>> presses and teases your <<pussy>> with <<his>> foot.
@@ -3779,7 +3708,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<</if>>
 				<<elseif $enemyarousal gte (($enemyarousalmax / 5) * 2)>>
 					<<if $worn.under_lower.type.includes("strap-on")>>
-						<<he>> continues to fuck your strap-on, relishing your sex toy inside <<him>>.
+						<<He>> continues to fuck your strap-on, relishing your sex toy inside <<him>>.
 					<<else>>
 						<<He>> continues to violate your <<penis>>, using you as a sex toy.
 					<</if>>
@@ -3829,7 +3758,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<set $speechpenisbig to 1>><<set $enemyanger += 5>>
 				<</if>>
 			<<else>>
-				Respecting your wishes, <<he>> does not envelope your <<penis>> with <<his>> ass, instead teasing the tip of your glans.
+				Respecting your wishes, <<he>> does not envelope your <<penis>> with <<his>> ass, instead teasing the tip of your <<glans>>.
 				<<sex 15 _n>><<set $speechotheranuswithhold to 1>>
 			<</if>>
 		<</if>>
@@ -3978,7 +3907,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<span class="blue"><<He>> moves <<his>> clit away and presses <<his>> hungry pussy against your <<penis>>.</span>
 			<<set $penisuse to "othervagina">><<set $NPCList[_n].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $speechpenisentrance to 1>>
 		<<else>>
-			<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> clit against your glans.
+			<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> clit against your <<glans>>.
 			<<sex 5 _n>>
 		<</if>>
 	<</if>>
@@ -4279,7 +4208,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<</if>>
 		<<else>>
 			<<if $penisuse is "feet">>
-				<<He>> presses your penis against your stomach with <<his>> foot and rubs your glans between <<his>> toes.
+				<<He>> presses your penis against your stomach with <<his>> foot and rubs your <<glans>> between <<his>> toes.
 				<<set $speechpenisfoot to 1>><<neutral 5 _n>><<violence 1>>
 			<<elseif $vaginause is "feet">>
 				<<He>> rubs <<his>> foot against your <<pussy>>.
@@ -4370,7 +4299,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<set $speechpenisbig to 1>><<set $enemyanger += 5>>
 				<</if>>
 			<<else>>
-				Respecting your wishes, <<he>> does not envelope your <<penis>> with <<his>> ass, instead teasing the tip of your glans.
+				Respecting your wishes, <<he>> does not envelope your <<penis>> with <<his>> ass, instead teasing the tip of your <<glans>>.
 				<<sex 15 _n>><<set $speechotheranuswithhold to 1>>
 			<</if>>
 		<</if>>
@@ -4587,11 +4516,24 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<if $NPCList[_n].vagina is "leftDildo">>
 		<<if $rng gte 1>>
 			<<if !$npcSub>>
-				<<He>> thrusts <<his>> pussy against your $currentSexToyLeft.name.
-				<<submission 2 _n>>
+				<<if $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
+					<<He>> <<print either("rhythmically","","")>> thrusts <<his>> pussy against your $currentSexToyLeft.name.
+				<<else>>
+					<<print either(
+						`<<He>> thrusts <<his>> pussy up and down your dildo, fucking <<him>>self with a violent intensity as <<he>> approaches <<his>> peak.`,
+						`<<He>> <<print either("forcefully","desperately","rhythmically")>> thrusts <<his>> pussy against your $currentSexToyLeft.name.`,
+						`<<He>> <<print either("thrusts","grinds")>> <<his>> pussy against your $currentSexToyLeft.name in circular motions.`,
+					)>>
+					<<if $NPCList[$lefttarget].type is "plant">>Nectar drips<<else>>Fluids drip<</if>> down the toy.
+				<</if>>
 			<<else>>
-				You fuck <<his>> pussy with your $currentSexToyLeft.name.
+				<<if $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
+					You fuck <<his>> pussy with your $currentSexToyLeft.name.
+				<<else>>
+					You fuck <<his>> pussy with your $currentSexToyLeft.name. <<if $NPCList[$lefttarget].type is "plant">>Nectar drips<<else>>Fluids drip<</if>> down your toy.
+				<</if>>
 			<</if>>
+			<<submission 2 _n>>
 		<<else>>
 			<<He>> moves your $currentSexToyLeft.name away from <<his>> pussy.
 			<<set $leftarm to 0>><<set $NPCList[_n].vagina to 0>><<set $leftactiondefault to "dildoOtherPussyFuck">>
@@ -4601,11 +4543,24 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<if $NPCList[_n].vagina is "rightDildo">>
 		<<if $rng gte 1>>
 			<<if !$npcSub>>
-				<<He>> thrusts <<his>> pussy against your $currentSexToyRight.name.
-				<<submission 2 _n>>
+				<<if $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
+					<<He>> <<print either("rhythmically","","")>> thrusts <<his>> pussy against your $currentSexToyLeft.name.
+				<<else>>
+					<<print either(
+						`<<He>> thrusts <<his>> pussy up and down your dildo, fucking <<him>>self with a violent intensity as <<he>> approaches <<his>> peak.`,
+						`<<He>> <<print either("forcefully","desperately","rhythmically")>> thrusts <<his>> pussy against your $currentSexToyLeft.name.`,
+						`<<He>> <<print either("thrusts","grinds")>> <<his>> pussy against your $currentSexToyLeft.name in circular motions.`,
+					)>>
+					<<if $NPCList[$lefttarget].type is "plant">>Nectar drips<<else>>Fluids drip<</if>> down your toy.
+				<</if>>
 			<<else>>
-				You fuck <<his>> pussy with your $currentSexToyRight.name.
+				<<if $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
+					You fuck <<his>> pussy with your $currentSexToyLeft.name.
+				<<else>>
+					You fuck <<his>> pussy with your $currentSexToyLeft.name. <<if $NPCList[$lefttarget].type is "plant">>Nectar drips<<else>>Fluids drip<</if>> from <<his>> pussy.
+				<</if>>
 			<</if>>
+			<<submission 2 _n>>
 		<<else>>
 			<<He>> moves your $currentSexToyRight.name away from <<his>> pussy.
 			<<set $rightarm to 0>><<set $NPCList[_n].vagina to 0>><<set $rightactiondefault to "dildoOtherPussyFuck">>
@@ -4927,7 +4882,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				Eyes fixed on your face, <<he>> wraps <<his>> tongue around your <<penis>> and sucks.
 				<<sex 30 _n>><<bruise penis>><<violence 1>>
 			<<elseif $enemyarousal lte (($enemyarousalmax / 5) * 3)>>
-				<<He>> squeezes <<his>> lips around your <<penis>>, and circles <<his>> tongue around your glans.
+				<<He>> squeezes <<his>> lips around your <<penis>>, and circles <<his>> tongue around your <<glans>>.
 				<<sex 30 _n>><<bruise penis>><<violence 1>>
 			<<elseif $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
 				<<He>> takes you deeper into <<his>> mouth, until your <<penis>> disappears inside <<him>> completely. <<He>> slowly pushes you out again, then takes a deep breath.
@@ -4960,7 +4915,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<</if>>
 				<<takeNPCVirginity _n "oral">>
 			<<else>>
-				Respecting your wishes, <<he>> does not envelope your <<penis>> with <<his>> mouth, instead kissing the tip of your glans.
+				Respecting your wishes, <<he>> does not envelope your <<penis>> with <<his>> mouth, instead kissing the tip of your <<glans>>.
 				<<sex 15 _n>>
 			<</if>>
 		<</if>>
