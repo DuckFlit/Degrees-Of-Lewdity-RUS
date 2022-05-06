@@ -60,6 +60,7 @@ const hairStyleCap = {
 		"straight curl":200,
 		"ringlet curl":300,
 		"curtain":200,
+		"trident":200,
 	}
 }
 

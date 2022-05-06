@@ -2,7 +2,7 @@ const Furniture = (() => {
 	setup.furniture = new Map();
 
 	/* Keep set to false, unless during developer testing. If on true, set to false unless in use. */
-	const FORCE_UPDATE = true; /* IMPORTANT: Switch to false before the next update. */
+	const FORCE_UPDATE = false; /* IMPORTANT: Switch to false before the next update. */
 
 	const Categories = Object.freeze({
 		bed			: 'bed',

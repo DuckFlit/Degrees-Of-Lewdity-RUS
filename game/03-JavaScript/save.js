@@ -651,6 +651,7 @@ window.settingsObjects = function (type) {
 				footdisable: { boolLetter: true, bool: true },
 				toydildodisable: { boolLetter: true, bool: true },
 				toywhipdisable: { boolLetter: true, bool: true },
+				speechpregnancydisable: {boolLetter: true, bool: true},
 				asphyxiaLvl: { min: 0, max: 4, decimals: 0 },
 				NudeGenderDC: { min: 0, max: 2, decimals: 0 },
 				breastsizemin: { min: 0, max: 4, decimals: 0 },
