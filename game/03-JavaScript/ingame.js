@@ -1457,6 +1457,10 @@ window.npcHasSexToyOfType = function(npcIndex,toyType){
 	}
 }
 
+window.npcIsALoveInterest = function(npcName){
+	return V.loveInterest.primary === npcName || V.loveInterest.secondary === npcName || V.loveInterest.tertiary === npcName;
+}
+
 window.randomSexToy = function(toyType){
 
 	if (toyType != undefined){
@@ -1529,4 +1533,14 @@ window.fameSum = function(...fameTypes) {
 	let result = 0;
 	fameTypes.forEach(fameType => result += V.fame[fameType]);
 	return result;
+}
+
+window.checkTFparts = function(){
+	Object.entries(V.transformationParts).forEach(([tfName,tf]) => /* Iterate over each transformation */
+		Object.entries(tf).forEach(([pName, pStatus]) => { /* Iterate over each part of each transformation */
+			if (pStatus !== "disabled" && pStatus !== "hidden"){ /* Filter out the parts that the player doesn't have or is suppressing */
+				T[tfName+pName.toLocaleUpperFirst()] = true; /* Create temporary variables with camelCase names for each tf part that is visible */
+			}
+		})
+	);
 }
