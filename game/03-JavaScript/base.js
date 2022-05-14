@@ -538,18 +538,18 @@ window.mobBtnShow = function mobBtnShow(){
 	$('.mob-btn').show()
 	$('.mob-btn-h').hide()
 }
- 
+
 /**
  * This function creates a random float 0.0-1.0, weighted by exponential curve.
- * 
+ *
  * A value of 1.0 returns 1 every time.
- * 
+ *
  * Values between 1.0 and 2.0 return a curve favoring higher results (closer to 1)
- * 
+ *
  * A value of 2.0 will return a flat line distribution, and is identical to random()
- * 
+ *
  * Values greater than 2.0 return a curve favoring lower results (closer to 0), reaching to 0 at infinity.
- * 
+ *
  * For example, see:
  * https://www.desmos.com/calculator/o3rxbwzvdu
 
