@@ -1507,7 +1507,6 @@ setup.debugMenu.event_list = {
 			widgets: [
 				`<<set $control to 0>>`,
 				`<<set $possessed to true>>`,
-				function(){ if (!$wraith.will) return `<<set $wraith.will to random(1300, 1700)>>`}
 			]
 		},
 		{
