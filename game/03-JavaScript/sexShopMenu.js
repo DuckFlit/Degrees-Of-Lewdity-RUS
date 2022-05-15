@@ -243,6 +243,28 @@ setup.sextoys = [
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
 		display_condition: () => 1
+	}, {
+		index: 10,
+		name: "aphrodisiac pills",
+		namecap: "Aphrodisiac pills",
+		name_underscore: "aphrodisiac_pills",
+		description: "A pack of three aphrodisiac pills. The instructions say to take 'a suitable number' before sex for an enhanced experience.",
+		cost: 4000,
+		wearable: 0,
+		size: 3,
+		category: "aphrodisiacpill",
+		type: ["aphrodisiacpill"],
+		icon: "img/misc/icon/sexToys/aphrodisiacpill.png",
+		colour: 0,
+		uses: 3,
+		colour_options: ["pink"],
+		default_colour: "pink",
+		owned: setup.sextoyFunctions.owned,
+		isCarried: setup.sextoyFunctions.isCarried,
+		isWorn: setup.sextoyFunctions.isWorn,
+		unWear: setup.sextoyFunctions.unWear,
+		unCarry: setup.sextoyFunctions.unCarry,
+		display_condition: () => 1
 	}
 ];
 
