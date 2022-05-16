@@ -311,29 +311,6 @@
 	<</if>>
 <</widget>>
 
-<<widget "kylarStatusCheck">>
-	<<set _kylar to $NPCName[$NPCNameList.indexOf("Kylar")]>>
-	<!-- USAGE: if Kylar's love is over 50, <<if _kylarStatus.includes("Love")>>; if otherwise, <<else>> -->
-	<<set _kylarStatus to "">>
-	<<if _kylar.love gte 50>>
-		<<set _kylarStatus += "Love">>
-	<</if>>
-	<!-- USAGE: if Kylar's lust is over 60, <<if _kylarStatus.includes("Lust")>>; otherwise, <<else>>  -->
-	<<if _kylar.lust gte 60>>
-		<<set _kylarStatus += "Lust">>
-	<</if>>
-	<!-- USAGE: if Kylar's jealousy is over 90: <<if _kylarStatus.includes("MaxRage")>>; otherwise if Kylar's jealousy is over 60: <<elseif _kylarStatus.includes("Rage")>>; otherwise if Kylar's jealousy is over 30: <<if !_kylarStatus.includes("Calm")>>; otherwise, <<else>> -->
-	<<if _kylar.rage gte 90>>
-		<<set _kylarStatus += "MaxRage">>
-	<<elseif _kylar.rage gte 60>>
-		<<set _kylarStatus += "Rage">>
-	<<elseif _kylar.rage gte 30>>
-		<<set _kylarStatus += "Sus">>
-	<<else>>
-		<<set _kylarStatus += "Calm">>
-	<</if>>
-<</widget>>
-
 <<widget "kylarRandomUnderwear">>
 	<<if !_kylar>>
 		<<set _kylar to statusCheck("Kylar")>>
@@ -341,10 +318,11 @@
 	<<set $_underwearGender to _args[0] or _kylar.pronoun>> <!-- Futureproofing for kylar crossdressing -->
 	<<set $_underwearSet to []>>
 
+	<<set $_colour to ["black", "white", "grey", "pink", "red", "green"].random()>>
+	<<set $_colourBase to ["black", "white", "white"].filter(c => c !== $_colour).random()>>
+
 	<!-- gender neutral underwear -->
-	<<set $_underwearSet.push(
-		/* empty for now */
-	)>>
+	<!-- <<set $_underwearSet.push()>> --> /* empty for now */
 
 	<<if $_underwearGender is "m">>
 		<<set $_underwearSet.push(
@@ -352,15 +330,21 @@
 		)>>
 	<<else>>
 		<<set $_underwearSet.push(
-			{id: 20, desc: "panties with XX and YY stripes", simpleDesc: "panties", colourDesc: "XX and YY striped panties", hasAcc: true},
+			{id: 20, desc: "panties with XX and YY stripes", simpleDesc: "panties", colourDesc: "XX and XX striped panties", hasAcc: true},
+			{id: 1, desc: "XX panties", simpleDesc: "panties", colourDesc: "XX panties", hasAcc: false},
 		)>>
 	<</if>>
 	<<set _kylarUndies to $_underwearSet.random()>>
 
-	<<set _kylarUndies.colour to ["black", "white"].random()>>
 	<<if _kylarUndies.hasAcc>>
-		<<set _kylarUndies.colourAcc to ["black", "white", "green", "pink", "red", "green"].filter(c => c !== _kylarUndies.colour).random()>>
+		<!-- If the underwear has two colours, the second colour is its base, so "white with red stripes" and "red" both use $_colour for "red" -->
+		<<set _kylarUndies.colour to $_colourBase>>
+		<<set _kylarUndies.colourAcc to $_colour>>
+	<<else>>
+		<<set _kylarUndies.colour to $_colour>>
 	<</if>>
+
+	<!-- Replace the XX and YY in the descriptions with the colours that have been randomly chosen -->
 	<<set _kylarUndies.desc to _kylarUndies.desc.replace("XX", _kylarUndies.colour).replace("YY", _kylarUndies.colourAcc)>>
 	<<set _kylarUndies.colourDesc to _kylarUndies.colourDesc.replace("XX", _kylarUndies.colour).replace("YY", _kylarUndies.colourAcc)>>
 
@@ -973,7 +957,7 @@ You shake off Kylar's grip and leave. <<He>> watches you with <<his>> fists clen
 		You lay your hand on Kylar's inner thigh. <<He>> widens <<his>> legs slightly to allow you better access.
 	<</addinlineevent>><<addinlineevent "kylarFlirtEar">>
 		You blow into Kylar's ear. <<He>> smiles and blows into yours in response.
-		<<if random(1,2)>>
+		<<if random(0,1)>>
 			"Your ears were very sensitive in my dream," <<he>> says. "I guess they're not as sensitive here."
 			<<gstress>><<stress 1>>
 			<br>
@@ -1098,7 +1082,7 @@ You shake off Kylar's grip and leave. <<He>> watches you with <<his>> fists clen
 			<<if $trauma gte ($traumamax / 5) * 3>>
 				Sometimes, when they stroke the back of your head while you're suckling, it makes you feel wanted. Almost like you're with... You cut yourself off.
 			<</if>>
-			<<He>> looks away, <<print ($pronoun is "m" ? "frowning" : "blushing")>>.
+			<<He>> looks away, <<print (_kylar.pronoun is "m" ? "frowning" : "blushing")>>.
 		<<else>>
 			You whisper to Kylar one of your deepest fantasies. <<He>> looks away, <<print either("blushing","frowning","wide-eyed","sweating","hiding a smile")>>.
 		<</if>>
@@ -2204,31 +2188,31 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 		<<ltiredness>><<tiredness -6>>
 		<br><br>
 
-		<<run checkTFparts()>>
+		<<set _tf to checkTFparts()>>
 		<<set _tfSplit to random(0,1)>>
-		<<if (_angelHalo or _fallenAngelHalo) and _tfSplit is 0>>
+		<<if (_tf.angelHalo or _tf.fallenAngelHalo) and _tfSplit is 0>>
 			After a while, <<his>> eyes turn to your <<if $fallenangel>>broken <</if>>halo, and <<he>> slowly reaches <<his>> hand up to touch it.
 			<<His>> brow furrows as <<his>> hand reaches nothing, and <<he>> squints at the air above your head.
 			"I could've sworn there was..." <<He>> retracts <<his>> hand and returns to stroking your hair, a confused frown on <<his>> face.
 			<br><br>
-		<<elseif _demonHorns and _cowHorns>>
+		<<elseif _tf.demonHorns and _tf.cowHorns>>
 			After a while, <<he>> reaches up and pokes your demon horns. "Are these real?" <<he>> asks.
 			"What about these ones?" <<His>> hand drifts down to your cow horns.
 			For a few minutes, <<he>> alternates between the two sets, sometimes stroking, sometimes tapping.
 			<br><br>
-		<<elseif (_demonHorns and _tfSplit is 0) or (_cowHorns and _tfSplit is 1)>>
+		<<elseif (_tf.demonHorns and _tfSplit is 0) or (_tf.cowHorns and _tfSplit is 1)>>
 			After a while, <<he>> reaches up and pokes your horns. "Are these real?" <<he>> asks.
 			For a few minutes, <<he>> alternates between stroking and tapping your horns, seemingly entranced.
 			<br><br>
-		<<elseif (_wolfEars or _catEars) and _tfSplit is 1>>
-			After a while, <<his>> hand brushes against your <<print (_wolfEars ? "wolf" : "cat")>> ears.
-			You shiver, <<print (_wolfEars ? "whining" : "purring")>> at <<his>> touch.
+		<<elseif (_tf.wolfEars or _tf.catEars) and _tfSplit is 1>>
+			After a while, <<his>> hand brushes against your <<print (_tf.wolfEars ? "wolf" : "cat")>> ears.
+			You shiver, <<print (_tf.wolfEars ? "whining" : "purring")>> at <<his>> touch.
 			<<He>> smiles. "Are they sensitive?" For a few minutes, <<he>> scratches around your ears, blowing into them at one point.
-			<<if _wolfTail or _catTail>>
-				Your tail <<print (_wolfTail ? "wags happily" : "swishes in contentment")>>, brushing against <<him>> on occasion.
+			<<if _tf.wolfTail or _tf.catTail>>
+				Your tail <<print (_tf.wolfTail ? "wags happily" : "swishes in contentment")>>, brushing against <<him>> on occasion.
 			<</if>>
 			<br><br>
-		<<elseif _birdPlumage and _tfSplit is 1>>
+		<<elseif _tf.birdPlumage and _tfSplit is 1>>
 			After a while, <<he>> brings <<his>> other hand to you and brushes your plumage. "Are these feathers?" <<he>> asks.
 			For a few minutes, <<he>> strokes your hair with one hand and your plumage with the other.
 			<<if $player.perceived_breastsize gte 3 or $player.gender_appearance is "f" or ($player.gender is "f" and $genderknown.includes("Kylar"))>>

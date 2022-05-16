@@ -1537,13 +1537,15 @@ window.fameSum = function(...fameTypes) {
 }
 
 function checkTFparts() {
+	const tfParts = {}
 	Object.entries(V.transformationParts).forEach(([tfName,tf]) => /* Iterate over each transformation */
 		Object.entries(tf).forEach(([pName, pStatus]) => { /* Iterate over each part of each transformation */
 			if (pStatus !== "disabled" && pStatus !== "hidden"){ /* Filter out the parts that the player doesn't have or is suppressing */
-				T[tfName+pName.toUpperFirst()] = true; /* Create temporary variables with camelCase names for each tf part that is visible */
+				tfParts[tfName+pName.toUpperFirst()] = true; /* Assign properties with camelCase names for each tf part that is visible */
 			}
 		})
 	);
+	return tfParts;
 }
 window.checkTFparts = checkTFparts;
 
