@@ -423,7 +423,7 @@ DefineMacroS("combatDefaults", combatDefaults);
 * Another form of the formula is written as
 * (700 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * $_npc.clothes[$_clothesTarget].integrity)
 * This is the difficulty to undress an NPC. The base difficulty is lower, but the arousal multiplier is different. The 100 multiplier is replaced by the NPC's clothes' integrity, which is often higher than 100. The more tattered the clothes, the harder to succeed in the action (the arousal side becomes lower).
-* 
+*
 * The function uses the following formula:
 * skill + trust + (arousalfactor * multiplier) + rng >= basedifficulty + anger
 * Which is the same as the previous formula, just renamed.
@@ -437,7 +437,7 @@ DefineMacroS("combatDefaults", combatDefaults);
 * E.g. the function passes "anal" as the only argument (and thus skillname is "anal"). skill will become the value of $analskill used in calculation.
 * So skillname is a string, and skill is an integer. Why not simply pass the skill value as the argument? Because of possible future variants, such as moor luck, affecting some variable and not the other.
 * targetid is an optional value, that doesn't see use currently but can possibly be required in the future in case any of the "enemy" variables (such as $enemyarousal or $enemytrust) become individual values ("per NPC", as health currently is).
-* 
+*
 * The output is simply: true if the action is a success, and false if the action fails.
 */
 /**
@@ -1184,7 +1184,7 @@ window.currentSkillValue = function(skill){
 		Errors.report(`[currentSkillValue]: skill '${skill}' unknown.`, { 'Stacktrace' : Utils.GetStack(), skill });
 		return 0;
 	};
-	if(['skulduggery','physique','danceskill','swimmingskill','athletics','willpower','tending','english'].includes(skill) && V.moorLuck > 0){
+	if(['skulduggery','physique','danceskill','swimmingskill','athletics','willpower','tending','science','maths','english','history'].includes(skill) && V.moorLuck > 0){
 		result = Math.floor(result * (1 + (V.moorLuck / 100)));
 	}
 	if(['physique','danceskill','swimmingskill','athletics'].includes(skill) && V.sexStats.vagina.pregnancy.bellySize >= 10){
