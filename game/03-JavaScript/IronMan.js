@@ -1,4 +1,6 @@
 const IronMan = (() => {
+	'use strict';
+
 	/**
 	 * Set to true to allow debug mode changes during gameplay.
 	 * By default this should always be false, if it is not false, please change it.
