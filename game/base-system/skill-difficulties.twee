@@ -647,31 +647,42 @@
 <</if>>
 <</widget>>
 
+<!--
 
+	args[0]: skill to be checked.
+	args[1]: skill name to display.
+	args[2]: skill required to have a chance.
+	args[3]: skill required for 100% success rate
+	args[4]: hide the skill text.
+-->
 <<widget "skill_difficulty">>
-/*args[0]: skill to be checked.
-args[1]: skill name to display.
-args[2]: skill required to have a chance.
-args[3]: skill required for 100% success rate
-args[4]: hide the skill text.*/
-<<set _skilldifficultymin to (_args[2] ? _args[2] : 1)>>
-<<set _skilldifficultymax to (_args[3] ? _args[3] : 1000)>>
-<<if _skilldifficultymin gte _skilldifficultymax>>
-	<<set _skilldifficultymax to _skilldifficultymin + 1>>
-<</if>>
-/* Note: willpower uses a different default value for skilldifficultymax */
-<<if _args[4] is undefined and $statdisable is "f">>
-	<<if $checkstyle is "skillname">>
-		| <span class="orange"><<print _args[1]>></span>
-	<<else>>
-		| <span class="orange"><<print _args[1]>></span>:
-		<<print '<<set _difficulty to Math.round(Math.clamp($' + _args[0] + ' - _skilldifficultymin, 0, _skilldifficultymax) / (_skilldifficultymax - _skilldifficultymin) * 100)>>'>>
-		<<if _difficulty gt 100>>
-			<<set _difficulty to 100>>
+	<<set $_skill to Scripting.evalTwineScript(_args[0])>>
+	<<if typeof $_skill is "number">>
+		<!-- Now we know $_skill is a valid number, we can perform our calculations safely. -->
+		<<set _skilldifficultymin to (_args[2] ? _args[2] : 1)>>
+		<<set _skilldifficultymax to (_args[3] ? _args[3] : 1000)>>
+		<<if _skilldifficultymin gte _skilldifficultymax>>
+			<<set _skilldifficultymax to _skilldifficultymin + 1>>
 		<</if>>
-		<<skillDifficultyText _difficulty>>
+		/* Note: willpower uses a different default value for skilldifficultymax */
+		<<if _args[4] is undefined and $statdisable is "f">>
+			<<if $checkstyle is "skillname">>
+				| <span class="orange"><<print _args[1]>></span>
+			<<else>>
+				| <span class="orange"><<print _args[1]>></span>:
+				<<set _difficulty to Math.round(Math.clamp($_skill - _skilldifficultymin, 0, _skilldifficultymax) / (_skilldifficultymax - _skilldifficultymin) * 100)>>
+				<<if _difficulty gt 100>>
+					<<set _difficulty to 100>>
+				<</if>>
+				<<skillDifficultyText _difficulty>>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<error {
+			message: '<<skill_difficulty>> widget was given an invalid skill name: Not a number.',
+			source: `Skill name: ${_args[0]}, skill display: ${_args[1]}, minimum: ${_args[2]}, max: ${_args[3]}, hide: ${_args[4]}`
+		}>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "historyrequired">>

@@ -80,13 +80,14 @@ End of '<<print $replayScene.name>>' scene.
 
 /*Scenes when player viewing can be tracked*/
 <<widget "seenPassageChecks">>
+<<set $_robin to statusCheck("Robin")>>
 <<if $scenePassages is undefined>>
 	<<set $scenePassages to []>>
 <</if>>
 <<if $NPCName[$NPCNameList.indexOf('Avery')].init is 1>>
 	<<run $scenePassages.pushUnique("Park Lichen")>>
 <</if>>
-<<if $NPCName[$NPCNameList.indexOf('Robin')].init is 1>>
+<<if $_robin.init is 1>>
 	<<run $scenePassages.pushUnique("Robin Intro")>>
 <</if>>
 <<if $bun_value gte 15000>>
@@ -108,24 +109,18 @@ End of '<<print $replayScene.name>>' scene.
 <<if $halloween_kylar_proposed>>
 	<<run $scenePassages.pushUnique("halloweenkylar")>>
 <</if>>
-<<if $farm_stage gt 1>>
-	<<run $scenePassages.pushUnique("AlexFarmIntro")>>
-<</if>>
-<<if $farm_stage gte 3>>
-	<<run $scenePassages.pushUnique("AlexFarmWorkStage3")>>
-<</if>>
-<<if $farm_stage gte 4>>
-	<<run $scenePassages.pushUnique("AlexFarmWorkStage4")>>
-<</if>>
-<<if $farm_stage gte 5>>
-	<<run $scenePassages.pushUnique("AlexFarmWorkStage5")>>
-<</if>>
-<<if $farm_stage gte 6>>
-	<<run $scenePassages.pushUnique("AlexFarmWorkStage6")>>
-<</if>>
-<<if $farm is undefined>>
-<<elseif $farm.milking is undefined>>
-<<elseif $farm.milking.alexNightEvent is true>>
+<!-- Intentional breakless design for this switch.
+	Example: If $farm_stage is 4, it will run cases 4, 3 and 2. -->
+<<run
+	switch (Math.clamp($farm_stage, 0, 6)) {
+		case 6: $scenePassages.pushUnique("AlexFarmWorkStage6");
+		case 5: $scenePassages.pushUnique("AlexFarmWorkStage5");
+		case 4: $scenePassages.pushUnique("AlexFarmWorkStage4");
+		case 3: $scenePassages.pushUnique("AlexFarmWorkStage3");
+		case 2: $scenePassages.pushUnique("AlexFarmIntro");
+	}
+>>
+<<if $farm and $farm.milking and $farm.milking.alexNightEvent>>
 	<<run $scenePassages.pushUnique("AlexFarmSelfMilkingCaught")>>
 <</if>>
 <<if $bullyevent gt 0>>
@@ -140,26 +135,20 @@ End of '<<print $replayScene.name>>' scene.
 <<if $bullyevent gt 3>>
 	<<run $scenePassages.pushUnique("WhitneySchoolBully4")>>
 <</if>>
-<<if $NPCName[$NPCNameList.indexOf('Robin')].cdquest gte 1>>
-	<<run $scenePassages.pushUnique("RobinCrossdressing1")>>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf('Robin')].cdquest gte 2>>
-	<<run $scenePassages.pushUnique("RobinCrossdressing2")>>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf('Robin')].cdquest gte 3>>
-	<<run $scenePassages.pushUnique("RobinCrossdressing3")>>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf('Robin')].cdquest gte 4>>
-	<<run $scenePassages.pushUnique("RobinCrossdressing4")>>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf('Robin')].cdquest gte 5>>
-	<<run $scenePassages.pushUnique("RobinCrossdressing5")>>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf('Robin')].cdquest gte 6>>
-	<<run $scenePassages.pushUnique("RobinCrossdressing6")>>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf('Robin')].cdquest gte 6>>
-	<<run $scenePassages.pushUnique("RobinCrossdressing6I")>>
+<!-- Intentional breakless design for this switch.
+	Example: If $_robin.cdquest is 3, it will run cases 3, 2 and 1. -->
+<<run
+	switch (Math.clamp($_robin.cdquest, 0, 6)) {
+		case 6: $scenePassages.pushUnique("RobinCrossdressing6", "RobinCrossdressing6I");
+		case 5: $scenePassages.pushUnique("RobinCrossdressing5");
+		case 4: $scenePassages.pushUnique("RobinCrossdressing4");
+		case 3: $scenePassages.pushUnique("RobinCrossdressing3");
+		case 2: $scenePassages.pushUnique("RobinCrossdressing2");
+		case 1: $scenePassages.pushUnique("RobinCrossdressing1");
+	}
+>>
+<<if $robinfirstrentfight is 1>>
+	<<run $scenePassages.pushUnique("RentFirstRobinFight")>>
 <</if>>
 
 <</widget>>
@@ -379,6 +368,13 @@ Be aware that many objects will be restored for you, including player, worn, car
 			/* TODO: update this when we figure out how much time the above passage is meant to take */
 			manualVariableChanges:"<<set $NPCName[$NPCNameList.indexOf(\"Robin\")].crossdress to 6>><<set $weekday to 1>><<set $hour to 12>><<set $minute to 0>><<set $time to 720>>",
 			unlocked: $scenePassages.includes("RobinCrossdressing6I")
+		},
+		"RentFirstRobinFight":{
+			name:"Rent First Robin Fight",
+			startPassage:"Rent First Robin SV",
+			passages:["Rent Pay","Rent Seduce","Rent Refuse","Rent First Robin Fight","Rent First Robin Fight Finish"],
+			manualVariableChanges:"<<set $robinpaid to 1>><<set $robinromance to 1>><<set $bus to \"home\">><<set $robinfirstrentfight to 0>><<set $baileydefeatedchain to 3>><<unset $baileyReunionScene>><<set $renttime to 0>><<set $robinmissing to 0>><<set $home_gone to 0>>",
+			unlocked: $scenePassages.includes("RentFirstRobinFight")
 		},
 	}>>
 <</if>>

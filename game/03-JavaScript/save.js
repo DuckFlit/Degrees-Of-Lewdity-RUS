@@ -219,6 +219,13 @@ const DoLSave = ((Story, Save) => {
 		}
 	}
 
+	Macro.add('incrementautosave', {
+		tags: null,
+		handler() {
+			if (!V.ironmanmode) V.saveDetails.auto.count++;
+		}
+	});
+
 	return Object.freeze({
 		save		: save,
 		load		: loadSave,
