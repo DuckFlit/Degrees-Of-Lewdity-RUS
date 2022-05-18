@@ -222,7 +222,7 @@ setup.debugMenu.event_list = {
 				`Roll over`, function(){return V.passage}
 			],
 			widgets: [
-				function(){return (`<<set $position to ` + (V.position == "doggy") ? "doggy" : "missionary" ) + `>>`}
+				function(){return (`<<set $position to ` + (V.position == "doggy" ? "doggy" : "missionary") + `>>`)}
 			],
 			condition: function (){return (V.position == "doggy" || V.position == "missionary") ? 1 : 0}
 		},
