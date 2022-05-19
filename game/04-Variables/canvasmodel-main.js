@@ -1666,7 +1666,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + '.png';
+					return 'img/bodywriting/text/default/' + area_name + '.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/' + area_name + '.png'
 				} else {
@@ -1687,7 +1687,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + '.png';
+					return 'img/bodywriting/text/default/' + area_name + '.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/' + area_name + '.png'
 				} else {
@@ -1708,7 +1708,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + '.png';
+					return 'img/bodywriting/text/default/' + area_name + '.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/' + area_name + (writing.arrow ? "_arrow" : "") + '.png'
 				} else {
@@ -1729,7 +1729,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + '1.png';
+					return 'img/bodywriting/text/default/' + area_name + '1.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/breasts' + options.breast_size + '.png'
 				} else {
@@ -1746,7 +1746,7 @@ Renderer.CanvasModels["main"] = {
 			srcfn(options) {
 				let writing = setup.bodywriting[options.writing_breasts];
 				if ((!writing.sprites || writing.sprites.length == 0) && writing.type === "text" && options.breast_size >= 2) {
-					return 'img/bodywriting/text/_default/breasts' + options.breast_size + '.png'
+					return 'img/bodywriting/text/default/breasts' + options.breast_size + '.png'
 				} else {
 					return '';
 				}
@@ -1765,7 +1765,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + '.png';
+					return 'img/bodywriting/text/default/' + area_name + '.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/' + area_name + '.png'
 				} else {
@@ -1786,7 +1786,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + '.png';
+					return 'img/bodywriting/text/default/' + area_name + '.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/' + area_name + '.png'
 				} else {
@@ -1813,7 +1813,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + (writing.arrow ? "_arrow" : "") + '.png';
+					return 'img/bodywriting/text/default/' + area_name + (writing.arrow ? "_arrow" : "") + '.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/' + area_name + '.png'
 				} else {
@@ -1834,7 +1834,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + (writing.arrow ? "_arrow" : "") + '.png';
+					return 'img/bodywriting/text/default/' + area_name + (writing.arrow ? "_arrow" : "") + '.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/' + area_name + '.png'
 				} else {
@@ -1855,7 +1855,7 @@ Renderer.CanvasModels["main"] = {
 					if (writing.sprites && writing.sprites.length > 0 && writing.sprites.includes(area_name)) {
 						return 'img/bodywriting/text/' + writing.key + '/' + area_name + '.png';
 					}
-					return 'img/bodywriting/text/_default/' + area_name + (writing.arrow ? "_arrow" : "") + '.png';
+					return 'img/bodywriting/text/default/' + area_name + (writing.arrow ? "_arrow" : "") + '.png';
 				} else if (writing.type === "object") {
 					return 'img/bodywriting/' + writing.writing + '/' + area_name + '.png'
 				} else {
