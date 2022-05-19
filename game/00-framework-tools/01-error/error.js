@@ -137,7 +137,7 @@ Errors.report = (message, copyData) => {
 
 /** Jimmy: Uses SugarCube's source code, modified for use as a macro.
  *         Likely should be updated after SugarCube updates their error system. */
-Errors.inlineReport = (message, source) => {
+Errors.inlineReport = (message, source, isExportable = true) => {
 	const $wrapper = jQuery(document.createElement('div'));
 	const $toggle  = jQuery(document.createElement('button'));
 	const $source  = jQuery(document.createElement('pre'));
@@ -162,9 +162,22 @@ Errors.inlineReport = (message, source) => {
 		})
 		.appendTo($wrapper);
 	jQuery(document.createElement('span'))
-		.addClass('dol-error')
 		.text(mesg)
 		.appendTo($wrapper);
+
+	if (isExportable && !Browser.isMobile.any()) {
+		jQuery(document.createElement('button'))
+			.addClass('error-export macro-button')
+			.text('Export')
+			.ariaClick({
+				label : 'Export'
+			}, () => {
+				updateExportDay();
+				Save.export('degrees-of-lewdity');
+			})
+			.appendTo($wrapper);
+	}
+
 	jQuery(document.createElement('code'))
 		.text(source)
 		.appendTo($source);
@@ -176,7 +189,7 @@ Errors.inlineReport = (message, source) => {
 		})
 		.appendTo($wrapper);
 	$wrapper
-		.addClass('error-view');
+		.addClass('error-view dol-error');
 
 	console.warn(`${mesg}\n\t${source.replace(/\n/g, '\n\t')}`);
 

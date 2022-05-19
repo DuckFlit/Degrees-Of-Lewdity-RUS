@@ -23,13 +23,14 @@ const ErrorSystem = ((Scripting, Errors) => {
 		handler() {
 			const exp = this.args.full;
 			const result = Scripting.evalJavaScript(exp[0] === '{' ? `(${exp})` : exp);
-			let { message, source, depth } = Object.assign({
+			let { message, source, depth, exportable } = Object.assign({
 				message: 'Message not set',
 				source: null,
-				depth: 0
+				depth: 0,
+				exportable: true
 			}, result);
 			if (source === null) source = getTargetSource.call(this, depth);
-			Errors.inlineReport(message, source).appendTo(this.output);
+			Errors.inlineReport(message, source, exportable).appendTo(this.output);
 		}
 	});
 
