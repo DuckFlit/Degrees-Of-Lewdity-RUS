@@ -225,6 +225,19 @@ const IronMan = (() => {
 		}
 	}
 
+	function scheduledSaves() {
+		const date = new Date(V.month + ' ' + V.monthday + ', ' + V.year);
+
+		if (!V.ironmanautosaveschedule)
+			V.ironmanautosaveschedule = (date.getTime()).toString(8);
+		if (parseInt(V.ironmanautosaveschedule, 8) < date.getTime()){
+			//autosave
+			ironmanAutoSave();
+			//
+			V.ironmanautosaveschedule = (date.getTime() + (getRandomIntInclusive(432000, 777600) * 1000)).toString(8);
+		}
+	}
+
 	/* If the game is in ironman mode, generate the objects necessary. Can use the updater code for it without issues. */
 	/* $(document).on(':start2', function() {
 		if (V.ironmanmode) {
@@ -269,7 +282,8 @@ const IronMan = (() => {
 			debugExport: uiDebugExport,
 			debugExportButton: uiDebugExportButton
 		},
-		update: update
+		update: update,
+		scheduledSaves: scheduledSaves
 	});
 })();
 window.IronMan = IronMan;
