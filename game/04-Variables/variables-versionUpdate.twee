@@ -3358,10 +3358,29 @@
 	<</if>>
 
 	<!-- <= v0.3.8.6: Modeling rework -->
-	<<if $photo and $photo.fame_stage>>
-		<<set $photo.audienceSize to Math.ceil( $photo.fame_stage / 2 )>>
-		<<set $photo.timesWithThisAudienceSize to ( ( ( $photo.fame_stage - 1 ) % 2 ) + 1 )>>
-		<<run delete $photo.fame_stage>>
+	<<if typeof $photo is 'object'>>
+		<<script>>
+			const photo = V.photo;
+			const versions = V.objectVersion;
+			if (versions.photo === undefined) {
+				versions.photo = 0;
+			}
+			switch (versions.photo) {
+				case 0:
+					if (typeof photo.fame_stage === 'number') {
+						photo.audienceSize = Math.ceil(photo.fame_stage / 2);
+						photo.timesWithThisAudienceSize = ((photo.fame_stage - 1) % 2) + 1;
+					} else {
+						photo.audienceSize = 1;
+						photo.timesWithThisAudienceSize = 0;
+					}
+					delete photo.fame_stage;
+					if (typeof photo.money !== 'number' || Number.isNaN(photo.money)) {
+						photo.money = 450;
+					}
+					versions.photo = 1;
+			}
+		<</script>>
 	<</if>>
 
 	<!-- v0.3.8.6: Kylar rework -->
