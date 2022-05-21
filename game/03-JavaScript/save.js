@@ -14,7 +14,7 @@ const DoLSave = ((Story, Save) => {
 				const saveDetails = JSON.parse(localStorage.getItem(KEY_DETAILS));
 				const metadata = saveDetails.slots[saveSlot].metadata;
 				/* Check if metadata for save matches the save's computed md5 hash. If it matches, the ironman save was not tampered with. */
-				if (metadata.ironman) {
+				if (metadata.ironman && !Browser.isMobile.any()) {
 					const save = Save.slots.get(saveSlot);
 					const signature = md5(JSON.stringify(save.state.delta[0]));
 					// (if ironman mode enabled) following checks md5 signature of the save to see if the variables have been modified
