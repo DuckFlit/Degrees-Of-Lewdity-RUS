@@ -13,12 +13,14 @@ const DoLSave = ((Story, Save) => {
 			} else {
 				const saveDetails = JSON.parse(localStorage.getItem(KEY_DETAILS));
 				const metadata = saveDetails.slots[saveSlot].metadata;
-				/* Check if metadata for save matches the save's computed md5 hash. If it matches, the ironman save was not tampered with. */
+				/* Check if metadata for save matches the save's computed md5 hash. If it matches, the ironman save was not tampered with.
+					Bypass this check if on a mobile, because they are notoriously difficult to grab saves from in the event of issues. */
 				if (metadata.ironman && !Browser.isMobile.any()) {
 					const save = Save.slots.get(saveSlot);
-					const signature = md5(JSON.stringify(save.state.delta[0]));
+					IronMan.update(save, metadata);
+					const signature = IronMan.getSignature(save);
 					// (if ironman mode enabled) following checks md5 signature of the save to see if the variables have been modified
-					if (signature !== metadata.ironman_signature) {
+					if (signature !== metadata.signature) {
 						new Wikifier(null, '<<loadIronmanCheater ' + saveSlot + '>>');
 						return;
 					}
@@ -51,13 +53,15 @@ const DoLSave = ((Story, Save) => {
 				if (success) {
 					const save = Save.slots.get(saveSlot);
 					setSaveDetail(saveSlot, {
-						"saveId": saveId, "saveName": saveName,
-						"ironman": V.ironmanmode, "ironman_signature": (V.ironmanmode ? md5(JSON.stringify(save.state.delta[0])) : false)
+						"saveId": saveId,
+						"saveName": saveName,
+						"ironman": V.ironmanmode,
+						"signature": (V.ironmanmode ? IronMan.getSignature(save) : false)
 					});
 					V.currentOverlay = null;
 					overlayShowHide("customOverlay");
 					if (V.ironmanmode === true)
-						SugarCube.Engine.restart();
+						Engine.restart();
 				}
 			}
 		}
@@ -213,8 +217,10 @@ const DoLSave = ((Story, Save) => {
 		if (success) {
 			const save = Save.slots.get(saveSlot);
 			setSaveDetail(saveSlot, {
-				"saveId": V.saveId, "saveName": V.saveName,
-				"ironman": V.ironmanmode, "ironman_signature": (V.ironmanmode ? md5(JSON.stringify(save.state.delta[0])) : false)
+				"saveId": V.saveId,
+				"saveName": V.saveName,
+				"ironman": V.ironmanmode,
+				"signature": (V.ironmanmode ? IronMan.getSignature(save) : false)
 			});
 		}
 	}

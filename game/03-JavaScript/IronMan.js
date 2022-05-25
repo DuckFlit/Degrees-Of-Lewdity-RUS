@@ -1,4 +1,4 @@
-const IronMan = (() => {
+const IronMan = ((Save) => {
 	'use strict';
 
 	/**
@@ -82,27 +82,23 @@ const IronMan = (() => {
 		}
 	}
 
-	function getSignature() {
-		let res;
-		for (const va of [V.debug, V.autosavedisabled, V.virginity, V.player, V.enemyhealth, V.enemyarousal, V.enemytrust, V.enemystrength, V.passage, V.money]) {
-			res += JSON.stringify(va);
-		}
-		return md5(res);
+	function getSignature(save = null) {
+		const keys = ['debug', 'autosavedisabled', 'virginity', 'player', 'enemyhealth', 'enemyarousal', 'enemytrust', 'enemystrength', 'passage', 'money'];
+		const target = save == null ? V : save.state.delta[0].variables;
+		const subset = keys.map(key => target[key]);
+		const encodedSubset = JSON.stringify(subset);
+		const signature = md5(encodedSubset);
+		return signature;
 	}
 
 	/*  --------------------------------------
 		   Update code for the $ironman obj.
 		-------------------------------------- */
 
-	function update() {
-		const versions = V.objectVersion;
-		if (versions.ironMan == undefined) {
-			versions.ironMan = 0;
-		}
-		switch (versions.ironMan) {
-			case 0:
-				/* Do nothing until the first implementation. */
-				break;
+	function update(save, metadata) {
+		delete metadata.ironman_signature;
+		if (typeof metadata.signature !== 'string') {
+			metadata.signature = getSignature(save);
 		}
 	}
 
@@ -175,9 +171,92 @@ const IronMan = (() => {
 		saveAs(new Blob([saveObj], { type : 'text/plain;charset=UTF-8' }), exportName);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	function exportCurrent() {
 		updateExportDay();
 		Save.export();
+	}
+
+	/**
+	 * Export the slot's data and encode it into data which is difficult to decode without prior knowledge.
+	 * @param {number} slot The index of the save to export for debugging.
+	 * @returns String containing the encoded data.
+	 */
+	function exportDebug(slot) {
+		updateExportDay();
+		const data = Save.slots.get(slot);
+		const details = DoLSave.SaveDetails.get(slot);
+		if (data == null) {
+			/* Output error response, stating the save slot is invalid. */
+			const msg = `IronMan::exportDebug(slot: ${slot}): save file is empty.`;
+			console.debug(msg);
+			Errors.report(msg);
+			return undefined;
+		}
+		const datatoEncode = { data, details };
+		const encodedData = LZString.compressToBase64(JSON.stringify(datatoEncode));
+		const finalData = btoa(encodedData);
+		/* Navigate to the export-import page. */
+		T.presetData = finalData;
+		new Wikifier(null, '<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>');
+		return finalData;
+	}
+
+	function importDebug(data) {
+		const decodedData = LZString.decompressFromBase64(atob(data));
+		const saveObj = JSON.parse(decodedData);
+		return saveObj;
+	}
+
+	function importAndLoadDebug(data) {
+		const saveObj = importDebug(data);
+		if (typeof saveObj !== 'object') {
+			/* Output error response, stating the save slot is invalid. */
+			console.debug(msg);
+			Errors.report(msg);
+			return false;
+		}
+		const save = saveObj.data;
+		/* TODO: Change it around so we don't have to stringify and recompress. */
+		const encodedSave = LZString.compressToBase64(JSON.stringify(save));
+		const result = Save.deserialize(encodedSave);
+		return {
+			result,
+			...saveObj
+		};
+	}
+
+	function exportFile(saveData) {
+		const saveId = saveData.metadata.saveId;
+		const saveName = saveData.metadata.saveName;
+		const exportName = `${saveData.id}-${saveName === '' ? saveId : saveName}-${getDatestamp()}.save`;
+		const saveObj = LZString.compressToBase64(JSON.stringify(saveData));
+		saveAs(new Blob([saveObj], { type : 'text/plain;charset=UTF-8' }), exportName);
+	}
+
+	const clickCount = {
+		'slot': -1,
+		'count': 0
+	}
+
+	function uiExportIconHandler(slot) {
+		/* If the slot is different, reset the object. */
+		if (slot !== clickCount.slot) {
+			clickCount.slot = slot;
+			clickCount.count = 0;
+		}
+		/* Begin increment or activator. */
+		/* Takes 3 clicks to activate the exporter. */
+		if (clickCount.count >= 2) {
+			exportDebug(slot);
+			clickCount.slot = -1;
+			clickCount.count = 0;
+		} else {
+			/* Increment and return, as to not reset the counter. */
+			clickCount.count++;
+		}
 	}
 
 	/**
@@ -187,42 +266,6 @@ const IronMan = (() => {
 		const exportName = "degrees-of-lewdity" + (V.saveName != '' ? '-' + V.saveName : '');
 		updateExportDay();
 		Save.export(exportName);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	function uiDebugExport(slot) {
-		const save = Save.slots.get(slot);
-		if (!save)
-			return;
-		let compress = LZString.compressToBase64(JSON.stringify({ "id": save.id, "state": save.state }));
-		compress = window.btoa(compress)
-		new Wikifier(null, `<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>`)
-		$(function () {
-			var input = document.getElementById("saveDataInput");
-			updateExportDay();
-			input.value = compress;
-		})
-	}
-
-	/**
-	 * @deprecated
-	 */
-	function uiDebugExportButton(slot) {
-		const div = document.getElementById("saveSlot" + slot);
-		if (div) {
-			let click_value = parseInt(div.getAttribute("click-count"))
-			if (click_value && click_value % 3 == 0) {
-				let tmp = div.parentElement.parentElement.parentElement.getElementsByClassName("deleteButton")[0]
-				if (click_value % 6 == 0)
-					document.getElementById("exportDebugButton" + slot).remove()
-				else if (click_value % 6 == 3)
-					tmp.outerHTML = `<div id="exportDebugButton` + slot + `" class="exportDebugButton"><input type="button" class="saveMenuButton right" value="Debug" onclick="ironManDebugExport(` + slot + `)"/></div>`
-						+ tmp.outerHTML
-			}
-			div.setAttribute("click-count", click_value + 1)
-		}
 	}
 
 	function scheduledSaves() {
@@ -275,15 +318,18 @@ const IronMan = (() => {
 		addSetter: addSetter,
 		clearSetters: clearSetters,
 		export: exportSlot,
-		exportDebug: exportCurrent,
+		exportDebug: exportDebug,
+		importDebug: importDebug,
+		importAndLoadDebug: importAndLoadDebug,
+		exportFile: exportFile,
+		/* exportDebug: exportCurrent, */
 		UI: {
 			checkBox: uiCheckBox,
 			exportButton: uiExportButton,
-			debugExport: uiDebugExport,
-			debugExportButton: uiDebugExportButton
+			exportHandler: uiExportIconHandler
 		},
 		update: update,
 		scheduledSaves: scheduledSaves
 	});
-})();
+})(Save);
 window.IronMan = IronMan;

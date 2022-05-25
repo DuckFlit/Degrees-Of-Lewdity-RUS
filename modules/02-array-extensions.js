@@ -30,7 +30,7 @@ Object.defineProperty(Array.prototype, 'select', {
 			throw new TypeError('Array.prototype.select called on null or undefined');
 		}
 		if (typeof index !== 'number') {
-			throw new Error('Array.prototype.select index parameter must be a function');
+			throw new Error('Array.prototype.select index parameter must be a number');
 		}
 		const start = 0;
 		const end = this.length - 1;
