@@ -191,7 +191,7 @@ Combat Controls:
 	<br>
 	Click on "Copy Text Area" to copy the current contents for you. The button name will change to "Copying Error" if your device or browser does not support it.
 	<br><br>
-	<textarea id="saveDataInput" rows="4" cols="40" onClick="if(V.disableAutoSelect == false)this.select();"></textarea>
+	<textarea id="saveDataInput" rows="4" cols="40" onClick="if(V.disableAutoSelect == false)this.select();"><<if _presetData>>_presetData<</if>></textarea>
 	<br>
 	<input type="button" value="Clear Text Box" onclick="clearTextBox('saveDataInput')"/>
 	<input type="button" value="Top of Text Box" onclick="topTextArea('saveDataInput')"/>
@@ -282,11 +282,12 @@ Combat Controls:
 					<</if>>
 				<<elseif _i lt 10>>
 					<<set _slot to _i - 1>>
+					<<set _ironmanSlot to 9>>
 					<<if _saveDetails.slots[_slot] isnot null>>
 						<div class="saveGroup">
-							<<if _saveDetails.slots[_slot].metadata.ironman == true>>
+							<<if _saveDetails.slots[_slot].metadata.ironman === true>>
 								<div class="saveId" style="width: 10px;">
-									<img @id="'saveSlot'+_slot" src="img/ui/SilverCoin.gif" style="max-width: 16px;filter: brightness(2.2);" click-count=0 @onclick="'IronMan.export()'">
+									<img src="img/ui/SilverCoin.gif" class="ironman-icon" @onclick="'IronMan.UI.exportHandler(' + _slot + ')'">
 								</div>
 							<<else>>
 								<div class="saveId" style="width: 10px;">
@@ -316,8 +317,8 @@ Combat Controls:
 								<span @class="'datestamp' + (_saveDetails.slots[_slot].date gte _currentTime - 1800000 ? ' gold':'')"><<print new Date(_saveDetails.slots[_slot].date).toLocaleString()>></span>
 							</div>
 						</div>
-						<<if _i == 9>>
-							<div id="exportButton" class="exportButton"><input type="button" class="saveMenuButton right" value="Export" onclick="IronMan.export()"/></div>
+						<<if _i is _ironmanSlot>>
+							<div id="exportButton" class="exportButton"><input type="button" class="saveMenuButton right" value="Export" @onclick="'IronMan.export('+ _slot +')'"/></div>
 						<</if>>
 						<div class="deleteButton"><input type="button" class="saveMenuButton right" value="Delete" @onclick="'deleteSave('+ _slot +')'"/></div>
 					<<else>>
