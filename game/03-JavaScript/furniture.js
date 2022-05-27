@@ -36,11 +36,11 @@ const Furniture = (() => {
 			description: "A set of stools on which to sit on.",			Description for the shop interface to show.
 			iconFile: "stool.png",			Used in image widgets; <img id="icon" @src="'img/misc/icon/furniture/' + $_chair.iconFile">
 		});
-		
+
 		Egg armchairs are here to stay.
 		Egg.
 		*/
-	
+
 		/* ------------- CHAIRS ------------- */
 		mapper.set('stool', {
 			name: "stools",
@@ -78,7 +78,7 @@ const Furniture = (() => {
 			description: "A set of armchairs with a rounded back, in exotic colours. A chore to set up.",
 			iconFile: "armchairegg.png",
 		});
-	
+
 		/* ------------- TABLES ------------- */
 		mapper.set('woodentable', {
 			name: "wooden table",
@@ -98,7 +98,7 @@ const Furniture = (() => {
 			description: "A regular wooden table with a twist.",
 			iconFile: "marbletable.png",
 		});
-	
+
 		/* ------------- BEDS ------------- */
 		mapper.set('bed', {
 			name: "basic bed",
@@ -175,7 +175,7 @@ const Furniture = (() => {
 				return target !== 'bedroom';
 			}
 		});
-	
+
 		/* ------------- MISC ------------- */
 		mapper.set('plantpot', {
 			name: "plant pot",
@@ -252,7 +252,7 @@ const Furniture = (() => {
 			iconFile: "bearplushie.png",
 		});
 		/* ------------- WARDROBES ------------- */
-		/*  starter - 20 clothing slots for every type
+		/*	starter - 20 clothing slots for every type
 			spacious - 30 clothing slots for every type
 			organised - 40 clothing slots for every type */
 		mapper.set('wardrobe', {
@@ -406,7 +406,28 @@ const Furniture = (() => {
 					}
 				}
 				wardrobeSpaceUpdater();
-				versions.furniture = 1;
+			case 1:
+				/* Set the target to the bedroom in the unlikely event it wasn't preset. */
+				furnitureIn(Locations.bedroom);
+				/* Search for the wallpaper object, returns null if not found. */
+				const wallpaper = furnitureGet(Categories.wallpaper);
+				if (wallpaper != null && wallpaper.name.includes('<<')) {
+					const name = Util.escape(wallpaper.name);
+					furnitureSet('wallpaper', Categories.wallpaper, {
+						name: name,
+						nameCap: name.toUpperFirst()
+					});
+				}
+				/* Search for the poster object, returns null if not found. */
+				const poster = furnitureGet(Categories.poster);
+				if (poster != null && poster.name.includes('<<')) {
+					const name = Util.escape(poster.name);
+					furnitureSet('poster', Categories.poster, {
+						name: name,
+						nameCap: name.toUpperFirst()
+					});
+				}
+				versions.furniture = 2;
 				break;
 		}
 	}
