@@ -7,7 +7,7 @@
 			angel: {halo:"disabled", wings:"disabled"},
 			fallenAngel: {halo:"disabled", wings:"disabled"},
 			demon: {horns:"disabled", wings:"disabled", tail: "disabled"},
-			cat: {ears:"disabled", tail:"disabled"},
+			cat: {ears:"disabled", tail:"disabled", heterochromia:"disabled"},
 			cow: {horns:"disabled", ears:"disabled", tail:"disabled"},
 			wolf: {ears:"disabled", tail:"disabled", pubes:"disabled", pits:"disabled"},
 			bird: {tail:"disabled", wings:"disabled", eyes:"disabled", malar:"disabled", plumage:"disabled", pubes:"disabled"}
@@ -53,6 +53,9 @@
 			<</if>>
 			<<if $cat gte 6>>
 				<<set $transformationParts.cat.tail to "default">>
+			<</if>>
+			<<if $cat gte 7>>
+				<<set $transformationParts.cat.heterochromia to "default">>
 			<</if>>
 			<<if $cow gte 2>>
 				<<set $transformationParts.cow.horns to "default">>
@@ -701,21 +704,21 @@
 					<<set $cat to 7>>
 					<<run window.determineCatEyeStages()>>
 					<<set $original_colour = [$leftEyeColour, $rightEyeColour]>>
-					<<set $leftEyeColour to "cat_tf_stage_0_left">>
-					<<set $rightEyeColour to "cat_tf_stage_0_right">>
+					<<set $transformationParts.cat.heterochromia to "default">>
+					<<catHeterochromiaTF 0>>
 					<span class="gold">Your eyes itch.</span>
 					<br><br>
 				<<elseif $catbuild lt 50>>
 					<<set $cat to 5>>
 					<span class="gold">Your cat tail disappears.</span>
 					<<set $transformationParts.cat.tail to "disabled">>
+					<<set $transformationParts.cat.heterochromia to "disabled">>
 					<br><br>
 				<</if>>
 			<<case 7>>
 				<<if $catbuild gte 60>>
 					<<set $cat to 8>>
-					<<set $leftEyeColour to "cat_tf_stage_1_left">>
-					<<set $rightEyeColour to "cat_tf_stage_1_right">>
+					<<catHeterochromiaTF 1>>
 					<span class="gold">Your eyes water from a burning sensation around the pupil.</span>
 					<br><br>
 				<<elseif $catbuild lt 55>>
@@ -728,34 +731,27 @@
 			<<case 8>>
 				<<if $catbuild gte 65>>
 					<<set $cat to 9>>
-					<<set $leftEyeColour to "cat_tf_stage_2_left">>
-					<<set $rightEyeColour to "cat_tf_stage_2_right">>
+					<<catHeterochromiaTF 2>>
 					<span class="gold">Your eyes burn, likely due to some sort of allergy, you can barely keep them open.</span>
 					<br><br>
 				<<elseif $catbuild lt 60>>
-					<<set $leftEyeColour to "cat_tf_stage_0_left">>
-					<<set $rightEyeColour to "cat_tf_stage_0_right">>
+					<<catHeterochromiaTF 0>>
 					<span class="gold">Your eyes sense less detail of your surroundings.</span>
 					<<set $cat to 7>>
 				<</if>>
 			<<case 9>>
 				<<if $catbuild gte 70>>
 					<<set $cat to 10>>
-					<<set $leftEyeColour to "cat_tf_stage_3_left">>
-					<<set $rightEyeColour to "cat_tf_stage_3_right">>
+					<<catHeterochromiaTF 3>>
 					<span class="gold">Your eyes no longer burn, and despite the darkness of the early morning, you are able to pick up every detail of the scenery around you.</span>
-					<<set $heterochromia to 1>>
 					<br><br>
 				<<elseif $catbuild lt 65>>
-					<<set $leftEyeColour to "cat_tf_stage_1_left">>
-					<<set $rightEyeColour to "cat_tf_stage_1_right">>
+					<<catHeterochromiaTF 1>>
 					<<set $cat to 8>>
-					<<set $heterochromia to 0>>
 				<</if>>
 			<<case 10>>
 				<<if $catbuild lt 70>>
-					<<set $leftEyeColour to "cat_tf_stage_2_left">>
-					<<set $rightEyeColour to "cat_tf_stage_2_right">>
+					<<catHeterochromiaTF 2>>
 					<span class="gold">Your surroundings appear darker than before. </span>
 					<<set $cat to 9>>
 				<</if>>
@@ -778,6 +774,26 @@
 		<<set $transformationParts.cat.ears to "default">>
 		<<set $transformationParts.cat.tail to "default">>
 	<</if>>
+<</widget>>
+
+<<widget "catHeterochromiaTF">>
+<<if _args[0] gte 0 or _args[0] == "hide">>
+	<<if $transformationParts.cat.heterochromia isnot "hidden" and _args[0] isnot "hide">>
+		<<set $leftEyeColour to "cat_tf_stage_" + _args[0] + "_left">>
+		<<set $rightEyeColour to "cat_tf_stage_" + _args[0] + "_right">>
+		<<if _args[0] >= 3>>
+			<<set $heterochromia to 1>>
+		<<else>>
+			<<set $heterochromia to 0>>
+		<</if>>
+	<<else>>
+		<<if V.original_colour isnot undefined>>
+			<<set $leftEyeColour to $original_colour[0]>>
+			<<set $rightEyeColour to $original_colour[1]>>
+		<</if>>
+		<<set $heterochromia to 0>>
+	<</if>>
+<</if>>
 <</widget>>
 
 <<widget "cowTransform">>

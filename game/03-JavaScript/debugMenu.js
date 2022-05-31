@@ -2484,6 +2484,30 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
+				`Cat up`, function(){return V.passage}
+			],
+			widgets: [
+				`<<set $cat += 1>>`
+			]
+		},
+		{
+			link: [
+				`Cat build up`, function(){return V.passage}
+			],
+			widgets: [
+				`<<set $catbuild += 80>>`
+			]
+		},
+		{
+			link: [
+				`Cat off`, function(){return V.passage}
+			],
+			widgets: [
+				`<<set $cat = 0>>`
+			]
+		},
+		{
+			link: [
 				`Wolf off`, function(){return V.passage}
 			],
 			widgets: [
