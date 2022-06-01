@@ -305,3 +305,118 @@ function getOwnedClothingCount(index, type) {
 	return wardrobe[type].reduce((p, c) => p + Number(c.index === index), 0);
 }
 window.getOwnedClothingCount = getOwnedClothingCount;
+
+var colorPickerShopCustom = {};
+
+window.importCustomColour = function (acc) {
+	const setName = prompt("Enter custom code", "");
+	if (setName != null) {
+		const color = JSON.parse(window.atob(setName));
+		const colour_properties = Object.getOwnPropertyNames(color);
+
+		if (colour_properties.sort().join(',')=== ["color", "saturation", "brightness", "contrast"].sort().join(',')){
+			V.customColors.color[acc] = color.color;
+			V.customColors.saturation[acc] = color.saturation;
+			V.customColors.brightness[acc] = color.brightness;
+			V.customColors.contrast[acc] = color.contrast;
+			colorPickerShopCustom[acc].color.hue = color.color;
+			colorPickerShopCustom[acc].color.saturation = color.saturation / 32 * 100 / 4 * 100;
+			colorPickerShopCustom[acc].color.brightness = color.brightness / 4 * 100;
+			T.varCon = color.contrast;
+			updateMannequin();
+		}
+		else
+			throw new Exception();
+		if (Object.keys(V.customColors.presets).includes(setName)) {
+			alert('Invalid code. Make sure you copied it properly, without any white spaces around it.');
+			return;
+		}
+	}
+}
+
+window.exportCustomColour = function (acc) {
+	const obj = {color:V.customColors.color[acc], saturation:V.customColors.saturation[acc], brightness:V.customColors.brightness[acc], contrast:V.customColors.contrast[acc]}
+
+	navigator.clipboard.writeText(window.btoa(JSON.stringify(obj)));
+	document.getElementById("export-custom-colour-box").outerHTML =`
+	<div id="export-custom-colour-box">
+		<span class="export-custom-colour-alert">Copied to clipboard!</span>
+	</div>`;
+	window.setTimeout(function() {
+		if (document.getElementById("export-custom-colour-box"))
+			document.getElementById("export-custom-colour-box").classList.add("successfully-exported");
+	},100)
+}
+
+
+function adaptSliderWidth(){
+	if (window.innerWidth > 787)
+		return 400;
+	else if (window.innerWidth > 710)
+		return 350;	
+	else if (window.innerWidth > 667)
+		return 300;
+	else if (window.innerWidth > 600)
+		return 230;
+	else if (window.innerWidth > 519)
+		return 350;
+	else if (window.innerWidth > 463)
+		return 300;
+	else
+		return 250;
+}
+
+window.shopClothCustomColorWheel = function(acc, preset_choice){
+		const container = document.createElement('label');
+		colorPickerShopCustom[acc] = new iro.ColorPicker(container, {
+			color: {h:61, s:47, v:100},
+			width: adaptSliderWidth(),
+			layout: [
+				  {
+					component: iro.ui.Slider,
+					options: {
+					  sliderType: 'hue'
+					}
+				  },
+				  {
+					component: iro.ui.Slider,
+					options: {
+					  sliderType: 'saturation'
+					}
+				  },
+				  {
+					component: iro.ui.Slider,
+					options: {
+					  sliderType: 'value'
+					}
+				  }
+			]
+		});
+		if (preset_choice == '---' || preset_choice){
+			colorPickerShopCustom[acc].color.hue = V.customColors.color[acc];
+			colorPickerShopCustom[acc].color.saturation = V.customColors.saturation[acc] / 32 * 100 / 4 * 100;
+			colorPickerShopCustom[acc].color.brightness = V.customColors.brightness[acc] / 4 * 100;
+		}
+		colorPickerShopCustom[acc].on(['color:init', 'color:change'], function(color) {
+			V.customColors.color[acc] = Math.round(color.hue);
+			V.customColors.saturation[acc] = color.saturation * 32 / 100 * 4 / 100;
+			V.customColors.brightness[acc] = color.hsl.l * 4 / 100;
+			updateMannequin();
+		});
+		return container;
+}
+
+window.addEventListener('resize', function(event) {
+	for (let cat in colorPickerShopCustom){
+		colorPickerShopCustom[cat].resize(adaptSliderWidth());
+	}
+}, true);
+
+Macro.add('shopclothingcustomcolourwheel', {
+	handler() {
+		if (this.args[0]){
+			const resp = shopClothCustomColorWheel(this.args[0], this.args[1]);
+			this.output.append(resp.children[0]);
+		}
+	}
+});
