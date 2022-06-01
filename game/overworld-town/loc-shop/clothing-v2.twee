@@ -796,22 +796,25 @@
 		<<set _hidden = $colouraction == "custom" ? "" : " hidden">>
 	<</if>>
 	<<capture _acc $clothingShopSlot>>
-		<div @class="'custom-colour ' + _acc + _hidden">
+		<div @class="'pt-1-em pc-c fw-wrap custom-colour ' + _acc + _hidden">
 			<div @class="'custom-colour-sliders ' + _acc">
-				<<set _varHue = "$customColors.color." + _acc>>
+				/*<<set _varHue = "$customColors.color." + _acc>>
 				<<set _varBri = "$customColors.brightness." + _acc>>
-				<<set _varSat = "$customColors.saturation." + _acc>>
+				<<set _varSat = "$customColors.saturation." + _acc>>*/
 				<<set _varCon = "$customColors.contrast." + _acc>>
-				<div class="colour-slider"><span class="colour-slider-caption">Hue</span><<numberslider _varHue $customColors.color[_acc] 0 360 1>></div>
+/* 				<div class="colour-slider"><span class="colour-slider-caption">Hue</span><<numberslider _varHue $customColors.color[_acc] 0 360 1>></div>
 				<div class="colour-slider"><span class="colour-slider-caption">Brightness</span><<numberslider _varBri $customColors.brightness[_acc] 0 4 0.01>></div>
 				<div class="colour-slider"><span class="colour-slider-caption">Saturation</span><<numberslider _varSat $customColors.saturation[_acc] 0 4 0.01>></div>
-				<div class="colour-slider"><span class="colour-slider-caption">Contrast</span><<numberslider _varCon $customColors.contrast[_acc] 0 4 0.01>></div>
+				<div class="colour-slider"><span class="colour-slider-caption">Contrast</span><<numberslider _varCon $customColors.contrast[_acc] 0 4 0.01>></div>*/
+				<<set $customColors.contrast[_acc] to 1.46>>
+				<<shopclothingcustomcolourwheel _acc _preset_choice[_acc]>>
+				<div class="colour-slider text-align-center elem-fill-available"><span class="colour-slider-caption">Contrast</span><<numberslider _varCon $customColors.contrast[_acc] 0 4 0.01>></div>
 			</div>
-			<div class="custom-colour-presets no-numberify">
+			<div class="custom-colour-presets no-numberify preset-colour-options">
 				<div class="presets-dropdown">
 					<<if _preset_choice is undefined>><<set _preset_choice = {}>><</if>>
 					<<listbox "_preset_choice[_acc]" autoselect>>
-						<!-- Just... don't try to understand the next line. In short, it adds [L] to legacy preset names in dropdown -->
+							<!-- Just... don't try to understand the next line. In short, it adds [L] to legacy preset names in dropdown -->
 						<<optionsfrom {...{'---': '---'}, ...Object.keys($customColors.presets).reduce((acc, val) => ({...acc, [($customColors.presets[val].ver >= 2 ? '' : '[L] ') + val]: val }), {})}>>
 					<</listbox>>
 					<<set _delDisabled = Object.keys($customColors.presets).includes(_preset_choice[_acc]) ? "" : "disabled">>
@@ -834,6 +837,29 @@
 						<<run updateMoment()>>
 					<</link>>
 				</div>
+				/* import/export custom colour buttons */
+				<div class="import-export-buttons">
+					<div class="colour-button div-link ">
+						<div>
+							<img src="img/ui/import-preset-colour.png">
+							<span class="capitalize colour-name-span">import</span>
+							<<link "">>
+								<<run importCustomColour(_acc)>>
+								<<run updateMoment()>>
+							<</link>>
+						</div>
+					</div>
+					<div class="colour-button div-link active">
+						<div class="bg-custom-export">
+						 	<img src="img/ui/export-preset-colour.png">
+							<span class="capitalize colour-name-span">export</span>
+							<<link "">>
+								<<run exportCustomColour(_acc)>>
+							<</link>>
+						</div>
+					</div>
+				</div>
+				<div id="export-custom-colour-box"></div>
 			</div>
 		</div>
 	<</capture>>
