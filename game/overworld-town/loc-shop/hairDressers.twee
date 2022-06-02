@@ -116,159 +116,167 @@ You are in the hairdressers. Here you can have your hair cut or dyed.
 	<<if not $twoToneDyeOption2>>
 		<<set $twoToneDyeOption2 to "black">>
 	<</if>>
-	<<if ($money gte _currentCost + 3000 or $hairOption isnot $hairlength) and $hairlength gt 100>>
-		<<if $hairOption isnot $hairlength>>
-			<<set _currentCost += 3000>>
-		<</if>>
-		Have your sides cut to your:
-		<br>
-		<<set _hairNames to ["Ears", "Chin", "Shoulders", "Upper chest", "Middle chest", "Upper stomach", "Navel", "Thighs", "Knees", "Ankles"]>>
-		<<set _start to Math.clamp(($hairlength - ($hairlength % 100) - 200)/100,0,9)>>
-		<<set _hairOptions to {"Don't cut":$hairlength}>>
-		<<for _i to _start; _i gte 0; _i-->>
-			<<set _hairOptions[_hairNames[_i]] to (_i * 100) + 100>>
-		<</for>>
-		<<listbox "$hairOption" autoselect>>
-			<<optionsfrom _hairOptions>>
-		<</listbox>>
-		<br><br>
-	<<elseif $hairlength gt 100>>
-		You don't have enough money to cut your hair.
-		<br><br>
-	<</if>>
-
-	<<if ($money gte _currentCost + 3000 or $fringeOption isnot $fringelength) and $fringelength gte 100>>
-		<<if $fringeOption isnot $fringelength>>
-			<<set _currentCost += 3000>>
-		<</if>>
-		Have your fringe cut until it's:
-		<br>
-		<<set _fringeNames to ["Very short", "Short", "Standard", "Long"]>>
-		<<set _start to Math.clamp(($fringelength - ($fringelength % 200))/200,0,3)>>
-		<<set _fringeOptions to {"Don't cut":$fringelength}>>
-		<<for _i to _start; _i gte 0; _i-->>
-			<<set _fringeOptions[_fringeNames[_i]] to (_i * 200) + 100>>
-		<</for>>
-		<<listbox "$fringeOption" autoselect>>
-			<<optionsfrom _fringeOptions>>
-		<</listbox>>
-		<br><br>
-	<<elseif $fringelength gte 100>>
-		You don't have enough money to cut your fringe.
-		<br><br>
-	<</if>>
-
-	<<set _dyeNames to ["Red","Jet black", "Black", "Blond", "Soft Blond", "Platinum blond", "Golden", "Ashy blond", "Strawberry blond", "Dark Brown", "Brown", "Soft brown", "Light brown", "Burnt Orange", "Ginger", "Blood Orange", "Blue", "Deep Blue", "Neon Blue", "Green", "Dark Lime", "Toxic Green", "Teal", "Pink", "Bright Pink", "Hot pink", "Soft pink", "Crimson", "Purple", "Medium Purple", "Bright Purple", "White", "Snow white"]>>
-	<<set $hairdressersHairColour to ["red","jetblack", "black", "blond", "softblond", "platinumblond", "golden", "ashyblond", "strawberryblond", "darkbrown", "brown", "softbrown", "lightbrown", "burntorange", "ginger", "bloodorange", "blue", "deepblue", "neonblue", "green", "darklime", "toxicgreen", "teal", "pink", "brightpink", "hotpink", "softpink", "crimson", "purple", "mediumpurple", "brightpurple", "white", "snowwhite"]>>
-
-	<<if $money gte _currentCost + 3000 or $dyeOption isnot "noChange">>
-		<<if $dyeOption is "removeDye">>
-			<<set _currentCost += 3000>>
-		<<elseif not $twoToneHairDye and $dyeOption isnot "noChange">>
-			<<if $dyedHairPart is "hair">>
-				<<set _currentCost += 6000>>
-			<<else>>
-				<<set _currentCost += 5000>>
-			<</if>>
-		<<elseif $twoToneHairDye>>
-			<<set _currentCost += 25000>>
-		<</if>>
-		Have your hair dyed<<if $haircolour isnot $naturalhaircolour or $hairfringecolour is not $naturalhaircolour>> or cleared of hair dye<</if>>:
-		<br>
-		<label><<radiobutton "$dyedHairPart" "hair" autocheck>> Full head</label> |
-		<label><<radiobutton "$dyedHairPart" "fringe" autocheck>> Fringe</label> |
-		<label><<radiobutton "$dyedHairPart" "sides" autocheck>> Sides</label> |
-		<br>
-		<label><<checkbox "$twoToneHairDye" false true autocheck>> Request a two-tone coloring</label>
-		<br>
-
-		<<set _dyeOptions to {"Don't dye":"noChange"}>>
-		<<set _twotoneDyeOptions to {}>>
-		<<if $haircolour isnot $naturalhaircolour>>
-			<<set _dyeOptions["Remove dye"] to "removeDye">>
-		<</if>>
-		<<if $money gte _currentCost + 6000 or ($dyeOption isnot "noChange" and $dyeOption isnot "removeDye")>>
-			<<for _i to 0; _i lt _dyeNames.length; _i++>>
-				<<if $haircolour is $hairdressersHairColour[_i] or $naturalhaircolour is $hairdressersHairColour[_i]>>
-					<<continue>>
+	<<set _hiddenMannequin = $options.images is 1 ? "" : "hidden">>
+	<div id="hairDresserDiv">
+		<div id="mannequin" @class="'mannequin ' + _hiddenMannequin + ($sidebarRenderer is 'both' ? ' both-renderers' : '')" style="height:unset">
+			<<mannequinHairdresser>>
+		</div>
+		<div>
+			<<if ($money gte _currentCost + 3000 or $hairOption isnot $hairlength) and $hairlength gt 100>>
+				<<if $hairOption isnot $hairlength>>
+					<<set _currentCost += 3000>>
 				<</if>>
-				<<set _dyeOptions[_dyeNames[_i]] to $hairdressersHairColour[_i]>>
-			<</for>>
-		<</if>>
-		<<for _i to 0; _i lt _dyeNames.length; _i++>>
-			<<set _twotoneDyeOptions[_dyeNames[_i]] to $hairdressersHairColour[_i]>>
-		<</for>>
-		<<if not $twoToneHairDye>>
-			<<listbox "$dyeOption" autoselect>>
-				<<optionsfrom _dyeOptions>>
-			<</listbox>>
-			<<if $dyeOption isnot "noChange"and $dyeOption isnot "removeDye">>
-				<<dyeSwatch $dyeOption>>
+				Have your sides cut to your:
 				<br>
-			<<else>>
+				<<set _hairNames to ["Ears", "Chin", "Shoulders", "Upper chest", "Middle chest", "Upper stomach", "Navel", "Thighs", "Knees", "Ankles"]>>
+				<<set _start to Math.clamp(($hairlength - ($hairlength % 100) - 200)/100,0,9)>>
+				<<set _hairOptions to {"Don't cut":$hairlength}>>
+				<<for _i to _start; _i gte 0; _i-->>
+					<<set _hairOptions[_hairNames[_i]] to (_i * 100) + 100>>
+				<</for>>
+				<<listbox "$hairOption" autoselect>>
+					<<optionsfrom _hairOptions>>
+				<</listbox>>
+				<br><br>
+			<<elseif $hairlength gt 100>>
+				You don't have enough money to cut your hair.
 				<br><br>
 			<</if>>
-		<<else>>
-			Style: <<listbox "$twoToneStyle" autoselect>>
-				<<option "Low Ombré" "low-ombre">>
-				<<option "High Ombré" "high-ombre">>
-				<<option "Split" "split">>
-				<<option "Face-framing highlights" "face-frame">>
-			<</listbox>>
-			<br>
-			First colour: <<listbox "$twoToneDyeOption1" autoselect>>
-				<<optionsfrom _twotoneDyeOptions>>
-			<</listbox>>
-			<<dyeSwatch $twoToneDyeOption1>>
-			<br>
-			Second colour: <<listbox "$twoToneDyeOption2" autoselect>>
-				<<optionsfrom _twotoneDyeOptions>>
-			<</listbox>>
-			<<dyeSwatch $twoToneDyeOption2>>
-			<br>
-			<br>
-		<</if>>
-	<<else>>
-		You don't have enough money to dye your <<print $dyedHairPart>>.
-		<br><br>
-	<</if>>
 
-	<<if $money gte _currentCost + 1000 or $browsDyeOption isnot "noChange">>
-		<<if $browsDyeOption is "removeDye">>
-			<<set _currentCost += 1000>>
-		<<elseif $browsDyeOption isnot "noChange">>
-			<<set _currentCost += 2000>>
-		<</if>>
-		Have your eyebrows dyed<<if $makeup.browscolour isnot $naturalhaircolour>> or cleared of hair dye<</if>>:
-		<br>
-
-		<<set _browsDyeOptions to {"Don't dye":"noChange"}>>
-		<<if $makeup.browscolour isnot $naturalhaircolour>>
-			<<set _browsDyeOptions["Remove dye"] to "removeDye">>
-		<</if>>
-		<<if $money gte _currentCost + 2000 or ($browsDyeOption isnot "noChange" and $browsDyeOption isnot "removeDye")>>
-			<<for _i to 0; _i lt _dyeNames.length; _i++>>
-				<<if $makeup.browscolour is $hairdressersHairColour[_i] or $naturalhaircolour is $hairdressersHairColour[_i]>>
-					<<continue>>
+			<<if ($money gte _currentCost + 3000 or $fringeOption isnot $fringelength) and $fringelength gte 100>>
+				<<if $fringeOption isnot $fringelength>>
+					<<set _currentCost += 3000>>
 				<</if>>
-				<<set _browsDyeOptions[_dyeNames[_i]] to $hairdressersHairColour[_i]>>
-			<</for>>
-		<</if>>
-		<<listbox "$browsDyeOption" autoselect>>
-			<<optionsfrom _browsDyeOptions>>
-		<</listbox>>
-		<<if $browsDyeOption isnot "noChange"and $browsDyeOption isnot "removeDye">>
-			<div @class="'hair-'+$browsDyeOption">
-				<div style="height: 25px; width: 100px; margin-top:5px; background-color: #fd6064; border:1px solid #ccc;" class="colour-hair"></div>
-			</div>
-			<br>
-		<<else>>
-			<br><br>
-		<</if>>
-	<<else>>
-		You don't have enough money to dye your brow.
-		<br><br>
-	<</if>>
+				Have your fringe cut until it's:
+				<br>
+				<<set _fringeNames to ["Very short", "Short", "Standard", "Long"]>>
+				<<set _start to Math.clamp(($fringelength - ($fringelength % 200))/200,0,3)>>
+				<<set _fringeOptions to {"Don't cut":$fringelength}>>
+				<<for _i to _start; _i gte 0; _i-->>
+					<<set _fringeOptions[_fringeNames[_i]] to (_i * 200) + 100>>
+				<</for>>
+				<<listbox "$fringeOption" autoselect>>
+					<<optionsfrom _fringeOptions>>
+				<</listbox>>
+				<br><br>
+			<<elseif $fringelength gte 100>>
+				You don't have enough money to cut your fringe.
+				<br><br>
+			<</if>>
+
+			<<set _dyeNames to ["Red","Jet black", "Black", "Blond", "Soft Blond", "Platinum blond", "Golden", "Ashy blond", "Strawberry blond", "Dark Brown", "Brown", "Soft brown", "Light brown", "Burnt Orange", "Ginger", "Blood Orange", "Blue", "Deep Blue", "Neon Blue", "Green", "Dark Lime", "Toxic Green", "Teal", "Pink", "Bright Pink", "Hot pink", "Soft pink", "Crimson", "Purple", "Medium Purple", "Bright Purple", "White", "Snow white"]>>
+			<<set $hairdressersHairColour to ["red","jetblack", "black", "blond", "softblond", "platinumblond", "golden", "ashyblond", "strawberryblond", "darkbrown", "brown", "softbrown", "lightbrown", "burntorange", "ginger", "bloodorange", "blue", "deepblue", "neonblue", "green", "darklime", "toxicgreen", "teal", "pink", "brightpink", "hotpink", "softpink", "crimson", "purple", "mediumpurple", "brightpurple", "white", "snowwhite"]>>
+
+			<<if $money gte _currentCost + 3000 or $dyeOption isnot "noChange">>
+				<<if $dyeOption is "removeDye">>
+					<<set _currentCost += 3000>>
+				<<elseif not $twoToneHairDye and $dyeOption isnot "noChange">>
+					<<if $dyedHairPart is "hair">>
+						<<set _currentCost += 6000>>
+					<<else>>
+						<<set _currentCost += 5000>>
+					<</if>>
+				<<elseif $twoToneHairDye>>
+					<<set _currentCost += 25000>>
+				<</if>>
+				Have your hair dyed<<if $haircolour isnot $naturalhaircolour or $hairfringecolour is not $naturalhaircolour>> or cleared of hair dye<</if>>:
+				<br>
+				<label><<radiobutton "$dyedHairPart" "hair" autocheck>> Full head</label> |
+				<label><<radiobutton "$dyedHairPart" "fringe" autocheck>> Fringe</label> |
+				<label><<radiobutton "$dyedHairPart" "sides" autocheck>> Sides</label> |
+				<br>
+				<label><<checkbox "$twoToneHairDye" false true autocheck>> Request a two-tone coloring</label>
+				<br>
+
+				<<set _dyeOptions to {"Don't dye":"noChange"}>>
+				<<set _twotoneDyeOptions to {}>>
+				<<if $haircolour isnot $naturalhaircolour>>
+					<<set _dyeOptions["Remove dye"] to "removeDye">>
+				<</if>>
+				<<if $money gte _currentCost + 6000 or ($dyeOption isnot "noChange" and $dyeOption isnot "removeDye")>>
+					<<for _i to 0; _i lt _dyeNames.length; _i++>>
+						<<if $haircolour is $hairdressersHairColour[_i] or $naturalhaircolour is $hairdressersHairColour[_i]>>
+							<<continue>>
+						<</if>>
+						<<set _dyeOptions[_dyeNames[_i]] to $hairdressersHairColour[_i]>>
+					<</for>>
+				<</if>>
+				<<for _i to 0; _i lt _dyeNames.length; _i++>>
+					<<set _twotoneDyeOptions[_dyeNames[_i]] to $hairdressersHairColour[_i]>>
+				<</for>>
+				<<if not $twoToneHairDye>>
+					<<listbox "$dyeOption" autoselect>>
+						<<optionsfrom _dyeOptions>>
+					<</listbox>>
+					<<if $dyeOption isnot "noChange"and $dyeOption isnot "removeDye">>
+						<<dyeSwatch $dyeOption>>
+						<br>
+					<<else>>
+						<br><br>
+					<</if>>
+				<<else>>
+					Style: <<listbox "$twoToneStyle" autoselect>>
+						<<option "Low Ombré" "low-ombre">>
+						<<option "High Ombré" "high-ombre">>
+						<<option "Split" "split">>
+						<<option "Face-framing highlights" "face-frame">>
+					<</listbox>>
+					<br>
+					First colour: <<listbox "$twoToneDyeOption1" autoselect>>
+						<<optionsfrom _twotoneDyeOptions>>
+					<</listbox>>
+					<<dyeSwatch $twoToneDyeOption1>>
+					<br>
+					Second colour: <<listbox "$twoToneDyeOption2" autoselect>>
+						<<optionsfrom _twotoneDyeOptions>>
+					<</listbox>>
+					<<dyeSwatch $twoToneDyeOption2>>
+					<br>
+					<br>
+				<</if>>
+			<<else>>
+				You don't have enough money to dye your <<print $dyedHairPart>>.
+				<br><br>
+			<</if>>
+
+			<<if $money gte _currentCost + 1000 or $browsDyeOption isnot "noChange">>
+				<<if $browsDyeOption is "removeDye">>
+					<<set _currentCost += 1000>>
+				<<elseif $browsDyeOption isnot "noChange">>
+					<<set _currentCost += 2000>>
+				<</if>>
+				Have your eyebrows dyed<<if $makeup.browscolour isnot $naturalhaircolour>> or cleared of hair dye<</if>>:
+				<br>
+
+				<<set _browsDyeOptions to {"Don't dye":"noChange"}>>
+				<<if $makeup.browscolour isnot $naturalhaircolour>>
+					<<set _browsDyeOptions["Remove dye"] to "removeDye">>
+				<</if>>
+				<<if $money gte _currentCost + 2000 or ($browsDyeOption isnot "noChange" and $browsDyeOption isnot "removeDye")>>
+					<<for _i to 0; _i lt _dyeNames.length; _i++>>
+						<<if $makeup.browscolour is $hairdressersHairColour[_i] or $naturalhaircolour is $hairdressersHairColour[_i]>>
+							<<continue>>
+						<</if>>
+						<<set _browsDyeOptions[_dyeNames[_i]] to $hairdressersHairColour[_i]>>
+					<</for>>
+				<</if>>
+				<<listbox "$browsDyeOption" autoselect>>
+					<<optionsfrom _browsDyeOptions>>
+				<</listbox>>
+				<<if $browsDyeOption isnot "noChange"and $browsDyeOption isnot "removeDye">>
+					<div @class="'hair-'+$browsDyeOption">
+						<div style="height: 25px; width: 100px; margin-top:5px; background-color: #fd6064; border:1px solid #ccc;" class="colour-hair"></div>
+					</div>
+					<br>
+				<<else>>
+					<br><br>
+				<</if>>
+			<<else>>
+				You don't have enough money to dye your brow.
+				<br><br>
+			<</if>>
+		</div>
+	</div>
 
 	<<if _sydneyPresent>>
 		<<if (!_cancel or _currentCost gt 0) and $money gte _currentCost>>
@@ -472,4 +480,80 @@ You are in the hairdressers. Here you can have your hair cut or dyed.
 		You don't have enough money to dye Sydney's hair.
 	<</if>>
 	<br><br>
+<</widget>>
+
+<<widget "mannequinHairdresser">>
+	<<if $options.images is 1>>
+		<div class="mannequin-inner">
+			<<if $sidebarRenderer isnot "img">>
+				<<selectmodel "main" "hairdresser">>
+					<<set _modeloptions.mannequin to true>>
+					<<set _modeloptions.show_face to false>>
+					<<set _modeloptions.show_hair to true>>
+					<<set _modeloptions.breasts to "">>
+					<<set _modeloptions.breast_size to 5>>
+					<<set _modeloptions.crotch_visible to true>>
+					<<set _modeloptions.brows to "top">>
+					<<set _modeloptions.brows_colour to ($makeup.browscolour != 0 ? $makeup.browscolour : $naturalhaircolour)>>
+					<<if $browsDyeOption isnot "noChange" and $browsDyeOption isnot "removeDye">>
+						<<set _modeloptions.brows_colour to $browsDyeOption>>
+					<</if>>
+
+					<<set _modeloptions.hair_colour = $haircolour>>
+					<<set _modeloptions.hair_fringe_colour = $hairfringecolour>>
+					<<set _modeloptions.hair_fringe_colour_gradient = $hairFringeColourGradient>>
+					<<set _modeloptions.hair_fringe_colour_style = $hairFringeColourStyle>>
+					<<set _modeloptions.hair_colour_gradient = $hairColourGradient>>
+					<<set _modeloptions.hair_colour_style = $hairColourStyle>>
+					<<if $twoToneHairDye>>
+						<<if $twoToneDyeOption1 == "noChange">>
+							<<set $twoToneDyeOption1 = $haircolour>>
+							<<set $twoToneDyeOption2 = $hairfringecolour>>
+						<</if>>
+						<<set _gradient = {
+							style: $twoToneStyle,
+							colours: [$twoToneDyeOption1, $twoToneDyeOption2]
+						}>>
+						<<if $dyedHairPart isnot "fringe">>
+							<<set _modeloptions.hair_colour = $twoToneDyeOption1>>
+							<<set _modeloptions.hair_colour_gradient = clone(_gradient)>>
+							<<set _modeloptions.hair_colour_style to "gradient">>
+						<</if>>
+						<<if $dyedHairPart isnot "sides">>
+							<<set _modeloptions.hair_fringe_colour = $twoToneDyeOption2>>
+							<<set _modeloptions.hair_fringe_colour_gradient = clone(_gradient)>>
+							<<set _modeloptions.hair_fringe_colour_style to "gradient">>
+						<</if>>
+					<<else>>
+						<<set _newColour = $dyeOption == "removeDye" ? $naturalhaircolour : $dyeOption>>
+						<<if _newColour isnot "noChange">>
+							<<if $dyedHairPart isnot "fringe">>
+								<<set _modeloptions.hair_colour = _newColour>>
+								<<set _modeloptions.hair_colour_style to "simple">>
+							<</if>>
+							<<if $dyedHairPart isnot "sides">>
+								<<set _modeloptions.hair_fringe_colour = _newColour>>
+								<<set _modeloptions.hair_fringe_colour_style to "simple">>
+							<</if>>
+						<</if>>
+					<</if>>
+					<<set _modeloptions.hair_sides_length to $hairOption != $hairlength ? convertHairLengthToStage("sides", $hairOption) : $hairlengthstage>>
+					<<set _modeloptions.hair_fringe_length to $fringeOption != $fringelength ? convertHairLengthToStage("fringe", $fringeOption) : $fringelengthstage>>
+					<<set _modeloptions.hair_fringe_type to $fringetype>>
+					<<set _modeloptions.hair_sides_type to $hairtype>>
+				<<rendermodel "canvas-mannequin">>
+			<</if>>
+			/*
+			<<if $sidebarRenderer isnot "canvas">>
+			<div class="mannequin-body">
+				<img src="img/body/mannequin/leftarmidle.png">
+				<img src="img/body/mannequin/basenoarms.png">
+				<img src="img/body/mannequin/rightarmidle.png">
+				<img src="img/body/mannequin/basehead.png">
+				<img @src="'img/body/mannequin/breasts/' + $player.breastsize + '.png'">
+			</div>
+			<</if>> <!-- renderer switch -->
+			*/
+		</div>
+	<</if>>
 <</widget>>
