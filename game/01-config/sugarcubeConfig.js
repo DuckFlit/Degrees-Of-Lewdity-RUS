@@ -11,6 +11,7 @@ Save.onLoad.add(function(save) {
 	window.onLoadUpdateCheck = true;
 });
 
+let isReloading = true;
 let pageLoading = false;
 
 Save.onLoad.add(function(save) {
@@ -88,8 +89,23 @@ importScripts([
 Config.navigation.override = function (dest) {
 	const isLoading = pageLoading; // if page is freshly loading (after a refresh etc), we hold its value in a temporary variable
 
+	if (isReloading) {
+		/* This must have the highest precedence. */
+		const lastVersion = DoLSave.Utils.parseVer(V.saveVersions.last());
+		const currVersion = DoLSave.Utils.parseVer(StartConfig.version);
+		if (lastVersion > currVersion) {
+			isReloading = false;
+			V.bypassHeader = true;
+			return 'Downgrade Waiting Room';
+		}
+	}
+
+	isReloading = false;
 	pageLoading = false
+
 	switch (dest) {
+		case 'Downgrade Waiting Room':
+			return V.passage;
 		case 'Pharmacy Select Custom Lenses':
 			return isLoading ? 'Pharmacy Ask Custom Lenses' : false;
 		case 'Forest Shop Outfit':

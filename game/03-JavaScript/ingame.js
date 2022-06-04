@@ -1282,3 +1282,17 @@ function checkTFparts() {
 }
 window.checkTFparts = checkTFparts;
 
+function getSexesFromRandomGroup() {
+	if (V.malechance <= 0) { /* Only females. */
+		if (V.dgchance <= 0) return SexTypes.ALL_FEMALES;		/* All females, no dickgirls. Always vaginal. */
+		if (V.dgchance >= 100) return SexTypes.ALL_DICKGIRLS;	/* All females, all dickgirls. Always penises. */
+	}
+	if (V.malechance >= 100) { /* Only males. */
+		if (V.cbchance <= 0) return SexTypes.ALL_MALES;			/* All males, no cuntboys. Always males. */
+		if (V.cbchance >= 100) return SexTypes.ALL_CUNTBOYS;	/* All males, all cuntboys. Always vaginal. */
+	}
+	if (V.cbchance >= 100 && V.dgchance <= 0) return SexTypes.ALL_VAGINAS;	/* Both females and males, but males are cuntboys, and there are no dickgirls. */
+	if (V.dgchance >= 100 && V.cbchance <= 0) return SexTypes.ALL_DICKS;	/* Both females and males, but all females are dickgirls, and there are no cuntboys. */
+	return SexTypes.BOTH;
+}
+window.getSexesFromRandomGroup = getSexesFromRandomGroup;

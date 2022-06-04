@@ -201,7 +201,7 @@ Combat Controls:
 	<<else>>
 		<input type="button" value="Get Save Data" onclick="getSaveData()"/>
 	<</if>>
-	<input type="button" value="Load Save Data" onclick="loadSaveData()"/>
+	<input type="button" value="Load Save Data" onclick="DoLSave.loadHandler()"/>
 	<input id="CopyTextArea" type="button" value="Copy Text Area" onclick="copySavedata('saveDataInput')">
 <br><br>
 <label>
@@ -245,7 +245,7 @@ Combat Controls:
 						<div class="saveGroup">
 							<div class="saveId">A</div>
 							<div class="saveButton">
-								<input type="button" class="saveMenuButton" value="Load" onclick="loadSave('auto')"/>
+								<input type="button" class="saveMenuButton" value="Load" onclick="DoLSave.loadHandler('auto')"/>
 							</div>
 
 							<<if _saveDetails.autosave.metadata isnot undefined>>
@@ -303,7 +303,7 @@ Combat Controls:
 										<input type="button" value="Save" disabled/>
 									<</if>>
 								<</if>>
-								<input type="button" class="saveMenuButton" value="Load" @onclick="'loadSave('+ _slot +')'"/>
+								<input type="button" class="saveMenuButton" value="Load" @onclick="'DoLSave.loadHandler('+ _slot +')'"/>
 							</div>
 							<div @class="'saveName' + ($saveId is _saveDetails.slots[_slot].metadata.saveId ? ' gold' : '')">
 								<<if _saveDetails.slots[_slot].metadata.saveName isnot "">>
@@ -465,17 +465,30 @@ Combat Controls:
 		<br>
 		<<print new Date(_saveDetails.autosave.date).toLocaleString()>>
 		<br>
-		<input type="button" class="saveMenuButton saveMenuConfirm" value="Load" onclick="loadSave('auto', true)"/>
+		<input type="button" class="saveMenuButton saveMenuConfirm" value="Load" onclick="DoLSave.loadHandler('auto', true)"/>
 	<<else>>
 		<<print _saveDetails.slots[_args[0]].title>>
 		<br>
 		<<print new Date(_saveDetails.slots[_args[0]].date).toLocaleString()>>
 		<br>
-		<input type="button" class="saveMenuButton saveMenuConfirm" value="Load" @onclick="'loadSave('+ _args[0] +', true)'"/>
+		<input type="button" class="saveMenuButton saveMenuConfirm" value="Load" @onclick="'DoLSave.loadHandler('+ _args[0] +', true)'"/>
 	<</if>>
 	<input type="button" class="saveMenuButton saveMenuConfirm" value="Cancel" onclick="resetSaveMenu();"/>
 	<br>
 </div>
+<</widget>>
+
+<<widget "loadwarningcompat">>
+	<<set $_slot to _args[0]>>
+	<div class="saveBorder">
+		<h4 class="red">Loading save into an older version!</h4>
+		Loading a save game into an older version can have many unintended consequences.
+		We do not guarantee forward compatibility, expect bugs.
+		<br>
+		<input type="button" class="saveMenuButton saveMenuConfirm" value="Load" @onclick="'DoLSave.load(' + $_slot + ')'"/>
+		<input type="button" class="saveMenuButton saveMenuConfirm" value="Cancel" onclick="resetSaveMenu();"/>
+		<br>
+	</div>
 <</widget>>
 
 <<widget "deleteWarning">>
@@ -553,6 +566,12 @@ Combat Controls:
 <<widget "loadConfirm">>
 	<<replace #saveList>>
 		<<loadWarning _args[0]>>
+	<</replace>>
+<</widget>>
+
+<<widget "loadconfirmcompat">>
+	<<replace #saveList>>
+		<<loadwarningcompat _args[0]>>
 	<</replace>>
 <</widget>>
 

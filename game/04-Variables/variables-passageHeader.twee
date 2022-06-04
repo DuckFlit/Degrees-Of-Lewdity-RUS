@@ -2,8 +2,7 @@
 <<set $passagePrev to $passage ? $passage : "none">>
 <<set $passage to passage()>><<set $tags to tags()>>
 
-<<if !["Start", "Start2", "Clothes Testing", "Renderer Test Page", "Tips"].includes($passage)>>
-
+<<if !["Start", "Start2", "Clothes Testing", "Renderer Test Page", "Tips"].includes($passage) && !$bypassHeader>>
 	/* Run stuff on every save load */
 	<<if onLoadUpdateCheck>>
 		<<set $saveVersion to ($saveVersions ? $saveVersions.last() : "ancient")>> /*update save version */
@@ -23,9 +22,9 @@
 		<<set _preventUpdate to true>> /*prevent rewriting autosaves */
 		<<if $reducedLineHeight is true>><<addclass "#passages" "reducedLineHeight">><</if>>
 		<<run zoom($zoom, true)>> <!-- Pass the save's $zoom into the set zoom func, with second arg true, to either correct it to 100, or between 50 and 200. (Sanitisation) -->
-		<<run window.syncFavourites()>>
-		<<run window.initCustomLenses()>>	/* push custom eyelenses inside setup.colours.eyes; on every load/refresh it needs to be done. */
-		<<run window.syncDebugAddedEvents()>>
+		<<run syncFavourites()>>
+		<<run initCustomLenses()>>	/* push custom eyelenses inside setup.colours.eyes; on every load/refresh it needs to be done. */
+		<<run syncDebugAddedEvents()>>
 	<</if>>
 
 	/* Variables that you need to check on every passage */
@@ -41,3 +40,5 @@
 <<if $debug is 1>>
 	<<checkTimeSystem "Header">>
 <</if>>
+
+<<unset $bypassHeader>>
