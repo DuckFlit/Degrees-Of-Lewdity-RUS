@@ -397,11 +397,13 @@ window.shopClothCustomColorWheel = function(acc, preset_choice){
 			colorPickerShopCustom[acc].color.saturation = V.customColors.saturation[acc] / 32 * 100 / 4 * 100;
 			colorPickerShopCustom[acc].color.brightness = V.customColors.brightness[acc] / 4 * 100;
 		}
+		V.customColors.sepia = {primary: 0, secondary: 0}
 		colorPickerShopCustom[acc].on(['color:init', 'color:change'], function(color) {
 			V.customColors.color[acc] = Math.round(color.hue);
 			V.customColors.saturation[acc] = color.saturation * 32 / 100 * 4 / 100;
 			V.customColors.brightness[acc] = color.hsl.l * 4 / 100;
-			updateMannequin();
+			if (document.getElementById("mannequin"))
+				updateMannequin();
 		});
 		return container;
 }
