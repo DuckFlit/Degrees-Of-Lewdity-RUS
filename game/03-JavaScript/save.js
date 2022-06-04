@@ -4,44 +4,103 @@ const DoLSave = ((Story, Save) => {
 	const DEFAULT_DETAILS = Object.freeze({ id: Story.domId, autosave: null, slots: [null, null, null, null, null, null, null, null] });
 	const KEY_DETAILS = "dolSaveDetails";
 
-	function loadSave(saveSlot, confirm) {
-		if (V.ironmanmode === true && V.passage != "Start"){
-			new Wikifier(null, "<<loadIronmanSafetyCancel " + saveSlot + ">>");
+	/* Place somewhere to expose globally. */
+	function isObject(obj) {
+		return typeof obj === 'object' && obj != null;
+	}
+
+	/* Can also call from backcomp in the future? */
+	function getSaveVersion(variables) {
+		if (isObject(variables)) {
+			if (!variables.saveVersions) {
+				return -1;
+			}
+			return variables.saveVersions.last();
+		}
+		return -2;
+	}
+
+	function marshalVersion(version) {
+		return typeof version === 'string' ? version.replace(/[^0-9.]+/g, "").split(".").map(v => parseInt(v)) : [ 0, 0, 0, 0 ];
+	}
+
+	function parseVersion(version) {
+		version = marshalVersion(version);
+		return version ? version[0] * 1000000 + version[1] * 10000 + version[2] * 100 + version[3] * 1 : 0;
+	}
+
+	/**
+	 * The handler which the load button should call.
+	 * Contains checks to determine whether the save loads or pops up a confirmation window.
+	 * @param {any} slot The slot ID to get the save from. 0 to 9, or 'auto'.
+	 * @param {boolean} confirm Bypass the load confirmation.
+	 * @returns void
+	 */
+	function loadHandler(slot, confirm) {
+		if (V.ironmanmode === true && V.passage !== 'Start') {
+			new Wikifier(null, '<<loadIronmanSafetyCancel ' + saveSlot + '>>');
 			return;
 		}
 		if (V.confirmLoad === true && confirm === undefined) {
-			new Wikifier(null, '<<loadConfirm ' + saveSlot + '>>');
-		} else {
-			if (saveSlot === "auto") {
-				Save.autosave.load();
-			} else {
-				const saveDetails = JSON.parse(localStorage.getItem(KEY_DETAILS));
-				const metadata = saveDetails.slots[saveSlot].metadata;
-				/* Check if metadata for save matches the save's computed md5 hash. If it matches, the ironman save was not tampered with.
-					Bypass this check if on a mobile, because they are notoriously difficult to grab saves from in the event of issues. */
-				if (metadata.ironman && !Browser.isMobile.any()) {
-					const save = Save.slots.get(saveSlot);
-					IronMan.update(save, metadata);
-					const signature = IronMan.getSignature(save);
-					// (if ironman mode enabled) following checks md5 signature of the save to see if the variables have been modified
-					if (signature !== metadata.signature) {
-						new Wikifier(null, '<<loadIronmanCheater ' + saveSlot + '>>');
-						return;
-					}
-				}
-				Save.slots.load(saveSlot);
-				if (V.ironmanmode) {
-					// (ironman) remove all saves(except auto-save) with the same saveId than loaded save
-					[0, 1, 2, 3, 4, 5, 6, 7].forEach(id => {
-						const saveDetail = saveDetails.slots[id];
-						if (saveDetail == null) return;
-						if (saveDetail.metadata.saveId === metadata.saveId) {
-							Save.slots.delete(id);
-							deleteSaveDetails(id);
-						}
-					});
-				}
+			new Wikifier(null, '<<loadConfirm ' + slot + '>>');
+			return;
+		}
+		const save = slot === 'auto' ? Save.autosave.get() : Save.slots.get(slot);
+		if (typeof save !== 'object') {
+			Errors.report('Could not find a valid save at that slot.', {});
+			return;
+		}
+		const currVersion = parseVersion(StartConfig.version);
+		/* Assume the save->variables is valid if an object. */
+		const saveVersion = parseVersion(getSaveVersion(save.state.delta[0].variables));
+		if (currVersion < saveVersion) {
+			new Wikifier(null, `<<loadconfirmcompat ${slot}>>`);
+			return;
+		}
+		load(slot, save);
+	}
+
+	/**
+	 * Loads the given saveobj, or the save from the given slot.
+	 * @param {any} The slot ID to get the save from. 0 to 9, or 'auto'.
+	 * @param {*} saveObj The save object if already possessed by the callee.
+	 * @returns void
+	 */
+	function load(slot, saveObj, overrides) {
+		const save = saveObj
+			|| slot === 'auto'
+				? Save.autosave.get()
+				: Save.slots.get(slot);
+		const saveDetails = JSON.parse(localStorage.getItem(KEY_DETAILS));
+		const metadata = slot === 'auto'
+			? saveDetails.autosave.metadata
+			: saveDetails.slots[slot].metadata;
+		/* Check if metadata for save matches the save's computed md5 hash. If it matches, the ironman save was not tampered with.
+			Bypass this check if on a mobile, because they are notoriously difficult to grab saves from in the event of issues. */
+		if (metadata.ironman && !Browser.isMobile.any()) {
+			IronMan.update(save, metadata);
+			const signature = IronMan.getSignature(save);
+			// (if ironman mode enabled) following checks md5 signature of the save to see if the variables have been modified
+			if (signature !== metadata.signature) {
+				new Wikifier(null, '<<loadIronmanCheater ' + slot + '>>');
+				return;
 			}
+		}
+		if (slot === 'auto') {
+			Save.autosave.load();
+		} else {
+			Save.slots.load(slot);
+		}
+		if (V.ironmanmode) {
+			// (ironman) remove all saves(except auto-save) with the same saveId than loaded save
+			[0, 1, 2, 3, 4, 5, 6, 7].forEach(id => {
+				const saveDetail = saveDetails.slots[id];
+				if (saveDetail == null) return;
+				if (saveDetail.metadata.saveId === metadata.saveId) {
+					Save.slots.delete(id);
+					deleteSaveDetails(id);
+				}
+			});
 		}
 	}
 
@@ -237,11 +296,13 @@ const DoLSave = ((Story, Save) => {
 
 	return Object.freeze({
 		save		: save,
-		load		: loadSave,
+		load		: load,
 		delete		: deleteSave,
 		import		: importSave,
 		getSaves	: returnSaveData,
 		resetMenu	: resetSaveMenu,
+		getVersion	: getSaveVersion,
+		loadHandler	: loadHandler,
 		SaveDetails	: Object.freeze({
 			prepare		: prepareSaveDetails,
 			set			: setSaveDetail,
@@ -251,9 +312,13 @@ const DoLSave = ((Story, Save) => {
 		}),
 		IronMan		: Object.freeze({
 			autoSave	: ironmanAutoSave
+		}),
+		Utils		: Object.freeze({
+			parseVer	: parseVersion
 		})
 	});
 })(Story, Save);
+window.DoLSave = DoLSave;
 
 /* Legacy references, references to the global namespace should be avoided, and thus this is considered deprecated usage. */
 window.prepareSaveDetails = DoLSave.SaveDetails.prepare;
