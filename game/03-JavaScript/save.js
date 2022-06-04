@@ -5,6 +5,10 @@ const DoLSave = ((Story, Save) => {
 	const KEY_DETAILS = "dolSaveDetails";
 
 	function loadSave(saveSlot, confirm) {
+		if (V.ironmanmode === true && V.passage != "Start"){
+			new Wikifier(null, "<<loadIronmanSafetyCancel " + saveSlot + ">>");
+			return;
+		}
 		if (V.confirmLoad === true && confirm === undefined) {
 			new Wikifier(null, '<<loadConfirm ' + saveSlot + '>>');
 		} else {
