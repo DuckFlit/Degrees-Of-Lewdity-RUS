@@ -91,6 +91,16 @@ function restructureEyeColourVariable() {
 			}
 			V.objectVersion.eyeRepair = 2;
 			break;
+		case 2:	
+			/* If $makeup.eyelenses is not an object/is null. Of if it is, but left/right properties are undefined, rebuild it properly. */
+			if (V.makeup.eyelenses == null || typeof V.makeup.eyelenses !== 'object' || V.makeup.eyelenses.left == undefined || V.makeup.eyelenses.left == undefined) {
+				V.makeup.eyelenses = {
+					'left' : 0,
+					'right' : 0
+				};
+			}
+			V.objectVersion.eyeRepair = 3;
+			break;
 	}
 }
 window.restructureEyeColourVariable = restructureEyeColourVariable;
