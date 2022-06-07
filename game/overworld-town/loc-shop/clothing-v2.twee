@@ -3,9 +3,9 @@
 <<widget "exitclothingshop">>
 	<div class="button-back-to-shop div-link">
 		<<if $clothes_choice and $shopDefaults.alwaysBackToShopButton is false>>
-			<<link "Back">><<unset $clothes_choice>><<updateclotheslist>><</link>>
+			<<link "Back">><<unset $clothes_choice>><<updateclotheslist>><<set $retrieveShopCustomColor to {}>><</link>>
 		<<else>>
-			<<link "Back to shop">><<unset $clothes_choice>><<updateclothingshop>><<set _shopNameFilter to "">><</link>>
+			<<link "Back to shop">><<unset $clothes_choice>><<updateclothingshop>><<set _shopNameFilter to "">><<set $retrieveShopCustomColor to {}>><</link>>
 		<</if>>
 	</div>
 <</widget>>
@@ -754,8 +754,9 @@
 					<<capture _buttonName _args[0] _acc $clothingShopSlot>>
 						<<link "">>
 							<<if _buttonName == "random">>
-								<<set _col_array = setup.clothes[$clothingShopSlot][$clothes_choice][_colourType]>>
-								<<set _colour = _col_array[Math.floor(Math.random() * _col_array.length)]>>
+								<<set $customColors.color[_acc] to getRandomIntInclusive(0,360)>> /* 0,360 are min/max hue values, representing colours */
+								<<run updateHueSlider($customColors.color[_acc], _acc)>>
+								<<set _colour = "custom">>
 							<<else>>
 								<<set _colour = _buttonName>>
 							<</if>>
@@ -806,8 +807,9 @@
 				<div class="colour-slider"><span class="colour-slider-caption">Brightness</span><<numberslider _varBri $customColors.brightness[_acc] 0 4 0.01>></div>
 				<div class="colour-slider"><span class="colour-slider-caption">Saturation</span><<numberslider _varSat $customColors.saturation[_acc] 0 4 0.01>></div>
 				<div class="colour-slider"><span class="colour-slider-caption">Contrast</span><<numberslider _varCon $customColors.contrast[_acc] 0 4 0.01>></div>*/
-				<<set $customColors.contrast[_acc] to 1.46>>
-				<<shopclothingcustomcolourwheel _acc _preset_choice[_acc]>>
+				<<setShopCustomColors _acc>>
+				<<set $retrieveShopCustomColor[_acc] to true>>
+				<<shopclothingcustomcolourwheel _acc>>
 				<div class="colour-slider text-align-center elem-fill-available"><span class="colour-slider-caption">Contrast</span><<numberslider _varCon $customColors.contrast[_acc] 0 4 0.01>></div>
 			</div>
 			<div class="custom-colour-presets no-numberify preset-colour-options">
@@ -863,6 +865,19 @@
 			</div>
 		</div>
 	<</capture>>
+<</widget>>
+
+<<widget "setShopCustomColors">>
+	<<if $retrieveShopCustomColor[_acc] is true>>
+		<<set $retrieveShopCustomColor[_acc] to false>>
+	<<else>>
+		<<set $customColors.color[_acc] to 61>>
+		<<set $customColors.contrast[_acc] to 1.46>>
+		<<set $customColors.brightness[_acc] to 3.08>>
+		<<set $customColors.value[_acc] to 100>>
+		<<set $customColors.saturation[_acc] to 0.6016>>
+		<<set $customColors.sepia[_acc] to 0>>
+	<</if>>
 <</widget>>
 
 <<widget "printcursed">>

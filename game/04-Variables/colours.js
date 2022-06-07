@@ -827,6 +827,12 @@ setup.colours.clothes = [{
 	"csstext": "wine",
 	"canvasfilter": {"blend": "#65252d"}
 }, {
+	"variable": "apocalypse",
+	"name": "apocalypse",
+	"name_cap": "Apocalypse",
+	"csstext": "apocalypse",
+	"canvasfilter": {"blend": "#5c271d"}
+}, {
 	"variable": "steel",
 	"name": "steel",
 	"name_cap": "Steel",
