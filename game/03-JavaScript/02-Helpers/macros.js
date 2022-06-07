@@ -155,7 +155,7 @@ var General = ((Macro, SexTypes) => {
 				}
 			}
 		}
-	})
+	});
 
 	return Object.seal({
 		getFluidsFromGroup

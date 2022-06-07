@@ -38,7 +38,7 @@ const DoLSave = ((Story, Save) => {
 	 */
 	function loadHandler(slot, confirm) {
 		if (V.ironmanmode === true && V.passage !== 'Start') {
-			new Wikifier(null, '<<loadIronmanSafetyCancel ' + saveSlot + '>>');
+			new Wikifier(null, '<<loadIronmanSafetyCancel ' + slot + '>>');
 			return;
 		}
 		if (V.confirmLoad === true && confirm === undefined) {
@@ -67,10 +67,11 @@ const DoLSave = ((Story, Save) => {
 	 * @returns void
 	 */
 	function load(slot, saveObj, overrides) {
-		const save = saveObj
-			|| slot === 'auto'
+		const save = saveObj == null
+			? slot === 'auto'
 				? Save.autosave.get()
-				: Save.slots.get(slot);
+				: Save.slots.get(slot)
+			: saveObj;
 		const saveDetails = JSON.parse(localStorage.getItem(KEY_DETAILS));
 		const metadata = slot === 'auto'
 			? saveDetails.autosave.metadata
