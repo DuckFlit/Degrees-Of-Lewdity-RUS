@@ -152,8 +152,9 @@ window.saveCustomColourPreset = function (slot = "primary") {
 		}
 
 		V.customColors.presets[setName] = {
-			ver: 2,
+			ver: 3,
 			color: V.customColors.color[slot],
+			value: V.customColors.value[slot],
 			brightness: V.customColors.brightness[slot],
 			saturation: V.customColors.saturation[slot],
 			contrast: V.customColors.contrast[slot]
@@ -165,6 +166,14 @@ window.loadCustomColourPreset = function (slot = "primary") {
 	let setName = T.preset_choice[slot];
 	let preset = V.customColors.presets[setName];
 	if (preset) {
+		// ver 3 includes property "value" which is used to set the position of the "value"(aka brightness) custom slider at shop, see here : https://i.imgur.com/hmbFT4U.png
+		if (preset.ver >= 3){
+			V.customColors.value[slot] = preset.value;
+			// this effectively set the different sliders values
+			colorPickerShopCustom[slot].color.hue = preset.color;
+			colorPickerShopCustom[slot].color.saturation = (((preset.saturation / 32) * 100) / 4) * 100;
+			colorPickerShopCustom[slot].color.value = preset.value;
+		}
 		// new version of preset (has only one set of colour parameters and doesn't have sepia)
 		if (preset.ver >= 2) {
 			V.customColors.color[slot] = preset.color;
@@ -314,28 +323,26 @@ window.importCustomColour = function (acc) {
 		const color = JSON.parse(window.atob(setName));
 		const colour_properties = Object.getOwnPropertyNames(color);
 
-		if (colour_properties.sort().join(',')=== ["color", "saturation", "brightness", "contrast"].sort().join(',')){
+		if (colour_properties.sort().join(',')=== ["color", "saturation", "value", "brightness", "contrast"].sort().join(',')){
 			V.customColors.color[acc] = color.color;
 			V.customColors.saturation[acc] = color.saturation;
-			V.customColors.brightness[acc] = color.brightness;
+			V.customColors.value[acc] = color.value;
 			V.customColors.contrast[acc] = color.contrast;
+			V.customColors.brightness[acc] = color.brightness;
 			colorPickerShopCustom[acc].color.hue = color.color;
-			colorPickerShopCustom[acc].color.saturation = color.saturation / 32 * 100 / 4 * 100;
-			colorPickerShopCustom[acc].color.brightness = color.brightness / 4 * 100;
-			T.varCon = color.contrast;
+			colorPickerShopCustom[acc].color.saturation = (((color.saturation / 32) * 100) / 4) * 100;
+			colorPickerShopCustom[acc].color.value = color.value;
+			document.getElementById("numberslider-input-customcolorscontrastprimary").value = color.contrast.toString();
+			document.getElementById("numberslider-value-customcolorscontrastprimary").innerText = color.contrast.toString();
 			updateMannequin();
 		}
 		else
-			throw new Exception();
-		if (Object.keys(V.customColors.presets).includes(setName)) {
-			alert('Invalid code. Make sure you copied it properly, without any white spaces around it.');
-			return;
-		}
+			throw "Invalid code. Make sure you copied it properly, without any white spaces around it.";
 	}
 }
 
 window.exportCustomColour = function (acc) {
-	const obj = {color:V.customColors.color[acc], saturation:V.customColors.saturation[acc], brightness:V.customColors.brightness[acc], contrast:V.customColors.contrast[acc]}
+	const obj = {color:V.customColors.color[acc], saturation:V.customColors.saturation[acc], value:V.customColors.value[acc], brightness: V.customColors.brightness[acc], contrast:V.customColors.contrast[acc]}
 
 	navigator.clipboard.writeText(window.btoa(JSON.stringify(obj)));
 	document.getElementById("export-custom-colour-box").outerHTML =`
@@ -366,7 +373,7 @@ function adaptSliderWidth(){
 		return 250;
 }
 
-window.shopClothCustomColorWheel = function(acc, preset_choice){
+window.shopClothCustomColorWheel = function(acc){
 		const container = document.createElement('label');
 		colorPickerShopCustom[acc] = new iro.ColorPicker(container, {
 			color: {h:61, s:47, v:100},
@@ -392,21 +399,26 @@ window.shopClothCustomColorWheel = function(acc, preset_choice){
 				  }
 			]
 		});
-		if (preset_choice == '---' || preset_choice){
-			colorPickerShopCustom[acc].color.hue = V.customColors.color[acc];
-			colorPickerShopCustom[acc].color.saturation = V.customColors.saturation[acc] / 32 * 100 / 4 * 100;
-			colorPickerShopCustom[acc].color.brightness = V.customColors.brightness[acc] / 4 * 100;
-		}
-		V.customColors.sepia = {primary: 0, secondary: 0}
+		colorPickerShopCustom[acc].color.hue = V.customColors.color[acc];
+		colorPickerShopCustom[acc].color.saturation = (((V.customColors.saturation[acc] / 32) * 100) / 4) * 100;
+		colorPickerShopCustom[acc].color.value = V.customColors.value[acc];
+		//
 		colorPickerShopCustom[acc].on(['color:init', 'color:change'], function(color) {
 			V.customColors.color[acc] = Math.round(color.hue);
-			V.customColors.saturation[acc] = color.saturation * 32 / 100 * 4 / 100;
-			V.customColors.brightness[acc] = color.hsl.l * 4 / 100;
+			V.customColors.saturation[acc] = (((color.saturation * 32) / 100) * 4) / 100;
+			V.customColors.brightness[acc] = (color.hsl.l * 4) / 100;
+			V.customColors.value[acc] = color.value;
 			if (document.getElementById("mannequin"))
 				updateMannequin();
 		});
 		return container;
 }
+
+function updateHueSlider(new_value, acc){
+	colorPickerShopCustom[acc].color.hue = new_value;
+}
+
+window.updateHueSlider = updateHueSlider;
 
 window.addEventListener('resize', function(event) {
 	for (let cat in colorPickerShopCustom){
