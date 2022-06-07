@@ -1251,6 +1251,11 @@ function isLoveInterest(name) {
 }
 window.isLoveInterest = isLoveInterest;
 
+function isBloodmoon() {
+	return V.moonstate === "evening" && V.hour >= 21 || V.moonstate === "morning" && V.hour < 5;
+}
+window.isBloodmoon = isBloodmoon;
+
 window.wraithSleepEventCheck = function(){
 	return V.wraith && V.wraith.state !== "" && V.wraith.nightmare === 1 && (V.moonstate === "evening" && V.hour >= 21 || V.moonstate === "morning" && V.hour < 5);
 }
