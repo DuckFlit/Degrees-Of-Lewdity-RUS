@@ -56,6 +56,9 @@ Macro.add('widget', {
 
 			// Delete the existing widget.
 			Macro.delete(widgetName);
+
+			// Throw an error to alert devs if they've redefined an existing widget (they should definitely not fail to see this while testing.)
+			return this.error(`The "${widgetName}" widget is being defined twice`);
 		}
 
 		try {
