@@ -886,6 +886,11 @@ window.DefaultActions = {
 	}
 }
 
+function selectWardrobe(targetLocation = V.wardrobe_location) {
+	return (!targetLocation || targetLocation === "wardrobe" ? V.wardrobe : V.wardrobes[targetLocation]); 
+}
+window.selectWardrobe = selectWardrobe;
+
 window.transferClothing = function(slot, index, newWardrobe){
 	let oldWardrobeObject;
 	if(V.wardrobe_location === "wardrobe"){
@@ -970,7 +975,7 @@ window.clothesDataTrimmer = function(item){
 	});
 }
 
-window.clothesReturnLocation = function(item, type){
+function clothesReturnLocation(item, type){
 	if(!V.multipleWardrobes) return "wardrobe";
 	let isolated = ["asylum","prison"];
 	let lastTaken = item.lastTaken;
@@ -981,40 +986,34 @@ window.clothesReturnLocation = function(item, type){
 	}
 	switch(type){
 		case "rebuy":
-			switch(V.location){
-				case "asylum":
-					if(item.type.includes("asylum")){
-						return "asylum";
-					}
-					if(!isolated.includes(lastTaken)){
-						return lastTaken;
-					}
-				case "prison":
-					if(item.type.includes("prison")){
-						return "prison";
-					}
-					if(!isolated.includes(lastTaken)){
-						return lastTaken;
-					}
-				default:
-					if(!isolated.includes(lastTaken)){
-						return lastTaken;
-					}
-			}
+			if (isolated.includes(V.location) && item.type.includes(V.location)) return V.location;
+			break;
 		default:
-			switch(V.location){
-				case "asylum":
-					return "asylum";
-				case "prison":
-					return "prison";
-				default:
-					if(!isolated.includes(lastTaken)){
-						return lastTaken;
-					}
-			}
+			if (isolated.includes(V.location)) return V.location;
 	}
+	if (!isolated.includes(lastTaken)) return lastTaken;
 	return "wardrobe";
 }
+window.clothesReturnLocation = clothesReturnLocation;
+
+function resetClothingState(slot) {
+	if (!slot || slot === "genitals") return;
+	const setupItem = setup.clothes[slot][clothesIndex(slot,V.worn[slot])];
+	// Overwrite the following properties of $worn[slot], IF the corresponding properties are defined in the setupItem.
+	// Note that no single item actually has ALL of these properties; It only changes the properties that DO exist on the item.
+	V.worn[slot] = {
+		...V.worn[slot], 
+		...Object.fromEntries(Object.entries({
+			state: setupItem.state_base,
+			state_top: setupItem.state_top_base,
+			exposed: setupItem.exposed_base,
+			skirt_down: setupItem.skirt_down,
+			vagina_exposed: setupItem.vagina_exposed_base,
+			anus_exposed: setupItem.anus_exposed_base,
+		}).filter(([_,p]) => p != undefined))
+	};
+}
+window.resetClothingState = resetClothingState;
 
 //the 'modder' variable is specifically for modders name, should be kept as a short string
 window.clothesIndex = function(slot, itemToIndex) {
