@@ -302,6 +302,16 @@ window.sexShopOnColourClick = function(colour){
 	document.getElementById("ssm_desc_img").className = "clothes-"+colour
 }
 
+window.sexShopOnCloseDesc = function (elem_id) {
+	document.getElementById(elem_id).style.display = 'none';
+	/* grid item box class changes */
+	try{
+		document.getElementsByClassName("ssm_selected_a")[0].classList.remove("ssm_selected_a");
+		document.getElementsByClassName("ssm_selected_b")[0].classList.remove("ssm_selected_b");
+		document.getElementsByClassName("ssm_selected_c")[0].classList.remove("ssm_selected_c");
+	}catch{;}
+}
+
 window.sexShopOnItemClick = function (index) {
 	let item = setup.sextoys[index]
 	let coloring_div = "";
