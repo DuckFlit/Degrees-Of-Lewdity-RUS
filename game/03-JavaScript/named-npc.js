@@ -1,7 +1,7 @@
 /* This file contains utility functions for named NPCs. */
 
 function statusCheck(name) {
-	if (['Robin', 'Kylar', 'Sydney'].includes(name)) {
+	if (V.NPCNameList.includes(name)) {
 		const nnpc = V.NPCName[V.NPCNameList.indexOf(name)];
 
 
@@ -42,20 +42,20 @@ function kylarStatusCheck(kylar) {
 	if (kylar.love >= 50) {
 		kylarStatus.push("Love");
 	}
-	// USAGE: 
-	// if Kylar's lust is 60+:  <<if _kylarStatus.includes("Lust")>> 
-	// if Kylar's lust is 0-60: <<if !_kylarStatus.includes("Lust")>> 
+	// USAGE:
+	// if Kylar's lust is 60+:  <<if _kylarStatus.includes("Lust")>>
+	// if Kylar's lust is 0-60: <<if !_kylarStatus.includes("Lust")>>
 	if (kylar.lust >= 60) {
 		kylarStatus.push("Lust");
 	}
-	// USAGE: 
+	// USAGE:
 	// if Kylar's jealousy is 90+:   <<if _kylarStatus.includes("MaxRage")>>
 	if (kylar.rage >= 90) {
 		kylarStatus.push("MaxRage");
 	}
-	
+
 	// USAGE:
-	// if Kylar's jealousy is 60+:   <<if _kylarStatus.includes("Rage")>> 
+	// if Kylar's jealousy is 60+:   <<if _kylarStatus.includes("Rage")>>. Not mutually exclusive with 90+
 	// if Kylar's jealousy is 30-59: <<if _kylarStatus.includes("Sus")>>
 	// if Kylar's jealousy is 0-30:  <<if _kylarStatus.includes("Calm")>>
 	if (kylar.rage >= 60) {
