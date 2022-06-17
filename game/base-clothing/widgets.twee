@@ -712,7 +712,7 @@
 		<</if>>
 		<<set _slots to []>>
 		<<if $carried[$_slot].name isnot "naked">>
-			<<set _slots.push($_slot)>>
+			<<set _slots.pushUnique($_slot)>>
 			<<set $worn[$_slot] to clone($carried[$_slot])>>
 			<<set $carried[$_slot] to clone(setup.clothes[$_slot][0])>> <!-- set this slot to "naked" -->
 
@@ -721,11 +721,13 @@
 				<<if $carried[$_outfitPieceSlot].name is $_outfitPieceName>>
 					<<set $worn[$_outfitPieceSlot] to clone($carried[$_outfitPieceSlot])>>
 					<<set $carried[$_outfitPieceSlot] to clone(setup.clothes[$_outfitPieceSlot][0])>> <!-- set this slot to "naked" -->
-					<<set _slots.push($_outfitPieceSlot)>>
+					<<set _slots.pushUnique($_outfitPieceSlot)>>
 				<</if>>
 			<</for>>
 			<<unset _outfitPrimaryOn>>
 		<</if>>
+
+		<<run _slots.pushUnique($_slot)>> <!-- Ensure that this slot's state is properly reset -->
 
 		/*Resets status of existing clothing*/
 		<<run _slots.forEach(slot => resetClothingState(slot))>>
