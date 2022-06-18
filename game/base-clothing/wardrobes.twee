@@ -178,12 +178,12 @@
 		<<pass $_timeSpent>>
 		You repair the <<print _item.name>>.
 		<br>
-	<<elseif $wardrobeOption is "seperateOutfits" and Object.values(_outfitPieceIds).length gt 0>>
+	<<elseif $wardrobeOption is "separateOutfits" and Object.values(_outfitPieceIds).length gt 0>>
 		<<for $_outfitSlot, $_outfitId range _outfitPieceIds>>
 			<<set _selectedWardrobe[$_outfitSlot][$_outfitId].outfitSecondary[1] to "broken">>
 			<<set _selectedWardrobe[$_outfitSlot][$_outfitId].one_piece to "broken">>
+			<<set _item.outfitPrimary[$_outfitSlot] to "broken">>
 		<</for>>
-		<<set _item.outfitPrimary[$_outfitSlot] to "broken">>
 		<<set _item.one_piece to "broken">>
 		You cut up the <<print _item.name>>.
 		<<pass 10>>
@@ -434,7 +434,7 @@ __Clothing__
 <<if $sewingKit is 1 and $location is "home">>
 	<label><<radiobutton "$wardrobeOption" "repair" autocheck>> Repair (0:05 per piece)</label> |
 <</if>>
-<label><<radiobutton "$wardrobeOption" "seperateOutfits" autocheck>> Separate Outfits (0:10)</label> |
+<label><<radiobutton "$wardrobeOption" "separateOutfits" autocheck>> Separate Outfits (0:10)</label> |
 <<if $multipleWardrobes is "all" and !$wardrobes[$wardrobe_location].isolated>>
 	<label><<radiobutton "$wardrobeOption" "transfer" autocheck>> Transfer:</label>
 	<<set _options to {}>>
@@ -563,6 +563,30 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 	<</if>>
 <</silently>><<print $_output>><</widget>>
 
+<<widget "toggleHood">>
+	<div class="toggleHoodLink">
+		<<link `($hoodDown ? "Pull hood up" : "Pull hood down")`>>
+			<<set $hoodDown to +!$hoodDown>>
+			<<updatesidebarimg>>
+			<<run $(".toggleHoodLink .link-internal").html($hoodDown ? "Pull hood up" : "Pull hood down")>>
+			<<run Links.generateLinkNumbers($(".passage"))>>
+		<</link>>
+	</div>
+<</widget>>
+
+<<widget "toggleUpperTuck">>
+	<<set _linkOption1 to _args[0] || "Untuck">>
+	<<set _linkOption2 to _args[1] || "Tuck in">>
+	<div class="toggleUpperTuck">
+		<<link `($upperTucked ? _linkOption1 : _linkOption2)`>>
+			<<set $upperTucked to +!$upperTucked>>
+			<<updatesidebarimg>>
+			<<run $(".toggleUpperTuck .link-internal").html($upperTucked ? _linkOption1 : _linkOption2)>>
+			<<run Links.generateLinkNumbers($(".passage"))>>
+		<</link>>
+	</div>
+<</widget>>
+
 <<widget "wardrobeList">>
 	<<wardrobeClothingOptions>>
 	<<set _wardrobe_list to _args[0]>>
@@ -657,19 +681,13 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 				<<shoptraits>>
 			</div>
 
-			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItemData.notuck>>
-				<<link `($upperTucked ? "Untuck" : "Tuck in")`>>
-					<<set $upperTucked to +!$upperTucked>>
-					<<updatewardrobe>>
-				<</link>>
+			<<if isConnectedToHood(_wardrobe_list)>>
+				<!-- If selected item is a hood or selected item has a secondary hood piece -->
+				<div class="no-numberify"><<toggleHood>></div>
 				<br>
 			<</if>>
-			<<if (_wornItem.hood and _wornItem.outfitSecondary) or (_wornItem.outfitPrimary and _wornItem.outfitPrimary.head and $worn.head.hood)>>
-				<!-- If selected item is a hood or selected item has a secondary hood piece -->
-				<<link `($hoodDown ? "Pull hood up" : "Pull hood down")`>>
-					<<set $hoodDown to +!$hoodDown>>
-					<<updatewardrobe>>
-				<</link>>
+			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItemData.notuck>>
+				<div class="no-numberify"><<toggleUpperTuck>></div>
 				<br>
 			<</if>>
 		<</if>>
@@ -787,6 +805,7 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 				<<default>>
 					<<replace `'#clothingBox-' + $_slot`>><<oldWardrobeList $_slot>><</replace>>
 			<</switch>>
+			<<replace '#wardrobeMinorOptions'>><<oldWardrobeMinorOptions>><</replace>>
 		<<else>>
 			<<replace '#oldWardrobeListDisplay'>><<oldWardrobeListDisplay>><</replace>>
 		<</if>>
@@ -797,23 +816,23 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 	<<run updateMoment()>>
 <</widget>>
 
+<<widget "oldWardrobeMinorOptions">>
+	<div id="wardrobeMinorOptions">
+		<<if $worn.lower.name isnot "naked" and $worn.upper.outfitPrimary is undefined and !setup.clothes.upper[clothesIndex('upper', $worn.upper)].notuck>>
+			<<set $_linkOption1 to `Untuck your ${$worn.upper.name}`>>
+			<<set $_linkOption2 to `Tuck your ${$worn.upper.name} into your ${$worn.lower.name}`>>
+			<<toggleUpperTuck $_linkOption1 $_linkOption2>>
+		<</if>>
+		<<if $worn.head.hood>>
+			<!-- If selected item is a hood or selected item has a secondary hood piece -->
+			<<toggleHood>>
+		<</if>>
+	</div>
+<</widget>>
+
 <<widget "oldWardrobeListDisplay">>
 <<wardrobeClothingOptions>>
-<<if $worn.lower.name isnot "naked" and $worn.upper.outfitPrimary is undefined and !setup.clothes.upper[clothesIndex('upper', $worn.upper)].notuck>>
-	<<if $upperTucked>>
-		<<set $_linkText to "Untuck " + $worn.upper.name>>
-	<<else>>
-		<<set $_linkText to "Tuck " + $worn.upper.name + " in " + $worn.lower.name>>
-	<</if>>
-	<<link [[$_linkText|$passage]]>><<set $upperTucked to +!$upperTucked>><</link>>
-	<br>
-<</if>>
-<<if $worn.head.hood and ($worn.head.outfitSecondary) or ($worn.upper.outfitPrimary and $worn.upper.outfitPrimary.head)>>
-	<!-- If head item is a hood or upper clothing has a secondary hood piece -->
-	<<set $_linkText to "Pull the hood on your " + $worn.upper.name + ($hoodDown ? " up" : " down")>>
-	<<link [[$_linkText|$passage]]>><<set $hoodDown to +!$hoodDown>><</link>>
-	<br>
-<</if>>
+<<oldWardrobeMinorOptions>>
 <br>
 
 <<if $debug is 1>>

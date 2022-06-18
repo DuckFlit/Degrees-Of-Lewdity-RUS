@@ -1015,6 +1015,25 @@ function resetClothingState(slot) {
 }
 window.resetClothingState = resetClothingState;
 
+function isConnectedToHood(slot) {
+	// Note: this function currently only works on hoods in the "head" slot, NOT the "over_head" slot.
+	
+	// Return false if slot is undefined or not a valid clothing category
+	if (!slot || !V.worn[slot]) return false;
+	// Return true if this item IS a hood 
+	if (V.worn[slot].hood) return true;
+
+	// Use the primary clothing slot for the next check if this item is connected to an outfit (and is not the primary item)
+	if (V.worn[slot].outfitSecondary && V.worn[slot].outfitSecondary[1] !== "broken"){
+		slot = V.worn[slot].outfitSecondary[0];
+	}
+	if (V.worn[slot].outfitPrimary && V.worn[slot].outfitPrimary.head && V.worn[slot].outfitPrimary.head !== "broken" && V.worn.head.hood){
+		return true;
+	}
+	return false;
+}
+window.isConnectedToHood = isConnectedToHood;
+
 //the 'modder' variable is specifically for modders name, should be kept as a short string
 window.clothesIndex = function(slot, itemToIndex) {
 	if(!slot || !itemToIndex || !itemToIndex.name || !itemToIndex.variable) {
