@@ -1,6 +1,7 @@
 :: Widgets Wardrobe [widget]
 
 <<widget "wardrobewear">>
+<!-- Note: Don't use $_ in this widget, because this widget gets <<replace>>'d into the passage body -->
 <<if $wardrobes[$wardrobe_location] is undefined>>
 	<span class="red">A wardrobe error occured, please report. The default wardrobe will be shown in place of the intended wardrobe.</span>
 	<br>
@@ -40,16 +41,16 @@
 <<set _towelCheck to ["upper", "lower"]>>
 <<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false, "genitals":false}>>
 <<set $_itemNames to []>>
-<<for $_slot range _equip>>
+<<for _slot range _equip>>
 	<<unset _outfitPieceIds>>
 	<<unset _item>>
-	<<if _equipSkip[$_slot] is true>>
+	<<if _equipSkip[_slot] is true>>
 		<<continue>>
 	<</if>>
 	<<if !Object.keys($worn).includes(_wardrobe_list)>>
 		<<continue>>
 	<<else>>
-		<<set _wearId to V["wear_"+$_slot]>>
+		<<set _wearId to V["wear_"+_slot]>>
 	<</if>>
 	<<if _wearId is "none">>
 		<<continue>>
@@ -57,9 +58,9 @@
 	<<if $wardrobeOption is "wear" or ["strip","towel","large_towel"].includes(_wearId)>>
 		/*Checks for cursed equip*/
 		<<unset _cursedPrevent>>
-		<<set _wornOutfitPrimary to $worn[$_slot].outfitPrimary>>
-		<<if $worn[$_slot].cursed is 1>>
-			You try to remove the <<print $worn[$_slot].name>>, but fail. <<cursedtext $worn[$_slot].name>>
+		<<set _wornOutfitPrimary to $worn[_slot].outfitPrimary>>
+		<<if $worn[_slot].cursed is 1>>
+			You try to remove the <<print $worn[_slot].name>>, but fail. <<cursedtext $worn[_slot].name>>
 			<br>
 			<<set _cursedPrevent to true>>
 		<</if>>
@@ -77,9 +78,9 @@
 			<<continue>>
 		<</if>>
 		/*Strips equip and puts it in the wardrobe*/
-		<<if _wearId is "strip" and $worn[$_slot].name isnot "naked">>
-			You remove the <<print $worn[$_slot].name>>.
-			<<generalUndress $wardrobe_location $_slot>>
+		<<if _wearId is "strip" and $worn[_slot].name isnot "naked">>
+			You remove the <<print $worn[_slot].name>>.
+			<<generalUndress $wardrobe_location _slot>>
 			<br>
 			<<if _wornOutfitPrimary isnot undefined>>
 				<<for $_outfitPieceSlot, $_outfitPieceName range _wornOutfitPrimary>>
@@ -93,10 +94,10 @@
 		<</if>>
 		<<unset _wornOutfitPrimary>>
 		/*Strips equip, puts it in the wardrobe and equips a towl*/
-		<<if _wearId is "towel" and _towelCheck.includes($_slot)>>
-			<<generalUndress $wardrobe_location $_slot>>
-			<<set $worn[$_slot] to clone(setup.clothes[$_slot][3])>><<set $worn[$_slot].colour to clone($worn[$_slot].colour_options.random())>>
-			<<if $_slot is "upper">>
+		<<if _wearId is "towel" and _towelCheck.includes(_slot)>>
+			<<generalUndress $wardrobe_location _slot>>
+			<<set $worn[_slot] to clone(setup.clothes[_slot][3])>><<set $worn[_slot].colour to clone($worn[_slot].colour_options.random())>>
+			<<if _slot is "upper">>
 				You tie a towel around your chest.
 			<<else>>
 				You tie a towel around your waist.
@@ -104,7 +105,7 @@
 			<br><br>
 			<<continue>>
 		<</if>>
-		<<if _wearId is "large_towel" and $_slot is "upper">>
+		<<if _wearId is "large_towel" and _slot is "upper">>
 			<<generalUndress $wardrobe_location "upper">><<generalUndress $wardrobe_location "lower">>
 			<<set $worn.upper to clone(setup.clothes.upper[14])>><<set $worn.upper.colour to clone($worn.upper.colour_options.random())>>
 			<<set $worn.lower to clone(setup.clothes.lower[15])>><<set $worn.lower.colour to clone($worn.upper.colour)>>
@@ -115,12 +116,12 @@
 	<</if>>
 	/*Find the item to equip*/
 	<<if _wearId gte 0>>
-		<<set _item to _selectedWardrobe[$_slot][_wearId]>>
+		<<set _item to _selectedWardrobe[_slot][_wearId]>>
 	<<else>>
 		<<continue>>
 	<</if>>
 	/*Prevent equip when the ear slime doesn't allow it*/
-	<<if _slimePrevent.includes($_slot) and $corruption_slime gte 80 and $wardrobeOption is "wear">>
+	<<if _slimePrevent.includes(_slot) and $corruption_slime gte 80 and $wardrobeOption is "wear">>
 		<<if currentSkillValue('willpower') lt 800 and _item.reveal lt 500 and !_item.type.includesAny("school", "event")>>
 			<span class="red">You were unable to equip your _item.name as the slime in your ear did not permit it.</span>
 			<br>
@@ -165,10 +166,10 @@
 			<<set _selectedWardrobe[$_outfitSlot].deleteAt($_outfitId)>>
 		<</for>>
 		You discard the <<print _item.name>>.
-		<<set _selectedWardrobe[$_slot].deleteAt(_wearId)>>
+		<<set _selectedWardrobe[_slot].deleteAt(_wearId)>>
 		<br>
 	<<elseif $wardrobeOption is "repair">>
-		<<set _item.integrity to clothingData($_slot,_item,'integrity_max')>>
+		<<set _item.integrity to clothingData(_slot,_item,'integrity_max')>>
 		<<set $_timeSpent to 5>>
 		/*Repair the relating items*/
 		<<for $_outfitSlot, $_outfitId range _outfitPieceIds>>
@@ -193,7 +194,7 @@
 		/*Set the target wardrobe*/
 		<<set _wardrobeTransferObject to selectWardrobe(_wardrobeTransfer)>>
 		/*Make sure there is enough space*/
-		<<if _wardrobeTransferObject[$_slot].length gt _wardrobeTransferObject.space>>
+		<<if _wardrobeTransferObject[_slot].length gt _wardrobeTransferObject.space>>
 			<<set _slotsFull to true>>
 		<</if>>
 		<<for $_outfitSlot, $_outfitId range _outfitPieceIds>>
@@ -205,7 +206,7 @@
 		<<if !_slotsFull>>
 			You transfered the <<print _item.name>> to the <<print $wardrobes[_wardrobeTransfer].name>> storage.
 			/*Transfer everything*/
-			<<run transferClothing($_slot,_wearId,_wardrobeTransfer)>>
+			<<run transferClothing(_slot,_wearId,_wardrobeTransfer)>>
 			<<for $_outfitSlot, $_outfitId range _outfitPieceIds>>
 				<<run transferClothing($_outfitSlot,$_outfitId,_wardrobeTransfer)>>
 			<</for>>
@@ -214,7 +215,7 @@
 		<</if>>
 	<<elseif $wardrobeOption is "wear">>
 		/*Equip the relating items*/
-		<<generalUndress $wardrobe_location $_slot>>
+		<<generalUndress $wardrobe_location _slot>>
 		<<for $_outfitSlot, $_outfitId range _outfitPieceIds>>
 			<<generalUndress $wardrobe_location $_outfitSlot>>
 			<<set $worn[$_outfitSlot] to clone(_selectedWardrobe[$_outfitSlot][$_outfitId])>>
@@ -222,11 +223,11 @@
 			<<set _selectedWardrobe[$_outfitSlot].deleteAt($_outfitId)>>
 			<<run resetClothingState($_outfitSlot)>>
 		<</for>>
-		<<set $worn[$_slot] to clone(_item)>>
-		<<set $worn[$_slot].lastTaken to clone($wardrobe_location)>>
-		<<run resetClothingState($_slot)>>
+		<<set $worn[_slot] to clone(_item)>>
+		<<set $worn[_slot].lastTaken to clone($wardrobe_location)>>
+		<<run resetClothingState(_slot)>>
 		<<set $_itemNames.push(_item.name)>>
-		<<set _selectedWardrobe[$_slot].deleteAt(_wearId)>>
+		<<set _selectedWardrobe[_slot].deleteAt(_wearId)>>
 	<</if>>
 <</for>>
 <<if $wardrobeOption is "wear">>
@@ -527,10 +528,10 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 		<<if _saveColor>>
 			<<set _equip to ["over_upper", "over_lower", "upper", "lower", "under_upper", "under_lower", "over_head", "head", "face", "neck", "hands", "legs", "feet"]>>
 			<<set _colors to {}>>
-			<<for $_slot range _equip>>
-				<<set _colors[$_slot] to [$worn[$_slot].colour, $worn[$_slot].accessory_colour]>>
-				<<if $worn[$_slot].colour is "custom" or $worn[$_slot].accessory_colour is "custom">>
-					<<run _colors[$_slot+"custom"] to [$worn[$_slot].colourCustom, $worn[$_slot].accessory_colourCustom] >>
+			<<for _slot range _equip>>
+				<<set _colors[_slot] to [$worn[_slot].colour, $worn[_slot].accessory_colour]>>
+				<<if $worn[_slot].colour is "custom" or $worn[_slot].accessory_colour is "custom">>
+					<<run _colors[_slot+"custom"] to [$worn[_slot].colourCustom, $worn[_slot].accessory_colourCustom] >>
 				<</if>>
 			<</for>>
 			<<set _newOutfit.colors to _colors>>
@@ -1200,6 +1201,7 @@ Comfortable warmth range: <<print ($chill + 1)>> - <<print Math.trunc(($chill * 
 <</widget>>
 
 <<widget "wardrobeExits">>
+	<!-- Note: Don't use $_ in this widget, because this widget gets <<replace>>'d into the passage body -->
 	<!-- this widget doesn't make sense because these links ALWAYS depend on the passage this widget is called from, so there's no reason to make it a widget -->
 	<<switch $passage>>
 		<<case "Wardrobe">>
