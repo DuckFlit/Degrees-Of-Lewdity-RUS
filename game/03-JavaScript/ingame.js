@@ -887,7 +887,7 @@ window.DefaultActions = {
 }
 
 function selectWardrobe(targetLocation = V.wardrobe_location) {
-	return (!targetLocation || targetLocation === "wardrobe" ? V.wardrobe : V.wardrobes[targetLocation]); 
+	return ((!targetLocation || targetLocation === "wardrobe" || !V.wardrobes[targetLocation]) ? V.wardrobe : V.wardrobes[targetLocation]); 
 }
 window.selectWardrobe = selectWardrobe;
 
