@@ -10,6 +10,8 @@ Object.defineProperties(window, {
 		}
 	},
 	C: {
-		value: {}
+		get: function() {
+			return Constants;
+		}
 	}
 });
