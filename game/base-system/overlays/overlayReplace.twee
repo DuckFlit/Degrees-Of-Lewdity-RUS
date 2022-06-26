@@ -1,0 +1,225 @@
+:: overlayReplace [widget]
+
+/*
+	Displays overlay (#customOverlay element) with title and content defined by provided key.
+	"overlay-load" event is triggered on `document` when overlay element is updated with new content.
+*/
+<<widget "overlayReplace">>
+	<<set _key to _args[0]>>
+
+	<<if _key>>
+		<<if $currentOverlay isnot _key>>
+			<<set $currentOverlay to _key>>
+			<<run $("#customOverlay").attr("data-overlay", $currentOverlay)>>
+
+			<<switch _key>>
+				<<case "characteristics">>
+					<<replace #customOverlayTitle>><<OverlayTitle "colorCodes">><</replace>>
+					<<replace #customOverlayContent>><<characteristics>><</replace>>
+
+				<<case "traits">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<traits>><</replace>>
+
+				<<case "social">>
+					<<replace #customOverlayTitle>><<OverlayTitle "colorCodes">><</replace>>
+					<<replace #customOverlayContent>><<social>><</replace>>
+
+				<<case "journal">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<journal>><</replace>>
+
+				<<case "statistics">>
+					<<replace #customOverlayTitle>><<OverlayTitle "statistics">><</replace>>
+					<<replace #customOverlayContent>><<statistics>><</replace>>
+
+				<<case "extraStatistics">>
+					<<replace #customOverlayTitle>><<OverlayTitle "extraStatistics">><</replace>>
+					<<replace #customOverlayContent>><<extraStatistics>><</replace>>
+
+				<<case "extraStatisticsWarning">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<extraStatisticsWarning>><</replace>>
+
+				<<case "gameFeats">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<feats>><</replace>>
+
+				<<case "startFeats">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<feats>><</replace>>
+
+				<<case "options">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<options>><</replace>>
+
+				<<case "saves">>
+					<<replace #customOverlayTitle>><<OverlayTitle "saves">><</replace>>
+					<<replace #customOverlayContent>><<saves>><</replace>>
+
+				<<case "optionsExportImport">>
+					<<replace #customOverlayTitle>><<OverlayTitle "optionsExportImport">><</replace>>
+					<<replace #customOverlayContent>><<optionsExportImport>><</replace>>
+
+				<<case "cheats">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<cheats>><</replace>>
+
+				<<case "canvasLayers">>
+					<<replace #customOverlayTitle>><<OverlayTitle "canvasLayers">><</replace>>
+					<<replace #customOverlayContent>><<canvasLayersEditor>><</replace>>
+
+				<<case "canvasColours">>
+					<<replace #customOverlayTitle>><<OverlayTitle "canvasColours">><</replace>>
+					<<replace #customOverlayContent>><<canvasColoursEditor `$cheatdisable is "f"`>><</replace>>
+
+				<<case "canvasModel">>
+					<<replace #customOverlayTitle>><<OverlayTitle "canvasModel">><</replace>>
+					<<replace #customOverlayContent>><<canvasModelEditor>><</replace>>
+
+				<<case "blackjackHelp">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<blackjackHelp>><</replace>>
+
+				<<case "eventExtraInfo">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<eventExtraInfo>><</replace>>
+
+				<<case "outfitEditor">>
+					<<replace #customOverlayTitle>><<OverlayTitle>><</replace>>
+					<<replace #customOverlayContent>><<outfitEditor>><</replace>>
+			<</switch>>
+
+			<<removeclass "#customOverlay" "hidden">>
+			<<script>>
+				document.getElementById("customOverlay").scrollTop = 0;
+				$(document).trigger("overlay-load", $("#customOverlay"));
+			<</script>>
+
+		<<else>>
+			<<set $currentOverlay to null>>
+			<<addclass "#customOverlay" "hidden">>
+		<</if>>
+	<</if>>
+<</widget>>
+
+/* Custom overlay title section. Renders "Close" button and optional content defined by provided key */
+<<widget "OverlayTitle">>
+	<<set _key to _args[0]>>
+
+	<<button Close>>
+		<<addclass "#customOverlay" "hidden">>
+		<<set $currentOverlay to null>>
+	<</button>>
+
+	<<switch _key>>
+		<<case "saves">>
+			<<button "Export/Import Save">>
+				<<overlayReplace "optionsExportImport">>
+				<<set $currentOverlay to null>>
+			<</button>>
+
+		<<case "optionsExportImport">>
+			<<button "Return to Saves">>
+				<<overlayReplace "saves">>
+			<</button>>
+
+		<<case "statistics">>
+			<<button "Extra Stats (Spoilers)">>
+				<<if $skipStatisticsConfirmation>>
+					<<overlayReplace "extraStatistics">>
+				<<else>>
+					<<overlayReplace "extraStatisticsWarning">>
+				<</if>>
+
+				<<set $currentOverlay to null>>
+			<</button>>
+
+		<<case "extraStatistics">>
+			<<button "Statistics">>
+				<<overlayReplace "statistics">>
+				<<set $currentOverlay to null>>
+			<</button>>
+
+		<<case "colorCodes">>
+			<<button "Colour Codes">>
+				<<script>>overlayShowHide('statsHelp');<</script>>
+			<</button>>
+			<div id="statsHelp" class="hidden">
+				<span class="green">Excellent</span>
+				<br>
+				<span class="teal">Good</span>
+				<br>
+				<span class="lblue">Decent</span>
+				<br>
+				<span class="blue">Okay</span>
+				<br>
+				<span class="purple">Poor</span>
+				<br>
+				<span class="pink">Bad</span>
+				<br>
+				<span class="red">Terrible</span>
+				<br>
+			</div>
+	<</switch>>
+
+	<<if _key && _key.indexOf("canvas") == 0>>
+		<<if _key is not "canvasLayers">>
+			<<button "Layers">>
+				<<overlayReplace "canvasLayers">>
+			<</button>>
+		<<else>>
+			<div class="buttonlike -noborder">Layers</div>
+		<</if>>
+
+		<<if _key is not "canvasColours">>
+			<<button "Colours">>
+				<<overlayReplace "canvasColours">>
+			<</button>>
+		<<else>>
+			<div class="buttonlike -noborder">Colours</div>
+		<</if>>
+
+		<<if _key is not "canvasModel">>
+			<<button "Model">>
+				<<overlayReplace "canvasModel">>
+			<</button>>
+		<<else>>
+			<div class="buttonlike -noborder">Model</div>
+		<</if>>
+
+		<br>
+
+		<<if Renderer.lastAnimation>>
+			<<button "Start/stop animation">>
+				<<script>>
+					if (Renderer.lastAnimation.playing) { Renderer.lastAnimation.stop(); }
+					else { Renderer.lastAnimation.start(); }
+				<</script>>
+			<</button>>
+		<</if>>
+
+		<<button "Refresh caches">>
+			<<script>>
+				Renderer.Stats.logmsgLoad.value = "";
+				Renderer.Stats.logmsgRender.value = "";
+				Renderer.Stats.logmsgAnimate.value = "";
+				Renderer.ImageCaches = {};
+				Renderer.ImageErrors = {};
+				Renderer.lastAnimation.invalidateCaches();
+				Renderer.invalidateLayerCaches(Renderer.lastModel.layerList);
+				Renderer.lastModel.redraw();
+			<</script>>
+		<</button>>
+
+		<br>
+
+		<<script>>
+			output.append(Renderer.Stats.logmsgLoad.bindText($("<div>")[0]));
+			output.append(Renderer.Stats.logmsgRender.bindText($("<div>")[0]));
+			output.append(Renderer.Stats.logmsgAnimate.bindText($("<div>")[0]));
+		<</script>>
+	<</if>>
+
+	<br><br>
+<</widget>>

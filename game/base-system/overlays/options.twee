@@ -1,0 +1,174 @@
+:: Options Overlay [widget]
+
+<<widget "options">>
+
+<h3>Options</h3>
+Some of these will only have an effect after changing passage. Changing location, advancing combat/sex or similar actions will be enough.
+<br><br>
+
+<span class="gold">General Options</span>
+
+<br>
+<<if $debug is 1>>
+	/*<label><<checkbox "$notifyUpdate" false true autocheck>> Notify when there's a new game update available</label>
+	<br>*/
+	<<link "Check for updates">>
+		<<run checkNewVersion()>>
+	<</link>>
+	<br><br>
+<</if>>
+
+/* TODO: Uncomment when Light theme CSS is ready
+Theme:
+<label>
+	<input type="radio" name="theme" value="dark" /> Dark
+</label> |
+<label>
+	<input type="radio" name="theme" value="light" /> Light
+</label>
+<label> |
+	<input type="radio" name="theme" value="system-default" /> System default
+</label>
+<<script>>
+	window.Theme.initControl();
+<</script>>
+<br>*/
+
+Passage Line Height: <<link "1.75">><<unset $reducedLineHeight>><<removeclass "#passages" "reducedLineHeight">><</link>> | <<link "1.5">><<set $reducedLineHeight to true>><<addclass "#passages" "reducedLineHeight">><</link>>
+<br><br>
+<label>
+	<<checkbox "$newWardrobeStyle" false true autocheck>>
+	Show the new wardrobe style
+</label>
+<br>
+
+<label>
+	<<checkbox "$useNarrowMarket" false true autocheck>>
+	Use "narrow screen" version of the market inventory
+</label>
+<br>
+
+<label>
+	<<checkbox "$neverNudeMenus" false true autocheck>>
+	Hide player nudity in menus
+</label>
+<br>
+
+<label>
+	<<checkbox "$showCaptionText" false true autocheck>>
+	Show Caption Text in Sidebar
+</label>
+<br>
+
+<label>
+	<<checkbox "$skipStatisticsConfirmation" false true autocheck>>
+	Skip asking for confirmation when viewing Extra Stats
+</label>
+<br>
+
+<label>
+	<<if $ironmanmode is true>>
+		<<print '<input id="checkbox-autosavedisabled" name="checkbox-autosavedisabled" type="checkbox" tabindex="0" class="macro-checkbox" disabled checked>'>>
+		<span style="color: #7e7e7e;">Disable autosave on sleeping</span>
+	<<else>>
+		<<checkbox "$autosavedisabled" false true autocheck>>
+		Disable autosave on sleeping
+	<</if>>
+</label>
+<br>
+
+<label>
+	<<checkbox "$scroll_remember" false true autocheck>>
+	Restore scrolling position during combat
+</label>
+<br>
+
+<label>
+	<<checkbox "$numpad" false true autocheck>>
+	Enable numpad. Useful on mobile if links break due to translation software
+</label>
+
+<<if $map isnot undefined>>
+	<br><br>
+	<span class="gold">Map Options</span>
+	<br>
+	<label>
+		<<checkbox "$map.movement" false true autocheck>>
+		Enable map movement by clicking/touching the map icons
+	</label>
+	<br>
+	<label>
+		<<checkbox "$map.markers" false true autocheck>>
+		Show clickable area on map
+	</label>
+	<br>
+	<<if $map isnot undefined>>
+		<label><<print '<<checkbox "$map.legacy" false true '+($map.legacy is true ? "checked" : "")+'>>'>> Disable SVG map. Enable if town map is not visible. The above option will not work with this enabled. </label><br>
+	<</if>>
+	<label><<print '<<checkbox "$map.top" false true '+($map.top is true ? "checked" : "")+'>>'>>
+		Move the map above the map links
+	</label>
+<</if>>
+<br><br>
+
+<span class="gold">Image Options</span>
+<br>
+Sidebar character renderer:
+<label><<radiovar "$sidebarRenderer" "img">><<updatesidebarimg>><</radiovar>> Old</label> |
+<label><<radiovar "$sidebarRenderer" "canvas">><<updatesidebarimg>><</radiovar>> New</label> |
+<label><<radiovar "$sidebarRenderer" "both">><<updatesidebarimg>><</radiovar>> Both</label>
+<br>
+
+Lighten the background of the character:
+<label><<radiobutton "$imgLighten" "" autocheck>> Disabled</label> |
+<label><<radiobutton "$imgLighten" "imgLighten" autocheck>> Lighten</label> |
+<label><<radiobutton "$imgLighten" "imgLighten2" autocheck>> Lighten further</label>
+<br>
+
+Closed sidebar stats:
+<label><<radiobutton "$sidebarStats" "Disabled" autocheck>> Disabled</label> |
+<label><<radiobutton "$sidebarStats" "Limited" autocheck>> Limited to important only</label> |
+<label><<radiobutton "$sidebarStats" "All" autocheck>> Show all</label>
+<br>
+
+Closed sidebar time:
+<label><<radiobutton "$sidebarTime" "Disabled" autocheck>> Disabled</label> |
+<label><<radiobutton "$sidebarTime" "top" autocheck>> Above sidebar stats</label> |
+<label><<radiobutton "$sidebarTime" "bottom" autocheck>> Below sidebar stats</label>
+<br>
+/*<label>
+	<<checkbox "$sidebarImage" false true autocheck>>
+	Use sidebar icons rather than text
+</label>
+<br>*/
+<label><<checkbox "$showDebugRenderer" false true autocheck>> Enable renderer debugger</label>
+<br><br>
+
+<span class="gold">Combat Options</span>
+<br>
+Combat Controls:
+<label><<radiobutton "$combatControls" "radio" autocheck>> Radio Buttons</label> |
+<label><<radiobutton "$combatControls" "lists" autocheck>> Lists (No width limit)</label> |
+<label><<radiobutton "$combatControls" "limitedLists" autocheck>> Lists (Width Limit)</label>
+<br>
+
+"Yourself" as a target option:
+<label><<radiobutton "$targetYourself" false autocheck>> Disabled</label> |
+<label><<radiobutton "$targetYourself" true autocheck>> Enabled</label>
+<br><br>
+
+<div class="small-description">To fix animations that aren't playing correctly you can click on them, or press <code>[F]</code> key, or use the button below.</div>
+<br>
+<<if $passage isnot "Start">>
+	<<button "Restart Game">>
+		<<script>>
+			SugarCube.UI.restart();
+		<</script>>
+	<</button>>
+<</if>>
+
+<<button "Fix stuck animations">>
+	<<run fixStuckAnimations()>>
+<</button>>
+
+<</widget>>
