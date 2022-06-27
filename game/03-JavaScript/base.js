@@ -575,11 +575,11 @@ function normalise(value, max, min = 0) {
         Errors.report('[normalise]: min and max params must be different.', { value, max, min });
         return 0;
     }
-    if (value < min || value > max) {
-        Errors.report('[normalise]: value must be within the bounds provided.', { value, max, min });
+    if (denominator < 0) {
+        Errors.report('[normalise]: max param must be greater than min param.', { value, max, min });
         return 0;
     }
-    return (value - min) / denominator;
+    return Math.clamp( (value - min) / denominator, 0, 1);
 }
 window.normalise = normalise;
 
