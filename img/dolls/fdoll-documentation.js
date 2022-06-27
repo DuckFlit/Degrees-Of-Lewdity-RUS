@@ -262,7 +262,7 @@ justAnArm.renderTo(displayContainer);
  * was defined in the hypothetical "bracelet.js" file. 
  * 
  * However, because our tattoo accessory's selected variant was defined as "null", 
- * the arm will not have a tatoo. 
+ * the arm will not have a tattoo. 
  * If we wish to display one of the tattoos 
  * available for the arm, (say, for example a skull), 
  * we simply do 
