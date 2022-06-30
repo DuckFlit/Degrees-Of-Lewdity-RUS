@@ -259,14 +259,12 @@ window.getTimeNumber = function (t) {
 
 window.extendStats = function () {
 	V.extendedStats = !V.extendedStats;
-	var captionDiv = document.getElementById('storyCaptionContent'),
-		statsDiv = document.getElementById('stats');
+	const captionDiv = document.getElementById('storyCaptionDiv');
+	if (captionDiv === null) return;
 	if (V.extendedStats === true) {
-		captionDiv.classList.add("storyCaptionContentExtended");
-		statsDiv.classList.add("statsExtended");
+		captionDiv.classList.add("statsExtended");
 	} else {
-		captionDiv.classList.remove("storyCaptionContentExtended");
-		statsDiv.classList.remove("statsExtended");
+		captionDiv.classList.remove("statsExtended");
 	}
 	new Wikifier(null, '<<replace #stats>><<statsCaption>><</replace>>');
 }
