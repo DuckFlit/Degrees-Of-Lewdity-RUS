@@ -244,6 +244,24 @@
 	<<unset $greatHawkMonsterRoll>>
 	<<unset $estate_bluffed>>
 	<<unset $estate_chaos>>
+
+	<<if not $estatePersistent>>
+		<<set $estatePersistent = {"suspicion": 0, "newDeckTimer": 3}>>
+	<</if>>
+	<<if $estatePersistent.suspicion and $estatePersistent.suspicion gte 1>>
+		<<set _cards_suspicion_decay = 5 >>
+		<<set _cards_suspicion_decay += $NPCName[$NPCNameList.indexOf("Wren")].love * 0.2 >>
+		<<blackjackSuspicion `-_cards_suspicion_decay` >>
+	<</if>>
+	<<if $estatePersistent.newDeckTimer > 0 && $estatePersistent.markedCards && $estatePersistent.markedCards.size > 0 >>
+		<!--  we don't re-set this to 3 here - we only do that in the same
+			passage where we actually reset the deck.
+			we don't do that here because we acknowledge the timer and actually reset it
+			  when the player enters the cottage, to not confuse things mid-game
+		 -->
+		<<set $estatePersistent.newDeckTimer -= 1>>
+	<</if>>
+
 	<<prison_day>>
 	<<if $stall_rejected gte 1>>
 		<<set $stall_rejected -= 1>>

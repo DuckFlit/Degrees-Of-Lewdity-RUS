@@ -549,6 +549,106 @@ window.deck = function(){
 	return cards;
 }
 
+window.ordinalSuffixOf = function(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
+
+window.joinWithConjuction = function(arr, conjuction=" and ", separator=", ") {
+    if (!arr.length) return "";
+
+    if (arr.length <= 2) return arr.join(` and `);
+
+    return `${arr.slice(0, arr.length-1).join(separator)}${conjuction}${arr[arr.length-1]}`;
+}
+
+window.nCr = function(n, r) {
+	// https://stackoverflow.com/questions/11809502/which-is-better-way-to-calculate-ncr
+    if (r > n - r) {
+        // because C(n, r) == C(n, n - r)
+        r = n - r
+    }
+
+    let ans = 1;
+    for(let i = 1; i <= r; ++i) {
+        ans *= n - r + i;
+        ans /= i;
+    }
+
+    return ans;
+}
+
+/**
+ * Given there are {deckCount} cards in the deck and {markedCount} of them have been marked by the player,
+ *   calculates the chance that the player will see at least {atLeast} number of marked cards (from the top of the deck), 
+ *   provided they can only see up to {depth} cards from the top.
+ * 
+ * Use this debug function to calculate the probability to tweak the max depth and max count values for game balance, for the mark cards cheat feature.
+ * 
+ * For example, if the deck is standard (52 cards), the player can see up to 3 cards from the top and the player has marked 8 cards,
+ *   the chance that they will see at least 1 card at the start of a round is calculateMarkedChance(52, 8, 3, 1) = 0.4 (which means they'll see at least 1 marked card in 40% of their games, 
+ *   the first round at least).
+ * If that's too high of a chance, we could, for example, decrease their depth by 1, or decrease the max marked count by 2.
+ *   calculateMarkedChance(52, 8, 2, 1) = 0.28, so 28%, and calculateMarkedChance(52, 6, 3, 1) = 0.31, so 31%.
+ * 
+ * Arguably, seeing what card is third from the top is also less useful than being able to more consistently see the top card or the dealer's hole card, so 
+ *   it's worth assuming the REAL depth is 1/2 even if the value is passed as 3 (so while debugging, always also calculate with depth=1 or depth=2 and see if the number still seems fair).
+ * 
+ * Also, note that the dealer's hole card is included in the depth. This means that if the depth is 3, then it calculates the chance the player will either see one of the top 2 cards or the dealer's second card.
+ * 
+ * @param {Number} deckCount  The number of cards in the deck
+ * @param {Number} markedCount  The number of cards the player has (or can) mark in a deck
+ * @param {Number} depth  How many cards the player can see from the top of the deck (including the dealer's hole card) (to identify if they're marked or not)
+ * @param {Number} atLeast  At least how many cards the player will see (from <depth> cards from the top of the deck)
+ * @param {Boolean} doLog = false, if true - logs the steps of the solution
+ * @returns 
+ */
+window.calculateMarkedChance = function(deckCount, markedCount, depth, atLeast, doLog=false) {
+    // we calculate how many possible ways we can pull DEPTH amount of cards from the deck (and put them in the front of the deck)
+    let totalEvents = nCr(deckCount, depth);
+    let logMessages = [];
+    let log = (m) => {
+        if (doLog) {
+            logMessages.push(m);
+        }
+    }
+    log(`DEPTH=${depth} cards can be placed in front of the deck from a deck of ${deckCount} cards in ${deckCount}c${depth} = ${totalEvents} ways.`);
+
+    let favorableEvents = 0;
+
+    // as per the algorithm, we go from how many marked cards we need at the very least, to either how many marked cards there are, or to how deep we can go (whichever is the limit)
+    let possibleMarkedCardsVisibleLimit = Math.min(markedCount, depth);
+    for (let nMarkedPicked = atLeast; nMarkedPicked <= possibleMarkedCardsVisibleLimit; ++nMarkedPicked) {
+        // we calculate how many possible ways we can pull a valid number of marked cards from the deck
+        //   by dividing the cards into a pool of 
+        //    * marked cards (and calculating how many ways we can pull the valid nMarkedPicked cards from the pool of markedCount marked cards),  nCr(markedCount, nMarkedPicked)
+        //    * unmarked cards (and calculating how many ways we can pull the remaining possibleMarkedCardsVisibleLimit-nMarkedPicked non-marked cards from the pool of deck-markedCount unmarked cards), ncr(deck-markedCount, possibleMarkedCardsVisibleLimit-nMarkedPicked)
+        //   and then we multiply the mutually exclusive combinations to get all possible combinations (cross-joins) of the two (since for each way we can pull (say) 1 marked card, there's the second number of ways we can pull the remaining non marked ones)
+        let markedPoolWays = nCr(markedCount, nMarkedPicked);
+        let unmarkedPoolWays = nCr(deckCount - markedCount, possibleMarkedCardsVisibleLimit - nMarkedPicked);
+        let totalWays = markedPoolWays * unmarkedPoolWays;
+        favorableEvents += totalWays;
+        //log(`One marked card can be picked from MARKED=1 cards in 1c1 = 1 ways, and the remaining three (which are not marked) can be picked from DECK=5-MARKED=1 = 4 cards in 4c3 = 4 ways.
+        log(`${nMarkedPicked} marked cards can be picked from MARKED=${markedCount} cards in ${markedCount}c${nMarkedPicked} = ${markedPoolWays} ways,` +
+            `and the remaining ${deckCount - markedCount} (which are not marked) can be picked from DECK=${deckCount}-MARKED=${markedCount} = ${deckCount - markedCount} cards in ${deckCount - markedCount}c${possibleMarkedCardsVisibleLimit - nMarkedPicked} = ${unmarkedPoolWays} ways.\n` +
+            `${markedPoolWays}*${unmarkedPoolWays} = ${totalWays} ways.`
+        );
+    }
+
+    console.log(logMessages.join("\n"));
+    return favorableEvents / totalEvents;
+}
+
 window.shuffle = function(o) {
 	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
 	return o;
