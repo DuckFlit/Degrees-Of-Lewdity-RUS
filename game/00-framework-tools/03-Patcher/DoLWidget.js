@@ -89,7 +89,7 @@ Macro.add('widget', {
 								delete State.variables[key]
 							})
 						} else if (magicals.length > 0) {
-							console.warn(`Found variables: ${JSON.stringify(magicals)} declared in main`)
+							console.warn(`Found variables: ${JSON.stringify(magicals)} declared in :: ${State.passage}`)
 						}
 						// End custom code
 

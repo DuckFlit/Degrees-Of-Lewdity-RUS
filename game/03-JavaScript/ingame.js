@@ -986,6 +986,11 @@ window.DefaultActions = {
 	}
 }
 
+function selectWardrobe(targetLocation = V.wardrobe_location) {
+	return ((!targetLocation || targetLocation === "wardrobe" || !V.wardrobes[targetLocation]) ? V.wardrobe : V.wardrobes[targetLocation]); 
+}
+window.selectWardrobe = selectWardrobe;
+
 window.transferClothing = function(slot, index, newWardrobe){
 	let oldWardrobeObject;
 	if(V.wardrobe_location === "wardrobe"){
@@ -1070,7 +1075,7 @@ window.clothesDataTrimmer = function(item){
 	});
 }
 
-window.clothesReturnLocation = function(item, type){
+function clothesReturnLocation(item, type){
 	if(!V.multipleWardrobes) return "wardrobe";
 	let isolated = ["asylum","prison"];
 	let lastTaken = item.lastTaken;
@@ -1081,40 +1086,53 @@ window.clothesReturnLocation = function(item, type){
 	}
 	switch(type){
 		case "rebuy":
-			switch(V.location){
-				case "asylum":
-					if(item.type.includes("asylum")){
-						return "asylum";
-					}
-					if(!isolated.includes(lastTaken)){
-						return lastTaken;
-					}
-				case "prison":
-					if(item.type.includes("prison")){
-						return "prison";
-					}
-					if(!isolated.includes(lastTaken)){
-						return lastTaken;
-					}
-				default:
-					if(!isolated.includes(lastTaken)){
-						return lastTaken;
-					}
-			}
+			if (isolated.includes(V.location) && item.type.includes(V.location)) return V.location;
+			break;
 		default:
-			switch(V.location){
-				case "asylum":
-					return "asylum";
-				case "prison":
-					return "prison";
-				default:
-					if(!isolated.includes(lastTaken)){
-						return lastTaken;
-					}
-			}
+			if (isolated.includes(V.location)) return V.location;
 	}
+	if (!isolated.includes(lastTaken)) return lastTaken;
 	return "wardrobe";
 }
+window.clothesReturnLocation = clothesReturnLocation;
+
+function resetClothingState(slot) {
+	if (!slot || slot === "genitals") return;
+	const setupItem = setup.clothes[slot][clothesIndex(slot,V.worn[slot])];
+	// Overwrite the following properties of $worn[slot], IF the corresponding properties are defined in the setupItem.
+	// Note that no single item actually has ALL of these properties; It only changes the properties that DO exist on the item.
+	V.worn[slot] = {
+		...V.worn[slot], 
+		...Object.fromEntries(Object.entries({
+			state: setupItem.state_base,
+			state_top: setupItem.state_top_base,
+			exposed: setupItem.exposed_base,
+			skirt_down: setupItem.skirt_down,
+			vagina_exposed: setupItem.vagina_exposed_base,
+			anus_exposed: setupItem.anus_exposed_base,
+		}).filter(([_,p]) => p != undefined))
+	};
+}
+window.resetClothingState = resetClothingState;
+
+function isConnectedToHood(slot) {
+	// Note: this function currently only works on hoods in the "head" slot, NOT the "over_head" slot.
+	
+	// Return false if slot is undefined or not a valid clothing category
+	if (!slot || !V.worn[slot]) return false;
+	// Return true if this item IS a hood 
+	if (V.worn[slot].hood) return true;
+
+	// Use the primary clothing slot for the next check if this item is connected to an outfit (and is not the primary item)
+	if (V.worn[slot].outfitSecondary && V.worn[slot].outfitSecondary[1] !== "broken"){
+		slot = V.worn[slot].outfitSecondary[0];
+	}
+	if (V.worn[slot].outfitPrimary && V.worn[slot].outfitPrimary.head && V.worn[slot].outfitPrimary.head !== "broken" && V.worn.head.hood){
+		return true;
+	}
+	return false;
+}
+window.isConnectedToHood = isConnectedToHood;
 
 //the 'modder' variable is specifically for modders name, should be kept as a short string
 window.clothesIndex = function(slot, itemToIndex) {
