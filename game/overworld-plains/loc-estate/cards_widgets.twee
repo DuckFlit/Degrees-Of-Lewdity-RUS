@@ -202,24 +202,24 @@ more suspicion if you actually lose the round. -->
 
 <<widget "blackjackCheatingCaught">>
 	<!-- 
-		worth considering the option to make Wren throw the player to the moor if lust isn't high enough 
+		worth considering the option to make Wren throw the player to the moor/give them to Remy if lust isn't high enough 
 		also worth considering having a longer arousal increase assault, with the player getting kicked out if they endure it
 
+		if the player loses in the ride state, they have no other options provided to them
 		the reason I haven't done that is because, if the state is "ride" and the player loses - the moor option is not available to then
 		  as they'd have to run for that (which is not possible in that position)
-		so this means the consequence of losing before the ride state is, at worst, being sent to the moor,
+		so this means the consequence of losing before the ride state is, at worst, being given to remy or being sent to the moor,
 		  but after we've reached the state - the consequence is fornication
 
 		otherwise players could intentionally get caught cheating in this phase in a lost hand and avoid the consequences, but pehraps that
 		  should be allowed as a valid strategy
 	-->
-	<!--  -->
+	<!-- if the player is caught cheating, the deck will be replaced as soon as the player returns for another game -->
+
+	<<set $estatePersistent.newDeckTimer to 0 >>
 	<<if $estate.cards.state is "ride">>
 		<<if $estate.cards.position is "penile" or $estate.cards.position is "vaginal" or $estate.cards.position is "anal">>
-			<!-- 
-			"I'm feeling kind today," <<he>> says, "so instead of giving you to Remy - I'll just consider this your loss and take my prize."<br><br>
-			-->
-			"I'm going to consider this your loss", says Wren. "Time to take my prize."
+			"I'm feeling kind today," <<he>> says, "so instead of giving you to <span class="pink"><<nnpc_him "Remy">></span> - I'll just consider this your loss. Time to take my prize."<br><br>
 			<br><br>
 			<<if $estate.cards.position is "pc_lap" or $estate.cards.position is "penile">>
 				<span class="blue">Wren's weight holds you down, preventing flight.</span>
@@ -232,28 +232,110 @@ more suspicion if you actually lose the round. -->
 			<br>
 		<<else>>
 			<!-- I'm not sure what this branch actually is and how it's reached, so I'll just go with this -->
-			<!-- 
-			"I'm feeling kind today," <<he>> says, "so instead of giving you to Remy - I'll just consider this your loss."<br><br>
-			-->
-			"I'm going to consider this your loss", says Wren. "Time to take my prize."
+			"I'm feeling kind today," <<he>> says, "so instead of giving you to <span class="pink"><<nnpc_him "Remy">></span> - I'll just consider this your loss."<br><br>
 			<br><br>
 			<<link [[Next|Estate Cards Sex Safe]]>><</link>>
 			<br>
 		<</if>>
 	<<else>>
-		<!-- 
-		"It looks like <<pshe>> would benefit from being taught some discipline," says <<he>> with a smirk. "I know just the right <<nnpc_gender "Remy">> for that."<br><br>
-		 -->
+		"It looks like <<pshe>> would benefit from being taught some discipline," <<he>> says with a smirk. "I know just the right <<nnpc_gender "Remy">> for that."<br><br>
 		<<He>> looks at his friends and nods at you. They start advancing on you.
 		<br><br>
-		<<link [[Run|Estate Cards Run]]>><<set $estate.cards_done to true>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 200 800>><<llllove>>
-		<br>
-		<<link [[Apologise|Estate Cards Cheating Apologise]]>><<set $estate.cards_done to true>><<trauma 6>><<stress 6>><<npcincr Wren love 3>><</link>><<gtrauma>><<gstress>><<glove>>
-		<br>
-		<<link [[Protest|Estate Cards Cheating Protest]]>><<set $estate.cards_done to true>><</link>>
-		<br>
-		<!-- todocop fight option? -->
+		<<blackjackCaughtControls 1>>
 	<</if>>
+<</widget>>
+
+
+<<widget "blackjackCaughtControls">>
+<<set _caught_phase = _args[0]>>
+<<if _caught_phase == 1>>
+	<span class="green">If you are going to run, you'll be more likely to succeed if you don't waste time now.</span>
+
+	<<set $estate.prev_apologised to $estatePersistent.cur_apologised == true>>
+
+	<!-- 
+	Static plead base chance modifiers (Wren love, English) are calculated here, but the RNG dynamic modifiers are calculated in the plead passage, to allow save-scumming.
+	I don't know the stance of the development team on save-scumming outside of ironmna mode,
+	  and it seems like it's not a requirement to prevent save-scumming as the athleticscheck also calculates the success chance after the link is clicked,
+	  so I'll fallback onto my own belief of letting players play the game the way they want.
+	Feel free to move the success calculations from the plead passage to here, though.
+	-->
+	<<set $estate._plead_required_points to 800>>
+	<<set $estate._base_plead_points to 0>>
+	<<set $estate._plead_rng_min = 0>>
+	<<set $estate._plead_rng_max = 1000>>
+	<<set _base_chance = 1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min, $estate._plead_rng_max)>>
+	<<set _base_chance_str = formatDecimals(_base_chance*100, 1) >>
+	<!-- 0-200 points for love (proportionate to 0,50 love) (as in 50 love is always full 200 points)-->
+	<<set _extra_wren = lerp(Math.clamp($NPCName[$NPCNameList.indexOf("Wren")].love / 50, 0, 1), 0, 250) >>
+	<<set $estate._base_plead_points += _extra_wren>>
+	<<set _extra_wren_chance_str = formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_wren, $estate._plead_rng_max + _extra_wren) - _base_chance)*100, 1)>>
+	<!-- 0-200 points for English (proportionate to 0,1000 english)-->
+	<<set _extra_english = lerp(Math.clamp(currentSkillValue('english') / 1000, 0, 1), 0, 250) >>
+	<<set $estate._base_plead_points += _extra_english>>
+	<<set _extra_english_chance_str = formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_english, $estate._plead_rng_max + _extra_english) - _base_chance)*100, 1)>>
+	<!-- 0-100 extra points for submissiveness (1000,2000) -->
+	<<set _extra_sub = lerp(inverseLerp($submissive, 1000, 2000), 0, 100) >>
+	<<set $estate._base_plead_points += _extra_sub>>
+	<<set _extra_sub_chance_str = formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_sub, $estate._plead_rng_max + _extra_sub) - _base_chance)*100, 1)>>
+
+	<<set _plead_difficulty = Math.round((1-inverseLerp(800, $estate._base_plead_points + $estate._plead_rng_min, $estate._base_plead_points + $estate._plead_rng_max))*100)>>
+	<<set _plead_chance_str = formatDecimals(_plead_difficulty, 1)>>
+
+	<!-- 
+	+ 0,1000 RNG points
+	this means you have at least a 20% chance to convince Wren, and at most 70%.
+	 -->
+
+	<br><br>
+	<<if $estate.prev_apologised >>
+		<span class="red">You've apologised the last time you were caught. You're not sure if that will work again.</span>
+		<br>
+	<</if>>
+	Forgiveness chance:
+	<br>
+	Base: <span class="black"><<print _base_chance_str>>%</span>
+	<<if _extra_english > 0>>
+		<br>
+		<span class="green">English</span> <span class="black">+<<print _extra_english_chance_str>>%</span>
+	<</if>>
+	<<if _extra_wren > 0>>
+		<br>
+		<span class="green">Wren's love</span> <span class="black">+<<print _extra_wren_chance_str>>%</span>
+	<</if>>
+	<<if _extra_sub > 0>>
+		<br>
+		<span class="green">Submissiveness</span> <span class="black">+<<print _extra_sub_chance_str>>%</span>
+	<</if>>
+	<<if (_extra_english + _extra_wren + _extra_sub) > 0>>
+		<br>
+		Total: <span class="black"><<print _plead_chance_str>>%</span>
+	<</if>>
+
+	<br><br>
+
+	<<link [[Run|Estate Cards Cheating Run]]>><<set $estate.cards_done to true>><<set $estatePersistent.cur_apologised to false>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 500 1000>><<llllove>>
+	<br>
+	<<link [[Plead|Estate Cards Cheating Plead]]>><<set $estate.cards_done to true>><<set $estatePersistent.cur_apologised to true>><<trauma 15>><<stress 15>><<npcincr Wren love 3>><</link>><<ggtrauma>><<ggstress>><<glove>>
+		<<if $checkstyle is "skillname">>
+			| <span class="lblue">Forgiveness Chance</span>
+		<<else>>
+			| <span class="lblue">Forgiveness Chance</span>:
+			<<skillDifficultyText _plead_difficulty>>
+		<</if>>
+	<br>
+	<<link [[Protest|Estate Cards Cheating Protest]]>><<set $estate.cards_done to true>><<set $estatePersistent.cur_apologised to false>><<trauma -6>><<stress -6>><<npcincr Wren love -1>><</link>><<lstress>><<ltrauma>><<llove>>
+	<br>
+	<<link [[Surrender|Estate Cards Cheat Surrender]]>><<set $estate.cards_done to true>><<set $estatePersistent.cur_apologised to false>><<npcincr Wren love 2>><</link>><<glove>>
+	<!-- idea - fight option? -->
+<<else>>
+	<span class="red"><<His>> friends have almost surrounded you. It's going to be more difficult to run away now.</span>
+	<br><br>
+	<<link [[Run|Estate Cards Cheating Run]]>><<set $estate.cards_done to true>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 800 1200>><<llllove>>
+	<br>
+	<<link [[Surrender|Estate Cards Cheat Surrender]]>><<set $estate.cards_done to true>><<npcincr Wren love 2>><</link>><<glove>>
+	<br>
+<</if>>
 <</widget>>
 
 <<widget "blackjackControls">>
@@ -315,7 +397,7 @@ more suspicion if you actually lose the round. -->
 		<</if>>
 	<<elseif $estate.cards.cheatPeeking == true && $blackjack.isFirstTurn == true >>
 		<<if $blackjack.turnIsStale == false>>
-			<!-- todocop  an alternative, where we handle the deck and the chance to see the card is higher -->
+			<!-- idea -  an alternative, where we handle the deck and the chance to see the card is higher -->
 			<!-- 
 				skulduggery affects your chance to see the card. base chance is 10%, skulduggery adds from 0 to 10% chance.
 				different levels of exposure have a chance to affect the chance as well, as you're distracting the dealer every now and then.
@@ -535,6 +617,7 @@ Total: <<print $blackjack.playersScore>>
 <<if $estatePersistent.suspicion is undefined>>
 	<<set $estatePersistent.suspicion = 0 >>
 <</if>>
+<<set _player_cheating_virginity_warned = false>>
 <<if $estatePersistent.suspicion > 0>>
 	<br><br>
 	Suspicion:
@@ -543,6 +626,10 @@ Total: <<print $blackjack.playersScore>>
 	<<if $estatePersistent.suspicion > _consts__danger_zone_suspicion>>
 		<br>
 		<span class="red">Wren and <<his>> friends are very suspicious of you, and you are being closely watched.</span>
+		<<if $estate.cards.state is "ride">>
+			<<set _player_cheating_virginity_warned = true>>
+			<<cards_cheating_virginity_warning>>
+		<</if>>
 	<</if>>
 <</if>>
 <</widget>>
@@ -572,7 +659,12 @@ Total: <<print $blackjack.playersScore>>
 				<</if>>
 				<br>
 				<<set $skulduggerydifficulty = 400 + _can_mark_count*100 + $estatePersistent.suspicion*25 >>
-				<<link [[$_link_text|Estate Blackjack Cheat]]>><<set $blackjack.playersState to "cheat">><<set $blackjack.cheatChoice to "mark">><</link>><<skulduggerydifficulty>>
+				<<link [[$_link_text|Estate Blackjack Cheat]]>><<set $blackjack.playersState to "cheat">><<set $blackjack.cheatChoice to "mark">><</link>>
+					<<skulduggerydifficulty>>
+					<<if $estate.cards.state is "ride" && !_player_cheating_virginity_warned>>
+						<<set _player_cheating_virginity_warned = false>>
+						<<cards_cheating_virginity_warning true>>
+					<</if>>
 			<</if>>
 
 			<<if $estate.cards.cheatPeeking == true >>
@@ -645,6 +737,35 @@ Total: <<print $blackjack.playersScore>>
 		<br>
 	<</if>>
 <</if>>
+<</widget>>
+
+<<widget "blackjackCaughtCheatingSurrender">>
+<<if $wren_intro isnot undefined>>
+	<<set $estate_cards_end to "cheat_remy">>
+<</if>>
+
+<<if !($worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")) >>
+	<<clothesruined>><<exposure>>
+	"Let's get <<pher>> ready," the <<person2>><<person>> says. Hands grasp your clothes from all directions, pulling and tearing the fabric, until you're left exposed. <<covered>>
+	<br><br>
+<</if>>
+<<fameexhibitionism 7>>
+
+They lift you, and carry you naked through the estate, <<if $estate.chaos gte 100>>through all the chaos you've caused, <</if>> towards a small barn.
+<br><br>
+A couple of guard see you coming and smirk. Wren hands you to the guards.
+<br><br>
+<<leash 21>>
+One of the guards goes into the barn and comes back with a collar and chain, which are then fixed around your neck. The guards tug on the attached chain, forcing you along.
+<br><br>
+<<if $NPCName[$NPCNameList.indexOf('Wren')].love gte 20 >>
+	"Looking forward to playing with you again," says Wren. "I know you'll be back soon, one way or another."
+<<else>>
+	"Don't cause them too much trouble", says Wren.
+<</if>>
+<br><br>
+<<link [[Next|Livestock Intro]]>><<endevent>><<estate_end>><</link>>
+<br>
 <</widget>>
 
 
@@ -1142,6 +1263,37 @@ Your current score: <<print $highlow.correct>>
 <</if>>
 <</widget>>
 
+
+<<widget "cards_virginity_all_warnings">>
+<<set _player_suspicious = $estatePersistent.suspicion > 0 >>
+<<if $estate.cards.position is "vaginal">>
+	<<if $player.virginity.vaginal is true>>
+		<<if _player_suspicious>>
+			<span class="red">If you orgasm, or if you're caught cheating - Wren will take your virginity.</span>
+		<<else>>
+			<span class="red">If you orgasm, Wren will take your virginity.</span>
+		<</if>>
+	<</if>>
+<<elseif $estate.cards.position is "penile">>
+	<<if $player.virginity.penile is true>>
+		<<if _player_suspicious>>
+			<span class="red">If you orgasm, or if you're caught cheating - Wren will take your virginity.</span>
+		<<else>>
+			<span class="red">If you orgasm, Wren will take your virginity.</span>
+		<</if>>
+	<</if>>
+<<elseif $estate.cards.position is "anal">>
+	<<if $player.virginity.anal is true>>
+		<<if _player_suspicious>>
+			<span class="red">If you orgasm, or if you're caught cheating - Wren will take your anal virginity.</span>
+		<<else>>
+			<span class="red">If you orgasm, Wren will take your anal virginity.</span>
+		<</if>>
+	<</if>>
+<</if>>
+<</widget>>
+
+
 <<widget "cards_virginity_warning">>
 <<if $estate.cards.position is "vaginal">>
 	<<if $player.virginity.vaginal is true>>
@@ -1154,6 +1306,26 @@ Your current score: <<print $highlow.correct>>
 <<elseif $estate.cards.position is "anal">>
 	<<if $player.virginity.anal is true>>
 		<span class="red">If you orgasm, Wren will take your anal virginity.</span>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "cards_cheating_virginity_warning">>
+<<set _is_inline = _args[0]>>
+<<if $estate.cards.position is "vaginal">>
+	<<if $player.virginity.vaginal is true>>
+		<<if !_is_inline>><br><<else>> | <</if>>
+		<span class="red">If you're caught cheating, Wren will take your virginity.</span>
+	<</if>>
+<<elseif $estate.cards.position is "penile">>
+	<<if $player.virginity.penile is true>>
+		<<if !_is_inline>><br><<else>> | <</if>>
+		<span class="red">If you're caught cheating, Wren will take your virginity.</span>
+	<</if>>
+<<elseif $estate.cards.position is "anal">>
+	<<if $player.virginity.anal is true>>
+		<<if !_is_inline>><br><<else>> | <</if>>
+		<span class="red">If you're caught cheating, Wren will take your anal virginity.</span>
 	<</if>>
 <</if>>
 <</widget>>
@@ -1213,7 +1385,7 @@ Wren leans behind <<him>>, and opens a drawer. <<He>> feels inside, and produces
 <<else>>
 	<<link [[Play (0:01)|Estate Blackjack]]>><<pass 1>><</link>>
 	<<if $estate.cards.state is "ride">>
-		<span class="purple">Losing may increase arousal.</span> <<cards_virginity_warning>>
+		<span class="purple">Losing may increase arousal.</span> <<cards_virginity_all_warnings>>
 	<</if>>
 	<<if _cards_desire is "kiss" and $player.virginity.kiss is true>>
 		<span class="red">If you lose, Wren will take your first kiss.</span>

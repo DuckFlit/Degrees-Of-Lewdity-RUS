@@ -572,6 +572,16 @@ window.joinWithConjuction = function(arr, conjuction=" and ", separator=", ") {
     return `${arr.slice(0, arr.length-1).join(separator)}${conjuction}${arr[arr.length-1]}`;
 }
 
+window.lerp = function(percent, start, end) {
+	return Math.clamp(start + (end - start) * percent, start, end);
+}
+window.inverseLerp = function(value, start, end) {
+	return Math.clamp((value - start) / (end - start), 0, 1);
+}
+window.formatDecimals = function(value, decimalPlaces) {
+	return Number(Math.round(parseFloat(value + 'e' + decimalPlaces)) + 'e-' + decimalPlaces);
+}
+
 window.nCr = function(n, r) {
 	// https://stackoverflow.com/questions/11809502/which-is-better-way-to-calculate-ncr
     if (r > n - r) {

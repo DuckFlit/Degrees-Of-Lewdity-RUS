@@ -45,8 +45,16 @@
 		"Look who it is," Wren says, grinning. "I said you'd be back for more." <<His>> friends laugh.
 	<<elseif $estate_cards_end is "oral">>
 		"Look who it is," Wren says. "Glad you're here. My friends enjoyed you last time. I promised I'd have you on your knees again."
-	<<elseif $estate_cards_end is "cheat">>
+	<<elseif $estate_cards_end is "cheat_run">>
+		"Look who it is," Wren says. "You were a very bad <<girl>> last time, cheating and booking it like that. Ready to be taught a lesson?"
+	<<elseif $estate_cards_end is "cheat_moor">>
 		"Look who it is," Wren says. "You were a bad <<girl>> last time, cheating like that. Hope you've learned your lesson."
+	<<elseif $estate_cards_end is "cheat_remy">>
+		<<if $NPCName[$NPCNameList.indexOf('Wren')].love gte 20 >>
+			"Look who it is," Wren says. "I knew you'd be back soon - you won me a bet."
+		<<else>>
+			"Look who it is," Wren says. "Not too surprised to meet you again. Hope you didn't cause them too much trouble."
+		<</if>>
 	<<elseif $wren_seen is "catsuit">>
 		"Look who it is," Wren says. "It was fun to run into you during work."
 	<<else>>
@@ -97,6 +105,7 @@ You enter the cottage. A group of <<people>> play cards around a table. They all
 <</if>>
 <<set $estate.cards_done to true>>
 <<if $estate.cards.state is "ride">>
+	<!-- note - this is an impossible if clause. the player isn't given this option in the ride state. -->
 	<<if $estate.cards.position is "pc_lap" or $estate.cards.position is "penile">>
 		You shove Wren off your lap, and run for the door.
 	<<else>>
@@ -134,13 +143,35 @@ You enter the cottage. A group of <<people>> play cards around a table. They all
 	<br>
 <</if>>
 
-:: Estate Cards Cheating Apologise
+
+:: Estate Cards Cheating Run
 <<effects>>
-<<if $wren_intro isnot undefined>>
-	<<set $estate_cards_end to "cheat">>
-<</if>>
 <<set $estate.cards_done to true>>
-<!-- <<if $estate.cards.state is "ride">>  is omitted because in that state the apologize option isn't given -->
+You turn and run.
+<<if $athleticsSuccess>>
+	<<if $wren_intro isnot undefined>>
+		<<set $estate_cards_end to "cheat_run">>
+	<</if>>
+
+	You hear footsteps pursue, but you dash around the outside of the cottage <span class="green">and outpace them.</span> You drop down a ditch to hide.
+	<br><br>
+
+	<<link [[Next|Estate]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You hear footsteps pursue. You've barely made it outside when Wren <span class="red">tackles you to the ground.</span> 
+	<br><br>
+	"Got you", says Wren, now on top of you. "Now, stop resisting. You're gonna be in good hands - <<nnpc_he "Remy">> will whip you into shape."
+	<br><br>
+
+	<<blackjackCaughtCheatingSurrender>>
+<</if>>
+
+:: Estate Cards Cheating Plead
+<<effects>>
+<<set $estate.cards_done to true>>
+<!-- <<if $estate.cards.state is "ride">>  is omitted because in that state the apologise option isn't given -->
+
 
 <<if $submissive gte 1150>>
 	"I'm sorry for cheating, please forgive me!" you plead.
@@ -150,31 +181,56 @@ You enter the cottage. A group of <<people>> play cards around a table. They all
 	"You got me," you say. "Sorry."
 <</if>>
 
-<br><br>
-"Sorry won't cut it, <<lass>>," says Wren. "Gotta make sure you learn your lesson."
-<br><br>
-<!--
-"Now, be a good <<girl>> and don't try anything stupid", <<he>> says with a smile.
-<br><br>
--->
-<<His>> friends are advancing on you.
+<<set _plead_points to $estate._base_plead_points + random($estate._plead_rng_min, $estate._plead_rng_max) >>
+<<set _plead_success to (_plead_points gte $estate._plead_required_points) >>
 
-<!-- 
-	should we make this a more viable option by giving Wren a chance to forgive the player?
-	since Wren doesn't have a "forgive if love > x" feature in place at the moment, I will assume he's not that soft to let us off for getting caught cheating
- -->
- <!-- also, shouldn't the outcome be worse? I don't mean just for the cheating - but for running as well  -->
-<br><br>
-<<link [[Run|Estate Cards Run]]>><<set $estate.cards_done to true>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 200 800>><<llllove>>
-<br>
-<<link [[Surrender|Estate Cards Cheat Surrender]]>><<set $estate.cards_done to true>><<npcincr Wren love 2>><</link>><<glove>>
-<br>
+<<if not $estate.prev_apologised and _plead_success>>
+	<<if $wren_intro isnot undefined>>
+		<<set $estate_cards_end to "cheat_moor">>
+	<</if>>
+	<br><br>
+	Wren sighs. "What am I going to do with you?", <<he>> says.<br><br>
+	<span class="green">Your pleas seem to have reached <<him>>.</span>
+	<br><br>
+	"Can't give this one to <span class="pink"><<nnpc_him "Remy">></span>, would cause them too much trouble", says Wren.
+	<br>
+	"What should we do with <<pher>>?", <<he>> asks <<his>> friends, who have completely surrounded you.
+	<br><br>
+	<<if $worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")>>
+		"Let's take <<phim>> to the moor," the <<person2>><<person>> replies.
+	<<else>>
+		<<clothesruined>><<exposure>>
+		"Like you need to ask," the <<person2>><<person>> replies. Hands grasp your clothes from all directions, pulling and tearing the fabric, until you're left exposed. <<covered>>
+	<</if>>
+	<br><br>
+	They lift you, and carry you naked through the estate, towards the entrance. The guard sees you coming, and smirks as <<he>> opens the gate.
+	<br><br>
+
+	They heft you through. You hear it rattle shut as you climb to your feet. You stumble away, enduring the jeers.
+	<br><br>
+
+	<<link [[Next|Moor]]>><<endevent>><<set $eventskip to 1>><<estate_end>><</link>>
+	<br>
+<<else>>
+	<<if $estate.prev_apologised >>
+		<br><br>
+		Wren looks at you in disbelief for a second and scoffs.
+		<br><br>
+		"You're shameless, you know that?" <<he>> says. <span class="red">"That's exactly what you told us last time."</span>
+	<<else>>
+		<br><br>
+		<span class="red">"Sorry won't cut it, <<lass>>,"</span> says Wren. "Gotta make sure you learn your lesson."
+	<</if>>
+
+	<br><br>
+	"Now, be a good <<girl>> and don't try anything stupid", <<he>> says with a smile.
+
+	<br><br>
+	<<blackjackCaughtControls 2>>
+<</if>>
 
 :: Estate Cards Cheating Protest
 <<effects>>
-<<if $wren_intro isnot undefined>>
-	<<set $estate_cards_end to "cheat">>
-<</if>>
 <<set $estate.cards_done to true>>
 
 <<if $submissive gte 1150>>
@@ -188,47 +244,18 @@ You enter the cottage. A group of <<people>> play cards around a table. They all
 <br><br>
 Your words fall on deaf ears. "We both know what you did," says Wren. "Gotta make sure you learn your lesson."
 <br><br>
-<!-- 
+
 "Now, be a good <<girl>> and don't try anything stupid", <<he>> says with a smile.
 <br><br>
- -->
-<<His>> friends are advancing on you.
-<!-- todo  basically same as apologize, just without the +love and without the +stress/trauma -->
-<br><br>
-<<link [[Run|Estate Cards Run]]>><<set $estate.cards_done to true>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 200 800>><<llllove>>
-<br>
-<<link [[Surrender|Estate Cards Cheat Surrender]]>><<set $estate.cards_done to true>><<npcincr Wren love 2>><</link>><<glove>>
-<br>
+<<blackjackCaughtControls 2>>
 
 :: Estate Cards Cheat Surrender
 <<effects>>
-<<if $wren_intro isnot undefined>>
-	<<set $estate_cards_end to "cheat">>
-<</if>>
 <<set $estate.cards_done to true>>
 You stay in place, allowing Wren's goons to surround you.
 <br><br>
-"What should we do with <<phim>>?" <<he>> asks <<his>> friends, who have completely surrounded you.
-<br><br>
-<<if $worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")>>
-	"Let's take <<phim>> to the moor," the <<person2>><<person>> replies.
-<<else>>
-	<<clothesruined>><<exposure>>
-	"Like you need to ask," the <<person2>><<person>> replies. Hands grasp your clothes from all directions, pulling and tearing the fabric, until you're left exposed. <<covered>>
-<</if>>
-<<fameexhibitionism 7>>
-<br><br>
-
-They lift you, and carry you naked through the estate, towards the entrance. The guard sees you coming, and smirks as <<he>> opens the gate.
-<br><br>
-
-They heft you through. You hear it rattle shut as you climb to your feet. You stumble away, enduring the jeers.
-<br><br>
-
-<<link [[Next|Moor]]>><<endevent>><<set $eventskip to 1>><<estate_end>><</link>>
-<br>
-
-<!-- todo  basically same stuff as in run, but less forced -->
+<<blackjackCaughtCheatingSurrender>>
+<!--  basically same stuff as in run, but less forced -->
 
 
 :: Estate Cards Intro 2
