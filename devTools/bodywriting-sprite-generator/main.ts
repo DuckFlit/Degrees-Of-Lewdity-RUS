@@ -223,13 +223,7 @@ function verifyCollisions(bodyParts: Array<BodyPart>): void {
         for (var y = 0; y < args.size; y++) {
             for (var x = 0; x < args.size; x++) {
 
-                const r = part1.image.pixels[y][x].r != 0 && part2.image.pixels[y][x].r != 0;
-                const g = part1.image.pixels[y][x].g != 0 && part2.image.pixels[y][x].g != 0;
-                const b = part1.image.pixels[y][x].b != 0 && part2.image.pixels[y][x].b != 0;
-                const a = part1.image.pixels[y][x].a != 0 && part2.image.pixels[y][x].a != 0;
-
-
-                const collided = r || g || b || a;
+                const collided = part1.image.pixels[y][x].a != 0 && part2.image.pixels[y][x].a != 0;
                 if (collided) {
                     return [{
                         part1: part1,
