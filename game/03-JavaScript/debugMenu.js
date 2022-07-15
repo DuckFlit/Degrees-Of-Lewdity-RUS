@@ -1,6 +1,11 @@
+/* A standard function to reference to avoid declaring an anonymous function repeatedly. */
+const stayOnPassageFn = function () {
+	return V.passage;
+};
+
 setup.debugMenu = {
 	cacheDebugDiv: {}
-}
+};
 
 setup.debugMenu.event_list = {
 	Main:[
@@ -38,7 +43,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Strip`, function(){return V.passage}
+				`Strip`, stayOnPassageFn
 			],
 			widgets: [
 				`<<undressclothes "wardrobe">>`
@@ -46,7 +51,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Strip to undies`, function(){return V.passage}
+				`Strip to undies`, stayOnPassageFn
 			],
 			widgets: [
 				`<<generalUndress wardrobe over_upper>>`,
@@ -57,7 +62,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Strip all`, function(){return V.passage}
+				`Strip all`, stayOnPassageFn
 			],
 			widgets: [
 				`<<undress "wardrobe">>`
@@ -65,7 +70,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 1 minute`, function(){return V.passage}
+				`Pass 1 minute`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 1>>`
@@ -73,7 +78,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 15 minutes`, function(){return V.passage}
+				`Pass 15 minutes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 15>>`
@@ -81,7 +86,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 20 minutes`, function(){return V.passage}
+				`Pass 20 minutes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 20>>`
@@ -89,7 +94,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 1 hour`, function(){return V.passage}
+				`Pass 1 hour`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 60>>`
@@ -97,7 +102,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 3 hours`, function(){return V.passage}
+				`Pass 3 hours`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 3 hours>>`
@@ -105,7 +110,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 6 hours`, function(){return V.passage}
+				`Pass 6 hours`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 6 hours>>`
@@ -113,7 +118,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 12 hours`, function(){return V.passage}
+				`Pass 12 hours`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 12 hours>>`
@@ -121,7 +126,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 18 hours`, function(){return V.passage}
+				`Pass 18 hours`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 18 hours>>`
@@ -129,7 +134,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 23 hours`, function(){return V.passage}
+				`Pass 23 hours`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 23 hours>>`
@@ -137,7 +142,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pass 24 hours`, function(){return V.passage}
+				`Pass 24 hours`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pass 24 hours>>`
@@ -145,7 +150,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Trust me`, function(){return V.passage}
+				`Trust me`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $enemytrust += 2000>>`,
@@ -154,7 +159,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Hate me`, function(){return V.passage}
+				`Hate me`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $enemytrust -= 2000>>`,
@@ -163,7 +168,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Super Punch`, function(){return V.passage}
+				`Super Punch`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $enemyhealth to 0>>`
@@ -171,7 +176,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Super Stroke`, function(){return V.passage}
+				`Super Stroke`, stayOnPassageFn
 			],
 			widgets: [
 				function(){return (`<<set $enemyarousal to ` + V.enemyarousalmax + `>>`)}
@@ -179,7 +184,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Scream`, function(){return V.passage}
+				`Scream`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $alarm to 1>>`
@@ -187,7 +192,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Finish`, function(){return V.passage}
+				`Finish`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $finish to 1>>`
@@ -195,7 +200,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make Rape`, function(){return V.passage}
+				`Make Rape`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $consensual to 0>>`
@@ -203,7 +208,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make consensual`, function(){return V.passage}
+				`Make consensual`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $consensual to 1>>`
@@ -211,7 +216,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Frigify`, function(){return V.passage}
+				`Frigify`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $enemyarousal to 0>>`
@@ -219,7 +224,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Roll over`, function(){return V.passage}
+				`Roll over`, stayOnPassageFn
 			],
 			widgets: [
 				function(){return (`<<set $position to ` + (V.position == "doggy" ? "doggy" : "missionary") + `>>`)}
@@ -228,7 +233,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 1`, function(){return V.passage}
+				`RNG 1`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 1>>`
@@ -236,7 +241,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 11`, function(){return V.passage}
+				`RNG 11`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 11>>`
@@ -244,7 +249,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 21`, function(){return V.passage}
+				`RNG 21`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 21>>`
@@ -252,7 +257,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 31`, function(){return V.passage}
+				`RNG 31`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 31>>`
@@ -260,7 +265,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 41`, function(){return V.passage}
+				`RNG 41`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 41>>`
@@ -268,7 +273,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 51`, function(){return V.passage}
+				`RNG 51`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 51>>`
@@ -276,7 +281,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 61`, function(){return V.passage}
+				`RNG 61`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 61>>`
@@ -284,7 +289,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 71`, function(){return V.passage}
+				`RNG 71`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 71>>`
@@ -292,7 +297,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 81`, function(){return V.passage}
+				`RNG 81`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 81>>`
@@ -300,7 +305,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG 91`, function(){return V.passage}
+				`RNG 91`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to 91>>`
@@ -308,7 +313,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG reroll x1`, function(){return V.passage}
+				`RNG reroll x1`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $rng to random(1,100)>>`
@@ -316,7 +321,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG reroll x3`, function(){return V.passage}
+				`RNG reroll x3`, stayOnPassageFn
 			],
 			widgets: [
 				`<<run random(1,100)>>`,
@@ -326,7 +331,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`RNG reroll x5`, function(){return V.passage}
+				`RNG reroll x5`, stayOnPassageFn
 			],
 			widgets: [
 				`<<run random(1,100)>>`,
@@ -338,7 +343,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Wear sundress`, function(){return V.passage}
+				`Wear sundress`, stayOnPassageFn
 			],
 			widgets: [
 				`<<upperwear 1>>`
@@ -346,7 +351,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Wear swimsuit`, function(){return V.passage}
+				`Wear swimsuit`, stayOnPassageFn
 			],
 			widgets: [
 				`<<underlowerwear 6>>`
@@ -364,7 +369,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`End Event`, function(){return V.passage}
+				`End Event`, stayOnPassageFn
 			],
 			widgets: [
 				`<<endevent>>`
@@ -372,7 +377,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Escape Vore`, function(){return V.passage}
+				`Escape Vore`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $vorestage to 0>>`
@@ -383,7 +388,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make all beasts monster boys`, function(){return V.passage}
+				`Make all beasts monster boys`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $monsterchance to 100>>`,
@@ -394,7 +399,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make all beasts monster girls`, function(){return V.passage}
+				`Make all beasts monster girls`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $monsterchance to 100>>`,
@@ -405,7 +410,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make all beasts monster cuntboys`, function(){return V.passage}
+				`Make all beasts monster cuntboys`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $monsterchance to 100>>`,
@@ -416,7 +421,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make all beasts monster dickgirls`, function(){return V.passage}
+				`Make all beasts monster dickgirls`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $monsterchance to 100>>`,
@@ -427,7 +432,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make all beasts male animals`, function(){return V.passage}
+				`Make all beasts male animals`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $monsterchance to 0>>`,
@@ -436,7 +441,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make all beasts female animals`, function(){return V.passage}
+				`Make all beasts female animals`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $monsterchance to 0>>`,
@@ -448,7 +453,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Spring`, function(){return V.passage}
+				`Spring`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $season to "spring">>`
@@ -456,7 +461,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Summer`, function(){return V.passage}
+				`Summer`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $season to "summer">>`
@@ -464,7 +469,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Autumn`, function(){return V.passage}
+				`Autumn`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $season to "autumn">>`
@@ -472,7 +477,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Winter`, function(){return V.passage}
+				`Winter`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $season to "winter">>`
@@ -483,7 +488,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Enable basic Pregnancy features`, function(){return V.passage}
+				`Enable basic Pregnancy features`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $sexStats.anus.pregnancy.seenDoctor to 2>>`,
@@ -492,7 +497,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Initial Mother Trait`, function(){return V.passage}
+				`Get Initial Mother Trait`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $sexStats.anus.pregnancy.motherStatus to 1>>`
@@ -500,7 +505,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Fertilise New Eggs`, function(){return V.passage}
+				`Fertilise New Eggs`, stayOnPassageFn
 			],
 			widgets: [
 				`<<fertilise>>`
@@ -508,7 +513,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pregnancy Progress Day`, function(){return V.passage}
+				`Pregnancy Progress Day`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pregProgressDay>>`
@@ -516,7 +521,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pregnancy Progress Week`, function(){return V.passage}
+				`Pregnancy Progress Week`, stayOnPassageFn
 			],
 			widgets: [
 				`<<pregProgressDay>>`,
@@ -531,7 +536,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				function(){return `Set all pregnancy events to next ` + V.pass}, function(){return V.passage}
+				function(){return `Set all pregnancy events to next ` + V.pass}, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _pregnancy to $sexStats.anus.pregnancy>>`,
@@ -546,7 +551,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Pregnant with an eel`, function(){return V.passage}
+				`Get Pregnant with an eel`, stayOnPassageFn
 			],
 			widgets: [
 				`<<impregnate "eels" 1000>>`
@@ -554,7 +559,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Pregnant with an slime`, function(){return V.passage}
+				`Get Pregnant with an slime`, stayOnPassageFn
 			],
 			widgets: [
 				`<<impregnate "slimes" 1000>>`
@@ -562,7 +567,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Pregnant with an worm`, function(){return V.passage}
+				`Get Pregnant with an worm`, stayOnPassageFn
 			],
 			widgets: [
 				`<<impregnate "worms" 1000>>`
@@ -570,7 +575,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Pregnant with an tentacle`, function(){return V.passage}
+				`Get Pregnant with an tentacle`, stayOnPassageFn
 			],
 			widgets: [
 				`<<impregnate "tentacle" 1000>>`
@@ -581,7 +586,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Repair Pregnancy Objects`, function(){return V.passage}
+				`Repair Pregnancy Objects`, stayOnPassageFn
 			],
 			widgets: [
 				`<<prenancyObjectRepair>>`
@@ -589,7 +594,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Reset Pregnancy Objects`, function(){return V.passage}
+				`Reset Pregnancy Objects`, stayOnPassageFn
 			],
 			widgets: [
 				`<<unset $container>>`,
@@ -605,7 +610,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Pregnant with humans`, function(){return V.passage}
+				`Get Pregnant with humans`, stayOnPassageFn
 			],
 			widgets: [
 				function() {if (V.sexStats.vagina.menstruation.currentState == "normal"){
@@ -619,7 +624,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Pregnant with wolves`, function(){return V.passage}
+				`Get Pregnant with wolves`, stayOnPassageFn
 			],
 			widgets: [
 				function() {if (V.sexStats.vagina.menstruation.currentState == "normal"){
@@ -633,7 +638,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Robin Pregnant with PCs children`, function(){return V.passage}
+				`Get Robin Pregnant with PCs children`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _sperm to ["pc"]>>`,
@@ -643,7 +648,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Get Bailey Pregnant with Black wolf`, function(){return V.passage}
+				`Get Bailey Pregnant with Black wolf`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _sperm to ["Black Wolf"]>>`,
@@ -653,7 +658,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Enable Debug Lines`, function(){return V.passage}
+				`Enable Debug Lines`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $debugLines to true>>`
@@ -661,7 +666,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Disable Debug Lines`, function(){return V.passage}
+				`Disable Debug Lines`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $debugLines to false>>`
@@ -704,7 +709,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Start Robin Event`, function(){return V.passage}
+				`Start Robin Event`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $robindebt to 9>>`
@@ -1169,7 +1174,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Halloween`, function(){return V.passage}
+				`Halloween`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $days to 47>>`,
@@ -1180,7 +1185,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Full winter`, function(){return V.passage}
+				`Full winter`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $days to 92>>`,
@@ -1191,7 +1196,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Christmas`, function(){return V.passage}
+				`Christmas`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $days to 110>>`,
@@ -1202,7 +1207,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Blood moon`, function(){return V.passage}
+				`Blood moon`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $monthday to 31>>`,
@@ -1215,7 +1220,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Test`, function(){return V.passage}
+				`Test`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $month to "october">>`
@@ -1514,7 +1519,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Creature`, function(){return V.passage}
+				`Creature`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _xy to $enemyno-1>>`,
@@ -1523,7 +1528,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Dog`, function(){return V.passage}
+				`Dog`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _xy to $enemyno-1>>`,
@@ -1532,7 +1537,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Wolf`, function(){return V.passage}
+				`Wolf`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _xy to $enemyno-1>>`,
@@ -1541,7 +1546,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Dolphin`, function(){return V.passage}
+				`Dolphin`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _xy to $enemyno-1>>`,
@@ -1550,7 +1555,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Bear`, function(){return V.passage}
+				`Bear`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _xy to $enemyno-1>>`,
@@ -1559,7 +1564,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Boar`, function(){return V.passage}
+				`Boar`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _xy to $enemyno-1>>`,
@@ -1568,7 +1573,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pig`, function(){return V.passage}
+				`Pig`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _xy to $enemyno-1>>`,
@@ -1577,7 +1582,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Lizard`, function(){return V.passage}
+				`Lizard`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set _xy to $enemyno-1>>`,
@@ -1695,7 +1700,7 @@ setup.debugMenu.event_list = {
 	Character:[
 		{
 			link: [
-				`Default allure`, function(){return V.passage}
+				`Default allure`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $alluretest to 0>>`
@@ -1704,7 +1709,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Become Alluring`, function(){return V.passage}
+				`Become Alluring`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $alluretest to 1>>`
@@ -1713,7 +1718,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Become Unalluring`, function(){return V.passage}
+				`Become Unalluring`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $alluretest to 2>>`
@@ -1722,7 +1727,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Hide`, function(){return V.passage}
+				`Hide`, stayOnPassageFn
 			],
 			widgets: [
 				`<<dontHideRevert>>`
@@ -1731,7 +1736,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Don't hide`, function(){return V.passage}
+				`Don't hide`, stayOnPassageFn
 			],
 			widgets: [
 				`<<dontHideForNow>>`
@@ -1743,7 +1748,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`All Fame`, function(){return V.passage}
+				`All Fame`, stayOnPassageFn
 			],
 			widgets: [
 				`<<fameexhibitionism 1000 "none" true>>`,
@@ -1762,7 +1767,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Fame Sex`, function(){return V.passage}
+				`Fame Sex`, stayOnPassageFn
 			],
 			widgets: [
 				`<<famesex 2000 "none" true>>`
@@ -1770,7 +1775,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Timer`, function(){return V.passage}
+				`Timer`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $timer -= 60>>`
@@ -1778,7 +1783,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Size Up`, function(){return V.passage}
+				`Size Up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $devlevel += 1>>`
@@ -1786,7 +1791,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Full Lewd Characteristics`, function(){return V.passage}
+				`Full Lewd Characteristics`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $promiscuity += 100>>`,
@@ -1796,7 +1801,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Exhibitionism`, function(){return V.passage}
+				`Exhibitionism`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $exhibitionism += 20>>`
@@ -1804,7 +1809,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Promiscuity`, function(){return V.passage}
+				`Promiscuity`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $promiscuity += 20>>`
@@ -1812,7 +1817,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Deviancy`, function(){return V.passage}
+				`Deviancy`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $deviancy += 20>>`
@@ -1820,7 +1825,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Beauty`, function(){return V.passage}
+				`Beauty`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $beauty += 10000>>`
@@ -1828,7 +1833,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Physique`, function(){return V.passage}
+				`Physique`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $physique += 2000>>`
@@ -1836,7 +1841,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Awareness up`, function(){return V.passage}
+				`Awareness up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $awareness += 200>>`
@@ -1844,7 +1849,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Awareness down`, function(){return V.passage}
+				`Awareness down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $awareness -= 200>>`
@@ -1852,7 +1857,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Purity Up`, function(){return V.passage}
+				`Purity Up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $purity += 500>>`
@@ -1860,7 +1865,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Purity Down`, function(){return V.passage}
+				`Purity Down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $purity -= 500>>`
@@ -1871,7 +1876,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pain Up`, function(){return V.passage}
+				`Pain Up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $pain += 50>>`
@@ -1879,7 +1884,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pain Down`, function(){return V.passage}
+				`Pain Down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $pain -= 200>>`
@@ -1887,7 +1892,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Stress`, function(){return V.passage}
+				`Stress`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $stress += 5000>>`
@@ -1895,7 +1900,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Destress`, function(){return V.passage}
+				`Destress`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $stress -= 5000>>`
@@ -1903,7 +1908,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Traumatise me`, function(){return V.passage}
+				`Traumatise me`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $trauma += 2000>>`
@@ -1911,7 +1916,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`DeTraumatise me`, function(){return V.passage}
+				`DeTraumatise me`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $trauma -= 2000>>`
@@ -1919,7 +1924,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Arousal max`, function(){return V.passage}
+				`Arousal max`, stayOnPassageFn
 			],
 			widgets: [
 				`<<arousal $arousalmax>>`
@@ -1927,7 +1932,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Arousal zero`, function(){return V.passage}
+				`Arousal zero`, stayOnPassageFn
 			],
 			widgets: [
 				`<<arousal 0>>`
@@ -1935,7 +1940,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Booze`, function(){return V.passage}
+				`Booze`, stayOnPassageFn
 			],
 			widgets: [
 				`<<alcohol 60>>`
@@ -1943,7 +1948,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Drugged`, function(){return V.passage}
+				`Drugged`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $drugged += 600>>`
@@ -1951,7 +1956,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Hallucinogen`, function(){return V.passage}
+				`Hallucinogen`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $hallucinogen += 600>>`
@@ -1962,7 +1967,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Sunlight`, function(){return V.passage}
+				`Sunlight`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $weather to "clear">>`
@@ -1970,7 +1975,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Wash`, function(){return V.passage}
+				`Wash`, stayOnPassageFn
 			],
 			widgets: [
 				`<<wash>>`
@@ -1981,7 +1986,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Seduction`, function(){return V.passage}
+				`Seduction`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $seductionskill += 200>>`
@@ -1989,7 +1994,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Skulduggery`, function(){return V.passage}
+				`Skulduggery`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $skulduggery += 200>>`
@@ -1997,7 +2002,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Swimming Skill`, function(){return V.passage}
+				`Swimming Skill`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $swimmingskill += 100>>`
@@ -2008,7 +2013,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Crime Up`, function(){return V.passage}
+				`Crime Up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $crime += 500>>`
@@ -2016,7 +2021,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Crime Down`, function(){return V.passage}
+				`Crime Down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $crime -= 500>>`
@@ -2027,7 +2032,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Reset NPC[0]'s Hand`, function(){return V.passage}
+				`Reset NPC[0]'s Hand`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $NPCList[0].lefthand to 0>>`,
@@ -2039,7 +2044,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Chastity Belt`, function(){return V.passage}
+				`Chastity Belt`, stayOnPassageFn
 			],
 			widgets: [
 				`<<genitalswear 1>>`
@@ -2047,7 +2052,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Chastity Cage`, function(){return V.passage}
+				`Chastity Cage`, stayOnPassageFn
 			],
 			widgets: [
 				`<<genitalswear 2>>`
@@ -2055,7 +2060,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Collar`, function(){return V.passage}
+				`Collar`, stayOnPassageFn
 			],
 			widgets: [
 				`<<leash 21>>`
@@ -2063,7 +2068,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Bind`, function(){return V.passage}
+				`Bind`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $leftarm to "bound">>`,
@@ -2072,7 +2077,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`UnBind`, function(){return V.passage}
+				`UnBind`, stayOnPassageFn
 			],
 			widgets: [
 				`<<unbind>>`
@@ -2083,7 +2088,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Breasts up`, function(){return V.passage}
+				`Breasts up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $player.breastsize += 1>>`
@@ -2091,7 +2096,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Breasts down`, function(){return V.passage}
+				`Breasts down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $player.breastsize -= 1>>`
@@ -2099,7 +2104,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Butt up`, function(){return V.passage}
+				`Butt up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $player.bottomsize -= 1>>`
@@ -2107,7 +2112,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Penis up`, function(){return V.passage}
+				`Penis up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $player.penissize += 1>>`
@@ -2115,7 +2120,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Penis down`, function(){return V.passage}
+				`Penis down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $player.penissize -= 1>>`
@@ -2123,7 +2128,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Balls up`, function(){return V.passage}
+				`Balls up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $ballssize += 1>>`
@@ -2131,7 +2136,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Balls down`, function(){return V.passage}
+				`Balls down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $ballssize -= 1>>`
@@ -2142,7 +2147,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Money`, function(){return V.passage}
+				`Money`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $money += 500000>>`
@@ -2150,7 +2155,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Grow hair`, function(){return V.passage}
+				`Grow hair`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $hairlength += 100>>`
@@ -2158,7 +2163,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Grow fringe`, function(){return V.passage}
+				`Grow fringe`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $fringelength += 100>>`
@@ -2166,7 +2171,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Chest Parasite`, function(){return V.passage}
+				`Chest Parasite`, stayOnPassageFn
 			],
 			widgets: [
 				`<<parasite nipples urchin>>`
@@ -2174,7 +2179,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Penis Parasite`, function(){return V.passage}
+				`Penis Parasite`, stayOnPassageFn
 			],
 			widgets: [
 				`<<parasite penis urchin>>`
@@ -2182,7 +2187,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Chastity Parasite`, function(){return V.passage}
+				`Chastity Parasite`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $analchastityparasite to "worms">>`
@@ -2190,7 +2195,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Month`, function(){return V.passage}
+				`Month`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $monthday += 31>>`,
@@ -2202,7 +2207,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Delinquency`, function(){return V.passage}
+				`Delinquency`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $delinquency += 1000>>`
@@ -2210,7 +2215,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Detention`, function(){return V.passage}
+				`Detention`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $detention += 10>>`
@@ -2218,7 +2223,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`School Skills`, function(){return V.passage}
+				`School Skills`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $school += 8000>>`,
@@ -2234,7 +2239,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`School Exam Skill`, function(){return V.passage}
+				`School Exam Skill`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $science_exam += 1000>>`,
@@ -2245,7 +2250,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`All Skills`, function(){return V.passage}
+				`All Skills`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $school += 448>>`,
@@ -2270,7 +2275,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`All Skills Super`, function(){return V.passage}
+				`All Skills Super`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $school += 4000>>`,
@@ -2299,7 +2304,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Status`, function(){return V.passage}
+				`Status`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $cool += 400>>`
@@ -2307,7 +2312,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Status Down`, function(){return V.passage}
+				`Status Down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $cool -= 400>>`
@@ -2318,7 +2323,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Destroy Swimming Outfits`, function(){return V.passage}
+				`Destroy Swimming Outfits`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $upperschoolswimsuitno to 0>>`,
@@ -2328,7 +2333,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Towels`, function(){return V.passage}
+				`Towels`, stayOnPassageFn
 			],
 			widgets: [
 				`<<clothesontowel>>`
@@ -2336,7 +2341,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Towels Please`, function(){return V.passage}
+				`Towels Please`, stayOnPassageFn
 			],
 			widgets: [
 				`<<towelup>>`
@@ -2344,7 +2349,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Submission`, function(){return V.passage}
+				`Submission`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $submissive += 250>>`
@@ -2352,7 +2357,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Defiance`, function(){return V.passage}
+				`Defiance`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $submissive -= 250>>`
@@ -2363,7 +2368,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Robin Love`, function(){return V.passage}
+				`Robin Love`, stayOnPassageFn
 			],
 			widgets: [
 				`<<npcincr Robin love 100>>`,
@@ -2372,7 +2377,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Robin Note`, function(){return V.passage}
+				`Robin Note`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $robinnote to 1>>`
@@ -2380,7 +2385,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Robin Romance`, function(){return V.passage}
+				`Robin Romance`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $robinromance to 1>>`
@@ -2391,7 +2396,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Sex Statistics Up`, function(){return V.passage}
+				`Sex Statistics Up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $orgasmstat += 2000>>`,
@@ -2409,7 +2414,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Almost Destroy Lowerclothes`, function(){return V.passage}
+				`Almost Destroy Lowerclothes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.lower.integrity to 1>>`
@@ -2417,7 +2422,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Almost Destroy Upperclothes`, function(){return V.passage}
+				`Almost Destroy Upperclothes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.upper.integrity to 1>>`
@@ -2425,7 +2430,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Almost Destroy Underclothes`, function(){return V.passage}
+				`Almost Destroy Underclothes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.under_lower.integrity to 1>>`
@@ -2433,7 +2438,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Almost Destroy Underupperclothes`, function(){return V.passage}
+				`Almost Destroy Underupperclothes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.under_upper.integrity to 1>>`
@@ -2441,7 +2446,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Damage Lowerclothes`, function(){return V.passage}
+				`Damage Lowerclothes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.lower.integrity -= 200>>`
@@ -2449,7 +2454,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Damage Upperclothes`, function(){return V.passage}
+				`Damage Upperclothes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.upper.integrity -= 200>>`
@@ -2457,7 +2462,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Damage Underupperclothes`, function(){return V.passage}
+				`Damage Underupperclothes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.under_upper.integrity -= 200>>`
@@ -2465,7 +2470,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Damage Underclothes`, function(){return V.passage}
+				`Damage Underclothes`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.under_lower.integrity -= 200>>`
@@ -2473,7 +2478,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Damage Chastity`, function(){return V.passage}
+				`Damage Chastity`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $worn.genitals.integrity -= 5000>>`
@@ -2484,7 +2489,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Cat up`, function(){return V.passage}
+				`Cat up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $cat += 1>>`
@@ -2492,7 +2497,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Cat build up`, function(){return V.passage}
+				`Cat build up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $catbuild += 80>>`
@@ -2500,7 +2505,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Cat off`, function(){return V.passage}
+				`Cat off`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $cat = 0>>`
@@ -2508,7 +2513,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Wolf off`, function(){return V.passage}
+				`Wolf off`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $wolfgirl to 0>>`
@@ -2516,7 +2521,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Wolf up`, function(){return V.passage}
+				`Wolf up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $wolfgirl += 1>>`
@@ -2524,7 +2529,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Wolf build up`, function(){return V.passage}
+				`Wolf build up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $wolfbuild += 40>>`
@@ -2532,7 +2537,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Wolf build down`, function(){return V.passage}
+				`Wolf build down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $wolfbuild -= 40>>`
@@ -2540,7 +2545,23 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Angel build up`, function(){return V.passage}
+				`Cow build up`, stayOnPassageFn
+			],
+			widgets: [
+				`<<set $cowbuild += 40>>`
+			]
+		},
+		{
+			link: [
+				`Cow build down`, stayOnPassageFn
+			],
+			widgets: [
+				`<<set $cowbuild -= 40>>`
+			]
+		},
+		{
+			link: [
+				`Angel build up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $angelbuild += 40>>`
@@ -2548,7 +2569,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Angel build down`, function(){return V.passage}
+				`Angel build down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $angelbuild -= 40>>`
@@ -2556,7 +2577,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Demon build up`, function(){return V.passage}
+				`Demon build up`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $demonbuild += 40>>`
@@ -2564,7 +2585,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Demon build down`, function(){return V.passage}
+				`Demon build down`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $demonbuild -= 40>>`
@@ -2572,7 +2593,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Undertemp off`, function(){return V.passage}
+				`Undertemp off`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $undertemp to 0>>`
@@ -2580,7 +2601,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Goo Me`, function(){return V.passage}
+				`Goo Me`, stayOnPassageFn
 			],
 			widgets: [
 				`<<drench both 5>>`
@@ -2588,7 +2609,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Goo Me Small`, function(){return V.passage}
+				`Goo Me Small`, stayOnPassageFn
 			],
 			widgets: [
 				`<<drench both 1>>`
@@ -2596,7 +2617,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Drench me`, function(){return V.passage}
+				`Drench me`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $upperwet to 200>>`,
@@ -2607,7 +2628,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Drench over-outfit only`, function(){return V.passage}
+				`Drench over-outfit only`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $overupperwet to 200>>`,
@@ -2616,7 +2637,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Drench middle-outfit only`, function(){return V.passage}
+				`Drench middle-outfit only`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $upperwet to 200>>`,
@@ -2625,7 +2646,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Drench under-outfit only`, function(){return V.passage}
+				`Drench under-outfit only`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $underupperwet to 200>>`,
@@ -2634,7 +2655,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Soak me in water`, function(){return V.passage}
+				`Soak me in water`, stayOnPassageFn
 			],
 			widgets: [
 				`<<water>>`
@@ -2642,7 +2663,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Bully Timer`, function(){return V.passage}
+				`Bully Timer`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $bullytimer to 100>>`,
@@ -2651,7 +2672,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Whitney Lower Dominance`, function(){return V.passage}
+				`Whitney Lower Dominance`, stayOnPassageFn
 			],
 			widgets: [
 				`<<npcincr Whitney dom -20>>`
@@ -2659,7 +2680,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Whitney Raise Dominance`, function(){return V.passage}
+				`Whitney Raise Dominance`, stayOnPassageFn
 			],
 			widgets: [
 				`<<npcincr Whitney dom 20>>`
@@ -2667,7 +2688,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Whitney Love`, function(){return V.passage}
+				`Whitney Love`, stayOnPassageFn
 			],
 			widgets: [
 				`<<npcincr Whitney love 20>>`,
@@ -2676,7 +2697,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Whitney Romance`, function(){return V.passage}
+				`Whitney Romance`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $whitneyromance to 1>>`
@@ -2684,7 +2705,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Pub Whore`, function(){return V.passage}
+				`Pub Whore`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $pubwhore += 10>>`
@@ -2692,7 +2713,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Make Creature`, function(){return V.passage}
+				`Make Creature`, stayOnPassageFn
 			],
 			widgets: [
 				`<<beasttype bear>>`
@@ -2700,7 +2721,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Full Spray`, function(){return V.passage}
+				`Full Spray`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $spraymax to 5>>`,
@@ -2712,7 +2733,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Unlock all seeds`, function(){return V.passage}
+				`Unlock all seeds`, stayOnPassageFn
 			],
 			widgets: [
 				`<<run unlockAllSeeds()>>`
@@ -2720,7 +2741,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Super Debug Character`, function(){return V.passage}
+				`Super Debug Character`, stayOnPassageFn
 			],
 			widgets: [
 				`<<set $school += 4000>>`,`<<set $science += 1000>>`,`<<set $maths += 1000>>`,`<<set $english += 1000>>`,`<<set $history += 1000>>`,`<<set $sciencetrait to 4>>`,
@@ -2734,7 +2755,7 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
-				`Unlock all pills`, function(){return V.passage}
+				`Unlock all pills`, stayOnPassageFn
 			],
 			widgets: [
 				`<<run window.getAllPills()>>`
@@ -3026,7 +3047,7 @@ window.addDebugForm = function() {
 		<div class="addevent-content-search-content" id="formChangeColor2" style="">
 			<input name="addEvents" id="addEventsTitle" placeholder="Event Title..." onfocusout="" onfocus="" oninput="" />
 		</div>
-		<abbr title="For dynamic allocation, you can enter a function that will be saved !\nFor example function(){return V.passage}">Passage Name*:</abbr>
+		<abbr title="For dynamic allocation, you can enter a function that will be saved !\nFor example stayOnPassageFn">Passage Name*:</abbr>
 		<div class="addevent-content-search-content" id="formChangeColor3" style="">
 			<input name="addEvents" id="addEventsPassage" placeholder="Passage name..." onfocusout="" onfocus="" oninput="" />
 		</div>

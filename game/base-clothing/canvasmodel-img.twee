@@ -202,16 +202,19 @@ if ($skinColor.tanningEnabled is true){
 		<<if !_disabled.includes($transformationParts.demon.tail)>>
 			<<if $exposed gte 2 and $dontHide is false and $uncomfortable.flaunting is false>>
 				<<set _modeloptions.demon_tail_state to "flaunt">>
+				<<set _modeloptions.cat_tail_state to "flaunt">>
 			<<else>>
 				<<set _modeloptions.demon_tail_state to "idle">>
+				<<set _modeloptions.cat_tail_state to "idle">>
 			<</if>>
 		<</if>>
 		<<set _modeloptions.angel_wing_left to "idle">>
 		<<set _modeloptions.fallen_wing_left to "idle">>
 		<<set _modeloptions.bird_wing_left to "idle">>
 	<<elseif _coverCrotch is true>>
-		<<if !_disabled.includes($transformationParts.demon.wings)>>
+		<<if !_disabled.includes($transformationParts.demon.tail)>>
 			<<set _modeloptions.demon_tail_state to "cover">>
+			<<set _modeloptions.cat_tail_state to "cover">>
 			<<set _modeloptions.arm_right to "idle">>
 		<<elseif !_disabled.includes($transformationParts.angel.wings)>>
 			<<set _modeloptions.angel_wing_left to "cover">>
@@ -316,6 +319,14 @@ $worn.under_upper.type.includes("naked") and $worn.under_lower.type.includes("na
  -       ██    ██      ███████
  -->
 
+<!-- Transformation filters here -->
+<<set $_filterBase to {
+	blendMode: "hard-light",
+	brightness: 0,
+	contrast: 1,
+	desaturate: false
+}>>
+
 <!-- wing and tail idle/cover/flaunt state is configured in the arms section above -->
 
 <<set _modeloptions.angel_wings_type to $transformationParts.angel.wings>>
@@ -326,7 +337,18 @@ $worn.under_upper.type.includes("naked") and $worn.under_lower.type.includes("na
 
 <<set _modeloptions.demon_wings_type to $transformationParts.demon.wings>>
 <<set _modeloptions.demon_tail_type to $transformationParts.demon.tail>>
+<<set _modeloptions.demon_tail_index to ZIndices.backhair>>
 <<set _modeloptions.demon_horns_type to $transformationParts.demon.horns>>
+
+<<set _modeloptions.filters.demon_wings to clone(Object.assign($_filterBase, {
+	blend: ColourUtils.toHslString($transformationParts.demon.wings_colour) || 'purple'
+}))>>
+<<set _modeloptions.filters.demon_tail to clone(Object.assign($_filterBase, {
+	blend: ColourUtils.toHslString($transformationParts.demon.tail_colour) || 'purple'
+}))>>
+<<set _modeloptions.filters.demon_horns to clone(Object.assign($_filterBase, {
+	blend: ColourUtils.toHslString($transformationParts.demon.horns_colour) || 'purple'
+}))>>
 
 <<set _modeloptions.wolf_tail_type to $transformationParts.wolf.tail>>
 <<set _modeloptions.wolf_ears_type to $transformationParts.wolf.ears>>
@@ -347,6 +369,32 @@ $worn.under_upper.type.includes("naked") and $worn.under_lower.type.includes("na
 <<set _modeloptions.bird_malar_type to $transformationParts.bird.malar>>
 <<set _modeloptions.bird_plumage_type to $transformationParts.bird.plumage>>
 <<set _modeloptions.bird_pubes_type to $transformationParts.bird.pubes>>
+
+<!--
+ -	 ██████ ██   ██ ██ ███    ███ ███████ ██████   █████  
+ -	██      ██   ██ ██ ████  ████ ██      ██   ██ ██   ██ 
+ -	██      ███████ ██ ██ ████ ██ █████   ██████  ███████ 
+ -	██      ██   ██ ██ ██  ██  ██ ██      ██   ██ ██   ██ 
+ -	 ██████ ██   ██ ██ ██      ██ ███████ ██   ██ ██   ██ 
+-->
+
+<!-- Demon-cat tail -->
+<<if $chimera.demoncat.tail and isPartEnabled(_modeloptions.cat_tail_type) and isPartEnabled(_modeloptions.demon_tail_type)>>
+	<<set _modeloptions.demon_tail_type to 'default-cat'>>
+	<<set _modeloptions.demon_tail_index to ZIndices.tailPenisCoverOverlay>>
+<</if>>
+<!-- Demon-harpy wings -->
+<<if isPartEnabled(_modeloptions.demon_wing_type) && isPartEnabled(_modeloptions.bird_wings_type)>>
+	<!-- Empty for now. -->
+<</if>>
+<!-- Demon-cow horns -->
+<<if $chimera.demoncow.horns and isPartEnabled(_modeloptions.cow_horns_type) and isPartEnabled(_modeloptions.demon_horns_type)>>
+	<<if !['default', 'succubus'].includes(_modeloptions.demon_horns_type)>>
+		<!-- Force default horns if the PC has unsupported horn styles (E.G. Classic) -->
+		<<set _modeloptions.demon_horns_type to 'default'>>
+	<</if>>
+	<<set _modeloptions.cow_horns_type to 'default-demon'>>
+<</if>>
 
 <!--
  -     ██████ ██████   ██████  ████████  ██████ ██   ██

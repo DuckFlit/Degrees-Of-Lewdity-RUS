@@ -1,4 +1,4 @@
-window.ZIndices = {
+var ZIndices = {
 	bg: 0,
 
 	over_head_back: 0,
@@ -75,10 +75,11 @@ window.ZIndices = {
 	parasite: 160,
 
 	tailPenisCover: 165,
+	tailPenisCoverOverlay: 166,
 
 	over_lower: 170,
 	over_upper: 171,
 	over_upper_arms: 170,
 	over_upper_arms_cover: 174
 };
-
+window.ZIndices = ZIndices;
