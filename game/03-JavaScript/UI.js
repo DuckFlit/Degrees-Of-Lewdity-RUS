@@ -493,3 +493,8 @@ function sliderPerc(e){
 	else
 		valSpan.css('color', 'unset');
 }
+
+function elementExists(selector) {
+	return document.querySelector(selector) !== null;
+}
+window.elementExists = elementExists;

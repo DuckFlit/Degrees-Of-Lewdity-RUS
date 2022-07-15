@@ -434,3 +434,5 @@ Macro.add('shopclothingcustomcolourwheel', {
 		}
 	}
 });
+
+window.colorPickerShopCustom = colorPickerShopCustom;
