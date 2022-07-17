@@ -2,6 +2,8 @@
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 <<if $schoolstate is "second">>
+	<!-- Note: until we separate the NPC introductions out of the <<npc>> widget, we must pay attention to where we use <<npc River>> in this passage. -->
+	<!-- It would save several lines to simply put it here, but we can't. -->
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
@@ -28,8 +30,6 @@
 				<<undressOverClothes "mathsClassroom">>
 			<</if>>
 			and take your seat.
-			<br><br>
-			<<mathsstart>>
 		<<elseif $time lte ($hour * 60 + 5)>>
 			You enter the maths classroom.
 			<<npc River>><<person1>>
@@ -38,9 +38,6 @@
 				<<undressOverClothes "mathsClassroom">>
 				You hang your coat at the back of the class and take your seat.
 			<</if>>
-			<br><br>
-
-			<<mathsstart>>
 		<<else>>
 			You enter the maths classroom.
 			<<npc River>><<person1>>
@@ -60,14 +57,15 @@
 				<<undressOverClothes "mathsClassroom">>
 			<</if>>
 			take a seat as River continues.
-			<br><br>
-
-			<<mathsstart>>
 		<</if>>
+		<br><br>
 
+		<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+		<br>
 	<<elseif $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 		<<npc River>><<person1>>
-		River's eyes narrow as <<he>> sees your bound <<if $rightarm is "bound" or $leftarm is "bound">>arms<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">> and <</if>><<if $feetuse is "bound">>legs<</if>>. "And another one. Look, whatever silly game you're playing needs to stop. You're not coming in here tied up like that. Go see the head."
+		River's eyes narrow as <<he>> sees your bound <<boundBodyParts>>.
+		"And another one. Look, whatever silly game you're playing needs to stop. You're not coming in here tied up like that. Go see the head."
 		<br><br>
 
 		<<link [[Next|Hallways]]>><<endevent>><</link>>
@@ -81,17 +79,17 @@
 		<br><br>
 	<</if>>
 <<elseif $schoollesson is 1>>
+	<<npc River>><<person1>>
 	<<if $mathsinterrupted is 1>>
-		<<npc River>><<person1>>You enter the maths classroom. River stops speaking abruptly and looks your way. "You again? Get out." <<He>> shuts the door on you.
-		<<gdelinquency>>
+		You enter the maths classroom. River stops speaking abruptly and looks your way. "You again? Get out." <<He>> shuts the door on you.
+		<<detention 1>><<gdelinquency>>
 		<br><br>
-		<<detention 1>>
 
 		<<link [[Next|Hallways]]>><<endevent>><</link>>
 	<<else>>
-		<<npc River>><<person1>>You enter the maths classroom. River stops speaking abruptly and looks your way. "Yes, what is it?" It seems you've interrupted the lesson.
-		<br><br>
 		<<set $mathsinterrupted to 1>>
+		You enter the maths classroom. River stops speaking abruptly and looks your way. "Yes, what is it?" It seems you've interrupted the lesson.
+		<br><br>
 
 		<<link [[Apologise|Maths Classroom Apology]]>><<trauma 1>><<stress 1>><</link>><<gstress>><<gtrauma>>
 		<br>
@@ -123,6 +121,7 @@
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 <<set $mathsattended to 1>>
 
+<<mathsWhitneyAttendChance>>
 
 <<if $weekday is 6 and $minute gte 37>>
 	River walks up and down the aisles, placing a white exam booklet in front of each student.<<gstress>><<stress 6>>
@@ -134,16 +133,15 @@
 	There's a shuffle of paper as students open the first page. River will brook no talking. <<He>> sits at the front of the room, cold eyes staring at no one in particular, but observing everyone.
 
 	<<if $whitneymaths is "active">>
-		<<endevent>><<npc Whitney>><<person1>>
-		Even Whitney is silent, but this doesn't stop <<him>> bouncing a rubber off your back with an underarm throw.
+		Even Whitney is silent, but this doesn't stop <<nnpc_him "Whitney">> bouncing a rubber off your back with an underarm throw.
 	<<elseif $whitneymaths is "seat">>
-		<<endevent>><<npc Whitney>><<person1>>
-		Even Whitney is silent, but this doesn't stop <<him>> groping you beneath the desk.<<garousal>><<arousal 600>>
+		Even Whitney is silent, but this doesn't stop <<nnpc_him "Whitney">> groping you beneath the desk.<<garousal>><<arousal 600>>
 	<</if>>
 	<br><br>
 	<<endevent>>
 	<<if $arousal gte $arousalmax>>
 		<<set _teacher to "River">>
+		<!-- Note: There should be special text if Whitney is directly involved in the player's orgasm -->
 		<<orgasmLocation "classroom">>
 	<</if>>
 	<<exam_cheat maths>>
@@ -158,15 +156,14 @@
 		<br>
 	<<elseif $whitneymaths is "seat">>
 		<<if $promiscuity gte 35>>
-			<<npc Whitney>><<person1>>
-			<<if $NPCList[0].penis isnot "none">>
+			<<if $NPCName[$NPCNameList.indexOf("Whitney")].penis isnot "none">>
 				<<link [[Satisfy Whitney with a handjob|Maths Exam]]>><<set $phase to 4>><<npcincr Whitney love 1>><<npcincr Whitney lust 1>><</link>><<skill_difficulty "$handskill" "Hand Skill" 1 1000>><<ghandskill>><<glove>><<glust>>
 				<br>
-			<<else>>
+			<</if>>
+			<<if $NPCName[$NPCNameList.indexOf("Whitney")].vagina isnot "none">>
 				<<link [[Satisfy Whitney with your fingers|Maths Exam]]>><<set $phase to 5>><<npcincr Whitney love 1>><<npcincr Whitney lust 1>><</link>><<skill_difficulty "$handskill" "Hand Skill" 1 1000>><<ghandskill>><<glove>><<glust>>
 				<br>
 			<</if>>
-			<<endevent>>
 		<</if>>
 		<<link [[Retaliate|Whitney Maths Exam]]>><<def 1>><</link>><<physiquedifficulty 1 $physiquemax>>
 		<br>
@@ -196,16 +193,12 @@
 	<<link [[Daydream|Maths Lesson Daydream]]>><</link>><<lstress>><<lharass>>
 	<br>
 
-	<<if $whitneymaths is "seat">>
-		<<if $exhibitionism gte 75>>
-			<<link [[Masturbate|Maths Lesson Masturbate]]>><<set $masturbationstart to 1>><<npcincr Whitney lust 1>><</link>><<exhibitionist5>><<glust>>
-			<br>
-		<</if>>
-	<<else>>
-		<<if $exhibitionism gte 55>>
-			<<link [[Masturbate|Maths Lesson Masturbate]]>><<set $masturbationstart to 1>><</link>><<exhibitionist4>>
-			<br>
-		<</if>>
+	<<if $whitneymaths is "seat" and $exhibitionism gte 75>>
+		<<link [[Masturbate|Maths Lesson Masturbate]]>><<set $masturbationstart to 1>><<npcincr Whitney lust 1>><</link>><<exhibitionist5>><<glust "Whitney">>
+		<br>
+	<<elseif $exhibitionism gte 55>>
+		<<link [[Masturbate|Maths Lesson Masturbate]]>><<set $masturbationstart to 1>><</link>><<exhibitionist4>>
+		<br>
 	<</if>>
 <</if>>
 
@@ -242,24 +235,9 @@ You focus on listening to the teacher and studying the material. It's hard going
 <<stress _lesson_progress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "mathsClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "mathsClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><</link>>
+	<<mathsLessonEnd>>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - $allure)>>
-		<<eventsmaths>>
-	<<else>>
-		<<eventsmathssafe>>
-	<</if>>
+	<<mathsLessonEvent>>
 <</if>>
 
 :: Maths Lesson Socialise
@@ -287,24 +265,9 @@ You focus on listening to the teacher and studying the material. It's hard going
 <<trauma _trauma>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "mathsClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "mathsClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><</link>>
+	<<mathsLessonEnd>>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure * 2))>>
-		<<eventsmaths>>
-	<<else>>
-		<<eventsmathssafe>>
-	<</if>>
+	<<mathsLessonEvent 2>>
 <</if>>
 
 :: Maths Lesson Daydream
@@ -314,13 +277,13 @@ You focus on listening to the teacher and studying the material. It's hard going
 
 <<if $trauma gte (($traumamax / 10) * 7)>>
 	You keep to yourself, afraid that one wrong move will result in the whole class molesting you.
+	<<if $whitneymaths is "seat">>Whitney doesn't seem to notice you, as <<nnpc_he "Whitney">> watches students mill about in the yard.<</if>>
 <<elseif $trauma gte (($traumamax / 10) * 2)>>
 	You focus on your own thoughts, trying to keep the creeping anxiety at bay.
+	<<if $whitneymaths is "seat">>Whitney seems more interested in watching birds than listening to River's lesson.<</if>>
 <<else>>
 	You don't really pay attention to the lesson, instead idly staring out the window and thinking about what you'll do after school.
-<</if>>
-<<if $whitneymaths is "seat">>
-	Whitney has the same idea.
+	<<if $whitneymaths is "seat">>Whitney has the same idea.<</if>>
 <</if>>
 <br><br>
 
@@ -330,23 +293,8 @@ You focus on listening to the teacher and studying the material. It's hard going
 
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "mathsClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "mathsClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><</link>>
+	<<mathsLessonEnd>>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure / 2))>>
-		<<eventsmaths>>
-	<<else>>
-		<<eventsmathssafe>>
-	<</if>>
+	<<mathsLessonEvent 0.5>>
 <</if>>
 

@@ -732,7 +732,8 @@
 	<<link [[Encourage|Maths Whitney Encourage]]>><<npcincr Whitney love 1>><<detention 3>><</link>><<glove>><<gdelinquency>>
 	<br>
 
-<<elseif $rng gte 41>><<rng>>
+<<elseif $rng gte 41>>
+	<<rng>>
 	<<npc River>><<person1>>
 
 	River stands beside your table. "I need you to deliver a message for me. To the head." <<He>> hands you a sealed envelope.
@@ -882,7 +883,8 @@
 <</widget>>
 
 <<widget "eventsmathssafe">>
-	<<if $mathsproject is "none" and $days gte 23 and $scienceprojectdays isnot (21 + (7 - $weekday))>><<set $mathsproject to "ongoing">><<set $mathsprojectdays to (21 + (7 - $weekday))>>
+<<if $mathsproject is "none" and $days gte 23 and $scienceprojectdays isnot (21 + (7 - $weekday))>>
+	<<set $mathsproject to "ongoing">><<set $mathsprojectdays to (21 + (7 - $weekday))>>
 	<<mathsprojectstart>>
 	<<npc River>><<person1>><<generatey2>>"Everyone listen," River announces. <<He>> knocks on <<his>> desk. "That includes you at the back. I have something special for you today. We hold an annual competition for students in your year." This grabs a <<person2>><<person>> at the front's attention. <<He>> sits upright.
 	<<if $whitneymaths is "active" or $whitneymaths is "seat">>
@@ -1045,47 +1047,78 @@
 <</if>>
 <</widget>>
 
-<<widget "mathsstart">>
-<<endevent>>
-<<if $NPCName[$NPCNameList.indexOf("Whitney")].state is "active" or $NPCName[$NPCNameList.indexOf("Whitney")].state is "rescued">>
-	<<set _whitney_maths_chance to (($NPCName[$NPCNameList.indexOf("Whitney")].love / 3) + ($NPCName[$NPCNameList.indexOf("Whitney")].dom * 3) + ($NPCName[$NPCNameList.indexOf("Whitney")].lust / 3))>>
-<</if>>
-<<if ($NPCName[$NPCNameList.indexOf("Whitney")].state is "active" or $NPCName[$NPCNameList.indexOf("Whitney")].state is "rescued") and $whitneymaths is undefined>>
+<<widget "mathsWhitneyAttendChance">>
+	<<set _whitney to $NPCName[$NPCNameList.indexOf("Whitney")]>>
+	<<set $_canAttend to (_whitney.state is "active" or _whitney.state is "rescued") and ($whitneymaths is undefined or $whitneymaths is "absent")>>
+	<<if $_canAttend and $minute lte 40>>
+		<<set $_whitney_maths_chance to ((_whitney.love / 3) + (_whitney.dom * 3) + (_whitney.lust / 3))>>
+		<<set $_whitney_tardy_modifier to ($minute lte 20 ? $minute : -$minute + 40) - 10>>
+		<!-- whitney_tardy_modifier starts out negative, becomes positive at 10 minutes late, peaks at 20 minutes late, and hits negative again at 30 minutes late -->
+		<<set $_whitney_maths_chance += $_whitney_tardy_modifier>>
+		<<if random(1, 100) lte $_whitney_maths_chance>>
+			<<npc Whitney 1>><<person1>>
+			
+			<<if $whitneymaths is undefined>>
+				<!-- Whitney attending Maths class for the first time during the game -->
+				Whitney swaggers in. "So you decided to show up," River says, pointing at an empty seat at the front. "Tuck your shirt in."
+				<br><br>
+				
+				<<if $whitneyromance is 1>>
+					<<set $whitneymaths to "seat">>
+					Whitney rolls <<his>> eyes, and instead takes a seat beside you.
+				<<else>>
+					<<set $whitneymaths to "active">>
+					Whitney rolls <<his>> eyes, and instead takes a seat at the back.
+				<</if>>
+				<<He>> tucks just the front of <<his>> shirt into <<his>> <<npcClothesText _whitney "lower">> as <<he>> sits.
+			<<else>>
+				<<if $whitneyromance is 1>>
+					<<set $whitneymaths to "seat">>
+					Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you.
+				<<else>>
+					<<set $whitneymaths to "active">>
+					Whitney enters the class. <<He>> takes a seat at the back.
+				<</if>>
+			<</if>>
+			<br><br>
 
-	<<npc River>><<person1>>Whitney swaggers in. "So you decided to show up," River says, pointing at an empty seat at the front. "Tuck your shirt in."
-	<br><br>
-	<<endevent>>
-	<<if $whitneyromance is 1>>
-		<<set $whitneymaths to "seat">>
-		<<npc Whitney>><<person1>> Whitney rolls <<his>> eyes, and instead takes a seat beside you. <<He>> tucks just the front of <<his>> shirt into <<his>> <<if $pronoun is "f">>skirt<<else>>trousers<</if>> as <<he>> sits.
-		<br><br>
-	<<else>>
-		<<set $whitneymaths to "active">>
-		<<npc Whitney>><<person1>> Whitney rolls <<his>> eyes, and instead takes a seat at the back. <<He>> tucks just the front of <<his>> shirt into <<his>> <<if $pronoun is "f">>skirt<<else>>trousers<</if>> as <<he>> sits.
-		<br><br>
-	<</if>>
-	<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
-	<br>
-<<elseif ($NPCName[$NPCNameList.indexOf("Whitney")].state is "active" or $NPCName[$NPCNameList.indexOf("Whitney")].state is "rescued") and _whitney_maths_chance gte random(1, 100)>>
-	<<if $whitneyromance is 1>>
-		<<set $whitneymaths to "seat">>
-		<<npc Whitney>><<person1>>Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you.
-		<br><br>
-	<<else>>
-		<<set $whitneymaths to "active">>
-		<<npc Whitney>><<person1>>Whitney enters the class. <<He>> takes a seat at the back.
-		<br><br>
-	<</if>>
-	<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
-	<br>
-<<else>>
-	<<if $whitneymaths isnot undefined>>
+		<<elseif $whitneymaths isnot undefined>>
+			<!-- if whitney HAS attended class before, but is not present now -->
+			<<set $whitneymaths to "absent">>
+		<</if>>
+	<<elseif $whitneymaths isnot undefined>>
+		<!-- if whitney HAS attended class before, but is unable to attend -->
 		<<set $whitneymaths to "absent">>
 	<</if>>
-	<br>
-	<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
-	<br>
-<</if>>
+<</widget>>
+
+<<widget "mathsLessonEnd">>
+	<<set $phase to 0>>
+	The bell rings, signifying the end of the lesson. You
+	<<storeon "mathsClassroom" "check">>
+	<<if _store_check is 1>>
+		<<storeon "mathsClassroom">>
+		grab your coat and
+	<</if>>
+	leave the classroom.
+	<br><br>
+
+	<<if $whitneymaths isnot undefined>>
+		<!-- set whitney's state to absent after the lesson ends so that we can use mathsWhitneyAttendChance to put them back in class on the next day -->
+		<<set $whitneymaths to "absent">>
+	<</if>>
+
+	<<link [[Next|Hallways]]>><</link>>
+<</widget>>
+
+<<widget "mathsLessonEvent">>
+	<<set $_mod to _args[0] or 1>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (8900 - ($allure * $_mod))>>
+		<<eventsmaths>>
+	<<else>>
+		<<eventsmathssafe>>
+	<</if>>
 <</widget>>
 
 :: Widgets Events English [widget]
@@ -1122,82 +1155,65 @@
 	<br>
 
 <<elseif $rng gte 81>>
-	<<if $cool lt 40>>
+	<<set $_genitals_exposed to ($worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("hidden"))>>
+	<<set $_seat_glued to ($cool lt 40)>>
+	As you stand to hand your work in,
+	<<if $_seat_glued>>
 		<<set $worn.lower.integrity -= 30>>
 		<<if $worn.lower.integrity lte 0>>
-			As you stand to hand your work in, your $worn.lower.name <<print ($worn.lower.plural? "tear" : "tears")>> clean off of your body!
+			your $worn.lower.name <<print ($worn.lower.plural ? "tear" : "tears")>> clean off of your body!
 			You look down in horror and see the remains attached to the chair. Someone put glue on your seat!
-			You cover your exposed <<undies>> as soon as you can, but for a moment you were completely exposed.
-			Doren rushes over with a towel, while your face flushes with humiliation.
-
-			<<if $worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("hidden")>>
-				<<stress 12>><<trauma 12>><<ggstress>><<ggtrauma>>
-				<<if $player.gender isnot $player.gender_appearance and ($schoolrep.crossdress gte 3 or $schoolrep.herm gte 3) and !$worn.genitals.type.includes("hidden")>>
-					<br><br>
-					The other students giggle at your plight. You overhear a few whispers while Doren is busy helping you,
-					and can make out something about <<print ($player.gender is "h" ? "your genitals" : "you crossdressing")>>. They saw, and they know the rumours are true.
-				<<elseif $player.gender isnot $player.gender_appearance and !$worn.genitals.type.includes("hidden")>>
-					<br><br>
-					The other students gasp, and the classroom fills with hushed whispers while Doren is busy helping you.
-					You can make out something about <<print ($player.gender is "h" ? "your genitals" : "you crossdressing")>>. They saw.
-				<</if>>
-
-				<<schoolrep_naked>>
-				<<if !$worn.genitals.type.includes("hidden")>>
-					<<set $genderknown.pushUnique("Doren")>>
-				<</if>>
-				<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">><<set $genderknown.pushUnique("Kylar")>><</if>>
-			<<else>>
-				<<stress 6>><<trauma 6>><<gstress>><<gtrauma>>
-			<</if>>
-			<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">>
-				<br><br>
-
-				Kylar blushes and looks away, but <<nnpc_he "Kylar">> clearly saw.<<npcincr Kylar lust 1>><<glust>>
-			<</if>>
 		<<else>>
-			As you stand to hand your work in, your $worn.lower.name <<print ($worn.lower.plural? "tear" : "tears")>>. Someone put glue on your seat!
+			your $worn.lower.name <<print ($worn.lower.plural ? "tear" : "tears")>>. Someone put glue on your seat!
 			Fortunately, your $worn.lower.name survived, though certainly worse for wear.
 		<</if>>
-		<br><br>
 	<<else>>
 		<<set $worn.lower.integrity -= 10>>
 		<<if $worn.lower.integrity lte 0>>
-			As you stand to hand your work in, your $worn.lower.name <<print ($worn.lower.plural? "catch" : "catches")>> on the corner of your desk
-			and <<print ($worn.lower.plural? "tear" : "tears")>> clean off of your body!
+			your $worn.lower.name <<print ($worn.lower.plural ? "catch" : "catches")>> on the corner of your desk and <<print ($worn.lower.plural ? "tear" : "tears")>> clean off of your body!
 			You look down in horror and see the remains hanging from the desk.
-			You cover your exposed <<undies>> as soon as you can, but for a moment you were completely exposed.
-			Doren rushes over with a towel, while your face flushes with humiliation.
-			<<if $worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("hidden")>>
-				<<stress 12>><<trauma 12>><<ggstress>><<ggtrauma>>
-				<<if $player.gender isnot $player.gender_appearance and ($schoolrep.crossdress gte 3 or $schoolrep.herm gte 3) and !$worn.genitals.type.includes("hidden")>>
-					<br><br>
-					The other students look almost satisfied by your plight. You overhear a few whispers while Doren is busy helping you,
-					and can make out something about <<print ($player.gender is "h"? "your genitals" : "you crossdressing")>>. They saw, and they know the rumours are true.
-				<<elseif $player.gender isnot $player.gender_appearance and !$worn.genitals.type.includes("hidden")>>
-					<br><br>
-					The other students gasp, and the classroom fills with hushed whispers while Doren is busy helping you.
-					You can make out something about <<print ($player.gender is "h"? "your genitals" : "you crossdressing")>>. They saw.
-				<</if>>
-
-				<<schoolrep_naked>>
-				<<if !$worn.genitals.type.includes("hidden")>>
-					<<set $genderknown.pushUnique("Doren")>>
-				<</if>>
-				<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">><<set $genderknown.pushUnique("Kylar")>><</if>>
-			<<else>>
-				<<stress 6>><<trauma 6>><<gstress>><<gtrauma>>
-			<</if>>
-			<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">>
-				<br><br>
-				Kylar blushes and looks away, but <<nnpc_he "Kylar">> clearly saw.<<npcincr Kylar lust 1>><<glust>>
-			<</if>>
 		<<else>>
-			As you stand to hand your work in, your $worn.lower.name <<print ($worn.lower.plural? "catch" : "catches")>> on the corner of your desk and tears.
+			your $worn.lower.name <<print ($worn.lower.plural ? "catch" : "catches")>> on the corner of your desk and <<print ($worn.lower.plural ? "tear" : "tears")>>.
 			Fortunately, your $worn.lower.name survived, though a bit worse for wear.
-			<br><br>
 		<</if>>
 	<</if>>
+
+	<<if $worn.lower.integrity lte 0>>
+		You cover your exposed <<undies>> as soon as you can, but for a moment you were completely exposed.
+		Doren rushes over with a towel, while your face flushes with humiliation.
+
+		<<if $_genitals_exposed>>
+			<<stress 12>><<trauma 12>><<ggstress>><<ggtrauma>>
+			
+			<<if $player.gender isnot $player.gender_appearance>>
+				<br><br>
+				<<if $schoolrep.crossdress gte 3 or $schoolrep.herm gte 3>>
+					The other students <<print ($_seat_glued ? "look almost satisfied by" : "giggle at")>> your plight.
+					You overhear a few whispers while Doren is busy helping you,
+					and can make out something about <<print ($player.gender is "h" ? "your genitals" : "you crossdressing")>>. They saw, and they know the rumours are true.
+				<<else>>
+					The other students gasp, and the classroom fills with hushed whispers while Doren is busy helping you.
+					You can make out something about <<print ($player.gender is "h" ? "your genitals" : "you crossdressing")>>. They saw.
+				<</if>>
+				<<schoolrep_naked>>
+			<</if>>
+			
+			<<set $genderknown.pushUnique("Doren")>>
+		<<else>>
+			<!-- Nothing happens if the player's genitals aren't exposed -->
+			<<stress 6>><<trauma 6>><<gstress>><<gtrauma>>
+		<</if>>
+
+		<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">>
+			<br><br>
+
+			Kylar blushes and looks away, but <<nnpc_he "Kylar">> clearly saw.<<npcincr Kylar lust 1>><<glust>>
+			<<if $_genitals_exposed>>
+				<<set $genderknown.pushUnique("Kylar")>>
+			<</if>>
+		<</if>>
+	<</if>>
+	<br><br>
 	<<integritycheck>>
 	<<link [[Next|English Lesson]]>><<towelup>><</link>>
 	<br>
