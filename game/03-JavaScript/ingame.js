@@ -1429,3 +1429,19 @@ function getSexesFromRandomGroup() {
 	return SexTypes.BOTH;
 }
 window.getSexesFromRandomGroup = getSexesFromRandomGroup;
+
+function getColourClassFromPercentage(percentage) {
+	// This function is for picking the right color to use when coloring various things, primarily the sidebar stats.
+	/* When using this function, try to keep in mind what value of your input variable you want "red" to be at. 
+	 * Example: $drugged goes higher than 500, but we want the bar to become red at 500, so we call this function as getColourClassFromPercentage($drugged / 5).   
+	*/
+	if (percentage <= 0) return "green";
+	if (percentage < 20) return "teal";
+	if (percentage < 40) return "lblue";
+	if (percentage < 60) return "blue";
+	if (percentage < 80) return "purple";
+	if (percentage < 100) return "pink";
+	return "red";
+}
+window.getColourClassFromPercentage = getColourClassFromPercentage;
+
