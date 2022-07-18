@@ -564,14 +564,6 @@ window.ordinalSuffixOf = function(i) {
     return i + "th";
 }
 
-window.joinWithConjuction = function(arr, conjuction=" and ", separator=", ") {
-    if (!arr.length) return "";
-
-    if (arr.length <= 2) return arr.join(` and `);
-
-    return `${arr.slice(0, arr.length-1).join(separator)}${conjuction}${arr[arr.length-1]}`;
-}
-
 window.lerp = function(percent, start, end) {
 	return Math.clamp(start + (end - start) * percent, start, end);
 }

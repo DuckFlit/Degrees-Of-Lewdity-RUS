@@ -19,18 +19,12 @@
 
 	<<clothingCaptionTextUnder>>
 
-	<<switch Math.clamp(_clothingCaptionItems.length, 0, 3)>>
-	<<case 3>>
-		<<set _lastItem to _clothingCaptionItems.pop()>>
-		<<set _text_output to _wearing + _clothingCaptionItems.join(", ") + " and " + _lastItem>>
-	<<case 2>>
-		<<set _text_output to _wearing + _clothingCaptionItems[0] + " and " + _clothingCaptionItems[1]>>
-	<<case 1>>
-		<<set _text_output to _wearing + (_nothingBut ? "nothing but" : "only ") + _clothingCaptionItems[0]>>
-	<<default>>
-		/* print nothing. but technically, should be impossible */
-	<</switch>>
-	<<set _text_output += _finally>>
+	<<set _text_output to _wearing>>
+	<<if _clothingCaptionItems.length is 1>>
+		<<set _text_output += (_nothingBut ? "nothing but" : "only")>>
+	<</if>>
+
+	<<set _text_output += formatList(_clothingCaptionItems) + _finally>>
 	<<print _text_output>>
 
 	<<clothingCaptionTextGenitals>>
@@ -268,14 +262,7 @@
 			<</switch>>
 
 			<<if _output isnot "">><<set _output += " and your ">><</if>>
-			<<if $_clothes[$_type].length is 1>>
-				<<set _output += $_clothes[$_type][0] + $_verb>>
-			<<elseif $_clothes[$_type].length is 2>>
-				<<set _output += $_clothes[$_type][0] + " and " + $_clothes[$_type][1] + $_verb>>
-			<<else>>
-				<<set _lastClothes to $_clothes[$_type].pop()>>
-				<<set _output += $_clothes[$_type].join(", ") + "and _lastClothes" + $_verb>>
-			<</if>>
+			<<set _output += formatList($_clothes[$_type]) + $_verb>>
 		<</for>>
 
 		/* Print the caption */
