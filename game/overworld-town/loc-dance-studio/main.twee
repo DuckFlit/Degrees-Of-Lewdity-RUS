@@ -96,45 +96,43 @@ You are in the dance studio. Here you can pay for lessons to improve your dancin
 You are in the dance studio's changing room. Benches line the walls, with hooks for clothes hanging above.
 <br><br>
 
-You could strip down to a leotard or similar dance clothes here.
-<br><br>
-
 <<storeon "dance_studio" "check">>
 <<if _store_check is 1>>
 	You left your clothes here.
 	<br>
 	<<link [[Wear|Dance Studio Changing Room]]>><<storeon "dance_studio">><</link>>
 	<br>
-<</if>>
+<<else>>
+	You could strip down to a leotard or similar dance clothes here.
+	<br><br>
 
-<<if $worn.under_upper.type.includes("dance") and $worn.under_lower.type.includes("dance")>>
-	<<if $worn.upper.name isnot "naked">>
-		<<link [[Strip down to your dance clothes|Dance Studio Change]]>><</link>>
-		<br>
-	<<elseif $worn.lower.name isnot "naked">>
+	<<set _wearingDance to $worn.under_upper.type.includes("dance") and $worn.under_lower.type.includes("dance")>>
+	<<set _notNaked to ["over_upper","over_lower","upper","lower"].some(slot => $worn[slot].name isnot "naked")>>
+	<<if _wearingDance and _notNaked>>
 		<<link [[Strip down to your dance clothes|Dance Studio Change]]>><</link>>
 		<br>
 	<</if>>
 <</if>>
-<br>
 <<link [[Leave|Dance Studio]]>><</link>>
 <br>
 
 :: Dance Studio Change
 <<effects>>
 
-<<if $worn.upper.name isnot "naked">>
-	<<if $worn.lower.name isnot "naked" and $worn.upper.set isnot $worn.lower.set>>
-		You remove your $worn.lower.name, and hang it on one of the hooks.
-		<<lowerundress "dance_studio">>
-	<<else>>
-		You remove your $worn.upper.name, and hang it on one of the hooks.
-		<<upperundress "dance_studio">>
-	<</if>>
-<<elseif $worn.lower.name isnot "naked">>
-	You remove your $worn.lower.name, and hang it on one of the hooks.
-	<<lowerundress "dance_studio">>
-<</if>>
+<<set _slots to ["over_upper","over_lower","upper","lower"].filter(slot => $worn[slot].name isnot "naked" and ($worn[slot].one_piece isnot 1 or $worn[slot].outfitSecondary is undefined))>>
+<<set _arrayClothes to _slots.map(slot => $worn[slot].name)>>
+<!-- _arrayClothes and _slots have same length due to how .map works
+     _arrayClothes now has all our clothes names -->
+
+<<for _slot range _slots>>
+	<<generalUndress "dance_studio" _slot>>
+<</for>>
+
+<<set _them to ((_arrayClothes.length gt 1 or $worn[_slots[0]].word is "n") ? "them" : "it")>>
+<<set _hooks to (_arrayClothes.length gt 1 ? "the hooks" : "a hook")>>
+<<set _clothes to formatList(_arrayClothes)>>
+
+You remove your _clothes, and hang _them on _hooks.
 <br><br>
 
 <<link [[Next|Dance Studio Changing Room]]>><</link>>

@@ -42,3 +42,28 @@ Object.defineProperty(Array.prototype, 'select', {
 		return this[safeIndex];
 	}
 });
+
+Object.defineProperty(Array.prototype, 'formatList', {
+	configurable: true,
+	writable: true,
+	value(options) {
+		let { conjunction, useOxfordComma, separator } = Object.assign(
+			{
+				conjunction: "and",
+				useOxfordComma: false,
+				separator: ", ",
+			},
+			options
+		);
+		if (this == null) {
+			throw new TypeError('Array.prototype.formatList called on null or undefined.');
+		}
+		if (this.length === 0) {
+			return "";
+		}
+		conjunction += " ";
+		if (this.length <= 2) return this.join(" " + conjunction);
+		const oxConj = (useOxfordComma ? separator : " ") + conjunction;
+		return this.slice(0, -1).join(separator) + oxConj + this.at(-1);
+	}
+});
