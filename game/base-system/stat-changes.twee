@@ -171,33 +171,30 @@
 <</widget>>
 
 <<widget "stress">>
-<<if _args[0]>>
-	<<if $drunk lte 0>>
-		<<set _stress_mod to 40>>
-	<<elseif $drunk lte 120>>
-		<<set _stress_mod to 30>>
-	<<elseif $drunk lte 240>>
-		<<set _stress_mod to 25>>
-	<<elseif $drunk lte 360>>
-		<<set _stress_mod to 20>>
-	<<elseif $drunk lte 480>>
-		<<set _stress_mod to 15>>
-	<<else>>
-		<<set _stress_mod to 10>>
-	<</if>>
+	<!-- args[0] is the "base" amount of stress, and is required. must be a non-zero number. -->
+	<!-- args[1] is optional, use it you want to override the calculated stress multiplier -->
+	<<if _args[0] and typeof _args[0] is "number">>
+		<<if _args[1] and typeof _args[1] is "number">>
+			<<set $stress += (_args[0] * _args[1])>>
+		<<elseif _args[0] lte 0>> <!-- if stress is being lowered, and a custom multiplier was not provided, multiply it by 80 -->
+			<<set $stress += (_args[0] * 80)>>
+		<<else>>
+			<<if $drunk lte 0>>
+				<<set _stress_mod to 40>>
+			<<else>>
+				<<set _drunk_mod to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
+				<<set _stress_mod to 30 - _drunk_mod * 5>>
+			<</if>>
 
-	<<if $body_temperature is "cold">>
-		<<set _stress_mod *= 3.0>>
-	<<elseif $body_temperature is "chilly">>
-		<<set _stress_mod *= 1.5>>
-	<</if>>
+			<<if $body_temperature is "cold">>
+				<<set _stress_mod *= 3.0>>
+			<<elseif $body_temperature is "chilly">>
+				<<set _stress_mod *= 1.5>>
+			<</if>>
 
-	<<if _args[0] gt 0>>
-		<<set $stress += (_args[0] * _stress_mod)>>
-	<<else>>
-		<<set $stress += (_args[0] * 80)>>
+			<<set $stress += (_args[0] * _stress_mod)>>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "arousal">>
