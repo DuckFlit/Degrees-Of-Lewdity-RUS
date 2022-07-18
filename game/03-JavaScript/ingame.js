@@ -89,7 +89,7 @@ window.combatListColor = function (name, value, type) {
 			case "rightcovervagina": case "rightcoverpenis": case "rightcoveranus":
 			case "leftunderpull": case "leftskirtpull": case "leftlowerpull": case "leftupperpull":
 			case "rightunderpull": case "rightskirtpull": case "rightlowerpull": case "rightupperpull": case "rightUndressOther": case "leftUndressOther":
-			case "stopchoke": case "clench": case "shacklewhack": case "leftfold": case "rightfold": case "dildowhack":
+			case "stopchoke": case "clench": case "shacklewhack": case "leftfold": case "rightfold": case "dildowhack": case "hypnosiswhack":
 			case "leftstruggleweak": case "rightstruggleweak":
 			case "leftresistW": case "rightresistW": case "leftstillW": case "rightstillW":
 			/*feetaction*/
@@ -121,7 +121,7 @@ window.combatListColor = function (name, value, type) {
 			case "leftcovervaginameek": case "leftcoverpenismeek": case "leftcoveranusmeek":
 			case "rightcovervaginameek": case "rightcoverpenismeek": case "rightcoveranusmeek":
 			case "leftprotect": case "rightprotect": case "leftgrip": case "rightgrip":
-			case "leftcurl": case "rightcurl": case "pickupSexToy":
+			case "leftcurl": case "rightcurl": case "pickupSexToy": case "leftcamerapose": case "rightcamerapose":
 			/*mouthaction*/
 			case "grasp": case "plead": case "forgive": case "down":
 			case "letout": case "letoutorgasm": case "noises": case "pay":
@@ -146,7 +146,7 @@ window.combatListColor = function (name, value, type) {
 			case "grab": case "vaginagrab": case "grabrub": case "vaginagrabrub": case "rub":
 			/*mouthaction*/
 			case "peniskiss": case "kisslips" : case "kissskin": case "suck": case "lick": case "moan": case "breastsuck": case "breastlick": case "swallow": case "movetochest":
-			case "othervagina": case "mouth": case "kissback": case "vaginalick": case "askchoke": case "anallick": case "analkiss":
+			case "othervagina": case "mouth": case "kissback": case "vaginalick": case "askchoke": case "anallick": case "analkiss": case "askrough":
 			/*penisaction*/
 			case "penistovagina": case "penistoanus": case "penisvaginafuck": case "penisanusfuck": case "othermouthtease": case "othermouthrub":
 			case "othermouthcooperate": case "tease": case "cooperate": case "otheranustease": case "otheranusrub": case "otheranuscooperate": case "clitrub":
@@ -963,7 +963,7 @@ window.DefaultActions = {
 		this.addMany(type, 'Submissive', 'anusaction', ['penistease', 'cooperate']);
 		this.addMany(type, 'Submissive', 'feetaction', ['grabrub', 'grabrub', 'vaginagrabrub']);
 		this.addMany(type, 'Defiant', 'leftaction', ['lefthit', 'leftstruggle']);
-		this.addMany(type, 'Defiant', 'rightaction', ['penwhack', 'righthit', 'rightstruggle']);
+		this.addMany(type, 'Defiant', 'rightaction', ['penwhack', 'righthit', 'rightstruggle', 'hypnosiswhack']);
 		this.addMany(type, 'Defiant', 'mouthaction', ['pullaway', 'bite', 'breastbite', 'headbutt']);
 		this.addMany(type, 'Defiant', 'penisaction', ['escape', 'otheranusescape', 'othermouthescape']);
 		this.addMany(type, 'Defiant', 'vaginaaction', ['escape', 'othermouthescape']);

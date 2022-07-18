@@ -101,19 +101,19 @@
 <<if $leftaction is "leftprotect" and $rightaction is "rightprotect">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftprotect">><<set $rightactiondefault to "rightprotect">>
 	You shield the tender parts of your body, protecting them from further harm. <span class="green"> - Pain</span>
-	<<meek 2>><<set $pain -= 2>><<set _br to true>>
+	<<meek 2>><<pain -2>><<set _br to true>>
 <</if>>
 
 <<if $leftaction is "leftprotect">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftprotect">>
 	You clutch a tender spot on your body with your left hand, protecting it from harm. <span class="green"> - Pain</span>
-	<<meek 1>><<set $pain -= 1>><<set _br to true>>
+	<<meek 1>><<pain -1>><<set _br to true>>
 <</if>>
 
 <<if $rightaction is "rightprotect">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightprotect">>
 	You clutch a tender spot on your body with your right hand, protecting it from harm. <span class="green"> - Pain</span>
-	<<meek 1>><<set $pain -= 1>><<set _br to true>>
+	<<meek 1>><<pain -1>><<set _br to true>>
 <</if>>
 
 <<if _br is true>>
@@ -123,13 +123,19 @@
 <<if $mouthaction is "stifle">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "stifle">>
 	You try to control your breath and stifle your sobs. You're mostly successful. <span class="green"> - Pain</span>
-	<<set $pain -= 1>>
+	<<pain -1>>
 <</if>>
 
 <<if $mouthaction is "letout">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "letout">><<set _sound to 1>>
 	You don't hold back your tears. Your sobs are punctuated by cries and whimpers. <span class="green"> - Stress</span>
 	<<meek 1>><<stress -2>>
+<</if>>
+
+<<if $gamemode is "soft">>
+	<<set $pain to Math.clamp($pain, 0, 0)>>
+<<else>>
+	<<set $pain to Math.clamp($pain, 0, 200)>>
 <</if>>
 
 <</widget>>
@@ -554,7 +560,7 @@
 	<<set _resist to 0>>
 	<<if $leftaction isnot "leftresistW" and $rightaction isnot "rightresistW" and $feetaction isnot "feetresistW" and $mouthaction isnot "mouthresistW">>
 		<span class="pink">You let it take you.</span>
-		<<pain -2>><<stress -12>><<set $submissive += 2>><<lpain>><<llstress>><<set $wraith.will += 30>>
+		<<pain -2>><<stress -12>><<sub 2>><<lpain>><<llstress>><<set $wraith.will += 30>>
 	<<else>>
 		<<if $leftaction is "leftresistW" and $rightaction is "rightresistW" and $feetaction is "feetresistW">>
 			<<set _resist to 3>>
@@ -596,11 +602,11 @@
 					<span class="purple">You can't stop the stream of words coming from your mouth, though.</span>
 				<</if>>
 			<</if>>
-			<<pain _resist>><<stress _resist>><<trauma _resist>><<set $submissive -= 2>><<gpain>><<gtrauma>><<gstress>><<if _resist is 4>><<ggcontrol>><<else>><<gcontrol>><</if>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 24)*_resist>>
+			<<pain _resist>><<stress _resist>><<trauma _resist>><<def 2>><<gpain>><<gtrauma>><<gstress>><<if _resist is 4>><<ggcontrol>><<else>><<gcontrol>><</if>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 24)*_resist>>
 			<<set $control += Math.floor(currentSkillValue('willpower') / 24)*_resist>>
 		<<else>>
 			<span class="red">Your body does not obey.</span>
-			<<stress 6>><<trauma 6>><<willpower 1>><<set $submissive -= 1>><<gtrauma>><<gstress>><<gwillpower>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 40)*_resist>>
+			<<stress 6>><<trauma 6>><<willpower 1>><<def 1>><<gtrauma>><<gstress>><<gwillpower>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 40)*_resist>>
 		<</if>>
 	<</if>>
 	<br><br>

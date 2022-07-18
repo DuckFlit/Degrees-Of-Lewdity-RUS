@@ -64,6 +64,22 @@
 		<br><br>
 
 		<<kylaroptionsleave>>
+	<<elseif $bus is "manor" and $hour lt 18>>
+		Kylar looks at a monitor. "I should sleep," <<he>> says. <<He>> walks over to <<his>> bed and collapses atop it, fully dressed. <<He>> watches you, longing on <<his>> face, but <<he>> doesn't say anything.
+		<br><br>
+		
+		<<link [[Say goodnight|Manor Kylar Goodnight]]>><</link>>
+		<br>
+		<<link [[Pounce|Manor Kylar Pounce]]>><<npcincr Kylar love 1>><</link>><<promiscuous1>><<glove>>
+		<br>
+	<<elseif _kylarStatus.includes("Love") and $NPCName[$NPCNameList.indexOf("Kylar")].love gte 90 and $kylar_camera is undefined>>
+		Kylar looks even more anxious than usual. <<He>> stares at <<his>> feet, and shifts <<his>> weight between them. "I-I," <<he>> gulps. "I got you something." <<He>> crouches, and reaches behind a bench, pulling out a bow-tied box. <<He>> holds it out to you.
+		<br><br>
+		
+		<<link [[Open it|Kylar Gift Box Open]]>><<npcincr Kylar rage -5>><<npcincr Kylar love 1>><</link>><<glove>><<llksuspicion>>
+		<br>
+		<<link [[Refuse|Kylar Gift Box Refuse]]>><<npcincr Kylar love -1>><<npcincr Kylar rage 3>><</link>><<llove>><<gksuspicion>>
+		<br>
 	<<else>>
 		<<link [[Chat (0:15)|Kylar Chat]]>><<pass 15>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><<stress -2>><</link>><<lstress>><<glove>><<lksuspicion>>
 		<br>
@@ -100,7 +116,7 @@
 			<<link [[Gift Kylar a strap-on|Kylar Gift Strap-on]]>><</link>><<glove>><<lksuspicion>><<gglust>><<lstress>>
 			<br>
 		<</if>>
-
+		
 		<<kylaroptionsleave true>>
 	<</if>>
 <</widget>>
@@ -121,6 +137,8 @@
 				<<set $_dest to "School Library">>
 			<<case "starfish">>
 				<<set $_dest to "Arcade">>
+			<<case "manor">>
+				<<set $_dest to "Manor Kylar Room">>
 			<<default>>
 				<<set $_dest to "School Rear Playground">>
 		<</switch>>
@@ -353,6 +371,309 @@
 	<</if>>
 <</widget>>
 
+<<widget "kylar_abduction_init">>
+<<set $kylar_abduction_binds to 100>>
+<<set $syndromekylarbuild to 0>>
+<<set $kylar_parents_trust to 0>>
+<</widget>>
+
+<<widget "kylar_parents_trust">>
+<<if $args[0]>>
+	<<set $kylar_parents_trust += $args[0]>>
+	<<set Math.clamp($kylar_parents_trust, 0, 100)>>
+<</if>>
+<</widget>>
+
+<<widget "kylar_abduction_end">>
+<<earnFeat "Longing">>
+<<unset $kylar_abduction_binds>>
+<<unset $kylar_clothes>>
+<<unset $kylar_clothes_init>>
+<<unset $kylar_abduction_stupid>>
+<<unset $kylar_abduction_password>>
+<<unset $kylar_abduction_torch>>
+<<unset $kylar_abduction_key>>
+<<unset $kylar_abduction_bailey>>
+<<unset $kylar_abduction_knife>>
+<</widget>>
+
+<<widget "kylar_abduction_return">>
+<<endevent>>
+<<npc Kylar>><<person1>>
+<<if _args[0] is "rest">>
+	A pair of trembling hands shake your legs. "Wake up <<kylar_pet_name>>," <<he>> says, rising to <<his>> feet.
+<<elseif _args[0] isnot "none">>
+	You hear footsteps. The door opens, and Kylar enters. "I missed you <<kylar_pet_name>>," <<he>> says, closing the door behind <<him>>.
+<</if>>
+<<if $kylar_clothes_init is 1>>
+	<<unset $kylar_clothes_init>>
+	<<Hes>> wearing a <<npcClothesText $NPCList[0] "both">>, as you requested. "D-do you like it?" <<he>> says, twirling in front of you.
+	<<if $kylar_clothes is "formal">>
+		It looks expensive. A security tag trails after <<him>>.
+	<<elseif $kylar_clothes is "goth">>
+		<<Hes>> completed the look with black eyeliner. <<Hes>> overdone it, but the look still suits <<him>>.
+	<<elseif $kylar_clothes is "swimsuit">>
+		It's ill-fitting, too loose. <<He>> has to stop mid-twirl to avoid a wardrobe malfunction.
+	<<else>>
+		<<He>> seems comfortable in this outfit.
+	<</if>>	
+<<else>>
+	<<He>> adjusts <<his>> <<npcClothesText $NPCList[0] "both">>, as if nervous.
+<</if>>
+<br><br>
+
+<<if $rng gte 91>>
+	<<He>> places <<his>> arms on your shoulders, and climbs ontop of you, straddling your thighs. <<He>> buries <<his>> face in your hair, and inhalas. "You smell so good," <<he>> says. <<He>> pushes your chin up, baring you neck. <<He>> licks and kisses it, and even gives you the occasional bite.
+	<br><br>
+	
+	<<link [[Try to ignore it|Kylar Abduction Neck Resist]]>><</link>><<willpowerdifficulty 1 1000>>
+	<br>
+	<<link [[Headbutt|Kylar Abduction Neck Headbutt]]>><</link>>
+	<br>
+	<<link [[Kiss back|Kylar Abduction Neck Kiss]]>><</link>>
+	<br>
+<<elseif $rng gte 81>>
+	<<if $kylar_abduction_knife gte 5 or $kylar_abduction_knife is undefined>>
+		<<set $kylar_abduction_knife to 0>>
+	<</if>>
+	<<if $kylar_abduction_knife is 1>>
+		"I have something to show you," <<he>> says, jerking <<his>> knife in front of your eyes. A pink bow has been tied around the handle. "Do you like it?" <<he>> asks. "I made it pretty for you."
+		<br><br>
+	<<elseif $kylar_abduction_knife is 2>>
+		"I have something to show you," <<he>> says, jerking <<his>> knife in front of your eyes. Hearts have been drawn on the handle. "Do you like it?" <<he>> asks. "I made it pretty for you."
+		<br><br>
+	<<elseif $kylar_abduction_knife is 3>>
+		"I have something to show you," <<he>> says, jerking <<his>> knife in front of your eyes. A small drawing of you and Kylar holding hands has been stuck to the handle. "Do you like it?" <<he>> asks. "I made it pretty for you."
+		<br><br>
+	<<elseif $kylar_abduction_knife is 4>>
+		"I have something to show you," <<he>> says, jerking <<his>> knife in front of your eyes. Nails have been hammered into the handle at odd angles. "Do you like it?" <<he>> asks. "I made it pretty for you."
+		<br><br>
+	<<else>>
+		"Do you like my knife?" <<he>> asks, jerking it in front of your eyes. The handle is made of black wood. There's a symbol near the base of the blade, but it's faded with age. "It was my parents'. Before they," <<he>> pauses. "When they they still had time for cooking."
+		<<set $kylar_abduction_knife to 1>>
+		<br><br>
+	<</if>>
+		
+	"Well?" <<he>> asks. "It's pretty, isn't it!"
+	<br><br>
+	
+	<<link [[Agree|Kylar Abduction Knife Agree]]>><</link>>
+	<br>
+	<<link [[Disagree|Kylar Abduction Knife Disagree]]>><</link>>
+	<br>
+	<<link [[Whimper|Kylar Abduction Knife Whimper]]>><<stress -6>><</link>><<lstress>>
+	<br>
+<<elseif $rng gte 71>>
+	Kylar circles around you. <<He>> reaches out to touch, then backs away several steps. <<He>> repeats this several times, each time getting more bold. Like a frightened mouse. Or a shark testing prey.
+	<br><br>
+	
+	<<link [[Encourage|Kylar Abduction Circle Encourage]]>><</link>><<promiscuous1>>
+	<br>
+	<<link [[Discourage|Kylar Abduction Circle Discourage]]>><</link>>
+	<br>
+	<<link [[Do nothing|Kylar Abduction Circle Nothing]]>><</link>>
+	<br>
+<<elseif $rng gte 61>>
+	Kylar pulls out <<his>> phone, and crouches beside you. "Smile for the camera," <<he>> says. "Don't worry. I won't show anyone. This is for p-private use."
+	<br><br>
+	
+	<<link [[Smile|Kylar Abduction Camera Smile]]>><</link>>
+	<br>
+	<<link [[Frown|Kylar Abduction Camera Frown]]>><</link>>
+	<br>
+	<<link [[Glare|Kylar Abduction Camera Glare]]>><</link>>
+	<br>
+	<<link [[Close your eyes|Kylar Abduction Camera Close]]>><</link>>
+	<br>
+<<elseif $rng gte 51>>
+	Kylar pulls a table out from the corner of the room, pushing it in front of you. "I'll be back in a moment!" <<He>> vanishes through the door, leaving it ajar.
+	<br><br>
+	
+	You hear something out there. Metal scaping against stone. But Kylar returns before long, closing the door behind <<him>>. <<Hes>> carrying a metal tray, covered in a domed lid. <<He>> places it in front of you, then climbs onto the table and sits cross-legged opposite.
+	<br><br>
+	
+	<<link [[Next|Kylar Abduction Food]]>><</link>>
+	<br>
+<<elseif $rng gte 41>>
+	Kylar puts <<his>> hands against <<his>> chest. "I wrote a song for you," <<he>> says, and takes a deep breath.
+	<br><br>
+	
+	"I love you I love you so much you we are together and happy and..." <<he>> rambles on, following no tune in particular. It's pretty terrible.
+	<br><br>
+	"W-well? <<he>> asks after recovering from a shortage of breath. "Do you like it?"
+	<br><br>
+	
+	<<link [[Say you like it|Kylar Abduction Song Like]]>><</link>>
+	<br>
+	<<link [[Say you hate it|Kylar Abduction Song Hate]]>><</link>>
+	<br>
+	<<link [[Remain silent|Kylar Abduction Song Silent]]>><</link>>
+	<br>
+<<elseif $rng gte 31>>
+	Kylar glances at the ceiling. "Sorry about the noise," <<he>> says, looking back at you. "That's just my parents. I can't wait for you to meet them. They're always so busy though." <<He>> pauses in thought, as if unsure what to reveal.
+	<br><br>
+	
+	<<link [[Encourage|Kylar Abduction Parents Encourage]]>><</link>>
+	<br>
+	<<link [[Remain silent|Kylar Abduction Parents Silent]]>><</link>>
+	<br>
+<<elseif $rng gte 21>>
+	Kylar produces a sketchpad. "I want to draw you," <<he>> says. "W-will you model for me?"
+	<br><br>
+	<<link [[Agree|Kylar Abduction Draw Agree]]>><</link>>
+	<br>
+	<<link [[Refuse|Kylar Abduction Draw Refuse]]>><</link>>
+	<br>
+<<elseif $rng gte 11 and $pregnancyspeechdisable is "f">>
+	"I've thought up names for our children," Kylar says with a smile. <<He>> rattles off several names for boys and girls. You recognise some as anime characters. You suspect the ones you don't recognise are as well.
+	<br><br>
+	
+	<<if $player.vaginaExist and $NPCList[0].penis isnot "none" or $player.penisExist and $NPCList[0].vagina isnot "none">>
+		<<link [["Inform Kylar that you wouldn't breed with " + $NPCList[0].pronouns.him + " if " + $NPCList[0].pronouns.he + " were the last " + $NPCList[0].pronouns.boy + " on earth"|Kylar Abduction Kids Insult]]>><</link>>
+		<br>
+	<<else>>
+		<<link [["Inform Kylar that you wouldn't adopt kids with " + $NPCList[0].pronouns.him + " if " + $NPCList[0].pronouns.he + " were the last " + $NPCList[0].pronouns.boy + " on earth"|Kylar Abduction Kids Insult]]>><</link>>
+		<br>
+	<</if>>
+	<<link [[Say the names are nice|Kylar Abduction Kids Nice]]>><</link>>
+	<br>
+	<<link [[Say the names are terrible|Kylar Abduction Kids Terrible]]>><</link>>
+	<br>
+	<<link [[Remain silent|Kylar Abduction Kids Silent]]>><</link>>
+	<br>
+<<else>>
+	Kylar pulls a chair in front of you, and sits on it backwards, facing you.
+	<<set $rng to random(1, 10)>>
+	<<switch $rng>>
+		<<case 1>>
+			"It's very kind of my parents to let you sleep over," <<he>> says. "They're always so busy. They never seem to sleep."
+		<<case 2>>
+			"I hope you have everything you need," <<he>> says. A drop of condensed water drips onto your head.
+		<<case 3>>
+			"Do you like the furniture?" <<he>> says. The chair creaks beneath you. "They're antiques!"
+		<<case 4>>
+			"I want to brag about us to my friends at school," <<he>> says. You're not sure who <<he>> means. "But they'd only be jealous of our love."
+		<<case 5>>
+			"I love you so much," <<he>> says. "I love you so, so much! Even more than that!"
+		<<case 6>>
+			"I want to wed in the forest," <<he>> says. "There are some venues there, but that's not special enough. We need somewhere no one's been wed before."
+		<<case 7>>
+			"We should invite the whole town to our wedding," <<he>> says. "But we'll need lots of security. So many will want to steal you away from me."
+		<<case 8>>
+			"You're safe in here," <<he>> says. "I nailed garlic around the door to be certain."
+		<<case 9>>
+			"You don't have parents, do you?" <<he>> asks. "That's sad. I-I'd have liked to meet them."
+		<<default>>
+			"People at school never believe me when I say we're together," <<he>> says. "Just wait until they see the wedding photos. "
+	<</switch>>
+	<<He>> natters on for several minutes, until a thump above interrupts <<him>>.<<pass 8>><<gstress>><<stress 6>>
+	<br><br>
+	
+	<<link [[Next|Kylar Abduction Event End]]>><</link>>
+	<br>
+<</if>>
+
+<</widget>>
+
+<<widget "kylar_abduction_rage">>
+<<if $NPCName[$NPCNameList.indexOf("Kylar")].dom gte 90>>
+	<<His>> body shakes, and <<he>> lunges at you, knocking you and the chair onto your back.<<gpain>><<pain 4>>
+	<br><br>
+
+	<<He>> climbs atop you, <<his>> features contorted with rage. <<He>> smacks both fists into your chest, then your face. <<He>> hits you again and again, mad laughter echoing through the small room.<<gggpain>><<pain 12>><<gtrauma>><<trauma 6>><<gstress>><<stress 6>>
+	<br><br>
+
+	<span class="red"><<He>> presses the knife against your throat.</span> <<He>> stares at you, then looks at <<his>> hands. Then <<he>> screams.
+	<br><br>
+
+	<<link [[Next|Kylar Abduction Rage]]>><</link>>
+	<br>
+<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].dom gte 50>>
+	<<His>> body shakes, harder and harder, but then <<he>> becomes deathly still. <<He>> creeps towards you, a small smile on <<his>> lips. "I'm being very good to you," <<he>> repeats. "I don't have to be."
+	<br><br>
+	
+	<<He>> lunges, knocking you and the chair onto your back.<<gpain>><<pain 4>>
+	<br><br>
+	
+	<<He>> climbs atop you, <<his>> features contorted by a vicious grin. <<He>> runs the tip of <<his>> knife down the side of your face. "So very very good."<<gggpain>><<pain 12>><<gtrauma>><<trauma 6>><<gstress>><<stress 6>>
+	<br><br>
+	
+	<span class="red">The knife reaches your throat, and <<he>> holds it there.</span> <<He>> stares at you, then looks at <<his>> hands. Then <<he>> screams.
+	<br><br>
+
+	<<link [[Next|Kylar Abduction Rage]]>><</link>>
+	<br>
+<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].dom gte 10>>
+	<<He>> throws <<his>> head back, shrieks, then lunges. <<He>> knocks you and the chair onto your back.<<gpain>><<pain 4>>
+	<br><br>
+	
+	"Why won't you love me?!" <<he>> howls, clutching your neck with both hands. You feel <<his>> knife, cold against your skin. "Why are you such a monster?!" <<His>> grip is iron.<<gggpain>><<pain 12>><<gtrauma>><<trauma 6>><<gstress>><<stress 6>>
+	<br><br>
+	
+	<span class="red"><<He>> brings the knife to your throat.</span> <<He>> stares at you, then looks at <<his>> hands. Then <<he>> screams.
+	<br><br>
+	
+	<<link [[Next|Kylar Abduction Rage]]>><</link>>
+	<br>
+<<else>>
+	<<He>> falls to <<his>> knees, and crawls towards you, tears streaming down <<his>> face. "If can't have you," <<he>> says, grabbing the front legs of your chair. "No one can." <<He>> flips you, and the chair, onto your back.<<gpain>><<pain 4>>
+	<br><br>
+	
+	<<He>> crawls atop you, <<his>> knife-wielding hand trailing limply behind, as if reluctant. The blade scrapes across the ground.
+	<br><br>
+	
+	<<He>> grasps your neck with one hand, <span class="red">and brings the knife to your throat with the other.</span> <<He>> stares at you, then looks at <<his>> hands. Then <<he>> screams.
+	<br><br>
+
+	<<link [[Next|Kylar Abduction Rage]]>><</link>>
+	<br>
+	
+<</if>>
+
+<</widget>>
+
+<<widget "kylar_pet_name">>
+<<if $NPCName[$NPCNameList.indexOf("Kylar")].dom gte 80>>
+	<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 80>>
+		<<set _text_output to "my little tease">>
+	<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 40>>
+		<<set _text_output to "my lover">>
+	<<else>>
+		<<set _text_output to "my love">>
+	<</if>>
+<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].dom gte 40>>
+	<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 80>>
+		<<set _text_output to "my flame">>
+	<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 40>>
+		<<set _text_output to "my cherry">>
+	<<else>>
+		<<set _text_output to "my love">>
+	<</if>>
+<<else>>
+	<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 80>>
+		<<set _text_output to "my gaoler">>
+	<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 40>>
+		<<set _text_output to "my blossom">>
+	<<else>>
+		<<set _text_output to "my love">>
+	<</if>>
+<</if>>
+<<if _args[0] is "cap">>
+	<<set _text_output to _text_output.toUpperFirst()>>
+<</if>>
+<<if _args[1] is "quote">>
+	<<set _text_output to '"' + _text_output>>
+<</if>>
+<<print _text_output>>
+<</widget>>
+
+<<widget "kylar_stockholm_start">>
+<<earnFeat "Longing">>
+<<set $syndromekylar to 1>>
+<<unset $syndromekylarbuild>>
+<</widget>>
+
+
 :: Kylar Intro Intervene
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
@@ -433,7 +754,7 @@ You continue on, not wanting to get involved. No one gives you a second glance.
 :: Kylar Basement
 <<set $outside to 0>><<set $location to "school">><<effects>>
 <<npc Kylar>><<person1>><<set $leftarm to "bound">><<set $rightarm to "bound">>
-<<set $stress -= 2000>><<clothesontowel>><<set $pain += 1>>
+<<set $stress -= 2000>><<clothesontowel>><<pain 1>>
 You awaken sat on a chair. You can't move. Your legs are chained and your arms are bound behind you. You're in a spacious basement. A tiny window lets in a little light.
 <br><br>
 
@@ -1122,6 +1443,8 @@ You shake off Kylar's grip and leave. <<He>> watches you with <<his>> fists clen
 	<<kylaroptions>>
 <</if>>
 
+
+
 :: Kylar Invite
 <<set $outside to 0>><<set $location to "home">><<effects>>
 
@@ -1138,6 +1461,10 @@ Kylar hugs your arm on the walk over, as if afraid you'll run.
 	<br>
 	<<link [[Berate Kylar|Kylar Orphanage Berate]]>><<npcincr Kylar love -3>><</link>><<lllove>>
 	<br>
+	<<if $syndromekylar gte 1>>
+		<<link [[Angrily defend Kylar|Kylar Orphanage Angry]]>><<status -10>><<npcincr Kylar love 3>><</link>><<llcool>><<gglove>>
+		<br>
+	<</if>>
 <<else>>
 	No one bothers you. You arrive at the orphanage, and lead Kylar to your room.
 	<br><br>
@@ -1209,6 +1536,34 @@ Kylar turns to leave as well, but you grab <<his>> arm. "I didn't mean it," you 
 <<link [[Next|Kylar Orphanage]]>><</link>>
 <br>
 
+
+:: Kylar Orphanage Angry
+<<effects>>
+
+<<person1>>
+<<if $submissive gte 1150>>
+	"Y-you should show my <<if $pronoun is "m">>boyfriend<<else>>girlfriend<</if>> more respect," you say.
+<<elseif $submissive lte 850>>
+	"Piss off," you say, pulling Kylar closer to you. "This is my <<if $pronoun is "m">>boyfriend<<else>>girlfriend<</if>>. Show some respect."
+<<else>>
+	"This is my <<if $pronoun is "m">>boyfriend<<else>>girlfriend<</if>>," you say. "Have some respect."
+<</if>>
+<br><br>
+
+"Th-that's right," Kylar says. "D-don't mess with <<phim>>."
+<br><br>
+
+The <<person2>><<person>> sneers in disgust. "Fine. But I'm blaming you if someone poisons the food."
+<br><br>
+
+You walk past the <<person>> and continue to your room. Kylar clings to you, as if for safety.
+<br><br>
+
+<<endevent>><<npc Kylar>><<person1>>
+
+<<link [[Next|Kylar Orphanage]]>><</link>>
+<br>
+
 :: Kylar Orphanage
 <<effects>>
 
@@ -1256,7 +1611,7 @@ pushing you down to the bed.
 	<<neutral 1>>
 
 	<<maninit>>
-	<<set $enemytrust += 100>><<promiscuity5>>
+	<<set $enemytrust += 100>>
 <</if>>
 <<effects>>
 <<effectsman>><<man>>
@@ -1507,11 +1862,11 @@ Kylar's grip on your hand tightens, before <<he>> lunges forward and kisses you 
 <<effects>><<run statusCheck("Kylar")>>
 
 <<if $submissive gte 1150>>
-	"You're being creepy again," you say. "I don't think we're there yet." 'Love' is a bit much for what you have, you think.
+	"You're being creepy again," you say. "I don't think we're there yet." <<if $syndromekylar isnot 1>>'Love' is a bit much for what you have, you think.<</if>>
 <<elseif $submissive lte 850>>
-	"It's a bit early for that, don't you think?" you say, rolling your eyes. <<He>> shouldn't be throwing that word around willy-nilly.
+	"It's a bit early for that, don't you think?" you say, rolling your eyes. <<if $syndromekylar isnot 1>><<He>> shouldn't be throwing that word around willy-nilly.<</if>>
 <<else>>
-	"You shouldn't say that unless you know you mean it," you say. It feels a bit early for <<him>> to be saying that.
+	"You shouldn't say that unless you know you mean it," you say. <<if $syndromekylar isnot 1>>It feels a bit early for <<him>> to be saying that.<</if>>
 <</if>>
 <<if $kylarSeen.includes("saidLove")>>
 	<<Hes>> said it before, but only during the heat of sex.
@@ -1709,7 +2064,7 @@ Kylar stops under the door frame on <<his>> way out.
 
 :: Kylar Park Walk
 <<set $location to "park">><<set $outside to 1>><<effects>>
-
+<<set $bus to "park">>
 You accompany Kylar to the park. <<He>> grasps your hand once outside the orphanage, and loudly refers to you as <<his>> <<girlfriend>> as others pass by.
 <<if $phase is 1>><<He>> sounds giddy.<</if>>
 <br><br>
@@ -2596,6 +2951,22 @@ You turn and walk away. "What's w-wrong," Kylar says, running in front of you. "
 <<link [[Next|Hallways]]>><<set $eventskip to 1>><<endevent>><</link>>
 <br>
 
+:: Kylar Kiss
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<person1>>
+You wrap one arm around Kylar's waist, clasp a hand behind <<his>> neck, and pull <<him>> into a kiss. <<His>> body hangs limp as your lips meet. If you weren't half-carrying <<him>>, <<he>>'d fall to the floor.<<takeKissVirginity "Kylar" `($kylarenglish gte 1?"loveInterest":"romantic")`>>
+<br><br>
+
+The <<person2>><<person>> and <<his>> friends recoil in disgust. "Guess that's two freaks," <<he>> says. "Let's go before we catch something." They walk away, casting glances over their shoulders and whispering amongst themselves.
+<br><br>
+
+You release Kylar. <<He>> staggers, but manages to stay upright. <<He>> releases a squeak of joy, and practically skips away.
+<br><br>
+
+<<link [[Next|Hallways]]>><<set $eventskip to 1>><<endevent>><</link>>
+<br>
+
 :: Kylar Refuse
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
@@ -2911,7 +3282,7 @@ You sit beside Kylar and say hello.
 	<<link [[Pull away|Canteen Kylar Whitney Refuse]]>><<npcincr Kylar rage -1>><<npcincr Whitney dom -1>><</link>><<ldom "Whitney">><<lksuspicion>>
 	<br>
 	<<if $submissive lte 500>>
-		<<link [[Slap|Canteen Kylar Whitney Slap]]>><<set $submissive -= 1>><<npcincr Whitney dom -3>><<npcincr Kylar rage -10>><</link>><<defianttext>><<llksuspicion>><<lldom "Whitney">>
+		<<link [[Slap|Canteen Kylar Whitney Slap]]>><<def 1>><<npcincr Whitney dom -3>><<npcincr Kylar rage -10>><</link>><<defianttext>><<llksuspicion>><<lldom "Whitney">>
 		<br>
 	<</if>>
 
@@ -3012,7 +3383,7 @@ Whitney lunges for the smaller student, grasps <<person1>><<his>> collar, and sh
 Excited at the prospect of violence, other students gather around.
 <br><br>
 
-<<link [[Intervene|Canteen Kylar Whitney Intervene]]>><<set $submissive -= 1>><<npcincr Whitney dom -1>><<set $fightstart to 1>><<status -10>><<endevent>><<npc Whitney>><<person1>><</link>><<ldom "Whitney">><<lcool>>
+<<link [[Intervene|Canteen Kylar Whitney Intervene]]>><<def 1>><<npcincr Whitney dom -1>><<set $fightstart to 1>><<status -10>><<endevent>><<npc Whitney>><<person1>><</link>><<ldom "Whitney">><<lcool>>
 <br>
 <<link [[Encourage|Canteen Kylar Whitney Encourage]]>><<npcincr Kylar rage 20>><<status 1>><</link>><<promiscuous1>><<gcool>><<gggksuspicion>>
 <br>
@@ -3571,11 +3942,11 @@ You run for the cover of a <<if $bus is "park">>bush<<else>>parked car<</if>> an
 <br>
 <<if $promiscuity gte 15 and $submissive lte 500>>
 	<<if $footdisable is "f">>
-		<<link [[Punish with your foot|Street Kylar Foot]]>><<set $submissive -= 1>><</link>><<promiscuous2>><<defianttext>>
+		<<link [[Punish with your foot|Street Kylar Foot]]>><<def 1>><</link>><<promiscuous2>><<defianttext>>
 		<br>
-		<<link [[Punish with your hand|Street Kylar Hand]]>><<set $submissive -= 1>><</link>><<promiscuous2>><<defianttext>>
+		<<link [[Punish with your hand|Street Kylar Hand]]>><<def 1>><</link>><<promiscuous2>><<defianttext>>
 	<<else>>
-		<<link [[Punish sexually|Street Kylar Hand]]>><<set $submissive -= 1>><</link>><<promiscuous2>><<defianttext>>
+		<<link [[Punish sexually|Street Kylar Hand]]>><<def 1>><</link>><<promiscuous2>><<defianttext>>
 	<</if>>
 	<br>
 <</if>>
@@ -4363,4 +4734,61 @@ The two of you continue walking.
 <<kylaroptions>>
 <br>
 
+:: Kylar Gift Box Open
+<<effects>>
+
+<<set $kylar_camera to 1>>
+You pull the bow, and open the lid. Inside is a grey owl plushie. It looks old. Tufts of fluff escape its worn hide.
+<br><br>
+
+"It's been in my family a long time," Kylar says. "I want you to have it. S-so it can watch over you when I can't."
+<br><br>
+
+<<link [[Accept|Kylar Gift Box Accept]]>><<npcincr Kylar rage -5>><<npcincr Kylar love 1>><</link>><<glove>><<llksuspicion>>
+<br>
+<<link [[Refuse|Kylar Gift Box Refuse 3]]>><<npcincr Kylar love -1>><<npcincr Kylar rage 3>><</link>><<llove>><<gksuspicion>>
+<br>
+
+:: Kylar Gift Box Refuse
+<<effects>>
+
+You refuse to take the box. Kylar refueses to accept your refusal. <<He>> stares at you. Not a single muscle on <<his>> face twitches.
+<<set $kylar_camera to 0>>
+<br><br>
+
+<<link [[Open it|Kylar Gift Box Open]]>><<npcincr Kylar rage -5>><<npcincr Kylar love 1>><</link>><<glove>><<llksuspicion>>
+<br>
+<<link [[Refuse again|Kylar Gift Box Refuse 2]]>><<npcincr Kylar love -1>><<npcincr Kylar rage 3>><</link>><<llove>><<gksuspicion>>
+<br>
+
+
+:: Kylar Gift Box Refuse 2
+<<effects>>
+
+Kylar lowers the box, and nods. "I-it's okay," <<he>> says. "P-people refuse gifts from lovers all the time, d-don't they?"
+<br><br>
+
+<<kylaroptions>>
+
+:: Kylar Gift Box Accept
+<<effects>>
+
+"Make sure to put it somewhere high," Kylar says. "So it can watch over you. It would make me feel better." There's space for it in your room at the orphanage.
+<br><br>
+<<set $kylar_camera to 2>>
+
+<<run Furniture.set('owlplushie', 'decoration', {
+	name	: 'owl plushie',
+	nameCap	: 'Owl plushie'
+})>>
+
+<<kylaroptions>>
+
+:: Kylar Gift Box Refuse 3
+<<effects>>
+
+You give Kylar the box back. <<He>> hesitates before taking it. "Y-you don't like it?" <<he>> asks. "Th-that's okay. People refuse gifts from lovers all the time, d-don't they?"
+<br><br>
+
+<<kylaroptions>>
 

@@ -251,6 +251,16 @@ const Furniture = (() => {
 			description: "Soft, cuddly and forever loyal.",
 			iconFile: "bearplushie.png",
 		});
+		mapper.set('owlplushie', {
+			name: "owl plushie",
+			nameCap: "Owl plushie",
+			category: ["decoration"],
+			type: [],
+			cost: setPrice(),
+			description: "Large eyes stare at the world.",
+			iconFile: "owlplushie.png",
+			showFn: () => false
+		});
 		/* ------------- WARDROBES ------------- */
 		/*	starter - 20 clothing slots for every type
 			spacious - 30 clothing slots for every type

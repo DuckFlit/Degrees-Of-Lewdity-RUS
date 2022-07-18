@@ -769,6 +769,97 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 
 <</widget>>
 
+<<widget "combat-hand-hypnosis">>
+<<set $rng to random(1, 100)>>
+<<if $rng gte 51 and ($hypnosis_traits.scream is undefined or $hypnosis_traits.scream lt 5)>>
+	<<if _args[0] is "left">>
+		<<He>> waves the <<print $NPCList[_n].lefttool>> at you. 
+		<<set $NPCList[_n].lefthand to "hypnosis_scream">>
+	<<else>>
+		<<He>> waves the <<print $NPCList[_n].righttool>> at you. 
+		<<set $NPCList[_n].righthand to "hypnosis_scream">>
+	<</if>>
+	<<His>> voice echoes in your mind. <span class="purple"><i>From when I click my fingers, should you try to scream, you will beg for rougher treatment instead.</i></span>
+<<else>>
+	<<if random(1, 2) is 2>>
+		<<His>> voice echoes in your mind. <span class="purple"><i>When I click my fingers, you will be overcome by arousal, and climax at once.</i></span>
+		<<if _args[0] is "left">>
+			<<He>> waves the <<print $NPCList[_n].lefttool>> at you. 
+			<<set $NPCList[_n].lefthand to "hypnosis_orgasm">>
+		<<else>>
+			<<He>> waves the <<print $NPCList[_n].righttool>> at you. 
+			<<set $NPCList[_n].righthand to "hypnosis_orgasm">>
+		<</if>>
+	<<else>>
+		<<His>> voice echoes in your mind. <span class="purple"><i>When I click my fingers, you will lust for the pleasure of pain.</i></span>
+		<<if _args[0] is "left">>
+			<<He>> waves the <<print $NPCList[_n].lefttool>> at you. 
+			<<set $NPCList[_n].lefthand to "hypnosis_masochism">>
+		<<else>>
+			<<He>> waves the <<print $NPCList[_n].righttool>> at you. 
+			<<set $NPCList[_n].righthand to "hypnosis_masochism">>
+		<</if>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "combat-hand-hypnosis-orgasm">>
+<<He>> clasps <<his>> palm around the
+<<if _args[0] is "left">>
+	<<print $NPCList[_n].lefttool>>,
+	<<set $NPCList[_n].lefttool to 0>>
+<<else>>
+	<<print $NPCList[_n].righttool>>,
+	<<set $NPCList[_n].righttool to 0>>
+<</if>>
+and clicks <<his>> fingers. A deep yearning blooms,
+<<if $willpower gte random(1, 1000)>>
+	nurtured by a traitorous part of you. <span class="lblue">You will it away.</span> <<He>> frowns.
+<<else>>
+	unbeckoned. <span class="pink">You can't resist it.</span> Feelings of arousal overwhelm you. <<He>> flashes you a satisfied smile. <<arousal 10000>><<willpower 1>><<gwillpower>>
+<</if>>
+<<combat-reset-hand _args[0]>>
+<</widget>>
+
+<<widget "combat-hand-hypnosis-masochism">>
+<<He>> clasps <<his>> palm around the
+<<if _args[0] is "left">>
+	<<print $NPCList[_n].lefttool>>,
+	<<set $NPCList[_n].lefttool to 0>>
+<<else>>
+	<<print $NPCList[_n].righttool>>,
+	<<set $NPCList[_n].righttool to 0>>
+<</if>>
+and clicks <<his>> fingers. A deep yearning blooms,
+<<if $willpower gte random(1, 1000)>>
+	nurtured by a traitorous part of you. <span class="lblue">You will it away.</span> <<He>> frowns.
+<<else>>
+	unbeckoned. <span class="pink">You can't resist it.</span> You long for pain. <<He>> flashes you a satisfied smile. <<masochism 10>><<willpower 1>><<gwillpower>>
+<</if>>
+<<combat-reset-hand _args[0]>>
+<</widget>>
+
+<<widget "combat-hand-hypnosis-scream">>
+<<He>> clasps <<his>> palm around the
+<<if _args[0] is "left">>
+	<<print $NPCList[_n].lefttool>>,
+	<<set $NPCList[_n].lefttool to 0>>
+<<else>>
+	<<print $NPCList[_n].righttool>>,
+	<<set $NPCList[_n].righttool to 0>>
+<</if>>
+and clicks <<his>> fingers.
+<span class="pink">You feel something shift in your consciousness.</span>
+<<if !$hypnosis_traits.scream>>
+	You've gained the <span class="pink">Hypnotic Yearning</span> trait.
+	<<set $hypnosis_traits.scream to 1>>
+<<elseif $hypnosis_traits.scream lt 5>>
+	Your hypnotic yearning has deepened.
+	<<set $hypnosis_traits.scream += 1>>
+<</if>>
+<<combat-reset-hand _args[0]>>
+<</widget>>
+
 <<widget "combat-hand-on-mouth">>
 	<<rng>>
 	<<if $enemyanger lte 20 and $enemytrust gte 20>>
@@ -1586,7 +1677,18 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<set $NPCList[_n].righthand to "pen">>
 		<</if>>
 		<<neutral 1 _n>>
-
+	<<elseif $enemyanger + $rng lte 15 and $NPCList[_n].traits.includes("hypnotist")>>
+		<<He>> produces a
+		<<if _args[0] is "left">>
+			<<set $NPCList[_n].lefthand to "hypnosis">>
+			<<set $NPCList[_n].lefttool to "pendant">>
+			<<print $NPCList[_n].lefttool>>,
+		<<else>>
+			<<set $NPCList[_n].righthand to "hypnosis">>
+			<<set $NPCList[_n].righttool to "pendant">>
+			<<print $NPCList[_n].righttool>>,
+		<</if>>
+		<span class="purple">and swings it in front of your face.</span>
 	<<elseif $enemyanger + $rng lte 20>>
 		<<if $walltype is "front">>
 			<<He>> strokes your cheek.
@@ -6143,7 +6245,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<oxygen -225>>
 			<</if>>
 			<<set $speechthroat to 1>>
-			<<set $submissive += 1>>
+			<<sub 1>>
 		<</if>>
 		<<bruise neck>><<bruise neck>>
 

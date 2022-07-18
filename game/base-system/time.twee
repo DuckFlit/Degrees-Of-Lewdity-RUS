@@ -17,6 +17,9 @@
 		<<set $exhibitionism -= 1>>
 		<<set $promiscuity -= 1>>
 		<<set $deviancy -= 1>>
+		<<set $exhibitionism to Math.clamp($exhibitionism, 0, 100)>>
+		<<set $promiscuity to Math.clamp($promiscuity, 0, 100)>>
+		<<set $deviancy to Math.clamp($deviancy, 0, 100)>>
 	<</if>>
 	<<set $harpervisit to 0>>
 	<<set $yeardays += 1>>
@@ -170,12 +173,12 @@
 	<<else>>
 		<<set $brothel_basement_price to 500>>
 	<</if>>
-	<<set $corruption_slime -= 1>>
+	<<corruption 1>>
 	<<if $parasite.left_ear.name is "slime">>
-		<<set $corruption_slime += 1>>
+		<<corruption 1>>
 	<</if>>
 	<<if $parasite.right_ear.name is "slime">>
-		<<set $corruption_slime += 1>>
+		<<corruption 1>>
 	<</if>>
 	<<if $chef_rework gte 1>>
 		<<set $chef_rework -= 1>>
@@ -298,6 +301,11 @@
 		<<set $lewd_unlock to true>>
 	<</if>>
 	<<unset $bailey_wake_day>>
+	<<unset $manor_forage>>
+	<<unset $manor_garden>>
+	<<unset $manor_kitchen>>
+	<<unset $manor_parents>>
+	<<unset $manor_lab>>
 
 	<<set $left_before_nurse_returned to 0>>
 	<<set $pharmDaily to {}>>
@@ -716,6 +724,7 @@
 		<<unset $eden_christmas_dinner>>
 		<<unset $christmas_wraith>>
 	<</if>>
+	
 	<<if $bell_timer>>
 		<<set $bell_timer -= 1>>
 	<</if>>
@@ -750,7 +759,7 @@
 		<<set $milk_volume += 10>>
 	<</if>>
 
-	<<set $lactation_pressure -= 1>>
+	<<lactation_pressure -1>>
 	<<if $lactating is 1>>
 		<<if $lactation_pressure lt 30 or $player.breastsize lte 0>>
 			<<set $lactating to 0>>
@@ -766,6 +775,7 @@
 	<</if>>
 
 	<<set $nectar_addiction -= 5>>
+	<<set $nectar_addiction = Math.clamp($nectar_addiction, 0, 200)>>
 	<<if $backgroundTraits.includes("plantlover")>>
 		<<set $nectar_timer-->>
 		<<if $nectar_timer lte 0>>
@@ -799,6 +809,7 @@
 		<span class="red">You feel a terrible light sear through you.</span>
 		<<gstress>><<set $stress += $stressmax>>
 	<</if>>
+	<<unset $demon_window_orphan>>
 
 	<<if $featsPurityBoost>>
 		<<purity $featsPurityBoost>>
@@ -869,7 +880,7 @@
 			<<if _lessonmissed>>
 				<<set _delinquencyDecay to Math.floor(_delinquencyDecay / 2)>>
 			<</if>>
-			<<set $delinquency -= _delinquencyDecay>>
+			<<delinquency `-_delinquencyDecay / 4`>>
 			<<if $schoolfameblackmail isnot undefined>>
 				<<set $schoolfameblackmail += 1>>
 			<</if>>
@@ -1176,10 +1187,10 @@
 				<<set $bookOverdue += 1>>
 				<<if $bookOverdue gte 7>>
 					<<crimeup 1>>
-					<<set $delinquency += 5>>
+					<<delinquency `5 / 4`>>
 					<br><span class="red">You have a book severely overdue, and the police have been informed.</span><br>
 				<<elseif $bookOverdue gte 3>>
-					<<set $delinquency += 3>>
+					<<delinquency `3 / 4`>>
 					<br><span class="red">You have a book overdue, and have incurred delinquency.</span><br>
 				<</if>>
 			<</if>>

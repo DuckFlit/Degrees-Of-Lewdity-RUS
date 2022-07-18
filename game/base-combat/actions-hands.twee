@@ -16,6 +16,12 @@
 	<<set _leftaction["Cover your face"] to "leftcoverface">>
 <</widget>>
 
+<<widget "leftcamerapose">>
+	<<if $audiencecamera1 isnot 0>>
+		<<set _leftaction["Pose for camera"] to "leftcamerapose">>
+	<</if>>
+<</widget>>
+
 <!-- Deprecated, not in use. See "leftgrabnew"-->
 <<widget "leftgrab">>
 
@@ -279,6 +285,15 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <</if>>
 <</widget>>
 
+<<widget "lefthypnosiswhack">>
+<<if $lefttarget isnot "self">>
+	<<set $_target to $NPCList[$lefttarget]>>
+	<<if $_target.lefthand and ($_target.lefthand is "hypnosis" or $_target.lefthand.startsWith("hypnosis_")) or $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_"))>>
+		<<set _leftaction["Whack the hypnotic instrument away"] to "hypnosiswhack">>
+	<</if>>
+<</if>>
+<</widget>>
+
 <<widget "leftdildowhack">>
 <<if $lefttarget isnot "self">>
 	<<if $NPCList[$lefttarget].lefthand is "dildo" or $NPCList[$lefttarget].righthand is "dildo">>
@@ -463,6 +478,12 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 
 <<widget "rightcoverface">>
 	<<set _rightaction["Cover your face"] to "rightcoverface">>
+<</widget>>
+
+<<widget "rightcamerapose">>
+<<if $audiencecamera1 isnot 0>>
+	<<set _rightaction["Pose for camera"] to "rightcamerapose">>
+<</if>>
 <</widget>>
 
 <!-- Deprecated, not in use. See "rightgrabnew"-->
@@ -721,6 +742,15 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<if $righttarget isnot "self">>
 	<<if $NPCList[$righttarget].lefthand is "shackle_entrance" or $NPCList[$righttarget].lefthand is "shackle_imminent" or $NPCList[$righttarget].righthand is "shackle_entrance" or $NPCList[$righttarget].righthand is "shackle_imminent">>
 		<<set _rightaction["Whack away the shackles"] to "shacklewhack">>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "righthypnosiswhack">>
+<<if $righttarget isnot "self">>
+	<<set $_target to $NPCList[$righttarget]>>
+	<<if $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_")) or $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_"))>>
+		<<set _rightaction["Whack the hypnotic instrument away"] to "hypnosiswhack">>
 	<</if>>
 <</if>>
 <</widget>>
@@ -1653,6 +1683,36 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <</if>>
 <</widget>>
 
+<<widget "effectshypnosiswhack">>
+<<if $leftaction is "hypnosiswhack">>
+	<<set $leftaction to 0>>
+	<<personselect $lefttarget>>
+	<<set $_target to $NPCList[$lefttarget]>>
+	<<if $_target.lefthand is "hypnosis" or $_target.lefthand is "hypnosis_scream" or $_target.lefthand is "hypnosis_orgasm" or $_target.lefthand is "hypnosis_masochism">>
+		You whack the <<print $_target.lefttool>> from the <<personselect $lefttarget>><<persons>> hand.
+		<<combat-reset-hand "left">><<set $_target.lefttool to 0>>
+	<<elseif $_target.righthand is "hypnosis" or $_target.righthand is "hypnosis_scream" or $_target.righthand is "hypnosis_orgasm" or $_target.righthand is "hypnosis_masochism">>
+		You whack the <<print $_target.righttool>> from the <<personselect $lefttarget>><<persons>> hand.
+		<<combat-reset-hand "right">><<set $_target.righttool to 0>>
+	<</if>>
+	<<brat 10 $lefttarget>>
+<</if>>
+
+<<if $rightaction is "hypnosiswhack">>
+	<<set $rightaction to 0>>
+	<<personselect $righttarget>>
+	<<set $_target to $NPCList[$righttarget]>>
+	<<if $_target.lefthand is "hypnosis" or $_target.lefthand is "hypnosis_scream" or $_target.lefthand is "hypnosis_orgasm" or $_target.lefthand is "hypnosis_masochism">>
+		You whack the <<print $_target.lefttool>> from the <<personselect $righttarget>><<persons>> hand.
+		<<combat-reset-hand "left">><<set $_target.lefttool to 0>>
+	<<elseif $_target.righthand is "hypnosis" or $_target.righthand is "hypnosis_scream" or $_target.righthand is "hypnosis_orgasm" or $_target.righthand is "hypnosis_masochism">>
+		You whack the <<print $_target.righttool>> from the <<personselect $righttarget>><<persons>> hand.
+		<<combat-reset-hand "right">><<set $_target.righttool to 0>>
+	<</if>>
+	<<brat 10 $righttarget>>
+<</if>>
+<</widget>>
+
 <<widget "effectsdildowhack">>
 <<if $leftaction is "dildowhack">>
 	<<set $leftaction to 0>>
@@ -1993,6 +2053,10 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 		<<case "penisdildo">> <<combat-dildo-on-penis $_hand>>
 		<<case "penisstroker">> <<combat-stroker-on-penis $_hand>>
 		<<case "buttplug">> <<combat-hand-on-buttplug $_hand>>
+		<<case "hypnosis">> <<combat-hand-hypnosis $_hand>>
+		<<case "hypnosis_scream">> <<combat-hand-hypnosis-scream $_hand>>
+		<<case "hypnosis_orgasm">> <<combat-hand-hypnosis-orgasm $_hand>>
+		<<case "hypnosis_masochism">> <<combat-hand-hypnosis-masochism $_hand>>
 		<<case 0>> <<combat-set-hand-start $_hand>>
 		<<default>> <<run console.error("NPC hand action unaccounted for! Hand: " + $_hand + " Value: " + $_npcHand)>> <<run throw new Error("NPC hand action unaccounted for! Hand: " + $_hand + " Value: " + $_npcHand)>>
 	<</switch>>

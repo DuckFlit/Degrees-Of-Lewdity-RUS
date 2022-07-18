@@ -18,7 +18,7 @@
 	<<set $condomUse to false>>
 <</if>>
 
-<<set $pain -= 1>>
+<<pain -0.25>>
 
 <<if $enemyno gte 2>>
 	<<set $pronoun to "n">>
@@ -95,6 +95,7 @@
 <<effectssteal>>
 <<effectspenwhack>>
 <<effectsshacklewhack>>
+<<effectshypnosiswhack>>
 <<effectshandsfreeface>>
 <<effectsdildowhack>>
 
@@ -428,6 +429,23 @@
 	<<else>>
 		<<actionshit $righttarget>><<set $speechhit to 1>><<defiance 2 $righttarget>><<set $attackstat += 1>>
 	<</if>>
+<</if>>
+
+<<if $leftaction is "leftcamerapose" and $rightaction is "rightcamerapose">>
+	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftcamerapose">><<set $rightactiondefault to "rightcamerapose">>
+	<<neutral 4>>
+	You make peace signs for the cameras.
+	<<set $speechcamerapose to 1>>
+<<elseif $leftaction is "leftcamerapose">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftcamerapose">>
+	<<neutral 2>>
+	You make a peace sign with your left hand.
+	<<set $speechcamerapose to 1>>
+<<elseif $rightaction is "rightcamerapose">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightcamerapose">>
+	<<neutral 2>>
+	You make a peace sign with your right hand.
+	<<set $speechcamerapose to 1>>
 <</if>>
 
 <<cover_end>>/*Resets $face and other variables that are covered */
@@ -2615,6 +2633,12 @@
 	<</if>>
 <</if>>
 
+<<if $mouthaction is "ask" and $askAction is "askrough">>
+	<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
+	<<askrough>>
+	<<submission 1>><<set $enemyanger += (10 * $englishtrait)>><<set $speechaskrough to 1>>
+<</if>>
+
 <<if $mouthaction is "demand">>
 	<<set $mouthaction to 0>><<set _sound to 1>>
 	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
@@ -2842,8 +2866,19 @@
 	<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $corruption_slime gte (currentSkillValue('willpower')/ 10)>>
 		You open your mouth to scream for help, <span class="red">but your voice catches in your throat.</span> You feel the slime steal your breath away.
 		<<gwillpower>><<willpower 1>>
+	<<elseif $hypnosis_traits.scream gte 1 and $willpower lt random(1, (200 * $hypnosis_traits.scream))>>
+		<<hypnosisicon>> You intend to scream for help, <span class="pink">but the thought is snatched from your mind, and replaced with another.</span>  
+		<<hypnotised 1>><<willpower 1>>
+		<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
+		<<askrough>>
+		<<submission 1>><<set $enemyanger += (10 * $englishtrait)>>
+		<<hypnosisicon>>
 	<<else>>
-		You scream for help.
+		<<if $hypnosis_traits.scream gte 1>>
+			<span class="green">You resist intrusive thoughts,</span> and scream for help.
+		<<else>>
+			You scream for help.
+		<</if>>
 		<<if isLoveInterest("Eden") and $location is "forest" and !($npc.includes("Eden")) and (!$undergroundbrothel or !$undergroundbrothel.active)>>
 			<<if $rng lte 50>>
 				"Eden! Get them off of me!"
@@ -2910,6 +2945,7 @@
 	<<else>>
 		<<set $mouthactiondefault to "plead">>
 		<<set $trauma -= $traumagain>><<set $traumagain to 0>><<set $speechforgive to 1>><<set $angelforgive to 1>>
+		<<traumaclamp>>
 		<<if $enemytype is "beast">>
 			"You don't know any better. You're just a <<beasttype>>," you say. "I forgive you."
 		<<else>>

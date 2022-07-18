@@ -184,50 +184,50 @@
 <<widget "passwater">>
 	<<if $outside is 1 and $weather is "clear">>
 		<<if $upperwet gte 1>>
-			<<set $upperwet -= ($pass * 2)>>
+			<<upperwet `($pass * -2)`>>
 		<</if>>
 		<<if $lowerwet gte 1>>
-			<<set $lowerwet -= ($pass * 2)>>
+			<<lowerwet `($pass * -2)`>>
 		<</if>>
 		<<if $underlowerwet gte 1>>
 			<<if $worn.lower.type.includes("naked")>>
-				<<set $underlowerwet -= ($pass * 2)>>
+				<<underlowerwet `($pass * -2)`>>
 			<<else>>
-				<<set $underlowerwet -= $pass>>
+				<<underlowerwet `-$pass`>>
 			<</if>>
 		<</if>>
 		<<if $underupperwet gte 1>>
 			<<if $worn.upper.type.includes("naked")>>
-				<<set $underupperwet -= ($pass * 2)>>
+				<<underupperwet `($pass * -2)`>>
 			<<else>>
-				<<set $underupperwet -= $pass>>
+				<<underupperwet `-$pass`>>
 			<</if>>
 		<</if>>
 	<<elseif $outside is 1 and $weather is "rain" and !$worn.head.type.includes("rainproof")>>
 		<<if !$worn.upper.type.includes("naked") and !waterproofCheck($worn.upper) and !waterproofCheck($worn.over_upper)>>
-			<<set $upperwet += $pass>>
+			<<upperwet $pass>>
 		<</if>>
 		<<if !$worn.lower.type.includes("naked") and !waterproofCheck($worn.lower) and !waterproofCheck($worn.over_lower)>>
-			<<set $lowerwet += $pass>>
+			<<lowerwet $pass>>
 		<</if>>
 		<<if !$worn.under_lower.type.includes("naked") and !waterproofCheck($worn.under_lower) and !waterproofCheck($worn.lower) and !waterproofCheck($worn.over_lower)>>
-			<<set $underlowerwet += $pass>>
+			<<underlowerwet $pass>>
 		<</if>>
 		<<if !$worn.under_upper.type.includes("naked") and !waterproofCheck($worn.under_upper) and !waterproofCheck($worn.upper) and !waterproofCheck($worn.over_upper)>>
-			<<set $underupperwet += $pass>>
+			<<underupperwet $pass>>
 		<</if>>
 	<<else>>
 		<<if $upperwet gte 1>>
-			<<set $upperwet -= $pass>>
+			<<upperwet `-$pass`>>
 		<</if>>
 		<<if $lowerwet gte 1>>
-			<<set $lowerwet -= $pass>>
+			<<lowerwet `-$pass`>>
 		<</if>>
 		<<if $underlowerwet gte 1>>
-			<<set $underlowerwet -= $pass>>
+			<<underlowerwet `-$pass`>>
 		<</if>>
 		<<if $underupperwet gte 1>>
-			<<set $underupperwet -= $pass>>
+			<<underupperwet `-$pass`>>
 		<</if>>
 	<</if>>
 	/* Commented out, new system is the "passArousalWetness" widget
@@ -275,8 +275,8 @@
 			<<set $_change to Math.clamp($_change, 1, 3)>>
 
 			<<if !$worn.under_lower.type.includes("naked") and !$worn.under_lower.type.includes("swim")>>
-				<<set $underlowerwet += Math.round($_change * $pass)>>
-				<<set $underlowerwet to Math.clamp($underlowerwet, 0, 100 + $pass)>>
+				<<underlowerwet `Math.round($_change * $pass)`>>
+				<<underlowerwet `Math.clamp($underlowerwet, 0, 100 + $pass)`>>
 				<<set $pantiesSoaked to ($underlowerwet gte 100)>>
 			<</if>>
 			<!-- Commented out for now because the wetness messages aren't updated to account for it -->
@@ -322,14 +322,15 @@
 	<</if>>
 
 	<<if $hallucinogen gt 0>>
-		<<set $hallucinogen -= $pass>>
+		<<hallucinogen -$pass>>
 	<</if>>
 	<<if $drunk gt 0>>
 		<<tiredness $pass pass>>
-		<<set $drunk -= $pass>>
+		<<alcohol -$pass>>
+		<<set $drunk to Math.clamp($drunk, 0, 1000)>>
 	<</if>>
 	<<if $drugged gt 0>>
-		<<set $drugged -= $pass>>
+		<<drugs -$pass>>
 	<</if>>
 	<<if $pain gt 0>>
 		<<set $pain -= $pass>>
@@ -496,7 +497,7 @@
 				<<set _drunkMod to 10>>
 			<</if>>
 			<<if $possessed is true and _violence gte 0>>
-				<<set $control += _violence>>
+				<<control `_violence / 10`>>
 				<<set $wraith.will -= _violence>>
 				<<set _possessMod to 3>>
 			<<else>>
@@ -510,15 +511,15 @@
 			<<set $arousalmasochism += (_violence * (0 + ($masochism / 7)))>>
 			<<if $orgasmdown gte 1>>
 				<<if $masochism gte 800>>
-					<<set $masochism += (_violence / 20)>>
+					<<masochism `(_violence / 20)`>>
 				<<elseif $masochism gte 500>>
-					<<set $masochism += (_violence / 10)>>
+					<<masochism `(_violence / 10)`>>
 				<<elseif $masochism gte 300>>
-					<<set $masochism += (_violence / 6)>>
+					<<masochism `(_violence / 6)`>>
 				<<elseif $masochism gte 100>>
-					<<set $masochism += (_violence / 2)>>
+					<<masochism `(_violence / 2)`>>
 				<<else>>
-					<<set $masochism += _violence>>
+					<<masochism _violence>>
 				<</if>>
 			<</if>>
 			<<if _violence gte 6>>
@@ -527,6 +528,11 @@
 				<<set $enemyanger -= _violence>>
 			<</if>>
 			<<set $enemyarousal += 1>>
+			<<if $gamemode is "soft">>
+				<<set $pain to Math.clamp($pain, 0, 0)>>
+			<<else>>
+				<<set $pain to Math.clamp($pain, 0, 200)>>
+			<</if>>
 		<</if>>
 	<</if>>
 <</widget>>
@@ -554,16 +560,21 @@
 			<<set $arousalmasochism += (_violence * (0 + ($masochism / 7)))>>
 			<<if $orgasmdown gte 1>>
 				<<if $masochism gte 800>>
-					<<set $masochism += (_violence / 20)>>
+					<<masochism `(_violence / 20)`>>
 				<<elseif $masochism gte 500>>
-					<<set $masochism += (_violence / 10)>>
+					<<masochism `(_violence / 10)`>>
 				<<elseif $masochism gte 300>>
-					<<set $masochism += (_violence / 6)>>
+					<<masochism `(_violence / 6)`>>
 				<<elseif $masochism gte 100>>
-					<<set $masochism += (_violence / 2)>>
+					<<masochism `(_violence / 2)`>>
 				<<else>>
-					<<set $masochism += _violence>>
+					<<masochism _violence>>
 				<</if>>
+			<</if>>
+			<<if $gamemode is "soft">>
+				<<set $pain to Math.clamp($pain, 0, 0)>>
+			<<else>>
+				<<set $pain to Math.clamp($pain, 0, 200)>>
 			<</if>>
 		<</if>>
 	<</if>>
@@ -579,7 +590,7 @@
 				<<set $_stress_multiplier to 10>>
 			<</if>>
 			<<stress _args[0] $_stress_multiplier>>
-			<<set $submissive += 1>>
+			<<sub `_args[0] / 4`>>
 		<<else>>
 			<<set $stress -= 10 * _args[0]>>
 			<<set $assertive += 1>>
@@ -597,7 +608,7 @@
 		<<set $stress -= 10 * _defiance>>
 		<<combattrauma `-_defiance`>>
 		<<set $enemyanger += 5 * _defiance>>
-		<<set $submissive -= 1>>
+		<<def `_args[0] / 4`>>
 		<<set $enemytrust -= 4>>
 		<<set _defiance_arousal to (_defiance * ($sadism / 40))>>
 		<<arousal _defiance_arousal>>
@@ -627,7 +638,7 @@
 		<<elseif $NPCList[0].legs isnot "walk">>
 			<<set $enemyanger += 5 * _args[0]>>
 		<</if>>
-		<<set $submissive -= 1>>
+		<<def `_args[0] / 4`>>
 		<<set $enemytrust -= 2>>
 		<<set $NPCList[0].bold -= (_args[0] * 10)>>
 	<</if>>
@@ -636,7 +647,7 @@
 <<widget "meek">>
 	<<if _args[0]>>
 		<<if $consensual isnot 1>>
-			<<set $submissive += 1>>
+			<<sub `_args[0] / 4`>>
 		<<else>>
 			<<set $assertive += 1>>
 		<</if>>
@@ -670,7 +681,7 @@
 <</widget>>
 
 <<widget "seductionskilluse">>
-	<<set $enemyarousal += ($seductionskill / 100)>><<set $seductionskill += 5>>
+	<<set $enemyarousal += ($seductionskill / 100)>><<seductionskill 5>>
 <</widget>>
 
 <<widget "seductionskilluptext">>
@@ -681,43 +692,43 @@
 <</widget>>
 
 <<widget "seductionskillusecombat">>
-	<<set $enemyarousal += ($seductionskill / 100)>><<set $seductionskill += 5>><<set $seductionskillup to 1>>
+	<<set $enemyarousal += ($seductionskill / 100)>><<seductionskill 5>><<set $seductionskillup to 1>>
 <</widget>>
 
 <<widget "oralskilluse">>
-	<<set $enemyarousal += ($oralskill / 100)>><<set $oralskill += 5>><<set $oralskillup to 1>>
+	<<set $enemyarousal += ($oralskill / 100)>><<oralskill 5>><<set $oralskillup to 1>>
 <</widget>>
 
 <<widget "vaginalskilluse">>
-	<<set $enemyarousal += ($vaginalskill / 100)>><<set $vaginalskill += 5>><<set $vaginalskillup to 1>>
+	<<set $enemyarousal += ($vaginalskill / 100)>><<vaginalskill 5>><<set $vaginalskillup to 1>>
 <</widget>>
 
 <<widget "analskilluse">>
-	<<set $enemyarousal += ($analskill / 100)>><<set $analskill += 5>><<set $analskillup to 1>>
+	<<set $enemyarousal += ($analskill / 100)>><<analskill 5>><<set $analskillup to 1>>
 <</widget>>
 
 <<widget "handskilluse">>
-	<<set $enemyarousal += ($handskill / 100)>><<set $handskill += 5>><<set $handskillup to 1>>
+	<<set $enemyarousal += ($handskill / 100)>><<handskill 5>><<set $handskillup to 1>>
 <</widget>>
 
 <<widget "feetskilluse">>
-	<<set $enemyarousal += ($feetskill / 100)>><<set $feetskill += 5>><<set $feetskillup to 1>>
+	<<set $enemyarousal += ($feetskill / 100)>><<feetskill 5>><<set $feetskillup to 1>>
 <</widget>>
 
 <<widget "bottomskilluse">>
-	<<set $enemyarousal += ($bottomskill / 100)>><<set $bottomskill += 5>><<set $bottomskillup to 1>>
+	<<set $enemyarousal += ($bottomskill / 100)>><<bottomskill 5>><<set $bottomskillup to 1>>
 <</widget>>
 
 <<widget "thighskilluse">>
-	<<set $enemyarousal += ($thighskill / 100)>><<set $thighskill += 5>><<set $thighskillup to 1>>
+	<<set $enemyarousal += ($thighskill / 100)>><<thighskill 5>><<set $thighskillup to 1>>
 <</widget>>
 
 <<widget "chestskilluse">>
-	<<set $enemyarousal += ($chestskill / 100)>><<set $chestskill += 5>><<set $chestskillup to 1>>
+	<<set $enemyarousal += ($chestskill / 100)>><<chestskill 5>><<set $chestskillup to 1>>
 <</widget>>
 
 <<widget "penileskilluse">>
-	<<set $enemyarousal += ($penileskill / 100)>><<set $penileskill += 5>><<set $penileskillup to 1>>
+	<<set $enemyarousal += ($penileskill / 100)>><<penileskill 5>><<set $penileskillup to 1>>
 <</widget>>
 
 <<widget "skulduggeryskilluse">>
@@ -733,6 +744,7 @@
 <<widget "combatskulduggeryskilluse">>
 	<<if $statFreeze isnot true>>
 		<<set $skulduggery += 3>>
+		<<set $skulduggery to Math.clamp($skulduggery, 0, 1000)>>
 		<<if $skulduggery lt 1000>>
 			<span class="gold"> You learned a thing or two about skulduggery.</span>
 		<</if>>
@@ -745,6 +757,7 @@
 		<<if $swimmingskill lt 1000>>
 			<span class="gold"> You've become more confident at swimming.</span>
 		<</if>>
+		<<set $swimmingskill to Math.clamp($swimmingskill, 0, 1000)>>
 	<</if>>
 <</widget>>
 
@@ -848,6 +861,7 @@
 	<</if>>
 	<<set $athletics += Math.trunc(_temp * 1.4)>>
 	<<set $athletics to Math.clamp($athletics, 0, 1000)>>
+	<<set $tending to Math.clamp($tending, 0, 1000)>>
 <</if>>
 <</widget>>
 
@@ -887,6 +901,7 @@
 	<<else>>
 		<span class="gold"> You get a good workout.</span>
 	<</if>>
+	<<set $physique = Math.clamp($physique, 0, $physiquesize)>>
 <</if>>
 <</widget>>
 
@@ -901,26 +916,37 @@
 		<<switch _args[0]>>
 		<<case "face">>
 			<<set $facebruise += 1>>
+			<<set $facebruise to Math.clamp($facebruise, 0, 100)>>
 		<<case "neck">>
 			<<set $neckbruise += 1>>
+			<<set $neckbruise to Math.clamp($neckbruise, 0, 100)>>
 		<<case "chest">>
 			<<set $chestbruise += 1>>
+			<<set $chestbruise to Math.clamp($chestbruise, 0, 100)>>
 		<<case "rightarm">>
 			<<set $rightarmbruise += 1>>
+			<<set $rightarmbruise to Math.clamp($rightarmbruise, 0, 100)>>
 		<<case "leftarm">>
 			<<set $leftarmbruise += 1>>
+			<<set $leftarmbruise to Math.clamp($leftarmbruise, 0, 100)>>
 		<<case "tummy">>
 			<<set $tummybruise += 1>>
+			<<set $tummybruise to Math.clamp($tummybruise, 0, 100)>>
 		<<case "bottom">>
 			<<set $bottombruise += 1>>
+			<<set $bottombruise to Math.clamp($bottombruise, 0, 100)>>
 		<<case "thigh">>
 			<<set $thighbruise += 1>>
+			<<set $thighbruise to Math.clamp($thighbruise, 0, 100)>>
 		<<case "anus">>
 			<<set $anusbruise += 1>>
+			<<set $anusbruise to Math.clamp($anusbruise, 0, 100)>>
 		<<case "vagina">>
 			<<set $vaginabruise += 1>>
+			<<set $vaginabruise to Math.clamp($vaginabruise, 0, 100)>>
 		<<case "penis">>
 			<<set $penisbruise += 1>>
+			<<set $penisbruise to Math.clamp($penisbruise, 0, 100)>>
 		<<case "full">>
 			<<set $facebruise += 1>>
 			<<set $neckbruise += 1>>
@@ -930,6 +956,18 @@
 			<<set $tummybruise += 1>>
 			<<set $bottombruise += 1>>
 			<<set $thighbruise += 1>>
+			
+			<<set $facebruise to Math.clamp($facebruise, 0, 100)>>
+			<<set $chestbruise to Math.clamp($chestbruise, 0, 100)>>
+			<<set $tummybruise to Math.clamp($tummybruise, 0, 100)>>
+			<<set $vaginabruise to Math.clamp($vaginabruise, 0, 100)>>
+			<<set $penisbruise to Math.clamp($penisbruise, 0, 100)>>
+			<<set $anusbruise to Math.clamp($anusbruise, 0, 100)>>
+			<<set $bottombruise to Math.clamp($bottombruise, 0, 100)>>
+			<<set $thighbruise to Math.clamp($thighbruise, 0, 100)>>
+			<<set $leftarmbruise to Math.clamp($leftarmbruise, 0, 100)>>
+			<<set $rightarmbruise to Math.clamp($rightarmbruise, 0, 100)>>
+			<<set $neckbruise to Math.clamp($neckbruise, 0, 100)>>
 		<</switch>>
 	<</if>>
 <</widget>>
@@ -1003,6 +1041,8 @@
 <<widget "vaginaldoublestat">><<if $statFreeze isnot true>><<set $vaginaldoublestat += 1>><</if>><</widget>>
 
 <<widget "sextoystat">><<if $statFreeze isnot true>><<set $sextoystat += 1>><</if>><</widget>>
+
+<<widget "urinestat">><<if $statFreeze isnot true>><<if $args[0]>><<set $urinestat += $args[0]>><<else>><<set $urinestat += 1>><</if>><</if>><</widget>>
 
 <<widget "distinction_stat">>
 <<if $statFreeze isnot true>>
@@ -1361,7 +1401,7 @@
 <br><br>
 <</widget>>
 
-<<widget "drunk">>
+<<widget "drunkcaption">>
 	<<if $drunk gt 0>>
 		<<set $_colour to getColourClassFromPercentage($drunk * (100 / 480))>>
 		<<set $_barColour to $_colour + "bar">>
@@ -1391,7 +1431,7 @@
 	<</if>>
 <</widget>>
 
-<<widget "drugged">>
+<<widget "druggedcaption">>
 	<<if $drugged gt 0>>
 		<<set $_colour to getColourClassFromPercentage($drugged / 5)>>
 		<<set $_barColour to $_colour + "bar">>
@@ -1414,7 +1454,7 @@
 	<</if>>
 <</widget>>
 
-<<widget "hallucinogen">>
+<<widget "hallucinogencaption">>
 	<<if $hallucinogen gt 0>>
 		<<set $_colour to getColourClassFromPercentage($hallucinogen / 5)>>
 		<<set $_barColour to $_colour + "bar">>
@@ -3877,6 +3917,64 @@ __Map__<br>
 	<<set $NPCName[_i].lust = Math.clamp($NPCName[_i].lust, 0, 100)>>
 	<<set $NPCName[_i].purity = Math.clamp($NPCName[_i].purity, 0, 100)>>
 	<<set $NPCName[_i].corruption = Math.clamp($NPCName[_i].corruption, 0, 50)>>
+	
+	<<set _i to $NPCNameList.indexOf("Darryl")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("River")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Mason")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Sam")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Wren")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Charlie")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Bailey")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Briar")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Doren")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Gwylan")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Harper")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Jordan")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Landry")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Leighton")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Morgan")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Winter")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Niki")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Quinn")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+	<<set _i to $NPCNameList.indexOf("Remy")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
+	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
 <</widget>>
 
 <<widget "fringecheck">>
@@ -3995,7 +4093,7 @@ __Map__<br>
 	<<set $hunger -= (_args[0] * 5)>><<set $thirst -= (_args[0] * 5)>>
 	<<drugs _args[0]>><<set $arousal += _args[0]>>
 	<<if $ejaculating is 1>>
-		<<set $drunk += (_args[0] * 3)>>
+		<<alcohol `(_args[0] * 3)`>>
 		<<set $player.bodyliquid.mouth.goo += 1>>
 	<</if>>
 	<<if $backgroundTraits.includes("plantlover")>>
@@ -4007,6 +4105,7 @@ __Map__<br>
 		<</if>>
 		<<set $nectar_timer to 21>>
 	<</if>>
+	<<set $nectar_addiction = Math.clamp($nectar_addiction, 0, 200)>>
 <</widget>>
 
 <<widget "setup_pillory">>
@@ -4907,6 +5006,10 @@ __Map__<br>
 <<else>>
 	<<set $historytrait to 0>>
 <</if>>
+<<set $english to Math.clamp($english, 0, 1000)>>
+<<set $maths to Math.clamp($maths, 0, 1000)>>
+<<set $science to Math.clamp($science, 0, 1000)>>
+<<set $history to Math.clamp($history, 0, 1000)>>
 <</widget>>
 
 /*
@@ -4983,6 +5086,14 @@ __Map__<br>
 <<widget "sadism">>
 <<if _args[0]>>
 	<<set $sadism += _args[0]>>
+	<<set $sadism to Math.clamp($sadism, 0, 1000)>>
+<</if>>
+<</widget>>
+
+<<widget "masochism">>
+<<if _args[0]>>
+	<<set $masochism += _args[0]>>
+	<<set $masochism to Math.clamp($masochism, 0, 1000)>>
 <</if>>
 <</widget>>
 

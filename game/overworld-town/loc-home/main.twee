@@ -47,6 +47,8 @@ You are in your bedroom.
 	<<switch _deco.name>>
 		<<case "bearplushie">>
 			<<furnitureicon _deco.iconFile>>The _deco.name is sitting in a corner.
+		<<case "owl plushie">>
+			<<furnitureicon _deco.iconFile>>The _deco.name stares down from the wardrobe, blending into the gloom.
 		<<default>>
 			<<furnitureicon _deco.iconFile>>The _deco.name is hanging on a wall.
 	<</switch>>
@@ -372,6 +374,24 @@ You are in your bedroom.
 		<</if>>
 		<<home_outside>>
 		<br><br>
+		<<set _kylar to statusCheck("Kylar")>>
+		<<if $kylar_camera is 4>>
+			<<ind>><<link [[Decide what to do with Kylar's camera(0:05)|Bedroom Kylar Camera]]>><<pass 5>><</link>>
+			<br><br>
+		<</if>>
+		<<if $kylar_camera is 0>>
+			The box Kylar tried to gift you sits at the foot of your bed.
+			<br><br>
+			<<link [[Open it|Bedroom Kylar Gift Open]]>><</link>>
+			<br><br>
+		<<elseif $kylar_camera is 1>>
+			The box Kylar tried to gift you sits at the foot of your bed. The owl plushie is inside.
+			<br><br>
+			<<link [[Keep it as decoration|Bedroom Kylar Gift Keep]]>><</link>>
+			<br>
+			<<link [[Give it to an orphan|Bedroom Kylar Gift Orphan]]>><<hope 1>><</link>><<ghope>>
+			<br><br>
+		<</if>>
 	<</if>>
 	<<link [[Settings]]>><<set $settingsExitPassage to "Bedroom">><</link>>
 	<br>
@@ -383,6 +403,121 @@ You are in your bedroom.
 	<</if>>
 	<br><br>
 <</if>>
+
+
+:: Bedroom Kylar Gift Open
+<<effects>>
+
+You pull the bow, and open the lid. Inside is a grey owl plushie. It looks old. Tufts of fluff escape its worn hide.
+<br><br>
+
+<<link [[Keep it as decoration|Bedroom Kylar Gift Keep]]>><</link>>
+<br>
+<<link [[Give it to an orphan|Bedroom Kylar Gift Orphan]]>><<hope 1>><</link>><<ghope>>
+<br>
+
+:: Bedroom Kylar Gift Keep
+<<effects>>
+
+<<set $kylar_camera to 2>>
+
+You find a space on top of the wardrobe, where its black eyes can watch the room.
+<br><br>
+
+<<run Furniture.set('owlplushie', 'decoration', {
+	name	: 'owl plushie',
+	nameCap	: 'Owl plushie'
+})>>
+
+<<link [[Next|Bedroom]]>><</link>>
+<br>
+
+:: Bedroom Kylar Gift Orphan
+<<effects>>
+
+<<set $kylar_camera to 3>>
+<<generatey1>><<person1>>
+You walk into the hall. An orphan scurries towards you. You hold out the plushie. <<His>> eyes sparkle. "For me?" <<he>> asks. You barely nod once before <<he>> snatches it with both arms. "Thank you!" <<He>> dashes away, clutching the toy to <<his>> chest.
+<br><br>
+
+<<link [[Next|Bedroom]]>><<endevent>><</link>>
+<br>
+
+
+:: Bedroom Kylar Camera
+<<effects>>
+
+You take the plushie down from the wardrobe, and look into its black eyes. You can see it now, one eye is a little more reflective than the other. You push two fingers through one of the tufty holes in the head, and fish out a small camera.
+<br><br>
+
+<<link [[Destroy it|Bedroom Kylar Camera Destroy]]>><<set $phase to 0>><</link>>
+<br>
+<<if $exhibitionism gte 35>>
+	<<link [[Leave it there. For revenge|Bedroom Kylar Camera Leave]]>><<set $phase to 0>><</link>><<exhibitionist3>>
+	<br>
+<</if>>
+
+:: Orphanage Kylar Camera
+<<effects>>
+
+You find the plushie in the living room, sat beside the television with several other toys. You look into its black eyes. You can see it now, one eye is a little more reflective than the other. You push two fingers through one of the tufty holes in the head, and fish out a small camera.
+<br><br>
+
+<<link [[Destroy it|Bedroom Kylar Camera Destroy]]>><<set $phase to 1>><</link>>
+<br>
+<<if $exhibitionism gte 35>>
+	<<link [[Position it in your room. For revenge|Bedroom Kylar Camera Leave]]>><<set $phase to 1>><</link>><<exhibitionist3>>
+	<br>
+<</if>>
+
+:: Bedroom Kylar Camera Destroy
+<<effects>>
+
+You drop the camera on the floor, and stomp on it. You feel the lens crack. That should put an end to it.<<gggcontrol>><<control 100>><<llltrauma>><<trauma -30>>
+<br><br>
+
+<<set $kylar_camera to 6>>
+
+<<if $phase is 1>>
+	Disarmed and safe, you leave the plushie where you found it.
+	<br><br>
+	
+	<<link [[Next|Orphanage]]>><</link>>
+	<br>
+<<else>>
+	Disarmed and safe, you place the plushie back on top of the wardrobe.
+	<br><br>
+	<<link [[Next|Bedroom]]>><</link>>
+	<br>
+<</if>>
+
+
+
+
+:: Bedroom Kylar Camera Leave
+<<effects>>
+
+
+
+<<set $kylar_camera to 7>>
+	
+<<if $phase is 1>>
+	You return to your room, and place the plushie on top of your wardrobe.
+	<<run Furniture.set('owlplushie', 'decoration', {
+		name	: 'owl plushie',
+		nameCap	: 'Owl plushie'
+	})>>
+<<else>>
+	You place the plushie back on top of your wardrobe.
+<</if>>
+
+You stare right at the lens "I wonder who I'll invite over," you say. You stick out your tongue. "I hope you enjoy the show. <i>My love.</i>"<<gggcontrol>><<control 100>><<llltrauma>><<trauma -30>><<exhibitionism3>>
+
+
+<<link [[Next|Bedroom]]>><</link>>
+<br>
+
+
 
 :: Bedroom Robin Mist Note
 <<set _robin to statusCheck("Robin")>>
@@ -709,7 +844,7 @@ You are in the bathroom.
 			<br>
 			<<link [[Berate Kylar|Kylar Orphanage Sleep Berate]]>><<set $kylarbed to 0>><<npcincr Kylar love -3>><</link>><<lllove>>
 			<br>
-			<<if $submissive lte 500>>
+			<<if $submissive lte 500 or $syndromekylar gte 1>>
 				<<link [[Slam the door|Kylar Orphanage Slam]]>><<set $kylarbed to 0>><<npcincr Kylar love 1>><<npcincr Kylar lust 1>><</link>><<glove>><<glust>><<defianttext>>
 			<</if>>
 
@@ -1587,6 +1722,10 @@ and !$fromRobinRoom and _robin.cdquest is 2 and _robin.trauma lte 20 and !$robin
 		<<ind>><<link [[Find hacker (0:10)|Orphanage Hacker]]>><<pass 10>><</link>>
 		<br><br>
 	<</if>>
+	<<if $kylar_camera is 5>>
+		<<ind>><<link [[Decide what to do with Kylar's camera (0:05)|Orphanage Kylar Camera]]>><<pass 5>><</link>>
+		<br><br>
+	<</if>>
 	<<if $halloween is 1 and $robinmissing is 0 and $hour gte 16 and $hour lt 19 and $monthday is 31 and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
 		<<if $halloween_robin_costume is "witch">>
 			You see Robin, dressed as a witch and surrounded by excited orphans.
@@ -1633,6 +1772,7 @@ and !$fromRobinRoom and _robin.cdquest is 2 and _robin.trauma lte 20 and !$robin
 	<<home_outside>>
 	<br>
 <</if>>
+
 <<if $fromRobinRoom>>
 	<<unset $fromRobinRoom>>
 <</if>>
@@ -2192,7 +2332,7 @@ Attitudes
 <<set $stress -= 2000>>
 <<npc Bailey>><<person1>>You're awoken by a sharp pain in your face. It's Bailey. <<He>> slaps you again. "I provide a perfectly good bed for you, yet you opt to sleep on the floor." <<He>> slams the door shut as <<he>> leaves.
 <br><br>
-<<set $pain += 20>>
+<<pain 5>>
 <<link [[Next|Bedroom]]>><<endevent>><</link>>
 <br>
 
