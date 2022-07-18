@@ -1131,13 +1131,13 @@ function isConnectedToHood(slot) {
 	// Return false if slot is undefined or not a valid clothing category
 	if (!slot || !V.worn[slot]) return false;
 	// Return true if this item IS a hood 
-	if (V.worn[slot].hood) return true;
+	if (V.worn[slot].hood && V.worn[slot].outfitSecondary[1] !== "broken") return true;
 
 	// Use the primary clothing slot for the next check if this item is connected to an outfit (and is not the primary item)
 	if (V.worn[slot].outfitSecondary && V.worn[slot].outfitSecondary[1] !== "broken"){
 		slot = V.worn[slot].outfitSecondary[0];
 	}
-	if (V.worn[slot].outfitPrimary && V.worn[slot].outfitPrimary.head && V.worn[slot].outfitPrimary.head !== "broken" && V.worn.head.hood){
+	if (V.worn[slot].hoodposition && (V.worn[slot].hoodposition == "down" || (V.worn[slot].hoodposition == "up" && V.worn[slot].outfitPrimary.head !== "broken" && V.worn.head.hood == 1))){
 		return true;
 	}
 	return false;

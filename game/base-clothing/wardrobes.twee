@@ -564,15 +564,52 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 	<</if>>
 <</silently>><<print $_output>><</widget>>
 
-<<widget "toggleHood">>
+<<widget "toggleHoodLink">>
 	<div class="toggleHoodLink">
-		<<link `($hoodDown ? "Pull hood up" : "Pull hood down")`>>
-			<<set $hoodDown to +!$hoodDown>>
+		<<link `($worn.upper.hoodposition is "down" ? "Pull hood up" : "Pull hood down")`>>
+			<<toggleHood _args[0]>>
 			<<updatesidebarimg>>
-			<<run $(".toggleHoodLink .link-internal").html($hoodDown ? "Pull hood up" : "Pull hood down")>>
+			<<if _args[0] isnot "shop">>
+				<<updatewardrobe>>
+			<</if>>
+			<<run $(".toggleHoodLink .link-internal").html($worn.upper.hoodposition is "down" ? "Pull hood up" : "Pull hood down")>>
 			<<run Links.generateLinkNumbers($(".passage"))>>
 		<</link>>
 	</div>
+<</widget>>
+
+<<widget "toggleHood">>
+	/* If hood is up, put it down and free up the head slot*/
+	<<if $worn.upper.hoodposition is "up">> 
+		<<run delete $worn.upper.outfitPrimary.head>>
+		<<set $worn.upper.hoodposition to "down">>
+		<<if _args[0] is "shop" and $tryOn.ownedStored.head.name isnot $worn.head.name and !($tryOn.ownedStored.head.outfitSecondary and $tryOn.ownedStored.head.outfitSecondary[1] isnot "broken")>>
+			<<set $worn.head to clone($tryOn.ownedStored.head)>>
+		<<else>>
+			<<set $worn.head to clone(setup.clothes.head[0])>>
+		<</if>>
+	
+	/* If hood is down, put it back up and remove anything on the head if necessary */
+	<<else>>
+		<<if !$worn.head.cursed>> /* No cursed head items yet, but if one is made, should probably have some popup saying this was prevented */
+			<<if $worn.head.name isnot "naked" and _args[0] isnot "shop">> /*Don't put head accessory back in wardrobe if curently in a shop, might need it back*/
+				<<generalUndress $wardrobe_location "head">>
+			<</if>>
+			<<set $worn.upper.outfitPrimary.head to clone(setup.clothes.upper[$worn.upper.index].outfitPrimary.head)>>
+			<<set $worn.upper.hoodposition to "up">>
+			/* re-create the hood using colors from the hoodie */
+			<<set $_hoodIndex to setup.clothes.head.findIndex(x => x.name === $worn.upper.outfitPrimary.head)>>
+			<<set $worn.head to clone(setup.clothes.head[$_hoodIndex])>>
+			<<set $worn.head.colour to $worn.upper.colour>>
+			<<if $worn.head.colour is "custom">>
+				<<set $worn.head.colourCustom to $worn.upper.colourCustom>>
+			<</if>>
+			<<set $worn.head.accessory_colour to $worn.upper.accessory_colour>>
+			<<if $worn.head.accessory_colour is "custom">>
+				<<set $worn.head.accessory_colourCustom to $worn.upper.accessory_colourCustom>>
+			<</if>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "toggleUpperTuck">>
@@ -684,7 +721,7 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 
 			<<if isConnectedToHood(_wardrobe_list)>>
 				<!-- If selected item is a hood or selected item has a secondary hood piece -->
-				<div class="no-numberify"><<toggleHood>></div>
+				<div class="no-numberify"><<toggleHoodLink>></div>
 				<br>
 			<</if>>
 			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItemData.notuck>>
@@ -826,7 +863,7 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 		<</if>>
 		<<if $worn.head.hood>>
 			<!-- If selected item is a hood or selected item has a secondary hood piece -->
-			<<toggleHood>>
+			<<Link>>
 		<</if>>
 	</div>
 <</widget>>
