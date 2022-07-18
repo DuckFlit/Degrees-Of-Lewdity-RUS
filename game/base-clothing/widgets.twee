@@ -161,7 +161,9 @@
 			<<for $_label, $_value range $_outfitPrimary>>
 				<<set _pieceId to setup.clothes[$_label].findIndex(item => item.name is $_value)>>
 				<<if _pieceId isnot -1>> <!-- findIndex() returns -1 if no index is found -->
-					<<sendToWardrobeFromDefault _args[0] $_label _pieceId _colour _accessory_colour>>
+					<<if !_hoodDown or $_label isnot "head">> /*If hood is down, don't make a hood*/
+						<<sendToWardrobeFromDefault _args[0] $_label _pieceId _colour _accessory_colour>>
+					<</if>>
 				<<else>>
 					<!-- Error -->
 				<</if>>
@@ -205,6 +207,10 @@
 		<<else>>
 			<<set $_item.accessory_colour to clone($_item.accessory_colour_options.random())>>
 		<</if>>
+	<</if>>
+	<<if _hoodDown and $_item.hoodposition isnot undefined>>
+		<<set $_item.hoodposition to "down">>
+		<<run delete $_item.outfitPrimary.head>>
 	<</if>>
 	<<run clothesDataTrimmer($_item)>>
 <</widget>>
@@ -598,6 +604,7 @@
 		<</if>>
 
 		<<set $_cost to Math.trunc(getClothingCost($_item, $_slot) * 1.5)>>
+		<<set _hoodDown to $_item.hoodposition is "down">>
 
 		<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] is "broken">>
 		<<elseif $money gte $_cost>>
@@ -609,6 +616,7 @@
 			<<run $rebuy_failure.push(clone($_item.name))>>
 			<<set $effectsmessage to 1>>
 		<</if>>
+		<<unset _hoodDown>>
 	<</if>>
 <</if>>
 <</widget>>

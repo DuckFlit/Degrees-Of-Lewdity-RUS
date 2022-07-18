@@ -104,7 +104,7 @@ function genderappearancecheck() {
 	addfemininityofclothingarticle('legs',V.worn.legs);
 	addfemininityofclothingarticle('feet',V.worn.feet);
 	/* Hair length */
-	if ((V.worn.over_head.hood !== 1 && V.worn.head.hood !== 1) || V.hoodDown == 1) {
+	if (V.worn.over_head.hood !== 1 && V.worn.head.hood !== 1) {
 		let lengthCap;
 		/* Set Hair Style cap */
 		if(hairStyleCap.hairtype[V.hairtype] && hairStyleCap.fringetype[V.fringetype]){

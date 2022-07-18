@@ -2354,8 +2354,8 @@ function genlayer_clothing_main(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
 			let isHoodDown = options.hood_down &&
-				options["worn_" + slot + "_setup"].hood &&
-				options["worn_" + slot + "_setup"].outfitSecondary !== undefined;
+				options["worn_" + slot + "_setup"].hoodposition !== undefined &&
+				options["worn_" + slot + "_setup"].outfitPrimary.head !== undefined;
 			let path = 'img/clothes/' +
 				slot + '/' +
 				options["worn_" + slot + "_setup"].variable + '/' +
@@ -2380,8 +2380,8 @@ function genlayer_clothing_accessory(slot, overrideOptions) {
 		srcfn(options) {
 			let setup = options["worn_" + slot + "_setup"];
 			let isHoodDown = options.hood_down &&
-				setup.hood &&
-				setup.outfitSecondary !== undefined;
+				setup.hoodposition !== undefined &&
+				setup.outfitPrimary.head !== undefined;
 			let path = 'img/clothes/' +
 				slot + '/' +
 				setup.variable + '/' +
