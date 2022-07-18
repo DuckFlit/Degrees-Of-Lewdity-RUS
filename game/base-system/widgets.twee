@@ -773,168 +773,80 @@
 <</widget>>
 
 <<widget "skulduggeryskilluse">>
-<<if $statFreeze isnot true>>
-	<<set $skulduggery += 3>>
-	<<if $skulduggery lt 1000>>
-		<span class="gold"> You learned a thing or two about skulduggery.</span>
-		<br><br>
+	<<if $statFreeze isnot true>>
+		<<set $skulduggery += 3>>
+		<<if $skulduggery lt 1000>>
+			<span class="gold"> You learned a thing or two about skulduggery.</span>
+			<br><br>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "combatskulduggeryskilluse">>
-<<if $statFreeze isnot true>>
-	<<set $skulduggery += 3>>
-	<<if $skulduggery lt 1000>>
-		<span class="gold"> You learned a thing or two about skulduggery.</span>
+	<<if $statFreeze isnot true>>
+		<<set $skulduggery += 3>>
+		<<if $skulduggery lt 1000>>
+			<span class="gold"> You learned a thing or two about skulduggery.</span>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "swimmingskilluse">>
-<<if $statFreeze isnot true>>
-	<<set $swimmingskill += 9>>
-	<<if $swimmingskill lt 1000>>
-		<span class="gold"> You've become more confident at swimming.</span>
+	<<if $statFreeze isnot true>>
+		<<set $swimmingskill += 9>>
+		<<if $swimmingskill lt 1000>>
+			<span class="gold"> You've become more confident at swimming.</span>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "danceskilluse">>
-<<if $statFreeze isnot true>>
-	<<danceskill 1>>
-	<<if $danceskill lt 1000>>
-		<span class="gold"> You feel more confident in your dancing abilities.</span>
+	<<if $statFreeze isnot true>>
+		<<danceskill 1>>
+		<<if $danceskill lt 1000>>
+			<span class="gold"> You feel more confident in your dancing abilities.</span>
+		<</if>>
 	<</if>>
-<</if>>
+<</widget>>
+
+<<widget "schoolskillgeneral">>
+	<<if $statFreeze isnot true>>
+		<<set $_subject to _args[0]>>
+		<<set $_gain to _args[1] || 1>>
+
+		<<set _skill_mod to [2.4, 1.2, 0.6, 0.3][Math.clamp(V[$_subject + "trait"], 0, 3)]>>
+		
+		<<if _args[2] isnot "no_star">>
+			<<if V[$_subject + "_star"] lt 3>>
+				<<set V[$_subject + "_star"] += 1>>
+			<</if>>
+			<<if $worn.face.type.includes("glasses")>>
+				<<set _skill_mod *= 1.2>>
+			<</if>>
+			<<if $exposed gte 1>>
+				<<set _skill_mod *= 1.2>>
+			<</if>>
+		<</if>>
+
+		<<set V[$_subject + "_exam"] += ($_gain * _skill_mod)>>
+		<<exam_clamp $_subject>>
+	<</if>>
 <</widget>>
 
 <<widget "scienceskill">>
-<<if $statFreeze isnot true>>
-	<<switch $sciencetrait>>
-		<<case 4>>
-			<<set _skill_mod to 0.3>>
-		<<case 3>>
-			<<set _skill_mod to 0.3>>
-		<<case 2>>
-			<<set _skill_mod to 0.6>>
-		<<case 1>>
-			<<set _skill_mod to 1.2>>
-		<<default>>
-			<<set _skill_mod to 2.4>>
-	<</switch>>
-	<<if $science_star lt 3 and _args[1] isnot "no_star">>
-		<<set $science_star += 1>>
-	<</if>>
-	<<if $worn.face.type.includes("glasses") and _args[1] isnot "no_star">>
-		<<set _skill_mod *= 1.2>>
-	<</if>>
-	<<if $exposed gte 1 and _args[1] isnot "no_star">>
-		<<set _skill_mod *= 1.2>>
-	<</if>>
-	<<if _args[0]>>
-		<<set $science_exam += (_args[0] * _skill_mod)>>
-	<<else>>
-		<<set $science_exam += (1 * _skill_mod)>>
-	<</if>>
-	<<exam_clamp science>>
-<</if>>
+	<<schoolskillgeneral "science" _args[0] _args[1]>>
 <</widget>>
 
 <<widget "mathsskill">>
-<<if $statFreeze isnot true>>
-	<<switch $mathstrait>>
-		<<case 4>>
-			<<set _skill_mod to 0.3>>
-		<<case 3>>
-			<<set _skill_mod to 0.3>>
-		<<case 2>>
-			<<set _skill_mod to 0.6>>
-		<<case 1>>
-			<<set _skill_mod to 1.2>>
-		<<default>>
-			<<set _skill_mod to 2.4>>
-	<</switch>>
-	<<if $maths_star lt 3 and _args[1] isnot "no_star">>
-		<<set $maths_star += 1>>
-	<</if>>
-	<<if $worn.face.type.includes("glasses") and _args[1] isnot "no_star">>
-		<<set _skill_mod *= 1.2>>
-	<</if>>
-	<<if $exposed gte 1 and _args[1] isnot "no_star">>
-		<<set _skill_mod *= 1.2>>
-	<</if>>
-	<<if _args[0]>>
-		<<set $maths_exam += (_args[0] * _skill_mod)>>
-	<<else>>
-		<<set $maths_exam += (1 * _skill_mod)>>
-	<</if>>
-	<<exam_clamp maths>>
-<</if>>
+	<<schoolskillgeneral "maths" _args[0] _args[1]>>
 <</widget>>
 
 <<widget "englishskill">>
-<<if $statFreeze isnot true>>
-	<<switch $englishtrait>>
-		<<case 4>>
-			<<set _skill_mod to 0.3>>
-		<<case 3>>
-			<<set _skill_mod to 0.3>>
-		<<case 2>>
-			<<set _skill_mod to 0.6>>
-		<<case 1>>
-			<<set _skill_mod to 1.2>>
-		<<default>>
-			<<set _skill_mod to 2.4>>
-	<</switch>>
-	<<if $english_star lt 3 and _args[1] isnot "no_star">>
-		<<set $english_star += 1>>
-	<</if>>
-	<<if $worn.face.type.includes("glasses") and _args[1] isnot "no_star">>
-		<<set _skill_mod *= 1.2>>
-	<</if>>
-	<<if $exposed gte 1 and _args[1] isnot "no_star">>
-		<<set _skill_mod *= 1.2>>
-	<</if>>
-	<<if _args[0]>>
-		<<set $english_exam += (_args[0] * _skill_mod)>>
-	<<else>>
-		<<set $english_exam += (1 * _skill_mod)>>
-	<</if>>
-	<<exam_clamp english>>
-<</if>>
+	<<schoolskillgeneral "english" _args[0] _args[1]>>
 <</widget>>
 
 <<widget "historyskill">>
-<<if $statFreeze isnot true>>
-	<<switch $historytrait>>
-		<<case 4>>
-			<<set _skill_mod to 0.3>>
-		<<case 3>>
-			<<set _skill_mod to 0.3>>
-		<<case 2>>
-			<<set _skill_mod to 0.6>>
-		<<case 1>>
-			<<set _skill_mod to 1.2>>
-		<<default>>
-			<<set _skill_mod to 2.4>>
-	<</switch>>
-	<<if $history_star lt 3 and _args[1] isnot "no_star">>
-		<<set $history_star += 1>>
-	<</if>>
-	<<if $worn.face.type.includes("glasses") and _args[1] isnot "no_star">>
-		<<set _skill_mod *= 1.2>>
-	<</if>>
-	<<if $exposed gte 1 and _args[1] isnot "no_star">>
-		<<set _skill_mod *= 1.2>>
-	<</if>>
-	<<if _args[0]>>
-		<<set $history_exam += (_args[0] * _skill_mod)>>
-	<<else>>
-		<<set $history_exam += (1 * _skill_mod)>>
-	<</if>>
-	<<exam_clamp history>>
-<</if>>
+	<<schoolskillgeneral "history" _args[0] _args[1]>>
 <</widget>>
 
 <<widget "passiveStudy">>
@@ -4857,23 +4769,23 @@ __Map__<br>
 <</widget>>
 
 <<widget "linkradiogroup">>
-    <<set _receiver_name to _args[0]>>
-    <<set _possible_values_by_label to _args[1]>>
-    <<set _set_value to State.getVar(_receiver_name)>>
+	<<set _receiver_name to _args[0].slice(1)>>
+	<<set _options to _args[1]>>
+	<<set _set_value to V[_receiver_name]>>
 
-    <span class="no-numberify">
-        <<for _label, _value range _possible_values_by_label>>
-            <<capture _receiver_name, _value>>
-                <span @class="_set_value is _value?'goldLink':''">
+	<span class="no-numberify">
+		<<for _label, _value range _options>>
+			<<capture _receiver_name, _value>>
+				<span @class="(_set_value is _value ? 'goldLink' : '')">
 					<<link _label>>
-						<<run State.setVar(_receiver_name, _value)>>
-						<<run Engine.show()>>
+						<<set V[_receiver_name] to _value>>
+						<<run Engine.show()>> <!-- refresh the page without leaving it -->
 					<</link>>
 				</span>
-            <</capture>>
-            |
-        <</for>>
-    </span>
+			<</capture>>
+			|
+		<</for>>
+	</span>
 <</widget>>
 
 <<widget "radiogroup">>
@@ -4927,11 +4839,20 @@ __Map__<br>
 <</widget>>
 
 <<widget "skulduggeryuse">>
-<<if $skulduggery lte ($skulduggerydifficulty + 100)>>
-	<<skulduggeryskilluse>>
+<<if _args[0] is true>>
+	<!-- This argument lets us use skulduggery without adding extra linebreaks that make formatting things a nightmare. -->
+	<<if $skulduggery lte ($skulduggerydifficulty + 100)>>
+		<<combatskulduggeryskilluse>>
+	<<else>>
+		<span class="blue">That was too easy. You didn't learn anything.</span>
+	<</if>>
 <<else>>
-	<span class="blue">That was too easy. You didn't learn anything.</span>
-	<br><br>
+	<<if $skulduggery lte ($skulduggerydifficulty + 100)>>
+		<<skulduggeryskilluse>>
+	<<else>>
+		<span class="blue">That was too easy. You didn't learn anything.</span>
+		<br><br>
+	<</if>>
 <</if>>
 <</widget>>
 
@@ -5008,11 +4929,13 @@ __Map__<br>
 <</widget>>
 
 <<widget "schoolrep_naked">>
-<<if $player.gender is "h" and !$worn.genitals.type.includes("hidden")>>
-	<<schoolrep herm 1>>
-<<elseif $player.gender isnot $player.gender_appearance and !$worn.genitals.type.includes("hidden")>>
-	<<schoolrep crossdress 1>>
-<</if>>
+	<<if !$worn.genitals.type.includes("hidden")>>
+		<<if $player.gender is "h">>
+			<<schoolrep herm 1>>
+		<<elseif $player.gender isnot $player.gender_appearance>>
+			<<schoolrep crossdress 1>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "event_trigger">>

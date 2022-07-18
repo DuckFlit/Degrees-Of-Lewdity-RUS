@@ -1,246 +1,184 @@
 :: Widgets Exams [widget]
 <<widget "exam">>
-
-Understanding:
-<<if _args[0] is "science">>
-	<<set $exam_chance to $science_exam>>
-	<span class="black"><<print Math.trunc($science_exam)>> %</span>
+	<<switch _args[0]>>
+		<<case "science">>
+			<<set $exam_chance to $science_exam>><<set $_teacher_name to "Sirris">>
+		<<case "maths">>
+			<<set $exam_chance to $maths_exam>><<set $_teacher_name to "River">>
+		<<case "english">>
+			<<set $exam_chance to $english_exam>><<set $_teacher_name to "Doren">>
+		<<case "history">>
+			<<set $exam_chance to $history_exam>><<set $_teacher_name to "Winter">>
+		<<default>>
+			<<run throw new Error("Invalid argument passed to 'exam' widget: ", _args[0])>>
+	<</switch>>
+	Understanding: <span class="black"><<print Math.trunc($exam_chance)>>%</span>
 	<br>
-	<<if $NPCName[$NPCNameList.indexOf("Sirris")].love gte 10>>
+	<<if $NPCName[$NPCNameList.indexOf($_teacher_name)].love gte 10>>
 		<<set $exam_chance += 5>>
-		<span class="green">Sirris's love</span> <span class="black">+5%</span>
+		<span class="green">$_teacher_name's love:</span> <span class="black">+5%</span>
 		<br>
 	<</if>>
-<<elseif _args[0] is "maths">>
-	<<set $exam_chance to $maths_exam>>
-	<span class="black"><<print Math.trunc($maths_exam)>> %</span>
-	<br>
-	<<if $NPCName[$NPCNameList.indexOf("River")].love gte 10>>
-		<<set $exam_chance += 5>>
-		<span class="green">River's love</span> <span class="black">+5%</span>
-		<br>
+	<<if _args[0] is "maths">>
+		<<if $whitneymaths is "active">>
+			<<set $exam_chance -= 5>>
+			<span class="pink">Whitney's distractions:</span> <span class="black">-5%</span>
+			<br>
+		<<elseif $whitneymaths is "seat">>
+			<<set $exam_chance -= 10>>
+			<span class="red">Whitney's distractions:</span> <span class="black">-10%</span>
+			<br>
+		<</if>>
 	<</if>>
-	<<if $whitneymaths is "active">>
-		<<set $exam_chance -= 5>>
-		<span class="pink">Whitney's distractions</span> <span class="black">-5%</span>
+	<<if $anxiety gte 2>>
+		<<set $exam_chance -= 20>>
+		<span class="red">Very anxious:</span> <span class="black">-20%</span>
 		<br>
-	<<elseif $whitneymaths is "seat">>
+	<<elseif $anxiety gte 1>>
 		<<set $exam_chance -= 10>>
-		<span class="red">Whitney's distractions</span> <span class="black">-10%</span>
+		<span class="red">Anxious:</span> <span class="black">-10%</span>
 		<br>
 	<</if>>
-<<elseif _args[0] is "english">>
-	<<set $exam_chance to $english_exam>>
-	<span class="black"><<print Math.trunc($english_exam)>> %</span>
-	<br>
-	<<if $NPCName[$NPCNameList.indexOf("Doren")].love gte 10>>
-		<<set $exam_chance += 5>>
-		<span class="green">Doren's love</span> <span class="black">+5%</span>
-		<br>
-	<</if>>
-<<elseif _args[0] is "history">>
-	<<set $exam_chance to $history_exam>>
-	<span class="black"><<print Math.trunc($history_exam)>> %</span>
-	<br>
-	<<if $NPCName[$NPCNameList.indexOf("Winter")].love gte 10>>
-		<<set $exam_chance += 5>>
-		<span class="green">Winter's love</span> <span class="black">+5%</span>
-		<br>
-	<</if>>
-<</if>>
-<<if $anxiety gte 2>>
-	<<set $exam_chance -= 20>>
-	<span class="red">Very anxious</span> <span class="black">-20%</span>
-	<br>
-<<elseif $anxiety gte 1>>
-	<<set $exam_chance -= 10>>
-	<span class="red">Anxious</span> <span class="black">-10%</span>
-	<br>
-<</if>>
 
-
-Pass chance: <<print Math.trunc($exam_chance)>> %
+	Pass chance: <<print Math.trunc($exam_chance)>>%
 
 <</widget>>
 
-<<widget "exam_check">>
-<<if $exam_chance lt 0>>
-	<<set $exam_chance to 0>>
-<</if>>
-<<if $exam_chance gte V[_args[0] + '_exam_difficulty']>>
-	<<set _exam_success to true>>
-<<else>>
-	<<set _exam_success to false>>
-<</if>>
+<<widget "exam_result">>
+	<<set $_subject to _args[0]>>
+	<<if $exam_chance gte V[$_subject + '_exam_difficulty']>>
+		<<school_skill_up $_subject>>
+		<<if V[$_subject + 'trait'] gte 4>>
+			<<school_mark $_subject>> printed and circled on the front, with <span class="green">"Distinction"</span> written beside it in green ink.<<ggcontrol>><<control 25>>
+			<<distinction_stat>>
+		<<else>>
+			<<school_mark $_subject>> printed and circled on the front. <span class="green">You've improved your mark!</span>
+			<br>
+			<<school_skill_up_text $_subject>>
+		<</if>>
+	<<else>>
+		<<school_mark $_subject>> printed and circled on the front. The expected mark.
+	<</if>>
+	<<unset $exam_chance>>
 <</widget>>
 
 <<widget "exam_difficulty">>
-<<set $science_exam_difficulty to random(1, 100)>>
-<<set $maths_exam_difficulty to random(1, 100)>>
-<<set $english_exam_difficulty to random(1, 100)>>
-<<set $history_exam_difficulty to random(1, 100)>>
-<</widget>>
-
-<<widget "exam_end">>
-<<unset $exam_chance>>
+	<<set $science_exam_difficulty to random(1, 100)>>
+	<<set $maths_exam_difficulty to random(1, 100)>>
+	<<set $english_exam_difficulty to random(1, 100)>>
+	<<set $history_exam_difficulty to random(1, 100)>>
 <</widget>>
 
 <<widget "school_mark">>
-<<if V[_args[0] + 'trait'] gte 4>>
-	an <span class="green">A*</span>
-<<elseif V[_args[0] + 'trait'] gte 3>>
-		an <span class="teal">A</span>
-<<elseif V[_args[0] + 'trait'] gte 2>>
-	a <span class="lblue">B</span>
-<<elseif V[_args[0] + 'trait'] gte 1>>
-	a <span class="blue">C</span>
-<<elseif V[_args[0] + 'trait'] gte 0>>
-	a <span class="purple">D</span>
-<<else>>
-	a <span class="red">F</span>
-<</if>>
+	<<set $_trait to V[_args[0] + 'trait']>>
+	<<switch Math.clamp($_trait,-1,4)>>
+		<<case 4>> an <span class="green">A*</span>
+		<<case 3>> an <span class="teal">A</span>
+		<<case 2>> a <span class="lblue">B</span>
+		<<case 1>> a <span class="blue">C</span>
+		<<case 0>> a <span class="purple">D</span>
+		<<default>> a <span class="red">F</span>
+	<</switch>>
 <</widget>>
 
 <<widget "school_skill_up">>
-<<if V[_args[0] + 'trait'] lt 4>>
-	<<set V[_args[0] + 'trait'] += 1>>
-<</if>>
-<<if V[_args[0] + 'trait'] gte 4>>
-	<<set V[_args[0]] to 1000>>
-<<elseif V[_args[0] + 'trait'] gte 3>>
-	<<set V[_args[0]] to 700>>
-<<elseif V[_args[0] + 'trait'] gte 2>>
-	<<set V[_args[0]] to 400>>
-<<elseif V[_args[0] + 'trait'] gte 1>>
-	<<set V[_args[0]] to 200>>
-<<elseif V[_args[0] + 'trait'] gte 0>>
-	<<set V[_args[0]] to 100>>
-<<else>>
-	<<set V[_args[0]] to 0>>
-<</if>>
-<<set V[_args[0] + '_exam'] to 0>>
-<<set $school to $science + $maths + $english + $history>>
+	<<school_skill_change _args[0] 1>>
 <</widget>>
 
 <<widget "school_skill_down">>
-<<if V[_args[0] + 'trait'] gte 0>>
-	<<set V[_args[0] + 'trait'] -= 1>>
-<</if>>
-<<if V[_args[0] + 'trait'] gte 4>>
-	<<set V[_args[0]] to 1000>>
-<<elseif V[_args[0] + 'trait'] gte 3>>
-	<<set V[_args[0]] to 700>>
-<<elseif V[_args[0] + 'trait'] gte 2>>
-	<<set V[_args[0]] to 400>>
-<<elseif V[_args[0] + 'trait'] gte 1>>
-	<<set V[_args[0]] to 200>>
-<<elseif V[_args[0] + 'trait'] gte 0>>
-	<<set V[_args[0]] to 100>>
-<<else>>
-	<<set V[_args[0]] to 0>>
-<</if>>
-<<set V[_args[0] + '_exam'] to 0>>
-<<set $school to $science + $maths + $english + $history>>
+	<<school_skill_change _args[0] -1>>
+<</widget>>
+
+<<widget "school_skill_change">>
+	<!-- args[0] is the school subject, while args[1] is either 1 or -1. -->
+	<<set $_trait to V[_args[0] + 'trait']>>
+	<<set $_skill to V[_args[0]]>>
+	<<set $_change to _args[1]>>
+	<<set $_trait to Math.clamp($_trait + $_change, -1, 4)>>
+
+	<<set $_skill to [0,100,200,400,700,1000][$_trait]>>
+	<<set V[_args[0] + '_exam'] to 0>>
+	<<set $school to $science + $maths + $english + $history>>
 <</widget>>
 
 <<widget "exam_clamp">>
-<<set V[_args[0] + '_exam'] = Math.clamp(V[_args[0] + '_exam'], -107, 200)>>
+	<<set V[_args[0] + '_exam'] to Math.clamp(V[_args[0] + '_exam'], -107, 200)>>
 <</widget>>
 
 <<widget "exam_clamp_all">>
-<<exam_clamp science>>
-<<exam_clamp maths>>
-<<exam_clamp english>>
-<<exam_clamp history>>
+	<<exam_clamp science>>
+	<<exam_clamp maths>>
+	<<exam_clamp english>>
+	<<exam_clamp history>>
 <</widget>>
 
 <<widget "exam_cheat">>
-<<if V[_args[0] + 'trait'] gte 4>>
-	<<set $skulduggerydifficulty to 1100>>
-<<elseif V[_args[0] + 'trait'] gte 3>>
-	<<set $skulduggerydifficulty to 1100>>
-<<elseif V[_args[0] + 'trait'] gte 2>>
-	<<set $skulduggerydifficulty to 700>>
-<<elseif V[_args[0] + 'trait'] gte 1>>
-	<<set $skulduggerydifficulty to 400>>
-<<elseif V[_args[0] + 'trait'] gte 0>>
-	<<set $skulduggerydifficulty to 200>>
-<<else>>
-	<<set $skulduggerydifficulty to 100>>
-<</if>>
+	<<set $_trait to V[_args[0] + 'trait']>>
+	<<set $skulduggerydifficulty to [100,200,400,700,1100,1100][Math.clamp($_trait, -1, 4)]>>
 <</widget>>
 
 
 <<widget "science_skill_up_text">>
-<<switch $sciencetrait>>
-<<case 4>>
-	<span class="gold">You've gained the <span class="green">Excellent Science</span> trait,</span> making pain much easier to cope with.
-<<case 3>>
-	<span class="gold">You've gained the <span class="teal">Good Science</span> trait,</span> making pain easier to cope with.
-<<case 2>>
-	<span class="gold">You've gained the <span class="lblue">Decent Science</span> trait,</span> making pain moderately easier to cope with.
-<<case 1>>
-	<span class="gold">You've gained the <span class="blue">Passable Science</span> trait,</span> making pain slightly easier to cope with.
-<<default>>
-	Keep at it, and you're sure to benefit.
-<</switch>>
-<<if $sciencetrait lt 4>>
-	However, the next exam will be harder.
-<</if>>
+	<<school_skill_up_text "science">>
 <</widget>>
 
 <<widget "maths_skill_up_text">>
-<<switch $mathstrait>>
-<<case 4>>
-	<span class="gold">You've gained the <span class="green">Excellent Maths</span> trait,</span> letting you make 100% more from tips and negotiated fees.
-<<case 3>>
-	<span class="gold">You've gained the <span class="teal">Good Maths</span> trait,</span> letting you make 75% more from tips and negotiated fees.
-<<case 2>>
-	<span class="gold">You've gained the <span class="lblue">Decent Maths</span> trait,</span> letting you make 50% more from tips and negotiated fees.
-<<case 1>>
-	<span class="gold">You've gained the <span class="blue">Passable Maths</span> trait,</span> letting you make 25% more from tips and negotiated fees.
-<<default>>
-	Keep at it, and you're sure to benefit.
-<</switch>>
-<<if $mathstrait lt 4>>
-	However, the next exam will be harder.
-<</if>>
+	<<school_skill_up_text "maths">>
 <</widget>>
 
 <<widget "english_skill_up_text">>
-<<switch $englishtrait>>
-<<case 4>>
-	<span class="gold">You've gained the <span class="green">Excellent English</span> trait,</span> making speech actions five times as effective.
-<<case 3>>
-	<span class="gold">You've gained the <span class="teal">Good English</span> trait,</span> making speech actions four times as effective.
-<<case 2>>
-	<span class="gold">You've gained the <span class="lblue">Decent English</span> trait,</span> making speech actions three times as effective.
-<<case 1>>
-	<span class="gold">You've gained the <span class="blue">Passable English</span> trait,</span> making speech actions (plead, moan, demand, apologise, mock, tease) twice as effective.
-<<default>>
-	Keep at it, and you're sure to benefit.
-<</switch>>
-<<if $englishtrait lt 4>>
-	However, the next exam will be harder.
-<</if>>
+	<<school_skill_up_text "english">>
 <</widget>>
 
 <<widget "history_skill_up_text">>
-<<switch $historytrait>>
-<<case 4>>
-	<span class="gold">You've gained the <span class="green">Excellent History</span> trait,</span> teaching you more secret paths around town.
-<<case 3>>
-	<span class="gold">You've gained the <span class="teal">Good History</span> trait,</span> teaching you more secret paths around town.
-<<case 2>>
-	<span class="gold">You've gained the <span class="lblue">Decent History</span> trait,</span> teaching you more secret paths around town.
-<<case 1>>
-	<span class="gold">You've gained the <span class="blue">Passable History</span> trait,</span> teaching you secret paths around town.
-<<default>>
-	Keep at it, and you're sure to benefit.
-<</switch>>
-<<if $historytrait lt 4>>
-	However, the next exam will be harder.
-<</if>>
+	<<school_skill_up_text "history">>
+<</widget>>
+
+<<widget "school_skill_up_text">>
+	<<set $_subject to _args[0].toUpperFirst()>>
+	<<set $_trait to V[_args[0] + 'trait']>>
+	<<if $_trait lt 1>>
+		Keep at it, and you're sure to benefit.
+	<<else>>
+		<<set $_colour to ["","blue", "lblue", "teal", "green"][$_trait]>>
+		<<set $_traitname to ["", "Passable", "Decent", "Good", "Excellent"][$_trait] + " " + $_subject>>
+		<span class="gold">
+			You've gained the <span @class="$_colour">$_traitname</span> trait,
+		</span>
+		<<switch _args[0]>>
+			<<case "science">>
+				<<switch $_trait>>
+					<<case 4>> making pain much easier to cope with. <!-- Excellent Science -->
+					<<case 3>> making pain easier to cope with. <!-- Good Science -->
+					<<case 2>> making pain moderately easier to cope with. <!-- Decent Science -->
+					<<case 1>> making pain slightly easier to cope with. <!-- Passable Science -->
+				<</switch>>
+			<<case "maths">>
+				<<switch $_trait>>
+					<<case 4>> letting you make 100% more from tips and negotiated fees. <!-- Excellent Maths -->
+					<<case 3>> letting you make 75% more from tips and negotiated fees. <!-- Good Maths -->
+					<<case 2>> letting you make 50% more from tips and negotiated fees. <!-- Decent Maths -->
+					<<case 1>> letting you make 25% more from tips and negotiated fees. <!-- Passable Maths -->
+				<</switch>>
+			<<case "english">>
+				<<switch $_trait>>
+					<<case 4>> making speech actions five times as effective. <!-- Excellent English -->
+					<<case 3>> making speech actions four times as effective. <!-- Good English -->
+					<<case 2>> making speech actions three times as effective. <!-- Decent English -->
+					<<case 1>> making speech actions (plead, moan, demand, apologise, mock, tease) twice as effective. <!-- Passable English -->
+				<</switch>>
+			<<case "history">>
+				<<switch $_trait>>
+					<<case 4>> teaching you more secret paths around town. <!-- Excellent History -->
+					<<case 3>> teaching you more secret paths around town. <!-- Good History -->
+					<<case 2>> teaching you more secret paths around town. <!-- Decent History -->
+					<<case 1>> teaching you secret paths around town. <!-- Passable History -->
+				<</switch>>
+		<</switch>>
+	<</if>>
+	<<if $_trait lt 4>>
+		However, the next exam will be harder.
+	<</if>>
 <</widget>>
 
 
@@ -250,72 +188,46 @@ Pass chance: <<print Math.trunc($exam_chance)>> %
 <<set _time_temp to (59 - $minute)>>
 <<pass _time_temp>>
 
+<<npc Sirris>><<person1>>
 
 <<switch $phase>>
-<<case 0>>
-	You focus on the exam, doing your best to tune out the scribbling and groans of other students.
-	<br><br>
-<<case 1>>
-	You take a deep breath, and try not to let the pressure get to you.
-	<br><br>
-<<case 2>>
-	<<skulduggerycheck>>
-	<<npc Sirris>><<person1>>
-	You watch Sirris. <<Hes>> supposed to keep an eye on the room, but spends more time looking out the window. You should be able to copy your neighbours if you're
+	<<case 0>>
+		You focus on the exam, doing your best to tune out the scribbling and groans of other students.
+	<<case 1>>
+		You take a deep breath, and try not to let the pressure get to you.
+	<<case 2>>
+		<<skulduggerycheck>>
+		You watch Sirris. <<Hes>> supposed to keep an eye on the room, but spends more time looking out the window. You should be able to copy your neighbours if you're
 
-
-	<<if $skulduggerysuccess is 1>>
-		<<set $exam_chance += 10>>
-		careful. <span class="green">You manage to glean a few answers to some of the tougher questions.</span><<passPercent 10>>
+		<<if $skulduggerysuccess is 1>>
+			careful. <span class="green">You manage to glean a few answers to some of the tougher questions.</span>
+			<<set $exam_chance += 10>><<passPercent 10>>
+		<<else>>
+			care-
+			<br><br>
+			<span class="red">"Focus on your own paper,"</span> Sirris says, looking right at you. <<He>> wasn't as distracted as <<he>> appeared.
+			<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<gdelinquency>><<detention 5>>
+		<</if>>
 		<br><br>
 
-		<<skulduggeryuse>>
-
-	<<else>>
-		<<set $exam_chance -= 10>>
-		care-
-		<br><br>
-		<span class="red">"Focus on your own paper,"</span> Sirris says, looking right at you. <<He>> wasn't as distracted as <<he>> appeared.<<gstress>><<stress 6>><<passPercent -10>><<gdelinquency>><<detention 5>>
-		<br><br>
-
-		<<skulduggeryuse>>
-
-	<</if>>
-	<<endevent>>
+		<<skulduggeryuse true>>
 <</switch>>
+<br><br>
 
-<<exam_check science>>
-<<endevent>>
-
-<<npc Sirris>><<person1>>
 Sirris looks at <<his>> watch now and then. "And done," <<he>> says. "I hope that wasn't too bad." Some students continue to scribble, but Sirris zips around the room in <<his>> haste to retrieve the booklets.
 <br><br>
+
 The class are allowed to chat while Sirris marks the papers. They make up for the period of silence with more noise than usual, though some are too nervous to talk.
 <br><br>
+
 The bell rings. Sirris stands by the door, smiling as <<he>> hands the booklets back to passing students. <<He>> holds out yours,
-<<if _exam_success is true>>
-	<<if $sciencetrait gte 4>>
-		<<school_skill_up science>>
-		<<school_mark science>> printed and circled on the front, with <span class="green">"Distinction"</span> written beside it in green ink.<<ggcontrol>><<control 25>>
-		<<distinction_stat>>
-	<<else>>
-		<<school_skill_up science>>
-		<<school_mark science>> printed and circled on the front. <span class="green">You've improved your mark!</span>
-		<br>
-		<<science_skill_up_text>>
-	<</if>>
-<<else>>
-	<<school_mark science>> printed and circled on the front. The expected mark.
-<</if>>
+<<exam_result "science">>
 <br><br>
 
 You join the throng of students in the hallway.
 <br><br>
 
-<<endevent>>
-<<exam_end>>
-
-<<link [[Next|Hallways]]>><</link>>
+<<link [[Next|Hallways]]>><<endevent>><</link>>
 <br>
 
 
@@ -325,138 +237,107 @@ You join the throng of students in the hallway.
 <<set _time_temp to (59 - $minute)>>
 <<pass _time_temp>>
 
+<<npc River 1>><<person1>>
+<<generatey2>> <!-- student who doesn't stop writing when the exam is over -->
 
 <<switch $phase>>
-<<case 0>>
-	You focus on the exam, doing your best to tune out the scribbling and groans of other students.
-	<br><br>
-<<case 1>>
-	You take a deep breath, and try not to let the pressure get to you.
-	<br><br>
-<<case 2>>
-	<<skulduggerycheck>>
-	You glance sideways. The <<generatey1>><<person1>><<person>> beside you seems confident. You cover your glances with innocuous movements,
+	<<case 0>>
+		<<if $whitneymaths is "active">>
+			You try to focus on the exam, but Whitney's frequent distractions make it difficult to concentrate.
+		<<elseif $whitneymaths is "seat">>
+			You try to focus on the exam, but Whitney's sporadic groping makes it difficult to concentrate. <<garousal>><<arousal 600>>
+		<<else>>
+			You focus on the exam, doing your best to tune out the scribbling and groans of other students.
+		<</if>>
+	<<case 1>>
+		<<if $whitneymaths is "active">>
+			You take a deep breath, and try not to let Whitney's frequent distractions bother you.
+		<<elseif $whitneymaths is "seat">>
+			You take a deep breath, and try not to let Whitney's sporadic groping bother you. <<garousal>><<arousal 300>>
+		<<else>>
+			You take a deep breath, and try not to let the pressure get to you.
+		<</if>>
+	<<case 2>>
+		<<skulduggerycheck>>
+		<<generatey3>><<person3>>
+		You glance sideways. The <<person>> beside you seems confident. You cover your glances with innocuous movements,
 
-	<<endevent>>
-	<<npc River>><<person1>>
-
-
-	<<if $skulduggerysuccess is 1>>
-		<<set $exam_chance += 10>>
-		hoping to avoid River's gaze. <span class="green">You manage to glean a few answers to some of the tougher questions.</span><<passPercent 10>>
+		<<if $skulduggerysuccess is 1>>
+			hoping to avoid River's gaze. <span class="green">You manage to glean a few answers to some of the tougher questions.</span>
+			<<set $exam_chance += 10>><<passPercent 10>>
+		<<else>>
+			hoping to-
+			<br><br>
+			<span class="red">"Eyes in front,"</span> River says, piercing you with <<person1>><<his>> gaze. <<He>> doesn't say another word on the matter, but you know your paper will be under thorough scrutiny.
+			<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<gdelinquency>><<detention 5>>
+		<</if>>
 		<br><br>
 
-		<<skulduggeryuse>>
+		<<skulduggeryuse true>>
+	<<case 3>>
+		<<npc Whitney 3>>
+		<<if $danceSuccess>>
+			You glance behind you as Whitney throws, <span class="green">and manage to snatch the rubber from the air.</span>
+			Deprived of <<person3>><<his>> projectile, Whitney can only glower.
+			<<set $exam_chance += 5>><<passPercent 5>>
+		<<else>>
+			You glance behind you as Whitney throws, hoping to snatch the rubber from the air.
+			<br><br>
+			
+			<span class="red">"Eyes in front,"</span> River says, piercing you with <<person1>><<his>> gaze. <<He>> doesn't say another word on the matter, but you know your paper will be under thorough scrutiny.
+			<<gstress>><<stress 6>><<passPercent -10>><<set $exam_chance -= 10>>
+			<br><br>
 
-	<<else>>
-		<<set $exam_chance -= 10>>
-		hoping to-
-		<br><br>
-		<span class="red">"Eyes in front,"</span> River says, piercing you with <<his>> gaze. <<He>> doesn't say another word on the matter, but you know your paper will be under thorough scrutiny.<<gstress>><<stress 6>><<passPercent -10>><<gdelinquency>><<detention 5>>
-		<br><br>
+			Whitney stops harassing you, but you just know <<person3>><<hes>> smirking.
+		<</if>>
+	<<default>>
+		<<if $phase is 4 or $phase is 5>>
+			<<npc Whitney 3>><<person3>>
+			You <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower">>, 
+			<<if $phase is 4>>
+				and wrap your fingers around <<his>> <<print $NPCName[$NPCNameList.indexOf("Whitney")].penisdesc>>.
+			<<else>>
+				and press your fingers against <<his>> clit.
+			<</if>>
+			You <<handtext>> stroke <<him>>.
+			<br><br>
+			<<if $handskill gte random(1, 1000)>>
+				You need to finish <<him>> quick, before River notices.
+				<<if $phase is 4>>
+					<<He>> has the sense not to make a noise, but shudders as <<he>> <span class="green">climaxes over your hand.</span><<set $player.bodyliquid.leftarm.semen += 1>>
+				<<else>>
+					<<He>> has the sense not to make a noise, but shudders as <<he>> <span class="green">climaxes.</span>
+				<</if>>
+				<<passPercent 5>><<set $exam_chance += 5>>
+				<br><br>
 
-		<<skulduggeryuse>>
+				<<He>> leans back, content, allowing you to work through the booklet.
+			<<else>>
+				You know you need to finish <<him>> quick, before River notices, but it's difficult with such limited movement.
+				<br><br>
 
-	<</if>>
-	<<endevent>>
-<<case 3>>
-	<<if $danceSuccess>>
-		<<npc Whitney>><<person1>>
-		You glance behind you as Whitney throws, <span class="green">and manage to snatch the rubber from the air.</span> Deprived of <<his>> projectile, Whitney can only glower.<<set $exam_chance += 5>><<passPercent 5>>
-		<br><br>
-		<<endevent>>
-	<<else>>
-		<<npc Whitney>><<person1>>
-		You glance behind you as Whitney throws, hoping to snatch the rubber from the air.
-		<br><br>
-		<<endevent>>
-		<<npc River>><<person1>>
-		<span class="red">"Eyes in front,"</span> River says, piercing you with <<his>> gaze. <<He>> doesn't say another word on the matter, but you know your paper will be under thorough scrutiny.<<gstress>><<stress 6>><<passPercent -10>><<set $exam_chance -= 10>>
-		<br><br>
-		<<endevent>>
-		<<npc Whitney>><<person1>>
-		Whitney stops harassing you, but you just know <<hes>> smirking.
-		<br><br>
-		<<endevent>>
-	<</if>>
-<<case 4>>
-	<<npc Whitney>><<person1>>
-	<<if $pronoun is "f">>
-		You pull up Whitney's skirt, and wrap your fingers around <<his>> <<print $NPCName[$NPCNameList.indexOf("Whitney")].penisdesc>>.
-	<<else>>
-		You unzip Whitney's trousers, and wrap your fingers around <<his>> <<print $NPCName[$NPCNameList.indexOf("Whitney")].penisdesc>>.
-	<</if>>
-	You <<handtext>> stroke <<him>>.
-	<br><br>
-	<<if $handskill gte random(1, 1000)>>
-		You need to finish <<him>> quick, before River notices. <<He>> has the sense not to make a noise, but shudders as <<he>> <span class="green">climaxes over your hand.</span><<set $player.bodyliquid.leftarm.semen += 1>><<passPercent 10>><<set $exam_chance += 5>>
-		<br><br>
-		<<He>> leans back, content, allowing you to work through the booklet.
-		<br><br>
-	<<else>>
-		You know you need to finish <<him>> quick, before River notices, but it's difficult with such limited movement.
-		<<endevent>><<npc River>><<person1>>
-		<br><br>
-		<span class="red">"Stop fidgeting,"</span> River says, piercing you with <<his>> gaze. You pull your hand away, leaving you to endure Whitney's sporadic groping.
-		<br><br>
-	<</if>>
-<<default>>
-	<<npc Whitney>><<person1>>
-	<<if $pronoun is "f">>
-		You pull up Whitney's skirt, and press your fingers against <<his>> clit.
-	<<else>>
-		You unzip Whitney's trousers, and press your fingers against <<his>> clit.
-	<</if>>
-	You <<handtext>> stroke <<him>>.
-	<br><br>
-	<<if $handskill gte random(1, 1000)>>
-		You need to finish <<him>> quick, before River notices. <<He>> has the sense not to make a noise, but shudders as <<he>> <span class="green">climaxes.</span><<passPercent 10>><<set $exam_chance += 5>>
-		<br><br>
-		<<He>> leans back, content, allowing you to work through the booklet.
-		<br><br>
-	<<else>>
-		You know you need to finish <<him>> quick, before River notices, but it's difficult with such limited movement.
-		<<endevent>><<npc River>><<person1>>
-		<br><br>
-		<span class="red">"Stop fidgeting,"</span> River says, piercing you with <<his>> gaze. You pull your hand away, leaving you to endure Whitney's sporadic groping.
-		<br><br>
-	<</if>>
+				<span class="red">"Stop fidgeting,"</span> River says, piercing you with <<person1>><<his>> gaze. You pull your hand away, leaving you to endure Whitney's sporadic groping. <<garousal>><<arousal 600>>
+			<</if>>
+		<</if>>
 <</switch>>
-
-<<exam_check maths>>
-<<endevent>>
-
-<<npc River>><<generatey2>><<person1>>
-River watches throughout, casting an occasional glance at the clock on the wall. "Put down your pens," <<he>> says. A <<person2>><<person>> keeps writing, until River shoots <<him>> a sharp look.
 <br><br>
-<<person1>>
-River directs the class to solve some "fun" puzzles at the back of your textbooks while <<he>> marks the exam. It only takes a few minutes.
+
+River watches throughout, casting an occasional glance at the clock on the wall. "Put down your pens," <<person1>><<he>> says. A <<person2>><<person>> keeps writing, until River shoots <<him>> a sharp look.
 <br><br>
+
+River directs the class to solve some "fun" puzzles at the back of your textbooks while <<person1>><<he>> marks the exam. It only takes a few minutes.
+<br><br>
+
 The marked booklet lands on your desk,
-<<if _exam_success is true>>
-	<<if $mathstrait gte 4>>
-		<<school_skill_up maths>>
-		<<school_mark maths>> printed and circled on the front, with <span class="green">"Distinction"</span> written beside it in green ink.<<ggcontrol>><<control 25>>
-		<<distinction_stat>>
-	<<else>>
-		<<school_skill_up maths>>
-		<<school_mark maths>> printed and circled on the front. <span class="green">You've improved your mark!</span>
-		<br>
-		<<maths_skill_up_text>>
-	<</if>>
-<<else>>
-	<<school_mark maths>> printed and circled on the front. The expected mark.
-<</if>>
+<<exam_result "maths">>
 <br><br>
+
+<!-- Add text for interacting with Whitney here, if they are present? -->
 The bell rings. You shuffle with the other students into the throng of the hallway.
 <br><br>
 
-<<endevent>>
-<<exam_end>>
-
-<<link [[Next|Hallways]]>><</link>>
+<<link [[Next|Hallways]]>><<endevent>><</link>>
 <br>
-
 
 
 :: English Exam
@@ -465,78 +346,52 @@ The bell rings. You shuffle with the other students into the throng of the hallw
 <<set _time_temp to (59 - $minute)>>
 <<pass _time_temp>>
 
+<<npc Doren>><<person1>>
 
 <<switch $phase>>
-<<case 0>>
-	You focus on the exam, doing your best to tune out the scribbling and groans of other students.
-	<br><br>
-<<case 1>>
-	You take a deep breath, and try not to let the pressure get to you.
-	<br><br>
-<<case 2>>
-	<<skulduggerycheck>>
-	<<endevent>>
-	<<npc Doren>><<person1>>
+	<<case 0>>
+		You focus on the exam, doing your best to tune out the scribbling and groans of other students.
+	<<case 1>>
+		You take a deep breath, and try not to let the pressure get to you.
+	<<case 2>>
+		<<skulduggerycheck>>
+		Doren's back is often turned to you, but <<his>> path is unpredictable.
 
-	Doren's back is often turned to you, but <<his>> path is unpredictable.
+		<<if $skulduggerysuccess is 1>>
+			<<He>> could turn at any moment, <span class="green">but you manage to read your neighbour's papers with daring glances.</span>
+			<<set $exam_chance += 10>><<passPercent 10>>
+		<<else>>
+			You wait until <<he>> passes, then sneak a glance at your neighbour. Doren spins, <span class="red">and smacks <<his>> hand against your desk.</span>
+			<br><br>
 
-	<<if $skulduggerysuccess is 1>>
-		<<set $exam_chance += 10>>
-		<<He>> could turn at any moment, <span class="green">but you manage to read your neighbour's papers with daring glances.</span><<passPercent 10>>
+			"Got the fly," <<he>> says. <<Hes>> sparing you the embarrassment of being caught cheating, but your paper will be under extra scrutiny.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<gdelinquency>><<detention 5>>
+		<</if>>
 		<br><br>
 
-		<<skulduggeryuse>>
-
-	<<else>>
-		<<set $exam_chance -= 10>>
-		You wait until <<he>> passes, then sneak a glance at your neighbour. Doren spins, <span class="red">and smacks <<his>> hand against your desk.</span>
-		<br><br>
-
-		"Got the fly," <<he>> says. <<Hes>> sparing you the embarrassment of being caught cheating, but your paper will be under extra scrutiny.<<gstress>><<stress 6>><<passPercent -10>><<gdelinquency>><<detention 5>>
-		<br><br>
-
-		<<skulduggeryuse>>
-
-	<</if>>
-	<<endevent>>
-<<default>>
-	<<npc Kylar>><<person1>>
-	You glance at Kylar's booklet. <<He>> notices and, eager to please, keeps <<his>> arm from obscuring your view as <<he>> writes. <<He>> has creative answers to the tougher questions.
-	<br><br>
+		<<skulduggeryuse true>>
+	<<case 3>>
+		<<npc Kylar 2>><<person2>>
+		You glance at Kylar's booklet. <<He>> notices and, eager to please, keeps <<his>> arm from obscuring your view as <<he>> writes. <<He>> has creative answers to the tougher questions.
 <</switch>>
-
-<<exam_check english>>
-<<endevent>>
-
-<<npc Doren>><<person1>>
-Doren prowls throughout, then lifts the tray on <<his>> desk. <<He>> walks around the room, gathering the booklets.
 <br><br>
+
+Doren prowls throughout, then lifts the tray on <<person1>><<his>> desk. <<He>> walks around the room, gathering the booklets.
+<br><br>
+
 "Won't be long," <<he>> says, tearing through the first paper with a red pen. <<Hes>> unbothered by the chatter that erupts. <<Hes>> soon finished.
 <br><br>
+
 Your marked booklet skids in front of you,
-<<if _exam_success is true>>
-	<<if $englishtrait gte 4>>
-		<<school_skill_up english>>
-		<<school_mark english>> printed and circled on the front, with <span class="green">"Distinction"</span> written beside it in green ink.<<ggcontrol>><<control 25>>
-		<<distinction_stat>>
-	<<else>>
-		<<school_skill_up english>>
-		<<school_mark english>> printed and circled on the front. <span class="green">You've improved your mark!</span>
-		<br>
-		<<english_skill_up_text>>
-	<</if>>
-<<else>>
-	<<school_mark english>> printed and circled on the front. The expected mark.
-<</if>>
+<<exam_result "english">>
 <br><br>
+
+<!-- Add text for interacting with Kylar here, if they are present? -->
 The bell rings. You shuffle with the other students into the throng of the hallway.
 <br><br>
 
-<<endevent>>
-<<exam_end>>
-
-<<link [[Next|Hallways]]>><</link>>
+<<link [[Next|Hallways]]>><<endevent>><</link>>
 <br>
+
 
 :: History Exam
 <<schooleffects>><<effects>>
@@ -544,75 +399,49 @@ The bell rings. You shuffle with the other students into the throng of the hallw
 <<set _time_temp to (59 - $minute)>>
 <<pass _time_temp>>
 
+<<npc Winter>><<person1>>
 
 <<switch $phase>>
-<<case 0>>
-	You focus on the exam, doing your best to tune out the scribbling and groans of other students.
-	<br><br>
-<<case 1>>
-	You take a deep breath, and try not to let the pressure get to you.
-	<br><br>
-<<case 2>>
-	<<skulduggerycheck>>
-	<<npc Winter>><<person1>>
-	Winter occupies <<himself>> with a book, and doesn't seem to be paying attention.
+	<<case 0>>
+		You focus on the exam, doing your best to tune out the scribbling and groans of other students.
+	<<case 1>>
+		You take a deep breath, and try not to let the pressure get to you.
+	<<case 2>>
+		<<skulduggerycheck>>
+		Winter occupies <<himself>> with a book, and doesn't seem to be paying attention.
 
 
-	<<if $skulduggerysuccess is 1>>
-		<<set $exam_chance += 10>>
-		You know that isn't true. There are moments, here and there, where the teacher's attention is taken. You glance at your neighbours during those moments, <span class="green">and manage to glean a few answers to the tougher questions.</span><<passPercent 10>>
-		<br><br>
-
-		<<skulduggeryuse>>
-
-	<<else>>
-		<<set $exam_chance -= 10>>
-		You take the chance, and look at your neighbour's paper.
-		<br><br>
-		<<if $robinhistory is "seat">>
-			<span class="red">Robin nudges you.</span> "You shouldn't cheat!"
-			<br><br>
-			Winter glances up. "No talking." You won't be able to get away with it now.<<gstress>><<stress 6>>
-			<br><br>
+		<<if $skulduggerysuccess is 1>>
+			You know that isn't true. There are moments, here and there, where the teacher's attention is taken. You glance at your neighbours during those moments, <span class="green">and manage to glean a few answers to the tougher questions.</span>
+			<<set $exam_chance += 10>><<passPercent 10>>
 		<<else>>
-			<span class="red">"No cheating,"</span> Winter says without looking up. You know <<he>> was referring to you, though <<he>> gives no indication.<<gstress>><<stress 6>><<passPercent -10>><<gdelinquency>><<detention 5>>
+			You take the chance, and look at your neighbour's paper.
 			<br><br>
+			<<if $robinhistory is "seat">>
+				<span class="red">Robin nudges you.</span> "You shouldn't cheat!"
+				<br><br>
+
+				Winter glances up. "No talking." You won't be able to get away with it now.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>>
+			<<else>>
+				<span class="red">"No cheating,"</span> Winter says without looking up. You know <<he>> was referring to you, though <<he>> gives no indication.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<gdelinquency>><<detention 5>>
+			<</if>>
 		<</if>>
+		<br><br>
 
-		<<skulduggeryuse>>
-
-	<</if>>
-	<<endevent>>
+		<<skulduggeryuse true>>
 <</switch>>
-
-<<exam_check history>>
-<<endevent>>
-
-<<npc Winter>><<person1>>
-Winter thumbs through the pages of <<his>> book while the students work. <<He>> thuds it shut. "Done," <<he>> announces.
 <br><br>
+
+Winter thumbs through the pages of <<person1>><<his>> book while the students work. <<He>> thuds it shut. "Done," <<he>> announces.
+<br><br>
+
 You form into another orderly queue. Winter marks each booklet as <<he>> receives them, <<his>> red pen ablur. Yours is no different. <<He>> hands it back to you,
-<<if _exam_success is true>>
-	<<if $historytrait gte 4>>
-		<<school_skill_up history>>
-		<<school_mark history>> printed and circled on the front, with <span class="green">"Distinction"</span> written beside it in green ink.<<ggcontrol>><<control 25>>
-		<<distinction_stat>>
-	<<else>>
-		<<school_skill_up history>>
-		<<school_mark history>> printed and circled on the front. <span class="green">You've improved your mark!</span>
-		<br>
-		<<history_skill_up_text>>
-	<</if>>
-<<else>>
-	<<school_mark history>> printed and circled on the front. The expected mark.
-<</if>>
+<<exam_result "history">>
 <br><br>
 
+<!-- Add text for interacting with Robin here, if they are present? -->
 The bell rings, and you join the throng of students in the hallway.
 <br><br>
 
-<<endevent>>
-<<exam_end>>
-
-<<link [[Next|Hallways]]>><</link>>
+<<link [[Next|Hallways]]>><<endevent>><</link>>
 <br>
