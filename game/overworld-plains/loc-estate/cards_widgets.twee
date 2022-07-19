@@ -22,6 +22,8 @@
 		susRoseInThisRound: false,
 		/* we don't want to increase suspicion for already seen marked cards */
 		seenMarkedCardsSoFar: new Set(),
+		caughtType: null,
+		susCritHit: false,
 
 		cheatChoice: null,
 		playersScore: null,
@@ -73,37 +75,39 @@
 <</widget>>
 
 <<widget "blackjackSuspicion">>
-	<<set $blackjackCaughtType = false >>
+	<<set $_susGain to _args[0]>>
+	<<set $_caughtType to _args[1]>>
+	<<set $blackjack.caughtType to null>>
 
-	<<set _consts__danger_zone_suspicion = 70>>
-	<<if _args[0] > 0 && $estatePersistent.suspicion > _consts__danger_zone_suspicion>>
-		<<set $blackjackSuspicionCriticalHit = random(1,8) == 1 >>
+	<<set _consts__danger_zone_suspicion to 70>>
+	<<if $_susGain gt 0 and $estatePersistent.suspicion gt _consts__danger_zone_suspicion>>
+		<<set $blackjack.susCritHit to random(1,8) eq 1>>
 	<<else>>
-		<<set $blackjackSuspicionCriticalHit = false >>
+		<<set $blackjack.susCritHit to false>>
 	<</if>>
-	<<if $blackjackSuspicionCriticalHit == true >>
-		<<set $estatePersistent.suspicion = 100 >>
+	<<if $blackjack.susCritHit>>
+		<<set $estatePersistent.suspicion to 100>>
 	<<else>>
-		<<set $estatePersistent.suspicion = Math.clamp($estatePersistent.suspicion + _args[0], 0, 100) >>
+		<<set $estatePersistent.suspicion to Math.clamp($estatePersistent.suspicion + $_susGain, 0, 100)>>
 	<</if>>
 
-	<<if _args[0] > 0 && $estatePersistent && $estatePersistent.suspicion >= 100>>
-		<<set $blackjackCaughtType = _args[1] >>
+	<<if $_susGain gt 0 and $estatePersistent and $estatePersistent.suspicion gte 100>>
+		<<set $blackjack.caughtType to $_caughtType>>
 	<</if>>
 <</widget>>
 
 <<widget "blackjackGetCanMarkCount">>
-	<<set _marked_count = $estatePersistent.markedCards ? $estatePersistent.markedCards.size : 0>>
-	<<set _consts__max_marked = 8>>
-	<<set _can_mark_count = _consts__max_marked - _marked_count >>
-	<<set _non_marked_in_hand = 0>>
-	<<for _i = 0; _i < $blackjack.playersCards.length; ++_i>>
-		<<set _c = $blackjack.playersCards[_i]>>
-		<<if !$estatePersistent.markedCards || !$estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
-			<<set _non_marked_in_hand++ >>
+	<<set _marked_count to $estatePersistent.markedCards ? $estatePersistent.markedCards.size : 0>>
+	<<set _consts__max_marked to 8>>
+	<<set _can_mark_count to _consts__max_marked - _marked_count>>
+	<<set _non_marked_in_hand to 0>>
+	<<for _i to 0; _i lt $blackjack.playersCards.length; ++_i>>
+		<<set _c to $blackjack.playersCards[_i]>>
+		<<if !$estatePersistent.markedCards or !$estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
+			<<set _non_marked_in_hand++>>
 		<</if>>
 	<</for>>
-	<<set _can_mark_count = Math.min(_can_mark_count, _non_marked_in_hand)>>
+	<<set _can_mark_count to Math.min(_can_mark_count, _non_marked_in_hand)>>
 <</widget>>
 
 <<widget "blackjackCalculate">>
@@ -119,7 +123,7 @@
 		<<set $blackjack.turn to "dealer">>
 	<</if>>
 <<else>>
-	<<set $blackjack.isFirstTurn = false >>
+	<<set $blackjack.isFirstTurn to false>>
 <</if>>
 
 <!-- <STARTING CHEATS> -->
@@ -127,7 +131,7 @@
 	<<set $blackjack.cheatChoice to null>>
 <</if>>
 <<if $estate.cards.cheatPeeking is undefined>>
-	<<set $estate.cards.cheatPeeking = false>>
+	<<set $estate.cards.cheatPeeking to false>>
 <</if>>
 
 
@@ -135,21 +139,21 @@
 <<if $blackjack.playersState is "cheat">>
 	<<if $blackjack.cheatChoice is "mark">>
 		<<if $estatePersistent.markedCards is null or $estatePersistent.markedCards is undefined>>
-			<<set $estatePersistent.markedCards = new Set()>>
+			<<set $estatePersistent.markedCards to new Set()>>
 		<</if>>
 
 		<<blackjackGetCanMarkCount>>
 
-		<<set _loop_min_ind = $blackjack.playersCards.length - _can_mark_count >>
+		<<set _loop_min_ind to $blackjack.playersCards.length - _can_mark_count>>
 
-		<<for _i = $blackjack.playersCards.length - 1; _i >= _loop_min_ind; --_i>> 
-			<<set _c = $blackjack.playersCards[_i]>>
+		<<for _i to $blackjack.playersCards.length - 1; _i gte _loop_min_ind; --_i>> 
+			<<set _c to $blackjack.playersCards[_i]>>
 			<<set $estatePersistent.markedCards.add(`${_c.name}${_c.suits[0]}`)>>
 		<</for>>
 
-		<<set $_marked_text = `${_can_mark_count} of your card${_can_mark_count > 1 ? 's' : ''}`>>
-		<<set $_plural = _can_mark_count > 1 ? "them" : "it">>
-		You've successfully marked $_marked_text. You'll recognise <<print _can_mark_count > 1 ? "them" : "it">> if you see $_plural on top of the deck, or in Wren's hand.<br>
+		<<set $_marked_text to `${_can_mark_count} of your card${_can_mark_count gt 1 ? 's' : ''}`>>
+		<<set $_plural to _can_mark_count gt 1 ? "them" : "it">>
+		You've successfully marked $_marked_text. You'll recognise <<print _can_mark_count gt 1 ? "them" : "it">> if you see $_plural on top of the deck, or in Wren's hand.<br>
 	<</if>>
 	<<set $blackjack.cheatChoice to null>>
 <</if>>
@@ -177,27 +181,23 @@
 <</if>>
 <</widget>>
 
-<!-- args[0] = lost? true if lost, more decay. 
+<!-- args[0] to lost? true if lost, more decay. 
 you will lose suspicion every round you play fairly, and you lose
 more suspicion if you actually lose the round. -->
 <<widget "blackjackControlsPostGameSuspicion">>
-	<!-- no decay if suspicion was gained (through seeing new cards or peeking at dealer card) -->
-	<<if $blackjack.susRoseInThisRound == false >>
-		<<if $estatePersistent.suspicion and $estatePersistent.suspicion gte 1>>
-			<<set _cards_suspicion_post_game_decay = 2 >>
-			<<if _args[0] and _args[0] == true>>
-				<<set _cards_suspicion_post_game_decay = 4 >>
-			<</if>>
-			<<set _cards_suspicion_post_game_decay += $NPCName[$NPCNameList.indexOf("Wren")].love * 0.05 >>
+    <<set $_lostGame to _args[0]>>
+    <!-- no decay if suspicion was gained (through seeing new cards or peeking at dealer card) -->
+    <<if !$blackjack.susRoseInThisRound and $estatePersistent.suspicion gte 1>>
+        <<set $_suspicionDecay to -(($_lostGame ? 4 : 2) + $NPCName[$NPCNameList.indexOf("Wren")].love * 0.05)>>
 
-			<<if _args[0] and _args[0] == true>>
-				You've lost this round, fair and square.<<llsuspicion>><br>
-			<<else>>
-				You've played fairly this round.<<lsuspicion>><br>
-			<</if>>
-			<<blackjackSuspicion `-_cards_suspicion_post_game_decay` >>
-		<</if>>
-	<</if>>
+        <<if $_lostGame>>
+            You've lost this round, fair and square.<<llsuspicion>>
+        <<else>>
+            You've played fairly this round.<<lsuspicion>>
+        <</if>>
+        <br>
+        <<blackjackSuspicion $_suspicionDecay>>
+    <</if>>
 <</widget>>
 
 <<widget "blackjackCheatingCaught">>
@@ -216,7 +216,7 @@ more suspicion if you actually lose the round. -->
 	-->
 	<!-- if the player is caught cheating, the deck will be replaced as soon as the player returns for another game -->
 
-	<<set $estatePersistent.newDeckTimer to 0 >>
+	<<set $estatePersistent.newDeckTimer to 0>>
 	<<if $estate.cards.state is "ride">>
 		<<if $estate.cards.position is "penile" or $estate.cards.position is "vaginal" or $estate.cards.position is "anal">>
 			"I'm feeling kind today," <<he>> says, "so instead of giving you to <span class="pink"><<nnpc_him "Remy">></span> - I'll just consider this your loss. Time to take my prize."<br><br>
@@ -239,7 +239,7 @@ more suspicion if you actually lose the round. -->
 		<</if>>
 	<<else>>
 		"It looks like <<pshe>> would benefit from being taught some discipline," <<he>> says with a smirk. "I know just the right <<nnpc_gender "Remy">> for that."<br><br>
-		<<He>> looks at his friends and nods at you. They start advancing on you.
+		<<He>> looks at <<his>> friends and nods at you. They start advancing on you.
 		<br><br>
 		<<blackjackCaughtControls 1>>
 	<</if>>
@@ -247,11 +247,11 @@ more suspicion if you actually lose the round. -->
 
 
 <<widget "blackjackCaughtControls">>
-<<set _caught_phase = _args[0]>>
-<<if _caught_phase == 1>>
+<<set _caught_phase to _args[0]>>
+<<if _caught_phase eq 1>>
 	<span class="green">If you are going to run, you'll be more likely to succeed if you don't waste time now.</span>
 
-	<<set $estate.prev_apologised to $estatePersistent.cur_apologised == true>>
+	<<set $estate.prev_apologised to $estatePersistent.cur_apologised is true>>
 
 	<!-- 
 	Static plead base chance modifiers (Wren love, English) are calculated here, but the RNG dynamic modifiers are calculated in the plead passage, to allow save-scumming.
@@ -262,25 +262,25 @@ more suspicion if you actually lose the round. -->
 	-->
 	<<set $estate._plead_required_points to 800>>
 	<<set $estate._base_plead_points to 0>>
-	<<set $estate._plead_rng_min = 0>>
-	<<set $estate._plead_rng_max = 1000>>
-	<<set _base_chance = 1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min, $estate._plead_rng_max)>>
-	<<set _base_chance_str = formatDecimals(_base_chance*100, 1) >>
+	<<set $estate._plead_rng_min to 0>>
+	<<set $estate._plead_rng_max to 1000>>
+	<<set _base_chance to 1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min, $estate._plead_rng_max)>>
+	<<set _base_chance_str to formatDecimals(_base_chance*100, 1)>>
 	<!-- 0-200 points for love (proportionate to 0,50 love) (as in 50 love is always full 200 points)-->
-	<<set _extra_wren = lerp(Math.clamp($NPCName[$NPCNameList.indexOf("Wren")].love / 50, 0, 1), 0, 250) >>
+	<<set _extra_wren to lerp(Math.clamp($NPCName[$NPCNameList.indexOf("Wren")].love / 50, 0, 1), 0, 250)>>
 	<<set $estate._base_plead_points += _extra_wren>>
-	<<set _extra_wren_chance_str = formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_wren, $estate._plead_rng_max + _extra_wren) - _base_chance)*100, 1)>>
+	<<set _extra_wren_chance_str to formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_wren, $estate._plead_rng_max + _extra_wren) - _base_chance)*100, 1)>>
 	<!-- 0-200 points for English (proportionate to 0,1000 english)-->
-	<<set _extra_english = lerp(Math.clamp(currentSkillValue('english') / 1000, 0, 1), 0, 250) >>
+	<<set _extra_english to lerp(Math.clamp(currentSkillValue('english') / 1000, 0, 1), 0, 250)>>
 	<<set $estate._base_plead_points += _extra_english>>
-	<<set _extra_english_chance_str = formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_english, $estate._plead_rng_max + _extra_english) - _base_chance)*100, 1)>>
+	<<set _extra_english_chance_str to formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_english, $estate._plead_rng_max + _extra_english) - _base_chance)*100, 1)>>
 	<!-- 0-100 extra points for submissiveness (1000,2000) -->
-	<<set _extra_sub = lerp(inverseLerp($submissive, 1000, 2000), 0, 100) >>
+	<<set _extra_sub to lerp(inverseLerp($submissive, 1000, 2000), 0, 100)>>
 	<<set $estate._base_plead_points += _extra_sub>>
-	<<set _extra_sub_chance_str = formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_sub, $estate._plead_rng_max + _extra_sub) - _base_chance)*100, 1)>>
+	<<set _extra_sub_chance_str to formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_sub, $estate._plead_rng_max + _extra_sub) - _base_chance)*100, 1)>>
 
-	<<set _plead_difficulty = Math.round((1-inverseLerp(800, $estate._base_plead_points + $estate._plead_rng_min, $estate._base_plead_points + $estate._plead_rng_max))*100)>>
-	<<set _plead_chance_str = formatDecimals(_plead_difficulty, 1)>>
+	<<set _plead_difficulty to Math.round((1-inverseLerp(800, $estate._base_plead_points + $estate._plead_rng_min, $estate._base_plead_points + $estate._plead_rng_max))*100)>>
+	<<set _plead_chance_str to formatDecimals(_plead_difficulty, 1)>>
 
 	<!-- 
 	+ 0,1000 RNG points
@@ -288,26 +288,26 @@ more suspicion if you actually lose the round. -->
 	 -->
 
 	<br><br>
-	<<if $estate.prev_apologised >>
+	<<if $estate.prev_apologised>>
 		<span class="red">You've apologised the last time you were caught. You're not sure if that will work again.</span>
 		<br>
 	<</if>>
 	Forgiveness chance:
 	<br>
 	Base: <span class="black"><<print _base_chance_str>>%</span>
-	<<if _extra_english > 0>>
+	<<if _extra_english gt 0>>
 		<br>
 		<span class="green">English</span> <span class="black">+<<print _extra_english_chance_str>>%</span>
 	<</if>>
-	<<if _extra_wren > 0>>
+	<<if _extra_wren gt 0>>
 		<br>
 		<span class="green">Wren's love</span> <span class="black">+<<print _extra_wren_chance_str>>%</span>
 	<</if>>
-	<<if _extra_sub > 0>>
+	<<if _extra_sub gt 0>>
 		<br>
 		<span class="green">Submissiveness</span> <span class="black">+<<print _extra_sub_chance_str>>%</span>
 	<</if>>
-	<<if (_extra_english + _extra_wren + _extra_sub) > 0>>
+	<<if (_extra_english + _extra_wren + _extra_sub) gt 0>>
 		<br>
 		Total: <span class="black"><<print _plead_chance_str>>%</span>
 	<</if>>
@@ -339,55 +339,55 @@ more suspicion if you actually lose the round. -->
 <</widget>>
 
 <<widget "blackjackControls">>
-<<set _player_can_choose = $blackjack.turn is "players" and $blackjack.playersScore lte 20 >>
-<<set _consts__max_marked_see_depth = 3>>
-<<set _seen_cards_deck = []>>
-<<set _seen_cards_indexes = []>>
-<<set _seen_cards_index_strings = []>>
-<<set _seen_new_marked_card_this_turn = false >>
-<<set _seen_dealer_card = false >>
+<<set _player_can_choose to $blackjack.turn is "players" and $blackjack.playersScore lte 20>>
+<<set _consts__max_marked_see_depth to 3>>
+<<set _seen_cards_deck to []>>
+<<set _seen_cards_indexes to []>>
+<<set _seen_cards_index_strings to []>>
+<<set _seen_new_marked_card_this_turn to false>>
+<<set _seen_dealer_card to false>>
 
 <!-- we don't want to make the player to be punished for seeing marked cards when it's the dealer's turn (since the player wouldn't be actively looking for them) -->
 <<if _player_can_choose>>
-	<<for $_i to 0; $_i < _consts__max_marked_see_depth; $_i++>>
-		<<set _c = $blackjack.cards[$_i]>>
-		<<if $estatePersistent.markedCards && $estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
+	<<for $_i to 0; $_i lt _consts__max_marked_see_depth; $_i++>>
+		<<set _c to $blackjack.cards[$_i]>>
+		<<if $estatePersistent.markedCards and $estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
 			<<set _seen_cards_deck.push(_c)>>
 			<<set _seen_cards_indexes.push($_i)>>
 			<<set _seen_cards_index_strings.push(ordinalSuffixOf($_i+1))>>
 			<<if !$blackjack.seenMarkedCardsSoFar.has(`${_c.name}${_c.suits[0]}`);>>
-				<<set _seen_new_marked_card_this_turn = true >>
-				<<set $blackjack.seenMarkedCardsSoFar.add(`${_c.name}${_c.suits[0]}`); >>
+				<<set _seen_new_marked_card_this_turn to true>>
+				<<set $blackjack.seenMarkedCardsSoFar.add(`${_c.name}${_c.suits[0]}`);>>
 			<</if>>
 		<</if>>
 	<</for>>
-	<<if _seen_cards_deck.length > 0>>
-		<<set $_plural = _seen_cards_deck.length > 1 ? "s" : "">>
-		<<set _max_card_index = Math.max(...(_seen_cards_indexes)) >>
-		<<if _seen_cards_deck.length == 1 && _seen_cards_indexes[0] == 0>>
+	<<if _seen_cards_deck.length gt 0>>
+		<<set $_plural to _seen_cards_deck.length gt 1 ? "s" : "">>
+		<<set _max_card_index to Math.max(...(_seen_cards_indexes))>>
+		<<if _seen_cards_deck.length eq 1 and _seen_cards_indexes[0] eq 0>>
 			You recognise the card sitting on top of the deck. It's one of the cards you've marked:
 		<<else>>
 			<<set $_indexes_str = formatList(_seen_cards_index_strings) >>
 			You recognise the $_indexes_str card$_plural from the top of the deck:
 		<</if>>
 		<br>
-		<<for _i to 0; _i <= _max_card_index; _i++>>
-			<<set _hidden = !_seen_cards_indexes.includes(_i) >>
+		<<for _i to 0; _i lte _max_card_index; _i++>>
+			<<set _hidden to !_seen_cards_indexes.includes(_i)>>
 			<div class="left"><<cardImage $blackjack.cards[_i] _hidden>></div>
 		<</for>>
 		<div style="clear:both;"></div>
 	<</if>>
 
-	<<set _c = $blackjack.dealerCards[1] >>
-	<<if $estatePersistent.markedCards && $estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
-		<<if $blackjack.turnIsStale == false>>
+	<<set _c to $blackjack.dealerCards[1]>>
+	<<if $estatePersistent.markedCards and $estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
+		<<if !$blackjack.turnIsStale>>
 			<<if !$blackjack.seenMarkedCardsSoFar.has(`${_c.name}${_c.suits[0]}`);>>
-				<<set _seen_new_marked_card_this_turn = true >>
-				<<set $blackjack.seenMarkedCardsSoFar.add(`${_c.name}${_c.suits[0]}`); >>
+				<<set _seen_new_marked_card_this_turn to true>>
+				<<set $blackjack.seenMarkedCardsSoFar.add(`${_c.name}${_c.suits[0]}`);>>
 			<</if>>
 			<!-- we've seen the card, so we can display it -->
-			<<set $blackjack.dealerSecondCardHidden = false >>
-			<<set _seen_dealer_card = true>>
+			<<set $blackjack.dealerSecondCardHidden to false>>
+			<<set _seen_dealer_card to true>>
 			<br><br>
 			You recognise this card you've marked to be Wren's hole card.<br>
 			<div class="left"><<cardImage _c>></div>
@@ -395,53 +395,53 @@ more suspicion if you actually lose the round. -->
 		<<else>>
 			<!-- reminding the user that they know Wren's hole card is probably redundant, since they can see it now -->
 		<</if>>
-	<<elseif $estate.cards.cheatPeeking == true && $blackjack.isFirstTurn == true >>
-		<<if $blackjack.turnIsStale == false>>
+	<<elseif $estate.cards.cheatPeeking and $blackjack.isFirstTurn>>
+		<<if !$blackjack.turnIsStale>>
 			<!-- idea -  an alternative, where we handle the deck and the chance to see the card is higher -->
 			<!-- 
 				skulduggery affects your chance to see the card. base chance is 10%, skulduggery adds from 0 to 10% chance.
 				different levels of exposure have a chance to affect the chance as well, as you're distracting the dealer every now and then.
 			 -->
-			<<set _chance_to_see = Math.clamp(15 + Math.round(currentSkillValue('skulduggery')/100), 15, 25)>>
-			<<set _dealer_distracted = false>>
-			<<set _dealer_distracted_text = "You notice the dealer occasionally sneaking glances at you.">>
+			<<set _chance_to_see to Math.clamp(15 + Math.round(currentSkillValue('skulduggery')/100), 15, 25)>>
+			<<set _dealer_distracted to false>>
+			<<set _dealer_distracted_text to "You notice the dealer occasionally sneaking glances at you.">>
 			<!-- we generate two numbers because we want a different chance for the text appearing: we don't want it tied to the chance_to_see -->
 			/* base 15-25% chance */
 			<<if $estate.cards.state is "ride">>
-				<<if random(1, 5) > 1>>
-					/* 4/5 * .8 = +60% chance */
+				<<if random(1, 5) gt 1>>
+					/* 4/5 * .8 to +60% chance */
 					<<set _chance_to_see += 75>>
-					<<set _dealer_distracted = true>>
+					<<set _dealer_distracted to true>>
 					<<person2>>
 					<<silently>><<his>><</silently>>
-					<<set _dealer_distracted_text = "You notice the dealer watching you and Wren with lust in " + _text_output + " eyes." >>
+					<<set _dealer_distracted_text to "You notice the dealer watching you and Wren with lust in " + _text_output + " eyes.">>
 					<<person1>>
 				<</if>>
-			<<elseif $exposed == 2>>
-				<!-- actual chance bonus = random_chance * extra_chance_to_see (so .5*.75=0.375) -->
-				<<if random(1, 2) == 1>>
-					/* 1/2 * .75 = +37.5% chance */
+			<<elseif $exposed eq 2>>
+				<!-- actual chance bonus to random_chance * extra_chance_to_see (so .5*.75=0.375) -->
+				<<if random(1, 2) eq 1>>
+					/* 1/2 * .75 to +37.5% chance */
 					<<set _chance_to_see += 75>>
-					<<set _dealer_distracted = true>>
+					<<set _dealer_distracted to true>>
 					<<person2>>
 					<<silently>><<he>><</silently>>
-					<<set _dealer_distracted_text = "You notice the dealer oogling your body when " + _text_output + " thinks you're not looking." >>
+					<<set _dealer_distracted_text to "You notice the dealer oogling your body when " + _text_output + " thinks you're not looking.">>
 					<<person1>>
 				<</if>>
-			<<elseif $exposed == 1>>
-				<<if random(1, 2) == 1>>
-					/* 0.5 * .4 = +20% chance */
+			<<elseif $exposed eq 1>>
+				<<if random(1, 2) eq 1>>
+					/* 0.5 * .4 to +20% chance */
 					<<set _chance_to_see += 40>>
-					<<set _dealer_distracted = true>>
-					<<set _dealer_distracted_text = "You notice the dealer occasionally sneaking glances at you.">>
+					<<set _dealer_distracted to true>>
+					<<set _dealer_distracted_text to "You notice the dealer occasionally sneaking glances at you.">>
 				<</if>>
 			<</if>>
-			<<if _dealer_distracted == true>>
+			<<if _dealer_distracted>>
 				<span class="pink">_dealer_distracted_text</span>
 				<br>
 			<</if>>
 			<<rng>>
-			<<if $rng < _chance_to_see>>
+			<<if $rng lt _chance_to_see>>
 				The dealer seems distracted, as <<person2>><<he>><<person1>> clumsily hands Wren <<his>> second card.
 				<br>
 				<span class="green">You manage to sneak a peek at Wren's hole card.</span>
@@ -449,7 +449,7 @@ more suspicion if you actually lose the round. -->
 				<div class="left"><<cardImage _c>></div>
 				<div style="clear:both;"></div>
 				<<blackjackSuspicion 10 "holecardingsuccess">>
-				<<if $blackjackSuspicionCriticalHit == false>>
+				<<if !$blackjack.susCritHit>>
 					<<switch random(1,3)>>
 						<<case 1>>
 							Wren also notices the dealer's blunder and glances at you, but doesn't say anything.<<gsuspicion>>
@@ -457,23 +457,23 @@ more suspicion if you actually lose the round. -->
 							Wren also notices the dealer's blunder and glances at you. "I hope you're keeping your eyes on your own hand", <<he>> says.<<gsuspicion>>
 						<<case 3>>
 							<<person2>>
-							<<set _text_output_custom = $pronoun is "m" ? "man" : "girl" >>
+							<<set _text_output_custom to $pronoun is "m" ? "man" : "girl">>
 							<<person1>>
 							"Come on, _text_output_custom!" says Wren to the dealer. "Gotta be swifter when you deal the cards". <<He>> glances at you, but doesn't say anything else.
 					<</switch>>
 				<<else>>
-					When you look at Wren however, you see he's <span class="red">staring into your eyes with a smirk.</span><<gggsuspicion>>
+					When you look at Wren however, you see <<hes>> <span class="red">staring into your eyes with a smirk.</span><<gggsuspicion>>
 				<</if>>
 				<br><br>
 				<!-- we've seen the card, so we can display it -->
-				<<set $blackjack.dealerSecondCardHidden = false >>
-				<<set $blackjack.susRoseInThisRound = true >>
-				<<set $blackjack.suspicionIncreasedInFirstTurn = true >>
+				<<set $blackjack.dealerSecondCardHidden to false>>
+				<<set $blackjack.susRoseInThisRound to true>>
+				<<set $blackjack.suspicionIncreasedInFirstTurn to true>>
 			<<else>>
-				<<set $blackjack.susRoseInThisRound = true >>
+				<<set $blackjack.susRoseInThisRound to true>>
 				<<blackjackSuspicion 5 "holecardingfail">>
 				You try to peek at Wren's second card while it's being dealt, but you don't manage to see anything.<br>
-				<<if $blackjackSuspicionCriticalHit == false>>
+				<<if !$blackjack.susCritHit>>
 					<<switch random(1,3)>>
 						<<case 1>>
 							You wonder if they can tell you're peeking.<<gsuspicion>>
@@ -483,7 +483,7 @@ more suspicion if you actually lose the round. -->
 							You can feel Wren staring at you after receiving <<his>> card.<<gsuspicion>>
 					<</switch>>
 				<<else>>
-					When you look at Wren however, you see he's <span class="red">staring into your eyes with a smirk.</span><<gggsuspicion>>
+					When you look at Wren however, you see <<hes>> <span class="red">staring into your eyes with a smirk.</span><<gggsuspicion>>
 				<</if>>
 				<br><br>
 			<</if>>
@@ -493,21 +493,21 @@ more suspicion if you actually lose the round. -->
 	<</if>>
 <</if>>
 
-<<set _marked_card_show_sus_warning = false >>
+<<set _marked_card_show_sus_warning to false>>
 <<if _player_can_choose and $blackjack.turnIsStale != true>>
-	<<if _seen_new_marked_card_this_turn >>
+	<<if _seen_new_marked_card_this_turn>>
 		<!-- 
 		we do this here to make sure all automatic suspicion raising actions are performed before this check
 		we set a simple bool value for simplicity (so that we don't copy-paste the checks)
 		-->
-		<<set _marked_card_show_sus_warning = true >>
-		<<set $blackjack.susRoseInThisRound = true >>
+		<<set _marked_card_show_sus_warning to true>>
+		<<set $blackjack.susRoseInThisRound to true>>
 		<<blackjackSuspicion `Math.round($estatePersistent.markedCards.size * 0.4)` "markedcardseen">>
 	<</if>>
 <</if>>
 
-<<if $estatePersistent.suspicion >= 100>>
-	<<switch $blackjackCaughtType>>
+<<if $estatePersistent.suspicion gte 100>>
+	<<switch $blackjack.caughtType>>
 		<<case "holecardingfail" "holecardingsuccess">>
 			"Careful there," says Wren. "<span class="red">You're peeking too hard.</span> You don't want to snap your own neck."
 			<br><br>
@@ -523,7 +523,7 @@ more suspicion if you actually lose the round. -->
 			<br><br>
 			<<blackjackCheatingCaught>>
 		<<case "markedcardseen">>
-			<<if _seen_dealer_card == true>>
+			<<if _seen_dealer_card>>
 				Wren stares at you for a moment, before carefully inspecting <<his>> hole card. Then, <span class="red"><<he>> scoffs</span>.
 				<br><br>
 			<<else>>
@@ -588,26 +588,26 @@ Total: <<print $blackjack.playersScore>>
 
 
 <<widget "blackjackCheatingAlertsFooter">>
-<<if _marked_card_show_sus_warning >>
+<<if _marked_card_show_sus_warning>>
 	<br><br>
 	While you were looking at the marked cards, you could feel Wren and <<his>> friends occasionally glancing at you.<<gsuspicion>>
 <</if>>
 
 <<if $blackjack.playersState is "choose_cheat">>
 	<br><br>
-	<<set _marked_count = $estatePersistent.markedCards ? $estatePersistent.markedCards.size : 0>>
-	<<set _consts__max_marked = 8>>
+	<<set _marked_count to $estatePersistent.markedCards ? $estatePersistent.markedCards.size : 0>>
+	<<set _consts__max_marked to 8>>
 	You've marked <<print _marked_count>> cards in this deck.<br>
-	<<set _d = deck()>>
-	<<for _i = 0; _i < _d.length; ++_i>>
-		<<set _c = _d[_i]>>
-		<<if $estatePersistent.markedCards && $estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
+	<<set _d to deck()>>
+	<<for _i to 0; _i lt _d.length; ++_i>>
+		<<set _c to _d[_i]>>
+		<<if $estatePersistent.markedCards and $estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
 			<div class="left"><<cardImage _c>></div>
 		<</if>>
 	<</for>>
 	<div style="clear:both;"></div>
 	<br>
-	<<if _marked_count >= _consts__max_marked>>
+	<<if _marked_count gte _consts__max_marked>>
 		That's as many unique marks as you can place and remember. You can no longer mark cards until Wren changes the deck.
 	<<else>>
 		You can mark up to <<print _consts__max_marked - _marked_count>> more cards. That's as many as you'll be able to mark and remember.
@@ -615,19 +615,19 @@ Total: <<print $blackjack.playersScore>>
 <</if>>
 
 <<if $estatePersistent.suspicion is undefined>>
-	<<set $estatePersistent.suspicion = 0 >>
+	<<set $estatePersistent.suspicion to 0>>
 <</if>>
-<<set _player_cheating_virginity_warned = false>>
-<<if $estatePersistent.suspicion > 0>>
+<<set _player_cheating_virginity_warned to false>>
+<<if $estatePersistent.suspicion gt 0>>
 	<br><br>
 	Suspicion:
 	<<statbar $estatePersistent.suspicion 100 right>>
-	<<set _consts__danger_zone_suspicion = 70>>
-	<<if $estatePersistent.suspicion > _consts__danger_zone_suspicion>>
+	<<set _consts__danger_zone_suspicion to 70>>
+	<<if $estatePersistent.suspicion gt _consts__danger_zone_suspicion>>
 		<br>
 		<span class="red">Wren and <<his>> friends are very suspicious of you, and you are being closely watched.</span>
 		<<if $estate.cards.state is "ride">>
-			<<set _player_cheating_virginity_warned = true>>
+			<<set _player_cheating_virginity_warned to true>>
 			<<cards_cheating_virginity_warning>>
 		<</if>>
 	<</if>>
@@ -640,39 +640,39 @@ Total: <<print $blackjack.playersScore>>
 <<if $blackjack.turn is "players" and $blackjack.playersScore lte 20>>
 	<<if $blackjack.playersState is "choose_cheat">>
 		<<link [[Back (regular options)|$passage]]>><<set $blackjack.playersState to null>><</link>>
-		<<if _marked_count < _consts__max_marked>>
-			<<set _can_mark_count = _consts__max_marked - _marked_count >>
-			<<set _non_marked_in_hand = 0>>
-			<<for _i = 0; _i < $blackjack.playersCards.length; ++_i>>
-				<<set _c = $blackjack.playersCards[_i]>>
-				<<if !$estatePersistent.markedCards || !$estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
-					<<set _non_marked_in_hand++ >>
+		<<if _marked_count lt _consts__max_marked>>
+			<<set _can_mark_count to _consts__max_marked - _marked_count>>
+			<<set _non_marked_in_hand to 0>>
+			<<for _i to 0; _i lt $blackjack.playersCards.length; ++_i>>
+				<<set _c to $blackjack.playersCards[_i]>>
+				<<if !$estatePersistent.markedCards or !$estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
+					<<set _non_marked_in_hand++>>
 				<</if>>
 			<</for>>
-			<<set _can_mark_count = Math.min(_can_mark_count, _non_marked_in_hand)>>
+			<<set _can_mark_count to Math.min(_can_mark_count, _non_marked_in_hand)>>
 
-			<<if _can_mark_count > 0>>
-				<<if _can_mark_count > 1>> 
-					<<set $_link_text = `Mark your ${_can_mark_count} newest cards`>>
+			<<if _can_mark_count gt 0>>
+				<<if _can_mark_count gt 1>> 
+					<<set $_link_text to `Mark your ${_can_mark_count} newest cards`>>
 				<<else>>
-					<<set $_link_text = `Mark your newest card`>>
+					<<set $_link_text to `Mark your newest card`>>
 				<</if>>
 				<br>
-				<<set $skulduggerydifficulty = 400 + _can_mark_count*100 + $estatePersistent.suspicion*25 >>
+				<<set $skulduggerydifficulty to 400 + _can_mark_count*100 + $estatePersistent.suspicion*25>>
 				<<link [[$_link_text|Estate Blackjack Cheat]]>><<set $blackjack.playersState to "cheat">><<set $blackjack.cheatChoice to "mark">><</link>>
 					<<skulduggerydifficulty>>
-					<<if $estate.cards.state is "ride" && !_player_cheating_virginity_warned>>
-						<<set _player_cheating_virginity_warned = false>>
+					<<if $estate.cards.state is "ride" and !_player_cheating_virginity_warned>>
+						<<set _player_cheating_virginity_warned to false>>
 						<<cards_cheating_virginity_warning true>>
 					<</if>>
 			<</if>>
 
-			<<if $estate.cards.cheatPeeking == true >>
+			<<if $estate.cards.cheatPeeking>>
 				<br>
-				<<link [[Stop peeking at Wren's hole card during dealing|$passage]]>><<set $estate.cards.cheatPeeking = false>><</link>>
+				<<link [[Stop peeking at Wren's hole card during dealing|$passage]]>><<set $estate.cards.cheatPeeking to false>><</link>>
 			<<else>>
 				<br>
-				<<link [[Peek at Wren's hole card during dealing|$passage]]>><<set $estate.cards.cheatPeeking = true>><</link>>
+				<<link [[Peek at Wren's hole card during dealing|$passage]]>><<set $estate.cards.cheatPeeking to true>><</link>>
 			<</if>>
 		<</if>>
 		<!--  // todo
@@ -682,9 +682,9 @@ Total: <<print $blackjack.playersScore>>
 			<<link [[Peek hole card|$passage]]>><<set $blackjack.playersState to "peek">><<set $blackjack.cheatChoice to "peek_hole_card">><</link>>
 		 -->
 	<<else>>
-		<<link [[Hit|$passage]]>><<set $blackjack.playersState to "hit">><<set $blackjack.turnIsStale = false>><<set $blackjack.isFirstTurn = false>><</link>> |
-		<<link [[Stand|$passage]]>><<set $blackjack.turn to "dealer">><<set $blackjack.playersState to "stand">><<set $blackjack.turnIsStale = false>><<set $blackjack.isFirstTurn = false>><</link>> |
-		<<link [[Cheating options|$passage]]>><<set $blackjack.playersState to "choose_cheat">><<set $blackjack.turnIsStale = true>><</link>> |
+		<<link [[Hit|$passage]]>><<set $blackjack.playersState to "hit">><<set $blackjack.turnIsStale to false>><<set $blackjack.isFirstTurn to false>><</link>> |
+		<<link [[Stand|$passage]]>><<set $blackjack.turn to "dealer">><<set $blackjack.playersState to "stand">><<set $blackjack.turnIsStale to false>><<set $blackjack.isFirstTurn to false>><</link>> |
+		<<link [[Cheating options|$passage]]>><<set $blackjack.playersState to "choose_cheat">><<set $blackjack.turnIsStale to true>><</link>> |
 		<<link "Help and Options">><<overlayReplace "blackjackHelp">><</link>>
 	<</if>>
 <<elseif $blackjack.turn is "players" and $blackjack.playersScore gt 21>>
@@ -744,7 +744,7 @@ Total: <<print $blackjack.playersScore>>
 	<<set $estate_cards_end to "cheat_remy">>
 <</if>>
 
-<<if !($worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")) >>
+<<if !($worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked"))>>
 	<<clothesruined>><<exposure>>
 	"Let's get <<pher>> ready," the <<person2>><<person>> says. Hands grasp your clothes from all directions, pulling and tearing the fabric, until you're left exposed. <<covered>>
 	<br><br>
@@ -758,7 +758,7 @@ A couple of guard see you coming and smirk. Wren hands you to the guards.
 <<leash 21>>
 One of the guards goes into the barn and comes back with a collar and chain, which are then fixed around your neck. The guards tug on the attached chain, forcing you along.
 <br><br>
-<<if $NPCName[$NPCNameList.indexOf('Wren')].love gte 20 >>
+<<if $NPCName[$NPCNameList.indexOf('Wren')].love gte 20>>
 	"Looking forward to playing with you again," says Wren. "I know you'll be back soon, one way or another."
 <<else>>
 	"Don't cause them too much trouble", says Wren.
@@ -770,7 +770,7 @@ One of the guards goes into the barn and comes back with a collar and chain, whi
 
 
 <<widget "blackjackHelp">>
-<<set _consts__max_marked = 8>>
+<<set _consts__max_marked to 8>>
 <h3>Blackjack Guide</h3>
 <ul>
 	<li>Your goal is to beat the dealer in having a higher score that never goes above 21.</li>
@@ -795,15 +795,15 @@ Back cover:
 <br>
 
 <div id="card-cover-options" @class="'clothes-' + $cardcover.colour">
-	<<for _i = 0; _i <= 7; _i++>>
-		<div @class="'div-link card cardcover' + _i + ($cardcover.style == _i ? ' active' : '')">
-			<<if _i == 0>>
+	<<for _i to 0; _i lte 7; _i++>>
+		<div @class="'div-link card cardcover' + _i + ($cardcover.style eq _i ? ' active' : '')">
+			<<if _i eq 0>>
 				<span class="number">?</span>
 				<span class="suit">?</span>
 			<</if>>
 			<<capture _i>>
 				<<link "">>
-					<<set $cardcover.style = _i>>
+					<<set $cardcover.style to _i>>
 					<<run $('#card-cover-options .card').removeClass('active')>>
 					<<run $('#card-cover-options .card:nth-child(' + (_i+1) + ')').addClass('active')>>
 				<</link>>
@@ -966,7 +966,7 @@ Your current score: <<print $highlow.correct>>
 <<if _args[0]>>
 	<div @class="'card ' + (_args[1] ? 'cardcover' + $cardcover.style : '') + ' clothes-' + $cardcover.colour">
 		<<if _args[1]>>
-			<<if $cardcover.style == 0>>
+			<<if $cardcover.style eq 0>>
 				<span class="number">?</span>
 				<span class="suit">?</span>
 			<</if>>
@@ -1265,7 +1265,7 @@ Your current score: <<print $highlow.correct>>
 
 
 <<widget "cards_virginity_all_warnings">>
-<<set _player_suspicious = $estatePersistent.suspicion > 0 >>
+<<set _player_suspicious to $estatePersistent.suspicion gt 0>>
 <<if $estate.cards.position is "vaginal">>
 	<<if $player.virginity.vaginal is true>>
 		<<if _player_suspicious>>
@@ -1311,7 +1311,7 @@ Your current score: <<print $highlow.correct>>
 <</widget>>
 
 <<widget "cards_cheating_virginity_warning">>
-<<set _is_inline = _args[0]>>
+<<set _is_inline to _args[0]>>
 <<if $estate.cards.position is "vaginal">>
 	<<if $player.virginity.vaginal is true>>
 		<<if !_is_inline>><br><<else>> | <</if>>
