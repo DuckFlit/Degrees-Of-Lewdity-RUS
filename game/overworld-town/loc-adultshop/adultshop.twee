@@ -1,5 +1,10 @@
 :: Adult Shop
 
+/* TEMPORARY fix to clean up NPC overflow issues */
+<<if $enemyno gte 1 or $phase gte 1>>
+	<<endevent>>
+<</if>>
+
 /* Variables */
 <<set $outside to 0>><<set $location to "adult_shop">><<effects>><<run statusCheck("Sydney")>>
 
@@ -8,7 +13,8 @@
 <<if $adultshopintro is undefined>>
 	<<set $adultshopintro to 0>>
 <</if>>
-<<if random(0,99) is 0>>
+<<rng>>
+<<if $rng is 100>>
 	<<set _shopnameshort to "Aubergine's">>
 <<else>>
 	<<set _shopnameshort to "the shop">>
@@ -23,11 +29,17 @@
 	]>>
 <<set _shopmusic to ["Smooth jazz","Salsa","Tango","Reggae","R&B","Romantic lounge","Classic rock","Classic pop"]>>
 
+<<set _binds to ($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+<<set _gag to ($worn.face.type.includes("gag") and $worn.face.cursed is 1)>>
+<<set _both to (_binds and _gag)>>
+<<set _gagname to $worn.face.name>>
+<<set _predicament to ( (_binds ? "bindings" : "") + (_both ? " and " : "") + (_gag ? _gagname : "") )>>
+
 /* Shop text */
-<<if $adultshopintro is 0 and random(0,99 is 0)>>
-You are in an adult shop, bemusingly titled "_shopnamelong". A wide array of strap-ons, lingerie, fetish wear, and all manner of sex toys line the shelves.
+<<if $adultshopintro is 0 and $rng is 100>>
+	You are in an adult shop, bemusingly titled "_shopnamelong". A wide array of strap-ons, lingerie, fetish wear, and all manner of sex toys line the shelves.
 <<else>>
-You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and all manner of sex toys line the shelves.
+	You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and all manner of sex toys line the shelves.
 <</if>>
 <br>
 <<if $adultshopstate isnot "closed">>
@@ -50,7 +62,7 @@ You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and 
 
 	<<set $adultshopstate to "closed">>
 	<<if $exposed lte 0>>
-		<<link [[Go outside|Elk Street]]>><<clearadultshopvariables>><</link>>
+		<<link [[Go outside|Elk Street]]>><<adultShopClear>><</link>>
 		<br>
 	<<else>>
 		<<link [[Hide until it's over (1:00)|Adult Shop]]>><<pass 1 hour>><</link>>
@@ -59,6 +71,7 @@ You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and 
 	/* States */
 	<<switch $adultshopstate>>
 		<<case "sirris">>
+			<<npc "Sirris">>
 			<<if $adultshopintro is 0>>
 				<<set _shopgreeting.push(
 					"discount on jumbo buttplugs,",
@@ -72,37 +85,27 @@ You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and 
 					"20% discount on gallon drums of lube,")
 				>>
 				/* Shop intro text*/
-				<<npc "Sirris">>
 				"Welcome to _shopnameshort, <<print _shopgreeting[random(0,_shopgreeting.length-1)]>>" Sirris <<print either("beams","greets warmly","welcomes","waves and smiles","smiles and winks","winks and thumbs up","intones")>>.
 				<<He>> <<print either("resumes discussing the merits of strap-ons","returns to completing a sale","returns to showing customers various dildos","resumes discussing lubes","returns to showing off fetish wear")>>.
 				<br><br>
 				<<set $adultshopintro to 1>>
 			<</if>>
-			<<if ($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
-				<<npc "Sirris">>
-				<<unbind>>
-				Sirris sniggers, taking notice of your bindings. You open your mouth to say something, but <<he>> raises <<his>> hand. "Happens about as much as you'd expect here. Up on the counter, please."
+			<<if _binds or _gag>> <!-- Remove bindings and forced gags, dynamically -->
+				<<set _oblige to ( (_gag ? "looking at him quizzically" : "but ask Sirris to elaborate") + (_binds ? " as <<he>> helps you up on the counter" : " as you hop up on the counter") )>>
+				Sirris sniggers, taking notice of your _predicament. You <<if _gag>>wheeze through your gag,<<else>>open your mouth to say something,<</if>> but <<he>> raises <<his>> hand. "Happens about as much as you'd expect here. Up on the counter, please."
 				<br><br>
-				You oblige, but ask Sirris to elaborate as <<he>> helps you up on the counter. <<He>> ducks down, searching for something. "Customers trying out the equipment, mostly. Without permission. There were times I didn't let them out as a punishment, but I realised most of them probably wanted that to begin with."
-				<<He>> stands back up, holding a screwdriver. "Hold still."
+				You oblige, _oblige. <<He>> ducks down, searching for something. "Customers trying out the equipment, mostly. Without permission. There were times I didn't let them out as a punishment, but I realised most of them probably wanted that to begin with."
+				<<He>> stands back up, holding a pair of snips. "Hold still."
 				<br><br>
-				<<He>> jams the screwdriver into your bindings with professional precision, and they clatter to the ground in an instant. <<He>> helps you down, and continues <<his>> work.
+				<<He>> uses the snips to cut through your
+				<<if _binds>>bindings<</if>>
+				<<if _both>>and your<</if>>
+				<<if _gag>>_gagname<</if>>
+				with professional precision.
+				<<if _binds>>They clatter<<else>>It clatters<</if>> to the ground in an instant. <<He>> helps you down, and continues <<his>> work.
 				<br><br>
-				<<if $worn.face.type.includes("gag") and $worn.face.cursed is 1>>
-					<<set $worn.face.type.push("broken")>>
-					<<faceruined>>
-				<</if>>
-			<<elseif $worn.face.type.includes("gag") and $worn.face.cursed is 1>>
-				<<npc "Sirris">>
-				Sirris sniggers, taking notice of your <<print $worn.face.name>>. You wheeze through your gag, but <<he>> raises <<his>> hand. "Happens about as much as you'd expect here. Up on the counter, please."
-				<br><br>
-				You oblige. <<He>> ducks down, searching for something. "Mostly customers trying out the equipment. Without permission. There were times I didn't let them out as a punishment, but I realised most of them probably wanted that to begin with."
-				<<He>> stands back up, holding wire cutters. "Hold still."
-				<br><br>
-				<<He>> snips your <<print $worn.face.name>> with professional precision, and it clatters to the ground in an instant. <<He>> helps you down, and continues <<his>> work.
-				<br><br>
-				<<set $worn.face.type.push("broken")>>
-				<<faceruined>>
+				<<if _binds>><<unbind>><</if>>
+				<<if _gag>><<set $worn.face.type.push("broken")>><<faceruined>><</if>>
 			<</if>>
 			<<adultShopEvents>>
 			<br><br>
@@ -161,42 +164,29 @@ You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and 
 				<br><br>
 				<<set $adultshopintro to 1>>
 			<</if>>
-			<<if ($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
-				<<unbind>>
-				Sydney's eyes widen as <<he>> notices your bindings.
+
+			<<if _binds or _gag>> <!-- Remove bindings and forced gags, dynamically -->
+				Sydney's eyes widen as <<he>> notices your _predicament.
 				<<if _sydneyStatus.includes("corrupt")>>
-					"You could just... ask, you know." Your face flushes, and you try to explain yourself. Sydney giggles, waving away your explanation as <<he>> searches for something under the counter.
+					"You could just... ask, you know." Your face flushes<<if !_gag>>, and you try to explain yourself<</if>>. Sydney giggles<<if !_gag>>, waving away your explanation<</if>> as <<he>> searches for something under the counter.
 				<<else>>
 					"Are you alright? Who did that to you? Or did you just... have an accident while trying out the props?" Sydney disappears under the counter as you explain.
 				<</if>>
 				<br><br>
-				<<He>> emerges with a screwdriver, and motions for you to come behind the counter. <<He>> gets to work undoing your bindings without hesitation, and they clatter to the ground quickly enough.
+				<<He>> emerges with a pair of snips, and motions for you to come behind the counter. <<He>> snips off your
+				<<if _binds>>bindings<</if>>
+				<<if _both>>and your<</if>>
+				<<if _gag>>_gagname<</if>>
+				with precision, and
+				<<if _binds>>they clatter<<else>>it clatters<</if>>
+				to the ground quickly enough.
 				<<if $sydneyromance gte 1>>
 					Before you can thank <<him>>, <<he>> kisses you on the cheek. "Be more careful, please."
 				<</if>>
 				<<He>> returns to work after making sure that you're alright.
 				<br><br>
-				<<if $worn.face.type.includes("gag") and $worn.face.cursed is 1>>
-					<<set $worn.face.type.push("broken")>>
-					<<faceruined>>
-				<</if>>
-			<<elseif $worn.face.type.includes("gag") and $worn.face.cursed is 1>>
-				<<unbind>>
-				Sydney's eyes widen as <<he>> notices your <<print $worn.face.name>>.
-				<<if _sydneyStatus.includes("corrupt")>>
-					"You could just... ask, you know." Your face flushes. Sydney giggles as <<he>> searches for something under the counter.
-				<<else>>
-					"Are you alright? Who did that to you? Or did you just... have an accident while trying out the props?" Sydney disappears under the counter.
-				<</if>>
-				<br><br>
-				<<He>> emerges with wire snips, and motions for you to come behind the counter. <<He>> snips off your $worn.face.name with precision, and it clatters to the ground quickly enough.
-				<<if $sydneyromance gte 1>>
-					Before you can thank <<him>>, <<he>> kisses you on the cheek. "Be more careful, please."
-				<</if>>
-				<<He>> returns to work after making sure that you're alright.
-				<br><br>
-				<<set $worn.face.type.push("broken")>>
-				<<faceruined>>
+				<<if _binds>><<unbind>><</if>>
+				<<if _gag>><<set $worn.face.type.push("broken")>><<faceruined>><</if>>
 			<</if>>
 			<<adultShopEvents>>
 			<br><br>
@@ -206,7 +196,7 @@ You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and 
 			<<if ($hour lt 16 or $hour gt $closinghour) and $adultshoptheft isnot 1>>
 					<br><br>
 					/* */
-					<<if $images is 1>> <img id="icon" src="img/misc/icon/clothes/traits/sticky_fingers.png">  <</if>><<link [[Examine the cash register|Adult Shop Register]]>><</link>>
+					<<if $images is 1>><img id="icon" src="img/misc/icon/clothes/traits/sticky_fingers.png"><</if>><<link [[Examine the cash register|Adult Shop Register]]>><</link>>
 				<</if>>
 			<br><br>
 
@@ -236,7 +226,7 @@ You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and 
 		<img id="icon" src="img/misc/icon/clothes/strap-on.png"> <<link [[Browse toys|Adult Shop Menu]]>><<pass 1>><</link>>
 	<</if>>
 	<br><br>
-	<<exiticon>><<link [[Exit (0:01)|Elk Street]]>><<pass 1>><<clearadultshopvariables>><</link>>
+	<<exiticon>><<link [[Exit (0:01)|Elk Street]]>><<pass 1>><<adultShopClear>><</link>>
 
 <</if>>
 
@@ -252,7 +242,7 @@ You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and 
 /*Unfinished content. Removes binds etc but demonstrates this to the customers.*/
 Sirris smiles as you approach.
 <<if $adultshopclerk and $NPCName[$NPCNameList.indexOf("Sirris")].love gt 50>>
-	"You're doing a good job." /*<<He>>*/<<nnpc_He Sirris>> says.
+	"You're doing a good job." <<nnpc_He Sirris>> says.
 <</if>>
 "Is there anything you need?"
 <br><br>

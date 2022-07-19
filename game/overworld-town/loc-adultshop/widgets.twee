@@ -216,57 +216,25 @@
 
 	<<set $_customertype to [{description:"vulgar",hp:220},{description:"shady",hp:220},{description:"shifty",hp:220},{description:"rotund",hp:250},{description:"slick-haired",hp:200},{description:"muscular",hp:275},{description:"senior",hp:175},{description:"flamboyant",hp:200},{description:"mouth-breathing",hp:200},{description:"creepy",hp:250},{description:"slender",hp:200},{description:"giggly",hp:200},{description:"boney",hp:175}]>>
 
-	<<switch _args[0]>>
-		<<case 1>> <<generate1>>
-		<<case 2>>
-			<<if _args[1] isnot undefined>>
-				<<generatep2>>
-			<<else>>
-				<<generate2>>
-			<</if>>
-		<<case 3>>
-			<<if _args[1] isnot undefined>>
-				<<generatep3>>
-			<<else>>
-				<<generate3>>
-			<</if>>
-		<<case 4>>
-			<<if _args[1] isnot undefined>>
-				<<generatep4>>
-			<<else>>
-				<<generate4>>
-			<</if>>
-		<<case 5>>
-			<<if _args[1] isnot undefined>>
-				<<generatep5>>
-			<<else>>
-				<<generate5>>
-			<</if>>
-		<<case 6>>
-			<<if _args[1] isnot undefined>>
-				<<generatep6>>
-			<<else>>
-				<<generate6>>
-			<</if>>
-	<</switch>>
+	<<if _args[1] isnot undefined>>
+		<<set _generate_partner to 1>>
+	<</if>>
+	<<generateNPC _args[0]>>
 
 	<<set $_npc to $NPCList[_args[0]-1]>>
 	<<if $_npc.pronoun is "m">>
 		<<set $_customertype.push({description:"handsome",hp:200},{description:"rugged",hp:250},{description:"brutish",hp:275},{description:"foppish",hp:175},{description:"toned",hp:250})>>
-		<<set $_npc.description to $_customertype[random(0,$_customertype.length-1)].description>>
-		<<set $_npc.fullDescription to $NPCList[0].description + " man">>
-		<<set $_npc.healthmax to $_customertype[random(0,$_customertype.length-1)].hp>>
 	<<else>>
 		<<set $_customertype.push({description:"pretty",hp:200},{description:"cute",hp:200},{description:"plush",hp:250},{description:"busty",hp:220},{description:"curvy",hp:220})>>
-		<<set $_npc.description to $_customertype[random(0,$_customertype.length-1)].description>>
-		<<set $_npc.fullDescription to $NPCList[0].description + " woman">>
-		<<set $_npc.healthmax to $_customertype[random(0,$_customertype.length-1)].hp>>
 	<</if>>
+	<<set $_chosentype to $_customertype.random()>>
+	<<set $_npc.description to $_chosentype.description>>
+	<<set $_npc.fullDescription to $_chosentype.description + ($_npc.pronoun is "m" ? " man" : " woman")>>
+	<<set $_npc.healthmax to $_chosentype.hp>>
 <</widget>>
 
-<<widget "clearadultshopvariables">>
-	<<unset $adultshopintro>>
-	<<endnpc>>
+<<widget "adultShopClear">>
+	<<set $adultshopintro to 0>>
 	<<endevent>>
 <</widget>>
 
