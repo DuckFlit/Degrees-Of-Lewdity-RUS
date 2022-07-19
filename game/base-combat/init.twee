@@ -954,12 +954,12 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 <<wetnessCalculate>>
 <</widget>>
 
-/* How to use:
-* Call this widget as <<deactivateNPC _n>> where _n is any number between 0 and 5, and is an active NPC.
-* This will prevent said NPC from entering combat plus deal with all the rest of the math.
-* Optional arguments [1] and [2] for health and arousal respectivelly. If the original health or arousal values for the NPCs haven't been changed, no need to use those arguments.
-*/
 <<widget "deactivateNPC">>
+	/* How to use:
+	* Call this widget as <<deactivateNPC _n>> where _n is any number between 0 and 5, and is an active NPC.
+	* This will prevent said NPC from entering combat plus deal with all the rest of the math.
+	* Optional arguments [1] and [2] for health and arousal respectivelly. If the original health or arousal values for the NPCs haven't been changed, no need to use those arguments.
+	*/
 	<<set $_hpToReduce to _args[1] || $NPCList[_args[0]].healthmax>>
 	<<set $_arousalToReduce to _args[2] || $enemyarousalmax/$enemyno>>
 	<<if _args[0] isnot undefined and $NPCList[_args[0]]>>
@@ -1029,128 +1029,138 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 
 <<rng>>
 
-<<if $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $npc.length isnot 0 and $worn.genitals.type.includesAll("chastity", "hidden")>>
-<<elseif $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $npc.length isnot 0>>
-	<<for _iii to 0; _iii lt $npc.length; _iii++>>
-		<<set $genderknown.pushUnique($npc[_iii])>>
-	<</for>>
+<<if $worn.over_lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $npc.length isnot 0 and !$worn.genitals.type.includesAll("chastity", "hidden")>>
+	<<run $npc.forEach(npc => $genderknown.pushUnique(npc))>>
 <</if>>
 
 <<if $worn.genitals.type.includesAll("chastity", "hidden") or $NPCList[0].state is "stalk" or $NPCList[0].state is "pursuit">>
-<<elseif $crossdressing is 2 and $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.over_lower.vagina_exposed gte 1>>
-	/*Comment for seeing herm character genitals for the first time*/
-	<<set $crossdressing to 0>>
+<<elseif $crossdressing gte 1 and $worn.over_lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1>>	
 	<<exposedcheck true>>
-	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and ($npc[0] is "Kylar" or $npc[0] is "Sydney"))>>
-		<<schoolrep herm 1>>
+	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and (["Kylar","Sydney"].includes($npc[0])))>>
+		<<schoolrep_naked>>
 	<</if>>
-	<<if $enemyno gte 2>>
-		<<if $rng gte 96>>
-			<span class="red">They recoil in horror and disgust at the sight of your <<genitals>>!</span>
-			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechhermangry to 2>>
-		<<elseif $rng gte 85>>
-			<span class="purple">Their hands shake and their breath quickens at the sight of your <<genitals>>.</span>
-			<<set $enemyarousal += (50 * $enemyno)>><<set $speechhermaroused to 2>>
-		<<elseif $rng gte 50>>
-			<span class="blue">They recoil in shock at the sight of your <<genitals>>.</span>
-			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechhermshock to 2>>
-		<<elseif $rng gte 30>>
-			They're taken aback by your <<genitals>>. They don't seem angry, at least.
-			<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechhermdisappointed to 2>>
-		<<else>>
-			They take both your <<genitals>> in stride, seeming unbothered.
-		<</if>>
-		<br><br>
-	<<else>>
-		<<if $npc.includes("Sydney") and !$sydneySeen.includes("herm")>>
-			<<set $sydneySeen.pushUnique("herm")>>
-			<<run statusCheck("Sydney")>>
-			<<if _sydneyStatus.includes("corrupt")>>
-				<<He>> stares with wonder at your <<genitals>>. "Woah! <<sydneyMum>> never told me that was possible."
+	<<if $genitalReactionDisable>> <!-- this makes the NPC not react at all; currently a debug thing, you can set this value manually if you want. -->
+	<<elseif $crossdressing is 2>> <!-- Herm PC -->
+		<<if $npc.length is 1 and (["Kylar","Sydney"].includes($npc[0]))>>
+			<!-- Only Kylar and Sydney have fixed reactions, other named NPCs CAN react with anything from disgust to arousal to anger if they don't know your gender. -->
+			<<if $npc[0] is "Sydney" and !$sydneySeen.includes("herm")>>
+				<<set $sydneySeen.pushUnique("herm")>>
+				<<if _sydneyStatus.includes("corrupt")>>
+					<<He>> stares with wonder at your <<genitals>>.
+				<<else>>
+					<<He>> eyes your <<genitals>> with great curiosity.
+				<</if>>
+				<<npcincr Sydney purity -2>><<lspurity>><<set $speechhermaroused to 2>>
+			<<elseif $npc[0] is "Kylar">>
+				<!-- TODO: Give Kylar a unique reaction? -->
+				<span class="purple"><<His>> hands shake and <<his>> breath quickens at the sight of your <<genitals>>.</span>
+				<<set $enemyarousal += 50>><<set $speechhermaroused to 2>>
+			<</if>>
+		<<elseif $NPCList[0].type is "plant" or $rng lt 30>>
+			<<if $enemyno gte 2>>
+				They take both your <<genitals>> in stride, seeming unbothered.
 			<<else>>
-				<<He>> eyes your <<genitals>> with great curiosity. "B...both? I didn't know that was possible!"
-			<</if>><<npcincr Sydney purity -2>><<lspurity>>
-		<<elseif $rng gte 96 and !$npc.includes("Kylar") and $NPCList[0].type isnot "plant">>
-			<span class="red"><<He>> recoils in horror and disgust at the sight of your <<genitals>>!</span>
-			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechhermangry to 2>>
-		<<elseif $rng gte 85 and $NPCList[0].type isnot "plant" or $npc.includes("Kylar")>>
-			<span class="purple"><<His>> hands shake and <<his>> breath quickens at the sight of your <<genitals>>.</span>
-			<<set $enemyarousal += (50 * $enemyno)>><<set $speechhermaroused to 2>>
-		<<elseif $rng gte 50 and $NPCList[0].type isnot "plant">>
-			<span class="blue"><<He>> recoils in shock at the sight of your <<genitals>>.</span>
-			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechhermshock to 2>>
-		<<elseif $rng gte 30 and $NPCList[0].type isnot "plant">>
-			<<Hes>> taken aback by your <<genitals>>. <<He>> doesn't seem angry, at least.
+				<<He>> takes both your <<genitals>> in stride, seeming unbothered.
+			<</if>>
+		<<elseif $rng lt 50>>
+			<<if $enemyno gte 2>>
+				They're taken aback by your <<genitals>>. They don't seem angry, at least.
+			<<else>>
+				<<Hes>> taken aback by your <<genitals>>. <<He>> doesn't seem angry, at least.
+			<</if>>
 			<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechhermdisappointed to 2>>
+		<<elseif $rng lt 85>>
+			<<if $enemyno gte 2>>
+				<span class="blue">They recoil in shock at the sight of your <<genitals>>.</span>
+			<<else>>
+				<span class="blue"><<He>> recoils in shock at the sight of your <<genitals>>.</span>	
+			<</if>>
+			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechhermshock to 2>>
+		<<elseif $rng lt 95>>
+			<<if $enemyno gte 2>>
+				<span class="purple">Their hands shake and their breath quickens at the sight of your <<genitals>>.</span>
+			<<else>>
+				<span class="purple"><<His>> hands shake and <<his>> breath quickens at the sight of your <<genitals>>.</span>
+			<</if>>
+			<<set $enemyarousal += (50 * $enemyno)>><<set $speechhermaroused to 2>>
 		<<else>>
-			<<He>> takes both your <<genitals>> in stride, seeming unbothered.
+			<<if $enemyno gte 2>>
+				<span class="red">They recoil in horror and disgust at the sight of your <<genitals>>!</span>
+			<<else>>
+				<span class="red"><<He>> recoils in horror and disgust at the sight of your <<genitals>>!</span>
+			<</if>>
+			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechhermangry to 2>>
 		<</if>>
-		<br><br>
-	<</if>>
-<<elseif $crossdressing is 1 and $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.over_lower.vagina_exposed gte 1>>
-	<<set $crossdressing to 0>>
-	<<exposedcheck true>>
-	<<if !$backgroundTraits.includes("crossdresser")>>
-		<<if $crossdressingTrait is undefined>>
-			<<set $crossdressingTrait to 1>>
-		<<else>>
-			<<set $crossdressingTrait += 1>>
-		<</if>>
-		<<if $crossdressingTrait gte 100>>
-			<<run $backgroundTraits.pushUnique("crossdresser")>>
-			<<set _newTrait to true>>
-		<</if>>
-	<</if>>
-	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and ($npc[0] is "Kylar" or $npc[0] is "Sydney"))>>
-		<<schoolrep crossdress 1>>
-	<</if>>
-	<<if $enemyno gte 2>>
-		<<if $rng gte 96>>
-			<span class="red">They recoil in horror upon seeing your <<genitals>>. The deception has driven them mad with rage!</span>
-			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechcrossdressangry to 2>>
-		<<elseif $rng gte 85>>
-			Your <<genitals>> was clearly not what they were expecting, but they don't seem to mind. <span class="purple">In fact, if their shaking hands are anything to go by they're quite pleased.</span>
+	<<else>> <!-- Crossdressing PC -->
+		<<if $npc.length is 1 and (["Kylar","Sydney"].includes($npc[0]))>>
+			<<if $npc[0] is "Sydney" and !$sydneySeen.includes("crossdress")>>
+				<<set $sydneySeen.pushUnique("crossdress")>>
+				<<run statusCheck("Sydney")>>
+				<<if _sydneyStatus.includes("corrupt")>>
+					<<He>> looks taken aback by your <<genitals>>. It wasn't what <<he>> was expecting, but <<he>> doesn't seem to mind.
+				<<else>>
+					<<He>> stares at your <<genitals>> with confusion. It wasn't what <<he>> was expecting, but <<he>> doesn't seem to mind.
+				<</if>>
+				<<npcincr Sydney purity -2>><<lspurity>><<set $speechcrossdressaroused to 2>>
+			<<elseif $npc[0] is "Kylar">>
+				<!-- TODO: Give Kylar unique reactions? -->
+				<<set _kylar to statusCheck("Kylar")>>
+				<<if _kylar.gender isnot $player.gender or _kylar.gender is "h">>
+					Your <<genitals 1>> was clearly not what <<he>> was expecting, but <<he>> doesn't seem to mind. <<if _kylar.gender isnot "h">><span class="purple">In fact, if <<his>> shaking hands are anything to go by <<he>> is quite pleased.</span><</if>>
+					<<set $enemyarousal += 50>><<set $speechcrossdressaroused to 2>>
+				<<else>>
+					<<He>> looks disappointed by your <<genitals>>. It wasn't what <<he>> was expecting.
+					<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechcrossdressdisappointed to 2>>
+				<</if>>
+			<</if>>
+		<<elseif $NPCList[0].type is "plant" or $rng lt 30>>
+			<<if $enemyno gte 2>>
+				Your <<genitals>> was clearly not what they were expecting, but they don't seem to mind.
+			<<else>>
+				Your <<genitals 1>> was clearly not what <<he>> was expecting, but <<he>> doesn't seem to mind.
+			<</if>>
+		<<elseif $rng lt 50>>
+			<<if $enemyno gte 2>>
+				They look disappointed by your <<genitals>>. It wasn't what they were expecting.
+			<<else>>
+				<<He>> looks disappointed by your <<genitals>>. It wasn't what <<he>> was expecting.
+			<</if>>
+			<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechcrossdressdisappointed to 2>>
+		<<elseif $rng lt 85>>
+			<<if $enemyno gte 2>>
+				Their eyes widen in shock when they see your <<genitals>>. They seem unsure what to do.
+			<<else>>
+				<<His>> eyes widen in shock when <<he>> sees your <<genitals>>. <<He>> seems unsure what to do.
+			<</if>>
+			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechcrossdressshock to 2>>
+		<<elseif $rng lt 95>>
+			<<if $enemyno gte 2>>
+				Your <<genitals>> was clearly not what they were expecting, but they don't seem to mind. <span class="purple">In fact, if their shaking hands are anything to go by they're quite pleased.</span>
+			<<else>>
+				Your <<genitals 1>> was clearly not what <<he>> was expecting, but <<he>> doesn't seem to mind. <span class="purple">In fact, if <<his>> shaking hands are anything to go by <<he>> is quite pleased.</span>
+			<</if>>
 			<<set $enemyarousal += (50 * $enemyno)>><<set $speechcrossdressaroused to 2>>
-		<<elseif $rng gte 50>>
-			Their eyes widen in shock when they see your <<genitals>>. They seem unsure what to do.
-			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechcrossdressshock to 2>>
-		<<elseif $rng gte 30>>
-			They look disappointed by your <<genitals>>. It wasn't what they were expecting.
-			<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechcrossdressdisappointed to 2>>
 		<<else>>
-			Your <<genitals>> was clearly not what they were expecting, but they don't seem to mind.
-		<</if>>
-		<br><br>
-	<<else>>
-		<<if $npc.includes("Sydney") and !$sydneySeen.includes("crossdress")>>
-			<<set $sydneySeen.pushUnique("crossdress")>>
-			<<run statusCheck("Sydney")>>
-			<<if _sydneyStatus.includes("corrupt")>>
-				<<He>> looks taken aback by your <<genitals>>. "All this time, you were a <<gender>>? Well, that doesn't change how I feel about you."
+			<<if $enemyno gte 2>>
+				<span class="red">They recoil in horror upon seeing your <<genitals>>. The deception has driven them mad with rage!</span>
 			<<else>>
-				<<He>> stares at your <<genitals>> with confusion. "You're... a <<gender>>? Th-that's okay! I don't think of you any differently!"
-			<</if>><<npcincr Sydney purity -2>><<lspurity>>
-		<<elseif $rng gte 96 and !$npc.includes("Kylar") and $NPCList[0].type isnot "plant">>
-			<span class="red"><<He>> recoils in horror upon seeing your <<genitals>>. The deception has driven <<him>> mad with rage!</span>
+				<span class="red"><<He>> recoils in horror upon seeing your <<genitals>>. The deception has driven <<him>> mad with rage!</span>
+			<</if>>
 			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechcrossdressangry to 2>>
-		<<elseif $rng gte 86 and $NPCList[0].type isnot "plant" or ($npc.includes("Kylar") and $NPCList[0].gender isnot $player.gender)>>
-			Your <<genitals 1>> was clearly not what <<he>> was expecting, but <<he>> doesn't seem to mind. <span class="purple">In fact, if <<his>> shaking hands are anything to go by <<he>> is quite pleased.</span>
-			<<set $enemyarousal += 50>><<set $speechcrossdressaroused to 2>>
-		<<elseif $rng gte 50 and !$npc.includes("Kylar") and $NPCList[0].type isnot "plant">>
-			<<His>> eyes widen in shock when <<he>> sees your <<genitals>>. <<He>> seems unsure what to do.
-			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechcrossdressshock to 2>>
-		<<elseif $rng gte 30 and $NPCList[0].type isnot "plant" or ($npc.includes("Kylar") and $NPCList[0].gender is $player.gender)>>
-			<<He>> looks disappointed by your <<genitals>>. It wasn't what <<he>> was expecting.
-			<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechcrossdressdisappointed to 2>>
-		<<else>>
-			Your <<genitals 1>> was clearly not what <<he>> was expecting, but <<he>> doesn't seem to mind.
 		<</if>>
-		<br><br>
+		<<if !$backgroundTraits.includes("crossdresser")>>
+			<<set $crossdressingTrait to ($crossdressingTrait gte 1 ? $crossdressingTrait + 1 : 1)>>
+			<<if $crossdressingTrait gte 100>>
+				<<run $backgroundTraits.pushUnique("crossdresser")>>
+				<br><br>
+				
+				<span class="gold">Being seen crossdressing makes you feel happy inside.</span>
+			<</if>>
+		<</if>>
 	<</if>>
-	<<if _newTrait is true>>
-		<<unset _newTrait>>
-		<span class="gold">Being seen crossdressing makes you feel happy inside</span>
-	<</if>>
+	<<set $crossdressing to 0>>
+	<br><br>
+
 <</if>>
 
 /* NPC reactions to revealing your sex toys */
