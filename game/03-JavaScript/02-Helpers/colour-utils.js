@@ -123,8 +123,8 @@ const ColourUtils = (() => {
 		};
 	}
 
-	function toHslString(hsl) {
-		if (!hsl) return 'hsl(0, 100%, 50%)';
+	function toHslString(hsl, defaultColour = 'hsl(0, 100%, 50%)') {
+		if (!hsl) return defaultColour;
 		return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
 	}
 
