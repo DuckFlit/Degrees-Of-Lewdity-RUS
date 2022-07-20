@@ -592,28 +592,28 @@ window.nCr = function(n, r) {
 
 /**
  * Given there are {deckCount} cards in the deck and {markedCount} of them have been marked by the player,
- *   calculates the chance that the player will see at least {atLeast} number of marked cards (from the top of the deck), 
+ *   calculates the chance that the player will see at least {atLeast} number of marked cards (from the top of the deck),
  *   provided they can only see up to {depth} cards from the top.
- * 
+ *
  * Use this debug function to calculate the probability to tweak the max depth and max count values for game balance, for the mark cards cheat feature.
- * 
+ *
  * For example, if the deck is standard (52 cards), the player can see up to 3 cards from the top and the player has marked 8 cards,
- *   the chance that they will see at least 1 card at the start of a round is calculateMarkedChance(52, 8, 3, 1) = 0.4 (which means they'll see at least 1 marked card in 40% of their games, 
+ *   the chance that they will see at least 1 card at the start of a round is calculateMarkedChance(52, 8, 3, 1) = 0.4 (which means they'll see at least 1 marked card in 40% of their games,
  *   the first round at least).
  * If that's too high of a chance, we could, for example, decrease their depth by 1, or decrease the max marked count by 2.
  *   calculateMarkedChance(52, 8, 2, 1) = 0.28, so 28%, and calculateMarkedChance(52, 6, 3, 1) = 0.31, so 31%.
- * 
- * Arguably, seeing what card is third from the top is also less useful than being able to more consistently see the top card or the dealer's hole card, so 
+ *
+ * Arguably, seeing what card is third from the top is also less useful than being able to more consistently see the top card or the dealer's hole card, so
  *   it's worth assuming the REAL depth is 1/2 even if the value is passed as 3 (so while debugging, always also calculate with depth=1 or depth=2 and see if the number still seems fair).
- * 
+ *
  * Also, note that the dealer's hole card is included in the depth. This means that if the depth is 3, then it calculates the chance the player will either see one of the top 2 cards or the dealer's second card.
- * 
+ *
  * @param {Number} deckCount  The number of cards in the deck
  * @param {Number} markedCount  The number of cards the player has (or can) mark in a deck
  * @param {Number} depth  How many cards the player can see from the top of the deck (including the dealer's hole card) (to identify if they're marked or not)
  * @param {Number} atLeast  At least how many cards the player will see (from <depth> cards from the top of the deck)
  * @param {Boolean} doLog = false, if true - logs the steps of the solution
- * @returns 
+ * @returns
  */
 window.calculateMarkedChance = function(deckCount, markedCount, depth, atLeast, doLog=false) {
     // we calculate how many possible ways we can pull DEPTH amount of cards from the deck (and put them in the front of the deck)
@@ -632,7 +632,7 @@ window.calculateMarkedChance = function(deckCount, markedCount, depth, atLeast, 
     let possibleMarkedCardsVisibleLimit = Math.min(markedCount, depth);
     for (let nMarkedPicked = atLeast; nMarkedPicked <= possibleMarkedCardsVisibleLimit; ++nMarkedPicked) {
         // we calculate how many possible ways we can pull a valid number of marked cards from the deck
-        //   by dividing the cards into a pool of 
+        //   by dividing the cards into a pool of
         //    * marked cards (and calculating how many ways we can pull the valid nMarkedPicked cards from the pool of markedCount marked cards),  nCr(markedCount, nMarkedPicked)
         //    * unmarked cards (and calculating how many ways we can pull the remaining possibleMarkedCardsVisibleLimit-nMarkedPicked non-marked cards from the pool of deck-markedCount unmarked cards), ncr(deck-markedCount, possibleMarkedCardsVisibleLimit-nMarkedPicked)
         //   and then we multiply the mutually exclusive combinations to get all possible combinations (cross-joins) of the two (since for each way we can pull (say) 1 marked card, there's the second number of ways we can pull the remaining non marked ones)
@@ -989,7 +989,7 @@ window.DefaultActions = {
 }
 
 function selectWardrobe(targetLocation = V.wardrobe_location) {
-	return ((!targetLocation || targetLocation === "wardrobe" || !V.wardrobes[targetLocation]) ? V.wardrobe : V.wardrobes[targetLocation]); 
+	return ((!targetLocation || targetLocation === "wardrobe" || !V.wardrobes[targetLocation]) ? V.wardrobe : V.wardrobes[targetLocation]);
 }
 window.selectWardrobe = selectWardrobe;
 
@@ -1104,7 +1104,7 @@ function resetClothingState(slot) {
 	// Overwrite the following properties of $worn[slot], IF the corresponding properties are defined in the setupItem.
 	// Note that no single item actually has ALL of these properties; It only changes the properties that DO exist on the item.
 	V.worn[slot] = {
-		...V.worn[slot], 
+		...V.worn[slot],
 		...Object.fromEntries(Object.entries({
 			state: setupItem.state_base,
 			state_top: setupItem.state_top_base,
@@ -1119,10 +1119,10 @@ window.resetClothingState = resetClothingState;
 
 function isConnectedToHood(slot) {
 	// Note: this function currently only works on hoods in the "head" slot, NOT the "over_head" slot.
-	
+
 	// Return false if slot is undefined or not a valid clothing category
 	if (!slot || !V.worn[slot]) return false;
-	// Return true if this item IS a hood 
+	// Return true if this item IS a hood
 	if (V.worn[slot].hood && V.worn[slot].outfitSecondary[1] !== "broken") return true;
 
 	// Use the primary clothing slot for the next check if this item is connected to an outfit (and is not the primary item)
@@ -1424,8 +1424,8 @@ window.getSexesFromRandomGroup = getSexesFromRandomGroup;
 
 function getColourClassFromPercentage(percentage) {
 	// This function is for picking the right color to use when coloring various things, primarily the sidebar stats.
-	/* When using this function, try to keep in mind what value of your input variable you want "red" to be at. 
-	 * Example: $drugged goes higher than 500, but we want the bar to become red at 500, so we call this function as getColourClassFromPercentage($drugged / 5).   
+	/* When using this function, try to keep in mind what value of your input variable you want "red" to be at.
+	 * Example: $drugged goes higher than 500, but we want the bar to become red at 500, so we call this function as getColourClassFromPercentage($drugged / 5).
 	*/
 	if (percentage <= 0) return "green";
 	if (percentage < 20) return "teal";
