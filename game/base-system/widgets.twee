@@ -332,9 +332,9 @@
 	<<if $drugged gt 0>>
 		<<drugs `-$pass`>>
 	<</if>>
-	<<if $pain gt 0>>
-		<<set $pain -= $pass>>
-	<</if>>
+	
+	<<pain $pass -1>>
+	
 	<<if $pass gt 1200>>
 		<<set $tiredness to 0>>
 	<<else>>
@@ -4780,16 +4780,16 @@ __Map__<br>
 <</widget>>
 
 <<widget "linkradiogroup">>
-	<<set _receiver_name to _args[0].slice(1)>>
+	<<set _receiver_name to _args[0]>>
 	<<set _options to _args[1]>>
-	<<set _set_value to V[_receiver_name]>>
+	<<set _set_value to State.getVar(_receiver_name)>>
 
 	<span class="no-numberify">
 		<<for _label, _value range _options>>
 			<<capture _receiver_name, _value>>
 				<span @class="(_set_value is _value ? 'goldLink' : '')">
 					<<link _label>>
-						<<set V[_receiver_name] to _value>>
+						<<run State.setVar(_receiver_name, _value)>>
 						<<run Engine.show()>> <!-- refresh the page without leaving it -->
 					<</link>>
 				</span>
