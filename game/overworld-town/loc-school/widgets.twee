@@ -977,52 +977,56 @@
 <</widget>>
 
 <<widget "mathsWhitneyAttendChance">>
-	<<set _whitney to $NPCName[$NPCNameList.indexOf("Whitney")]>>
-	<<set $_canAttend to (_whitney.state is "active" or _whitney.state is "rescued") and ($whitneymaths is undefined or $whitneymaths is "absent")>>
-	<<if $_canAttend and $minute lte 40>>
-		<<set $_whitney_maths_chance to ((_whitney.love / 3) + (_whitney.dom * 3) + (_whitney.lust / 3))>>
-		<<set $_whitney_tardy_modifier to ($minute lte 20 ? $minute : -$minute + 40) - 10>>
-		<!-- whitney_tardy_modifier starts out negative, becomes positive at 10 minutes late, peaks at 20 minutes late, and hits negative again at 30 minutes late -->
-		<<set $_whitney_maths_chance += $_whitney_tardy_modifier>>
-		<<if random(1, 100) lte $_whitney_maths_chance>>
-			<<npc Whitney 1>><<person1>>
-			
-			<<if $whitneymaths is undefined>>
-				<!-- Whitney attending Maths class for the first time during the game -->
-				Whitney swaggers in. "So you decided to show up," River says, pointing at an empty seat at the front. "Tuck your shirt in."
-				<br><br>
+	<<set $_alreadyPresent to ($whitneymaths is "active" or $whitneymaths is "seat" or $whitneymaths is "sent")>>
+	<<if !$_alreadyPresent>>
+		<<set _whitney to $NPCName[$NPCNameList.indexOf("Whitney")]>>
+		<<set $_canAttend to (_whitney.state is "active" or _whitney.state is "rescued") and ($whitneymaths is undefined or $whitneymaths is "absent")>>
+		<<if $_canAttend and $minute lte 40>>
+			<<set $_whitney_maths_chance to ((_whitney.love / 3) + (_whitney.dom * 3) + (_whitney.lust / 3))>>
+			<<set $_whitney_tardy_modifier to ($minute lte 20 ? $minute : -$minute + 40) - 10>>
+			<!-- whitney_tardy_modifier starts out negative, becomes positive at 10 minutes late, peaks at 20 minutes late, and hits negative again at 30 minutes late -->
+			<<set $_whitney_maths_chance += $_whitney_tardy_modifier>>
+			<<if random(1, 100) lte $_whitney_maths_chance>>
+				<<npc Whitney 1>><<person1>>
 				
-				<<if $whitneyromance is 1>>
-					<<set $whitneymaths to "seat">>
-					Whitney rolls <<his>> eyes, and instead takes a seat beside you.
+				<<if $whitneymaths is undefined>>
+					<!-- Whitney attending Maths class for the first time during the game -->
+					Whitney swaggers in. "So you decided to show up," River says, pointing at an empty seat at the front. "Tuck your shirt in."
+					<br><br>
+					
+					<<if $whitneyromance is 1>>
+						<<set $whitneymaths to "seat">>
+						Whitney rolls <<his>> eyes, and instead takes a seat beside you.
+					<<else>>
+						<<set $whitneymaths to "active">>
+						Whitney rolls <<his>> eyes, and instead takes a seat at the back.
+					<</if>>
+					<<He>> tucks just the front of <<his>> shirt into <<his>> <<npcClothesText _whitney "lower">> as <<he>> sits.
 				<<else>>
-					<<set $whitneymaths to "active">>
-					Whitney rolls <<his>> eyes, and instead takes a seat at the back.
+					<<if $whitneyromance is 1>>
+						<<set $whitneymaths to "seat">>
+						Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you.
+					<<else>>
+						<<set $whitneymaths to "active">>
+						Whitney enters the class. <<He>> takes a seat at the back.
+					<</if>>
 				<</if>>
-				<<He>> tucks just the front of <<his>> shirt into <<his>> <<npcClothesText _whitney "lower">> as <<he>> sits.
-			<<else>>
-				<<if $whitneyromance is 1>>
-					<<set $whitneymaths to "seat">>
-					Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you.
-				<<else>>
-					<<set $whitneymaths to "active">>
-					Whitney enters the class. <<He>> takes a seat at the back.
-				<</if>>
-			<</if>>
-			<br><br>
+				<<endevent>>
+				<br><br>
 
+			<<elseif $whitneymaths isnot undefined>>
+				<!-- if whitney HAS attended class before, but is not present now -->
+				<<set $whitneymaths to "absent">>
+			<</if>>
 		<<elseif $whitneymaths isnot undefined>>
-			<!-- if whitney HAS attended class before, but is not present now -->
+			<!-- if whitney HAS attended class before, but is unable to attend -->
 			<<set $whitneymaths to "absent">>
 		<</if>>
-	<<elseif $whitneymaths isnot undefined>>
-		<!-- if whitney HAS attended class before, but is unable to attend -->
-		<<set $whitneymaths to "absent">>
 	<</if>>
 <</widget>>
 
 <<widget "mathsLessonEnd">>
-	<<set $phase to 0>>
+	<<endevent>>
 	The bell rings, signifying the end of the lesson. You
 	<<storeon "mathsClassroom" "check">>
 	<<if _store_check is 1>>

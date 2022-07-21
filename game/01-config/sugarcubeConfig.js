@@ -223,6 +223,17 @@ Config.navigation.override = function (dest) {
 		case 'Sextoys Inventory Cabin':
 			return 'Sextoys Inventory';
 
+		case 'Kylar Abduction Angry':
+		case 'Kylar Abduction Apologise':
+		case 'Kylar Abduction Silent':
+		case 'Kylar Abduction Eden':
+		case 'Kylar Abduction Robin':
+		case 'Kylar Abduction Whitney':
+		case 'Kylar Abduction Sydney':
+		case 'Kylar Abduction Wolf':
+		case 'Kylar Abduction Hawk':
+			return 'Kylar Abduction Event Response';
+
 		default:
 			return false;
 	}

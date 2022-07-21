@@ -1423,9 +1423,9 @@ function getSexesFromRandomGroup() {
 window.getSexesFromRandomGroup = getSexesFromRandomGroup;
 
 function getColourClassFromPercentage(percentage) {
-	// This function is for picking the right color to use when coloring various things, primarily the sidebar stats.
-	/* When using this function, try to keep in mind what value of your input variable you want "red" to be at.
-	 * Example: $drugged goes higher than 500, but we want the bar to become red at 500, so we call this function as getColourClassFromPercentage($drugged / 5).
+	/* This function is for picking the right color to use when coloring various things, primarily the sidebar stats. */
+	/* When using this function, try to keep in mind what value of your input variable you want "red" to be at. 
+	 * Example: $drugged goes higher than 500, but we want the bar to become red at 500, so we call this function as getColourClassFromPercentage($drugged / 5).   
 	*/
 	if (percentage <= 0) return "green";
 	if (percentage < 20) return "teal";
@@ -1437,3 +1437,13 @@ function getColourClassFromPercentage(percentage) {
 }
 window.getColourClassFromPercentage = getColourClassFromPercentage;
 
+function playerCanBreedWith(npc) {
+	/* This function can accept either a named NPC's name, or an NPC object from either NPCList or NPCName. 
+	 * Examples: playerCanBreedWith("Kylar"), or playerCanBreedWith($NPCList[0]) or playerCanBreedWith($NPCName[$NPCNameList.indexOf("Kylar")])
+	 * Returns true or false. If you give it garbage, like a totally wrong name, it'll return false, so be careful about silent failures like that.
+	*/
+	if (typeof npc === "string") npc = V.NPCName[V.NPCNameList.indexOf(npc)];
+	
+	return (V.player.vaginaExist && npc.penis !== "none") || (V.player.penisExist && npc.vagina !== "none");
+}
+window.playerCanBreedWith = playerCanBreedWith;
