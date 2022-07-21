@@ -329,22 +329,29 @@
 <</if>>
 <</widget>>
 
-<<widget "pain">>
-	<<set _pain to _args[0] * 4>>
-	<!-- apply science reduction -->
-	<<if _pain gte 0>>
-		<<set _pain *= 1 - ($sciencetrait / 10)>>
-		<!-- Including masochism effect for all pain NG v2.7 -->
-		<<if $masochism gte 100>>
-			<<set _pain *= 1 - $masochism / 1200>>
-			<<set _arousal to _args[0] * $masochism / 6>>
-			<<if _arousal gte 0>>
-				<<arousal _arousal "maso">>
+<<widget "pain">> <!-- _args[0] is value, _args[1] is optional modifier, default 4 -->
+	<<if _args[0] and typeof _args[0] is "number">>
+		<<set $_pain to _args[0]>>
+		<<set $_mod to 4>>
+		<<if _args[1] and typeof _args[1] is "number">>
+			<<set $_mod to _args[1]>>
+		<</if>>
+		<<set _pain to $_pain * $_mod>>
+		<!-- apply science reduction -->
+		<<if _pain gte 0>>
+			<<set _pain *= 1 - ($sciencetrait / 10)>>
+			<!-- Including masochism effect for all pain NG v2.7 -->
+			<<if $masochism gte 100>>
+				<<set _pain *= 1 - $masochism / 1200>>
+				<<set _arousal to _args[0] * $masochism / 6>>
+				<<if _arousal gte 0>>
+					<<arousal _arousal "maso">>
+				<</if>>
 			<</if>>
 		<</if>>
-	<</if>>
 
-	<<set $pain += _pain>>
+		<<set $pain += _pain>>
+	<</if>>
 	<<if $gamemode is "soft">>
 		<<set $pain to Math.clamp($pain, 0, 0)>>
 	<<else>>
@@ -825,7 +832,7 @@
 <</widget>>
 
 <<widget "hallucinogen">>
-<<if _arsg[0] and $statFreeze isnot true>>
+<<if _args[0] and $statFreeze isnot true>>
 	<<set $hallucinogen += _args[0]>>
 	<<set $hallucinogen to Math.clamp($hallucinogen, 0, 1000)>>
 <</if>>
