@@ -147,6 +147,9 @@ module.exports = {
 	ignorePatterns: [
 		"**/*.*",
 		"!**/*.js",
+		"!**/*.cjs",
+		// Format config file
+		"!.eslintrc.cjs",
 		"node_modules",
 		"devTools",
 		"dist",
@@ -165,11 +168,7 @@ module.exports = {
 		jquery: true,
 	},
 
-	extends: [
-		"eslint:recommended",
-		"plugin:jsdoc/recommended",
-		"prettier-standard/prettier-file",
-	],
+	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file"],
 
 	settings: {
 		jsdoc: {
@@ -180,6 +179,9 @@ module.exports = {
 	// Keep rules grouped by plugin and sorted alphabetically
 	rules: {
 		"object-shorthand": ["error", "always"],
+
+		// SugarCube extends native objects and we follow it
+		"no-extend-native": "off",
 
 		/* eslint-plugin-jsdoc */
 
