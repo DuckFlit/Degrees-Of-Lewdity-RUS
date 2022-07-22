@@ -65,6 +65,7 @@
 
 		<<kylaroptionsleave>>
 	<<elseif $bus is "manor" and $hour lt 18>>
+		<<unset $kylar_action>>
 		Kylar looks at a monitor. "I should sleep," <<he>> says. <<He>> walks over to <<his>> bed and collapses atop it, fully dressed. <<He>> watches you, longing on <<his>> face, but <<he>> doesn't say anything.
 		<br><br>
 
@@ -81,6 +82,24 @@
 		<<link [[Refuse|Kylar Gift Box Refuse]]>><<npcincr Kylar love -1>><<npcincr Kylar rage 3>><</link>><<llove>><<gksuspicion>>
 		<br>
 	<<else>>
+		<<if _lewdIdea>>
+			<<if $kylarSeen.includes("home")>>
+				You remember seeing Kylar snooping around your room, as well as noticing a pair of underwear missing before that, and
+			<<elseif $whitneypantiescheck is 1>>
+				You remember the deal Whitney made with you, about coming to school with no underwear, and
+			<<else>>
+				You think of your own experiences with being exposed in public, and
+			<</if>>
+			<span class="lewd">a lewd idea strikes you.</span>
+			<br><br>
+
+			<<link [[`Ask Kylar for ${_kylar.pronouns.his} ${$kylarDaily.underwear.simpleDesc}`|Kylar Tease Underwear]]>><<arousal 600>><<npcincr Kylar lust 3>><</link>><<promiscuous3>><<garousal>><<gglust>>
+			<br><br>
+		<</if>>
+		<<if !$kylarDaily.walkKiss and $kylar_action is "walk">>
+			<<link [[Kiss|Kylar Walk In The Park End 2]]>><</link>><<glove>><<glust>><<llksuspicion>><<kissvirginitywarning>><<NPCvirginitywarning "Kylar" "kiss">>
+			<br>
+		<</if>>
 		<<link [[Chat (0:15)|Kylar Chat]]>><<pass 15>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><<stress -2>><</link>><<lstress>><<glove>><<lksuspicion>>
 		<br>
 		<<set _linkText to (_kylarStatus.includes("Love") ? "Flirt (0:15)" : "Tease (0:15)")>>
@@ -393,7 +412,7 @@
 	<</if>>
 	<br><br>
 
-	<<if _kylarStatus.includes("Love")>>
+	<<if _kylarStatus.includes("Love") and $bus isnot "manor">>
 		Kylar's face turns red, and <<he>> jumps to <<his>> feet to shield you from view.
 	<<else>>
 		Kylar's face turns red.
@@ -407,8 +426,8 @@
 <</widget>>
 
 <<widget "kylar_parents_trust">>
-	<<if $args[0]>>
-		<<set $kylar_parents_trust += $args[0]>>
+	<<if _args[0]>>
+		<<set $kylar_parents_trust += _args[0]>>
 		<<set Math.clamp($kylar_parents_trust, 0, 100)>>
 	<</if>>
 <</widget>>
@@ -424,12 +443,13 @@
 	<<unset $kylar_abduction_key>>
 	<<unset $kylar_abduction_bailey>>
 	<<unset $kylar_abduction_knife>>
+	<<npcincr Kylar dom -100>>
 <</widget>>
 
 <<widget "kylar_abduction_return">>
 	<<endevent>>
 	<<npc Kylar>><<person1>>
-	
+
 	<<set _kylar to statusCheck("Kylar")>>
 	<<if _args[0] is "rest">>
 		A pair of trembling hands shake your legs. "Wake up <<kylar_pet_name>>," <<he>> says, rising to <<his>> feet.
@@ -480,7 +500,7 @@
 			"I have something to show you," <<he>> says, jerking <<his>> knife in front of your eyes. Nails have been hammered into the handle at odd angles. "Do you like it?" <<he>> asks. "I made it pretty for you."
 			<br><br>
 		<<else>>
-			"Do you like my knife?" <<he>> asks, jerking it in front of your eyes. The handle is made of black wood. There's a symbol near the base of the blade, but it's faded with age. "It was my parents'. Before they," <<he>> pauses. "When they they still had time for cooking."
+			"Do you like my knife?" <<he>> asks, jerking it in front of your eyes. The handle is made of black wood. There's a symbol near the base of the blade, but it's faded with age. "It was my parents'. Before they," <<he>> pauses. "When they still had time for cooking."
 			<<set $kylar_abduction_knife to 1>>
 			<br><br>
 		<</if>>
@@ -651,7 +671,7 @@
 <<widget "kylar_pet_name">><<silently>>
 	<<set _kylar to statusCheck("Kylar")>>
 
-	/* 
+	/*
 	<<set $_dom to Math.floor(_kylar.dom/40)>>
 	<<set $_rage to Math.floor(_kylar.rage/40)>>
 
@@ -1294,7 +1314,7 @@ You shake off Kylar's grip and leave. <<He>> watches you with <<his>> fists clen
 			<br><br>
 
 			"D-don't tell anyone," <<he>> says. "That's for you only."
-			<<if $promiscuity gte 35 and !$kylarSeen.includes("commando") and ($whitneypantiescheck is 1 or $exhibitionism gte 75 or $kylarSeen.includes("home")) and !(($location is "park" or $bus is "starfish") and _kylar.love gte 80 and _kylar.lust gte 80 and $kylarDaily.invite isnot "home")>>
+			<<if $promiscuity gte 35 and !$kylarSeen.includes("commando") and ($whitneypantiescheck is 1 or $exhibitionism gte 75 or $kylarSeen.includes("home")) and ($location is "park" or $location is "school")>>
 				<<set _lewdIdea to true>>
 			<</if>>
 		<</if>>
@@ -1366,8 +1386,6 @@ You shake off Kylar's grip and leave. <<He>> watches you with <<his>> fists clen
 				<<He>> seems disheartened.
 			<<else>>
 				"I can make that happen," <<he>> says. "There must be a way for me to start lactating."
-				<br><br>
-
 				<<switch _kylar.breastsize>>
 					<<case 0 1 2>>      <<He>> begins anxiously tapping <<his>> shirt with both hands, directly above where <<his>> nipples should be. "I might need to get a b-bit bigger first..."
 					<<case 3 4 5>>      <<He>> begins openly rubbing <<his>> _kylar.breastsdesc through <<his>> shirt. "Maybe if I keep trying long enough, m-milk will come out?"
@@ -1450,25 +1468,7 @@ You shake off Kylar's grip and leave. <<He>> watches you with <<his>> fists clen
 <<runeventpool>>
 <<promiscuity1>>
 
-<<if _lewdIdea>>
-	<<if $kylarSeen.includes("home")>>
-		You remember seeing Kylar snooping around your room, as well as noticing a pair of underwear missing before that, and
-	<<elseif $whitneypantiescheck is 1>>
-		You remember the deal Whitney made with you, about coming to school with no underwear, and
-	<<else>>
-		You think of your own experiences with being exposed in public, and
-	<</if>>
-	<span class="lewd">a lewd idea strikes you.</span>
-	<br><br>
-
-	<<kylaroptionstext>>
-	<br><br>
-
-	<<link [[`Ask Kylar for ${_kylar.pronouns.his} ${$kylarDaily.underwear.simpleDesc}`|Kylar Tease Underwear]]>><<arousal 600>><<npcincr Kylar lust 3>><</link>><<promiscuous3>><<garousal>><<gglust>>
-	<br><br>
-	<<kylaroptions "notext">>
-
-<<elseif ($location is "park" or $bus is "starfish") and _kylar.love gte 80 and _kylar.lust gte 80 and $kylarDaily.invite isnot "home">>
+<<if ($location is "park" or $bus is "starfish") and _kylar.love gte 80 and _kylar.lust gte 80 and $kylarDaily.invite isnot "home">>
 	<<set $kylarDaily.invite to "home">>
 	Kylar stares at you, eyes full of intensity. It melts away at once. "D-do you," <<he>> manages before averting <<his>> eyes. "Do you want to go somewhere private, where we can do th-things?"
 	<br><br>
@@ -2527,7 +2527,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 		<<else>>
 			<<gstress>><<stress 1>>
 		<</if>>
-	<<elseif $rng gte 91>>
+	<<elseif $rng gte 91 and $pregnancyspeechdisable is "f">>
 		You chat with Kylar. "I've been thinking up names for our children," <<he>> says.
 		<<gstress>><<stress 1>>
 	<<elseif $rng gte 81>>
@@ -2547,7 +2547,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 		<<elseif $bus is "schoollibrary">>
 			<<print either("one of the bookshelves", "the beaker picture on a biology textbook", "the half-full return basket", "the rain-splattered window", "a spider web strung in a ceiling corner")>>.
 		<<elseif $bus is "manor">>
-			<<print either("the tangled sheets ofthe bed", "the skylight", "one of the monitors", "one of the loft banisters", "a spider web strung in a ceiling corner")>>
+			<<print either("the tangled sheets of the bed", "the skylight", "one of the monitors", "one of the loft banisters", "a spider web strung in a ceiling corner")>>.
 		<<elseif $season is "winter">>
 			<<print either("an icicle hanging off a tree", "a snow angel in the snow nearby", "a leafless tree", "a discarded water bottle", "a spider web surviving against all odds")>>.
 		<<else>>
@@ -4701,7 +4701,11 @@ The two of you continue walking.
 	<<He>> pulls you down to sit with <<him>>. "That was... interesting," you say. Kylar looks around. Suddenly, <<he>> kisses you on the lips and holds your shoulders.
 	<<takeKissVirginity "Kylar" `($kylarenglish gte 1?"loveInterest":"romantic")`>>
 	<br><br>
-	<<link [[Kiss back|Kylar Walk In The Park End 2]]>><<set $phase to (_npcKissVirginTemp ? 10 : 1)>><<npcincr Kylar love 1>><<npcincr Kylar lust 1>><<npcincr Kylar rage -1>><</link>><<glove>><<glust>><<lksuspicion>>
+	<<if _npcKissVirginTemp>>
+		<<link [[Kiss back|Kylar Walk In The Park End 2]]>><<set $phase to 10>><<npcincr Kylar love 1>><<npcincr Kylar lust 1>><<npcincr Kylar rage -1>><</link>><<glove>><<glust>><<lksuspicion>>
+	<<else>>
+		<<link [[Kiss back|Kylar Walk In The Park End 2]]>><<set $phase to 1>><<npcincr Kylar love 1>><<npcincr Kylar lust 1>><<npcincr Kylar rage -1>><</link>><<glove>><<glust>><<lksuspicion>>
+	<</if>>
 	<br>
 	<<link [[Pull away|Kylar Walk In The Park End 2]]>><<set $phase to 2>><<npcincr Kylar love -1>><<npcincr Kylar rage 1>><</link>><<llove>><<gksuspicion>>
 <<else>>
@@ -4712,15 +4716,7 @@ The two of you continue walking.
 	<</if>>
 	<br><br>
 
-	<<if !$kylarDaily.walkKiss>>
-		<<kylaroptionstext>>
-		<br><br>
-		<<link [[Kiss|Kylar Walk In The Park End 2]]>><</link>><<glove>><<glust>><<llksuspicion>><<kissvirginitywarning>><<NPCvirginitywarning "Kylar" "kiss">>
-		<br>
-		<<kylaroptions "notext">>
-	<<else>>
-		<<kylaroptions>>
-	<</if>>
+	<<kylaroptions>>
 <</if>>
 <br>
 
