@@ -320,9 +320,19 @@
 							<<set _selectedWardrobe[$_outfitslot].deleteAt(_index)>>
 							<<run resetClothingState($_outfitslot)>>
 						<</for>>
+
+						<<if $_slot is "upper" and $worn.upper.hoodposition>>
+							<<if $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
+								<<toggleHood>>
+								<<set _equipSkip["head"] to ($worn.upper.hoodposition is "up" ? true : false)>>
+							<</if>>
+						<</if>>
 					<<else>>
 						<<if $worn[$_slot].name is $_incomingItemName>>
 							<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "not found replacement"}>>
+							<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
+								<<toggleHood>>
+							<</if>>
 							<<if $wardrobe_location isnot "wardrobe">>
 								<<set _makeTempClothing to 1>>
 								<<storeItem $wardrobe_location $_slot>>

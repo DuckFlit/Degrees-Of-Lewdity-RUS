@@ -1447,3 +1447,14 @@ function playerCanBreedWith(npc) {
 	return (V.player.vaginaExist && npc.penis !== "none") || (V.player.penisExist && npc.vagina !== "none");
 }
 window.playerCanBreedWith = playerCanBreedWith;
+
+function outfitHoodPosition(outfit) {
+	let hoodie = setup.clothes.upper.find(item => item.name === outfit.upper);
+	if (hoodie.hoodposition === undefined) return "none";
+	if (outfit.head !== hoodie.outfitPrimary.head) return "down";
+	if (!outfit.colors) return "up";
+	if (outfit.colors.head[0] !== outfit.colors.upper[0] || outfit.colors.head[1] !== outfit.colors.upper[1]) return "down";
+	if ((outfit.colors.headcustom && outfit.colors.headcustom[0] !== outfit.colors.uppercustom[0]) || (outfit.colors.headcustom && outfit.colors.headcustom[1] !== outfit.colors.uppercustom[1])) return "down";
+	return "up";
+}
+window.outfitHoodPosition = outfitHoodPosition;
