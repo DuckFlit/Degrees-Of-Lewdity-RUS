@@ -2342,6 +2342,23 @@ function tf_enabled(type) {
 }
 window.isPartEnabled = tf_enabled;
 
+function isChimeraEnabled(type, part) {
+	if (typeof V.chimera !== 'object') {
+		/* No need to post errors for $chimera, only user inputs (type&part) */
+		return false;
+	}
+	if (typeof V.chimera[type] !== 'object') {
+		console.debug(`$chimera.${type} not found.`);
+		return false;
+	}
+	if (V.chimera[type][part] == null) {
+		console.debug(`$chimera.${type}.${part} not found.`);
+		return false;
+	}
+	return !!V.chimera[type][part];
+}
+window.isChimeraEnabled = isChimeraEnabled;
+
 // If the filter has hard-light blending, add _gray to path
 function gray_suffix(path, filter) {
 	if (!filter || filter.blendMode !== "hard-light" || !filter.blend) return path;
