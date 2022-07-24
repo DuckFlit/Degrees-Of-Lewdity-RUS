@@ -30,7 +30,7 @@ window.StartConfig = {
 	"debug": false,
 	"enableImages": true,
 	"enableLinkNumberify": true,
-	"version": "0.3.10.2",
+	"version": "0.3.10.3",
 }
 
 /* convert version string to numeric value */
