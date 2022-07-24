@@ -64,6 +64,6 @@ Object.defineProperty(Array.prototype, 'formatList', {
 		conjunction += " ";
 		if (this.length <= 2) return this.join(" " + conjunction);
 		const oxConj = (useOxfordComma ? separator : " ") + conjunction;
-		return this.slice(0, -1).join(separator) + oxConj + this.at(-1);
+		return this.slice(0, -1).join(separator) + oxConj + this.last();
 	}
 });
