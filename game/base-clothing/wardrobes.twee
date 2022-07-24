@@ -582,11 +582,23 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 		<<else>>
 			<<set $worn.head to clone(setup.clothes.head[0])>>
 		<</if>>
+
+		<<if _args[0] is "shop" and $tryOn.tryingOn.upper is null>>
+			<<updateOwned "upper">>
+			<<updateOwned "head">>
+		<</if>>
 	
 	/* If hood is down, put it back up and remove anything on the head if necessary */
 	<<else>>
 		<<if !$worn.head.cursed>> /* No cursed head items yet, but if one is made, should probably have some popup saying this was prevented */
-			<<if $worn.head.name isnot "naked" and _args[0] isnot "shop">> /*Don't put head accessory back in wardrobe if curently in a shop, might need it back*/
+			<<if _args[0] is "shop">> /*If in a shop, make sure the head item is accounted for first*/
+				<<if $tryOn.tryingOn.head isnot null>>
+					<<shopbuyv2 "head" "return" null>>/*return if trying on*/
+				<</if>>
+				<<if $tryOn.tryingOn.upper is null and $worn.head.name isnot "naked">>
+					<<generalUndress $wardrobe_location "head">>/*send back to wardrobe if already owned*/
+				<</if>>
+			<<elseif $worn.head.name isnot "naked">>
 				<<generalUndress $wardrobe_location "head">>
 			<</if>>
 			<<set $worn.upper.outfitPrimary.head to clone(setup.clothes.upper[$worn.upper.index].outfitPrimary.head)>>
@@ -601,6 +613,10 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 			<<set $worn.head.accessory_colour to $worn.upper.accessory_colour>>
 			<<if $worn.head.accessory_colour is "custom">>
 				<<set $worn.head.accessory_colourCustom to $worn.upper.accessory_colourCustom>>
+			<</if>>
+			
+			<<if _args[0] is "shop" and $tryOn.tryingOn.upper is null>>
+				<<updateOwned "upper">>
 			<</if>>
 		<</if>>
 	<</if>>
