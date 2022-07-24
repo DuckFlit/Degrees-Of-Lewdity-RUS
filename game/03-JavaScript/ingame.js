@@ -1449,6 +1449,10 @@ function playerCanBreedWith(npc) {
 window.playerCanBreedWith = playerCanBreedWith;
 
 function outfitHoodPosition(outfit) {
+	/*This function is used to determine whether a hoodie in a given outfit set should have its hood up or down.
+	 * It does this by comparing the upper and head slots to determine whether they're part of the same clothing item
+	*/
+
 	let hoodie = setup.clothes.upper.find(item => item.name === outfit.upper);
 	if (hoodie.hoodposition === undefined) return "none";
 	if (outfit.head !== hoodie.outfitPrimary.head) return "down";
