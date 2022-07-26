@@ -612,3 +612,11 @@ Macro.add('rng', {
 		}
 	}
 });
+
+/**
+ * Returns the object, or a blank object if null. Replaces ?. operator.
+ * @param {object} obj
+ * @returns {object} - Either the passed arg or {}
+ */
+const nullable = (obj) => obj || {};
+window.nullable = nullable;
