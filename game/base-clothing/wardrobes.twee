@@ -574,7 +574,7 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 
 <<widget "toggleHood">>
 	/* If hood is up, put it down and free up the head slot*/
-	<<if $worn.upper.hoodposition is "up">> 
+	<<if $worn.upper.hoodposition is "up" and $worn.head.hood is 1 and $worn.upper.outfitPrimary.head is $worn.head.name>> 
 		<<run delete $worn.upper.outfitPrimary.head>>
 		<<set $worn.upper.hoodposition to "down">>
 		<<if _args[0] is "shop" and $tryOn.ownedStored.head.name isnot $worn.head.name and !($tryOn.ownedStored.head.outfitSecondary and $tryOn.ownedStored.head.outfitSecondary[1] isnot "broken")>>
@@ -589,36 +589,47 @@ Type: <label>Everyday <<radiobutton "$outfit_type" 0 checked>></label> | <label>
 		<</if>>
 	
 	/* If hood is down, put it back up and remove anything on the head if necessary */
-	<<else>>
+	<<elseif $worn.upper.hoodposition is "down">>
 		<<if !$worn.head.cursed>> /* No cursed head items yet, but if one is made, should probably have some popup saying this was prevented */
-			<<if _args[0] is "shop">> /*If in a shop, make sure the head item is accounted for first*/
-				<<if $tryOn.tryingOn.head isnot null>>
-					<<shopbuyv2 "head" "return" null>>/*return if trying on*/
+			<<if $worn.head.outfitSecondary and $worn.head.outfitSecondary[1] isnot "broken">>
+				<<if $worn.head.hood is 1 and $worn.head.outfitSecondary[1] is $worn.upper.name and 
+				$worn.head.colour is $worn.upper.colour and $worn.head.accessory_colour is $worn.upper.accessory_colour and
+				$worn.head.colourCustom is $worn.upper.colourCustom and $worn.head.accessory_colourCustom is $worn.upper.accessory_colourCustom>>
+					<<set $worn.upper.outfitPrimary.head to clone(setup.clothes.upper[$worn.upper.index].outfitPrimary.head)>>
+					<<set $worn.upper.hoodposition to "up">>
 				<</if>>
-				<<if $tryOn.tryingOn.upper is null and $worn.head.name isnot "naked">>
-					<<generalUndress $wardrobe_location "head">>/*send back to wardrobe if already owned*/
+			<<else>>
+				<<if _args[0] is "shop">> /*If in a shop, make sure the head item is accounted for first*/
+					<<if $tryOn.tryingOn.head isnot null>>
+						<<shopbuyv2 "head" "return" null>>/*return if trying on*/
+					<</if>>
+					<<if $tryOn.tryingOn.upper is null and $worn.head.name isnot "naked">>
+						<<generalUndress $wardrobe_location "head">>/*send back to wardrobe if already owned*/
+					<</if>>
+				<<elseif $worn.head.name isnot "naked">>
+					<<generalUndress $wardrobe_location "head">>
 				<</if>>
-			<<elseif $worn.head.name isnot "naked">>
-				<<generalUndress $wardrobe_location "head">>
-			<</if>>
-			<<set $worn.upper.outfitPrimary.head to clone(setup.clothes.upper[$worn.upper.index].outfitPrimary.head)>>
-			<<set $worn.upper.hoodposition to "up">>
-			/* re-create the hood using colors from the hoodie */
-			<<set $_hoodIndex to setup.clothes.head.findIndex(x => x.name === $worn.upper.outfitPrimary.head)>>
-			<<set $worn.head to clone(setup.clothes.head[$_hoodIndex])>>
-			<<set $worn.head.colour to $worn.upper.colour>>
-			<<if $worn.head.colour is "custom">>
-				<<set $worn.head.colourCustom to $worn.upper.colourCustom>>
-			<</if>>
-			<<set $worn.head.accessory_colour to $worn.upper.accessory_colour>>
-			<<if $worn.head.accessory_colour is "custom">>
-				<<set $worn.head.accessory_colourCustom to $worn.upper.accessory_colourCustom>>
-			<</if>>
-			
-			<<if _args[0] is "shop" and $tryOn.tryingOn.upper is null>>
-				<<updateOwned "upper">>
+				<<set $worn.upper.outfitPrimary.head to clone(setup.clothes.upper[$worn.upper.index].outfitPrimary.head)>>
+				<<set $worn.upper.hoodposition to "up">>
+				/* re-create the hood using colors from the hoodie */
+				<<set $_hoodIndex to setup.clothes.head.findIndex(x => x.name === $worn.upper.outfitPrimary.head)>>
+				<<set $worn.head to clone(setup.clothes.head[$_hoodIndex])>>
+				<<set $worn.head.colour to $worn.upper.colour>>
+				<<if $worn.head.colour is "custom">>
+					<<set $worn.head.colourCustom to $worn.upper.colourCustom>>
+				<</if>>
+				<<set $worn.head.accessory_colour to $worn.upper.accessory_colour>>
+				<<if $worn.head.accessory_colour is "custom">>
+					<<set $worn.head.accessory_colourCustom to $worn.upper.accessory_colourCustom>>
+				<</if>>
+				
+				<<if _args[0] is "shop" and $tryOn.tryingOn.upper is null>>
+					<<updateOwned "upper">>
+				<</if>>
 			<</if>>
 		<</if>>
+	<<elseif $worn.upper.hoodposition is undefined and setup.clothes.upper[$worn.upper.index].hoodposition isnot undefined>>
+		<<set $worn.upper.hoodposition to "up">>
 	<</if>>
 <</widget>>
 
