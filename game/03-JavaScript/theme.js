@@ -10,7 +10,7 @@
 	 *  @returns {ColorPreference}
 	 */
 	function getPreference() {
-		return localStorage.getItem(STORAGE_KEY) ?? "system-default";
+		return (localStorage.getItem(STORAGE_KEY) || "system-default");
 	}
 
 	/**
