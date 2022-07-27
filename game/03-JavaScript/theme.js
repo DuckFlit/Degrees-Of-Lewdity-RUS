@@ -1,4 +1,5 @@
-!(function initTheme() {
+// eslint-disable-next-line no-var, no-unused-vars
+var ThemeManager = (() => {
 	/** @typedef {"dark" | "light" | "system-default"} ColorPreference */
 
 	const STORAGE_KEY = "dolTheme";
@@ -10,7 +11,7 @@
 	 *  @returns {ColorPreference}
 	 */
 	function getPreference() {
-		return (localStorage.getItem(STORAGE_KEY) || "system-default");
+		return localStorage.getItem(STORAGE_KEY) || "system-default";
 	}
 
 	/**
@@ -22,7 +23,8 @@
 	}
 
 	/**
-	 * Applies theme by setting `html` element data attribute
+	 * Applies theme by setting `html` element data attribute.
+	 *
 	 * @param {"dark" | "light"} theme
 	 */
 	function setTheme(theme) {
@@ -34,7 +36,8 @@
 	}
 
 	/**
-	 * Applies color preference as theme
+	 * Applies color preference as theme.
+	 *
 	 * @param {ColorPreference} preference
 	 */
 	function reflectPreference(preference) {
@@ -49,7 +52,12 @@
 
 			theme = isDarkPreferredQuery.matches ? "dark" : "light";
 			// Watch for color preference changes
-			isDarkPreferredQuery.addEventListener("change", onThemeChange);
+			if (typeof isDarkPreferredQuery.addEventListener === "function") {
+				isDarkPreferredQuery.addEventListener("change", onThemeChange);
+			} else {
+				/* For Safari 13 and below. */
+				isDarkPreferredQuery.addListener(onThemeChange);
+			}
 		} else {
 			theme = preference;
 		}
@@ -63,12 +71,9 @@
 	window.Theme = {
 		initControl() {
 			$(document).one("overlay-load", () => {
-				$(`input[name=theme][value="${getPreference()}"]`).prop(
-					"checked",
-					true
-				);
+				$(`input[name=theme][value="${getPreference()}"]`).prop("checked", true);
 
-				$("input[name=theme]").on("change", (event) => {
+				$("input[name=theme]").on("change", event => {
 					setPreference(event.currentTarget.value);
 				});
 			});
