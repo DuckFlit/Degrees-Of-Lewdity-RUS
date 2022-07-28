@@ -127,15 +127,7 @@
 <</if>>
 
 <!-- <STARTING CHEATS> -->
-<<if $blackjack.playersState is "choose_cheat">>
-	<<set $blackjack.cheatChoice to null>>
-<</if>>
-<<if $estate.cards.cheatPeeking is undefined>>
-	<<set $estate.cards.cheatPeeking to false>>
-<</if>>
 
-
-<!-- </STARTING CHEATS> -->
 <<if $blackjack.playersState is "cheat">>
 	<<if $blackjack.cheatChoice is "mark">>
 		<<if $estatePersistent.markedCards is null or $estatePersistent.markedCards is undefined>>
@@ -452,15 +444,13 @@ more suspicion if you actually lose the round. -->
 				<<if !$blackjack.susCritHit>>
 					<<switch random(1,3)>>
 						<<case 1>>
-							Wren also notices the dealer's blunder and glances at you, but doesn't say anything.<<gsuspicion>>
+							Wren also notices the dealer's blunder and glances at you, but doesn't say anything.
 						<<case 2>>
-							Wren also notices the dealer's blunder and glances at you. "I hope you're keeping your eyes on your own hand", <<he>> says.<<gsuspicion>>
+							Wren also notices the dealer's blunder and glances at you. "I hope you're keeping your eyes on your own hand", <<he>> says.
 						<<case 3>>
-							<<person2>>
-							<<set _text_output_custom to $pronoun is "m" ? "man" : "girl">>
-							<<person1>>
-							"Come on, _text_output_custom!" says Wren to the dealer. "Gotta be swifter when you deal the cards". <<He>> glances at you, but doesn't say anything else.
+							"Oh, come on," says Wren to the dealer. "Gotta be swifter when you deal the cards". <<He>> glances at you, but doesn't say anything else.
 					<</switch>>
+					<<gsuspicion>>
 				<<else>>
 					When you look at Wren however, you see <<hes>> <span class="red">staring into your eyes with a smirk.</span><<gggsuspicion>>
 				<</if>>
@@ -476,12 +466,13 @@ more suspicion if you actually lose the round. -->
 				<<if !$blackjack.susCritHit>>
 					<<switch random(1,3)>>
 						<<case 1>>
-							You wonder if they can tell you're peeking.<<gsuspicion>>
+							You wonder if they can tell you're peeking.
 						<<case 2>>
-							You notice Wren eyeing you.<<gsuspicion>>
+							You notice Wren eyeing you.
 						<<case 3>>
-							You can feel Wren staring at you after receiving <<his>> card.<<gsuspicion>>
+							You can feel Wren staring at you after receiving <<his>> card.
 					<</switch>>
+					<<gsuspicion>>
 				<<else>>
 					When you look at Wren however, you see <<hes>> <span class="red">staring into your eyes with a smirk.</span><<gggsuspicion>>
 				<</if>>
@@ -593,25 +584,27 @@ Total: <<print $blackjack.playersScore>>
 	While you were looking at the marked cards, you could feel Wren and <<his>> friends occasionally glancing at you.<<gsuspicion>>
 <</if>>
 
-<<if $blackjack.playersState is "choose_cheat">>
-	<br><br>
-	<<set _marked_count to $estatePersistent.markedCards ? $estatePersistent.markedCards.size : 0>>
-	<<set _consts__max_marked to 8>>
-	You've marked <<print _marked_count>> cards in this deck.<br>
-	<<set _d to deck()>>
-	<<for _i to 0; _i lt _d.length; ++_i>>
-		<<set _c to _d[_i]>>
-		<<if $estatePersistent.markedCards and $estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
-			<div class="left"><<cardImage _c>></div>
+<<if $blackjack.turn is "players" and $blackjack.playersScore lte 20>>
+	<div id="blackjackChoicesCheatingInformationDiv" style="display: none">
+		<br><br>
+		<<set _marked_count to $estatePersistent.markedCards ? $estatePersistent.markedCards.size : 0>>
+		<<set _consts__max_marked to 8>>
+		You've marked <<print _marked_count>> cards in this deck.<br>
+		<<set _d to deck()>>
+		<<for _i to 0; _i lt _d.length; ++_i>>
+			<<set _c to _d[_i]>>
+			<<if $estatePersistent.markedCards and $estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
+				<div class="left"><<cardImage _c>></div>
+			<</if>>
+		<</for>>
+		<div style="clear:both;"></div>
+		<br>
+		<<if _marked_count gte _consts__max_marked>>
+			That's as many unique marks as you can place and remember. You can no longer mark cards until Wren changes the deck.
+		<<else>>
+			You can mark up to <<print _consts__max_marked - _marked_count>> more cards. That's as many as you'll be able to mark and remember.
 		<</if>>
-	<</for>>
-	<div style="clear:both;"></div>
-	<br>
-	<<if _marked_count gte _consts__max_marked>>
-		That's as many unique marks as you can place and remember. You can no longer mark cards until Wren changes the deck.
-	<<else>>
-		You can mark up to <<print _consts__max_marked - _marked_count>> more cards. That's as many as you'll be able to mark and remember.
-	<</if>>
+	</div>
 <</if>>
 
 <<if $estatePersistent.suspicion is undefined>>
@@ -635,58 +628,79 @@ Total: <<print $blackjack.playersScore>>
 <</widget>>
 
 
+<<widget "blackjackCheatingPeekingChoiceGenerate">>
+<<if $estate.cards.cheatPeeking>>
+	<<link "Stop peeking at Wren's hole card during dealing">><<set $estate.cards.cheatPeeking to false>><<replace "#blackjackCheatingPeekingChoice">><<blackjackCheatingPeekingChoiceGenerate>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>>
+<<else>>
+	<<link "Peek at Wren's hole card during dealing">><<set $estate.cards.cheatPeeking to true>><<replace "#blackjackCheatingPeekingChoice">><<blackjackCheatingPeekingChoiceGenerate>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>>
+	<!-- | <span class="orange">Skulduggery</span> -->
+	<mouse class="tooltip linkBlue">(?)<span>Every first turn, when the cards are dealt, you will try to peek at Wren's hole card when the cards are dealt. Your chances will be influenced by your skulduggery skill, the dealer's alertness, etc.</span></mouse>
+<</if>>
+<</widget>>
+
+<<widget "blackjackCheatingChoicesGenerate">>
+<<set $_showCheating to _args[0]>>
+<<if $_showCheating>>
+	<<run $("#blackjackChoicesCheatingInformationDiv").show() >>
+	<<link "Back (regular options)">><<replace "#blackjackChoicesDiv">><<blackjackCheatingChoicesGenerate false>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>>
+
+	<<if _marked_count lt _consts__max_marked>>
+		<<set _can_mark_count to _consts__max_marked - _marked_count>>
+		<<set _non_marked_in_hand to 0>>
+		<<for _i to 0; _i lt $blackjack.playersCards.length; ++_i>>
+			<<set _c to $blackjack.playersCards[_i]>>
+			<<if !$estatePersistent.markedCards or !$estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
+				<<set _non_marked_in_hand++>>
+			<</if>>
+		<</for>>
+		<<set _can_mark_count to Math.min(_can_mark_count, _non_marked_in_hand)>>
+
+		<<if _can_mark_count gt 0>>
+			<<if _can_mark_count gt 1>> 
+				<<set $_link_text to `Mark your ${_can_mark_count} newest cards`>>
+			<<else>>
+				<<set $_link_text to `Mark your newest card`>>
+			<</if>>
+			<br>
+			<<set $skulduggerydifficulty to 400 + _can_mark_count*100 + $estatePersistent.suspicion*25>>
+			<<link [[$_link_text|Estate Blackjack Cheat]]>><<set $blackjack.playersState to "cheat">><<set $blackjack.cheatChoice to "mark">><</link>>
+				<<skulduggerydifficulty>>
+				<<if $estate.cards.state is "ride" and !_player_cheating_virginity_warned>>
+					<<set _player_cheating_virginity_warned to false>>
+					<<cards_cheating_virginity_warning true>>
+				<</if>>
+		<</if>>
+	<</if>>
+
+	<br>
+	<span id="blackjackCheatingPeekingChoice">
+		<<blackjackCheatingPeekingChoiceGenerate>>
+	</span>
+
+	<!--  // idea
+	<br>
+	<<link [[Swap deck cards|$passage]]>><<set $blackjack.playersState to "cheat">><<set $blackjack.cheatChoice to "swap_deck">><</link>>
+	<br>
+	<<link [[Peek hole card|$passage]]>><<set $blackjack.playersState to "peek">><<set $blackjack.cheatChoice to "peek_hole_card">><</link>>
+	-->
+
+	<br>
+	<<link "Help and Options">><<overlayReplace "blackjackHelp">><</link>>
+<<else>>
+	<<run $("#blackjackChoicesCheatingInformationDiv").hide() >>
+	<<link [[Hit|$passage]]>><<set $blackjack.playersState to "hit">><<set $blackjack.turnIsStale to false>><<set $blackjack.isFirstTurn to false>><</link>> |
+	<<link [[Stand|$passage]]>><<set $blackjack.turn to "dealer">><<set $blackjack.turnIsStale to false>><<set $blackjack.playersState to "stand">><<set $blackjack.isFirstTurn to false>><</link>> |
+	<<link "Cheating options">><<replace "#blackjackChoicesDiv">><<blackjackCheatingChoicesGenerate true>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>> |
+	<<link "Help and Options">><<overlayReplace "blackjackHelp">><</link>>
+<</if>>
+<</widget>>
+
 <<widget "blackjackControlsChoices">>
 <br><br>
 <<if $blackjack.turn is "players" and $blackjack.playersScore lte 20>>
-	<<if $blackjack.playersState is "choose_cheat">>
-		<<link [[Back (regular options)|$passage]]>><<set $blackjack.playersState to null>><</link>>
-		<<if _marked_count lt _consts__max_marked>>
-			<<set _can_mark_count to _consts__max_marked - _marked_count>>
-			<<set _non_marked_in_hand to 0>>
-			<<for _i to 0; _i lt $blackjack.playersCards.length; ++_i>>
-				<<set _c to $blackjack.playersCards[_i]>>
-				<<if !$estatePersistent.markedCards or !$estatePersistent.markedCards.has(`${_c.name}${_c.suits[0]}`)>>
-					<<set _non_marked_in_hand++>>
-				<</if>>
-			<</for>>
-			<<set _can_mark_count to Math.min(_can_mark_count, _non_marked_in_hand)>>
-
-			<<if _can_mark_count gt 0>>
-				<<if _can_mark_count gt 1>> 
-					<<set $_link_text to `Mark your ${_can_mark_count} newest cards`>>
-				<<else>>
-					<<set $_link_text to `Mark your newest card`>>
-				<</if>>
-				<br>
-				<<set $skulduggerydifficulty to 400 + _can_mark_count*100 + $estatePersistent.suspicion*25>>
-				<<link [[$_link_text|Estate Blackjack Cheat]]>><<set $blackjack.playersState to "cheat">><<set $blackjack.cheatChoice to "mark">><</link>>
-					<<skulduggerydifficulty>>
-					<<if $estate.cards.state is "ride" and !_player_cheating_virginity_warned>>
-						<<set _player_cheating_virginity_warned to false>>
-						<<cards_cheating_virginity_warning true>>
-					<</if>>
-			<</if>>
-
-			<<if $estate.cards.cheatPeeking>>
-				<br>
-				<<link [[Stop peeking at Wren's hole card during dealing|$passage]]>><<set $estate.cards.cheatPeeking to false>><</link>>
-			<<else>>
-				<br>
-				<<link [[Peek at Wren's hole card during dealing|$passage]]>><<set $estate.cards.cheatPeeking to true>><</link>>
-			<</if>>
-		<</if>>
-		<!--  // todo
-			<br>
-			<<link [[Swap deck cards|$passage]]>><<set $blackjack.playersState to "cheat">><<set $blackjack.cheatChoice to "swap_deck">><</link>>
-			<br>
-			<<link [[Peek hole card|$passage]]>><<set $blackjack.playersState to "peek">><<set $blackjack.cheatChoice to "peek_hole_card">><</link>>
-		 -->
-	<<else>>
-		<<link [[Hit|$passage]]>><<set $blackjack.playersState to "hit">><<set $blackjack.turnIsStale to false>><<set $blackjack.isFirstTurn to false>><</link>> |
-		<<link [[Stand|$passage]]>><<set $blackjack.turn to "dealer">><<set $blackjack.playersState to "stand">><<set $blackjack.turnIsStale to false>><<set $blackjack.isFirstTurn to false>><</link>> |
-		<<link [[Cheating options|$passage]]>><<set $blackjack.playersState to "choose_cheat">><<set $blackjack.turnIsStale to true>><</link>> |
-		<<link "Help and Options">><<overlayReplace "blackjackHelp">><</link>>
-	<</if>>
+	<div id="blackjackChoicesDiv">
+		<<blackjackCheatingChoicesGenerate false>>
+	</div>
 <<elseif $blackjack.turn is "players" and $blackjack.playersScore gt 21>>
 	<span class="red">Bust</span>
 	<br>
