@@ -1484,9 +1484,9 @@ Preset: <<print _args[0]>>
 		<<case "eyeshadow">>
 			Eye Shadow: <<makeupPresetsItem $_label $_value>>
 		<<case "mascara">>
-			Mascera: <<makeupPresetsItem $_label $_value>>
+			Mascara: <<makeupPresetsItem $_label $_value>>
 		<<case "eyelenses">>
-			Contact Lens: <<makeupPresetsItem $_label $_value>>
+			Contact Lenses: <<makeupPresetsItem $_label $_value>>
 	<</switch>>
 	<br>
 <</for>>
@@ -1494,11 +1494,13 @@ Preset: <<print _args[0]>>
 <<link [[Apply preset makeup|$passage]]>>
 	<<for $_i to 0; $_i lt _makeupNames.length; $_i++>>
 		<<if _makeupNames[$_i] is "eyelenses">>
-			<<if _presetChosen[_makeupNames[$_i]] is 0>>
+			<<if _presetChosen[_makeupNames[$_i]].left is 0 && _presetChosen[_makeupNames[$_i]].right is 0>>
 				<<set $makeup[_makeupNames[$_i]] to 0>>
-			<<elseif $makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]])>>
+			<<elseif $makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]].left) && 
+					$makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]].right)>>
 				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
-			<<elseif $makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]])>>
+			<<elseif $makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]].left) &&
+					$makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]].right)>>
 				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
 			<</if>>
 		<<elseif _presetChosen[_makeupNames[$_i]] is 0 and _makeupNames[$_i] is "hairdye">>
@@ -1529,10 +1531,12 @@ Preset: <<print _args[0]>>
 		<span class="green">Remove.</span>
 	<<else>>
 		<<if _args[0] is "eyelenses">>
-			<<if $makeup.owned.eyelenses.includes(_args[1]) or $makeup.owned.custom_eyelenses.includes(_args[1])>>
-				<span class="green"><<print _args[1]>> (Owned).</span>
+			<<if _args[1].left == 0 && _args[1].right == 0>>
+				<span class="green">Remove</span>
+			<<elseif _args[1].left == _args[1].right>>
+				<span class="green"><<print _args[1].left>> (Owned).</span>
 			<<else>>
-				<span class="red"><<print _args[1]>> (Not Owned).</span>
+				<span class="green"><<print _args[1].left + ", " + _args[1].right>> (Owned).</span>
 			<</if>>
 		<<else>>
 			<<for $_i to 0; $_i lt $makeup.owned[_args[0]].length; $_i++>>
