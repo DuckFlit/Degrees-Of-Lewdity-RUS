@@ -34,3 +34,13 @@
 		console.debug(resp);
 	}
 })();
+
+/* Implement hasOwn function interception for old versions of JS. */
+(function (hasOwn) {
+	Object.hasOwn = function () {
+		if (typeof hasOwn !== "function") {
+			return this.prototype.hasOwnProperty.call(...arguments);
+		}
+		return hasOwn.apply(this, arguments);
+	};
+})(Object.hasOwn);
