@@ -26,11 +26,13 @@ Save.onSave.add(function(save) {
 
 /*LinkNumberify and images will enable or disable the feature completely*/
 /*debug will enable or disable the feature only for new games*/
+/*sneaky will enable the Sneaky notice banner on the opening screen and save display*/
 window.StartConfig = {
 	"debug": false,
 	"enableImages": true,
 	"enableLinkNumberify": true,
 	"version": "0.3.10.5",
+	"sneaky" : false,
 }
 
 /* convert version string to numeric value */
