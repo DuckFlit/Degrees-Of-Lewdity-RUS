@@ -20,10 +20,17 @@ var ConstantsLoader = (() => {
 			} else if (allowedTypes.includes(typeof value)) {
 				/* A value type, ready for getter conversion. */
 				Object.defineProperty(fragment, key, {
+					set() {
+						if (!V.debug) return;
+						Errors.report("A modification of a constant was attempted.", {
+							key,
+							value,
+							fragment,
+						});
+					},
 					get() {
 						return value;
 					},
-					writable: false,
 					configurable: false,
 				});
 			}
