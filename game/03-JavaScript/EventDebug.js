@@ -17,6 +17,7 @@
 
 /**
  * Handles event data for NPC objects for debugging.
+ *
  * @module EventData
  */
 class EventData {
@@ -28,12 +29,12 @@ class EventData {
 		if (this.disable) return;
 		V.event = ensure(V.event, {
 			buffer: [],
-			schema: 1
+			schema: 1,
 		});
 		V.event.buffer.push({
-			slot: index, // TODO: Remove in favour of direct insertion. (Nvm)
-			time: time,
-			area: [passage, ...DOL.Stack.slice(0, -1)]
+			slot: index,
+			time,
+			area: [passage, ...DOL.Stack.slice(0, -1)],
 		});
 	}
 
@@ -61,13 +62,13 @@ class EventData {
 		return [];
 	}
 
-	Clear()  {
+	Clear() {
 		if (this.disable) return;
 		delete V.event;
 	}
 
 	Update() {
-		if (V.event == undefined) {
+		if (V.event == null) {
 			return;
 		}
 		// Check if $event contains schema
@@ -75,27 +76,25 @@ class EventData {
 			case 1:
 				// No need for updates.
 				return;
-			default:
-				// Update to newer schema (1 atm).
-				// .event ['Farm Work', 'Farm Work', 'Farm Work', 'Farm Work']
-				// .eventtime [497, 497, 497, 497]
-				// .eventslot [0, 1, 2, 3]
-				const event = [...V.event];
-				V.event = {
-					buffer: [],
-					schema: 1
-				};
-				for (let i = 0; i < event.length; i++) {
-					this.Push(event[i], V.eventslot[i], V.eventtime[i])
-				}
-				delete V.eventtime;
-				delete V.eventslot;
-				return;
 		}
+		// Update to newer schema (1 atm).
+		// .event ['Farm Work', 'Farm Work', 'Farm Work', 'Farm Work']
+		// .eventtime [497, 497, 497, 497]
+		// .eventslot [0, 1, 2, 3]
+		const event = [...V.event];
+		V.event = {
+			buffer: [],
+			schema: 1,
+		};
+		for (let i = 0; i < event.length; i++) {
+			this.Push(event[i], V.eventslot[i], V.eventtime[i]);
+		}
+		delete V.eventtime;
+		delete V.eventslot;
 	}
 
 	IsSlotTaken(index) {
-		if (V.event == undefined) return false;
+		if (V.event == null) return false;
 		return V.event.buffer.some(e => e.slot === index);
 	}
 
@@ -104,13 +103,13 @@ class EventData {
 	}
 
 	set Disable(value) {
-		if (typeof value === 'boolean') {
+		if (typeof value === "boolean") {
 			this.disable = value;
 		} else {
-			console.debug('EventData.disable set with unexpected data-type, requires boolean.');
+			console.debug("EventData.disable set with unexpected data-type, requires boolean.");
 		}
 	}
-};
+}
 
 // Jimmy: Potentially flawed design style, static class basically.
 // But ends up being just an extended function in reality. (Not actually tho)
