@@ -1,182 +1,222 @@
 function getHe() {
 	switch (V.pronoun) {
-		case 'm':
-			return 'he';
-		case 'f':
-			return 'she';
-		case 'i':
-			return 'it';
-		case 'n':
-			return 'one';
-		case 't':
-			return 'they';
+		case "m":
+			return "he";
+		case "f":
+			return "she";
+		case "i":
+			return "it";
+		case "n":
+			return "one";
+		case "t":
+			return "they";
 		default:
-			DOL.Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
-			return 'they';
+			Errors.report(
+				`Used ?${
+					this.name
+				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
+			);
+			return "they";
 	}
 }
-/** ?he - Returns the pronoun based on whatever $pronoun is set to.
- *		  Call ?he in TwineScript after calling <<person1>> to use. */
-Template.add('he', getHe);
+/**
+ * ?he - Returns the pronoun based on whatever $pronoun is set to.
+ *		  Call ?he in TwineScript after calling <<person1>> to use.
+ */
+Template.add("he", getHe);
 /** ?He - Capitalised version of above. */
-Template.add('He', function() {
+Template.add("He", function () {
 	return getHe.call(this).toUpperFirst();
 });
 
 function getHim() {
 	switch (V.pronoun) {
-		case 'm':
-			return 'him';
-		case 'f':
-			return 'her';
-		case 'i':
-			return 'it';
-		case 'n':
-		case 't':
-			return 'them';
+		case "m":
+			return "him";
+		case "f":
+			return "her";
+		case "i":
+			return "it";
+		case "n":
+		case "t":
+			return "them";
 		default:
-			DOL.Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
-			return 'them';
+			Errors.report(
+				`Used ?${
+					this.name
+				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
+			);
+			return "them";
 	}
 }
-/** ?him - Returns the pronoun based on whatever $pronoun is set to.
- *		   Call ?him in TwineScript after calling <<person1>> to use. */
-Template.add('him', getHim);
+/**
+ * ?him - Returns the pronoun based on whatever $pronoun is set to.
+ *		   Call ?him in TwineScript after calling <<person1>> to use.
+ */
+Template.add("him", getHim);
 /** ?Him - Capitalised version of above. */
-Template.add('Him', function() {
+Template.add("Him", function () {
 	return getHim.call(this).toUpperFirst();
 });
 
 function getHis() {
 	switch (V.pronoun) {
-		case 'm':
-			return 'his';
-		case 'f':
-			return 'her';
-		case 'i':
-			return 'its';
-		case 'n':
-			return 'the';
-		case 't':
-			return 'their';
+		case "m":
+			return "his";
+		case "f":
+			return "her";
+		case "i":
+			return "its";
+		case "n":
+			return "the";
+		case "t":
+			return "their";
 		default:
-			DOL.Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
-			return 'their';
+			Errors.report(
+				`Used ?${
+					this.name
+				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
+			);
+			return "their";
 	}
 }
-/** ?his - Returns the pronoun based on whatever $pronoun is set to.
- *		   Call ?his in TwineScript after calling <<person1>> to use. */
-Template.add('his', getHis);
+/**
+ * ?his - Returns the pronoun based on whatever $pronoun is set to.
+ *		   Call ?his in TwineScript after calling <<person1>> to use.
+ */
+Template.add("his", getHis);
 /** ?His - Capitalised version of above. */
-Template.add('His', function() {
+Template.add("His", function () {
 	return getHis.call(this).toUpperFirst();
 });
 
 function getHeIs() {
 	switch (V.pronoun) {
-		case 'm':
+		case "m":
 			return "he's";
-		case 'f':
+		case "f":
 			return "she's";
-		case 'i':
+		case "i":
 			return "it's";
-		case 'n':
+		case "n":
 			return "one is";
-		case 't':
+		case "t":
 			return "they are";
 		default:
-			DOL.Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
+			Errors.report(
+				`Used ?${
+					this.name
+				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
+			);
 			return "they are";
 	}
 }
-/** ?hes - Returns the pronoun based on whatever $pronoun is set to.
- *		   Call ?hes in TwineScript after calling <<person1>> to use. */
-Template.add('hes', getHeIs);
+/**
+ * ?hes - Returns the pronoun based on whatever $pronoun is set to.
+ *		   Call ?hes in TwineScript after calling <<person1>> to use.
+ */
+Template.add("hes", getHeIs);
 /** ?Hes - Capitalised version of above. */
-Template.add('Hes', function() {
+Template.add("Hes", function () {
 	return getHeIs.call(this).toUpperFirst();
 });
 
 function getHers() {
 	switch (V.pronoun) {
-		case 'm':
-			return 'his';
-		case 'f':
-			return 'hers';
-		case 'i':
-			return 'its';
-		case 'n':
-			return 'the';
-		case 't':
-			return 'theirs';
+		case "m":
+			return "his";
+		case "f":
+			return "hers";
+		case "i":
+			return "its";
+		case "n":
+			return "the";
+		case "t":
+			return "theirs";
 		default:
-			DOL.Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
-			return 'theirs';
+			Errors.report(
+				`Used ?${
+					this.name
+				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
+			);
+			return "theirs";
 	}
 }
-/** ?hers - Returns the pronoun based on whatever $pronoun is set to.
- *		   Call ?hers in TwineScript after calling <<person1>> to use. */
-Template.add('hers', getHers);
+/**
+ * ?hers - Returns the pronoun based on whatever $pronoun is set to.
+ *		   Call ?hers in TwineScript after calling <<person1>> to use.
+ */
+Template.add("hers", getHers);
 /** ?Hers - Capitalised version of above. */
-Template.add('Hers', function() {
+Template.add("Hers", function () {
 	return getHers.call(this).toUpperFirst();
 });
 
 function getHimself() {
 	switch (V.pronoun) {
-		case 'm':
-			return 'himself';
-		case 'i':
-			return 'itself';
-		case 'f':
-		case 'n':
-		case 't':
-			return 'herself';
+		case "m":
+			return "himself";
+		case "i":
+			return "itself";
+		case "f":
+		case "n":
+		case "t":
+			return "herself";
 		default:
-			DOL.Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
-			return 'theirs';
+			Errors.report(
+				`Used ?${
+					this.name
+				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
+			);
+			return "theirs";
 	}
 }
-/** ?himself - Returns the pronoun based on whatever $pronoun is set to.
- *		   Call ?himself in TwineScript after calling <<person1>> to use. */
-Template.add('himself', getHimself);
+/**
+ * ?himself - Returns the pronoun based on whatever $pronoun is set to.
+ *		   Call ?himself in TwineScript after calling <<person1>> to use.
+ */
+Template.add("himself", getHimself);
 /** ?Himself - Capitalised version of above. */
-Template.add('Himself', function() {
+Template.add("Himself", function () {
 	return getHimself.call(this).toUpperFirst();
 });
 
 function getPeople() {
 	switch (V.malechance) {
 		case 100:
-			return 'men';
+			return "men";
 		case 0:
-			return 'women';
+			return "women";
 		default:
-			return 'men and women';
+			return "men and women";
 	}
 }
-/** ?people - Returns the pronoun based on whatever $pronoun is set to.
- *		   Call ?people in TwineScript after calling <<person1>> to use. */
-Template.add('people', getPeople);
+/**
+ * ?people - Returns the pronoun based on whatever $pronoun is set to.
+ *		   Call ?people in TwineScript after calling <<person1>> to use.
+ */
+Template.add("people", getPeople);
 /** ?People - Capitalised version of above. */
-Template.add('People', function() {
+Template.add("People", function () {
 	return getPeople.call(this).toUpperFirst();
 });
 
 function getPeopleYoung() {
 	switch (V.malechance) {
 		case 100:
-			return 'boys';
+			return "boys";
 		case 0:
-			return 'boys';
+			return "boys";
 		default:
-			return 'boys and girls';
+			return "boys and girls";
 	}
 }
-/** ?peopley - Returns the pronoun based on whatever $pronoun is set to.
- *		   Call ?peopley in TwineScript after calling <<person1>> to use. */
-Template.add('peopley', getPeopleYoung);
+/**
+ * ?peopley - Returns the pronoun based on whatever $pronoun is set to.
+ *		   Call ?peopley in TwineScript after calling <<person1>> to use.
+ */
+Template.add("peopley", getPeopleYoung);
 /** ?Peopley - Capitalised version of above. */
-Template.add('Peopley', function() {
+Template.add("Peopley", function () {
 	return getPeopleYoung.call(this).toUpperFirst();
 });
