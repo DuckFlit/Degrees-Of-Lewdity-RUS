@@ -142,6 +142,7 @@
 <<if $currentSettings isnot "importConfirmDetails">>
 	<<unset $importString>>
 <</if>>
+<<run settingsDisableElement()>>
 <</widget>>
 
 <<widget "displaySubsection">>
@@ -444,7 +445,6 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<label>Hermaphrodite <<radiobutton "$player.gender" "h" autocheck>></label>
 	<br><br>
 	</div>
-	<<run settingsPCGenderUpdate()>>
 
 	<span class="gold">Natural features</span>
 	<br>
@@ -461,12 +461,12 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<br><br>
 	<</if>>
 
-	<span class="gold">Penis size</span> - if applicable
-	<br>
+	<span data-target="player.gender" data-disabledif="V.player.gender==='f'">
+	<span class="gold">Penis size</span> - if applicable<br>
 	<label>Tiny <<radiobutton "$player.penissize" 0 autocheck>></label> |
 	<label>Small <<radiobutton "$player.penissize" 1 autocheck>></label> |
 	<label>Normal <<radiobutton "$player.penissize" 2 autocheck>></label>
-	<br><br>
+	</span><br><br>
 
 	<span class="gold">Breast size</span>
 	<br>
@@ -485,11 +485,11 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<label>Cushioned <<radiobutton "$player.bottomsize" 3 autocheck>></label>
 	<br><br>
 
-	<span class="gold">Testes</span> - applicable only if hermaphrodite
-	<br>
+	<span data-target="player.gender" data-disabledif="V.player.gender!=='h'">
+	<span class="gold">Testes</span> - applicable only if hermaphrodite<br>
 	<label>Yes <<radiobutton "$player.ballsExist" true autocheck>></label> |
 	<label>No <<radiobutton "$player.ballsExist" false autocheck>></label> |
-	<br><br>
+	</span><br><br>
 
 	<span class="gold">Chest sensitivity</span>
 	<br>
@@ -626,7 +626,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<br>
 	<label><span class="lewd">Beautiful</span> <<radiobutton "$background" "beautiful" autocheck>> - You turn heads. <i>Not recommended for beginners.</i></label>
 	<br>
-	<label><span class="lewd">Crossdresser</span> <<radiobutton "$background" "crossdresser" autocheck>> - You've taken a liking to the clothing of the opposite sex. Does nothing for hermaphrodites.</label>
+	<label data-target="player.gender" data-disabledif="V.player.gender==='h'"><span class="lewd">Crossdresser</span> <<radiobutton "$background" "crossdresser" autocheck>> - You've taken a liking to the clothing of the opposite sex. Does nothing for hermaphrodites.</label>
 	<br>
 	<label><span class="lewd">Lustful</span> <<radiobutton "$background" "lustful" autocheck>> - Arousal increases over time, and needs to be managed.</label>
 	/*<br>
@@ -763,7 +763,6 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<label><div class="settingsToggle">
 	<<checkbox "$analdisable" "t" "f" autocheck>> Enable anal
 	</div></label>
-	<<run settingsDoubleAnalToggleGreyOut()>>
 	<div class="settingsToggle" role="group" aria-labelledby="settingsAnalingusHead">
 	<span id="settingsAnalingusHead">Analingus:</span>
 	<label>
@@ -778,7 +777,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<label>
 		<<checkbox "$vaginaldoubledisable" "t" "f" autocheck>> Vaginal
 	</label>
-	<label>
+	<label data-target="analdisable" data-disabledif="V.analdisable==='t'">
 		<<checkbox "$analdoubledisable" "t" "f" autocheck>> Anal
 	</label>
 	<mouse class="tooltip linkBlue">(?)<span>Note that double anal requires anal to be enabled.
@@ -1580,7 +1579,6 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> Vagina</label> |
 		<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> Penis</label>
 		<<if $debug is 1>>| <label><<radiobutton "$NPCName[_npcId].gender" "h" autocheck>> Both</label><</if>>
-		<<run settingsNamedNpcGenderUpdate()>>
 	<<else>>
 		Unable to change the npc genitals due to their pregnancy.
 	<</if>>
@@ -1588,6 +1586,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	Penis size - if applicable:
 	<br>
 	<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
+	<span data-target="npcname-npcidgender" data-disabledif="V.NPCName[T.npcId].gender==='f'">
 	<<for _j to 1; _j lt _penisNames.length; _j++>>
 		<label>
 			<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
@@ -1595,6 +1594,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		</label>
 		<<if _j isnot _penisNames.length -1>>|<</if>>
 	<</for>>
+	</span>
 	<br><br>
 
 	<div class="settingsToggle" style="display: inline-flex;">
@@ -1641,6 +1641,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<</for>>
 		<br><br>
 	<</if>>
+<<run settingsDisableElement()>>
 <</widget>>
 
 <<widget "perNPCSettingsMenu">>
@@ -1699,16 +1700,18 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 			<</link>>
 		<</if>>
 		<br>
+		<span data-disabledif="V.per_npc[T.pNPCId].pronoun==='i'">
 		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
 		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
+		</span>
 		<br>
 		<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
 		<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
-		<<run settingsPersistentNpcGenderUpdate()>>
 		<br><br>
 		Penis size - if applicable:
 		<br>
 		<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
+		<span data-target="pernpc-npcidgender" data-disabledif="V.per_npc[T.pNPCId].gender==='f'">
 		<<for _j to 1; _j lt _penisNames.length; _j++>>
 			<label>
 				<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
@@ -1716,6 +1719,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 			</label>
 			<<if _j isnot _penisNames.length -1>>|<</if>>
 		<</for>>
+		</span>
 		<br><br>
 		<div class="settingsToggle" style="display: inline-flex;">
 			Breast size
@@ -1726,6 +1730,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<div style="clear:both;">
 		/*Keep at end of toggles*/
 	</div>
+<<run settingsDisableElement()>>
 <</widget>>
 
 
