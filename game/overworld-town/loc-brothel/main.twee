@@ -833,17 +833,16 @@ After <<his>> thirty minutes are up, <<he>> pays you the agreed fee and thanks y
 	<<maninit>>
 <</if>>
 <<effects>>
-<<effectsman>><<man>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
 <<audience>>
 <<stateman>>
 <br><br>
 <<actionsman>>
 <<if $alarm is 1>>
-	<<if $rescue is 1>>
-	<<else>>
-		No one comes to your aid.
+	<<if $rescue is 0>>
 		<<set $alarm to 0>>
-		<<if $drugged gte 1>>The drugs inhibit you, you couldn't cry very convincingly.<</if>>
 		<br><br>
 		<<if $enemyarousal gte $enemyarousalmax>>
 			<span id="next"><<link [[Next->Brothel Dance Rape Finish]]>><</link>></span><<nexttext>>
@@ -948,16 +947,15 @@ You are led down a dim corridor. You can hear music playing somewhere above. The
 	At the first sign of resistance, Briar laughs. "Oh, foolish <<girl>>, you're not going anywhere."
 	<br><br>
 <</if>>
+
 <<effects>>
-<<effectsman>><<man>>
+<<effectsman>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
-<<if $enemyhealth lte 0>>
-	<span id="next"><<link [[Next|Brothel Punishment Fight Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[Next|Brothel Punishment Fight Finish]]>><</link>></span><<nexttext>>
-<<elseif $pain gte 100 and $willpowerpain is 0>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
 	<span id="next"><<link [[Next|Brothel Punishment Fight Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Brothel Punishment Fight]]>><</link>></span><<nexttext>>
@@ -1056,39 +1054,35 @@ Someone sticks their $NPCList[0].penisdesc through the hole, and against your li
 
 :: Brothel Punishment Molestation
 <<if $molestationstart is 1>>
-<<set $molestationstart to 0>>
-<<controlloss>>
-<<violence 1>>
-<<neutral 1>>
-<<molested>>
-
-<<maninit>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
 	<<if $punishmentposition is "wall">>
-	<<set $position to "wall">>
-	<<set $enemyhealthmax to 1000>><<set $enemyhealth to 1000>>
-	<<else>><!-- Gloryhole outcome with $punishmentposition = "gloryhole" -->
-	<<npcoral>>
-	<<set $enemyhealthmax to 10>><<set $enemyhealth to 10>>
-	<<set $enemyarousal to $enemyarousalmax - 100>>
-	<<set $NPCList[0].lefthand to "none">>
-	<<set $position to "doggy">>
-	<<set $NPCList[0].righthand to "none">>
-	<<set $NPCList[0].mouth to "none">>
+		<<set $position to "wall">>
+		<<set $enemyhealthmax to 1000>><<set $enemyhealth to 1000>>
+		<<else>><!-- Gloryhole outcome with $punishmentposition = "gloryhole" -->
+		<<npcoral>>
+		<<set $enemyhealthmax to 10>><<set $enemyhealth to 10>>
+		<<set $enemyarousal to $enemyarousalmax - 100>>
+		<<set $NPCList[0].lefthand to "none">>
+		<<set $position to "doggy">>
+		<<set $NPCList[0].righthand to "none">>
+		<<set $NPCList[0].mouth to "none">>
 	<</if>>
 <</if>>
 <<set $enemyarousal += 10>>
 
 <<effects>>
-
-<<effectsman>><<man>>
-
+<<effectsman>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
 
-<<if $enemyhealth lte 0 or $penisbitten is 1>>
-	<span id="next"><<link [[Next|Brothel Punishment Molestation Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
+<<if _combatend or $penisbitten is 1>>
 	<span id="next"><<link [[Next|Brothel Punishment Molestation Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Brothel Punishment Molestation]]>><</link>></span><<nexttext>>
@@ -1303,26 +1297,23 @@ You examine the sex machine. A large phallus protrudes from the main body, besid
 
 :: Brothel Punishment Rape
 <<if $molestationstart is 1>>
-<<set $molestationstart to 0>>
-<<controlloss>>
-<<violence 1>>
-<<neutral 1>>
-<<molested>>
-
-<<generate1>><<person1>><<maninit>><<set $position to "wall">><<set $head to "bound">>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<generate1>><<person1>><<maninit>><<set $position to "wall">><<set $head to "bound">>
 <</if>>
+
 <<set $position to "wall">>
 <<effects>>
-
-<<effectsman>><<man>>
-
+<<effectsman>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
 
-<<if $enemyhealth lte 0>>
-	<span id="next"><<link [[Next|Brothel Punishment Rape Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
+<<if _combatend>>
 	<span id="next"><<link [[Next|Brothel Punishment Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Brothel Punishment Rape]]>><</link>></span><<nexttext>>
@@ -1401,30 +1392,24 @@ Briar withdraws <<his>> hand. <<He>> nods at <<his>> thugs. "Fine," <<he>> says.
 
 :: Brothel Pay Strip
 <<if $molestationstart is 1>>
-<<set $molestationstart to 0>>
-<<controlloss>>
-<<violence 1>>
-<<neutral 1>>
-<<molested>>
-
-<<maninit>><<npcstrip>><<npcidlegenitals>>
-<<set $enemyanger += 200>><<set $enemytrust -= 60>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>><<npcstrip>><<npcidlegenitals>>
+	<<set $enemyanger += 200>><<set $enemytrust -= 60>>
 <</if>>
 
 <<effects>>
-<<effectsman>><<man>>
-
+<<effectsman>>
+<<man>>
 <<audience>>
-
 <<stateman>>
 <br><br>
 <<actionsman>>
 
-<<if $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[Next|Brothel Pay Strip Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[Next|Brothel Pay Strip Finish]]>><</link>></span><<nexttext>>
-<<elseif $pain gte 100 and $willpowerpain is 0>>
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
 	<span id="next"><<link [[Next|Brothel Pay Strip Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Brothel Pay Strip]]>><</link>></span><<nexttext>>
@@ -1479,28 +1464,23 @@ Briar bows to the audience. "Thank you, thank you," <<he>> says. "And now my fri
 
 :: Brothel Pay Rape
 <<if $molestationstart is 1>>
-<<set $molestationstart to 0>>
-<<controlloss>>
-<<violence 1>>
-<<neutral 1>>
-<<molested>>
-
-<<generate1>><<generate2>><<generate3>><<generate4>><<generate5>><<generate6>><<maninit>><<person1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<generate1>><<generate2>><<generate3>><<generate4>><<generate5>><<generate6>><<maninit>><<person1>>
 <</if>>
 
 <<effects>>
-
-<<effectsman>><<man>>
-
+<<effectsman>>
+<<man>>
 <<audience>>
-
 <<stateman>>
 <br><br>
 <<actionsman>>
 
-<<if $enemyhealth lte 0>>
-	<span id="next"><<link [[Next|Brothel Pay Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
+<<if _combatend>>
 	<span id="next"><<link [[Next|Brothel Pay Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Brothel Pay Rape]]>><</link>></span><<nexttext>>
@@ -1772,16 +1752,15 @@ Due to the high police presence, you have a to wait for things to calm down befo
 		<<set $leftarm to "bound">><<set $rightarm to "bound">>
 	<</if>>
 <</if>>
+
 <<effects>>
-<<effectsman>><<man>>
+<<effectsman>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
-<<if $finish is 1>>
-	<span id="next"><<link [[Next|Brothel Raid Arrest Sex Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[Next|Brothel Raid Arrest Sex Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
+
+<<if _combatend>>
 	<span id="next"><<link [[Next|Brothel Raid Arrest Sex Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Brothel Raid Arrest Sex]]>><</link>></span><<nexttext>>
