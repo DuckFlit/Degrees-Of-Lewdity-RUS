@@ -429,50 +429,33 @@ window.settingsNamedNpcBreastSize = function (id, persist) {
 	});
 }
 
-window.settingsNamedNpcGenderUpdate = function () {
-	let updateButtonsActive = () => {
-		jQuery('[id*=radiobutton-npcname-npcidpenissize]').prop("disabled", V.NPCName[T.npcId].gender == "f");
-	};
+// Checks current settings page for data attributes
+// Run only when settings tab is changed (probably in "displaySettings" widget)
+//data-target is the target element that needs to be clicked for the value to be updated
+//data-disabledif is the conditional statement (e.g. data-disabledif="V.per_npc[T.pNPCId].gender==='f'")
+//Conditional statement uses V and T instead of $ and _
 
-	jQuery(document).ready(() => {
-		updateButtonsActive();
-		jQuery('[id*=radiobutton-npcname-npcidgender]').on('change', function (e) { updateButtonsActive(); });
-	});
-}
-
-window.settingsPersistentNpcGenderUpdate = function () {
-	let updateButtonsActive = () => {
-		jQuery('[id*=radiobutton-' + Util.slugify('$per_npc[_pNPCId].penissize') + ']').prop("disabled", V.per_npc[T.pNPCId].gender == "f");
-		jQuery('[id*=radiobutton-' + Util.slugify('$per_npc[_pNPCId].pronoun') + ']').prop("disabled", V.per_npc[T.pNPCId].pronoun == "i");
-	};
-
-	jQuery(document).ready(() => {
-		updateButtonsActive();
-		jQuery('[id*=radiobutton-' + Util.slugify('$per_npc[_pNPCId].gender') + ']').on('change', function (e) { updateButtonsActive(); });
-	});
-}
-
-window.settingsPCGenderUpdate = function () {
-	let updateButtonsActive = () => {
-		jQuery('[id*=radiobutton-penissize]').prop("disabled", V.player.gender == "f");
-		jQuery('[id*=radiobutton-playerballsexist]').prop("disabled", V.player.gender !== "h");
-		jQuery('[id*=radiobutton-background-8]').prop("disabled", V.player.gender == "h");
-	};
-
-	jQuery(document).ready(() => {
-		updateButtonsActive();
-		jQuery('.playergender [id*=radiobutton-playergender]').on('change', function (e) { updateButtonsActive(); });
-	});
-}
-
-window.settingsDoubleAnalToggleGreyOut = function() {
-	let updateButtonsActive = () => {
-		jQuery('[id*=checkbox-analdoubledisable]').prop("disabled", V.analdisable == "t");
-	};
-
-	jQuery(document).ready(() => {
-		updateButtonsActive();
-		jQuery('[id*=checkbox-analdisable]').on('change', function (e) { updateButtonsActive(); });
+window.settingsDisableElement = function() {
+	$(document).ready(() => {
+		$("[data-target]").each(function(){
+			let updateButtonsActive = () => {
+				$(document).ready(() => {
+					try{
+						let cond = eval(disabledif);
+						let style = cond ? "var(--500)" : "";
+						orig.css("color", style).children().css("color", style);
+						orig.find("input").prop("disabled", cond);
+					}
+					catch(e){ console.log(e); }
+				});
+			};
+			let orig = $(this);
+			let disabledif = orig.data("disabledif");
+			if(orig.data("target") && disabledif){
+				updateButtonsActive();
+				$(document).on("click.evt", "[name*='" + Util.slugify(orig.data("target")) + "']", function(){ updateButtonsActive(); });
+			}
+		});
 	});
 }
 
