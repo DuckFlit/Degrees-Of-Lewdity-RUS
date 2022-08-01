@@ -409,7 +409,7 @@ window.redetermineMostTaken = function(type, subtype, fullname=null) {
 window.onTakeClick = function (item_name){
 	V.sexStats.pills["pills"][item_name].owned -= 1;
 	V.sexStats.pills["pills"][item_name].doseTaken += 1 // Stat for specific pill consumption
-	V.pillsConsumed = (typeof V.pillsConsumed == undefined || V.pillsConsumed == null) ? 1 : V.pillsConsumed + 1 // Stat for total pills consumption
+	V.pillsConsumed = (typeof V.pillsConsumed == "undefined" || V.pillsConsumed == null) ? 1 : V.pillsConsumed + 1 // Stat for total pills consumption
 	for (let item of setup.pills){
 		if (item.name == item_name){
 			for (let widget of item.effects) // run the widgets associated with a pill
