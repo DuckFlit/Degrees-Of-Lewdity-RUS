@@ -1,5 +1,6 @@
-const IronMan = ((Save) => {
-	'use strict';
+/* eslint-disable no-var */
+var IronMan = (Save => {
+	"use strict";
 
 	/**
 	 * Set to true to allow debug mode changes during gameplay.
@@ -7,6 +8,7 @@ const IronMan = ((Save) => {
 	 */
 	const IRONMAN_DEBUG = false;
 
+	// eslint-disable-next-line no-unused-vars
 	let varsFrozen = false;
 
 	/*  --------------------------------------
@@ -16,10 +18,12 @@ const IronMan = ((Save) => {
 	const _setterHandlers = new Set();
 
 	function addSetter(handler) {
-		if (typeof handler === 'function') {
+		if (typeof handler === "function") {
 			_setterHandlers.add(handler);
 		} else {
-			Errors.report('The IronMan setter function requires a function to be passed as the parameter.');
+			Errors.report(
+				"The IronMan setter function requires a function to be passed as the parameter."
+			);
 		}
 	}
 
@@ -29,18 +33,18 @@ const IronMan = ((Save) => {
 
 	function handleSetters() {
 		let workDone = false;
-		const stateObj = session.get('state');
+		const stateObj = session.get("state");
 		_setterHandlers.forEach(handler => {
 			/* We could delete entries as we call them, but clearing the entire structure at the end works too. */
-			if (typeof handler === 'function') {
+			if (typeof handler === "function") {
 				/* Pass the stateobj variables object as args, manipulate story vars there. */
-				handler.apply(this, [ stateObj.delta[0].variables ]);
+				handler.apply(this, [stateObj.delta[0].variables]);
 				workDone = true;
 			}
 		});
 		_setterHandlers.clear();
 		if (workDone) {
-			session.set('state', stateObj);
+			session.set("state", stateObj);
 			State.restore();
 		}
 	}
@@ -51,30 +55,41 @@ const IronMan = ((Save) => {
 
 	function ironmanLock() {
 		/* Immediately exit if on the starting passage. */
-		if (['Start', 'Clothes Testing', 'Renderer Test Page', 'Tips'].includes(V.passage)) return;
+		if (["Start", "Clothes Testing", "Renderer Test Page", "Tips"].includes(V.passage)) return;
 		/* Immediately exit if the game is in debug mode or test mode. */
 		if (Config.debug) return;
 		const readonly = { writable: false, configurable: false };
-		Object.defineProperty(V, "ironmanmode", { ...readonly, value: V.ironmanmode });
+		Object.defineProperty(
+			V,
+			"ironmanmode",
+			Object.assign({}, readonly, { value: V.ironmanmode })
+		);
 		if (V.ironmanmode) {
 			Object.defineProperties(V, {
-				"cheatdisable": { ...readonly, value: 't' },
-				"ironmanautosaveschedule": { ...readonly, value: V.ironmanautosaveschedule },
-				"autosavedisabled": { ...readonly, value: true },
-				"virginity": { ...readonly, value: V.player.virginity }
+				cheatdisable: Object.assign({}, readonly, { value: "t" }),
+				ironmanautosaveschedule: Object.assign({}, readonly, {
+					value: V.ironmanautosaveschedule,
+				}),
+				autosavedisabled: Object.assign({}, readonly, { value: true }),
+				virginity: Object.assign({}, readonly, { value: V.player.virginity }),
 			});
 			if (!IRONMAN_DEBUG) {
-				Object.defineProperty(V, "debug", { ...readonly, value: 0 });
+				Object.defineProperty(V, "debug", Object.assign({}, readonly, { value: 0 }));
 			}
-			if (V.combat == 1) {
+			if (V.combat === 1) {
 				for (const item of ["enemyhealth", "enemyarousal", "enemytrust", "enemystrength"])
-					Object.defineProperty(V, item, { ...readonly, value: V[item] });
+					Object.defineProperty(V, item, Object.assign({}, readonly, { value: V[item] }));
 			}
 			for (const type in V.player.virginity) {
-				if (V.player.virginity[type] != true && type != "temple") {
+				if (!V.player.virginity[type] && type !== "temple") {
+					/* Should be removed in a later revision, completely unnecessary. */
 					try {
-						Object.defineProperty(V.player.virginity, type, { ...readonly, value: V.player.virginity[type] });
-					} catch (e) { /* Not sure why lifeanime put this catch here, isn't it better to check the values properly? */
+						Object.defineProperty(
+							V.player.virginity,
+							type,
+							Object.assign({}, readonly, { value: V.player.virginity[type] })
+						);
+					} catch (e) {
 						console.debug(e);
 					}
 				}
@@ -83,7 +98,18 @@ const IronMan = ((Save) => {
 	}
 
 	function getSignature(save = null) {
-		const keys = ['debug', 'autosavedisabled', 'virginity', 'player', 'enemyhealth', 'enemyarousal', 'enemytrust', 'enemystrength', 'passage', 'money'];
+		const keys = [
+			"debug",
+			"autosavedisabled",
+			"virginity",
+			"player",
+			"enemyhealth",
+			"enemyarousal",
+			"enemytrust",
+			"enemystrength",
+			"passage",
+			"money",
+		];
 		const target = save == null ? V : save.state.delta[0].variables;
 		const subset = keys.map(key => target[key]);
 		const encodedSubset = JSON.stringify(subset);
@@ -97,7 +123,7 @@ const IronMan = ((Save) => {
 
 	function update(save, metadata) {
 		delete metadata.ironman_signature;
-		if (typeof metadata.signature !== 'string') {
+		if (typeof metadata.signature !== "string") {
 			metadata.signature = getSignature(save);
 		}
 	}
@@ -109,41 +135,50 @@ const IronMan = ((Save) => {
 	function uiCheckBox(mode = "normal") {
 		$(function () {
 			const checkbox = document.getElementById("checkbox-ironmanmode");
-			if (mode == "normal") {
+			if (mode === "normal") {
 				V.ironmanmode = checkbox.checked;
-				if (checkbox.checked == true) {
-					if (V.alluremod < 1)
-						V.alluremod = 1;
-					if (V.rentmod < 1)
-						V.rentmod = 1;
-					if (V.tending_yield_factor > 5)
-						V.tending_yield_factor = 5;
-					if (document.getElementById("sliderTendingYieldFactor"))
-						new Wikifier(null, '<<replace #sliderTendingYieldFactor>><<numberslider "$tending_yield_factor" $tending_yield_factor 1 10 1 $ironmanmode>><</replace>>')
-					if (document.getElementById("sliderRentMode"))
-						new Wikifier(null, '<<replace #sliderRentMode>><<numberslider "$rentmod" $rentmod 0.1 3 0.1 $ironmanmode>><</replace>>')
-					if (document.getElementById("sliderAllureMode"))
-						new Wikifier(null, '<<replace #sliderAllureMode>><<numberslider "$alluremod" $alluremod 0.2 2 0.1 $ironmanmode>><</replace>>')
+				if (checkbox.checked) {
+					if (V.alluremod < 1) V.alluremod = 1;
+					if (V.rentmod < 1) V.rentmod = 1;
+					if (V.tending_yield_factor > 5) V.tending_yield_factor = 5;
+					if (document.getElementById("sliderTendingYieldFactor")) {
+						Wikifier.wikifyEval(
+							'<<replace #sliderTendingYieldFactor>><<numberslider "$tending_yield_factor" $tending_yield_factor 1 10 1 $ironmanmode>><</replace>>'
+						);
+					}
+					if (document.getElementById("sliderRentMode")) {
+						Wikifier.wikifyEval(
+							'<<replace #sliderRentMode>><<numberslider "$rentmod" $rentmod 0.1 3 0.1 $ironmanmode>><</replace>>'
+						);
+					}
+					if (document.getElementById("sliderAllureMode")) {
+						Wikifier.wikifyEval(
+							'<<replace #sliderAllureMode>><<numberslider "$alluremod" $alluremod 0.2 2 0.1 $ironmanmode>><</replace>>'
+						);
+					}
 					V.maxStates = 1;
 					V.cheatdisabletoggle = "t";
 					V.autosavedisabled = true;
-					$('.ironman-slider input').on('input change', e => sliderPerc(e)).trigger('change');
+					$(".ironman-slider input")
+						.on("input change", e => sliderPerc(e))
+						.trigger("change");
 				} else {
 					if (document.getElementById("numberslider-input-alluremod"))
 						document.getElementById("numberslider-input-alluremod").disabled = false;
 					if (document.getElementById("numberslider-input-rentmod"))
 						document.getElementById("numberslider-input-rentmod").disabled = false;
 					if (document.getElementById("numberslider-input-tending-yield-factor"))
-						document.getElementById("numberslider-input-tending-yield-factor").disabled = false;
+						document.getElementById(
+							"numberslider-input-tending-yield-factor"
+						).disabled = false;
 				}
 			} else {
-				checkbox.checked = V.ironmanmode == true;
-				if (V.passage != "Start")
-					checkbox.disabled = true;
+				checkbox.checked = V.ironmanmode === true;
+				if (V.passage !== "Start") checkbox.disabled = true;
 			}
 		});
 	}
-	
+
 	function getDatestamp() {
 		const now = new Date();
 		let MM = now.getMonth() + 1;
@@ -152,11 +187,21 @@ const IronMan = ((Save) => {
 		let mm = now.getMinutes();
 		let ss = now.getSeconds();
 
-		if (MM < 10) { MM = `0${MM}`; }
-		if (DD < 10) { DD = `0${DD}`; }
-		if (hh < 10) { hh = `0${hh}`; }
-		if (mm < 10) { mm = `0${mm}`; }
-		if (ss < 10) { ss = `0${ss}`; }
+		if (MM < 10) {
+			MM = `0${MM}`;
+		}
+		if (DD < 10) {
+			DD = `0${DD}`;
+		}
+		if (hh < 10) {
+			hh = `0${hh}`;
+		}
+		if (mm < 10) {
+			mm = `0${mm}`;
+		}
+		if (ss < 10) {
+			ss = `0${ss}`;
+		}
 
 		return `${now.getFullYear()}${MM}${DD}-${hh}${mm}${ss}`;
 	}
@@ -166,14 +211,17 @@ const IronMan = ((Save) => {
 		const data = Save.slots.get(slot);
 		const saveId = data.metadata.saveId;
 		const saveName = data.metadata.saveName;
-		const exportName = `${data.id}-${saveName === '' ? saveId : saveName}-${getDatestamp()}.save`;
+		const exportName = `${data.id}-${
+			saveName === "" ? saveId : saveName
+		}-${getDatestamp()}.save`;
 		const saveObj = LZString.compressToBase64(JSON.stringify(data));
-		saveAs(new Blob([saveObj], { type : 'text/plain;charset=UTF-8' }), exportName);
+		saveAs(new Blob([saveObj], { type: "text/plain;charset=UTF-8" }), exportName);
 	}
 
 	/**
 	 * @deprecated
 	 */
+	// eslint-disable-next-line no-unused-vars
 	function exportCurrent() {
 		updateExportDay();
 		Save.export();
@@ -181,8 +229,9 @@ const IronMan = ((Save) => {
 
 	/**
 	 * Export the slot's data and encode it into data which is difficult to decode without prior knowledge.
+	 *
 	 * @param {number} slot The index of the save to export for debugging.
-	 * @returns String containing the encoded data.
+	 * @returns {string} Containing the encoded data.
 	 */
 	function exportDebug(slot) {
 		updateExportDay();
@@ -200,7 +249,9 @@ const IronMan = ((Save) => {
 		const finalData = btoa(encodedData);
 		/* Navigate to the export-import page. */
 		T.presetData = finalData;
-		new Wikifier(null, '<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>');
+		Wikifier.wikifyEval(
+			'<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>'
+		);
 		return finalData;
 	}
 
@@ -212,9 +263,10 @@ const IronMan = ((Save) => {
 
 	function importAndLoadDebug(data) {
 		const saveObj = importDebug(data);
-		if (typeof saveObj !== 'object') {
+		if (typeof saveObj !== "object") {
 			/* Output error response, stating the save slot is invalid. */
-			console.debug(msg);
+			const msg = "importAndLoadDebug failed.";
+			console.debug(msg, data);
 			Errors.report(msg);
 			return false;
 		}
@@ -222,24 +274,23 @@ const IronMan = ((Save) => {
 		/* TODO: Change it around so we don't have to stringify and recompress. */
 		const encodedSave = LZString.compressToBase64(JSON.stringify(save));
 		const result = Save.deserialize(encodedSave);
-		return {
-			result,
-			...saveObj
-		};
+		return Object.assign({}, result, saveObj);
 	}
 
 	function exportFile(saveData) {
 		const saveId = saveData.metadata.saveId;
 		const saveName = saveData.metadata.saveName;
-		const exportName = `${saveData.id}-${saveName === '' ? saveId : saveName}-${getDatestamp()}.save`;
+		const exportName = `${saveData.id}-${
+			saveName === "" ? saveId : saveName
+		}-${getDatestamp()}.save`;
 		const saveObj = LZString.compressToBase64(JSON.stringify(saveData));
-		saveAs(new Blob([saveObj], { type : 'text/plain;charset=UTF-8' }), exportName);
+		saveAs(new Blob([saveObj], { type: "text/plain;charset=UTF-8" }), exportName);
 	}
 
 	const clickCount = {
-		'slot': -1,
-		'count': 0
-	}
+		slot: -1,
+		count: 0,
+	};
 
 	function uiExportIconHandler(slot) {
 		/* If the slot is different, reset the object. */
@@ -263,21 +314,23 @@ const IronMan = ((Save) => {
 	 * @deprecated
 	 */
 	function uiExportButton() {
-		const exportName = "degrees-of-lewdity" + (V.saveName != '' ? '-' + V.saveName : '');
+		const exportName = "degrees-of-lewdity" + (V.saveName !== "" ? "-" + V.saveName : "");
 		updateExportDay();
 		Save.export(exportName);
 	}
 
 	function scheduledSaves() {
-		const date = new Date(V.month + ' ' + V.monthday + ', ' + V.year);
+		const date = new Date(V.month + " " + V.monthday + ", " + V.year);
 
-		if (!V.ironmanautosaveschedule)
-			V.ironmanautosaveschedule = (date.getTime()).toString(8);
-		if (parseInt(V.ironmanautosaveschedule, 8) < date.getTime()){
-			//autosave
+		if (!V.ironmanautosaveschedule) V.ironmanautosaveschedule = date.getTime().toString(8);
+		if (parseInt(V.ironmanautosaveschedule, 8) < date.getTime()) {
+			// autosave
 			ironmanAutoSave();
 			//
-			V.ironmanautosaveschedule = (date.getTime() + (getRandomIntInclusive(432000, 777600) * 1000)).toString(8);
+			V.ironmanautosaveschedule = (
+				date.getTime() +
+				getRandomIntInclusive(432000, 777600) * 1000
+			).toString(8);
 		}
 	}
 
@@ -288,7 +341,7 @@ const IronMan = ((Save) => {
 		}
 	}); */
 
-	$(document).on(':passagestart', function() {
+	$(document).on(":passagestart", function () {
 		varsFrozen = false;
 		handleSetters();
 	});
@@ -297,39 +350,39 @@ const IronMan = ((Save) => {
 		IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
 
 		This runs at the end of the passage processing pipeline. Check docs for SugarCube.md for more information about the pipeline. */
-	$(document).on(':passageend', function() {
+	$(document).on(":passageend", function () {
 		ironmanLock();
 		varsFrozen = true;
 	});
 
 	/* DEPRECATED - Macro definition */
-	Macro.add('ironmandefer', {
+	Macro.add("ironmandefer", {
 		tags: null,
 		handler() {
 			/* TODO: Provide a mechanism for TwineScript users to do this. */
-		}
+		},
 	});
 
 	/* Export the module object containing functions. */
 	return Object.seal({
 		lock: ironmanLock,
-		getSignature: getSignature,
+		getSignature,
 		/* Setter helpers that control the setter object, to defer variable assignments at the very beginning of the next passage. */
-		addSetter: addSetter,
-		clearSetters: clearSetters,
+		addSetter,
+		clearSetters,
 		export: exportSlot,
-		exportDebug: exportDebug,
-		importDebug: importDebug,
-		importAndLoadDebug: importAndLoadDebug,
-		exportFile: exportFile,
+		exportDebug,
+		importDebug,
+		importAndLoadDebug,
+		exportFile,
 		/* exportDebug: exportCurrent, */
 		UI: {
 			checkBox: uiCheckBox,
 			exportButton: uiExportButton,
-			exportHandler: uiExportIconHandler
+			exportHandler: uiExportIconHandler,
 		},
-		update: update,
-		scheduledSaves: scheduledSaves
+		update,
+		scheduledSaves,
 	});
 })(Save);
 window.IronMan = IronMan;
