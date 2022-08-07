@@ -11,13 +11,14 @@ const Utils = (() => {
 		if (Engine.isIdle()) {
 			$(() => func(...params));
 		} else {
-			$(document).one(':passageend', () => func(...params));
+			$(document).one(":passageend", () => func(...params));
 		}
 	}
 
 	return Object.preventExtensions({
 		GetStack: getStack,
-		Defer: defer
-	})
+		Defer: defer,
+	});
 })();
+
 window.Utils = Utils;

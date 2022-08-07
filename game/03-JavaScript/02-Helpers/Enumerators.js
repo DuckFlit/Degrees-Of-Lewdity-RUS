@@ -6,12 +6,12 @@
 function getEnumBase() {
 	return {
 		from: {
-			value: function(toFind) {
+			value(toFind) {
 				return Object.entries(this).find(e => e[1] === toFind)[0];
 			},
 			writable: false,
-			enumerable: false
-		}
+			enumerable: false,
+		},
 	};
 }
 
@@ -20,13 +20,19 @@ function getEnumBase() {
 /**
  * An enumerator containing the types of sexes a group is.
  */
-var SexTypes = Object.freeze(Object.defineProperties({
-	ALL_DICKS		: 3,
-	ALL_MALES		: 2,
-	ALL_DICKGIRLS	: 1,
-	BOTH			: 0,
-	ALL_CUNTBOYS	: -1,
-	ALL_FEMALES		: -2,
-	ALL_VAGINAS		: -3
-}, getEnumBase()));
+// eslint-disable-next-line no-var
+var SexTypes = Object.freeze(
+	Object.defineProperties(
+		{
+			ALL_DICKS: 3,
+			ALL_MALES: 2,
+			ALL_DICKGIRLS: 1,
+			BOTH: 0,
+			ALL_CUNTBOYS: -1,
+			ALL_FEMALES: -2,
+			ALL_VAGINAS: -3,
+		},
+		getEnumBase()
+	)
+);
 window.SexTypes = SexTypes;

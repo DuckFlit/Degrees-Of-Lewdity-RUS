@@ -1,12 +1,16 @@
 const DoLSave = ((Story, Save) => {
-	'use strict';
+	"use strict";
 
-	const DEFAULT_DETAILS = Object.freeze({ id: Story.domId, autosave: null, slots: [null, null, null, null, null, null, null, null] });
+	const DEFAULT_DETAILS = Object.freeze({
+		id: Story.domId,
+		autosave: null,
+		slots: [null, null, null, null, null, null, null, null],
+	});
 	const KEY_DETAILS = "dolSaveDetails";
 
 	/* Place somewhere to expose globally. */
 	function isObject(obj) {
-		return typeof obj === 'object' && obj != null;
+		return typeof obj === "object" && obj != null;
 	}
 
 	/* Can also call from backcomp in the future? */
@@ -21,40 +25,48 @@ const DoLSave = ((Story, Save) => {
 	}
 
 	function marshalVersion(version) {
-		return typeof version === 'string' ? version.replace(/[^0-9.]+/g, "").split(".").map(v => parseInt(v)) : [ 0, 0, 0, 0 ];
+		return typeof version === "string"
+			? version
+					.replace(/[^0-9.]+/g, "")
+					.split(".")
+					.map(v => parseInt(v))
+			: [0, 0, 0, 0];
 	}
 
 	function parseVersion(version) {
 		version = marshalVersion(version);
-		return version ? version[0] * 1000000 + version[1] * 10000 + version[2] * 100 + version[3] * 1 : 0;
+		return version
+			? version[0] * 1000000 + version[1] * 10000 + version[2] * 100 + version[3] * 1
+			: 0;
 	}
 
 	/**
 	 * The handler which the load button should call.
 	 * Contains checks to determine whether the save loads or pops up a confirmation window.
+	 *
 	 * @param {any} slot The slot ID to get the save from. 0 to 9, or 'auto'.
 	 * @param {boolean} confirm Bypass the load confirmation.
-	 * @returns void
+	 * @returns {void}
 	 */
 	function loadHandler(slot, confirm) {
-		if (V.ironmanmode === true && V.passage !== 'Start') {
-			new Wikifier(null, '<<loadIronmanSafetyCancel ' + slot + '>>');
+		if (V.ironmanmode === true && V.passage !== "Start") {
+			Wikifier.wikifyEval(`<<loadIronmanSafetyCancel ${slot}>>`);
 			return;
 		}
 		if (V.confirmLoad === true && confirm === undefined) {
-			new Wikifier(null, '<<loadConfirm ' + slot + '>>');
+			Wikifier.wikifyEval(`<<loadConfirm ${slot}>>`);
 			return;
 		}
-		const save = slot === 'auto' ? Save.autosave.get() : Save.slots.get(slot);
-		if (typeof save !== 'object') {
-			Errors.report('Could not find a valid save at that slot.', {});
+		const save = slot === "auto" ? Save.autosave.get() : Save.slots.get(slot);
+		if (typeof save !== "object") {
+			Errors.report("Could not find a valid save at that slot.", {});
 			return;
 		}
 		const currVersion = parseVersion(StartConfig.version);
 		/* Assume the save->variables is valid if an object. */
 		const saveVersion = parseVersion(getSaveVersion(save.state.delta[0].variables));
 		if (currVersion < saveVersion) {
-			new Wikifier(null, `<<loadconfirmcompat ${slot}>>`);
+			Wikifier.wikifyEval(`<<loadconfirmcompat ${slot}>>`);
 			return;
 		}
 		load(slot, save);
@@ -62,20 +74,22 @@ const DoLSave = ((Story, Save) => {
 
 	/**
 	 * Loads the given saveobj, or the save from the given slot.
-	 * @param {any} The slot ID to get the save from. 0 to 9, or 'auto'.
-	 * @param {*} saveObj The save object if already possessed by the callee.
-	 * @returns void
+	 *
+	 * @param {number|string} slot The slot ID to get the save from. 0 to 9, or 'auto'.
+	 * @param {object} saveObj The save object if already possessed by the callee.
+	 * @param {boolean} overrides
+	 * @returns {void}
 	 */
 	function load(slot, saveObj, overrides) {
-		const save = saveObj == null
-			? slot === 'auto'
-				? Save.autosave.get()
-				: Save.slots.get(slot)
-			: saveObj;
+		const save =
+			saveObj == null
+				? slot === "auto"
+					? Save.autosave.get()
+					: Save.slots.get(slot)
+				: saveObj;
 		const saveDetails = JSON.parse(localStorage.getItem(KEY_DETAILS));
-		const metadata = slot === 'auto'
-			? saveDetails.autosave.metadata
-			: saveDetails.slots[slot].metadata;
+		const metadata =
+			slot === "auto" ? saveDetails.autosave.metadata : saveDetails.slots[slot].metadata;
 		/* Check if metadata for save matches the save's computed md5 hash. If it matches, the ironman save was not tampered with.
 			Bypass this check if on a mobile, because they are notoriously difficult to grab saves from in the event of issues. */
 		if (metadata.ironman && !Browser.isMobile.any()) {
@@ -83,11 +97,11 @@ const DoLSave = ((Story, Save) => {
 			const signature = IronMan.getSignature(save);
 			// (if ironman mode enabled) following checks md5 signature of the save to see if the variables have been modified
 			if (signature !== metadata.signature) {
-				new Wikifier(null, '<<loadIronmanCheater ' + slot + '>>');
+				Wikifier.wikifyEval(`<<loadIronmanCheater ${slot}>>`);
 				return;
 			}
 		}
-		if (slot === 'auto') {
+		if (slot === "auto") {
 			Save.autosave.load();
 		} else {
 			Save.slots.load(slot);
@@ -107,25 +121,31 @@ const DoLSave = ((Story, Save) => {
 
 	function save(saveSlot, confirm, saveId, saveName) {
 		if (saveId == null) {
-			new Wikifier(null, '<<saveConfirm ' + saveSlot + '>>');
-		} else if ((V.confirmSave === true && confirm != true) || (V.saveId != saveId && saveId != null)) {
-			new Wikifier(null, '<<saveConfirm ' + saveSlot + '>>');
+			Wikifier.wikifyEval(`<<saveConfirm ${saveSlot}>>`);
+		} else if (
+			(V.confirmSave === true && confirm !== true) ||
+			(V.saveId !== saveId && saveId != null)
+		) {
+			Wikifier.wikifyEval(`<<saveConfirm ${saveSlot}>>`);
 		} else {
-			if (saveSlot != undefined) {
+			if (saveSlot != null) {
 				updateSavesCount();
-				const success = Save.slots.save(saveSlot, null, { "saveId": saveId, "saveName": saveName, "ironman": V.ironmanmode });
+				const success = Save.slots.save(saveSlot, null, {
+					saveId,
+					saveName,
+					ironman: V.ironmanmode,
+				});
 				if (success) {
 					const save = Save.slots.get(saveSlot);
 					setSaveDetail(saveSlot, {
-						"saveId": saveId,
-						"saveName": saveName,
-						"ironman": V.ironmanmode,
-						"signature": (V.ironmanmode ? IronMan.getSignature(save) : false)
+						saveId,
+						saveName,
+						ironman: V.ironmanmode,
+						signature: V.ironmanmode ? IronMan.getSignature(save) : false,
 					});
 					V.currentOverlay = null;
 					overlayShowHide("customOverlay");
-					if (V.ironmanmode === true)
-						Engine.restart();
+					if (V.ironmanmode === true) Engine.restart();
 				}
 			}
 		}
@@ -134,7 +154,7 @@ const DoLSave = ((Story, Save) => {
 	function deleteSave(saveSlot, confirm) {
 		if (saveSlot === "all") {
 			if (confirm === undefined) {
-				new Wikifier(null, '<<clearSaveMenu>>');
+				Wikifier.wikifyEval("<<clearSaveMenu>>");
 				return;
 			} else if (confirm === true) {
 				Save.clear();
@@ -142,7 +162,7 @@ const DoLSave = ((Story, Save) => {
 			}
 		} else if (saveSlot === "auto") {
 			if (V.confirmDelete === true && confirm === undefined) {
-				new Wikifier(null, '<<deleteConfirm ' + saveSlot + '>>');
+				Wikifier.wikifyEval(`<<deleteConfirm ${saveSlot}>>`);
 				return;
 			} else {
 				Save.autosave.delete();
@@ -150,25 +170,25 @@ const DoLSave = ((Story, Save) => {
 			}
 		} else {
 			if (V.confirmDelete === true && confirm === undefined) {
-				new Wikifier(null, '<<deleteConfirm ' + saveSlot + '>>');
+				Wikifier.wikifyEval(`<<deleteConfirm ${saveSlot}>>`);
 				return;
 			} else {
 				Save.slots.delete(saveSlot);
 				deleteSaveDetails(saveSlot);
 			}
 		}
-		new Wikifier(null, '<<resetSaveMenu>>');
+		Wikifier.wikifyEval("<<resetSaveMenu>>");
 	}
 
 	function importSave(saveFile) {
 		if (!window.FileReader) return; // Browser is not compatible
-	
-		var reader = new FileReader();
-	
+
+		const reader = new FileReader();
+
 		reader.onloadend = function () {
 			DeserializeGame(this.result);
-		}
-	
+		};
+
 		reader.readAsText(saveFile[0]);
 	}
 
@@ -176,13 +196,13 @@ const DoLSave = ((Story, Save) => {
 		const saveDetails = getSaveDetails();
 		if (saveDetails == null || saveDetails.id !== Story.domId || forceRun) {
 			const scSaveDetails = Save.get();
-			const dolSaveDetails = { ...DEFAULT_DETAILS };
+			const dolSaveDetails = Object.assign({}, DEFAULT_DETAILS);
 			/* Search SugarCube's autosave property, if it exists, reflect this in the save details. */
 			if (scSaveDetails.autosave != null) {
 				dolSaveDetails.autosave = {
 					title: scSaveDetails.autosave.title,
 					date: scSaveDetails.autosave.date,
-					metadata: scSaveDetails.autosave.metadata
+					metadata: scSaveDetails.autosave.metadata,
 				};
 				if (dolSaveDetails.autosave.metadata === undefined) {
 					dolSaveDetails.autosave.metadata = { saveName: "" };
@@ -197,10 +217,10 @@ const DoLSave = ((Story, Save) => {
 					dolSaveDetails.slots[i] = {
 						title: scSaveDetails.slots[i].title,
 						date: scSaveDetails.slots[i].date,
-						metadata: scSaveDetails.slots[i].metadata
+						metadata: scSaveDetails.slots[i].metadata,
 					};
 					if (dolSaveDetails.slots[i].metadata === undefined) {
-						dolSaveDetails.slots[i].metadata = { saveName: "old save", saveId: 0 }
+						dolSaveDetails.slots[i].metadata = { saveName: "old save", saveId: 0 };
 					}
 					if (dolSaveDetails.slots[i].metadata.saveName === undefined) {
 						dolSaveDetails.slots[i].metadata.saveName = "old save";
@@ -209,7 +229,7 @@ const DoLSave = ((Story, Save) => {
 					dolSaveDetails.slots[i] = null;
 				}
 			}
-	
+
 			localStorage.setItem(KEY_DETAILS, JSON.stringify(dolSaveDetails));
 			return true;
 		}
@@ -223,24 +243,24 @@ const DoLSave = ((Story, Save) => {
 				id: Story.domId,
 				title: Story.get(V.passage).description(),
 				date: Date.now(),
-				metadata: metadata
+				metadata,
 			};
 		} else {
-			var slot = parseInt(saveSlot);
+			const slot = parseInt(saveSlot);
 			saveDetails.slots[slot] = {
 				id: Story.domId,
 				title: Story.get(V.passage).description(),
 				date: Date.now(),
-				metadata: metadata
+				metadata,
 			};
 		}
 		localStorage.setItem(KEY_DETAILS, JSON.stringify(saveDetails));
 	}
 
 	function getSaveDetails(saveSlot) {
-		if (localStorage.hasOwnProperty(KEY_DETAILS)) {
+		if (Object.hasOwn(localStorage, KEY_DETAILS)) {
 			const saveDetails = JSON.parse(localStorage.getItem(KEY_DETAILS));
-			if (typeof saveSlot === 'number') {
+			if (typeof saveSlot === "number") {
 				if (saveDetails != null) {
 					return saveDetails.slots[saveSlot];
 				}
@@ -256,7 +276,7 @@ const DoLSave = ((Story, Save) => {
 		if (saveSlot === "autosave") {
 			saveDetails.autosave = null;
 		} else {
-			var slot = parseInt(saveSlot);
+			const slot = parseInt(saveSlot);
 			saveDetails.slots[slot] = null;
 		}
 		localStorage.setItem(KEY_DETAILS, JSON.stringify(saveDetails));
@@ -271,52 +291,56 @@ const DoLSave = ((Story, Save) => {
 	}
 
 	function resetSaveMenu() {
-		new Wikifier(null, '<<resetSaveMenu>>');
+		Wikifier.wikifyEval("<<resetSaveMenu>>");
 	}
 
 	function ironmanAutoSave() {
 		const saveSlot = 8;
 		updateSavesCount();
-		const success = Save.slots.save(saveSlot, null, { "saveId": V.saveId, "saveName": V.saveName, "ironman": V.ironmanmode });
+		const success = Save.slots.save(saveSlot, null, {
+			saveId: V.saveId,
+			saveName: V.saveName,
+			ironman: V.ironmanmode,
+		});
 		if (success) {
 			const save = Save.slots.get(saveSlot);
 			setSaveDetail(saveSlot, {
-				"saveId": V.saveId,
-				"saveName": V.saveName,
-				"ironman": V.ironmanmode,
-				"signature": (V.ironmanmode ? IronMan.getSignature(save) : false)
+				saveId: V.saveId,
+				saveName: V.saveName,
+				ironman: V.ironmanmode,
+				signature: V.ironmanmode ? IronMan.getSignature(save) : false,
 			});
 		}
 	}
 
-	Macro.add('incrementautosave', {
+	Macro.add("incrementautosave", {
 		handler() {
 			if (!V.ironmanmode) V.saveDetails.auto.count++;
-		}
+		},
 	});
 
 	return Object.freeze({
-		save		: save,
-		load		: load,
-		delete		: deleteSave,
-		import		: importSave,
-		getSaves	: returnSaveData,
-		resetMenu	: resetSaveMenu,
-		getVersion	: getSaveVersion,
-		loadHandler	: loadHandler,
-		SaveDetails	: Object.freeze({
-			prepare		: prepareSaveDetails,
-			set			: setSaveDetail,
-			get			: getSaveDetails,
-			delete		: deleteSaveDetails,
-			deleteAll	: deleteAllSaveDetails
+		save,
+		load,
+		delete: deleteSave,
+		import: importSave,
+		getSaves: returnSaveData,
+		resetMenu: resetSaveMenu,
+		getVersion: getSaveVersion,
+		loadHandler,
+		SaveDetails: Object.freeze({
+			prepare: prepareSaveDetails,
+			set: setSaveDetail,
+			get: getSaveDetails,
+			delete: deleteSaveDetails,
+			deleteAll: deleteAllSaveDetails,
 		}),
-		IronMan		: Object.freeze({
-			autoSave	: ironmanAutoSave
+		IronMan: Object.freeze({
+			autoSave: ironmanAutoSave,
 		}),
-		Utils		: Object.freeze({
-			parseVer	: parseVersion
-		})
+		Utils: Object.freeze({
+			parseVer: parseVersion,
+		}),
 	});
 })(Story, Save);
 window.DoLSave = DoLSave;
@@ -341,29 +365,29 @@ window.getSaveData = function () {
 	const input = document.getElementById("saveDataInput");
 	updateExportDay();
 	input.value = Save.serialize();
-}
+};
 
 window.loadSaveData = function () {
 	const input = document.getElementById("saveDataInput");
 	const result = Save.deserialize(input.value);
 	if (result === null) {
-		input.value = "Invalid Save."
+		input.value = "Invalid Save.";
 	}
-}
+};
 
 window.clearTextBox = function (id) {
 	document.getElementById(id).value = "";
-}
+};
 
 window.topTextArea = function (id) {
 	const textArea = document.getElementById(id);
 	textArea.scroll(0, 0);
-}
+};
 
 window.bottomTextArea = function (id) {
 	const textArea = document.getElementById(id);
 	textArea.scroll(0, textArea.scrollHeight);
-}
+};
 
 window.copySavedata = function (id) {
 	const saveData = document.getElementById(id);
@@ -371,18 +395,20 @@ window.copySavedata = function (id) {
 	saveData.select();
 
 	try {
-		const successful = document.execCommand('copy');
+		document.execCommand("copy");
 	} catch (err) {
 		const copyTextArea = document.getElementById("CopyTextArea");
 		copyTextArea.value = "Copying Error";
-		console.log('Unable to copy: ', err);
+		console.log("Unable to copy: ", err);
 	}
-}
+};
 
-window.updateExportDay = function() {
-	if (V.saveDetails != undefined && State.history[0].variables.saveDetails != undefined) {
+window.updateExportDay = function () {
+	if (V.saveDetails != null && State.history[0].variables.saveDetails != null) {
 		V.saveDetails.exported.days = clone(V.days);
-		State.history[0].variables.saveDetails.exported.days = clone(State.history[0].variables.days);
+		State.history[0].variables.saveDetails.exported.days = clone(
+			State.history[0].variables.days
+		);
 		V.saveDetails.exported.count++;
 		State.history[0].variables.saveDetails.exported.count++;
 		V.saveDetails.exported.dayCount++;
@@ -395,10 +421,10 @@ window.updateExportDay = function() {
 			session.set("state", sessionState);
 		}
 	}
-}
+};
 
 window.updateSavesCount = function () {
-	if (V.saveDetails != undefined && State.history[0].variables.saveDetails != undefined) {
+	if (V.saveDetails != null && State.history[0].variables.saveDetails != null) {
 		V.saveDetails.slot.count++;
 		State.history[0].variables.saveDetails.slot.count++;
 		V.saveDetails.slot.dayCount++;
@@ -410,19 +436,19 @@ window.updateSavesCount = function () {
 			session.set("state", sessionState);
 		}
 	}
-}
+};
 
 window.importSettings = function (data, type) {
+	const reader = new FileReader();
 	switch (type) {
 		case "text":
-			V.importString = document.getElementById("settingsDataInput").value
-			new Wikifier(null, '<<displaySettings "importConfirmDetails">>');
+			V.importString = document.getElementById("settingsDataInput").value;
+			Wikifier.wikifyEval('<<displaySettings "importConfirmDetails">>');
 			break;
 		case "file":
-			const reader = new FileReader();
-			reader.addEventListener('load', function (e) {
+			reader.addEventListener("load", function (e) {
 				V.importString = e.target.result;
-				new Wikifier(null, '<<displaySettings "importConfirmDetails">>');
+				Wikifier.wikifyEval(null, '<<displaySettings "importConfirmDetails">>');
 			});
 			reader.readAsBinaryString(data[0]);
 			break;
@@ -430,38 +456,46 @@ window.importSettings = function (data, type) {
 			importSettingsData(data);
 			break;
 	}
-}
+};
 
-var importSettingsData = function (data) {
+const importSettingsData = function (data) {
 	let S = null;
 	const result = data;
-	if (result != null && result != undefined) {
-		//console.log("json",JSON.parse(result));
+	if (result != null && result != null) {
+		// console.log("json",JSON.parse(result));
 		S = JSON.parse(result);
-		if (V.passage === "Start" && S.starting != undefined) {
-			S.starting = settingsConvert(false, "starting", S.starting)
+		if (V.passage === "Start" && S.starting != null) {
+			S.starting = settingsConvert(false, "starting", S.starting);
 		}
-		if (S.general != undefined) {
-			S.general = settingsConvert(false, "general", S.general)
+		if (S.general != null) {
+			S.general = settingsConvert(false, "general", S.general);
 		}
 
-		if (V.passage === "Start" && S.starting != undefined) {
-			var listObject = settingsObjects("starting");
-			var listKey = Object.keys(listObject);
-			var namedObjects = ["player", "skinColor"];
+		if (V.passage === "Start" && S.starting != null) {
+			const listObject = settingsObjects("starting");
+			const listKey = Object.keys(listObject);
+			const namedObjects = ["player", "skinColor"];
 
-			for (var i = 0; i < listKey.length; i++) {
-				if (namedObjects.includes(listKey[i]) && S.starting[listKey[i]] != undefined) {
-					var itemKey = Object.keys(listObject[listKey[i]]);
-					for (var j = 0; j < itemKey.length; j++) {
-						if (V[listKey[i]][itemKey[j]] != undefined && S.starting[listKey[i]][itemKey[j]] != undefined) {
-							if (validateValue(listObject[listKey[i]][itemKey[j]], S.starting[listKey[i]][itemKey[j]])) {
+			for (let i = 0; i < listKey.length; i++) {
+				if (namedObjects.includes(listKey[i]) && S.starting[listKey[i]] != null) {
+					const itemKey = Object.keys(listObject[listKey[i]]);
+					for (let j = 0; j < itemKey.length; j++) {
+						if (
+							V[listKey[i]][itemKey[j]] != null &&
+							S.starting[listKey[i]][itemKey[j]] != null
+						) {
+							if (
+								validateValue(
+									listObject[listKey[i]][itemKey[j]],
+									S.starting[listKey[i]][itemKey[j]]
+								)
+							) {
 								V[listKey[i]][itemKey[j]] = S.starting[listKey[i]][itemKey[j]];
 							}
 						}
 					}
 				} else if (!namedObjects.includes(listKey[i])) {
-					if (V[listKey[i]] != undefined && S.starting[listKey[i]] != undefined) {
+					if (V[listKey[i]] != null && S.starting[listKey[i]] != null) {
 						if (validateValue(listObject[listKey[i]], S.starting[listKey[i]])) {
 							V[listKey[i]] = S.starting[listKey[i]];
 						}
@@ -470,23 +504,31 @@ var importSettingsData = function (data) {
 			}
 		}
 
-		if (S.general != undefined) {
-			var listObject = settingsObjects("general");
-			var listKey = Object.keys(listObject);
-			var namedObjects = ["map", "skinColor", "shopDefaults"];
+		if (S.general != null) {
+			const listObject = settingsObjects("general");
+			const listKey = Object.keys(listObject);
+			const namedObjects = ["map", "skinColor", "shopDefaults"];
 
-			for (var i = 0; i < listKey.length; i++) {
-				if (namedObjects.includes(listKey[i]) && S.general[listKey[i]] != undefined) {
-					var itemKey = Object.keys(listObject[listKey[i]]);
-					for (var j = 0; j < itemKey.length; j++) {
-						if (V[listKey[i]][itemKey[j]] != undefined && S.general[listKey[i]][itemKey[j]] != undefined) {
-							if (validateValue(listObject[listKey[i]][itemKey[j]], S.general[listKey[i]][itemKey[j]])) {
+			for (let i = 0; i < listKey.length; i++) {
+				if (namedObjects.includes(listKey[i]) && S.general[listKey[i]] != null) {
+					const itemKey = Object.keys(listObject[listKey[i]]);
+					for (let j = 0; j < itemKey.length; j++) {
+						if (
+							V[listKey[i]][itemKey[j]] != null &&
+							S.general[listKey[i]][itemKey[j]] != null
+						) {
+							if (
+								validateValue(
+									listObject[listKey[i]][itemKey[j]],
+									S.general[listKey[i]][itemKey[j]]
+								)
+							) {
 								V[listKey[i]][itemKey[j]] = S.general[listKey[i]][itemKey[j]];
 							}
 						}
 					}
 				} else if (!namedObjects.includes(listKey[i])) {
-					if (V[listKey[i]] != undefined && S.general[listKey[i]] != undefined) {
+					if (V[listKey[i]] != null && S.general[listKey[i]] != null) {
 						if (validateValue(listObject[listKey[i]], S.general[listKey[i]])) {
 							V[listKey[i]] = S.general[listKey[i]];
 						}
@@ -495,17 +537,28 @@ var importSettingsData = function (data) {
 			}
 		}
 
-		if (S.npc != undefined) {
-			var listObject = settingsObjects("npc");
-			var listKey = Object.keys(listObject);
-			for (var i = 0; i < V.NPCNameList.length; i++) {
-				if (S.npc[V.NPCNameList[i]] != undefined) {
-					for (var j = 0; j < listKey.length; j++) {
-						//Overwrite to allow for "none" default value in the start passage to allow for rng to decide
-						if (V.passage === "Start" && ["pronoun", "gender"].includes(listKey[j]) && S.npc[V.NPCNameList[i]][listKey[j]] === "none") {
+		if (S.npc != null) {
+			const listObject = settingsObjects("npc");
+			// eslint-disable-next-line no-var
+			const listKey = Object.keys(listObject);
+			// eslint-disable-next-line no-var
+			for (let i = 0; i < V.NPCNameList.length; i++) {
+				if (S.npc[V.NPCNameList[i]] != null) {
+					// eslint-disable-next-line no-var
+					for (let j = 0; j < listKey.length; j++) {
+						// Overwrite to allow for "none" default value in the start passage to allow for rng to decide
+						if (
+							V.passage === "Start" &&
+							["pronoun", "gender"].includes(listKey[j]) &&
+							S.npc[V.NPCNameList[i]][listKey[j]] === "none"
+						) {
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
-						}
-						else if (validateValue(listObject[listKey[j]], S.npc[V.NPCNameList[i]][listKey[j]])) {
+						} else if (
+							validateValue(
+								listObject[listKey[j]],
+								S.npc[V.NPCNameList[i]][listKey[j]]
+							)
+						) {
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
 						}
 					}
@@ -513,10 +566,10 @@ var importSettingsData = function (data) {
 			}
 		}
 	}
-}
+};
 
 window.validateValue = function (keys, value) {
-	//console.log("validateValue",keys,value);
+	// console.log("validateValue",keys,value);
 	const keyArray = Object.keys(keys);
 	let valid = false;
 	if (keyArray.length === 0) {
@@ -527,8 +580,8 @@ window.validateValue = function (keys, value) {
 			valid = true;
 		}
 	}
-	if (keyArray.includes("decimals") && value != undefined) {
-		if (value.toFixed(keys.decimals) != value) {
+	if (keyArray.includes("decimals") && value != null) {
+		if (value.toFixed(keys.decimals) !== value) {
 			valid = false;
 		}
 	}
@@ -542,13 +595,13 @@ window.validateValue = function (keys, value) {
 			valid = true;
 		}
 	}
-	if (keyArray.includes("strings") && value != undefined) {
+	if (keyArray.includes("strings") && value != null) {
 		if (keys.strings.includes(value)) {
 			valid = true;
 		}
 	}
 	return valid;
-}
+};
 
 window.exportSettings = function (data, type) {
 	const S = {
@@ -557,7 +610,7 @@ window.exportSettings = function (data, type) {
 			skinColor: {},
 			shopDefaults: {},
 		},
-		npc: {}
+		npc: {},
 	};
 	let listObject;
 	let listKey;
@@ -571,18 +624,23 @@ window.exportSettings = function (data, type) {
 		listKey = Object.keys(listObject);
 		namedObjects = ["player", "skinColor"];
 
-		for (var i = 0; i < listKey.length; i++) {
-			if (namedObjects.includes(listKey[i]) && V[listKey[i]] != undefined) {
-				var itemKey = Object.keys(listObject[listKey[i]]);
-				for (var j = 0; j < itemKey.length; j++) {
-					if (V[listKey[i]][itemKey[j]] != undefined) {
-						if (validateValue(listObject[listKey[i]][itemKey[j]], V[listKey[i]][itemKey[j]])) {
+		for (let i = 0; i < listKey.length; i++) {
+			if (namedObjects.includes(listKey[i]) && V[listKey[i]] != null) {
+				const itemKey = Object.keys(listObject[listKey[i]]);
+				for (let j = 0; j < itemKey.length; j++) {
+					if (V[listKey[i]][itemKey[j]] != null) {
+						if (
+							validateValue(
+								listObject[listKey[i]][itemKey[j]],
+								V[listKey[i]][itemKey[j]]
+							)
+						) {
 							S.starting[listKey[i]][itemKey[j]] = V[listKey[i]][itemKey[j]];
 						}
 					}
 				}
 			} else if (!namedObjects.includes(listKey[i])) {
-				if (V[listKey[i]] != undefined) {
+				if (V[listKey[i]] != null) {
 					if (validateValue(listObject[listKey[i]], V[listKey[i]])) {
 						S.starting[listKey[i]] = V[listKey[i]];
 					}
@@ -595,18 +653,20 @@ window.exportSettings = function (data, type) {
 	listKey = Object.keys(listObject);
 	namedObjects = ["map", "skinColor", "shopDefaults"];
 
-	for (var i = 0; i < listKey.length; i++) {
-		if (namedObjects.includes(listKey[i]) && V[listKey[i]] != undefined) {
-			var itemKey = Object.keys(listObject[listKey[i]]);
-			for (var j = 0; j < itemKey.length; j++) {
-				if (V[listKey[i]][itemKey[j]] != undefined) {
-					if (validateValue(listObject[listKey[i]][itemKey[j]], V[listKey[i]][itemKey[j]])) {
+	for (let i = 0; i < listKey.length; i++) {
+		if (namedObjects.includes(listKey[i]) && V[listKey[i]] != null) {
+			const itemKey = Object.keys(listObject[listKey[i]]);
+			for (let j = 0; j < itemKey.length; j++) {
+				if (V[listKey[i]][itemKey[j]] != null) {
+					if (
+						validateValue(listObject[listKey[i]][itemKey[j]], V[listKey[i]][itemKey[j]])
+					) {
 						S.general[listKey[i]][itemKey[j]] = V[listKey[i]][itemKey[j]];
 					}
 				}
 			}
 		} else if (!namedObjects.includes(listKey[i])) {
-			if (V[listKey[i]] != undefined) {
+			if (V[listKey[i]] != null) {
 				if (validateValue(listObject[listKey[i]], V[listKey[i]])) {
 					S.general[listKey[i]] = V[listKey[i]];
 				}
@@ -615,52 +675,107 @@ window.exportSettings = function (data, type) {
 	}
 	listObject = settingsObjects("npc");
 	listKey = Object.keys(listObject);
-	for (var i = 0; i < V.NPCNameList.length; i++) {
+	for (let i = 0; i < V.NPCNameList.length; i++) {
 		S.npc[V.NPCNameList[i]] = {};
-		for (var j = 0; j < listKey.length; j++) {
-			//Overwrite to allow for "none" default value in the start passage to allow for rng to decide
-			if (V.passage === "Start" && ["pronoun", "gender"].includes(listKey[i]) && V.NPCName[i][listKey[j]] === "none") {
+		for (let j = 0; j < listKey.length; j++) {
+			// Overwrite to allow for "none" default value in the start passage to allow for rng to decide
+			if (
+				V.passage === "Start" &&
+				["pronoun", "gender"].includes(listKey[i]) &&
+				V.NPCName[i][listKey[j]] === "none"
+			) {
 				S.npc[V.NPCNameList[i]][listKey[j]] = V.NPCName[i][listKey[j]];
-			}
-			else if (validateValue(listObject[listKey[j]], V.NPCName[i][listKey[j]])) {
+			} else if (validateValue(listObject[listKey[j]], V.NPCName[i][listKey[j]])) {
 				S.npc[V.NPCNameList[i]][listKey[j]] = V.NPCName[i][listKey[j]];
 			}
 		}
 	}
 
 	if (V.passage === "Start") {
-		S.starting = settingsConvert(true, "starting", S.starting)
+		S.starting = settingsConvert(true, "starting", S.starting);
 	}
-	S.general = settingsConvert(true, "general", S.general)
+	S.general = settingsConvert(true, "general", S.general);
 
-	//console.log(S);
-	var result = JSON.stringify(S);
+	// console.log(S);
+	const result = JSON.stringify(S);
 	if (type === "text") {
-		var textArea = document.getElementById("settingsDataInput");
+		const textArea = document.getElementById("settingsDataInput");
 		textArea.value = result;
-	}
-	else if (type === "file") {
-		var blob = new Blob([result], { type: "text/plain;charset=utf-8" });
+	} else if (type === "file") {
+		const blob = new Blob([result], { type: "text/plain;charset=utf-8" });
 		saveAs(blob, "DolSettingsExport.txt");
 	}
-}
+};
 
 window.settingsObjects = function (type) {
-	let result = undefined;
-	/*boolLetter type also requires the bool type aswell*/
+	let result;
+	/* boolLetter type also requires the bool type aswell */
 	switch (type) {
 		case "starting":
 			result = {
 				bodysize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
 				breastsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
 				genitalsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
-				eyeselect: { strings: ["purple", "dark blue", "light blue", "amber", "hazel", "green", "lime green", "red", "pink", "grey", "light grey", "random"], randomize: "characterAppearance" },
-				hairselect: { strings: ["red", "jetblack", "black", "brown", "softbrown", "lightbrown", "burntorange", "blond", "softblond", "platinumblond", "ashyblond", "strawberryblond", "ginger", "random"], randomize: "characterAppearance" },
+				eyeselect: {
+					strings: [
+						"purple",
+						"dark blue",
+						"light blue",
+						"amber",
+						"hazel",
+						"green",
+						"lime green",
+						"red",
+						"pink",
+						"grey",
+						"light grey",
+						"random",
+					],
+					randomize: "characterAppearance",
+				},
+				hairselect: {
+					strings: [
+						"red",
+						"jetblack",
+						"black",
+						"brown",
+						"softbrown",
+						"lightbrown",
+						"burntorange",
+						"blond",
+						"softblond",
+						"platinumblond",
+						"ashyblond",
+						"strawberryblond",
+						"ginger",
+						"random",
+					],
+					randomize: "characterAppearance",
+				},
 				hairlength: { min: 0, max: 400, decimals: 0, randomize: "characterAppearance" },
-				awareselect: { strings: ["innocent", "knowledgeable"], randomize: "characterTrait" },
-				background: { strings: ["waif", "nerd", "athlete", "delinquent", "promiscuous", "exhibitionist", "deviant", "beautiful", "crossdresser", "lustful", "greenthumb", "plantlover"], randomize: "characterTrait" },
+				awareselect: {
+					strings: ["innocent", "knowledgeable"],
+					randomize: "characterTrait",
+				},
+				background: {
+					strings: [
+						"waif",
+						"nerd",
+						"athlete",
+						"delinquent",
+						"promiscuous",
+						"exhibitionist",
+						"deviant",
+						"beautiful",
+						"crossdresser",
+						"lustful",
+						"greenthumb",
+						"plantlover",
+					],
+					randomize: "characterTrait",
+				},
 				gamemode: { strings: ["normal", "soft", "hard"] },
-				ironmanmode: { bool: false, bool: true },
+				ironmanmode: { bool: false },
 				maxStates: { min: 1, max: 20, decimals: 0 },
 				player: {
 					gender: { strings: ["m", "f", "h"], randomize: "characterAppearance" },
@@ -669,12 +784,24 @@ window.settingsObjects = function (type) {
 					freckles: { bool: true, strings: ["random"], randomize: "characterAppearance" },
 					breastsize: { min: 0, max: 4, decimals: 0, randomize: "characterAppearance" },
 					penissize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
-					bottomsize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" }
+					bottomsize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
 				},
 				skinColor: {
-					natural: { strings: ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"], randomize: "characterAppearance" },
+					natural: {
+						strings: [
+							"light",
+							"medium",
+							"dark",
+							"gyaru",
+							"ylight",
+							"ymedium",
+							"ydark",
+							"ygyaru",
+						],
+						randomize: "characterAppearance",
+					},
 					range: { min: 0, max: 100, decimals: 0, randomize: "characterAppearance" },
-				}
+				},
 			};
 			break;
 		case "general":
@@ -733,7 +860,7 @@ window.settingsObjects = function (type) {
 				footdisable: { boolLetter: true, bool: true },
 				toydildodisable: { boolLetter: true, bool: true },
 				toywhipdisable: { boolLetter: true, bool: true },
-				speechpregnancydisable: {boolLetter: true, bool: true},
+				speechpregnancydisable: { boolLetter: true, bool: true },
 				asphyxiaLvl: { min: 0, max: 4, decimals: 0 },
 				NudeGenderDC: { min: 0, max: 2, decimals: 0 },
 				breastsizemin: { min: 0, max: 4, decimals: 0 },
@@ -741,14 +868,14 @@ window.settingsObjects = function (type) {
 				bottomsizemax: { min: 0, max: 9, decimals: 0 },
 				penissizemax: { min: -2, max: 4, decimals: 0 },
 				penissizemin: { min: -2, max: 0, decimals: 0 },
-				/*ToDo: Pregnancy, uncomment to properly enable, add defaults back to DolSettingsExport.json*/
-				//baseVaginalPregnancyChance: { min: 0, max: 96, decimals: 0 },
-				//baseNpcPregnancyChance: { min: 0, max: 16, decimals: 0 },
-				//humanPregnancyMonths: { min: 1, max: 9, decimals: 0 },
-				//wolfPregnancyWeeks: { min: 2, max: 12, decimals: 0 },
-				//playerPregnancyHumanDisable: {boolLetter: true, bool: true},
-				//playerPregnancyBeastDisable: {boolLetter: true, bool: true},
-				//npcPregnancyDisable: {boolLetter: true, bool: true},
+				/* ToDo: Pregnancy, uncomment to properly enable, add defaults back to DolSettingsExport.json */
+				// baseVaginalPregnancyChance: { min: 0, max: 96, decimals: 0 },
+				// baseNpcPregnancyChance: { min: 0, max: 16, decimals: 0 },
+				// humanPregnancyMonths: { min: 1, max: 9, decimals: 0 },
+				// wolfPregnancyWeeks: { min: 2, max: 12, decimals: 0 },
+				// playerPregnancyHumanDisable: {boolLetter: true, bool: true},
+				// playerPregnancyBeastDisable: {boolLetter: true, bool: true},
+				// npcPregnancyDisable: {boolLetter: true, bool: true},
 				images: { min: 0, max: 1, decimals: 0 },
 				sidebarAnimations: { bool: true },
 				combatAnimations: { bool: true },
@@ -758,7 +885,10 @@ window.settingsObjects = function (type) {
 				halfcloseddisable: { boolLetter: true, bool: true },
 				numberify_enabled: { min: 0, max: 1, decimals: 0 },
 				timestyle: { strings: ["military", "ampm"] },
-				checkstyle: { strings: ["percentage", "words", "skillname"], randomize: "gameplay" },
+				checkstyle: {
+					strings: ["percentage", "words", "skillname"],
+					randomize: "gameplay",
+				},
 				tipdisable: { boolLetter: true, bool: true },
 				debugdisable: { boolLetter: true, bool: true },
 				statdisable: { boolLetter: true, bool: true },
@@ -793,7 +923,23 @@ window.settingsObjects = function (type) {
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },
-					color: { strings: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"] },
+					color: {
+						strings: [
+							"black",
+							"blue",
+							"brown",
+							"green",
+							"pink",
+							"purple",
+							"red",
+							"tangerine",
+							"teal",
+							"white",
+							"yellow",
+							"custom",
+							"random",
+						],
+					},
 					colourItems: { strings: ["disable", "random", "default"] },
 					compactMode: { bool: true },
 					disableReturn: { bool: true },
@@ -802,7 +948,23 @@ window.settingsObjects = function (type) {
 					mannequinGenderFromClothes: { bool: true },
 					noHelp: { bool: true },
 					noTraits: { bool: true },
-					secColor: { strings: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"] },
+					secColor: {
+						strings: [
+							"black",
+							"blue",
+							"brown",
+							"green",
+							"pink",
+							"purple",
+							"red",
+							"tangerine",
+							"teal",
+							"white",
+							"yellow",
+							"custom",
+							"random",
+						],
+					},
 				},
 			};
 			break;
@@ -812,24 +974,24 @@ window.settingsObjects = function (type) {
 				gender: { strings: ["m", "f"] },
 				penissize: { min: 0, max: 4, decimals: 0 },
 				breastsize: { min: 0, max: 12, decimals: 0 },
-			}
+			};
 			break;
 	}
 	return result;
-}
+};
 
-/*Converts specific settings to so they don't look so chaotic to players*/
-window.settingsConvert = function(exportType, type, settings) {
+/* Converts specific settings to so they don't look so chaotic to players */
+window.settingsConvert = function (exportType, type, settings) {
 	const listObject = settingsObjects(type);
 	const result = settings;
 	const keys = Object.keys(listObject);
 	for (let i = 0; i < keys.length; i++) {
 		if (result[keys[i]] === undefined) continue;
 		if (["map", "skinColor", "player", "shopDefaults"].includes(keys[i])) {
-			var itemKey = Object.keys(listObject[keys[i]]);
-			for (var j = 0; j < itemKey.length; j++) {
+			const itemKey = Object.keys(listObject[keys[i]]);
+			for (let j = 0; j < itemKey.length; j++) {
 				if (result[keys[i]][itemKey[j]] === undefined) continue;
-				var keyArray = Object.keys(listObject[keys[i]][itemKey[j]]);
+				const keyArray = Object.keys(listObject[keys[i]][itemKey[j]]);
 				if (exportType) {
 					if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
 						if (result[keys[i]][itemKey[j]] === "t") {
@@ -849,7 +1011,7 @@ window.settingsConvert = function(exportType, type, settings) {
 				}
 			}
 		} else {
-			var keyArray = Object.keys(listObject[keys[i]]);
+			const keyArray = Object.keys(listObject[keys[i]]);
 			if (exportType) {
 				if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
 					if (result[keys[i]] === "t") {
@@ -870,24 +1032,24 @@ window.settingsConvert = function(exportType, type, settings) {
 		}
 	}
 	return result;
-}
+};
 
 window.loadExternalExportFile = function () {
 	importScripts("DolSettingsExport.json")
-		.then(function() {
+		.then(function () {
 			const textArea = document.getElementById("settingsDataInput");
 			textArea.value = JSON.stringify(DolSettingsExport);
 		})
-		.catch(function(err) {
-			//console.log(err);
+		.catch(function () {
+			// console.log(err);
 			const button = document.getElementById("LoadExternalExportFile");
 			button.value = "Error Loading";
 		});
-}
+};
 
-window.randomizeSettings = function(filter) {
-	let settingsResult = {};
-	const settingContainers = ['player', 'skinColor'];
+window.randomizeSettings = function (filter) {
+	const settingsResult = {};
+	const settingContainers = ["player", "skinColor"];
 	const randomizeSettingLoop = function (settingsObject, mainObject, subObject) {
 		if (mainObject && !settingsResult[mainObject]) {
 			settingsResult[mainObject] = {};
@@ -895,77 +1057,82 @@ window.randomizeSettings = function(filter) {
 		if (subObject) {
 			if (!settingsResult[mainObject][subObject]) settingsResult[mainObject][subObject] = {};
 		}
-		Object.entries(settingsObject).forEach((setting) => {
+		Object.entries(settingsObject).forEach(setting => {
 			if (settingContainers.includes(setting[0])) {
 				randomizeSettingLoop(setting[1], mainObject, setting[0]);
-			} else if ((!filter && setting[1].randomize) || (filter && filter === setting[1].randomize)) {
+			} else if (
+				(!filter && setting[1].randomize) ||
+				(filter && filter === setting[1].randomize)
+			) {
 				if (subObject) {
-					settingsResult[mainObject][subObject][setting[0]] = randomizeSettingSet(setting[1]);
+					settingsResult[mainObject][subObject][setting[0]] = randomizeSettingSet(
+						setting[1]
+					);
 				} else {
 					settingsResult[mainObject][setting[0]] = randomizeSettingSet(setting[1]);
 				}
 			}
-		})
-	}
-	const randomNumber = function(min, max, decimals = 0) {
-		let decimalsMult = Math.pow(10, decimals);
-		let minMult = min * decimalsMult;
-		let maxMult = max * decimalsMult;
-		let rn = (Math.floor(Math.random() * (maxMult - minMult)) + minMult) / decimalsMult;
+		});
+	};
+	const randomNumber = function (min, max, decimals = 0) {
+		const decimalsMult = Math.pow(10, decimals);
+		const minMult = min * decimalsMult;
+		const maxMult = max * decimalsMult;
+		const rn = (Math.floor(Math.random() * (maxMult - minMult)) + minMult) / decimalsMult;
 		return parseFloat(rn.toFixed(decimals));
-	}
-	const randomizeSettingSet = function(setting) {
+	};
+	const randomizeSettingSet = function (setting) {
 		let result;
 		const keys = Object.keys(setting);
-		if (keys.includes('min')) {
+		if (keys.includes("min")) {
 			result = randomNumber(setting.min, setting.max, setting.decimals);
 		}
-		if (keys.includes('strings')) {
+		if (keys.includes("strings")) {
 			result = setting.strings.pluck();
 		}
-		if (keys.includes('boolLetter')) {
-			result = ['t', 'f'].pluck();
+		if (keys.includes("boolLetter")) {
+			result = ["t", "f"].pluck();
 		}
-		if (keys.includes('bool')) {
+		if (keys.includes("bool")) {
 			result = [true, false].pluck();
 		}
 		return result;
-	}
+	};
 	if (V.passage === "Start") {
-		randomizeSettingLoop(settingsObjects('starting'), 'starting');
+		randomizeSettingLoop(settingsObjects("starting"), "starting");
 	}
-	randomizeSettingLoop(settingsObjects('general'), 'general');
+	randomizeSettingLoop(settingsObjects("general"), "general");
 
 	return JSON.stringify(settingsResult);
-}
+};
 
 // !!Hack warning!! Don't use it maybe?
 window.updateMoment = function () {
 	// change last (and only) moment in local history
 	State.history[State.history.length - 1].variables = JSON.parse(JSON.stringify(V));
 	// prepare the moment object with modified history
-	let moment = SugarCube.State.marshalForSave();
+	const moment = State.marshalForSave();
 	// replace moment.history with moment.delta, because that's what SugarCube expects to find
 	// this is a bad thing to do probably btw, because while history and delta appear to look very similar,
 	// they're not always the same thing, SugarCube actually decodes delta into history (see: https://github.com/tmedwards/sugarcube-2/blob/36a8e1600160817c44866205bc4d2b7730b2e70c/src/state.js#L527)
 	// but for my purpose it works (i think?)
-	//delete Object.assign(moment, {delta: moment.history}).history;
+	// delete Object.assign(moment, {delta: moment.history}).history;
 	// delta-encode the state
 	delete Object.assign(moment, { delta: State.deltaEncode(moment.history) }).history;
 	// replace saved moment in session with the new one
-	let gameName = SugarCube.Story.domId;
+	const gameName = Story.domId;
 	sessionStorage[gameName + ".state"] = JSON.stringify(moment);
 	// it appears that this line is not necessary for it to work
-	//SugarCube.session._engine[gameName + ".state"] = JSON.stringify(moment);
+	// SugarCube.session._engine[gameName + ".state"] = JSON.stringify(moment);
 
 	// Voilà! F5 will reload the current state now without going to another passage!
-}
+};
 
-window.isJsonString = function(s) {
+window.isJsonString = function (s) {
 	try {
 		JSON.parse(s);
 	} catch (e) {
 		return false;
 	}
 	return true;
-}
+};
