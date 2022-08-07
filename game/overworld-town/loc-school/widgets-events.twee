@@ -723,7 +723,8 @@
 		<<link [[Ignore|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
 	<</if>>
-
+<<elseif $rng gte 11 and !$worn.lower.type.includes("naked")>>
+	<<lockerevent>>
 <<else>>
 	<<generatey1>>A <<person1>><<person>> walks up to you. "Hi," <<he>> says. Seems <<he>> wants to talk.
 	<br><br>
@@ -744,6 +745,72 @@
 		<<link [[Next|School Rear Playground]]>><<set $eventskip to 1>><</link>>
 		<br>
 	<</if>>
+<</widget>>
+
+<<widget "lockerevent">>
+	<<generatey1>><<generatey2><<person1>>
+	<<if $cool gte 240 or $worn.under_lower.type.includes("naked")>>
+		While walking through the halls you feel a tug on your $worn.lower.name.
+		You turn to see the culprit, a <<person>> hooking the fabric inside a nearby locker. <<He>> slams the locker door shut.<<stress 5>><<gstress>>
+		<br><br>
+		<<set $phase to 0>>
+	<<elseif $cool gte 120>>
+		While walking through the halls you feel a tug on the <<print setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 ? "back hem" : "back waistband">>
+		of your $worn.under_lower.name. You turn to see the culprit, a <<person>> hooking the fabric inside a nearby locker.
+		<<He>> slams the locker door shut. It pulls uncomfortably tight against your <<bottom>>. <<pain 2>><<gpain>><<stress 5>><<gstress>>
+		<br><br>
+		<<set $phase to 1>>
+	<<else>>
+		While walking through the halls you feel a tug on the <<print setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 ? "front hem" : "front waistband">>
+		of your $worn.under_lower.name. You look down to see the culprit, a <<person>> hooking the fabric inside a nearby locker.
+		<<He>> slams the locker door shut. It pulls uncomfortably tight against your <<genitals>>.<<pain 5>><<gpain>><<stress 5>><<gstress>>
+		<br><br>
+		<<set $phase to 2>>
+	<</if>>
+	"Oops," <<he>> says with a sly grin on <<his>> face before walking off.
+	<br><br>
+	<<set $lock to 50>>
+	<<lockereventpassages>>
+<</widget>>
+
+<<widget "lockereventpassages">>
+	<<if currentSkillValue('skulduggery') gte $lock>>
+		<<link[[Try to pick the Lock(0:05)|Hallways Pick Locker Attempt]]>><<pass 5>><<crimeup 30>><<stress 5>><</link>><<crime>><<gstress>>
+		<br>
+	<<else>>
+		<span class="red">The lock is beyond your ability to pick.</span><<skulduggeryrequired>>
+		<br><br>
+	<</if>>
+	<<set _physiquemax to $physiquemax * 1.05>>
+	<<link[[Struggle Free (0:01)|Hallways Locker Struggle Free Attempt]]>><<pass 1>><</link>><<physiquedifficulty 2000 _physiquemax>>
+	<<if $worn.lower.type.includes("naked") and $exhibitionism gte 35>>
+		<br>
+		<<link[[Strip (0:01)|Hallways Strip Locker Clothing]]>><<pass 1>><</link>><<exhibitionist3>>
+	<<elseif !$worn.lower.type.includes("naked") and $exhibitionism gte 15>>
+		<br>
+		<<link[[Strip (0:01)|Hallways Strip Locker Clothing]]>><<pass 1>><</link>><<exhibitionist1>>
+	<</if>>
+<</widget>>
+
+<<widget "lockereventnext">>
+	<<if $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")>>
+		<<if $exhibitionism gte 35>>
+			<<flaunting>> you walk away, leaving your clothes behind.
+		<<else>>
+			<<tearful>> you stagger away, leaving your clothes behind.<<covered>>
+		<</if>>
+	<<elseif $worn.lower.type.includes("naked")>>
+		<<if $exhibitionism gte 35>>
+			<<flaunting>> you walk away.
+		<<else>>
+			<<tearful>> you run away.<<embarrassment>><<gtrauma>><<trauma 5>>
+		<</if>>
+	<<else>>
+		You walk away.
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<link[[Next|Hallways]]>><</link>>
 <</widget>>
 
 <<widget "eventsplayground">>
