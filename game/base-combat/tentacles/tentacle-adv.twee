@@ -517,7 +517,28 @@ _The _tentacle.fullDesc writhes between your feet.
 		Your hypnotic yearning has deepened.
 		<<set $hypnosis_traits.scream += 1>>
 	<</if>>
-	<<set _tentacle.tentaclehealth -= 6>>
+	<<set _tentacle.tentaclehealth -= 6>><<set _tentacle.head to 0>><<set _tentacle.tempBusy to true>>
+	<br>
+<</if>>
+
+<<rng>>
+<<if _tentacle.head is "hypnosis_cover">>
+	and in front of your face
+	<<if _tentacle.type is "vine">>
+		<span class="pink">where it puffs glittering pollen in your face.</span>
+	<<else>>
+		<span class="pink">where it shines with eldritch light.</span>
+	<</if>>
+	<span class="pink">You feel something shift in your consciousness.</span>
+	<<if !$hypnosis_traits.cover>>
+		You've gained the <span class="pink">Hypnotic Flaunting</span> trait.
+		<<set $hypnosis_traits.cover to 1>>
+	<<elseif $hypnosis_traits.cover lt 5>>
+		Your hypnotic flaunting has deepened.
+		<<set $hypnosis_traits.cover += 1>>
+	<</if>>
+	<<set _tentacle.tentaclehealth -= 6>><<set _tentacle.head to 0>><<set _tentacle.tempBusy to true>>
+	<br>
 <</if>>
 
 <<rng>>
@@ -529,12 +550,15 @@ _The _tentacle.fullDesc writhes between your feet.
 		<span class="pink">where it shines with eldritch light.</span>
 	<</if>>
 	A deep yearning blooms,
-	<<if $willpower gte random(1, 1000)>>
+	<<if $uncomfortable.hypnosis is false>>
+		nurtured by a lewd part of you. <span class="lewd">Your mind immediately accepts it.</span> You long for the suffering of others. <<sadism 10>>
+	<<elseif $willpower gte random(1, 1000)>>
 		nurtured by a traitorous part of you. <span class="lblue">You will it away.</span>
 	<<else>>
 		unbeckoned. <span class="pink">You can't resist it.</span> You long for the suffering of others. <<sadism 10>><<willpower 1>><<gwillpower>>
 	<</if>>
-	<<set _tentacle.tentaclehealth -= 6>>
+	<<set _tentacle.tentaclehealth -= 6>><<set _tentacle.head to 0>><<set _tentacle.tempBusy to true>>
+	<br>
 <</if>>
 
 <<rng>>
@@ -546,12 +570,15 @@ _The _tentacle.fullDesc writhes between your feet.
 		<span class="pink">where it shines with eldritch light.</span>
 	<</if>>
 	A deep yearning blooms,
-	<<if $willpower gte random(1, 1000)>>
+	<<if $uncomfortable.hypnosis is false>>
+		nurtured by a lewd part of you. <span class="lewd">Your mind immediately accepts it.</span> Feelings of arousal overwhelm you. <<arousal 10000>>
+	<<elseif $willpower gte random(1, 1000)>>
 		nurtured by a traitorous part of you. <span class="lblue">You will it away.</span>
 	<<else>>
 		unbeckoned. <span class="pink">You can't resist it.</span> Feelings of arousal overwhelm you. <<arousal 10000>><<willpower 1>><<gwillpower>>
 	<</if>>
-	<<set _tentacle.tentaclehealth -= 6>>
+	<<set _tentacle.tentaclehealth -= 6>><<set _tentacle.head to 0>><<set _tentacle.tempBusy to true>>
+	<br>
 <</if>>
 
 
@@ -559,27 +586,32 @@ _The _tentacle.fullDesc writhes between your feet.
 <<if _tentacle.head is "hypnosis">>
 	and in front of your face
 	<<if _tentacle.type is "vine">>
-		<span class="pink">where glittering pollen lingers on the tip.</span>
+		<span class="purple">where glittering pollen lingers on the tip.</span>
 	<<else>>
 		<span class="purple">where it glimmers with eldritch light.</span>
 	<</if>>
-	<<if $rng gte 67 and ($hypnosis_traits.scream is undefined or $hypnosis_traits.scream lt 5)>>
+	<<if $rng gte 76 and ($hypnosis_traits.scream is undefined or $hypnosis_traits.scream lt 5)>>
 		Confusing images swim through your mind, blending and reversing your thoughts.
 		<<set _tentacle.head to "hypnosis_scream">>
-	<<elseif $rng gte 33>>
+	<<elseif $rng gte 51 and ($hypnosis_traits.cover is undefined or $hypnosis_traits.cover lt 5)>>
+		Confusing images swim through your mind, blending and reversing your thoughts.
+		<<set _tentacle.head to "hypnosis_cover">>
+	<<elseif $rng gte 26>>
 		Sadistic images surge through your mind, accompanied by unholy delight.
 		<<set _tentacle.head to "hypnosis_sadism">>
 	<<else>>
 		A feeling of immense pleasure shivers through your scalp. A dangerous feeling.
 		<<set _tentacle.head to "hypnosis_orgasm">>
 	<</if>>
+	<br>
 <</if>>
 
 <<rng>>
-<<if _tentacle.head is 0 and _tentacle.shaft isnot 0>>
-	<<if random(1, 2) is 2 and (_tentacle.desc is "iridescent" or _tentacle.desc is "incandescent" or _tentacle.desc is "translucent" or _tentacle.desc is "blooming" or _tentacle.desc is "wired" or _tentacle.desc is "convulsing")>>
+<<if _tentacle.head is 0 and _tentacle.shaft isnot 0 and !_tentacle.tempBusy>>
+	<<if random(1, 2) is 2 and _tentacle.traits.includes("hypno")>>
 		<<upperslither>><span class="blue">and waves in front of your eyes.</span>
 		<<set _tentacle.head to "hypnosis">>
+		<br>
 	<<elseif $rng lte 10>>
 		<<if $chestuse is "squeezed">>
 			<<upperslither>><span class="blue">and<<if _tentacle.shaft is "breasts">> <<slithers>><</if>> up between your squeezed <<breasts>>.</span>
@@ -780,6 +812,7 @@ _The _tentacle.fullDesc writhes between your feet.
 		<<neutral 1>>
 	<</if>>
 <</if>>
+<<run delete _tentacle.tempBusy>>
 <</widget>>
 
 <<widget "tentacleadvdefault">>

@@ -832,6 +832,14 @@ setup.debugMenu.event_list = {
 		},
 		{
 			link: [
+				"Hypnotist Test", "Hypnotist Test"
+			],
+			widgets: [
+				"<<endcombat>>"
+			]
+		},
+		{
+			link: [
 				`Eels Swarm Me`, `Sea Eels`
 			],
 			widgets: [
