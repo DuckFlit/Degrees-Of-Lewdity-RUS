@@ -157,14 +157,14 @@ module.exports = {
 	],
 
 	parserOptions: {
-		// Support back to ES6 introduction to cover old mobile devices with outdated WebView versions
-		ecmaVersion: "2015",
+		// Support back to ES2018 to cover old mobile devices with outdated WebView versions that fail on 2019 and up functions
+		// ecmaVersion: "2018", (taken care of by env es2018)
 		sourceType: "module",
 	},
 
 	env: {
 		browser: true,
-		es2015: true,
+		es2018: true,
 		jquery: true,
 	},
 
