@@ -770,8 +770,8 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 <</widget>>
 
 <<widget "combat-hand-hypnosis">>
-<<set $rng to random(1, 100)>>
-<<if $rng gte 51 and ($hypnosis_traits.scream is undefined or $hypnosis_traits.scream lt 5)>>
+<<rng>>
+<<if $rng gte 76 and ($hypnosis_traits.scream is undefined or $hypnosis_traits.scream lt 5)>>
 	<<if _args[0] is "left">>
 		<<He>> waves the <<print $NPCList[_n].lefttool>> at you.
 		<<set $NPCList[_n].lefthand to "hypnosis_scream">>
@@ -779,7 +779,16 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<He>> waves the <<print $NPCList[_n].righttool>> at you.
 		<<set $NPCList[_n].righthand to "hypnosis_scream">>
 	<</if>>
-	<<His>> voice echoes in your mind. <span class="purple"><i>From when I click my fingers, should you try to scream, you will beg for rougher treatment instead.</i></span>
+	<<His>> voice echoes in your mind. <span class="purple"><i><span class="red">From when I click my fingers,</span> should you try to scream, you will beg for rougher treatment instead.</i></span>
+<<elseif $rng gte 51 and ($hypnosis_traits.cover is undefined or $hypnosis_traits.cover lt 5)>>
+	<<if _args[0] is "left">>
+		<<He>> waves the <<print $NPCList[_n].lefttool>> at you.
+		<<set $NPCList[_n].lefthand to "hypnosis_cover">>
+	<<else>>
+		<<He>> waves the <<print $NPCList[_n].righttool>> at you.
+		<<set $NPCList[_n].righthand to "hypnosis_cover">>
+	<</if>>
+	<<His>> voice echoes in your mind. <span class="purple"><i><span class="red">From when I click my fingers,</span> should you try to cover your body, you will display it for all to see instead.</i></span>
 <<else>>
 	<<if random(1, 2) is 2>>
 		<<His>> voice echoes in your mind. <span class="purple"><i>When I click my fingers, you will be overcome by arousal, and climax at once.</i></span>
@@ -813,7 +822,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<set $NPCList[_n].righttool to 0>>
 <</if>>
 and clicks <<his>> fingers. A deep yearning blooms,
-<<if $willpower gte random(1, 1000)>>
+<<if $uncomfortable.hypnosis is false>>
+	nurtured by a lewd part of you. <span class="lewd">Your mind immediately accepts it.</span> Feelings of arousal overwhelm you. <<He>> flashes you a satisfied smile. <<arousal 10000>>
+<<elseif $willpower gte random(1, 1000)>>
 	nurtured by a traitorous part of you. <span class="lblue">You will it away.</span> <<He>> frowns.
 <<else>>
 	unbeckoned. <span class="pink">You can't resist it.</span> Feelings of arousal overwhelm you. <<He>> flashes you a satisfied smile. <<arousal 10000>><<willpower 1>><<gwillpower>>
@@ -831,7 +842,9 @@ and clicks <<his>> fingers. A deep yearning blooms,
 	<<set $NPCList[_n].righttool to 0>>
 <</if>>
 and clicks <<his>> fingers. A deep yearning blooms,
-<<if $willpower gte random(1, 1000)>>
+<<if $uncomfortable.hypnosis is false>>
+	nurtured by a lewd part of you. <span class="lewd">Your mind immediately accepts it.</span> You long for pain. <<He>> flashes you a satisfied smile. <<masochism 10>>
+<<elseif $willpower gte random(1, 1000)>>
 	nurtured by a traitorous part of you. <span class="lblue">You will it away.</span> <<He>> frowns.
 <<else>>
 	unbeckoned. <span class="pink">You can't resist it.</span> You long for pain. <<He>> flashes you a satisfied smile. <<masochism 10>><<willpower 1>><<gwillpower>>
@@ -856,6 +869,27 @@ and clicks <<his>> fingers.
 <<elseif $hypnosis_traits.scream lt 5>>
 	Your hypnotic yearning has deepened.
 	<<set $hypnosis_traits.scream += 1>>
+<</if>>
+<<combat-reset-hand _args[0]>>
+<</widget>>
+
+<<widget "combat-hand-hypnosis-cover">>
+<<He>> clasps <<his>> palm around the
+<<if _args[0] is "left">>
+	<<print $NPCList[_n].lefttool>>,
+	<<set $NPCList[_n].lefttool to 0>>
+<<else>>
+	<<print $NPCList[_n].righttool>>,
+	<<set $NPCList[_n].righttool to 0>>
+<</if>>
+and clicks <<his>> fingers.
+<span class="pink">You feel something shift in your consciousness.</span>
+<<if !$hypnosis_traits.cover>>
+	You've gained the <span class="pink">Hypnotic Flaunting</span> trait.
+	<<set $hypnosis_traits.cover to 1>>
+<<elseif $hypnosis_traits.cover lt 5>>
+	Your hypnotic flaunting has deepened.
+	<<set $hypnosis_traits.cover += 1>>
 <</if>>
 <<combat-reset-hand _args[0]>>
 <</widget>>
