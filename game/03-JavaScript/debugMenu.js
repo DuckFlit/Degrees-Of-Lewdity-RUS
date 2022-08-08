@@ -2603,7 +2603,7 @@ setup.debugMenu.event_list = {
 				`Goo Me`, stayOnPassageFn
 			],
 			widgets: [
-				`<<drench both 5>>`
+				`<<drench "semen" "slime" 5>>`
 			]
 		},
 		{
@@ -2611,7 +2611,7 @@ setup.debugMenu.event_list = {
 				`Goo Me Small`, stayOnPassageFn
 			],
 			widgets: [
-				`<<drench both 1>>`
+				`<<drench "semen" "slime" 1>>`
 			]
 		},
 		{
