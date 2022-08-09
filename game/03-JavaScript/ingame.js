@@ -1462,3 +1462,15 @@ function outfitHoodPosition(outfit) {
 	return "up";
 }
 window.outfitHoodPosition = outfitHoodPosition;
+
+window.combatCharacterShadow = function() {
+	if(!V.lightCombat) return;
+	const targetClass = "char-shadow-combat";
+	const mainDiv = ".char_combat";
+
+	$(document).ready(() => {
+		$(mainDiv).find('img').filter((i, n) => n.className.match(new RegExp("layer-(" + setup.shadowImage[V.position === "doggy" ? "doggy" : "missionary"].join("|") + ")( |$)", 'i')))
+		.clone(true).removeClass((i, n) => (n.match(/(^|\s)(colour|layer)-\S+/g) || []).join(' '))
+		.addClass(targetClass).removeAttr('style').appendTo($(mainDiv).last());
+	});
+}
