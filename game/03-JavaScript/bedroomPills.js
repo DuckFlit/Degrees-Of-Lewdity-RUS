@@ -47,7 +47,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/bottomReduction.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() < 2) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() < 2 && V.sexStats.pills["pills"]["bottom growth"].doseTaken === 0 && V.sexStats.pills["pills"]["bottom blocker"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -64,7 +64,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/bottomGrowth.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() < 2) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() < 2 && V.sexStats.pills["pills"]["bottom reduction"].doseTaken === 0 && V.sexStats.pills["pills"]["bottom blocker"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -81,7 +81,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/bottomBlocker.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return 1},
+		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["bottom growth"].doseTaken === 0 && V.sexStats.pills["pills"]["bottom reduciton"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -98,7 +98,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/breastReduction.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() < 2) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() < 2 && V.sexStats.pills["pills"]["breast growth"].doseTaken === 0 && V.sexStats.pills["pills"]["breast blocker"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -115,7 +115,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/breastGrowth.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() < 2) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() < 2 && V.sexStats.pills["pills"]["breast reduction"].doseTaken === 0 && V.sexStats.pills["pills"]["breast blocker"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -132,7 +132,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/breastBlocker.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return 1},
+		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["breast growth"].doseTaken === 0 && V.sexStats.pills["pills"]["breast reduciton"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -149,7 +149,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/penisReduction.png',
 		display_condition: function(){return (V.player.penisExist && this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() < 2) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() < 2 && V.sexStats.pills["pills"]["penis growth"].doseTaken === 0 && V.sexStats.pills["pills"]["penis blocker"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -166,7 +166,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/penisGrowth.png',
 		display_condition: function(){return (V.player.penisExist && this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() < 2) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() < 2 && V.sexStats.pills["pills"]["penis reduction"].doseTaken === 0 && V.sexStats.pills["pills"]["penis blocker"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -183,7 +183,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/penisBlocker.png',
 		display_condition: function(){return (V.player.penisExist && this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return 1},
+		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["penis growth"].doseTaken === 0 && V.sexStats.pills["pills"]["penis reduciton"].doseTaken === 0)},
 		effects:[]
 	},
 	{
@@ -200,7 +200,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/pregnancyFertility.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() < 2) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() < 2 && V.sexStats.pills["pills"]["contraceptive"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -217,7 +217,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/pregnancyContraceptive.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() < 2) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() < 2 && V.sexStats.pills["pills"]["fertility booster"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
