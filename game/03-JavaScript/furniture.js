@@ -34,7 +34,7 @@ const Furniture = (() => {
 			type: ["chair", "expensive"],	Traits, can be multiple, shouldn't be shown because I'm too lazy to make a description /j
 			cost: 160,						Cost, 100 is one pound.
 			description: "A set of stools on which to sit on.",			Description for the shop interface to show.
-			iconFile: "stool.png",			Used in image widgets; <img id="icon" @src="'img/misc/icon/furniture/' + $_chair.iconFile">
+			iconFile: "stool.png",			Used in image widgets; <img class="icon" @src="'img/misc/icon/furniture/' + $_chair.iconFile">
 		});
 
 		Egg armchairs are here to stay.
