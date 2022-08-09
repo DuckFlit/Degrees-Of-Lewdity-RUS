@@ -620,3 +620,22 @@ Macro.add('rng', {
  */
 const nullable = (obj) => obj || {};
 window.nullable = nullable;
+
+/**
+ * This inputs an icon img tag, using the given filename.
+ * Files are all in img/misc/icon/
+ * Example: <<icon "bed.png">>
+ * <<icon "bed.png" "nowhitespace">> does not add a trailing whitespace for formatting.
+ */
+Macro.add("icon", {
+	handler() {
+		if (!V.images) return;
+		const name = typeof(this.args[0]) === "string" ? this.args[0] : "error";
+		const iconImg = document.createElement("img");
+		iconImg.className = "icon";
+		iconImg.src = "img/misc/icon/" + name;
+		this.output.append(iconImg);
+		//append a whitespace for compatibility with old icon behavior
+		if (!this.args.includes("nowhitespace")) this.output.append(" ");
+	}
+});

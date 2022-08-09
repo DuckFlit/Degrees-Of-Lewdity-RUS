@@ -295,7 +295,7 @@ window.addElementToGrid = function(item) {
 		hpi_gridContainer.innerHTML = hpi_gridContainer.innerHTML +
 		`
 		<div class="hpi_item">
-		<div class="hpi_icon"><img id="icon" src="` + item.icon + `"</img></div>
+		<div class="hpi_icon"><img class="icon" src="` + item.icon + `"</img></div>
 		<div class="hpi_name" id="hpi_name_` + item_name + `" >` + item_name + ((item.autoTake() == true) ? `<span class="hpi_auto_label"> [Auto]</span>` : "") + `</div>
 		<div class="hpi_count" onmouseenter="window.onMouseEventDisableGridClick(true)" onmouseleave="window.onMouseEventDisableGridClick(false)">` + item.owned() + `</div>
 		</div>
