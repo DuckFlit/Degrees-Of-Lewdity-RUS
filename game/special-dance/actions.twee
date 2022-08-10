@@ -7,26 +7,74 @@
 		<<elseif $exposed gte 1 and $exhibitionism lte 34 and $forceddance isnot 1 and ($corruptionDancing is undefined or $dancelocation isnot "brothel") and !$worn.under_lower.type.includes("dance")>>
 		<<else>>
 			<<if $audience gte 1>>
+				<<person1>>
 				<<if $dance_place is undefined>>
-					<label>Dance near the <<person1>><<person>> <<radiobutton "$dance_place" 1 checked>></label> |
+					<div class="dance_box"><label>
+					<<if $NPCList[0].masturbating gte 1>>
+						The <<person>> masturbates. <<dance_npc_masturbation_chance 0>>
+					<<else>>
+						The <<person>> watches.
+					<</if>>
+					 | Dance near <<him>>. <<radiobutton "$dance_place" 1 checked>></label></div>
 				<<else>>
-					<label>Dance near the <<person1>><<person>> <<radiobutton "$dance_place" 1 autocheck>></label> |
+					<div class="dance_box"><label>
+					<<if $NPCList[0].masturbating gte 1>>
+						The <<person>> masturbates. <<dance_npc_masturbation_chance 0>>
+					<<else>>
+						The <<person>> watches.
+					<</if>>
+					 | Dance near <<him>>. <<radiobutton "$dance_place" 1 autocheck>></label></div>
 				<</if>>
-			<</if>>
+			<</if>><br>
 			<<if $audience gte 2>>
-				<label>Dance near the <<person2>><<person>> <<radiobutton "$dance_place" 2 autocheck>></label> |
-			<</if>>
+				<<person2>>
+				<div class="dance_box"><label>
+				<<if $NPCList[1].masturbating gte 1>>
+					The <<person>> masturbates. <<dance_npc_masturbation_chance 1>>
+				<<else>>
+					The <<person>> watches.
+				<</if>>
+				 | Dance near <<him>>. <<radiobutton "$dance_place" 2 autocheck>></label></div>
+			<</if>><br>
 			<<if $audience gte 3>>
-				<label>Dance near the <<person3>><<person>> <<radiobutton "$dance_place" 3 autocheck>></label> |
-			<</if>>
+				<<person3>>
+				<div class="dance_box"><label>
+				<<if $NPCList[2].masturbating gte 1>>
+					The <<person>> masturbates. <<dance_npc_masturbation_chance 2>>
+				<<else>>
+					The <<person>> watches.
+				<</if>>
+				 | Dance near <<him>>. <<radiobutton "$dance_place" 3 autocheck>></label></div>
+			<</if>><br>
 			<<if $audience gte 4>>
-				<label>Dance near the <<person4>><<person>> <<radiobutton "$dance_place" 4 autocheck>></label> |
-			<</if>>
+				<<person4>>
+				<div class="dance_box"><label>
+				<<if $NPCList[3].masturbating gte 1>>
+					The <<person>> masturbates. <<dance_npc_masturbation_chance 3>>
+				<<else>>
+					The <<person>> watches.
+				<</if>>
+				 | Dance near <<him>>. <<radiobutton "$dance_place" 4 autocheck>></label></div>
+			<</if>><br>
 			<<if $audience gte 5>>
-				<label>Dance near the <<person5>><<person>> <<radiobutton "$dance_place" 5 autocheck>></label> |
-			<</if>>
+				<<person5>>
+				<div class="dance_box"><label>
+				<<if $NPCList[4].masturbating gte 1>>
+					The <<person>> masturbates. <<dance_npc_masturbation_chance 4>>
+				<<else>>
+					The <<person>> watches.
+				<</if>>
+				 | Dance near <<him>>. <<radiobutton "$dance_place" 5 autocheck>></label></div>
+			<</if>><br>
 			<<if $audience gte 6>>
-				<label>Dance near the <<person6>><<person>> <<radiobutton "$dance_place" 6 autocheck>></label> |
+				<<person6>>
+				<div class="dance_box"><label>
+				<<if $NPCList[5].masturbating gte 1>>
+					The <<person>> masturbates. <<dance_npc_masturbation_chance 5>>
+				<<else>>
+					The <<person>> watches.
+				<</if>>
+				 | Dance near <<him>>. <<radiobutton "$dance_place" 6 autocheck>></label></div>
 			<</if>>
 			<br><br>
 			<<if $danceactiondefault is "cool">>
@@ -239,6 +287,7 @@
 			There's a large crowd of people watching you. Those at the back struggle to get a good view.
 		<</if>>
 		<<dancespeech>>
+		<<dance_npc_masturbation>>
 		<<person_dance>>
 		<br><br>
 		<<if $audience gte 1>>
@@ -273,6 +322,19 @@
 				<span class="pink">lecherous.</span>
 			<<else>>
 				<span class="red">filled with carnal desire.</span>
+			<</if>>
+			<<if $dance_stage_cum gte 10>>
+				<span class="red">Not an inch</span> of the stage is free of semen.
+			<<elseif $dance_stage_cum gte 8>>
+				The stage is <span class="pink">drenched</span> with semen.
+			<<elseif $dance_stage_cum gte 6>>
+				The stage is <span class="purple">coated</span> in semen.
+			<<elseif $dance_stage_cum gte 4>>
+				The stage is <span class="blue">wet</span> with semen.
+			<<elseif $dance_stage_cum gte 2>>
+				There's a <span class="lblue">large</span> pool of semen on the stage.
+			<<elseif $dance_stage_cum gte 1>>
+				There's a <span class="teal">small</span> pool of semen on the stage.
 			<</if>>
 			<<set $audiencemod to Math.clamp($audiencemod, 1, 10)>>
 			<br>
@@ -313,6 +375,13 @@
 			<<rng>><<rngWraith 2 "night">>
 			<<if $wraith and ($wraith.state is "haunt" or $wraith.offspring is "dead") and _wraithEvent and $rng lte 10>>
 				<<danceWraith>>
+			<<elseif $dance_stage_cum gte random(1, 25)>>
+				<<if currentSkillValue('danceskill') gte $dance_stage_cum>>
+					Your feet slip on the semen-covered stage, <span class="green">but you're able to recover,</span> incorporating the move into the dance.
+				<<else>>
+					Your feet slip on the semen-covered stage, <span class="red">and you fall on your <<bottom>>.</span>
+					<<dancefall>>
+				<</if>>
 			<<elseif $dancelocation is 0>>
 				<<if $audiencearousal gte 100>>
 					<<if $rng gte 91>>
@@ -511,6 +580,7 @@
 				<<elseif $audiencearousal gte 41>>
 					<<if $rng gte 91>>
 						<<dancestrip>>
+						<<dancestrip>>
 					<<elseif $rng gte 71>>
 						<<dancelight>>
 					<</if>>
@@ -593,6 +663,11 @@
 	Driven wild by their lust, your audience surges toward you, their eyes filled with a primal hunger.
 <</widget>>
 
+<<widget "dancefall">>
+	<<set $danceevent to "rape">>
+	Driven wild by your vulnerability, your audience surges toward you, their eyes filled with a primal hunger.
+<</widget>>
+
 <<widget "dancemolest">>
 	<<set $danceevent to "molest">><<molested>>
 	The <<person>> reaches out and grasps your waist!<<trauma 6>><<stress 6>>
@@ -650,7 +725,7 @@
 <</widget>>
 
 <<widget "danceprivate">>
-	The <<person1>><<person>> raises <<his>> <<if $pronoun is "m">>wallet,<<else>>purse,<</if>> indicating <<he>> wants to hire your services.
+	The <<person>> raises <<his>> <<if $pronoun is "m">>wallet,<<else>>purse,<</if>> indicating <<he>> wants to hire your services.
 	<<set $danceevent to "private">>
 	<<if $promiscuity lte 34 and $uncomfortable.prostituting is true>>
 		However, you are not promiscuous enough to take up <<his>> offer.

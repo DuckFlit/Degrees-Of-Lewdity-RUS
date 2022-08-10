@@ -297,7 +297,7 @@ window.combatListColor = function (name, value, type) {
 				break;
 
 			/*leftaction or rightaction*/
-			case "capture": case "mouth_pull": case "mouth_spray": case "vagina_pull": case "vagina_spray":
+			case "capture": case "mouth_pull": case "mouth_spray": case "vagina_pull": case "vagina_spray": case "guard":
 			case "penis_pull": case "penis_spray": case "anus_pull": case "anus_spray": case "chest_pull": case "chest_spray":
 			/*mouthaction*/
 			case "bite":
