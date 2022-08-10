@@ -1,5 +1,145 @@
 :: Widgets Blackjack [widget]
 
+
+<!--
+
+
+End conditions
+
+1. Wren finishes early
+   estate_cards_end: "wren_finished_early" (or gets replaced with "oral")
+   Desc: The PC has out-endured Wren, so technically Wren finished first
+   Bets: allowed to take the pot
+   End Location: Estate
+   Clothes: oral for towel (if naked)
+   Reason: while Wren didn't get to take PC, PC also hasn't gotten all they wanted from Wren, so it's really a tie. Wren does end up better off, so technically he'd still be dominant enough to demand oral for towel, rather than demanding oral for clothes buy-back
+   
+2. Wren finishes with PC
+   estate_cards_end: "sex" ("oral" setter is ignored), or "sex_safe" ("oral" can replace it)
+   Desc: The PC has lost, and Wren took his reward. PC lost
+   Bets: allowed to take the pot
+   End Location: Estate
+   Clothes: oral for towel (if naked)
+   Reason: Wren completely dominated PC, so definitely only oral for towel. It does have a variation where PC can have a chastity (so no sex), but we consider this to still be end 2
+   
+3. PC cheats, ends up being forgiven
+   estate_cards_end: "cheat_moor"
+   Desc: The PC was caught cheating, so it's a disqualification. Thrown into the moor
+   Bets: pot confiscated
+   End Location: Moor
+   Clothes: none
+   Reason: getitng caught cheating is considered a complete loss
+   
+4. PC cheats, ends up surrendering
+   estate_cards_end: "cheat_remy"
+   Desc: The PC was caught cheating, so it's a disqualification. Given to Remy. Can also be reached by failing plead (failed 3) and surrendering, or not trying to plead and surrendering
+   Bets: pot confiscated
+   End Location: Remy
+   Clothes: none
+   Reason: getitng caught cheating is considered a complete loss
+   
+5. PC cheats, ends up successfully running
+   estate_cards_end: "cheat_run"
+   Desc: The PC was caught cheating, disqualification. Can also be reached by failing plead (failed 3) and running, or not trying to plead and surrendering
+   (???) Bets: pot confiscated, but perhaps we should let the player try and steal the pot for a much lower escape chance
+   End Location: Estate
+   Clothes: none
+   Reason: obviously, because we ran, no option to get clothes/a towel back
+   
+6. PC cheats, ends up running, but fails
+   estate_cards_end: "cheat_remy"
+   Desc: The PC was caught cheating, disqualification. Can also be reached by failing plead (failed 3) and running, or not trying to plead and surrendering. Got caught, given to Remy.
+   Bets: pot confiscated
+   End Location: Remy
+   Clothes: none
+   Reason: obviously, because we ran and got caught, no option to get clothes/a towel back
+
+7. PC runs after loss, ends up successfully running
+   estate_cards_end: "run"
+   Desc: not as bad as cheating, PC lost and ran
+   (???) Bets: pot confiscated, but perhaps we should let the player try and steal the pot for a much lower escape chance
+   End Location: Estate
+   Clothes: none
+  
+8. PC runs after loss, ends up getting caught
+   estate_cards_end: "run"
+   Desc: not as bad as cheating, PC lost and tried runing, got caught, thrown into moor
+   Bets: pot confiscated
+   End Location: Moor
+   Clothes: none
+ 
+9. PC leaves early
+   estate_cards_end: "naked" or "left_early"
+   Desc: The PC has left early.
+   Bets: allowed to take pot
+   End Location: Estate
+   Clothes: oral for towel (if naked)
+   Reason: Wren is diasppoitned that PC is leaving the game essentially in the middle of it (with no one having won). Too annoyed to let the player get the clothes back
+   
+  
+10. (todo) PC declares victory
+   estate_cards_end: "pc_won" (or gets replaced by "pc_won_and_oral")
+   Desc: The PC gets all favors they needed from Wren, and declares that they don't need anything else. Considered a win because Wren has exhasuted his usefulness and PC hasn't. PC can either rebuy the clothes after satisfying the goons, or leave
+   Bets: allowed to take the pot
+   End Location: Estate
+   Clothes: allowed to buy back (all states)
+   Reason: Wren realizes they've done a ton of favours already and didn't get much from you, so they must feel defeated enough to let you take the clothes you've lost back
+ 
+   
+   
+   
+For each of these outcomes, we need to call <<card_pot_confiscated>> right after the PC abandons the pot (if the bets are confiscated) or <<card_pot_collected>> right before the player leaves the table (if the player collects the bet)
+Each also calls <<estate_cards_finish>> and calls <<endevent>> and some set $estate_cards_end
+Some also call <<estate_end>> if they kick the player directly into the moor/remy's farm
+   
+Coverage:
+    bets conf/coll | <<estate_cards_finish>>            | <<endevent>>        | <<estate_end>> (opt)      | Clothes (todo)         | $estate_cards_end
+1   collected      | + calls <<cards_naked_end>>        | + <--------         | - estate <------          | towel                  | "wren_finished_early" (can be replaced by "oral")
+2   collected      | + calls <<cards_naked_end>>        | + <--------         | - estate <------          | towel                  | "sex" or "sex_safe" ("safe_sex" can be replaced by "oral")
+3   confiscated    | +                                  | +                   | + moor                    | none                   | "cheat_moor"
+4   confiscated >> | + calls <<bl...Surrender>>         | + <--------         | + remy <--------          | none                   | "cheat_remy" <--------
+5   confiscated    | +                                  | +                   | - estate                  | none                   | "cheat_run"
+6   confiscated >> | + calls <<bl...Surrender>>         | + <--------         | + remy <--------          | none                   | "cheat_remy" <--------
+7   confiscated    | +                                  | +                   | - estate                  | none                   | "run"
+8   confiscated    | +                                  | +                   | - estate                  | none                   | "run"
+9   collected      | + (or + <<cards_naked_end>>)       | + (or + <----)      | - estate (or - estate <-) | none (or towel)        | "left_early" or "naked"
+10  collected      | + (or + <<cards_oral_options>>)    | + (or + <----)      | - estate (or - estate <-) | none (or rebuy)        | "pc_won" (can be replaced by "pc_won_and_oral")
+
+(with estate end 9, if you're naked, the parentheses cover the case, otherwise - the outside part of the parentheses)
+
+<<widget "cards_naked_end">>
+calls <<cards_oral_options>>
+<</widget>>
+
+<<widget "cards_oral_options">>
+Initiates oral scene.
+if leave without oral:
+	calls <<estate_cards_finish>>
+	calls <<endevent>>
+else if leave after attempt:
+	if $estate.cards.clothesRebuyTerms:
+		sets $estate_cards_end to "pc_won_and_oral"
+	else:
+		sets $estate_cards_end to "oral", if it isn't "sex"
+	calls <<estate_cards_finish>>
+	calls <<endevent>>
+else: 
+    if $estate.cards.clothesRebuyTerms:
+		sets $estate_cards_end to "pc_won_and_oral"
+	else:
+		sets $estate_cards_end to "oral", if it isn't "sex"
+	calls <<estate_cards_finish>>
+	calls <<endevent>>
+<</widget>>
+
+<<widget "blackjackCaughtCheatingSurrender">>
+	sets $estate_cards_end to "cheat_remy"
+	sets $esate.cards_done to true
+	calls <<endevent>>
+	calls <<estate_end>>
+<</widget>>
+ -->
+
 <!--Needs to be run in a previous passage to prevent cheating-->
 <<widget "blackjackStart">>
 <<if _args[0]>>
@@ -35,13 +175,144 @@
 <</if>>
 <</widget>>
 
-<<widget "blackjackEnd">>
-<<unset $blackjack>>
-<<set $blackjack_played += 1>>
-<<if $blackjack_streak gt $blackjack_streak_high>>
-	<<set $blackjack_streak_high to $blackjack_streak>>
+<<widget "calculateBlackjackLuckStats">>
+<!-- currently very basic. instead of taking into account HOW the user won (hitting on 19, for example), it just calculates stats of the last X games -->
+<!-- 
+// use this to see all distributions for a given number of games,
+// with an optional filter func for only showing the distributions that fit the given filter formula
+
+let max = 6;
+let nums = [];
+let pcts = [];
+
+let filterFuncs = [];
+
+// filterFuncs.push(ind) => {
+//    // example formula: the player has a bad streak if less than 70% of the games are ties, and the opponent has won twice as many games
+//    return pcts[ind].wins >= pcts[ind].losses*2 && pcts[ind].ties < .7
+// }
+let generateBasicFilterFunc = (tiesCutoff, winMult) => {
+	filterFuncs.push(["Player lucky cases", (ind) => pcts[ind].wins >= pcts[ind].losses*winMult && pcts[ind].ties < tiesCutoff])
+	filterFuncs.push(["Wren lucky cases", (ind) => pcts[ind].losses >= pcts[ind].wins*winMult && pcts[ind].ties < tiesCutoff])
+	filterFuncs.push(["Neutral cases", (ind) => !( (pcts[ind].losses >= pcts[ind].wins*winMult && pcts[ind].ties < tiesCutoff) || (pcts[ind].wins >= pcts[ind].losses*winMult && pcts[ind].ties < tiesCutoff) )])
+}
+generateBasicFilterFunc(0.7, 2)
+// in all other cases, the flow of luck is considered "neutral"
+
+
+for (let i = 0; i < max; ++i) {
+    for (let j = 0; j  < max; ++j) {
+        for (let k = 0; k < max; ++k) {
+            if ((i + j + k) !== max) {
+                continue;
+            }
+
+            nums.push({wins:i,losses:j,ties:k});
+        }
+    }
+}
+
+let s = [];
+for (let sub of nums) {
+    let wPct = sub.wins/max;
+    let lPct = sub.losses/max;
+    let tPct = sub.ties/max;
+
+	pcts.push({wins: wPct, losses: lPct, ties: tPct});
+
+    s.push(`wins ${(wPct*100).toFixed(2)}% losses ${(lPct*100).toFixed(2)}% ties ${(tPct*100).toFixed(2)}%`)
+}
+
+for (let [filterName, filterFunc] of filterFuncs) {
+	console.log(filterName);
+	for (let i = 0; i < s.length; ++i) {
+		if (!filterFunc(i)) continue;
+		console.log(`${nums[i].wins} wins / ${nums[i].losses} losses / ${nums[i].ties} ties | ${s[i]}`)
+	}
+}
+
+
+ -->
+<<if $estate.cards.gameResults eq null>>
+	<<set $estate.cards.gameResults to []>>
+	<<run delete $estate.cards.luckStats>>
+<<else>>	
+	<<set $_lookback to Math.min($estate.cards.gameResults.length, 6)>>
+	<<set $_slice to $estate.cards.gameResults.slice($_lookback * -1)>>
+	<<set $_stats to {"wins": 0, "losses": 0, "ties": 0, "winPct": 0, "lossPct": 0, "tiePct": 0, "total": $_lookback}>>
+	/* only taking into account the last 6 games */
+	<<for $_result range $_slice>>
+		<<switch $_result.result>>
+			<<case "tie">>
+				<<run $_stats.ties += 1>>
+			<<case "win">>
+				<<run $_stats.wins += 1>>
+			<<case "loss">>
+				<<run $_stats.losses += 1>>
+		<</switch>>
+	<</for>>
+
+	<<set $_stats.winPct to $_stats.wins/$_lookback>>
+	<<set $_stats.lossPct to $_stats.losses/$_lookback>>
+	<<set $_stats.tiePct to $_stats.losses/$_lookback>>
+
+	<<set $estate.cards.luckStats to $_stats>>
 <</if>>
-<<if $blackjack_streak gte 5>>
+
+
+
+<</widget>>
+
+<<widget "blackjackEnd">>
+/* win|loss|tie */
+<<set $_result to _args[0]>>
+<<unset $blackjack>>
+
+<<if $estate.cards.bettingEnabled and $estate.cards.currentBetInput gt 0>>
+	<<switch $_result>>
+		<<case "win">>
+			<<set $estatePersistent.totalBetRoundsWon += 1>>
+		<<case "loss">>
+			<<set $estatePersistent.totalBetRoundsLost += 1>>
+		<<case "tie">>
+			<<set $estatePersistent.totalBetRoundsTied += 1>>
+	<</switch>>
+<</if>>
+<!-- these include betting wins -->
+<<switch $_result>>
+	<<case "win">>
+		<<set $estatePersistent.totalRoundsWon += 1>>
+	<<case "loss">>
+		<<set $estatePersistent.totalRoundsLost += 1>>
+	<<case "tie">>
+		<<set $estatePersistent.totalRoundsTied += 1>>
+<</switch>>
+
+
+<<if $estate.cards.gameResults eq null>>
+	<<set $estate.cards.gameResults to []>>
+<</if>>
+<<run $estate.cards.gameResults.push({"result": $_result}) >>
+
+<<if $_result is "win">>
+	<<set $estatePersistent.winStreak += 1>>
+	<<if $estatePersistent.winStreak gt $estatePersistent.winStreakHighScore>>
+		<<set $estatePersistent.winStreakHighScore to $estatePersistent.winStreak>>
+	<</if>>
+<<else>>
+	<<set $estatePersistent.winStreak to 0>>
+<</if>>
+
+<<if $_result is "loss">>
+	<<set $estatePersistent.lossStreak += 1>>
+	<<if $estatePersistent.lossStreak gt $estatePersistent.lossStreakHighScore>>
+		<<set $estatePersistent.lossStreakHighScore to $estatePersistent.lossStreak>>
+	<</if>>
+<<else>>
+	<<set $estatePersistent.lossStreak to 0>>
+<</if>>
+
+<<if $estatePersistent.winStreak gte 5>>
 	<<earnFeat "Five in a Row">>
 <</if>>
 <</widget>>
@@ -71,6 +342,59 @@
 			<<case "players">><<set $blackjack.playersScore to _score>><<if $_blackjack>><<set $blackjack.playersState to "blackjack">><</if>>
 		<</switch>>
 	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "initEstatePersistent">>
+<<if not $estatePersistent>>
+	<<set $estatePersistent to {
+		"suspicion": 0, 
+		"newDeckTimer": 3, 
+		"markedCards": new Set(),
+	}>>
+<</if>>
+<!-- betting update -->
+<<if $estatePersistent.stakesRaised eq null>>
+	<<run Object.assign($estatePersistent, {
+		"stakesRaised": false,
+		"suggestedRaisingStakes": false,
+		"playerRejectedRaisingStakes": false,
+		/* total of all the bets we've won, even if the money was abandoned in the end or lost in a subsequent round */
+		"totalBetMoneyMade": 0,
+		/* same, but for bets we've lost */
+		"totalBetMoneyLost": 0,
+		/* total counter for how much we've made from tips */
+		"totalTipMoneyMade": 0,
+		/* NOT included in totalBetMoneyLost, counts all the pot money we've lost due to running away or getting caught cheating 
+		   includes the ante */
+		"totalMoneyConfiscated": 0,
+		/* to calculate total revenue (including loss of ante): totalBetMoneyMade + totalTipMoneyMade - totalBetMoneyLost - totalMoneyConfiscated */
+
+		/* these stats are not retroactive, but their sum has been tracked already in original blackjack: $blackjack_played, $blackjack_won, $blackjack_streak etc */
+		/* total rounds won (betting or not) */
+		"totalRoundsWon": 0,
+		/* total rounds lost (betting or not) */
+		"totalRoundsLost": 0,
+		/* total rounds tied (betting or not) */
+		"totalRoundsTied": 0,
+		/* these stats are not retroactive */
+		/* same as above, but only for rounds where you bet money */
+		"totalBetRoundsWon": 0,
+		"totalBetRoundsLost": 0,
+		"totalBetRoundsTied": 0,
+
+		/* counts entire sessions - not the individual rounds */
+		/* counts the total games you've played with an ante */
+		"totalGamesPlayedWithBetting": 0,
+		/* counts the total games you've played with or without an ante */
+		"totalGamesPlayed": 0,
+		/* counts the total amount of times the player has been caught cheating */
+		"totalCaughtCheating": 0,
+		"winStreakHighScore": 0,
+		"winStreak": 0,
+		"lossStreakHighScore": 0,
+		"lossStreak": 0
+	}); >>
 <</if>>
 <</widget>>
 
@@ -241,6 +565,7 @@ more suspicion if you actually lose the round. -->
 <<widget "blackjackCaughtControls">>
 <<set _caught_phase to _args[0]>>
 <<if _caught_phase eq 1>>
+	<<set $estatePersistent.totalCaughtCheating += 1>>
 	<span class="green">If you are going to run, you'll be more likely to succeed if you don't waste time now.</span>
 
 	<<set $estate.prev_apologised to $estatePersistent.cur_apologised is true>>
@@ -306,9 +631,9 @@ more suspicion if you actually lose the round. -->
 
 	<br><br>
 
-	<<link [[Run|Estate Cards Cheating Run]]>><<set $estate.cards_done to true>><<set $estatePersistent.cur_apologised to false>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 500 1000>><<llllove>>
+	<<link [[Run|Estate Cards Cheating Run]]>><<set $estatePersistent.cur_apologised to false>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 500 1000>><<llllove>>
 	<br>
-	<<link [[Plead|Estate Cards Cheating Plead]]>><<set $estate.cards_done to true>><<set $estatePersistent.cur_apologised to true>><<trauma 15>><<stress 15>><<npcincr Wren love 3>><</link>><<ggtrauma>><<ggstress>><<glove>>
+	<<link [[Plead|Estate Cards Cheating Plead]]>><<set $estatePersistent.cur_apologised to true>><<trauma 15>><<stress 15>><<npcincr Wren love 3>><</link>><<ggtrauma>><<ggstress>><<glove>>
 		<<if $checkstyle is "skillname">>
 			| <span class="lblue">Forgiveness Chance</span>
 		<<else>>
@@ -316,16 +641,16 @@ more suspicion if you actually lose the round. -->
 			<<skillDifficultyText _plead_difficulty>>
 		<</if>>
 	<br>
-	<<link [[Protest|Estate Cards Cheating Protest]]>><<set $estate.cards_done to true>><<set $estatePersistent.cur_apologised to false>><<trauma -6>><<stress -6>><<npcincr Wren love -1>><</link>><<lstress>><<ltrauma>><<llove>>
+	<<link [[Protest|Estate Cards Cheating Protest]]>><<set $estatePersistent.cur_apologised to false>><<trauma -6>><<stress -6>><<npcincr Wren love -1>><</link>><<lstress>><<ltrauma>><<llove>>
 	<br>
-	<<link [[Surrender|Estate Cards Cheat Surrender]]>><<set $estate.cards_done to true>><<set $estatePersistent.cur_apologised to false>><<npcincr Wren love 2>><</link>><<glove>>
+	<<link [[Surrender|Estate Cards Cheat Surrender]]>><<set $estatePersistent.cur_apologised to false>><<npcincr Wren love 2>><</link>><<glove>>
 	<!-- idea - fight option? -->
 <<else>>
 	<span class="red"><<His>> friends have almost surrounded you. It's going to be more difficult to run away now.</span>
 	<br><br>
-	<<link [[Run|Estate Cards Cheating Run]]>><<set $estate.cards_done to true>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 800 1200>><<llllove>>
+	<<link [[Run|Estate Cards Cheating Run]]>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 800 1200>><<llllove>>
 	<br>
-	<<link [[Surrender|Estate Cards Cheat Surrender]]>><<set $estate.cards_done to true>><<npcincr Wren love 2>><</link>><<glove>>
+	<<link [[Surrender|Estate Cards Cheat Surrender]]>><<npcincr Wren love 2>><</link>><<glove>>
 	<br>
 <</if>>
 <</widget>>
@@ -354,13 +679,13 @@ more suspicion if you actually lose the round. -->
 		<</if>>
 	<</for>>
 	<<if _seen_cards_deck.length gt 0>>
-		<<set $_plural to _seen_cards_deck.length gt 1 ? "s" : "">>
+		<<set $_plural to _seen_cards_deck.length gt 1 ? "cards" : "card">>
 		<<set _max_card_index to Math.max(...(_seen_cards_indexes))>>
 		<<if _seen_cards_deck.length eq 1 and _seen_cards_indexes[0] eq 0>>
 			You recognise the card sitting on top of the deck. It's one of the cards you've marked:
 		<<else>>
-			<<set $_indexes_str = formatList(_seen_cards_index_strings) >>
-			You recognise the $_indexes_str card$_plural from the top of the deck:
+			<<set $_indexes_str to formatList(_seen_cards_index_strings) >>
+			You recognise the $_indexes_str $_plural from the top of the deck:
 		<</if>>
 		<br>
 		<<for _i to 0; _i lte _max_card_index; _i++>>
@@ -390,18 +715,18 @@ more suspicion if you actually lose the round. -->
 	<<elseif $estate.cards.cheatPeeking and $blackjack.isFirstTurn>>
 		<<if !$blackjack.turnIsStale>>
 			<!-- idea -  an alternative, where we handle the deck and the chance to see the card is higher -->
-			<!--
-				skulduggery affects your chance to see the card. base chance is 10%, skulduggery adds from 0 to 10% chance.
+			<!-- 
+				skulduggery affects your chance to see the card. base chance is 10%, skulduggery adds from 0 to 15% chance.
 				different levels of exposure have a chance to affect the chance as well, as you're distracting the dealer every now and then.
 			 -->
-			<<set _chance_to_see to Math.clamp(15 + Math.round(currentSkillValue('skulduggery')/100), 15, 25)>>
+			<<set _chance_to_see to Math.clamp(10 + Math.round(currentSkillValue('skulduggery')/100), 10, 25)>>
 			<<set _dealer_distracted to false>>
 			<<set _dealer_distracted_text to "You notice the dealer occasionally sneaking glances at you.">>
 			<!-- we generate two numbers because we want a different chance for the text appearing: we don't want it tied to the chance_to_see -->
-			/* base 15-25% chance */
+			/* base 10-25% chance */
 			<<if $estate.cards.state is "ride">>
 				<<if random(1, 5) gt 1>>
-					/* 4/5 * .8 to +60% chance */
+					/* 4/5 * .75 to +60% chance = 70% - 85% */
 					<<set _chance_to_see += 75>>
 					<<set _dealer_distracted to true>>
 					<<person2>>
@@ -412,7 +737,7 @@ more suspicion if you actually lose the round. -->
 			<<elseif $exposed eq 2>>
 				<!-- actual chance bonus to random_chance * extra_chance_to_see (so .5*.75=0.375) -->
 				<<if random(1, 2) eq 1>>
-					/* 1/2 * .75 to +37.5% chance */
+					/* 1/2 * .75 to +37.5% chance = 47.5% - 62.5% */
 					<<set _chance_to_see += 75>>
 					<<set _dealer_distracted to true>>
 					<<person2>>
@@ -422,12 +747,13 @@ more suspicion if you actually lose the round. -->
 				<</if>>
 			<<elseif $exposed eq 1>>
 				<<if random(1, 2) eq 1>>
-					/* 0.5 * .4 to +20% chance */
+					/* 0.5 * .4 to +20% chance = 30 - 45% */
 					<<set _chance_to_see += 40>>
 					<<set _dealer_distracted to true>>
 					<<set _dealer_distracted_text to "You notice the dealer occasionally sneaking glances at you.">>
 				<</if>>
 			<</if>>
+			/* if fully clothed = 10% - 25% */
 			<<if _dealer_distracted>>
 				<span class="pink">_dealer_distracted_text</span>
 				<br>
@@ -446,9 +772,9 @@ more suspicion if you actually lose the round. -->
 						<<case 1>>
 							Wren also notices the dealer's blunder and glances at you, but doesn't say anything.
 						<<case 2>>
-							Wren also notices the dealer's blunder and glances at you. "I hope you're keeping your eyes on your own hand", <<he>> says.
+							Wren also notices the dealer's blunder and glances at you. "I hope you're keeping your eyes on your own hand," <<he>> says.
 						<<case 3>>
-							"Oh, come on," says Wren to the dealer. "Gotta be swifter when you deal the cards". <<He>> glances at you, but doesn't say anything else.
+							"Oh, come on," Wren says to the dealer. "Gotta be swifter when you deal the cards". <<He>> glances at you, but doesn't say anything else.
 					<</switch>>
 					<<gsuspicion>>
 				<<else>>
@@ -458,7 +784,6 @@ more suspicion if you actually lose the round. -->
 				<!-- we've seen the card, so we can display it -->
 				<<set $blackjack.dealerSecondCardHidden to false>>
 				<<set $blackjack.susRoseInThisRound to true>>
-				<<set $blackjack.suspicionIncreasedInFirstTurn to true>>
 			<<else>>
 				<<set $blackjack.susRoseInThisRound to true>>
 				<<blackjackSuspicion 5 "holecardingfail">>
@@ -485,7 +810,7 @@ more suspicion if you actually lose the round. -->
 <</if>>
 
 <<set _marked_card_show_sus_warning to false>>
-<<if _player_can_choose and $blackjack.turnIsStale != true>>
+<<if _player_can_choose and $blackjack.turnIsStale neq true>>
 	<<if _seen_new_marked_card_this_turn>>
 		<!--
 		we do this here to make sure all automatic suspicion raising actions are performed before this check
@@ -500,14 +825,14 @@ more suspicion if you actually lose the round. -->
 <<if $estatePersistent.suspicion gte 100>>
 	<<switch $blackjack.caughtType>>
 		<<case "holecardingfail" "holecardingsuccess">>
-			"Careful there," says Wren. "<span class="red">You're peeking too hard.</span> You don't want to snap your own neck."
+			"Careful there," Wren says. "<span class="red">You're peeking too hard.</span> You don't want to snap your own neck."
 			<br><br>
 			<<if $submissive gte 1150>>
-				"I-I'm sorry, I didn't mean to look!", you say.
+				"I-I'm sorry, I didn't mean to look!" you say.
 			<<elseif $submissive lte 850>>
 				"Peeking? I'm just making sure your dealer isn't doing anything shady," you say. "Scared?"
 			<<else>>
-				"I wasn't peeking", you say.
+				"I wasn't peeking," you say.
 			<</if>>
 			<br><br>
 			Wren scoffs. <<He>> doesn't look convinced by your words.
@@ -521,14 +846,14 @@ more suspicion if you actually lose the round. -->
 				Wren stares at you for a moment, before grabbing a card from the deck. <<He>> inspects it, and then - <span class="red"><<he>> scoffs</span>.
 			<</if>>
 			<br><br>
-			<<He>> points to the mark you've placed on the card. "You ain't slick", Wren says.
+			<<He>> points to the mark you've placed on the card. "You ain't slick," Wren says.
 			<br><br>
 			<<if $submissive gte 1150>>
-				"I-It wasn't me, I didn't do anything!", you say.
+				"I-It wasn't me, I didn't do anything!" you say.
 			<<elseif $submissive lte 850>>
 				"Don't be stupid," you say. "That's just a scratch. For all we know it could be the dealer's fault."
 			<<else>>
-				"That's just a scratch", you say. "Doesn't mean it was intentional, let alone that it was me."
+				"That's just a scratch," you say. "Doesn't mean it was intentional, let alone that it was me."
 			<</if>>
 			<br><br>
 			Wren scoffs. <<He>> doesn't look convinced by your words.
@@ -715,29 +1040,23 @@ Total: <<print $blackjack.playersScore>>
 	<<elseif $blackjack.playersState is "blackjack">>
 		<<set $blackjack.winner to "player">>
 		<span class="green">You win with a Natural Blackjack</span>
-		<<set $blackjack_won += 1>>
-		<<set $blackjack_streak += 1>>
 	<<elseif $blackjack.dealerState is "blackjack">>
 		<<set $blackjack.winner to "dealer">>
 		<span class="red">You lose to the Natural Blackjack</span>
-		<<set $blackjack_streak to 0>>
 	<<elseif $blackjack.playersScore gt $blackjack.dealerScore or $blackjack.dealerScore gt 21>>
 		<<set $blackjack.winner to "player">>
 		<span class="green">You win</span>
-		<<set $blackjack_won += 1>>
-		<<set $blackjack_streak += 1>>
 	<<elseif $blackjack.playersScore is $blackjack.dealerScore>>
 		<<set $blackjack.winner to "tie">>
 		<span class="blue">You tie</span>
 	<<else>>
 		<<set $blackjack.winner to "dealer">>
 		<span class="red">You lose</span>
-		<<set $blackjack_streak to 0>>
 	<</if>>
 	<br><br>
 	<<if $blackjack.winner is "tie">>
 		<<blackjackControlsPostGameSuspicion>>
-		<<blackjackEnd>>
+		<<blackjackEnd "tie">>
 		<<blackjackStart "Blackjack Finish">>
 		<<link [[Next|Estate Blackjack]]>><<pass 1>><</link>>
 		<br>
@@ -773,11 +1092,15 @@ A couple of guard see you coming and smirk. Wren hands you to the guards.
 One of the guards goes into the barn and comes back with a collar and chain, which are then fixed around your neck. The guards tug on the attached chain, forcing you along.
 <br><br>
 <<if $NPCName[$NPCNameList.indexOf('Wren')].love gte 20>>
-	"Looking forward to playing with you again," says Wren. "I know you'll be back soon, one way or another."
+	"Looking forward to playing with you again," Wren says. "I know you'll be back soon, one way or another."
 <<else>>
-	"Don't cause them too much trouble", says Wren.
+	"Don't cause them too much trouble," Wren says.
 <</if>>
 <br><br>
+<!-- estate ends 4, 6 -->
+<<card_pot_confiscated>>
+<<estate_cards_finish>>
+
 <<link [[Next|Livestock Intro]]>><<endevent>><<estate_end>><</link>>
 <br>
 <</widget>>
@@ -1361,6 +1684,329 @@ Your current score: <<print $highlow.correct>>
 <</if>>
 <</widget>>
 
+
+<<widget "card_clothes_lost">>
+<<set $_cloth_type to _args[0]>>
+<<if $estate.cards.confiscatedClothes eq null>>
+	<<set $estate.cards.confiscatedClothes to []>>
+<</if>>
+<<run $estate.cards.confiscatedClothes.push({
+	"type": $_cloth_type,
+	"copy": clone($worn[$_cloth_type])
+})>>
+<<generalStrip $_cloth_type>>
+<</widget>>
+
+
+<<widget "card_clothes_rebuy_calculate">>
+<<set $_total_price to 0>>
+<<for $_obj range $estate.cards.confiscatedClothes>>
+	<<set $_cur to $_obj["copy"]>>
+	<<set $_base to setup.clothes[$_obj["type"]][$_cur["index"]]>>
+	
+	<<if $_base.cost gt 0>>
+		<!--  base 20% reduction for having been worn -->
+		<<set $_price to $_base.cost * 0.8>>
+		<<set $_integrity_frac to inverseLerp($_cur.integrity, 0, $_base.integrity_max)>>
+		<!-- making the price drop exponentially relative to the integrity y = (1-x)^2 -->
+		<!-- basically, clothes appear more worn out than they are, and drop the price further -->
+		<<set $_integrity_frac to $_integrity_frac * $_integrity_frac>>
+
+		<<set $_price to $_price * $_integrity_frac>>
+		<<set $_total_price += $_price>>
+	<</if>>
+<</for>>
+
+<<set $estate.cards.clothesRebuyTerms to {"price": $_total_price}>>
+<</widget>>
+
+
+<<widget "estate_cards_finish">>
+<<if $estate.cards.confiscatedClothes and $estate.cards.confiscatedClothes.length gt 0>>
+	<<for $_cloth_obj range $estate.cards.confiscatedClothes>>
+		<<generalRuined $_cloth_obj["type"]>>
+	<</for>>
+	<<set $estate.cards.confiscatedClothes to []>>
+<</if>>
+<<run delete $estate.cards.clothesRebuyTerms>> <!-- we should just unset cards, but I'm not 100% that it won't cause any side effects within some code I haven't seen -->
+<<set $estate.cards_done to true>>
+<<set $estatePersistent.totalGamesPlayed += 1>>
+<<if $estate.cards.bettingEnabled>>
+	<<set $estatePersistent.totalGamesPlayedWithBetting += 1>>
+<</if>>
+<</widget>>
+
+<<widget "card_pot_confiscated">>
+<<person1>>
+<<if $estate.cards.bettingEnabled>>
+	<<set $_potValue to $estate.cards.playerPot>>
+	<<if $_potValue gt 0>>
+		<span class="red">Your pot consisting of <<printmoney $_potValue>> has been left behind to be confiscated by Wren and <<his>> goons.</span>
+		<<set $estatePersistent.totalMoneyConfiscated += $_potValue>>
+	<<else>>
+		<span class="gold">You've lost all the money from your pot during the game. If you had any left in the pot, it would've been left behind to be confiscated by Wren and <<his>> goons.</span>
+	<</if>>
+	<br><br>
+	<!-- the money just doesn't get added to PC's account and is automatically reset by <<estate_end>>, whenever it gets called -->
+	<!-- the player won't be able to get into the cottage until $estate.cards_done is reset by <<estate_end>>, so this is safe -->
+<</if>>
+<</widget>>
+
+<<widget "card_pot_collected">>
+<<if $estate.cards.bettingEnabled>>
+	<<set $_potValue to $estate.cards.playerPot>>
+	<<set $_moneyDiff to $estate.cards.playerPot - $estate.cards.ante>>
+	<<set $_resStr to $_moneyDiff gte 0 ? "profit" : "loss">>
+	<<if $_potValue gt 0>>
+		<span class="green">You approach the pot and take your winnings. You've gained <<moneyGain `$_potValue/100`>>, finishing the game with a <<printmoney $_moneyDiff>> $_resStr.</span>
+	<<else>>
+		<span class="red">You've lost all the money from your pot during the game, so you have to leave empty-handed.</span>
+	<</if>>
+	<br><br>
+<</if>>
+<</widget>>
+
+<<widget "blackjackPostGameThrowTips">>
+<<if $estate.cards.bettingEnabled>>
+	<!-- the goons throw in tips even if you're not betting, as long as you've paid the ante -->
+	<!-- the goons throw in 5-15% of your bet, plus a random base of 1-5 -->
+	<<set $_tipAmount to random(100,500)>>
+	<<set $_tipPct to random(5,15)/100>>
+	<<set $_tipAmount += $estate.cards.currentBetInput * 100 * $_tipPct>>
+
+	Wren's goons throw <<printmoney $_tipAmount>> into your pot, as a tip.
+	<br><br>
+
+	<<set $estate.cards.playerPot += $_tipAmount>>
+	<<set $estatePersistent.totalTipMoneyMade += $_tipAmount>>
+<</if>>
+<</widget>>
+
+<<widget "blackjackPostGameBettingResult">>
+<<set $_playerWon to _args[0]>>
+
+<<if $estate.cards.bettingEnabled and $estate.cards.currentBetInput gt 0>>
+	<<set $_bet to $estate.cards.currentBetInput * 100>>
+	<<if $_playerWon>>
+		<<set $estate.cards.playerPot += $_bet>>
+		<<set $estate.cards.wrenMoney -= $_bet>>
+		<<set $estatePersistent.totalBetMoneyMade += $_bet>>
+	<<else>>
+		<<set $estate.cards.playerPot -= $_bet>>
+		<<set $estate.cards.wrenMoney += $_bet>>
+		<<set $estatePersistent.totalBetMoneyLost += $_bet>>
+	<</if>>
+<</if>>
+
+<</widget>>
+
+<<widget "blackjackResultText">>
+<<set $_playerWon to _args[0]>>
+
+<<calculateBlackjackLuckStats>>
+<<set $_luckFlow to "neutral">> <!-- wren|player|neutral -->
+<!-- the player has a bad streak if less than 50% of the games are ties, and the opponent has won 2x as many games. 6 games are considered normally. -->
+<!-- here's all the possible cases (generated with the code in the comment of calculateBlackjackLuckStats) -->
+<!--
+
+Player lucky cases
+3 wins / 1 losses / 2 ties | wins 50.00% losses 16.67% ties 33.33%
+4 wins / 0 losses / 2 ties | wins 66.67% losses 0.00% ties 33.33%
+4 wins / 1 losses / 1 ties | wins 66.67% losses 16.67% ties 16.67%
+4 wins / 2 losses / 0 ties | wins 66.67% losses 33.33% ties 0.00%
+5 wins / 0 losses / 1 ties | wins 83.33% losses 0.00% ties 16.67%
+5 wins / 1 losses / 0 ties | wins 83.33% losses 16.67% ties 0.00%
+
+Wren lucky cases
+0 wins / 4 losses / 2 ties | wins 0.00% losses 66.67% ties 33.33%
+0 wins / 5 losses / 1 ties | wins 0.00% losses 83.33% ties 16.67%
+1 wins / 3 losses / 2 ties | wins 16.67% losses 50.00% ties 33.33%
+1 wins / 4 losses / 1 ties | wins 16.67% losses 66.67% ties 16.67%
+1 wins / 5 losses / 0 ties | wins 16.67% losses 83.33% ties 0.00%
+2 wins / 4 losses / 0 ties | wins 33.33% losses 66.67% ties 0.00%
+
+Neutral cases
+0 wins / 1 losses / 5 ties | wins 0.00% losses 16.67% ties 83.33%
+0 wins / 2 losses / 4 ties | wins 0.00% losses 33.33% ties 66.67%
+0 wins / 3 losses / 3 ties | wins 0.00% losses 50.00% ties 50.00%
+1 wins / 0 losses / 5 ties | wins 16.67% losses 0.00% ties 83.33%
+1 wins / 1 losses / 4 ties | wins 16.67% losses 16.67% ties 66.67%
+1 wins / 2 losses / 3 ties | wins 16.67% losses 33.33% ties 50.00%
+2 wins / 0 losses / 4 ties | wins 33.33% losses 0.00% ties 66.67%
+2 wins / 1 losses / 3 ties | wins 33.33% losses 16.67% ties 50.00%
+2 wins / 2 losses / 2 ties | wins 33.33% losses 33.33% ties 33.33%
+2 wins / 3 losses / 1 ties | wins 33.33% losses 50.00% ties 16.67%
+3 wins / 0 losses / 3 ties | wins 50.00% losses 0.00% ties 50.00%
+3 wins / 2 losses / 1 ties | wins 50.00% losses 33.33% ties 16.67%
+3 wins / 3 losses / 0 ties | wins 50.00% losses 50.00% ties 0.00%
+ -->
+<!-- to tweak these values, check calculateBlackjackLuckStats -->
+<!-- the first 4 games will always be neutral -->
+<<if $estate.cards.luckStats and $estate.cards.luckStats.total gte 5>>
+	/* pcts[ind][0] >= pcts[ind][1]*2 && pcts[ind][2] < .7 */
+	<<if $estate.cards.luckStats["winPct"] gte $estate.cards.luckStats["lossPct"] * 2.5 and $estate.cards.luckStats["tiePct"] lt 0.5>>
+		<<set $_luckFlow to "player">>
+	<<elseif $estate.cards.luckStats["lossPct"] gte $estate.cards.luckStats["winPct"] * 2.5 and $estate.cards.luckStats["tiePct"] lt 0.5>>
+		<<set $_luckFlow to "wren">>
+	<<else>>
+		<<set $_luckFlow to "neutral">>
+	<</if>>
+<</if>>
+
+<<if $estate.cards.bettingEnabled and $estate.cards.currentBetInput gt 0>>
+	<<formatmoney `$estate.cards.currentBetInput * 100`>>
+	<<set $_money to '<span class="' + ($_playerWon ? 'gold' : 'red') + '">' + _printmoney + '</span>'>>
+
+	<<if $_playerWon>>
+		<<if $_luckFlow is "neutral">>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"Good game," Wren says as <<he>> pushes the $_money to the side, to your pot, seemingly unaffected by the loss.
+				<<case 2>>
+					Wren smiles and lazily pushes your $_money towards your pot. If <<hes>> frustrated - <<hes>> hiding it well.
+				<<case 3>>
+					"Oh well," Wren says with a smile as <<he>> motions for <<his>> goon to push the $_money to your pot.
+			<</switch>>
+		<<elseif $_luckFlow is "wren">>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"Can't win them all," Wren says, as <<he>> pushes the $_money to the side, to your pot, seemingly unaffected by the loss.
+				<<case 2>>
+					"Looks like lady luck has finally smiled at you," Wren says as <<he>> motions for <<his>> goon to push the $_money to your pot.
+				<<case 3>>
+					"And I was doing so well," Wren says with a smile as <<he>> pushes the $_money towards your pot.
+			<</switch>>
+		<<else>>
+			<<switch random(1,5)>>
+				<<case 1>>
+					Wren scoffs and lazily swipes <<his>> hand across the pot of $_money, pushing it towards your pot. 
+				<<case 2>>
+					"You're awfully lucky today," Wren says as <<he>> pushes the $_money towards your pot, <<his>> face betraying a hint of annoyance.
+				<<case 3>>
+					Wren motions for <<his>> goon to push the $_money to your pot. For a second, you think you can see <<him>> gritting <<his>> teeth in frustration.
+				<<case 4>>
+					"A black cat must've crossed my path today," Wren says with a resigned chuckle as <<he>> pushes the $_money towards your pot.
+				<<case 5>>
+					"You should buy a lottery ticket," Wren says as <<he>> motions for <<his>> goon to push the $_money to your pot.
+			<</switch>>
+		<</if>>
+	<<else>>
+		<<if $_luckFlow is "neutral">>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"Good game," Wren grins as <<he>> reaches for the pot of cash, and hands it to one of <<his>> goons, who safely stashes the $_money away.
+				<<case 2>>
+					Wren lazily reaches for the pot of $_money and hands it over to <<his>> goon, a satisfied grin on <<his>> face.
+				<<case 3>>
+					"Better luck next time," Wren says with a smile as <<he>> motions for <<his>> goon to take the $_money.
+			<</switch>>
+		<<elseif $_luckFlow is "wren">>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"The game's going great," Wren says, as <<he>> reaches for the pot of cash, and hands it to one of <<his>> goons, who safely stashes the $_money away.
+				<<case 2>>
+					"Looks like lady luck is smiling at me," Wren says as <<he>> lazily reaches for the pot of $_money and hands it over to <<his>> goon, a satisfied grin on <<his>> face.
+				<<case 3>>
+					"Lady luck has turned her back on you," Wren says with a smile as <<he>> motions for <<his>> goon to take the $_money.
+			<</switch>>
+		<<else>>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"Finally, some good luck," Wren says, as <<he>> reaches for the pot of cash, and hands it to one of <<his>> goons, who safely stashes the $_money away.
+				<<case 2>>
+					"Your streak couldn't go on forever," Wren says as <<he>> lazily reaches for the pot of $_money and hands it over to <<his>> goon, a satisfied grin on <<his>> face.
+				<<case 3>>
+					"Looks like your good streak is ending," Wren says with a smile as <<he>> motions for <<his>> goon to take the $_money.
+			<</switch>>
+		<</if>>
+	<</if>>
+<<else>>
+	<<if $_playerWon>>
+		<<if $_luckFlow is "neutral">>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"Good game," Wren says.
+				<<case 2>>
+					Wren gives you a light smile.
+				<<case 3>>
+					"Oh well," Wren says with a smile.
+			<</switch>>
+		<<elseif $_luckFlow is "wren">>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"Can't win them all," Wren says, leaning back on the chair.
+				<<case 2>>
+					"Looks like lady luck has finally smiled at you," Wren says.
+				<<case 3>>
+					"And I was doing so well," Wren says with a smile.
+			<</switch>>
+		<<else>>
+			<<switch random(1,5)>>
+				<<case 1>>
+					Wren scoffs, leaning back on the chair.
+				<<case 2>>
+					"You're awfully lucky today," Wren says.
+				<<case 3>>
+					Wren crosses <<his>> as <<he>> leans back on the chair, giving you a resigned smile.
+				<<case 4>>
+					"A black cat must've crossed my path today," Wren says with a resigned chuckle.
+				<<case 5>>
+					"You should buy a lottery ticket," Wren says.
+			<</switch>>
+		<</if>>
+	<<else>>
+		<<if $_luckFlow is "neutral">>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"Good game," Wren grins.
+				<<case 2>>
+					Wren sits up and leans forward with a satisfied grin on <<his>> face.
+				<<case 3>>
+					"Better luck next time," Wren says with a smile.
+			<</switch>>
+		<<elseif $_luckFlow is "wren">>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"The game's going great," Wren says, as <<he>> sits up and leans forward.
+				<<case 2>>
+					"Looks like lady luck is smiling at me," Wren says.
+				<<case 3>>
+					"Lady luck has turned her back on you," Wren says with a smile.
+			<</switch>>
+		<<else>>
+			<<switch random(1,3)>>
+				<<case 1>>
+					"Finally, some good luck," Wren says as <<he>> sits up and leans forward.
+				<<case 2>>
+					"Your streak couldn't go on forever," Wren says as <<he>> leans forward.
+				<<case 3>>
+					"Looks like your good streak is ending," Wren says with a smile.
+			<</switch>>
+		<</if>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "cards_oral_options">>
+
+<<if $estate.cards.clothesRebuyTerms and $estate.cards.clothesRebuyTerms.price gt $money>>
+	<span class="blue">You don't have enough money to accept the deal.</span>
+	<br><br>
+<<elseif $promiscuity gte 55>>
+	<<link [[Accept|Estate Cards Oral]]>><</link>><<promiscuous4>><<goralskill>>
+	<br>
+<<else>>
+	<span class="blue">You're not promiscuous enough to take up such an offer.</span> But leaving with nothing will be dangerous.
+	<br><br>
+
+	<<link [[Accept|Estate Cards Oral]]>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
+	<br>
+<</if>>
+<<link [[Refuse|Estate Cards Oral Refuse]]>><</link>>
+<br>
+
+<</widget>>
+
 <<widget "cards_naked_end">>
 <<covered>>
 <<if $submissive gte 1150>>
@@ -1378,21 +2024,36 @@ Wren leans behind <<him>>, and opens a drawer. <<He>> feels inside, and produces
 "Satisfy them with your mouth," <<he>> continues. "And I'll let you wear a towel."
 <br><br>
 
-<<if $promiscuity gte 55>>
-	<<link [[Accept|Estate Cards Oral]]>><</link>><<promiscuous4>><<goralskill>>
-	<br>
-<<else>>
-	<span class="blue">You're not promiscuous enough to take up such an offer.</span> But leaving with nothing will be dangerous.
-	<br><br>
-
-	<<link [[Accept|Estate Cards Oral]]>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
-	<br>
-<</if>>
-<<link [[Refuse|Estate Cards Oral Refuse]]>><</link>>
-<br>
+<<cards_oral_options>>
 <</widget>>
 
 <<widget "cards_play_options">>
+<<if $estate.cards.bettingEnabled>>
+	<<person1>>
+	<!-- the player can't bet more than Wren has, or more than the player has in the pot (including tips), or more than the max bet-->
+	<<set $_maxBetAmount to Math.min($estate.cards.baseMaxBet, $estate.cards.wrenMoney, $estate.cards.playerPot)>>
+	<!-- rounding down to nearest multiple of X (X pounds = step) -->
+	<<set $_step to $estate.cards.betStep>>
+    <<set $_maxBetAmount to Math.floor($_maxBetAmount / $_step) * $_step >>
+
+	<<set $_moneyDiff to $estate.cards.playerPot - $estate.cards.ante>>
+	<div>
+		<div><span>Your money on the table<mouse class="tooltip">(?)<span>The amount of money you've made that is kept on the table as insurance (including tips and your ante). If you get caught cheating or run away, you either have to risk trying to take it with you or abandon it.</span></mouse>: 
+		<<printmoney $estate.cards.playerPot>></span></div>
+		<div><span>Your current winnings<mouse class="tooltip">(?)<span>The total standing, how much money you've made or lost in the game (including tips). Does not represent the final amount you'll end up with, as you might end up abandoning your winnings for a less risky escape.</span></mouse>: 
+		<<printmoney $_moneyDiff>></span></div>
+		<div><span>Wren's pot<mouse class="tooltip">(?)<span>The amount of money Wren has that you can win (including <<his>> ante). The tips come from the goons, so they're not included. If Wren's pot is exhausted, <<he>> will not be able to bet any more until the next day.</span></mouse>: 
+		<<printmoney $estate.cards.wrenMoney>></span></div>
+		<<if $_maxBetAmount gt 0>>
+			<div><span>Your bet:</span><<numberslider "$estate.cards.currentBetInput" 0 0 `$_maxBetAmount/100` `$_step/100`>></div>
+		<<elseif $estate.cards.playerPot lt $_step>>
+			<span class="blue">You don't have enough money in your pot to place the minimum bet (<<printmoney $_step>> required).</span>
+		<<else>>
+			<span class="blue">Wren doesn't have enough money left in <<his>> pot to match the minimum bet.</span>
+		<</if>>
+	</div>
+	<br><br>
+<</if>>
 <<if $estate.cards.desire is "chastity">>
 	<<link [[Leave|Estate Cards Leave]]>><</link>>
 	<br>
@@ -1408,6 +2069,55 @@ Wren leans behind <<him>>, and opens a drawer. <<He>> feels inside, and produces
 	<<link [[Leave|Estate Cards Leave]]>><<npcincr Wren love 1>><</link>><<llove>>
 	<br>
 <</if>>
+<</widget>>
+
+
+
+<<widget "cards_start_play_options">>
+
+<<link [[Play cards|Estate Cards Intro 2]]>><</link>>
+
+<<if $estatePersistent.stakesRaised>>
+	<<set $_anteMaxNum to setup.estateBlackjack.anteSizes.length - 1>>
+	
+	<<for _i to 0; _i lte $_anteMaxNum; _i++>>
+		<<set _anteAmount to setup.estateBlackjack.anteSizes[_i]>>
+		<<formatmoney _anteAmount>>
+
+		<<set $_confidenceMoney to setup.estateBlackjack.confidenceMoney[_i]>>
+		<<set $_primaryReq to setup.estateBlackjack.primaryRequirements[_i]>>
+
+
+		<<if $money gte $_confidenceMoney or Scripting.evalTwineScript($_primaryReq.check)>>
+			<<if $money lt _anteAmount>>
+				<br>
+				<span class="blue">Play cards with betting (_printmoney upfront): you're confident, but you don't have enough money.</span>
+			<<else>>
+				<<set _linkText to "Play cards with betting (" + _printmoney + " upfront)" >>
+				<br>
+				<<capture _linkText, _anteAmount, _i>>
+					<<link [[_linkText|Estate Cards Intro 2]]>><<estate_betting_start _i>><</link>>
+				<</capture>>
+			<</if>>
+		<<else>>
+			<br>
+			<span class="blue">Play cards with betting (_printmoney upfront): you're not confident enough to risk that much money. <i><<print $_primaryReq.message>></i></span>
+		<</if>>
+	<</for>>
+<<elseif $wren_intro isnot undefined and not ($estate.cards.suggestedRaisingStakesToday or $estatePersistent.playerRejectedRaisingStakes)>>
+	<!-- $estate.cards.suggestedRaisingStakesToday prevents you from trying to convince Wren again until you leave the estate once, to give them time to think -->
+	<br>
+	<<if not $estatePersistent.suggestedRaisingStakes>>
+		<<link [[Suggest raising the stakes|Estate Cards Suggest Betting Init]]>><</link>>
+	<<else>>
+		<<link [[Suggest raising the stakes|Estate Cards Suggest Betting Again]]>><</link>>
+	<</if>>
+<<elseif $estatePersistent.playerRejectedRaisingStakes>>
+	<br>
+	<<link [[Accept raising the stakes|Estate Cards Reconsider Accept Betting]]>><</link>>
+<</if>>
+<br>
+<<link [[Leave|Estate Cards Intro Leave]]>><</link>>
 <</widget>>
 
 <<widget "cards_lap_return">>

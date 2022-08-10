@@ -12,11 +12,39 @@
 <<set $estate.cards.pc_exposed_text to 0>>
 <<set $estate.cards.pc_exposed_walk to 0>>
 <<set $estate.cards.cheatPeeking to false>>
+<<set $estate.cards.suggestedRaisingStakesToday to false>>
+<<set $estate.cards.gameResults to []>>
+<<set $estate.cards.confiscatedClothes to []>>
 <<set $estate.entrance to _args[0]>>
 <<set $estate.chaos to 0>>
-<<if $estatePersistent eq undefined>>
-	<<set $estatePersistent to {"suspicion": 0, "newDeckTimer": 3, "markedCards": new Set()}>>
+<</widget>>
+
+
+<<widget "estate_betting_start">>
+<<set $_anteNum to _args[0]>>
+<<set $_anteMaxNum to setup.estateBlackjack.anteSizes.length - 1>>
+<<if $_anteNum gt $_anteMaxNum>>
+	<<error {
+		message	: `Attempted to set the ante number to a higher number than allowed.`,
+		source	: Utils.GetStack()
+	}>>
 <</if>>
+
+<!-- if not defined, it means the player has agreed to Wren's demand and will receive their clothing back
+	after satisfying the goons. contains the terms (the amount Wren has asked for) -->
+<!-- $estate.cards.clothesRebuyTerms  can't set it to null because some old saves had NaNs turn into nulls, so now we avoid nulls -->
+<<set $estate.cards.bettingEnabled to true>>
+<<set $_ante to setup.estateBlackjack.anteSizes[$_anteNum]>>
+<<set $estate.cards.betStep to setup.estateBlackjack.betSteps[$_anteNum]>>
+<<set $estate.cards.baseMaxBet to setup.estateBlackjack.baseMaxBets[$_anteNum]>>
+<<set $estate.cards.ante to $_ante>>
+<<set $estate.cards.wrenMoney to $_ante>>
+<<set $estate.cards.playerPot to $_ante>>
+<<set $estate.cards.currentBetInput to 0>>
+	
+<!-- taking away player's money -->
+<<set $money -= $_ante>>
+
 <</widget>>
 
 <<widget "estate_end">>
