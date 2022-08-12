@@ -151,3 +151,8 @@ Template.add("gwylanItem", () =>
 		"knick-knack of unknown purpose"
 	)
 );
+
+/* ?sin */
+Template.add("sin", () =>
+	either("pride", "wrath", "envy", "lust", "gluttony", "greed", "sloth")
+);
