@@ -4,79 +4,37 @@
 	<<exposure>>
 	<<if $danceevent is 0>>
 		<<if $exposed gte 2 and $exhibitionism lte 74 and $forceddance isnot 1 and ($corruptionDancing is undefined or $dancelocation isnot "brothel")>>
+			<!--
+				No dancing if:
+				Under 75 exhib, fully exposed, not forced, (not at brothel or not corrupt dance)
+			-->
 		<<elseif $exposed gte 1 and $exhibitionism lte 34 and $forceddance isnot 1 and ($corruptionDancing is undefined or $dancelocation isnot "brothel") and !$worn.under_lower.type.includes("dance")>>
+			<!--
+				No dancing if:
+				Under 35 exhib, half exposed, not forced,
+				not wearing dance clothes, (not at brothel or not corrupt Dancing)
+			-->
 		<<else>>
+			<!-- Generate "dance near" boxes -->
 			<<if $audience gte 1>>
-				<<person1>>
-				<<if $dance_place is undefined>>
+				<<for $_audienceMemberIndex to 0; $_audienceMemberIndex lt $enemyno; $_audienceMemberIndex++>> <!-- For each audience member 1-6 -->
+					<<personselect $_audienceMemberIndex>>
 					<div class="dance_box"><label>
-					<<if $NPCList[0].masturbating gte 1>>
-						The <<person>> masturbates. <<dance_npc_masturbation_chance 0>>
-					<<else>>
-						The <<person>> watches.
-					<</if>>
-					 | Dance near <<him>>. <<radiobutton "$dance_place" 1 checked>></label></div>
-				<<else>>
-					<div class="dance_box"><label>
-					<<if $NPCList[0].masturbating gte 1>>
-						The <<person>> masturbates. <<dance_npc_masturbation_chance 0>>
-					<<else>>
-						The <<person>> watches.
-					<</if>>
-					 | Dance near <<him>>. <<radiobutton "$dance_place" 1 autocheck>></label></div>
-				<</if>>
-			<</if>><br>
-			<<if $audience gte 2>>
-				<<person2>>
-				<div class="dance_box"><label>
-				<<if $NPCList[1].masturbating gte 1>>
-					The <<person>> masturbates. <<dance_npc_masturbation_chance 1>>
-				<<else>>
-					The <<person>> watches.
-				<</if>>
-				 | Dance near <<him>>. <<radiobutton "$dance_place" 2 autocheck>></label></div>
-			<</if>><br>
-			<<if $audience gte 3>>
-				<<person3>>
-				<div class="dance_box"><label>
-				<<if $NPCList[2].masturbating gte 1>>
-					The <<person>> masturbates. <<dance_npc_masturbation_chance 2>>
-				<<else>>
-					The <<person>> watches.
-				<</if>>
-				 | Dance near <<him>>. <<radiobutton "$dance_place" 3 autocheck>></label></div>
-			<</if>><br>
-			<<if $audience gte 4>>
-				<<person4>>
-				<div class="dance_box"><label>
-				<<if $NPCList[3].masturbating gte 1>>
-					The <<person>> masturbates. <<dance_npc_masturbation_chance 3>>
-				<<else>>
-					The <<person>> watches.
-				<</if>>
-				 | Dance near <<him>>. <<radiobutton "$dance_place" 4 autocheck>></label></div>
-			<</if>><br>
-			<<if $audience gte 5>>
-				<<person5>>
-				<div class="dance_box"><label>
-				<<if $NPCList[4].masturbating gte 1>>
-					The <<person>> masturbates. <<dance_npc_masturbation_chance 4>>
-				<<else>>
-					The <<person>> watches.
-				<</if>>
-				 | Dance near <<him>>. <<radiobutton "$dance_place" 5 autocheck>></label></div>
-			<</if>><br>
-			<<if $audience gte 6>>
-				<<person6>>
-				<div class="dance_box"><label>
-				<<if $NPCList[5].masturbating gte 1>>
-					The <<person>> masturbates. <<dance_npc_masturbation_chance 5>>
-				<<else>>
-					The <<person>> watches.
-				<</if>>
-				 | Dance near <<him>>. <<radiobutton "$dance_place" 6 autocheck>></label></div>
+						<<if $NPCList[$_audienceMemberIndex].masturbating gte 1>>
+							The <<person>> masturbates.
+							<!-- <<dance_npc_masturbation_chance $_audienceMemberIndex>> -->
+						<<else>>
+							The <<person>> watches.
+						<</if>>
+						<<capture $_audienceMemberIndex>>
+							| Dance near <<him>>. <<radiobutton "$dance_place" $_audienceMemberIndex autocheck>>
+						<</capture>>
+					</label></div>
+					<br>
+				<</for>>
+				<br>
 			<</if>>
-			<br><br>
+			<!-- Generate general dance actions -->
 			<<if $danceactiondefault is "cool">>
 				<label>Cool Dance (0:01) <<radiobutton "$danceaction" "cool" checked>></label> |
 			<<elseif $danceactiondefault is 0>>
@@ -113,6 +71,7 @@
 					<label><span class="sub">Groom</span> (0:01) <span class="blue">Cat</span> <<radiobutton "$danceaction" "groom">></label> |
 				<</if>>
 			<</if>>
+			<!-- Generate stripping dance actions -->
 			<<dancestripactions>>
 			<br><br>
 			<<link [[Continue|$passage]]>><</link>>
@@ -235,19 +194,10 @@
 		<</if>>
 		<<rng>>
 		<<if ($allure / 100 + currentSkillValue('danceskill') / 20 + $audienceexcitement / 5 + $audiencearousal / 5 + _heelBonus) gte $rng>>
+			<<if $audience gte 0 and $audience lte 5>>
+				<<generatel>><<personselect $audience>>
+				A <<person>> starts watching you.
 			<<set $audience += 1>>
-			<<if $audience is 1>>
-				<<generatel>> A <<person1>><<person>> starts watching you.
-			<<elseif $audience is 2>>
-				<<generatel>> A <<person2>><<person>> starts watching you.
-			<<elseif $audience is 3>>
-				<<generatel>> A <<person3>><<person>> starts watching you.
-			<<elseif $audience is 4>>
-				<<generatel>> A <<person4>><<person>> starts watching you.
-			<<elseif $audience is 5>>
-				<<generatel>> A <<person5>><<person>> starts watching you.
-			<<elseif $audience is 6>>
-				<<generatel>> A <<person6>><<person>> starts watching you.
 			<<else>>
 				Someone else joins the audience.
 			<</if>>
@@ -375,13 +325,18 @@
 			<<rng>><<rngWraith 2 "night">>
 			<<if $wraith and ($wraith.state is "haunt" or $wraith.offspring is "dead") and _wraithEvent and $rng lte 10>>
 				<<danceWraith>>
-			<<elseif $dance_stage_cum gte random(1, 25)>>
-				<<if currentSkillValue('danceskill') gte $dance_stage_cum>>
+				<<set $_blockDancingEvents to true>>
+			<<elseif currentSkillValue('danceskill') lt ( ($dance_stage_cum * 50) + random(1,250) )>>
+				<<if currentSkillValue('danceskill') gte ( ($dance_stage_cum * 40) + random(1,100) )>>
 					Your feet slip on the semen-covered stage, <span class="green">but you're able to recover,</span> incorporating the move into the dance.
 				<<else>>
 					Your feet slip on the semen-covered stage, <span class="red">and you fall on your <<bottom>>.</span>
 					<<dancefall>>
+					<<set $_blockDancingEvents to true>>
 				<</if>>
+			<</if>>
+			<<if $_blockDancingEvents>>
+				<!-- No other events can trigger -->
 			<<elseif $dancelocation is 0>>
 				<<if $audiencearousal gte 100>>
 					<<if $rng gte 91>>

@@ -2974,35 +2974,16 @@ It
 <</widget>>
 
 <<widget "random_semen">>
-<<set _rng to random (1, 10)>>
-It
-<<if random(1, 2) is 2>>
-	splatters onto your
-<<else>>
-	coats your
-<</if>>
-<<switch _rng>>
-	<<case 1>>
-		<<bodyliquid "neck" "semen">><span class="purple">neck</span>
-	<<case 2>>
-		<<bodyliquid "rightarm" "semen">><span class="purple">right arm.</span>
-	<<case 3>>
-		<<bodyliquid "leftarm" "semen">><span class="purple">left arm.</span>
-	<<case 4>>
-		<<bodyliquid "thighs" "semen">><span class="purple">thighs.</span>
-	<<case 5>>
-		<<bodyliquid "bottom" "semen">><span class="purple">bottom.</span>
-	<<case 6>>
-		<<bodyliquid "tummy" "semen">><span class="purple">tummy.</span>
-	<<case 7>>
-		<<bodyliquid "chest" "semen">><span class="purple">chest.</span>
-	<<case 8>>
-		<<bodyliquid "face" "semen">><span class="purple">face.</span>
-	<<case 9>>
-		<<bodyliquid "hair" "semen">><span class="purple">hair.</span>
-	<<case 10>>
-		<<bodyliquid "feet" "semen">><span class="purple">feet.</span>
-<</switch>>
+	<<set $_rng to random (0, 9)>> <!-- 1-10 but 0 indexed -->
+	<<set $_part_text to [
+		"neck", "right arm", "left arm", "thigh", "bottom",
+		"tummy", "chest", "face", "hair", "feet"
+		].select($_rng)>>
+	<<set $_part to $_part_text.replace(" ","")>>
+	<<set $player.bodyliquid[$_part].semen += 1>>
+
+	It <<print either("splatters onto your", "coats your", "lands on your", "splashes your")>>
+	<span class="purple">$_part_text.</span>
 <</widget>>
 
 <<widget "washmakeup">>
@@ -3350,7 +3331,7 @@ __Map__<br>
 
 <<widget "roomoptions">>
 	<<if $sexStats.pills.boughtOnce is true or $sexStats.pills["pills"]["Dr Harper\'s prescription"].owned gte 1 or $sexStats.pills["pills"]["asylum\'s prescription"].owned gte 1>>
-		<<icon "pill collection">><<link [[Check your pills|PillCollection]]>><<set $pillsExitPassage to $passage>><<endevent>><</link>>
+		<<icon "pill collection.png">><<link [[Check your pills|PillCollection]]>><<set $pillsExitPassage to $passage>><<endevent>><</link>>
 		<br>
 	<</if>>
 <</widget>>
@@ -5077,7 +5058,7 @@ __Map__<br>
 	<</if>>
 <</widget>>
 
-<<widget "bodyliquid">>
+<<widget "bodyliquid">><<silently>>
 	<!-- first argument is either bodypart, all, outside, inside, or clear (required) -->
 	<!-- second and later arguments are liquid types (semen, goo, nectar, or all; at least one required) -->
 	<!-- last argument is optional and if numeric - specifies the amount (default: 1) -->
@@ -5148,10 +5129,10 @@ __Map__<br>
 
 	<<if $_fail is true>>
 		<<if $debugdisable is "f">>
-			<<error {
+			<</silently>><<error {
 				message	: `bodyliquid widget on ${Utils.GetStack()} failed, please report`,
 				source	: `Arguments: ${$_bodypart} | ${_args[0]} | ${_args[1]} | ${_args[2]} | ${_args[3]}.`
-			}>>
+			}>><<silently>>
 		<</if>>
 	<<else>>
 		<<for $_part range $_bodypart>>
@@ -5160,4 +5141,4 @@ __Map__<br>
 			<</for>>
 		<</for>>
 	<</if>>
-<</widget>>
+<</silently>><</widget>>
