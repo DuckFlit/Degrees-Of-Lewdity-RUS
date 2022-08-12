@@ -597,20 +597,9 @@
 <</widget>>
 
 <<widget "person_dance">>
-<<switch $dance_place>>
-	<<case 1>>
-		<<person1>>
-	<<case 2>>
-		<<person2>>
-	<<case 3>>
-		<<person3>>
-	<<case 4>>
-		<<person4>>
-	<<case 5>>
-		<<person5>>
-	<<case 6>>
-		<<person6>>
-<</switch>>
+	<<if $dance_place gte 0 and $dance_place lte 5 and $dance_place lt $enemyno>>
+		<<personselect $dance_place>>
+	<</if>>
 <</widget>>
 
 <<widget "dance_crossdress_reveal">>
@@ -1279,58 +1268,63 @@
 <</widget>>
 
 <<widget "dance_npc_masturbation">>
-<<for _i to 0; _i lt $NPCList.length; _i++>>
-	<<if ($NPCList[_i].lefthand is 0 or $NPCList[_i].righthand is 0) and ($dancelocation is "brothel" or $dancelocation is "underground" or $dancelocation is "smuggler_forced" or $dancelocation is "stage")>>
-		<<personselect _i>>
-		<<if $NPCList[_i].masturbating is undefined>>
-			<<if $audiencearousal gte random(1, 300)>>
-				<br>
-				The <<print $NPCList[_i].fullDescription>> reveals <<his>>
-				<<if $NPCList[_i].penis isnot "none">>
-					<<print $NPCList[_i].penisdesc>>,
+	<<if ["brothel", "underground", "smuggler_forced", "stage"].includes($dancelocation)>>
+		<<for $_index to 0; $_index lt $enemyno; $_index++>>
+			<<if ($NPCList[$_index].lefthand is 0 or $NPCList[$_index].righthand is 0)>>
+				<<personselect $_index>>
+				<<if $NPCList[$_index].masturbating is undefined>>
+					<<if $audiencearousal gte random(1, 300)>>
+						<br>
+						The <<print $NPCList[$_index].fullDescription>> reveals <<his>>
+						<<if $NPCList[$_index].penis isnot "none">>
+							<<print $NPCList[$_index].penisdesc>>,
+						<<else>>
+							pussy,
+						<</if>>
+						and starts masturbating.
+						<<set $NPCList[$_index].masturbating to 1>>
+					<</if>>
 				<<else>>
-					pussy,
-				<</if>>
-				and starts masturbating.
-				<<set $NPCList[_i].masturbating to 1>>
-			<</if>>
-		<<else>>
-			<<if $NPCList[_i].masturbating gte random(1, 25)>>
-				<br>
-				<<set $NPCList[_i].masturbating to 1>>
-				The <<print $NPCList[_i].fullDescription>> shakes as <<he>> reaches climax.
-				<<if $NPCList[_i].penis isnot "none">>
-					<<if ($dance_place - 1) is _i>>
-						A thick rope of cum erupts from <<his>> <<print $NPCList[_i].penisdesc>>.
-						<<random_semen>><<set $audiencemod += 2>>
+					<<if $NPCList[$_index].masturbating gte random(1, 25)>>
+						<br>
+						<<set $NPCList[$_index].masturbating to 1>>
+						The <<print $NPCList[$_index].fullDescription>> shakes as <<he>> reaches climax.
+						<<if $NPCList[$_index].penis isnot "none">>
+							A thick rope of cum erupts from <<his>> <<print $NPCList[$_index].penisdesc>>.
+							<<if $dance_place is $_index>>
+								<<random_semen>><<set $audiencemod += 2>>
+							<<else>>
+								It splatters the <span class="blue">stage.</span>
+								<<dance_stage_cum 1>>
+							<</if>>
+						<</if>>
 					<<else>>
-						A thick rope of cum splatters the <span class="blue">stage.</span>
-						<<dance_stage_cum 1>>
+						<<set $NPCList[$_index].masturbating += 1>>
 					<</if>>
 				<</if>>
-			<<else>>
-				<<set $NPCList[_i].masturbating += 1>>
 			<</if>>
-		<</if>>
+		<</for>>
 	<</if>>
-<</for>>
 <</widget>>
 
 <<widget "dance_npc_masturbation_chance">>
-Orgasm chance:
-<<if $NPCList[_args[0]].masturbating gte 16>>
-	<span class="red"><<print $NPCList[_args[0]].masturbating * 4>>%</span>
-<<elseif $NPCList[_args[0]].masturbating gte 13>>
-	<span class="pink"><<print $NPCList[_args[0]].masturbating * 4>>%</span>
-<<elseif $NPCList[_args[0]].masturbating gte 10>>
-	<span class="purple"><<print $NPCList[_args[0]].masturbating * 4>>%</span>
-<<elseif $NPCList[_args[0]].masturbating gte 7>>
-	<span class="blue"><<print $NPCList[_args[0]].masturbating * 4>>%</span>
-<<elseif $NPCList[_args[0]].masturbating gte 4>>
-	<span class="lblue"><<print $NPCList[_args[0]].masturbating * 4>>%</span>
-<<elseif $NPCList[_args[0]].masturbating gte 2>>
-	<span class="teal"><<print $NPCList[_args[0]].masturbating * 4>>%</span>
-<<else>>
-	<span class="green"><<print $NPCList[_args[0]].masturbating * 4>>%</span>
-<</if>>
+	Orgasm chance: 
+	<<set $_npcMast to $NPCList[_args[0]].masturbating>>
+	<<set $_orgasmChance to $_npcMast * 4>>
+	<<if $_npcMast gte 16>>
+		<<set $_spanColour to "red">>
+	<<elseif $_npcMast gte 13>>
+		<<set $_spanColour to "pink">>
+	<<elseif $_npcMast gte 10>>
+		<<set $_spanColour to "purple">>
+	<<elseif $_npcMast gte 7>>
+		<<set $_spanColour to "blue">>
+	<<elseif $_npcMast gte 4>>
+		<<set $_spanColour to "lblue">>
+	<<elseif $_npcMast gte 2>>
+		<<set $_spanColour to "teal">>
+	<<else>>
+		<<set $_spanColour to "green">>
+	<</if>>
+	<span class="$_spanColour"><<print $_orgasmChance>>%</span>
 <</widget>>
