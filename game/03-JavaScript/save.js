@@ -439,16 +439,17 @@ window.updateSavesCount = function () {
 };
 
 window.importSettings = function (data, type) {
-	const reader = new FileReader();
+	let reader;
 	switch (type) {
 		case "text":
 			V.importString = document.getElementById("settingsDataInput").value;
 			Wikifier.wikifyEval('<<displaySettings "importConfirmDetails">>');
 			break;
 		case "file":
+			reader = new FileReader();
 			reader.addEventListener("load", function (e) {
 				V.importString = e.target.result;
-				Wikifier.wikifyEval(null, '<<displaySettings "importConfirmDetails">>');
+				Wikifier.wikifyEval('<<displaySettings "importConfirmDetails">>');
 			});
 			reader.readAsBinaryString(data[0]);
 			break;
@@ -1137,19 +1138,20 @@ window.isJsonString = function (s) {
 	return true;
 };
 
-/** 
+/**
  * Recursively traverses an object, reporting an error for any NaN values or null objects\
- * Example: `let result = recurseNaN(a, "a");`
- * @param {object} obj - The head of the object tree
- * @param {string} path - A string to indicate the path, put the object name in quotes
- * @param {object} result - An object to store the results in. - leave blank
- * @param {set} hist - A set used for Cycle history. - leave blank
+ * Example: `let result = recurseNaN(a, "a");`.
+ *
+ * @param {object} obj The head of the object tree.
+ * @param {string} path A string to indicate the path, put the object name in quotes.
+ * @param {object} result An object to store the results in. - leave blank.
+ * @param {Set} hist A set used for Cycle history. - leave blank.
  */
-function recurseNaN(obj, path, result=null, hist=null) {
-	if (result === null) result = {"nulls" : [], "nan" : [], "cycle" : []};
+function recurseNaN(obj, path, result = null, hist = null) {
+	if (result === null) result = { nulls: [], nan: [], cycle: [] };
 	if (hist === null) hist = new Set([obj]);
-	/*let result = {"nulls" : [], "nan" : [], "cycle" : []};*/
-	for (const [key,val] of Object.entries(obj)) {
+	/* let result = {"nulls" : [], "nan" : [], "cycle" : []}; */
+	for (const [key, val] of Object.entries(obj)) {
 		const newPath = `${path}.${key}`;
 		if (Number.isNaN(val)) {
 			result.nan.push(newPath);
