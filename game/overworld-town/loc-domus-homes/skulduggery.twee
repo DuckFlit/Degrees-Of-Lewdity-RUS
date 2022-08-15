@@ -263,8 +263,8 @@ You sneak around the house and look for anything of value.
 	<<enable_rescue>>
 <</if>>
 <<effects>>
-<<if $phase is 1 and $orgasmdown gte 2>>
-	<<set $phase to 2>>
+<<if $phase.between(1,2) and $orgasmdown gte 2>>
+	<<set $phase += 2>>
 	<<person2>>"Wow," says the <<person>>. "Being my <<beasttype>>'s bitch is making you cum. Maybe this isn't such a punishment for you after all, it's where you belong." You feel utterly humiliated.<<famebestiality 1>>
 	<br><br>
 <<elseif $phase gte 1>>
@@ -272,7 +272,13 @@ You sneak around the house and look for anything of value.
 	<br><br>
 <</if>>
 <<effectsman>>
-<<alarmstate>>
+<<if ($phase % 2) and $alarm is 1>>
+	<<alarmstate '<span class="red"><<person2>>The <<person>> laughs. "What\'s the matter, bitch? <<person1>>Is <<bhe>> too big for you?"</span><<person1>>' 1>>
+	<<set $alarm to 0>>
+	<<set $phase += 1>>
+<<else>>
+	<<alarmstate '<span class="red">Your screams go unanswered.</span>'>>
+<</if>>
 <<beast $enemyno>>
 <br><br>
 <<stateman>>
@@ -335,9 +341,10 @@ You flee out the house, the <<beasttype>> snapping at your heels. <<bHe>> doesn'
 	<br>
 	<<link [[Leave|Domus Street]]>><<endevent>><</link>>
 	<br>
-<<elseif $alarm is 1>>
+<<elseif $alarm is 1 and $rescue is 1>>
+	<<set $rescue to 0>>
 	<<if $NPCList[0].stance is "top">>
-		<<person2>>"What you got there boy?" says a <<person>>.
+		<<person2>>You hear footsteps coming towards you. "What you got there, <<print $NPCList[0].pronouns.boy>>?" says a <<person>>.
 		<<He>> laughs when <<he>> sees you. "Serves you right, sneaking around my property like that." <<He>> takes a seat. "Don't mind me."
 		<br><br>
 		<<link [[Next|Domus House Dog]]>><<set $phase to 1>><</link>>
@@ -408,6 +415,15 @@ The <<beasttypes>> ears twitch, but other than that <<bhe>> makes no move as you
 <<elseif $enemyhealth lte 0>>
 	<<person2>>The beast cowers and rolls over in submission.
 	<<tearful>> you escape the room before the <<person>> can react.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Domus Street]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<person1>>The <<beasttype>> backs away from you. <<bHe>> growls at you again, but sits down by the window.
+	<<person2>>The <<person>> sighs. "Not even giving me a good show, huh?" <<He>> walks over to you before you can recover and grabs your neck. <<He>> drags you to the front door and hefts you onto the porch. "If I see you again you'll get far worse." The door slams shut.
+	<<tearful>> you rise to your feet.
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>
