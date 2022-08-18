@@ -3091,7 +3091,7 @@ window.submitNewDebugPassage = function() {
 			let match = element.value.match('<<.+>>{0,}')
 
 			if (match == null || match[0] != match.input){
-				element.setCustomValidity("Unvalid widget format. Valid : <<widget @params>>");
+				element.setCustomValidity("Invalid widget format. Valid : <<widget @params>>");
 				element.reportValidity();
 				document.getElementById("debugAddResult").innerHTML = ''
 				sigerror = 1

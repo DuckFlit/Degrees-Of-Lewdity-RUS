@@ -116,7 +116,7 @@
 	return parseInt(str, 16);
   }
   /**
-	* @desc Convert nunber into to 2-digit hex
+	* @desc Convert number into to 2-digit hex
 	* @param int - number to convert
 	*/
 
@@ -181,7 +181,7 @@
 	/**
 		* @desc Shortcut to set a specific channel value
 		* @param format - hsv | hsl | rgb
-		* @param channel - individual channel to set, for example if model = hsl, chanel = h | s | l
+		* @param channel - individual channel to set, for example if model = hsl, channel = h | s | l
 		* @param value - new value for the channel
 	*/
 	;
