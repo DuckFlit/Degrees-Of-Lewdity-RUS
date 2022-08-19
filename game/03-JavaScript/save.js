@@ -569,8 +569,8 @@ const importSettingsData = function (data) {
 	}
 };
 
-window.validateValue = function (keys, value) {
-	// console.log("validateValue",keys,value);
+function validateValue(keys, value) {
+	// console.log("validateValue", keys, value);
 	const keyArray = Object.keys(keys);
 	let valid = false;
 	if (keyArray.length === 0) {
@@ -582,7 +582,8 @@ window.validateValue = function (keys, value) {
 		}
 	}
 	if (keyArray.includes("decimals") && value != null) {
-		if (value.toFixed(keys.decimals) !== value) {
+		// eslint-disable-next-line eqeqeq
+		if (value.toFixed(keys.decimals) != value) {
 			valid = false;
 		}
 	}
@@ -602,9 +603,10 @@ window.validateValue = function (keys, value) {
 		}
 	}
 	return valid;
-};
+}
+window.validateValue = validateValue;
 
-window.exportSettings = function (data, type) {
+function exportSettings(data, type) {
 	const S = {
 		general: {
 			map: {},
@@ -706,9 +708,10 @@ window.exportSettings = function (data, type) {
 		const blob = new Blob([result], { type: "text/plain;charset=utf-8" });
 		saveAs(blob, "DolSettingsExport.txt");
 	}
-};
+}
+window.exportSettings = exportSettings;
 
-window.settingsObjects = function (type) {
+function settingsObjects(type) {
 	let result;
 	/* boolLetter type also requires the bool type aswell */
 	switch (type) {
@@ -979,10 +982,11 @@ window.settingsObjects = function (type) {
 			break;
 	}
 	return result;
-};
+}
+window.settingsObjects = settingsObjects;
 
 /* Converts specific settings to so they don't look so chaotic to players */
-window.settingsConvert = function (exportType, type, settings) {
+function settingsConvert(exportType, type, settings) {
 	const listObject = settingsObjects(type);
 	const result = settings;
 	const keys = Object.keys(listObject);
@@ -1033,7 +1037,8 @@ window.settingsConvert = function (exportType, type, settings) {
 		}
 	}
 	return result;
-};
+}
+window.settingsConvert = settingsConvert;
 
 window.loadExternalExportFile = function () {
 	importScripts("DolSettingsExport.json")
