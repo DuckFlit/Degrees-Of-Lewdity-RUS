@@ -917,6 +917,7 @@ setup.debugMenu.event_list = {
 			widgets: [
 				`<<endcombat>>`,
 				`<<set $sexstart to 1>>`,
+				`<<beastNEWinit 3 dolphin>>`,
 				`<<set $outside to 1>>`,
 				`<<location to "sea">>`,
 				`<<set $bus to "sea">>`

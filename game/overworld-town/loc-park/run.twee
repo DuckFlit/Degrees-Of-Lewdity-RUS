@@ -24,7 +24,15 @@
 		<br>
 		<<link [[Give in|Park Run Harper Give]]>><</link>>
 		<br>
+	<<elseif $rng gte 91>>
+		<<generate1>><<person1>>
+		You hear footsteps behind you, and spare a glance over your shoulder. A <<person>> follows, <span class="pink">pursuing you.</span>
+		<br><br>
+		
+		<<link [[Next|Park Run Stalk]]>><<set $molestationstart to 1>><</link>>
+		<br>
 	<<else>>
+		<<rng>>
 		<<if $rng gte 33>>/*2/3 of time, do nothing*/
 		<<elseif $rng gte 22>>
 			<br><br>
@@ -499,9 +507,19 @@ Your heart is pounding with the thrill as you quietly move on.
 		You _exercise in the deserted park. The cool night air caresses your skin.
 	<</if>>
 	<<physique 1>>
-	<br><br>
-	<<link [[Next|Park]]>><</link>>
-	<br>
+	<<rng>>
+	<<if $rng gte 91>>
+		<<generate1>><<person1>>
+		You hear footsteps behind you, and spare a glance over your shoulder. A <<person>> follows, <span class="pink">pursuing you.</span>
+		<br><br>
+		
+		<<link [[Next|Park Run Stalk]]>><<set $molestationstart to 1>><</link>>
+		<br>	
+	<<else>>
+		<br><br>
+		<<link [[Next|Park]]>><</link>>
+		<br>
+	<</if>>
 <<else>>
 	<<if $weather is "rain">>
 		You _exercise in the nearly-deserted park.
@@ -550,3 +568,113 @@ You decline the offer and get back to your exercise.
 <<link [[Next|Park]]>><<endevent>><</link>>
 <br>
 
+:: Park Run Stalk
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<stalk_init>>
+	<<stalk_run>>
+	<<set $location to "park">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<if $audience_active>>
+	<<audience>>
+<</if>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or $stalk_end>>
+	<span id="next"><<link [[Next|Park Run Stalk Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Park Run Stalk]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Park Run Stalk Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<if $combat_end_text>>
+		<<print $combat_end_text>>
+	<<else>>
+		The <<person>> smacks your <<bottom>>, and leaves you lying on the grass.
+	<</if>>
+	<br><br>
+	<<tearful>> you climb to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Park]]>><<set $eventskip to 1>><</link>>
+	<br>
+
+<<elseif $enemyhealth lte 0>>
+	You smack the <<person>> to the grass, and leave <<him>> lying there as you make your escape.
+	<br><br>
+	<<tearful>> you rest against a tree.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Park]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $stalk_end is "escaped">>
+	You leave the <<person>> behind, and slow to a walk. <<tearful>> you rest against a tree.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Park]]>><<set $eventskip to 1>><</link>>
+	<br>
+
+<<elseif $stalk_end is "passed">>
+	You take a deep breath. <<tearful>> you rest against a tree.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Park]]>><<set $eventskip to 1>><</link>>
+	<br>
+
+<<elseif $stalk_end is "hide">>
+	<<covered>> <<tearful>> you emerge from your hiding place. You continue your journey.
+	<br><br>
+
+	<<set $stealtextskip to 1>>
+	<<stealclothes>>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Park]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	<<if $exposed gte 1>>
+		<<switch $location>>
+		<<case alley>>
+			<<tearful>> you slow to a stop. <<covered>> There's no one around, but this is still a public place.
+		<<case forest lake>>
+			<<tearful>> you slow to a stop. <<covered>> There's no one around right now, but there's no knowing who you could meet in the woods.
+		<<case moor>>
+			<<tearful>> you slow to a stop. <<covered>> There's no one around, but being exposed in such an open place is frightening regardless.
+		<<case park>>
+		<<default>>
+			<<covered>> <<tearful>> you hide behind a tree, hoping to shield your body from any prying eyes.
+		<</switch>>
+	<<else>>
+		<<tearful>> you slow to stop.
+	<</if>>
+	<br><br>
+	<<set $stealtextskip to 1>>
+	<<stealclothes>>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Park]]>><<set $eventskip to 1>><</link>>
+	<br>
+
+<</if>>
