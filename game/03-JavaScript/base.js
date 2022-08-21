@@ -540,6 +540,29 @@ window.mobBtnShow = function mobBtnShow(){
 }
 
 /**
+ * This function takes a value, and weights it by exponential curve.
+ * 
+ * Value should be between 0.0 and 1.0 (use normalise to get a percentage of a max).
+ *
+ * An exponent of 1.0 returns 1 every time.
+ *
+ * Exponents between 1.0 and 2.0 return a curve favoring higher results (closer to 1)
+ *
+ * An exponent of 2.0 will return a flat line distribution, and is identical to random()
+ *
+ * Exponents greater than 2.0 return a curve favoring lower results (closer to 0), reaching to 0 at infinity.
+ *
+ * For example, see:
+ * https://www.desmos.com/calculator/87hhrjfixi
+ * 
+ * @param {number} value Value to be weighted
+ * @param {number} exp Exponent used to generate the curve
+ * @returns {number} value weighted against exponential curve
+ */
+function expCurve(value, exp) {	return (value ** exp) / value; };
+window.expCurve = expCurve;
+
+/**
  * This function creates a random float 0.0-1.0, weighted by exponential curve.
  *
  * A value of 1.0 returns 1 every time.
@@ -551,15 +574,12 @@ window.mobBtnShow = function mobBtnShow(){
  * Values greater than 2.0 return a curve favoring lower results (closer to 0), reaching to 0 at infinity.
  *
  * For example, see:
- * https://www.desmos.com/calculator/o3rxbwzvdu
-
+ * https://www.desmos.com/calculator/87hhrjfixi
+ * 
  * @param {number} exp Exponent used to generate the curve
  * @returns {number} random number weighted against exponential curve
  */
-function randomExp(exp) {
-    const x = State.random();
-    return ( x ** exp ) / x;
-}
+function randomExp(exp) { return expCurve(State.random(), exp); };
 window.randomExp = randomExp;
 
 /**
