@@ -531,17 +531,36 @@ A pair of eyes stares at you from between the trees, then vanishes.
 <</widget>>
 
 <<widget "lakeclothes">>
-<<if !$possessed>>
-	<<wearoutfit>>
-	<br>
-	Swimming sets:
-	<br>
-	<<listswimoutfits "lakeshore">>
-	<br>
-
-	<<storeactions "lakeshore">>
-	<<temperature>>
-<</if>>
+	<<if !$possessed>>
+		<<wardrobeSelection true>>
+		<<wearoutfit>>
+		<<set _store_location to "lakeshore">>
+		<<storeon _store_location "check">>
+		<<if _store_check is 1>>
+			<<set _clothes to clothingInStorage(_store_location)>>
+			<<if _clothes.length gt 0>>
+				<br>
+				<<if _clothes.length gt 2>>
+					Your clothes are lying on the ground behind a rock.
+					<br>
+				<<elseif _clothes.length is 2>>
+					Your _clothes[0].name and _clothes[1].name are lying on the ground behind a rock.
+					<br>
+				<<else>>
+					Your _clothes[0].name is lying on the ground behind a rock.
+					<br>
+				<</if>>
+				<<link [[Put on clothes|$passage]]>><<set $eventskip to 1>><<storeload _store_location>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+		<br>
+		//Swimming sets://
+		<br>
+		<<listswimoutfits $wardrobe_location _store_location>>
+		<<temperature>>
+		<br>
+	<</if>>
 <</widget>>
 
 <<widget "destinationlakeruin">>
@@ -559,26 +578,3 @@ A pair of eyes stares at you from between the trees, then vanishes.
 <</switch>>
 <br>
 <</widget>>
-
-<<widget "schoolpoolclothes">>
-<<set $wardrobe_location to _args[0]>>
-<<wardrobeSelection true>>
-<<wearoutfit>>
-<br>
-<<storeon "school pool" "check">>
-<<if _store_check is 1>>
-	<<link [[Get dressed|$passage]]>><<storeon "school pool">><</link>>
-<</if>>
-<br>
-Swimming sets:
-<br>
-<<listswimoutfits $wardrobe_location>>
-<br>
-Normal sets:
-<br>
-<<listoutfitsPassage $wardrobe_location>>
-<br>
-
-<<temperature>>
-<</widget>>
-

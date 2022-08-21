@@ -23,14 +23,26 @@
 
 <<widget "listoutfitsPassage">>
 	<<set $wardrobe_location to _args[0]>>
+	<<set _store_location to _args[1] || _args[0]>>
 	<<wardrobeSelection true>>
-	<<for _index, $_outfit range $outfit>>
-		<<if ($_outfit.location and $_outfit.location isnot $wardrobe_location) or $_outfit.type.includes("swim") or $_outfit.type.includes("sleep")>>
+	<<for _index, _outfit range $outfit>>
+		<<if (_outfit.location and _outfit.location isnot $wardrobe_location) or _outfit.type.includes("swim") or _outfit.type.includes("sleep")>>
 			<<continue>>
 		<</if>>
-		<<capture _index>>
-			<<set _outfitname to $_outfit.name + ($_outfit.colors is false ? "" : " [C]")>>
-			<<link [["Wear "+_outfitname|$passage]]>><<set $eventskip to 1>><<set $wear_outfit to _index>><</link>>
+		<<capture _index _outfit>>
+			<<if _outfit.name is currentOutfit()>>
+				<span class="grey"><<print _outfit.name>> (Equipped)</span>
+			<<else>>
+				<<link [["Wear "+_outfit.name|$passage]]>>
+					<<if clothingInStorage(_store_location).length is 0>>
+						<<storesave _store_location>>
+					<</if>>
+					<<set $wearoutfittext to _outfit.name + " clothes">>
+					<<set $eventskip to 1>>
+					<<set $wear_outfit to _index>>
+					<<set $storeLocation to _args[0]>>
+				<</link>>
+			<</if>>
 			<br>
 		<</capture>>
 	<</for>>
@@ -84,14 +96,54 @@
 
 <<widget "listswimoutfits">>
 	<<set $wardrobe_location to _args[0]>>
+	<<set _store_location to _args[1] || _args[0]>>
 	<<wardrobeSelection true>>
-	<<for _index, $_outfit range $outfit>>
-		<<if ($_outfit.location and $_outfit.location isnot $wardrobe_location) or !$_outfit.type.includes("swim")>>
+	<<for _index, _outfit range $outfit>>
+		<<if (_outfit.location and _outfit.location isnot $wardrobe_location) or !_outfit.type.includes("swim")>>
 			<<continue>>
 		<</if>>
-		<<capture _index>>
-			<<set _outfitname to $_outfit.name + ($_outfit.colors is false ? "" : " [C]")>>
-			<<link [["Wear "+_outfitname|$passage]]>><<set $eventskip to 1>><<set $wear_outfit to _index>><<set $storeLocation to _args[0]>><</link>>
+		<<capture _index _outfit>>
+			<<if _outfit.name is currentOutfit()>>
+				<span class="grey"><<print _outfit.name>> (Equipped)</span>
+			<<else>>
+				<<link [["Wear "+_outfit.name|$passage]]>>
+					<<if clothingInStorage(_store_location).length is 0>>
+						<<storesave _store_location>>
+					<</if>>
+					<<set $wearoutfittext to _outfit.name>>
+					<<set $eventskip to 1>>
+					<<set $wear_outfit to _index>>
+					<<set $storeLocation to _args[0]>>
+				<</link>>
+			<</if>>
+			<br>
+		<</capture>>
+	<</for>>
+<</widget>>
+
+<<widget "listdancingclothes">>
+	<<set _store_location to _args[0]>>
+	<<set _slot to "under_upper">>
+	<<for _index, _outfit range $wardrobe[_slot].sort((a, b) => (a.name > b.name) ? 1 : -1)>>
+		<<if !_outfit.type.includes("dance")>>
+			<<continue>>
+		<</if>>
+		<<capture _outfit>>
+			<<if !$wardrobe['under_lower'].find(item => item.variable is _outfit.variable)>>
+				<span class="grey"><<print _outfit.name>> (Broken)</span>
+			<<elseif _outfit.name is currentOutfit()>>
+				<span class="grey"><<print _outfit.name>> (Equipped)</span>
+			<<else>>
+				<<link [["Wear "+_outfit.name|$passage]]>>
+					<<if clothingInStorage(_store_location).length is 0>>
+						<<storesave _store_location>>
+						<<set $wearoutfittext to 1>>
+					<</if>>
+					<<set $eventskip to 1>>
+					<<set _item_index to $wardrobe[_slot].indexOf(_outfit)>>
+					<<generalWearFromWardrobe _slot _item_index>>
+				<</link>>
+			<</if>>
 			<br>
 		<</capture>>
 	<</for>>
@@ -139,7 +191,7 @@
 	<<if $wear_outfit is "clotheson">>
 		<<storeon $storeLocation>>
 	<<elseif $wear_outfit isnot "none">>
-		<<set _equip to ["over_upper","over_lower","upper", "lower", "under_upper", "under_lower","over_head","head", "face", "neck", "hands", "legs", "feet"]>>
+		<<set _equip to setup.clothingLayer.all>>
 		<<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false}>>
 		<<set _storeItemSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false}>>
 		<<set _equipDamageValue to {"over_upper":3, "over_lower":3, "upper":3, "lower":3, "under_upper":3, "under_lower":3, "over_head":1, "head":1, "face":1, "neck":1, "hands":1, "legs":1, "feet":1}>>
@@ -458,7 +510,7 @@
 
 <<widget "overwriteoutfit">>
 	<<if $delete_outfit is 2 and $wear_outfit isnot "none">>
-		<<set _equip to ["over_head","over_upper","over_lower","upper", "lower", "under_upper", "under_lower","head", "face", "neck", "hands", "legs", "feet"]>>
+		<<set _equip to setup.clothingLayer.all>>
 		<<set _outfit to $outfit[$wear_outfit]>>
 		<<for $_slot range _equip>>
 			<<set _outfit[$_slot] to $worn[$_slot].name>>
@@ -753,7 +805,7 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 <<capture _args[0]>>
 	<<for $_label, $_value range setup.clothes>>
 		<<set $_itemName to $outfit[_args[0]][$_label]>>
-		<<if $_itemName and !["over_upper","over_lower","over_head"].includes($_label)>>
+		<<if $_itemName and !setup.clothingLayer.over.includes($_label)>>
 			<label class="outfitEditorItemClothes">
 				<<set $_options to []>>
 				<<for $_value2 range $_value>>
