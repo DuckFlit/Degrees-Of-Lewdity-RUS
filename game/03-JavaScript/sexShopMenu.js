@@ -4,35 +4,38 @@
  * **Do not** change the indexes, and do not move any objects in setup.sextoys array
  * If you need to add new items, add them at the end of the list, and set their index equal to their place in the array. First item has index 0, second item index 1 etc.
  * to be completed.
-*/
+ */
 
 setup.sextoyFunctions = {
-	notExists: (name) => V.player.inventory.sextoys[name] === undefined,
-	owned: function (name) {
+	notExists: name => V.player.inventory.sextoys[name] === undefined,
+	owned(name) {
 		if (setup.sextoyFunctions.notExists(name)) return 0;
 		return V.player.inventory.sextoys[name].length();
 	},
-	isCarried: function (name) {
+	isCarried(name) {
 		if (setup.sextoyFunctions.notExists(name)) return false;
 		return V.player.inventory.sextoys[name].some(item => item.carried);
 	},
-	isWorn: function (name) {
+	isWorn(name) {
 		if (setup.sextoyFunctions.notExists(name)) return false;
-		if (V.player.inventory.sextoys[name].type.includes("strap-on")){
-			return V.worn.under_lower.type.includes("strap-on")
+		if (V.player.inventory.sextoys[name].type.includes("strap-on")) {
+			return V.worn.under_lower.type.includes("strap-on");
 		} else {
 			return V.player.inventory.sextoys[name].some(item => item.worn);
 		}
 	},
-	unWear: function (name) {
+	unWear(name) {
 		if (setup.sextoyFunctions.notExists(name)) return;
-		V.player.inventory.sextoys[name].forEach(item => item.worn = 0);
+		V.player.inventory.sextoys[name].forEach(item => (item.worn = 0));
 	},
-	unCarry: function (name) {
+	unCarry(name) {
 		if (setup.sextoyFunctions.notExists(name)) return;
-		V.player.inventory.sextoys[name].forEach(item => item.worn = 0, item.carried = 0);
+		V.player.inventory.sextoys[name].forEach(item => {
+			item.worn = 0;
+			item.carried = 0;
+		});
 	},
-}
+};
 
 setup.sextoys = [
 	{
@@ -48,14 +51,25 @@ setup.sextoys = [
 		type: ["dildo"],
 		icon: "img/misc/icon/sexToys/dildo.png",
 		colour: 1,
-		colour_options: ["black","blue","teal","lime-green","light-pink","purple","tan","brown","red"],
+		colour_options: [
+			"black",
+			"blue",
+			"teal",
+			"lime-green",
+			"light-pink",
+			"purple",
+			"tan",
+			"brown",
+			"red",
+		],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 1,
 		name: "small dildo",
 		namecap: "Small dildo",
@@ -68,44 +82,67 @@ setup.sextoys = [
 		type: ["dildo"],
 		icon: "img/misc/icon/sexToys/dildo_small.png",
 		colour: 1,
-		colour_options: ["black","blue","teal","lime-green","light-pink","purple","tan","brown","red"],
+		colour_options: [
+			"black",
+			"blue",
+			"teal",
+			"lime-green",
+			"light-pink",
+			"purple",
+			"tan",
+			"brown",
+			"red",
+		],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 2,
 		name: "anal beads",
 		namecap: "Anal beads",
 		name_underscore: "anal_beads",
 		description: "For anal play. This item can be worn in your bottom or played with.",
 		cost: 8000,
-		type: ["dildo","anal"],
+		type: ["dildo", "anal"],
 		category: "butt_plug",
 		wearable: 1,
 		size: 2,
 		icon: "img/misc/icon/sexToys/analbeads.png",
 		colour: 1,
-		colour_options: ["black","blue","teal","lime-green","light-pink","purple","tan","brown","red"],
+		colour_options: [
+			"black",
+			"blue",
+			"teal",
+			"lime-green",
+			"light-pink",
+			"purple",
+			"tan",
+			"brown",
+			"red",
+		],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 3,
 		name: "bullet vibe",
 		namecap: "Bullet vibe",
 		name_underscore: "bullet_vibe",
-		description: "The vibrations produced from this item give powerful orgasms. Good for people new to sex toys.",
+		description:
+			"The vibrations produced from this item give powerful orgasms. Good for people new to sex toys.",
 		cost: 12000,
 		wearable: 0,
 		size: 0,
 		category: "vibrator",
-		type: ["dildo","vibrator"],
+		type: ["dildo", "vibrator"],
 		icon: "img/misc/icon/sexToys/bulletvibe.png",
 		colour: 0,
 		colour_options: [],
@@ -115,8 +152,9 @@ setup.sextoys = [
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 4,
 		name: "butt plug",
 		namecap: "Butt plug",
@@ -126,17 +164,28 @@ setup.sextoys = [
 		wearable: 1,
 		size: 2,
 		category: "butt_plug",
-		type: ["dildo","anal"],
+		type: ["dildo", "anal"],
 		icon: "img/misc/icon/sexToys/buttplug.png",
 		colour: 1,
-		colour_options: ["black","blue","teal","lime-green","light-pink","purple","tan","brown","red"],
+		colour_options: [
+			"black",
+			"blue",
+			"teal",
+			"lime-green",
+			"light-pink",
+			"purple",
+			"tan",
+			"brown",
+			"red",
+		],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 5,
 		name: "strap-on",
 		namecap: "Strap-on",
@@ -147,18 +196,30 @@ setup.sextoys = [
 		wearable: 1,
 		size: 2,
 		category: "strap-on",
-		type: ["strap-on","fetish"],
+		type: ["strap-on", "fetish"],
 		icon: "img/misc/icon/clothes/strap-on.png",
 		colour: 1,
 		shape: "cock",
-		colour_options: ["black", "blue", "green", "pink", "purple", "red", "white", "yellow", "tan", "brown"],
+		colour_options: [
+			"black",
+			"blue",
+			"green",
+			"pink",
+			"purple",
+			"red",
+			"white",
+			"yellow",
+			"tan",
+			"brown",
+		],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 6,
 		name: "strap-on horse cock",
 		namecap: "Strap-on horse cock",
@@ -169,18 +230,30 @@ setup.sextoys = [
 		wearable: 1,
 		size: 4,
 		category: "strap-on",
-		type: ["strap-on","fetish"],
+		type: ["strap-on", "fetish"],
 		icon: "img/misc/icon/clothes/strap-on_horse_cock.png",
 		colour: 1,
 		shape: "horse cock",
-		colour_options: ["black", "blue", "green", "pink", "purple", "red", "white", "yellow", "tan", "brown"],
+		colour_options: [
+			"black",
+			"blue",
+			"green",
+			"pink",
+			"purple",
+			"red",
+			"white",
+			"yellow",
+			"tan",
+			"brown",
+		],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 7,
 		name: "strap-on knotted cock",
 		namecap: "Strap-on knotted cock",
@@ -191,18 +264,30 @@ setup.sextoys = [
 		wearable: 1,
 		size: 3,
 		category: "strap-on",
-		type: ["strap-on","fetish"],
+		type: ["strap-on", "fetish"],
 		icon: "img/misc/icon/clothes/strap-on_knotted_cock.png",
 		colour: 1,
-		colour_options: ["black", "blue", "green", "pink", "purple", "red", "white", "yellow", "tan", "brown"],
+		colour_options: [
+			"black",
+			"blue",
+			"green",
+			"pink",
+			"purple",
+			"red",
+			"white",
+			"yellow",
+			"tan",
+			"brown",
+		],
 		shape: "knotted cock",
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 8,
 		name: "lube",
 		namecap: "Lube",
@@ -224,7 +309,8 @@ setup.sextoys = [
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
 		display_condition: () => 1,
-	}, {
+	},
+	{
 		index: 9,
 		name: "stroker",
 		namecap: "stroker",
@@ -236,19 +322,31 @@ setup.sextoys = [
 		type: ["stroker"],
 		icon: "img/misc/icon/sexToys/onahole.png",
 		colour: 1,
-		colour_options: ["black","blue","teal","lime-green","light-pink","purple","tan","brown","red"],
+		colour_options: [
+			"black",
+			"blue",
+			"teal",
+			"lime-green",
+			"light-pink",
+			"purple",
+			"tan",
+			"brown",
+			"red",
+		],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}, {
+		display_condition: () => 1,
+	},
+	{
 		index: 10,
 		name: "aphrodisiac pills",
 		namecap: "Aphrodisiac pills",
 		name_underscore: "aphrodisiac_pills",
-		description: "A pack of three aphrodisiac pills. The instructions say to take 'a suitable number' before sex for an enhanced experience.",
+		description:
+			"A pack of three aphrodisiac pills. The instructions say to take 'a suitable number' before sex for an enhanced experience.",
 		cost: 4000,
 		wearable: 0,
 		size: 3,
@@ -264,90 +362,115 @@ setup.sextoys = [
 		isWorn: setup.sextoyFunctions.isWorn,
 		unWear: setup.sextoyFunctions.unWear,
 		unCarry: setup.sextoyFunctions.unCarry,
-		display_condition: () => 1
-	}
+		display_condition: () => 1,
+	},
 ];
 
-window.sexShopGridInit = function(){
-	$(function(){
-		for (let item of setup.sextoys){
-			if (item.display_condition())
-				window.sexShopGridAddItemBox(item)
+function sexShopGridInit() {
+	$(function () {
+		for (const item of setup.sextoys) {
+			if (item.display_condition()) window.sexShopGridAddItemBox(item);
 		}
-	})
+	});
 }
+window.sexShopGridInit = sexShopGridInit;
 
-window.sexShopGridAddItemBox = function(item) {
+function sexShopGridAddItemBox(item) {
 	document.getElementById("sexShopMenuContainer").innerHTML += `
-	<div class="ssm_item" id="ssm_item_${item.name_underscore}" onclick="window.sexShopOnItemClick(${item.index})">
+	<div class="ssm_item" id="ssm_item_${item.name_underscore}" onclick="window.sexShopOnItemClick(${
+		item.index
+	})">
 		<div class="ssm_icon">
-			<img id="ssm_item_icon_${item.name_underscore}" src="${item.icon}" class="${(item.colour == 1 ? "clothes-" + item.colour_options.random() : "")}">
+			<img id="ssm_item_icon_${item.name_underscore}" src="${item.icon}" class="${
+		item.colour === 1 ? "clothes-" + item.colour_options.random() : ""
+	}">
 		</div>
 		<div class="ssm_details">
 			<div class="ssm_item_name">
 				${item.namecap}
 			</div>
 			<div class="ssm_already_owned">
-				${(item.owned() > 0 ? `<span class="ssm_owned_text">owned</span>` : "")}
+				${item.owned() > 0 ? '<span class="ssm_owned_text">owned</span>' : ""}
 			</div>
 		</div>
 	</div>
 	`;
 }
+window.sexShopGridAddItemBox = sexShopGridAddItemBox;
 
-window.sexShopOnColourClick = function(colour){
-	for (let elem of document.getElementsByClassName("colour-button div-link "))
+function sexShopOnColourClick(colour) {
+	for (const elem of document.getElementsByClassName("colour-button div-link "))
 		elem.classList.remove("active");
 	document.querySelectorAll(`[colour-name="${colour}"]`)[0].classList.add("active");
-	document.getElementById("ssm_desc_img").className = "clothes-"+colour
+	document.getElementById("ssm_desc_img").className = "clothes-" + colour;
+}
+window.sexShopOnColourClick = sexShopOnColourClick;
+
+function removeClassNameAt(id) {
+	const elements = document.getElementsByClassName(id);
+	for (const element of elements) {
+		element.classList.remove(id);
+	}
 }
 
-window.sexShopOnCloseDesc = function (elem_id) {
-	document.getElementById(elem_id).style.display = 'none';
+function sexShopOnCloseDesc(id) {
+	const element = document.getElementById(id);
+	if (element == null) {
+		// TODO: Log
+		return;
+	}
+	element.style.display = "none";
+
 	/* grid item box class changes */
-	try{
-		document.getElementsByClassName("ssm_selected_a")[0].classList.remove("ssm_selected_a");
-		document.getElementsByClassName("ssm_selected_b")[0].classList.remove("ssm_selected_b");
-		document.getElementsByClassName("ssm_selected_c")[0].classList.remove("ssm_selected_c");
-	}catch{;}
+	removeClassNameAt("ssm_selected_a");
+	removeClassNameAt("ssm_selected_b");
+	removeClassNameAt("ssm_selected_c");
 }
+window.sexShopOnCloseDesc = sexShopOnCloseDesc;
 
-window.sexShopOnItemClick = function (index) {
-	let item = setup.sextoys[index]
-	let coloring_div = "";
+function sexShopOnItemClick(index) {
+	const item = setup.sextoys[index];
+	let coloringDiv = "";
 
 	/* clear "Bought!/Buy it" fade in setTimeout from window.sexShopOnBuyClick */
-	if (window.sexShopOnGiftClick.counter !== undefined && window.sexShopOnGiftClick.counter != "off"){
-		clearTimeout(window.sexShopOnGiftClick.counter)
-		window.sexShopOnGiftClick.counter = "off"
+	if (sexShopOnGiftClick.counter !== undefined && sexShopOnGiftClick.counter !== "off") {
+		clearTimeout(sexShopOnGiftClick.counter);
+		sexShopOnGiftClick.counter = "off";
 	}
-	if (window.sexShopOnBuyClick.counter !== undefined && window.sexShopOnBuyClick.counter != "off"){
-		clearTimeout(window.sexShopOnBuyClick.counter)
-		window.sexShopOnBuyClick.counter = "off"
+	if (sexShopOnBuyClick.counter !== undefined && sexShopOnBuyClick.counter !== "off") {
+		clearTimeout(window.sexShopOnBuyClick.counter);
+		sexShopOnBuyClick.counter = "off";
 	}
 	/* grid item box class changes */
-	try{
-		document.getElementsByClassName("ssm_selected_a")[0].classList.remove("ssm_selected_a")
-		document.getElementsByClassName("ssm_selected_b")[0].classList.remove("ssm_selected_b")
-		document.getElementsByClassName("ssm_selected_c")[0].classList.remove("ssm_selected_c")
-	}catch{;}
-	$(`#ssm_item_${item.name_underscore}`)[0].classList.add("ssm_selected_a")
-	$(`#ssm_item_${item.name_underscore} > .ssm_details > .ssm_item_name`)[0].classList.add("ssm_selected_b")
-	$(`#ssm_item_${item.name_underscore} > .ssm_details > .ssm_already_owned`)[0].classList.add("ssm_selected_c")
+	removeClassNameAt("ssm_selected_a");
+	removeClassNameAt("ssm_selected_b");
+	removeClassNameAt("ssm_selected_c");
+	$(`#ssm_item_${item.name_underscore}`)[0].classList.add("ssm_selected_a");
+	$(`#ssm_item_${item.name_underscore} > .ssm_details > .ssm_item_name`)[0].classList.add(
+		"ssm_selected_b"
+	);
+	$(`#ssm_item_${item.name_underscore} > .ssm_details > .ssm_already_owned`)[0].classList.add(
+		"ssm_selected_c"
+	);
 	/* description/buying box */
-	for (let index in item.colour_options) {
-		coloring_div +=
-			(index == 0 ? `<br><span style="color: #e0e0e0">Colours to choose from : </span><div id="ssm_colour_panel" class="colour-options-div"><br> ` : "") + `
+	for (const index in item.colour_options) {
+		coloringDiv +=
+			(index === 0
+				? `<br><span style="color: #e0e0e0">Colours to choose from : </span><div id="ssm_colour_panel" class="colour-options-div"><br> `
+				: "") +
+			`
 			<div colour-name="${item.colour_options[index]}" onclick="window.sexShopOnColourClick(\`${item.colour_options[index]}\`)" class="colour-button div-link">
 				<div class="bg-${item.colour_options[index]}">
 					<span class="capitalize colour-name-span">${item.colour_options[index]}</span>
 					<a tabindex="0"></a>
 				</div>
-			</div>`
+			</div>`;
 	}
-	coloring_div += "</div>";
-	document.getElementById("ssm_descContainer").innerHTML = `
-	<div id="ssm_desc_img" class="` + document.getElementById("ssm_item_icon_" + item.name_underscore).className + `">
+	coloringDiv += "</div>";
+	document.getElementById("ssm_descContainer").innerHTML =
+		`<div id="ssm_desc_img" class="` +
+		document.getElementById("ssm_item_icon_" + item.name_underscore).className +
+		`">
 		<img style="" src="${item.icon}">
 	</div>
 	<div class="ssm_desc_border">
@@ -357,153 +480,185 @@ window.sexShopOnItemClick = function (index) {
 				</div>
 			</div>
 			<span style="color: #bcbcbc">${item.description}</span>
-			<div id="ssm_desc_action">${coloring_div}<div style="text-align: center;">
+			<div id="ssm_desc_action">${coloringDiv}<div style="text-align: center;">
 				<br>
-				` + (V.money >= item.cost ? `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(${item.index})" class="ssm_buy_button">
+				` +
+		(V.money >= item.cost
+			? `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(${item.index})" class="ssm_buy_button">
 					Buy it
-				</a> (<span class="gold">£` + item.cost / 100 + `</span>)` : `<span class="ssm_not_enough_money">Not enough money</span>` ) +
-				(item.type.includes("strap-on") ? window.determineRecipient(item.index) : "") +
-				`</div>
+				</a> (<span class="gold">£` +
+			  item.cost / 100 +
+			  `</span>)`
+			: `<span class="ssm_not_enough_money">Not enough money</span>`) +
+		(item.type.includes("strap-on") ? determineRecipient(item.index) : "") +
+		`</div>
 			</div>
 		</div>
 	</div>
-	`
-	document.getElementById("ssmDescPillContainer").style.display = ""
+	`;
+	document.getElementById("ssmDescPillContainer").style.display = "";
 }
+window.sexShopOnItemClick = sexShopOnItemClick;
 
-window.determineRecipient = function(index) { // conditions for gifting items to people
-	let item = setup.sextoys[index];
-	let builder;
-	let option_builder = '';
+// conditions for gifting items to people
+function determineRecipient(index) {
+	const item = setup.sextoys[index];
+	let optionBuilder = "";
 
-	if (document.getElementById("giftBr"))
-		document.getElementById("giftBr").remove()
-	if (V.money < (item.cost + (15 * 100))) // Add 15$ for gifting paperwrap
-		return "";
-	
-	for (let li of ["Alex", "Eden", "Kylar", "Robin", "Sydney"]){
-		if (V.loveInterest.primary == li || V.loveInterest.secondary == li || V.loveInterest.tertiary == li){
-			option_builder += (`<option value="${li}">${li}</option>`)
+	const giftBr = document.getElementById("giftBr");
+	if (giftBr != null) giftBr.remove();
+
+	// Add 15$ for gifting paperwrap
+	if (V.money < item.cost + 15 * 100) return "";
+
+	for (const li of ["Alex", "Eden", "Kylar", "Robin", "Sydney"]) {
+		if (
+			V.loveInterest.primary === li ||
+			V.loveInterest.secondary === li ||
+			V.loveInterest.tertiary === li
+		) {
+			optionBuilder += `<option value="${li}">${li}</option>`;
 		}
 	}
-	if (option_builder == "") // if no possible recipient, return.
-		return ""
-	builder = `<br id="giftBr"><a id="ssmGiftButton" onclick="window.sexShopOnGiftClick(${item.index})" class="ssm_gift_button">
-	Make a gift for :  </a><select name="recipient" id="recipientList">${option_builder}</select>
-	<div id="spanGift">(<span class="gold">£${(item.cost / 100) + 15}</span>)</div>`
-	return builder
+	// if no possible recipient, return.
+	if (optionBuilder === "") return "";
+	const builder = `<br id="giftBr"><a id="ssmGiftButton" onclick="window.sexShopOnGiftClick(${
+		item.index
+	})" class="ssm_gift_button">
+	Make a gift for :  </a><select name="recipient" id="recipientList">${optionBuilder}</select>
+	<div id="spanGift">(<span class="gold">£${item.cost / 100 + 15}</span>)</div>`;
+	return builder;
 }
+window.determineRecipient = determineRecipient;
 
-window.sexShopOnGiftClick = function (index) {
-	let item = setup.sextoys[index];
-	let icon_class_name = document.getElementById("ssm_desc_img").className
+function sexShopOnGiftClick(index) {
+	const item = setup.sextoys[index];
+	const iconClassName = document.getElementById("ssm_desc_img").className;
 	let recipient = document.getElementById("recipientList").value.toLowerCase();
 
-	recipient = window.findIndexInNPCNameVar(recipient)
-	if (recipient == undefined ) return;
-	
-	window.sexShopOnGiftClick.counter = window.sexShopOnGiftClick.counter || "off"
+	// Leaving window in because of file order, that I don't want to deal with.
+	recipient = window.findIndexInNPCNameVar(recipient);
+	if (recipient === undefined) return;
+
+	sexShopOnGiftClick.counter = sexShopOnGiftClick.counter || "off";
 	/* add item to NPC's inventory */
-	if (V.NPCName[recipient].sextoys == undefined)
-		V.NPCName[recipient].sextoys = {}
-	if (V.NPCName[recipient].sextoys[item.name] == undefined)
-		V.NPCName[recipient].sextoys[item.name] = []
-	let obj = {
-		"index": item.index,
-		"name": item.name,
-		"namecap": item.namecap,
-		"colour": (icon_class_name == '' ? item.default_colour : icon_class_name.substring(icon_class_name.indexOf("-") + 1)),
-		"worn": false,
-		"size": item.size,
-		"carried": false,
-		"state": "worn",
-		"state_base": "worn",
-		"gift_state": "held",
-		"uses": (item.uses ? item.uses : undefined),
-		"shape": (item.shape ? item.shape : undefined)
-	}
-	if (item.category == "strap-on") {
-		obj.clothes_index = item.clothes_index
+	if (V.NPCName[recipient].sextoys == null) V.NPCName[recipient].sextoys = {};
+	if (V.NPCName[recipient].sextoys[item.name] == null)
+		V.NPCName[recipient].sextoys[item.name] = [];
+	const obj = {
+		index: item.index,
+		name: item.name,
+		namecap: item.namecap,
+		colour:
+			iconClassName === ""
+				? item.default_colour
+				: iconClassName.substring(iconClassName.indexOf("-") + 1),
+		worn: false,
+		size: item.size,
+		carried: false,
+		state: "worn",
+		state_base: "worn",
+		gift_state: "held",
+		uses: item.uses ? item.uses : undefined,
+		shape: item.shape ? item.shape : undefined,
+	};
+	if (item.category === "strap-on") {
+		obj.clothes_index = item.clothes_index;
 	}
 	V.NPCName[recipient].sextoys[item.name].push(obj);
 	/* withdraw money from player */
-	V.money -= (item.cost + (15 * 100))
+	V.money -= item.cost + 15 * 100;
 
 	/* update sidebar money */
-	window.updateSideBarMoney()
+	updateSideBarMoney();
 
 	/* fade in/out bought green text indicator */
-	document.getElementById("ssmGiftButton").outerHTML = `<span class="ssm_gift_button ssm_fade_in" id="ssmGiftButton" style="color:#97de97">Bought!</span>`
-	document.getElementById("recipientList").remove()
-	document.getElementById("spanGift").remove()
-	if (window.sexShopOnGiftClick.counter == "off"){
-		window.sexShopOnGiftClick.counter = window.setTimeout(function(){
-			document.getElementById("ssmGiftButton").outerHTML = window.determineRecipient(index);
-		window.sexShopOnGiftClick.counter = "off"
-		}, 1400)
+	document.getElementById(
+		"ssmGiftButton"
+	).outerHTML = `<span class="ssm_gift_button ssm_fade_in" id="ssmGiftButton" style="color:#97de97">Bought!</span>`;
+	document.getElementById("recipientList").remove();
+	document.getElementById("spanGift").remove();
+	if (sexShopOnGiftClick.counter === "off") {
+		sexShopOnGiftClick.counter = setTimeout(function () {
+			document.getElementById("ssmGiftButton").outerHTML = determineRecipient(index);
+			sexShopOnGiftClick.counter = "off";
+		}, 1400);
 	}
 }
+window.sexShopOnGiftClick = sexShopOnGiftClick;
 
-window.sexShopOnBuyClick = function (index) {
-	let item = setup.sextoys[index]
-	let icon_class_name = document.getElementById("ssm_desc_img").className
-	window.sexShopOnBuyClick.counter = window.sexShopOnBuyClick.counter || "off"
+function sexShopOnBuyClick(index) {
+	const item = setup.sextoys[index];
+	const iconClassName = document.getElementById("ssm_desc_img").className;
+	sexShopOnBuyClick.counter = sexShopOnBuyClick.counter || "off";
 	/* add item to player inventory */
-	if (V.player.inventory.sextoys[item.name] == undefined)
-		V.player.inventory.sextoys[item.name] = []
-	let obj = {
-		"index": item.index,
-		"colour": (icon_class_name == '' ? item.default_colour : icon_class_name.substring(icon_class_name.indexOf("-") + 1)),
-		"name": item.name,
-		"namecap": item.namecap,
-		"worn": false,
-		"type": item.type,
-		"size": item.size,
-	//	"sizeDesc": {0: "", 1: "", 2: "", 3: "large", 4: "massive"}[item.size],
-	//	"desc": (this.sizeDesc + " " + this.colour + " " + this.name),
-		"carried": false,
-		"state": "removed",
-		"state_base": "worn",
-		"shape": (item.shape ? item.shape : undefined),
-		"uses": (item.uses ? item.uses : undefined)
+	if (V.player.inventory.sextoys[item.name] === undefined)
+		V.player.inventory.sextoys[item.name] = [];
+	const obj = {
+		index: item.index,
+		colour:
+			iconClassName === ""
+				? item.default_colour
+				: iconClassName.substring(iconClassName.indexOf("-") + 1),
+		name: item.name,
+		namecap: item.namecap,
+		worn: false,
+		type: item.type,
+		size: item.size,
+		// "sizeDesc": {0: "", 1: "", 2: "", 3: "large", 4: "massive"}[item.size],
+		// "desc": (this.sizeDesc + " " + this.colour + " " + this.name),
+		carried: false,
+		state: "removed",
+		state_base: "worn",
+		shape: item.shape ? item.shape : undefined,
+		uses: item.uses ? item.uses : undefined,
+	};
+	if (item.category === "strap-on") {
+		obj.clothes_index = item.clothes_index;
 	}
-	if (item.category == "strap-on") {
-		obj.clothes_index = item.clothes_index
-	}
-	V.player.inventory.sextoys[item.name].push(obj)
+	V.player.inventory.sextoys[item.name].push(obj);
 	/* withdraw money from player */
-	V.money -= item.cost
+	V.money -= item.cost;
 	/* update sidebar money */
-	window.updateSideBarMoney()
+	updateSideBarMoney();
 	/* fade in "owned" icon */
-	document.getElementById("ssm_item_" + item.name_underscore).getElementsByClassName("ssm_already_owned")[0].innerHTML = `<span class="ssm_owned_text ssm_fade_in">owned</span>`
+	document
+		.getElementById("ssm_item_" + item.name_underscore)
+		.getElementsByClassName(
+			"ssm_already_owned"
+		)[0].innerHTML = `<span class="ssm_owned_text ssm_fade_in">owned</span>`;
 	/* fade in/out bought green text indicator */
-	document.getElementById("ssmBuyButton").outerHTML = `<span class="ssm_buy_button ssm_fade_in" id="ssmBuyButton" style="color:#97de97">Bought!</span>`
-	if (window.sexShopOnBuyClick.counter == "off"){
-		window.sexShopOnBuyClick.counter = window.setTimeout(function(){
+	document.getElementById(
+		"ssmBuyButton"
+	).outerHTML = `<span class="ssm_buy_button ssm_fade_in" id="ssmBuyButton" style="color:#97de97">Bought!</span>`;
+	if (sexShopOnBuyClick.counter === "off") {
+		sexShopOnBuyClick.counter = setTimeout(function () {
 			if (document.getElementById("ssmBuyButton"))
-			document.getElementById("ssmBuyButton").outerHTML = `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` + index + `)" class="ssm_buy_button ssm_fade_in_fast">
+				document.getElementById("ssmBuyButton").outerHTML =
+					`<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` +
+					index +
+					`)" class="ssm_buy_button ssm_fade_in_fast">
 			Buy it
 		</a>`;
-		window.sexShopOnBuyClick.counter = "off"
-		}, 1400)
+			sexShopOnBuyClick.counter = "off";
+		}, 1400);
 	}
 }
+window.sexShopOnBuyClick = sexShopOnBuyClick;
 
-window.createInventoryObject = function(){ // create Inventory object if it doesn't exist
-	var recipient;
-
-	if (V.player.inventory == undefined)
-		V.player.inventory = {}
-	if (V.player.inventory.sextoys == undefined)
-		V.player.inventory.sextoys = {}
-	for (let li of ["alex", "eden", "kylar", "robin", "sydney"]){
-		recipient = window.findIndexInNPCNameVar(li)
-		if (V.NPCName[recipient].sextoys == undefined)
-			V.NPCName[recipient].sextoys = {}
+// create Inventory object if it doesn't exist
+function createInventoryObject() {
+	let recipient;
+	if (V.player.inventory == null) V.player.inventory = {};
+	if (V.player.inventory.sextoys == null) V.player.inventory.sextoys = {};
+	for (const li of ["alex", "eden", "kylar", "robin", "sydney"]) {
+		recipient = window.findIndexInNPCNameVar(li);
+		if (V.NPCName[recipient].sextoys == null) V.NPCName[recipient].sextoys = {};
 	}
 }
+window.createInventoryObject = createInventoryObject;
 
-window.updateSideBarMoney = function(){
-	new Wikifier(null, '<<updatesidebarmoney>>');
+function updateSideBarMoney() {
+	Wikifier.wikifyEval("<<updatesidebarmoney>>");
 }
+window.updateSideBarMoney = updateSideBarMoney;
