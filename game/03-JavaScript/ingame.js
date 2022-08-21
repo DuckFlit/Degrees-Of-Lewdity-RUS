@@ -1117,6 +1117,36 @@ function resetClothingState(slot) {
 }
 window.resetClothingState = resetClothingState;
 
+/* Returns array of clothing items that are stored in [loc] */
+window.clothingInStorage = function(loc) {
+	if(loc == null) return;
+	let clothing = [];
+	for(const slot of setup.clothingLayer.all) {
+		let item = V.store[slot].find(item => item.location === loc);
+		if(item && !item.outfitSecondary) {
+			item["slot"] = slot;
+			clothing.push(item);
+		}
+	}
+	return clothing;
+}
+
+/* Returns name of the current worn outfit, or "none" if no matches are found */
+window.currentOutfit = function() {
+	let compareOutfit = (outfit) => {
+		for(const slot of setup.clothingLayer.all) {
+			if(V.worn[slot].name != (outfit[slot] || "naked"))
+				return false;
+		}
+		return true;
+	}
+	for(const outfit of V.outfit) {
+		if(compareOutfit(outfit))
+			return outfit.name;
+	}
+	return "none";
+}
+
 function isConnectedToHood(slot) {
 	// Note: this function currently only works on hoods in the "head" slot, NOT the "over_head" slot.
 

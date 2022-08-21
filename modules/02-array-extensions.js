@@ -39,7 +39,32 @@ Object.defineProperty(Array.prototype, "select", {
 	},
 });
 
-Object.defineProperty(Array.prototype, "formatList", {
+/* Returns copy of array minus the values in arguments. */
+Object.defineProperty(Array.prototype, 'except', {
+	configurable : true,
+	writable     : true,
+
+	value() {
+		if (this == null) {
+			throw new TypeError('Array.prototype.except called on null or undefined');
+		}
+		if (arguments.length === 0) {
+			return this;
+		}
+
+		const needles = Array.prototype.concat.apply([], arguments);
+
+		return this.filter(obj => {
+			for(n of needles) {
+				if(obj === n)
+					return false;
+			}
+			return true;
+		});
+	}
+});
+
+Object.defineProperty(Array.prototype, 'formatList', {
 	configurable: true,
 	writable: true,
 	value(options) {

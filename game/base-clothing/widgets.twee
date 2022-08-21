@@ -682,13 +682,13 @@
 /*The "...on" widgets put on clothing removed with the "...strip" widgets.*/
 
 <<widget "outfiton">>
-	<<for $_slot range ["over_upper","over_lower","upper","lower"]>>
+	<<for $_slot range setup.clothingLayer.torso_inner>>
 		<<generalOn $_slot>>
 	<</for>>
 <</widget>>
 
 <<widget "clotheson">>
-	<<for $_slot range ["over_upper","over_lower","upper","lower","under_upper","under_lower","over_head","head","face","neck","hands","legs","feet"]>>
+	<<for $_slot range setup.clothingLayer.all>>
 		<<generalOn $_slot>>
 	<</for>>
 	<<buttplugon>>
@@ -815,14 +815,14 @@
 
 <<widget "steal">>
 	<<set _temp_steal to _args[0]>>
-	<<for $_slot range ["upper","lower","under_upper","under_lower","head","face","neck","hands","legs","feet"]>>
+	<<for $_slot range setup.clothingLayer.body>>
 		<<generalSteal $_slot _temp_steal>>
 	<</for>>
 <</widget>>
 
 <<widget "stealclothes">>
 	<<set _temp_steal to _args[0]>>
-	<<for $_slot range ["upper","lower","under_upper","under_lower"]>>
+	<<for $_slot range setup.clothingLayer.torso_inner>>
 		<<generalSteal $_slot _temp_steal>>
 	<</for>>
 <</widget>>
@@ -917,14 +917,14 @@
 
 <<widget "undress">>
 	<<set $_location to _args[0]>>
-	<<for $_slot range ["over_upper","over_lower","over_head","upper","lower","under_upper","under_lower","head","face","neck","hands","legs","feet"]>>
+	<<for $_slot range setup.clothingLayer.all>>
 		<<generalUndress $_location $_slot>>
 	<</for>>
 <</widget>>
 
 <<widget "undressKeepFace">>
 	<<set $_location to _args[0]>>
-	<<for $_slot range ["over_upper","over_lower","over_head","upper","lower","under_upper","under_lower","head","neck","hands","legs","feet"]>>
+	<<for $_slot range setup.clothingLayer.all.except("face")>>
 		<<generalUndress $_location $_slot>>
 	<</for>>
 <</widget>>
@@ -944,14 +944,14 @@
 
 <<widget "undressOverClothes">>
 	<<set $_location to _args[0]>>
-	<<for $_slot range ["over_upper","over_lower","over_head"]>>
+	<<for $_slot range setup.clothingLayer.over>>
 		<<generalUndress $_location $_slot>>
 	<</for>>
 <</widget>>
 
 <<widget "undressclothes">>
 	<<set $_location to _args[0]>>
-	<<for $_slot range ["over_upper","over_lower","upper","lower","under_upper","under_lower"]>>
+	<<for $_slot range setup.clothingLayer.torso>>
 		<<generalUndress $_location $_slot>>
 	<</for>>
 <</widget>>
@@ -1143,13 +1143,76 @@
 	<<generalUndress _args[0] "feet">>
 <</widget>>
 
-/*The "storeon..." widgets retrieve the clothing stored with the "...undress" widgets, that weren't put in a wardrobe. Requires the same argument that was used to store the clothing in order to correctly identify. Optionally accepts a second argument. Inputting "delete" will destroy the stored item, rather than wear it. Inputting "check" will set _store_check to 1, for when you want to check whether or not an item exists in a given location.*/
+/* Returns stored items that are a part of an outfit (wear_outfit) to the wardrobe so that they can be used by another outfit. */
+/* args[0] specifies the location identifier */
+<<widget "storereturn">>
+	<<if !isNaN($wear_outfit) and _args[0] isnot undefined>>
+		<<for $_slot range setup.clothingLayer.all>>
+			<<set $_name to $outfit[$wear_outfit][$_slot]>>
+			<<set $_item to $store[$_slot].find(item => item.location is _args[0])>>
+			<<generalStoreon _args[0] $_slot "check">>
+			<<if _store_check and $_item isnot undefined and $_name isnot "naked" and $_name isnot undefined>>
+				<<if $store[$_slot].length gt 0 and $_name is $_item.name>>
+					<<set $wardrobe[$_slot].push(clone($_item))>>
+					<<set $store[$_slot].deleteAt($store[$_slot].indexOf($_item))>>
+				<</if>>
+			<</if>>
+		<</for>>
+	<</if>>
+<</widget>>
+
+/* Unequips items, then saves a copy of stored items to a temporary variable */
+/* args[0] specifies the location identifier */
+<<widget "storesave">>
+	<<if _args[0] isnot undefined>>
+		<<undress _args[0]>>
+		<<set $outfitTmp[_args[0]] to {}>>
+		<<for $_slot range setup.clothingLayer.all>>
+			<<if $store[$_slot].length gt 0>>
+				<<set $_copy to $store[$_slot].find(item => item.location is _args[0])>>
+				<<if $_copy isnot undefined and $_copy.name isnot "naked" and $_copy.name isnot undefined>>
+					<<set $outfitTmp[_args[0]][$_slot] to clone($_copy)>>
+				<</if>>
+			<</if>>
+		<</for>>
+	<</if>>
+<</widget>>
+
+/* Loads a list of stored items previously saved by 'storesave', and tries to equip it on the player */
+/* If the items have been removed from storage, it checks if the player is currently wearing them, and will not unequip them if so */
+/* args[0] specifies the location identifier */
+<<widget "storeload">>
+	<<if _args[0] isnot undefined and $outfitTmp[_args[0]] isnot undefined and Object.keys($outfitTmp[_args[0]]).length gt 0>>
+		<<for $_slot range setup.clothingLayer.all>>
+			<<set $_item to $outfitTmp[_args[0]][$_slot]>>
+			<<if $_item is undefined or $worn[$_slot].name isnot $_item.name>>
+				<<generalStrip $_slot>>
+				<<returnCarried>>
+			<</if>>
+			<<if $_item isnot undefined>>
+				<<set $_stored to $store[$_slot].find(item => item.name is $_item.name)>>
+				<<if $_stored>>
+					<<set $worn[$_slot] to clone($_item)>>
+					<<set $worn[$_slot].location to 0>>
+					<<set $store[$_slot].deleteAt($store[$_slot].indexOf($_stored))>>
+				<</if>>
+			<</if>>
+		<</for>>
+		<<run delete V.outfitTmp[_args[0]]>>
+	<</if>>
+<</widget>>
+
+/* The "storeon..." widgets retrieve the clothing stored with the "...undress" widgets, that weren't put in a wardrobe. */
+/* Requires the same argument that was used to store the clothing in order to correctly identify. Optionally accepts a second argument. */
+/* Inputting "delete" will destroy the stored item, rather than wear it. */
+/* Inputting "check" will set _store_check to 1, for when you want to check whether or not an item exists in a given location. */
+/* Inputting "return" will return the item to the wardrobe */
 
 <<widget "storeon">>
 	<<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false}>>
 	<<set _store_temp to _args[0]>>
 	<<set _store_option to _args[1] or 0>>
-	<<for $_slot range ["over_upper","over_lower","upper","lower","under_upper","under_lower","over_head","head","face","neck","hands","legs","feet"]>>
+	<<for $_slot range setup.clothingLayer.all>>
 		<<generalStoreon _store_temp $_slot _store_option>>
 	<</for>>
 <</widget>>
@@ -1162,7 +1225,7 @@
 	<<if $_item isnot undefined>>
 		<<set $_index to $store[$_slot].indexOf($_item)>>
 		<<if $worn[$_slot].cursed is 1>>
-		<<elseif _equipSkip[$_slot] is true>>
+		<<elseif _equipSkip isnot undefined and _equipSkip[$_slot] is true>>
 			<<if $_item.temp is undefined>>
 				<<set $_selectedWardrobe to $wardrobe>>
 				<<if $multipleWardrobes>>
@@ -1185,6 +1248,10 @@
 				<<set $store[$_slot].deleteAt($_index)>>
 			<<elseif _args[2] is "delete">>
 				<<set $store[$_slot].deleteAt($_index)>>
+			<<elseif _args[2] is "return">>
+				<<set $wardrobe[$_slot].push(clone($_item))>>
+				<<set $store[$_slot].deleteAt($_index)>>
+				<<run delete V.outfitTmp[_args[0]]>>
 			<<elseif _args[2] is "check">>
 				<<set _store_check to 1>>
 			<<else>>
@@ -1202,6 +1269,10 @@
 				<<set $store[$_slot].deleteAt($_index)>>
 			<</if>>
 		<</if>>
+	/* Strips and returns clothing items that are not replaced */
+	<<elseif $worn[$_slot].name isnot "naked" and !_args[2]>>
+		<<generalStrip $_slot>>
+		<<returnCarried>>
 	<</if>>
 <</if>>
 <</widget>>
@@ -1321,7 +1392,7 @@
 <<widget "generalWearFromWardrobe">>
 <<set _slot to _args[0]>>
 <<set _wearId to _args[1]>>
-<<set _slimePrevent to ["upper", "lower", "under_upper", "under_lower"]>>
+<<set _slimePrevent to setup.clothingLayer.torso_inner>>
 <<set $_selectedWardrobe to selectWardrobe()>>
 
 <<unset _cursedPrevent>><<unset _outfitPieceIds>><<unset _item>>

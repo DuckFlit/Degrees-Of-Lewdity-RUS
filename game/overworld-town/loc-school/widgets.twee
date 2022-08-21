@@ -36,6 +36,12 @@
 		<</if>>
 	<</if>>
 
+	<<if $schoolpoolundress isnot undefined>>
+		<span class="yellow">Your clothes were moved to the <<print $schoolpoolundress is "wardrobe" ? "wardrobe" : $schoolpoolundress + " changing room">>.</span>
+		<br>
+		<<unset $schoolpoolundress>>
+	<</if>>
+
 	<!-- pool room itself is in use during $schoolstate only -->
 	<<if $schoolstate is "fifth">>
 		<<set $poolroomstate to "own">>
@@ -2584,6 +2590,82 @@
 		<br>
 	<</if>>
 <</if>>
+<</widget>>
+
+<<widget "schoolpoolclothes">>
+	<<storereturn _args[0]>>
+	<<wardrobeSelection true>>
+	<<silently>><<wearoutfit>><</silently>>
+	<<schooleffects>><<effects>>
+	<<if $wearoutfittext isnot undefined>>
+		<span class="purple">
+		<<switch $wearoutfittext>>
+			<<case 1>>
+				You gather your clothes from the bench and carefully put them on.
+			<<case 2>>
+				You put away the clothes into your locker.
+			<<default>>
+				You change into your <<print $wearoutfittext.toLowerCase()>>.
+		<</switch>>
+		</span>
+		<<unset $wearoutfittext>>
+	<</if>>
+
+	<<storeon _args[0] "check">>
+	<<if _store_check is 1>>
+		<<set _clothes to clothingInStorage(_args[0])>>
+		<<if _clothes.length gt 0>>
+			<br>
+			<<if _clothes.length gt 2>>
+				Your clothes are gathered in a neat pile next to the lockers.
+				<br>
+			<<elseif _clothes.length is 2>>
+				Your _clothes[0] and _clothes[1] are lying on the bench next to the lockers.
+				<br>
+			<<else>>
+				Your _clothes[0] is lying on the bench next to the lockers.
+				<br>
+			<</if>>
+			<<link [[Put on|$passage]]>><<storeload _args[0]>><<set $eventskip to 1>><<set $wearoutfittext to 1>><</link>>
+			<br>
+			<<link [[Put away|$passage]]>><<storeon _args[0] "return">><<set $eventskip to 1>><<set $wearoutfittext to 2>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<br>
+	//Swimming sets://
+	<br>
+	<<listswimoutfits $wardrobe_location _args[0]>>
+	<br>
+	//Normal sets://
+	<br>
+	<<listoutfitsPassage $wardrobe_location _args[0]>>
+	<br>
+	<<temperature>>
+<</widget>>
+
+<<widget "schoolpoolundress">>
+	<<set _store_location to "school pool">>
+	<<if $player.gender_appearance is "m">>
+		<<set _store_location += " boys">>
+		<<set $schoolpoolundress to "boys">>
+	<<else>>
+		<<set _store_location += " girls">>
+		<<set $schoolpoolundress to "girls">>
+	<</if>>
+	<<if clothingInStorage(_store_location).length is 0>>
+		<<storesave _store_location>>
+	<<else>>
+		<<strip>>
+		<<returnCarried>>
+		<<set $schoolpoolundress to "wardrobe">>
+	<</if>>
+<</widget>>
+
+<<widget "schoolclothesreset">>
+	<<storeon "schoolBoys" "return">>
+	<<storeon "schoolGirls" "return">>
+	<<set $outfitTmp to {}>>
 <</widget>>
 
 <<widget "school_infirmary_options">>
