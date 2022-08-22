@@ -5,20 +5,20 @@ const Furniture = (() => {
 	const FORCE_UPDATE = false; /* IMPORTANT: Switch to false before the next update. */
 
 	const Categories = Object.freeze({
-		bed			: 'bed',
-		table		: 'table',
-		chair		: 'chair',
-		wardrobe	: 'wardrobe',
-		decoration	: 'decoration',
-		windowsill	: 'windowsill',
-		poster		: 'poster',
-		wallpaper	: 'wallpaper'
+		bed: "bed",
+		table: "table",
+		chair: "chair",
+		wardrobe: "wardrobe",
+		decoration: "decoration",
+		windowsill: "windowsill",
+		poster: "poster",
+		wallpaper: "wallpaper",
 	});
 
 	const Locations = Object.freeze({
 		bedroom: "bedroom",
 		cabin: "cabin",
-		cottage: "cottage"
+		cottage: "cottage",
 	});
 
 	let target = Locations.bedroom;
@@ -42,7 +42,7 @@ const Furniture = (() => {
 		*/
 
 		/* ------------- CHAIRS ------------- */
-		mapper.set('stool', {
+		mapper.set("stool", {
 			name: "stools",
 			nameCap: "Wooden stools",
 			category: ["chair"],
@@ -51,7 +51,7 @@ const Furniture = (() => {
 			description: "A set of stools. Uncomfortable, but better than nothing.",
 			iconFile: "stool.png",
 		});
-		mapper.set('chair', {
+		mapper.set("chair", {
 			name: "wooden chairs",
 			nameCap: "Wooden chairs",
 			category: ["chair"],
@@ -60,7 +60,7 @@ const Furniture = (() => {
 			description: "A set of regular wooden chairs.",
 			iconFile: "chair.png",
 		});
-		mapper.set('armchair', {
+		mapper.set("armchair", {
 			name: "armchairs",
 			nameCap: "Armchairs",
 			category: ["chair"],
@@ -69,18 +69,19 @@ const Furniture = (() => {
 			description: "A set of armchairs. Soft, relaxing and expensive.",
 			iconFile: "armchair.png",
 		});
-		mapper.set('egg', {
+		mapper.set("egg", {
 			name: "egg armchairs",
 			nameCap: "Egg armchairs",
 			category: ["chair"],
 			type: [],
 			cost: setPrice(2420, 50),
-			description: "A set of armchairs with a rounded back, in exotic colours. A chore to set up.",
+			description:
+				"A set of armchairs with a rounded back, in exotic colours. A chore to set up.",
 			iconFile: "armchairegg.png",
 		});
 
 		/* ------------- TABLES ------------- */
-		mapper.set('woodentable', {
+		mapper.set("woodentable", {
 			name: "wooden table",
 			nameCap: "Wooden table",
 			category: ["table"],
@@ -89,7 +90,7 @@ const Furniture = (() => {
 			description: "Can be used as a working or gathering spot. Just add chairs.",
 			iconFile: "table.png",
 		});
-		mapper.set('marbletable', {
+		mapper.set("marbletable", {
 			name: "marble-topped table",
 			nameCap: "Marble-topped table",
 			category: ["table"],
@@ -100,7 +101,7 @@ const Furniture = (() => {
 		});
 
 		/* ------------- BEDS ------------- */
-		mapper.set('bed', {
+		mapper.set("bed", {
 			name: "basic bed",
 			nameCap: "Basic bed",
 			category: ["bed"],
@@ -109,7 +110,7 @@ const Furniture = (() => {
 			description: "An old, poor bed. Uncomfortable.",
 			iconFile: "bed.png",
 		});
-		mapper.set('singlebed', {
+		mapper.set("singlebed", {
 			name: "single bed",
 			nameCap: "Single bed",
 			category: ["bed"],
@@ -118,7 +119,7 @@ const Furniture = (() => {
 			description: "A bed for one.",
 			iconFile: "singlebed.png",
 		});
-		mapper.set('singlebeddeluxe', {
+		mapper.set("singlebeddeluxe", {
 			name: "deluxe single bed",
 			nameCap: "Deluxe single bed",
 			category: ["bed"],
@@ -127,7 +128,7 @@ const Furniture = (() => {
 			description: "An ergonomically designed bed. Very comfortable.",
 			iconFile: "singlebeddeluxe.png",
 		});
-		mapper.set('doublebed', {
+		mapper.set("doublebed", {
 			name: "double bed",
 			nameCap: "Double bed",
 			category: ["bed"],
@@ -136,10 +137,10 @@ const Furniture = (() => {
 			description: "A simple bed. Fits two.",
 			iconFile: "doublebed.png",
 			showFn() {
-				return target !== 'bedroom';
-			}
+				return target !== "bedroom";
+			},
 		});
-		mapper.set('doublebeddeluxe', {
+		mapper.set("doublebeddeluxe", {
 			name: "deluxe double bed",
 			nameCap: "Deluxe double bed",
 			category: ["bed"],
@@ -148,22 +149,23 @@ const Furniture = (() => {
 			description: "A beautiful bed with a soft mattress. Very comfortable, fits two.",
 			iconFile: "doublebeddeluxe.png",
 			showFn() {
-				return target !== 'bedroom';
-			}
+				return target !== "bedroom";
+			},
 		});
-		mapper.set('doublebedexotic', {
+		mapper.set("doublebedexotic", {
 			name: "exotic double bed",
 			nameCap: "Exotic double bed",
 			category: ["bed"],
 			type: ["double", "comfy"],
 			cost: setPrice(4884),
-			description: "A bed made in a contemporary, minimalist style. Very comfortable, fits two.",
+			description:
+				"A bed made in a contemporary, minimalist style. Very comfortable, fits two.",
 			iconFile: "doublebedexotic.png",
 			showFn() {
-				return target !== 'bedroom';
-			}
+				return target !== "bedroom";
+			},
 		});
-		mapper.set('doublebedwicker', {
+		mapper.set("doublebedwicker", {
 			name: "wicker double bed",
 			nameCap: "Wicker double bed",
 			category: ["bed"],
@@ -172,21 +174,22 @@ const Furniture = (() => {
 			description: "An authentic bed on a rattan frame. Very comfortable, fits two.",
 			iconFile: "doublebedwicker.png",
 			showFn() {
-				return target !== 'bedroom';
-			}
+				return target !== "bedroom";
+			},
 		});
 
 		/* ------------- MISC ------------- */
-		mapper.set('plantpot', {
+		mapper.set("plantpot", {
 			name: "plant pot",
 			nameCap: "Plant pot",
 			category: ["windowsill"],
 			type: [],
 			cost: setPrice(680),
-			description: "A clay pot with good soil. Flowers come pre-planted. Can be put on your windowsill.",
+			description:
+				"A clay pot with good soil. Flowers come pre-planted. Can be put on your windowsill.",
 			iconFile: "flower.png",
-			});
-		mapper.set('jar', {
+		});
+		mapper.set("jar", {
 			name: "jar",
 			nameCap: "Jar",
 			category: ["windowsill"],
@@ -197,7 +200,7 @@ const Furniture = (() => {
 		});
 
 		/* ------------- DECORATIONS ------------- */
-		mapper.set('calendar', {
+		mapper.set("calendar", {
 			name: "calendar",
 			nameCap: "Calendar",
 			category: ["decoration"],
@@ -206,7 +209,7 @@ const Furniture = (() => {
 			description: "The days of this calendar are numbered.",
 			iconFile: "calendar.png",
 		});
-		mapper.set('painting', {
+		mapper.set("painting", {
 			name: "painting",
 			nameCap: "Painting",
 			category: ["decoration"],
@@ -215,7 +218,7 @@ const Furniture = (() => {
 			description: "It's not actually a painting. It's an illustration. ",
 			iconFile: "painting.png",
 		});
-		mapper.set('banner', {
+		mapper.set("banner", {
 			name: "banner",
 			nameCap: "Banner",
 			category: ["decoration"],
@@ -224,7 +227,7 @@ const Furniture = (() => {
 			description: "A figure from an old movie is poised in the centre.",
 			iconFile: "banner.png",
 		});
-		mapper.set('bannerlewd', {
+		mapper.set("bannerlewd", {
 			name: "lewd banner",
 			nameCap: "Lewd banner",
 			category: ["decoration"],
@@ -233,7 +236,7 @@ const Furniture = (() => {
 			description: "A banner with a tentacle.",
 			iconFile: "banner.png",
 		});
-		mapper.set('bannerfestive', {
+		mapper.set("bannerfestive", {
 			name: "festive banner",
 			nameCap: "Festive banner",
 			category: ["decoration"],
@@ -242,7 +245,7 @@ const Furniture = (() => {
 			description: "It may or may not be in season, but it still looks cool.",
 			iconFile: "bannerfestive.png",
 		});
-		mapper.set('bearplushie', {
+		mapper.set("bearplushie", {
 			name: "large bear plushie",
 			nameCap: "Large bear plushie",
 			category: ["decoration"],
@@ -251,7 +254,7 @@ const Furniture = (() => {
 			description: "Soft, cuddly and forever loyal.",
 			iconFile: "bearplushie.png",
 		});
-		mapper.set('owlplushie', {
+		mapper.set("owlplushie", {
 			name: "owl plushie",
 			nameCap: "Owl plushie",
 			category: ["decoration"],
@@ -259,13 +262,13 @@ const Furniture = (() => {
 			cost: setPrice(),
 			description: "Large eyes stare at the world.",
 			iconFile: "owlplushie.png",
-			showFn: () => false
+			showFn: () => false,
 		});
 		/* ------------- WARDROBES ------------- */
 		/*	starter - 20 clothing slots for every type
 			spacious - 30 clothing slots for every type
 			organised - 40 clothing slots for every type */
-		mapper.set('wardrobe', {
+		mapper.set("wardrobe", {
 			name: "creaky wardrobe",
 			nameCap: "Creaky wardrobe",
 			category: ["wardrobe"],
@@ -273,9 +276,9 @@ const Furniture = (() => {
 			cost: setPrice(0),
 			description: "An old, creaky wardrobe. Doesn't hold much.",
 			iconFile: "wardrobe.png",
-			showFn: () => false
+			showFn: () => false,
 		});
-		mapper.set('wardrobebasic', {
+		mapper.set("wardrobebasic", {
 			name: "wardrobe",
 			nameCap: "Wardrobe",
 			category: ["wardrobe"],
@@ -285,9 +288,9 @@ const Furniture = (() => {
 			iconFile: "wardrobebasic.png",
 			showFn() {
 				return isWardrobeHigherTier(this);
-			}
+			},
 		});
-		mapper.set('armoire', {
+		mapper.set("armoire", {
 			name: "armoire",
 			nameCap: "Armoire",
 			category: ["wardrobe"],
@@ -297,9 +300,9 @@ const Furniture = (() => {
 			iconFile: "armoire.png",
 			showFn() {
 				return isWardrobeHigherTier(this);
-			}
+			},
 		});
-		mapper.set('organiser', {
+		mapper.set("organiser", {
 			name: "organiser wardrobe",
 			nameCap: "Organiser wardrobe",
 			category: ["wardrobe"],
@@ -309,9 +312,9 @@ const Furniture = (() => {
 			iconFile: "wardrobeorganiser.png",
 			showFn() {
 				return isWardrobeHigherTier(this);
-			}
+			},
 		});
-		mapper.set('carved', {
+		mapper.set("carved", {
 			name: "carved armoire",
 			nameCap: "Carved armoire",
 			category: ["wardrobe"],
@@ -321,10 +324,10 @@ const Furniture = (() => {
 			iconFile: "armoirecarved.png",
 			showFn() {
 				return isWardrobeHigherTier(this);
-			}
+			},
 		});
 		/* --------------- POSTERS --------------- */
-		mapper.set('poster', {
+		mapper.set("poster", {
 			name: "blank poster",
 			nameCap: "Blank poster",
 			category: ["poster"],
@@ -334,7 +337,7 @@ const Furniture = (() => {
 			iconFile: "poster.png",
 		});
 		/* ------------- WALLPAPERS -------------- */
-		mapper.set('wallpaper', {
+		mapper.set("wallpaper", {
 			name: "blank wallpaper",
 			nameCap: "Blank wallpaper",
 			category: ["wallpaper"],
@@ -346,22 +349,26 @@ const Furniture = (() => {
 	}
 
 	function furnitureGet(type, onlySetup = false) {
-		if (typeof type !== 'string') {
-			console.debug('furnitureGet expected an argument of type: string.', type);
+		if (typeof type !== "string") {
+			console.debug("furnitureGet expected an argument of type: string.", type);
 			return null;
 		}
 		if (onlySetup) {
 			return setup.furniture.get(type);
 		}
 		if (!V) {
-			console.debug('furnitureGet called before SugarCube is ready, postpone execution next time.', type);
+			console.debug(
+				"furnitureGet called before SugarCube is ready, postpone execution next time.",
+				type
+			);
 			return null;
 		}
 		const area = V.furniture[target];
-		if (area.hasOwnProperty(type)) {
+		if (Object.hasOwn(area, type)) {
 			const current = area[type];
 			const defaults = setup.furniture.get(current.id);
-			return { ...defaults, ...current };
+			const composite = Object.assign({}, defaults, current);
+			return composite;
 		} else {
 			return null;
 		}
@@ -369,18 +376,18 @@ const Furniture = (() => {
 
 	function furnitureSet(id, category, propertyMap) {
 		if (!setup.furniture.has(id)) {
-			Errors.report(`Furniture.Set was incorrectly passed an id not listed in furniture: ${id}`);
+			Errors.report(
+				`Furniture.Set was incorrectly passed an id not listed in furniture: ${id}`
+			);
 			return false;
 		}
-		if (!Categories.hasOwnProperty(category)) {
+		if (!Object.hasOwn(Categories, category)) {
 			Errors.report(`Furniture.Set was incorrectly passed an invalid category : ${category}`);
 			return false;
 		}
 		const home = V.furniture[target];
 
-		home[category] = {
-			'id'	: id
-		};
+		home[category] = { id };
 		if (propertyMap) {
 			/* Object.defineProperties(home[category], propertyMap); */
 			Object.assign(home[category], propertyMap);
@@ -392,13 +399,17 @@ const Furniture = (() => {
 		if (Object.values(Locations).includes(location)) {
 			target = location;
 		} else {
-			Errors.report(`Location provided (${location}) does not exist in the furniture system.`);
+			Errors.report(
+				`Location provided (${location}) does not exist in the furniture system.`
+			);
 		}
 		return Furniture;
 	}
 
 	function furnitureUpdate(fromBackComp = false) {
 		const versions = V.objectVersion;
+		let wallpaper;
+		let poster;
 		if (versions.furniture === undefined || FORCE_UPDATE) {
 			versions.furniture = 0;
 		}
@@ -406,35 +417,36 @@ const Furniture = (() => {
 			case 0:
 				V.furniturePriceFactor = 1;
 				V.furniture = {
-					bedroom	: {
-						bed	: {
-							id: 'bed'
+					bedroom: {
+						bed: {
+							id: "bed",
 						},
-						wardrobe : {
-							id: fromBackComp ? 'organiser' : 'wardrobe'
-						}
-					}
-				}
+						wardrobe: {
+							id: fromBackComp ? "organiser" : "wardrobe",
+						},
+					},
+				};
 				wardrobeSpaceUpdater();
+			// eslint-disable-next-line no-fallthrough
 			case 1:
 				/* Set the target to the bedroom in the unlikely event it wasn't preset. */
 				furnitureIn(Locations.bedroom);
 				/* Search for the wallpaper object, returns null if not found. */
-				const wallpaper = furnitureGet(Categories.wallpaper);
-				if (wallpaper != null && wallpaper.name.includes('<<')) {
+				wallpaper = furnitureGet(Categories.wallpaper);
+				if (wallpaper != null && wallpaper.name.includes("<<")) {
 					const name = Util.escape(wallpaper.name);
-					furnitureSet('wallpaper', Categories.wallpaper, {
-						name: name,
-						nameCap: name.toUpperFirst()
+					furnitureSet("wallpaper", Categories.wallpaper, {
+						name,
+						nameCap: name.toUpperFirst(),
 					});
 				}
 				/* Search for the poster object, returns null if not found. */
-				const poster = furnitureGet(Categories.poster);
-				if (poster != null && poster.name.includes('<<')) {
+				poster = furnitureGet(Categories.poster);
+				if (poster != null && poster.name.includes("<<")) {
 					const name = Util.escape(poster.name);
-					furnitureSet('poster', Categories.poster, {
-						name: name,
-						nameCap: name.toUpperFirst()
+					furnitureSet("poster", Categories.poster, {
+						name,
+						nameCap: name.toUpperFirst(),
 					});
 				}
 				versions.furniture = 2;
@@ -443,13 +455,13 @@ const Furniture = (() => {
 	}
 
 	function getWardrobeTier(wardrobe) {
-		const type = wardrobe.type.find(e => ['spacious', 'organiser'].includes(e)) || 'starter';
-		const tier = { 'starter': 0, 'spacious': 1, 'organiser': 2 }[type];
+		const type = wardrobe.type.find(e => ["spacious", "organiser"].includes(e)) || "starter";
+		const tier = { starter: 0, spacious: 1, organiser: 2 }[type];
 		return tier;
 	}
 
 	function isWardrobeHigherTier(wardrobe) {
-		const current = Furniture.get('wardrobe');
+		const current = Furniture.get("wardrobe");
 		if (current) {
 			const targetTier = getWardrobeTier(wardrobe);
 			const currentTier = getWardrobeTier(current);
@@ -462,13 +474,13 @@ const Furniture = (() => {
 
 	function wardrobeSpaceUpdater() {
 		const wardrobe = V.wardrobe;
-		const furniture = furnitureGet('wardrobe');
-		if (typeof furniture !== 'object') return;
+		const furniture = furnitureGet("wardrobe");
+		if (typeof furniture !== "object") return;
 		if (!(furniture.type instanceof Array)) return;
 		/* Wardrobe object appears to be good: Is an object, type is an array. */
-		if (furniture.type.includes('organiser')) {
+		if (furniture.type.includes("organiser")) {
 			wardrobe.space = 40;
-		} else if (furniture.type.includes('spacious')) {
+		} else if (furniture.type.includes("spacious")) {
 			wardrobe.space = 30;
 		} else {
 			wardrobe.space = 20;
@@ -479,7 +491,7 @@ const Furniture = (() => {
 		return () => Math.floor((pounds * 100 + pence) * V.furniturePriceFactor);
 	}
 
-	$(document).on(':start2', function() {
+	$(document).on(":start2", function () {
 		furnitureUpdate();
 	});
 
@@ -487,15 +499,15 @@ const Furniture = (() => {
 	furnitureInit();
 
 	return Object.freeze({
-		init			: furnitureInit,
-		get				: furnitureGet,
-		set				: furnitureSet,
-		in				: furnitureIn,
-		update			: furnitureUpdate,
-		wardrobeUpdate	: wardrobeSpaceUpdater,
+		init: furnitureInit,
+		get: furnitureGet,
+		set: furnitureSet,
+		in: furnitureIn,
+		update: furnitureUpdate,
+		wardrobeUpdate: wardrobeSpaceUpdater,
 		get target() {
 			return target;
-		}
+		},
 	});
 })();
 window.Furniture = Furniture;
