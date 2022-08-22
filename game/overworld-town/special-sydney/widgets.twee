@@ -108,28 +108,11 @@
 	<<unset $schoolShopAction>>
 	<br><br>
 	<<sydneyOptions>>
-<<elseif $hour is 9 and $sydneyScience isnot 1 and $sydneyScienceWarn isnot 2>>
-	<<if !$sydneyScienceWarn>>
-		<<set $sydneyScienceWarn to 0>>
-	<</if>>
-	<<set $sydneyScienceWarn++>>
-	<<if $sydneyScienceWarn is 1>>
-		Sydney looks up at you. "Classes usually start around now. Aren't you going to be late?"
-		<br><br>
-		<<sydneyOptions>>
-	<<elseif $sydneyScienceWarn is 2>>
-		Sydney looks up at you. "Are you... skipping class just to see me?"
-		<br><br>
-		<<sydneyOptions>>
-	<<elseif $sydneyScienceWarn gte 3 and $sydneyromance isnot 1>>
-		Sydney shoos you away from the rental counter. "If the <<nnpc_Title "Leighton">> catches you skipping class, we'll both be in big trouble!"
-		<br><br>
-		<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
-		<br>
-	<<else>>
-		<br><br>
-		<<sydneyOptions>>
-	<</if>>
+<<elseif $sydneyClassWarn and $sydneyClassWarn gte 3 and !_sydneyStatus.includes("corrupt")>>
+	Sydney shoos you away. "If the <<nnpc_Title "Leighton">> catches you skipping class, we'll both be in big trouble!"
+	<br><br>
+	<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
 <<elseif _counterApproach is 1>>
 	<<if $sydneyChastityRemoveIntro is 1>>
 		Sydney looks eager to talk to you about something.
@@ -223,20 +206,47 @@
 <<if $bus is "schoollibrary" or $location is "school">>
 	<<switch _sydney_location>>
 		<<case "library">>
-			<<sydneyOptionsTalk>>
-			<br>
-			<<bookRentalOptions>>
-			<br>
-			You can purchase any school-sanctioned clothing here.
-			<br>
-			<<link [[Buy clothes|School Library Shop]]>><</link>>
-			<br>
-			<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
-			<br>
+			<<if ($sydneyScience isnot 1 and $schoolstate is "first") or ["fourth", "fifth"].includes($schoolstate)>>
+				<<if !$sydneyClassWarn>>
+					<<set $sydneyClassWarn to 0>>
+				<</if>>
+				<<set $sydneyClassWarn++>>
+			<</if>>
+			<<if $sydneyClassWarn and $sydneyClassWarn gte 3 and !_sydneyStatus.includes("corrupt")>>
+				<<He>> shoos you away from the rental counter. "If the <<nnpc_Title "Leighton">> catches you skipping class, we'll both be in big trouble!"
+				<br><br>
+				<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+				<br>
+			<<else>>
+				<<if $sydneyClassWarn is 1>>
+					<<if $schoolstate is "first">>
+						<<He>> looks up at you. "Classes usually start around now. Aren't you going to be late?"
+					<<else>>
+						<<He>> checks the time. "You're going to be late for your next class."
+					<</if>>
+					<br><br>
+				<<elseif $sydneyClassWarn is 2>>
+					<<He>> looks up at you. "Are you... skipping class just to see me?"
+					<br><br>
+				<<elseif $sydneyClassWarn is 3 and _sydneyStatus.includes("corrupt")>>
+					<<He>> checks the time. "Screw it, you can stay. Just don't blame me if you get detention."
+					<br><br>
+				<</if>>
+				<<sydneyOptionsTalk>>
+				<br>
+				<<bookRentalOptions>>
+				<br>
+				You can purchase any school-sanctioned clothing here.
+				<br>
+				<<link [[Buy clothes|School Library Shop]]>><</link>>
+				<br>
+				<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+				<br>
+			<</if>>
 		<<case "science">>
 			Sydney's eyes grow wide. "Sh<<if _sydneyStatus.includes("corrupt")>>i<<else>>oo<</if>>t! We're late for science class!" <<He>> begins to pack up <<his>> things. "<<sydneyMum>>'s gonna kill me..."
 			<br><br>
-			<<scienceicon>><<link [[Go with Sydney|Sydney Science Walk Late]]>><<set $eventskip to 1>><</link>>
+			<<scienceicon>><<link [[Go with Sydney|Science Classroom]]>><<endevent>><<set $sydneyScienceWalk to 1>><</link>>
 			<br>
 			<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
@@ -437,7 +447,7 @@
 	<br>
 <</if>>
 <<if $location is "school" and $sydneySeen.includes("science") and $hour is 8 and $minute gte 45>>
-	<<scienceicon>><<link [[Walk to science class (0:05)|Sydney Science Walk]]>><<pass 5>><<npcincr Sydney love 1>><</link>><<glove>>
+	<<scienceicon>><<link [[Walk to science class with Sydney (0:05)|Science Classroom]]>><<pass 5>><<npcincr Sydney love 1>><<endevent>><<set $sydneyScienceWalk to 1>><</link>><<glove>>
 	<br>
 <</if>>
 <<if $location is "adult_shop">> /*Placeholder. Unfinished.*/
