@@ -33,7 +33,12 @@
 			<br>
 		<<elseif $time lte ($hour * 60 + 5)>>
 
-			You enter the science classroom.
+			<<if $sydneyScienceWalk>>
+				<<unset $sydneyScienceWalk>>
+				You enter the science classroom with Sydney.
+			<<else>>
+				You enter the science classroom.
+			<</if>>
 			<<npc Sirris>><<person1>>
 			Sirris is preparing at the front of the room while the seats fill.
 			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
@@ -46,17 +51,33 @@
 			<br>
 
 		<<else>>
-			You enter the science classroom.
-			<<npc Sirris>><<person1>>
-			<<if $scienceExcused is true>>
-				<<unset $scienceExcused>>
-				Sirris cuts off mid-sentence to regard you. "Excused tardiness, please take a seat." <<He>> smiles at you.
+			<<if $sydneyScienceWalk>>
+				<<unset $sydneyScienceWalk>>
+				You enter the science classroom with Sydney.
+				<<npc Sirris>><<person1>>
+				<<if $scienceExcused is true>>
+					<<unset $scienceExcused>>
+					Sirris cuts off mid-sentence to regard you. "Excused tardiness, for both of you. Please take a seat." <<He>> smiles at you.
+				<<else>>
+					Sirris cuts off mid-sentence to regard you. "I'm sorry, but I'll have to record your tardiness. Both of you." Sydney looks ashamed.
+					<<gdelinquency>><<lspurity>>
+					<br><br>
+					<<detention 1>>
+				<</if>>
 			<<else>>
-				Sirris cuts off mid-sentence to regard you. "I'm sorry, but I'll have to record your tardiness."
-				<<gdelinquency>>
-				<br><br>
-				<<detention 1>>
+				You enter the science classroom.
+				<<npc Sirris>><<person1>>
+				<<if $scienceExcused is true>>
+					<<unset $scienceExcused>>
+					Sirris cuts off mid-sentence to regard you. "Excused tardiness, please take a seat." <<He>> smiles at you.
+				<<else>>
+					Sirris cuts off mid-sentence to regard you. "I'm sorry, but I'll have to record your tardiness."
+					<<gdelinquency>>
+					<br><br>
+					<<detention 1>>
+				<</if>>
 			<</if>>
+
 			You
 			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
 				hang your coat at the back of the class and
@@ -113,6 +134,10 @@
 
 		<<npc Sirris>><<person1>>You open the door to the science classroom. Sirris cuts off mid-sentence as you enter, looking surprised. "Can I help you?" It seems you've interrupted the lesson.
 		<br><br>
+		<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
+			You spot Sydney right at the front of the class. <<nnpc_He "Sydney">> looks to you with confusion.
+			<br><br>
+		<</if>>
 		<<set $scienceinterrupted to 1>>
 
 		<<link [[Apologise|Science Classroom Apology]]>><<trauma 1>><<stress 1>><</link>><<gstress>><<gtrauma>>
@@ -153,6 +178,15 @@ Embarrassed, you apologise and leave.
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 You mock the teacher. "A white lab coat is a good idea <<sir>>, it'll hide the stains." Laughter erupts among the seated students.
+<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
+	<<run statusCheck("Sydney")>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		Even Sydney struggles to not burst into laughter.
+	<<else>>
+		Sydney's eyes widen in shock.
+	<</if>>
+	<<lspurity>>
+<</if>>
 <br><br>
 
 Sirris looks exasperated. "Right. I'll have to inform the head of your behaviour, you know. Please, just go."
