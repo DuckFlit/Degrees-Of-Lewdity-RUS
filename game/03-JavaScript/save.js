@@ -509,6 +509,9 @@ const importSettingsData = function (data) {
 			const listObject = settingsObjects("general");
 			const listKey = Object.keys(listObject);
 			const namedObjects = ["map", "skinColor", "shopDefaults"];
+			// correct swapped min/max values
+			if (S.general.breastsizemin > S.general.breastsizemax){let temp = S.general.breastsizemin; S.general.breastsizemin = S.general.breastsizemax, S.general.breastsizemax = temp};
+			if (S.general.penissizemin > S.general.penissizemax){let temp = S.general.penissizemin; S.general.penissizemin = S.general.penissizemax, S.general.penissizemax = temp};
 
 			for (let i = 0; i < listKey.length; i++) {
 				if (namedObjects.includes(listKey[i]) && S.general[listKey[i]] != null) {
@@ -868,7 +871,7 @@ function settingsObjects(type) {
 				asphyxiaLvl: { min: 0, max: 4, decimals: 0 },
 				NudeGenderDC: { min: 0, max: 2, decimals: 0 },
 				breastsizemin: { min: 0, max: 4, decimals: 0 },
-				breastsizemax: { min: 0, max: 13, decimals: 0 },
+				breastsizemax: { min: 0, max: 12, decimals: 0 },
 				bottomsizemax: { min: 0, max: 9, decimals: 0 },
 				penissizemax: { min: -2, max: 4, decimals: 0 },
 				penissizemin: { min: -2, max: 0, decimals: 0 },

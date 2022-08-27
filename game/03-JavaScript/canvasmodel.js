@@ -178,7 +178,7 @@ window.CanvasModel = class CanvasModel {
 	 * @param [listener] Listener for Renderer events
 	 */
 	render(canvas,options,listener) {
-		if (typeof options === undefined) options = this.options;
+		if (typeof options === "undefined") options = this.options;
 		this.canvas = canvas;
 		this.options = options;
 		this.listener = listener;
