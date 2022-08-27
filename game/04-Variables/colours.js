@@ -296,7 +296,7 @@ setup.colours.hair = [{
 	"variable": "bloodorange",
 	"name": "blood orange",
 	"name_cap": "Blood Orange",
-	"csstext": "",
+	"csstext": "bloodorange",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -306,7 +306,7 @@ setup.colours.hair = [{
 	"variable": "blue",
 	"name": "blue",
 	"name_cap": "Blue",
-	"csstext": "",
+	"csstext": "bluehair",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -317,18 +317,18 @@ setup.colours.hair = [{
 	"variable": "deepblue",
 	"name": "deep blue",
 	"name_cap": "Deep Blue",
-	"csstext": "",
+	"csstext": "deepblue",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
-		"blend": "#0d2f73",
+		"blend": "#1349b5",
 		"brightness": -0.3
 	}
 }, {
 	"variable": "neonblue",
 	"name": "neon blue",
 	"name_cap": "Neon Blue",
-	"csstext": "",
+	"csstext": "neonblue",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -338,17 +338,17 @@ setup.colours.hair = [{
 	"variable": "green",
 	"name": "green",
 	"name_cap": "Green",
-	"csstext": "",
+	"csstext": "greenhair",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
-		"blend": "#005c00"
+		"blend": "#007400"
 	}
 }, {
 	"variable": "darklime",
 	"name": "dark lime",
 	"name_cap": "Dark Lime",
-	"csstext": "",
+	"csstext": "darklime",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -358,7 +358,7 @@ setup.colours.hair = [{
 	"variable": "toxicgreen",
 	"name": "toxic green",
 	"name_cap": "Toxic Green",
-	"csstext": "",
+	"csstext": "toxicgreen",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -368,7 +368,7 @@ setup.colours.hair = [{
 	"variable": "teal",
 	"name": "teal",
 	"name_cap": "Teal",
-	"csstext": "",
+	"csstext": "tealhair",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -378,7 +378,7 @@ setup.colours.hair = [{
 	"variable": "pink",
 	"name": "pink",
 	"name_cap": "Pink",
-	"csstext": "",
+	"csstext": "pinkhair",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -388,7 +388,7 @@ setup.colours.hair = [{
 	"variable": "brightpink",
 	"name": "bright pink",
 	"name_cap": "Bright Pink",
-	"csstext": "",
+	"csstext": "brightpink",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -398,7 +398,7 @@ setup.colours.hair = [{
 	"variable": "hotpink",
 	"name": "hot pink",
 	"name_cap": "Hot Pink",
-	"csstext": "",
+	"csstext": "hotpink",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -408,7 +408,7 @@ setup.colours.hair = [{
 	"variable": "softpink",
 	"name": "soft pink",
 	"name_cap": "Soft Pink",
-	"csstext": "",
+	"csstext": "softpink",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -419,7 +419,7 @@ setup.colours.hair = [{
 	"variable": "crimson",
 	"name": "crimson",
 	"name_cap": "Crimson",
-	"csstext": "",
+	"csstext": "crimson",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -429,27 +429,27 @@ setup.colours.hair = [{
 	"variable": "purple",
 	"name": "purple",
 	"name_cap": "Purple",
-	"csstext": "",
+	"csstext": "purplehair",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
-		"blend": "#48095d"
+		"blend": "#6a0d89"
 	}
 }, {
 	"variable": "mediumpurple",
 	"name": "medium purple",
 	"name_cap": "Medium Purple",
-	"csstext": "",
+	"csstext": "mediumpurple",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
-		"blend": "#3600b2"
+		"blend": "#5113df"
 	}
 }, {
 	"variable": "brightpurple",
 	"name": "bright purple",
 	"name_cap": "Bright Purple",
-	"csstext": "",
+	"csstext": "brightpurple",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
@@ -459,18 +459,18 @@ setup.colours.hair = [{
 	"variable": "white",
 	"name": "white",
 	"name_cap": "White",
-	"csstext": "",
+	"csstext": "whitehair",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
-		"blend": "#808080",
+		"blend": "#BBBBBB",
 		"brightness": 0.3
 	}
 }, {
 	"variable": "snowwhite",
 	"name": "snow white",
 	"name_cap": "Snow White",
-	"csstext": "",
+	"csstext": "snowwhitehair",
 	"natural": false,
 	"dye": true,
 	"canvasfilter": {
