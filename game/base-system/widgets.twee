@@ -659,26 +659,48 @@
 	<</if>>
 <</widget>>
 
-<<widget "crimeup">>
-<<if $statFreeze isnot true>>
-	<<set _crime_up to 1>>
-	<<for _active_clothes range Object.keys($worn)>>
-		<<if $worn[_active_clothes].type.includes("stealthy")>>
-			<<set _crime_up -= 0.05>>
-		<</if>>
-	<</for>>
+<<widget "crimeup">><<silently>>
+	<<if $statFreeze isnot true>>
 		<<if _args[0]>>
-			<<set $crime += Math.trunc(_args[0] * _crime_up)>>
-			<<set $crimehistory += Math.trunc(_args[0] * _crime_up)>>
+			<<set $_crimemod to _args[0]>>
+			<<if _args[0] gte 1>>
+				<!-- Our crime value is positive, adjust by stealth factor -->
+				<<set $_crimefactor to 1>>
+				/* The following commented code contains experimental factors for calculating stealth */
+				/*
+					<<set $_crime1 to Math.clamp($crime, C.crime.min, C.crime.max / 10)>>
+					<<set $_crime2 to $crime - $_crime1>>
+					<<set $_crime2 to Math.clamp($crime - $_crime1, C.crime.min, C.crime.max / 10)>>
+					<!-- crime1 = first 5k of crime, crime2 = next 5k of crime -->
+					<<set $_normCrime1 to normalise($_crime1, C.crime.max / 10)>>
+					<<set $_normCrime2 to normalise($_crime2, C.crime.max / 10)>>
+					<!-- Both normalized to percentage of max/10 (currently 5k) -->
+					<<set $_stealthReduce1 to expCurve($_normcrime1, 3.0)>>
+					<!-- First 5k of crime at a curve to 5000 -->
+				*/
+				<<set $_stealthfactor to ( 0.15 * ( 1 - normalise($crime, C.crime.max / 5 ) ) )>>
+				<!-- Stealth gives 15%, but reduced by existing crime stat down to 0 at C.crime.max / 5 -->
+				<!-- At 10k crime, stealth equipment is effectively useless - too much evidence -->
+
+				<!-- Filter to all items with type "stealthy" and count them... -->
+				<<set $_stealthMult to Object.values($worn).filter(item => item.type.includes("stealthy")).length>>
+				<<set $_crimefactor -= $_stealthfactor * $_stealthMult>>
+
+				<<set $_crimemod to Math.ceil($_crimemod * $_crimefactor)>>
+				<!-- Add to crime history and Avery crimetracker-->
+				<<set $crimehistory += $_crimemod>>
+				<<if $averyCrimeTracker isnot undefined>>
+					<<set $averyCrimeTracker += $_crimemod>>
+				<</if>>
+			<</if>>
+			<<set $crime += $_crimemod>> <!-- This works for negative values as well! -->
+			<<set $crime to Math.clamp($crime, C.crime.min, C.crime.max)>> <!-- Auto-clamp crime -->
 		<</if>>
 		<<if $slimeEvent is "steal something">>
 			<<unset $slimeEvent>>
 		<</if>>
-	<<if $averyCrimeTracker isnot undefined>>
-	<<set $averyCrimeTracker+= (_args[0] * _crime_up)>>
 	<</if>>
-<</if>>
-<</widget>>
+<</silently>><</widget>>
 
 <<widget "seductionskilluse">>
 	<<set $enemyarousal += ($seductionskill / 100)>><<seductionskill 5>>
