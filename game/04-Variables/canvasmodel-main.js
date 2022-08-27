@@ -90,6 +90,7 @@ replace (?<!["'\w])_(?=\w) with T.
  * "lipstick_colour": "" (none), key from setup.colours.lipstick_map, or "custom" ("lipstick" filter required)
  * "eyeshadow_colour": "" (none), key from setup.colours.eyeshadow_map, or "custom" ("eyeshadow" filter required)
  * "mascara_colour": "" (none), key from setup.colours.mascara_map, or "custom" ("mascara" filter required)
+ * "mascara_running": number - mascara smear level, 0..4, 0 is "no smears"
  *
  * TF OPTIONS: ("disabled" & "hidden" types hide the layer)
  * ----------
@@ -276,6 +277,7 @@ Renderer.CanvasModels["main"] = {
 			"lipstick_colour": "",
 			"eyeshadow_colour": "",
 			"mascara_colour": "",
+			"mascara_running": 0,
 			// tf
 			"angel_wings_type": "disabled",
 			"angel_wing_right": "idle",
@@ -961,13 +963,13 @@ Renderer.CanvasModels["main"] = {
 		},
 		"makeup_mascara_tears": {
 			srcfn(options) {
-				return 'img/face/' + options.facestyle + '/' + 'makeup/mascara' + options.tears + '.png'
+				return 'img/face/' + options.facestyle + '/' + 'makeup/mascara' + options.mascara_running + '.png'
 			},
 			showfn(options) {
-				return options.show_face && options.tears > 0 && !!options.mascara_colour
+				return options.show_face && options.mascara_running > 0 && !!options.mascara_colour
 			},
 			filters: ["mascara"],
-			z: ZIndices.lashes
+			z: ZIndices.mascara_running
 		},
 		/***
 		 *    ██   ██  █████  ██ ██████

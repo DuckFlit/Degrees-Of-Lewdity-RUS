@@ -1094,6 +1094,14 @@ setup.colours.mascara = [
 		canvasfilter: {
 			blend: "#292929"
 		}
+	}, {
+		variable: "black waterproof",
+		name: "black (waterproof)",
+		name_cap: "Black (waterproof)",
+		csstext: "black",
+		canvasfilter: {
+			blend: "#292929"
+		}
 	}
 ];
 

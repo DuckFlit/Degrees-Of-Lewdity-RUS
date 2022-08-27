@@ -1504,3 +1504,15 @@ window.combatCharacterShadow = function() {
 		.addClass(targetClass).removeAttr('style').appendTo($(mainDiv).last());
 	});
 }
+
+window.painToTearsLvl = function(pain) {
+	/**
+	 * For usage with tears calculation, converts pain stat [0..200] to 0..4 range (maxes out at pain = 80)
+	 */
+	pain ??= V.pain;
+	return Math.floor(Math.clamp(pain, 0, 99) / 20);
+}
+
+window.mascaraNameToCSS = function(name) {
+	return setup.colours.mascara.find(x => x.variable == name)?.csstext;
+}
