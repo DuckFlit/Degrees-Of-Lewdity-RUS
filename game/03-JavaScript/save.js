@@ -1152,9 +1152,10 @@ window.isJsonString = function (s) {
  * @param {object} result An object to store the results in. - leave blank.
  * @param {Set} hist A set used for Cycle history. - leave blank.
  */
+
 function recurseNaN(obj, path, result = null, hist = null) {
-	if (result === null) result = { nulls: [], nan: [], cycle: [] };
-	if (hist === null) hist = new Set([obj]);
+	result = Object.assign({ nulls: [], nan: [], cycle: [] }, result);
+	if (hist == null) hist = new Set([obj]);
 	/* let result = {"nulls" : [], "nan" : [], "cycle" : []}; */
 	for (const [key, val] of Object.entries(obj)) {
 		const newPath = `${path}.${key}`;
@@ -1180,3 +1181,40 @@ function recurseNaN(obj, path, result = null, hist = null) {
 	return result;
 }
 window.recurseNaN = recurseNaN;
+
+/**
+ * Recursively traverse target object, finding and returning an object containing all the NaN vars inside.
+ *
+ * Use with objectAssignDeep to re-assign 0 to all bad NaN'd vars.  Use with caution.
+ *
+ * @param {object} target The object to traverse.  Defaults to V ($).
+ * @returns {object} An object containing all the properties/sub-props that were NaN.
+ */
+function scanNaNs(target = V) {
+	// If this gets set to true during function, a NaN was hit within scope.
+	let isMutated = false;
+	const current = Object.create({});
+	// Loop through all properties of the target for NaNs and objects to scan.
+	for (const [key, value] of Object.entries(target)) {
+		// If value is an object, scan that property.
+		if (value && typeof value === "object") {
+			const resp = scanNaNs(value);
+			// If scanNaNs returns a non-null object, there was a NaN somewhere, so make sure to update current obj.
+			if (resp && typeof resp === "object") {
+				current[key] = resp;
+				isMutated = true;
+			}
+		} else if (typeof value === "number") {
+			// Does what it says on the tin, make sure you only test numbers.
+			if (isNaN(value)) {
+				// Set property to a default value, likely zero.
+				current[key] = 0;
+				isMutated = true;
+			}
+		}
+	}
+	// Return a fully realised object, indicating there were NaNs, or null, which can be ignored.
+	// isMutated controls whether we have encountered NaNs, remember to update where necessary.
+	return isMutated ? current : null;
+}
+window.scanNaNs = scanNaNs;

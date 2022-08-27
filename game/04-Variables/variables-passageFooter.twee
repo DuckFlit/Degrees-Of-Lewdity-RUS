@@ -71,13 +71,27 @@
 <</if>>
 
 <<if $debugdisable is "f">>
-	<<set _nancheck to recurseNaN(V, "V").nan.formatList()>>
-	<<if _nancheck isnot "">>
+	<<set _normalised to scanNaNs(V)>>
+	<<if _normalised neq null>>
 		<<error {
 			message: "Corrupted variables have been detected.",
-			source: "The following variables have invalid values:\n" + _nancheck +
+			source: "The following variables have invalid values:\n" + JSON.stringify(_normalised) +
 			"\n\nCurrent passage is: '" + $passage + "'\nPlease report this to the DoL Discord #bug-reports.",
 			exportable: false,
 		}>>
+		<br>
+		Please expand the above box (click the dropdown arrow on the left) before taking a screenshot.
+		<br><br>
+		<div id="nanClear">
+			If you are advised to do so by developers, you can click below to reset the corrupted variables.
+			<br>
+			<<link "Reset Corrupted Variables">>
+				<<silently>><<run objectAssignDeep(V, _normalised)>><</silently>>
+				<<replace "#nanClear" t8n>><span class="green">The variables have been cleared.</span><</replace>>
+			<</link>>
+			<br>
+			<span class="red">WARNING: This will set all corrupted variables to 0. This may have unintended consequences to your game state. Proeceed with caution!</span>
+		</div>
+		<br><br>
 	<</if>>
 <</if>>
