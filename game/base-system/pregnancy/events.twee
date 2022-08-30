@@ -49,6 +49,10 @@ You shake your head. <<He>> holds open the door for you, and you leave the offic
 	<<link [[Inquire about anal futa removal (0:30)|Remove Futa Pregnancy]]>><<pass 30>><<set $futaCheck to true>><<set $firstOption to false>><</link>>
 	<br>
 <</if>>
+<<if $sexStats.anus.pregnancy.typesSeen.length gte 4 and $sexStats.anus.pregnancy.book is 1>>
+	<<link [[Inquire about information on parasites (0:05)|Harper Parasite Book]]>><<pass 5>><<set $firstOption to false>><</link>>
+	<br>
+<</if>>
 
 <<link [[Return to foyer|Hospital Foyer]]>><<endevent>><<unset $firstOption>><</link>>
 
@@ -140,7 +144,7 @@ Harper stares unblinking at your <<bottom>> as the pulsing increases in intensit
 <br><br>
 
 "All done," <<he>> says as <<he>> unties the straps. <<He>> turns away as you dress.
-<br><br><br><br>
+<br><br>
 <<link [[Next|Pregnancy Discussion]]>><<unset $futaCheck>><</link>>
 
 :: GiveBirth
@@ -148,13 +152,14 @@ Harper stares unblinking at your <<bottom>> as the pulsing increases in intensit
 <<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
 <<set _pregnancy to $sexStats.anus.pregnancy>>
 <<set _pregnancy.feltMovement to false>>
-<<set _container to $container[$location]>>
+<<set _container to $container[$phase]>>
 <<set $pregResult to "notReady">>
 <<set _stressMulti to 2 - _pregnancy.motherStatus>>
 <<set $checkboxResult to {}>>
 <<set $checkboxReplace to {}>>
 <<set $parasiteSelectionCount to 0>>
-<<set _vine to 0>><<set _metal to 0>><<set _pale to 0>>
+<<set _newlyBirthed to {}>>
+<<set _allSeen to _pregnancy.typesSeen.length + _pregnancy.variantsSeen.length>>
 
 Following the directions from Doctor Harper, you get into position and attempt to deliver <<if _pregnancy.namesChildren is true>>your baby<<else>>the parasites<</if>>. <<if _stressMulti gt 0>><<gstress>><</if>><<set $stress += 250 * _stressMulti>>
 <br><br>
@@ -165,7 +170,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 	<</if>>
 	<<if _pregnancy[_i].stats.gender isnot "Futa">>
 		<<set _rand to random(0,100)>>
-		<<if (_rand lte 80 and _pregnancy[_i].daysLeft is 0) or (_rand lte 50 and _pregnancy[_i].daysLeft lte 1) or (_rand lte 30 and _pregnancy[_i].daysLeft lte 2) or (_rand lte 10 and _pregnancy[_i].daysLeft lte 3)>>
+		<<if (_rand lte 80 and _pregnancy[_i].daysLeft is 0) or (_rand lte 50 and _pregnancy[_i].daysLeft lte 1) or (_rand lte 30 and _pregnancy[_i].daysLeft lte 2) or (_rand lte 10 and _pregnancy[_i].daysLeft lte 3) or $parasiteBirthDebug>>
 			<<if $pregResult is "notReady">>
 				<<set $pregResult to [clone(_i)]>>
 			<<else>>
@@ -185,32 +190,56 @@ Following the directions from Doctor Harper, you get into position and attempt t
 
 	<ul>
 		<<for _i to 0; _i lt $pregResult.length; _i++>>
-			<li><label><<print '<<checkbox "$checkboxResult[' + clone($pregResult[_i]) + ']" false true checked>>'>> - <<print _pregnancy[$pregResult[_i]].creature>> - <<creatureActivity _pregnancy[$pregResult[_i]].stats.speed>></label></li>
-			<<if _pregnancy[$pregResult[_i]].creature is "Vine">>
-				<<set _vine++>>
-			<</if>>
-			<<if _pregnancy[$pregResult[_i]].creature.includes("Metal")>>
-				<<set _metal++>>
-			<</if>>
-			<<if _pregnancy[$pregResult[_i]].creature.includes("Pale")>>
-				<<set _pale++>>
+			<<set _result to _pregnancy[$pregResult[_i]]>>
+			<!-- Printing the checkbox -->
+			<li><label><<print '<<checkbox "$checkboxResult[' + clone($pregResult[_i]) + ']" false true checked>>'>> - <<print _result.creature>> - <<creatureActivity _result.stats.speed>></label></li>
+			<<if _result.creature.includes(" ")>>
+				<!-- If the creature has a variant, like Pale. Currently does not account for creatures with more than one variant, because those don't yet exist -->
+				<!-- Possible task for the future: turn parasite variants into variables, so there can be multiple -->
+				<<set _split to _result.creature.split(" ")>>
+				<<if !_pregnancy.variantsSeen.includes(_split[0]) and _split[0] isnot _split[1]>>
+					<<set _pregnancy.variantsSeen.pushUnique(_split[0])>>
+					<!-- For Pale Tentacle, this will set _newlyBirthed.Pale to "tentacle" -->
+					<<set _newlyBirthed[_split[0]] to _split[1].toLowerCase()>>
+				<</if>>
+				<<if !_pregnancy.typesSeen.includes(_split[1])>>
+					<<set _pregnancy.typesSeen.pushUnique(_split[1])>>
+					<<set _newlyBirthed[_split[1]] to true>>
+				<</if>>
+			<<else>>
+				<!-- Creatures without variants -->
+				<<if !_pregnancy.typesSeen.includes(_result.creature)>>
+					<<set _pregnancy.typesSeen.pushUnique(_result.creature)>>
+					<<set _newlyBirthed[_result.creature] to true>>
+				<</if>>
 			<</if>>
 		<</for>>
 	</ul>
-	<<if _vine gte 1 and !$containerVine and $location is "home">>
-		<<set $containerVine to true>>
-		You worry that the vine<<if _vine gte 2>>s<</if>> won't be able to survive without being planted in a better environment, but <<if _vine is 1>>it seems<<else>>they seem<</if>> to be fine in your <<print $container[$location].name>>, writhing around. You suspect <<if _vine is 1>>it's<<else>>they're<</if>> not strictly plant life.
+	<<for _n to 0; _n lt Object.values(_newlyBirthed).length; _n++>>
+		<<switch Object.keys(_newlyBirthed)[_n]>>
+			<<case "Tentacle">>
+				You watch the tentacle in fascination. It writhes around blindly and coils around itself, almost like a snake. It's so energetic, just looking at it makes you feel less tired.
+			<<case "Slime">>
+				The slime doesn't move for a while. You poke at it, a little worried, and it jiggles. It has an indescribable consistency. It looks almost without flaw, and you feel <<if _pregnancy.namesChildren is true>>proud to have birthed<<else>>almost proud to have hosted<</if>> such a creature.
+			<<case "Worm">>
+				Almost immediately, the worm tries to find somewhere to dig. It has little success, and squirms in agitation until you place it in the <<print _container.name.toLowerCase()>>. You feel odd, having <<if _pregnancy.namesChildren is true>>birthed<<else>>hosted<</if>> such a creature.
+			<<case "Lurker">>
+				The lurker moves mainly by crawling, but sometimes hops surprising distances. You quickly place it in the <<print _container.name.toLowerCase()>> before you can lose it.
+			<<case "Vine">>
+				You worry that the vine won't be able to survive without being planted in a better environment, but it seems to be fine in the <<print _container.name.toLowerCase()>>, writhing around. You suspect it's not strictly plant life.
+			<<case "Metal">>
+				Upon closer inspection, the metal <<print _newlyBirthed.Metal>> isn't truly metal. It has a metallic colour and pattern, but it bends and writhes in ways that steel wouldn't be able to. You hope it doesn't need anything in particular to eat.
+			<<case "Pale">>
+				Your hands seem to move on their own, and you find yourself holding the pale <<print _newlyBirthed.Pale>>. It's so pale that it's almost translucent. You feel a twinge of dread, but it's quickly replaced by an odd contentment.
+				<span class="blue">You should be careful deciding whether to keep it.</span>
+			<<default>>
+				<!-- This way, species like Wasp that don't have a unique line don't print <br>s for no reason -->
+				<<continue>>
+		<</switch>>
 		<br><br>
-	<</if>>
-	<<if _metal gte 1 and !$containerMetal and $location is "home">>
-		<<set $containerMetal to true>>
-		Upon closer inspection, the metal tentacle isn't truly metal. It has a metallic colour and pattern, but it bends and writhes in ways that steel wouldn't be able to. You hope it doesn't need anything in particular to eat.
-		<br><br>
-	<</if>>
-	<<if _pale gte 1 and !$containerPale and $location is "home">>
-		<<set $containerPale to true>>
-		Your hands seem to move on their own, and you find yourself holding the pale creature<<if _pale gte 2>>s<</if>>. <<if _pale gte 2>>They're<<else>>It's<</if>> so pale that <<if _pale gte 2>>they're<<else>>it's<</if>> almost translucent. You feel a twinge of dread, but it's quickly replaced by an odd contentment.
-		<span class="blue">You should be careful deciding whether to keep <<if _pale gte 2>>them<<else>>it<</if>>.</span>
+	<</for>>
+	<<if _pregnancy.book is 3 and _pregnancy.typesSeen.length + _pregnancy.variantsSeen.length gt _allSeen>>
+		You write about <<if _pregnancy.namesChildren is true>>your new children<<else>>the new parasites<</if>> in your notebook.
 		<br><br>
 	<</if>>
 	<<if $pregResult.length gt (_container.maxCount - _container.count)>>
@@ -235,7 +264,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 <<widget "PregEventsResult">>
 <<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
 <<set _pregnancy to $sexStats.anus.pregnancy>>
-<<set _container to $container[$location]>>
+<<set _container to $container[$phase]>>
 <<set $parasiteSelectionCount to 0>>
 <<set $parasiteReplaceArray to []>>
 <<set _availableStorage to (_container.maxCount - _container.count)>>
@@ -280,7 +309,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 <<elseif $parasiteSelectionCount gt 0>>
 	Not enough storage for selected amount. Please replace <<number $parasiteSelectionCount-_availableStorage>> <<if _pregnancy.namesChildren is true>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'babies' : 'baby'>><<else>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'parasites' : 'parasite'>><</if>>.
 	<br>
-	<<if ($parasiteSelectionCount - $parasiteReplaceArray.length) is _availableStorage>>
+	<<if ($parasiteSelectionCount - $parasiteReplaceArray.length) lte _availableStorage>>
 		<<if _pregnancy.namesChildren is true>>
 			<<link [[Replace selected babies|PregEventsResult2]]>>
 				<<set $pregChoice to "ReplaceSelected">>
@@ -342,7 +371,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 			<<moveCreature $pregResult[_i] "portable">>
 		<</if>>
 	<</for>>
-	You decide to keep <<number $parasiteSelectionCount>> of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>> and so place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$location].name>> in place of <<number $parasiteReplaceArray.length>> <<if $parasiteReplaceArray.length gt 1>>others<<else>>other<</if>>, while preparing the rest for Doctor Harper.
+	You decide to keep <<number $parasiteSelectionCount>> of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$phase].name.toLowerCase()>> in place of <<number $parasiteReplaceArray.length>> <<if $parasiteReplaceArray.length gt 1>>others<<else>>other<</if>>, while preparing the rest for Doctor Harper.
 	<br><br>
 <<case "KeepSelected">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
@@ -352,13 +381,13 @@ Following the directions from Doctor Harper, you get into position and attempt t
 			<<moveCreature $pregResult[_i] "portable">>
 		<</if>>
 	<</for>>
-	You decide to keep <<number $parasiteSelectionCount>> of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$location].name>> while preparing the rest for Doctor Harper.
+	You decide to keep <<number $parasiteSelectionCount>> of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$phase].name.toLowerCase()>> while preparing the rest for Doctor Harper.
 	<br><br>
 <<case "keepAll">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
 		<<moveCreature $pregResult[_i] "container">>
 	<</for>>
-	You decide to keep all of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and place them in your <<print $container[$location].name>>.
+	You decide to keep all of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and place them in your <<print $container[$phase].name.toLowerCase()>>.
 	<br><br>
 <<case "sellAll">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
@@ -373,6 +402,17 @@ Following the directions from Doctor Harper, you get into position and attempt t
 	<<unset $checkboxResult>><<unset $checkboxReplace>>
 	<<unset $parasiteSelectionCount>><<unset $parasiteReplaceArray>>
 <</link>>
+
+:: Harper Parasite Book
+<<effects>>
+<<set $sexStats.anus.pregnancy.book to 2>>
+Harper nods approvingly. "It's good that you want to know more." <<He>> brings out a rather thick book and shows it to you. "This is a popular reference guide among scientists. It has a lot of information on this subject, but it's property of the hospital. I'm not authorized to lend it out."
+<br><br>
+
+<<He>> thinks for a few seconds. "<span class="gold">The pet shop on High Street may have something.</span> If nothing else, you could pick up a notebook and fill out info you gather yourself."
+<br><br>
+
+<<link [[Next|Pregnancy Discussion]]>><</link>>
 
 
 :: Pregnancy Birth Hospital Passout
