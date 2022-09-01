@@ -7,6 +7,10 @@ const constants = {
 		max: 5,
 		min: -2,
 	},
+	tiredness: {
+		max: 2000,
+		min: 0,
+	},
 };
 
 /* Hoist Constants to the top (For statevars.js) */
