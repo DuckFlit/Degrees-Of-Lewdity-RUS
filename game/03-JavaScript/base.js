@@ -659,3 +659,10 @@ Macro.add("icon", {
 		if (!this.args.includes("nowhitespace")) this.output.append(" ");
 	}
 });
+
+window.pickRandom = function (list) {
+	if (!list)
+		return undefined;
+
+	return list[Math.floor(Math.random() * list.length)];
+}

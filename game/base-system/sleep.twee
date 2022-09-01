@@ -2,6 +2,7 @@
 
 <<widget "sleep">>
 	<<sleephour>>
+	<<ruffleHairFromSleep>>
 <</widget>>
 
 <<widget "sleephour">>
@@ -332,6 +333,29 @@
 	<<set $wraith.nightmare to 2>>
 	<<set $wraith.hunt to 0>>
 	<<set $foresthunt to 0>>
+<</widget>>
+
+<<widget "ruffleHairFromSleep">>
+	<!-- Roll a chance to wake up with ruffled hair the longer you sleep -->
+	<!-- Chance is negligible at under 5 hours of sleep and reaches 40% at 10 hours, 100% at 13 hours -->
+	<!-- Graph: https://www.desmos.com/calculator/gslcapsydv -->
+	<<set _chance = Math.pow($sleepHoursTotal, 4) * 10 / 250000>>
+	<<set _roll = Math.random()>>
+	<<if $debug>>
+		<<print $sleepHoursTotal + " hours: Rolled " + _roll + " vs " + _chance + " chance">>
+	<</if>>
+	<<if _chance > _roll>>
+		<span class="yellow">Your hair is tousled.</span>
+		<<ruffleHair>>
+	<</if>>
+<</widget>>
+
+<<widget "ruffleHair">>
+	<!-- Find a style group of current hair (loose, braid, etc.) and pick a random one from a list of corresponding 'ruffled' styles. If none found then keep current hair -->
+	<<set $hairtype = pickRandom(setup.hair.hairtype.find(x => x.list.contains($hairtype))?.devolve_into) ?? $hairtype>>
+	<<set $fringetype = pickRandom(setup.hair.fringetype.find(x => x.list.contains($fringetype))?.devolve_into) ?? $fringetype>>
+	<<set $tempSavedHairStyles.hairtype = $hairtype>>
+	<<set $tempSavedHairStyles.fringetype = $fringetype>>
 <</widget>>
 
 :: SleepSlimeEventObey
