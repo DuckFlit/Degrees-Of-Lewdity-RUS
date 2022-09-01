@@ -121,10 +121,14 @@
 					<<default>> <<set $_timeStr to "1:00">><<set _pass to 60>>
 				<</switch>>
 
-				<<if $images is 1 and $_plantedPlant.icon>>
-					<img class="tending_icon" @src="`img/misc/icon/tending/` + $_plantedPlant.icon">
+				<<if $leftarm is "bound" and $rightarm is "bound">>
+					<span class="red">Can't pick when your arms are bound.</span>
+				<<else>>
+					<<if $images is 1 and $_plantedPlant.icon>>
+						<img class="tending_icon" @src="`img/misc/icon/tending/` + $_plantedPlant.icon">
+					<</if>>
+					<<link "Pick ($_timeStr)" $passage>><<pass _pass>><<tending_harvest _plantbed>><<clear_plot _plantbed>><</link>>
 				<</if>>
-				<<link "Pick ($_timeStr)" $passage>><<pass _pass>><<tending_harvest _plantbed>><<clear_plot _plantbed>><</link>>
 				<br>
 
 			<<elseif _plantbed.stage is 4>>
@@ -176,9 +180,11 @@
 		<<if $location is "alex_farm" and _plotsToWater.length gte $_hoursUntilAttack>>
 			<span class="pink">You won't have enough time to water all your fields before Remy's arrival.</span>
 		<<else>>
-			<<link "Water all dry beds ($_time)" $passage>>
-				<<tendingWaterAllDryBeds _plotsToWater>><<tiredness _water_needed>><<physique _water_needed>><<tending _water_needed>>
-			<</link>><<gtiredness>><<gtending>>
+			<<if !($leftarm is "bound" and $rightarm is "bound")>>
+				<<link "Water all dry beds ($_time)" $passage>>
+					<<tendingWaterAllDryBeds _plotsToWater>><<tiredness _water_needed>><<physique _water_needed>><<tending _water_needed>>
+				<</link>><<gtiredness>><<gtending>>
+			<</if>>
 		<</if>>
 		<br>
 
@@ -202,10 +208,14 @@
 	<</switch>>
 
 	<<set $_time to getTimeString(_tPass)>>
-	<<link "Water ($_time)" $passage>>
-		<<tending _tStatup>><<pass _tPass>><<set _plantbed.water to 1>><<set $tendingvars.plot_watered to true>>
-		<<tiredness _tStatup>><<physique _tStatup>><<event_trigger>>
-	<</link>><<gtiredness>><<gtending>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">Can't water when your arms are bound.</span>
+	<<else>>
+		<<link "Water ($_time)" $passage>>
+			<<tending _tStatup>><<pass _tPass>><<set _plantbed.water to 1>><<set $tendingvars.plot_watered to true>>
+			<<tiredness _tStatup>><<physique _tStatup>><<event_trigger>>
+		<</link>><<gtiredness>><<gtending>>
+	<</if>>
 <</widget>>
 
 <<widget "tendingWaterAllDryBeds">>
@@ -288,52 +298,57 @@
 	<<if $farm_attack_timer is 0>>
 		<<set $_timeUntilAttack to ((23 - $hour) * 60) + (60 - $minute)>>
 	<</if>>
-	<<if $location is "alex_farm" and _baseTime gte $_timeUntilAttack>>
-		<span class="pink">Not enough time to till the field before Remy's arrival.</span>
-	<<else>>
-		<<capture _baseTiredsness _baseTime _plantbed>>
-			<<link "Till (_timeString)" $passage>>
-				<<set $tendingvars.plot_tilled to true>>
-				<<tiredness _baseTiredsness>><<physique _baseTiredsness>>
-				<<pass _baseTime>>
-				<<if $location is "farm">>
-					<<farm_count _baseTime>>
-				<</if>>
-				<<set _plantbed.till to 1>>
-			<</link>><<gtiredness>>
-		<</capture>>
-	<</if>>
-	<br>
-	<<if $fertiliser.current gte 1 and _plantbed.quality lt 4 and currentSkillValue('tending') gte 400>>
-		<<set _baseTimeFert to Math.floor(_baseTime * 1.5)>>
-		<<set _timeString to getTimeString(_baseTimeFert)>>
-		<<set _fertTiredness to Math.floor(_baseTiredsness * 1.5)>>
-		<<capture _baseTimeFert _fertTiredness _plantbed>>
-			<<link "Till and apply fertiliser (_timeString)" $passage>>
-				/* Till */
-				<<set $tendingvars.plot_tilled_fertiliser to true>>
-				<<tiredness _fertTiredness>><<physique _fertTiredness>>
-				<<pass _baseTimeFert>>
-				<<if $location is "farm">>
-					<<farm_count _baseTimeFert>>
-				<</if>>
-				<<set _plantbed.till to 1>>
-
-				/* Fertilise */
-				<<set $fertiliser.current-->><<set $fertiliser.used++>>
-				<<set _plantbed.quality++>>
-				<<if !$backgroundTraits.includes("greenthumb")>>
-					<<if _plantbed.baseQuality is undefined>>
-						<<set _plantbed.baseQuality to clone(_plantbed.quality - 1)>>
-					<</if>>
-					<<set _plantbed.fertiliserDecay to 2>>
-					<<if _plantbed.size isnot "large">>
-						<<set _plantbed.fertiliserDecay++>>
-					<</if>>
-				<</if>>
-			<</link>><<gtiredness>>
-		<</capture>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">Can't till when your arms are bound.</span>
 		<br>
+	<<else>>
+		<<if $location is "alex_farm" and _baseTime gte $_timeUntilAttack>>
+			<span class="pink">Not enough time to till the field before Remy's arrival.</span>
+		<<else>>
+			<<capture _baseTiredsness _baseTime _plantbed>>
+				<<link "Till (_timeString)" $passage>>
+					<<set $tendingvars.plot_tilled to true>>
+					<<tiredness _baseTiredsness>><<physique _baseTiredsness>>
+					<<pass _baseTime>>
+					<<if $location is "farm">>
+						<<farm_count _baseTime>>
+					<</if>>
+					<<set _plantbed.till to 1>>
+				<</link>><<gtiredness>>
+			<</capture>>
+		<</if>>
+		<br>
+		<<if $fertiliser.current gte 1 and _plantbed.quality lt 4 and currentSkillValue('tending') gte 400>>
+			<<set _baseTimeFert to Math.floor(_baseTime * 1.5)>>
+			<<set _timeString to getTimeString(_baseTimeFert)>>
+			<<set _fertTiredness to Math.floor(_baseTiredsness * 1.5)>>
+			<<capture _baseTimeFert _fertTiredness _plantbed>>
+				<<link "Till and apply fertiliser (_timeString)" $passage>>
+					/* Till */
+					<<set $tendingvars.plot_tilled_fertiliser to true>>
+					<<tiredness _fertTiredness>><<physique _fertTiredness>>
+					<<pass _baseTimeFert>>
+					<<if $location is "farm">>
+						<<farm_count _baseTimeFert>>
+					<</if>>
+					<<set _plantbed.till to 1>>
+
+					/* Fertilise */
+					<<set $fertiliser.current-->><<set $fertiliser.used++>>
+					<<set _plantbed.quality++>>
+					<<if !$backgroundTraits.includes("greenthumb")>>
+						<<if _plantbed.baseQuality is undefined>>
+							<<set _plantbed.baseQuality to clone(_plantbed.quality - 1)>>
+						<</if>>
+						<<set _plantbed.fertiliserDecay to 2>>
+						<<if _plantbed.size isnot "large">>
+							<<set _plantbed.fertiliserDecay++>>
+						<</if>>
+					<</if>>
+				<</link>><<gtiredness>>
+			<</capture>>
+			<br>
+		<</if>>
 	<</if>>
 <</widget>>
 

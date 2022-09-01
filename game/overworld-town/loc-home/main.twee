@@ -617,7 +617,12 @@ You are in the bathroom.
 <<if $stress gte $stressmax>>
 	<<passouthome>>
 <<else>>
-	<<ind>><<link [[Have a bath (0:30)->Bath]]>><<strip>><<pass 30>><<stress -6>><<set $hygiene to 0>><</link>><<lstress>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<<set _clothed = ![V.worn.upper.name, V.worn.lower.name, V.worn.under_upper.name, V.worn.under_lower.name, V.worn.over_upper.name, V.worn.over_lower.name].every(x => x == 'naked')>>
+		<<ind>><<link [["Have a bath " + (_clothed ? " in clothes " : "") + "(0:30)"->Bath]]>><<water>><<pass 30>><<stress -6>><<set $hygiene to 0>><</link>><<lstress>>
+	<<else>>
+		<<ind>><<link [[Have a bath (0:30)->Bath]]>><<strip>><<pass 30>><<stress -6>><<set $hygiene to 0>><</link>><<lstress>>
+	<</if>>
 	<br>
 	<!-- Check if there's any hair-->
 	<<if $pbdisable is "f" and ($pblevel gte 2 or $pbstrip gte 1 or $pblevelballs gte 2)>>
@@ -1287,7 +1292,11 @@ As you remove the plug to drain the water, you feel something probe your <<genit
 		<<if $exhibitionism gte 75 and $uncomfortable.nude is false>>
 			You yelp in surprise, but make no effort to hide your <<lewdness>>. They stare at you with wide eyes, surprised you are letting them. The <<person1>><<person>> grins and closes the door.
 		<<else>>
-			You cover your <<lewdness>>. They stare at you with wide eyes. The <<person1>><<person>> grins and closes the door.
+			<<if $leftarm is "bound" and $rightarm is "bound">>
+				You want to cover your <<lewdness>>, but with <span class="red">your arms bound</span> you can't. You feel deep embarrassement and your face reddens.<<stress 6>> They stare at you with wide eyes. The <<person1>><<person>> grins and closes the door.
+			<<else>>
+				You cover your <<lewdness>>. They stare at you with wide eyes. The <<person1>><<person>> grins and closes the door.
+			<</if>>
 		<</if>>
 			<br><br>
 
@@ -1309,7 +1318,11 @@ As you remove the plug to drain the water, you feel something probe your <<genit
 		<<if $exhibitionism gte 75 and $uncomfortable.nude is false>>
 			You yelp in surprise, but make no effort to hide your <<lewdness>>. They stare at you with wide eyes, surprised you are letting them. The <<person1>><<person>> grins and closes the door.
 		<<else>>
-			You cover your <<lewdness>>. They stare at you with wide eyes. The <<person1>><<person>> grins and closes the door.
+			<<if $leftarm is "bound" and $rightarm is "bound">>
+				You want to cover your <<lewdness>>, but with <span class="red">your arms bound</span> you can't. You feel deep embarrassement and your face reddens.<<stress 6>> They stare at you with wide eyes. The <<person1>><<person>> grins and closes the door.
+			<<else>>
+				You cover your <<lewdness>>. They stare at you with wide eyes. The <<person1>><<person>> grins and closes the door.
+			<</if>>
 		<</if>>
 
 		<<if $player.penisExist and ($player.penissize lte 1 or $player.penissize is 4) and random(0,9) gte 6>>
@@ -1338,27 +1351,35 @@ You wash until you're squeaky clean.<<wash>>
 :: Bath Finish
 <<effects>><<set $location to "home">><<set $outside to 0>>
 
-Your skin is still damp.
+<<if $upperwetstage >= 3 or $lowerwetstage >= 3 or $underupperwetstage >= 3 or $underlowerwetstage >= 3 or $overupperwetstage >= 3 or $overlowerwetstage >= 3>>
+	Your clothes are drenched, water drips from you onto the floor.
+<<else>>
+	Your skin is still damp.
+<</if>>
 <br><br>
-<<link [[Dress as you were|Bathroom]]>><<clotheson>><</link>>
-<br>
-<<link [[Wrap yourself in a towel|Bathroom]]>>
-	<<if $player.gender == "f" or $player.breastsize > 0>>
-		<<set $wear_upper = "large_towel">>
-	<<else>>
-		<<set $wear_lower = "towel">>
-	<</if>>
-	<<returnCarried>>
-	<<wardrobewear>>
-<</link>>
-
-<<if $wardrobe.upper.findIndex(x => x.name == "bathrobe") >= 0 or $carried.upper.name == "bathrobe">>
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	<<link [[Next|Bathroom]]>><</link>>
+<<else>>
+	<<link [[Dress as you were|Bathroom]]>><<clotheson>><</link>>
 	<br>
-	<<link [[Put on a bathrobe|Bathroom]]>>
+	<<link [[Wrap yourself in a towel|Bathroom]]>>
+		<<if $player.gender == "f" or $player.breastsize > 0>>
+			<<set $wear_upper = "large_towel">>
+		<<else>>
+			<<set $wear_lower = "towel">>
+		<</if>>
 		<<returnCarried>>
-		<<set $wear_upper = $wardrobe.upper.findIndex(x => x.name == "bathrobe")>>
 		<<wardrobewear>>
 	<</link>>
+
+	<<if $wardrobe.upper.findIndex(x => x.name == "bathrobe") >= 0 or $carried.upper.name == "bathrobe">>
+		<br>
+		<<link [[Put on a bathrobe|Bathroom]]>>
+			<<returnCarried>>
+			<<set $wear_upper = $wardrobe.upper.findIndex(x => x.name == "bathrobe")>>
+			<<wardrobewear>>
+		<</link>>
+	<</if>>
 <</if>>
 
 :: Passout home
@@ -2698,60 +2719,67 @@ You grab your clothes and dress with haste.
 
 :: Shave
 <<effects>>
-<<dontHideForNow>><<shavestrip>>
-You take off your clothes and look at your <<genitals>>.
-<br>
-<<if $worn.genitals.name is "chastity belt" or $worn.genitals.name is "gold chastity belt">>
-The belt fits snug against your body and it seems that reaching pubes with a razor is almost impossible.
-<br>
-<<link [[Dress up->Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+<<dontHideForNow>>
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	<span class="red">Both of your arms are bound</span> and you find it difficult to do anything about your pubes this way.
+	<br>
+	<<link [[Back->Bathroom]]>><<dontHideRevert>><</link>>
 <<else>>
-<<if $worn.genitals.name is "chastity cage">>
-Your penis is locked inside the cage. Shaving around it will be a bit more tricky, but that's not a big deal.
-<br>
-<</if>>
-<<if $pblevel gte 2 or $pbstrip gte 1 or $pblevelballs gte 2>>
-	<<link [[Shave clean (0:15)->Shave clean]]>><<pass 15>><<arousal 100>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<set $pbstrip to 0>><<set $makeup.pbcolour to 0>><</link>>
+	<<shavestrip>>
+	You take off your clothes and look at your <<genitals>>.
 	<br>
-<</if>>
-<<if $pblevel gte 5 or $pbstrip gte 2 or ($pbstrip is 1 and $pblevel gte 2)>>
-	<<link [[Form a landing strip (0:15)->Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat landing strip">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 1>><</link>>
+	<<if $worn.genitals.name is "chastity belt" or $worn.genitals.name is "gold chastity belt">>
+	The belt fits snug against your body and it seems that reaching pubes with a razor is almost impossible.
 	<br>
-<</if>>
-<<if $pblevel gte 5 or $pbstrip gte 3 or ($pbstrip gte 2 and $pblevel gte 2)>>
-	<<link [[Form a heart (0:15)->Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "cute heart shape">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 2>><</link>>
+	<<link [[Dress up->Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+	<<else>>
+	<<if $worn.genitals.name is "chastity cage">>
+	Your penis is locked inside the cage. Shaving around it will be a bit more tricky, but that's not a big deal.
 	<br>
-<</if>>
-<<if $pblevel gte 5 or $pbstrip gte 4 or ($pbstrip gte 3 and $pblevel gte 2)>>
-	<<link [[Form a triangle (0:15)->Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat triangle">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 3>><</link>>
-	<br>
-<</if>>
-<<if $player.ballsExist is true>>
-	<<if $pblevel gte 2 or $pbstrip gte 1>>
-		<<link [[Shave only pubis (0:10)->Shave pubis]]>><<pass 10>><<arousal 50>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 0>><<if $pblevelballs is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
+	<</if>>
+	<<if $pblevel gte 2 or $pbstrip gte 1 or $pblevelballs gte 2>>
+		<<link [[Shave clean (0:15)->Shave clean]]>><<pass 15>><<arousal 100>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<set $pbstrip to 0>><<set $makeup.pbcolour to 0>><</link>>
 		<br>
 	<</if>>
-	<<if $pblevelballs gte 3>>
-		<<link [[Shave only balls (0:05)->Shave balls]]>><<pass 5>><<arousal 50>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<if $pblevel is 0 and $pbstrip is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
+	<<if $pblevel gte 5 or $pbstrip gte 2 or ($pbstrip is 1 and $pblevel gte 2)>>
+		<<link [[Form a landing strip (0:15)->Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat landing strip">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 1>><</link>>
 		<br>
 	<</if>>
-<</if>>
-<<if $pblevel gt 5 or $pblevelballs gt 5>>
-	<<link [[Trim short (0:10)->Shave trim]]>><<pass 10>><<arousal 100>>
-		<<if $pblevel gte 5>>
-			<<set $pblevel to 5>><<set $pbgrowth to 7>><<set $pbstrip to 0>>
+	<<if $pblevel gte 5 or $pbstrip gte 3 or ($pbstrip gte 2 and $pblevel gte 2)>>
+		<<link [[Form a heart (0:15)->Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "cute heart shape">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 2>><</link>>
+		<br>
+	<</if>>
+	<<if $pblevel gte 5 or $pbstrip gte 4 or ($pbstrip gte 3 and $pblevel gte 2)>>
+		<<link [[Form a triangle (0:15)->Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat triangle">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 3>><</link>>
+		<br>
+	<</if>>
+	<<if $player.ballsExist is true>>
+		<<if $pblevel gte 2 or $pbstrip gte 1>>
+			<<link [[Shave only pubis (0:10)->Shave pubis]]>><<pass 10>><<arousal 50>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 0>><<if $pblevelballs is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
+			<br>
 		<</if>>
-		<<if $pblevelballs gte 5>>
-			<<set $pblevelballs to 5>><<set $pbgrowthballs to 10>>
+		<<if $pblevelballs gte 3>>
+			<<link [[Shave only balls (0:05)->Shave balls]]>><<pass 5>><<arousal 50>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<if $pblevel is 0 and $pbstrip is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
+			<br>
 		<</if>>
-	<</link>>
-	<br>
+	<</if>>
+	<<if $pblevel gt 5 or $pblevelballs gt 5>>
+		<<link [[Trim short (0:10)->Shave trim]]>><<pass 10>><<arousal 100>>
+			<<if $pblevel gte 5>>
+				<<set $pblevel to 5>><<set $pbgrowth to 7>><<set $pbstrip to 0>>
+			<</if>>
+			<<if $pblevelballs gte 5>>
+				<<set $pblevelballs to 5>><<set $pbgrowthballs to 10>>
+			<</if>>
+		<</link>>
+		<br>
+	<</if>>
+	<<if $worn.genitals.name isnot "chastity belt">>
+		<<link [[Dye pubic hair->Dye pubic hair]]>><</link>>
+		<br>
+	<</if>>
+	<<link [[Don't shave anything->Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
 <</if>>
-<<if $worn.genitals.name isnot "chastity belt">>
-	<<link [[Dye pubic hair->Dye pubic hair]]>><</link>>
-	<br>
-<</if>>
-<<link [[Don't shave anything->Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
 <</if>>
 
 :: Shave clean
