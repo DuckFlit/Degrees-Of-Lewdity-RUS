@@ -510,8 +510,16 @@ const importSettingsData = function (data) {
 			const listKey = Object.keys(listObject);
 			const namedObjects = ["map", "skinColor", "shopDefaults"];
 			// correct swapped min/max values
-			if (S.general.breastsizemin > S.general.breastsizemax){let temp = S.general.breastsizemin; S.general.breastsizemin = S.general.breastsizemax, S.general.breastsizemax = temp};
-			if (S.general.penissizemin > S.general.penissizemax){let temp = S.general.penissizemin; S.general.penissizemin = S.general.penissizemax, S.general.penissizemax = temp};
+			if (S.general.breastsizemin > S.general.breastsizemax) {
+				const temp = S.general.breastsizemin;
+				S.general.breastsizemin = S.general.breastsizemax;
+				S.general.breastsizemax = temp;
+			}
+			if (S.general.penissizemin > S.general.penissizemax) {
+				const temp = S.general.penissizemin;
+				S.general.penissizemin = S.general.penissizemax;
+				S.general.penissizemax = temp;
+			}
 
 			for (let i = 0; i < listKey.length; i++) {
 				if (namedObjects.includes(listKey[i]) && S.general[listKey[i]] != null) {

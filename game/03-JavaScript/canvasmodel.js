@@ -32,17 +32,16 @@
 
 /**
  * @typedef {object} CanvasModelLayer
- *
  * @property {boolean} [show] Show this layer, default false (if no show:true or showfn present, needs explicit <<showlayer>>). Do not use undefined/null/0/"" to hide layer!
- * @property {string} [src] Image path. Either `src` or `srcfn` is required
- * @property {number} [z] Z-index (rendering order), higher=above, lower=below. Either `z` of `zfn` is required
- * @property {number} [alpha] Layer opacity, from 0 (invisible) to 1 (opaque, default)
- * @property {boolean} [desaturate] Convert image to grayscale (before recoloring), default false
- * @property {number} [brightness] Adjust brightness, from -1 to +1 (before recoloring), default 0
- * @property {number} [contrast] Adjust contrast (before recoloring), default 1
- * @property {string} [blendMode] Recoloring mode (see docs for globalCompositeOperation; "hard-light", "multiply" and "screen" ), default none
- * @property {string|object} [blend] Color for recoloring, CSS color string or gradient spec (see model.d.ts)
- * @property {string} [masksrc] Mask image path. If present, only parts where mask is opaque will be displayed
+ * @property {string} [src] Image path. Either `src` or `srcfn` is required.
+ * @property {number} [z] Z-index (rendering order), higher=above, lower=below. Either `z` of `zfn` is required.
+ * @property {number} [alpha] Layer opacity, from 0 (invisible) to 1 (opaque, default).
+ * @property {boolean} [desaturate] Convert image to grayscale (before recoloring), default false.
+ * @property {number} [brightness] Adjust brightness, from -1 to +1 (before recoloring), default 0.
+ * @property {number} [contrast] Adjust contrast (before recoloring), default 1.
+ * @property {string} [blendMode] Recoloring mode (see docs for globalCompositeOperation; "hard-light", "multiply" and "screen" ), default none.
+ * @property {string|object} [blend] Color for recoloring, CSS color string or gradient spec (see model.d.ts).
+ * @property {string} [masksrc] Mask image path. If present, only parts where mask is opaque will be displayed.
  * @property {string} [animation] Name of animation to apply, default none
  * @property {number} [frames] Frame numbers used to display static images, array of subsprite indices. For example, if model frame count is 6 but layer has only 3 subsprites, default frames would be [0, 0, 1, 1, 2, 2].
  * @property {string[]} [filters] Names of filters that should be applied to the layer; filters themselves are taken from model options
@@ -73,26 +72,26 @@
 
 /**
  * @typedef {object} CanvasModelOptions
- * @property {string} name Model name, for debugging
- * @property {number} width Frame width
- * @property {number} height Frame height
- * @property {number} frames Number of frames for CSS animation
- * @property {object<string,CanvasModelLayer>} layers Layers (by name)
- * @property {function} [generatedOptions] Function ()=>string[] names of generated options
- * @property {function} [defaultOptions] Function ()=>object returning default options
+ * @property {string} name Model name, for debugging.
+ * @property {number} width Frame width.
+ * @property {number} height Frame height.
+ * @property {number} frames Number of frames for CSS animation.
+ * @property {Object<string, CanvasModelLayer>} layers Layers (by name).
+ * @property {Function} [generatedOptions] Function ()=>string[] names of generated options.
+ * @property {Function} [defaultOptions] Function ()=>object returning default options.
  * @property {function} [preprocess] Preprocessing function (options)=>void to generate temp options
  */
 
 // Consider doing proper class inheritance
 /**
- * @property {string} name Model name, for debugging
- * @property {number} width Frame width
- * @property {number} height Frame height
- * @property {number} frames Number of frames for CSS animation
- * @property {function} defaultOptions Function ()=>object returning default options
- * @property {string[]} generatedOptions Names of generated options
- * @property {object<string,CanvasModelLayer>} layers Layers (by name)
- * @property {CanvasModelLayer[]} layerList Layers
+ * @property {string} name Model name, for debugging.
+ * @property {number} width Frame width.
+ * @property {number} height Frame height.
+ * @property {number} frames Number of frames for CSS animation.
+ * @property {Function} defaultOptions Function ()=>object returning default options.
+ * @property {string[]} generatedOptions Names of generated options.
+ * @property {Object<string, CanvasModelLayer>} layers Layers (by name).
+ * @property {CanvasModelLayer[]} layerList Layers.
  * @property {CanvasRenderingContext2D} canvas
  */
 window.CanvasModel = class CanvasModel {
@@ -104,22 +103,22 @@ window.CanvasModel = class CanvasModel {
 		this.width = options.width;
 		this.height = options.height;
 		this.frames = options.frames || 1;
-		if ('generatedOptions' in options) this.generatedOptions = options.generatedOptions;
-		if ('defaultOptions' in options) this.defaultOptions = options.defaultOptions;
-		if ('preprocess' in options) this.preprocess = options.preprocess;
+		if ("generatedOptions" in options) this.generatedOptions = options.generatedOptions;
+		if ("defaultOptions" in options) this.defaultOptions = options.defaultOptions;
+		if ("preprocess" in options) this.preprocess = options.preprocess;
 		this.layers = clone(options.layers);
-		for (let name in this.layers) {
-			if (!this.layers.hasOwnProperty(name)) continue;
-			let layer = this.layers[name];
+		for (const name in this.layers) {
+			if (!Object.hasOwn(this.layers, name)) continue;
+			const layer = this.layers[name];
 			layer.name = name;
 			assignDefaults(layer, {
 				show: false, // By default, all layers have to be enabled manually
 				brightness: 0.0,
 				contrast: 1.0,
-				blend: '',
-				blendMode: '',
+				blend: "",
+				blendMode: "",
 				alpha: 1.0,
-				desaturate: false
+				desaturate: false,
 			});
 			layer.defaultOptions = clone(layer); // deep copy
 		}
@@ -138,8 +137,8 @@ window.CanvasModel = class CanvasModel {
 
 	defaultOptions() {
 		return {
-			filters: {}
-		}
+			filters: {},
+		};
 	}
 
 	createCanvas(cssAnimated) {
@@ -148,23 +147,23 @@ window.CanvasModel = class CanvasModel {
 
 	reset() {
 		this.options = {};
-		for (let layer of this.layerList) {
+		for (const layer of this.layerList) {
 			// Reset options
 			jQuery.extend(true, layer, layer.defaultOptions);
 		}
 	}
 
 	showLayer(name, filters) {
-		let layer = this.layers[name];
+		const layer = this.layers[name];
 		if (!layer) {
 			console.error("Layer not found: " + this.name + "/" + name);
 			return;
 		}
 		layer.show = true;
-		for (let filter of filters) {
+		for (const filter of filters) {
 			if (filter === null || filter === undefined) continue; // null & undefined are allowed as "empty filter"
-			if (typeof filter !== 'object') {
-				console.error("Invalid layer " + name + " filter " + typeof (filter), filter);
+			if (typeof filter !== "object") {
+				console.error("Invalid layer " + name + " filter " + typeof filter, filter);
 				continue;
 			}
 			Object.assign(layer, filter);
@@ -172,12 +171,13 @@ window.CanvasModel = class CanvasModel {
 	}
 
 	/**
-	 * Update layers according to options and render them as static image
-	 * @param {CanvasRenderingContext2D} canvas Canvas to render on (can be created with {@link createCanvas})
-	 * @param {object} options Options to use when rendering model
-	 * @param [listener] Listener for Renderer events
+	 * Update layers according to options and render them as static image.
+	 *
+	 * @param {CanvasRenderingContext2D} canvas Canvas to render on (can be created with {@link createCanvas}).
+	 * @param {object} options Options to use when rendering model.
+	 * @param [listener] Listener for Renderer events.
 	 */
-	render(canvas,options,listener) {
+	render(canvas, options, listener) {
 		if (typeof options === "undefined") options = this.options;
 		this.canvas = canvas;
 		this.options = options;
@@ -187,11 +187,12 @@ window.CanvasModel = class CanvasModel {
 	}
 
 	/**
-	 * Update layers according to options and animate them
-	 * @param {CanvasRenderingContext2D} canvas Canvas to render on (can be created with {@link createCanvas})
-	 * @param {object} options Options to use when rendering model
-	 * @param [listener] Listener for Renderer events
-	 * @return {AnimatingCanvas} AnimatingCanvas object
+	 * Update layers according to options and animate them.
+	 *
+	 * @param {CanvasRenderingContext2D} canvas Canvas to render on (can be created with {@link createCanvas}).
+	 * @param {object} options Options to use when rendering model.
+	 * @param [listener] Listener for Renderer events.
+	 * @returns {AnimatingCanvas} AnimatingCanvas object.
 	 */
 	animate(canvas, options, listener) {
 		this.canvas = canvas;
@@ -202,51 +203,56 @@ window.CanvasModel = class CanvasModel {
 	}
 
 	/**
-	 * Redraw the model onto same canvas
+	 * Redraw the model onto same canvas.
 	 */
 	redraw() {
 		if (!this.canvas) {
-			Errors.report("CanvasModel.redraw() called but model was never rendered!")
+			Errors.report("CanvasModel.redraw() called but model was never rendered!");
 			return;
 		}
 		Renderer.lastModel = this;
 		if (this.animated) {
-			return Renderer.animateLayers(this.canvas,
+			return Renderer.animateLayers(
+				this.canvas,
 				this.compile(this.options),
 				this.listener,
-				true);
+				true
+			);
 		} else {
-			return Renderer.composeLayers(this.canvas,
+			return Renderer.composeLayers(
+				this.canvas,
 				this.compile(this.options),
-				this.canvas.canvas.width/this.width,
-				this.listener);
+				this.canvas.canvas.width / this.width,
+				this.listener
+			);
 		}
 	}
 
 	/**
 	 * Pre-process options. Typically you calculate some expression here and store them as generated options
 	 * Override in subclass.
-	 * @param options Model options
+	 *
+	 * @param options Model options.
 	 */
-	preprocess(options) {
-	}
+	preprocess(options) {}
 
 	/**
-	 * Compile list of layers according to options
-	 * @param options Model options
-	 * @return {CompositeLayerSpec[]} layers
+	 * Compile list of layers according to options.
+	 *
+	 * @param options Model options.
+	 * @returns {CompositeLayerSpec[]} Layers.
 	 */
 	compile(options) {
 		const debug = V.debug;
-		if (!options) options = {filters: {}};
-		if (!('filters' in options)) options.filters = {};
+		if (!options) options = { filters: {} };
+		if (!("filters" in options)) options.filters = {};
 		try {
 			this.preprocess(options);
 		} catch (e) {
 			console.error(e);
-			throw "Error in model preprocessing: "+e.stack
+			throw new Error("Error in model preprocessing: " + e.stack);
 		}
-		for (let layer of this.layerList) {
+		for (const layer of this.layerList) {
 			// Reset some options
 			layer.brightness = layer.defaultOptions.brightness;
 			layer.contrast = layer.defaultOptions.contrast;
@@ -267,27 +273,30 @@ window.CanvasModel = class CanvasModel {
 				// This is why we eval all properties in debug mode, but ignore their errors
 				return;
 			}
-			let fnkey = propname + "fn";
+			const fnkey = propname + "fn";
 			if (fnkey in layer) {
 				try {
 					layer[propname] = layer[fnkey](options);
 				} catch (e) {
 					if (layer.show) {
-						console.error("Error evaluating layer " + layer.name + " property " + propname,)
+						console.error(
+							"Error evaluating layer " + layer.name + " property " + propname
+						);
 					}
 				}
 			}
 		}
 
-		for (let layer of this.layerList) {
+		for (const layer of this.layerList) {
 			propeval(layer, "show");
 			propeval(layer, "src");
 			if (!layer.src) {
-				layer.src = ''; // force string value
+				layer.src = ""; // force string value
 				layer.show = false;
 			}
 			propeval(layer, "z");
-			if (typeof layer.z !== 'number' && layer.show !== false) console.error("Layer " + layer.name + " missing property z");
+			if (typeof layer.z !== "number" && layer.show !== false)
+				console.error("Layer " + layer.name + " missing property z");
 			propeval(layer, "alpha");
 			propeval(layer, "blendMode");
 			propeval(layer, "blend");
@@ -302,8 +311,8 @@ window.CanvasModel = class CanvasModel {
 			propeval(layer, "width");
 			propeval(layer, "height");
 			if (layer.show !== false && layer.filters) {
-				for (let filterName of layer.filters) {
-					let filter = options.filters[filterName];
+				for (const filterName of layer.filters) {
+					const filter = options.filters[filterName];
 					if (!filter) {
 						// console.warn("Layer " + layer.name + " needs filter " + filterName + " but it is not provided");
 						continue;
@@ -314,27 +323,28 @@ window.CanvasModel = class CanvasModel {
 		}
 		return this.layerList;
 	}
-}
+};
 
 /**
- * @type {object<string,CanvasModelOptions>}
+ * @type {Object<string, CanvasModelOptions>}
  */
-Renderer.CanvasModels = {}
+Renderer.CanvasModels = {};
 /**
- * @type {object<string,object<string,CanvasModel>>}
+ * @type {Object<string, Object<string, CanvasModel>>}
  */
-Renderer.CanvasModelCaches = {}
+Renderer.CanvasModelCaches = {};
 /**
  * Find or create new CanvasModel.
- * @param {string} modelName CanvasModel name in Renderer.CanvasModels
+ *
+ * @param {string} modelName CanvasModel name in Renderer.CanvasModels.
  * @param {string} [slot] Cache id to speed up rendering between passages.
- * @return {CanvasModel}
+ * @returns {CanvasModel}
  */
-Renderer.locateModel = function(modelName, slot) {
-	let options = Renderer.CanvasModels[modelName];
+Renderer.locateModel = function (modelName, slot) {
+	const options = Renderer.CanvasModels[modelName];
 	if (!options) {
-		Errors.report("Requested non-existing model "+modelName);
-		return new CanvasModel({name:"empty",width:1,height:1,layers:{}});
+		Errors.report("Requested non-existing model " + modelName);
+		return new CanvasModel({ name: "empty", width: 1, height: 1, layers: {} });
 	}
 	if (!slot) {
 		return new CanvasModel(options);
@@ -350,5 +360,4 @@ Renderer.locateModel = function(modelName, slot) {
 		cache[slot] = model;
 		return model;
 	}
-}
-
+};

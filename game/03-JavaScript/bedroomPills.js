@@ -81,7 +81,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/bottomBlocker.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["bottom growth"].doseTaken === 0 && V.sexStats.pills["pills"]["bottom reduciton"].doseTaken === 0) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["bottom growth"].doseTaken === 0 && V.sexStats.pills["pills"]["bottom reduction"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -132,7 +132,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/breastBlocker.png',
 		display_condition: function(){return (this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["breast growth"].doseTaken === 0 && V.sexStats.pills["pills"]["breast reduciton"].doseTaken === 0) ? 1 : 0},
+		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["breast growth"].doseTaken === 0 && V.sexStats.pills["pills"]["breast reduction"].doseTaken === 0) ? 1 : 0},
 		effects:[]
 	},
 	{
@@ -183,7 +183,7 @@ setup.pills = [
 		overdose: function(){return V.sexStats.pills["pills"][this.name].overdose},
 		icon: 'img/misc/icon/penisBlocker.png',
 		display_condition: function(){return (V.player.penisExist && this.owned() > 0) ? 1 : 0},
-		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["penis growth"].doseTaken === 0 && V.sexStats.pills["pills"]["penis reduciton"].doseTaken === 0)},
+		take_condition: function(){return (this.doseTaken() === 0 && V.sexStats.pills["pills"]["penis growth"].doseTaken === 0 && V.sexStats.pills["pills"]["penis reduction"].doseTaken === 0)},
 		effects:[]
 	},
 	{
@@ -319,7 +319,7 @@ window.onHomePillItemClick = function(item_name) {
 					</div>
 				</div>
 				`
-				window.toggleWhatNeedsToBeToggled(item)
+				window.initPillContextButtons(item)
 				document.getElementById("hpi_desc_img").innerHTML = `<img` + ((item.shape == "galenic") ? ` style="margin-left: 17%;"` : "") + ` src="` + item.icon + `"></img>` +
 				`<div id="hpi_indicator" class="hpi_indicator"></div>`
 				window.addIndicators(item);
@@ -335,22 +335,30 @@ window.addIndicators = function(item){ // Indicators are the "++Control" and "+A
 	}
 }
 
-window.toggleWhatNeedsToBeToggled = function(item){
-	document.getElementById("hpi_take_every_morning").innerHTML = (item.autoTake()) ? "Stop taking them" : "Take every morning"
-	if (item.type == "asylum" || item.type == "harper"){
-		document.getElementById("hpi_take_every_morning").className = "hidden" // prevent from Take every Morning option to show for those type of pills
-		document.getElementById("hpi_take_pills").classList.add("hpi_take_me_single")
-	}
-	document.getElementById("hpi_take_pills").innerHTML = "Take pill"
-	if (document.getElementById("hpi_doseTaken") != undefined)
-		document.getElementById("hpi_doseTaken").outerHTML = `<span id="hpi_doseTaken" style="font-size: 0.88em;color: #979797;"> [` + item.doseTaken() + ` Taken]</span>` // Display today taken doses for specific pill
-	else
-		document.getElementById("hpi_take_pills").outerHTML += `<span id="hpi_doseTaken" style="font-size: 0.88em;color: #979797;"> [` + item.doseTaken() + ` Taken]</span>` // Display today taken doses for specific pill
-	if (item.take_condition() == 0){
-		document.getElementById("hpi_take_pills").classList.add("hpi_greyed_out")
-		document.getElementById("hpi_take_pills").onclick = "" // disable "Take Pill" button
-	}
-}
+window.initPillContextButtons = function(item){
+    // create button to "Take everyone morning" / "Stop taking them" (every morning)
+    document.getElementById("hpi_take_every_morning").innerHTML = (item.autoTake()) ? "Stop taking them" : "Take every morning"
+    
+    // special case if pill type is "asylum" or "harper"
+    if (item.type == "asylum" || item.type == "harper"){
+        document.getElementById("hpi_take_every_morning").className = "hidden" // prevent 'Take every Morning' option to be displayed for those type of pills
+        document.getElementById("hpi_take_pills").classList.add("hpi_take_me_single") // readapt css since there's only one button now
+    }
+    //  Add 'Take pill' button
+    document.getElementById("hpi_take_pills").innerHTML = "Take pill"
+
+    // If the button doesnt exist, create it. If it exists, display the right dose Taken for that pill
+    if (document.getElementById("hpi_doseTaken") != undefined)
+        document.getElementById("hpi_doseTaken").outerHTML = `<span id="hpi_doseTaken" style="font-size: 0.88em;color: #979797;"> [` + item.doseTaken() + ` Taken]</span>` // Display today taken doses for specific pill
+    else
+        document.getElementById("hpi_take_pills").outerHTML += `<span id="hpi_doseTaken" style="font-size: 0.88em;color: #979797;"> [` + item.doseTaken() + ` Taken]</span>` // Display today taken doses for specific pill
+    
+    // Check if the player meets the criteria to take the pill.
+    if (item.take_condition() == 0){
+        document.getElementById("hpi_take_pills").classList.add("hpi_greyed_out") // grey the "Take Pill" button out
+        document.getElementById("hpi_take_pills").onclick = "" // disable "Take Pill" onclick event.
+    }
+};
 
 window.setLastTaken = function(type, subtype, fullname=null) {
 	if (fullname != null){
@@ -436,7 +444,7 @@ window.onAutoTakeClick = function(item_name, item_type){
 	for (let item in setup.pills){
 		if (setup.pills[item].name == item_name){
 			V.sexStats.pills["pills"][item_name].autoTake = !V.sexStats.pills["pills"][item_name].autoTake // toggle auto take
-			window.toggleWhatNeedsToBeToggled(setup.pills[item]) // change "Take every morning" button to "Stop taking them"
+			window.initPillContextButtons(setup.pills[item]) // change "Take every morning" button to "Stop taking them"
 		}
 		else if (["breast", "penis", "bottom", "pregnancy"].includes(item_type) && setup.pills[item].type == item_type)
 			V.sexStats.pills["pills"][setup.pills[item].name].autoTake = false // disable auto takes for other similar pills(bottom/penis/breast etc)

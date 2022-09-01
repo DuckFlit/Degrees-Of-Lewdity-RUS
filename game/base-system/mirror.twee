@@ -1135,7 +1135,7 @@ __Hair__
 <br>
 <<if !$savedHairStyles>>
 	<<set $savedHairStyles to {
-		Default: {hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition}
+		Default: { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }
 	}>>
 <</if>>
 <<set _hairTypeByName to {"Braid left": "braid left", "Braid right": "braid right", "Flat ponytail": "flat ponytail", "Loose": "loose", "Messy": "messy", "Pigtails": "pigtails", "Ponytail": "ponytail", "Short": "short", "Side tail left": "side tail left", "Side tail right": "side tail right", "Straight": "straight", "Swept left": "swept left", "Twin braids": "twin braids", "Twintails": "twintails", "Curl": "curl", "Defined curl": "defined curl", "Neat": "neat", "Curly pigtails": "curly pigtails", "Sailor buns": "sailor buns", "Dreads": "dreads", "Short spiky": "short spiky", "Bubble tails": "bubble tails", "Curly side up": "curly side up", "Heart braid": "heart braid", "Loop braid": "loop braid", "Ruffled": "ruffled"}>>
@@ -1209,7 +1209,7 @@ Your fringe is in the "$fringetype" style.
 	<br>
 	<<link [["Save Current Hairstyle"|$passage]]>>
 		<<set _hairStyleName to _hairStyleName.replace(/[^a-zA-Z0-9_-]+/g,"").substring(0,30)>>
-		<<set $savedHairStyles[_hairStyleName] to {hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition}>>
+		<<set $savedHairStyles[_hairStyleName] to { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }>>
 	<</link>>
 </div>
 
@@ -1234,11 +1234,18 @@ Your fringe is in the "$fringetype" style.
 		<<capture _itemType>>
 		<span class="no-numberify">
 		<<link "Remove">>
-		<<set $makeup[_itemType] = 0>>
+
+		<<if _itemType is "eyelenses">>
+			<!-- A safety check for $makeup.eyelenses -->
+			<<set $makeup.eyelenses to { left: 0, right: 0 }>>
+		<<else>>
+			<<set $makeup[_itemType] to 0>>
+		<</if>>
 		<<if _itemType == 'mascara'>>
 			<<set $makeup.mascara_running = 0>>
 		<</if>>
 		<<run Engine.show()>>
+
 		<</link>></span>
 		<<print " | ">>
 		<</capture>>
@@ -1292,8 +1299,12 @@ __Makeup__
 	<<set $makeup.lipstick to 0>>
 	<<set $makeup.eyeshadow to 0>>
 	<<set $makeup.mascara to 0>>
+<<<<<<< game/base-system/mirror.twee
+	<<set $makeup.eyelenses to { left: 0, right: 0 }>>
+=======
 	<<set $makeup.mascara_running to 0>>
 	<<set $makeup.eyelenses to { "left": 0, "right": 0 }>>
+>>>>>>> game/base-system/mirror.twee
 <</link>> |
 <<link [[Randomise|$passage]]>>
 	<<for _i to 0; _i lt _makeupNames.length; _i++>>
@@ -1301,10 +1312,7 @@ __Makeup__
 		<<if _makeupNames[_i] is "eyelenses">>
 			<<set _rng to random(0, _ownedMakeup.length)>>
 			<<set _lens to _rng is _ownedMakeup.length ? 0 : _ownedMakeup[_rng]>>
-			<<set $makeup[_makeupNames[_i]] to {
-				"left": _lens,
-				"right": _lens
-			}>>
+			<<set $makeup.eyelenses to { left: _lens, right: _lens }>>
 		<<else>>
 			<<set _rngset to []>>
 			<<for _label, _value range _ownedMakeup>>
@@ -1363,26 +1371,26 @@ __Makeup__
 		<<if $makeup.eyelenses.left != 0 || $makeup.eyelenses.right != 0>>
 			<span class="no-numberify">
 			<<link "None">>
-			<<set $makeup.eyelenses = {"left":0, "right":0}>>
+			<<set $makeup.eyelenses = { left:0, right:0 }>>
 			<<run Engine.show()>>
 			<</link>></span>
 			<<print " | ">>
 		<</if>>
 		<<for _i, _colour range $makeup.owned.eyelenses>>
 			<<capture _colour>>
-			<span class="capitalize no-numberify">
-			<<link _colour>>
-			<<if _contact_eye_selected == "Both">>
-				<<set $makeup.eyelenses = {"left":_colour, "right":_colour}>>
-			<<elseif _contact_eye_selected == "Left eye">>
-				<<set $makeup.eyelenses["left"] = _colour>>
-			<<elseif _contact_eye_selected == "Right eye">>
-				<<set $makeup.eyelenses["right"] = _colour>>
-			<</if>>
-			<<run Engine.show()>>
-			<</link>></span>
-				<span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes left-iris"></span></span>
-			<<print " | ">>
+				<span class="capitalize no-numberify">
+				<<link _colour>>
+					<<if _contact_eye_selected == "Both">>
+						<<set $makeup.eyelenses = { left:_colour, right:_colour }>>
+					<<elseif _contact_eye_selected == "Left eye">>
+						<<set $makeup.eyelenses.left = _colour>>
+					<<elseif _contact_eye_selected == "Right eye">>
+						<<set $makeup.eyelenses.right = _colour>>
+					<</if>>
+					<<run Engine.show()>>
+				<</link>></span>
+					<span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes left-iris"></span></span>
+				<<print " | ">>
 			<</capture>>
 		<</for>>
 		<br>
@@ -1396,7 +1404,7 @@ __Makeup__
 		<<if $makeup.eyelenses.left != 0 || $makeup.eyelenses.right != 0>>
 			<span class="no-numberify">
 			<<link "None">>
-			<<set $makeup.eyelenses = {"left":0, "right":0}>>
+			<<set $makeup.eyelenses = { left:0, right:0 }>>
 			<<run Engine.show()>>
 			<</link>></span>
 			<<print " | ">>
@@ -1409,20 +1417,20 @@ __Makeup__
 				<</if>>
 			<</for>>
 			<<capture _colour _background_colour>>
-			<span class="capitalize no-numberify">
-			<<set _colour_name_with_space = window.colorNameTranslate(_colour, "spaced name")>>
-			<<link _colour_name_with_space>>
-			<<if _custom_eye_selected == "Both">>
-				<<set $makeup.eyelenses = {"left":_colour, "right":_colour}>>
-			<<elseif _custom_eye_selected == "Left eye">>
-				<<set $makeup.eyelenses["left"] = _colour>>
-			<<elseif _custom_eye_selected == "Right eye">>
-				<<set $makeup.eyelenses["right"] = _colour>>
-			<</if>>
-			<<run Engine.show()>>
-			<</link>></span>
-			<span class="eye-custom"><span @style="'background:'+_background_colour" class="colour-sample"></span></span>
-			<<print " | ">>
+				<span class="capitalize no-numberify">
+				<<set _colour_name_with_space = window.colorNameTranslate(_colour, "spaced name")>>
+				<<link _colour_name_with_space>>
+					<<if _custom_eye_selected == "Both">>
+						<<set $makeup.eyelenses = { left:_colour, right:_colour }>>
+					<<elseif _custom_eye_selected == "Left eye">>
+						<<set $makeup.eyelenses.left = _colour>>
+					<<elseif _custom_eye_selected == "Right eye">>
+						<<set $makeup.eyelenses.right = _colour>>
+					<</if>>
+					<<run Engine.show()>>
+				<</link>></span>
+				<span class="eye-custom"><span @style="'background:'+_background_colour" class="colour-sample"></span></span>
+				<<print " | ">>
 			<</capture>>
 		<</for>>
 		<br><br>
@@ -1512,29 +1520,27 @@ Preset: <<print _args[0]>>
 <</for>>
 <br>
 <<link [[Apply preset makeup|$passage]]>>
-	<<for $_i to 0; $_i lt _makeupNames.length; $_i++>>
-		<<if _makeupNames[$_i] is "eyelenses">>
-			<<if _presetChosen[_makeupNames[$_i]].left is 0 && _presetChosen[_makeupNames[$_i]].right is 0>>
-				<<set $makeup[_makeupNames[$_i]] to 0>>
-			<<elseif $makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]].left) &&
-					$makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]].right)>>
-				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
-			<<elseif $makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]].left) &&
-					$makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]].right)>>
-				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
+	<<for $_makeupName range _makeupNames>>
+		<<set _preset to _presetChosen[$_makeupName]>>
+		<<if $_makeupName is "eyelenses">>
+			<<if _preset.left is 0 and _preset.right is 0>>
+				<<set $makeup.eyelenses to { left:0, right:0 }>>
+			<<elseif $makeup.owned.eyelenses.includes(_preset.left) and $makeup.owned.eyelenses.includes(_preset.right)>>
+				<<set $makeup.eyelenses to _preset>>
+			<<elseif $makeup.owned.custom_eyelenses.includes(_preset.left) and $makeup.owned.custom_eyelenses.includes(_preset.right)>>
+				<<set $makeup.eyelenses to _preset>>
 			<</if>>
-		<<elseif _presetChosen[_makeupNames[$_i]] is 0 and _makeupNames[$_i] is "hairdye">>
+		<<elseif _preset is 0 and $_makeupName is "hairdye">>
 			/*Do Nothing*/
-		<<elseif _presetChosen[_makeupNames[$_i]] is 0>>
-			<<set $makeup[_makeupNames[$_i]] to 0>>
+		<<elseif _preset is 0>>
+			<<set $makeup[$_makeupName] to 0>>
 		<<else>>
-			<<for $_label, $_value range $makeup.owned[_makeupData[$_i]]>>
-				<<if $_value.colour is _presetChosen[_makeupNames[$_i]] and $_value.colour isnot $makeup[_makeupNames[$_i]] and $_value.count gt 0>>
-					<<set $makeup[_makeupNames[$_i]] to clone($_value.colour)>>
-					<<set $_value.count-->>
-					<<break>>
-				<</if>>
-			<</for>>
+			<<set $_makeupName2 to ($_makeupName is "browscolour" ? "hairdye" : $_makeupName)>>
+			<<set $_target to $makeup.owned[$_makeupName2].find(invMakeup => invMakeup.colour is _preset and invMakeup.colour isnot $makeup[$_makeupName] and invMakeup.count gt 0)>>
+			<<if $_target>>
+				<<set $makeup[$_makeupName] to clone($_target.colour)>>
+				<<set $_target.count-->>
+			<</if>>
 		<</if>>
 	<</for>>
 <</link>> |

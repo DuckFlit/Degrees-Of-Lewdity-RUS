@@ -928,20 +928,14 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "underoutfit">><<silently>>
-<<outfitChecks>>
-<<breasts>><<set _breasts_text to _text_output>>
-<<genitals>><<set _genitals_text to _text_output>>
-<<if _underOutfit>>
-	<<set _text_output to $worn.under_upper.name>>
-<<elseif $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-	<<set _text_output to _breasts_text + " and " + _genitals_text>>
-<<elseif $worn.under_lower.name is "naked">>
-	<<set _text_output to $worn.under_upper.name + " and " + _breasts_text>>
-<<elseif $worn.under_upper.name is "naked">>
-	<<set _text_output to _breasts_text + " and " + $worn.under_lower.name>>
-<<else>>
-	<<set _text_output to $worn.under_upper.name + " and " + $worn.under_lower.name>>
-<</if>>
+	<<outfitChecks>>
+	<<undies>><<set $_secondhalf to _text_output>>
+	<<undertop>>
+	<!-- _text_output now has top (either worn under_upper name, or breasts desc) -->
+	
+	<<if !_underOutfit>> <!-- Two separate items, not an outfit -->
+		<<set _text_output += " and " + $_secondhalf>>
+	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "genitalstate">><<silently>>
@@ -4138,7 +4132,8 @@ A sign reads "Opening hours: <<ampm 8 00>> - <<ampm 21 00>>"
 	<<set _text_output to $worn.upper.name>>
 	<<set $stripset to 1>>
 <<else>>
-	<<set _text_output to $worn.upper.name + " and " + $worn.lower.name>>
+	<<set $_clothes to [$worn.upper.name, $worn.lower.name].filter(a => a !== "naked")>>
+	<<set _text_output to $_clothes.formatList()>>
 	<<set $stripset to 0>>
 <</if>>
 <</silently>>_text_output<</widget>>
