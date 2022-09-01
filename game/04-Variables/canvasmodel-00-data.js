@@ -25,6 +25,7 @@ var ZIndices = {
 	tanbreasts: 30,
 	blush: 50,
 	freckles: 51,
+	mascara_running: 51.5,
 	skin: 52,
 	tears: 55,
 	hair: 60,
