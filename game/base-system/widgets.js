@@ -333,17 +333,17 @@ function exposedcheck() {
 DefineMacro("exposedcheck", exposedcheck);
 
 function updatehistorycontrols(){
-	if (V.maxStates === undefined || V.maxStates > 20) {
+	if (V.options.maxStates === undefined || V.options.maxStates > 20) {
 		/* initiate new variable based on engine config and limit it to 20 */
-		V.maxStates = Math.clamp(1, 20, Config.history.maxStates);
+		V.options.maxStates = Math.clamp(1, 20, Config.history.maxStates);
 	}
-	if (V.maxStates == 1) {
+	if (V.options.maxStates == 1) {
 		/* when disabled, irreversibly delete history controls the way sugarcube intended */
 		Config.history.maxStates = 1;
 		jQuery('#ui-bar-history').remove();
 	} else {
 		/* set actual maxStates in accordance with our new variable */
-		Config.history.maxStates = V.maxStates;
+		Config.history.maxStates = V.options.maxStates;
 		/* ensure that controls are enabled so sugarcube won't destroy them on reload */
 		Config.history.controls = true;
 		/* if irreversibly deleted, restore #ui-bar-history from oblivion and pop it after #ui-bar-toggle */

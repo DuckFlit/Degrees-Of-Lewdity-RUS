@@ -1494,7 +1494,7 @@ function outfitHoodPosition(outfit) {
 window.outfitHoodPosition = outfitHoodPosition;
 
 window.combatCharacterShadow = function() {
-	if(!V.lightCombat) return;
+	if(!V.options.characterLightEnabled || !V.options.images || !V.options.combatImages) return;
 	const targetClass = "char-shadow-combat";
 	const mainDiv = ".char_combat";
 

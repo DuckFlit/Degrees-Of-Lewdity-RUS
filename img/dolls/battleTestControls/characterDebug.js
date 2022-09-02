@@ -355,8 +355,6 @@ var skinColor = {
   tanLoc: ["body", "breasts", "penis", "swimshorts", "swimsuitTop", "swimsuitBottom", "bikiniTop", "bikiniBottom", "tshirt"],
   natural: "light",
   init: true,
-  tanningEnabled: true,
-  tanImgEnabled: "t",
   range: 17,
   current: {
     test: "",

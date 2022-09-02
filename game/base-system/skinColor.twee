@@ -3,8 +3,6 @@
 	<<if $skinColor isnot undefined>>
 		<<set _natural to $skinColor.natural>>
 		<<set _init to $skinColor.init>>
-		<<set _tanning to $skinColor.tanningEnabled>>
-		<<set _enable to $skinColor.tanImgEnabled>>
 	<<else>>
 		<<set _natural to "light">>
 		<<set _init to false>>
@@ -15,8 +13,6 @@
 		"tanLoc":["body", "breasts", "penis", "swimshorts", "swimsuitTop", "swimsuitBottom", "bikiniTop", "bikiniBottom", "tshirt"],
 		"natural": _natural,
 		"init": _init,
-		"tanningEnabled": _tanning,
-		"tanImgEnabled": _enable,
 		"range": 0,
 		"current": {
 			"test": "",
@@ -49,8 +45,6 @@
 		"tanLoc":["body", "breasts", "penis", "swimshorts", "swimsuitTop", "swimsuitBottom", "bikiniTop", "bikiniBottom", "tshirt"],
 		"natural": null,
 		"init": false,
-		"tanningEnabled": false,
-		"tanImgEnabled": "f",
 		"range": 0,
 		"current": {
 			"test": "",
@@ -92,28 +86,28 @@
 
 			<<for _i to 0; _i lt $skinColor.tanLoc.length; _i++>>
 				<<set $skinColor.tanValues.push($skinColor.range)>>
-				<<set $skinColor.current[$skinColor.tanLoc[_i]] to skinColor($skinColor.tanImgEnabled, $skinColor.range,$skinColor.overwrite)>>
+				<<set $skinColor.current[$skinColor.tanLoc[_i]] to skinColor($options.tanImgEnabled, $skinColor.range,$skinColor.overwrite)>>
 			<</for>>
-			<<set $skinColor.current.mouth to skinColor($skinColor.tanImgEnabled, $skinColor.range,$skinColor.overwrite)>>
+			<<set $skinColor.current.mouth to skinColor($options.tanImgEnabled, $skinColor.range,$skinColor.overwrite)>>
 		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "SkinColorImgTest">>
 
-<<if $skinColor.tanImgEnabled is "f">>
-	<<set $skinColor.tanImgEnabled to "t">>
+<<if !$options.tanImgEnabled>>
+	<<set $options.tanImgEnabled to true>>
 	<<set _skincolortemp to true>>
 <</if>>
-<<print '<img class="" src="img/bodyRed/baseReColorTest.png" style="filter:'+skinColor($skinColor.tanImgEnabled, $range,setup.skinColor[$naturalSkinColor])+'">'>>
+<<print '<img class="" src="img/bodyRed/baseReColorTest.png" style="filter:'+skinColor($options.tanImgEnabled, $range,setup.skinColor[$naturalSkinColor])+'">'>>
 <<if _skincolortemp is true>>
-	<<set $skinColor.tanImgEnabled to "f">>
+	<<set $options.tanImgEnabled to false>>
 <</if>>
 
 <</widget>>
 
 <<widget "tanned">>
-<<if $skinColor.tanningEnabled is true>>
+<<if $options.tanningEnabled is true>>
 	<<set _coverage to [0,0,0,0,0,0,0,0,0]>>
 	<<if _args[1] is "ignoreCoverage">>
 		<<set _coverage to [0,0,0,0,0,0,0,0,0]>>
@@ -130,12 +124,12 @@
 		<<if _coverage[_i] is 0>>
 			<<set _tanLoc to $skinColor.tanLoc[_i]>>
 			<<set $skinColor.tanValues[_i] to Math.clamp(($skinColor.tanValues[_i] + _tanChange).toFixed(1), 0, 100)>>
-			<<set $skinColor.current[_tanLoc] to skinColor($skinColor.tanImgEnabled, $skinColor.tanValues[_i],$skinColor.overwrite)>>
+			<<set $skinColor.current[_tanLoc] to skinColor($options.tanImgEnabled, $skinColor.tanValues[_i],$skinColor.overwrite)>>
 		<</if>>
 	<</for>>
-	<<set $skinColor.current.mouth to skinColor($skinColor.tanImgEnabled, $skinColor.tanValues[0],$skinColor.overwrite)>>
+	<<set $skinColor.current.mouth to skinColor($options.tanImgEnabled, $skinColor.tanValues[0],$skinColor.overwrite)>>
 <</if>>
-<<if $skinColor.tanningEnabled is false and $skinColor.tanImgEnabled is "f">>
+<<if $options.tanningEnabled is false and !$options.tanImgEnabled>>
 	<<set $skinColor.current to {
 		"test": "",
 		"body": "",
@@ -150,11 +144,11 @@
 		"mouth": ""
 	}>>
 <</if>>
-<<if $skinColor.tanningEnabled is false and $skinColor.tanImgEnabled is "t">>
+<<if $options.tanningEnabled is false and $options.tanImgEnabled>>
 	<<for _s to 0; _s lt $skinColor.tanLoc.length; _s++>>
-		<<set $skinColor.current[$skinColor.tanLoc[_s]] to skinColor($skinColor.tanImgEnabled, $skinColor.tanValues[_s],$skinColor.overwrite)>>
+		<<set $skinColor.current[$skinColor.tanLoc[_s]] to skinColor($options.tanImgEnabled, $skinColor.tanValues[_s],$skinColor.overwrite)>>
 	<</for>>
-	<<set $skinColor.current.mouth to skinColor($skinColor.tanImgEnabled, $skinColor.tanValues[0],$skinColor.overwrite)>>
+	<<set $skinColor.current.mouth to skinColor($options.tanImgEnabled, $skinColor.tanValues[0],$skinColor.overwrite)>>
 <</if>>
 <</widget>>
 

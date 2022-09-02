@@ -209,7 +209,7 @@ var defaultSkinColorRanges = {
 };
 
 window.skinColor = function (enabled, percent, overwrite) {
-	if (enabled === "f") {
+	if (enabled === false) {
 		return "";
 	}
 
@@ -450,13 +450,49 @@ window.settingsDisableElement = function() {
 				});
 			};
 			let orig = $(this);
+			let target = orig.data("target");
 			let disabledif = orig.data("disabledif");
 			if(orig.data("target") && disabledif){
 				updateButtonsActive();
-				$(document).on("click.evt", "[name*='" + Util.slugify(orig.data("target")) + "']", function(){ updateButtonsActive(); });
+				$(document).on("click.evt", "[name*='" + (Array.isArray(target) ? target.map(x => Util.slugify(x)).join("'], [name*='") : Util.slugify(target)) + "']", function(){ updateButtonsActive(); });
 			}
 		});
 	});
+}
+
+/* Adds event listeners to input on current page */
+window.onInputChanged = function(func) {
+	if (!func || (typeof func !== "function")) return;
+	$(document).ready(() => {
+		$("input").on("change", function() { func(); });
+	});
+}
+
+window.closeOverlay = function() {
+	updateOptions();
+	V.currentOverlay = null;
+	T.buttons.reset();
+	$("#customOverlay").addClass("hidden").parent().addClass("hidden");
+}
+
+window.updateOptions = function() {
+	if(V.currentOverlay === "options" && T.optionsRefresh && V.passage != 'Start'){
+		updatehistorycontrols();
+		let optionsData = clone(V.options);
+		let tmpButtons = T.buttons;
+		let tmpKey = T.key;
+
+		State.restore();
+		V.options = optionsData;
+		State.show();
+
+		T.key = tmpKey;
+		T.buttons = tmpButtons;
+		T.buttons.setupTabs();
+		if(T.key !== "options") {
+			T.buttons.setActive(T.buttons.activeTab);	
+		}
+	}
 }
 
 $(document).on('click', '#cbtToggleMenu .cbtToggle', function (e) {

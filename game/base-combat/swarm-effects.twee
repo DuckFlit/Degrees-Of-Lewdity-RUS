@@ -5,7 +5,7 @@
 	<<getTargetList>>
 <</if>>
 <div id="listContainer">
-	<div id="leftaction" @class="$combatControls + 'Control'">
+	<div id="leftaction" @class="$options.combatControls + 'Control'">
 		<<if $lefttarget is "self">>
 			<<leftActionInitSelf>>
 		<<else>>
@@ -13,7 +13,7 @@
 		<</if>>
 	</div>
 
-	<div id="rightaction" @class="$combatControls + 'Control'">
+	<div id="rightaction" @class="$options.combatControls + 'Control'">
 		<<if $righttarget is "self">>
 			<<rightActionInitSelf>>
 		<<else>>
@@ -21,12 +21,12 @@
 		<</if>>
 	</div>
 
-	<div id="feetaction" @class="$combatControls + 'Control'">
+	<div id="feetaction" @class="$options.combatControls + 'Control'">
 		<<feetActionInitSwarm>>
 	</div>
 
 	<<if ($mouthuse is 0 and !($dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)))>>
-		<div id="mouthaction" @class="$combatControls + 'Control'">
+		<div id="mouthaction" @class="$options.combatControls + 'Control'">
 			<<mouthActionInit>>
 		</div>
 	<</if>>
@@ -50,7 +50,7 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
+		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
 			Target: <span onchange="actionsreplace('left')">
 			<<listbox "$lefttarget" autoselect>>
 				<<optionsfrom _targetlistarms>>
@@ -59,7 +59,7 @@
 		<</if>>
 		<<set _leftOptions to "free">>
 		<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">Your left arm is free.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
+		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
 			Target: <span onchange="actionsreplace('left')">
 			<<listbox "$lefttarget" autoselect>>
 				<<optionsfrom _targetlistarms>>
@@ -69,7 +69,7 @@
 	<</if>>
 <<case "swarmgrappled">>
 	<<set _leftOptions to "unable">>
-	<span class="purple">The $swarm["type"] are constricting your left arm!</span><<if $combatControls is "radio">><br><</if>>
+	<span class="purple">The $swarm["type"] are constricting your left arm!</span><<if $options.combatControls is "radio">><br><</if>>
 <<case "bound">>
 	<<if $orgasmdown gte 1>>
 		<<set _leftOptions to "unable">>
@@ -83,7 +83,7 @@
 	<<else>>
 		<<set _leftOptions to "bound">>
 		<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">Your left arm is bound and helpless.</span>
-	<</if>><<if $combatControls is "radio">><br><</if>>
+	<</if>><<if $options.combatControls is "radio">><br><</if>>
 <<case "trapped">>
 	<<set $_changetype to true>><<leftActionInitVore>>
 <<case "grappled" "penis" "othervagina" "vagina" "coverpenis" "anus" "behind">>
@@ -106,7 +106,7 @@
 		<div class="extraMargin">
 			<<generateCombatActionOthers _leftaction "leftaction" _textColor $leftaction "Swarm">>
 		</div>
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="leftactionDifficulty">
 				<<leftactionDifficulty>>
 			</div>
@@ -123,20 +123,20 @@
 <<set _leftaction to {}>>
 <<switch _leftOptions>>
 <<case "free">>
-	<<if $rightarm is "swarmgrappled" and ($lefttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if $rightarm is "swarmgrappled" and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _leftaction["Free your right arm"] to "leftfree">>
 	<<elseif _swarmamounts.active[2] gte 1 and $lefttarget isnot "self">>
 		<<silently>><<swarmName>><</silently>>
 		<<set _leftaction[_swarmsteady + " one of the " + _swarmname] to "leftswarm">>
 	<</if>>
-	<<if _swarmamounts.genital[0] lte 0 and _swarmamounts.genital[1] lte 0 and ($lefttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if _swarmamounts.genital[0] lte 0 and _swarmamounts.genital[1] lte 0 and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<silently>><<genitals>><</silently>>
 		<<set _leftaction["Cover your "+ _text_output] to "frontcoverleft">>
 	<</if>>
-	<<if _swarmamounts.butt[0] lte 0 and _swarmamounts.butt[1] lte 0 and ($lefttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if _swarmamounts.butt[0] lte 0 and _swarmamounts.butt[1] lte 0 and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _leftaction["Cover your butt"] to "backcoverleft">>
 	<</if>>
-	<<if _swarmamounts.chest lte 0 and ($lefttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if _swarmamounts.chest lte 0 and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _leftaction["Cover your chest"] to "chestcoverleft">>
 	<</if>>
 	<<if $lefttarget isnot "self">>
@@ -158,7 +158,7 @@
 			<<set _leftaction["Clear the "+ $swarm["type"] + " off of your chest"] to "chestclearleft">>
 		<</if>>
 	<</if>>
-	<<if $water is 1 and $vorecreature is 0 and ($consensual isnot 1 or $gamemode is "soft") and ($lefttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if $water is 1 and $vorecreature is 0 and ($consensual isnot 1 or $gamemode is "soft") and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _leftaction["Swim to safety"] to "swim">>
 	<</if>>
 	<<if $vorecreature is 0>>
@@ -198,7 +198,7 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
+		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
 			Target: <span onchange="actionsreplace('right')">
 			<<listbox "$righttarget" autoselect>>
 				<<optionsfrom _targetlistarms>>
@@ -207,7 +207,7 @@
 		<</if>>
 		<<set _rightOptions to "free">>
 		<span @class="($lastOptions.right isnot _rightOptions ?'gold':'')">Your right arm is free.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
+		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
 			Target: <span onchange="actionsreplace('right')">
 			<<listbox "$righttarget" autoselect>>
 				<<optionsfrom _targetlistarms>>
@@ -217,7 +217,7 @@
 	<</if>>
 <<case "swarmgrappled">>
 	<<set _rightOptions to "unable">>
-	<span class="purple">The $swarm["type"] are constricting your right arm!</span><<if $combatControls is "radio">><br><</if>>
+	<span class="purple">The $swarm["type"] are constricting your right arm!</span><<if $options.combatControls is "radio">><br><</if>>
 <<case "bound">>
 	<<if $orgasmdown gte 1>>
 		<<set _rightOptions to "unable">>
@@ -231,7 +231,7 @@
 	<<else>>
 		<<set _rightOptions to "bound">>
 		<span @class="($lastOptions.right isnot _rightOptions ?'gold':'')">Your right arm is bound and helpless.</span>
-	<</if>><<if $combatControls is "radio">><br><</if>>
+	<</if>><<if $options.combatControls is "radio">><br><</if>>
 <<case "trapped">>
 	<<set $_changetype to true>><<rightActionInitVore>>
 <<case "grappled" "penis" "othervagina" "vagina" "coverpenis" "anus" "behind">>
@@ -254,7 +254,7 @@
 		<div class="extraMargin">
 			<<generateCombatActionOthers _rightaction "rightaction" _textColor $rightaction "Swarm">>
 		</div>
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="rightactionDifficulty">
 				<<rightactionDifficulty>>
 			</div>
@@ -271,20 +271,20 @@
 <<set _rightaction to {}>>
 <<switch _rightOptions>>
 <<case "free">>
-	<<if $leftarm is "swarmgrappled" and ($righttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if $leftarm is "swarmgrappled" and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _rightaction["Free your left arm"] to "rightfree">>
 	<<elseif _swarmamounts.active[2] gte 1 and $righttarget isnot "self">>
 		<<silently>><<swarmName>><</silently>>
 		<<set _rightaction[_swarmsteady + " one of the " + _swarmname] to "rightswarm">>
 	<</if>>
-	<<if _swarmamounts.genital[0] lte 0 and _swarmamounts.genital[1] lte 0 and ($righttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if _swarmamounts.genital[0] lte 0 and _swarmamounts.genital[1] lte 0 and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<silently>><<genitals>><</silently>>
 		<<set _rightaction["Cover your "+ _text_output] to "frontcoverright">>
 	<</if>>
-	<<if _swarmamounts.butt[0] lte 0 and _swarmamounts.butt[1] lte 0 and ($righttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if _swarmamounts.butt[0] lte 0 and _swarmamounts.butt[1] lte 0 and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _rightaction["Cover your butt"] to "backcoverright">>
 	<</if>>
-	<<if _swarmamounts.chest lte 0 and ($righttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if _swarmamounts.chest lte 0 and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _rightaction["Cover your chest"] to "chestcoverright">>
 	<</if>>
 	<<if $righttarget isnot "self">>
@@ -306,7 +306,7 @@
 			<<set _rightaction["Clear the "+ $swarm["type"] + " off of your chest"] to "chestclearright">>
 		<</if>>
 	<</if>>
-	<<if $water is 1 and $vorecreature is 0 and ($consensual isnot 1 or $gamemode is "soft") and ($righttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if $water is 1 and $vorecreature is 0 and ($consensual isnot 1 or $gamemode is "soft") and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _rightaction["Swim to safety"] to "swim">>
 	<</if>>
 	<<if $vorecreature is 0>>
@@ -338,7 +338,7 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistall["Yourself"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
+		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
 			<<if ($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound")>>
 			<<else>>
 				Target: <span onchange="actionsreplace('feet')">
@@ -365,7 +365,7 @@
 			<<set _feetOptions to "free">>
 			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free.</span>
 		<</if>>
-		<<if $combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
+		<<if $options.combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
 			Target: <span onchange="actionsreplace('feet')">
 			<<listbox "$feettarget" autoselect>>
 				<<optionsfrom _targetlistall>>
@@ -396,7 +396,7 @@
 			<div class="extraMargin">
 				<<generateCombatActionOthers _feetaction "feetaction" _textColor $feetaction "Swarm">>
 			</div>
-			<<if $combatControls.includes("ists")>>
+			<<if $options.combatControls.includes("ists")>>
 				<div id="feetactionDifficulty">
 					<<feetactionDifficulty>>
 				</div>
@@ -421,7 +421,7 @@
 	<<set _feetaction[_swarmsteady + " one of the " + _swarmname] to "feetswarm">>
 <</if>>
 <<if _feetOptions is "free">>
-	<<if $water is 1 and $vorecreature is 0 and currentSkillValue('swimmingskill') gt 700 and $consensual isnot 1 and ($feettarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if $water is 1 and $vorecreature is 0 and currentSkillValue('swimmingskill') gt 700 and $consensual isnot 1 and ($feettarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 		<<set _feetaction["Swim to safety"] to "swim">>
 	<</if>>
 <</if>>
@@ -437,7 +437,7 @@
 	<<set $front to 0>>
 	<<set $back to 0>>
 	<<if $vorecreature is 0>>
-		<<if $images is 1 and $combatimages is 1>>
+		<<if $options.images is 1 and $options.combatImages is 1>>
 			<<if $swarm.amount.active>>
 				<<set _swarmactive to $swarm.amount.active[0]>>
 			<<else>>
@@ -457,12 +457,12 @@
 	<<combatstate>>
 	<<carryblock>>
 
-	<<if $trance lte 0 and $panicparalysis is 0 and $panicviolence is 0 and $combatControls isnot "disabled">>
+	<<if $trance lte 0 and $panicparalysis is 0 and $panicviolence is 0 and $options.combatControls isnot "disabled">>
 		<<set _swarmsteady to $swarm["steady"].toUpperFirst()>>
 		<<set _swarmamounts to $swarm.amount>>
 		<<generateActionsSwarm>>
 	<</if>>
-	<<if $trance lte 0 and $dissociation lte 1 and $panicparalysis is 0 and $panicviolence is 0 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $combatControls is "disabled">>
+	<<if $trance lte 0 and $dissociation lte 1 and $panicparalysis is 0 and $panicviolence is 0 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $options.combatControls is "disabled">>
 		<<set _swarmsteady to $swarm["steady"].toUpperFirst()>>
 		<<set _swarmamounts to $swarm.amount>>
 

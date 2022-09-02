@@ -9,7 +9,7 @@
 	<<if $gamemode is "soft">>
 		<<set $pain to 0>>
 	<</if>>
-	<<if $images is 1>>
+	<<if $options.images is 1>>
 		<<addclass body has-images>>
 		<<removeclass body no-images>>
 		<div id="sidebar-img-container">
@@ -23,13 +23,13 @@
 	<div id="storyCaptionDiv" @class="($extendedStats ? 'statsExtended' : '')">
 
 	<div id="debugWindow"></div>
-	<<if $images is 1>>
+	<<if $options.images is 1>>
 		<div id="stats" onclick="extendStats()">
 			<<statsCaption>>
 		</div>
 	<</if>>
 	<div id="storyCaptionContent">
-		<<if $numpad is true>>
+		<<if $options.numpad is true>>
 			<style>
 				.mob-btn-group>div{
 				padding: 10px;background-color: rgb(34, 34, 34);color: #fff;border: 1px solid rgb(68, 68, 68);border-radius: 5px 0 0;
@@ -53,7 +53,7 @@
 		<</if>>
 		<<if $endeventerror isnot undefined>>
 			<<if $debugdisable is "f">>
-				<<if $images is 1>><img class="layer-sexmouth" src="img/ui/sym_awareness.png"><</if>><span class="red"><<print StartConfig.version>> Error: An NPC generated on the "$endeventerror" passage broke free. Please inform Vrelnir. <<if $cheatdisable is "f">>Disregard this if you've just used a cheat.<</if>></span>
+				<<if $options.images is 1>><img class="layer-sexmouth" src="img/ui/sym_awareness.png"><</if>><span class="red"><<print StartConfig.version>> Error: An NPC generated on the "$endeventerror" passage broke free. Please inform Vrelnir. <<if $cheatdisable is "f">>Disregard this if you've just used a cheat.<</if>></span>
 				<br><br>
 			<</if>>
 			<<unset $endeventerror>>
@@ -84,7 +84,7 @@
 			<<set $lessonmissedtext to 0>>
 			<br>
 		<</if>>
-		<<if $images is 0>>
+		<<if $options.images is 0>>
 			<div id="money-noimg">
 				<<statsMoneyNoImg>>
 			</div>
@@ -209,13 +209,13 @@
 		</div>
 		<br>
 		<<if $passage isnot "Start" and $passage isnot "Start2">>
-			<<if $sidebarTime is "top">>
+			<<if $options.sidebarTime is "top">>
 				<<append #mobileStats>><<mobileStatsTime>><</append>>
 			<</if>>
-			<<if $sidebarStats isnot "Disabled">>
+			<<if $options.sidebarStats isnot "disabled">>
 				<<append #mobileStats>><<mobileStats>><</append>>
 			<</if>>
-			<<if $sidebarTime is "bottom">>
+			<<if $options.sidebarTime is "bottom">>
 				<<append #mobileStats>><<mobileStatsTime>><</append>>
 			<</if>>
 		<</if>>
@@ -225,64 +225,70 @@
 			<br><br>
 		<</if>>
 
-		<<button CHARACTERISTICS>>
-			<<overlayReplace "characteristics">>
-		<</button>>
-		<<button SOCIAL>>
-			<<overlayReplace "social">>
-		<</button>>
-		<div class="sidebarButtonSplit">
-			<<button TRAITS>>
-				<<overlayReplace "traits">>
+		<<script>>
+			T.buttons = new window.Tab("overlayButtons", "macro-button-selected");
+		<</script>>
+
+		<div id="overlayButtons">
+			<<button CHARACTERISTICS>>
+				<<overlayReplace "characteristics">>
 			<</button>>
-			<<button JOURNAL>>
-				<<overlayReplace "journal">>
+			<<button SOCIAL>>
+				<<overlayReplace "social">>
 			<</button>>
-		</div>
-		<div class="sidebarButtonSplit">
-			<<button STATS>>
-				<<overlayReplace "statistics">>
-			<</button>>
-			<<button FEATS>>
-				<<overlayReplace "gameFeats">>
-			<</button>>
-		</div>
-		<br>
-		<div class="sidebarButtonSplit">
-			<<if $dancing is 0 and $combat is 0 and $passage isnot "Start2" and $cheatdisable is "f" or $debug is 1>>
-				<<button CHEATS>>
-					<<overlayReplace "cheats">>
+			<div class="sidebarButtonSplit">
+				<<button TRAITS>>
+					<<overlayReplace "traits">>
 				<</button>>
+				<<button JOURNAL>>
+					<<overlayReplace "journal">>
+				<</button>>
+			</div>
+			<div class="sidebarButtonSplit">
+				<<button STATS>>
+					<<overlayReplace "statistics">>
+				<</button>>
+				<<button FEATS>>
+					<<overlayReplace "gameFeats">>
+				<</button>>
+			</div>
+			<br>
+			<div class="sidebarButtonSplit">
+				<<if $dancing is 0 and $combat is 0 and $passage isnot "Start2" and $cheatdisable is "f" or $debug is 1>>
+					<<button CHEATS>>
+						<<overlayReplace "cheats">>
+					<</button>>
+				<</if>>
+				<<if $debug is 1>>
+					<<debug>>
+				<</if>>
+			</div>
+			<!-- Event debug button - Shows an overlay stored in debug-events.twee. -->
+			<<if $event isnot undefined and $debugdisable is "f">>
+				<<set _temp to "<span class='yellow'>SHOW EVENT INFO</span>">>
+				<<if EventSystem.Get(0).area[0] is $passage>>
+					<<set _eventalertmajorarea to false>>
+					<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
+				<<elseif setup.majorAreas.includes($passage)>>
+					<<set _eventalertmajorarea to true>>
+					<<set _temp to "<span class='red'>EVENT ACTIVE</span>">>
+				<<elseif $event.buffer.map(e => e.area[0]).length is 1 and ["Forest Cabin", "Eden Cabin", "Eden Clearing"].includes(EventSystem.Get(0).area[0])>>
+					<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
+				<</if>>
+				<<button _temp>><<overlayReplace "eventExtraInfo">><</button>>
+				<<unset _temp>>
 			<</if>>
-			<<if $debug is 1>>
-				<<debug>>
+			<<if $options.showDebugRenderer>>
+				<<button "DEBUG RENDERER">><<overlayReplace "canvasModel">><</button>>
 			<</if>>
-		</div>
-		<!-- Event debug button - Shows an overlay stored in debug-events.twee. -->
-		<<if $event isnot undefined and $debugdisable is "f">>
-			<<set _temp to "<span class='yellow'>SHOW EVENT INFO</span>">>
-			<<if EventSystem.Get(0).area[0] is $passage>>
-				<<set _eventalertmajorarea to false>>
-				<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
-			<<elseif setup.majorAreas.includes($passage)>>
-				<<set _eventalertmajorarea to true>>
-				<<set _temp to "<span class='red'>EVENT ACTIVE</span>">>
-			<<elseif $event.buffer.map(e => e.area[0]).length is 1 and ["Forest Cabin", "Eden Cabin", "Eden Clearing"].includes(EventSystem.Get(0).area[0])>>
-				<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
-			<</if>>
-			<<button _temp>><<overlayReplace "eventExtraInfo">><</button>>
-			<<unset _temp>>
-		<</if>>
-		<<if $showDebugRenderer>>
-			<<button "DEBUG RENDERER">><<overlayReplace "canvasModel">><</button>>
-		<</if>>
-		<div class="sidebarButtonSplit">
-			<<button OPTIONS>>
-				<<overlayReplace "options">>
-			<</button>>
-			<<button SAVES>>
-				<<overlayReplace "saves">>
-			<</button>>
+			<div class="sidebarButtonSplit">
+				<<button OPTIONS>>
+					<<overlayReplace "options">>
+				<</button>>
+				<<button SAVES>>
+					<<overlayReplace "saves">>
+				<</button>>
+			</div>
 		</div>
 	</div>
 </div>
@@ -936,10 +942,10 @@ Your $worn.under_upper.name <<underupperhas>> been pulled to your $worn.under_up
 	<</if>>
 	<<set _disabled to ["disabled","hidden"]>>
 
-	<<if $sidebarRenderer is undefined>>
-		<<set $sidebarRenderer to 'canvas'>>
+	<<if $options.sidebarRenderer is undefined>>
+		<<set $options.sidebarRenderer to 'canvas'>>
 	<</if>>
-	<<if $sidebarRenderer isnot 'img'>>
+	<<if $options.sidebarRenderer isnot 'img'>>
 		<<selectmodel "main" "sidebar">> <!-- reuse sidebar cache slot -->
 		<<twinescript>>
 			_modeloptions.breast_size = _breastSize;
@@ -1000,14 +1006,14 @@ Your $worn.under_upper.name <<underupperhas>> been pulled to your $worn.under_up
 			}
 			_modeloptions.crotch_visible = !_showClothes && !_showUnderwear;
 		<</twinescript>>
-		<<rendermodel `($sidebarRenderer is 'both' ? 'canvasimg-both' : '')`>>
+		<<rendermodel `($options.sidebarRenderer is 'both' ? 'canvasimg-both' : '')`>>
 	<</if>>
-	<<if $sidebarRenderer isnot 'canvas'>>
+	<<if $options.sidebarRenderer isnot 'canvas'>>
 	<img class="layer-base" @src="_img.basenoarms" @style="'filter: '+_filters.body">
 	<img class="layer-basehead" @src="_img.basehead" @style="'filter: '+_filters.body">
 
 	<img class="layer-breasts" @src="_img['breasts'+ _breastSize]" @style="'filter: '+_filters.breasts">
-	<<if $skinColor.tanImgEnabled is "t" and $skinColor.tanValues[0] isnot $skinColor.tanValues[1]>>
+	<<if $options.tanImgEnabled and $skinColor.tanValues[0] isnot $skinColor.tanValues[1]>>
 		<img class="layer-breasts" @src="_img.baseTanBikini_UUpper + _breastSize + '.png'" @style="'filter: '+_filters.bikiniTop">
 	<</if>>
 
@@ -1050,13 +1056,13 @@ Your $worn.under_upper.name <<underupperhas>> been pulled to your $worn.under_up
 			<img class="layer-penis" @src="_img['penis' + ($player.ballsExist ? '':'noballs') + _penisSize]" @style="'filter: '+_filters.penis">
 		<</if>>
 	<</if>>
-	<<if $skinColor.tanImgEnabled is "f">>
-		<<set $skinColor.tanImgEnabled to "t">>
+	<<if !$options.tanImgEnabled>>
+		<<set $options.tanImgEnabled to true>>
 		<<set _tanReset to true>>
 	<</if>>
 	<<faceimg 1>>
 	<<if _tanReset>>
-		<<set $skinColor.tanImgEnabled to "f">>
+		<<set $options.tanImgEnabled to false>>
 		<<unset _tanReset>>
 	<</if>>
 	<<if _clothesType is "male">>

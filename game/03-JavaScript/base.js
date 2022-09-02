@@ -604,7 +604,7 @@ window.nullable = nullable;
  */
 Macro.add("icon", {
 	handler() {
-		if (!V.images) return;
+		if (!V.options.images) return;
 		const name = typeof(this.args[0]) === "string" ? this.args[0] : "error";
 		const iconImg = document.createElement("img");
 		iconImg.className = "icon";
@@ -612,6 +612,50 @@ Macro.add("icon", {
 		this.output.append(iconImg);
 		//append a whitespace for compatibility with old icon behavior
 		if (!this.args.includes("nowhitespace")) this.output.append(" ");
+	}
+});
+
+/**
+ * Adds a foldout, which can be expanded and collapsed
+ * It uses the first element in the content as a header (which can be clicked on), and all other elements as the body (which gets expanded/collapsed)
+ * First argument defines whether it starts expanded or not.
+ * Second argument defines the variable where the foldout state is saved (if no variable is defined, the foldout will reset to default if you leave the page)
+ * Example: <<foldout true "_tempVar">><div>header here</div>body here<</foldout>>
+ */
+Macro.add("foldout", {
+	tags: null,
+	handler: function() {
+		function setFoldoutState(state, transition = 0) {
+			if(state) {
+				toggle.addClass("extended");
+				body.slideDown(transition);
+			}
+			else {
+				toggle.removeClass("extended");
+				body.slideUp(transition);
+			}
+			State.setVar(varname, foldoutState);
+		}
+
+		let def = this.args[0] !== undefined ? this.args[0] : true;
+		let varname = this.args[1] || null;
+		let foldoutState = State.getVar(varname) != null ? State.getVar(varname) : def;
+		let content = this.payload[0].contents;
+
+		let e = $("<div>")
+			.addClass("foldout")
+			.append(Wikifier.wikifyEval(content));
+		let header = e.children().first().addClass("foldoutHeader");
+		let toggle = $("<span>").addClass("foldoutToggle").appendTo(header);
+		let body = e.contents().not(header).wrapAll("<div>").parent().insertAfter(header);
+		
+		setFoldoutState(foldoutState);
+
+		header.on('click', function () {
+				foldoutState = !foldoutState;
+				setFoldoutState(foldoutState, 100);
+			});
+		e.appendTo(this.output);
 	}
 });
 
