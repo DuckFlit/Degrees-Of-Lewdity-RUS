@@ -70,13 +70,13 @@ var ThemeManager = (() => {
 
 	window.Theme = {
 		initControl() {
-			$(document).one("overlay-load", () => {
+			$(document).ready(() => {
 				$(`input[name=theme][value="${getPreference()}"]`).prop("checked", true);
 
 				$("input[name=theme]").on("change", event => {
 					setPreference(event.currentTarget.value);
 				});
 			});
-		},
+		}
 	};
 })();

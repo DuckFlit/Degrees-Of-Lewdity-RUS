@@ -70,8 +70,10 @@ var IronMan = (Save => {
 				ironmanautosaveschedule: Object.assign({}, readonly, {
 					value: V.ironmanautosaveschedule,
 				}),
-				autosavedisabled: Object.assign({}, readonly, { value: true }),
 				virginity: Object.assign({}, readonly, { value: V.player.virginity }),
+			});
+			Object.defineProperties(V.options, {
+				autosaveDisabled: Object.assign({}, readonly, { value: true })
 			});
 			if (!IRONMAN_DEBUG) {
 				Object.defineProperty(V, "debug", Object.assign({}, readonly, { value: 0 }));
@@ -100,7 +102,7 @@ var IronMan = (Save => {
 	function getSignature(save = null) {
 		const keys = [
 			"debug",
-			"autosavedisabled",
+			"options",
 			"virginity",
 			"player",
 			"enemyhealth",
@@ -156,9 +158,9 @@ var IronMan = (Save => {
 							'<<replace #sliderAllureMode>><<numberslider "$alluremod" $alluremod 0.2 2 0.1 $ironmanmode>><</replace>>'
 						);
 					}
-					V.maxStates = 1;
+					V.options.maxStates = 1;
 					V.cheatdisabletoggle = "t";
-					V.autosavedisabled = true;
+					V.options.autosaveDisabled = true;
 					$(".ironman-slider input")
 						.on("input change", e => sliderPerc(e))
 						.trigger("change");

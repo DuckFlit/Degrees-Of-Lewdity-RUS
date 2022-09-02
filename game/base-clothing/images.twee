@@ -1,10 +1,10 @@
 :: Widgets Img [widget]
 <<widget "img">>
 <<set _filters to $skinColor.current>>
-<<set _img to setup.tanImg.sidebar[$skinColor.tanImgEnabled]>>
+<<set _img to setup.tanImg.sidebar[($options.tanImgEnabled ? "t" : "f")]>>
 <<charLight "118px" "187px">>
-<div id="img" @class="limitedColourContainerClasses() + ($sidebarAnimations isnot false ? '':' noAnimations')">
-<<if $sidebarRenderer is 'canvas'>>
+<div id="img" @class="limitedColourContainerClasses() + ($options.sidebarAnimations isnot false ? '':' noAnimations')">
+<<if $options.sidebarRenderer is 'canvas'>>
 	<<for _i to 1; _i lte $spraymax; _i++>>
 		<<if $spray gte _i>>
 			<img @id="'spray'+_i" src="img/ui/pepperspray.png">
@@ -14,7 +14,7 @@
 	<</for>>
 	<<canvasimg>>
 <<else>>
-	<<if $sidebarRenderer is 'both'>>
+	<<if $options.sidebarRenderer is 'both'>>
 		<<canvasimg 'canvasimg-both'>>
 	<</if>>
 	/*Prep for image checks*/
@@ -77,7 +77,7 @@
 			<img @id="'spray'+_i" src="img/ui/emptyspray.png">
 		<</if>>
 	<</for>>
-	<<if $skinColor.tanImgEnabled is "t">>
+	<<if $options.tanImgEnabled>>
 		<<if $skinColor.tanValues[0] isnot $skinColor.tanValues[2]>>
 			<img class="layer-base anim-idle-2f" @src="_img.baseTanSwimshorts" @style="'filter: '+_filters.swimshorts">
 			<img class="layer-base anim-idle-2f" @src="_img.baseTanSwimsuit_UUpper" @style="'filter: '+_filters.swimsuitTop">
@@ -92,7 +92,7 @@
 		<<else>>
 			<img class="layer-breasts anim-idle-2f" @src="_img['breasts'+ _breastSize]" @style="'filter: '+_filters.breasts">
 		<</if>>
-		<<if $skinColor.tanImgEnabled is "t" and $skinColor.tanValues[0] isnot $skinColor.tanValues[1]>>
+		<<if $options.tanImgEnabled and $skinColor.tanValues[0] isnot $skinColor.tanValues[1]>>
 			<img class="layer-breasts anim-idle-2f" @src="_img.baseTanBikini_UUpper + _breastSize + '.png'" @style="'filter: '+_filters.bikiniTop">
 		<</if>>
 	<</if>>
@@ -253,7 +253,7 @@
 		<</if>>
 	<</if>>
 
-	<<if $bodywritingImages is true>>
+	<<if $options.bodywritingImages is true>>
 		<<if $skin.forehead.writing>>
 			<<if $skin.forehead.type is "text">>
 				<<if $skin.forehead.sprites and $skin.forehead.sprites.length > 0 and $skin.forehead.sprites.includes('forehead')>>
@@ -608,7 +608,7 @@
 	<<set _diagram = _args[0] ? 1 : 0>>
 	<<set _animIdle = _diagram ? "" : "anim-idle-2f">>
 
-	<<if $skinColor.tanImgEnabled is "t">>
+	<<if $options.tanImgEnabled>>
 		<<set _red = "/red">>
 	<<else>>
 		<<set _red = "">>
@@ -628,7 +628,7 @@
 		<<set _iris = "iris">>
 		<<set _trauma = "">>
 	<</if>>
-	<<if $blinkingdisable is "f" and _diagram is 0>>
+	<<if $options.blinkingEnabled and _diagram is 0>>
 		<<set _blink = "eyes-blink" + _trauma>>
 	<<else>>
 		<<set _blink = "">>
@@ -638,7 +638,7 @@
 	<<else>>
 		<<set _sclera = "sclera">>
 	<</if>>
-	<<if $halfcloseddisable isnot "t" and ($arousal gte ($arousalmax / 5) * 4 or $orgasmdown gte 1) and _trauma is "" and $pain lt 60 and _diagram is 0 and $eyelidTEST is true or $possessed>>
+	<<if $options.halfClosedEnabled and ($arousal gte ($arousalmax / 5) * 4 or $orgasmdown gte 1) and _trauma is "" and $pain lt 60 and _diagram is 0 and $eyelidTEST is true or $possessed>>
 		<<set _half = "_halfclosed">>
 	<<else>>
 		<<set _half = "">>
@@ -3224,13 +3224,13 @@
 
 <<widget "player-base-body">>
 	<<set _filters to $skinColor.current>>
-	<<set _img to setup.tanImg.sidebar[$skinColor.tanImgEnabled]>>
+	<<set _img to setup.tanImg.sidebar[($options.tanImgEnabled ? "t" : "f")]>>
 	<div id="img" @class="limitedColourContainerClasses() + ' noAnimations'">
 		<<charLight "118px" "187px" "limited">>
-		<<if $sidebarRenderer is 'canvas' or $sidebarRenderer is 'both'>> /* <img> renderer */
+		<<if $options.sidebarRenderer is 'canvas' or $options.sidebarRenderer is 'both'>> /* <img> renderer */
 			<<canvas-player-base-body>>
 		<</if>>
-		<<if $sidebarRenderer is 'img' or $sidebarRenderer is 'both'>> /* legacy renderer */
+		<<if $options.sidebarRenderer is 'img' or $options.sidebarRenderer is 'both'>> /* legacy renderer */
 		/*Prep for image checks*/
 		<<switch $player.perceived_breastsize>>
 		<<case 12>>
@@ -3254,7 +3254,7 @@
 		<img class="layer-base" @src="_img.basenoarms" @style="'filter: '+_filters.body">
 		<img class="layer-basehead" @src="_img.basehead" @style="'filter: '+_filters.body">
 
-		<<if $skinColor.tanImgEnabled is "t">>
+		<<if $options.tanImgEnabled>>
 			<<if $skinColor.tanValues[0] isnot $skinColor.tanValues[2]>>
 				<img class="layer-base" @src="_img.baseTanSwimshorts" @style="'filter: '+_filters.swimshorts">
 				<img class="layer-base" @src="_img.baseTanSwimsuit_UUpper" @style="'filter: '+_filters.swimsuitTop">
@@ -3402,7 +3402,7 @@
 	<</if>>
 
 
-		<<if $neverNudeMenus>> /* If player doesn't want to see nude character in menus, render the default breifs or bra + panties on their body */
+		<<if $options.neverNudeMenus>> /* If player doesn't want to see nude character in menus, render the default breifs or bra + panties on their body */
 			<<if $player.gender_appearance neq "m" or $player.perceived_breastsize gte 3>>
 				<div class="clothes-div layer-under_upper">
 					<img class="clothes-pale-white" src="img/clothes/under_upper/plainbra/full.png" style="">
@@ -3421,7 +3421,7 @@
 			<</if>>
 		<<else>>
 			<img class="layer-breasts" @src="_img['breasts'+ _breastSize]" @style="'filter: '+_filters.breasts">
-			<<if $skinColor.tanImgEnabled is "t" and $skinColor.tanValues[0] isnot $skinColor.tanValues[1]>>
+			<<if $options.tanImgEnabled and $skinColor.tanValues[0] isnot $skinColor.tanValues[1]>>
 				<img class="layer-breasts" @src="_img.baseTanBikini_UUpper + _breastSize + '.png'" @style="'filter: '+_filters.bikiniTop">
 			<</if>>
 
@@ -3466,6 +3466,6 @@
 		<</if>>
 
 		<<faceimg 1>>
-		<</if>> /* $sidebarRenderer is img */
+		<</if>> /* $options.sidebarRenderer is img */
 	</div>
 <</widget>>

@@ -18,10 +18,6 @@
 <<set $awareselect to "innocent">>
 <<set $background to "waif">>
 <<set $startingseason to "autumn">>
-<<if StartConfig.enableImages is true>>
-	<<set $images to 1>>
-	<<set $silhouettedisable to "f">>
-<</if>>
 <<set $numberify_enabled to 1>>
 <<set $gamemode to "normal">>
 <<set $whitechance to 90>>
@@ -62,7 +58,6 @@
 <<set $pregnancyspeechdisable to "f">>
 <<set $tipdisable to "f">>
 <<set $statdisable to "f">>
-<<set $bodywritingImages to true>>
 <<if $debug is 1>>
 	<<set $debugdisable to "f">>
 <<else>>
@@ -77,22 +72,7 @@
 <<set $checkstyle to "words">>
 <<set $blackwolfmonster to 1>>
 <<set $greathawkmonster to 1>>
-<<set $blinkingdisable to "f">>
-<<set $halfcloseddisable to "f">>
-
-<<set $newWardrobeStyle to true>>
-<<set $lightSpotlight to 0.2>>
-<<set $lightGradient to 0>>
-<<set $lightGlow to 0>>
-<<set $lightFlat to 0>>
-<<set $lightCombat to 0.2>>
-<<set $lightTFColor to 0.2>>
-<<set $sidebarStats to "Disabled">>
-<<set $sidebarTime to "Disabled">>
-<<set $combatControls to "radio">>
 <<set $reducedLineHeight to false>>
-<<set $sidebarAnimations to true>>
-<<set $combatAnimations to true>>
 <<set $clothesPrice to 1>>
 <<set $clothesPriceUnderwear to 1>>
 <<set $clothesPriceSchool to 1>>
@@ -109,7 +89,6 @@
 <<set $condomchance to 50>>
 <<set $condomautochance to 50>>
 <<set $multipleWardrobes to "isolated">>
-<<set $targetYourself to false>>
 <<set $tending_yield_factor to 5>>
 
 <<set $notifyUpdate = true>>
@@ -175,7 +154,7 @@
 		<<button "Character Creation<span class='red'>*</span>">>
 			<<displaySettings "characterSettings">>
 		<</button>>
-		<<if $images is 1>>
+		<<if $options.images is 1>>
 			<<button "Feat Boosts<span class='red'>*</span> <img class='imgButton' src='img/ui/GoldCoin.gif'/>">>
 				<<displaySettings "featSettings">>
 			<</button>>
@@ -232,9 +211,9 @@
 	<<set _buttonName to "Confirm">>
 <</if>>
 <<link _buttonName>>
-	<<if ($feats.locked is true or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1)) and $maxStates lte 5>>
+	<<if ($feats.locked is true or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1)) and $options.maxStates lte 5>>
 		<<settingsExitFunction>>
-	<<elseif $maxStates lte 5>><!-- confirm cheats -->
+	<<elseif $options.maxStates lte 5>><!-- confirm cheats -->
 		<<replace #settingsExit>><<settingsExitConfirm>><</replace>>
 	<<else>><!-- confirm huge history -->
 		<<replace #settingsExit>><<settingsExitConfirmHistory>><</replace>>
@@ -271,13 +250,13 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 </span>
 <br>
 <<link "Disable the feature">>
-	<<set $maxStates to 1>>
+	<<set $options.maxStates to 1>>
 	<<replace #settingsExit>><<settingsExit>><</replace>>
 	<<displaySettings>>
 <</link>>
 <br>
 <<link "Lower the values to safer levels">>
-	<<set $maxStates to 5>>
+	<<set $options.maxStates to 5>>
 	<<replace #settingsExit>><<settingsExit>><</replace>>
 	<<displaySettings>>
 <</link>>
@@ -573,17 +552,17 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<<if StartConfig.enableImages is true>>
 		<<link "Test Colour">>
 			<<replace #test>>
-				<<if $skinColor.tanImgEnabled is "f">>
-					<<set $skinColor.tanImgEnabled to "t">>
+				<<if $options.tanImgEnabled>>
+					<<set $options.tanImgEnabled to true>>
 					<<set _skincolortemp to true>>
 				<</if>>
-				<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($skinColor.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>
+				<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($options.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>
 				<<if _skincolortemp is true>>
-					<<set $skinColor.tanImgEnabled to "f">>
+					<<set $options.tanImgEnabled to false>>
 				<</if>>
 			<</replace>>
 		<</link>> (approximate)
-		<div id="test">/*<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($skinColor.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>*/</div>
+		<div id="test">/*<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($options.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>*/</div>
 		<br>
 	<</if>>
 	<br>
@@ -1200,105 +1179,16 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 <</widget>>
 
 <<widget "generalSettings">>
-	<span class="gold">Images</span>
-	<<if StartConfig.enableImages is true>>
-		<label><div class="settingsToggleBig">
-		<<checkbox "$images" 0 1 autocheck>> Enable images
-		<div class="description">Images may not load properly on older Androids.</div>
-		<label data-target="images" data-disabledif="V.images===0"><<checkbox "$combatimages" 0 1 autocheck>> Enable combat images
-		</label></div>
-
-		<label><div class="settingsToggleBig">
-		CSS animations
-		<div><label><<checkbox "$sidebarAnimations" false true autocheck>> Sidebar animations</label></div>
-		<div><label><<checkbox "$combatAnimations" false true autocheck>> Combat animations</label></div>
-		<div class="description">Disabling may help improve performance and prevent images from loading incorrectly. Gif images will not be affected. Try disabling sidebar images first.</div>
+	<<if StartConfig.enableImages is true and $debug is 1>>
+		<span class="gold">Images</span>
+		<label><div class="settingsToggleBig"><div style="display: inline-flex;">
+		Face style
+		<div style="margin-left: 1em;"><<textbox "$facestyle" $facestyle>></div></div>
+		<div class="description">This setting works only if you have installed face styles other than default.</div>
+		<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>>
 		</div></label>
-
-		<label><div class="settingsToggleBig">
-		<<checkbox "$bodywritingImages" false true autocheck>> Enable body-writing Images
-		<div class="description">Disabling may improve performance and potentially prevent images from not loading correctly.</div>
-		</div></label>
-
-		<label><div class="settingsToggleBig">
-		<<checkbox "$silhouettedisable" "t" "f" autocheck>> Enable NPC silhouettes
-		</div></label>
-
-		<<if $skinColor.init is false and $passage isnot "Start">>
-			<span class="gold">You can now choose your character's skin colour. Click "Test" to preview the setting on the paperdolls. Click "Confirm" when you've made your selection.</span> This can cause performance issues on some devices. Should this be an issue, the option to disable the new skin system will appear here.
-			<br>
-			<div id="skinColorDiv"><img class="" src="img/bodyRed/baseReColorTest.png"></div>
-
-			Skin colour:<br>
-			Reddish:
-			<label>Light <<radiobutton "$naturalSkinColor" "light" autocheck>></label> |
-			<label>Medium <<radiobutton "$naturalSkinColor" "medium" autocheck>></label> |
-			<label>Dark <<radiobutton "$naturalSkinColor" "dark" autocheck>></label> |
-			<label>Gyaru <<radiobutton "$naturalSkinColor" "gyaru" autocheck>> (Pale with no tan, very dark with full tan)</label>
-			<br>
-			Yellowish:
-			<label>Light <<radiobutton "$naturalSkinColor" "ylight" autocheck>></label> |
-			<label>Medium <<radiobutton "$naturalSkinColor" "ymedium" autocheck>></label> |
-			<label>Dark <<radiobutton "$naturalSkinColor" "ydark" autocheck>></label>
-			<label>Gyaru <<radiobutton "$naturalSkinColor" "ygyaru" autocheck>></label>
-			<br><br>
-			<<if $range is undefined>>
-				<<set $range to 0>>
-			<</if>>
-			<label>Initial Tan: <<numberslider "$range" 0 0 100 1>></label>
-			<br>
-			<<link "Test">>
-				<<if $range isnot undefined and $naturalSkinColor isnot undefined>>
-					<<replace #skinColorDiv>><<SkinColorImgTest $range $naturalSkinColor>><</replace>>
-				<</if>>
-			<</link>>
-
-			<br>
-			<<link [[Confirm|$passage]]>>
-				<<if $range isnot undefined and $naturalSkinColor isnot undefined>>
-					<<set $skinColor.range to $range>>
-					<<set $skinColor.natural to $naturalSkinColor>>
-					<<set $skinColor.tanningEnabled to true>>
-					<<set $skinColor.tanImgEnabled to "t">>
-					<<setSkinColorBase>>
-					<<unset $naturalSkinColor>>
-					<<unset $range>>
-				<</if>>
-			<</link>> - <span class="red">These settings can not be changed after Confirming.</span>
-		<<else>>
-			<label><div class="settingsToggleBig">
-			<<checkbox "$skinColor.tanImgEnabled" "f" "t" autocheck>> Visual representation of the player character's skin colour
-			<div class="description"><span class="pink">May hinder performance on some devices.</span></div>
-			</div></label>
-			<label><div class="settingsToggleBig">
-			<<checkbox "$skinColor.tanningEnabled" false true autocheck>> Tanning changes due to sun exposure
-			<div class="description"><span class="red">Option to disable may be removed at a later date.</span></div>
-			</div></label>
-		<</if>>
-
-		<label><div class="settingsToggleBig">
-		<<checkbox "$blinkingdisable" "t" "f" autocheck>> Animate eyes blinking
-		<div class="description">Works only if CSS animations are enabled.</div>
-		</div></label>
-		<<if $eyelidTEST is true>>
-		<label><div class="settingsToggleBig">
-		<<checkbox "$halfcloseddisable" "t" "f" autocheck>> Enable half-closed eyes graphics
-		<div class="description">Draw eyelids in sidebar as half-closed when highly aroused.</div>
-		</div></label>
-		<</if>>
-		<<if $debug is 1>>
-			<label><div class="settingsToggleBig"><div style="display: inline-flex;">
-			Face style
-			<div style="margin-left: 1em;"><<textbox "$facestyle" $facestyle>></div></div>
-			<div class="description">This setting works only if you have installed face styles other than default.</div>
-			<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>>
-			</div></label>
-		<</if>>
-	<<else>>
-		<br>
-		Not Available
+		<br><br>
 	<</if>>
-	<br><br>
 	<span class="gold">Numbered link navigation</span>
 	<br>
 	<<if StartConfig.enableLinkNumberify is true>>
@@ -1371,25 +1261,11 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<input type="button" value="Set Zoom" onclick="zoom(undefined, true)"/>
 	<br><br>
 
-
-	<span class="gold">History depth</span><br>
-	<div class="description">Enables going back in history up to N-1 passages. Changes take effect on settings exit.<br>
-	<span class="red"><b>WARNING:</b> Will cause slowdowns. Additionally, values above 5 can exceed your localStorage quota and cause <br>
-	<b>troubles with saves</b>. Use at your own risk.</span>
-	</div>
-	<<numberslider "$maxStates" $maxStates 1 20 1 $ironmanmode>>
-	<br><br>
-
-
 	<span class="gold">Cheats menu</span>
 	<label><div class="settingsToggleBig">
-	<<if $ironmanmode is true>>
-		<<print '<input id="checkbox-autosavedisabled" name="checkbox-autosavedisabled" type="checkbox" tabindex="0" class="macro-checkbox" disabled>'>>
-		<span style="color: #7e7e7e;">Enable cheats</span>
-	<<else>>
-		<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>>
-		Enable cheats
-	<</if>>
+	<label data-disabledif="V.ironmanmode===true">
+		<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> Enable cheats
+	</label>
 	<div class="description">Button shows in sidebar. <span class="red">Leaving the settings with cheats enabled will prevent you from earning feats in a save.</span></div>
 	</div></label>
 	<br><br>
@@ -1398,7 +1274,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<<if version.major gt 2 or version.minor gt 29>>
 		<<link [["Character Viewer"|Clothes Testing]]>>
 			<<set $lastPassage to $passage>>
-			<<set $gameTanImgSetting to clone($skinColor.tanImgEnabled)>>
+			<<set $gameTanImgSetting to clone($options.tanImgEnabled)>>
 		<</link>>
 		- This will allow you to have a play with the character sprites.
 		<br>
