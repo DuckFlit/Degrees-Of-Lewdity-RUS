@@ -1183,22 +1183,44 @@
 /* args[0] specifies the location identifier */
 <<widget "storeload">>
 	<<if _args[0] isnot undefined and $outfitTmp[_args[0]] isnot undefined and Object.keys($outfitTmp[_args[0]]).length gt 0>>
-		<<for $_slot range setup.clothingLayer.all>>
-			<<set $_item to $outfitTmp[_args[0]][$_slot]>>
-			<<if $_item is undefined or $worn[$_slot].name isnot $_item.name>>
-				<<generalStrip $_slot>>
-				<<returnCarried>>
+		<<if _args[1] isnot undefined>>
+			<<set $_item to $outfitTmp[_args[0]][_args[1]]>>
+			<<storeloaditem $_item _args[1]>>
+			<<run delete V.outfitTmp[_args[0][_args[1]]]>>
+			<<if Object.keys(V.outfitTmp[_args[0]]).length is 0>>
+				<<run delete V.outfitTmp[_args[0]]>>
 			<</if>>
-			<<if $_item isnot undefined>>
-				<<set $_stored to $store[$_slot].find(item => item.name is $_item.name)>>
-				<<if $_stored>>
-					<<set $worn[$_slot] to clone($_item)>>
-					<<set $worn[$_slot].location to 0>>
-					<<set $store[$_slot].deleteAt($store[$_slot].indexOf($_stored))>>
+		<<else>>
+			<<for $_slot range setup.clothingLayer.all>>
+				<<set $_item to $outfitTmp[_args[0]][$_slot]>>
+				<<if $_item is undefined or $worn[$_slot].name isnot $_item.name>>
+					<<generalStrip $_slot>>
+					<<returnCarried>>
 				<</if>>
-			<</if>>
-		<</for>>
+				<<if $_item isnot undefined>>
+					<<set $_stored to $store[$_slot].find(item => item.name is $_item.name)>>
+					<<if $_stored>>
+						<<set $worn[$_slot] to clone($_item)>>
+						<<set $worn[$_slot].location to 0>>
+						<<set $store[$_slot].deleteAt($store[$_slot].indexOf($_stored))>>
+					<</if>>
+				<</if>>
+			<</for>>
 		<<run delete V.outfitTmp[_args[0]]>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "storeloaditem">>
+	<<set $_item to _args[0]>>
+	<<set $_slot to _args[1]>>
+	<<if $_item isnot undefined>>
+		<<set $_stored to $store[$_slot].find(item => item.name is $_item.name)>>
+		<<if $_stored>>
+			<<set $worn[$_slot] to clone($_item)>>
+			<<set $worn[$_slot].location to 0>>
+			<<set $store[$_slot].deleteAt($store[$_slot].indexOf($_stored))>>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -1270,7 +1292,7 @@
 			<</if>>
 		<</if>>
 	/* Strips and returns clothing items that are not replaced */
-	<<elseif $worn[$_slot].name isnot "naked" and !_args[2]>>
+	<<elseif $worn[$_slot].name isnot "naked" and !_args[2] and _args[2] isnot "noreplace">>
 		<<generalStrip $_slot>>
 		<<returnCarried>>
 	<</if>>
