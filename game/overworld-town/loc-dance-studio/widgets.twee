@@ -42,14 +42,35 @@
 	<</if>>
 	<br>
 	<br>
-	<<if $wardrobe["under_upper"].filter(a => a.type.includes("dance")) lte 0>>
-		//You currently have no dancing clothes.//
-	<<else>>
-		//Dancing clothes://
+	<<if $worn.under_upper.type.includes("dance") and $worn.under_lower.type.includes("dance") 
+		and setup.clothingLayer.torso_outer.some(slot => $worn[slot].name isnot "naked" and ($worn[slot].one_piece isnot 1 or $worn[slot].outfitSecondary is undefined))
+		and clothingInStorage(_store_location).length is 0
+	>>
+		<<link [[Strip down to your dance clothes|$passage]]>>
+			<<if clothingInStorage(_store_location).length is 0>>
+					<<storesave _store_location>>
+					<<for _slot range setup.clothingLayer.all.except(setup.clothingLayer.torso_outer)>>
+						<<storeload _store_location _slot>>
+					<</for>>
+			<<else>>
+				<<for _slot range setup.clothingLayer.torso_outer>>
+					<<generalUndress _store_location _slot>>
+				<</for>>
+			<</if>>
+		<</link>>
 		<br>
-		<<listdancingclothes _store_location>>
-		<<temperature>>
+		<br>
 	<</if>>
-	<br>
+	<<if !$worn.under_upper.type.includes("dance") gt 0 or clothingInStorage(_store_location).length is 0>>
+		<<if $wardrobe.under_upper.filter(a => a.type.includes("dance")) lte 0>>
+			//You currently have no dancing clothes.//
+		<<else>>
+			//Dancing clothes://
+			<br>
+			<<listdancingclothes _store_location>>
+			<<temperature>>
+		<</if>>
+		<br>
+	<</if>>
 	<br>
 <</widget>>

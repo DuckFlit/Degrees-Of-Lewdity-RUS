@@ -144,7 +144,7 @@ const DoLSave = ((Story, Save) => {
 						signature: V.ironmanmode ? IronMan.getSignature(save) : false,
 					});
 					V.currentOverlay = null;
-					overlayShowHide("customOverlay");
+					closeOverlay();
 					if (V.ironmanmode === true) Engine.restart();
 				}
 			}
