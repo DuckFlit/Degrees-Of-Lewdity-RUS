@@ -3692,6 +3692,31 @@
 	<<if _version lte 31104>>
 		<<run delete $sexStats.creampie.npc.penis>>
 		<<run delete $sexStats.creampie.npc.tentacle>>
+
+		<!-- Fixing most named npcs missing all of their virginities -->
+		<!-- Resetting all virginities to defaults, keeping virginities already taken by player -->
+		<<if $NPCName[$NPCNameList.indexOf("Jordan")].virginity.penile is false>>
+			<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
+				<<set $_takenVirginities to []>>
+				<<for $_virginity, $_status range $NPCName[$_i].virginity>>
+					<<if $_status is "player">>
+						<<set $_takenVirginities.push($_virginity)>>
+					<</if>>
+				<</for>>
+				<<if $NPCNameList[$_i] is "Sydney">>
+					<<set $NPCName[$_i].virginity to {"anal": true, "oral": true, "penile": true, "vaginal": true, "handholding": true, "temple": true, "kiss": true}>>
+				<<else>>
+					<<initNNPCVirginity $_i>>
+				<</if>>
+				<<set $_takenVirginities.forEach(taken => $NPCName[$_i].virginity[taken] = "player")>>
+			<</for>>
+		<</if>>
+
+		<!-- Fix for saves where people were able to change wraith's gender -->
+		<<if $per_npc.wraith and $per_npc.wraith.pronoun isnot "i">>
+			<<set $per_npc.wraith.pronoun to "i">>
+			<<generatePronouns $per_npc.wraith>>
+		<</if>>
 	<</if>>
 
 	<!-- v0.3.11.4 $tirednessmax change to C.tiredness.max -->
