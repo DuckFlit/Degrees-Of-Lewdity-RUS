@@ -112,6 +112,17 @@ setup.colours = {
 			return '#ffffff';
 		}
 		return Renderer.lintRgbStaged(tan, gradient).toHexString();
+	},
+	/** 
+	 * Get CSS style filter that, when applied, transforms #FF0000 colour to a skin colour
+	 * @param {string} type - One of [ light, medium, dark, gyaru, ylight, ymedium, ydark, ygyaru ]
+	 * @param {number} tan - How tanned the skin is, where 0 = the lightest, 100 = full tan
+	 * @returns {string} - CSS filter value. Note: return string doesn't start with 'filter:', you have to prepend it yourself
+	 * Return example: 'hue-rotate(50deg) saturate(0.40) brightness(0.60)'
+	 */
+	getSkinCSSFilter(type, tan = 0) {
+		let slidersValues = setup.skinColor[type];
+		return skinColor(true, tan, slidersValues);
 	}
 };
 
