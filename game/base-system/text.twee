@@ -1205,6 +1205,12 @@
 	<<combatperson>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
+<<widget "genderswapPlayer">>
+	<!-- Note: You'll want to call this again when you're done, because its effects are visible on the sidebar caption if you leave it swapped, and we don't want that. -->
+	<!-- Note 2: gender_appearance is recalculated at the start of each passage, so don't expect the effects to stick around. -->
+	<<set $player.gender_appearance to ($player.gender_appearance is "f" ? "m" : "f")>>
+<</widget>>
+
 <<widget "genderswap">>
 	<!-- Changes the current pronoun, without modifying the NPC it's referencing. Useful for crossdressing NPC dialogue. -->
 	<!-- Usage: <<person1>><<genderswap>><<he>> -->
@@ -1375,52 +1381,45 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "genitalsensitivity">><<silently>>
-<<if $genitalsensitivity > 5>>
-	<<set _text_output2 to "sensitive ">>
-<<elseif $genitalsensitivity >= 3>>
-	<<set _text_output2 to "tender ">>
-<<elseif $genitalsensitivity >= 1.5>>
-	<<set _text_output2 to "receptive ">>
-<<else>>
-	<<set _text_output2 to "">>
-<</if>>
+	<<if $genitalsensitivity > 5>>
+		<<set _text_output2 to "sensitive ">>
+	<<elseif $genitalsensitivity >= 3>>
+		<<set _text_output2 to "tender ">>
+	<<elseif $genitalsensitivity >= 1.5>>
+		<<set _text_output2 to "receptive ">>
+	<<else>>
+		<<set _text_output2 to "">>
+	<</if>>
 <</silently>><<print _text_output2>><</widget>>
 
 <<widget "genitals">><<silently>>
-<<if $worn.genitals.type.includes("chastity") and _args[0] is undefined and _chastityBreak isnot 1>>
-	<<set _text_output to $worn.genitals.name>>
-<<else>>
-	<<set _text_output to "">>
-	<<if $genitalsensitivity > 5>>
-		<<set _text_output += "sensitive ">>
-	<<elseif $genitalsensitivity >= 3>>
-		<<set _text_output += "tender ">>
-	<<elseif $genitalsensitivity >= 1.5>>
-		<<set _text_output += "receptive ">>
-	<</if>>
-	<<if $player.penisExist>>
-		<<if $player.virginity.penile is true and _args[0] isnot 2>>
-			<<set _text_output += "virgin ">>
+	<<if $worn.genitals.type.includes("chastity") and _args[0] is undefined and _chastityBreak isnot 1>>
+		<<set _text_output to $worn.genitals.name>>
+	<<else>>
+		<<genitalsensitivity>><<set _text_output to _text_output2>>
+		<<if $player.penisExist>>
+			<<if $player.virginity.penile is true and _args[0] isnot 2>>
+				<<set _text_output += "virgin ">>
+			<</if>>
+			<<set _text_output += "penis">>
 		<</if>>
-		<<set _text_output += "penis">>
-	<</if>>
-	<<if $player.penisExist and $player.vaginaExist>>
-		<<set _text_output += " and ">>
-	<</if>>
-	<<if $player.vaginaExist>>
-		<<if $player.virginity.vaginal is true and _args[0] isnot 2>>
-			<<set _text_output += "virgin ">>
+		<<if $player.vaginaExist>>
+			<<if $player.penisExist>>
+				<<set _text_output += " and ">>
+			<</if>>
+			<<if $player.virginity.vaginal is true and _args[0] isnot 2>>
+				<<set _text_output += "virgin ">>
+			<</if>>
+			<<if $vaginaWetness gte 75 and $pbdisable is "f" and $pblevel gte 8>>
+				<<set _text_output += "visibly aroused and bushy ">>
+			<<elseif $vaginaWetness gte 75>>
+				<<set _text_output += "visibly aroused ">>
+			<<elseif $pbdisable is "f" and $pblevel gte 8>>
+				<<set _text_output += "bushy ">>
+			<</if>>
+			<<set _text_output += ["pussy", "pussy", "pussy", "quim"].pluck()>>
 		<</if>>
-		<<if $pblevel gte 8 and $vaginaWetness gte 75 and $pbdisable is "f">>
-			<<set _text_output += "visibly aroused and bushy ">>
-		<<elseif $vaginaWetness gte 75>>
-			<<set _text_output += "visibly aroused ">>
-		<<elseif $pblevel gte 8 and $pbdisable is "f">>
-			<<set _text_output += "bushy ">>
-		<</if>>
-		<<set _text_output += ["pussy", "pussy", "pussy", "quim"].pluck()>>
 	<</if>>
-<</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <!-- optionally takes 2 parameters: what to add after the text for singular/plural -->

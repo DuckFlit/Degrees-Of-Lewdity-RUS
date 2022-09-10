@@ -984,17 +984,13 @@ alternative way to write that:
 <</widget>>
 
 <<widget "npcrelationship">>
-<!-- Robin, Avery, Kylar are unique and are treated differently -->
-<<set _nam to _args[0]>>
-<<set _i to $NPCNameList.indexOf(_nam)>>
-<<if $NPCName[_i].init is 1>>
-	<<set $npctextlove to $NPCName[_i].love>>
-	<<set $npctextdom to $NPCName[_i].dom>>
-	<<set $npctextname to _nam>>
-	<<set $npctextdescription to $NPCName[_i].title>>
-	<<relationshiptext _nam>>
-	<br>
-<</if>>
+	<!-- Robin, Avery, Kylar are unique and are treated differently -->
+	<<set _npc to _args[0]>>
+	<<set _i to $NPCNameList.indexOf(_npc)>>
+	<<if $NPCName[_i].init is 1>>
+		<<relationshiptext>>
+		<br>
+	<</if>>
 <</widget>>
 
 <<widget "npcincr">>
@@ -1114,8 +1110,6 @@ alternative way to write that:
 <</widget>>
 
 <<widget "relationshiptext">>
-<<set _npc to _args[0]>>
-<<set _i to $NPCNameList.indexOf(_npc)>>
 <!-- Special cases for Robin, Avery, Kylar -->
 <<switch _npc>>
 	<<case Robin>>
@@ -1147,7 +1141,7 @@ alternative way to write that:
 		<</if>>
 	<<case Avery>>
 		Avery
-		<<if $NPCName[$NPCNameList.indexOf("Avery")].state is "dismissed">>
+		<<if $NPCName[_i].state is "dismissed">>
 			<span class="red">has moved on.</span>
 		<<elseif $NPCName[_i].rage gte 96>>
 			<span class="red">has given up on you.</span>
@@ -1178,7 +1172,7 @@ alternative way to write that:
 		<</if>>
 	<<case Kylar>>
 		Kylar
-		<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison" and $location isnot "prison">>
+		<<if $NPCName[_i].state is "prison" and $location isnot "prison">>
 				<span class="red"> is imprisoned.</span>
 		<<elseif $NPCName[_i].love gte 90>>
 			<<if $NPCName[_i].rage gte 90>>
@@ -1223,28 +1217,28 @@ alternative way to write that:
 		<</if>>
 	<<case Whitney>>
 		Whitney
-		<<if $NPCName[$NPCNameList.indexOf("Whitney")].state is "dungeon">>
+		<<if $NPCName[_i].state is "dungeon">>
 			<span class="red">is gone.</span>
-		<<elseif $npctextlove gte $npclovehigh>>
-			<<if $npctextdom gte $npcdomhigh>>
+		<<elseif $NPCName[_i].love gte $npclovehigh>>
+			<<if $NPCName[_i].dom gte $npcdomhigh>>
 				thinks you're <span class="green">adorable.</span>
-			<<elseif $npctextdom lte $npcdomlow>>
+			<<elseif $NPCName[_i].dom lte $npcdomlow>>
 				thinks you're <span class="green">inspiring.</span>
 			<<else>>
 				thinks you're <span class="green">delightful.</span>
 			<</if>>
-		<<elseif $npctextlove lte $npclovelow>>
-			<<if $npctextdom gte $npcdomhigh>>
+		<<elseif $NPCName[_i].love lte $npclovelow>>
+			<<if $NPCName[_i].dom gte $npcdomhigh>>
 				thinks you're <span class="red">pathetic.</span>
-			<<elseif $npctextdom lte $npcdomlow>>
+			<<elseif $NPCName[_i].dom lte $npcdomlow>>
 				thinks you're <span class="red">irritating.</span>
 			<<else>>
 				thinks you're <span class="red">terrible.</span>
 			<</if>>
 		<<else>>
-			<<if $npctextdom gte $npcdomhigh>>
+			<<if $NPCName[_i].dom gte $npcdomhigh>>
 				thinks you're <span class="pink">cute.</span>
-			<<elseif $npctextdom lte $npcdomlow>>
+			<<elseif $NPCName[_i].dom lte $npcdomlow>>
 				<span class="teal">looks up to you.</span>
 			<<else>>
 				has no strong opinion of you.
@@ -1379,31 +1373,32 @@ alternative way to write that:
 			has no strong opinion of you.
 		<</if>>
 
-<!-- Default cases for all other NNPCs -->
+	<!-- Default cases for all other NNPCs -->
 	<<default>>
-		<<if $npctextlove gte $npclovehigh>>
-			<<if $npctextdom gte $npcdomhigh>>
-			$npctextname thinks you're <span class="green">adorable.</span>
-			<<elseif $npctextdom lte $npcdomlow>>
-			$npctextname thinks you're <span class="green">inspiring.</span>
+		_npc
+		<<if $NPCName[_i].love gte $npclovehigh>>
+			<<if $NPCName[_i].dom gte $npcdomhigh>>
+				thinks you're <span class="green">adorable.</span>
+			<<elseif $NPCName[_i].dom lte $npcdomlow>>
+				thinks you're <span class="green">inspiring.</span>
 			<<else>>
-			$npctextname thinks you're <span class="green">delightful.</span>
+				thinks you're <span class="green">delightful.</span>
 			<</if>>
-		<<elseif $npctextlove lte $npclovelow>>
-			<<if $npctextdom gte $npcdomhigh>>
-			$npctextname thinks you're <span class="red">pathetic.</span>
-			<<elseif $npctextdom lte $npcdomlow>>
-			$npctextname thinks you're <span class="red">irritating.</span>
+		<<elseif $NPCName[_i].love lte $npclovelow>>
+			<<if $NPCName[_i].dom gte $npcdomhigh>>
+				thinks you're <span class="red">pathetic.</span>
+			<<elseif $NPCName[_i].dom lte $npcdomlow>>
+				thinks you're <span class="red">irritating.</span>
 			<<else>>
-			$npctextname thinks you're <span class="red">terrible.</span>
+				thinks you're <span class="red">terrible.</span>
 			<</if>>
 		<<else>>
-			<<if $npctextdom gte $npcdomhigh>>
-			$npctextname thinks you're <span class="pink">cute.</span>
-			<<elseif $npctextdom lte $npcdomlow>>
-			$npctextname <span class="teal">looks up to you.</span>
+			<<if $NPCName[_i].dom gte $npcdomhigh>>
+				thinks you're <span class="pink">cute.</span>
+			<<elseif $NPCName[_i].dom lte $npcdomlow>>
+				<span class="teal">looks up to you.</span>
 			<<else>>
-			$npctextname has no strong opinion of you.
+				has no strong opinion of you.
 			<</if>>
 		<</if>>
 <</switch>>
@@ -1413,21 +1408,9 @@ alternative way to write that:
 <!-- Can be used in any situation to let all active named NPCs known the player's gender -->
 <!-- Use _args[0] to ignore clothing -->
 <!-- Won't ignore the chastity belt's "hidden" property (for now) -->
-<<if _args[0]>>
+<<if _args[0] or $exposed gte 2>>
 	<<if !$worn.genitals.type.includes("hidden")>>
-		<<if $npc.length gt 0>>
-			<<for _i to 0; _i lt $npc.length; _i++>>
-				<<set $genderknown.pushUnique($npc[_i])>>
-			<</for>>
-		<</if>>
-	<</if>>
-<<else>>
-	<<if $exposed gte 2 and !$worn.genitals.type.includes("hidden")>>
-		<<if $npc.length gt 0>>
-			<<for _i to 0; _i lt $npc.length; _i++>>
-				<<set $genderknown.pushUnique($npc[_i])>>
-			<</for>>
-		<</if>>
+		<<run $npc.forEach(npc => $genderknown.pushUnique(npc))>>
 	<</if>>
 <</if>>
 <</widget>>
