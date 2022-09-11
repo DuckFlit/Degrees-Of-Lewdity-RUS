@@ -361,3 +361,19 @@ Renderer.locateModel = function (modelName, slot) {
 		return model;
 	}
 };
+
+/**
+ * Copies to targets keys from source that are not present there.
+ * Shallow.
+ *
+ * @param {object} target Object to extend.
+ * @param {object} source Default properties.
+ * @returns {object} Target.
+ */
+function assignDefaults(target, source) {
+	for (const k in source) {
+		if (!source.hasOwnProperty(k)) continue;
+		if (!(k in target)) target[k] = source[k];
+	}
+	return target;
+}

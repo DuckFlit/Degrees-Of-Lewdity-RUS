@@ -35,9 +35,7 @@ const DoLSave = ((Story, Save) => {
 
 	function parseVersion(version) {
 		version = marshalVersion(version);
-		return version
-			? version[0] * 1000000 + version[1] * 10000 + version[2] * 100 + version[3] * 1
-			: 0;
+		return version ? version[0] * 1000000 + version[1] * 10000 + version[2] * 100 + version[3] * 1 : 0;
 	}
 
 	/**
@@ -81,15 +79,9 @@ const DoLSave = ((Story, Save) => {
 	 * @returns {void}
 	 */
 	function load(slot, saveObj, overrides) {
-		const save =
-			saveObj == null
-				? slot === "auto"
-					? Save.autosave.get()
-					: Save.slots.get(slot)
-				: saveObj;
+		const save = saveObj == null ? (slot === "auto" ? Save.autosave.get() : Save.slots.get(slot)) : saveObj;
 		const saveDetails = JSON.parse(localStorage.getItem(KEY_DETAILS));
-		const metadata =
-			slot === "auto" ? saveDetails.autosave.metadata : saveDetails.slots[slot].metadata;
+		const metadata = slot === "auto" ? saveDetails.autosave.metadata : saveDetails.slots[slot].metadata;
 		/* Check if metadata for save matches the save's computed md5 hash. If it matches, the ironman save was not tampered with.
 			Bypass this check if on a mobile, because they are notoriously difficult to grab saves from in the event of issues. */
 		if (metadata.ironman && !Browser.isMobile.any()) {
@@ -122,10 +114,7 @@ const DoLSave = ((Story, Save) => {
 	function save(saveSlot, confirm, saveId, saveName) {
 		if (saveId == null) {
 			Wikifier.wikifyEval(`<<saveConfirm ${saveSlot}>>`);
-		} else if (
-			(V.confirmSave === true && confirm !== true) ||
-			(V.saveId !== saveId && saveId != null)
-		) {
+		} else if ((V.confirmSave === true && confirm !== true) || (V.saveId !== saveId && saveId != null)) {
 			Wikifier.wikifyEval(`<<saveConfirm ${saveSlot}>>`);
 		} else {
 			if (saveSlot != null) {
@@ -144,6 +133,7 @@ const DoLSave = ((Story, Save) => {
 						signature: V.ironmanmode ? IronMan.getSignature(save) : false,
 					});
 					V.currentOverlay = null;
+					// todo: find a better solution
 					closeOverlay();
 					if (V.ironmanmode === true) Engine.restart();
 				}
@@ -406,9 +396,7 @@ window.copySavedata = function (id) {
 window.updateExportDay = function () {
 	if (V.saveDetails != null && State.history[0].variables.saveDetails != null) {
 		V.saveDetails.exported.days = clone(V.days);
-		State.history[0].variables.saveDetails.exported.days = clone(
-			State.history[0].variables.days
-		);
+		State.history[0].variables.saveDetails.exported.days = clone(State.history[0].variables.days);
 		V.saveDetails.exported.count++;
 		State.history[0].variables.saveDetails.exported.count++;
 		V.saveDetails.exported.dayCount++;
@@ -481,16 +469,8 @@ const importSettingsData = function (data) {
 				if (namedObjects.includes(listKey[i]) && S.starting[listKey[i]] != null) {
 					const itemKey = Object.keys(listObject[listKey[i]]);
 					for (let j = 0; j < itemKey.length; j++) {
-						if (
-							V[listKey[i]][itemKey[j]] != null &&
-							S.starting[listKey[i]][itemKey[j]] != null
-						) {
-							if (
-								validateValue(
-									listObject[listKey[i]][itemKey[j]],
-									S.starting[listKey[i]][itemKey[j]]
-								)
-							) {
+						if (V[listKey[i]][itemKey[j]] != null && S.starting[listKey[i]][itemKey[j]] != null) {
+							if (validateValue(listObject[listKey[i]][itemKey[j]], S.starting[listKey[i]][itemKey[j]])) {
 								V[listKey[i]][itemKey[j]] = S.starting[listKey[i]][itemKey[j]];
 							}
 						}
@@ -525,16 +505,8 @@ const importSettingsData = function (data) {
 				if (namedObjects.includes(listKey[i]) && S.general[listKey[i]] != null) {
 					const itemKey = Object.keys(listObject[listKey[i]]);
 					for (let j = 0; j < itemKey.length; j++) {
-						if (
-							V[listKey[i]][itemKey[j]] != null &&
-							S.general[listKey[i]][itemKey[j]] != null
-						) {
-							if (
-								validateValue(
-									listObject[listKey[i]][itemKey[j]],
-									S.general[listKey[i]][itemKey[j]]
-								)
-							) {
+						if (V[listKey[i]][itemKey[j]] != null && S.general[listKey[i]][itemKey[j]] != null) {
+							if (validateValue(listObject[listKey[i]][itemKey[j]], S.general[listKey[i]][itemKey[j]])) {
 								V[listKey[i]][itemKey[j]] = S.general[listKey[i]][itemKey[j]];
 							}
 						}
@@ -565,12 +537,7 @@ const importSettingsData = function (data) {
 							S.npc[V.NPCNameList[i]][listKey[j]] === "none"
 						) {
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
-						} else if (
-							validateValue(
-								listObject[listKey[j]],
-								S.npc[V.NPCNameList[i]][listKey[j]]
-							)
-						) {
+						} else if (validateValue(listObject[listKey[j]], S.npc[V.NPCNameList[i]][listKey[j]])) {
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
 						}
 					}
@@ -643,12 +610,7 @@ function exportSettings(data, type) {
 				const itemKey = Object.keys(listObject[listKey[i]]);
 				for (let j = 0; j < itemKey.length; j++) {
 					if (V[listKey[i]][itemKey[j]] != null) {
-						if (
-							validateValue(
-								listObject[listKey[i]][itemKey[j]],
-								V[listKey[i]][itemKey[j]]
-							)
-						) {
+						if (validateValue(listObject[listKey[i]][itemKey[j]], V[listKey[i]][itemKey[j]])) {
 							S.starting[listKey[i]][itemKey[j]] = V[listKey[i]][itemKey[j]];
 						}
 					}
@@ -672,9 +634,7 @@ function exportSettings(data, type) {
 			const itemKey = Object.keys(listObject[listKey[i]]);
 			for (let j = 0; j < itemKey.length; j++) {
 				if (V[listKey[i]][itemKey[j]] != null) {
-					if (
-						validateValue(listObject[listKey[i]][itemKey[j]], V[listKey[i]][itemKey[j]])
-					) {
+					if (validateValue(listObject[listKey[i]][itemKey[j]], V[listKey[i]][itemKey[j]])) {
 						S.general[listKey[i]][itemKey[j]] = V[listKey[i]][itemKey[j]];
 					}
 				}
@@ -693,11 +653,7 @@ function exportSettings(data, type) {
 		S.npc[V.NPCNameList[i]] = {};
 		for (let j = 0; j < listKey.length; j++) {
 			// Overwrite to allow for "none" default value in the start passage to allow for rng to decide
-			if (
-				V.passage === "Start" &&
-				["pronoun", "gender"].includes(listKey[i]) &&
-				V.NPCName[i][listKey[j]] === "none"
-			) {
+			if (V.passage === "Start" && ["pronoun", "gender"].includes(listKey[i]) && V.NPCName[i][listKey[j]] === "none") {
 				S.npc[V.NPCNameList[i]][listKey[j]] = V.NPCName[i][listKey[j]];
 			} else if (validateValue(listObject[listKey[j]], V.NPCName[i][listKey[j]])) {
 				S.npc[V.NPCNameList[i]][listKey[j]] = V.NPCName[i][listKey[j]];
@@ -802,16 +758,7 @@ function settingsObjects(type) {
 				},
 				skinColor: {
 					natural: {
-						strings: [
-							"light",
-							"medium",
-							"dark",
-							"gyaru",
-							"ylight",
-							"ymedium",
-							"ydark",
-							"ygyaru",
-						],
+						strings: ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"],
 						randomize: "characterAppearance",
 					},
 					range: { min: 0, max: 100, decimals: 0, randomize: "characterAppearance" },
@@ -906,7 +853,7 @@ function settingsObjects(type) {
 				reducedLineHeight: { bool: true },
 				multipleWardrobes: { strings: [false, "isolated"] }, //, "all"
 				outfitEditorPerPage: { min: 5, max: 20, decimals: 0 }, //, "all"
-				options:{
+				options: {
 					neverNudeMenus: { bool: true },
 					showCaptionText: { bool: true },
 					sidebarStats: { strings: ["disabled", "limited", "all"] },
@@ -935,7 +882,7 @@ function settingsObjects(type) {
 					maxStates: { min: 1, max: 20, decimals: 0 },
 					newWardrobeStyle: { bool: true },
 					useNarrowMarket: { bool: true },
-					skipStatisticsConfirmation:{ bool: true },
+					skipStatisticsConfirmation: { bool: true },
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },
@@ -1078,14 +1025,9 @@ window.randomizeSettings = function (filter) {
 		Object.entries(settingsObject).forEach(setting => {
 			if (settingContainers.includes(setting[0])) {
 				randomizeSettingLoop(setting[1], mainObject, setting[0]);
-			} else if (
-				(!filter && setting[1].randomize) ||
-				(filter && filter === setting[1].randomize)
-			) {
+			} else if ((!filter && setting[1].randomize) || (filter && filter === setting[1].randomize)) {
 				if (subObject) {
-					settingsResult[mainObject][subObject][setting[0]] = randomizeSettingSet(
-						setting[1]
-					);
+					settingsResult[mainObject][subObject][setting[0]] = randomizeSettingSet(setting[1]);
 				} else {
 					settingsResult[mainObject][setting[0]] = randomizeSettingSet(setting[1]);
 				}
