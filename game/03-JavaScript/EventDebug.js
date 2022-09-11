@@ -27,10 +27,9 @@ class EventData {
 
 	Push(passage, index, time) {
 		if (this.disable) return;
-		V.event = ensure(V.event, {
-			buffer: [],
-			schema: 1,
-		});
+		if (V.event == null) {
+			V.event = { buffer: [], schema: 1 };
+		}
 		V.event.buffer.push({
 			slot: index,
 			time,

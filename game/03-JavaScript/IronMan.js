@@ -73,7 +73,7 @@ var IronMan = (Save => {
 				virginity: Object.assign({}, readonly, { value: V.player.virginity }),
 			});
 			Object.defineProperties(V.options, {
-				autosaveDisabled: Object.assign({}, readonly, { value: true })
+				autosaveDisabled: Object.assign({}, readonly, { value: true }),
 			});
 			if (!IRONMAN_DEBUG) {
 				Object.defineProperty(V, "debug", Object.assign({}, readonly, { value: 0 }));
@@ -133,6 +133,17 @@ var IronMan = (Save => {
 	/*  --------------------------------------
 		UI Functions relating to IronMan mode.
 		-------------------------------------- */
+
+	function sliderPerc(e) {
+		const valSpan = $(e.currentTarget).siblings().first();
+		const value = valSpan.text();
+
+		valSpan.text((i, value) => Math.round(value * 100) + "%");
+
+		if (value > 1) valSpan.css("color", "gold");
+		else if (value < 1) valSpan.css("color", "green");
+		else valSpan.css("color", "unset");
+	}
 
 	function uiCheckBox(mode = "normal") {
 		$(function () {
@@ -331,7 +342,7 @@ var IronMan = (Save => {
 			//
 			V.ironmanautosaveschedule = (
 				date.getTime() +
-				getRandomIntInclusive(432000, 777600) * 1000
+				random(432000, 777600) * 1000
 			).toString(8);
 		}
 	}
