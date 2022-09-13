@@ -97,6 +97,7 @@
 <<effectsshacklewhack>>
 <<effectshypnosiswhack>>
 <<effectshandsfreeface>>
+<<effectshandpull>>
 <<effectsdildowhack>>
 
 <<if $bodyaction is "doggy">>
@@ -195,6 +196,80 @@
 		<<set $NPCList[$righttarget].lefthand to "idle">>
 	<<else>>
 		<<set $NPCList[$righttarget].lefthand to 0>>
+	<</if>>
+<</if>>
+
+<<if $leftaction is "handguide">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "handguide">><<combatpromiscuity2>>
+
+	<<if combatSkillCheck("hand", $lefttarget)>>
+		<<if $rightaction is "handguide" and $handGuideLeft is $handGuideRight>>
+			<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+		<</if>>
+
+		<<switch $handGuideLeft>>
+			<<case "penis">>
+				You lower <<someones $lefttarget>> hand to your <<penis>>.
+				<<set $NPCList[$lefttarget].righthand to "penisentrance">><<set $penisuse to 1>><<set $penisstate to "otherhandentrance">>
+			<<case "pussy">>
+				You lower <<someones $lefttarget>> hand to your <<pussy>>.
+				<<set $NPCList[$lefttarget].righthand to "vaginaentrance">><<set $vaginause to 1>><<set $vaginastate to "otherhandentrance">>
+			<<case "ass">>
+				You press <<someones $lefttarget>> hand against your <<bottom>>.
+				<<set $NPCList[$lefttarget].righthand to "anusentrance">><<set $anususe to "handentrance">><<set $anusstate to "handentrance">>
+			<<default>>
+		<</switch>>
+		<<set $leftactiondefault to "rest">><<set $leftarm to 0>><<submission 1 $lefttarget>>
+	<<else>>
+		You try to guide <<someones $lefttarget>> hand to
+		<<switch $handGuideRight>>
+			<<case "penis">>your <<penis>>,
+			<<case "pussy">>your <<pussy>>,
+			<<case "ass">>your <<bottom>>,
+			<<default>>
+		<</switch>>
+
+		<<if $enemyanger gte random(30, 100)>>
+			<span class="purple">but <<he>> wrenches it out of your grasp.</span>
+			<<set $leftactiondefault to "rest">><<set $leftarm to 0>>
+			<<set $NPCList[$lefttarget].righthand to 0>><<violence 2>>
+		<<else>>
+			but <<his>> grip is too tight.
+		<</if>>
+	<</if>>
+<</if>>
+
+<<if $rightaction is "handguide">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "handguide">><<combatpromiscuity2>>
+
+	<<if combatSkillCheck("hand", $righttarget)>>
+		<<switch $handGuideRight>>
+			<<case "penis">>
+				You lower <<someones $lefttarget>> hand to your <<penis>>.
+				<<set $NPCList[$righttarget].lefthand to "penisentrance">><<set $penisuse to 1>><<set $penisstate to "otherhandentrance">>
+			<<case "pussy">>
+				Your lower <<someones $lefttarget>> hand to your <<pussy>>.
+				<<set $NPCList[$righttarget].lefthand to "vaginaentrance">><<set $vaginause to 1>><<set $vaginastate to "otherhandentrance">>
+			<<case "ass">>
+				You press <<someones $lefttarget>> hand against your <<bottom>>.
+				<<set $NPCList[$righttarget].lefthand to "anusentrance">><<set $anususe to "handentrance">><<set $anusstate to "handentrance">>
+		<</switch>>
+		<<set $rightactiondefault to "rest">><<set $rightarm to 0>><<submission 1 $righttarget>>
+	<<else>>
+		You try to guide <<someones $lefttarget>> hand to
+		<<switch $handGuideRight>>
+			<<case "penis">>your <<penis>>,
+			<<case "pussy">>your <<pussy>>,
+			<<case "ass">>your <<bottom>>,
+		<</switch>>
+
+		<<if $enemyanger gte random(30, 100)>>
+			<span class="purple">but <<he>> wrenches it out of your grasp.</span>
+			<<set $rightactiondefault to "rest">><<set $rightarm to 0>>
+			<<set $NPCList[$righttarget].lefthand to 0>><<violence 2>>
+		<<else>>
+			but <<his>> grip is too tight.
+		<</if>>
 	<</if>>
 <</if>>
 
@@ -2960,7 +3035,7 @@
 <</if>>
 
 <<if $mouthaction is "kisslips">>
-	<<set $mouthaction to 0>><<set $mouthactiondefault to "kisslips">><<personselect $mouthtarget>>
+	<<set $mouthaction to 0>><<set $mouthactiondefault to "kisslips">><<personselect $mouthtarget>><<combatpromiscuity1>>
 	<<if combatSkillCheck("oral", $mouthtarget)>>
 		You move your lips close to <<hers>>.
 		<<set $mouthuse to "kiss">><<set $mouthstate to "kissentrance">>
@@ -3492,6 +3567,25 @@
 
 <<if $mouthaction is "analkiss">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "analkiss">><<actionsAnalKiss $mouthtarget>><<submission 12 $mouthtarget>>
+<</if>>
+
+<<if $mouthaction is "analpull" and ($NPCList[$mouthtarget].penis is "mouthotheranus" or $NPCList[$mouthtarget].vagina is "mouthotheranus")>>
+	<<set $mouthaction to 0>><<set $mouthactiondefault to "analpull">><<personselect $mouthtarget>>
+	You try to pull away from the anus menacing your mouth.
+	<<oralskilluse>><<brat 1 $mouthtarget>>
+	<<if combatSkillCheck("oral", $mouthtarget)>>
+		<span class="green"><<He>> doesn't stop you.</span>
+		<<set $mouthstate to 0>><<set $mouthuse to 0>>
+		<<if $NPCList[$mouthtarget].penis is "mouthotheranus">><<set $NPCList[$mouthtarget].penis to 0>><</if>>
+		<<if $NPCList[$mouthtarget].vagina is "mouthotheranus">><<set $NPCList[$mouthtarget].vagina to 0>><</if>>
+		<<set $NPCList[$mouthtarget].location.genitals to 0>>
+	<<else>>
+		<span class="red">However, <<combatperson>> refuses to allow it,</span> forcing your face into <<his>> ass.
+		<<violence 1>>
+		<<if $consensual is 1>>
+			<<set $consensual to 0>><<molested>><<controlloss>>
+		<</if>>
+	<</if>>
 <</if>>
 
 <<rng>>
