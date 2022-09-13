@@ -22,6 +22,23 @@
 	<</if>>
 <</widget>>
 
+<<widget "lefthandpull">>
+	<<if ($NPCList[$lefttarget].lefthand and $NPCList[$lefttarget].lefthand.startsWith("penis"))
+	or ($NPCList[$lefttarget].righthand and $NPCList[$lefttarget].righthand.startsWith("penis"))>>
+		<<set _leftaction["Take " + $NPCList[$lefttarget].pronouns.his + " hand off your penis"] to "handpullpenis">>
+	<</if>>
+
+	<<if ($NPCList[$lefttarget].lefthand and $NPCList[$lefttarget].lefthand.startsWith("vagina"))
+	or ($NPCList[$lefttarget].righthand and $NPCList[$lefttarget].righthand.startsWith("vagina"))>>
+		<<set _leftaction["Take " + $NPCList[$lefttarget].pronouns.his + " hand off your pussy"] to "handpullvagina">>
+	<</if>>
+
+	<<if ($NPCList[$lefttarget].lefthand and $NPCList[$lefttarget].lefthand.startsWith("anus"))
+	or ($NPCList[$lefttarget].righthand and $NPCList[$lefttarget].righthand.startsWith("anus"))>>
+		<<set _leftaction["Take " + $NPCList[$lefttarget].pronouns.his + " hand off your ass"] to "handpullanus">>
+	<</if>>
+<</widget>>
+
 <!-- Deprecated, not in use. See "leftgrabnew"-->
 <<widget "leftgrab">>
 
@@ -484,6 +501,23 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<if $audiencecamera1 isnot 0>>
 	<<set _rightaction["Pose for camera"] to "rightcamerapose">>
 <</if>>
+<</widget>>
+
+<<widget "righthandpull">>
+	<<if ($NPCList[$righttarget].lefthand and $NPCList[$righttarget].lefthand.startsWith("penis"))
+	or ($NPCList[$righttarget].righthand and $NPCList[$righttarget].righthand.startsWith("penis"))>>
+		<<set _rightaction["Take " + $NPCList[$righttarget].pronouns.his + " hand off your penis"] to "handpullpenis">>
+	<</if>>
+
+	<<if ($NPCList[$righttarget].lefthand and $NPCList[$righttarget].lefthand.startsWith("vagina"))
+	or ($NPCList[$righttarget].righthand and $NPCList[$righttarget].righthand.startsWith("vagina"))>>
+		<<set _rightaction["Take " + $NPCList[$righttarget].pronouns.his + " hand off your pussy"] to "handpullvagina">>
+	<</if>>
+
+	<<if ($NPCList[$righttarget].lefthand and $NPCList[$righttarget].lefthand.startsWith("anus"))
+	or ($NPCList[$righttarget].righthand and $NPCList[$righttarget].righthand.startsWith("anus"))>>
+		<<set _rightaction["Take " + $NPCList[$righttarget].pronouns.his + " hand off your ass"] to "handpullanus">>
+	<</if>>
 <</widget>>
 
 <!-- Deprecated, not in use. See "rightgrabnew"-->
@@ -959,6 +993,39 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 		<<elseif $_heldhand is "lefthand" and $lefttarget isnot "self">>
 			<<if $NPCList[$lefttarget].righthand is 0 or $NPCList[$lefttarget].righthand is "idle">>
 				<<set _leftaction["Hold " + $NPCList[$lefttarget].pronouns.his + " hand"] to "lefthandholdnew">>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "combathandguide">>
+	<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lt 15 and !$promiscuityIgnore>>
+		<!-- Do Nothing -->
+	<<else>>
+		<<set _handGuideOptions to {}>>
+
+		<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+		<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
+
+		<<if $_genitals_exposed>>
+			<<if $penisuse is 0>>
+				<<set _handGuideOptions["your penis"] to "penis">>
+			<</if>>
+
+			<<if $vaginause is 0>>
+				<<set _handGuideOptions["your pussy"] to "pussy">>
+			<</if>>
+		<</if>>
+
+		<<if $anususe is 0 and $_anus_exposed>>
+			<<set _handGuideOptions["your ass"] to "ass">>
+		<</if>>
+
+		<<if Object.keys(_handGuideOptions).length gt 0>>
+			<<if _args[0] is "left">>
+				<<set _leftaction["Guide " + $NPCList[$lefttarget].pronouns.him + " to"] to "handguide">>
+			<<else>>
+				<<set _rightaction["Guide " + $NPCList[$righttarget].pronouns.him + " to"] to "handguide">>
 			<</if>>
 		<</if>>
 	<</if>>
@@ -1784,43 +1851,29 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 			<<set $leftaction to 0>><<set $leftactiondefault to "freeface">>
 			<<set $rightaction to 0>><<set $rightactiondefault to "freeface">>
 			<<set _freestrength to 2.5>>
+			<<set $_t to $lefttarget>>
 			You try to use both hands to free your face,
 		<<elseif $leftaction is "freeface">>
 			<<set $leftaction to 0>><<set $leftactiondefault to "freeface">>
 			<<set _freestrength to 1>>
+			<<set $_t to $lefttarget>>
 			You try to use your hand to free your face,
 		<<elseif $rightaction is "freeface">>
 			<<set $rightaction to 0>><<set $rightactiondefault to "freeface">>
 			<<set _freestrength to 1>>
+			<<set $_t to $rightarget>>
 			You try to use your hand to free your face,
 		<</if>>
 
-		<<if $mouthuse is "facesit">>
-			<<if $mouthstate is "vagina">>
-				<<selectNpcWithPartInPosition "vagina" "facesit">>
-			<<elseif $mouthstate is "anal">>
-				<<selectNpcWithPartInPosition "vagina" "facesitanal">>
-			<</if>>
-		<<elseif $mouthstate is "nipple">>
-			<<selectNpcWithPartInPosition "chest" "mouth">>
-		<<elseif $mouthstate is "breasts">>
-			<<selectNpcWithPartInPosition "chest" "mouthentrance">>
-		<<elseif $mouthuse is "lefthand">>
-			<<selectNpcWithPartInPosition "lefthand" "mouth">>
-		<<elseif $mouthuse is "righthand">>
-			<<selectNpcWithPartInPosition "righthand" "mouth">>
-		<<elseif $mouthstate is "otheranus">>
-			<<selectNpcWithPartInPosition "penis" "mouthotheranus">>
-		<</if>>
-
+		<<set _npc to $NPCList[$_t]>><<personselect $_t>>
 		<<set _nectarDifficulty to Math.clamp($drugged, 0, 500) + Math.clamp($nectar_addiction, 0, 500)>>
 		<<willpowerdifficulty _nectarDifficulty $willpowermax "silent">>
-		<<if (($mouthuse is "facesit" and $mouthstate is "vagina") or ["nipple","breasts"].includes($mouthstate)) and ($NPCList[$lefttarget].type is "plant" or $NPCList[$righttarget].type is "plant") and !$willpowerSuccess>>
+		<<if (($mouthuse is "facesit" and $mouthstate is "vagina") or ["nipple","breasts"].includes($mouthstate)) and (_npc.type is "plant") and !$willpowerSuccess>>
 			<span class="red">but you can't tear yourself from the sweet nectar.</span>
 			<<if $mouthstate is "nipple">>
-				You desperately suck their $NPCList[0].breastdesc.
+				You desperately suck <<his>> _npc.breastdesc.
 			<<elseif $mouthstate is "breasts">>
-				You push your face back into their $NPCList[0].breastdesc.
+				You push your face back into <<his>> _npc.breastdesc.
 			<<else>>
 				You desperately lick the pussy pressing into your face.
 			<</if>>
@@ -1880,7 +1933,13 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 							"and manage to shove <<his>> ass from off of your face.",
 							"and wrestle <<him>> and <<his>> ass away from your mouth."
 						)>>
-						<<set _npc.penis to 0>><<set _npc.location.genitals to 0>>
+						<<if _npc.penis is "mouthotheranus">>
+							<<set _npc.penis to 0>>
+						<</if>>
+						<<if _npc.vagina is "mouthotheranus">>
+							<<set _npc.vagina to 0>>
+						<</if>>
+						<<set _npc.location.genitals to 0>>
 					<</if>>
 				</span>
 				<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $mouthaction to 0>><<set $head to 0>>
@@ -1969,6 +2028,135 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 				</span>
 				<<brat 2>>
 			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "effectshandpull">>
+	<<if $leftaction is "handpullpenis" or $rightaction is "handpullpenis">>
+		<<if $leftaction is "handpullpenis" and $rightaction is "handpullpenis">>
+			<<set $leftaction to 0>><<set $leftactiondefault to "handpullpenis">>
+			<<set $rightaction to 0>><<set $rightactiondefault to "handpullpenis">>
+			<<personselect $lefttarget>><<set $_handPullDifficulty to 500>>
+		<<elseif $leftaction is "handpullpenis">>
+			<<set $leftaction to 0>><<set $leftactiondefault to "handpullpenis">>
+			<<personselect $lefttarget>><<set $_handPullDifficulty to 1000>>
+		<<else>>
+			<<set $rightaction to 0>><<set $rightactiondefault to "handpullpenis">>
+			<<personselect $righttarget>><<set $_handPullDifficulty to 1000>>
+		<</if>>
+		<<brat 1>>
+
+		
+		<<if combatSkillCheck("hand", _n, $_handPullDifficulty)>>
+			You grasp <<combatpersons>> wrist,
+			<<if $penisstate is "otherhand">>
+				<span class="green">and pry <<his>> fingers off your <<penis>>.</span>
+			<<else>>
+				<span class="green">and pull it off your crotch.</span>
+			<</if>>
+
+			<<if $NPCList[_n].lefthand and $NPCList[_n].lefthand.startsWith("penis")>>
+				<<combat-reset-hand "left">>
+			<<else>>
+				<<combat-reset-hand "right">>
+			<</if>>
+			<<set $penisuse to 0>><<set $penisstate to 0>>
+		<<else>>
+			You try to grab <<combatpersons>> wrist,
+			<<if $penisstate is "otherhand">>
+				<span class="red">but <<he>> tightens <<his>> grip in retaliation.</span>
+			<<else>>
+				<span class="red">but <<he>> swats your hand away and resumes <<his>> stroking.</span>
+			<</if>>
+			<<if $consensual is 1>>
+				<<set $consensual to 0>><<molested>><<controlloss>>
+			<</if>>
+			<<violence 1>>
+		<</if>>
+	<</if>>
+
+	<<if $leftaction is "handpullvagina" or $rightaction is "handpullvagina">>
+		<<if $leftaction is "handpullvagina" and $rightaction is "handpullvagina">>
+			<<set $leftaction to 0>><<set $leftactiondefault to "handpullvagina">>
+			<<set $rightaction to 0>><<set $rightactiondefault to "handpullvagina">>
+			<<personselect $lefttarget>><<set $_handPullDifficulty to 500>>
+		<<elseif $leftaction is "handpullvagina">>
+			<<set $leftaction to 0>><<set $leftactiondefault to "handpullvagina">>
+			<<personselect $lefttarget>><<set $_handPullDifficulty to 1000>>
+		<<else>>
+			<<set $rightaction to 0>><<set $rightactiondefault to "handpullvagina">>
+			<<personselect $righttarget>><<set $_handPullDifficulty to 1000>>
+		<</if>>
+		<<brat 1>>
+
+		<<if combatSkillCheck("hand", _n, $_handPullDifficulty)>>
+			You grasp <<combatpersons>> wrist,
+			<<if $vaginastate is "otherhand">>
+				<span class="green">and pry <<his>> fingers out of your <<pussy>>.</span>
+			<<else>>
+				<span class="green">and pull it off your crotch.</span>
+			<</if>>
+
+			<<if $NPCList[_n].lefthand and $NPCList[_n].lefthand.startsWith("vagina")>>
+				<<combat-reset-hand "left">>
+			<<else>>
+				<<combat-reset-hand "right">>
+			<</if>>
+			<<set $vaginause to 0>><<set $vaginastate to 0>>
+		<<else>>
+			You try to grab <<combatpersons>> wrist,
+			<<if $vaginastate is "otherhand">>
+				<span class="red">but <<he>> jams <<his>> fingers deeper in retaliation.</span>
+			<<else>>
+				<span class="red">but <<he>> swats your hand away and resumes <<his>> stroking.</span>
+			<</if>>
+			<<if $consensual is 1>>
+				<<set $consensual to 0>><<molested>><<controlloss>>
+			<</if>>
+			<<violence 1>>
+		<</if>>
+	<</if>>
+
+	<<if $leftaction is "handpullanus" or $rightaction is "handpullanus">>
+		<<if $leftaction is "handpullanus" and $rightaction is "handpullanus">>
+			<<set $leftaction to 0>><<set $leftactiondefault to "handpullanus">>
+			<<set $rightaction to 0>><<set $rightactiondefault to "handpullanus">>
+			<<personselect $lefttarget>><<set $_handPullDifficulty to 500>>
+		<<elseif $leftaction is "handpullanus">>
+			<<set $leftaction to 0>><<set $leftactiondefault to "handpullanus">>
+			<<personselect $lefttarget>><<set $_handPullDifficulty to 1000>>
+		<<else>>
+			<<set $rightaction to 0>><<set $rightactiondefault to "handpullanus">>
+			<<personselect $righttarget>><<set $_handPullDifficulty to 1000>>
+		<</if>>
+		<<brat 1>>
+
+		<<if combatSkillCheck("hand", _n, $_handPullDifficulty)>>
+			You grasp <<combatpersons>> wrist,
+			<<if $anusstate is "otherhand">>
+				<span class="green">and pry <<his>> fingers out of your asshole.</span>
+			<<else>>
+				<span class="green">and pull it off your <<bottom>>.</span>
+			<</if>>
+
+			<<if $NPCList[_n].lefthand and $NPCList[_n].lefthand.startsWith("anus")>>
+				<<combat-reset-hand "left">>
+			<<else>>
+				<<combat-reset-hand "right">>
+			<</if>>
+			<<set $anususe to 0>><<set $anusstate to 0>>
+		<<else>>
+			You try to grab <<combatpersons>> wrist,
+			<<if $anusstate is "otherhand">>
+				<span class="red">but <<he>> jams <<his>> fingers deeper in retaliation.</span>
+			<<else>>
+				<span class="red">but <<he>> swats your hand away and resumes <<his>> stroking.</span>
+			<</if>>
+			<<if $consensual is 1>>
+				<<set $consensual to 0>><<molested>><<controlloss>>
+			<</if>>
+			<<violence 1>>
 		<</if>>
 	<</if>>
 <</widget>>

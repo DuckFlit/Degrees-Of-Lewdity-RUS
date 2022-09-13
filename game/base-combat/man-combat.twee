@@ -279,7 +279,23 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 <<widget "combat-hand-on-hand">>
 	<<rng>>
 	<<set $_hand to _args[0]>>
-	<<if $rng gte 95>>
+	<<if $enemyanger + $rng gte 196>>
+		In anger, <span class="pink"><<he>> wrenches <<his>> hand from your grasp.</span>
+		<<combat-reset-hand _args[0]>>
+		<<if $_hand is "left">>
+			<<set $rightarm to 0>>
+		<<else>>
+			<<set $leftarm to 0>>
+		<</if>>
+		<<violence 5>>
+	<<elseif $enemyanger + $rng gte 160>>
+		<<print either(
+			"<<He>> digs <<his>> nails into your wrist.",
+			"<<He>> crushes your hand in <<his>> grip.",
+			"<<He>> bends your fingers back."
+		)>>
+		<<violence 10>><<hitstat>><<set $speechbeat to 1>>
+	<<elseif $rng gte 95>>
 		<span class="purple"><<He>> releases your <<print ($_hand is "left" ? "right" : "left")>> hand.</span>
 		<<combat-reset-hand _args[0]>>
 		<<if $_hand is "left">>
@@ -4490,6 +4506,27 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<else>>
 			<<He>> gets up off of your face.
 			<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+		<</if>>
+	<</if>>
+
+	<<rng>>
+	<<if $NPCList[_n].vagina is "mouthotheranus">>
+		<<if $rng gte 1>>
+			<<if $enemyarousal gte (($enemyarousalmax / 5) * 3)>>
+				<<He>> grinds <<his>> ass against your mouth.
+			<<else>>
+				<<He>> slowly moves <<his>> ass against your lips.
+			<</if>>
+			<<sex 3 _n>><<set $speechmouthotheranus to 1>>
+			<<if $mouthactiondefault is "anallick">>
+				<<set $speechanallick to 1>>
+			<<elseif $mouthactiondefault is "analkiss">>
+				<<set $speechanalkiss to 1>>
+			<</if>>
+		<<else>>
+			<span class="purple"><<He>> moves <<his>> ass away from your face.</span>
+			<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].penis to 0>>
+			<<set $NPCList[_n].location.genitals = 0>>
 		<</if>>
 	<</if>>
 
