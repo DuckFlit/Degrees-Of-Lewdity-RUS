@@ -141,14 +141,18 @@
 	<<set $_vType to _args[1]>>
 	<!-- if the first argument is a name, find which npc has that name, else assume it is an index. -->
 	<<if typeof $_npcId is "string">>
-		<<set $_npc to $NPCList.find(npc => npc.fullDescription === $_npcId)>>
-		<<set $_straponvirginityIgnore to ($_vType is "penile" and npcHasStrapon($NPCList.findIndex(npc => npc.fullDescription === $_npcId)))>>
-	<<elseif $_npcId isnot undefined>>
+		<<set $_npcId to $NPCList.findIndex(npc => npc.fullDescription === $_npcId)>>
+	<</if>>
+	<<if $_npcId isnot undefined and $_npcId gte 0>>
 		<<set $_npc to $NPCList[$_npcId]>>
 		<<set $_straponvirginityIgnore to ($_vType is "penile" and npcHasStrapon($_npcId))>>
 	<</if>>
 
 	<<if $_npc and $_vType and $_npc.virginity and $_npc.virginity[$_vType] and (!$wraith or $wraith.mimic isnot $_npc.nam) and !$_straponvirginityIgnore>>
+		<<if ($_vType is "vaginal" or $_vType is "penile") and $_npc.virginity.temple is true and $templePromised isnot $_npc.fullDescription>>
+			<<set $_npc.virginity.temple to false>>
+		<</if>>
+		
 		/* note: virginity must be exactly equal to true; only true means that they still have their virginity. */
 		<<if $_npc.virginity[$_vType] is true>>
 			<<personselect $_npcId>>
