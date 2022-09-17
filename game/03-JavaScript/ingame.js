@@ -654,8 +654,12 @@ function getRobinLocation() {
 		T.robin_location = V.robinlocationoverride.location;
 	} else if (["docks", "landfill", "dinner", "pillory"].includes(V.robinmissing)) {
 		T.robin_location = V.robinmissing;
-	} else if (!between(V.hour, 7, 20)) { // if hour is 6 or lower, or 21 or higher
-		T.robin_location = "sleep";
+	} else if (!between(V.hour, 7, 20)){ //if hour is 6 or lower, or 21 or higher
+		if (V.NPCName[V.NPCNameList.indexOf("Robin")].lust >= 80 && V.robinromance === 1 && between(V.hour, 21, 23) && !V.robinDaily.sleepMasturbate){
+			return T.robin_location = "sleepMasturbate";
+		} else {
+			return T.robin_location = "sleep";
+		}
 	} else if (V.schoolday === 1 && between(V.hour, 8, 15)) {
 		return (T.robin_location = "school");
 	} else if ((V.weekday === 7 || V.weekday === 1) && between(V.hour, 9, 16) && V.NPCName[V.NPCNameList.indexOf("Robin")].trauma < 80) {
@@ -698,6 +702,7 @@ function getRobinCrossdressingStatus(crossdressLevel) {
 	switch (getRobinLocation()) {
 		case "orphanage":
 		case "sleep":
+		case "sleepMasturbate":
 			if (crossdressLevel >= 2) T.robin_cd = 2;
 			break;
 		case "park":
@@ -1465,9 +1470,9 @@ window.getSexesFromRandomGroup = getSexesFromRandomGroup;
 
 function getColourClassFromPercentage(percentage) {
 	/* This function is for picking the right color to use when coloring various things, primarily the sidebar stats. */
-	/* When using this function, try to keep in mind what value of your input variable you want "red" to be at. 
+	/* When using this function, try to keep in mind what value of your input variable you want "red" to be at.
 	 * Example: $drugged goes higher than 500, but we want the bar to become red at 500, so we call this function as getColourClassFromPercentage($drugged / 5).
-	 */
+	*/
 	if (percentage <= 0) return "green";
 	if (percentage < 20) return "teal";
 	if (percentage < 40) return "lblue";
