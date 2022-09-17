@@ -56,14 +56,16 @@
 
 		<<kylaroptionsleave>>
 	<<elseif ($bus is "starfish" or $bus is "park") and $daystate isnot "day">>
-		<<if _kylarStatus.includes("Love")>>
+		<<if $syndromekylar is 1>>
+			<<He>> looks at <<his>> watch. "I need to go," <<he>> says. "They're waiting for me." <<He>> looks at you.
+		<<elseif _kylarStatus.includes("Love")>>
 			<<He>> looks at <<his>> watch. "I need to go," <<he>> says. "They're waiting for me." <<He>> keeps looking over <<his>> shoulder as <<he>> walks.
 		<<else>>
 			<<He>> looks at <<his>> watch, mumbles something, then walks away.
 		<</if>>
 		<br><br>
 
-		<<kylaroptionsleave>>
+		<<kylaroptionsleave "manor">>
 	<<elseif $bus is "kylarmanor" and $hour lt 18>>
 		<<unset $kylar_action>>
 		Kylar looks at a monitor. "I should sleep," <<he>> says. <<He>> walks over to <<his>> bed and collapses atop it, fully dressed. <<He>> watches you, longing on <<his>> face, but <<he>> doesn't say anything.
@@ -135,17 +137,16 @@
 			<<link [[Gift Kylar a strap-on|Kylar Gift Strap-on]]>><</link>><<glove>><<lksuspicion>><<gglust>><<lstress>>
 			<br>
 		<</if>>
-		<<kylaroptionsleave true>>
+		<<kylaroptionsleave "leave">>
 	<</if>>
 <</widget>>
 
 <<widget "kylaroptionsleave">>
 	<<run statusCheck("Kylar")>>
-	<<set $_kylarCanStopYou to _args[0] is true>>
 
 	<<if $kylar_action is "stop">>
 		<<link [[Shake off|Kylar Shake]]>><<npcincr Kylar rage 5>><</link>><<ggksuspicion>>
-	<<elseif $_kylarCanStopYou and random(1, 100) lte 40 and _kylarStatus.includes("Love")>>
+	<<elseif _args[0] is "leave" and random(1, 100) lte 40 and _kylarStatus.includes("Love")>>
 		<<link [[Leave|Kylar Stop]]>><</link>>
 	<<else>>
 		<<switch $bus>>
@@ -160,6 +161,10 @@
 			<<default>>
 				<<set $_dest to "School Rear Playground">>
 		<</switch>>
+		<<if _args[0] is "manor" and $syndromekylar is 1>>
+			<<link [["Walk with " + _kylar.pronouns.him + " (0:20)"|Kylar Walk Manor]]>><</link>>
+			<br>
+		<</if>>
 		<<link [[Leave|$_dest]]>><<endevent>><<unset $kylar_action>><</link>>
 	<</if>>
 	<br>
@@ -2114,7 +2119,7 @@ You accompany Kylar to the arcade. <<He>> grasps your hand once outside the orph
 
 :: Kylar Tease 2
 <<effects>><<set _kylar to statusCheck("Kylar")>>
-<<set $kylarDaily.invite to ($location is "school" ? "school" : "home")>>
+<<set $kylarDaily.invite to ($bus is "kylarmanor" ? "manor" : $location)>>
 
 You lean in again, and press your lips to Kylar's cheek, lingering for a few seconds. You can feel <<his>> cheek shift as <<he>> smiles. You're not done yet, though. You hold <<his>> head in place with one hand and kiss <<him>> again, this time a little lower, near the jawline. You keep kissing <<him>>, going over <<his>> chin and down <<his>> neck. <<His>> breathing becomes heavy.
 <br><br>
@@ -2131,15 +2136,29 @@ You rest your other hand on <<his>> _kylar.clothes.lower.name, right over <<his>
 <</if>>
 <<promiscuity2>>
 
-<<if _kylarStatus.includes("Lust")>>
-	Kylar whimpers, before placing <<his>> hands on your shoulders. "I-I need you," <<he>> says. "We can find somewhere private, right?" <<He>> grinds against your hand.
+<<if $bus is "kylarmanor">>
+	<<if _kylarStatus.includes("Lust")>>
+		Kylar whimpers, before placing <<his>> hands on your shoulders. "I-I need you," <<he>> says. "Please, please, please." <<He>> grinds against your hand.
+	<<else>>
+		Kylar whimpers, before placing a hand on your shoulder. "W-We can have sex right now," <<he>> says. "Anytime you want."
+	<</if>>
 <<else>>
-	Kylar whimpers, before placing a hand on your shoulder. "W-We can find somewhere private," <<he>> says. "Anywhere you want."
+	<<if _kylarStatus.includes("Lust")>>
+		Kylar whimpers, before placing <<his>> hands on your shoulders. "I-I need you," <<he>> says. "We can find somewhere private, right?" <<He>> grinds against your hand.
+	<<else>>
+		Kylar whimpers, before placing a hand on your shoulder. "W-We can find somewhere private," <<he>> says. "Anywhere you want."
+	<</if>>
 <</if>>
 <br><br>
 
 <<if $location is "school">>
 	<<link [[Take Kylar to the bathrooms (0:05)|Kylar Tease Bathroom]]>><<pass 5>><</link>><<promiscuous2>>
+<<elseif $bus is "kylarmanor">>
+	<<link [[Take Kylar to the bed|Manor Kylar Invite]]>><<set $phase to 0>><</link>><<promiscuous2>>
+	<<if currentSkillValue('physique') gte $physiquesize>>
+		<br>
+		<<link [[Carry Kylar to the bed|Manor Kylar Invite]]>><<set $phase to 1>><<npcincr Kylar lust 10>><</link>><<promiscuous2>><<gglust>>
+	<</if>>
 <<else>>
 	<<link [[Invite Kylar to the orphanage (0:15)|Kylar Invite]]>><<pass 15>><</link>><<promiscuous2>>
 <</if>>
