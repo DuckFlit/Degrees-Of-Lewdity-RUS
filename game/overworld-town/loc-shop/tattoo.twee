@@ -21,17 +21,16 @@
 
 <<set $outside to 0>><<effects>><<set $lock to 0>>
 
-You are in the tattoo parlour. The artists here can turn anything drawn on you into a tattoo. They also have a selection of tattoo designs available. Costs £500.
+You are in the tattoo parlour. The artists here can turn anything drawn on you into a tattoo. They also have a selection of tattoo designs available. Costs <<printmoney 50000>>.
 <br><br>
 
 <<if $daystate is "night">>
 	You are alone in the darkness.
+	<br><br>
 <<elseif $exposed gte 1>>
 	You hide in a cupboard to protect your dignity.
-<<else>>
-
+	<br><br>
 <</if>>
-<br><br>
 
 <<if $stress gte $stressmax>>
 	<<passoutshop>>
@@ -74,41 +73,51 @@ You are in the tattoo parlour. The artists here can turn anything drawn on you i
 <<effects>>
 
 <<for _active_bodypart range setup.bodyparts>>
-	<<if ["pen","marker","lipstick","mud"].includes($skin[_active_bodypart].pen)>>
-		<<if $money gte 50000>>
-		You have <<if $skin[_active_bodypart].type is "text">><span class="pink">"<<print $skin[_active_bodypart].writing>>"</span> written<<else>>a $skin[_active_bodypart].writing drawn<</if>> on your <<bodypart _active_bodypart>>.
-			<<if ($skin[_active_bodypart].special is "bestiality" or $skin[_active_bodypart].special is "Black Wolf" or $skin[_active_bodypart].special is "Great Hawk") and $deviancy lte 34>>
-				<<if (_active_bodypart is "left_bottom" or _active_bodypart is "right_bottom" or _active_bodypart is "pubic" or _active_bodypart is "breasts") and $exhibitionism lte 34>>
-					<span class="blue">You can't bear to show your <<bodypart _active_bodypart>> to the tattoo artist, and you're not deviant enough to have such a thing made into a tattoo anyway.</span>
+	<<set _part to $skin[_active_bodypart]>>
+	<<switch _part.pen>>
+		<<case "pen" "marker" "lipstick" "mud">>
+			You have
+			<<if _part.type is "text">>
+				<span class="pink">"<<print _part.writing>>"</span> written
+			<<else>>
+				<span class="pink">a _part.writing</span> drawn
+			<</if>>
+			on your <<bodypart _active_bodypart>>.
+			<<set _tooShy to (["left_bottom","right_bottom","pubic","breasts"].includes(_active_bodypart) and $exhibitionism lte 34)>>
+			<<set _deviant to ["bestiality", "Black Wolf", "Great Hawk"].includes(_part.special)>>
+			<<set _lewd to _part.lewd is 1>>
+			<<if $money lte 50000>>
+				<span class="red">You cannot afford to turn it into a tattoo.</span>
+			<<elseif (_deviant and $deviancy lte 34) or (_lewd and $promiscuity lte 34)>>
+				<<set _lewdOrDeviant to (_deviant ? "deviant" : "lewd")>>
+				<<if _tooShy>>
+					<span class="blue">You can't bear to show your <<bodypart _active_bodypart>> to the tattoo artist, and you're not _lewdOrDeviant enough to have such a thing made into a tattoo anyway.</span>
 				<<else>>
-					<span class="blue">You're not deviant enough to have such a thing made into a tattoo.</span>
+					<span class="blue">You're not _lewdOrDeviant enough to have such a thing made into a tattoo.</span>
 				<</if>>
-			<<elseif $skin[_active_bodypart].lewd is 1 and $skin[_active_bodypart].special isnot "bestiality" and $promiscuity lte 34>>
-				<<if (_active_bodypart is "left_bottom" or _active_bodypart is "right_bottom" or _active_bodypart is "pubic" or _active_bodypart is "breasts") and $exhibitionism lte 34>>
-					<span class="blue">You can't bear to show your <<bodypart _active_bodypart>> to the tattoo artist, and you're not lewd enough to have such a thing made into a tattoo anyway.</span>
-				<<else>>
-					<span class="blue">You're not lewd enough to have such a thing made into a tattoo.</span>
-				<</if>>
-			<<elseif (_active_bodypart is "left_bottom" or _active_bodypart is "right_bottom" or _active_bodypart is "pubic" or _active_bodypart is "breasts") and $exhibitionism lte 34>>
+				<<unset _lewdOrDeviant>>
+			<<elseif _tooShy>>	
 				<span class="blue">You can't bear to show your <<bodypart _active_bodypart>> to the tattoo artist.</span>
 			<<else>>
-			<<capture _active_bodypart>> | <<link [[Turn into tattoo (£500 1:00)|Tattoo Bodywriting]]>><<pass 60>><<set $money -= 50000>><<set $tattoo_bodypart to _active_bodypart>><<set $tattoo_parlour to clone($skin[_active_bodypart])>><<if $skin[_active_bodypart].lewd is 1 or $skin[_active_bodypart].special is "bestiality" or $skin[_active_bodypart].special is "Black Wolf" or $skin[_active_bodypart].special is "Great Hawk">><<control 50>><<else>><<control 25>><</if>><<set $skin[_active_bodypart].pen to "tattoo">><<pain 6>><</link>><</capture>> <<if $skin[_active_bodypart].lewd is 1 or $skin[_active_bodypart].special is "bestiality" or $skin[_active_bodypart].special is "Black Wolf" or $skin[_active_bodypart].special is "Great Hawk">><<gggcontrol>><<else>><<ggcontrol>><</if>>
-			<</if>><<gpain>>
-		<br>
-		<</if>>
-	<<elseif $skin[_active_bodypart].pen is "tattoo">>
-		Your <<bodypart _active_bodypart>> is already tattooed.
-		<br>
-	<<elseif $skin[_active_bodypart].pen is "brand">>
-		Your <<bodypart _active_bodypart>> is <span class="red">branded</span>.
-		<br>
-	<<elseif $skin[_active_bodypart].pen is "magic">>
-		Your <<bodypart _active_bodypart>> has a magical <span class="pink">seal</span>.
-		<br>
-	<<elseif !$skin[_active_bodypart].pen>>
-		Nothing is written on your <<bodypart _active_bodypart>>.
-		<br>
-	<</if>>
+				<<capture _active_bodypart _part _deviant _lewd>>
+					| <<link [[Turn into tattoo (£500 1:00)|Tattoo Bodywriting]]>>
+						<<pass 60>><<set $money -= 50000>><<set $tattoo_bodypart to _active_bodypart>><<set $tattoo_parlour to clone(_part)>>
+						<<if _lewd or _deviant>><<control 50>><<else>><<control 25>><</if>>
+						<<set _part.pen to "tattoo">><<pain 6>>
+					<</link>><<if _lewd or _deviant>><<gggcontrol>><<else>><<ggcontrol>><</if>><<gpain>>
+				<</capture>>
+			<</if>>
+			<<unset _tooShy>><<unset _deviant>><<unset _lewd>>
+		<<case "tattoo">>
+			Your <<bodypart _active_bodypart>> is already tattooed.
+		<<case "brand">>
+			Your <<bodypart _active_bodypart>> is <span class="red">branded</span>.
+		<<case "magic">>
+			Your <<bodypart _active_bodypart>> has a magical <span class="pink">seal</span>.
+		<<default>>
+			Nothing is written on your <<bodypart _active_bodypart>>.
+	<</switch>>
+	<br>
 <</for>>
 <br>
 <<link [[Back|Tattoo Parlour]]>><</link>>
@@ -122,9 +131,8 @@ They have a board displaying a number of tattoo designs.
 
 Location:<br>
 <<for _active_bodypart range setup.bodyparts>>
-	<<if $skin[_active_bodypart].writing>>
-
-	<<else>><<set _bodypart_detected to 1>>
+	<<if !$skin[_active_bodypart].writing>>
+		<<set _bodypart_detected to 1>>
 		<label>Your <<bodypart _active_bodypart>> <<capture _active_bodypart>><<radiobutton "$tattoo_bodypart" _active_bodypart>><</capture>></label>
 		<br>
 	<</if>>
