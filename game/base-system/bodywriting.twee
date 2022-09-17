@@ -2315,72 +2315,45 @@ Second arg: tool */
 <</widget>>
 
 <<widget "bodywriting_exposure_check">>/*Checks if bodywriting or tattoos are visible to NPCs.*/
-<<if _skin_array is undefined or _args[0] is true>>
-	<<set _skin_array to []>>
-	<<set _skin_array_special to []>>
-	<<set _bodywriting_exposed to 0>>
-	<<if $skin.forehead.writing>>
-		<<set _skin_array.push("forehead")>>
-		<<set _skin_array_special.push($skin.forehead.special)>>
-		<<set _bodywriting_exposed to 1>>
+	<<if _skin_array is undefined or _args[0] is true>>
+		<<set _visible_areas to []>>
+		<<set _bodywriting_exposed to 0>>
+		
+		<!-- first: construct a set of all locations where writing COULD be seen (doesn't matter if there is any writing or not) -->
+		<<set _visible_areas.push("forehead")>>
+		<<if !$worn.face.type.includes("mask")>>
+			<<set _visible_areas.push("left_cheek", "right_cheek")>>
+		<</if>>
+		<<if ($worn.over_upper.exposed gte 1 or $worn.over_upper.open is 1) and ($worn.upper.exposed gte 1 or $worn.upper.open is 1) and ($worn.under_upper.exposed gte 1 or $worn.under_upper.open is 1)>>
+			<<set _visible_areas.push("left_shoulder", "right_shoulder")>>
+		<</if>>
+		<<if ($worn.over_upper.exposed gte 1) and ($worn.upper.exposed gte 1) and ($worn.under_upper.exposed gte 1)>>
+			<<set _visible_areas.push("breasts")>>
+		<</if>>
+		<<if ($worn.over_upper.exposed gte 1 or $worn.over_upper.state isnot "waist") and ($worn.upper.exposed gte 1 or $worn.upper.state isnot "waist") and ($worn.under_upper.exposed gte 1 or $worn.under_upper.state isnot "waist")>>
+			<<set _visible_areas.push("back")>>
+		<</if>>
+		<<if ($worn.over_lower.exposed gte 1 or $worn.over_lower.anus_exposed gte 1) and ($worn.lower.exposed gte 1 or $worn.lower.anus_exposed gte 1) and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic"))>>
+			<<set _visible_areas.push("left_bottom", "right_bottom")>>
+		<</if>>
+		<<if $worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1 and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic"))>>
+			<<set _visible_areas.push("pubic")>>
+		<</if>>
+		<<if $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and !$worn.under_lower.type.includes("athletic")>>
+			<<set _visible_areas.push("left_thigh", "right_thigh")>>
+		<</if>>
+
+		<!-- second: filter out every area where there is no writing and store it in _skin_array -->
+		<<set _skin_array to _visible_areas.filter(loc => $skin[loc].writing)>>
+		
+		<!-- third: make an array of all the special properties of the visible bodywriting -->
+		<<set _skin_array_special to _skin_array.map(loc => $skin[loc].special)>>
+
+		<<if _skin_array.length gte 1>>
+			<<set _bodywriting_exposed to 1>>
+		<</if>>
 	<</if>>
-	<<if $skin.left_cheek.writing and !$worn.face.type.includes("mask")>>
-		<<set _skin_array.push("left_cheek")>>
-		<<set _skin_array_special.push($skin.left_cheek.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.right_cheek.writing and !$worn.face.type.includes("mask")>>
-		<<set _skin_array.push("right_cheek")>>
-		<<set _skin_array_special.push($skin.right_cheek.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.left_shoulder.writing and ($worn.over_upper.exposed gte 1 or $worn.over_upper.open is 1) and ($worn.upper.exposed gte 1 or $worn.upper.open is 1) and ($worn.under_upper.exposed gte 1 or $worn.under_upper is 1)>>
-		<<set _skin_array.push("left_shoulder")>>
-		<<set _skin_array_special.push($skin.left_shoulder.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.right_shoulder.writing and ($worn.over_upper.exposed gte 1 or $worn.over_upper.open is 1) and ($worn.upper.exposed gte 1 or $worn.upper.open is 1) and ($worn.under_upper.exposed gte 1 or $worn.under_upper is 1)>>
-		<<set _skin_array.push("right_shoulder")>>
-		<<set _skin_array_special.push($skin.right_shoulder.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.breasts.writing and ($worn.over_upper.exposed gte 1) and ($worn.upper.exposed gte 1) and ($worn.under_upper.exposed gte 1)>>
-		<<set _skin_array.push("breasts")>>
-		<<set _skin_array_special.push($skin.breasts.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.back.writing and ($worn.over_upper.exposed gte 1 or $worn.over_upper.state isnot "waist") and ($worn.upper.exposed gte 1 or $worn.upper.state isnot "waist") and ($worn.under_upper.exposed gte 1 or $worn.under_upper.state isnot "waist")>>
-		<<set _skin_array.push("back")>>
-		<<set _skin_array_special.push($skin.back.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.left_bottom.writing and ($worn.over_lower.exposed gte 1 or $worn.over_lower.anus_exposed gte 1) and ($worn.lower.exposed gte 1 or $worn.lower.anus_exposed gte 1) and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic"))>>
-		<<set _skin_array.push("left_bottom")>>
-		<<set _skin_array_special.push($skin.left_bottom.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.right_bottom.writing and ($worn.over_lower.exposed gte 1 or $worn.over_lower.anus_exposed gte 1) and ($worn.lower.exposed gte 1 or $worn.lower.anus_exposed gte 1) and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic"))>>
-		<<set _skin_array.push("right_bottom")>>
-		<<set _skin_array_special.push($skin.right_bottom.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.pubic.writing and $worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1 and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic"))>>
-		<<set _skin_array.push("pubic")>>
-		<<set _skin_array_special.push($skin.pubic.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.left_thigh.writing and $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and !$worn.under_lower.type.includes("athletic")>>
-		<<set _skin_array.push("left_thigh")>>
-		<<set _skin_array_special.push($skin.left_thigh.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-	<<if $skin.right_thigh.writing and $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and !$worn.under_lower.type.includes("athletic")>>
-		<<set _skin_array.push("right_thigh")>>
-		<<set _skin_array_special.push($skin.right_thigh.special)>>
-		<<set _bodywriting_exposed to 1>>
-	<</if>>
-<</if>>
-<<set _bodypart to _skin_array.random()>>
+	<<set _bodypart to _skin_array.random()>>
 <</widget>>
 
 <<widget "bodywriting_prostitution_check">>
@@ -2388,179 +2361,168 @@ Second arg: tool */
 <</widget>>
 
 <<widget "tattoo_parlour">>
-<<generate1>><<person1>>
-<<if $tattoo_choice>>
-	<<if $tattoo_parlour.special is "bestiality" or $tattoo_parlour.special is "Black Wolf" or $tattoo_parlour.special is "Great Hawk">>
-	Blushing, you tell the tattoo artist you want <<if $tattoo_parlour.type is "text">><span class="pink">"<<print $tattoo_parlour.writing>>"</span><<else>>a <span class="pink"><<print $tattoo_parlour.writing>></span><</if>> tattooed on your <<bodypart $tattoo_bodypart>>. <<Hes>> unfazed by your deviant request.
-	<<control 50>><<gggcontrol>>
-
+	<<generate1>><<person1>>
+	<<if ["bestiality", "Black Wolf", "Great Hawk"].includes($tattoo_parlour.special)>>
+		<<set $_embarassingType to "deviant">>
 	<<elseif $tattoo_parlour.lewd is 1>>
-	Blushing, you tell the tattoo artist you want <<if $tattoo_parlour.type is "text">><span class="pink">"<<print $tattoo_parlour.writing>>"</span><<else>>a <span class="pink"><<print $tattoo_parlour.writing>></span><</if>> tattooed on your <<bodypart $tattoo_bodypart>>. <<Hes>> unfazed by your lewd request.
-	<<control 50>><<gggcontrol>>
-
-	<<elseif $tattoo_bodypart is "left_bottom" or $tattoo_bodypart is "right_bottom" or $tattoo_bodypart is "pubic" or $tattoo_bodypart is "breasts">>
-	Blushing, you tell the tattoo artist you want <<if $tattoo_parlour.type is "text">><span class="pink">"<<print $tattoo_parlour.writing>>"</span><<else>>a <span class="pink"><<print $tattoo_parlour.writing>></span><</if>> tattooed on your <<bodypart $tattoo_bodypart>>. <<Hes>> unfazed by the location.
-	<<control 50>><<gggcontrol>>
-
-	<<else>>
-	You tell the tattoo artist you want <<if $tattoo_parlour.type is "text">><span class="pink">"<<print $tattoo_parlour.writing>>"</span><<else>>a <span class="pink"><<print $tattoo_parlour.writing>></span><</if>> tattooed on your <<bodypart $tattoo_bodypart>>.
-	<<control 25>><<ggcontrol>>
-
+		<<set $_embarassingType to "lewd">>
+	<<elseif ["left_bottom", "right_bottom", "pubic", "breasts"].includes($tattoo_bodypart)>>
+		<<set $_embarassingType to "location">>
 	<</if>>
-<<else>>
-	<<if $tattoo_parlour.special is "bestiality" or $tattoo_parlour.special is "Black Wolf" or $tattoo_parlour.special is "Great Hawk">>
-	Blushing, you tell the tattoo artist you want <<if $tattoo_parlour.type is "text">>writing<<else>>image<</if>> on your <<bodypart $tattoo_bodypart>> to become permanent. <<Hes>> unfazed by your deviant request.
-
-	<<elseif $tattoo_parlour.lewd is 1>>
-	Blushing, you tell the tattoo artist you want the <<if $tattoo_parlour.type is "text">>writing<<else>>image<</if>> on your <<bodypart $tattoo_bodypart>> to become permanent. <<Hes>> unfazed by your lewd request.
-
-	<<elseif $tattoo_bodypart is "left_bottom" or $tattoo_bodypart is "right_bottom" or $tattoo_bodypart is "pubic" or $tattoo_bodypart is "breasts">>
-	Blushing, you tell the tattoo artist you want the <<if $tattoo_parlour.type is "text">>writing<<else>>image<</if>> on your <<bodypart $tattoo_bodypart>> to become permanent. <<Hes>> unfazed by the location.
-
+	<<if $tattoo_choice>>
+		<<if $tattoo_parlour.type is "text">>
+			<<set $_request to `<span class="pink">"<<print $tattoo_parlour.writing>>"</span>`>>
+		<<else>>
+			<<set $_request to `a <span class="pink"><<print $tattoo_parlour.writing>></span>`>>
+		<</if>>
+		<<if $_embarassingType>>
+			Blushing, you tell the tattoo artist you want $_request tattooed on your <<bodypart $tattoo_bodypart>>.
+			<<control 50>><<gggcontrol>>
+		<<else>>
+			You tell the tattoo artist you want $_request tattooed on your <<bodypart $tattoo_bodypart>>.
+			<<control 25>><<ggcontrol>>
+		<</if>>
 	<<else>>
-	You tell the tattoo artist you want the <<if $tattoo_parlour.type is "text">>writing<<else>>image<</if>> on your <<bodypart $tattoo_bodypart>> to become permanent.
-
+		<<set $_writing to ($tattoo_parlour.type is "text" ? "writing" : "image")>>
+		<<if $_embarassingType>>
+			Blushing, you tell the tattoo artist you want the $_writing on your <<bodypart $tattoo_bodypart>> to become permanent.
+		<<else>>
+			You tell the tattoo artist you want the $_writing on your <<bodypart $tattoo_bodypart>> to become permanent.
+		<</if>>
 	<</if>>
-<</if>>
-<br><br>
-<<if $tattoo_bodypart is "left_bottom" or $tattoo_bodypart is "right_bottom">>
-"Alright," <<he>> says, pulling the curtain shut. "Lets see your bottom."
-	<<if $worn.lower.name isnot "naked">>
-		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-			<<if $worn.under_lower.name isnot "naked">>
-				You <<nervously>> flip up your skirt, baring your $worn.under_lower.name. "Those need to go," <<he>> says. "Or they'll get in the way."
-					<<if $worn.under_lower.set is $worn.under_upper.set>>
-						You follow <<his>> instruction, and shuffle out of your $worn.under_upper.name while <<his>> back is turned.
-					<<else>>
-						You follow <<his>> instruction, and pull down your $worn.under_lower.name while <<his>> back is turned.
-					<</if>>
+	<<if $_embarassingType is "deviant">>
+		<<Hes>> unfazed by your deviant request.
+	<<elseif $_embarassingType is "lewd">>
+		<<Hes>> unfazed by your lewd request.
+	<<elseif $_embarassingType is "location">>
+		<<Hes>> unfazed by the location.
+	<</if>>
+	<br><br>
+
+	<<set $_skirt to setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt>>
+	<<if ["left_bottom", "right_bottom"].includes($tattoo_bodypart)>>
+		"Alright," <<he>> says, pulling the curtain shut. "Lets see your bottom."
+		<<if $worn.lower.type.includes("naked")>>
+			<<if $worn.under_lower.type.includes("naked")>>
+				You <<nervously>> turn, showing <<him>> your <<bottom>>.
 			<<else>>
+				You <<nervously>> pull down your $worn.under_lower.name, baring your <<bottom>>.
+			<</if>>
+		<<elseif $worn.under_lower.type.includes("naked")>>
+			<<if $_skirt is 1>>
 				You <<nervously>> flip up your skirt, baring your <<bottom>>.
-			<</if>>
-		<<else>>
-			<<if $worn.lower.set is $worn.upper.set>>
-				<<if !$worn.under_lower.type.includes("naked")>>
-					You <<nervously>> remove your $worn.upper.name, baring your <<undertop>> and $worn.under_lower.name. "Those need to go," <<he>> says. "Or they'll get in the way."
-						<<if $worn.under_lower.est is $worn.under_upper.set>>
-							You follow <<his>> instruction, and shuffle out of your $worn.under_upper.name while <<his>> back is turned.
-						<<else>>
-							You follow <<his>> instruction, and pull down your $worn.under_lower.name while <<his>> back is turned.
-						<</if>>
-				<<else>>
-					You <<nervously>> pull down your $worn.lower.name, baring your <<bottom>>.
-				<</if>>
 			<<else>>
-				<<if !$worn.under_lower.type.includes("naked")>>
-					You <<nervously>> pull down your $worn.lower.name, baring your $worn.under_lower.name. "Those need to go," <<he>> says. "Or they'll get in the way."
-						<<if $worn.under_lower.est is $worn.under_upper.set>>
-							You follow <<his>> instruction, and shuffle out of your $worn.under_upper.name while <<his>> back is turned.
-						<<else>>
-							You follow <<his>> instruction, and pull down your $worn.under_lower.name while <<his>> back is turned.
-						<</if>>
+				You <<nervously>> pull down your $worn.lower.name, baring your <<bottom>>.
+			<</if>>
+		<<else>>
+			<<if $_skirt is 1>>
+				You <<nervously>> flip up your skirt, baring your $worn.under_lower.name.
+			<<elseif $worn.lower.set is $worn.upper.set>>
+				You <<nervously>> remove your $worn.upper.name, baring your <<undertop>> and $worn.under_lower.name.
+			<<else>>
+				You <<nervously>> pull down your $worn.lower.name, baring your $worn.under_lower.name.
+			<</if>>
+			"Those need to go," <<he>> says. "Or they'll get in the way."
+			<<if $worn.under_lower.set is $worn.under_upper.set>>
+				You follow <<his>> instruction, and shuffle out of your $worn.under_upper.name while <<his>> back is turned.
+			<<else>>
+				You follow <<his>> instruction, and pull down your $worn.under_lower.name while <<his>> back is turned.
+			<</if>>
+		<</if>>
+
+	<<elseif ["pubic", "left_thigh", "right_thigh"].includes($tattoo_bodypart)>>
+		"Alright," <<he>> says, pulling the curtain shut.
+		<<if $worn.lower.type.includes("naked")>>
+			<<if $tattoo_bodypart is "pubic" and !$worn.under_lower.type.includes("naked")>>
+				"Those need to go," <<he>> says. "Or they'll get in the way."
+				<<if $worn.under_lower.set is $worn.under_upper.set>>
+					You <<nervously>> follow <<his>> instruction, and shuffle out of your $worn.under_upper.name while <<his>> back is turned.
 				<<else>>
-					You <<nervously>> pull down your $worn.lower.name, baring your <<bottom>>.
+					You <<nervously>> follow <<his>> instruction, and pull down your $worn.under_lower.name while <<his>> back is turned.
+				<</if>>
+			<</if>>
+		<<else>>
+			<<if $_skirt is 1>>
+				"You'll have to pull your skirt right up. Don't want fabric getting in the way."
+				You <<nervously>> lift your $worn.lower.name, baring your <<undies>>.
+			<<elseif $worn.upper.set is $worn.lower.set>>
+				"You'll have to strip right down. Don't want fabric getting in the way."
+				You <<nervously>> remove your $worn.upper.name, baring your <<undertop>> and <<undies>>.
+			<<else>>
+				"You'll have to take your bottoms off. Don't want the fabric getting in the way."
+				You <<nervously>> pull down your $worn.lower.name, baring your <<undies>>.
+			<</if>>
+
+			<<if $tattoo_bodypart is "pubic" and !$worn.under_lower.type.includes("naked")>>
+				"Those need to go too," <<he>> says.
+				<<if $worn.under_lower.set is $worn.under_upper.set>>
+					You follow <<his>> instruction, and shuffle out of your $worn.under_upper.name while <<his>> back is turned.
+				<<else>>
+					You follow <<his>> instruction, and pull down your $worn.under_lower.name while <<his>> back is turned.
 				<</if>>
 			<</if>>
 		<</if>>
-	<<else>>
-		<<if $worn.under_lower.name isnot "naked">>
-			You <<nervously>> pull down your $worn.under_lower.name, baring your <<bottom>>.
-		<<else>>
-			You <<nervously>> turn, showing <<him>> your <<bottom>>.
+
+	<<elseif ["breasts", "back"].includes($tattoo_bodypart)>>
+		"Alright," <<he>> says, pulling the curtain shut.
+		<<if !$worn.upper.type.includes("naked")>>
+			<<if $worn.upper.open is 1 or $worn.upper.type.includes("naked")>>
+				"Could you pull your top down?" You <<nervously>> tug down your $worn.upper.name,
+			<<else>>
+				"Could you take your top off?" You <<nervously>> remove your $worn.upper.name,
+			<</if>>
+			exposing your <<undertop>>.
 		<</if>>
 	<</if>>
-<br><br>
-<<He>> pulls a lever, and the chair beside <<him>> reclines. "Lie on your side," <<he>> says.
-	<<if $worn.genitals.name isnot "naked">>
-		<<He>> doesn't mention your $worn.genitals.name. You assume that means it won't get in the way.
-	<</if>>
-	<<if $worn.under_lower.name is "naked">>
-		Bare from the waist down, you lie as instructed. "This will hurt a bit."
-	<<else>>
-		You lie as instructed. "This will hurt a bit."
-	<</if>>
-<br><br>
+	<br><br>
 
-<<elseif $tattoo_bodypart is "pubic" or $tattoo_bodypart is "left_thigh" or $tattoo_bodypart is "right_thigh">>
-"Alright," <<he>> says, pulling the curtain shut.
-	<<if $worn.lower.name is "naked">>
+	<<if ["left_bottom", "right_bottom", "pubic", "left_thigh", "right_thigh"].includes($tattoo_bodypart)>>
+		<<He>> pulls a lever, and the chair beside <<him>> reclines. "Lie <<print (["left_bottom", "right_bottom"].includes($tattoo_bodypart) ? "on your side" : "down")>>," <<he>> says.
 
-	<<elseif $worn.upper.set is $worn.lower.set and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1>>
-		"You'll have to strip right down. Don't want fabric getting in the way."
-
-		You <<nervously>> remove your $worn.upper.name, baring your <<undertop>> and <<undies>>.
-	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1>>
-		"You'll have to take your bottoms off. Don't want the fabric getting in the way."
-
-		You <<nervously>> pull down your $worn.lower.name, baring your <<undies>>.
-	<<else>>
-		"You'll have to pull your skirt right up. Don't want fabric getting in the way."
-
-		You <<nervously>> lift your $worn.lower.name, baring your <<undies>>.
-	<</if>>
-	<<He>> pulls a lever, and the chair beside <<him>> reclines. "Lie down," <<he>> says.
-	<<if $worn.genitals.name isnot "naked">>
-		<<He>> doesn't mention your $worn.genitals.name. You assume that means it won't get in the way.
-	<</if>>
-
-	<<if $worn.under_lower.name is "naked">>
-		Bare from the waist down, you lie as instructed. "This will hurt a bit."
-	<<else>>
-		You lie as instructed. "This will hurt a bit."
-	<</if>>
-
-<<elseif $tattoo_bodypart is "breasts" or $tattoo_bodypart is "back">>
-	"Alright," <<he>> says, pulling the curtain shut.
-	<<if $worn.upper.type.includes("naked")>>
-
-	<<elseif $worn.upper.open is 1 or $worn.upper.name is "naked">>
-		"Could you pull your top down?"
-		<<if $worn.under_upper.type.includes("naked")>>
-			You <<nervously>> tug down your $worn.upper.name, exposing your <<breasts>>.
-		<<else>>
-			You <<nervously>> tug down your $worn.upper.name, exposing your $worn.under_upper.name.
+		<<if $worn.genitals.name isnot "naked">>
+			<<He>> doesn't mention your $worn.genitals.name. You assume that means it won't get in the way.
+			<br><br>
 		<</if>>
 
-	<<else>>
-		"Could you take your top off?"
-		<<if $worn.under_upper.type.includes("naked")>>
-			You <<nervously>> remove your $worn.upper.name, exposing your <<breasts>>.
+		<<if $worn.under_lower.type.includes("naked")>>
+			Bare from the waist down, you lie as instructed. "This will hurt a bit."
 		<<else>>
-			You <<nervously>> remove your $worn.upper.name, exposing your $worn.under_upper.name.
+			You lie as instructed. "This will hurt a bit."
 		<</if>>
-
+	<<else>>
+		<<He>> pulls a lever, and the chair beside <<him>> reclines. "Lie down." You lie as instructed. "This will hurt a bit."
 	<</if>>
-	<<He>> pulls a lever, and the chair beside <<him>> reclines. "Lie down." You lie as instructed. "This will hurt a bit."
+	<br><br>
 
-<<else>>
-	<<He>> pulls a lever, and the chair beside <<him>> reclines. "Lie down." You lie as instructed. "This will hurt a bit."
-<</if>>
-<br><br>
-<<Hes>> not wrong. Your <<bodypart $tattoo_bodypart>> stings the whole way through, but you get used to it, becoming bored instead.
-<<if $tattoo_bodypart is "pubic" or $tattoo_bodypart is "breasts" or $tattoo_bodypart is "left_bottom" or $tattoo_bodypart is "right_bottom">>
-The artist remains professional despite the lewd location.
-<</if>>
-<br><br>
-"There we go," <<he>> says at last, reaching for a mirror. You examine your new tattoo,
-<<if $tattoo_parlour.lewd is 1>>
-	<<if $tattoo_parlour.type is "text">><span class="lewd">"<<print $tattoo_parlour.writing>>"</span><<else>>a <span class="lewd"><<print $tattoo_parlour.writing>></span><</if>>
-<<else>>
-	<<if $tattoo_parlour.type is "text">><span class="purple">"<<print $tattoo_parlour.writing>>"</span><<else>>a <span class="purple"><<print $tattoo_parlour.writing>></span><</if>>
-<</if>>
-now permanently emblazoned on your <<bodypart $tattoo_bodypart>>.
-<br><br>
-The artist explains how to care for your skin while the tattoo is still raw. You get the gist. "Thanks for your custom," <<he>> says as you stand.
-<<if $tattoo_bodypart is "left_bottom" or $tattoo_bodypart is "right_bottom">>"Oh, and be careful sitting down."<</if>>
-<br><br>
+	<<Hes>> not wrong. Your <<bodypart $tattoo_bodypart>> stings the whole way through, but you get used to it, becoming bored instead.
+	<<if $_embarassingType is "location">>
+		The artist remains professional despite the lewd location.
+	<</if>>
+	<br><br>
 
-<<if $tattoo_parlour.writing is "Book Criminal >:(" or $tattoo_parlour.writing is "Book Criminal <3">>
-	<<earnFeat "A Crime Most Foul">>
-<</if>>
+	"There we go," <<he>> says at last, reaching for a mirror. You examine your new tattoo,
+	<<set $_colour to ($tattoo_parlour.lewd is 1 ? "lewd" : "purple")>>
+	<<if $tattoo_parlour.type is "text">>
+		<span @class="$_colour">"<<print $tattoo_parlour.writing>>"</span>
+	<<else>>
+		a <span @class="$_colour"><<print $tattoo_parlour.writing>></span>
+	<</if>>
+	now permanently emblazoned on your <<bodypart $tattoo_bodypart>>.
+	<br><br>
+	The artist explains how to care for your skin while the tattoo is still raw. You get the gist. "Thanks for your custom," <<he>> says as you stand.
+	<<if $tattoo_bodypart is "left_bottom" or $tattoo_bodypart is "right_bottom">>
+		"Oh, and be careful sitting down."
+	<</if>>
+	<br><br>
 
-<<unset $tattoo_parlour>>
-<<unset $tattoo_bodypart>>
-<<unset $tattoo_choice>>
-<<endevent>>
+	<<if $tattoo_parlour.writing is "Book Criminal >:(" or $tattoo_parlour.writing is "Book Criminal <3">>
+		<<earnFeat "A Crime Most Foul">>
+	<</if>>
+
+	<<unset $tattoo_parlour>>
+	<<unset $tattoo_bodypart>>
+	<<unset $tattoo_choice>>
+	<<endevent>>
 <</widget>>
 
 <<widget "bodywriting_dungeon_select">>
