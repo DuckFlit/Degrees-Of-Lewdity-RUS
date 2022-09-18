@@ -207,3 +207,26 @@ function convertNormalToOver() {
 	}
 }
 window.convertNormalToOver = convertNormalToOver;
+
+function getVisibleClothesList() {
+	let visibleClothes = [ 
+		V.worn.over_upper, V.worn.over_lower, V.worn.over_head,
+		V.worn.face, V.worn.neck,
+		V.worn.hands, V.worn.legs, V.worn.feet
+	];
+	// over_head doesn't have 'exposed' parameter, but maybe it will some day (in which case remove check for 'naked')
+	if (V.worn.over_head.name === "naked" || V.worn.over_head.exposed >= 2)
+		visibleClothes.push(V.worn.head);
+	if (V.worn.over_upper.exposed >= 2 || V.overupperwetstage >= 3)
+		visibleClothes.push(V.worn.upper);
+	if (V.worn.over_lower.exposed >= 2 || V.overlowerwetstage >= 3)
+		visibleClothes.push(V.worn.lower);
+	if (V.worn.upper.exposed >= 2 || V.upperwetstage >= 3)
+		visibleClothes.push(V.worn.under_upper);
+	if (V.worn.lower.exposed >= 2 || V.lowerwetstage >= 3)
+		visibleClothes.push(V.worn.under_lower);
+	if (V.worn.under_lower.exposed >= 2 || V.underlowerwetstage >= 3)
+		visibleClothes.push(V.worn.genitals);
+	return visibleClothes;
+}
+window.getVisibleClothesList = getVisibleClothesList;
