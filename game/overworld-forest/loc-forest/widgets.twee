@@ -1210,3 +1210,153 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 <<widget "gwylanitem">>
 	<<print either("trophy","baseball","baseball bat","snow globe","magic 8-ball","ping-pong paddle","chess set","piggy bank","mug","cookie tin","frying pan","backscratcher","pencil case","lunch box","lava lamp","flashlight","cuckoo clock","Rubix cube","globe","water gun","dictionary","hand mirror","novelty camera","ziplock bag filled with seashells","miniature stepladder","knick-knack of unknown purpose")>>
 <</widget>>
+
+<<widget "slimePunishmentForest">>
+	You feel a jolt of pain as the slime punishes you for defiance.
+	<<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+<</widget>>
+
+<<widget "forestRescueSetup">>
+	<<set $_eden_available to (isLoveInterest("Eden") and (random(1, 2) is 2 or $eden_rescue isnot 1))>>
+	<<if $_eden_available or $forest lte 20>>
+		<<if $_eden_available and $forest lte 20>>
+			<<set $rescue to 2>>
+		<<else>>
+			<<enable_rescue>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "forestRescueFail">>
+	<<if $gwylan_rescue is 1>>
+		<span class="red">You're too deep into the forest for Gwylan to hear you<<if _args[0] isnot "hunter" and isLoveInterest("Eden")>>, and Eden must not be in the area<</if>>.</span>
+	<<else>>
+		<span class="red">You're too far from the town for anyone to hear you<<if _args[0] isnot "hunter" and isLoveInterest("Eden")>>, and Eden must not be in the area<</if>>.</span>
+	<</if>>
+<</widget>>
+
+<<widget "gwylanRescueFail">>
+	<!-- Note: This widget was initially designed to expect ONE argument which is ONLY either "wolf" or "hunter"; If you want to use it for other animals, you will need to edit this widget. -->
+	<<set $_gwylan_abort_value to (_args[0] is "wolf" ? 2 : 1)>>
+	
+	<<if $forest lte 20 and $gwylan_aborted isnot $_gwylan_abort_value>>
+		<<set $gwylan_aborted to $_gwylan_abort_value>>
+		<<set $_assailant to (_args[0] is "wolf" ? "assailant" : "wolf")>> <!-- If you want to use this widget for other animals, change this -->
+		You see <<if $forest_shop_intro is 1 or $gwylan_rescue is 1>>Gwylan<<else>>a mousy <<nnpc_gendery "Gwylan">><</if>> burst through the treeline, alarmed by your shout.
+		<<nnpc_He "Gwylan">> takes one look at the $_assailant, <span class="red">then turns and runs away.</span>
+		<br><br>
+	<<elseif $forest gt 20>>
+		<<forestRescueFail _args[0]>>
+		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "gwylanRescueApology">>
+	<<if $gwylan_aborted is 3>>
+		<<nnpc_He "Gwylan">> looks you over with concern. "Are you feeling okay? You look a little pale, and I thought I heard you screaming the other night..."
+	<<else>>
+		<<nnpc_He "Gwylan">> can't meet your gaze. <<gwylanRescueApologySpeech>>
+	<</if>>
+<</widget>>
+
+<<widget "gwylanRescueApologyShop">>
+	<<if $gwylan_aborted is 3>>
+		<<if _args[0] is "Intro">>
+			<<nnpc_He "Gwylan">> looks you over with concern.
+		<<else>>
+			"Hey," Gwylan says as you walk in. <<nnpc_He "Gwylan">> looks concerned.
+		<</if>>
+		"Are you feeling okay? You look a little pale, and I thought I heard you screaming the other night..."
+	<<else>>
+		<<if _args[0] is "Robin">>
+			<<nnpc_He "Gwylan">> turns to you with an apologetic smile. <<gwylanRescueApologySpeech "btw">>
+		<<elseif _args[0] is "Intro">>
+			<<nnpc_He "Gwylan">> rubs the back of <<nnpc_his "Gwylan">> neck. <<gwylanRescueApologySpeech "btw">>
+		<<else>>
+			"Hey," Gwylan says as you walk in. <<gwylanRescueApologySpeech>>
+		<</if>>
+	<</if>>
+
+	<<if _args[0] is "Robin">>
+		Robin blinks, but doesn't question it.
+	<</if>>
+<</widget>>
+
+<<widget "gwylanRescueApologySpeech">>
+	<<if _args[0] is "btw">>
+		"By the way, sorry for not saving you before, but I'm not messing with
+	<<else>>
+		"Sorry for not saving you before, but I'm not messing with
+	<</if>>
+	<<if $gwylan_aborted is 1 and $gwylan_eden_coop gte 1>>
+		Eden. <<nnpc_He "Eden">> still scares me."
+	<<elseif $gwylan_aborted is 1>>
+		the <<nnpc_title "Eden">>. <<nnpc_Hes "Eden">> the scariest thing in the forest."
+	<<elseif $gwylan_aborted is 2>>
+		the alpha. I don't want the entire pack breaking my door down."
+	<</if>>
+<</widget>>
+
+<<widget "gwylanForestRescue">>
+	<<set _gwylanKnown to ($forest_shop_intro is 1 or $gwylan_rescue is 1)>>
+	
+	<<switch _args[0]>>
+		<<case "beast">> The <<beasttype>> growls, but is hit in the face by a flying ?gwylanItem. <<bHe>> yelps and looks around, alarmed. <<if $monster is 1>>"Human attack! Where human?!"<</if>>
+		<<case "river">> The <<beasttype>> hisses, but is hit in the face by a flying ?gwylanItem. <<bHe>> looks around, alarmed.
+		<<case "man">> The <<person1>><<person>> charges you, but is interrupted when a flying ?gwylanItem smacks <<him>> in the face. The <<person2>><<person>> looks over, only for a ?gwylanItem to fly into <<his>> face as well.
+	<</switch>>
+	<br><br>
+
+	"Hey!" <<if _gwylanKnown>>Gwylan<<else>>a <<nnpc_gendery "Gwylan">><</if>> shouts from beyond the treeline.
+	<<set $_theboy to (_gwylanKnown ? "Gwylan" : "the " + _text_output)>> <!-- This _text_output comes from the nnpc_gendery call one line above. Do not move this line without accounting for that. -->
+	<<switch _args[0]>>
+		<<case "beast">> "Shoo!" <<nnpc_He "Gwylan">> throws a ?gwylanItem, hitting the <<beasttype>> in the side. <<bHe>> scurries away, <<bhis>> tail between <<bhis>> legs.
+		<<case "river">> "Shoo!" <<nnpc_He "Gwylan">> throws a ?gwylanItem, hitting the <<beasttype>> in the side. <<bHe>> dives back into the churning water.
+		<<case "man">> "Get away from <<phim>>. I have more." As if to demonstrate, <<nnpc_he "Gwylan">> throws a ?gwylanItem, hitting the <<person1>><<person>> in the face again. The pair glance at each other, then turn and run.
+	<</switch>>
+	<br><br>
+
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf("Gwylan")].pronoun>>
+	<<switch _args[0]>>
+		<<case "beast">> "I swear they get more aggressive every day," $_theboy mutters.
+		<<case "river">> "The rivers keep getting more dangerous," $_theboy mutters.
+		<<case "man">> "I hope they weren't customers," $_theboy mutters. "Well, I wouldn't want their money anyway."
+	<</switch>>
+	<<He>> steps out from the treeline, and walks toward you. "You okay? Good thing I was in the area."
+	<<if _args[0] is "river">><<He>> grasps your arm and pulls you out of the water.<</if>>
+
+	<<if !_gwylanKnown>>
+		<br><br>
+
+		<<He>> looks about your age, with mousy hair and freckles. "I'm older than I look," <<he>> says, as if reading your mind. "I'm Gwylan. Nice to meet you."
+		<br><br>
+
+		"I have a shop right by the outskirts of the forest," <<he>> says. "You can't miss it. I sell-" <<he>> pauses. "My grand<<father>> sells-" another pause. "I sell knick-knacks there. Things you won't find in normal shops. Even I don't know what I have in stock!" <<He>> sounds proud.
+	<<elseif $gwylan_aborted gte 1>>
+		<<gwylanRescueApology>>
+	<</if>>
+	<br><br>
+
+	<<if $gwylan_eden_coop gte 1 and $gwylan_aborted is 0>>
+		<<He>> looks around for a moment, as if waiting for something. "Strange," <<he>> says to <<himself>>. "I thought the <<nnpc_title "Eden">> would be here. Must be busy. Ah well."
+		<br><br>
+	<</if>>
+
+	<<if $gwylan_rescue isnot 1>>
+		<<set $gwylan_rescue to 1>>
+		<<He>> starts to walk away, but stops and turns around. "By the way," <<he>> says. "I was able to save you because you're close enough to my shop. <span class="gold">If you go any further than the start of the lake, I won't be able to hear you.</span> Keep it in mind."
+		<br><br>
+	<</if>>
+	<<He>> gathers <<his>> items, then walks off in the direction of <<his>> shop.
+	<br><br>
+
+	<<clotheson>><<set $gwylan_aborted to 0>>
+	<<endcombat>>
+
+	<<if _args[1] is "slime">>
+		<<slimePunishmentForest>>
+		<br><br>
+	<</if>>
+
+	<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
+<</widget>>
