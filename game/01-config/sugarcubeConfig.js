@@ -236,6 +236,11 @@ Config.navigation.override = function (dest) {
 		case "Kylar Abduction Hawk":
 			return "Kylar Abduction Event Response";
 
+		case "Robin's Chocolate Help":
+			return "Robin Chocolate Help";
+		case "Robin Chocolate Cover 2":
+				return "Robin Chocolate Cover";
+
 		default:
 			return false;
 	}
