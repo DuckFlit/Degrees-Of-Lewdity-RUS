@@ -611,3 +611,13 @@ function pickRandom(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
 window.pickRandom = pickRandom;
+
+/**
+ * @returns 30 for November, 31 for December, 28 for February (29 if leap year), et cetera 
+ * Uses current in-game month and year when no arguments provided
+ */
+function getLastDayOfMonth(month, year) {
+    let monthNumber = new Date(Date.parse((month || V.month) + ' 1 ' + (year || V.year))).getMonth() + 1;
+    return new Date((year || V.year), monthNumber, 0).getDate();
+}
+window.getLastDayOfMonth = getLastDayOfMonth;

@@ -168,7 +168,7 @@ function genderappearancecheck() {
 		addfemininityfromfactor(V.player.vaginaExist * 100000 - V.player.penisExist * 100000, "Genitals exposed", "noow");
 	}
 	/* plain breasts factor */
-	addfemininityfromfactor((V.player.breastsize - 0.5) * 100, "Exposed breasts", "noow");
+	addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, "Exposed breasts", "noow");
 	/* Lower clothing, bulge, and genitals */
 	addfemininityofclothingarticle("over_lower", V.worn.over_lower);
 	if (!T.over_lower_protected) {
@@ -225,14 +225,14 @@ function genderappearancecheck() {
 		if (V.worn.under_upper.exposed >= 1) {
 			/* Exposed breasts */
 			T.breast_indicator = 1;
-			addfemininityfromfactor((V.player.breastsize - 0.5) * 100, "Exposed breasts");
-		} else if (!V.worn.under_upper.type.includes("chest_bind")) {
+			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, "Exposed breasts");
+		} else {
 			/* Breasts covered by only underwear */
-			addfemininityfromfactor(Math.clamp((V.player.breastsize - 2) * 100, 0, Infinity), "Breast size visible through underwear");
+			addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 2) * 100, 0, Infinity), "Breast size visible through underwear");
 		}
-	} else if (!V.worn.under_upper.type.includes("chest_bind")) {
+	} else {
 		/* Breast fully covered */
-		addfemininityfromfactor(Math.clamp((V.player.breastsize - 4) * 100, 0, Infinity), "Breast size visible through clothing");
+		addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 4) * 100, 0, Infinity), "Breast size visible through clothing");
 	}
 	/* Pregnant Belly */
 	if (V.sexStats === undefined) {
@@ -318,21 +318,22 @@ function apparentbottomsizecheck() {
 
 function exposedcheck() {
 	if (!V.combat || V.args[0] === true) {
+		apparentbreastsizecheck();
+		apparentbottomsizecheck();
 		genderappearancecheck();
+		
 		V.player.gender_appearance = T.gender_appearance;
 		T.gender_appearance_factors.sort((a, b) => a.femininity > b.femininity);
 		V.player.gender_appearance_factors = T.gender_appearance_factors;
 		V.player.femininity = T.apparent_femininity;
-
+		
 		V.player.gender_appearance_without_overwear = T.gender_appearance_noow;
 		T.gender_appearance_factors_noow.sort((a, b) => a.femininity > b.femininity);
 		V.player.gender_appearance_without_overwear_factors = T.gender_appearance_factors_noow;
 		V.player.femininity_without_overwear = T.apparent_femininity_noow;
-
+		
 		V.breastindicator = T.breast_indicator;
-
-		apparentbreastsizecheck();
-		apparentbottomsizecheck();
+		
 	}
 }
 DefineMacro("exposedcheck", exposedcheck);
