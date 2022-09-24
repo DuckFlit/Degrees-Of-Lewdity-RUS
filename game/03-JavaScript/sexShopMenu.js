@@ -489,7 +489,7 @@ function sexShopOnItemClick(index) {
 				</a> (<span class="gold">£` +
 			  item.cost / 100 +
 			  `</span>)`
-			: `<span class="ssm_not_enough_money">Not enough money</span>`) +
+			: `<span class="ssm_not_enough_money">Not enough money</span> (<span class="gold">£${item.cost / 100}</span>)`) +
 		(item.type.includes("strap-on") ? determineRecipient(item.index) : "") +
 		`</div>
 			</div>
@@ -512,11 +512,7 @@ function determineRecipient(index) {
 	if (V.money < item.cost + 15 * 100) return "";
 
 	for (const li of ["Alex", "Eden", "Kylar", "Robin", "Sydney"]) {
-		if (
-			V.loveInterest.primary === li ||
-			V.loveInterest.secondary === li ||
-			V.loveInterest.tertiary === li
-		) {
+		if (isLoveInterest(li)) {
 			optionBuilder += `<option value="${li}">${li}</option>`;
 		}
 	}
@@ -635,11 +631,11 @@ function sexShopOnBuyClick(index) {
 		sexShopOnBuyClick.counter = setTimeout(function () {
 			if (document.getElementById("ssmBuyButton"))
 				document.getElementById("ssmBuyButton").outerHTML =
-					`<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` +
-					index +
-					`)" class="ssm_buy_button ssm_fade_in_fast">
-			Buy it
-		</a>`;
+					V.money > item.cost
+						? `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` +
+						  index +
+						  `)" class="ssm_buy_button ssm_fade_in_fast">Buy it</a>`
+						: `<span class="ssm_not_enough_money">Not enough money</span>`;
 			sexShopOnBuyClick.counter = "off";
 		}, 1400);
 	}
