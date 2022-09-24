@@ -121,7 +121,7 @@ setup.debugMenu.eventList = {
 		{
 			link: [`Roll Over`, stayOnPassageFn],
 			widgets: [() => `<<set $position to ` + (V.position === "doggy" ? "doggy" : "missionary") + `>>`],
-			condition: () => (V.position === "doggy" || V.position === "missionary" ? 1 : 0),
+			condition() { return (V.position === "doggy" || V.position === "missionary" ? 1 : 0) },
 		},
 		{
 			link: [`RNG 1`, stayOnPassageFn],
@@ -317,7 +317,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			text_only: `\nVaginal Pregnancy<br>(New Pregnancy will only occur if not pregnant)\n`,
-			condition: () => V.pregnancyTesting,
+			condition() { return V.pregnancyTesting },
 		},
 		{
 			link: [`Get Pregnant with humans`, stayOnPassageFn],
@@ -330,7 +330,7 @@ setup.debugMenu.eventList = {
 					}
 				},
 			],
-			condition: () => V.pregnancyTesting,
+			condition() { return V.pregnancyTesting },
 		},
 		{
 			link: [`Get Pregnant with wolves`, stayOnPassageFn],
@@ -343,17 +343,17 @@ setup.debugMenu.eventList = {
 					}
 				},
 			],
-			condition: () => V.pregnancyTesting,
+			condition() { return V.pregnancyTesting },
 		},
 		{
 			link: [`Get Robin Pregnant with PCs children`, stayOnPassageFn],
 			widgets: [`<<set _sperm to ["pc"]>>`, `<<humanPregnancy "Robin" "pc" true>>`],
-			condition: () => V.pregnancyTesting,
+			condition() { return V.pregnancyTesting },
 		},
 		{
 			link: [`Get Bailey Pregnant with Black wolf`, stayOnPassageFn],
 			widgets: [`<<set _sperm to ["Black Wolf"]>>`, `<<wolfPregnancy "Bailey" "Black Wolf" true>>`],
-			condition: () => V.pregnancyTesting,
+			condition() { return V.pregnancyTesting },
 		},
 		{
 			link: [`Enable Debug Lines`, stayOnPassageFn],
@@ -914,27 +914,27 @@ setup.debugMenu.eventList = {
 		{
 			link: [`Default allure`, stayOnPassageFn],
 			widgets: [`<<set $alluretest to 0>>`],
-			condition: () => V.alluretest >= 1,
+			condition() { return V.alluretest >= 1; },
 		},
 		{
 			link: [`Become Alluring`, stayOnPassageFn],
 			widgets: [`<<set $alluretest to 1>>`],
-			condition: () => V.alluretest < 1,
+			condition() { return V.alluretest < 1 },
 		},
 		{
 			link: [`Become Unalluring`, stayOnPassageFn],
 			widgets: [`<<set $alluretest to 2>>`],
-			condition: () => V.alluretest < 1,
+			condition() { return V.alluretest < 1 },
 		},
 		{
 			link: [`Hide`, stayOnPassageFn],
 			widgets: [`<<dontHideRevert>>`],
-			condition: () => V.dontHide,
+			condition() { return V.dontHide; },
 		},
 		{
 			link: [`Don't hide`, stayOnPassageFn],
 			widgets: [`<<dontHideForNow>>`],
-			condition: () => !V.dontHide,
+			condition() { return !V.dontHide },
 		},
 		{
 			text_only: "\n\n",
@@ -1821,10 +1821,10 @@ function checkEventCondition() {
 		for (const section of ["Character", "Events", "Favourites", "Main"]) {
 			const ev = setup.debugMenu.eventList[section];
 			for (const i in ev) {
-				if (ev[i].hasOwnProperty("condition")) {
+				if (Object.hasOwn(ev[i], "condition")) {
 					if (
-						(typeof ev[i].condition === "function" && ev[i].condition() === 1) ||
-						(typeof ev[i].condition !== "function" && ev[i].condition === 1)
+						(typeof ev[i].condition === "function" && ev[i].condition()) ||
+						(typeof ev[i].condition !== "function" && ev[i].condition)
 					) {
 						if (document.getElementById(section + "-" + i) == null) return;
 						document.getElementById(section + "-" + i).classList.remove("condhide");
@@ -1916,7 +1916,7 @@ function submitNewDebugPassage() {
 	}
 	for (const section of ["Character", "Events", "Favourites", "Main"]) {
 		for (const ev of setup.debugMenu.eventList[section]) {
-			if (ev.hasOwnProperty("link") && ev.link[0] === inputList[0].value) {
+			if (Object.hasOwn(ev, "link") && ev.link[0] === inputList[0].value) {
 				inputList[0].setCustomValidity("This event title already exists. It needs to be unique!");
 				inputList[0].reportValidity();
 				document.getElementById("debugAddResult").innerHTML = "";
@@ -1947,7 +1947,7 @@ window.submitNewDebugPassage = submitNewDebugPassage;
 function syncDebugAddedEvents() {
 	if (V.debug_custom_events == null) V.debug_custom_events = { Main: [], Character: [], Events: [] };
 	for (const section of ["Main", "Character", "Events"]) {
-		if (V.debug_custom_events.hasOwnProperty(section) === false) V.debug_custom_events[section] = [];
+		if (Object.hasOwn(V.debug_custom_events, section) === false) V.debug_custom_events[section] = [];
 		for (const ev of V.debug_custom_events[section]) setup.debugMenu.eventList[section].unshift(ev);
 	}
 }
@@ -1961,7 +1961,7 @@ function removeDebugCustomPassage() {
 			if (V.debug_custom_events[section][ev].link[0] === selectedForRemoval) V.debug_custom_events[section].splice(ev, 1);
 			for (const ev2 in setup.debugMenu.eventList[section]) {
 				if (
-					setup.debugMenu.eventList[section][ev2].hasOwnProperty("link") &&
+					Object.hasOwn(setup.debugMenu.eventList[section][ev2], "link") &&
 					setup.debugMenu.eventList[section][ev2].link[0] === selectedForRemoval
 				) {
 					setup.debugMenu.eventList[section].splice(ev2, 1);
