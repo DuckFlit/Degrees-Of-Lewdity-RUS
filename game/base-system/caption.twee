@@ -277,15 +277,22 @@
 			</div>
 			<!-- Event debug button - Shows an overlay stored in debug-events.twee. -->
 			<<if $event isnot undefined and $debugdisable is "f">>
+				<!-- Default _temp to what we should people regularly if an event active. -->
 				<<set _temp to "<span class='yellow'>SHOW EVENT INFO</span>">>
-				<<if EventSystem.Get(0).area[0] is $passage>>
-					<<set _eventalertmajorarea to false>>
-					<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
-				<<elseif setup.majorAreas.includes($passage)>>
-					<<set _eventalertmajorarea to true>>
-					<<set _temp to "<span class='red'>EVENT ACTIVE</span>">>
-				<<elseif $event.buffer.map(e => e.area[0]).length is 1 and ["Forest Cabin", "Eden Cabin", "Eden Clearing"].includes(EventSystem.Get(0).area[0])>>
-					<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
+				<!-- Prepare for cases where we want to update the button view. -->
+				<<if EventSystem.any()>>
+					<<if !EventSystem.validate()>>
+						<!-- Could not validate the NPC list with event data. -->
+						<<set _temp to "<span class='red'>EVENT ERROR</span>">>
+					<<elseif EventSystem.has(0) and EventSystem.get(0).area[0] is $passage>>
+						<<set _eventAlertMajorArea to false>>
+						<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
+					<<elseif setup.majorAreas.includes($passage)>>
+						<<set _eventAlertMajorArea to true>>
+						<<set _temp to "<span class='red'>EVENT ACTIVE</span>">>
+					<<elseif $event.buffer.map(e => e.area[0]).length is 1 and EventSystem.has(0) and ["Forest Cabin", "Eden Cabin", "Eden Clearing"].includes(EventSystem.get(0).area[0])>>
+						<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
+					<</if>>
 				<</if>>
 				<<button _temp>><<overlayReplace "eventExtraInfo">><</button>>
 				<<unset _temp>>
