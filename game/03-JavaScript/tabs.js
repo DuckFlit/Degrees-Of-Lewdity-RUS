@@ -1,4 +1,4 @@
-window.Tab = class {
+const Tab = class {
 	constructor(element, selectedClass) {
 		this.element = element;
 		this.selectedClass = selectedClass;
@@ -7,17 +7,20 @@ window.Tab = class {
 	}
 
 	setupTabs() {
-		$(() => { this.tabs = $("#" + this.element).find("button"); });
+		$(() => {
+			this.tabs = $("#" + this.element).find("button");
+		});
 	}
+
 	setActive(index = 0) {
 		$(() => {
-			if(index === -1) return;
+			if (index === -1) return;
 			this.activeTab = index;
 			this.toggle(this.tabs.eq(index));
 		});
 	}
 
-	toggle(target = $(window.event.target)) {
+	toggle(target = $(window.event.currentTarget)) {
 		this.reset();
 		this.activeTab = this.tabs.index(target);
 		target.addClass(this.selectedClass);
@@ -28,3 +31,4 @@ window.Tab = class {
 		this.tabs.removeClass(this.selectedClass);
 	}
 };
+window.Tab = Tab;

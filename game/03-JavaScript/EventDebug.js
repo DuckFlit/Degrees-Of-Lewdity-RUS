@@ -25,7 +25,7 @@ class EventData {
 		this.disable = false;
 	}
 
-	Push(passage, index, time) {
+	push(passage, index, time) {
 		if (this.disable) return;
 		if (V.event == null) {
 			V.event = { buffer: [], schema: 1 };
@@ -37,36 +37,108 @@ class EventData {
 		});
 	}
 
-	Pop(index) {
+	pop(index) {
 		if (this.disable) return;
 		if (V.event) {
 			V.event.buffer = V.event.buffer.filter(e => e.slot !== index); // TODO: Splice backwards instead.
 			if (V.event.buffer.length === 0) {
-				this.Clear();
+				this.clear();
 			}
 		}
 	}
 
-	Get(index) {
-		if (V.event) {
-			return V.event.buffer.find(e => e.slot === index);
-		}
-		return undefined;
+	get(index) {
+		return V.event?.buffer.find(e => e.slot === index);
 	}
 
-	GetEvery(index) {
-		if (V.event) {
-			return V.event.buffer.filter(e => e.slot === index);
-		}
-		return [];
+	has(index) {
+		return V.event?.buffer.some(e => e.slot === index);
 	}
 
-	Clear() {
+	getEvery(index) {
+		return V.event?.buffer.filter(e => e.slot === index) ?? [];
+	}
+
+	count() {
+		return V.event?.buffer.length || 0;
+	}
+
+	any() {
+		return V.event?.buffer.length > 0;
+	}
+
+	clear() {
 		if (this.disable) return;
 		delete V.event;
 	}
 
-	Update() {
+	isSlotTaken(index) {
+		return V.event?.buffer.some(e => e.slot === index);
+	}
+
+	get Disable() {
+		return this.disable;
+	}
+
+	set Disable(value) {
+		if (typeof value === "boolean") {
+			this.disable = value;
+		} else {
+			console.debug("EventData.disable set with unexpected data-type, requires boolean.");
+		}
+	}
+
+	validate() {
+		// Return false if an event is not in progress. True would be a problem in our stack system for NPCs. False indicates normal operation.
+		if (V.event == null) return true;
+		// Extrapolate slots
+		const buffer = V.event.buffer;
+		// Making assumptions for the validator, traverse from the end, and when we hit the first NPC, return index.
+		// We plus one because we want the semantic size that we believe the NPC list is at.
+		// An NPCList of [empty, npc, npc, empty, empty, empty] would have a size of 3.
+		// We assume the first empty is a mistake, someone not following proper conduct in NPC gen.
+		const numOfNPCs = V.NPCList.findLastIndex(e => Object.hasOwn(e, "type")) + 1;
+
+		// First check for if buffer's length exceeds NPCList's length. (Guaranteed gaps or inaccurate tracking)
+		if (buffer.length > numOfNPCs) return false;
+
+		// Generate array to track whether an NPC slot is used.
+		const usedArr = Array(numOfNPCs).fill(false);
+		// Example: [false, false, false, false, false] for 5 NPCs in $NPCList
+		for (let i = 0; i < buffer.length; i++) {
+			const element = buffer[i];
+			if (!usedArr[element.slot]) {
+				// Slot not accounted for yet, NPC is good.
+				usedArr[element.slot] = true;
+				continue;
+			} else if (V.debugdisable === "f" || V.debug) {
+				// NPC position is being used more than once, although not a gap, flag.
+				console.warn(
+					"NPC slot",
+					element.slot,
+					"is being used more than once. Existing NPCs should be disposed before using their slot."
+				);
+				return false;
+			}
+		}
+
+		// Check usedArr for false values. Filter results where false remains into a new array at the index.
+		// [true, false, true, false] => [1, 3]
+		// We then intend to display these indices to the user for debugging.
+		const slots = [];
+		for (let i = 0; i < usedArr.length; i++) {
+			const e = usedArr[i];
+			if (!e) slots.push(i);
+		}
+		if (slots.length !== 0) {
+			// Index is slot, index being 0 or higher means we have an empty slot.
+			console.warn("NPC slots that are empty:", slots);
+			return false;
+		}
+		return true;
+	}
+
+	update() {
 		if (V.event == null) {
 			return;
 		}
@@ -86,27 +158,10 @@ class EventData {
 			schema: 1,
 		};
 		for (let i = 0; i < event.length; i++) {
-			this.Push(event[i], V.eventslot[i], V.eventtime[i]);
+			this.push(event[i], V.eventslot[i], V.eventtime[i]);
 		}
 		delete V.eventtime;
 		delete V.eventslot;
-	}
-
-	IsSlotTaken(index) {
-		if (V.event == null) return false;
-		return V.event.buffer.some(e => e.slot === index);
-	}
-
-	get Disable() {
-		return this.disable;
-	}
-
-	set Disable(value) {
-		if (typeof value === "boolean") {
-			this.disable = value;
-		} else {
-			console.debug("EventData.disable set with unexpected data-type, requires boolean.");
-		}
 	}
 }
 
