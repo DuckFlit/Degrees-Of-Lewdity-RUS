@@ -19,6 +19,62 @@ Can cause problems if confirmed during events, or with NPCs around.
 
 <</widget>>
 
+<<widget "cheatVirginityToggle">>
+	<<set _type to _args[0]>>
+	<<set _id to `stats${_type}virginity`>>
+	<<capture _type _id>>
+		<span @id="_id"><<print ($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>></span> |
+		<span @id="_id + 'link'"><<link `($player.virginity[_type] is true ? "Take" : "Restore")`>>
+			<<if $player.virginity[_type] is true>>
+				<<set $player.virginity[_type] to (_virginity[_type] is true ? false : _virginity[_type])>><<set $player.virginity.temple to false>>
+			<<else>>
+				<<set $player.virginity[_type] to true>>
+			<</if>>
+			<<run $(`#${_id}link .link-internal`).html($player.virginity[_type] is true ? "Take" : "Restore")>>
+			<<run $(`#${_id}`).html($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>>
+		<</link>></span>
+	<</capture>>
+<</widget>>
+
+<<widget "cheatParasiteToggle">>
+
+	<<set _bodypart to _args[0]>>
+	<<set _id to `stats${_bodypart}parasite`>>
+	<<capture _bodypart _id>>
+		<<set $_currentType to $parasite[_bodypart].name or "none">>
+		<<print _bodypart.toUpperFirst().replace("_", " ")>> parasite: <span @id="_id" class="gold"><<print $_currentType>></span> |
+	
+		<<set T["parasiteType"+_bodypart] to $_currentType>>
+		<<set _optionName to "_parasiteType"+_bodypart>>
+		<<for _parasiteOption range setup.parasiteTypesPerBodypart[_bodypart]>>
+			<label>_parasiteOption <<radiobutton `_optionName` _parasiteOption autocheck>></label> |
+		<</for>>
+		<<link "Set">>
+			<<removeparasite _bodypart>>
+
+			<<set _parasiteTypeActual to T["parasiteType"+_bodypart]>>
+			<<if _parasiteTypeActual isnot "none">>
+				<<parasite _bodypart _parasiteTypeActual>>
+			<</if>>
+			<<run $(`#${_id}`).html($parasite[_bodypart].name or "none")>>
+			<<updatesidebarimg>>
+		<</link>>
+	<</capture>>
+<</widget>>
+
+<<widget "cheatBodyliquidOnPart">>
+	<<set _part to _args[0]>>
+	<<set _label to _args[1]>>
+	<<set _type to _args[2]>>
+	<<capture _type _label _part>>
+		<<set _id to `stats${_part}${_type}`>>
+		<<link "<">><<bodyliquid _part _type -1>><<run $(`#stats${_part}${_type}`).html(Math.trunc($player.bodyliquid[_part][_type]))>><<updatesidebarimg>><</link>>
+		_label: <span @id="_id"><<print Math.trunc($player.bodyliquid[_part][_type])>></span>
+		<<link ">">><<bodyliquid _part _type 1>><<run $(`#stats${_part}${_type}`).html(Math.trunc($player.bodyliquid[_part][_type]))>><<updatesidebarimg>><</link>>
+		|
+	<</capture>>
+<</widget>>
+
 <<widget "cheats-characterStats">>
 
 <span class="gold">Miscellaneous</span>
@@ -44,7 +100,7 @@ Money: <span id="statsmoney"><<print Math.trunc($money)>></span>
 	<br>
 <</if>>
 
-Infinite spray: <span id="statsinfinitespray">$infinitespray</span> |
+Infinite spray: <span id="statsinfinitespray"><<print ($infinitespray ? "on" : "off")>></span> |
 <<link "Change">>
 	<<if $infinitespray is 1>>
 		<<set $infinitespray to 0>>
@@ -52,7 +108,7 @@ Infinite spray: <span id="statsinfinitespray">$infinitespray</span> |
 		<<spray 5>>
 		<<set $infinitespray to 1>>
 	<</if>>
-	<<replace "#statsinfinitespray">><<print $infinitespray>><</replace>>
+	<<replace "#statsinfinitespray">><<print ($infinitespray ? "on" : "off")>><</replace>>
 <</link>>
 <br>
 
@@ -243,74 +299,23 @@ Body size:
 	<</replace>>
 <</link>> |
 <br><br>
+
+<<set _virginity to clone($player.virginity)>>
 <<if $player.vaginaExist>>
-	Vaginal virginity: <span id="statsvaginalvirginity"><<print ($player.virginity.vaginal is true ? "Present" : "Taken by " + ($player.virginity.vaginal is false ? "unknown" : $player.virginity.vaginal))>></span> |
-	<<link "Change">>
-		<<if $player.virginity.vaginal is true>>
-			<<set $player.virginity.vaginal to false>><<set $player.virginity.temple to false>>
-		<<else>>
-			<<set $player.virginity.vaginal to true>>
-		<</if>>
-		<<replace "#statsvaginalvirginity">><<print ($player.virginity.vaginal is true ? "Present" : "Taken by " + ($player.virginity.vaginal is false ? "unknown" : $player.virginity.vaginal))>><</replace>>
-	<</link>>
+	Vaginal virginity: <<cheatVirginityToggle "vaginal">>
 	<br>
 <</if>>
-
 <<if $player.penisExist>>
-	Penile virginity: <span id="statspenilevirginity"><<print ($player.virginity.penile is true ? "Present" : "Taken by " + ($player.virginity.penile is false ? "unknown" : $player.virginity.penile))>></span> |
-	<<link "Change">>
-		<<if $player.virginity.penile is true>>
-			<<set $player.virginity.penile to false>><<set $player.virginity.temple to false>>
-		<<else>>
-			<<set $player.virginity.penile to true>>
-		<</if>>
-		<<replace "#statspenilevirginity">><<print ($player.virginity.penile is true ? "Present" : "Taken by " + ($player.virginity.penile is false ? "unknown" : $player.virginity.penile))>><</replace>>
-	<</link>>
+	Penile virginity: <<cheatVirginityToggle "penile">>
 	<br>
 <</if>>
-
-Anal virginity: <span id="statsanalvirginity"><<print ($player.virginity.anal is true ? "Present" : "Taken by " + ($player.virginity.anal is false ? "unknown" : $player.virginity.anal))>></span> |
-<<link "Change">>
-	<<if $player.virginity.anal is true>>
-		<<set $player.virginity.anal to false>>
-	<<else>>
-		<<set $player.virginity.anal to true>>
-	<</if>>
-	<<replace "#statsanalvirginity">><<print ($player.virginity.anal is true ? "Present" : "Taken by " + ($player.virginity.anal is false ? "unknown" : $player.virginity.anal))>><</replace>>
-<</link>>
+Anal virginity: <<cheatVirginityToggle "anal">>
 <br>
-
-Oral virginity: <span id="statsoralvirginity"><<print ($player.virginity.oral is true ? "Present" : "Taken by " + ($player.virginity.oral is false ? "unknown" : $player.virginity.oral))>></span> |
-<<link "Change">>
-	<<if $player.virginity.oral is true>>
-		<<set $player.virginity.oral to false>>
-	<<else>>
-		<<set $player.virginity.oral to true>>
-	<</if>>
-	<<replace "#statsoralvirginity">><<print ($player.virginity.oral is true ? "Present" : "Taken by " + ($player.virginity.oral is false ? "unknown" : $player.virginity.oral))>><</replace>>
-<</link>>
+Oral virginity: <<cheatVirginityToggle "oral">>
 <br>
-
-Handholding virginity: <span id="statshandholdingvirginity"><<print ($player.virginity.handholding is true ? "Present" : "Taken by " + ($player.virginity.handholding is false ? "unknown" : $player.virginity.handholding))>></span> |
-<<link "Change">>
-	<<if $player.virginity.handholding is true>>
-		<<set $player.virginity.handholding to false>>
-	<<else>>
-		<<set $player.virginity.handholding to true>>
-	<</if>>
-	<<replace "#statshandholdingvirginity">><<print ($player.virginity.handholding is true ? "Present" : "Taken by " + ($player.virginity.handholding is false ? "unknown" : $player.virginity.handholding))>><</replace>>
-<</link>>
+Handholding virginity: <<cheatVirginityToggle "handholding">>
 <br>
-
-First kiss: <span id="statskissvirginity"><<print ($player.virginity.kiss is true ? "Present" : "Taken by " + ($player.virginity.kiss is false ? "unknown" : $player.virginity.kiss))>></span> |
-<<link "Change">>
-	<<if $player.virginity.kiss is true>>
-		<<set $player.virginity.kiss to false>>
-	<<else>>
-		<<set $player.virginity.kiss to true>>
-	<</if>>
-	<<replace "#statskissvirginity">><<print ($player.virginity.kiss is true ? "Present" : "Taken by " + ($player.virginity.kiss is false ? "unknown" : $player.virginity.kiss))>><</replace>>
-<</link>>
+First kiss: <<cheatVirginityToggle "kiss">>
 <br><br>
 
 <span class="gold">State</span>
@@ -1169,470 +1174,138 @@ Between your legs is your: <span id="statsgenitals"><<genitals>></span>
 <br>
 
 <<if $parasitedisable is "f">>
-<span class="gold">Parasites</span>
-<br>
-Nipple parasites: <span id="statsnippleparasite"><<if $parasite.nipples.name>>$parasite.nipples.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.nipples.name>>
-<<removeparasite nipples>><<parasite nipples urchin>>
-<<elseif $parasite.nipples.name is "urchin">>
-<<removeparasite nipples>><<parasite nipples slime>>
-<<else>>
-<<removeparasite nipples>>
-<</if>>
-<<replace "#statsnippleparasite">><<print $parasite.nipples.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-<br>
-
-<<if $player.penisExist>>
-	Penis parasites: <span id="statspenisparasite"><<if $parasite.penis.name>>$parasite.penis.name<<else>>None<</if>></span> |
-	<<link "Change">>
-	<<if !$parasite.penis.name>>
-	<<removeparasite penis>><<parasite penis urchin>>
-	<<elseif $parasite.penis.name is "urchin">>
-	<<removeparasite penis>><<parasite penis slime>>
-	<<else>>
-	<<removeparasite penis>>
-	<</if>>
-	<<replace "#statspenisparasite">><<print $parasite.penis.name>><</replace>>
-	<<updatesidebarimg>>
-	<</link>>
+	<span class="gold">Parasites</span>
 	<br>
-<</if>>
-
-<<if !$player.penisExist>>
-	Clit parasites: <span id="statsclitparasite"><<if $parasite.clit.name>>$parasite.clit.name<<else>>None<</if>></span> |
-	<<link "Change">>
-	<<if !$parasite.clit.name>>
-	<<removeparasite clit>><<parasite clit urchin>>
-	<<elseif $parasite.clit.name is "urchin">>
-	<<removeparasite clit>><<parasite clit slime>>
-	<<else>>
-	<<removeparasite clit>>
-	<</if>>
-	<<replace "#statsclitparasite">><<print $parasite.clit.name>><</replace>>
-	<<updatesidebarimg>>
-	<</link>>
+	<<cheatParasiteToggle "nipples">>
 	<br>
-<</if>>
-
-Ass parasites: <span id="statsbottomparasite"><<if $parasite.bottom.name>>$parasite.bottom.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.bottom.name>>
-	<<removeparasite bottom>><<parasite bottom urchin>>
-<<elseif $parasite.bottom.name is "urchin">>
-	<<removeparasite bottom>><<parasite bottom slime>>
-<<elseif $parasite.bottom.name is "slime">>
-	<<removeparasite bottom>><<parasite bottom maggot>>
-<<else>>
-	<<removeparasite bottom>>
-<</if>>
-<<replace "#statsbottomparasite">><<print $parasite.bottom.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-<br>
-
-Left thigh Parasite:<span id="statsleft_thighparasite"><<if $parasite.left_thigh.name>>$parasite.left_thigh.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.left_thigh.name>>
-	<<removeparasite left_thigh>><<parasite left_thigh maggot>>
-<<else>>
-	<<removeparasite left_thigh>>
-<</if>>
-<<replace "#statsleft_thighparasite">><<print $parasite.left_thigh.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-<br>
-
-
-Right thigh Parasite:<span id="statsright_thighparasite"><<if $parasite.right_thigh.name>>$parasite.right_thigh.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.right_thigh.name>>
-	<<removeparasite right_thigh>><<parasite right_thigh maggot>>
-<<else>>
-	<<removeparasite right_thigh>>
-<</if>>
-<<replace "#statsright_thighparasite">><<print $parasite.right_thigh.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-<br>
-
-Left arm parasite:<span id="statsleft_armparasite"><<if $parasite.left_arm.name>>$parasite.left_arm.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.left_arm.name>>
-	<<removeparasite left_arm>><<parasite left_arm maggot>>
-<<else>>
-	<<removeparasite left_arm>>
-<</if>>
-<<replace "#statsleft_armparasite">><<print $parasite.left_arm.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-<br>
-
-Right arm parasite:<span id="statsright_armparasite"><<if $parasite.right_arm.name>>$parasite.right_arm.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.right_arm.name>>
-	<<removeparasite right_arm>><<parasite right_arm maggot>>
-<<else>>
-	<<removeparasite right_arm>>
-<</if>>
-<<replace "#statsright_armparasite">><<print $parasite.right_arm.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-<br>
-
-Tummy parasite:<span id="statstummyparasite"><<if $parasite.tummy.name>>$parasite.tummy.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.tummy.name>>
-	<<removeparasite tummy>><<parasite tummy maggot>>
-<<else>>
-	<<removeparasite tummy>>
-<</if>>
-<<replace "#statstummyparasite">><<print $parasite.tummy.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-<br>
-
-
-
-Left ear parasite: <span id="statsleft_earparasite"><<if $parasite.left_ear.name>>$parasite.left_ear.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.left_ear.name>>
-<<removeparasite left_ear>><<parasite left_ear slime>>
-<<else>>
-<<removeparasite left_ear>>
-<</if>>
-<<replace "#statsleft_earparasite">><<print $parasite.left_ear.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-<br>
-
-Right ear parasite: <span id="statsright_earparasite"><<if $parasite.right_ear.name>>$parasite.right_ear.name<<else>>None<</if>></span> |
-<<link "Change">>
-<<if !$parasite.right_ear.name>>
-<<removeparasite right_ear>><<parasite right_ear slime>>
-<<else>>
-<<removeparasite right_ear>>
-<</if>>
-<<replace "#statsright_earparasite">><<print $parasite.right_ear.name>><</replace>>
- <<updatesidebarimg>>
-<</link>>
-
-<br><br>
+	<<if $player.penisExist>>
+		<<cheatParasiteToggle "penis">>
+		<br>
+	<<else>>
+		<<cheatParasiteToggle "clit">>
+		<br>
+	<</if>>
+	<<cheatParasiteToggle "bottom">>
+	<br>
+	<<cheatParasiteToggle "left_thigh">>
+	<br>
+	<<cheatParasiteToggle "right_thigh">>
+	<br>
+	<<cheatParasiteToggle "left_arm">>
+	<br>
+	<<cheatParasiteToggle "right_arm">>
+	<br>
+	<<cheatParasiteToggle "tummy">>
+	<br>
+	<<cheatParasiteToggle "left_ear">>
+	<br>
+	<<cheatParasiteToggle "right_ear">>
+	<br><br>
 <</if>>
 
 <span class="gold">Semen</span>
 <br>
 <<link "Add all semen">>
-<!-- todosemen -->
-<<bodyliquid "neck" "semen" 5>><<replace "#statsnecksemen">><<print Math.trunc($player.bodyliquid.neck.semen )>><</replace>>
-<<bodyliquid "rightarm" "semen" 5>><<replace "#statsrightarmsemen">><<print Math.trunc($player.bodyliquid.rightarm.semen )>><</replace>>
-<<bodyliquid "leftarm" "semen" 5>><<replace "#statsleftarmsemen">><<print Math.trunc($player.bodyliquid.leftarm.semen )>><</replace>>
-<<bodyliquid "thigh" "semen" 5>><<replace "#statsthighsemen">><<print Math.trunc($player.bodyliquid.thigh.semen )>><</replace>>
-<<bodyliquid "bottom" "semen" 5>><<replace "#statsbottomsemen">><<print Math.trunc($player.bodyliquid.bottom.semen )>><</replace>>
-<<bodyliquid "tummy" "semen" 5>><<replace "#statstummysemen">><<print Math.trunc($player.bodyliquid.tummy.semen )>><</replace>>
-<<bodyliquid "chest" "semen" 5>><<replace "#statschestsemen">><<print Math.trunc($player.bodyliquid.chest.semen )>><</replace>>
-<<bodyliquid "face" "semen" 5>><<replace "#statsfacesemen">><<print Math.trunc($player.bodyliquid.face.semen )>><</replace>>
-<<bodyliquid "hair" "semen" 5>><<replace "#statshairsemen">><<print Math.trunc($player.bodyliquid.hair.semen )>><</replace>>
-<<bodyliquid "feet" "semen" 5>><<replace "#statsfeetsemen">><<print Math.trunc($player.bodyliquid.feet.semen )>><</replace>>
-<<bodyliquid "vaginaoutside" "semen" 5>><<replace "#statsvaginaoutsidesemen">><<print Math.trunc($player.bodyliquid.vaginaoutside.semen )>><</replace>>
-<<bodyliquid "vagina" "semen" 5>><<replace "#statsvaginasemen">><<print Math.trunc($player.bodyliquid.vagina.semen )>><</replace>>
-<<bodyliquid "penis" "semen" 5>><<replace "#statspenissemen">><<print Math.trunc($player.bodyliquid.penis.semen )>><</replace>>
-<<bodyliquid "anus" "semen" 5>><<replace "#statsanussemen">><<print Math.trunc($player.bodyliquid.anus.semen )>><</replace>>
-<<bodyliquid "mouth" "semen" 5>><<replace "#statsmouthsemen">><<print Math.trunc($player.bodyliquid.mouth.semen )>><</replace>>
- <<updatesidebarimg>>
+	<<for _type range ["neck","rightarm","leftarm","thigh","bottom","tummy","chest","face","hair","feet","vaginaoutside","vagina","penis","anus","mouth"]>>
+		<<bodyliquid _type "semen" 5>><<run $(`#stats${_type}semen`).html(Math.trunc($player.bodyliquid[_type].semen))>>	
+	<</for>>
+	<<updatesidebarimg>>
 <</link>> |
 
 <<link "Remove all semen">>
-<<bodyliquid "neck" "semen" -5>><<replace "#statsnecksemen">><<print Math.trunc($player.bodyliquid.neck.semen )>><</replace>>
-<<bodyliquid "rightarm" "semen" -5>><<replace "#statsrightarmsemen">><<print Math.trunc($player.bodyliquid.rightarm.semen )>><</replace>>
-<<bodyliquid "leftarm" "semen" -5>><<replace "#statsleftarmsemen">><<print Math.trunc($player.bodyliquid.leftarm.semen )>><</replace>>
-<<bodyliquid "thigh" "semen" -5>><<replace "#statsthighsemen">><<print Math.trunc($player.bodyliquid.thigh.semen )>><</replace>>
-<<bodyliquid "bottom" "semen" -5>><<replace "#statsbottomsemen">><<print Math.trunc($player.bodyliquid.bottom.semen )>><</replace>>
-<<bodyliquid "tummy" "semen" -5>><<replace "#statstummysemen">><<print Math.trunc($player.bodyliquid.tummy.semen )>><</replace>>
-<<bodyliquid "chest" "semen" -5>><<replace "#statschestsemen">><<print Math.trunc($player.bodyliquid.chest.semen )>><</replace>>
-<<bodyliquid "face" "semen" -5>><<replace "#statsfacesemen">><<print Math.trunc($player.bodyliquid.face.semen )>><</replace>>
-<<bodyliquid "hair" "semen" -5>><<replace "#statshairsemen">><<print Math.trunc($player.bodyliquid.hair.semen )>><</replace>>
-<<bodyliquid "feet" "semen" -5>><<replace "#statsfeetsemen">><<print Math.trunc($player.bodyliquid.feet.semen )>><</replace>>
-<<bodyliquid "vaginaoutside" "semen" -5>><<replace "#statsvaginaoutsidesemen">><<print Math.trunc($player.bodyliquid.vaginaoutside.semen )>><</replace>>
-<<bodyliquid "vagina" "semen" -5>><<replace "#statsvaginasemen">><<print Math.trunc($player.bodyliquid.vagina.semen )>><</replace>>
-<<bodyliquid "penis" "semen" -5>><<replace "#statspenissemen">><<print Math.trunc($player.bodyliquid.penis.semen )>><</replace>>
-<<bodyliquid "anus" "semen" -5>><<replace "#statsanussemen">><<print Math.trunc($player.bodyliquid.anus.semen )>><</replace>>
-<<bodyliquid "mouth" "semen" -5>><<replace "#statsmouthsemen">><<print Math.trunc($player.bodyliquid.mouth.semen )>><</replace>>
- <<updatesidebarimg>>
+	<<for _type range ["neck","rightarm","leftarm","thigh","bottom","tummy","chest","face","hair","feet","vaginaoutside","vagina","penis","anus","mouth"]>>
+		<<bodyliquid _type "semen" -5>><<run $(`#stats${_type}semen`).html(Math.trunc($player.bodyliquid[_type].semen))>>
+	<</for>>
+	<<updatesidebarimg>>
 <</link>> |
 
 <br>
 
-<<link "<">><<bodyliquid "neck" "semen" -1>><<replace "#statsnecksemen">><<print Math.trunc($player.bodyliquid.neck.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Neck semen: <span id="statsnecksemen"><<print Math.trunc($player.bodyliquid.neck.semen )>></span>
-<<link ">">><<bodyliquid "neck" "semen">><<replace "#statsnecksemen">><<print Math.trunc($player.bodyliquid.neck.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "rightarm" "semen" -1>><<replace "#statsrightarmsemen">><<print Math.trunc($player.bodyliquid.rightarm.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Right arm semen: <span id="statsrightarmsemen"><<print Math.trunc($player.bodyliquid.rightarm.semen )>></span>
-<<link ">">><<bodyliquid "rightarm" "semen">><<replace "#statsrightarmsemen">><<print Math.trunc($player.bodyliquid.rightarm.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "leftarm" "semen" -1>><<replace "#statsleftarmsemen">><<print Math.trunc($player.bodyliquid.leftarm.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Left arm semen: <span id="statsleftarmsemen"><<print Math.trunc($player.bodyliquid.leftarm.semen )>></span>
-<<link ">">><<bodyliquid "leftarm" "semen">><<replace "#statsleftarmsemen">><<print Math.trunc($player.bodyliquid.leftarm.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "thigh" "semen" -1>><<replace "#statsthighsemen">><<print Math.trunc($player.bodyliquid.thigh.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Thigh semen: <span id="statsthighsemen"><<print Math.trunc($player.bodyliquid.thigh.semen )>></span>
-<<link ">">><<bodyliquid "thigh" "semen">><<replace "#statsthighsemen">><<print Math.trunc($player.bodyliquid.thigh.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "bottom" "semen" -1>><<replace "#statsbottomsemen">><<print Math.trunc($player.bodyliquid.bottom.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Bottom semen: <span id="statsbottomsemen"><<print Math.trunc($player.bodyliquid.bottom.semen )>></span>
-<<link ">">><<bodyliquid "bottom" "semen">><<replace "#statsbottomsemen">><<print Math.trunc($player.bodyliquid.bottom.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "tummy" "semen" -1>><<replace "#statstummysemen">><<print Math.trunc($player.bodyliquid.tummy.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Tummy semen: <span id="statstummysemen"><<print Math.trunc($player.bodyliquid.tummy.semen )>></span>
-<<link ">">><<bodyliquid "tummy" "semen">><<replace "#statstummysemen">><<print Math.trunc($player.bodyliquid.tummy.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "chest" "semen" -1>><<replace "#statschestsemen">><<print Math.trunc($player.bodyliquid.chest.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Chest semen: <span id="statschestsemen"><<print Math.trunc($player.bodyliquid.chest.semen )>></span>
-<<link ">">><<bodyliquid "chest" "semen">><<replace "#statschestsemen">><<print Math.trunc($player.bodyliquid.chest.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "face" "semen" -1>><<replace "#statsfacesemen">><<print Math.trunc($player.bodyliquid.face.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Face semen: <span id="statsfacesemen"><<print Math.trunc($player.bodyliquid.face.semen )>></span>
-<<link ">">><<bodyliquid "face" "semen">><<replace "#statsfacesemen">><<print Math.trunc($player.bodyliquid.face.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "hair" "semen" -1>><<replace "#statshairsemen">><<print Math.trunc($player.bodyliquid.hair.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Hair semen: <span id="statshairsemen"><<print Math.trunc($player.bodyliquid.hair.semen )>></span>
-<<link ">">><<bodyliquid "hair" "semen">><<replace "#statshairsemen">><<print Math.trunc($player.bodyliquid.hair.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "feet" "semen" -1>><<replace "#statsfeetsemen">><<print Math.trunc($player.bodyliquid.feet.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Feet semen: <span id="statsfeetsemen"><<print Math.trunc($player.bodyliquid.feet.semen )>></span>
-<<link ">">><<bodyliquid "feet" "semen">><<replace "#statsfeetsemen">><<print Math.trunc($player.bodyliquid.feet.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "vaginaoutside" "semen" -1>><<replace "#statsvaginaoutsidesemen">><<print Math.trunc($player.bodyliquid.vaginaoutside.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Labia semen: <span id="statsvaginaoutsidesemen"><<print Math.trunc($player.bodyliquid.vaginaoutside.semen )>></span>
-<<link ">">><<bodyliquid "vaginaoutside" "semen">><<replace "#statsvaginaoutsidesemen">><<print Math.trunc($player.bodyliquid.vaginaoutside.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "vagina" "semen" -1>><<replace "#statsvaginasemen">><<print Math.trunc($player.bodyliquid.vagina.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Vagina semen: <span id="statsvaginasemen"><<print Math.trunc($player.bodyliquid.vagina.semen )>></span>
-<<link ">">><<bodyliquid "vagina" "semen">><<replace "#statsvaginasemen">><<print Math.trunc($player.bodyliquid.vagina.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "penis" "semen" -1>><<replace "#statspenissemen">><<print Math.trunc($player.bodyliquid.penis.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Penis semen: <span id="statspenissemen"><<print Math.trunc($player.bodyliquid.penis.semen )>></span>
-<<link ">">><<bodyliquid "penis" "semen">><<replace "#statspenissemen">><<print Math.trunc($player.bodyliquid.penis.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "anus" "semen" -1>><<replace "#statsanussemen">><<print Math.trunc($player.bodyliquid.anus.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Anus semen: <span id="statsanussemen"><<print Math.trunc($player.bodyliquid.anus.semen )>></span>
-<<link ">">><<bodyliquid "anus" "semen">><<replace "#statsanussemen">><<print Math.trunc($player.bodyliquid.anus.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "mouth" "semen" -1>><<replace "#statsmouthsemen">><<print Math.trunc($player.bodyliquid.mouth.semen )>><</replace>> <<updatesidebarimg>><</link>>
-Mouth semen: <span id="statsmouthsemen"><<print Math.trunc($player.bodyliquid.mouth.semen )>></span>
- <<link ">">><<bodyliquid "mouth" "semen" 1>><<replace "#statsmouthsemen">><<print Math.trunc($player.bodyliquid.mouth.semen )>><</replace>> <<updatesidebarimg>><</link>>
-|
+<<cheatBodyliquidOnPart "neck" "Neck" "semen">>
+<<cheatBodyliquidOnPart "rightarm" "Right arm" "semen">>
+<<cheatBodyliquidOnPart "leftarm" "Left arm" "semen">>
+<<cheatBodyliquidOnPart "thigh" "Thigh" "semen">>
+<<cheatBodyliquidOnPart "bottom" "Bottom" "semen">>
+<<cheatBodyliquidOnPart "tummy" "Tummy" "semen">>
+<<cheatBodyliquidOnPart "chest" "Chest" "semen">>
+<<cheatBodyliquidOnPart "face" "Face" "semen">>
+<<cheatBodyliquidOnPart "hair" "Hair" "semen">>
+<<cheatBodyliquidOnPart "feet" "Feet" "semen">>
+<<cheatBodyliquidOnPart "vaginaoutside" "Labia" "semen">>
+<<cheatBodyliquidOnPart "vagina" "Vagina" "semen">>
+<<cheatBodyliquidOnPart "penis" "Penis" "semen">>
+<<cheatBodyliquidOnPart "anus" "Anus" "semen">>
+<<cheatBodyliquidOnPart "mouth" "Mouth" "semen">>
 <br><br>
 
 <span class="gold">Slime</span>
 <br>
 <<link "Add all slime">>
-<<bodyliquid "neck" "goo" 5>><<replace "#statsneckgoo">><<print Math.trunc($player.bodyliquid.neck.goo)>><</replace>>
-<<bodyliquid "rightarm" "goo" 5>><<replace "#statsrightarmgoo">><<print Math.trunc($player.bodyliquid.rightarm.goo)>><</replace>>
-<<bodyliquid "leftarm" "goo" 5>><<replace "#statsleftarmgoo">><<print Math.trunc($player.bodyliquid.leftarm.goo)>><</replace>>
-<<bodyliquid "thigh" "goo" 5>><<replace "#statsthighgoo">><<print Math.trunc($player.bodyliquid.thigh.goo)>><</replace>>
-<<bodyliquid "bottom" "goo" 5>><<replace "#statsbottomgoo">><<print Math.trunc($player.bodyliquid.bottom.goo)>><</replace>>
-<<bodyliquid "tummy" "goo" 5>><<replace "#statstummygoo">><<print Math.trunc($player.bodyliquid.tummy.goo)>><</replace>>
-<<bodyliquid "chest" "goo" 5>><<replace "#statschestgoo">><<print Math.trunc($player.bodyliquid.chest.goo)>><</replace>>
-<<bodyliquid "face" "goo" 5>><<replace "#statsfacegoo">><<print Math.trunc($player.bodyliquid.face.goo)>><</replace>>
-<<bodyliquid "hair" "goo" 5>><<replace "#statshairgoo">><<print Math.trunc($player.bodyliquid.hair.goo)>><</replace>>
-<<bodyliquid "feet" "goo" 5>><<replace "#statsfeetgoo">><<print Math.trunc($player.bodyliquid.feet.goo)>><</replace>>
-<<bodyliquid "vaginaoutside" "goo" 5>><<replace "#statsvaginaoutsidegoo">><<print Math.trunc($player.bodyliquid.vaginaoutside.goo)>><</replace>>
-<<bodyliquid "vagina" "goo" 5>><<replace "#statsvaginagoo">><<print Math.trunc($player.bodyliquid.vagina.goo)>><</replace>>
-<<bodyliquid "penis" "goo" 5>><<replace "#statspenisgoo">><<print Math.trunc($player.bodyliquid.penis.goo)>><</replace>>
-<<bodyliquid "anus" "goo" 5>><<replace "#statsanusgoo">><<print Math.trunc($player.bodyliquid.anus.goo)>><</replace>>
-<<bodyliquid "mouth" "goo" 5>><<replace "#statsmouthgoo">><<print Math.trunc($player.bodyliquid.mouth.goo)>><</replace>>
- <<updatesidebarimg>>
+	<<for _type range ["neck","rightarm","leftarm","thigh","bottom","tummy","chest","face","hair","feet","vaginaoutside","vagina","penis","anus","mouth"]>>
+		<<bodyliquid _type "goo" 5>><<run $(`#stats${_type}goo`).html(Math.trunc($player.bodyliquid[_type].goo))>>	
+	<</for>>
+	<<updatesidebarimg>>
 <</link>> |
 
 <<link "Remove all slime">>
-<<bodyliquid "neck" "goo" -5>><<replace "#statsneckgoo">><<print Math.trunc($player.bodyliquid.neck.goo)>><</replace>>
-<<bodyliquid "rightarm" "goo" -5>><<replace "#statsrightarmgoo">><<print Math.trunc($player.bodyliquid.rightarm.goo)>><</replace>>
-<<bodyliquid "leftarm" "goo" -5>><<replace "#statsleftarmgoo">><<print Math.trunc($player.bodyliquid.leftarm.goo)>><</replace>>
-<<bodyliquid "thigh" "goo" -5>><<replace "#statsthighgoo">><<print Math.trunc($player.bodyliquid.thigh.goo)>><</replace>>
-<<bodyliquid "bottom" "goo" -5>><<replace "#statsbottomgoo">><<print Math.trunc($player.bodyliquid.bottom.goo)>><</replace>>
-<<bodyliquid "tummy" "goo" -5>><<replace "#statstummygoo">><<print Math.trunc($player.bodyliquid.tummy.goo)>><</replace>>
-<<bodyliquid "chest" "goo" -5>><<replace "#statschestgoo">><<print Math.trunc($player.bodyliquid.chest.goo)>><</replace>>
-<<bodyliquid "face" "goo" -5>><<replace "#statsfacegoo">><<print Math.trunc($player.bodyliquid.face.goo)>><</replace>>
-<<bodyliquid "hair" "goo" -5>><<replace "#statshairgoo">><<print Math.trunc($player.bodyliquid.hair.goo)>><</replace>>
-<<bodyliquid "feet" "goo" -5>><<replace "#statsfeetgoo">><<print Math.trunc($player.bodyliquid.feet.goo)>><</replace>>
-<<bodyliquid "vaginaoutside" "goo" -5>><<replace "#statsvaginaoutsidegoo">><<print Math.trunc($player.bodyliquid.vaginaoutside.goo)>><</replace>>
-<<bodyliquid "vagina" "goo" -5>><<replace "#statsvaginagoo">><<print Math.trunc($player.bodyliquid.vagina.goo)>><</replace>>
-<<bodyliquid "penis" "goo" -5>><<replace "#statspenisgoo">><<print Math.trunc($player.bodyliquid.penis.goo)>><</replace>>
-<<bodyliquid "anus" "goo" -5>><<replace "#statsanusgoo">><<print Math.trunc($player.bodyliquid.anus.goo)>><</replace>>
-<<bodyliquid "mouth" "goo" -5>><<replace "#statsmouthgoo">><<print Math.trunc($player.bodyliquid.mouth.goo)>><</replace>>
- <<updatesidebarimg>>
+	<<for _type range ["neck","rightarm","leftarm","thigh","bottom","tummy","chest","face","hair","feet","vaginaoutside","vagina","penis","anus","mouth"]>>
+		<<bodyliquid _type "goo" -5>><<run $(`#stats${_type}goo`).html(Math.trunc($player.bodyliquid[_type].goo))>>
+	<</for>>
+	<<updatesidebarimg>>
 <</link>> |
 
 <br>
 
-<<link "<">><<bodyliquid "neck" "semen" -1>><<replace "#statsneckgoo">><<print Math.trunc($player.bodyliquid.neck.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Neck slime: <span id="statsneckgoo"><<print Math.trunc($player.bodyliquid.neck.goo)>></span>
-<<link ">">><<bodyliquid "neck" "goo">><<replace "#statsneckgoo">><<print Math.trunc($player.bodyliquid.neck.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "rightarm" "goo" -1>><<replace "#statsrightarmgoo">><<print Math.trunc($player.bodyliquid.rightarm.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Right arm slime: <span id="statsrightarmgoo"><<print Math.trunc($player.bodyliquid.rightarm.goo)>></span>
-<<link ">">><<bodyliquid "rightarm" "goo">><<replace "#statsrightarmgoo">><<print Math.trunc($player.bodyliquid.rightarm.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "leftarm" "goo" -1>><<replace "#statsleftarmgoo">><<print Math.trunc($player.bodyliquid.leftarm.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Left arm slime: <span id="statsleftarmgoo"><<print Math.trunc($player.bodyliquid.leftarm.goo)>></span>
-<<link ">">><<bodyliquid "leftarm" "goo">><<replace "#statsleftarmgoo">><<print Math.trunc($player.bodyliquid.leftarm.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "thigh" "goo" -1>><<replace "#statsthighgoo">><<print Math.trunc($player.bodyliquid.thigh.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Thigh slime: <span id="statsthighgoo"><<print Math.trunc($player.bodyliquid.thigh.goo)>></span>
-<<link ">">><<bodyliquid "thigh" "goo">><<replace "#statsthighgoo">><<print Math.trunc($player.bodyliquid.thigh.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "bottom" "goo" -1>><<replace "#statsbottomgoo">><<print Math.trunc($player.bodyliquid.bottom.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Bottom slime: <span id="statsbottomgoo"><<print Math.trunc($player.bodyliquid.bottom.goo)>></span>
-<<link ">">><<bodyliquid "bottom" "goo">><<replace "#statsbottomgoo">><<print Math.trunc($player.bodyliquid.bottom.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "tummy" "goo" -1>><<replace "#statstummygoo">><<print Math.trunc($player.bodyliquid.tummy.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Tummy slime: <span id="statstummygoo"><<print Math.trunc($player.bodyliquid.tummy.goo)>></span>
-<<link ">">><<bodyliquid "tummy" "goo">><<replace "#statstummygoo">><<print Math.trunc($player.bodyliquid.tummy.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "chest" "goo" -1>><<replace "#statschestgoo">><<print Math.trunc($player.bodyliquid.chest.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Chest slime: <span id="statschestgoo"><<print Math.trunc($player.bodyliquid.chest.goo)>></span>
-<<link ">">><<bodyliquid "chest" "goo">><<replace "#statschestgoo">><<print Math.trunc($player.bodyliquid.chest.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "face" "goo" -1>><<replace "#statsfacegoo">><<print Math.trunc($player.bodyliquid.face.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Face slime: <span id="statsfacegoo"><<print Math.trunc($player.bodyliquid.face.goo)>></span>
-<<link ">">><<bodyliquid "face" "goo">><<replace "#statsfacegoo">><<print Math.trunc($player.bodyliquid.face.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "hair" "goo" -1>><<replace "#statshairgoo">><<print Math.trunc($player.bodyliquid.hair.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Hair slime: <span id="statshairgoo"><<print Math.trunc($player.bodyliquid.hair.goo)>></span>
-<<link ">">><<bodyliquid "hair" "goo">><<replace "#statshairgoo">><<print Math.trunc($player.bodyliquid.hair.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "feet" "goo" -1>><<replace "#statsfeetgoo">><<print Math.trunc($player.bodyliquid.feet.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Feet slime: <span id="statsfeetgoo"><<print Math.trunc($player.bodyliquid.feet.goo)>></span>
-<<link ">">><<bodyliquid "feet" "goo">><<replace "#statsfeetgoo">><<print Math.trunc($player.bodyliquid.feet.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "vaginaoutside" "goo" -1>><<replace "#statsvaginaoutsidegoo">><<print Math.trunc($player.bodyliquid.vaginaoutside.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Labia slime: <span id="statsvaginaoutsidegoo"><<print Math.trunc($player.bodyliquid.vaginaoutside.goo)>></span>
-<<link ">">><<bodyliquid "vaginaoutside" "goo">><<replace "#statsvaginaoutsidegoo">><<print Math.trunc($player.bodyliquid.vaginaoutside.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "vagina" "goo" -1>><<replace "#statsvaginagoo">><<print Math.trunc($player.bodyliquid.vagina.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Vagina slime: <span id="statsvaginagoo"><<print Math.trunc($player.bodyliquid.vagina.goo)>></span>
-<<link ">">><<bodyliquid "vagina" "goo">><<replace "#statsvaginagoo">><<print Math.trunc($player.bodyliquid.vagina.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "penis" "goo" -1>><<replace "#statspenisgoo">><<print Math.trunc($player.bodyliquid.penis.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Penis slime: <span id="statspenisgoo"><<print Math.trunc($player.bodyliquid.penis.goo)>></span>
-<<link ">">><<bodyliquid "penis" "goo">><<replace "#statspenisgoo">><<print Math.trunc($player.bodyliquid.penis.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "anus" "goo" -1>><<replace "#statsanusgoo">><<print Math.trunc($player.bodyliquid.anus.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Anus slime: <span id="statsanusgoo"><<print Math.trunc($player.bodyliquid.anus.goo)>></span>
-<<link ">">><<bodyliquid "anus" "goo">><<replace "#statsanusgoo">><<print Math.trunc($player.bodyliquid.anus.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "mouth" "goo" -1>><<replace "#statsmouthgoo">><<print Math.trunc($player.bodyliquid.mouth.goo)>><</replace>> <<updatesidebarimg>><</link>>
-Mouth slime: <span id="statsmouthgoo"><<print Math.trunc($player.bodyliquid.mouth.goo)>></span>
-<<link ">">><<bodyliquid "mouth" "goo">><<replace "#statsmouthgoo">><<print Math.trunc($player.bodyliquid.mouth.goo)>><</replace>> <<updatesidebarimg>><</link>>
-|
+<<cheatBodyliquidOnPart "neck" "Neck" "goo">>
+<<cheatBodyliquidOnPart "rightarm" "Right arm" "goo">>
+<<cheatBodyliquidOnPart "leftarm" "Left arm" "goo">>
+<<cheatBodyliquidOnPart "thigh" "Thigh" "goo">>
+<<cheatBodyliquidOnPart "bottom" "Bottom" "goo">>
+<<cheatBodyliquidOnPart "tummy" "Tummy" "goo">>
+<<cheatBodyliquidOnPart "chest" "Chest" "goo">>
+<<cheatBodyliquidOnPart "face" "Face" "goo">>
+<<cheatBodyliquidOnPart "hair" "Hair" "goo">>
+<<cheatBodyliquidOnPart "feet" "Feet" "goo">>
+<<cheatBodyliquidOnPart "vaginaoutside" "Labia" "goo">>
+<<cheatBodyliquidOnPart "vagina" "Vagina" "goo">>
+<<cheatBodyliquidOnPart "penis" "Penis" "goo">>
+<<cheatBodyliquidOnPart "anus" "Anus" "goo">>
+<<cheatBodyliquidOnPart "mouth" "Mouth" "goo">>
 <br><br>
 
 <span class="gold">Nectar</span>
 <br>
 <<link "Add all nectar">>
-<<bodyliquid "neck" "nectar" 5>><<replace "#statsnecknectar">><<print Math.trunc($player.bodyliquid.neck.nectar)>><</replace>>
-<<bodyliquid "rightarm" "nectar" 5>><<replace "#statsrightarmnectar">><<print Math.trunc($player.bodyliquid.rightarm.nectar)>><</replace>>
-<<bodyliquid "leftarm" "nectar" 5>><<replace "#statsleftarmnectar">><<print Math.trunc($player.bodyliquid.leftarm.nectar)>><</replace>>
-<<bodyliquid "thigh" "nectar" 5>><<replace "#statsthighnectar">><<print Math.trunc($player.bodyliquid.thigh.nectar)>><</replace>>
-<<bodyliquid "bottom" "nectar" 5>><<replace "#statsbottomnectar">><<print Math.trunc($player.bodyliquid.bottom.nectar)>><</replace>>
-<<bodyliquid "tummy" "nectar" 5>><<replace "#statstummynectar">><<print Math.trunc($player.bodyliquid.tummy.nectar)>><</replace>>
-<<bodyliquid "chest" "nectar" 5>><<replace "#statschestnectar">><<print Math.trunc($player.bodyliquid.chest.nectar)>><</replace>>
-<<bodyliquid "face" "nectar" 5>><<replace "#statsfacenectar">><<print Math.trunc($player.bodyliquid.face.nectar)>><</replace>>
-<<bodyliquid "hair" "nectar" 5>><<replace "#statshairnectar">><<print Math.trunc($player.bodyliquid.hair.nectar)>><</replace>>
-<<bodyliquid "feet" "nectar" 5>><<replace "#statsfeetnectar">><<print Math.trunc($player.bodyliquid.feet.nectar)>><</replace>>
-<<bodyliquid "vaginaoutside" "nectar" 5>><<replace "#statsvaginaoutsidenectar">><<print Math.trunc($player.bodyliquid.vaginaoutside.nectar)>><</replace>>
-<<bodyliquid "vagina" "nectar" 5>><<replace "#statsvaginanectar">><<print Math.trunc($player.bodyliquid.vagina.nectar)>><</replace>>
-<<bodyliquid "penis" "nectar" 5>><<replace "#statspenisnectar">><<print Math.trunc($player.bodyliquid.penis.nectar)>><</replace>>
-<<bodyliquid "anus" "nectar" 5>><<replace "#statsanusnectar">><<print Math.trunc($player.bodyliquid.anus.nectar)>><</replace>>
-<<bodyliquid "mouth" "nectar" 5>><<replace "#statsmouthnectar">><<print Math.trunc($player.bodyliquid.mouth.nectar)>><</replace>>
- <<updatesidebarimg>>
+	<<for _type range ["neck","rightarm","leftarm","thigh","bottom","tummy","chest","face","hair","feet","vaginaoutside","vagina","penis","anus","mouth"]>>
+		<<bodyliquid _type "nectar" 5>><<run $(`#stats${_type}nectar`).html(Math.trunc($player.bodyliquid[_type].nectar))>>	
+	<</for>>
+	<<updatesidebarimg>>
 <</link>> |
 
 <<link "Remove all nectar">>
-<<bodyliquid "neck" "nectar" -5>><<replace "#statsnecknectar">><<print Math.trunc($player.bodyliquid.neck.nectar)>><</replace>>
-<<bodyliquid "rightarm" "nectar" -5>><<replace "#statsrightarmnectar">><<print Math.trunc($player.bodyliquid.rightarm.nectar)>><</replace>>
-<<bodyliquid "leftarm" "nectar" -5>><<replace "#statsleftarmnectar">><<print Math.trunc($player.bodyliquid.leftarm.nectar)>><</replace>>
-<<bodyliquid "thigh" "nectar" -5>><<replace "#statsthighnectar">><<print Math.trunc($player.bodyliquid.thigh.nectar)>><</replace>>
-<<bodyliquid "bottom" "nectar" -5>><<replace "#statsbottomnectar">><<print Math.trunc($player.bodyliquid.bottom.nectar)>><</replace>>
-<<bodyliquid "tummy" "nectar" -5>><<replace "#statstummynectar">><<print Math.trunc($player.bodyliquid.tummy.nectar)>><</replace>>
-<<bodyliquid "chest" "nectar" -5>><<replace "#statschestnectar">><<print Math.trunc($player.bodyliquid.chest.nectar)>><</replace>>
-<<bodyliquid "face" "nectar" -5>><<replace "#statsfacenectar">><<print Math.trunc($player.bodyliquid.face.nectar)>><</replace>>
-<<bodyliquid "hair" "nectar" -5>><<replace "#statshairnectar">><<print Math.trunc($player.bodyliquid.hair.nectar)>><</replace>>
-<<bodyliquid "feet" "nectar" -5>><<replace "#statsfeetnectar">><<print Math.trunc($player.bodyliquid.feet.nectar)>><</replace>>
-<<bodyliquid "vaginaoutside" "nectar" -5>><<replace "#statsvaginaoutsidenectar">><<print Math.trunc($player.bodyliquid.vaginaoutside.nectar)>><</replace>>
-<<bodyliquid "vagina" "nectar" -5>><<replace "#statsvaginanectar">><<print Math.trunc($player.bodyliquid.vagina.nectar)>><</replace>>
-<<bodyliquid "penis" "nectar" -5>><<replace "#statspenisnectar">><<print Math.trunc($player.bodyliquid.penis.nectar)>><</replace>>
-<<bodyliquid "anus" "nectar" -5>><<replace "#statsanusnectar">><<print Math.trunc($player.bodyliquid.anus.nectar)>><</replace>>
-<<bodyliquid "mouth" "nectar" -5>><<replace "#statsmouthnectar">><<print Math.trunc($player.bodyliquid.mouth.nectar)>><</replace>>
- <<updatesidebarimg>>
+	<<for _type range ["neck","rightarm","leftarm","thigh","bottom","tummy","chest","face","hair","feet","vaginaoutside","vagina","penis","anus","mouth"]>>
+		<<bodyliquid _type "nectar" -5>><<run $(`#stats${_type}nectar`).html(Math.trunc($player.bodyliquid[_type].nectar))>>
+	<</for>>
+	<<updatesidebarimg>>
 <</link>> |
 
 <br>
 
-<<link "<">><<bodyliquid "neck" "semen" -1>><<replace "#statsnecknectar">><<print Math.trunc($player.bodyliquid.neck.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Neck nectar: <span id="statsnecknectar"><<print Math.trunc($player.bodyliquid.neck.nectar)>></span>
-<<link ">">><<bodyliquid "neck" "nectar">><<replace "#statsnecknectar">><<print Math.trunc($player.bodyliquid.neck.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "rightarm" "nectar" -1>><<replace "#statsrightarmnectar">><<print Math.trunc($player.bodyliquid.rightarm.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Right arm nectar: <span id="statsrightarmnectar"><<print Math.trunc($player.bodyliquid.rightarm.nectar)>></span>
-<<link ">">><<bodyliquid "rightarm" "nectar">><<replace "#statsrightarmnectar">><<print Math.trunc($player.bodyliquid.rightarm.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "leftarm" "nectar" -1>><<replace "#statsleftarmnectar">><<print Math.trunc($player.bodyliquid.leftarm.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Left arm nectar: <span id="statsleftarmnectar"><<print Math.trunc($player.bodyliquid.leftarm.nectar)>></span>
-<<link ">">><<bodyliquid "leftarm" "nectar">><<replace "#statsleftarmnectar">><<print Math.trunc($player.bodyliquid.leftarm.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "thigh" "nectar" -1>><<replace "#statsthighnectar">><<print Math.trunc($player.bodyliquid.thigh.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Thigh nectar: <span id="statsthighnectar"><<print Math.trunc($player.bodyliquid.thigh.nectar)>></span>
-<<link ">">><<bodyliquid "thigh" "nectar">><<replace "#statsthighnectar">><<print Math.trunc($player.bodyliquid.thigh.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "bottom" "nectar" -1>><<replace "#statsbottomnectar">><<print Math.trunc($player.bodyliquid.bottom.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Bottom nectar: <span id="statsbottomnectar"><<print Math.trunc($player.bodyliquid.bottom.nectar)>></span>
-<<link ">">><<bodyliquid "bottom" "nectar">><<replace "#statsbottomnectar">><<print Math.trunc($player.bodyliquid.bottom.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "tummy" "nectar" -1>><<replace "#statstummynectar">><<print Math.trunc($player.bodyliquid.tummy.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Tummy nectar: <span id="statstummynectar"><<print Math.trunc($player.bodyliquid.tummy.nectar)>></span>
-<<link ">">><<bodyliquid "tummy" "nectar">><<replace "#statstummynectar">><<print Math.trunc($player.bodyliquid.tummy.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "chest" "nectar" -1>><<replace "#statschestnectar">><<print Math.trunc($player.bodyliquid.chest.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Chest nectar: <span id="statschestnectar"><<print Math.trunc($player.bodyliquid.chest.nectar)>></span>
-<<link ">">><<bodyliquid "chest" "nectar">><<replace "#statschestnectar">><<print Math.trunc($player.bodyliquid.chest.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "face" "nectar" -1>><<replace "#statsfacenectar">><<print Math.trunc($player.bodyliquid.face.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Face nectar: <span id="statsfacenectar"><<print Math.trunc($player.bodyliquid.face.nectar)>></span>
-<<link ">">><<bodyliquid "face" "nectar">><<replace "#statsfacenectar">><<print Math.trunc($player.bodyliquid.face.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "hair" "nectar" -1>><<replace "#statshairnectar">><<print Math.trunc($player.bodyliquid.hair.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Hair nectar: <span id="statshairnectar"><<print Math.trunc($player.bodyliquid.hair.nectar)>></span>
-<<link ">">><<bodyliquid "hair" "nectar">><<replace "#statshairnectar">><<print Math.trunc($player.bodyliquid.hair.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "feet" "nectar" -1>><<replace "#statsfeetnectar">><<print Math.trunc($player.bodyliquid.feet.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Feet nectar: <span id="statsfeetnectar"><<print Math.trunc($player.bodyliquid.feet.nectar)>></span>
-<<link ">">><<bodyliquid "feet" "nectar">><<replace "#statsfeetnectar">><<print Math.trunc($player.bodyliquid.feet.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "vaginaoutside" "nectar" -1>><<replace "#statsvaginaoutsidenectar">><<print Math.trunc($player.bodyliquid.vaginaoutside.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Labia nectar: <span id="statsvaginaoutsidenectar"><<print Math.trunc($player.bodyliquid.vaginaoutside.nectar)>></span>
-<<link ">">><<bodyliquid "vaginaoutside" "nectar">><<replace "#statsvaginaoutsidenectar">><<print Math.trunc($player.bodyliquid.vaginaoutside.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "vagina" "nectar" -1>><<replace "#statsvaginanectar">><<print Math.trunc($player.bodyliquid.vagina.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Vagina nectar: <span id="statsvaginanectar"><<print Math.trunc($player.bodyliquid.vagina.nectar)>></span>
-<<link ">">><<bodyliquid "vagina" "nectar">><<replace "#statsvaginanectar">><<print Math.trunc($player.bodyliquid.vagina.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "penis" "nectar" -1>><<replace "#statspenisnectar">><<print Math.trunc($player.bodyliquid.penis.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Penis nectar: <span id="statspenisnectar"><<print Math.trunc($player.bodyliquid.penis.nectar)>></span>
-<<link ">">><<bodyliquid "penis" "nectar">><<replace "#statspenisnectar">><<print Math.trunc($player.bodyliquid.penis.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "anus" "nectar" -1>><<replace "#statsanusnectar">><<print Math.trunc($player.bodyliquid.anus.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Anus nectar: <span id="statsanusnectar"><<print Math.trunc($player.bodyliquid.anus.nectar)>></span>
-<<link ">">><<bodyliquid "anus" "nectar">><<replace "#statsanusnectar">><<print Math.trunc($player.bodyliquid.anus.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
-<<link "<">><<bodyliquid "mouth" "nectar" -1>><<replace "#statsmouthnectar">><<print Math.trunc($player.bodyliquid.mouth.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-Mouth nectar: <span id="statsmouthnectar"><<print Math.trunc($player.bodyliquid.mouth.nectar)>></span>
-<<link ">">><<bodyliquid "mouth" "nectar">><<replace "#statsmouthnectar">><<print Math.trunc($player.bodyliquid.mouth.nectar)>><</replace>> <<updatesidebarimg>><</link>>
-|
+<<cheatBodyliquidOnPart "neck" "Neck" "nectar">>
+<<cheatBodyliquidOnPart "rightarm" "Right arm" "nectar">>
+<<cheatBodyliquidOnPart "leftarm" "Left arm" "nectar">>
+<<cheatBodyliquidOnPart "thigh" "Thigh" "nectar">>
+<<cheatBodyliquidOnPart "bottom" "Bottom" "nectar">>
+<<cheatBodyliquidOnPart "tummy" "Tummy" "nectar">>
+<<cheatBodyliquidOnPart "chest" "Chest" "nectar">>
+<<cheatBodyliquidOnPart "face" "Face" "nectar">>
+<<cheatBodyliquidOnPart "hair" "Hair" "nectar">>
+<<cheatBodyliquidOnPart "feet" "Feet" "nectar">>
+<<cheatBodyliquidOnPart "vaginaoutside" "Labia" "nectar">>
+<<cheatBodyliquidOnPart "vagina" "Vagina" "nectar">>
+<<cheatBodyliquidOnPart "penis" "Penis" "nectar">>
+<<cheatBodyliquidOnPart "anus" "Anus" "nectar">>
+<<cheatBodyliquidOnPart "mouth" "Mouth" "nectar">>
 <br><br>
 
 <span class="gold">Transformations</span>
