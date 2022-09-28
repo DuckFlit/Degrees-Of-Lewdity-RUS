@@ -132,7 +132,7 @@ const DoLSave = ((Story, Save) => {
 						ironman: V.ironmanmode,
 						signature: V.ironmanmode ? IronMan.getSignature(save) : false,
 					});
-					V.currentOverlay = null;
+					delete T.currentOverlay;
 					// todo: find a better solution
 					closeOverlay();
 					if (V.ironmanmode === true) Engine.restart();

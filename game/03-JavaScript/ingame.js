@@ -1522,16 +1522,11 @@ function combatCharacterShadow() {
 }
 window.combatCharacterShadow = combatCharacterShadow;
 
-function painToTearsLvl(pain) {
-	/**
-	 * For usage with tears calculation, converts pain stat [0..200] to 0..4 range (maxes out at pain = 80)
-	 */
-	pain ??= V.pain;
-	return Math.floor(Math.clamp(pain, 0, 99) / 20);
-}
+/**
+ * For usage with tears calculation, converts pain stat [0..200] to 0..4 range (maxes out at pain = 80)
+ */
+const painToTearsLvl = (pain) => Math.floor(Math.clamp((pain || V.pain), 0, 99) / 20);
 window.painToTearsLvl = painToTearsLvl;
 
-function mascaraNameToCSS(name) {
-	return setup.colours.mascara.find(x => x.variable === name)?.csstext;
-}
+const mascaraNameToCSS = (name) => nullable(setup.colours.mascara.find(x => x.variable === name)).csstext;
 window.mascaraNameToCSS = mascaraNameToCSS;

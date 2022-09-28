@@ -111,7 +111,7 @@
 					<<wraithEvent>>
 				<<elseif $bird.state is "hunting" and $bird.timer lte 0>>
 					<<set _sleepinterrupt to 1>>
-				<<elseif $bird.state is "home" and $bird.satisfied isnot true and random(1, 10) is 10>>
+				<<elseif $bird.state is "home" and !$bird.satisfied and random(1, 10) is 10>>
 					<<set _sleepinterrupt to 1>>
 				<</if>>
 			<<case "wolf_cave">>
@@ -217,6 +217,7 @@
 		<<trauma 10>>
 		<span class="red">Your stress level reached a peak while you slept and has since subsided, but at cost to your mental health.</span>
 		<<lstress>><<gtrauma>>
+		<<ruffleHair>>
 		<br><br>
 	<</if>>
 	<<if $scienceproject is "ongoing" and $sciencephallusknown isnot 1 and $promiscuity gte 35>>
@@ -336,26 +337,43 @@
 <</widget>>
 
 <<widget "ruffleHairFromSleep">>
-	<!-- Roll a chance to wake up with ruffled hair the longer you sleep -->
-	<!-- Chance is negligible at under 5 hours of sleep and reaches 40% at 10 hours, 100% at 13 hours -->
-	<!-- Graph: https://www.desmos.com/calculator/gslcapsydv -->
-	<<set _chance = Math.pow($sleepHoursTotal, 4) * 10 / 250000>>
-	<<set _roll = Math.random()>>
-	<<if $debug>>
-		<<print $sleepHoursTotal + " hours: Rolled " + _roll + " vs " + _chance + " chance">>
-	<</if>>
-	<<if _chance > _roll>>
-		<span class="yellow">Your hair is tousled.</span>
-		<<ruffleHair>>
+	<!-- Roll a chance to wake up with ruffled hair -->
+	<!-- Chance is based on number of hours slept, with Trauma and Stress adding "calculated" hours -->
+	<!-- Trauma adds max 4.5, Stress 2 -->
+	<!-- Chances are ~5% at 8 hours, ~13% at 10 hours, 99% at 16.5 calculated hours -->
+
+	<!-- Math below uses rng of 1000, and calculates 75 instead of 750, for more granular probability -->
+
+	<!-- Use the below graph to calculate and demo -->
+	<!-- New Graph: https://www.desmos.com/calculator/xd73rdkx1v -->
+	<<set $_calcTrauma to ($trauma - $traumamax / 10) / 1000>>
+	<<if $_calcTrauma gte 0>>
+		<<set $_calcStress to $stress / 5000>>
+		<<set $_calcTotal to $_calcTrauma + $_calcStress + $sleepHoursTotal>>
+		<<set $_chance to $_calcTotal ** 4 / 75>>
+		<<rng 1000>>
+		<<if $_chance gt $rng>>
+			<span class="yellow">Your hair is tousled.</span>
+			<<ruffleHair>>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "ruffleHair">>
 	<!-- Find a style group of current hair (loose, braid, etc.) and pick a random one from a list of corresponding 'ruffled' styles. If none found then keep current hair -->
-	<<set $hairtype = pickRandom(setup.hair.hairtype.find(x => x.list.contains($hairtype))?.devolve_into) ?? $hairtype>>
-	<<set $fringetype = pickRandom(setup.hair.fringetype.find(x => x.list.contains($fringetype))?.devolve_into) ?? $fringetype>>
-	<<set $tempSavedHairStyles.hairtype = $hairtype>>
-	<<set $tempSavedHairStyles.fringetype = $fringetype>>
+	<<set $_hair to setup.hair.hairtype.find(x => x.list.contains($hairtype))>>
+	<<set $_fringe to setup.hair.fringetype.find(x => x.list.contains($fringetype))>>
+	<<if $_hair>>
+		<<set $_rndhair to $_hair.devolve.random()>>
+	<</if>>
+	<<if $_fringe>>
+		<<set $_rndfringe to $_fringe.devolve.random()>>
+	<</if>>
+	<<set $hairtype to $_rndhair || $hairtype>>
+	<<set $fringetype to $_rndfringe || $fringetype>>
+
+	<<set $tempSavedHairStyles.hairtype to $hairtype>>
+	<<set $tempSavedHairStyles.fringetype to $fringetype>>
 <</widget>>
 
 :: SleepSlimeEventObey

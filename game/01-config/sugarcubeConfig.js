@@ -72,6 +72,7 @@ l10nStrings.errorTitle = StartConfig.version + " Error";
 
 // delete parser that adds unneeded line breaks -ng
 Wikifier.Parser.delete("lineBreak");
+Wikifier.Parser.delete("emdash");
 
 /* ToDo: implement the dolls system, uncomment during and when its setup
 importScripts([
