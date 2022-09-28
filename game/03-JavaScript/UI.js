@@ -468,7 +468,7 @@ window.onInputChanged = onInputChanged;
 
 function closeOverlay() {
 	updateOptions();
-	V.currentOverlay = null;
+	delete T.currentOverlay;
 	T.buttons.reset();
 	$("#customOverlay").addClass("hidden").parent().addClass("hidden");
 }
@@ -525,7 +525,7 @@ window.updatehistorycontrols = updatehistorycontrols;
 DefineMacro("updatehistorycontrols", updatehistorycontrols);
 
 function updateOptions() {
-	if (V.currentOverlay === "options" && T.optionsRefresh && V.passage !== "Start") {
+	if (T.currentOverlay === "options" && T.optionsRefresh && V.passage !== "Start") {
 		updatehistorycontrols();
 		const optionsData = clone(V.options);
 		const tmpButtons = T.buttons;

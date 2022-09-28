@@ -606,12 +606,6 @@ Macro.add("foldout", {
 	},
 });
 
-function pickRandom(list) {
-	if (!list) return undefined;
-	return list[Math.floor(Math.random() * list.length)];
-}
-window.pickRandom = pickRandom;
-
 /**
  * @returns 30 for November, 31 for December, 28 for February (29 if leap year), et cetera 
  * Uses current in-game month and year when no arguments provided

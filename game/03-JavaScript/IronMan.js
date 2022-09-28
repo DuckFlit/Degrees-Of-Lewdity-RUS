@@ -263,7 +263,7 @@ var IronMan = (Save => {
 		/* Navigate to the export-import page. */
 		T.presetData = finalData;
 		Wikifier.wikifyEval(
-			'<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>'
+			'<<overlayReplace "optionsExportImport">><<unset _currentOverlay>>'
 		);
 		return finalData;
 	}
