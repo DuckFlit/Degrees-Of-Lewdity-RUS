@@ -541,6 +541,7 @@ One last time.
 <<else>>
 <<set $pain to 5>>
 <</if>>
+<<set $moonstate to 0>><<set $hour to 11>><<set $minute to 0>><<set $time to (11 * 60)>>
 You open your eyes.
 <br><br>
 You're underwater. You can't breathe, but it's okay. You don't feel like you need to anymore.
@@ -559,7 +560,7 @@ You drift through the empty ruin. You can feel it pulling you. You see it. It's 
 <br>
 
 :: Schism Necklace
-<<effects>><<set $moonstate to 0>>
+<<effects>>
 You can't. You can't enter. The room is only walls, and no doors. But that's okay. You only need to see it.
 <br><br>
 You place your palm against the wall. You feel it around your neck. You hold your necklace.
@@ -631,6 +632,7 @@ You yell. You scream. You cry.
 
 :: Schism Wraith 2
 <<effects>><<unset $schism>><<set $moonstate to "evening">><<set $wraith.state to "haunt">>
+<<set $hour to 22>><<set $minute to 0>><<set $time to (22 * 60)>><<set $weather to "rain">>
 <<neckruined>><<set $pain to 80>>
 You cry.
 <br><br>
@@ -677,9 +679,8 @@ The feeling of dread rapidly fades. <span class="blue"><i>You're safe until the 
 <<unset _wraithEvent>>
 <<endWraith>>
 <<clearWraith>>
-<br><br>
 <<if !$wraithPrison.vision>>
-	You wonder what would have happened next, had you not woken up.
+	<span class="blue">You wonder what would have happened next, had you not woken up.</span>
 	<br><br>
 <</if>>
 <<link [[Next|Lake Ruin Prison]]>><</link>>
@@ -688,7 +689,9 @@ The feeling of dread rapidly fades. <span class="blue"><i>You're safe until the 
 :: Widgets Schism [widget]
 <<widget "schismStart">>
 /*Store player stats*/
-<<set $statFreeze to true>>
+<<if !$frozenValues>>
+	<<freezePlayerStats>>
+<</if>>
 <<set $real_playersex to $player.sex>>
 <<set $real_playergender to $player.gender>>
 <<set $real_penisexist to $player.penisExist>>
@@ -739,6 +742,7 @@ The feeling of dread rapidly fades. <span class="blue"><i>You're safe until the 
 <<set $real_month to $month>>
 <<set $real_year to $year>>
 <<set $real_moonstate to $moonstate>>
+<<set $real_wraithState to $wraith.state>>
 /*store player clothing*/
 <<set $real_rebuy to $clothingrebuy>>
 <<undress "wraith">>
@@ -838,12 +842,10 @@ The feeling of dread rapidly fades. <span class="blue"><i>You're safe until the 
 
 <<neckwear 23>>
 
-<<freezePlayerStats>>
-
 <</widget>>
 
 <<widget "schismEnd">>
-<<unfreezePlayerStats>>
+
 <<unset $possessed>>
 <<unset $schism>>
 /*restore clothes integrity and undress*/
@@ -873,6 +875,7 @@ The feeling of dread rapidly fades. <span class="blue"><i>You're safe until the 
 	<<set $penisstate to "none">>
 	<<set $penisuse to "none">>
 <</if>>
+<<set $wraith.state to $real_wraithState>>
 <<unset $statFreeze>>
 <<if $real_lefteyecolour>>
 	<<set $leftEyeColour to $real_lefteyecolour>>
@@ -893,10 +896,16 @@ The feeling of dread rapidly fades. <span class="blue"><i>You're safe until the 
 <<set $player.bodyliquid to clone($real_bodyliquid)>><<goocount>>
 <<set $parasite to clone($real_parasite)>>
 <<set $player.virginity to clone($real_virginity)>>
-<<set $arousal to ($arousal + $real_arousal)>>
-<<set $tiredness to ($tiredness + $real_tiredness)>>
+<<if $frozenValues>>
+	<<set $arousal to $real_arousal>>
+	<<set $tiredness to $real_tiredness>>
+	<<set $trauma to $real_trauma>>
+<<else>>
+	<<set $arousal to ($arousal + $real_arousal)>>
+	<<set $tiredness to ($tiredness + $real_tiredness)>>
+	<<set $trauma to ($trauma + $real_trauma)>>
+<</if>>
 <<set $stress to $real_stress>>
-<<set $trauma to ($trauma + $real_trauma)>>
 <<set $control to $real_control>>
 <<set $angel to $real_angel>>
 <<set $angelbuild to $real_angelbuild>>
@@ -930,24 +939,27 @@ The feeling of dread rapidly fades. <span class="blue"><i>You're safe until the 
 <<set $minute to $real_minute>>
 <<set $time to $real_time>>
 <<time>>
-<<switch $hour>>
-	<<case 21>>
-		<<pass 9 hours>>
-	<<case 22>>
-		<<pass 8 hours>>
-	<<case 23>>
-		<<pass 7 hours>>
-	<<case 0>>
-		<<pass 6 hours>>
-	<<case 1>>
-		<<pass 5 hours>>
-	<<case 2>>
-		<<pass 4 hours>>
-	<<case 3>>
-		<<pass 3 hours>>
-	<<case 4>>
-		<<pass 2 hours>>
-	<<case 5>>
-		<<pass 1 hour>>
-<</switch>>
+<<if !$frozenValues>>
+	<<switch $hour>>
+		<<case 21>>
+			<<pass 9 hours>>
+		<<case 22>>
+			<<pass 8 hours>>
+		<<case 23>>
+			<<pass 7 hours>>
+		<<case 0>>
+			<<pass 6 hours>>
+		<<case 1>>
+			<<pass 5 hours>>
+		<<case 2>>
+			<<pass 4 hours>>
+		<<case 3>>
+			<<pass 3 hours>>
+		<<case 4>>
+			<<pass 2 hours>>
+		<<case 5>>
+			<<pass 1 hour>>
+	<</switch>>
+<</if>>
+<<unfreezePlayerStats>>
 <</widget>>

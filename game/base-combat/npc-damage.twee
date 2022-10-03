@@ -16,9 +16,9 @@
 	<<set _npctodefeat to []>>/* An array for later use. */
 	/* When args[0] is undefined, that means the action has no target and inflicts damage to all NPCs. */
 	<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
-		<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated">>
-			/* Divide damage by all current active enemies. */
-			<<set $NPCList[_npctodamage].health -= (_thedamage/$enemyno)>>
+		<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
+			<<set _enemydivide to $fightTargets ? $enemyno-$fightTargets.length : $enemyno>> /* Divide damage by all current active enemies. */
+			<<set $NPCList[_npctodamage].health -= (_thedamage/_enemydivide)>>
 			/* Lookout for any NPCs whose healths were reduced to 0 by splash damage. */
 			<<if $enemyno gte 2 and $NPCList[_npctodamage].health lte 0>>
 				<<set _npctodefeat.push(_npctodamage)>>
