@@ -1,83 +1,80 @@
 :: Widgets Persistent NPCs [widget]
+
 /*For saving generic NPC data so they can be loaded later*/
 <<widget "saveNPC">>
-/*First argument is the NPClist index of the NPC to be saved. Second argument is the string you want to save it under.*/
-<<if _args[0] gte 0 and _args[1]>>
-	<<set _temp1 to _args[1]>>
-	<<set _temp0 to _args[0]>>
-	<<set $per_npc[_temp1] to clone($NPCList[_temp0])>>
-	/*Clears name from name pool */
-	<<if $NPCList[_args[0]].pronoun is "f">>
-		<<set $NPC_names_f.delete($NPCList[_args[0]].name)>>
-	<<else>>
-		<<set $NPC_names_m.delete($NPCList[_args[0]].name)>>
+	/*First argument is the NPClist index of the NPC to be saved. Second argument is the string you want to save it under.*/
+	<<if _args[0] gte 0 and _args[1]>>
+		<<set $_name to _args[1]>>
+		<<set $_slot to _args[0]>>
+		<<if EventSystem.isSlotTaken($_slot)>>
+			<<set $per_npc[$_name] to clone($NPCList[$_slot])>>
+			/*Clears name from name pool */
+			<<if $NPCList[$_slot].pronoun is "f">>
+				<<set $NPC_names_f.delete($NPCList[$_slot].name)>>
+			<<else>>
+				<<set $NPC_names_m.delete($NPCList[$_slot].name)>>
+			<</if>>
+		<<else>>
+			<<run Errors.report(`saveNPC called with invalid or empty NPCList slot (${$_slot})`,
+			{
+				Stacktrace : Utils.GetStack(),
+				Name : $_name,
+				Slot : $_slot,
+			})>>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "loadNPC">>
-<!-- Checks if endevent was properly used after the last event -->
-<<checkEventNPC _args[0]>>
-/*First argument is the NPClist you want the NPC to fill. Second argument is the string you want to load, as saved with saveNPC.*/
-<<if _args[0] gte 0 and _args[1]>>
-	<<set _temp1 to _args[1]>>
-	<<set _temp0 to _args[0]>>
-	<<if $per_npc[_temp1] isnot undefined>>
-		<<set $NPCList[_temp0] to clone($per_npc[_temp1])>>
-		<<if $enemyno lt 6>><<set $enemyno += 1>><</if>><<set $enemynomax to $enemyno>>
-		<<if $NPCList[_temp0].monster is "monster">>
-			<<set $monster to 1>>
+	<!-- Checks if endevent was properly used after the last event -->
+	<<checkEventNPC _args[0]>>
+	/*First argument is the NPClist you want the NPC to fill. Second argument is the string you want to load, as saved with saveNPC.*/
+	<<if _args[0] gte 0 and _args[1]>>
+		<<set $_name to _args[1]>>
+		<<set $_slot to _args[0]>>
+		<<if $per_npc[$_name] neq null>>
+			<<set $NPCList[$_slot] to clone($per_npc[$_name])>>
+			<<if $enemyno lt 6>><<set $enemyno += 1>><</if>><<set $enemynomax to $enemyno>>
+			<<set $monster to ($NPCList[$_slot].monster is "monster" ? 1 : 0)>>
+			<<run EventSystem.push($passage, $_slot, $time)>>
 		<<else>>
-			<<set $monster to 0>>
-		<</if>>
-		<<run EventSystem.push($passage, _args[0], $time)>>
-	<<else>>
-		<span class="red">[ERROR: NPC "<<print _temp1>>" is undefined in passage: "<<print $passage>>"! Please report this issue.]</span>
+			<<run Errors.report(`loadNPC called with an undefined NPC name (${$_name})`, {
+				Stacktrace : Utils.GetStack(),
+				Name : $_name,
+				Slot : $_slot,
+			})>>
 
-		<<switch _temp1>>
-			<<case "black_dog">>
-				<<beastNEWinit 1 dog>>
-				<<saveNPC _temp0 "black_dog">>
-			<<case "relaxed_guard">>
-				<<generateRole _temp0 "relaxed" "guard">>
-				<<saveNPC _temp0 "relaxed_guard">>
-			<<case "anxious_guard">>
-				<<generateRole _temp0 "anxious" "guard">>
-				<<saveNPC _temp0 "anxious_guard">>
-			<<case "veteran_guard">>
-				<<generateRole _temp0 "veteran" "guard">>
-				<<saveNPC _temp0 "veteran_guard">>
-			<<case "methodical_guard">>
-				<<generateRole _temp0 "methodical" "guard">>
-				<<saveNPC _temp0 "methodical_guard">>
-			<<case "scarred_inmate">>
-				<<generateRole _temp0 "scarred" "inmate">>
-				<<saveNPC _temp0 "scarred_inmate">>
-			<<case "tattooed_inmate">>
-				<<generateRole _temp0 "tattooed" "inmate">>
-				<<saveNPC _temp0 "tattooed_inmate">>
-			<<default>>
-				<<generateNPC _temp0>>
-				<<saveNPC _temp0 _temp1>>
-		<</switch>>
+			<<set $_genslot to $_slot + 1>>
+			<<set $_parts to $_name.split("_")>>
+			<<if $_name is "black_dog">>
+				<<generateBEAST $_genslot dog>>
+				<<set $enemytype to "beast">>
+				<<set $monster to ($NPCList[$_slot].monster is "monster" ? 1 : 0)>>
+			<<elseif ["guard", "inmate"].includes($_parts[1])>>
+				<!-- _guard or _inmate -->
+				<<generateRole $_slot $_parts[0] $_parts[1]>> <!-- uses 0-5 not 1-6 -->
+			<<else>>
+				<<generateNPC $_genslot>>
+			<</if>>
+			<<saveNPC $_slot $_name>>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "clearNPC">>
-/*Clears persistent NPC data for a single NPC. Argument is the string the NPC was saved under.*/
-<<if _args[0]>>
-	<<set _temp0 to _args[0]>>
-	/*Adds name back into name pool */
-	<<if $per_npc[_temp0] and $per_npc[_temp0].name>>
-		<<if $per_npc[_temp0].pronoun is "f">>
-			<<set $NPC_names_f.pushUnique($per_npc[_temp0].name)>>
-		<<else>>
-			<<set $NPC_names_m.pushUnique($per_npc[_temp0].name)>>
+	/*Clears persistent NPC data for a single NPC. Argument is the string the NPC was saved under.*/
+	<<if _args[0]>>
+		<<set $_name to _args[0]>>
+		/*Adds name back into name pool */
+		<<if $per_npc[$_name] and $per_npc[$_name].name>>
+			<<if $per_npc[$_name].pronoun is "f">>
+				<<set $NPC_names_f.pushUnique($per_npc[$_name].name)>>
+			<<else>>
+				<<set $NPC_names_m.pushUnique($per_npc[$_name].name)>>
+			<</if>>
 		<</if>>
+		<<run delete $per_npc[$_name]>>
 	<</if>>
-	<<run delete $per_npc[_temp0]>>
-<</if>>
 <</widget>>
 
 <<widget "updatePersistentNPCs">>
@@ -220,14 +217,15 @@
 <</if>>
 <</widget>>
 
-<<widget "updateNPCsFirst">>/*Adds new variables to saved NPCs.*/
-<<for _per_keys range Object.keys($per_npc)>>
-	<<set $per_npc[_per_keys][_args[0]] to _args[1]>>
-<</for>>
+<<widget "updateNPCsFirst">>
+	/*Adds new variables to saved NPCs.*/
+	<<for $_per_keys range Object.keys($per_npc)>>
+		<<set $per_npc[$_per_keys][_args[0]] to _args[1]>>
+	<</for>>
 <</widget>>
 
 <<widget "updateNPCsSecond">>
-<<for _per_keys range Object.keys($per_npc)>>
-	<<set $per_npc[_per_keys][_args[0]][_args[1]] to _args[2]>>
-<</for>>
+	<<for $_per_keys range Object.keys($per_npc)>>
+		<<set $per_npc[$_per_keys][_args[0]][_args[1]] to _args[2]>>
+	<</for>>
 <</widget>>
