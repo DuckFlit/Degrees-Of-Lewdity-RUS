@@ -3,13 +3,13 @@
  * run this after V.NPCName exists */
 function initCNPC() {
 	C.npc = {};
-	for (const name of V.NPCNameList) {
+	for (const name of setup.NPCNameList) {
 		Object.defineProperty(C.npc, name, {
 			get() {
-				return V.NPCName[V.NPCNameList.indexOf(name)];
+				return V.NPCName[setup.NPCNameList.indexOf(name)];
 			},
 			set(val) {
-				return (V.NPCName[V.NPCNameList.indexOf(name)] = val);
+				return (V.NPCName[setup.NPCNameList.indexOf(name)] = val);
 			},
 		});
 	}
