@@ -105,7 +105,7 @@ const combatActionColours = {
 			/* feetaction */
 			"run", "hide", "confront", "feetresistW",
 			/* mouthaction */
-			"pullaway", "pullawayvagina", "finish", "novaginal", "nopenile", "noanal", "scream", "mock", "breastclosed", "breastpull", "pullawaykiss", "noupper", "analpull", "up", "stifleorgasm", "stifle", "mouthresistW", "handcloseW",
+			"pullaway", "pullawayvagina", "finish", "novaginal", "nopenile", "noanal", "scream", "mock", "breastclosed", "breastpull", "pullawaykiss", "noupper", "analpull", "up", "stifleorgasm", "stifle", "mouthresistW", "handcloseW", "growl",
 			/* penisaction */
 			"othermouthescape", "escape", "otheranusescape", "fencingescape",
 			/* vaginaaction */
@@ -124,6 +124,8 @@ const combatActionColours = {
 		meek: [
 			/* leftaction or rightaction */
 			"behind", "fold", "leftcovervaginameek", "leftcoverpenismeek", "leftcoveranusmeek", "rightcovervaginameek", "rightcoverpenismeek", "rightcoveranusmeek", "leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "pickupSexToy", "leftcamerapose", "rightcamerapose",
+			/*feetaction*/
+			"strut",
 			/* mouthaction */
 			"grasp", "plead", "forgive", "down", "letout", "letoutorgasm", "noises", "pay",
 			/* penisaction */
@@ -131,7 +133,7 @@ const combatActionColours = {
 			/* vaginaaction */
 			"penisthighs",
 			/* anusaction */
-			"bottombay", "penischeeks", "penispussy", "penispussydap", "penisanus", "bottomhandbay",
+			"bottombay", "penischeeks", "penispussy", "penispussydap", "penisanus", "bottomhandbay", "wiggle",
 		],
 		sub: [
 			/* leftaction or rightaction */
@@ -173,7 +175,7 @@ const combatActionColours = {
 			/* leftaction or rightaction */
 			"leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak",
 			/* mouthaction */
-			"mouthpullawaytentacle", "stifleorgasm", "stifle",
+			"mouthpullawaytentacle", "stifleorgasm", "stifle", "mouthlulltentacle",
 			/* penisaction */
 			"penispullawaytentacle",
 			/* vaginaaction */

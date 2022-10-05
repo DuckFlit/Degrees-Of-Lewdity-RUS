@@ -34,7 +34,16 @@ You run around the edge of the yard.
 You warm up yourself up, load the barbell, and lift. Your muscles soon ache.<<physique 12>>
 <br><br>
 
-<<if $physique gte 15000>>
+<<if random(1, 4) is 4>>
+	<<generate1>><<person1>>
+	A <<person>> walks up to the bar, and holds <<his>> hands under it. "Go on," <<he>> says. "Give it all you got."
+	<br><br>
+	
+	<<link [[Give it all you got|Prison Yard Give]]>><<tiredness 6>><</link>><<gtiredness>><<ggphysique>>
+	<br>
+	<<link [["Tell " + $NPCList[0].pronouns.him + " to go away"|Prison Yard Tell]]>><</link>>
+	<br>
+<<elseif $physique gte 15000>>
 	No one's lifting heavier than you.
 	<br><br>
 	<<link [[Show off|Prison Yard Show]]>><</link>><<physiquedifficulty 10000 20000>>
@@ -45,6 +54,100 @@ You warm up yourself up, load the barbell, and lift. Your muscles soon ache.<<ph
 	<<link [[Next|Prison Yard]]>><</link>>
 	<br>
 <</if>>
+
+
+:: Prison Yard Give
+<<effects>>
+
+You push yourself harder than you normally would while the <<person>> shouts encouragement, until your arms hang limp.
+
+<<if $rng gte $prison.inmates>>
+	<<He>> lowers the barbell, <span class="pink">trapping you.</span>
+	<br><br>
+	"Now how's about you help me?" <<he>> asks, pressing <<his>> groin against your face.
+	<br><br>
+	<<link [[Next|Prison Exercise Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<<else>>
+	<<He>> lifts the barbell off, and helps you to your feet.
+	<br><br>
+	<<link [[Next|Prison Yard]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Prison Exercise Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<npcoral>>
+	<<set $position to "missionary">>
+	<<enable_rescue>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Prison Exercise Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Prison Exercise Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Prison Exercise Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<He>> leaves barbell atop you, and walks away.
+	<br><br>
+	<<tearful>> you catch your breath. Strength recovered, you push up the barbell, freeing yourself.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<destination_prison>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	The <<person>> backs out of reach, and watches you warily. "You're harder than you look."<<grespect>><<prison_inmates 1>>
+	<br><br>
+	<<tearful>> you catch your breath. Strength recovered, you pushed up the barbell, freeing yourself.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<destination_prison>>
+<<else>>
+	<<set $rescued += 1>>
+	The <<person>> flees at the sound of a heavy pair of footsteps.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<generate_veteran_guard 0>><<person1>>
+	You're still stuck beneath the barbell when <<veteran_guard 0>> arrives. "You're disturbing the peace and tranquility of this institution," <<veteran_guard 0>> says, looking down at you. <<He>> lifts the barbell, freeing you, then rests a hand on your shoulder. "You're coming with me."
+	<br><br>
+	<<link [[Go quietly|Prison Punishment]]>><<endevent>><</link>>
+	<br>
+	<<link [[Fight|Prison Punishment Fight]]>><<set $fightstart to 1>><</link>>
+	<br>
+
+<</if>>
+
+:: Prison Yard Tell
+<<effects>>
+
+"Suit yourself," the <<person>> says, walking away.
+<br><br>
+
+<<link [[Next|Prison Yard]]>><<endevent>><</link>>
+<br>
 
 :: Prison Yard Show
 <<effects>>
@@ -774,7 +877,7 @@ Your turn.
 <<effects>>
 <<generate_methodical_guard 0>><<person1>>
 <<if $prison.methodical gte 1 and $NPCList[0].name_known isnot 1>>
-	<<methodical_guard 0 cap>> acknowledges your arrival with a sniff. <<He>> doesn't have time for more. <span class="red">A loud crack</span> echoes through the room as the cupboard bursts open. A dark shape hurls across the room.
+	<<methodical_guard 0 cap>> acknowledges your arrival with a sniff. <<He>> doesn't have time for more. <span class="red">A loud crack</span> echoes as the cupboard bursts open. A dark shape hurls across the room.
 	<br><br>
 	"Shut the door!" <<methodical_guard 0>> shouts. "Shut it!"
 	<br><br>
@@ -860,7 +963,7 @@ You're sorting through the last of the paper, when you find another interesting 
 <<generate_methodical_guard 0>><<person1>>You help <<methodical_guard 0>> move patients, take vitals, and apply bandages. <<He>> only speaks when necessary, and gives little heed to the patients' comfort.
 <br><br>
 
-<<rng 5>>
+<<rng 6>>
 <<switch $rng>>
 <<case 1>>
 	"Painkillers are suitable for this one," <<he>> says. <<He>> pulls a bottle from <<his>> pocket, but has trouble opening it. "Would you mind? Just the one, actually." The jar pops open. There are shark's teeth inside.
@@ -902,6 +1005,31 @@ You're sorting through the last of the paper, when you find another interesting 
 	<br><br>
 
 	<<prison_medical_options>>
+<<case 5>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		You're conscious of the patients' eyes on you as you struggle to accomplish your tasks with bound arms. They don't hide their amusement.<<lrespect>><<prison_inmates -1>><<gstress>><<stress 6>>
+		<br><br>
+		<<prison_medical_options>>
+	<<else>>
+		<<generate2>><<person2>>
+		One of the patients watches you with lascivious eyes as you work.
+		<<if $NPCList[1].penis isnot "none">>
+			A bulge forms in <<his>> bedsheet, above <<his>> groin. "Hey nurse," <<he>> says as you draw closer. "There's an emergency. It's my cock." <<He>> forces a cough. "You need to help me cum, or I'll get sicker."
+		<<else>>
+			"Hey nurse," <<he>> says as you draw closer. "There's an emergency. It's my pussy." <<He>> forces a cough. "You need to help me cum, or I'll get sicker."
+		<</if>>
+		<br><br>
+		<<link [[Ignore|Prison Medical Work Handjob Ignore]]>><</link>>
+		<br>
+		<<if $promiscuity gte 15>>
+			<<link [[Give handjob|Prison Medical Work Handjob]]>><<prison_hope 1>><</link>><<promiscuous2>><<ghope>>
+			<br>
+		<</if>>
+		<<if $submissive lte 500>>
+			<<link [[Scare|Prison Medical Work Handjob Scare]]>><<prison_reb 1>><<prison_inmates 1>><</link>><<defianttext>><<greb>><<grespect>>
+			<br>
+		<</if>>
+	<</if>>
 <<default>>
 	The lights flicker.
 	<<if $hallucinations gte 2 and random(1, 10) is 10>>
@@ -912,6 +1040,67 @@ You're sorting through the last of the paper, when you find another interesting 
 	<br><br>
 	<<prison_medical_options>>
 <</switch>>
+
+:: Prison Medical Work Handjob Ignore
+<<effects>>
+
+You ignore the lascivious patient, and endure <<his>> gaze as you continue working.
+<br><br>
+
+<<prison_medical_options>>
+
+:: Prison Medical Work Handjob
+<<effects>>
+<<handstat>>
+<<if $submissive gte 1150>>
+	"I-if that's the only cure," you say. "Then it's what I must do."
+<<elseif $submissive lte 850>>
+	"You're disgusting," you say. "But I suppose it can't be helped."
+<<else>>
+	"If that's what it takes," you say. "I suppose it can't be helped."
+<</if>>
+You reach beneath the sheet, and find the <<person>>'s
+<<if $NPCList[1].penis isnot "none">>
+	<<bodyliquid "rightarm" "semen">>
+	<<print $NPCList[1].penisdesc>>. <<Hes>> already pulled down <<his>> underwear. With a clinical demeanor, you take <<his>> length between thumb and forefinger, and rub <<him>> up and down.
+	<br><br>
+	
+	<<He>> shuts <<his>> eyes and moans as you work, moving faster and adding more fingers, but keeping your expression neutral and disinterested the whole time. If anything, this turns <<him>> on even more, and <<he>> soon writhes and ejaculates over your arm.
+<<else>>
+	<<bodyliquid "rightarm" "goo">>
+	pussy. <<Hes>> already pulled down <<his>> underwear. With a clinical demeanor, you push your thumb against <<his>> clit, and rub in a circular motion.
+	<br><br>
+	
+	<<He>> shuts <<his>> eyes and moans as you work, moving faster and adding more fingers, but keeping your expression neutral and disinterested the whole time. If anything, this turns <<him>> on even more, and <<he>> soon writhes in climax against your fingers.
+<</if>>
+<br><br>
+
+"Thanks nurse," <<he>> sighs. "I'm feeling better already. If only I were allowed a cigarette."
+<<promiscuity2>>
+
+<<prison_medical_options>>
+
+:: Prison Medical Work Handjob Scare
+<<effects>>
+
+"I have a better medicine," you say. "It must be injected directly into your
+
+<<if $NPCList[1].penis isnot "none">>
+	balls.
+<<else>>
+	clitoris.
+<</if>>
+You'll need multiple doses. Let me find the biggest needle-"
+<br><br>
+
+"N-no!" the <<person>> gasps. "I'm feeling better already. Honest!"
+<br><br>
+
+You continue working, free from <<his>> lascivious gaze.
+<br><br>
+
+<<prison_medical_options>>
+
 
 :: Prison Medical Work Angry
 <<effects>>

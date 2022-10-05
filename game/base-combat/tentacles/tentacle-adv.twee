@@ -558,6 +558,34 @@ _The _tentacle.fullDesc writhes between your feet.
 <</if>>
 
 <<rng>>
+<<if _tentacle.head is "hypnosis_deviancy">>
+	and in front of your face
+	<<if _tentacle.type is "vine">>
+		<span class="pink">where it puffs glittering pollen in your face.</span>
+	<<elseif _tentacle.fullDesc.includes("metal")>>
+		<span class="pink">where a light flashes to a fascinating rhythm.</span>
+	<<else>>
+		<span class="pink">where it shines with eldritch light.</span>
+	<</if>>
+	<span class="pink">You feel something shift in your consciousness.</span> Alluring sensations of unspeakable matings fill your mind,
+	<<if $willpower gte random(1, 1000)>>
+		<span class="green">but you will them away.</span>
+	<<else>>
+		<span class="red">devouring all contrary thoughts.</span>
+		<<if !$hypnosis_traits.deviancy>>
+			You've gained the <span class="pink">Hypnotic Deviancy</span> trait.
+			<<set $hypnosis_traits.deviancy to 1>>
+		<<elseif $hypnosis_traits.deviancy lt 5>>
+			Your hypnotic deviancy has deepened.
+			<<set $hypnosis_traits.deviancy += 1>>
+		<</if>>
+		<<willpower 1>><<gwillpower>>
+	<</if>>
+	<<set _tentacle.tentaclehealth -= 6>><<set _tentacle.head to 0>><<set _tentacle.tempBusy to true>>
+	<br>
+<</if>>
+
+<<rng>>
 <<if _tentacle.head is "hypnosis_sadism">>
 	and in front of your face
 	<<if _tentacle.type is "vine">>
@@ -613,13 +641,17 @@ _The _tentacle.fullDesc writhes between your feet.
 	<<else>>
 		<span class="purple">where it glimmers with eldritch light.</span>
 	<</if>>
-	<<if $rng gte 76 and ($hypnosis_traits.scream is undefined or $hypnosis_traits.scream lt 5)>>
+	<<rng 5>>
+	<<if $rng gte 5 and ($hypnosis_traits.scream is undefined or $hypnosis_traits.scream lt 5)>>
 		Confusing images swim through your mind, blending and reversing your thoughts.
 		<<set _tentacle.head to "hypnosis_scream">>
-	<<elseif $rng gte 51 and ($hypnosis_traits.cover is undefined or $hypnosis_traits.cover lt 5)>>
+	<<elseif $rng gte 4 and ($hypnosis_traits.cover is undefined or $hypnosis_traits.cover lt 5)>>
 		Confusing images swim through your mind, blending and reversing your thoughts.
 		<<set _tentacle.head to "hypnosis_cover">>
-	<<elseif $rng gte 26>>
+	<<elseif $rng gte 3 and $bestialitydisable is "f" and ($hypnosis_traits.deviancy is undefined or $hypnosis_traits.deviancy lt 5)>>
+		Unspeakable images fill your mind, luring you someplace alien.
+		<<set _tentacle.head to "hypnosis_deviancy">>
+	<<elseif $rng gte 2>>
 		Sadistic images surge through your mind, accompanied by unholy delight.
 		<<set _tentacle.head to "hypnosis_sadism">>
 	<<else>>
@@ -1127,7 +1159,10 @@ _The _tentacle.fullDesc writhes between your feet.
 			<<set _action to "mouthpullaway"+_tentacle.id >>
 			<<actionstentacleadvcheckbox "brat" "Pull away" "$mouthaction" _action $mouthactiondefault>>
 		<</if>>
-
+		<<if $tending gte 600>>
+			<<set _action to "mouthlull"+_tentacle.id >>
+			<<actionstentacleadvcheckbox "brat" "Lull" "$mouthaction" _action $mouthactiondefault>>
+		<</if>>
 	<<elseif _tentacle.head is "mouthimminent">>
 		<<set _action to "mouthkiss"+_tentacle.id >>
 		<<actionstentacleadvcheckbox "sub" "Kiss it" "$mouthaction" _action $mouthactiondefault>>
@@ -1137,13 +1172,21 @@ _The _tentacle.fullDesc writhes between your feet.
 			<<set _action to "mouthpullaway"+_tentacle.id >>
 			<<actionstentacleadvcheckbox "brat" "Pull away" "$mouthaction" _action $mouthactiondefault>>
 		<</if>>
-
+		<<if $tending gte 600>>
+			<<set _action to "mouthlull"+_tentacle.id >>
+			<<actionstentacleadvcheckbox "brat" "Lull" "$mouthaction" _action $mouthactiondefault>>
+		<</if>>
 	<<elseif _tentacle.head is "mouth" or _tentacle.head is "mouthdeep">>
 		<<set _action to "mouthcooperate"+_tentacle.id >>
 		<<actionstentacleadvcheckbox "sub" "Cooperate" "$mouthaction" _action $mouthactiondefault>>
 
 		<<set _action to "mouthbite"+_tentacle.id >>
 		<<actionstentacleadvcheckbox "def" "Bite" "$mouthaction" _action $mouthactiondefault>>
+	<<else>>		
+		<<if $tending gte 600>>
+			<<set _action to "mouthlull"+_tentacle.id >>
+			<<actionstentacleadvcheckbox "brat" "Lull" "$mouthaction" _action $mouthactiondefault>>
+		<</if>>
 	<</if>>
 
 
@@ -1277,7 +1320,10 @@ _The _tentacle.fullDesc writhes between your feet.
 		<</if>>
 		<<defiance `2 * _multi`>>
 		<<set $speechhit to 1 * _multi>><<set $attackstat += 1 * _multi>>
-		<<if $rng lte (currentSkillValue('physique') / 200)>><<set _tentacle.tentaclehealth -= 1 * _multi>><</if>>
+		<<if $rng lte (currentSkillValue('physique') / 200)>>
+			<span class="green">It trembles before your strength.</span>
+			<<set _tentacle.tentaclehealth -= 1 * _multi>>
+		<</if>>
 		<<set _tentacle.tentaclehealth -= 1 * _multi>>
 		<<tentacleadvdisable _tentacle>>
 		<<if $abomination is 1>>
@@ -1329,6 +1375,11 @@ _The _tentacle.fullDesc writhes between your feet.
 		<</if>>
 		<span class="lblue">You <<handtext>> grab _the _tentacle.fullDesc with your _hand hand.</span>
 		<<submission 1>><<handstat>>
+		<<if $consensual is 1>>
+			<<takeHandholdingVirginity _tentacle.fullDesc consensual>>
+		<<else>>
+			<<takeHandholdingVirginity _tentacle.fullDesc rape>>
+		<</if>>
 	<</if>>
 
 	<<if $leftaction is "leftrub"+_tentacle.id or $rightaction is "rightrub"+_tentacle.id>>
@@ -1652,6 +1703,7 @@ _The _tentacle.fullDesc writhes between your feet.
 		<<defiance 2>><<set $speechhit to 1>><<tentacleadvdisable _tentacle>><<set $attackstat += 1>>
 		<<set _tentacle.tentaclehealth -= 1>>
 		<<if $rng lte (currentSkillValue('physique') / 200)>>
+			<span class="green">It trembles before your strength.</span>
 			<<set _tentacle.tentaclehealth -= 1>>
 		<</if>>
 		<<if $abomination is 1>>
@@ -1766,7 +1818,18 @@ _The _tentacle.fullDesc writhes between your feet.
 		You let go of the _tentacle.fullDesc between your feet.
 		<<tentacleadvdisable _tentacle>>
 	<</if>>
-
+	
+	<<if $mouthaction is "mouthlull"+_tentacle.id>>
+		<<set $mouthaction to 0>><<set $mouthactiondefault to "mouthlull"+_tentacle.id>>
+		<<brat 1>>
+		You hum a soothing lullaby at _the _tentacle.fullDesc, sapping its strength. <span class="green">It recoils.</span>
+		<<tentacleadvdisable _tentacle>><<set _tentacle.tentaclehealth -= 1>>
+		<<if $rng lte (currentSkillValue('willpower') / 10)>>
+			<span class="green">It trembles before your will.</span>
+			<<set _tentacle.tentaclehealth -= 1>>
+		<</if>>
+	<</if>>
+	
 	<<if $mouthaction is "mouthlick"+_tentacle.id>>
 		<<set $mouthaction to 0>><<set $mouthactiondefault to "mouthlick"+_tentacle.id>>
 		<<submission 2>><<oralskilluse>>
@@ -1834,6 +1897,7 @@ _The _tentacle.fullDesc writhes between your feet.
 		You bite down on the _tentacle.fullDesc invading your mouth. <span class="teal">It recoils immediately.</span>
 		<<tentacleadvdisable _tentacle>><<set $attackstat += 1>><<set _tentacle.tentaclehealth -= 1>>
 		<<if $rng lte (currentSkillValue('physique') / 200)>>
+			<span class="green">It trembles before your strength.</span>
 			<<set _tentacle.tentaclehealth -= 1>>
 		<</if>>
 		<<if $abomination is 1>>

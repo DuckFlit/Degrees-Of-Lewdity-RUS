@@ -629,6 +629,7 @@ Macro.add('canvasModelEditor', {
 						optionCategory("Face"),
 						selectOption("facestyle", ["default"]),
 						booleanOption("freckles"),
+						booleanOption("toast"),
 						booleanOption("trauma"),
 						booleanOption("blink"),
 						booleanOption("eyes_half"),

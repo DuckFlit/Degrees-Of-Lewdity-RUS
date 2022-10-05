@@ -21,7 +21,17 @@
 					<<personselect $_audienceMemberIndex>>
 					<div class="dance_box"><label>
 						<<if $NPCList[$_audienceMemberIndex].masturbating gte 1>>
-							The <<person>> masturbates.
+							<<if $NPCList[$_audienceMemberIndex].traits.includes("relaxed") and _danceaction is "sophisticated">>
+								<span class="pink">The <<person>> masturbates.</span>
+							<<elseif $NPCList[$_audienceMemberIndex].traits.includes("sociable") and _danceaction is "cool">>
+								<span class="pink">The <<person>> masturbates.</span>
+							<<elseif $NPCList[$_audienceMemberIndex].traits.includes("brooding") and _danceaction is "sensual">>
+								<span class="pink">The <<person>> masturbates.</span>
+							<<elseif $NPCList[$_audienceMemberIndex].traits.includes("lecher") and _danceaction is "sexual">>
+								<span class="pink">The <<person>> masturbates.</span>
+							<<else>>
+								The <<person>> masturbates.
+							<</if>>
 							<<dance_npc_masturbation_chance $_audienceMemberIndex>>
 						<<else>>
 							The <<person>> watches.
@@ -82,6 +92,21 @@
 		<br>
 		<<link [[Push away|$passage]]>><<set $danceaction to "vippush">><</link>>
 		<br>
+	<<elseif $danceevent is "darryl">>
+		<<link [[Reassure|$passage]]>><<set $danceaction to "darrylreassure">><<npcincr Darryl love 1>><</link>><<glove>>
+		<br>
+		<<link [[Pull Darryl onto the stage|$passage]]>><<set $danceaction to "darrylpull">><</link>>
+		<br>
+	<<elseif $danceevent is "briar">>
+		<<link [[Wink at Briar|$passage]]>><<set $danceaction to "briarwink">><<npcincr Briar love 1>><</link>><<glove>>
+		<br>
+		<<if $promiscuity gte 35>>
+			<<link [[Seduce Briar|$passage]]>><<set $danceaction to "briarseduce">><</link>><<promiscuous3>>
+			<br>
+		<<else>>
+			<span class="blue">The thought of seducing Briar strikes your mind, but you're not promiscuous enough.</span>
+			<br>
+		<</if>>
 	<<elseif $danceevent is "strippertrouble">>
 		<<link [[Help them|$passage]]>><<set $danceaction to "stripperhelp">><</link>>
 		<br>
@@ -375,6 +400,12 @@
 						<<dancestrippertrouble>>
 					<<elseif $rng gte 51>>
 						<<dancesalivate>>
+					<<elseif $rng gte 49>>
+						<<dancedarryl>>
+					<</if>>
+				<<else>>
+					<<if $rng gte 99>>
+						<<dancedarryl>>
 					<</if>>
 				<</if>>
 			<<elseif $dancelocation is "cafe">>
@@ -397,6 +428,8 @@
 				<<elseif $audiencearousal gte 100>>
 					<<if $rng gte 101 - ($corruption_slime / 20) and $corruptionDancing is undefined>>
 						<<danceCorruption>>
+					<<elseif $rng gte 99>>
+						<<dancebriar>>
 					<<elseif $rng gte 91>>
 						<<dancerape>>
 					<<elseif $rng gte 71>>
@@ -415,6 +448,8 @@
 				<<elseif $audiencearousal gte 81>>
 					<<if $rng gte 101 - ($corruption_slime / 25) and $corruptionDancing is undefined>>
 						<<danceCorruption>>
+					<<elseif $rng gte 99>>
+						<<dancebriar>>
 					<<elseif $rng gte 91>>
 						<<dancemolest>>
 					<<elseif $rng gte 86 and $enemyno gte 2>>
@@ -431,6 +466,8 @@
 				<<elseif $audiencearousal gte 41>>
 					<<if $rng gte 102 - ($corruption_slime / 25) and $corruptionDancing is undefined>>
 						<<danceCorruption>>
+					<<elseif $rng gte 99>>
+						<<dancebriar>>
 					<<elseif $rng gte 91>>
 						<<dancestrip>>
 					<<elseif $rng gte 86 and $enemyno gte 2>>
@@ -703,6 +740,16 @@
 <<widget "dancevip">>
 	<<set $danceevent to "vip">>
 	A <<person>> wearing an expensive <<if $pronoun is "f">>gown<<else>>suit<</if>> grasps your arm and tugs you closer. Security look away. "They won't bother us," <<he>> says. "They know who I am."
+<</widget>>
+
+<<widget "dancedarryl">>
+	<<set $danceevent to "darryl">>
+	You notice Darryl roam between stages, checking in on the dancers. <<nnpc_He "Darryl">> arrives at yours, and watches you.
+<</widget>>
+
+<<widget "dancebriar">>
+	<<set $danceevent to "briar">>
+	You notice Briar in the audience, whispering in their ears while watching you.
 <</widget>>
 
 <<widget "dancestrippertrouble">>

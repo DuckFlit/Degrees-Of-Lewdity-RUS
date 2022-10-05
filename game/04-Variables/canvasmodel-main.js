@@ -274,6 +274,7 @@ Renderer.CanvasModels["main"] = {
 			"mouth": "none",
 			"tears": 0,
 			"blush": 0,
+			"toast": 0,
 			"lipstick_colour": "",
 			"eyeshadow_colour": "",
 			"mascara_colour": "",
@@ -415,6 +416,7 @@ Renderer.CanvasModels["main"] = {
 			"upper_tucked": false,
 			"hood_down": false,
 			"head_mask_src": "", // generated option
+			"belly_mask_src": "", // generated option
 			"blink_animation": "", // generated option
 			"ztan_swimshorts": ZIndices.base, // generated option
 			"ztan_swimsuitTop": ZIndices.base, // generated option
@@ -550,10 +552,14 @@ Renderer.CanvasModels["main"] = {
 		if (options.worn_over_upper) {
 			options.zarms = ZIndices.over_upper_arms - 0.1;
 		} else if (options.worn_upper) {
-			if (options.upper_tucked) {
-				options.zarms = ZIndices.upper_arms_tucked - 0.1;
+			if (options.arm_left === "cover"){
+				if (options.upper_tucked) {
+					options.zarms = ZIndices.upper_arms_tucked - 0.1;
+				} else {
+					options.zarms = ZIndices.upper_arms - 0.1;
+				}
 			} else {
-				options.zarms = ZIndices.upper_arms - 0.1;
+				options.zarms = ZIndices.under_upper_arms - 0.1;
 			}
 		} else if (options.worn_under_upper) {
 			options.zarms = ZIndices.under_upper_arms - 0.1;
@@ -564,10 +570,14 @@ Renderer.CanvasModels["main"] = {
 		if (options.worn_under_upper_setup.sleeve_img === 1) {
 			options.zarms = ZIndices.under_upper_arms - 0.1;
 		} else if (options.worn_upper_setup.sleeve_img === 1) {
-			if (options.upper_tucked) {
-				options.zarms = ZIndices.upper_arms_tucked - 0.1;
+			if (options.arm_left === "cover"){
+				if (options.upper_tucked) {
+					options.zarms = ZIndices.upper_arms_tucked - 0.1;
+				} else {
+					options.zarms = ZIndices.upper_arms - 0.1;
+				}
 			} else {
-				options.zarms = ZIndices.upper_arms - 0.1;
+				options.zarms = ZIndices.under_upper_arms - 0.1;
 			}
 		}
 
@@ -592,6 +602,20 @@ Renderer.CanvasModels["main"] = {
 			options.head_mask_src = "img/clothes/head/" + options.worn_head_setup.variable + "/mask.png";
 		} else {
 			options.head_mask_src = null;
+		}
+		
+		if(between(options.belly,6,20)){
+			options.belly_mask_src = "img/clothes/belly/belly_mask.png";
+		}
+		
+		if(between(options.belly,20,20)){
+			options.belly_mask_lower_shadow_src = "img/clothes/belly/belly_mask_lower_shadow_3.png";
+			options.belly_mask_upper_shadow_src = "img/clothes/belly/belly_mask_upper_shadow_2.png";
+		} else if(between(options.belly,11,19)){
+			options.belly_mask_lower_shadow_src = "img/clothes/belly/belly_mask_lower_shadow_2.png";
+			options.belly_mask_upper_shadow_src = "img/clothes/belly/belly_mask_upper_shadow.png";
+		} else if(between(options.belly,6,10)){
+			options.belly_mask_lower_shadow_src = "img/clothes/belly/belly_mask_lower_shadow.png";
 		}
 
 		options.genitals_chastity = options.worn_genitals_setup.type.includes("chastity");
@@ -659,6 +683,7 @@ Renderer.CanvasModels["main"] = {
 			},
 			z: ZIndices.bellyBase,
 			filters: ["body"],
+			animation: "idle"
 		},
 		"nipples_parasite": {
 			srcfn(options) {
@@ -970,6 +995,20 @@ Renderer.CanvasModels["main"] = {
 			},
 			filters: ["mascara"],
 			z: ZIndices.mascara_running
+		},
+		"toast": {
+			srcfn(options) {
+				if (V.trauma > 4000) {
+					return 'img/misc/toast_raw.png'
+				} else {
+					return 'img/misc/toast_buttered.png'
+				}
+			},
+			showfn(options) {
+				return options.show_face && !!options.toast	
+			},
+			filters: ["toast"],
+			z: ZIndices.toast		
 		},
 		/***
 		 *    ██   ██  █████  ██ ██████
@@ -1975,6 +2014,38 @@ Renderer.CanvasModels["main"] = {
 				return options.zupper
 			}
 		}),
+		"upper_belly_2": genlayer_clothing_belly_2("upper", {
+			zfn(options) {
+				return options.zupper
+			},
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			}
+		}),
+		"upper_belly": genlayer_clothing_belly("upper", {
+			zfn(options) {
+				return options.zupper
+			},
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			}
+		}),
+		"upper_belly_shadow": genlayer_clothing_belly_highlight("upper", {
+			zfn(options) {
+				return options.zupper
+			},
+			masksrcfn(options) {
+				return options.belly_mask_upper_shadow_src;
+			}
+		}),
+		"upper_belly_acc": genlayer_clothing_belly_acc("upper", {
+			zfn(options) {
+				return options.zupper
+			},
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			}
+		}),
 		"upper_breasts": genlayer_clothing_breasts("upper", {
 			zfn(options) {
 				return options.zupper
@@ -2072,6 +2143,38 @@ Renderer.CanvasModels["main"] = {
 				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower;
 			}
 		}),
+		"lower_belly_2": genlayer_clothing_belly_2("lower", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
+			zfn(options) {
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
+			}
+		}),
+		"lower_belly": genlayer_clothing_belly("lower", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
+			zfn(options) {
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
+			}
+		}),
+		"lower_belly_shadow": genlayer_clothing_belly_shadow("lower", {
+			masksrcfn(options) {
+				return options.belly_mask_lower_shadow_src;
+			},
+			zfn(options) {
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
+			}
+		}),
+		"lower_belly_acc": genlayer_clothing_belly_acc("lower", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
+			zfn(options) {
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
+			}
+		}),
 		"lower_acc": genlayer_clothing_accessory('lower'),
 		"lower_back": genlayer_clothing_back_img('lower', {
 			z: ZIndices.back_lower
@@ -2098,6 +2201,38 @@ Renderer.CanvasModels["main"] = {
 		 *
 		 */
 		"under_lower": genlayer_clothing_main('under_lower', {
+			zfn(options) {
+				return options.worn_lower_setup.high_img ? ZIndices.under_lower_high : ZIndices.under_lower;
+			}
+		}),
+		"under_lower_belly_2": genlayer_clothing_belly_2("under_lower", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
+			zfn(options) {
+				return options.worn_lower_setup.high_img ? ZIndices.under_lower_high : ZIndices.under_lower;
+			}
+		}),
+		"under_lower_belly": genlayer_clothing_belly("under_lower", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
+			zfn(options) {
+				return options.worn_lower_setup.high_img ? ZIndices.under_lower_high : ZIndices.under_lower;
+			}
+		}),
+		"under_lower_belly_shadow": genlayer_clothing_belly_shadow("under_lower", {
+			masksrcfn(options) {
+				return options.belly_mask_lower_shadow_src;
+			},
+			zfn(options) {
+				return ZIndices.under_lower_top_high;
+			}
+		}),
+		"under_lower_belly_acc": genlayer_clothing_belly_acc("under_lower", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
 			zfn(options) {
 				return options.worn_lower_setup.high_img ? ZIndices.under_lower_high : ZIndices.under_lower;
 			}
@@ -2144,6 +2279,38 @@ Renderer.CanvasModels["main"] = {
 		 *
 		 */
 		"under_upper": genlayer_clothing_main('under_upper'),
+		"under_upper_belly_2": genlayer_clothing_belly_2("under_upper", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
+			zfn(options) {
+				return ZIndices.under_upper_top;
+			}
+		}),
+		"under_upper_belly": genlayer_clothing_belly("under_upper", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
+			zfn(options) {
+				return ZIndices.under_upper_top;
+			}
+		}),
+		"under_upper_belly_shadow": genlayer_clothing_belly_highlight("under_upper", {
+			masksrcfn(options) {
+				return options.belly_mask_upper_shadow_src;
+			},
+			zfn(options) {
+				return ZIndices.under_lower_top_high;
+			}
+		}),
+		"under_upper_belly_acc": genlayer_clothing_belly_acc("under_upper", {
+			masksrcfn(options) {
+				return options.belly_mask_src;
+			},
+			zfn(options) {
+				return options.worn_lower_setup.high_img ? ZIndices.under_lower_high : ZIndices.under_lower;
+			}
+		}),
 		"under_upper_breasts": genlayer_clothing_breasts("under_upper"),
 		"under_upper_acc": genlayer_clothing_accessory('under_upper'),
 		"under_upper_breasts_acc": genlayer_clothing_breasts_acc('under_upper'),
@@ -2441,6 +2608,190 @@ function genlayer_clothing_breasts(slot, overrideOptions) {
 			return options["worn_" + slot + "_alpha"]
 		},
 		filters: ["worn_" + slot],
+		animation: "idle"
+	}, overrideOptions)
+}
+function genlayer_clothing_belly(slot, overrideOptions) {
+	return Object.assign({
+		srcfn(options) {
+			let path = 'img/clothes/' +
+				slot + '/' +
+				options["worn_" + slot + "_setup"].variable + '/' +
+				options["worn_" + slot + "_integrity"] + '.png';
+			return gray_suffix(path, options.filters['worn_' + slot]);
+		},
+		showfn(options) {
+			return options.show_clothes &&
+				options["worn_" + slot] > 0 &&
+				options["worn_" + slot + "_setup"].mainImage !== 0
+		},
+		alphafn(options) {
+			return options["worn_" + slot + "_alpha"]
+		},
+		dxfn(options) {
+			if(between(options.belly,20,20)){
+				return 10;
+			} else if(between(options.belly,19,19)){
+				return 8;
+			} else if(between(options.belly,16,18)){
+				return 6;
+			} else if(between(options.belly,11,15)){
+				return 4;
+			} else if(between(options.belly,6,10)){
+				return 2;
+			} else {
+				return 0;
+			}
+		},
+		z: ZIndices.bellyClothes,
+		filters: ["worn_" + slot],
+		animation: "idle"
+	}, overrideOptions)
+}
+function genlayer_clothing_belly_2(slot, overrideOptions) {
+	return Object.assign({
+		srcfn(options) {
+			let path = 'img/clothes/' +
+				slot + '/' +
+				options["worn_" + slot + "_setup"].variable + '/' +
+				options["worn_" + slot + "_integrity"] + '.png';
+			return gray_suffix(path, options.filters['worn_' + slot]);
+		},
+		showfn(options) {
+			return options.show_clothes &&
+				options["worn_" + slot] > 0 &&
+				options["worn_" + slot + "_setup"].mainImage !== 0
+		},
+		alphafn(options) {
+			return options["worn_" + slot + "_alpha"]
+		},
+		dxfn(options) {
+			if(between(options.belly,20,20)){
+				return 6;
+			} else if(between(options.belly,19,19)){
+				return 6;
+			} else if(between(options.belly,16,18)){
+				return 6;
+			} else {
+				return 0;
+			}
+		},
+		z: ZIndices.bellyClothes,
+		filters: ["worn_" + slot],
+		animation: "idle"
+	}, overrideOptions)
+}
+function genlayer_clothing_belly_shadow(slot, overrideOptions) {
+	return Object.assign({
+		srcfn(options) {
+			let path = 'img/clothes/' +
+				slot + '/' +
+				options["worn_" + slot + "_setup"].variable + '/' +
+				options["worn_" + slot + "_integrity"] + '.png';
+			return gray_suffix(path, options.filters['worn_' + slot]);
+		},
+		showfn(options) {
+			return options.show_clothes &&
+				options["worn_" + slot] > 0 &&
+				options["worn_" + slot + "_setup"].mainImage !== 0
+		},
+		alphafn(options) {
+			return options["worn_" + slot + "_alpha"]
+		},
+		brightnessfn(options) {
+			if(between(options.belly,6,20)){
+				return -0.25;
+			} else {
+				return 0;
+			}
+		},
+		z: ZIndices.bellyClothesShadow,
+		filters: ["worn_" + slot],
+		animation: "idle"
+	}, overrideOptions)
+}
+function genlayer_clothing_belly_highlight(slot, overrideOptions) {
+	return Object.assign({
+		srcfn(options) {
+			let path = 'img/clothes/' +
+				slot + '/' +
+				options["worn_" + slot + "_setup"].variable + '/' +
+				options["worn_" + slot + "_integrity"] + '.png';
+			return gray_suffix(path, options.filters['worn_' + slot]);
+		},
+		showfn(options) {
+			return options.show_clothes &&
+				options["worn_" + slot] > 0 &&
+				options["worn_" + slot + "_setup"].mainImage !== 0
+		},
+		alphafn(options) {
+			return options["worn_" + slot + "_alpha"]
+		},
+		dxfn(options) {
+			if(between(options.belly,20,20)){
+				return 10;
+			} else if(between(options.belly,19,19)){
+				return 8;
+			} else if(between(options.belly,16,18)){
+				return 6;
+			} else if(between(options.belly,11,15)){
+				return 4;
+			} else {
+				return 0;
+			}
+		},
+		brightnessfn(options) {
+			if(between(options.belly,11,20)){
+				return 0.15;
+			} else {
+				return 0;
+			}
+		},
+		z: ZIndices.bellyClothesShadow,
+		filters: ["worn_" + slot],
+		animation: "idle"
+	}, overrideOptions)
+}
+function genlayer_clothing_belly_acc(slot, overrideOptions) {
+	return Object.assign({
+		srcfn(options) {
+			let setup = options["worn_" + slot + "_setup"];
+			let isHoodDown = options.hood_down &&
+				setup.hoodposition !== undefined &&
+				setup.outfitPrimary.head !== undefined;
+			let path = 'img/clothes/' +
+				slot + '/' +
+				setup.variable + '/' +
+				'acc' +
+				(setup.accessory_integrity_img ? '_' + options["worn_" + slot + "_integrity"] : '') +
+				(isHoodDown ? '_down' : '') + '.png';
+			return gray_suffix(path, options.filters['worn_' + slot + '_acc']);
+		},
+		showfn(options) {
+			return options.show_clothes &&
+				options["worn_" + slot] > 0 &&
+				options["worn_" + slot + "_setup"].accessory === 1
+		},
+		alphafn(options) {
+			return options["worn_" + slot + "_alpha"]
+		},
+		dxfn(options) {
+			if(between(options.belly,20,20)){
+				return 10;
+			} else if(between(options.belly,19,19)){
+				return 8;
+			} else if(between(options.belly,16,18)){
+				return 6;
+			} else if(between(options.belly,11,15)){
+				return 4;
+			} else if(between(options.belly,6,10)){
+				return 2;
+			} else {
+				return 0;
+			}
+		},
+		z: ZIndices[slot],
+		filters: ["worn_" + slot + "_acc"],
 		animation: "idle"
 	}, overrideOptions)
 }
