@@ -620,32 +620,20 @@
 
 	<<moonstate>>
 
+
 	<<if $schoolday is 1 and $location isnot "prison">>
-		<<if $scienceattended isnot 1>>
-			<<set $sciencemissed += 1>><<set $lessonmissedtext += 1>><<set $lessonmissed += 1>><<set _lessonmissed to true>>
-		<<else>>
-			<<set $sciencemissed -= 1>><<set $lessonmissed -= ($lessonmissed gt 0 ? 1 : 0)>>
-		<</if>>
-		<<if $mathsattended isnot 1>>
-			<<set $mathsmissed += 1>><<set $lessonmissedtext += 1>><<set $lessonmissed += 1>><<set _lessonmissed to true>>
-		<<else>>
-			<<set $mathsmissed -= 1>><<set $lessonmissed -= ($lessonmissed gt 0 ? 1 : 0)>>
-		<</if>>
-		<<if $englishattended isnot 1>>
-			<<set $englishmissed += 1>><<set $lessonmissedtext += 1>><<set $lessonmissed += 1>><<set _lessonmissed to true>>
-		<<else>>
-			<<set $englishmissed -= 1>><<set $lessonmissed -= ($lessonmissed gt 0 ? 1 : 0)>>
-		<</if>>
-		<<if $historyattended isnot 1>>
-			<<set $historymissed += 1>><<set $lessonmissedtext += 1>><<set $lessonmissed += 1>><<set _lessonmissed to true>>
-		<<else>>
-			<<set $historymissed -= 1>><<set $lessonmissed -= ($lessonmissed gt 0 ? 1 : 0)>>
-		<</if>>
-		<<if $swimmingattended isnot 1>>
-			<<set $swimmingmissed += 1>><<set $lessonmissedtext += 1>><<set $lessonmissed += 1>><<set _lessonmissed to true>>
-		<<else>>
-			<<set $swimmingmissed -= 1>><<set $lessonmissed -= ($lessonmissed gt 0 ? 1 : 0)>>
-		<</if>>
+		<!-- We calculate and add to missed values, missed lesson counts, etc. -->
+		<!-- The math below uses doubled values to calculate the adds and subtracts in one equation each -->
+		<<set $_attended to $scienceattended + $mathsattended + $englishattended + $historyattended + $swimmingattended>>
+		<<set $sciencemissed += 1 - $scienceattended * 2>>
+		<<set $mathsmissed += 1 - $mathsattended * 2>>
+		<<set $englishmissed += 1 - $englishattended * 2>>
+		<<set $historymissed += 1 - $historyattended * 2>>
+		<<set $swimmingmissed += 1 - $swimmingattended * 2>>
+		<<set $lessonmissed += 5 - $_attended * 2>>
+		<<set $lessonmissedtext to 5 - $_attended>>
+
+		<<set $lessonmissed to Math.max(0, $lessonmissed)>>
 		<<set $scienceattended to 0>>
 		<<set $mathsattended to 0>>
 		<<set $englishattended to 0>>
@@ -898,7 +886,7 @@
 			<<if $NPCName[$NPCNameList.indexOf("Mason")].love gte $npclovehigh>>
 				<<set _delinquencyDecay += 1>>
 			<</if>>
-			<<if _lessonmissed>>
+			<<if $lessonmissedtext>>
 				<<set _delinquencyDecay to Math.floor(_delinquencyDecay / 2)>>
 			<</if>>
 			<<delinquency `-_delinquencyDecay / 4`>>
