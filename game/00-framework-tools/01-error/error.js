@@ -83,7 +83,7 @@ Errors.report = (message, copyData) => {
 						<div class="button close" onclick="Errors.Reporter.hide()">Close</div>
 						<div class="button close" onclick="Errors.Reporter.hide(true)">Clear</div>
 						<div class="button copy" onclick="Errors.Reporter.copyAll()">Copy</div>
-						<textarea class="copy-area hidden"></textarea>
+						<textarea class="copy-area hidden" spellcheck="false"></textarea>
 					</div>
 				</div>`;
 			document.querySelector("#story").insertAdjacentElement("afterbegin", reporterContainer);
@@ -137,9 +137,10 @@ Errors.report = (message, copyData) => {
 	Reporter.createEntry = error => {
 		const div = document.createElement("div");
 		div.className = "message-entry";
-		div.innerHTML = `<div class="message"></div>`;
-		// This ensures that only text content is reported
-		div.querySelector(".message").textContent = error.message;
+		div.textContent = error.message;
+		if (error.copyData !== undefined) {
+			div.innerHTML += "<br><br>" + formatErrorObj(error.copyData);
+		}
 		return div;
 	};
 
@@ -147,11 +148,14 @@ Errors.report = (message, copyData) => {
 		const copyButton = Reporter.reporterContainer().querySelector(".button.copy");
 		const copyArea = Reporter.copyArea();
 		try {
-			copyArea.textContent = JSON.stringify(
-				Errors.log.map(e => [e.message, e.copyData]),
-				null,
-				2
-			);
+			let copyResult = "";
+			Errors.log.forEach(e => {
+				copyResult += e.message;
+				if (e.copyData !== undefined) copyResult += " : " + formatErrorObj(e.copyData);
+				copyResult += " ;\n";
+			});
+			copyResult = copyResult.replace(/\n$/, ""); // remove the trailing newline
+			copyArea.textContent = copyResult;
 			copyArea.classList.remove("hidden");
 			copyArea.focus();
 			copyArea.select();
@@ -235,3 +239,15 @@ Errors.inlineReport = (message, source, isExportable = true) => {
 
 	return $wrapper;
 };
+
+function formatErrorObj(obj) {
+	/* turns object into a prettified JSON string for display */
+	return JSON.stringify(obj, (key, value) => {
+		/* custom replacer function to keep stuff from turning into null */
+		if (Number.isNaN(value)) return "NaN";
+		else if (value === undefined) return "Undefined";
+		else if (value === Infinity) return "Infinity";
+		else return value;
+	}).replace(/(?<=[,:;])/g, " "); // add spaces after commas, colons, and semicolons
+}
+window.formatErrorObj = formatErrorObj;
