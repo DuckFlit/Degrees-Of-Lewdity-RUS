@@ -91,13 +91,24 @@ class EventData {
 	validate() {
 		// Return false if an event is not in progress. True would be a problem in our stack system for NPCs. False indicates normal operation.
 		if (V.event == null) return true;
+
 		// Extrapolate slots
 		const buffer = V.event.buffer;
+
+		const npcList = V.NPCList;
+		if (!Array.isArray(npcList)) return true;
+
 		// Making assumptions for the validator, traverse from the end, and when we hit the first NPC, return index.
 		// We plus one because we want the semantic size that we believe the NPC list is at.
 		// An NPCList of [empty, npc, npc, empty, empty, empty] would have a size of 3.
 		// We assume the first empty is a mistake, someone not following proper conduct in NPC gen.
-		const numOfNPCs = V.NPCList.findLastIndex(e => Object.hasOwn(e, "type")) + 1;
+		let numOfNPCs = -1;
+		for (let i = npcList.length - 1; i >= 0; i--) {
+			if (Object.hasOwn(npcList[i], "type")) {
+				numOfNPCs = i + 1;
+				break;
+			}
+		}
 
 		// First check for if buffer's length exceeds NPCList's length. (Guaranteed gaps or inaccurate tracking)
 		if (buffer.length > numOfNPCs) return false;
@@ -132,7 +143,9 @@ class EventData {
 		}
 		if (slots.length !== 0) {
 			// Index is slot, index being 0 or higher means we have an empty slot.
-			console.warn("NPC slots that are empty:", slots);
+			if (V.debugdisable === "f" || V.debug) {
+				console.warn("NPC slots that are empty:", slots);
+			}
 			return false;
 		}
 		return true;
