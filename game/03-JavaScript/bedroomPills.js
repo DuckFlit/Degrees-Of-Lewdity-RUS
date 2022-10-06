@@ -619,8 +619,9 @@ function redetermineMostTaken(type, subtype, fullname = null) {
 	}
 	if (!["breast", "bottom", "penis"].includes(type)) return;
 	for (const pill of setup.pills) {
-		if (pill.type === type && ["blocker", "growth", "reduction"].includes(pill.subtype));
-		result[pill.subtype] = pill.doseTaken();
+		if (pill.type === type && ["blocker", "growth", "reduction"].includes(pill.subtype)) {
+			result[pill.subtype] = pill.doseTaken();
+		}
 	}
 	const ret = result.growth - result.reduction;
 	if (ret === 0 && (result.growth > 0 || result.reduction > 0)) {
