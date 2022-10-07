@@ -1501,7 +1501,7 @@ Renderer.CanvasModels["main"] = {
 				return options.show_tf && isPartEnabled(options.wolf_cheeks_type);
 			},
 			filters: ["hair"],
-			z: ZIndices.hirsute,
+			z: ZIndices.lower,
 			animation: "idle"
 		},
 		/***

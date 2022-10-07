@@ -1003,44 +1003,41 @@
 <</if>>
 <</silently>><<print _text_output>><</widget>>
 
-<!-- [0] - if true, genital sensitivity is not outputted -->
+<!-- [0] - if truthy, genital sensitivity is omitted -->
 <<widget "pussy">><<silently>>
-	<<set _genital_sensitivity to "">>
-	<<if _args[0]>>
-		<<genitalsensitivity>><<set _genital_sensitivity to _text_output>>
-	<</if>>
 	<<genitalstate>><<set _genital_state_text to _text_output>>
-	<<set _text_output to ["pussy","pussy","pussy","quim"].pluck()>>
-	<<set _text_output to _genital_sensitivity + _genital_state_text + _text_output>>
+	<<set _text_output to "">>
+	<<if !_args[0]>>
+		<<genitalsensitivity>>
+	<</if>>
+	<<set _text_output += _genital_state_text + ["pussy","pussy","pussy","quim"].pluck()>>
 <</silently>><<print _text_output>><</widget>>
 
-<!-- [0] - if true, genital sensitivity is not outputted -->
+<!-- [0] - if truthy, genital sensitivity is omitted -->
 <<widget "clit">><<silently>>
 <<if $player.penisExist>>
 	<<penis>>
 <<else>>
-	<<set _genital_sensitivity to "">>
-	<<if _args[0]>>
-		<<genitalsensitivity>><<set _genital_sensitivity to _text_output>>
+	<<set _text_output to "">>
+	<<if !_args[0]>>
+		<<genitalsensitivity>>
 	<</if>>
-	<<set _genital_sensitivity + _text_output to "clit">>
+	<<set _text_output += "clit">>
 <</if>>
 <</silently>><<print _text_output>><</widget>>
 
-
-<!-- [0] - if true, genital sensitivity is not outputted -->
-<<widget "penis">><<silently>>
-	<<set _genital_sensitivity to "">>
-	<<if _args[0]>>
-		<<genitalsensitivity>><<set _genital_sensitivity to _text_output>>
-	<</if>>
+<!-- [0] - if truthy, genital sensitivity is omitted -->
+<<widget "penis">><<silently>>	
 	<<penissize>><<set _penissize_text to _text_output>>
 	<<if _penissize_text isnot "">>
 		<<set _penissize_text to _penissize_text + " ">>
 	<</if>>
 	<<genitalstate>><<set _genital_state_text to _text_output>>
-
-	<<set _text_output to _genital_sensitivity + _penissize_text + _genital_state_text + "penis">>
+	<<set _text_output to "">>
+	<<if !_args[0]>>
+		<<genitalsensitivity>>
+	<</if>>
+	<<set _text_output += _penissize_text + _genital_state_text + "penis">>
 
 	<<if playerHasStrapon()>>
 		<<if _args[0] isnot undefined and _args[0] is "strap-on" and $player.penisExist>>
@@ -1410,11 +1407,14 @@
 	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
-<!-- optionally takes 2 parameters:
- [0] undefined produces output about chastity, 2 leaves out information about virginity
+<!--
+	Optional parameter [0] possible values:
+	0 or omitted or null - display chastity and virginity
+	1 - omit chastity, display virginity
+	2 - omit chastity, omit virginity
  -->
 <<widget "genitals">><<silently>>
-	<<if $worn.genitals.type.includes("chastity") and _args[0] is undefined and _chastityBreak isnot 1>>
+	<<if $worn.genitals.type.includes("chastity") and !_args[0] and _chastityBreak isnot 1>>
 		<<set _text_output to $worn.genitals.name>>
 	<<else>>
 		<<genitalsensitivity>>
@@ -1442,8 +1442,6 @@
 		<</if>>
 	<</if>>
 <</silently>><<print _text_output>><</widget>>
-
-
 
 <!-- optionally takes 2 parameters: what to add after the text for singular/plural -->
 <<widget "genitalsandbreasts">>
