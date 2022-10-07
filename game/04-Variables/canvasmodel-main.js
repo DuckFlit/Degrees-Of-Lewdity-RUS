@@ -2510,12 +2510,12 @@ function isPartEnabled(type) {
 	/* TODO: Enable this check, and fix cases that have fallen prey to this design flaw of returning true for undefined.
 		It is better to catch potential errors and ensure a standard is kept. */
 	/* Check for undefined in case the object given was a typo. 06/10/22 Sneaky incident :trolldispair: */
-	/* if (typeof type !== "undefined") {
+	if (typeof type !== "string") {
 		if (V.debug || V.debugdisable === "f") {
-			console.warn("isPartEnabled was given an undefined value, normally expects a string.", type);
+			Errors.report("isPartEnabled was given an unexpected value.", type);
 		}
-		return false;
-	} */
+		// return false;
+	};
 	return type !== "disabled" && type !== "hidden";
 }
 window.isPartEnabled = isPartEnabled;
