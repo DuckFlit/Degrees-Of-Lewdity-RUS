@@ -1,0 +1,255 @@
+:: Catacombs
+<<location "catacombs">><<set outside to 0>><<effects>>
+
+You are in the catacombs beneath the forest.
+
+<<catacombs_depth_text>>
+<br><br>
+
+<<catacombs_torch_text>>
+<br><br>
+
+<<if $rng gte 71>>
+
+	You find a locked chest.
+	
+	<<set $lock to 500>>
+	<<if currentSkillValue('skulduggery') gte $lock>>
+		<span class="green">The lock looks easy to pick.</span>
+		<br><br>
+		<<link [[Loot (0:10)|Catacombs Chest]]>><<pass 10>><<crimeup 1>><</link>><<crime>>
+		<br>
+	<<else>>
+		<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+		<br><br>
+	<</if>>
+	<<catacombs_links>>
+<<elseif $rng gte 41>>
+	<<if $catacombs gte 81>>
+	
+	<<elseif $catacombs gte 61>>
+	
+	<<elseif $catacombs gte 41>>
+	
+	<<else>>
+	
+	<</if>>
+<<else>>
+	<<rng 100>>
+	<<if $rng gte 81>>
+		<<if $catacombs_torch gte random(1, 100)>>
+			A stone slab up ahead is raised higher than the others. <span class="green">You step over it.</span>
+			<br><br>
+			<<catacombs_links>>
+		<<else>>
+			You feel a stone slab give way underfoot. Dust showers you, and a paddle swings down from a recess in the ceiling, <span class="red">smacking your <<bottom>>.</span><<gpain>><<pain 4>><<gtrauma>><<trauma 6>><<gstress>><<stress 6>>
+			<br><br>
+			<<catacombs_links>>
+		<</if>>
+	<<elseif $rng gte 61>>
+		<<if $catacombs_torch gte random(1, 100)>>
+			A rope hangs at knee-height up ahead. <span class="green">You step over it.</span>
+			<br><br>
+			<<catacombs_links>>
+		<<else>>
+			You feel something brush against your knee. A hatch thuds open, and a dart flies from the dark. <span class="red">It catches your arm.</span> You remove it at once, <span class="lewd">but a warmth spreads from the point of impact.</span>
+			<br><br>
+			You examine the dart.
+			<<if $history gte 1000>>
+				It looks medieval, until you peer closer at the top. It's made of steel. You give it a shake. There's fluid inside. There's not much here, but it might be worth a little to someone with criminal connections.<<set $blackmoney += 10>>
+			<<else>>
+				It looks old.
+			<</if>>
+			<br><br>
+			<<catacombs_links>>
+		<</if>>
+	<<elseif $rng gte 41>>
+		<<if $catacombs_torch gte random(1, 100)>>
+			You see a large spiderweb, completely covering the passage. You hold out your torch, <span class="green">and burn it away.</span>
+			<br><br>
+			
+			<<catacombs_links>>
+		<<elseif $leftarm is "bound" and $rightarm is "bound">>
+			You walk right into a spiderweb. It sticks to your already-bound arms. You try to pull free in the only way you can, by pulling against the web with your whole body. The web gets tighter and tighter, until it snaps back violently. The elasticity pulls you up and into the web, <span class="red">leaving you suspended and helpless.</span>
+			<br><br>
+			
+			<<beastNEWinit 1 spider>>
+			/*Needs sprites*/
+			<<if $spiderdisable is "f" and $spidertest is 1>>
+				<<if $monster is 1 or $bestialitydisable is "f">>
+					<<if $monster is 1>>
+						"Well well," croons a voice from the dark. <span class="red">A <<beasttype>> follows it, examining your body with thirsty eyes.</span>
+						<br><br>
+						"I don't get many visitors," <<bhe>> says. <<bHe>> follows with a chittering laugh. "I get so hungry." <<He>> climbs the web with a practised ease, until <<bhe>> perches above you. <<bHe>> leans forward, and traces <<bhis>> tongue across your cheek.<<ggstress>><<stress 12>>
+						<br><br>
+						
+						"Don't look so scared," <<bhe>> says. "I have a different meal in mind."
+						<br><br>
+						<<link [[Next|Catacombs Spider]]>><<set $molestationstart to 1>><</link>>
+						<br>
+					<<else>>
+						<span class="red">You hear a chittering from the dark, and see eight eyes.</span> A giant spider crawls across the stone, up the wall, and onto the web with a delicate ease.<<ggstress>><<stress 12>>
+						<br><br>
+						<<link [[Next|Catacombs Spider]]>><<set $molestationstart to 1>><</link>>
+						<br>
+					<</if>>
+				<<else>>
+					<span class="red">You hear a chittering from the dark, and see eight eyes.</span>
+					<br><br>
+					<<endevent>>
+					You flail in a mad panic, tear free from the web, and flee into the dark.<<beastescape>>
+					<br><br>
+					<<catacombs_links>>
+				<</if>>
+			<<else>>
+				You squirm and struggle, loosening the web until you at last drop free.<<pass 20>><<beastescape>>
+				<br><br>
+				<<endevent>>
+				<<catacombs_links>>
+			<</if>>
+		<<else>>
+			You walk right into a cobweb. You tear it away from your face, but now it's stuck to your hand, then your other hand, then you notice your legs are covered as well. It must have been a large spider.
+			<br><br>
+			
+			<<link [[Tear free|Catacombs Tear]]>><</link>><<physiquedifficulty 1 20000>>
+			<br>
+			<<link [[Save your strength|Catacombs Save]]>><<stress -6>><</link>><<lstress>>
+		<</if>>
+	<<elseif $rng gte 21>>
+
+	<<else>>
+
+	<</if>>
+<</if>>
+<br><br>
+
+:: Catacombs Tear
+<<effects>>
+
+<<if $physiqueSuccess>>
+	<span class="green">You rip and tear the cobweb off your body.</span> A few strands stick to you, but they'll be no problem.
+	<br><br>
+	
+	<<catacombs_links>>
+<<else>>
+	You try to rip the spiderweb off your body, but the more you struggle, <span class="red>the tighter it sticks,</span> until you can't move your arms at all. You won't be able to remove it here. At least your legs are free.
+	<br><br>
+	
+	<<bind>>
+	
+	<<catacombs_links>>
+<</if>>
+
+:: Catacombs Save
+<<effects>>
+
+You steady your breath. You won't be getting this web off here, but you're not in immediate danger.
+<br><br>
+
+<<bind>>
+
+<<catacombs_links>>
+
+:: Catacombs Spider
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<prop web>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Catacombs Spider Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Catacombs Spider]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Catacombs Spider Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+
+	The creature scuttles into the dark.
+	<br><br>
+
+	<<tearful>> you manage to free yourself from the web.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Beast Rape]]>><<set $eventskip to 1>><</link>>
+
+<<else>>
+
+	The creature scuttles into the dark.
+	<br><br>
+
+	<<tearful>> you manage to free yourself from the web.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Beast Rape]]>><<set $eventskip to 1>><</link>>
+
+<</if>>
+
+<<catacombs_links>>
+
+:: Catacombs Chest
+<<effects>>
+
+You make quick work of the archaic lock, and kick the lid open.
+<<if $catacombs gte 81>>
+	<<if $rng gte 67>>
+	
+	<<elseif $rng gte 33>>
+	
+	<<else>>
+	
+	<</if>>
+<<elseif $catacombs gte 61>>
+	<<if $rng gte 67>>
+	
+	<<elseif $rng gte 33>>
+	
+	<<else>>
+	
+	<</if>>
+<<elseif $catacombs gte 41>>
+	<<if $rng gte 67>>
+	
+	<<elseif $rng gte 33>>
+	
+	<<else>>
+	
+	<</if>>
+<<else>>
+	<<if $rng gte 67>>
+	
+	<<elseif $rng gte 33>>
+	
+	<<else>>
+	
+	<</if>>
+<</if>>
+
+<<if $skulduggery lte 600>>
+	<<skulduggeryskilluse>>
+<</if>>
