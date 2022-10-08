@@ -365,7 +365,7 @@ function combatSkillCheck(skillname, targetid = 0, basedifficulty = 1000, multip
 window.combatSkillCheck = combatSkillCheck;
 
 function hairdressersReset() {
-	$("#passages").on("change", ".macro-listbox", function (e) {
+	$(".passage").on("change", ".macro-listbox", function (e) {
 		Wikifier.wikifyEval("<<replace #hairDressers>><<hairDressersOptions>><</replace>>");
 		Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>");
 	});
@@ -374,7 +374,7 @@ function hairdressersReset() {
 DefineMacroS("hairdressersReset", hairdressersReset);
 
 function hairdressersResetAlt() {
-	$("#passages").on("click", ".macro-cycle", function (e) {
+	$(".passage").on("click", ".macro-cycle", function (e) {
 		Wikifier.wikifyEval("<<replace #hairDressersSydney>><<hairDressersOptionsSydney>><</replace>>");
 		Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>");
 	});
