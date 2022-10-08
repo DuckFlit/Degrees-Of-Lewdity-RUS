@@ -248,6 +248,6 @@ function formatErrorObj(obj) {
 		else if (value === undefined) return "Undefined";
 		else if (value === Infinity) return "Infinity";
 		else return value;
-	}).replace(/(?<=[,:;])/g, " "); // add spaces after commas, colons, and semicolons
+	}).replace(/([,:;])/g, "$1 "); // add spaces after commas, colons, and semicolons
 }
 window.formatErrorObj = formatErrorObj;
