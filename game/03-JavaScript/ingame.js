@@ -365,19 +365,19 @@ function combatSkillCheck(skillname, targetid = 0, basedifficulty = 1000, multip
 window.combatSkillCheck = combatSkillCheck;
 
 function hairdressersReset() {
-	$(".passage").on("change", ".macro-listbox", function (e) {
+	$(() => $("#hairDressers").on("change", ".macro-listbox", function (e) {
 		Wikifier.wikifyEval("<<replace #hairDressers>><<hairDressersOptions>><</replace>>");
 		Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>");
-	});
+	}));
 	return "";
 }
 DefineMacroS("hairdressersReset", hairdressersReset);
 
 function hairdressersResetAlt() {
-	$(".passage").on("click", ".macro-cycle", function (e) {
+	$(() => $("#hairDressersSydney").on("click", ".macro-cycle", function (e) {
 		Wikifier.wikifyEval("<<replace #hairDressersSydney>><<hairDressersOptionsSydney>><</replace>>");
 		Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>");
-	});
+	}));
 	return "";
 }
 DefineMacroS("hairdressersResetAlt", hairdressersResetAlt);
