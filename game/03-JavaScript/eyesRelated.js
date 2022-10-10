@@ -216,7 +216,7 @@ window.determineCatEyeStages = function () {
 				/* again, 'i' is either "left" or "right" here */
 				if (V.custom_eyecolours[x].variable === "cat_tf_stage_" + (index - 1) + "_" + i)
 					V.custom_eyecolours[x] = colourObject;
-				else if (x === V.custom_eyecolours.length - 1)
+				else if (x == V.custom_eyecolours.length - 1) // keep it `==` !!!
 					V.custom_eyecolours.push(colourObject);
 			}
 			if (V.custom_eyecolours.length === 0) V.custom_eyecolours.push(colourObject);
