@@ -166,7 +166,7 @@ window.determineCatEyeStages = function () {
 	const orange = "#f59b25";
 
 	const stages = 4; // amount of stages we'll have before reaching final colour
-	const totalPercentage = 0.5 + Math.random() / 4;
+	const totalPercentage = 0.5 + Math.random() / 4; // 50%-75%
 	/* How much of targetColour the current eye colour needs to adapt into.
 	0.0 to 1.0 (0%-100%) */
 	const baseColour = [
@@ -183,7 +183,7 @@ window.determineCatEyeStages = function () {
 	   might not notice a difference.  So, swap the two eyes */
 	if (V.rightEyeColour === "light blue" && targetColours[1] === blue)
 		targetColours = [targetColours[1], targetColours[0]];
-	for (let index = 0; index < stages; index++) {
+	for (let index = 1; index <= stages; index++) {
 		const eyesResult = {
 			left: eyeColourGradient(
 				baseColour[0],
@@ -214,9 +214,10 @@ window.determineCatEyeStages = function () {
 			for (const x in V.custom_eyecolours) {
 				/* create new object for our new colour eye */
 				/* again, 'i' is either "left" or "right" here */
+				/* and x is actually a string */
 				if (V.custom_eyecolours[x].variable === "cat_tf_stage_" + (index - 1) + "_" + i)
 					V.custom_eyecolours[x] = colourObject;
-				else if (x == V.custom_eyecolours.length - 1) // keep it `==` !!!
+				else if (x === (V.custom_eyecolours.length - 1).toString())
 					V.custom_eyecolours.push(colourObject);
 			}
 			if (V.custom_eyecolours.length === 0) V.custom_eyecolours.push(colourObject);

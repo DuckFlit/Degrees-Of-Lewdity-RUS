@@ -3744,4 +3744,23 @@
 		<<set $historyattended to $historyattended || 0>>
 		<<set $swimmingattended to $swimmingattended || 0>>
 	<</if>>
+
+	<!-- v0.3.12.3 Fix heterochromia -->
+	<<if V.custom_eyecolours.findIndex(i => i.variable === "cat_tf_stage_-1_left") !== -1>>
+		<!-- if there's objects with a bugged variable -->
+		<<script>>
+			/* re-create custom eyecolours without broken variables */
+			const repairedEyeColours = [];
+			V.custom_eyecolours.forEach(c => c.variable.startsWith("cat_tf") || repairedEyeColours.push(c));
+			V.custom_eyecolours = repairedEyeColours;
+			/* regenerate cat eye stages from "natural" eye colour (selected at game start) while preserving the current colours */
+			const lEC = V.leftEyeColour;
+			const rEC = V.rightEyeColour;
+			V.leftEyeColour = V.eyeselect;
+			V.rightEyeColour = V.eyeselect;
+			determineCatEyeStages();
+			V.leftEyeColour = lEC;
+			V.rightEyeColour = rEC;
+		<</script>>
+	<</if>>
 <</widget>>
