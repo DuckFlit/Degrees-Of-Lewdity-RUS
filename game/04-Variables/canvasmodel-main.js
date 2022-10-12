@@ -2300,7 +2300,7 @@ Renderer.CanvasModels["main"] = {
 				return options.belly_mask_upper_shadow_src;
 			},
 			zfn(options) {
-				return ZIndices.under_lower_top_high;
+				return ZIndices.under_upper_top_high;
 			}
 		}),
 		"under_upper_belly_acc": genlayer_clothing_belly_acc("under_upper", {
@@ -2308,7 +2308,7 @@ Renderer.CanvasModels["main"] = {
 				return options.belly_mask_src;
 			},
 			zfn(options) {
-				return options.worn_lower_setup.high_img ? ZIndices.under_lower_high : ZIndices.under_lower;
+				return options.worn_lower_setup.high_img ? ZIndices.under_upper_top_acc : ZIndices.under_upper_top_acc;
 			}
 		}),
 		"under_upper_breasts": genlayer_clothing_breasts("under_upper"),

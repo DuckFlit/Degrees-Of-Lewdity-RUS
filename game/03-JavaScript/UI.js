@@ -258,6 +258,25 @@ function customColour(color, saturation, brightness, contrast, sepia) {
 }
 window.customColour = customColour;
 
+window.zoom = function (size, set) {
+    if (size === undefined) {
+        size = document.getElementById("numberslider-input-zoom").value;
+    }
+    var parsedSize = parseInt(size);
+    var body = document.getElementsByTagName("body")[0];
+    if (parsedSize >= 50 && parsedSize <= 200 && parsedSize !== 100) {
+        body.style.zoom = size + "%";
+        if (set === true) {
+            V.zoom = size;
+        }
+    } else {
+        body.style.zoom = "";
+        if (set === true) {
+            V.zoom = 100;
+        }
+    }
+}
+
 function beastTogglesCheck() {
 	T.beastVars = [
 		"bestialitydisable",
