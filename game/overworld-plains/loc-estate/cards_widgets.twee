@@ -13,7 +13,7 @@ End conditions
    End Location: Estate
    Clothes: oral for towel (if naked)
    Reason: while Wren didn't get to take PC, PC also hasn't gotten all they wanted from Wren, so it's really a tie. Wren does end up better off, so technically he'd still be dominant enough to demand oral for towel, rather than demanding oral for clothes buy-back
-   
+
 2. Wren finishes with PC
    estate_cards_end: "sex" ("oral" setter is ignored), or "sex_safe" ("oral" can replace it)
    Desc: The PC has lost, and Wren took his reward. PC lost
@@ -21,7 +21,7 @@ End conditions
    End Location: Estate
    Clothes: oral for towel (if naked)
    Reason: Wren completely dominated PC, so definitely only oral for towel. It does have a variation where PC can have a chastity (so no sex), but we consider this to still be end 2
-   
+
 3. PC cheats, ends up being forgiven
    estate_cards_end: "cheat_moor"
    Desc: The PC was caught cheating, so it's a disqualification. Thrown into the moor
@@ -29,7 +29,7 @@ End conditions
    End Location: Moor
    Clothes: none
    Reason: getitng caught cheating is considered a complete loss
-   
+
 4. PC cheats, ends up surrendering
    estate_cards_end: "cheat_remy"
    Desc: The PC was caught cheating, so it's a disqualification. Given to Remy. Can also be reached by failing plead (failed 3) and surrendering, or not trying to plead and surrendering
@@ -37,7 +37,7 @@ End conditions
    End Location: Remy
    Clothes: none
    Reason: getitng caught cheating is considered a complete loss
-   
+
 5. PC cheats, ends up successfully running
    estate_cards_end: "cheat_run"
    Desc: The PC was caught cheating, disqualification. Can also be reached by failing plead (failed 3) and running, or not trying to plead and surrendering
@@ -45,7 +45,7 @@ End conditions
    End Location: Estate
    Clothes: none
    Reason: obviously, because we ran, no option to get clothes/a towel back
-   
+
 6. PC cheats, ends up running, but fails
    estate_cards_end: "cheat_remy"
    Desc: The PC was caught cheating, disqualification. Can also be reached by failing plead (failed 3) and running, or not trying to plead and surrendering. Got caught, given to Remy.
@@ -60,14 +60,14 @@ End conditions
    (???) Bets: pot confiscated, but perhaps we should let the player try and steal the pot for a much lower escape chance
    End Location: Estate
    Clothes: none
-  
+
 8. PC runs after loss, ends up getting caught
    estate_cards_end: "run"
    Desc: not as bad as cheating, PC lost and tried runing, got caught, thrown into moor
    Bets: pot confiscated
    End Location: Moor
    Clothes: none
- 
+
 9. PC leaves early
    estate_cards_end: "naked" or "left_early"
    Desc: The PC has left early.
@@ -75,8 +75,8 @@ End conditions
    End Location: Estate
    Clothes: oral for towel (if naked)
    Reason: Wren is diasppoitned that PC is leaving the game essentially in the middle of it (with no one having won). Too annoyed to let the player get the clothes back
-   
-  
+
+
 10. (todo) PC declares victory
    estate_cards_end: "pc_won" (or gets replaced by "pc_won_and_oral")
    Desc: The PC gets all favors they needed from Wren, and declares that they don't need anything else. Considered a win because Wren has exhasuted his usefulness and PC hasn't. PC can either rebuy the clothes after satisfying the goons, or leave
@@ -84,14 +84,14 @@ End conditions
    End Location: Estate
    Clothes: allowed to buy back (all states)
    Reason: Wren realizes they've done a ton of favours already and didn't get much from you, so they must feel defeated enough to let you take the clothes you've lost back
- 
-   
-   
-   
+
+
+
+
 For each of these outcomes, we need to call <<card_pot_confiscated>> right after the PC abandons the pot (if the bets are confiscated) or <<card_pot_collected>> right before the player leaves the table (if the player collects the bet)
 Each also calls <<estate_cards_finish>> and calls <<endevent>> and some set $estate_cards_end
 Some also call <<estate_end>> if they kick the player directly into the moor/remy's farm
-   
+
 Coverage:
     bets conf/coll | <<estate_cards_finish>>            | <<endevent>>        | <<estate_end>> (opt)      | Clothes (todo)         | $estate_cards_end
 1   collected      | + calls <<cards_naked_end>>        | + <--------         | - estate <------          | towel                  | "wren_finished_early" (can be replaced by "oral")
@@ -123,7 +123,7 @@ else if leave after attempt:
 		sets $estate_cards_end to "oral", if it isn't "sex"
 	calls <<estate_cards_finish>>
 	calls <<endevent>>
-else: 
+else:
     if $estate.cards.clothesRebuyTerms:
 		sets $estate_cards_end to "pc_won_and_oral"
 	else:
@@ -177,7 +177,7 @@ else:
 
 <<widget "calculateBlackjackLuckStats">>
 <!-- currently very basic. instead of taking into account HOW the user won (hitting on 19, for example), it just calculates stats of the last X games -->
-<!-- 
+<!--
 // use this to see all distributions for a given number of games,
 // with an optional filter func for only showing the distributions that fit the given filter formula
 
@@ -236,7 +236,7 @@ for (let [filterName, filterFunc] of filterFuncs) {
 <<if $estate.cards.gameResults eq null>>
 	<<set $estate.cards.gameResults to []>>
 	<<run delete $estate.cards.luckStats>>
-<<else>>	
+<<else>>
 	<<set $_lookback to Math.min($estate.cards.gameResults.length, 6)>>
 	<<set $_slice to $estate.cards.gameResults.slice($_lookback * -1)>>
 	<<set $_stats to {"wins": 0, "losses": 0, "ties": 0, "winPct": 0, "lossPct": 0, "tiePct": 0, "total": $_lookback}>>
@@ -348,8 +348,8 @@ for (let [filterName, filterFunc] of filterFuncs) {
 <<widget "initEstatePersistent">>
 <<if not $estatePersistent>>
 	<<set $estatePersistent to {
-		"suspicion": 0, 
-		"newDeckTimer": 3, 
+		"suspicion": 0,
+		"newDeckTimer": 3,
 		"markedCards": new Set(),
 	}>>
 <</if>>
@@ -365,7 +365,7 @@ for (let [filterName, filterFunc] of filterFuncs) {
 		"totalBetMoneyLost": 0,
 		/* total counter for how much we've made from tips */
 		"totalTipMoneyMade": 0,
-		/* NOT included in totalBetMoneyLost, counts all the pot money we've lost due to running away or getting caught cheating 
+		/* NOT included in totalBetMoneyLost, counts all the pot money we've lost due to running away or getting caught cheating
 		   includes the ante */
 		"totalMoneyConfiscated": 0,
 		/* to calculate total revenue (including loss of ante): totalBetMoneyMade + totalTipMoneyMade - totalBetMoneyLost - totalMoneyConfiscated */
@@ -715,7 +715,7 @@ more suspicion if you actually lose the round. -->
 	<<elseif $estate.cards.cheatPeeking and $blackjack.isFirstTurn>>
 		<<if !$blackjack.turnIsStale>>
 			<!-- idea -  an alternative, where we handle the deck and the chance to see the card is higher -->
-			<!-- 
+			<!--
 				skulduggery affects your chance to see the card. base chance is 10%, skulduggery adds from 0 to 15% chance.
 				different levels of exposure have a chance to affect the chance as well, as you're distracting the dealer every now and then.
 			 -->
@@ -1702,7 +1702,7 @@ Your current score: <<print $highlow.correct>>
 <<for $_obj range $estate.cards.confiscatedClothes>>
 	<<set $_cur to $_obj["copy"]>>
 	<<set $_base to setup.clothes[$_obj["type"]][$_cur["index"]]>>
-	
+
 	<<if $_base.cost gt 0>>
 		<!--  base 20% reduction for having been worn -->
 		<<set $_price to $_base.cost * 0.8>>
@@ -1878,7 +1878,7 @@ Neutral cases
 		<<else>>
 			<<switch random(1,5)>>
 				<<case 1>>
-					Wren scoffs and lazily swipes <<his>> hand across the pot of $_money, pushing it towards your pot. 
+					Wren scoffs and lazily swipes <<his>> hand across the pot of $_money, pushing it towards your pot.
 				<<case 2>>
 					"You're awfully lucky today," Wren says as <<he>> pushes the $_money towards your pot, <<his>> face betraying a hint of annoyance.
 				<<case 3>>
@@ -2039,11 +2039,11 @@ Wren leans behind <<him>>, and opens a drawer. <<He>> feels inside, and produces
 
 	<<set $_moneyDiff to $estate.cards.playerPot - $estate.cards.ante>>
 	<div>
-		<div><span>Your money on the table<mouse class="tooltip">(?)<span>The amount of money you've made that is kept on the table as insurance (including tips and your ante). If you get caught cheating or run away, you either have to risk trying to take it with you or abandon it.</span></mouse>: 
+		<div><span>Your money on the table<mouse class="tooltip">(?)<span>The amount of money you've made that is kept on the table as insurance (including tips and your ante). If you get caught cheating or run away, you either have to risk trying to take it with you or abandon it.</span></mouse>:
 		<<printmoney $estate.cards.playerPot>></span></div>
-		<div><span>Your current winnings<mouse class="tooltip">(?)<span>The total standing, how much money you've made or lost in the game (including tips). Does not represent the final amount you'll end up with, as you might end up abandoning your winnings for a less risky escape.</span></mouse>: 
+		<div><span>Your current winnings<mouse class="tooltip">(?)<span>The total standing, how much money you've made or lost in the game (including tips). Does not represent the final amount you'll end up with, as you might end up abandoning your winnings for a less risky escape.</span></mouse>:
 		<<printmoney $_moneyDiff>></span></div>
-		<div><span>Wren's pot<mouse class="tooltip">(?)<span>The amount of money Wren has that you can win (including <<his>> ante). The tips come from the goons, so they're not included. If Wren's pot is exhausted, <<he>> will not be able to bet any more until the next day.</span></mouse>: 
+		<div><span>Wren's pot<mouse class="tooltip">(?)<span>The amount of money Wren has that you can win (including <<his>> ante). The tips come from the goons, so they're not included. If Wren's pot is exhausted, <<he>> will not be able to bet any more until the next day.</span></mouse>:
 		<<printmoney $estate.cards.wrenMoney>></span></div>
 		<<if $_maxBetAmount gt 0>>
 			<div><span>Your bet:</span><<numberslider "$estate.cards.currentBetInput" 0 0 `$_maxBetAmount/100` `$_step/100`>></div>
@@ -2080,7 +2080,7 @@ Wren leans behind <<him>>, and opens a drawer. <<He>> feels inside, and produces
 
 <<if $estatePersistent.stakesRaised>>
 	<<set $_anteMaxNum to setup.estateBlackjack.anteSizes.length - 1>>
-	
+
 	<<for _i to 0; _i lte $_anteMaxNum; _i++>>
 		<<set _anteAmount to setup.estateBlackjack.anteSizes[_i]>>
 		<<formatmoney _anteAmount>>
