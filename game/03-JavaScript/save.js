@@ -86,9 +86,8 @@ const DoLSave = ((Story, Save) => {
 			Bypass this check if on a mobile, because they are notoriously difficult to grab saves from in the event of issues. */
 		if (metadata.ironman && !Browser.isMobile.any()) {
 			IronMan.update(save, metadata);
-			const signature = IronMan.getSignature(save);
 			// (if ironman mode enabled) following checks md5 signature of the save to see if the variables have been modified
-			if (signature !== metadata.signature) {
+			if (!IronMan.compare(metadata, save)) {
 				Wikifier.wikifyEval(`<<loadIronmanCheater ${slot}>>`);
 				return;
 			}
@@ -126,12 +125,15 @@ const DoLSave = ((Story, Save) => {
 				});
 				if (success) {
 					const save = Save.slots.get(saveSlot);
-					setSaveDetail(saveSlot, {
-						saveId,
-						saveName,
-						ironman: V.ironmanmode,
-						signature: V.ironmanmode ? IronMan.getSignature(save) : false,
-					});
+					const metadata = { saveId, saveName };
+					if (V.ironmanmode) {
+						Object.assign(metadata, {
+							ironman: V.ironmanmode,
+							signature: V.ironmanmode ? IronMan.getSignature(save) : false,
+							schema: IronMan.schema,
+						});
+					}
+					setSaveDetail(saveSlot, metadata);
 					delete T.currentOverlay;
 					// todo: find a better solution
 					closeOverlay();
@@ -294,12 +296,15 @@ const DoLSave = ((Story, Save) => {
 		});
 		if (success) {
 			const save = Save.slots.get(saveSlot);
-			setSaveDetail(saveSlot, {
-				saveId: V.saveId,
-				saveName: V.saveName,
-				ironman: V.ironmanmode,
-				signature: V.ironmanmode ? IronMan.getSignature(save) : false,
-			});
+			const metadata = { saveId: V.saveId, saveName: V.saveName };
+			if (V.ironmanmode) {
+				Object.assign(metadata, {
+					ironman: V.ironmanmode,
+					signature: V.ironmanmode ? IronMan.getSignature(save) : false,
+					schema: IronMan.schema,
+				});
+			}
+			setSaveDetail(saveSlot, metadata);
 		}
 	}
 
