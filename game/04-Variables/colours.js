@@ -11,6 +11,11 @@ setup.colours = {
 			brightness: 0.0,
 			contrast: 1.0
 		},
+		hair_fringe: {
+			desaturate: true,
+			brightness: 0.0,
+			contrast: 1.0
+		},
 		brows: {
 			desaturate: true,
 			brightness: 0.0,

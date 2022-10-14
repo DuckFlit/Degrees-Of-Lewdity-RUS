@@ -254,6 +254,7 @@ Renderer.CanvasModels["main"] = {
 			"hair_sides_type": "default",
 			"hair_sides_length": "short",
 			"hair_sides_position": "back",
+			"hair_fringe_colour": "red",
 			"hair_fringe_type": "default",
 			"hair_fringe_length": "short",
 			"brows_colour": "",
@@ -494,6 +495,7 @@ Renderer.CanvasModels["main"] = {
 		options.filters.left_eye = lookupColour(setup.colours.eyes_map, options.left_eye, "eyes", "eyes_custom", "eyes");
 		options.filters.right_eye = lookupColour(setup.colours.eyes_map, options.right_eye, "eyes", "eyes_custom", "eyes");
 		options.filters.hair = lookupColour(setup.colours.hair_map, options.hair_colour, "hair", "hair_custom", "hair");
+		options.filters.hair_fringe = lookupColour(setup.colours.hair_map, options.hair_fringe_colour || options.hair_colour, "hair_fringe", "hair_fringe_custom", "hair_fringe");
 		options.filters.brows = lookupColour(setup.colours.hair_map, options.brows_colour || options.hair_colour, "brows", "brows_custom", "brows");
 		options.filters.pbhair = lookupColour(setup.colours.hair_map, options.pbhair_colour || options.hair_colour, "pbhair", "pbhair_custom", "pbhair");
 		if (options.lipstick_colour) {
@@ -1049,7 +1051,7 @@ Renderer.CanvasModels["main"] = {
 			masksrcfn(options) {
 				return options.head_mask_src;
 			},
-			filters: ["hair"],
+			filters: ["hair_fringe"],
 			z: ZIndices.fronthair,
 			animation: "idle"
 		},
