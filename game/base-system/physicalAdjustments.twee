@@ -189,15 +189,7 @@
 	*/
 	<<set $sexStats.vagina to {
 		"pregnancy": {
-			0: null,
-			1: null,
-			2: null,
-			3: null,
-			4: null,
-			5: null,
-			6: null,
-			7: null,
-			"currentCount": 0,
+			"fetus": [],
 			"givenBirth": 0,
 			"totalBirthEvents": 0,
 			"motherStatus": 0,
@@ -242,10 +234,21 @@
 	<</if>>
 	<<set _menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
 
-
 	<<if $player.vaginaExist>>
 		<<set $sexStats.vagina.menstruation.running = true>>
 	<</if>>
+<</if>>
+<<if $sexStats.vagina.pregnancy.fetus is undefined>>
+	<<set $sexStats.vagina.pregnancy.fetus = []>>
+	<<run delete $sexStats.vagina.pregnancy.currentCount>>
+	<<run delete $sexStats.vagina.pregnancy[0]>>
+	<<run delete $sexStats.vagina.pregnancy[1]>>
+	<<run delete $sexStats.vagina.pregnancy[2]>>
+	<<run delete $sexStats.vagina.pregnancy[3]>>
+	<<run delete $sexStats.vagina.pregnancy[4]>>
+	<<run delete $sexStats.vagina.pregnancy[5]>>
+	<<run delete $sexStats.vagina.pregnancy[6]>>
+	<<run delete $sexStats.vagina.pregnancy[7]>>
 <</if>>
 <</widget>>
 
@@ -477,17 +480,20 @@ And REMOVE it or comment it out -->
 		<<for _i, _key range _keys>>
 			<<run determineAutoTakePill(_key)>>
 			<<if _autoTakeDetermined != null and _pills.pills[_autoTakeDetermined].owned > 0>>
-				<<set $pillsconsumed++>> /* to keep track of overall pill consumption (stats) */
-				<<set _pills.pills[_autoTakeDetermined].owned-->>
-				<<set _pills.pills[_autoTakeDetermined].doseTaken += 1>>
-				<<run redetermineMostTaken(0, 0, _autoTakeDetermined)>>
-				<<run setLastTaken(null, null, _autoTakeDetermined)>>
-				<<set $pillsTaken to true>>
-				<<set $pillsTakenOn to ($monthday.toString() + $month + $year.toString())>>
-				<<set $effectsmessage to 1>>
-				<<if _pills.pills[_autoTakeDetermined].owned == 0>>
-					<<set _pills.pills[_autoTakeDetermined].autoTake to false>>
-					<<set $pillsTakenLast to true>>
+				/*Prevent pills from being taken if the player has already taken a dose, aloowing them to either take more than intended, or to bypass the overdose effects*/
+				<<if !_pills.pills[_autoTakeDetermined].doseTaken>>
+					<<set $pillsconsumed++>> /* to keep track of overall pill consumption (stats) */
+					<<set _pills.pills[_autoTakeDetermined].owned-->>
+					<<set _pills.pills[_autoTakeDetermined].doseTaken += 1>>
+					<<run redetermineMostTaken(0, 0, _autoTakeDetermined)>>
+					<<run setLastTaken(null, null, _autoTakeDetermined)>>
+					<<set $pillsTaken to true>>
+					<<set $pillsTakenOn to ($monthday.toString() + $month + $year.toString())>>
+					<<set $effectsmessage to 1>>
+					<<if _pills.pills[_autoTakeDetermined].owned == 0>>
+						<<set _pills.pills[_autoTakeDetermined].autoTake to false>>
+						<<set $pillsTakenLast to true>>
+					<</if>>
 				<</if>>
 			<<elseif _autoTakeDetermined != null>>
 				<<set _pills.pills[_autoTakeDetermined].autoTake to false>>
