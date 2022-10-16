@@ -352,9 +352,9 @@ setup.pills = [
 	{
 		name: "fertility booster",
 		description:
-			"Each pill contains 50mg of clomiphene citrate, a structural analogue of estrogens. It also acts on your hypothalamus which secretes the hormones necessary to trigger ovulation. In most cases effectively inducing your ovary to release eggs.",
+			"Each pill contains 50mg of clomiphene citrate, a structural analogue of estrogens. It also acts on your hypothalamus which secretes the hormones necessary to trigger ovulation. In some cases effectively inducing your ovary to release eggs.",
 		onTakeMessage: "You take the pills intended to increase your fertility. You hope it will be as effective as advertised.",
-		warning_label: "Warning: Severe complications if exceeding the maximum doses per day.",
+		warning_label: "Warning: Mild side effects may occur with the prescribed dosage, including those that may mimic the signs of early pregnancy. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",
 		autoTake() {
 			return V.sexStats.pills["pills"][this.name].autoTake;
 		},
@@ -365,7 +365,7 @@ setup.pills = [
 			return V.sexStats.pills["pills"][this.name].owned;
 		},
 		type: "pregnancy",
-		subtype: "fertility",
+		subtype: "fertility booster",
 		shape: "pill",
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
@@ -384,7 +384,7 @@ setup.pills = [
 		description:
 			"Estroprogestatifs associating 24mg of ethinylestradiol(synthetic estrogen) and 31mg of a synthetic progestin for a near-perfect contraceptive effect.",
 		onTakeMessage: "You take the contraceptive pill. You hope it will be as effective as advertised.",
-		warning_label: "Warning: Serious side effects upon exceeding the maximum doses per day. If in doubt, please consult your doctor.",
+		warning_label: "Warning: Mild side effects may occur with the prescribed dosage. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",
 		autoTake() {
 			return V.sexStats.pills["pills"][this.name].autoTake;
 		},

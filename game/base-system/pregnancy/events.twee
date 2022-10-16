@@ -483,25 +483,21 @@ Player gets on the bed, midwife checking the player over and helping to prepare.
 Midwife give the ok to push
 <br><br>
 
-<<set _pregnancy to $sexStats.vagina.pregnancy>>
-<<if _pregnancy.totalBirthEvents gte 5>>
+<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+<<if $_pregnancy.totalBirthEvents gte 5>>
 	<<set _min to 15>>
 	<<set _max to 60>>
-<<elseif _pregnancy.totalBirthEvents gte 3>>
+<<elseif $_pregnancy.totalBirthEvents gte 3>>
 	<<set _min to 30>>
 	<<set _max to 120>>
 <<else>>
 	<<set _min to 60>>
 	<<set _max to 180>>
 <</if>>
-<<for _i to 7; _i gte 0; _i-->>
-	<<if _pregnancy[_i] is null>>
-		<<continue>>
-	<</if>>
-	<<set _max to Math.floor(_max * (1 + Math.floor(_i * 0.2)))>>
-	<<set _min to Math.floor(_min * (1 + Math.floor(_i * 0.2)))>>
-	<<break>>
-<</for>>
+
+<<set _max to Math.floor(_max * (1 + Math.floor($_pregnancy.fetus.length * 0.2)))>>
+<<set _min to Math.floor(_min * (1 + Math.floor($_pregnancy.fetus.length * 0.2)))>>
+
 <<set $timeCalc to random(_min, _max)>>
 <<set _hours to Math.floor($timeCalc / 60)>>
 <<set _minutes to $timeCalc % 60>>
@@ -521,7 +517,7 @@ Player pushes and eventually gives birth, and is given the children to hold. Mil
 Player is taken somewhere more comfortable where they can recover and start to have special time with their newborns. Option to name occurs here.
 <br><br>
 /*Debug args[3] "human" should be removed later*/
-/*Debug args[0] should be set to something specific*/
+/*ToDo: Pregnancy - Debug args[0] should be set to the specific location*/
 <<birthUi "test" "Pregnancy Birth Hospital 6" _time>>
 
 :: Pregnancy Birth Hospital 6
@@ -628,14 +624,12 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <<if !$player.vaginaExist>>
 	<span class="green">It's negative.</span> You wonder how it could ever be positive.
 <<else>>
-	<<set _pregnancy to $sexStats.vagina.pregnancy>>
-	<<if _pregnancy.timerStart is null>>
-		<span class="green">It's negative.</span>
-	<<elseif _pregnancy.timerStart is _pregnancy.timer or (between(_pregnancy.timerStart - _pregnancy.timer, 1, 3) and $random(0,100) gte 3) or (between(_pregnancy.timerStart - _pregnancy.timer, 4, 6) and $random(0,100) gte 15)>>
+	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+	<<if $_pregnancy.fetus.length is 0 or $_pregnancy.timerStart is $_pregnancy.timer or (between($_pregnancy.timerStart - $_pregnancy.timer, 1, 3) and random(0,100) gte 10) or (between($_pregnancy.timerStart - $_pregnancy.timer, 4, 6) and random(0,100) gte 15)>>
 		<span class="green">It's negative.</span>
 	<<else>>
 		<span class="lewd">It's positive.</span> Many thoughts rush through your head, and you sit to collect yourself. <<gstress>><<stress 3>><<garousal>><<arousal 100>>
-		<<set _pregnancy.awareOf to true>>
+		<<set $_pregnancy.awareOf to true>>
 	<</if>>
 <</if>>
 
@@ -659,7 +653,7 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 
 :: Pregnancy ultrasound
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<set _pregnancy to $sexStats.vagina.pregnancy>>
+<<set $_pregnancy to $sexStats.vagina.pregnancy>>
 <<harper_intro>>
 <<if $ultrasoundIntro isnot 1>>
 	<<set $ultrasoundIntro to 1>>
@@ -678,12 +672,12 @@ Player is taken somewhere where it occurs, they remove their upper related cloth
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 
 Ultrasound occurs, Dr Harper lets them know what going on.
-<<set _pregnancy to $sexStats.vagina.pregnancy>>
-<<if _pregnancy.currentCount gt 1>>
+<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+<<if $_pregnancy.fetus.length gt 1>>
 	<<set _multiple to true>>
 <<else>>
 	<<set _multiple to false>>
-	<<switch _pregnancy[0].gender>>
+	<<switch $_pregnancy.fetus[0].gender>>
 		<<case "m">>
 			<<set $_he to "he">>
 			<<set $_He to "He">>
@@ -703,75 +697,75 @@ Ultrasound occurs, Dr Harper lets them know what going on.
 			<<set $_gender to "hermaphrodite">>
 	<</switch>>
 <</if>>
-<<switch _pregnancy.type>>
+<<switch $_pregnancy.type>>
 	<<case "human">>
-		<<if _pregnancy.timer gte _pregnancy.timerStart * 0.9>>
+		<<if $_pregnancy.timer gte $_pregnancy.timerStart * 0.9>>
 			<<if _multiple>>
 				The babies are small, the ultrasound can only just pick it up. Their tiny hearts are beating about once every second.
-				<<if _pregnancy.currentCount gt 1>>
-					You know you are carrying <<if _pregnancy.currentCount is 3>>triplets<<else>>twins<</if>>.
+				<<if $_pregnancy.fetus.length gt 1>>
+					You know you are carrying <<if $_pregnancy.fetus.length is 3>>triplets<<else>>twins<</if>>.
 				<</if>>
 			<<else>>
 				Your baby is tiny, the ultrasound can only just pick it up. Its tiny heart is beating about once every second.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.8>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.8>>
 			<<if _multiple>>
 				The babies are small but you can see more details. You can see the ears and eyes starting to form, tiny buds are starting to form where the arms/legs should be. Their heads are much larger than the rest of the body.
 			<<else>>
 				Your baby is still tiny but you can see more details. You can see the ears and eyes starting to form, tiny buds are starting to form where the arms/legs should be. The head is much larger than the rest of the body.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.7>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.7>>
 			<<if _multiple>>
 				Babies are not so tiny now and fully formed. Arms, hands, fingers, feet and toes fully formed. They are starting to explore by doing things like making a small fist.
 			<<else>>
 				Your baby is not so tiny now and fully formed. Arms, hands, fingers, feet and toes fully formed. They are starting to explore by doing things like making a small fist.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.6>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.6>>
 			<<if _multiple>>
 				Babies continues to grow in size. Their hearts are audible through an instrument called a doppler. Eyelids, eyebrows, eyelashes, nails and hair are formed. They can suck their own thumbs, yawn, stretch and make faces. Genitalia are fully developed so they can be told to the player.
 				<<pregnancyGendersText>>
 			<<else>>
 				<<print $_He>> continues to grow in size. Heart is audible through an instrument called a doppler. Eyelids, eyebrows, eyelashes, nails and hair are formed. <<print $_He>> can suck <<print $_his>> own thumbs, yawn, stretch and make faces. Genitalia are fully developed now so you know <<print $_he>> is a little
-				<<switch _pregnancy[0].gender>>
+				<<switch $_pregnancy.fetus[0].gender>>
 					<<case "m">>boy.
 					<<case "f">>girl.
 					<<case "h">>hermaphrodite.
 				<</switch>>
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.5>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.5>>
 			<<if _multiple>>
 				Babies continues to grow in size. They can move around, developing muscles and exercising them. Hair is growing on their head, protective hair/white coating is growing over the baby, this will shed shortly after birth.
 			<<else>>
 				<<print $_He>> continues to grow in size. <<print $_He>> can move around, developing muscles and exercising them. Hair is growing on <<print $_his>> head, protective hair/white coating is growing over the baby, this will shed shortly after birth.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.4>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.4>>
 			<<if _multiple>>
 				Babies continues to grow in size. Eyelids begin to part and eyes open/close. They have started to develop some body fat, hearing is fully developed. They change position frequently and responds to stimuli, including sound, pain and light. The amniotic fluid begins to diminish.
 			<<else>>
 				<<print $_He>> continues to grow in size. Eyelids begin to part and eyes open/close. <<print $_He>> has started to develop some body fat, hearing is fully developed. <<print $_He>> change position frequently and responds to stimuli, including sound, pain and light. The amniotic fluid begins to diminish.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.3>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.3>>
 			<<if _multiple>>
 				Babies continues to mature and develop more reserves of body fat. They will be will be kicking more at this point. Their brain is developing rapidly at this time, and they can see and hear.
 			<<else>>
 				<<print $_He>> continues to mature and develop more reserves of body fat. <<print $_He>> will be will be kicking more at this point. <<print $_His>> brain is developing rapidly at this time, and they can see and hear.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.2>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.2>>
 			<<if _multiple>>
 				Babies are getting close to being fully grown. Their reflexes are coordinated so they can blink, close the eyes, turn the head, grasp firmly, and respond to sounds, light, and touch. Lungs are close to fully developed.
 			<<else>>
 				<<print $_He>> is getting close to being fully grown. <<print $_His>> reflexes are coordinated so <<print $_he>> can blink, close the eyes, turn the head, grasp firmly, and respond to sounds, light, and touch. Lungs are close to fully developed.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.1>>
-			<<if _pregnancy.currentCount gt 1>>
-				Babies are almost fully grown, they are slightly smaller than if you weren't pregnant with <<if _pregnancy.currentCount is 3>>triplets<<else>>twins<</if>>. They will start to move around less, their position will have moved to having their head closer to your pelvis.
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.1>>
+			<<if $_pregnancy.fetus.length gt 1>>
+				Babies are almost fully grown, they are slightly smaller than if you weren't pregnant with <<if $_pregnancy.fetus.length is 3>>triplets<<else>>twins<</if>>. They will start to move around less, their position will have moved to having their head closer to your pelvis.
 			<<else>>
 				<<print $_He>> is almost fully grown. <<print $_He>> will start to move around less, <<print $_his>> position will have moved to having <<print $_his>> head closer to your pelvis.
 			<</if>>
 			Mention the time for labour is starting to get close.
 		<<else>>
-			<<if _pregnancy.currentCount gt 1>>
-				Babies are fully grown and ready to face the world, they are slightly smaller than if you weren't pregnant with <<if _pregnancy.currentCount is 3>>triplets<<else>>twins<</if>>.
+			<<if $_pregnancy.fetus.length gt 1>>
+				Babies are fully grown and ready to face the world, they are slightly smaller than if you weren't pregnant with <<if $_pregnancy.fetus.length is 3>>triplets<<else>>twins<</if>>.
 			<<else>>
 				<<print $_He>> is fully grown and ready to face the world.
 			<</if>>
