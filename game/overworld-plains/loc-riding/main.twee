@@ -99,6 +99,11 @@ You are at Remy's riding school. Stables surround a central courtyard. A small o
 			<br>
 		<</if>>
 
+		<<if isPubfameTaskAccepted("remy")>>
+			<<link [[Look for Landry's contact (0:20)|Riding School Contact]]>><<pass 20>><</link>>
+			<br>
+		<</if>>
+
 		<<link [[Leave|Farmland]]>><</link>>
 		<br>
 	<</if>>
@@ -1050,3 +1055,287 @@ You duck under a bough, and arrive in a small and sheltered clearing. The <<pers
 <br><br>
 <<link [[Next|Riding School Lesson]]>><</link>>
 
+:: Riding School Contact
+<<effects>><<set $pubfame.remy.attempts++>>
+
+You look around the courtyard for anyone on their own. Most students are in groups of two or three, chatting idly, but you see a few stragglers around.
+<br><br>
+
+<<generate1>><<person1>>
+A <<person>> catches your eye, <<print either("leaning against the fence","leaning against a stable","scrolling on <<his>> phone","idly walking in circles")>>. "Excuse me," you say, approaching <<him>>. "Where do the flowers bloom?"
+<br><br>
+
+<<rng>>
+<<if $rng gte 86 or $pubfame.remy.attempts % 10 is 0>> <!-- 15% chance. Correct answer. Also guaranteed correct answer after ten failed attempts -->
+	<<set $phase to 1>>
+	<<set _looks to ["doesn't look","doesn't look","doesn't look","glances"][random(3)]>>
+	<<set _password to 0>>
+<<elseif $rng gte 51>> <!-- 35% chance. Wrong or almost answer, leads to rape -->
+	<<set $phase to 2>>
+	<<set _looks to ["doesn't look","doesn't look","doesn't look","glances"][random(3)]>>
+	<<set _password to ["wrong","wrong","wrong","almost","almost"][random(4)]>>
+<<elseif $rng gte 31>> <!-- 20% chance. Wrong or almost answer answer, leads to capture -->
+	<<set $phase to 3>>
+	<<set _looks to ["doesn't look","glances","glances","glances"][random(3)]>>
+	<<set _password to ["wrong","wrong","wrong","almost","almost"][random(4)]>>
+<<elseif $rng gte 26>> <!-- 5% chance. Correct answer, leads to capture-->
+	<<set $phase to 4>>
+	<<set _looks to ["doesn't look","glances","glances","glances"][random(3)]>>
+	<<set _password to 0>>
+<<else>> <!-- 30% chance. No password at all -->
+	<<set _failed to true>>
+	<<He>> stares at you blankly for a second.
+	"<<print either(
+		"Is that a riddle? I'm no good with riddles.",
+		"There's a farm just up the road, try there.",
+		"I'm not interested in your cult, <<girl>>.",
+		"Is that a... reference to something?",
+		"I'm in the middle of something.",
+		"I have a <<spouse>>."
+	)>>" <<He>> turns <<his>> back to you.
+	<br><br>
+
+	<<if $hour isnot $closinghour>>
+		<<link [[Find someone else (0:20)|Riding School Contact]]>><<pass 20>><<endevent>><</link>>
+		<br>
+		<<link [[Give up for now|Riding School]]>><<endevent>><</link>>
+	<<else>>
+		It's closing time. The horses are being herded into their stables, and the customers from the grounds. <<if $exposed gte 1>>You skulk away before anyone sees your <<lewdness>>.<</if>>
+		<br><br>
+
+		<<link [[Next|Farmland]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+<<if !_failed>>
+	<<He>> _looks at you. "<<pubfameRemyPassword _password "cap">>," <<he>> says. <<He>> turns around and walks behind a stable.
+	<<if $awareness gte 1000 and $phase gte 3>>
+		<br>
+		<span class="purple">You notice Remy watching you out of the corner of your eye.</span>
+	<</if>>
+	<br><br>
+
+	<<link [["Follow " + $NPCList[0].pronouns.him|Riding School Contact Follow]]>><</link>>
+	<br>
+	<<link [[Leave|Riding School Contact Leave]]>><<set $phase to Math.ceil($phase / 2)>><</link>>
+<</if>>
+
+:: Riding School Contact Leave
+<<effects>>
+You shake your head and walk away.
+<<if $phase is 1>>
+	The <<person>> looks confused, but doesn't pursue you.
+<<else>>
+	You hear the <<person>> click <<his>> tongue in disappointment, but <<he>> doesn't pursue you.
+<</if>>
+<br><br>
+
+<<if $hour isnot $closinghour>>
+	<<link [[Find someone else (0:20)|Riding School Contact]]>><<pass 20>><<endevent>><</link>>
+	<br>
+	<<link [[Give up for now|Riding School]]>><<endevent>><</link>>
+<<else>>
+	It's closing time. The horses are being herded into their stables, and the customers from the grounds. <<if $exposed gte 1>>You skulk away before anyone sees your <<lewdness>>.<</if>>
+	<br><br>
+
+	<<link [[Next|Farmland]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Riding School Contact Follow
+<<effects>>
+
+You follow the <<person>> behind the stable.
+<br><br>
+
+<<switch $phase>>
+	<<case 1>>
+		<<He>> digs around in a hay bale for a moment, before pulling out a small black box, about the size of your hand. <<He>> leaves it on the hay and walks out without a word, the opposite way <<he>> came from.
+		<br><br>
+
+		You pick up the box. You don't see any visible seams or openings, and running your fingers over it, you don't feel any either. It sounds hollow when you tap it, but you can't tell if there's anything inside.
+		<br><br>
+
+		<<pubfameComplete "remy">>
+
+		<<link [[Next|Riding School]]>><<endevent>><</link>>
+	<<case 2>>
+		<<He>> stands there for a few seconds, before suddenly <span class="red">lunging for you, knocking you into a pile of hay</span>. "Don't know what you're on about," <<he>> laughs. "And I don't care."
+		<br><br>
+
+		<<link [[Next|Riding School Contact Rape]]>><<set $molestationstart to 1>><</link>>
+	<<case 3>>
+		<<generate2>><<generate3>>
+		<<He>> stands there for a few seconds, before suddenly lunging for you and grabbing your arms, pinning them to your sides. "Don't know what you're on about," <<he>> laughs. "But figured if I went along with it, you'd be an easy gain."
+		<br><br>
+
+		A <<person2>><<person>> and <<person3>><<person>> walk toward you, the <<person2>><<person>> holding a rag and bottle. <<He>> approaches you, grinning.
+		<br><br>
+
+		<<link [[Fight|Riding School Contact Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+		<<link [[Give in|Riding School Contact Give]]>><</link>>
+	<<case 4>>
+		<<generate2>><<generate3>>
+		<<He>> digs around in a hay bale for a moment, before pulling out a small black box, about the size of your hand. <<He>> examines it for a moment, before <span class="red">tossing it to the side and lunging for you</span>. <<He>> grabs your arms, pinning them to your sides. "Some bridges are worth burning, if there's enough of a payout," <<he>> laughs. "Tell Landry <<nnpc_he "Landry">> can get bent."
+		<br><br>
+
+		A <<person2>><<person>> and <<person3>><<person>> walk toward you, the <<person2>><<person>> holding a rag and bottle. <<He>> approaches you, grinning.
+		<br><br>
+
+		<<pubfameComplete "remy" "betray">>
+
+		<<link [[Fight|Riding School Contact Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+		<<link [[Give in|Riding School Contact Give]]>><</link>>
+<</switch>>
+
+:: Riding School Contact Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $enemyanger to 20>>
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Riding School Contact Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Riding School Contact Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Riding School Contact Rape Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<if $enemyanger gte ($enemyangermax / 5) * 3>>
+		<<He>> smacks your face, then leaves you lying in the hay.
+		<br>
+		<<underlowersteal>>
+		<<violence 3>>
+	<<elseif $enemyanger gte 1>>
+		Without a word, <<he>> leaves.
+		<br>
+		<<underlowersteal>>
+	<<else>>
+		Smiling, <<he>> kisses you on the cheek. "This is for you." <<He>> gets up and leaves you lying on the ground.
+		<br>
+		You've gained <<moneyGain 5>>.
+	<</if>>
+<<else>>
+	You shove <<him>> off you, and <<he>> tips over into the stable with a cry.
+<</if>>
+<br><br>
+
+<<tearful>> you rise to your feet.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<if $hour isnot $closinghour>>
+	<<link [[Find someone else (0:20)|Riding School Contact]]>><<pass 20>><<endevent>><</link>>
+	<br>
+	<<link [[Give up for now|Riding School]]>><<endevent>><</link>>
+<<else>>
+	It's closing time. The horses are being herded into their stables, and the customers from the grounds. <<if $exposed gte 1>>You skulk away before anyone sees your <<lewdness>>.<</if>>
+	<br><br>
+
+	<<link [[Next|Farmland]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Riding School Contact Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Riding School Contact Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Riding School Contact Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Riding School Contact Fight Finish
+<<effects>>
+
+<<if $pain gte 100 and $willpowerpain is 0>>
+	It's too much. <<tearful>> you collapse to the ground.
+	<br><br>
+
+	The <<person3>><<person>> soaks the rag with the bottle and holds it to your mouth. You weakly try to turn away, but <<he>> holds your face still with <<his>> other hand. The sweet smell makes your mind swim, and your consciousness fades.
+	<br><br>
+
+	<<endcombat>>
+
+	<<link [[Next|Moor Abduction Wake]]>><<pass 60>><<set $stress -= 2000>><<set $moor to 50>><<clotheson>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	The <<fullGroup>> collapse against the stable. <<tearful>> you rise to your feet and run away.
+	<br><br>
+
+	<<endcombat>><<clotheson>>
+
+	<<if $hour isnot $closinghour>>
+		<<link [[Find someone else (0:20)|Riding School Contact]]>><<pass 20>><<endevent>><</link>>
+		<br>
+		<<link [[Give up for now|Riding School]]>><<endevent>><</link>>
+	<<else>>
+		It's closing time. The horses are being herded into their stables, and the customers from the grounds. <<if $exposed gte 1>>You skulk away before anyone sees your <<lewdness>>.<</if>>
+		<br><br>
+
+		<<link [[Next|Farmland]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	You push the <<person1>><<person>> off of you, who falls onto the <<person2>><<person>>, who knocks over the <<person3>><<person>>. <<tearful>> you rise to your feet and run away, leaving them arguing about whose fault it was.
+	<br><br>
+
+	<<endcombat>><<clotheson>>
+
+	<<if $hour isnot $closinghour>>
+		<<link [[Find someone else (0:20)|Riding School Contact]]>><<pass 20>><<endevent>><</link>>
+		<br>
+		<<link [[Give up for now|Riding School]]>><<endevent>><</link>>
+	<<else>>
+		It's closing time. The horses are being herded into their stables, and the customers from the grounds. <<if $exposed gte 1>>You skulk away before anyone sees your <<lewdness>>.<</if>>
+		<br><br>
+
+		<<link [[Next|Farmland]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Riding School Contact Give
+<<effects>>
+
+You do nothing as the <<person>> soaks the rag. <<He>> holds your head still anyway, holding the rag up to your face.
+<br><br>
+
+The sweet smell makes your mind swim. "Look at how gentle <<pshe>> is," you hear the <<person2>><<person>> say before your consciousness fades.
+<br><br>
+
+<<link [[Next|Moor Abduction Wake]]>><<pass 60>><<set $stress -= 2000>><<set $moor to 50>><<endevent>><<clotheson>><</link>>

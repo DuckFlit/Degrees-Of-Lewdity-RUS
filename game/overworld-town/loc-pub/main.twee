@@ -16,21 +16,42 @@
 	<<if $police_hack is 1>>
 		<<link [[Ask for help breaking into the police computer|Pub Hack]]>><</link>>
 		<br>
+	<<elseif $police_hack is 4 and $money gte 30000>>
+		<<link [[Ask for updated police password (£300)|Pub Hack]]>><<set $money -= 30000>><</link>>
+		<br>
 	<<elseif $pub_hack_job is 3 and $hacker_tasks.length gte 2>>
 		<<link [[Pass on the hacker's message|Pub Hack]]>><<set $pub_hack_job to 4>><</link>>
 		<br>
-	<<elseif $police_hack is 4>>
-		<<link [[Ask for updated police password (£300)|Pub Hack]]>><<set $money -= 30000>><</link>>
-		<br>
 	<</if>>
 	<<if $pubtask2 is 1>>
-		<<link [[Hand over the black box|Pub Box]]>><</link>>
+		<<link [[Hand over the black box|Pub Box]]>><<set $pub_task_stat++>><</link>>
 		<br>
 	<</if>>
 	<<if $estate_fence is "quest" and _estate_asked isnot true>>
 		<<link [[Ask about breaking into the Remy Estate|Pub Estate]]>><</link>>
 		<br>
 	<</if>>
+	<<if $pubfame>>
+		<<if $pubfame.status is "ready">>
+			<<link [[Ask for help with your fame|Pub Fame]]>><<set $phase to 0>><</link>>
+			<br>
+		<<elseif $pubfame.status is "hiding">>
+			<<link [[Ask for help with your fame|Pub Fame Hiding]]>><</link>>
+			<br>
+		<<elseif $pubfame.status is "accepted">>
+			<<link [[Talk to Mickey about your favour|Pub Fame]]>><<set $phase to 0>><</link>>
+			<br>
+		<<elseif $pubfame.status is "done">>
+			<<link [[Report your completed favour to Mickey|Pub Fame]]>><<set $phase to 0>><</link>>
+			<br>
+		<<elseif $pubfame.intro and $hacker_tasks.length gte 2>>
+			<<link [[Ask for help with your fame|Pub Fame Return]]>><</link>>
+			<br>
+		<</if>>
+	<<elseif StartConfig.sneaky or $debug is 1>>
+		<<link [[Ask for some sneaky help|Pub Fame Sneaky]]>><</link>> | <i>Unlocks fame quest content. Sneaky option</i> <!-- Delete before official release -->
+	<</if>>
+	<br>
 <</widget>>
 
 :: Pub
@@ -70,6 +91,20 @@
 		<br>
 		<<link [[Go to the bar|Avery Dismissal Bar]]>><</link>>
 		<br>
+	<<elseif ($fame.bestiality gte 400 or $fame.rape gte 400 or $fame.prostitution gte 400 or $fame.sex gte 400) and !$pubfame>>
+		<<set $pubfame to {seen: [], tasksDone: []}>><<set $fameDecay to {}>><<set $fameDecayTimer to {}>>
+		<<generate1>><<person1>>
+		A hand lands on your shoulder from behind. "You've been busy," a <<person>> says in your ear. You can smell the alcohol on <<his>> breath. "Don't think I don't recognize you. You're the talk of the town.
+		<<if $fame.bestiality gte 400>>
+			Bit surprising not seeing a buncha mutts fucking you raw, though."
+		<<else>>
+			Bit surprising not seeing you being fucked raw, though."
+		<</if>>
+		<<stress 3>><<gstress>>
+		<br><br>
+		<<His>> grip tightens. "I reckon it's time I got my slice of the pie. <<if $fame.prostitution gte 400>>Hope you don't mind that I'm not paying for it.<<elseif $fame.rape gte 400>>You like it rough, right? That's what I've heard.<</if>> Come 'ere, sweetheart."
+		<br><br>
+		<<link [[Next|Pub Fame Intro]]>><</link>>
 	<<elseif $pubwhore gte 10 and $pubattack isnot 1>>
 		<<set $pubattack to 1>>
 		<span class="red">A black sack is thrown over your head</span> and two pairs of arms grab you from behind. They drag you out of the pub and into a waiting van.
@@ -173,10 +208,25 @@ Deciding there's no chance of danger in public like this, you agree. <<He>> lead
 :: Pub Landry
 
 <<set $outside to 0>><<set $location to "pub">><<effects>><<set $bus to "harvest">>
-<<npc Landry>><<person1>>You ask the bartender for Landry, who nods and beckons you over to your usual table. You've barely sat down when Landry arrives and sits opposite you.
+
+<<if $phase is 1>>
+	<<endevent>><<npc Landry>><<person1>>
+	You walk back to Landry's table. "What's your plan now?" <<he>> asks.
+<<else>>
+	<<npc Landry>><<person1>>You ask the bartender for Landry, who nods and beckons you over to your usual table. You've barely sat down when Landry arrives and sits opposite you.
+	<br><br>
+
+	"What have you got for me?" <<he>> asks.
+	<<if $pubfame>>
+		<<if $pubfame.status is "finished">>
+			"If you're looking for our friend, they're busy. Should be ready to see you <span class="gold"><<if $pubfame.timer gt 1>>in <<number $pubfame.timer>> days<<else>>tomorrow<</if>></span>."
+		<<elseif $pubfame.status is "hidingKnown">>
+			"If you're looking for our friend, they're still lying low. Should be ready to see you <span class="gold"><<if $pubfame.timer gt 1>>in <<number $pubfame.timer>> days<<else>>tomorrow<</if>></span>."
+		<</if>>
+	<</if>>
+<</if>>
 <br><br>
-"What have you got for me?" <<he>> asks.
-<br><br>
+
 <<landryoptions>>
 <<link [[Leave|Pub]]>><<endevent>><</link>>
 <br>
@@ -254,17 +304,63 @@ You make £<<print $blackmoney>>.
 :: Pub Hack
 <<set $outside to 0>><<set $location to "pub">><<effects>><<set $bus to "harvest">><<set $phase to 1>>
 <<if $police_hack is 1>>
-	"Hacking a police computer?" Landry asks, reclining. "I like your style. But if you're looking for my help with cyber stuff, you're out of luck." <<He>> rubs <<his>> chin in thought. "There is someone. <span class="teal">This orphan at the home on Domus Street.</span> A computer whiz. Mickey, or Mckay, something like that."
-	<br><br>
-	You know who Landry's referring to, but you've never spoken. They keep to themselves.
-	<br><br>
-	"Best hope," Landry continues. "Is to find this orphan. If you can get them to come work with me, there'll be some money in it for you. Just don't step on Bailey's toes." <<He>> smiles. "But you knew that."
-	<br><br>
+	<<if $pubfame and !$pubfame.intro>>
+		"Hacking a police computer?" Landry asks, reclining. "I like your style.
+		<<if $pubfame.status is "hiding">>
+			<<set $pubfame.status to "hidingKnown">>
+			I can't help you there, and unfortunately <span class="red">our friend is out of commission for the moment</span>. Needs to lie low, keep some nasty folk off their trail. Someone spilt important information about them."
+			<<stress 12>><<ggstress>>
+			<br><br>
 
-	<<link [[Deal|Pub Hack Deal]]>><<set $police_hack to 2>><<set $pub_hack_job to 1>><<set $phase to 1>><</link>>
-	<br>
-	<<link [[No deal|Pub Hack Deal]]>><<set $phase to 2>><</link>>
-	<br>
+			<<He>> shakes <<his>> head before you can say anything. "Don't apologise. I've said worse under torture. They'll be able to hook you up once they're back in business. Should be fine <span class="gold"><<if $pubfame.timer gt 1>>in <<number $pubfame.timer>> days<<else>>tomorrow<</if>></span>."
+			<br><br>
+
+			<<link [[Leave|Pub]]>><<endevent>><</link>>
+		<<elseif $pubfame.status is "hidingKnown">>
+			I can't help you there, and unfortunately our friend is still lying low. They'll be able to hook you up once they're back in business, though."
+			<br><br>
+
+			<<link [[Leave|Pub]]>><<endevent>><</link>>
+		<<else>>
+			<<set $police_hack to 4>>
+			I can't help you here, but I think I know who can." <<He>> checks to make sure nobody's nearby, then jerks a thumb toward a door behind the table. "<span class="teal">Our mutual friend should be able to hook you up.</span>"
+			<br><br>
+
+			You knock on the door. "It's me."
+			<br><br>
+
+			'Mickey' inches it open. "Hey. I overheard you and Landry. A police password? Easy. But it'll cost you. <<printmoney 30000>>." They raise an eyebrow at your expression. "What? I need cash too. Favours don't pay for everything."
+			<br><br>
+
+			<<if $money gte 30000>>
+				<<link [[Deal (£300)|Pub Hack Deal Mickey]]>><<set $police_hack to 5>><<set $phase to 1>><<set $money -= 30000>><</link>>
+				<br>
+				<<link [[No deal|Pub Hack Deal Mickey]]>><<set $police_hack to 4>><<set $phase to 2>><</link>>
+			<<else>>
+				You don't have enough.
+				<<link [[Next|Pub Hack Deal Mickey]]>><<set $police_hack to 4>><<set $phase to 2>><</link>>
+			<</if>>
+		<</if>>
+	<<else>>
+		"Hacking a police computer?" Landry asks, reclining. "I like your style. But if you're looking for my help with cyber stuff, you're out of luck." <<He>> rubs <<his>> chin in thought. "There is someone.
+		<<if $pubfame and $pubfame.intro>>
+			Remember Mickey? The hacker I pointed you to for your fame issue. They should be able to get things done."
+		<<else>>
+			<span class="teal">This orphan at the home on Domus Street.</span> A computer whiz. Mickey, or Mckay, something like that."
+			<br><br>
+
+			You know who Landry's referring to, but you've never spoken. They keep to themselves.
+			<br><br>
+
+			"Best hope," Landry continues. "Is to find this orphan. If you can get them to come work with me, there'll be some money in it for you. Just don't step on Bailey's toes." <<He>> smiles. "But you knew that."
+		<</if>>
+		<br><br>
+
+		<<link [[Deal|Pub Hack Deal]]>><<set $police_hack to 2>><<if $pub_hack_job lte 1>><<set $pub_hack_job to 1>><</if>><<set $phase to 1>><</link>>
+		<br>
+		<<link [[No deal|Pub Hack Deal]]>><<set $phase to 2>><</link>>
+		<br>
+	<</if>>
 <<elseif $police_hack is 4>>
 	"Sure," Landry says. "Give me 10 minutes."
 	<br><br>
@@ -285,7 +381,7 @@ You make £<<print $blackmoney>>.
 	<br><br>
 	"There's also this," <<he>> says, holding out a USB stick. "A virus. Wipes computer systems clean. Should be able to cause some trouble. Or make old trouble disappear. Good luck."
 	<br><br>
-	<<set $money += 50000>><<set $police_hack to 5>>
+	<<set $money += 50000>><<set $police_hack to 5>><<set $mickeyPub to 2>>
 	<<link [[Leave|Pub]]>><<endevent>><</link>>
 	<br>
 <</if>>
@@ -301,6 +397,20 @@ You make £<<print $blackmoney>>.
 <br><br>
 <<link [[Next|Pub]]>><<endevent>><</link>>
 
+:: Pub Hack Deal Mickey
+<<effects>>
+<<if $phase is 1>>
+	"Great." Mickey abruptly closes the door, before opening it again. "Sorry. I'll be a few minutes. I wasn't just taking your money." They shut the door again.
+	<br><br>
+
+	You watch the other bar customers for a while. Mickey soon returns.
+	<br>
+	"Here," they say. They give you an envelope with a card, with a word scrawled on it. They also give you a USB stick. "This is a virus. Use it to wipe the whole system. Only if you need to. You'll need a new password if you do."
+<<elseif $phase is 2>>
+	Mickey abruptly closes the door. "Talk to Landry if you change your mind," they say through the door.
+<</if>>
+<br><br>
+<<link [[Next|Pub]]>><<endevent>><</link>>
 :: Pub Estate
 <<effects>>
 
