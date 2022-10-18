@@ -1532,3 +1532,8 @@ window.painToTearsLvl = painToTearsLvl;
 
 const mascaraNameToCSS = (name) => nullable(setup.colours.mascara.find(x => x.variable === name)).csstext;
 window.mascaraNameToCSS = mascaraNameToCSS;
+
+function isPubfameTaskAccepted(task, status) {
+	return V.pubfame && V.pubfame.task === task && (V.pubfame.status === "accepted" || V.pubfame.status === status);
+}
+window.isPubfameTaskAccepted = isPubfameTaskAccepted;

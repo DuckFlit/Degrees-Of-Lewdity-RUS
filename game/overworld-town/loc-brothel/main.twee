@@ -7,6 +7,16 @@ You are in the brothel. Several stages dot the crowded room. The staff look flus
 <br><br>
 <<if $stress gte $stressmax>>
 	<<passoutshop>>
+<<elseif $briarPunishment gte 1>>
+	<<set $briarPunishReason to "default">>
+	<<npc Briar>><<generate2>><<generate3>><<person1>>
+	Briar storms towards you as two of <<his>> thugs block the entrance. "I'm surprised you had the nerve to come back," <<he>> says. "Don't think I'm letting you off for what you did." <<He>> nods at <<his>> thugs and advances. If you want to escape, now's your only chance. There are three of them however.<<person1>>
+	<br><br>
+	<<link [[Go with them|Brothel Punishment 2]]>><</link>>
+	<br>
+	<<link [[Fight|Brothel Punishment Fight]]>><<set $fightstart to 1>><<set $submissive -= 10>><</link>>
+	<br>
+
 <<elseif $brothelshowdata.missed>>
 	<<set $brothelshowdata.missed to false>><<npcincr Briar love -1>>
 	<<npc Briar>><<generate2>><<generate3>><<person1>>Briar storms towards you as two of <<his>> thugs block the entrance. "Where were you?" <<he>> asks. "The crowd were expecting a show. It cost me, but you'll pay for it," <<he>> holds out <<his>> hand. "£1000. Now."
@@ -112,6 +122,13 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 <</if>>
 <<mirroricon>><<link [[Mirror|Brothel Mirror]]>><</link>>
 <br><br>
+
+<<if isPubfameTaskAccepted("briar") and $pubfame.briar.distract isnot 2>>
+	You notice a dancer packing clothes into a suitcase.
+	<br>
+	<<link [[Approach|Brothel Distraction]]>><</link>>
+	<br><br>
+<</if>>
 
 <<link [[Return to the club (0:01)|Brothel]]>><<pass 1>><</link>>
 <br><br>
@@ -395,6 +412,39 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 	Briar sprawls on the sofa, holding a glass of wine. <<He>> looks up as you enter. "Something I can do for you?"
 	<br><br>
 
+	<<if isPubfameTaskAccepted("briar")>>
+		<<His>> laptop is on the sofa next to <<him>>. 'Mickey' asked you to hack into Briar's computer.
+		<br>
+		You have
+		<<if $pubfame.briar.distract is 2>>
+			<span class="green">someone set to cause a distraction</span>,
+		<<else>>
+			<span class="pink">no distraction set</span>,
+		<</if>>
+		<<if $pubfame.briar.distract is 2 and ($pubfame.briar.escape is 2 or $cat gte 6) or $pubfame.briar.distract isnot 2 and $pubfame.briar.escape isnot 2 and $cat lt 6>>
+			and
+		<<else>>
+			but
+		<</if>>
+		<<if $pubfame.briar.escape is 2>>
+			<span class="green">an escape route planned</span>.
+		<<elseif $cat gte 6>>
+			you could easily escape through the window. <span class="green">Cats always land on their feet.</span>
+		<<else>>
+			<span class="pink">no escape route planned</span>.
+		<</if>>
+		<<if !$pubfame.briar.notice>>
+			<<set $pubfame.briar.notice to true>>
+			<<if $cat gte 6>>
+				You could probably find a distraction by looking around the brothel.
+			<<else>>
+				You could probably find a distraction, and an escape route, by looking around the brothel.
+			<</if>>
+		<</if>>
+		<br>
+		<<link [[Distract Briar|Briar Hack]]>><</link>>
+		<br><br>
+	<</if>>
 	<<if $brothelshowdata.intro and $brothelshowdata.type is "none">>
 		<<link [[Set up a show|Briar's Office Show]]>><</link>>
 		<br>
@@ -895,6 +945,7 @@ After <<his>> thirty minutes are up, <<he>> pays you the agreed fee and thanks y
 :: Brothel Punishment
 
 <<set $outside to 1>><<set $location to "brothel">><<effects>>
+<<set $briarPunishReason to "whore">>
 You're sat down on a bench, and hear the engine start. The hood is pulled off you.<<npc Briar>><<generate2>><<generate3>>
 <<if $brothelintro is 1>>
 	On the seat opposite sits Briar, owner of the brothel. <<person1>><<Hes>> flanked by a <<person2>><<person>> and <<person3>><<person>>.<<person1>>
@@ -923,9 +974,15 @@ The van halts and the <<person2>><<person>> and <<person3>><<person>> haul you o
 :: Brothel Punishment 2
 
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<if $briarPunishment>>
+	<<set $punishmenthole to $briarPunishment>>
+	<<unset $briarPunishment>>
+<<else>>
+	<<set $punishmenthole to 5>>
+<</if>>
 You are led down a dim corridor. You can hear music playing somewhere above. The <<person2>><<person>> shoves you through a door into a tiny cell with a hole in the wall, then <<he>> and the <<person3>><<person>> start coiling rope around you. Once your arms and legs are held behind you in a hogtie, they hoist you into the air and tie you to the ceiling, leaving you suspended.
 <br><br>
-"There," says Briar. "Now you're ready to service our customers. Because I'm kind, you'll only need to help five of them." <<person1>><<He>> ties your neck to a peg beneath the hole, leaving your mouth pressed against it. "Have fun!" <<he>> says as <<he>> shuts the door, leaving you in darkness.
+"There," says Briar. "Now you're ready to service our customers. Because I'm kind, you'll only need to help <<number $punishmenthole>> of them." <<person1>><<He>> ties your neck to a peg beneath the hole, leaving your mouth pressed against it. "Have fun!" <<he>> says as <<he>> shuts the door, leaving you in darkness.
 <br><br>
 <<set $leftarm to "bound">>
 <<set $rightarm to "bound">>
@@ -967,6 +1024,7 @@ You are led down a dim corridor. You can hear music playing somewhere above. The
 
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
+	<<unset $briarPunishment>>
 	<<ejaculation "short">>
 	"Don't let the <<girl>> escape!" shouts Briar to <<person1>><<his>> goons once <<he>> stops shuddering, but you're already gone. <<tearful>> you flee down the road.
 	<br><br>
@@ -974,6 +1032,7 @@ You are led down a dim corridor. You can hear music playing somewhere above. The
 	<<endcombat>>
 	<<harvestquick>>
 <<elseif $enemyhealth lte 0>>
+	<<unset $briarPunishment>>
 	You knock the <<person2>><<person>> aside, giving you the chance you need. <<tearful>> you run through the gap created and flee down the road. You hear Briar shout at <<person1>><<his>> subordinates.
 	<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
 	<br><br>
@@ -992,7 +1051,15 @@ You are led down a dim corridor. You can hear music playing somewhere above. The
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
 
 <<if $punishmenthole lte 0>>
-	<<endevent>><<npc Briar>><<person1>>The cell door opens and Briar steps in, holding a knife. <<He>> severs the rope holding you to the ceiling and you fall to the ground. "Now we're even," <<he>> says as <<he>> cuts more rope. "If you want to sell that body of yours in the future, you do so under my roof." <<He>> finishes cutting and steps back. "Is that understood? Good." <<He>> steps aside and a <<generate2>><<person2>><<person>> enters the cell. <<He>> drags you out the way you came in and slams the door behind you. They left your arms bound.
+
+	<<endevent>><<npc Briar>><<person1>>The cell door opens and Briar steps in, holding a knife. <<He>> severs the rope holding you to the ceiling and you fall to the ground. "Now we're even," <<he>> says as <<he>> cuts more rope.
+	<<if $briarPunishReason is "whore">>
+		"If you want to sell that body of yours in the future, you do so under my roof."
+	<<else>>
+		"Maybe now you'll think twice before crossing me."
+	<</if>>
+	<<unset $briarPunishReason>>
+	<<He>> finishes cutting and steps back. "Is that understood? Good." <<He>> steps aside and a <<generate2>><<person2>><<person>> enters the cell. <<He>> drags you out the way you came in and slams the door behind you. They left your arms bound.
 	<br><br>
 
 	<<if $brothelknown isnot 1>>
@@ -1226,6 +1293,15 @@ You are behind the largest stage in the brothel. This is where the more involved
 
 <<if $brothel_machine_repair is undefined>>
 	A sex machine sits in the corner. A note has been stuck to the side. It reads: "Out of order."
+	<br><br>
+<</if>>
+
+<<if isPubfameTaskAccepted("briar") and !$pubfame.briar.escape and $cat lte 5>>
+	<<set $pubfame.briar.escape to 1>>
+	A curtain covering a window is partially open. It's directly below Briar's office on the second floor.
+	<br><br>
+
+	<span class="blue">An idea strikes you.</span> If you can get a ladder to face Briar's office, you could leave that way. There might be one in the alleyways nearby.
 	<br><br>
 <</if>>
 
@@ -2001,3 +2077,194 @@ The <<person1>><<person>> withdraws <<his>> probing hands. "Easy <<girl>>," <<he
 <<link [[Next|Brothel]]>><</link>>
 <br>
 
+:: Brothel Distraction
+<<effects>>
+<<if $pubfame.briar.distract is 1>>
+	<<loadNPC 0 "pubfame_distract">><<person1>>
+
+	You approach the <<person>>. <<He>> pretends not to notice you.
+	<br><br>
+
+	<<link [[Ask to help you|Brothel Distraction 2]]>><</link>><<englishdifficulty 400 1000>>
+	<br>
+	<<link [[Leave|Brothel Dressing Room]]>><<endevent>><</link>>
+<<else>>
+	<<set $pubfame.briar.distract to 1>>
+	<<generateRole 0 0 "dancer">><<saveNPC 0 "pubfame_distract">><<person1>>
+
+	You approach the <<personsimple "normal">>, a <<person>>. <<He>> frowns as you approach <<him>>. "Don't try changing my mind. I'm done with this stupid place and I'm done with this lifestyle. Leave me alone."
+	<br><br>
+
+	<<He>> turns back to <<his>> suitcase. "I'm skipping town. Somewhere Briar won't ever find me. I'd love to pay <<nnpc_him "Briar">> back for everything I endured here, but I can't think of anything I could do... not to someone like <<nnpc_him "Briar">>."
+	<br><br>
+
+	<span class="blue">An idea strikes you.</span> <<He>> could be a good way to distract Briar, and <<he>> clearly has a bone to pick.
+	<br><br>
+
+	<<link [[Ask to help you|Brothel Distraction 2]]>><</link>><<englishdifficulty 400 1000>>
+	<br>
+	<<link [[Leave|Brothel Dressing Room]]>><<endevent>><</link>>
+<</if>>
+
+:: Brothel Distraction 2
+<<effects>>
+You ask the <<person>> to help distract Briar.
+<<if $englishSuccess>>
+	<<set $pubfame.briar.distract to 2>>
+	<span class="green">You manage to appeal to <<his>> logic</span>, telling <<him>> that <<he>>'ll be able to get away long before Briar notices anything is truly wrong. "I like the way you think," the <<person>> admits. "So, what's the plan?"
+	<br><br>
+
+	<<His>> part is relatively simple. <<He>> finishes packing <<his>> suitcase, then nods to you. "You better succeed at whatever nonsense you're pulling. Good luck." <span class="green">You now have an effective distraction.</span>
+	<br><br>
+
+	<<link [[Next|Brothel Dressing Room]]>><<endevent>><</link>>
+<<else>>
+	<span class="red">You put too much emphasis on how much it'll affect Briar.</span> "No way I'm getting involved in something that big," <<he>> scoffs. "Good luck with your death wish."
+	<br><br>
+
+	<<link [[Next|Brothel Dressing Room]]>><<endevent>><</link>>
+<</if>>
+
+:: Briar Hack
+<<effects>>
+
+<<if $submissive gte 1150>>
+	"Y-you might want to take a look downstairs," you say. "I heard there was going to be a p-police raid."
+<<elseif $submissive gte 850>>
+	"Heads up," you say, jerking your head toward the stairs. "The fuzz are gonna be here any minute. You're welcome for the advance warning."
+<<else>>
+	"I heard some cops say they were going to raid here," you say. "What do you think we should do?"
+<</if>>
+<br><br>
+
+Briar chuckles, and lifts <<himself>> up off the sofa. "Don't you worry your little head.
+<<if $pubfame.briar.distract is 2>>
+	<<loadNPC 1 "pubfame_distract">><<clearNPC "pubfame_distract">>
+	I'll take-"
+	<br><br>
+
+	From downstairs, you hear the sound of shattering glass. "This is the police!" you hear the <<person2>><<person>> shout. "Everyone on the ground, now!"
+	<br><br>
+
+	Briar grimaces. Without another glance at you, <<person1>><<he>> makes for the stairs.
+<<else>>
+	I'll take care of this." <<He>> walks, almost leisurely, to the stairs.
+<</if>>
+<<His>> laptop remains open.
+<br><br>
+
+You wait until you're sure Briar is gone, then rush to the laptop. You plug the USB in. You can't see anything happening on the screen, but you assume it's doing something.
+<br><br>
+
+<<link [[Next|Briar Hack 2]]>><<pass 1>><</link>>
+
+:: Briar Hack 2
+<<effects>>
+
+<<if $pubfame.briar.distract is 2>>
+	After enough time passes, you remove the USB. You hope it was done with whatever it was doing.
+	<br><br>
+
+	<<if $pubfame.briar.escape is 2>>
+		You make your way over to the window and climb onto the ladder. You close the window, climb down, and remove the ladder from the building. Briar won't know you did a thing.
+		<br><br>
+
+		The <<person2>><<person>> waves at you from a nearby car, before pulling out and driving out of town.
+		<br><br>
+
+		<<pubfameComplete "briar">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<<elseif $cat gte 6>>
+		<<set $pubfame.detail to "briarWindow">>
+		You make your way over to the window and slip out. You grab onto the handle and let it slide shut, before dropping to the ground. Briar won't know you did a thing.
+		<br><br>
+
+		The <<person2>><<person>> waves at you from a nearby car, before pulling out and driving out of town.
+		<br><br>
+
+		<<pubfameComplete "briar">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<<else>>
+		<<set $briarPunishment to 3>>
+		You walk down the staircase, emerging in the main room of the brothel. The dancers are slowly returning to the stage, and the customers are chattering at the bar. You notice one of the windows being replaced.
+		<br><br>
+
+		Briar is standing by the window, and notices you. You run out the door before <<he>> can ask any questions.
+		<<npcincr Briar love -3>><<lllove>>
+		<br><br>
+
+		The <<person2>><<person>> waves at you from a nearby car, before pulling out and driving out of town.
+		<br><br>
+
+		<<pubfameComplete "briar" "punish">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<</if>>
+<<else>>
+	<span class="red">"Yeah, that's what I thought you were doing."</span> Briar strolls back into the office, guards following behind <<him>>. You can't count how many there are. "I had a feeling there was no police raid. I didn't want to assume, though. It makes an ass out of you and me." <<He>> takes a sip of <<his>> wine. "Of course, from where I'm standing, the only ass here is you."
+	<<npcincr Briar love -3>><<lllove>>
+	<br><br>
+
+	You quickly pull the USB out of the laptop, and Briar chuckles. "I couldn't care less what you just did. But the fact that you thought you could get away with it is what rankles me. That needs to be fixed."
+	<br><br>
+
+	<<if $pubfame.briar.escape is 2>>
+		<<set $briarPunishment to 5>>
+		The guards advance on you, and you run to the window. "That's a two storey drop," <<he>> laughs. "Go ahead, though. It might still be better than what I've in mind."
+		<br><br>
+
+		You slide the window open, and hurriedly climb down the ladder. Briar gasps and runs to the window, but you reach the bottom and remove the ladder before <<he>> or any of the guards can climb down as well. "There will be hell to pay," <<he>> calls down, before closing the window.
+		<br><br>
+
+		<<pubfameComplete "briar" "punish">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<<elseif $cat gte 6>>
+		<<set $briarPunishment to 5>><<set $pubfame.detail to "briarWindow">>
+		The guards advance on you, and you run to the window. "That's a two storey drop," <<he>> laughs. "Go ahead, though. It might still be better than what I've in mind."
+		<br><br>
+
+		You slide the window open, and nimbly hop out. You land on your feet, barely making a sound, before looking back up. Briar stares out the window, shocked. "There will be hell to pay," <<he>> calls down, before closing the window.
+		<br><br>
+
+		<<pubfameComplete "briar" "punish">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<<else>>
+		The guards advance on you, and you run to the window. "That's a two storey drop," <<he>> laughs. "Go ahead, though. It might still be better than what I've in mind."
+		<<if $harpy gte 6 or $angel gte 6 or $demon gte 6 or $fallenangel gte 2>>
+			The ground is far, but still too close for your wings to slow your descent enough to give you a safe landing.
+		<</if>>
+		<br><br>
+
+		You try to fight back against the guards, but they just keep coming. Eventually, one gets a lucky hit and sends you to the ground. The rest pile onto you.
+		<<pain 40>><<trauma 6>><<ggpain>><<gtrauma>>
+		<br><br>
+
+		<<pubfameComplete "briar" "failure">>
+
+		<<link [[Next|Briar Hack Fail]]>><<pass 10>><</link>>
+	<</if>>
+<</if>>
+
+:: Briar Hack Fail
+<<set $outside to 1>><<set $location to "alley">><<effects>><<set $bus to "industrial">>
+
+Briar whispers into one of the guard's ears, and <<he>> nods. You're quickly blindfolded and brought down the stairs, through a hallway.
+<br><br>
+
+You feel the <<if $weather is "overcast" or $weather is "clear">>wind<<else>>$weather<</if>> on your face. You're outside. You're quickly shoved into a car, which takes off after a few seconds.
+<br><br>
+
+After about ten minutes of silence, Briar speaks. You weren't aware <<he>> was even in the car with you. "When I let someone under my roof, it's me extending my trust. Do you know what I mean? There's an unspoken agreement that I provide for you, and you don't mess things up for me. So when that trust is broken, it hurts."
+<br><br>
+
+<<He>> lets out a deep breath. "What I'm saying is, you hurt me. And it's hard to get past that. I don't forgive you... but I will. Just as soon as they're done with you."
+<br><br>
+
+The car comes to a stop, and Briar pulls you out. "I like avoiding this place. It's too..." <<he>> searches for a word. "Unprofitable, for my tastes. But for cases like these, it's well worth it." Another pair of hands grabs you and pulls you through a doorway, removing your blindfold. You hear, and see, the car pull away before the door closes.
+<br><br>
+
+<<link [[Next|Underground Intro]]>><<generate2>><<generate3>><</link>>

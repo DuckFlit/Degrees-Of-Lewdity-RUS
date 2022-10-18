@@ -1420,6 +1420,34 @@
 	<</if>>
 	<<unset $glideScared>>
 	<<unset $swimCrossdressPermission>>
+
+	<<if $pubfame>>
+		<<if $pubfame.timer gte 1>>
+			<<set $pubfame.timer-->>
+		<<elseif $pubfame.timer lte 0>>
+			<<if $pubfame.status is "hiding">>
+				<<set $pubfame.detail to "hiding">>
+			<</if>>
+			<<if $pubfame.target>>
+				<<set $pubfame.status to "accepted">>
+			<<else>>
+				<<set $pubfame.status to "ready">>
+			<</if>>
+			<<run delete $pubfame.timer>>
+		<</if>>
+
+		<<for $_fameKeys range Object.keys($fameDecay)>>
+			<<if $fameDecayTimer[$_fameKeys] gte 1>>
+				<<set $fameDecayTimer[$_fameKeys]-->>
+				<<set $fame[$_fameKeys] -= $fameDecay[$_fameKeys]>>
+			<<elseif $fameDecayTimer[$_fameKeys] lte 0>>
+				<<run delete $fameDecayTimer[$_fameKeys]>>
+				<<run delete $fameDecay[$_fameKeys]>>
+				<<set $fame[$_fameKeys] to Math.round($fame[$_fameKeys])>>
+			<</if>>
+		<</for>>
+	<</if>>
+
 	/*ToDo: Pregnancy, remove check to properly enable*/
 	<<if $pregnancyTesting>>
 		<<menstruationCycle>>
@@ -1601,6 +1629,14 @@
 		<<unset $wolfpatrolsent>>
 	<<elseif $wolfpatrolsent gte 1>>
 		<<set $wolfpatrolsent++>>
+	<</if>>
+
+	<<if $per_npc.pubfame_receptionist>>
+		<<clearNPC "pubfame_receptionist">>
+		<<set $pubfame.hospital to {}>>
+		<<if $per_npc.pubfame_nurse>>
+			<<clearNPC "pubfame_nurse">>
+		<</if>>
 	<</if>>
 
 	<<if $robinPillory and $robinPillory.danger isnot undefined>>

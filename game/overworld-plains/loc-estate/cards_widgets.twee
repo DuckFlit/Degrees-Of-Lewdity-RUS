@@ -2076,48 +2076,56 @@ Wren leans behind <<him>>, and opens a drawer. <<He>> feels inside, and produces
 
 <<widget "cards_start_play_options">>
 
-<<link [[Play cards|Estate Cards Intro 2]]>><</link>>
+<<if $farm_stage gte 5>>
+	<<link [[Play cards|Estate Cards Intro 2]]>><</link>>
 
-<<if $estatePersistent.stakesRaised>>
-	<<set $_anteMaxNum to setup.estateBlackjack.anteSizes.length - 1>>
+	<<if $estatePersistent.stakesRaised>>
+		<<set $_anteMaxNum to setup.estateBlackjack.anteSizes.length - 1>>
 
-	<<for _i to 0; _i lte $_anteMaxNum; _i++>>
-		<<set _anteAmount to setup.estateBlackjack.anteSizes[_i]>>
-		<<formatmoney _anteAmount>>
+		<<for _i to 0; _i lte $_anteMaxNum; _i++>>
+			<<set _anteAmount to setup.estateBlackjack.anteSizes[_i]>>
+			<<formatmoney _anteAmount>>
 
-		<<set $_confidenceMoney to setup.estateBlackjack.confidenceMoney[_i]>>
-		<<set $_primaryReq to setup.estateBlackjack.primaryRequirements[_i]>>
+			<<set $_confidenceMoney to setup.estateBlackjack.confidenceMoney[_i]>>
+			<<set $_primaryReq to setup.estateBlackjack.primaryRequirements[_i]>>
 
 
-		<<if $money gte $_confidenceMoney or Scripting.evalTwineScript($_primaryReq.check)>>
-			<<if $money lt _anteAmount>>
-				<br>
-				<span class="blue">Play cards with betting (_printmoney upfront): you're confident, but you don't have enough money.</span>
+			<<if $money gte $_confidenceMoney or Scripting.evalTwineScript($_primaryReq.check)>>
+				<<if $money lt _anteAmount>>
+					<br>
+					<span class="blue">Play cards with betting (_printmoney upfront): you're confident, but you don't have enough money.</span>
+				<<else>>
+					<<set _linkText to "Play cards with betting (" + _printmoney + " upfront)" >>
+					<br>
+					<<capture _linkText, _anteAmount, _i>>
+						<<link [[_linkText|Estate Cards Intro 2]]>><<estate_betting_start _i>><</link>>
+					<</capture>>
+				<</if>>
 			<<else>>
-				<<set _linkText to "Play cards with betting (" + _printmoney + " upfront)" >>
 				<br>
-				<<capture _linkText, _anteAmount, _i>>
-					<<link [[_linkText|Estate Cards Intro 2]]>><<estate_betting_start _i>><</link>>
-				<</capture>>
+				<span class="blue">Play cards with betting (_printmoney upfront): you're not confident enough to risk that much money. <i><<print $_primaryReq.message>></i></span>
 			<</if>>
+		<</for>>
+	<<elseif $wren_intro isnot undefined and not ($estate.cards.suggestedRaisingStakesToday or $estatePersistent.playerRejectedRaisingStakes)>>
+		<!-- $estate.cards.suggestedRaisingStakesToday prevents you from trying to convince Wren again until you leave the estate once, to give them time to think -->
+		<br>
+		<<if not $estatePersistent.suggestedRaisingStakes>>
+			<<link [[Suggest raising the stakes|Estate Cards Suggest Betting Init]]>><</link>>
 		<<else>>
-			<br>
-			<span class="blue">Play cards with betting (_printmoney upfront): you're not confident enough to risk that much money. <i><<print $_primaryReq.message>></i></span>
+			<<link [[Suggest raising the stakes|Estate Cards Suggest Betting Again]]>><</link>>
 		<</if>>
-	<</for>>
-<<elseif $wren_intro isnot undefined and not ($estate.cards.suggestedRaisingStakesToday or $estatePersistent.playerRejectedRaisingStakes)>>
-	<!-- $estate.cards.suggestedRaisingStakesToday prevents you from trying to convince Wren again until you leave the estate once, to give them time to think -->
-	<br>
-	<<if not $estatePersistent.suggestedRaisingStakes>>
-		<<link [[Suggest raising the stakes|Estate Cards Suggest Betting Init]]>><</link>>
-	<<else>>
-		<<link [[Suggest raising the stakes|Estate Cards Suggest Betting Again]]>><</link>>
+	<<elseif $estatePersistent.playerRejectedRaisingStakes>>
+		<br>
+		<<link [[Accept raising the stakes|Estate Cards Reconsider Accept Betting]]>><</link>>
 	<</if>>
-<<elseif $estatePersistent.playerRejectedRaisingStakes>>
 	<br>
-	<<link [[Accept raising the stakes|Estate Cards Reconsider Accept Betting]]>><</link>>
 <</if>>
-<br>
+
+<<if isPubfameTaskAccepted("wren")>>
+	<<link [[Give Wren the letter|Estate Fame Letter]]>><</link>>
+	<br>
+<</if>>
+
 <<link [[Leave|Estate Cards Intro Leave]]>><</link>>
 <</widget>>
 
