@@ -6,7 +6,7 @@
 /*Sends the required variables to the chosen display type*/
 <<widget "generateCombatAction">>
 <<switch $options.combatControls>>
-	<<case "radio">>
+	<<case "radio" "columnRadio">>
 		<<generateCombatActionRadio _args[0] _args[1] _args[3]>>
 	<<case "lists" "limitedLists">>
 		<<generateCombatActionList _args[0] _args[1] _args[2]>>
@@ -20,7 +20,7 @@
 	<label>
 		<<print '<<radiobutton "$'+_args[1]+'" "'+_valueC+'" ' + (_valueC is _args[2] ? "checked" : "") + '>>'>>
 		<span @id="(_valueC isnot 'ask' ?'':'askLabel')" @class="(_valueC isnot 'ask' ? combatListColor('', _valueC, '') : $askActionColour)"><<print _labelC>></span>
-		<<print '<<'+_args[1]+'Difficulty "'+_valueC+'">>'>> |
+		<<print '<<'+_args[1]+'Difficulty "'+_valueC+'">>'>><<if $options.combatControls is "radio">> |<</if>>
 	</label>
 <</for>>
 <br><br>
@@ -209,6 +209,22 @@
 <</if>>
 <</widget>>
 
+/*This takes two arguments and one optional argument*/
+/*_arg[0] is the name of the body part*/
+/*_arg[1] is the list of targets*/
+/*_arg[2] is optional and used if a special reciever is needed*/
+<<widget "targetListBox">>
+	<<set _onChangeString to "actionsreplace('" + _args[0] + "')">>
+	<<set _listBoxReciever to  _args[2] === undefined ? "$" + _args[0] + "target" : _args[2]>>
+	<label>
+		Target: <span @onchange=_onChangeString>
+			<<listbox _listBoxReciever autoselect>>
+				<<optionsfrom _args[1]>>
+			<</listbox>>
+		</span>
+	</label>
+<</widget>>
+
 /*Each set of actions are based on the same set of rules*/
 /*Setup by getting the situation that the player is in. i.e Their left hand is hold onto a penis*/
 
@@ -245,21 +261,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
 		<</if>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1 and $stealstateleft is undefined>>
-			Target: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateleft is undefined>>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<set _leftOptions to "free">>
 		<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1 and $stealstateleft is undefined>><br>
-			Target: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateleft is undefined>>
+			<br>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $lefttarget to _firsttarget>>
@@ -320,21 +329,14 @@
 	<<if _targetYourself is true and _targetnumber gt 1>>
 		<<set _targetlistarms["Yourself"] to "self">>
 	<</if>>
-	<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-		Target: <span onchange="actionsreplace('left')">
-		<<listbox "$lefttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<<targetListBox "left" _targetlistarms>>
 	<</if>>
 	<<set _leftOptions to "heldSexToy">>
 	<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is holding the <<print $currentSexToyLeft.name>>.</span>
-	<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-		Target: <span onchange="actionsreplace('left')">
-		<<listbox "$lefttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<br>
+		<<targetListBox "left" _targetlistarms>>
 	<</if>>
 	<<if _targetnumber is 1>>
 		<<set $lefttarget to _firsttarget>>
@@ -626,21 +628,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
 		<</if>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1 and $stealstateright is undefined>>
-			Target: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateright is undefined>>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<set _rightOptions to "free">>
 		<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1 and $stealstateright is undefined>><br>
-			Target: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateright is undefined>>
+			<br>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $righttarget to _firsttarget>>
@@ -701,21 +696,14 @@
 	<<if _targetYourself is true and _targetnumber gt 1>>
 		<<set _targetlistarms["Yourself"] to "self">>
 	<</if>>
-	<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-		Target: <span onchange="actionsreplace('right')">
-		<<listbox "$righttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<<targetListBox "right" _targetlistarms>>
 	<</if>>
 	<<set _rightOptions to "heldSexToy">>
 	<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is holding the $currentSexToyRight.name.</span>
-	<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-		Target: <span onchange="actionsreplace('right')">
-		<<listbox "$righttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<br>
+		<<targetListBox "right" _targetlistarms>>
 	<</if>>
 	<<if _targetnumber is 1>>
 		<<set $righttarget to _firsttarget>>
@@ -998,13 +986,9 @@
 			<<if _targetYourself is true and _targetnumber gt 1>>
 				<<set _targetlistall["Yourself"] to "self">>
 			<</if>>
-			<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
 				<<if !(($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound"))>>
-					Target: <span onchange="actionsreplace('feet')">
-					<<listbox "$feettarget" autoselect>>
-						<<optionsfrom _targetlistall>>
-					<</listbox>>
-					</span>
+					<<targetListBox "feet" _targetlistall>>
 				<</if>>
 			<</if>>
 			<<if $leftleg is 0 and $rightleg is 0>>
@@ -1026,12 +1010,9 @@
 				<<set _feetOptions to "free">>
 				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free.</span>
 			<</if>>
-			<<if $options.combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
-				Target: <span onchange="actionsreplace('feet')">
-				<<listbox "$feettarget" autoselect>>
-					<<optionsfrom _targetlistall>>
-				<</listbox>>
-				</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>>
+				<br>
+				<<targetListBox "feet" _targetlistall>>
 			<</if>>
 			<<if _targetnumber is 1>>
 				<<set $feettarget to _firsttarget>>
@@ -1202,21 +1183,14 @@
 <<else>>
 	<<switch $mouthuse>>
 	<<case 0>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-			Target: <span onchange="actionsreplace('mouth')">
-			<<listbox "$mouthtarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "mouth" _targetlist>>
 		<</if>>
 		<<set _mouthOptions to "free">>
 		<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-			Target: <span onchange="actionsreplace('mouth')">
-			<<listbox "$mouthtarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "mouth" _targetlist>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $mouthtarget to _firsttarget>>
@@ -1456,21 +1430,14 @@
 <<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $penisstate>>
 	<<case 0>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-			Target: <span onchange="actionsreplace('penis')">
-			<<listbox "$penistarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "penis" _targetlist>>
 		<</if>>
 		<<set _penisOptions to "free">>
 		<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')">Your <<penis>> is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-			Target: <span onchange="actionsreplace('penis')">
-			<<listbox "$penistarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "penis" _targetlist>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $penistarget to _firsttarget>>
@@ -1674,21 +1641,14 @@
 <<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $vaginastate>>
 	<<case 0>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-			Target: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginatarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "vagina" _targetlist>>
 		<</if>>
 		<<set _vaginaOptions to "free">>
 		<span @class="($lastOptions.vagina isnot _vaginaOptions ?'gold':'')">Your <<pussy>> is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-			Target: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginatarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<br>
+			<<targetListBox "vagina" _targetlist>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $vaginatarget to _firsttarget>>
@@ -1709,15 +1669,11 @@
 			<<getDoubleTargetList>>
 		<</if>>
 		<<if _secondtarget is true>>
-			<<if $options.combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 			<<if $vaginadoubletarget is undefined>>
 				<<set $vaginadoubletarget to _firstdoubletarget>>
 			<</if>>
-			Target: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginadoubletarget" autoselect>>
-				<<optionsfrom _doubletargetlist>>
-			<</listbox>>
-			</span>
+			<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
 		<</if>>
 	<<case "imminent">>
 		<<set _vaginaOptions to "penisImminent">>
@@ -1726,15 +1682,11 @@
 			<<getDoubleTargetList>>
 		<</if>>
 		<<if _secondtarget is true>>
-			<<if $options.combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 			<<if $vaginadoubletarget is undefined>>
 				<<set $vaginadoubletarget to _firstdoubletarget>>
 			<</if>>
-			Target: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginadoubletarget" autoselect>>
-				<<optionsfrom _doubletargetlist>>
-			<</listbox>>
-			</span>
+			<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
 		<</if>>
 	<<case "penetrated">>
 		<<set _vaginaOptions to "penisPenetrated">>
@@ -1743,15 +1695,11 @@
 			<<getDoubleTargetList>>
 		<</if>>
 		<<if _secondtarget is true>>
-			<<if $options.combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 			<<if $vaginadoubletarget is undefined>>
 				<<set $vaginadoubletarget to _firstdoubletarget>>
 			<</if>>
-			Target: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginadoubletarget" autoselect>>
-				<<optionsfrom _doubletargetlist>>
-			<</listbox>>
-			</span>
+			<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
 		<</if>>
 	<<case "othervaginaentrance">>
 		<<set _vaginaOptions to "vaginaEntrance">><<selectNpcWithPartInPosition "vagina" "vaginaentrance">><<set $vaginatarget to $index>>
@@ -1950,21 +1898,14 @@
 	<<else>>
 		<<switch $anusstate>>
 		<<case 0>>
-			<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-				Target: <span onchange="actionsreplace('anus')">
-				<<listbox "$anustarget" autoselect>>
-					<<optionsfrom _targetlist>>
-				<</listbox>>
-				</span>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<<targetListBox "anus" _targetlist>>
 			<</if>>
 			<<set _anusOptions to "free">>
 			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">Your <<bottom>> is free.</span>
-			<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-				Target: <span onchange="actionsreplace('anus')">
-				<<listbox "$anustarget" autoselect>>
-					<<optionsfrom _targetlist>>
-				<</listbox>>
-				</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<br>
+				<<targetListBox "anus" _targetlist>>
 			<</if>>
 			<<if _targetnumber is 1>>
 				<<set $anustarget to _firsttarget>>
@@ -1991,15 +1932,11 @@
 				<<getDoubleTargetList>>
 			<</if>>
 			<<if _secondtarget is true>>
-				<<if $options.combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 				<<if $anusdoubletarget is undefined>>
 					<<set $anusdoubletarget to _firstdoubletarget>>
 				<</if>>
-				Target: <span onchange="actionsreplace('anus')">
-				<<listbox "$anusdoubletarget" autoselect>>
-					<<optionsfrom _doubletargetlist>>
-				<</listbox>>
-				</span>
+				<<targetListBox "anus" _doubletargetlist "$anusdoubletarget">>
 			<</if>>
 		<<case "imminent">>
 			<<set _anusOptions to "penisImminent">><<selectNpcWithPartInPosition "penis" "anusimminent">><<set $anustarget to $index>>
@@ -2011,15 +1948,11 @@
 				<<getDoubleTargetList>>
 			<</if>>
 			<<if _secondtarget is true>>
-				<<if $options.combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 				<<if $anusdoubletarget is undefined>>
 					<<set $anusdoubletarget to _firstdoubletarget>>
 				<</if>>
-				Target: <span onchange="actionsreplace('anus')">
-				<<listbox "$anusdoubletarget" autoselect>>
-					<<optionsfrom _doubletargetlist>>
-				<</listbox>>
-				</span>
+				<<targetListBox "anus" _doubletargetlist "$anusdoubletarget">>
 			<</if>>
 		<<case "doubleentrance">>
 			<<set _anusOptions to "penisDoubleEntrance">>
@@ -2456,21 +2389,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
 		<</if>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-			Target: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<set _leftOptions to "free">>
 		<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-			Target: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $lefttarget to _firsttarget>>
@@ -2492,21 +2418,14 @@
 	<<if _targetYourself is true and _targetnumber gt 1>>
 		<<set _targetlistarms["Yourself"] to "self">>
 	<</if>>
-	<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-		Target: <span onchange="actionsreplace('left')">
-		<<listbox "$lefttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<<targetListBox "left" _targetlistarms>>
 	<</if>>
 	<<set _leftOptions to "heldSexToy">>
 	<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is holding the <<print $currentSexToyLeft.name>>.</span>
-	<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-		Target: <span onchange="actionsreplace('left')">
-		<<listbox "$lefttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<br>
+		<<targetListBox "left" _targetlistarms>>
 	<</if>>
 	<<if _targetnumber is 1>>
 		<<set $lefttarget to _firsttarget>>
@@ -2517,7 +2436,7 @@
 	<<set _leftGold to true>>
 <</if>>
 <<leftActionsSelf>>
-<<if Object.keys(_leftaction).length gt 0>><<if $options.combatControls is "radio">><br><</if>>
+<<if Object.keys(_leftaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
 	<<if Object.values(_leftaction).includes($leftactiondefault) is false or _args[0] is true or $leftactiondefault is "rest">>
 		<<set _defaultsCombatAction to "leftaction">>
 		<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
@@ -2545,7 +2464,7 @@
 		<div id="leftactionDifficultySelf">
 			<<leftactionDifficultySelf>>
 		</div>
-	<</if>><<if $options.combatControls is "radio">><br><br><</if>>/* Seems to render no effect..? */
+	<</if>><<if $options.combatControls.includes("adio")>><br><br><</if>>/* Seems to render no effect..? */
 <</if>>
 <<set $lastOptions.left to clone(_leftOptions)>>
 <</widget>>
@@ -2644,21 +2563,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
 		<</if>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-			Target: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<set _rightOptions to "free">>
 		<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-			Target: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $righttarget to _firsttarget>>
@@ -2680,21 +2592,13 @@
 	<<if _targetYourself is true and _targetnumber gt 1>>
 		<<set _targetlistarms["Yourself"] to "self">>
 	<</if>>
-	<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-		Target: <span onchange="actionsreplace('right')">
-		<<listbox "$righttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<<targetListBox "right" _targetlistarms>>
 	<</if>>
 	<<set _rightOptions to "heldSexToy">>
 	<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is holding the $currentSexToyRight.name.</span>
-	<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-		Target: <span onchange="actionsreplace('right')">
-		<<listbox "$righttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br>
+		<<targetListBox "right" _targetlistarms>>
 	<</if>>
 	<<if _targetnumber is 1>>
 		<<set $righttarget to _firsttarget>>
@@ -2704,7 +2608,7 @@
 	<<set _rightGold to true>>
 <</if>>
 <<rightActionsSelf>>
-<<if Object.keys(_rightaction).length gt 0>><<if $options.combatControls is "radio">><br><</if>>
+<<if Object.keys(_rightaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
 	<<if Object.values(_rightaction).includes($rightactiondefault) is false or _args[0] is true or $rightactiondefault is "rest">>
 		<<set _defaultsCombatAction to "rightaction">>
 		<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
@@ -2732,7 +2636,7 @@
 		<div id="rightactionDifficultySelf">
 			<<rightactionDifficultySelf>>
 		</div>
-	<</if>><<if $options.combatControls is "radio">><br><br><</if>>/* Seems to render no effect..? */
+	<</if>><<if $options.combatControls.includes("adio")>><br><br><</if>>/* Seems to render no effect..? */
 <</if>>
 <<set $lastOptions.right to clone(_rightOptions)>>
 <</widget>>
@@ -2821,21 +2725,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistall["Yourself"] to "self">>
 		<</if>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-			Target: <span onchange="actionsreplace('feet')">
-			<<listbox "$feettarget" autoselect>>
-				<<optionsfrom _targetlistall>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "feet" _targetlistall>>
 		<</if>>
 		<<set _feetOptions to "free">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1 and _feetOptions is "free">><br>
-			Target: <span onchange="actionsreplace('feet')">
-			<<listbox "$feettarget" autoselect>>
-				<<optionsfrom _targetlistall>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and _feetOptions is "free">>
+			<br>
+			<<targetListBox "feet" _targetlistall>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $feettarget to _firsttarget>>
@@ -2845,7 +2742,7 @@
 		<<set _feetGold to true>>
 	<</if>>
 	<<feetActionsSelf>>
-	<<if Object.keys(_feetaction).length gt 0>><<if $options.combatControls is "radio">><br><</if>>
+	<<if Object.keys(_feetaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
 		<<if Object.values(_feetaction).includes($feetactiondefault) is false or _args[0] is true or $feetactiondefault is "rest">>
 			<<set _defaultsCombatAction to "feetaction">>
 			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
@@ -2870,7 +2767,7 @@
 			<div id="feetactionDifficulty">
 				<<feetactionDifficulty>>
 			</div>
-		<</if>><<if $options.combatControls is "radio">><br><</if>>/* Seems to render no effect..? */
+		<</if>><<if $options.combatControls.includes("adio")>><br><</if>>/* Seems to render no effect..? */
 	<</if>>
 	<<set $lastOptions.feet to clone(_feetOptions)>>
 <<else>>
@@ -2903,7 +2800,7 @@
 
 <<widget "generateCombatActionOthers">>
 <<switch $options.combatControls>>
-	<<case "radio">>
+	<<case "radio" "columnRadio">>
 		<<generateCombatActionOthersRadio _args[0] _args[1] _args[3] _args[4]>>
 	<<case "lists" "limitedLists">>
 		<<generateCombatActionOthersList _args[0] _args[1] _args[2] _args[4]>>
@@ -2915,7 +2812,7 @@
 	<label>
 		<<print '<<radiobutton "$'+_args[1]+'" "'+_valueC+'" ' + (_valueC is _args[2] ? "checked" : "") + '>>'>>
 		<span @class="combatListColor('', _valueC, _args[3])"><<print _labelC>></span>
-		<<print '<<'+_args[1]+'Difficulty'+_args[3]+' "'+_valueC+'">>'>> |
+		<<print '<<'+_args[1]+'Difficulty'+_args[3]+' "'+_valueC+'">>'>><<if $options.combatControls is "radio">> |<</if>>
 	</label>
 <</for>>
 <</widget>>

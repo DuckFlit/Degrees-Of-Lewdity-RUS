@@ -3,7 +3,7 @@
 /*Sends the required variables to the chosen display type*/
 <<widget "generateCombatActionTentacle">>
 <<switch $options.combatControls>>
-	<<case "radio">>
+	<<case "radio" "columnRadio">>
 		<<generateCombatActionTentacleRadio _args[0] _args[1] _args[3]>>
 	<<case "lists" "limitedLists">>
 		<<generateCombatActionTentacleList _args[0] _args[1] _args[2] _args[4]>>
@@ -16,7 +16,7 @@
 	<label>
 		<<print '<<radiobutton "$'+_args[1]+'" "'+_valueC+'" ' + (_valueC is _args[2] ? "checked" : "") + '>>'>>
 		<span @class="combatListColor('', _valueC, 'Tentacle')"><<print _labelC>></span>
-		<<print '<<'+_args[1]+'DifficultyTentacle "'+_valueC+'">>'>> |
+		<<print '<<'+_args[1]+'DifficultyTentacle "'+_valueC+'">>'>><<if $options.combatControls is "radio">> |<</if>>
 	</label>
 <</for>>
 <</widget>>
@@ -106,21 +106,14 @@
 		<<set _leftOptions to "unreal">>
 		<span class="pink">Your left arm is free, but doesn't feel real.</span>
 	<<else>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-			Target: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<set _leftOptions to "free">>
 		<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">Your left arm is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-			Target: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 	<</if>>
 <<case "tentgrappled">>
@@ -224,7 +217,7 @@
 		<<set $leftaction to $leftactiondefault>>
 		<<set _textColor to combatListColor('leftaction', (Object.values(_leftaction).includes($leftaction) ? $leftaction : Object.values(_leftaction)[0]), "Tentacle")>>
 		<div class="extraMargin">
-			<<if $options.combatControls isnot "radio" and _leftOptions is "free">>
+			<<if not $options.combatControls.includes("adio") and _leftOptions is "free">>
 				<<set _reducedWidths to true>>
 			<<else>>
 				<<set _reducedWidths to false>>
@@ -288,17 +281,27 @@
 		<</for>>
 	<</if>>
 	<<if _tentacle_targets_available>>
-		<span @class="'whiteList ' + (_reducedWidths is true? 'reducedWidth':'')">
-			<<listbox "$leftactionTarget" autoselect>>
-				<<optionsfrom _availableTargets>>
-			<</listbox>>
-		</span>
+		<<if $options.combatControls is "columnRadio">>
+			<label>
+				Target: <span @class="'whiteList ' + 'reducedWidth'">
+					<<listbox "$leftactionTarget" autoselect>>
+						<<optionsfrom _availableTargets>>
+					<</listbox>>
+				</span>
+			</label>
+		<<else>>
+			<span @class="'whiteList ' + (_reducedWidths is true? 'reducedWidth':'')">
+				<<listbox "$leftactionTarget" autoselect>>
+					<<optionsfrom _availableTargets>>
+				<</listbox>>
+			</span>
+		<</if>>
 	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "leftactionBoundBanish">>
-<<if $options.combatControls is "radio">>
+<<if $options.combatControls.includes("adio")>>
 	<br>
 	<label>
 		<<print '<<radiobutton "$leftactionTarget" "'+_banishTarget.id+'">>'>>
@@ -407,21 +410,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["Yourself"] to "self">>
 		<</if>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
-			Target: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<set _rightOptions to "free">>
 		<span @class="($lastOptions.right isnot _rightOptions ?'gold':'')">Your right arm is free.</span>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1>><br>
-			Target: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $righttarget to _firsttarget>>
@@ -528,7 +524,7 @@
 		<<set $rightaction to $rightactiondefault>>
 		<<set _textColor to combatListColor('rightaction', (Object.values(_rightaction).includes($rightaction) ? $rightaction : Object.values(_rightaction)[0]), "Tentacle")>>
 		<div class="extraMargin">
-			<<if $options.combatControls isnot "radio" and _rightOptions is "free">>
+			<<if not $options.combatControls.includes("adio") and _rightOptions is "free">>
 				<<set _reducedWidths to true>>
 			<<else>>
 				<<set _reducedWidths to false>>
@@ -592,17 +588,27 @@
 		<</for>>
 	<</if>>
 	<<if _tentacle_targets_available>>
+		<<if $options.combatControls is "columnRadio">>
+		<label>
+			Target: <span @class="'whiteList ' + 'reducedWidth'">
+			<<listbox "$rightactionTarget" autoselect>>
+				<<optionsfrom _availableTargets>>
+			<</listbox>>
+			</span>
+		</label>
+		<<else>>
 		<span @class="'whiteList ' + (_reducedWidths is true? 'reducedWidth':'')">
 			<<listbox "$rightactionTarget" autoselect>>
 				<<optionsfrom _availableTargets>>
 			<</listbox>>
 		</span>
+		<</if>>
 	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "rightactionBoundBanish">>
-<<if $options.combatControls is "radio">>
+<<if $options.combatControls.includes("adio")>>
 	<br>
 	<label>
 		<<print '<<radiobutton "$rightactionTarget" "'+_banishTarget.id+'">>'>>
@@ -706,13 +712,9 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistall["Yourself"] to "self">>
 		<</if>>
-		<<if $options.combatControls isnot "radio" and _targetnumber gt 1>>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
 			<<if !(($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound"))>>
-				Target: <span onchange="actionsreplace('feet')">
-				<<listbox "$feettarget" autoselect>>
-					<<optionsfrom _targetlistall>>
-				<</listbox>>
-				</span>
+				<<targetListBox "feet" _targetlistall>>
 			<</if>>
 		<</if>>
 		<<if $leftleg is 0 and $rightleg is 0>>
@@ -740,12 +742,9 @@
 				<</if>>
 			<</for>>
 		<</if>>
-		<<if $options.combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
-			Target: <span onchange="actionsreplace('feet')">
-			<<listbox "$feettarget" autoselect>>
-				<<optionsfrom _targetlistall>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>>
+			<br>
+			<<targetListBox "feet" _targetlistall>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $feettarget to _firsttarget>>
@@ -796,7 +795,7 @@
 			<<set _textColor to combatListColor('feetaction', (Object.values(_feetaction).includes($feetaction) ? $feetaction : Object.values(_feetaction)[0]), "Tentacle")>>
 			<div class="extraMargin">
 				<<set _availableContext to ["free","leftFree","rightFree"]>>
-				<<if $options.combatControls isnot "radio" and _availableContext.includes(_feetOptions)>>
+				<<if not $options.combatControls.includes("adio") and _availableContext.includes(_feetOptions)>>
 					<<set _reducedWidths to true>>
 				<<else>>
 					<<set _reducedWidths to false>>
@@ -822,7 +821,7 @@
 <</widget>>
 
 <<widget "feetactionSetupTentacle">>
-<<if $options.combatControls is "radio">>
+<<if $options.combatControls.includes("adio")>>
 	<br><br>
 	<<set _first to true>>
 	<<if $regrab>>

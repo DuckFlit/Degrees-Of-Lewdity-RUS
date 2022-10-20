@@ -863,7 +863,7 @@ function settingsObjects(type) {
 					showCaptionText: { bool: true },
 					sidebarStats: { strings: ["disabled", "limited", "all"] },
 					sidebarTime: { strings: ["disabled", "top", "bottom"] },
-					combatControls: { strings: ["radio", "lists", "limitedLists"] },
+					combatControls: { strings: ["radio", "columnRadio", "lists", "limitedLists"] },
 					mapMovement: { bool: true },
 					mapTop: { bool: true },
 					mapMarkers: { bool: true },
