@@ -37,7 +37,8 @@ window.StartConfig = {
 
 /* convert version string to numeric value */
 const tmpver = StartConfig.version.replace(/[^0-9.]+/g, "").split(".");
-window.StartConfig.version_numeric = tmpver[0] * 1000000 + tmpver[1] * 10000 + tmpver[2] * 100 + tmpver[3] * 1;
+window.StartConfig.version_numeric =
+	tmpver[0] * 1000000 + tmpver[1] * 10000 + tmpver[2] * 100 + tmpver[3] * 1;
 
 Config.saves.autosave = "autosave";
 
@@ -105,8 +106,8 @@ Config.navigation.override = function (dest) {
 
 	isReloading = false;
 	pageLoading = false;
-	
-	const checkPassages = (dest) => {
+
+	const checkPassages = dest => {
 		switch (dest) {
 			case "Downgrade Waiting Room":
 				return V.passage;
@@ -124,7 +125,7 @@ Config.navigation.override = function (dest) {
 			case "Forest Shop Legs":
 			case "Forest Shop Feet":
 				return "Forest Shop";
-	
+
 			case "Over Outfit Shop":
 			case "Outfit Shop":
 			case "Top Shop":
@@ -139,94 +140,94 @@ Config.navigation.override = function (dest) {
 			case "Legs Shop":
 			case "Shoe Shop":
 				return "Clothing Shop";
-	
+
 			case "Penis Inspection Flaunt Crossdress":
 				return "Penis Inspection Flaunt No Penis";
-	
+
 			case "Pussy Inspection2":
 				return "Pussy Inspection 2";
-	
+
 			case "Pussy Inspection Penis":
 				return "Pussy Inspection Flaunt No Pussy";
-	
+
 			case "Forest Plant Sex No Tentacles":
 				return "Forest Plant Sex";
-	
+
 			case "Forest Plant Sex No Tentacles Finish":
 				return "Forest Plant Sex Finish";
-	
+
 			case "Forest Plant Passout No Tentacles":
 				return "Forest";
-	
+
 			case "Moor Plant Sex No Tentacles":
 				return "Moor Plant Sex";
-	
+
 			case "Moor Plant Sex No Tentacles Finish":
 				return "Moor Plant Sex Finish";
-	
+
 			case "Underground Plant Molestation No Tentacles":
 				return "Underground Plant Molestation";
-	
+
 			case "Underground Plant Molestation No Tentacles Finish":
 				return "Underground Plant Molestation Finish";
-	
+
 			case "Evens Swimming Endure":
 				return "Events Swimming Swim Endure";
-	
+
 			case "Domus House Work":
 				return "Domus Gutters Intro";
-	
+
 			case "Trash Boys":
 				return "Trash Compare";
-	
+
 			case "Trash Boys Spy":
 				return "Trash Compare Spy";
-	
+
 			case "Trash Boys Greet":
 				return "Trash Compare Greet";
-	
+
 			case "Trash Boys Refuse":
 				return "Trash Compare Refuse";
-	
+
 			case "Trash Boys Compare":
 				return "Trash Compare Others";
-	
+
 			case "Trash Boys Back Out":
 				return "Trash Compare Back Out";
-	
+
 			case "Trash Boys Show":
 				return "Trash Compare Show";
-	
+
 			case "Trash Boys Offer Secret":
 				return "Trash Compare Penis Secret";
-	
+
 			case "Trash Boys Wrap It Up":
 				return "Trash Compare Wrap It Up";
-	
+
 			case "Trash Boys Crossdressing Refuse":
 				return "Trash Compare Breast Refuse";
-	
+
 			case "Trash Boys Crossdressing Show All":
 				return "Trash Compare Breast Show All";
-	
+
 			case "Trash Boys Forced Strip":
 				return "Trash Compare Forced Strip";
-	
+
 			case "Trash Boys Combat Win":
 				return "Trash Compare Combat Win";
-	
+
 			case "Trash Boys Combat Loss":
 				return "Trash Compare Combat Loss";
-	
+
 			case "Lake Underwater Tentacles Finish Figure":
 				return "Lake Underwater Tentacles Finish";
-	
+
 			case "Sextoys Inventory Home":
 			case "Sextoys Inventory Brothel":
 			case "Sextoys Inventory Cottage":
 			case "Sextoys Inventory Cabin":
 				return "Sextoys Inventory";
-	
+
 			case "Kylar Abduction Angry":
 			case "Kylar Abduction Apologise":
 			case "Kylar Abduction Silent":
@@ -237,140 +238,145 @@ Config.navigation.override = function (dest) {
 			case "Kylar Abduction Wolf":
 			case "Kylar Abduction Hawk":
 				return "Kylar Abduction Event Response";
-	
+
 			case "Robin's Chocolate Help":
 				return "Robin Chocolate Help";
 			case "Robin Chocolate Cover 2":
 				return "Robin Chocolate Cover";
-	
+
 			case "School Boy's Escape":
 			case "School Girl's Escape":
 				return "School Changing Room Escape";
-	
+
 			case "School Boy's Flirt":
 			case "School Girl's Flirt":
 				return "School Changing Room Flirt";
-	
+
 			case "School Boy's Apologise":
 			case "School Girl's Apologise":
 				return "School Changing Room Apologise";
-	
+
 			case "School Boy's Strip":
 			case "School Girl's Strip":
 				return "School Changing Room Strip";
-	
+
 			case "School Boy's Refuse Molestation":
 			case "School Girl's Refuse Molestation":
 				return "School Changing Room Refuse Molestation";
-	
+
 			case "School Boy's Seduce":
 			case "School Girl's Seduce":
 				return "School Changing Room Seduce";
-	
+
 			case "School Boy's Seduce Sex":
 			case "School Girl's Seduce Sex":
 				return "School Changing Room Seduce Sex";
-	
+
 			case "School Boy's Seduce Sex Finish":
 			case "School Girl's Seduce Sex Finish":
 				return "School Changing Room Seduce Sex Finish";
-	
+
 			case "School Boy's Knees":
 			case "School Girl's Knees":
 				return "School Changing Room Knees";
-	
+
 			case "School Boy's Knees 2":
 			case "School Girl's Knees 2":
 				return "School Changing Room Knees 2";
-	
+
 			case "School Boy's Bend":
 			case "School Girl's Bend":
 				return "School Changing Room Bend";
-	
+
 			case "School Boy's Naked Refuse":
 			case "School Girl's Naked Refuse":
 				return "School Changing Room Naked Refuse";
-	
+
 			case "School Boy's Crossdress Seduce":
 			case "School Girl's Crossdress Seduce":
 				return "School Changing Room Crossdress Seduce";
-	
+
 			case "School Boy's Crossdress Sex":
 			case "School Girl's Crossdress Sex":
 				return "School Changing Room Crossdress Sex";
-	
+
 			case "School Boy's Crossdress Sex Finish":
 			case "School Girl's Crossdress Sex Finish":
 				return "School Changing Room Crossdress Sex Finish";
-	
+
 			case "School Boy's Crossdress Honest":
 			case "School Girl's Crossdress Honest":
 				return "School Changing Room Crossdress Honest";
-	
+
 			case "School Boy's Crossdress Forced":
 			case "School Girl's Crossdress Forced":
 				return "School Changing Room Crossdress Forced";
-	
+
 			case "School Boy's Herm Explain":
 			case "School Girl's Herm Explain":
 				return "School Changing Room Herm Explain";
-	
+
 			case "School Boy's Watch":
 			case "School Girl's Watch":
 				return "School Changing Room Watch";
-	
+
 			case "School Boy's Exhibitionism":
 			case "School Girl's Exhibitionism":
 				return "School Changing Room Exhibitionism";
-	
+
 			case "School Boy's Flaunt":
 			case "School Girl's Flaunt":
 				return "School Changing Room Flaunt";
-	
+
 			case "School Boy's Goad":
 			case "School Girl's Goad":
 				return "School Changing Room Goad";
-	
+
 			case "School Boy's Goad Finish":
 			case "School Girl's Goad Finish":
 				return "School Changing Room Goad Finish";
-	
+
 			case "School Boy's Run":
 			case "School Girl's Run":
 				return "School Changing Room Run";
-	
+
 			case "School Boy's Masturbation":
 			case "School Girl's Masturbation":
 				return "School Changing Room Masturbation";
-	
-			case "School Boy's Masturbation":
-			case "School Girl's Masturbation":
-				return "School Changing Room Masturbation";
-	
+
 			case "School Boy's Masturbation Finish":
 			case "School Girl's Masturbation Finish":
 				return "School Changing Room Masturbation Finish";
-	
+
 			case "School Boy's Masturbation Caught":
 			case "School Girl's Masturbation Caught":
 				return "School Changing Room Masturbation Caught";
-	
+
 			case "School Boy Locker":
 			case "School Girl Locker":
 				return "School Changing Room Locker";
-	
+
 			case "School Boy Wardrobe":
 			case "School Girl Wardrobe":
 				return "School Pool Wardrobe";
-	
+
+			case "Robin Forest Vampire":
+			case "Robin Forest Vampire Tease":
+			case "Robin Forest Vampire Compliment":
+			case "Robin Forest Vampire Buy":
+			case "Robin Forest Witch":
+			case "Robin Forest Witch Tease":
+			case "Robin Forest Witch Compliment":
+			case "Robin Forest Witch Buy":
+				return "Robin Forest Costume Intro"; /* Send the player back to the start, they won't mind. */
+
 			default:
 				return false;
 		}
-	}
+	};
 
-	let passageOverride = checkPassages(dest);
-	if(passageOverride)
-		V.passageOverride = passageOverride
+	const passageOverride = checkPassages(dest);
+	if (passageOverride) V.passageOverride = passageOverride;
 
 	return passageOverride;
 };

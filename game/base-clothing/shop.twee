@@ -38,6 +38,30 @@
 	<br>
 <</widget>>
 
+<<widget "forestShop-text">>
+	You are in the forest shop. The interior is dark and crowded by tall shelves, holding all manner of items. Most are useless knick-knacks, but some interest you.
+	<br><br>
+	<<if $gwylan_aborted gte 1>>
+		<<gwylanRescueApologyShop>>
+		<<set $gwylan_aborted to 0>>
+	<<else>>
+		You hear Gwylan shuffling somewhere in the gloom.
+	<</if>>
+	<<if $robin_in_forest_shop>>
+		Robin is busy admiring the costumes.
+		<<if !$halloween_robin_costume or $halloween_robin_costume is "ghost">>
+			<br><br>
+
+			<<link [[Talk to Robin|Robin Forest Costume Intro]]>><<forestShop-leave>><<clothingReset>><</link>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "forestShop-leave">>
+	<<shopClothingFilterReset>><<unset $clothes_choice>><<ShowUnderEquip "normal">><<ShowUnderEquip "over">>
+	<<set $tryOn.autoReset to true>><<set $eventskip to 1>><<unset $tempDisable>>
+<</widget>>
+
 <<widget "forestShop-main">>
 	<<set $outside to 0>><<set $location to "forest_shop">><<effects>>
 	<<set $shopName = "forest">>
@@ -47,14 +71,7 @@
 		<<set $forest_shop_intro to 1>>
 		<<forestShop-intro>>
 	<<else>>
-		You are in the forest shop. The interior is dark and crowded by tall shelves, holding all manner of items. Most are useless knick-knacks, but some interest you.
-		<br><br>
-		<<if $gwylan_aborted gte 1>>
-			<<gwylanRescueApologyShop>>
-			<<set $gwylan_aborted to 0>>
-		<<else>>
-			You hear Gwylan shuffling somewhere in the gloom.
-		<</if>>
+		<<forestShop-text>>
 		<br><br>
 
 		<div id="tryonstats-div"><<tryOnStats>></div>
@@ -136,10 +153,11 @@
 			<</link>>
 			<br>
 		<<elseif $tryOn.value is 0>>
-			<<link [[Leave|Forest]]>>
-				<<shopClothingFilterReset>><<endnpc>><<unset $clothes_choice>><<ShowUnderEquip "normal">><<ShowUnderEquip "over">>
-				<<set $tryOn.autoReset to true>><<set $eventskip to 1>><<unset $tempDisable>>
-			<</link>>
+			<<if $robin_in_forest_shop>>
+				<<link [[Leave with Robin (0:10)|Robin Forest Shop Home]]>><<endnpc "Gwylan">><<forestShop-leave>><<pass 10>><</link>>
+			<<else>>
+				<<link [[Leave|Forest]]>><<endnpc "Gwylan">><<forestShop-leave>><</link>>
+			<</if>>
 		<</if>>
 	<</if>>
 <</widget>>

@@ -24,8 +24,12 @@
 	<<ind>><<link [[Cinema (£15 2:00)|Robin Walk Cinema]]>><<if $hour lt 12 and ($schoolday is 1 or $weekday is 7 or $weekday is 1)>><<pass 15>><</if>><</link>>
 	<br>
 <</if>>
-<<if $halloween_robin is 1 and $halloween_robin_costume is "ghost">>
-	<<ind>><<link [[Go shopping for Halloween costumes (0:30)|Robin Forest Shop]]>><<pass 30>><</link>>
+<<if $halloween_robin is 1 and $halloween_robin_costume is "ghost" and !($monthday is 31 and $hour gte 16)>>
+	<<if !$robin_forest_visited>>
+		<<ind>><<link [[Go shopping for Halloween costumes (0:30)|Robin Forest Shop]]>><<pass 10>><</link>>
+	<<else>>
+		<<ind>><<link [[Go shopping for Halloween costumes (0:20)|Robin Forest Shop]]>><<pass 10>><</link>>
+	<</if>>
 	<br>
 <</if>>
 <br>
@@ -1321,6 +1325,43 @@ You sit together for several minutes, before packing up the picnic and walking b
 <br><br>
 <<robinoptions>>
 
+:: Robin Forest Shop Widgets [widget]
+
+<<widget "robinForestCostumePose">>
+	<<He>> turns back to the mirror and
+	<<switch $forest_costume.name>>
+		<<case "witch">> swishes the skirt around.
+		<<case "vampire">> strikes a menacing pose.
+	<</switch>>
+<</widget>>
+
+<<widget "robinForestCostumeBuy">>
+	<<if $money gte 8000>>
+		<<link [[Buy the costume for Robin (£80)|Robin Forest Costume Buy]]>><<npcincr Robin love 3>><<set $money -= 8000>><<set $halloween_robin_costume to $forest_costume.name>><<set $forest_costume.bought to true>><</link>><<gglove>>
+		<br>
+	<<else>>
+		You don't have enough money to buy the costume. (£80)
+		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "robinForestCostumeOptions">>
+	<<if !$forest_costume.bought>>
+		<<if _args[0] isnot "witch">>
+			<<link [[Ask Robin to try on the girl's witch costume|Robin Forest Costume]]>><<set $phase to "witch">><</link>>
+			<br>
+		<</if>>
+		<<if _args[0] isnot "vampire">>
+			<<link [[Ask Robin to try on the boy's vampire costume|Robin Forest Costume]]>><<set $phase to "vampire">><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<<link [[Continue shopping|Forest Shop]]>><</link>>
+	<br>
+	<<link [[Walk home with Robin (0:10)|Robin Forest Shop Home]]>><<pass 10>><</link>>
+	<br>
+<</widget>>
+
 :: Robin Forest Shop
 
 <<set $outside to 1>><<set $location to "town">><<effects>>
@@ -1331,7 +1372,7 @@ You sit together for several minutes, before packing up the picnic and walking b
 	<br><br>
 	You catch up, but each shop you visit is out of stock. Robin grows impatient and enters one to ask the shopkeeper directly.
 	<br><br>
-	"Sorry," the <<generate2>><<person2>><<person>> behind the counter responds. "They got snapped up almost as soon as we put them out. Even charged a premium. It's all the tourists."
+	"Sorry," the <<print (random(1,100) lte $malechance ? "man" : "woman")>> behind the counter responds. "They got snapped up almost as soon as we put them out. Even charged a premium. It's all the tourists."
 	<br><br>
 	You leave the shop with a crestfallen Robin.
 	<br><br>
@@ -1353,41 +1394,44 @@ You sit together for several minutes, before packing up the picnic and walking b
 :: Robin Forest Shop 2
 
 <<set $outside to 1>><<set $location to "town">><<effects>>
-<<person1>>
+
 <<if $phase is 0>>
 	"Sorry we couldn't find anything," you say.
 	<br><br>
-	"It's not your fault," Robin says, a smile returning to <<his>> face. "I like going out with you-" <<Hes>> interrupted by a witch hat blowing into <<his>> face.
-	<br><br>
+	"It's not your fault," Robin says, a smile returning to <<person1>><<his>> face. "I like going out with you-" <<Hes>> interrupted by a witch hat blowing into <<his>> face.
 <<else>>
 	"There must be costumes in stock somewhere," you say.
 	<br><br>
-	"You're right," Robin says, a smile returning to <<his>> face. "We need to-" <<Hes>> interrupted by a witch hat blowing into <<his>> face.
-	<br><br>
+	"You're right," Robin says, a smile returning to <<person1>><<his>> face. "We need to-" <<Hes>> interrupted by a witch hat blowing into <<his>> face.
 <</if>>
-<<He>> pulls it off and stares at it with a blank expression. You look the way it came, and see a <<nnpc_gendery "Gwylan">> with mousy hair walking in the opposite direction, carrying a large box. The lid is ajar. Inside you see another witch hat flop with each step.
 <br><br>
-"Wait!" Robin shouts. The mousy <<nnpc_gendery "Gwylan">> doesn't hear, and disappears around the corner. Robin runs after <<nnpc_him "Gwylan">>. You follow close behind.
+<<He>> pulls it off and stares at it with a blank expression. You look the way it came, and see a <<npc "Gwylan" 2>><<person2>><<personsimple>> with mousy hair walking in the opposite direction, carrying a large box. The lid is ajar. Inside you see another witch hat flop with each step.
 <br><br>
-<<link [[Next|Robin Forest Shop 3]]>><</link>>
+"Wait!" Robin shouts. The mousy <<personsimple>> doesn't hear, and disappears around the corner. Robin runs after <<him>>. You follow close behind.
+<br><br>
+<<link [[Next|Robin Forest Shop 3]]>><<pass 5>><</link>>
 <br>
 
 :: Robin Forest Shop 3
 
 <<location "forest">><<effects>>
-Each time you round a corner you see the mousy <<nnpc_gendery "Gwylan">> about to disappear around another, despite <<nnpc_his "Gwylan">> casual pace.
+Each time you round a corner you see the mousy <<personsimple>> about to disappear around another, despite <<his>> casual pace.
 <br><br>
-You arrive at Wolf Street just in time to see the <<nnpc_gendery "Gwylan">> disappear into the trees. Robin hesitates, then breaks into a run. You follow <<him>> into the forest.
+You arrive at Wolf Street just in time to see the <<personsimple>> disappear into the trees. Robin hesitates, then breaks into a run. You follow <<person1>><<him>> into the forest.
 <br><br>
-<<link [[Next|Robin Forest Shop 4]]>><</link>>
+<<link [[Next|Robin Forest Shop 4]]>><<pass 5>><</link>>
 <br>
 
 :: Robin Forest Shop 4
 
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
+<<set $robin_in_forest_shop to true>><<set $forest_costume to {}>>
+<<npc "Gwylan" 2>>
+
 <<if !$robin_forest_visited>>
 	<<set $robin_forest_visited to 1>>
-	You catch occasional glimpses of the <<nnpc_gendery "Gwylan">> through the trees, until at last you come to a strange building.
+	You catch occasional glimpses of the <<person2>><<personsimple>> through the trees, until at last you come to a strange building.
+	<<person1>>
 	<<if $forest_shop_intro isnot 1>>
 		<<if $gwylan_rescue isnot 1>>
 			You hear shuffling inside. A sign on the door says "Open."
@@ -1402,8 +1446,7 @@ You arrive at Wolf Street just in time to see the <<nnpc_gendery "Gwylan">> disa
 		<</if>>
 		<br><br>
 
-		<<npc "Gwylan" 2>><<person2>>
-		The interior is dark and crowded by tall shelves holding all manner of items. The quiet is broken by a scraping, then a thud. A <<personsimple>> holding a stepladder appears at the end of the closest aisle.
+		The interior is dark and crowded by tall shelves holding all manner of items. The quiet is broken by a scraping, then a thud. A <<person2>><<personsimple>> holding a stepladder appears at the end of the closest aisle.
 		<<if $gwylan_rescue isnot 1>>
 			"Customers!" <<he>> says, dropping the ladder and walking over. <<He>> wipes <<his>> hands on <<his>> apron. "Welcome to my shop."
 			<br><br>
@@ -1419,14 +1462,13 @@ You arrive at Wolf Street just in time to see the <<nnpc_gendery "Gwylan">> disa
 		"It's okay," you say to a nervous Robin. "I've been here before. It's a shop." All apprehension leaves the orphan, and <<he>> enters.
 		<br><br>
 
-		<<npc "Gwylan" 2>><<person2>>
 		You follow Robin into the shop. Your eyes adjust to the gloom just as Gwylan appears at the end of an aisle.
 	<</if>>
 
 	<<if $forest_shop_intro is 1 or $gwylan_rescue is 1>>
 		<br><br>
 
-		"You brought a friend!" <<he>> says, rushing over and grasping Robin's hand in both <<his>> own. "I'm Gwylan. Welcome to my shop."
+		"You brought a friend!" <<person2>><<he>> says, rushing over and grasping Robin's hand in both <<his>> own. "I'm Gwylan. Welcome to my shop."
 		<<if $gwylan_aborted gte 1>>
 			<<gwylanRescueApologyShop "Robin">>
 			<<set $gwylan_aborted to 0>>
@@ -1437,7 +1479,7 @@ You arrive at Wolf Street just in time to see the <<nnpc_gendery "Gwylan">> disa
 	<<link [[Next|Robin Forest Shop 5]]>><</link>>
 
 <<else>>
-	<<npc "Gwylan" 2>><<person2>>Gwylan greets you as you enter. "I'm glad to see you again," <<he>> says, shaking both your and Robin's hand. "Let me know if you need anything."
+	Gwylan greets you as you enter. "I'm glad to see you again," <<person2>><<he>> says, shaking both your and Robin's hand. "Let me know if you need anything."
 
 	<<if $gwylan_aborted gte 1>>
 		<<gwylanRescueApologyShop "Robin">>
@@ -1445,275 +1487,163 @@ You arrive at Wolf Street just in time to see the <<nnpc_gendery "Gwylan">> disa
 	<</if>>
 	<br><br>
 
-	<<person1>>Robin beelines towards the dark screen. You catch up and find <<him>> admiring the outfits.
+	Robin beelines towards the dark screen.
 	<br><br>
 
-	<<link [[Ask Robin to try on the girl's witch costume|Robin Forest Witch]]>><</link>>
-	<br>
-	<<link [[Ask Robin to try on the boy's vampire costume|Robin Forest Vampire]]>><</link>>
-	<br>
-	<<link [[Walk home|Robin Forest Shop Home]]>><</link>>
-	<br>
+	<<link [[Next|Forest Shop]]>><</link>>
 <</if>>
 
 :: Robin Forest Shop 5
 
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
-<<endevent>><<npc Robin>><<person1>>
-"Pleased to meet you," Robin says. <<He>> holds out the witch hat. "You dropped this."
+<<endevent>><<npc "Robin" 1>><<npc "Gwylan" 2>>
+"Pleased to meet you," Robin says. <<person1>><<He>> holds out the witch hat. "You dropped this."
 <br><br>
-Gwylan smiles. "Thank you," <<nnpc_he "Gwylan">> says. "I just picked up some new clothes."
+Gwylan smiles. "Thank you," <<person2>><<he>> says. "I just picked up some new clothes."
 <br><br>
 "Halloween costumes?" Robin asks, hopeful.
 <br><br>
-Gwylan pauses. "You could wear them as such," <<nnpc_he "Gwylan">> decides. "They're behind the dark screen over-" Robin doesn't wait for Gwylan to finish. <<He>> rushes over, almost knocking over a shelf on the way.
+Gwylan pauses. "You could wear them as such," <<he>> decides. "They're behind the dark screen over-" Robin doesn't wait for Gwylan to finish. <<person1>><<He>> rushes over, almost knocking over a shelf on the way.
 <br><br>
-You catch up, and find <<him>> admiring two outfits. A witch costume for girls and a vampire costume for boys. "They're so authentic," <<he>> says.
-<br><br>
-<<link [[Ask Robin to try on the girl's witch costume|Robin Forest Witch]]>><</link>>
-<br>
-<<link [[Ask Robin to try on the boy's vampire costume|Robin Forest Vampire]]>><</link>>
-<br>
-<<link [[Walk home|Robin Forest Shop Home]]>><</link>>
-<br>
+
+<<link [[Next|Forest Shop]]>><</link>>
 
 :: Robin Forest Shop Home
 
 <<set $outside to 0>><<set $location to "home">><<effects>>
-You bid Gwylan farewell. Together you and Robin walk back to the orphanage. Robin is excited the whole way, and talks about how cool the Halloween costumes were.
+You bid Gwylan farewell. Together you and Robin walk back to the orphanage. 
+<<if $forest_costume.bought>>
+	Robin is <<if $forest_costume.cd>>nervous but<</if>> excited, and clutches the $forest_costume.name costume close to <<his>> chest the entire time.
+<<else>>
+	Robin is excited the whole way, and talks about how cool the Halloween costumes were.
+<</if>>
 <br><br>
-<<robinoptions>>
+<<unset $forest_costume>><<unset $robin_in_forest_shop>>
 
-:: Robin Forest Witch
+<<if $monthday is 31 and $hour is 16>>
+	Robin sees the orphans gathered in costumes once you reach the main hall. "I'm going to be late. I'd better go change into my costume," <<he>> hurriedly says.
+	<<set _costume to getHalloweenCostume()>>
+	"<<if _costume is "none">>You should put yours on too! <</if>>Meet me back here in a minute or two if you wanna join us." <<He>> rushes to <<his>> room to change.
+	<br><br>
+
+	You return to your own room.
+	<br><br>
+
+	<<link [[Next|Bedroom]]>><<endevent>><</link>>
+<<else>>
+	<<robinoptions>>
+<</if>>
+:: Robin Forest Costume Intro
+
+<<npc "Robin" 1>><<person1>>
+You catch up with Robin, and find <<him>> admiring two outfits. A witch costume for girls and a vampire costume for boys. "They're so authentic," <<he>> says.
+<br><br>
+<<robinForestCostumeOptions>>
+
+:: Robin Forest Costume
 
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
-"You should try this on," you say, holding the witch outfit against <<him>>.
+<<switch $phase>>
+	<<case "witch">> <<set $forest_costume to {"name": "witch", "gender": "f"}>>
+	<<case "vampire">> <<set $forest_costume to {"name": "vampire", "gender": "m"}>>
+<</switch>>
+<<set $forest_costume.cd to ($NPCName[$NPCNameList.indexOf("Robin")].pronoun isnot $forest_costume.gender)>>
+
+"You should try this on," you say, holding the $forest_costume.name outfit against <<him>>.
 <br><br>
-<<if $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "m">>
-	"But it's for girls," Robin says.
+<<if $forest_costume.cd>>
+	"But it's for <<print ($forest_costume.gender is "m" ? "boys" : "girls")>>," Robin says.
 	<br><br>
 	"So?" you respond. "You're only dressing up for fun."
 	<br><br>
-	<<if $NPCName[$NPCNameList.indexOf("Robin")].love gte 60>>
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].love lt 60>>
+		Robin hesitates, then shakes <<his>> head. "It's a really cool outfit," <<he>> says. "But I'd be too embarrassed."
+		<br><br>
+		<<robinForestCostumeOptions $forest_costume.name>>
+		<br>
+	<<else>>
 		Robin hesitates, then takes the outfit. You leave the screen to give <<him>> some privacy.
 		<br><br>
-		"Promise you won't laugh," Robin says after a minute. <<He>> doesn't wait for your response before stepping out, still adjusting <<his>> hat. The costume is oddly tight around <<his>> waist, giving the impression of feminine contours. It fits well.
+		"Promise you won't laugh," Robin says after a minute. <<He>> doesn't wait for your response before stepping out,
+		<<switch $forest_costume.name>>
+			<<case "witch">> still adjusting <<his>> hat. The costume is oddly tight around <<his>> waist, giving the impression of feminine contours. It fits well.
+			<<case "vampire">> still adjusting <<his>> collar. It fits well.
+		<</switch>>
 		<br><br>
 		<<He>> examines <<himself>> in a nearby mirror.
 		<br><br>
-		<<link [[Tease|Robin Forest Witch Tease]]>><</link>>
+		<<link [[Tease|Robin Forest Costume Tease]]>><</link>>
 		<br>
-		<<link [[Compliment|Robin Forest Witch Compliment]]>><</link>>
-		<br>
-	<<else>>
-		Robin hesitates, then shakes <<his>> head. "It's a really cool outfit," <<he>> says. "But I'd be too embarrassed."
-		<br><br>
-		<<link [[Ask Robin to try on the boy's vampire costume|Robin Forest Vampire]]>><</link>>
-		<br>
-		<<link [[Walk home|Robin Forest Shop Home]]>><</link>>
+		<<link [[Compliment|Robin Forest Costume Compliment]]>><</link>>
 		<br>
 	<</if>>
 <<else>>
 	"Okay." Robin says, taking the outfit. You leave the screen to give <<him>> some privacy.
 	<br><br>
-	"I'm ready," Robin says after a minute. <<He>> doesn't wait for your response before stepping out, still adjusting <<his>> hat. The costume is tight around <<his>> waist, and shows off <<his>> feminine contours. It fits well.
+	"I'm ready," Robin says after a minute. <<He>> doesn't wait for your response before stepping out, 
+	<<switch $forest_costume.name>>
+		<<case "witch">> still adjusting <<his>> hat. The costume is tight around <<his>> waist, and shows off <<his>> feminine contours. It fits well.
+		<<case "vampire">> still adjusting <<his>> collar. It fits well.
+	<</switch>>
 	<br><br>
 	<<He>> examines <<himself>> in a nearby mirror.
 	<br><br>
-	<<link [[Tease|Robin Forest Witch Tease]]>><</link>>
+	<<link [[Tease|Robin Forest Costume Tease]]>><</link>>
 	<br>
-	<<link [[Compliment|Robin Forest Witch Compliment]]>><</link>>
+	<<link [[Compliment|Robin Forest Costume Compliment]]>><</link>>
 	<br>
 <</if>>
 
-:: Robin Forest Witch Tease
+:: Robin Forest Costume Tease
 
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
-<<if $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "m">>
-	"You make such a cute girl," you laugh. "It suits you."
-	<br><br>
-	"No I don't," <<he>> says, blushing yet smiling. <<He>> turns back to the mirror and swishes the skirt around.
-	<br><br>
-<<else>>
-	"You make such a cute witch," you laugh. "It suits you."
-	<br><br>
-	"Does it?" <<he>> asks, smiling. <<He>> turns back to the mirror and swishes the skirt around.
-	<br><br>
-<</if>>
-<<if $money gte 8000>>
-	<<link [[Buy the costume for Robin (£80)|Robin Forest Witch Buy]]>><<npcincr Robin love 3>><<set $money -= 8000>><<set $halloween_robin_costume to "witch">><</link>><<gglove>>
-	<br>
-<<else>>
-	You don't have enough money to buy the costume. (£80)
-	<br><br>
-<</if>>
-<<link [[Ask Robin to try on the boy's vampire costume|Robin Forest Vampire]]>><</link>>
-<br>
-<<link [[Walk home|Robin Forest Shop Home]]>><</link>>
-<br>
 
-:: Robin Forest Witch Compliment
+<<if $forest_costume.cd>>
+	"You make such a <<print ($forest_costume.gender is "m" ? "handsome boy" : "cute girl")>>," you laugh. "It suits you."
+	<br><br>
+	"No I don't," <<he>> says, blushing yet smiling. 
+<<else>>
+	"You make such a <<print ($forest_costume.gender is "m" ? "handsome" : "cute")>> $forest_costume.name," you laugh. "It suits you."
+	<br><br>
+	"Does it?" <<he>> asks, smiling.
+<</if>>
+<<robinForestCostumePose>>
+<br><br>
+
+<<robinForestCostumeBuy>>
+<<robinForestCostumeOptions $forest_costume.name>>
+
+:: Robin Forest Costume Compliment
 
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
-"It suits you," you say. "You look like a scary witch."
+"It suits you," you say. "You look like a scary $forest_costume.name."
 <br><br>
-"Really?" <<he>> asks, smiling. <<He>> turns back to the mirror and swishes the skirt around.
+"Really?" <<he>> asks, smiling.
+<<robinForestCostumePose>>
 <br><br>
-<<if $money gte 8000>>
-	<<link [[Buy the costume for Robin (£80)|Robin Forest Witch Buy]]>><<npcincr Robin love 3>><<set $money -= 8000>><<set $halloween_robin_costume to "witch">><</link>><<gglove>>
-	<br>
-<<else>>
-	You don't have enough money to buy the costume. (£80)
-	<br><br>
-<</if>>
-<<link [[Ask Robin to try on the boy's vampire costume|Robin Forest Vampire]]>><</link>>
-<br>
-<<link [[Walk home|Robin Forest Shop Home]]>><</link>>
-<br>
 
-:: Robin Forest Witch Buy
+<<robinForestCostumeBuy>>
+<<robinForestCostumeOptions $forest_costume.name>>
+
+:: Robin Forest Costume Buy
 
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
 "I'm going to buy it," you announce. "You need a proper costume for Halloween."
 <br><br>
-<<if $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "m">>
-	"But I can't dress as a girl," Robin says. "I'm not brave enough."
+<<if $forest_costume.cd>>
+	"But I can't dress as a <<print ($forest_costume.gender is "m" ? "boy" : "girl")>>," Robin says. "I'm not brave enough."
 	<br><br>
 	"Yes you are," you reply. "You like the outfit, don't you?"
 	<br><br>
 	"I do," Robin says, looking at the mirror. "And you're supposed to dress up for Halloween."
-	<br><br>
-	Robin disappears behind the screen to dress. Despite <<his>> misgivings, you take the outfit to Gwylan and hand over the money.
-	<br><br>
-	You walk back to the orphanage with a nervous and excited Robin.
-	<br><br>
 <<else>>
 	"That's not fair on you," <<he>> says.
 	<br><br>
 	"It's a gift," you reply. "You like the outfit, don't you?"
 	<br><br>
 	"I do," Robin says, looking at the mirror. "It would be nice to have a proper costume."
-	<br><br>
-	Robin disappears behind the screen to dress. Despite <<his>> misgivings, you take the outfit to Gwylan and hand over the money.
-	<br><br>
-	You walk back to the orphanage with an excited Robin.
-	<br><br>
 <</if>>
-<<robinoptions>>
-
-:: Robin Forest Vampire
-
-<<set $outside to 0>><<set $location to "forest_shop">><<effects>>
-"You should try this on," you say, holding the vampire outfit against <<him>>.
 <br><br>
-<<if $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "f">>
-	"But it's for boys," Robin says.
-	<br><br>
-	"So?" you respond. "You're only dressing up for fun."
-	<br><br>
-	<<if $NPCName[$NPCNameList.indexOf("Robin")].love gte 60>>
-		Robin hesitates, then takes the outfit. You leave the screen to give <<him>> some privacy.
-		<br><br>
-		"Promise you won't laugh," Robin says after a minute. <<He>> doesn't wait for your response before stepping out, still adjusting <<his>> collar. It fits well.
-		<br><br>
-		<<He>> examines <<himself>> in a nearby mirror.
-		<br><br>
-		<<link [[Tease|Robin Forest Vampire Tease]]>><</link>>
-		<br>
-		<<link [[Compliment|Robin Forest Vampire Compliment]]>><</link>>
-		<br>
-	<<else>>
-		Robin hesitates, then shakes <<his>> head. "It's a really cool outfit," <<he>> says. "But I'd be too embarrassed."
-		<br><br>
-		<<link [[Ask Robin to try on the girl's witch costume|Robin Forest Witch]]>><</link>>
-		<br>
-		<<link [[Walk home|Robin Forest Shop Home]]>><</link>>
-		<br>
-	<</if>>
-<<else>>
-	"Okay." Robin says, taking the outfit. You leave the screen to give <<him>> some privacy.
-	<br><br>
-	"I'm ready," Robin says after a minute. <<He>> doesn't wait for your response before stepping out, still adjusting <<his>> collar. It fits well.
-	<br><br>
-	<<He>> examines <<himself>> in a nearby mirror.
-	<br><br>
-	<<link [[Tease|Robin Forest Vampire Tease]]>><</link>>
-	<br>
-	<<link [[Compliment|Robin Forest Vampire Compliment]]>><</link>>
-	<br>
-<</if>>
-
-:: Robin Forest Vampire Tease
-
-<<set $outside to 0>><<set $location to "forest_shop">><<effects>>
-<<if $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "f">>
-	"You make such a handsome boy," you laugh. "It suits you."
-	<br><br>
-	"No I don't," <<he>> says, blushing yet smiling. <<He>> turns back to the mirror and strikes a menacing pose.
-	<br><br>
-<<else>>
-	"You make such a handsome vampire," you laugh. "It suits you."
-	<br><br>
-	"Does it?" <<he>> asks, smiling. <<He>> turns back to the mirror and strikes a menacing pose.
-	<br><br>
-<</if>>
-<<if $money gte 8000>>
-	<<link [[Buy the costume for Robin (£80)|Robin Forest Vampire Buy]]>><<npcincr Robin love 3>><<set $money -= 8000>><<set $halloween_robin_costume to "vampire">><</link>><<gglove>>
-	<br>
-<<else>>
-	You don't have enough money to buy the costume. (£80)
-	<br><br>
-<</if>>
-<<link [[Ask Robin to try on the girl's witch costume|Robin Forest Witch]]>><</link>>
-<br>
-<<link [[Walk home|Robin Forest Shop Home]]>><</link>>
-<br>
-
-:: Robin Forest Vampire Compliment
-
-<<set $outside to 0>><<set $location to "forest_shop">><<effects>>
-"It suits you," you say. "You look like a scary vampire."
+Robin disappears behind the screen to dress. Despite <<his>> misgivings, you take the outfit to Gwylan and hand over the money.
 <br><br>
-"Really?" <<he>> asks, smiling. <<He>> turns back to the mirror and strikes a menacing pose.
-<br><br>
-<<if $money gte 8000>>
-	<<link [[Buy the costume for Robin (£80)|Robin Forest Vampire Buy]]>><<npcincr Robin love 3>><<set $money -= 8000>><<set $halloween_robin_costume to "vampire">><</link>><<gglove>>
-	<br>
-<<else>>
-	You don't have enough money to buy the costume. (£80)
-	<br><br>
-<</if>>
-<<link [[Ask Robin to try on the girl's witch costume|Robin Forest Witch]]>><</link>>
-<br>
-<<link [[Walk home|Robin Forest Shop Home]]>><</link>>
-<br>
-
-:: Robin Forest Vampire Buy
-
-<<set $outside to 0>><<set $location to "forest_shop">><<effects>>
-"I'm going to buy it," you announce. "You need a proper costume for Halloween."
-<br><br>
-<<if $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "f">>
-	"But I can't dress as a boy," Robin says. "I'm not brave enough."
-	<br><br>
-	"Yes you are," you reply. "You like the outfit, don't you?"
-	<br><br>
-	"I do," Robin says, looking at the mirror. "And you're supposed to dress up for Halloween."
-	<br><br>
-	Robin disappears behind the screen to dress. Despite <<his>> misgivings, you take the outfit to Gwylan and hand over the money.
-	<br><br>
-	You walk back to the orphanage with a nervous and excited Robin.
-	<br><br>
-<<else>>
-	"That's not fair on you," <<he>> says.
-	<br><br>
-	"It's a gift," you reply. "You like the outfit, don't you?"
-	<br><br>
-	"I do," Robin says, looking at the mirror. "It would be nice to have a proper costume."
-	<br><br>
-	Robin disappears behind the screen to dress. Despite <<his>> misgivings, you take the outfit to Gwylan and hand over the money.
-	<br><br>
-	You walk back to the orphanage with an excited Robin.
-	<br><br>
-<</if>>
-<<robinoptions>>
+<<robinForestCostumeOptions>>

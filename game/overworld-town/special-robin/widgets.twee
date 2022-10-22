@@ -96,12 +96,12 @@
 		<<He>> sits down. There's an open magazine beside <<him>>, advertising more impressive, but pricey, costumes. Some are circled in pen, but <<he>> moves it away to clear space before you get a good look.
 		<br><br>
 
-		"I want to take some of the orphans trick-or-treating on the day," <<he>> continues through the sheet. "You can come too. If you like. I want to leave between <span class="gold"><<ampm 16 00>> and <<ampm 19 00>>.</span> The orphans shouldn't be out late."
+		"I want to take some of the orphans trick-or-treating <<print ($monthday is 31 ? "today" : "on the day")>>," <<he>> continues through the sheet. "You can come too. If you like. I want to leave between <span class="gold"><<ampm 16 00>> and <<ampm 19 00>>.</span> The orphans shouldn't be out late."
 		<br><br>
 
 	<!-- If Robin just came back from a punishment -->
-	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].comforted is 0>>
-		<<set $NPCName[$NPCNameList.indexOf("Robin")].comforted to 1>>
+	<<elseif _robin.comforted is 0>>
+		<<set _robin.comforted to 1>>
 
 		You knock on the door. Robin throws it open and hugs you, though <<he>> looks upset.
 		<<switch $robinLastPunishment>>
@@ -121,7 +121,7 @@
 				"So glad to be home. I was afraid I'd never see the sun again," <<he>> smiles at you. "Thank you, I don't know if I would've had the strength to do it alone."
 			<<case "mansion">>
 				"They took me to a mansion on Danube Street and made me clean," <<he>> says. "The hosts were... grabby. And they put me in a maid dress."
-				<<if _robin.crossdressing gte 2 and _robin.pronoun is "m">>
+				<<if _robin.pronoun is (_robin.crossdressing gte 2 ? "m" : "f")>>
 					<<Hes>> quiet for a few seconds. "I sort of wish they let me keep it," <<he>> admits, hiding <<his>> face.
 				<</if>>
 		<</switch>>
@@ -348,7 +348,8 @@
 				<br>
 			<</if>>
 		<</if>>
-	<<elseif $robinbaileyhelp is 1>><<set $robinbaileyhelp to 2>>
+	<<elseif $robinbaileyhelp is 1>>
+		<<set $robinbaileyhelp to 2>>
 		Robin turns to face you, <<his>> eyes downcast. "I'm sorry," <<he>> says. "I'm sorry I told Bailey. I thought <<endevent>><<npc Bailey>><<person1>><<he>> would help. <<Hes>><<endevent>><<npc Robin>><<person1>> meant to."
 		<br><br>
 		<<link [[Forgive|Robin Bailey Forgive]]>><<trauma -6>><<stress 6>><<npcincr Robin love 1>><</link>><<gstress>><<glove>><<ltrauma>>
@@ -362,13 +363,17 @@
 			<<He>> hugs and pushes you towards the door. "I don't want you to see me dress," <<he>> says. "It will be more magical that way."
 			<br><br>
 		<</if>>
-		<<if $worn.upper.type.includes("costume") or $worn.lower.type.includes("costume") or $worn.upper.type.includes("naked") and $worn.under_upper.type.includes("costume") or $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("costume") or $physicalTransform is 1 or $specialTransform is 1>>
-			"I'll be in the main hall gathering the orphans once I'm ready."
-		<<else>>
+		<<set _costume to getHalloweenCostume()>>
+		<<if _costume is "none">>
 			"I'll be in the main hall gathering the orphans if you want to join in. I can't wait to see your costume!"
+		<<elseif _costume is "exposed" or _costume is "fully naked">>
+			"I'll be in the main hall gathering the orphans once I'm ready. You should... probably put something on."
+			<<towelup>>
+		<<else>>
+			"I'll be in the main hall gathering the orphans once I'm ready."
 		<</if>>
 		<br><br>
-		<<link [[Leave (0:01)|Bedroom]]>><<endevent>><<pass 1>><</link>>
+		<<link [[Leave|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
 		<br>
 
 	<<else>>
@@ -383,11 +388,11 @@
 				<br><br>
 			<<elseif _robin.love gte 20 and _robin.lovestage is 1>>
 				<<set _robin.lovestage to 2>>
-					<<if $robinconsole is 1>>
-						"Let me know if there's a game you'd like to play," <<he>> says. "You always let me choose."
-					<<else>>
-						"I like spending time with you," <<he>> says. "I'd choose your company over my console every day."
-					<</if>>
+				<<if $robinconsole is 1>>
+					"Let me know if there's a game you'd like to play," <<he>> says. "You always let me choose."
+				<<else>>
+					"I like spending time with you," <<he>> says. "I'd choose your company over my console every day."
+				<</if>>
 				<br><br>
 			<<elseif _robin.love gte 40 and _robin.lovestage is 2>>
 				<<set _robin.lovestage to 3>>
