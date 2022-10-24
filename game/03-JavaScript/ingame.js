@@ -1537,3 +1537,73 @@ function isPubfameTaskAccepted(task, status) {
 	return V.pubfame && V.pubfame.task === task && (V.pubfame.status === "accepted" || V.pubfame.status === status);
 }
 window.isPubfameTaskAccepted = isPubfameTaskAccepted;
+
+function getHalloweenCostume() {
+	const upper = V.worn.upper;
+	const lower = V.worn.lower;
+
+	T.tf = checkTFparts();
+
+	// I'm really not sure if there's any better way to do this than going through each name. Please forgive my sins.
+	// (Note: We could just add new types to clothes? ex: ["costume", "vampire"]. Update this function if you do.)
+	if (upper.name === "vampire jacket") {
+		return "vampire";
+	} else if (upper.name === "witch dress" && lower.name === "witch skirt") {
+		return "witch";
+	} else if (upper.name === "scarecrow shirt" && lower.name === "scarecrow skirt") {
+		return "scarecrow";
+	} else if (upper.name.includes("gothic") && lower.name.includes("gothic")) {
+		return "gothic";
+	} else if (upper.name === "nun's habit" && lower.name === "nun's habit skirt") {
+		return "nun";
+	} else if (upper.name === "maid dress" && lower.name === "maid skirt") {
+		return "maid";
+	} else if (upper.name.includes("christmas") && lower.name.includes("christmas")) {
+		return "christmas";
+	} else if (upper.name === "cheerleading top" && lower.name === "cheerleading skirt") {
+		return "cheerleader";
+	} else if (upper.name.includes("prison") && lower.name.includes("prison")) {
+		return "prison";
+	} else if (upper.name === "karate jacket" && lower.name === "karate trousers") {
+		return "karate";
+	} else if (upper.name === "monk's habit" && lower.name === "monk's habit skirt") {
+		return "monk";
+	} else if (upper.name === "padded football shirt" && lower.name === "football shorts") {
+		return "football";
+	} else if (upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") {
+		return "belly dancer";
+	} else if (V.worn.head.name === "cowboy hat" && lower.name === "cowboy chaps" && V.worn.feet.name === "cowboy boots") {
+		return "cowboy";
+	} else if (["costume", "riding"].every(type => V.worn.head.type.includes(type) && upper.type.includes(type))) {
+		return "riding";
+	} else if (upper.name === "cow onesie" && lower.name === "cow onesie bottoms") {
+		return "cow onesie";
+	} else if (upper.name === "mummy top" && lower.name === "mummy skirt") {
+		return "mummy";
+	} else if (upper.name.includes("sailor") && lower.name.includes("sailor")) {
+		return "sailor";
+	} else if (T.tf.angelHalo && T.tf.angelWings) {
+		return "angel TF";
+	} else if (T.tf.wolfEars && T.tf.wolfTail) {
+		return "wolf TF";
+	} else if (T.tf.fallenAngelHalo && T.tf.fallenAngelWings) {
+		return "fallen angel TF";
+	} else if (T.tf.demonHorns && T.tf.demonWings) {
+		return "demon TF";
+	} else if (T.tf.catEars && T.tf.catTail) {
+		return "cat TF";
+	} else if (T.tf.cowHorns && T.tf.cowTail) {
+		return "cow TF";
+	} else if (T.tf.birdWings && T.tf.birdEyes) {
+		return "harpy TF";
+	} else if (V.worn.upper.type.includes("costume") || V.worn.lower.type.includes("costume") || (V.worn.upper.type.includes("naked") && V.worn.under_upper.type.includes("costume")) || (V.worn.lower.type.includes("naked") && V.worn.under_lower.type.includes("costume"))) {
+		return "mixed";
+	} else if (V.exposed >= 2) {
+		return "fully naked";
+	} else if (V.exposed >= 1) {
+		return "exposed";
+	} else {
+		return "none";
+	}
+}
+window.getHalloweenCostume = getHalloweenCostume;
