@@ -33,7 +33,7 @@ You collapse on the cold stone floor, with your senses slowly returning to you. 
 	<<set $wraithIntro to true>>
 	Before you floats a beautiful pale figure.
 	<<if $wraith.state is "haunt">>
-		It regards you with angry red eyes, clutching at its own neck.
+		It regards you with angry red eyes, clutching at its own scarred neck.
 		<br><br>
 		"<span class="wraith">Sealed away forever. As a thief should.</span>"
 		<br><br>
@@ -48,9 +48,15 @@ You collapse on the cold stone floor, with your senses slowly returning to you. 
 <<else>>
 	The pale figure floats before you.
 	<<if $wraith.state is "haunt">>
-		It scratches its neck, before pushing you over effortlessly. It floats down, and comes to rest as it straddles you. It grabs you by the neck. <span class="red">You can't breathe!</span>
-		<br><br>
-		"<span class="wraith">If you wish to steal from the dead, you will join them.</span>"
+		<<if $wraithPrison and $wraithPrison.vision>>
+			It places a clawed hand on your chest. You can feel a bitter chill in your whole body. You feel the room spin, and your back touch the floor.
+			<be><br>
+			"<span class="wraith">Do you understand yet, thief? Don't make me repeat myself.</span>"
+		<<else>>
+			It scratches its scarred neck, before pushing you over effortlessly. It floats down, and comes to rest as it straddles you. It grabs you by the neck. <span class="red">You can't breathe!</span>
+			<br><br>
+			"<span class="wraith">If you wish to steal from the dead, you will join them.</span>"
+		<</if>>
 	<<else>>
 		It thumbs its necklace, before gently pushing you on your back. It floats down, and comes to rest as it straddles you.
 		<br><br>
@@ -58,6 +64,11 @@ You collapse on the cold stone floor, with your senses slowly returning to you. 
 	<</if>>
 <</if>>
 Its gaze bores into you, keeping your body weak and unresponsive.
+<<if C.npc["Ivory Wraith"].lust gte 12>>
+	A sadistic smile creeps across its face.
+<<else>>
+	It seems to hesitate for a moment, as if in thought.
+<</if>>
 <<if !$wraithPrison>>
 	<br><br>
 	<<link [[Beg|Lake Prison Intro 3]]>><<set $phase to 1>><<sub 1>><</link>>
@@ -79,7 +90,16 @@ Its gaze bores into you, keeping your body weak and unresponsive.
 	<</if>>
 <</if>>
 <br>
-<<set $wraithPrison to {timer: 0, timePassed: 0, search: 0, state: "present", possession: false, masturbation: false}>>
+<<if !$wraithPrison>>
+	<<set $wraithPrison to {timer: 0, timePassed: 0, search: 0, state: "present", possession: false, masturbation: false}>>
+<<else>>
+	<<set $wraithPrison.timer to 0>>
+	<<set $wraithPrison.timePassed to 0>>
+	<<set $wraithPrison.search to 0>>
+	<<set $wraithPrison.state to "present">>
+	<<set $wraithPrison.possession to false>>
+	<<set $wraithPrison.masturbation to false>>
+<</if>>
 
 :: Lake Prison Intro 3
 <<set $outside to 0>><<set $location to "lake_ruin">><<set $bus to "lake_ruin_prison">><<set $wraith.exit to "lake_ruin">><<effects>>
@@ -124,7 +144,7 @@ Its gaze bores into you, keeping your body weak and unresponsive.
 <<set $outside to 0>><<set $location to "lake_ruin">><<set $bus to "lake_ruin_prison">><<set $wraith.exit to "lake_ruin">><<effects>>
 With the last of your willpower, you keep moving your head, preventing the slime from entering.
 <br><br>
-It looks down at you and whispers. "<span class="wraith">You will submit.</span>"
+It looks down at you and whispers. "<span class="wraith">You will bend. Or you will break.</span>"
 <<initWraith "abomination">>
 <<startWraith>>
 <br><br>
@@ -143,7 +163,7 @@ It brings the slime down to your
 	<<parasite right_ear slime>>
 <</if>>
 <br><br>
-You shake in the figure's grasp. You feel unnaturally aroused, especially with it straddling you like this. It's a small feeling at first. Then it grows, until <span class="lewd">an overwhelming desire for lewdity overtakes you.</span>
+You shake in the figure's grasp. You feel unnaturally aroused, especially with it straddling you like this. It's a small feeling at first. Then it grows, until <span class="lewd">an overwhelming desire for lewdity overtakes you.</span> It looks pleased. <<lobsession>>
 <br><br>
 <<if !$corruption_slime>>
 	<i>A corruption bar has appeared in the Characteristics tab.</i>
@@ -222,7 +242,7 @@ Its grip on you loosens<<if $wraith.state is "haunt">>, and you gasp for breath<
 <<if !$wraithMax>>
 	<<set $wraithCount to 0>>
 	<<set $wraithMax to 2>>
-	<<if $wraith.offspring is "dead">>
+	<<if C.npc["Ivory Wraith"].lust gt 10>>
 		<<set $wraithMax++>>
 	<</if>>
 	<<if $tentacledisable is "t">>
@@ -284,7 +304,11 @@ Its grip on you loosens<<if $wraith.state is "haunt">>, and you gasp for breath<
 		It suddenly lifts you, and begins to carry you. You're helpless to resist.
 		You're placed in a decrepit cage, right next to the centre of the lichen colony. There's no door.
 		<<if $wraith.state is "haunt">>
-			"<span class="wraith">I will break open your mind, and then I will show you. And then you will. Give. It. Back.</span>"
+			<<if !$wraithPrison.vision>>
+				"<span class="wraith">I will break open your mind, and then I will show you. And then you will. Give. It. Back.</span>"
+			<<else>>
+				"<span class="wraith">The descent begins again. Isn't it beautiful?</span>"
+			<</if>>
 			<<if $worn.neck.cursed is 1>>
 				It rests a hand against your $worn.neck.name. There's a flash of light, a deep groaning sound, and the metal is no more.
 				<<set $worn.neck.type.push("broken")>>
@@ -322,23 +346,34 @@ You are in a submerged prison. Pink mist swirls in the air. <<ghallucinogens>>
 	You see the figure near the staircase leading down. It's flickering.
 	<br><br>
 	<<if $wraith.state is "haunt">>
-		It stares at you with pure anger and hatred. It screams, and begins floating in circles, clawing at its own bare neck and wailing.
-		<br><br>
-		It flickers out, only to flicker back right in front of you. It grabs you by the neck, its hand long and clawed. It swiftly drags you to the stairs, and plunges your head under the water. <<stress 24>><<pain 10>><<gpain>><<gstress>>
-		<br><br>
-		<<if !$wraithPrison.vision>>
-			You struggle against it. It screams. "<span class="wraith">I will show you exactly what you've done. I will find you again, thief. You have not suffered enough. You were not ready.</span>"
-		<<else>>
-			You struggle against it. It laughs. "<span class="wraith">Again, and again. See you soon.</span>"
-		<</if>>
-		<br><br>
-		It flickers backwards. You bring your head back up above the water, and cough. <<tearful>> you stand. The rune at the bottom of the stairs glows again.
-		<br><br>
+			<<if !$wraithPrison.vision>>
+				It stares at you with pure anger and hatred. It screams, and begins floating in circles, clawing at its own bare neck and wailing.
+				<br><br>
+				It flickers out, only to flicker back right in front of you. It grabs you by the neck, its hand long and clawed. It swiftly drags you to the stairs, and plunges your head under the water. <<stress 24>><<pain 10>><<gpain>><<gstress>>
+				<br><br>
+				You struggle against it. It screams. "<span class="wraith">I will show you exactly what you've done. I will find you again, thief. You have not suffered enough. You were not ready.</span>" <<gobsession>>
+				<br><br>
+				It flickers backwards. You bring your head back up above the water, and cough. <<tearful>> you stand. The rune at the bottom of the stairs glows again.
+			<<elseif C.npc["Ivory Wraith"].lust gte 12>>
+				It stares at you with pure anger. It growls, and begins floating in circles, holding its own neck.
+				<br><br>
+				It flickers out, only to flicker back right in front of you. It grabs you by the neck, its hand long and clawed. You're pressed back against the wall. <<stress 12>><<pain 5>><<gpain>><<gstress>>
+				<br><br>
+				You struggle against it. It whispers. "<span class="wraith">You've seen it. Do you seek penance? More. More pain, first.</span>" 
+				<br><br>
+				It flickers backwards. You slide down the wall. <<tearful>> you stand. The rune at the bottom of the stairs glows again. <<lobsession>>
+			<<else>>
+				It stares at you with apprehension, before appearing directly in front of you. It brings a clawed hand up, as if to strike you, and you instinctively cover your face.
+				<br><br>
+				You instead feel a gentle caress against your cheek. You slowly open your eyes. <span class="green">The clawed hand is gone, replaced by pale, supple skin. You see a faint familiarity in its face.</span>
+				<br><br>
+				"<span class="wraith">We're still falling, nowhere near the bottom. But maybe we don't need to reach the bottom.</span>" <<lobsession>>
+			<</if>>
 	<<else>>
 		"<span class="wraith">My time comes to an end. You will return, next moon.</span>"
-	<</if>>
-	<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
-		It giggles, and you feel the slime in your head wriggle. "<span class="wraith">This is the only place you can free yourself from the parasite, after all.</span>"
+		<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+			It giggles, and you feel the slime in your head wriggle. "<span class="wraith">This is the only place you can free yourself from the parasite, after all.</span>"
+		<</if>>
 	<</if>>
 	<br><br>
 	A torrent of water shoots up from the stairs, and when it passes, the figure is gone. <span class="blue"><i>You're safe until the next blood moon.</i></span>
@@ -349,7 +384,7 @@ You are in a submerged prison. Pink mist swirls in the air. <<ghallucinogens>>
 	<<clearWraith>>
 <</if>>
 <<if _wraithEvent is true>>
-	<<if $wraith.state is "haunt" and $trauma gte ($traumamax / 10) * 5 and $wraithPrison.timePassed gte 180>>
+	<<if $wraith.state is "haunt" and $trauma gte ($traumamax / 10) * 4 and $wraithPrison.timePassed gte 140>>
 		The pale figure emerges from the ground. You feel your energy being sapped away already. You're pushed into one of the cells and onto a bed of lichen by an unseen force.
 		<br><br>
 		It looks you over with a cold gaze, and grabs your cheeks with a clawed hand.
@@ -359,7 +394,13 @@ You are in a submerged prison. Pink mist swirls in the air. <<ghallucinogens>>
 			"<span class="wraith">Down we go, once again. <<pcPetname "Wraith">>.</span>"
 		<</if>>
 		<br><br>
-		It grabs a handful of lichen from the centre of the large colony, and tilts your head back. It begins to drop the crushed lichen into your mouth. You try to spit it out, but your body isn't obeying you. Once your mouth is full of the flowering lichen, it kisses you.
+		It grabs a handful of lichen from the centre of the large colony, and tilts your head back. It begins to drop the crushed lichen into your mouth.
+		<<if $wraithPrison.vision>>
+			You know better than to try to resist.
+		<<else>>
+			You try to spit it out, but your body isn't obeying you.
+		<</if>>
+		Once your mouth is full of the flowering lichen, it kisses you.
 		You tense up, but soon enough, you feel an odd sense of relief. <<takeKissVirginity "Ivory Wraith" "rape">>
 		<<stress -200>><<lllstress>><<trauma 36>><<gggtrauma>><<purity -50>><<lllpurity>><<physique_loss 16>><<llphysique>><<pain -15>><<llpain>>
 		<br><br>
@@ -403,7 +444,7 @@ You are in a submerged prison. Pink mist swirls in the air. <<ghallucinogens>>
 			<br>
 			<<link [[Spit it out|Lake Ruin Lichen Eat]]>><<set $phaseWraith to 3>><</link>>
 			<br>
-		<<elseif $rng gte 70 and $wraithPrison.possession is false and $wraith.state is "haunt">>
+		<<elseif $rng gte 70 and $wraithPrison.possession is false>>
 			<<if !$wraith.will>>
 				<<set $wraith.will to random(1300, 1700)>>
 			<</if>>
@@ -551,7 +592,7 @@ You don't know how much time passes. Your body feels refreshed, but your mind fe
 <<if !$wraithMax>>
 	<<set $wraithCount to 0>>
 	<<set $wraithMax to 1>>
-	<<if $wraith.offspring is "dead">>
+	<<if C.npc["Ivory Wraith"].lust gt 10>>
 		<<set $wraithMax++>>
 	<</if>>
 	<<if $tentacledisable is "t">>
@@ -607,9 +648,16 @@ You don't know how much time passes. Your body feels refreshed, but your mind fe
 You push back as much as you can, clashing against its will.
 <br><br>
 <<if $willpowerSuccess>>
-	It's pushed back, <span class="green">rejected by your body.</span> It growls, and grabs you by the neck.
-	<br><br>
-	"<span class="wraith">Very well. We do it the hard way, then.</span>"
+	It's pushed back, <span class="green">rejected by your body.</span>
+	<<if $wraith.state is "haunt">>
+		It growls, and grabs you by the neck.
+		<br><br>
+		"<span class="wraith">Very well. We do it the hard way, then.</span>"
+	<<else>>
+		It laughs, and places its hands on your shoulders.
+		<br><br>
+		"<span class="wraith">And yet, it was not a request.</span>"
+	<</if>>
 	<br><br>
 	<<initWraith>>
 	<<startWraith>>
@@ -637,7 +685,7 @@ It stands up in your body, steadying itself against the bars of the cage. It cle
 "You're mine," it says with your voice.
 <br><br>
 
-<<if $tentacledisable is "f">>
+<<if $tentacledisable is "f" and $rng gte 25>>
 	It sits down against the wall, and spreads your legs. Many pale tentacles enter your vision.
 	<<if $worn.lower.name isnot "naked">>
 		Your $worn.lower.name <<lowerplural>> torn to shreds in an instant.<<lowerruined>>
@@ -671,23 +719,40 @@ It stands up in your body, steadying itself against the bars of the cage. It cle
 <</if>>
 <br><br>
 
-Relief never comes, and you sit, trapped in your own body, for what feels like an eternity. It laughs in your voice, clearly enjoying the suffering it's inflicting on you. The minuscule light of the room begins to fade, and you black out.
-<br><br>
+<<if $wraith.state is "haunt">>
+	Relief never comes, and you sit, trapped in your own body, for what feels like an eternity. It laughs in your voice, clearly enjoying the suffering it's inflicting on you. The minuscule light of the room begins to fade, and you black out.
+	<br><br>
 
-<<link [[Next|Lake Ruin Prison Possession 2]]>><</link>>
-<br>
+	<<link [[Next|Lake Ruin Prison Possession 2]]>><</link>>
+	<br>
+<<else>>
+	Its upper half exits your body, and its hands caress your face. You're flooded with warmth as it leaves you. You're not sure if you can resist what's coming. You're not sure if you want to.
+	<br><br>
+
+	<<initWraith "man">>
+	<<link [[Next|Lake Ruin Prison Rape]]>><<wraithExorcise true false>><</link>>
+	<br>
+<</if>>
 
 :: Lake Ruin Prison Possession 2
 <<effects>>
 An instant later, it forces you awake. It has a hold of your very consciousness, and won't allow you any amount of relief. It begins to laugh hysterically in your voice. It shakily stands, and clenches your hands again.
 <br><br>
-<span class="red">It punches you in the gut with a force much greater than what your body is normally capable of.</span> At the exact same moment, you regain feeling in your entire body. You crumble, and it leaves you. You gasp for air, nearly retching. <<gggpain>><<pain 18>>
-<br><br>
-Its foot comes crashing down on your back. A jolt of pain shoots through your whole body, and you go fully prone. The minuscule sensation of your <<genitals 2>> hitting the stone is enough to finally push you over the edge into an incredibly painful orgasm. <<orgasm>>
-It keeps laughing as it digs its foot into your back, causing you to cry out in agony. It seems the slime covering you amplifies pain as well.
-<br><br>
-You barely manage to look up. It kneels down in front of you, smiling innocently. It almost looks human for a moment, but you know better than to think there's anything human about this. Its smile is quickly replaced with a sneer as it lifts your battered body, and begins to choke you.
-<br><br>
+<<if C.npc["Ivory Wraith"].lust gte 14>>
+	<span class="red">It punches you in the gut with a force much greater than what your body is normally capable of.</span> At the exact same moment, you regain feeling in your entire body. You crumble, and it leaves you. You gasp for air, nearly retching. <<gggpain>><<pain 18>>
+	<br><br>
+	Its foot comes crashing down on your back. A jolt of pain shoots through your whole body, and you go fully prone. The minuscule sensation of your <<genitals 2>> hitting the stone is enough to finally push you over the edge into an incredibly painful orgasm. <<orgasm>>
+	It keeps laughing as it digs its foot into your back, causing you to cry out in agony. It seems the slime covering you amplifies pain as well.
+	<br><br>
+	You barely manage to look up. It kneels down in front of you, smiling innocently. It almost looks human for a moment, but you know better than to think there's anything human about this. Its smile is quickly replaced with a sneer as it lifts your battered body, and begins to choke you.
+	<br><br>
+<<else>>
+	However, just before continuing to assault you with your own body, <span class="green">it hesitates.</span> Your hands unclench. You both let out a long breath.
+	<br><br>
+	Your body sits against the wall. Your legs tuck in to your chest. You both sit there, unmoving. "Why?"
+	<br><br>
+	You're not sure which one of you asked. You don't know the answer, either. You feel your hand shakily move to your neck, as the pale figure begins to exit your body.
+<</if>>
 <<initWraith "man">><<set $NPCList[0].lefthand to "throat">><<set $NPCList[0].righthand to "throat">><<set $neckuse to "hand">>
 <<link [[Next|Lake Ruin Prison Rape]]>><<wraithExorcise true false>><</link>>
 <br>
@@ -725,7 +790,13 @@ You barely manage to look up. It kneels down in front of you, smiling innocently
 	<<else>>
 		You back away, and keep your eyes closed.
 		<br><br>
-		<span class="red">You're kicked right in the stomach.</span> You immediately spit the lichen out, and begin coughing. <<pain 10>><<trauma 12>><<gtrauma>><<ggpain>>
+		<<if C.npc["Ivory Wraith"].lust gte 12>>
+			<span class="red">You're kicked right in the stomach.</span> You immediately spit the lichen out, and begin coughing. <<pain 10>><<trauma 12>><<gtrauma>><<ggpain>>
+		<<else>>
+			You immediately feel yourself get pushed back against the wall. You open your eyes and spit out the lichen. It's looking at you with a mixture of anger and remorse.
+			<br><br>
+			"<span class="wraith">You prefer to suffer? Very well.</span>"
+		<</if>>
 		<br><br>
 		You feel it grab you by the throat.
 		<br><br>
@@ -747,7 +818,7 @@ You barely manage to look up. It kneels down in front of you, smiling innocently
 You push back as much as you can, clashing against its will.
 <br><br>
 <<if $willpowerSuccess>>
-	It's pushed back, <span class="green">rejected by your body.</span> It tuts, and grabs you by the neck.
+	It's pushed back, <span class="green">rejected by your body.</span> It tuts, and grabs you by the arm.
 	<br><br>
 	"<span class="wraith">You'll learn to take the honey.</span>"
 	<br><br>
@@ -971,7 +1042,7 @@ When it finally ends, you collapse to the ground like a puppet with cut strings,
 <<endcombat>><<generateWraith 1>>
 <<wraithExorcise true true>>
 
-<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+<<if C.npc["Ivory Wraith"].lust gte 14>>
 	The pale figure looks down at you and grins. "<span class="wraith">You've consumed yourself. Now I consume the rest.</span>"
 	<br><br>
 	<<initWraith>>

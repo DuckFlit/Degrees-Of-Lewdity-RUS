@@ -369,7 +369,7 @@ You hear shouting outside.
 	<<set $farm_assault.teams[_assault_keys[_s]].wall_progress to 0>>
 	<<set $farm_assault.teams[_assault_keys[_s]].field_progress to 0>>
 	<<set $farm_assault.teams[_assault_keys[_s]].number to 3>>
-	<<if $wraith and $wraith.state is "haunt" and $farm_assault.wraith is undefined and $hallucinations gte 2 and random(1,12) is 1>>
+	<<if $wraith.state is "haunt" and $farm_assault.wraith is undefined and $hallucinations gte 2 and random(1,15-Math.floor(C.npc["Ivory Wraith"].lust/5)) is 1>>
 		<<set $farm_assault.teams[_assault_keys[_s]].type to "wraith">>
 		<<set $farm_assault.teams[_assault_keys[_s]].number to 1>>
 		<<set $farm_assault.teams[_assault_keys[_s]].torched to 0>>
@@ -450,7 +450,7 @@ You hear shouting outside.
 		<<if $farm_assault.teams[_assault_keys[_s]].state is "celebrate">>
 			<<set $farm_assault.teams[_assault_keys[_s]].state to "field">>
 			<<set $farm_assault.teams[_assault_keys[_s]].location to $farm_assault.no.pluck()>>
-			<<if $farm_assault.teams[_assault_keys[_s]].location is undefined or $farm_assault.teams[_assault_keys[_s]].torched is 3>>
+			<<if $farm_assault.teams[_assault_keys[_s]].location is undefined or $farm_assault.teams[_assault_keys[_s]].torched gte Math.floor(C.npc["Ivory Wraith"].lust/4)>>
 				<<set $farm_assault.teams[_assault_keys[_s]].location to "done">>
 			<</if>>
 		<</if>>
@@ -2443,10 +2443,9 @@ You move as fast as you think you can get away with. $farm.tower_guard tries to 
 <<effects>><<set _assault_keys to Object.keys($farm_assault.teams)>>
 
 <<if !$wraithIntro>>
-	<<set $wraithIntro to true>><<set $wraith.seenFarm to true>>
+	<<set $wraithIntro to true>>
 	You charge at the stranger. They're a beautiful pale figure, with translucent white robes and flowing silver hair. They regard you with angry red eyes, clawing at their own neck. A bizarre, slimy substance leaks wherever they walk.
 <<elseif !$wraith.seenFarm>>
-	<<set $wraith.seenFarm to true>>
 	You charge at the stranger. They turn to look at you and chuckle. <span class="red">Their face is a terrible, familiar pale.</span> A bizarre, slimy substance leaks wherever it walks.
 <<else>>
 	You charge at the pale figure. It turns to look at you and chuckles. A bizarre, slimy substance leaks wherever it walks.
@@ -2457,7 +2456,7 @@ You move as fast as you think you can get away with. $farm.tower_guard tries to 
 <br><br>
 
 <<generateWraith 1 true>>
-<<initWraith "man" "arms" "abomination">><<startWraith>>
+<<initWraith "man" "arms" "abomination">><<startWraith>><<set $wraith.seenFarm to true>>
 An ember crackles at <<his>> finger. <span class="red">The slime begins to spread across the field on its own.</span>
 <br><br>
 
@@ -2476,76 +2475,25 @@ An ember crackles at <<his>> finger. <span class="red">The slime begins to sprea
 	<<set $enemytype to $wraith.type>>
 	<<set $wraith.exit to "farm_assault">>
 	<<set _assault_keys to Object.keys($farm_assault.teams)>>
-	<<set $timer to 10 - $farm_assault.teams[_assault_keys[$farm_assault.wraith]].field_progress>>
+	<<set $timer to 12 - $farm_assault.teams[_assault_keys[$farm_assault.wraith]].field_progress - Math.floor(C.npc["Ivory Wraith"].lust/4)>>
 <</if>>
 <<set $enemyanger += 10>>
 
-<<switch $wraith.gen>>
-	<<case "man">>
-		<<effectsman>>
-		<<if $phase is 1>>
-			<br>
-			<<if $timer gte 10>>
-				<span class="lblue">The slime is thinly spread.</span>
-			<<elseif $timer gte 7>>
-				<span class="blue">The slime spreads out.</span>
-			<<elseif $timer gte 4>>
-				<span class="purple">The slime spreads further.</span>
-			<<elseif $timer gte 1>>
-				<span class="pink">The slime almost coats the entire field.</span>
-			<<else>>
-				<span class="red">The slime covers every inch.</span>
-			<</if>>
-			<br>
-		<</if>>
-		<<man>>
-		<<stateman>>
-		<<actionsman>>
-	<<case "arms">>
-		<<set _introSkip to true>>
-		<<set $enemynomax to 4>>
-		<<effectsman>>
-		<<if $phase is 1>>
-			<br>
-			<<if $timer gte 8>>
-				<span class="lblue">The slime is thinly spread.</span>
-			<<elseif $timer gte 6>>
-				<span class="blue">The slime spreads out.</span>
-			<<elseif $timer gte 4>>
-				<span class="purple">The slime spreads further.</span>
-			<<elseif $timer gte 2>>
-				<span class="pink">The slime almost coats the entire field.</span>
-			<<else>>
-				<span class="red">The slime covers every inch.</span>
-			<</if>>
-			<br>
-		<</if>>
-		<<man>>
-		<<set $enemyno to 1>>
-		<<stateman>>
-		<<actionsman>>
-	<<case "abomination">>
-		<<chastityBreakWraith>>
-		<<effectsabomination>>
-		<<if $phase is 1>>
-			<br>
-			<<if $timer gte 8>>
-				<span class="lblue">The slime is thinly spread.</span>
-			<<elseif $timer gte 6>>
-				<span class="blue">The slime spreads out.</span>
-			<<elseif $timer gte 4>>
-				<span class="purple">The slime spreads further.</span>
-			<<elseif $timer gte 2>>
-				<span class="pink">The slime almost coats the entire field.</span>
-			<<else>>
-				<span class="red">The slime covers every inch.</span>
-			<</if>>
-			<br>
-		<</if>>
-		<<abomination>>
-		<<stateabomination>>
-		<<actionsabomination>>
-<</switch>>
+<<if $phase is 1>>
+	<<if $timer gte 8>>
+		<span class="lblue">The slime is thinly spread.</span>
+	<<elseif $timer gte 6>>
+		<span class="blue">The slime spreads out.</span>
+	<<elseif $timer gte 4>>
+		<span class="purple">The slime spreads further.</span>
+	<<elseif $timer gte 2>>
+		<span class="pink">The slime almost coats the entire field.</span>
+	<<else>>
+		<span class="red">The slime covers every inch.</span>
+	<</if>>
+<</if>>
+
+<<effectsWraith>>
 
 <<if _combatend or ($pain gte 100 and $willpowerpain is 0) or ($timer lte 0 and $phase is 1)>>
 	<span id="next"><<link [[Next|Farm Assault Wraith Fight Finish]]>><</link>></span><<nexttext>>
@@ -2573,7 +2521,7 @@ An ember crackles at <<his>> finger. <span class="red">The slime begins to sprea
 	The strand flies out of <<his>> hands of its own accord and wraps around you, pinning your arms to your side. <<He>> gently pushes <<his>> foot into your chest, and you fall over.
 	<br><br>
 
-	"<span class="wraith">Chorus of fire, melodies scorched away. What a terrible song.</span>"
+	"<span class="wraith">Cacophony of cinder. Walk the coals that remain, and cover your ears.</span>"
 	<br><br>
 
 	<<He>> walks away, leaving you in the dirt. You're not sure when you lose sight of <<him>>. <<tearful>> you struggle against the strand of energy. It's gossamer thin, but very strong.
@@ -2630,7 +2578,7 @@ An ember crackles at <<his>> finger. <span class="red">The slime begins to sprea
 	The strand flies out of <<his>> hands of its own accord and wraps around you, pinning your arms to your side. <<He>> gently pushes <<his>> foot into your chest, and you fall over.
 	<br><br>
 
-	"<span class="wraith">Chorus of fire, melodies scorched away. What a terrible song.</span>"
+	"<span class="wraith">Cacophony of cinder. Walk the coals that remain, and cover your ears.</span>"
 	<br><br>
 
 	The pale figure flicks a single spark off its fingertip, onto the slime coating the field. It spreads, and <span class="red">the field bursts into flames.</span> You're not burnt, but the field is torched in front of your eyes. You struggle and scream.

@@ -34,8 +34,8 @@
 				"Sydney" : {
 					important : true,
 					love : { maxValue: 150 },
-					purity : { requirements : State.variables.NPCName[28].purity > 0, maxValue : 100, minValue : 0 },
-					corruption : { requirements : State.variables.NPCName[28].corruption > 0, maxValue : 50, minValue : 0 }
+					purity : { requirements : V.NPCName[28].purity > 0, maxValue : 100, minValue : 0 },
+					corruption : { requirements : V.NPCName[28].corruption > 0, maxValue : 50, minValue : 0 }
 				},
 				"Mason" : {
 					love : { maxValue : 50 }
@@ -54,27 +54,25 @@
 				},
 				"Sam" : {
 					love : { maxValue : 50 }
+				},
+				"Ivory Wraith" : {
+					lust : { name: "Obsession", activeIcon : (V.wraith && V.wraith.state == "haunt" ? "img/ui/obsessionblood.png" : "img/ui/obsession.png"), inactiveIcon : "img/ui/obsessionempty.png", maxValue : 20 }
 				}
 			};
 
-			/*This list is backwards due to the method used to sort via index, with unimportant NPCs being assigned -1*/
-			T.importantNpcOrder = [ "Alex", "Great Hawk", "Avery", "Sydney", "Kylar", "Eden", "Whitney", "Robin"];
+			/* This list dictates the order that the important NPCs will show up in on the social menu screen */
+			T.importantNpcOrder = ["Robin", "Whitney", "Eden", "Kylar", "Sydney", "Avery", "Great Hawk", "Alex"];
+			T.specialNPCs = ["Ivory Wraith"];
 
-			/*Clones the NPC list, and orderes it by important first, then by alphabetical order*/
-			T.orderedNPCs = V.NPCName.slice().sort(function(a, b) {
-				let diff = T.importantNpcOrder.indexOf(a.nam) - T.importantNpcOrder.indexOf(b.nam);
+			/* this list is sorted */
+			T.importantNPCs = T.importantNpcOrder.map(name => V.NPCName[V.NPCNameList.indexOf(name)]);
+			
+			/* this list is unsorted */
+			T.otherNPCs = V.NPCName.filter(npc => !T.importantNpcOrder.includes(npc.nam) && !T.specialNPCs.includes(npc.nam));
 
-				if(diff == 0) {
-					diff = a.nam < b.nam ? 1 : -1;
-				}
-
-				return diff;
-			});
-			T.orderedNPCs.reverse();
-
-
-			T.importantNPCs = T.orderedNPCs.slice(0, T.importantNpcOrder.length);
-			T.otherNPCs = T.orderedNPCs.slice(T.importantNpcOrder.length);
+			/* sorting takes the lower value and puts it first, so if a < b, a goes first. */
+			/* yes, this works on words, somehow. it's math shit, but it works. read a book if necessary. */
+			T.otherNPCs.sort((a,b) => a.nam - b.nam);
 		<</script>>
 	<</silently>>
 
@@ -98,6 +96,12 @@
 		<<set _initNPC to 0>>
 		<<for _k= 0; _k lt _otherNPCs.length; _k++>>
 			<<relation-box _otherNPCs[_k] _npcConfig[_otherNPCs[_k].nam]>>
+			<<set _initNPC += _npcData.init>>
+		<</for>>
+	</div>
+	<div id="secondary-npcs" class="relation-box-list">
+		<<for _ik= 0; _ik lt _specialNPCs.length; _ik++>>
+			<<relation-box $NPCName[$NPCNameList.indexOf(_specialNPCs[_ik])] _npcConfig[_specialNPCs[_ik]]>>
 			<<set _initNPC += _npcData.init>>
 		<</for>>
 	</div>

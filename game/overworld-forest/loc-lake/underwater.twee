@@ -5,7 +5,7 @@
 	<<passoutlake>>
 <<elseif $foresthunt gte 10>>
 	<<foresthunt>>
-<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
+<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
 	<<wHunt "lake">>
 <<else>>
 	<<if $season is "winter">>
@@ -200,7 +200,7 @@ You are in the submerged ruin beneath the lake. Glowing purple lichen covers anc
 	<<passoutlake>>
 <<elseif $foresthunt gte 10>>
 	<<foresthunt>>
-<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
+<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
 	<<wHunt "lake">>
 <<else>>
 	<<if $sciencelichenknown is 1 and $sciencelichenlake isnot 1 and $scienceproject is "ongoing">>
@@ -245,7 +245,7 @@ You are deep in the submerged ruin beneath the lake. Pots of different sizes fil
 	<<passoutlake>>
 <<elseif $foresthunt gte 10>>
 	<<foresthunt>>
-<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
+<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
 	<<wHunt "lake">>
 <<else>>
 	<<if $lakeruinkey is 1>>
@@ -273,9 +273,7 @@ You are deep in the submerged ruin beneath the lake. Pots of different sizes fil
 <<set $lakeruinkey to 2>>
 You hear the ancient mechanism creak and the door groans open. Beyond is a plinth, stood alone in a rubble-strewn room. Atop it sits an ivory necklace. It's studded with blue jewels.
 <br><br>
-<<link [[Take it|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
-<br>
-<<link [[Leave|Lake Ruin Deep]]>><</link>>
+<<link [[Swim inside|Lake Ruin Plinth]]>><</link>>
 <br>
 
 :: Lake Ruin Sit
@@ -364,12 +362,15 @@ The creature recoils from you and disappears into darkness. <<tearful>> you look
 
 <<set $outside to 0>><<set $location to "lake_ruin">><<underwater>><<effects>><<lakeeffects>>
 You are deep in the lake ruin, in a small room with a plinth.
+<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
+	An ivory necklace sits atop it. It's studded with blue jewels.
+<</if>>
 <<set _leave to 1>>
 <<set _bmoon to (($moonstate is "evening" and $hour gte 21) or ($moonstate is "morning" and $hour lt 6))>>
 <<set _parasite to ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime")>>
 <<if _bmoon>>
 	/* Display these on every blood moon entry */
-	<<if $wraith and $wraith.hunt>>
+	<<if $wraith.hunt>>
 		You sense the presence following you come to a stop. <span class="blue">It can't reach you in here.</span>
 		<<set $wraith.hunt to 0>><<set $foresthunt to 0>><<set $wraith.timer += 5>>
 	<</if>>
@@ -390,19 +391,13 @@ You are deep in the lake ruin, in a small room with a plinth.
 
 	<<link [[Sit on the plinth|Lake Ruin Sit]]>><</link>>
 	<br>
-<<elseif $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
-	An ivory necklace sits atop it. It's studded with blue jewels.
-	<br><br>
-
-	<<link [[Take it|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
-	<br>
 <<elseif $tentacledisable is "f" and $hallucinations gte 2 and !_bmoon>>
-	You look around the barren room. You don't see anything besides the plinth, but you hear a faint slithering sound. <span class="blue">Something's watching you.</span>
+	You look around the barren room. You don't see anything besides the plinth<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">> and necklace<</if>>, but you hear a faint slithering sound. <span class="blue">Something's watching you.</span>
 	<br><br>
 
 	<<link [[Search|Lake Ruin Deep Offer]]>><<loxygen>><</link>>
 	<br>
-<<elseif $tentacledisable is "f" and _bmoon and $phase isnot 1>>
+<<elseif $tentacledisable is "f" and _bmoon and $phase isnot 1 and $museumAntiques.antiques.antiqueivorynecklace isnot "notFound">>
 	<<set _leave to 0>>
 	<br><br>
 	You feel the water stirring around you, growing more agitated as you look around. From the darkness, thinly illuminated by the red moonlight, tentacles lash out. <span class="red">Two of them wrap around your ankles, beginning to pull you further into the room!</span>
@@ -412,7 +407,7 @@ You are deep in the lake ruin, in a small room with a plinth.
 	<br>
 	<<link [[Escape|Lake Ruin Deep Consentacles Leave]]>><<loxygen>><</link>><<swimmingdifficulty 600 1200>>
 	<br>
-<<elseif _bmoon and ($phase is 1 or $tentacledisable isnot "f")>>
+<<elseif _bmoon>>
 	The water around you is eerily silent, and deathly still, the room barely illuminated in the red glow.
 	<br><br>
 <<else>>
@@ -420,6 +415,10 @@ You are deep in the lake ruin, in a small room with a plinth.
 	<br><br>
 <</if>>
 <<if _leave>>
+	<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
+		<<link [[Take the necklace|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
+		<br>
+	<</if>>
 	<<link [[Leave|Lake Ruin Deep]]>><<set $phase to 0>><</link>>
 	<br>
 <</if>>
@@ -432,7 +431,7 @@ You lift the necklace from the plinth. The craftsmanship is masterful, and you g
 	You suddenly hear pounding on the walls all around you. <<if $wraith and $wraith.seen gte 1>>A familiar<<else>>An unfamiliar<</if>> voice cries out, and it feels like something's grabbing at your arms and legs. You instinctively flail and push yourself backwards through the water. <<trauma 12>><<ggtrauma>>
 	<br><br>
 	It dies down after a few moments, leaving you shaken.
-	<<if $wraith and $wraith.hunt>>
+	<<if $wraith.hunt>>
 		The dread slowly passes, and you no longer sense the presence hunting you. <span class="blue"><i>You're safe until the next blood moon.</i></span>
 		<br><br>
 	<</if>>
@@ -442,7 +441,7 @@ You lift the necklace from the plinth. The craftsmanship is masterful, and you g
 		<<set $wraithSkip to true>>
 	<</if>>
 	<<tearful>> you exit the room.
-<<elseif $wraith and $wraith.state isnot "">>
+<<elseif $wraith.state>>
 	You feel a twinge of dread as you look at your reflection in the blue gemstones. You look pale. <<stress 6>><<gstress>>
 	<br><br>
 	You decide not to linger, and leave the room with the necklace in hand.
@@ -468,6 +467,9 @@ Whatever it is, it sounds like it's behind you. No matter what direction you fac
 :: Lake Ruin Deep Offer 2
 
 <<set $outside to 0>><<set $location to "lake_ruin">><<underwater>><<effects>><<lakeeffects>>
+<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
+	You gingerly move the necklace aside.
+<</if>>
 <<if $exposed gte 2>>
 	You spread your arms and legs out, presenting your body to the thing in the room. <<deviancy4>>
 <<else>>

@@ -1346,6 +1346,9 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
 		<<set _npcList[clone($NPCNameList[$_i])] to clone($_i)>>
 	<</for>>
+	<<if $passage is "Start" or !$wraithIntro>>
+		<<run delete _npcList["Ivory Wraith"]>>
+	<</if>>
 <</if>>
 
 <div id="npcSettingsMenu">
@@ -1361,7 +1364,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 
 			T.keys = {};
 			T.keyNames = [];
-			const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "wraith", "pinch", "black_dog", "hacker"];
+			const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "pinch", "black_dog", "hacker"];
 			Object.keys(V.per_npc).forEach(k => {
 				for (const j of allowed_npcs){
 					if (k.includes(j)){
@@ -1445,17 +1448,29 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<<else>>
 			<<set _npcId-->>
 		<</if>>
+		<<if _npcList[$NPCName[_npcId].nam] is undefined>>
+			<<set _npcId-->>
+		<</if>>
 		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
 	<</link>> |
 	<<link "Next">>
-		<<set _npcId++>>
+		<<if _npcId is $NPCNameList.length - 1>>
+			<<set _npcId to 0>>
+		<<else>>
+			<<set _npcId++>>
+		<</if>>
+		<<if _npcList[$NPCName[_npcId].nam] is undefined>>
+			<<set _npcId++>>
+		<</if>>
 		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
 	<</link>>
 	<br><br>
 	<span class="gold">$NPCName[_npcId].nam the $NPCName[_npcId].title</span>
 	<br>
+	<span data-target="npcname-npcidpronoun" data-disabledif="V.NPCName[T.npcId].pronoun==='i'">
 	<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> Female</label> |
 	<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> Male</label>
+	</span>
 	<br>
 	<<if !$NPCName[_npcId].pregnancy or !$NPCName[_npcId].pregnancy.enabled or !$NPCName[_npcId].pregnancy.fetus.length>>
 		<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> Vagina</label> |
@@ -1577,8 +1592,6 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<<else>>
 		<<if $per_npc[_pNPCId].name_known>>
 			<span class="gold">$per_npc[_pNPCId].name the <<print _pNPCId.replace(/_/g, ' ')>></span>
-		<<elseif $per_npc[_pNPCId].name is "Ivory Wraith">>
-			<span class="wraith">The Ivory Wraith</span>
 		<<elseif _pNPCId is "tower_creature">>
 			<span class="gold">The Night Monster</span>
 		<<elseif _pNPCId is "hacker">>

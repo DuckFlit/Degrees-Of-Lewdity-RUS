@@ -1251,14 +1251,33 @@
 		<</if>>
 	<</if>>
 
-	<<if $wraith>>
-		<<if $wraithAnger>>
-			<<if $wraithAnger gt 0>>
-				<<set $wraithAnger -->>
+	<<if $wraith.state>>
+		<<if $wraithAngerCooldown>>
+			<<if $wraithAngerCooldown gt 0>>
+				<<set $wraithAngerCooldown -->>
 			<<else>>
 				<<set $wraith.offspring to "">>
-				<<unset $wraithAnger>>
+				<<unset $wraithAngerCooldown>>
 			<</if>>
+		<</if>>
+		<<set $wraith.days ++>>
+		<<if $wraith.days gte 31 and $wraithIntro and !$wraithCompoundCooldown and !$wraithCompoundEvent>>
+			<<if !$wraithCompoundChance>>
+				<<set $wraithCompoundChance to 0>>
+				<<if $wraith.offspring is "sold">>
+					<<set $wraithCompoundChance += 10>>
+				<</if>>
+			<</if>>
+			<<set $wraithCompoundChance ++>>
+			<<if $wraithCompoundChance gte random(5, (60 - C.npc["Ivory Wraith"].lust))>>
+				<<set $wraithCompoundEvent to true>>
+				<<unset $wraithCompoundChance>>
+				<br><span class="red">A fell mist hangs over Elk Street.</span><br>
+			<</if>>
+		<<elseif $wraithCompoundCooldown gt 0>>
+			<<set $wraithCompoundCooldown -->>
+		<<elseif $wraithCompoundCooldown lte 0>>
+			<<unset $wraithCompoundCooldown>>
 		<</if>>
 	<</if>>
 

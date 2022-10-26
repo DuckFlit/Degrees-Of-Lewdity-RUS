@@ -610,10 +610,19 @@ You hear voices up ahead, and take cover down a stairwell leading to a basement.
 <</widget>>
 
 <<widget "street2">>
-<<generate1>><<person1>>You hear footsteps behind you. <span class="blue">You feel followed.</span>
+You hear footsteps behind you. <span class="blue">You feel followed.</span>
 <br><br>
+<<rngWraith 2 "noBlood">>
+<<if _wraithEvent and $wraithIntro and $rng gte 51>>
+	<<generateWraith 1 true>><<person1>>
+	<<set $NPCList[0].skills to {athletics: random(300,500) + C.npc["Ivory Wraith"].lust * 25, security: random(300,500) + C.npc["Ivory Wraith"].lust * 25}>>
+	<<set $combatgoal to "confront">>
+	<<link [[Next|Wraith Stalk]]>><<set $molestationstart to 1>><</link>>
+<<else>>
+	<<generate1>><<person1>>
+	<<link [[Next|Street Stalk]]>><<set $molestationstart to 1>><</link>>
+<</if>>
 
-<<link [[Next|Street Stalk]]>><<set $molestationstart to 1>><</link>>
 <br>
 <</widget>>
 
@@ -1556,7 +1565,7 @@ You stumble in your heels and fall forwards. As your face approaches the ground,
 
 	<<npc Kylar>><<person1>>Something tugs your arm. It's Kylar. "H-hi," <<he>> gulps. <<He>> tries to pull you toward a dark alley. "We need privacy. I need you to do things to me."
 	<br><br>
-	<<if $wraith and _wraithEvent and ($wraith.state is "haunt" or $wraith.offspring is "dead")>>
+	<<if $wraith.state and _wraithEvent and ($wraith.state is "haunt" or ["dead","sold"].includes($wraith.offspring))>>
 		<<set $wraith.mimic to "Kylar">><<set $wraith.exit to "town">>
 		<<link [[Go with Kylar|Wraith Mimic Fight]]>><<set $sexstart to 1>><</link>><<promiscuous1>><<gglove>><<llksuspicion>>
 		<br>
@@ -2677,7 +2686,7 @@ You find a quiet place and open the <<wallet>>.
 
 <<set $dangerevent to random(1, 100)>>
 <<rng>>
-<<if $wraith and $eventforced and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6) and !_wraithEventSkipped>>
+<<if $wraith.state and $eventforced and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6) and !_wraithEventSkipped>>
 	<<wraithEventStreet>>
 <<elseif $kylarwatched is 1>>
 	<<kylarwatched>>
@@ -3160,9 +3169,9 @@ You find a quiet place and open the <<wallet>>.
 
 <<widget "streeteffects">>
 <<if !$possessed>>
-	<<if ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and $wraith.hunt is 0 and $wraith.timer gte (random(0, 60))>>
+	<<if ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte (random(0, 60))>>
 		<<wHunt "town">>
-	<<elseif $wraith and $wraith.hunt isnot 0>>
+	<<elseif $wraith.hunt>>
 		<<wHunt "town">>
 	<<elseif $kylar and $kylar.timer.street gte ($rng + 65) and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and $kylarwatched isnot 1 and $exposed lte 0>>
 		<<set $kylar.timer.street to 0>><<set $kylarwatchedtimer to 2>>

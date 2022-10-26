@@ -53,11 +53,15 @@
 		<!-- Parasites die if they don't get fed enough. The max time you can leave them is determined by tank size/parasite barn quality -->
 		<<set _container.deadCreatures to _container.count>>
 		<<for _i to 0; _i lt _container.count; _i++>>
-			<<if _container.creatures[_i].creature.includes("Pale") and $wraith and $wraith.state isnot "">>
+			<<if _container.creatures[_i].creature.includes("Pale") and $wraith.state>>
 				<!-- If a pale parasite dies, the Ivory Wraith becomes angry, and encounters become more dangerous -->
 				<<set $wraith.offspring to "dead">>
-				<<set $wraithAnger to 30>>
+				<<set $wraithAngerCooldown to 30>>
 				<<set $wraithShow to true>>
+				<<if !$wraithAngerCount>>
+					<<set $wraithAngerCount to 0>>
+				<</if>>
+				<<set $wraithAngerCount ++>>
 			<</if>>
 		<</for>>
 		<<set _container.count to 0>>
@@ -195,14 +199,16 @@
 		<<hallucinogen _boosts.hallucinogen>><<ghallucinogens>>
 	<</if>>
 
-	<<if $wraith and $wraith.state isnot "" and (_paleChance gte random(1, 10) or _paleChance gte 1 and !$wraith.offspringWarning) and !$possessed>>
+	<<if $wraith.state and (_paleChance gte random(1, 10) or _paleChance gte 1 and !$wraith.offspringWarning) and !$possessed>>
 		<!-- When you have pale parasites, the Ivory Wraith has a chance of appearing and warning you to keep them alive -->
 		<!-- It's guaranteed to appear if you're viewing pale parasites for the first time -->
 		<br><br>
 		You catch a glimpse of a pale figure standing right next to you. You jump back in shock. It slowly turns to you.
 		<br><br>
 		"<span class="wraith">Beautiful. Keep <<if _container.count isnot 1>>them<<else>>it<</if>> safe.</span>" It disappears with a bright flash. <<stress 6>><<gstress>>
-		<<set $wraith.offspring to "alive">>
+		<<if !["dead","sold"].includes($wraith.offspring)>>
+			<<set $wraith.offspring to "alive">>
+		<</if>>
 		<<if !$wraith.offspringWarning>>
 			<br>
 			You try to imagine what would happen if you let the pale creature die. <span class="purple">A spike of dread shoots through you.</span>
@@ -366,13 +372,18 @@
 			<<set _traumaMulti to 1>>
 		<</if>>
 		<<trauma `30 * _traumaMulti * _container.deadCreatures`>>
-		<<if $wraith and $wraith.state isnot "" and $wraithShow>>
+		<<if $wraith.state and $wraithShow>>
+			<<if !$wraithAngerCount>>
+				<<set $wraithAngerCount to 1>>
+			<</if>>
+			<<set _wraithRage to ($wraithAngerCount * 2)>>
 			<<unset $wraithShow>>
+			<<unset $wraithAngerCount>>
 			You feel something gingerly grab your neck from behind.
 			<br><br>
 			"<span class="wraith">Unforgivable. You'll join <<if _container.count isnot 1>>them<<else>>it<</if>> soon.</span>" <<stress 12>><<trauma 12>><<ggstress>><<ggtrauma>>
 			<br><br>
-			You turn around, but nothing's there.
+			You turn around, but nothing's there. <<gobsession _wraithRage>>
 			<br><br>
 		<</if>>
 

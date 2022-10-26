@@ -2479,7 +2479,6 @@
 	<<set $kylar.play to $kylar_play>>
 	<<unset $kylar_play>>
 <</if>>
-
 <<if typeof($semen_produced_stat) is "string">>
 	<<set $semen_produced_stat to parseFloat($semen_produced_stat)>>
 <</if>>
@@ -3805,5 +3804,36 @@
 		<<set $animalsemenswallowedstat to 0>>
 	<</if>>
 
+	<!-- v0.3.12.4 Wraith update -->
+	<<if !$wraith>>
+		<<set $wraith to {"state": "", "init": 0}>>
+	<<elseif $wraith.init is undefined>>
+		<<set $wraith.init to 1>>
+		<<set $wraith.days to 0>>
+	<</if>>
+	<<if $per_npc.wraith>>
+		<<if $wraithAnger>>
+			<<set $wraithAngerCooldown to $wraithAnger>>
+			<<unset $wraithAnger>>
+		<</if>>
+		<<initnpc "Ivory Wraith">>
+		<<run ["pronouns", "pronoun", "gender", "pregnancyAvoidance", "vagina", "penis", "clothes", "chest", "skincolour", "breastsize", "breastsdesc", "breastdesc", "penisdesc", "penissize", "trust", "type"].forEach(s => C.npc["Ivory Wraith"][s] = clone($per_npc.wraith[s]))>>
+		<<set C.npc["Ivory Wraith"].lust to 0>>
+		<<if $wraith.state is "haunt">>
+			<<set C.npc["Ivory Wraith"].lust to 20>>
+			<<if ($wraithPrison and $wraithPrison.vision) or Object.keys(V.feats.currentSave).includes("Schism")>>
+				<<set $wraithPrison.vision to true>>
+				<<set C.npc["Ivory Wraith"].lust -= 5>>
+			<</if>>
+		<</if>>
+		<<if $wraithAngerCooldown>>
+			<<set C.npc["Ivory Wraith"].lust += 3>>
+		<</if>>
+		<<set C.npc["Ivory Wraith"].lust = Math.clamp(C.npc["Ivory Wraith"].lust, 0, 20)>>
+		<<clearNPC "wraith">>
+		<<if $wraith.state and !$wraith.days>>
+			<<set $wraith.days to ($days - 60)>>
+		<</if>>
+	<</if>>
 
 <</widget>>
