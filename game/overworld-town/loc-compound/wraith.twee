@@ -1,7 +1,7 @@
 :: Elk Compound Wraith Give
 <<effects>><<wraithPossess>>
 
-<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+<<if C.npc["Ivory Wraith"].lust gt 10 and ($wraith.state is "haunt" or $wraith.offspring is "dead")>>
 	<<set $compoundWraith to "accepted">>
 	You can't tell if it's moving or not, but afterimages form around it all the same. You fall to your knees without resistance.
 <<else>>
@@ -79,12 +79,12 @@ You look away, trying to force the swirling shapes out of your mind. The pale fi
 :: Elk Compound Wraith Fight Finish
 <<effects>>
 <<if !$wraithCount>>
-	<<if $wraith.state isnot "haunt" and $wraith.offspring isnot "dead">>
+	<<if $wraith.state isnot "haunt" and !["dead","sold"].includes($wraith.offspring)>>
 		<<set $wraithCount to 1>><<set $wraithMax to 1>>
 	<<else>>
 		<<set $wraithCount to 0>>
 		<<set $wraithMax to 3>>
-		<<if $wraith.offspring is "dead">>
+		<<if ["dead","sold"].includes($wraith.offspring)>>
 			<<set $wraithMax++>>
 		<</if>>
 		<<if $tentacledisable is "t">>
@@ -106,6 +106,8 @@ You look away, trying to force the swirling shapes out of your mind. The pale fi
 	<<set $wraith.defeated++>>
 	<<clotheson>>
 	<<endcombat>><<endWraith>><<clearWraith>>
+	<<set $wraithCompoundCooldown to 10>>
+	<<set $wraithCompoundChance to 10>>
 	<<link [[Next|Elk Compound]]>><</link>>
 <<elseif $enemyarousal gte $enemyarousalmax or $pain gte 100 and $willpowerpain is 0 or ($wraith.type is "tentacles" and $tentacles.active lte ($tentacles.max / 2)) or ($wraith.type is "slime" and $struggle.done gte $struggle.number)>>
 	<<set $wraithCount++>>
@@ -125,13 +127,15 @@ You look away, trying to force the swirling shapes out of your mind. The pale fi
 			<br><br>
 			<<link [[Next|Elk Compound Possessed Intro]]>><<endWraith>><<clearWraith>><<clotheson>><<endcombat>><<wraithPossess>><</link>>
 			<br>
-		<<elseif $wraith.state is "haunt" or $wraith.offspring is "dead">>
+		<<elseif $wraith.state is "haunt" or ["dead","sold"].includes($wraith.offspring)>>
 			The figure scowls. "<span class="wraith">Have you not taken enough from me? I will find another way.</span>" <<He>> breaks off and vanishes in a torrent of water.
 			<br><br>
 			<<tearful>> you look around, trying to make sure <<hes>> really gone.
 			<<endRainWraith true>>
 			<<clotheson>>
 			<<endcombat>><<endWraith>><<clearWraith>>
+			<<set $wraithCompoundCooldown to 10>>
+			<<set $wraithCompoundChance to 10>>
 			<<link [[Next|Elk Compound]]>><</link>>
 		<<else>>
 			The figure frowns. "<span class="wraith">Like squeezing blood from a stone. I will find another way.</span>" <<He>> breaks off and vanishes in a torrent of water.
@@ -140,6 +144,8 @@ You look away, trying to force the swirling shapes out of your mind. The pale fi
 			<<endRainWraith true>>
 			<<clotheson>>
 			<<endcombat>><<endWraith>><<clearWraith>>
+			<<set $wraithCompoundCooldown to 10>>
+			<<set $wraithCompoundChance to 10>>
 			<<link [[Next|Elk Compound]]>><</link>>
 		<</if>>
 	<<else>>
@@ -152,17 +158,20 @@ You look away, trying to force the swirling shapes out of your mind. The pale fi
 
 :: Elk Compound Possessed Intro
 <<effects>>
-<<set $wraithWillMessage to true>>
-You shamble over to a puddle, and look at your reflection. A pale <<girl>> with <<wraithEyes>> eyes stares back.
+<<set $wraithWillMessage to true>><<set $wraithCompoundSeen to true>>
+You <<wraithShamble>> over to a puddle, and look at your reflection. A pale <<girl>> with <<wraithEyes>> eyes stares back.
 <br><br>
 You move each finger individually, as if to test them.
 <br><br>
-Your head quickly tilts to the side, making sickening cracks. You stare at the central building.
-<br><br>
-Words come out of your mouth.
 <<if $compoundWraith is "willing">>
+	Your head tilts to the side, making a satisfying pop. You stare at the central building.
+	<br><br>
+	Words come out of your mouth.
 	"<span class="wraith">Onward we fly.</span>" It nods your head resolutely.
 <<else>>
+	Your head quickly tilts to the side, making sickening cracks. You stare at the central building.
+	<br><br>
+	Words come out of your mouth.
 	"<span class="wraith">Onward I fly.</span>" It twists your lips into a grin.
 <</if>>
 <br><br>
@@ -178,7 +187,7 @@ You are in the compound on Elk Street. Three red brick buildings stand surrounde
 <</if>>
 <br><br>
 
-You shamble toward the central building, reaching the door. You reach for the door handle and try to pull it open. It's locked.
+You <<wraithShamble>> toward the central building, reaching the door. You reach for the door handle and try to pull it open. It's locked.
 <br><br>
 
 <<if $compoundWraith is "willing">>
@@ -364,6 +373,8 @@ You step into the room, and the guards turn to look at you. The <<person1>><<per
 	<br><br>
 
 	<<endcombat>><<clotheson>>
+	<<set $wraithCompoundCooldown to 10>>
+	<<set $wraithCompoundChance to 10>>
 
 	<<link [[Next|Elk Compound]]>><<unset $compoundWraith>><<endRainWraith>><<endWraith>><<clearWraith>><</link>>
 <</if>>
@@ -428,26 +439,40 @@ The <<person>> collapses to the ground, groaning. <<He>> tries to push <<himself
 	The pale figure snaps its fingers, and the metal of each crate warps and deforms. One crate is shorn apart, and a white, almost translucent substance leaks out. It undulates, pulling itself out of the crate and shambling toward the figure. <span class="gold">It's a pale slime.</span>
 	<br><br>
 
-	The pale figure reaches down and picks it up, gently stroking it. More and more crates break open, revealing all sorts of creatures, all pale as ivory. There are slimes, long tentacles, creatures covered in tendrils, and more. They all crowd around the pale figure. Its shoulders slump as it finally relaxes.
+	The pale figure reaches down and picks it up, gently stroking it. More and more crates break open, revealing all sorts of creatures, all pale as ivory. There are slimes, long tentacles, creatures covered in tendrils, and more.
+	<<if $wraith.offspring is "sold">>
+		<span class="green">You even see the pale children you sold.</span>
+	<</if>>
+	They all crowd around the pale figure. Its shoulders slump as it finally relaxes.
 	<br>
 	One creature, a pale, leathery multi-limbed creature that goes up to your waist, scuttles toward you. You raise your arms to defend yourself on reflex, but it doesn't attack. Instead, it gently nuzzles into your side, before chirping and jumping back.
 	<<stress -6>><<lstress>>
 	<br><br>
 
-	Eventually, the pale figure sets the slime down and waves an arm. A swirling purple disc appears on the floor, and the creatures jump into it without a hint of fear. A hand gently lands on your shoulder from behind; you know it belongs to the pale figure, despite it standing in front of you. "<span class="wraith">You whose charity knows no bounds.</span>"
+	Eventually, the pale figure sets the slime down and waves an arm. A swirling purple disc appears on the floor, and the creatures jump into it without a hint of fear. A hand gently lands on your shoulder from behind; you know it belongs to the pale figure, despite it standing in front of you.
+	<<if $wraith.state is "haunt">>
+		"<span class="wraith">You who seeks to repent.</span>"
+	<<else>>
+		"<span class="wraith">You whose charity knows no bounds.</span>"
+	<</if>>
 	<br>
 	<<if $museumAntiques.antiques.antiquehourglass isnot "found" and $museumAntiques.antiques.antiquehourglass isnot "talk" and $museumAntiques.antiques.antiquehourglass isnot "museum">>
 		<<set $antiquemoney += 1400>><<museumAntiqueStatus "antiquehourglass" "found">>
 		It reaches into one specific crate, one which didn't appear to be holding a creature at all, and pulls out an ornate hourglass made of an unidentifiable metal, with various inscriptions along the edges. A collector might be interested in it. "<span class="wraith">The sands have long since run dry, but still they do not deserve this. Hold it close, fore it slips through your fingers.</span>"
 	<<else>>
 		<<set $blackmoney += 1000>>
-		It pulls several devices off the nearby wall with tendrils, giving them to you. Someone on the black market may be interested. "<span class="wraith">A token of appreciation. That it hurts them merely sweetens the deal.</span>"
+		It pulls several devices off the nearby wall with tendrils, giving them to you. Someone on the black market may be interested. "<span class="wraith">A token of appreciation. That it hurts them is but another boon.</span>"
 	<</if>>
+	<<npcincr "Ivory Wraith" love 3>><<gglove>><<lobsession 1>>
 <<else>>
-	You snap your fingers, and the metal of each cage warps and deforms. One crate is shown apart, and a white, almost translucent substance leaks out. It undulates, pulling itself out of the crate and shambling into the open. <span class="gold">It's a pale slime.</span>
+	You snap your fingers, and the metal of each cage warps and deforms. One crate is shorn apart, and a white, almost translucent substance leaks out. It undulates, pulling itself out of the crate and shambling into the open. <span class="gold">It's a pale slime.</span>
 	<br><br>
 
-	It seems hesitant, but your eyes flash <<wraithEyes>> and it shambles towards you. You pick it up, gently stroking it. More and more crates break open, revealing all sorts of creatures, all pale as ivory. There are slimes, long tentacles, creatures covered in tendrils, and more. They all crowd around you. Your shoulders slump as your body finally relaxes.
+	It seems hesitant, but your eyes flash <<wraithEyes>> and it shambles towards you. You pick it up, gently stroking it. More and more crates break open, revealing all sorts of creatures, all pale as ivory. There are slimes, long tentacles, creatures covered in tendrils, and more.
+	<<if $wraith.offspring is "sold">>
+		<span class="green">You even see the pale children you sold.</span>
+	<</if>>	
+	They all crowd around you. Your shoulders slump as your body finally relaxes.
 	<br>
 	One creature, a pale, leathery multi-limbed creature that goes up to your waist, scuttles toward you. A dark pit settles in your stomach, but it doesn't attack. Instead, it gently nuzzles into your side, before chirping and jumping back.
 	<br><br>
@@ -468,10 +493,17 @@ The <<person>> collapses to the ground, groaning. <<He>> tries to push <<himself
 			It reaches into one specific crate, one which didn't appear to be holding a creature at all, and pulls out an ornate hourglass made of an unidentifiable metal, with various inscriptions along the edges. A collector might be interested in it. "<span class="wraith">I trust this more in your hands, than I do in theirs. Hold it close, fore it slips through your fingers.</span>"
 		<<else>>
 			<<set $blackmoney += 1000>>
-			It pulls several devices off the nearby wall with tendrils, giving them to you. Someone on the black market may be interested. "<span class="wraith">A token of appreciation. That it hurts them merely sweetens the deal.</span>"
+			It pulls several devices off the nearby wall with tendrils, giving them to you. Someone on the black market may be interested. "<span class="wraith">A token of appreciation. That it hurts them is but another boon.</span>"
 		<</if>>
+		<<npcincr "Ivory Wraith" love 1>><<glove>><<if $wraith.offspring is "sold">><<lobsession 1>><<else>><<lobsession 3>><</if>>
 	<</if>>
 <</if>>
+<<if $wraith.offspring is "sold">>
+	<<unset $wraithAngerCooldown>>
+	<<set $wraith.offspring to "">>
+<</if>>
+<<set $wraithCompoundCooldown to 30>>
+<<unset $wraithCompoundChance>>
 <br><br>
 
 <<if $possessed>>

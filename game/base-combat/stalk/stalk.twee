@@ -30,22 +30,20 @@
 
 	<<if $NPCList[_n].distance lte _n>>
 		<<if !$stalk_end>>
-			<<if $NPCList[_n].legs is "run" or $NPCList[0].bold gte random(1, 1000)>>
+			<<if $NPCList[0].fullDescription isnot "Ivory Wraith" and ($NPCList[_n].legs is "run" or $NPCList[0].bold gte random(1, 1000))
+			or $NPCList[0].fullDescription is "Ivory Wraith" and C.npc["Ivory Wraith"].lust gte random(5,15)>>
 				<span class="red">You are accosted.</span>
 				<<if $npcrow.includes(0)>>
 					<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
 					<<if !$stalk_assess>>
-						<span class="pink">It's <<print $npc[$npcrow.indexOf(0)]>>.</span>
+						<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+							<span class="red">A<<if $wraith.seen gte 3>> familiar<</if>> pale figure stares down at you, eyes flashing <<wraithEyes>>.</span>
+						<<else>>
+							<span class="pink">It's <<print $npc[$npcrow.indexOf(0)]>>.</span>
+						<</if>>
 					<</if>>
 					<br><br>
 					<<events_stalk_nnpc $NPCList[0].fullDescription>>
-				<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-					<<stalk_nnpc_text_attack "Wraith">>
-					<<if !$stalk_assess>>
-						<span class="red">A<<if $wraith.seen gte 3>> familiar<</if>> pale figure stares down at you, eyes flashing <<wraithEyes>>.</span>
-					<</if>>
-					<br><br>
-					<<events_stalk_nnpc "Wraith">>
 				<<else>>
 					<br><br>
 					<<events_stalk>>
@@ -53,8 +51,6 @@
 			<<else>>
 				<<if $npcrow.includes(0)>>
 					<<stalk_nnpc_text_passed $NPCList[0].fullDescription>>
-				<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-					<<stalk_nnpc_text_passed "Wraith" "passed">>
 				<<else>>
 					A <<person1>><<person>>
 					<<switch $enemyno>>
@@ -595,8 +591,6 @@
 <<if $combatgoal is "confront">>
 	<<if $npcrow.includes(0)>>
 		<<stalk_nnpc_text_confront $NPCList[0].fullDescription>>
-	<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-		<<stalk_nnpc_text_confront "Wraith">>
 	<<else>>
 		<span class="purple">You're grabbed by the arm and pulled back to face your assailant.</span>
 	<</if>>
@@ -878,7 +872,8 @@
 				<<case 2>>"Thought you were safe? Guess again."
 				<<case 1>>"My favourite <<bitch>>, all by <<pherself>>." <<He>> grins. "Lucky me."
 			<</switch>>
-		<<case "Wraith">>
+		<<case "Ivory Wraith">>
+			<<set $stalk_assess to true>>
 			<<if $wraith.state is "haunt">>
 				<<switch random(1, 5)>>
 					<<case 5>><<set _wraith_output to "Give it back.">>
@@ -887,13 +882,13 @@
 					<<case 2>><<set _wraith_output to "Where can you go but down?">>
 					<<case 1>><<set _wraith_output to "Run from your sins, into empty arms.">>
 				<</switch>>
-			<<elseif $wraith.offspring is "dead">>
+			<<elseif ["dead","sold"].includes($wraith.offspring)>>
 				<<switch random(1, 5)>>
 					<<case 5>><<set _wraith_output to "Coward.">>
 					<<case 4>><<set _wraith_output to "All your fault.">>
 					<<case 3>><<set _wraith_output to "<<pcPetname \"Wraith\">>.">>
 					<<case 2>><<set _wraith_output to "Afraid. Alone. You'll share that pain.">>
-					<<case 1>><<set _wraith_output to "You've dug their grave. Now lie with them.">>
+					<<case 1>><<set _wraith_output to ($wraith.offspring is "dead" ? "You've dug their grave. Now lie with them." : "They're still calling your name. Will you hear them?")>>
 				<</switch>>
 			<<else>>
 				<<switch random(1, 5)>>
@@ -904,7 +899,8 @@
 					<<case 1>><<set _wraith_output to "Fly while you can, before your wings are clipped.">>
 				<</switch>>
 			<</if>>
-			<span class="wraith">"<<print _wraith_output>>"</span>
+			"<span class="wraith"><<print _wraith_output>></span>"
+			<<rainWraith true>>
 		<<default>>
 			"Best play along," <<he>> says. "It'll be easier for you."
 	<</switch>>
@@ -985,7 +981,7 @@
 				<<case 2>><span class="green"><<He>> throws <<his>> hands up,</span> smiling innocently. "Just admiring the view from back here."<br><br> <<He>> smacks your <<bottom>> as <<he>> walks on.<<stress 2>><<arousal 150>><<gstress>><<garousal>>
 				<<case 1>>Just as <<he>> draws near, <<he>> jumps at you with a loud "Boo!" You flinch on instinct.<br><br> "Wuss," <<he>> laughs <span class="green">as <<he>> leaves you behind.</span><<stress 4>><<gstress>>
 			<</switch>>
-		<<case "Wraith">>
+		<<case "Ivory Wraith">>
 			It cackles, <span class="teal">before dissipating into a thick, cool mist.</span> Its voice echoes around you.
 			<<switch random(1, 3)>>
 				<<case 3>><<set _wraith_output to "Bask while you can. The night comes quickly.">>
@@ -1064,13 +1060,13 @@
 				<<case 2>><<stalk_nnpc_name>> smacks your <<bottom>> as <<he>> passes.<<if $stalk_assess>><<He>> flashes a smug smirk over <<his>> shoulder.<<else>><<Hes>> gone before you can get a good look at <<him>>.<</if>><<stress 2>><<arousal 150>><<gstress>><<garousal>>
 				<<case 1>><<stalk_nnpc_name>> picks at <<his>> nails as <<he>> passes. <span class="teal"><<Hes>> too engrossed to notice you.</span>
 			<</switch>>
-		<<case "Wraith">>
+		<<case "Ivory Wraith">>
 			<<switch random(1, 3)>>
 				<<case 3>>A cold chill blows over you, <span class="teal">but it vanishes just as quickly.</span>
 				<<case 2>>A cold, clammy hand grabs your shoulder. You turn, <span class="teal">but no one's there.</span>
 				<<case 1>>You feel a presence. Someone breathes in your ear. "<span class="wraith">Not yet.</span>" A warm breeze washes over you, <span class="teal">taking the unwelcome presence with it.</span>
 			<</switch>>
-			You think you're alone.<<trauma 2>><<stress 4>><<gtrauma>><<gstress>>
+			A faint mist is left in the air. You think you're alone.<<trauma 2>><<stress 4>><<gtrauma>><<gstress>>
 		<<default>>
 			A <<personsimple>> passes by. <span class="teal"><<He>> doesn't glance at you.</span>
 	<</switch>>
@@ -1086,7 +1082,7 @@
 			<<else>>
 				the culprit.
 			<</if>>
-		<<case "Wraith">>
+		<<case "Ivory Wraith">>
 			The air chills around you. Animated by instinct, you turn around to find a pair of <<wraithEyes>> eyes staring back.
 		<<default>>
 			You're grabbed by the arm and pulled back to face your assailant.
@@ -1094,10 +1090,18 @@
 <</widget>>
 
 <<widget "stalk_nnpc_name">>
-	<<if $stalk_assess>>
-		<<print $NPCList[0].fullDescription>>
+	<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+		<<if $stalk_assess>>
+			The pale figure
+		<<else>>
+			Somebody
+		<</if>>
 	<<else>>
-		A <<personsimple>>
+		<<if $stalk_assess>>
+			<<print $NPCList[0].fullDescription>>
+		<<else>>
+			A <<personsimple>>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -1108,23 +1112,31 @@
 	<<for _i to 0; _i lt 8; _i++>>
 		<img @class="'stalk_' + _i" src="img/misc/stalk/base.png">
 	<</for>>
+	<<if $NPCList[0].fullDescription is "Ivory Wraith" and $stalk_assess>>
+		<<set $_stalker to "_wraith">>
+	<<else>>
+		<<set $_stalker to "">>
+	<</if>>
 	<<if $NPCList[0].distance is 0 and $NPCList[0].state isnot "pursuit" or $stalk_end is "hide">>
-		<<if $stalk_end>>
+		<<if $stalk_end is "confront">>
+			<img class="stalk_3" @src="'img/misc/stalk/npc' + $_stalker + '.png'">
 			<img class="stalk_4" src="img/misc/stalk/pc.png">
-			<img class="stalk_5" src="img/misc/stalk/safe_npc.png">
+		<<elseif $stalk_end>>
+			<img class="stalk_4" src="img/misc/stalk/pc.png">
+			<img class="stalk_5" @src="'img/misc/stalk/safe_npc' + $_stalker + '.png'">
 		<<else>>
-			<img class="stalk_4" src="img/misc/stalk/caught.png">
+			<img class="stalk_4" @src="img/misc/stalk/caught.png">
 		<</if>>
 	<<else>>
 		<<if $NPCList[0].distance lt 4>>
 			<<if $NPCList[0].state is "pursuit">>
 				<<set _stalk_position to 4 + $NPCList[0].distance>>
-				<img @class="'stalk_' + _stalk_position" src="img/misc/stalk/npc.png">
+				<img @class="'stalk_' + _stalk_position" @src="'img/misc/stalk/npc' + $_stalker + '.png'">
 				<img @class="'stalk_' + _stalk_position" src="img/misc/stalk/clothes.png">
 			<<elseif $stalk_end is "escaped">>
 			<<else>>
 				<<set _stalk_position to 4 - $NPCList[0].distance>>
-				<img @class="'stalk_' + _stalk_position" src="img/misc/stalk/npc.png">
+				<img @class="'stalk_' + _stalk_position" @src="'img/misc/stalk/npc' + $_stalker + '.png'">
 			<</if>>
 		<</if>>
 		<img class="stalk_4" src="img/misc/stalk/pc.png">

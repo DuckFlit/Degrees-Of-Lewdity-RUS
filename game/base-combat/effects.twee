@@ -2782,7 +2782,7 @@
 		<<else>>
 			<<if $feetuse isnot "run">>
 				You break into a run.
-				<<if $NPCList[0].bold * 2 gte random(1, 1000)>>
+				<<if $NPCList[0].fullDescription is "Ivory Wraith" or $NPCList[0].bold * 2 gte random(1, 1000)>>
 					The footsteps behind you speed up. <span class="red">You are being chased.</span>
 					<<stalk_run>>
 					<<if $worn.feet.type.includes("heels")>>
@@ -2828,7 +2828,6 @@
 				<<else>>
 					<span class="red">The footsteps get closer.</span>
 				<</if>>
-				<br>
 			<</if>>
 			<<if $NPCList[0].distance gte 5>>
 				<span class="green">You leave them far behind,</span> and escape to safety.
@@ -2892,7 +2891,8 @@
 				You dive down a small alley, and take cover behind a dumpster.
 			<</switch>>
 			<<set $stalk_end to "hide">>
-		<<elseif !_hide_success and ($NPCList[0].legs is "run" or $NPCList[0].bold gte random(1, 1000))>>
+		<<elseif !_hide_success and ($NPCList[0].fullDescription isnot "Ivory Wraith" and ($NPCList[_n].legs is "run" or $NPCList[0].bold gte random(1, 1000))
+		or $NPCList[0].fullDescription is "Ivory Wraith" and C.npc["Ivory Wraith"].lust gte random(5,15))>>
 			<<switch $location>>
 			<<case alley>>
 				You dive down a thin alley, and take cover behind a dumpster. You peek around the corner. You don't see anyone.
@@ -2911,17 +2911,14 @@
 			<<if $npcrow.includes(0)>>
 				<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
 				<<if !$stalk_assess>>
-					<span class="pink">It's <<print $npc[$npcrow.indexOf(0)]>>.</span>
+					<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+						<span class="red">A<<if $wraith.seen gte 3>> familiar<</if>> pale figure stares down at you, eyes flashing <<wraithEyes>>.</span>
+					<<else>>
+						<span class="pink">It's <<print $npc[$npcrow.indexOf(0)]>>.</span>
+					<</if>>
 				<</if>>
 				<br><br>
 				<<events_stalk_nnpc $NPCList[0].fullDescription>>
-			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-				<<stalk_nnpc_text_attack "Wraith">>
-				<<if !$stalk_assess>>
-					<span class="red">A<<if $wraith.seen gte 3>> familiar<</if>> pale figure stares down at you, eyes flashing <<wraithEyes>>.</span>
-				<</if>>
-				<br><br>
-				<<events_stalk_nnpc "Wraith">>
 			<<else>>
 				<br><br>
 				<<events_stalk>>
@@ -2929,14 +2926,37 @@
 		<<else>>
 			<<switch $location>>
 			<<case alley>>
-				You dive down a thin alley, and take cover behind a dumpster. <span class="green"><<if $enemyno gt 1>>They pass<<else>>The <<person>> passes<</if>> without looking your way.</span>
+				You dive down a thin alley, and take cover behind a dumpster.
+				<<if $NPCList[0].fullDescription isnot "Ivory Wraith">>
+					<span class="green"><<if $enemyno gt 1>>They pass<<else>>The <<person>> passes<</if>> without looking your way.</span>
+				<</if>>
 			<<case forest lake>>
-				You run into a dense copse, and take cover behind a thick trunk. You peek around the edge. <span class="green"><<if $enemyno gt 1>>They pass<<else>>The <<person>> passes<</if>> by without looking your way.</span>
+				You run into a dense copse, and take cover behind a thick trunk. You peek around the edge.
+				<<if $NPCList[0].fullDescription isnot "Ivory Wraith">>
+					<span class="green"><<if $enemyno gt 1>>They pass<<else>>The <<person>> passes<</if>> by without looking your way.</span>
+				<</if>>
 			<<case moor>>
-				You crest a small ridge, and dive into a ditch. The <<if $enemyno gt 1>><<person1>><</if>><<person>> pauses at the top, <span class="green">then moves on without looking your way.</span>
+				You crest a small ridge, and dive into a ditch.
+				<<if $NPCList[0].fullDescription isnot "Ivory Wraith">>
+					The <<if $enemyno gt 1>><<person1>><</if>><<person>> pauses at the top, <span class="green">then moves on without looking your way.</span>
+				<</if>>
 			<<default>>
-				You dive down a thin alley, and take cover behind a dumpster. You peek around the side. <span class="green"><<if $enemyno gt 1>>They pass<<else>>The <<person>> passes<</if>> without looking your way.</span>
+				You dive down a thin alley, and take cover behind a dumpster. You peek around the side.
+				<<if $NPCList[0].fullDescription isnot "Ivory Wraith">>
+					<span class="green"><<if $enemyno gt 1>>They pass<<else>>The <<person>> passes<</if>> without looking your way.</span>
+				<</if>>
 			<</switch>>
+			<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<set $stalk_assess to true>>
+				The pale figure cackles and <span class="teal">dissipates into a thick, cool mist</span>. Its voice echoes around you.
+				<<switch random(1, 3)>>
+					<<case 3>><<set _wraith_output to "You can only hide from yourself for so long.">>
+					<<case 2>><<set _wraith_output to "As the sun rests below the horizon.">>
+					<<case 1>><<set _wraith_output to "Before they lose their shine.">>
+				<</switch>>
+				"<span class="wraith"><<print _wraith_output>></span>"
+				<<trauma 2>><<stress 4>><<gtrauma>><<gstress>>
+			<</if>>
 			<<set $stalk_end to "hide">>
 		<</if>>
 	<</if>>
@@ -2946,29 +2966,31 @@
 		You swivel around, and come face to face with
 		<<person1>>
 		<<if $npcrow.includes(0)>>
-			<<if $stalk_assess>>
-				<<if $enemyno gte 3>>
-					<<print $NPCList[0].fullDescription>> and <<his>> companions.
-				<<elseif $enemyno is 2>>
-					<<print $NPCList[0].fullDescription>> and <<his>> companion.
+			<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<if $stalk_assess>>
+					the pale figure.
 				<<else>>
-					<<print $NPCList[0].fullDescription>>.
+					a<<if $wraith.seen gte 3>> familiar<</if>> pale figure.
 				<</if>>
 			<<else>>
-				<<if $enemyno gte 3>>
-					a <<personsimple>> and <<his>> companions.
-				<<elseif $enemyno is 2>>
-					a <<personsimple>> and <<his>> companion.
+				<<if $stalk_assess>>
+					<<if $enemyno gte 3>>
+						<<print $NPCList[0].fullDescription>> and <<his>> companions.
+					<<elseif $enemyno is 2>>
+						<<print $NPCList[0].fullDescription>> and <<his>> companion.
+					<<else>>
+						<<print $NPCList[0].fullDescription>>.
+					<</if>>
 				<<else>>
-					a <<personsimple>>.
+					<<if $enemyno gte 3>>
+						a <<personsimple>> and <<his>> companions.
+					<<elseif $enemyno is 2>>
+						a <<personsimple>> and <<his>> companion.
+					<<else>>
+						a <<personsimple>>.
+					<</if>>
+					<span class="pink">It's <<print $NPCList[0].fullDescription>>.</span>
 				<</if>>
-				<span class="pink">It's <<print $NPCList[0].fullDescription>>.</span>
-			<</if>>
-		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-			<<if $stalk_assess>>
-				the pale figure.
-			<<else>>
-				a<<if $wraith.seen gte 3>> familiar<</if>> pale figure.
 			<</if>>
 		<<elseif $enemyno gte 3>>
 			the <<person>> and <<his>> companions.
@@ -2985,10 +3007,16 @@
 		<</if>>
 		<br><br>
 		<<if $combatgoal is "confront">>
-			<span class="purple"><<He>> comes to a stop in front of you.</span>
+			<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<set $stalk_assess to true>>
+				You blink. When you open your eyes, <span class="red">the pale figure is inches from your face.</span>
+			<<else>>
+				<span class="purple"><<He>> comes to a stop in front of you.</span>
+			<</if>>
 			<br><br>
 			<<set $stalk_end to "confront">>
-		<<elseif $NPCList[0].bold * 2 gte random(1, 1000)>>
+		<<elseif $NPCList[0].fullDescription isnot "Ivory Wraith" and $NPCList[0].bold * 2 gte random(1, 1000)
+		or $NPCList[0].fullDescription is "Ivory Wraith" and C.npc["Ivory Wraith"].lust gte random(1,10)>>
 			<<if $NPCList[0].fullDescription is "Ivory Wraith">>
 				You blink. When you open your eyes, <span class="red">the pale figure is inches from your face.</span>
 			<<else>>
@@ -3000,8 +3028,6 @@
 
 			<<if $npcrow.includes(0)>>
 				<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
-			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-				<<stalk_nnpc_text_attack "Wraith">>
 			<<else>>
 				<<if $NPCList[0].traits.includes("relaxed")>>
 					"Best play along," <<he>> says. "It'll be easier for you."
@@ -3018,8 +3044,6 @@
 		<<else>>
 			<<if $npcrow.includes(0)>>
 				<<stalk_nnpc_text_threat $NPCList[0].fullDescription>>
-			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-				<<stalk_nnpc_text_threat "Wraith">>
 			<<else>>
 				<span class="green"><<He>> throws up <<his>> hands.</span>
 				<<if $NPCList[0].traits.includes("relaxed")>>
@@ -3418,6 +3442,16 @@
 		<<elseif $robinRentEvent is 1 and $combatPhase is "Robin">>
 			You tell <<him>> you're sorry for not paying <<him>>.
 			<<set $speechapologiseno to 1>>
+		<<elseif $npc.includes("Ivory Wraith") and $wraith.state is "haunt" and $wraithPrison and $wraithPrison.vision and !$wraithApologiseCooldown>>
+			You tell <<him>> you're sorry for taking everything from <<him>>.
+			<<set $mouthactiondefault to "plead">>
+			<<if $apologised is 0>>
+				<<set $apologised to 1>><<set $speechapologise to 1>><<set $wraithApologise to true>><<set $wraithApologiseCooldown to true>>
+				<<set $enemyanger -= 100 * (1 + $englishtrait)>>
+			<<else>>
+				<<He>> angrily claws at <<his>> neck.
+				<<set $speechapologiseno to 1>>
+			<</if>>		
 		<<else>>
 			You tell <<him>> you're sorry for being bad.
 			<<set $mouthactiondefault to "plead">>
@@ -4327,36 +4361,44 @@
 		You glance over your shoulder.
 		<<if $stalk_assess>>
 			<<if $npcrow.includes(0)>>
-				<<print $NPCList[0].fullDescription>> is still following you.
-			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-				<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
-					The pale figure continues to stalk you.
+				<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+					<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+						The pale figure continues to stalk you.
+					<<else>>
+						The pale figure continues to drift along.
+					<</if>>
 				<<else>>
-					The pale figure continues to drift along.
+					<<print $NPCList[0].fullDescription>> is still following you.
 				<</if>>
 			<<else>>
 				The <<person1>><<person>> is still following you.
 			<</if>>
 		<<else>>
 			<<if $npcrow.includes(0)>>
-				You see a <<person1>><<personsimple>> following you. <span class="pink">It's <<print $NPCList[0].fullDescription>>.</span>
-			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-				<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
-					A<<if $wraith.seen gte 3>> familiar<</if>> pale figure lurks behind you, <span class="red">its eerie <<wraithEyes>> gaze locked on you.</span>
+				<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+					<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+						A<<if $wraith.seen gte 3>> familiar<</if>> pale figure lurks behind you, <span class="red">its eerie <<wraithEyes>> gaze locked on you.</span>
+					<<else>>
+						A<<if $wraith.seen gte 3>> familiar<</if>> pale figure drifts behind you, seeming unaware of your presence.
+					<</if>>
+					Its feet don't touch the ground, but you still hear footsteps.
 				<<else>>
-					A<<if $wraith.seen gte 3>> familiar<</if>> pale figure drifts behind you, seeming unaware of your presence.
+					You see a <<person1>><<personsimple>> following you. <span class="pink">It's <<print $NPCList[0].fullDescription>>.</span>
 				<</if>>
 			<<else>>
 				You see a <<person1>><<person>> following you.
 			<</if>>
 		<</if>>
 		<<if $npcrow.includes(0)>>
-			<<nnpc_He $NPCList[0].fullDescription>> moves with
-		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-			It moves with
+			<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+				It
+			<<else>>
+				<<nnpc_He $NPCList[0].fullDescription>>
+			<</if>>
 		<<else>>
-			<<He>> moves with
+			<<He>>
 		<</if>>
+		moves with
 		<<if $NPCList[0].skills.athletics gte 800>>
 			<span class="pink">an energetic stride</span>
 		<<elseif $NPCList[0].skills.athletics gte 600>>

@@ -497,7 +497,8 @@
 				<<set _drunkMod to 10>>
 			<</if>>
 			<<if $possessed is true and _violence gte 0>>
-				<<control `_violence / 10`>>
+				<<set $_controlMod to (10 * $enemyno)>>
+				<<control `_violence / $_controlMod`>>
 				<<set $wraith.will -= _violence>>
 				<<set _possessMod to 3>>
 			<<else>>
@@ -3746,13 +3747,13 @@ __Map__<br>
 				},
 				"purity" : {
 					name: "Purity",
-					value: State.temporary.npcData.purity,
-					activeIcon: (State.temporary.npcData.virginity.vaginal == false || State.temporary.npcData.virginity.penile == false ? "img/ui/sym_fallen_purity.png" : "img/ui/sym_purity.png"),
+					value: T.npcData.purity,
+					activeIcon: (T.npcData.virginity.vaginal == false || T.npcData.virginity.penile == false ? "img/ui/sym_fallen_purity.png" : "img/ui/sym_purity.png"),
 					color: 'white'
 				},
 				"corruption" : {
 					name: "Corruption",
-					value: State.temporary.npcData.corruption,
+					value: T.npcData.corruption,
 					iconOrientation : 'horizontal-inverted',
 					activeIcon: "img/ui/sym_demon_purity.png",
 					color: 'purple'
@@ -3779,7 +3780,58 @@ __Map__<br>
 		<</script>>
 	<</silently>>
 	<<if _npcData and _npcData.init is 1>>
-		<<if _npcOverrides and _npcOverrides.important>>
+		<<if (_npcData.nam is ("Ivory Wraith") or ($wraith.mimic is _npcData.nam and $wraith.revealed))>>
+			<<rngWraithSocial>>
+			<<if _npcData.nam is ("Ivory Wraith") and ($wraith.mimic is "" and (_wraithEventSocial or $wraith.type)) and $wraithIntro>>
+				<div class="relation-box">
+					<div class="relation-top-line">
+						<span class="relation-name">
+							_npcData.nam
+							<small class="relation-title black"><i>The _wraithTitle</i></small>
+						</span>
+						<div class="quick-stats">
+							<<for _j = 0; _j lt _otherNpcStats.length; _j++>>
+								<<if _npcData[_otherNpcStats[_j]] gt 0 and _checkRequirements(_otherNpcStats[_j])>>
+									<<relation-box-stat _getStatConfig(_otherNpcStats[_j])>>
+								<</if>>
+							<</for>>
+						</div>
+					</div>
+					<div class="relation-description">
+						<<if $options.images is 1 and (_rngWraithFace is 1 or $possessed)>>
+							<img id="wraith" @src="'img/misc/icon/wraith' + V.wraith.state + '.png'">
+						<<else>>
+							<<npcrelationship _npcData.nam>>
+						<</if>>
+					</div>
+				</div>
+			<<elseif $wraithIntro and $wraith.mimic is _npcData.nam and $wraith.revealed and _npcOverrides and _npcOverrides.important>>
+				<div class="relation-box">
+					<div class="relation-top-line">
+						<span class="relation-name">
+							_npcData.nam?
+							<small class="relation-title black"><i>The _wraithTitle</i></small>
+						</span>
+						<<if _loveInterest>>
+							<img class="love-interest-icon" src="img/ui/love_interest.png" alt="Love Interest" title="Love Interest"/>
+						<</if>>
+					</div>
+					<div class="relation-description">
+						<<set _rngWraithLineChance to 1>>
+						<<npcrelationship "Ivory Wraith">>
+					</div>
+					<div @class="'relation-stat-list' + ($options.images ? '' : ' no-images')">
+						<<for _j = 0; _j lt _importantNpcStats.length; _j++>>
+							<<if _npcData[_importantNpcStats[_j]] gt 0 and _checkRequirements(_importantNpcStats[_j])>>
+								<<relation-box-stat _getStatConfig(_importantNpcStats[_j]) true>>
+							<</if>>
+						<</for>>
+					</div>
+				</div>
+			<<else>>
+			/* Do not display anything */
+			<</if>>		
+		<<elseif _npcOverrides and _npcOverrides.important>>
 			<div class="relation-box">
 				<div class="relation-top-line">
 					<span class="relation-name">
@@ -3955,6 +4007,15 @@ __Map__<br>
 	<<set _i to $NPCNameList.indexOf("Remy")>>
 	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -100, 100)>>
 	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+
+	<<set _i to $NPCNameList.indexOf("Ivory Wraith")>>
+	<<if $wraith.state is "haunt">>
+		<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, 0, 10)>>
+		<<set $NPCName[_i].lust = Math.clamp($NPCName[_i].lust, 10, 20)>>
+	<<else>>
+		<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, 0, 20)>>
+		<<set $NPCName[_i].lust = Math.clamp($NPCName[_i].lust, 0, 20)>>
+	<</if>>
 <</widget>>
 
 <<widget "fringecheck">>

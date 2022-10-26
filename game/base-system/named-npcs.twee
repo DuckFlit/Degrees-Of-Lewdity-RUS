@@ -240,6 +240,9 @@ Zohar
 		<</if>>
 	<</if>>
 <</if>>
+<<if $NPCName[_i].nam is "Ivory Wraith">>
+	<<set $NPCName[_i].pronoun to "i">>
+<</if>>
 
 <!-- Set Genital Existence -->
 <<if $NPCName[_i].type isnot "human">>
@@ -463,6 +466,16 @@ alternative way to write that:
 		<<set $sydneyDaily to {}>>
 		<<set $sydneyDaily.sex to 0>>
 		<<set $sydney.sexTotal to 0>>
+	<<case "Ivory Wraith">>
+		<<checkWraith>>
+		<<set $genderknown.pushUnique("Ivory Wraith")>>
+		<<set C.npc["Ivory Wraith"].lust to 0>>
+		<<if $museumAntiques.antiques.antiqueivorynecklace isnot "notFound">>
+			<<set C.npc["Ivory Wraith"].lust to 20>>
+			<<if $wraithPrison and $wraithPrison.vision>>
+				<<set C.npc["Ivory Wraith"].lust -= 5>>
+			<</if>>
+		<</if>>
 	<<default>>
 	<</switch>>
 <</if>>
@@ -519,6 +532,7 @@ alternative way to write that:
 		<<case Mason>><<set $NPCName[_i].outfits.pushUnique("teacher", "maleSchoolSwim", "neutralSwim", "townTrack")>>
 		<<case Leighton>><<set $NPCName[_i].outfits.pushUnique("teacher", "maleFormal1", "femaleFormal1")>>
 		<<case "Black Wolf" "Great Hawk">><<set $NPCName[_i].outfits to ["naked"]>>
+		<<case "Ivory Wraith">><<set $NPCName[_i].outfits to ["naked", "moonRobe"]>>
 	<<default>>
 		<!-- Maybe should be left as a default case for futureproofing?
 		Assigns area-appropriate clothes without saving them to the NPC.
@@ -607,6 +621,8 @@ alternative way to write that:
 			<<npcClothesType $NPCName[_i] "beach">>
 		<<case "Black Wolf" "Great Hawk">>
 			<<npcClothesType $NPCName[_i] "naked">>
+		<<case "Ivory Wraith">>
+			<<npcClothesType $NPCName[_i] "Wraith">>
 	<<default>>
 		<<generateNPCClothes $NPCName[_i]>>
 	<</switch>>
@@ -818,6 +834,12 @@ alternative way to write that:
 	<<set $NPCList[_npcno].health to 200>>
 	<<set $NPCList[_npcno].healthmax to 200>>
 	<<set $NPCList[_npcno].traits.push("hypnotist")>>
+<<case "Ivory Wraith">>
+	<<statsWraith>>
+	<<set $NPCList[_npcno].health to _wraithHP>>
+	<<set $NPCList[_npcno].healthmax to _wraithHP>>
+	<<set $NPCList[_npcno].traits to ["brooding", "watchful", "willful", "beautiful"]>>
+	<<set $NPCList[_npcno].skincolour to "white">>
 <<default>>
 	<<set $NPCList[_npcno].health to 200>>
 	<<set $NPCList[_npcno].healthmax to 200>>
@@ -984,8 +1006,12 @@ alternative way to write that:
 
 <<widget "npcrelationship">>
 	<!-- Robin, Avery, Kylar are unique and are treated differently -->
-	<<set _npc to _args[0]>>
-	<<set _i to $NPCNameList.indexOf(_npc)>>
+	<<set _i to V.NPCName.findIndex(i => i.nam === _args[0])>>
+	<<if _i !== -1>>
+		<<set _npc to _args[0]>>
+	<<else>>
+		<<error { message: "<<npcrelationship>> was provided incorrect arguments" }>>
+	<</if>>
 	<<if $NPCName[_i].init is 1>>
 		<<relationshiptext>>
 		<br>
@@ -1109,7 +1135,7 @@ alternative way to write that:
 <</widget>>
 
 <<widget "relationshiptext">>
-<!-- Special cases for Robin, Avery, Kylar -->
+<!-- Special cases for Robin, Avery, Kylar, Whitney, Sydney, Alex, Wraith -->
 <<switch _npc>>
 	<<case Robin>>
 		Robin
@@ -1371,7 +1397,49 @@ alternative way to write that:
 		<<else>>
 			has no strong opinion of you.
 		<</if>>
-
+	<<case "Ivory Wraith">>
+		<<if $wraith>>
+			<<if $wraith.hunt and !$wraith.type>>
+				The Wraith
+				<<if $wraith.state is "haunt">>
+					<span class="red">is fiercely hunting you.</span>
+				<<else>>
+					<span class="blue">is stalking you.</span>
+				<</if>>
+			<<elseif _rngWraithLineChance is 1>>
+				<<if !_rngWraithLine>>
+					<<set _rngWraithLine to true>>
+					<<silently>><<speechWraith "lines">><</silently>>
+				<</if>>
+				_line1
+			<<elseif $bus isnot "lake_ruin_prison" and !$wraith.type and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
+				The Wraith
+				<<if $wraith.state is "haunt">>
+					<span class="red">is looking for you.</span>
+				<<else>>
+					<span class="blue">prowls.</span>
+				<</if>>
+			<<else>>
+				The Wraith
+				<<if $wraith.state is "haunt">>
+					<<if $NPCName[_i].lust gte 18>>
+						<span class="red">is manic.</span>
+					<<elseif $NPCName[_i].lust gte 14>>
+						<span class="pink">is enraged.</span>
+					<<else>>
+						<span class="purple">holds a grudge.</span>
+					<</if>>
+				<<else>>
+					<<if $NPCName[_i].lust gte 15>>
+						<span class="purple">is obsessed with you.</span>
+					<<elseif $NPCName[_i].lust gte 6>>
+						<span class="purple">is intrigued by you.</span>
+					<<else>>
+						<span class="blue">is entertained by you.</span>
+					<</if>>
+				<</if>>
+			<</if>>
+		<</if>>
 	<!-- Default cases for all other NNPCs -->
 	<<default>>
 		_npc
