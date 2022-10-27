@@ -1416,13 +1416,34 @@ function isLoveInterest(name) {
 }
 window.isLoveInterest = isLoveInterest;
 
+function getMoonState(forced = false) {
+	if (!T.timeChecked) time(); // ensure that T.nightstate exists before running (but don't call it every time bc that's wasteful)
+	if (T.moonChecked === V.time && !forced) return V.moonstate; // don't bother recalculating this if time hasn't changed (unless forced to)
+
+	if (T.nightstate === "evening") {
+		if (V.monthday === getLastDayOfMonth()) { // blood moon happens on the last night of the month
+			V.moonstate = "evening";
+		} else {
+			V.moonstate = 0; // moonstate will stay "morning" until the night after the blood moon
+		}
+	} else if (T.nightstate === "morning") { 
+		if (V.moonstate === "evening") { // if it's after midnight and there was a blood moon before midnight, then it's still a blood moon
+			V.moonstate = "morning";
+		}
+	}
+
+	T.moonChecked = V.time; //set this temp var to $time so that we don't recalculate it unless time changes in this passage for some reason
+	return V.moonstate;
+}
+window.getMoonState = getMoonState;
+
 function isBloodmoon() {
-	return V.moonstate === "evening" && V.hour >= 21 || V.moonstate === "morning" && V.hour < 5;
+	return (V.daystate === "night" && getMoonState() !== 0); // it's only a blood moon if it's night
 }
 window.isBloodmoon = isBloodmoon;
 
 function wraithSleepEventCheck() {
-	return V.wraith && V.wraith.state !== "" && V.wraith.nightmare === 1 && (V.moonstate === "evening" && V.hour >= 21 || V.moonstate === "morning" && V.hour < 5);
+	return V.wraith.state !== "" && V.wraith.nightmare === 1 && isBloodmoon(true);
 }
 window.wraithSleepEventCheck = wraithSleepEventCheck;
 
