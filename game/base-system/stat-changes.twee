@@ -553,57 +553,50 @@
 	<<incgpenisinsecurity 20>>
 <</widget>>
 
-<<widget "insecurity_gain">>
-	<<set _acceptance to V["acceptance_" + _args[0]]>>
-	<<set _insecurity to V["insecurity_" + _args[0]]>>
-	<<set _stat_gain to (_args[1] * 10)>>
-
-	<<set _insecurity_possible = {
-		"penis_tiny": $player.penisExist and $player.penissize lte 0,
-		"penis_small": $player.penisExist and $player.penissize is 1,
-		"penis_big": $player.penisExist and $player.penissize gte 4,
-		"breasts_tiny": $gender isnot "m",
-		"breasts_small": true,
-		"breasts_big": true
-	}[_args[0]]>>
-
-	<<if _acceptance lt 1000 and _insecurity_possible>>
-		<<set _insecurity += _stat_gain>>
-		<<set _insecurity = Math.clamp(_insecurity, 0, 1000)>>
-		<<if _insecurity gte 1000>>
-			<<stress 3>><<control -3>>
-		<<elseif _insecurity gte 800>>
-			<<stress 3>><<control -2>>
-		<<elseif _insecurity gte 600>>
-			<<stress 2>><<control -2>>
-		<<elseif _insecurity gte 400>>
-			<<stress 2>><<control -1>>
-		<<elseif _insecurity gte 200>>
-			<<stress 1>><<control -1>>
-		<<else>>
-			<<stress 1>>
-		<</if>>
-		<<set V["insecurity_" + _args[0]] to _insecurity>>
-		/* reduce acceptance by matching amount */
-		<<if _stat_gain gt 0>>
-			<<set _acceptance -= _stat_gain>>
-			<<set _acceptance = Math.clamp(_acceptance, 0, 1000)>>
-			<<set V["acceptance_" + _args[0]] to _acceptance>>
-		<</if>>
-	<</if>>
-<</widget>>
-
 <<widget "insecurity">>
-	/*
-		args[0]: insecurity type
-		args[1]: amount to increase by
-	*/
-	<<if _args[0] and _args[1] and $statFreeze isnot true>>
-		<<if ["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big"].includes(_args[0])>>
-			<<insecurity_gain _args[0] _args[1]>>
-		<<else>>
-			<span class="red">INVALID INSECURITY TYPE SPECIFIED: <<print "insecurity_"+_args[0]>></span>
+	<<if _args[0] and _args[1] and !$statFreeze and ["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big"].includes(_args[0])>>
+		<<set
+			_type to _args[0];
+			_change to _args[1];
+			_acceptance = V["acceptance_" + _type];
+			_insecurity = V["insecurity_" + _type];
+			_stat_gain to _change * 10;
+			_insecurity_possible = {
+				"penis_tiny": $player.penisExist and $player.penissize lte 0,
+				"penis_small": $player.penisExist and $player.penissize is 1,
+				"penis_big": $player.penisExist and $player.penissize gte 4,
+				"breasts_tiny": $gender isnot "m",
+				"breasts_small": true,
+				"breasts_big": true
+			}[_type];
+		>>
+
+		<<if _acceptance lt 1000 and _insecurity_possible>>
+			<<set _insecurity += _stat_gain>>
+			<<set _insecurity = Math.clamp(_insecurity, 0, 1000)>>
+			<<if _insecurity gte 1000>>
+				<<stress 3>><<control -3>>
+			<<elseif _insecurity gte 800>>
+				<<stress 3>><<control -2>>
+			<<elseif _insecurity gte 600>>
+				<<stress 2>><<control -2>>
+			<<elseif _insecurity gte 400>>
+				<<stress 2>><<control -1>>
+			<<elseif _insecurity gte 200>>
+				<<stress 1>><<control -1>>
+			<<else>>
+				<<stress 1>>
+			<</if>>
+			<<set V["insecurity_" + _args[0]] to _insecurity>>
+			/* reduce acceptance by matching amount */
+			<<if _stat_gain gt 0>>
+				<<set _acceptance -= _stat_gain>>
+				<<set _acceptance = Math.clamp(_acceptance, 0, 1000)>>
+				<<set V["acceptance_" + _args[0]] to _acceptance>>
+			<</if>>
 		<</if>>
+	<<elseif !$statsFreeze>>
+		<br><span class="red">IMPROPER INSECURITY CALL! args: <<print _args>></span><br>
 	<</if>>
 <</widget>>
 
