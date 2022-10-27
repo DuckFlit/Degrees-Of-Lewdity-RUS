@@ -158,174 +158,125 @@
 
 <!--New isolated wardrobes also need updates to the `clothesReturnLocation` function in ingame.js-->
 <<widget "wardrobesUpdate">>
-<<set _default to {
-	face:[],
-	feet:[],
-	hands:[],
-	head:[],
-	legs:[],
-	lower:[],
-	neck:[],
-	over_head:[],
-	over_lower:[],
-	over_upper:[],
-	genitals:[],
-	under_lower:[],
-	under_upper:[],
-	upper:[],
-	unlocked: false,
-	shopSend: false,
-	transfer: true,
-	isolated: false,
-	locationRequirement:[],
-	space:5
-}>>
-<<set _defaultExtended to {
-	face:[],
-	feet:[],
-	hands:[],
-	head:[],
-	legs:[],
-	lower:[],
-	neck:[],
-	over_head:[],
-	over_lower:[],
-	over_upper:[],
-	genitals:[],
-	under_lower:[],
-	under_upper:[],
-	upper:[],
-	unlocked: false,
-	shopSend: true,
-	transfer: true,
-	isolated: false,
-	locationRequirement:[],
-	space:40
-}>>
-<<if $wardrobes is undefined>>
-	<<set $wardrobes to {
-		shopReturn:"wardrobe",
-		wardrobe:{
-			NOTE:"DO NOT USE THIS OBJECT TO STORE CLOTHES",
-			unlocked: true,
-			shopSend: true,
-			name: "Orphanage"
-		},
-		changingRoom:clone(_default),
-		edensCabin:clone(_default),
-		asylum:clone(_default),
-		alexFarm:clone(_defaultExtended),
-		stripClub:clone(_default),
-		brothel:clone(_default),
-		schoolBoys:clone(_default),
-		schoolGirls:clone(_default),
-		prison: clone(_default)
-	}>>
-
-	<<set $wardrobes.changingRoom.name to "Beach changing room">>
-	<<set $wardrobes.changingRoom.unlocked to true>>
-
-	<<set $wardrobes.edensCabin.name to "Eden's Cabin">>
-	<<set $wardrobes.edensCabin.space to 10>>
-	<<if $syndromeeden>>
-		<<set $wardrobes.edensCabin.unlocked to true>>
-	<</if>>
-
-	<<set $wardrobes.asylum.locationRequirement.push("asylum")>>
-	<<set $wardrobes.asylum.name to "Asylum">>
-	<<set $wardrobes.asylum.transfer to false>>
-	<<set $wardrobes.asylum.isolated to true>>
-
-	<<set $wardrobes.alexFarm.name to "Alex's Farm">>
-	<<if $farm_stage gte 7>>
-		<<set $wardrobes.alexFarm.unlocked to true>>
-	<</if>>
-
-	<<set $wardrobes.stripClub.name to "Strip Club">>
-	<<set $wardrobes.stripClub.space to 10>>
-	<<if $stripclubdancingintro>>
-		<<set $wardrobes.stripClub.unlocked to true>>
-	<</if>>
-
-	<<set $wardrobes.brothel.name to "Brothel">>
-	<<set $wardrobes.brothel.space to 10>>
-	<<if $brotheljob>>
-		<<set $wardrobes.brothel.unlocked to true>>
-	<</if>>
-
-	<<set $wardrobes.schoolBoys.name to "Schools boy's locker">>
-	<<set $wardrobes.schoolBoys.unlocked to true>>
-	<<set $wardrobes.schoolBoys.under_lower.push(setup.clothes.under_lower[7])>>
-	<<set $wardrobes.schoolBoys.under_lower.last().colour to "blue">>
-
-	<<set $wardrobes.schoolGirls.name to "Schools girl's locker">>
-	<<set $wardrobes.schoolGirls.unlocked to true>>
-	<<set $wardrobes.schoolGirls.under_lower.push(setup.clothes.under_lower[6])>>
-	<<set $wardrobes.schoolGirls.under_lower.last().colour to "blue">>
-	<<set $wardrobes.schoolGirls.under_upper.push(setup.clothes.under_upper[2])>>
-	<<set $wardrobes.schoolGirls.under_upper.last().colour to "blue">>
-
-	<<set $wardrobes.prison.name to "Prison Locker">>
-	<<set $wardrobes.prison.transfer to false>>
-	<<set $wardrobes.prison.isolated to true>>
-
-	<<for _label, _value range $worn>>
-		<<set $worn[_label].lastTaken to "wardrobe">>
-	<</for>>
-	<<if $carried isnot undefined>>
-		<<for _label, _value range $carried>>
-			<<set $worn[_label].lastTaken to "wardrobe">>
-		<</for>>
-	<</if>>
-	<<if $store isnot undefined>>
-		<<for _label, _value range $store>>
-			<<set $store[_label].forEach(item => {
-				item.lastTaken = "wardrobe"
-			})>>
-		<</for>>
-	<</if>>
-<</if>>
-<<if $wardrobes.prison.name is "Prison Locker">>
-	<<set $wardrobes.prison.name to "Prison locker">>
-<</if>>
-
-<<if $objectVersion.wardrobes lt 2>>
-	<<set _equip to setup.clothes_all_slots>>
-	<<for $_i to 0; $_i lt _equip.length; $_i++>>
-		<<if $wardrobe[_equip[$_i]] is undefined>>
-			<<continue>>
-		<</if>>
-		<<for $_j to $wardrobe[_equip[$_i]].length - 1; $_j gte 0; $_j-->>
-			<<if $wardrobe[_equip[$_i]][$_j].temp>>
-				<<run console.log($wardrobe[_equip[$_i]][$_j])>>
-				<<run $wardrobe[_equip[$_i]].deleteAt($_j)>>
-			<</if>>
-		<</for>>
-		<<for $_j to $wardrobes.prison[_equip[$_i]].length - 1; $_j gte 0; $_j-->>
-			<<if $wardrobes.prison[_equip[$_i]][$_j].temp>>
-				<<run $wardrobes.prison[_equip[$_i]].deleteAt($_j)>>
-			<</if>>
-		<</for>>
-		<<for $_j to $wardrobes.asylum[_equip[$_i]].length - 1; $_j gte 0; $_j-->>
-			<<if $wardrobes.asylum[_equip[$_i]][$_j].temp>>
-				<<run $wardrobes.asylum[_equip[$_i]].deleteAt($_j)>>
-			<</if>>
-		<</for>>
-	<</for>>
-<</if>>
-
-<<if $objectVersion.wardrobes lt 4>>
-	<<run clothesDataTrimmerLoop()>>
-<</if>>
-
-<<if $objectVersion.wardrobes lt 4>>
-	<<if $wardrobe.genitals is undefined>>
-		<<set $wardrobe.genitals to []>>
-	<</if>>
-	<<for $_label, $_value range $wardrobes>>
-		<<if $_label isnot "wardrobe" and $wardrobes[$_label].unlocked isnot undefined and $wardrobes[$_label].genitals is undefined>>
-			<<set $wardrobes[$_label].genitals to []>>
-		<</if>>
-	<</for>>
-<</if>>
+<<script>>
+	/* default wardrobe object */
+	const def_wardrobe = {
+		face: [],
+		feet: [],
+		hands: [],
+		head: [],
+		legs: [],
+		lower: [],
+		neck: [],
+		over_head: [],
+		over_lower: [],
+		over_upper: [],
+		genitals: [],
+		under_lower: [],
+		under_upper: [],
+		upper: [],
+		unlocked: false,
+		shopSend: false,
+		transfer: true,
+		isolated: false,
+		locationRequirement: [],
+		space: 5,
+	};
+	/* initialise multiple wardrobes. works for both old saves and new games */
+	if (V.wardrobes === undefined) {
+		V.wardrobes = {
+			shopReturn: "wardrobe",
+			wardrobe: {
+				NOTE: "DO NOT USE THIS OBJECT TO STORE CLOTHES",
+				unlocked: true,
+				shopSend: true,
+				name: "Orphanage",
+			},
+			changingRoom: clone(def_wardrobe),
+			edensCabin: clone(def_wardrobe),
+			asylum: clone(def_wardrobe),
+			alexFarm: clone(def_wardrobe),
+			stripClub: clone(def_wardrobe),
+			brothel: clone(def_wardrobe),
+			schoolBoys: clone(def_wardrobe),
+			schoolGirls: clone(def_wardrobe),
+			prison: clone(def_wardrobe),
+		};
+		/* beach */
+		V.wardrobes.changingRoom.name = "Beach changing room";
+		V.wardrobes.changingRoom.unlocked = true;
+		/* eden's */
+		V.wardrobes.edensCabin.name = "Eden's Cabin";
+		V.wardrobes.edensCabin.space = 10;
+		if (V.syndromeeden) V.wardrobes.edensCabin.unlocked = true;
+		/* asylum */
+		V.wardrobes.asylum.locationRequirement.push("asylum");
+		V.wardrobes.asylum.name = "Asylum";
+		V.wardrobes.asylum.transfer = false;
+		V.wardrobes.asylum.isolated = true;
+		/* alex's */
+		V.wardrobes.alexFarm.name = "Alex's Farm";
+		V.wardrobes.alexFarm.shopSend = true;
+		V.wardrobes.alexFarm.space = 40;
+		if (V.farm_stage >= 7) V.wardrobes.alexFarm.unlocked = true;
+		/* strip club */
+		V.wardrobes.stripClub.name = "Strip Club";
+		V.wardrobes.stripClub.space = 10;
+		if (V.stripclubdancingintro) V.wardrobes.stripClub.unlocked = true;
+		/* brothel */
+		V.wardrobes.brothel.name = "Brothel";
+		V.wardrobes.brothel.space = 10;
+		if (V.brotheljob) V.wardrobes.brothel.unlocked = true;
+		/* school pool boys */
+		V.wardrobes.schoolBoys.name = "Schools boy's locker";
+		V.wardrobes.schoolBoys.unlocked = true;
+		V.wardrobes.schoolBoys.under_lower.push(setup.clothes.under_lower[7]);
+		V.wardrobes.schoolBoys.under_lower.last().colour = "blue";
+		/* school pool girls */
+		V.wardrobes.schoolGirls.name = "Schools girl's locker";
+		V.wardrobes.schoolGirls.unlocked = true;
+		V.wardrobes.schoolGirls.under_lower.push(setup.clothes.under_lower[6]);
+		V.wardrobes.schoolGirls.under_lower.last().colour = "blue";
+		V.wardrobes.schoolGirls.under_upper.push(setup.clothes.under_upper[2]);
+		V.wardrobes.schoolGirls.under_upper.last().colour = "blue";
+		/* prison */
+		V.wardrobes.prison.name = "Prison locker";
+		V.wardrobes.prison.transfer = false;
+		V.wardrobes.prison.isolated = true;
+		/* add .lastTaken prop to everything */
+		if (V.worn !== undefined) Object.keys(V.worn).forEach(s => V.worn[s].lastTaken = "wardrobe");
+		if (V.carried !== undefined) Object.keys(V.carried).forEach(s => V.carried[s].lastTaken = "wardrobe");
+		if (V.store !== undefined) Object.keys(V.store).forEach(s => V.store[s].forEach(i => i.lastTaken = "wardrobe"));
+	};
+	/* fix prison wardrobe name */
+	if (V.wardrobes.prison.name === "Prison Locker") V.wardrobes.prison.name = "Prison locker";
+	/* very old saves */
+	if (V.objectVersion.wardrobes < 2) {
+		for (const slot in setup.clothes_all_slots) {
+			/* skip slots that didn't exist in old saves */
+			if (V.wardrobe[slot] === undefined) continue;
+			/* remove all temporary items */
+			for (let j = V.wardrobe[slot].length - 1; j >= 0; j--) {
+				if (V.wardrobe[slot][j].temp) V.wardrobe[slot].deleteAt(j);
+			};
+			for (let j = V.wardrobes.prison[slot].length - 1; j >= 0; j--) {
+				if (V.wardrobes.prison[slot][j].temp) V.wardrobes.prison[slot].deleteAt(j);
+			};
+			for (let j = V.wardrobes.asylum[slot].length - 1; j >= 0; j--) {
+				if (V.wardrobes.asylum[slot][j].temp) V.wardrobes.asylum[slot].deleteAt(j);
+			};
+		};
+	};
+	/* less old saves */
+	if (V.objectVersion.wardrobes < 4) {
+		/* remove unnecessary vars */
+		clothesDataTrimmerLoop();
+		/* add a slot for genitals to all wardrobes */
+		if (V.wardrobe.genitals === undefined) V.wardrobe.genitals = [];
+		for (const w in V.wardrobes) {
+			if (w !== "wardrobe" && V.wardrobes[w].unlocked !== undefined && V.wardrobes[w].genitals === undefined)
+				V.wardrobes[w].genitals = [];
+		}
+	}
+<</script>>
 <</widget>>
