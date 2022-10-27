@@ -657,7 +657,7 @@ function getRobinLocation() {
 	} else if (["docks", "landfill", "dinner", "pillory"].includes(V.robinmissing)) {
 		T.robin_location = V.robinmissing;
 	} else if (!between(V.hour, 7, 20)){ //if hour is 6 or lower, or 21 or higher
-		if (V.NPCName[V.NPCNameList.indexOf("Robin")].lust >= 80 && V.robinromance === 1 && between(V.hour, 21, 23) && !V.robinDaily.sleepMasturbate){
+		if (V.NPCName[V.NPCNameList.indexOf("Robin")].lust >= 80 && V.robinromance === 1 && between(V.hour, 21, 23) && !V.daily.robin.sleepMasturbate){
 			return T.robin_location = "sleepMasturbate";
 		} else {
 			return T.robin_location = "sleep";
@@ -1538,6 +1538,7 @@ function isPubfameTaskAccepted(task, status) {
 }
 window.isPubfameTaskAccepted = isPubfameTaskAccepted;
 
+
 function getHalloweenCostume() {
 	const upper = V.worn.upper;
 	const lower = V.worn.lower;
@@ -1607,3 +1608,203 @@ function getHalloweenCostume() {
 	}
 }
 window.getHalloweenCostume = getHalloweenCostume;
+
+function dailyConvert() {
+	if (V.daily === undefined) {
+		/* transfer old vars */
+		V.daily = {
+			school: {
+				scienceInterrupted: V.scienceinterrupted,
+				mathsInterrupted: V.mathsinterrupted,
+				englishInterrupted: V.englishinterrupted,
+				historyInterrupted: V.historyinterrupted,
+				swimmingInterrupted: V.swimminginterrupted,
+				headInterrupted: V.headinterrupted,
+				lunchEaten: V.luncheaten,
+				canteenApproach: V.canteenapproach,
+				detentionAttended: V.detentionattended,
+				boysRoomEntered: V.boysroomentered,
+				girlRroomEntered: V.girlsroomentered,
+				scienceExcused: V.scienceExcused,
+				mathsExcused: V.mathsExcused,
+				englishExcused: V.englishExcused,
+				historyExcused: V.historyExcused,
+				swimmingExcused: V.swimmingExcused,
+				herm: V.school_herm_day,
+				crossdress: V.school_crossdress_day,
+			},
+			whitney: {
+				bullyGate: V.bullygate,
+				toiletCheck: V.whitney_toilet_check,
+				park: V.whitney_park,
+				textTrigger: V.whitney_text_trigger,
+				flirt: V.whitneyFlirt,
+				chat: V.whitneyChat,
+				ask: V.whitneyAsk,
+				text: V.whitney_text,
+			},
+			robin: {
+				walk: V.robinwalk,
+				hugCry: V.robinhugcry,
+				hugComplain: V.robinhugcomplain,
+				blame: V.robinblame,
+				persecute: V.robinpersecute,
+				policeBody: V.robinpolicebody,
+				policePay: V.robinpolicepay,
+				tending: V.robin_tending,
+				beachPolice: V.robinbeachpolice,
+				parkSnow: V.robinparksnow,
+				debtAsk: V.robinDebtAsk,
+			},
+			kylar: V.kylarDaily || {},
+			morgan: {},
+			eden: {
+				breakfastLust: V.edenbreakfastlust,
+				breakfast: V.edenbreakfast,
+				bath: V.edenbath,
+				walk: V.edenwalk,
+				chopLust: V.edenchoplust,
+				hunting: V.edenhunting,
+				lunch: V.edenlunch,
+				dinner: V.edendinner,
+				distract: V.edendistract,
+				asylumDisarm: V.edenasylumdisarm,
+				asylumRescue: V.eden_asylum_rescue,
+				sew: V.eden_sew,
+				supplies: V.eden_supplies,
+				sweep: V.eden_sweep,
+				salve: V.eden_salve,
+				soap: V.eden_soap,
+				search: V.eden_search,
+				exposed: V.edenexposed,
+				springJoin: V.edenspringjoin,
+				salveUse: V.salveuse,
+				massage: V.edenmassage,
+				huntCaught: V.edenhuntcaught,
+				farmRescue: V.edenfarmrescue,
+			},
+			alex: V.alexDaily || {},
+			sydney: {
+				scienceWarn: V.sydneyScienceWarn,
+				classWarn: V.sydneyClassWarn,
+				scienceWalk: V.sydneyScienceWalk,
+				punish: V.sydneyPunish,
+				templeSkip: V.sydneyTempleSkip,
+			},
+			ex: {
+				day: V.ex_day,
+				club: V.ex_club,
+				brothel: V.ex_brothel,
+				studio: V.ex_studio,
+				high: V.ex_high,
+				connudatus: V.ex_connudatus,
+				stall: V.ex_stall,
+				mason: V.ex_mason,
+				flyover: V.ex_flyover,
+				cream: V.ex_cream,
+				road: V.ex_road,
+				fence: V.ex_fence,
+				lorries: V.ex_lorries,
+				fountain: V.ex_fountain,
+			},
+			pharm: V.pharmDaily || {},
+			motherWake: V.motherwake,
+			harperVisit: V.harpervisit,
+			policeCollarSeduceAttempt: V.policecollarseduceattempt,
+			tenyclusPlayed: V.tenyclusPlayed,
+			beachStrip: V.beachstrip,
+			compoundState: V.compoundstate,
+			baileyVisit: V.baileyvisit,
+			lakeCouple: V.lakecouple,
+			museumGreenGemTouch: V.museumgreengemtouch,
+			fenceClimb: V.fenceclimb,
+			cafeEaten: V.cafeeaten,
+			mirrorTentacles: V.mirrortentacles,
+			massAttended: V.massattended,
+			dockExhibitionism: V.dockexhibitionism,
+			homeEvent: V.home_event,
+			leightonDanceOffered: V.leightondanceoffered,
+			wolfCaveDog: V.wolf_cave_dog,
+			jordan_missing: V.jordan_missing,
+			blackWolfMonsterRoll: V.blackWolfMonsterRoll,
+			templePray: V.temple_pray,
+			lakeMeditate: V.lake_meditate,
+			masonSpoken: V.mason_spoken,
+			stallRented: V.stall_rented,
+			rocksPoolInvite: V.rocks_pool_invite,
+			birdWash: V.bird_wash,
+			birdDailyGreeting: V.birdDailyGreeting,
+			greatHawkMonsterRoll: V.greatHawkMonsterRoll,
+			estateBluffed: V.estate_bluffed,
+			estateChaos: V.estate_chaos,
+			spaEvent: V.spa_event,
+			estateDone: V.estate_done,
+			baileyWake: V.bailey_wake_day,
+			manorForage: V.manor_forage,
+			manorGarden: V.manor_garden,
+			manorKitchen: V.manor_kitchen,
+			manorParents: V.manor_parents,
+			manorLab: V.manor_lab,
+			promiscuityStress1: V.promiscuitystress1,
+			promiscuityStress2: V.promiscuitystress2,
+			promiscuityStress3: V.promiscuitystress3,
+			promiscuityStress4: V.promiscuitystress4,
+			promiscuityStress5: V.promiscuitystress5,
+			exhibitionismStress1: V.exhibitionismstress1,
+			exhibitionismStress2: V.exhibitionismstress2,
+			exhibitionismStress3: V.exhibitionismstress3,
+			exhibitionismStress4: V.exhibitionismstress4,
+			exhibitionismStress5: V.exhibitionismstress5,
+			deviancyStress1: V.deviancystress1,
+			deviancyStress2: V.deviancystress2,
+			deviancyStress3: V.deviancystress3,
+			deviancyStress4: V.deviancystress4,
+			deviancyStress5: V.deviancystress5,
+			seenPets: V.seenPets,
+			asylumFirstTreatment: V.asylumfirsttreatment,
+			asylumSecondTreatment: V.asylumsecondtreatment,
+			asylumAssessment: V.asylumassessment,
+			asylumExercise: V.asylumexercise,
+			slimeFarmNaked: V.slimeFarmNaked,
+		};
+		/* merge values from old daily objects */
+		if (V.whitneyDaily) Object.keys(V.whitneyDaily).forEach(n => (V.daily.whitney[n] = V.whitneyDaily[n]));
+		if (V.robinDaily) Object.keys(V.robinDaily).forEach(n => (V.daily.robin[n] = V.robinDaily[n]));
+		if (V.sydneyDaily) Object.keys(V.sydneyDaily).forEach(n => (V.daily.sydney[n] = V.sydneyDaily[n]));
+		/* $sewersDaily to $daily.morgan. somehow, it's an array */
+		if (V.sewerssex === 1) V.daily.morgan.sex = 1;
+		if (V.sewersfeeding === 1) V.daily.morgan.feeding = 1;
+		if (V.sewersDaily) V.sewersDaily.forEach(n => (V.daily.morgan[n] = 1));
+		/* `$compoundstate != undefined` is no longer used as an indicator of the access to compound,
+		as it migrated to $daily.compoundState. $compoundcard === 2 is used for that instead. */
+		if (V.compoundcard === 1 && V.compoundstate !== undefined) V.compoundcard = 2;
+		V.daily.pharm.impatient = V.left_before_nurse_returned;
+
+		/* unset old vars */
+		[
+			// eslint-disable-next-line prettier/prettier
+			/* school */ "scienceinterrupted", "mathsinterrupted", "englishinterrupted", "historyinterrupted", "swimminginterrupted", "headinterrupted", "luncheaten", "canteenapproach", "detentionattended", "boysroomentered", "girlsroomentered", "scienceExcused", "mathsExcused", "englishExcused", "historyExcused", "swimmingExcused", "school_herm_day", "school_crossdress_day",
+			// eslint-disable-next-line prettier/prettier
+			/* whitney */ "bullygate", "whitney_toilet_check", "whitney_park", "whitney_text_trigger", "whitneyFlirt", "whitneyChat", "whitneyAsk","whitney_text", "whitney_text_trigger", "whitneyDaily",
+			// eslint-disable-next-line prettier/prettier
+			/* robin */ "robinwalk", "robinhugcry", "robinhugcomplain", "robinblame", "robinpersecute", "robinpolicebody", "robinpolicepay", "robin_tending", "robinDaily", "robinbeachpolice", "robinparksnow", "robinDebtAsk", 
+			// eslint-disable-next-line prettier/prettier
+			/* kylar */ "kylarDaily",
+			// eslint-disable-next-line prettier/prettier
+			/* morgan */ "sewerssex", "sewersfeeding", "sewersDaily",
+			// eslint-disable-next-line prettier/prettier
+			/* eden */ "edenbreakfastlust", "edenbreakfast", "edenbath", "edenwalk", "edenbath", "edenchoplust", "edenhunting", "edenlunch", "edendinner", "edendistract", "edenasylumdisarm", "eden_asylum_rescue", "eden_sew", "eden_supplies", "eden_sweep", "eden_salve", "eden_soap", "eden_search", "edenexposed", "edenspringjoin", "salveuse", "edenmassage", "edenhuntcaught", "edenfarmrescue", 
+			// eslint-disable-next-line prettier/prettier
+			/* alex */ "alexDaily",
+			// eslint-disable-next-line prettier/prettier
+			/* sydney */ "sydneyScienceWarn", "sydneyClassWarn", "sydneyScienceWalk", "sydneyPunish", "sydneyTempleSkip", "sydneyDaily",
+			// eslint-disable-next-line prettier/prettier
+			/* ex */ "ex_day", "ex_club", "ex_brothel", "ex_studio", "ex_high", "ex_stall", "ex_mason", "ex_flyover", "ex_cream", "ex_road", "ex_fence", "ex_connudatus", "ex_lorries", "ex_fountain", "ex_high",
+			// eslint-disable-next-line prettier/prettier
+			/* pharm */ "left_before_nurse_returned", "pharmTriedSeduction", "pharmSexFinished", "pharmClosed", "pharmSeductionFailed", "pharmDaily",
+			// eslint-disable-next-line prettier/prettier
+			/* misc */ "comb", "motherwake", "harpervisit", "policecollarseduceattempt", "tenyclusPlayed", "beachstrip", "compoundstate", "baileyvisit", "lakecouple", "museumgreengemtouch", "fenceclimb", "cafeeaten", "mirrortentacles", "massattended", "dockexhibitionism", "home_event", "leightondanceoffered", "wolf_cave_dog", "jordan_missing", "blackWolfMonsterRoll", "temple_pray", "lake_meditate", "mason_spoken", "stall_rented", "rocks_pool_invite", "bird_wash", "birdDailyGreeting", "greatHawkMonsterRoll", "estate_bluffed", "estate_chaos", "spa_event", "estate_done", "lewd_unlock", "bailey_wake_day", "manor_forage", "manor_garden", "manor_kitchen", "manor_parents", "manor_lab", "promiscuitystress1", "promiscuitystress2", "promiscuitystress3", "promiscuitystress4", "promiscuitystress5", "exhibitionismstress1", "exhibitionismstress2", "exhibitionismstress3", "exhibitionismstress4", "exhibitionismstress5", "deviancystress1", "deviancystress2", "deviancystress3", "deviancystress4", "deviancystress5", "seenPets", "asylumfirsttreatment", "asylumsecondtreatment", "asylumassessment", "asylumexercise", "slimeFarmNaked"
+		].forEach(n => delete V[n]);
+	}
+}
+window.dailyConvert = dailyConvert;
