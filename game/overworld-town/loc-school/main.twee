@@ -255,41 +255,62 @@ The school gate is shut and sealed by a sturdy padlock.
 
 You haul yourself over the fence and drop down on the other side.
 
-<<if !$worn.over_lower.type.includes("naked")>>
-	<<set $worn.over_lower.integrity -= 20>>
-	<<if $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")>>
-		<<if $worn.over_lower.integrity lte 0>>
-			You feel strangely cold. You look back at the fence, and see your $worn.over_lower.name hanging from one of the spikes!
-		<<else>>
-			Your $worn.over_lower.name caught on a spike and tore slightly as you climbed over.
-		<</if>>
-		A breeze caresses your <<genitals>>, making you shiver.
-	<<else>>
-		<<if $worn.over_lower.integrity lte 0>>
-			You feel strangely cold. You look back at the fence, and see your $worn.over_lower.name hanging from one of the spikes!
-		<<else>>
-			Your $worn.over_lower.name caught on a spike and tore slightly as you climbed over.
-		<</if>>
+/*
+ * "I'm tired of this mother fucking fence
+ *	and this mother fucking ripping of clothing.
+ *	Options to not rip clothing"
+ *				-- Skullky, 2020
+ */
+<<if !$daily.school.fenceHop>>
+	<<if !$fenceFamiliarity>>
+		<<set $fenceFamiliarity to 0>>
+	<<elseif $fenceFamiliarity lt 20>>
+		<<set $fenceFamiliarity++>>
 	<</if>>
-<<elseif $worn.lower.type.includes("naked")>>
-	<<if !$worn.under_lower.type.includes("naked")>>
-		<<set $worn.under_lower.integrity -= 20>>
-		<<if $worn.under_lower.integrity lte 0>>
-			You feel strangely cold. You look back at the fence, and see your $worn.under_lower.name hanging from one of the spikes!
-		<<else>>
-			Your $worn.under_lower.name caught on a spike and tore slightly as you climbed over.
-		<</if>>
-	<<else>>
-		A breeze caresses your <<genitals>>, making you shiver.
-	<</if>>
-<<else>>
-	<<set $worn.lower.integrity -= 20>>
-	<<if $worn.lower.integrity lte 0>>
-		You feel strangely cold. You look back at the fence, and see your $worn.lower.name hanging from one of the spikes!
-	<<else>>
-		Your $worn.lower.name caught on a spike and tore slightly as you climbed over.
-	<</if>>
+	<<transform "cat" 1>>
+	<<set $daily.school.fenceHop to 1>>
 <</if>>
+/* chance to hop the fence based on athletics or fence familiarity, capped at 95% */
+<<set _fencehop to Math.max(($fenceFamiliarity - 1) * 5, currentSkillValue("athletics") / 11)>>
+
+/* find the top-most slot that is not naked */
+<<set _slots to ["over_lower", "lower", "under_lower"]>>
+<<set _cloth to _slots.find(c => !V.worn[c].type.includes("naked"))>>
+/* find the bottom slot that is not naked, and if it's the same as the top one (but not under_lower) - pc is going commando */
+<<set _commando to _slots.reverse().find(c => !V.worn[c].type.includes("naked")) === _cloth and _cloth isnot "under_lower">>
+<<if $cat gte 6>>
+	With unmatched grace and elegance, you land on all fours.
+<<elseif _cloth isnot undefined and _fencehop lte $rng>>
+	/* has clothes, failed the check */
+	<<if _fencehop gte 95>>
+		As chance would have it, your impeccable skills at hopping fences alone are not enough to conquer the fence. You fumble while getting down.
+	<<elseif _fencehop gte 50>>
+		Your skill at hopping fences still has room to grow, and the sound of ripping fabric reminds you of this.
+	<</if>>
+	<<set $worn[_cloth].integrity -= 20>>
+	<<if $worn[_cloth].integrity lte 0>>
+		You feel strangely cold. You look back at the fence, and see your <<print $worn[_cloth].name>> hanging from one of the spikes!
+	<<else>>
+		Your <<print $worn[_cloth].name>> catches on a spike and tears slightly as you climb over.
+	<</if>>
+<<elseif _cloth isnot undefined>>
+	/* has clothes, succeeded the check */
+	<<if _fencehop gte 95>>
+		You are familiar enough with hopping fences that you hop this one without issues.
+	<<elseif _fencehop gte 50>>
+		You've spent a little bit of time hopping fences, and the practice pays off as you manage to get over this one without any complications.
+	<<else>>
+		Through sheer dumb luck, you manage to get over the fence without hurting yourself or tearing your clothing.
+	<</if>>
+<<elseif _fencehop lte $rng>>
+	/* naked, failed */
+	A moment later, you feel a sharp pain in your <<print either("shoulder", "back", "butt")>>. The old fence din't left you unscratched.<<pain 8>><<stress 6>><<ggpain>><<gstress>>
+<</if>>
+<<if _commando>>
+	<br>
+	A breeze caresses your <<genitals>>, making you shiver<<if $body_temperature is "cold">>. It's getting really cold.<<stress 6>><<gstress>><<elseif $exhibitionism gte 15>> <span class="lewd">with excitement</span>.<<arousal 150>><<garousal>><<else>>.<</if>>
+<</if>>
+
 <<integritycheck>>
 <br><br>
 
@@ -301,41 +322,62 @@ You haul yourself over the fence and drop down on the other side.
 
 You haul yourself over the fence and drop down on the other side.
 
-<<if !$worn.over_lower.type.includes("naked")>>
-	<<set $worn.over_lower.integrity -= 20>>
-	<<if $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")>>
-		<<if $worn.over_lower.integrity lte 0>>
-			You feel strangely cold. You look back at the fence, and see your $worn.over_lower.name hanging from one of the spikes!
-		<<else>>
-			Your $worn.over_lower.name caught on a spike and tore slightly as you climbed over.
-		<</if>>
-		A breeze caresses your <<genitals>>, making you shiver.
-	<<else>>
-		<<if $worn.over_lower.integrity lte 0>>
-			You feel strangely cold. You look back at the fence, and see your $worn.over_lower.name hanging from one of the spikes!
-		<<else>>
-			Your $worn.over_lower.name caught on a spike and tore slightly as you climbed over.
-		<</if>>
+/*
+ * "I'm tired of this mother fucking fence
+ *	and this mother fucking ripping of clothing.
+ *	Options to not rip clothing"
+ *				-- Skullky, 2020
+ */
+<<if !$daily.school.fenceHop>>
+	<<if !$fenceFamiliarity>>
+		<<set $fenceFamiliarity to 0>>
+	<<elseif $fenceFamiliarity lt 20>>
+		<<set $fenceFamiliarity++>>
 	<</if>>
-<<elseif $worn.lower.type.includes("naked")>>
-	<<if !$worn.under_lower.type.includes("naked")>>
-		<<set $worn.under_lower.integrity -= 20>>
-		<<if $worn.under_lower.integrity lte 0>>
-			You feel strangely cold. You look back at the fence, and see your $worn.under_lower.name hanging from one of the spikes!
-		<<else>>
-			Your $worn.under_lower.name caught on a spike and tore slightly as you climbed over.
-		<</if>>
-	<<else>>
-		A breeze caresses your <<genitals>>, making you shiver.
-	<</if>>
-<<else>>
-	<<set $worn.lower.integrity -= 20>>
-	<<if $worn.lower.integrity lte 0>>
-		You feel strangely cold. You look back at the fence, and see your $worn.lower.name hanging from one of the spikes!
-	<<else>>
-		Your $worn.lower.name caught on a spike and tore slightly as you climbed over.
-	<</if>>
+	<<transform "cat" 1>>
+	<<set $daily.school.fenceHop to 1>>
 <</if>>
+/* chance to hop the fence based on athletics or fence familiarity, capped at 95% */
+<<set _fencehop to Math.max(($fenceFamiliarity - 1) * 5, currentSkillValue("athletics") / 11)>>
+
+/* find the top-most slot that is not naked */
+<<set _slots to ["over_lower", "lower", "under_lower"]>>
+<<set _cloth to _slots.find(c => !V.worn[c].type.includes("naked"))>>
+/* find the bottom slot that is not naked, and if it's the same as the top one (but not under_lower) - pc is going commando */
+<<set _commando to _slots.reverse().find(c => !V.worn[c].type.includes("naked")) === _cloth and _cloth isnot "under_lower">>
+<<if $cat gte 6>>
+	With unmatched grace and elegance, you land on all fours.
+<<elseif _cloth isnot undefined and _fencehop lte $rng>>
+	/* has clothes, failed the check */
+	<<if _fencehop gte 95>>
+		Despite your skill at hopping fences, you fumble while getting down.
+	<<elseif _fencehop gte 50>>
+		Your skill at hopping fences still has room to grow, and the sound of ripping fabric reminds you of this.
+	<</if>>
+	<<set $worn[_cloth].integrity -= 20>>
+	<<if $worn[_cloth].integrity lte 0>>
+		You feel strangely cold. You look back at the fence, and see your <<print $worn[_cloth].name>> hanging from one of the spikes!
+	<<else>>
+		Your <<print $worn[_cloth].name>> catches on a spike and tears slightly as you climb over.
+	<</if>>
+<<elseif _cloth isnot undefined>>
+	/* has clothes, succeeded the check */
+	<<if _fencehop gte 95>>
+		You are familiar enough with hopping fences that you hop this one without issues.
+	<<elseif _fencehop gte 50>>
+		You've spent a little bit of time hopping fences, and the practice pays off as you manage to get over this one without any complications.
+	<<else>>
+		Through sheer dumb luck, you manage to get over the fence without hurting yourself or tearing your clothing.
+	<</if>>
+<<elseif _fencehop lte $rng>>
+	/* naked, failed */
+	A moment later, you feel a sharp pain in your <<print either("shoulder", "back", "butt")>>. The old fence din't left you unscratched.<<pain 8>><<stress 6>><<ggpain>><<gstress>>
+<</if>>
+<<if _commando>>
+	<br>
+	A breeze caresses your <<genitals>>, making you shiver<<if $body_temperature is "cold">>. It's getting really cold.<<stress 6>><<gstress>><<elseif $exhibitionism gte 15>> <span class="lewd">with excitement</span>.<<arousal 150>><<garousal>><<else>>.<</if>>
+<</if>>
+
 <<integritycheck>>
 <br><br>
 
