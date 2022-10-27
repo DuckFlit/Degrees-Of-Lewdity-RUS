@@ -1416,24 +1416,28 @@ function isLoveInterest(name) {
 }
 window.isLoveInterest = isLoveInterest;
 
-function getMoonState(forced = false) {
+function getMoonState(forced = false, forecast) {
 	if (!T.timeChecked) time(); // ensure that T.nightstate exists before running (but don't call it every time bc that's wasteful)
 	if (T.moonChecked === V.time && !forced) return V.moonstate; // don't bother recalculating this if time hasn't changed (unless forced to)
 
-	if (T.nightstate === "evening") {
+	const nightstate = forecast || T.nightstate;
+	let moonstate = V.moonstate;
+
+	if (nightstate === "evening") {
 		if (V.monthday === getLastDayOfMonth()) { // blood moon happens on the last night of the month
-			V.moonstate = "evening";
+			moonstate = "evening";
 		} else {
-			V.moonstate = 0; // moonstate will stay "morning" until the night after the blood moon
+			moonstate = 0; // moonstate will stay "morning" until the night after the blood moon
 		}
-	} else if (T.nightstate === "morning") { 
+	} else if (nightstate === "morning") { 
 		if (V.moonstate === "evening") { // if it's after midnight and there was a blood moon before midnight, then it's still a blood moon
-			V.moonstate = "morning";
+			moonstate = "morning";
 		}
 	}
 
 	T.moonChecked = V.time; //set this temp var to $time so that we don't recalculate it unless time changes in this passage for some reason
-	return V.moonstate;
+	if (!forecast) V.moonstate = moonstate; //don't modify the real moonstate if this is just a forecast 
+	return moonstate;
 }
 window.getMoonState = getMoonState;
 
