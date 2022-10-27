@@ -1437,8 +1437,8 @@ function getMoonState(forced = false) {
 }
 window.getMoonState = getMoonState;
 
-function isBloodmoon() {
-	return (V.daystate === "night" && getMoonState() !== 0); // it's only a blood moon if it's night
+function isBloodmoon(wraithEvent = false) {
+	return (V.daystate === "night" && getMoonState() !== 0 && (!wraithEvent || V.hour < 5)); // it's only a blood moon if it's night. also, wraith events can't start at 5 AM.
 }
 window.isBloodmoon = isBloodmoon;
 
