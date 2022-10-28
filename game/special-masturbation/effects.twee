@@ -1,7 +1,10 @@
 :: Widgets Masturbation Effects [widget]
 
 <<widget "masturbationeffects">>
-<<set _playerToys to window.listUniqueCarriedSextoys().filter(toy => toy.type.includesAny("dildo","stroker"))>>
+/*For older saves in existing masturbation scene*/
+<<if !$masturbation_oralSkill>><<set $masturbation_oralSkill to 0>><</if>>
+
+<<set _playerToys to window.listUniqueCarriedSextoys().filter(toy => (V.player.penisExist && !V.worn.genitals.type.includes("chastity") && toy.type.includesAny("stroker")) || toy.type.includesAny("dildo"))>>
 <<if $currentToyLeft isnot undefined and $currentToyLeft isnot "none">>
 	<<set $_lefttoy to _playerToys[$currentToyLeft].name>>
 	<<set $_lefttoycolour to _playerToys[$currentToyLeft].colour>>
@@ -16,7 +19,7 @@
 	<<vaginaWetnessCalculate>>
 <</if>>
 
-<<if $corruptionMasturbation is true>>
+<<if $corruptionMasturbation>>
 	<<if $leftarm is "bound" and $rightarm is "bound">>
 		The slime makes you fight against the binds around your arms. You make no progress, <span class="blue">and it gives up.</span>
 		<<arousal 600>><<stress 6>><<gstress>><<garousal>>
@@ -33,9 +36,26 @@
 			<<if $corruptionMasturbationCount is 0>>
 				<<set $corruptionMasturbation to false>>
 				<<unset $corruptionMasturbationCount>>
+				<<if $awareness lt 200>>
+					/*Prevents the PC from continuing actions that they normally are unable to do yet*/
+					<span class="green">With the loss of the control from the slimes in your ear, you
+						<<if $mouth is "mpenis">>
+							<<set $mouthactiondefault to "mrest">><<set $mouthaction to 0>><<set $mouth to 0>><<set $penisuse to 0>>
+							remove your <<penis>> from your mouth and move away.
+						<<elseif $mouth is "mpenisentrance">>
+							<<set $mouthactiondefault to "mrest">><<set $mouthaction to 0>><<set $mouth to 0>><<set $penisuse to 0>>
+							move away from your <<penis>>.
+						<<elseif $mouth is "mvaginaentrance">>
+							<<set $mouthactiondefault to "mrest">><<set $mouthaction to 0>><<set $mouth to 0>>
+							move away from your <<pussy>>.
+						<</if>>
+					</span>
+				<</if>>
 			<</if>>
 		<</if>>
-		<<masturbationSlimeControl>>
+		<<if $corruptionMasturbation>>
+			<<masturbationSlimeControl>>
+		<</if>>
 	<</if>>
 <</if>>
 
@@ -192,7 +212,7 @@
 	<</if>>
 
 	/* the text output currently does not care which hand is used or if both hands are used */
-	<<if $worn.upper.exposed gte 2 and $worn.under_upper.exposed gte 1>>
+	<<if $worn.over_upper.exposed gte 2 and $worn.upper.exposed gte 2 and $worn.under_upper.exposed gte 1>>
 		<<arousal `100 * _handsOnBreasts`>>
 		<<if $player.breastsize lte 2>>
 			<<if $arousal gte ($arousalmax / 5) * 4>>
@@ -449,11 +469,12 @@
 <<elseif $leftaction is "mpenisshaft" or $rightaction is "mpenisshaft">>
 	<<if $leftaction is "mpenisshaft">>
 		<<set $leftactiondefault to $leftaction>><<set $leftaction to 0>>
+		<<arousal 200 "genitals">>
 	<</if>>
 	<<if $rightaction is "mpenisshaft">>
 		<<set $rightactiondefault to $rightaction>><<set $rightaction to 0>>
+		<<arousal 200 "genitals">>
 	<</if>>
-	<<arousal 200 "genitals">>
 	<<if $player.virginity.penile is true>>
 		<<if $arousal gte ($arousalmax / 5) * 4>>
 			You run your fingers up and down your virgin penis as roughly as your foreskin will allow.
@@ -892,8 +913,9 @@
 
 <!-- Mouth actions -->
 
-<<if $mouthaction is "mpenisentrance">>
+<<if $mouthaction is "mpenisentrance" and $penisuse is 0>>
 	<<set $mouthactiondefault to "mpenislick">><<set $mouthaction to 0>><<arousal 100 "genitals">><<set $mouth to "mpenisentrance">>
+	<<if $awareness lt 200 and $corruptionMasturbation>><span class="red">The slime in your ear forces you to bend down. You're not sure if you're going to like what's coming.</span><<awareness 1>><<gawareness>><</if>>
 	<<if $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
 		<span class="blue">You get close enough to your <<penis>> to reach out and lick the tip with your tongue.</span>
 		<<arousal 100 "genitals">>
@@ -903,6 +925,7 @@
 	<<elseif $worn.lower.vagina_exposed is 1>>
 		<span class="blue">You run your tongue over your <<penis>>, feeling the bulge beneath your $worn.under_lower.name.</span>
 	<</if>>
+	<<set $penisuse to "mouth">>
 <</if>>
 
 <<if $mouthaction is "mpenislick">>
@@ -940,7 +963,7 @@
 <<if $mouthaction is "mpenisdeepthroat">>
 	<<set $selfsuckDepth += 1>>
 	<<set $_actiondefault to ($selfsuckDepth lt $selfsuckLimit ? $mouthaction : "mpenissuck")>>
-	<<set $mouthactiondefault to $_actiondefault>><<set $mouthaction to 0>>
+	<<set $mouthactiondefault to $_actiondefault>><<set $mouthaction to 0>><<set $masturbation_oralSkill++>>
 	<<set $_arousalGain to 200 + 50*$selfsuckDepth>>
 	<<arousal $_arousalGain>>
 
@@ -1021,7 +1044,7 @@
 <</if>>
 
 <<if $mouthaction is "mpenissuck">>
-	<<set $mouthactiondefault to "mpenissuck">><<set $mouthaction to 0>>
+	<<set $mouthactiondefault to "mpenissuck">><<set $mouthaction to 0>><<set $masturbation_oralSkill++>>
 	<<arousal 200 "genitals">>
 
 	<<set $_eagerly to ($arousal gte $arousalmax * (2/5) ? "eagerly" : "slowly")>>
@@ -1049,12 +1072,13 @@
 <</if>>
 
 <<if $mouthaction is "mpenisstop">>
-	<<set $mouthactiondefault to "mrest">><<set $mouthaction to 0>><<set $mouth to 0>>
+	<<set $mouthactiondefault to "mrest">><<set $mouthaction to 0>><<set $mouth to 0>><<set $penisuse to 0>>
 	<span class="lblue">You move your mouth away from your <<penis>>.</span>
 <</if>>
 
 <<if $mouthaction is "mvaginaentrance">>
 	<<set $mouthactiondefault to "mvaginalick">><<set $mouthaction to 0>><<arousal 100 "genitals">><<set $mouth to "mvaginaentrance">><<set $vaginause to "mouth">>
+	<<if $awareness lt 200 and $corruptionMasturbation>><span class="red">The slime in your ear forces you to bend down. You're not sure if you're going to like what's coming.</span><<awareness 1>><<gawareness>><</if>>
 	<<if $_genitals_exposed>>
 		<span class="blue">You run your tongue over your exposed clit and shiver in anticipation.</span>
 		<<arousal 100 "genitals">>
@@ -1120,7 +1144,7 @@
 <</if>>
 
 <<if $mouthaction is "mpenisflowerlick">>
-	<<set $mouthactiondefault to "mpenisflowerlick">><<set $mouthaction to 0>><<set $mouth to "mpenisflowerlick">><<arousal 200 "genitals">><<drugs 10>><<set $moorPhallusPlant to 2>>
+	<<set $mouthactiondefault to "mpenisflowerlick">><<set $mouthaction to 0>><<set $mouth to "mpenisflowerlick">><<arousal 200 "genitals">><<drugs 10>><<set $moorPhallusPlant to 2>><<set $masturbation_oralSkill++>>
 	<<print either(
 		"You almost take the phallus plant into your mouth, but suddenly feel apprehensive.",
 		"You lick the phallus plant's tip and swallow the sweet liquid.",
@@ -1147,7 +1171,7 @@
 <</if>>
 
 <<if $mouthaction is "mpenisflowersuck">>
-	<<set $mouthactiondefault to "mpenisflowersuck">><<set $mouthaction to 0>><<arousal 500 "genitals">><<drugs 10>>
+	<<set $mouthactiondefault to "mpenisflowersuck">><<set $mouthaction to 0>><<arousal 500 "genitals">><<drugs 10>><<set $masturbation_oralSkill++>>
 	<<if $arousal gte ($arousalmax / 5) * 4>>
 		You shiver as you drink down the fluid while sucking and moving your head back and forward.
 	<<elseif $arousal gte ($arousalmax / 5) * 3>>
@@ -1342,7 +1366,8 @@
 
 /* Stroker actions*/
 
-<<if $leftaction is "mpenisentrancestroker" and $rightaction is "mpenisentrancestroker">>
+<<if $penisuse isnot 0 and $penisuse isnot "stroker">>
+<<elseif $leftaction is "mpenisentrancestroker" and $rightaction is "mpenisentrancestroker">>
 	<<set $_actiondefault to "mpenisentrancestroker">>
 	<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mpenisentrancestroker">>
 	<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mpenisentrancestroker">>
@@ -1358,6 +1383,7 @@
 	<<else>>
 		<span class="blue">You run your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<penis>>, feeling its shape beneath your clothing.</span>
 	<</if>>
+	<<set $penisuse to "stroker">>
 <<elseif $leftaction is "mpenisentrancestroker">>
 	<<set $_actiondefault to "mpenisentrancestroker">>
 	<<if $leftaction is "mpenisentrancestroker">>
@@ -1375,6 +1401,7 @@
 			feeling its shape beneath your clothing.
 		<</if>>
 	</span>
+	<<set $penisuse to "stroker">>
 <<elseif $rightaction is "mpenisentrancestroker">>
 	<<set $_actiondefault to "mpenisentrancestroker">>
 	<<if $rightaction is "mpenisentrancestroker">>
@@ -1392,6 +1419,7 @@
 			feeling its shape beneath your clothing.
 		<</if>>
 	</span>
+	<<set $penisuse to "stroker">>
 <</if>>
 
 <<if $leftaction is "mpenisstroker" or $rightaction is "mpenisstroker">>
@@ -1416,15 +1444,288 @@
 	<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftarm to 0>><<set $penisuse to 0>>
 	<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>>
 	<span class="purple">You move your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy away from your <<penis>>.</span>
-
 <<elseif $leftaction is "mpenisstopstroker">>
-	<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftarm to 0>><<set $penisuse to 0>>
+	<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftarm to 0>>
+	<<if !["mpenisentrancestroker","mpenisstroker"].includes($rightarm)>><<set $penisuse to 0>><</if>>
 	<span class="purple">You move your _playerToys[$currentToyLeft].name in your left hand away from your <<penis>>.</span>
-
 <<elseif $rightaction is "mpenisstopstroker">>
 	<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>><<set $penisuse to 0>>
+	<<if !["mpenisentrancestroker","mpenisstroker"].includes($leftarm)>><<set $penisuse to 0>><</if>>
 	<span class="purple">You move your _playerToys[$currentToyRight].name in your right hand away from your <<penis>>.</span>
 <</if>>
+
+/* Bullet vibrator actions*/
+
+<<if $leftaction is "mchestvibrate" or $rightaction is "mchestvibrate">>
+	<<set _toysOnBreasts to 0>>
+	<<if $leftaction is "mchestvibrate">>
+		<<set _toysOnBreasts += 1>>
+		<<set $leftactiondefault to $leftaction>><<set $leftaction to 0>>
+		<<arousal 200 "nipples">><<playWithBreasts 2>><<set _toysCount++>>
+		<<set _nippleToyName to _playerToys[$currentToyLeft].name>>
+		<<set _toyHand to 'your left hand'>>
+	<</if>>
+	<<if $rightaction is "mchestvibrate">>
+		<<set _toysOnBreasts += 1>>
+		<<set $rightactiondefault to $rightaction>><<set $rightaction to 0>>
+		<<arousal 200 "nipples">><<playWithBreasts 2>><<set _toysCount++>>
+		<<if _nippleToyName>>
+			<<set _nippleToyName += " and  " + _playerToys[$currentToyRight].name>>
+			<<set _toyHand to 'both hands'>>
+		<<else>>
+			<<set _nippleToyName to _playerToys[$currentToyRight].name>>
+			<<set _toyHand to 'your right hand'>>
+		<</if>>
+	<</if>>
+
+	<<if $worn.over_upper.exposed gte 2 and $worn.upper.exposed gte 2 and $worn.under_upper.exposed gte 1>>
+		<<arousal `200 * _toysOnBreasts` "nipples">>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
+			Your nipples stand erect despite the _nippleToyName being rubbed against them as hard as you can stand, vibrations sending a constant feeling of pleasure through you.
+		<<elseif $arousal gte ($arousalmax / 5) * 3>>
+			You rub your _nippleToyName against your hardening nipples with _toyHand.
+		<<else>>
+			You press your _nippleToyName against your nipples with _toyHand, feeling the lewd warmth grow as it continues to vibrate.
+		<</if>>
+	<<else>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
+			Your nipples stand erect against your <<topaside>>, despite the _nippleToyName being rubbed against them through the fabric.
+			Your nipples stand erect against despite the _nippleToyName being rubbed and vibrated against them below your <<topaside>>.
+		<<elseif $arousal gte ($arousalmax / 5) * 3>>
+			You rub your _nippleToyName against your hardening nipples through your <<topaside>> with _toyHand.
+		<<else>>
+			You press your _nippleToyName against your nipples with _toyHand. It feels good, even with your <<topaside>> in the way.
+		<</if>>
+	<</if>>
+<</if>>
+
+<<if $leftaction is "mpenisvibrate" or $rightaction is "mpenisvibrate" and $penisuse is 0>>
+	<<set _toysOnPenis to 0>>
+	<<if $leftaction is "mpenisvibrate">>
+		<<set $leftactiondefault to $leftaction>><<set $leftaction to 0>>
+		<<arousal 200 "genital">><<set _toysOnPenis++>>
+		<<set _penisToyName to _playerToys[$currentToyLeft].name>>
+	<</if>>
+	<<if $rightaction is "mpenisvibrate">>
+		<<set $rightactiondefault to $rightaction>><<set $rightaction to 0>>
+		<<arousal 200 "genital">><<set _toysOnPenis++>>
+		<<if _penisToyName>>
+			<<set _penisToyName += " and  " + _playerToys[$currentToyRight].name>>
+		<<else>>
+			<<set _penisToyName to _playerToys[$currentToyRight].name>>
+		<</if>>
+	<</if>>
+	<<if $worn.over_upper.exposed lte 1 and $worn.upper.exposed lte 1 and $worn.under_upper.exposed is 0>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
+			You rub your _penisToyName up and down your <<penis>> through your <<bottomaside>>.
+		<<elseif $arousal gte ($arousalmax / 5) * 3>>
+			You rub your _penisToyName up and down your <<penis>>, its vibrations quickly making you aroused even through your <<bottomaside>>.
+		<<else>>
+			You gently hold your _penisToyName against the underside of your <<penis>>, enjoying the sensation despite your <<bottomaside>> being in the way.
+		<</if>>
+	<<elseif $player.virginity.penile is true>>
+		<<arousal `200 * _toysOnPenis` "genital">>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
+			You rub your vibrating _penisToyName up and down your virgin penis as roughly as your foreskin will allow.
+		<<elseif $arousal gte ($arousalmax / 5) * 3>>
+			You rub your _penisToyName up and down your virgin penis, its vibrations quickly making you aroused.
+		<<else>>
+			You gently hold your vibrating _penisToyName against the underside of your <<penis>>, enjoying the sensation.
+		<</if>>
+	<<else>>
+		<<arousal `200 * _toysOnPenis` "genital">>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
+			You rub your vibrating _penisToyName up and down your <<penis>>.
+		<<elseif $arousal gte ($arousalmax / 5) * 3>>
+			You rub your _penisToyName up and down your <<penis>>, its vibrations generating a quickly-growing lewd warmth.
+		<<else>>
+			You hold your vibrating _penisToyName against the underside of your <<penis>>, enjoying the sensation.
+		<</if>>
+	<</if>>
+<</if>>
+
+<<if $leftaction is "mvaginaclitvibrate" or $rightaction is "mvaginaclitvibrate">>
+	<<set _toysOnClit to 0>>
+	<<if $leftaction is "mvaginaclitvibrate">>
+		<<set $leftactiondefault to $leftaction>><<set $leftaction to 0>>
+		<<arousal 200 "genital">><<set _toysOnClit++>>
+		<<set _clitToyName to _playerToys[$currentToyLeft].name>>
+	<</if>>
+	<<if $rightaction is "mvaginaclitvibrate">>
+		<<set $rightactiondefault to $rightaction>><<set $rightaction to 0>>
+		<<arousal 200 "genital">><<set _toysOnClit++>>
+		<<if _clitToyName>>
+			<<set _clitToyName += " and  " + _playerToys[$currentToyRight].name>>
+		<<else>>
+			<<set _clitToyName to _playerToys[$currentToyRight].name>>
+		<</if>>
+	<</if>>
+	<<if $_genitals_exposed and $bugsinside is 1>>
+		<<arousal `200 * _toysOnClit` "genital">>
+		<span class="blue">You gently press your _clitToyNameagainst against your <<clit>>, the vibrations combined with the sensation of the insects crawling around within you making your toes curl.</span>
+		<<addVaginalWetness 4>>
+	<<elseif $_genitals_exposed>>
+		<<arousal `200 * _toysOnClit` "genital">>
+		<span class="blue">
+			You gently press your _clitToyName against your <<clit>>,
+			<<if $mouth is "mdildomouth">>
+				the soft moans elicited by the sensation muffled by the
+				<<if $worn.face.type.includes("gag")>>
+					<<print $worn.face.name>>
+				<<elseif $leftarm is "mdildomouth">>
+					<<print _playerToys[$currentToyLeft].name>>
+				<<else>>
+					<<print _playerToys[$currentToyRight].name>>
+				<</if>>
+				obstructing your mouth.
+			<<else>>
+				moaning softly at the sensation.
+			<</if>>
+		</span>
+		<<addVaginalWetness 4>>
+	<<elseif $worn.under_lower.vagina_exposed is 1>>
+		<span class="blue">You press your _clitToyName against your <<clit>> through your $worn.lower.name, enjoying the way it feels even through the fabric.</span>
+		<<addVaginalWetness 2>>
+	<<elseif $worn.lower.vagina_exposed is 1>>
+		<span class="blue">You press your _clitToyName against your <<clit>> through your $worn.under_lower.name, enjoying the way it feels even through the fabric.</span>
+		<<addVaginalWetness 1>>
+	<<else>>
+		<span class="blue">You firmly press your _clitToyName against your <<clit>> through your clothes, enjoying the way it feels despite the layers of fabric in the way.</span>
+		<<addVaginalWetness 0>>
+	<</if>>
+<</if>>
+
+/* Small Dildo and dildo actions*/
+
+<<if $leftaction is "mdildomouthentrance" and $mouth is 0 and ($rightaction isnot "mdildomouthentrance" or random(0,100) gte 50)>>
+	<<set $leftactiondefault to "mdildomouth">><<set $leftaction to 0>><<set $leftarm to "mdildomouthentrance">><<set $mouth to "mdildomouthentrance">>
+	<<set $mouthactiondefault to "mdildolick">>
+	<<arousal 100 "mouth">>
+	You bring your <<print _playerToys[$currentToyLeft].name>> up to your mouth,
+	<<if $oralskill lt 100>>
+		eager for some practice.
+	<<else>>
+		enjoying the sensation of it against your lips.
+	<</if>>
+<</if>>
+
+<<if $rightaction is "mdildomouthentrance" and $mouth is 0>>
+	<<set $rightactiondefault to "mdildomouth">><<set $rightaction to 0>><<set $rightarm to "mdildomouthentrance">><<set $mouth to "mdildomouthentrance">>
+	<<set $mouthactiondefault to "mdildolick">>
+	<<arousal 100 "mouth">>
+	You bring your <<print _playerToys[$currentToyRight].name>> up to your mouth,
+	<<if $oralskill lt 100>>
+		eager for some practice.
+	<<else>>
+		enjoying the sensation of it against your lips.
+	<</if>>
+<</if>>
+
+<<if $leftaction is "mdildopiston" or $rightaction is "mdildopiston">>
+	<<if $leftaction is "mdildopiston">><<set $leftactiondefault to $leftaction>><<set $leftaction to 0>><<set $_mouthDildo to $currentToyLeft>><</if>>
+	<<if $rightaction is "mdildopiston">><<set $rightactiondefault to $rightaction>><<set $rightaction to 0>><<set $_mouthDildo to $currentToyRight>><</if>>
+	<<if _playerToys[$_mouthDildo].name.includes("small")>><<set $_smallDildo to true>><</if>>
+	<<arousal 100 "mouth">><<set $masturbation_oralSkill++>>
+	<<if $oralskill lt 100>>
+		You carefully move the <<print _playerToys[$_mouthDildo].name>> back and forth in your mouth,
+		<<if $_smallDildo>>
+			its modest size perfect for a beginner like you.
+		<<else>>
+			careful not to push it in too deep.
+		<</if>>
+	<<elseif $oralskill lt 200>>
+		<<arousal 100 "mouth">>
+		You bob your head back and forth on the <<print _playerToys[$_mouthDildo].name>>, enjoying the sensation of it rubbing against your lips and tongue.
+	<<else>>
+		<<arousal 200 "mouth">>
+		You skilfully lick and tease the <<print _playerToys[$_mouthDildo].name>> as you quickly bob your head back and forth along it, reveling in the lewd sensations it provides.
+	<</if>>
+<</if>>
+
+<<if $mouthaction is "mdildolick">>
+	<<set $mouthactiondefault to $mouthaction>>
+	<<set $mouthaction to 0>>
+	<<if $leftarm is $mouth>><<set $_mouthDildo to $currentToyLeft>><</if>>
+	<<if $rightarm is $mouth>><<set $_mouthDildo to $currentToyRight>><</if>>
+	<<if _playerToys[$_mouthDildo].name.includes("small")>><<set $_smallDildo to true>><</if>>
+	<<arousal 100 "mouth">><<set $masturbation_oralSkill++>>
+	<<if $mouth is "mdildomouthentrance">>
+		<<if $oralskill lt 100>>
+			You gingerly lick the <<print _playerToys[$_mouthDildo].name>>'s tip, trying your best to tease it with your tongue.
+		<<elseif $oralskill lt 200>>
+			<<arousal 100 "mouth">>
+			You eagerly lick the <<print _playerToys[$_mouthDildo].name>>'s tip, doing your best to tease it with your tongue.
+		<<else>>
+			<<arousal 200 "mouth">>
+			You skilfully kiss and lick the <<print _playerToys[$_mouthDildo].name>>'s tip, lavishing attention upon it with your lips and tongue.
+		<</if>>
+	<<else>>
+		<<if $oralskill lt 100>>
+			<<if $_smallDildo>>
+				You awkwardly wiggle your tongue along the bottom of the <<print _playerToys[$_mouthDildo].name>> in your mouth.
+			<<else>>
+				You struggle to lick along the <<print _playerToys[$_mouthDildo].name>>, its girth pinning your tongue to the bottom of your mouth.
+			<</if>>
+		<<elseif $oralskill lt 200>>
+			<<arousal 100 "mouth">>
+			You wriggle your tongue along the <<print _playerToys[$_mouthDildo].name>> in your mouth, trying your best to reach as much of the toy as you can.
+		<<else>>
+			<<arousal 200 "mouth">>
+			You skillfully wriggle your tongue along the <<print _playerToys[$_mouthDildo].name>> in your mouth, occasionally adjusting your angle to reach as much of it as possible.
+		<</if>>
+	<</if>>
+<<elseif $mouthaction is "mdildokiss">>
+	<<set $mouthactiondefault to $mouthaction>><<set $mouthaction to 0>>
+	<<if $leftarm is $mouth>><<set $_mouthDildo to $currentToyLeft>><</if>>
+	<<if $rightarm is $mouth>><<set $_mouthDildo to $currentToyRight>><</if>>
+	<<arousal 100 "mouth">><<set $masturbation_oralSkill++>>
+	<<if $oralskill lt 100>>
+		You clumsily kiss along the <<print _playerToys[$_mouthDildo].name>>'s length.
+	<<elseif $oralskill lt 200>>
+		<<arousal 100 "mouth">>
+		You kiss along the <<print _playerToys[$_mouthDildo].name>>'s length, a lewd warmth growing within you.
+	<<else>>
+		<<arousal 200 "mouth">>
+		You lovingly plant a series of kisses along the <<print _playerToys[$_mouthDildo].name>>'s length,
+		<<if $player.virginity.oral is true>>
+			hoping you'll get to experience the real thing soon.
+		<<else>>
+			a lewd warmth growing within you as you treat it like the real thing.
+		<</if>>
+	<</if>>
+<<elseif $mouthaction is "mdildosuck">>
+	<<set $mouthactiondefault to $mouthaction>><<set $mouthaction to 0>>
+	<<if $leftarm is $mouth>><<set $_mouthDildo to $currentToyLeft>><</if>>
+	<<if $rightarm is $mouth>><<set $_mouthDildo to $currentToyRight>><</if>>
+	<<arousal 100 "mouth">><<set $masturbation_oralSkill++>>
+	<<if $oralskill lt 100>>
+		You try your best to suck on the <<print _playerToys[$_mouthDildo].name>>.
+	<<elseif $oralskill lt 200>>
+		<<arousal 100 "mouth">>
+		You eagerly suck on the <<print _playerToys[$_mouthDildo].name>>.
+	<<else>>
+		<<arousal 200 "mouth">>
+		You skillfully suck on and tease the <<print _playerToys[$_mouthDildo].name>>,
+		<<if $player.virginity.oral is true>>
+			wondering how different a real penis would feel.
+		<<elseif $ejactrait>>
+			a little disappointed you won't be getting your reward when you're done.
+		<<else>>
+			pretending it's the real thing.
+		<</if>>
+	<</if>>
+<</if>>
+
+<<if $leftaction is "mdildomouth" or $rightaction is "mdildomouth">>
+	<<if $leftaction is "mdildomouth">><<set $leftactiondefault to "mdildopiston">><<set $leftaction to 0>><<set $leftarm to "mdildomouth">><<set $mouth to "mdildomouth">><<set $_mouthDildo to $currentToyLeft>><</if>>
+	<<if $rightaction is "mdildomouth">><<set $rightactiondefault to "mdildopiston">><<set $rightaction to 0>><<set $rightarm to "mdildomouth">><<set $mouth to "mdildomouth">><<set $_mouthDildo to $currentToyRight>><</if>>
+	<<if $mouthactiondefault is "mdildokiss">>
+		<<set $mouthactiondefault to "mdildosuck">>
+	<</if>>
+	<<arousal 200 "mouth">>
+	You take the <<print _playerToys[$_mouthDildo].name>> into your mouth, briefly running your tongue along it as you thrust it between your lips.
+<</if>>
+
 
 /* Hand on Vagina Actions */
 
@@ -1507,7 +1808,7 @@
 	<</if>>
 	<<set _afinger to ($mVaginaFingerAdd is 2 ? "two _lubricated fingers" : "a _lubricated finger")>>
 	<<set $_arousal to ($mVaginaFingerAdd is 2 ? 250 : 200)>>
-	<<arousal $_arousal>>
+	<<arousal $_arousal "genital">>
 	<<if $_hymenIntact>>
 		<span class="purple">You push _afinger into your <<pussy>> until you poke your unblemished hymen.</span>
 	<<elseif $bugsinside is 1>>
@@ -1535,7 +1836,7 @@
 	<<set _anotherfinger to ($mVaginaFingerAdd is 2 ? "two more _lubricated fingers" : "another _lubricated finger")>>
 
 	<<set $_arousalGain to 200 + 50*$fingersInVagina>>
-	<<arousal $_arousalGain>>
+	<<arousal $_arousalGain "genitals">>
 	<<if $bugsinside is 1>>
 		<<if $fingersInVagina is $vaginaFingerLimit>>
 			<span class="lblue">You gasp as you fit one last _lubricated finger inside yourself. You feel insects crawling inside.</span>
@@ -1592,7 +1893,7 @@
 		<<set $rightactiondefault to $rightaction>><<set $rightaction to 0>>
 	<</if>>
 	<<set $_arousalGain to 300 + 50*$fingersInVagina>>
-	<<arousal $_arousalGain>>
+	<<arousal $_arousalGain "genital">>
 	<<set $_fingers to ($fingersInVagina is 1 ? "finger" : "fingers")>>
 	<<addVaginalWetness $fingersInVagina>>
 	<<if $bugsinside is 1>>
@@ -1898,7 +2199,7 @@
 		<</if>>
 	<</if>>
 	<<set $_arousalGain to 300 + 50*$_toypleasure>>
-	<<arousal $_arousalGain>>
+	<<arousal $_arousalGain "genital">>
 	<<addVaginalWetness $_toypleasure>>
 	/* set vaginal wetness text */
 	<<set $_wet to "">>
@@ -2298,6 +2599,15 @@
 	<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>>
 	<span class="purple">You move your _playerToys[$currentToyRight].name in your right hand away from your <<bottom>>.</span>
 <</if>>
+
+<<if $leftaction is "mmouthstopdildo">>
+	<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftarm to 0>><<set $mouth to 0>>
+	<span class="purple">You move your _playerToys[$currentToyLeft].name in your left hand away from your mouth.</span>
+<<elseif $rightaction is "mmouthstopdildo">>
+	<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>><<set $mouth to 0>>
+	<span class="purple">You move your _playerToys[$currentToyRight].name in your right hand away from your mouth.</span>
+<</if>>
+
 
 <<rng>>
 <<if $leftaction is "mrest">>
