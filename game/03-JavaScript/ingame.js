@@ -650,28 +650,20 @@ function numbersBetween(start, end, step = 1) {
 window.numbersBetween = numbersBetween;
 
 function getRobinLocation() {
-	if (V.NPCName[V.NPCNameList.indexOf("Robin")].init !== 1) {
+	if (C.npc.Robin.init !== 1) {
 		return;
 	} else if (V.robinlocationoverride && V.robinlocationoverride.during.includes(V.hour)) {
 		T.robin_location = V.robinlocationoverride.location;
 	} else if (["docks", "landfill", "dinner", "pillory"].includes(V.robinmissing)) {
 		T.robin_location = V.robinmissing;
 	} else if (!between(V.hour, 7, 20)){ //if hour is 6 or lower, or 21 or higher
-		if (V.NPCName[V.NPCNameList.indexOf("Robin")].lust >= 80 && V.robinromance === 1 && between(V.hour, 21, 23) && !V.daily.robin.sleepMasturbate){
-			return T.robin_location = "sleepMasturbate";
-		} else {
-			return T.robin_location = "sleep";
-		}
+		T.robin_location = "sleep";
 	} else if (V.schoolday === 1 && between(V.hour, 8, 15)) {
-		return (T.robin_location = "school");
-	} else if ((V.weekday === 7 || V.weekday === 1) && between(V.hour, 9, 16) && V.NPCName[V.NPCNameList.indexOf("Robin")].trauma < 80) {
-		if (V.season === "winter") {
-			T.robin_location = "park";
-		} else {
-			T.robin_location = "beach";
-		}
+		T.robin_location = "school";
 	} else if (V.halloween === 1 && between(V.hour, 16, 18) && V.monthday === 31) {
 		T.robin_location = "halloween";
+	} else if ((V.weekday === 7 || V.weekday === 1) && between(V.hour, 9, 16) && C.npc.Robin.trauma < 80) {
+		T.robin_location = (V.season === "winter" ? "park" : "beach");
 	} else {
 		T.robin_location = "orphanage";
 	}
@@ -704,7 +696,6 @@ function getRobinCrossdressingStatus(crossdressLevel) {
 	switch (getRobinLocation()) {
 		case "orphanage":
 		case "sleep":
-		case "sleepMasturbate":
 			if (crossdressLevel >= 2) T.robin_cd = 2;
 			break;
 		case "park":
