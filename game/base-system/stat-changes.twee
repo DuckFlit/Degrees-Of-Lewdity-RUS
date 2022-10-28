@@ -239,76 +239,97 @@
 <</widget>>
 
 <<widget "arousal">>
-	<<if _args[0] gte 0 or _args[0] lt 0>>
-		<<set $_gain to _args[0]>>
-		<<if $orgasmtrait gte 1 and $_gain gte 1>>
-			<<set $_gain *= 0.6>>
+	<!-- args[0] must be a number indicating the base increase or decrease of the arousal. -->
+	<!-- args[1] indicates the source of the stimulus. -->
+	<<if (typeof _args[0]) is "number">>		
+		<<set _gain to _args[0]>>
+		<<set _mod to 1>>	
+
+		<!-- Trait checks & effects below -->
+		<<if $orgasmtrait gte 1 and _gain gt 0>>
+			<<set _mod *= 0.6>>
 		<</if>>
 		<<if $choketrait gte 1>>
-			<!-- up to x2 arousal gain when suffocating -->
-			<<set $_gain *= 1 + ($oxygenmax - $oxygen) / 1200>>
+			<!-- adds up to +1 to the  arousal modifier when suffocating -->
+			<<set _mod += ($oxygenmax - $oxygen) / $oxygenmax>>
 		<</if>>
-		<<set $arousal to Math.clamp($arousal + $_gain, 0, $arousalmax)>>
-		<<if _args[1] is "maso">>
-			<<set $arousalmasochism += $_gain>>
-		<<elseif _args[0] gte 0>>
-			<<if _args[1] is true>>
+		<<if $drugged gt 0>>
+			<!-- Multiplies the modifier by up to 2x at full bar -->
+			<!-- Comment Akoz: I chose to make it multiply, rather than add to the modifier -->
+			<!-- so that the aphrodisiacs become quite threatening during nonconsensual use, -->
+			<!-- and more thrilling when used intentionally -->
+			<<set _mod *= 1 + ($drugged / 1000)>>
+		<</if>>
+
+		<!-- Apply effect according to args[1] -->
+		<<switch _args[1]>>
+			<<case undefined>>
+				<!-- No modifier. The usual behaviour for this widget -->
+			<<case "mouth" "oral" "lips">>
+				<<set _mod += ($mouthsensitivity - 1)>>
+			<<case "breast" "breasts" "chest" "nipple" "nipples">>
+				<<set _mod += ($breastsensitivity - 1)>>
+			<<case "bottom" "anus" "anal" "ass" "butt">>
+				<<set _mod += ($bottomsensitivity - 1)>>
+			<<case "genital" "genitals" "penis" "penile" "pussy" "vaginal">>
+				<<set _mod += ($genitalsensitivity - 1)>>
+			<<case "maso">>
+				<<set $arousalmasochism += _gain * _mod>>
+			<<case "time">>
+				<<set _arousal to Math.clamp($arousal + _gain * _mod, 0, $arousalmax)>>
 				<<if $trackedArousal.length gt 4>>
 					<<run $trackedArousal.deleteAt(0)>>
 					<!--add current arousal level to previous hour, low arousal level matters less-->
-					<<set $trackedArousal[$trackedArousal.length - 1] += $arousal * $arousal / ($arousalmax * 0.8)>>
+					<<set $trackedArousal[$trackedArousal.length-1] += ( _arousal * _arousal / ($arousalmax * 0.8) )>>
 				<</if>>
 				<<run $trackedArousal.push(0)>>
-			<</if>>
-			<<set $trackedArousal[$trackedArousal.length - 1] += _args[0]>>
+			<<default>>
+				<!-- Unexpected modifier was received. Throw error/exception -->
+				<<arousalError _args[0] _args[1]>>
+				<<error {
+					message : `Unexpected value \"${_args[1]}\" for second parameter`,
+					source : "Called from " + Utils.GetStack()
+				}>>
+		<</switch>>
+
+		<!-- Now we apply the arousal gain -->
+		<<set $arousal to Math.clamp($arousal + _gain * _mod, 0, $arousalmax)>>
+
+		<!-- And add the increase to the tracker -->
+		<<if _args[0] gte 0>>
+			<!-- Adds the current increase to the latest tracked hour -->
+			<<set $trackedArousal[$trackedArousal.length-1] += _gain * _mod>>
 			<<if _args[0] gt 0>>
 				<<set $timeSinceArousal to 0>>
 			<</if>>
 		<</if>>
-		<<set $arousal = Math.clamp($arousal, 0, $arousalmax)>>
+
 	<<else>>
-		<<if $arousalError is undefined>>
-			<<set $arousalError to [_args[0]]>>
-		<<elseif $arousalError.length gte 50>>
-			<<set $arousalError to [_args[0]]>>
-		<<else>>
-			<<set $arousalError.push(_args[0])>>
-		<</if>>
+		<<arousalError _args[0] _args[1]>>
+		<<error {
+			message : `Unexpected value ${_args[0]} for first parameter`,
+			source : "Called from " + Utils.GetStack()
+		}>>
+	<</if>>
+	
+<</widget>>
+
+<<widget "arousalError">>
+	<<if $arousalError is undefined>>
+		<<set $arousalError to [[_args[0], _args[1]]]>>
+	<<elseif $arousalError.length gte 50>>
+		<<set $arousalError to [[_args[0], _args[1]]]>>
+	<<else>>
+		<<set $arousalError.push([_args[0], _args[1]])>>
 	<</if>>
 <</widget>>
 
 <<widget "breastarousal">>
-	<<if _args[0] gte 0 or _args[0] lt 0>>
-		<<set $arousal += (_args[0] * $breastsensitivity)>>
-		<<if _args[0] gte 0>>
-			<<set $trackedArousal[$trackedArousal.length - 1] += _args[0] * $breastsensitivity>>
-		<</if>>
-	<<else>>
-		<<if $arousalError is undefined>>
-			<<set $arousalError to [_args[0]]>>
-		<<elseif $arousalError.length gte 50>>
-			<<set $arousalError to [_args[0]]>>
-		<<else>>
-			<<set $arousalError.push(_args[0])>>
-		<</if>>
-	<</if>>
+	<<arousal _args[0] "breasts">>
 <</widget>>
 
 <<widget "genitalarousal">>
-	<<if _args[0] gte 0 or _args[0] lt 0>>
-		<<set $arousal += (_args[0] * $genitalsensitivity)>>
-		<<if _args[0] gte 0>>
-			<<set $trackedArousal[$trackedArousal.length - 1] += _args[0] * $genitalsensitivity>>
-		<</if>>
-	<<else>>
-		<<if $arousalError is undefined>>
-			<<set $arousalError to [_args[0]]>>
-		<<elseif $arousalError.length gte 50>>
-			<<set $arousalError to [_args[0]]>>
-		<<else>>
-			<<set $arousalError.push(_args[0])>>
-		<</if>>
-	<</if>>
+	<<arousal _args[0] "genitals">>
 <</widget>>
 
 <<widget "tiredness">>
