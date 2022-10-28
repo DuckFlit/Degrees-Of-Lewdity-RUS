@@ -1,6 +1,6 @@
 :: Pharmacy
 <<unset $pharmacyItem>>
-<<if $pharmDaily.closed>>
+<<if $daily.pharm.closed>>
 	A "Closed" sign hangs on the door. You tug the door but it's locked.
 	<br><br>
 
@@ -12,13 +12,13 @@
 
 	<<if "pharmNurse" in $per_npc>>
 		<<loadNPC 0 "pharmNurse">><<person1>>
-		<<if $pharmDaily.seductionResult is "fail">>
+		<<if $daily.pharm.seductionResult is "fail">>
 			<br>
 			"Hey, you're back," the <<person>> notices you, then goes back to <<his>> book.
-		<<elseif $pharmDaily.seductionResult is "pass">>
-			<<if $pharmDaily.sexResult is "buy">>
+		<<elseif $daily.pharm.seductionResult is "pass">>
+			<<if $daily.pharm.sexResult is "buy">>
 				The <<person>> at the till glances at you, then returns to <<his>> book, blushing slightly.
-			<<elseif $pharmDaily.sexResult is "embarrassed">>
+			<<elseif $daily.pharm.sexResult is "embarrassed">>
 				The <<person>> at the till glances at you, then returns to <<his>> book with a smirk.
 			<<else>>
 				The <<person>> at the till glances at you, then returns to <<his>> book.
@@ -72,7 +72,7 @@
 		<br><br>
 	<</if>>
 	<<link [[Take a look at the contact lenses display|Pharmacy Lenses]]>><</link>>
-	<<if $left_before_nurse_returned lt 3 and $lenses_ordered.length gt 0>>
+	<<if $daily.pharm.impatient lt 3 and $lenses_ordered.length gt 0>>
 		<br><<link [[Ask if your custom contact lenses arrived|Pharmacy Ask If Lenses Delivered]]>><</link>>
 	<</if>>
 	<br><br>
@@ -134,7 +134,7 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 <<link [[Go back|Pharmacy]]>><</link>>
 
 :: Pharmacy Ask Custom Lenses
-<<if $left_before_nurse_returned > 2>>
+<<if $daily.pharm.impatient > 2>>
 	"Who do we have here," says the nurse a rictus on <<his>> face, "Get out, you wasted enough of my time already. Try again tomorrow if you're done with your little game"
 	<br><br><<link [[Leave|Pharmacy Lenses]]>><</link>>
 <<else>>
@@ -187,21 +187,21 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 <<link [[Next|Pharmacy]]>><</link>>
 
 :: Pharmacy Ask If Lenses Delivered
-<<if $left_before_nurse_returned is 1>>
+<<if $daily.pharm.impatient is 1>>
 	"Hello how can I he-", <<he>> frowns, "Don't you think I forgot last time. It's not cool, you can't just send me looking for your package and just leave. Don't do that again please."
 	<br>You apologise, and <<he>> then goes check if your package arrived.
-<<elseif $left_before_nurse_returned is 2>>
+<<elseif $daily.pharm.impatient is 2>>
 	"Who do we have here," says the nurse a rictus on <<his>> face, "Get out, you wasted enough of my time already. Try again tomorrow if you're done with your little game."
-	<<set $left_before_nurse_returned to 3>>
+	<<set $daily.pharm.impatient to 3>>
 <<else>>
 	"How can I h-", <<he>> stops. "Oh, you're the one who ordered the contact lenses, hold on a second sweetheart I'll check if we received them already". You watch as <<he>> disappears in a back room.
 <</if>>
 <br><br>
-<<if $left_before_nurse_returned lt 2>>
-	<<link [[Wait (0:15)|Pharmacy Ask If Lenses Delivered 2]]>><<set $left_before_nurse_returned to 0>><<pass 15>><</link>>
+<<if $daily.pharm.impatient lt 2>>
+	<<link [[Wait (0:15)|Pharmacy Ask If Lenses Delivered 2]]>><<set $daily.pharm.impatient to 0>><<pass 15>><</link>>
 	<br>
 <</if>>
-<<link [[Leave|Pharmacy]]>><<set $left_before_nurse_returned += 1>><</link>>
+<<link [[Leave|Pharmacy]]>><<set $daily.pharm.impatient to ($daily.pharm.impatient + 1) || 1>><</link>>
 
 :: Pharmacy Ask If Lenses Delivered 2
 <<set _received to 0>>
@@ -253,11 +253,11 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 <<formatmoney $pharmacyItem.price>>
 <<switch $pharmacyItem.type>>
 	<<case "penis reduction">>
-		"That'll be _printmoney.<<if !$pharmDaily.seductionResult>> So is it too big, or do you just want it to be tiny?<</if>>"
+		"That'll be _printmoney.<<if !$daily.pharm.seductionResult>> So is it too big, or do you just want it to be tiny?<</if>>"
 	<<case "penis growth">>
-		"That'll be _printmoney.<<if !$pharmDaily.seductionResult>> So you think yours is too small?<</if>>"
+		"That'll be _printmoney.<<if !$daily.pharm.seductionResult>> So you think yours is too small?<</if>>"
 	<<case "penis blocker">>
-		"_printmoney please.<<if !$pharmDaily.seductionResult>> I wonder how big you are.<</if>>"
+		"_printmoney please.<<if !$daily.pharm.seductionResult>> I wonder how big you are.<</if>>"
 	<<case "breast reduction">>
 		"_printmoney please. The effects will vary."
 	<<case "breast growth">>
@@ -317,7 +317,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 	<span class="purple">You cannot afford them.</span>
 <</if>>
 <br>
-<<if $pharmacyItem.type.includes("penis") and $promiscuity gte 15 and !$pharmDaily.seductionResult>>
+<<if $pharmacyItem.type.includes("penis") and $promiscuity gte 15 and !$daily.pharm.seductionResult>>
 	<<link [[Seduce|Pharmacy Seduction]]>><</link>><<seductiondifficulty>><<promiscuous2>>
 	<br>
 <</if>>
@@ -338,7 +338,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 <<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>><<promiscuity2>>
 
 <<if $seductionrating gte $seductionrequired>>
-	<<set $pharmDaily.seductionResult to "pass">>
+	<<set $daily.pharm.seductionResult to "pass">>
 	<<He>> arches an eyebrow and blushes while glancing around to make sure you're alone. Satisfied, <<he>> takes you by the hand and leads you behind the counter.
 	<br>
 	<<He>> pushes you against the wall, drops down on <<his>> knees and hastens to remove your <<allBottomsUnderwear>>.
@@ -347,7 +347,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 	<<set $sexstart to 1>>
 	<<link [[Next|Pharmacy Encounter Sex]]>><</link>>
 <<else>>
-	<<set $pharmDaily.seductionResult to "fail">>
+	<<set $daily.pharm.seductionResult to "fail">>
 	After a brief pause, <<he>> bursts into a ringing laugh.<<ggstress>><<stress 23>>
 	<br>
 	"Nice try, <<lass>>!" <<he>> says.
@@ -482,7 +482,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 
 :: Pharmacy Encounter Sex Finish
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<set $pharmDaily.sexFinished to true>>
+<<set $daily.pharm.sexFinished to true>>
 
 <<capture $pharmacyItem>>
 <<if $enemyarousal gte $enemyarousalmax>>
@@ -505,7 +505,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 		<<endcombat>>
 		<<if $money gte $pharmacyItem.price>>
 			<<link [["Buy " + $pharmacyItem.name + " for " + _printmoney|Pharmacy]]>>
-				<<set $eventskip to 1>><<set $pharmDaily.sexResult to "buy">>
+				<<set $eventskip to 1>><<set $daily.pharm.sexResult to "buy">>
 				<<set $money -= $pharmacyItem.price>><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>>
 			<</link>>
 		<<else>>
@@ -522,7 +522,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 		<<if $money gte $pharmacyItem.price>>
 			<<formatmoney $pharmacyItem.price>>
 			<<link [["Buy growth blocker pills for " + _printmoney|Pharmacy]]>>
-				<<set $eventskip to 1>><<set $pharmDaily.sexResult to "buy">>
+				<<set $eventskip to 1>><<set $daily.pharm.sexResult to "buy">>
 				<<set $money -= $pharmacyItem.price>><<set $sexStats.pills.pills["penis blocker"].owned += 14>><<boughtOnce>>
 			<</link>>
 		<<else>>
@@ -530,7 +530,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 		<</if>>
 	<</if>>
 	<br>
-	<<link [[Don't buy|Pharmacy]]>><<set $eventskip to 1>><<set $pharmDaily.sexResult to "dontBuy">><</link>>
+	<<link [[Don't buy|Pharmacy]]>><<set $eventskip to 1>><<set $daily.pharm.sexResult to "dontBuy">><</link>>
 
 <<elseif $enemyhealth lte 0>>
 	The <<personsimple>> drops on the floor and nurses <<his>> injuries. <<tearful>> you gather yourself.
@@ -542,7 +542,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 	You look at the counter and see the box of <<print $pharmacyItem.name>> pills you tried to purchase.
 	<br><br>
 
-	<<set $pharmDaily.closed to true>>
+	<<set $daily.pharm.closed to true>>
 	<<clearNPC "pharmNurse">>
 	<<link [[Steal the pills before the nurse picks themselves up|Hospital Foyer]]>>
 		<<set $eventskip to 1>>
@@ -552,7 +552,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 	<<link [[Just leave|Hospital Foyer]]>><<set $eventskip to 1>><</link>>
 
 <<elseif $finish is 1>>
-	<<set $pharmDaily.sexResult to "embarrassed">>
+	<<set $daily.pharm.sexResult to "embarrassed">>
 	<<switch $phase>>
 		<<case "chastity">>
 			Embarrassed, you don't speak as you rise to your feet.

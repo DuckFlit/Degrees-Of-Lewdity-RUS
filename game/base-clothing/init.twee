@@ -38,95 +38,38 @@
 <</widget>>
 
 <<widget "clothing_arrays">>
-
-<<set $clothes to {}>>
-<<set $worn to {}>>
-<<set $wardrobe to {}>>
-<<wardrobesUpdate>>
-<<set $store to {}>>
-<<set $outfit to []>>
-<<set $carried to {}>>
-<<set $outfitTmp to {}>>
-
-<<set $worn.over_upper to clone(setup.clothes.over_upper[0])>>
-<<set $worn.over_lower to clone(setup.clothes.over_lower[0])>>
-<<set $worn.upper to clone(setup.clothes.upper[0])>>
-<<set $worn.lower to clone(setup.clothes.lower[0])>>
-<<set $worn.under_upper to clone(setup.clothes.under_upper[0])>>
-<<set $worn.under_lower to clone(setup.clothes.under_lower[0])>>
-<<set $worn.genitals to clone(setup.clothes.genitals[0])>>
-<<set $worn.over_head to clone(setup.clothes.over_head[0])>>
-<<set $worn.head to clone(setup.clothes.head[0])>>
-<<set $worn.face to clone(setup.clothes.face[0])>>
-<<set $worn.neck to clone(setup.clothes.head[0])>>
-<<set $worn.hands to clone(setup.clothes.hands[0])>>
-<<set $worn.legs to clone(setup.clothes.legs[0])>>
-<<set $worn.feet to clone(setup.clothes.feet[0])>>
-
-<<set $wardrobe.over_upper to []>>
-<<set $wardrobe.over_lower to []>>
-<<set $wardrobe.upper to []>>
-<<set $wardrobe.lower to []>>
-<<set $wardrobe.under_upper to []>>
-<<set $wardrobe.under_lower to []>>
-<<set $wardrobe.over_head to []>>
-<<set $wardrobe.head to []>>
-<<set $wardrobe.face to []>>
-<<set $wardrobe.neck to []>>
-<<set $wardrobe.hands to []>>
-<<set $wardrobe.legs to []>>
-<<set $wardrobe.feet to []>>
-<<set $wardrobe.space to 20>>
-
-<<set $outfit to [{
-	index: 0,
-	name: "Pyjamas",
-	over_upper: "naked",
-	over_lower: "naked",
-	upper: "pyjama shirt",
-	lower: "pyjama bottoms",
-	under_upper: "naked",
-	under_lower: "naked",
-	over_head: "naked",
-	head: "naked",
-	face: "naked",
-	neck: "naked",
-	hands: "naked",
-	legs: "naked",
-	feet: "naked",
-	type: ["sleep"],
-	colors: false
-}]>>
-
-<<set $carried.over_upper to clone(setup.clothes.over_upper[0])>>
-<<set $carried.over_lower to clone(setup.clothes.over_lower[0])>>
-<<set $carried.upper to clone(setup.clothes.upper[0])>>
-<<set $carried.lower to clone(setup.clothes.lower[0])>>
-<<set $carried.under_upper to clone(setup.clothes.under_upper[0])>>
-<<set $carried.under_lower to clone(setup.clothes.under_lower[0])>>
-<<set $carried.genitals to clone(setup.clothes.genitals[0])>>
-<<set $carried.over_head to clone(setup.clothes.over_head[0])>>
-<<set $carried.head to clone(setup.clothes.head[0])>>
-<<set $carried.face to clone(setup.clothes.face[0])>>
-<<set $carried.neck to clone(setup.clothes.neck[0])>>
-<<set $carried.hands to clone(setup.clothes.hands[0])>>
-<<set $carried.legs to clone(setup.clothes.legs[0])>>
-<<set $carried.feet to clone(setup.clothes.feet[0])>>
-
-<<set $store.over_upper to []>>
-<<set $store.over_lower to []>>
-<<set $store.upper to []>>
-<<set $store.lower to []>>
-<<set $store.under_upper to []>>
-<<set $store.under_lower to []>>
-<<set $store.over_head to []>>
-<<set $store.head to []>>
-<<set $store.face to []>>
-<<set $store.neck to []>>
-<<set $store.hands to []>>
-<<set $store.legs to []>>
-<<set $store.feet to []>>
-
+	<<script>>
+		V.clothes = {};
+		V.store = {};
+		V.wardrobe = { space: 20 };
+		V.outfitTmp = {};
+		V.carried = {};
+		V.worn = {};
+		const worn = {};
+		for (let slot of setup.clothes_all_slots) {
+			V.store[slot] = [];
+			V.wardrobe[slot] = [];
+			V.carried[slot] = clone(setup.clothes[slot][0]);
+			V.worn[slot] = clone(setup.clothes[slot][0]);
+			/* create a proxy that will forward the calls to V.worn[slot], but also pull extra properties from setup.clothes if necessary.
+			writing to C.worn.slot.property will only affect V.worn.slot.property.
+			please, AVOID calling C.worn.slot without properties!! */
+			worn[slot] = new Proxy (
+				{ /* direct proxy to V.worn is impossible due to the latter getting re-created every passage, so we use empty object instead */ }, {
+					get(nil, prop) { return prop in V.worn[slot]
+						? V.worn[slot][prop]
+						: setup.clothes[slot][clothesIndex(slot, V.worn[slot])][prop];
+					},
+					set(nil, prop, val) { return V.worn[slot][prop] = val },
+				}
+			);
+		};
+		/* freeze worn to prevent proxies from being overwritten */
+		Object.freeze(worn);
+		C.worn = worn;
+		V.outfit = [{ index: 0, name: "Pyjamas", over_upper: "naked", over_lower: "naked", upper: "pyjama shirt", lower: "pyjama bottoms", under_upper: "naked", under_lower: "naked", over_head: "naked", head: "naked", face: "naked", neck: "naked", hands: "naked", legs: "naked", feet: "naked", type: ["sleep"], colors: false }];
+	<</script>>
+	<<wardrobesUpdate>>
 <</widget>>
 
 <<widget "clothinginit">>

@@ -104,11 +104,11 @@
 	<<elseif $schoolShopAction.includes("return")>>
 		"Couldn't find the right size? I'll inform the <<nnpc_title "Leighton">>."
 	<</if>>
-	Sydney leads you back to <<his>> post at the rental counter<<if $sydneyDaily.peek>>, looking nervous and trying to conceal <<his>> blush all the while<</if>>.
+	Sydney leads you back to <<his>> post at the rental counter<<if $daily.sydney.peek>>, looking nervous and trying to conceal <<his>> blush all the while<</if>>.
 	<<unset $schoolShopAction>>
 	<br><br>
 	<<sydneyOptions>>
-<<elseif $sydneyClassWarn and $sydneyClassWarn gte 3 and !_sydneyStatus.includes("corrupt") and $hour isnot 12 and $hour.between(9,14)>>
+<<elseif $daily.sydney.classWarn and $daily.sydney.classWarn gte 3 and !_sydneyStatus.includes("corrupt") and $hour isnot 12 and $hour.between(9,14)>>
 	Sydney shoos you away. "If the <<nnpc_Title "Leighton">> catches you skipping class, we'll both be in big trouble!"
 	<br><br>
 	<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
@@ -149,9 +149,9 @@
 		<<unset $bookOverdue>>
 		<br><br>
 		<<sydneyOptions>>
-	<<elseif $bookOverdue and !$sydneyDaily.overdueMessage>>
+	<<elseif $bookOverdue and !$daily.sydney.overdueMessage>>
 		Sydney looks up at you. "You've got a book overdue." <<bookCriminal>>
-		<<set $sydneyDaily.overdueMessage to true>>
+		<<set $daily.sydney.overdueMessage to true>>
 		<br><br>
 		<<sydneyOptions>>
 	<<elseif $bookStolenAbsent and $sydneyStolenKnown>>
@@ -207,30 +207,30 @@
 	<<switch _sydney_location>>
 		<<case "library">>
 			<<if ($sydneyScience isnot 1 and $schoolstate is "first") or ["fourth", "fifth"].includes($schoolstate)>>
-				<<if !$sydneyClassWarn>>
-					<<set $sydneyClassWarn to 0>>
+				<<if !$daily.sydney.classWarn>>
+					<<set $daily.sydney.classWarn to 0>>
 				<</if>>
-				<<set $sydneyClassWarn++>>
+				<<set $daily.sydney.classWarn++>>
 			<<else>>
-				<<unset $sydneyClassWarn>>
+				<<unset $daily.sydney.classWarn>>
 			<</if>>
-			<<if $sydneyClassWarn gte 3 and !_sydneyStatus.includes("corrupt") and $hour isnot 12 and $hour.between(9,14)>>
+			<<if $daily.sydney.classWarn gte 3 and !_sydneyStatus.includes("corrupt") and $hour isnot 12 and $hour.between(9,14)>>
 				<<He>> shoos you away from the rental counter. "If the <<nnpc_Title "Leighton">> catches you skipping class, we'll both be in big trouble!"
 				<br><br>
 				<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 				<br>
 			<<else>>
-				<<if $sydneyClassWarn is 1>>
+				<<if $daily.sydney.classWarn is 1>>
 					<<if $schoolstate is "first">>
 						<<He>> looks up at you. "Classes usually start around now. Aren't you going to be late?"
 					<<else>>
 						<<He>> checks the time. "You're going to be late for your next class."
 					<</if>>
 					<br><br>
-				<<elseif $sydneyClassWarn is 2>>
+				<<elseif $daily.sydney.classWarn is 2>>
 					<<He>> looks up at you. "Are you... skipping class just to see me?"
 					<br><br>
-				<<elseif $sydneyClassWarn is 3 and _sydneyStatus.includes("corrupt")>>
+				<<elseif $daily.sydney.classWarn is 3 and _sydneyStatus.includes("corrupt")>>
 					<<He>> checks the time. "Screw it, you can stay. Just don't blame me if you get detention."
 					<br><br>
 				<</if>>
@@ -248,7 +248,7 @@
 		<<case "science">>
 			Sydney's eyes grow wide. "Sh<<if _sydneyStatus.includes("corrupt")>>i<<else>>oo<</if>>t! We're late for science class!" <<He>> begins to pack up <<his>> things. "<<sydneyMum>>'s gonna kill me..."
 			<br><br>
-			<<scienceicon>><<link [[Go with Sydney|Science Classroom]]>><<endevent>><<set $sydneyScienceWalk to 1>><</link>>
+			<<scienceicon>><<link [[Go with Sydney|Science Classroom]]>><<endevent>><<set $daily.sydney.scienceWalk to 1>><</link>>
 			<br>
 			<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
@@ -268,7 +268,7 @@
 			<<if $NPCName[$NPCNameList.indexOf("Sydney")].love gte 10>>
 				<<He>> begins gathering some books. "I'm going to get lunch. Would you like to come with me?"
 				<br><br>
-				<<link [[Go with Sydney|Canteen Lunch Sydney]]>><<endevent>><<set $luncheaten to 1>><<set $phase2 to 1>><<npcincr Sydney love 1>><</link>><<glove>>
+				<<link [[Go with Sydney|Canteen Lunch Sydney]]>><<endevent>><<set $daily.school.lunchEaten to 1>><<set $phase2 to 1>><<npcincr Sydney love 1>><</link>><<glove>>
 				<br>
 			<<else>>
 				<<He>> begins gathering some books. "I'm off to lunch, should only be about fifteen minutes."
@@ -278,7 +278,7 @@
 			<br>
 		<<case "temple">>
 			Sydney stands up, yawning.
-			<<if $detention gte 1 and $detentionattended isnot 1 and $headnodetention isnot 1 and $pillory_tenant.special.name isnot "Leighton">>
+			<<if $detention gte 1 and $daily.school.detentionAttended isnot 1 and $headnodetention isnot 1 and $pillory_tenant.special.name isnot "Leighton">>
 				"It's closing time. The <<nnpc_title "Leighton">> said you're not allowed to leave the premises until you serve your detention at the end of the day. Sorry."
 				<br><br>
 			<<elseif $sydneySeen.includes("mass") or $sydneySeen.includes("initiate")>>
@@ -444,12 +444,12 @@
 <</widget>>
 
 <<widget "sydneyOptionsTalk">>
-<<if $bus is "schoollibrary" and $sydneyDaily.peek and !$sydneyDaily.peekConfront>>
-	<<link [[Confront about changing room|Sydney Peek Confront]]>><<set $sydneyDaily.peekConfront to true>><</link>>
+<<if $bus is "schoollibrary" and $daily.sydney.peek and !$daily.sydney.peekConfront>>
+	<<link [[Confront about changing room|Sydney Peek Confront]]>><<set $daily.sydney.peekConfront to true>><</link>>
 	<br>
 <</if>>
 <<if $location is "school" and $sydneySeen.includes("science") and $hour is 8 and $minute gte 45>>
-	<<scienceicon>><<link [[Walk to science class with Sydney (0:05)|Science Classroom]]>><<pass 5>><<npcincr Sydney love 1>><<endevent>><<set $sydneyScienceWalk to 1>><</link>><<glove>>
+	<<scienceicon>><<link [[Walk to science class with Sydney (0:05)|Science Classroom]]>><<pass 5>><<npcincr Sydney love 1>><<endevent>><<set $daily.sydney.scienceWalk to 1>><</link>><<glove>>
 	<br>
 <</if>>
 <<if $location is "adult_shop">> /*Placeholder. Unfinished.*/
@@ -491,15 +491,15 @@
 		<<link [[Share milkshake (0:15)|Sydney Share Milkshake]]>><<pass 15>><<set $milkshake -= 1>><<npcincr Sydney love 2>><<stress -10>><</link>><<lstress>><<gglove>>
 		<br>
 	<</if>>
-	<<if $promiscuity gte 55 and $sydneyromance is 1 and !$sydneyDaily.crawl>>
-		<<link [[Crawl under the counter|Sydney Crawl]]>><<set $sydneyDaily.crawl to true>><</link>><<promiscuous4>><<llspurity>><<sydneyWarning corrupt>>
+	<<if $promiscuity gte 55 and $sydneyromance is 1 and !$daily.sydney.crawl>>
+		<<link [[Crawl under the counter|Sydney Crawl]]>><<set $daily.sydney.crawl to true>><</link>><<promiscuous4>><<llspurity>><<sydneyWarning corrupt>>
 		<br>
 	<</if>>
 <</if>>
 <<if ($sydney.glasses is "broken" or $sydney.glasses is "playerbroken") and $money gte 1500 and ($sydneyChatState gte 3 or $sydneyromance is 1)>>
 	<<highicon>><<link [["Offer to replace " + $NPCList[0].pronouns.his + " glasses (£15 0:30)"|Sydney Walk]]>><<npcincr Sydney love 3>><</link>><<gglove>>
 	<br>
-<<elseif ($sydney.glasses isnot "broken" and $sydney.glasses isnot "playerbroken") and $NPCName[$NPCNameList.indexOf("Sydney")].love gte 30 and !$sydneyDaily.walk>>
+<<elseif ($sydney.glasses isnot "broken" and $sydney.glasses isnot "playerbroken") and $NPCName[$NPCNameList.indexOf("Sydney")].love gte 30 and !$daily.sydney.walk>>
 	<<link [[Ask to go somewhere together|Sydney Walk]]>><</link>>
 	<br>
 <</if>>
@@ -524,8 +524,8 @@
 		/* Do Nothing */
 	<</if>>
 <</if>>
-<<if $bus is "schoollibrary" and $NPCName[$NPCNameList.indexOf("Sydney")].love gte 50 and $trauma gte ($traumamax / 7) * 3 and !$sydneyDaily.breakdown>>
-	<<link [[Break down (0:25)|Sydney Library Break]]>><<pass 25>><<stress -24>><<trauma -12>><<set $sydneyDaily.breakdown to true>><</link>><<llstress>><<lltrauma>>
+<<if $bus is "schoollibrary" and $NPCName[$NPCNameList.indexOf("Sydney")].love gte 50 and $trauma gte ($traumamax / 7) * 3 and !$daily.sydney.breakdown>>
+	<<link [[Break down (0:25)|Sydney Library Break]]>><<pass 25>><<stress -24>><<trauma -12>><<set $daily.sydney.breakdown to true>><</link>><<llstress>><<lltrauma>>
 	<br>
 <</if>>
 <</widget>>
@@ -601,7 +601,7 @@
 <<print _text_output>><</widget>>
 
 <<widget "sydneySchedule">>
-<<if $sydneyPunish is 1>>
+<<if $daily.sydney.punish is 1>>
 	<<set _sydney_location to "home">>
 	<<set _sydney_location_message to "home">>
 <<elseif $weekday is 1>>
@@ -663,10 +663,10 @@
 		<<set _sydney_location to "science">>
 	<<elseif ["second", "third"].includes($schoolstate)>>
 		<<set _sydney_location to "class">>
-	<<elseif $schoolstate is "lunch" and $luncheaten isnot 1 and $minute lte 15>>
+	<<elseif $schoolstate is "lunch" and $daily.school.lunchEaten isnot 1 and $minute lte 15>>
 		<<set _sydney_location to "canteen">>
 	<<elseif $hour lte 15 or ($hour is 16 and $minute lte 40)>>
-		<<if $sydneyTempleSkip>>
+		<<if $daily.sydney.templeSkip>>
 			<<set _sydney_location to "temple">>
 		<<else>>
 			<<set _sydney_location to "library">>
@@ -728,8 +728,8 @@
 <</widget>>
 
 <<widget "sydneyGreeting">>
-<<if !$sydneyDaily.greeting>>
-	<<set $sydneyDaily.greeting to true>>
+<<if !$daily.sydney.greeting>>
+	<<set $daily.sydney.greeting to true>>
 	<<if $sydneyromance is 1>>
 		<<if $hour lte 3 or $hour gte 18>>
 			"Good evening, my beloved," <<he>> says before kissing you on the cheek.
@@ -755,7 +755,7 @@
 <</widget>>
 
 <<widget "bookCriminal">>
-<<if !$sydneyDaily.overdueMessage>>
+<<if !$daily.sydney.overdueMessage>>
 	<<bodywriting_exposure_check>>
 	<<run statusCheck("Sydney")>>
 	<<if _bodywriting_exposed gte 1 and ($skin[_bodypart].writing is "Book Criminal >:(" or $skin[_bodypart].writing is "Book Criminal <3")>>
@@ -794,7 +794,7 @@
 				<<He>> scribbles something on your forehead, and holds up a small pocket mirror. Your forehead now reads: <<bodywriting_npc_sydney_book forehead "marker">>
 				<<if $sydneyromance is 1>>
 					<<He>> finishes with a kiss on your forehead, pulling away with a loud "Mwah!"
-					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$kylarDaily.leightonPunch>>
+					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$daily.kylar.leightonPunch>>
 						<br><br>
 						Kylar stares from across the library. <<gksuspicion>><<npcincr Kylar rage 1>><<set $kylarSeen.pushUnique("sydneyWriting")>>
 					<</if>>
@@ -806,7 +806,7 @@
 				<<He>> wipes away your <<tattoo forehead>> on your forehead, and scribbles something of <<his>> own. <<bodywriting_clear forehead>> Your forehead now reads: <<bodywriting_npc_sydney_book forehead "marker">>
 				<<if $sydneyromance is 1>>
 					<<He>> finishes with a kiss on your forehead, pulling away with a loud "Mwah!"
-					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$kylarDaily.leightonPunch>>
+					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$daily.kylar.leightonPunch>>
 						<br><br>
 						<<if _kylarPresent>>
 							Kylar glowers from across the library. <<ggksuspicion>><<npcincr Kylar rage 3>><<set $kylarSeen.pushUnique("sydneyWriting")>>
@@ -819,7 +819,7 @@
 				<<He>> scribbles something on your left cheek, and holds up a small pocket mirror. Your left cheek now reads: <<bodywriting_npc_sydney_book left_cheek "marker">>
 				<<if $sydneyromance is 1>>
 					<<He>> finishes with a kiss on your cheek, pulling away with a loud "Mwah!"
-					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$kylarDaily.leightonPunch>>
+					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$daily.kylar.leightonPunch>>
 						<br><br>
 						Kylar stares from across the library. <<gksuspicion>><<npcincr Kylar rage 1>><<set $kylarSeen.pushUnique("sydneyWriting")>>
 					<</if>>
@@ -831,7 +831,7 @@
 				<<He>> wipes away your <<tattoo left_cheek>> on your left cheek, and scribbles something of <<his>> own. <<bodywriting_clear left_cheek>> Your left cheek now reads: <<bodywriting_npc_sydney_book left_cheek "marker">>
 				<<if $sydneyromance is 1>>
 					<<He>> finishes with a kiss on your cheek, pulling away with a loud "Mwah!"
-					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$kylarDaily.leightonPunch>>
+					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$daily.kylar.leightonPunch>>
 						<br><br>
 						Kylar stares from across the library. <<gksuspicion>><<npcincr Kylar rage 1>><<set $kylarSeen.pushUnique("sydneyWriting")>>
 					<</if>>
@@ -840,7 +840,7 @@
 				<<He>> scribbles something on your right cheek, and holds up a small pocket mirror. Your right cheek now reads: <<bodywriting_npc_sydney_book right_cheek "marker">>
 				<<if $sydneyromance is 1>>
 					<<He>> finishes with a kiss on your cheek, pulling away with a loud "Mwah!"
-					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$kylarDaily.leightonPunch>>
+					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$daily.kylar.leightonPunch>>
 						<br><br>
 						<<if _kylarPresent>>
 							Kylar glowers from across the library. <<ggksuspicion>><<npcincr Kylar rage 3>><<set $kylarSeen.pushUnique("sydneyWriting")>>
@@ -856,7 +856,7 @@
 				<<He>> wipes away your <<tattoo right_cheek>> on your right cheek, and scribbles something of <<his>> own. <<bodywriting_clear right_cheek>> Your right cheek now reads: <<bodywriting_npc_sydney_book right_cheek "marker">>
 				<<if $sydneyromance is 1>>
 					<<He>> finishes with a kiss on your cheek, pulling away with a loud "Mwah!"
-					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$kylarDaily.leightonPunch>>
+					<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and !$daily.kylar.leightonPunch>>
 						<br><br>
 						<<if _kylarPresent>>
 							Kylar glowers from across the library. <<ggksuspicion>><<npcincr Kylar rage 3>><<set $kylarSeen.pushUnique("sydneyWriting")>>
@@ -1041,7 +1041,7 @@
 		<br>
 		<<if $penisfucked is 1>>
 			<<He>> slowly drops down on you, taking your entire length again.
-			<<arousal 2500>>
+			<<arousal 2500 "genitals">>
 			<<if $arousal gte $arousalmax>>
 				<<orgasm>>Sydney looks proud of <<himself>> as <<he>> gets off of you. <<npcincr Sydney purity -5>><<llspurity>><<set $sydneySeen.pushUnique("player climax")>>
 			<<else>>
@@ -1057,7 +1057,7 @@
 					<</if>>
 				<<else>>
 					<<His>> riding quickly gets weaker, and <<he>> seems to be drained.
-					<<arousal 4000>>
+					<<arousal 4000 "genitals">>
 					<<if $arousal gte $arousalmax>>
 						<<orgasm>>Sydney breathes heavily. "I... I did it? I did it!" <<He>> hugs you, with you still inside <<him>>. <<npcincr Sydney purity -5>><<llspurity>><<set $sydneySeen.pushUnique("player climax")>>
 					<<else>>
@@ -1069,7 +1069,7 @@
 			<</if>>
 		<<elseif $vaginafucked is 1 or $anusfucked is 1>>
 			<<He>> slowly thrusts into you again.
-			<<arousal 2500>>
+			<<arousal 2500 "genitals">>
 			<<if $arousal gte $arousalmax>>
 				<<orgasm>>Sydney looks proud of <<himself>> as <<he>> pulls out of you. <<npcincr Sydney purity -2>><<lspurity>><<set $sydneySeen.pushUnique("player climax")>>
 			<<else>>
@@ -1085,7 +1085,7 @@
 					<</if>>
 				<<else>>
 					<<His>> thrusting quickly gets weaker, and <<he>> seems to be drained.
-					<<arousal 4000>>
+					<<arousal 4000 "genitals">>
 					<<if $arousal gte $arousalmax>>
 						<<orgasm>>Sydney breathes heavily. "I... I did it? I did it!" <<He>> hugs you while still inside you. <<npcincr Sydney purity -2>><<lspurity>><<set $sydneySeen.pushUnique("player climax")>>
 					<<else>>
@@ -1105,7 +1105,7 @@
 					<<He>> looks up at you, with a hint of fear in <<his>> eyes.
 					<<if $player.penisExist>>
 						<<He>> gently takes your penis in <<his>> hand, and licks the tip.
-						<<arousal 2500>>
+						<<arousal 2500 "genitals">>
 						<<if $arousal gte $arousalmax>>
 							<<orgasm>>"I did it!" <<he>> exclaims before covering <<his>> mouth. <<npcincr Sydney purity -2>><<lspurity>><<set $sydneySeen.pushUnique("player climax")>>
 						<<else>>
@@ -1116,7 +1116,7 @@
 						<</if>>
 					<<else>>
 						<<He>> gives your clit a gentle rub, and licks it.
-						<<arousal 2500>>
+						<<arousal 2500 "genitals">>
 						<<if $arousal gte $arousalmax>>
 							<<orgasm>>"I did it!" <<he>> exclaims with joy before covering <<his>> mouth. <<npcincr Sydney purity -2>><<lspurity>><<set $sydneySeen.pushUnique("player climax")>>
 						<<else>>
@@ -1129,7 +1129,7 @@
 					<<He>> looks up at you, and takes a deep breath. "I can... I can do this..."
 					<<if $player.penisExist>>
 						<<He>> gently takes your penis in <<his>> hand, and licks the tip.
-						<<arousal 2500>>
+						<<arousal 2500 "genitals">>
 						<<if $arousal gte $arousalmax>>
 							<<orgasm>>"I did it!" <<he>> exclaims with joy before covering <<his>> mouth. <<npcincr Sydney purity -2>><<lspurity>><<set $sydneySeen.pushUnique("player climax")>>
 						<<else>>
@@ -1143,7 +1143,7 @@
 						<</if>>
 					<<else>>
 						<<He>> gently rubs your clit, and licks it.
-						<<arousal 2500>>
+						<<arousal 2500 "genitals">>
 						<<if $arousal gte $arousalmax>>
 							<<orgasm>>"I did it!" <<he>> exclaims with joy before covering <<his>> mouth. <<npcincr Sydney purity -2>><<lspurity>><<set $sydneySeen.pushUnique("player climax")>>
 						<<else>>
@@ -1158,7 +1158,7 @@
 					<<if $player.penisExist>>
 						<<set $NPCList[$npcrow[$npc.indexOf('Sydney')]].mouth to "penis">>
 						<<He>> gently takes your penis in <<his>> hand, and takes it into <<his>> mouth without warning. <<set $penisuse to "othermouth">><<set $penisstate to "othermouth">><<takeNPCVirginity "Sydney" "oral">>
-						<<arousal 5000>>
+						<<arousal 5000 "genitals">>
 						<<if $arousal gte $arousalmax>>
 							<<orgasm>>"That didn't take much," <<he>> teases. <<npcincr Sydney purity -2>><<lspurity>><<set $sydneySeen.pushUnique("player climax")>>
 						<<else>>
@@ -1169,7 +1169,7 @@
 						<</if>>
 					<<else>>
 						<<He>> gently rubs your clit, and licks it. Without warning, <<he>> plunges <<his>> tongue in.
-						<<arousal 5000>>
+						<<arousal 5000 "genitals">>
 						<<if $arousal gte $arousalmax>>
 							<<orgasm>>"That didn't take long," <<he>> teases. <<npcincr Sydney purity -2>><<lspurity>><<set $sydneySeen.pushUnique("player climax")>>
 						<<else>>

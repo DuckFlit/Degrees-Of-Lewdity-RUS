@@ -381,8 +381,11 @@
 	<</if>>
 <</widget>>
 
-<<widget "neutral">>
-	<<if _args[0]>>
+<<widget "neutral">> <!-- This widget's names ('neutral') is awful. Maybe 'molest' might better describe its use? -->
+	<!-- args[1] now modifies the arousal applied to the PC -->
+	<!-- Consult the 'arousal' widget to see how -->
+	<<if _args[0] and (typeof _args[0]) is "number">>
+		
 		<<if $consensual isnot 1>>
 			<<if $drunk gt 0>>
 				<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
@@ -393,50 +396,41 @@
 			<<stress _args[0] $_stress_multiplier>>
 			<<combattrauma _args[0]>>
 		<</if>>
+
 		<<set _arousal to 20 * _args[0]>>
-		<<arousal _arousal>>
-		<<set $enemyarousal += _args[0]>>
+		<<if _args[1] and _args[2] and (typeof _args[1]) is "string" and (typeof _args[2]) is "number">>
+			<<arousal _arousal _args[1]>>
+			<<enemyarousal _args[0] _args[2]>>
+		<<elseif _args[1] and (typeof _args[1]) is "string">>
+			<<arousal _arousal _args[1]>>
+			<<enemyarousal _args[0]>>
+		<<elseif _args[1] and (typeof _args[1]) is "number">>
+			<<arousal _arousal>>
+			<<enemyarousal _args[0] _args[1]>>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "neutralbreast">>
-	<<if _args[0]>>
-		<<if $consensual isnot 1>>
-			<<if $drunk gt 0>>
-				<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
-				<<set $_stress_multiplier to [9,8,6,4,3][$_drunk_level]>>
-			<<else>>
-				<<set $_stress_multiplier to 10>>
-			<</if>>
-			<<stress _args[0] $_stress_multiplier>>
-			<<combattrauma _args[0]>>
-		<</if>>
-		<<set _arousal to 20 * _args[0] * $breastsensitivity>>
-		<<arousal _arousal>>
-		<<set $enemyarousal += _args[0]>>
-	<</if>>
+	<<neutral _args[0] "breasts">>
 <</widget>>
 
 <<widget "neutralgenitals">>
-	<<if _args[0]>>
-		<<if $consensual isnot 1>>
-			<<if $drunk gt 0>>
-				<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
-				<<set $_stress_multiplier to [9,8,6,4,3][$_drunk_level]>>
-			<<else>>
-				<<set $_stress_multiplier to 10>>
-			<</if>>
-			<<stress _args[0] $_stress_multiplier>>
-			<<combattrauma _args[0]>>
-		<</if>>
-		<<set _arousal to 20 * _args[0] * $genitalsensitivity>>
-		<<arousal _arousal>>
-		<<set $enemyarousal += _args[0]>>
-	<</if>>
+	<<neutral _args[0] "genitals">>
+<</widget>>
+
+<<widget "enemyarousal">>
+	<<set $enemyarousal += _args[0]>>
 <</widget>>
 
 <<widget "sex">>
-	<<if _args[0]>>
+	<!-- args[1] - indicates target: "genitals" if penile or vaginal, "anus" if anal, "mouth" if oral -->
+
+	<!-- Comment Akoz: args[2] was used at some places to show double penetration and at others -->
+	<!-- to pass which enemy NPC is doing the fucking. I'd leave it to mean the later, but -->
+	<!-- I didn't want to make a decision about a system I'm not working on. -->
+	<!-- So I chose to leave args[2] unused -->
+	<<if _args[0] and (typeof _args[0]) is "number">>
 		<<if $consensual isnot 1>>
 			<<if $drunk gt 0>>
 				<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
@@ -450,8 +444,15 @@
 			<<stress _args[0] -10>>
 		<</if>>
 		<<set _arousal to 20 * _args[0]>>
-		<<arousal _arousal>>
-		<<set $enemyarousal += 2 * _args[0]>>
+		<<set _enemyarousal to 2 * _args[0]>>
+		<<if _args[1] is undefined>>
+			<<error {
+				message : `Expected a second parameter, but none was provided.`,
+				source : "Called from " + Utils.GetStack()
+			}>>
+		<</if>>
+		<<arousal _arousal _args[1]>>
+		<<enemyarousal _enemyarousal>>
 	<</if>>
 <</widget>>
 
@@ -487,7 +488,7 @@
 		<<set _stressMod = _args[1] || 1>>
 		<<set _traumaMod = _args[2] || 1>>
 		<<set _painMod = _args[3] || 1>>
-		<<set _arousalMod = _args[4] || 1>>
+		<!-- args[4] - indicates NPC id (but is currently unused) -->
 
 		<<if _violence gt 0 or _violence lt 0>>
 			<<if $drunk gt 0>>
@@ -507,9 +508,8 @@
 			<<set $stress += (_violence * _drunkMod * _stressMod) * (1 - ($masochism / 1200))>>
 			<<combattrauma _violence * _traumaMod>>
 			<<set $pain += (_violence * _painMod * (1 - ($masochism / 1200)) * (1 - ($sciencetrait / 10)) / _possessMod)>>
-			<<set _arousal to (_violence * _arousalMod * (0 + ($masochism / 18)))>>
-			<<arousal _arousal/_possessMod>>
-			<<set $arousalmasochism += (_violence * (0 + ($masochism / 7)))>>
+			<<set _arousal to (_violence * (0 + ($masochism / 18)))>>
+			<<arousal _arousal/_possessMod "maso">>
 			<<if $orgasmdown gte 1>>
 				<<if $masochism gte 800>>
 					<<masochism `(_violence / 20)`>>
@@ -557,7 +557,7 @@
 			<<trauma _violence * _traumaMod>>
 			<<set $pain += (_violence * _painMod * (1 - ($masochism / 1200)) * (1 - ($sciencetrait / 10)))>>
 			<<set _arousal to (_violence * _arousalMod * (0 + ($masochism / 18)))>>
-			<<arousal _arousal>>
+			<<arousal _arousal "maso">>
 			<<set $arousalmasochism += (_violence * (0 + ($masochism / 7)))>>
 			<<if $orgasmdown gte 1>>
 				<<if $masochism gte 800>>
@@ -582,6 +582,10 @@
 <</widget>>
 
 <<widget "submission">>
+	<!-- Comment Akoz: this won't use sensitivities as I reckon this arousal source is -->
+	<!-- entirely psychological. -->
+	<!-- args[0] - the submission value -->
+	<!-- args[1] - the NPC to whom PC is submitting (currently unused) -->
 	<<if _args[0]>>
 		<<if $consensual isnot 1>>
 			<<if $drunk gt 0>>
@@ -646,6 +650,10 @@
 <</widget>>
 
 <<widget "meek">>
+	<!-- Comment Akoz: this won't use sensitivities as I reckon this arousal source is -->
+	<!-- entirely psychological. -->
+	<!-- args[0] - the meek value -->
+	<!-- args[1] - the NPC for whom PC is acting meekly (currently unused) -->
 	<<if _args[0]>>
 		<<if $consensual isnot 1>>
 			<<sub `_args[0] / 4`>>
@@ -2776,7 +2784,7 @@ or _args[0] is "force">>
 		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
 	<</if>>
 	<<if $parasite.bottom.name>>
-		<<set $_arousal += $pass * 10>>
+		<<set $_arousal += $pass * 10 * $bottomsensitivity>>
 	<</if>>
 	<<if $parasite.tummy.name>>
 		<<set $_arousal += $pass * 10>>
@@ -3406,7 +3414,7 @@ __Map__<br>
 		<<spray 1>>
 		<span class="green">You steal a charge for your pepper spray.</span>
 		<<crimeup 50>><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
-	<<elseif $rng gte 90 and $compoundstate is undefined and $compoundcard is undefined>>
+	<<elseif $rng gte 90 and !$compoundcard>>
 		<<set $compoundcard to 1>>
 		You steal a strange card. There's an address on it, for a location on <span class="gold">Elk Street.</span>
 	<<else>>
@@ -4903,8 +4911,8 @@ __Map__<br>
 <<widget "schoolrep">>
 <<if _args[0] and _args[1] and (!$worn.face.type.includes("mask") or _args[1] lt 0)>>
 	<<if $schoolrep[_args[0]] lt 5 or _args[1] lt 0>>
-		<<if _args[0] is "crossdress" and ($school_crossdress_day is undefined or _args[1] lt 0)>>
-			<<set $school_crossdress_day to 1>>
+		<<if _args[0] is "crossdress" and ($daily.school.crossdress is undefined or _args[1] lt 0)>>
+			<<set $daily.school.crossdress to 1>>
 			<<set $schoolrep[_args[0]] += _args[1]>>
 			<<if $schoolrep.crossdress gte 5>>
 				<<set $genderknown.pushUnique("Kylar")>>
@@ -4921,8 +4929,8 @@ __Map__<br>
 				<<set $school_crossdress_message to $schoolrep.crossdress>>
 			<</if>>
 			<<set $schoolrep.crossdress = Math.clamp($schoolrep.crossdress, 0, 5)>>
-		<<elseif _args[0] is "herm" and ($school_herm_day is undefined or _args[1] lt 0)>>
-			<<set $school_herm_day to 1>>
+		<<elseif _args[0] is "herm" and ($daily.school.herm is undefined or _args[1] lt 0)>>
+			<<set $daily.school.herm to 1>>
 			<<set $schoolrep[_args[0]] += _args[1]>>
 			<<if $schoolrep.herm gte 5>>
 				<<set $genderknown.pushUnique("Kylar")>>

@@ -5,43 +5,44 @@
 	How do you feel about consensual sex? <i>Provides a bonus after consensual sex based on how assertive you were.</i>
 	<br>
 <label>
-	<<print '<<radiobutton "$assertiveaction" "submissive" '+($assertiveaction is "submissive" ? "checked" : "")+'>>'>>
+	<<radiobutton "$assertiveaction" "submissive" autocheck>>
 	<span class="meek">I like making people feel good</span> (increase submissiveness)
 </label>
 <br>
 <label>
-	<<print '<<radiobutton "$assertiveaction" "defiant" '+($assertiveaction is "defiant" ? "checked" : "")+'>>'>>
+	<<radiobutton "$assertiveaction" "defiant" autocheck>>
 	<span class="brat">I like being in control</span> (increase defiance)
 </label>
 <br>
 <label>
-	<<print '<<radiobutton "$assertiveaction" "trauma" '+($assertiveaction is "trauma" ? "checked" : "")+'>>'>>
+	<<radiobutton "$assertiveaction" "trauma" autocheck>>
 	<span class="green">It's naughty</span> (decrease trauma)
 </label>
 <br>
 <label>
-	<<print '<<radiobutton "$assertiveaction" "stress" '+($assertiveaction is "stress" ? "checked" : "")+'>>'>>
+	<<radiobutton "$assertiveaction" "stress" autocheck>>
 	<span class="green">It's fun</span> (decrease stress)
 </label>
 <br><br>
 
 What makes you feel uncomfortable?
 <br>
-<<if $exhibitionism gte 55 or $uncomfortable.underwear is false>>
-	<label><<print '<<checkbox "$uncomfortable.underwear" false true '+($uncomfortable.underwear ? "checked" : "")+'>>'>> You're uncomfortable having your underwear seen by others.</label>
+/* some events can force the switches to false without actually unlocking them */
+<<if $attitudesControl.unlockExhibitionismUnderwear or $uncomfortable.underwear is false>>
+	<label><<checkbox "$uncomfortable.underwear" false true autocheck>> You're uncomfortable having your underwear seen by others.</label>
 <<else>>
 	<span class="black">You're uncomfortable having your underwear seen by others. <i>Requires higher exhibitionism.</i></span>
 <</if>>
 <br>
-<<if $exhibitionism gte 95 or $uncomfortable.nude is false>>
-	<label><<print '<<checkbox "$uncomfortable.nude" false true '+($uncomfortable.nude ? "checked" : "")+'>>'>> You're uncomfortable being nude in front of others.</label>
+<<if $attitudesControl.unlockExhibitionismNude or $uncomfortable.nude is false>>
+	<label><<checkbox "$uncomfortable.nude" false true autocheck>> You're uncomfortable being nude in front of others.</label>
 <<else>>
 	<span class="black">You're uncomfortable being nude in front of others. <i>Requires higher exhibitionism.</i></span>
 <</if>>
 <br>
-<<if $specialTransform is 1 or $physicalTransform is 1>>
-	<<if ($exhibitionism gte 95 and $demon gte 6) or $uncomfortable.flaunting is false>>
-		<label><<print '<<checkbox "$uncomfortable.flaunting" false true '+($uncomfortable.flaunting ? "checked" : "")+'>>'>> You're uncomfortable flaunting your nudity in front of others (Demon tail and wings).</label>
+<<if $attitudesControl.unlockTransformation>>
+	<<if $attitudesControl.unlockDemonFlaunt or $uncomfortable.flaunting is false>>
+		<label><<checkbox "$uncomfortable.flaunting" false true autocheck>> You're uncomfortable flaunting your nudity in front of others (Demon tail and wings).</label>
 	<<elseif $exhibitionism gte 95>>
 		<span class="black">You're uncomfortable flaunting your nudity in front of others. <i>Requires the complete demon transformation.</i></span>
 	<<elseif $demon gte 6>>
@@ -53,8 +54,8 @@ What makes you feel uncomfortable?
 <</if>>
 <br>
 
-<<if $soldCount gte 1>>
-	<label><<print '<<checkbox "$uncomfortable.prostituting" false true ' + ($uncomfortable.prostituting ? "checked" : "") + '>>'>> You're uncomfortable prostituting yourself to help avoid Bailey's torments. <i>If unchecked, lets you prostitute yourself without appropriate promiscuity. Doing so will decrease control.</i></label>
+<<if $attitudesControl.unlockProstitution>>
+	<label><<checkbox "$uncomfortable.prostituting" false true autocheck>> You're uncomfortable prostituting yourself to help avoid Bailey's torments. <i>If unchecked, lets you prostitute yourself without appropriate promiscuity. Doing so will decrease control.</i></label>
 	<br>
 <<else>>
 	Is it worth prostituting yourself to help avoid Bailey's torments? <i>Lets you prostitute yourself without appropriate promiscuity. Doing so will decrease control.</i>
@@ -65,8 +66,8 @@ What makes you feel uncomfortable?
 <br>
 
 <<if $gamemode isnot "hard">>
-	<<if $lewd_unlock is true>>
-		<label><<print '<<checkbox "$uncomfortable.lewd" false true ' + ($uncomfortable.lewd ? "checked" : "") + '>>'>> You're uncomfortable reflecting on all the lewd acts you've performed. <i>If unchecked, exhibitionism, promiscuity, and deviancy will not decay. This can make managing control difficult.</i></label>
+	<<if $attitudesControl.unlockLewd>>
+		<label><<checkbox "$uncomfortable.lewd" false true autocheck>> You're uncomfortable reflecting on all the lewd acts you've performed. <i>If unchecked, exhibitionism, promiscuity, and deviancy will not decay. This can make managing control difficult.</i></label>
 	<<else>>
 		You're uncomfortable reflecting on all the lewd acts you've performed.
 		<br>
@@ -75,8 +76,8 @@ What makes you feel uncomfortable?
 	<br>
 <</if>>
 
-<<if Object.keys($hypnosis_traits).length gte 1>>
-	<label><<print '<<checkbox "$uncomfortable.hypnosis" false true ' + ($uncomfortable.hypnosis ? "checked" : "") + '>>'>> You're uncomfortable being hypnotised during sex. <i>If unchecked, you will accept hypnosis attempts during combat regardless of willpower.</i></label>
+<<if $attitudesControl.unlockHypnosis>>
+	<label><<checkbox "$uncomfortable.hypnosis" false true autocheck>> You're uncomfortable being hypnotised during sex. <i>If unchecked, you will accept hypnosis attempts during combat regardless of willpower.</i></label>
 	<br>
 <</if>>
 
@@ -732,40 +733,27 @@ __If consensual:__
 
 <</widget>>
 
-<<widget "attitudesControl">>
-<<set $attitudesControl[_args[0]] to _args[1]>>
-<<set $attitudesControl.showGoldLink to true>>
-<</widget>>
-
 <<widget "attitudesControlCheck">>
-<<if $exhibitionism gte 55 and $attitudesControl.unlockExhibitionismUnderwear is false>>
-	<<attitudesControl "unlockExhibitionismUnderwear" true>>
-<</if>>
-<<if $exhibitionism gte 95 and $attitudesControl.unlockExhibitionismNude is false>>
-	<<attitudesControl "unlockExhibitionismNude" true>>
-<</if>>
-<<if ($specialTransform is 1 or $physicalTransform is 1) and $attitudesControl.unlockTransformation is false>>
-	<<attitudesControl "unlockTransformation" true>>
-<</if>>
-<<if $demon gte 6 and $exhibitionism gte 95 and $attitudesControl.unlockDemonFlaunt is false>>
-	<<attitudesControl "unlockDemonFlaunt" true>>
-<</if>>
-<<if $rentsale gte 1 and $attitudesControl.unlockProstitution is false>>
-	<<attitudesControl "unlockProstitution" true>>
-<</if>>
-<<if $loveInterest.primary isnot "None" and $attitudesControl.unlockLoveInterest1 is false>>
-	<<attitudesControl "unlockLoveInterest1" true>>
-<</if>>
-<<if $awarelevel gte 2 and $loveInterest.primary isnot "None" and $loveInterest.secondary is "None" and $attitudesControl.unlockLoveInterest2 is false>>
-	<<attitudesControl "unlockLoveInterest2" true>>
-<</if>>
-<<if $moleststat gt 0 and $attitudesControl.unlockDefaultActions is false>>
-	<<attitudesControl "unlockDefaultActions" true>>
-<</if>>
-<<if $lewd_unlock is true and !$attitudesControl.unlockLewd>>
-	<<attitudesControl "unlockLewd" true>>
-<</if>>
-<<if Object.keys($hypnosis_traits).length gte 1 and !$attitudesControl.unlockHypnosis>>
-	<<attitudesControl "unlockHypnosis" true>>
-<</if>>
+	/* highlight the attitudes button when new attitude controls are available */
+	<<script>>
+		/* back up the old variable for later comparison */
+		T.oldControl = clone(V.attitudesControl);
+		/* update available controls */
+		V.attitudesControl.unlockExhibitionismUnderwear = V.exhibitionism >= 55;
+		V.attitudesControl.unlockExhibitionismNude = V.exhibitionism >= 95;
+		V.attitudesControl.unlockTransformation = V.specialTransform === 1 || V.physicalTransform === 1;
+		V.attitudesControl.unlockDemonFlaunt = V.demon >= 6 && V.exhibitionism >= 95;
+		V.attitudesControl.unlockProstitution = V.soldCount >= 1;
+		/* getting the first LI automatically assigns them as a primary one, indicating that now there's options */
+		V.attitudesControl.unlockLoveInterest1 = V.loveInterest.primary !== "None";
+		/* there's no point in highlighting that you can assign the second LI if you've not assigned the first one */
+		V.attitudesControl.unlockLoveInterest2 = V.awarelevel >= 2 && V.loveInterest.primary !== "None" && V.loveInterest.secondary === "None";
+		V.attitudesControl.unlockDefaultActions = V.moleststat > 0;
+		V.attitudesControl.unlockLewd = V.exhibitionism >= 35 || V.promiscuity >= 35 || V.deviancy >= 35;
+		V.attitudesControl.unlockHypnosis = Object.keys(V.hypnosis_traits).length >= 1;
+		/* set the highlight flag when one of the controls switches to true */
+		for (const c in V.attitudesControl) {
+			if (V.attitudesControl[c] && !T.oldControl[c]) { V.attitudesControl.showGoldLink = true; break }
+		}
+	<</script>>
 <</widget>>

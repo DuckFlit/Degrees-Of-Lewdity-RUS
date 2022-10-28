@@ -421,7 +421,7 @@
 			<<clothesstrip>>
 		<</if>>
 		kneel right at the edge of the stage, presenting your naked <<body_size_text>> and <<breastsensitivity>> <<breasts>> to the crowd.
-		Hands reach out to grope you. <<arousal 500>><<garousal>>
+		Hands reach out to grope you. <<arousal 500 "breasts">><<garousal>>
 		<br><br>
 		<<set $audience += 26>>
 		/* Fills all unoccupied NPC slots; generatel not to be confused with generate1 */
@@ -743,7 +743,7 @@
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
 			<</if>>
 		<<case "campsite">>
-			<<if $weather is "rain" or $weather is "snow" or $hour lt 18 or $lakecouple is 1>>
+			<<if $weather is "rain" or $weather is "snow" or $hour lt 18 or $daily.lakeCouple is 1>>
 				You steady yourself against a tree as your spasms subside. Fortunately, there's no one around right now to see you in such a state.
 			<<elseif $exposed gte 1>>
 				<<set $_hidden to true>>
@@ -885,61 +885,61 @@
 <</widget>>
 
 <<widget "vaginaWetnessCalculate">>
-<<set _totalArousal = 0>>
-<<set _length to $trackedArousal.length>>
-<<for _ia to 0; _ia lt _length; _ia++>>
-	<<set _totalArousal += $trackedArousal[_ia] / ((_length - _ia) * 1.5)>>
-<</for>>
-<<if $combat is 1>>
-	<!-- combatWetBoost can be from 0 to 5, because max promiscuity/deviancy is 100. -->
-	<<if $enemytype is "man">>
-		<<set $combatWetBoost to Math.floor($promiscuity /20)>>
-	<<elseif $enemytype is "tentacles" or $enemytype is "beast">>
-		<<set $combatWetBoost to Math.floor($deviancy /20)>>
+	<<set _totalArousal = 0>>
+	<<set _length to $trackedArousal.length>>
+	<<for _ia to 0; _ia lt _length; _ia++>>
+		<<set _totalArousal += $trackedArousal[_ia] / ((_length - _ia) * 1.5)>>
+	<</for>>
+	<<if $combat is 1>>
+		<!-- combatWetBoost can be from 0 to 5, because max promiscuity/deviancy is 100. -->
+		<<if $enemytype is "man">>
+			<<set $combatWetBoost to Math.floor($promiscuity /20)>>
+		<<elseif $enemytype is "tentacles" or $enemytype is "beast">>
+			<<set $combatWetBoost to Math.floor($deviancy /20)>>
+		<<else>>
+			<<set $combatWetBoost to 0>>
+		<</if>>
+		<!-- combatArousalWetness has been replaced by vaginaArousalWetness but I don't want to remove it completely so it's commented out for now. -->
+		/* <<set $_combatArousalWetness to 75 - Math.floor(Math.pow(0.99985,_totalArousal) * 75)>>
+		<<set $combatWetBoost += $_combatArousalWetness>> */
 	<<else>>
 		<<set $combatWetBoost to 0>>
 	<</if>>
-	<!-- combatArousalWetness has been replaced by vaginaArousalWetness but I don't want to remove it completely so it's commented out for now. -->
-	/* <<set $_combatArousalWetness to 75 - Math.floor(Math.pow(0.99985,_totalArousal) * 75)>>
-	<<set $combatWetBoost += $_combatArousalWetness>> */
-<<else>>
-	<<set $combatWetBoost to 0>>
-<</if>>
 
-<<set $vaginaWetness to $vaginaArousalWetness + $combatWetBoost + (setup.bodyliquid.combined("vagina") + setup.bodyliquid.combined("vaginaoutside")) * 6>>
-<<set $vaginaWetness to Math.clamp($vaginaWetness, 0, 120)>>
+	<<set $vaginaWetness to $vaginaArousalWetness + $combatWetBoost + (setup.bodyliquid.combined("vagina") + setup.bodyliquid.combined("vaginaoutside")) * 6>>
+	<<set $vaginaWetness to Math.clamp($vaginaWetness, 0, 120)>>
 <</widget>>
 
 <<widget "penetrationPainCalculate">>
-<<set $vaginalPain to 0>>
-<<set $analPain to 0>>
-<<set $penisPain to 0>>
-<<if $demon lt 6 and $gamemode isnot "soft">>
-	<<if $player.vaginaExist>>
+	<<set $vaginalPain to 0>>
+	<<set $analPain to 0>>
+	<<set $penisPain to 0>>
+	<<if $demon lt 6 and $gamemode isnot "soft">>
+		<<if $player.vaginaExist>>
+			<<if $consensual is 1>>
+				<<set $vaginalPain to Math.floor(3 * Math.pow(0.4,$vaginaWetness/8))>>
+			<<else>>
+				<<set $vaginalPain to Math.floor(6 * Math.pow(0.5,$vaginaWetness/25))>>
+			<</if>>
+		<</if>>
+		<<if $player.penisExist>>
+			<<if $consensual is 1>>
+				<<set $penisPain to Math.floor(3 * Math.pow(0.4,$penisWetness/8))>>
+			<<else>>
+				<<set $penisPain to Math.floor(6 * Math.pow(0.5,$penisWetness/25))>>
+			<</if>>
+		<</if>>
 		<<if $consensual is 1>>
-			<<set $vaginalPain to Math.floor(3 * Math.pow(0.4,$vaginaWetness/8))>>
+			<<set $analPain to Math.floor(3 * Math.pow(0.4,$anusWetness/8))>>
 		<<else>>
-			<<set $vaginalPain to Math.floor(6 * Math.pow(0.5,$vaginaWetness/25))>>
+			<<set $analPain to Math.floor(6 * Math.pow(0.5,$anusWetness/25))>>
+		<</if>>
+		<<if $gamemode is "hard">>
+			<<set $vaginalPain *= 2>>
+			<<set $penisPain *= 2>>
+			<<set $analPain *= 2>>
 		<</if>>
 	<</if>>
-	<<if $player.penisExist>>
-		<<if $consensual is 1>>
-			<<set $penisPain to Math.floor(3 * Math.pow(0.4,$penisWetness/8))>>
-		<<else>>
-			<<set $penisPain to Math.floor(6 * Math.pow(0.5,$penisWetness/25))>>
-		<</if>>
-	<</if>>
-	<<if $consensual is 1>>
-		<<set $analPain to Math.floor(3 * Math.pow(0.4,$anusWetness/8))>>
-	<<else>>
-		<<set $analPain to Math.floor(6 * Math.pow(0.5,$anusWetness/25))>>
-	<</if>>
-	<<if $gamemode is "hard">>
-		<<set $vaginalPain *= 2>>
-		<<set $penisPain *= 2>>
-		<<set $analPain *= 2>>
-	<</if>>
-<</if>>
 <</widget>>
 
 <!-- Lube is only released when vaginaArousalWetness is over 60 (also, its max value is 100)-->
