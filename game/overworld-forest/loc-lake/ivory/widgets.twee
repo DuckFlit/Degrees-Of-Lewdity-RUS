@@ -138,7 +138,7 @@
 <<else>>
 	<<switch random(1, 6)>>
 		<<case 1>>
-			<<if $wraith.state is "haunt" or ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
+			<<if $wraith.state is "haunt" or isBloodmoon()>>
 				<<initWraith "abomination">>
 			<<else>>
 				<<initWraith "man">>
@@ -1101,7 +1101,7 @@
 	<<if !$possessed>>
 		<<switch _args[0]>>
 			<<case "town">>
-				<<if ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte (random(0, 50))>>
+				<<if isBloodmoon(true) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte (random(0, 50))>>
 					<br><br>
 					<<set $wraith.hunt to 1>>
 					A wave of dizziness and confusion washes over you. Every time you blink, you see a blurred image.
@@ -1162,7 +1162,7 @@
 				<br><br>
 				<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
 			<<case "drain">>
-				<<if ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte (random(0, 60))>>
+				<<if isBloodmoon(true) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte (random(0, 60))>>
 					<<set $wraith.hunt to 1>>
 					<br><br>
 					A wave of dizziness and confusion washes over you. Every time you blink, you see a blurred image.
@@ -1194,7 +1194,7 @@
 					<</if>>
 				<</if>>
 			<<case "sewers">>
-				<<if ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte (random(0, 60))>>
+				<<if isBloodmoon(true) and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte (random(0, 60))>>
 					<<set $wraith.hunt to 1>>
 					<br><br>
 					A wave of dizziness and confusion washes over you. Every time you blink, you see a blurred image.
@@ -1260,7 +1260,7 @@
 
 <<widget "wPersist">>
 <<if $wraith.state and !$possessed>>
-	<<if $wraith.hunt and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5)>>
+	<<if $wraith.hunt and isBloodmoon(true)>>
 		<<if _args[0] is "forest">>
 			<<if $foresthunt gte 1>>
 				<<set $wraith.hunt to $foresthunt>>
@@ -1293,14 +1293,14 @@
 				<</if>>
 			<</if>>
 		<</if>>
-	<<elseif $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5 and !$possessed>>
+	<<elseif isBloodmoon(true) and !$possessed>>
 		<<wTimerProgress>>
 	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "wTimerProgress">>
-<<if $wraith.state and $wraith.hunt is 0 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
+<<if $wraith.state and $wraith.hunt is 0 and isBloodmoon()>>
 	<<set $wraith.timer++>>
 	<<set $wraith.timer += Math.floor(C.npc["Ivory Wraith"].lust / 10)>>
 	<<if $rng gte 60 and ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime")>>
@@ -1376,7 +1376,7 @@
 
 <<widget "rngWraith">>
 <<if $wraith.state>>
-	<<if _args[1] is "night" and $daystate isnot "night" or _args[1] is "noBlood" and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
+	<<if _args[1] is "night" and $daystate isnot "night" or _args[1] is "noBlood" and isBloodmoon()>>
 		<<set _wraithEvent to false>>
 	<<else>>
 		<<set _rngWraith to 2 + (Math.floor(C.npc["Ivory Wraith"].lust / 10))>>
@@ -1384,7 +1384,7 @@
 			<<set _rngWraith += 2>>
 		<</if>>
 		<<set _wraithHallucinations to (_args[0] is 1 or _args[0] is 2 ? _args[0] : 0)>>
-		<<if ($hallucinations gte _wraithHallucinations and _rngWraith gte random(1,100)) or ($moonstate is "evening" and $hour gte 21) or ($moonstate is "morning" and $hour lt 6)>>
+		<<if ($hallucinations gte _wraithHallucinations and _rngWraith gte random(1,100)) or isBloodmoon()>>
 			<<set _wraithEvent to true>>
 		<</if>>
 	<</if>>
@@ -1400,7 +1400,7 @@
 	<<if $daystate is "night">>
 		<<set _rngWraithSocial += 2>>
 	<</if>>
-	<<if ($hallucinations gte 1 and _rngWraithSocial gte random(1,100)) or ($moonstate is "evening" and $hour gte 21) or ($moonstate is "morning" and $hour lt 6)>>
+	<<if ($hallucinations gte 1 and _rngWraithSocial gte random(1,100)) or isBloodmoon()>>
 		<<set _wraithEventSocial to true>>
 	<</if>>
 	<<if $wraith.mimic isnot "" and $wraith.revealed>>

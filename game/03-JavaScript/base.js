@@ -25,14 +25,16 @@ Mousetrap.bind(["f"], function () {
 Macro.add("time", {
 	handler() {
 		let daystate; // Never checked and always overwritten - no need to init with old value
+		let nightstate; // Tracks whether it's before midnight or after
 		let time = V.time;
 		// Sanity check
 		if (time < 0) time = 0;
-		if (time >= 24 * 60) time = 23 * 59 + 59;
+		if (time >= 24 * 60) time = (24 * 60) - 1; //note: no changes are made to V.time in this function
 
 		const hour = Math.floor(time / 60);
 		if (hour < 6) {
 			daystate = "night";
+			nightstate = "morning";
 		} else if (hour < 9) {
 			daystate = "dawn";
 		} else if (hour < 18) {
@@ -41,9 +43,12 @@ Macro.add("time", {
 			daystate = "dusk";
 		} else {
 			daystate = "night";
+			nightstate = "evening";
 		}
 		V.hour = hour;
 		V.daystate = daystate;
+		T.nightstate = nightstate;
+		T.timeChecked = true;
 	},
 });
 
