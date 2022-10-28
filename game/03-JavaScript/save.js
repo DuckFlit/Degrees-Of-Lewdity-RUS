@@ -888,6 +888,8 @@ function settingsObjects(type) {
 					newWardrobeStyle: { bool: true },
 					useNarrowMarket: { bool: true },
 					skipStatisticsConfirmation: { bool: true },
+					passageCount: { strings: ["disabled", "changes", "total"] },
+					playtime: { bool: true },
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },

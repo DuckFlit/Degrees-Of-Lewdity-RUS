@@ -7,22 +7,55 @@ State.prng.init();
 window.versionUpdateCheck = true;
 window.onLoadUpdateCheck = false;
 
-Save.onLoad.add(save => {
-	window.onLoadUpdateCheck = true;
-});
-
 let isReloading = true;
 let pageLoading = false;
 
 Save.onLoad.add(save => {
 	pageLoading = true;
+	window.onLoadUpdateCheck = true;
+	save.state.history.forEach(h => {
+		h.variables.saveDetails = defaultSaveDetails(h.variables.saveDetails);
+		h.variables.saveDetails.loadTime = new Date()
+	});
 });
 
 Save.onSave.add(save => {
 	Wikifier.wikifyEval("<<updateFeats>>");
+	save.state.history.forEach(h => {
+		h.variables.saveDetails = defaultSaveDetails(h.variables.saveDetails);
+		h.variables.saveDetails.playTime += new Date() - (h.variables.saveDetails.loadTime ? h.variables.saveDetails.loadTime : 0);
+		h.variables.saveDetails.loadCount++;
+	});
 	// eslint-disable-next-line no-undef
 	prepareSaveDetails(); // defined in save.js
 });
+
+function defaultSaveDetails(input){
+	let saveDetails = input;
+	if(!saveDetails){
+		//In the rare case the variable doesnt exist
+		saveDetails = {
+			exported:{
+				days: clone(variables.days),
+				frequency: 15,
+				count: 0,
+				dayCount: 0,
+			},
+			auto:{
+				count: 0
+			},
+			slot:{
+				count: 0,
+				dayCount: 0,
+			}
+		}
+	}
+	if(!saveDetails.playTime){
+		saveDetails.playTime = 0;
+		saveDetails.loadCount = 0;
+	}
+	return saveDetails;
+}
 
 /* LinkNumberify and images will enable or disable the feature completely */
 /* debug will enable or disable the feature only for new games */

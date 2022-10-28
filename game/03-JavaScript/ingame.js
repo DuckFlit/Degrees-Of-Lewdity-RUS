@@ -1563,6 +1563,20 @@ function isPubfameTaskAccepted(task, status) {
 }
 window.isPubfameTaskAccepted = isPubfameTaskAccepted;
 
+window.msToTime = (s) => {
+	function pad(n, z) {
+		z = z || 2;
+		return ('00' + n).slice(-z);
+	}
+	var ms = s % 1000;
+	s = (s - ms) / 1000;
+	var secs = s % 60;
+	s = (s - secs) / 60;
+	var mins = s % 60;
+	var hrs = (s - mins) / 60;
+
+	return (hrs ? hrs : 0) + ':' + pad(mins) + ':' + pad(secs);
+}
 
 function getHalloweenCostume() {
 	const upper = V.worn.upper;

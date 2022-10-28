@@ -58,7 +58,7 @@
 	<<if $awareness gte 200 and $worn.genitals.anal_shield isnot 1>>
 		| <label><<radiobutton "$leftaction" "manusentrance" autocheck>> <span class="sub">Stroke your anus</span> <<combataware 3>></label>
 	<</if>>
-	<<if $awareness gte 200 and ["home","brothel","cafe"].includes($location)>> <!-- v0.3.6.2: Player sex toys -->
+	<<if $awareness gte 200 and (["home","brothel","cafe"].includes($location) or _enableSexToys)>> <!-- v0.3.6.2: Player sex toys -->
 		<<if _playerToys.length gte (_sextoysInUse + 1)>>
 			<<set $_playerToysLeft to {}>>
 			<<run _playerToys.forEach((toy,i) => {
@@ -211,12 +211,21 @@
 	<br>
 	| <label><<radiobutton "$leftaction" "mpenisstroker" autocheck>> <span class="sub">Masturbate</span></label>
 	| <label><<radiobutton "$leftaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
-
+<<elseif $leftarm is "mdildomouthentrance">>
+	Your $_lefttoycolour $_lefttoy is in your left hand by your mouth.
+	<br>
+	| <label><<radiobutton "$leftaction" "mdildomouth" autocheck>> <span class="sub">Push into your mouth</span></label>
+	| <label><<radiobutton "$leftaction" "mmouthstopdildo" autocheck>> Move your hand away</label>
+<<elseif $leftarm is "mdildomouth">>
+	Your left hand is holding your $_lefttoycolour $_lefttoy in your mouth.
+	<br>
+	| <label><<radiobutton "$leftaction" "mdildopiston" autocheck>> <span class="sub">Move it back and forward</span></label>
+	| <label><<radiobutton "$leftaction" "mmouthstopdildo" autocheck>> Move your hand away</label>
 <<elseif $leftarm is "mpickupdildo">>
 	You hold your $_lefttoycolour $_lefttoy in your left hand.
 	<br>
 	<<if _playerToys[$currentToyLeft].type.includes("stroker")>>
-		<<if $player.penisExist and _playerToys[$currentToyLeft].type.includes("stroker")>>
+		<<if $player.penisExist and _playerToys[$currentToyLeft].type.includes("stroker") and ($penisuse is 0 or $penisuse is "stroker")>>
 			| <label><<radiobutton "$leftaction" "mpenisentrancestroker" autocheck>> <span class="sub">Move to your penis</span></label>
 		<</if>>
 	| <label><<radiobutton "$leftaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
@@ -225,6 +234,21 @@
 			| <label><<radiobutton "$leftaction" "mvaginaentrancedildo" autocheck>> <span class="sub">Move to your vagina</span></label>
 		<</if>>
 		| <label><<radiobutton "$leftaction" "manusentrancedildo" autocheck>> <span class="sub">Move to your anus</span></label>
+		<<switch _playerToys[$currentToyLeft].name>>
+			<<case "bullet vibe">>
+				<<if $player.penisExist and $penisuse is 0 and !$worn.genitals.type.includes("chastity")>>
+					| <label><<radiobutton "$leftaction" "mpenisvibrate" autocheck>> <span class="sub">Hold against your penis</span></label>
+				<<elseif !$player.penisExist and !$worn.genitals.type.includes("chastity")>>
+					| <label><<radiobutton "$leftaction" "mvaginaclitvibrate" autocheck>> <span class="sub">Hold against your clit</span></label>
+				<</if>>
+				| <label><<radiobutton "$leftaction" "mchestvibrate" autocheck>> <span class="sub">Press against a nipple</span></label>
+			<<case "small dildo" "dildo">>
+				<<if $mouth is 0 and $awareness gte 200>>
+					| <label><<radiobutton "$leftaction" "mdildomouthentrance" autocheck>> <span class="sub">Hold against your mouth</span></label>
+				<</if>>
+		<</switch>>
+		<<if _playerToys[$currentToyLeft].name is "bullet vibe">>
+		<</if>>
 		| <label><<radiobutton "$leftaction" "mvaginastopdildo" autocheck>> Move your hand away</label>
 	<</if>>
 
@@ -337,7 +361,7 @@
 	<<if $awareness gte 200 and $worn.genitals.anal_shield isnot 1>>
 		| <label><<radiobutton "$rightaction" "manusentrance" autocheck>> <span class="sub">Stroke your anus</span> <<combataware 3>></label>
 	<</if>>
-	<<if $awareness gte 200 and ["home","brothel","cafe"].includes($location)>> /* Player sex toys */
+	<<if $awareness gte 200 and (["home","brothel","cafe"].includes($location) or _enableSexToys)>> /* Player sex toys */
 		<<if _playerToys.length gte (_sextoysInUse + 1)>>
 			<<set $_playerToysRight to {}>>
 			<<run _playerToys.forEach((toy,i) => {
@@ -487,12 +511,21 @@
 	<br>
 	| <label><<radiobutton "$rightaction" "mpenisstroker" autocheck>> <span class="sub">Masturbate</span></label>
 	| <label><<radiobutton "$rightaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
-
+<<elseif $rightarm is "mdildomouthentrance">>
+	Your $_righttoycolour $_righttoy is in your right hand by your mouth.
+	<br>
+	| <label><<radiobutton "$rightaction" "mdildomouth" autocheck>> <span class="sub">Push into your mouth</span></label>
+	| <label><<radiobutton "$rightaction" "mmouthstopdildo" autocheck>> Move your hand away</label>
+<<elseif $rightarm is "mdildomouth">>
+	Your right hand is holding your $_righttoycolour $_righttoy in your mouth.
+	<br>
+	| <label><<radiobutton "$rightaction" "mdildopiston" autocheck>> <span class="sub">Move it back and forward</span></label>
+	| <label><<radiobutton "$rightaction" "mmouthstopdildo" autocheck>> Move your hand away</label>
 <<elseif $rightarm is "mpickupdildo">>
 	You hold your $_righttoycolour $_righttoy in your right hand.
 	<br>
 	<<if _playerToys[$currentToyRight].type.includes("stroker")>>
-		<<if $player.penisExist>>
+		<<if $player.penisExist and ($penisuse is 0 or $penisuse is "stroker")>>
 			| <label><<radiobutton "$rightaction" "mpenisentrancestroker" autocheck>> <span class="sub">Move to your penis</span></label>
 		<</if>>
 		| <label><<radiobutton "$rightaction" "mpenisstopstroker" autocheck>> Move your hand away</label>
@@ -501,6 +534,19 @@
 			| <label><<radiobutton "$rightaction" "mvaginaentrancedildo" autocheck>> <span class="sub">Move to your vagina</span></label>
 		<</if>>
 		| <label><<radiobutton "$rightaction" "manusentrancedildo" autocheck>> <span class="sub">Move to your anus</span></label>
+		<<switch _playerToys[$currentToyRight].name>>
+			<<case "bullet vibe">>
+				<<if $player.penisExist and $penisuse is 0 and !$worn.genitals.type.includes("chastity")>>
+					| <label><<radiobutton "$rightaction" "mpenisvibrate" autocheck>> <span class="sub">Hold against your penis</span></label>
+				<<elseif !$player.penisExist and !$worn.genitals.type.includes("chastity")>>
+					| <label><<radiobutton "$rightaction" "mvaginaclitvibrate" autocheck>> <span class="sub">Hold against your clit</span></label>
+				<</if>>
+				| <label><<radiobutton "$rightaction" "mchestvibrate" autocheck>> <span class="sub">Press against a nipple</span></label>
+			<<case "small dildo" "dildo">>
+				<<if $mouth is 0 and $awareness gte 200>>
+					| <label><<radiobutton "$rightaction" "mdildomouthentrance" autocheck>> <span class="sub">Hold against your mouth</span></label>
+				<</if>>
+		<</switch>>
 		| <label><<radiobutton "$rightaction" "mvaginastopdildo" autocheck>> Move your hand away</label>
 	<</if>>
 
@@ -572,7 +618,9 @@
 <</if>>
 
 /* Mouth Actions */
-<<if $moorPhallusPlant or $awareness gte 200>>
+<<if $moorPhallusPlant or $awareness gte 200 or $mouth isnot 0>>
+	<<set _corruptionCheck to $corruptionMasturbation and $awareness lt 200>>
+	<<set _awarenessCheck to $corruptionMasturbation or $awareness gte 200>>
 	<<set $mouthaction to $mouthactiondefault>>
 	<<if $mouth is 0>>
 		<br><br>
@@ -588,43 +636,59 @@
 			<</if>>
 		<</for>>
 
-		<<if _hasAphrodisiac is true>>
-			| <label><<radiobutton "$mouthaction" "maphropill" autocheck>> Swallow an aphrodisiac pill <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		<<if _hasAphrodisiac is true and $awareness gte 200>>
+			| <label><<radiobutton "$mouthaction" "maphropill" autocheck>> Swallow an aphrodisiac pill <<combataware 3>></label>
 		<</if>>
 
-		<<if $_genitals_exposed>>
+		<<if $_genitals_exposed and $awareness gte 200>>
 			<<if $canSelfSuckPenis and $penisuse is 0>>
-				| <label><<radiobutton "$mouthaction" "mpenisentrance" autocheck>> <span class="sub">Lick your penis</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+				| <label><<radiobutton "$mouthaction" "mpenisentrance" autocheck>> <span class="sub">Lick your penis</span> <<combataware 3>></label>
 			<</if>>
 			<<if $canSelfSuckVagina and $vaginause is 0 and $fingersInVagina is 0>>
-				| <label><<radiobutton "$mouthaction" "mvaginaentrance" autocheck>> <span class="sub">Lick your pussy</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+				| <label><<radiobutton "$mouthaction" "mvaginaentrance" autocheck>> <span class="sub">Lick your pussy</span> <<combataware 3>></label>
 			<</if>>
 		<</if>>
 		<<if $moorPhallusPlant is 1>>
-			| <label><<radiobutton "$mouthaction" "mpenisflowerlick" autocheck>> <span class="sub">Lick the phallus plant</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+			| <label><<radiobutton "$mouthaction" "mpenisflowerlick" autocheck>> <span class="sub">Lick the phallus plant</span></label>
 		<</if>>
 		| <label><<radiobutton "$mouthaction" "mrest" autocheck>> Rest</label>
 
 	<<elseif $mouth is "mpenisentrance">>
 		<br><br>
-		Your mouth is in front of your penis.
+		<<if _corruptionCheck>>
+			<span class="red">The slimes in your ear are forcing your mouth to be in front of your penis.</span>
+		<<else>>
+			Your mouth is in front of your penis.
+		<</if>>
 		<br>
-		| <label><<radiobutton "$mouthaction" "mpenislick" autocheck>> <span class="sub">Lick your penis</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
-		| <label><<radiobutton "$mouthaction" "mpenistakein" autocheck>> <span class="sub">Take it into your mouth</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		<<if _awarenessCheck>>
+			| <label><<radiobutton "$mouthaction" "mpenislick" autocheck>> <span class="sub">Lick your penis</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+			| <label><<radiobutton "$mouthaction" "mpenistakein" autocheck>> <span class="sub">Take it into your mouth</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+		<</if>>
 		| <label><<radiobutton "$mouthaction" "mpenisstop" autocheck>> Move your mouth away</label>
 		| <label><<radiobutton "$mouthaction" "mrest" autocheck>> Rest</label>
 
 	<<elseif $mouth is "mvaginaentrance">>
 		<br><br>
-		You're licking your pussy.
+		<<if _corruptionCheck>>
+			<span class="red">The slimes in your ear are forcing you to lick your pussy.</span>
+		<<else>>
+			You're licking your pussy.
+		<</if>>
 		<br>
-		| <label><<radiobutton "$mouthaction" "mvaginalick" autocheck>> <span class="sub">Lick your pussy</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
-		| <label><<radiobutton "$mouthaction" "mvaginaclit" autocheck>> <span class="sub">Focus on your clit</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		<<if _awarenessCheck>>
+			| <label><<radiobutton "$mouthaction" "mvaginalick" autocheck>> <span class="sub">Lick your pussy</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+			| <label><<radiobutton "$mouthaction" "mvaginaclit" autocheck>> <span class="sub">Focus on your clit</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+		<</if>>
 		| <label><<radiobutton "$mouthaction" "mvaginastop" autocheck>> Move your mouth away</label>
 
 	<<elseif $mouth is "mpenis">>
 		<br><br>
-		You're sucking on your penis.
+		<<if _corruptionCheck>>
+			<span class="red">The slimes in your ear are forcing you to suck on your penis.</span>
+		<<else>>
+			You're sucking on your penis.
+		<</if>>
 		<<if $selfsuckDepth is $selfsuckLimit>>
 			You have the whole thing in your mouth<<if $selfsuckDepth gte 2>> and throat<</if>>.
 		<<else>>
@@ -636,9 +700,12 @@
 			<</switch>>
 		<</if>>
 		<br>
-		| <label><<radiobutton "$mouthaction" "mpenissuck" autocheck>> <span class="sub">Suck on your penis</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
-		<<if $selfsuckDepth lt $selfsuckLimit>>
-			| <label><<radiobutton "$mouthaction" "mpenisdeepthroat" autocheck>> <span class="sub">Take it deeper</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		
+		<<if _awarenessCheck>>
+			| <label><<radiobutton "$mouthaction" "mpenissuck" autocheck>> <span class="sub">Suck on your penis</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+			<<if $selfsuckDepth lt $selfsuckLimit>>
+				| <label><<radiobutton "$mouthaction" "mpenisdeepthroat" autocheck>> <span class="sub">Take it deeper</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+			<</if>>
 		<</if>>
 		<<if $selfsuckDepth gte 1>>
 			| <label><<radiobutton "$mouthaction" "mpenispullback" autocheck>> Pull back</label>
@@ -648,20 +715,43 @@
 		<<if $selfsuckDepth lte 1>>
 			| <label><<radiobutton "$mouthaction" "mpenisstop" autocheck>> Move your mouth away</label>
 		<</if>>
-
+	<<elseif $mouth is "mdildomouthentrance">>
+		<br><br>
+		<<if $leftarm is "mdildomouthentrance">>
+			Your $_lefttoycolour $_lefttoy
+		<<else>>
+			Your $_righttoycolour $_righttoy
+		<</if>>
+		is in front of your mouth.
+		<br>
+		| <label><<radiobutton "$mouthaction" "mdildolick" autocheck>> <span class="sub">Lick</span></label>
+		| <label><<radiobutton "$mouthaction" "mdildokiss" autocheck>> <span class="sub">Kiss</span></label>
+		| <label><<radiobutton "$mouthaction" "mrest" autocheck>> Rest</label>
+	<<elseif $mouth is "mdildomouth">>
+		<br><br>
+		<<if $leftarm is "mdildomouth">>
+			Your $_lefttoycolour $_lefttoy
+		<<else>>
+			Your $_righttoycolour $_righttoy
+		<</if>>
+		is inside of your mouth.
+		<br>
+		| <label><<radiobutton "$mouthaction" "mdildolick" autocheck>> <span class="sub">Lick</span></label>
+		| <label><<radiobutton "$mouthaction" "mdildosuck" autocheck>> <span class="sub">Suck</span></label>
+		| <label><<radiobutton "$mouthaction" "mrest" autocheck>> Rest</label>
 	<<elseif $mouth is "mpenisflowerlick">>
 		<br><br>
 		You're licking the phallus plant.
 		<br>
-		| <label><<radiobutton "$mouthaction" "mpenisflowerlick" autocheck>> <span class="sub">Lick</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
-		| <label><<radiobutton "$mouthaction" "mpenisflowertakein" autocheck>> <span class="sub">Take it into your mouth</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		| <label><<radiobutton "$mouthaction" "mpenisflowerlick" autocheck>> <span class="sub">Lick</span></label>
+		| <label><<radiobutton "$mouthaction" "mpenisflowertakein" autocheck>> <span class="sub">Take it into your mouth</span></label>
 		| <label><<radiobutton "$mouthaction" "mpenisflowerstop" autocheck>> Move your mouth away</label>
 
 	<<elseif $mouth is "mpenisflowersuck">>
 		<br><br>
 		You're sucking on the phallus plant.
 		<br>
-		| <label><<radiobutton "$mouthaction" "mpenisflowersuck" autocheck>> <span class="sub">Lick</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		| <label><<radiobutton "$mouthaction" "mpenisflowersuck" autocheck>> <span class="sub">Lick</span></label>
 		| <label><<radiobutton "$mouthaction" "mpenisflowersuckstop" autocheck>> Move your mouth away</label>
 	<</if>>
 <</if>>
