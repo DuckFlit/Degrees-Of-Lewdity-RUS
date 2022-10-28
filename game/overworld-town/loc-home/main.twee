@@ -1042,17 +1042,11 @@ You are in the bathroom.
 				<<if _wakingEffect is "dryheaving">>
 					"Are you okay? Let me help," Robin says, easing you back up. <<He>> checks to see if you're fine before getting up <<himself>>.
 					<<set $phase to 1>>
-				<<elseif _orgasm is true and !$rng lte _robinAwakeChance>>
+				<<elseif _orgasm is true and $rng gt _robinAwakeChance>>
 					<<set $phase to 1>>
 					<<if $exposed gte 2>>
-						Robin cuddles you. "You should go-" <<he>> pauses, noticing the moisture on their body and yours. Blushing, <<he>> gathers tissues for both of you.
-						<<if $rng gte 71>>
-							"I-It's okay," <<he>> says.
-						<<elseif $rng gte 31>>
-							"This might be my fault," <<he>> says.
-						<<else>>
-							"I-I might need a bath," <<he>> says.
-						<</if>>
+						Robin cuddles you. "You should go-" <<he>> pauses, noticing the moisture on <<his>> body and yours. Blushing, <<he>> gathers tissues for both of you.
+						"<<print ["I-It's okay", "This might be my fault", "I-I might need a bath"].random()>>," <<he>> says.
 					<<else>>
 						Robin cuddles you. "You should go ba-" <<he>> pauses, noticing the moist patch around your crotch. Blushing, <<he>> passes you a tissue.
 						"I-It's okay," <<he>> says.
@@ -1596,19 +1590,27 @@ You are in the main hall of the orphanage.
 
 <<if $christmas is 1 and $monthday is 25 and $daystate isnot "night">>
 	The room is alive with festive merriment.
+<<elseif $halloween is 1 and $monthday is 31 and $hour gte 15 and $daystate isnot "night">>
+	<<if !$halloween_robin_costume and !$halloween_robin_scare and ($wraith.state isnot "" and $wraithIntro and $hallucinations gte 1 and $rng lte 70)>>
+		<!-- This event happens if Robin is wearing the ghost costume, but you don't know that it's Robin. -->
+		<!-- The odds are 70% if you meet the conditions, much higher than normal, bc this is a non-repeatable event -->
+		<<set _wraithEvent to true>>
+	<<else>>
+		The room is buzzing with the excitement of costumed orphans.
+	<</if>>
 <<else>>
 	<<if $daystate is "day">>
-	A couple of orphans on cleaning duty sweep the floor.
+		A couple of orphans on cleaning duty sweep the floor.
 	<<elseif $daystate is "dusk">>
-	You hear hushed voices.
+		You hear hushed voices.
 	<<elseif $daystate is "dawn">>
 		<<if $schoolday is 1>>
-		The orphans are heading off to school.
+			The orphans are heading off to school.
 		<<else>>
-		The orphans are leaving to find work.
+			The orphans are leaving to find work.
 		<</if>>
 	<<elseif $daystate is "night">>
-	The orphans must be asleep.
+		The orphans must be asleep.
 	<</if>>
 <</if>>
 
@@ -1711,7 +1713,7 @@ You are in the main hall of the orphanage.
 
 	<<link [[Next|Orphanage]]>><<endevent>><</link>>
 
-<<elseif $days gte 1 and $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and ($schoolday is 1 and ($hour is 7 or $hour gte 16 and $hour lte 20) or $schoolday isnot 1 and $hour gte 7 and $hour lte 20)>>
+<<elseif $days gte 1 and _robin.init is 0 and $hour gte 7 and $hour lte 20 and ($schoolday isnot 1 or !($hour gte 8 and $hour lte 15))>>
 	<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 	<<npc Robin>><<initnpc Robin>><<person1>>You hear a voice shout behind you. "Hey!" It's Robin. <<Hes>> another resident at the orphanage. <<Hes>> always looked up to you, despite being about the same age. <<He>> runs towards you and fails to slow down in time, colliding with you and almost falling over. You hold <<his>> arm to steady <<him>>. "Thanks," <<he>> says, looking embarrassed though still smiling.
 	<br><br>
@@ -1748,7 +1750,7 @@ You are in the main hall of the orphanage.
 
 	<<link [[Next|Orphanage]]>><<endevent>><</link>>
 	<br>
-<<elseif $christmas is 1 and $monthday is 25 and $robinmissing is 0 and $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $christmas_robin_gift_received is undefined and $hour gte 7>>
+<<elseif $christmas is 1 and $monthday is 25 and $robinmissing is 0 and _robin.init is 1 and $christmas_robin_gift_received is undefined and $hour gte 7>>
 	<<set $christmas_robin_gift_received to true>>
 	You spot a present laid under the tree with your name on it. It's from Robin.
 	<br><br>
@@ -1776,6 +1778,24 @@ and !$fromRobinRoom and _robin.cdquest is 2 and _robin.trauma lte 20 and !$daily
 	<br>
 	<<link [[Ignore|Orphanage]]>><<endevent>><</link>>
 <<else>>
+	<<if $halloween is 1 and $monthday is 31 and !$fromRobinRoom and $robinmissing is 0 and $hour gte 16 and $hour lt 19 and _robin.init is 1>>
+		<<if $halloween_robin_costume>>
+			You see Robin, dressed as a $halloween_robin_costume and surrounded by excited orphans.
+		<<elseif _wraithEvent>>
+			You see someone wearing a bedsheet over their head. They're completely motionless, and the hall is empty and silent. <span class="red">The bedsheet is a terrible, familiar pale.</span>
+			<br><br>
+
+			<span class="wraith">"Trick or treat."</span>
+			<br><br>
+
+			You stumble backwards and shriek, and in a single blink, the hall changes completely. Now you see Robin, surrounded by excited orphans and holding <<nnpc_his "Robin">> bedsheet in <<nnpc_his "Robin">> arms, looking at both you and the bedsheet with utter confusion in <<nnpc_his "Robin">> eyes.
+		<<else>>
+			You see someone wearing a bedsheet over their head. They're surrounded by excited orphans.
+		<</if>>
+		<br><br>
+		<<ind>><<link [[Approach them|Robin Trick Hall]]>><</link>>
+		<br><br>
+	<</if>>
 	<<if $police_hack is 2 and ($pub_hack_job is 1 or $pub_hack_job is 2)>>
 		<<ind>><<link [[Find hacker (0:10)|Orphanage Hacker]]>><<pass 10>><</link>>
 		<br><br>
@@ -1787,18 +1807,6 @@ and !$fromRobinRoom and _robin.cdquest is 2 and _robin.trauma lte 20 and !$daily
 		<<ind>><<link [[Decide what to do with Kylar's camera (0:05)|Orphanage Kylar Camera]]>><<pass 5>><</link>>
 		<br><br>
 	<</if>>
-	<<if $halloween is 1 and $robinmissing is 0 and $hour gte 16 and $hour lt 19 and $monthday is 31 and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
-		<<if $halloween_robin_costume is "witch">>
-			You see Robin, dressed as a witch and surrounded by excited orphans.
-		<<elseif $halloween_robin_costume is "vampire">>
-			You see Robin, dressed as a vampire and surrounded by excited orphans.
-		<<else>>
-			You see someone wearing a bedsheet over their head. They're surrounded by excited orphans.
-		<</if>>
-		<br><br>
-		<<ind>><<link [[Go trick-or-treating|Robin Trick Hall]]>><</link>>
-		<br>
-	<</if>>
 	<<if $christmas is 1 and $monthday is 25 and $daystate isnot "night" and $exposed lte 0>>
 		<<ind>><<link [[Celebrate Christmas (1:00)|Orphanage Christmas]]>><<pass 60>><<trauma -12>><<stress -6>><</link>><<lltrauma>><<lstress>>
 		<br>
@@ -1807,7 +1815,7 @@ and !$fromRobinRoom and _robin.cdquest is 2 and _robin.trauma lte 20 and !$daily
 	<br><br>
 	<<officeicon>><<link [[Bailey's office (0:01)|Bailey's Office]]>><<pass 1>><</link>>
 	<br>
-	<<if $hour gte 18 and $hour lte 20 and $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40 and $robinmissing is 0 and !$robinTraumaVisit>>
+	<<if $hour gte 18 and $hour lte 20 and _robin.trauma gte 40 and $robinmissing is 0 and !$robinTraumaVisit>>
 		<<bedroomicon>><<link [[Bedroom (0:01)|Robin Trauma Visit]]>><<set $phase to 0>><<pass 1>><</link>>
 		<br>
 	<<elseif $kylar.timer.home gte 100 and $kylar.home is undefined>>
@@ -1822,7 +1830,7 @@ and !$fromRobinRoom and _robin.cdquest is 2 and _robin.trauma lte 20 and !$daily
 	<</if>>
 	<<bathroomicon>><<link [[Bathroom (0:01)->Bathroom]]>><<pass 1>><</link>>
 	<br>
-	<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $exposed lte 0>>
+	<<if _robin.init is 1 and $exposed lte 0>>
 		<<bedroomicon>><<link [[Robin's room (0:01)|Robin's Room Entrance]]>><<pass 1>><</link>>
 		<br>
 	<</if>>
