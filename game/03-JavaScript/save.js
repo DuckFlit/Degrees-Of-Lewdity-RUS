@@ -690,8 +690,10 @@ function settingsObjects(type) {
 		case "starting":
 			result = {
 				bodysize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
-				breastsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
-				genitalsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
+				breastsensitivity: { min: 1, max: 3, decimals: 0, randomize: "characterTrait" },
+				genitalsensitivity: { min: 1, max: 3, decimals: 0, randomize: "characterTrait" },
+				mouthsensitivity: { min: 1, max: 3, decimals: 0, randomize: "characterTrait" },
+				bottomsensitivity: { min: 1, max: 3, decimals: 0, randomize: "characterTrait" },
 				eyeselect: {
 					strings: [
 						"purple",

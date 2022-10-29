@@ -241,9 +241,10 @@
 <<widget "arousal">>
 	<!-- args[0] must be a number indicating the base increase or decrease of the arousal. -->
 	<!-- args[1] indicates the source of the stimulus. -->
-	<<if (typeof _args[0]) is "number">>		
+	<!-- first check to protect against strings and nans -->
+	<<if Number.isFinite(_args[0])>>
 		<<set _gain to _args[0]>>
-		<<set _mod to 1>>	
+		<<set _mod to 1>>
 
 		<!-- Trait checks & effects below -->
 		<<if $orgasmtrait gte 1 and _gain gt 0>>
@@ -262,6 +263,7 @@
 		<</if>>
 
 		<!-- Apply effect according to args[1] -->
+		<<set _noSens to _mod>>
 		<<switch _args[1]>>
 			<<case undefined>>
 				<!-- No modifier. The usual behaviour for this widget -->
@@ -276,11 +278,10 @@
 			<<case "maso">>
 				<<set $arousalmasochism += _gain * _mod>>
 			<<case "time">>
-				<<set _arousal to Math.clamp($arousal + _gain * _mod, 0, $arousalmax)>>
 				<<if $trackedArousal.length gt 4>>
 					<<run $trackedArousal.deleteAt(0)>>
 					<!--add current arousal level to previous hour, low arousal level matters less-->
-					<<set $trackedArousal[$trackedArousal.length-1] += ( _arousal * _arousal / ($arousalmax * 0.8) )>>
+					<<set $trackedArousal[$trackedArousal.length - 1] += (_arousal * _arousal / ($arousalmax * 0.8))>>
 				<</if>>
 				<<run $trackedArousal.push(0)>>
 			<<default>>
@@ -291,14 +292,18 @@
 					source : "Called from " + Utils.GetStack()
 				}>>
 		<</switch>>
-
+		<!-- do not apply sensitivity boosts during chef job -->
+		<!-- todo: rebalance chef job better -->
+		<<if $masturbation_bowl is 1>>
+			<<set _mod to _noSens>>
+		<</if>>
 		<!-- Now we apply the arousal gain -->
 		<<set $arousal to Math.clamp($arousal + _gain * _mod, 0, $arousalmax)>>
 
 		<!-- And add the increase to the tracker -->
 		<<if _args[0] gte 0>>
 			<!-- Adds the current increase to the latest tracked hour -->
-			<<set $trackedArousal[$trackedArousal.length-1] += _gain * _mod>>
+			<<set $trackedArousal[$trackedArousal.length - 1] += _gain * _mod>>
 			<<if _args[0] gt 0>>
 				<<set $timeSinceArousal to 0>>
 			<</if>>
