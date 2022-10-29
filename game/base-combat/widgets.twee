@@ -6,7 +6,7 @@
 		<!-- Do nothing -->
 	<<else>>
 		<<if $player.virginity[_args[1]] is true>>
-			<<if $wraith.mimic is _args[0]>>
+			<<if $activeNightmare or ($wraith.mimic is _args[0])>>
 				<<switch _args[0]>>
 					<<case "Robin">><<displayFeatFake "Robin the Lover">>
 					<<case "Kylar">><<displayFeatFake "Kylar the Obsessed">>
@@ -21,7 +21,9 @@
 					<<case "Harper">><<displayFeatFake "Harper the Hypnotist">>
 					<<case "Morgan">><<displayFeatFake "Morgan the Lost">>
 				<</switch>>
-				<<set _args[0] to "Ivory Wraith">>
+				<<if !$activeNightmare>>
+					<<set _args[0] to "Ivory Wraith">>
+				<</if>>
 			<<elseif _args[1] is "vaginal" or _args[1] is "penile">>
 				<<switch _args[0]>>
 					<<case "Robin">><<earnFeat "Robin the Lover">>
@@ -195,13 +197,19 @@
 				<<default>>
 			<</switch>>
 
-			<<run $virginTaken[$_vType].pushUnique($_npc.fullDescription)>>
-			<<set $_i to $NPCNameList.indexOf($_npc.fullDescription)>>
-			<<if $_i isnot -1>>
+			<<if $activeNightmare>>
 				<<if $_npc.fullDescription is "Sydney" and ($_vType is "vaginal" or $_vType is "penile")>>
-					<<earnFeat "Sydney the Pure Hearted">>
+					<<displayFeatFake "Sydney the Pure Hearted">>
 				<</if>>
-				<<set $NPCName[$_i].virginity to $_npc.virginity>>
+			<<else>>
+				<<run $virginTaken[$_vType].pushUnique($_npc.fullDescription)>>
+				<<set $_i to $NPCNameList.indexOf($_npc.fullDescription)>>
+				<<if $_i isnot -1>>
+					<<if $_npc.fullDescription is "Sydney" and ($_vType is "vaginal" or $_vType is "penile")>>
+						<<earnFeat "Sydney the Pure Hearted">>
+					<</if>>
+					<<set $NPCName[$_i].virginity to $_npc.virginity>>
+				<</if>>
 			<</if>>
 		<</if>>
 	<</if>>
