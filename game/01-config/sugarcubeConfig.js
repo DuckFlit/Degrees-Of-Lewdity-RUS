@@ -140,7 +140,15 @@ Config.navigation.override = function (dest) {
 	isReloading = false;
 	pageLoading = false;
 
-	const checkPassages = dest => {
+	/* Check for passage rerouting using events */
+	const passageArgs = { name: dest };
+	jQuery.event.trigger(":passageoverride", passageArgs);
+	if (passageArgs.name !== dest) {
+		/* Return new passage dest. Will divert the processed passage to this. */
+		return passageArgs.name;
+	}
+
+	const checkPassages = (dest) => {
 		switch (dest) {
 			case "Downgrade Waiting Room":
 				return V.passage;
@@ -408,8 +416,9 @@ Config.navigation.override = function (dest) {
 		}
 	};
 
-	const passageOverride = checkPassages(dest);
-	if (passageOverride) V.passageOverride = passageOverride;
+	let passageOverride = checkPassages(dest);
+	if(passageOverride)
+		V.passageOverride = passageOverride
 
 	return passageOverride;
 };

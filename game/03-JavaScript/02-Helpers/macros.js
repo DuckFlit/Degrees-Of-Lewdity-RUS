@@ -180,8 +180,40 @@ var General = ((Macro, SexTypes) => {
 		},
 	});
 
+	function linkOverride(map) {
+		$(document).one(":passageoverride", function (_, passage) {
+			for (const key in map) {
+				if (Object.hasOwn(map, key)) {
+					const element = map[key];
+					if (passage.name === key) {
+						passage.name = element;
+						return;
+					}
+				}
+			}
+		});
+	}
+
+	Macro.add("reroute", {
+		skipArgs: true,
+		handler() {
+			const exp = this.args.full;
+			const map = Scripting.evalJavaScript(exp[0] === "{" ? `(${exp})` : exp);
+			if (typeof map !== "object") {
+				Errors.inlineReport(
+					"Incorrect argument used in <<reroute>>",
+					{ exp, map },
+					false
+				).appendTo(this.output);
+				return this.output;
+			}
+			linkOverride(map);
+		},
+	});
+
 	return Object.seal({
 		getFluidsFromGroup,
+		linkOverride,
 	});
 })(Macro, SexTypes);
 window.General = General;
