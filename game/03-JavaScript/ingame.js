@@ -391,7 +391,7 @@ function browsDyeReset() {
 DefineMacroS("browsDyeReset", browsDyeReset);
 
 function NPCSettingsReset() {
-	jQuery(document).on("change", "#listbox--npcid", function (e) {
+	jQuery(".passage").on("change", "#listbox--npcid", function (e) {
 		Wikifier.wikifyEval("<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>");
 	});
 	return "";

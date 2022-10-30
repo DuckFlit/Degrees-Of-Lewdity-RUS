@@ -753,6 +753,7 @@ function settingsObjects(type) {
 					randomize: "characterTrait",
 				},
 				gamemode: { strings: ["normal", "soft", "hard"] },
+				startingseason: { strings: ["autumn", "winter", "spring", "summer", "random"] },
 				ironmanmode: { bool: false },
 				player: {
 					gender: { strings: ["m", "f", "h"], randomize: "characterAppearance" },
