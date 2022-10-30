@@ -268,16 +268,17 @@
 			<<case undefined>>
 				<!-- No modifier. The usual behaviour for this widget -->
 			<<case "mouth" "oral" "lips">>
-				<<set _mod += ($mouthsensitivity - 1)>>
+				<<set $_arousalPart to $mouthsensitivity>>
 			<<case "breast" "breasts" "chest" "nipple" "nipples">>
-				<<set _mod += ($breastsensitivity - 1)>>
+				<<set $_arousalPart to $breastsensitivity>>
 			<<case "bottom" "anus" "anal" "ass" "butt">>
-				<<set _mod += ($bottomsensitivity - 1)>>
+				<<set $_arousalPart to $bottomsensitivity>>
 			<<case "genital" "genitals" "penis" "penile" "pussy" "vaginal">>
-				<<set _mod += ($genitalsensitivity - 1)>>
+				<<set $_arousalPart to $genitalsensitivity>>
 			<<case "maso">>
 				<<set $arousalmasochism += _gain * _mod>>
 			<<case "time">>
+				<<set _arousal to Math.clamp($arousal + _gain * _mod, 0, $arousalmax)>>
 				<<if $trackedArousal.length gt 4>>
 					<<run $trackedArousal.deleteAt(0)>>
 					<!--add current arousal level to previous hour, low arousal level matters less-->
@@ -286,12 +287,19 @@
 				<<run $trackedArousal.push(0)>>
 			<<default>>
 				<!-- Unexpected modifier was received. Throw error/exception -->
-				<<arousalError _args[0] _args[1]>>
 				<<error {
 					message : `Unexpected value \"${_args[1]}\" for second parameter`,
 					source : "Called from " + Utils.GetStack()
 				}>>
 		<</switch>>
+
+		<!-- Adjusts modifier for body part sensitivity, if applicable -->
+		<<if $_arousalPart gte 2>>
+			<<set _mod += (($_arousalPart - 1) * 0.5)>>
+		<<elseif $_arousalPart>>
+			<<set _mod += ($_arousalPart - 1)>>
+		<</if>>
+
 		<!-- do not apply sensitivity boosts during chef job -->
 		<!-- todo: rebalance chef job better -->
 		<<if $masturbation_bowl is 1>>
@@ -310,7 +318,6 @@
 		<</if>>
 
 	<<else>>
-		<<arousalError _args[0] _args[1]>>
 		<<error {
 			message : `Unexpected value ${_args[0]} for first parameter`,
 			source : "Called from " + Utils.GetStack()
