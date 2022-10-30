@@ -57,25 +57,18 @@ var IronMan = (Save => {
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
-	const schema = 1;
+	const schema = 2;
 	const keys = [
 		"debug",
 		"options.autosaveDisabled",
 		"cheatdisable",
 		"ironmanautosaveschedule",
 		"player.virginity",
-		"pain",
-		"arousal",
-		"tiredness",
-		"stress",
-		"trauma",
-		"control",
 		"enemyhealth",
 		"enemyarousal",
 		"enemytrust",
 		"enemystrength",
 		"passage",
-		"money",
 	];
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
