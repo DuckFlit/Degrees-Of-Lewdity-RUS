@@ -3768,6 +3768,10 @@
 		<</if>>
 		<<set C.npc["Ivory Wraith"].lust = Math.clamp(C.npc["Ivory Wraith"].lust, 0, 20)>>
 		<<clearNPC "wraith">>
+		<<if $NPC_names_m.includes("Ivory Wraith") or $NPC_names_f.includes("Ivory Wraith")>>
+			<<run delete $NPC_names_m["Ivory Wraith"]>>
+			<<run delete $NPC_names_f["Ivory Wraith"]>>
+		<</if>>
 		<<if $wraith.state and !$wraith.days>>
 			<<set $wraith.days to ($days - 60)>>
 		<</if>>
@@ -3775,4 +3779,21 @@
 
 	<!-- v0.3.12.4 $daily object -->
 	<<run dailyConvert()>>
+
+	<!-- v0.3.13.0 Persistent NPCs stealing the Wraith's name -->
+	<<if $NPC_names_m.includes("Ivory Wraith") or $NPC_names_f.includes("Ivory Wraith")>>
+		<<run delete $NPC_names_m["Ivory Wraith"]>>
+		<<run delete $NPC_names_f["Ivory Wraith"]>>
+	<</if>>
+
+	<<if Object.values($per_npc).some(npc => npc.name is "Ivory Wraith")>>
+		<<for _i, _npc range $per_npc>>
+			<<if $per_npc[_i].name is "Ivory Wraith">> <<set $per_npc[_i].name to ($per_npc[_i].pronoun is "m" ? $NPC_names_m.pluck() : $NPC_names_f.pluck())>> <</if>>
+		<</for>>
+	<</if>>
+
+	<!-- v0.3.13.0 Fixed Landry forgetting about Mickey -->
+	<<if $police_hack gte 4>>
+		<<set $mickeyPub to 2>>
+	<</if>>
 <</widget>>
