@@ -1579,6 +1579,8 @@ function getHalloweenCostume() {
 	// (Note: We could just add new types to clothes? ex: ["costume", "vampire"]. Update this function if you do.)
 	if (upper.name === "vampire jacket") {
 		return "vampire";
+	} else if (upper.name === "classy vampire jacket") {
+		return "classy vampire";
 	} else if (upper.name === "witch dress" && lower.name === "witch skirt") {
 		return "witch";
 	} else if (upper.name === "scarecrow shirt" && lower.name === "scarecrow skirt") {
