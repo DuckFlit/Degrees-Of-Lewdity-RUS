@@ -106,6 +106,12 @@ var IronMan = (Save => {
 				const target = resolve(V, key);
 				const parts = key.split(".");
 				const prop = parts.pop();
+				// Only process enemy values if in combat.
+				if (
+					V.combat !== 1 &&
+					["enemyhealth", "enemyarousal", "enemytrust", "enemystrength"].includes(prop)
+				)
+					continue;
 				const parent = resolve(V, parts.join(".") || "");
 				Object.defineProperty(
 					parent,
