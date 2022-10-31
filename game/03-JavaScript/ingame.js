@@ -1577,10 +1577,8 @@ function getHalloweenCostume() {
 
 	// I'm really not sure if there's any better way to do this than going through each name. Please forgive my sins.
 	// (Note: We could just add new types to clothes? ex: ["costume", "vampire"]. Update this function if you do.)
-	if (upper.name === "vampire jacket") {
+	if (upper.name.includes("vampire jacket")) {
 		return "vampire";
-	} else if (upper.name === "classy vampire jacket") {
-		return "classy vampire";
 	} else if (upper.name === "witch dress" && lower.name === "witch skirt") {
 		return "witch";
 	} else if (upper.name === "scarecrow shirt" && lower.name === "scarecrow skirt") {
@@ -1615,6 +1613,10 @@ function getHalloweenCostume() {
 		return "mummy";
 	} else if (upper.name.includes("sailor") && lower.name.includes("sailor")) {
 		return "sailor";
+	} else if (upper.name === "skeleton outfit" && lower.name === "skeleton bottoms") {
+		return "skeleton";
+	
+	/* Transformations */
 	} else if (T.tf.angelHalo && T.tf.angelWings) {
 		return "angel TF";
 	} else if (T.tf.wolfEars && T.tf.wolfTail) {
@@ -1629,6 +1631,8 @@ function getHalloweenCostume() {
 		return "cow TF";
 	} else if (T.tf.birdWings && T.tf.birdEyes) {
 		return "harpy TF";
+	
+	/* Misc outcomes */
 	} else if (V.worn.upper.type.includes("costume") || V.worn.lower.type.includes("costume") || (V.worn.upper.type.includes("naked") && V.worn.under_upper.type.includes("costume")) || (V.worn.lower.type.includes("naked") && V.worn.under_lower.type.includes("costume"))) {
 		return "mixed";
 	} else if (V.exposed >= 2) {
