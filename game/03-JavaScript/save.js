@@ -861,6 +861,7 @@ function settingsObjects(type) {
 				reducedLineHeight: { bool: true },
 				multipleWardrobes: { strings: [false, "isolated"] }, //, "all"
 				outfitEditorPerPage: { min: 5, max: 20, decimals: 0 }, //, "all"
+				skinColor: { tanImgEnabled: { boolLetter: true, bool: true } },
 				options: {
 					neverNudeMenus: { bool: true },
 					showCaptionText: { bool: true },
