@@ -9,47 +9,6 @@ var IronMan = (Save => {
 	// eslint-disable-next-line no-unused-vars
 	const IRONMAN_DEBUG = false;
 
-	// eslint-disable-next-line no-unused-vars
-	let varsFrozen = false;
-
-	/*  --------------------------------------
-		Event code to set protected variables.
-		-------------------------------------- */
-
-	const _setterHandlers = new Set();
-
-	function addSetter(handler) {
-		if (typeof handler === "function") {
-			_setterHandlers.add(handler);
-		} else {
-			Errors.report(
-				"The IronMan setter function requires a function to be passed as the parameter."
-			);
-		}
-	}
-
-	function clearSetters() {
-		_setterHandlers.clear();
-	}
-
-	function handleSetters() {
-		let workDone = false;
-		const stateObj = session.get("state");
-		_setterHandlers.forEach(handler => {
-			/* We could delete entries as we call them, but clearing the entire structure at the end works too. */
-			if (typeof handler === "function") {
-				/* Pass the stateobj variables object as args, manipulate story vars there. */
-				handler.apply(this, [stateObj.delta[0].variables]);
-				workDone = true;
-			}
-		});
-		_setterHandlers.clear();
-		if (workDone) {
-			session.set("state", stateObj);
-			State.restore();
-		}
-	}
-
 	/*  -------------------------------------
 		Integral IronMan mode core functions.
 		------------------------------------- */
@@ -57,8 +16,9 @@ var IronMan = (Save => {
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
-	const schema = 2;
+	const schema = 3;
 	const keys = [
+		"ironmanmode",
 		"debug",
 		"options.autosaveDisabled",
 		"cheatdisable",
@@ -69,6 +29,8 @@ var IronMan = (Save => {
 		"enemytrust",
 		"enemystrength",
 		"passage",
+		"money",
+		"time",
 	];
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
@@ -90,17 +52,14 @@ var IronMan = (Save => {
 		return obj;
 	}
 
+	// Don't worry about cleaning up this variable as it's already tightly controlled, and will be disposed of via restarting.
+	const internals = {};
+
 	function ironmanLock() {
 		/* Immediately exit if on the starting passage. */
 		if (["Start", "Clothes Testing", "Renderer Test Page", "Tips"].includes(V.passage)) return;
 		/* Immediately exit if the game is in debug mode or test mode. */
 		if (Config.debug) return;
-		// Do actual stuff now.
-		Object.defineProperty(
-			V,
-			"ironmanmode",
-			Object.assign({ writable: false, configurable: false }, { value: V.ironmanmode })
-		);
 		if (V.ironmanmode) {
 			for (const key of keys) {
 				const target = resolve(V, key);
@@ -113,12 +72,18 @@ var IronMan = (Save => {
 				)
 					continue;
 				const parent = resolve(V, parts.join(".") || "");
-				Object.defineProperty(
-					parent,
-					prop,
-					Object.assign({ writable: false, configurable: false }, target)
-				);
+				internals[key] = target;
+				Object.defineProperty(parent, prop, {
+					get() {
+						return internals[key];
+					},
+					set(value) {
+						if (window.ironmanFlag) internals[key] = value;
+					},
+				});
 			}
+			// Set flag to lock out setter.
+			delete window.ironmanFlag;
 		}
 	}
 
@@ -387,33 +352,12 @@ var IronMan = (Save => {
 		}
 	}
 
-	/* If the game is in ironman mode, generate the objects necessary. Can use the updater code for it without issues. */
-	/* $(document).on(':start2', function() {
-		if (V.ironmanmode) {
-			update();
-		}
-	}); */
-
-	$(document).on(":passagestart", function () {
-		varsFrozen = false;
-		handleSetters();
-	});
-
 	/*  IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
 		IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
 
 		This runs at the end of the passage processing pipeline. Check docs for SugarCube.md for more information about the pipeline. */
 	$(document).on(":passageend", function () {
 		ironmanLock();
-		varsFrozen = true;
-	});
-
-	/* DEPRECATED - Macro definition */
-	Macro.add("ironmandefer", {
-		tags: null,
-		handler() {
-			/* TODO: Provide a mechanism for TwineScript users to do this. */
-		},
 	});
 
 	/* Export the module object containing functions. */
@@ -421,9 +365,6 @@ var IronMan = (Save => {
 		lock: ironmanLock,
 		getSignature,
 		compare: compareSignatures,
-		/* Setter helpers that control the setter object, to defer variable assignments at the very beginning of the next passage. */
-		addSetter,
-		clearSetters,
 		export: exportSlot,
 		exportDebug,
 		importDebug,
@@ -440,6 +381,7 @@ var IronMan = (Save => {
 		get schema() {
 			return schema;
 		},
+		resolve,
 	});
 })(Save);
 window.IronMan = IronMan;
