@@ -794,7 +794,7 @@ setup.debugMenu.eventList = {
 			link: [`Summon the Wraith`, `Wraith Test Start`],
 			widgets: [
 				`<<endcombat>>`,
-				`<<set $monthday to 31>>`,
+				`<<set $monthday to getLastDayOfMonth()>>`,
 				`<<set $daystate to "night">>`,
 				`<<set $hour to 21>>`,
 				`<<set $minute to 0>>`,

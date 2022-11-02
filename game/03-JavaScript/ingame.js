@@ -1407,11 +1407,8 @@ function isLoveInterest(name) {
 }
 window.isLoveInterest = isLoveInterest;
 
-function getMoonState(forced = false, forecast) {
-	if (!T.timeChecked) time(); // ensure that T.nightstate exists before running (but don't call it every time bc that's wasteful)
-	if (T.moonChecked === V.time && !forced) return V.moonstate; // don't bother recalculating this if time hasn't changed (unless forced to)
-
-	const nightstate = forecast || T.nightstate;
+function getMoonState() {
+	const nightstate = T.nightstate;
 	let moonstate = V.moonstate;
 
 	if (nightstate === "evening") {
@@ -1420,25 +1417,29 @@ function getMoonState(forced = false, forecast) {
 		} else {
 			moonstate = 0; // moonstate will stay "morning" until the night after the blood moon
 		}
-	} else if (nightstate === "morning") { 
-		if (V.moonstate === "evening") { // if it's after midnight and there was a blood moon before midnight, then it's still a blood moon
+	} else if (nightstate === "morning") {
+		if (V.monthday === 1) { // blood moon happens on the first morning of the month
 			moonstate = "morning";
+		} else {
+			moonstate = 0;
 		}
 	}
-
-	T.moonChecked = V.time; //set this temp var to $time so that we don't recalculate it unless time changes in this passage for some reason
-	if (!forecast) V.moonstate = moonstate; //don't modify the real moonstate if this is just a forecast 
-	return moonstate;
+	return V.moonstate = moonstate;
 }
 window.getMoonState = getMoonState;
 
-function isBloodmoon(wraithEvent = false) {
-	return (V.daystate === "night" && getMoonState() !== 0 && (!wraithEvent || V.hour < 5)); // it's only a blood moon if it's night. also, wraith events can't start at 5 AM.
+function isBloodmoon() {
+	return (V.daystate === "night" && getMoonState() === T.nightstate); // it's only a blood moon if it's night, and the current moon state matches the current night state
 }
 window.isBloodmoon = isBloodmoon;
 
+function wraithCanHunt() {
+	return isBloodmoon() && V.hour !== 5; // wraith events can't start at 5 AM.
+}
+window.wraithCanHunt = wraithCanHunt;
+
 function wraithSleepEventCheck() {
-	return V.wraith.state !== "" && V.wraith.nightmare === 1 && isBloodmoon(true);
+	return V.wraith.state !== "" && V.wraith.nightmare === 1 && wraithCanHunt();
 }
 window.wraithSleepEventCheck = wraithSleepEventCheck;
 
