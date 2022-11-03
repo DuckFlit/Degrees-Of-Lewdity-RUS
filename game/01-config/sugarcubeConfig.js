@@ -23,7 +23,7 @@ Save.onSave.add(save => {
 	Wikifier.wikifyEval("<<updateFeats>>");
 	save.state.history.forEach(h => {
 		h.variables.saveDetails = defaultSaveDetails(h.variables.saveDetails);
-		h.variables.saveDetails.playTime += new Date() - (h.variables.saveDetails.loadTime ? h.variables.saveDetails.loadTime : 0);
+		h.variables.saveDetails.playTime += (new Date() - h.variables.saveDetails.loadTime ? h.variables.saveDetails.loadTime : 0);
 		h.variables.saveDetails.loadCount++;
 	});
 	// eslint-disable-next-line no-undef
@@ -58,6 +58,10 @@ function defaultSaveDetails(input){
 		saveDetails.f = 1;
 		saveDetails.playTime = 0;
 	}
+	if(saveDetails.f !== 2 && saveDetails.playTime > 1000000000){
+		saveDetails.playTime = 0;
+	}
+	saveDetails.f = 2;
 	return saveDetails;
 }
 
