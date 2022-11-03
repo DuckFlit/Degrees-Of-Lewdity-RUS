@@ -493,7 +493,7 @@ const importSettingsData = function (data) {
 		if (S.general != null) {
 			const listObject = settingsObjects("general");
 			const listKey = Object.keys(listObject);
-			const namedObjects = ["map", "skinColor", "shopDefaults"];
+			const namedObjects = ["map", "skinColor", "shopDefaults","options"];
 			// correct swapped min/max values
 			if (S.general.breastsizemin > S.general.breastsizemax) {
 				const temp = S.general.breastsizemin;
@@ -595,6 +595,7 @@ function exportSettings(data, type) {
 			map: {},
 			skinColor: {},
 			shopDefaults: {},
+			options: {},
 		},
 		npc: {},
 	};
@@ -632,7 +633,7 @@ function exportSettings(data, type) {
 
 	listObject = settingsObjects("general");
 	listKey = Object.keys(listObject);
-	namedObjects = ["map", "skinColor", "shopDefaults"];
+	namedObjects = ["map", "skinColor", "shopDefaults","options"];
 
 	for (let i = 0; i < listKey.length; i++) {
 		if (namedObjects.includes(listKey[i]) && V[listKey[i]] != null) {
@@ -825,6 +826,7 @@ function settingsObjects(type) {
 				beedisable: { boolLetter: true, bool: true },
 				lurkerdisable: { boolLetter: true, bool: true },
 				horsedisable: { boolLetter: true, bool: true },
+				pregnancyspeechdisable: { boolLetter: true, bool: true },
 				plantdisable: { boolLetter: true, bool: true },
 				footdisable: { boolLetter: true, bool: true },
 				toydildodisable: { boolLetter: true, bool: true },
@@ -861,7 +863,6 @@ function settingsObjects(type) {
 				reducedLineHeight: { bool: true },
 				multipleWardrobes: { strings: [false, "isolated"] }, //, "all"
 				outfitEditorPerPage: { min: 5, max: 20, decimals: 0 }, //, "all"
-				skinColor: { tanImgEnabled: { boolLetter: true, bool: true } },
 				options: {
 					neverNudeMenus: { bool: true },
 					showCaptionText: { bool: true },
@@ -962,7 +963,7 @@ function settingsConvert(exportType, type, settings) {
 	const keys = Object.keys(listObject);
 	for (let i = 0; i < keys.length; i++) {
 		if (result[keys[i]] === undefined) continue;
-		if (["map", "skinColor", "player", "shopDefaults"].includes(keys[i])) {
+		if (["map", "skinColor", "player", "shopDefaults","options"].includes(keys[i])) {
 			const itemKey = Object.keys(listObject[keys[i]]);
 			for (let j = 0; j < itemKey.length; j++) {
 				if (result[keys[i]][itemKey[j]] === undefined) continue;
