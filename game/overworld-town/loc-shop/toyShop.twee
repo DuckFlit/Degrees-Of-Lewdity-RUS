@@ -20,11 +20,23 @@
 :: Toy Shop
 <<set $outside to 0>><<effects>><<set $lock to 0>>
 
+<<if $player.inventory.childrenToys is undefined>>
+	<<set $player.inventory.childrenToys to []>>
+<</if>>
+<<if !$storedChildrenToys>><<set $storedChildrenToys to {}>><</if>>
+
 You are in the toy store. From floor to ceiling stand before you toys of all kinds, many in their own boxes, others ready to be played with.
 <<if $pregnancyStats.humanToysUnlocked>>
 	You can't help but think about your children when being in here.
 <</if>>
-<<if random(0,200) gte 199 and $daystate isnot "night">>You spot a kid zooming around in a vrelcar.<</if>>
+<<if random(0,200) gt 199 and $daystate isnot "night">>
+	<br><br>
+	You spot a kid zooming around in a vrelcar.
+	<<if !$daily.seenVrelcar>>
+		<<set $daily.seenVrelcar to true>>
+		<<trauma -60>><<lltrauma>>
+	<</if>>
+<</if>>
 <br><br>
 
 <<if $daystate is "night">>
@@ -55,21 +67,18 @@ You are in the toy store. From floor to ceiling stand before you toys of all kin
 			<br><br>
 		<</if>>
 
-		/*ToDo: Pregnancy, remove check to properly enable*/
-		<<if $pregnancyTesting>>
-			<<toySelection>>
-			<<if $exposed lte 1 and $daystate isnot "night" and $hour isnot 21>>
-				<<if $pregnancyStats.humanToysUnlocked>>
-					/*Baby Toys*/
-					<<link [[Baby rattle|Toy Shop Item]]>><<set $selectedToy to clone(_toySelection["babyRattle"])>><</link>>
-					<br>
-					<<link [[Toy cars|Toy Shop Item]]>><<set $selectedToy to clone(_toySelection["toyCar"])>><</link>>
-					<br>
-					<<link [[Dummies|Toy Shop Item]]>><<set $selectedToy to clone(_toySelection["dummy"])>><</link>>
-					<br>
-					<<link [[Teddy bears|Toy Shop Item]]>><<set $selectedToy to clone(_toySelection["teddyBear"])>><</link>>
-					<br><br>
-				<</if>>
+		<<toySelection>>
+		<<if $exposed lte 1 and $daystate isnot "night" and $hour isnot 21>>
+			<<if $pregnancyStats.humanToysUnlocked>>
+				/*Baby Toys*/
+				<<link [[Baby rattle|Toy Shop Item]]>><<set $selectedToy to clone(_toySelection["babyRattle"])>><</link>>
+				<br>
+				<<link [[Toy cars|Toy Shop Item]]>><<set $selectedToy to clone(_toySelection["toyCar"])>><</link>>
+				<br>
+				<<link [[Dummies|Toy Shop Item]]>><<set $selectedToy to clone(_toySelection["dummy"])>><</link>>
+				<br>
+				<<link [[Teddy bears|Toy Shop Item]]>><<set $selectedToy to clone(_toySelection["teddyBear"])>><</link>>
+				<br><br>
 			<</if>>
 		<</if>>
 		<<link [[Leave|Shopping Centre Top]]>><</link>>
@@ -83,12 +92,12 @@ You take a look at the collection of <<print $selectedToy.set>>. They cost <span
 <br><br>
 <<if $selectedToy.options>>
 	<<set _numberOnHand to {}>>
-	<<for _i to 0; _i lt $currentToys.length; _i++>>
-		<<if $currentToys[_i].set is $selectedToy.set>>
-			<<if _numberOnHand[$currentToys[_i].name] is undefined>>
-				<<set _numberOnHand[$currentToys[_i].name] to 1>>
+	<<for _i to 0; _i lt $player.inventory.childrenToys.length; _i++>>
+		<<if $player.inventory.childrenToys[_i].set is $selectedToy.set>>
+			<<if _numberOnHand[$player.inventory.childrenToys[_i].name] is undefined>>
+				<<set _numberOnHand[$player.inventory.childrenToys[_i].name] to 1>>
 			<<else>>
-				<<set _numberOnHand[$currentToys[_i].name]++>>
+				<<set _numberOnHand[$player.inventory.childrenToys[_i].name]++>>
 			<</if>>
 		<</if>>
 	<</for>>
@@ -104,7 +113,7 @@ You take a look at the collection of <<print $selectedToy.set>>. They cost <span
 	<br><br>
 <</if>>
 
-<<if $currentToys.length gte 5>>
+<<if $player.inventory.childrenToys.length gte 5>>
 	You can't have more than 5 toys with you at a time.
 <<elseif $selectedToy.cost lte $money>>
 	<<link [[Buy|Toy Shop]]>><<buyToy>><</link>>
@@ -199,6 +208,6 @@ You take a look at the collection of <<print $selectedToy.set>>. They cost <span
 	<<run delete $selectedToy.selectedOption>>
 	<<run delete $selectedToy.options>>
 <</if>>
-<<set $currentToys.push(clone($selectedToy))>>
+<<run $player.inventory.childrenToys.push(clone($selectedToy))>>
 <<unset $selectedToy>>
 <</widget>>
