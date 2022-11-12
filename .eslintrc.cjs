@@ -157,18 +157,20 @@ module.exports = {
 	],
 
 	parserOptions: {
-		// Support back to ES2018 to cover old mobile devices with outdated WebView versions that fail on 2019 and up functions
-		// ecmaVersion: "2018", (taken care of by env es2018)
+		// Support back to ES2019 to cover old mobile devices with outdated WebView versions that fail on 2020 and up functions
+		// ecmaVersion: "2019", (taken care of by env es2019)
 		sourceType: "module",
 	},
 
 	env: {
 		browser: true,
-		es2018: true,
+		es2019: true,
 		jquery: true,
 	},
 
-	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file"],
+	plugins: ["es"],
+
+	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file", "plugin:es/restrict-to-es2019"],
 
 	settings: {
 		jsdoc: {
@@ -187,11 +189,7 @@ module.exports = {
 
 		// Descriptions should be sentence-like not comment-like
 		"jsdoc/require-description-complete-sentence": "warn",
-		"jsdoc/require-hyphen-before-param-description": [
-			"error",
-			"never",
-			{ tags: { property: "never" } },
-		],
+		"jsdoc/require-hyphen-before-param-description": ["error", "never", { tags: { property: "never" } }],
 		// Adding JSDoc is preferable but not required
 		"jsdoc/require-jsdoc": "off",
 		"jsdoc/require-param-description": "off",
@@ -202,5 +200,8 @@ module.exports = {
 		/* eslint-plugin-prettier */
 
 		"prettier/prettier": "warn",
+
+		// Rule to fix Safari/Webkit not supporting a 4+ year old function you idiots
+		"es/no-regexp-lookbehind-assertions": "error",
 	},
 };
