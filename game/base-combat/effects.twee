@@ -1818,6 +1818,26 @@
 	<</if>>
 <</if>>
 
+<<if $leftaction is "penisremovecondom" or $rightaction is "penisremovecondom">>
+	<<set _handsCount to 0>>
+	<<if $leftaction is "penisremovecondom">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+		<<set _handsCount++>>
+	<</if>>
+	<<if $rightaction is "penisremovecondom">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+		<<set _handsCount++>>
+	<</if>>
+	<<if false>>
+		/*Npc tries to prevent you from removing the condom*/
+	<<else>>
+		<<if $player.condom>>
+			You are not stopped from removing the condom from your penis.
+			<<removeCondom>>
+		<</if>>
+	<</if>>
+<</if>>
+
 <<if $leftaction is "leftmasturbatepussy">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftmasturbatepussy">><<combatpromiscuity3>>
 	<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
@@ -4163,76 +4183,131 @@
 				They pause a moment before responding,
 				<<set _response to [
 					"Sure thing, slut.",
-					"Yeah, you probably have something contagious.",
-					"Last thing I want is an unclaimed brat with my name on it.",
+					"You like it bareback, eh?",
+					"You're a proper cumdump.",
 					"Fine, but I expect you to cooperate.",
-					"Good idea, I don't want any evidence traced back to me."
+					"You better be clean."
 				]>>
 				<span class="green">"<<print _response.pluck()>>"</span>
 				<<set $condomUse to false>>
+				<<set _npcReject to false>>
 			<<else>>
 				<<if $npc and $NPCList[0].pregnancyAvoidance gt random(0, 99)>>
 					<<set _npcReject to true>>
 				<</if>>
-				<<if _npcReject>>
-					<<set $condomUse to true>>
-					<<switch $npc>>
-						<<default>><span class="lewd"><<He>> says, "I'm not ready for children, it's better to be safe than sorry."</span>
-					<</switch>>
-					/*Your penis*/
+			<</if>>
+
+			<<if _npcReject>>
+				<<set $condomUse to true>>
+				<<switch $npc>>
+					<<default>><span class="lewd"><<He>> says, "I'm not ready for children, it's better to be safe than sorry."</span>
+				<</switch>>
+				/*Your penis*/
+				<<if $penisstate is "entrance" or $penisstate is "imminent" or $penisstate is "otheranusentrance" or $penisstate is "otheranusimminent">>
+					<<if ($NPCList[$penistarget].vagina is "penis" or $NPCList[$penistarget].penis is "otheranus") and !$player.condom and $parasite.penis.name is undefined>>
+						<<personselect $penistarget>>
+						<span class="green">The <<person>> slips a condom onto your penis.</span>
+						<<equipCondom>>
+					<</if>>
+				<</if>>
+				<<if $penisstate is "penetrated">>
+					<<if $NPCList[$penistarget].vagina is "penis" and !$player.condom and $parasite.penis.name is undefined>>
+						<<personselect $penistarget>>
+						<span class="green">The <<person>> briefly frees your penis from <<his>> vagina, slips a condom on, and slides it back in.</span>
+						<<equipCondom>>
+					<</if>>
+				<</if>>
+				<<if $penisstate is "otheranus">>
+					<<if $NPCList[$penistarget].penis is "otheranus" and !$player.condom and $parasite.penis.name is undefined>>
+						<<personselect $penistarget>>
+						<span class="green">The <<person>> briefly frees your penis from <<his>> anus, slips a condom on, and slides it back in.</span>
+						<<equipCondom>>
+					<</if>>
+				<</if>>
+				/*Their penis*/
+				<<if $vaginastate is "entrance" or $vaginastate is "imminent" or $vaginastate is "doubleentrance" or $vaginastate is "doubleimminent">>
+					<<if ($NPCList[$vaginatarget].penis is "vaginaentrance" or $NPCList[$vaginatarget].penis is "vaginaimminent") and $NPCList[$vaginatarget].condom is false>>
+						<<personselect $vaginatarget>>
+						<span class="green">The <<person>> slips a condom onto <<his>> penis.</span>
+						<<equipCondom $vaginatarget>>
+					<</if>>
+				<</if>>
+				<<if $vaginastate is "penetrated" or $vaginastate is "doublepenetrated">>
+					<<if $NPCList[$vaginatarget].penis is "vagina" and $NPCList[$vaginatarget].condom is false>>
+						<<personselect $vaginatarget>>
+						<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, slips a condom on, and slides it back in.</span>
+						<<equipCondom $vaginatarget>>
+					<</if>>
+				<</if>>
+				<<if $anusstate is "entrance" or $anusstate is "imminent" or $anusstate is "doubleentrance" or $anusstate is "doubleimminent">>
+					<<if ($NPCList[$anustarget].penis is "anusentrance" or $NPCList[$anustarget].penis is "anusimminent") and $NPCList[$anustarget].condom is false>>
+						<<personselect $anustarget>>
+						<span class="green">The <<person>> slips a condom onto <<his>> penis.</span>
+						<<equipCondom $anustarget>>
+					<</if>>
+				<</if>>
+				<<if $anusstate is "penetrated" or $anusstate is "doublepenetrated">>
+					<<if $NPCList[$anustarget].penis is "anus" and $NPCList[$anustarget].condom is false>>
+						<<personselect $anustarget>>
+						<span class="green">The <<person>> briefly withdraws <<his>> penis from your anus, slips a condom on, and slides it back in.</span>
+						<<equipCondom $anustarget>>
+					<</if>>
+				<</if>>
+			<<else>>
+				<span class="green">They nod in acknowledgement.</span>
+				<<set $condomUse to false>>
+				/*Your penis*/
+				<<if $player.condom>>
 					<<if $penisstate is "entrance" or $penisstate is "imminent" or $penisstate is "otheranusentrance" or $penisstate is "otheranusimminent">>
-						<<if ($NPCList[$penistarget].vagina is "penis" or $NPCList[$penistarget].penis is "otheranus") and !$player.condom and $parasite.penis.name is undefined>>
+						<<if ($NPCList[$penistarget].vagina is "penis" or $NPCList[$penistarget].penis is "otheranus")>>
 							<<personselect $penistarget>>
-							<span class="green">The <<person>> slips a condom onto your penis.</span>
-							<<equipCondom>>
+							<span class="green">The <<person>> rolls the condom off your penis.</span>
+							<<removeCondom>>
 						<</if>>
 					<</if>>
 					<<if $penisstate is "penetrated">>
-						<<if $NPCList[$penistarget].vagina is "penis" and !$player.condom and $parasite.penis.name is undefined>>
+						<<if $NPCList[$penistarget].vagina is "penis">>
 							<<personselect $penistarget>>
-							<span class="green">The <<person>> briefly frees your penis from <<his>> vagina, slips a condom on, and slides it back in.</span>
-							<<equipCondom>>
+							<span class="green">The <<person>> briefly frees your penis from <<his>> vagina, rolls off the condom, and slides it back in.</span>
+							<<removeCondom>>
 						<</if>>
 					<</if>>
 					<<if $penisstate is "otheranus">>
-						<<if $NPCList[$penistarget].penis is "otheranus" and !$player.condom and $parasite.penis.name is undefined>>
+						<<if $NPCList[$penistarget].penis is "otheranus">>
 							<<personselect $penistarget>>
-							<span class="green">The <<person>> briefly frees your penis from <<his>> anus, slips a condom on, and slides it back in.</span>
-							<<equipCondom>>
+							<span class="green">The <<person>> briefly frees your penis from <<his>> anus, rolls off the condom, and slides it back in.</span>
+							<<removeCondom>>
 						<</if>>
 					<</if>>
-					/*Their penis*/
-					<<if $vaginastate is "entrance" or $vaginastate is "imminent">>
-						<<if ($NPCList[$vaginatarget].penis is "vaginaentrance" or $NPCList[$vaginatarget].penis is "vaginaimminent") and $NPCList[$vaginatarget].condom is false>>
-							<<personselect $vaginatarget>>
-							<span class="green">The <<person>> slips a condom onto <<his>> penis.</span>
-							<<equipCondom $vaginatarget>>
-						<</if>>
+				<</if>>
+				/*Their penis*/
+				<<if $vaginastate is "entrance" or $vaginastate is "imminent" or $vaginastate is "doubleentrance" or $vaginastate is "doubleimminent">>
+					<<if ($NPCList[$vaginatarget].penis is "vaginaentrance" or $NPCList[$vaginatarget].penis is "vaginaimminent" or $NPCList[$vaginatarget].penis is "vaginaentrancedouble" or $NPCList[$vaginatarget].penis is "vaginadoubleimminent") and $NPCList[$vaginatarget].condom>>
+						<<personselect $vaginatarget>>
+						<span class="green">The <<person>> rolls the condom off <<his>> penis.</span>
+						<<removeCondom $vaginatarget>>
 					<</if>>
-					<<if $vaginastate is "penetrated">>
-						<<if $NPCList[$vaginatarget].penis is "vagina" and $NPCList[$vaginatarget].condom is false>>
-							<<personselect $vaginatarget>>
-							<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, slips a condom on, and slides it back in.</span>
-							<<equipCondom $vaginatarget>>
-						<</if>>
+				<</if>>
+				<<if $vaginastate is "penetrated" or $vaginastate is "doublepenetrated">>
+					<<if $NPCList[$vaginatarget].penis is "vagina" and $NPCList[$vaginatarget].condom>>
+						<<personselect $vaginatarget>>
+						<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, rolls off the condom, and slides it back in.</span>
+						<<removeCondom $vaginatarget>>
 					<</if>>
-					<<if $anusstate is "entrance" or $anusstate is "imminent">>
-						<<if ($NPCList[$anustarget].penis is "anusentrance" or $NPCList[$anustarget].penis is "anusimminent") and $NPCList[$anustarget].condom is false>>
-							<<personselect $anustarget>>
-							<span class="green">The <<person>> slips a condom onto <<his>> penis.</span>
-							<<equipCondom $anustarget>>
-						<</if>>
+				<</if>>
+				<<if $anusstate is "entrance" or $anusstate is "imminent" or $anusstate is "doubleentrance" or $anusstate is "doubleimminent">>
+					<<if ($NPCList[$anustarget].penis is "anusentrance" or $NPCList[$anustarget].penis is "anusimminent" or $NPCList[$anustarget].penis is "anusdoubleentrance" or $NPCList[$anustarget] is "anusdoubleimminent") and $NPCList[$anustarget].condom>>
+						<<personselect $anustarget>>
+						<span class="green">The <<person>> rolls the condom off <<his>> penis.</span>
+						<<removeCondom $anustarget>>
 					<</if>>
-					<<if $anusstate is "penetrated">>
-						<<if $NPCList[$anustarget].penis is "anus" and $NPCList[$anustarget].condom is false>>
-							<<personselect $anustarget>>
-							<span class="green">The <<person>> briefly withdraws <<his>> penis from your anus, slips a condom on, and slides it back in.</span>
-							<<equipCondom $anustarget>>
-						<</if>>
+				<</if>>
+				<<if $anusstate is "penetrated" or $anusstate is "doublepenetrated">>
+					<<if $NPCList[$anustarget].penis is "anus" and $NPCList[$anustarget].condom>>
+						<<personselect $anustarget>>
+						<span class="green">The <<person>> briefly withdraws <<his>> penis from your anus, rolls off the condom, and slides it back in.</span>
+						<<removeCondom $anustarget>>
 					<</if>>
-				<<else>>
-					<span class="green">They nod in acknowledgement.</span>
-					<<set $condomUse to false>>
 				<</if>>
 			<</if>>
 		<<else>>
