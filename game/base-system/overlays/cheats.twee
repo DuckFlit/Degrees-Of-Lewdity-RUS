@@ -132,8 +132,8 @@ Infinite spray: <span id="statsinfinitespray"><<print ($infinitespray ? "on" : "
 	/*passage change is intentional to allow the players to quickly see the visual differences*/
 	Current Gender: <<gender>>
 	<br>
-	Change to:
-	<<if $player.gender isnot "m" and $sexStats.vagina.menstruation.currentState isnot "pregnant">>
+	<<if $sexStats.vagina.menstruation.currentState is "pregnant">>
+		Change to:
 		<<link [[Become boy|$passage]]>>
 			<<set $vaginause to "none">>
 			<<set $vaginastate to "none">>
@@ -146,35 +146,35 @@ Infinite spray: <span id="statsinfinitespray"><<print ($infinitespray ? "on" : "
 			<<set $player.vaginaExist to false>>
 			<<set $sexStats.vagina.menstruation.running = false>>
 		<</link>> |
-	<<elseif $player.gender isnot "m" and $sexStats.vagina.menstruation.currentState is "pregnant">>
-		Gender can only be changed to male when you're not pregnant to prevent potential issues. |
-	<</if>>
-	<<if $player.gender isnot "f">>
-		<<link [[Become girl|$passage]]>>
-			<<set $vaginause to 0>>
-			<<set $vaginastate to 0>>
-			<<set $penisuse to "none">>
-			<<set $penisstate to "none">>
-			<<set $player.gender to "f">>
-			<<set $player.sex to "f">>
-			<<set $player.ballsExist to false>>
-			<<set $player.penisExist to false>>
-			<<set $player.vaginaExist to true>>
-			<<set $sexStats.vagina.menstruation.running = true>>
-		<</link>> |
-	<</if>>
-	<<if $player.gender isnot "h">>
-		<<link [[Become hermaphrodite|$passage]]>>
-			<<set $vaginause to 0>>
-			<<set $vaginastate to 0>>
-			<<set $penisuse to 0>>
-			<<set $penisstate to 0>>
-			<<set $player.gender to "h">>
-			<<set $player.sex to "h">>
-			<<set $player.penisExist to true>>
-			<<set $player.vaginaExist to true>>
-			<<set $sexStats.vagina.menstruation.running = true>>
-		<</link>> |
+		<<if $player.gender isnot "f">>
+			<<link [[Become girl|$passage]]>>
+				<<set $vaginause to 0>>
+				<<set $vaginastate to 0>>
+				<<set $penisuse to "none">>
+				<<set $penisstate to "none">>
+				<<set $player.gender to "f">>
+				<<set $player.sex to "f">>
+				<<set $player.ballsExist to false>>
+				<<set $player.penisExist to false>>
+				<<set $player.vaginaExist to true>>
+				<<set $sexStats.vagina.menstruation.running = true>>
+			<</link>> |
+		<</if>>
+		<<if $player.gender isnot "h">>
+			<<link [[Become hermaphrodite|$passage]]>>
+				<<set $vaginause to 0>>
+				<<set $vaginastate to 0>>
+				<<set $penisuse to 0>>
+				<<set $penisstate to 0>>
+				<<set $player.gender to "h">>
+				<<set $player.sex to "h">>
+				<<set $player.penisExist to true>>
+				<<set $player.vaginaExist to true>>
+				<<set $sexStats.vagina.menstruation.running = true>>
+			<</link>> |
+		<</if>>
+	<<else>>
+		Gender can only be changed when you're not pregnant to prevent potential issues.
 	<</if>>
 	<<if $player.gender is "h">>
 		<br><br>
@@ -2127,89 +2127,89 @@ Change to:
 	<br><br>
 <</if>>
 
-<<if $analpregdisable is "f">>
-	<<set _pregnancy to $sexStats.anus.pregnancy>>
-	<div id="cheatsImpregOptions"><<cheatsImpregOptions>></div>
+<<if $parasitepregdisable is "f" && ($sexStats.anus.pregnancy.type is "parasite" or $sexStats.anus.pregnancy.type is null)>>
+	<div id="cheatsImpregOptions-anus"><<cheatsImpregOptions "anus">></div>
+<<elseif !($sexStats.anus.pregnancy.type is "parasite" or $sexStats.anus.pregnancy.type is null)>>
+	Your current pregnant with "<<print $sexStats.anus.pregnancy.type>>" children and cant access these settings.
+<<else>>
+	You need to enable anal pregnancy in the settings to access these settings.
+<</if>>
+
+<<if $parasitepregdisable is "f" && ($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
+	<div id="cheatsImpregOptions-vagina"><<cheatsImpregOptions "vagina">></div>
+<<elseif !($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
+	Your current pregnant with "<<print $sexStats.vagina.pregnancy.type>>" children and cant access these settings.
 <<else>>
 	You need to enable anal pregnancy in the settings to access these settings.
 <</if>>
 <</widget>>
 
 <<widget "cheatsImpregOptions">>
-<span class="gold">Anal Pregnancy</span>
-<br>
-<<if _pregnancy.count lt _pregnancy.maxCount>>
-	Get Pregnant with a |
-	<<link "eel">><<impregnate "eels" 1000>><<cheatsImpreg>><</link>> |
-	<<link "slime">><<impregnate "slimes" 1000>><<cheatsImpreg>><</link>> |
-	<<link "Fish">><<impregnate "fish" 1000>><<cheatsImpreg>><</link>> |
-	<<link "Snake">><<impregnate "snake" 1000>><<cheatsImpreg>><</link>> |
-	<<link "worm">><<impregnate "worms" 1000>><<cheatsImpreg>><</link>> |
-	<<link "tentacle">><<impregnate "tentacle" 1000>><<cheatsImpreg>><</link>> |
-	<<link "lurker">><<impregnate "lurker" 1000>><<cheatsImpreg>><</link>> |
-	<<link "wasp">><<impregnate "wasp" 1000>><<cheatsImpreg>><</link>> |
-	<<link "squid">><<impregnate "squid" 1000>><<cheatsImpreg>><</link>> |
-	<<link "vine">><<impregnate "vine" 1000>><<cheatsImpreg>><</link>> |
+<<capture _args>>
+	<<set $_pregnancy to $sexStats[_args[0]].pregnancy>>
+	<span class="gold"><<print (_args[0] is "anus" ? "Anal" : "Vaginal")>> Parasite Pregnancy</span>
 	<br>
-	<<if _pregnancy.motherStatus lt 2>>
-		Get Pregnant with a Hermaphrodite |
-		<<link "eel">><<cheatsImpregPre>><<impregnate "eels" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "slime">><<cheatsImpregPre>><<impregnate "slimes" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "Fish">><<cheatsImpregPre>><<impregnate "fish" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "Snake">><<cheatsImpregPre>><<impregnate "snake" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "worm">><<cheatsImpregPre>><<impregnate "worms" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "tentacle">><<cheatsImpregPre>><<impregnate "tentacle" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "lurker">><<cheatsImpregPre>><<impregnate "lurker" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "wasp">><<cheatsImpregPre>><<impregnate "wasp" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "squid">><<cheatsImpregPre>><<impregnate "squid" 1000>><<cheatsImpreg true>><</link>> |
-		<<link "vine">><<cheatsImpregPre>><<impregnate "vine" 1000>><<cheatsImpreg true>><</link>> |
+	<<if $_pregnancy.fetus.length lt maxParasites(_args[0])>>
+		Get Pregnant with a |
+		<<link "eel">><<impregnateParasite "eels" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "slime">><<impregnateParasite "slimes" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "Fish">><<impregnateParasite "fish" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "Snake">><<impregnateParasite "snake" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "worm">><<impregnateParasite "worms" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "tentacle">><<impregnateParasite "tentacle" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "lurker">><<impregnateParasite "lurker" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "wasp">><<impregnateParasite "wasp" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "squid">><<impregnateParasite "squid" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<<link "vine">><<impregnateParasite "vine" 1000 undefined _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+		<br>
+		<<if $_pregnancy.motherStatus lt 2>>
+			Get Pregnant with a Hermaphrodite |
+			<<link "eel">><<impregnateParasite "eels" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "slime">><<impregnateParasite "slimes" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "Fish">><<impregnateParasite "fish" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "Snake">><<impregnateParasite "snake" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "worm">><<impregnateParasite "worms" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "tentacle">><<impregnateParasite "tentacle" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "lurker">><<impregnateParasite "lurker" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "wasp">><<impregnateParasite "wasp" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "squid">><<impregnateParasite "squid" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "vine">><<impregnateParasite "vine" 1000 undefined _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+		<<else>>
+			Can only have one Hermaphrodite at a time.
+		<</if>>
 	<<else>>
-		Can only have one Hermaphrodite at a time.
+		You have hit the maximum number of <<print (_args[0] is "anus" ? "Anal" : "Vaginal")>> pregnancies at one time.
 	<</if>>
-<<else>>
-	You have hit the maximum number of anal pregnancies at one time.
-<</if>>
-<br><br>
-<<link "Clear Current Pregnancies">>
-	<<set _pregnancy[0] to null>>
-	<<set _pregnancy[1] to null>>
-	<<set _pregnancy[2] to null>>
-	<<set _pregnancy[3] to null>>
-	<<set _pregnancy.lowestDaysLeft to null>>
-	<<set _pregnancy.count to 0>>
-	<<if _pregnancy.motherStatus is 2>>
-		<<set _pregnancy.motherStatus to 1>>
-		<<set _pregnancy.maxCount to 2>>
-	<</if>>
-	<<replace #cheatsImpregOptions>><<cheatsImpregOptions>><</replace>>
-<</link>>
+	<br><br>
+	<<set $_linkName to "Clear Current " + (_args[0] is "anus" ? "Anal" : "Vaginal") + " Pregnancies">>
+	<<link $_linkName>>
+		<<if $sexStats[_args[0]].pregnancy.type is "parasite">>
+			<<set $sexStats[_args[0]].pregnancy.fetus to []>>
+			<<set $sexStats[_args[0]].pregnancy.type to null>>
+			<<if $sexStats[_args[0]].pregnancy.motherStatus is 2>>
+				<<set $sexStats[_args[0]].pregnancy.motherStatus to 1>>
+			<</if>>
+		<</if>>
+		<<replace `"#cheatsImpregOptions-" + _args[0]`>><<cheatsImpregOptions _args[0]>><</replace>>
+	<</link>>
+	<br><br>
+<</capture>>
 <</widget>>
 
 <<widget "cheatsImpreg">>
-<<if _pregnancy.seenDoctor lt 2>>
-	<<set _pregnancy.seenDoctor to 2>>
+<<set $_pregnancy to $sexStats[_args[0]].pregnancy>>
+<<if $pregnancyStats.parasiteDoctorEvents lt 2>>
+	<<set $pregnancyStats.parasiteDoctorEvents to 2>>
 <</if>>
-<<if _args[0]>>
-	<<set _pregnancy.motherStatus to 2>>
-	<<set _pregnancy.maxCount to 4>>
-	<<set _pregnancy[_pregPre].stats.gender to "Futa">>
-	<<set _pregnancy[_pregPre].stats.lastEgg to Math.floor(_pregnancy[0].stats.growth / 3)>>
+<<if _args[1]>>
+	<<set $_pregnancy.motherStatus to 2>>
+	<<set $_pregnancy.fetus.last().stats.gender to "Hermaphrodite">>
+	<<set $_pregnancy.fetus.last().stats.lastEgg to Math.floor($_pregnancy.fetus.last().stats.growth / 3)>>
 <<else>>
-	<<if _pregnancy.motherStatus is 0>>
-		<<set _pregnancy.motherStatus to 1>>
-		<<set _pregnancy.maxCount to 2>>
+	<<if $_pregnancy.motherStatus is 0>>
+		<<set $_pregnancy.motherStatus to 1>>
 	<</if>>
 <</if>>
-<<fertilise>>
-<<replace #cheatsImpregOptions>><<cheatsImpregOptions>><</replace>>
-<</widget>>
-
-<<widget "cheatsImpregPre">>
-<<unset _pregPre>>
-<<for $_i to 0; $_i lt _pregnancy.maxCount; $_i++>>
-	<<if _pregnancy[$_i] is null>>
-		<<set _pregPre to clone($_i)>>
-		<<break>>
-	<</if>>
-<</for>>
+<<fertiliseParasites _args[0]>>
+<<replace `"#cheatsImpregOptions-" + _args[0]`>><<cheatsImpregOptions _args[0]>><</replace>>
 <</widget>>
