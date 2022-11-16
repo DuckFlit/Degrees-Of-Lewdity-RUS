@@ -319,23 +319,23 @@
 <<if $pregnancyTesting>>
 	<<foldout false "_pregnancyFoldout">>
 		<span class="gold">Pregnancy</span>
-		<<if $player.vaginaExist>>
-			Times given birth: <<print $sexStats.vagina.pregnancy.totalBirthEvents>>
-			<br>
-			Total number of children: <<print $pregnancyStats.playerChildren>>
-			<br>
-			Total number of human children: <<print $pregnancyStats.humanChildren>>
-			<br>
-			Total number of wolf children: <<print $pregnancyStats.wolfChildren>>
-			<br>
-			After Morning pills taken: <<print $pregnancyStats.aftermorningpills>>
-			<br>
-		<</if>>
-		<<if $player.vaginaExist or $pregnancyStats.pregnancyTestsTaken gt 0>>
-			Pregnancy tests taken: <<print $pregnancyStats.pregnancyTestsTaken>>
-		<</if>>
+		Times given birth: <<print $sexStats.vagina.pregnancy.totalBirthEvents + $sexStats.anus.pregnancy.totalBirthEvents>>
 		<br>
-		Anal Pregnancy Births: <<print $sexStats.anus.pregnancy.givenBirth>>
+		Total number of children: <<print $pregnancyStats.playerChildren>>
+		<br>
+		Total number of human children: <<print $pregnancyStats.humanChildren>>
+		<br>
+		Total number of wolf children: <<print $pregnancyStats.wolfChildren>>
+		<br>
+		After Morning pills taken: <<print $pregnancyStats.aftermorningpills>>
+		<br>
+		Pregnancy tests taken: <<print $pregnancyStats.pregnancyTestsTaken>>
+		<br>
+		<<if $player.vaginaExist>>
+			Vaginal Parasite Born: <<print $sexStats.vagina.pregnancy.parasiteBirthEvents>>
+			<br>
+		<</if>>
+		Anal Parasite Born: <<print $sexStats.anus.pregnancy.parasiteBirthEvents>>
 		<br><br>
 	<</foldout>>
 <</if>>
@@ -385,8 +385,12 @@
 	Passed out: $passoutstat
 	<br>
 	/*ToDo: Pregnancy, remove the duplicate stat*/
-	<<if $analpregdisable is "f">>
-		Anal Pregnancy Births: <<print $sexStats.anus.pregnancy.givenBirth>>
+	<<if $parasitepregdisable is "f">>
+		<<if $player.vaginaExist>>
+		Vaginal Pregnancy Births: <<print $sexStats.vagina.pregnancy.parasiteBirthEvents>>
+		<br>
+		<</if>>
+		Anal Pregnancy Births: <<print $sexStats.anus.pregnancy.parasiteBirthEvents>>
 		<br>
 	<</if>>
 	Crime History: $crimehistory
@@ -434,7 +438,7 @@
 		<mouse class="tooltip linkBlue">(?)<span>Total number of times a save has been loaded, does not track repeated load times of the same save. Not tracked in versions '0.3.12.X' and older</span></mouse>
 		<br>
 		Play Time: <<print msToTime(($saveDetails.playTime ? $saveDetails.playTime : 0) + (new Date() - ($saveDetails.loadTime ? $saveDetails.loadTime : 0)))>>
-		<mouse class="tooltip linkBlue">(?)<span>Formatted into 'h:mm:ss'. Be aware that leaving the game for hours alone, then saving will have it's time tracked, to avoid, save the game before ending play and then load the save when you resume play. Not tracked in versions '0.3.12.X' and older</span></mouse>
+		<mouse class="tooltip linkBlue">(?)<span>Formatted into 'h:mm:ss'. Be aware that leaving the game for hours alone, then saving will have it's time tracked, to avoid, save the game before ending play and then load the save when you resume play. Not tracked in versions '0.3.13.X' and older</span></mouse>
 		<br>
 	<</if>>
 	<<if $saveVersions isnot undefined>>
@@ -637,7 +641,7 @@
 		<br><br>
 	<</foldout>>
 
-	<<foldout false "_violenceFoldout">>
+	<<foldout false "_transformationFoldout">>
 		<span class="gold">Transformations</span>
 		Wolfiness: <<print Math.trunc($wolfbuild)>> (30+ for full transformation)
 		<br>
@@ -668,20 +672,140 @@
 		<br><br>
 	<</foldout>>
 
-	<<foldout false "_violenceFoldout">>
-		<span class="gold">Anal Pregnancy</span>
-		<<set _pregnancy to $sexStats.anus.pregnancy>>
-		<<for _i to 0; _i lt _pregnancy.maxCount; _i++>>
-		<<if _pregnancy[_i] isnot null>>
-		<<if _pregnancy[_i].fertilised>>
-		Anal slot <<=_i+1>> is pregnant with a _pregnancy[_i].stats.gender _pregnancy[_i].creature, and will be ready to deliver in less than <<=_pregnancy[_i].daysLeft + 1>> days.<br>
+	<<foldout false "_parasitePregnancyFoldout">>
+		<span class="gold">Parasite Pregnancy</span>
+		<<set _aPregnancy to $sexStats.anus.pregnancy>>
+		<<if _aPregnancy.type is "parasite" or _aPregnancy.type is null>>
+			<<for _i to 0; _i lt maxParasites("anus"); _i++>>
+				<<if _aPregnancy.fetus[_i] isnot undefined>>
+					<<if _aPregnancy.fetus[_i].fertilised>>
+						Anal slot <<=_i+1>> is pregnant with a _aPregnancy.fetus[_i].stats.gender _aPregnancy.fetus[_i].creature,
+						<<if _aPregnancy.fetus[_i].stats.gender is "Hermaphrodite">>
+							<<if $pregnancyStats.parasiteDoctorEvents gte 4 and _aPregnancy.fetus[_i].daysLeft is 0>>
+								Dr Harper will be able to help you to deliver at any time.
+							<<elseif $pregnancyStats.parasiteDoctorEvents gte 4>>
+								Dr Harper will be able to help you to deliver in <<=_aPregnancy.fetus[_i].daysLeft>> days.
+							<<else>>
+								You will need to see Dr Harper to deliver.
+							<</if>>
+						<<else>>
+							<<if _aPregnancy.fetus[_i].daysLeft is 0>>
+								and will be ready to deliver at any time soon.
+							<<else>>
+								and will be ready to deliver in less than <<=_aPregnancy.fetus[_i].daysLeft>> days.
+							<</if>>
+						<</if>>
+						<br>
+					<<else>>
+						Anal slot <<=_i+1>> has a _aPregnancy.fetus[_i].stats.gender _aPregnancy.fetus[_i].creature egg ready to be fertilised.<br>
+					<</if>>
+				<<else>>
+					Anal slot <<=_i+1>> is empty.<br>
+				<</if>>
+			<</for>>
 		<<else>>
-		Anal slot <<=_i+1>> has a _pregnancy[_i].stats.gender _pregnancy[_i].creature egg ready to be fertilised.<br>
+			Unable to host parasites due to other type of anal pregnancy.
 		<</if>>
-		<<else>>
-		Anal slot <<=_i+1>> is empty.<br>
+		<<set _vPregnancy to $sexStats.vagina.pregnancy>>
+		<<if $player.vaginaExist>>
+			<<if _vPregnancy.type is "parasite" or _vPregnancy.type is null>>
+				<<for _i to 0; _i lt maxParasites("vagina"); _i++>>
+					<<if _vPregnancy.fetus[_i] isnot undefined>>
+						<<if _vPregnancy.fetus[_i].fertilised>>
+							Vagina slot <<=_i+1>> is pregnant with a _vPregnancy.fetus[_i].stats.gender _vPregnancy.fetus[_i].creature,
+							<<if _vPregnancy.fetus[_i].stats.gender is "Hermaphrodite">>
+								<<if $pregnancyStats.parasiteDoctorEvents gte 4 and _vPregnancy.fetus[_i].daysLeft is 0>>
+									Dr Harper will be able to help you to deliver at any time.
+								<<elseif $pregnancyStats.parasiteDoctorEvents gte 4>>
+									Dr Harper will be able to help you to deliver in <<=_vPregnancy.fetus[_i].daysLeft + 1>> days.
+								<<else>>
+									You will need to see Dr Harper to deliver.
+								<</if>>
+							<<else>>
+								<<if _vPregnancy.fetus[_i].daysLeft is 0>>
+									and will be ready to deliver at any time soon.
+								<<else>>
+									and will be ready to deliver in less than <<=_vPregnancy.fetus[_i].daysLeft>> days.
+								<</if>>
+							<</if>>
+							<br>
+						<<else>>
+							Vagina slot <<=_i+1>> has a _vPregnancy.fetus[_i].stats.gender _vPregnancy.fetus[_i].creature egg ready to be fertilised.<br>
+						<</if>>
+					<<else>>
+						Vagina slot <<=_i+1>> is empty.<br>
+					<</if>>
+				<</for>>
+			<<else>>
+				Unable to host parasites due to other type of vaginal pregnancy.
+			<</if>>
 		<</if>>
-		<</for>>
 	<</foldout>>
+	<!-- ToDo: Pregnancy - remove $pregnancyTesting check-->
+	<<if $pregnancyTesting>>
+		<<set $_menstruation to $sexStats.vagina.menstruation>>
+		<<foldout false "_menstruationFoldout">>
+			<span class="gold">Menstruation cycle</span>
+			Running: <<print $_menstruation.running ? "true" : "false">>
+			<<if $_menstruation.running>>
+				<br>
+				Current Day in cycle: <<print $_menstruation.currentDay>>
+				<br>
+				Last day in cycle: <<print $_menstruation.currentDaysMax>>
+				<br>
+				Most risky days: <<print $_menstruation.stages[2]>>
+			<</if>>
+			<br>
+		<</foldout>>
+		<<foldout false "_pregnancyFoldout">>
+			<span class="gold">Pregnancy</span>
+			<br>
+			<<if canBeMPregnant()>>
+			<<elseif !$player.vaginaExist>>
+				Can not currently get pregnant.
+			<<elseif _vPregnancy.type is "parasite">>
+				Parasites in the womb are preventing normal pregnancy from occuring.
+			<<elseif _vPregnancy.type isnot null>>
+				Currently pregnant with: <<print _vPregnancy.fetus.length>> <<print _vPregnancy.type>>.
+				<br>
+				Pregnancy progress: <<print Math.clamp(_aPregnancy.timer / _aPregnancy.timerEnd * 100, 0, 100)>>%.
+				<br>
+			<<else>>
+				Not currently pregnant.
+				<br>
+				<<set [_trackedNPCs, _spermArray] to spermObjectToArray($sexStats.vagina.sperm)>>
+				Number of sources of sperm that can get you pregnant: <<print _spermArray.length>>.
+				<br><br>
+				Those who's sperm you have inside you currently:
+				<ul>
+					<<for _name range _trackedNPCs>>
+						<li><<print _name[1]>></li>
+					<</for>>
+				</ul>
+			<</if>>
+			<<if canBeMPregnant()>>
+				<<if _vPregnancy.type is "parasite">>
+					Parasites in the womb are preventing normal pregnancy from occuring.
+				<<elseif _aPregnancy.type isnot null>>
+					Currently pregnant with: <<print _aPregnancy.fetus.length>> <<print _aPregnancy.type>>.
+					<br>
+					Pregnancy progress: <<print Math.clamp(_aPregnancy.timer / _aPregnancy.timerEnd * 100, 0, 100)>>%.
+					<br>
+				<<else>>
+					Not currently pregnant.
+					<br>
+					<<set [_trackedNPCs, _spermArray] to spermObjectToArray($sexStats.anus.sperm)>>
+					Number of sources of sperm that can get you pregnant: <<print _spermArray.length>>.
+					<br><br>
+					Those who's sperm you have inside you currently:
+					<ul>
+						<<for _name range _trackedNPCs>>
+							<li><<print _name[1]>></li>
+						<</for>>
+					</ul>
+				<</if>>
+			<</if>>
+		<</foldout>>
+	<</if>>
 </div>
 <</widget>>

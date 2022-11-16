@@ -1,7 +1,7 @@
 :: Pregnancy Introduction
 
 <<set $outside to 0>><<set $location to "town">><<effects>>
-<<set $sexStats.anus.pregnancy.seenDoctor to 2>>
+<<set $pregnancyStats.parasiteDoctorEvents to 2>>
 <<harper_intro>>
 "You're experiencing strange sensations in your abdomen?" <<he>> asks. You nod. <<He>> wheels <<his>> chair closer, and places <<his>> stethoscope to your tummy.
 <br><br>
@@ -12,14 +12,13 @@
 <<He>> turns back to <<his>> computer. "Species like this are of scientific interest," <<he>> continues. "If you're interested in making a bit of money, I'm able to pay you for them on behalf of a local company." <<He>> rises to <<his>> feet. "Is there anything else?"
 <br><br>
 You shake your head. <<He>> holds open the door for you, and you leave the office. "Be well," <<he>> says as you pass.
-<br><br><br><br>
+<br><br>
 <<link [[Return to foyer|Hospital Foyer]]>><<endevent>><</link>>
 
 :: Pregnancy Discussion
 
 <<set $outside to 0>><<set $location to "town">><<effects>>
 <<if $firstOption is undefined>><<set $firstOption to true>><</if>>
-<<set _pregnancy to $sexStats.anus.pregnancy>>
 
 <<if $firstOption is true>>
 	<<npc Harper>><<person1>>You don't have to wait long. Doctor Harper emerges from <<his>> office and beckons you over. You enter <<his>> office and take a seat.
@@ -32,8 +31,8 @@ You shake your head. <<He>> holds open the door for you, and you leave the offic
 	<br><br>
 <</if>>
 
-<<if $sexStats.anus.pregnancy.seenDoctor gte 2 and $container.portable.value gt 0>>
-	<<if _pregnancy.namesChildren is true>>
+<<if $pregnancyStats.parasiteDoctorEvents gte 2 and $container.portable.value gt 0>>
+	<<if $pregnancyStats.namesParasitesChild is true>>
 		<<link [[Sell the children you're carrying (0:05)|Sell Children]]>><<pass 5>><<set $firstOption to false>><</link>>
 		<br>
 	<<else>>
@@ -41,15 +40,15 @@ You shake your head. <<He>> holds open the door for you, and you leave the offic
 		<br>
 	<</if>>
 <</if>>
-<<if $sexStats.anus.pregnancy.seenDoctor is 3>>
+<<if $pregnancyStats.parasiteDoctorEvents is 3>>
 	<<link [[Inquire about feeling something large in your stomach (0:10)|Pregnancy Futa Introduction]]>><<pass 10>><<set $firstOption to false>><</link>>
 	<br>
 <</if>>
-<<if $sexStats.anus.pregnancy.seenDoctor gte 4 and $sexStats.anus.pregnancy.motherStatus is 2>>
+<<if $pregnancyStats.parasiteDoctorEvents gte 4 and ($sexStats.anus.pregnancy.motherStatus is 2 or ($sexStats.anus.pregnancy.motherStatus is 2 and !$warn.genitals.type.includes("hidden")))>>
 	<<link [[Inquire about anal futa removal (0:30)|Remove Futa Pregnancy]]>><<pass 30>><<set $futaCheck to true>><<set $firstOption to false>><</link>>
 	<br>
 <</if>>
-<<if $sexStats.anus.pregnancy.typesSeen.length gte 4 and $sexStats.anus.pregnancy.book is 1>>
+<<if $pregnancyStats.parasiteTypesSeen.length gte 4 and $pregnancyStats.parasiteBook is 1>>
 	<<link [[Inquire about information on parasites (0:05)|Harper Parasite Book]]>><<pass 5>><<set $firstOption to false>><</link>>
 	<br>
 <</if>>
@@ -90,7 +89,7 @@ You pull out the small container <<he>> gave you. <<He>> looks inside. Seeming s
 :: Pregnancy Futa Introduction
 
 <<set $outside to 0>><<set $location to "town">><<effects>>
-<<set $sexStats.anus.pregnancy.seenDoctor to 4>>
+<<set $pregnancyStats.parasiteDoctorEvents to 4>>
 "Strange," <<he>> says. "N-not that there's anything to be alarmed about." <<He>> pulls <<his>> chair back to <<his>> computer and types something in.
 <br><br>
 You wait as <<he>> reads the screen, occasionally tapping on the keyboard. <<He>> pulls a large book from a drawer, blows off dust, and flips through the pages. At last, <<he>> puts the book away and turns to face you.
@@ -108,37 +107,49 @@ You wait as <<he>> reads the screen, occasionally tapping on the keyboard. <<He>
 
 <<set $outside to 0>><<set $location to "town">><<effects>>
 
-<<set _pregnancy to $sexStats.anus.pregnancy>><<set _extra to false>>
-<<for _i to 0; _i lt _pregnancy.maxCount; _i++>>
-	<<if _pregnancy[_i] isnot null>>
-		<<if _pregnancy[_i].stats.gender is "Futa">>
-			<<moveCreature _i "destroy">>
-			<<set _pregnancy.motherStatus to 1>>
-			<<set _pregnancy.maxCount to 2>>
-			<<break>>
+<<set _aPregnancy to $sexStats.anus.pregnancy>>
+<<if _aPregnancy.type is "parasite">>
+	<<for _i to 0; _i lt _aPregnancy.fetus.length; _i++>>
+		<<if _aPregnancy.fetus[_i] isnot undefined>>
+			<<if _aPregnancy.fetus[_i].stats.gender is "Hermaphrodite">>
+				<<set _analFuta to true>>
+				<<moveCreature _i "destroy" undefined "anus">>
+				<<set _aPregnancy.motherStatus to 1>>
+				<<break>>
+			<</if>>
 		<</if>>
-	<</if>>
-<</for>>
+	<</for>>
+	<<clearToDeleteParasiteFetus>>
+	<<for _i to 0; _i lt _aPregnancy.fetus.length; _i++>>
+		<<if _aPregnancy.fetus[_i] isnot undefined and _i >= maxParasites("anus")>>
+				<<set _analFutaOther to true>>
+				<<moveCreature _i "destroy" undefined "anus">>
+		<</if>>
+	<</for>>
+	<<clearToDeleteParasiteFetus>>
+<</if>>
 
-<<set _slotsFree to [false, false]>>
-<<for _i to 0; _i lt 4; _i++>>
-	<<if _i lt 2 and _pregnancy[_i] is null>>
-		<<set _slotsFree[_i] to true>>
-	<<elseif _i gte 2 and _pregnancy[_i] isnot null>>
-		<<if _slotsFree[0] is true>>
-			<<set _pregnancy[0] to clone(_pregnancy[_i])>>
-			<<set _slotsFree[0] to false>>
-		<<elseif _slotsFree[1] is true>>
-			<<set _pregnancy[1] to clone(_pregnancy[_i])>>
-			<<set _slotsFree[1] to false>>
-		<<else>>
-			<<set _extra to true>>
-			<<set _pregnancy.count -= 1>>
-			<<set _pregnancy.givenBirth += 1>>
+<<set _vPregnancy to $sexStats.vagina.pregnancy>>
+<<if _vPregnancy.type is "parasite" and !$worn.genitals.type.includes("hidden")>>
+	<<for _i to 0; _i lt _vPregnancy.fetus.length; _i++>>
+		<<if _vPregnancy.fetus[_i] isnot undefined>>
+			<<if _vPregnancy.fetus[_i].stats.gender is "Hermaphrodite">>
+				<<set _vaginaFuta to true>>
+				<<moveCreature _i "destroy" undefined "anus">>
+				<<set _vPregnancy.motherStatus to 1>>
+				<<break>>
+			<</if>>
 		<</if>>
-		<<set _pregnancy[_i] to null>>
-	<</if>>
-<</for>>
+	<</for>>
+	<<clearToDeleteParasiteFetus>>
+	<<for _i to 0; _i lt _vPregnancy.fetus.length; _i++>>
+		<<if _vPregnancy.fetus[_i] isnot undefined and _i >= maxParasites("vagina")>>
+				<<set _vaginaFutaOther to true>>
+				<<moveCreature _i "destroy" undefined "anus">>
+		<</if>>
+	<</for>>
+	<<clearToDeleteParasiteFetus>>
+<</if>>
 
 "Please undress and lie on the table," <<he>> says while pulling on a latex glove. "No need to be shy." <<He>> turns and rummages through a drawer.
 <br><br>
@@ -149,16 +160,19 @@ You <<nervously>> remove your clothing while <<his>> back is turned. You lie dow
 "It will be easier if you're still," <<he>> affirms as <<he>> ties down your wrists. You can barely move.
 <br><br>
 
-<<if $worn.genitals.anal_shield is 1>>
+<<if _anusFuta && $worn.genitals.anal_shield is 1>>
 	<<He>> examines your $worn.under_lower.name, then produces a strange metal device from <<his>> coat. <<He>> taps the metal, and your anal shield falls loose. "I'll return it when I'm done," <<he>> says.
 	<br><br>
 <</if>>
 
-<<He>> opens another drawer, and pulls out a smooth white rod with a round ball on one end. <<He>> pushes the thin end against your <<bottom>>. "Just relax,<<if pregnancyBellyVisible()>> this won't hurt the baby,<</if>>" <<he>> says. It slides in without pain, as if lubricated. Harper twists the other side, and you feel it pulse within you.
+<<He>> opens another drawer, and pulls out a smooth white rod with a round ball on one end. <<He>> pushes the thin end against your <<bottom>>. "Just relax,<<if pregnancyBellyVisible() and !_vaginaFuta>> this won't hurt the baby,<</if>>" <<he>> says. It slides in without pain, as if lubricated. Harper twists the other side, and you feel it pulse within you.
 <<garousal>><<arousal 1200 "bottom">>
 <br><br>
 
-Harper stares unblinking at your <<bottom>> as the pulsing increases in intensity. Just when you feel like you can't take any more, <<he>> eases it out. The <<if _pregnancy.namesChildren is true>>baby<<else>>parasite<</if>> is wrapped around the end<<if _extra is true>> alongside a smaller one<</if>>. <<He>> puts it in an opaque container, and seals it shut.
+Harper stares unblinking at your <<bottom>> as the pulsing increases in intensity. Just when you feel like you can't take any more, <<he>> eases it out. The <<if $pregnancyStats.namesParasitesChild is true>>baby <</if>>parasite is wrapped around the end<<if _analFutaOther or _vaginaFutaOther>> alongside a smaller one<</if>>. <<He>> puts it in an opaque container, and seals it shut.
+<<if _vaginaFuta and _anusFuta>>
+	<<He>> repeats the procedure on the other sets of parasites inside you and more are wrappered and sealed.
+<</if>>
 <br><br>
 
 "All done," <<he>> says as <<he>> unties the straps. <<He>> turns away as you dress.
@@ -168,8 +182,8 @@ Harper stares unblinking at your <<bottom>> as the pulsing increases in intensit
 :: GiveBirth
 
 <<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
-<<set _pregnancy to $sexStats.anus.pregnancy>>
-<<set _pregnancy.feltMovement to false>>
+<<set _pregnancy to $sexStats[$giveBirthLocation or "anus"].pregnancy>>
+<<set _pregnancy.parasiteFeltMovement to false>>
 <<set _container to $container[$phase]>>
 <<set $pregResult to "notReady">>
 <<set _stressMulti to 2 - _pregnancy.motherStatus>>
@@ -177,18 +191,15 @@ Harper stares unblinking at your <<bottom>> as the pulsing increases in intensit
 <<set $checkboxReplace to {}>>
 <<set $parasiteSelectionCount to 0>>
 <<set _newlyBirthed to {}>>
-<<set _allSeen to _pregnancy.typesSeen.length + _pregnancy.variantsSeen.length>>
+<<set _allSeen to $pregnancyStats.parasiteTypesSeen.length + $pregnancyStats.parasiteVariantsSeen.length>>
 
-Following the directions from Doctor Harper, you get into position and attempt to deliver <<if _pregnancy.namesChildren is true>>your baby<<else>>the parasites<</if>>. <<if _stressMulti gt 0>><<gstress>><</if>><<set $stress += 250 * _stressMulti>>
+Following the directions from Doctor Harper, you get into position and attempt to deliver <<if $pregnancyStats.namesParasitesChild is true>>your baby<<else>>the parasites<</if>>. <<if _stressMulti gt 0>><<gstress>><</if>><<set $stress += 250 * _stressMulti>>
 <br><br>
 
-<<for _i to 0; _i lt _pregnancy.maxCount; _i++>>
-	<<if _pregnancy[_i] is null>>
-		<<continue>>
-	<</if>>
-	<<if _pregnancy[_i].stats.gender isnot "Futa">>
+<<for _i to 0; _i lt _pregnancy.fetus.length; _i++>>
+	<<if _pregnancy.fetus[_i].stats.gender isnot "Hermaphrodite">>
 		<<set _rand to random(0,100)>>
-		<<if (_rand lte 80 and _pregnancy[_i].daysLeft is 0) or (_rand lte 50 and _pregnancy[_i].daysLeft lte 1) or (_rand lte 30 and _pregnancy[_i].daysLeft lte 2) or (_rand lte 10 and _pregnancy[_i].daysLeft lte 3) or $parasiteBirthDebug>>
+		<<if (_rand lte 80 and _pregnancy.fetus[_i].daysLeft is 0) or (_rand lte 50 and _pregnancy.fetus[_i].daysLeft lte 1) or (_rand lte 30 and _pregnancy.fetus[_i].daysLeft lte 2) or (_rand lte 10 and _pregnancy.fetus[_i].daysLeft lte 3) or $parasiteBirthDebug>>
 			<<if $pregResult is "notReady">>
 				<<set $pregResult to [clone(_i)]>>
 			<<else>>
@@ -199,35 +210,35 @@ Following the directions from Doctor Harper, you get into position and attempt t
 <</for>>
 
 <<if $pregResult is "notReady">>
-	Despite your efforts, none of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>> are ready to leave you.
+	Despite your efforts, none of <<if $pregnancyStats.namesParasitesChild is true>>your children<<else>>the parasites<</if>> are ready to leave you.
 	<br><br>
 
-	<<link [[Next|Containers]]>><<unset $pregResult>><</link>>
+	<<link [[Next|Containers]]>><<unset $pregResult>><<unset $giveBirthLocation>><</link>>
 <<else>>
-	Your body shudders, and to the floor falls <<if _pregnancy.namesChildren is true>><<number $pregResult.length>> <<print $pregResult.length gt 1 ? 'babies' : 'baby'>><<else>><<number $pregResult.length>> <<print $pregResult.length gt 1 ? 'parasites' : 'parasite'>><</if>>.
+	Your body shudders, and to the floor falls <<if $pregnancyStats.namesParasitesChild is true>><<number $pregResult.length>> <<print $pregResult.length gt 1 ? 'babies' : 'baby'>><<else>><<number $pregResult.length>> <<print $pregResult.length gt 1 ? 'parasites' : 'parasite'>><</if>>.
 
 	<ul>
 		<<for _i to 0; _i lt $pregResult.length; _i++>>
-			<<set _result to _pregnancy[$pregResult[_i]]>>
+			<<set _result to _pregnancy.fetus[$pregResult[_i]]>>
 			<!-- Printing the checkbox -->
 			<li><label><<print '<<checkbox "$checkboxResult[' + clone($pregResult[_i]) + ']" false true checked>>'>> - <<print _result.creature>> - <<creatureActivity _result.stats.speed>></label></li>
 			<<if _result.creature.includes(" ")>>
 				<!-- If the creature has a variant, like Pale. Currently does not account for creatures with more than one variant, because those don't yet exist -->
 				<!-- Possible task for the future: turn parasite variants into variables, so there can be multiple -->
 				<<set _split to _result.creature.split(" ")>>
-				<<if !_pregnancy.variantsSeen.includes(_split[0]) and _split[0] isnot _split[1]>>
-					<<set _pregnancy.variantsSeen.pushUnique(_split[0])>>
+				<<if !$pregnancyStats.parasiteVariantsSeen.includes(_split[0]) and _split[0] isnot _split[1]>>
+					<<set $pregnancyStats.parasiteVariantsSeen.pushUnique(_split[0])>>
 					<!-- For Pale Tentacle, this will set _newlyBirthed.Pale to "tentacle" -->
 					<<set _newlyBirthed[_split[0]] to _split[1].toLowerCase()>>
 				<</if>>
-				<<if !_pregnancy.typesSeen.includes(_split[1])>>
-					<<set _pregnancy.typesSeen.pushUnique(_split[1])>>
+				<<if !$pregnancyStats.parasiteTypesSeen.includes(_split[1])>>
+					<<set $pregnancyStats.parasiteTypesSeen.pushUnique(_split[1])>>
 					<<set _newlyBirthed[_split[1]] to true>>
 				<</if>>
 			<<else>>
 				<!-- Creatures without variants -->
-				<<if !_pregnancy.typesSeen.includes(_result.creature)>>
-					<<set _pregnancy.typesSeen.pushUnique(_result.creature)>>
+				<<if !$pregnancyStats.parasiteTypesSeen.includes(_result.creature)>>
+					<<set $pregnancyStats.parasiteTypesSeen.pushUnique(_result.creature)>>
 					<<set _newlyBirthed[_result.creature] to true>>
 				<</if>>
 			<</if>>
@@ -238,9 +249,9 @@ Following the directions from Doctor Harper, you get into position and attempt t
 			<<case "Tentacle">>
 				You watch the tentacle in fascination. It writhes around blindly and coils around itself, almost like a snake. It's so energetic, just looking at it makes you feel less tired.
 			<<case "Slime">>
-				The slime doesn't move for a while. You poke at it, a little worried, and it jiggles. It has an indescribable consistency. It looks almost without flaw, and you feel <<if _pregnancy.namesChildren is true>>proud to have birthed<<else>>almost proud to have hosted<</if>> such a creature.
+				The slime doesn't move for a while. You poke at it, a little worried, and it jiggles. It has an indescribable consistency. It looks almost without flaw, and you feel <<if $pregnancyStats.namesParasitesChild is true>>proud to have birthed<<else>>almost proud to have hosted<</if>> such a creature.
 			<<case "Worm">>
-				Almost immediately, the worm tries to find somewhere to dig. It has little success, and squirms in agitation until you place it in the <<print _container.name.toLowerCase()>>. You feel odd, having <<if _pregnancy.namesChildren is true>>birthed<<else>>hosted<</if>> such a creature.
+				Almost immediately, the worm tries to find somewhere to dig. It has little success, and squirms in agitation until you place it in the <<print _container.name.toLowerCase()>>. You feel odd, having <<if $pregnancyStats.namesParasitesChild is true>>birthed<<else>>hosted<</if>> such a creature.
 			<<case "Lurker">>
 				The lurker moves mainly by crawling, but sometimes hops surprising distances. You quickly place it in the <<print _container.name.toLowerCase()>> before you can lose it.
 			<<case "Vine">>
@@ -256,8 +267,8 @@ Following the directions from Doctor Harper, you get into position and attempt t
 		<</switch>>
 		<br><br>
 	<</for>>
-	<<if _pregnancy.book is 3 and _pregnancy.typesSeen.length + _pregnancy.variantsSeen.length gt _allSeen>>
-		You write about <<if _pregnancy.namesChildren is true>>your new children<<else>>the new parasites<</if>> in your notebook.
+	<<if $pregnancyStats.parasiteBook is 3 and $pregnancyStats.parasiteTypesSeen.length + $pregnancyStats.parasiteVariantsSeen.length gt _allSeen>>
+		You write about <<if $pregnancyStats.namesParasitesChild is true>>your new children<<else>>the new parasites<</if>> in your notebook.
 		<br><br>
 	<</if>>
 	<<if $pregResult.length gt (_container.maxCount - _container.count)>>
@@ -281,7 +292,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 :: Widgets PregEventsResult [widget]
 <<widget "PregEventsResult">>
 <<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
-<<set _pregnancy to $sexStats.anus.pregnancy>>
+<<set _pregnancy to $sexStats[$giveBirthLocation or "anus"].pregnancy>>
 <<set _container to $container[$phase]>>
 <<set $parasiteSelectionCount to 0>>
 <<set $parasiteReplaceArray to []>>
@@ -314,7 +325,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 
 <<if $parasiteSelectionCount lte _availableStorage>>
 	<<if $parasiteSelectionCount gt 0>>
-		<<if _pregnancy.namesChildren is true>>
+		<<if $pregnancyStats.namesParasitesChild is true>>
 			<<link [[Keep selected babies|PregEventsResult2]]>>
 				<<set $pregChoice to "KeepSelected">>
 			<</link>>
@@ -325,10 +336,10 @@ Following the directions from Doctor Harper, you get into position and attempt t
 		<</if>>
 	<</if>>
 <<elseif $parasiteSelectionCount gt 0>>
-	Not enough storage for selected amount. Please replace <<number $parasiteSelectionCount-_availableStorage>> <<if _pregnancy.namesChildren is true>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'babies' : 'baby'>><<else>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'parasites' : 'parasite'>><</if>>.
+	Not enough storage for selected amount. Please replace <<number $parasiteSelectionCount-_availableStorage>> <<if $pregnancyStats.namesParasitesChild is true>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'babies' : 'baby'>><<else>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'parasites' : 'parasite'>><</if>>.
 	<br>
 	<<if ($parasiteSelectionCount - $parasiteReplaceArray.length) lte _availableStorage>>
-		<<if _pregnancy.namesChildren is true>>
+		<<if $pregnancyStats.namesParasitesChild is true>>
 			<<link [[Replace selected babies|PregEventsResult2]]>>
 				<<set $pregChoice to "ReplaceSelected">>
 			<</link>>
@@ -341,7 +352,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 <</if>>
 <<if $pregResult.length lte _availableStorage>>
 	<br>
-	<<if _pregnancy.namesChildren is true>>
+	<<if $pregnancyStats.namesParasitesChild is true>>
 		<<link [[Keep all babies|PregEventsResult2]]>>
 			<<set $pregChoice to "keepAll">>
 		<</link>>
@@ -353,7 +364,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 <</if>>
 
 <br><br>
-<<if _pregnancy.namesChildren is true>>
+<<if $pregnancyStats.namesParasitesChild is true>>
 	<<link [[Sell all babies|PregEventsResult2]]>>
 		<<set $pregChoice to "sellAll">>
 	<</link>>
@@ -374,56 +385,59 @@ Following the directions from Doctor Harper, you get into position and attempt t
 
 :: PregEventsResult2
 <<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
-<<set _pregnancy to $sexStats.anus.pregnancy>>
+<<set _pregnancy to $sexStats[$giveBirthLocation or "anus"].pregnancy>>
 
 <<switch $pregChoice>>
 <<case "ReplaceSelected">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
 		<<if $checkboxResult[$pregResult[_i]] is true>>
 			<<if _i lt $parasiteReplaceArray.length>>
-				<<moveCreature $pregResult[_i] "replace" $parasiteReplaceArray[_i]>>
+				<<moveCreature $pregResult[_i] "replace" $parasiteReplaceArray[_i] $giveBirthLocation>>
 			<<else>>
-				<<moveCreature $pregResult[_i] "container">>
+				<<moveCreature $pregResult[_i] "container" undefined $giveBirthLocation>>
 			<</if>>
 		<<elseif $checkboxResult[$pregResult[_i]] is false>>
-			<<moveCreature $pregResult[_i] "portable">>
+			<<moveCreature $pregResult[_i] "portable" undefined $giveBirthLocation>>
 		<</if>>
 	<</for>>
-	You decide to keep <<number $parasiteSelectionCount>> of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$phase].name.toLowerCase()>> in place of <<number $parasiteReplaceArray.length>> <<if $parasiteReplaceArray.length gt 1>>others<<else>>other<</if>>, while preparing the rest for Doctor Harper.
+	You decide to keep <<number $parasiteSelectionCount>> of <<if $pregnancyStats.namesParasitesChild is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$phase].name.toLowerCase()>> in place of <<number $parasiteReplaceArray.length>> <<if $parasiteReplaceArray.length gt 1>>others<<else>>other<</if>>, while preparing the rest for Doctor Harper.
 	<br><br>
 <<case "KeepSelected">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
 		<<if $checkboxResult[$pregResult[_i]] is true>>
-			<<moveCreature $pregResult[_i] "container">>
+			<<moveCreature $pregResult[_i] "container" undefined $giveBirthLocation>>
 		<<elseif $checkboxResult[$pregResult[_i]] is false>>
-			<<moveCreature $pregResult[_i] "portable">>
+			<<moveCreature $pregResult[_i] "portable" undefined $giveBirthLocation>>
 		<</if>>
 	<</for>>
-	You decide to keep <<number $parasiteSelectionCount>> of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$phase].name.toLowerCase()>> while preparing the rest for Doctor Harper.
+	You decide to keep <<number $parasiteSelectionCount>> of <<if $pregnancyStats.namesParasitesChild is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$phase].name.toLowerCase()>> while preparing the rest for Doctor Harper.
 	<br><br>
 <<case "keepAll">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
-		<<moveCreature $pregResult[_i] "container">>
+		<<moveCreature $pregResult[_i] "container" undefined $giveBirthLocation>>
 	<</for>>
-	You decide to keep all of <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and place them in your <<print $container[$phase].name.toLowerCase()>>.
+	You decide to keep all of <<if $pregnancyStats.namesParasitesChild is true>>your children<<else>>the parasites<</if>>, and place them in your <<print $container[$phase].name.toLowerCase()>>.
 	<br><br>
 <<case "sellAll">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
-		<<moveCreature $pregResult[_i] "portable">>
+		<<moveCreature $pregResult[_i] "portable" undefined $giveBirthLocation>>
 	<</for>>
-	You decide to sell all <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and prepare to take them to Doctor Harper.
+	You decide to sell all <<if $pregnancyStats.namesParasitesChild is true>>your children<<else>>the parasites<</if>>, and prepare to take them to Doctor Harper.
 	<br><br>
 <</switch>>
+
+<<clearToDeleteParasiteFetus>>
 
 <<link [[Next|Containers]]>>
 	<<unset $pregChoice>><<unset $pregResult>>
 	<<unset $checkboxResult>><<unset $checkboxReplace>>
 	<<unset $parasiteSelectionCount>><<unset $parasiteReplaceArray>>
+	<<unset $giveBirthLocation>>
 <</link>>
 
 :: Harper Parasite Book
 <<effects>>
-<<set $sexStats.anus.pregnancy.book to 2>>
+<<set $pregnancyStats.parasiteBook to 2>>
 Harper nods approvingly. "It's good that you want to know more." <<He>> brings out a rather thick book and shows it to you. "This is a popular reference guide among scientists. It has a lot of information on this subject, but it's property of the hospital. I'm not authorised to lend it out."
 <br><br>
 
@@ -467,7 +481,7 @@ Dr Harper is introduced if required. Harper checks the pc, if it's a non-human p
 	<br><br>
 <</if>>
 
-<<switch $sexStats.vagina.pregnancy.type>>
+<<switch nonparasitePregnancyType()>>
 	<<case "human">>
 		Dr Harper mentions a hidwife waiting for the player.
 		<<link [[Next (00:05)| Pregnancy Birth Hospital 2]]>><<pass 5>><<set $phase to 1>><</link>>
@@ -485,7 +499,7 @@ Dr Harper is introduced if required. Harper checks the pc, if it's a non-human p
 	<<strip>>
 	<<link [[Next (00:05)| Pregnancy Birth Hospital 3]]>><<pass 5>><<endevent>><</link>>
 <<elseif $phase is 2>>
-	<<switch $sexStats.vagina.pregnancy.type>>
+	<<switch nonparasitePregnancyType()>>
 		<<case "wolf">><<set $exitPassage to "Pregnancy Birth Hospital Wolf">>
 	<</switch>>
 	Player is taken to where they can give birth
@@ -501,7 +515,11 @@ Player gets on the bed, midwife checking the player over and helping to prepare.
 Midwife give the ok to push
 <br><br>
 
-<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+<<if $player.vaginaExist>>
+	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+<<else>>
+	<<set $_pregnancy to $sexStats.anus.pregnancy>>
+<</if>>
 <<if $_pregnancy.totalBirthEvents gte 5>>
 	<<set _min to 15>>
 	<<set _max to 60>>
@@ -640,10 +658,19 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <br><br>
 <<set $pregnancyStats.pregnancyTestsTaken++>>
 <<if !$player.vaginaExist>>
-	<span class="green">It's negative.</span> You wonder how it could ever be positive.
+	<<set $_pregnancy to $sexStats.anus.pregnancy>>
+	<<if $_pregnancy.type is null or $_pregnancy.type is "parasite" or $_pregnancy.timer is 0 or (between($_pregnancy.timer, 0, 3) and random(0,100) gte 10) or (between($_pregnancy.timer, 3, 6) and random(0,100) gte 15)>>
+		<span class="green">It's negative.</span> You wonder how it could ever be positive.
+	<<elseif $_pregnancy.givenBirth >= 1>>
+		<span class="lewd">It's positive.</span> Many thoughts rush through your head, and you sit to collect yourself. <<gstress>><<stress 3>><<garousal>><<arousal 100>>
+		<<set $_pregnancy.awareOf to true>>
+	<<else>>
+		<span class="lewd">It's positive.</span> You briefly wonder if you're seeing things or have gone crazy. Many thoughts rush through your head, and you sit to collect yourself. <<ggstress>><<stress 10>><<ggarousal>><<arousal 200>>
+		<<set $_pregnancy.awareOf to true>>
+	<</if>>
 <<else>>
 	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-	<<if $_pregnancy.fetus.length is 0 or $_pregnancy.timer is 0 or (between($_pregnancy.timer, 0, 3) and random(0,100) gte 10) or (between($_pregnancy.timer, 3, 6) and random(0,100) gte 15)>>
+	<<if $_pregnancy.type is null or $_pregnancy.type is "parasite" or $_pregnancy.timer is 0 or (between($_pregnancy.timer, 0, 3) and random(0,100) gte 10) or (between($_pregnancy.timer, 3, 6) and random(0,100) gte 15)>>
 		<span class="green">It's negative.</span>
 	<<else>>
 		<span class="lewd">It's positive.</span> Many thoughts rush through your head, and you sit to collect yourself. <<gstress>><<stress 3>><<garousal>><<arousal 100>>
@@ -673,8 +700,11 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 /* Ultrasounds not performed before 12 weeks in normal circumstances, or before 8 in high-risk. Prior to 12 weeks, ultrasounds are usually performed transvaginally. Future commit will address this.*/
 
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<set _pregnancy to $sexStats.vagina.pregnancy>>
-<<set _pregnancy.ultrasoundDone to 1>><<set _pregnancy.ultrasoundLast to $days>>
+<<if $player.vaginaExist>>
+	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+<<else>>
+	<<set $_pregnancy to $sexStats.anus.pregnancy>>
+<</if>>
 <<harper_intro>>
 <<if $ultrasoundIntro isnot 1>>
 	<<set $ultrasoundIntro to 1>>
@@ -697,8 +727,13 @@ A technician enters the room and asks you to lie down and remove your outerwear.
 
 :: Pregnancy ultrasound 2
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
+
 You strip and lie down.
-<<set _pregnancy to $sexStats.vagina.pregnancy>>
+<<if $player.vaginaExist>>
+	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+<<else>>
+	<<set $_pregnancy to $sexStats.anus.pregnancy>>
+<</if>>
 <<if _pregnancy.timer lte _pregnancy.timerEnd * 0.3>>
 	"You're not far along enough for an abdominal ultrasound," the technician remarks. "But we can use the doppler to listen for cardiac activity."  
 	The technician picks up a small handheld instrument, twists a dial and begins pressing a small circular wand against your lower abdomen.<br>

@@ -4,27 +4,18 @@
 <br>
 Here you can earn VrelCoins by completing different tasks, each requiring you to meet the requirements in a single save. These will transfer to new games and allow optional bonuses. This will work even if cookies are cleared, however, you have to load your most recent save before starting a new game. Most feats will be earned at midnight, in a specific scene, or when specific text is shown. However, a handful will be unlocked by the hour.
 <br><br>
-Playing on softmode or having the "The rate that events are triggered by allure" setting below 1 will prevent you from earning feats.
-Enabling cheats at any point will prevent you from earning feats permanently in your current game.
-The other mentioned settings will also cause some feats to be locked permanently for your current game.
-Locked feats will have a red title.
-<<if $feats.locked is false>>
-	<<if $gamemode is "soft" or $alluremod lt 1>>
-		<br>
-		<span class="red">You are either on softmode or have the allure modifier below 1.</span>
-		<br>
-		<<if $feats.soft is true>>
-			<span class="red">Some feats are locked in this current game.</span>
-		<</if>>
-	<<elseif $debug is 1>>
-		<span class="red">Disabled by debug mode.</span>
-	<<elseif $replayScene isnot undefined>>
-		<span class="red">Disabled by replay mode.</span>
-	<<else>>
-		<span class="green">You can earn feats.</span>
-	<</if>>
-<<else>>
+Playing on softmode or changing settings in specific ways may prevent you from earning some feats in your current game. Enabling cheats at any point will prevent you from earning feats permanently in your current game. You will be warned if you are about to change any setting that does this. Locked feats will have a red title.
+
+<<if $feats.locked>>
 	<span class="red">You can't earn feats as you have enabled cheats at some point.</span>
+<<elseif $debug is 1>>
+	<span class="red">Disabled by debug mode.</span>
+<<elseif $replayScene isnot undefined>>
+	<span class="red">Disabled by replay mode.</span>
+<<elseif $feats.soft or $feats.pregnancyLocked>>
+	<span class="red">Some feats are locked in this current game.</span>
+<<else>>
+	<span class="green">You can earn feats.</span>
 <</if>>
 <br><br>
 You currently have <<if $feats.allSaves.point is undefined>><<print $feats.allSaves.points>><<else>>0<</if>> VrelCoins.
@@ -53,7 +44,7 @@ Filter by:
 <<set _filter to "All">>
 <<set _keys to Object.keys(_feats)>>
 <<for _i to 0; _i lt _keys.length; _i++>>
-	<<if (_skip.includes(_feats[_keys[_i]].series) and _feats[_keys[_i]].hint is undefined) or !_feats[_keys[_i]].filter.includes($feats.filter)>>
+	<<if _skip.includes(_feats[_keys[_i]].series) or !_feats[_keys[_i]].filter.includes($feats.filter)>>
 		<<continue>>
 	<</if>>
 	<<if Object.keys($feats.currentSave).includes(_keys[_i])>>
@@ -62,6 +53,9 @@ Filter by:
 		<<set _owned to 1>>
 	<<else>>
 		<<set _owned to 0>>
+		<<if _feats[_keys[_i]].hidden>>
+			<<continue>>
+		<</if>>
 		<<if _feats[_keys[_i]].series isnot "">>
 			<<set _skip.push(_feats[_keys[_i]].series)>>
 		<</if>>
@@ -73,13 +67,15 @@ Filter by:
 					<<case 1>><img @src="'img/ui/CopperCoin'+(_owned is 1 ? 'Dull':'')+'.png'" class="featCoin" @style="(_owned is 1 ? 'filter:brightness(65%) contrast(85%);':'')">
 					<<case 2>><img @src="'img/ui/SilverCoin'+(_owned is 1 ? 'Dull':'')+'.png'" class="featCoin" @style="(_owned is 1 ? 'filter:brightness(75%) contrast(85%);':'')">
 					<<case 3>><img @src="'img/ui/GoldCoin'+(_owned is 1 ? 'Dull':'')+'.png'" class="featCoin" @style="(_owned is 1 ? 'filter:brightness(65%) contrast(85%);':'')">
+					<<case 4>><img @src="'img/ui/DiamondCoin'+(_owned is 1 ? 'Dull':'')+'.png'" class="featCoin" @style="(_owned is 1 ? 'filter:brightness(65%) contrast(85%);':'')">
+					<<case 5>><img @src="'img/ui/RubyCoin'+(_owned is 1 ? 'Dull':'')+'.png'" class="featCoin" @style="(_owned is 1 ? 'filter:brightness(65%) contrast(85%);':'')">
 				<</switch>>
 			<<else>>
 				<span class="dot"></span>
 			<</if>>
 		</div>
 		<div class="featText">
-			<<if ($feats.soft is true and _feats[_keys[_i]].softLockable is true) or $feats.locked is true or ($gamemode is "soft" or $alluremod lt 1)>>
+			<<if ($feats.pregnancyLocked and _feats[_keys[_i]].pregnancyLockable) or ($feats.soft and _feats[_keys[_i]].softLockable) or $feats.locked or ($gamemode is "soft" or $alluremod lt 1)>>
 				<<set _titleColor to " red">>
 			<<else>>
 				<<set _titleColor to "">>
@@ -115,12 +111,15 @@ Filter by:
 		<<set _featsCount++>>
 	<</if>>
 <</silently>>
-<div @id="'feat-' + _featsCount" class="feat">
+<<capture _featsCount>>
+<div @id="'feat-' + _featsCount" @class="'feat feat' + _featsCount + (_featsCount gte 3 ? ' hiddenFeat' : '')">
 	<div class="featImage">
 		<<switch _feats[_args[0]].difficulty>>
 			<<case 1>><img src="img/ui/CopperCoin.gif" class="featCoin">
 			<<case 2>><img src="img/ui/SilverCoin.gif" class="featCoin">
 			<<case 3>><img src="img/ui/GoldCoin.gif" class="featCoin">
+			<<case 4>><img src="img/ui/DiamondCoin.gif" class="featCoin">
+			<<case 5>><img src="img/ui/RubyCoin.gif" class="featCoin">
 		<</switch>>
 	</div>
 	<div class="featText">
@@ -130,6 +129,7 @@ Filter by:
 	</div>
 	<div @id="'closeFeat-' + _featsCount" class="closeFeat" @onclick="'closeFeats('+ _featsCount +')'"></div>
 </div>
+<</capture>>
 <</widget>>
 
 /*Feat Points Menu*/
@@ -416,6 +416,8 @@ Filter by:
 				<<case 1>><img src="img/ui/CopperCoinFake.gif" class="featCoin">
 				<<case 2>><img src="img/ui/SilverCoinFake.gif" class="featCoin">
 				<<case 3>><img src="img/ui/GoldCoinFake.gif" class="featCoin">
+				<<case 3>><img src="img/ui/DiamondCoinFake.gif" class="featCoin">
+				<<case 3>><img src="img/ui/RubyCoinFake.gif" class="featCoin">
 			<</switch>>
 		</div>
 		<div class="featText">

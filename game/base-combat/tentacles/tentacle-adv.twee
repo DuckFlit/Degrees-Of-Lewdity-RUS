@@ -15,9 +15,14 @@
 <<if $abomination is 1 and $ejaculating is 1>>
 	<<statetentacles>>
 	<<if (_tentacle.head is "anus" or _tentacle.head is "anusdeep") and _tentacle.baby isnot 0>>
-		<<impregnate _tentacle.baby _tentacle.babychance>>
-		<<fertilise>>
+		<<impregnateParasite _tentacle.baby _tentacle.babychance>>
+		<<fertiliseParasites>>
 		<<set _tentacleAnus to $tentacleAnus>>
+	<</if>>
+	<<if (_tentacle.head is "vagina" or _tentacle.head is "vaginadeep") and _tentacle.baby isnot 0>>
+		<<impregnateParasite _tentacle.baby _tentacle.babychance "vagina">>
+		<<fertiliseParasites "vagina">>
+		<<set _tentacleVagina to $_tentacleVagina>>
 	<</if>>
 	<<if _tentacle.shaft isnot "finished" and _tentacle.head isnot "finished">>
 		<<if _firsttentacle isnot 1>><<set _firsttentacle to 1>>_The<</if>>
@@ -30,7 +35,9 @@
 			<<else>>
 				and <<print _tentacle.fullDesc>>s all retract
 			<</if>>
-			<<if _tentacleAnus>>
+			<<if _tentacleVagina>>
+				away from you,<<if _retract isnot 1>> the _tentacleVagina<</if>> <span class="red">pumping something into your vagina</span> before leaving.
+			<<elseif _tentacleAnus>>
 				away from you,<<if _retract isnot 1>> the _tentacleAnus<</if>> <span class="red">pumping something into your anus</span> before leaving.
 			<<else>>
 				away from you.
@@ -227,7 +234,13 @@ _The _tentacle.fullDesc writhes between your feet.
 <</if>>
 
 <<if _tentacle.head is "vaginadeep">>
-	and <<slithers>> into your <<pussy>> where it pumps a viscous _fluid at the apex of each thrust.
+	<<if _tentacle.baby isnot 0>>
+		and <<slithers>> into your <<pussy>> where it pumps a viscous _fluid <<if canImpregnateParasite("vagina")>><span class="red">alongside something else </span><</if>>at the apex of each thrust.
+		<<impregnateParasite _tentacle.baby _tentacle.babychance "vagina">>
+		<<fertiliseParasites "vagina">>
+	<<else>>
+		and <<slithers>> into your <<pussy>> where it pumps a viscous _fluid at the apex of each thrust.
+	<</if>>
 	<<tentacle_skin "vagina">>
 	<br>
 	<<purity -1>><<internalejac>><<sex 5 "genitals">>
@@ -242,7 +255,12 @@ _The _tentacle.fullDesc writhes between your feet.
 <</if>>
 
 <<if _tentacle.head is "vagina">>
-	and continues thrusting into your <<pussy>>.<span class="pink"> The tip opens and begins oozing a viscous _fluid.</span>
+	<<if _tentacle.baby isnot 0 and canImpregnateParasite("vagina")>>
+		and continues thrusting into your <<pussy>>.<span class="pink"> The tip opens and begins oozing a viscous _fluid <span class="red">alongside something else</span>.</span>
+		<span class="red"> Something about it scares you.</span>
+	<<else>>
+		and continues thrusting into your <<pussy>>.<span class="pink"> The tip opens and begins oozing a viscous _fluid.</span>
+	<</if>>
 	<<tentacle_skin "vagina">>
 	<br>
 	<<purity -1>><<internalejac>>
@@ -363,9 +381,9 @@ _The _tentacle.fullDesc writhes between your feet.
 
 <<if _tentacle.head is "anusdeep">>
 	<<if _tentacle.baby isnot 0>>
-		and <<slithers>> into your <<bottom>> where it pumps a viscous _fluid <span class="red">alongside something else</span> at the apex of each thrust.
-		<<impregnate _tentacle.baby _tentacle.babychance>>
-		<<fertilise>>
+		and <<slithers>> into your <<bottom>> where it pumps a viscous _fluid <<if canImpregnateParasite("anus")>><span class="red">alongside something else</span><</if>>at the apex of each thrust.
+		<<impregnateParasite _tentacle.baby _tentacle.babychance>>
+		<<fertiliseParasites>>
 		<<set _tentacle.baby to 0>><<set $tentacleAnusBaby to _tentacle.baby>>
 	<<else>>
 		and <<slithers>> into your <<bottom>> where it pumps a viscous _fluid at the apex of each thrust.
@@ -384,8 +402,8 @@ _The _tentacle.fullDesc writhes between your feet.
 <</if>>
 
 <<if _tentacle.head is "anus">>
-	<<if _tentacle.baby isnot 0>>
-		and continues thrusting into your <<bottom>>.<span class="pink"> The tip opens and begins oozing a viscous _fluid alongside something else.</span>
+	<<if _tentacle.baby isnot 0 and canImpregnateParasite("anus")>>
+		and continues thrusting into your <<bottom>>.<span class="pink"> The tip opens and begins oozing a viscous <<print _fluid>><<if canImpregnateParasite("anus")>><span class="red">alongside something else</span><</if>>.</span>
 		<span class="red"> Something about it scares you.</span>
 	<<else>>
 		and continues thrusting into your <<bottom>>.<span class="pink"> The tip opens and begins oozing a viscous _fluid.</span>
@@ -471,6 +489,9 @@ _The _tentacle.fullDesc writhes between your feet.
 		<<else>>
 			and<<if _tentacle.shaft is "breasts">> <<slithers>><</if>> between your thighs <span class="blue">where it <<slithers>> toward your <<pussy>>.</span>
 		<</if>>
+		<<if _tentacle.baby isnot 0 and canImpregnateParasite("vagina")>>
+			<span class="red"> Something about it scares you.</span>
+		<</if>>
 		<<set $vaginause to "tentacle">><<set $vaginastate to "tentacleentrance">><<set _tentacle.head to "vaginaentrance">><<set $thighuse to 0>><<set $vaginatarget to "tentacles">>
 	<</if>>
 	<br>
@@ -512,9 +533,9 @@ _The _tentacle.fullDesc writhes between your feet.
 	<<elseif $noanal is 1>>
 		and <<slithers>> toward your <<bottom>>. The <<personsimple>> clicks <<his>> tongue, and <span class="lblue">it retracts,</span> <<slithering>> between your <<bottom>> cheeks instead.
 	<<else>>
-		<<if _tentacle.baby isnot 0>>
+		<<if _tentacle.baby isnot 0 and canImpregnateParasite("anus")>>
 			<span class="blue">and <<slithers>> toward your <<bottom>>.</span>
-			<span class="green"> Something about it scares you.</span>
+			<span class="red"> Something about it scares you.</span>
 		<<else>>
 			and<<if _tentacle.shaft is "breasts">> <<slithers>><</if>> between your <<bottom>> cheeks, <span class="blue"> toward your anus.</span>
 			<<neutral 3 "anus">>
@@ -733,8 +754,8 @@ _The _tentacle.fullDesc writhes between your feet.
 	<<elseif $rng lte 50>>
 		<<if $anususe is 0 and $analdisable is "f" and $noanal is 0>>
 			<<underslither>> <span class="blue">and <<slithers>> toward your <<bottom>>.</span>
-			<<if _tentacle.baby isnot 0>>
-				<span class="green"> Something about it scares you.</span>
+			<<if _tentacle.baby isnot 0 and canImpregnateParasite("anus")>>
+				<span class="red"> Something about it scares you.</span>
 			<</if>>
 			<<neutral 2 "bottom">>
 			<<set $anususe to "tentacle">><<set $anusstate to "tentacleentrance">><<set _tentacle.head to "anusentrance">><<set $anustarget to "tentacles">>
@@ -746,6 +767,9 @@ _The _tentacle.fullDesc writhes between your feet.
 	<<elseif $rng lte 60>>
 		<<if $player.vaginaExist and $vaginause is 0 and $novaginal is 0>>
 			<<underslither>> <span class="blue">and <<slithers>> toward your <<pussy>>.</span>
+			<<if _tentacle.baby isnot 0 and canImpregnateParasite("vagina")>>
+				<span class="red"> Something about it scares you.</span>
+			<</if>>
 			<<neutralgenitals 2>>
 			<<set $vaginause to "tentacle">><<set $vaginastate to "tentacleentrance">><<set _tentacle.head to "vaginaentrance">><<set $vaginatarget to "tentacles">>
 			<<tentacle_skin "pubic">>
