@@ -368,32 +368,36 @@
 
 	<!-- Use the below graph to calculate and demo -->
 	<!-- New Graph: https://www.desmos.com/calculator/xd73rdkx1v -->
-	<<set $_calcTrauma to ($trauma - $traumamax / 10) / 1000>>
-	<<if $_calcTrauma gte 0>>
-		<<set $_calcStress to $stress / 5000>>
-		<<set $_calcTotal to $_calcTrauma + $_calcStress + $sleepHoursTotal>>
-		<<set $_chance to $_calcTotal ** 4 / 75>>
-		<<rng 1000>>
-		<<if $_chance gt $rng>>
-			<span class="yellow">Your hair is tousled.</span>
-			<<ruffleHair>>
-			<<saveTempHairStyle>>
+	<<if $ruffledisable is "f">>
+		<<set $_calcTrauma to ($trauma - $traumamax / 10) / 1000>>
+		<<if $_calcTrauma gte 0>>
+			<<set $_calcStress to $stress / 5000>>
+			<<set $_calcTotal to $_calcTrauma + $_calcStress + $sleepHoursTotal>>
+			<<set $_chance to $_calcTotal ** 4 / 75>>
+			<<rng 1000>>
+			<<if $_chance gt $rng>>
+				<span class="yellow">Your hair is tousled.</span>
+				<<ruffleHair>>
+				<<saveTempHairStyle>>
+			<</if>>
 		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "ruffleHair">>
 	<!-- Find a style group of current hair (loose, braid, etc.) and pick a random one from a list of corresponding 'ruffled' styles. If none found then keep current hair -->
-	<<set $_hair to setup.hair.hairtype.find(x => x.list.includes($hairtype))>>
-	<<set $_fringe to setup.hair.fringetype.find(x => x.list.includes($fringetype))>>
-	<<if $_hair>>
-		<<set $_rndhair to $_hair.devolve.random()>>
+	<<if $ruffledisable is "f">>
+		<<set $_hair to setup.hair.hairtype.find(x => x.list.includes($hairtype))>>
+		<<set $_fringe to setup.hair.fringetype.find(x => x.list.includes($fringetype))>>
+		<<if $_hair>>
+			<<set $_rndhair to $_hair.devolve.random()>>
+		<</if>>
+		<<if $_fringe>>
+			<<set $_rndfringe to $_fringe.devolve.random()>>
+		<</if>>
+		<<set $hairtype to $_rndhair || $hairtype>>
+		<<set $fringetype to $_rndfringe || $fringetype>>
 	<</if>>
-	<<if $_fringe>>
-		<<set $_rndfringe to $_fringe.devolve.random()>>
-	<</if>>
-	<<set $hairtype to $_rndhair || $hairtype>>
-	<<set $fringetype to $_rndfringe || $fringetype>>
 <</widget>>
 
 :: SleepSlimeEventObey

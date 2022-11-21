@@ -50,6 +50,29 @@ Your home is nearby.
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
 		<<eventsstreet>>
+	<<elseif $town_projects.thicket is 1>>
+		<<set $town_projects.thicket to 2>>
+		You walk by a small but dense cluster of trees. It used to be a recreational area, but has long been neglected, left to wild brambles. People pass it every day without sparing it a thought.
+		<br><br>
+		You keep your distance. The brambles sway in the wind, and the large thorns look sharp. Juicy-looking raspberries crown their tops, far out of reach. They remind you of the eyes beneath the pool in the hookah parlour. <span class="green">An idea strikes you.</span> This could be a pleasant place if it were properly maintained.
+		<br><br>
+		<i>You could enquire about the thicket at the town hall.</i>
+		<br><br>
+
+		<<link [[Next|Residential alleyways]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
+
+	<<elseif $town_projects.thicket is 3>>
+		<<set $town_projects.thicket to 4>>
+		<<generate1>><<person1>>
+		You approach the thicket. It's no longer so overgrown. Branches have been trimmed, and the wild brambles have been cut well back.
+		<br><br>
+
+		There's a bench near the middle, bearing a plaque that thanks you by name. A <<person>> sits on it, eating a sandwich.
+		<br><br>
+		<<earnFeat "Concrete Woodland">>
+		<<link [[Next|Residential alleyways]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
 	<<else>>
 		<<if $options.mapTop is true>>
 			<<map "residential">>
@@ -64,19 +87,23 @@ Your home is nearby.
 			<<homeicon>><<link [[Go home (0:02)->Garden]]>><<if $daily.fenceClimb isnot 1>><<set $daily.fenceClimb to 1>><<transform cat 1>><</if>><<pass 2>><</link>>
 			<br>
 		<</if>>
+		<<if $town_projects.thicket gte 4>>
+			<<foresticon>><<link [[Thicket (0:01)|Residential Thicket]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
 		<<if $cat gte 6 and $daystate is "night">>
-			<<link [[Meow (0:30)|Residential Meow]]>><<pass 30>><<stress -3>><</link>><<cat>><<lstress>>
+			<<ind>><<link [[Meow (0:30)|Residential Meow]]>><<pass 30>><<stress -3>><</link>><<cat>><<lstress>>
 			<br>
 		<</if>>
 		<<if $daystate isnot "night">>
 			<<if $exposed gte 2>>
 				<<if $exhibitionism gte 75>>
-					<<link [[Cross Connudatus Street (0:05)|Road Ex]]>><</link>><<if $daily.ex.road is undefined>><<exhibitionist5>><</if>>
+					<<ind>><<link [[Cross Connudatus Street (0:05)|Road Ex]]>><</link>><<if $daily.ex.road is undefined>><<exhibitionist5>><</if>>
 					<br>
 				<</if>>
 			<<elseif $exposed is 1>>
 				<<if $exhibitionism gte 35>>
-					<<link [[Cross Connudatus Street (0:05)|Road Ex]]>><</link>><<if $daily.ex.road is undefined>><<exhibitionist3>><</if>>
+					<<ind>><<link [[Cross Connudatus Street (0:05)|Road Ex]]>><</link>><<if $daily.ex.road is undefined>><<exhibitionist3>><</if>>
 					<br>
 				<</if>>
 			<</if>>
@@ -352,4 +379,102 @@ The <<beasttype>> growls, but relents in <<bhis>> attempt to <<if $pregnancyspee
 <<link [[Next|Residential alleyways]]>><</link>>
 <br>
 
+<</if>>
+
+:: Residential Thicket
+<<set $outside to 1>><<effects>>
+
+You are in the thicket in the residential district.
+
+<<if $daystate is "night">>
+	<<if $weather is "rain">>
+		Large drops of cold water fall from the canopy.
+	<<elseif $weather is "snow">>
+		The branches bow above, weighed down by snow.
+	<<else>>
+		The branches wave in the cool breeze.
+	<</if>>
+<<else>>
+	<<if $weather is "rain">>
+		The rain is keeping people away.
+	<<elseif $season is "autumn">>
+		<<if $schoolday is 1 and $hour gte 16>>
+			Students from school are picking blackberries.
+		<<elseif $hour is 12>>
+			An old couple are picking blackberries together.
+		<<elseif $hour gte 9>>
+			Leaves flutter to the ground whenever the breeze picks up.
+		<<else>>
+			You see a squirrel run up a trunk.
+		<</if>>
+	<<elseif $weather is "snow">>
+		<<if $schoolday is 1 and $hour gte 16>>
+			Students from school are chatting between the trees, nearby several snow angels.
+		<<elseif $hour is 12>>
+			An old couple are eating lunch together on the bench, well-bundled against the cold.
+		<<else>>
+			You see a squirrel run up a trunk.
+		<</if>>
+	<<else>>
+		<<if $schoolday is 1 and $hour gte 16>>
+			Students from school are chatting between the trees.
+		<<elseif $hour is 12>>
+			An old couple are eating lunch together on the bench.
+		<<else>>
+			You see a squirrel run up a trunk.
+		<</if>>
+	<</if>>
+<</if>>
+<br><br>
+
+<<if $thicket_blackberries isnot 1>>
+	<<icon "tending/blackberry.png">> <<link [[Pick blackberries (0:20)|Residential Thicket Blackberries]]>><<pass 20>><<set $thicket_blackberries to 1>><</link>><<tendingdifficulty 1 300>>
+	<br>
+<</if>>
+<<if $historytrait gte 2>>
+	<<if $thicket_tunnel_intro is 1>>
+		<<ind>><<link [[Take secret tunnel to forest (0:05)|Forest]]>><<set $forest to 0>><<set $eventskip to 1>><<set $thicket_tunnel_intro to 1>><</link>>
+		<br>
+	<<else>>
+		<<ind>><<link [[Take secret tunnel to forest (0:05)|Residential Thicket Tunnel]]>><<pass 5>><</link>>
+		<br>
+	<</if>>
+<</if>>
+<br>
+<<link [[Leave (0:01)|Residential alleyways]]>><<pass 1>><</link>>
+<br>
+
+:: Residential Thicket Tunnel
+<<effects>>
+
+The ground slopes beneath one of the bramble bushes. You peer into the dark, and see a stone archway. You've read about these old tunnels, but had no idea there would be one hidden in this thicket.
+<br><br>
+
+You need to crouch to fit through the entrance. Earth has heaped here, but you can walk upright once clear of it.
+<br><br>
+
+The tunnel is pitch black, but straight, and you're able to make it to the other side without difficulty. You emerge in the forest.
+<br><br>
+
+<<link [[Next|Forest]]>><<set $forest to 0>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Residential Thicket Blackberries
+<<effects>>
+
+The lower <<icon "tending/blackberry.png">> blackberries have all been picked. You stand on tip-toe to reach the tops of the bramble bushes.
+<br><br>
+<<if $tendingSuccess>>
+	<span class="green">You manage to gather a number of juicy-looking specimens.</span>
+	<<tending_pick blackberry 60 180>>
+	<br><br>
+
+	<<link [[Next|Residential Thicket]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	<span class="red">Try as you might, you can't reach,</span> and you don't want to risk grazing yourself on a thorn.<<gtending>><<tending 2>>
+	<br><br>
+
+	<<link [[Next|Residential Thicket]]>><<set $eventskip to 1>><</link>>
+	<br>
 <</if>>

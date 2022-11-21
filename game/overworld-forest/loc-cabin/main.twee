@@ -94,6 +94,7 @@ You are in Eden's cabin.
 	<</if>>
 	<br>
 	<<link [[Just say you removed it|Eden Collar Remove]]>><</link>>
+	<br>
 <<elseif ($exposed gte 2 and $exhibitionism lte 74 or $exposed gte 1 and $exhibitionism lte 54) and !isLoveInterest("Eden")>>
 	You don't want to be seen like this! You rush to your clothes.
 	<br><br>
@@ -237,20 +238,24 @@ You are in Eden's cabin.
 		Eden lies on the bed. "Make me breakfast," <<he>> says.
 		<br><br>
 
-		<<link [[Make the usual breakfast (0:20)|Eden Breakfast]]>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<pass 20>><<set $phase to 0>><</link>><<glove>><<gdom>>
+		<<link [[Make the usual breakfast (0:20)|Eden Breakfast]]>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<pass 20>><<set $phase to 0>><<housekeeping 1 100>><</link>><<housekeepingdifficulty 1 100>><<gdom>>
 		<br>
-		<<link [[Make something new (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 1>><</link>>
-		<br>
-		<<if $edengarden gte 3>>
-			<<link [[Use vegetables from the plot (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 3>><<npcincr Eden love 3>><</link>><<gglove>>
+		<<if $housekeeping gte 100>>
+			<<link [[Make something new (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 1>><</link>>
 			<br>
-		<</if>>
-		<<if $edenshrooms gte 3>>
-			<<link [[Use mushrooms from the barrel (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 4>><<npcincr Eden lust 30>><</link>><<ggglust>>
+			<<if $edengarden gte 3>>
+				<<link [[Use vegetables from the plot (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 3>><<npcincr Eden love 3>><</link>><<gglove>>
+				<br>
+			<</if>>
+			<<if $edenshrooms gte 3>>
+				<<link [[Use mushrooms from the barrel (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 4>><<npcincr Eden lust 30>><</link>><<ggglust>>
+				<br>
+			<</if>>
+			<<link [[Refuse|Eden Breakfast]]>><<npcincr Eden love -1>><<npcincr Eden dom -1>><<set $phase to 2>><</link>><<ldom>><<llove>>
 			<br>
+		<<else>>
+			<span class="blue">You're not a skilled enough housekeeper to make something more imaginative.</span>
 		<</if>>
-		<<link [[Refuse|Eden Breakfast]]>><<npcincr Eden love -1>><<npcincr Eden dom -1>><<set $phase to 2>><</link>><<ldom>><<llove>>
-		<br>
 
 	<<else>>
 
@@ -278,10 +283,15 @@ You are in Eden's cabin.
 	<br><br>
 
 	<<if $hour is 15 and $daily.eden.lunch isnot 1>>
-		Eden must be hungry after all that hunting. Maybe <<he>>'d appreciate some lunch.
-		<br>
-		<<link [[Make lunch for Eden (0:30)|Eden Lunch]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $daily.eden.lunch to 1>><</link>>
-		<br><br>
+		<<if $housekeeping gte 100>>
+			Eden must be hungry after all that hunting. Maybe <<he>>'d appreciate some lunch.
+			<br>
+			<<link [[Make lunch for Eden (0:30)|Eden Lunch]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $daily.eden.lunch to 1>><</link>>
+			<br><br>
+		<<else>>
+			Eden must be hungry after all that hunting. You think about making <<him>> lunch, <span class="blue">but lack the housekeeping confidence to whip anything up.</span>
+			<br><br>
+		<</if>>
 	<</if>>
 	<<if $month is "november" and $edenprepare is 1>>
 		<<link [[Fix the cabin|Cabin Eden Prepare]]>><</link>>
@@ -415,21 +425,21 @@ You are in Eden's cabin.
 <<effects>>
 <<if $hour lte 20>>/* if hour >= 21 and it's the last day of october, passing 3h will make it november, which unsets the variables, making nans */
 	<<if $edenwall lt 5>>
-		<<link [[Fix the cracks in the walls (3:00)|Eden Wall]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><</link>><<glove>><<gdom "Eden">>
+		<<link [[Fix the cracks in the walls (3:00)|Eden Wall]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">The walls are fully repaired.</span>
 	<</if>>
 	<br><br>
 
 	<<if $edenchimney lt 5>>
-		<<link [[Clean the chimney (3:00)|Eden Chimney]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><</link>><<glove>><<gdom "Eden">>
+		<<link [[Clean the chimney (3:00)|Eden Chimney]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">The chimney is clean.</span>
 	<</if>>
 	<br><br>
 
 	<<if $edenroof lt 5>>
-		<<link [[Fix the roof (3:00)|Eden Roof]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><</link>><<glove>><<gdom "Eden">>
+		<<link [[Fix the roof (3:00)|Eden Roof]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">The roof is fixed.</span>
 	<</if>>
@@ -439,8 +449,8 @@ You are in Eden's cabin.
 	<br><br>
 <</if>>
 
-	<<link [[Go back|Eden Clearing]]>><<endevent>><</link>>
-	<br><br>
+<<link [[Go back|Eden Clearing]]>><<endevent>><</link>>
+<br><br>
 
 :: Cabin Eden Actions
 <<effects>>

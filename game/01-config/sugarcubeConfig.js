@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 Config.history.controls = false;
 Config.saves.slots = 9;
-Config.history.maxStates = 1;
+Config.history.maxStates = 5;
 
 State.prng.init();
 
@@ -42,7 +42,7 @@ Save.onSave.add(save => {
 /* sneaky will enable the Sneaky notice banner on the opening screen and save display */
 /* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
 window.StartConfig = {
-	debug: false,
+	debug: true,
 	enableImages: true,
 	enableLinkNumberify: true,
 	version: "0.3.14.0",

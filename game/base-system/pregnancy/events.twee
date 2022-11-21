@@ -33,10 +33,10 @@ You shake your head. <<He>> holds open the door for you, and you leave the offic
 
 <<if $pregnancyStats.parasiteDoctorEvents gte 2 and $container.portable.value gt 0>>
 	<<if $pregnancyStats.namesParasitesChild is true>>
-		<<link [[Sell the children you're carrying (0:05)|Sell Children]]>><<pass 5>><<set $firstOption to false>><</link>>
+		<<link [[Sell the children you are carrying (0:05)|Sell Children]]>><<pass 5>><<set $firstOption to false>><</link>>
 		<br>
 	<<else>>
-		<<link [[Sell the parasites you're carrying (0:05)|Sell Children]]>><<pass 5>><<set $firstOption to false>><</link>>
+		<<link [[Sell the parasites you are carrying (0:05)|Sell Children]]>><<pass 5>><<set $firstOption to false>><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -452,7 +452,7 @@ Harper nods approvingly. "It's good that you want to know more." <<He>> brings o
 :: Pregnancy Birth Hospital Passout
 <<set $outside to 0>><<effects>>
 
-Player gets taken to the hospital, labour contractions beginning. Time depends on where the player is.
+You collapse on the spot. The last thing you hear is a rush of footsteps.
 <br><br>
 
 <<switch $location>>
@@ -462,61 +462,65 @@ Player gets taken to the hospital, labour contractions beginning. Time depends o
 <</switch>>
 <<set _hours to Math.floor(_time / 60)>>
 <<set _minutes to _time % 60>>
-<<link [["Next (0"+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Hospital]]>><<pass _time>><<set $phase to 1>><</link>>
+<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Hospital]]>><<pass _time>><<set $phase to 1>><</link>>
 
 :: Pregnancy Birth Hospital
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-
-<<if $phase is 1>>
-	Player gets to the hospital by passing out.
+<<if playerNormalPregnancyTotal() is 0>>
+	<<set $first_birth to 1>>
+<</if>>
+<<npc "Harper">><<person1>>
+<<if $hospitalintro is 0>>
+	<<set $hospitalintro to 1>>
+	<<if $phase is 1>>
+		You awaken in a hospital bed. Several blurry figures move around. One leans closer, <<his>> features coalescing into those of a young <<personsimple>>. "I'm Doctor Harper," <<he>> says, brushing <<his>> blond fringe away from <<his>> eyes. "Please don't be alarmed, but your waters have broken. You're in the hospital." <<He>>'s young for a doctor, can't be older than 25.
+		<br><br>
+	<<else>>
+		The receptionist nods. "Please take a seat, the doctor will be right with you."
+		<br><br>
+		You don't need to wait long. A young <<personsimple>> dressed like a doctor arrives. "I'm Doctor Harper," <<he>> says, brushing <<his>> blond fringe from away from <<his>> eyes. "We've prepared a bed for you. This way."
+		<br><br>
+		<<He>> leads you through the hospital, to a room in the labour ward. A midwife adjusts a machine by the bed.
+		<br><br>
+	<</if>>
 <<else>>
-	Player gets to the hospital by going there themselves.
+	<<if $phase is 1>>
+		You awaken in a hospital bed. Several blurry figures move around. One leans closer, <<his>> features coalescing into those of Doctor Harper. "Please don't be alarmed, but your waters have broken. You're in the hospital."
+		<br><br>
+	<<else>>
+		The receptionist nods. "Please take a seat, the doctor will be right with you."
+		<br><br>
+		Doctor Harper soon arrives. "We've prepared a bed for you. This way."
+		<br><br>
+		<<He>> leads you through the hospital, to a room in the labour ward. A midwife adjusts a machine by the bed.
+		<br><br>
+	<</if>>
 <</if>>
-<br><br>
-Dr Harper is introduced if required. Harper checks the pc, if it's a non-human pregnancy they somehow recognise it.
-<br><br>
-
+<<if $exposed lt 2 and $phase isnot 1>>
+	"Please undress," the doctor says.
+<<else>>
+	"Please take a deep breath," the doctor says.
+<</if>>
 <<if playerChastity("hidden")>>
-	Chastity Belt is broken if equipped.
-	<<set $worn.genitals.type.push("broken")>>
-	<<genitalsruined>>
+	<<He>> notices your chastity belt, and opens a chest-high cupboard. <<He>> retrieves a tool shaped like a pair of prongs, but bulkier. "We need to remove that device. <<if $phase isnot 1>>Please lie down.<</if>> This won't hurt."
 	<br><br>
+	<<if $phase isnot 1>>You lie down. The ceiling is plain white. There's a fan right above you. <</if>><<He>> grasps your <<print $worn.genitals.name>> with the prongs, and presses a button on the handle. You hear a whirring noise within the tool, <span class="pink">and they snap the metal.</span>
+	<<set $worn.genitals.type.push("broken")>>
+<<elseif $phase isnot 1>>
+	"Then lie down." You do so. The ceiling is plain white. There's a fan right above you.
 <</if>>
+<br><br>
+<<undress "hospital_birth">>
 
-<<switch playerNormalPregnancyType()>>
-	<<case "human">>
-		Dr Harper mentions a hidwife waiting for the player.
-		<br><br>
-		<<link [[Next (00:05)| Pregnancy Birth Hospital 2]]>><<pass 5>><<set $phase to 1>><</link>>
-	<<case "wolf">>
-		Dr Harper mentions something about the pregnancy being abnormal and having to take the player somewhere.
-		<br><br>
-		<<link [[Next (00:15)| Pregnancy Birth Hospital 2]]>><<pass 15>><<set $phase to 2>><</link>>
-<</switch>>
+
+
+<<link [[Next|Pregnancy Birth Hospital 2]]>><</link>>
+<br>
 
 :: Pregnancy Birth Hospital 2
-<<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<if $phase is 1>>
-	Player gets taken to a room where there is a midwife waiting. Labour contractions beginning to get more frequent, pain.
-	Player feels the need to "push" but told to hold out a bit longer. Players clothes get removed. Dr Harper Leaves
-	<br><br>
-	<<strip>>
-	<<link [[Next (00:05)| Pregnancy Birth Hospital 3]]>><<pass 5>><<endevent>><</link>>
-<<elseif $phase is 2>>
-	<<switch playerNormalPregnancyType()>>
-		<<case "wolf">><<set $exitPassage to "Pregnancy Birth Hospital Wolf">>
-		<<default>>Something went wrong with the passage "Pregnancy Birth Hospital 2" <<set $exitPassage to "Hospital Foyer">>
-	<</switch>>
-	Player is taken to where they can give birth
-	<br><br>
-	<<link [[Next (01:00)|$exitPassage]]>><<pass 1 hour>><<endevent>><</link>>
-<</if>>
+<<effects>>
 
-:: Pregnancy Birth Hospital 3
-<<set $outside to 0>><<set $location to "hospital">><<effects>>
-
-Player gets on the bed, midwife checking the player over and helping to prepare. Frequent labour contractions and more pain.
-Midwife give the ok to push
+The midwife places a mask over your face. You feel your consciousness fade. Several other figures appear around you, their forms ablur.
 <br><br>
 
 <<set _pregnancy to getPregnancyObject()>>
@@ -537,57 +541,270 @@ Midwife give the ok to push
 <<set $timeCalc to random(_min, _max)>>
 <<set _hours to Math.floor($timeCalc / 60)>>
 <<set _minutes to $timeCalc % 60>>
-<<link [["Next (0"+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Hospital 4]]>><<pass $timeCalc>><</link>>
+
+/* Note: Pregnancy species */
+<<switch playerNormalPregnancyType()>>
+	<<case "human">>
+		Harper's voice floats through the fog. "Normal human, but keep the others on the line, just in case..."
+		<br><br>
+		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Hospital 3]]>><<endevent>><<pass $timeCalc>><</link>>
+	<<case "wolf">>
+		Harper's voice floats through the fog. "Not human. This will be an abnormal delivery. Follow my instructions to the letter..."
+		<br><br>
+		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Hospital Wolf]]>><<endevent>><<pass $timeCalc>><</link>>
+<</switch>>
+
+:: Pregnancy Birth Hospital 3
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<endevent>>
+
+<<generate1>><<person1>>
+<<set $litter_size to $sexStats.vagina.pregnancy.fetus.length>>
+You awaken in another room. A smiling midwife stands beside your bed, 
+<<if $litter_size is 1>>
+
+	holding a bundled baby in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you the baby. They sit in your arms, eyes shut, chest rising and falling with gentle breaths.
+	<br><br>
+
+	"We've run all the tests," the midwife says. "There's not a single health problem. Have you thought of a name?"
+	<br><br>
+
+<<elseif $litter_size is 2>>
+
+	holding two bundled babies in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you one, and then the other. One sits in each of your arms, eyes shut, chests rising and falling with gentle breaths.
+	<br><br>
+
+	"We've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+
+<<else>>
+
+	holding a trio of bundled babies in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you one, and then another. One sits in each of your arms. The midwife holds the third right in front of your chest. Their eyes are shut, their chests rising and falling with gentle breaths.
+	<br><br>
+
+	"We've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+<</if>>
+
+<<birthUi "pc" "hospital" "home" "Pregnancy Birth Hospital 4" _time>>
 
 :: Pregnancy Birth Hospital 4
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-$timeCalc can be used to reference how difficult the birth was, base it on the number of children
-Player pushes and eventually gives birth, and is given the children to hold. Mild contractions still occur, pain stops here.
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+<<if $litter_size is 1>>
+
+	You cradle your baby for a while longer, enjoying <<childhis>> tiny breaths and movements. <<childHe>> spends most of the time sleeping, but opens <<childhis>> eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth is 1>>
+		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
+
+	<<else>>
+		<<He>> assists you with changing <<childname>>'s nappy, and bathing <<childhim>>. 
+
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime."
+	<br><br>
+	You want nothing more than to hold <<childname>>, but you find yourself dozing all the same.
+	<br><br>
+<<elseif $litter_size is 2>>
+	You cradle your babies for a while longer, enjoying their tiny breaths and movements. They spends most of the time sleeping, but opens their eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth is 1>>
+		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
+
+	<<else>>
+		<<He>> assists you with changing <<childname>>'s nappy, and with bathing <<childhim>>. 
+
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime."
+	<br><br>
+	You want nothing more than to hold the twins, but you find yourself dozing all the same.
+	<br><br>
+<<elseif $litter_size is 3>>
+	You cradle your babies for a while longer, enjoying their tiny breaths and movements. They spends most of the time sleeping, but opens their eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth is 1>>
+		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
+	<<else>>
+		<<He>> assists you with changing <<childname>>'s nappy, and with bathing <<childhim>>. 
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime."
+	<br><br>
+	You want nothing more than to hold the triplets, but you find yourself dozing all the same.
+	<br><br>
+<</if>>
+
+<<link [[Next|Pregnancy Birth Hospital 5]]>><<storeon "hospital_birth">><<pass 24 hour>><</link>>
 <br><br>
 
-<<link [[Next| Pregnancy Birth Hospital 5]]>><<unset $timeCalc>><</link>>
 
 :: Pregnancy Birth Hospital 5
-<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<effects>>
 
-Player is taken somewhere more comfortable where they can recover and start to have special time with their newborns. Option to name occurs here.
+<<if $littersize gte 2>>Your babies<<else>><<childname>><</if>> lies in a cradle while the midwife helps you stand. You feel your insides drop as you stand, but <<he>> assures you that's normal.
 <br><br>
-<<birthUi "pc" "hospital" "home" "Pregnancy Birth Hospital 6" _time>>
+
+Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+<br><br>
+
+The midwife helps you to dress. "You should be good to go," <<he>> says. "Someone's waiting for you. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].gender is "f">>mum<<else>>dad<</if>> I think."
+<br><br>
+
+<<link [[Next|Pregnancy Birth Hospital 6]]>><<endevent>><</link>>
 
 :: Pregnancy Birth Hospital 6
-<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<set $location to "town">><<effects>>
 
-Player sleeps/cuddles babies/breastfeeds/looks after them each of them.
+<<npc "Bailey">><<person1>>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+Bailey waits for you in the hospital foyer. <<He>> smiles when <<he>> sees you. It almost looks real. "We've a place prepared," <<he>> says.
+<<if $litter_size is 1>>
+
+<<elseif $litter_size is 2>>
+	"For both of them."
+<<else>>
+	"For all three of them."
+<</if>>
+<<He>> leads you outside, where <<his>> car waits. <<He>> holds open the passenger door for you, before climbing in the other side.
 <br><br>
-Player re-equips clothes
-<<clotheson>>
+The engine comes to life.
+<<if $first_birth is 1>>
+	"You're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a day."
+	<br><br>
+	"They don't leave the nursery," <<he>> adds as <<he>> drives from the hospital car park. "Ever."
+<<elseif playerNormalPregnancyTotal() lte 4>>
+	"Remember that you're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a day."
+	<br><br>
+<<else>>
+	"You're an irresponsible slut," <<he>> says. "Remember that if I have to intervene in the care of your offspring, it'll cost you an extra <span class="red">£100</span> a day."
+<</if>>
 <br><br>
 
-<<link [[Next (24:00)|????]]>><<pass 24 hour>><<endevent>><</link>>
+<<if $litter_size is 1>>
+	<<link [[Tell Bailey your baby's name|Pregnancy Birth Hospital 7]]>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Just hold the baby tight|Pregnancy Birth Hospital 7]]>><</link>>
+	<br>
+<<else>>
+	<<link [[Tell Bailey your babies' names|Pregnancy Birth Hospital 7]]>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[Just hold your babies tight|Pregnancy Birth Hospital 7]]>><</link>>
+	<br>
+<</if>>
+
+
+:: Pregnancy Birth Hospital 7
+<<effects>>
+
+Bailey drives past the temple, onto Danube Street.
+<<if $phase is 1>>
+	"This is <<childname>>," you begin, holding <<childhim>> closer to Bailey's arm. You tell Bailey everything that happened from when you arrived at the hospital. <<He>> doesn't interrupt, but doesn't respond either.
+<<else>>
+	<<if $litter_size gte 2>>
+		You hold your babies to your chest. <<childname>> yawns.
+	<<else>>
+		You hold your baby to your chest. <<childHe>> yawns.
+	<</if>>
+<</if>>
 <br><br>
-<<link [[Debug exit|Hospital Foyer]]>><<endevent>><</link>>
+<<pass 5>>
+
+You arrive at Domus Street. Bailey holds open the car door for you.
+
+<<if $first_birth>>
+	"I'll escort you inside," <<he>> says. <<His>> eyes dart to <<if $litter_size gte 2>>the babies in your arms<<else>><<childname>><</if>>. "For safety."
+	<br><br>
+	You walk through the orphanage, towards the youth ward.
+	<br><br>
+<<else>>
+	"I'll escort you to the youth ward," <<he>> says. <<His>> eyes dart to <<if $litter_size gte 2>>the babies in your arms<<else>><<childname>><</if>>. "For safety."
+	<br><br>
+	<<He>> leads you through the orphanage, towards the youth ward.
+<</if>>
+
+<<link [[Next|Pregnancy Birth Hospital 8]]>><</link>>
+<br>
+
+:: Pregnancy Birth Hospital 8
+<<set $location to "home">><<effects>>
+
+<<generate2>><<person2>>
+<<if $litter_size is 1>>
+	One of Baileys goons, a <<person>> exits the youth ward, pushing a cradle. You place <<childname>> within. "My staff keep an eye on things here," Bailey says. "They'll make sure your brat doesn't starve or anything, <span class="gold">but make sure you spend some time with them every day.</span> Or I'll charge."
+	<br><br>
+	<<person1>>
+	"Later though," <<he>> adds. "You need to freshen up, and your brat is asleep anyway. The <<person2>><<person>> pushes <<childname>> through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on <<childname>> until <<childhe>>'s safely within.
+	<br><br>
+<<elseif $litter_size is 2>>
+	One of Baileys goons, a <<person>> exits the youth ward, pushing a pair of cradles. You place the twins within. "My staff keep an eye on things here," Bailey says. "They'll make sure your brats don't starve or anything, <span class="gold">but make sure you spend some time with them every day.</span> Or I'll charge."
+	<br><br>
+	<<person1>>
+	"Later though," <<he>> adds. "You need to freshen up, and your brats are asleep anyway. The <<person2>><<person>> pushes the twins through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on them until they're safely within.
+	<br><br>
+<<else>>
+	One of Baileys goons, a <<person>> exits the youth ward, pushing a trio of cradles. You place the triplets within. "My staff keep an eye on things here," Bailey says. "They'll make sure your brats don't starve or anything, <span class="gold">but make sure you spend some time with them every day.</span> Or I'll charge."
+	<br><br>
+	<<person1>>
+	"Later though," <<he>> adds. "You need to freshen up, and your brats are asleep anyway. The <<person2>><<person>> pushes the triplets through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on them until they're safely within.
+	<br><br>
+<</if>>
+<<if $first_birth>>
+	<span class="gold">You can now access the youth ward, and the nursery.</span>
+	<br><br>
+<</if>>
+
+<<link [[Next|Orphanage]]>><<unset $litter_size>><<unset $first_birth>><<endevent>><</link>>
 
 :: Pregnancy Birth Hospital Wolf
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-Player leaves the hospital and is taken to the forest
+You feel a rumbling all around you. Then a pain in your abdomen. You're tied down, ling in the back of what looks like an ambulance.
+<<if playerChastity("hidden")>>
+	There's a figure beside you, holding a blurry tool to your <<print $worn.genitals.name>>. You feel the metal snap as you lose consciousness once more.
+	<<set $worn.genitals.type.push("broken")>>
+	<<genitalsruined>>
+	<br><br>
+<<else>>
+	A figure beside you presses a mask to your face, and you lose consciousness once more.
+	<br><br>
+<</if>>
 
-<br><br>
 <<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 2]]>><<pass 15>><<endevent>><</link>>
 
 :: Pregnancy Birth Hospital Wolf 2
 <<location "forest">><<effects>>
-Player enters the forest on their own?
+
+You awaken again. You hang limps between two figures. The branches of the forest hang overhead. You're being carried, but you're too weak to move. Your consciousness slips once more.
 
 <br><br>
 <<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 3]]>><<pass 15>><<endevent>><</link>>
 
 :: Pregnancy Birth Hospital Wolf 3
 <<location "forest">><<effects>>
-Extra passage example
-
+You hit the ground. A pair of footsteps rush away from you.
 <br><br>
-<<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 4]]>><<pass 15>><<endevent>><</link>>
 
+You remember this smell. You're outside the wolf cave.
+<br><br>
+<<pass 15>><<playerEndWaterBreaking>><<endevent>>
+<<pregnancyBirthWolfCave>>
+
+
+/* Note: Pregnancy - Unused passages */
 :: Pregnancy Birth Hospital Wolf 4
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
 Player reaches the wolf cave, is guided to the inside of the cave to give birth.
@@ -606,7 +823,7 @@ Player reaches the wolf cave, is guided to the inside of the cave to give birth.
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
 The others wolves leave the player alone for them to give birth, sequence should follow similar to the normal birth, though alone this time.
 <br><br>
-<<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 6]]>><<pass 15>><<playerEndWaterBreaking>><<endevent>><</link>>
+<<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 6]]>><<pass 15>><<endevent>><</link>>
 
 :: Pregnancy Birth Hospital Wolf 6
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
@@ -695,7 +912,7 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 	<</if>>
 <</widget>>
 
-/*ToDo: Pregnancy Story Content: Has placeholder text, Ultrasound, wolf varient is lacking, other parts may need re-writing. Check each passage related here*/
+/*Note: Pregnancy */
 :: Pregnancy ultrasound
 /* Ultrasounds not performed before 12 weeks in normal circumstances, or before 8 in high-risk. Prior to 12 weeks, ultrasounds are usually performed transvaginally. Future commit will address this.*/
 
@@ -704,20 +921,19 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <<if $ultrasoundIntro isnot 1>>
 	<<set $ultrasoundIntro to 1>>
 	/* player is introduced to what ultrasounds are, how it occurs and the reasons why they are done. */
-	"So, I guess congratulations are in order?" says Doctor Harper. "The next step is to run a diagnostic ultrasound to look at the child. If you are far enough along, we can determine the child's sex," <<he>> says.<br>
-	"Please follow the nurse to Radiology."<br><br>
+	"First of all," the doctor says. "Congratulations. An ultrasound is a wise request. Please follow me to radiology."
 <<else>>
-	You follow the signs to Radiology for your ultrasound appointment.
+	"An ultrasound is a wise request. Please follow me to radiology."
 <</if>>
+<br><br>
 
-You are taken to a room in the hospital basement. Several machines blink and make soft "ping" sounds.
-A bed is in one corner of the room, with a monitor next to it, facing away from the bed.<br>
-A technician enters the room and asks you to lie down and remove your outerwear.<br>
-<<overupperstrip>>
-<<upperstrip>>
-<<underupperstrip>>
+<<He>> leads you to a room in the hospital basement. Several machines blink, and make a soft pinging sound. There's a bed in one corner of the room, with a monitor next to it.
+<br><br>
 
-<<link [[Next|Pregnancy ultrasound 2]]>><</link>>
+"Please undress down to your underwear," the doctor says.
+<br><br>
+
+<<link [[Next|Pregnancy ultrasound 2]]>><<overupperstrip>><<upperstrip>><<underupperstrip>><</link>>
 
 :: Pregnancy ultrasound 2
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
@@ -725,30 +941,35 @@ A technician enters the room and asks you to lie down and remove your outerwear.
 You strip and lie down.
 <<set _pregnancy to getPregnancyObject()>>
 <<if _pregnancy.timer lte _pregnancy.timerEnd * 0.3>>
-	"You're not far along enough for an abdominal ultrasound," the technician remarks. "But we can use the doppler to listen for cardiac activity."
-	The technician picks up a small handheld instrument, twists a dial and begins pressing a small circular wand against your lower abdomen.<br>
-	She moves the wand slowly across your body as the instrument makes static-sounding hisses, punctuated by occasional thrums.
-	She slows and the thrums become more rhythmic in a staccato dance. "There! Listen. A healthy child." The thrumming soothes you at a little more than two beats every second.<br>  <<stress -10>>
+	"I'm afraid you're not far enough along for an abdominal ultrasound," Doctor Harper remarks. "But we can use the doppler to listen for cardiac activity."
+	<br><br>
+	<<He>> picks up a small handheld instrument, twists a dial, and presses a small circular wand against your lower abdomen. <<He>> moves it across your body. The instrument makes static-sounding hisses, punctuated by occasional thrums. <<He>> slows, and the thrums becom ea rhythmic staccato dance.
+	<br><br>
+	"There! Listen. A healthy child." A little more than two beats a second. The thrumming soothes you.<<lstress>>
+	<br><br>
+	<<stress -10>>
 	<<if _pregnancy.fetus.length gt 1>>
-		The technician moves the wand slightly and barely covers the surprise on her face. "And there's another one!"<br>
-		You hear a second pulsing, slightly different in tempo.<br>
-		You wonder how you will provide for multiple babies at once.<<stress 2>> <<gstress>> <br>
+		<<He>> moves the wand a little more, and fails to conceal surprise. "There's another one." You hear a second pulsing, slightly different in tempo.<<gstress>><<stress 6>>
+		<br><br>
 	<</if>>
 <<else>>
 	<<bodyliquid "vaginaoutside" "goo" 2>>
-	The technician tries to make small talk as she prepares the gel and wand for the procedure. Thankfully the gel is warmed as she slathers it on your abdomen.<br>
+	Doctor Harper prepares the gel and wand for the procedure. You find the gel to be comfortably warm as <<he>> slathers it on your abdomen.
+	<br><br>
+	
 	<<if $cowbuild gte 20>>
-		<br>Your teats tingle with anticipation.<<garousal>> <<arousal 3>> <br><br>
+		<br>You surprise the urge to moo. Your teats tingle with anticipation.<<garousal>> <<arousal 3>> <br><br>
 	<<elseif $wolfbuild gte 20>>
 		/* <br>Your wolf fur gets slightly matted by the gel.<br><br> */
 	<<elseif $catbuild gte 20>>
 		/* <br>Your cat fur gets slightly matted by the gel. <br><br> */
 	<</if>>
-
-	The technician runs the wand left and right over your lower abdominals, as the screen changes and flashes different shades of grey over her face.<br>
-	There's a lot of clicking and typing on the computer as the technician measures different parts - femur, head, humerus, and amniotic fluid levels.<br>
-	Finally, she turns to you and asks if you'd like to see the pictures now.<br>
-	You nod nervously, and the technician swings the monitor toward your face.
+	<<He>> runs the wand left and right over your lower abdomen as the screen changes and flashes different shades of grey over <<his>> face.
+	<br>
+	There's a lot of clicking and typing on the computer as the technician measure different parts. Femur, head, humerous, and amniotic fluid levels. <<He>> at last turns to you. "Would you like to see?"
+	<br><br>
+	<<He>> swings the monitor to face you.
+	<br><br>
 
 	<<if _pregnancy.fetus.length gt 1>>
 		<<set _multiple to true>>
@@ -777,99 +998,119 @@ You strip and lie down.
 	<<switch _pregnancy.type>>
 		<<case "human">>
 
-			<br>You see <<if _multiple>><<if _pregnancy.fetus.length is 3>>three<<else>>two<</if>> sets<<else>>a pair<</if>> of eyes, arms, hands, legs, and feet as the technician moves the wand across your full belly. <<stress -5>><<lstress>><br>
-			<br>"Perfect pictures!" the technician gushes. "I'll print them out for you to take home."<br>
+			You see <<if _multiple>><<if _pregnancy.fetus.length is 3>>three<<else>>two<</if>> sets<<else>>a pair<</if>> of eyes, arms, hands, legs, and feet as the doctor moves the wand across your full belly. <<stress -5>><<lstress>><br><br>
+			"Perfect," the doctor says. "I'll print them out for you to take home."<br><br>
 
 			<<if _pregnancy.timer gte _pregnancy.timerEnd * 0.9>>
 			/* 36-40 weeks, full term */
 				<<if ! _multiple>>
-					"Good news, your baby has dropped and is head-down. Hopefully this has eased some of the pressure you feel!"
+					"Good news," <<he>> continues. "Your baby has dropped and is head-down. This should ease some of the pressure you feel."
 				<</if>>
-				There's not much room left in your womb -- it'll be time to deliver soon.<br>
-				Doctor Harper enters and provides some literature about what to do when labour begins.<br>
-				"Please come see us at the hospital when your waters break. We will take good care of you."<br>
+				It'll be time to deliver soon. The doctor hands you some literature about labour, and what to do when it begins. "Please come see us when your waters break. We will take good care of you."
+				<br><br>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.8>>
 			/*32-36 weeks, preterm */
-				As the technician continues to probe, you feel several fluttery kicks from your womb.<br>
-				"Based on the measurements," the technician says, "you'll be full term in a few weeks. Have you made your birth plans yet? Make sure you're getting enough rest and nutrition!"<br>
-				You're not sure what other plans to make right now, but you know you'll need rest and money. <<gstress>><<stress 2>><br>
+				You feel several fluttery kicks as the doctor continues to probe. "Based on these measurements," the technician says, "You'll be full term in a few weeks. Have you made birth plans yet? Make sure you're getting rest and nutrition."
+				<br><br>
+				You know you'll need rest, and money.<<gstress>><<stress 6>>
+				<br><br>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.7>>
 			/*28-32 weeks */
-				"Look, <<print _he>> is moving around! Can you see the fingers?" the technician coos. You look, and it appears <<print _his>> hand is waving at the screen. <<llstress>><<stress -7>><br>
-				You feel the movements from the inside at the same time.
-				<br>Doctor Harper enters the room.<br><br>
+				"Look, <<print _he>> is moving around," the doctor says. "Can you see the fingers?" It appears <<print _his>> hand is waving at the screen. You feel movements inside at the same time.<<llstress>><<stress -7>>
+				<br><br>
+				
 				<<if _multiple>>
-					"Your children look healthy. They just need to keep growing, putting on weight and maturing their lungs.
-					It's very important that you make healthy choices right now, as your children depend on your body for everything."<br>
+					"Your children look healthy," Harper continues. "They just need to keep growing, putting on weight and maturing their lungs.
+					It's very important that you make healthy choices right now, as your children depend on your body for everything."
 				<<else>>
-					"Your child looks healthy. <<print _He>> just need to keep growing, putting on weight and maturing <<print _his>> lungs.
-					It's very important that you make healthy choices right now, as your child depends on your body for everything."<br>
+					Harper continues. "Your child looks healthy. <<print _He>> just needs to keep growing, putting on weight and maturing <<print _his>> lungs.
+					It's very important that you make healthy choices right now, as your child depends on your body for everything."
 				<</if>>
+				<br><br>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.6>>
 			/* 24-28 weeks */
 				<<if _multiple>>
-					The technician continues to probe your belly. As she does, you feel like there is a swarm of butterflies inside as your children turn back and forth in response to the prodding from the ultrasound. <br>
-					Doctor Harper enters the room. "Everything seems in order. Your babies are measuring <<print _pregnancy.fetus[0].features.size>>, and is perfectly healthy. Please come see us in a few months to make sure you're ready to give birth."<br>
+					The doctor continues to probe your belly. As <<he>> does, you feel like there is a swarm of butterflies inside as your children turn back and forth in response to the prodding.
+					<br><br>
+					"Everything seems in order," Harper says. "Your babies are measuring <<print _pregnancy.fetus[0].features.size>>, and are perfectly healthy. Please come see us in a few months, when you're almost ready to give birth.
+					<br><br>
 				<<else>>
-					The technician continues to probe your belly. As she does, you feel like there is a swarm of butterflies inside as your child turns back and forth in response to the prodding from the ultrasound.<br>
-					Doctor Harper enters the room. "Everything seems in order. Your baby is measuring <<print _pregnancy.fetus[0].features.size>>, and is perfectly healthy. Please come see us in a few months to make sure you're ready to give birth."<br>
+					The doctor continues to probe your belly. As <<he>> does, you feel like there is a swarm of butterflies inside as your children turn back and forth in response to the prodding.
+					<br><br>
+					"Everything seems in order," Harper says. "Your babies are measuring <<print _pregnancy.fetus[0].features.size>>, and is perfectly healthy. Please come see us in a few months, when you're almost ready to give birth.
+					<br><br>
 				<</if>>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.4>>
 			/* 16-24 weeks */
 				<<if ! _pregnancy.genderKnown>>
 					<<if $_multiple>>
 					    <<set _pregnancy.genderKnown to true>>
+						The doctor glides the wand over your bulging belly. The pressure is uncomfortable.
+						<br><br>
+						"Are you excited to know the sex of your babies?" <<he>> announces.
 						The technician moves the wand over your gently bulging belly. The wand glides smoothly, though the pressure she is using is uncomfortable.<br>
-						"Are you excited to know the sex of your babies?" she annouces. "Doctor Harper will be in momentarily."<br>
+						"Are you excited to know the sex of your babies?" she annouces. 
 						<<pregnancyGendersText>>
 					<<else>>
 							<<set _pregnancy.genderKnown to true>>
-							The technician moves the wand over your slightly rounded abdomen. The wand glides smoothly, though the pressure she is using is uncomfortable.<br>
+							The doctor glides the wand over your rounded abdoment. The pressure is uncomfortable.
+							<br><br>
 							<<if _pregnancy.fetus[0].gender is "m">>
-								"Congratulations, it's a boy! You can see the penis and scrotum right there." The technician traces out a head-and-shoulders looking pattern on the monitor. It just looks like a blur to you.<br>
+								"It's a boy," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
+								<br><br>
 							<<elseif _pregnancy.fetus[0].gender is "f">>
-								"Congratulations, it's a girl! You can see the vulvar folds here." The technician draws three short parallel lines on the monitor that look roughly like a sandwich.<br>
+								"It's a girl," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
+								<br><br>
 							<<else>>
-								"Congratulations, it's a hermaphrodite! This one will be a very special child." The technician points out three lines and three bumps on the monitor. Your head is swimming with the idea of raising a baby with both sets of organs.<br>
+								"I'm afraid I can't tell if it's a boy or a girl," <<he>> says. "<span class="blue">It almost looks like both.</span> Regardless, they're healthy. Congratulations." The screen just looks like a blur to you.
+								<br><br>
 							<</if>>
-
 					<</if>>
 				<<else>>
 					<<if _multiple>>
-						"Your babies are doing great. They're a little smaller than if you just had the one, but they are responsive and moving well. There's ample fluid as well, so it should be a normal pregnancy."<br>
+						"Your babies are doing fine," the doctor says. "They're a little smaller than if you just had the one, but they are responsive and moving well. There's ample fluid as well, so it should be a normal pregnancy."
 						<<llstress>> <<stress -8>>
-						On the screen you can see them moving around, legs and arms switching places. One jerks rapidly, and the technician giggles. "Hiccups!"<br>
-
+						<br><br>
+						On the screen you can see them moving around, legs and arms switching places. One jerks. "Hiccups," Harper assures you.
+						<br><br>
 					<<else>>
-						"Your baby is doing great. <<print _He>> is responsive and moving well. There's ample fluid as well, so it should be a normal pregnancy."<br>
+						"Your baby is doing great. <<print _He>> is responsive and moving well," the doctor says. "There's ample fluid as well, so it should be a normal pregnancy."
 						<<llstress>> <<stress -8>>
-						On the screen you can see <<print _him>> moving around, legs and arms switching places. <<print _He>> jerks rapidly, and the technician giggles. "Hiccups!"<br>
+						<br><br>
+						On the screen you can see <<print _him>> moving around, legs and arms switching places. <<print _He>> jerks. "Hiccups," Harper assures you.
+						<br><br>
 					<</if>>
-
 				<</if>>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.3>>
 				<<if ! _pregnancy.genderKnown>>
 				/* 12-16 weeks */
-					"It's time!" the technician announces.<br>
+					"It's time," the doctor announces.
 					<<if _multiple>>
-						The technician continues to move the wand over your gently bulging belly. The wand glides smoothly, though the pressure she is using is uncomfortable.<br>
-						"Are you excited to know the sex of your babies?" she annouces. "Doctor Harper will be in momentarily."<br>
+						<<He>> glides the wand over your gently bulging belly. The pressure is uncomfortable.
+						<br><br>
+						"Are you excited to know the sex of your babies?" <<he>> asks.
+						<br><br>
 						<<pregnancyGendersText>>
 						<<set _pregnancy.genderKnown to true>>
 					<<else>>
 						<<set _pregnancy.genderKnown to true>>
-						The technician continues to move the wand over your slightly rounded abdomen. The wand glides smoothly, though the pressure she is using is uncomfortable.<br>
+						<<He>> glides the wand over your slightly rounded abdoment. The pressure is uncomfortable.
+						<br><br>
 						<<if _pregnancy.fetus[0].gender is "m">>
-							"Congratulations, it's a boy! You can see the penis and scrotum right there." The technician traces out a head-and-shoulders looking pattern on the monitor. It just looks like a blur to you.<br>
+							"It's a boy," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
+							<br><br>
 						<<elseif _pregnancy.fetus[0].gender is "f">>
-							"Congratulations, it's a girl! You can see the vulvar folds here." The technician draws three short parallel lines on the monitor that look roughly like a sandwich.<br>
+							"It's a girl," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
+							<br><br>
 						<<else>>
-							"Congratulations, it's a hermaphrodite! This one will be a very special child." The technician points out three lines and three bumps on the monitor. Your head is swimming with the idea of raising a baby with both sets of organs.<br>
+							"I'm afraid I can't tell if it's a boy or a girl," <<he>> says. "<span class="blue">It almost looks like both.</span> Regardless, they're healthy. Congratulations." The screen just looks like a blur to you.
+							<br><br>
 						<</if>>
 					<</if>>
 				<<else>>
-						"Your baby is doing great. <<print _He>> is responsive and moving well. There's ample fluid as well, so it should be a normal pregnancy." <<llstress>> <<stress -8>> <br>
-						On the screen you can see <<print _him>> moving around, legs and arms switching places. <<print _He>> jerks rapidly, and the technician giggles. "Hiccups!"<br>
+					"Your baby is healthy," the doctor says. "<<He>> is reponsive, and moving well. There's ample fluid, so it should be a normal pregnancy."<<llstress>><<stress -8>>
+					<br><br>
+					You can see <<print _him>> moving around on the screen, legs and arms switching places. <<print _He>> jerks. "Hiccups," Harper assures you.<br>
 				<</if>>
 			<<else>>
 			/* Shouldn't get here. */
@@ -886,8 +1127,9 @@ You strip and lie down.
 :: Pregnancy ultrasound 3
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 
+
+You thank Doctor Harper for the scan as <<he>> hands you a warm towel. You wipe off the gel.
+<br><br> <<bodyliquid "vaginaoutside" "goo" -1>>
 <<clotheson>>
-You thank Doctor Harper for the scan. The technician hands you a warm towel and helps you wipe off the gel.<br> <<bodyliquid "vaginaoutside" "goo" -1>>
-You dress and prepare for what comes next for you and your offspring.<br>
 
 <<link [[Return to foyer|Hospital Foyer]]>><<endevent>><</link>>

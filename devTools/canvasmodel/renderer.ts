@@ -232,8 +232,8 @@ namespace Renderer {
 				break;
 			case "radial":
 				gradient = globalC2D.createRadialGradient(
-					spec.values[0], spec.values[1], spec.values[2],
-					spec.values[3], spec.values[4], spec.values[5]
+					spec.values[1], spec.values[2], spec.values[3],
+					spec.values[4], spec.values[5], spec.values[6]
 				);
 				break;
 			default:

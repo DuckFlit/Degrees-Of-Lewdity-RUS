@@ -12,7 +12,7 @@ setup.hair = {
 				"neat",
 				"curly side up",
 				"heart braid",
-				"ruffled",
+				"ruffled"
 			],
 			devolve: ["ruffled"],
 		},
@@ -23,7 +23,8 @@ setup.hair = {
 		},
 		{
 			name: "double tail",
-			list: ["pigtails", "twintails", "curly pigtails", "sailor buns", "loop braid"],
+			list: ["pigtails", "twintails", "curly pigtails", "sailor buns", "loop braid", 
+			"thick twintails"],
 			devolve: ["twintails"],
 		},
 		{
@@ -71,6 +72,7 @@ setup.hair = {
 				"ringlet curl",
 				"curtain",
 				"trident",
+				"framed"
 			],
 			devolve: ["messy", "trident", "thin flaps"],
 		},
