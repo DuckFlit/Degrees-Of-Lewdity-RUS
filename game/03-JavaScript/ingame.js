@@ -83,13 +83,13 @@ const combatActionColours = {
 	Default: {
 		brat: [
 			/* leftaction or rightaction */
-			"steal", "penwhack", "freeface", "leftcovervagina", "leftcoverpenis", "leftcoveranus", "rightcovervagina", "rightcoverpenis", "rightcoveranus", "leftunderpull", "leftskirtpull", "leftlowerpull", "leftupperpull", "rightunderpull", "rightskirtpull", "rightlowerpull", "rightupperpull", "rightUndressOther", "leftUndressOther", "stopchoke", "clench", "shacklewhack", "leftfold", "rightfold", "dildowhack", "hypnosiswhack", "leftstruggleweak", "rightstruggleweak", "handpullpenis", "handpullvagina", "handpullanus", "leftresistW", "rightresistW", "leftstillW", "rightstillW",
+			"steal", "penwhack", "freeface", "leftcovervagina", "leftcoverpenis", "leftcoveranus", "rightcovervagina", "rightcoverpenis", "rightcoveranus", "leftunderpull", "leftskirtpull", "leftlowerpull", "leftupperpull", "rightunderpull", "rightskirtpull", "rightlowerpull", "rightupperpull", "rightUndressOther", "leftUndressOther", "stopchoke", "clench", "shacklewhack", "leftfold", "rightfold", "dildowhack", "hypnosiswhack", "leftstruggleweak", "rightstruggleweak", "handpullpenis", "handpullvagina", "handpullanus", "leftresistW", "rightresistW", "leftstillW", "rightstillW", "penisremovecondom", "npcremovecondom",
 			/* feetaction */
 			"run", "hide", "confront", "feetresistW",
 			/* mouthaction */
-			"pullaway", "ejacspit", "pullawayvagina", "finish", "novaginal", "nopenile", "noanal", "scream", "mock", "breastclosed", "breastpull", "pullawaykiss", "noupper", "analpull", "up", "stifleorgasm", "stifle", "mouthresistW", "handcloseW", "growl",
+			"pullaway", "ejacspit", "pullawayvagina", "finish", "novaginal", "nopenile", "noanal", "scream", "mock", "breastclosed", "breastpull", "pullawaykiss", "noupper", "analpull", "up", "stifleorgasm", "stifle", "mouthresistW", "handcloseW", "growl", "askPullOut",
 			/* penisaction */
-			"othermouthescape", "escape", "otheranusescape", "fencingescape",
+			"othermouthescape", "escape", "otheranusescape", "fencingescape", "pullOut",
 			/* vaginaaction */
 			"tribescape",
 			/* anusaction */
@@ -105,7 +105,7 @@ const combatActionColours = {
 		],
 		meek: [
 			/* leftaction or rightaction */
-			"behind", "fold", "leftcovervaginameek", "leftcoverpenismeek", "leftcoveranusmeek", "rightcovervaginameek", "rightcoverpenismeek", "rightcoveranusmeek", "leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "pickupSexToy", "leftcamerapose", "rightcamerapose",
+			"behind", "fold", "leftcovervaginameek", "leftcoverpenismeek", "leftcoveranusmeek", "rightcovervaginameek", "rightcoverpenismeek", "rightcoveranusmeek", "leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "pickupSexToy", "leftcamerapose", "rightcamerapose", "peniscondom", "npcgivecondom",
 			/* feetaction */
 			"strut",
 			/* mouthaction */
@@ -123,7 +123,7 @@ const combatActionColours = {
 			/* feetaction */
 			"grab", "vaginagrab", "grabrub", "vaginagrabrub", "rub",
 			/* mouthaction */
-			"peniskiss", "kisslips", "kissskin", "suck", "lick", "ejacswallow", "moan", "breastsuck", "breastlick", "swallow", "movetochest", "othervagina", "mouth", "kissback", "vaginalick", "oraledge", "askchoke", "anallick", "analkiss", "askrough",
+			"peniskiss", "kisslips", "kissskin", "suck", "lick", "ejacswallow", "moan", "breastsuck", "breastlick", "swallow", "movetochest", "othervagina", "mouth", "kissback", "vaginalick", "oraledge", "askchoke", "anallick", "analkiss", "askrough", "condoms", "noCondoms", 
 			/* penisaction */
 			"penistovagina", "penistoanus", "penisvaginafuck", "penisanusfuck", "othermouthtease", "othermouthrub", "othermouthcooperate", "tease", "cooperate", "otheranustease", "otheranusrub", "otheranuscooperate", "clitrub", "vaginaEdging", "otheranusEdging", "handtease", "handAnusRub", "handcooperate", "strokerCooperate",
 			/* fencing */
@@ -517,8 +517,8 @@ function calculateMarkedChance(deckCount, markedCount, depth, atLeast, doLog = f
 	for (let nMarkedPicked = atLeast; nMarkedPicked <= possibleMarkedCardsVisibleLimit; ++nMarkedPicked) {
 		// we calculate how many possible ways we can pull a valid number of marked cards from the deck
 		//   by dividing the cards into a pool of
-		//    * marked cards (and calculating how many ways we can pull the valid nMarkedPicked cards from the pool of markedCount marked cards),  nCr(markedCount, nMarkedPicked)
-		//    * unmarked cards (and calculating how many ways we can pull the remaining possibleMarkedCardsVisibleLimit-nMarkedPicked non-marked cards from the pool of deck-markedCount unmarked cards), ncr(deck-markedCount, possibleMarkedCardsVisibleLimit-nMarkedPicked)
+		//	* marked cards (and calculating how many ways we can pull the valid nMarkedPicked cards from the pool of markedCount marked cards),  nCr(markedCount, nMarkedPicked)
+		//	* unmarked cards (and calculating how many ways we can pull the remaining possibleMarkedCardsVisibleLimit-nMarkedPicked non-marked cards from the pool of deck-markedCount unmarked cards), ncr(deck-markedCount, possibleMarkedCardsVisibleLimit-nMarkedPicked)
 		//   and then we multiply the mutually exclusive combinations to get all possible combinations (cross-joins) of the two (since for each way we can pull (say) 1 marked card, there's the second number of ways we can pull the remaining non marked ones)
 		const markedPoolWays = nCr(markedCount, nMarkedPicked);
 		const unmarkedPoolWays = nCr(deckCount - markedCount, possibleMarkedCardsVisibleLimit - nMarkedPicked);
@@ -565,123 +565,6 @@ function bulkProduceValue(plant, quantity = 250) {
 	}
 }
 window.bulkProduceValue = bulkProduceValue;
-
-function pregnancyBellyVisible() {
-	const size = playerBellySize();
-	if (size <= 7) return false;
-	if (size <= 11 && V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) return false;
-	if (size <= 17 && V.worn.upper.type.includes("bellyHide")) return false;
-
-	return true;
-}
-window.pregnancyBellyVisible = pregnancyBellyVisible;
-
-function playerCanBreedWith(npc) {
-	/* This function can accept either a named NPC's name, or an NPC object from either NPCList or NPCName.
-	 * Examples: playerCanBreedWith("Kylar"), or playerCanBreedWith($NPCList[0]) or playerCanBreedWith($NPCName[$NPCNameList.indexOf("Kylar")])
-	 * Returns true or false. If you give it garbage, like a totally wrong name, it'll return false, so be careful about silent failures like that.
-	 * Should be used for NPC breeding lines ONLY.
-	 */
-	if (typeof npc === "string") npc = V.NPCName[V.NPCNameList.indexOf(npc)];
-
-	return (V.player.vaginaExist && npc.penis !== "none") || (V.player.penisExist && npc.vagina !== "none");
-}
-window.playerCanBreedWith = playerCanBreedWith;
-
-function playerPregnancyPossibleWith(NPC) {
-	/* Like the above function, this will accept either a named NPC's name, or an NPC object from either NPCList or NPCName.
-	* This one checks if the player could become pregnant, rather than the NPC.
-	* Returns true or false, as well as sets T.pregFalseReason, so writers can make events around the specific reason why a player and NPC might not be compatible for pregnancy at any given time.
-	*/
-	T.pregFalseReason = "";
-	if (typeof NPC === "string" || V.NPCNameList.includes(NPC.fullDescription)) {
-		// Check if this is a named NPC, whether the function is provided a string or NPCList object that belongs to a named NPC
-		const NPCObject = V.NPCName[V.NPCNameList.indexOf(typeof NPC === "string" ? NPC : NPC.fullDescription)];
-		const NPCNameCheck = NPCObject.fullDescription;
-		if (!C.npc[NPCNameCheck]) {
-			Errors.report(
-				"Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check."
-			); return false;
-		}
-		if (!NPCObject.pregnancy.enabled) {
-			T.pregFalseReason = "infertile";
-			return false; // Check for named NPC being "infertile"
-			//"this check is placed here because it only applies to named NPCs" - hwp told me to put this here
-		}
-	}
-	const NPCObject = (NPCObject || NPC);
-	if (V.sexStats.vagina.pregnancy.fetus.length) {
-		T.pregFalseReason = "playerPregnant";
-		return false; // Check if player is already pregnant
-	}
-	switch (NPCObject.type) {
-		case "human" :
-			if (V.playerPregnancyHumanDisable === "t") {
-				T.pregFalseReason = "pregnantDisabled";
-				return false;
-			} else break; // Check Human and Beast pregnancy settings
-		case "wolf": case "bird":
-			if (V.playerPregnancyBeastDisable === "t") {
-				T.pregFalseReason = "pregnantDisabled";
-				return false;
-			} else break;
-			// Check if NPC species can impregnate the player yet	
-		default: T.pregFalseReason = "pregnantTypeUnsupported"; return false;
-	}
-	if (!V.player.vaginaExist || NPCObject.gender === "f"){
-		T.pregFalseReason = "genitals";
-		return false; // Check for genital compatibility for player pregnancy
-	} 
-	return true;
-}
-window.playerPregnancyPossibleWith = playerPregnancyPossibleWith;
-
-function NPCPregnancyPossibleWithPlayer(NPC) {
-	/* Like the above function, this will accept either a named NPC's name, or an NPC object from either NPCList or NPCName.
-	* This one checks if the NPC could become pregnant, rather than the player.
-	* Returns true or false, as well as sets T.pregFalseReason, so writers can make events around the specific reason why a player and NPC might not be compatible for pregnancy at any given time.
-	*/
-	T.pregFalseReason = "";
-	if (typeof NPC === "string" || V.NPCNameList.includes(NPC.fullDescription)) {
-		// Check if this is a named NPC, whether the function is provided a string or NPCList object that belongs to a named NPC
-		const NPCObject = V.NPCName[V.NPCNameList.indexOf(typeof NPC === "string" ? NPC : NPC.fullDescription)];
-		const NPCNameCheck = NPCObject.fullDescription;
-		if (!C.npc[NPCNameCheck]) {
-			Errors.report(
-				"Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check."
-			); return false;
-		}
-		if (!NPCObject.pregnancy.enabled) {
-			T.pregFalseReason = "infertile";
-			return false; // Check for named NPC being "infertile"
-			//"this check is placed here because it only applies to named NPCs" - hwp told me to put this here too
-		}
-		if (NPCObject.pregnancy.fetus.length) {
-			T.pregFalseReason = "npcPregnant";
-			return false; // Check if named NPC is already pregnant
-		}
-	} else {
-		const NPCObject = NPC;
-		if (NPCObject.pregnancy) {
-			T.pregFalseReason = "npcPregnant";
-			return false; // Check if random NPC is already pregnant
-		}
-	}
-	if (V.npcPregnancyDisable === "t") {
-		T.pregFalseReason = "pregnantDisabled";
-		return false; // Check if NPC pregnancy is enabled or possible in settings
-	}
-	if (!["human","wolf"].includes(NPCObject.type)){
-		T.pregFalseReason = "pregnantTypeUnsupported";
-		return false; // Check if NPC species can get impregnated by the player yet		
-	}
-	if (!V.player.penisExist || NPCObject.gender === "m") {
-		T.pregFalseReason = "genitals";
-		return false; // Check for genital compatibility for NPC pregnancy
-	} 
-	return true;
-}
-window.NPCPregnancyPossibleWithPlayer = NPCPregnancyPossibleWithPlayer;
 
 function toTitleCase(str) {
 	return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());

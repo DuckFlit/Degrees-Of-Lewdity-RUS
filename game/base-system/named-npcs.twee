@@ -219,7 +219,7 @@ Zohar
 <!-- Set Pronoun -->
 <<if !$NPCName[_i].pronoun or $NPCName[_i].pronoun is "none" or _args[1] is "genders">>
 	<<if $malechance lt random(1, 100)>>
-		<<set $NPCName[_i].pronoun to "f">><<set $test to $NPCName[_i].pronoun>>
+		<<set $NPCName[_i].pronoun to "f">>
 	<<else>>
 		<<set $NPCName[_i].pronoun to "m">>
 	<</if>>
@@ -835,6 +835,16 @@ alternative way to write that:
 	<<set $NPCList[_npcno].healthmax to _wraithHP>>
 	<<set $NPCList[_npcno].traits to ["brooding", "watchful", "willful", "beautiful"]>>
 	<<set $NPCList[_npcno].skincolour to "white">>
+<<case "Alex">>
+	<<set $NPCList[_npcno].health to 200>>
+	<<set $NPCList[_npcno].healthmax to 200>>
+	/* Alex never thinks to bring a condom. */
+	<<set _condomIgnore to true>>
+<<case "Morgan">>
+	<<set $NPCList[_npcno].health to 200>>
+	<<set $NPCList[_npcno].healthmax to 200>>
+	/* I'm so sorry.*/
+	<<set $NPCName[_i].pregnancyAvoidance to random(0,100)>>
 <<default>>
 	<<set $NPCList[_npcno].health to 200>>
 	<<set $NPCList[_npcno].healthmax to 200>>
@@ -881,14 +891,29 @@ alternative way to write that:
 
 <<set $NPCList[_npcno].bold to 0>>
 <<set $NPCList[_npcno].condom to false>>
-
 <<set $NPCList[_npcno].pregnancyAvoidance to $NPCName[_i].pregnancyAvoidance>>
+
 <!-- ToDo: Pregnancy, remove $pregnancyTesting to properly enable -->
-<<if $NPCList[_npcno].pregnancyAvoidance gt random(0,100) and $pregnancyTesting>>
-	<<set $condomUse to true>>
-<</if>>
-<<if $NPCList[_npcno].pregnancyAvoidance gt 0>>
-	<<set $npcCondoms to "normal">>
+<<if $pregnancyTesting and $condomLvl gte 2>>
+	<!-- 50 is the threshold for named NPCs bringing their own condoms, do not change -->
+	<<if ($NPCList[_n].pregnancyAvoidance gte 50 and !_condomIgnore)>>
+		<<set $NPCList[_n].condom to {
+			willUse: true,
+			state: (random(0,100) gt 98 ? "damaged" : "normal"),
+			type: "plain",
+			colour: "plain",
+			worn: false
+		}>>
+	<!-- Kylar brings their own sabotaged condoms -->
+	<<elseif _nam is "Kylar">>
+		<<set $NPCList[_n].condom to {
+			willUse: false,
+			state: "damaged",
+			type: "plain",
+			colour: "plain",
+			worn: false			
+		}>>
+	<</if>>
 <</if>>
 
 <!-- Whitney and Avery should wear strap-ons based on strap-on chance -->

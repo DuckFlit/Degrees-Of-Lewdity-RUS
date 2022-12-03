@@ -19,6 +19,10 @@
 	<<promiscuityN 5>>
 <</widget>>
 
+<<widget "promiscuity6">>
+	<<promiscuityN 6>>
+<</widget>>
+
 <<widget "promiscuityN">>
 	<<set $_n to _args[0]>>
 	<<set $_scaledPromiscuityMax to 20 * $_n>>
@@ -30,13 +34,17 @@
 		You feel disgusting, but <<print $desperateaction>>.
 	<<else>>
 		<<if $control lt $controlmax>>
-			<<if $promiscuity lt $_scaledPromiscuityMax>>
+			<<if $_n is 6>>
+				Performing such an act of manic depravity <span class="green">fully restores your sense of control</span>, <span class="red">but inflicts damage to your mental state</span>.
+			<<elseif $promiscuity lt $_scaledPromiscuityMax>>
 				Performing such a lewd act excites you and <span class="green">restores your sense of control and self-worth</span>, for now.
 			<<else>>
 				Performing such a lewd act excites you, but does nothing to lift the cloud hanging over you. <span class="pink">You need to do something more extreme.</span>
 			<</if>>
 		<<else>>
-			<<if $promiscuity lt $_scaledPromiscuityMax>>
+			<<if $_n is 6>>
+				You already feel in control, <span class="red">leaving you unfulfilled as your act of manic depravity seems wasted</span>.
+			<<elseif $promiscuity lt $_scaledPromiscuityMax>>
 				You already feel in control, but performing such a lewd act <span class="green">soothes</span> and excites you.
 			<<else>>
 				You already feel in control and the act is <span class="pink">too tame to soothe</span>, but it does excite you.
@@ -56,7 +64,10 @@
 		<</switch>>
 		<<gtrauma>><<trauma $_n>>
 	<<else>>
-		<<if $promiscuity lt $_scaledPromiscuityMax>>
+		<<if $_n is 6>>
+			<<set $promiscuity += ($control lt $controlmax ? 2 : 1)>>
+			<<if $control lt $controlmax>><<set $control to $controlmax>><<gggcontrol>><</if>><<trauma 40>><<ggtrauma>>
+		<<elseif $promiscuity lt $_scaledPromiscuityMax>>
 			<<set $promiscuity += ($control lt $controlmax ? 2 : 1)>>
 			<<if $control lt $controlmax>>
 				<<ggcontrol>>
@@ -94,21 +105,26 @@
 	<<combatpromiscuityN 5>>
 <</widget>>
 
+<<widget "combatpromiscuity6">>
+	<<combatpromiscuityN 6>>
+<</widget>>
+
 <<widget "combatpromiscuityN">>
 	<<if !$promiscuityIgnore>>
 		<<set $_n to _args[0]>>
 		<<if $enemytype isnot "man">>
 			<<combatdeviancyN $_n>>
-		<<elseif $consensual is 1>>
+		<<elseif $consensual is 1 or $_n is 6>>
 			<<set $_scaledPromiscuityMax to 20 * $_n>>
 			<<if $promiscuity lt $_scaledPromiscuityMax>>
 				<<set $promiscuity += ($control lt $controlmax ? 2 : 1)>>
 				<<if $control lt $controlmax>>
-					<<set _combat_promiscuity_success to $_n>><<control 25>>
+					<<set _combat_promiscuity_success to $_n>>
+					<<if $_n is 6>><<set $control to $controlmax>><<else>><<control 25>><</if>>
 				<<else>>
 					<<set _combat_promiscuity_max_control to $_n>>
 				<</if>>
-				<<stress $_n -300>><<combattrauma `$_n * -30`>>
+				<<if $_n is 6>><<combattrauma 40>><<else>><<stress $_n -300>><<combattrauma `$_n * -30`>><</if>>
 			<<else>>
 				<<set _combat_promiscuity_failure to $_n>>
 				<<if V.daily["promiscuityStress" + $_n] isnot 1 and $statFreeze isnot true>>
@@ -124,10 +140,18 @@
 <<widget "combat_promiscuity_text">>
 	<<if _combat_promiscuity_success>>
 		<br>
-		Your promiscuous behaviour <span class="green">restores your sense of control.</span><<ggcontrol>><<ltrauma>><<lstress>><<garousal>>
+		<<if _combat_promiscuity_success is 6>>
+			Your crazed act of promiscuity <span class="green">fully restores your sense of control</span>, <span class="red">but inflicts damage to your mental state</span>.<<gggcontrol>><<ggtrauma>><<ggarousal>>
+		<<else>>
+			Your promiscuous behaviour <span class="green">restores your sense of control.</span><<ggcontrol>><<ltrauma>><<lstress>><<garousal>>
+		<</if>>
 	<<elseif _combat_promiscuity_max_control>>
 		<br>
-		Your promiscuous behaviour <span class="green">soothes and excites you.</span><<ltrauma>><<lstress>><<garousal>>
+		<<if _combat_promiscuity_max_control is 6>>
+			You already feel in control, <span class="red">leaving you unfulfilled as your act of manic depravity seems wasted</span>.<<gggcontrol>><<ggtrauma>><<ggarousal>>
+		<<else>>
+			Your promiscuous behaviour <span class="green">soothes and excites you.</span><<ltrauma>><<lstress>><<garousal>>
+		<</if>>
 	<<elseif _combat_promiscuity_failure>>
 		<br>
 		Your behaviour is promiscuous, <span class="pink">though it's too tame to soothe.</span><<lstress>><<garousal>>

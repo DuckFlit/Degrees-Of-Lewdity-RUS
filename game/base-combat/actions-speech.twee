@@ -80,12 +80,19 @@
 		<<set _askActions["to be more rough"] to "askrough">>
 	<</if>>
 	/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-	<<if $enemytype is "man" and $condomAsk is undefined and $pregnancyTesting and !$abomination>>
-		<<if $npcCondoms isnot undefined>>
-			<<set _askActions["to use condoms"] to "condoms">>
+	<<if $enemytype is "man" and !$NPCList[$mouthtarget].condomAsk and $pregnancyTesting and $condomLvl gte 2 and !$abomination and $NPCList[$mouthtarget].fullDescription isnot "Ivory Wraith">>
+		<<if $NPCList[$mouthtarget].penis is "none" and (!$player.penisExist or $crossdressing gte 1)>>
+			/*Prevent condoms in situations where none can be equipped*/
+		<<else>>
+			<<if !$NPCList[$mouthtarget].condom or ($NPCList[$mouthtarget].condom and !$NPCList[$mouthtarget].condom.worn)>>
+				<<set _askActions["to use a condom"] to "condoms">>
+			<</if>>
+			<<set _askActions["to not use a condom"] to "noCondoms">>
 		<</if>>
-		<<if $npcCondoms isnot undefined>>
-			<<set _askActions["to not use condoms"] to "noCondoms">>
+	<</if>>
+	<<if $enemytype is "man" and !$pullOutAsk and !$NPCList[$mouthtarget].condom and !$abomination and $NPCList[$mouthtarget].fullDescription isnot "Ivory Wraith">>
+		<<if $NPCList[$mouthtarget].penis.includes("vagina") or $NPCList[$mouthtarget].penis.includes("anus")>>
+			<<set _askActions["to pull out"] to "askPullOut">>
 		<</if>>
 	<</if>>
 	<<if $robinRentEvent is 1 and $combatPhase is "pay">>
@@ -114,7 +121,7 @@
 			<<set $askAction to Object.values(_askActions)[0]>>
 		<</if>>
 		<<switch $askAction>>
-			<<case "askchoke" "condoms" "damagedCondoms" "noCondoms">><<set $askActionColour to "sub">>
+			<<case "askchoke" "condoms" "noCondoms">><<set $askActionColour to "sub">>
 			<<default>><<set $askActionColour to "brat">>
 		<</switch>>
 	<</if>>
@@ -130,13 +137,13 @@
 
 <<widget "replaceAskColour">>
 <<switch $askAction>>
-	<<case "askchoke" "condoms" "damagedCondoms" "noCondoms">>
+	<<case "askchoke" "condoms" "noCondoms">>
 		<<if $options.combatControls.includes("adio")>>
 			<<addclass "#askLabel" "sub">><<removeclass "#askLabel" "brat">>
 		<<else>>
 			<<addclass "#askDifficulty" "subList">><<removeclass "#askDifficulty" "bratList">>
 		<</if>>
-	<<case "askchoke">>
+	<<case "askchoke" "askPullOut">>
 	<<default>>
 		<<if $options.combatControls.includes("adio")>>
 			<<addclass "#askLabel" "brat">><<removeclass "#askLabel" "sub">>

@@ -8,6 +8,10 @@
 		<<set $_slot to _args[0]>>
 		<<if EventSystem.isSlotTaken($_slot)>>
 			<<set $per_npc[$_name] to clone($NPCList[$_slot])>>
+			/*ToDo: Pregnancy, Condoms not yet compatible with NPC saving and loading */
+			<<set $per_npc[$_name].condom to false>>
+			<<run delete $per_npc[$_name].condomAsk>>
+			<<run delete $per_npc[$_name].condomCanGive>>
 			/*Clears name from name pool */
 			<<if $NPCList[$_slot].pronoun is "f">>
 				<<set $NPC_names_f.delete($NPCList[$_slot].name)>>
@@ -77,13 +81,42 @@
 	<</if>>
 <</widget>>
 
+<<widget "compressNPC">>
+	/*First argument is the NPClist index of the NPC to be saved. Second argument is the string you want to save it under.*/
+	<<if _args[0] gte 0 and _args[1]>>
+		<<set $_name to _args[1]>>
+		<<set $_nameInt to 0>>
+		<<for $_key range Object.keys($storedNPCs).filter(key => key.includes($_name))>>
+			<<if $_key is ($_name + "_" + $_nameInt)>>
+				<<set $_nameInt++>>
+			<<else>>
+				<<break>>
+			<</if>>
+		<</for>>
+		<<set $_name to $_name + "_" + $_nameInt>>
+		<<set $_slot to _args[0]>>
+		<<if EventSystem.isSlotTaken($_slot)>>
+			<<set $storedNPCs[$_name] to {
+				/*ToDo: Pregnancy, call NPC compression function here*/
+			}>>
+		<<else>>
+			<<run Errors.report(`saveNPCPreg called with invalid or empty NPCList slot (${$_slot})`,
+			{
+				Stacktrace : Utils.GetStack(),
+				Name : $_name,
+				Slot : $_slot,
+			})>>
+		<</if>>
+	<</if>>
+<</widget>>
+
 <<widget "updatePersistentNPCs">>
 <<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
 	<<for $_i, $_value range $per_npc>>
 		<!-- Set Pronoun -->
 		<<if $per_npc[$_i].pronoun is "none" or _args[0] is "genders">>
 			<<if $malechance lt random(1, 100)>>
-				<<set $per_npc[$_i].pronoun to "f">><<set $test to $per_npc[$_i].pronoun>>
+				<<set $per_npc[$_i].pronoun to "f">>
 			<<else>>
 				<<set $per_npc[$_i].pronoun to "m">>
 			<</if>>

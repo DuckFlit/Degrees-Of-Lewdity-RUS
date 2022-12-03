@@ -76,11 +76,24 @@
 		/% PEN:$penis VAG:$vagina MOU:$mouth GEN:$pronoun<br><br> %/
 		/% NPC: _nn VAG: $NPCList[_nn].vagina PEN: $NPCList[_nn].penis MOU: $NPCList[_nn].mouth <br> %/
 
+		<!-- Pulling out is for couches -->
+		<<if ($pullOut or $NPCList[_nn].pregnancyAvoidance gte 80) and ($NPCList[_nn].penis is "vagina" or $NPCList[_nn].penis is "anus") and !$NPCList[_nn].condom.worn>>
+			<<if $pullOut and $enemyanger gte 60>>
+				<span class="red"><<He>> doesn't pull out.</span>		
+			<<else>>
+				<span class="green"><<He>> pulls out at the last minute.</span>
+				<<if $NPCList[_nn].penis is "vagina">>
+					<<set $NPCList[_nn].penis to "vaginaimminent">>
+				<<elseif $NPCList[_nn].penis is "anus">>
+					<<set $NPCList[_nn].penis to "anusimminent">>
+				<</if>>				
+			<</if>>
+		<</if>>
+
 		<!-- NAMED NPCs: Named NPCs without custom modules use simple text to stay in character -->
 		<<unset _condomResult>>
-		<<if $NPCList[_nn].condom is undefined>>
-		<<elseif $NPCList[_nn].condom isnot false>>
-			<<if $NPCList[_nn].condom.damaged>>
+		<<if $NPCList[_nn].condom>>
+			<<if $NPCList[_nn].condom.state is "damaged">>
 				<<set _condomResult to "leaked">>
 			<<else>>
 				<<set _condomResult to "contained">>
@@ -288,7 +301,7 @@
 				<</if>>
 
 				<<if $NPCList[_nn].penis isnot "none" and !$NPCList[_nn].penisdesc.includes("strap-on") and _condomResult is "leaked">>
-					Despite wearing a condom, it was too damaged to stop the cum.
+					<span class="red">The condom broke, and did nothing to stop the cum.</span>
 				<</if>>
 			<</if>>
 			<br><br>
@@ -2172,7 +2185,7 @@
 					<</if>>
 				<</if>>
 				<<if $NPCList[_nn].penis isnot "none" and !$NPCList[_nn].penisdesc.includes("strap-on") and _condomResult is "leaked">>
-					Despite wearing a condom, it was too damaged to stop the cum from leaking out.
+					<span class="red">The condom broke, and did nothing to stop the cum.</span>
 				<</if>>
 			<</if>>
 			<<if _postOrgasmSpeech>>
