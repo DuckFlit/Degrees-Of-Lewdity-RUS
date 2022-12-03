@@ -13,11 +13,6 @@
 * Argument 3 (optional) is the extra multiplier for the arousal side. This is only used in undressing so far, but might as well add it as an option.
 */
 
-/*ToDo: Pregnancy, remove to properly enable*/
-<<if $pregnancyTesting is undefined>>
-	<<set $condomUse to false>>
-<</if>>
-
 <<pain -0.25>>
 
 <<if $enemyno gte 2>>
@@ -1787,42 +1782,126 @@
 <</if>>
 
 <<if $leftaction is "peniscondom" or $rightaction is "peniscondom">>
-	<<set _handsCount to 0>>
 	<<if $leftaction is "peniscondom">>
 		<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
-		<<set _handsCount++>>
 	<</if>>
 	<<if $rightaction is "peniscondom">>
 		<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
-		<<set _handsCount++>>
 	<</if>>
-	<<if false>>
-		/*Npc tries to prevent you from putting the condom on*/
+	<<set _foundnpc to $NPCList.filter(npc => npc.pregnancyAvoidance === 0).random()>>
+	<<if _foundnpc>>
+		<<personselect _foundnpc.index>>
+		<<set $_stop to true>> 
+	<</if>>
+	<<if $_stop>>
+		<<if combatSkillCheck("hand", $_s)>>
+			<<combatPerson>> tries to stop you from putting the condom on, <span class="green">but you manage to do it anyways.</span>
+			<<equipPlayerCondom>>
+		<<else>>
+			<<combatPerson>> <span class="red">stops you from putting the condom on.</span>
+		<</if>>
+	<<elseif $parasite.penis.name>>
+		<span class="lewd">You can't the condom on over the parasite.</span>
 	<<else>>
-		<<if !$player.condom and $parasite.penis.name is undefined>>
-			You are not stopped from putting the condom over your penis.
-			<<equipCondom>>
+		<<if !$player.condom>>
+			You roll the condom over your penis.
+			<<equipPlayerCondom>>
 		<</if>>
 	<</if>>
 <</if>>
 
 <<if $leftaction is "penisremovecondom" or $rightaction is "penisremovecondom">>
-	<<set _handsCount to 0>>
 	<<if $leftaction is "penisremovecondom">>
 		<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
-		<<set _handsCount++>>
 	<</if>>
 	<<if $rightaction is "penisremovecondom">>
 		<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
-		<<set _handsCount++>>
 	<</if>>
-	<<if false>>
-		/*Npc tries to prevent you from removing the condom*/
+	<<set _foundnpc to $NPCList.filter(npc => npc.pregnancyAvoidance >= 80).random()>>
+	<<if _foundnpc>>
+		<<personselect _foundnpc.index>>
+		<<set $_stop to true>> 
+	<</if>>
+	<<if $_stop>>
+		<<if combatSkillCheck("hand", $_s)>>
+			<<combatPerson>> tries to stop you from removing your condom, <span class="green">but you manage to do it anyways.</span>
+			<<removePlayerCondom>>
+		<<else>>
+			<<combatPerson>> <span class="red">stops you from removing your condom.</span>
+		<</if>>
 	<<else>>
 		<<if $player.condom>>
-			You are not stopped from removing the condom from your penis.
-			<<removeCondom>>
+			You quickly remove the condom from your penis.
+			<<removePlayerCondom>>
 		<</if>>
+	<</if>>
+<</if>>
+
+<<if $leftaction is "npcremovecondom" or $rightaction is "npcremovecondom">>
+	<<if $leftaction is "npcremovecondom" and $rightaction is "npcremovecondom">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "rest">><<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+		<<if $lefttarget is $righttarget>>
+			<<set $_target to $lefttarget>><<handskilluse>><<brat 2 $_target>>
+		<<else>>
+			<<set $_target to $lefttarget>><<set $_target2 to $righttarget>><<handskilluse>><<brat 1 $_target>><<brat 1 $_target2>>
+		<</if>>
+	<<elseif $leftaction is "npcremovecondom">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+		<<set $_target to $lefttarget>><<handskilluse>><<brat 1 $_target>>
+	<<elseif $rightaction is "npcremovecondom">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+		<<set $_target to $righttarget>><<handskilluse>><<brat 1 $_target>>
+	<</if>>
+	<<if $consensual is 0>><<combatpromiscuity6>><</if>>
+	<<personselect $_target>>
+	<<set $_npc to $NPCList[$_target]>>
+	<<if $_npc.pregnancyAvoidance gte 80>>
+		<<if combatSkillCheck("hand", $_target)>>
+			<<combatPerson>> tries to stop you from removing <<his>> condom, <span class="green">but you manage to do it anyways.</span>
+			<<removeNPCCondom $_target>>
+		<<else>>
+			<<combatPerson>> <span class="red">stops you from removing <<his>> condom.</span>
+		<</if>>
+	<<else>>
+		You stealthily remove the condom from <<combatpersons>> penis.
+		<<removeNPCCondom $_target>>
+	<</if>>
+	<<if $_target2>>
+		<<personselect $_target2>>
+		<<set $_npc to $NPCList[$_target2]>>
+		<<if $_npc.pregnancyAvoidance gte 80>>
+			<<if combatSkillCheck("hand", $_target2)>>
+				<<combatPerson>> tries to stop you from removing <<his>> condom, <span class="green">but you manage to do it anyways.</span>
+				<<removeNPCCondom $_target2>>
+			<<else>>
+				<<combatPerson>> <span class="red">stops you from removing <<his>> condom.</span>
+			<</if>>
+		<<else>>
+			You stealthily remove the condom from <<combatpersons>> penis.
+			<<removeNPCCondom $_target2>>
+		<</if>>		
+	<</if>>
+<</if>>
+
+<<if $leftaction is "npcgivecondom">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+	<<set $_target to $lefttarget>><<meek 1 $_target>>
+	<<personselect $_target>>
+	<<set $_npc to $NPCList[$_target]>>
+	<<if $NPCList[$_target].condomCanGive>>
+		You give <<combatperson>> one of your condoms to use.
+		<<giveNPCCondom $_target>>
+	<</if>>
+<</if>>
+
+<<if $rightaction is "npcgivecondom">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+	<<set $_target to $righttarget>><<meek 1 $_target>>
+	<<personselect $_target>>
+	<<set $_npc to $NPCList[$_target]>>
+	<<if $NPCList[$_target].condomCanGive>>
+		You give <<combatperson>> one of your condoms to use.
+		<<giveNPCCondom $_target>>
 	<</if>>
 <</if>>
 
@@ -4050,109 +4129,273 @@
 
 <<if $mouthaction is "ask" and $askAction is "condoms">>
 	<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
+	<<personselect $mouthtarget>>
 	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
-		<<wheeze "tell <<him>> to use condoms">>
+		<<wheeze "tell <<him>> to use a condom">>
 	<<else>>
-		<<set $mouthactiondefault to "rest">><<sub 2>><<if !$gloryhole and $gamemode isnot "soft">><<seductionskillusecombat>><</if>>
-		<<set $condomAsk to true>>
-		You tell <<him>> you want to use condoms.
-		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
-			<<if $consensual is 0>>
-				<<set $condomUse to true>>
-				They pause a moment before responding,
-				<<set _response to [
-					"Sure thing, slut.",
-					"Yeah, you probably have something contagious.",
-					"Last thing I want is a brat with my name on it.",
-					"Fine, but I expect you to cooperate.",
-					"Good idea, I don't want any evidence traced back to me."
-				]>>
-				<span class="green">"<<print _response.pluck()>>"</span>
+		<<set $mouthactiondefault to "rest">><<sub 2>>
+		<<if $NPCList[$mouthtarget].condom and $NPCList[$mouthtarget].condom.willUse is true>><<set $_checkSkip to true>><</if>>
+		<<if !$gloryhole and $gamemode isnot "soft" and !$npcrow.includes($mouthtarget) and !$_checkSkip>><<seductionskillusecombat>><</if>>
+		<<set $NPCList[$mouthtarget].condomAsk to true>>
+		You ask <<combatperson>> to use a condom.
+		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole or $npcrow.includes($mouthtarget) or $_checkSkip>>
+			<<if !$npcrow.includes($mouthtarget)>>
+				<<if $condomLvl is 1 or !$NPCList[$mouthtarget].condom>>
+					<<set $NPCList[$mouthtarget].condomCanGive to true>>
+					<<if $consensual is 0>>
+						<<He_Short>> pauses a moment before responding.
+						<<set _response to [
+							"I'll use one if you have one.",
+							"I hope you brought one.",
+							"I don't have one. Do you?",
+							"Looks like I forgot mine at home.",
+							"You better have one."
+						]>>
+					<<else>>
+						<<He_Short>> looks nervous for a moment.
+						<<set _response to [
+							"I didn't bring one. Do you have one?"
+						]>>
+					<</if>>
+					<span class="blue">"<<print _response.pluck()>>"</span>
+				<<elseif $NPCList[$mouthtarget].condom>>
+					<<if $NPCList[$mouthtarget].condom.willUse is true>>
+						<<if $consensual is 0>>
+							<<He_Short>> nods.
+							<<set _response to [
+								"I was going to, anyways.",
+								"Don't tell me what to do, I would have anyways.",
+								"You think I'd fuck you raw? Stupid slut."
+							]>>
+						<<else>>
+							<<He_Short>> nods.
+							<<set _response to [
+								"I was planning on using one anyways."
+							]>>
+						<</if>>
+						<<if $pregnancyspeechdisable is "f">>
+							<<if playerPregnancyPossibleWith($NPCList[$mouthtarget])>>
+								<<run _response.pushUnique(
+									"Do I look like I want a kid on my hands?",
+									"I don't want to get you pregnant, slut.",
+									"I'm not about to get a whore like you pregnant."
+								)>>
+							<<elseif NPCPregnancyPossibleWithPlayer($NPCList[$mouthtarget])>>
+								<<run _response.pushUnique(
+									"Do I look like I want a kid on my hands?",
+									"I'm not about to let myself get pregnant.",
+									"You're not putting a kid in me."
+								)>>
+							<</if>>
+						<</if>>
+						<span class="teal">"<<print _response.pluck()>>"</span>
+					<<else>>
+						<<set $NPCList[$mouthtarget].condom.willUse to true>>
+						<<if $consensual is 0>>
+							<<He_Short>> pauses a moment before responding.
+							<<set _response to [
+								"Sure thing, slut.",
+								"Yeah, you probably have something contagious.",
+								"Fine, but I expect you to cooperate.",
+								"Good idea, I don't want any evidence traced back to me."
+							]>>
+						<<else>>
+							<<He_Short>> nods in aknowledgement.
+							<<set _response to [
+								"I brought one, just in case."
+							]>>							
+						<</if>>
+						<<if $pregnancyspeechdisable is "f">>
+							<<if playerPregnancyPossibleWith($NPCList[$mouthtarget])>>
+								<<run _response.pushUnique(
+									"I don't want a kid on my hands.",
+									"I don't want to get you pregnant.",
+									"Last thing I want is a brat with my name on it."
+								)>>
+							<<elseif NPCPregnancyPossibleWithPlayer($NPCList[$mouthtarget])>>
+								<<run _response.pushUnique(
+									"I don't want a kid on my hands.",
+									"I'm not about to let myself get pregnant.",
+									"You're not putting a kid in me."
+								)>>
+							<</if>>
+						<</if>>
+						<span class="green">"<<print _response.pluck()>>"</span>
+					<</if>>
+				<</if>>
 			<<else>>
-				<<for _j = 0; _j lt $enemynomax; _j++>>
-					<<if $NPCList[_j].pregnancyAvoidance is undefined>>
-					<<elseif $NPCList[_j].pregnancyAvoidance lt random(1, 100)>>
-						<<set _npcReject to true>>
+				/*Named NPC section*/
+				/*If the NPC does not have a condom, or NPC condoms are disabled*/
+				<<if $condomLvl is 1 or !$NPCList[$mouthtarget].condom>>
+					/*If the NPC's pregnancyAvoidance is 50 or higher*/
+					<<if $NPCList[$mouthtarget].pregnancyAvoidance gte 50>>
+						<<set $NPCList[$mouthtarget].condomCanGive to true>>
+						<<set $_speech to "acceptGive">>
+					<<else>>
+						<<set $_speech to "reject">>
 					<</if>>
-				<</for>>
-				<<if _npcReject>>
-					<<set $condomUse to false>>
-					<<switch $npc>>
-						<<case "Kylar">><span class="lewd"><<He>> says, "B-but why? We're going to have many children. We should start now."</span>
-						<<default>><span class="lewd"><<He>> says, "It's a safe day for me, don't worry about it."</span>
-					<</switch>>
-				<<else>>
-					<<set $condomUse to true>>
-					<span class="green">They nod in acknowledgement.</span>
+				/*If the NPC brought their own condom */
+				<<elseif $NPCList[$mouthtarget].condom>>
+					/*If the NPC was going to use the condom anyways*/
+					<<if $NPCList[$mouthtarget].condom.willUse is true>>
+						<<set $_speech to "acceptHas">>
+					<<else>>
+						<<set $NPCList[$mouthtarget].condom.willUse to true>>
+						<<set $_speech to "accept">>
+					<</if>>
 				<</if>>
+				<<set $_npcn to $npc[$npcrow.indexOf($mouthtarget)]>>
+				<<switch $_npcn>>
+					<<case "Robin">>
+						/*Default pregnancyAvoidance is 50. Will have a condom if NPC condoms are enabled.*/
+						<<switch $_speech>>
+							<<case "accept">>
+								<<He_Short>> nods. "Better to stay safe, right?"
+							<<case "acceptGive">>
+								<<He_Short>> nods. "Better to stay safe, right? <span class="blue">Do you have one?</span>"
+							<<case "acceptHas">>
+								<<He_Short>> nods. "Better to stay safe, right? <span class="teal">I have one.</span>"
+							<<case "reject">>
+								/*MEANT TO BE UNREACHABLE*/
+								<<He_Short>> refuses! "<span class="red">That orphan ass is mine!</span>"
+						<</switch>>
+					<<case "Kylar">>
+						/*Default pregnancyAvoidance is 0, and any condoms they use will be sabotaged beforehand.*/
+						<<switch $_speech>>
+							<<case "accept">>
+								/*MEANT TO BE UNREACHABLE*/
+								<<He_Short>> sadly nods. "Okay, but only because you cheated and reached this debug line."
+							<<case "acceptGive">>
+								/*MEANT TO BE UNREACHABLE*/
+								<<He_Short>> sadly nods. "Okay, but only because you cheated and reached this debug line. <span class="blue">Do you have one?</span>"
+							<<case "acceptHas">>
+								<<He_Short>> excitedly nods.
+								<<if $awareness gte 300>>
+									"O-of course! <span class="red">I even brought my own!</span>"
+								<<else>>
+									"O-of course! <span class="teal">I even brought my own!</span>"
+								<</if>>							
+							<<case "reject">>
+								<<He_Short>> looks sad for a moment. 
+								<<if pregnancyCompatible("Kylar") and $pregnancyspeechdisable is "f">>
+									"B-but why? We're going to have many children. <span class="lewd">We should start now</span>."
+								<<else>>
+									"B-but why? We don't need one! <span class="lewd">I want to do it raw.</span>"
+								<</if>>
+						<</switch>>
+					<<case "Eden">>
+						/*Default pregnancyAvoidance is 0, maybe increase after having 1 or 2 children?*/
+						<<switch $_speech>>
+							<<case "accept">>
+								<<He_Short>> looks annoyed. "<span class="green">Fine.</span><<if pregnancyCompatible("Eden") and $pregnancyspeechdisable is "f">> I don't need another mouth to feed<<else>> I guess cleanup would be a pain<</if>>."
+							<<case "acceptGive">>
+								<<He_Short>> looks annoyed. "<span class="blue">Fine, if you have one.</span><<if pregnancyCompatible("Eden") and $pregnancyspeechdisable is "f">> I don't need another mouth to feed<<else>> I guess cleanup would be a pain<</if>>."
+							<<case "acceptHas">>
+								<<He_Short>> looks annoyed. "<span class="teal">Fine, I have one lying around.</span> Don't blame me if it breaks, it's probably as old as you."
+							<<case "reject">>
+								<<He_Short>> sneers. "No. <span class="lewd">We're doing it my way.</span>"
+						<</switch>>
+					<<case "Whitney">>
+						/*Default pregnancyAvoidance is 50*/
+						<<switch $_speech>>
+							<<case "accept">>
+								<<He_Short>> grins. "<span class="green">Sure thing, slut.</span>."
+							<<case "acceptGive">>
+								<<He_Short>> grins. "<span class="blue">Sure, if you have one.</span>"
+							<<case "acceptHas">>
+								<<He_Short>> grins. "<span class="teal">Yeah, yeah, I'm working on it.</span> Impatient <<bitch>>."
+							<<case "reject">>
+								<<He_Short>> grins. "Nah, <span class="lewd">I don't think you deserve it.</span>"
+						<</switch>>
+					<<case "Alex">>
+						/*Default pregnancyAvoidance is 50, but always forgets to bring a condom.*/
+						<<switch $_speech>>
+							<<case "accept">>
+								/*MEANT TO BE UNREACHABLE*/
+								<<He_Short>> frowns, and digs through a pocket. <<His>> face lights up. "<span class="green">How the hell did this get here?</span> I never remember these."
+							<<case "acceptGive">>
+								<<He_Short>> perks up. "Oh, sure!" <<He_Short>> digs through a pocket, then frowns. "<span class="blue">I didn't think to bring one. Do you have one?</span>"
+							<<case "acceptHas">>
+								/*MEANT TO BE UNREACHABLE*/
+								<<He_Short>> frowns, and digs through a pocket. <<His>> face lights up. "<span class="teal">How the hell did this get here?</span> I never remember these."
+							<<case "reject">>
+								<<He_Short>> gives you a coy smile. <span class="lewd">Ask me when I'm sober.</span>"
+						<</switch>>
+					<<case "Sydney">>
+						<<sydneyStatusCheck>>
+						<<switch $_speech>>
+							<<case "accept">>
+								<<if _sydneyStatus.includes("corrupt")>>
+									<<He_Short>> mockingly frowns, and sighs. "Fiiiiiiine."
+								<<else>>
+									<<He_Short>> nods. "We need to prevent the transfer of impure fluids."
+								<</if>>
+							<<case "acceptGive">>
+								<<if _sydneyStatus.includes("corrupt")>>
+									<<He_Short>> frowns. "Okay, but... <span class="blue">I didn't bring one.</span> Sorry."
+								<<else>>
+									<<He_Short>> nods, but pauses. "I don't... usually carry those... <span class="blue">do you have one?</span>"
+								<</if>>
+							<<case "acceptHas">>
+								<<He_Short>> nods. "Way ahead of you. I've got one right..." <<he>> sticks a hand into <<his>> pocket.
+								<<He_Short>> freezes, before feeling around some more. "Uh oh." <<He_Short>> checks <<his>> other pocket.
+								"Aha! Right here!"
+							<<case "reject">>
+								You feel a hand tighten around your throat. "<span class="red">No.</span>"
+						<</switch>>
+					<<case "Morgan">>
+						/*Default pregnancyAvoidance is random every encounter. I am so, so sorry.*/
+						<<switch $_speech>>
+							<<case "accept">>
+								<span class="green"><<He_Short>> excitedly nods.</span> "All sorts of nasty things these protect against! I even wear them on my fingers sometimes."
+							<<case "acceptGive">>
+								<<He_Short>> excitedly nods. "Look at my <<charles>>, always thinking of my safety! <span class="blue">Give one here.</span>"
+							<<case "acceptHas">>
+								<<He_Short>> excitedly nods. "Yes, <<charles>>, <span class="teal">I was going to use protection!</span> Be patient!"
+							<<case "reject">>
+								<span class="red"><<He_Short>> frowns, and growls.</span> "I will not fuck the bag! The government can't make me do it! I won't!"
+						<</switch>>
+					<<default>>
+						/*Need a case for Wren*/
+						<<switch $_speech>>
+							<<case "accept">>
+								<span class="green"><<He_Short>> nods in acknowledgement.</span>
+							<<case "acceptGive">>
+								<<He_Short>> nods. "<span class="blue">If you have one.</span>"
+							<<case "acceptHas">>
+								<<He_Short>> nods. "<span class="teal">I was planning on using one anyways.</span>"
+							<<case "reject">>
+								<span class="red"<<He_Short>> refuses!</span>
+						<</switch>>						
+				<</switch>>
 			<</if>>
-			<<if $condomUse>>
-				/*Your penis*/
-				<<if $penisstate is "entrance" or $penisstate is "imminent" or $penisstate is "otheranusentrance" or $penisstate is "otheranusimminent">>
-					<<if ($NPCList[$penistarget].vagina is "penis" or $NPCList[$penistarget].penis is "otheranus") and !$player.condom and $parasite.penis.name is undefined>>
-						<<personselect $penistarget>>
-						<span class="green">The <<person>> slips a condom onto your penis.</span>
-						<<equipCondom>>
-					<</if>>
-				<</if>>
-				<<if $penisstate is "penetrated">>
-					<<if $NPCList[$penistarget].vagina is "penis" and !$player.condom and $parasite.penis.name is undefined>>
-						<<personselect $penistarget>>
-						<span class="green">The <<person>> briefly frees your penis from <<his>> vagina, slips a condom on, and slides it back in.</span>
-						<<equipCondom>>
-					<</if>>
-				<</if>>
-				<<if $penisstate is "otheranus">>
-					<<if $NPCList[$penistarget].penis is "otheranus" and !$player.condom and $parasite.penis.name is undefined>>
-						<<personselect $penistarget>>
-						<span class="green">The <<person>> briefly frees your penis from <<his>> anus, slips a condom on, and slides it back in.</span>
-						<<equipCondom>>
-					<</if>>
-				<</if>>
-				/*Their penis*/
-				<<if $vaginastate is "entrance" or $vaginastate is "imminent">>
-					<<if ($NPCList[$vaginatarget].penis is "vaginaentrance" or $NPCList[$vaginatarget].penis is "vaginaimminent") and $NPCList[$vaginatarget].condom is false>>
-						<<personselect $vaginatarget>>
-						<span class="green">The <<person>> slips a condom onto <<his>> penis.</span>
-						<<equipCondom $vaginatarget>>
-					<</if>>
-				<</if>>
-				<<if $vaginastate is "penetrated">>
-					<<if $NPCList[$vaginatarget].penis is "vagina" and $NPCList[$vaginatarget].condom is false>>
-						<<personselect $vaginatarget>>
-						<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, slips a condom on, and slides it back in.</span>
-						<<equipCondom $vaginatarget>>
-					<</if>>
-				<</if>>
-				<<if $anusstate is "entrance" or $anusstate is "imminent">>
-					<<if ($NPCList[$anustarget].penis is "anusentrance" or $NPCList[$anustarget].penis is "anusimminent") and $NPCList[$anustarget].condom is false>>
-						<<personselect $anustarget>>
-						<span class="green">The <<person>> slips a condom onto <<his>> penis.</span>
-						<<equipCondom $anustarget>>
-					<</if>>
-				<</if>>
-				<<if $anusstate is "penetrated">>
-					<<if $NPCList[$anustarget].penis is "anus" and $NPCList[$anustarget].condom is false>>
-						<<personselect $anustarget>>
-						<span class="green">The <<person>> briefly withdraws <<his>> penis from your anus, slips a condom on, and slides it back in.</span>
-						<<equipCondom $anustarget>>
-					<</if>>
-				<</if>>
-			<</if>>
+			<<npcCondomEquipImmediate $mouthtarget>>
 		<<else>>
-			<<set $condomUse to false>>
 			<<if $consensual is 1>>
 				<<set $consensual to 0>>
 				<<molested>><<controlloss>>
 			<</if>>
 			<<set _response to [
-				"Stupid slut, you think you can tell me what to do?",
 				"You're not in charge here, slut.",
-				"You should feel lucky if I knock you up.",
-				"I think I'll leave you with a parting gift, actually.",
+				"I'm clean. You have nothing to worry about.",
 				"Hah! You wish!"
 			]>>
-			They pause a moment before responding,
+			<<if $pregnancyspeechdisable is "f">>
+				<<if playerPregnancyPossibleWith($NPCList[$mouthtarget])>>
+					<<run _response.pushUnique(
+						"You should feel lucky if I knock you up.",
+						"Maybe I should just put a baby in you now.",
+						"I could make you have my kids, and you wouldn't be able to do a damn thing."
+					)>>
+				<<elseif NPCPregnancyPossibleWithPlayer($NPCList[$mouthtarget])>>
+					<<run _response.pushUnique(
+						"I want your seed.",
+						"No, you're going to give me kids.",
+						"You don't have a choice. Make me a mother."
+					)>>
+				<</if>>
+			<</if>>
+			<<He_Short>> pauses a moment before responding.
 			<span class="red">"<<print _response.pluck()>>"</span>
 		<</if>>
 	<</if>>
@@ -4160,146 +4403,268 @@
 
 <<if $mouthaction is "ask" and $askAction is "noCondoms">>
 	<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
+	<<personselect $mouthtarget>>
 	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
-		<<wheeze "tell <<him>> to not use condoms">>
+		<<wheeze "tell <<him>> to not use a condom">>
 	<<else>>
-		<<set $mouthactiondefault to "rest">><<sub 2>><<if !$gloryhole and $gamemode isnot "soft">><<seductionskillusecombat>><</if>>
-		<<set $condomAsk to true>>
-		You tell <<him>> you do not want to use condoms.
-		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
-			<<if $consensual is 0>>
-				They pause a moment before responding,
-				<<set _response to [
-					"Sure thing, slut.",
-					"You like it bareback, eh?",
-					"You're a proper cumdump.",
-					"Fine, but I expect you to cooperate.",
-					"You better be clean."
-				]>>
-				<span class="green">"<<print _response.pluck()>>"</span>
-				<<set $condomUse to false>>
-				<<set _npcReject to false>>
-			<<else>>
-				<<if $npc and $NPCList[0].pregnancyAvoidance gt random(0, 99)>>
-					<<set _npcReject to true>>
+		<<if !$NPCList[$mouthtarget].condom or ($NPCList[$mouthtarget].condom and !$NPCList[$mouthtarget].condom.willUse) or $NPCList[$mouthtarget].pregnancyAvoidance gte 90>><<set $_checkSkip to true>><</if>>
+		<<set $mouthactiondefault to "rest">><<sub 2>><<if !$gloryhole and $gamemode isnot "soft" and !$_checkSkip>><<seductionskillusecombat>><</if>>
+		<<set $NPCList[$mouthtarget].condomAsk to true>>
+		<<if ($NPCList[$mouthtarget].condom and $NPCList[$mouthtarget].condom.worn) or $player.condom.worn>>
+			You ask <<combatperson>> to remove the condom.
+		<<else>>
+			You tell <<combatperson>> you don't want to use a condom.
+		<</if>>
+		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole or $npcrow.includes($mouthtarget) or $_checkSkip>>
+			<<if !$npcrow.includes($mouthtarget)>>
+				<<if $NPCList[$mouthtarget].pregnancyAvoidance lt 80 or ($condomLvl is 2 and !pregnancyCompatible($NPCList[$mouthtarget]))>>
+					<<if !$NPCList[$mouthtarget].condom and !$player.condom>>
+						<<if $consensual is 0>>
+							<<He_Short>> grins.
+							<<set _response to [
+								"Didn't have one anyway.",
+								"Do you think I carry around condoms?",
+								"Ah, yes, let me get the condom I specifically put aside for when I want to molest someone. Oh, wait. Stupid whore.",
+								"Condoms are expensive. Don't have one.",
+								"I don't have one anyways, slut."
+							]>>
+						<<else>>
+							<<He_Short>> looks at you with a smug grin.
+							<<set _response to [
+								"I didn't bring one, anyways."
+							]>>
+						<</if>>
+						<span class="blue">"<<print _response.pluck()>>"</span>
+					<<elseif $NPCList[$mouthtarget].condom.willUse is false and !$player.condom>>
+						<<if $consensual is 0>>
+							<<He_Short>> grins.
+							<<set _response to [
+								"Wasn't gonna use one anyways, slut.",
+								"These things are expensive, I wouldn't waste one on you.",
+								"I prefer it raw, anyways."
+							]>>
+						<<else>>
+							<<He_Short>> looks at you with a smug grin.
+							<<set _response to [
+								"I wasn't planning on using it, anyways."
+							]>>
+						<</if>>
+						<span class="teal">"<<print _response.pluck()>>"</span>
+					<<else>>
+						<<if $NPCList[$mouthtarget].condom>>
+							<<set $NPCList[$mouthtarget].condom.willUse to false>>
+						<</if>>
+						<<set _noCondom to true>>
+						<<if $consensual is 0>>
+							<<He_Short>> pauses a moment before responding.
+							<<set _response to [
+								"Sure thing, slut.",
+								"You like it bareback, eh?",
+								"Fine, but I expect you to cooperate.",
+								"You better be clean."
+							]>>
+						<<else>>
+							<<set _response to [
+								"It probably feels better raw.",
+								"Alright, let's do it."
+							]>>
+						<</if>>
+						<<if $pregnancyspeechdisable is "f">>
+							<<if playerPregnancyPossibleWith($NPCList[$mouthtarget])>>
+								<<run _response.pushUnique(
+									"Looking to get knocked up? Nice.",
+									"I'll breed you good, slut.",
+									"Maybe I'll put a baby in you."
+								)>>
+							<<elseif NPCPregnancyPossibleWithPlayer($NPCList[$mouthtarget])>>
+								<<run _response.pushUnique(
+									"Trying to knock me up? Nice.",
+									"You'd better knock me up.",
+									"Good. Put a baby in me."
+								)>>
+							<</if>>
+						<</if>>
+						<span class="lewd">"<<print _response.pluck()>>"</span>
+					<</if>>
+				<<else>>
+					<<He_Short>> shakes <<his>> head.
+					<<set _response to [
+						"Not taking that chance.",
+						"Sorry, I'm being safe about this.",
+						"Shut up, don't be stupid."
+					]>>
+					<<if $pregnancyspeechdisable is "f">>
+						<<if playerPregnancyPossibleWith($NPCList[$mouthtarget])>>
+							<<run _response.pushUnique(
+								"I'm not going to risk knocking you up.",
+								"Look for someone else to be your baby daddy."
+							)>>
+						<<elseif NPCPregnancyPossibleWithPlayer($NPCList[$mouthtarget])>>
+							<<run _response.pushUnique(
+								"I'm not going to risk getting knocked up.",
+								"Tempting, but no, I don't want to get pregnant.",
+							)>>
+						<</if>>
+					<</if>>
+					<span class="red">"<<print _response.pluck()>>"</span>
 				<</if>>
-			<</if>>
-
-			<<if _npcReject>>
-				<<set $condomUse to true>>
-				<<switch $npc>>
-					<<default>><span class="lewd"><<He>> says, "I'm not ready for children, it's better to be safe than sorry."</span>
+			<<else>>
+				/*Named NPC section*/
+				/*If the NPC does not have a condom, or NPC condoms are disabled*/
+				<<if !$NPCList[$mouthtarget].condom and !$player.condom>>
+					<<set $_speech to "acceptNone">>
+				/*If the NPC wasn't going to use one anyways*/
+				<<elseif (!$NPCList[$mouthtarget].condom or ($NPCList[$mouthtarget].condom and !$NPCList[$mouthtarget].condom.willUse)) and !$player.condom>>
+					<<set $_speech to "acceptWont">>
+				<<else>>
+					/*Outcome dependant on pregnancyAvoidance*/
+					<<if $NPCList[$mouthtarget].pregnancyAvoidance lte 80>>
+						<<if $NPCList[$mouthtarget].condom>>
+							<<set $NPCList[$mouthtarget].condom.willUse to false>>
+						<</if>>
+						<<set _noCondom to true>>
+						<<set $_speech to "accept">>
+					<<else>>
+						<<set $_speech to "reject">>
+					<</if>>
+				<</if>>
+				<<set $_npcn to $npc[$npcrow.indexOf($mouthtarget)]>>
+				<<switch $_npcn>>
+					<<case "Robin">>
+						<<switch $_speech>>
+							<<case "accept">>
+								<<He_Short>> nervously nods. "<span class="lewd">Are you sure this is safe?</span>"
+							<<case "acceptNone">>
+								<<He_Short>> nervously nods. "<span class="blue">I don't have one anyways...</span>"
+							<<case "acceptWont">>
+								<<He_Short>> nervously nods. "<span class="teal">I wasn't going to.</span>"
+							<<case "reject">>
+								<<He_Short>> refuses. "<span class="red">We can't be reckless!</span>"
+						<</switch>>
+					<<case "Kylar">>
+						<<switch $_speech>>
+							<<case "accept">>
+								<<He_Short>> exciedly nods. "<span class="lewd">Good! No protection!</span>"
+							<<case "acceptNone">>
+								<<He_Short>> excitedly nods. "<span class="blue">Ah... all mine are broken anyways...</span>" <<He_Short>> quickly covers <<his>> mouth to shush <<himself>>.
+							<<case "acceptWont">>
+								<<He_Short>> excitedly nods. "<span class="teal">I would never dream of using one with you.</span>"
+							<<case "reject">>
+								/*MEANT TO BE UNREACHABLE*/
+								<<He_Short>> refuses. "<span class="red">I am suddenly out of character and no longer interested in breeding.</span>"
+						<</switch>>
+					<<case "Eden">>
+						<<switch $_speech>>
+							<<case "accept">>
+								<<He_Short>> nods. "<span class="lewd">Natural is best.</span> I don't trust the flimsy rubbers they make in town."
+							<<case "acceptNone">>
+								<<He_Short>> nods. "<span class="blue">I don't keep any of those around.</span>"
+							<<case "acceptWont">>
+								<<He_Short>> nods. "<span class="teal">I wasn't going to use one.</span>"
+							<<case "reject">>
+								<<He_Short>> refuses. "<span class="red">We need to be safe for a while.</span>"
+						<</switch>>
+					<<case "Whitney">>
+						<<switch $_speech>>
+							<<case "accept">>
+								<<He_Short>> nods. "<span class="lewd">You want it raw? Good.</span>"
+							<<case "acceptNone">>
+								<<He_Short>> nods. "<span class="blue">I didn't bring one.</span> I thought you'd want it raw."
+							<<case "acceptWont">>
+								<<He_Short>> nods. "<span class="teal">I wasn't going to use one anyways, slut.</span>"
+							<<case "reject">>
+								<<He_Short>> refuses. "<span class="red">You're not in charge, <<bitch>>.</span>"
+						<</switch>>
+					<<case "Alex">>
+						<<switch $_speech>>
+							<<case "accept">>
+								<<He_Short>> puts <<his>> arms up triumphantly. "<span class="lewd">Woo, we're riding bareback!</span>"
+							<<case "acceptNone">>
+								<<He_Short>> looks down sheepishly. "<span class="blue">I fogot to bring one anyways.</span>"
+							<<case "acceptWont">>
+								<<He_Short>> looks down sheepishly. "<span class="teal">I fogot to bring one anyways.</span>"
+							<<case "reject">>
+								<<He_Short>> refuses. "<span class="red">I didn't forget for once, so we're gonna use it, damn it!</span>"
+						<</switch>>
+					<<case "Sydney">>
+						<<sydneyStatusCheck>>
+						<<switch $_speech>>
+							<<case "accept" "acceptNone" "acceptWont">>
+								<<if _sydneyStatus.includes("corrupt")>>
+									<<He_Short>> grins. "<span class="lewd">Good. Fuck me raw.</span>"
+								<<else>>
+									<<He_Short>> flushes. "<span class="lewd">Oh, okay! If you're sure...</span>"
+								<</if>>
+							<<case "reject">>
+								<<He_Short>> refuses. "<span class="red">We need to be safe! I can't let the temple down.</span>"
+						<</switch>>
+					<<case "Morgan">>
+						You're not even sure if <<he>> heard you.
+					<<default>>
+						<<switch $_speech>>
+							<<case "accept" "acceptNone" "acceptWont">>
+								<span class="green"><<He_Short>> nods in aknowledgemnt.</span>
+							<<case "reject">>
+								<span class="red"><<He_Short>> refuses.</span>
+						<</switch>>						
 				<</switch>>
-				/*Your penis*/
-				<<if $penisstate is "entrance" or $penisstate is "imminent" or $penisstate is "otheranusentrance" or $penisstate is "otheranusimminent">>
-					<<if ($NPCList[$penistarget].vagina is "penis" or $NPCList[$penistarget].penis is "otheranus") and !$player.condom and $parasite.penis.name is undefined>>
-						<<personselect $penistarget>>
-						<span class="green">The <<person>> slips a condom onto your penis.</span>
-						<<equipCondom>>
-					<</if>>
-				<</if>>
-				<<if $penisstate is "penetrated">>
-					<<if $NPCList[$penistarget].vagina is "penis" and !$player.condom and $parasite.penis.name is undefined>>
-						<<personselect $penistarget>>
-						<span class="green">The <<person>> briefly frees your penis from <<his>> vagina, slips a condom on, and slides it back in.</span>
-						<<equipCondom>>
-					<</if>>
-				<</if>>
-				<<if $penisstate is "otheranus">>
-					<<if $NPCList[$penistarget].penis is "otheranus" and !$player.condom and $parasite.penis.name is undefined>>
-						<<personselect $penistarget>>
-						<span class="green">The <<person>> briefly frees your penis from <<his>> anus, slips a condom on, and slides it back in.</span>
-						<<equipCondom>>
-					<</if>>
-				<</if>>
-				/*Their penis*/
-				<<if $vaginastate is "entrance" or $vaginastate is "imminent" or $vaginastate is "doubleentrance" or $vaginastate is "doubleimminent">>
-					<<if ($NPCList[$vaginatarget].penis is "vaginaentrance" or $NPCList[$vaginatarget].penis is "vaginaimminent") and $NPCList[$vaginatarget].condom is false>>
-						<<personselect $vaginatarget>>
-						<span class="green">The <<person>> slips a condom onto <<his>> penis.</span>
-						<<equipCondom $vaginatarget>>
-					<</if>>
-				<</if>>
-				<<if $vaginastate is "penetrated" or $vaginastate is "doublepenetrated">>
-					<<if $NPCList[$vaginatarget].penis is "vagina" and $NPCList[$vaginatarget].condom is false>>
-						<<personselect $vaginatarget>>
-						<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, slips a condom on, and slides it back in.</span>
-						<<equipCondom $vaginatarget>>
-					<</if>>
-				<</if>>
-				<<if $anusstate is "entrance" or $anusstate is "imminent" or $anusstate is "doubleentrance" or $anusstate is "doubleimminent">>
-					<<if ($NPCList[$anustarget].penis is "anusentrance" or $NPCList[$anustarget].penis is "anusimminent") and $NPCList[$anustarget].condom is false>>
-						<<personselect $anustarget>>
-						<span class="green">The <<person>> slips a condom onto <<his>> penis.</span>
-						<<equipCondom $anustarget>>
-					<</if>>
-				<</if>>
-				<<if $anusstate is "penetrated" or $anusstate is "doublepenetrated">>
-					<<if $NPCList[$anustarget].penis is "anus" and $NPCList[$anustarget].condom is false>>
-						<<personselect $anustarget>>
-						<span class="green">The <<person>> briefly withdraws <<his>> penis from your anus, slips a condom on, and slides it back in.</span>
-						<<equipCondom $anustarget>>
-					<</if>>
-				<</if>>
-			<<else>>
-				<span class="green">They nod in acknowledgement.</span>
-				<<set $condomUse to false>>
+			<</if>>
+			<<if _noCondom>>
 				/*Your penis*/
 				<<if $player.condom>>
 					<<if $penisstate is "entrance" or $penisstate is "imminent" or $penisstate is "otheranusentrance" or $penisstate is "otheranusimminent">>
-						<<if ($NPCList[$penistarget].vagina is "penis" or $NPCList[$penistarget].penis is "otheranus")>>
-							<<personselect $penistarget>>
-							<span class="green">The <<person>> rolls the condom off your penis.</span>
-							<<removeCondom>>
+						<<if ($NPCList[$mouthtarget].vagina is "penis" or $NPCList[$mouthtarget].penis is "otheranus")>>
+							<<personselect $mouthtarget>>
+							<span class="green"><<He_Short>> rolls <<condomDesc "player" "the">> off your penis.</span>
+							<<removeNPCCondom $mouthtarget "player">>
 						<</if>>
 					<</if>>
 					<<if $penisstate is "penetrated">>
-						<<if $NPCList[$penistarget].vagina is "penis">>
-							<<personselect $penistarget>>
-							<span class="green">The <<person>> briefly frees your penis from <<his>> vagina, rolls off the condom, and slides it back in.</span>
-							<<removeCondom>>
+						<<if $NPCList[$mouthtarget].vagina is "penis">>
+							<<personselect $mouthtarget>>
+							<span class="green"><<He_Short>> briefly frees your penis from <<his>> vagina, rolls off <<condomDesc "player" "the">>, and slides it back in.</span>
+							<<removeNPCCondom $mouthtarget "player">>
 						<</if>>
 					<</if>>
 					<<if $penisstate is "otheranus">>
-						<<if $NPCList[$penistarget].penis is "otheranus">>
-							<<personselect $penistarget>>
-							<span class="green">The <<person>> briefly frees your penis from <<his>> anus, rolls off the condom, and slides it back in.</span>
-							<<removeCondom>>
+						<<if $NPCList[$mouthtarget].penis is "otheranus">>
+							<<personselect $mouthtarget>>
+							<span class="green"><<He_Short>> briefly frees your penis from <<his>> ass, rolls off <<condomDesc "player" "the">>, and slides it back in.</span>
+							<<removeNPCCondom $mouthtarget "player">>
 						<</if>>
 					<</if>>
 				<</if>>
 				/*Their penis*/
 				<<if $vaginastate is "entrance" or $vaginastate is "imminent" or $vaginastate is "doubleentrance" or $vaginastate is "doubleimminent">>
-					<<if ($NPCList[$vaginatarget].penis is "vaginaentrance" or $NPCList[$vaginatarget].penis is "vaginaimminent" or $NPCList[$vaginatarget].penis is "vaginaentrancedouble" or $NPCList[$vaginatarget].penis is "vaginadoubleimminent") and $NPCList[$vaginatarget].condom>>
-						<<personselect $vaginatarget>>
-						<span class="green">The <<person>> rolls the condom off <<his>> penis.</span>
-						<<removeCondom $vaginatarget>>
+					<<if ($NPCList[$mouthtarget].penis is "vaginaentrance" or $NPCList[$mouthtarget].penis is "vaginaimminent" or $NPCList[$mouthtarget].penis is "vaginaentrancedouble" or $NPCList[$mouthtarget].penis is "vaginadoubleimminent") and $NPCList[$mouthtarget].condom.worn>>
+						<<personselect $mouthtarget>>
+						<span class="green"><<He_Short>> rolls <<condomDesc $mouthtarget "the">> off <<his>> penis.</span>
+						<<removeNPCCondom $mouthtarget>>
 					<</if>>
 				<</if>>
 				<<if $vaginastate is "penetrated" or $vaginastate is "doublepenetrated">>
-					<<if $NPCList[$vaginatarget].penis is "vagina" and $NPCList[$vaginatarget].condom>>
-						<<personselect $vaginatarget>>
-						<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, rolls off the condom, and slides it back in.</span>
-						<<removeCondom $vaginatarget>>
+					<<if $NPCList[$mouthtarget].penis is "vagina" and $NPCList[$mouthtarget].condom.worn>>
+						<<personselect $mouthtarget>>
+						<span class="green"><<He_Short>> briefly withdraws <<his>> penis from your vagina, rolls off <<condomDesc $mouthtarget "the">>, and slides it back in.</span>
+						<<removeNPCCondom $mouthtarget>>
 					<</if>>
 				<</if>>
 				<<if $anusstate is "entrance" or $anusstate is "imminent" or $anusstate is "doubleentrance" or $anusstate is "doubleimminent">>
-					<<if ($NPCList[$anustarget].penis is "anusentrance" or $NPCList[$anustarget].penis is "anusimminent" or $NPCList[$anustarget].penis is "anusdoubleentrance" or $NPCList[$anustarget] is "anusdoubleimminent") and $NPCList[$anustarget].condom>>
-						<<personselect $anustarget>>
-						<span class="green">The <<person>> rolls the condom off <<his>> penis.</span>
-						<<removeCondom $anustarget>>
+					<<if ($NPCList[$anustarget].penis is "anusentrance" or $NPCList[$mouthtarget].penis is "anusimminent" or $NPCList[$mouthtarget].penis is "anusdoubleentrance" or $NPCList[$mouthtarget] is "anusdoubleimminent") and $NPCList[$mouthtarget].condom.worn>>
+						<<personselect $mouthtarget>>
+						<span class="green"><<He_Short>> rolls <<condomDesc $mouthtarget "the">> off <<his>> penis.</span>
+						<<removeNPCCondom $mouthtarget>>
 					<</if>>
 				<</if>>
 				<<if $anusstate is "penetrated" or $anusstate is "doublepenetrated">>
-					<<if $NPCList[$anustarget].penis is "anus" and $NPCList[$anustarget].condom>>
-						<<personselect $anustarget>>
-						<span class="green">The <<person>> briefly withdraws <<his>> penis from your anus, rolls off the condom, and slides it back in.</span>
-						<<removeCondom $anustarget>>
+					<<if $NPCList[$mouthtarget].penis is "anus" and $NPCList[$mouthtarget].condom.worn>>
+						<<personselect $mouthtarget>>
+						<span class="green"><<He_Short>> briefly withdraws <<his>> penis from your anus, rolls off <<condomDesc $mouthtarget "the">>, and slides it back in.</span>
+						<<removeNPCCondom $mouthtarget>>
 					<</if>>
 				<</if>>
 			<</if>>
 		<<else>>
-			<<set $condomUse to null>>
 			<<if $consensual is 1>>
 				<<set $consensual to 0>>
 				<<molested>><<controlloss>>
@@ -4309,7 +4674,56 @@
 				"You're not in charge here, slut.",
 				"I'll do what I want, slut."
 			]>>
-			They pause a moment before responding,
+			<<He_Short>> pauses a moment before responding,
+			"<span class="red"><<print _response.pluck()>></span>"
+		<</if>>
+	<</if>>
+<</if>>
+
+<<if $mouthaction is "ask" and $askAction is "askPullOut">>
+	<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
+	<<personselect $mouthtarget>>
+	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
+		<<wheeze "tell <<him>> to pull out">>
+	<<else>>
+		<<set $pullOutAsk to true>>
+		<<set $_npcn to $npc[$npcrow.indexOf($mouthtarget)]>>
+		<<if $NPCList[$mouthtarget].pregnancyAvoidance gte 90 or $_npcn is "Kylar">><<set $_checkSkip to true>><</if>>
+		<<set $mouthactiondefault to "rest">><<sub 2>><<if !$gloryhole and $gamemode isnot "soft" and !$_checkSkip>><<seductionskillusecombat>><</if>>
+		You ask <<combatperson>> to pull out and finish outside.
+		<<if $npc[$npcrow.indexOf($mouthtarget)] is "Kylar">>
+			<<He_Short>> freezes for a moment. <span class="red">"No, my love."</span>
+		<<elseif combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole or $_checkSkip>>
+			<<set $pullOut to true>>
+			<<if $consensual is 0>>
+				<<He_Short>> pauses a moment before responding.
+				<<set _response to [
+					"Sure thing, slut.",			
+					"Fine, but I expect you to cooperate.",
+					"Good idea, I don't want any evidence traced back to me."
+				]>>
+				<span class="green">"<<print _response.pluck()>>"</span>
+			<<else>>
+				<span class="green"><<He_Short>> nods in aknowledgement.</span>
+			<</if>>		
+		<<else>>
+			<<if $consensual is 1>>
+				<<set $consensual to 0>>
+				<<molested>><<controlloss>>
+			<</if>>
+			<<set _response to [
+				"Stupid slut, you think you can tell me what to do?",
+				"You're not in charge here, slut.",
+				"I'll do what I want, slut."
+			]>>
+			<<if $pregnancyspeechdisable is "f" and $NPCList[$mouthtarget].penis is "vagina" and playerPregnancyPossibleWith($NPCList[$mouthtarget])>>
+				<<run _response.pushUnique(
+					"You should feel lucky if I knock you up.",
+					"Maybe I should just put a baby in you now.",
+					"I could make you have my kids, and you wouldn't be able to do a damn thing."
+				)>>
+			<</if>>			
+			<<He_Short>> pauses a moment before responding,
 			<span class="red">"<<print _response.pluck()>>"</span>
 		<</if>>
 	<</if>>
@@ -5453,6 +5867,51 @@
 	<<set $penisaction to 0>><<set $penisactiondefault to "escape">><<actionspenisescape $penistarget>><<brat 10 $penistarget>><<set $penisuse to "othervagina">><<set $penisstate to "entrance">>
 	<<personselect $penistarget>>
 	<<set $NPCList[$penistarget].vagina to "penisentrance">><<set $NPCList[$penistarget].speechpenisescape to 1>>
+<</if>>
+
+<<if $penisaction is "pullOut">>
+	<<set $penisaction to 0>><<set $penisactiondefault to "pullOut">><<penileskilluse>>
+	<<sex 5 "genitals">><<brat 10 $penistarget>>
+	<<if $leftleg is "bound" or $rightleg is "bound">>
+		You try to pull out, <span class="red">but your bound legs prevent you from doing so.</span>
+	<<elseif combatSkillCheck("penile", $penistarget)>>
+		<<personselect $penistarget>>
+		<<if $penisstate is "penetrated">>
+			<<if $NPCList[$penistarget].pregnancyAvoidance lte 10>>
+				As you try to pull out, <span class="red"><<combatperson>> locks <<his>> legs around you!</span>
+				<<if currentSkillValue('physique') gte random(1, 64000)>>
+					<<set $penisstate to "entrance">>
+					<<if $NPCList[$penistarget].vagina is "penis">>
+						<<set $NPCList[$penistarget].vagina to "penisentrance">>However, you're able to <span class="green"> force yourself free,</span> and <<peniletext>> pull your <<penis>> from <<his>> pussy.
+					<</if>>
+				<<else>>
+					You're prevented from pulling out!
+				<</if>>
+				<<sex 5 "genitals">>
+			<<else>>
+				<<set $penisstate to "entrance">>
+				<<if $NPCList[$penistarget].vagina is "penis">>
+					<<set $NPCList[$penistarget].vagina to "penisentrance">><span class="lblue">You <<peniletext>> pull your <<penis>> from <<his>> pussy.</span>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if $penisstate is "otheranus">>
+			<<set $penisstate to "otheranusentrance">>
+			<<if $NPCList[$penistarget].penis is "otheranus">>
+				<<set $NPCList[$penistarget].penis to "otheranusentrance">><span class="lblue">You <<peniletext>> pull your <<penis>> from <<his>> anus.</span>
+			<</if>>
+		<</if>>
+		<<if $penisstate is "othermouth">>
+			<<set $penisstate to "othermouthentrance">>
+			<<if $NPCList[$penistarget].mouth is "penis">>
+				<<set $NPCList[$penistarget].mouth to "penisentrance">><span class="lblue">You <<peniletext>> pull your <<penis>> from <<his>> mouth.</span>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<personselect $penistarget>>
+		You try to pull out, but <span class="red">can't move away from <<him>>.</span>
+	<</if>>
+	<<set $NPCList[$penistarget].speechpenisescape to 1>>
 <</if>>
 
 <<if $penisaction is "fencingtease">>

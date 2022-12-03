@@ -86,9 +86,13 @@
 <<set $playerPregnancyHumanDisable to "f">>
 <<set $playerPregnancyBeastDisable to "f">>
 <<set $npcPregnancyDisable to "f">>
+<<set $cycledisable to "f">>
+<<set $pregnancytype to "realistic">>
 <<set $rentmod to 1>>
-<<set $condomchance to 50>>
-<<set $condomautochance to 50>>
+<<set $condomLvl to 3>>
+<<set $condomChance to 60>>
+<<set $condomUseChanceRape to 33>>
+<<set $condomUseChanceCon to 83>>
 <<set $multipleWardrobes to "isolated">>
 <<set $tending_yield_factor to 5>>
 
@@ -926,18 +930,6 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<<numberslider "$blackchance" $blackchance 0 100 1>>
 		<br><br>
 
-		<<if $pregnancyTesting>>
-			/*ToDo: Pregnancy, remove check to properly enable*/
-			<span class="gold">Likelihood of NPCs having condoms on them</span>
-			<br>
-			<<numberslider "$condomchance" $condomchance 0 100 1>>
-			<br><br>
-
-			<span class="gold">Likelihood of NPCs using a condom without being asked</span>
-			<br>
-			<<numberslider "$condomautochance" $condomautochance 0 100 1>>
-			<br><br>
-		<</if>>
 	</div>
 <</widget>>
 
@@ -1154,24 +1146,54 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<div class="small-description"><span class="red">Will not stop existing pregnancy or prevent the player from interacting with their existing children.</span></div>
 		<label><div class="settingsToggle">
 			<<checkbox "$playerPregnancyHumanDisable" "t" "f" autocheck>>
-			Enable Player Human Pregnancy
+			Enable player human pregnancy
 		</div></label>
 		<label><div class="settingsToggle">
-			<<checkbox "$playerPregnancyBeastDisable" "t" "f" autocheck>> Enable Player Beast Pregnancy
+			<<checkbox "$playerPregnancyBeastDisable" "t" "f" autocheck>> Enable player beast pregnancy
 		</div></label>
 		/*ToDo: NPC Pregnancy - Remove when adding pregnancy for named npc's */
 		<<if $pregnancyTesting>>
 			<label><div class="settingsToggle">
-				<<checkbox "$npcPregnancyDisable" "t" "f" autocheck>> Enable NPC Pregnancy
+				<<checkbox "$npcPregnancyDisable" "t" "f" autocheck>> Enable NPC pregnancy
 			</div></label>
 		<</if>>
 		<label><div class="settingsToggle">
 		<<checkbox "$parasitepregdisable" "t" "f" autocheck>> Enable parasitic pregnancy
 		</div></label>
 		<label><div class="settingsToggle">
-		<<checkbox "$pregnancyspeechdisable" "t" "f" autocheck>> Enable fertility references.
+		<<checkbox "$cycledisable" "t" "f" autocheck>> Enable fertility cycles and heat/rut
+		</div></label>
+		<label><div class="settingsToggle">
+		Pregnancy type:
+		<label><<radiobutton "$pregnancytype" "realistic" autocheck>> <mouse class="tooltip green">Realistic<span>Pregnancy will not happen immediately, and you won't know right away when it happens. You may need to use a pregnancy test, and the father may not be known to you initially.</span></mouse></label> |
+		<label><<radiobutton "$pregnancytype" "fetish" autocheck>> <mouse class="tooltip pink">Fetishised<span>Pregnancy may happen as soon as semen meets vagina. You will know as soon as it happens, and will immediately know the father.</span></mouse></label>
+		</div></label>
+		<label><div class="settingsToggle">
+		<<checkbox "$pregnancyspeechdisable" "t" "f" autocheck>> Enable fertility references
 		<mouse class="tooltip linkBlue">(?)<span>Allow references to the PC being impregnated, or impregnating others. Disabling does not prevent all references to pregnancy, especially if other pregnancy settings are enabled.</span></mouse>
 		</div></label>
+		<div class="settingsToggle" style="display: inline-flex;">
+		&nbsp;&nbsp;Condoms
+		<<numberslider "$condomLvl" $condomLvl 0 3 1>>
+		<<run settingsCondoms()>>
+		</div>
+		<<if $debug is 1>>
+			DEBUG:
+			<br>
+			<span class="gold">Chance of NPCs having condoms</span>
+			<br>
+			<<numberslider "$condomChance" $condomChance 0 100 1>>
+			<br><br>
+
+			<span class="gold">Likelihood of NPCs using a condom without being asked...</span>
+			<br>
+			...during rape
+			<<numberslider "$condomUseChanceRape" $condomUseChanceRape 0 100 1>>
+			<br>
+			...during consensual sex
+			<<numberslider "$condomUseChanceCon" $condomUseChanceCon 0 100 1>>
+			<br>
+		<</if>>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
 <</widget>>

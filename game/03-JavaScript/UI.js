@@ -352,6 +352,39 @@ function settingsAsphyxiation() {
 }
 window.settingsAsphyxiation = settingsAsphyxiation;
 
+function settingsCondoms() {
+	const updateText = () => {
+		let val = V.condomLvl;
+		let text = null;
+		switch (val) {
+			case 0:
+				text = "<span class='red inline-colour'>Everyone is allergic to latex and safe sex.</span>";
+				break;
+			case 1:
+				text = "Only <span class='green inline-colour'>you</span> may use condoms. You may still give condoms to NPCs.";
+				break;
+			case 2:
+				text = "NPCs will only have condoms if <span class='blue inline-colour'>pregnancy</span> between them and the player is possible.";
+				break;
+			case 3:
+				text = "NPCs may have and use condoms <span class='pink inline-colour'>whenever they please</span>.";
+				break;
+			default:
+				text = "Error: bad value: " + val;
+				val = 0;
+		}
+		jQuery("#numberslider-value-condomlvl").text("").append(text).addClass("small-description");
+	};
+
+	$(() => {
+		updateText();
+		$("#numberslider-input-condomlvl").on("input change", function (e) {
+			updateText();
+		});
+	});
+}
+window.settingsCondoms = settingsCondoms;
+
 function settingsNudeGenderAppearance() {
 	const updateText = () => {
 		let val = V.NudeGenderDC;

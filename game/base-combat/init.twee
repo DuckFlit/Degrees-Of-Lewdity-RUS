@@ -54,15 +54,18 @@
 <<else>>
 	<<set $monster to 0>>
 <</if>>
-<<if random(0,99) lt $condomchance>>
-	<<set $npcCondoms to "normal">>
-<<else>>
-	/*<<set $npcCondoms to "damaged">>*/
-<</if>>
 
 /*ToDo: Pregnancy, remove to properly enable*/
-<<if $pregnancyTesting is undefined>>
-	<<set $condomUse to false>>
+<<if $pregnancyTesting and $condomLvl gte 2>>
+	<<for _i to 0; _i lt $enemyno; _i++>>
+		<<if $condomLvl is 2 and $NPCList[_i].condom and pregnancyCompatible($NPCList[_i]) is false>>
+			<<set $NPCList[_i].condom.willUse to false>>
+		<<elseif $NPCList[_i].pregnancyAvoidance gte 80>>
+			<<set $NPCList[_i].condom.willUse to true>>
+		<<elseif $NPCList[_i].condom and typeof $NPCList[_i].condom.willUse is "number">>
+			<<set $NPCList[_i].condom.willUse to ($NPCList[_i].condom.willUse lt ($consensual is 1 ? $condomUseChanceCon : $condomUseChanceRape))>>
+		<</if>>
+	<</for>>
 <</if>>
 
 <<combatinit>>
@@ -631,7 +634,7 @@
 otherwise there's no easy way of stopping NPC from shoving their stuff in PC's face -->
 
 <!--Prevents the use of asking for condoms-->
-<<set $condomAsk to true>>
+<<set $NPCList[0].condomAsk to true>>
 
 <<combatinit>>
 <</widget>>
@@ -1013,18 +1016,18 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 <</if>>
 <<for $_j = $enemynomax-1; $_j gte _end; $_j-->>
 	<<if ["vaginaentrance","vaginaimminent","vagina"].includes($NPCList[$_j].penis) and $NPCList[$_j].condom isnot false>>
-		<<if $NPCList[$_j].condom.damaged is false>>
+		<<if $NPCList[$_j].condom.state isnot "damaged">>
 			<<set $condomVaginalImg to true>>
 		<</if>>
 	<</if>>
 	<<if ["anusentrance","anusimminent","anus"].includes($NPCList[$_j].penis) and $NPCList[$_j].condom isnot false>>
-		<<if $NPCList[$_j].condom.damaged is false>>
+		<<if $NPCList[$_j].condom.state isnot "damaged">>
 			<<set $condomAnalImg to true>>
 		<</if>>
 	<</if>>
 <</for>>
 <<if $player.condom>>
-	<<if $player.condom.damaged is false>>
+	<<if $NPCList[$_j].condom.state isnot "damaged">>
 		<<set $condomPlayerPenisImg to true>>
 	<</if>>
 <</if>>

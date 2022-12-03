@@ -386,32 +386,150 @@
 	<</if>>
 <</widget>>
 
-/* args[0] - 1-6 for npc, args[1] for type */
-<<widget "equipCondom">>
-<<if _args[0] isnot undefined>>
-	<<switch _args[1]>>
-		<<case "damaged">><<set $NPCList[_args[1]].condom to {damaged:true,cum:false}>>
-		<<default>>
-			<<if $npcCondoms is "damagedCondoms" and random(0,100) gte 50>>
-				<<set $NPCList[_args[0]].condom to {damaged:true,cum:false}>>
-			<<else>>
-				<<set $NPCList[_args[0]].condom to {damaged:false,cum:false}>>
-			<</if>>
-	<</switch>>
-<<else>>
-	<<switch _args[0]>>
-		<<case "damaged">><<set $player.condom to {damaged:true,cum:false}>>
-		<<default>><<set $player.condom to {damaged:false,cum:false}>>
-	<</switch>>
-<</if>>
+/* args[0] - 0-5 for npc, or "player", args[1] fo article (the, it, etc)*/
+<<widget "condomDesc">><<silently>>
+	<<if _args[1] is "it">>
+		<<set _text_output to "it">>
+	<<else>>
+		<<set $_condomArticle to (_args[1] ? _args[1] : "a")>>
+		<<set $_condom to (_args[0] ? _args[0] : 0)>>
+		<<set _text_output to $_condomArticle>>
+		<<if $_condom is "player" and $player.condom>>
+			<<set $_condomDesc to clone($player.condom)>>
+		<<elseif $NPCList[$_condom].condom>>
+			<<set $_condomDesc to clone($NPCList[$_condom].condom)>>
+		<<else>>
+			<<set _text_output to "ERROR: Condom $_condom invalid">>
+		<</if>>
+		<<if $_condomArticle is "a">>
+			<<set _text_output += (["a","e","i","o","u","A","E","I","O","U"].some(letter => $_condomDesc.colour.startsWith(letter)) ? "n " + $_condomDesc.colour + " " : " " + $_condomDesc.colour + " ")>>
+		<<else>>
+			<<set _text_output += " " + $_condomDesc.colour + " ">>
+		<</if>>
+		<<if $_condomDesc.type isnot "plain">>
+			<<set _text_output += $_condomDesc.type + " ">>
+		<</if>>
+		<<set _text_output += "condom">>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+/* args[0] - 0-5 for npc, args[1] "player" if the npc is equipping it on the player */
+<<widget "equipNPCCondom">>
+	<<set $_condomnpc to (_args[0] ? _args[0] : 0)>>
+	<<if $NPCList[$_condomnpc].condom>>
+		<<if _args[1] is "player">>
+			<<set $player.condom to clone($NPCList[$_condomnpc].condom)>>
+			<<set $player.condom.worn to true>>
+			<<run delete $player.condom.willUse>>
+			<<set $NPCList[$_condomnpc].condom to false>>
+		<<else>>
+			<<set $NPCList[$_condomnpc].condom.worn to true>>
+		<</if>>
+		<<set $NPCList[$_condomnpc].condomAsk to true>>
+	<<else>>
+		<span class="red">ERROR: NPC condom $_condomnpc not defined.</span>
+	<</if>>
 <</widget>>
 
-/* args[0] - 1-6 for npc */
-<<widget "removeCondom">>
-	<<if _args[0]>>
-		<<set $NPCList[_args[0]].condom to false>>
-	<<else>>
+/* args[0] - 0-5 for npc, args[1] "player" if the npc is removing it from the player */
+<<widget "removeNPCCondom">>
+	<<set $_condomnpc to (_args[0] ? _args[0] : 0)>>
+	<<if _args[1] is "player">>
 		<<set $player.condom to false>>
+	<<else>>
+		<<set $NPCList[$_condomnpc].condom to false>>
+	<</if>>
+<</widget>>
+
+/* For the player equipping their own condom on themselves */
+<<widget "equipPlayerCondom">>
+	<<set $player.condom to {
+		state: (random(0,100) gt 98 ? "damaged" : "normal"),
+		type: "plain",
+		colour: "plain",
+		worn: true
+	}>>
+	<<set $condoms -= 1>>
+<</widget>>
+
+/* For the player removing any condom from themselves */
+<<widget "removePlayerCondom">>
+	<<set $player.condom to false>>
+<</widget>>
+
+<<widget "giveNPCCondom">>
+	<<set $_condomnpc to (_args[0] ? _args[0] : 0)>>
+	<<if $NPCList[$_condomnpc].condom>>
+		<span class="red">ERROR: NPC condom $_condomnpc overlapped with existing condom.</span>
+	<<else>>
+		<<set $NPCList[$_condomnpc].condom to {
+			willUse: true,
+			state: (random(0,100) gt 98 ? "damaged" : "normal"),
+			type: "plain",
+			colour: "plain",
+			worn: false
+		}>>
+		<<set $condoms -= 1>>
+		<<set $NPCList[$_condomnpc].condomCanGive to false>>
+		<<npcCondomEquipImmediate $_condomnpc "it">>
+	<</if>>	
+<</widget>>
+
+<<widget "npcCondomEquipImmediate">>
+	<<set $_condomnpc to (_args[0] ? _args[0] : 0)>>
+	<<set $_condomArticle to (_args[1] ? _args[1] : 0)>>
+	<<if $NPCList[$_condomnpc].condom and $NPCList[$_condomnpc].condom.willUse>>
+		/*Your penis*/
+		<<if $penisstate is "entrance" or $penisstate is "imminent" or $penisstate is "otheranusentrance" or $penisstate is "otheranusimminent">>
+			<<if ($NPCList[$_condomnpc].vagina.includes("penis") or $NPCList[$_condomnpc].penis.includes("otheranus")) and !$player.condom and $parasite.penis.name is undefined>>
+				<<personselect $_condomnpc>>
+				<span class="green"><<He_Short>> slips <<condomDesc $_condomnpc $_condomArticle>> onto your penis.</span>
+				<<equipNPCCondom $_condomnpc "player">>	
+			<</if>>
+		<</if>>
+		<<if $penisstate is "penetrated">>
+			<<if $NPCList[$_condomnpc].vagina is "penis" and !$player.condom and $parasite.penis.name is undefined>>
+				<<personselect $_condomnpc>>
+				<span class="green"><<He_Short>> briefly frees your penis from <<his>> vagina, slips <<condomDesc $_condomnpc $_condomArticle>>> on, and slides it back in.</span>	
+				<<equipNPCCondom $_condomnpc "player">>
+			<</if>>
+		<</if>>
+		<<if $penisstate is "otheranus">>
+			<<if $NPCList[$_condomnpc].penis is "otheranus" and !$player.condom and $parasite.penis.name is undefined>>
+				<<personselect $_condomnpc>>
+				<span class="green"><<He_Short>> briefly frees your penis from <<his>> ass, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
+				<<equipNPCCondom $_condomnpc "player">>
+			<</if>>
+		<</if>>
+		/*Their penis*/
+		<<if $vaginastate is "entrance" or $vaginastate is "imminent">>
+			<<if ($NPCList[$_condomnpc].penis is "vaginaentrance" or $NPCList[$_condomnpc].penis is "vaginaimminent") and $NPCList[$_condomnpc].condom.worn is false>>
+				<<personselect $_condomnpc>>
+				<span class="green"><<He_Short>> slips <<condomDesc $_condomnpc $_condomArticle>> onto <<his>> penis.</span>
+				<<equipNPCCondom $_condomnpc>>
+			<</if>>
+		<</if>>
+		<<if $vaginastate is "penetrated">>
+			<<if $NPCList[$_condomnpc].penis is "vagina" and $NPCList[$_condomnpc].condom.worn is false>>
+				<<personselect $_condomnpc>>
+				<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
+				<<equipNPCCondom $_condomnpc>>
+			<</if>>
+		<</if>>
+		<<if $anusstate is "entrance" or $anusstate is "imminent">>
+			<<if ($NPCList[$_condomnpc].penis is "anusentrance" or $NPCList[$_condomnpc].penis is "anusimminent") and $NPCList[$_condomnpc].condom.worn is false>>
+				<<personselect $_condomnpc>>
+				<span class="green">The <<person>> slips <<condomDesc $_condomnpc $_condomArticle>> onto <<his>> penis.</span>
+				<<equipNPCCondom $_condomnpc>>
+			<</if>>
+		<</if>>
+		<<if $anusstate is "penetrated">>
+			<<if $NPCList[$_condomnpc].penis is "anus" and $NPCList[$_condomnpc].condom.worn is false>>
+				<<personselect $_condomnpc>>
+				<span class="green">The <<person>> briefly withdraws <<his>> penis from your ass, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
+				<<equipNPCCondom $_condomnpc>>
+			<</if>>
+		<</if>>
 	<</if>>
 <</widget>>
 

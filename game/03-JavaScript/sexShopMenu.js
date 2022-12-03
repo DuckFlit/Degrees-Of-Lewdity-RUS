@@ -647,6 +647,7 @@ function createInventoryObject() {
 	let recipient;
 	if (V.player.inventory == null) V.player.inventory = {};
 	if (V.player.inventory.sextoys == null) V.player.inventory.sextoys = {};
+	if (V.player.inventory.condoms == null) V.player.inventory.condoms = {};
 	for (const li of ["alex", "eden", "kylar", "robin", "sydney"]) {
 		recipient = window.findIndexInNPCNameVar(li);
 		if (V.NPCName[recipient].sextoys == null) V.NPCName[recipient].sextoys = {};
