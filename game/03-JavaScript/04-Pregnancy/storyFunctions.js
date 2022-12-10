@@ -46,24 +46,47 @@ window.playerBellySize = (pregnancyOnly = false) => {
 	return Math.clamp(bellySize,0,20);
 }
 
-const playerEndWaterProgress = () => {
-	let pregnancy;
-	if(V.player.vaginaExist){
-		pregnancy = V.sexStats.vagina.pregnancy;
-	}else{
-		pregnancy = V.sexStats.anus.pregnancy;
-	}
-	if(!pregnancy.fetus.length || pregnancy.timer < pregnancy.timerEnd) return false;
-	if(!isNaN(pregnancy.waterBreakingTimer) && pregnancy.waterBreakingTimer > 0){
-		pregnancy.waterBreakingTimer--;
-		if(pregnancy.waterBreakingTimer <= 0){
-			pregnancy.waterBreaking = true;
-			return true;
-		}
-		return false;
-	}
+window.pregnancyBellyVisible = () => {
+	const size = playerBellySize();
+	if (size <= 7) return false;
+	if (size <= 11 && V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) return false;
+	if (size <= 17 && V.worn.upper.type.includes("bellyHide")) return false;
+
+	return true;
 }
-DefineMacro("playerEndWaterProgress", playerEndWaterProgress);
+
+window.npcBellySize = (npc) => {
+	let bellySize = 0;
+	if(C.npc(npc) && C.npc(npc).pregnancy && C.npc(npc).pregnancy.enabled){
+		let pregnancy = C.npc(npc).pregnancy;
+		let pregnancyProgress = 0;
+		if(pregnancy.timerEnd) pregnancyProgress = Math.clamp(vpregnancy.timer / vpregnancy.timerEnd, 0, 1);
+		let maxSize = 0;
+		switch(pregnancy.type){
+			case "human":
+				maxSize += 18 + Math.clamp(vpregnancy.fetus.length,1,3);
+			break;
+			case "wolf":
+				maxSize += 16 + Math.clamp(vpregnancy.fetus.length / 2,1,4);
+			break;
+			default:
+				maxSize += 20;
+			break;
+		}
+		bellySize += pregnancyProgress * maxSize;
+	}
+
+	return bellySize;
+}
+
+window.npcPregnancyBellyVisible = (npc) => {
+	const size = npcBellySize(npc);
+	if (size <= 7) return false;
+
+	return true;
+}
+
+window.playerIsPregnant = () => (V.sexStats.vagina.pregnancy.type !== null && V.sexStats.vagina.pregnancy.type !== "parasites") || (V.sexStats.anus.pregnancy.type !== null && V.sexStats.anus.pregnancy.type !== "parasites");
 
 window.isPlayerNonparasitePregnancyEnding = () => {
 	return V.sexStats.vagina.pregnancy.waterBreaking || V.sexStats.anus.pregnancy.waterBreaking || false;
@@ -76,15 +99,6 @@ window.nonparasitePregnancyType = () => {
 		return V.sexStats.anus.pregnancy.type;
 	}
 }
-
-//Used only when the player is about to give birth to their children and the player can name them
-const playerEndWaterBreaking = () => {
-	V.sexStats.vagina.pregnancy.waterBreaking = null;
-	V.sexStats.vagina.pregnancy.waterBreakingTimer = null;
-	V.sexStats.anus.pregnancy.waterBreaking = null;
-	V.sexStats.anus.pregnancy.waterBreakingTimer = null;
-}
-DefineMacro("playerEndWaterBreaking", playerEndWaterBreaking);
 
 window.wakingPregnancyEvent = (rng) => {
 	let pregnancy;
@@ -101,7 +115,7 @@ window.wakingPregnancyEvent = (rng) => {
 
 	if(playerBellySize(true) >= 8 && !pregnancy.awareOf){
 		return "bellySize";
-	} else if(!menstruation.awareOfPeriodDelay && V.awareness >= 100 && V.sciencetrait >= 3 && !pregnancy.awareOf && pregnancyStage !== false && between(pregnancy.timer - (menstruation.currentDaysMax - menstruation.currentDay), 4, 8)){
+	} else if(V.cycledisable === "f" && !menstruation.awareOfPeriodDelay && V.awareness >= 100 && V.sciencetrait >= 3 && !pregnancy.awareOf && pregnancyStage !== false && between(pregnancy.timer - (menstruation.currentDaysMax - menstruation.currentDay), 4, 8)){
 		return "missedPeriod";
 	} else if(between(pregnancyStage, 0.9, 1)){
 		wakingEffects = "nearBirthEvent";
@@ -172,7 +186,7 @@ window.dailyPregnancyEvent = (rng) => {
 		dailyEffects = "morningSicknessPills";
 	} else if(["contraceptive","fertility booster"].includes(lastPregPill) && pills.pills[lastPregPill].doseTaken >= 1 && rng >= 95){
 		dailyEffects = "mildIssues";
-	} else if(menstruation.currentState === "normal" && (menstruation.currentDay < 3 || menstruation.currentDay >= menstruation.currentDaysMax - 1 && rng >= 80)){
+	} else if(V.cycledisable === "f" && menstruation.currentState === "normal" && (menstruation.currentDay < 3 || menstruation.currentDay >= menstruation.currentDaysMax - 1 && rng >= 80)){
 		dailyEffects = "periodIssues";
 	}
 
@@ -197,4 +211,13 @@ window.dailyPregnancyEvent = (rng) => {
 		case "nearBirthEvent": return ["lightBabyKick","babyKick","babyMovement","babyHiccup","earlyContractions","earlyContractions"];
 	}
 	return false;
+}
+
+window.pregnancyNameCorrection = (name) => {
+	switch(name){
+		case "Black Wolf": case "Great Hawk": case "Ivory Wraith":
+			name = "the " + name;
+		break;
+	}
+	return name;
 }
