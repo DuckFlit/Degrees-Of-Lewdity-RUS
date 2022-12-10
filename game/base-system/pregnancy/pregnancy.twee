@@ -117,7 +117,9 @@
 	<<set $_last_preg_pill to clone(_pills.lastTaken.pregnancy)>>
 	<<switch _menstruation.currentState>>
 		<<case "normal">>
-			<<if _menstruation.currentDay lt _menstruation.currentDaysMax>>
+			<<if $cycledisable is "t">>
+				<<playerPregnancyAttempt `random(1,200)` $_pregLocation>>
+			<<elseif _menstruation.currentDay lt _menstruation.currentDaysMax>>
 				/*Continue the cycle again*/
 				<<if _menstruation.currentDay gte _menstruation.currentDaysMax / 2 and _menstruation.lastDaysMax isnot _menstruation.currentDaysMax>>
 				<</if>>
@@ -146,7 +148,7 @@
 					<</if>>
 					/*Check for pregnancy at a reduced chance for a few days before*/
 					<<if _menstruation.currentDay gte _menstruation.stages[3] - 4>>
-						<<set $_multi = Math.clamp(Math.ceil(2 * (1 + _menstruation.stages[3] - _menstruation.currentDay)),2,10)>>
+						<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.stages[3] - _menstruation.currentDay)),6,30)>>
 						<<playerPregnancyAttempt $_multi $_pregLocation>>
 					<</if>>
 				<<elseif _menstruation.currentDay lt _menstruation.stages[3]>>
@@ -155,12 +157,12 @@
 					<<set _menstruation.lastDaysMax to _menstruation.currentDaysMax>>
 
 					/*Check for pregnancy*/
-					<<playerPregnancyAttempt 1 $_pregLocation>>
+					<<playerPregnancyAttempt 3 $_pregLocation>>
 				<<else>>
 					/*Luteal phase*/
 					/*Check for pregnancy at a reduced chance for a few days after*/
 					<<if _menstruation.currentDay lte _menstruation.stages[3] + 4>>
-						<<set $_multi = Math.clamp(Math.ceil(2 * (1 + _menstruation.currentDay - _menstruation.stages[3])),2,10)>>
+						<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.currentDay - _menstruation.stages[3])),6,30)>>
 						<<playerPregnancyAttempt $_multi $_pregLocation`>>
 					<</if>>
 					<<if $_last_preg_pill and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
@@ -178,54 +180,6 @@
 				/*Start the cycle again*/
 				<<restartMenstruationCycle>>
 				<<set _menstruation.periodEnabled to true>>
-			<</if>>
-		<<case "pregnant">>
-			<<switch _pregnancy.type>>
-				<<case "human">><<set _multiplier to (1/(1/9*$humanPregnancyMonths))>>
-				<<case "wolf">><<set _multiplier to (1/(1/12*$wolfPregnancyWeeks))>>
-				<<default>><<set _multiplier to 1>>
-			<</switch>>
-			<<set $_pregnancy.timer += parseFloat((0.5 * _multiplier).toFixed(3))>>
-
-			/*Keeping fatigue low should help morning sickness*/
-			<<if between($_pregnancy.timer / $_pregnancy.timerEnd, 0.15, 0.25)>>
-				/*Early Morning sickness*/
-				/*Light Nausea/dizzyness at any time of day, but mostly when waking up*/
-				<<if random(0,100) gte 30>>
-					<<set $pregnancyStats.morningSicknessWaking to 1>>
-				<</if>>
-				<<if random(0,100) gte 30>>
-					<<set $pregnancyStats.morningSicknessGeneral to 1>>
-				<</if>>
-			<<elseif between($_pregnancy.timer / $_pregnancy.timerEnd, 0.24, 0.45)>>
-				/*Morning sickness*/
-				/*Nausea/dizzyness at any time of day, but mostly when waking up*/
-				/*First pregnancy should be worse*/
-				<<set $pregnancyStats.morningSicknessWaking to [1,2,2][random(0,2)]>>
-				<<if $_pregnancy.totalBirthEvents is 0 and $pregnancyStats.morningSicknessWaking lt 2>>
-					<<set $pregnancyStats.morningSicknessWaking to 2>>
-				<</if>>
-				<<if random(0,100) gte 20>>
-					<<set $pregnancyStats.morningSicknessGeneral to [1,2,2][random(0,2)]>>
-				<</if>>
-			<</if>>
-			<<if $_pregnancy.timer gte $_pregnancy.timerEnd>>
-				<<set _menstruation.currentState to "pregnantEnd">>
-				<<if $player.breastsize lte 4 and $player.breastsize lt $breastsizemax>>
-					<<set $player.breastsize += 1>><<set $breastgrowthtimer to 700>>
-					<<if $player.breastsize lte 4 and $player.breastsize lt $breastsizemax>>
-						<<set $player.breastsize += 1>>
-					<</if>>
-					<<set $breastgrowthmessage to $player.breastsize>><<set $effectsmessage to 1>>
-					<<set $player.breastsize to Math.clamp($player.breastsize, 0, 12)>>
-				<</if>>
-				<<if $lactating isnot 1 and $player.breastsize gt 0>>
-					<<set $lactating to 1>>
-					<<set $lactation_pressure to 100>>
-					<<milkvolume 50>>
-					<<set $effectsmessage to 1>>
-					<<set $lactationmessage to 1>>
-				<</if>>
 			<</if>>
 		<<case "recovering">>
 			<<set _menstruation.recoveryTime -= 0.5>>
@@ -254,87 +208,11 @@
 			<</if>>
 	<</switch>>
 <</if>>
-<<updateRecordedSperm "vagina">>
-<<updateRecordedSperm "anus">>
+<<updateRecordedSperm "vagina" "pc" 0.5>>
+<<updateRecordedSperm "anus" "pc" 0.5>>
 <</widget>>
 
 :: Pregnancy2 [widget]
-
-<<widget "updateRecordedSperm">>
-<<set _sperm to $sexStats[_args[0]].sperm>>
-<<for $_label, $_value range _sperm>>
-	<<for _i to $_value.count.length - 1; _i gte 0; _i-->>
-		<<set $_value.count[_i][0] -= 0.5>>
-		<<if $_value.count[_i][0] lte 0>>
-			<<run _sperm[$_label].count.deleteAt(_i)>>
-		<</if>>
-	<</for>>
-	<<if $_value.count.length is 0>>
-		<<run delete _sperm[$_label]>>
-	<</if>>
-<</for>>
-<</widget>>
-
-/*args[0] - potential mother, args[1] - npc fullDescription or "pc", _args[2] - type of pregnancy, _args[3] - _daysTillRemoval override for specific events*/
-<<widget "recordVaginalSperm">>
-/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-<<if _args[0] and _args[1] and _args[2] and $pregnancyTesting>>
-	<<if _args[0] is "pc">>
-		<<set $_sperm to $sexStats.vagina.sperm>>
-	<<elseif $NPCNameList.includes(_args[0]) and $NPCName[$NPCNameList.indexOf(_args[0])].pregnancy.enabled>>
-		<<set $_sperm to $NPCName[$NPCNameList.indexOf(_args[0])].pregnancy.sperm>>
-	<</if>>
-	<<if $_sperm>>
-		<<if $_sperm[_args[1]] is undefined>>
-			<<set $_sperm[_args[1]] to {"type":_args[2], count:[]}>>
-		<</if>>
-		<<if _args[3]>>
-			<<set _daysTillRemoval to _args[3]>>
-		<<else>>
-			<<set _daysTillRemoval to random(4,8)>>
-		<</if>>
-		<<for $_i to 0; $_i lt $_sperm[_args[1]].count.length;$_i++>>
-			<<if $_sperm[_args[1]].count[$_i][0] is _daysTillRemoval>>
-				<<set $_sperm[_args[1]].count[$_i][1] += 1>>
-				<<set $_found to true>>
-			<</if>>
-		<</for>>
-		<<if $_found isnot true>>
-			<<set $_sperm[_args[1]].count.push([_daysTillRemoval, 1])>>
-		<</if>>
-	<</if>>
-<</if>>
-<</widget>>
-
-<<widget "recordAnusSperm">>
-/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-<<if _args[0] and _args[1] and _args[2] and $pregnancyTesting>>
-	<<if _args[0] is "pc">>
-		<<set $_sperm to $sexStats.anus.sperm>>
-	<<elseif $NPCNameList.includes(_args[0]) and $NPCName[$NPCNameList.indexOf(_args[0])].pregnancy.enabled>>
-		/*<<set $_sperm to $NPCName[$NPCNameList.indexOf(_args[0])].pregnancy.sperm>> Not tracking right now*/
-	<</if>>
-	<<if $_sperm>>
-		<<if $_sperm[_args[1]] is undefined>>
-			<<set $_sperm[_args[1]] to {"type":_args[2], count:[]}>>
-		<</if>>
-		<<if _args[3]>>
-			<<set _daysTillRemoval to _args[3]>>
-		<<else>>
-			<<set _daysTillRemoval to random(4,8)>>
-		<</if>>
-		<<for $_i to 0; $_i lt $_sperm[_args[1]].count.length;$_i++>>
-			<<if $_sperm[_args[1]].count[$_i][0] is _daysTillRemoval>>
-				<<set $_sperm[_args[1]].count[$_i][1] += 1>>
-				<<set $_found to true>>
-			<</if>>
-		<</for>>
-		<<if $_found isnot true>>
-			<<set $_sperm[_args[1]].count.push([_daysTillRemoval, 1])>>
-		<</if>>
-	<</if>>
-<</if>>
-<</widget>>
 
 <<widget "bodyPregCalc">>
 <<switch $bodysize>>
@@ -764,7 +642,7 @@
 		<<set $_pregnancy.enabled to true>>
 		<<set $_pregnancy.cycleDaysTotal to random(24,32)>>
 		<<set $_pregnancy.cycleDay to random(1,$_pregnancy.cycleDaysTotal)>>
-		<<set $_pregnancy.cycleDangerousDay to 5>>
+		<<set $_pregnancy.cycleDangerousDay to 10>>
 		<<set $_pregnancy.sperm to {}>>
 		<<set $_pregnancy.potentialFathers to []>>
 		<<switch $_name>>

@@ -120,18 +120,28 @@ You have a <<bottom>>.
 <</if>>
 <<if $_pregnancy.awareOf is true>>
 	<<if $_pregnancy.timer / $_pregnancy.timerEnd lte 0.33>>
-		You know you're in the first trimester of your pregnancy.
+		<<set _trimester to "first">>
 	<<elseif $_pregnancy.timer / $_pregnancy.timerEnd lte 0.66>>
-		You know you're in the second trimester of your pregnancy.
+		<<set _trimester to "second">>
 	<<else>>
-		You know you're in the third trimester of your pregnancy.
+		<<set _trimester to "third">>
+	<</if>>
+	<<if $_pregnancy.awareOfDetails || $_pregnancy.potentialFathers.every((father, index, array) => father[0] === array[0][0])>>
+		<<set _number to $_pregnancy.awareOfDetails ? $_pregnancy.fetus.length : "an unknown number of">>
+		<<switch $_pregnancy.type>>
+			<<case "human">><<set _childType to "normal babies">>
+			<<case "wolf">><<set _childType to "wolf puppies">>
+		<</switch>>
+		You're pregnant with _number _childType in your _trimester trimester.
+	<<else>>
+		You know you're in the _trimester trimester of your pregnancy.
 	<</if>>
 	<<if $_pregnancy.potentialFathers.length is 1>>
-		You're sure the father is <<print $_pregnancy.potentialFathers[0][1]>>.
+		You know that the father is <<print pregnancyNameCorrection($_pregnancy.potentialFathers[0][1])>>.
 	<<elseif $_pregnancy.potentialFathers.length is 2>>
-		You're pretty sure the father is either <<print $_pregnancy.potentialFathers[0][1]>> or <<print $_pregnancy.potentialFathers[1][1]>>.
+		You're sure that the father is either <<print pregnancyNameCorrection($_pregnancy.potentialFathers[0][1])>> or <<print pregnancyNameCorrection($_pregnancy.potentialFathers[1][1])>>.
 	<<elseif $_pregnancy.potentialFathers.length is 3>>
-		You're pretty sure the father is either <<print $_pregnancy.potentialFathers[0][1]>>, <<print $_pregnancy.potentialFathers[1][1]>> or <<print $_pregnancy.potentialFathers[2][1]>>.
+		You're pretty sure that the father is either <<print pregnancyNameCorrection($_pregnancy.potentialFathers[0][1])>>, <<print pregnancyNameCorrection($_pregnancy.potentialFathers[1][1])>> or <<print pregnancyNameCorrection($_pregnancy.potentialFathers[2][1])>>.
 	<<else>>
 		You're unsure on who the father is.
 	<</if>>
