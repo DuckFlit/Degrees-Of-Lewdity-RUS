@@ -7,7 +7,7 @@ window.maxParasites = (genital = "anus") => {
 }
 
 window.canImpregnateParasite = (genital = "anus") => {
-	if(V.parasitepregdisable === "t" || (genital === "vagina" && !player.vaginaExist)) return false;
+	if(V.parasitepregdisable === "t" || (genital === "vagina" && !V.player.vaginaExist)) return false;
 	if(V.sexStats.pills.pills["Anti-Parasite Cream"] && V.sexStats.pills.pills["Anti-Parasite Cream"].doseTaken) return false;
 	let pregnancy = V.sexStats[genital].pregnancy;
 
