@@ -42,21 +42,11 @@ function shopClothingFilterSortOnDescription(traitOne, traitTwo) {
 }
 window.shopClothingFilterSortOnDescription = shopClothingFilterSortOnDescription;
 
-window.wikifier = function (widget, arg1, arg2, arg3) {
-	if (arg3 !== undefined) {
-		Wikifier.wikifyEval("<<" + widget + " " + arg1 + " " + arg2 + " " + arg3 + ">>");
-	} else if (arg2 !== undefined) {
-		Wikifier.wikifyEval("<<" + widget + " " + arg1 + " " + arg2 + ">>");
-	} else if (arg1 !== undefined) {
-		Wikifier.wikifyEval("<<" + widget + " " + arg1 + ">>");
-	} else if (arg1 === undefined) {
-		Wikifier.wikifyEval("<<" + widget + ">>");
-	}
-};
-
-window.wikifier2 = function (str) {
-	// eslint-disable-next-line no-new
-	new Wikifier(null, str);
+//Now also returns the value from wikifyEval
+//Not limited to number of parameters
+window.wikifier = function (widget, ...args) {
+	if(widget == null) return;
+	return Wikifier.wikifyEval("<<" + widget + (args.length ? " " + args.join(" ") : "") + ">>");
 };
 
 function actionsreplace(bodypart) {
@@ -1193,13 +1183,19 @@ function playerIsPenetrated() {
 }
 window.playerIsPenetrated = playerIsPenetrated;
 
-function getTimeString(minutes = 0) {
-	minutes = minutes > 0 ? minutes : 0;
-	// Doing it this way instead of Math.min to enforce number if an invalid (string) passed in
-	const hours = Math.trunc(minutes / 60);
-	const mins = (minutes % 60).toString().padStart(2, "0");
-
-	return (hours || 0) + ":" + mins;
+/**
+ * Overloads:
+ * 	getTimeString(minutes)
+ * 	getTimeString(hours, minutes)
+ * Examples:
+ * 	getTimeString(20) returns "0:20"
+ * 	getTimeString(1,5) returns "1:05"
+ */
+function getTimeString(...args) {
+	if(args[0] == null) return;
+	const hours = args[1] ? args[0] : 0;
+	let minutes = Math.max(args[1] || args[0], 0) + (hours * 60);
+	return Math.trunc(minutes / 60) + ":" + ('0' + Math.trunc(minutes % 60)).slice(-2);
 }
 window.getTimeString = getTimeString;
 
