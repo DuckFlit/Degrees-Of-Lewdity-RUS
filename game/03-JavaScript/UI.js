@@ -138,7 +138,7 @@ $(document).on(":passagerender", function (ev) {
 Links.keyNumberMatcher = /^\([^)]+\)/;
 
 Links.generateLinkNumbers = content => {
-	if (!V.numberify_enabled || !StartConfig.enableLinkNumberify) return;
+	if (!V.options.numberify_enabled || !StartConfig.enableLinkNumberify) return;
 
 	for (let i = 0; i < disableNumberifyInVisibleElements.length; i++) {
 		if ($(content).find(disableNumberifyInVisibleElements[i]).length || $(content).is(disableNumberifyInVisibleElements[i])) return; // simply skip this render
@@ -158,7 +158,7 @@ Links.generateLinkNumbers = content => {
 Links.generate = () => Links.generateLinkNumbers(document.getElementsByClassName("passage")[0] || document);
 
 $(document).on("keyup", function (ev) {
-	if (!V.numberify_enabled || !StartConfig.enableLinkNumberify || V.tempDisable) return;
+	if (!V.options.numberify_enabled || !StartConfig.enableLinkNumberify || V.tempDisable) return;
 
 	if (document.activeElement.tagName === "INPUT" && document.activeElement.type !== "radio" && document.activeElement.type !== "checkbox")
 		return;
@@ -276,24 +276,16 @@ function customColour(color, saturation, brightness, contrast, sepia) {
 }
 window.customColour = customColour;
 
-window.zoom = function (size, set) {
-    if (size === undefined) {
-        size = document.getElementById("numberslider-input-zoom").value;
-    }
-    var parsedSize = parseInt(size);
-    var body = document.getElementsByTagName("body")[0];
-    if (parsedSize >= 50 && parsedSize <= 200 && parsedSize !== 100) {
-        body.style.zoom = size + "%";
-        if (set === true) {
-            V.zoom = size;
-        }
-    } else {
-        body.style.zoom = "";
-        if (set === true) {
-            V.zoom = 100;
-        }
-    }
+function zoom(value) {
+	const slider = $("[name$='" + Util.slugify("options.zoom") +"']");
+	value = Math.clamp(value || slider[0].value, 50, 200);
+	$("body").css("zoom", value + "%").css("-ms-zoom", value + "%");
+	if(slider[0].value != value){
+		slider[0].value = value;
+		slider.trigger("change");
+	}
 }
+window.zoom = zoom;
 
 function beastTogglesCheck() {
 	T.beastVars = [
@@ -507,17 +499,10 @@ function settingsDisableElement() {
 				});
 			};
 			const orig = $(this);
-			const target = orig.data("target");
 			const disabledif = orig.data("disabledif");
+			[orig.data("target")].flat().forEach((e) => $("[name$='" + Util.slugify(e) +"']").on('click', updateButtonsActive));
 			if (orig.data("target") && disabledif) {
 				updateButtonsActive();
-				$(document).on(
-					"click.evt",
-					"[name*='" + (Array.isArray(target) ? target.map(x => Util.slugify(x)).join("'], [name*='") : Util.slugify(target)) + "']",
-					function () {
-						updateButtonsActive();
-					}
-				);
 			}
 		});
 	});

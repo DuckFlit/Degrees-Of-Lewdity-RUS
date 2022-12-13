@@ -1178,6 +1178,7 @@
 /* Returns stored items that are a part of an outfit (wear_outfit) to the wardrobe so that they can be used by another outfit. */
 /* args[0] specifies the location identifier */
 <<widget "storereturn">>
+	<<set _skip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
 	<<if !isNaN($wear_outfit) and _args[0] isnot undefined>>
 		<<for $_slot range setup.clothingLayer.all>>
 			<<set $_name to $outfit[$wear_outfit][$_slot]>>
@@ -1185,7 +1186,9 @@
 			<<generalStoreon _args[0] $_slot "check">>
 			<<if _store_check and $_item isnot undefined and $_name isnot "naked" and $_name isnot undefined>>
 				<<if $store[$_slot].length gt 0 and $_name is $_item.name>>
-					<<set $wardrobe[$_slot].push(clone($_item))>>
+					<<if !_skip.includes($_item.name)>>
+						<<set $wardrobe[$_slot].push(clone($_item))>>
+					<</if>>
 					<<set $store[$_slot].deleteAt($store[$_slot].indexOf($_item))>>
 				<</if>>
 			<</if>>
@@ -1295,6 +1298,7 @@
 			<</if>>
 			<<set $store[$_slot].deleteAt($_index)>>
 		<<else>>
+			<<set _skip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
 			<<if _args[2] is "wardrobe" or $wardrobes[_args[2]] isnot undefined>>
 				<<if $_item.temp is undefined>>
 					<<set $_location to clothesReturnLocation($worn[$_slot])>>
@@ -1305,7 +1309,9 @@
 			<<elseif _args[2] is "delete">>
 				<<set $store[$_slot].deleteAt($_index)>>
 			<<elseif _args[2] is "return">>
-				<<set $wardrobe[$_slot].push(clone($_item))>>
+				<<if !_skip.includes($_item.name)>>
+					<<set $wardrobe[$_slot].push(clone($_item))>>
+				<</if>>
 				<<set $store[$_slot].deleteAt($_index)>>
 				<<run delete V.outfitTmp[_args[0]]>>
 			<<elseif _args[2] is "check">>

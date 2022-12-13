@@ -954,13 +954,10 @@ function settingsObjects(type) {
 				// playerPregnancyHumanDisable: {boolLetter: true, bool: true},
 				// playerPregnancyBeastDisable: {boolLetter: true, bool: true},
 				// npcPregnancyDisable: {boolLetter: true, bool: true},
-				numberify_enabled: { min: 0, max: 1, decimals: 0 },
-				timestyle: { strings: ["military", "ampm"] },
 				checkstyle: {
 					strings: ["percentage", "words", "skillname"],
 					randomize: "gameplay",
 				},
-				tipdisable: { boolLetter: true, bool: true },
 				debugdisable: { boolLetter: true, bool: true },
 				statdisable: { boolLetter: true, bool: true },
 				cheatdisabletoggle: { boolLetter: true, bool: true },
@@ -1002,6 +999,9 @@ function settingsObjects(type) {
 					skipStatisticsConfirmation: { bool: true },
 					passageCount: { strings: ["disabled", "changes", "total"] },
 					playtime: { bool: true },
+					numberify_enabled: { min: 0, max: 1, decimals: 0 },
+					timestyle: { strings: ["military", "ampm"] },
+					tipdisable: { boolLetter: true, bool: true },
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },
