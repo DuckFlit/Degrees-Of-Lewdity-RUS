@@ -273,9 +273,14 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 :: Ocean Breeze Work
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 <<set $NPCName[$NPCNameList.indexOf("Sam")].love = Math.clamp($NPCName[$NPCNameList.indexOf("Sam")].love, -50, 50)>>
-<<rng>>
-
-<<if $rng gte 81 and $weather isnot "rain" and $weather isnot "snow">>
+<<rng 111>>
+<<if $rng gte 101>>
+	Sam asks you to bring plates of food out to a large table of customers.
+	<br><br>
+	<<link [[Make multiple trips|Ocean Breeze Plates]]>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[Take them all out at once|Ocean Breeze Plates]]>><<set $phase to 1>><</link>><<dancedifficulty 200 800>>
+<<elseif $rng gte 81 and $weather isnot "rain" and $weather isnot "snow">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 	<<if $danger gte (9900 - $allure)>>
 		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
@@ -649,6 +654,37 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 	<</if>>
 
 <</if>>
+
+:: Ocean Breeze Plates
+<<if $phase is 0>>
+	It takes a few minutes, but you manage to get everything to the table.
+	<br><br>
+	The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+	<br><br>
+<<elseif $phase is 1>>
+	<<if $danceSuccess>>
+		<<set $tipmod to 0.2>><<tipset "serving">>
+		
+		<<set $tip += 500>>
+		<<set $tip += 100>>
+
+		You load the plates onto serving trays and <<dancetext>> balance them on your shoulders, careful not to let anything spill. You manage to get everything to the table in one piece.
+		<br><br>
+		<<npc Sam>><<person1>>Sam gives you a thumbs-up as <<he>> walks by.<<npcincr Sam love 1>><<glove>>
+		<br><br>
+		The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive>>
+		<br><br>
+	<<else>>
+		You load the plates onto serving trays and <<dancetext>> balance them on your shoulders, careful not to let anything spill. You lose your balance on your way out of the kitchen, however, and accidentally dump several plates' worth of food onto the floor. Sam gives you a disapproving look.<<npcincr Sam love -1>><<llove>><<stress 6>><<gstress>>
+		<br><br>
+		You sigh as you begin cleaning up your mess.
+		<br><br>
+		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		<br><br>
+	<</if>>
+<</if>>
+<<pass 1 hour>>
+<<link [[Next|Ocean Breeze]]>><<endevent>><</link>>
 
 :: Ocean Breeze Soup Ignore
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
