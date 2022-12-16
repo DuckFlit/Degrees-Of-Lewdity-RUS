@@ -76,3 +76,15 @@ setup.hair = {
 		},
 	],
 };
+
+
+function hairLengthStringToNumber(hairLength) {
+	return {
+		short: 0,
+		shoulder: 200,
+		chest: 400,
+		navel: 600,
+		thighs: 700,
+		feet: 900,
+	}[hairLength];
+}
