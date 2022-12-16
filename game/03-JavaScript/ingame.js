@@ -338,7 +338,7 @@ window.combatSkillCheck = combatSkillCheck;
 
 function hairdressersReset() {
 	$(() =>
-		$("#hairDressers").on("change", ".macro-listbox", function (e) {
+		$("#hairDressers").on("change", ".macro-listbox, .macro-radiobutton, .macro-checkbox", function (e) {
 			Wikifier.wikifyEval("<<replace #hairDressers>><<hairDressersOptions>><</replace>>");
 			Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>");
 		})

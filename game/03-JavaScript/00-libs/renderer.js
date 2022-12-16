@@ -170,7 +170,7 @@ var Renderer;
 				gradient = Renderer.globalC2D.createLinearGradient(spec.values[0], spec.values[1], spec.values[2], spec.values[3]);
 				break;
 			case "radial":
-				gradient = Renderer.globalC2D.createRadialGradient(spec.values[1], spec.values[2], spec.values[3], spec.values[4], spec.values[5], spec.values[6]);
+				gradient = Renderer.globalC2D.createRadialGradient(spec.values[0], spec.values[1], spec.values[2], spec.values[3], spec.values[4], spec.values[5]);
 				break;
 			default:
 				throw new Error("Invalid gradient type: " + spec.gradient);
@@ -339,11 +339,11 @@ var Renderer;
 		}
 	}
 	Renderer.adjustBrightness = adjustBrightness;
-	function adjustLevels(image,
+	function adjustLevels(image, 
 	/**
 	 * scale factor, 1 - no change, >1 - higher contrast, <1 - lower contrast.
 	 */
-	factor,
+		factor, 
 	/**
 	 * shift, 0 - no change, >0 - brighter, <0 - darker
 	 */

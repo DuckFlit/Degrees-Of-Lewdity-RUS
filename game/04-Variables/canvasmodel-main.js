@@ -251,10 +251,20 @@ Renderer.CanvasModels["main"] = {
 			"skin_tone_bikiniBottom": -0.01,
 			// Hair
 			"hair_colour": "red",
+			"hair_colour_gradient": {
+				style: "split",
+				colours: ["red", "black"]
+			},
+			"hair_colour_style": "simple",
 			"hair_sides_type": "default",
 			"hair_sides_length": "short",
 			"hair_sides_position": "back",
 			"hair_fringe_colour": "red",
+			"hair_fringe_colour_gradient": {
+				style: "split",
+				colours: ["red", "black"]
+			},
+			"hair_fringe_colour_style": "simple",
 			"hair_fringe_type": "default",
 			"hair_fringe_length": "short",
 			"brows_colour": "",
@@ -491,19 +501,70 @@ Renderer.CanvasModels["main"] = {
 				}
 				filter = clone(record.canvasfilter);
 			}
+
 			if (prefilterName) {
 				Renderer.mergeLayerData(filter,
 					setup.colours.sprite_prefilters[prefilterName],
 					true
 				);
 			}
-			return filter
+			return filter;
+		}
+
+		function createHairColourGradient(hairPart, gradient, hairType, hairLength, prefilterName) {
+			const filterPrototypeLibrary = setup.colours.hairgradients_prototypes[hairPart][gradient.style];
+			const filterPrototype = filterPrototypeLibrary[hairType] || filterPrototypeLibrary.all;
+			const filter = {
+				blend: clone(filterPrototype),
+				blendMode: "hard-light"
+			};
+			for (const colorIndex in filter.blend.colors) {
+				filter.blend.colors[colorIndex][0] = filter.blend.lengthFunctions[0](hairLength, filter.blend.colors[colorIndex][0]);
+				filter.blend.colors[colorIndex][1] = setup.colours.hair_map[gradient.colours[colorIndex]].canvasfilter.blend;
+			}
+			Renderer.mergeLayerData(filter, setup.colours.sprite_prefilters[prefilterName], true);
+
+			return filter;
 		}
 
 		options.filters.left_eye = lookupColour(setup.colours.eyes_map, options.left_eye, "eyes", "eyes_custom", "eyes");
 		options.filters.right_eye = lookupColour(setup.colours.eyes_map, options.right_eye, "eyes", "eyes_custom", "eyes");
-		options.filters.hair = lookupColour(setup.colours.hair_map, options.hair_colour, "hair", "hair_custom", "hair");
-		options.filters.hair_fringe = lookupColour(setup.colours.hair_map, options.hair_fringe_colour || options.hair_colour, "hair_fringe", "hair_fringe_custom", "hair_fringe");
+		if (options.hair_colour_style === "gradient") {
+			options.filters.hair = createHairColourGradient(
+				"sides",
+				options.hair_colour_gradient,
+				options.hair_sides_type,
+				hairLengthStringToNumber(options.hair_sides_length),
+				"hair"
+			);
+		}
+		if (options.hair_colour_style === "simple") {
+			options.filters.hair = lookupColour(
+				setup.colours.hair_map,
+				options.hair_colour,
+				"hair",
+				"hair_custom",
+				"hair"
+			);
+		}
+		if (options.hair_fringe_colour_style === "gradient") {
+			options.filters.hair_fringe = createHairColourGradient(
+				"fringe",
+				options.hair_fringe_colour_gradient || options.hair_colour_gradient,
+				options.hair_fringe_type,
+				hairLengthStringToNumber(options.hair_sides_length),
+				"hair_fringe"
+			);
+		}
+		if (options.hair_fringe_colour_style === "simple") {
+			options.filters.hair_fringe = lookupColour(
+				setup.colours.hair_map,
+				options.hair_fringe_colour || options.hair_colour,
+				"hair_fringe",
+				"hair_fringe_custom",
+				"hair_fringe"
+			);
+		}
 		options.filters.brows = lookupColour(setup.colours.hair_map, options.brows_colour || options.hair_colour, "brows", "brows_custom", "brows");
 		options.filters.pbhair = lookupColour(setup.colours.hair_map, options.pbhair_colour || options.hair_colour, "pbhair", "pbhair_custom", "pbhair");
 		if (options.lipstick_colour) {
@@ -562,7 +623,7 @@ Renderer.CanvasModels["main"] = {
 		if (options.worn_over_upper) {
 			options.zarms = ZIndices.over_upper_arms - 0.1;
 		} else if (options.worn_upper) {
-			if (options.arm_left === "cover"){
+			if (options.arm_left === "cover") {
 				if (options.upper_tucked) {
 					options.zarms = ZIndices.upper_arms_tucked - 0.1;
 				} else {
@@ -580,7 +641,7 @@ Renderer.CanvasModels["main"] = {
 		if (options.worn_under_upper_setup.sleeve_img === 1) {
 			options.zarms = ZIndices.under_upper_arms - 0.1;
 		} else if (options.worn_upper_setup.sleeve_img === 1) {
-			if (options.arm_left === "cover"){
+			if (options.arm_left === "cover") {
 				if (options.upper_tucked) {
 					options.zarms = ZIndices.upper_arms_tucked - 0.1;
 				} else {
@@ -616,17 +677,17 @@ Renderer.CanvasModels["main"] = {
 			options.head_mask_src = null;
 		}
 
-		if(between(options.belly,6,20)){
+		if (between(options.belly, 6, 20)) {
 			options.belly_mask_src = "img/clothes/belly/belly_mask.png";
 		}
-		
-		if(between(options.belly,20,20)){
+
+		if (between(options.belly, 20, 20)) {
 			options.belly_mask_lower_shadow_src = "img/clothes/belly/belly_mask_lower_shadow_3.png";
 			options.belly_mask_upper_shadow_src = "img/clothes/belly/belly_mask_upper_shadow_2.png";
-		} else if(between(options.belly,11,19)){
+		} else if (between(options.belly, 11, 19)) {
 			options.belly_mask_lower_shadow_src = "img/clothes/belly/belly_mask_lower_shadow_2.png";
 			options.belly_mask_upper_shadow_src = "img/clothes/belly/belly_mask_upper_shadow.png";
-		} else if(between(options.belly,6,10)){
+		} else if (between(options.belly, 6, 10)) {
 			options.belly_mask_lower_shadow_src = "img/clothes/belly/belly_mask_lower_shadow.png";
 		}
 
@@ -1017,10 +1078,10 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 			showfn(options) {
-				return options.show_face && !!options.toast	
+				return options.show_face && !!options.toast
 			},
 			filters: ["toast"],
-			z: ZIndices.toast		
+			z: ZIndices.toast
 		},
 		/***
 		 *    ██   ██  █████  ██ ██████
@@ -2766,15 +2827,15 @@ function genlayer_clothing_belly(slot, overrideOptions) {
 			return options["worn_" + slot + "_alpha"]
 		},
 		dxfn(options) {
-			if(between(options.belly,20,20)){
+			if (between(options.belly, 20, 20)) {
 				return 10;
-			} else if(between(options.belly,19,19)){
+			} else if (between(options.belly, 19, 19)) {
 				return 8;
-			} else if(between(options.belly,16,18)){
+			} else if (between(options.belly, 16, 18)) {
 				return 6;
-			} else if(between(options.belly,11,15)){
+			} else if (between(options.belly, 11, 15)) {
 				return 4;
-			} else if(between(options.belly,6,10)){
+			} else if (between(options.belly, 6, 10)) {
 				return 2;
 			} else {
 				return 0;
@@ -2804,11 +2865,11 @@ function genlayer_clothing_belly_2(slot, overrideOptions) {
 			return options["worn_" + slot + "_alpha"]
 		},
 		dxfn(options) {
-			if(between(options.belly,20,20)){
+			if (between(options.belly, 20, 20)) {
 				return 6;
-			} else if(between(options.belly,19,19)){
+			} else if (between(options.belly, 19, 19)) {
 				return 6;
-			} else if(between(options.belly,16,18)){
+			} else if (between(options.belly, 16, 18)) {
 				return 6;
 			} else {
 				return 0;
@@ -2838,7 +2899,7 @@ function genlayer_clothing_belly_shadow(slot, overrideOptions) {
 			return options["worn_" + slot + "_alpha"]
 		},
 		brightnessfn(options) {
-			if(between(options.belly,6,20)){
+			if (between(options.belly, 6, 20)) {
 				return -0.25;
 			} else {
 				return 0;
@@ -2868,20 +2929,20 @@ function genlayer_clothing_belly_highlight(slot, overrideOptions) {
 			return options["worn_" + slot + "_alpha"]
 		},
 		dxfn(options) {
-			if(between(options.belly,20,20)){
+			if (between(options.belly, 20, 20)) {
 				return 10;
-			} else if(between(options.belly,19,19)){
+			} else if (between(options.belly, 19, 19)) {
 				return 8;
-			} else if(between(options.belly,16,18)){
+			} else if (between(options.belly, 16, 18)) {
 				return 6;
-			} else if(between(options.belly,11,15)){
+			} else if (between(options.belly, 11, 15)) {
 				return 4;
 			} else {
 				return 0;
 			}
 		},
 		brightnessfn(options) {
-			if(between(options.belly,11,20)){
+			if (between(options.belly, 11, 20)) {
 				return 0.15;
 			} else {
 				return 0;
@@ -2917,15 +2978,15 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 			return options["worn_" + slot + "_alpha"]
 		},
 		dxfn(options) {
-			if(between(options.belly,20,20)){
+			if (between(options.belly, 20, 20)) {
 				return 10;
-			} else if(between(options.belly,19,19)){
+			} else if (between(options.belly, 19, 19)) {
 				return 8;
-			} else if(between(options.belly,16,18)){
+			} else if (between(options.belly, 16, 18)) {
 				return 6;
-			} else if(between(options.belly,11,15)){
+			} else if (between(options.belly, 11, 15)) {
 				return 4;
-			} else if(between(options.belly,6,10)){
+			} else if (between(options.belly, 6, 10)) {
 				return 2;
 			} else {
 				return 0;

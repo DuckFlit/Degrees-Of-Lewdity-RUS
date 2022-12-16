@@ -62,6 +62,9 @@ You are in the hairdressers. Here you can have your hair cut or dyed.
 <<set $fringeOption to $fringelength>>
 <<set $dyeOption to "noChange">>
 <<set $browsDyeOption to "noChange">>
+<<set $twoToneDyeOption1 to "noChange">>
+<<set $twoToneDyeOption2 to "noChange">>
+<<set $twoToneHairDye to false>>
 <div id="currentCost" class="gold">
 	To pay: £0
 </div>
@@ -75,6 +78,13 @@ You are in the hairdressers. Here you can have your hair cut or dyed.
 <<link [[Leave|Hairdressers]]>><<endevent>><</link>>
 
 :: Hairdressers Widgets [widget]
+/*args[0]: dye name in colours.js */
+<<widget "dyeSwatch">>
+		<div @class="'hair-'+_args[0]">
+			<div style="height: 25px; width: 100px; margin-top:5px; background-color: #fd6064; border:1px solid #ccc;" class="colour-hair"></div>
+		</div>
+<</widget>>
+
 <<widget "hairdressersPricelist">>
 A sign by the mirror reads:
 <br>
@@ -86,6 +96,8 @@ Full head colouring: £60
 <br>
 Fringe or sides colouring: £50
 <br>
+Two-tone hair colouring: £250
+<br>
 Eyebrows colouring: £20"
 <br><br><</widget>>
 
@@ -93,6 +105,15 @@ Eyebrows colouring: £20"
 <<set _currentCost to 0>>
 <<if not $dyedHairPart>>
 	<<set $dyedHairPart to "hair">>
+<</if>>
+<<if not $twoToneHairDye>>
+	<<set $twoToneHairDye to false>>
+<</if>>
+<<if not $twoToneDyeOption1>>
+	<<set $twoToneDyeOption1 to "red">>
+<</if>>
+<<if not $twoToneDyeOption2>>
+	<<set $twoToneDyeOption2 to "black">>
 <</if>>
 <<if ($money gte _currentCost + 3000 or $hairOption isnot $hairlength) and $hairlength gt 100>>
 	<<if $hairOption isnot $hairlength>>
@@ -142,21 +163,26 @@ Eyebrows colouring: £20"
 <<if $money gte _currentCost + 3000 or $dyeOption isnot "noChange">>
 	<<if $dyeOption is "removeDye">>
 		<<set _currentCost += 3000>>
-	<<elseif $dyeOption isnot "noChange">>
+	<<elseif not $twoToneHairDye and $dyeOption isnot "noChange">>
 		<<if $dyedHairPart is "hair">>
 			<<set _currentCost += 6000>>
 		<<else>>
 			<<set _currentCost += 5000>>
 		<</if>>
+	<<elseif $twoToneHairDye>>
+		<<set _currentCost += 25000>>
 	<</if>>
 	Have your hair dyed<<if $haircolour isnot $naturalhaircolour or $hairfringecolour is not $naturalhaircolour>> or cleared of hair dye<</if>>:
 	<br>
 	<label><<radiobutton "$dyedHairPart" "hair" autocheck>> Full head</label> |
 	<label><<radiobutton "$dyedHairPart" "fringe" autocheck>> Fringe</label> |
-	<label><<radiobutton "$dyedHairPart" "sides" autocheck>> Sides</label>
+	<label><<radiobutton "$dyedHairPart" "sides" autocheck>> Sides</label> |
+	<br>
+	<label><<checkbox "$twoToneHairDye" false true autocheck>> Request a two-tone coloring</label>
 	<br>
 
 	<<set _dyeOptions to {"Don't dye":"noChange"}>>
+	<<set _twotoneDyeOptions to {}>>
 	<<if $haircolour isnot $naturalhaircolour>>
 		<<set _dyeOptions["Remove dye"] to "removeDye">>
 	<</if>>
@@ -168,16 +194,38 @@ Eyebrows colouring: £20"
 			<<set _dyeOptions[_dyeNames[_i]] to $hairdressersHairColour[_i]>>
 		<</for>>
 	<</if>>
-	<<listbox "$dyeOption" autoselect>>
-		<<optionsfrom _dyeOptions>>
-	<</listbox>>
-	<<if $dyeOption isnot "noChange"and $dyeOption isnot "removeDye">>
-		<div @class="'hair-'+$dyeOption">
-			<div style="height: 25px; width: 100px; margin-top:5px; background-color: #fd6064; border:1px solid #ccc;" class="colour-hair"></div>
-		</div>
-		<br>
+	<<for _i to 0; _i lt _dyeNames.length; _i++>>
+		<<set _twotoneDyeOptions[_dyeNames[_i]] to $hairdressersHairColour[_i]>>
+	<</for>>
+	<<if not $twoToneHairDye>>
+		<<listbox "$dyeOption" autoselect>>
+			<<optionsfrom _dyeOptions>>
+		<</listbox>>
+		<<if $dyeOption isnot "noChange"and $dyeOption isnot "removeDye">>
+			<<dyeSwatch $dyeOption>>
+			<br>
+		<<else>>
+			<br><br>
+		<</if>>
 	<<else>>
-		<br><br>
+		Style: <<listbox "$twoToneStyle" autoselect>>
+			<<option "Low Ombré" "low-ombre">>
+			<<option "High Ombré" "high-ombre">>
+			<<option "Split" "split">>
+			<<option "Face-framing highlights" "face-frame">>
+		<</listbox>>
+		<br>
+		First colour: <<listbox "$twoToneDyeOption1" autoselect>>
+			<<optionsfrom _twotoneDyeOptions>>
+		<</listbox>>
+		<<dyeSwatch $twoToneDyeOption1>>
+		<br>
+		Second colour: <<listbox "$twoToneDyeOption2" autoselect>>
+			<<optionsfrom _twotoneDyeOptions>>
+		<</listbox>>
+		<<dyeSwatch $twoToneDyeOption2>>
+		<br>
+		<br>
 	<</if>>
 <<else>>
 	You don't have enough money to dye your <<print $dyedHairPart>>.
@@ -237,12 +285,15 @@ Eyebrows colouring: £20"
 		<<link [[Leave|Sydney Hairdressers Cancel]]>><<endevent>><</link>>
 	<</if>>
 <<else>>
-	<<if _currentCost gt 0 and $money gte _currentCost>>
+
+	<<if $money lt _currentCost>>
+		You don't have enough money to pay the hairdresser.
+	<<elseif  $twoToneHairDye and ($twoToneDyeOption1 eq $twoToneDyeOption2)>>
+		You need to select two diffent colours for two-tone hair colouring.
+	<<elseif _currentCost gt 0 >>
 		<<link [[Pay hairdresser|Hairdressers Session]]>>
 			<<set $money -= _currentCost>>
 		<</link>>
-	<<elseif $money lt _currentCost>>
-		You don't have enough money to pay the hairdresser.
 	<</if>>
 	<br><br>
 	<<link [[Leave|Hairdressers]]>><<endevent>><</link>>
@@ -289,10 +340,10 @@ You hand over the money and <<he>> gets to work.
 	<<set $makeup.browscolour to clone($browsDyeOption)>>
 	<<if _pass gt 0>>
 		Then <<he>> asks you to tilt your head back. <<He>> applies selected eyebrow tint to a small brush and then brushes your eyebrows for a few minutes.
-		Soon <<he>> brings up a mirror for you to see your newly <<haircolourtext $makeup.browscolour>> eyebrows.
+		Soon <<he>> brings up a mirror for you to see your newly <<hairmapcolourtext $makeup.browscolour>> eyebrows.
 	<<else>>
 		The hairdresser begins to apply selected eyebrow tint to a small brush and then brushes your eyebrows for a few minutes.
-		Soon <<he>> brings up a mirror for you to see your newly <<haircolourtext $makeup.browscolour>> eyebrows.
+		Soon <<he>> brings up a mirror for you to see your newly <<hairmapcolourtext $makeup.browscolour>> eyebrows.
 	<</if>>
 	<br><br>
 	<<set _pass += 10>>
@@ -310,26 +361,60 @@ You hand over the money and <<he>> gets to work.
 	<br><br>
 
 	<<if $dyedHairPart is "sides" or $dyedHairPart is "hair">>
+		<<set $hairColourStyle to "simple">>
 		<<set $haircolour to clone($naturalhaircolour)>>
 	<</if>>
 	<<if $dyedHairPart is "fringe" or $dyedHairPart is "hair">>
+		<<set $hairFringeColourStyle to "simple">>
 		<<set $hairfringecolour to clone($naturalhaircolour)>>
 	<</if>>
 	<<set _pass += 15>>
 	<<unset $dyeOption>>
 	<<unset $dyedHairPart>>
-<<elseif $dyeOption isnot "noChange">>
+<<elseif $dyeOption isnot "noChange" and not $twoToneHairDye>>
 	<<if $dyedHairPart is "sides" or $dyedHairPart is "hair">>
+		<<set $hairColourStyle to "simple">>
 		<<set $haircolour to clone($dyeOption)>>
 	<</if>>
 	<<if $dyedHairPart is "fringe" or $dyedHairPart is "hair">>
+		<<set $hairFringeColourStyle to "simple">>
 		<<set $hairfringecolour to clone($dyeOption)>>
 	<</if>>
 	<<if _pass gt 0>>
-		<<He>> finishes your requests by carefully applying your chosen colour. It's not long before <<he>> brandishes a mirror for you to see your newly <<haircolourtext>> <<print $dyedHairPart>> from all angles.
+		<<He>> finishes your requests by carefully applying your chosen colour. It's not long before <<he>> brandishes a mirror for you to see your newly <<if $dyedHairPart is "fringe">><<hairfringecolourtext>><<else>><<haircolourtext>><</if>> <<print $dyedHairPart>> from all angles.
 	<<else>>
-		The hairdresser begins carefully applying your chosen colour. It's not long before <<he>> brandishes a mirror for you to see your newly <<if $dyedHairPart is "fringe">><<haircolourtext $hairfringecolour>><<else>><<haircolourtext>><</if>> <<print $dyedHairPart>> from all angles.
+		The hairdresser begins carefully applying your chosen colour. It's not long before <<he>> brandishes a mirror for you to see your newly <<if $dyedHairPart is "fringe">><<hairfringecolourtext>><<else>><<haircolourtext>><</if>> <<print $dyedHairPart>> from all angles.
 	<</if>>
+	<br><br>
+	<<set _pass += 30>>
+	<<unset $dyeOption>>
+	<<unset $dyedHairPart>>
+<<elseif $twoToneHairDye>>
+	<<set _gradient to {
+		style: $twoToneStyle, 
+		colours: [$twoToneDyeOption1, $twoToneDyeOption2]
+	}>>
+	<<if $dyedHairPart is "sides" or $dyedHairPart is "hair">>
+		<<set $hairColourStyle to "gradient">>
+		<<set $haircolour to clone($twoToneDyeOption1)>> /* This is set as a 'fallback' color for combat renderer */
+		<<set $hairColourGradient to clone(_gradient)>>
+	<</if>>
+	<<if $dyedHairPart is "fringe" or $dyedHairPart is "hair">>
+		<<set $hairFringeColourStyle to "gradient">>
+		<<set $hairfringecolour to clone($twoToneDyeOption2)>> /* This is set as a 'fallback' color for combat renderer */
+		<<set $hairFringeColourGradient to clone(_gradient)>>
+	<</if>>
+
+	<<if _pass gt 0>>
+		Finally, the
+	<<else>>
+        The
+	<</if>>
+	hairdresser mixes the dyes in two separate bowls until they foam up. <<Hes>> left with bowls of gooey-looking liquids.
+	<br>
+	<<He>> partitions your hair into sections with an array of clips. Then, starting with the lighter color, <<he>> applies the goo to your hair, coating each section individually.
+	<br><br>
+	You make small talk as you wait for the dyes to set. It's not too long before the hairdresser brandishes a mirror for you to see your newly <<haircolourtext>> <<print $dyedHairPart>> from all angles.
 	<br><br>
 	<<set _pass += 30>>
 	<<unset $dyeOption>>
