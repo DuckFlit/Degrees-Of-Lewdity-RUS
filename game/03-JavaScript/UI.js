@@ -278,9 +278,9 @@ window.customColour = customColour;
 
 function zoom(value) {
 	const slider = $("[name$='" + Util.slugify("options.zoom") +"']");
-	value = Math.clamp(value || slider[0].value, 50, 200);
+	value = Math.clamp(value || slider[0].value || 0, 50, 200);
 	$("body").css("zoom", value + "%").css("-ms-zoom", value + "%");
-	if(slider[0].value != value){
+	if(slider[0] !== undefined && slider[0].value != value){
 		slider[0].value = value;
 		slider.trigger("change");
 	}
