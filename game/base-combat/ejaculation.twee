@@ -2637,8 +2637,19 @@
 <</if>>
 
 <<if $NPCList[_jj].penis is "mouth">>
-	<<bHe>> ejaculates down the back of your throat.
-	<<oralejacstat>><<ejacstat>><<cumswallow `$NPCList[_jj].type`>>
+	<<if random(1, 100) gte 81 and ($NPCList[_jj].type is "dog" or $NPCList[_jj].type is "dogboy" or $NPCList[_jj].type is "doggirl")>>
+		<<knot_stat>>
+		With a final thrust, <<bhe>> forces <<bhis>> knot past your teeth as <<bhe>> ejaculates deep down your throat, <span class="pink">forcing you to swallow.</span> <<if $pain gte 40>>Tears run down your face<<else>>You gag<</if>> as you feel <<bhis>> cum backwash into your mouth. The <<beasttype>> climbs off and faces away from you, but you're locked together for a humiliating five minutes until the knot shrinks enough that the <<beasttype>> can wiggle it free.
+		<<pass 5>><<cumswallow `$NPCList[_jj].type` null "knotted">>
+	<<elseif random(1, 100) gte 61 and _npciswolftype>>
+		<<knot_stat>>
+		With a final thrust, <<bhe>> forces <<bhis>> knot past your teeth as <<bhe>> ejaculates deep down your throat, <span class="pink">forcing you to swallow.</span> <<if $pain gte 40>>Tears run down your face<<else>>You gag<</if>> as you feel <<bhis>> cum backwash into your mouth. The <<beasttype>> climbs off and faces away from you, but you're locked together for a humiliating five minutes until the knot shrinks enough that the <<beasttype>> can wiggle it free.
+		<<pass 5>><<transform wolf 1>><<cumswallow `$NPCList[_jj].type` null "knotted">>
+	<<else>>
+		<<bHe>> ejaculates down the back of your throat.
+		<<cumswallow `$NPCList[_jj].type`>>
+	<</if>>
+	<<oralejacstat>><<ejacstat>>
 	<<if _npciswolftype>><<transform wolf 1>><</if>>
 <</if>>
 
@@ -3044,24 +3055,33 @@
 	<<else>>
 		<<if _ejaculation_type is "human">>
 			<<set _ejaculation_volume to random(3, 8)>>
-		<<elseif ["wolf", "dog"].includes(_ejaculation_type)>>
+		<<elseif ["wolf", "dog"].some(type => _ejaculation_type.includes(type))>>
 			<<set _ejaculation_volume to random(5, 30)>>
-		<<elseif ["centaur", "horse", "bull", "cow"].includes(_ejaculation_type)>>
+		<<elseif ["centaur", "horse", "bull", "cow"].some(type => _ejaculation_type.includes(type))>>
 			<<set _ejaculation_volume to random(25, 250)>>
-		<<elseif ["boar", "pig"].includes(_ejaculation_type)>>
+		<<elseif ["boar", "pig"].some(type => _ejaculation_type.includes(type))>>
 			<<set _ejaculation_volume to random(50, 300)>>
-		<<elseif ["bear"].includes(_ejaculation_type)>>
+		<<elseif ["bear"].some(type => _ejaculation_type.includes(type))>>
 			<<set _ejaculation_volume to random(3, 15)>>
-		<<elseif ["cat"].includes(_ejaculation_type)>>
+		<<elseif ["cat"].some(type => _ejaculation_type.includes(type))>>
 			<<set _ejaculation_volume to random(1, 2)>>
-		<<elseif ["dolphin", "creature", "hawk", "harpy", "lizard"].includes(_ejaculation_type)>>
+		<<elseif ["dolphin", "creature", "hawk", "harpy", "lizard"].some(type => _ejaculation_type.includes(type))>>
 			<<set _ejaculation_volume to random(20, 150)>>
 		<<else>>
 			<<set _ejaculation_volume to random(3, 50)>>
 		<</if>>
 	<</if>>
 
-	<<if $mouthaction is "ejacspit">>
+	<<if _args[2] is "knotted">>
+		<<if _ejaculation_type is "human" or $bestialitydisable is "t">>
+			<<semenswallowedstat _ejaculation_volume>>
+		<<else>>
+			<<animalsemenswallowedstat _ejaculation_volume>>
+		<</if>>
+		<<set $hunger -= 200>>
+		<<set $thirst -= 200>>
+		<<bodyliquid "mouth" "semen" 1>>
+	<<elseif $mouthaction is "ejacspit">>
 		You spit out the cum.
 	<<else>>
 		<<if $consensual is 0>>
