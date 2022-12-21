@@ -108,9 +108,15 @@
 <</widget>>
 
 <<widget "menstruationCycle">>
-<<set $sexStats.vagina.menstruation.running to $player.vaginaExist or (!$player.vaginaExist and V.skin.pubic.pen is "magic" and V.skin.pubic.special is "pregnancy")>>
-<<if $sexStats.vagina.menstruation.running is true>>
-	<<set _menstruation to $sexStats.vagina.menstruation>>
+<<set _menstruation to $sexStats.vagina.menstruation>>
+<<if _args[0]>>
+	<<set _menstruation.nonCycleRng.push(random(0,6))>>
+	<<set _menstruation.nonCycleRng.deleteAt(0)>>
+<</if>>
+
+<<set _menstruation.running to $player.vaginaExist or (!$player.vaginaExist and V.skin.pubic.pen is "magic" and V.skin.pubic.special is "pregnancy")>>
+
+<<if _menstruation.running is true>>
 	<<set $_pregLocation to ($player.vaginaExist ? "vagina" : "anus")>>
 	<<set $_pregnancy to $sexStats[$_pregLocation].pregnancy>>
 	<<set _pills to $sexStats.pills>>
@@ -118,7 +124,7 @@
 	<<switch _menstruation.currentState>>
 		<<case "normal">>
 			<<if $cycledisable is "t">>
-				<<playerPregnancyAttempt `random(1,200)` $_pregLocation>>
+				<<playerPregnancyAttempt `Math.pow(4,_menstruation.nonCycleRng[0])` $_pregLocation>>
 			<<elseif _menstruation.currentDay lt _menstruation.currentDaysMax>>
 				/*Continue the cycle again*/
 				<<if _menstruation.currentDay gte _menstruation.currentDaysMax / 2 and _menstruation.lastDaysMax isnot _menstruation.currentDaysMax>>
@@ -150,6 +156,7 @@
 					<<if _menstruation.currentDay gte _menstruation.stages[3] - 4>>
 						<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.stages[3] - _menstruation.currentDay)),6,30)>>
 						<<playerPregnancyAttempt $_multi $_pregLocation>>
+						<<run console.log("playerPregnancyAttempt - Follicular")>>
 					<</if>>
 				<<elseif _menstruation.currentDay lt _menstruation.stages[3]>>
 					/*Ovulation phase*/
@@ -164,6 +171,7 @@
 					<<if _menstruation.currentDay lte _menstruation.stages[3] + 4>>
 						<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.currentDay - _menstruation.stages[3])),6,30)>>
 						<<playerPregnancyAttempt $_multi $_pregLocation`>>
+						<<run console.log("playerPregnancyAttempt - Luteal")>>
 					<</if>>
 					<<if $_last_preg_pill and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
 						<<set _menstruation.currentDay += 0.5>>
@@ -242,7 +250,7 @@
 <<set _menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
 <</widget>>
 
-/*args[0] - birth location, _args[1] - next passage, _args[2] - time passage*/
+/*args[0] - birth location, args[1] - location of where the clildren should go to, _args[2] - next passage, _args[3] - time passage*/
 <<widget "birthUi">>
 <<if $player.vaginaExist>>
 	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
@@ -265,7 +273,7 @@
 	<<set _timeString to " (" + (_hours lt 10 ? "0": "") +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
 <</if>>
 <<link [["Next" + (_args[2] ? _timeString : "")|_args[1]]]>>
-	<<endPlayerPregnancy _args[0]>>
+	<<endPlayerPregnancy _args[0] _args[1]>>
 <</link>>
 <</widget>>
 
@@ -333,7 +341,7 @@
 	<<else>>
 		<<set $_pregnancy to $sexStats.anus.pregnancy>>
 	<</if>>
-	<<set _wakingEffect to wakingPregnancyEvent(random(0,100))>>
+	<<set _wakingEffect to wakingPregnancyEvent()>>
 	<<if Array.isArray(_wakingEffect)>>
 		<<set _wakingEffect to _wakingEffect[random(0,_wakingEffect.length - 1)]>>
 	<</if>>
@@ -372,8 +380,8 @@
 			<<else>>
 				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to a nearby bin. You're forced to do a dry heave into it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
 			<</if>>
-			<<if $awareness gte 200 and $sciencetrait gte 4 and playerVaginalPregnancyCheck() gt 1>>
-				<<set $_text_output += " Maybe you should get tested.">>
+			<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
+				<<set $_text_output += " <span class='red'>Maybe you should get tested</span>.">>
 			<</if>>
 		<<case "lightBabyKick">>
 			<<set $_text_output to "You wake up feeling a light kick coming from your baby.<<stress -10>><<lstress>>">>
@@ -395,10 +403,21 @@
 			<<set $_pregnancy.awareOf to true>>
 		<<case "missedPeriod">>
 			<<set $_text_output to "You wake and think about the last period you had, strangely, your current one is late.">>
-			<<if $awareness gte 200 and $sciencetrait gte 4 and playerVaginalPregnancyCheck() gt 1>>
-				<<set $_text_output += "You wonder if you got yourself pregnant again, maybe you should get tested.">>
+			<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
+				<<set $_text_output += "You wonder if you got yourself pregnant again, <span class='red'>maybe you should get tested</span>.">>
 			<</if>>
 			<<set $sexStats.vagina.awareOfPeriodDelay to true>>
+		<<case "chastityBeltRemoval">>
+			<<if $worn.genitals.name is "gold chastity belt">>
+				<<set $_text_output to `<span class="blue">Your ${V.worn.genitals.name} feels loose.</span> It looks like it opened in your sleep due to your growing belly. Now that it's off, a collector may be interested in it.`>>
+				<<if $worn.genitals.integrity gt 0>>
+					<<set $antiquemoney += Math.floor(2000 / ($worn.genitals.integrity / clothingData('genitals',$worn.genitals,'integrity_max')))>>
+				<</if>>
+			<<else>>
+				<<set $_text_output to `<span class="blue">Your ${V.worn.genitals.name} feels loose.</span> It must have broken apart in your sleep due to your growing belly.`>>
+			<</if>>
+			<<set $worn.genitals.type.push("broken")>>
+			<<genitalsruined>>
 	<</switch>>
 <</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>>
@@ -406,7 +425,6 @@
 
 <<widget "pregnancyDailyEvent">><<silently>>
 <<if !["Asylum Sleep","Cabin Sleep","Wolf Cave Sleep","Bird Tower Sleep","Livestock Sleep","Farm Abduction wake 4","Sleep","Avery Hotel Morning"].includes($passage)>>
-	<<set _rng to random(0,100) + ($daily.pregnancyEvent || 0)>>
 	<<set _event to dailyPregnancyEvent(_rng)>>
 	<<if Array.isArray(_event)>>
 		<<set _event to _event[random(0,_event.length - 1)]>>
@@ -645,6 +663,7 @@
 		<<set $_pregnancy.cycleDangerousDay to 10>>
 		<<set $_pregnancy.sperm to {}>>
 		<<set $_pregnancy.potentialFathers to []>>
+		<<set $_pregnancy.nonCycleRng to [random(0,3),random(0,3)]>>
 		<<switch $_name>>
 			<<case "Kylar">><<set $_pregnancy.pills to "fertility">>
 			<<case "Alex" "Wren">><<set $_pregnancy.pills to "contraceptive">>
