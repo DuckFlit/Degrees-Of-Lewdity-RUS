@@ -1092,7 +1092,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<div class="solidBorderContainer"><div class="numberslider-inline">
 		<div class="numberslider-inline basevaginalpregnancychance-container">
 			<span class="gold">Base Vaginal Pregnancy Chance</span>
-			<div class="small-description">Chance of conceiving when only being inseminated once at the right time. Some events may leave you with more than one helping of cum. Cum on the outside of your vagina, rarely may get you pregnant unless you wash it off before several hours pass. Certain days of your menstruation cycle and other effects may modify the base chance.</div>
+			<div class="small-description">Chance of conceiving when only being inseminated once at the right time. Some events may leave you with more than one helping of cum. Other effects may modify the base chance, to both increase and decrease the chance of pregnancy.</div>
 			<<numberslider "$baseVaginalPregnancyChance" $baseVaginalPregnancyChance 0 96 4>>
 		</div>
 		<<run $(() => { $('.basevaginalpregnancychance-container input').on('input change', e => {
@@ -1100,14 +1100,13 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 			let value = valSpan.text();
 
 			valSpan.text((i, value) => "1 in " + (100 - value));
-			$('#maxRequired').text(100 - $baseVaginalPregnancyChance);
 		}).trigger('change') })>>
 		
 		/*ToDo: NPC Pregnancy - Remove when adding pregnancy for named npc's */
 		<<if $pregnancyTesting>>
 			<div class="numberslider-inline basenpcpregnancychance-container">
 				<span class="gold">Base NPC Pregnancy Chance</span>
-				<div class="small-description">Chance of an npc conceiving when only being inseminated once at the right time, <span id="npcMaxRequired"><<print 20 - $baseNpcPregnancyChance>></span> times to guarantee.</div>
+				<div class="small-description">Chance of an npc conceiving when only being inseminated once at the right time.</div>
 				<<numberslider "$baseNpcPregnancyChance" $baseNpcPregnancyChance 0 16 4>>
 			</div>
 			<<run $(() => { $('.basenpcpregnancychance-container input').on('input change', e => {
@@ -1115,7 +1114,6 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 				let value = valSpan.text();
 
 				valSpan.text((i, value) => "1 in " + (20 - value));
-				$('#npcMaxRequired').text(20 - $baseNpcPregnancyChance);
 			}).trigger('change') })>>
 		<</if>>
 		
@@ -1154,24 +1152,28 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 			</div></label>
 		<</if>>
 		<label><div class="settingsToggle">
-		<<checkbox "$parasitepregdisable" "t" "f" autocheck>> Enable parasitic pregnancy
+			<<checkbox "$parasitepregdisable" "t" "f" autocheck>> Enable parasitic pregnancy
 		</div></label>
 		<label><div class="settingsToggle">
-		<<checkbox "$cycledisable" "t" "f" autocheck>> Enable fertility cycles and heat/rut
+			<<checkbox "$cycledisable" "t" "f" autocheck>> Enable fertility cycles and heat/rut
+			<mouse class="tooltip linkBlue">(?)<span>
+				<div>When enabled, the player's menstruation cycle will determin when and when they cannot get pregnant.</div>
+				<div>When disabled, each day's pregnancy chance will be randomised. In addition, sperm will not last as long when the pregnancy type is set to "realistic".</div>
+			</span></mouse>
 		</div></label>
 		<label><div class="settingsToggle">
-		Pregnancy type:
-		<label><<radiobutton "$pregnancytype" "realistic" autocheck>> <mouse class="tooltip green">Realistic<span>Pregnancy will not happen immediately, and you won't know right away when it happens. You may need to use a pregnancy test, and the father may not be known to you initially.</span></mouse></label> |
-		<label><<radiobutton "$pregnancytype" "fetish" autocheck>> <mouse class="tooltip pink">Fetishised<span>Pregnancy may happen as soon as semen meets vagina. You will know as soon as it happens, and will immediately know the father.</span></mouse></label>
+			Pregnancy type:
+			<label><<radiobutton "$pregnancytype" "realistic" autocheck>> <mouse class="tooltip green">Realistic<span>Pregnancy will not happen immediately, and you won't know right away when it happens. You may need to use a pregnancy test, and the father may not be known to you initially. In addition, cum on the outside of your vagina, if washed off within several hours, will prevent it from potentially getting you pregnant.</span></mouse></label> |
+			<label><<radiobutton "$pregnancytype" "fetish" autocheck>> <mouse class="tooltip pink">Fetishised<span>Pregnancy may happen as soon as semen gets inside you. You will know as soon as it happens, and will immediately know the father.</span></mouse></label>
 		</div></label>
 		<label><div class="settingsToggle">
-		<<checkbox "$pregnancyspeechdisable" "t" "f" autocheck>> Enable fertility references
-		<mouse class="tooltip linkBlue">(?)<span>Allow references to the PC being impregnated, or impregnating others. Disabling does not prevent all references to pregnancy, especially if other pregnancy settings are enabled.</span></mouse>
+			<<checkbox "$pregnancyspeechdisable" "t" "f" autocheck>> Enable fertility references
+			<mouse class="tooltip linkBlue">(?)<span>Allow references to the PC being impregnated, or impregnating others. Disabling does not prevent all references to pregnancy, especially if other pregnancy settings are enabled.</span></mouse>
 		</div></label>
 		<div class="settingsToggle" style="display: inline-flex;">
-		&nbsp;&nbsp;Condoms
-		<<numberslider "$condomLvl" $condomLvl 0 3 1>>
-		<<run settingsCondoms()>>
+			&nbsp;&nbsp;Condoms
+			<<numberslider "$condomLvl" $condomLvl 0 3 1>>
+			<<run settingsCondoms()>>
 		</div>
 		<<if $debug is 1>>
 			DEBUG:

@@ -83,12 +83,18 @@ const fetishPregnancy = ({genital = "vagina", target = null, spermOwner = null, 
 			if(menstruation.currentState !== "normal") return null;
 			let diff = Math.abs(menstruation.stages[2] - menstruation.currentDay);
 			multi = Math.clamp((diff > 1 ? 1 - (diff * 0.15) : 1),0,1);
-		} else if(C.npc[target]){
+		} else if(C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled){
 			let diff = Math.abs(pregnancy.cycleDangerousDay - pregnancy.cycleDay);
 			multi = Math.clamp((diff > 1 ? 1 - (diff * 0.15) : 1),0,1);
 		}
 	} else {
 		//Other non-cycle modifiers
+		if(target === "pc"){
+			let menstruation = V.sexStats.vagina.menstruation;
+			multi = 1 / Math.pow(4, menstruation.nonCycleRng[0]);
+		} else if(C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled){
+			multi = 1 / Math.pow(4, C.npc[target].pregnancy.nonCycleRng[0]);
+		}
 	}
 
 	if(pregnancy && pregnancy.type === null){
@@ -256,7 +262,7 @@ const playerEndWaterBreaking = () => {
 }
 DefineMacro("playerEndWaterBreaking", playerEndWaterBreaking);
 
-const endPlayerPregnancy = (location) => {
+const endPlayerPregnancy = (birthLocation, location) => {
 	let type;
 	if(V.player.vaginaExist){
 		type = "vagina";
@@ -268,7 +274,7 @@ const endPlayerPregnancy = (location) => {
 
 	if(!pregnancy || !pregnancy.fetus.length) return false;
 
-	giveBirthToChildren("pc", location);
+	giveBirthToChildren("pc", birthLocation, location);
 
 	if(pregnancy.potentialFathers.filter(npc => npc[0] === pregnancy.type).length >= 5) Wikifier.wikifyEval('<<earnFeat "Bicycle Mother">>');
 
@@ -283,14 +289,13 @@ const endPlayerPregnancy = (location) => {
 			menstruation.recoveryTime = random(1,2) * V.wolfPregnancyWeeks;
 		break;
 	}
-	let birthEvents = clone(pregnancy.totalBirthEvents || 0) + 1;
 
 	if((V.player.virginity.anal === true && !V.player.vaginaExist) || (V.player.virginity.vaginal === true && V.player.vaginaExist)) Wikifier.wikifyEval('<<earnFeat "Miracle of Life">>');
 	if(!V.player.vaginaExist) Wikifier.wikifyEval('<<earnFeat "Life begins when you least expect">>');
 
 	V.sexStats[type].pregnancy = {
 		...pregnancy,
-		totalBirthEvents: birthEvents,
+		totalBirthEvents: (pregnancy.totalBirthEvents || 0) + 1,
 		fetus: [],
 		waterBreaking: false,
 		waterBreakingTimer: null,
@@ -314,7 +319,7 @@ const endPlayerPregnancy = (location) => {
 	return true;
 }
 DefineMacro("endPlayerPregnancy", endPlayerPregnancy);
-window.endPlayerPregnancyTest = (location) => {if(V.pregnancyTesting && location) return endPlayerPregnancy(location);};//V.pregnancyTesting Check should not be removed, debugging purposes only
+window.endPlayerPregnancyTest = (birthLocation, location) => {if(V.pregnancyTesting && birthLocation && location) return endPlayerPregnancy(birthLocation, location);};//V.pregnancyTesting Check should not be removed, debugging purposes only
 /*Player pregnancy ends here */
 
 /*Named NPC pregnancy starts here*/
@@ -344,12 +349,17 @@ const npcPregnancyCycle = () => {
 					pregnancy.waterBreaking = true;
 				}
 			}
-		} else if(pregnancy.enabled && V.npcPregnancyDisable === "f" && V.cycledisable === "f") {
-			pregnancy.cycleDay++;
-			if(pregnancy.cycleDay >= pregnancy.cycleDaysTotal){
-				pregnancy.cycleDay = 1;
-			} else if(between(pregnancy.cycleDay, pregnancy.cycleDangerousDay - 1, pregnancy.cycleDangerousDay + 1)){
-				namedNpcPregnancyAttempt(npcName);
+		} else if(pregnancy.enabled && V.npcPregnancyDisable === "f") {
+			if(V.cycledisable === "f"){
+				pregnancy.cycleDay++;
+				if(pregnancy.cycleDay >= pregnancy.cycleDaysTotal){
+					pregnancy.cycleDay = 1;
+				} else if(between(pregnancy.cycleDay, pregnancy.cycleDangerousDay - 1, pregnancy.cycleDangerousDay + 1)){
+					namedNpcPregnancyAttempt(npcName);
+				}
+			}else{
+				pregnancy.nonCycleRng.push(random(0,4));
+				pregnancy.nonCycleRng.deleteAt(0);
 			}
 		}
 		updateRecordedSperm("vagina", npcName, 1);
@@ -429,7 +439,7 @@ const namedNpcPregnancy = (mother, father, fatherSpecies, fatherKnown = false, t
 DefineMacro("namedNpcPregnancy", namedNpcPregnancy);
 window.namedNpcPregnancyTest = (mother, father, pregnancyType, fatherKnown, trackedNPCs, awareOf) => {if(V.pregnancyTesting) return namedNpcPregnancy(mother, father, pregnancyType, fatherKnown, trackedNPCs, awareOf);};//V.pregnancyTesting Check should not be removed, debugging purposes only
 
-const endNPCPregnancy = (npcName, location) => {
+const endNPCPregnancy = (npcName, birthLocation, location) => {
 	if(!C.npc[npcName] || C.npc[npcName].vagina === "none" || C.npc[npcName].pregnancy.enabled === undefined){
 		return false;
 	}
@@ -437,7 +447,7 @@ const endNPCPregnancy = (npcName, location) => {
 
 	if(!pregnancy || pregnancy.enabled === undefined || !pregnancy.fetus.length) return false;
 
-	giveBirthToChildren(npcName, location);
+	giveBirthToChildren(npcName, birthLocation, location);
 	switch(pregnancy.type){
 		case "human":
 			V.pregnancyStats.humanToysUnlocked = true;
@@ -470,10 +480,10 @@ const endNPCPregnancy = (npcName, location) => {
 	return true;
 }
 DefineMacro("endNPCPregnancy", endNPCPregnancy);
-window.endNPCPregnancyTest = (npcName, location) => {if(V.pregnancyTesting && npcName && location) return endNPCPregnancy(npcName, location);};//V.pregnancyTesting Check should not be removed, debugging purposes only
+window.endNPCPregnancyTest = (npcName, birthLocation, location) => {if(V.pregnancyTesting && npcName && birthLocation && location) return endNPCPregnancy(npcName, birthLocation, location);};//V.pregnancyTesting Check should not be removed, debugging purposes only
 /*Named NPC pregnancy ends here*/
 
-const giveBirthToChildren = (mother, location) => {
+const giveBirthToChildren = (mother, birthLocation, location) => {
 	let pregnancy;
 	if(mother === "pc"){
 		if(V.player.vaginaExist){
@@ -486,17 +496,19 @@ const giveBirthToChildren = (mother, location) => {
 	}
 	if(!pregnancy || !pregnancy.fetus.length) return false;
 
+	let birthId = (mother + String(totalBirthEvents(mother) + 1).padStart(3,"0")).replace(' ','');
+
 	pregnancy.fetus.forEach(childObject => {
 		pregnancy.givenBirth++;
-		let childId = (mother + String(pregnancy.givenBirth).padStart(3,"0")).replace(' ','');
+		let childId = (mother + String(totalBorn(mother)).padStart(4,"0")).replace(' ','');
 		V.children[childId] = {
 			...childObject,
 			name: generateBabyName(childObject.name, childObject.gender),
 			born: {day: clone(V.monthday), month: clone(V.month.toUpperFirst()), year: clone(V.year)},
-			birthId: 1,
+			birthId: birthId,
 			childId: childId,
 			location: location,
-			birthLocation: location,
+			birthLocation: birthLocation,
 		}
 		if(childObject.mother === "pc"){
 			V.pregnancyStats.playerChildren++;
@@ -513,12 +525,25 @@ const giveBirthToChildren = (mother, location) => {
 	return true;
 }
 
+const totalBirthEvents = (mother) => {
+	if(mother === "pc") return V.sexStats.vagina.pregnancy.totalBirthEvents + V.sexStats.anus.pregnancy.totalBirthEvents;
+	if(C.npc(mother) && C.npc(mother).pregnancy) return C.npc(mother).pregnancy.totalBirthEvents || 0
+}
+
+const totalBorn = (mother) => {
+	if(mother === "pc") return (V.sexStats.vagina.pregnancy.givenBirth + V.sexStats.anus.pregnancy.givenBirth) || 0;
+	if(C.npc(mother) && C.npc(mother).pregnancy) return C.npc(mother).pregnancy.givenBirth || 0;
+	return 0;
+}
+
 const recordSperm = ({genital = "vagina", target = null, spermOwner = null, spermType = null, daysTillRemovalOverride = null, rngModifier = 100, rngType, quantity}) => {
 	//ToDo: Pregnancy - remove the `V.pregnancyTesting` check
 	if(!V.pregnancyTesting) return null;
 	if(!target || !spermOwner || !spermType || !["anus","vagina"].includes(genital)) return null;
 
 	if(V.pregnancytype === "fetish"){
+		//Sperm on the outside should not be able to get the player pregnant
+		if(rngType === "canWash") return null;
 		return fetishPregnancy({genital, target, spermOwner, spermType, rngModifier, quantity});
 	}
 
@@ -533,6 +558,10 @@ const recordSperm = ({genital = "vagina", target = null, spermOwner = null, sper
 			sperm[spermOwner] = {type:spermType, count:[]};
 		}
 		let daysTillRemoval = daysTillRemovalOverride || random(4,8);
+
+		//Normal sperm should only last a day
+		if(V.cycledisable === "t") daysTillRemoval = Math.ceil(daysTillRemoval / 8);
+
 		rngModifier = !isNaN(rngModifier) ? rngModifier : 100;
 
 		if(spermOwner === "pc"){

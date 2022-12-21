@@ -302,6 +302,23 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 <</widget>>
 
 /*args[0] - childId*/
+<<widget "childherself">><<silently>>
+<<if _args[0] isnot undefined>>
+	<<set _id to _args[0]>>
+<<elseif $childSelected isnot undefined>>
+	<<set _id to $childSelected.childId>>
+<</if>>
+<<if _id isnot undefined>>
+	<<switch $children[_id].gender>>
+		<<case "m">><<set $_text_output to "hisself">>
+		<<case "f" "h">><<set $_text_output to "herself">>
+		<<case "h">><<set $_text_output to "theirself">>
+	<</switch>>
+<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
+<</widget>>
+
+/*args[0] - childId*/
 <<widget "childhand">><<silently>>
 <<if _args[0] isnot undefined>>
 	<<set _id to _args[0]>>
@@ -518,13 +535,16 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 <</widget>>
 
 <<widget "childViewerDisplayElements">>
+<div class="childrenUi">
 <<for $_i to _childStart; $_i lt _childEnd; $_i++>>
 	<<capture $_i>>
-		<div @id="'child-' + _childrenIds[$_i]" class="childrenUi">
+		<div @id="'child-' + _childrenIds[$_i]">
 			<<childViewerElement `_childrenIds[$_i]`>>
 		</div>
 	<</capture>>
 <</for>>
+</div>
+<br>
 <div class="childrenUiControls">
 	<<set _disabled = _listPage > 1 ? "" : "disabled">>
 	<div @class="'div-link btn-pagination prev ' + _disabled">
@@ -577,7 +597,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 
 <<widget "childViewerHiddenElements">>
 <<if _args[0]>>
-	<div @id="'childViewerHidden-'+_args[0]" @class="(_args[1] ? '' : 'hidden')">
+	<div @id="'childViewerHidden-'+_args[0]" @class="'childViewerHidden' + (_args[1] ? '' : ' hidden')">
 		Mother:
 		<<if $children[_args[0]].motherKnown>>
 			<<print $children[_args[0]].mother>>
@@ -681,10 +701,12 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 	<<else>>
 		<<set _toySets to []>>
 		<<set _toyNames to []>>
-		<<for $_i to 0; $_i lt $storedChildrenToys[$location].length; $_i++>>
-			<<run _toySets.pushUnique($storedChildrenToys[$location][$_i].set)>>
-			<<run _toyNames.pushUnique($storedChildrenToys[$location][$_i].name)>>
-		<</for>>
+		<<if $storedChildrenToys>>
+			<<for $_i to 0; $_i lt $storedChildrenToys[$location].length; $_i++>>
+				<<run _toySets.pushUnique($storedChildrenToys[$location][$_i].set)>>
+				<<run _toyNames.pushUnique($storedChildrenToys[$location][$_i].name)>>
+			<</for>>
+		<</if>>
 		<<if between(_childTotalDays, 0, 100)>>
 			<<if $daystate is "night">>
 				<<set _activity to ["sleeping", "sleeping", "sleeping", "sleeping", "sleeping", "restlessSleep", "restlessSleep", "crying","nappyChange"]>>
@@ -769,13 +791,13 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 			<<capture _childid>><<link [[Smile and laugh (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"smilesAndLaughs", childid:_childid}>><</link>><</capture>> |
 		<</if>>
 	<<case "talking">>
-		<<childHe>>'s gurgling and babbling to <<childhimself>>.
+		<<childHe>>'s gurgling and babbling to <<childherself>>.
 		<<if $children[_args[0]].localVariables.event is true>>
 			<br>
 			<<capture _childid>><<link [[Join in the babbling (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"talking", childid:_childid}>><</link>><</capture>> |
 		<</if>>
 	<<case "talking2">>
-		<<childHe>>'s gurgling and attempting to make sounds to <<childhimself>>.
+		<<childHe>>'s gurgling and attempting to make sounds to <<childherself>>.
 		<<if $children[_args[0]].localVariables.event is true>>
 			<br>
 			<<capture _childid>><<link [[Join in the talking (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"talking2", childid:_childid}>><</link>><</capture>> |
