@@ -296,7 +296,7 @@ Renderer.CanvasModels["sexdemo"] = {
 								return "img/sex/close/machine/vaginal/"+options.position+"/penetrated_close.png"
 							case "beast":
 								if (options.vagina_penetrator_subtype === "horse" || options.vagina_penetrator_subtype === "centaur") {
-									return "img/sex/close/beast/vaginapenetratedhorse.png"
+									return "img/sex/close/horse/vaginapenetratedhorse.png"
 								} else {
 									return "img/sex/close/"+options.position+"/vaginapenetratedbeast.png"
 								}
@@ -312,7 +312,7 @@ Renderer.CanvasModels["sexdemo"] = {
 								return "img/sex/machine/vaginal/"+options.position+"/entrance_close.png"
 							case "beast":
 								if (options.vagina_penetrator_subtype === "horse" || options.vagina_penetrator_subtype === "centaur") {
-									return "img/sex/close/beast/vaginaentrancehorse.png"
+									return "img/sex/close/horse/vaginaentrancehorse.png"
 								} else {
 									return "img/sex/close/"+options.position+"/vaginaentrancebeast.png"
 								}

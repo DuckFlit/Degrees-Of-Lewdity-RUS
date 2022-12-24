@@ -77,22 +77,27 @@
 		/% NPC: _nn VAG: $NPCList[_nn].vagina PEN: $NPCList[_nn].penis MOU: $NPCList[_nn].mouth <br> %/
 
 		<!-- Pulling out is for couches -->
-		<<if ($pullOut or $NPCList[_nn].pregnancyAvoidance gte 80) and ($NPCList[_nn].penis is "vagina" or $NPCList[_nn].penis is "anus") and !$NPCList[_nn].condom.worn>>
+		<<if ($pullOut or $NPCList[_nn].pregnancyAvoidance gte 80) and ["vagina","vaginadouble","anus","anusdouble"].includes($NPCList[_nn].penis) and !wearingCondom(_nn)>>
 			<<if $pullOut and $enemyanger gte 60>>
-				<span class="red"><<He>> doesn't pull out.</span>		
+				<span class="red"><<He>> doesn't pull out.</span>
 			<<else>>
 				<span class="green"><<He>> pulls out at the last minute.</span>
-				<<if $NPCList[_nn].penis is "vagina">>
+				<<if $NPCList[_nn].penis is "vagina" or $NPCList[_nn].penis is "vaginadouble">>
 					<<set $NPCList[_nn].penis to "vaginaimminent">>
-				<<elseif $NPCList[_nn].penis is "anus">>
+					<<set $vaginastate to ($vaginastate is "doublepenetrated" ? "penetrated" : "imminent")>>
+					<<set _pullOutVagina to true>>
+				<<elseif $NPCList[_nn].penis is "anus" or $NPCList[_nn].penis is "anusdouble">>
 					<<set $NPCList[_nn].penis to "anusimminent">>
-				<</if>>				
+					<<set $anusstate to ($anusstate is "doublepenetrated" ? "penetrated" : "imminent")>>
+					<<set $anusstate to "imminent">>
+					<<set _pullOutAnus to true>>
+				<</if>>
 			<</if>>
 		<</if>>
 
 		<!-- NAMED NPCs: Named NPCs without custom modules use simple text to stay in character -->
 		<<unset _condomResult>>
-		<<if $NPCList[_nn].condom && $NPCList[_nn].condom.worn>>
+		<<if wearingCondom(_nn)>>
 			<<if $NPCList[_nn].condom.state is "damaged">>
 				<<set _condomResult to "leaked">>
 			<<else>>
@@ -2444,7 +2449,7 @@
 			<<set _knotted to true>><<knot_stat>>
 			With a final thrust, <<bhe>> forces <<bhis>> knot into your <<pussy>>. <<bHe>> ejaculates deep into your womb. You feel the semen build within you, its exit plugged. The <<beasttype>> climbs off and faces away from you, but you remain locked together.
 		<<else>>
-			<<knot_stat>>
+			<<set _knotted_short to true>><<knot_stat>>
 			With a final thrust, <<bhe>> forces <<bhis>> knot into your <<pussy>>. <<bHe>> ejaculates deep into your womb. You feel the semen build within you, its exit plugged. The <<beasttype>> climbs off and faces away from you, but you're locked together for a humiliating five minutes until the knot shrinks enough that the <<beasttype>> can wiggle it free.
 			<<pass 5>>
 		<</if>>
@@ -2454,7 +2459,7 @@
 			With a final thrust, <<bhe>> forces <<bhis>> knot into your <<pussy>>. <<bHe>> ejaculates deep into your womb. You feel the semen build within you, its exit plugged. The <<beasttype>> climbs off and faces away from you, but you remain locked together.
 			<<transform wolf 1>>
 		<<else>>
-			<<knot_stat>>
+			<<set _knotted_short to true>><<knot_stat>>
 			With a final thrust, <<bhe>> forces <<bhis>> knot into your <<pussy>>. <<bHe>> ejaculates deep into your womb. You feel the semen build within you, its exit plugged. The <<beasttype>> climbs off and faces away from you, but you're locked together for a humiliating five minutes until the knot shrinks enough that the <<beasttype>> can wiggle it free.
 			<<pass 5>><<transform wolf 1>>
 		<</if>>
@@ -2552,7 +2557,7 @@
 			<<set _knotted to true>><<knot_stat>>
 			With a final thrust, <<bhe>> forces <<bhis>> knot into your <<bottom>>. <<bHe>> ejaculates deep into your bowels. You feel the semen build within you, its exit plugged. The <<beasttype>> climbs off and faces away from you, but you remain locked together.
 		<<else>>
-			<<knot_stat>>
+			<<set _knotted_short to true>><<knot_stat>>
 			With a final thrust, <<bhe>> forces <<bhis>> knot into your <<bottom>>. <<bHe>> ejaculates deep into your bowels. You feel the semen build within you, its exit plugged. The <<beasttype>> climbs off and faces away from you, but you're locked together for a humiliating five minutes until the knot shrinks enough that the <<beasttype>> can wiggle it free.
 			<<pass 5>>
 		<</if>>
@@ -2562,7 +2567,7 @@
 			With a final thrust, <<bhe>> forces <<bhis>> knot into your <<bottom>>. <<bHe>> ejaculates deep into your bowels. You feel the semen build within you, its exit plugged. The <<beasttype>> climbs off and faces away from you, but you remain locked together.
 			<<transform wolf 1>>
 		<<else>>
-			<<knot_stat>>
+			<<set _knotted_short to true>><<knot_stat>>
 			With a final thrust, <<bhe>> forces <<bhis>> knot into your <<bottom>>. <<bHe>> ejaculates deep into your bowels. You feel the semen build within you, its exit plugged. The <<beasttype>> climbs off and faces away from you, but you're locked together for a humiliating five minutes until the knot shrinks enough that the <<beasttype>> can wiggle it free.
 			<<pass 5>><<transform wolf 1>>
 		<</if>>

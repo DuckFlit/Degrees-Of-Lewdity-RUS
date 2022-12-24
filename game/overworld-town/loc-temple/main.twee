@@ -908,24 +908,32 @@ You tell Jordan you were attacked. <<He>> listens without a word, only speaking 
 
 <<set $outside to 0>><<set $location to "temple">><<temple_effects>><<effects>>
 <<if !$worn.genitals.type.includes("chastity")>>
-	"We fit chastity belts to any virgin who should want one. You will need to undergo a brief examination beforehand, that we might verify your purity. If you are not a virgin, then we can provide you with a belt for £80. If you already have a chastity belt, an anal shield can be fitted for £50. Even virgins must pay for the shield however."
-	<br><br>
-	"Our belts are very durable, designed to protect from even the most vicious of assailants. We don't use keys; once on, only specialised equipment can remove them. Be warned however, those that cannot sate their lust through obvious means may be driven to other violent urges. Also keep in mind that they don't conceal much from view, nor do they protect well against finer assaults, by fingers and the like. They are designed to protect chastity as written in the holy texts."
+	"We fit chastity belts to any virgin who should want one.
+	<<if pregnancyBellyVisible()>>
+		However, for safety reasons, we can't give them to those bearing life in their womb. Apologies."
+	<<else>>
+		You will need to undergo a brief examination beforehand, that we might verify your purity. If you are not a virgin, then we can provide you with a belt for £80. If you already have a chastity belt, an anal shield can be fitted for £50. Even virgins must pay for the shield however."
+		<br><br>
+
+		"Our belts are very durable, designed to protect from even the most vicious of assailants. We don't use keys; once on, only specialised equipment can remove them. Be warned however, those that cannot sate their lust through obvious means may be driven to other violent urges. Also keep in mind that they don't conceal much from view, nor do they protect well against finer assaults, by fingers and the like. They are designed to protect chastity as written in the holy texts."
+	<</if>>
 	<br><br>
 <<else>>
-	<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
+	<<if pregnancyBellyVisible()>>
+		"We should remove yours immediately. It's unsafe to wear one whilst pregnant."
+	<<elseif $player.virginity.penile is true and $player.virginity.vaginal is true>>
 		"It is written that we should never remove the chastity belt from a virgin. However, if you really want it removed, we will overlook that rule in return for an £80 donation."
-		<br><br>
 	<<else>>
 		"We can remove your belt if you like. Once it's off however, you'll need to pay again to have another put on."
-	<br><br>
 	<</if>>
-	<<if $worn.genitals.anal_shield is 0>>
+	<br><br>
+
+	<<if $worn.genitals.anal_shield is 0 and !pregnancyBellyVisible()>>
 		"Or would you prefer to have even more protection? We can fit a shield that will protect your rear for £50."
 		<br><br>
 	<</if>>
 <</if>>
-<<if !$worn.genitals.type.includes("chastity")>>
+<<if !$worn.genitals.type.includes("chastity") and !pregnancyBellyVisible()>>
 	<<if $templetest isnot "failed">>
 		<<link [[Virginity test (0:05)|Temple Test]]>><<set $phase to 0>><<pass 5>><</link>>
 		<br>
@@ -935,7 +943,7 @@ You tell Jordan you were attacked. <<He>> listens without a word, only speaking 
 		<br>
 	<</if>>
 <</if>>
-<<if $worn.genitals.type.includes("chastity") and $worn.genitals.anal_shield is 0>>
+<<if $worn.genitals.type.includes("chastity") and $worn.genitals.anal_shield is 0 and !pregnancyBellyVisible()>>
 	<<if $money gte 5000>>
 		<<link [[Have shield fitted (£50 0:05)|Temple Chastity Shield]]>><<pass 5>><<set $money -= 5000>><</link>>
 		<br>
@@ -951,7 +959,7 @@ You tell Jordan you were attacked. <<He>> listens without a word, only speaking 
 	<<link [[Have shield removed (0:05)|Temple Chastity Shield Removal]]>><<pass 5>><</link>>
 	<br>
 <</if>>
-<<if $worn.genitals.type.includes("chastity") and $player.virginity.penile is true and $player.virginity.vaginal is true>>
+<<if $worn.genitals.type.includes("chastity") and $player.virginity.penile is true and $player.virginity.vaginal is true and !pregnancyBellyVisible()>>
 	<<if $money gte 8000>>
 		<<link [[Have belt removed (£80 0:05)|Temple Chastity Removal]]>><<set $money -= 8000>><<pass 5>><</link>>
 		<br>
@@ -974,7 +982,13 @@ Jordan gives you a solemn nod. "Please come with me."
 
 You remove your clothing, wishing it wasn't quite so cold in here. Jordan rubs white powder between <<his>> hands, then kneels in front of you.
 <<if ($phase is 1 or $phase is 2) and $worn.genitals.type.includes("chastity") and $worn.genitals.origin is "temple">>
-<<He>> holds a strange rod against your $worn.genitals.name, and the device clatters to the floor.
+	<<He>> holds a strange rod against your $worn.genitals.name, and the device clatters to the floor.
+	<<if playerBellySize() gt 7>>
+		<<Hes>> briefly taken aback upon seeing your belly. "You are... with child?" <<He>> pauses. "The examination will continue. But I can not return your chastity device, for safety reasons."
+		<<set $worn.genitals.type.push("broken")>>
+		<<genitalsruined>>
+		<br><br>
+	<</if>>
 <</if>>
 <<if $player.penisExist>>
 	<<He>> holds your penis between both forefingers, and stares at it intently, gently manipulating the length. You try to distract yourself, but you soon feel it hardening under <<his>> scrutiny.
@@ -1075,30 +1089,38 @@ The fondling continues for a few minutes. Finally, <<he>> finishes <<his>> work.
 
 <<else>>
 	<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
-		"You are unblemished, and may it stay that way. Please be patient, I'll return shortly with your belt." <<He>> leaves you briefly, and returns with the
-		<<if $player.gender isnot "m">>
-			metallic device. Without a word <<he>> kneels once more and wraps it round your waist. You hear a loud click, and Jordan steps back to admire <<his>> handiwork.
-			<br><br>
-			You look down to examine it yourself. It doesn't feel as tight or uncomfortable as you expected, you wonder if it's on right. You try to slip your fingers beneath it, but have no success. You push down on the belt with both hands, but it doesn't give at all.
-			<br><br>
-			<<genitalswear 1>>
-			<<set $worn.genitals.origin to "temple">>
-
-			"Everything is satisfactory," <<he>> says. "If there are any problems, come see me." <<He>> leaves you alone in the room.
+		"You are unblemished, and may it stay that way.
+		<<if playerBellySize() gt 7>>
+			However, due to your pregnancy, I can not fit you with a chastity device. Congratulations on your immaculate conception."
 			<br><br>
 			<<clotheson>>
 			<<link [[Next|Temple]]>><<endevent>><</link>>
 		<<else>>
-			metallic belt and cage.
-			<br><br>
-			"Thanks to your <<genitals 2>>, you have two options. You could wear this cage, secured at the base of your <<genitals 2>>. However, it would only protect your <<genitals 2>>, leaving you vulnerable to sodomy."
-			<br><br>
-			After giving you a chance to examine it, <<he>> continues, "Your other option would be this chastity belt. It would be able to protect your <<genitals 2>>, and can be fitted with a shield to protect you from sodomy. It's been designed to both prevent rubbing and to hold a flaccid penis in place. This is the best protection, but others may mistake you for a girl."
-			<br><br>
+			Please be patient, I'll return shortly with your belt." <<He>> leaves you briefly, and returns with the
+			<<if $player.gender isnot "m">>
+				metallic device. Without a word <<he>> kneels once more and wraps it round your waist. You hear a loud click, and Jordan steps back to admire <<his>> handiwork.
+				<br><br>
+				You look down to examine it yourself. It doesn't feel as tight or uncomfortable as you expected, you wonder if it's on right. You try to slip your fingers beneath it, but have no success. You push down on the belt with both hands, but it doesn't give at all.
+				<br><br>
+				<<genitalswear 1>>
+				<<set $worn.genitals.origin to "temple">>
 
-			<<link [[Ask for the chastity cage|Temple Male Chastity Fitting]]>><<genitalswear 2>><</link>>
-			<br>
-			<<link [[Ask for the chastity belt|Temple Male Chastity Fitting]]>><<genitalswear 1>><</link>>
+				"Everything is satisfactory," <<he>> says. "If there are any problems, come see me." <<He>> leaves you alone in the room.
+				<br><br>
+				<<clotheson>>
+				<<link [[Next|Temple]]>><<endevent>><</link>>
+			<<else>>
+				metallic belt and cage.
+				<br><br>
+				"Thanks to your <<genitals 2>>, you have two options. You could wear this cage, secured at the base of your <<genitals 2>>. However, it would only protect your <<genitals 2>>, leaving you vulnerable to sodomy."
+				<br><br>
+				After giving you a chance to examine it, <<he>> continues, "Your other option would be this chastity belt. It would be able to protect your <<genitals 2>>, and can be fitted with a shield to protect you from sodomy. It's been designed to both prevent rubbing and to hold a flaccid penis in place. This is the best protection, but others may mistake you for a girl."
+				<br><br>
+
+				<<link [[Ask for the chastity cage|Temple Male Chastity Fitting]]>><<genitalswear 2>><</link>>
+				<br>
+				<<link [[Ask for the chastity belt|Temple Male Chastity Fitting]]>><<genitalswear 1>><</link>>
+			<</if>>
 		<</if>>
 	<<else>>
 		<<set $templetest to "failed">>
@@ -1128,7 +1150,14 @@ You look down to examine it yourself. It doesn't feel as tight or uncomfortable 
 <<set $outside to 0>><<set $location to "temple">><<temple_effects>><<effects>>
 <<He>> leads you out of the main hall and into a small room. "Please undress, I'll be back shortly." You remove your clothing, wishing the room were warmer. This is embarrassing, but it'll be worth it. <<He>> soon returns, carrying a metallic belt and cage.
 <br><br>
-<<if $player.gender isnot "m">>
+<<if playerBellySize() gt 7>>
+	<<He>> pauses upon seeing your belly. "You are... with child? I'm sorry, but we can't provide chastity devices to those bearing children. It's unsafe."
+	<br><br>
+	<<He>> gives you your money back. <<set $money += 8000>>
+	<br><br>
+	<<clotheson>>
+	<<link [[Next|Temple]]>><<endevent>><</link>>
+<<elseif $player.gender isnot "m">>
 	Without a word <<he>> places the cage to the side followed by wrapping the chastity belt around your waist. You hear a loud click, and Jordan steps back to admire <<his>> handiwork.
 	<br><br>
 	You look down to examine it yourself. It doesn't feel as tight or uncomfortable as you expected, you wonder if it's on right. You try to slip your fingers beneath it, but have no success. You push down on the belt with both hands, but it doesn't give at all.

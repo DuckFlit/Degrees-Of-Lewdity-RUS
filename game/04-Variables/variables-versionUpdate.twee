@@ -148,8 +148,7 @@
 	<<set $masturbationorgasm to 0>>
 <</if>>
 
-<<if $whitechance is undefined>>
-	<<set $whitechance to 90>>
+<<if $blackchance is undefined>>
 	<<set $blackchance to 10>>
 <</if>>
 
@@ -3916,4 +3915,37 @@
 		<<set $hairFringeColourStyle to "simple">>
 		<<set $hairFringeColourGradient to { style: "split", colours: ["red", "black"]}>>
 	<</if>>
+
+	<!-- v0.3.13.5 NPC Skin simplification -->
+	<<if $whitechance>>
+		<<unset $whitechance>>
+		<<unset $whitechanceselector>>
+		<<unset $blackchanceselector>>
+		<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
+			<<if $NPCName[$_i].init is 1 and !$NPCName[$_i].skincolour>>
+				<<if random(1, 100) lte $blackchance>>
+					<<set $NPCName[$_i].skincolour to "black">>
+				<<else>>
+					<<set $NPCName[$_i].skincolour to "white">>
+				<</if>>
+			<</if>>
+		<</for>>
+		<<if C.npc["Ivory Wraith"].init is 1>>
+			<<set C.npc["Ivory Wraith"].skincolour to "ghost">>
+		<</if>>
+		<<for $_s to 0; $_s lt $NPCList.length; $_s++>>
+			<<if $NPCList[$_s].health and !$NPCList[$_s].skincolour>>
+				<<if $NPCList[$_s].fullDescription is $npc[$_s]>>
+					<<set $NPCList[$_s].skincolour to C.npc[$npc[$_s]].skincolour>>
+				<<else>>
+					<<if random(1, 100) lte $blackchance>>
+						<<set $NPCList[$_s].skincolour to "black">>
+					<<else>>
+						<<set $NPCList[$_s].skincolour to "white">>
+					<</if>>
+				<</if>>
+			<</if>>
+		<</for>>
+	<</if>>
+
 <</widget>>

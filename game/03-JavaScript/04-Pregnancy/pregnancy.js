@@ -773,4 +773,18 @@ window.NPCPregnancyPossibleWithPlayer = (NPC) => {
 	} 
 	return true;
 }
+window.NPCPregnancyPossibleWithPlayer = NPCPregnancyPossibleWithPlayer;
 
+window.wearingCondom = (npcNumber) => {
+    let condom;
+    if(!isNaN(npcNumber) && V.NPCList[npcNumber] && V.NPCList[npcNumber].condom){
+        condom = V.NPCList[npcNumber].condom;
+    }else if(npcNumber === "player"){
+        condom = V.player.condom;
+    }
+    if(condom && condom.worn){
+        if(condom.state === "damaged") return "damaged";
+        return "worn";
+    }
+    return false;
+}
