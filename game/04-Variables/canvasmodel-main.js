@@ -32,6 +32,8 @@ replace (?<!["'\w])_(?=\w) with T.
  * "penis":""|"default"|"virgin" - has penis
  * "penis_size":number - penis size tier -1..5
  * "penis_parasite":""|"urchin"|"slime" - from $parasite.penis.name
+ * "penis_condom": ""|"plain" - from $player.condom.type
+ * "condom_colour": "" - from $player.condom.colour
  * "balls":boolean - has balls
  * "nipples_parasite":""|"urchin"|"slime" - from $parasite.nipples.name
  * "clit_parasite":""|"urchin"|"slime" - from $parasite.clit.name
@@ -234,6 +236,8 @@ Renderer.CanvasModels["main"] = {
 			"penis": "",
 			"penis_size": -1,
 			"penis_parasite": "",
+			"penis_condom": "",
+			"condom_colour": "",
 			"balls": false,
 			"nipples_parasite": "",
 			"clit_parasite": "",
@@ -582,6 +586,8 @@ Renderer.CanvasModels["main"] = {
 		} else {
 			options.filters.mascara = Renderer.emptyLayerFilter();
 		}
+		if (options.condom_colour) options.filters.condom = lookupColour(setup.colours.condom_map, options.condom_colour, "condom", "condom_custom", "condom");
+		
 		// Clothing filters and options
 		for (let slot of setup.clothes_all_slots) {
 			let index = options["worn_" + slot];
@@ -1271,6 +1277,29 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 			animation: "idle"
+		},
+		"penis_condom": {
+			srcfn(options) {
+				switch (options.penis_condom) {
+					case "plain":
+						return 'img/body/penis/condom' + options.penis_size + '.png'
+					default:
+						return "";
+				}
+			},
+			showfn(options) {
+				return options.crotch_visible && !!options.penis && !!options.penis_condom && !options.genitals_chastity;
+			},
+			alpha: 0.4,
+			filters: ["condom"],
+			zfn(options) {
+				if (options.crotch_exposed) {
+					return ZIndices.parasite
+				} else {
+					return ZIndices.underParasite
+				}
+			},
+			animation: "idle"		
 		},
 		/***
 		 *    ████████ ███████ ███████

@@ -596,6 +596,7 @@ Macro.add('canvasModelEditor', {
 						selectOption("penis", ["", "default", "virgin"]),
 						numberOption("penis_size", -2, 4, 1),
 						selectOption("penis_parasite", ["", "urchin", "slime"]),
+						selectOption("penis_condom", ["", "plain"]),
 						booleanOption("balls"),
 						selectOption("nipples_parasite", ["", "urchin", "slime"]),
 						selectOption("clit_parasite", ["", "urchin", "slime"]),
