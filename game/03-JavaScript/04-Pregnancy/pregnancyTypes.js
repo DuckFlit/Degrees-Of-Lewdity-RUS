@@ -169,8 +169,16 @@ const skinColourCalc = (name) => {
 	}
 }
 
+const removeNull = (obj) => {
+	Object.entries(obj).forEach(([key, val])  =>
+	 	(val && typeof val === 'object') && removeNull(val) ||
+	 	(val === null) && delete obj[key]
+	);
+	return obj;
+};
+
 const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown = false, birthId = null, type = null, gender = "f", identical = null, size = null, hairColour = null, eyeColour = null, monster = null, skinColour = null, clothes = null}) => {
-	return {
+	return removeNull({
 		"type": type,
 		"mother": mother,
 		"motherKnown": mother && motherKnown,
@@ -186,11 +194,15 @@ const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown
 		"location": null,
 		"birthLocation": null,
 		"localVariables":{},
-	};
+	});
 }
 
 window.pregnancyGenerator = {
 	human: (mother, father, fatherKnown = false, genital = "vagina") => {
+		//Hard coded limit
+		let limit = Object.values(V.children).length;
+		if(limit >= 1000) return false;
+
 		let motherObject = npcPregObject(mother);
 		let fatherObject = npcPregObject(father);
 		if(typeof motherObject === 'string' || motherObject instanceof String) return motherObject;
@@ -212,7 +224,7 @@ window.pregnancyGenerator = {
 			/*Ready for the cloning of PurityGuy to begin*/
 			for(let i = 0; i < count; i++){
 				if(identical && result.fetus.length){
-					result.fetus.push(result[0]);
+					result.fetus.push(result.fetus[0]);
 					continue;
 				}
 				let gender = random(0,100) > 50 ? "f" : "m";
@@ -231,6 +243,9 @@ window.pregnancyGenerator = {
 					clothes: "naked",
 				});
 				result.fetus.push(baby);
+
+				//Hard coded limit
+				if(limit + result.fetus.length >= 1000) break;
 			}
 			result.timerEnd = random(255,305) - (count * 10);
 
@@ -239,6 +254,10 @@ window.pregnancyGenerator = {
 		return false;
 	},
 	wolf: (mother, father, fatherKnown = false, genital = "vagina", monster = false) => {
+		//Hard coded limit
+		let limit = Object.values(V.children).length;
+		if(limit >= 1000) return false;
+
 		let motherObject = npcPregObject(mother);
 		let fatherObject = npcPregObject(father);
 		if(typeof motherObject === 'string' || motherObject instanceof String) return motherObject;
@@ -270,6 +289,9 @@ window.pregnancyGenerator = {
 				});
 				result.fetus.push(baby);
 				if(i > 4 && random(0,100) > 100 - (i * Math.clamp(4 - fertility,0,4)) && !magicTattoo) break;
+
+				//Hard coded limit
+				if(limit + result.fetus.length >= 1000) break;
 			}
 			result.timerEnd = random(70,110);
 
@@ -344,9 +366,11 @@ window.pregnancyGenerator = {
 				parasite.stats.gender = "Male";
 			}
 			result.fetus.push(clone(parasite));
-			
+
+			T.impregnatedParasite = genital;
 			return result;
 		}
+		T.impregnatedParasite = null;
 		return false;
 	}
 }
