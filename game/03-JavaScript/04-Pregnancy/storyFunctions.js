@@ -1,7 +1,7 @@
 
 //Determins how used to being pregnant the player is
 window.playerNormalPregnancyTotal = () => {
-	let result = Math.clamp(V.sexStats.vagina.pregnancy.totalBirthEvents + V.sexStats.anus.pregnancy.totalBirthEvents, 0, 4);
+	let result = Math.clamp(V.sexStats.vagina.pregnancy.totalBirthEvents + V.sexStats.anus.pregnancy.totalBirthEvents, 0, 8);
 	if(!isNaN(result)) return result;
 	return 0;
 };
