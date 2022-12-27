@@ -1093,10 +1093,13 @@ function currentSkillValue(skill) {
 			case 2:
 				T.pregnancyModifier = 50;
 				break;
-			case 3:
+			case 3: case 4: case 5:
 				T.pregnancyModifier = 65;
 				break;
-			case 4:
+			case 6: case 7:
+				T.pregnancyModifier = 80;
+				break;
+			default:
 				T.pregnancyModifier = 100;
 				break;
 		}

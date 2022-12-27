@@ -1002,6 +1002,13 @@ function settingsObjects(type) {
 					numberify_enabled: { min: 0, max: 1, decimals: 0 },
 					timestyle: { strings: ["military", "ampm"] },
 					tipdisable: { boolLetter: true, bool: true },
+					pepperSprayDisplay: { strings: ["none", "sprays", "compact"] },
+					condomsDisplay: { strings: ["none", "standard"] },
+					closeButtonMobile: { bool: true },
+					oldclock: { bool: true },
+					showDebugRenderer: { bool: true },
+					numpad: { bool: true },
+					traitOverlayFormat: { strings: ["table", "reducedTable", "list"] },
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },

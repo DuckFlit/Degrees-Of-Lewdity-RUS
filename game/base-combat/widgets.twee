@@ -403,6 +403,8 @@
 		<</if>>
 		<<if $_condomArticle is "a">>
 			<<set _text_output += (["a","e","i","o","u","A","E","I","O","U"].some(letter => $_condomDesc.colour.startsWith(letter)) ? "n " + $_condomDesc.colour + " " : " " + $_condomDesc.colour + " ")>>
+		<<elseif $_condomArticle is "the">>
+			<<set _text_output += " ">>
 		<<else>>
 			<<set _text_output += " " + $_condomDesc.colour + " ">>
 		<</if>>
@@ -446,7 +448,7 @@
 	<<set $player.condom to {
 		state: (random(0,100) gt 98 ? "damaged" : "normal"),
 		type: "plain",
-		colour: "plain",
+		colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
 		worn: true
 	}>>
 	<<set $condoms -= 1>>
@@ -466,7 +468,7 @@
 			willUse: true,
 			state: (random(0,100) gt 98 ? "damaged" : "normal"),
 			type: "plain",
-			colour: "plain",
+			colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
 			worn: false
 		}>>
 		<<set $condoms -= 1>>
@@ -481,16 +483,21 @@
 	<<if $NPCList[$_condomnpc].condom and $NPCList[$_condomnpc].condom.willUse>>
 		/*Your penis*/
 		<<if $penisstate is "entrance" or $penisstate is "imminent" or $penisstate is "otheranusentrance" or $penisstate is "otheranusimminent">>
-			<<if ($NPCList[$_condomnpc].vagina.includes("penis") or $NPCList[$_condomnpc].penis.includes("otheranus")) and !$player.condom and $parasite.penis.name is undefined>>
+			<<if ($NPCList[$_condomnpc].vagina.toString().includes("penis") or $NPCList[$_condomnpc].penis.toString().includes("otheranus")) and !$player.condom and $parasite.penis.name is undefined>>
 				<<personselect $_condomnpc>>
-				<span class="green"><<He_Short>> slips <<condomDesc $_condomnpc $_condomArticle>> onto your penis.</span>
-				<<equipNPCCondom $_condomnpc "player">>	
+				<<if $worn.genitals.type.includes("chastity")>>
+					<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
+					<<set $NPCList[$_condomnpc].condom.willUse to false>>
+				<<else>>
+					<span class="green"><<He_Short>> slips <<condomDesc $_condomnpc $_condomArticle>> onto your penis.</span>
+					<<equipNPCCondom $_condomnpc "player">>
+				<</if>>
 			<</if>>
 		<</if>>
 		<<if $penisstate is "penetrated">>
 			<<if $NPCList[$_condomnpc].vagina is "penis" and !$player.condom and $parasite.penis.name is undefined>>
 				<<personselect $_condomnpc>>
-				<span class="green"><<He_Short>> briefly frees your penis from <<his>> vagina, slips <<condomDesc $_condomnpc $_condomArticle>>> on, and slides it back in.</span>	
+				<span class="green"><<He_Short>> briefly frees your penis from <<his>> vagina, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>	
 				<<equipNPCCondom $_condomnpc "player">>
 			<</if>>
 		<</if>>
@@ -503,28 +510,33 @@
 		<</if>>
 		/*Their penis*/
 		<<if $vaginastate is "entrance" or $vaginastate is "imminent">>
-			<<if ($NPCList[$_condomnpc].penis is "vaginaentrance" or $NPCList[$_condomnpc].penis is "vaginaimminent") and $NPCList[$_condomnpc].condom.worn is false>>
+			<<if ($NPCList[$_condomnpc].penis is "vaginaentrance" or $NPCList[$_condomnpc].penis is "vaginaimminent") and $NPCList[$_condomnpc].condom.worn is false and !$NPCList[$_condomnpc].penisdesc.includes("strap-on")>>
 				<<personselect $_condomnpc>>
-				<span class="green"><<He_Short>> slips <<condomDesc $_condomnpc $_condomArticle>> onto <<his>> penis.</span>
-				<<equipNPCCondom $_condomnpc>>
+				<<if $NPCList[$_condomnpc].chastity.penis.includes("chastity")>>
+					<<He>> tries to put a condom on, but can't seem to get it over <<his>> $NPCList[$_condomnpc].chastity.penis. <span class="red"><<He>> quickly gives up.</span>
+					<<set $NPCList[$_condomnpc].condom.willUse to false>>
+				<<else>>
+					<span class="green"><<He_Short>> slips <<condomDesc $_condomnpc $_condomArticle>> onto <<his>> penis.</span>
+					<<equipNPCCondom $_condomnpc>>
+				<</if>>
 			<</if>>
 		<</if>>
 		<<if $vaginastate is "penetrated">>
-			<<if $NPCList[$_condomnpc].penis is "vagina" and $NPCList[$_condomnpc].condom.worn is false>>
+			<<if $NPCList[$_condomnpc].penis is "vagina" and $NPCList[$_condomnpc].condom.worn is false and !$NPCList[$_condomnpc].penisdesc.includes("strap-on")>>
 				<<personselect $_condomnpc>>
 				<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
 				<<equipNPCCondom $_condomnpc>>
 			<</if>>
 		<</if>>
 		<<if $anusstate is "entrance" or $anusstate is "imminent">>
-			<<if ($NPCList[$_condomnpc].penis is "anusentrance" or $NPCList[$_condomnpc].penis is "anusimminent") and $NPCList[$_condomnpc].condom.worn is false>>
+			<<if ($NPCList[$_condomnpc].penis is "anusentrance" or $NPCList[$_condomnpc].penis is "anusimminent") and $NPCList[$_condomnpc].condom.worn is false and !$NPCList[$_condomnpc].penisdesc.includes("strap-on")>>
 				<<personselect $_condomnpc>>
 				<span class="green">The <<person>> slips <<condomDesc $_condomnpc $_condomArticle>> onto <<his>> penis.</span>
 				<<equipNPCCondom $_condomnpc>>
 			<</if>>
 		<</if>>
 		<<if $anusstate is "penetrated">>
-			<<if $NPCList[$_condomnpc].penis is "anus" and $NPCList[$_condomnpc].condom.worn is false>>
+			<<if $NPCList[$_condomnpc].penis is "anus" and $NPCList[$_condomnpc].condom.worn is false and !$NPCList[$_condomnpc].penisdesc.includes("strap-on")>>
 				<<personselect $_condomnpc>>
 				<span class="green">The <<person>> briefly withdraws <<his>> penis from your ass, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
 				<<equipNPCCondom $_condomnpc>>

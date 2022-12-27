@@ -55,6 +55,11 @@ setup.colours = {
 			desaturate: true,
 			brightness: 0.4,
 			contrast: 1.0
+		},
+		condom: {
+			desaturate: true,
+			brightness: 0.4,
+			contrast: 1.0	
 		}
 	},
 
@@ -87,6 +92,11 @@ setup.colours = {
 	eyeshadow: [],
 	eyeshadow_map: {},
 	eyeshadow_default: {
+		blendMode: "hard-light"
+	},
+	condom: [],
+	condom_map: {},
+	condom_default: {
 		blendMode: "hard-light"
 	},
 
@@ -1255,6 +1265,81 @@ setup.colours.mascara = [
 		}
 	}
 ];
+setup.colours.condom = [
+	{
+		variable: "red",
+		name: "red",
+		name_cap: "Red",
+		csstext: "red",
+		canvasfilter: {
+			blend: "#EC3535"
+		}
+	}, {
+		variable: "blue",
+		name: "blue",
+		name_cap: "Blue",
+		csstext: "blue",
+		canvasfilter: {
+			blend: "#4372FF"
+		}
+	}, {
+		variable: "lblue",
+		name: "light blue",
+		name_cap: "Light Blue",
+		csstext: "lblue",
+		canvasfilter: {
+			blend: "#559BC0"
+		}
+	}, {
+		variable: "green",
+		name: "green",
+		name_cap: "Green",
+		csstext: "green",
+		canvasfilter: {
+			blend: "#38B20A"
+		}
+	}, {
+		variable: "lime",
+		name: "lime",
+		name_cap: "Lime",
+		csstext: "lime",
+		canvasfilter: {
+			blend: "#7caf7c"
+		}
+	}, {
+		variable: "purple",
+		name: "purple",
+		name_cap: "Purple",
+		csstext: "purple",
+		canvasfilter: {
+			blend: "#AA4BC8"
+		}
+	}, {
+		variable: "orange",
+		name: "orange",
+		name_cap: "Orange",
+		csstext: "orange",
+		canvasfilter: {
+			blend: "#f28500"
+		}
+	}, {
+		variable: "pink",
+		name: "pink",
+		name_cap: "Pink",
+		csstext: "pink",
+		canvasfilter: {
+			blend: "#E40081"
+		}
+	}, {
+		variable: "plain",
+		name: "plain",
+		name_cap: "Plain",
+		csstext: "plain",
+		canvasfilter: {
+			blend: "#f28500"
+		}
+	}
+];
 
 /*
  * Maps to easily access colour record by its variable code, ex. setup.colours.hair_map[$haircolour]
@@ -1284,6 +1369,7 @@ buildColourMap("clothes");
 buildColourMap("lipstick");
 buildColourMap("mascara");
 buildColourMap("eyeshadow");
+buildColourMap("condom");
 
 /**
  * Tries to guess colour in the map by removing spaces or replacing them with '-' and checking against name.
@@ -1314,7 +1400,8 @@ setup.colourName = function (colour) {
 		setup.colours.clothes_map,
 		setup.colours.mascara_map,
 		setup.colours.lipstick_map,
-		setup.colours.eyeshadow_map
+		setup.colours.eyeshadow_map,
+		setup.colours.condom_map
 	]) {
 		if (colour in map) return map[colour].name;
 	}

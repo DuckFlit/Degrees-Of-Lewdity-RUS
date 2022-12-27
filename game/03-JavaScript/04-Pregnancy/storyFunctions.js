@@ -1,6 +1,10 @@
 
 //Determins how used to being pregnant the player is
-window.playerVaginalPregnancyCheck = () => Math.clamp(V.sexStats.vagina.pregnancy.totalBirthEvents, 0, 4);
+window.playerNormalPregnancyTotal = () => {
+	let result = Math.clamp(V.sexStats.vagina.pregnancy.totalBirthEvents + V.sexStats.anus.pregnancy.totalBirthEvents, 0, 8);
+	if(!isNaN(result)) return result;
+	return 0;
+};
 
 //`pregnancyOnly` is there intentially, please make use of it if you add to this function
 window.playerBellySize = (pregnancyOnly = false) => {
@@ -15,39 +19,33 @@ window.playerBellySize = (pregnancyOnly = false) => {
 		let maxSize = 0;
 		switch(vpregnancy.type){
 			case "parasite":
-				maxSize += vpregnancy.fetus.length;
+				if(pregnancyOnly) bellySize += Math.clamp(vpregnancy.fetus.length,0,4);
 			break;
 			case "human":
-				maxSize += 18 + Math.clamp(vpregnancy.fetus.length,1,3);
+				maxSize += 17 + Math.clamp(vpregnancy.fetus.length,1,3);
 			break;
 			case "wolf":
 				maxSize += 16 + Math.clamp(vpregnancy.fetus.length / 2,1,4);
 			break;
-			default:
-				maxSize += 20;
-			break;
 		}
 		switch(apregnancy.type){
 			case "parasite":
-				maxSize += apregnancy.fetus.length;
+				if(pregnancyOnly) bellySize += Math.clamp(apregnancy.fetus.length,0,4);
 			break;
 			case "human":
-				maxSize += 18 + Math.clamp(apregnancy.fetus.length,1,3);
+				maxSize += 17 + Math.clamp(apregnancy.fetus.length,1,3);
 			break;
 			case "wolf":
 				maxSize += 16 + Math.clamp(apregnancy.fetus.length / 2,1,4);
 			break;
-			default:
-				maxSize += 20;
-			break;
 		}
-		bellySize += pregnancyProgress * maxSize;
+		bellySize += pregnancyProgress * Math.clamp(maxSize, 0,20);
 	}
-	return Math.clamp(bellySize,0,20);
+	return Math.floor(Math.clamp(bellySize,0,20));
 }
 
-window.pregnancyBellyVisible = () => {
-	const size = playerBellySize();
+window.pregnancyBellyVisible = (pregnancyOnly = false) => {
+	const size = playerBellySize(pregnancyOnly);
 	if (size <= 7) return false;
 	if (size <= 11 && V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) return false;
 	if (size <= 17 && V.worn.upper.type.includes("bellyHide")) return false;
@@ -69,14 +67,11 @@ window.npcBellySize = (npc) => {
 			case "wolf":
 				maxSize += 16 + Math.clamp(vpregnancy.fetus.length / 2,1,4);
 			break;
-			default:
-				maxSize += 20;
-			break;
 		}
-		bellySize += pregnancyProgress * maxSize;
+		bellySize += pregnancyProgress * Math.clamp(maxSize,0,20);
 	}
 
-	return bellySize;
+	return Math.floor(Math.clamp(bellySize,0,20));
 }
 
 window.npcPregnancyBellyVisible = (npc) => {
@@ -86,27 +81,31 @@ window.npcPregnancyBellyVisible = (npc) => {
 	return true;
 }
 
-window.playerIsPregnant = () => (V.sexStats.vagina.pregnancy.type !== null && V.sexStats.vagina.pregnancy.type !== "parasites") || (V.sexStats.anus.pregnancy.type !== null && V.sexStats.anus.pregnancy.type !== "parasites");
+window.npcIsPregnant = (npc) => C.npc[npc] && C.npc[npc].pregnancy && C.npc[npc].pregnancy.enabled && C.npc[npc].pregnancy.type && C.npc[npc].pregnancy.type !== "parasite";
+
+window.playerIsPregnant = () => (V.sexStats.vagina.pregnancy.type !== null && V.sexStats.vagina.pregnancy.type !== "parasite") || (V.sexStats.anus.pregnancy.type !== null && V.sexStats.anus.pregnancy.type !== "parasite");
 
 window.isPlayerNonparasitePregnancyEnding = () => {
 	return V.sexStats.vagina.pregnancy.waterBreaking || V.sexStats.anus.pregnancy.waterBreaking || false;
 }
 
-window.nonparasitePregnancyType = () => {
-	if(V.player.vaginaExist){
+window.playerNormalPregnancyType = () => {
+	if(V.player.vaginaExist && V.sexStats.vagina.pregnancy.type !== "parasite"){
 		return V.sexStats.vagina.pregnancy.type;
-	}else{
+	}else if(V.sexStats.anus.pregnancy.type !== "parasite"){
 		return V.sexStats.anus.pregnancy.type;
 	}
+	return null;
 }
 
-window.wakingPregnancyEvent = (rng) => {
+window.wakingPregnancyEvent = () => {
 	let pregnancy;
 	if(V.player.vaginaExist){
 		pregnancy = V.sexStats.vagina.pregnancy;
 	}else{
 		pregnancy = V.sexStats.anus.pregnancy;
 	}
+	const rng = random(0,100);
 	const menstruation = V.sexStats.vagina.menstruation;
 	const pills = V.sexStats.pills;
 	const lastPregPill = pills.lastTaken.pregnancy;
@@ -115,6 +114,8 @@ window.wakingPregnancyEvent = (rng) => {
 
 	if(playerBellySize(true) >= 8 && !pregnancy.awareOf){
 		return "bellySize";
+	} else if(playerBellySize(true) >= 9 && V.worn.genitals.type.includes("hidden")){
+		return "chastityBeltRemoval";
 	} else if(V.cycledisable === "f" && !menstruation.awareOfPeriodDelay && V.awareness >= 100 && V.sciencetrait >= 3 && !pregnancy.awareOf && pregnancyStage !== false && between(pregnancy.timer - (menstruation.currentDaysMax - menstruation.currentDay), 4, 8)){
 		return "missedPeriod";
 	} else if(between(pregnancyStage, 0.9, 1)){
@@ -157,13 +158,14 @@ window.wakingPregnancyEvent = (rng) => {
 	return false;
 }
 
-window.dailyPregnancyEvent = (rng) => {
+window.dailyPregnancyEvent = () => {
 	let pregnancy;
 	if(V.player.vaginaExist){
 		pregnancy = V.sexStats.vagina.pregnancy;
 	}else{
 		pregnancy = V.sexStats.anus.pregnancy;
 	}
+	const rng = random(0,100) + (V.daily.pregnancyEvent || 0);
 	const menstruation = V.sexStats.vagina.menstruation;
 	const pills = V.sexStats.pills;
 	const lastPregPill = pills.lastTaken.pregnancy;
