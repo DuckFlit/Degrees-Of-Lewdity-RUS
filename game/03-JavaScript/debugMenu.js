@@ -604,6 +604,14 @@ setup.debugMenu.eventList = {
 			widgets: [`<<imprison_leighton>>`],
 		},
 		{
+			link: [`Clear the Pillory`, stayOnPassageFn],
+			widgets: [`<<clear_pillory>>`],
+		},
+		{
+			link: [`Put random NPC in the Pillory`, stayOnPassageFn],
+			widgets: [`<<clear_pillory>><<new_npc_pillory>>`],
+		},
+		{
 			link: [`Hole in wall`, `Temple Arcade 2`],
 			widgets: [``],
 		},
