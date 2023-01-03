@@ -113,7 +113,7 @@ const combatActionColours = {
 			/* feetaction */
 			"grab", "vaginagrab", "grabrub", "vaginagrabrub", "rub",
 			/* mouthaction */
-			"peniskiss", "kisslips", "kissskin", "suck", "lick", "ejacswallow", "moan", "breastsuck", "breastlick", "swallow", "movetochest", "othervagina", "mouth", "kissback", "vaginalick", "oraledge", "askchoke", "anallick", "analkiss", "askrough", "condoms", "noCondoms", 
+			"peniskiss", "kisslips", "kissskin", "suck", "lick", "ejacswallow", "moan", "breastsuck", "breastlick", "swallow", "movetochest", "othervagina", "mouth", "kissback", "vaginalick", "oraledge", "askchoke", "anallick", "analkiss", "askrough", "condoms", "noCondoms",
 			/* penisaction */
 			"penistovagina", "penistoanus", "penisvaginafuck", "penisanusfuck", "othermouthtease", "othermouthrub", "othermouthcooperate", "tease", "cooperate", "otheranustease", "otheranusrub", "otheranuscooperate", "clitrub", "vaginaEdging", "otheranusEdging", "handtease", "handAnusRub", "handcooperate", "strokerCooperate",
 			/* fencing */
@@ -578,6 +578,8 @@ function getRobinLocation() {
 		T.robin_location = "sleep";
 	} else if (V.schoolday === 1 && between(V.hour, 8, 15)) {
 		T.robin_location = "school";
+	} else if (V.hour === 16 && between(V.minute, 31, 59) && !V.daily.robin.bath) {
+		T.robin_location = "bath";
 	} else if (V.halloween === 1 && between(V.hour, 16, 18) && V.monthday === 31) {
 		T.robin_location = "halloween";
 	} else if ((V.weekday === 7 || V.weekday === 1) && between(V.hour, 9, 16) && C.npc.Robin.trauma < 80) {
@@ -1738,13 +1740,13 @@ function dailyConvert() {
 			// eslint-disable-next-line prettier/prettier
 			/* whitney */ "bullygate", "whitney_toilet_check", "whitney_park", "whitney_text_trigger", "whitneyFlirt", "whitneyChat", "whitneyAsk","whitney_text", "whitney_text_trigger", "whitneyDaily",
 			// eslint-disable-next-line prettier/prettier
-			/* robin */ "robinwalk", "robinhugcry", "robinhugcomplain", "robinblame", "robinpersecute", "robinpolicebody", "robinpolicepay", "robin_tending", "robinDaily", "robinbeachpolice", "robinparksnow", "robinDebtAsk", 
+			/* robin */ "robinwalk", "robinhugcry", "robinhugcomplain", "robinblame", "robinpersecute", "robinpolicebody", "robinpolicepay", "robin_tending", "robinDaily", "robinbeachpolice", "robinparksnow", "robinDebtAsk",
 			// eslint-disable-next-line prettier/prettier
 			/* kylar */ "kylarDaily",
 			// eslint-disable-next-line prettier/prettier
 			/* morgan */ "sewerssex", "sewersfeeding", "sewersDaily",
 			// eslint-disable-next-line prettier/prettier
-			/* eden */ "edenbreakfastlust", "edenbreakfast", "edenbath", "edenwalk", "edenbath", "edenchoplust", "edenhunting", "edenlunch", "edendinner", "edendistract", "edenasylumdisarm", "eden_asylum_rescue", "eden_sew", "eden_supplies", "eden_sweep", "eden_salve", "eden_soap", "eden_search", "edenexposed", "edenspringjoin", "salveuse", "edenmassage", "edenhuntcaught", "edenfarmrescue", 
+			/* eden */ "edenbreakfastlust", "edenbreakfast", "edenbath", "edenwalk", "edenbath", "edenchoplust", "edenhunting", "edenlunch", "edendinner", "edendistract", "edenasylumdisarm", "eden_asylum_rescue", "eden_sew", "eden_supplies", "eden_sweep", "eden_salve", "eden_soap", "eden_search", "edenexposed", "edenspringjoin", "salveuse", "edenmassage", "edenhuntcaught", "edenfarmrescue",
 			// eslint-disable-next-line prettier/prettier
 			/* alex */ "alexDaily",
 			// eslint-disable-next-line prettier/prettier
