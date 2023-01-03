@@ -169,6 +169,17 @@ const skinColourCalc = (name) => {
 	}
 }
 
+//Only applies to the pc
+const beastTransform = (mother, father) => {
+	if(mother === "pc" || father === "pc"){
+		if(V.cat >= 10) return "cat";
+		if(V.cow >= 6) return "cow";
+		if(V.wolfgirl >= 6) return "wolf";
+		if(V.harpy >= 6) return "bird";
+	}
+	return null;
+}
+
 const removeNull = (obj) => {
 	Object.entries(obj).forEach(([key, val])  =>
 	 	(val && typeof val === 'object') && removeNull(val) ||
@@ -177,7 +188,7 @@ const removeNull = (obj) => {
 	return obj;
 };
 
-const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown = false, birthId = null, type = null, gender = "f", identical = null, size = null, hairColour = null, eyeColour = null, monster = null, skinColour = null, clothes = null}) => {
+const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown = false, birthId = null, type = null, gender = "f", identical = null, size = null, hairColour = null, eyeColour = null, monster = null, skinColour = null, clothes = null, beastTransform = null}) => {
 	return removeNull({
 		"type": type,
 		"mother": mother,
@@ -187,7 +198,7 @@ const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown
 		"born": {"day":null, "month":null, "year":null},
 		"concieved": {"day":V.monthday, "month":V.month.toUpperFirst(), "year":V.year},
 		"gender": gender,
-		"features": {"size":size, "hairColour":hairColour, "eyeColour":eyeColour, "identical":identical, "monster":monster, "clothes":clothes, "skinColour": skinColour},
+		"features": {"size":size, "hairColour":hairColour, "eyeColour":eyeColour, "identical":identical, "monster":monster, "clothes":clothes, "skinColour": skinColour, "beastTransform": beastTransform},
 		"name":null,
 		"birthId": birthId,
 		"childId": null,
@@ -240,6 +251,7 @@ window.pregnancyGenerator = {
 					eyeColour: [eyeColourCalc(motherObject.name), eyeColourCalc(fatherObject.name)][random(0,1)],
 					hairColour: [hairColourCalc(motherObject.name), hairColourCalc(fatherObject.name)][random(0,1)],
 					skinColour: [skinColourCalc(motherObject.name), skinColourCalc(fatherObject.name)][random(0,1)],
+					beastTransform: beastTransform(motherObject.name, fatherObject.name),
 					clothes: "naked",
 				});
 				result.fetus.push(baby);
