@@ -59,7 +59,7 @@
 <<if $debug is 1>>
 	<<set $debugdisable to "f">>
 <<else>>
-	<<set $debugdisable to "t">>
+	<<set $debugdisable to "f">>
 <</if>>
 <<set $cheatdisable to "t">>
 <<set $watersportsdisable to "t">>
@@ -113,8 +113,8 @@
 	<<case "gameSettings">><<replace #settingsDiv>><<gameSettings>><</replace>>
 	<<case "sizeLimitsSettings">><<replace #settingsDiv>><<sizeLimitsSettings>><</replace>>
 	<<case "npcSettings">><<replace #settingsDiv>><<npcSettings>><</replace>>
-	<<case "generalSettings">><<replace #settingsDiv>><<generalSettings>><</replace>>
 	<<case "exportsettings">><<replace #settingsDiv>><<exportsettings>><</replace>>
+	<<case "gallerySettings">><<replace #settingsDiv>><<gallerySettings>><</replace>>
 	<<case "importConfirmDetails">><<replace #settingsDiv>><<importConfirmDetails>><</replace>>
 	<<default>><<replace #settingsDiv>><<gameSettings>><</replace>>
 <</switch>>
@@ -174,8 +174,8 @@
 	<<button "Named NPC Settings">>
 		<<displaySettings "npcSettings">>
 	<</button>>
-	<<button "General">>
-		<<displaySettings "generalSettings">>
+	<<button "Gallery">>
+		<<displaySettings "gallerySettings">>
 	<</button>>
 	<<button "Export/Import Settings">>
 		<<displaySettings "exportsettings">>
@@ -207,7 +207,8 @@
 
 <<widget "settingsExit">>
 <<if $passage is "Start">>
-	<<set _buttonName to "Begin">>
+	<<set _buttonName to "Start Game!">>
+	<<saveNameSection>>
 <<else>>
 	<<set _buttonName to "Confirm">>
 <</if>>
@@ -356,6 +357,10 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 <i>Gender ratios and kinks can be fine-tuned in the Game Settings Tab.</i>
 <br><br>
 
+<<if $passage isnot "Start">>
+	<<saveNameSection>>
+<</if>>
+
 <span class="gold">Randomise:</span>
 <<link "All">><<presets "randomize" `randomizeSettings()`>><</link>> |
 <<if $passage is "Start">>
@@ -422,6 +427,16 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 			<span class="gold">Character sidebar preview:</span> <label>Hide Clothes <<checkbox "_showClothes" true false autocheck>></label> <label>Hide Underwear <<checkbox "_showUnderwear" true false autocheck>></label>
 			<mouse class="tooltip linkBlue">(?)<span>'Visual representation of the player's and NPC's skin colour' needs to be enabled in the Performance tab of the Options menu for skin colouring to show during normal gameplay.</span></mouse>
 			<br>
+			<<if $debug is 1>>
+				<span class="gold">Images</span>
+				<label><div class="settingsToggleBig"><div style="display: inline-flex;">
+				Face style
+				<div style="margin-left: 1em;"><<textbox "$facestyle" $facestyle>></div></div>
+				<div class="description">This setting works only if you have installed face styles other than default.</div>
+				<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>>
+				</div></label>
+				<br>
+			<</if>>
 		<</if>>
 		<hr>
 		<span class="gold"><u>Body:</u></span>
@@ -743,8 +758,15 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 			</label>
 		<</if>>
 		<br>
-		<input id="checkbox-ironmanmode" onclick="IronMan.UI.checkBox()" name="checkbox-ironmanmode" type="checkbox" tabindex="0" class="macro-checkbox"> <mouse class="tooltip white">Ironman mode<span>To prevent save-scumming and other practices in that spirit<br><br>You can save, you will then be led to Start Menu. You can then load that save, but then it will delete itself.<br><br>There will also be an additional save every 4-8 in-game days just in case you lose the other save.</span></mouse>&nbsp;<i class="ironman-clarify">(Cannot be unset after game start)</i>
-		<<run IronMan.UI.checkBox(`init`)>>
+		<label data-target="cheatdisabletoggle" data-disabledif="V.cheatdisabletoggle==='f'">
+			<input id="checkbox-ironmanmode" onclick="IronMan.UI.checkBox()" name="checkbox-ironmanmode" type="checkbox" tabindex="0" class="macro-checkbox"> <mouse class="tooltip white">Ironman mode<span>To prevent save-scumming and other practices in that spirit<br><br>You can save, you will then be led to Start Menu. You can then load that save, but then it will delete itself.<br><br>There will also be an additional save every 4-8 in-game days just in case you lose the other save.</span></mouse>&nbsp;<i class="ironman-clarify">(Cannot be unset after game start)</i>
+			<<run IronMan.UI.checkBox(`init`)>>
+		</label>
+		<br>
+		<label data-target="ironmanmode" data-disabledif="V.ironmanmode===true">
+			<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> <mouse class="tooltip red">Cheat mode<span>Leaving the settings with cheats enabled will prevent you from earning feats in a save.</span></mouse>&nbsp;<i class="ironman-clarify">(Button shows in sidebar)</i>
+		</label>
+		<div class="small-description"></div>
 		<div class="numberslider-group">
 			<span class="gold">Encounter Rate</span>
 			<div class="small-description">Default is 1.0. Multiplies the effect of allure on encounter chance.</div>
@@ -763,6 +785,17 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 			<label><<radiobutton "$multipleWardrobes" "all" autocheck>> Enable for all wardrobes</label>
 			<br>
 		<</if>>
+		<span class="gold">Skill check display</span>
+		<br>
+		<label>Show exact percentage <<radiobutton "$checkstyle" "percentage" autocheck>></label> |
+		<label>Show only general description <<radiobutton "$checkstyle" "words" autocheck>></label> |
+		<label>Show only skill name <<radiobutton "$checkstyle" "skillname" autocheck>></label> |
+		<br>
+
+		<label>
+		<<checkbox "$statdisable" "f" "t" autocheck>> Enable blind stats
+		<mouse class = "tooltip blue">(?)<span>You'll receive no indication when your stats change, or what skills are required to succeed in certain events. Survive on your intuition.<span class="red">Not recommended for beginners. This is an experimental feature and may be changed or removed in the future.</span></span></mouse>
+		</label>
 	</div>
 	<br>
 
@@ -1226,105 +1259,66 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 
 
 <<widget "sizeLimitsSettings">>
-	<span class="gold">Maximum player character breast size</span> <mouse class="tooltip linkBlue">(?)<span>Breasts already above this size won't automatically shrink. Your breasts will grow regardless of gender. Males and those with high purity experience slower growth. Surgery, pills and parasites can influence growth in both directions. Having breasts played with and hosting internal parasites both increase growth.</span></mouse>
-	<br>
-	<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
-	<<for _i to 0; _i lt _name.length; _i++>>
-		<span data-target="breastsizemin" @data-disabledif="'V.breastsizemin > ' + _i">
-			<label><<print _name[_i]>> <<radiobutton "$breastsizemax" `_i` autocheck>></label>
-		</span> |
-	<</for>>
-	<br><br>
+<div class="solidBorderContainer settings-container">
+	<div class="settingsToggleWide">
+		<span class="gold">Maximum player character breast size</span> <mouse class="tooltip linkBlue">(?)<span>Breasts already above this size won't automatically shrink. Your breasts will grow regardless of gender. Males and those with high purity experience slower growth. Surgery, pills and parasites can influence growth in both directions. Having breasts played with and hosting internal parasites both increase growth.</span></mouse>
+		<br>
+		<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
+		<<for _i to 0; _i lt _name.length; _i++>>
+			<span data-target="breastsizemin" @data-disabledif="'V.breastsizemin > ' + _i">
+				<label><<print _name[_i]>> <<radiobutton "$breastsizemax" `_i` autocheck>></label>
+			</span> |
+		<</for>>
+	</div>
 
-	<span class="gold">Minimum player character breast size</span> <mouse class="tooltip linkBlue">(?)<span>Breasts already below this size won't automatically grow.</span></mouse>
-	<br>
-	<<for _i to 0; _i lt 5; _i++>>
-		<span data-target="breastsizemax" @data-disabledif="_i + ' > V.breastsizemax'">
-			<label><<print _name[_i]>> <<radiobutton "$breastsizemin" _i autocheck>></label> |
-		</span>
-	<</for>>
-	<br><br>
+	<div class="settingsToggleWide">
+		<span class="gold">Minimum player character breast size</span> <mouse class="tooltip linkBlue">(?)<span>Breasts already below this size won't automatically grow.</span></mouse>
+		<br>
+		<<for _i to 0; _i lt 5; _i++>>
+			<span data-target="breastsizemax" @data-disabledif="_i + ' > V.breastsizemax'">
+				<label><<print _name[_i]>> <<radiobutton "$breastsizemin" _i autocheck>></label> |
+			</span>
+		<</for>>
+	</div>
 
-	<span class="gold">Maximum player character ass size</span> <mouse class="tooltip linkBlue">(?)<span>Bottoms already above this size won't automatically shrink.</span></mouse>
-	<br>
-	<<set _name to ["Slender", "Slim", "Modest", "Cushioned", "Soft", "Round", "Plump", "Large", "Huge"]>>
-	<<for _i to 0; _i lt _name.length; _i++>>
-		<label><<print _name[_i]>> <<radiobutton "$bottomsizemax" _i autocheck>></label> |
-	<</for>>
-	<br><br>
+	<div class="settingsToggleWide">
+		<span class="gold">Maximum player character ass size</span> <mouse class="tooltip linkBlue">(?)<span>Bottoms already above this size won't automatically shrink.</span></mouse>
+		<br>
+		<<set _name to ["Slender", "Slim", "Modest", "Cushioned", "Soft", "Round", "Plump", "Large", "Huge"]>>
+		<<for _i to 0; _i lt _name.length; _i++>>
+			<label><<print _name[_i]>> <<radiobutton "$bottomsizemax" _i autocheck>></label> |
+		<</for>>
+	</div>
 
-	<span class="gold">Maximum player character penis size</span> <mouse class="tooltip linkBlue">(?)<span>Penises already above this size won't automatically shrink. Surgery, pills and parasites can influence growth in both directions.</span></mouse>
-	<br>
-	<<set _name to ["Micro","Mini", "Tiny", "Small", "Normal", "Large", "Enormous"]>>
-	<<for _i to 0; _i lt _name.length; _i++>>
-		<span data-target="penissizemin" @data-disabledif="_i - 2 + ' < V.penissizemin'">
-			<label><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label> |
-		</span>
-	<</for>>
-	<br><br>
+	<div class="settingsToggleWide">
+		<span class="gold">Maximum player character penis size</span> <mouse class="tooltip linkBlue">(?)<span>Penises already above this size won't automatically shrink. Surgery, pills and parasites can influence growth in both directions.</span></mouse>
+		<br>
+		<<set _name to ["Micro","Mini", "Tiny", "Small", "Normal", "Large", "Enormous"]>>
+		<<for _i to 0; _i lt _name.length; _i++>>
+			<span data-target="penissizemin" @data-disabledif="_i - 2 + ' < V.penissizemin'">
+				<label><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label> |
+			</span>
+		<</for>>
+	</div>
 
-	<span class="gold">Minimum player character penis size</span> <mouse class="tooltip linkBlue">(?)<span>Penises already below this size won't automatically grow. The smaller sizes have additional requirements to shrink to/grow from.</span></mouse>
-	<br>
-	<<set _name to ["Micro","Mini", "Tiny"]>>
-	<<for _i to 0; _i lt _name.length; _i++>>
-		<span data-target="penissizemax" @data-disabledif="_i - 2 + ' > V.penissizemax'">
-			<label><<print _name[_i]>> <<radiobutton "$penissizemin" `(_i - 2)` autocheck>></label> |
-		</span>
-	<</for>>
-	<br><br>
-
+	<div class="settingsToggleWide">
+		<span class="gold">Minimum player character penis size</span> <mouse class="tooltip linkBlue">(?)<span>Penises already below this size won't automatically grow. The smaller sizes have additional requirements to shrink to/grow from.</span></mouse>
+		<br>
+		<<set _name to ["Micro","Mini", "Tiny"]>>
+		<<for _i to 0; _i lt _name.length; _i++>>
+			<span data-target="penissizemax" @data-disabledif="_i - 2 + ' > V.penissizemax'">
+				<label><<print _name[_i]>> <<radiobutton "$penissizemin" `(_i - 2)` autocheck>></label> |
+			</span>
+		<</for>>
+	</div>
+	<div style="clear:both;"></div>
+</div>
 <</widget>>
 
-<<widget "generalSettings">>
-	<<if StartConfig.enableImages is true and $debug is 1>>
-		<span class="gold">Images</span>
-		<label><div class="settingsToggleBig"><div style="display: inline-flex;">
-		Face style
-		<div style="margin-left: 1em;"><<textbox "$facestyle" $facestyle>></div></div>
-		<div class="description">This setting works only if you have installed face styles other than default.</div>
-		<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>>
-		</div></label>
-		<br><br>
-	<</if>>
-
-	<span class="gold">Skill check display</span>
-	<br>
-	<label>Show exact percentage <<radiobutton "$checkstyle" "percentage" autocheck>></label> |
-	<label>Show only general description <<radiobutton "$checkstyle" "words" autocheck>></label> |
-	<label>Show only skill name <<radiobutton "$checkstyle" "skillname" autocheck>></label> |
-	<br>
-
-	<label><div class="settingsToggleBig">
-	<<checkbox "$statdisable" "f" "t" autocheck>> Enable blind stats
-	<mouse class = "tooltip blue">(?)<span>You'll receive no indication when your stats change, or what skills are required to succeed in certain events. Survive on your intuition.<span class="red">Not recommended for beginners. This is an experimental feature and may be changed or removed in the future.</span></span></mouse>
-	</div></label>
-	<br><br>
-
-	<span class="gold">Additional error information</span>
-	<br>
-	<label><div class="settingsToggleBig">
-	<<checkbox "$debugdisable" "t" "f" autocheck>> Enable additional error messages
-	<div class="description">Shows in the sidebar.</div>
-	</div></label>
-	<br><br>
-
-	<span class="gold">Save Name</span>
-	<br>
-	<<textbox "$saveName" $saveName>>
-	<div class="description">Shows in the save menu in place of the save id.</div>
-	<div class="description"><span class="red">Only 10 characters at most will show in the save menu, leave empty to show the save ID.</span></div>
-	<br><br>
-
-	<span class="gold">Cheats menu</span>
-	<label><div class="settingsToggleBig">
-	<label data-disabledif="V.ironmanmode===true">
-		<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> Enable cheats
-	</label>
-	<div class="description">Button shows in sidebar. <span class="red">Leaving the settings with cheats enabled will prevent you from earning feats in a save.</span></div>
-	</div></label>
-	<br><br>
+<<widget "gallerySettings">>
+<div class="solidBorderContainer settings-container">
 	<span class="gold">Gallery</span> - these will not affect your save in any way.
-	<br>
+	<br><br>
 	<<if version.major gt 2 or version.minor gt 29>>
 		<<link [[Character Viewer|Clothes Testing]]>>
 			<<set $lastPassage to $passage>>
@@ -1354,6 +1348,7 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<span class="gold">Tips</span>
 	<br>
 	<span><<link [[View all tips|Tips]]>><<set $lastPassage to $passage>><</link>></span>
+</div>
 <</widget>>
 
 <<widget "npcSettings">>
@@ -1711,6 +1706,15 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		/*Keep at end of toggles*/
 	</div>
 <<run settingsDisableElement()>>
+<</widget>>
+
+<<widget "saveNameSection">>
+	<span class="gold">Save Name</span>
+	<br>
+	<<textbox "$saveName" $saveName>>
+	<div class="description">Shows in the save menu in place of the save id.</div>
+	<div class="description"><span class="red">Only 10 characters at most will show in the save menu, leave empty to show the save ID.</span></div>
+	<br>
 <</widget>>
 
 
