@@ -526,7 +526,6 @@ function closeOverlay() {
 	delete T.currentOverlay;
 	T.buttons.reset();
 	$("#customOverlay").addClass("hidden").parent().addClass("hidden");
-	$("body").css("overflow", "auto");
 }
 window.closeOverlay = closeOverlay;
 
