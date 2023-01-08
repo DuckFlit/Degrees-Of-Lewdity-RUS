@@ -766,7 +766,6 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<label data-target="ironmanmode" data-disabledif="V.ironmanmode===true">
 			<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> <mouse class="tooltip red">Cheat mode<span>Leaving the settings with cheats enabled will prevent you from earning feats in a save.</span></mouse>&nbsp;<i class="ironman-clarify">(Button shows in sidebar)</i>
 		</label>
-		<div class="small-description"></div>
 		<div class="numberslider-group">
 			<span class="gold">Encounter Rate</span>
 			<div class="small-description">Default is 1.0. Multiplies the effect of allure on encounter chance.</div>
@@ -1352,100 +1351,103 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 <</widget>>
 
 <<widget "npcSettings">>
-<<if $passage is "Start">>
-	<span class="red">Untouched options will be automatically generated for you.</span>
-	<br>
-<</if>>
-<<link "Generate all genders based on game settings">>
-	<<initnpcgender "genders">>
-	<<updatePersistentNPCs "genders">>
-	<<displaySettings>>
-<</link>>
-<br>
-<<link "Generate all penis sizes based on game settings">>
-	<<initnpcgender "penis">>
-	<<updatePersistentNPCs "penis">>
-	<<displaySettings>>
-<</link>>
-<br>
-<<link "Generate all breast sizes based on game settings">>
-	<<initnpcgender "breasts">>
-	<<updatePersistentNPCs "breasts">>
-	<<displaySettings>>
-<</link>>
-<<if $debug is 1>>
-	<br>
-	<<link "Reset hair and eye colours (Will only effect NPC's with a default colour)">>
-		<<generateNPCNameHairAndEyeColors "default">>
+<div class="solidBorderContainer settings-container">
+	<div class="small-description">
+	<<if $passage is "Start">>
+		<span class="red">Untouched options will be automatically generated for you.</span>
+		<br>
+	<</if>>
+	<<link "Generate all genders based on game settings">>
+		<<initnpcgender "genders">>
+		<<updatePersistentNPCs "genders">>
 		<<displaySettings>>
 	<</link>>
-<</if>>
-<br><br>
-
-<<if _npcId is undefined>>
-	<<set _npcId to 0>>
-
-	<<set _breastDescription to ["Flat","Small","Pert","Modest","Full","Large"]>>
-	<<set _breastDescriptionNPC to ["nipple","small breast","pert breast","modest breast","full breast","large breast"]>>
-	<<set _breastsDescriptionNPC to ["nipples","small breast","pert breast","modest breast","full breast","large breast"]>>
-
-	<<set _hairColorNPC to ["Red","Black","Brown","Light Brown","Blond","Platinum blond","Strawberry blond","Ginger", "mousy"]>>
-	<<set _hairColorNPCData to ["red","black","brown","lightbrown","blond","platinumblond","strawberryblond","ginger", "mousy"]>>
-	<<set _hairColorNPCText to ["red","black","brown","lightbrown","gold","platinum","strawberry","tangerine", "mousy"]>>
-
-	<<set _eyeColorNPC to ["Purple","Dark Blue","Light Blue","Amber","Hazel","Green","Lime Green","Red","Pink","Grey","Light Grey"]>>
-	<<set _eyeColorNPCData to ["purple","dark blue","light blue","amber","hazel","green", "lime green","red","pink","grey", "light grey"]>>
-	<<set _eyeColorNPCText to ["purple","blue","lblue","tangerine","brown","green","lime-green","red","pink","grey", "light-grey"]>>
-<</if>>
-
-<<if _npcList is undefined>>
-	<<set _npcList to {}>>
-	<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
-		<<set _npcList[clone($NPCNameList[$_i])] to clone($_i)>>
-	<</for>>
-	<<if $passage is "Start" or !$wraithIntro>>
-		<<run delete _npcList["Ivory Wraith"]>>
+	<br>
+	<<link "Generate all penis sizes based on game settings">>
+		<<initnpcgender "penis">>
+		<<updatePersistentNPCs "penis">>
+		<<displaySettings>>
+	<</link>>
+	<br>
+	<<link "Generate all breast sizes based on game settings">>
+		<<initnpcgender "breasts">>
+		<<updatePersistentNPCs "breasts">>
+		<<displaySettings>>
+	<</link>>
+	<<if $debug is 1>>
+		<br>
+		<<link "Reset hair and eye colours (Will only effect NPC's with a default colour)">>
+			<<generateNPCNameHairAndEyeColors "default">>
+			<<displaySettings>>
+		<</link>>
 	<</if>>
-<</if>>
+	</div>
+	<hr>
+	<<if _npcId is undefined>>
+		<<set _npcId to 0>>
 
-<div id="npcSettingsMenu">
-	<<npcSettingsMenu>>
-</div>
+		<<set _breastDescription to ["Flat","Small","Pert","Modest","Full","Large"]>>
+		<<set _breastDescriptionNPC to ["nipple","small breast","pert breast","modest breast","full breast","large breast"]>>
+		<<set _breastsDescriptionNPC to ["nipples","small breast","pert breast","modest breast","full breast","large breast"]>>
 
-<<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
-	<<run
-		if (!T.perNPCLock) {
-			$(".passage").on('change', '#perNPCSettingsMenu .macro-listbox', function (e) {
-				new Wikifier(null, '<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>');
-			});
+		<<set _hairColorNPC to ["Red","Black","Brown","Light Brown","Blond","Platinum blond","Strawberry blond","Ginger", "Mousy"]>>
+		<<set _hairColorNPCData to ["red","black","brown","lightbrown","blond","platinumblond","strawberryblond","ginger", "mousy"]>>
+		<<set _hairColorNPCText to ["red","black","brown","lightbrown","gold","platinum","strawberry","tangerine", "mousy"]>>
 
-			T.keys = {};
-			T.keyNames = [];
-			const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "pinch", "black_dog", "hacker"];
-			Object.keys(V.per_npc).forEach(k => {
-				for (const j of allowed_npcs){
-					if (k.includes(j)){
-						T.keyNames.push(k);
-						T.keys[k.toUpperFirst().replace(/_/g, ' ')] = k;
-						break
+		<<set _eyeColorNPC to ["Purple","Dark Blue","Light Blue","Amber","Hazel","Green","Lime Green","Red","Pink","Grey","Light Grey"]>>
+		<<set _eyeColorNPCData to ["purple","dark blue","light blue","amber","hazel","green", "lime green","red","pink","grey", "light grey"]>>
+		<<set _eyeColorNPCText to ["purple","blue","lblue","tangerine","brown","green","lime-green","red","pink","grey", "light-grey"]>>
+	<</if>>
+
+	<<if _npcList is undefined>>
+		<<set _npcList to {}>>
+		<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
+			<<set _npcList[clone($NPCNameList[$_i])] to clone($_i)>>
+		<</for>>
+		<<if $passage is "Start" or !$wraithIntro>>
+			<<run delete _npcList["Ivory Wraith"]>>
+		<</if>>
+	<</if>>
+
+	<div id="npcSettingsMenu">
+		<<npcSettingsMenu>>
+	</div>
+
+	<<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
+		<<run
+			if (!T.perNPCLock) {
+				$(".passage").on('change', '#perNPCSettingsMenu .macro-listbox', function (e) {
+					new Wikifier(null, '<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>');
+				});
+
+				T.keys = {};
+				T.keyNames = [];
+				const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "pinch", "black_dog", "hacker"];
+				Object.keys(V.per_npc).forEach(k => {
+					for (const j of allowed_npcs){
+						if (k.includes(j)){
+							T.keyNames.push(k);
+							T.keys[k.toUpperFirst().replace(/_/g, ' ')] = k;
+							break
+						}
 					}
-				}
-			});
-			T.perNPCLock = true;
-		}
-	>>
-	<<if T.keyNames and T.keyNames.length>>
-		<div id="perNPCSettingsMenu">
-			<<perNPCSettingsMenu>>
-		</div>
+				});
+				T.perNPCLock = true;
+			}
+		>>
+		<<if T.keyNames and T.keyNames.length>>
+			<hr>
+			<div id="perNPCSettingsMenu">
+				<<perNPCSettingsMenu>>
+			</div>
+		<</if>>
 	<</if>>
-<</if>>
 
-<<if _listActive isnot true>>
-	<<NPCSettingsReset>>
-	<<set _listActive to true>>
-<</if>>
-
+	<<if _listActive isnot true>>
+		<<NPCSettingsReset>>
+		<<set _listActive to true>>
+	<</if>>
+</div>
 <</widget>>
 
 <<widget "exportsettings">>
@@ -1522,46 +1524,51 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
 	<</link>>
 	<br><br>
+
 	<span class="gold">$NPCName[_npcId].nam the $NPCName[_npcId].title</span>
 	<br>
-	<span data-target="npcname-npcidpronoun" data-disabledif="V.NPCName[T.npcId].pronoun==='i'">
-	<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> Female</label> |
-	<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> Male</label>
-	</span>
-	<br>
-	<<if !$NPCName[_npcId].pregnancy or !$NPCName[_npcId].pregnancy.enabled or !$NPCName[_npcId].pregnancy.fetus.length>>
-		<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> Vagina</label> |
-		<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> Penis</label>
-		<<if $debug is 1>>| <label><<radiobutton "$NPCName[_npcId].gender" "h" autocheck>> Both</label><</if>>
-	<<else>>
-		Unable to change the npc genitals due to their pregnancy.
-	<</if>>
-	<br><br>
-	Penis size - if applicable:
-	<br>
-	<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
-	<span data-target="npcname-npcidgender" data-disabledif="V.NPCName[T.npcId].gender==='f'">
-	<<for _j to 1; _j lt _penisNames.length; _j++>>
-		<label>
-			<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
-			<<print _penisNames[_j]>>
-		</label>
-		<<if _j isnot _penisNames.length -1>>|<</if>>
-	<</for>>
-	</span>
-	<br><br>
+	<div class="settingsToggle">
+		<span data-target="npcname-npcidpronoun" data-disabledif="V.NPCName[T.npcId].pronoun==='i'">
+		<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> Female</label> |
+		<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> Male</label>
+		</span>
+	</div>
+	<div class="settingsToggle">
+		<<if !$NPCName[_npcId].pregnancy or !$NPCName[_npcId].pregnancy.enabled or !$NPCName[_npcId].pregnancy.fetus.length>>
+			<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> Vagina</label> |
+			<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> Penis</label>
+			<<if $debug is 1>>| <label><<radiobutton "$NPCName[_npcId].gender" "h" autocheck>> Both</label><</if>>
+		<<else>>
+			Unable to change the npc genitals due to their pregnancy.
+		<</if>>
+	</div>
+	<div class="settingsToggle">
+		Penis size - if applicable:
+		<br>
+		<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
+		<span data-target="npcname-npcidgender" data-disabledif="V.NPCName[T.npcId].gender==='f'">
+		<<for _j to 1; _j lt _penisNames.length; _j++>>
+			<label>
+				<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
+				<<print _penisNames[_j]>>
+			</label>
+			<<if _j isnot _penisNames.length -1>>|<</if>>
+		<</for>>
+		</span>
+	</div>
 
 	<<if $NPCName[_npcId].pregnancy && $NPCName[_npcId].pregnancy.enabled isnot undefined>>
-		<<if !$NPCName[_npcId].pregnancy.fetus.length>>
-			Enable pregnancy for npc - if applicable:
-			<mouse class="tooltip linkBlue">(?)<span>Still requires 'NPC Pregnancy' toggle to be enabled.</span></mouse>
-			<br>
-			<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" true autocheck>> True</label> |
-			<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" false autocheck>> False</label>
-		<<else>>
-			Unable to change the npc pregnancy settings due to their pregnancy.
-		<</if>>
-		<br><br>
+		<div class="settingsToggle">
+			<<if !$NPCName[_npcId].pregnancy.fetus.length>>
+				Enable pregnancy for npc - if applicable:
+				<mouse class="tooltip linkBlue">(?)<span>Still requires 'NPC Pregnancy' toggle to be enabled.</span></mouse>
+				<br>
+				<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" true autocheck>> True</label> |
+				<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" false autocheck>> False</label>
+			<<else>>
+				Unable to change the npc pregnancy settings due to their pregnancy.
+			<</if>>
+		</div>
 	<</if>>
 
 	<div class="settingsToggle" style="display: inline-flex;">
@@ -1569,52 +1576,57 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 	<<numberslider "$NPCName[_npcId].breastsize" $NPCName[_npcId].breastsize 0 12 1>>
 	<<run settingsNamedNpcBreastSize(Util.slugify('$NPCName[_npcId].breastsize'), false)>>
 	</div>
-	<div style="clear:both;">/*Keep at end of toggles*/</div>
 	<br>
 
-	<<if $NPCName[_npcId].nam is "Black Wolf">>
-		Beast Type:
-		<br>
-		<label><<radiobutton "$blackwolfmonster" 0 autocheck>> Always a beast</label> |
-		<label><<radiobutton "$blackwolfmonster" 1 autocheck>> Monster girl or boy when requirements met</label> |
-		<label><<radiobutton "$blackwolfmonster" 2 autocheck>> Always a monster girl or boy</label>
-		<br><br>
-	<<elseif $NPCName[_npcId].nam is "Great Hawk">>
-		Beast Type:
-		<br>
-		<label><<radiobutton "$greathawkmonster" 0 autocheck>> Always a beast</label> |
-		<label><<radiobutton "$greathawkmonster" 1 autocheck>> Monster girl or boy when requirements met</label> |
-		<label><<radiobutton "$greathawkmonster" 2 autocheck>> Always a monster girl or boy</label>
-		<br><br>
-	<<else>>
-		Skin colour:
-		<br>
-		<span data-target="npcname-npcidskincolour" data-disabledif="V.NPCName[T.npcId].skincolour==='ghost'">
-		<label><<radiobutton "$NPCName[_npcId].skincolour" "white" autocheck>> Pale</label> |
-		<label><<radiobutton "$NPCName[_npcId].skincolour" "black" autocheck>> Dark</label>
-		</span>
-		<br><br>
-	<</if>>
-	<<if $debug is 1>>
-		Hair Colour:
-		<br>
-		<<for _j to 0; _j lt _hairColorNPC.length; _j++>>
-			<label>
-				<<print '<<radiobutton "$NPCName['+_npcId+'].hairColour" "'+_hairColorNPCData[_j]+'" ' + ($NPCName[_npcId].hairColour is _hairColorNPCData[_j] ? "checked" : "") + '>>'>>
-				<span @class="_hairColorNPCText[_j]">_hairColorNPC[_j]</span>
-			</label> |
-		<</for>>
-		<br><br>
+	<div class="settingsToggle">
+		<<if $NPCName[_npcId].nam is "Black Wolf">>
+			Beast Type:
+			<br>
+			<label><<radiobutton "$blackwolfmonster" 0 autocheck>> Always a beast</label> |
+			<label><<radiobutton "$blackwolfmonster" 1 autocheck>> Monster girl or boy when requirements met</label> |
+			<label><<radiobutton "$blackwolfmonster" 2 autocheck>> Always a monster girl or boy</label>
+		<<elseif $NPCName[_npcId].nam is "Great Hawk">>
+			Beast Type:
+			<br>
+			<label><<radiobutton "$greathawkmonster" 0 autocheck>> Always a beast</label> |
+			<label><<radiobutton "$greathawkmonster" 1 autocheck>> Monster girl or boy when requirements met</label> |
+			<label><<radiobutton "$greathawkmonster" 2 autocheck>> Always a monster girl or boy</label>
+		<<else>>
+			Skin colour:
+			<br>
+			<span data-target="npcname-npcidskincolour" data-disabledif="V.NPCName[T.npcId].skincolour==='ghost'">
+			<label><<radiobutton "$NPCName[_npcId].skincolour" "white" autocheck>> Pale</label> |
+			<label><<radiobutton "$NPCName[_npcId].skincolour" "black" autocheck>> Dark</label>
+			</span>
+		<</if>>
+	</div>
+	<div style="clear:both;"></div>
 
-		Eye Colour:
+	<<if $debug is 1>>
+		DEBUG:
 		<br>
-		<<for _j to 0; _j lt _eyeColorNPC.length; _j++>>
-			<label>
-				<<print '<<radiobutton "$NPCName['+_npcId+'].eyeColour" "'+_eyeColorNPCData[_j]+'" ' + ($NPCName[_npcId].eyeColour is _eyeColorNPCData[_j] ? "checked" : "") + '>>'>>
-				<span @class="_eyeColorNPCText[_j]">_eyeColorNPC[_j]</span>
-			</label> |
-		<</for>>
-		<br><br>
+		<div class="settingsToggleWide">
+			Hair Colour:
+			<br>
+			<<for _j to 0; _j lt _hairColorNPC.length; _j++>>
+				<label>
+					<<print '<<radiobutton "$NPCName['+_npcId+'].hairColour" "'+_hairColorNPCData[_j]+'" ' + ($NPCName[_npcId].hairColour is _hairColorNPCData[_j] ? "checked" : "") + '>>'>>
+					<span @class="_hairColorNPCText[_j]">_hairColorNPC[_j]</span>
+				</label> |
+			<</for>>
+		</div>
+
+		<div class="settingsToggleWide">
+			Eye Colour:
+			<br>
+			<<for _j to 0; _j lt _eyeColorNPC.length; _j++>>
+				<label>
+					<<print '<<radiobutton "$NPCName['+_npcId+'].eyeColour" "'+_eyeColorNPCData[_j]+'" ' + ($NPCName[_npcId].eyeColour is _eyeColorNPCData[_j] ? "checked" : "") + '>>'>>
+					<span @class="_eyeColorNPCText[_j]">_eyeColorNPC[_j]</span>
+				</label> |
+			<</for>>
+		</div>
+		<div style="clear:both;"></div>
 	<</if>>
 <<run settingsDisableElement()>>
 <</widget>>
@@ -1675,36 +1687,43 @@ Values above 5 can lead to errors when creating new saves! Make sure you know wh
 			<</link>>
 		<</if>>
 		<br>
-		<span data-target="pernpc-npcidpronoun" data-disabledif="V.per_npc[T.pNPCId].pronoun==='i'||V.per_npc[T.pNPCId].pronoun==='t'">
-		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
-		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
-		</span>
-		<br>
-		<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
-		<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
-		<br><br>
-		Penis size - if applicable:
-		<br>
-		<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
-		<span data-target="pernpc-npcidgender" data-disabledif="V.per_npc[T.pNPCId].gender==='f'">
-		<<for _j to 1; _j lt _penisNames.length; _j++>>
-			<label>
-				<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
-				<<print _penisNames[_j]>>
-			</label>
-			<<if _j isnot _penisNames.length -1>>|<</if>>
-		<</for>>
-		</span>
-		<br><br>
+		<div class="settingsToggle">
+			<span data-target="pernpc-npcidpronoun" data-disabledif="V.per_npc[T.pNPCId].pronoun==='i'||V.per_npc[T.pNPCId].pronoun==='t'">
+			<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
+			<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
+			</span>
+		</div>
+		<div class="settingsToggle">
+			<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
+			<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
+		</div>
+		<div class="settingsToggle">
+			Penis size - if applicable:
+			<br>
+			<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
+			<span data-target="pernpc-npcidgender" data-disabledif="V.per_npc[T.pNPCId].gender==='f'">
+			<<for _j to 1; _j lt _penisNames.length; _j++>>
+				<label>
+					<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
+					<<print _penisNames[_j]>>
+				</label>
+				<<if _j isnot _penisNames.length -1>>|<</if>>
+			<</for>>
+			</span>
+		</div>
 		<div class="settingsToggle" style="display: inline-flex;">
 			Breast size
 			<<numberslider "$per_npc[_pNPCId].breastsize" $per_npc[_pNPCId].breastsize 0 12 1>>
 			<<run settingsNamedNpcBreastSize(Util.slugify('$per_npc[_pNPCId].breastsize'), true)>>
 		</div>
+		<div class="settingsToggle">
+			Skin colour:
+			<br>
+			<label><<radiobutton "$per_npc[_pNPCId].skincolour" "white" autocheck>> Pale</label> |
+			<label><<radiobutton "$per_npc[_pNPCId].skincolour" "black" autocheck>> Dark</label>
+		</div>
 	<</if>>
-	<div style="clear:both;">
-		/*Keep at end of toggles*/
-	</div>
+	<div style="clear:both;"></div>
 <<run settingsDisableElement()>>
 <</widget>>
 
