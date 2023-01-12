@@ -317,42 +317,69 @@ setup.debugMenu.eventList = {
 		},
 		{
 			text_only: `\nVaginal Pregnancy<br>(New Pregnancy will only occur if not pregnant)\n`,
-			condition() { return V.pregnancyTesting },
+			condition() { return V.pregnancyTesting && V.player.penisExist === false },
+		},
+		{
+			text_only: `Player is already pregnant\n`,
+			condition() { return V.pregnancyTesting && V.player.penisExist === false && V.sexStats.vagina.pregnancy.fetus.length !== 0 },
 		},
 		{
 			link: [`Get Pregnant with humans`, stayOnPassageFn],
 			widgets: [
 				() => {
-					if (V.sexStats.vagina.menstruation.currentState === "normal") {
-						return `<<set $sexStats.vagina.sperm["Debug Man"] = {"type":"human", "count":[[4,1000]]}>>
-						<<set $sexStats.vagina.menstruation.currentDay to $sexStats.vagina.menstruation.stages[2]>>
-						<<menstruationCycle>>`;
-					}
+					return `<<playerPregnancy "Debug Man" "human" true "vagina" undefined true>>`;
 				},
 			],
-			condition() { return V.pregnancyTesting },
+			condition() { return V.pregnancyTesting && V.player.penisExist === false && V.sexStats.vagina.pregnancy.fetus.length === 0},
 		},
 		{
 			link: [`Get Pregnant with wolves`, stayOnPassageFn],
 			widgets: [
 				() => {
-					if (V.sexStats.vagina.menstruation.currentState === "normal") {
-						return `<<set $sexStats.vagina.sperm["Debug Wolf"] = {"type":"wolf", "count":[[4,1000]]}>>
-						<<set $sexStats.vagina.menstruation.currentDay to $sexStats.vagina.menstruation.stages[2]>>
-						<<menstruationCycle>>`;
-					}
+					return `<<playerPregnancy "Debug Wolf" "wolf" true "vagina" undefined true>>`;
 				},
 			],
+			condition() { return V.pregnancyTesting && V.player.penisExist === false && V.sexStats.vagina.pregnancy.fetus.length === 0 },
+		},
+		{
+			link: [`Porgress Pregnancy to the end`, stayOnPassageFn],
+			widgets: [`<<set $sexStats.vagina.pregnancy.timer to $sexStats.vagina.pregnancy.timerEnd>>`],
+			condition() { return V.pregnancyTesting && V.player.penisExist === false && V.sexStats.vagina.pregnancy.fetus.length !== 0 },
+		},
+		{
+			link: [`End pregnancy and send children to default locations`, stayOnPassageFn],
+			widgets: [() => {
+				switch(V.sexStats.vagina.pregnancy.type){
+					case "human":
+						endPlayerPregnancy("hospital","home");
+					break;
+					case "wolf":
+						endPlayerPregnancy("wolf_cave","wolf_cave");
+					break;
+					default:
+						endPlayerPregnancy("unknown","unknown");
+					break;
+				};
+				return '';
+			}],
+			condition() { return V.pregnancyTesting && V.player.penisExist === false && V.sexStats.vagina.pregnancy.fetus.length !== 0 },
+		},
+		{
+			text_only: `\nNPC Pregnancies`,
+			condition() { return V.pregnancyTesting },
+		},
+		{
+			text_only: `(Each npc needs to be enabled for pregnancy in setup)\n`,
 			condition() { return V.pregnancyTesting },
 		},
 		{
 			link: [`Get Robin Pregnant with PCs children`, stayOnPassageFn],
-			widgets: [`<<set _sperm to ["pc"]>>`, `<<humanPregnancy "Robin" "pc" true>>`],
+			widgets: [`<<namedNpcPregnancy "Robin" "pc" "human" true undefined true>>`],
 			condition() { return V.pregnancyTesting },
 		},
 		{
-			link: [`Get Bailey Pregnant with Black wolf`, stayOnPassageFn],
-			widgets: [`<<set _sperm to ["Black Wolf"]>>`, `<<wolfPregnancy "Bailey" "Black Wolf" true>>`],
+			link: [`Get Bailey Pregnant with Black wolfs pups`, stayOnPassageFn],
+			widgets: [`<<namedNpcPregnancy "Bailey" "Black Wolf" "wolf" true undefined true>>`],
 			condition() { return V.pregnancyTesting },
 		},
 		{

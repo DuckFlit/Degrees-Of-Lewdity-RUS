@@ -87,7 +87,7 @@ const pregPrep = ({motherObject, parasiteType = null, genital = null}) => {
 		}
 
 		//Prevent Non-parasitic pregnancy in the anus unless the player is male with a magic tattoo
-		if(genital === "anus" && canBeMPregnant()) return ["MPreg is not currently avaliable to the player"];
+		if(genital === "anus" && !canBeMPregnant()) return ["MPreg is not currently avaliable to the player"];
 
 		pregnancy = V.sexStats[genital].pregnancy;
 
@@ -180,6 +180,14 @@ const beastTransform = (mother, father) => {
 	return null;
 }
 
+const divineTransform = (mother, father) => {
+	if(mother === "pc" || father === "pc"){
+		if(V.angel >= 6) return "angel";
+		if(V.demon >= 6) return "demon";
+	}
+	return null;
+}
+
 const removeNull = (obj) => {
 	Object.entries(obj).forEach(([key, val])  =>
 	 	(val && typeof val === 'object') && removeNull(val) ||
@@ -188,7 +196,7 @@ const removeNull = (obj) => {
 	return obj;
 };
 
-const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown = false, birthId = null, type = null, gender = "f", identical = null, size = null, hairColour = null, eyeColour = null, monster = null, skinColour = null, clothes = null, beastTransform = null}) => {
+const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown = false, birthId = null, type = null, gender = "f", identical = null, size = null, hairColour = null, eyeColour = null, monster = null, skinColour = null, clothes = null, beastTransform = null, divineTransform = null}) => {
 	return removeNull({
 		"type": type,
 		"mother": mother,
@@ -198,7 +206,7 @@ const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown
 		"born": {"day":null, "month":null, "year":null},
 		"concieved": {"day":V.monthday, "month":V.month.toUpperFirst(), "year":V.year},
 		"gender": gender,
-		"features": {"size":size, "hairColour":hairColour, "eyeColour":eyeColour, "identical":identical, "monster":monster, "clothes":clothes, "skinColour": skinColour, "beastTransform": beastTransform},
+		"features": {"size":size, "hairColour":hairColour, "eyeColour":eyeColour, "identical":identical, "monster":monster, "clothes":clothes, "skinColour": skinColour, "beastTransform": beastTransform, "divineTransform": divineTransform},
 		"name":null,
 		"birthId": birthId,
 		"childId": null,
@@ -252,6 +260,7 @@ window.pregnancyGenerator = {
 					hairColour: [hairColourCalc(motherObject.name), hairColourCalc(fatherObject.name)][random(0,1)],
 					skinColour: [skinColourCalc(motherObject.name), skinColourCalc(fatherObject.name)][random(0,1)],
 					beastTransform: beastTransform(motherObject.name, fatherObject.name),
+					divineTransform: divineTransform(motherObject.name, fatherObject.name),
 					clothes: "naked",
 				});
 				result.fetus.push(baby);

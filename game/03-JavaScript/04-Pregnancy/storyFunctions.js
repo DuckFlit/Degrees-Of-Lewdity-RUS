@@ -19,7 +19,7 @@ window.playerBellySize = (pregnancyOnly = false) => {
 		let maxSize = 0;
 		switch(vpregnancy.type){
 			case "parasite":
-				if(pregnancyOnly) bellySize += Math.clamp(vpregnancy.fetus.length,0,4);
+				if(!pregnancyOnly) bellySize += Math.clamp(vpregnancy.fetus.length,0,4);
 			break;
 			case "human":
 				maxSize += 17 + Math.clamp(vpregnancy.fetus.length,1,3);
@@ -30,7 +30,7 @@ window.playerBellySize = (pregnancyOnly = false) => {
 		}
 		switch(apregnancy.type){
 			case "parasite":
-				if(pregnancyOnly) bellySize += Math.clamp(apregnancy.fetus.length,0,4);
+				if(!pregnancyOnly) bellySize += Math.clamp(apregnancy.fetus.length,0,4);
 			break;
 			case "human":
 				maxSize += 17 + Math.clamp(apregnancy.fetus.length,1,3);
@@ -114,7 +114,7 @@ window.wakingPregnancyEvent = () => {
 
 	if(playerBellySize(true) >= 8 && !pregnancy.awareOf){
 		return "bellySize";
-	} else if(playerBellySize(true) >= 9 && V.worn.genitals.type.includes("hidden")){
+	} else if(playerBellySize() >= 9 && V.worn.genitals.type.includes("hidden")){
 		return "chastityBeltRemoval";
 	} else if(V.cycledisable === "f" && !menstruation.awareOfPeriodDelay && V.awareness >= 100 && V.sciencetrait >= 3 && !pregnancy.awareOf && pregnancyStage !== false && between(pregnancy.timer - (menstruation.currentDaysMax - menstruation.currentDay), 4, 8)){
 		return "missedPeriod";

@@ -496,11 +496,11 @@ const giveBirthToChildren = (mother, birthLocation, location) => {
 	}
 	if(!pregnancy || !pregnancy.fetus.length) return false;
 
-	let birthId = (mother + String(totalBirthEvents(mother) + 1).padStart(3,"0")).replace(' ','');
+	let birthId = (mother + (totalBirthEvents(mother))).replace(' ','');
 
 	pregnancy.fetus.forEach(childObject => {
 		pregnancy.givenBirth++;
-		let childId = (mother + String(totalBorn(mother)).padStart(4,"0")).replace(' ','');
+		let childId = (mother + totalBorn(mother)).replace(' ','');
 		V.children[childId] = {
 			...childObject,
 			name: generateBabyName(childObject.name, childObject.gender),
@@ -649,7 +649,7 @@ const washRecordedSperm = (genital, target) => {
 	if(sperm){
 		Object.values(sperm).forEach(s => {
 			//Delete sperm thats been washed in time
-			s.count = s.count.filter(count => !count[3].includes("canWash"));
+			s.count = s.count.filter(count => !count[3] || count[3] && !count[3].includes("canWash"));
 		});
 	}
 }
