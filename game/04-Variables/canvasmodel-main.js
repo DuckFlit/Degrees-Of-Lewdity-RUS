@@ -751,17 +751,16 @@ Renderer.CanvasModels["main"] = {
 		},
 		"belly": {
 			srcfn(options) {
-				/*ToDo: Pregnancy, uncomment to properly enable*/
-				/*if(between(options.belly,1,20)){
-					return "img/body/belly/pregnancy_belly_" + options.belly + ".png";
-				}*/
+				if(between(options.belly,1,20)){
+					return "img/body/preggyBelly/pregnancy_belly_" + options.belly + ".png";
+				}
 				return "";
 			},
 			showfn(options) {
 				return !!options.belly;
 			},
-			z: ZIndices.bellyBase,
 			filters: ["body"],
+			z: ZIndices.bellyBase,
 			animation: "idle"
 		},
 		"nipples_parasite": {
@@ -1367,7 +1366,7 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.angel_halo_type);
 			},
-			z: ZIndices.backhair,
+			z: ZIndices.over_head_back,
 			animation: "idle"
 		},
 		"angel_halo_front": {
@@ -1437,7 +1436,7 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.fallen_halo_type);
 			},
-			z: ZIndices.backhair,
+			z: ZIndices.over_head_back,
 			animation: "idle"
 		},
 		"fallen_halo_front": {

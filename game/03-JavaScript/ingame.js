@@ -1527,6 +1527,8 @@ function getHalloweenCostume() {
 		return "sailor";
 	} else if (upper.name === "skeleton outfit" && lower.name === "skeleton bottoms") {
 		return "skeleton";
+	} else if (upper.name === "futuristic bodysuit" && lower.name === "futuristic bodysuit pants") {
+		return "futuresuit";
 
 	/* Transformations */
 	} else if (T.tf.angelHalo && T.tf.angelWings) {
