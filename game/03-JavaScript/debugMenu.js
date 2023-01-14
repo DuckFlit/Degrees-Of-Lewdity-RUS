@@ -627,6 +627,22 @@ setup.debugMenu.eventList = {
 			widgets: [`<<set $crime to 5000>>`, `<<generate1>>`, `<<person1>>`],
 		},
 		{
+			link: [`Put Whitney in the Pillory`, stayOnPassageFn],
+			widgets: [`<<imprison_whitney>>`],
+		},
+		{
+			link: [`Put Leighton in the Pillory`, stayOnPassageFn],
+			widgets: [`<<imprison_leighton>>`],
+		},
+		{
+			link: [`Clear the Pillory`, stayOnPassageFn],
+			widgets: [`<<clear_pillory>>`],
+		},
+		{
+			link: [`Put random NPC in the Pillory`, stayOnPassageFn],
+			widgets: [`<<clear_pillory>><<new_npc_pillory>>`],
+		},
+		{
 			link: [`Hole in wall`, `Temple Arcade 2`],
 			widgets: [``],
 		},
