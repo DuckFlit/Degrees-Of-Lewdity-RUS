@@ -486,6 +486,10 @@ setup.debugMenu.eventList = {
 			widgets: ["<<endcombat>>"],
 		},
 		{
+			link: [`Pregnancy Belly Test`, `Pregnancy Belly Test`],
+			widgets: [`<<endcombat>><<set $sexstart to 1>>`],
+		},
+		{
 			link: [`Eels Swarm Me`, `Sea Eels`],
 			widgets: [`<<endcombat>>`, `<<set $molestationstart to 1>>`],
 		},
