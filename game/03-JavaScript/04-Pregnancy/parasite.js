@@ -4,10 +4,12 @@ const fertiliseParasites = (genital = "anus") => {
 	let pregnancy = V.sexStats[genital].pregnancy;
 	if(pregnancy.type === "parasite"){
 		pregnancy.fetus.forEach(parasite => {
-			parasite.fertilised = true;
-			parasite.daysLeft = parasite.stats.growth;
-			if(parasite.stats.gender === "Hermaphrodite"){
-				pregnancy.motherStatus = 2;
+			if(!parasite.fertilised){
+				parasite.fertilised = true;
+				parasite.daysLeft = parasite.stats.growth;
+				if(parasite.stats.gender === "Hermaphrodite"){
+					pregnancy.motherStatus = 2;
+				}
 			}
 		});
 	}

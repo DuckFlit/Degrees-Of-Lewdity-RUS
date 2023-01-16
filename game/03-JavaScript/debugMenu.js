@@ -342,7 +342,7 @@ setup.debugMenu.eventList = {
 			condition() { return V.pregnancyTesting && V.player.penisExist === false && V.sexStats.vagina.pregnancy.fetus.length === 0 },
 		},
 		{
-			link: [`Porgress Pregnancy to the end`, stayOnPassageFn],
+			link: [`Progress Pregnancy to the end`, stayOnPassageFn],
 			widgets: [`<<set $sexStats.vagina.pregnancy.timer to $sexStats.vagina.pregnancy.timerEnd>>`],
 			condition() { return V.pregnancyTesting && V.player.penisExist === false && V.sexStats.vagina.pregnancy.fetus.length !== 0 },
 		},
