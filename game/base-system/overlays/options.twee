@@ -6,6 +6,7 @@
 		window.Theme.initControl();
 		onInputChanged(() => {
 			if(!T.optionsRefresh) T.optionsRefresh = true;
+			Wikifier.wikifyEval("<<setFont true>>");
 		});
 	<</script>>
 <</widget>>
@@ -23,18 +24,6 @@
 		<</link>>
 		<br><br>
 	<</if>>
-
-	Theme:
-	<label><input type="radio" name="theme" value="dark" /> Dark</label> |
-	<label><input type="radio" name="theme" value="arctic" /> Nord</label> |
-	<label><input type="radio" name="theme" value="zen" /> Zenburn</label> |
-	<label><input type="radio" name="theme" value="monokai" /> Monokai</label> |
-	<label><input type="radio" name="theme" value="storm" /> Storm</label> |
-	<label><input type="radio" name="theme" value="system-default" /> System default</label>
-	<br>
-
-	Passage Line Height: <<link "1.75">><<unset $reducedLineHeight>><<removeclass "#passages" "reducedLineHeight">><</link>> | <<link "1.5">><<set $reducedLineHeight to true>><<addclass "#passages" "reducedLineHeight">><</link>>
-	<br><br>
 	
 	<label>
 		<<checkbox "$options.neverNudeMenus" false true autocheck>>
@@ -58,8 +47,8 @@
 	<br>
 
 	Time format:
-	<label>24-hour <<radiobutton "$options.timestyle" "military" autocheck>></label> |
-	<label>12-hour <<radiobutton "$options.timestyle" "ampm" autocheck>></label>
+	<label><<radiobutton "$options.timestyle" "military" autocheck>> 24-hour</label> |
+	<label><<radiobutton "$options.timestyle" "ampm" autocheck>> 12-hour</label>
 	<br>
 	
 	<label><<checkbox "$options.oldclock" false true autocheck>> Use old clock style in the sidebar</label>
@@ -177,6 +166,99 @@
 
 <</widget>>
 
+<<widget "optionstheme">>
+	<<setupOptions>>
+	<span class="gold">Theme</span>
+	<br>
+
+	Theme:
+	<label><input type="radio" name="theme" value="system-default" /> Default</label> |
+	<label><input type="radio" name="theme" value="dark" /> Dark</label> |
+	<label><input type="radio" name="theme" value="arctic" /> Nord</label> |
+	<label><input type="radio" name="theme" value="zen" /> Zenburn</label> |
+	<label><input type="radio" name="theme" value="monokai" /> Monokai</label> |
+	<label><input type="radio" name="theme" value="storm" /> Storm</label> |
+	<br><br>
+
+	Passage Line Height:
+	<label><<radiobutton "$options.passageLineHeight" 0 `$options.passageLineHeight is undefined ? 'checked' : 'autocheck'`>> Default</label> |
+	<label><<radiobutton "$options.passageLineHeight" 1 autocheck>> 1</label> |
+	<label><<radiobutton "$options.passageLineHeight" 1.25 autocheck>> 1.25</label> |
+	<label><<radiobutton "$options.passageLineHeight" 1.5 autocheck>> 1.5</label> |
+	<label><<radiobutton "$options.passageLineHeight" 1.75 autocheck>> 1.75</label> |
+	<label><<radiobutton "$options.passageLineHeight" 2 autocheck>> 2</label> |
+	<br>
+
+	Overlay Line Height:
+	<label><<radiobutton "$options.overlayLineHeight" 0 `$options.overlayLineHeight is undefined ? 'checked' : 'autocheck'`>> Default <mouse class="tooltip linkBlue">(?)<span>Equal to passage font size.</span></mouse></label> |
+	<label><<radiobutton "$options.overlayLineHeight" 1 autocheck>> 1</label> |
+	<label><<radiobutton "$options.overlayLineHeight" 1.25 autocheck>> 1.25</label> |
+	<label><<radiobutton "$options.overlayLineHeight" 1.5 autocheck>> 1.5</label> |
+	<label><<radiobutton "$options.overlayLineHeight" 1.75 autocheck>> 1.75</label> |
+	<label><<radiobutton "$options.overlayLineHeight" 2 autocheck>> 2</label> |
+	<br>
+
+	Sidebar Line Height:
+	<label><<radiobutton "$options.sidebarLineHeight" 0 `$options.sidebarLineHeight is undefined ? 'checked' : 'autocheck'`>> Default</label> |
+	<label><<radiobutton "$options.sidebarLineHeight" 1 autocheck>> 1</label> |
+	<label><<radiobutton "$options.sidebarLineHeight" 1.25 autocheck>> 1.25</label> |
+	<label><<radiobutton "$options.sidebarLineHeight" 1.5 autocheck>> 1.5</label> |
+	<label><<radiobutton "$options.sidebarLineHeight" 1.75 autocheck>> 1.75</label> |
+	<label><<radiobutton "$options.sidebarLineHeight" 2 autocheck>> 2</label> |
+	<br><br>
+
+	Passage Font Size:
+	<label><<radiobutton "$options.passageFontSize" 0 `$options.passageFontSize is undefined ? 'checked' : 'autocheck'`>> Default</label> |
+	<label><<radiobutton "$options.passageFontSize" 10 autocheck>> 10px</label> |
+	<label><<radiobutton "$options.passageFontSize" 12 autocheck>> 12px</label> |
+	<label><<radiobutton "$options.passageFontSize" 14 autocheck>> 14px</label> |
+	<label><<radiobutton "$options.passageFontSize" 16 autocheck>> 16px</label> |
+	<label><<radiobutton "$options.passageFontSize" 18 autocheck>> 18px</label> |
+	<label><<radiobutton "$options.passageFontSize" 20 autocheck>> 20px</label> |
+	<br>
+
+	Overlay Font Size:
+	<label><<radiobutton "$options.overlayFontSize" 0 `$options.overlayFontSize is undefined ? 'checked' : 'autocheck'`>> Default <mouse class="tooltip linkBlue">(?)<span>Equal to passage font size.</span></mouse></label> |
+	<label><<radiobutton "$options.overlayFontSize" 10 autocheck>> 10px</label> |
+	<label><<radiobutton "$options.overlayFontSize" 12 autocheck>> 12px</label> |
+	<label><<radiobutton "$options.overlayFontSize" 14 autocheck>> 14px</label> |
+	<label><<radiobutton "$options.overlayFontSize" 16 autocheck>> 16px</label> |
+	<label><<radiobutton "$options.overlayFontSize" 18 autocheck>> 18px</label> |
+	<label><<radiobutton "$options.overlayFontSize" 20 autocheck>> 20px</label> |
+	<br>
+
+	Sidebar Font Size:
+	<label><<radiobutton "$options.sidebarFontSize" 0 `$options.sidebarFontSize is undefined ? 'checked' : 'autocheck'`>> Default</label> |
+	<label><<radiobutton "$options.sidebarFontSize" 12 autocheck>> 12px</label> |
+	<label><<radiobutton "$options.sidebarFontSize" 14 autocheck>> 14px</label> |
+	<label><<radiobutton "$options.sidebarFontSize" 16 autocheck>> 16px</label> |
+	<label><<radiobutton "$options.sidebarFontSize" 18 autocheck>> 18px</label> |
+	<label><<radiobutton "$options.sidebarFontSize" 20 autocheck>> 20px</label> |
+	<br><br>
+
+	Font:
+	<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> Default</label> |
+	<br>
+	Sans-serif:
+	<label><<radiobutton "$options.font" "Arial" autocheck>> Arial</label> |
+	<label><<radiobutton "$options.font" "Verdana" autocheck>> Verdana</label> |
+	<br>
+	Serif:
+	<label><<radiobutton "$options.font" "TimesNewRoman" autocheck>> Times New Roman</label> |
+	<label><<radiobutton "$options.font" "Georgia" autocheck>> Georgia</label> |
+	<label><<radiobutton "$options.font" "Garamond" autocheck>> Garamond</label> |
+	<br>
+	Monospace:
+	<label><<radiobutton "$options.font" "CourierNew" autocheck>> Courier New</label> |
+	<label><<radiobutton "$options.font" "LucidaConsole" autocheck>> Lucida Console</label> |
+	<label><<radiobutton "$options.font" "Monaco" autocheck>> Monaco</label> |
+	<br>
+	Cursive:
+	<label><<radiobutton "$options.font" "ComicSans" autocheck>> Comic Sans</label> |
+
+	<br><br>
+<</widget>>
+
 <<widget "optionsperformance">>
 	<<setupOptions>>
 	<span class="gold">Images</span>
@@ -292,4 +374,65 @@
 	<<numberslider "$options.zoom" $options.zoom 50 200 1>>
 	<input type="button" value="Set" onclick='zoom()'/>
 	<input type="button" value="Reset" onclick='zoom(100)'/>
+<</widget>>
+
+<<widget "setFont">>
+<<removeclass "#passages" "fontSize10">>
+<<removeclass "#passages" "fontSize12">>
+<<removeclass "#passages" "fontSize14">>
+<<removeclass "#passages" "fontSize16">>
+<<removeclass "#passages" "fontSize18">>
+<<removeclass "#passages" "fontSize20">>
+<<if $options.passageFontSize>><<addclass "#passages" `"fontSize" + $options.passageFontSize`>><</if>>
+
+<<removeclass "#story-caption" "fontSize12">>
+<<removeclass "#story-caption" "fontSize14">>
+<<removeclass "#story-caption" "fontSize16">>
+<<removeclass "#story-caption" "fontSize18">>
+<<removeclass "#story-caption" "fontSize20">>
+<<if $options.sidebarFontSize>><<addclass "#story-caption" `"fontSize" + $options.sidebarFontSize`>><</if>>
+
+<<if _args[0]>><!--For elements that are not sugarcube specific and wont be loaded when the widget is normally called-->
+	<<removeclass "#customOverlay" "fontSize10">>
+	<<removeclass "#customOverlay" "fontSize12">>
+	<<removeclass "#customOverlay" "fontSize14">>
+	<<removeclass "#customOverlay" "fontSize16">>
+	<<removeclass "#customOverlay" "fontSize18">>
+	<<removeclass "#customOverlay" "fontSize20">>
+	<<if $options.overlayFontSize>><<addclass "#customOverlay" `"fontSize" + $options.overlayFontSize`>><</if>>
+<</if>>
+
+<<removeclass "#passages" "lineHeight1">>
+<<removeclass "#passages" "lineHeight125">>
+<<removeclass "#passages" "lineHeight15">>
+<<removeclass "#passages" "lineHeight175">>
+<<removeclass "#passages" "lineHeight2">>
+<<if $options.passageLineHeight>><<addclass "#passages" `"lineHeight" + $options.passageLineHeight.toString().replace('.','')`>><</if>>
+
+<<removeclass "#story-caption" "lineHeight1">>
+<<removeclass "#story-caption" "lineHeight125">>
+<<removeclass "#story-caption" "lineHeight15">>
+<<removeclass "#story-caption" "lineHeight175">>
+<<removeclass "#story-caption" "lineHeight2">>
+<<if $options.sidebarLineHeight>><<addclass "#story-caption" `"lineHeight" + $options.sidebarLineHeight.toString().replace('.','')`>><</if>>
+
+<<if _args[0]>>
+	<<removeclass "#customOverlay" "lineHeight1">>
+	<<removeclass "#customOverlay" "lineHeight125">>
+	<<removeclass "#customOverlay" "lineHeight15">>
+	<<removeclass "#customOverlay" "lineHeight175">>
+	<<removeclass "#customOverlay" "lineHeight2">>
+	<<if $options.overlayLineHeight>><<addclass "#customOverlay" `"lineHeight" + $options.overlayLineHeight.toString().replace('.','')`>><</if>>
+<</if>>
+
+<<removeclass "html" "Arial">>
+<<removeclass "html" "Verdana">>
+<<removeclass "html" "TimesNewRoman">>
+<<removeclass "html" "Georgia">>
+<<removeclass "html" "Garamond">>
+<<removeclass "html" "CourierNew">>
+<<removeclass "html" "LucidaConsole">>
+<<removeclass "html" "Monaco">>
+<<removeclass "html" "ComicSans">>
+<<if $options.font>><<addclass "html" $options.font>><</if>> <!--Adding to the body would remove it on changing passage-->
 <</widget>>

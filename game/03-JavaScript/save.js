@@ -1009,6 +1009,13 @@ function settingsObjects(type) {
 					showDebugRenderer: { bool: true },
 					numpad: { bool: true },
 					traitOverlayFormat: { strings: ["table", "reducedTable", "list"] },
+					font: { strings: ["","Arial","Verdana","TimesNewRoman","Georgia","Garamond","CourierNew","LucidaConsole","Monaco","ComicSans"] },
+					passageLineHeight: {  strings: [0, 1, 1.25, 1.5, 1.75, 2] },
+					overlayLineHeight: {  strings: [0, 1, 1.25, 1.5, 1.75, 2] },
+					sidebarLineHeight: {  strings: [0, 1, 1.25, 1.5, 1.75, 2] },
+					passageFontSize: { strings: [0, 10, 12, 14, 16, 18, 20] },
+					overlayFontSize: { strings: [0, 10, 12, 14, 16, 18, 20] },
+					sidebarFontSize: { strings: [0, 12, 14, 16, 18, 20] },
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },
