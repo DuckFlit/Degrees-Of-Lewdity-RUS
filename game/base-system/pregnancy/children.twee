@@ -1,699 +1,676 @@
 :: Widgets children [widget]
 <<widget "childrenSetup">>
-<<if $children is undefined>>
-	<<set $children to {}>>
-<</if>>
+	<<if $children is undefined>>
+		<<set $children to {}>>
+	<</if>>
 <</widget>>
 
 <<widget "getUsedChildrenNames">>
-<<set _usedChildrenNames to []>>
-<<for $_label, $_value range $children>>
-	<<run _usedChildrenNames.pushUnique($_value.name)>>
-<</for>>
+	<<set _usedChildrenNames to []>>
+	<<for $_label, $_value range $children>>
+		<<run _usedChildrenNames.pushUnique($_value.name)>>
+	<</for>>
 <</widget>>
 
 /*args[0] - location, args[1] - "both" to include unrelated children or "only" to exclude the player children*/
 <<widget "getChildrenIds">>
-<<set _childrenIds to []>>
-<<for $_label, $_value range $children>>
-	<<if $_value.mother isnot "pc" and $_value.father isnot "pc">>
-		<<if _args[1] isnot "both" and _args[1] isnot "only">>
+	<<set _childrenIds to []>>
+	<<for $_label, $_value range $children>>
+		<<if $_value.mother isnot "pc" and $_value.father isnot "pc">>
+			<<if _args[1] isnot "both" and _args[1] isnot "only">>
+				<<continue>>
+			<</if>>
+		<<elseif _args[1] is "only">>
 			<<continue>>
 		<</if>>
-	<<elseif _args[1] is "only">>
-		<<continue>>
-	<</if>>
-	<<if _args[0] is undefined or $_value.location is _args[0]>>
-		<<run _childrenIds.push($_label)>>
-	<</if>>
-<</for>>
+		<<if _args[0] is undefined or $_value.location is _args[0]>>
+			<<run _childrenIds.push($_label)>>
+		<</if>>
+	<</for>>
 <</widget>>
 
 /*args[0] - location, args[1] - min length requirement, args[2] - max length requirement,
 args[3] - "both" to include unrelated children or "only" to exclude the player children*/
 <<widget "getSameBirthChildrenIds">>
-<<set _birthChildrenIds to {}>>
-<<for $_label, $_value range $children>>
-	<<if $_value.mother isnot "pc" and $_value.father isnot "pc">>
-		<<if _args[3] isnot "both" and _args[3] isnot "only">>
+	<<set _birthChildrenIds to {}>>
+	<<for $_label, $_value range $children>>
+		<<if $_value.mother isnot "pc" and $_value.father isnot "pc">>
+			<<if _args[3] isnot "both" and _args[3] isnot "only">>
+				<<continue>>
+			<</if>>
+		<<elseif _args[3] is "only">>
 			<<continue>>
 		<</if>>
-	<<elseif _args[3] is "only">>
-		<<continue>>
-	<</if>>
-	<<if _args[0] is undefined or $_value.location is _args[0]>>
-		<<if _birthChildrenIds[$_value.birthId] is undefined>>
-			<<set _birthChildrenIds[$_value.birthId] to []>>
-		<</if>>
-		<<run _birthChildrenIds[$_value.birthId].push($_value.childId)>>
-	<</if>>
-<</for>>
-<<if _args[1]>>
-	<<for $_label, $_value range _birthChildrenIds>>
-		<<if $_value.length lt _args[1] or $_value.length gt _args[2]>>
-			<<run delete _birthChildrenIds[$_label]>>
+		<<if _args[0] is undefined or $_value.location is _args[0]>>
+			<<if _birthChildrenIds[$_value.birthId] is undefined>>
+				<<set _birthChildrenIds[$_value.birthId] to []>>
+			<</if>>
+			<<run _birthChildrenIds[$_value.birthId].push($_value.childId)>>
 		<</if>>
 	<</for>>
-<</if>>
+	<<if _args[1]>>
+		<<for $_label, $_value range _birthChildrenIds>>
+			<<if $_value.length lt _args[1] or $_value.length gt _args[2]>>
+				<<run delete _birthChildrenIds[$_label]>>
+			<</if>>
+		<</for>>
+	<</if>>
 <</widget>>
 
 /*args[0] - location, args[1] - birthId, args[2] - new location*/
 <<widget "moveChildren">>
-<<if _args[0] and _args[1]>>
-	<<getSameBirthChildrenIds _args[0]>>
-	<<if _birthChildrenIds[_args[1]] isnot undefined>>
-		<<for $_i to 0; $_i lt _birthChildrenIds[_args[1]].length; $_i++>>
-			<<set $children[_birthChildrenIds[_args[1]][$_i]].location to _args[2]>>
-		<</for>>
+	<<if _args[0] and _args[1]>>
+		<<getSameBirthChildrenIds _args[0]>>
+		<<if _birthChildrenIds[_args[1]] isnot undefined>>
+			<<for $_i to 0; $_i lt _birthChildrenIds[_args[1]].length; $_i++>>
+				<<set $children[_birthChildrenIds[_args[1]][$_i]].location to _args[2]>>
+			<</for>>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 /*args[0] - childId, args[1] - new name*/
 <<widget "childRename">>
-<<if _args[0]>>
-	<<set $children[_args[0]].name to generateBabyName(_args[1], $children[_args[0]].gender, _args[0])>>
-<</if>>
+	<<if _args[0]>>
+		<<set $children[_args[0]].name to generateBabyName(_args[1], $children[_args[0]].gender, _args[0])>>
+	<</if>>
 <</widget>>
 
 /*args[0] - childId, args[1] - clothes*/
 <<widget "childChangeClothes">>
-<<if _args[0]>>
-	<<if $children[_args[0]].features.clothes isnot null>>
-		<<if _args[1]>>
-			<<set _clothes to _args[1]>>
-		<<else>>
-			<<set _clothes to "naked">>
+	<<if _args[0]>>
+		<<if $children[_args[0]].features.clothes isnot null>>
+			<<if _args[1]>>
+				<<set _clothes to _args[1]>>
+			<<else>>
+				<<set _clothes to "naked">>
+			<</if>>
+			<<set $children[_args[0]].features.clothes to _clothes>>
 		<</if>>
-		<<set $children[_args[0]].features.clothes to _clothes>>
 	<</if>>
-<</if>>
 <</widget>>
 
 /*args[0] - childId, args[1] - set to display specific text output*/
 <<widget "childAge">><<silently>>
-<<if _args[0]>>
-	<<set _date1 to $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>>
-	<<set _date2 to $monthday + " " + $month + " " + $year>>
-	<<set $_calc to Math.abs(Date.parse(_date2) - Date.parse(_date1))>>
-	<<set _childTotalDays to Math.ceil($_calc / (1000 * 60 * 60 * 24))>>
-	<<set _childYears to Math.floor(_childTotalDays / 360)>>
-	<<set _childDays to Math.floor(_childTotalDays % 360)>>
-	<<switch _args[1]>>
-		<<case "full">>
-			<<set $_text_output to _childYears + " year" + (_childYears isnot 1 ? "s, " : ", ") + _childDays + " day" + (_childDays isnot 1 ? "s " : " ") + "old">>
-		<<case "year">>
-			<<set $_text_output to _childYears + " year" + (_childYears isnot 1 ? "s" : "")>>
-		<<case "day">>
-			<<set $_text_output to _childDays + " day" + (_childDays isnot 1 ? "s" : " ")>>
-		<<case "totalDays">>
-			<<set $_text_output to _childTotalDays>>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0]>>
+		<<set _date1 to $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>>
+		<<set _date2 to $monthday + " " + $month + " " + $year>>
+		<<set $_calc to Math.abs(Date.parse(_date2) - Date.parse(_date1))>>
+		<<set _childTotalDays to Math.ceil($_calc / (1000 * 60 * 60 * 24))>>
+		<<set _childYears to Math.floor(_childTotalDays / 360)>>
+		<<set _childDays to Math.floor(_childTotalDays % 360)>>
+		<<switch _args[1]>>
+			<<case "full">>
+				<<set $_text_output to _childYears + " year" + (_childYears isnot 1 ? "s, " : ", ") + _childDays + " day" + (_childDays isnot 1 ? "s " : " ") + "old">>
+			<<case "year">>
+				<<set $_text_output to _childYears + " year" + (_childYears isnot 1 ? "s" : "")>>
+			<<case "day">>
+				<<set $_text_output to _childDays + " day" + (_childDays isnot 1 ? "s" : " ")>>
+			<<case "totalDays">>
+				<<set $_text_output to _childTotalDays>>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*:: Widgets children2 [widget]*/
 
 /*args[0] - childId*/
 <<widget "childSelect">>
-<<if _args[0] isnot undefined>>
-	<<set $childSelected to $children[_args[0]]>>
-<</if>>
+	<<if _args[0] isnot undefined>>
+		<<set $childSelected to $children[_args[0]]>>
+	<</if>>
 <</widget>>
 
 /*args[0] - childId*/
 <<widget "childname">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<set $_text_output to $children[_id].name>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<set $_text_output to $children[_id].name>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId in an array*/
 <<widget "childrenNames">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set $_text_output to "">>
-	<<for $_i to 0; $_i lt _args[0].length; $_i++>>
-		<<set $_text_output += $children[_args[0][$_i]].name>>
-		<<if $_i is _args[0].length - 1>>
-		<<elseif $_i is _args[0].length - 2>>
-			<<set $_text_output += " and ">>
-		<<else>>
-			<<set $_text_output += ", ">>
-		<</if>>
-	<</for>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set $_text_output to "">>
+		<<for $_i to 0; $_i lt _args[0].length; $_i++>>
+			<<set $_text_output += $children[_args[0][$_i]].name>>
+			<<if $_i is _args[0].length - 1>>
+			<<elseif $_i is _args[0].length - 2>>
+				<<set $_text_output += " and ">>
+			<<else>>
+				<<set $_text_output += ", ">>
+			<</if>>
+		<</for>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId in an array*/
 <<widget "childInteratedWith">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id>>
-	<<set $children[_id].localVariables.interactions = $children[_id].localVariables.interactions ? $children[_id].localVariables.interactions + 1 : 1>>
-<</if>>
-<</silently>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id>>
+		<<set $children[_id].localVariables.interactions = $children[_id].localVariables.interactions ? $children[_id].localVariables.interactions + 1 : 1>>
+	<</if>>
+<</silently>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childHe">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "He">>
-		<<case "f" "h">><<set $_text_output to "She">>
-		<<case "h">><<set $_text_output to "They">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "He">>
+			<<case "f" "h">><<set $_text_output to "She">>
+			<<case "h">><<set $_text_output to "They">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childhe">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "he">>
-		<<case "f" "h">><<set $_text_output to "she">>
-		<<case "h">><<set $_text_output to "they">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "he">>
+			<<case "f" "h">><<set $_text_output to "she">>
+			<<case "h">><<set $_text_output to "they">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childHis">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "His">>
-		<<case "f" "h">><<set $_text_output to "Her">>
-		<<case "h">><<set $_text_output to "Their">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "His">>
+			<<case "f" "h">><<set $_text_output to "Her">>
+			<<case "h">><<set $_text_output to "Their">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childhis">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "his">>
-		<<case "f" "h">><<set $_text_output to "her">>
-		<<case "h">><<set $_text_output to "their">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "his">>
+			<<case "f" "h">><<set $_text_output to "her">>
+			<<case "h">><<set $_text_output to "their">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childHim">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "Him">>
-		<<case "f" "h">><<set $_text_output to "Her">>
-		<<case "h">><<set $_text_output to "Their">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "Him">>
+			<<case "f" "h">><<set $_text_output to "Her">>
+			<<case "h">><<set $_text_output to "Their">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childhim">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "him">>
-		<<case "f" "h">><<set $_text_output to "her">>
-		<<case "h">><<set $_text_output to "their">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "him">>
+			<<case "f" "h">><<set $_text_output to "her">>
+			<<case "h">><<set $_text_output to "their">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childHers">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "His">>
-		<<case "f" "h">><<set $_text_output to "Hers">>
-		<<case "h">><<set $_text_output to "Theirs">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "His">>
+			<<case "f" "h">><<set $_text_output to "Hers">>
+			<<case "h">><<set $_text_output to "Theirs">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childhers">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "his">>
-		<<case "f" "h">><<set $_text_output to "hers">>
-		<<case "h">><<set $_text_output to "theirs">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "his">>
+			<<case "f" "h">><<set $_text_output to "hers">>
+			<<case "h">><<set $_text_output to "theirs">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childherself">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].gender>>
-		<<case "m">><<set $_text_output to "hisself">>
-		<<case "f" "h">><<set $_text_output to "herself">>
-		<<case "h">><<set $_text_output to "theirself">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].gender>>
+			<<case "m">><<set $_text_output to "hisself">>
+			<<case "f" "h">><<set $_text_output to "herself">>
+			<<case "h">><<set $_text_output to "theirself">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childhand">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].type>>
-		<<case "human">><<set $_text_output to "hand">>
-		<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "paw">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].type>>
+			<<case "human">><<set $_text_output to "hand">>
+			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "paw">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childhands">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].type>>
-		<<case "human">><<set $_text_output to "hands">>
-		<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "paws">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].type>>
+			<<case "human">><<set $_text_output to "hands">>
+			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "paws">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childgiggles">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].type>>
-		<<case "human">><<set $_text_output to "giggles">>
-		<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "wags <<childhis _args[0]>> tail">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].type>>
+			<<case "human">><<set $_text_output to "giggles">>
+			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "wags <<childhis _args[0]>> tail">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childhair">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].type>>
-		<<case "human">><<set $_text_output to "hair">>
-		<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "fur">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
-
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].type>>
+			<<case "human">><<set $_text_output to "hair">>
+			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "fur">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - cry type, args[1] - childId */
 <<widget "childcry">><<silently>>
-<<if _args[1] isnot undefined>>
-	<<set _id to _args[1]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<if between(_args[0], 1, 4)>>
-		<<set _cry to _args[0]>>
-	<<else>>
-		<<set _cry to 1>>
+	<<if _args[1] isnot undefined>>
+		<<set _id to _args[1]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
 	<</if>>
-	<<switch $children[_id].type>>
-		<<case "human">>
-			<<switch _cry>>
-				<<case 1>><<set $_text_output to "sniffling">>
-				<<case 2>><<set $_text_output to "weeping">>
-				<<case 3>><<set $_text_output to "sobbing">>
-				<<case 4>><<set $_text_output to "wailing">>
-			<</switch>>
-		<<case "wolf" "wolfboy" "wolfgirl">>
-			<<switch _cry>>
-				<<case 1>><<set $_text_output to "whining">>
-				<<case 2>><<set $_text_output to "whimpering">>
-				<<case 3>><<set $_text_output to "crying">>
-				<<case 4>><<set $_text_output to "howling">>
-			<</switch>>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _id isnot undefined>>
+		<<if between(_args[0], 1, 4)>>
+			<<set _cry to _args[0]>>
+		<<else>>
+			<<set _cry to 1>>
+		<</if>>
+		<<switch $children[_id].type>>
+			<<case "human">>
+				<<switch _cry>>
+					<<case 1>><<set $_text_output to "sniffling">>
+					<<case 2>><<set $_text_output to "weeping">>
+					<<case 3>><<set $_text_output to "sobbing">>
+					<<case 4>><<set $_text_output to "wailing">>
+				<</switch>>
+			<<case "wolf" "wolfboy" "wolfgirl">>
+				<<switch _cry>>
+					<<case 1>><<set $_text_output to "whining">>
+					<<case 2>><<set $_text_output to "whimpering">>
+					<<case 3>><<set $_text_output to "crying">>
+					<<case 4>><<set $_text_output to "howling">>
+				<</switch>>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - cry type, args[1] - childId */
 <<widget "childCry">><<silently>>
-<<if _args[1] isnot undefined>>
-	<<set _id to _args[1]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<if between(_args[0], 1, 4)>>
-		<<set _cry to _args[0]>>
-	<<else>>
-		<<set _cry to 1>>
+	<<if _args[1] isnot undefined>>
+		<<set _id to _args[1]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
 	<</if>>
-	<<switch $children[_id].type>>
-		<<case "human">>
-			<<switch _cry>>
-				<<case 1>><<set $_text_output to "Sniffling">>
-				<<case 2>><<set $_text_output to "Weeping">>
-				<<case 3>><<set $_text_output to "Sobbing">>
-				<<case 4>><<set $_text_output to "Wailing">>
-			<</switch>>
-		<<case "wolf" "wolfboy" "wolfgirl">>
-			<<switch _cry>>
-				<<case 1>><<set $_text_output to "Whining">>
-				<<case 2>><<set $_text_output to "Whimpering">>
-				<<case 3>><<set $_text_output to "Crying">>
-				<<case 4>><<set $_text_output to "Howling">>
-			<</switch>>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _id isnot undefined>>
+		<<if between(_args[0], 1, 4)>>
+			<<set _cry to _args[0]>>
+		<<else>>
+			<<set _cry to 1>>
+		<</if>>
+		<<switch $children[_id].type>>
+			<<case "human">>
+				<<switch _cry>>
+					<<case 1>><<set $_text_output to "Sniffling">>
+					<<case 2>><<set $_text_output to "Weeping">>
+					<<case 3>><<set $_text_output to "Sobbing">>
+					<<case 4>><<set $_text_output to "Wailing">>
+				<</switch>>
+			<<case "wolf" "wolfboy" "wolfgirl">>
+				<<switch _cry>>
+					<<case 1>><<set $_text_output to "Whining">>
+					<<case 2>><<set $_text_output to "Whimpering">>
+					<<case 3>><<set $_text_output to "Crying">>
+					<<case 4>><<set $_text_output to "Howling">>
+				<</switch>>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId*/
 <<widget "childtype">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined>>
-	<<switch $children[_id].type>>
-		<<case "human">><<set $_text_output to "child">>
-		<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "pup">>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined>>
+		<<switch $children[_id].type>>
+			<<case "human">><<set $_text_output to "child">>
+			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "pup">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - childId, args[1] - word*/
 <<widget "childFirstWord">><<silently>>
-<<if _args[0] isnot undefined>>
-	<<set _id to _args[0]>>
-<<elseif $childSelected isnot undefined>>
-	<<set _id to $childSelected.childId>>
-<</if>>
-<<if _id isnot undefined and !$children[_id].localVariables.firstWord>>
-	<<set $_text_output to $children[_id].localVariables.firstWord.word>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+	<<if _args[0] isnot undefined>>
+		<<set _id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set _id to $childSelected.childId>>
+	<</if>>
+	<<if _id isnot undefined and !$children[_id].localVariables.firstWord>>
+		<<set $_text_output to $children[_id].localVariables.firstWord.word>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 /*args[0] - location, args[1] - toyid, toy set or toy name, args[2] - option of either "notext" or "lowercase"*/
 <<widget "childtoy">><<silently>>
-<<set _toys to $storedChildrenToys[_args[0]]>>
-<<if _toys>>
-	<<if between(_args[1], 0, _toys.length - 1)>>
-		<<set _toy to _toys[_args[1]]>>
-	<<elseif _args[1]>>
-		<<set _toySelect to []>>
-		<<for $_i to 0; $_i lt _toys.length; $_i++>>
-			<<if _toys[$_i].set is _args[1] or _toys[$_i].name is _args[1]>>
-				<<run _toySelect.push($_i)>>
+	<<set _toys to $storedChildrenToys[_args[0]]>>
+	<<if _toys>>
+		<<if between(_args[1], 0, _toys.length - 1)>>
+			<<set _toy to _toys[_args[1]]>>
+		<<elseif _args[1]>>
+			<<set _toySelect to []>>
+			<<for $_i to 0; $_i lt _toys.length; $_i++>>
+				<<if _toys[$_i].set is _args[1] or _toys[$_i].name is _args[1]>>
+					<<run _toySelect.push($_i)>>
+				<</if>>
+			<</for>>
+			<<if _toySelect.length gt 0>>
+				<<set _toyid to _toySelect[random(0,_toySelect.length - 1)]>>
+				<<set _toy to _toys[_toyid]>>
 			<</if>>
-		<</for>>
-		<<if _toySelect.length gt 0>>
-			<<set _toyid to _toySelect[random(0,_toySelect.length - 1)]>>
+		<<else>>
+			<<set _toyid to random(0,_toys.length - 1)>>
 			<<set _toy to _toys[_toyid]>>
 		<</if>>
-	<<else>>
-		<<set _toyid to random(0,_toys.length - 1)>>
-		<<set _toy to _toys[_toyid]>>
+		<<if _toy>>
+			<<switch _args[2]>>
+				<<case "notext">>
+				<<case "lowercase">>
+					<<set $_text_output to clone(_toy.name_lower)>>
+					<<set _toyName to clone(_toy.name_lower)>>
+				<<default>>
+					<<set $_text_output to clone(_toy.name)>>
+					<<set _toyName to clone(_toy.name)>>
+			<</switch>>
+		<</if>>
 	<</if>>
-	<<if _toy>>
-		<<switch _args[2]>>
-			<<case "notext">>
-			<<case "lowercase">>
-				<<set $_text_output to clone(_toy.name_lower)>>
-				<<set _toyName to clone(_toy.name_lower)>>
-			<<default>>
-				<<set $_text_output to clone(_toy.name)>>
-				<<set _toyName to clone(_toy.name)>>
-		<</switch>>
-	<</if>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
-<</widget>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
 <<widget "childViewerDisplay">>
-<<set _idList to _args[0]>>
-<<set _listMaxItems to 10>>
-<<set _listPage to 1>>
-<<set _listPageMax to Math.ceil(_idList.length / _listMaxItems)>>
-<<set _childStart to 0>>
-<<set _childEnd to (_childStart + _listMaxItems gt _idList.length ? _idList.length : _childStart + _listMaxItems)>>
-<div id="childViewer">
-	<<childViewerDisplayElements>>
-</div>
+	<<set _idList to _args[0]>>
+	<<set _listMaxItems to 10>>
+	<<set _listPage to 1>>
+	<<set _listPageMax to Math.ceil(_idList.length / _listMaxItems)>>
+	<<set _childStart to 0>>
+	<<set _childEnd to (_childStart + _listMaxItems gt _idList.length ? _idList.length : _childStart + _listMaxItems)>>
+	<div id="childViewer">
+		<<childViewerDisplayElements>>
+	</div>
 <</widget>>
 
 <<widget "childViewerPageUpdate">>
-<<set _childStart to _listMaxItems * (_listPage - 1)>>
-<<set _childEnd to (_childStart + _listMaxItems lte _idList.length ? _childStart + _listMaxItems : _idList.length)>>
-<<replace '#childViewer'>>
-	<<childViewerDisplayElements>>
-<</replace>>
+	<<set _childStart to _listMaxItems * (_listPage - 1)>>
+	<<set _childEnd to (_childStart + _listMaxItems lte _idList.length ? _childStart + _listMaxItems : _idList.length)>>
+	<<replace '#childViewer'>>
+		<<childViewerDisplayElements>>
+	<</replace>>
 <</widget>>
 
 <<widget "childViewerDisplayElements">>
-<div class="childrenUi">
-<<for $_i to _childStart; $_i lt _childEnd; $_i++>>
-	<<capture $_i>>
-		<div @id="'child-' + _childrenIds[$_i]">
-			<<childViewerElement `_childrenIds[$_i]`>>
+	<div class="childrenUi">
+		<<for $_i to _childStart; $_i lt _childEnd; $_i++>>
+			<<capture $_i>>
+				<div @id="'child-' + _childrenIds[$_i]">
+					<<childViewerElement `_childrenIds[$_i]`>>
+				</div>
+			<</capture>>
+		<</for>>
+	</div>
+	<br>
+	<div class="childrenUiControls">
+		<<set _disabled = _listPage > 1 ? "" : "disabled">>
+		<div @class="'div-link btn-pagination prev ' + _disabled">
+			<<link "Previous">>
+				<<if _listPage > 1>>
+					<<set _listPage -= 1>>
+					<<childViewerPageUpdate>>
+				<</if>>
+			<</link>>
+			<div class="btn-pagination-arrow">&lt;</div>
 		</div>
-	<</capture>>
-<</for>>
-</div>
-<br>
-<div class="childrenUiControls">
-	<<set _disabled = _listPage > 1 ? "" : "disabled">>
-	<div @class="'div-link btn-pagination prev ' + _disabled">
-		<<link "Previous">>
-			<<if _listPage > 1>>
-				<<set _listPage -= 1>>
-				<<childViewerPageUpdate>>
-			<</if>>
-		<</link>>
-		<div class="btn-pagination-arrow">&lt;</div>
+		<div>
+			<<print (_listPage) + " out of " + _listPageMax>>
+		</div>
+		<<set _disabled = _listPage < _listPageMax ? "" : "disabled">>
+		<div @class="'div-link btn-pagination next ' + _disabled">
+			<<link "Next">>
+				<<if _listPage < _listPageMax>>
+					<<set _listPage += 1>>
+					<<childViewerPageUpdate>>
+				<</if>>
+			<</link>>
+			<div class="btn-pagination-arrow">&gt;</div>
+		</div>
 	</div>
-	<div>
-		<<print (_listPage) + " out of " + _listPageMax>>
-	</div>
-	<<set _disabled = _listPage < _listPageMax ? "" : "disabled">>
-	<div @class="'div-link btn-pagination next ' + _disabled">
-		<<link "Next">>
-			<<if _listPage < _listPageMax>>
-				<<set _listPage += 1>>
-				<<childViewerPageUpdate>>
-			<</if>>
-		<</link>>
-		<div class="btn-pagination-arrow">&gt;</div>
-	</div>
-</div>
-<<run linkifyDivs('#childViewer')>>
+	<<run linkifyDivs('#childViewer')>>
 <</widget>>
 
 <<widget "childViewerElement">>
-<<if _children is undefined>>
-	<<set _children to {}>>
-<</if>>
-<<capture _args>>
-	<<if $children[_args[0]].type isnot "human">>
-		Type: <<print $children[_args[0]].type[0].toUpperCase() + $children[_args[0]].type.substring(1)>> |
+	<<if _children is undefined>>
+		<<set _children to {}>>
 	<</if>>
-	Gender:
-	<<switch $children[_args[0]].gender>>
-		<<case "m">>Male
-		<<case "f">>Female
-		<<case "h">>Hermaphrodite
-	<</switch>>
-	<br>
-	<label>Name: <<textbox "_children[_args[0]]" `$children[_args[0]].name`>></label>
-	<br>
-	<<childActivity _args[0]>>
-	<<childViewerHiddenElements _args[0] _args[1]>>
-<</capture>>
+	<<capture _args>>
+		<<if $children[_args[0]].type isnot "human">>
+			Type: <<print $children[_args[0]].type[0].toUpperCase() + $children[_args[0]].type.substring(1)>> |
+		<</if>>
+		Gender:
+		<<switch $children[_args[0]].gender>>
+			<<case "m">>Male
+			<<case "f">>Female
+			<<case "h">>Hermaphrodite
+		<</switch>>
+		<br>
+		<label>Name: <<textbox "_children[_args[0]]" `$children[_args[0]].name`>></label>
+		<br>
+		<<childActivity _args[0]>>
+		<<childViewerHiddenElements _args[0] _args[1]>>
+	<</capture>>
 <</widget>>
 
 <<widget "childViewerHiddenElements">>
-<<if _args[0]>>
-	<div @id="'childViewerHidden-'+_args[0]" @class="'childViewerHidden' + (_args[1] ? '' : ' hidden')">
-		Mother:
-		<<if $children[_args[0]].motherKnown>>
-			<<print $children[_args[0]].mother>>
-		<<else>>
-			????
-		<</if>>
-		| Father:
-		<<if $children[_args[0]].fatherKnown>>
-			<<print $children[_args[0]].father>>
-		<<else>>
-			????
-		<</if>>
-		<br>
-		Born: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
-		Age: <<childAge _args[0] "full">>
-		<br>
-		Size: <<print $children[_args[0]].features.size>> | Hair Colour: <<print $children[_args[0]].features.hairColour>>
-		<<if $children[_args[0]].features.skinColour isnot null>>
-			| Skin Colour: <<print $children[_args[0]].features.skinColour>>
-		<</if>>
-		<br>
-		<<if $children[_args[0]].features.identical isnot null>>
-			Identical: <<print $children[_args[0]].features.identical>>
-			<br>
-		<</if>>
-		<span class="no-numberify">
-		<<link "Re-name">>
-			<<set $children[_args[0]].name to generateBabyName(_children[_args[0]], $children[_args[0]].gender, _args[0])>>
-			<<replace `"#child-" + _args[0]`>><<childViewerElement _args[0] true>><</replace>>
-		<</link>> |
-		<<link "Random Name">>
-			<<set $children[_args[0]].name to generateBabyName(undefined, $children[_args[0]].gender, _args[0])>>
-			<<replace `"#child-" + _args[0]`>><<childViewerElement _args[0] true>><</replace>>
-		<</link>>
-		</span>
-		<br>
-		<small class="right">
-			ChildId: <<print $children[_args[0]].childId>>.
-			saveId: <<print $saveId>>.
-			<<if $saveName isnot "">>
-				| name: <<print $saveName>>.
+	<<if _args[0]>>
+		<div @id="'childViewerHidden-'+_args[0]" @class="'childViewerHidden' + (_args[1] ? '' : ' hidden')">
+			Mother:
+			<<if $children[_args[0]].motherKnown>>
+				<<print $children[_args[0]].mother>>
+			<<else>>
+				????
 			<</if>>
-		</small>
-	</div>
-<</if>>
+			| Father:
+			<<if $children[_args[0]].fatherKnown>>
+				<<print $children[_args[0]].father>>
+			<<else>>
+				????
+			<</if>>
+			<br>
+			Born: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
+			Age: <<childAge _args[0] "full">>
+			<br>
+			Size: <<print $children[_args[0]].features.size>> | Hair Colour: <<print $children[_args[0]].features.hairColour>>
+			<<if $children[_args[0]].features.skinColour isnot null>>
+				| Skin Colour: <<print $children[_args[0]].features.skinColour>>
+			<</if>>
+			<br>
+			<<if $children[_args[0]].features.identical isnot null>>
+				Identical: <<print $children[_args[0]].features.identical>>
+				<br>
+			<</if>>
+			<span class="no-numberify">
+			<<link "Re-name">>
+				<<set $children[_args[0]].name to generateBabyName(_children[_args[0]], $children[_args[0]].gender, _args[0])>>
+				<<replace `"#child-" + _args[0]`>><<childViewerElement _args[0] true>><</replace>>
+			<</link>> |
+			<<link "Random Name">>
+				<<set $children[_args[0]].name to generateBabyName(undefined, $children[_args[0]].gender, _args[0])>>
+				<<replace `"#child-" + _args[0]`>><<childViewerElement _args[0] true>><</replace>>
+			<</link>>
+			</span>
+			<br>
+			<small class="right">
+				ChildId: <<print $children[_args[0]].childId>>.
+				saveId: <<print $saveId>>.
+				<<if $saveName isnot "">>
+					| name: <<print $saveName>>.
+				<</if>>
+			</small>
+		</div>
+	<</if>>
 <</widget>>
 
 <<widget "childViewerHiddenElementsUnhide">>
-<<capture _args>>
-	<<if _args[0]>>
-		<<toggleclass `'#childViewerHidden-'+_args[0]` "hidden">>
-	<</if>>
-<</capture>>
+	<<capture _args>>
+		<<if _args[0]>>
+			<<toggleclass `'#childViewerHidden-'+_args[0]` "hidden">>
+		<</if>>
+	<</capture>>
 <</widget>>
 
 <<widget "childActivityUpdate">>
-<<if _args[0]>>
-	<<childAge _args[0]>>
-	<<childSelect _args[0]>>
-	<<if $children[_args[0]].localVariables.activityDay is undefined>>
-		<<set $children[_args[0]].localVariables.activityDay to $days - 1>>
-		<<set $children[_args[0]].localVariables.activityHour to $hour>>
-		<<set $children[_args[0]].localVariables.crawling to 0>>
-		<<set $children[_args[0]].localVariables.talking to 0>>
+	<<if _args[0]>>
+		<<childAge _args[0]>>
+		<<childSelect _args[0]>>
+		<<if $children[_args[0]].localVariables.activityDay is undefined>>
+			<<set $children[_args[0]].localVariables.activityDay to $days - 1>>
+			<<set $children[_args[0]].localVariables.activityHour to $hour>>
+			<<set $children[_args[0]].localVariables.crawling to 0>>
+			<<set $children[_args[0]].localVariables.talking to 0>>
+		<</if>>
+		<<if $children[_args[0]].localVariables.activityDay is $days and ($children[_args[0]].localVariables.activityHour + 4) gt $hour>>
+		<<else>>
+			<<set $children[_args[0]].localVariables.activityDay to $days>>
+			<<set $children[_args[0]].localVariables.activityHour to $hour>>
+		<</if>>
 	<</if>>
-	<<if $children[_args[0]].localVariables.activityDay is $days and ($children[_args[0]].localVariables.activityHour + 4) gt $hour>>
-	<<else>>
-		<<set $children[_args[0]].localVariables.activityDay to $days>>
-		<<set $children[_args[0]].localVariables.activityHour to $hour>>
-	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "childActivity">>
-<<if _args[0]>>
-	<<childAge _args[0]>>
-	<<childSelect _args[0]>>
-	<<if $children[_args[0]].localVariables.activityDay is undefined>>
-		<<set $children[_args[0]].localVariables.activityDay to $days - 1>>
-		<<set $children[_args[0]].localVariables.activityHour to $hour>>
-		<<set $children[_args[0]].localVariables.crawling to 0>>
-		<<set $children[_args[0]].localVariables.talking to 0>>
+	<<if _args[0]>>
+		<<childAge _args[0]>>
+		<<childSelect _args[0]>>
+		<<if $children[_args[0]].localVariables.activityDay is undefined>>
+			<<set $children[_args[0]].localVariables.activityDay to $days - 1>>
+			<<set $children[_args[0]].localVariables.activityHour to $hour>>
+			<<set $children[_args[0]].localVariables.crawling to 0>>
+			<<set $children[_args[0]].localVariables.talking to 0>>
+		<</if>>
+		<<switch $children[_args[0]].type>>
+			<<case "human">><<humanChildActivity _args[0]>>
+			<<case "wolf" "wolfboy" "wolfgirl">><<wolfChildActivity _args[0]>>
+		<</switch>>
+		<<if $children[_args[0]].localVariables.activityDay is $days and ($children[_args[0]].localVariables.activityHour + 4) gt $hour>>
+		<<else>>
+			<<set $children[_args[0]].localVariables.activityDay to $days>>
+			<<set $children[_args[0]].localVariables.activityHour to $hour>>
+		<</if>>
+		<span class="no-numberify">
+			<<link "Extra Details">><<childViewerHiddenElementsUnhide _args[0]>><</link>>
+		</span>
 	<</if>>
-	<<switch $children[_args[0]].type>>
-		<<case "human">><<humanChildActivity _args[0]>>
-		<<case "wolf" "wolfboy" "wolfgirl">><<wolfChildActivity _args[0]>>
-	<</switch>>
-	<<if $children[_args[0]].localVariables.activityDay is $days and ($children[_args[0]].localVariables.activityHour + 4) gt $hour>>
-	<<else>>
-		<<set $children[_args[0]].localVariables.activityDay to $days>>
-		<<set $children[_args[0]].localVariables.activityHour to $hour>>
-	<</if>>
-	<span class="no-numberify">
-		<<link "Extra Details">><<childViewerHiddenElementsUnhide _args[0]>><</link>>
-	</span>
-<</if>>
 <</widget>>
 
 <<widget "humanChildActivity">><<silently>>
@@ -905,11 +882,11 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 <</widget>>
 
 <<widget "humanChildActivityNoToy">>
-<<childHe>>'s sleeping soundly.
-<<if $children[_args[0]].localVariables.event is true>>
-	<br>
-	<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"shiverInCot", childid:_childid}>><</link>><</capture>> |
-<</if>>
+	<<childHe>>'s sleeping soundly.
+	<<if $children[_args[0]].localVariables.event is true>>
+		<br>
+		<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"shiverInCot", childid:_childid}>><</link>><</capture>> |
+	<</if>>
 <</widget>>
 
 <<widget "wolfChildActivity">><<silently>>

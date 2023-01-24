@@ -1,293 +1,291 @@
 :: Widgets updateClothes [widget]
 <<widget "updateClothes">>
+	<<set _equip to setup.clothes_all_slots>>
+	<<set _skip to ["integrity","integrity_max","colour","accessory_colour", "exposed", "vagina_exposed", "anus_exposed", "anal_shield", "one_piece", "skirt_down", "state", "state_top","name_cap","iconFile","accIcon","notuck","skirt","description","colour_options","accessory_colour_options","fabric_strength","integrity_max","bustresize","sleeve_img","breast_img","exposed_base","vagina_exposed_base","anus_exposed_base","state_top_base","state_base",,"word","femininity","strap","cost","shop"]>>
+	<<set _remap_colours to {"light-pink":"light pink", "blue-steel":"blue steel"}>>
 
-<<set _equip to setup.clothes_all_slots>>
-<<set _skip to ["integrity","integrity_max","colour","accessory_colour", "exposed", "vagina_exposed", "anus_exposed", "anal_shield", "one_piece", "skirt_down", "state", "state_top","name_cap","iconFile","accIcon","notuck","skirt","description","colour_options","accessory_colour_options","fabric_strength","integrity_max","bustresize","sleeve_img","breast_img","exposed_base","vagina_exposed_base","anus_exposed_base","state_top_base","state_base",,"word","femininity","strap","cost","shop"]>>
-<<set _remap_colours to {"light-pink":"light pink", "blue-steel":"blue steel"}>>
-
-/*0.3.9.3: adding "hoodposition" variable to all hoodies*/
-/*Just add the variable to hoodies that don't have it, skip it after this*/
-<<if $objectVersion.updateClothes gte 31>>
-	<<set _skip.push("hoodposition")>>
-<</if>>
-
-<<for _i to 0; _i lt _equip.length; _i++>>
-	<<set _worn to $worn[_equip[_i]]>>
-	<<set _default to setup.clothes[_equip[_i]][clothesIndex(_equip[_i],_worn)]>>
-	<<set _keys to Object.keys(_default)>>
-	<<for _j to 0; _j lt _keys.length; _j++>>
-		<<if _skip.includes(_keys[_j])>>
-			<<continue>>
-		<</if>>
-		<<if _keys[_j] is "outfitPrimary">>
-			<<if _worn[_keys[_j]] is undefined and _default[_keys[_j]] isnot undefined>>
-				<<set _worn[_keys[_j]] to clone(_default[_keys[_j]])>>
-				<<if _worn.one_piece is "broken">>
-					<<if _equip[_i] is "upper">>
-						<<set _worn[_keys[_j]].lower to "broken">>
-					<<elseif _equip[_i] is "under_upper">>
-						<<set _worn[_keys[_j]].under_lower to "broken">>
-					<</if>>
-				<</if>>
-			<</if>>
-			<<continue>>
-		<</if>>
-		<<if _keys[_j] is "outfitSecondary">>
-			<<if _worn[_keys[_j]] is undefined and _default[_keys[_j]] isnot undefined>>
-				<<set _worn[_keys[_j]] to clone(_default[_keys[_j]])>>
-				<<if _worn.one_piece is "broken">>
-					<<set _worn[_keys[_j]][1] to "broken">>
-				<</if>>
-			<</if>>
-			<<continue>>
-		<</if>>
-		<<set _worn[_keys[_j]] to clone(_default[_keys[_j]])>>
-	<</for>>
-	<<set _worn.colour to _remap_colours[_worn.colour] || _worn.colour>>
-	<<set _worn.accessory_colour to _remap_colours[_worn.accessory_colour] || _worn.accessory_colour>>
-	<<if (_worn.colour is 0 and _default.colour_options.length gt 0) or (_worn.accessory_colour is 0 and _default.accessory_colour_options gt 0)>>
-		<<updateClothingColours _worn>>
-	<</if>>
-	<!--Fix for 0.2.21.x issue-->
-	<<if _worn.colour_combat isnot undefined and _default.colour_options.length is 0>>
-		<<set _worn.colour to 0>>
-	<</if>>
-	<<if _worn.accessory_colour_combat isnot undefined and _default.colour_options.length is 0>>
-		<<set _worn.accessory_colour to 0>>
-	<</if>>
-	<!--end of fix-->
-	<<if _equip[_i] is "genitals">>
-		<<continue>>
-	<</if>>
-	<<if _worn.name is "Crop top">>
-		<<set _worn.name to "crop top">>
+	/*0.3.9.3: adding "hoodposition" variable to all hoodies*/
+	/*Just add the variable to hoodies that don't have it, skip it after this*/
+	<<if $objectVersion.updateClothes gte 31>>
+		<<set _skip.push("hoodposition")>>
 	<</if>>
 
-	<<set _carried to $carried[_equip[_i]]>>
-	<<set _default to setup.clothes[_equip[_i]][clothesIndex(_equip[_i],_carried)]>>
-	<<set _keys to Object.keys(_default)>>
-	<<for _j to 0; _j lt _keys.length; _j++>>
-		<<if _skip.includes(_keys[_j])>>
-			<<continue>>
-		<</if>>
-		<<if _keys[_j] is "outfitPrimary">>
-			<<if _carried[_keys[_j]] is undefined and _default[_keys[_j]] isnot undefined>>
-				<<set _carried[_keys[_j]] to clone(_default[_keys[_j]])>>
-				<<if _carried.one_piece is "broken">>
-					<<if _equip[_i] is "upper">>
-						<<set _carried[_keys[_j]].lower to "broken">>
-					<<elseif _equip[_i] is "under_upper">>
-						<<set _carried[_keys[_j]].under_lower to "broken">>
-					<</if>>
-				<</if>>
-			<</if>>
-			<<continue>>
-		<</if>>
-		<<if _keys[_j] is "outfitSecondary">>
-			<<if _carried[_keys[_j]] is undefined and _default[_keys[_j]] isnot undefined>>
-				<<set _carried[_keys[_j]] to clone(_default[_keys[_j]])>>
-				<<if _carried.one_piece is "broken">>
-					<<set _carried[_keys[_j]][1] to "broken">>
-				<</if>>
-			<</if>>
-			<<continue>>
-		<</if>>
-		<<set _carried[_keys[_j]] to clone(_default[_keys[_j]])>>
-	<</for>>
-	<<set _carried.colour to _remap_colours[_carried.colour] || _carried.colour>>
-	<<set _carried.accessory_colour to _remap_colours[_carried.accessory_colour] || _carried.accessory_colour>>
-	<<if (_carried.colour is 0 and _default.colour_options.length gt 0) or (_carried.accessory_colour is 0 and _default.accessory_colour_options gt 0)>>
-		<<updateClothingColours _carried>>
-	<</if>>
-	<!--Fix for 0.2.21.x issue-->
-	<<if _carried.colour_combat isnot undefined and _default.colour_options.length is 0>>
-		<<set _carried.colour to 0>>
-	<</if>>
-	<<if _carried.accessory_colour_combat isnot undefined and _default.colour_options.length is 0>>
-		<<set _carried.accessory_colour to 0>>
-	<</if>>
-	<!--end of fix-->
-	<<if _carried.name is "Crop top">>
-		<<set _carried.name to "crop top">>
-	<</if>>
-	<<for _j to 0; _j lt $wardrobe[_equip[_i]].length; _j++>>
-		<<set _wardrobe to $wardrobe[_equip[_i]][_j]>>
-		<<set _default to setup.clothes[_equip[_i]][clothesIndex(_equip[_i],_wardrobe)]>>
+	<<for _i to 0; _i lt _equip.length; _i++>>
+		<<set _worn to $worn[_equip[_i]]>>
+		<<set _default to setup.clothes[_equip[_i]][clothesIndex(_equip[_i],_worn)]>>
 		<<set _keys to Object.keys(_default)>>
-		<<for _k to 0; _k lt _keys.length; _k++>>
-			<<if _skip.includes(_keys[_k])>>
+		<<for _j to 0; _j lt _keys.length; _j++>>
+			<<if _skip.includes(_keys[_j])>>
 				<<continue>>
 			<</if>>
-			<<if _keys[_k] is "outfitPrimary">>
-				<<if _wardrobe[_keys[_k]] is undefined and _default[_keys[_k]] isnot undefined>>
-					<<set _wardrobe[_keys[_k]] to clone(_default[_keys[_k]])>>
-					<<if _wardrobe.one_piece is "broken">>
+			<<if _keys[_j] is "outfitPrimary">>
+				<<if _worn[_keys[_j]] is undefined and _default[_keys[_j]] isnot undefined>>
+					<<set _worn[_keys[_j]] to clone(_default[_keys[_j]])>>
+					<<if _worn.one_piece is "broken">>
 						<<if _equip[_i] is "upper">>
-							<<set _wardrobe[_keys[_k]].lower to "broken">>
+							<<set _worn[_keys[_j]].lower to "broken">>
 						<<elseif _equip[_i] is "under_upper">>
-							<<set _wardrobe[_keys[_k]].under_lower to "broken">>
+							<<set _worn[_keys[_j]].under_lower to "broken">>
 						<</if>>
 					<</if>>
 				<</if>>
 				<<continue>>
 			<</if>>
-			<<if _keys[_k] is "outfitSecondary">>
-				<<if _wardrobe[_keys[_k]] is undefined and _default[_keys[_k]] isnot undefined>>
-					<<set _wardrobe[_keys[_k]] to clone(_default[_keys[_k]])>>
-					<<if _wardrobe.one_piece is "broken">>
-						<<set _wardrobe[_keys[_k]][1] to "broken">>
+			<<if _keys[_j] is "outfitSecondary">>
+				<<if _worn[_keys[_j]] is undefined and _default[_keys[_j]] isnot undefined>>
+					<<set _worn[_keys[_j]] to clone(_default[_keys[_j]])>>
+					<<if _worn.one_piece is "broken">>
+						<<set _worn[_keys[_j]][1] to "broken">>
 					<</if>>
 				<</if>>
 				<<continue>>
 			<</if>>
-			<<set _wardrobe[_keys[_k]] to clone(_default[_keys[_k]])>>
+			<<set _worn[_keys[_j]] to clone(_default[_keys[_j]])>>
 		<</for>>
-		<<set _wardrobe.colour to _remap_colours[_wardrobe.colour] || _wardrobe.colour>>
-		<<set _wardrobe.accessory_colour to _remap_colours[_wardrobe.accessory_colour] || _wardrobe.accessory_colour>>
-		<<if (_wardrobe.colour is 0 and _default.colour_options.length gt 0) or (_wardrobe.accessory_colour is 0 and _default.accessory_colour_options gt 0)>>
-			<<updateClothingColours _wardrobe>>
+		<<set _worn.colour to _remap_colours[_worn.colour] || _worn.colour>>
+		<<set _worn.accessory_colour to _remap_colours[_worn.accessory_colour] || _worn.accessory_colour>>
+		<<if (_worn.colour is 0 and _default.colour_options.length gt 0) or (_worn.accessory_colour is 0 and _default.accessory_colour_options gt 0)>>
+			<<updateClothingColours _worn>>
 		<</if>>
 		<!--Fix for 0.2.21.x issue-->
-		<<if _wardrobe.colour_combat isnot undefined and _default.colour_options.length is 0>>
-			<<set _wardrobe.colour to 0>>
+		<<if _worn.colour_combat isnot undefined and _default.colour_options.length is 0>>
+			<<set _worn.colour to 0>>
 		<</if>>
-		<<if _wardrobe.accessory_colour_combat isnot undefined and _default.colour_options.length is 0>>
-			<<set _wardrobe.accessory_colour to 0>>
+		<<if _worn.accessory_colour_combat isnot undefined and _default.colour_options.length is 0>>
+			<<set _worn.accessory_colour to 0>>
 		<</if>>
 		<!--end of fix-->
-	<</for>>
-<</for>>
-<<for _i to 0; _i lt $outfit.length; _i++>>
-	<<if $outfit[_i].upper is "Crop top">>
-		<<set $outfit[_i].upper to "crop top">>
-	<</if>>
-<</for>>
+		<<if _equip[_i] is "genitals">>
+			<<continue>>
+		<</if>>
+		<<if _worn.name is "Crop top">>
+			<<set _worn.name to "crop top">>
+		<</if>>
 
+		<<set _carried to $carried[_equip[_i]]>>
+		<<set _default to setup.clothes[_equip[_i]][clothesIndex(_equip[_i],_carried)]>>
+		<<set _keys to Object.keys(_default)>>
+		<<for _j to 0; _j lt _keys.length; _j++>>
+			<<if _skip.includes(_keys[_j])>>
+				<<continue>>
+			<</if>>
+			<<if _keys[_j] is "outfitPrimary">>
+				<<if _carried[_keys[_j]] is undefined and _default[_keys[_j]] isnot undefined>>
+					<<set _carried[_keys[_j]] to clone(_default[_keys[_j]])>>
+					<<if _carried.one_piece is "broken">>
+						<<if _equip[_i] is "upper">>
+							<<set _carried[_keys[_j]].lower to "broken">>
+						<<elseif _equip[_i] is "under_upper">>
+							<<set _carried[_keys[_j]].under_lower to "broken">>
+						<</if>>
+					<</if>>
+				<</if>>
+				<<continue>>
+			<</if>>
+			<<if _keys[_j] is "outfitSecondary">>
+				<<if _carried[_keys[_j]] is undefined and _default[_keys[_j]] isnot undefined>>
+					<<set _carried[_keys[_j]] to clone(_default[_keys[_j]])>>
+					<<if _carried.one_piece is "broken">>
+						<<set _carried[_keys[_j]][1] to "broken">>
+					<</if>>
+				<</if>>
+				<<continue>>
+			<</if>>
+			<<set _carried[_keys[_j]] to clone(_default[_keys[_j]])>>
+		<</for>>
+		<<set _carried.colour to _remap_colours[_carried.colour] || _carried.colour>>
+		<<set _carried.accessory_colour to _remap_colours[_carried.accessory_colour] || _carried.accessory_colour>>
+		<<if (_carried.colour is 0 and _default.colour_options.length gt 0) or (_carried.accessory_colour is 0 and _default.accessory_colour_options gt 0)>>
+			<<updateClothingColours _carried>>
+		<</if>>
+		<!--Fix for 0.2.21.x issue-->
+		<<if _carried.colour_combat isnot undefined and _default.colour_options.length is 0>>
+			<<set _carried.colour to 0>>
+		<</if>>
+		<<if _carried.accessory_colour_combat isnot undefined and _default.colour_options.length is 0>>
+			<<set _carried.accessory_colour to 0>>
+		<</if>>
+		<!--end of fix-->
+		<<if _carried.name is "Crop top">>
+			<<set _carried.name to "crop top">>
+		<</if>>
+		<<for _j to 0; _j lt $wardrobe[_equip[_i]].length; _j++>>
+			<<set _wardrobe to $wardrobe[_equip[_i]][_j]>>
+			<<set _default to setup.clothes[_equip[_i]][clothesIndex(_equip[_i],_wardrobe)]>>
+			<<set _keys to Object.keys(_default)>>
+			<<for _k to 0; _k lt _keys.length; _k++>>
+				<<if _skip.includes(_keys[_k])>>
+					<<continue>>
+				<</if>>
+				<<if _keys[_k] is "outfitPrimary">>
+					<<if _wardrobe[_keys[_k]] is undefined and _default[_keys[_k]] isnot undefined>>
+						<<set _wardrobe[_keys[_k]] to clone(_default[_keys[_k]])>>
+						<<if _wardrobe.one_piece is "broken">>
+							<<if _equip[_i] is "upper">>
+								<<set _wardrobe[_keys[_k]].lower to "broken">>
+							<<elseif _equip[_i] is "under_upper">>
+								<<set _wardrobe[_keys[_k]].under_lower to "broken">>
+							<</if>>
+						<</if>>
+					<</if>>
+					<<continue>>
+				<</if>>
+				<<if _keys[_k] is "outfitSecondary">>
+					<<if _wardrobe[_keys[_k]] is undefined and _default[_keys[_k]] isnot undefined>>
+						<<set _wardrobe[_keys[_k]] to clone(_default[_keys[_k]])>>
+						<<if _wardrobe.one_piece is "broken">>
+							<<set _wardrobe[_keys[_k]][1] to "broken">>
+						<</if>>
+					<</if>>
+					<<continue>>
+				<</if>>
+				<<set _wardrobe[_keys[_k]] to clone(_default[_keys[_k]])>>
+			<</for>>
+			<<set _wardrobe.colour to _remap_colours[_wardrobe.colour] || _wardrobe.colour>>
+			<<set _wardrobe.accessory_colour to _remap_colours[_wardrobe.accessory_colour] || _wardrobe.accessory_colour>>
+			<<if (_wardrobe.colour is 0 and _default.colour_options.length gt 0) or (_wardrobe.accessory_colour is 0 and _default.accessory_colour_options gt 0)>>
+				<<updateClothingColours _wardrobe>>
+			<</if>>
+			<!--Fix for 0.2.21.x issue-->
+			<<if _wardrobe.colour_combat isnot undefined and _default.colour_options.length is 0>>
+				<<set _wardrobe.colour to 0>>
+			<</if>>
+			<<if _wardrobe.accessory_colour_combat isnot undefined and _default.colour_options.length is 0>>
+				<<set _wardrobe.accessory_colour to 0>>
+			<</if>>
+			<!--end of fix-->
+		<</for>>
+	<</for>>
+	<<for _i to 0; _i lt $outfit.length; _i++>>
+		<<if $outfit[_i].upper is "Crop top">>
+			<<set $outfit[_i].upper to "crop top">>
+		<</if>>
+	<</for>>
 <</widget>>
 
 <!--New isolated wardrobes also need updates to the `clothesReturnLocation` function in ingame.js-->
 <<widget "wardrobesUpdate">>
-<<script>>
-	/* default wardrobe object */
-	const def_wardrobe = {
-		face: [],
-		feet: [],
-		hands: [],
-		head: [],
-		legs: [],
-		lower: [],
-		neck: [],
-		over_head: [],
-		over_lower: [],
-		over_upper: [],
-		genitals: [],
-		under_lower: [],
-		under_upper: [],
-		upper: [],
-		unlocked: false,
-		shopSend: false,
-		transfer: true,
-		isolated: false,
-		locationRequirement: [],
-		space: 5,
-	};
-	/* initialise multiple wardrobes. works for both old saves and new games */
-	if (V.wardrobes === undefined) {
-		V.wardrobes = {
-			shopReturn: "wardrobe",
-			wardrobe: {
-				NOTE: "DO NOT USE THIS OBJECT TO STORE CLOTHES",
-				unlocked: true,
-				shopSend: true,
-				name: "Orphanage",
-			},
-			changingRoom: clone(def_wardrobe),
-			edensCabin: clone(def_wardrobe),
-			asylum: clone(def_wardrobe),
-			alexFarm: clone(def_wardrobe),
-			stripClub: clone(def_wardrobe),
-			brothel: clone(def_wardrobe),
-			schoolBoys: clone(def_wardrobe),
-			schoolGirls: clone(def_wardrobe),
-			prison: clone(def_wardrobe),
+	<<script>>
+		/* default wardrobe object */
+		const def_wardrobe = {
+			face: [],
+			feet: [],
+			hands: [],
+			head: [],
+			legs: [],
+			lower: [],
+			neck: [],
+			over_head: [],
+			over_lower: [],
+			over_upper: [],
+			genitals: [],
+			under_lower: [],
+			under_upper: [],
+			upper: [],
+			unlocked: false,
+			shopSend: false,
+			transfer: true,
+			isolated: false,
+			locationRequirement: [],
+			space: 5,
 		};
-		/* beach */
-		V.wardrobes.changingRoom.name = "Beach changing room";
-		V.wardrobes.changingRoom.unlocked = true;
-		/* eden's */
-		V.wardrobes.edensCabin.name = "Eden's Cabin";
-		V.wardrobes.edensCabin.space = 10;
-		if (V.syndromeeden) V.wardrobes.edensCabin.unlocked = true;
-		/* asylum */
-		V.wardrobes.asylum.locationRequirement.push("asylum");
-		V.wardrobes.asylum.name = "Asylum";
-		V.wardrobes.asylum.transfer = false;
-		V.wardrobes.asylum.isolated = true;
-		/* alex's */
-		V.wardrobes.alexFarm.name = "Alex's Farm";
-		V.wardrobes.alexFarm.shopSend = true;
-		V.wardrobes.alexFarm.space = 40;
-		if (V.farm_stage >= 7) V.wardrobes.alexFarm.unlocked = true;
-		/* strip club */
-		V.wardrobes.stripClub.name = "Strip Club";
-		V.wardrobes.stripClub.space = 10;
-		if (V.stripclubdancingintro) V.wardrobes.stripClub.unlocked = true;
-		/* brothel */
-		V.wardrobes.brothel.name = "Brothel";
-		V.wardrobes.brothel.space = 10;
-		if (V.brotheljob) V.wardrobes.brothel.unlocked = true;
-		/* school pool boys */
-		V.wardrobes.schoolBoys.name = "Schools boy's locker";
-		V.wardrobes.schoolBoys.unlocked = true;
-		V.wardrobes.schoolBoys.under_lower.push(setup.clothes.under_lower[7]);
-		V.wardrobes.schoolBoys.under_lower.last().colour = "blue";
-		/* school pool girls */
-		V.wardrobes.schoolGirls.name = "Schools girl's locker";
-		V.wardrobes.schoolGirls.unlocked = true;
-		V.wardrobes.schoolGirls.under_lower.push(setup.clothes.under_lower[6]);
-		V.wardrobes.schoolGirls.under_lower.last().colour = "blue";
-		V.wardrobes.schoolGirls.under_upper.push(setup.clothes.under_upper[2]);
-		V.wardrobes.schoolGirls.under_upper.last().colour = "blue";
-		/* prison */
-		V.wardrobes.prison.name = "Prison locker";
-		V.wardrobes.prison.transfer = false;
-		V.wardrobes.prison.isolated = true;
-		/* add .lastTaken prop to everything */
-		if (V.worn !== undefined) Object.keys(V.worn).forEach(s => V.worn[s].lastTaken = "wardrobe");
-		if (V.carried !== undefined) Object.keys(V.carried).forEach(s => V.carried[s].lastTaken = "wardrobe");
-		if (V.store !== undefined) Object.keys(V.store).forEach(s => V.store[s].forEach(i => i.lastTaken = "wardrobe"));
-	};
-	/* fix prison wardrobe name */
-	if (V.wardrobes.prison.name === "Prison Locker") V.wardrobes.prison.name = "Prison locker";
-	/* very old saves */
-	if (V.objectVersion.wardrobes < 2) {
-		for (const slot in setup.clothes_all_slots) {
-			/* skip slots that didn't exist in old saves */
-			if (V.wardrobe[slot] === undefined) continue;
-			/* remove all temporary items */
-			for (let j = V.wardrobe[slot].length - 1; j >= 0; j--) {
-				if (V.wardrobe[slot][j].temp) V.wardrobe[slot].deleteAt(j);
+		/* initialise multiple wardrobes. works for both old saves and new games */
+		if (V.wardrobes === undefined) {
+			V.wardrobes = {
+				shopReturn: "wardrobe",
+				wardrobe: {
+					NOTE: "DO NOT USE THIS OBJECT TO STORE CLOTHES",
+					unlocked: true,
+					shopSend: true,
+					name: "Orphanage",
+				},
+				changingRoom: clone(def_wardrobe),
+				edensCabin: clone(def_wardrobe),
+				asylum: clone(def_wardrobe),
+				alexFarm: clone(def_wardrobe),
+				stripClub: clone(def_wardrobe),
+				brothel: clone(def_wardrobe),
+				schoolBoys: clone(def_wardrobe),
+				schoolGirls: clone(def_wardrobe),
+				prison: clone(def_wardrobe),
 			};
-			for (let j = V.wardrobes.prison[slot].length - 1; j >= 0; j--) {
-				if (V.wardrobes.prison[slot][j].temp) V.wardrobes.prison[slot].deleteAt(j);
-			};
-			for (let j = V.wardrobes.asylum[slot].length - 1; j >= 0; j--) {
-				if (V.wardrobes.asylum[slot][j].temp) V.wardrobes.asylum[slot].deleteAt(j);
+			/* beach */
+			V.wardrobes.changingRoom.name = "Beach changing room";
+			V.wardrobes.changingRoom.unlocked = true;
+			/* eden's */
+			V.wardrobes.edensCabin.name = "Eden's Cabin";
+			V.wardrobes.edensCabin.space = 10;
+			if (V.syndromeeden) V.wardrobes.edensCabin.unlocked = true;
+			/* asylum */
+			V.wardrobes.asylum.locationRequirement.push("asylum");
+			V.wardrobes.asylum.name = "Asylum";
+			V.wardrobes.asylum.transfer = false;
+			V.wardrobes.asylum.isolated = true;
+			/* alex's */
+			V.wardrobes.alexFarm.name = "Alex's Farm";
+			V.wardrobes.alexFarm.shopSend = true;
+			V.wardrobes.alexFarm.space = 40;
+			if (V.farm_stage >= 7) V.wardrobes.alexFarm.unlocked = true;
+			/* strip club */
+			V.wardrobes.stripClub.name = "Strip Club";
+			V.wardrobes.stripClub.space = 10;
+			if (V.stripclubdancingintro) V.wardrobes.stripClub.unlocked = true;
+			/* brothel */
+			V.wardrobes.brothel.name = "Brothel";
+			V.wardrobes.brothel.space = 10;
+			if (V.brotheljob) V.wardrobes.brothel.unlocked = true;
+			/* school pool boys */
+			V.wardrobes.schoolBoys.name = "Schools boy's locker";
+			V.wardrobes.schoolBoys.unlocked = true;
+			V.wardrobes.schoolBoys.under_lower.push(setup.clothes.under_lower[7]);
+			V.wardrobes.schoolBoys.under_lower.last().colour = "blue";
+			/* school pool girls */
+			V.wardrobes.schoolGirls.name = "Schools girl's locker";
+			V.wardrobes.schoolGirls.unlocked = true;
+			V.wardrobes.schoolGirls.under_lower.push(setup.clothes.under_lower[6]);
+			V.wardrobes.schoolGirls.under_lower.last().colour = "blue";
+			V.wardrobes.schoolGirls.under_upper.push(setup.clothes.under_upper[2]);
+			V.wardrobes.schoolGirls.under_upper.last().colour = "blue";
+			/* prison */
+			V.wardrobes.prison.name = "Prison locker";
+			V.wardrobes.prison.transfer = false;
+			V.wardrobes.prison.isolated = true;
+			/* add .lastTaken prop to everything */
+			if (V.worn !== undefined) Object.keys(V.worn).forEach(s => V.worn[s].lastTaken = "wardrobe");
+			if (V.carried !== undefined) Object.keys(V.carried).forEach(s => V.carried[s].lastTaken = "wardrobe");
+			if (V.store !== undefined) Object.keys(V.store).forEach(s => V.store[s].forEach(i => i.lastTaken = "wardrobe"));
+		};
+		/* fix prison wardrobe name */
+		if (V.wardrobes.prison.name === "Prison Locker") V.wardrobes.prison.name = "Prison locker";
+		/* very old saves */
+		if (V.objectVersion.wardrobes < 2) {
+			for (const slot in setup.clothes_all_slots) {
+				/* skip slots that didn't exist in old saves */
+				if (V.wardrobe[slot] === undefined) continue;
+				/* remove all temporary items */
+				for (let j = V.wardrobe[slot].length - 1; j >= 0; j--) {
+					if (V.wardrobe[slot][j].temp) V.wardrobe[slot].deleteAt(j);
+				};
+				for (let j = V.wardrobes.prison[slot].length - 1; j >= 0; j--) {
+					if (V.wardrobes.prison[slot][j].temp) V.wardrobes.prison[slot].deleteAt(j);
+				};
+				for (let j = V.wardrobes.asylum[slot].length - 1; j >= 0; j--) {
+					if (V.wardrobes.asylum[slot][j].temp) V.wardrobes.asylum[slot].deleteAt(j);
+				};
 			};
 		};
-	};
-	/* less old saves */
-	if (V.objectVersion.wardrobes < 4) {
-		/* remove unnecessary vars */
-		clothesDataTrimmerLoop();
-		/* add a slot for genitals to all wardrobes */
-		if (V.wardrobe.genitals === undefined) V.wardrobe.genitals = [];
-		for (const w in V.wardrobes) {
-			if (w !== "wardrobe" && V.wardrobes[w].unlocked !== undefined && V.wardrobes[w].genitals === undefined)
-				V.wardrobes[w].genitals = [];
+		/* less old saves */
+		if (V.objectVersion.wardrobes < 4) {
+			/* remove unnecessary vars */
+			clothesDataTrimmerLoop();
+			/* add a slot for genitals to all wardrobes */
+			if (V.wardrobe.genitals === undefined) V.wardrobe.genitals = [];
+			for (const w in V.wardrobes) {
+				if (w !== "wardrobe" && V.wardrobes[w].unlocked !== undefined && V.wardrobes[w].genitals === undefined)
+					V.wardrobes[w].genitals = [];
+			}
 		}
-	}
-<</script>>
+	<</script>>
 <</widget>>
 
 <<widget "updateClothingColours">>

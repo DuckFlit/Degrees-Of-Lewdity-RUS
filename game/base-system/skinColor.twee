@@ -94,92 +94,90 @@
 <</widget>>
 
 <<widget "SkinColorImgTest">>
-
-<<if !$options.tanImgEnabled>>
-	<<set $options.tanImgEnabled to true>>
-	<<set _skincolortemp to true>>
-<</if>>
-<<print '<img class="" src="img/bodyRed/baseReColorTest.png" style="filter:'+skinColor($options.tanImgEnabled, $range,setup.skinColor[$naturalSkinColor])+'">'>>
-<<if _skincolortemp is true>>
-	<<set $options.tanImgEnabled to false>>
-<</if>>
-
+	<<if !$options.tanImgEnabled>>
+		<<set $options.tanImgEnabled to true>>
+		<<set _skincolortemp to true>>
+	<</if>>
+	<<print '<img class="" src="img/bodyRed/baseReColorTest.png" style="filter:'+skinColor($options.tanImgEnabled, $range,setup.skinColor[$naturalSkinColor])+'">'>>
+	<<if _skincolortemp is true>>
+		<<set $options.tanImgEnabled to false>>
+	<</if>>
 <</widget>>
 
 <<widget "tanned">>
-<<if $options.tanningEnabled is true>>
-	<<set _coverage to [0,0,0,0,0,0,0,0,0]>>
-	<<if _args[1] is "ignoreCoverage">>
+	<<if $options.tanningEnabled is true>>
 		<<set _coverage to [0,0,0,0,0,0,0,0,0]>>
-	<<elseif _args[1] is "tanLines">>
-		<<tannedCoverage>>
-	<</if>>
-	<<if $skinColor.sunBlock is true and _args[0] gt 0>>
-		<<set _tanChange to 0>>
-	<<else>>
-		<<set _tanChange to _args[0] / 24>>
-	<</if>>
-
-	<<for _i to 0; _i lt $skinColor.tanLoc.length; _i++>>
-		<<if _coverage[_i] is 0>>
-			<<set _tanLoc to $skinColor.tanLoc[_i]>>
-			<<set $skinColor.tanValues[_i] to Math.clamp(($skinColor.tanValues[_i] + _tanChange).toFixed(1), 0, 100)>>
-			<<set $skinColor.current[_tanLoc] to skinColor($options.tanImgEnabled, $skinColor.tanValues[_i],$skinColor.overwrite)>>
+		<<if _args[1] is "ignoreCoverage">>
+			<<set _coverage to [0,0,0,0,0,0,0,0,0]>>
+		<<elseif _args[1] is "tanLines">>
+			<<tannedCoverage>>
 		<</if>>
-	<</for>>
-	<<set $skinColor.current.mouth to skinColor($options.tanImgEnabled, $skinColor.tanValues[0],$skinColor.overwrite)>>
-<</if>>
-<<if $options.tanningEnabled is false and !$options.tanImgEnabled>>
-	<<set $skinColor.current to {
-		"test": "",
-		"body": "",
-		"breasts": "",
-		"penis": "",
-		"swimshorts": "",
-		"swimsuitTop": "",
-		"swimsuitBottom": "",
-		"bikiniTop": "",
-		"bikiniBottom": "",
-		"tshirt": "",
-		"mouth": ""
-	}>>
-<</if>>
-<<if $options.tanningEnabled is false and $options.tanImgEnabled>>
-	<<for _s to 0; _s lt $skinColor.tanLoc.length; _s++>>
-		<<set $skinColor.current[$skinColor.tanLoc[_s]] to skinColor($options.tanImgEnabled, $skinColor.tanValues[_s],$skinColor.overwrite)>>
-	<</for>>
-	<<set $skinColor.current.mouth to skinColor($options.tanImgEnabled, $skinColor.tanValues[0],$skinColor.overwrite)>>
-<</if>>
+		<<if $skinColor.sunBlock is true and _args[0] gt 0>>
+			<<set _tanChange to 0>>
+		<<else>>
+			<<set _tanChange to _args[0] / 24>>
+		<</if>>
+
+		<<for _i to 0; _i lt $skinColor.tanLoc.length; _i++>>
+			<<if _coverage[_i] is 0>>
+				<<set _tanLoc to $skinColor.tanLoc[_i]>>
+				<<set $skinColor.tanValues[_i] to Math.clamp(($skinColor.tanValues[_i] + _tanChange).toFixed(1), 0, 100)>>
+				<<set $skinColor.current[_tanLoc] to skinColor($options.tanImgEnabled, $skinColor.tanValues[_i],$skinColor.overwrite)>>
+			<</if>>
+		<</for>>
+		<<set $skinColor.current.mouth to skinColor($options.tanImgEnabled, $skinColor.tanValues[0],$skinColor.overwrite)>>
+	<</if>>
+	<<if $options.tanningEnabled is false and !$options.tanImgEnabled>>
+		<<set $skinColor.current to {
+			"test": "",
+			"body": "",
+			"breasts": "",
+			"penis": "",
+			"swimshorts": "",
+			"swimsuitTop": "",
+			"swimsuitBottom": "",
+			"bikiniTop": "",
+			"bikiniBottom": "",
+			"tshirt": "",
+			"mouth": ""
+		}>>
+	<</if>>
+	<<if $options.tanningEnabled is false and $options.tanImgEnabled>>
+		<<for _s to 0; _s lt $skinColor.tanLoc.length; _s++>>
+			<<set $skinColor.current[$skinColor.tanLoc[_s]] to skinColor($options.tanImgEnabled, $skinColor.tanValues[_s],$skinColor.overwrite)>>
+		<</for>>
+		<<set $skinColor.current.mouth to skinColor($options.tanImgEnabled, $skinColor.tanValues[0],$skinColor.overwrite)>>
+	<</if>>
 <</widget>>
 
 <<widget "tannedCoverage">>
-<<if $worn.over_upper.name isnot "naked" or $worn.upper.name isnot "naked">>
-<<else>>
-	<<switch $worn.under_upper.name>>
-	<<case "bikini top">>
-		<<set _coverage[$skinColor.tanLoc.indexOf("bikiniTop")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("breasts")] to 1>>
-	<<case "school swimsuit" "foreign school swimsuit">>
-		<<set _coverage[$skinColor.tanLoc.indexOf("bikiniTop")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("swimsuitTop")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("breasts")] to 1>>
-	<</switch>>
-<</if>>
-<<if $worn.over_lower.name isnot "naked" or $worn.lower.name isnot "naked">>
-<<else>>
-	<<switch $worn.under_lower.name>>
-	<<case "bikini bottoms">>
-		<<set _coverage[$skinColor.tanLoc.indexOf("bikiniBottom")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("swimsuitBottom")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("penis")] to 1>>
-	<<case "school swimsuit bottom" "foreign school swimsuit bottom">>
-		<<set _coverage[$skinColor.tanLoc.indexOf("swimsuitBottom")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("bikiniBottom")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("penis")] to 1>>
-	<<case "school swim shorts">>
-		<<set _coverage[$skinColor.tanLoc.indexOf("swimshorts")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("bikiniBottom")] to 1>>
-		<<set _coverage[$skinColor.tanLoc.indexOf("penis")] to 1>>
-	<</switch>>
-<</if>>
+	<<if $worn.over_upper.name isnot "naked" or $worn.upper.name isnot "naked">>
+	<<else>>
+		<<switch $worn.under_upper.name>>
+		<<case "bikini top">>
+			<<set _coverage[$skinColor.tanLoc.indexOf("bikiniTop")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("breasts")] to 1>>
+		<<case "school swimsuit" "foreign school swimsuit">>
+			<<set _coverage[$skinColor.tanLoc.indexOf("bikiniTop")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("swimsuitTop")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("breasts")] to 1>>
+		<</switch>>
+	<</if>>
+	<<if $worn.over_lower.name isnot "naked" or $worn.lower.name isnot "naked">>
+	<<else>>
+		<<switch $worn.under_lower.name>>
+		<<case "bikini bottoms">>
+			<<set _coverage[$skinColor.tanLoc.indexOf("bikiniBottom")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("swimsuitBottom")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("penis")] to 1>>
+		<<case "school swimsuit bottom" "foreign school swimsuit bottom">>
+			<<set _coverage[$skinColor.tanLoc.indexOf("swimsuitBottom")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("bikiniBottom")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("penis")] to 1>>
+		<<case "school swim shorts">>
+			<<set _coverage[$skinColor.tanLoc.indexOf("swimshorts")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("bikiniBottom")] to 1>>
+			<<set _coverage[$skinColor.tanLoc.indexOf("penis")] to 1>>
+		<</switch>>
+	<</if>>
 <</widget>>
