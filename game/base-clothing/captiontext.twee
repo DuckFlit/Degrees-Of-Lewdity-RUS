@@ -1,43 +1,43 @@
 :: Widgets Clothing caption text [widget]
 
 <<widget "clothingCaptionText">>
-<<run window.outfitChecks()>>
-<<if _fullyNaked is false>>
-	<<set _clothingCaptionItems to []>>
-	<<set _finally to ".">>
-	<<set _text_output to "">>
+	<<run window.outfitChecks()>>
+	<<if _fullyNaked is false>>
+		<<set _clothingCaptionItems to []>>
+		<<set _finally to ".">>
+		<<set _text_output to "">>
 
-	<<set _wearing to "You are " + (_topless ? "<span class='pink'>topless</span>, " : "") + "wearing ">>
+		<<set _wearing to "You are " + (_topless ? "<span class='pink'>topless</span>, " : "") + "wearing ">>
 
-	<<if !_overNaked>>
-		<<clothingCaptionTextOver>>
+		<<if !_overNaked>>
+			<<clothingCaptionTextOver>>
+		<</if>>
+
+		<<if !_middleNaked>>
+			<<clothingCaptionTextMiddle>>
+		<</if>>
+
+		<<clothingCaptionTextUnder>>
+
+		<<set _text_output to _wearing>>
+		<<if _clothingCaptionItems.length is 1>>
+			<<set _text_output += (_nothingBut ? "nothing but" : "only")>>
+		<</if>>
+
+		<<set _text_output += formatList(_clothingCaptionItems) + _finally>>
+		<<print _text_output>>
+
+		<<clothingCaptionTextGenitals>>
+	<</if>>
+	<<clothingCaptionTextNothing>>
+	<<clothingCaptionTextMask>>
+	<br>
+	<<if window.checkForExposedClothing()>>
+		<<clothingCaptionTextStrip>>
 	<</if>>
 
-	<<if !_middleNaked>>
-		<<clothingCaptionTextMiddle>>
-	<</if>>
-
-	<<clothingCaptionTextUnder>>
-
-	<<set _text_output to _wearing>>
-	<<if _clothingCaptionItems.length is 1>>
-		<<set _text_output += (_nothingBut ? "nothing but" : "only")>>
-	<</if>>
-
-	<<set _text_output += formatList(_clothingCaptionItems) + _finally>>
-	<<print _text_output>>
-
-	<<clothingCaptionTextGenitals>>
-<</if>>
-<<clothingCaptionTextNothing>>
-<<clothingCaptionTextMask>>
-<br>
-<<if window.checkForExposedClothing()>>
-	<<clothingCaptionTextStrip>>
-<</if>>
-
-<<clothingCaptionTextGender>>
-<br>
+	<<clothingCaptionTextGender>>
+	<br>
 <</widget>>
 
 <<widget "pushClothingCaption">>
@@ -88,63 +88,63 @@
 <</silently>><</widget>>
 
 <<widget "clothingCaptionTextUnder">><<silently>>
-<<set $_exposed to (_overNaked and _middleNaked)>>
+	<<set $_exposed to (_overNaked and _middleNaked)>>
 
-<<if _underNaked>>
-	<!--Not wearing-->
-	<<if ($worn.over_upper.name isnot "naked" or $worn.upper.name isnot "naked") and
-	($worn.over_lower.name isnot "naked" or $worn.lower.name isnot "naked")>>
-		<<set _finally to " <span class='purple'>with nothing beneath.</span>">>
-	<<elseif $worn.over_upper.name is "naked" or $worn.over_lower.name is "naked" or
-	$worn.upper.name is "naked" or $worn.lower.name is "naked">>
-		<<set _finally to " <span class='purple'>and no underwear.</span>">>
-	<</if>>
-<<else>>
-	<<if $_exposed>>
-		<<set _wearing to "<span class='pink'>You are " + (_topless ? "topless, " : "") + "wearing ">>
-		<<set _finally to ".</span>">>
-	<</if>>
-	<<if $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
-		<!--Both-->
-		<<set _nothingBut to $_exposed and _underOutfit>>
-
-		<<pushClothingCaption "under_upper">>
-		<<if !_underOutfit>>
-			<<pushClothingCaption "under_lower">>
+	<<if _underNaked>>
+		<!--Not wearing-->
+		<<if ($worn.over_upper.name isnot "naked" or $worn.upper.name isnot "naked") and
+		($worn.over_lower.name isnot "naked" or $worn.lower.name isnot "naked")>>
+			<<set _finally to " <span class='purple'>with nothing beneath.</span>">>
+		<<elseif $worn.over_upper.name is "naked" or $worn.over_lower.name is "naked" or
+		$worn.upper.name is "naked" or $worn.lower.name is "naked">>
+			<<set _finally to " <span class='purple'>and no underwear.</span>">>
 		<</if>>
-	<<elseif $worn.under_upper.name isnot "naked">>
-		<!--Upper only-->
-		<<pushClothingCaption "under_upper">>
-
-		<<set _nothingBut to $_exposed>>
-		<<if !$_exposed and !_bottomless>>
-			<<set _finally to ". <span class='purple'>You are not wearing " + ($player.gender isnot "m" ? "any panties" : "undies") + ".</span>">>
+	<<else>>
+		<<if $_exposed>>
+			<<set _wearing to "<span class='pink'>You are " + (_topless ? "topless, " : "") + "wearing ">>
+			<<set _finally to ".</span>">>
 		<</if>>
-	<<elseif $worn.under_lower.name isnot "naked">>
-		<!--Lower only-->
-		<<set $_pair to ($worn.under_lower.name.last() is "s" ? "a pair of" : "<<word under_lower>>")>>
-		<<pushClothingCaption "under_lower" $_pair>>
+		<<if $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
+			<!--Both-->
+			<<set _nothingBut to $_exposed and _underOutfit>>
 
-		<<set _nothingBut to $_exposed>>
-		<<if !$_exposed and !_topless and $player.breastsize gte 4 and ($player.gender isnot "m" or $backgroundTraits.includes("crossdresser"))>>
-			<<set _finally to ". <span class='purple'>You are not wearing a bra.</span>">>
+			<<pushClothingCaption "under_upper">>
+			<<if !_underOutfit>>
+				<<pushClothingCaption "under_lower">>
+			<</if>>
+		<<elseif $worn.under_upper.name isnot "naked">>
+			<!--Upper only-->
+			<<pushClothingCaption "under_upper">>
+
+			<<set _nothingBut to $_exposed>>
+			<<if !$_exposed and !_bottomless>>
+				<<set _finally to ". <span class='purple'>You are not wearing " + ($player.gender isnot "m" ? "any panties" : "undies") + ".</span>">>
+			<</if>>
+		<<elseif $worn.under_lower.name isnot "naked">>
+			<!--Lower only-->
+			<<set $_pair to ($worn.under_lower.name.last() is "s" ? "a pair of" : "<<word under_lower>>")>>
+			<<pushClothingCaption "under_lower" $_pair>>
+
+			<<set _nothingBut to $_exposed>>
+			<<if !$_exposed and !_topless and $player.breastsize gte 4 and ($player.gender isnot "m" or $backgroundTraits.includes("crossdresser"))>>
+				<<set _finally to ". <span class='purple'>You are not wearing a bra.</span>">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</silently>><</widget>>
 
 <<widget "clothingCaptionTextGenitals">><<silently>>
-<<if $worn.genitals.name isnot "naked">>
-	<<if _bottomless>>
-		<<set $_text_output to " <span class='red'>Your <<genitalsintegrity>> $worn.genitals.name <<if $worn.genitals.anal_shield is 1>>with an anal shield<</if>><<if playerHasButtPlug()>> and $worn.butt_plug.name<</if>> gives you no comfort.</span>">>
-	<<else>>
-		<<set $_text_output to " You wear <<genitalsword>> <<genitalsintegrity>> $worn.genitals.name<<if $worn.genitals.anal_shield is 1>> with an anal shield<</if>><<if playerHasButtPlug()>> and $worn.butt_plug.name<</if>>.">>
+	<<if $worn.genitals.name isnot "naked">>
+		<<if _bottomless>>
+			<<set $_text_output to " <span class='red'>Your <<genitalsintegrity>> $worn.genitals.name <<if $worn.genitals.anal_shield is 1>>with an anal shield<</if>><<if playerHasButtPlug()>> and $worn.butt_plug.name<</if>> gives you no comfort.</span>">>
+		<<else>>
+			<<set $_text_output to " You wear <<genitalsword>> <<genitalsintegrity>> $worn.genitals.name<<if $worn.genitals.anal_shield is 1>> with an anal shield<</if>><<if playerHasButtPlug()>> and $worn.butt_plug.name<</if>>.">>
+		<</if>>
+	<<elseif playerHasButtPlug()>>
+		<<set $_a to ($worn.butt_plug.name is "anal beads"? "": "a")>>
+		<<set $_text_output to " You wear $_a $worn.butt_plug.name.">>
 	<</if>>
-<<elseif playerHasButtPlug()>>
-	<<set $_a to ($worn.butt_plug.name is "anal beads"? "": "a")>>
-	<<set $_text_output to " You wear $_a $worn.butt_plug.name.">>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
+	<</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>
 
 <<widget "clothingCaptionTextMask">>
@@ -155,17 +155,16 @@
 <</widget>>
 
 <<widget "clothingCaptionTextNothing">><<silently>>
-<<if _fullyNaked>>
-	<<if $worn.genitals.name isnot "naked">>
-		<<set $_text_output to "Your <<genitalsintegrity>> $worn.genitals.name <<if $worn.genitals.anal_shield is 1>>with an anal shield<</if>> gives you no comfort.">>
-	<<else>>
-		<<set $_text_output to "You are completely naked!">>
+	<<if _fullyNaked>>
+		<<if $worn.genitals.name isnot "naked">>
+			<<set $_text_output to "Your <<genitalsintegrity>> $worn.genitals.name <<if $worn.genitals.anal_shield is 1>>with an anal shield<</if>> gives you no comfort.">>
+		<<else>>
+			<<set $_text_output to "You are completely naked!">>
+		<</if>>
+	<<elseif _bottomless>>
+		<<set $_text_output to "Your bottom half is completely exposed!">>
 	<</if>>
-<<elseif _bottomless>>
-	<<set $_text_output to "Your bottom half is completely exposed!">>
-<</if>>
-<</silently>><<if $_text_output>><span class="red"><<print $_text_output>></span><</if>>
-<</widget>>
+<</silently>><<if $_text_output>><span class="red"><<print $_text_output>></span><</if>><</widget>>
 
 <<widget "clothingstatecompare">>
 	/* One argument, a clothing article whose state you want to compare against its original state. Must be the ENTIRE variable, not .name! */
@@ -273,23 +272,21 @@
 <</widget>>
 
 <<widget "clothingCaptionTextGender">><<silently>>
-
-<<if $player.gender isnot "f" and $player.gender_appearance is "f">>
-	<<if $breastindicator is 1 and $player.perceived_breastsize gt 1>>
-		<<set $_text_output to "Your exposed breasts will make people think you're a girl!">>
-	<<elseif $exposed gte 2>>
-		<<set $_text_output to "The way you look, people will think you're a girl!">>
-	<<else>>
-		<<set $_text_output to "The way you're dressed, people will think you're a girl!">>
+	<<if $player.gender isnot "f" and $player.gender_appearance is "f">>
+		<<if $breastindicator is 1 and $player.perceived_breastsize gt 1>>
+			<<set $_text_output to "Your exposed breasts will make people think you're a girl!">>
+		<<elseif $exposed gte 2>>
+			<<set $_text_output to "The way you look, people will think you're a girl!">>
+		<<else>>
+			<<set $_text_output to "The way you're dressed, people will think you're a girl!">>
+		<</if>>
+	<<elseif $player.gender isnot "m" and $player.gender_appearance is "m">>
+		<<if $breastindicator is 0 and $worn.upper.exposed is 2 and $worn.under_upper.exposed gte 1 and $player.perceived_breastsize lte 1>>
+			<<set $_text_output to "Your exposed flat chest will make people think you're a boy!">>
+		<<elseif $exposed gte 2>>
+			<<set $_text_output to "The way you look, people will think you're a boy!">>
+		<<else>>
+			<<set $_text_output to "The way you're dressed, people will think you're a boy!">>
+		<</if>>
 	<</if>>
-<<elseif $player.gender isnot "m" and $player.gender_appearance is "m">>
-	<<if $breastindicator is 0 and $worn.upper.exposed is 2 and $worn.under_upper.exposed gte 1 and $player.perceived_breastsize lte 1>>
-		<<set $_text_output to "Your exposed flat chest will make people think you're a boy!">>
-	<<elseif $exposed gte 2>>
-		<<set $_text_output to "The way you look, people will think you're a boy!">>
-	<<else>>
-		<<set $_text_output to "The way you're dressed, people will think you're a boy!">>
-	<</if>>
-<</if>>
-<</silently>><<if $_text_output>><span class="pink"><<print $_text_output>></span><</if>>
-<</widget>>
+<</silently>><<if $_text_output>><span class="pink"><<print $_text_output>></span><</if>><</widget>>

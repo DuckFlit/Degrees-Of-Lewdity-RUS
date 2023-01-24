@@ -2,7 +2,7 @@
  * Usage:
  *
  * 1. Registering events as widgets
- * <<widget EVENT_NAME>>
+ * <<widget "EVENT_NAME">>
  *   (Event content)
  * <</widget>>
  *

@@ -2,86 +2,86 @@
 
 /*args[0] - location, args[1] - passageExit*/
 <<widget "childrenEvents">>
-<<if _args[0]>>
-	<<getChildrenIds _args[0]>>
-	<<if _childrenIds.length gt 0>>
-		<<set _singleEvents to true>>
+	<<if _args[0]>>
+		<<getChildrenIds _args[0]>>
+		<<if _childrenIds.length gt 0>>
+			<<set _singleEvents to true>>
+		<</if>>
+		<<getSameBirthChildrenIds _args[0] 2>>
+		<<if Object.keys(_birthChildrenIds).length gt 0>>
+			<<set _multipleEvents to true>>
+		<</if>>
+		<<set _keys to Object.keys(_birthChildrenIds)>>
+		<<set $childPassageExit to _args[1]>>
+		<<switch _args[0]>>
+			<<case "test">>
+				/*Examples of how to add events*/
+				<<if _singleEvents is true and (_multipleEvents is false or random(0,100) gt 40)>>
+					<<addevent `"testSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
+				<<elseif _multipleEvents is true>>
+					<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
+					<<addevent "testMultiple _args">>
+				<</if>>
+			<<case "wolf_cave">>
+				<<if _singleEvents is true and (_multipleEvents is false or random(0,100) gt 40)>>
+					<<addevent `"wolfCaveSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
+				<<elseif _multipleEvents is true>>
+					<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
+					/*<<addevent "wolfCaveMultiple _args">>*/
+				<</if>>
+		<</switch>>
 	<</if>>
-	<<getSameBirthChildrenIds _args[0] 2>>
-	<<if Object.keys(_birthChildrenIds).length gt 0>>
-		<<set _multipleEvents to true>>
-	<</if>>
-	<<set _keys to Object.keys(_birthChildrenIds)>>
-	<<set $childPassageExit to _args[1]>>
-	<<switch _args[0]>>
-		<<case "test">>
-			/*Examples of how to add events*/
-			<<if _singleEvents is true and (_multipleEvents is false or random(0,100) gt 40)>>
-				<<addevent `"testSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
-			<<elseif _multipleEvents is true>>
-				<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
-				<<addevent "testMultiple _args">>
-			<</if>>
-		<<case "wolf_cave">>
-			<<if _singleEvents is true and (_multipleEvents is false or random(0,100) gt 40)>>
-				<<addevent `"wolfCaveSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
-			<<elseif _multipleEvents is true>>
-				<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
-				/*<<addevent "wolfCaveMultiple _args">>*/
-			<</if>>
-	<</switch>>
-<</if>>
 <</widget>>
 
 <<widget "testSingles">>
-<<if _args[0]>>
-	<<childSelect _args[0]>>
-	<<switch random(0,0)>>
-		<<case 0>>
-			You spot your child <<childname>> on their back, looking at you with their <<childhands>> stretched towards you.
-			<br><br>
-			Picking <<childhim>> up, <<childhe>> <<childgiggles>> while rubbing your face.
-			<br><br>
-			<<link [[Breast feed (0:30)|childBreastFeed]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
-			<br>
-			<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
-	<</switch>>
-<</if>>
-<br>
+	<<if _args[0]>>
+		<<childSelect _args[0]>>
+		<<switch random(0,0)>>
+			<<case 0>>
+				You spot your child <<childname>> on their back, looking at you with their <<childhands>> stretched towards you.
+				<br><br>
+				Picking <<childhim>> up, <<childhe>> <<childgiggles>> while rubbing your face.
+				<br><br>
+				<<link [[Breast feed (0:30)|childBreastFeed]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+				<br>
+				<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+		<</switch>>
+	<</if>>
+	<br>
 <</widget>>
 
 <<widget "testMultiple">>
-<<if _args[0]>>
-	<<set $childrenIds to _args[0]>>
-	<<switch random(0,0)>>
-		<<case 0>>
-			You spot your children <<childrenNames $childrenIds>> sleeping together in their cot with a peaceful look on each face.
-			<br><br>
-			<<link [[Watch (0:30)|childCotWatch]]>><<pass 30>><<set $phase to 1>><</link>><<lstress>><<ltrauma>>
-			<br>
-			<<link [[Have a nap (0:30)|childCotWatch]]>><<pass 30>><<set $phase to 2>><</link>><<lstress>><<ltiredness>>
-	<</switch>>
-<</if>>
-<br>
+	<<if _args[0]>>
+		<<set $childrenIds to _args[0]>>
+		<<switch random(0,0)>>
+			<<case 0>>
+				You spot your children <<childrenNames $childrenIds>> sleeping together in their cot with a peaceful look on each face.
+				<br><br>
+				<<link [[Watch (0:30)|childCotWatch]]>><<pass 30>><<set $phase to 1>><</link>><<lstress>><<ltrauma>>
+				<br>
+				<<link [[Have a nap (0:30)|childCotWatch]]>><<pass 30>><<set $phase to 2>><</link>><<lstress>><<ltiredness>>
+		<</switch>>
+	<</if>>
+	<br>
 <</widget>>
 
 <<widget "wolfCaveSingles">>
-<<if _args[0]>>
-	<<childSelect _args[0]>>
-	<<switch random(0,0)>>
-		<<case 0>>
-			You spot your <<childtype>> <<childname>> lying on a sleeping wolf, looking at you with their <<childhands>> stretched towards you.
-			<br><br>
-			Picking <<childhim>> up, <<childhe>> <<childgiggles>> while rubbing your face.
-			<br><br>
-			<<if $milk_amount gte 1>>
-				<<link [[Breast feed (0:30)|childBreastFeed]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
-				<br>
-			<</if>>
-			<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
-	<</switch>>
-<</if>>
-<br>
+	<<if _args[0]>>
+		<<childSelect _args[0]>>
+		<<switch random(0,0)>>
+			<<case 0>>
+				You spot your <<childtype>> <<childname>> lying on a sleeping wolf, looking at you with their <<childhands>> stretched towards you.
+				<br><br>
+				Picking <<childhim>> up, <<childhe>> <<childgiggles>> while rubbing your face.
+				<br><br>
+				<<if $milk_amount gte 1>>
+					<<link [[Breast feed (0:30)|childBreastFeed]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+					<br>
+				<</if>>
+				<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+		<</switch>>
+	<</if>>
+	<br>
 <</widget>>
 
 :: childBreastFeed
@@ -132,7 +132,7 @@
 <br><br>
 <<childViewerDisplay _childrenIds>>
 <br><br>
-<<if $player.inventory.childrenToys>>	
+<<if $player.inventory.childrenToys>>
 	<<if !$storedChildrenToys[$location]>><<set $storedChildrenToys[$location] to []>><</if>>
 	<<link [[Store toys|Childrens Home Toys]]>><</link>>
 <<else>>
@@ -159,77 +159,75 @@
 :: Childrens Home Toys Widgets [widget]
 
 <<widget "childrenToysUI">>
-<<if $player.inventory.childrenToys.length gt 0>>
-	<div class="toysUiElement">
-		<h4>Toys with you</h4>
-		<<for _i to 0; _i lt $player.inventory.childrenToys.length; _i++>>
-			<label>
-				<<radiobutton "_selectedCurrentToy" _i autocheck>>
-				<span @class="$player.inventory.childrenToys[_i].colour"><<print $player.inventory.childrenToys[_i].name>></span>
-			</label>
+	<<if $player.inventory.childrenToys.length gt 0>>
+		<div class="toysUiElement">
+			<h4>Toys with you</h4>
+			<<for _i to 0; _i lt $player.inventory.childrenToys.length; _i++>>
+				<label>
+					<<radiobutton "_selectedCurrentToy" _i autocheck>>
+					<span @class="$player.inventory.childrenToys[_i].colour"><<print $player.inventory.childrenToys[_i].name>></span>
+				</label>
+				<br>
+			<</for>>
 			<br>
-		<</for>>
-		<br>
-		<<link "Discard">>
-			<<run $player.inventory.childrenToys.deleteAt(_selectedCurrentToy)>>
-			<<set _selectedCurrentToy to 0>>
-			<<childrenToysUIReplace>>
-		<</link>>
-		<br>
-		<<if $storedChildrenToys[$location].length lt 10>>
-			<<link "Leave toy">>
-				<<run $storedChildrenToys[$location].push($player.inventory.childrenToys[_selectedCurrentToy])>>
+			<<link "Discard">>
 				<<run $player.inventory.childrenToys.deleteAt(_selectedCurrentToy)>>
 				<<set _selectedCurrentToy to 0>>
 				<<childrenToysUIReplace>>
 			<</link>>
-		<<else>>
-			You can't leave more than 10 toys at a time.
-		<</if>>
-	</div>
-<<else>>
-	<div class="toysUiElement">You have no toys with you.</div>
-<</if>>
-
-
-<<if $storedChildrenToys[$location].length gt 0>>
-	<div class="toysUiElement">
-		<h4>Toys your children can play with</h4>
-		<<for _i to 0; _i lt $storedChildrenToys[$location].length; _i++>>
-			<label>
-				<<radiobutton "_selectedLocationToy" _i autocheck>>
-				<span @class="$storedChildrenToys[$location][_i].colour"><<print $storedChildrenToys[$location][_i].name>></span>
-			</label>
 			<br>
-		<</for>>
-		<br>
-		<<link "Discard">>
-			<<run $storedChildrenToys[$location].deleteAt(_selectedLocationToy)>>
-			<<set _selectedLocationToy to 0>>
-			<<childrenToysUIReplace>>
-		<</link>>
-		<br>
-		<<if $player.inventory.childrenToys.length lt 5>>
-			<<link "Take Back">>
-				<<run $player.inventory.childrenToys.push($storedChildrenToys[$location][_selectedLocationToy])>>
+			<<if $storedChildrenToys[$location].length lt 10>>
+				<<link "Leave toy">>
+					<<run $storedChildrenToys[$location].push($player.inventory.childrenToys[_selectedCurrentToy])>>
+					<<run $player.inventory.childrenToys.deleteAt(_selectedCurrentToy)>>
+					<<set _selectedCurrentToy to 0>>
+					<<childrenToysUIReplace>>
+				<</link>>
+			<<else>>
+				You can't leave more than 10 toys at a time.
+			<</if>>
+		</div>
+	<<else>>
+		<div class="toysUiElement">You have no toys with you.</div>
+	<</if>>
+
+	<<if $storedChildrenToys[$location].length gt 0>>
+		<div class="toysUiElement">
+			<h4>Toys your children can play with</h4>
+			<<for _i to 0; _i lt $storedChildrenToys[$location].length; _i++>>
+				<label>
+					<<radiobutton "_selectedLocationToy" _i autocheck>>
+					<span @class="$storedChildrenToys[$location][_i].colour"><<print $storedChildrenToys[$location][_i].name>></span>
+				</label>
+				<br>
+			<</for>>
+			<br>
+			<<link "Discard">>
 				<<run $storedChildrenToys[$location].deleteAt(_selectedLocationToy)>>
 				<<set _selectedLocationToy to 0>>
 				<<childrenToysUIReplace>>
 			<</link>>
-		<<else>>
-			You can't have more than 5 toys with you at a time.
-		<</if>>
-	</div>
-<<else>>
-	<div class="toysUiElement">You havn't left any toys here.</div>
-<</if>>
-
+			<br>
+			<<if $player.inventory.childrenToys.length lt 5>>
+				<<link "Take Back">>
+					<<run $player.inventory.childrenToys.push($storedChildrenToys[$location][_selectedLocationToy])>>
+					<<run $storedChildrenToys[$location].deleteAt(_selectedLocationToy)>>
+					<<set _selectedLocationToy to 0>>
+					<<childrenToysUIReplace>>
+				<</link>>
+			<<else>>
+				You can't have more than 5 toys with you at a time.
+			<</if>>
+		</div>
+	<<else>>
+		<div class="toysUiElement">You havn't left any toys here.</div>
+	<</if>>
 <</widget>>
 
 <<widget "childrenToysUIReplace">>
-<<replace "#childrenToysUI">>
-	<<childrenToysUI>>
-<</replace>>
+	<<replace "#childrenToysUI">>
+		<<childrenToysUI>>
+	<</replace>>
 <</widget>>
 
 :: Children Activity Events

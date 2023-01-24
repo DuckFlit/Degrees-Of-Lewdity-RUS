@@ -1,74 +1,74 @@
 :: Pregnancy [widget]
 
 <<widget "moveCreature">>
-/*0 -> _pregnancy.fetus[_i] or location (any but portable)*/
-/*1 -> Type*/
-/*2 -> locationId*/
-<<if _args[0] isnot null and _args[1]>>
-	<<set _portable to $container.portable>>
-	<<set _container to $container[$phase]>>
-	<<set $_pregnancy to $sexStats[_args[3] or "anus"].pregnancy>>
+	/*0 -> _pregnancy.fetus[_i] or location (any but portable)*/
+	/*1 -> Type*/
+	/*2 -> locationId*/
+	<<if _args[0] isnot null and _args[1]>>
+		<<set _portable to $container.portable>>
+		<<set _container to $container[$phase]>>
+		<<set $_pregnancy to $sexStats[_args[3] or "anus"].pregnancy>>
 
-	<<set _result to _args[1]>>
-	<<switch _args[0]>>
-		<<case 0 1 2 3>>
-			<!-- With a number as argument 0, it takes the parasite of that argument in your current pregnancy item -->
-			<<set _creature to clone($_pregnancy.fetus[_args[0]])>>
-		<<default>>
-			<!-- With a string as argument 0, it takes a parasite from the container matching the argument. Which parasite it takes corresponds to argument 2 -->
-			<!-- Currently only used when transferring parasites for selling in :: Containers, inside a for loop -->
-			<<if _args[2] isnot null>>
-				<<set _creature to clone($container[_args[0]].creatures[_args[2]])>>
-			<</if>>
-	<</switch>>
+		<<set _result to _args[1]>>
+		<<switch _args[0]>>
+			<<case 0 1 2 3>>
+				<!-- With a number as argument 0, it takes the parasite of that argument in your current pregnancy item -->
+				<<set _creature to clone($_pregnancy.fetus[_args[0]])>>
+			<<default>>
+				<!-- With a string as argument 0, it takes a parasite from the container matching the argument. Which parasite it takes corresponds to argument 2 -->
+				<!-- Currently only used when transferring parasites for selling in :: Containers, inside a for loop -->
+				<<if _args[2] isnot null>>
+					<<set _creature to clone($container[_args[0]].creatures[_args[2]])>>
+				<</if>>
+		<</switch>>
 
-	<<if _creature>>
-		<<if _result is "destroy">>
-			<!-- Simply gets rid of the parasite -->
-			<<set _creature to null>>
-			<<removeCreature _args[0] _args[2] _args[3]>>
-		<<elseif _result is "portable">>
-			<!-- Transfers the parasites for selling. The value of the parasite depends on its growth stat -->
-			<<set _portable.creatures.push(clone(_creature))>>
-			<<set _value to Math.floor(1000 / _creature.stats.growth)>>
-			<<set _portable.value += _value>>
-			<<removeCreature _args[0] _args[2] _args[3]>>
-		<<elseif _result is "replace" and _args[2] isnot null and _args[0] gte 0 and _args[0] lte 3>>
-			<!-- Replaces an existing parasite, for when you birth more than you can currently store -->
-			<!-- The replaced parasite gets transferred for selling -->
-			<<if _container.creatures[_i] isnot undefined>>
-				<<if _container.creatures[_i] isnot null>>
-					<<set _portable.creatures.push(clone(_container.creatures[_args[2]]))>>
-					<<set _value to Math.floor(1000 / _container.creatures[_args[2]].stats.growth)>>
-					<<set _portable.value += _value>>
+		<<if _creature>>
+			<<if _result is "destroy">>
+				<!-- Simply gets rid of the parasite -->
+				<<set _creature to null>>
+				<<removeCreature _args[0] _args[2] _args[3]>>
+			<<elseif _result is "portable">>
+				<!-- Transfers the parasites for selling. The value of the parasite depends on its growth stat -->
+				<<set _portable.creatures.push(clone(_creature))>>
+				<<set _value to Math.floor(1000 / _creature.stats.growth)>>
+				<<set _portable.value += _value>>
+				<<removeCreature _args[0] _args[2] _args[3]>>
+			<<elseif _result is "replace" and _args[2] isnot null and _args[0] gte 0 and _args[0] lte 3>>
+				<!-- Replaces an existing parasite, for when you birth more than you can currently store -->
+				<!-- The replaced parasite gets transferred for selling -->
+				<<if _container.creatures[_i] isnot undefined>>
+					<<if _container.creatures[_i] isnot null>>
+						<<set _portable.creatures.push(clone(_container.creatures[_args[2]]))>>
+						<<set _value to Math.floor(1000 / _container.creatures[_args[2]].stats.growth)>>
+						<<set _portable.value += _value>>
+						<<set _container.creatures[_args[2]] to clone(_creature)>>
+						<<set _replaced to true>>
+					<</if>>
+				<</if>>
+				<<if _replaced isnot true>>
 					<<set _container.creatures[_args[2]] to clone(_creature)>>
-					<<set _replaced to true>>
+					<<set _container.count += 1>>
 				<</if>>
+				<<removeCreature _args[0] undefined _args[3]>>
+			<<elseif _result is "container">>
+				<!-- Keeps the parasite and moves it to the current container -->
+				<<set _moveTo to false>>
+				<<for _containerSlot to 0; _containerSlot lt _container.maxCount; _containerSlot++>>
+					<<if _container.creatures[_containerSlot] is undefined>>
+						<<set _moveTo to true>>
+					<<elseif _container.creatures[_containerSlot] is null>>
+						<<set _moveTo to true>>
+					<</if>>
+					<<if _moveTo is true>>
+						<<set $container[$phase].creatures[_containerSlot] to clone(_creature)>>
+						<<set $container[$phase].count += 1>>
+						<<removeCreature _args[0] _args[2] _args[3]>>
+						<<break>>
+					<</if>>
+				<</for>>
 			<</if>>
-			<<if _replaced isnot true>>
-				<<set _container.creatures[_args[2]] to clone(_creature)>>
-				<<set _container.count += 1>>
-			<</if>>
-			<<removeCreature _args[0] undefined _args[3]>>
-		<<elseif _result is "container">>
-			<!-- Keeps the parasite and moves it to the current container -->
-			<<set _moveTo to false>>
-			<<for _containerSlot to 0; _containerSlot lt _container.maxCount; _containerSlot++>>
-				<<if _container.creatures[_containerSlot] is undefined>>
-					<<set _moveTo to true>>
-				<<elseif _container.creatures[_containerSlot] is null>>
-					<<set _moveTo to true>>
-				<</if>>
-				<<if _moveTo is true>>
-					<<set $container[$phase].creatures[_containerSlot] to clone(_creature)>>
-					<<set $container[$phase].count += 1>>
-					<<removeCreature _args[0] _args[2] _args[3]>>
-					<<break>>
-				<</if>>
-			<</for>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "removeCreature">>
@@ -93,506 +93,506 @@
 <</widget>>
 
 <<widget "clearToDeleteParasiteFetus">>
-<<if $sexStats.anus.pregnancy.type is "parasite">>
-	<<run $sexStats.anus.pregnancy.fetus to $sexStats.anus.pregnancy.fetus.filter(child => child && !child.toDelete)>>
-	<<if $sexStats.anus.pregnancy.fetus.length is 0>>
-		<<set $sexStats.anus.pregnancy.type to null>>
+	<<if $sexStats.anus.pregnancy.type is "parasite">>
+		<<run $sexStats.anus.pregnancy.fetus to $sexStats.anus.pregnancy.fetus.filter(child => child && !child.toDelete)>>
+		<<if $sexStats.anus.pregnancy.fetus.length is 0>>
+			<<set $sexStats.anus.pregnancy.type to null>>
+		<</if>>
 	<</if>>
-<</if>>
-<<if $sexStats.vagina.pregnancy.type is "parasite">>
-	<<run $sexStats.vagina.pregnancy.fetus to $sexStats.vagina.pregnancy.fetus.filter(child => child && !child.toDelete)>>
-	<<if $sexStats.vagina.pregnancy.fetus.length is 0>>
-		<<set $sexStats.vagina.pregnancy.type to null>>
+	<<if $sexStats.vagina.pregnancy.type is "parasite">>
+		<<run $sexStats.vagina.pregnancy.fetus to $sexStats.vagina.pregnancy.fetus.filter(child => child && !child.toDelete)>>
+		<<if $sexStats.vagina.pregnancy.fetus.length is 0>>
+			<<set $sexStats.vagina.pregnancy.type to null>>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "menstruationCycle">>
-<<set _menstruation to $sexStats.vagina.menstruation>>
-<<if _args[0]>>
-	<<set _menstruation.nonCycleRng.push(random(0,6))>>
-	<<set _menstruation.nonCycleRng.deleteAt(0)>>
-<</if>>
+	<<set _menstruation to $sexStats.vagina.menstruation>>
+	<<if _args[0]>>
+		<<set _menstruation.nonCycleRng.push(random(0,6))>>
+		<<set _menstruation.nonCycleRng.deleteAt(0)>>
+	<</if>>
 
-<<set _menstruation.running to $player.vaginaExist or (!$player.vaginaExist and V.skin.pubic.pen is "magic" and V.skin.pubic.special is "pregnancy")>>
+	<<set _menstruation.running to $player.vaginaExist or (!$player.vaginaExist and V.skin.pubic.pen is "magic" and V.skin.pubic.special is "pregnancy")>>
 
-<<if _menstruation.running is true>>
-	<<set $_pregLocation to ($player.vaginaExist ? "vagina" : "anus")>>
-	<<set $_pregnancy to $sexStats[$_pregLocation].pregnancy>>
-	<<set _pills to $sexStats.pills>>
-	<<set $_last_preg_pill to clone(_pills.lastTaken.pregnancy)>>
-	<<switch _menstruation.currentState>>
-		<<case "normal">>
-			<<if $cycledisable is "t">>
-				<<playerPregnancyAttempt `Math.pow(4,_menstruation.nonCycleRng[0])` $_pregLocation>>
-			<<elseif _menstruation.currentDay lt _menstruation.currentDaysMax>>
-				/*Continue the cycle again*/
-				<<if _menstruation.currentDay gte _menstruation.currentDaysMax / 2 and _menstruation.lastDaysMax isnot _menstruation.currentDaysMax>>
-				<</if>>
-				<<if _menstruation.currentDay lt _menstruation.stages[1]>>
-					/*Menstrual phase - period occurs right at the start of this part*/
-					<<if $_last_preg_pill is "fertility booster" and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
-						<<set _menstruation.currentDay += 0.5>>
+	<<if _menstruation.running is true>>
+		<<set $_pregLocation to ($player.vaginaExist ? "vagina" : "anus")>>
+		<<set $_pregnancy to $sexStats[$_pregLocation].pregnancy>>
+		<<set _pills to $sexStats.pills>>
+		<<set $_last_preg_pill to clone(_pills.lastTaken.pregnancy)>>
+		<<switch _menstruation.currentState>>
+			<<case "normal">>
+				<<if $cycledisable is "t">>
+					<<playerPregnancyAttempt `Math.pow(4,_menstruation.nonCycleRng[0])` $_pregLocation>>
+				<<elseif _menstruation.currentDay lt _menstruation.currentDaysMax>>
+					/*Continue the cycle again*/
+					<<if _menstruation.currentDay gte _menstruation.currentDaysMax / 2 and _menstruation.lastDaysMax isnot _menstruation.currentDaysMax>>
 					<</if>>
-					<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
+					<<if _menstruation.currentDay lt _menstruation.stages[1]>>
+						/*Menstrual phase - period occurs right at the start of this part*/
+						<<if $_last_preg_pill is "fertility booster" and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						<<if $_last_preg_pill is "contraceptive" and (random(0,100) gte 50 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
+						<<else>>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+					<<elseif _menstruation.currentDay lt _menstruation.stages[2]>>
+						/*Follicular phase*/
+						<<if $_last_preg_pill is "fertility booster" and _pills.pills[$_last_preg_pill].doseTakenn gte 2 and _menstruation.currentDay lt _menstruation.stages[2]>>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy" and _menstruation.currentDay lt _menstruation.stages[2]>>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						<<if _menstruation.currentDay lt _menstruation.stages[2]>>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						/*Check for pregnancy at a reduced chance for a few days before*/
+						<<if _menstruation.currentDay gte _menstruation.stages[3] - 4>>
+							<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.stages[3] - _menstruation.currentDay)),6,30)>>
+							<<playerPregnancyAttempt $_multi $_pregLocation>>
+							<<run console.log("playerPregnancyAttempt - Follicular")>>
+						<</if>>
+					<<elseif _menstruation.currentDay lt _menstruation.stages[3]>>
+						/*Ovulation phase*/
 						<<set _menstruation.currentDay += 0.5>>
-					<</if>>
-					<<if $_last_preg_pill is "contraceptive" and (random(0,100) gte 50 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
+						<<set _menstruation.lastDaysMax to _menstruation.currentDaysMax>>
+
+						/*Check for pregnancy*/
+						<<playerPregnancyAttempt 3 $_pregLocation>>
 					<<else>>
-						<<set _menstruation.currentDay += 0.5>>
+						/*Luteal phase*/
+						/*Check for pregnancy at a reduced chance for a few days after*/
+						<<if _menstruation.currentDay lte _menstruation.stages[3] + 4>>
+							<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.currentDay - _menstruation.stages[3])),6,30)>>
+							<<playerPregnancyAttempt $_multi $_pregLocation`>>
+							<<run console.log("playerPregnancyAttempt - Luteal")>>
+						<</if>>
+						<<if $_last_preg_pill and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						<<if $_last_preg_pill is "contraceptive" and (random(0,100) gte 50 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
+						<<else>>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
 					<</if>>
-				<<elseif _menstruation.currentDay lt _menstruation.stages[2]>>
-					/*Follicular phase*/
-					<<if $_last_preg_pill is "fertility booster" and _pills.pills[$_last_preg_pill].doseTakenn gte 2 and _menstruation.currentDay lt _menstruation.stages[2]>>
-						<<set _menstruation.currentDay += 0.5>>
-					<</if>>
-					<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy" and _menstruation.currentDay lt _menstruation.stages[2]>>
-						<<set _menstruation.currentDay += 0.5>>
-					<</if>>
-					<<if _menstruation.currentDay lt _menstruation.stages[2]>>
-						<<set _menstruation.currentDay += 0.5>>
-					<</if>>
-					/*Check for pregnancy at a reduced chance for a few days before*/
-					<<if _menstruation.currentDay gte _menstruation.stages[3] - 4>>
-						<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.stages[3] - _menstruation.currentDay)),6,30)>>
-						<<playerPregnancyAttempt $_multi $_pregLocation>>
-						<<run console.log("playerPregnancyAttempt - Follicular")>>
-					<</if>>
-				<<elseif _menstruation.currentDay lt _menstruation.stages[3]>>
-					/*Ovulation phase*/
-					<<set _menstruation.currentDay += 0.5>>
-					<<set _menstruation.lastDaysMax to _menstruation.currentDaysMax>>
-
-					/*Check for pregnancy*/
-					<<playerPregnancyAttempt 3 $_pregLocation>>
 				<<else>>
-					/*Luteal phase*/
-					/*Check for pregnancy at a reduced chance for a few days after*/
-					<<if _menstruation.currentDay lte _menstruation.stages[3] + 4>>
-						<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.currentDay - _menstruation.stages[3])),6,30)>>
-						<<playerPregnancyAttempt $_multi $_pregLocation`>>
-						<<run console.log("playerPregnancyAttempt - Luteal")>>
-					<</if>>
-					<<if $_last_preg_pill and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
-						<<set _menstruation.currentDay += 0.5>>
-					<</if>>
-					<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
-						<<set _menstruation.currentDay += 0.5>>
-					<</if>>
-					<<if $_last_preg_pill is "contraceptive" and (random(0,100) gte 50 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
-					<<else>>
-						<<set _menstruation.currentDay += 0.5>>
-					<</if>>
+					/*Start the cycle again*/
+					<<restartMenstruationCycle>>
+					<<set _menstruation.periodEnabled to true>>
 				<</if>>
-			<<else>>
-				/*Start the cycle again*/
-				<<restartMenstruationCycle>>
-				<<set _menstruation.periodEnabled to true>>
-			<</if>>
-		<<case "recovering">>
-			<<set _menstruation.recoveryTime -= 0.5>>
-			<<if $_last_preg_pill is "fertility booster">>
-				<<switch _pills.pills[$_last_preg_pill].doseTaken>>
-					<<case 1>><<set _menstruation.recoveryTime -= 0.5>>
-					<<case 2 3 4>><<set _menstruation.recoveryTime -= 1>>
-				<</switch>>
-			<</if>>
-			<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
+			<<case "recovering">>
 				<<set _menstruation.recoveryTime -= 0.5>>
-			<</if>>
-			<<if $_pregnancy.totalBirthEvents gt 2>>
-				<<set _menstruation.recoveryTime -= 0.5>>
-			<</if>>
-			<<set _menstruation.recoveryStage to Math.floor((1 - (_menstruation.recoveryTime / _menstruation.recoveryTimeStart))*5)>>
-			<<if _menstruation.recoveryTime lte 0>>
-				<<set $effectsmessage to 1>>
-				<<set $recovered_from_pregnancy to 1>>
-				/*Ready to give birth again*/
-				<<restartMenstruationCycle>>
-				<<set _menstruation.currentState to "normal">>
-				<<set _menstruation.recoveryTime to null>>
-				<<set _menstruation.recoveryTimeStart to null>>
-				<<set _menstruation.recoveryStage to null>>
-			<</if>>
-	<</switch>>
-<</if>>
-<<updateRecordedSperm "vagina" "pc" 0.5>>
-<<updateRecordedSperm "anus" "pc" 0.5>>
+				<<if $_last_preg_pill is "fertility booster">>
+					<<switch _pills.pills[$_last_preg_pill].doseTaken>>
+						<<case 1>><<set _menstruation.recoveryTime -= 0.5>>
+						<<case 2 3 4>><<set _menstruation.recoveryTime -= 1>>
+					<</switch>>
+				<</if>>
+				<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
+					<<set _menstruation.recoveryTime -= 0.5>>
+				<</if>>
+				<<if $_pregnancy.totalBirthEvents gt 2>>
+					<<set _menstruation.recoveryTime -= 0.5>>
+				<</if>>
+				<<set _menstruation.recoveryStage to Math.floor((1 - (_menstruation.recoveryTime / _menstruation.recoveryTimeStart))*5)>>
+				<<if _menstruation.recoveryTime lte 0>>
+					<<set $effectsmessage to 1>>
+					<<set $recovered_from_pregnancy to 1>>
+					/*Ready to give birth again*/
+					<<restartMenstruationCycle>>
+					<<set _menstruation.currentState to "normal">>
+					<<set _menstruation.recoveryTime to null>>
+					<<set _menstruation.recoveryTimeStart to null>>
+					<<set _menstruation.recoveryStage to null>>
+				<</if>>
+		<</switch>>
+	<</if>>
+	<<updateRecordedSperm "vagina" "pc" 0.5>>
+	<<updateRecordedSperm "anus" "pc" 0.5>>
 <</widget>>
 
 :: Pregnancy2 [widget]
 
 <<widget "bodyPregCalc">>
-<<switch $bodysize>>
-	<<case 0>><<set _bodySize to ["tiny","tiny","tiny","small","small","normal","large"]>>
-	<<case 1>><<set _bodySize to ["tiny","tiny","small","small","small","normal","normal","large"]>>
-	<<case 2>><<set _bodySize to ["tiny","small","small","normal","normal","normal","large","large"]>>
-	<<case 3>><<set _bodySize to ["tiny","small","normal","normal","large","large","large"]>>
-	<<default>>
-<</switch>>
-<<set _hairColour to [$naturalhaircolour, $naturalhaircolour, $naturalhaircolour, $naturalhaircolour,"red","jetblack","black","brown","burntorange","platinumblond","strawberryblond","ginger","ashyblond","blond"]>>
+	<<switch $bodysize>>
+		<<case 0>><<set _bodySize to ["tiny","tiny","tiny","small","small","normal","large"]>>
+		<<case 1>><<set _bodySize to ["tiny","tiny","small","small","small","normal","normal","large"]>>
+		<<case 2>><<set _bodySize to ["tiny","small","small","normal","normal","normal","large","large"]>>
+		<<case 3>><<set _bodySize to ["tiny","small","normal","normal","large","large","large"]>>
+		<<default>>
+	<</switch>>
+	<<set _hairColour to [$naturalhaircolour, $naturalhaircolour, $naturalhaircolour, $naturalhaircolour,"red","jetblack","black","brown","burntorange","platinumblond","strawberryblond","ginger","ashyblond","blond"]>>
 <</widget>>
 
 /*Don't call outside of the menstruationCycle widget*/
 <<widget "restartMenstruationCycle">>
-<<set _menstruation.currentDay to 0.5>>
-<<set _menstruation.currentDaysMax to _menstruation.baseDays + random(0, _menstruation.baseDaysRng)>>
-<<set _stage2 to Math.round(_menstruation.currentDaysMax * 0.17)>>
-<<if _stage2 gte 4>>
-	<<set _stage2-->>
-<</if>>
-<<set _stage3 to Math.round(_menstruation.currentDaysMax * 0.5)>>
-<<if _stage3 lt 13>>
-	<<set _stage3++>>
-<<elseif _stage3 gte 18>>
-	<<set _stage3-->>
-<</if>>
-<<set _menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
+	<<set _menstruation.currentDay to 0.5>>
+	<<set _menstruation.currentDaysMax to _menstruation.baseDays + random(0, _menstruation.baseDaysRng)>>
+	<<set _stage2 to Math.round(_menstruation.currentDaysMax * 0.17)>>
+	<<if _stage2 gte 4>>
+		<<set _stage2-->>
+	<</if>>
+	<<set _stage3 to Math.round(_menstruation.currentDaysMax * 0.5)>>
+	<<if _stage3 lt 13>>
+		<<set _stage3++>>
+	<<elseif _stage3 gte 18>>
+		<<set _stage3-->>
+	<</if>>
+	<<set _menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
 <</widget>>
 
 /*args[0] - birth location, args[1] - location of where the clildren should go to, _args[2] - next passage, _args[3] - time passage*/
 <<widget "birthUi">>
-<<if $player.vaginaExist>>
-	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-<<else>>
-	<<set $_pregnancy to $sexStats.anus.pregnancy>>
-<</if>>
-<div id="birthUi">
-	<<for _i to 0; _i lt $_pregnancy.fetus.length; _i++>>
-		<<capture _i>>
-			<div @id="'child-' + _i" class="childUi">
-				<<birthChildElement _i>>
-			</div>
-		<</capture>>
-	<</for>>
-</div>
-<br>
-<<if _args[2]>>
-	<<set _hours to Math.floor(_args[3] / 60)>>
-	<<set _minutes to _args[3] % 60>>
-	<<set _timeString to " (" + (_hours lt 10 ? "0": "") +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
-<</if>>
-<<link [["Next" + (_args[3] ? _timeString : "")|_args[2]]]>>
-	<<endPlayerPregnancy _args[0] _args[1]>>
-<</link>>
+	<<if $player.vaginaExist>>
+		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+	<<else>>
+		<<set $_pregnancy to $sexStats.anus.pregnancy>>
+	<</if>>
+	<div id="birthUi">
+		<<for _i to 0; _i lt $_pregnancy.fetus.length; _i++>>
+			<<capture _i>>
+				<div @id="'child-' + _i" class="childUi">
+					<<birthChildElement _i>>
+				</div>
+			<</capture>>
+		<</for>>
+	</div>
+	<br>
+	<<if _args[2]>>
+		<<set _hours to Math.floor(_args[3] / 60)>>
+		<<set _minutes to _args[3] % 60>>
+		<<set _timeString to " (" + (_hours lt 10 ? "0": "") +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
+	<</if>>
+	<<link [["Next" + (_args[3] ? _timeString : "")|_args[2]]]>>
+		<<endPlayerPregnancy _args[0] _args[1]>>
+	<</link>>
 <</widget>>
 
 <<widget "birthChildElement">>
-<<if $player.vaginaExist>>
-	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-<<else>>
-	<<set $_pregnancy to $sexStats.anus.pregnancy>>
-<</if>>
-<<capture _args>>
-	<<if $_pregnancy.fetus[_args[0]].type isnot "human">>
-		Type: <<print $_pregnancy.fetus[_args[0]].type[0].toUpperCase() + $_pregnancy.fetus[_args[0]].type.substring(1)>> |
-	<</if>>
-	Gender:
-	<<switch $_pregnancy.fetus[_args[0]].gender>>
-		<<case "m">>Male
-		<<case "f">>Female
-		<<case "h">>Hermaphrodite
-	<</switch>>
-	<br>
-	Mother:
-	<<if $_pregnancy.fetus[_args[0]].motherKnown>>
-		<<print $_pregnancy.fetus[_args[0]].mother>>
+	<<if $player.vaginaExist>>
+		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
 	<<else>>
-		????
+		<<set $_pregnancy to $sexStats.anus.pregnancy>>
 	<</if>>
-	| Father:
-	<<if $_pregnancy.fetus[_args[0]].fatherKnown>>
-		<<print $_pregnancy.fetus[_args[0]].father>>
-	<<else>>
-		????
-	<</if>>
-	<br>
-	Size: <<print $_pregnancy.fetus[_args[0]].features.size>> | Hair Colour: <<print $_pregnancy.fetus[_args[0]].features.hairColour>>
-	<<if $_pregnancy.fetus[_args[0]].features.skinColour isnot null>>
-		| Skin Colour: <<print $_pregnancy.fetus[_args[0]].features.skinColour>>
-	<</if>>
-	<br>
-	<<if $_pregnancy.fetus[_args[0]].features.identical isnot null>>
-		Identical: <<print $_pregnancy.fetus[_args[0]].features.identical>>
-		<br>
-	<</if>>
-	<label><<print '<<textbox "$_pregnancy.fetus['+_args[0]+'].name" $_pregnancy.fetus['+_args[0]+'].name>>'>></label>
-	<br>
-	<span class="no-numberify"><<link "Random Name">>
-		<<set _expectedChildId to "pc" + String($sexStats.vagina.pregnancy.givenBirth + 1 + _args[0]).padStart(3,"0").replace(' ','')>>
-		<<set $sexStats.vagina.pregnancy.fetus[_args[0]].name to generateBabyName(undefined, $sexStats.vagina.pregnancy.fetus[_args[0]].gender, _expectedChildId)>>
-		<<replace `"#child-" + _args[0]`>><<birthChildElement _args[0]>><</replace>>
-	<</link>></span>
-	<small class="right">
-		saveId: <<print $saveId>>
-		<<if $saveName isnot "">>
-			| name: <<print $saveName>>
+	<<capture _args>>
+		<<if $_pregnancy.fetus[_args[0]].type isnot "human">>
+			Type: <<print $_pregnancy.fetus[_args[0]].type[0].toUpperCase() + $_pregnancy.fetus[_args[0]].type.substring(1)>> |
 		<</if>>
-	</small>
-<</capture>>
+		Gender:
+		<<switch $_pregnancy.fetus[_args[0]].gender>>
+			<<case "m">>Male
+			<<case "f">>Female
+			<<case "h">>Hermaphrodite
+		<</switch>>
+		<br>
+		Mother:
+		<<if $_pregnancy.fetus[_args[0]].motherKnown>>
+			<<print $_pregnancy.fetus[_args[0]].mother>>
+		<<else>>
+			????
+		<</if>>
+		| Father:
+		<<if $_pregnancy.fetus[_args[0]].fatherKnown>>
+			<<print $_pregnancy.fetus[_args[0]].father>>
+		<<else>>
+			????
+		<</if>>
+		<br>
+		Size: <<print $_pregnancy.fetus[_args[0]].features.size>> | Hair Colour: <<print $_pregnancy.fetus[_args[0]].features.hairColour>>
+		<<if $_pregnancy.fetus[_args[0]].features.skinColour isnot null>>
+			| Skin Colour: <<print $_pregnancy.fetus[_args[0]].features.skinColour>>
+		<</if>>
+		<br>
+		<<if $_pregnancy.fetus[_args[0]].features.identical isnot null>>
+			Identical: <<print $_pregnancy.fetus[_args[0]].features.identical>>
+			<br>
+		<</if>>
+		<label><<print '<<textbox "$_pregnancy.fetus['+_args[0]+'].name" $_pregnancy.fetus['+_args[0]+'].name>>'>></label>
+		<br>
+		<span class="no-numberify"><<link "Random Name">>
+			<<set _expectedChildId to "pc" + String($sexStats.vagina.pregnancy.givenBirth + 1 + _args[0]).padStart(3,"0").replace(' ','')>>
+			<<set $sexStats.vagina.pregnancy.fetus[_args[0]].name to generateBabyName(undefined, $sexStats.vagina.pregnancy.fetus[_args[0]].gender, _expectedChildId)>>
+			<<replace `"#child-" + _args[0]`>><<birthChildElement _args[0]>><</replace>>
+		<</link>></span>
+		<small class="right">
+			saveId: <<print $saveId>>
+			<<if $saveName isnot "">>
+				| name: <<print $saveName>>
+			<</if>>
+		</small>
+	<</capture>>
 <</widget>>
 
 <<widget "wakingEffects">><<silently>>
-/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-<<if $pregnancyTesting is undefined>>
-<<elseif _args[0] and $sexStats.vagina.menstruation.currentState is "pregnant" or ($sexStats.vagina.menstruation.currentState is "normal" and ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f"))>>
-	<<if $player.vaginaExist>>
-		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-	<<else>>
-		<<set $_pregnancy to $sexStats.anus.pregnancy>>
-	<</if>>
-	<<set _wakingEffect to wakingPregnancyEvent()>>
-	<<if Array.isArray(_wakingEffect)>>
-		<<set _wakingEffect to _wakingEffect[random(0,_wakingEffect.length - 1)]>>
-	<</if>>
-	<<switch _wakingEffect>>
-		<<case "tired">>
-			<<set $_text_output to "You wake up feeling more tired than rested.<<tiredness 10>><<gtiredness>>">>
-		<<case "crying">>
-			<<set $_text_output to "You wake up in tears. You aren't even sure why you're crying, but the emotion quickly passes.">>
-		<<case "angry">>
-			<<set $_text_output to "You wake up feeling angry. The mood takes you by surprise, but soon passes.">>
-		<<case "meatCraving">>
-			<<set $_text_output to `You awaken to a strange craving ${V.wolfgirl >= 2 ? "of digging your fangs into" : "for"} something meaty.`>>
-		<<case "foodCraving">>
-			<<set $_text_output to `You awaken to a strange craving for something ${["sweet","spicy","sour","savory","bitter"][random(0,4)]}.`>>
-		<<case "headache">>
-			<<set $_text_output to "You wake up to your head throbbing. You're not sure what brought on this headache, but it eventually passes.">>
-		<<case "sensitiveBreasts">>
-			<<set $_text_output to "You wake to your <<breasts>> feeling more tender than normal. Thankfully, it passes.">>
-		<<case "bloated">>
-			<<set $_text_output to "You wake feeling a little bloated.">>
-		<<case "lightHeaded">>
-			<<set $_text_output to "You wake feeling a little lightheaded for a moment.">>
-		<<case "dizzy">>
-			<<set $_text_output to "You wake feeling a little dizzy but it passes quickly.">>
-		<<case "mildNausea">>
-			<<set $_text_output to "You wake feeling a little nauseous but it passes quickly.">>
-		<<case "nausea">>
-			<<set $_text_output to "You wake feeling nauseous but it passes after some time.">>
-		<<case "dryheaving">>
-			<<if $location is "wolf_cave">>
-				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the cave. You're forced to do a dry heave by it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
-			<<elseif $location is "farm">>
-				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the barn. You're forced to do a dry heave by it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
-			<<elseif $location is "tower">>
-				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the tower. You're forced to do a dry heave over it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
-			<<else>>
-				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to a nearby bin. You're forced to do a dry heave into it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
-			<</if>>
-			<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
-				<<set $_text_output += " <span class='red'>Maybe you should get tested</span>.">>
-			<</if>>
-		<<case "lightBabyKick">>
-			<<set $_text_output to "You wake up feeling a light kick coming from your baby.<<stress -10>><<lstress>>">>
-		<<case "babyKick">>
-			<<set $_text_output to "You wake up feeling a kick coming from your baby.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
-		<<case "babyMovement">>
-			<<set $_text_output to "You wake up feeling your baby moving around.<<stress -10>><<lstress>>">>
-		<<case "babyHiccup">>
-			<<set $_text_output to "You wake up feeling some baby hiccups.<<stress -10>><<lstress>>">>
-		<<case "earlyContractions">>
-			<<set $_text_output to "You wake up to a brief and sporadic contraction.<<stress 5>><<gstress>><<pain 1>><<gpain>>">>
-		<<case "bellySize">>
-			<<set $_text_output to "You wake and take a look at your growing belly.">>
-			<<if $_pregnancy.potentialFathers.length is 1>>
-				<<set $_text_output += " It's clear that "+ $_pregnancy.potentialFathers[0][1] +" was who got you pregnant.">>
-			<<else>>
-				<<set $_text_output += " You wonder who got you pregnant.">>
-			<</if>>
-			<<set $_pregnancy.awareOf to true>>
-		<<case "missedPeriod">>
-			<<set $_text_output to "You wake and think about the last period you had, strangely, your current one is late.">>
-			<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
-				<<set $_text_output += "You wonder if you got yourself pregnant again, <span class='red'>maybe you should get tested</span>.">>
-			<</if>>
-			<<set $sexStats.vagina.awareOfPeriodDelay to true>>
-		<<case "chastityBeltRemoval">>
-			<<if $worn.genitals.name is "gold chastity belt">>
-				<<set $_text_output to `<span class="blue">Your ${V.worn.genitals.name} feels loose.</span> It looks like it opened in your sleep due to your growing belly. Now that it's off, a collector may be interested in it.`>>
-				<<if $worn.genitals.integrity gt 0>>
-					<<set $antiquemoney += Math.floor(2000 / ($worn.genitals.integrity / clothingData('genitals',$worn.genitals,'integrity_max')))>>
+	/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
+	<<if $pregnancyTesting is undefined>>
+	<<elseif _args[0] and $sexStats.vagina.menstruation.currentState is "pregnant" or ($sexStats.vagina.menstruation.currentState is "normal" and ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f"))>>
+		<<if $player.vaginaExist>>
+			<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+		<<else>>
+			<<set $_pregnancy to $sexStats.anus.pregnancy>>
+		<</if>>
+		<<set _wakingEffect to wakingPregnancyEvent()>>
+		<<if Array.isArray(_wakingEffect)>>
+			<<set _wakingEffect to _wakingEffect[random(0,_wakingEffect.length - 1)]>>
+		<</if>>
+		<<switch _wakingEffect>>
+			<<case "tired">>
+				<<set $_text_output to "You wake up feeling more tired than rested.<<tiredness 10>><<gtiredness>>">>
+			<<case "crying">>
+				<<set $_text_output to "You wake up in tears. You aren't even sure why you're crying, but the emotion quickly passes.">>
+			<<case "angry">>
+				<<set $_text_output to "You wake up feeling angry. The mood takes you by surprise, but soon passes.">>
+			<<case "meatCraving">>
+				<<set $_text_output to `You awaken to a strange craving ${V.wolfgirl >= 2 ? "of digging your fangs into" : "for"} something meaty.`>>
+			<<case "foodCraving">>
+				<<set $_text_output to `You awaken to a strange craving for something ${["sweet","spicy","sour","savory","bitter"][random(0,4)]}.`>>
+			<<case "headache">>
+				<<set $_text_output to "You wake up to your head throbbing. You're not sure what brought on this headache, but it eventually passes.">>
+			<<case "sensitiveBreasts">>
+				<<set $_text_output to "You wake to your <<breasts>> feeling more tender than normal. Thankfully, it passes.">>
+			<<case "bloated">>
+				<<set $_text_output to "You wake feeling a little bloated.">>
+			<<case "lightHeaded">>
+				<<set $_text_output to "You wake feeling a little lightheaded for a moment.">>
+			<<case "dizzy">>
+				<<set $_text_output to "You wake feeling a little dizzy but it passes quickly.">>
+			<<case "mildNausea">>
+				<<set $_text_output to "You wake feeling a little nauseous but it passes quickly.">>
+			<<case "nausea">>
+				<<set $_text_output to "You wake feeling nauseous but it passes after some time.">>
+			<<case "dryheaving">>
+				<<if $location is "wolf_cave">>
+					<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the cave. You're forced to do a dry heave by it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
+				<<elseif $location is "farm">>
+					<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the barn. You're forced to do a dry heave by it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
+				<<elseif $location is "tower">>
+					<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the tower. You're forced to do a dry heave over it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
+				<<else>>
+					<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to a nearby bin. You're forced to do a dry heave into it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
 				<</if>>
-			<<else>>
-				<<set $_text_output to `<span class="blue">Your ${V.worn.genitals.name} feels loose.</span> It must have broken apart in your sleep due to your growing belly.`>>
-			<</if>>
-			<<set $worn.genitals.type.push("broken")>>
-			<<genitalsruined>>
-	<</switch>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>>
+				<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
+					<<set $_text_output += " <span class='red'>Maybe you should get tested</span>.">>
+				<</if>>
+			<<case "lightBabyKick">>
+				<<set $_text_output to "You wake up feeling a light kick coming from your baby.<<stress -10>><<lstress>>">>
+			<<case "babyKick">>
+				<<set $_text_output to "You wake up feeling a kick coming from your baby.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
+			<<case "babyMovement">>
+				<<set $_text_output to "You wake up feeling your baby moving around.<<stress -10>><<lstress>>">>
+			<<case "babyHiccup">>
+				<<set $_text_output to "You wake up feeling some baby hiccups.<<stress -10>><<lstress>>">>
+			<<case "earlyContractions">>
+				<<set $_text_output to "You wake up to a brief and sporadic contraction.<<stress 5>><<gstress>><<pain 1>><<gpain>>">>
+			<<case "bellySize">>
+				<<set $_text_output to "You wake and take a look at your growing belly.">>
+				<<if $_pregnancy.potentialFathers.length is 1>>
+					<<set $_text_output += " It's clear that "+ $_pregnancy.potentialFathers[0][1] +" was who got you pregnant.">>
+				<<else>>
+					<<set $_text_output += " You wonder who got you pregnant.">>
+				<</if>>
+				<<set $_pregnancy.awareOf to true>>
+			<<case "missedPeriod">>
+				<<set $_text_output to "You wake and think about the last period you had, strangely, your current one is late.">>
+				<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
+					<<set $_text_output += "You wonder if you got yourself pregnant again, <span class='red'>maybe you should get tested</span>.">>
+				<</if>>
+				<<set $sexStats.vagina.awareOfPeriodDelay to true>>
+			<<case "chastityBeltRemoval">>
+				<<if $worn.genitals.name is "gold chastity belt">>
+					<<set $_text_output to `<span class="blue">Your ${V.worn.genitals.name} feels loose.</span> It looks like it opened in your sleep due to your growing belly. Now that it's off, a collector may be interested in it.`>>
+					<<if $worn.genitals.integrity gt 0>>
+						<<set $antiquemoney += Math.floor(2000 / ($worn.genitals.integrity / clothingData('genitals',$worn.genitals,'integrity_max')))>>
+					<</if>>
+				<<else>>
+					<<set $_text_output to `<span class="blue">Your ${V.worn.genitals.name} feels loose.</span> It must have broken apart in your sleep due to your growing belly.`>>
+				<</if>>
+				<<set $worn.genitals.type.push("broken")>>
+				<<genitalsruined>>
+		<</switch>>
+	<</if>>
+	<</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>
 
 <<widget "pregnancyDailyEvent">><<silently>>
-<<if !["Asylum Sleep","Cabin Sleep","Wolf Cave Sleep","Bird Tower Sleep","Livestock Sleep","Farm Abduction wake 4","Sleep","Avery Hotel Morning"].includes($passage)>>
-	<<set _event to dailyPregnancyEvent(_rng)>>
-	<<if Array.isArray(_event)>>
-		<<set _event to _event[random(0,_event.length - 1)]>>
-	<</if>>
-	<<switch _event>>
-		<<case "tired">>
-			<<set $_text_output to "You yawn, everything seems to take more effort than usual.<<tiredness 2>><<gtiredness>>">>
-		<<case "crying">>
-			<<set $_text_output to "You suddenly burst into tears. You aren't even sure why you're crying, but the sadness passes as quickly as it came.<<stress 5>><<gstress>>">>
-		<<case "angry">>
-			<<set $_text_output to "You feel angry out of nowhere. The change in mood takes you by surprise, but it soon passes.<<stress 5>><<gstress>>">>
-		<<case "meatCraving">>
-			<<set $_text_output to `You have a sudden, strange craving ${V.wolfgirl >= 2 ? "of digging your fangs into" : "for"} something meaty.`>>
-		<<case "foodCraving">>
-			<<set $_text_output to `You have a sudden, strange craving for something ${["sweet","spicy","sour","savory","bitter"][random(0,4)]}.`>>
-		<<case "cramping">>
-			<<set $_text_output to "You feel some cramping near your vagina.<<stress 5>><<gstress>><<pain 5>><<gpain>>">>
-		<<case "bloated">>
-			<<set $_text_output to "You feel a little bloated.<<stress 3>><<gstress>>">>
-		<<case "lightHeaded">>
-			<<set $_text_output to "You feel a little lightheaded for a moment.">>
-		<<case "dizzy">>
-			<<set $_text_output to "You start feeling a little dizzy but it passes quickly.">>
-		<<case "mildNausea">>
-			<<set $_text_output to "You start feeling a little nauseous but it passes quickly.">>
-		<<case "nausea">>
-			<<set $_text_output to "You start feeling nauseous but it passes after some time.">>
-		<<case "lightBabyKick">>
-			<<set $_text_output to "You feel a light kick coming from your baby.<<stress -10>><<lstress>>">>
-		<<case "babyKick">>
-			<<set $_text_output to "You feel a kick coming from your baby.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
-		<<case "babyMovement">>
-			<<set $_text_output to "You feel your baby moving around.<<stress -10>><<lstress>>">>
-		<<case "babyHiccup">>
-			<<set $_text_output to "You feel some baby hiccups.<<stress -10>><<lstress>>">>
-		<<case "earlyContractions">>
-			<<set $_text_output to "You feel a brief and sporadic contraction.<<stress 5>><<gstress>>">>
-	<</switch>>
-	<<if _event>>
-		<<run delete $daily.pregnancyEvent>>
-	<<else>>
-		<<if !$daily.pregnancyEvent>>
-			<<set $daily.pregnancyEvent to 0>>
+	<<if !["Asylum Sleep","Cabin Sleep","Wolf Cave Sleep","Bird Tower Sleep","Livestock Sleep","Farm Abduction wake 4","Sleep","Avery Hotel Morning"].includes($passage)>>
+		<<set _event to dailyPregnancyEvent(_rng)>>
+		<<if Array.isArray(_event)>>
+			<<set _event to _event[random(0,_event.length - 1)]>>
 		<</if>>
-		<<set $daily.pregnancyEvent += 15>>
+		<<switch _event>>
+			<<case "tired">>
+				<<set $_text_output to "You yawn, everything seems to take more effort than usual.<<tiredness 2>><<gtiredness>>">>
+			<<case "crying">>
+				<<set $_text_output to "You suddenly burst into tears. You aren't even sure why you're crying, but the sadness passes as quickly as it came.<<stress 5>><<gstress>>">>
+			<<case "angry">>
+				<<set $_text_output to "You feel angry out of nowhere. The change in mood takes you by surprise, but it soon passes.<<stress 5>><<gstress>>">>
+			<<case "meatCraving">>
+				<<set $_text_output to `You have a sudden, strange craving ${V.wolfgirl >= 2 ? "of digging your fangs into" : "for"} something meaty.`>>
+			<<case "foodCraving">>
+				<<set $_text_output to `You have a sudden, strange craving for something ${["sweet","spicy","sour","savory","bitter"][random(0,4)]}.`>>
+			<<case "cramping">>
+				<<set $_text_output to "You feel some cramping near your vagina.<<stress 5>><<gstress>><<pain 5>><<gpain>>">>
+			<<case "bloated">>
+				<<set $_text_output to "You feel a little bloated.<<stress 3>><<gstress>>">>
+			<<case "lightHeaded">>
+				<<set $_text_output to "You feel a little lightheaded for a moment.">>
+			<<case "dizzy">>
+				<<set $_text_output to "You start feeling a little dizzy but it passes quickly.">>
+			<<case "mildNausea">>
+				<<set $_text_output to "You start feeling a little nauseous but it passes quickly.">>
+			<<case "nausea">>
+				<<set $_text_output to "You start feeling nauseous but it passes after some time.">>
+			<<case "lightBabyKick">>
+				<<set $_text_output to "You feel a light kick coming from your baby.<<stress -10>><<lstress>>">>
+			<<case "babyKick">>
+				<<set $_text_output to "You feel a kick coming from your baby.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
+			<<case "babyMovement">>
+				<<set $_text_output to "You feel your baby moving around.<<stress -10>><<lstress>>">>
+			<<case "babyHiccup">>
+				<<set $_text_output to "You feel some baby hiccups.<<stress -10>><<lstress>>">>
+			<<case "earlyContractions">>
+				<<set $_text_output to "You feel a brief and sporadic contraction.<<stress 5>><<gstress>>">>
+		<</switch>>
+		<<if _event>>
+			<<run delete $daily.pregnancyEvent>>
+		<<else>>
+			<<if !$daily.pregnancyEvent>>
+				<<set $daily.pregnancyEvent to 0>>
+			<</if>>
+			<<set $daily.pregnancyEvent += 15>>
+		<</if>>
 	<</if>>
-<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><br><</if>>
+	<</silently>><<if $_text_output>><<print $_text_output>><br><</if>>
 <</widget>>
 
 <<widget "pregnancyWatersBrokenPassout">>
-<<if $player.vaginaExist>>
-	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-<<else>>
-	<<set $_pregnancy to $sexStats.anus.pregnancy>>
-<</if>>
-<<set $_pregnancy.waterBreaking to false>>
-/*ToDo: Pregnancy - fill out for specific pregnancy passout events*/
-/*Area specific passout text for alternative pregnancy birth events*/
-<<switch _args[0]>>
-	<<case "asylum">>
-	<<case "forest">>
-		<<if $_pregnancy.type is "wolf">>
-			/*wolves help you if the pc is pregnant with wolves?*/
-		<<else>>
-
-		<</if>>
-	<<case "lake">>
-	<<case "tentacleworld">>
-		<<if $tentacleEntrance is "mirror">>
-
-		<<else>>
-
-		<</if>>
-	<<case "farmroad">>
-		<<if $location is "farm" and $_pregnancy.potentialFathers.find(father => father[1] === "Alex")>>
-			/*Alex can help here*/
-		<<else>>
-
-		<</if>>
-	<<case "remy">>
-	<<case "remyAbduction">>
-	<<case "moor">>
-	<<case "alley">>
-	<<case "arcade">>
-	<<case "beach">>
-	<<case "bus">>
-	<<case "docksSneak">>
-	<<case "docks">>
-	<<case "home">>
-	<<case "hospital">>
-	<<case "trash">>
-	<<case "sea">>
-	<<case "shop">>
-	<<case "monsterTower">>
-	<<case "street">>
-	<<case "compound">>
-	<<case "temple">>
-	<<case "cave">>
-	<<case "prison">>
-	<<case "edencabin">>
-		<<if $_pregnancy.potentialFathers.find(father => father[1] === "Eden")>>
-			/*Eden thinks it's his child?*/
-		<<else>>
-
-		<</if>>
-	<<case "drain">>
-	<<case "school">>
-	<<case "schoolLibrarian">>
-		/*Wake up while being put in an ambulance?*/
-	<<case "adultShop">>
-	<<default>>
-		With your waters broken, you're too stressed to continue.
-<</switch>>
-<br><br>
-/*Link for alternative pregnancy birth events*/
-<<switch _args[0]>>
-	<<case "forest">>
-		<<if $_pregnancy.type is "wolf">>
-			/*wolves help you if the pc is pregnant with wolves?*/
-			<<link [[Next|Pregnancy Birth Hospital Wolf 3]]>><<set $stress -= 5000>><<endevent>><</link>>
-		<<else>>
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
-		<</if>>
-	<<case "edencabin">>
-		<<if $_pregnancy.potentialFathers.find(father => father[1] === "Eden")>>
-			/*Alternative place to give birth?*/
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
-		<<else>>
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
-		<</if>>
-	<<case "remy" "remyAbduction">>
-		/*Alternative place to give birth?*/
-		<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
-	<<case "farmroad">>
-		<<if $location is "farm" and $_pregnancy.potentialFathers.find(father => father[1] === "Alex")>>
-			/*Alternative place to give birth?*/
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
-		<<else>>
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
-		<</if>>
-	<<case "hospital">>
-		<<link [[Next|Pregnancy Birth Hospital]]>><<set $stress -= 5000>><<endevent>><</link>>
-	<<default>>
-		<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
-<</switch>>
-<</widget>>
-
-<<widget "pregnancyMorningAfterPill">>
-<<if $sexStats.vagina.menstruation.currentState is "pregnant">>
 	<<if $player.vaginaExist>>
 		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
 	<<else>>
 		<<set $_pregnancy to $sexStats.anus.pregnancy>>
 	<</if>>
-	<<if between($_pregnancy.timer, 0, 2)>>
-		<<set $_menstruation to $sexStats.vagina.menstruation>>
-		<<set $_pregnancy.fetus to []>>
-		<<set $_pregnancy.waterBreaking to false>>
-		<<set $_pregnancy.type to null>>
-		<<set $_pregnancy.timer to null>>
-		<<set $_pregnancy.timerEnd to null>>
-		<<set $_pregnancy.awareOf to null>>
-		<<set $_pregnancy.potentialFathers to []>>
-		<<set $_menstruation.currentState to "normal">>
+	<<set $_pregnancy.waterBreaking to false>>
+	/*ToDo: Pregnancy - fill out for specific pregnancy passout events*/
+	/*Area specific passout text for alternative pregnancy birth events*/
+	<<switch _args[0]>>
+		<<case "asylum">>
+		<<case "forest">>
+			<<if $_pregnancy.type is "wolf">>
+				/*wolves help you if the pc is pregnant with wolves?*/
+			<<else>>
+
+			<</if>>
+		<<case "lake">>
+		<<case "tentacleworld">>
+			<<if $tentacleEntrance is "mirror">>
+
+			<<else>>
+
+			<</if>>
+		<<case "farmroad">>
+			<<if $location is "farm" and $_pregnancy.potentialFathers.find(father => father[1] === "Alex")>>
+				/*Alex can help here*/
+			<<else>>
+
+			<</if>>
+		<<case "remy">>
+		<<case "remyAbduction">>
+		<<case "moor">>
+		<<case "alley">>
+		<<case "arcade">>
+		<<case "beach">>
+		<<case "bus">>
+		<<case "docksSneak">>
+		<<case "docks">>
+		<<case "home">>
+		<<case "hospital">>
+		<<case "trash">>
+		<<case "sea">>
+		<<case "shop">>
+		<<case "monsterTower">>
+		<<case "street">>
+		<<case "compound">>
+		<<case "temple">>
+		<<case "cave">>
+		<<case "prison">>
+		<<case "edencabin">>
+			<<if $_pregnancy.potentialFathers.find(father => father[1] === "Eden")>>
+				/*Eden thinks it's his child?*/
+			<<else>>
+
+			<</if>>
+		<<case "drain">>
+		<<case "school">>
+		<<case "schoolLibrarian">>
+			/*Wake up while being put in an ambulance?*/
+		<<case "adultShop">>
+		<<default>>
+			With your waters broken, you're too stressed to continue.
+	<</switch>>
+	<br><br>
+	/*Link for alternative pregnancy birth events*/
+	<<switch _args[0]>>
+		<<case "forest">>
+			<<if $_pregnancy.type is "wolf">>
+				/*wolves help you if the pc is pregnant with wolves?*/
+				<<link [[Next|Pregnancy Birth Hospital Wolf 3]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<else>>
+				<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<</if>>
+		<<case "edencabin">>
+			<<if $_pregnancy.potentialFathers.find(father => father[1] === "Eden")>>
+				/*Alternative place to give birth?*/
+				<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<else>>
+				<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<</if>>
+		<<case "remy" "remyAbduction">>
+			/*Alternative place to give birth?*/
+			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+		<<case "farmroad">>
+			<<if $location is "farm" and $_pregnancy.potentialFathers.find(father => father[1] === "Alex")>>
+				/*Alternative place to give birth?*/
+				<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<else>>
+				<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<</if>>
+		<<case "hospital">>
+			<<link [[Next|Pregnancy Birth Hospital]]>><<set $stress -= 5000>><<endevent>><</link>>
+		<<default>>
+			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+	<</switch>>
+<</widget>>
+
+<<widget "pregnancyMorningAfterPill">>
+	<<if $sexStats.vagina.menstruation.currentState is "pregnant">>
+		<<if $player.vaginaExist>>
+			<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+		<<else>>
+			<<set $_pregnancy to $sexStats.anus.pregnancy>>
+		<</if>>
+		<<if between($_pregnancy.timer, 0, 2)>>
+			<<set $_menstruation to $sexStats.vagina.menstruation>>
+			<<set $_pregnancy.fetus to []>>
+			<<set $_pregnancy.waterBreaking to false>>
+			<<set $_pregnancy.type to null>>
+			<<set $_pregnancy.timer to null>>
+			<<set $_pregnancy.timerEnd to null>>
+			<<set $_pregnancy.awareOf to null>>
+			<<set $_pregnancy.potentialFathers to []>>
+			<<set $_menstruation.currentState to "normal">>
+		<</if>>
 	<</if>>
-<</if>>
-<<restartMenstruationCycle>>
+	<<restartMenstruationCycle>>
 <</widget>>
 
 <<widget "pregnancyGendersText">><<silently>>
@@ -641,72 +641,72 @@
 <</widget>>
 
 <<widget "npcPregnancyUpdater">>
-<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
-	<<set $_name to $NPCNameList[$_i]>>
-	<<if $NPCName[$NPCNameList.indexOf($_name)].pregnancy is undefined>>
-		<<set $NPCName[$NPCNameList.indexOf($_name)].pregnancy to {}>>
-	<</if>>
-	<<set $_pregnancy to $NPCName[$NPCNameList.indexOf($_name)].pregnancy>>
-	<<if setup.npcPregnancy.canBePregnant.includes($_name) and $NPCName[$NPCNameList.indexOf($_name)].pregnancy.enabled is undefined>>
-		<<set $_pregnancy.fetus to []>>
-		<<set $_pregnancy.givenBirth to 0>>
-		<<set $_pregnancy.totalBirthEvents to 0>>
-		<<set $_pregnancy.timer to null>>
-		<<set $_pregnancy.timerEnd to null>>
-		<<set $_pregnancy.waterBreaking to null>>
-		<<set $_pregnancy.npcAwareOf to null>>
-		<<set $_pregnancy.pcAwareOf to null>>
-		<<set $_pregnancy.type to null>>
-		<<set $_pregnancy.enabled to true>>
-		<<set $_pregnancy.cycleDaysTotal to random(24,32)>>
-		<<set $_pregnancy.cycleDay to random(1,$_pregnancy.cycleDaysTotal)>>
-		<<set $_pregnancy.cycleDangerousDay to 10>>
-		<<set $_pregnancy.sperm to {}>>
-		<<set $_pregnancy.potentialFathers to []>>
-		<<set $_pregnancy.nonCycleRng to [random(0,3),random(0,3)]>>
-		<<switch $_name>>
-			<<case "Kylar">><<set $_pregnancy.pills to "fertility">>
-			<<case "Alex" "Wren">><<set $_pregnancy.pills to "contraceptive">>
-			<<default>><<set $_pregnancy.pills to null>>
-		<</switch>>
-	<<elseif !setup.npcPregnancy.canBePregnant.includes($_name)>>
-		/*For saves that have the variables set, but have no need to be there*/
-		<<set $NPCName[$NPCNameList.indexOf($_name)].pregnancy to {}>>
-	<</if>>
-		/* 0 = never uses a condom, Kylar has a special exception
-		 * 50 = Will use a condom, but will refrain if asked
-		 * 100 = Always uses a condom, will not remove it
-		*/
-	<<if !$NPCName[$NPCNameList.indexOf($_name)].pregnancyAvoidance or $objectVersion.pregnancyAvoidance is undefined>>
-		<<switch $_name>>
-			<<case "Kylar" "Black Wolf" "Great Hawk" "Eden" "Ivory Wraith">><<set $NPCName[$NPCNameList.indexOf($_name)].pregnancyAvoidance to 0>>
-			<<case "Robin" "Whitney" "Alex" "Wren" "Avery">><<set $NPCName[$NPCNameList.indexOf($_name)].pregnancyAvoidance to 50>>
-			<<default>><<set $NPCName[$NPCNameList.indexOf($_name)].pregnancyAvoidance to 100>>
-		<</switch>>
-	<</if>>
-<</for>>
-<<set $objectVersion.pregnancyAvoidance to 1>>
+	<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
+		<<set $_name to $NPCNameList[$_i]>>
+		<<if $NPCName[$NPCNameList.indexOf($_name)].pregnancy is undefined>>
+			<<set $NPCName[$NPCNameList.indexOf($_name)].pregnancy to {}>>
+		<</if>>
+		<<set $_pregnancy to $NPCName[$NPCNameList.indexOf($_name)].pregnancy>>
+		<<if setup.npcPregnancy.canBePregnant.includes($_name) and $NPCName[$NPCNameList.indexOf($_name)].pregnancy.enabled is undefined>>
+			<<set $_pregnancy.fetus to []>>
+			<<set $_pregnancy.givenBirth to 0>>
+			<<set $_pregnancy.totalBirthEvents to 0>>
+			<<set $_pregnancy.timer to null>>
+			<<set $_pregnancy.timerEnd to null>>
+			<<set $_pregnancy.waterBreaking to null>>
+			<<set $_pregnancy.npcAwareOf to null>>
+			<<set $_pregnancy.pcAwareOf to null>>
+			<<set $_pregnancy.type to null>>
+			<<set $_pregnancy.enabled to true>>
+			<<set $_pregnancy.cycleDaysTotal to random(24,32)>>
+			<<set $_pregnancy.cycleDay to random(1,$_pregnancy.cycleDaysTotal)>>
+			<<set $_pregnancy.cycleDangerousDay to 10>>
+			<<set $_pregnancy.sperm to {}>>
+			<<set $_pregnancy.potentialFathers to []>>
+			<<set $_pregnancy.nonCycleRng to [random(0,3),random(0,3)]>>
+			<<switch $_name>>
+				<<case "Kylar">><<set $_pregnancy.pills to "fertility">>
+				<<case "Alex" "Wren">><<set $_pregnancy.pills to "contraceptive">>
+				<<default>><<set $_pregnancy.pills to null>>
+			<</switch>>
+		<<elseif !setup.npcPregnancy.canBePregnant.includes($_name)>>
+			/*For saves that have the variables set, but have no need to be there*/
+			<<set $NPCName[$NPCNameList.indexOf($_name)].pregnancy to {}>>
+		<</if>>
+			/* 0 = never uses a condom, Kylar has a special exception
+			* 50 = Will use a condom, but will refrain if asked
+			* 100 = Always uses a condom, will not remove it
+			*/
+		<<if !$NPCName[$NPCNameList.indexOf($_name)].pregnancyAvoidance or $objectVersion.pregnancyAvoidance is undefined>>
+			<<switch $_name>>
+				<<case "Kylar" "Black Wolf" "Great Hawk" "Eden" "Ivory Wraith">><<set $NPCName[$NPCNameList.indexOf($_name)].pregnancyAvoidance to 0>>
+				<<case "Robin" "Whitney" "Alex" "Wren" "Avery">><<set $NPCName[$NPCNameList.indexOf($_name)].pregnancyAvoidance to 50>>
+				<<default>><<set $NPCName[$NPCNameList.indexOf($_name)].pregnancyAvoidance to 100>>
+			<</switch>>
+		<</if>>
+	<</for>>
+	<<set $objectVersion.pregnancyAvoidance to 1>>
 <</widget>>
 
 /*ToDo: Pregnancy: add to appropriate story passages, when the player gives birth to their children*/
 <<widget "earSlimePregnancy">>
-<<if _args[0] and $corruption_slime gte 80>>
-	<<switch _args[0]>>
-		<<case "human">><<set $_type to _args[1]? 'babies' : 'baby'>>
-		<<case "wolf">><<set $_type to _args[1] ? 'wolf puppies' : 'wolf pup'>>
-		<<default>><<set $_type to _args[1] ? 'babies' : 'baby'>>
-	<</switch>>
-	<<set $_babiesText to _args[1] ? `to some beautiful ${$_type}` : `to a beautiful ${$_type}`>>
-	<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime" or true>>
-		<span class="green">A fulfilled warmth fills you.</span>
-		You almost forget the strife of the world. You can tell it's the slimes in your ears, rewarding you for giving birth <<print $_babiesText>>.
-		<<lllcorruption>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption `Math.floor($corruption_slime * -0.4)`>>
-		<br>
-	<<elseif $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
-		<span class="green">A fulfilled warmth fills you.</span>
-		You almost forget the strife of the world. You can tell it's the slime in your ear, rewarding you for giving birth <<print $_babiesText>>.
-		<<llcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption `Math.floor($corruption_slime * -0.2)`>>
-		<br>
+	<<if _args[0] and $corruption_slime gte 80>>
+		<<switch _args[0]>>
+			<<case "human">><<set $_type to _args[1]? 'babies' : 'baby'>>
+			<<case "wolf">><<set $_type to _args[1] ? 'wolf puppies' : 'wolf pup'>>
+			<<default>><<set $_type to _args[1] ? 'babies' : 'baby'>>
+		<</switch>>
+		<<set $_babiesText to _args[1] ? `to some beautiful ${$_type}` : `to a beautiful ${$_type}`>>
+		<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime" or true>>
+			<span class="green">A fulfilled warmth fills you.</span>
+			You almost forget the strife of the world. You can tell it's the slimes in your ears, rewarding you for giving birth <<print $_babiesText>>.
+			<<lllcorruption>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption `Math.floor($corruption_slime * -0.4)`>>
+			<br>
+		<<elseif $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+			<span class="green">A fulfilled warmth fills you.</span>
+			You almost forget the strife of the world. You can tell it's the slime in your ear, rewarding you for giving birth <<print $_babiesText>>.
+			<<llcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption `Math.floor($corruption_slime * -0.2)`>>
+			<br>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>

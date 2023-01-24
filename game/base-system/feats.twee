@@ -1,16 +1,16 @@
 :: Feats [widget]
 
 <<widget "earnFeat">>
-<<if _args[0] and $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1>>
-	<<if _feats is undefined>>
-		<<featsData>>
-	<</if>>
-	<<if $feats.currentSave[_args[0]] is undefined and (!$feats.soft or !_feats[_args[0]].softLockable) and (!$feats.pregnancyLocked or !_feats[_args[0]].pregnancyLockable)>>
-		<<set $feats.currentSave[_args[0]] to Date()>>
+	<<if _args[0] and $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1>>
+		<<if _feats is undefined>>
+			<<featsData>>
+		<</if>>
+		<<if $feats.currentSave[_args[0]] is undefined and (!$feats.soft or !_feats[_args[0]].softLockable) and (!$feats.pregnancyLocked or !_feats[_args[0]].pregnancyLockable)>>
+			<<set $feats.currentSave[_args[0]] to Date()>>
 
-		<<displayFeat _args[0]>>
+			<<displayFeat _args[0]>>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "updateFeats">>
@@ -76,551 +76,551 @@
 <</widget>>
 
 <<widget "setupFeats">>
-<<if $featsBoosts is undefined or _args[0] is true>>
-	<<set _keys to Object.keys($feats.allSaves)>>
+	<<if $featsBoosts is undefined or _args[0] is true>>
+		<<set _keys to Object.keys($feats.allSaves)>>
 
-	<<set _moneyFeats to _keys.count("Pocket Change") + _keys.count("Money Maker") + _keys.count("Tycoon") + _keys.count("Millionaire")>>
-	<<set _moneyFeatsLimit to (_moneyFeats * 10)>>
-	<<set _purityFeats to _keys.count("Angel") + _keys.count("Fallen Angel")>>
+		<<set _moneyFeats to _keys.count("Pocket Change") + _keys.count("Money Maker") + _keys.count("Tycoon") + _keys.count("Millionaire")>>
+		<<set _moneyFeatsLimit to (_moneyFeats * 10)>>
+		<<set _purityFeats to _keys.count("Angel") + _keys.count("Fallen Angel")>>
 
-	<<set _newLife to _keys.count("Broodmother Host") + _keys.count("Top Broodmother Host")>>
-	<<set _newLifeLimit to (_newLife * 20)>>
+		<<set _newLife to _keys.count("Broodmother Host") + _keys.count("Top Broodmother Host")>>
+		<<set _newLifeLimit to (_newLife * 20)>>
 
-	<<set _tattoosFeats to _keys.count("A Living Canvas") + _keys.count("Billboard")>>
+		<<set _tattoosFeats to _keys.count("A Living Canvas") + _keys.count("Billboard")>>
 
-	<<set $featsBoosts to {
-		upgrades:{
-			money:0,
-			grades:0,
-			skulduggery:0,
-			dancing:0,
-			swimming:0,
-			athletics:0,
-			tending:0,
-			greenThumb:0,
-			seduction:0,
-			purity:0,
-			impurity:0,
-			newLife:0,
-			aNewBestFriend:0,
-			tattoos:0,
-			defaultMoves: 0,
-			randomClothing:0,
-			specialClothing:0,
-		},
-		upgradeDetails:{
-			money:{cost:5, limit: _moneyFeatsLimit, minCount: 1, count:_moneyFeats, exclusive:""},
-			grades:{cost:15, limit: 30, minCount: 1, count:_keys.count("Perfect Record"), exclusive:""},
-			skulduggery:{cost:5, limit: 20, minCount: 1, count:_keys.count("Thief"), exclusive:""},
-			dancing:{cost:5, limit: 20, minCount: 1, count:_keys.count("May I have this Dance?"), exclusive:""},
-			swimming:{cost:5, limit: 20, minCount: 1, count:_keys.count("Aquanaut"), exclusive:""},
-			athletics:{cost:5, limit: 20, minCount: 1, count:_keys.count("Swift"), exclusive:""},
-			tending:{cost:5, limit: 20, minCount: 1, count:_keys.count("Green Fingered"), exclusive:""},
-			greenThumb:{cost:40, limit: 40, minCount: 1, count:_keys.count("Green Fingered"), exclusive:"", hidden:true},
-			seduction:{cost:5, limit: 20, minCount: 1, count:_keys.count("Seductress"), exclusive:""},
-			purity:{cost:20, limit: 100, minCount: 2, count:_purityFeats, exclusive:"impurity"},
-			impurity:{cost:20, limit: 100, minCount: 1, count:_keys.count("Demon"), exclusive:"purity"},
-			newLife:{cost:20, limit: _newLifeLimit, minCount: 1, count:_newLife, exclusive:""},
-			aNewBestFriend:{cost:10, limit: 10, minCount: 1, count:_keys.count("Ear Slime Lover"), exclusive:""},
-			tattoos:{cost:5, limit: 25, minCount: 2, count:_tattoosFeats, exclusive:""},
-			defaultMoves:{cost:5, limit: 25, minCount: 1, count:_keys.count("A New Life"), exclusive:""},
-			randomClothing:{cost:1, limit: 20, minCount: 0, count:0, exclusive:""},
-			specialClothing:{cost:40, limit: 40, minCount: 1, count:_keys.count("Curious Attire"), exclusive:""},
-		},
-		missing:{
-			money:"Missing money feat",
-			grades:"Missing 'Perfect Record' feat",
-			skulduggery:"Missing 'Thief' feat",
-			dancing:"Missing 'May I have this Dance?' feat",
-			swimming:"Missing 'Aquanaut' feat",
-			athletics:"Missing 'Swift' feat",
-			tending:"Missing 'Green Fingered' feat",
-			seduction:"Missing 'Seductress' feat",
-			purity:"Missing 'Walk Like an Angel' and 'Falling, Falling, Falling...' feats",
-			impurity:"Missing 'Devilish Looks' feat",
-			newLife:"Missing a '?????' feat (" + _feats["Broodmother Host"].hint + ")",
-			aNewBestFriend:"Missing a '?????' feat (" + _feats["Ear Slime Lover"].hint + ")",
-			tattoos:"Missing 'Billboard' and 'A Living Canvas' feats",
-			defaultMoves:"Missing a '?????' feat (" + _feats["A New Life"].hint + ")",
-			randomClothing:"",
-			specialClothing:"Missing a '?????' feat (" + _feats["Curious Attire"].hint + ")",
-		},
-		name:{
-			money:"Money",
-			grades:"School grades",
-			skulduggery:"Skulduggery grade",
-			dancing:"Dancing grade",
-			swimming:"Swimming grade",
-			athletics:"Athletics grade",
-			tending:"Tending grade",
-			greenThumb:"Green Thumb trait",
-			seduction:"Seduction grade",
-			purity:"Daily purity",
-			impurity:"Daily impurity",
-			newLife:"New Life",
-			aNewBestFriend:"A new best friend",
-			tattoos:"Tattoos",
-			defaultMoves:"Default Moves",
-			randomClothing:"Random Clothing",
-			specialClothing:"Special Clothing",
-		},
-		pointsUsed: 0,
-		clothingGender:"Either",
-		clothingCustomColors:false,
-		tattoos:{
-			1:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
-			2:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
-			3:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
-			4:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
-			5:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
-		}
-	}>>
-<</if>>
+		<<set $featsBoosts to {
+			upgrades:{
+				money:0,
+				grades:0,
+				skulduggery:0,
+				dancing:0,
+				swimming:0,
+				athletics:0,
+				tending:0,
+				greenThumb:0,
+				seduction:0,
+				purity:0,
+				impurity:0,
+				newLife:0,
+				aNewBestFriend:0,
+				tattoos:0,
+				defaultMoves: 0,
+				randomClothing:0,
+				specialClothing:0,
+			},
+			upgradeDetails:{
+				money:{cost:5, limit: _moneyFeatsLimit, minCount: 1, count:_moneyFeats, exclusive:""},
+				grades:{cost:15, limit: 30, minCount: 1, count:_keys.count("Perfect Record"), exclusive:""},
+				skulduggery:{cost:5, limit: 20, minCount: 1, count:_keys.count("Thief"), exclusive:""},
+				dancing:{cost:5, limit: 20, minCount: 1, count:_keys.count("May I have this Dance?"), exclusive:""},
+				swimming:{cost:5, limit: 20, minCount: 1, count:_keys.count("Aquanaut"), exclusive:""},
+				athletics:{cost:5, limit: 20, minCount: 1, count:_keys.count("Swift"), exclusive:""},
+				tending:{cost:5, limit: 20, minCount: 1, count:_keys.count("Green Fingered"), exclusive:""},
+				greenThumb:{cost:40, limit: 40, minCount: 1, count:_keys.count("Green Fingered"), exclusive:"", hidden:true},
+				seduction:{cost:5, limit: 20, minCount: 1, count:_keys.count("Seductress"), exclusive:""},
+				purity:{cost:20, limit: 100, minCount: 2, count:_purityFeats, exclusive:"impurity"},
+				impurity:{cost:20, limit: 100, minCount: 1, count:_keys.count("Demon"), exclusive:"purity"},
+				newLife:{cost:20, limit: _newLifeLimit, minCount: 1, count:_newLife, exclusive:""},
+				aNewBestFriend:{cost:10, limit: 10, minCount: 1, count:_keys.count("Ear Slime Lover"), exclusive:""},
+				tattoos:{cost:5, limit: 25, minCount: 2, count:_tattoosFeats, exclusive:""},
+				defaultMoves:{cost:5, limit: 25, minCount: 1, count:_keys.count("A New Life"), exclusive:""},
+				randomClothing:{cost:1, limit: 20, minCount: 0, count:0, exclusive:""},
+				specialClothing:{cost:40, limit: 40, minCount: 1, count:_keys.count("Curious Attire"), exclusive:""},
+			},
+			missing:{
+				money:"Missing money feat",
+				grades:"Missing 'Perfect Record' feat",
+				skulduggery:"Missing 'Thief' feat",
+				dancing:"Missing 'May I have this Dance?' feat",
+				swimming:"Missing 'Aquanaut' feat",
+				athletics:"Missing 'Swift' feat",
+				tending:"Missing 'Green Fingered' feat",
+				seduction:"Missing 'Seductress' feat",
+				purity:"Missing 'Walk Like an Angel' and 'Falling, Falling, Falling...' feats",
+				impurity:"Missing 'Devilish Looks' feat",
+				newLife:"Missing a '?????' feat (" + _feats["Broodmother Host"].hint + ")",
+				aNewBestFriend:"Missing a '?????' feat (" + _feats["Ear Slime Lover"].hint + ")",
+				tattoos:"Missing 'Billboard' and 'A Living Canvas' feats",
+				defaultMoves:"Missing a '?????' feat (" + _feats["A New Life"].hint + ")",
+				randomClothing:"",
+				specialClothing:"Missing a '?????' feat (" + _feats["Curious Attire"].hint + ")",
+			},
+			name:{
+				money:"Money",
+				grades:"School grades",
+				skulduggery:"Skulduggery grade",
+				dancing:"Dancing grade",
+				swimming:"Swimming grade",
+				athletics:"Athletics grade",
+				tending:"Tending grade",
+				greenThumb:"Green Thumb trait",
+				seduction:"Seduction grade",
+				purity:"Daily purity",
+				impurity:"Daily impurity",
+				newLife:"New Life",
+				aNewBestFriend:"A new best friend",
+				tattoos:"Tattoos",
+				defaultMoves:"Default Moves",
+				randomClothing:"Random Clothing",
+				specialClothing:"Special Clothing",
+			},
+			pointsUsed: 0,
+			clothingGender:"Either",
+			clothingCustomColors:false,
+			tattoos:{
+				1:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+				2:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+				3:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+				4:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+				5:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+			}
+		}>>
+	<</if>>
 <</widget>>
 
 <<widget "update_school_skills">>
-<<for _subject range ["science", "english", "maths", "history"]>>
-	<<if V[_subject + 'trait'] gte 4>>
-		<<set V[_subject] to 1000>>
-	<<elseif V[_subject + 'trait'] gte 3>>
-		<<set V[_subject] to 700>>
-	<<elseif V[_subject + 'trait'] gte 2>>
-		<<set V[_subject] to 400>>
-	<<elseif V[_subject + 'trait'] gte 1>>
-		<<set V[_subject] to 200>>
-	<<else>>
-		<<set V[_subject] to 100>>
-	<</if>>
-<</for>>
+	<<for _subject range ["science", "english", "maths", "history"]>>
+		<<if V[_subject + 'trait'] gte 4>>
+			<<set V[_subject] to 1000>>
+		<<elseif V[_subject + 'trait'] gte 3>>
+			<<set V[_subject] to 700>>
+		<<elseif V[_subject + 'trait'] gte 2>>
+			<<set V[_subject] to 400>>
+		<<elseif V[_subject + 'trait'] gte 1>>
+			<<set V[_subject] to 200>>
+		<<else>>
+			<<set V[_subject] to 100>>
+		<</if>>
+	<</for>>
 <</widget>>
 
 <<widget "applyFeatsBoost">>
-<<set _upgrades to $featsBoosts.upgrades>>
-<<set _details to $featsBoosts.upgradeDetails>>
-<<if $featsBoosts.pointsUsed gt 0>>
-	<<earnFeat "A New Life">>
-<</if>>
-<<if _upgrades.money gt 0>>
-	<<set $money += _upgrades.money * _details.money.count / _details.money.cost * 5000>>
-<</if>>
-<<if _upgrades.grades gt 0>>
-	<<set $sciencetrait += _upgrades.grades / _details.grades.cost * 1>>
-	<<set $englishtrait += _upgrades.grades / _details.grades.cost * 1>>
-	<<set $mathstrait += _upgrades.grades / _details.grades.cost * 1>>
-	<<set $historytrait += _upgrades.grades / _details.grades.cost * 1>>
-	<<update_school_skills>>
-<</if>>
-<<if _upgrades.skulduggery gt 0>>
-	<<set $skulduggery to _upgrades.skulduggery / _details.skulduggery.cost * 100>>
-	<<set $skulduggeryday to _upgrades.skulduggery / _details.skulduggery.cost * 100>>
-<</if>>
-<<if _upgrades.dancing gt 0>>
-	<<set $danceskill to _upgrades.dancing / _details.dancing.cost * 100>>
-<</if>>
-<<if _upgrades.tending gt 0>>
-	<<set $tending += _upgrades.tending / _details.tending.cost * 100>>
-<</if>>
-<<if _upgrades.swimming gt 0>>
-	<<set $swimmingskill += _upgrades.swimming / _details.swimming.cost * 100>>
-<</if>>
-<<if _upgrades.athletics gt 0>>
-	<<set $athletics += _upgrades.athletics / _details.athletics.cost * 100>>
-<</if>>
-<<if _upgrades.seduction gt 0>>
-	<<set $seductionskill to _upgrades.seduction / _details.seduction.cost * 100>>
-<</if>>
-<<if _upgrades.purity gt 0>>
-	<<set $featsPurityBoost to _upgrades.purity / _details.purity.cost>>
-<</if>>
-<<if _upgrades.impurity gt 0>>
-	<<set $featsPurityBoost to _upgrades.impurity / _details.impurity.cost * -1>>
-<</if>>
-<<if _upgrades.newLife gt 0 and $parasitepregdisable is "f">>
-	<<impregnateParasite "tentacle" 400>>
-	<<fertiliseParasites>>
-	<<set _pregnancy to $sexStats.anus.pregnancy>>
-	<<set _pregnancy.motherStatus to 2>>
-	<<set $pregnancyStats.parasiteDoctorEvents to 2>>
-	<<set _pregnancy.fetus[0].stats.gender to "Hermaphrodite">>
-	<<if _upgrades.newLife is 40>>
-		<<set _pregnancy.fetus[0].stats.growth to 7>>
-		<<set _pregnancy.fetus[0].stats.speed to 54>>
+	<<set _upgrades to $featsBoosts.upgrades>>
+	<<set _details to $featsBoosts.upgradeDetails>>
+	<<if $featsBoosts.pointsUsed gt 0>>
+		<<earnFeat "A New Life">>
 	<</if>>
-	<<set _pregnancy.fetus[0].stats.lastEgg to Math.floor(_pregnancy.fetus[0].stats.growth / 3)>>
-<</if>>
-<<if _upgrades.aNewBestFriend gt 0>>
-	<<parasite left_ear slime>>
-<</if>>
-<<if _upgrades.greenThumb gt 0>>
-	<<set $backgroundTraits.pushUnique("greenthumb")>>
-<</if>>
-<<if _upgrades.randomClothing gt 0>>
-	<<set _clothingItems to _upgrades.randomClothing * 3>>
-	<<set _options to {
-		head:[],
-		face:[],
-		neck:[],
-		hands:[],
-		upper:[],
-		lower:[],
-		under_upper:[],
-		under_lower:[],
-		legs:[],
-		feet:[]
-	}>>
-	<<set _equip to setup.clothingLayer.body>>
-	<<for _i to 0; _i lt _equip.length; _i++>>
-		<<set _slot to _equip[_i]>>
-		<<for _j to 0; _j lt setup.clothes[_slot].length; _j++>>
-			<<if (setup.clothes[_slot][_j].gender is "f" and $featsBoosts.clothingGender is "Male") or (setup.clothes[_slot][_j].gender is "m" and $featsBoosts.clothingGender is "Female")>>
-				<<continue>>
+	<<if _upgrades.money gt 0>>
+		<<set $money += _upgrades.money * _details.money.count / _details.money.cost * 5000>>
+	<</if>>
+	<<if _upgrades.grades gt 0>>
+		<<set $sciencetrait += _upgrades.grades / _details.grades.cost * 1>>
+		<<set $englishtrait += _upgrades.grades / _details.grades.cost * 1>>
+		<<set $mathstrait += _upgrades.grades / _details.grades.cost * 1>>
+		<<set $historytrait += _upgrades.grades / _details.grades.cost * 1>>
+		<<update_school_skills>>
+	<</if>>
+	<<if _upgrades.skulduggery gt 0>>
+		<<set $skulduggery to _upgrades.skulduggery / _details.skulduggery.cost * 100>>
+		<<set $skulduggeryday to _upgrades.skulduggery / _details.skulduggery.cost * 100>>
+	<</if>>
+	<<if _upgrades.dancing gt 0>>
+		<<set $danceskill to _upgrades.dancing / _details.dancing.cost * 100>>
+	<</if>>
+	<<if _upgrades.tending gt 0>>
+		<<set $tending += _upgrades.tending / _details.tending.cost * 100>>
+	<</if>>
+	<<if _upgrades.swimming gt 0>>
+		<<set $swimmingskill += _upgrades.swimming / _details.swimming.cost * 100>>
+	<</if>>
+	<<if _upgrades.athletics gt 0>>
+		<<set $athletics += _upgrades.athletics / _details.athletics.cost * 100>>
+	<</if>>
+	<<if _upgrades.seduction gt 0>>
+		<<set $seductionskill to _upgrades.seduction / _details.seduction.cost * 100>>
+	<</if>>
+	<<if _upgrades.purity gt 0>>
+		<<set $featsPurityBoost to _upgrades.purity / _details.purity.cost>>
+	<</if>>
+	<<if _upgrades.impurity gt 0>>
+		<<set $featsPurityBoost to _upgrades.impurity / _details.impurity.cost * -1>>
+	<</if>>
+	<<if _upgrades.newLife gt 0 and $parasitepregdisable is "f">>
+		<<impregnateParasite "tentacle" 400>>
+		<<fertiliseParasites>>
+		<<set _pregnancy to $sexStats.anus.pregnancy>>
+		<<set _pregnancy.motherStatus to 2>>
+		<<set $pregnancyStats.parasiteDoctorEvents to 2>>
+		<<set _pregnancy.fetus[0].stats.gender to "Hermaphrodite">>
+		<<if _upgrades.newLife is 40>>
+			<<set _pregnancy.fetus[0].stats.growth to 7>>
+			<<set _pregnancy.fetus[0].stats.speed to 54>>
+		<</if>>
+		<<set _pregnancy.fetus[0].stats.lastEgg to Math.floor(_pregnancy.fetus[0].stats.growth / 3)>>
+	<</if>>
+	<<if _upgrades.aNewBestFriend gt 0>>
+		<<parasite left_ear slime>>
+	<</if>>
+	<<if _upgrades.greenThumb gt 0>>
+		<<set $backgroundTraits.pushUnique("greenthumb")>>
+	<</if>>
+	<<if _upgrades.randomClothing gt 0>>
+		<<set _clothingItems to _upgrades.randomClothing * 3>>
+		<<set _options to {
+			head:[],
+			face:[],
+			neck:[],
+			hands:[],
+			upper:[],
+			lower:[],
+			under_upper:[],
+			under_lower:[],
+			legs:[],
+			feet:[]
+		}>>
+		<<set _equip to setup.clothingLayer.body>>
+		<<for _i to 0; _i lt _equip.length; _i++>>
+			<<set _slot to _equip[_i]>>
+			<<for _j to 0; _j lt setup.clothes[_slot].length; _j++>>
+				<<if (setup.clothes[_slot][_j].gender is "f" and $featsBoosts.clothingGender is "Male") or (setup.clothes[_slot][_j].gender is "m" and $featsBoosts.clothingGender is "Female")>>
+					<<continue>>
+				<</if>>
+				<<if setup.clothes[_slot][_j].outfitSecondary isnot undefined>>
+					<<continue>>
+				<</if>>
+				<<if setup.clothes[_slot][_j].shop.includes("clothing")>>
+					<<run _options[_slot].push(_j)>>
+				<</if>>
+			<</for>>
+		<</for>>
+		<<set _equip to ["head","face","neck","upper","upper","upper","upper","upper","lower","lower","lower","lower","lower","under_upper","under_upper","under_upper","under_lower","under_lower","under_lower","hands","legs","feet"]>>
+		<<for _i to 0; _i lt _clothingItems; _i++>>
+			<<set _slot to _equip.random()>>
+			<<set _index to _options[_slot].random()>>
+			<<set _item to clone(setup.clothes[_slot][_index])>>
+			<<if _item.colour_options.length gt 0>>
+				<<set _colors to clone(_item.colour_options)>>
+				<<if $featsBoosts.clothingCustomColors is false>>
+					<<run _colors.delete("custom")>>
+				<</if>>
+				<<set _item.colour to _colors.random()>>
+				<<if $featsBoosts.clothingCustomColors is true and _item.colour is "custom">>
+					<<set _item.colourCustom to customColour(random(0,360), (random(0,20)/10), (random(5,40)/10), (random(0,20)/10), (random(0,100)/100))>>
+				<</if>>
 			<</if>>
-			<<if setup.clothes[_slot][_j].outfitSecondary isnot undefined>>
-				<<continue>>
+			<<if _item.accessory_colour_options.length gt 0>>
+				<<set _colors to clone(_item.accessory_colour_options)>>
+				<<if $featsBoosts.clothingCustomColors is false>>
+					<<run _colors.delete("custom")>>
+				<</if>>
+				<<set _item.accessory_colour to _colors.random()>>
+				<<if $featsBoosts.clothingCustomColors is true and _item.accessory_colour is "custom">>
+					<<set _item.accessory_colourCustom to customColour(random(0,360), (random(0,20)/10), (random(5,40)/10), (random(0,20)/10), (random(0,100)/100))>>
+				<</if>>
 			<</if>>
-			<<if setup.clothes[_slot][_j].shop.includes("clothing")>>
-				<<run _options[_slot].push(_j)>>
+
+			<<set $_.outfitPrimary to _item.outfitPrimary>>
+			<<set $_.items to {}>>
+			<<run $_.items[_slot] to clone(_item)>>
+			<<if $_.outfitPrimary isnot undefined>>
+				<<for _labelf, _valuef range $_.outfitPrimary>>
+					<<for _j to 0; _j lt setup.clothes[_labelf].length; _j++>>
+						<<if _valuef is setup.clothes[_labelf][_j].name>>
+							<<set $_.items[_labelf] to clone(setup.clothes[_labelf][_j])>>
+							<<set $_.items[_labelf].colour to clone($_.items[_slot].colour)>>
+							<<set $_.items[_labelf].accessory_colour to clone($_.items[_slot].accessory_colour)>>
+							<<if $featsBoosts.clothingCustomColors is true and _item.colour is "custom">>
+								<<set $_.items[_labelf].colourCustom to clone($_.items[_slot].colourCustom)>>
+							<</if>>
+							<<if $featsBoosts.clothingCustomColors is true and _item.accessory_colour is "custom">>
+								<<set $_.items[_labelf].accessory_ColourCustom to clone($_.items[_slot].accessory_colourCustom)>>
+							<</if>>
+							<<break>>
+						<</if>>
+					<</for>>
+				<</for>>
+			<</if>>
+
+			<<if $_.items[_slot] isnot undefined and $wardrobe[_slot].length lt $wardrobe.space>>
+				<<for _labelf, _valuef range $_.items>>
+					<<run $wardrobe[_labelf].push(_valuef)>>
+				<</for>>
+			<<else>>
+				<<set _clothingItems += 1>>
+			<</if>>
+			<<unset _item>>
+		<</for>>
+	<</if>>
+
+	<<if _upgrades.tattoos gt 0>>
+		<<featsTattooOptions>>
+		<<set _totalTattoos to $featsBoosts.upgrades.tattoos / $featsBoosts.upgradeDetails.tattoos.cost>>
+		<<set _bodyPartOptions to ["forehead","left_cheek","right_cheek","left_shoulder","right_shoulder","back","breasts","left_bottom","right_bottom","left_thigh","right_thigh","pubic"]>>
+
+		/*Remove non-random locations*/
+		<<for _label, _value range $featsBoosts.tattoos>>
+			<<if _value.tattoo isnot "Random">>
+				<<set _bodyPart to _value.bodypart.toLowerCase()>>
+				<<set _bodyPart to _bodyPart.replace(" ", "_")>>
+				<<run _bodyPartOptions.delete(_bodyPart)>>
 			<</if>>
 		<</for>>
-	<</for>>
-	<<set _equip to ["head","face","neck","upper","upper","upper","upper","upper","lower","lower","lower","lower","lower","under_upper","under_upper","under_upper","under_lower","under_lower","under_lower","hands","legs","feet"]>>
-	<<for _i to 0; _i lt _clothingItems; _i++>>
-		<<set _slot to _equip.random()>>
-		<<set _index to _options[_slot].random()>>
-		<<set _item to clone(setup.clothes[_slot][_index])>>
-		<<if _item.colour_options.length gt 0>>
-			<<set _colors to clone(_item.colour_options)>>
-			<<if $featsBoosts.clothingCustomColors is false>>
-				<<run _colors.delete("custom")>>
-			<</if>>
-			<<set _item.colour to _colors.random()>>
-			<<if $featsBoosts.clothingCustomColors is true and _item.colour is "custom">>
-				<<set _item.colourCustom to customColour(random(0,360), (random(0,20)/10), (random(5,40)/10), (random(0,20)/10), (random(0,100)/100))>>
-			<</if>>
-		<</if>>
-		<<if _item.accessory_colour_options.length gt 0>>
-			<<set _colors to clone(_item.accessory_colour_options)>>
-			<<if $featsBoosts.clothingCustomColors is false>>
-				<<run _colors.delete("custom")>>
-			<</if>>
-			<<set _item.accessory_colour to _colors.random()>>
-			<<if $featsBoosts.clothingCustomColors is true and _item.accessory_colour is "custom">>
-				<<set _item.accessory_colourCustom to customColour(random(0,360), (random(0,20)/10), (random(5,40)/10), (random(0,20)/10), (random(0,100)/100))>>
-			<</if>>
-		<</if>>
 
-		<<set $_.outfitPrimary to _item.outfitPrimary>>
-		<<set $_.items to {}>>
-		<<run $_.items[_slot] to clone(_item)>>
-		<<if $_.outfitPrimary isnot undefined>>
-			<<for _labelf, _valuef range $_.outfitPrimary>>
-				<<for _j to 0; _j lt setup.clothes[_labelf].length; _j++>>
-					<<if _valuef is setup.clothes[_labelf][_j].name>>
-						<<set $_.items[_labelf] to clone(setup.clothes[_labelf][_j])>>
-						<<set $_.items[_labelf].colour to clone($_.items[_slot].colour)>>
-						<<set $_.items[_labelf].accessory_colour to clone($_.items[_slot].accessory_colour)>>
-						<<if $featsBoosts.clothingCustomColors is true and _item.colour is "custom">>
-							<<set $_.items[_labelf].colourCustom to clone($_.items[_slot].colourCustom)>>
-						<</if>>
-						<<if $featsBoosts.clothingCustomColors is true and _item.accessory_colour is "custom">>
-							<<set $_.items[_labelf].accessory_ColourCustom to clone($_.items[_slot].accessory_colourCustom)>>
-						<</if>>
-						<<break>>
-					<</if>>
-				<</for>>
-			<</for>>
-		<</if>>
-
-		<<if $_.items[_slot] isnot undefined and $wardrobe[_slot].length lt $wardrobe.space>>
-			<<for _labelf, _valuef range $_.items>>
-				<<run $wardrobe[_labelf].push(_valuef)>>
-			<</for>>
-		<<else>>
-			<<set _clothingItems += 1>>
-		<</if>>
-		<<unset _item>>
-	<</for>>
-<</if>>
-
-<<if _upgrades.tattoos gt 0>>
-	<<featsTattooOptions>>
-	<<set _totalTattoos to $featsBoosts.upgrades.tattoos / $featsBoosts.upgradeDetails.tattoos.cost>>
-	<<set _bodyPartOptions to ["forehead","left_cheek","right_cheek","left_shoulder","right_shoulder","back","breasts","left_bottom","right_bottom","left_thigh","right_thigh","pubic"]>>
-
-	/*Remove non-random locations*/
-	<<for _label, _value range $featsBoosts.tattoos>>
-		<<if _value.tattoo isnot "Random">>
+		/*Add non-random bodyparts*/
+		<<for _label, _value range $featsBoosts.tattoos>>
+			<<if _label gt _totalTattoos>>
+				<<break>>
+			<</if>>
+			<<if _value.bodypart is "Random">>
+				<<continue>>
+			<</if>>
 			<<set _bodyPart to _value.bodypart.toLowerCase()>>
 			<<set _bodyPart to _bodyPart.replace(" ", "_")>>
 			<<run _bodyPartOptions.delete(_bodyPart)>>
-		<</if>>
-	<</for>>
-
-	/*Add non-random bodyparts*/
-	<<for _label, _value range $featsBoosts.tattoos>>
-		<<if _label gt _totalTattoos>>
-			<<break>>
-		<</if>>
-		<<if _value.bodypart is "Random">>
-			<<continue>>
-		<</if>>
-		<<set _bodyPart to _value.bodypart.toLowerCase()>>
-		<<set _bodyPart to _bodyPart.replace(" ", "_")>>
-		<<run _bodyPartOptions.delete(_bodyPart)>>
-		<<if _value.tattoo is "Random">>
-			<<set _tattoo to _featsTattooOptions.pluck()>>
-		<<else>>
-			<<set _tattoo to _value.tattoo>>
-		<</if>>
-		<<for _label2, _value2 range setup.bodywriting>>
-			<<if _value2.writing is _tattoo>>
-				<<add_bodywriting _bodyPart _label2 `_value.pen.toLowerCase()`>>
+			<<if _value.tattoo is "Random">>
+				<<set _tattoo to _featsTattooOptions.pluck()>>
+			<<else>>
+				<<set _tattoo to _value.tattoo>>
+			<</if>>
+			<<for _label2, _value2 range setup.bodywriting>>
+				<<if _value2.writing is _tattoo>>
+					<<add_bodywriting _bodyPart _label2 `_value.pen.toLowerCase()`>>
+					<<break>>
+				<</if>>
+			<</for>>
+		<</for>>
+		/*Add random bodyparts*/
+		<<for _label, _value range $featsBoosts.tattoos>>
+			<<if _label gt _totalTattoos>>
 				<<break>>
 			<</if>>
-		<</for>>
-	<</for>>
-	/*Add random bodyparts*/
-	<<for _label, _value range $featsBoosts.tattoos>>
-		<<if _label gt _totalTattoos>>
-			<<break>>
-		<</if>>
-		<<if _value.bodypart isnot "Random">>
-			<<continue>>
-		<</if>>
-		<<set _bodyPart to _bodyPartOptions.pluck()>>
-		<<if _value.tattoo is "Random">>
-			<<set _tattoo to _featsTattooOptions.pluck()>>
-		<<else>>
-			<<set _tattoo to _value.tattoo>>
-		<</if>>
-		<<for _label2, _value2 range setup.bodywriting>>
-			<<if _value2.writing is _tattoo>>
-				<<add_bodywriting _bodyPart _label2 `_value.pen.toLowerCase()`>>
-				<<break>>
+			<<if _value.bodypart isnot "Random">>
+				<<continue>>
 			<</if>>
+			<<set _bodyPart to _bodyPartOptions.pluck()>>
+			<<if _value.tattoo is "Random">>
+				<<set _tattoo to _featsTattooOptions.pluck()>>
+			<<else>>
+				<<set _tattoo to _value.tattoo>>
+			<</if>>
+			<<for _label2, _value2 range setup.bodywriting>>
+				<<if _value2.writing is _tattoo>>
+					<<add_bodywriting _bodyPart _label2 `_value.pen.toLowerCase()`>>
+					<<break>>
+				<</if>>
+			<</for>>
 		<</for>>
-	<</for>>
-	<<bodywriting_exposure_check true>>
-<</if>>
-<<if _upgrades.defaultMoves gt 0>>
-	<<set $maxDefaultActionSets to 2 + _upgrades.defaultMoves / _details.defaultMoves.cost>>
-<</if>>
-<<if _upgrades.specialClothing gt 0>>
-	<<set _unlocked to $feats.allSaves.specialClothes>>
-	<<specialClothesSetup>>
-	<<for $_label, $_value range _unlocked>>
-		<<set $specialClothes[$_label] to $_value>>
-	<</for>>
-<</if>>
+		<<bodywriting_exposure_check true>>
+	<</if>>
+	<<if _upgrades.defaultMoves gt 0>>
+		<<set $maxDefaultActionSets to 2 + _upgrades.defaultMoves / _details.defaultMoves.cost>>
+	<</if>>
+	<<if _upgrades.specialClothing gt 0>>
+		<<set _unlocked to $feats.allSaves.specialClothes>>
+		<<specialClothesSetup>>
+		<<for $_label, $_value range _unlocked>>
+			<<set $specialClothes[$_label] to $_value>>
+		<</for>>
+	<</if>>
 <</widget>>
 
 <<widget "earnAllFeats">>
-<<specialClothesUpdate>>
-<<if $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1 and $replayScene is undefined>>
-	<!-- Save a widget call by checking _feats outside the widget -->
-	<<if _feats is undefined>>
-		<<featsData>>
-	<</if>>
-	<<if _args[0] is true>>
-		/*Rarely occuring feats*/
-		<<if $days gte 50>>
-			<<if $player.gender is "m">>
-				<<earnFeat "Being a Boy">>
-			<<elseif $player.gender is "f">>
-				<<earnFeat "Being a Girl">>
-			<<elseif $player.gender is "h">>
-				<<earnFeat "Being a Hermaphrodite">>
-			<</if>>
+	<<specialClothesUpdate>>
+	<<if $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1 and $replayScene is undefined>>
+		<!-- Save a widget call by checking _feats outside the widget -->
+		<<if _feats is undefined>>
+			<<featsData>>
+		<</if>>
+		<<if _args[0] is true>>
+			/*Rarely occuring feats*/
+			<<if $days gte 50>>
+				<<if $player.gender is "m">>
+					<<earnFeat "Being a Boy">>
+				<<elseif $player.gender is "f">>
+					<<earnFeat "Being a Girl">>
+				<<elseif $player.gender is "h">>
+					<<earnFeat "Being a Hermaphrodite">>
+				<</if>>
 
-			<<if $days gte 150>>
-				<<earnFeat "Being an Orphan">>
-			<</if>>
-
-			<<if $passoutstat is 0>>
-				<<earnFeat "Stressful Challenge">>
 				<<if $days gte 150>>
-					<<earnFeat "Long Stressful Challenge">>
+					<<earnFeat "Being an Orphan">>
+				<</if>>
+
+				<<if $passoutstat is 0>>
+					<<earnFeat "Stressful Challenge">>
+					<<if $days gte 150>>
+						<<earnFeat "Long Stressful Challenge">>
+					<</if>>
 				<</if>>
 			<</if>>
-		<</if>>
-		<<if $awareness gte 500>>
-			<<earnFeat "Most Aware">>
-		<<elseif $awareness lte -199>>
-			<<earnFeat "Most Innocent">>
-		<</if>>
-		<<if $promiscuity gte 100 and $deviancy gte 100 and $exhibitionism gte 100>>
-			<<earnFeat "No More Control">>
-		<</if>>
-		<<if (!$player.vaginaExist or $vaginalskill gte 1000) and (!$player.penisExist or $penileskill gte 1000) and $oralskill gte 1000
-		and ($analskill gte 1000 or $analdisable is "t") and $handskill gte 1000 and $feetskill gte 1000 and $bottomskill gte 1000
-		and $thighskill gte 1000 and $chestskill gte 1000>>
-			<<earnFeat "Sex Specialist">>
-		<</if>>
-		<<if $submissive gte 2000>>
-			<<earnFeat "Perfect Sub">>
-		<<elseif $submissive lte 0>>
-			<<earnFeat "Defying the Odds">>
-		<</if>>
-		<<if $museumAntiques.museumCount is $museumAntiques.maxCount>>
-			<<earnFeat "It Belongs in a Museum">>
-		<</if>>
-		<<if ($robinromance gte 1 and $whitneyromance gte 1 and $kylarenglish gte 1) or ($robinromance gte 1 and $whitneyromance gte 1 and $sydneyromance gte 1) or ($robinromance gte 1 and $kylarenglish gte 1 and $sydneyromance gte 1) or ($kylarenglish gte 1 and $whitneyromance gte 1 and $sydneyromance gte 1)>>
-			<<earnFeat "Love Triangles">>
-		<</if>>
-		<<if $robinromance gte 1 and $whitneyromance gte 1 and $kylarenglish gte 1 and $sydneyromance gte 1>>
-			<<earnFeat "Love Trapezoids">>
-		<</if>>
-		<<if $cat gte 6>>
-			<<earnFeat "Neko">>
-		<</if>>
-		<<if $wolfgirl gte 6>>
-			<<earnFeat "Wolf">>
-		<</if>>
-		<<if $angel gte 6>>
-			<<earnFeat "Angel">>
-		<</if>>
-		<<if $fallenangel gte 2>>
-			<<earnFeat "Fallen Angel">>
-		<</if>>
-		<<if $demon gte 6>>
-			<<earnFeat "Demon">>
-		<</if>>
-		<<if $cow gte 6>>
-			<<earnFeat "Cattle">>
-		<</if>>
-		<<if $orgasmtrait gte 1 or $ejactrait gte 1 or $molesttrait gte 1 or $rapetrait gte 1 or $bestialitytrait gte 1
-		or $tentacletrait gte 1 or $voretrait gte 1 or $milkdranktrait gte 1 or $choketrait gte 1>>
-			<<earnFeat "A Special Trait">>
-		<</if>>
-		<<if $orgasmtrait gte 1 and $ejactrait gte 1 and $molesttrait gte 1 and $rapetrait gte 1 and $bestialitytrait gte 1
-		and $tentacletrait gte 1 and $voretrait gte 1 and $milkdranktrait gte 1 and $choketrait gte 1>>
-			<<earnFeat "A Special Trait Collector">>
-		<</if>>
-		<<if $sexStats.anus.pregnancy.motherStatus is 2 or $sexStats.vagina.pregnancy.motherStatus is 2>>
-			<<earnFeat "Broodmother Host">>
-		<</if>>
-		<<if $pregnancyStats.parasiteTypesSeen && $pregnancyStats.parasiteTypesSeen.length gte 14 and $pregnancyStats.parasiteVariantsSeen.length gte 2 and $pregnancyStats.parasiteBook is 3>>
-			<!-- typesSeen: fish, snake, slime, spider, maggot, worm, eel, wasp, bee, lurker, squid, slug, tentacle, vine -->
-			<!-- variantsSeen: pale, metal -->
-			<<earnFeat "Broodmother Zoologist">>
-		<</if>>
-		<<if $spraymax gte 7>>
-			<<earnFeat "Max Those Shots">>
-		<</if>>
-		<<if ($semen_volume gte 2000 and $semen_amount gte $semen_volume)
-		or ($milk_volume gte 2000 and $milk_amount gte $milk_volume)>>
-			<<earnFeat "Feeling Full">>
-		<</if>>
-		<<if $cool gte 400>>
-			<<earnFeat "Social Butterfly">>
-		<</if>>
-		<<if $cool lte 2 and !$backgroundTraits.includes("nerd")>>
-			<<earnFeat "Anti-Social Moth">>
-		<</if>>
-		<<if $delinquency lte 0>>
-			<<earnFeat "Teachers Pet">>
-		<<elseif $delinquency gte 1000>>
-			<<earnFeat "Teachers Nightmare">>
-		<</if>>
-		<<if $skin.forehead.writing and $skin.left_cheek.writing and $skin.right_cheek.writing and $skin.left_shoulder.writing and $skin.right_shoulder.writing
-		and $skin.breasts.writing and $skin.back.writing and $skin.pubic.writing and $skin.left_thigh.writing and $skin.right_thigh.writing>>
-			<<earnFeat "A Living Canvas">>
-		<</if>>
-		<<if $produce_sold gte 100>>
-			<<earnFeat "Hawker">>
-		<</if>>
-		<<if $produce_sold gte 1000>>
-			<<earnFeat "Vendor">>
-		<</if>>
-		<<if $produce_sold gte 5000>>
-			<<earnFeat "Merchant">>
-		<</if>>
-		<<if $plants_known.length gte 16>>
-			<<earnFeat "Seedy">>
-		<</if>>
-		<<if $daily.ex.road is 1 and $daily.ex.cream is 1 and $daily.ex.flyover is 1>>
-			<<earnFeat "A Lewd Adventure">>
-		<</if>>
-		<<if $athletics gte 1000>>
-			<<earnFeat "Swift">>
-		<</if>>
-		<<if $farm_stage gte 2>>
-			<<if $farm.beasts.horses gte 20 and $farm.beasts.cattle gte 20 and $farm.beasts.dogs gte 20 and $farm.beasts.pigs gte 20>>
-				<<earnFeat "Animal Tender">>
+			<<if $awareness gte 500>>
+				<<earnFeat "Most Aware">>
+			<<elseif $awareness lte -199>>
+				<<earnFeat "Most Innocent">>
 			<</if>>
+			<<if $promiscuity gte 100 and $deviancy gte 100 and $exhibitionism gte 100>>
+				<<earnFeat "No More Control">>
+			<</if>>
+			<<if (!$player.vaginaExist or $vaginalskill gte 1000) and (!$player.penisExist or $penileskill gte 1000) and $oralskill gte 1000
+			and ($analskill gte 1000 or $analdisable is "t") and $handskill gte 1000 and $feetskill gte 1000 and $bottomskill gte 1000
+			and $thighskill gte 1000 and $chestskill gte 1000>>
+				<<earnFeat "Sex Specialist">>
+			<</if>>
+			<<if $submissive gte 2000>>
+				<<earnFeat "Perfect Sub">>
+			<<elseif $submissive lte 0>>
+				<<earnFeat "Defying the Odds">>
+			<</if>>
+			<<if $museumAntiques.museumCount is $museumAntiques.maxCount>>
+				<<earnFeat "It Belongs in a Museum">>
+			<</if>>
+			<<if ($robinromance gte 1 and $whitneyromance gte 1 and $kylarenglish gte 1) or ($robinromance gte 1 and $whitneyromance gte 1 and $sydneyromance gte 1) or ($robinromance gte 1 and $kylarenglish gte 1 and $sydneyromance gte 1) or ($kylarenglish gte 1 and $whitneyromance gte 1 and $sydneyromance gte 1)>>
+				<<earnFeat "Love Triangles">>
+			<</if>>
+			<<if $robinromance gte 1 and $whitneyromance gte 1 and $kylarenglish gte 1 and $sydneyromance gte 1>>
+				<<earnFeat "Love Trapezoids">>
+			<</if>>
+			<<if $cat gte 6>>
+				<<earnFeat "Neko">>
+			<</if>>
+			<<if $wolfgirl gte 6>>
+				<<earnFeat "Wolf">>
+			<</if>>
+			<<if $angel gte 6>>
+				<<earnFeat "Angel">>
+			<</if>>
+			<<if $fallenangel gte 2>>
+				<<earnFeat "Fallen Angel">>
+			<</if>>
+			<<if $demon gte 6>>
+				<<earnFeat "Demon">>
+			<</if>>
+			<<if $cow gte 6>>
+				<<earnFeat "Cattle">>
+			<</if>>
+			<<if $orgasmtrait gte 1 or $ejactrait gte 1 or $molesttrait gte 1 or $rapetrait gte 1 or $bestialitytrait gte 1
+			or $tentacletrait gte 1 or $voretrait gte 1 or $milkdranktrait gte 1 or $choketrait gte 1>>
+				<<earnFeat "A Special Trait">>
+			<</if>>
+			<<if $orgasmtrait gte 1 and $ejactrait gte 1 and $molesttrait gte 1 and $rapetrait gte 1 and $bestialitytrait gte 1
+			and $tentacletrait gte 1 and $voretrait gte 1 and $milkdranktrait gte 1 and $choketrait gte 1>>
+				<<earnFeat "A Special Trait Collector">>
+			<</if>>
+			<<if $sexStats.anus.pregnancy.motherStatus is 2 or $sexStats.vagina.pregnancy.motherStatus is 2>>
+				<<earnFeat "Broodmother Host">>
+			<</if>>
+			<<if $pregnancyStats.parasiteTypesSeen && $pregnancyStats.parasiteTypesSeen.length gte 14 and $pregnancyStats.parasiteVariantsSeen.length gte 2 and $pregnancyStats.parasiteBook is 3>>
+				<!-- typesSeen: fish, snake, slime, spider, maggot, worm, eel, wasp, bee, lurker, squid, slug, tentacle, vine -->
+				<!-- variantsSeen: pale, metal -->
+				<<earnFeat "Broodmother Zoologist">>
+			<</if>>
+			<<if $spraymax gte 7>>
+				<<earnFeat "Max Those Shots">>
+			<</if>>
+			<<if ($semen_volume gte 2000 and $semen_amount gte $semen_volume)
+			or ($milk_volume gte 2000 and $milk_amount gte $milk_volume)>>
+				<<earnFeat "Feeling Full">>
+			<</if>>
+			<<if $cool gte 400>>
+				<<earnFeat "Social Butterfly">>
+			<</if>>
+			<<if $cool lte 2 and !$backgroundTraits.includes("nerd")>>
+				<<earnFeat "Anti-Social Moth">>
+			<</if>>
+			<<if $delinquency lte 0>>
+				<<earnFeat "Teachers Pet">>
+			<<elseif $delinquency gte 1000>>
+				<<earnFeat "Teachers Nightmare">>
+			<</if>>
+			<<if $skin.forehead.writing and $skin.left_cheek.writing and $skin.right_cheek.writing and $skin.left_shoulder.writing and $skin.right_shoulder.writing
+			and $skin.breasts.writing and $skin.back.writing and $skin.pubic.writing and $skin.left_thigh.writing and $skin.right_thigh.writing>>
+				<<earnFeat "A Living Canvas">>
+			<</if>>
+			<<if $produce_sold gte 100>>
+				<<earnFeat "Hawker">>
+			<</if>>
+			<<if $produce_sold gte 1000>>
+				<<earnFeat "Vendor">>
+			<</if>>
+			<<if $produce_sold gte 5000>>
+				<<earnFeat "Merchant">>
+			<</if>>
+			<<if $plants_known.length gte 16>>
+				<<earnFeat "Seedy">>
+			<</if>>
+			<<if $daily.ex.road is 1 and $daily.ex.cream is 1 and $daily.ex.flyover is 1>>
+				<<earnFeat "A Lewd Adventure">>
+			<</if>>
+			<<if $athletics gte 1000>>
+				<<earnFeat "Swift">>
+			<</if>>
+			<<if $farm_stage gte 2>>
+				<<if $farm.beasts.horses gte 20 and $farm.beasts.cattle gte 20 and $farm.beasts.dogs gte 20 and $farm.beasts.pigs gte 20>>
+					<<earnFeat "Animal Tender">>
+				<</if>>
+			<</if>>
+			<<if $masochism_level gte 4 and $sadism_level gte 4>>
+				<<earnFeat "Sadomasochist">>
+			<</if>>
+			<<if $masochism_level gte 4>>
+				<<earnFeat "Twisted Desire">>
+			<</if>>
+			<<if $sadism_level gte 4>>
+				<<earnFeat "Served Hot">>
+			<</if>>
+			<!-- ToDo: Pregnancy, remove $pregnancyTesting to properly enable -->
+			<<if $fame.sex lte 29 and $fame.prostitution lte 29 and $fame.rape lte 29 and $fame.bestiality lte 29 and $fame.exhibitionism lte 29 and (!$pregnancyTesting or $fame.pregnancy lte 29)
+			and $fame.scrap gte 1000 and $fame.good gte 1000 and $fame.business gte 1000 and $fame.social gte 1000 and $fame.model gte 1000 /* and $fame.pimp gte 1000 */>>
+				<<earnFeat "Shining Reputation">>
+			<</if>>
+
+			<<if Object.values($children).reduce((prev,curr) => prev.pushUnique(curr.type), []).length gte Object.keys(pregnancyGenerator).filter(type => type !== "parasite").length>>
+				<<earnFeat "Diversity of Life">>
+			<</if>>
+
+			<!-- Should be last -->
+			<<if $feats.allSaves.points gte 150>>
+				<<earnFeat "My Collection of Feats">>
+			<</if>>
+			<<if $feats.allSaves.points gte 300>>
+				<<earnFeat "My Timeless Collection of Feats">>
+			<</if>>
+			<<specialClothesUpdate>>
 		<</if>>
-		<<if $masochism_level gte 4 and $sadism_level gte 4>>
-			<<earnFeat "Sadomasochist">>
+		<<if $money gte 100000>>
+			<<earnFeat "Pocket Change">>
 		<</if>>
-		<<if $masochism_level gte 4>>
-			<<earnFeat "Twisted Desire">>
+		<<if $money gte 1000000>>
+			<<earnFeat "Money Maker">>
 		<</if>>
-		<<if $sadism_level gte 4>>
-			<<earnFeat "Served Hot">>
+		<<if $money gte 10000000>>
+			<<earnFeat "Tycoon">>
 		<</if>>
-		<!-- ToDo: Pregnancy, remove $pregnancyTesting to properly enable -->
-		<<if $fame.sex lte 29 and $fame.prostitution lte 29 and $fame.rape lte 29 and $fame.bestiality lte 29 and $fame.exhibitionism lte 29 and (!$pregnancyTesting or $fame.pregnancy lte 29)
-		and $fame.scrap gte 1000 and $fame.good gte 1000 and $fame.business gte 1000 and $fame.social gte 1000 and $fame.model gte 1000 /* and $fame.pimp gte 1000 */>>
-			<<earnFeat "Shining Reputation">>
+		<<if $money gte 100000000>>
+			<<earnFeat "Millionaire">>
+		<</if>>
+		<<if $liquidoutsidecount gte 100
+		and ($analdisable is "t" or setup.bodyliquid.combined("anus") gte 5)
+		and (!$player.vaginaExist or setup.bodyliquid.combined("vagina") gte 5)
+		and setup.bodyliquid.combined("mouth") gte 5>>
+			<<earnFeat "Fully Covered">>
+		<</if>>
+		<<if $skulduggery gte 1000>>
+			<<earnFeat "Thief">>
+		<</if>>
+		<<if $danceskill gte 1000>>
+			<<earnFeat "May I have this Dance?">>
+		<</if>>
+		<<if $swimmingskill gte 1000>>
+			<<earnFeat "Aquanaut">>
+		<</if>>
+		<<if $seductionskill gte 1000>>
+			<<earnFeat "Seductress">>
+		<</if>>
+		<<if $tending gte 1000>>
+			<<earnFeat "Green Fingered">>
 		<</if>>
 
-		<<if Object.values($children).reduce((prev,curr) => prev.pushUnique(curr.type), []).length gte Object.keys(pregnancyGenerator).filter(type => type !== "parasite").length>>
-			<<earnFeat "Diversity of Life">>
+		<<if $baseAllure gte 7000 and $outside is 1 and $moonstate is 0>>
+			<<earnFeat "Alluring">>
 		<</if>>
-
-		<!-- Should be last -->
-		<<if $feats.allSaves.points gte 150>>
-			<<earnFeat "My Collection of Feats">>
+		<<if $science gte 1000 and $maths gte 1000 and $english gte 1000 and $history gte 1000>>
+			<<earnFeat "Perfect Record">>
 		<</if>>
-		<<if $feats.allSaves.points gte 300>>
-			<<earnFeat "My Timeless Collection of Feats">>
+		<<if $corruption_slime gte 100>>
+			<<earnFeat "Ear Slime Lover">>
 		<</if>>
-		<<specialClothesUpdate>>
 	<</if>>
-	<<if $money gte 100000>>
-		<<earnFeat "Pocket Change">>
-	<</if>>
-	<<if $money gte 1000000>>
-		<<earnFeat "Money Maker">>
-	<</if>>
-	<<if $money gte 10000000>>
-		<<earnFeat "Tycoon">>
-	<</if>>
-	<<if $money gte 100000000>>
-		<<earnFeat "Millionaire">>
-	<</if>>
-	<<if $liquidoutsidecount gte 100
-	and ($analdisable is "t" or setup.bodyliquid.combined("anus") gte 5)
-	and (!$player.vaginaExist or setup.bodyliquid.combined("vagina") gte 5)
-	and setup.bodyliquid.combined("mouth") gte 5>>
-		<<earnFeat "Fully Covered">>
-	<</if>>
-	<<if $skulduggery gte 1000>>
-		<<earnFeat "Thief">>
-	<</if>>
-	<<if $danceskill gte 1000>>
-		<<earnFeat "May I have this Dance?">>
-	<</if>>
-	<<if $swimmingskill gte 1000>>
-		<<earnFeat "Aquanaut">>
-	<</if>>
-	<<if $seductionskill gte 1000>>
-		<<earnFeat "Seductress">>
-	<</if>>
-	<<if $tending gte 1000>>
-		<<earnFeat "Green Fingered">>
-	<</if>>
-
-	<<if $baseAllure gte 7000 and $outside is 1 and $moonstate is 0>>
-		<<earnFeat "Alluring">>
-	<</if>>
-	<<if $science gte 1000 and $maths gte 1000 and $english gte 1000 and $history gte 1000>>
-		<<earnFeat "Perfect Record">>
-	<</if>>
-	<<if $corruption_slime gte 100>>
-		<<earnFeat "Ear Slime Lover">>
-	<</if>>
-<</if>>
 <</widget>>
 
 /*
@@ -631,1480 +631,1480 @@
 	hidden: true, //Will hide the feat at all times unless unlocked, best for feats for unreleased content
 */
 <<widget "featsData">>
-<<if _feats is undefined>>
-	<<set _feats to {
-		"Pocket Change":{
-			title: "Pocket Change",
-			desc: "Have £1,000.",
-			difficulty: 1,
-			series: "money",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Money Maker":{
-			title: "Money Maker",
-			desc: "Have £10,000.",
-			difficulty: 1,
-			series: "money",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Tycoon":{
-			title: "Tycoon",
-			desc: "Have £100,000.",
-			difficulty: 2,
-			series: "money",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Millionaire":{
-			title: "Millionaire",
-			desc: "Have £1,000,000.",
-			difficulty: 3,
-			series: "money",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"It Belongs in a Museum":{
-			title: "It Belongs in a Museum!",
-			desc: "Find all the artifacts",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Fully Covered":{
-			title: "Fully Covered",
-			desc: "Drenched in something other than water.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "General"],
-		},
-		"Being a Boy":{
-			title: "Being a Boy",
-			desc: "Get to day 50 as a boy.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Being a Girl":{
-			title: "Being a Girl",
-			desc: "Get to day 50 as a girl.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Being a Hermaphrodite":{
-			title: "Being a Hermaphrodite",
-			desc: "Get to day 50 as a hermaphrodite.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Being an Orphan":{
-			title: "Being an Orphan",
-			desc: "Get to day 150.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Stressful Challenge":{
-			title: "Stressful Challenge",
-			desc: "Get to day 50 without passing out.",
-			difficulty: 2,
-			series: "challenge",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Long Stressful Challenge":{
-			title: "Long Stressful Challenge",
-			desc: "Get to day 150 without passing out.",
-			difficulty: 3,
-			series: "challenge",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Billboard":{
-			title: "Billboard",
-			desc: "Wear an advert, and have it pay off.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "General"],
-		},
-		"A Living Canvas":{
-			title: "A Living Canvas",
-			desc: "Ink on every part.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "General"],
-		},
-		"Farmhand":{
-			title: "Farmhand",
-			desc: "Help Alex expand the farm.",
-			difficulty: 2,
-			series: "alex",
-			filter: ["All", "General"],
-		},
-		"Farmer":{
-			title: "Farmer",
-			desc: "Return the farm to its former glory.",
-			difficulty: 3,
-			series: "alex",
-			filter: ["All", "General"],
-		},
-		"Cultivator":{
-			title: "Cultivator",
-			desc: "Claim every field at Alex's farm.",
-			difficulty: 3,
-			series: "alex",
-			filter: ["All", "General"],
-		},
-		"The Rival Farm":{
-			title: "The Rival Farm",
-			desc: "Fully upgrade a farm expansion.",
-			difficulty: 2,
-			series: "farm",
-			filter: ["All", "General"],
-		},
-		"The Rival Estate":{
-			title: "The Rival Estate",
-			desc: "Build all the farm expansions.",
-			difficulty: 3,
-			series: "farm",
-			filter: ["All", "General"],
-		},
-		"Heroic Victory":{
-			title: "Heroic Victory",
-			desc: "Defend nine fields from Remy, lose none.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "General"],
-		},
-		"Five in a Row":{
-			title: "Five in a Row",
-			desc: "Win five games of blackjack in a row.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "General"],
-		},
-		"Distinction":{
-			title: "Distinction",
-			desc: "Win a distinction on a school exam.",
-			difficulty: 1,
-			series: "distinction",
-			filter: ["All", "General"],
-		},
-		"Distinctive":{
-			title: "Distinctive",
-			desc: "Win 5 distinctions on school exams.",
-			difficulty: 2,
-			series: "distinction",
-			filter: ["All", "General"],
-		},
-		"Distinguished":{
-			title: "Distinguished",
-			desc: "Win 15 distinctions on school exams.",
-			difficulty: 3,
-			series: "distinction",
-			filter: ["All", "General"],
-		},
-		"Science Fair Winner":{
-			title: "Science Fair Winner",
-			desc: "Blind them with science.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Maths Competition Winner":{
-			title: "Maths Competition Winner",
-			desc: "Sordid advantage or no.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "General"],
-			softLockable: true,
-		},
-		"Most Aware":{
-			title: "Most Aware",
-			desc: "You see things others don't.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Most Innocent":{
-			title: "Most Innocent",
-			desc: "Everything is fine.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"No More Control":{
-			title: "No More Control",
-			desc: "You don't know how to get lewder!",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Thief":{
-			title: "Thief",
-			desc: "You know how to acquire things.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"May I have this Dance?":{
-			title: "May I Have This Dance?",
-			desc: "No one can resist your moves.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Aquanaut":{
-			title: "Aquanaut",
-			desc: "For those treasure hunters.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Seductress":{
-			title: "Seductress",
-			desc: "Be in control.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Green Fingered":{
-			title: "Green Fingered",
-			desc: "You can get a lot done on your knees.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Swift":{
-			title: "Swift",
-			desc: "Like the Wind.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Alluring":{
-			title: "Alluring",
-			desc: "Attracting attention is easy.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Stats"],
-			softLockable: true,
-		},
-		"Sex Specialist":{
-			title: "Sex Specialist",
-			desc: "You excel at making others cum.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Perfect Record":{
-			title: "Perfect Record",
-			desc: "You excel at studying.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Perfect Sub":{
-			title: "Perfect Sub",
-			desc: "The pinnacle of submission.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Defying the Odds":{
-			title: "Defying the Odds",
-			desc: "The pinnacle of defiance.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Hawker":{
-			title: "Hawker",
-			desc: "Profit from the earth.",
-			difficulty: 1,
-			series: "market",
-			filter: ["All", "Stats"],
-		},
-		"Vendor":{
-			title: "Vendor",
-			desc: "Prove your sales chops.",
-			difficulty: 2,
-			series: "market",
-			filter: ["All", "Stats"],
-		},
-		"Merchant":{
-			title: "Merchant",
-			desc: "Dominate the market.",
-			difficulty: 2,
-			series: "market",
-			filter: ["All", "Stats"],
-		},
-		"Twisted Desire":{
-			title: "Twisted Desire",
-			desc: "Suffering is optional.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Served Hot":{
-			title: "Served Hot",
-			desc: "You'll hurt them. And you'll like it.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Sadomasochist":{
-			title: "Sadomasochist",
-			desc: "You want to hurt.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Shining Reputation":{
-			title: "Shining Reputation",
-			desc: "Famous, but only in the right ways.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Stats"],
-		},
-		"Social Butterfly":{
-			title: "Social Butterfly",
-			desc: "You are the centre of attention.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Anti-Social Moth":{
-			title: "Unsocial Moth",
-			desc: "Who needs friends?",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Teachers Pet":{
-			title: "Teacher's Pet",
-			desc: "You are the best in class.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Teachers Nightmare":{
-			title: "Teacher's Nightmare",
-			desc: "You are a terror!",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Robin the Lover":{
-			title: "Robin the Lover",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Robin's Song":{
-			title: "Robin's Song",
-			desc: "Helped Robin feel comfortable crossdressing.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Whitney the Tsundere":{
-			title: "Whitney the Bully",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Delinquent Antics":{
-			title: "Delinquent Antics",
-			desc: "Made Whitney cum during class.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Giddy Up":{
-			title: "Giddy Up",
-			desc: "Throw Whitney into a pool.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Kylar the Obsessed":{
-			title: "Kylar the Obsessed",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Eden the Lonely":{
-			title: "Eden the Lonely",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Avery the Moneybags":{
-			title: "Avery the Moneybags",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Leighton the Shady":{
-			title: "Leighton the Shady",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Alex the Robust":{
-			title: "Alex the Robust",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Great Hawk the Terror":{
-			title: "Great Hawk the Terror",
-			desc: "You'll make an excellent spouse.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Wren the Sly":{
-			title: "Wren the Sly",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Great Wolf the Alpha":{
-			title: "Black Wolf the Alpha",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Sydney the Pure Hearted":{
-			title: "Sydney the Pure-Hearted",
-			desc: "They gave their virginity to you.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Harper the Hypnotist":{
-			title: "Harper the Hypnotist",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Morgan the Lost":{
-			title: "Morgan the Lost",
-			desc: "You gave your virginity to them.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Love Triangles":{
-			title: "Love Triangles",
-			desc: "You don't know who to choose.",
-			difficulty: 2,
-			series: "love triangles",
-			filter: ["All", "Social"],
-		},
-		"Love Trapezoids":{
-			title: "Love Trapezoids",
-			desc: "Three wasn't enough for you.",
-			difficulty: 3,
-			series: "love triangles",
-			filter: ["All", "Social"],
-		},
-		"Ballroom Show-off":{
-			title: "Ballroom Show-off",
-			desc: "Won a competition with Avery.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Under the Table":{
-			title: "Under the Table",
-			desc: "Proved your mettle in a drinking contest.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Pub Crawl Victors":{
-			title: "Pub Crawl Victors",
-			desc: "Won a competition with your work colleagues.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Mason's Secret":{
-			title: "Mason's Secret",
-			desc: "Convince Mason to share something they'd rather not.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Mason's Shame":{
-			title: "Mason's Shame",
-			desc: "Bring Mason to orgasm inside a locker.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"Animal Tender":{
-			title: "Animal Tender",
-			desc: "Earn the respect of all animals at Alex's farm.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"I Spy":{
-			title: "I Spy",
-			desc: "Peek on Alex in the shower.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"First Kiss":{
-			title: "First Kiss",
-			desc: "Give your first kiss to a love interest.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Social"],
-		},
-		"A Crime Most Foul":{
-			title: "A Crime Most Foul",
-			desc: "Once late, forever shamed.",
-			difficulty: 2,
-			series: "",
-			hint: "Hint: Make a written punishment permanent.",
-			filter: ["All", "Social"],
-		},
-		"Longing":{
-			title: "Longing",
-			desc: "Escaped Kylar's home.",
-			difficulty: 3,
-			series: "",
-			hint: "Hint: Drive Kylar to restrained madness.",
-			filter: ["All", "Social"],
-		},
-		"Pagan Rite":{
-			title: "Pagan Rite",
-			desc: "Learned about Kylar's parents.",
-			difficulty: 1,
-			series: "",
-			hint: "Hint: Discover the secret of Kylar's manor.",
-			filter: ["All", "Social"],
-		},
-		"Neko":{
-			title: "Purrfect",
-			desc: "Purring for attention.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Transformation"],
-		},
-		"Wolf":{
-			title: "Howl at the Moon",
-			desc: "Looking to be part of a pack.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Transformation"],
-		},
-		"Cattle":{
-			title: "Mess With the Bull...",
-			desc: "Ready for milking.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Transformation"],
-		},
-		"Harpy":{
-			title: "Fly Like an Eagle",
-			desc: "Casting a great shadow.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Transformation"],
-		},
-		"Angel":{
-			title: "Walk Like an Angel",
-			desc: "Try not to fall.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Transformation"],
-		},
-		"Fallen Angel":{
-			title: "Falling, Falling, Falling...",
-			desc: "Cruel defilement.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Transformation"],
-		},
-		"Demon":{
-			title: "Devilish Looks",
-			desc: "A cause of great lewdity.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Transformation"],
-		},
-		"A Special Trait":{
-			title: "A Special Trait",
-			desc: "Gain a special trait.",
-			difficulty: 2,
-			series: "special trait",
-			hint: "Hint: Something special.",
-			filter: ["All", "Special"],
-		},
-		"A Special Trait Collector":{
-			title: "A Special Trait Collector",
-			desc: "Gain all the special traits.",
-			difficulty: 3,
-			hint: "Hint: Something extra special.",
-			series: "special trait",
-			filter: ["All", "Special"],
-		},
-		"Broodmother Host":{
-			title: "Broodmother Host",
-			desc: "Host to an endless number of little critters.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Something left behind."
-		},
-		"Top Broodmother Host":{
-			title: "Top Broodmother Host",
-			desc: "Host to a perfect critter.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Something amazing left behind."
-		},
-		"Broodmother Zoologist":{
-			title: "Broodmother Zoologist",
-			desc: "Filled out the parasite notebook.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Everything left behind, carefully detailed."
-		},
-		"Bicycle Mother":{
-			title: "Bicycle Mother",
-			desc: "Got impregnated without knowing who the father is.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Do you know who did it?",
-			hidden: true,
-		},
-		"Miracle of Life":{
-			title: "Miracle of Life",
-			desc: "Gave birth as a virgin.",
-			difficulty: 4,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Gained something but not at the cost of something else.",
-			pregnancyLockable: true,
-			hidden: true,
-		},
-		/*"Broken Dam":{ //Not in the code right now
-			title: "Broken Dam",
-			desc: "Get impregnated thanks to a broken condom.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: ."
-		},*/
-		/*"Seed Spreader":{ //Not in the code right now
-			title: "Seed Spreader",
-			desc: "Impregnate three NPCs in a single day.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: ."
-		},*/
-		"Life Comes in Threes":{
-			title: "Life Comes in Threes",
-			desc: "Gave birth to triplets.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Three of a kind.",
-			pregnancyLockable: true,
-			hidden: true,
-		},
-		"Diversity of Life":{
-			title: "Diversity of Life",
-			desc: "Gave birth to chidren of many different species.",
-			difficulty: 4,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Many forms of existence.",
-			pregnancyLockable: true,
-			hidden: true,
-		},
-		"Life begins when you least expect":{
-			title: "Life begins when you least expect",
-			desc: "Gave birth to children as a male.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: The Magic that helps creates that what should not be.",
-			hidden: true,
-		},
-		"Producer of Lewd Fluids":{
-			title: "Producer of Lewd Fluids",
-			desc: "Those tentacles know who's boss.",
-			difficulty: 1,
-			series: "lewd fluids",
-			filter: ["All", "Special"],
-			hint: "Hint: The tentacles envy you."
-		},
-		"Literally Buckets":{
-			title: "Literally Buckets",
-			desc: "A tentacle god.",
-			difficulty: 2,
-			series: "lewd fluids",
-			filter: ["All", "Special"],
-			hint: "Hint: A tub full of [Redacted]."
-		},
-		"Feeling Full":{
-			title: "Feeling Full",
-			desc: "Full of lewd fluid.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: After a large meal."
-		},
-		"Head Chief":{
-			title: "Head Chef",
-			desc: "They just love your buns.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Baking for others."
-		},
-		"Locked In Gold":{
-			title: "Locked In Gold",
-			desc: "Won't protect you from frustration.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Better to lock it away than lose it."
-		},
-		"Bailey's Trouble Maker":{
-			title: "Bailey's Trouble Maker",
-			desc: "Made them cum.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Trouble at home."
-		},
-		"Leighton's Nightmare":{
-			title: "Leighton's Nightmare",
-			desc: "Made them cum.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Trouble at school."
-		},
-		"Alex's Partner":{
-			title: "Alex's Partner",
-			desc: "Made them cum.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: A field of fun."
-		},
-		"Harper's Bane":{
-			title: "Harper's Bane",
-			desc: "Made Harper drink their serum.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: A taste of their own medicine."
-		},
-		"Laughingstock":{
-			title: "Laughingstock",
-			desc: "Sent someone to the pillory.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Humiliate them."
-		},
-		"You're the Laughingstock":{
-			title: "You're the Laughingstock",
-			desc: "Got sent to the pillory.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Seen as a criminal."
-		},
-		"The Endless Deep":{
-			title: "The Endless Deep",
-			desc: "Kept swimming out to sea.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: To the edge of the world."
-		},
-		"Wet and Ruined":{
-			title: "Wet and Ruined",
-			desc: "Discovered the ruined castle.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Lost in the mire."
-		},
-		"Head of the Pack":{
-			title: "Head of the Pack",
-			desc: "Be the leader of wolves.",
-			difficulty: 2,
-			series: "wolves",
-			filter: ["All", "Special"],
-			hint: "Hint: Being a leader."
-		},
-		"Top of the Food Chain":{
-			title: "Top of the Food Chain",
-			desc: "All fear the terrible howls.",
-			difficulty: 2,
-			series: "wolves",
-			filter: ["All", "Special"],
-			hint: "Hint: Prove your leadership."
-		},
-		"Illicit Science":{
-			title: "Illicit Science",
-			desc: "Discovered the compound.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Secrets hidden from the law-abiding."
-		},
-		"Mouth Sealed Shut":{
-			title: "Mouth Sealed Shut",
-			desc: "Survived an interrogation.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Don't spill the beans."
-		},
-		"Neck Deep":{
-			title: "Neck Deep",
-			desc: "Survived being submerged in aphrodisiac.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Resist a most lewd substance."
-		},
-		"Seedy":{
-			title: "Seedy",
-			desc: "Seeds are little things, but they can't hide from you.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Harvest nature's secrets.",
-			softLockable: true,
-		},
-		"Pride of the Farm":{
-			title: "Pride of the Farm",
-			desc: "Out-produced all others.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Supreme yield."
-		},
-		"Dawn to Dusk":{
-			title: "Dawn to Dusk",
-			desc: "Worked all day on the farm.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Honest agrarian labour."
-		},
-		"Runaway Cattle":{
-			title: "Runaway Cattle",
-			desc: "Escaped Remy's farm.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: No pen can hold you.",
-			softLockable: true,
-		},
-		"Equine Rescue":{
-			title: "Equine Rescue",
-			desc: "Rescued by your equine friends.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Collapse in a field, but dodge the consequences."
-		},
-		"A Thunderous Response":{
-			title: "A Thunderous Response",
-			desc: "Caused a brawl on the High Street.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Cause a schism in a crowd."
-		},
-		"A Lewd Adventure":{
-			title: "A Lewd Adventure",
-			desc: "Made an exposed journey through town.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Make a daring journey.",
-			softLockable: true,
-		},
-		"Sour Dealing":{
-			title: "Sour Dealing",
-			desc: "Rescued from a gang who got in too deep.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Make some unscrupulous acquaintances.",
-			softLockable: true,
-		},
-		"Rear Passenger":{
-			title: "Rear Passenger",
-			desc: "Almost crashed a car with your butt.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Break road safety laws."
-		},
-		"Cornered Rogue":{
-			title: "Cornered Rogue",
-			desc: "Recovered your clothes from a mischievous fox.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Outfox a mischievous rogue.",
-			softLockable: true,
-		},
-		"Pain Rider":{
-			title: "Pain Rider",
-			desc: "Demonstrated Winter's wooden horse to completion.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Ride a wooden horse to completion.",
-			softLockable: true,
-		},
-		"Submerged":{
-			title: "Submerged",
-			desc: "Demonstrated Winter's ducking stool to completion.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Be ducked to completion.",
-			softLockable: true,
-		},
-		"Farm Protector":{
-			title: "Farm Protector",
-			desc: "Defended the fields from a rival's thugs.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Trespassers will be kicked.",
-			softLockable: true,
-		},
-		"A Knot to Remember":{
-			title: "A Knot to Remember",
-			desc: "Knotted in the field with people nearby.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: A most deviant display."
-		},
-		"Wrong Size":{
-			title: "Wrong Size",
-			desc: "Swapped the boys' and girls' clothes.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Drown the rumours."
-		},
-		"Idle Hands":{
-			title: "Idle Hands",
-			desc: "Robbed a client while working as a masseur.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Skilled hands have many uses."
-		},
-		"Stolen Technology":{
-			title: "Stolen Technology",
-			desc: "Repaired the brothel sex machine.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Briar has something for everyone.",
-			softLockable: true,
-		},
-		"Spelunking":{
-			title: "Spelunking",
-			desc: "Found the old smuggler's cave near the beach.",
-			difficulty: 1,
-			series: "beach cave",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Find the old smuggler route.",
-			softLockable: true,
-		},
-		"X Marks the Spot":{
-			title: "X Marks the Spot",
-			desc: "Found a treasure map in the smuggler's cave.",
-			difficulty: 2,
-			series: "beach cave",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Hidden deep.",
-			softLockable: true,
-		},
-		"Buried Treasure":{
-			title: "Buried Treasure",
-			desc: "Followed the treasure map, and made a discovery.",
-			difficulty: 3,
-			series: "beach cave",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Follow the map.",
-			softLockable: true,
-		},
-		"Abnormal Mollusc":{
-			title: "Abnormal Mollusc",
-			desc: "Escaped the giant slug.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Lurking below the surf.",
-			softLockable: true,
-		},
-		"Leverage":{
-			title: "Leverage",
-			desc: "Threatened your way from the smuggler's den.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Defy the rogues.",
-			softLockable: true,
-		},
-		"Flurry":{
-			title: "Flurry",
-			desc: "Protected Robin's stand from snowball-wielding delinquents.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Win a snowball fight."
-		},
-		"Under the Ice":{
-			title: "Under the Ice",
-			desc: "Escaped the frozen lake.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Break free.",
-			softLockable: true,
-		},
-		"A Festive Home":{
-			title: "A Festive Home",
-			desc: "Gave gifts to the orphans.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Bring wintry cheer to the orphans."
-		},
-		"In Red Light":{
-			title: "In Red Light",
-			desc: "Harvested wild blood lemons.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Strange fruit grows in strange light.",
-			softLockable: true,
-		},
-		"Oh Bother":{
-			title: "Oh Bother",
-			desc: "Harvested wild honeycomb.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Sweet and sticky.",
-			softLockable: true,
-		},
-		"Employee Benefits":{
-			title: "Employee Benefits",
-			desc: "Discovered a shipment of gold by day, and took it by night.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Find gold. Steal it later.",
-			softLockable: true,
-		},
-		"Not Like the Movies":{
-			title: "Not Like the Movies",
-			desc: "Gained knowledge of quicksand.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Sunken moor wisdom.",
-			softLockable: true,
-		},
-		"Slippery":{
-			title: "Slippery",
-			desc: "Escaped Remy's goons.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Escape Remy's goons.",
-			softLockable: true,
-		},
-		"High Reflection":{
-			title: "High Reflection",
-			desc: "Returned the mirror to the top of the castle ruin.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Blind and in ruin.",
-			softLockable: true,
-		},
-		"Schism":{
-			title: "Schism",
-			desc: "Witnessed a drowned history.",
-			difficulty: 3,
-			series: "",
-			hint: "Hint: Witness a history washed away.",
-			filter: ["All", "Discoveries"],
-			softLockable: true,
-		},
-		"Catch the Wind":{
-			title: "Catch the Wind",
-			desc: "Learned how to fly.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Learn to fly.",
-			softLockable: true,
-		},
-		"Trading Dignity":{
-			title: "Trading Dignity",
-			desc: "Orally satisfied a pack of Remy's goons.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Make a one-sided trade.",
-			softLockable: true,
-		},
-		"Playing with Fire":{
-			title: "Playing with Fire",
-			desc: "Made Wren cum before you.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Endure a gambler's demands.",
-			softLockable: true,
-		},
-		"Firestarter":{
-			title: "Firestarter",
-			desc: "Convinced Wren to start a fire.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Win a destructive prize.",
-			softLockable: true,
-		},
-		"Dealing":{
-			title: "Dealing",
-			desc: "Sold produce to an unscrupulous company.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Sell Alex's strange produce.",
-			softLockable: true,
-		},
-		"To Watch the Fields":{
-			title: "To Watch the Fields",
-			desc: "Hired security for your farm.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Hire help.",
-			softLockable: true,
-		},
-		"Reliable Employer":{
-			title: "Reliable Employer",
-			desc: "Employed an S-ranked guard.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Help an employee reach their potential.",
-			softLockable: true,
-		},
-		"Into the Sunset":{
-			title: "Into the Sunset",
-			desc: "Escaped Remy's goons on horseback.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Escape mounted pursuers.",
-			softLockable: true,
-		},
-		"Bent Copper":{
-			title: "Bent Copper",
-			desc: "Interrupted a corrupt exchange.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Keep your eyes open while helping the community.",
-			softLockable: true,
-		},
-		"Social Contract":{
-			title: "Social Contract",
-			desc: "Finished community service.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Pay your debt to society.",
-			softLockable: true,
-		},
-		"Institutionalised":{
-			title: "Institutionalised",
-			desc: "Released from prison after serving your sentence.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Do your time.",
-			softLockable: true,
-		},
-		"Breaker":{
-			title: "Breaker",
-			desc: "Disabled the prison shock collars.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Rebellious sabotage.",
-			softLockable: true,
-		},
-		"Time and Pressure":{
-			title: "Time and Pressure",
-			desc: "Dug through the prison wall.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: No walls are thick enough.",
-			softLockable: true,
-		},
-		"More than a Number":{
-			title: "More than a Number",
-			desc: "Learned five names in prison.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Make friends from behind bars.",
-			softLockable: true,
-		},
-		"Friends in the Sky":{
-			title: "Friends in the Sky",
-			desc: "Befriended the watchers.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Recover that which was lost.",
-			softLockable: true,
-		},
-		"Not Meant to be Caged":{
-			title: "Not Meant to be Caged",
-			desc: "Broke out of prison.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Cut your sentence short.",
-			softLockable: true,
-		},
-		"Slip Through the Backdoor":{
-			title: "Slip Through the Backdoor",
-			desc: "Wiped Bailey's list and evaded punishment.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Wiped clean and got away with it.",
-		},
-		"Life of the Party":{
-			title: "Life of the Party",
-			desc: "Impressed a party with your dance.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Impress Charlie's friends.",
-			softLockable: true,
-		},
-		"Belle of the Ball":{
-			title: "Belle of the Ball",
-			desc: "Impressed an aristocratic party with your dance.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Impress high society.",
-			softLockable: true,
-		},
-		"Breaking the Stone":{
-			title: "Breaking the Stone",
-			desc: "Stopped the ritual beneath a Danube manor.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Use your dance connections to access and end a ritual.",
-			softLockable: true,
-		},
-		"Pound Alpha":{
-			title: "Pound Alpha",
-			desc: "Reached maximum status at the dog pound.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Show those dogs who's boss.",
-			softLockable: true,
-		},
-		"Pound Runt":{
-			title: "Pound Runt",
-			desc: "Reached minimum status at the dog pound.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Submit to the dogs.",
-			softLockable: true,
-		},
-		"Pounded Pound":{
-			title: "Pounded Pound",
-			desc: "Informed Bailey of the dog pound's activities.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Find dirt on the dog pound.",
-			softLockable: true,
-		},
-		"Pound Liberator":{
-			title: "Pound Liberator",
-			desc: "Rescued the black dog.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Release a special prisoner.",
-			softLockable: true,
-		},
-		"The Value of Pain":{
-			title: "The Value of Pain",
-			desc: "Rescued an orphan while preying as a demon.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Do a good deed, demonically.",
-			softLockable: true,
-		},
-		"Free Booze":{
-			title: "Free Booze",
-			desc: "Drank all the youths' booze, but resisted rape.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Drink a lot on the moor.",
-			softLockable: true,
-		},
-		"Bewitching Echoes":{
-			title: "Bewitching Echoes",
-			desc: "Caused a mad frenzy during the bukkake show.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Ruin a demonic show in the best way.",
-			softLockable: true,
-		},
-		"Dark Delvings":{
-			title: "Dark Delvings",
-			desc: "Retrieved the white crystal.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: Break into an ancient site.",
-			softLockable: true,
-		},
-		"Max Those Shots":{
-			title: "Max Those Shots",
-			desc: "Holding a lot of pepper spray.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Discoveries"],
-			hint: "Hint: The best defence is a good offence.",
-			softLockable: true,
-		},
-		"Ear Slime Lover":{
-			title: "Ear Slime Lover",
-			desc: "It is your best friend.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Whispers in your ear."
-		},
-		"The Path to Redemption":{
-			title: "The Path to Redemption",
-			desc: "Recover your humanity from the demon within.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Recover what you lost.",
-			softLockable: true,
-		},
-		"A New Life":{
-			title: "A New Life",
-			desc: "Start with a boost.",
-			difficulty: 1,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Starting off fast."
-		},
-		"Negotiator":{
-			title: "Negotiator",
-			desc: "Made over £500 from a single tip.",
-			difficulty: 3,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Rake it in."
-		},
-		"Curious Attire":{
-			title: "Curious Attire",
-			desc: "Unlocked all the special clothing items.",
-			difficulty: 2,
-			series: "",
-			filter: ["All", "Special"],
-			hint: "Hint: Able to wear them all.",
-			softLockable: true,
-		},
-		"My Collection of Feats":{
-			title: "My Collection of Feats",
-			desc: "Too many to count.",
-			difficulty: 3,
-			series: "collection",
-			filter: ["All", "Special"],
-			hint: "Hint: A collection of something."
-		},
-		"My Timeless Collection of Feats":{
-			title: "My Timeless Collection of Feats",
-			desc: "Feats being worth more than time itself.",
-			difficulty: 5,
-			series: "collection",
-			filter: ["All", "Special"],
-			hint: "Hint: Time and effort."
-		},
-	}>>
-<</if>>
+	<<if _feats is undefined>>
+		<<set _feats to {
+			"Pocket Change":{
+				title: "Pocket Change",
+				desc: "Have £1,000.",
+				difficulty: 1,
+				series: "money",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Money Maker":{
+				title: "Money Maker",
+				desc: "Have £10,000.",
+				difficulty: 1,
+				series: "money",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Tycoon":{
+				title: "Tycoon",
+				desc: "Have £100,000.",
+				difficulty: 2,
+				series: "money",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Millionaire":{
+				title: "Millionaire",
+				desc: "Have £1,000,000.",
+				difficulty: 3,
+				series: "money",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"It Belongs in a Museum":{
+				title: "It Belongs in a Museum!",
+				desc: "Find all the artifacts",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Fully Covered":{
+				title: "Fully Covered",
+				desc: "Drenched in something other than water.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "General"],
+			},
+			"Being a Boy":{
+				title: "Being a Boy",
+				desc: "Get to day 50 as a boy.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Being a Girl":{
+				title: "Being a Girl",
+				desc: "Get to day 50 as a girl.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Being a Hermaphrodite":{
+				title: "Being a Hermaphrodite",
+				desc: "Get to day 50 as a hermaphrodite.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Being an Orphan":{
+				title: "Being an Orphan",
+				desc: "Get to day 150.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Stressful Challenge":{
+				title: "Stressful Challenge",
+				desc: "Get to day 50 without passing out.",
+				difficulty: 2,
+				series: "challenge",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Long Stressful Challenge":{
+				title: "Long Stressful Challenge",
+				desc: "Get to day 150 without passing out.",
+				difficulty: 3,
+				series: "challenge",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Billboard":{
+				title: "Billboard",
+				desc: "Wear an advert, and have it pay off.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "General"],
+			},
+			"A Living Canvas":{
+				title: "A Living Canvas",
+				desc: "Ink on every part.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "General"],
+			},
+			"Farmhand":{
+				title: "Farmhand",
+				desc: "Help Alex expand the farm.",
+				difficulty: 2,
+				series: "alex",
+				filter: ["All", "General"],
+			},
+			"Farmer":{
+				title: "Farmer",
+				desc: "Return the farm to its former glory.",
+				difficulty: 3,
+				series: "alex",
+				filter: ["All", "General"],
+			},
+			"Cultivator":{
+				title: "Cultivator",
+				desc: "Claim every field at Alex's farm.",
+				difficulty: 3,
+				series: "alex",
+				filter: ["All", "General"],
+			},
+			"The Rival Farm":{
+				title: "The Rival Farm",
+				desc: "Fully upgrade a farm expansion.",
+				difficulty: 2,
+				series: "farm",
+				filter: ["All", "General"],
+			},
+			"The Rival Estate":{
+				title: "The Rival Estate",
+				desc: "Build all the farm expansions.",
+				difficulty: 3,
+				series: "farm",
+				filter: ["All", "General"],
+			},
+			"Heroic Victory":{
+				title: "Heroic Victory",
+				desc: "Defend nine fields from Remy, lose none.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "General"],
+			},
+			"Five in a Row":{
+				title: "Five in a Row",
+				desc: "Win five games of blackjack in a row.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "General"],
+			},
+			"Distinction":{
+				title: "Distinction",
+				desc: "Win a distinction on a school exam.",
+				difficulty: 1,
+				series: "distinction",
+				filter: ["All", "General"],
+			},
+			"Distinctive":{
+				title: "Distinctive",
+				desc: "Win 5 distinctions on school exams.",
+				difficulty: 2,
+				series: "distinction",
+				filter: ["All", "General"],
+			},
+			"Distinguished":{
+				title: "Distinguished",
+				desc: "Win 15 distinctions on school exams.",
+				difficulty: 3,
+				series: "distinction",
+				filter: ["All", "General"],
+			},
+			"Science Fair Winner":{
+				title: "Science Fair Winner",
+				desc: "Blind them with science.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Maths Competition Winner":{
+				title: "Maths Competition Winner",
+				desc: "Sordid advantage or no.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "General"],
+				softLockable: true,
+			},
+			"Most Aware":{
+				title: "Most Aware",
+				desc: "You see things others don't.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Most Innocent":{
+				title: "Most Innocent",
+				desc: "Everything is fine.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"No More Control":{
+				title: "No More Control",
+				desc: "You don't know how to get lewder!",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Thief":{
+				title: "Thief",
+				desc: "You know how to acquire things.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"May I have this Dance?":{
+				title: "May I Have This Dance?",
+				desc: "No one can resist your moves.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Aquanaut":{
+				title: "Aquanaut",
+				desc: "For those treasure hunters.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Seductress":{
+				title: "Seductress",
+				desc: "Be in control.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Green Fingered":{
+				title: "Green Fingered",
+				desc: "You can get a lot done on your knees.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Swift":{
+				title: "Swift",
+				desc: "Like the Wind.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Alluring":{
+				title: "Alluring",
+				desc: "Attracting attention is easy.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Stats"],
+				softLockable: true,
+			},
+			"Sex Specialist":{
+				title: "Sex Specialist",
+				desc: "You excel at making others cum.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Perfect Record":{
+				title: "Perfect Record",
+				desc: "You excel at studying.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Perfect Sub":{
+				title: "Perfect Sub",
+				desc: "The pinnacle of submission.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Defying the Odds":{
+				title: "Defying the Odds",
+				desc: "The pinnacle of defiance.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Hawker":{
+				title: "Hawker",
+				desc: "Profit from the earth.",
+				difficulty: 1,
+				series: "market",
+				filter: ["All", "Stats"],
+			},
+			"Vendor":{
+				title: "Vendor",
+				desc: "Prove your sales chops.",
+				difficulty: 2,
+				series: "market",
+				filter: ["All", "Stats"],
+			},
+			"Merchant":{
+				title: "Merchant",
+				desc: "Dominate the market.",
+				difficulty: 2,
+				series: "market",
+				filter: ["All", "Stats"],
+			},
+			"Twisted Desire":{
+				title: "Twisted Desire",
+				desc: "Suffering is optional.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Served Hot":{
+				title: "Served Hot",
+				desc: "You'll hurt them. And you'll like it.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Sadomasochist":{
+				title: "Sadomasochist",
+				desc: "You want to hurt.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Shining Reputation":{
+				title: "Shining Reputation",
+				desc: "Famous, but only in the right ways.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Stats"],
+			},
+			"Social Butterfly":{
+				title: "Social Butterfly",
+				desc: "You are the centre of attention.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Anti-Social Moth":{
+				title: "Unsocial Moth",
+				desc: "Who needs friends?",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Teachers Pet":{
+				title: "Teacher's Pet",
+				desc: "You are the best in class.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Teachers Nightmare":{
+				title: "Teacher's Nightmare",
+				desc: "You are a terror!",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Robin the Lover":{
+				title: "Robin the Lover",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Robin's Song":{
+				title: "Robin's Song",
+				desc: "Helped Robin feel comfortable crossdressing.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Whitney the Tsundere":{
+				title: "Whitney the Bully",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Delinquent Antics":{
+				title: "Delinquent Antics",
+				desc: "Made Whitney cum during class.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Giddy Up":{
+				title: "Giddy Up",
+				desc: "Throw Whitney into a pool.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Kylar the Obsessed":{
+				title: "Kylar the Obsessed",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Eden the Lonely":{
+				title: "Eden the Lonely",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Avery the Moneybags":{
+				title: "Avery the Moneybags",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Leighton the Shady":{
+				title: "Leighton the Shady",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Alex the Robust":{
+				title: "Alex the Robust",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Great Hawk the Terror":{
+				title: "Great Hawk the Terror",
+				desc: "You'll make an excellent spouse.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Wren the Sly":{
+				title: "Wren the Sly",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Great Wolf the Alpha":{
+				title: "Black Wolf the Alpha",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Sydney the Pure Hearted":{
+				title: "Sydney the Pure-Hearted",
+				desc: "They gave their virginity to you.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Harper the Hypnotist":{
+				title: "Harper the Hypnotist",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Morgan the Lost":{
+				title: "Morgan the Lost",
+				desc: "You gave your virginity to them.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Love Triangles":{
+				title: "Love Triangles",
+				desc: "You don't know who to choose.",
+				difficulty: 2,
+				series: "love triangles",
+				filter: ["All", "Social"],
+			},
+			"Love Trapezoids":{
+				title: "Love Trapezoids",
+				desc: "Three wasn't enough for you.",
+				difficulty: 3,
+				series: "love triangles",
+				filter: ["All", "Social"],
+			},
+			"Ballroom Show-off":{
+				title: "Ballroom Show-off",
+				desc: "Won a competition with Avery.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Under the Table":{
+				title: "Under the Table",
+				desc: "Proved your mettle in a drinking contest.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Pub Crawl Victors":{
+				title: "Pub Crawl Victors",
+				desc: "Won a competition with your work colleagues.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Mason's Secret":{
+				title: "Mason's Secret",
+				desc: "Convince Mason to share something they'd rather not.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Mason's Shame":{
+				title: "Mason's Shame",
+				desc: "Bring Mason to orgasm inside a locker.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"Animal Tender":{
+				title: "Animal Tender",
+				desc: "Earn the respect of all animals at Alex's farm.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"I Spy":{
+				title: "I Spy",
+				desc: "Peek on Alex in the shower.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"First Kiss":{
+				title: "First Kiss",
+				desc: "Give your first kiss to a love interest.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Social"],
+			},
+			"A Crime Most Foul":{
+				title: "A Crime Most Foul",
+				desc: "Once late, forever shamed.",
+				difficulty: 2,
+				series: "",
+				hint: "Hint: Make a written punishment permanent.",
+				filter: ["All", "Social"],
+			},
+			"Longing":{
+				title: "Longing",
+				desc: "Escaped Kylar's home.",
+				difficulty: 3,
+				series: "",
+				hint: "Hint: Drive Kylar to restrained madness.",
+				filter: ["All", "Social"],
+			},
+			"Pagan Rite":{
+				title: "Pagan Rite",
+				desc: "Learned about Kylar's parents.",
+				difficulty: 1,
+				series: "",
+				hint: "Hint: Discover the secret of Kylar's manor.",
+				filter: ["All", "Social"],
+			},
+			"Neko":{
+				title: "Purrfect",
+				desc: "Purring for attention.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Transformation"],
+			},
+			"Wolf":{
+				title: "Howl at the Moon",
+				desc: "Looking to be part of a pack.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Transformation"],
+			},
+			"Cattle":{
+				title: "Mess With the Bull...",
+				desc: "Ready for milking.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Transformation"],
+			},
+			"Harpy":{
+				title: "Fly Like an Eagle",
+				desc: "Casting a great shadow.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Transformation"],
+			},
+			"Angel":{
+				title: "Walk Like an Angel",
+				desc: "Try not to fall.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Transformation"],
+			},
+			"Fallen Angel":{
+				title: "Falling, Falling, Falling...",
+				desc: "Cruel defilement.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Transformation"],
+			},
+			"Demon":{
+				title: "Devilish Looks",
+				desc: "A cause of great lewdity.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Transformation"],
+			},
+			"A Special Trait":{
+				title: "A Special Trait",
+				desc: "Gain a special trait.",
+				difficulty: 2,
+				series: "special trait",
+				hint: "Hint: Something special.",
+				filter: ["All", "Special"],
+			},
+			"A Special Trait Collector":{
+				title: "A Special Trait Collector",
+				desc: "Gain all the special traits.",
+				difficulty: 3,
+				hint: "Hint: Something extra special.",
+				series: "special trait",
+				filter: ["All", "Special"],
+			},
+			"Broodmother Host":{
+				title: "Broodmother Host",
+				desc: "Host to an endless number of little critters.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Something left behind."
+			},
+			"Top Broodmother Host":{
+				title: "Top Broodmother Host",
+				desc: "Host to a perfect critter.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Something amazing left behind."
+			},
+			"Broodmother Zoologist":{
+				title: "Broodmother Zoologist",
+				desc: "Filled out the parasite notebook.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Everything left behind, carefully detailed."
+			},
+			"Bicycle Mother":{
+				title: "Bicycle Mother",
+				desc: "Got impregnated without knowing who the father is.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Do you know who did it?",
+				hidden: true,
+			},
+			"Miracle of Life":{
+				title: "Miracle of Life",
+				desc: "Gave birth as a virgin.",
+				difficulty: 4,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Gained something but not at the cost of something else.",
+				pregnancyLockable: true,
+				hidden: true,
+			},
+			/*"Broken Dam":{ //Not in the code right now
+				title: "Broken Dam",
+				desc: "Get impregnated thanks to a broken condom.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: ."
+			},*/
+			/*"Seed Spreader":{ //Not in the code right now
+				title: "Seed Spreader",
+				desc: "Impregnate three NPCs in a single day.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: ."
+			},*/
+			"Life Comes in Threes":{
+				title: "Life Comes in Threes",
+				desc: "Gave birth to triplets.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Three of a kind.",
+				pregnancyLockable: true,
+				hidden: true,
+			},
+			"Diversity of Life":{
+				title: "Diversity of Life",
+				desc: "Gave birth to chidren of many different species.",
+				difficulty: 4,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Many forms of existence.",
+				pregnancyLockable: true,
+				hidden: true,
+			},
+			"Life begins when you least expect":{
+				title: "Life begins when you least expect",
+				desc: "Gave birth to children as a male.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: The Magic that helps creates that what should not be.",
+				hidden: true,
+			},
+			"Producer of Lewd Fluids":{
+				title: "Producer of Lewd Fluids",
+				desc: "Those tentacles know who's boss.",
+				difficulty: 1,
+				series: "lewd fluids",
+				filter: ["All", "Special"],
+				hint: "Hint: The tentacles envy you."
+			},
+			"Literally Buckets":{
+				title: "Literally Buckets",
+				desc: "A tentacle god.",
+				difficulty: 2,
+				series: "lewd fluids",
+				filter: ["All", "Special"],
+				hint: "Hint: A tub full of [Redacted]."
+			},
+			"Feeling Full":{
+				title: "Feeling Full",
+				desc: "Full of lewd fluid.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: After a large meal."
+			},
+			"Head Chief":{
+				title: "Head Chef",
+				desc: "They just love your buns.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Baking for others."
+			},
+			"Locked In Gold":{
+				title: "Locked In Gold",
+				desc: "Won't protect you from frustration.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Better to lock it away than lose it."
+			},
+			"Bailey's Trouble Maker":{
+				title: "Bailey's Trouble Maker",
+				desc: "Made them cum.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Trouble at home."
+			},
+			"Leighton's Nightmare":{
+				title: "Leighton's Nightmare",
+				desc: "Made them cum.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Trouble at school."
+			},
+			"Alex's Partner":{
+				title: "Alex's Partner",
+				desc: "Made them cum.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: A field of fun."
+			},
+			"Harper's Bane":{
+				title: "Harper's Bane",
+				desc: "Made Harper drink their serum.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: A taste of their own medicine."
+			},
+			"Laughingstock":{
+				title: "Laughingstock",
+				desc: "Sent someone to the pillory.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Humiliate them."
+			},
+			"You're the Laughingstock":{
+				title: "You're the Laughingstock",
+				desc: "Got sent to the pillory.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Seen as a criminal."
+			},
+			"The Endless Deep":{
+				title: "The Endless Deep",
+				desc: "Kept swimming out to sea.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: To the edge of the world."
+			},
+			"Wet and Ruined":{
+				title: "Wet and Ruined",
+				desc: "Discovered the ruined castle.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Lost in the mire."
+			},
+			"Head of the Pack":{
+				title: "Head of the Pack",
+				desc: "Be the leader of wolves.",
+				difficulty: 2,
+				series: "wolves",
+				filter: ["All", "Special"],
+				hint: "Hint: Being a leader."
+			},
+			"Top of the Food Chain":{
+				title: "Top of the Food Chain",
+				desc: "All fear the terrible howls.",
+				difficulty: 2,
+				series: "wolves",
+				filter: ["All", "Special"],
+				hint: "Hint: Prove your leadership."
+			},
+			"Illicit Science":{
+				title: "Illicit Science",
+				desc: "Discovered the compound.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Secrets hidden from the law-abiding."
+			},
+			"Mouth Sealed Shut":{
+				title: "Mouth Sealed Shut",
+				desc: "Survived an interrogation.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Don't spill the beans."
+			},
+			"Neck Deep":{
+				title: "Neck Deep",
+				desc: "Survived being submerged in aphrodisiac.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Resist a most lewd substance."
+			},
+			"Seedy":{
+				title: "Seedy",
+				desc: "Seeds are little things, but they can't hide from you.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Harvest nature's secrets.",
+				softLockable: true,
+			},
+			"Pride of the Farm":{
+				title: "Pride of the Farm",
+				desc: "Out-produced all others.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Supreme yield."
+			},
+			"Dawn to Dusk":{
+				title: "Dawn to Dusk",
+				desc: "Worked all day on the farm.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Honest agrarian labour."
+			},
+			"Runaway Cattle":{
+				title: "Runaway Cattle",
+				desc: "Escaped Remy's farm.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: No pen can hold you.",
+				softLockable: true,
+			},
+			"Equine Rescue":{
+				title: "Equine Rescue",
+				desc: "Rescued by your equine friends.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Collapse in a field, but dodge the consequences."
+			},
+			"A Thunderous Response":{
+				title: "A Thunderous Response",
+				desc: "Caused a brawl on the High Street.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Cause a schism in a crowd."
+			},
+			"A Lewd Adventure":{
+				title: "A Lewd Adventure",
+				desc: "Made an exposed journey through town.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Make a daring journey.",
+				softLockable: true,
+			},
+			"Sour Dealing":{
+				title: "Sour Dealing",
+				desc: "Rescued from a gang who got in too deep.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Make some unscrupulous acquaintances.",
+				softLockable: true,
+			},
+			"Rear Passenger":{
+				title: "Rear Passenger",
+				desc: "Almost crashed a car with your butt.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Break road safety laws."
+			},
+			"Cornered Rogue":{
+				title: "Cornered Rogue",
+				desc: "Recovered your clothes from a mischievous fox.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Outfox a mischievous rogue.",
+				softLockable: true,
+			},
+			"Pain Rider":{
+				title: "Pain Rider",
+				desc: "Demonstrated Winter's wooden horse to completion.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Ride a wooden horse to completion.",
+				softLockable: true,
+			},
+			"Submerged":{
+				title: "Submerged",
+				desc: "Demonstrated Winter's ducking stool to completion.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Be ducked to completion.",
+				softLockable: true,
+			},
+			"Farm Protector":{
+				title: "Farm Protector",
+				desc: "Defended the fields from a rival's thugs.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Trespassers will be kicked.",
+				softLockable: true,
+			},
+			"A Knot to Remember":{
+				title: "A Knot to Remember",
+				desc: "Knotted in the field with people nearby.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: A most deviant display."
+			},
+			"Wrong Size":{
+				title: "Wrong Size",
+				desc: "Swapped the boys' and girls' clothes.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Drown the rumours."
+			},
+			"Idle Hands":{
+				title: "Idle Hands",
+				desc: "Robbed a client while working as a masseur.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Skilled hands have many uses."
+			},
+			"Stolen Technology":{
+				title: "Stolen Technology",
+				desc: "Repaired the brothel sex machine.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Briar has something for everyone.",
+				softLockable: true,
+			},
+			"Spelunking":{
+				title: "Spelunking",
+				desc: "Found the old smuggler's cave near the beach.",
+				difficulty: 1,
+				series: "beach cave",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Find the old smuggler route.",
+				softLockable: true,
+			},
+			"X Marks the Spot":{
+				title: "X Marks the Spot",
+				desc: "Found a treasure map in the smuggler's cave.",
+				difficulty: 2,
+				series: "beach cave",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Hidden deep.",
+				softLockable: true,
+			},
+			"Buried Treasure":{
+				title: "Buried Treasure",
+				desc: "Followed the treasure map, and made a discovery.",
+				difficulty: 3,
+				series: "beach cave",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Follow the map.",
+				softLockable: true,
+			},
+			"Abnormal Mollusc":{
+				title: "Abnormal Mollusc",
+				desc: "Escaped the giant slug.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Lurking below the surf.",
+				softLockable: true,
+			},
+			"Leverage":{
+				title: "Leverage",
+				desc: "Threatened your way from the smuggler's den.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Defy the rogues.",
+				softLockable: true,
+			},
+			"Flurry":{
+				title: "Flurry",
+				desc: "Protected Robin's stand from snowball-wielding delinquents.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Win a snowball fight."
+			},
+			"Under the Ice":{
+				title: "Under the Ice",
+				desc: "Escaped the frozen lake.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Break free.",
+				softLockable: true,
+			},
+			"A Festive Home":{
+				title: "A Festive Home",
+				desc: "Gave gifts to the orphans.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Bring wintry cheer to the orphans."
+			},
+			"In Red Light":{
+				title: "In Red Light",
+				desc: "Harvested wild blood lemons.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Strange fruit grows in strange light.",
+				softLockable: true,
+			},
+			"Oh Bother":{
+				title: "Oh Bother",
+				desc: "Harvested wild honeycomb.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Sweet and sticky.",
+				softLockable: true,
+			},
+			"Employee Benefits":{
+				title: "Employee Benefits",
+				desc: "Discovered a shipment of gold by day, and took it by night.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Find gold. Steal it later.",
+				softLockable: true,
+			},
+			"Not Like the Movies":{
+				title: "Not Like the Movies",
+				desc: "Gained knowledge of quicksand.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Sunken moor wisdom.",
+				softLockable: true,
+			},
+			"Slippery":{
+				title: "Slippery",
+				desc: "Escaped Remy's goons.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Escape Remy's goons.",
+				softLockable: true,
+			},
+			"High Reflection":{
+				title: "High Reflection",
+				desc: "Returned the mirror to the top of the castle ruin.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Blind and in ruin.",
+				softLockable: true,
+			},
+			"Schism":{
+				title: "Schism",
+				desc: "Witnessed a drowned history.",
+				difficulty: 3,
+				series: "",
+				hint: "Hint: Witness a history washed away.",
+				filter: ["All", "Discoveries"],
+				softLockable: true,
+			},
+			"Catch the Wind":{
+				title: "Catch the Wind",
+				desc: "Learned how to fly.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Learn to fly.",
+				softLockable: true,
+			},
+			"Trading Dignity":{
+				title: "Trading Dignity",
+				desc: "Orally satisfied a pack of Remy's goons.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Make a one-sided trade.",
+				softLockable: true,
+			},
+			"Playing with Fire":{
+				title: "Playing with Fire",
+				desc: "Made Wren cum before you.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Endure a gambler's demands.",
+				softLockable: true,
+			},
+			"Firestarter":{
+				title: "Firestarter",
+				desc: "Convinced Wren to start a fire.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Win a destructive prize.",
+				softLockable: true,
+			},
+			"Dealing":{
+				title: "Dealing",
+				desc: "Sold produce to an unscrupulous company.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Sell Alex's strange produce.",
+				softLockable: true,
+			},
+			"To Watch the Fields":{
+				title: "To Watch the Fields",
+				desc: "Hired security for your farm.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Hire help.",
+				softLockable: true,
+			},
+			"Reliable Employer":{
+				title: "Reliable Employer",
+				desc: "Employed an S-ranked guard.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Help an employee reach their potential.",
+				softLockable: true,
+			},
+			"Into the Sunset":{
+				title: "Into the Sunset",
+				desc: "Escaped Remy's goons on horseback.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Escape mounted pursuers.",
+				softLockable: true,
+			},
+			"Bent Copper":{
+				title: "Bent Copper",
+				desc: "Interrupted a corrupt exchange.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Keep your eyes open while helping the community.",
+				softLockable: true,
+			},
+			"Social Contract":{
+				title: "Social Contract",
+				desc: "Finished community service.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Pay your debt to society.",
+				softLockable: true,
+			},
+			"Institutionalised":{
+				title: "Institutionalised",
+				desc: "Released from prison after serving your sentence.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Do your time.",
+				softLockable: true,
+			},
+			"Breaker":{
+				title: "Breaker",
+				desc: "Disabled the prison shock collars.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Rebellious sabotage.",
+				softLockable: true,
+			},
+			"Time and Pressure":{
+				title: "Time and Pressure",
+				desc: "Dug through the prison wall.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: No walls are thick enough.",
+				softLockable: true,
+			},
+			"More than a Number":{
+				title: "More than a Number",
+				desc: "Learned five names in prison.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Make friends from behind bars.",
+				softLockable: true,
+			},
+			"Friends in the Sky":{
+				title: "Friends in the Sky",
+				desc: "Befriended the watchers.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Recover that which was lost.",
+				softLockable: true,
+			},
+			"Not Meant to be Caged":{
+				title: "Not Meant to be Caged",
+				desc: "Broke out of prison.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Cut your sentence short.",
+				softLockable: true,
+			},
+			"Slip Through the Backdoor":{
+				title: "Slip Through the Backdoor",
+				desc: "Wiped Bailey's list and evaded punishment.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Wiped clean and got away with it.",
+			},
+			"Life of the Party":{
+				title: "Life of the Party",
+				desc: "Impressed a party with your dance.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Impress Charlie's friends.",
+				softLockable: true,
+			},
+			"Belle of the Ball":{
+				title: "Belle of the Ball",
+				desc: "Impressed an aristocratic party with your dance.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Impress high society.",
+				softLockable: true,
+			},
+			"Breaking the Stone":{
+				title: "Breaking the Stone",
+				desc: "Stopped the ritual beneath a Danube manor.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Use your dance connections to access and end a ritual.",
+				softLockable: true,
+			},
+			"Pound Alpha":{
+				title: "Pound Alpha",
+				desc: "Reached maximum status at the dog pound.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Show those dogs who's boss.",
+				softLockable: true,
+			},
+			"Pound Runt":{
+				title: "Pound Runt",
+				desc: "Reached minimum status at the dog pound.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Submit to the dogs.",
+				softLockable: true,
+			},
+			"Pounded Pound":{
+				title: "Pounded Pound",
+				desc: "Informed Bailey of the dog pound's activities.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Find dirt on the dog pound.",
+				softLockable: true,
+			},
+			"Pound Liberator":{
+				title: "Pound Liberator",
+				desc: "Rescued the black dog.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Release a special prisoner.",
+				softLockable: true,
+			},
+			"The Value of Pain":{
+				title: "The Value of Pain",
+				desc: "Rescued an orphan while preying as a demon.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Do a good deed, demonically.",
+				softLockable: true,
+			},
+			"Free Booze":{
+				title: "Free Booze",
+				desc: "Drank all the youths' booze, but resisted rape.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Drink a lot on the moor.",
+				softLockable: true,
+			},
+			"Bewitching Echoes":{
+				title: "Bewitching Echoes",
+				desc: "Caused a mad frenzy during the bukkake show.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Ruin a demonic show in the best way.",
+				softLockable: true,
+			},
+			"Dark Delvings":{
+				title: "Dark Delvings",
+				desc: "Retrieved the white crystal.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: Break into an ancient site.",
+				softLockable: true,
+			},
+			"Max Those Shots":{
+				title: "Max Those Shots",
+				desc: "Holding a lot of pepper spray.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Discoveries"],
+				hint: "Hint: The best defence is a good offence.",
+				softLockable: true,
+			},
+			"Ear Slime Lover":{
+				title: "Ear Slime Lover",
+				desc: "It is your best friend.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Whispers in your ear."
+			},
+			"The Path to Redemption":{
+				title: "The Path to Redemption",
+				desc: "Recover your humanity from the demon within.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Recover what you lost.",
+				softLockable: true,
+			},
+			"A New Life":{
+				title: "A New Life",
+				desc: "Start with a boost.",
+				difficulty: 1,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Starting off fast."
+			},
+			"Negotiator":{
+				title: "Negotiator",
+				desc: "Made over £500 from a single tip.",
+				difficulty: 3,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Rake it in."
+			},
+			"Curious Attire":{
+				title: "Curious Attire",
+				desc: "Unlocked all the special clothing items.",
+				difficulty: 2,
+				series: "",
+				filter: ["All", "Special"],
+				hint: "Hint: Able to wear them all.",
+				softLockable: true,
+			},
+			"My Collection of Feats":{
+				title: "My Collection of Feats",
+				desc: "Too many to count.",
+				difficulty: 3,
+				series: "collection",
+				filter: ["All", "Special"],
+				hint: "Hint: A collection of something."
+			},
+			"My Timeless Collection of Feats":{
+				title: "My Timeless Collection of Feats",
+				desc: "Feats being worth more than time itself.",
+				difficulty: 5,
+				series: "collection",
+				filter: ["All", "Special"],
+				hint: "Hint: Time and effort."
+			},
+		}>>
+	<</if>>
 <</widget>>
 <!--
 Paste in the console to get the total number of vrelcoins, the `featsData` widget needs to have been run first (open the feats list)

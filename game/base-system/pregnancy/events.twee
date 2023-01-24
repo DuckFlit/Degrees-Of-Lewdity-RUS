@@ -295,96 +295,94 @@ Following the directions from Doctor Harper, you get into position and attempt t
 
 :: Widgets PregEventsResult [widget]
 <<widget "PregEventsResult">>
-<<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
-<<set _pregnancy to $sexStats[$giveBirthLocation or "anus"].pregnancy>>
-<<set _container to $container[$phase]>>
-<<set $parasiteSelectionCount to 0>>
-<<set $parasiteReplaceArray to []>>
-<<set _availableStorage to (_container.maxCount - _container.count)>>
-<<for _i to 0; _i lt $pregResult.length; _i++>>
-	<<if $checkboxResult[$pregResult[_i]] is true>>
-		<<set $parasiteSelectionCount += 1>>
-	<</if>>
-<</for>>
-<<for _i to 0; _i lt _container.count; _i++>>
-	<<if $checkboxReplace[_i] is true>>
-		<<set $parasiteReplaceArray.push(clone(_i))>>
-	<</if>>
-<</for>>
-
-<<if $debug is 1>>
-	Debug - Keep selected babies result (ID - Checkbox - Result)
-	<br>
-	<<for _i to 0; _i lt $pregResult.length;_i++>>
+	<<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
+	<<set _pregnancy to $sexStats[$giveBirthLocation or "anus"].pregnancy>>
+	<<set _container to $container[$phase]>>
+	<<set $parasiteSelectionCount to 0>>
+	<<set $parasiteReplaceArray to []>>
+	<<set _availableStorage to (_container.maxCount - _container.count)>>
+	<<for _i to 0; _i lt $pregResult.length; _i++>>
 		<<if $checkboxResult[$pregResult[_i]] is true>>
-			<<print $pregResult[_i]>> - <<print $checkboxResult[$pregResult[_i]]>> - Keep
-			<br>
-		<<elseif $checkboxResult[$pregResult[_i]] is false>>
-			<<print $pregResult[_i]>> - <<print $checkboxResult[$pregResult[_i]]>> - Sell
-			<br>
+			<<set $parasiteSelectionCount += 1>>
 		<</if>>
 	<</for>>
-	<br>
-<</if>>
+	<<for _i to 0; _i lt _container.count; _i++>>
+		<<if $checkboxReplace[_i] is true>>
+			<<set $parasiteReplaceArray.push(clone(_i))>>
+		<</if>>
+	<</for>>
 
-<<if $parasiteSelectionCount lte _availableStorage>>
-	<<if $parasiteSelectionCount gt 0>>
+	<<if $debug is 1>>
+		Debug - Keep selected babies result (ID - Checkbox - Result)
+		<br>
+		<<for _i to 0; _i lt $pregResult.length;_i++>>
+			<<if $checkboxResult[$pregResult[_i]] is true>>
+				<<print $pregResult[_i]>> - <<print $checkboxResult[$pregResult[_i]]>> - Keep
+				<br>
+			<<elseif $checkboxResult[$pregResult[_i]] is false>>
+				<<print $pregResult[_i]>> - <<print $checkboxResult[$pregResult[_i]]>> - Sell
+				<br>
+			<</if>>
+		<</for>>
+		<br>
+	<</if>>
+
+	<<if $parasiteSelectionCount lte _availableStorage>>
+		<<if $parasiteSelectionCount gt 0>>
+			<<if $pregnancyStats.namesParasitesChild is true>>
+				<<link [[Keep selected babies|PregEventsResult2]]>>
+					<<set $pregChoice to "KeepSelected">>
+				<</link>>
+			<<else>>
+				<<link [[Keep selected parasites|PregEventsResult2]]>>
+					<<set $pregChoice to "KeepSelected">>
+				<</link>>
+			<</if>>
+		<</if>>
+	<<elseif $parasiteSelectionCount gt 0>>
+		Not enough storage for selected amount. Please replace <<number $parasiteSelectionCount-_availableStorage>> <<if $pregnancyStats.namesParasitesChild is true>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'babies' : 'baby'>><<else>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'parasites' : 'parasite'>><</if>>.
+		<br>
+		<<if ($parasiteSelectionCount - $parasiteReplaceArray.length) lte _availableStorage>>
+			<<if $pregnancyStats.namesParasitesChild is true>>
+				<<link [[Replace selected babies|PregEventsResult2]]>>
+					<<set $pregChoice to "ReplaceSelected">>
+				<</link>>
+			<<else>>
+				<<link [[Replace selected parasites|PregEventsResult2]]>>
+					<<set $pregChoice to "ReplaceSelected">>
+				<</link>>
+			<</if>>
+		<</if>>
+	<</if>>
+	<<if $pregResult.length lte _availableStorage>>
+		<br>
 		<<if $pregnancyStats.namesParasitesChild is true>>
-			<<link [[Keep selected babies|PregEventsResult2]]>>
-				<<set $pregChoice to "KeepSelected">>
+			<<link [[Keep all babies|PregEventsResult2]]>>
+				<<set $pregChoice to "keepAll">>
 			<</link>>
 		<<else>>
-			<<link [[Keep selected parasites|PregEventsResult2]]>>
-				<<set $pregChoice to "KeepSelected">>
+			<<link [[Keep all parasites|PregEventsResult2]]>>
+				<<set $pregChoice to "keepAll">>
 			<</link>>
 		<</if>>
 	<</if>>
-<<elseif $parasiteSelectionCount gt 0>>
-	Not enough storage for selected amount. Please replace <<number $parasiteSelectionCount-_availableStorage>> <<if $pregnancyStats.namesParasitesChild is true>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'babies' : 'baby'>><<else>><<print $parasiteSelectionCount - _availableStorage gt 1 ? 'parasites' : 'parasite'>><</if>>.
-	<br>
-	<<if ($parasiteSelectionCount - $parasiteReplaceArray.length) lte _availableStorage>>
-		<<if $pregnancyStats.namesParasitesChild is true>>
-			<<link [[Replace selected babies|PregEventsResult2]]>>
-				<<set $pregChoice to "ReplaceSelected">>
-			<</link>>
-		<<else>>
-			<<link [[Replace selected parasites|PregEventsResult2]]>>
-				<<set $pregChoice to "ReplaceSelected">>
-			<</link>>
-		<</if>>
-	<</if>>
-<</if>>
-<<if $pregResult.length lte _availableStorage>>
-	<br>
+
+	<br><br>
 	<<if $pregnancyStats.namesParasitesChild is true>>
-		<<link [[Keep all babies|PregEventsResult2]]>>
-			<<set $pregChoice to "keepAll">>
+		<<link [[Sell all babies|PregEventsResult2]]>>
+			<<set $pregChoice to "sellAll">>
 		<</link>>
 	<<else>>
-		<<link [[Keep all parasites|PregEventsResult2]]>>
-			<<set $pregChoice to "keepAll">>
+		<<link [[Sell all parasites|PregEventsResult2]]>>
+			<<set $pregChoice to "sellAll">>
 		<</link>>
 	<</if>>
-<</if>>
-
-<br><br>
-<<if $pregnancyStats.namesParasitesChild is true>>
-	<<link [[Sell all babies|PregEventsResult2]]>>
-		<<set $pregChoice to "sellAll">>
-	<</link>>
-<<else>>
-	<<link [[Sell all parasites|PregEventsResult2]]>>
-		<<set $pregChoice to "sellAll">>
-	<</link>>
-<</if>>
 <</widget>>
 
 <<widget "resetPregButtons">>
-
-<<replace #pregResult>>
-	<<PregEventsResult>>
-<</replace>>
-
+	<<replace #pregResult>>
+		<<PregEventsResult>>
+	<</replace>>
 <</widget>>
 
 :: PregEventsResult2
@@ -684,17 +682,17 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 
 :: pregnancyTestWidget [widget]
 <<widget "pregnancyTest">>
-<<if _args[0]>>
-	<<if $pregnancyTest gt 0>>
-		<<if $sexStats.vagina.pregnancy.awareOf isnot true>>
-			<<link [[Take a pregnancy test (00:05)|pregnancyTest]]>><<pass 5>><<set $lastPassage to _args[0]>><</link>>
-			<br>
-		<<elseif $sexStats.vagina.pregnancy.awareOf is true>>
-			<span class="lewd">You have a pregnancy test, but you already know you're pregnant.</span>
-			<br>
+	<<if _args[0]>>
+		<<if $pregnancyTest gt 0>>
+			<<if $sexStats.vagina.pregnancy.awareOf isnot true>>
+				<<link [[Take a pregnancy test (00:05)|pregnancyTest]]>><<pass 5>><<set $lastPassage to _args[0]>><</link>>
+				<br>
+			<<elseif $sexStats.vagina.pregnancy.awareOf is true>>
+				<span class="lewd">You have a pregnancy test, but you already know you're pregnant.</span>
+				<br>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 :: Pregnancy ultrasound

@@ -136,111 +136,111 @@
 <</widget>>
 
 <<widget "pass10sec">>
-<<if !$prayerRoom>>
-	<<set $seconds += 10>>
-	<<if $seconds gte 60>>
-		<<set $seconds to 0>>
-		<<pass 1>>
+	<<if !$prayerRoom>>
+		<<set $seconds += 10>>
+		<<if $seconds gte 60>>
+			<<set $seconds to 0>>
+			<<pass 1>>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 :: Widgets Combat State [widget]
 <<widget "combatstate">>
-<<if _statechecked isnot true>>
-	<<if $gamemode is "soft">>
-		<<set $pain to 0>>
-	<</if>>
-	<<wetnessCalculate>>
-	<<if $orgasmdown gte 1>>
-		<<set $enemyarousal += 10>>
-		<span class="pink">Your body pulses and spasms with orgasmic waves, preventing you from acting normally.</span>
-		<br>
-		<<disable>>
-		<<if $options.combatControls is "disabled" and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
-			<<actionsorgasm>>
+	<<if _statechecked isnot true>>
+		<<if $gamemode is "soft">>
+			<<set $pain to 0>>
 		<</if>>
-	<</if>>
-
-	<<if $pain gte 100 and $willpowerpain is 0>>
-		<<set $enemyarousal += 10>>
-		<<if $possessed is true>>
-			<<if $orgasmdown lte 0>>
-				You can't take any more pain, <span class="red">but your body continues to fight.</span>
-				<<trauma 12>><<ggtrauma>>
-				<br>
+		<<wetnessCalculate>>
+		<<if $orgasmdown gte 1>>
+			<<set $enemyarousal += 10>>
+			<span class="pink">Your body pulses and spasms with orgasmic waves, preventing you from acting normally.</span>
+			<br>
+			<<disable>>
+			<<if $options.combatControls is "disabled" and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
+				<<actionsorgasm>>
 			<</if>>
-		<<else>>
-			<span class="red">You are in too much pain to act normally.</span>
+		<</if>>
+
+		<<if $pain gte 100 and $willpowerpain is 0>>
+			<<set $enemyarousal += 10>>
+			<<if $possessed is true>>
+				<<if $orgasmdown lte 0>>
+					You can't take any more pain, <span class="red">but your body continues to fight.</span>
+					<<trauma 12>><<ggtrauma>>
+					<br>
+				<</if>>
+			<<else>>
+				<span class="red">You are in too much pain to act normally.</span>
+				<br>
+				<<disable>>
+				<<if $options.combatControls is "disabled" and $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
+					<<actionspain>>
+				<</if>>
+			<</if>>
+		<</if>>
+
+		<<if $panicviolence gte 1 and !$possessed>>
+			<<set $enemyarousal += 10>>
+			<<if $position is "stalk">>
+				<span class="red">You are overcome by panic. You run, needing to be anywhere but here.</span>
+			<<else>>
+				<span class="red">You are stricken with panic, and flail wildly at anything invading your personal space.</span>
+			<</if>>
+			<br>
+			<<defiance 10>><<set $panicviolence to $panicviolence - 1>><<disable>>
+		<</if>>
+
+		<<if $panicparalysis gte 1 and !$possessed>>
+			<<set $enemyarousal += 10>>
+			<<if $position is "stalk">>
+				<span class="red">You are stricken with panic. Your muscles seize up, leaving you motionless.</span>
+			<<else>>
+				<span class="red">You are stricken with panic. Your muscles seize up, leaving you helpless.</span>
+			<</if>>
+			<br>
+			<<set $panicparalysis -= 1>><<disable>>
+		<</if>>
+
+		<<if $dissociation gte 2 and !$possessed>>
+			<<set $enemyarousal += 10>>
+			You feel disconnected from yourself, as if in a dream.
 			<br>
 			<<disable>>
 			<<if $options.combatControls is "disabled" and $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
-				<<actionspain>>
+				<<if $pain lt 100 or $willpowerpain is undefined>>
+					<<actionsdissociation>>
+				<</if>>
 			<</if>>
 		<</if>>
-	<</if>>
 
-	<<if $panicviolence gte 1 and !$possessed>>
-		<<set $enemyarousal += 10>>
-		<<if $position is "stalk">>
-			<span class="red">You are overcome by panic. You run, needing to be anywhere but here.</span>
-		<<else>>
-			<span class="red">You are stricken with panic, and flail wildly at anything invading your personal space.</span>
-		<</if>>
-		<br>
-		<<defiance 10>><<set $panicviolence to $panicviolence - 1>><<disable>>
-	<</if>>
-
-	<<if $panicparalysis gte 1 and !$possessed>>
-		<<set $enemyarousal += 10>>
-		<<if $position is "stalk">>
-			<span class="red">You are stricken with panic. Your muscles seize up, leaving you motionless.</span>
-		<<else>>
-			<span class="red">You are stricken with panic. Your muscles seize up, leaving you helpless.</span>
-		<</if>>
-		<br>
-		<<set $panicparalysis -= 1>><<disable>>
-	<</if>>
-
-	<<if $dissociation gte 2 and !$possessed>>
-		<<set $enemyarousal += 10>>
-		You feel disconnected from yourself, as if in a dream.
-		<br>
-		<<disable>>
-		<<if $options.combatControls is "disabled" and $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
-			<<if $pain lt 100 or $willpowerpain is undefined>>
-				<<actionsdissociation>>
-			<</if>>
-		<</if>>
-	<</if>>
-
-	<<if $trance gte 1>>
-		<<set $enemyarousal += 10>>
-		You are entranced.
-		<br>
-		<<disable>>
-	<</if>>
-
-	<<if $possessed is true>>
-		<<if $orgasmdown lte 0>>
-			Your body is not your own. <<if $rng gte 96>><span class="fading">It never was.</span><</if>>
+		<<if $trance gte 1>>
+			<<set $enemyarousal += 10>>
+			You are entranced.
 			<br>
+			<<disable>>
 		<</if>>
-		<<disable>>
-		<<if $options.combatControls is "disabled" and $dissociation lte 1 and $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
-			<<actionspossessed>>
+
+		<<if $possessed is true>>
+			<<if $orgasmdown lte 0>>
+				Your body is not your own. <<if $rng gte 96>><span class="fading">It never was.</span><</if>>
+				<br>
+			<</if>>
+			<<disable>>
+			<<if $options.combatControls is "disabled" and $dissociation lte 1 and $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
+				<<actionspossessed>>
+			<</if>>
+			/* Updates the control caption at the top of the screen to include any control gained through the rest of the passage */
+			<<run $(()=>{
+				Dynamic.render("control-caption")
+			})>>
+			/* Adds the condition for ending an encounter. */
+			<<if $control gte $controlmax>>
+				<<set _controlRegain to 1>>
+			<</if>>
 		<</if>>
-		/* Updates the control caption at the top of the screen to include any control gained through the rest of the passage */
-		<<run $(()=>{
-			Dynamic.render("control-caption")
-		})>>
-		/* Adds the condition for ending an encounter. */
-		<<if $control gte $controlmax>>
-			<<set _controlRegain to 1>>
-		<</if>>
+		<<set _statechecked to true>>
 	<</if>>
-	<<set _statechecked to true>>
-<</if>>
 <</widget>>
 
 <<widget "carryblock">>
