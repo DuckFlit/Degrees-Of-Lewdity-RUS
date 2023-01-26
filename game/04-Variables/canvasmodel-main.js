@@ -749,7 +749,7 @@ Renderer.CanvasModels["main"] = {
 		},
 		"belly": {
 			srcfn(options) {
-				if(between(options.belly,1,20)){
+				if(between(options.belly,1,24)){
 					return "img/body/preggyBelly/pregnancy_belly_" + options.belly + ".png";
 				}
 				return "";

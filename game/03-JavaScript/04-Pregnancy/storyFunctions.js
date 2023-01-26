@@ -22,10 +22,11 @@ window.playerBellySize = (pregnancyOnly = false) => {
 				if(!pregnancyOnly) bellySize += Math.clamp(vpregnancy.fetus.length,0,4);
 			break;
 			case "human":
-				maxSize += 17 + Math.clamp(vpregnancy.fetus.length,1,3);
+				maxSize += 21 + Math.clamp(vpregnancy.fetus.length,1,3);
 			break;
+			//For human offspring, max sizes are 22 for single fetus, 23 for twins, and 24 for triplets.
 			case "wolf":
-				maxSize += 16 + Math.clamp(vpregnancy.fetus.length / 2,1,4);
+				maxSize += 20 + Math.clamp(vpregnancy.fetus.length / 2,1,4);
 			break;
 		}
 		switch(apregnancy.type){
@@ -33,15 +34,15 @@ window.playerBellySize = (pregnancyOnly = false) => {
 				if(!pregnancyOnly) bellySize += Math.clamp(apregnancy.fetus.length,0,4);
 			break;
 			case "human":
-				maxSize += 17 + Math.clamp(apregnancy.fetus.length,1,3);
+				maxSize += 21 + Math.clamp(apregnancy.fetus.length,1,3);
 			break;
 			case "wolf":
-				maxSize += 16 + Math.clamp(apregnancy.fetus.length / 2,1,4);
+				maxSize += 20 + Math.clamp(apregnancy.fetus.length / 2,1,4);
 			break;
 		}
-		bellySize += pregnancyProgress * Math.clamp(maxSize, 0,20);
+		bellySize += pregnancyProgress * Math.clamp(maxSize,0,24);
 	}
-	return Math.floor(Math.clamp(bellySize,0,20));
+	return Math.floor(Math.clamp(bellySize,0,24));
 }
 
 window.pregnancyBellyVisible = (pregnancyOnly = false) => {

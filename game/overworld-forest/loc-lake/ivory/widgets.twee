@@ -256,6 +256,7 @@
 	<<unset $nextPassageIntended>>
 	<<unset $nextPassageCheck>>
 	<<unset $phaseWraith>>
+	<<unset $wraithBedSpeech>>
 <</widget>>
 
 <<widget "rainWraith">>
@@ -404,6 +405,7 @@
 
 <<widget "speechWraith">><<silently>>
 	<<if $possessed and _args[0] isnot "lines">>
+		<<set $_npcWraith to _args[0] || "none">>
 		<<set _speakPool to ["speak","grunt","giggle","whisper","sneer","laugh","yell","spit","speak in an eerily calm tone"]>>
 		<<if $wolfgirl gte 4>>
 			<<run _speakPool.pushUnique(
@@ -426,7 +428,7 @@
 			)>>
 		<</if>>
 
-		<<set _linePool to [
+		<<set _linePool to ($_npcWraith is "none" ? [
 			"Me.",
 			"Stay.",
 			"Give in.",
@@ -457,7 +459,7 @@
 			"Desolate. Disappear. Drown. We'll come back to find you.",
 			"It would be maddening, to only know the other end of the ordeal.",
 			"Carve. Into. You. Our. Name. Perfection. Wash. Away. All. You. Are."
-		]>>
+		] : [])>>
 		<<if $npc.includes("Sydney")>>
 			<<run statusCheck("Sydney")>>
 			<<run _linePool.pushUnique(
@@ -506,10 +508,14 @@
 				)>>
 			<</if>>
 		<<else>>
-			<<run _linePool.pushUnique("We stand <span class=\"tentacle\">As One</span>, and you'll never be a part.")>>
-		<</if>>
-		<<if $npc.includes("Robin")>>
 			<<run _linePool.pushUnique(
+				"You'll never be a part. We'll never be apart.",
+				"We stand <span class=\"tentacle\">As One</span>, and you'll never be a part."
+				)>>
+		<</if>>
+		<<if $npc.includes("Robin") or $_npcWraith is "Robin">>
+			<<run _linePool.pushUnique(
+				"Little nothing.",
 				"The wing-clipped are better smothered.",
 				"How far would you go? How far can you run?",
 				"You've built your cage, songbird. Lie in it."
@@ -517,8 +523,11 @@
 			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 20>>
 				<<run _linePool.pushUnique("I'm sorry that you put your trust in <<phim>>.")>>
 			<</if>>
+			<<if $NPCName[$NPCNameList.indexOf("Robin")].cdquest gte 7>>
+				<<run _linePool.pushUnique("New skin. Same sin.")>>
+			<</if>>
 		<</if>>
-		<<if $npc.includes("Whitney")>>
+		<<if $npc.includes("Whitney") or $_npcWraith is "Whitney">>
 			<<run _linePool.pushUnique(
 				"Tormentor.",
 				"Drown in smoke. Drown in flame.",
@@ -528,8 +537,10 @@
 				<<run _linePool.pushUnique("Betrayed by your worst enemy. Do you love <<phim>>?")>>
 			<</if>>
 		<</if>>
-		<<if $npc.includes("Kylar")>>
+		<<if $npc.includes("Kylar") or $_npcWraith is "Kylar">>
 			<<run _linePool.pushUnique(
+				"Child of monsters.",
+				"You've seen it, too.",
 				"A shadow, just as faithless.",
 				"Were your grip a little stronger.",
 				"Blistering emerald green, blinding the world. Such is your envy."
@@ -541,8 +552,11 @@
 				<<run _linePool.pushUnique("Longing, belonging.")>>
 			<</if>>
 		<</if>>
-		<<if $npc.includes("Eden")>>
+		<<if $npc.includes("Eden") or $_npcWraith is "Eden">>
 			<<run _linePool.pushUnique(
+				"Eden...",
+				"So much left unsaid.",
+				"If you could take me with you...",
 				"You never should have stopped running.",
 				"Like a long lost friend you never knew.",
 				"You'll never be far enough. It never leaves."
@@ -551,7 +565,7 @@
 				<<run _linePool.pushUnique("You found a home, in collar and chains.")>>
 			<</if>>
 		<</if>>
-		<<if $npc.includes("Avery")>>
+		<<if $npc.includes("Avery") or $_npcWraith is "Avery">>
 			<<run _linePool.pushUnique(
 				"Not all stains wash out.",
 				"Money. Material. Meaningless noise.",
@@ -561,7 +575,7 @@
 				<<run _linePool.pushUnique("Wine mixes with blood, shed from the glass shattered.")>>
 			<</if>>
 		<</if>>
-		<<if $npc.includes("Alex")>>
+		<<if $npc.includes("Alex") or $_npcWraith is "Alex">>
 			<<run _linePool.pushUnique(
 				"You would be nothing.",
 				"One of thirteen. Indistinguishable.",
@@ -571,7 +585,7 @@
 				<<run _linePool.pushUnique("The locusts will have a new feast.")>>
 			<</if>>
 		<</if>>
-		<<if $npc.includes("Black Wolf")>>
+		<<if $npc.includes("Black Wolf") or $_npcWraith is "Black Wolf">>
 			<<run _linePool.pushUnique(
 				"Wait your turn.",
 				"The howl, too, drips with red.",
@@ -581,7 +595,7 @@
 				<<run _linePool.pushUnique("Bite the hand that feeds.")>>
 			<</if>>
 		<</if>>
-		<<if $npc.includes("Great Hawk")>>
+		<<if $npc.includes("Great Hawk") or $_npcWraith is "Great Hawk">>
 			<<run _linePool.pushUnique(
 				"Wise to fear your reflection.",
 				"Fly to the sun or sink in the mud.",
@@ -741,7 +755,7 @@
 			"The pure die young, and the corrupt are as lambs to the slaughter.",
 			"At the bottom, you'll find only darkness, and the darkness will be your everything.",
 			"<<pcPetname \"Wraith\">>.","<<pcPetname \"Wraith\">>.","<<pcPetname \"Wraith\">>.",
-			"<<pcPetname \"Wraith\">> <<pcpetname \"Wraith\">>.", "<<pcPetname \"Wraith\">> <<pcpetname \"Wraith\">>."
+			"<<pcPetname \"Wraith\">>, <<pcpetname \"Wraith\">>.", "<<pcPetname \"Wraith\">>, <<pcpetname \"Wraith\">>."
 		]>>
 		<<if $wraith.state is "haunt">>
 			<<run _linePool.pushUnique(
@@ -972,11 +986,11 @@
 				<br><br>
 				With one final pull, the metal fractures and splinters, sending shards of gold clattering to the ground as your $worn.genitals.name yields and shatters in a bright flash of light. Both the figure and the tentacles seem to be considerably weaker after the effort.
 				<<if $abomination is 1>>
-					<<set $enemyhealth -= 300>><<set $enemyarousal += 300>>
+					<<set $enemyhealth -= 150>><<set $enemyarousal += 150>>
 				<</if>>
 				<<set _tentDefeated to 0>>
 				<<for _i to 0; _i lt $tentacles.active; _i++>>
-					<<if _tentDefeated gte 4>>
+					<<if _tentDefeated gte 3>>
 						<<break>>
 					<</if>>
 					<<if $tentacles[_i].tentaclehealth gt 0>>
