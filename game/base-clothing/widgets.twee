@@ -179,11 +179,10 @@
 
 		<<set _slots to []>>
 		<<set $_selectedWardrobe to selectWardrobe()>>
-		<<set $_skip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
 		<<if $_outfitPrimaryUndress isnot undefined>>
 			<<for _labelUndress, _valueUndress range $_outfitPrimaryUndress>>
 				<<if _valueUndress isnot "broken">>
-					<<if !$_skip.includes($carried[_labelUndress].name) and $carried[_labelUndress].name is _valueUndress>>
+					<<if !setup.wardrobeSkip.includes($carried[_labelUndress].name) and $carried[_labelUndress].name is _valueUndress>>
 						<<set $_selectedWardrobe[_labelUndress].push(clone($carried[_labelUndress]))>>
 						<<run _slots.push(_labelUndress)>>
 					<</if>>
@@ -192,7 +191,7 @@
 			<</for>>
 		<</if>>
 
-		<<if !$_skip.includes($carried[$_undressSlot].name)>>
+		<<if !setup.wardrobeSkip.includes($carried[$_undressSlot].name)>>
 			<<set $_selectedWardrobe[$_undressSlot].push(clone($carried[$_undressSlot]))>>
 		<</if>>
 		<<set $carried[$_undressSlot] to clone(setup.clothes[$_undressSlot][0])>>
@@ -441,15 +440,13 @@
 
 /*Returns all carried clothes back to the wardrobe*/
 <<widget "returnCarried">>
-	<<set _skip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
-
 	<<if _args[0] is "wardrobe" or $wardrobes[_args[0]] is undefined>>
 		<<set $_selectedWardrobe to $wardrobe>>
 	<<else>>
 		<<set $_selectedWardrobe to $wardrobes[_args[0]]>>
 	<</if>>
 	<<run Object.keys($carried).forEach(slot => {
-		if (!_skip.includes($carried[slot].name)) {
+		if (!setup.wardrobeSkip.includes($carried[slot].name)) {
 			let location = clothesReturnLocation($carried[slot]);
 			if(location === "wardrobe" || !$wardrobes[location].unlocked){
 				$wardrobe[slot].push(clone($carried[slot]));
@@ -1026,11 +1023,10 @@
 				<<set _slots to []>>
 				<<if _args[0] is "wardrobe" or Object.keys($wardrobes).includes(_args[0])>>
 					<<set $_selectedWardrobe to selectWardrobe()>>
-					<<set _skip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
 					<<if _outfitPrimaryUndress isnot undefined>>
 						<<for _labelUndress, _valueUndress range _outfitPrimaryUndress>>
 							<<if _valueUndress isnot "broken">>
-								<<if !_skip.includes($worn[_labelUndress].name) and $worn[_labelUndress].name is _valueUndress>>
+								<<if !setup.wardrobeSkip.includes($worn[_labelUndress].name) and $worn[_labelUndress].name is _valueUndress>>
 									<<set $_selectedWardrobe[_labelUndress].push(clone($worn[_labelUndress]))>>
 									<<run _slots.push(_labelUndress)>>
 								<</if>>
@@ -1044,8 +1040,7 @@
 					<<set $worn[_undressSlot] to clone(setup.clothes[_undressSlot][0])>>
 					<<run _slots.push(_undressSlot)>>
 				<<elseif _args[0] and !_storeItemSkip[_undressSlot]>>
-					<<set _skip to ["naked"]>>
-					<<if !_skip.includes($worn[_undressSlot].name)>>
+					<<if $worn[_undressSlot].name isnot "naked">>
 						<<if _outfitPrimaryUndress isnot undefined>>
 							<<for _labelUndress, _valueUndress range _outfitPrimaryUndress>>
 								<<if $worn[_labelUndress].outfitSecondary isnot undefined>>
@@ -1085,7 +1080,6 @@
 
 <<widget "storeItem">>
 	<<set $_slot to _args[1]>>
-	<<set _storeSkip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
 
 	<<set $_item to $store[$_slot].find(item => item.location is _args[0])>>
 	<<if $_item>>
@@ -1093,14 +1087,14 @@
 			<<for _labelStore, _unused range $_item.outfitPrimary>>
 				<<set $_itemPair to $store[_labelStore].find(item => item.location is _args[0])>>
 				<<if $_itemPair and $_itemPair.outfitSecondary isnot undefined and $_itemPair.outfitSecondary[1] is $_item.name>>
-					<<if !_storeSkip.includes($_itemPair.name)>>
+					<<if !setup.wardrobeSkip.includes($_itemPair.name)>>
 						<<set $wardrobe[_labelStore].push(clone($_itemPair))>>
 					<</if>>
 					<<set $store[_labelStore].delete($_itemPair)>>
 				<</if>>
 			<</for>>
 		<</if>>
-		<<if !_storeSkip.includes($_item.name) and $_item.temp is undefined>>
+		<<if !setup.wardrobeSkip.includes($_item.name) and $_item.temp is undefined>>
 			<<set $wardrobe[$_slot].push(clone($_item))>>
 		<</if>>
 		<<set $store[$_slot].delete($_item)>>
@@ -1177,7 +1171,6 @@
 /* Returns stored items that are a part of an outfit (wear_outfit) to the wardrobe so that they can be used by another outfit. */
 /* args[0] specifies the location identifier */
 <<widget "storereturn">>
-	<<set _skip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
 	<<if !isNaN($wear_outfit) and _args[0] isnot undefined>>
 		<<for $_slot range setup.clothingLayer.all>>
 			<<set $_name to $outfit[$wear_outfit][$_slot]>>
@@ -1185,7 +1178,7 @@
 			<<generalStoreon _args[0] $_slot "check">>
 			<<if _store_check and $_item isnot undefined and $_name isnot "naked" and $_name isnot undefined>>
 				<<if $store[$_slot].length gt 0 and $_name is $_item.name>>
-					<<if !_skip.includes($_item.name)>>
+					<<if !setup.wardrobeSkip.includes($_item.name)>>
 						<<set $wardrobe[$_slot].push(clone($_item))>>
 					<</if>>
 					<<set $store[$_slot].deleteAt($store[$_slot].indexOf($_item))>>
@@ -1297,10 +1290,9 @@
 				<</if>>
 				<<set $store[$_slot].deleteAt($_index)>>
 			<<else>>
-				<<set _skip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
 				<<if _args[2] is "wardrobe" or $wardrobes[_args[2]] isnot undefined>>
-					<<if $_item.temp is undefined>>
-						<<set $_location to clothesReturnLocation($worn[$_slot])>>
+					<<if !setup.wardrobeSkip.includes($_item.name) and $_item.temp is undefined>>
+						<<set $_location to clothesReturnLocation($_item)>>
 						<<set $_selectedWardrobe to ($_location is "wardrobe" ? $wardrobe : $wardrobes[$_location])>>
 						<<set $_selectedWardrobe[$_slot].push(clone($_item))>>
 					<</if>>
@@ -1308,7 +1300,7 @@
 				<<elseif _args[2] is "delete">>
 					<<set $store[$_slot].deleteAt($_index)>>
 				<<elseif _args[2] is "return">>
-					<<if !_skip.includes($_item.name)>>
+					<<if !setup.wardrobeSkip.includes($_item.name)>>
 						<<set $wardrobe[$_slot].push(clone($_item))>>
 					<</if>>
 					<<set $store[$_slot].deleteAt($_index)>>
