@@ -11,8 +11,10 @@ const setChildFirstWord = (childId, word, playerAbsent = false) => {
 
 	if(!word){
 		let wordList = ["mama", "mommy", "dada", "daddy", "papa", "no", "nana", "yes", "uh oh", "bye", "bye-bye", "hello"];
-		if(random(0,10000) === 0){
-			wordList.push("Brouzof");
+
+		//Should be last
+		if(random(0,Math.ceil(2000 / wordList.length)) === 0){
+			wordList.push("Brouzouf");
 		}
 		word = wordList[random(0, wordList.length - 1)];
 	};

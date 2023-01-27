@@ -37,7 +37,7 @@ function generateBabyName(name, gender, childId) {
 }
 window.generateBabyName = generateBabyName;
 
-window.spermObjectToArray = (spermObject = {}) => {
+window.spermObjectToArray = (spermObject = {}, player) => {
 	let spermArray = [];
 	let trackedNPCs = [];
 
@@ -47,11 +47,11 @@ window.spermObjectToArray = (spermObject = {}) => {
 		let spermType;
 		switch(sperm.type){
 			case "human":
-				if(V.playerPregnancyHumanDisable === "t") continue;
+				if(V.playerPregnancyHumanDisable === "t" && player) continue;
 				spermType = "human";
 			break;
 			case "wolf": case "wolfboy": case "wolfgirl":
-				if(V.playerPregnancyBeastDisable === "t") continue;
+				if(V.playerPregnancyBeastDisable === "t" && player) continue;
 				spermType = "wolf";
 			break;
 			default: continue;
@@ -122,7 +122,7 @@ const playerPregnancyAttempt = (baseMulti = 1, genital = "vagina") => {
 
 	if(pregnancy.fetus.length || isNaN(baseMulti) || baseMulti < 1 || !V.pregnancyTesting || V.pregnancytype !== "realistic") return false;
 
-	let [trackedNPCs, spermArray] = spermObjectToArray(V.sexStats[genital].sperm);
+	let [trackedNPCs, spermArray] = spermObjectToArray(V.sexStats[genital].sperm, true);
 
 	let pills = V.sexStats.pills;
 	let lastPillsTaken = pills.lastTaken.pregnancy;
@@ -151,6 +151,8 @@ DefineMacro("playerPregnancyAttempt", playerPregnancyAttempt);
 window.playerPregnancyAttemptTest = (baseMulti, genital) => {if(V.pregnancyTesting) return playerPregnancyAttempt(baseMulti, genital);};//V.pregnancyTesting Check should not be removed, debugging purposes only
 
 const playerPregnancy = (npc, npcType, fatherKnown = false, genital = "vagina", trackedNPCs, awareOf = false) => {
+	if(V.playerPregnancyHumanDisable === "t" && npcType === "human") return false;//Human player pregnancy disabled
+	if(V.playerPregnancyBeastDisable === "t" && npcType !== "human") return false;//Beast player pregnancy disabled
 	let pregnancy = clone(V.sexStats[genital].pregnancy);
 	let newPregnancy;
 	let backupSpermType;
@@ -377,7 +379,7 @@ const namedNpcPregnancyAttempt = (npcName) => {
 		//Pregnancy not supported or disabled by the player, or when they are already pregnant
 		return false;
 	}
-	let [trackedNPCs, spermArray] = spermObjectToArray(pregnancy.sperm);
+	let [trackedNPCs, spermArray] = spermObjectToArray(pregnancy.sperm, false);
 
 	let fertility = pregnancy.pills === "fertility" ? 0.8 : 1;
 	let contraceptive = pregnancy.pills === "contraceptive";
@@ -396,6 +398,7 @@ const namedNpcPregnancyAttempt = (npcName) => {
 }
 
 const namedNpcPregnancy = (mother, father, fatherSpecies, fatherKnown = false, trackedNPCs, awareOf = false) => {
+	if(V.npcPregnancyDisable === "t") return false;//Npc pregnancy disabled
 	let namedNpc = C.npc[mother];
 	let namedNpcType;
 	switch(mother){
@@ -539,6 +542,9 @@ const totalBorn = (mother) => {
 const recordSperm = ({genital = "vagina", target = null, spermOwner = null, spermType = null, daysTillRemovalOverride = null, rngModifier = 100, rngType, quantity}) => {
 	//ToDo: Pregnancy - remove the `V.pregnancyTesting` check
 	if(!V.pregnancyTesting) return null;
+	if(V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false;//Human player pregnancy disabled
+	if(V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false;//Beast player pregnancy disabled
+	if(V.npcPregnancyDisable === "t" && target !== "pc") return false;//Npc pregnancy disabled
 	if(!target || !spermOwner || !spermType || !["anus","vagina"].includes(genital)) return null;
 
 	if(V.pregnancytype === "fetish"){

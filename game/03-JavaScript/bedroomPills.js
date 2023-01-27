@@ -899,7 +899,7 @@ window.determineAutoTakePill = determineAutoTakePill;
 function resetAllDoseTaken() {
 	for (const pill in V.sexStats.pills["pills"]) {
 		switch(pill){
-			case "Anti-Parasite Cream":
+			case "Anti-Parasite Cream": case "fertility booster": case "contraceptive":
 				if(V.sexStats.pills["pills"][pill].doseTaken > 0){
 					V.sexStats.pills["pills"][pill].doseTaken--;
 				}

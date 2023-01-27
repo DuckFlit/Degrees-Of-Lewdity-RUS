@@ -117,6 +117,7 @@
 	<<characteristic-text _hairTextConfig>>
 	<br><br>
 
+	<!--Pregnancy Details-->
 	<<if $player.vaginaExist>>
 		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
 	<<else>>
@@ -126,6 +127,7 @@
 	<<set $_pills to $sexStats.pills>>
 	<<set $_last_preg_pill to clone($_pills.lastTaken.pregnancy)>>
 	<<set $_knowsTheyCanBecomePregnant to ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f") and ($player.vaginaExist or (canBeMPregnant() and $_pregnancy.givenBirth gte 1))>>
+	<<set $_heatArousal to playerHeatMinArousal() + playerRutMinArousal()>>
 
 	<<if $_pregnancy.fetus.length and $_pregnancy.awareOf>>
 		<<if $_pregnancy.timer / $_pregnancy.timerEnd lte 0.33>>
@@ -163,79 +165,39 @@
 		<</if>>
 		<br><br>
 	<<elseif $_knowsTheyCanBecomePregnant and (($sciencetrait gte 4 and $awareness gte 200) or $awareness gte 500)>>
-		<<if $cycledisable is "t">>
-			<<set $_risk to $_menstruation.nonCycleRng[0]>>
-		<<else>>
-			<<switch $pregnancytype>>
-				<<case "realistic">>
-					<!--Was a pain to calculate, might need to be adjusted-->
-					<<if $_menstruation.currentDay gt $_menstruation.stages[3] + 4>>
-						<<set $_daysTillEnd to ($_menstruation.currentDaysMax - $_menstruation.currentDay) + $_menstruation.stages[3]>>
-					<<else>>
-						<<set $_daysTillEnd to ($_menstruation.stages[3]) - $_menstruation.currentDay>>
-					<</if>>
-
-					<<set $_multi to 1>>
-					<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
-						<<set $_multi += 1>>
-					<</if>>
-					<<if $_last_preg_pill is "fertility booster" and _pills.pills["fertility booster"].doseTaken gte 2>>
-						<<set $_multi += 1>>
-					<</if>>
-
-					<<set $_daysTillEnd to $_daysTillEnd / $_multi>>
-
-					<!--To account for the lower chance of pregnancy occuring at the end-->
-					<<set $_daysTillEnd += 4>>
-
-					<<if between($_daysTillEnd, 0, 1)>>
-						<<set $_risk to 3>>
-					<<elseif between($_daysTillEnd, 1, 2)>>
-						<<set $_risk to 2>>
-					<<elseif between($_daysTillEnd, 2, 3)>>
-						<<set $_risk to 1>>
-					<<elseif between($_daysTillEnd, 4, 10)>>
-						<<set $_risk to 0>>
-					<<elseif between($_daysTillEnd, 10, 12)>>
-						<<set $_risk to 1>>
-					<<elseif between($_daysTillEnd, 12, 14)>>
-						<<set $_risk to 2>>
-					<<elseif between($_daysTillEnd, 14, 15)>>
-						<<set $_risk to 3>>
-					<<elseif between($_daysTillEnd, 15, 16)>>
-						<<set $_risk to 4>>
-					<<elseif between($_daysTillEnd, 16, 17)>>
-						<<set $_risk to 5>>
-					<<else>>
-						<<set $_risk to 6>>
-					<</if>>
-				<<case "fetish">>
-					<<set $_diff to Math.abs($_menstruation.stages[2] - $_menstruation.currentDay)>>
-					<<set $_multi = Math.clamp(($_diff > 1 ? 1 - ($_diff * 0.15) : 1),0,1)>>
-					<<switch $_multi>>
-						<<case 1>><<set $_risk to 0>>
-						<<case 0.85>><<set $_risk to 1>>
-						<<case 0.70>><<set $_risk to 2>>
-						<<case 0.55>><<set $_risk to 3>>
-						<<case 0.40>><<set $_risk to 4>>
-						<<case 0.25>><<set $_risk to 4>>
-						<<case 0.10>><<set $_risk to 5>>
-						<<default>><<set $_risk to 6>>
-					<</switch>>
-			<</switch>>
-		<</if>>
+		<<set $_risk to playerPregnancyRisk()>>
 		<<if $_risk isnot undefined>>
 			<<switch $_risk>>
 				<<case 6>><<set $_pregnancyRisk to "very safe">><<set $_pregnancyRiskColour to "green">>
-				<<case 5 6>><<set $_pregnancyRisk to "safe">><<set $_pregnancyRiskColour to "teal">>
+				<<case 5>><<set $_pregnancyRisk to "safe">><<set $_pregnancyRiskColour to "teal">>
 				<<case 3 4>><<set $_pregnancyRisk to "some-what safe">><<set $_pregnancyRiskColour to "lblue">>
 				<<case 1 2>><<set $_pregnancyRisk to "risky">><<set $_pregnancyRiskColour to "pink">>
 				<<case 0>><<set $_pregnancyRisk to "dangerous">><<set $_pregnancyRiskColour to "red">>
 			<</switch>>
-			You feel that it's a <span @class="$_pregnancyRiskColour ? $_pregnancyRiskColour : ''">$_pregnancyRisk</span> to have intercourse.
+			
+			<<if $_heatArousal>>
+				<<if $wolfgirl gte 6 or $cat gte 6>>
+					Your inner beast is sending you into heat.
+				<<else>>
+					Something is keeping you aroused.
+				<</if>>
+				Intercourse will be <span @class="$_pregnancyRiskColour">$_pregnancyRisk</span>.
+			<<else>>
+				You feel that it's <span @class="$_pregnancyRiskColour">$_pregnancyRisk</span> to have intercourse.
+			<</if>>
 			<br><br>
 		<</if>>
+	<<elseif $_heatArousal>>
+		<<if ($wolfgirl gte 6 or $cat gte 6) and ($player.vaginaExist or (canBeMPregnant() and $_pregnancy.givenBirth gte 1))>>
+			Your inner beast is sending you into heat.
+		<<elseif ($wolfgirl gte 6 or $cat gte 6) and !$player.vaginaExist>>
+			Your inner beast is sending you into rut.
+		<<else>>
+			Something is keeping you aroused.
+		<</if>>
+		<br><br>
 	<</if>>
+
 	<!--Semen Details-->
 	<<if $player.penisExist>>
 		<<set _semenCapacityTextConfig = { currentValue : $semen_volume, preText: 'You produce ', states : [
@@ -305,6 +267,7 @@
 		}>>
 		<<characteristic-text _milkCapacityTextConfig>>
 		<<characteristic-text _milkVolumeTextConfig>>
+		<<if $milkFullPain and $milkFullPain gte 155>>Being full for so long is causing you some pain.<</if>>
 		<br>
 	<</if>>
 

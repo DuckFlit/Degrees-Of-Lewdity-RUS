@@ -204,7 +204,7 @@ const babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown
 		"father": father || null,
 		"fatherKnown": father && fatherKnown,
 		"born": {"day":null, "month":null, "year":null},
-		"concieved": {"day":V.monthday, "month":V.month.toUpperFirst(), "year":V.year},
+		"conceived": {"day":V.monthday, "month":V.month.toUpperFirst(), "year":V.year},
 		"gender": gender,
 		"features": {"size":size, "hairColour":hairColour, "eyeColour":eyeColour, "identical":identical, "monster":monster, "clothes":clothes, "skinColour": skinColour, "beastTransform": beastTransform, "divineTransform": divineTransform},
 		"name":null,
