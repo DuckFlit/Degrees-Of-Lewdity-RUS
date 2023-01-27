@@ -340,7 +340,7 @@ function hairdressersReset() {
 	$(() =>
 		$("#hairDressers").on("change", ".macro-listbox, .macro-radiobutton, .macro-checkbox", function (e) {
 			Wikifier.wikifyEval("<<replace #hairDressers>><<hairDressersOptions>><</replace>>");
-			Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>");
+			Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>><<numberify \"#passages > .passage\">>");
 		})
 	);
 }
@@ -350,7 +350,7 @@ function hairdressersResetAlt() {
 	$(() =>
 		$("#hairDressersSydney").on("click", ".macro-cycle", function (e) {
 			Wikifier.wikifyEval("<<replace #hairDressersSydney>><<hairDressersOptionsSydney>><</replace>>");
-			Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>");
+			Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>><<numberify \"#passages > .passage\">>");
 		})
 	);
 }
@@ -1763,3 +1763,38 @@ function dailyConvert() {
 	}
 }
 window.dailyConvert = dailyConvert;
+
+function convertHairLengthToStage(hair, length){
+	if (!hair || !length)
+		throw new Error(`Hair AND Length must be provided to be converted: ${hair} / ${length}`);
+	if (hair == "fringe") {
+		if (length >= 900)
+			return "feet";
+		else if (length >= 700)
+			return "thighs";
+		else if (length >= 600)
+			return "navel";
+		else if (length >= 400)
+			return "chest";
+		else if (length >= 200)
+			return "shoulder";
+		else
+			return "short";
+	}
+	else if (hair == "sides") {
+		if (length >= 900)
+			return "feet";
+		else if (length >= 700)
+			return "thighs";
+		else if (length >= 600)
+			return "navel";
+		else if (length >= 400)
+			return "chest";
+		else if (length >= 200)
+			return "shoulder";
+		else
+			return "short";
+	}
+}
+
+window.convertHairLengthToStage = convertHairLengthToStage;
