@@ -12,7 +12,7 @@
 
 <<widget "sleep_clamp">>
 	<<set $stress = Math.clamp($stress, 0, $stressmax)>>
-	<<set $arousal = Math.clamp($arousal, 0, $arousalmax)>>
+	<<arousalclamp>>
 	<<set $tiredness = Math.clamp($tiredness, 0, 2000)>>
 <</widget>>
 
@@ -57,7 +57,7 @@
 	<<set $nectar_addiction = Math.clamp($nectar_addiction, 0, 200)>>
 
 	<<set $hygiene = Math.clamp($hygiene, 0, 2000)>>
-	<<set $arousal = Math.clamp($arousal, 0, $arousalmax)>>
+	<<arousalclamp>>
 	<<set $tiredness = Math.clamp($tiredness, 0, 2000)>>
 	<<set $hairlength = Math.clamp($hairlength, 0, 1000)>>
 	<<set $fringelength = Math.clamp($fringelength, 0, 1000)>>
@@ -93,11 +93,7 @@
 	<<set $athletics to Math.clamp($athletics, 0, 1000)>>
 	<<set $tending to Math.clamp($tending, 0, 1000)>>
 
-	<<if $gamemode is "soft">>
-		<<set $pain to Math.clamp($pain, 0, 0)>>
-	<<else>>
-		<<set $pain to Math.clamp($pain, 0, 200)>>
-	<</if>>
+	<<painclamp>>
 
 	<<set $facebruise to Math.clamp($facebruise, 0, 100)>>
 	<<set $chestbruise to Math.clamp($chestbruise, 0, 100)>>
@@ -147,5 +143,26 @@
 
 <<widget "maxDefaultActionSetsclamp">>
 	<<set $maxDefaultActionSets to Math.clamp($maxDefaultActionSets, 1, 10)>>
+<</widget>>
+
+<<widget "painclamp">>
+	<<if $gamemode is "soft">>
+		<<set $pain to Math.clamp($pain, 0, 0)>>
+	<<else>>
+		<<set $_minPain to 0>>
+		<<if $lactating is 1 and $breastfeedingdisable is "f" and $milkFullPain gt 150>>
+			<<set $_minPain += $milkFullPain ? Math.ceil(($milkFullPain - 150) / 5) : 0>>
+		<</if>>
+		<<set $pain to Math.clamp($pain, Math.clamp($_minPain,0,50), 200)>>
+	<</if>>
+<</widget>>
+
+<<widget "arousalclamp">>
+	<<set $_minArousal to 0>>
+
+	<<set $_minArousal += playerHeatMinArousal()>>
+	<<set $_minArousal += playerRutMinArousal()>>
+
+	<<set $arousal = Math.clamp($arousal, Math.clamp($_minArousal,0,4000), $arousalmax)>>
 <</widget>>
 

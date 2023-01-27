@@ -109,9 +109,11 @@
 
 <<widget "menstruationCycle">>
 	<<set _menstruation to $sexStats.vagina.menstruation>>
-	<<if _args[0]>>
+	<<if _args[0] is "daily">>/*Daily cycle*/
 		<<set _menstruation.nonCycleRng.push(random(0,6))>>
 		<<set _menstruation.nonCycleRng.deleteAt(0)>>
+	<<elseif _args[0] is "overdose">>/*Daily cycle*/
+		<<set _menstruation.nonCycleRng[0] to 0>>
 	<</if>>
 
 	<<set _menstruation.running to $player.vaginaExist or (!$player.vaginaExist and V.skin.pubic.pen is "magic" and V.skin.pubic.special is "pregnancy")>>
@@ -218,6 +220,24 @@
 	<</if>>
 	<<updateRecordedSperm "vagina" "pc" 0.5>>
 	<<updateRecordedSperm "anus" "pc" 0.5>>
+<</widget>>
+
+
+<<widget "rutCycle">>
+	<<if $player.penisExist and ($wolfgirl gte 6 or $cat gte 6)>>
+		<<if !$player.beastRut>>
+			<<set $player.beastRut to 0>>
+		<</if>>
+		<<set $_pills = $sexStats.pills.pills>>
+
+		<<set $player.beastRut += 1 + $_pills["fertility booster"].doseTaken>>
+
+		<<if $player.beastRut gte 30 or _args[0] or $_pills["fertility booster"].doseTaken gt 2>>
+			<<set $player.beastRut to 0>>
+		<</if>>
+	<<else>>
+		<<run delete $player.beastRut>>
+	<</if>>
 <</widget>>
 
 :: Pregnancy2 [widget]

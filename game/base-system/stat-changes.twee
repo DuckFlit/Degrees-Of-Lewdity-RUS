@@ -200,6 +200,16 @@
 		<<set $milk_amount += _args[0]>>
 		<<set $milk_amount = Math.clamp($milk_amount, 0, $milk_volume)>>
 	<</if>>
+	<<if !$milkFullPain>>
+	<<elseif $milkFullPain and between($milk_amount / $milk_volume, 0, 0.8)>>
+		<<set $milkFullPain to 0>>
+	<<elseif $milkFullPain gt 175 and between($milk_amount / $milk_volume, 0.85, 0.9)>>
+		<<set $milkFullPain to 175>>
+	<<elseif $milkFullPain gt 200 and between($milk_amount / $milk_volume, 0.9, 0.95)>>
+		<<set $milkFullPain to 200>>
+	<<elseif $milkFullPain gt 225 and between($milk_amount / $milk_volume, 0.95, 0.98)>>
+		<<set $milkFullPain to 225>>
+	<</if>>
 <</widget>>
 
 <<widget "lactation_pressure">>
@@ -263,15 +273,15 @@
 		<!-- Apply effect according to args[1] -->
 		<<set _noSens to _mod>>
 		<<switch _args[1]>>
-			<<case undefined>>
+			<<case undefined "masturbation">>
 				<!-- No modifier. The usual behaviour for this widget -->
-			<<case "mouth" "oral" "lips">>
+			<<case "mouth" "oral" "lips" "masturbationMouth" "masturbationOral">>
 				<<set $_arousalPart to $mouthsensitivity>>
-			<<case "breast" "breasts" "chest" "nipple" "nipples">>
+			<<case "breast" "breasts" "chest" "nipple" "nipples" "masturbationBreasts" "masturbationNipples">>
 				<<set $_arousalPart to $breastsensitivity>>
-			<<case "bottom" "anus" "anal" "ass" "butt">>
+			<<case "bottom" "anus" "anal" "ass" "butt" "masturbationAnal" "masturbationAss">>
 				<<set $_arousalPart to $bottomsensitivity>>
-			<<case "genital" "genitals" "penis" "penile" "pussy" "vaginal" "vagina">>
+			<<case "genital" "genitals" "penis" "penile" "pussy" "vaginal" "vagina" "masturbationGenital" "masturbationPenis" "masturbationVagina">>
 				<<set $_arousalPart to $genitalsensitivity>>
 			<<case "maso">>
 				<<set $arousalmasochism += _gain * _mod>>
@@ -291,6 +301,10 @@
 				}>>
 		<</switch>>
 
+		<<if _args[1] and _args[1].includes('masturbation')>>
+			<<set $_masturbationReduction to 1 - (Math.clamp(playerHeatMinArousal() + playerRutMinArousal(),0,4000) / 5000)>>
+		<</if>>
+
 		<!-- Adjusts modifier for body part sensitivity, if applicable -->
 		<<if $_arousalPart gte 2>>
 			<<set _mod += (($_arousalPart - 1) * 0.5)>>
@@ -304,12 +318,15 @@
 			<<set _mod to _noSens>>
 		<</if>>
 		<!-- Now we apply the arousal gain -->
-		<<set $arousal to Math.clamp($arousal + _gain * _mod, 0, $arousalmax)>>
+		<<set $arousal to $arousal + _gain * _mod * ($_masturbationReduction or 1)>>
+
+		<!-- Now we apply the arousal clamp -->
+		<<arousalclamp>>
 
 		<!-- And add the increase to the tracker -->
 		<<if _args[0] gte 0>>
 			<!-- Adds the current increase to the latest tracked hour -->
-			<<set $trackedArousal[$trackedArousal.length - 1] += _gain * _mod>>
+			<<set $trackedArousal[$trackedArousal.length - 1] += _gain * _mod * ($_masturbationReduction or 1)>>
 			<<if _args[0] gt 0>>
 				<<set $timeSinceArousal to 0>>
 			<</if>>
@@ -384,11 +401,7 @@
 
 		<<set $pain += _pain>>
 	<</if>>
-	<<if $gamemode is "soft">>
-		<<set $pain to Math.clamp($pain, 0, 0)>>
-	<<else>>
-		<<set $pain to Math.clamp($pain, 0, 200)>>
-	<</if>>
+	<<painclamp>>
 <</widget>>
 
 <<widget "masopain">>
@@ -396,11 +409,7 @@
 		<<set $pain += ((_args[0] * (1 - ($masochism / 1200))) * 4)>>
 		<<set _arousal to ((_args[0] * (0 + ($masochism / 18))) * 4)>>
 		<<arousal _arousal>>
-		<<if $gamemode is "soft">>
-			<<set $pain to Math.clamp($pain, 0, 0)>>
-		<<else>>
-			<<set $pain to Math.clamp($pain, 0, 200)>>
-		<</if>>
+		<<painclamp>>
 	<</if>>
 <</widget>>
 

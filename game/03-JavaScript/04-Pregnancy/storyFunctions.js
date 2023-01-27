@@ -224,3 +224,102 @@ window.pregnancyNameCorrection = (name) => {
 	}
 	return name;
 }
+
+const playerPregnancyRisk = () => {
+	if(V.playerPregnancyHumanDisable === "t" && V.playerPregnancyBeastDisable === "t") return 6; //Player Pregnancy Disabled
+	if(!V.player.vaginaExist && !canBeMPregnant()) return 6; //Player is male and can't become MPregnant
+	if(playerIsPregnant()) return 6; //Player is pregnant already
+	const menstruation = V.sexStats.vagina.menstruation;
+
+	if(V.cycledisable === "t") return menstruation.nonCycleRng[0];
+
+	let pills = V.sexStats.pills;
+	let last_preg_pill = pills.lastTaken.pregnancy;
+
+	let risk;
+	switch(V.pregnancytype){
+		case "realistic":
+			//Was a pain to calculate, might need to be adjusted
+			let daysTillEnd;
+			if(menstruation.currentDay > menstruation.stages[3] + 4){
+				daysTillEnd = (menstruation.currentDaysMax - menstruation.currentDay) + menstruation.stages[3];
+			}else{
+				daysTillEnd = menstruation.stages[3] - menstruation.currentDay;
+			}
+
+			let multi = 1;
+			if(V.skin.pubic.type === "magic" && V.skin.pubic.special === "pregnancy") multi += 1;
+			if(last_preg_pill === "fertility booster" && pills.pills["fertility booster"].doseTaken >= 2) multi += 1;
+			daysTillEnd = daysTillEnd / multi;
+			daysTillEnd += 4;
+
+			if(between(daysTillEnd, 4, 10)){
+				risk = 0;
+			} else if(between(daysTillEnd, 2, 4) || between(daysTillEnd, 10, 12)){
+				risk = 1;
+			} else if(between(daysTillEnd, 1, 2) || between(daysTillEnd, 12, 14)){
+				risk = 2;
+			} else if(between(daysTillEnd, 0, 1) || between(daysTillEnd, 14, 15)){
+				risk = 3;
+			} else if(between(daysTillEnd, 15, 16)){
+				risk = 4;
+			} else if(between(daysTillEnd, 16, 17)){
+				risk = 5;
+			} else {
+				risk = 6;
+			}
+		break;
+		case "fetish":
+			let diff = Math.abs(menstruation.stages[2] - menstruation.currentDay);
+			switch(diff){
+				case 0: risk = 0; break;
+				case 1: risk = 1; break;
+				case 2: risk = 2; break;
+				case 3: risk = 3; break;
+				case 4: case 5: risk = 4; break;
+				case 6: risk = 5; break;
+				default: risk = 6; break;
+			}
+		break;
+	}
+	return risk;
+}
+window.playerPregnancyRisk = playerPregnancyRisk;
+
+window.playerHeatMinArousal = () => {
+	if(!(V.player.vaginaExist || canBeMPregnant()) || playerIsPregnant() || !V.sexStats || !V.sexStats.pills) return 0;
+	if(V.wolfgirl < 6 && V.cat < 6) return 0;
+
+	let pills = V.sexStats.pills.pills;
+	let risk = playerPregnancyRisk();
+	let minArousal = 0;
+
+	if(risk <= 1 && pills.contraceptive.doseTaken === 0){
+		if(V.wolfgirl) minArousal += Math.clamp(V.wolfbuild,0,100) * 10 * (2 - risk);
+		if(V.cat) minArousal += Math.clamp(V.catbuild,0,100) * 10 * (2 - risk);
+	}
+	if(pills["fertility booster"].doseTaken > 2){
+		minArousal += 500;
+	}
+
+	minArousal = Math.ceil(minArousal * pills["fertility booster"].doseTaken + 1);
+	return minArousal;
+}
+
+window.playerRutMinArousal = () => {
+	if(!V.player.penisExist || !V.sexStats || !V.sexStats.pills || V.player.beastRut !== 0) return 0;
+	if(V.wolfgirl < 6 && V.cat < 6) return 0;
+
+	let pills = V.sexStats.pills.pills;
+	let minArousal = 0;
+
+	if(pills.contraceptive.doseTaken === 0){
+		if(V.wolfgirl) minArousal += Math.clamp(V.wolfbuild,0,100) * 10;
+		if(V.cat) minArousal += Math.clamp(V.catbuild,0,100) * 10;
+	}
+	if(pills["fertility booster"].doseTaken > 2){
+		minArousal += 500;
+	}
+
+	return minArousal;
+}
