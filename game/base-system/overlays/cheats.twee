@@ -2165,6 +2165,15 @@
 	<<else>>
 		You need to enable anal pregnancy in the settings to access these settings.
 	<</if>>
+
+	/* ToDo: remove $pregnancyTesting to correctly enable */
+	<<if $pregnancyTesting and ($playerPregnancyBeastDisable == "f" or $playerPregnancyHumanDisable == "f")>>
+		<<if !$player.vaginaExist>>
+			You don't have a vagina. You can't do nothing here at the moment. /* This will change when PC can inpregnate NPCs or when Mpreg */
+		<<else>>
+			<div id="cheatsPregnancyOptions"><<cheatsPregnancyOptions "vagina">></div>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "cheatsImpregOptions">>
@@ -2235,4 +2244,49 @@
 	<</if>>
 	<<fertiliseParasites _args[0]>>
 	<<replace `"#cheatsImpregOptions-" + _args[0]`>><<cheatsImpregOptions _args[0]>><</replace>>
+<</widget>>
+
+<<widget "cheatsPregnancyOptions">>
+<<capture _args>>
+	<<set _menstruation to $sexStats.vagina.menstruation>> /* Maybe it will change when Mpreg (menstruation linked to anal? rut?) */
+	<<set _pregnancy to $sexStats[_args[0]].pregnancy>>
+	<span class="gold">Pregnancy Cheats</span>
+	<br>
+	<<if !playerIsPregnant() and $cycledisable == "f">>
+		<<link "<<">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay - 5, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>> |
+		<<link "<">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay - 1, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>> |
+		Menstruation day:: <span id="cheatMenstruationDay"><<print Math.trunc(_menstruation.currentDay)>></span> of _menstruation.currentDaysMax
+		<<link "Ovulate">><<set _menstruation.currentDay to _menstruation.stages[2]>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
+		| <<link ">">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay + 1, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
+		| <<link ">>">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay + 5, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
+		<br>
+	<</if>>
+	<<if playerIsPregnant()>>
+		<<link "<<">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer - _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>> |
+		<<link "<">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer - _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>> |
+		Pregnancy progress: <span id="cheatPregnancyProgress"><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%</span>
+		| <<link ">">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
+		| <<link ">>">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
+		<br>
+		<<link [[Clear current pregnancy|$passage]]>>
+			<<set _pregnancy.type to null>>
+			<<set _pregnancy.fetus to []>>
+			<<set _pregnancy.waterBreaking to false>>
+			<<set _pregnancy.waterBreakingTimer to null>>
+			<<set _pregnancy.bellySize to 0>>
+			<<set _pregnancy.timer to null>>
+			<<set _pregnancy.timerEnd to null>>
+			<<set _pregnancy.awareOf to null>>
+			<<set _pregnancy.awareOfDetails to null>>
+			<<set _pregnancy.potentialFathers to []>>
+			<<set _menstruation.currentDay to .5>>
+			<<menstruationCycle>>
+		<</link>>
+		<span class="description">This is a cheat, not an abortion.</span>
+	<<else>>
+		/* Impregnation options */
+	<</if>>
+	<br>
+	<br>
+<</capture>>
 <</widget>>
