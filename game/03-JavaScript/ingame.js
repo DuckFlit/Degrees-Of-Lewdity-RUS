@@ -75,7 +75,7 @@ const combatActionColours = {
 			/* leftaction or rightaction */
 			"steal", "penwhack", "freeface", "leftcovervagina", "leftcoverpenis", "leftcoveranus", "rightcovervagina", "rightcoverpenis", "rightcoveranus", "leftunderpull", "leftskirtpull", "leftlowerpull", "leftupperpull", "rightunderpull", "rightskirtpull", "rightlowerpull", "rightupperpull", "rightUndressOther", "leftUndressOther", "stopchoke", "clench", "shacklewhack", "leftfold", "rightfold", "dildowhack", "hypnosiswhack", "leftstruggleweak", "rightstruggleweak", "handpullpenis", "handpullvagina", "handpullanus", "leftresistW", "rightresistW", "leftstillW", "rightstillW", "penisremovecondom", "npcremovecondom",
 			/* feetaction */
-			"run", "hide", "confront", "feetresistW",
+			"run", "hide", "confront", "feetresistW", "legLock", "legLocked", "feetHold",
 			/* mouthaction */
 			"pullaway", "ejacspit", "pullawayvagina", "finish", "novaginal", "nopenile", "noanal", "scream", "mock", "breastclosed", "breastpull", "pullawaykiss", "noupper", "analpull", "up", "stifleorgasm", "stifle", "mouthresistW", "handcloseW", "growl", "askPullOut",
 			/* penisaction */
@@ -97,7 +97,7 @@ const combatActionColours = {
 			/* leftaction or rightaction */
 			"behind", "fold", "leftcovervaginameek", "leftcoverpenismeek", "leftcoveranusmeek", "rightcovervaginameek", "rightcoverpenismeek", "rightcoveranusmeek", "leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "pickupSexToy", "leftcamerapose", "rightcamerapose", "peniscondom", "npcgivecondom",
 			/* feetaction */
-			"strut",
+			"strut", "feetCurl",
 			/* mouthaction */
 			"grasp", "plead", "forgive", "down", "letout", "letoutorgasm", "noises", "pay",
 			/* penisaction */
@@ -146,6 +146,8 @@ const combatActionColours = {
 		brat: [
 			/* leftaction or rightaction */
 			"leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak",
+			/* feetaction */
+			"feetHold",
 			/* mouthaction */
 			"mouthpullawaytentacle", "stifleorgasm", "stifle", "mouthlulltentacle",
 			/* penisaction */
@@ -176,24 +178,26 @@ const combatActionColours = {
 		meek: [
 			/* leftaction or rightaction */
 			"leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl",
+			/* feetaction */
+			"feetCurl",
 			/* mouthaction */
 			"letout", "letoutorgasm", "noises",
 		],
 	},
 	Vore: {
 		brat: [
-			"leftescape", "rightescape", "lefthold", "righthold", "leftvorefree", "rightvorefree", "leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak",
+			"leftescape", "rightescape", "lefthold", "righthold", "leftvorefree", "rightvorefree", "leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak", "feetHold",
 		],
 		meek: [
-			"leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl",
+			"leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "feetCurl",
 		],
 	},
 	Swarm: {
 		brat: [
-			"leftfree", "rightfree", "frontpurgeleft", "frontpurgeright", "frontclearleft", "frontclearright", "backpurgeleft", "backpurgeright", "backclearleft", "backclearright", "chestclearleft", "chestclearright", "leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak",
+			"leftfree", "rightfree", "frontpurgeleft", "frontpurgeright", "frontclearleft", "frontclearright", "backpurgeleft", "backpurgeright", "backclearleft", "backclearright", "chestclearleft", "chestclearright", "leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak", "feetHold",
 		],
 		meek: [
-			"leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl",
+			"leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "feetCurl",
 		],
 		teal: ["swim"],
 	},
@@ -201,12 +205,14 @@ const combatActionColours = {
 		brat: [
 			/* leftaction or rightaction */
 			"mouth_strengthen", "mouth_grasp", "vagina_strengthen", "vagina_grasp", "penis_strengthen", "penis_grasp", "anus_strengthen", "anus_grasp", "chest_strengthen", "chest_grasp", "leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak",
+			/* feetaction */
+			"feetHold",
 		],
 		meek: [
 			/* leftaction or rightaction */
 			"leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "rest",
 			/* feetaction */
-			"evade", "plant",
+			"evade", "plant", "feetCurl",
 		],
 		def: [
 			/* leftaction or rightaction */
@@ -222,20 +228,20 @@ const combatActionColours = {
 		],
 	},
 	Machine: {
-		brat: ["leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak", "vaginal_push", "anal_push"],
+		brat: ["leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak", "vaginal_push", "anal_push", "feetHold"],
 		def: ["chain_struggle", "whack", "vaginal_whack", "anal_whack"],
-		meek: ["leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl"],
+		meek: ["leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "feetCurl"],
 	},
 	Self: {
 		brat: [
 			/* leftaction or rightaction */
-			"leftfree", "rightfree", "leftcovervagina", "leftcoverpenis", "leftcoveranus", "rightcovervagina", "rightcoverpenis", "rightcoveranus", "leftunderpull", "leftskirtpull", "leftlowerpull", "leftupperpull", "rightunderpull", "rightskirtpull", "rightlowerpull", "rightupperpull", "leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak",
+			"leftfree", "rightfree", "leftcovervagina", "leftcoverpenis", "leftcoveranus", "rightcovervagina", "rightcoverpenis", "rightcoveranus", "leftunderpull", "leftskirtpull", "leftlowerpull", "leftupperpull", "rightunderpull", "rightskirtpull", "rightlowerpull", "rightupperpull", "leftfold", "rightfold", "leftstruggleweak", "rightstruggleweak", "feetHold",
 		],
 		meek: [
 			/* leftaction or rightaction */
 			"leftprotect", "rightprotect", "leftgrip", "rightgrip", "leftcurl", "rightcurl", "behind", "pickupSexToy",
 			/* feetaction */
-			"evade", "plant",
+			"evade", "plant", "feetCurl",
 		],
 		sub: [
 			/* Masturbate */

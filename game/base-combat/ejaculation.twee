@@ -45,21 +45,7 @@
 				<<fameexhibitionism 2>>
 			<</if>>
 
-			<<if $NPCList[_nn].pronoun is "m">>
-				<<set $pronoun to "m">>
-			<</if>>
-			<<if $NPCList[_nn].pronoun is "f">>
-				<<set $pronoun to "f">>
-			<</if>>
-			<<if $NPCList[_nn].pronoun is "i">><!-- Beast Type -->
-				<<set $pronoun to "i">>
-			<</if>>
-			<<if $NPCList[_nn].pronoun is "n">>
-				<<set $pronoun to "n">>
-			<</if>>
-			<<if $NPCList[_nn].pronoun is "t">>
-				<<set $pronoun to "t">>
-			<</if>>
+			<<set $pronoun to $NPCList[_nn].pronoun>>
 
 			<<if $enemytype is "man">>
 				<<set $NPCList[_nn].intro to 1>>
@@ -78,32 +64,38 @@
 
 			<!-- Pulling out is for couches -->
 			<<if ($pullOut or $NPCList[_nn].pregnancyAvoidance gte 80) and ["vagina","vaginadouble","anus","anusdouble"].includes($NPCList[_nn].penis) and !wearingCondom(_nn)>>
-				<<if $pullOut and $enemyanger gte 60>>
+				<<if _nn is $leglocktarget>>
+					<<He>> tries to pull out at the last minute, but <span class="lewd">you <<if $position is "missionary">>lock your legs even tighter<<else>>push back even harder<</if>>, taking <<him>> all the way in as <<he>> hits <<his>> peak.</span>				
+				<<elseif $pullOut and $enemyanger gte 60>>
 					<span class="red"><<He>> doesn't pull out.</span>
 				<<else>>
 					<span class="green"><<He>> pulls out at the last minute.</span>
 					<<if $NPCList[_nn].penis is "vagina" or $NPCList[_nn].penis is "vaginadouble">>
-						<<set $NPCList[_nn].penis to "vaginaimminent">>
+						<<set $NPCList[_nn].penis to "vaginaentrance">>
 						<<set $vaginastate to ($vaginastate is "doublepenetrated" ? "penetrated" : "imminent")>>
 						<<set _pullOutVagina to true>>
 					<<elseif $NPCList[_nn].penis is "anus" or $NPCList[_nn].penis is "anusdouble">>
-						<<set $NPCList[_nn].penis to "anusimminent">>
+						<<set $NPCList[_nn].penis to "anusentrance">>
 						<<set $anusstate to ($anusstate is "doublepenetrated" ? "penetrated" : "imminent")>>
-						<<set $anusstate to "imminent">>
 						<<set _pullOutAnus to true>>
 					<</if>>
 				<</if>>
 			<</if>>
 
-			<!-- NAMED NPCs: Named NPCs without custom modules use simple text to stay in character -->
 			<<unset _condomResult>>
 			<<if wearingCondom(_nn)>>
-				<<if $NPCList[_nn].condom.state is "damaged">>
+				<<if $NPCList[_nn].condom.state is "defective">>
 					<<set _condomResult to "leaked">>
+				<<elseif $NPCList[_nn].condom.state is "sabotaged">>
+					<<set _condomResult to "burst">>
 				<<else>>
 					<<set _condomResult to "contained">>
 				<</if>>
+			<<else>>
+				<<set _condomResult to "none">>
 			<</if>>
+
+			<!-- NAMED NPCs: Named NPCs without custom modules use simple text to stay in character -->
 			<<if $npc[$npcrow.indexOf(_nn)] is "Eden">>
 				<<ejaculation-eden _args[0]>>
 			<<elseif $npc[$npcrow.indexOf(_nn)] is "Kylar">>
@@ -114,11 +106,7 @@
 				<<ejaculation-leighton _args[0]>>
 			<<elseif $npc[$npcrow.indexOf(_nn)] is "Sydney">>
 				<<ejaculation-sydney _args[0]>>
-			<<elseif _condomResult is "contained">>
-				<<genericCondomEjaculation>>
-			<<elseif $position is "wall" and $walltype is "pillory">>
-				<<ejaculation-pillory _args[0]>>
-			<<elseif $position is "wall" and $walltype is "cleanpillory">>
+			<<elseif $position is "wall" and ($walltype is "pillory" or $walltype is "cleanpillory")>>
 				<<ejaculation-pillory _args[0]>>
 			<<elseif $position is "wall">>
 				<<ejaculation-wall _args[0]>>
@@ -146,9 +134,16 @@
 						<<default>>
 							<<He>> ?orgasmMoans and shivers in orgasmic bliss, grinding the strap-on against <<his>> genitals.
 					<</switch>>
+				<<elseif _condomResult is "contained">>
+					<<genericCondomEjaculation>>
 				<<else>>
-					<<if $NPCList[_nn].penis isnot "none" and !$NPCList[_nn].penisdesc.includes("strap-on") and _condomResult is "leaked">>
-						<span class="red">The condom bursts open.</span>
+				
+					<<if $NPCList[_nn].penis isnot "none" and (_condomResult is "leaked" or _condomResult is "burst")>>
+						<<if _condomResult is "leaked">>
+							<span class="red">The condom broke.</span>
+						<<elseif _condomResult is "burst">>
+							<span class="red">The tip of the condom bursts and rips, exposing the head of <<his>> penis.</span>
+						<</if>>
 					<</if>>
 
 					<<if $NPCList[_nn].penis is "otheranusfrot">>
@@ -1069,9 +1064,6 @@
 
 				<!-- Male Gender NPC Start -->
 				<<if $NPCList[_nn].penis isnot "none">>
-					<<if $NPCList[_nn].penis isnot "none" and !$NPCList[_nn].penisdesc.includes("strap-on") and _condomResult is "leaked">>
-						<span class="red">The condom bursts open.</span>
-					<</if>>
 					<!-- Start simplified strap-on sub-case -->
 					<<if $NPCList[_nn].penisdesc.includes("strap-on")>>
 						<<if $consensual is 0>><!-- Non-consen strap-on case -->
@@ -1129,12 +1121,19 @@
 						<</if>>
 					<!-- Start Consensual -->
 					<<elseif $consensual is 1>>
+						<<if _condomResult is "leaked">>
+							<span class="red">The condom broke.</span>
+						<<elseif _condomResult is "burst">>
+							<span class="red">The tip of the condom bursts and rips, exposing the head of <<his>> penis.</span>
+						<</if>>
 						<<if $NPCList[_nn].penis is "idle">>
 							<<if $submissive lte 850>>
 								<<He>> groans as a wet patch forms on <<his>> trousers. You stifle a giggle at how pathetic <<he>> looks.
 							<<else>>
 								<<He>> groans as a wet patch forms on <<his>> trousers.
 							<</if>>
+						<<elseif _condomResult is "contained">>
+							<<genericCondomEjaculation>>
 						<<elseif $NPCList[_nn].penis is "thighs">>
 							<<switch random(1, 7)>>
 							<<case 1 2 3>>
@@ -1643,9 +1642,16 @@
 						<</if>>
 					<!-- Start Non-Consensual -->
 					<<else>>
+						<<if _condomResult is "leaked">>
+							<span class="red">The condom broke.</span>
+						<<elseif _condomResult is "burst">>
+							<span class="red">The tip of the condom bursts and rips, exposing the head of <<his>> penis.</span>
+						<</if>>
 						<<if $NPCList[_nn].penis is "idle">>
 							<<He>> moans as a wet patch forms on <<his>> trousers. You laugh at the pathetic display, regardless of the danger <<he>> poses.
 							<br><br>
+						<<elseif _condomResult is "contained">>
+							<<genericCondomEjaculation>>
 						<<elseif $NPCList[_nn].penis is "thighs">>
 							<<switch random(1, 7)>>
 							<<case 1 2 3>>
@@ -3027,10 +3033,9 @@
 <</widget>>
 
 <<widget "genericCondomEjaculation">>
-	<<He>><<print $NPCList[_nn].fullDescription>> ejaculates into the condom.
+	<<He>> ejaculates into the condom.
 	<<rng>>
 	<<if $rng gte 96>>
-		<<personselect _nn>>
 		<<if $consensual is 1>>
 			<<if $player.virginity.kiss is true or random(0,100) gte 60>>
 				<<He>> takes the condom off <<his>> <<penis>> and proceeds to drain it into <<his>> hands. While watching, <<he>> proceeds to drain them into your mouth, forcing you to drink the semen.
@@ -3044,7 +3049,6 @@
 		<</if>>
 	<</if>>
 	/*Addition npc comments*/
-	<br><br>
 <</widget>>
 
 

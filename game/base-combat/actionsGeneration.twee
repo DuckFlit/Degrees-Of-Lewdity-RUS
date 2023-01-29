@@ -461,7 +461,7 @@
 			<<handdifficulty>> <<combatpromiscuous2>>
 		<<case "peniscondom">><<handdifficulty>>
 		<<case "penisremovecondom">><<handdifficulty>>
-		<<case "npcremovecondom">><<handdifficulty>> <<if $consensual is 0>><<combatpromiscuous6>><</if>>
+		<<case "npcremovecondom">><<handdifficulty>> <<if $consensual is 0 and playerPregnancyPossibleWith($NPCList[$lefttarget])>><<combatpromiscuous6>><</if>>
 	<</switch>>
 <</widget>>
 
@@ -831,7 +831,7 @@
 			<<handdifficulty>> <<combatpromiscuous2>>
 		<<case "peniscondom">><<handdifficulty>>
 		<<case "penisremovecondom">><<handdifficulty>>
-		<<case "npcremovecondom">><<handdifficulty>> <<if $consensual is 0>><<combatpromiscuous6>><</if>>
+		<<case "npcremovecondom">><<handdifficulty>> <<if $consensual is 0 and playerPregnancyPossibleWith($NPCList[$lefttarget])>><<combatpromiscuous6>><</if>>
 	<</switch>>
 <</widget>>
 
@@ -983,12 +983,15 @@
 <</widget>>
 
 <<widget "feetActionInit">>
-	<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined or $possessed)>>
+	<<if $dissociation lte 1 and ($pain lt 100 or $willpowerpain is undefined or $possessed)>>
 		<<switch $feetuse>>
 			<<case 0>>
 				<<if $possessed>>
 					<<set _feetOptions to "possessed">>
 					Your legs are free, <span class="pink">but you can't feel them beneath you.</span>
+				<<elseif $orgasmdown gte 1>>
+					<<set _feetOptions to "orgasm">>
+					<span class="lewd">Your legs are free, but you can't stop the spasms.</span>
 				<<else>>
 					<<if _targetYourself is true and _targetnumber gt 1>>
 						<<set _targetlistall["Yourself"] to "self">>
@@ -1034,6 +1037,8 @@
 			<<case "bound">>
 				<<if $possessed>>
 					Your legs thrash in their shackles, unbidden.
+				<<elseif $orgasmdown gte 1>>
+					<span class="lewd">Your legs thrash against their bindings.</span>
 				<<else>>
 					<<set _feetOptions to "bound">>
 					<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your legs are bound.</span>
@@ -1052,6 +1057,14 @@
 				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free but unusable in this position.</span>
 			<<case "mechgrappled">>
 				<<set $_changetype to true>><<feetActionInitMachine>>
+			<<case "legLock">>
+				<<if $orgasmdown gte 1>>
+					<<set _feetOptions to "orgasmLegLock">>
+					<span class="lewd"><<if $position is "missionary">>Your legs clench around<<else>>You push back against<</if>> $NPCList[$leglocktarget].pronouns.him even harder as you climax.</span>
+				<<else>>
+					<<set _feetOptions to "legLocked">>
+					<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your legs are locked around <<personselect $leglocktarget>><<combatperson>>.</span>
+				<</if>>
 			<<default>>
 				<<set $_changetype to true>><<feetActionInitTentacle>>
 		<</switch>>
@@ -1105,6 +1118,8 @@
 	<</if>>
 	<<switch _diffAction>>
 		<<case "grab" "vaginagrab">><<feetdifficulty>><<combatpromiscuous3>>
+		<<case "legLock">><<thighdifficulty>><<if $consensual is 0>><<combatpromiscuous6>><<else>><<combatpromiscuous3>><</if>>
+		<<case "legLocked">><<thighdifficulty>>
 		<<case "run">><<if $NPCList[0].legs is "run">><<stalk_athletics_difficulty>><</if>>
 		<<case "hide">><<if $NPCList[0].state is "stalk">><<stalk_skulduggery_difficulty>><</if>>
 	<</switch>>
@@ -1129,6 +1144,7 @@
 				<<feetKick>>
 				<<feetshoes>>
 				<<feetsocks>>
+				<<legLock>>
 			<<case "leftfree" "rightFree">>
 				<<feetgrabnew>>
 				<<feetKick>>
@@ -1136,6 +1152,17 @@
 				<<feetGrabRub>>
 			<<case "othervagina">>
 				<<feetOthervagina>>
+			<<case "legLocked">>
+				<<run delete _feetaction["Rest"]>>
+				<<legLocked>>
+			<<case "orgasm">>
+				<<run delete _feetaction["Rest"]>>
+				<<set _feetaction["Hold still"] to "feetHold">>
+				<<set _feetaction["Curl toes"] to "feetCurl">>
+				<<legLock>>
+			<<case "orgasmLegLock">>
+				<<run delete _feetaction["Rest"]>>
+				<<set _feetaction["No escape!"] to "legLocked">>
 			<<case "possessed">>
 				<<set _feetaction to {}>>
 				<<set _feetaction["Accept it"] to "feetacceptW">>
