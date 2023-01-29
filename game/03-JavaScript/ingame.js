@@ -635,6 +635,30 @@ function getRobinCrossdressingStatus(crossdressLevel) {
 }
 window.getRobinCrossdressingStatus = getRobinCrossdressingStatus;
 
+/* 
+	TEMPORARY - remove once obsolete
+	Temporary function until location framework is in place - to detect if a NPC is in the park
+	Uses same checks as other Park NPC checks
+ */
+function isInPark(name) {
+	switch(name.toLowerCase()) {
+		case "kylar":
+			return V.NPCName[V.NPCNameList.indexOf("Kylar")].state === "active" 
+				&& !["rain", "snow"].includes(V.weather) 
+				&& V.daystate === "day" && V.kylarwatched !== 1;
+		case "robin":
+			return getRobinLocation() === "park";
+		case "whitney":
+			return ["active", "rescued"].includes(V.NPCName[V.NPCNameList.indexOf("Whitney")].state)
+				&& V.NPCName[V.NPCNameList.indexOf("Whitney")].init === 1 && ["snow", "rain"].includes(V.weather)
+				&& V.daystate === "day" && (V.schoolday !== 1 || V.hour <= 8 || V.hour >= 15)
+				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
+		default:
+			return false;
+	}
+}
+window.isInPark = isInPark;
+
 window.DefaultActions = {
 	create(isMinimal = false, preload = false) {
 		let storage = {};
