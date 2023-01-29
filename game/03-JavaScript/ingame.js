@@ -892,33 +892,42 @@ function clothesDataTrimmerLoop() {
 }
 window.clothesDataTrimmerLoop = clothesDataTrimmerLoop;
 
+/*
+	Be aware, the shop is excluded from this, clothing items in every other situation requires one of the below methods
+	Setup example - setup.clothes.upper[clothesIndex('upper',$worn.upper)].name_cap
+	clothingData example - clothingData(_slot, $worn[_slot], "integrity_max")
+
+	The `clothingData example`, allows you to add the variable back to override the setup varient, for example, if you want to increase `integrity_max`
+
+	If any use the `Setup example` and you want to override variables like the `clothingData example`, every instance needs to be converted first, please update the comment below if you do
+*/
 function clothesDataTrimmer(item) {
 	if (!item) return;
 	const toDelete = [
-		"name_cap",
-		"iconFile",
-		"accIcon",
-		"notuck",
-		"skirt",
-		"description",
-		"colour_options",
-		"accessory_colour_options",
-		"fabric_strength",
-		"integrity_max",
-		"bustresize",
-		"sleeve_img",
-		"breast_img",
-		"exposed_base",
-		"vagina_exposed_base",
-		"anus_exposed_base",
-		"state_top_base",
-		"state_base",
-		"word",
-		"femininity",
-		"strap",
-		"cost",
-		"shop",
-		"short",
+		"name_cap", // use `Setup example`
+		"iconFile", // use `Setup example`
+		"accIcon", // use `Setup example`
+		"notuck", // use `Setup example`
+		"skirt", // use `Setup example`
+		"description", // use `Setup example`
+		"colour_options", // use `Setup example`
+		"accessory_colour_options", // use `Setup example`
+		"fabric_strength", // use `clothingData example`
+		"integrity_max", // use `clothingData example`
+		"bustresize", // use `clothingData example`
+		"sleeve_img", // use `Setup example`
+		"breast_img", // use `Setup example`
+		"exposed_base", // use `Setup example`
+		"vagina_exposed_base", // use `Setup example`
+		"anus_exposed_base", // use `Setup example`
+		"state_top_base", // use `Setup example`
+		"state_base", // use `Setup example`
+		"word", // use `Setup example`
+		"femininity", // use `Setup example`
+		"strap", // use `Setup example`
+		"cost", // use `Setup example`
+		"shop", // use `Setup example`, should never be added back on to clothing items due to being in `trimmerVersion`
+		"short", // use `Setup example`, should never be added back on to clothing items due to being in `trimmerVersion`
 	];
 	// To prevent it from running on variables multiple times, when updating toDelete, the last of the new additions should be added here
 	const trimmerVersion = ["shop", "short"];
