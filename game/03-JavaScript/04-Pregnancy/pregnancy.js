@@ -789,7 +789,8 @@ window.wearingCondom = (npcNumber) => {
         condom = V.player.condom;
     }
     if(condom && condom.worn){
-        if(condom.state === "damaged") return "damaged";
+        if(condom.state === "defective") return "defective";
+		if(condom.state === "sabotaged") return "sabotaged";
         return "worn";
     }
     return false;
