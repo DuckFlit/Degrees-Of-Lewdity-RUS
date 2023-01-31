@@ -517,7 +517,7 @@ window.settingsDisableElement = settingsDisableElement;
 function onInputChanged(func) {
 	if (!func || typeof func !== "function") return;
 	$(() => {
-		$("input").on("change", function () {
+		$("input, select").on("change", function () {
 			func();
 		});
 	});
