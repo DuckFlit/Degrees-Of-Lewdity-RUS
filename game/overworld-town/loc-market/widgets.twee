@@ -472,7 +472,7 @@
 		<<elseif $rng is 5>>
 			<<generate1>><<person1>>
 			<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-			A <<person>> walks up to your display. <<He>> examines one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks. <<He>> leers at you openly.
+			A <<person>> walks up to your display. <<He>> <<stall_check_text>>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks. <<He>> leers at you openly.
 			<br><br>
 
 			<<stall_trust>>
@@ -482,7 +482,7 @@
 		<<elseif $rng is 6>>
 			<<generate1>><<person1>>
 			<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-			A <<person>> walks up to your display. <<He>> lifts one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks. "And don't try to sweet talk me. I've heard about you."
+			A <<person>> walks up to your display. <<He>> <<stall_check_text>>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks. "And don't try to sweet talk me. I've heard about you."
 			<br><br>
 
 			<<stall_trust>>
@@ -492,7 +492,7 @@
 		<<elseif $rng is 7>>
 			<<generate1>><<person1>>
 			<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-			You see a <<person>> watching you from afar. <<He>> walks over when your eyes meet. <<He>> stoops to examine one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks.
+			You see a <<person>> watching you from afar. <<He>> walks over when your eyes meet. <<He>> <<stall_check_text>>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks.
 			<br><br>
 
 			<<stall_trust>>
@@ -502,7 +502,7 @@
 		<<elseif $rng is 8>>
 			<<generate1>><<person1>>
 			<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-			A <<person>> walks by, and stops in front of your stall. <<His>> eyes flicker over your face and chest as <<he>> picks up one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks.
+			A <<person>> walks by, and stops in front of your stall. <<His>> eyes flicker over your face and chest as <<he>> <<stall_check_text>>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks.
 			<br><br>
 
 			<<stall_trust>>
@@ -515,7 +515,7 @@
 			A <<person>> swaggers up to your display. Without warning, <<he>> reaches forward and grasps your arm. <<He>> tugs you forward, until you're leaning over the table, then <<he>> leans in and licks your cheek.
 			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 			<br><br>
-			<<He>> releases you, then examines one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks, leaning against the table.
+			<<He>> releases you, then <<stall_check_text>>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks, leaning against the table.
 			<br><br>
 
 			<<stall_trust>>
@@ -525,7 +525,7 @@
 		<<else>>
 			<<generate1>><<person1>>
 			<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-			A <<person>> walks up to your display. <<He>> sniffs one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks, leaning against the table.
+			A <<person>> walks up to your display. <<He>> <<stall_check_text>>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks, leaning against the table.
 			<br><br>
 
 			<<stall_trust>>
@@ -607,7 +607,7 @@
 	<<elseif $rng is 7>>
 		<<generate1>><<person1>>
 		<<stall_init>>
-		A <<person>> stops in front of your stall. "Looking for something for the <<spouse>>," <<he>> says. <<He>> leans down and sniffs one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?"
+		A <<person>> stops in front of your stall. "Looking for something for the <<spouse>>," <<he>> says. <<He>> leans down and <<stall_check_text>>. "How much for <span class="green"><<stall_amount>></span> of these?"
 		<br><br>
 
 		<<stall_trust>>
@@ -924,3 +924,36 @@
 	<</if>>
 	<<print _text_output>>
 <</widget>>
+
+<<widget "stall_check_text">><<silently>>
+	<<set $_examines to ["examines","lifts","picks up","sniffs"].pluck()>>
+	<<switch $stall_plant>>
+		<<case "blood_lemon" "bottle_of_breast_milk" "bottle_of_semen" "strange_flower" "wolfshroom">>
+			<<if $_examines is "sniffs">>
+				<<set $_reacts to ", before blushing">>
+			<<else>>
+				<<set $_reacts to "">>
+			<</if>>
+		<<case "apple" "banana" "cabbage" "orange" "peach" "pear" "plum" "strawberry">>
+			<<if $_examines is "examines">>
+				<<set $_reacts to " for bruises">>
+			<<elseif ["lifts","picks up"].includes($_examines)>>
+				<<set $_reacts to " to check for bruises">>
+			<<else>>
+				<<set $_reacts to "">>
+			<</if>>
+		<<case "egg">>
+			<<if $_examines is "sniffs">>
+				<<set $_examines to "examines">>
+				<<set $_reacts to " for cracks">>
+			<<elseif $_examines is "examines">>
+				<<set $_reacts to " for cracks">>
+			<<elseif ["lifts","picks up"].includes($_examines)>>
+				<<set $_reacts to " to check for cracks">>
+			<</if>>
+		<<default>>
+			<<set $_reacts to "">>
+	<</switch>>
+
+	<<set _text_output to $_examines + " one of the <span class='green'>" + setup.plants[$stall_plant].plural + "</span>" + $_reacts>>
+<</silently>><<print _text_output>><</widget>>
