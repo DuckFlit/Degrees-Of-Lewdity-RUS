@@ -42,8 +42,8 @@ function shopClothingFilterSortOnDescription(traitOne, traitTwo) {
 }
 window.shopClothingFilterSortOnDescription = shopClothingFilterSortOnDescription;
 
-//Now also returns the value from wikifyEval
-//Not limited to number of parameters
+// Now also returns the value from wikifyEval
+// Not limited to number of parameters
 window.wikifier = function (widget, ...args) {
 	if(widget == null) return;
 	return Wikifier.wikifyEval("<<" + widget + (args.length ? " " + args.join(" ") : "") + ">>");
@@ -1123,25 +1123,25 @@ function currentSkillValue(skill) {
 	) {
 		result = Math.floor(result * (1 + V.moorLuck / 100));
 	}
-	if (["physique", "danceskill", "swimmingskill", "athletics"].includes(skill) && playerBellySize() >= 10) {
-		switch (V.pregnancyStats.mother) {
+	if (["physique", "danceskill", "swimmingskill", "athletics"].includes(skill) && playerBellySize() >= 10 && playerNormalPregnancyTotal() < 50) {
+		switch (playerNormalPregnancyTotal()) {
 			case 0:
-				T.pregnancyModifier = 30;
+				T.pregnancyModifier = 36;
 				break;
 			case 1:
-				T.pregnancyModifier = 40;
+				T.pregnancyModifier = 48;
 				break;
 			case 2:
-				T.pregnancyModifier = 50;
+				T.pregnancyModifier = 60;
 				break;
 			case 3: case 4: case 5:
-				T.pregnancyModifier = 65;
+				T.pregnancyModifier = 78;
 				break;
 			case 6: case 7:
-				T.pregnancyModifier = 80;
+				T.pregnancyModifier = 96;
 				break;
 			default:
-				T.pregnancyModifier = 100;
+				T.pregnancyModifier = 120;
 				break;
 		}
 		result = Math.floor(result * (1 - playerBellySize() / T.pregnancyModifier));
@@ -1233,12 +1233,14 @@ window.playerIsPenetrated = playerIsPenetrated;
  * 	getTimeString(hours, minutes)
  * Examples:
  * 	getTimeString(20) returns "0:20"
- * 	getTimeString(1,5) returns "1:05"
+ * 	getTimeString(1,5) returns "1:05".
+ *
+ * @param {...any} args
  */
 function getTimeString(...args) {
 	if(args[0] == null) return;
 	const hours = args[1] ? args[0] : 0;
-	let minutes = Math.max(args[1] || args[0], 0) + (hours * 60);
+	const minutes = Math.max(args[1] || args[0], 0) + (hours * 60);
 	return Math.trunc(minutes / 60) + ":" + ('0' + Math.trunc(minutes % 60)).slice(-2);
 }
 window.getTimeString = getTimeString;
@@ -1807,7 +1809,7 @@ window.dailyConvert = dailyConvert;
 function convertHairLengthToStage(hair, length){
 	if (!hair || !length)
 		throw new Error(`Hair AND Length must be provided to be converted: ${hair} / ${length}`);
-	if (hair == "fringe") {
+	if (hair === "fringe") {
 		if (length >= 900)
 			return "feet";
 		else if (length >= 700)
@@ -1821,7 +1823,7 @@ function convertHairLengthToStage(hair, length){
 		else
 			return "short";
 	}
-	else if (hair == "sides") {
+	else if (hair === "sides") {
 		if (length >= 900)
 			return "feet";
 		else if (length >= 700)

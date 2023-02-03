@@ -460,7 +460,16 @@ window.getOwnedClothingCount = getOwnedClothingCount;
 function importCustomColour(acc) {
 	const setName = prompt("Enter custom code", "");
 	if (setName != null) {
-		const color = JSON.parse(window.atob(setName));
+		let color;
+		try {
+			color = JSON.parse(window.atob(setName));
+		} catch (e){
+			document.getElementById("export-custom-colour-box").outerHTML = `
+			<div id="export-custom-colour-box">
+				<span class="export-custom-colour-error">Invalid string, make sure you copied it correctly without any spaces around it.</span>
+			</div>`;
+			return;
+		}
 		const colourProperties = Object.getOwnPropertyNames(color);
 
 		if (colourProperties.sort().join(",") === ["color", "saturation", "value", "brightness", "contrast"].sort().join(",")) {
@@ -474,8 +483,21 @@ function importCustomColour(acc) {
 			colourPickerShopCustom[acc].color.value = color.value;
 			document.getElementById("numberslider-input-customcolorscontrastprimary").value = color.contrast.toString();
 			document.getElementById("numberslider-value-customcolorscontrastprimary").innerText = color.contrast.toString();
+			document.getElementById("export-custom-colour-box").outerHTML = `
+			<div id="export-custom-colour-box">
+				<span class="export-custom-colour-alert">Imported!</span>
+			</div>`;
+			window.setTimeout(() => {
+				if (document.getElementById("export-custom-colour-box"))
+					document.getElementById("export-custom-colour-box").classList.add("successfully-exported");
+			}, 100);
 			updateMannequin();
-		} else throw "Invalid code. Make sure you copied it properly, without any white spaces around it.";
+		} else {
+			document.getElementById("export-custom-colour-box").outerHTML = `
+			<div id="export-custom-colour-box">
+				<span class="export-custom-colour-error">Invalid code.</span>
+			</div>`;
+		}
 	}
 }
 window.importCustomColour = importCustomColour;

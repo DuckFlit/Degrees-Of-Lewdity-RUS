@@ -122,7 +122,6 @@
 		<<set $_pregLocation to ($player.vaginaExist ? "vagina" : "anus")>>
 		<<set $_pregnancy to $sexStats[$_pregLocation].pregnancy>>
 		<<set _pills to $sexStats.pills>>
-		<<set $_last_preg_pill to clone(_pills.lastTaken.pregnancy)>>
 		<<switch _menstruation.currentState>>
 			<<case "normal">>
 				<<if $cycledisable is "t">>
@@ -133,19 +132,19 @@
 					<</if>>
 					<<if _menstruation.currentDay lt _menstruation.stages[1]>>
 						/*Menstrual phase - period occurs right at the start of this part*/
-						<<if $_last_preg_pill is "fertility booster" and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
+						<<if _pills.pills["fertility booster"].doseTaken gte 2>>
 							<<set _menstruation.currentDay += 0.5>>
 						<</if>>
 						<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
 							<<set _menstruation.currentDay += 0.5>>
 						<</if>>
-						<<if $_last_preg_pill is "contraceptive" and (random(0,100) gte 50 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
+						<<if (_pills.pills["contraceptive"].doseTaken gte 1 and random(0,100) gte 50) or _pills.pills["contraceptive"].doseTaken gte 2>>
 						<<else>>
 							<<set _menstruation.currentDay += 0.5>>
 						<</if>>
 					<<elseif _menstruation.currentDay lt _menstruation.stages[2]>>
 						/*Follicular phase*/
-						<<if $_last_preg_pill is "fertility booster" and _pills.pills[$_last_preg_pill].doseTakenn gte 2 and _menstruation.currentDay lt _menstruation.stages[2]>>
+						<<if _pills.pills["fertility booster"].doseTakenn gte 2 and _menstruation.currentDay lt _menstruation.stages[2]>>
 							<<set _menstruation.currentDay += 0.5>>
 						<</if>>
 						<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy" and _menstruation.currentDay lt _menstruation.stages[2]>>
@@ -158,7 +157,6 @@
 						<<if _menstruation.currentDay gte _menstruation.stages[3] - 4>>
 							<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.stages[3] - _menstruation.currentDay)),6,30)>>
 							<<playerPregnancyAttempt $_multi $_pregLocation>>
-							<<run console.log("playerPregnancyAttempt - Follicular")>>
 						<</if>>
 					<<elseif _menstruation.currentDay lt _menstruation.stages[3]>>
 						/*Ovulation phase*/
@@ -173,15 +171,14 @@
 						<<if _menstruation.currentDay lte _menstruation.stages[3] + 4>>
 							<<set $_multi = Math.clamp(Math.ceil(6 * (1 + _menstruation.currentDay - _menstruation.stages[3])),6,30)>>
 							<<playerPregnancyAttempt $_multi $_pregLocation`>>
-							<<run console.log("playerPregnancyAttempt - Luteal")>>
 						<</if>>
-						<<if $_last_preg_pill and _pills.pills[$_last_preg_pill].doseTaken gte 2>>
+						<<if _pills.pills["fertility booster"].doseTaken gte 2>>
 							<<set _menstruation.currentDay += 0.5>>
 						<</if>>
 						<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
 							<<set _menstruation.currentDay += 0.5>>
 						<</if>>
-						<<if $_last_preg_pill is "contraceptive" and (random(0,100) gte 50 or _pills.pills[$_last_preg_pill].doseTaken gte 2)>>
+						<<if (_pills.pills["contraceptive"].doseTaken gte 1 and random(0,100) gte 50) or _pills.pills["contraceptive"].doseTaken gte 2>>
 						<<else>>
 							<<set _menstruation.currentDay += 0.5>>
 						<</if>>
@@ -191,14 +188,29 @@
 					<<restartMenstruationCycle>>
 					<<set _menstruation.periodEnabled to true>>
 				<</if>>
+			<<case "pregnant">>
+				/*To progress as normal so that the heat cycle and pregnancy risk still works as normal, will be reset in the recovering stage*/
+				<<if (_pills.pills["contraceptive"].doseTaken gte 1 and random(0,100) gte 50) or _pills.pills["contraceptive"].doseTaken gte 2>>
+				<<else>>
+					<<set _menstruation.currentDay += 0.5>>
+				<</if>>
+				<<if _menstruation.currentDay lt _menstruation.stages[3]>>
+					<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
+						<<set _menstruation.currentDay += 0.5>>
+					<</if>>
+					<<if _pills.pills["fertility booster"].doseTaken gte 2>>
+						<<set _menstruation.currentDay += 0.5>>
+					<</if>>
+					<<if _menstruation.currentDay lt _menstruation.currentDaysMax>>
+						<<set _menstruation.currentDay to 0.5>>
+					<</if>>
+				<</if>>
 			<<case "recovering">>
 				<<set _menstruation.recoveryTime -= 0.5>>
-				<<if $_last_preg_pill is "fertility booster">>
-					<<switch _pills.pills[$_last_preg_pill].doseTaken>>
-						<<case 1>><<set _menstruation.recoveryTime -= 0.5>>
-						<<case 2 3 4>><<set _menstruation.recoveryTime -= 1>>
-					<</switch>>
-				<</if>>
+				<<switch _pills.pills["fertility booster"].doseTaken>>
+					<<case 1>><<set _menstruation.recoveryTime -= 0.5>>
+					<<case 2 3 4>><<set _menstruation.recoveryTime -= 1>>
+				<</switch>>
 				<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
 					<<set _menstruation.recoveryTime -= 0.5>>
 				<</if>>
@@ -416,7 +428,7 @@
 			<<case "bellySize">>
 				<<set $_text_output to "You wake and take a look at your growing belly.">>
 				<<if $_pregnancy.potentialFathers.length is 1>>
-					<<set $_text_output += " It's clear that "+ $_pregnancy.potentialFathers[0][1] +" was who got you pregnant.">>
+					<<set $_text_output += " It's clear that "+ $_pregnancy.potentialFathers[0].source +" was who got you pregnant.">>
 				<<else>>
 					<<set $_text_output += " You wonder who got you pregnant.">>
 				<</if>>
@@ -521,7 +533,7 @@
 				/*Entered vie the asylum*/
 			<</if>>
 		<<case "farmroad">>
-			<<if $location is "farm" and $_pregnancy.potentialFathers.find(father => father[1] === "Alex")>>
+			<<if $location is "farm" and $_pregnancy.potentialFathers.find(father => father.source === "Alex")>>
 				/*Alex can help here*/
 			<<else>>
 
@@ -547,7 +559,7 @@
 		<<case "cave">>
 		<<case "prison">>
 		<<case "edencabin">>
-			<<if $_pregnancy.potentialFathers.find(father => father[1] === "Eden")>>
+			<<if $_pregnancy.potentialFathers.find(father => father.source === "Eden")>>
 				/*Eden thinks it's his child?*/
 			<<else>>
 
@@ -571,7 +583,7 @@
 				<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 			<</if>>
 		<<case "edencabin">>
-			<<if $_pregnancy.potentialFathers.find(father => father[1] === "Eden")>>
+			<<if $_pregnancy.potentialFathers.find(father => father.source === "Eden")>>
 				/*Alternative place to give birth?*/
 				<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 			<<else>>
@@ -581,7 +593,7 @@
 			/*Alternative place to give birth?*/
 			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 		<<case "farmroad">>
-			<<if $location is "farm" and $_pregnancy.potentialFathers.find(father => father[1] === "Alex")>>
+			<<if $location is "farm" and $_pregnancy.potentialFathers.find(father => father.source === "Alex")>>
 				/*Alternative place to give birth?*/
 				<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 			<<else>>
@@ -682,7 +694,7 @@
 			<<set $_pregnancy.cycleDaysTotal to random(24,32)>>
 			<<set $_pregnancy.cycleDay to random(1,$_pregnancy.cycleDaysTotal)>>
 			<<set $_pregnancy.cycleDangerousDay to 10>>
-			<<set $_pregnancy.sperm to {}>>
+			<<set $_pregnancy.sperm to []>>
 			<<set $_pregnancy.potentialFathers to []>>
 			<<set $_pregnancy.nonCycleRng to [random(0,3),random(0,3)]>>
 			<<switch $_name>>
