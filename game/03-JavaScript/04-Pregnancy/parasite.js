@@ -1,13 +1,14 @@
+/* eslint-disable no-undef */
 
-const fertiliseParasites = (genital = "anus") => {
-	//Runs whenever someone ejaculates in your `genital`
-	let pregnancy = V.sexStats[genital].pregnancy;
-	if(pregnancy.type === "parasite"){
+function fertiliseParasites(genital = "anus") {
+	// Runs whenever someone ejaculates in your `genital`
+	const pregnancy = V.sexStats[genital].pregnancy;
+	if (pregnancy.type === "parasite") {
 		pregnancy.fetus.forEach(parasite => {
-			if(!parasite.fertilised){
+			if (!parasite.fertilised) {
 				parasite.fertilised = true;
 				parasite.daysLeft = parasite.stats.growth;
-				if(parasite.stats.gender === "Hermaphrodite"){
+				if (parasite.stats.gender === "Hermaphrodite") {
 					pregnancy.motherStatus = 2;
 				}
 			}
@@ -16,16 +17,16 @@ const fertiliseParasites = (genital = "anus") => {
 }
 DefineMacro("fertiliseParasites", fertiliseParasites);
 
-const parasiteProgressDay = (genital = "anus") => {
-	let pregnancy = V.sexStats[genital].pregnancy;
+function parasiteProgressDay(genital = "anus") {
+	const pregnancy = V.sexStats[genital].pregnancy;
 	V.pregnancyStats.namesParasitesChild = V.deviancy >= 75;
-	if(pregnancy.type === "parasite"){
+	if (pregnancy.type === "parasite") {
 		pregnancy.fetus.forEach(parasite => {
-			if(parasite.daysLeft > 0) parasite.daysLeft--;
-			if(parasite.stats.gender === "Hermaphrodite" && parasite.daysLeft <= 3){
-				if(parasite.stats.lastEgg > 0){
+			if (parasite.daysLeft > 0) parasite.daysLeft--;
+			if (parasite.stats.gender === "Hermaphrodite" && parasite.daysLeft <= 3) {
+				if (parasite.stats.lastEgg > 0) {
 					parasite.stats.lastEgg--;
-				} else if(V.sexStats[genital].pregnancy.fetus.length < maxParasites(genital)) {
+				} else if (V.sexStats[genital].pregnancy.fetus.length < maxParasites(genital)) {
 					impregnateParasite(parasite.creature, true, genital, parasite);
 				}
 			}
@@ -33,35 +34,38 @@ const parasiteProgressDay = (genital = "anus") => {
 		pregnancy.fetus = pregnancy.fetus.filter(parasite => parasite.daysLeft > 0 || parasite.fertilised);
 	}
 }
-DefineMacro("parasiteProgressDay", () => {parasiteProgressDay(); parasiteProgressDay("vagina");});
+DefineMacro("parasiteProgressDay", () => {
+	parasiteProgressDay();
+	parasiteProgressDay("vagina");
+});
 
-const parasiteProgressTime = (pass, genital = "anus") => {
-	let pregnancy = V.sexStats[genital].pregnancy;
-	if(pregnancy.type === "parasite"){
+function parasiteProgressTime(pass, genital = "anus") {
+	const pregnancy = V.sexStats[genital].pregnancy;
+	if (pregnancy.type === "parasite") {
 		pregnancy.fetus.forEach(parasite => {
-			if(parasite.fertilised){
-				if(parasite.timeLeft === null) parasite.timeLeft = parasite.stats.speed;
+			if (parasite.fertilised) {
+				if (parasite.timeLeft === null) parasite.timeLeft = parasite.stats.speed;
 				parasite.timeLeft -= pass;
-				if(parasite.timeLeft <= 0){
+				if (parasite.timeLeft <= 0) {
 					parasite.timeLeft = parasite.stats.speed;
-					if(!V.daily.parasiteEvent){
+					if (!V.daily.parasiteEvent) {
 						V.daily.parasiteEvent = [];
 					}
-					if(parasite.stats.gender === "Hermaphrodite" && parasite.daysLeft <= 3){
-						if((parasite.daysLeft <= 3 && random(0,100) < 20) || (parasite.daysLeft === 0 && random(0,100) < 50)){
+					if (parasite.stats.gender === "Hermaphrodite" && parasite.daysLeft <= 3) {
+						if ((parasite.daysLeft <= 3 && random(0, 100) < 20) || (parasite.daysLeft === 0 && random(0, 100) < 50)) {
 							V.daily.parasiteEvent.pushUnique(genital + 0);
-							if(V.pregnancyStats.parasiteDoctorEvents === 2) V.pregnancyStats.parasiteDoctorEvents = 3;
-						} else if(parasite.daysLeft === 0 || random(0,100) < 60){
+							if (V.pregnancyStats.parasiteDoctorEvents === 2) V.pregnancyStats.parasiteDoctorEvents = 3;
+						} else if (parasite.daysLeft === 0 || random(0, 100) < 60) {
 							V.daily.parasiteEvent.pushUnique(genital + 2);
 						}
 					} else {
-						if((parasite.daysLeft === 0 && random(0,100) < 50) || (parasite.daysLeft <= 3 && random(0,100) < 20)){
+						if ((parasite.daysLeft === 0 && random(0, 100) < 50) || (parasite.daysLeft <= 3 && random(0, 100) < 20)) {
 							V.daily.parasiteEvent.pushUnique(genital + 1);
-							if(V.pregnancyStats.parasiteDoctorEvents === 0) V.pregnancyStats.parasiteDoctorEvents = 1;
-							if(V.pregnancyStats.parasiteDoctorEvents >= 2) pregnancy.parasiteFeltMovement = true;
-						} else if(parasite.daysLeft === 0 || (parasite.daysLeft <= 3 && random(0,100) < 60)){
+							if (V.pregnancyStats.parasiteDoctorEvents === 0) V.pregnancyStats.parasiteDoctorEvents = 1;
+							if (V.pregnancyStats.parasiteDoctorEvents >= 2) pregnancy.parasiteFeltMovement = true;
+						} else if (parasite.daysLeft === 0 || (parasite.daysLeft <= 3 && random(0, 100) < 60)) {
 							V.daily.parasiteEvent.pushUnique(genital + 2);
-						} else if(parasite.daysLeft < 7 && random(0,100) < 50){
+						} else if (parasite.daysLeft < 7 && random(0, 100) < 50) {
 							V.daily.parasiteEvent.pushUnique(genital + 3);
 						}
 					}
@@ -70,42 +74,51 @@ const parasiteProgressTime = (pass, genital = "anus") => {
 		});
 	}
 }
-DefineMacro("parasiteProgressTime", (pass) => {parasiteProgressTime(pass); parasiteProgressTime(pass, "vagina");});
+DefineMacro("parasiteProgressTime", pass => {
+	parasiteProgressTime(pass);
+	parasiteProgressTime(pass, "vagina");
+});
 
-const impregnateParasite = (parasiteType, chance, genital = "anus", hermParasite) => {
-	if(V.parasitepregdisable === "t" || !parasiteType || (!V.player.vaginaExist && genital === "vagina")) return false;
-	if(V.sexStats.pills.pills["Anti-Parasite Cream"] && V.sexStats.pills.pills["Anti-Parasite Cream"].doseTaken && !hermParasite) return false;
+function impregnateParasite(parasiteType, chance, genital = "anus", hermParasite) {
+	if (V.parasitepregdisable === "t" || !parasiteType || (!V.player.vaginaExist && genital === "vagina")) return false;
+	if (V.sexStats.pills.pills["Anti-Parasite Cream"] && V.sexStats.pills.pills["Anti-Parasite Cream"].doseTaken && !hermParasite) return false;
 
-	let pregnancy = V.sexStats[genital].pregnancy;
+	const pregnancy = V.sexStats[genital].pregnancy;
 
-	if(pregnancy.fetus.length >= maxParasites(genital) || (pregnancy.type !== null && pregnancy.type !== "parasite")) return false;
+	if (pregnancy.fetus.length >= maxParasites(genital) || (pregnancy.type !== null && pregnancy.type !== "parasite")) return false;
 
-	let rngCheck = chance === true || random(0,100) <= (1 + chance / (pregnancy.fetus.length + 1));
+	const rngCheck = chance === true || random(0, 100) <= 1 + chance / (pregnancy.fetus.length + 1);
 
-	if(pregnancy && rngCheck){
-		switch(parasiteType){
-			case "slimes": case "eels": case "worms": case "snakes": case "spiders": case "slugs": case "maggots":
+	if (pregnancy && rngCheck) {
+		switch (parasiteType) {
+			case "slimes":
+			case "eels":
+			case "worms":
+			case "snakes":
+			case "spiders":
+			case "slugs":
+			case "maggots":
 				parasiteType = toTitleCase(parasiteType);
-				parasiteType = parasiteType.substring(0,parasiteType.length - 1);
-			break;
+				parasiteType = parasiteType.substring(0, parasiteType.length - 1);
+				break;
 			default:
 				parasiteType = toTitleCase(parasiteType);
-			break;
+				break;
 		}
 
-		let newPregnancy = pregnancyGenerator.parasite({
+		const newPregnancy = pregnancyGenerator.parasite({
 			mother: "pc",
-			parasiteType: parasiteType,
-			genital: genital,
-			hermParasite: hermParasite,
+			parasiteType,
+			genital,
+			hermParasite,
 		});
-		if(newPregnancy && !(typeof newPregnancy === 'string' || newPregnancy instanceof String)){
+		if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String)) {
 			V.sexStats[genital].pregnancy = {
 				...pregnancy,
 				...newPregnancy,
-			}
+			};
 		}
-		if(!hermParasite) T.impreg = true;
+		if (!hermParasite) T.impreg = true;
 		return true;
 	}
 	return false;

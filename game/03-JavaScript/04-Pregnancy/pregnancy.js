@@ -1,18 +1,20 @@
-//Should a name type for species be setup, say, human/wolf specific names
+/* eslint-disable no-undef */
+
+// Should a name type for species be setup, say, human/wolf specific names
 function generateBabyName(name, gender, childId) {
 	let result = "";
-	let usedNames = [];
-	if(usedNames.length === 0){
+	const usedNames = [];
+	if (usedNames.length === 0) {
 		Object.values(V.children).forEach(child => {
-			if(!usedNames.includes(child.name) && child.childId !== childId && child.name !== "Unnamed"){
+			if (!usedNames.includes(child.name) && child.childId !== childId && child.name !== "Unnamed") {
 				usedNames.push(child.name);
 			}
-		})
+		});
 	}
 	if (!!name && name !== "" && name !== "Unnamed") {
 		result = name.replace(/[^a-zA-ZÀ-ÿ ]+/g, "").substring(0, 30);
-		if(usedNames.includes(result)){
-			result += ' - ' + childId;
+		if (usedNames.includes(result)) {
+			result += " - " + childId;
 		}
 		return result;
 	}
@@ -32,221 +34,228 @@ function generateBabyName(name, gender, childId) {
 	names.delete(usedNames);
 
 	result = names[random(0, names.length - 1)];
-	if(!result) result = "Unnamed";
+	if (!result) result = "Unnamed";
 	return result;
 }
 window.generateBabyName = generateBabyName;
 
-window.spermObjectToArray = (spermObject = {}, player) => {
-	let spermArray = [];
-	let trackedNPCs = [];
+function spermObjectToArray(spermObject = [], player) {
+	const spermArray = [];
+	const trackedNPCs = [];
+	for (const sperm of spermObject) {
+		if (V.NPCNameList.includes(sperm.source) && !setup.npcPregnancy.canImpregnatePlayer.includes(sperm.source)) continue;
 
-	for(let npc in spermObject){
-		if(V.NPCNameList.includes(npc) && !setup.npcPregnancy.canImpregnatePlayer.includes(npc)) continue;
-		let sperm = spermObject[npc];
-		let spermType;
-		switch(sperm.type){
+		switch (sperm.type) {
 			case "human":
-				if(V.playerPregnancyHumanDisable === "t" && player) continue;
-				spermType = "human";
-			break;
-			case "wolf": case "wolfboy": case "wolfgirl":
-				if(V.playerPregnancyBeastDisable === "t" && player) continue;
-				spermType = "wolf";
-			break;
-			default: continue;
+				if (V.playerPregnancyHumanDisable === "t" && player) continue;
+				break;
+			case "wolf":
+			case "wolfboy":
+			case "wolfgirl":
+				if (V.playerPregnancyBeastDisable === "t" && player) continue;
+				break;
+			default:
+				continue;
 		}
-		if(!trackedNPCs.includes(npc)) trackedNPCs.push([spermType, npc]);
-		let count = sperm.count.length < 500 ? sperm.count.length : 500;
-		for(let i = 0; i < count; i++){
-			if(sperm.count[i][2] < random(0,100)) continue;
-			let count2 = sperm.count[i][1] < 500 ? sperm.count[i][1] : 500;
-			for(let j = 0; j < count2; j++){
-				spermArray.push([sperm.type, npc]);
-				if(sperm.count[i][2] > random(100,200)) spermArray.push([sperm.type, npc]);
-			}
+
+		if (!trackedNPCs.includes(sperm.source)) trackedNPCs.push({ type: sperm.Type, source: sperm.source });
+		for (let i = 0, l = sperm.quantity; i < l; i++) {
+			if (sperm.mod < random(0, 100)) continue;
+
+			spermArray.push({ type: sperm.type, source: sperm.source });
+			if (sperm.mod > random(100, 200)) spermArray.push({ type: sperm.type, source: sperm.source });
 		}
 	}
 	return [trackedNPCs, spermArray];
 }
+window.spermObjectToArray = spermObjectToArray;
 
-/*V.pregnancytype === "fetish" uses this function*/
-const fetishPregnancy = ({genital = "vagina", target = null, spermOwner = null, spermType, rngModifier = 100, quantity = 1}) => {
-	let motherObject = npcPregObject(target);
-	const [pregnancy, fertility, magicTattoo] = pregPrep({motherObject, genital});
+/* V.pregnancytype === "fetish" uses this function */
+function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null, spermType, rngModifier = 100, quantity = 1 }) {
+	const motherObject = npcPregObject(target);
+	const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital });
 
-	//Check the cycle settings
+	// Check the cycle settings
 	let multi = 1;
-	if(V.cycledisable === "f"){
-		if(target === "pc"){
-			let menstruation = V.sexStats.vagina.menstruation;
-			if(menstruation.currentState !== "normal") return null;
-			let diff = Math.abs(menstruation.stages[2] - menstruation.currentDay);
-			multi = Math.clamp((diff > 1 ? 1 - (diff * 0.15) : 1),0,1);
-		} else if(C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled){
-			let diff = Math.abs(pregnancy.cycleDangerousDay - pregnancy.cycleDay);
-			multi = Math.clamp((diff > 1 ? 1 - (diff * 0.15) : 1),0,1);
+	if (V.cycledisable === "f") {
+		if (target === "pc") {
+			const menstruation = V.sexStats.vagina.menstruation;
+			if (menstruation.currentState !== "normal") return null;
+			const diff = Math.abs(menstruation.stages[2] - menstruation.currentDay);
+			multi = Math.clamp(diff > 1 ? 1 - diff * 0.15 : 1, 0, 1);
+		} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled) {
+			const diff = Math.abs(pregnancy.cycleDangerousDay - pregnancy.cycleDay);
+			multi = Math.clamp(diff > 1 ? 1 - diff * 0.15 : 1, 0, 1);
 		}
 	} else {
-		//Other non-cycle modifiers
-		if(target === "pc"){
-			let menstruation = V.sexStats.vagina.menstruation;
+		// Other non-cycle modifiers
+		if (target === "pc") {
+			const menstruation = V.sexStats.vagina.menstruation;
 			multi = 1 / Math.pow(4, menstruation.nonCycleRng[0]);
-		} else if(C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled){
+		} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled) {
 			multi = 1 / Math.pow(4, C.npc[target].pregnancy.nonCycleRng[0]);
 		}
 	}
 
-	if(pregnancy && pregnancy.type === null){
-		let chance = 100 / (target === "pc" ? 100 - V.baseVaginalPregnancyChance : 20 - V.baseNpcPregnancyChance);
+	if (pregnancy && pregnancy.type === null) {
+		const chance = 100 / (target === "pc" ? 100 - V.baseVaginalPregnancyChance : 20 - V.baseNpcPregnancyChance);
 
-		if(chance * quantity * (rngModifier / 100) * (1 + fertility + magicTattoo) * multi < random(1,100) - 15) return false;
+		if (chance * quantity * (rngModifier / 100) * (1 + fertility + magicTattoo) * multi < random(1, 100) - 15) return false;
 
-		if(target === "pc"){
-			let result = playerPregnancy(spermOwner, spermType, true, genital, undefined, true);
-			if(result === true) T.playerIsPregnant = true;
-		}else if(C.npc[target]){
-			let result = namedNpcPregnancy(target, spermOwner, spermType, true);
-			if(result === true) T.npcIsPregnant = true;
+		if (target === "pc") {
+			const result = playerPregnancy(spermOwner, spermType, true, genital, undefined, true);
+			if (result === true) T.playerIsPregnant = true;
+		} else if (C.npc[target]) {
+			const result = namedNpcPregnancy(target, spermOwner, spermType, true);
+			if (result === true) T.npcIsPregnant = true;
 		}
 		return true;
 	}
 	return false;
 }
 
-/*Player pregnancy starts here */
-/*ToDo: Pregnancy - remove the ` || !V.pregnancyTesting` part of the check*/
-/*V.pregnancytype === "realistic" uses this function*/
-const playerPregnancyAttempt = (baseMulti = 1, genital = "vagina") => {
-	let pregnancy = V.sexStats[genital].pregnancy;
+/* Player pregnancy starts here */
+/* ToDo: Pregnancy - remove the ` || !V.pregnancyTesting` part of the check */
+/* V.pregnancytype === "realistic" uses this function */
+function playerPregnancyAttempt(baseMulti = 1, genital = "vagina") {
+	const pregnancy = V.sexStats[genital].pregnancy;
 
-	if(pregnancy.fetus.length || isNaN(baseMulti) || baseMulti < 1 || !V.pregnancyTesting || V.pregnancytype !== "realistic") return false;
+	if (pregnancy.fetus.length || isNaN(baseMulti) || baseMulti < 1 || !V.pregnancyTesting || V.pregnancytype !== "realistic") return false;
 
-	let [trackedNPCs, spermArray] = spermObjectToArray(V.sexStats[genital].sperm, true);
+	const [trackedNPCs, spermArray] = spermObjectToArray(V.sexStats[genital].sperm, true);
 
-	let pills = V.sexStats.pills;
-	let lastPillsTaken = pills.lastTaken.pregnancy;
-	let contraceptive = lastPillsTaken === "contraceptive" ? pills.pills[lastPillsTaken].doseTaken : 0;
+	const pills = V.sexStats.pills;
+	const lastPillsTaken = pills.lastTaken.pregnancy;
+	const contraceptive = lastPillsTaken === "contraceptive" ? pills.pills[lastPillsTaken].doseTaken : 0;
 
-	if(spermArray.length === 0 || (contraceptive && (random(0,100) >= 10 || contraceptive > 1))) return false;
+	if (spermArray.length === 0 || (contraceptive && (random(0, 100) >= 10 || contraceptive > 1))) return false;
 	let fertilityBoost = 1;
-	if(lastPillsTaken === "fertility booster"){
-		fertilityBoost -= Math.clamp((boosterPillsTaken * 0.2), 0, 0.7);
+	if (lastPillsTaken === "fertility booster") {
+		fertilityBoost -= Math.clamp(pills.pills[lastPillsTaken].doseTaken * 0.2, 0, 0.7);
 	}
-	if(V.skin.pubic.pen === "magic" && V.skin.pubic.special === "pregnancy"){
+	if (V.skin.pubic.pen === "magic" && V.skin.pubic.special === "pregnancy") {
 		fertilityBoost -= 0.4;
 	}
-	let baseChance = Math.floor((100 - V.baseVaginalPregnancyChance) * Math.clamp(fertilityBoost, 0.1, 1) * baseMulti);
-	let rng = random(0, spermArray.length - 1 > baseChance ? spermArray.length - 1 : baseChance);
+	const baseChance = Math.floor((100 - V.baseVaginalPregnancyChance) * Math.clamp(fertilityBoost, 0.1, 1) * baseMulti);
+	const rng = random(0, spermArray.length - 1 > baseChance ? spermArray.length - 1 : baseChance);
 
-	if(spermArray[rng]){
-		let fatherKnown = Object.keys(trackedNPCs).length === 1;
+	if (spermArray[rng]) {
+		const fatherKnown = Object.keys(trackedNPCs).length === 1;
 
-		//Player becomes pregnant
-		return playerPregnancy(spermArray[rng][1], spermArray[rng][0], fatherKnown, genital, trackedNPCs);
+		// Player becomes pregnant
+		return playerPregnancy(spermArray[rng].source, spermArray[rng].type, fatherKnown, genital, trackedNPCs);
 	}
 	return false;
 }
 DefineMacro("playerPregnancyAttempt", playerPregnancyAttempt);
-window.playerPregnancyAttemptTest = (baseMulti, genital) => {if(V.pregnancyTesting) return playerPregnancyAttempt(baseMulti, genital);};//V.pregnancyTesting Check should not be removed, debugging purposes only
+window.playerPregnancyAttemptTest = (baseMulti, genital) => {
+	if (V.pregnancyTesting) return playerPregnancyAttempt(baseMulti, genital);
+}; // V.pregnancyTesting Check should not be removed, debugging purposes only
 
 const playerPregnancy = (npc, npcType, fatherKnown = false, genital = "vagina", trackedNPCs, awareOf = false) => {
-	if(V.playerPregnancyHumanDisable === "t" && npcType === "human") return false;//Human player pregnancy disabled
-	if(V.playerPregnancyBeastDisable === "t" && npcType !== "human") return false;//Beast player pregnancy disabled
-	let pregnancy = clone(V.sexStats[genital].pregnancy);
+	if (V.playerPregnancyHumanDisable === "t" && npcType === "human") return false; // Human player pregnancy disabled
+	if (V.playerPregnancyBeastDisable === "t" && npcType !== "human") return false; // Beast player pregnancy disabled
+	const pregnancy = clone(V.sexStats[genital].pregnancy);
 	let newPregnancy;
 	let backupSpermType;
 
-	switch(npcType){
+	switch (npcType) {
 		case "human":
 			newPregnancy = pregnancyGenerator.human("pc", npc, fatherKnown, genital);
 			backupSpermType = "human";
-		break;
+			break;
 		case "wolf":
 			newPregnancy = pregnancyGenerator.wolf("pc", npc, fatherKnown, genital);
 			backupSpermType = "wolf";
-		break;
-		case "wolfboy": case "wolfgirl":
+			break;
+		case "wolfboy":
+		case "wolfgirl":
 			newPregnancy = pregnancyGenerator.wolf("pc", npc, fatherKnown, genital, true);
 			backupSpermType = "wolf";
-		break;
+			break;
 	}
-	if(newPregnancy && !(typeof newPregnancy === 'string' || newPregnancy instanceof String) && newPregnancy.fetus.length){
+	if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String) && newPregnancy.fetus.length) {
 		V.sexStats[genital].pregnancy = {
 			...pregnancy,
 			...newPregnancy,
-			potentialFathers: trackedNPCs || [[backupSpermType,npc]],
-			waterBreakingTimer: random(0,24),
+			potentialFathers: trackedNPCs || [{ type: backupSpermType, source: npc }],
+			waterBreakingTimer: random(0, 24),
 			waterBreaking: false,
-			awareOf: awareOf,
-		}
+			awareOf,
+		};
 		V.sexStats.vagina.menstruation.currentState = "pregnant";
 		return true;
 	}
 	return false;
-}
+};
 DefineMacro("playerPregnancy", playerPregnancy);
-window.playerPregnancyTest = (npc, npcType, fatherKnown, genital, trackedNPCs, awareOf) => {if(V.pregnancyTesting) return playerPregnancy(npc, npcType, fatherKnown, genital, trackedNPCs, awareOf);};//V.pregnancyTesting Check should not be removed, debugging purposes only
+window.playerPregnancyTest = (npc, npcType, fatherKnown, genital, trackedNPCs, awareOf) => {
+	if (V.pregnancyTesting) return playerPregnancy(npc, npcType, fatherKnown, genital, trackedNPCs, awareOf);
+}; // V.pregnancyTesting Check should not be removed, debugging purposes only
 
-const pregnancyProgress = (genital = "vagina") => {
-	let pregnancy = V.sexStats[genital].pregnancy;
-	if(!pregnancy || pregnancy.type === null || pregnancy.type === "parasites") return null;
+function pregnancyProgress(genital = "vagina") {
+	const pregnancy = V.sexStats[genital].pregnancy;
+	if (!pregnancy || pregnancy.type === null || pregnancy.type === "parasites") return null;
 
-	if(pregnancy.timer < pregnancy.timerEnd){
+	if (pregnancy.timer < pregnancy.timerEnd) {
 		let multiplier = 1;
-		switch(pregnancy.type){
-			case "human": multiplier = (1/(1/9*V.humanPregnancyMonths)); break;
-			case "wolf": multiplier = (1/(1/12*V.wolfPregnancyWeeks)); break;
+		switch (pregnancy.type) {
+			case "human":
+				multiplier = 1 / ((1 / 9) * V.humanPregnancyMonths);
+				break;
+			case "wolf":
+				multiplier = 1 / ((1 / 12) * V.wolfPregnancyWeeks);
+				break;
 		}
-		//The `0.5 * ` is because it runs at both midnight and noon
+		// The `0.5 * ` is because it runs at both midnight and noon
 		pregnancy.timer += parseFloat((0.5 * multiplier).toFixed(3));
 
-		/*Keeping fatigue low should help morning sickness*/
-		if(between(pregnancy.timer / pregnancy.timerEnd, 0.15, 0.25)){
-			/*Early Morning sickness*/
-			/*Light Nausea/dizzyness at any time of day, but mostly when waking up*/
-			if(random(0,100) >= 30){
+		/* Keeping fatigue low should help morning sickness */
+		if (between(pregnancy.timer / pregnancy.timerEnd, 0.15, 0.25)) {
+			/* Early Morning sickness */
+			/* Light Nausea/dizzyness at any time of day, but mostly when waking up */
+			if (random(0, 100) >= 30) {
 				V.pregnancyStats.morningSicknessWaking = 1;
 			}
-			if(random(0,100) >= 30){
+			if (random(0, 100) >= 30) {
 				V.pregnancyStats.morningSicknessGeneral = 1;
 			}
-		} else if(between(pregnancy.timer / pregnancy.timerEnd, 0.24, 0.45)){
-			/*Morning sickness*/
-			/*Nausea/dizzyness at any time of day, but mostly when waking up*/
-			/*First pregnancy should be worse*/
-			V.pregnancyStats.morningSicknessWaking = [1,2,2][random(0,2)];
-			if(pregnancy.totalBirthEvents === 0 && V.pregnancyStats.morningSicknessWaking < 2){
+		} else if (between(pregnancy.timer / pregnancy.timerEnd, 0.24, 0.45)) {
+			/* Morning sickness */
+			/* Nausea/dizzyness at any time of day, but mostly when waking up */
+			/* First pregnancy should be worse */
+			V.pregnancyStats.morningSicknessWaking = [1, 2, 2][random(0, 2)];
+			if (pregnancy.totalBirthEvents === 0 && V.pregnancyStats.morningSicknessWaking < 2) {
 				V.pregnancyStats.morningSicknessWaking = 2;
 			}
 		}
-		if(pregnancy.timer >= pregnancy.timerEnd){
-			if(V.player.breastsize <= 4 && V.player.breastsize < V.breastsizemax){
+		if (pregnancy.timer >= pregnancy.timerEnd) {
+			if (V.player.breastsize <= 4 && V.player.breastsize < V.breastsizemax) {
 				V.player.breastsize += 1;
-				if(V.player.breastsize <= 4 && V.player.breastsize < V.breastsizemax) V.player.breastsize += 1;
+				if (V.player.breastsize <= 4 && V.player.breastsize < V.breastsizemax) V.player.breastsize += 1;
 				V.breastgrowthtimer = 700;
 				V.breastgrowthmessage = V.player.breastsize;
 				V.effectsmessage = 1;
 			}
-			if(V.lactating !== 1 && V.player.breastsize > 0){
+			if (V.lactating !== 1 && V.player.breastsize > 0) {
 				V.lactating = 1;
 				V.lactation_pressure = 100;
-				Wikifier.wikifyEval('<<milkvolume 50>>');
+				Wikifier.wikifyEval("<<milkvolume 50>>");
 				V.effectsmessage = 1;
 				V.lactationmessage = 1;
 			}
 		}
-	}	
+	}
 }
-DefineMacro("pregnancyProgress",pregnancyProgress);
+DefineMacro("pregnancyProgress", pregnancyProgress);
 
-const playerEndWaterProgress = (genital = "vagina") => {
-	let pregnancy = V.sexStats[genital].pregnancy;
-	if(!pregnancy || pregnancy.type === null || pregnancy.type === "parasites" || pregnancy.timer < pregnancy.timerEnd) return null;
+function playerEndWaterProgress(genital = "vagina") {
+	const pregnancy = V.sexStats[genital].pregnancy;
+	if (!pregnancy || pregnancy.type === null || pregnancy.type === "parasites" || pregnancy.timer < pregnancy.timerEnd) return null;
 
-	if(!isNaN(pregnancy.waterBreakingTimer) && pregnancy.waterBreakingTimer > 0){
+	if (!isNaN(pregnancy.waterBreakingTimer) && pregnancy.waterBreakingTimer > 0) {
 		pregnancy.waterBreakingTimer--;
-		if(pregnancy.waterBreakingTimer <= 0){
+		if (pregnancy.waterBreakingTimer <= 0) {
 			pregnancy.waterBreaking = true;
 			return true;
 		}
@@ -255,8 +264,8 @@ const playerEndWaterProgress = (genital = "vagina") => {
 }
 DefineMacro("playerEndWaterProgress", playerEndWaterProgress);
 
-//Used only when the player is about to give birth to their children and the player can name them
-const playerEndWaterBreaking = () => {
+// Used only when the player is about to give birth to their children and the player can name them
+function playerEndWaterBreaking() {
 	V.sexStats.vagina.pregnancy.waterBreaking = null;
 	V.sexStats.vagina.pregnancy.waterBreakingTimer = null;
 	V.sexStats.anus.pregnancy.waterBreaking = null;
@@ -264,36 +273,37 @@ const playerEndWaterBreaking = () => {
 }
 DefineMacro("playerEndWaterBreaking", playerEndWaterBreaking);
 
-const endPlayerPregnancy = (birthLocation, location) => {
+function endPlayerPregnancy(birthLocation, location) {
 	let type;
-	if(V.player.vaginaExist){
+	if (V.player.vaginaExist) {
 		type = "vagina";
-	}else{
+	} else {
 		type = "anus";
 	}
-	let pregnancy = V.sexStats[type].pregnancy;
-	let menstruation = V.sexStats.vagina.menstruation;
+	const pregnancy = V.sexStats[type].pregnancy;
+	const menstruation = V.sexStats.vagina.menstruation;
 
-	if(!pregnancy || !pregnancy.fetus.length) return false;
+	if (!pregnancy || !pregnancy.fetus.length) return false;
 
 	giveBirthToChildren("pc", birthLocation, location);
 
-	if(pregnancy.potentialFathers.filter(npc => npc[0] === pregnancy.type).length >= 5) Wikifier.wikifyEval('<<earnFeat "Bicycle Mother">>');
+	if (pregnancy.potentialFathers.filter(npc => npc.type === pregnancy.type).length >= 5) Wikifier.wikifyEval('<<earnFeat "Bicycle Mother">>');
 
-	switch(pregnancy.type){
+	switch (pregnancy.type) {
 		case "human":
 			V.pregnancyStats.humanToysUnlocked = true;
-			menstruation.recoveryTime = random(2,3) * V.humanPregnancyMonths;
-			if(pregnancy.fetus.length === 3) Wikifier.wikifyEval('<<earnFeat "Life Comes in Threes">>');
-		break;
+			menstruation.recoveryTime = random(2, 3) * V.humanPregnancyMonths;
+			if (pregnancy.fetus.length === 3) Wikifier.wikifyEval('<<earnFeat "Life Comes in Threes">>');
+			break;
 		case "wolf":
 			V.pregnancyStats.wolfToysUnlocked = true;
-			menstruation.recoveryTime = random(1,2) * V.wolfPregnancyWeeks;
-		break;
+			menstruation.recoveryTime = random(1, 2) * V.wolfPregnancyWeeks;
+			break;
 	}
 
-	if((V.player.virginity.anal === true && !V.player.vaginaExist) || (V.player.virginity.vaginal === true && V.player.vaginaExist)) Wikifier.wikifyEval('<<earnFeat "Miracle of Life">>');
-	if(!V.player.vaginaExist) Wikifier.wikifyEval('<<earnFeat "Life begins when you least expect">>');
+	if ((V.player.virginity.anal === true && !V.player.vaginaExist) || (V.player.virginity.vaginal === true && V.player.vaginaExist))
+		Wikifier.wikifyEval('<<earnFeat "Miracle of Life">>');
+	if (!V.player.vaginaExist) Wikifier.wikifyEval('<<earnFeat "Life begins when you least expect">>');
 
 	V.sexStats[type].pregnancy = {
 		...pregnancy,
@@ -308,7 +318,7 @@ const endPlayerPregnancy = (birthLocation, location) => {
 		awareOf: null,
 		awareOfDetails: null,
 		potentialFathers: [],
-	}
+	};
 
 	V.sexStats.vagina.menstruation = {
 		...menstruation,
@@ -317,158 +327,179 @@ const endPlayerPregnancy = (birthLocation, location) => {
 		recoveryStage: 0,
 		periodEnabled: false,
 		awareOfPeriodDelay: false,
-	}
+	};
 	return true;
 }
 DefineMacro("endPlayerPregnancy", endPlayerPregnancy);
-window.endPlayerPregnancyTest = (birthLocation, location) => {if(V.pregnancyTesting && birthLocation && location) return endPlayerPregnancy(birthLocation, location);};//V.pregnancyTesting Check should not be removed, debugging purposes only
-/*Player pregnancy ends here */
+window.endPlayerPregnancyTest = (birthLocation, location) => {
+	if (V.pregnancyTesting && birthLocation && location) return endPlayerPregnancy(birthLocation, location);
+}; // V.pregnancyTesting Check should not be removed, debugging purposes only
+/* Player pregnancy ends here */
 
-/*Named NPC pregnancy starts here*/
-/*ToDo: NPC Pregnancy - run in time.twee, should only run once per day, update where required*/
-const npcPregnancyCycle = () => {
-	for(const npcName in V.NPCNameList){
-		let npc = C.npc[npcName];
-		let pregnancy = npc.pregnancy;
-		if(!pregnancy || pregnancy.enabled === undefined) return false;
+/* Named NPC pregnancy starts here */
+/* ToDo: NPC Pregnancy - run in time.twee, should only run once per day, update where required */
+function npcPregnancyCycle() {
+	for (const npcName in V.NPCNameList) {
+		const npc = C.npc[npcName];
+		const pregnancy = npc.pregnancy;
+		if (!pregnancy || pregnancy.enabled === undefined) return false;
 
-		if(pregnancy.fetus.length){
+		if (pregnancy.fetus.length) {
 			let multiplier = 1;
-			switch(pregnancy.type){
-				case "human": multiplier = (1/(1/9*V.humanPregnancyMonths)); break;
-				case "wolf": multiplier = (1/(1/12*V.wolfPregnancyWeeks)); break;
+			switch (pregnancy.type) {
+				case "human":
+					multiplier = 1 / ((1 / 9) * V.humanPregnancyMonths);
+					break;
+				case "wolf":
+					multiplier = 1 / ((1 / 12) * V.wolfPregnancyWeeks);
+					break;
 			}
 			pregnancy.timer += parseFloat(multiplier.toFixed(3));
-			if(pregnancy.timer > pregnancy.timerEnd * 0.2 && !pregnancy.npcAwareOf){
+			if (pregnancy.timer > pregnancy.timerEnd * 0.2 && !pregnancy.npcAwareOf) {
 				pregnancy.npcAwareOf = true;
 			}
-			if(pregnancy.timer > pregnancy.timerEnd){
-				if(pregnancy.timer >= pregnancy.timerEnd + (14 * multiplier)){
-					/*ToDo: NPC Pregnancy*/
-					/*Player has not seen the npc recently, sort out the pregnancy in another way*/
+			if (pregnancy.timer > pregnancy.timerEnd) {
+				if (pregnancy.timer >= pregnancy.timerEnd + 14 * multiplier) {
+					/* ToDo: NPC Pregnancy */
+					/* Player has not seen the npc recently, sort out the pregnancy in another way */
 				} else {
-					/*Can deal with the npc in the next event*/
+					/* Can deal with the npc in the next event */
 					pregnancy.waterBreaking = true;
 				}
 			}
-		} else if(pregnancy.enabled && V.npcPregnancyDisable === "f") {
-			if(V.cycledisable === "f"){
+		} else if (pregnancy.enabled && V.npcPregnancyDisable === "f") {
+			if (V.cycledisable === "f") {
 				pregnancy.cycleDay++;
-				if(pregnancy.cycleDay >= pregnancy.cycleDaysTotal){
+				if (pregnancy.cycleDay >= pregnancy.cycleDaysTotal) {
 					pregnancy.cycleDay = 1;
-				} else if(between(pregnancy.cycleDay, pregnancy.cycleDangerousDay - 1, pregnancy.cycleDangerousDay + 1)){
+				} else if (between(pregnancy.cycleDay, pregnancy.cycleDangerousDay - 1, pregnancy.cycleDangerousDay + 1)) {
 					namedNpcPregnancyAttempt(npcName);
 				}
-			}else{
-				pregnancy.nonCycleRng.push(random(0,4));
+			} else {
+				pregnancy.nonCycleRng.push(random(0, 4));
 				pregnancy.nonCycleRng.deleteAt(0);
 			}
 		}
 		updateRecordedSperm("vagina", npcName, 1);
-	} 
+	}
 }
 DefineMacro("npcPregnancyCycle", npcPregnancyCycle);
 
-/*V.pregnancytype === "realistic" uses this function*/
-const namedNpcPregnancyAttempt = (npcName) => {
-	if(!C.npc[npcName] || C.npc[npcName].vagina === "none" || V.pregnancytype !== "realistic") return false;
-	
-	let namedNpc = C.npc[npcName];
-	let pregnancy = namedNpc.pregnancy;
-	if(pregnancy || !pregnancy.enabled || pregnancy.fetus.length){
-		//Pregnancy not supported or disabled by the player, or when they are already pregnant
+/* V.pregnancytype === "realistic" uses this function */
+function namedNpcPregnancyAttempt(npcName) {
+	if (!C.npc[npcName] || C.npc[npcName].vagina === "none" || V.pregnancytype !== "realistic") return false;
+
+	const namedNpc = C.npc[npcName];
+	const pregnancy = namedNpc.pregnancy;
+	if (pregnancy || !pregnancy.enabled || pregnancy.fetus.length) {
+		// Pregnancy not supported or disabled by the player, or when they are already pregnant
 		return false;
 	}
-	let [trackedNPCs, spermArray] = spermObjectToArray(pregnancy.sperm, false);
+	const [trackedNPCs, spermArray] = spermObjectToArray(pregnancy.sperm, false);
 
-	let fertility = pregnancy.pills === "fertility" ? 0.8 : 1;
-	let contraceptive = pregnancy.pills === "contraceptive";
+	const fertility = pregnancy.pills === "fertility" ? 0.8 : 1;
+	const contraceptive = pregnancy.pills === "contraceptive";
 
-	let baseChance = Math.floor((20 - V.baseNpcPregnancyChance) * fertility);
-	let rng = random(0,(spermArray.length > baseChance ? spermArray.length : baseChance))
-	if(contraceptive && random(0,100) >= 10){
-		/*NPC doesn't get pregnant due to contraceptive*/
-	} else if(spermArray[rng]){
-		let fatherKnown = Object.keys(trackedNPCs).length === 1;
+	const baseChance = Math.floor((20 - V.baseNpcPregnancyChance) * fertility);
+	const rng = random(0, spermArray.length > baseChance ? spermArray.length : baseChance);
+	if (contraceptive && random(0, 100) >= 10) {
+		/* NPC doesn't get pregnant due to contraceptive */
+	} else if (spermArray[rng]) {
+		const fatherKnown = Object.keys(trackedNPCs).length === 1;
 
-		/*NPC gets pregnant*/
-		return namedNpcPregnancy(npcName, spermArray[rng][1], spermArray[rng][0], fatherKnown, trackedNPCs);
+		/* NPC gets pregnant */
+		return namedNpcPregnancy(npcName, spermArray[rng].source, spermArray[rng].type, fatherKnown, trackedNPCs);
 	}
 	return false;
 }
 
-const namedNpcPregnancy = (mother, father, fatherSpecies, fatherKnown = false, trackedNPCs, awareOf = false) => {
-	if(V.npcPregnancyDisable === "t") return false;//Npc pregnancy disabled
-	let namedNpc = C.npc[mother];
+function namedNpcPregnancy(mother, father, fatherSpecies, fatherKnown = false, trackedNPCs, awareOf = false) {
+	if (V.npcPregnancyDisable === "t") return false; // Npc pregnancy disabled
+	const namedNpc = C.npc[mother];
 	let namedNpcType;
-	switch(mother){
+	switch (mother) {
 		case "Black Wolf":
-			if((V.monsterchance > random(0,100) && (V.hallucinations >= 1 || V.monsterhallucinations === "f")) || (V.blackwolfmonster === 2)){
+			if ((V.monsterchance > random(0, 100) && (V.hallucinations >= 1 || V.monsterhallucinations === "f")) || V.blackwolfmonster === 2) {
 				namedNpcType = "wolfgirl";
-			}else{
+			} else {
 				namedNpcType = namedNpc.type;
 			}
-		break;
-		default: namedNpcType = namedNpc.type; break;
+			break;
+		default:
+			namedNpcType = namedNpc.type;
+			break;
 	}
 	let newPregnancy;
 	let backupSpermType;
-	switch(fatherSpecies + namedNpcType){
+	switch (fatherSpecies + namedNpcType) {
 		case "humanhuman":
 			newPregnancy = pregnancyGenerator.human(mother, father, fatherKnown, "vagina");
 			backupSpermType = "human";
-		break;
-		case "wolfhuman": case "humanwolf": case "wolfwolf":
+			break;
+		case "wolfhuman":
+		case "humanwolf":
+		case "wolfwolf":
 			newPregnancy = pregnancyGenerator.wolf(mother, father, fatherKnown, "vagina");
 			backupSpermType = "wolf";
-		break;
-		case "humanwolfboy": case "wolfboyhuman": case "wolfwolfboy": case "wolfboywolf": case "wolfboywolfboy": case "humanwolfgirl": case "wolfgirlhuman": case "wolfwolfgirl": case "wolfgirlwolf": case "girlwolfgirlwolf":
+			break;
+		case "humanwolfboy":
+		case "wolfboyhuman":
+		case "wolfwolfboy":
+		case "wolfboywolf":
+		case "wolfboywolfboy":
+		case "humanwolfgirl":
+		case "wolfgirlhuman":
+		case "wolfwolfgirl":
+		case "wolfgirlwolf":
+		case "girlwolfgirlwolf":
 			newPregnancy = pregnancyGenerator.wolf(mother, father, fatherKnown, "vagina", true);
 			backupSpermType = "wolf";
-		break;
+			break;
 	}
-	if(newPregnancy && !(typeof newPregnancy === 'string' || newPregnancy instanceof String) && newPregnancy.fetus.length){
+	if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String) && newPregnancy.fetus.length) {
 		namedNpc.pregnancy = {
 			...namedNpc.pregnancy,
 			...newPregnancy,
-			potentialFathers: trackedNPCs || [[backupSpermType,father]],
+			potentialFathers: trackedNPCs || [{ type: backupSpermType, source: father }],
 			npcAwareOf: false,
 			pcAwareOf: awareOf,
-		}
+		};
 		return true;
 	}
 	return false;
 }
 DefineMacro("namedNpcPregnancy", namedNpcPregnancy);
-window.namedNpcPregnancyTest = (mother, father, pregnancyType, fatherKnown, trackedNPCs, awareOf) => {if(V.pregnancyTesting) return namedNpcPregnancy(mother, father, pregnancyType, fatherKnown, trackedNPCs, awareOf);};//V.pregnancyTesting Check should not be removed, debugging purposes only
+window.namedNpcPregnancyTest = (mother, father, pregnancyType, fatherKnown, trackedNPCs, awareOf) => {
+	if (V.pregnancyTesting) return namedNpcPregnancy(mother, father, pregnancyType, fatherKnown, trackedNPCs, awareOf);
+}; // V.pregnancyTesting Check should not be removed, debugging purposes only
 
-const endNPCPregnancy = (npcName, birthLocation, location) => {
-	if(!C.npc[npcName] || C.npc[npcName].vagina === "none" || C.npc[npcName].pregnancy.enabled === undefined){
+function endNPCPregnancy(npcName, birthLocation, location) {
+	if (!C.npc[npcName] || C.npc[npcName].vagina === "none" || C.npc[npcName].pregnancy.enabled === undefined) {
 		return false;
 	}
-	let pregnancy = C.npc[npcName].pregnancy;
+	const pregnancy = C.npc[npcName].pregnancy;
 
-	if(!pregnancy || pregnancy.enabled === undefined || !pregnancy.fetus.length) return false;
+	if (!pregnancy || pregnancy.enabled === undefined || !pregnancy.fetus.length) return false;
 
 	giveBirthToChildren(npcName, birthLocation, location);
-	switch(pregnancy.type){
+	switch (pregnancy.type) {
 		case "human":
 			V.pregnancyStats.humanToysUnlocked = true;
-			menstruation.recoveryTime = random(2,3) * V.humanPregnancyMonths;
-		break;
+			// menstruation.recoveryTime = random(2, 3) * V.humanPregnancyMonths;
+			break;
 		case "wolf":
 			V.pregnancyStats.wolfToysUnlocked = true;
-			menstruation.recoveryTime = random(1,2) * V.wolfPregnancyWeeks;
-		break;
+			// menstruation.recoveryTime = random(1, 2) * V.wolfPregnancyWeeks;
+			break;
 	}
-	let birthEvents = clone(pregnancy.totalBirthEvents) + 1;
-	let cycleDay = clone(pregnancy.cycleDaysTotal) - 3;
+	const birthEvents = clone(pregnancy.totalBirthEvents) + 1;
+	const cycleDay = clone(pregnancy.cycleDaysTotal) - 3;
 
 	V.NPCName[V.NPCNameList.indexOf(npcName)].pregnancy = {
 		...pregnancy,
 		fetus: [],
 		bellySize: 0,
-		birthEvents: birthEvents,
+		birthEvents,
 		timer: null,
 		timerEnd: null,
 		waterBreaking: false,
@@ -476,193 +507,242 @@ const endNPCPregnancy = (npcName, birthLocation, location) => {
 		pcAwareOf: null,
 		type: null,
 		potentialFathers: [],
-		cycleDay: cycleDay,
-	}
+		cycleDay,
+	};
 
 	V.pregnancyStats.npcTotalBirthEvents++;
 	return true;
 }
 DefineMacro("endNPCPregnancy", endNPCPregnancy);
-window.endNPCPregnancyTest = (npcName, birthLocation, location) => {if(V.pregnancyTesting && npcName && birthLocation && location) return endNPCPregnancy(npcName, birthLocation, location);};//V.pregnancyTesting Check should not be removed, debugging purposes only
-/*Named NPC pregnancy ends here*/
+window.endNPCPregnancyTest = (npcName, birthLocation, location) => {
+	if (V.pregnancyTesting && npcName && birthLocation && location) return endNPCPregnancy(npcName, birthLocation, location);
+}; // V.pregnancyTesting Check should not be removed, debugging purposes only
+/* Named NPC pregnancy ends here */
 
-const giveBirthToChildren = (mother, birthLocation, location) => {
+function giveBirthToChildren(mother, birthLocation, location) {
 	let pregnancy;
-	if(mother === "pc"){
-		if(V.player.vaginaExist){
+	if (mother === "pc") {
+		if (V.player.vaginaExist) {
 			pregnancy = V.sexStats.vagina.pregnancy;
-		}else{
+		} else {
 			pregnancy = V.sexStats.anus.pregnancy;
 		}
-	} else if(C.npc[mother]) {
+	} else if (C.npc[mother]) {
 		pregnancy = C.npc[mother].pregnancy;
 	}
-	if(!pregnancy || !pregnancy.fetus.length) return false;
+	if (!pregnancy || !pregnancy.fetus.length) return false;
 
-	let birthId = (mother + (totalBirthEvents(mother))).replace(' ','');
+	const birthId = (mother + totalBirthEvents(mother)).replace(" ", "");
 
 	pregnancy.fetus.forEach(childObject => {
 		pregnancy.givenBirth++;
-		let childId = (mother + totalBorn(mother)).replace(' ','');
+		const childId = (mother + totalBorn(mother)).replace(" ", "");
 		V.children[childId] = {
 			...childObject,
 			name: generateBabyName(childObject.name, childObject.gender),
-			born: {day: clone(V.monthday), month: clone(V.month.toUpperFirst()), year: clone(V.year)},
-			birthId: birthId,
-			childId: childId,
-			location: location,
-			birthLocation: birthLocation,
-		}
-		if(childObject.mother === "pc"){
+			born: { day: clone(V.monthday), month: clone(V.month.toUpperFirst()), year: clone(V.year) },
+			birthId,
+			childId,
+			location,
+			birthLocation,
+		};
+		if (childObject.mother === "pc") {
 			V.pregnancyStats.playerChildren++;
-			switch(childObject.type){
-				case "human": V.pregnancyStats.humanChildren++; break;
-				case "wolf": V.pregnancyStats.wolfChildren++; break;
+			switch (childObject.type) {
+				case "human":
+					V.pregnancyStats.humanChildren++;
+					break;
+				case "wolf":
+					V.pregnancyStats.wolfChildren++;
+					break;
 			}
-		} else if(childObject.father === "pc"){
+		} else if (childObject.father === "pc") {
 			V.pregnancyStats.npcChildren++;
 		} else {
 			V.pregnancyStats.npcChildrenUnrelatedToPlayer++;
 		}
-	})
+	});
 	return true;
 }
 
-const totalBirthEvents = (mother) => {
-	if(mother === "pc") return V.sexStats.vagina.pregnancy.totalBirthEvents + V.sexStats.anus.pregnancy.totalBirthEvents;
-	if(C.npc(mother) && C.npc(mother).pregnancy) return C.npc(mother).pregnancy.totalBirthEvents || 0
+function totalBirthEvents(mother) {
+	if (mother === "pc") return V.sexStats.vagina.pregnancy.totalBirthEvents + V.sexStats.anus.pregnancy.totalBirthEvents;
+	if (C.npc(mother) && C.npc(mother).pregnancy) return C.npc(mother).pregnancy.totalBirthEvents || 0;
 }
 
-const totalBorn = (mother) => {
-	if(mother === "pc") return (V.sexStats.vagina.pregnancy.givenBirth + V.sexStats.anus.pregnancy.givenBirth) || 0;
-	if(C.npc(mother) && C.npc(mother).pregnancy) return C.npc(mother).pregnancy.givenBirth || 0;
+function totalBorn(mother) {
+	if (mother === "pc") return V.sexStats.vagina.pregnancy.givenBirth + V.sexStats.anus.pregnancy.givenBirth || 0;
+	if (C.npc(mother) && C.npc(mother).pregnancy) return C.npc(mother).pregnancy.givenBirth || 0;
 	return 0;
 }
 
-const recordSperm = ({genital = "vagina", target = null, spermOwner = null, spermType = null, daysTillRemovalOverride = null, rngModifier = 100, rngType, quantity}) => {
-	//ToDo: Pregnancy - remove the `V.pregnancyTesting` check
-	if(!V.pregnancyTesting) return null;
-	if(V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false;//Human player pregnancy disabled
-	if(V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false;//Beast player pregnancy disabled
-	if(V.npcPregnancyDisable === "t" && target !== "pc") return false;//Npc pregnancy disabled
-	if(!target || !spermOwner || !spermType || !["anus","vagina"].includes(genital)) return null;
+function recordSperm({
+	genital = "vagina",
+	target = null,
+	spermOwner = null,
+	spermType = null,
+	daysTillRemovalOverride = null,
+	rngModifier = 100,
+	rngType,
+	quantity = 1,
+}) {
+	// ToDo: Pregnancy - remove the `V.pregnancyTesting` check
+	if (!V.pregnancyTesting) return null;
+	if (V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false; // Human player pregnancy disabled
+	if (V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false; // Beast player pregnancy disabled
+	if (V.npcPregnancyDisable === "t" && target !== "pc") return false; // Npc pregnancy disabled
+	if (!target || !spermOwner || !spermType || !["anus", "vagina"].includes(genital)) return null;
 
-	if(V.pregnancytype === "fetish"){
-		//Sperm on the outside should not be able to get the player pregnant
-		if(rngType === "canWash") return null;
-		return fetishPregnancy({genital, target, spermOwner, spermType, rngModifier, quantity});
+	if (V.pregnancytype === "fetish") {
+		// Sperm on the outside should not be able to get the player pregnant
+		if (rngType === "canWash") return null;
+		return fetishPregnancy({ genital, target, spermOwner, spermType, rngModifier, quantity });
 	}
 
 	let sperm;
-	if(target === "pc") {
+	if (target === "pc") {
 		sperm = V.sexStats[genital].sperm;
-	}else if(C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled){
+	} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled) {
 		sperm = C.npc[target].pregnancy.sperm;
 	}
-	if(sperm){
-		if(sperm[spermOwner] === undefined){
-			sperm[spermOwner] = {type:spermType, count:[]};
-		}
-		let daysTillRemoval = daysTillRemovalOverride || random(4,8);
+	if (sperm) {
+		let daysTillRemoval = daysTillRemovalOverride || random(4, 8);
 
-		//Normal sperm should only last a day
-		if(V.cycledisable === "t") daysTillRemoval = Math.ceil(daysTillRemoval / 8);
+		// Normal sperm should only last a day
+		if (V.cycledisable === "t") daysTillRemoval = Math.ceil(daysTillRemoval / 8);
 
 		rngModifier = !isNaN(rngModifier) ? rngModifier : 100;
 
-		if(spermOwner === "pc"){
-			let pills = V.sexStats.pills;
-			let lastPillsTaken = pills.lastTaken.pregnancy;
-			switch(lastPillsTaken){
-				case "fertility booster": rngModifier += ((pills.pills[lastPillsTaken].doseTaken || 0) * 25); break;
-				case "contraceptive": rngModifier -= ((pills.pills[lastPillsTaken].doseTaken || 0) * 50); break;
-			}
-		}else if(C.npc[spermOwner] && C.npc[spermOwner].pregnancy){
-			switch(C.npc[spermOwner].pregnancy.pills){
-				case "fertility": rngModifier += 25; break;
-				case "contraceptive": rngModifier -= 50; break;
+		let spermOwnerName;
+		if (typeof spermOwner === "string" || spermOwner instanceof String) {
+			spermOwnerName = spermOwner;
+		} else if (C.npc[spermOwner.fullDescription]) {
+			spermOwnerName = spermOwner.fullDescription;
+		} else {
+			if (spermOwner.role && spermOwner.role !== "normal" && spermOwner.name_known) {
+				spermOwnerName = spermOwner.name + " the " + spermOwner.role;
+			} else {
+				spermOwnerName = spermOwner.fullDescription + (spermOwner.role && spermOwner.role !== "normal" ? " the " + spermOwner.role : "");
 			}
 		}
-		rngModifier = Math.clamp(rngModifier,0,200);
-		if(rngModifier === 0) return false;
 
-		//The  number in `1 + rngType`, the number should match the number of times `updatePlayerRecordedSperm` should not delete the `canWash` tag
-		switch(rngType){
-			case "canWash": rngType = 1 + rngType; break;
-			default: break;
+		if (spermOwnerName === "pc") {
+			const pills = V.sexStats.pills;
+			const lastPillsTaken = pills.lastTaken.pregnancy;
+			switch (lastPillsTaken) {
+				case "fertility booster":
+					rngModifier += (pills.pills[lastPillsTaken].doseTaken || 0) * 25;
+					break;
+				case "contraceptive":
+					rngModifier -= (pills.pills[lastPillsTaken].doseTaken || 0) * 50;
+					break;
+			}
+		} else if (C.npc[spermOwnerName] && C.npc[spermOwnerName].pregnancy) {
+			switch (C.npc[spermOwnerName].pregnancy.pills) {
+				case "fertility":
+					rngModifier += 25;
+					break;
+				case "contraceptive":
+					rngModifier -= 50;
+					break;
+			}
+		}
+		rngModifier = Math.clamp(rngModifier, 0, 200);
+		if (rngModifier === 0) return false;
+
+		// The  number in `1 + rngType`, the number should match the number of times `updatePlayerRecordedSperm` should not delete the `canWash` tag
+		switch (rngType) {
+			case "canWash":
+				rngType = 1 + rngType;
+				break;
+			default:
+				break;
 		}
 
-		let spermFound = sperm[spermOwner].count.find(s => s[0] === daysTillRemoval && s[2] === rngModifier && s[3] === rngType);
-		if(spermFound){
-			spermFound[1] += quantity || 1;
+		const spermFoundIndex = sperm.findIndex(
+			item =>
+				item.source === spermOwnerName &&
+				item.type === spermType &&
+				item.daysLeft === daysTillRemoval &&
+				item.mod === rngModifier &&
+				item.tag === rngType
+		);
+
+		if (spermFoundIndex !== -1) {
+			sperm[spermFoundIndex].quantity += quantity;
 			return true;
-		}else{
-			sperm[spermOwner].count.push([daysTillRemoval, quantity || 1]);
-			if(!isNaN(rngModifier)){
-				sperm[spermOwner].count.last().push(rngModifier);
-				if(rngType) sperm[spermOwner].count.last().push(rngType);
-			}
+		} else {
+			const newSperm = {
+				source: spermOwnerName,
+				type: spermType,
+				quantity,
+				daysLeft: daysTillRemoval,
+			};
+			if (rngType) newSperm.tag = rngType;
+			if (rngModifier) newSperm.mod = rngModifier;
+
+			sperm.push(newSperm);
 			return true;
 		}
 	}
 	return false;
 }
-DefineMacro("recordSperm",recordSperm);
-DefineMacro("recordVaginalSperm", (target, spermOwner, spermType,daysTillRemovalOverride) => recordSperm({target:target, spermOwner:spermOwner, spermType:spermType, daysTillRemovalOverride:daysTillRemovalOverride}));
-DefineMacro("recordAnusSperm", (target, spermOwner, spermType,daysTillRemovalOverride) => recordSperm({genital:"anus", target:target, spermOwner:spermOwner, spermType:spermType, daysTillRemovalOverride:daysTillRemovalOverride}));
+DefineMacro("recordSperm", recordSperm);
+DefineMacro("recordVaginalSperm", (target, spermOwner, spermType, daysTillRemovalOverride) =>
+	recordSperm({ target, spermOwner, spermType, daysTillRemovalOverride })
+);
+DefineMacro("recordAnusSperm", (target, spermOwner, spermType, daysTillRemovalOverride) =>
+	recordSperm({ genital: "anus", target, spermOwner, spermType, daysTillRemovalOverride })
+);
 
-//Period is `1 divided how many timers per day the function is run`
-const updateRecordedSperm = (genital, target, period = 1) => {
-	//ToDo: Pregnancy - remove the `V.pregnancyTesting` check
-	if(!V.pregnancyTesting) return null;
+// Period is `1 divided how many timers per day the function is run`
+function updateRecordedSperm(genital, target, period = 1) {
+	// ToDo: Pregnancy - remove the `V.pregnancyTesting` check
+	if (!V.pregnancyTesting) return null;
 
 	let sperm;
-	if(genital !== "vagina" && target !== "pc") return null;
-	if(target === "pc") {
+	if (genital !== "vagina" && target !== "pc") return null;
+	if (target === "pc") {
 		sperm = V.sexStats[genital].sperm;
-	}else if(C.npc[target] && C.npc[target].pregnancy && C.npc[target].enabled){
+	} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].enabled) {
 		sperm = C.npc[target].sperm;
 	}
-	if(sperm){
-		Object.values(sperm).forEach(s => {
-			s.count.forEach(count => {
-				count[0] -= period;
-				if(count[3] && count[3].includes("canWash") && !isNaN(parseInt(count[3]))){
-					let canWashCount = parseInt(count[3]);
-					canWashCount--;
-					if(canWashCount >= 0){
-						count[3] = canWashCount + "canWash";
-					}else{
-						count[3] = 0;
-					}
+	if (sperm) {
+		sperm.forEach(s => {
+			s.daysLeft -= period;
+
+			if (s.tag && s.tag.includes("canWash") && !isNaN(parseInt(s.tag))) {
+				let canWashCount = parseInt(s.tag);
+				canWashCount--;
+				if (canWashCount >= 0) {
+					s.tag = canWashCount + "canWash";
+				} else {
+					s.tag = "";
 				}
-			});
-			//Delete sperm that has passed it's lifespan
-			s.count = s.count.filter(count => count[0] > 0);
-		})
-	}
-}
-DefineMacro("updateRecordedSperm",updateRecordedSperm);
-
-const washRecordedSperm = (genital, target) => {
-	let sperm;
-	if(genital !== "vagina" && target !== "pc") return null;
-	if(target === "pc") {
-		sperm = V.sexStats[genital].sperm;
-	}else if(C.npc[target] && C.npc[target].pregnancy && C.npc[target].enabled){
-		sperm = C.npc[target].sperm;
-	}
-	if(sperm){
-		Object.values(sperm).forEach(s => {
-			//Delete sperm thats been washed in time
-			s.count = s.count.filter(count => !count[3] || count[3] && !count[3].includes("canWash"));
+			}
 		});
+
+		// Remove sperm that is too old now
+		if (target === "pc") {
+			V.sexStats[genital].sperm = sperm.filter(s => s.daysLeft > 0);
+		} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].enabled) {
+			C.npc[target].sperm = sperm.filter(s => s.daysLeft > 0);
+		}
 	}
 }
-DefineMacro("washRecordedSperm",washRecordedSperm);
+DefineMacro("updateRecordedSperm", updateRecordedSperm);
 
+function washRecordedSperm(genital, target) {
+	if (genital !== "vagina" && target !== "pc") return null;
+	if (target === "pc") {
+		V.sexStats[genital].sperm = V.sexStats[genital].sperm.filter(s => !s.tag || (s.tag && !s.tag.includes("canWash")));
+	} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].enabled) {
+		C.npc[target].sperm = C.npc[target].sperm.filter(s => !s.tag || (s.tag && !s.tag.includes("canWash")));
+	}
+}
+DefineMacro("washRecordedSperm", washRecordedSperm);
 
-window.playerCanBreedWith = (npc) => {
+function playerCanBreedWith(npc) {
 	/* This function can accept either a named NPC's name, or an NPC object from either NPCList or NPCName.
 	 * Examples: playerCanBreedWith("Kylar"), or playerCanBreedWith($NPCList[0]) or playerCanBreedWith($NPCName[$NPCNameList.indexOf("Kylar")])
 	 * Returns true or false. If you give it garbage, like a totally wrong name, it'll return false, so be careful about silent failures like that.
@@ -672,17 +752,19 @@ window.playerCanBreedWith = (npc) => {
 
 	return (V.player.vaginaExist && npc.penis !== "none") || (V.player.penisExist && npc.vagina !== "none");
 }
+window.playerCanBreedWith = playerCanBreedWith;
 
-window.pregnancyCompatible = (NPC) => {
+function pregnancyCompatible(NPC) {
 	if (playerPregnancyPossibleWith(NPC) === false || NPCPregnancyPossibleWithPlayer(NPC) === false) return false;
 	return true;
 }
+window.pregnancyCompatible = pregnancyCompatible;
 
-window.playerPregnancyPossibleWith = (NPC) => {
+function playerPregnancyPossibleWith(NPC) {
 	/* Like the above function, this will accept either a named NPC's name, or an NPC object from either NPCList or NPCName.
-	* This one checks if the player could become pregnant, rather than the NPC.
-	* Returns true or false, as well as sets T.pregFalseReason, so writers can make events around the specific reason why a player and NPC might not be compatible for pregnancy at any given time.
-	*/
+	 * This one checks if the player could become pregnant, rather than the NPC.
+	 * Returns true or false, as well as sets T.pregFalseReason, so writers can make events around the specific reason why a player and NPC might not be compatible for pregnancy at any given time.
+	 */
 	T.pregFalseReason = "";
 	let NPCObject;
 	if (typeof NPC === "string" || V.NPCNameList.includes(NPC.fullDescription)) {
@@ -690,18 +772,17 @@ window.playerPregnancyPossibleWith = (NPC) => {
 		NPCObject = V.NPCName[V.NPCNameList.indexOf(typeof NPC === "string" ? NPC : NPC.fullDescription)];
 		const NPCNameCheck = NPCObject.fullDescription;
 		if (!C.npc[NPCNameCheck]) {
-			Errors.report(
-				"Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check."
-			); return false;
+			Errors.report("Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check.");
+			return false;
 		}
 		if (!NPCObject.pregnancy.enabled) {
 			T.pregFalseReason = "infertile";
 			return false; // Check for named NPC being "infertile"
-			//"this check is placed here because it only applies to named NPCs" - hwp told me to put this here
+			// "this check is placed here because it only applies to named NPCs" - hwp told me to put this here
 		}
 	}
-	if(!NPCObject) {
-		if(typeof NPC === 'object' && !Array.isArray(NPC) && NPC !== null){
+	if (!NPCObject) {
+		if (typeof NPC === "object" && !Array.isArray(NPC) && NPC !== null) {
 			NPCObject = NPC;
 		} else {
 			T.pregFalseReason = "invalidNpc";
@@ -713,31 +794,35 @@ window.playerPregnancyPossibleWith = (NPC) => {
 		return false; // Check if player is already pregnant
 	}
 	switch (NPCObject.type) {
-		case "human" :
+		case "human":
 			if (V.playerPregnancyHumanDisable === "t") {
 				T.pregFalseReason = "pregnantDisabled";
 				return false;
 			} else break; // Check Human and Beast pregnancy settings
-		case "wolf": case "bird":
+		case "wolf":
+		case "bird":
 			if (V.playerPregnancyBeastDisable === "t") {
 				T.pregFalseReason = "pregnantDisabled";
 				return false;
 			} else break;
-			// Check if NPC species can impregnate the player yet	
-		default: T.pregFalseReason = "pregnantTypeUnsupported"; return false;
+		// Check if NPC species can impregnate the player yet
+		default:
+			T.pregFalseReason = "pregnantTypeUnsupported";
+			return false;
 	}
-	if (!V.player.vaginaExist || NPCObject.gender === "f"){
+	if (!V.player.vaginaExist || NPCObject.gender === "f") {
 		T.pregFalseReason = "genitals";
 		return false; // Check for genital compatibility for player pregnancy
-	} 
+	}
 	return true;
 }
+window.playerPregnancyPossibleWith = playerPregnancyPossibleWith;
 
-window.NPCPregnancyPossibleWithPlayer = (NPC) => {
+function NPCPregnancyPossibleWithPlayer(NPC) {
 	/* Like the above function, this will accept either a named NPC's name, or an NPC object from either NPCList or NPCName.
-	* This one checks if the NPC could become pregnant, rather than the player.
-	* Returns true or false, as well as sets T.pregFalseReason, so writers can make events around the specific reason why a player and NPC might not be compatible for pregnancy at any given time.
-	*/
+	 * This one checks if the NPC could become pregnant, rather than the player.
+	 * Returns true or false, as well as sets T.pregFalseReason, so writers can make events around the specific reason why a player and NPC might not be compatible for pregnancy at any given time.
+	 */
 	T.pregFalseReason = "";
 	let NPCObject;
 	if (typeof NPC === "string" || V.NPCNameList.includes(NPC.fullDescription)) {
@@ -745,14 +830,13 @@ window.NPCPregnancyPossibleWithPlayer = (NPC) => {
 		NPCObject = V.NPCName[V.NPCNameList.indexOf(typeof NPC === "string" ? NPC : NPC.fullDescription)];
 		const NPCNameCheck = NPCObject.fullDescription;
 		if (!C.npc[NPCNameCheck]) {
-			Errors.report(
-				"Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check."
-			); return false;
+			Errors.report("Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check.");
+			return false;
 		}
 		if (!NPCObject.pregnancy.enabled) {
 			T.pregFalseReason = "infertile";
 			return false; // Check for named NPC being "infertile"
-			//"this check is placed here because it only applies to named NPCs" - hwp told me to put this here too
+			// "this check is placed here because it only applies to named NPCs" - hwp told me to put this here too
 		}
 		if (NPCObject.pregnancy.fetus.length) {
 			T.pregFalseReason = "npcPregnant";
@@ -769,29 +853,31 @@ window.NPCPregnancyPossibleWithPlayer = (NPC) => {
 		T.pregFalseReason = "pregnantDisabled";
 		return false; // Check if NPC pregnancy is enabled or possible in settings
 	}
-	if (!["human","wolf"].includes(NPCObject.type)){
+	if (!["human", "wolf"].includes(NPCObject.type)) {
 		T.pregFalseReason = "pregnantTypeUnsupported";
-		return false; // Check if NPC species can get impregnated by the player yet		
+		return false; // Check if NPC species can get impregnated by the player yet
 	}
 	if (!V.player.penisExist || NPCObject.gender === "m") {
 		T.pregFalseReason = "genitals";
 		return false; // Check for genital compatibility for NPC pregnancy
-	} 
+	}
 	return true;
 }
 window.NPCPregnancyPossibleWithPlayer = NPCPregnancyPossibleWithPlayer;
 
-window.wearingCondom = (npcNumber) => {
-    let condom;
-    if(!isNaN(npcNumber) && V.NPCList[npcNumber] && V.NPCList[npcNumber].condom){
-        condom = V.NPCList[npcNumber].condom;
-    }else if(npcNumber === "player"){
-        condom = V.player.condom;
-    }
-    if(condom && condom.worn){
-        if(condom.state === "defective") return "defective";
+// eslint-disable-next-line no-unused-vars
+function wearingCondom(npcNumber) {
+	let condom;
+	if (!isNaN(npcNumber) && V.NPCList[npcNumber] && V.NPCList[npcNumber].condom) {
+		condom = V.NPCList[npcNumber].condom;
+	} else if (npcNumber === "player") {
+		condom = V.player.condom;
+	}
+	if (condom && condom.worn) {
+		if (condom.state === "defective") return "defective";
 		if(condom.state === "sabotaged") return "sabotaged";
-        return "worn";
-    }
-    return false;
+		return "worn";
+	}
+	return false;
 }
+window.wearingCondom = wearingCondom;

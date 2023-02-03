@@ -171,7 +171,7 @@ You cry for help.
 <<if $phase is 0>>
 	You walk over to the Black Wolf and drop to your knees to stroke <<bhis>> head. <<bHe>> shakes you off, then presents <<bhis>> genitals to you.
 	<<if $monster is 1>>
-		"Angry. Help."
+		"Angry. Help.<<print ((playerHeatMinArousal() && (V.player.vaginaExist || canBeMPregnant()) && V.NPCList[0].penis !== "none") ? ' You ready.' : '')>>"
 	<</if>>
 <br><br>
 
@@ -181,6 +181,11 @@ You cry for help.
 	<<link [[Take in mouth|Wolf Cave Black Wolf]]>><<set $phase to 1>><<set $sexstart to 1>><</link>><<deviant4>>
 	<br>
 <</if>>
+<<if $wolfgirl gte 6 and $deviancy gte 75 and playerAwareTheyAreInHeat() and $NPCList[0].penis isnot "none" and !$worn.genitals.type.includes("hidden")>>
+	<<link [[Present your behind|Wolf Cave Black Wolf]]>><<set $phase to 2>><<set $sexstart to 1>><</link>><<deviant5>><<wolfgirl>><<heat>>
+	<br>
+<</if>>
+<br>
 <<link [[Refuse|Wolf Cave Calm]]>><<set $phase to 1>><</link>>
 <br>
 
@@ -216,12 +221,19 @@ You cry for help.
 	<<if $phase is 0>>
 		You reach beneath the <<beasttype>> and take it in your hand.
 		<<npchand>><<deviancy1>>
+	<<elseif $phase is 2>>
+		You turn round and present your <<print ($player.vaginaExist ? '<<pussy>>' : 'anus')>> to the <<beasttype>>.
+		<<npc_attempt_sex>><<deviancy5>>
+		<<set $position to "doggy">>
+		<<set $position_lock to 1>>
+		<<clothesstrip>>
 	<<else>>
 		You lean beneath the <<beasttype>>.
 		<<npcoral>><<deviancy4>>
 	<</if>>
 	<<blackwolfhealth>><<set $enemytrust -= 20>>
-
+	<!--Prevents the mate event from occuring back to back with black wolf sex-->
+	<<set $daily.blackWolfHeatEvent to $hour>>
 <<elseif $molestationstart is 1>>
 	<<set $molestationstart to 0>>
 	<<controlloss>>
@@ -383,6 +395,77 @@ You cry for help.
 
 	<<destinationwolfcave>>
 <</if>>
+
+:: Wolf Cave Black Wolf Mate
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<clothesstrip>>
+	You turn round and present your <<print ($player.vaginaExist ? '<<pussy>>' : 'anus')>> to the <<beasttype>>. You hear <<bhim>> approach.
+	<<npc_attempt_sex>><<deviancy5>>
+	<<set $position to "doggy">>
+	<<set $position_lock to 1>>
+	<<blackwolfhealth>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Wolf Cave Black Wolf Mate Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Black Wolf Mate]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Black Wolf Mate Finish
+
+<<if $enemyarousal gte $enemyarousalmax and (($player.vaginaExist and $NPCList[0].penis is "vagina") or (!$player.vaginaExist and $NPCList[0].penis is "anus"))>>
+	<<beastejaculation>>
+	<br>
+	The Black Wolf looks pleased.
+	<<if $monster is 1>>
+		"Will birth strong pups."
+	<<else>>
+		<<bHe>> rubs <<bhis>> nose against your belly.
+	<</if>>
+	<br><br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<br>
+	The Black Wolf looks perplexed.
+
+	<<if $monster is 1>>
+		"Didn't you need to mate?"
+	<<else>>
+		<<bHe>> nudges your belly with <<bhis>> nose.
+	<</if>>
+	<br><br>
+<<else>>
+	The Black Wolf looks perplexed.
+
+	<<if $monster is 1>>
+		"Didn't you need to mate?"
+	<<else>>
+		<<bHe>> nudges your belly with <<bhis>> nose.
+	<</if>>
+	<br><br>
+<</if>>
+
+You climb to your feet.
+<br>
+<<clotheson>>
+<<endcombat>>
+
+<<destinationwolfcave>>
 
 :: Wolf Cave Young
 <<set $location to "wolf_cave">><<effects>>
