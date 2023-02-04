@@ -2165,11 +2165,12 @@
 	<<else>>
 		You need to enable anal pregnancy in the settings to access these settings.
 	<</if>>
+	<br><br>
 
 	/* ToDo: remove $pregnancyTesting to correctly enable */
 	<<if $pregnancyTesting and ($playerPregnancyBeastDisable == "f" or $playerPregnancyHumanDisable == "f")>>
 		<<if !$player.vaginaExist>>
-			You don't have a vagina. You can't do nothing here at the moment. /* This will change when PC can inpregnate NPCs or when Mpreg */
+			You don't have a vagina. You can't do anything here at the moment. /* This will change when PC can inpregnate NPCs or when Mpreg */
 		<<else>>
 			<div id="cheatsPregnancyOptions"><<cheatsPregnancyOptions "vagina">></div>
 		<</if>>
@@ -2265,8 +2266,8 @@
 		<<link "<<">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer - _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>> |
 		<<link "<">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer - _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>> |
 		Pregnancy progress: <span id="cheatPregnancyProgress"><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%</span>
-		| <<link ">">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
-		| <<link ">>">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
+		| <<link ">">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd * .99)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
+		| <<link ">>">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd * .99)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
 		<br>
 		<<link [[Clear current pregnancy|$passage]]>>
 			<<set _pregnancy.type to null>>
@@ -2284,7 +2285,47 @@
 		<</link>>
 		<span class="description">This is a cheat, not an abortion.</span>
 	<<else>>
-		/* Impregnation options */
+		Get pregnant with:
+		<br>
+		<<if $playerPregnancyHumanDisable == "f">>
+			<<link [[A random person|$passage]]>> /* checks if males or females have penises, if there's is no people with penises a foreigner impregnates PC */
+			<<set _impregnator to "cheater ">>
+			<<if $dgchance gt 0 and $cbchance lt 100>>
+				<<set _impregnator += either("man", "boy", "woman", "girl")>>
+			<<elseif $dgchance gt 0 and $cbchance gt 99>>
+				<<set _impregnator += either("woman", "girl")>>
+			<<elseif $dgchance lt 1 and $cbchance lt 100>>
+				<<set _impregnator += either("man", "boy")>>
+			<<else>>
+				<<set _impregnator += "foreigner">>
+			<</if>>
+			<<playerPregnancy _impregnator "human" true "vagina" undefined true>>
+			<</link>>
+			<br>
+		<</if>>
+		<<if $playerPregnancyBeastDisable == "f">>
+			<<link [[A wolf|$passage]]>>
+			<<if $beastmalechance gt 0>> /* checks if there are male wolves, if not a foreigner wolf impregnates PC */
+				<<set _impregnator to "cheater wolf">>
+			<<else>>
+				<<set _impregnator to "cheater foreign wolf">>
+			<</if>>
+			<<playerPregnancy _impregnator "wolf" true "vagina" undefined true>>
+			<</link>>
+			<br>
+		<</if>>
+		<<if $playerPregnancyBeastDisable == "f" and $NPCName[$NPCNameList.indexOf("Black Wolf")].gender == "m">> /* playerPregnancyPossibleWith("Black Wolf") is not returning true */
+			<<link [[Black Wolf|$passage]]>>
+			<<playerPregnancy "Black Wolf" "wolf" true "vagina" undefined true>>
+			<</link>>
+			<br>
+		<</if>>
+		<<if $player.penisExist>>
+			<<link [[Yourself|$passage]]>>
+			<<playerPregnancy "pc" "human" true "vagina" undefined true>>
+			<</link>>
+			<br>
+		<</if>>
 	<</if>>
 	<br>
 	<br>
