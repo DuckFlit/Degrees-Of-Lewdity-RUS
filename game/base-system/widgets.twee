@@ -1122,37 +1122,39 @@
 <</widget>>
 
 <<widget "tirednesscaption">>
-	<div id="tirednesscaption" @title="'Fatigue: ' + $tiredness?.toFixed(2)">
-		<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
-			Fatigue:
-			<<if $options.showCaptionText is true>>
-				<<if $tiredness gte C.tiredness.max>>
-					<span class="red">You are exhausted.</span>
-				<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
-					<span class="pink">You are fatigued.</span>
-				<<elseif $tiredness gte (C.tiredness.max / 5) * 3>>
-					<span class="purple">You are tired.</span>
-				<<elseif $tiredness gte (C.tiredness.max / 5) * 2>>
-					<span class="blue">You are wearied.</span>
-				<<elseif $tiredness gte C.tiredness.max / 5>>
-					<span class="lblue">You are alert.</span>
-				<<elseif $tiredness gte 1>>
-					<span class="teal">You are wide awake.</span>
-				<<else>>
-					<span class="green">You are refreshed.</span>
+	<<if Number.isFinite($tiredness)>>
+		<div id="tirednesscaption" @title="'Fatigue: ' + $tiredness.toFixed(2)">
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				Fatigue:
+				<<if $options.showCaptionText is true>>
+					<<if $tiredness gte C.tiredness.max>>
+						<span class="red">You are exhausted.</span>
+					<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
+						<span class="pink">You are fatigued.</span>
+					<<elseif $tiredness gte (C.tiredness.max / 5) * 3>>
+						<span class="purple">You are tired.</span>
+					<<elseif $tiredness gte (C.tiredness.max / 5) * 2>>
+						<span class="blue">You are wearied.</span>
+					<<elseif $tiredness gte C.tiredness.max / 5>>
+						<span class="lblue">You are alert.</span>
+					<<elseif $tiredness gte 1>>
+						<span class="teal">You are wide awake.</span>
+					<<else>>
+						<span class="green">You are refreshed.</span>
+					<</if>>
 				<</if>>
+			</div>
+
+			<<if $tiredness gte C.tiredness.max>>
+				<<set $stress += (($tiredness - C.tiredness.max) * 16)>><<set $trauma += (($tiredness - C.tiredness.max) / 3)>>
 			<</if>>
+
+			<<set $tiredness = Math.clamp($tiredness, 0, C.tiredness.max)>>
+			<<set _showCaptionText to !$options.showCaptionText>>
+			<<statbar $tiredness `C.tiredness.max` _showCaptionText>>
+			<div style="clear:both;"></div>
 		</div>
-
-		<<if $tiredness gte C.tiredness.max>>
-			<<set $stress += (($tiredness - C.tiredness.max) * 16)>><<set $trauma += (($tiredness - C.tiredness.max) / 3)>>
-		<</if>>
-
-		<<set $tiredness = Math.clamp($tiredness, 0, C.tiredness.max)>>
-		<<set _showCaptionText to !$options.showCaptionText>>
-		<<statbar $tiredness `C.tiredness.max` _showCaptionText>>
-		<div style="clear:both;"></div>
-	</div>
+	<</if>>
 <</widget>>
 
 <<widget "hygiene">>
@@ -1174,60 +1176,64 @@
 <</widget>>
 
 <<widget "stresscaption">>
-	<div id="stresscaption" @title="'Stress: ' + $stress?.toFixed(2)">
-		<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
-			Stress:
-			<<if $options.showCaptionText is true>>
-				<<if $stress gte $stressmax>>
-					<span class="red">You are overwhelmed!</span>
-				<<elseif $stress gte ($stressmax / 5) * 4>>
-					<span class="pink">You are distressed.</span>
-				<<elseif $stress gte ($stressmax / 5) * 3>>
-					<span class="purple">You are strained.</span>
-				<<elseif $stress gte ($stressmax / 5) * 2>>
-					<span class="blue">You are tense.</span>
-				<<elseif $stress gte $stressmax / 5>>
-					<span class="lblue">You are calm.</span>
-				<<elseif $stress gte 1>>
-					<span class="teal">You are placid.</span>
-				<<else>>
-					<span class="green">You are serene.</span>
+	<<if Number.isFinite($stress)>>
+		<div id="stresscaption" @title="'Stress: ' + $stress.toFixed(2)">
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				Stress:
+				<<if $options.showCaptionText is true>>
+					<<if $stress gte $stressmax>>
+						<span class="red">You are overwhelmed!</span>
+					<<elseif $stress gte ($stressmax / 5) * 4>>
+						<span class="pink">You are distressed.</span>
+					<<elseif $stress gte ($stressmax / 5) * 3>>
+						<span class="purple">You are strained.</span>
+					<<elseif $stress gte ($stressmax / 5) * 2>>
+						<span class="blue">You are tense.</span>
+					<<elseif $stress gte $stressmax / 5>>
+						<span class="lblue">You are calm.</span>
+					<<elseif $stress gte 1>>
+						<span class="teal">You are placid.</span>
+					<<else>>
+						<span class="green">You are serene.</span>
+					<</if>>
 				<</if>>
-			<</if>>
+			</div>
+			<<set $stress = Math.clamp($stress, 0, $stressmax)>>
+			<<set _showCaptionText to !$options.showCaptionText>>
+			<<statbar $stress $stressmax _showCaptionText>>
+			<div style="clear:both;"></div>
 		</div>
-		<<set $stress = Math.clamp($stress, 0, $stressmax)>>
-		<<set _showCaptionText to !$options.showCaptionText>>
-		<<statbar $stress $stressmax _showCaptionText>>
-		<div style="clear:both;"></div>
-	</div>
+	<</if>>
 <</widget>>
 
 <<widget "traumacaption">>
-	<div id="traumacaption" @title="'Trauma: ' + $trauma?.toFixed(2)">
-		<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
-			Trauma:
-			<<if $options.showCaptionText is true>>
-				<<if $trauma gte $traumamax>>
-					<span class="red">You feel numb.</span>
-				<<elseif $trauma gte ($traumamax / 5) * 4>>
-					<span class="pink">You are tormented.</span>
-				<<elseif $trauma gte ($traumamax / 5) * 3>>
-					<span class="purple">You are disturbed.</span>
-				<<elseif $trauma gte ($traumamax / 5) * 2>>
-					<span class="blue">You are troubled.</span>
-				<<elseif $trauma gte ($traumamax / 5) * 1>>
-					<span class="lblue">You are nervous.</span>
-				<<elseif $trauma gte 1>>
-					<span class="teal">You are uneasy.</span>
-				<<else>>
-					<span class="green">You are healthy.</span>
+	<<if Number.isFinite($trauma)>>
+		<div id="traumacaption" @title="'Trauma: ' + $trauma.toFixed(2)">
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				Trauma:
+				<<if $options.showCaptionText is true>>
+					<<if $trauma gte $traumamax>>
+						<span class="red">You feel numb.</span>
+					<<elseif $trauma gte ($traumamax / 5) * 4>>
+						<span class="pink">You are tormented.</span>
+					<<elseif $trauma gte ($traumamax / 5) * 3>>
+						<span class="purple">You are disturbed.</span>
+					<<elseif $trauma gte ($traumamax / 5) * 2>>
+						<span class="blue">You are troubled.</span>
+					<<elseif $trauma gte ($traumamax / 5) * 1>>
+						<span class="lblue">You are nervous.</span>
+					<<elseif $trauma gte 1>>
+						<span class="teal">You are uneasy.</span>
+					<<else>>
+						<span class="green">You are healthy.</span>
+					<</if>>
 				<</if>>
-			<</if>>
+			</div>
+			<<set _showCaptionText to !$options.showCaptionText>>
+			<<statbar $trauma $traumamax _showCaptionText>>
+			<div style="clear:both;"></div>
 		</div>
-		<<set _showCaptionText to !$options.showCaptionText>>
-		<<statbar $trauma $traumamax _showCaptionText>>
-		<div style="clear:both;"></div>
-	</div>
+	<</if>>
 <</widget>>
 
 <<widget "innocencecaption">>
@@ -1259,122 +1265,128 @@
 <</widget>>
 
 <<widget "controlcaption">>
-	<div id="controlcaption" @title="'Control: ' + $control?.toFixed(2)">
-		<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
-			Control:
-			<<if $options.showCaptionText is true>>
-				<<if $possessed>>
-					<<if $control gte $controlmax>>
-						<span class="green">You are in control.</span>
-					<<elseif $control gte ($controlmax / 5) * 4>>
-						<span class="teal">You are nearly in control.</span>
-					<<elseif $control gte ($controlmax / 5) * 3>>
-						<span class="lblue">You are struggling.</span>
-					<<elseif $control gte ($controlmax / 5) * 2>>
-						<span class="blue">Your body feels hollow.</span>
-					<<elseif $control gte ($controlmax / 5) * 1>>
-						<span class="purple">Your mind is numb.</span>
-					<<elseif $control gte 1>>
-						<span class="pink">You're being puppeteered.</span>
+	<<if Number.isFinite($control)>>
+		<div id="controlcaption" @title="'Control: ' + $control.toFixed(2)">
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				Control:
+				<<if $options.showCaptionText is true>>
+					<<if $possessed>>
+						<<if $control gte $controlmax>>
+							<span class="green">You are in control.</span>
+						<<elseif $control gte ($controlmax / 5) * 4>>
+							<span class="teal">You are nearly in control.</span>
+						<<elseif $control gte ($controlmax / 5) * 3>>
+							<span class="lblue">You are struggling.</span>
+						<<elseif $control gte ($controlmax / 5) * 2>>
+							<span class="blue">Your body feels hollow.</span>
+						<<elseif $control gte ($controlmax / 5) * 1>>
+							<span class="purple">Your mind is numb.</span>
+						<<elseif $control gte 1>>
+							<span class="pink">You're being puppeteered.</span>
+						<<else>>
+							<span class="red">You're helpless.</span>
+						<</if>>
 					<<else>>
-						<span class="red">You're helpless.</span>
-					<</if>>
-				<<else>>
-					<<if $control gte $controlmax>>
-						<span class="green">You are confident.</span>
-					<<elseif $control gte ($controlmax / 5) * 4>>
-						<span class="teal">You are insecure.</span>
-					<<elseif $control gte ($controlmax / 5) * 3>>
-						<span class="lblue">You are worried.</span>
-					<<elseif $control gte ($controlmax / 5) * 2>>
-						<span class="blue">You are anxious.</span>
-					<<elseif $control gte ($controlmax / 5) * 1>>
-						<span class="purple">You are scared.</span>
-					<<elseif $control gte 1>>
-						<span class="pink">You are frightened.</span>
-					<<else>>
-						<span class="red">You are terrified.</span>
+						<<if $control gte $controlmax>>
+							<span class="green">You are confident.</span>
+						<<elseif $control gte ($controlmax / 5) * 4>>
+							<span class="teal">You are insecure.</span>
+						<<elseif $control gte ($controlmax / 5) * 3>>
+							<span class="lblue">You are worried.</span>
+						<<elseif $control gte ($controlmax / 5) * 2>>
+							<span class="blue">You are anxious.</span>
+						<<elseif $control gte ($controlmax / 5) * 1>>
+							<span class="purple">You are scared.</span>
+						<<elseif $control gte 1>>
+							<span class="pink">You are frightened.</span>
+						<<else>>
+							<span class="red">You are terrified.</span>
+						<</if>>
 					<</if>>
 				<</if>>
-			<</if>>
+			</div>
+			<<set _showCaptionText to !$options.showCaptionText>>
+			<<statbarinverted $control $controlmax _showCaptionText>>
+			<div style="clear:both;"></div>
 		</div>
-		<<set _showCaptionText to !$options.showCaptionText>>
-		<<statbarinverted $control $controlmax _showCaptionText>>
-		<div style="clear:both;"></div>
-	</div>
+	<</if>>
 <</widget>>
 
 <<widget "arousalcaption">>
-	<div id="arousalcaption" @title="'Arousal: ' + $arousal?.toFixed(2)">
-		<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
-			Arousal:
-			<<if $options.showCaptionText is true>>
-				<<if $arousal gte $arousalmax>>
-					<span class="red">You shake with arousal.</span>
-				<<elseif $arousal gte ($arousalmax / 5) * 4>>
-					<span class="pink">A heat rises within.</span>
-				<<elseif $arousal gte ($arousalmax / 5) * 3>>
-					<span class="purple">You feel horny.</span>
-				<<elseif $arousal gte ($arousalmax / 5) * 2>>
-					<span class="blue">You feel lustful.</span>
-				<<elseif $arousal gte $arousalmax / 5>>
-					<span class="lblue">You feel aroused.</span>
-				<<elseif $arousal gte 1>>
-					<span class="teal">You feel sensual.</span>
-				<<else>>
-					<span class="green">You feel cold.</span>
+	<<if Number.isFinite($arousal)>>
+		<div id="arousalcaption" @title="'Arousal: ' + $arousal.toFixed(2)">
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				Arousal:
+				<<if $options.showCaptionText is true>>
+					<<if $arousal gte $arousalmax>>
+						<span class="red">You shake with arousal.</span>
+					<<elseif $arousal gte ($arousalmax / 5) * 4>>
+						<span class="pink">A heat rises within.</span>
+					<<elseif $arousal gte ($arousalmax / 5) * 3>>
+						<span class="purple">You feel horny.</span>
+					<<elseif $arousal gte ($arousalmax / 5) * 2>>
+						<span class="blue">You feel lustful.</span>
+					<<elseif $arousal gte $arousalmax / 5>>
+						<span class="lblue">You feel aroused.</span>
+					<<elseif $arousal gte 1>>
+						<span class="teal">You feel sensual.</span>
+					<<else>>
+						<span class="green">You feel cold.</span>
+					<</if>>
 				<</if>>
-			<</if>>
+			</div>
+			<<set _showCaptionText to !$options.showCaptionText>>
+			<<statbar $arousal $arousalmax _showCaptionText>>
+			<div style="clear:both;"></div>
 		</div>
-		<<set _showCaptionText to !$options.showCaptionText>>
-		<<statbar $arousal $arousalmax _showCaptionText>>
-		<div style="clear:both;"></div>
-	</div>
+	<</if>>
 <</widget>>
 
 <<widget "allurecaption">>
-	<div id="allurecaption" @title="'Allure: ' + $allure?.toFixed(2)">
-		<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
-			Allure:
-			<<if $options.showCaptionText is true>>
-				<<if $allure gte (6000 * $alluremod)>><span class="red">You look like you need to be ravaged.</span>
-				<<elseif $allure gte (4000 * $alluremod)>><span class="pink">You look perverted.</span>
-				<<elseif $allure gte (3000 * $alluremod)>><span class="purple">You look lewd.</span>
-				<<elseif $allure gte (2000 * $alluremod)>><span class="blue">You stand out.</span>
-				<<elseif $allure gte (1500 * $alluremod)>><span class="lblue">You attract attention.</span>
-				<<elseif $allure gte (1000 * $alluremod)>><span class="teal">You attract glances.</span>
-				<<else>><span class="green">You look unremarkable.</span>
+	<<if Number.isFinite($allure)>>
+		<div id="allurecaption" @title="'Allure: ' + $allure.toFixed(2)">
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				Allure:
+				<<if $options.showCaptionText is true>>
+					<<if $allure gte (6000 * $alluremod)>><span class="red">You look like you need to be ravaged.</span>
+					<<elseif $allure gte (4000 * $alluremod)>><span class="pink">You look perverted.</span>
+					<<elseif $allure gte (3000 * $alluremod)>><span class="purple">You look lewd.</span>
+					<<elseif $allure gte (2000 * $alluremod)>><span class="blue">You stand out.</span>
+					<<elseif $allure gte (1500 * $alluremod)>><span class="lblue">You attract attention.</span>
+					<<elseif $allure gte (1000 * $alluremod)>><span class="teal">You attract glances.</span>
+					<<else>><span class="green">You look unremarkable.</span>
+					<</if>>
 				<</if>>
-			<</if>>
-		</div>
-		<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
-			<<set $percent=Math.floor(($allure/(8000 * $alluremod))*100)>>
-			<<if $allure gte (6000 * $alluremod)>>
-			<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $allure gte (4000 * $alluremod)>>
-			<<print '<div class="pinkbar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $allure gte (3000 * $alluremod)>>
-			<<print '<div class="purplebar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $allure gte (2000 * $alluremod)>>
-			<<print '<div class="bluebar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $allure gte (1500 * $alluremod)>>
-			<<print '<div class="lbluebar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $allure gte (1000 * $alluremod)>>
-			<<print '<div class="tealbar" style="width:' + $percent + '%"></div>'>>
-			<<else>>
-			<<print '<div class="greenbar" style="width:' + $percent + '%"></div>'>>
-			<</if>>
-		</div>
+			</div>
+			<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
+				<<set $percent=Math.floor(($allure/(8000 * $alluremod))*100)>>
+				<<if $allure gte (6000 * $alluremod)>>
+				<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $allure gte (4000 * $alluremod)>>
+				<<print '<div class="pinkbar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $allure gte (3000 * $alluremod)>>
+				<<print '<div class="purplebar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $allure gte (2000 * $alluremod)>>
+				<<print '<div class="bluebar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $allure gte (1500 * $alluremod)>>
+				<<print '<div class="lbluebar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $allure gte (1000 * $alluremod)>>
+				<<print '<div class="tealbar" style="width:' + $percent + '%"></div>'>>
+				<<else>>
+				<<print '<div class="greenbar" style="width:' + $percent + '%"></div>'>>
+				<</if>>
+			</div>
 
-		<<if $allure gte 8000>><<set $allure to 8000>><</if>>
-		<<if $alluretest is 1>>
-			<<set $allure += 100000>>
-		<<elseif $alluretest is 2>>
-			<<set $allure -= 100000>>
-		<</if>>
+			<<if $allure gte 8000>><<set $allure to 8000>><</if>>
+			<<if $alluretest is 1>>
+				<<set $allure += 100000>>
+			<<elseif $alluretest is 2>>
+				<<set $allure -= 100000>>
+			<</if>>
 
-		<div style="clear:both;"></div>
-	</div>
+			<div style="clear:both;"></div>
+		</div>
+	<</if>>
 <</widget>>
 
 <<widget "updateallure">>
@@ -1504,40 +1516,42 @@
 <</widget>>
 
 <<widget "paincaption">>
-	<div id="paincaption" @title="'Pain: ' + $pain?.toFixed(2)">
-		<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
-			Pain:
-			<<if $options.showCaptionText is true>>
-				<<if $pain gte 100 and $willpowerpain is 0>><span class="red">You sob uncontrollably.</span>
-				<<elseif $pain gte 80>><span class="pink">You cry and whimper.</span>
-				<<elseif $pain gte 60>><span class="purple">You are crying.</span>
-				<<elseif $pain gte 40>><span class="blue">Tears run down your face.</span>
-				<<elseif $pain gte 20>><span class="lblue">Tears well in your eyes.</span>
-				<<elseif $pain gte 1>><span class="teal">You are upset.</span>
-				<<else>><span class="green">You feel okay.</span>
+	<<if Number.isFinite($pain)>>
+		<div id="paincaption" @title="'Pain: ' + $pain.toFixed(2)">
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				Pain:
+				<<if $options.showCaptionText is true>>
+					<<if $pain gte 100 and $willpowerpain is 0>><span class="red">You sob uncontrollably.</span>
+					<<elseif $pain gte 80>><span class="pink">You cry and whimper.</span>
+					<<elseif $pain gte 60>><span class="purple">You are crying.</span>
+					<<elseif $pain gte 40>><span class="blue">Tears run down your face.</span>
+					<<elseif $pain gte 20>><span class="lblue">Tears well in your eyes.</span>
+					<<elseif $pain gte 1>><span class="teal">You are upset.</span>
+					<<else>><span class="green">You feel okay.</span>
+					<</if>>
 				<</if>>
-			<</if>>
+			</div>
+			<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
+				<<set $percent=Math.floor(($pain/100)*100)>>
+				<<if $pain gte 100 and $willpowerpain is 0>>
+				<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $pain gte 80>>
+				<<print '<div class="pinkbar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $pain gte 60>>
+				<<print '<div class="purplebar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $pain gte 40>>
+				<<print '<div class="bluebar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $pain gte 20>>
+				<<print '<div class="lbluebar" style="width:' + $percent + '%"></div>'>>
+				<<elseif $pain gte 1>>
+				<<print '<div class="tealbar" style="width:' + $percent + '%"></div>'>>
+				<<else>>
+				<<print '<div class="greenbar" style="width:' + $percent + '%"></div>'>>
+				<</if>>
+			</div>
+			<div style="clear:both;"></div>
 		</div>
-		<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
-			<<set $percent=Math.floor(($pain/100)*100)>>
-			<<if $pain gte 100 and $willpowerpain is 0>>
-			<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $pain gte 80>>
-			<<print '<div class="pinkbar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $pain gte 60>>
-			<<print '<div class="purplebar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $pain gte 40>>
-			<<print '<div class="bluebar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $pain gte 20>>
-			<<print '<div class="lbluebar" style="width:' + $percent + '%"></div>'>>
-			<<elseif $pain gte 1>>
-			<<print '<div class="tealbar" style="width:' + $percent + '%"></div>'>>
-			<<else>>
-			<<print '<div class="greenbar" style="width:' + $percent + '%"></div>'>>
-			<</if>>
-		</div>
-		<div style="clear:both;"></div>
-	</div>
+	<</if>>
 <</widget>>
 
 <<widget "raped">>
