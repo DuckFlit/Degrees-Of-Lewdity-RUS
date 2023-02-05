@@ -20,6 +20,10 @@
 		<<set $rightleg to "bound">>
 		<<set $feetuse to "bound">>
 	<</if>>
+	<<if playerHasStrapon() and $worn.under_lower.size isnot undefined>>
+		<<set $playerPenisSizeBackup to $player.penissize>>
+		<<set $player.penissize to $worn.under_lower.size>>
+	<</if>>
 <</widget>>
 
 <<widget "struggle_creatures">>
@@ -174,6 +178,9 @@
 <</widget>>
 
 <<widget "struggle_end">>
+	<<if playerHasStrapon()>>
+			<<set $player.penissize to $playerPenisSizeBackup>>
+	<</if>>
 	<<unset $struggle>>
 <</widget>>
 
@@ -227,7 +234,7 @@
 			</div>
 		<</if>>
 
-		<<if $penisstate isnot 0 and $player.penisExist>>
+		<<if $penisstate isnot 0 and (playerHasStrapon() or $player.penisExist)>>
 			<hr>
 			<div id="listContainer" style="margin-bottom:0px">
 				<div id="penisaction" @class="$options.combatControls + 'Control'">
@@ -1118,39 +1125,22 @@
 	<</if>>
 
 	<!-- HANDS -->
-	<<for _hand range ["left", "right"]>>
-	<!-- iterate once per hand, unless $leftaction is $rightaction, in which case do stuff for the right hand immediately and <<break>> -->
-		<<set _handaction to V[_hand + 'action']>>
-		<<if _handaction>>
-			<<if _handaction.includes("_stroke")>>
-				<<set _action to "stroke">>
-			<<elseif _handaction.includes("strengthen")>>
-				<<set _action to "strengthen">>
-			<<elseif _handaction.includes("pull")>>
-				<<set _action to "pull">>
-			<<elseif _handaction.includes("grasp")>>
-				<<set _action to "grasp">>
-			<<elseif _handaction.includes("spray")>>
-				<<set _action to "spray">>
-			<<elseif _handaction.includes("upper")>>
-				<<set _action to "clothes">>
-			<<elseif _handaction.includes("lower")>>
-				<<set _action to "clothes">>
-			<<else>>
-				<<set _action to _handaction>>
-			<</if>>
-			<<if _handaction.includes("mouth_")>>
-				<<set _actionpart to "mouth">>
-			<<elseif _handaction.includes("vagina_")>>
-				<<set _actionpart to "vagina">>
-			<<elseif _handaction.includes("penis_")>>
-				<<set _actionpart to "penis">>
-			<<elseif _handaction.includes("anus_")>>
-				<<set _actionpart to "anus">>
-			<<elseif _handaction.includes("chest_")>>
-				<<set _actionpart to "chest">>
-			<</if>>
-		<</if>>
+	<<set _actionPriority = ["rest", "stroke", "grasp", "strengthen", "pull", "spray"]>>
+	<<set _hands = [{id: "left", handaction: $leftaction},{id: "right", handaction: $rightaction}]
+		.map(h => {
+			let [,part, action] = /(?:([^_]+)_)?(.*)/.exec(h.handaction);
+			return Object.assign(h, {part, action});
+		}).sort((a,b) => _actionPriority.indexOf(a.action) - _actionPriority.indexOf(b.action))
+	>>
+	<<for _i, _handObj range _hands>>
+	<!-- iterate once per hand, unless $leftaction is $rightaction, in which case do stuff for the other hand immediately and <<break>> -->
+		/* <<set {id: _hand, part: _actionpart, action: _action} = _Hand>> */
+		<<set _hand = _handObj.id, _actionpart = _handObj.part, _action = _handObj.action>>
+		<<set _otherHand to _hands[1-_i].id>>
+		<<if !_action or V[_hand + "action"] is 0>><<continue>><</if>>
+		<<if _action.includes("upper") or _action.includes("lower")>><<set _action to "clothes">><</if>>
+		<<set _gripped to _grip_strength gte random(2000)>>
+		<!-- _grip_strength is set above in the FEET section -->
 		<<switch _action>>
 			<<case "rest">>
 				/* nothing to do */
@@ -1175,8 +1165,8 @@
 				<<set V[_hand + 'arm'] to "struggle">>
 				<<set V[_hand + 'armstate'] to _actionpart + '_struggle'>>
 				<<if $leftaction is $rightaction>>
-					<<set $rightarmstate to _actionpart + '_struggle'>>
-					<<set $rightarm to "struggle">>
+					<<set V[_otherHand + "armstate"] to _actionpart + '_struggle'>>
+					<<set V[_otherHand + "arm"] to "struggle">>
 					<<submission 2>>
 					<<break>>
 				<</if>>
@@ -1184,26 +1174,13 @@
 				You raise your <<if $leftaction is $rightaction>>hands<<else>>_hand hand<</if>> to the <<print $struggle[_actionpart].creature>> clinging to your <<struggle_region _actionpart>>, though it's hard to find purchase.
 				<<set V[_hand + 'arm'] to "struggle">>
 				<<set V[_hand + 'armstate'] to _actionpart + '_struggle'>>
-				<<set $struggle[_actionpart].grip++>>
-
-				<<if $leftaction is $rightaction>>
-					<<set $leftaction to _actionpart + '_strengthen'>>
-					<<set $rightaction to _actionpart + '_strengthen'>>
-					<<set $rightarm to "struggle">>
-					<<set $rightarmstate to _actionpart + '_struggle'>>
-					<<set $struggle[_actionpart].grip++>>
-					<<break>>
-				<<else>>
-				<!-- changing $leftaction or $rightaction is needed to correctly set action defaults at the end of hands section, and it should be done after the `$leftaction is $rightaction` comparison -->
-					<<set V[_hand + 'action'] to _actionpart + '_strengthen'>>
-				<</if>>
+				<<set $struggle[_actionpart].grip += 1 + _gripped>>
+				<<set V[_hand + 'action'] to _actionpart + '_strengthen'>>
 			<<case "strengthen">>
 				You tighten your grip on the <<print $struggle[_actionpart].creature>> clinging to your <<struggle_region _actionpart>><<if $leftaction is $rightaction>> with both hands<</if>>.
 				<<set V[_hand + 'arm'] to "struggle">>
 				<<set V[_hand + 'armstate'] to _actionpart + '_struggle'>>
-				<<set _rng2000 to random(2000)>>
-				<!-- _grip_strength is set above in the FEET section -->
-				<<if _grip_strength gte _rng2000>>
+				<<if _gripped>>
 					Your grasp is <span class="teal">much better.</span>
 					<<set $struggle[_actionpart].grip += 2>>
 				<<else>>
@@ -1213,17 +1190,17 @@
 				<br>
 				<<handskilluse>>
 
-				<<if $leftaction is $rightaction>>
-					<<set $struggle[_actionpart].grip += (_grip_strength gte _rng2000 ? 2 : 1)>>
-					<<set $rightarm to "struggle">>
-					<<set $rightarmstate to _actionpart + '_struggle'>>
+				<<if $leftaction is $rightaction and _i == 0>>
+					<<set $struggle[_actionpart].grip += 1 + _gripped>>
+					<<set V[_otherHand + "arm"] to "struggle">>
+					<<set V[_otherHand + "armstate"] to _actionpart + '_struggle'>>
 					<<break>>
 				<</if>>
 			<<case "pull">>
 				<br>
 				You dig your nails in and try to wrench the <<print $struggle[_actionpart].creature>> off your <<struggle_region _actionpart>>.
 				<<struggle_difficulty_set>>
-				<<if $struggle[_actionpart].success gte random(1, 100)>>
+				<<if $struggle[_actionpart].success gte random(1, 100) || ($leftaction is $rightaction and $struggle[_actionpart].success gte random(1, 100))>>
 					<span class="green">You hurl it away from you.</span>
 					<<set V[_actionpart + 'use'] to 0>>
 					<<set V[_actionpart + 'state'] to 0>>
@@ -1231,7 +1208,7 @@
 					<<set $struggle.warded++>>
 					<<struggleClearActions `_actionpart + '_'`>>
 				<<else>>
-					<!-- TODO: maybe add some skill and random checks, with possibilities (and corresponding flavour text) to retain the grip, or lessen it instead of outright resetting it to 0 -->
+					<!-- TODO: maybe add some skill and random checks, with possibilities (and corresponding flavour text) to retain the grip -->
 					You can't maintain your grip, and <span class="red">your fingers pull away without the creature.</span>
 					<<set $struggle[_actionpart].grip to 0>>
 					<<set V[_hand + 'action'] to _actionpart + '_grasp'>>
@@ -1381,13 +1358,13 @@
 			<<case 4>>
 				<<if $player.virginity.oral isnot true>>
 					The <<print $struggle.mouth.creature>> <span class="pink"><<print (_mouthOpen ?'slides':'forces')>> its <<struggle_appendage mouth>> into your mouth</span>. It becomes girthier as more enters.
-					<<oralstat>>
+					<<submission 10>>
 				<<else>>
 					The <<print $struggle.mouth.creature>> <span class="pink"><<print (_mouthOpen ?'slides':'forces')>> its <<struggle_appendage mouth>> into your mouth</span>. <span class="red">It tastes strange.</span>
-					<<takeVirginity $struggle.mouth.creature "oral">><<oralstat>>
+					<<submission 30>><<takeVirginity $struggle.mouth.creature "oral">>
 				<</if>>
 				<<if $consensual isnot 1>><<bruise face>><<violence 1>><<raped>><</if>>
-				<<neutral 5 "mouth">><<set $mouthstate to "struggle_pen">><<set $mouthaction to 0>>
+				<<oralstat>><<neutral 5 "mouth">><<set $mouthstate to "struggle_pen">><<set $mouthaction to 0>>
 			<<case 5>>
 				The <<print $struggle.mouth.creature>> pushes itself deeper into your mouth.<<neutral 5 "mouth">>
 			<<case 6>>
@@ -1452,8 +1429,7 @@
 				<<set _pain to $vaginalPain>>
 				<<if $player.virginity.vaginal isnot true>>
 					The <<print $struggle.vagina.creature>> <span class="pink">forces its <<struggle_appendage vagina>> into your <<pussy>>.</span> It becomes girthier as more enters.
-					<<set $vaginastate to "struggle_pen">><<vaginalstat>><<vaginaraped>>
-					<<sex 30 "genitals">><<pain _pain>>
+					<<sex 30 "genitals">>
 				<<else>>
 					The <<print $struggle.vagina.creature>> <span class="pink">forces its <<struggle_appendage vagina>> into your <<pussy>>,</span>
 					<<if $sexStats.vagina.pregnancy.totalBirthEvents gt 0>>
@@ -1461,12 +1437,10 @@
 					<<else>>
 						<span class="red">breaking your hymen and forever robbing you of your purity.</span>
 					<</if>>
-					<<set $vaginastate to "struggle_pen">><<vaginalstat>><<vaginaraped>>
-					<<sex 30 "genitals">><<pain _pain>>
+					<<sex 100 "genitals">><<takeVirginity $struggle.vagina.creature "vaginal">>
 				<</if>>
-				<<takeVirginity $struggle.vagina.creature "vaginal">>
-				<<if $consensual isnot 1>><<bruise vagina>><<violence 2>><<raped>><<vaginaraped>><</if>>
-				<<neutral 5 "genitals">>
+				<<if $consensual isnot 1>><<bruise vagina>><<violence 2>><<pain _pain>><<raped>><<vaginaraped>><</if>>
+				<<vaginalstat>><<set $vaginastate to "struggle_pen">><<neutral 5 "genitals">>
 			<<case 5>>
 				The <<print $struggle.vagina.creature>> pushes itself deeper into your <<pussy>>.<<neutral 5 "genitals">>
 			<<case 6>>
@@ -1509,18 +1483,16 @@
 				The <<print $struggle.penis.creature>> pushes against your <<penis>>. <span class="pink">It's about to envelop you fully.</span><<neutral 5 "genitals">>
 			<<case 4>>
 				<<set _pain to $penisPain>>
-				<<if $player.virginity.penile isnot true>>
+				<<if playerHasStrapon() or $player.virginity.penile isnot true>>
 					The <<print $struggle.penis.creature>> <span class="pink">forces your <<penis>> inside its body.</span> It becomes tighter as more enters.
-					<<set $penisstate to "struggle_pen">><<penilestat>><<penisraped>>
-					<<sex 30 "genitals">><<pain _pain>>
+					<<sex 30 "genitals">>
 				<<else>>
 					The <<print $struggle.penis.creature>> <span class="pink">forces your <<penis>> into its body,</span> <span class="red">separating your foreskin from your glans and forever robbing you of your purity.</span>
-					<<set $penisstate to "struggle_pen">><<penilestat>><<penisraped>>
-					<<sex 30 "genitals">><<pain _pain>>
+					<<sex 100 "genitals">><<takeVirginity $struggle.penis.creature "penile">>
 				<</if>>
-				<<takeVirginity $struggle.penis.creature "penile">>
-				<<if $consensual isnot 1>><<bruise penis>><<violence 2>><<raped>><<penisraped>><</if>>
-				<<neutral 5 "genitals">>
+				<<if playerHasStrapon()>><<violence 2 1 1 0>>
+				<<elseif $consensual isnot 1>><<bruise penis>><<violence 2>><<pain _pain>><<raped>><<penisraped>><</if>>
+				<<penilestat>><<neutral 5 "genitals">><<set $penisstate to "struggle_pen">>
 			<<case 5>>
 				The <<print $struggle.penis.creature>> takes your <<penis>> deeper inside.<<neutral 5 "genitals">>
 			<<case 6>>
@@ -1557,15 +1529,13 @@
 				<<set _pain to $analPain>>
 				<<if $player.virginity.anal isnot true>>
 					The <<print $struggle.anus.creature>>'s <<struggle_appendage anus>> <span class="pink">thrusts into your <<bottom>>.</span> It becomes girthier as more enters.
-					<<set $anusstate to "struggle_pen">><<analstat>><<anusraped>>
-					<<sex 30 "anus">><<pain _pain>>
+					<<sex 30 "anus">>
 				<<else>>
 					The <<print $struggle.anus.creature>>'s <<struggle_appendage anus>> <span class="pink">thrusts into your <<bottom>>,</span> <span class="red">violating you in a way you hadn't conceived of.</span>
-					<<takeVirginity $struggle.anus.creature "anal">><<set $anusstate to "struggle_pen">><<analstat>><<anusraped>>
-					<<sex 30 "anus">><<pain _pain>>
+					<<sex 100 "anus">><<takeVirginity $struggle.anus.creature "anal">>
 				<</if>>
 				<<if $consensual isnot 1>><<bruise anus>><<violence 2>><<raped>><<anusraped>><</if>>
-				<<neutral 5 "anus">>
+				<<analstat>><<neutral 5 "anus">><<pain _pain>><<anusraped>><<set $anusstate to "struggle_pen">>
 			<<case 5>>
 				The <<print $struggle.anus.creature>>'s <<struggle_appendage anus>> pushes deeper into your <<bottom>>.<<neutral 5 "anus">>
 			<<case 6>>
@@ -1779,7 +1749,7 @@
 	<<set _targets to []>>
 	<<if $mouthuse is 0>><<set _targets.push("mouth")>><</if>>
 	<<if $vaginause is 0 and $player.vaginaExist>><<set _targets.push("vagina")>><</if>>
-	<<if $penisuse is 0 and $player.penisExist>><<set _targets.push("penis")>><</if>>
+	<<if $penisuse is 0 and (playerHasStrapon() or $player.penisExist)>><<set _targets.push("penis")>><</if>>
 	<<if $anususe is 0 and $analdisable is "f">><<set _targets.push("anus")>><</if>>
 	<<if $chestuse is 0>><<set _targets.push("chest")>><</if>>
 
