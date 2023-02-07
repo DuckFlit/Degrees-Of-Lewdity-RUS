@@ -126,6 +126,48 @@
 	<<set $NPCList[0].mouth to "speech_only">>
 <</widget>>
 
+<<widget "npcgangstrip">> /* Organises the NPC groups for strips, so they aren't all clawing at the same items (as much) */
+	<<set $combatgoal to "strip">>
+	<<set $position to "missionary">>
+	<<set _startpos to 0>>
+	<<for _i = 0; _i < $NPCList.length; _i++>>
+		<<set $NPCList[_i].righthand to 0>>
+		<<set $NPCList[_i].lefthand to 0>>
+		
+		<<if $rightarm is 0>>	/* Person 1 grabs you */
+			<<set $rightarm to "grappled">>
+			<<set $NPCList[_i].lefthand to "arms">>
+		<</if>>
+		<<if $leftarm is 0>>
+			<<set $leftarm to "grappled">>
+			<<set $NPCList[_i].lefthand to "arms">>
+		<</if>>
+
+		<<if $NPCList[_i].righthand is 0 and $NPCList[_i].lefthand is 0>>
+			<<switch _startpos>>
+				<<case 0>> /* Person 2 starts low */
+					<<if $worn.over_lower.name isnot "naked">>
+						<<set $NPCList[_i].lefthand to "overlowerclothes">>
+						<<set $NPCList[_i].righthand to "overlowerclothes">>
+					<<elseif $worn.lower.name isnot "naked">>
+						<<set $NPCList[_i].lefthand to "lowerclothes">>
+						<<set $NPCList[_i].righthand to "lowerclothes">>
+					<<elseif $worn.under_lower.name isnot "naked">>
+						<<set $NPCList[_i].lefthand to "underlowerclothes">>
+						<<set $NPCList[_i].righthand to "underlowerclothes">>
+					<</if>>
+				<<case 1>>	/* Person 3 starts high by default */	
+				<<case 2>>	/* Person 4 works with 1 - goes straight to under */
+					<<if $worn.under_upper.name isnot "naked">>
+						<<set $NPCList[_i].lefthand to "underupperclothes">>
+						<<set $NPCList[_i].righthand to "underupperclothes">>
+					<</if>>
+			<</switch>>
+			<<set _startpos += 1>>
+		<</if>>
+	<</for>>
+<</widget>>
+
 <<widget "npcspank">>
 	<<if $rightarm is 0>>
 		<<set $rightarm to "grappled">>

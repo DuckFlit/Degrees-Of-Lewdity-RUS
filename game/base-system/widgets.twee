@@ -4246,89 +4246,77 @@
 	<<set $framed to 0>>
 <</widget>>
 
+<<widget "imprison_npc">> /* number as argument to select npc 0-5. Only use at end of scene. */
+	<<clear_pillory>>
+	<<if not _args[0]>>
+		<<set _id to 0>>
+	<<else>>
+		<<set _id to _args[0]>>
+	<</if>>
+	<<if _args[1]>>
+		<<set $pillory_tenant.special.desc to _args[1]>>
+	<</if>>
+	<<new_npc_pillory $NPCList[_id]>>
+	<<endevent>>
+<</widget>>
+
 <<widget "get_pillory_npc">>
 	<<set $NPCList[0] to clone($pillory_tenant.person)>><<person1>>
 <</widget>>
 
-<<widget "A_pillory_person">>
+<<widget "A_pillory_person">>  /* Can't simplify to <<pillory_person>> because: 'a thin man', but not 'a Whitney') */
+	<<silently>><<set _out to "">>
 	<<get_pillory_npc>>
 	<<if $pillory_tenant.special.name is "">>
-		A <<person>>
+		<<set _out += "A <<person>>">>
 	<<else>>
-		$pillory_tenant.special.name
+		<<set _out += $pillory_tenant.special.name>>
 	<</if>>
+	<</silently>><<print _out>>
 <</widget>>
 
 <<widget "The_pillory_person">>
+	<<silently>><<set _out to "">>
 	<<get_pillory_npc>>
 	<<if $pillory_tenant.special.name is "">>
-		The <<person>>
+		<<set _out += "The <<person>>">>
 	<<else>>
-		$pillory_tenant.special.name
+		<<set _out += $pillory_tenant.special.name>>
 	<</if>>
+	<</silently>><<print _out>>
+<</widget>>
+
+<<widget "a_pillory_person">>
+	<<silently>><<set _out to "">>
+	<<get_pillory_npc>>
+	<<if $pillory_tenant.special.name is "">>
+		<<set _out += "a <<person>>">>
+	<<else>>
+		<<set _out += $pillory_tenant.special.name>>
+	<</if>>
+	<</silently>><<print _out>>
 <</widget>>
 
 <<widget "the_pillory_person">>
+	<<silently>><<set _out to "">>
 	<<get_pillory_npc>>
 	<<if $pillory_tenant.special.name is "">>
-		the <<person>>
+		<<set _out += "the <<person>>">>
 	<<else>>
-		$pillory_tenant.special.name
+		<<set _out += $pillory_tenant.special.name>>
 	<</if>>
-<</widget>>
-
-<<widget "the_pillory_person_stop">>
-	<<get_pillory_npc>>
-	<<if $pillory_tenant.special.name is "">>
-		the <<person>>.
-	<<else>>
-		$pillory_tenant.special.name.
-	<</if>>
-<</widget>>
-
-<<widget "the_pillory_persons">>
-	<<get_pillory_npc>>
-	<<if $pillory_tenant.special.name is "">>
-		the <<persons>>
-	<<else>>
-		$pillory_tenant.special.name's
-	<</if>>
+	<</silently>><<print _out>>
 <</widget>>
 
 <<widget "pillory_type">>
+	<<silently>><<set _out to "">>
 	<<get_pillory_npc>>
 	<<if $pillory_tenant.special.name is "">>
-		<<person>>
+		<<set _out += "<<person>>">>
 	<<else>>
-		$pillory_tenant.special.desc
+		<<set _out += $pillory_tenant.special.desc>>
 	<</if>>
-<</widget>>
-
-<<widget "the_pillory_type">>
-	<<get_pillory_npc>>the
-	<<if $pillory_tenant.special.name is "">>
-		<<person>>
-	<<else>>
-		$pillory_tenant.special.desc
-	<</if>>
-<</widget>>
-
-<<widget "the_pillory_type_stop">>
-	<<get_pillory_npc>>the
-	<<if $pillory_tenant.special.name is "">>
-		<<person>>.
-	<<else>>
-		$pillory_tenant.special.desc.
-	<</if>>
-<</widget>>
-
-<<widget "the_pillory_types">>
-	<<get_pillory_npc>>the
-	<<if $pillory_tenant.special.name is "">>
-		<<persons>>
-	<<else>>
-		$pillory_tenant.special.desc's
-	<</if>>
+	<</silently>><<print _out>>
 <</widget>>
 
 <<widget "npc_pillory">>
@@ -4363,7 +4351,7 @@
 		<<elseif $pillory_tenant.crowd gte 4>>A curious group hang around
 		<<else>>A small group watch
 		<</if>>
-	<</if>><<the_pillory_type>> locked prone in the pillory.
+	<</if>>the <<pillory_type>> locked prone in the pillory.
 	<<if $pillory_tenant.broken gte 32>><<He>> looks traumatised, perhaps permanently broken by the abuse <<hes>> already suffered.
 	<<elseif $pillory_tenant.broken gte 16>><<He>> is weeping from the abuse <<hes>> already suffered.
 	<<elseif $pillory_tenant.broken gte 8>><<He>> is sobbing from the abuse.
@@ -4489,18 +4477,18 @@
 				<<rng>>
 				<<if $pillory_tenant.person.pronoun is "f" and $rng gte 40>> /* 60% if upper-exposed F */
 					A <<person>> in rough farmer clothes approaches the pillory with a bucket.
-					Setting the bucket underneath <<the_pillory_types>> chest, <<person2>><<he>>
+					Setting the bucket underneath the <<pillory_type>>'s chest, <<person2>><<he>>
 					<<if $pillory_tenant.upperexposed lte 1>>displaces the prisoner's top,<</if>>
 					<<if $pillory_tenant.upperexposed lte 2>><<set $pillory_tenant.upperexposed to 3>> slips off her bra,<</if>>
-					grabs <<the_pillory_types>> $pillory_tenant.person.breastsdesc and sets about trying to milk her into the bucket.
+					grabs the <<pillory_type>>'s $pillory_tenant.person.breastsdesc and sets about trying to milk her into the bucket.
 					<br><br>
 					<<if $rng % 3 is 0>>
 						<<if $rng % 2>>
 							Milk bursts from her breasts. Smiling, the farmer soon builds up a rhythm, adeptly milking both breasts.
 							<br>
-							"Good cow," the farmer ruffles <<the_pillory_persons>> hair before leaving with an almost full bucket.
+							"Good cow," the farmer ruffles <<the_pillory_person>>'s hair before leaving with an almost full bucket.
 						<<else>><<set $pillory_tenant.spank += 1>>
-							Milk dribbles from <<the_pillory_types>> breasts. With a lot of persistent squeezing and nipple pulling the farmer is eventually
+							Milk dribbles from the <<pillory_type>>'s breasts. With a lot of persistent squeezing and nipple pulling the farmer is eventually
 							able to	get a fair amount of milk from the prisoner. Her $pillory_tenant.person.breastsdesc look raw and painful afterward.
 							<br>
 							The farmer pats the prisoner's head before leaving with <<person2>><<his>> half-filled bucket.
@@ -4510,7 +4498,7 @@
 						<<if $rng % 2>>
 							Finally giving up, the <<person2>><<person>> pats her head. "Poor girl. You're all dried up."
 							<br>
-							<<He>> walks behind <<the_pillory_type>> and
+							<<He>> walks behind the <<pillory_type>> and
 							<<if $pillory_tenant.lowerexposed lte 1>>strips <<his>> <<print either("silk panties","plain panties","tattered undies","boyshorts")>>,
 							<<else>>holds <<his>> butt-cheeks spread apart<</if>> exposing <<if $pillory_tenant.person.gender is "f">><<his>> pussy <<else>><<his>> ass <</if>>to all.
 							<br>
@@ -4526,7 +4514,7 @@
 				<<elseif $pillory_tenant.person.gender is "m" and $rng gte 40>>
 					A <<person>> in rough farmer clothes approaches the pillory with a clear glass.
 					<br>
-					Setting the glass underneath <<the_pillory_types>> groin, <<person2>><<he>>
+					Setting the glass underneath the <<pillory_type>>'s groin, <<person2>><<he>>
 					<<if $pillory_tenant.lowerexposed lte 0>><<if $pillory_tenant.person.pronoun is "m">>pulls down the prisoner's trousers,<<else>>hitches up the prisoner's skirt,<</if>><</if>>
 					<<if $pillory_tenant.lowerexposed lte 1>><<set $pillory_tenant.lowerexposed to 2>><<if $pillory_tenant.person.pronoun is "m">> removes his underpants, <<else>> pulls down her panties, <</if>><</if>>
 					grabs the prisoner's $pillory_tenant.person.penisdesc and starts to rub.
@@ -4534,15 +4522,15 @@
 					<<person2>>
 					<<if $rng % 3>>
 						The farmer glances in the glass and then starts again. Seemingly an 'old hand,' <<he>> starts to browse <<his>> phone with
-						one hand, while bringing <<the_pillory_type>> to several more orgasms with the other.
+						one hand, while bringing the <<pillory_type>> to several more orgasms with the other.
 						<br>
 						Ten minutes later, the farmer is walking off with a glassful of ejaculate, while <<the_pillory_person>> hangs in the pillory, <<his>> face
 						flickering between shock, shame, pain and satiation.
 					<<else>><<set $pillory_tenant.spank += 1>>
-						The farmer browses <<his>> phone with one hand, while trying to bring <<the_pillory_type>> back to orgasm with the other.
+						The farmer browses <<his>> phone with one hand, while trying to bring the <<pillory_type>> back to orgasm with the other.
 						<br>
-						After a minute or so, the farmer looks confused, then annoyed at <<the_pillory_persons>> lack of response.
-						The <<person2>><<person>> pulls a device from <<his>> pocket. <<He>> clips one end of the device to the base of <<the_pillory_types>> penis,
+						After a minute or so, the farmer looks confused, then annoyed at <<the_pillory_person>>'s lack of response.
+						The <<person2>><<person>> pulls a device from <<his>> pocket. <<He>> clips one end of the device to the base of the <<pillory_type>>'s penis,
 						and slides the other deep into the prisoner's anus.
 						<br>
 						The farmer presses a button and with a loud electric crackle, <<the_pillory_person>> yelps, jerks and starts to orgasm continually.
@@ -4556,7 +4544,7 @@
 				<<elseif $pillory_tenant.person.gender is "f" and $rng gte 20>>
 					A <<person>> in rough farmer clothes approaches the pillory with a glass beaker.
 					<br>
-					Setting the beaker underneath <<the_pillory_types>> groin, <<person2>><<he>>
+					Setting the beaker underneath the <<pillory_type>>'s groin, <<person2>><<he>>
 					<<if $pillory_tenant.lowerexposed lte 0>><<if $pillory_tenant.person.pronoun is "f">>hitches up the prisoner's skirt,<<else>>pulls down the prisoner's trousers,<</if>><</if>>
 					<<if $pillory_tenant.lowerexposed lte 1>><<set $pillory_tenant.lowerexposed to 2>><<if $pillory_tenant.person.pronoun is "f">> pulls down her panties,<<else>> removes his underpants,<</if>><</if>>
 					grabs the prisoner's pussy and starts to rub.
@@ -4564,7 +4552,7 @@
 					<<his>> pussy. A moment later panic crosses <<his>> face as something is clamped to <<his>> clit, and almost instantly waves of electricity hit <<him>>.
 					<br>
 					The crowd are engrossed as <<the_pillory_person>> writhes in orgasm after shuddering orgasm. The farmer barely pays attention, holding
-					the beaker close underneath to catch <<the_pillory_persons>> fluids, while browsing <<person2>><<his>> phone.
+					the beaker close underneath to catch <<the_pillory_person>>'s fluids, while browsing <<person2>><<his>> phone.
 					At last, the farmer turns off and extracts <<his>> machine. <<Hes>> still browsing <<his>> phone as <<he>> walks away with a
 					full beaker of fluids.
 					<br>
@@ -4598,20 +4586,20 @@
 						<<set $pillory_tenant.crowd -= 1>>
 						<<if $pillory_tenant.upperexposed + $pillory_tenant.lowerexposed gte 1>>
 							<<set $pillory_tenant.upperexposed to 0>><<set $pillory_tenant.lowerexposed to 0>>
-							The <<monk>> finally restores <<the_pillory_types>> dignity by replacing <<his>> clothes.
+							The <<monk>> finally restores the <<pillory_type>>'s dignity by replacing <<his>> clothes.
 						<</if>>
 					<</if>>
 				<</if>>
 			<<elseif $rng gte 36>> /* 5% */
-				A <<person>> throws fruit at <<the_pillory_type_stop>> Unable to move or defend, it hits <<him>> directly in the face.
+				A <<person>> throws fruit at the <<pillory_type>>. Unable to move or defend, it hits <<him>> directly in the face.
 				It looks painful, especially as <<he>> cannot wipe the acids out of <<his>> eyes.
 				<<set $pillory_tenant.fruit += 1>>
 			<<elseif $rng gte 26>> /* 10% */
-				A <<person>> throws fruit at <<the_pillory_type>> but misses completely.
+				A <<person>> throws fruit at the <<pillory_type>> but misses completely.
 			<<elseif $rng gte 16>> /* 10% */
-				A <<person>> walks up to the pillory and _ly fondles <<the_pillory_types>> <<if $pronoun is "f">>breasts.<<else>>balls.<</if>>
+				A <<person>> walks up to the pillory and _ly fondles the <<pillory_type>>'s <<if $pronoun is "f">>breasts.<<else>>balls.<</if>>
 			<<elseif $rng gte 11 and $pillory_tenant.upperexposed lt 3>>/* 5% */
-				A <<person>> walks up to <<the_pillory_type>> and
+				A <<person>> walks up to the <<pillory_type>> and
 				<<if $pillory_tenant.upperexposed is 2>>
 					<<if $pronoun is "f">>
 					_ly removes <<his>> bra, fully exposing <<his>> $pillory_tenant.person.breastsdesc to a jeering crowd.
@@ -4635,24 +4623,24 @@
 			<<elseif $rng gte 6 and $pillory_tenant.lowerexposed lt 2>>/* 5% */
 				A <<person>> walks up to <<the_pillory_person>> and
 				<<if $pillory_tenant.lowerexposed is 1>>
-					<<if $pillory_tenant.person.gender is "f">>removes <<the_pillory_types>> underwear, fully exposing <<his>> ass and pussy to the jeering crowd.
-					<<else>>fully removes <<the_pillory_types>> underwear, exposing <<his>> ass and <<his>> $pillory_tenant.person.penisdesc to the jeering crowd.
+					<<if $pillory_tenant.person.gender is "f">>removes the <<pillory_type>>'s underwear, fully exposing <<his>> ass and pussy to the jeering crowd.
+					<<else>>fully removes the <<pillory_type>>'s underwear, exposing <<his>> ass and <<his>> $pillory_tenant.person.penisdesc to the jeering crowd.
 					<</if>>
 				<<else>>
-					<<if $pronoun is "f">>lifts <<the_pillory_types>> skirt,<<else>>pulls down <<his>> trousers,<</if>> exposing <<his>> underwear to a jeering crowd.
+					<<if $pronoun is "f">>lifts the <<pillory_type>>'s skirt,<<else>>pulls down <<his>> trousers,<</if>> exposing <<his>> underwear to a jeering crowd.
 				<</if>><<set $pillory_tenant.lowerexposed += 1>>
 			<<else>><<set $pillory_tenant.spank += 1>>/* 5% */
-				A <<person>> walks up to <<the_pillory_type>> and spanks <<him>> hard on the ass. The thwack echoes across the street.
+				A <<person>> walks up to the <<pillory_type>> and spanks <<him>> hard on the ass. The thwack echoes across the street.
 			<</if>>
 		<<else>> /*night*/
 			<<if $rng gte 86>> /* 15% chance of jeer and shout only, 85% chance of something active */
 				A number of people, led by a <<person>> jeer and shout at the prisoner.
 			<<elseif $rng gte 81>> /* 5% */
-				A <<person>> throws fruit at <<the_pillory_type_stop>> Unable to move or defend <<himself>>, it hits <<the_pillory_person>> directly in the face. There is a loud cheer.
+				A <<person>> throws fruit at the <<pillory_type>>. Unable to move or defend <<himself>>, it hits <<the_pillory_person>> directly in the face. There is a loud cheer.
 				It looks painful, especially as <<he>> cannot wipe the acids out of <<his>> eyes.
 				<<set $pillory_tenant.fruit += 1>>
 			<<elseif $rng gte 76>> /* 5% */
-				A <<person>> throws fruit at <<the_pillory_type>> but misses completely.
+				A <<person>> throws fruit at the <<pillory_type>> but misses completely.
 			<<elseif $pillory_tenant.person.pronoun is "f" and $pillory_tenant.upperexposed lt 3>>
 				<<set $pillory_tenant.upperexposed to 3>>
 				A <<person>> walks up to the helpless <<pillory_type>> and displaces all <<his>> upper clothes, fully baring <<his>> <<if $pronoun is "f">>$pillory_tenant.person.breastsdesc<<else>>chest<</if>> to the crowd.
@@ -4664,67 +4652,87 @@
 				A <<person>> walks up to the helpless <<pillory_type>> and displaces all <<his>> lower clothes, fully baring <<his>> <<if $pillory_tenant.person.gender is "f">>pussy<<else>>$pillory_tenant.person.penisdesc<</if>> to the crowd. There is a loud cheer.
 			<<elseif $rng gte 66>> /* 10% */
 				A <<person>> tries to incite a nearby dog to mount the prisoner's naked backside. It
-				<<if $rng % 2>>gives <<the_pillory_persons>> ass a few tentative sniffs, but
+				<<if $rng % 2>>gives <<the_pillory_person>>'s ass a few tentative sniffs, but
 				<</if>>is not interested.
-			<<elseif $rng gte 56>> /* 10% */
+			<<elseif $rng gte 58>> /* 8% */
 				<<set $pillory_tenant.spank += 1>>
-				A <<person>> sneaks up behind the pillory and _ly slaps <<the_pillory_types>> exposed <<if $pillory_tenant.person.gender is "f">>cunt.<<else>>balls.<</if>> The crowd jeer and laugh as <<he>> howls in pain.
-			<<elseif $rng gte 41>> /* 15% */
+				A <<person>> sneaks up behind the pillory and _ly slaps the <<pillory_type>>'s exposed <<if $pillory_tenant.person.gender is "f">>cunt.<<else>>balls.<</if>> The crowd jeer and laugh as <<he>> howls in pain.
+			<<elseif $rng gte 51>> /* 7% */
+				<<set $pillory_tenant.spank += 2>><br>
+				Some teacher you've seen around the school but never had classes with, walks drunkenly toward the pillory.
+				<<if $pillory_tenant.special.name is "Whitney">>
+					<br><<set $pillory_tenant.spank += 1>>
+					"Well, hello, Whitney! <<print either("Fancy seeing you here!","Look who it is!","Are you stuck there? How unfortunate!","Isn't this quite the turnaround!?","Such a nice surprise to see you here!")>>" <<he>> slurs, grinning.
+					"<<print either("We both know that you've earned this.","We both know how richly you deserve this.","And today's lesson will be about consequences.","Do remember that mean little nickname you made up for me?","Do remember what you did in my class the other day?")>>"
+				<<elseif $pillory_tenant.special.name is "Leighton">>
+					<br><<set $pillory_tenant.spank += 1>>
+					"Well, hello there. Is that you, boss?" <<he>> says, staying out of sight behind the pillory.
+					"<<print either("I think it's time for some 'anonymous staff feedback'.","Remember what you said about 'cruel to be kind?'","So I guess it's your turn for some 'frank and honest feedback'?","So is this the 'right forum' to air staff grievances?")>>"
+				<<else>><br>
+					"Well, hello there," <<he>> slurs, grinning.
+					"<<print either("Looks like you've been naughty.","Discipline. So important.","Isn't it a lovely evening? Don't you think? Look at that full moon!")>>"
+				<</if>><br>
+				<<He>> spanks the <<pillory_type>>'s ass until <<person2>><<his>> arm tires. The crowd jeer and laugh as the <<person1>><<person>> howls in pain.
+			<<elseif $rng gte 41>> /* 10% */
 				<<set $pillory_tenant.face += 1>>
-				A <<person>> walks in front of the pillory and _ly masturbates in front of <<the_pillory_type_stop>>
-				<<person2>><<if $pronoun is "m">>Cum soon splatters across <<the_pillory_persons>> face.
-				<<else>><<He>> grinds <<his>> cunt against <<the_pillory_persons>><<person2>> face as <<he>> orgasms.
+				A <<person>> walks in front of the pillory and _ly masturbates in front of the <<pillory_type>>.
+				<<person2>><<if $pronoun is "m">>Cum soon splatters across <<the_pillory_person>>'s face.
+				<<else>><<He>> grinds <<his>> cunt against <<the_pillory_person>>'s<<person2>> face as <<he>> orgasms.
 				<</if>> The crowd cheer and laugh.
 			<<elseif $rng gte 31>> /* 10% */
 				<<set $pillory_tenant.ass += 1>>
-				A <<person>> walks behind the pillory and _ly <<if $pronoun is "m">>rapes<<else>>fingers<</if>> <<the_pillory_types>> asshole. The crowd cheer <<person2>><<him>> on.
+				A <<person>> walks behind the pillory and _ly <<if $pronoun is "m">>rapes<<else>>fingers<</if>> the <<pillory_type>>'s asshole. The crowd cheer <<person2>><<him>> on.
 			<<elseif $rng gte 21>> /* 10% */
 				<<set $pillory_tenant.genital += 1>>
-				A <<person>> walks behind the pillory and _ly rapes <<if $pronoun is "m">><<the_pillory_person_stop>><<else>><<the_pillory_person>> with a strap-on.<</if>><<person2>> The crowd take pictures and cheer <<him>> on.
+				A <<person>> walks behind the pillory and _ly rapes <<if $pronoun is "m">><<the_pillory_person>>.<<else>><<the_pillory_person>> with a strap-on.<</if>><<person2>> The crowd take pictures and cheer <<him>> on.
 			<<elseif $rng gte 11>> /* 10% */
 				<<set $pillory_tenant.genital += 1>><<set $pillory_tenant.ass += 1>>
-				The crowd watch and photograph as a stray dog rapes <<the_pillory_person_stop>> A <<person2>><<person>> rewards the dog with a <<print either("biscuit.","pat on the head.","sweet.","cream bun.")>>
+				The crowd watch and photograph as a stray dog rapes <<the_pillory_person>>. A <<person2>><<person>> rewards the dog with a <<print either("biscuit.","pat on the head.","sweet.","cream bun.")>>
 				<br>
 				The crowd enjoys such a perverted spectacle.
-			<<elseif $rng gte 6>> /* 5% */
+			<<elseif $rng gte 6 and $malechance gt 0 and ($homochance gt 0 or $pillory_tenant.person.gender isnot "m")>> /* 5% - with men allowed */
 				<<set $pillory_tenant.ass += 1>><<set $pillory_tenant.face += 1>>
-				<<if $rng % 3 is 0>>A couple of off-duty police approach. They make a <<person>> record as they<<else>>Two men approach. Together they<</if>>
-				<<if $pillory_tenant.person.gender is "m">>anally-<<else>>_ly <</if>>spit-roast <<the_pillory_person_stop>> The crowd enjoys the spectacle.
+				<<if $rng % 3 is 0>>A couple of off-duty policemen approach. They make a <<person>> record as they<<else>>Two men approach. Together they<</if>>
+				<<if $pillory_tenant.person.gender is "m">>anally-<<else>>_ly <</if>>spit-roast <<the_pillory_person>>. The crowd enjoys the spectacle.
+			<<elseif $rng gte 6 and $malechance lt 100 and ($homochance gt 0 or $pillory_tenant.person.gender isnot "f")>> /* 5% - with women allowed */
+				<<set $pillory_tenant.ass += 1>><<set $pillory_tenant.face += 1>>
+				<<if $rng % 3 is 0>>A couple of off-duty policewomen approach. They make a <<person>> record as they<<else>>Two women approach. Together they<</if>>
+				<<if $pillory_tenant.person.gender is "m">>anally-<<else>>_ly <</if>>spit-roast <<the_pillory_person>> with strap-ons. The crowd enjoys the spectacle.
 			<<else>> /* 5% */
 				<<set $pillory_tenant.spank += 1>>
-				A <<person>> walks up to <<the_pillory_type>> and spanks <<him>> hard on the ass. The thwack echoes across the street.
+				A <<person>> walks up to the <<pillory_type>> and spanks <<him>> hard on the ass. The thwack echoes across the street.
 			<</if>>
 		<</if>>
 	<<else>>/* already abused this hour - no action, don't want spamming this scene to accelerate things ridiculously */
 		The people around <<print either("jeer at","laugh at","point at","shout abuse at","taunt","mock","leer at")>>
 		<<if $weekday isnot 1 and $weekday isnot 7 and (($hour gte 7 and $hour lte 8) or ($hour is 15)) and $schoolday is 1 and $rng lte 34>>
-			<<the_pillory_type_stop>> A group of students from the nearby school pass by, gaping at
+			the <<pillory_type>>. A group of students from the nearby school pass by, gaping at
 			<<if $pillory_tenant.lowerexposed gte 2 or $pillory_tenant.upperexposed gte 3>>the lewdly exposed prisoner.
 				<<if $rng % 3 is 0>>
-				An outraged bystander runs up to the pillory and replaces <<the_pillory_types>> clothes.
+				An outraged bystander runs up to the pillory and replaces the <<pillory_type>>'s clothes.
 				<<set $pillory_tenant.lowerexposed to 0>><<set $pillory_tenant.upperexposed to 0>><</if>>
 			<<else>>the prisoner.
 			<</if>>
 		<<elseif $daystate isnot "night">>
 			<<if $rng lte 80>>
-				<<the_pillory_type>> and <<print either("mutter among themselves.","take photos.","amuse themselves.")>>
+				the <<pillory_type>> and <<print either("mutter among themselves.","take photos.","amuse themselves.")>>
 			<<elseif $rng lte 93>>
-				<<the_pillory_type_stop>> Some get bored and leave.
+				the <<pillory_type>>. Some get bored and leave.
 				<<set $pillory_tenant.crowd -= 1>>
 			<<else>>
-				<<the_pillory_type_stop>> A bus drops some people off nearby. A few join the crowd around the pillory.
+				the <<pillory_type>>. A bus drops some people off nearby. A few join the crowd around the pillory.
 				<<set $pillory_tenant.crowd += 1>>
 			<</if>>
 		<<else>>
 			<<if $rng lte 67>>
-				<<if $pillory_tenant.lowerexposed gte 2 and $rng % 4 is 0>><<the_pillory_type>> and take selfies posing around <<his>> exposed, naked ass.
-				<<else>><<the_pillory_type>> and <<print either("mutter darkly.","drink.","throw empty beer cans.","make sinister threats.","take selfies with the prisoner.","tell dirty jokes.")>>
+				<<if $pillory_tenant.lowerexposed gte 2 and $rng % 4 is 0>>the <<pillory_type>> and take selfies posing around <<his>> exposed, naked ass.
+				<<else>>the <<pillory_type>> and <<print either("mutter darkly.","drink.","throw empty beer cans.","make sinister threats.","take selfies with the prisoner.","tell dirty jokes.")>>
 				<</if>>
 			<<elseif $rng lte 85>>
-				<<the_pillory_type_stop>> Some get tired and leave.
+				the <<pillory_type>>. Some get tired and leave.
 				<<set $pillory_tenant.crowd -= 1>>
 			<<else>>
-				<<the_pillory_type_stop>> A few people passing by join the crowd around the pillory.
+				the <<pillory_type>>. A few people passing by join the crowd around the pillory.
 				<<set $pillory_tenant.crowd += 1>>
 			<</if>>
 		<</if>>

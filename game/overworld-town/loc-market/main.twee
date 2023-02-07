@@ -1448,3 +1448,120 @@ The <<person1>><<person>> peeks outside. Fear crosses <<his>> face. <<He>> shoot
 	<<endcombat>>
 	<<stall_actions>>
 <</if>>
+
+:: Market Street Urchin Help
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "connudatus">>
+<<set $urchin_debt to random(500,2000)>>
+It turns out that the <<person1>><<person>> stole some <<if $phase is 0>>food<<else>>items from the stall<</if>> worth <<printmoney $urchin_debt>>, and the market stall owner wants to call the police.
+<br><br>
+<<if $phase is 0>>
+	<<link [[Try to explain the orphan's desperate hunger|Market Street Urchin Help Persuade]]>><</link>>
+	<br>
+<<else>>
+	<<link [[Persuade the market stall owner to drop it|Market Street Urchin Help Persuade]]>><</link>>
+	<br>
+<</if>>
+<<if $money gte $urchin_debt>>
+	<<link [[Offer to pay|Market Street Urchin Help Pay]]>><<set $phase += 1>><</link>> /* incr $phase to indicate price not agreed. */
+	<br>
+<</if>>
+<<if $submissive lte 1100 and (($phase is 0) or ($phase is 10 and ($delinquency gte 400 or $cool gte 40)))>>
+	<<link [[Attack the market stall owner|Market Street Urchin Help Hit]]>><<crime 200>><</link>><<gcrime>>
+	<br>
+<</if>>
+<<link [[Walk away|Connudatus Street]]>><<unset $urchin_debt>><<endevent>><</link>>
+<br>
+
+:: Market Street Urchin Help Persuade
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "connudatus">>
+<<if $phase is 0>>
+	You explain to the market stall owner the horrors of life in the orphanage, and what the <<person1>><<person>> has to live through.<br>
+	<<if $chef_speech is "bailey">>
+		The market stall owner looks away <<print either("sadly","darkly","with a pained expression")>>. "I've heard the rumours about that place." <<set _bar to random(0,400)>>
+	<<else>>
+		The market stall owner looks sceptical about your claims. <<set bar to random(0,1000)>>
+	<</if>>
+<<else>>
+	You tell the market stall owner about how hard the <<person>> works at school and how calling the police could destroy <<his>> whole future.<<set _bar to random(0,800)>>
+<</if>><br><br>
+<<if currentSkillValue('english') gte _bar>>
+	Hearing the passion in your words, the market stall owner relents.
+	<br>
+	<<if $phase is 0>>
+		The market stall owner sighs and waves away the concerned on-lookers. Calls you both in.<br>
+		"I'm not a monster. If you're hungry, ask me any time I'm open. Just please don't steal my stuff. Okay?"<br>
+		The <<person>> smiles, hesitates, and starts to hand back the food.<br>
+		"Keep it. It's yours. Now, get outta here. Both of you." <<lstress>><<stress -3>>
+		<br><br>
+		"Thanks," the <<person>> says, as you walk away. "I owe you one." <<ghope>><<hope 1>>
+		<br><br>
+		<<link [[Leave|Connudatus Street]]>><<famegood 20>><<unset $urchin_debt>><<endevent>><</link>>
+		<br>
+	<<else>>
+		"Okay, okay! Cut it out!" The market stall owner laughs. "Who am I to derail a future of such grand and world-changing potential!?
+		I'll let <<him>> off this time. But give that back and get outta here, and don't make me regret this. If I see you near my stall again you better be buying something.
+		And you... You, get out of here before I hire you as a sales clark!"<br>
+		The <<person>> hands back the stolen item. And the stall owner goes back to work.
+		<br><br>
+		"Thanks," the <<person>> says, as you walk away. "I owe you one." <<gcool>><<status 1>>
+		<br><br>
+		<<link [[Next|Connudatus Street]]>><<famegood 20>><<unset $urchin_debt>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<elseif currentSkillValue('english') gte (_bar/2)>>
+	Hearing the conviction in your words, the market stall owner relents.
+	<br><br>
+	"Okay, but someone has to pay me for it."<br><br>
+	<<if $money gte $urchin_debt>>
+		<<link [[Offer to pay|Market Street Urchin Help Pay]]>><</link>><br>
+		<<link [[Refuse to pay|Market Street Urchin Not Pay]]>><</link>><br>
+		<br>
+	<<else>>
+		<span class="red">You can't afford it.</span>
+		<br><br>
+		<<link [[Explain that you can't afford to pay|Market Street Urchin Not Pay]]>><<famegood 2>><</link>><br>
+	<</if>>
+<<else>>
+	The market stall owner is not convinced, and drags the <<person>> off toward the police station.<br><br>
+	<<link [[Next|Connudatus Street]]>><<unset $urchin_debt>><<endevent>><</link>>
+<</if>>
+
+:: Market Street Urchin Help Pay
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "connudatus">>
+<<if $phase % 10 is 1 and $rng % 3 is 0>> /* price not yet agreed? 1 in 3 chance of a price hike */
+	<<set $urchin_debt *= 2>>
+	"Okay," the market stall owner says. "But since <<person1>><<he>> tried to steal from me, the price has gone up to <<printmoney $urchin_debt>>."
+<<else>>
+	"Okay," the market stall owner says. "Just pay <<printmoney $urchin_debt>> for it, and get out of here. You're lucky it's been a busy day."
+<</if>>
+<br><br>
+<<if $money gte $urchin_debt>>
+	You pay the market stall owner. <<ghope>><<hope 1>><<set $money -= $urchin_debt>>
+	<br><br>
+	The owner counts it carefully and then waves you both away. "Get out of here."
+	<br><br>
+	<<link [[Next|Connudatus Street]]>><<famegood 20>><<unset $urchin_debt>><<endevent>><</link>>
+	<br>
+<<else>>
+	<span class="red">You can't afford it.</span>
+	<br><br>
+	<<link [[Explain that you can't afford to pay|Market Street Urchin Not Pay]]>><<famegood 2>><</link>><br>
+<</if>>
+
+:: Market Street Urchin Not Pay
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "connudatus">>
+The market stall owner shrugs, and drags the <<person>> off toward the police station.
+<br><br>
+<<link [[Next|Connudatus Street]]>><<unset $urchin_debt>><<endevent>><</link>>
+
+:: Market Street Urchin Help Hit
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "connudatus">>
+Without warning, you lunge at the market stall owner and shove them into their stall. Wares crash in every direction.
+<br><br>
+In the chaos that ensues, you both get away.
+<<if $phase is 0>>The orphan is grateful for your help.<<greb>><<ghope>><<reb 1>><<hope 1>>
+<<else>>The student is is grateful for your help.<<gcool>><<status 1>><<famescrap 5>>
+<</if>>
+<br><br>
+<<link [[Next|Connudatus Street]]>><<unset $urchin_debt>><<endevent>><</link>>
+<br>
