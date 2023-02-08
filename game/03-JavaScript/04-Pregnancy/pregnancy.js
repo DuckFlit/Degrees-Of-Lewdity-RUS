@@ -11,7 +11,7 @@ function generateBabyName(name, gender, childId) {
 			}
 		});
 	}
-	if (!!name && name !== "" && name !== "Unnamed") {
+	if (!!name && name !== "Unnamed") {
 		result = name.replace(/[^a-zA-ZÀ-ÿ ]+/g, "").substring(0, 30);
 		if (usedNames.includes(result)) {
 			result += " - " + childId;
@@ -58,7 +58,7 @@ function spermObjectToArray(spermObject = [], player) {
 				continue;
 		}
 
-		if (!trackedNPCs.includes(sperm.source)) trackedNPCs.push({ type: sperm.Type, source: sperm.source });
+		if (!trackedNPCs.find(npc => npc.source === sperm.source)) trackedNPCs.push({ type: sperm.type, source: sperm.source });
 		for (let i = 0, l = sperm.quantity; i < l; i++) {
 			if (sperm.mod < random(0, 100)) continue;
 
@@ -109,6 +109,7 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 			const result = namedNpcPregnancy(target, spermOwner, spermType, true);
 			if (result === true) T.npcIsPregnant = true;
 		}
+		if (target !== "pc" && spermOwner === "pc") Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>');
 		return true;
 	}
 	return false;
@@ -301,8 +302,9 @@ function endPlayerPregnancy(birthLocation, location) {
 			break;
 	}
 
+	Wikifier.wikifyEval('<<earnFeat "Miracle of Life">>');
 	if ((V.player.virginity.anal === true && !V.player.vaginaExist) || (V.player.virginity.vaginal === true && V.player.vaginaExist))
-		Wikifier.wikifyEval('<<earnFeat "Miracle of Life">>');
+		Wikifier.wikifyEval('<<earnFeat "Hail Mary">>');
 	if (!V.player.vaginaExist) Wikifier.wikifyEval('<<earnFeat "Life begins when you least expect">>');
 
 	V.sexStats[type].pregnancy = {
@@ -337,14 +339,12 @@ window.endPlayerPregnancyTest = (birthLocation, location) => {
 /* Player pregnancy ends here */
 
 /* Named NPC pregnancy starts here */
-/* ToDo: NPC Pregnancy - run in time.twee, should only run once per day, update where required */
 function npcPregnancyCycle() {
-	for (const npcName in V.NPCNameList) {
+	for (const npcName of V.NPCNameList) {
 		const npc = C.npc[npcName];
 		const pregnancy = npc.pregnancy;
-		if (!pregnancy || pregnancy.enabled === undefined) return false;
-
-		if (pregnancy.fetus.length) {
+		if (!pregnancy) continue;
+		if (pregnancy.fetus && pregnancy.fetus.length) {
 			let multiplier = 1;
 			switch (pregnancy.type) {
 				case "human":
@@ -360,8 +360,32 @@ function npcPregnancyCycle() {
 			}
 			if (pregnancy.timer > pregnancy.timerEnd) {
 				if (pregnancy.timer >= pregnancy.timerEnd + 14 * multiplier) {
-					/* ToDo: NPC Pregnancy */
 					/* Player has not seen the npc recently, sort out the pregnancy in another way */
+					let birthLocation = "";
+					let location = "";
+					switch (npcName) {
+						case "Black Wolf":
+							birthLocation = "wolf_cave";
+							location = "wolf_cave";
+							break;
+					}
+					if (!birthLocation || !location) {
+						switch (pregnancy.type) {
+							case "human":
+								if (!birthLocation) birthLocation = "hospital";
+								if (!location) location = "home";
+								break;
+							case "wolf":
+								if (!birthLocation) birthLocation = "wolf_cave";
+								if (!location) location = "wolf_cave";
+								break;
+							default: /* Considered an invalid location when the above is not updated */
+								if (!birthLocation) birthLocation = "unknown";
+								if (!location) location = "unknown";
+								break;
+						}
+					}
+					endNPCPregnancy(npcName, birthLocation, location);
 				} else {
 					/* Can deal with the npc in the next event */
 					pregnancy.waterBreaking = true;
@@ -391,7 +415,7 @@ function namedNpcPregnancyAttempt(npcName) {
 
 	const namedNpc = C.npc[npcName];
 	const pregnancy = namedNpc.pregnancy;
-	if (pregnancy || !pregnancy.enabled || pregnancy.fetus.length) {
+	if (!pregnancy || !pregnancy.enabled || pregnancy.fetus.length) {
 		// Pregnancy not supported or disabled by the player, or when they are already pregnant
 		return false;
 	}
@@ -473,13 +497,15 @@ window.namedNpcPregnancyTest = (mother, father, pregnancyType, fatherKnown, trac
 	if (V.pregnancyTesting) return namedNpcPregnancy(mother, father, pregnancyType, fatherKnown, trackedNPCs, awareOf);
 }; // V.pregnancyTesting Check should not be removed, debugging purposes only
 
-function endNPCPregnancy(npcName, birthLocation, location) {
+function endNpcPregnancy(npcName, birthLocation, location) {
 	if (!C.npc[npcName] || C.npc[npcName].vagina === "none" || C.npc[npcName].pregnancy.enabled === undefined) {
 		return false;
 	}
 	const pregnancy = C.npc[npcName].pregnancy;
 
 	if (!pregnancy || pregnancy.enabled === undefined || !pregnancy.fetus.length) return false;
+
+	if (pregnancy.fetus.mother !== "pc" && pregnancy.fetus.father === "pc") Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>');
 
 	giveBirthToChildren(npcName, birthLocation, location);
 	switch (pregnancy.type) {
@@ -513,9 +539,9 @@ function endNPCPregnancy(npcName, birthLocation, location) {
 	V.pregnancyStats.npcTotalBirthEvents++;
 	return true;
 }
-DefineMacro("endNPCPregnancy", endNPCPregnancy);
-window.endNPCPregnancyTest = (npcName, birthLocation, location) => {
-	if (V.pregnancyTesting && npcName && birthLocation && location) return endNPCPregnancy(npcName, birthLocation, location);
+DefineMacro("endNpcPregnancy", endNpcPregnancy);
+window.endNpcPregnancyTest = (npcName, birthLocation, location) => {
+	if (V.pregnancyTesting && npcName && birthLocation && location) return endNpcPregnancy(npcName, birthLocation, location);
 }; // V.pregnancyTesting Check should not be removed, debugging purposes only
 /* Named NPC pregnancy ends here */
 
@@ -539,7 +565,7 @@ function giveBirthToChildren(mother, birthLocation, location) {
 		const childId = (mother + totalBorn(mother)).replace(" ", "");
 		V.children[childId] = {
 			...childObject,
-			name: generateBabyName(childObject.name, childObject.gender),
+			name: generateBabyName(childObject.name, childObject.gender, childObject.childId),
 			born: { day: clone(V.monthday), month: clone(V.month.toUpperFirst()), year: clone(V.year) },
 			birthId,
 			childId,
@@ -567,12 +593,12 @@ function giveBirthToChildren(mother, birthLocation, location) {
 
 function totalBirthEvents(mother) {
 	if (mother === "pc") return V.sexStats.vagina.pregnancy.totalBirthEvents + V.sexStats.anus.pregnancy.totalBirthEvents;
-	if (C.npc(mother) && C.npc(mother).pregnancy) return C.npc(mother).pregnancy.totalBirthEvents || 0;
+	if (C.npc[mother] && C.npc[mother].pregnancy) return C.npc[mother].pregnancy.totalBirthEvents || 0;
 }
 
 function totalBorn(mother) {
 	if (mother === "pc") return V.sexStats.vagina.pregnancy.givenBirth + V.sexStats.anus.pregnancy.givenBirth || 0;
-	if (C.npc(mother) && C.npc(mother).pregnancy) return C.npc(mother).pregnancy.givenBirth || 0;
+	if (C.npc[mother] && C.npc[mother].pregnancy) return C.npc[mother].pregnancy.givenBirth || 0;
 	return 0;
 }
 
@@ -875,7 +901,7 @@ function wearingCondom(npcNumber) {
 	}
 	if (condom && condom.worn) {
 		if (condom.state === "defective") return "defective";
-		if(condom.state === "sabotaged") return "sabotaged";
+		if (condom.state === "sabotaged") return "sabotaged";
 		return "worn";
 	}
 	return false;

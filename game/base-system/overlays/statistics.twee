@@ -472,7 +472,7 @@
 		<<link "Yes">>
 			<<replace #customOverlayContent>><<extraStatistics>><</replace>>
 		<</link>>
-		&nbsp;&nbsp;&nbsp;<<checkbox "$options.skipStatisticsConfirmation" false true autocheck>> Don't Show Again
+		&nbsp;&nbsp;&nbsp;<label><<checkbox "$options.skipStatisticsConfirmation" false true autocheck>> Don't Show Again</label>
 		<!-- ignore the nbsp's, they're just for formatting -->
 	</div>
 <</widget>>
@@ -762,16 +762,21 @@
 			<</if>>
 			<<foldout false "_pregnancyFoldout">>
 				<span class="gold">Pregnancy</span>
-				<br>
 				<<if canBeMPregnant()>>
 				<<elseif !$player.vaginaExist>>
 					Can not currently get pregnant.
 				<<elseif $_vPregnancy.type is "parasite">>
 					Parasites in the womb are preventing normal pregnancy from occuring.
 				<<elseif $_vPregnancy.type isnot null>>
-					Currently pregnant with: <<print $_vPregnancy.fetus.length>> <<print $_vPregnancy.type>>.
+					Currently pregnant with: <<print $_vPregnancy.fetus.length>>
+						<<extraStatisticsPregnancyType $_vPregnancy.type>>
 					<br>
-					Pregnancy progress: <<print Math.clamp($_vPregnancy.timer / $_vPregnancy.timerEnd * 100, 0, 100)>>%.
+					<<set $_days to pregnancyDaysEta($_vPregnancy)>>
+					<<if $_days lt 1>>
+						ETA: Anytime.
+					<<elseif $_days>>
+						ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
+					<</if>>
 					<br>
 				<<else>>
 					Not currently pregnant.
@@ -794,9 +799,15 @@
 					<<if $_aPregnancy.type is "parasite">>
 						Parasites in the womb are preventing normal pregnancy from occuring.
 					<<elseif $_aPregnancy.type isnot null>>
-						Currently pregnant with: <<print $_aPregnancy.fetus.length>> <<print $_aPregnancy.type>>.
+						Currently pregnant with: <<print $_aPregnancy.fetus.length>>
+						<<extraStatisticsPregnancyType $_aPregnancy.type>>
 						<br>
-						Pregnancy progress: <<print Math.clamp($_aPregnancy.timer / $_aPregnancy.timerEnd * 100, 0, 100)>>%.
+						<<set $_days to pregnancyDaysEta($_aPregnancy)>>
+						<<if $_days lt 1>>
+							ETA: Anytime.
+						<<elseif $_days>>
+							ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
+						<</if>>
 						<br>
 					<<else>>
 						Not currently pregnant.
@@ -817,6 +828,37 @@
 					<</if>>
 				<</if>>
 			<</foldout>>
+			<<if $NPCName.find(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
+				<<foldout false "_npcPregnancyFoldout">>
+					<span class="gold">NPC Pregnancy</span>
+					<<for $_npc range $NPCName.filter(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
+						<div>
+							<<print $_npc.nam>>:
+							<<if !$_npc.pregnancy.enabled and !$_npc.pregnancy.fetus.length>>
+								Pregnancy for NPC disabled by the player.
+							<<elseif !$_npc.pregnancy.fetus.length>>
+								Not Pregnant.
+							<<elseif $_npc.pregnancy.fetus.length>>
+								Pregnant with <<print $_npc.pregnancy.fetus.length>>
+								<<extraStatisticsPregnancyType $_npc.pregnancy.type>>
+								<<set $_days to pregnancyDaysEta($_npc.pregnancy)>>
+								<<if $_days lt 1>>
+									ETA: Anytime.
+								<<elseif $_days>>
+									ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
+								<</if>>
+							<</if>>
+						</div>
+					<</for>>
+				<</foldout>>
+			<</if>>
 		<</if>>
 	</div>
+<</widget>>
+
+<<widget "extraStatisticsPregnancyType">>
+	<<switch _args[0]>>
+		<<case "human">>normal babies.
+		<<case "wolf">>wolf puppies.
+	<</switch>>
 <</widget>>

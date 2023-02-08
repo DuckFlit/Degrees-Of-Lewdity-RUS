@@ -60,7 +60,7 @@ window.pregnancyBellyVisible = pregnancyBellyVisible;
 
 function npcBellySize(npc) {
 	let bellySize = 0;
-	if (C.npc(npc) && C.npc(npc).pregnancy && C.npc(npc).pregnancy.enabled) {
+	if (C.npc(npc) && C.npc(npc).pregnancy && C.npc(npc).pregnancy.enabled === undefined) {
 		const pregnancy = C.npc(npc).pregnancy;
 		let pregnancyProgress = 0;
 		if (pregnancy.timerEnd) pregnancyProgress = Math.clamp(pregnancy.timer / pregnancy.timerEnd, 0, 1);
@@ -89,9 +89,20 @@ function npcPregnancyBellyVisible(npc) {
 window.npcPregnancyBellyVisible = npcPregnancyBellyVisible;
 
 function npcIsPregnant(npc) {
-	return C.npc[npc] && C.npc[npc].pregnancy && C.npc[npc].pregnancy.enabled && C.npc[npc].pregnancy.type && C.npc[npc].pregnancy.type !== "parasite";
+	return (
+		C.npc[npc] &&
+		C.npc[npc].pregnancy &&
+		C.npc[npc].pregnancy.enabled === undefined &&
+		C.npc[npc].pregnancy.type &&
+		C.npc[npc].pregnancy.type !== "parasite"
+	);
 }
 window.npcIsPregnant = npcIsPregnant;
+
+function npcPregnancyEnding(npc) {
+	return C.npc[npc] && C.npc[npc].pregnancy && C.npc[npc].pregnancy.waterBreaking;
+}
+window.npcPregnancyEnding = npcPregnancyEnding;
 
 function playerIsPregnant() {
 	return (
@@ -320,6 +331,16 @@ function pregnancyNameCorrection(name) {
 }
 window.pregnancyNameCorrection = pregnancyNameCorrection;
 
+function pregnancyUINameCorrection(name) {
+	switch (name) {
+		case "pc":
+			name = "You";
+			break;
+	}
+	return name;
+}
+window.pregnancyUINameCorrection = pregnancyUINameCorrection;
+
 function playerPregnancyRisk() {
 	if (V.playerPregnancyHumanDisable === "t" && V.playerPregnancyBeastDisable === "t") return 6; // Player Pregnancy Disabled
 	if (!V.player.vaginaExist && !canBeMPregnant()) return 6; // Player is male and can't become MPregnant
@@ -398,35 +419,34 @@ function playerHeatMinArousal() {
 	if (!V.sexStats || !V.sexStats.pills) return 0;
 	if (!V.player.vaginaExist && !canBeMPregnant()) return 0;
 	if (playerIsPregnant() && playerPregnancyProgress(false) > 10) return 0;
-	if (V.wolfgirl < 6 && V.cat < 6) return 0;
 
 	const pills = V.sexStats.pills.pills;
 	const risk = playerPregnancyRisk();
 	let minArousal = 0;
 
 	if (risk <= 1 && pills.contraceptive.doseTaken === 0) {
-		if (V.wolfgirl) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10 * (2 - risk);
-		if (V.cat) minArousal += Math.clamp(V.catbuild, 0, 100) * 10 * (2 - risk);
+		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10 * (2 - risk);
+		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10 * (2 - risk);
+		if (V.cow >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10 * (2 - risk);
 	}
 	if (pills["fertility booster"].doseTaken > 2) {
 		minArousal += 500;
 	}
 
-	minArousal *= Math.ceil(minArousal * pills["fertility booster"].doseTaken + 1);
 	return minArousal;
 }
 window.playerHeatMinArousal = playerHeatMinArousal;
 
 function playerRutMinArousal() {
-	if (!V.player.penisExist || !V.sexStats || !V.sexStats.pills || V.player.beastRut !== 0) return 0;
-	if (V.wolfgirl < 6 && V.cat < 6) return 0;
+	if (!V.player.penisExist || V.player.penissize < -1 || !V.sexStats || !V.sexStats.pills) return 0;
 
 	const pills = V.sexStats.pills.pills;
 	let minArousal = 0;
 
-	if (pills.contraceptive.doseTaken === 0) {
-		if (V.wolfgirl) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10;
-		if (V.cat) minArousal += Math.clamp(V.catbuild, 0, 100) * 10;
+	if (pills.contraceptive.doseTaken === 0 && V.player.beastRut !== undefined && V.player.beastRut <= 1) {
+		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10;
+		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10;
+		if (V.cow >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10;
 	}
 	if (pills["fertility booster"].doseTaken > 2) {
 		minArousal += 500;
@@ -445,3 +465,27 @@ function playerAwareTheyAreInHeat() {
 	return playerHeatMinArousal() && playerAwareTheyCanBePregnant();
 }
 window.playerAwareTheyAreInHeat = playerAwareTheyAreInHeat;
+
+function pregnancyDaysEta(pregnancyObject) {
+	if (
+		!pregnancyObject ||
+		!pregnancyObject.fetus ||
+		!pregnancyObject.fetus.length ||
+		!pregnancyObject.type ||
+		pregnancyObject.timer === undefined ||
+		pregnancyObject.timer === null ||
+		!pregnancyObject.timerEnd
+	) {
+		return null;
+	}
+	const timerLeft = pregnancyObject.timerEnd - pregnancyObject.timer;
+	switch (pregnancyObject.type) {
+		case "human":
+			return Math.floor(timerLeft / (1 / ((1 / 9) * V.humanPregnancyMonths)));
+		case "wolf":
+			return Math.floor(timerLeft / (1 / ((1 / 12) * V.wolfPregnancyWeeks)));
+		default:
+			return null;
+	}
+}
+window.pregnancyDaysEta = pregnancyDaysEta;

@@ -107,6 +107,10 @@
 	<</if>>
 <</widget>>
 
+<<widget "menstruationCycleState">>
+	<<set $sexStats.vagina.menstruation.running to $player.vaginaExist or (!$player.vaginaExist and $skin.pubic.pen is "magic" and $skin.pubic.special is "pregnancy")>>
+<</widget>>
+
 <<widget "menstruationCycle">>
 	<<set _menstruation to $sexStats.vagina.menstruation>>
 	<<if _args[0] is "daily">>/*Daily cycle*/
@@ -116,7 +120,7 @@
 		<<set _menstruation.nonCycleRng[0] to 0>>
 	<</if>>
 
-	<<set _menstruation.running to $player.vaginaExist or (!$player.vaginaExist and V.skin.pubic.pen is "magic" and V.skin.pubic.special is "pregnancy")>>
+	<<menstruationCycleState>>
 
 	<<if _menstruation.running is true>>
 		<<set $_pregLocation to ($player.vaginaExist ? "vagina" : "anus")>>
@@ -234,17 +238,22 @@
 	<<updateRecordedSperm "anus" "pc" 0.5>>
 <</widget>>
 
-
 <<widget "rutCycle">>
-	<<if $player.penisExist and ($wolfgirl gte 6 or $cat gte 6)>>
+	<<if $player.penisExist and ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2)>>
 		<<if !$player.beastRut>>
 			<<set $player.beastRut to 0>>
 		<</if>>
 		<<set $_pills = $sexStats.pills.pills>>
-
+		<<if $wolfgirl gte 2>>
+			<<set $_changeReduction to $wolfbuild>>
+		<<elseif $cat gte 2>>
+			<<set $_changeReduction to $catbuild>>
+		<<elseif $cow gte 2>>
+			<<set $_changeReduction to $cowbuild>>
+		<</if>>
 		<<set $player.beastRut += 1 + $_pills["fertility booster"].doseTaken>>
 
-		<<if $player.beastRut gte 30 or _args[0] or $_pills["fertility booster"].doseTaken gt 2>>
+		<<if $player.beastRut gte random(30 - Math.ceil($_changeReduction / 5), 120 - Math.clamp($_changeReduction, 0, 100)) or _args[0] or $_pills["fertility booster"].doseTaken gt 2>>
 			<<set $player.beastRut to 0>>
 		<</if>>
 	<<else>>
@@ -282,91 +291,113 @@
 	<<set _menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
 <</widget>>
 
+/*args[0] - mother, args[1] - birth location, args[2] - location of where the clildren should go to, _args[3] - next passage, _args[4] - time passage*/
 /*args[0] - birth location, args[1] - location of where the clildren should go to, _args[2] - next passage, _args[3] - time passage*/
 <<widget "birthUi">>
-	<<if $player.vaginaExist>>
-		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+	<<if _args[0] is "pc">>
+		<<if $player.vaginaExist>>
+			<<set _pregnancyBirth to $sexStats.vagina.pregnancy>>
+		<<else>>
+			<<set _pregnancyBirth to $sexStats.anus.pregnancy>>
+		<</if>>
+	<<elseif C.npc[_args[0]] and C.npc[_args[0]].pregnancy>>
+		<<set _pregnancyBirth to C.npc[_args[0]].pregnancy>>
+	<</if>>
+	<<if _pregnancyBirth>>
+		<div id="birthUi">
+			<<for _i to 0; _i lt _pregnancyBirth.fetus.length; _i++>>
+				<<capture _i>>
+					<div @id="'child-' + _i" class="childUi">
+						<<birthChildElement _args[0] _i>>
+					</div>
+				<</capture>>
+			<</for>>
+		</div>
+		<br>
+		<<if _args[3]>>
+			<<set _hours to Math.floor(_args[4] / 60)>>
+			<<set _minutes to _args[4] % 60>>
+			<<set _timeString to " (" + (_hours lt 10 ? "0": "") +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
+		<</if>>
+		<<link [["Next" + (_args[4] ? _timeString : "")|_args[3]]]>>
+			<<if _args[0] is "pc">>
+				<<endPlayerPregnancy _args[1] _args[2]>>
+			<<elseif $NPCNameList.includes(_args[0])>>
+				<<endNpcPregnancy _args[0] _args[1] _args[2]>>
+			<</if>>
+		<</link>>
 	<<else>>
-		<<set $_pregnancy to $sexStats.anus.pregnancy>>
+
 	<</if>>
-	<div id="birthUi">
-		<<for _i to 0; _i lt $_pregnancy.fetus.length; _i++>>
-			<<capture _i>>
-				<div @id="'child-' + _i" class="childUi">
-					<<birthChildElement _i>>
-				</div>
-			<</capture>>
-		<</for>>
-	</div>
-	<br>
-	<<if _args[2]>>
-		<<set _hours to Math.floor(_args[3] / 60)>>
-		<<set _minutes to _args[3] % 60>>
-		<<set _timeString to " (" + (_hours lt 10 ? "0": "") +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
-	<</if>>
-	<<link [["Next" + (_args[3] ? _timeString : "")|_args[2]]]>>
-		<<endPlayerPregnancy _args[0] _args[1]>>
-	<</link>>
 <</widget>>
 
 <<widget "birthChildElement">>
-	<<if $player.vaginaExist>>
-		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-	<<else>>
-		<<set $_pregnancy to $sexStats.anus.pregnancy>>
-	<</if>>
-	<<capture _args>>
-		<<if $_pregnancy.fetus[_args[0]].type isnot "human">>
-			Type: <<print $_pregnancy.fetus[_args[0]].type[0].toUpperCase() + $_pregnancy.fetus[_args[0]].type.substring(1)>> |
-		<</if>>
-		Gender:
-		<<switch $_pregnancy.fetus[_args[0]].gender>>
-			<<case "m">>Male
-			<<case "f">>Female
-			<<case "h">>Hermaphrodite
-		<</switch>>
-		<br>
-		Mother:
-		<<if $_pregnancy.fetus[_args[0]].motherKnown>>
-			<<print $_pregnancy.fetus[_args[0]].mother>>
-		<<else>>
-			????
-		<</if>>
-		| Father:
-		<<if $_pregnancy.fetus[_args[0]].fatherKnown>>
-			<<print $_pregnancy.fetus[_args[0]].father>>
-		<<else>>
-			????
-		<</if>>
-		<br>
-		Size: <<print $_pregnancy.fetus[_args[0]].features.size>> | Hair Colour: <<print $_pregnancy.fetus[_args[0]].features.hairColour>>
-		<<if $_pregnancy.fetus[_args[0]].features.skinColour isnot null>>
-			| Skin Colour: <<print $_pregnancy.fetus[_args[0]].features.skinColour>>
-		<</if>>
-		<br>
-		<<if $_pregnancy.fetus[_args[0]].features.identical isnot null>>
-			Identical: <<print $_pregnancy.fetus[_args[0]].features.identical>>
-			<br>
-		<</if>>
-		<label><<print '<<textbox "$_pregnancy.fetus['+_args[0]+'].name" $_pregnancy.fetus['+_args[0]+'].name>>'>></label>
-		<br>
-		<span class="no-numberify"><<link "Random Name">>
-			<<set _expectedChildId to "pc" + String($sexStats.vagina.pregnancy.givenBirth + 1 + _args[0]).padStart(3,"0").replace(' ','')>>
-			<<set $sexStats.vagina.pregnancy.fetus[_args[0]].name to generateBabyName(undefined, $sexStats.vagina.pregnancy.fetus[_args[0]].gender, _expectedChildId)>>
-			<<replace `"#child-" + _args[0]`>><<birthChildElement _args[0]>><</replace>>
-		<</link>></span>
-		<small class="right">
-			saveId: <<print $saveId>>
-			<<if $saveName isnot "">>
-				| name: <<print $saveName>>
+	<<if _pregnancyBirth>>
+		<<capture _args>>
+			<<if _pregnancyBirth.fetus[_args[1]].type isnot "human">>
+				Type: <<print _pregnancyBirth.fetus[_args[1]].type[0].toUpperCase() + _pregnancyBirth.fetus[_args[1]].type.substring(1)>> |
 			<</if>>
-		</small>
-	<</capture>>
+			Gender:
+			<<switch _pregnancyBirth.fetus[_args[1]].gender>>
+				<<case "m">>Male
+				<<case "f">>Female
+				<<case "h">>Hermaphrodite
+			<</switch>>
+			<br>
+			Mother:
+			<<if _pregnancyBirth.fetus[_args[1]].motherKnown>>
+				<<print pregnancyUINameCorrection(_pregnancyBirth.fetus[_args[1]].mother)>>
+			<<else>>
+				????
+			<</if>>
+			| Father:
+			<<if _pregnancyBirth.fetus[_args[1]].fatherKnown>>
+				<<print pregnancyUINameCorrection(_pregnancyBirth.fetus[_args[1]].father)>>
+			<<else>>
+				????
+			<</if>>
+			<br>
+			Size: <<print _pregnancyBirth.fetus[_args[1]].features.size>> | Hair Colour: <<print _pregnancyBirth.fetus[_args[1]].features.hairColour>>
+			<<if _pregnancyBirth.fetus[_args[1]].features.skinColour>>
+				| Skin Colour: <<print _pregnancyBirth.fetus[_args[1]].features.skinColour>>
+			<</if>>
+			<br>
+			<<if _pregnancyBirth.fetus[_args[1]].features.identical>>
+				Identical: <<print _pregnancyBirth.fetus[_args[1]].features.identical>>
+				<br>
+			<</if>>
+			<label><<print '<<textbox "_pregnancyBirth.fetus['+_args[1]+'].name" `_pregnancyBirth.fetus['+_args[1]+'].name or ""`>>'>></label>
+			<br>
+			<span class="no-numberify">
+				<<link "Random Name">>
+					<<if _args[0] is "pc">>
+						<<if $player.vaginaExist>>
+							<<set _pregnancyNaming to $sexStats.vagina.pregnancy>>
+						<<else>>
+							<<set _pregnancyNaming to $sexStats.anus.pregnancy>>
+						<</if>>
+					<<elseif C.npc[_args[0]] and C.npc[_args[0]].pregnancy>>
+						<<set _pregnancyNaming to C.npc[_args[0]].pregnancy>>
+					<</if>>
+					<<set _pregnancyNaming.fetus[_args[1]].name to generateBabyName(undefined, _pregnancyNaming.fetus[_args[1]].gender, _expectedChildId)>>
+					<<replace `"#child-" + _args[1]`>><<birthChildElement _args[0] _args[1]>><</replace>>
+				<</link>>
+			</span>
+			<small class="right">
+				saveId: <<print $saveId>>
+				<<if $saveName isnot "">>
+					| name: <<print $saveName>>
+				<</if>>
+			</small>
+		<</capture>>
+	<<else>>
+
+	<</if>>
 <</widget>>
 
 <<widget "wakingEffects">><<silently>>
-	/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-	<<if $pregnancyTesting is undefined>>
+	/*ToDo: Pregnancy, remove 'or $pregnancyTesting' to properly enable*/
+	<<if !$sexStats.vagina.menstruation.running or $pregnancyTesting is undefined>>
 	<<elseif _args[0] and $sexStats.vagina.menstruation.currentState is "pregnant" or ($sexStats.vagina.menstruation.currentState is "normal" and ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f"))>>
 		<<if $player.vaginaExist>>
 			<<set $_pregnancy to $sexStats.vagina.pregnancy>>
