@@ -42,17 +42,17 @@
  * @property {string} [blendMode] Recoloring mode (see docs for globalCompositeOperation; "hard-light", "multiply" and "screen" ), default none.
  * @property {string|object} [blend] Color for recoloring, CSS color string or gradient spec (see model.d.ts).
  * @property {string} [masksrc] Mask image path. If present, only parts where mask is opaque will be displayed.
- * @property {string} [animation] Name of animation to apply, default none
+ * @property {string} [animation] Name of animation to apply, default none.
  * @property {number} [frames] Frame numbers used to display static images, array of subsprite indices. For example, if model frame count is 6 but layer has only 3 subsprites, default frames would be [0, 0, 1, 1, 2, 2].
- * @property {string[]} [filters] Names of filters that should be applied to the layer; filters themselves are taken from model options
- * @property {number} [dx] Layer X position on the image, default 0
- * @property {number} [dy] Layer Y position on the image, default 0
- * @property {number} [width] Layer subsprite width, default = model width
- * @property {number} [height] Layer subsprite width, default = model height
+ * @property {string[]} [filters] Names of filters that should be applied to the layer; filters themselves are taken from model options.
+ * @property {number} [dx] Layer X position on the image, default 0.
+ * @property {number} [dy] Layer Y position on the image, default 0.
+ * @property {number} [width] Layer subsprite width, default = model width.
+ * @property {number} [height] Layer subsprite width, default = model height.
  *
- * The following functions can be used instead of constant properties. Their arguments are (options) where options are model options provided in render call (from _modeloptions variable for <<rendermodel>>/<<animatemodel>> widget)
- * @property {function} [showfn] (options)=>boolean Function generating `show` property. Should return boolean, do not use undefined/null/0/"" to hide layer, use of !! (double not) operator recommended.
- * @property {function} [srcfn] (options)=>string
+ * The following functions can be used instead of constant properties. Their arguments are (options) where options are model options provided in render call (from _modeloptions variable for <<rendermodel>>/<<animatemodel>> widget).
+ * @property {Function} [showfn] (options)=>boolean Function generating `show` property. Should return boolean, do not use undefined/null/0/"" to hide layer, use of !! (double not) operator recommended.
+ * @property {Function} [srcfn] (options)=>string.
  * @property {function} [zfn] (options)=>number
  * @property {function} [alphafn] (options)=>number
  * @property {function} [desaturatefn] (options)=>boolean
@@ -79,7 +79,7 @@
  * @property {Object<string, CanvasModelLayer>} layers Layers (by name).
  * @property {Function} [generatedOptions] Function ()=>string[] names of generated options.
  * @property {Function} [defaultOptions] Function ()=>object returning default options.
- * @property {function} [preprocess] Preprocessing function (options)=>void to generate temp options
+ * @property {Function} [preprocess] Preprocessing function (options)=>void to generate temp options.
  */
 
 // Consider doing proper class inheritance
@@ -170,6 +170,15 @@ window.CanvasModel = class CanvasModel {
 		}
 	}
 
+	hideLayer(name) {
+		const layer = this.layers[name];
+		if (!layer) {
+			console.error("Layer not found: " + this.name + "/" + name);
+			return;
+		}
+		layer.show = false;
+	}
+
 	/**
 	 * Update layers according to options and render them as static image.
 	 *
@@ -212,19 +221,9 @@ window.CanvasModel = class CanvasModel {
 		}
 		Renderer.lastModel = this;
 		if (this.animated) {
-			return Renderer.animateLayers(
-				this.canvas,
-				this.compile(this.options),
-				this.listener,
-				true
-			);
+			return Renderer.animateLayers(this.canvas, this.compile(this.options), this.listener, true);
 		} else {
-			return Renderer.composeLayers(
-				this.canvas,
-				this.compile(this.options),
-				this.canvas.canvas.width / this.width,
-				this.listener
-			);
+			return Renderer.composeLayers(this.canvas, this.compile(this.options), this.canvas.canvas.width / this.width, this.listener);
 		}
 	}
 
@@ -279,24 +278,21 @@ window.CanvasModel = class CanvasModel {
 					layer[propname] = layer[fnkey](options);
 				} catch (e) {
 					if (layer.show) {
-						console.error(
-							"Error evaluating layer " + layer.name + " property " + propname
-						);
+						console.error("Error evaluating layer " + layer.name + " property " + propname);
 					}
 				}
 			}
 		}
 
 		for (const layer of this.layerList) {
-			propeval(layer, "show");
+			layer.show || propeval(layer, "show");
 			propeval(layer, "src");
 			if (!layer.src) {
 				layer.src = ""; // force string value
 				layer.show = false;
 			}
 			propeval(layer, "z");
-			if (typeof layer.z !== "number" && layer.show !== false)
-				console.error("Layer " + layer.name + " missing property z");
+			if (typeof layer.z !== "number" && layer.show !== false) console.error("Layer " + layer.name + " missing property z");
 			propeval(layer, "alpha");
 			propeval(layer, "blendMode");
 			propeval(layer, "blend");
@@ -372,7 +368,7 @@ Renderer.locateModel = function (modelName, slot) {
  */
 function assignDefaults(target, source) {
 	for (const k in source) {
-		if (!source.hasOwnProperty(k)) continue;
+		if (!Object.hasOwn(source, k)) continue;
 		if (!(k in target)) target[k] = source[k];
 	}
 	return target;
