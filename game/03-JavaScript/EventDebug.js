@@ -122,7 +122,7 @@ class EventData {
 				// Slot not accounted for yet, NPC is good.
 				usedArr[element.slot] = true;
 				continue;
-			} else if (V.debugdisable === "f" || V.debug) {
+			} else if (V.options.debugdisable === "f" || V.debug) {
 				// NPC position is being used more than once, although not a gap, flag.
 				console.warn("NPC slot", element.slot, "is being used more than once. Existing NPCs should be disposed before using their slot.");
 				return false;
@@ -139,7 +139,7 @@ class EventData {
 		}
 		if (slots.length !== 0) {
 			// Index is slot, index being 0 or higher means we have an empty slot.
-			if (V.debugdisable === "f" || V.debug) {
+			if (V.options.debugdisable === "f" || V.debug) {
 				console.warn("NPC slots that are empty:", slots);
 			}
 			return false;

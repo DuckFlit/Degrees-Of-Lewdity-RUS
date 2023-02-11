@@ -1,3 +1,15 @@
+/* eslint-disable jsdoc/check-tag-names */
+/* eslint-disable jsdoc/no-undefined-types */
+/* eslint-disable jsdoc/newline-after-description */
+/* eslint-disable jsdoc/require-description-complete-sentence */
+/* eslint-disable eqeqeq */
+/* eslint-disable camelcase */
+/* eslint-disable spaced-comment */
+/* eslint-disable no-useless-return */
+/* eslint-disable no-undef */
+/* eslint-disable prefer-const */
+/* eslint-disable prettier/prettier */
+/* eslint-disable dot-notation */
 
 /*
 twine expression conversion (simple cases only):
@@ -2725,7 +2737,7 @@ function isPartEnabled(type) {
 		It is better to catch potential errors and ensure a standard is kept. */
 	/* Check for undefined in case the object given was a typo. 06/10/22 Sneaky incident :trolldispair: */
 	if (typeof type !== "string") {
-		if (V.debug || V.debugdisable === "f") {
+		if (V.debug || V.options.debugdisable === "f") {
 			Errors.report("isPartEnabled was given an unexpected value.", type);
 		}
 		// return false;
