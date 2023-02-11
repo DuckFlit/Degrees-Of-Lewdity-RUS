@@ -6,9 +6,7 @@
 	let resp = "";
 	try {
 		// eslint-disable-next-line no-eval
-		eval(
-			"const tdTest = { 'name': 'Bob', 'age': 5 };const tfTest2 = { 'hair': 'blonde', ...tdTest };"
-		);
+		eval("const tdTest = { 'name': 'Bob', 'age': 5 };const tfTest2 = { 'hair': 'blonde', ...tdTest };");
 	} catch (e) {
 		hasErrored = true;
 		resp += "Destructuring is not supported for your browser.\n";
@@ -20,9 +18,7 @@
 		const chromeTest = segments.findIndex(s => s.startsWith("Chrome"));
 		const firefoxTest = segments.findIndex(s => s.startsWith("Firefox"));
 		if (androidTest >= 0) {
-			resp +=
-				"\nUpdate your Android WebView System app.\nVersion: " +
-				segments[androidTest].slice(8);
+			resp += "\nUpdate your Android WebView System app.\nVersion: " + segments[androidTest].slice(8);
 		} else if (chromeTest >= 0) {
 			resp += "\nUpdate your Chrome browser.\nVersion: " + segments[chromeTest].slice(7);
 		} else if (firefoxTest >= 0) {
@@ -36,11 +32,16 @@
 })();
 
 /* Implement hasOwn function interception for old versions of JS. */
-(function (hasOwn) {
-	Object.hasOwn = function () {
-		if (typeof hasOwn !== "function") {
-			return this.prototype.hasOwnProperty.call(...arguments);
-		}
-		return hasOwn.apply(this, arguments);
-	};
-})(Object.hasOwn);
+if (!Object.hasOwn) {
+	Object.defineProperty(Object, "hasOwn", {
+		value(object, property) {
+			if (object == null) {
+				throw new TypeError("Cannot convert undefined or null to object");
+			}
+			return Object.prototype.hasOwnProperty.call(Object(object), property);
+		},
+		configurable: true,
+		enumerable: false,
+		writable: true,
+	});
+}
