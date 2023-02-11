@@ -326,7 +326,13 @@ function pregnancyNameCorrection(name) {
 		case "Ivory Wraith":
 			name = "the " + name;
 			break;
-	}
+		case "pc":
+			name = "yourself";
+			break;
+		default:
+			name = (name[0] == name[0].toLowerCase() ? "a " + name : name);
+			break;
+		}
 	return name;
 }
 window.pregnancyNameCorrection = pregnancyNameCorrection;
