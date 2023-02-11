@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 Config.history.controls = false;
 Config.saves.slots = 9;
 Config.history.maxStates = 1;
@@ -7,7 +8,6 @@ State.prng.init();
 window.versionUpdateCheck = true;
 window.onLoadUpdateCheck = false;
 
-let isReloading = true;
 let pageLoading = false;
 
 Save.onLoad.add(save => {
@@ -63,7 +63,7 @@ Config.saves.isAllowed = function () {
 
 $(document).on(":passagestart", function (ev) {
 	if (ev.passage.title === "Start2") {
-		jQuery.event.trigger({
+		$.event.trigger({
 			type: ":start2",
 			content: ev.content,
 			passage: ev.passage,
@@ -138,36 +138,21 @@ function defaultSaveDetails(input) {
 
 // Runs before a passage load, returning a string redirects to the new passage name.
 Config.navigation.override = function (dest) {
-	const isLoading = pageLoading; // if page is freshly loading (after a refresh etc), we hold its value in a temporary variable
-
-	if (isReloading) {
-		/* This must have the highest precedence. */
+	const checkPassages = dest => {
 		const lastVersion = DoLSave.Utils.parseVer(V.saveVersions.last());
 		const currVersion = DoLSave.Utils.parseVer(StartConfig.version);
 		if (lastVersion > currVersion) {
-			isReloading = false;
 			V.bypassHeader = true;
 			return "Downgrade Waiting Room";
 		}
-	}
 
-	isReloading = false;
-	pageLoading = false;
-
-	/* Check for passage rerouting using events */
-	const passageArgs = { name: dest };
-	jQuery.event.trigger(":passageoverride", passageArgs);
-	if (passageArgs.name !== dest) {
-		/* Return new passage dest. Will divert the processed passage to this. */
-		return passageArgs.name;
-	}
-
-	const checkPassages = dest => {
 		switch (dest) {
 			case "Downgrade Waiting Room":
 				return V.passage;
+
 			case "Pharmacy Select Custom Lenses":
-				return isLoading ? "Pharmacy Ask Custom Lenses" : false;
+				return "Pharmacy Ask Custom Lenses";
+
 			case "Forest Shop Outfit":
 			case "Forest Shop Upper":
 			case "Forest Shop Lower":
@@ -430,8 +415,21 @@ Config.navigation.override = function (dest) {
 		}
 	};
 
-	const passageOverride = checkPassages(dest);
-	if (passageOverride) V.passageOverride = passageOverride;
+	/* Check for passage rerouting using events */
+	const passageArgs = { name: dest };
+	$.event.trigger(":passageoverride", passageArgs);
+	if (passageArgs.name !== dest) {
+		/* Return new passage dest. Will divert the processed passage to this. */
+		return passageArgs.name;
+	}
 
-	return passageOverride;
+	if (pageLoading) {
+		pageLoading = false;
+		const passageOverride = checkPassages(dest);
+		if (passageOverride) V.passageOverride = passageOverride;
+
+		return passageOverride;
+	}
+
+	return false;
 };

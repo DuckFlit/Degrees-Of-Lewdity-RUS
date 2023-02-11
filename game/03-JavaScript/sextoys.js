@@ -5,17 +5,14 @@ window.playerHasStrapon = playerHasStrapon;
 
 function npcHasStrapon(index) {
 	if (typeof index !== "number") {
-		if (V.debugdisable === "f" || V.debug === 1)
+		if (V.options.debugdisable === "f" || V.debug === 1)
 			Errors.report(`[npcHasStrapon]: index must be a number, was ${typeof index}.`, {
 				index,
 			});
 		return false;
 	} else if (index < 0 || index > 5) {
-		if (V.debugdisable === "f" || V.debug === 1)
-			Errors.report(
-				`[npcHasStrapon]: index must be between 0 and 5 inclusive, was ${index}.`,
-				{ index }
-			);
+		if (V.options.debugdisable === "f" || V.debug === 1)
+			Errors.report(`[npcHasStrapon]: index must be between 0 and 5 inclusive, was ${index}.`, { index });
 		return false;
 	}
 	// index is 0 to 5
@@ -69,8 +66,7 @@ const randomSexToy = toyType => getSexToysofType(toyType).random();
 window.randomSexToy = randomSexToy;
 
 function playerHasButtPlug() {
-	return (
-		V.worn.butt_plug != null && V.worn.butt_plug.state === "worn" && V.worn.butt_plug.worn === 1
-	); // V.worn.butt_plug.worn === 1 is just as a safeguard for now
+	return V.worn.butt_plug != null && V.worn.butt_plug.state === "worn" && V.worn.butt_plug.worn === 1;
+	// V.worn.butt_plug.worn === 1 is just as a safeguard for now
 }
 window.playerHasButtPlug = playerHasButtPlug;
