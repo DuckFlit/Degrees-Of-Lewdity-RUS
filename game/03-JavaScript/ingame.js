@@ -1345,7 +1345,7 @@ window.isLoveInterest = isLoveInterest;
 
 /** This function will determine if the date is right for a blood moon, and which part of the night it will happen in */
 function getTodaysMoonState() {
-	let todaysMoonState = 0;
+	const todaysMoonState = 0;
 	if (V.monthday === getLastDayOfMonth()) {
 		// blood moon happens on the last night of the month
 		T.todaysMoonState = "evening";
@@ -1360,7 +1360,7 @@ function getMoonState() {
 	let moonstate = 0;
 	T.todaysMoonState = getTodaysMoonState();
 
-	if (T.nightstate === T.todaysMoonState) { //if the current time of night matches the time a blood moon will happen, set moonstate
+	if (T.nightstate === T.todaysMoonState) { // if the current time of night matches the time a blood moon will happen, set moonstate
 		moonstate = T.todaysMoonState;
 	}
 	// V.moonstate = moonstate; //commenting this out to make sure this function doesn't modify save variables

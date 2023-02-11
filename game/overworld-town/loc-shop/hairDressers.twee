@@ -483,77 +483,62 @@ You are in the hairdressers. Here you can have your hair cut or dyed.
 <</widget>>
 
 <<widget "mannequinHairdresser">>
-	<<if $options.images is 1>>
+	<<if $options.images is 1 and $sidebarRenderer isnot "img">>
 		<div class="mannequin-inner">
-			<<if $sidebarRenderer isnot "img">>
-				<<selectmodel "main" "hairdresser">>
-					<<set _modeloptions.mannequin to true>>
-					<<set _modeloptions.show_face to false>>
-					<<set _modeloptions.show_hair to true>>
-					<<set _modeloptions.breasts to "">>
-					<<set _modeloptions.breast_size to 5>>
-					<<set _modeloptions.crotch_visible to true>>
-					<<set _modeloptions.brows to "top">>
-					<<set _modeloptions.brows_colour to ($makeup.browscolour != 0 ? $makeup.browscolour : $naturalhaircolour)>>
-					<<if $browsDyeOption isnot "noChange" and $browsDyeOption isnot "removeDye">>
-						<<set _modeloptions.brows_colour to $browsDyeOption>>
-					<</if>>
+			<<selectmodel "main" "hairdresser">>
+				<<set _modeloptions.mannequin to true>>
+				<<set _modeloptions.show_face to false>>
+				<<showlayer "brows">>
+				<<set _modeloptions.crotch_visible to true>>
+				<<set _modeloptions.brows to "top">>
+				<<set _modeloptions.brows_colour to ($makeup.browscolour != 0 ? $makeup.browscolour : $naturalhaircolour)>>
+				<<if $browsDyeOption isnot "noChange" and $browsDyeOption isnot "removeDye">>
+					<<set _modeloptions.brows_colour to $browsDyeOption>>
+				<</if>>
 
-					<<set _modeloptions.hair_colour = $haircolour>>
-					<<set _modeloptions.hair_fringe_colour = $hairfringecolour>>
-					<<set _modeloptions.hair_fringe_colour_gradient = $hairFringeColourGradient>>
-					<<set _modeloptions.hair_fringe_colour_style = $hairFringeColourStyle>>
-					<<set _modeloptions.hair_colour_gradient = $hairColourGradient>>
-					<<set _modeloptions.hair_colour_style = $hairColourStyle>>
-					<<if $twoToneHairDye>>
-						<<if $twoToneDyeOption1 == "noChange">>
-							<<set $twoToneDyeOption1 = $haircolour>>
-							<<set $twoToneDyeOption2 = $hairfringecolour>>
-						<</if>>
-						<<set _gradient = {
-							style: $twoToneStyle,
-							colours: [$twoToneDyeOption1, $twoToneDyeOption2]
-						}>>
+				<<set _modeloptions.hair_colour = $haircolour>>
+				<<set _modeloptions.hair_fringe_colour = $hairfringecolour>>
+				<<set _modeloptions.hair_fringe_colour_gradient = $hairFringeColourGradient>>
+				<<set _modeloptions.hair_fringe_colour_style = $hairFringeColourStyle>>
+				<<set _modeloptions.hair_colour_gradient = $hairColourGradient>>
+				<<set _modeloptions.hair_colour_style = $hairColourStyle>>
+				<<if $twoToneHairDye>>
+					<<if !setup.colours.hair_map[$twoToneDyeOption1] or !setup.colours.hair_map[$twoToneDyeOption2]>>
+						<<set $twoToneDyeOption1 = $haircolour>>
+						<<set $twoToneDyeOption2 = $hairfringecolour>>
+					<</if>>
+					<<set _gradient = {
+						style: $twoToneStyle,
+						colours: [$twoToneDyeOption1, $twoToneDyeOption2]
+					}>>
+					<<if $dyedHairPart isnot "fringe">>
+						<<set _modeloptions.hair_colour = $twoToneDyeOption1>>
+						<<set _modeloptions.hair_colour_gradient = clone(_gradient)>>
+						<<set _modeloptions.hair_colour_style to "gradient">>
+					<</if>>
+					<<if $dyedHairPart isnot "sides">>
+						<<set _modeloptions.hair_fringe_colour = $twoToneDyeOption2>>
+						<<set _modeloptions.hair_fringe_colour_gradient = clone(_gradient)>>
+						<<set _modeloptions.hair_fringe_colour_style to "gradient">>
+					<</if>>
+				<<else>>
+					<<set _newColour = $dyeOption == "removeDye" ? $naturalhaircolour : $dyeOption>>
+					<<if _newColour isnot "noChange">>
 						<<if $dyedHairPart isnot "fringe">>
-							<<set _modeloptions.hair_colour = $twoToneDyeOption1>>
-							<<set _modeloptions.hair_colour_gradient = clone(_gradient)>>
-							<<set _modeloptions.hair_colour_style to "gradient">>
+							<<set _modeloptions.hair_colour = _newColour>>
+							<<set _modeloptions.hair_colour_style to "simple">>
 						<</if>>
 						<<if $dyedHairPart isnot "sides">>
-							<<set _modeloptions.hair_fringe_colour = $twoToneDyeOption2>>
-							<<set _modeloptions.hair_fringe_colour_gradient = clone(_gradient)>>
-							<<set _modeloptions.hair_fringe_colour_style to "gradient">>
-						<</if>>
-					<<else>>
-						<<set _newColour = $dyeOption == "removeDye" ? $naturalhaircolour : $dyeOption>>
-						<<if _newColour isnot "noChange">>
-							<<if $dyedHairPart isnot "fringe">>
-								<<set _modeloptions.hair_colour = _newColour>>
-								<<set _modeloptions.hair_colour_style to "simple">>
-							<</if>>
-							<<if $dyedHairPart isnot "sides">>
-								<<set _modeloptions.hair_fringe_colour = _newColour>>
-								<<set _modeloptions.hair_fringe_colour_style to "simple">>
-							<</if>>
+							<<set _modeloptions.hair_fringe_colour = _newColour>>
+							<<set _modeloptions.hair_fringe_colour_style to "simple">>
 						<</if>>
 					<</if>>
-					<<set _modeloptions.hair_sides_length to $hairOption != $hairlength ? convertHairLengthToStage("sides", $hairOption) : $hairlengthstage>>
-					<<set _modeloptions.hair_fringe_length to $fringeOption != $fringelength ? convertHairLengthToStage("fringe", $fringeOption) : $fringelengthstage>>
-					<<set _modeloptions.hair_fringe_type to $fringetype>>
-					<<set _modeloptions.hair_sides_type to $hairtype>>
-				<<rendermodel "canvas-mannequin">>
-			<</if>>
-			/*
-			<<if $sidebarRenderer isnot "canvas">>
-			<div class="mannequin-body">
-				<img src="img/body/mannequin/leftarmidle.png">
-				<img src="img/body/mannequin/basenoarms.png">
-				<img src="img/body/mannequin/rightarmidle.png">
-				<img src="img/body/mannequin/basehead.png">
-				<img @src="'img/body/mannequin/breasts/' + $player.breastsize + '.png'">
-			</div>
-			<</if>> <!-- renderer switch -->
-			*/
+				<</if>>
+				<<set _modeloptions.hair_sides_length to $hairOption != $hairlength ? convertHairLengthToStage("sides", $hairOption) : $hairlengthstage>>
+				<<set _modeloptions.hair_fringe_length to $fringeOption != $fringelength ? convertHairLengthToStage("fringe", $fringeOption) : $fringelengthstage>>
+				<<set _modeloptions.hair_fringe_type to $fringetype>>
+				<<set _modeloptions.hair_sides_type to $hairtype>>
+			<<rendermodel "canvas-mannequin">>
 		</div>
 	<</if>>
 <</widget>>
