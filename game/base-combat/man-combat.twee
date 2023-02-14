@@ -464,7 +464,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	and $worn.under_lower.state isnot "naked" and ($worn.under_lower.state isnot "waist" or $worn.under_lower.vagina_exposed gte 1)
 	and $worn.lower.state isnot "naked" and ($worn.lower.state isnot "waist" or $worn.lower.vagina_exposed gte 1)
 	and $worn.over_lower.state isnot "naked" and ($worn.over_lower.state isnot "waist" or $worn.over_lower.vagina_exposed gte 1
-	and !$worn.genitals.type.includes("chastity")) and $vaginause isnot "othermouth" and ($vaginaldoubledisable is "f" and toymultiplepenetration is "f" or $vaginause is 0)>>
+	and !playerChastity("vagina")) and $vaginause isnot "othermouth" and ($vaginaldoubledisable is "f" and toymultiplepenetration is "f" or $vaginause is 0)>>
 		/* penetration */
 		/* Doesn't check if the PC is already penetrated (aside from mouth) in order to allow for multiple penetrations. */
 		<span class="pink"><<He>> plunges <<his>> _args[0]-hand $_toy into your warm <<pussy>>.</span>
@@ -543,7 +543,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	and $worn.under_lower.state isnot "naked" and ($worn.under_lower.state isnot "waist" or $worn.under_lower.vagina_exposed gte 1)
 	and $worn.lower.state isnot "naked" and ($worn.lower.state isnot "waist" or $worn.lower.vagina_exposed gte 1)
 	and $worn.over_lower.state isnot "naked" and ($worn.over_lower.state isnot "waist" or $worn.over_lower.vagina_exposed gte 1)
-	and !$worn.genitals.type.includes("chastity")>>
+	and !playerChastity("penis")>>
 		/* escalation */
 		<span class="pink"><<He>> <<print either("rubs","frots","fences")>> the $_toy in <<his>> _args[0] hand against your <<penisSimple>>.</span>
 		<<neutral 15 "genitals" _n>>
@@ -678,7 +678,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	and $worn.under_lower.state isnot "naked" and ($worn.under_lower.state isnot "waist" or $worn.under_lower.anus_exposed gte 1)
 	and $worn.lower.state isnot "naked" and ($worn.lower.state isnot "waist" or $worn.lower.anus_exposed gte 1)
 	and $worn.over_lower.state isnot "naked" and ($worn.over_lower.state isnot "waist" or $worn.over_lower.anus_exposed gte 1)
-	and $worn.genitals.anal_shield isnot 1 and (!playerHasButtPlug() or random(0,1) isnot 0) and $anususe isnot "othermouth" and ($analdoubledisable is "f" and $toymultiplepenetration is "f" or $anususe is 0)>>
+	and !playerChastity("anus") and (!playerHasButtPlug() or random(0,1) isnot 0) and $anususe isnot "othermouth" and ($analdoubledisable is "f" and $toymultiplepenetration is "f" or $anususe is 0)>>
 		/* penetration */
 		/* Doesn't check if the PC is already penetrated (aside from mouth) in order to allow for multiple penetrations. */
 		<span class="pink"><<He>> plunges the $_toy in <<his>> _hand hand into your ass<<if playerHasButtPlug()>>, heedless of your $worn.butt_plug.name<</if>>.</span>
@@ -729,20 +729,22 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<if $_rand lte 8 and npcHasSexToyOfType(_n,"dildo") or $_rand lt 1 and npcHasSexToyOfType(_n,"whip")>>
 		/* find orifice to penetrate */
 		<<if $analdisable is "t" or random(0,2) isnot 0>>
-			<<if $player.penisExist and $player.vaginaExist>>
+			<<if ($player.penisExist and !playerChastity("penis")) and ($player.vaginaExist and !playerChastity("vagina"))>>
 				<<if random(0,3) is 0>>
 					<<combat-dildo-on-penisentrance $_hand>>
 				<<else>>
 					<<combat-dildo-on-vaginaentrance $_hand>>
 				<</if>>
-			<<elseif $player.penisExist>>
+			<<elseif $player.penisExist and !playerChastity("penis")>>
 				<<if random(0,2) is 0>>
 					<<combat-dildo-on-penisentrance $_hand>>
 				<<else>>
 					<<combat-dildo-on-anusentrance $_hand>>
 				<</if>>
-			<<elseif $player.vaginaExist>>
+			<<elseif $player.vaginaExist and !playerChastity("vagina")>>
 				<<combat-dildo-on-vaginaentrance $_hand>>
+			<<else>>
+				<<combat-dildo-on-anusentrance $_hand>>
 			<</if>>
 		<<else>>
 			<<combat-dildo-on-anusentrance $_hand>>
@@ -1732,10 +1734,10 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<elseif $worn.lower.name isnot "naked">>
 				<span class="purple"><<He>> grasps your $worn.lower.name with <<his>> _args[0] hand.</span>
 				<<set $handtarget to "lowerclothes">><<neutral 1 _n>>
-			<<elseif $worn.genitals.type.includes("chastity")>>
+			<<elseif !(($player.penisExist and !playerChastity("penis")) or ($player.vaginaExist and !playerChastity("vagina")))>>
 				<<He>> <<strokes>> your inner thigh and brushes <<his>> fingers against your $worn.genitals.name.
 				<<neutral 10 "genitals" _n>><<set $speechchastity to 1>>
-			<<elseif $player.penisExist and $player.vaginaExist>>
+			<<elseif ($player.penisExist and !playerChastity("penis")) and ($player.vaginaExist and !playerChastity("vagina"))>>
 				<<if $player.ballsExist and random(0,1) is 1>>
 					<<He>> <<strokes>> your <<testicles>> and teases your glans.
 					<<neutral 10 "genitals" _n>><<set $speechglans to 1>>
@@ -1743,10 +1745,10 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<He>> strokes the base of your <<penis>> where it meets your <<pussy>>.
 					<<neutral 10 "genitals" _n>><<set $speechfutapenis to 1>>
 				<</if>>
-			<<elseif $player.penisExist and $player.ballsExist>>
+			<<elseif $player.penisExist and $player.ballsExist and !playerChastity("penis")>>
 				<<He>> <<strokes>> your <<testicles>> and teases your glans.
 				<<neutral 10 "genitals" _n>><<set $speechglans to 1>>
-			<<elseif $player.vaginaExist>>
+			<<elseif $player.vaginaExist and !playerChastity("vagina")>>
 				<<He>> <<strokes>> your pubic mound and teases your clit.
 				<<neutral 10 "genitals" _n>><<set $speechclit to 1>>
 			<</if>>
@@ -1764,18 +1766,21 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<elseif playerHasStrapon()>>
 				<<He>> <<strokes>> your inner thigh and brushes <<his>> fingers against your $worn.under_lower.name.
 				<<neutral 10 "genitals" _n>>
-			<<elseif $worn.genitals.type.includes("chastity")>>
+			<<elseif !(($player.penisExist and !playerChastity("penis")) or ($player.vaginaExist and !playerChastity("vagina")))>>
 				<<He>> <<strokes>> your inner thigh and brushes <<his>> fingers against your $worn.genitals.name.
 				<<neutral 10 "genitals" _n>><<set $speechchastity to 1>>
-			<<elseif $player.penisExist and $player.vaginaExist>>
+			<<elseif ($player.penisExist and !playerChastity("penis")) and ($player.vaginaExist and !playerChastity("vagina"))>>
 				<<He>> runs <<his>> hand up your thigh and over the area where your <<penis>> and <<pussy>> meet.
 				<<neutral 10 "genitals" _n>><<set $speechfutapenis to 1>>
-			<<elseif $player.penisExist>>
+			<<elseif $player.penisExist and !playerChastity("penis")>>
 				<<He>> <<strokes>> your inner thigh and brushes <<his>> fingers against your <<glans>>.
 				<<neutral 10 "genitals" _n>><<set $speechglans to 1>>
-			<<elseif $player.vaginaExist>>
+			<<elseif $player.vaginaExist and !playerChastity("vagina")>>
 				<<He>> <<strokes>> your inner thigh and brushes <<his>> fingers against your clit.
 				<<neutral 10 "genitals" _n>><<set $speechclit to 1>>
+			<<else>>
+				<<He>> <<strokes>> your inner thigh.
+				<<neutral 10 "genitals" _n>>
 			<</if>>
 			<<combat-set-hand-target _args[0] $handtarget>>
 			<<bodypart_admire_chance random_thigh>>
@@ -1852,7 +1857,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 					<span class="purple"><<He>> grasps your $worn.under_lower.name with <<his>> _args[0] hand.</span>
 					<<set $handtarget to "underlowerclothes">><<neutral 1 _n>>
-				<<elseif $analdisable is "f" and playerHasButtPlug() and random(0,1) is 0 and $worn.genitals.anal_shield isnot undefined and $worn.genitals.anal_shield isnot 1>>
+				<<elseif $analdisable is "f" and playerHasButtPlug() and random(0,1) is 0 and $worn.genitals.anal_shield isnot undefined and !playerChastity("anus")>>
 					<span class="purple"><<He>> places <<his>> hand on your $worn.butt_plug.name.</span>
 					<<neutral 1 _n>><<set $handtarget to "buttplug">>
 				<<elseif $worn.genitals.name isnot "naked">>
@@ -1997,15 +2002,15 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 	<<elseif $enemyanger + $rng lte 90 and $enemytype isnot "beast" and $NPCList[_n].type isnot "plant" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination>>
 		<<combat-set-hand-target _args[0] "lube">>
-		<<if $NPCList[_n].penis is "vaginaentrance" and $player.bodyliquid.vaginaoutside.goo lt 5 and !$worn.genitals.type.includes("chastity")>>
+		<<if $NPCList[_n].penis is "vaginaentrance" and $player.bodyliquid.vaginaoutside.goo lt 5 and !playerChastity("vagina")>>
 			<span class="purple"><<He>> holds a bottle of lubricant near your <<pussy>>.</span>
-		<<elseif $NPCList[_n].penis is "anusentrance" and $player.bodyliquid.bottom.goo lt 5 and $worn.genitals.anal_shield isnot 1>>
+		<<elseif $NPCList[_n].penis is "anusentrance" and $player.bodyliquid.bottom.goo lt 5 and !playerChastity("anus")>>
 			<span class="purple"><<He>> holds a bottle of lubricant near your <<bottom>>.</span>
-		<<elseif $NPCList[_n].penis is "otheranusentrance" and $player.bodyliquid.penis.goo lt 5 and !$worn.genitals.type.includes("chastity")>>
+		<<elseif $NPCList[_n].penis is "otheranusentrance" and $player.bodyliquid.penis.goo lt 5 and !playerChastity("penis")>>
 			<span class="purple"><<He>> holds a bottle of lubricant near your <<penis>>.</span>
-		<<elseif $NPCList[_n].vagina is "penisentrance" and $player.bodyliquid.penis.goo lt 5 and !$worn.genitals.type.includes("chastity")>>
+		<<elseif $NPCList[_n].vagina is "penisentrance" and $player.bodyliquid.penis.goo lt 5 and !playerChastity("penis")>>
 			<span class="purple"><<He>> holds a bottle of lubricant near your <<penis>>.</span>
-		<<elseif $NPCList[_n].vagina is "otheranusentrance" and $player.bodyliquid.penis.goo lt 5 and !$worn.genitals.type.includes("chastity")>>
+		<<elseif $NPCList[_n].vagina is "otheranusentrance" and $player.bodyliquid.penis.goo lt 5 and !playerChastity("penis")>>
 			<span class="purple"><<He>> holds a bottle of lubricant near your <<penis>>.</span>
 		<<else>>
 			<<He>> smacks your hip.
@@ -2028,7 +2033,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<</if>>
 		<</if>>
 	<<elseif $enemyanger + $rng lte 100 and $walltype isnot "front">>
-		<<if $worn.genitals.type.includes("chastity")>>
+		<<if !(($player.penisExist and !playerChastity("penis")) or ($player.vaginaExist and !playerChastity("vagina")))>>
 			<<if $worn.over_lower.state is "waist" and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 0>>
 				<<if $worn.lower.state is "waist" and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 0>>
 					<<He>> tries to fondle you around your $worn.genitals.name through your $worn.over_lower.name, but you're wearing too much to really feel it.
@@ -2051,7 +2056,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<neutral 10 "genitals" _n>>
 			<</if>>
 			<<bodypart_admire_chance random_thigh>>
-		<<elseif $player.penisExist and (!$player.vaginaExist or random(0,100) gte 50)>>
+		<<elseif $player.penisExist and (!$player.vaginaExist or random(0,100) gte 50) and !playerChastity("penis")>>
 			<<if $worn.over_lower.state is "waist" and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 0>>
 				<<if $worn.lower.state is "waist" and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 0>>
 					<<He>> tries to grope your <<penis>> through your $worn.over_lower.name, but you're wearing too much to really feel it.
@@ -2077,7 +2082,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<neutral 10 "genitals" _n>>
 			<</if>>
 			<<bodypart_admire_chance pubic>>
-		<<elseif $player.vaginaExist>>
+		<<elseif $player.vaginaExist and !playerChastity("vagina")>>
 			<<if $worn.over_lower.state is "waist" and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 0>>
 				<<if $worn.lower.state is "waist" and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 0>>
 					<<He>> tries to grope your labia through your $worn.over_lower.name, but you're wearing too much to really feel it.
@@ -2117,7 +2122,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<He>> pinches your shaft.
 				<<neutral 10 "genitals" _n>><<bruise penis>>
 			<</if>>
-		<<elseif $player.vaginaExist and !$worn.genitals.type.includes("chastity")>>
+		<<elseif $player.vaginaExist and !playerChastity("vagina")>>
 			<<He>> pinches your clitoris.
 			<<neutral 15 "genitals" _n>><<bruise vagina>><<set $speechclit to 1>>
 		<</if>>
@@ -2678,9 +2683,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<elseif $worn.under_lower.vagina_exposed is 1>>
 						<<if $rng gte 51>>
 							<<if $NPCList[_n].chastity.penis.includes("chastity")>>
-								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.penis against your <<pussy>><<if $worn.genitals.type.includes("chastity")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
+								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.penis against your <<pussy>><<if playerChastity("vagina")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
 								<<sex 25 "genital" _n>><<set $speechNPCChastity to 1>>
-							<<elseif $worn.genitals.type.includes("chastity")>>
+							<<elseif playerChastity("vagina")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].penisdesc against your <<pussy>> through your $worn.genitals.name.
 								<<sex 25 "genital" _n>><<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 							<<elseif !$npcSub>>
@@ -2697,7 +2702,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 								<</if>>
 							<</if>>
 						<<elseif $rng gte 1>>
-							<<if !$worn.genitals.type.includes("chastity")>>
+							<<if !playerChastity("vagina")>>
 								<<if $npcSub>>
 									You tease <<his>> <<print $NPCList[_n].penisdesc>> with your <<pussy>> without trying to penetrate.
 								<<else>>
@@ -2939,9 +2944,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<elseif $worn.under_lower.vagina_exposed is 1>>
 						<<if $rng gte 51>>
 							<<if $NPCList[_n].chastity.penis.includes("chastity")>>
-								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.penis against your <<pussy>><<if $worn.genitals.type.includes("chastity")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
+								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.penis against your <<pussy>><<if playerChastity("vagina")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
 								<<sex 25 "genitals">><<set $speechNPCChastity to 1>>
-							<<elseif $worn.genitals.type.includes("chastity")>>
+							<<elseif playerChastity("vagina")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].penisdesc against your <<pussy>> through your $worn.genitals.name.
 								<<sex 25 "genitals">><<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 							<<elseif !$npcSub>>
@@ -2959,7 +2964,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 								<</if>>
 							<</if>>
 						<<elseif $rng gte 1>>
-							<<if !$worn.genitals.type.includes("chastity")>>
+							<<if !playerChastity("vagina")>>
 								<<if $npcSub>>
 									You tease <<his>> <<print $NPCList[_n].penisdesc>> with your <<pussy>> without trying to penetrate.
 								<<else>>
@@ -3149,9 +3154,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<elseif $worn.under_lower.anus_exposed is 1>>
 						<<if $rng gte 51>>
 							<<if $NPCList[_n].chastity.penis.includes("chastity")>>
-								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.penis against your anus<<if $worn.genitals.type.includes("chastity") and $worn.genitals.anal_shield is 1>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
+								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.penis against your anus<<if playerChastity("anus")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
 								<<sex 25 "anal" _n>><<set $speechNPCChastity to 1>>
-							<<elseif $worn.genitals.type.includes("chastity") and $worn.genitals.anal_shield is 1>>
+							<<elseif playerChastity("anus")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].penisdesc against your anus through your $worn.genitals.name.
 								<<sex 25 "anal" _n>><<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 							<<elseif playerHasButtPlug()>>
@@ -3427,9 +3432,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<elseif $worn.under_lower.anus_exposed is 1>>
 						<<if $rng gte 51>>
 							<<if $NPCList[_n].chastity.penis.includes("chastity")>>
-								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.penis against your anus<<if $worn.genitals.type.includes("chastity") and $worn.genitals.anal_shield is 1>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
+								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.penis against your anus<<if playerChastity("anus")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
 								<<sex 25 "anal" _n>><<set $speechNPCChastity to 1>>
-							<<elseif $worn.genitals.type.includes("chastity") and $worn.genitals.anal_shield is 1>>
+							<<elseif playerChastity("anus")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].penisdesc against your anus through your $worn.genitals.name.
 								<<sex 25 "anal" _n>><<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 							<<elseif playerHasButtPlug()>>
@@ -3815,9 +3820,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<elseif $worn.under_lower.vagina_exposed is 1>>
 						<<if $rng gte 71>>
 							<<if $NPCList[_n].chastity.anus.includes("shield")>>
-								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.anus against your <<penis>><<if $worn.genitals.type.includes("chastity")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
+								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.anus against your <<penis>><<if playerChastity("penis")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
 								<<sex 25 "genital" _n>><<set $speechNPCChastity to 1>>
-							<<elseif $worn.genitals.type.includes("chastity")>>
+							<<elseif playerChastity("penis")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> ass against your <<penis>> through your $worn.genitals.name.
 								<<sex 20 "genital" _n>><<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 							<<elseif $nopenile is 1 and !$npcSub>>
@@ -3831,7 +3836,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 								<<sex 5 "genital" _n>><<set $speechotheranusimminent to 1>>
 							<</if>>
 						<<elseif $rng gte 1>>
-							<<if !$worn.genitals.type.includes("chastity")>>
+							<<if !playerChastity("penis")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> your <<penis>> between <<his>> cheeks.
 								<<sex 10 "genital" _n>>
 							<<else>>
@@ -3885,7 +3890,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<</if>>
 			<<his>> <<npcPenisSimple _n>> against your <<penis>>.</span>
 			<<set $penisstate to "otherpenis">><<set $NPCList[_n].penis to "penis">><<sex 20 "genital" _n>><<set $speechpenispenis to 1>>
-			<<if $worn.genitals.type.includes("chastity")>>
+			<<if playerChastity("penis")>>
 				<<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 			<</if>>
 		<<elseif $NPCList[_n].penis is "penis">>
@@ -3908,7 +3913,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<He>> kneads and caresses your <<penises>> together.
 				<</if>>
 				<<sex 20 "genital" _n>><<set $speechpenispenis to 1>>
-				<<if $worn.genitals.type.includes("chastity")>>
+				<<if playerChastity("penis")>>
 					<<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 				<</if>>
 			<<else>>
@@ -4043,9 +4048,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<elseif $worn.under_lower.vagina_exposed is 1>>
 						<<if $rng gte 51>>
 							<<if $NPCList[_n].chastity.vagina.includes("chastity")>>
-								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.vagina against your <<penis>><<if $worn.genitals.type.includes("chastity")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
+								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.vagina against your <<penis>><<if playerChastity("penis")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
 								<<sex 25 "genital" _n>><<set $speechNPCChastity to 1>>
-							<<elseif $worn.genitals.type.includes("chastity")>>
+							<<elseif playerChastity("penis")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> pussy against your <<penis>> through your $worn.genitals.name.
 								<<sex 20 "genital" _n>><<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 							<<elseif $nopenile is 1 and !$npcSub>>
@@ -4063,7 +4068,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 								<</if>>
 							<</if>>
 						<<elseif $rng gte 1>>
-							<<if !$worn.genitals.type.includes("chastity")>>
+							<<if !playerChastity("penis")>>
 								<<if $npcSub>>
 									You tease <<his>> labia with your <<penis>>.
 								<<else>>
@@ -4255,7 +4260,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<if $NPCList[_n].vagina is "otherfrot">>
 			<<if $rng gte 101>>
 				<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
-					<<if $worn.genitals.type.includes("chastity")>>
+					<<if playerChastity("penis")>>
 						<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 						<<set $NPCList[_n].condom.willUse to false>>
 					<<else>>
@@ -4366,9 +4371,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<elseif $worn.under_lower.vagina_exposed is 1>>
 						<<if $rng gte 51>>
 							<<if $NPCList[_n].chastity.anus.includes("shield")>>
-								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.anus against your <<penis>><<if $worn.genitals.type.includes("chastity")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
+								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> $NPCList[_n].chastity.anus against your <<penis>><<if playerChastity("penis")>><<set $worn.genitals.integrity -= 10>> through your $worn.genitals.name<</if>>.
 								<<sex 25 "genital" _n>><<set $speechNPCChastity to 1>>
-							<<elseif $worn.genitals.type.includes("chastity")>>
+							<<elseif playerChastity("penis")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> ass against your <<penis>> through your $worn.genitals.name.
 								<<sex 25 "genital" _n>><<set $worn.genitals.integrity -= 10>><<set $speechchastity to 1>>
 							<<elseif $nopenile is 1 and !$npcSub>>
@@ -4382,7 +4387,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 								<<sex 5 "genital" _n>><<set $speechotheranusimminent to 1>>
 							<</if>>
 						<<elseif $rng gte 1>>
-							<<if !$worn.genitals.type.includes("chastity")>>
+							<<if !playerChastity("penis")>>
 								<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> your <<penis>> between <<his>> cheeks.
 								<<sex 10 "genital" _n>>
 							<<else>>
@@ -4822,7 +4827,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<<sex 5 "anal" _n>><<set $worn.genitals.integrity -= 10>>
 					<<elseif $worn.under_lower.anus_exposed is 1 and $worn.genitals.anus_exposed is 1>>
 						<<if $rng gte 71>>
-							<<if $noanal is 0 and $worn.genitals.anal_shield is 1>>
+							<<if $noanal is 0 and playerChastity("anus")>>
 								<span class="purple"><<He>> presses <<his>> tongue against your $worn.genitals.name near your anus.</span>
 								<<sex 20 "anal" _n>><<set $NPCList[_n].mouth to "anusimminent">><<set $anusstate to "othermouthimminent">>
 							<<elseif $noanal is 1>>
@@ -4870,10 +4875,10 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<span class="blue"><<He>> stops pressing <<his>> tongue against your <<pussy>>.</span>
 				<<set $NPCList[_n].mouth to "vaginaentrance">><<set $vaginastate to "othermouthentrance">>
 			<<elseif $rng gte 1>>
-				<<if $novaginal is 0 and $worn.genitals.type.includes("chastity")>>
+				<<if $novaginal is 0 and playerChastity("vagina")>>
 					<<He>> licks around your $worn.genitals.name, attempting to get past it.
 					<<sex 25 "genital" _n>><<set $worn.genitals.integrity -= 10>>
-				<<elseif $novaginal is 1 and $worn.genitals.type.includes("chastity")>>
+				<<elseif $novaginal is 1 and playerChastity("vagina")>>
 					<<He>> licks around your $worn.genitals.name.
 					<<sex 30 "genital" _n>>
 				<<elseif $novaginal is 0>>
@@ -4917,7 +4922,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<<sex 5 "genital" _n>><<set $worn.under_lower.integrity -= 10>>
 					<<elseif $worn.under_lower.vagina_exposed is 1>>
 						<<if $rng gte 71>>
-							<<if $novaginal is 0 and $worn.genitals.type.includes("chastity")>>
+							<<if $novaginal is 0 and playerChastity("vagina")>>
 								<span class="purple"><<He>> presses <<his>> lips against your $worn.genitals.name, near your <<pussy>>.</span>
 								<<sex 20 "genital" _n>><<set $NPCList[_n].mouth to "vaginaimminent">><<set $vaginastate to "othermouthimminent">>
 							<<elseif $novaginal is 1>>
@@ -4928,7 +4933,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 								<<sex 20 "genital" _n>><<set $NPCList[_n].mouth to "vaginaimminent">><<set $vaginastate to "othermouthimminent">>
 							<</if>>
 						<<elseif $rng gte 1>>
-							<<if !$worn.genitals.type.includes("chastity")>>
+							<<if !playerChastity("vagina")>>
 								<<He>> blows on your <<clit>> and runs <<his>> tongue around your labia.
 								<<sex 10 "genital" _n>>
 							<<else>>
@@ -4974,10 +4979,10 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<span class="blue"><<He>> stops pressing <<his>> lips against your <<penis>>.</span>
 				<<set $NPCList[_n].mouth to "penisentrance">><<set $penisstate to "othermouthentrance">>
 			<<elseif $rng gte 1>>
-				<<if $nopenile is 0 and $worn.genitals.type.includes("chastity")>>
+				<<if $nopenile is 0 and playerChastity("penis")>>
 					<<He>> licks around your $worn.genitals.name, near your <<penis>>, attempting to get past it.
 					<<sex 25 "genital" _n>><<set $worn.genitals.integrity -= 10>>
-				<<elseif $nopenile is 1 and $worn.genitals.type.includes("chastity")>>
+				<<elseif $nopenile is 1 and playerChastity("penis")>>
 					<<He>> licks around your $worn.genitals.name, near your <<penis>>.
 					<<sex 30 "genital" _n>>
 				<<elseif $nopenile is 0>>
@@ -5022,7 +5027,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<<sex 5 "genital" _n>><<set $worn.under_lower.integrity -= 10>>
 					<<elseif $worn.under_lower.vagina_exposed is 1>>
 						<<if $rng gte 71>>
-							<<if $worn.genitals.type.includes("chastity")>>
+							<<if playerChastity("penis")>>
 								<span class="purple"><<He>> tries to wriggle <<his>> tongue into your $worn.genitals.name, eager to taste your <<penis>>.</span>
 								<<sex 20 "genital" _n>>
 							<<elseif $nopenile is 1>>
@@ -5033,7 +5038,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 								<<sex 20 "genital" _n>><<set $NPCList[_n].mouth to "penisimminent">><<set $penisstate to "othermouthimminent">>
 							<</if>>
 						<<elseif $rng gte 1>>
-							<<if !$worn.genitals.type.includes("chastity")>>
+							<<if !playerChastity("penis")>>
 								<<He>> blows on and licks the tip of your <<penis>>.
 								<<sex 10 "genital" _n>>
 							<<else>>
@@ -5741,7 +5746,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<if $penisuse is 0>>
 				<<if $analdisable is "f" and $consensual is 1>>
 					<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
-						<<if $worn.genitals.type.includes("chastity")>>
+						<<if playerChastity("penis")>>
 							<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 							<<set $NPCList[_n].condom.willUse to false>>
 						<<else>>
@@ -6027,10 +6032,10 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<</if>>
 			<</if>>
 			<<if $worn.lower.vagina_exposed is 1 and $worn.over_lower.vagina_exposed is 1>>
-				<<if $worn.under_lower.vagina_exposed is 1 and !$worn.genitals.type.includes("chastity") and $NPCList[_n].chastity.penis.includes("chastity")>>
+				<<if $worn.under_lower.vagina_exposed is 1 and !playerChastity("vagina") and $NPCList[_n].chastity.penis.includes("chastity")>>
 					<span class="purple"><<He>> presses <<his>> $NPCList[_n].penisdesc against your <<pussy>>.</span>
 					<<sex 5 "genital" _n>><<set $vaginause to "penis">><<set $NPCList[_n].penis to "vaginaentrance">><<set $vaginastate to "entrance">><<set $speechvaginaentrance to 1>><<set $vaginatarget to _n>>
-				<<elseif $worn.under_lower.vagina_exposed is 1 and !$worn.genitals.type.includes("chastity")>>
+				<<elseif $worn.under_lower.vagina_exposed is 1 and !playerChastity("vagina")>>
 					<span class="purple"><<He>> presses <<his>> $NPCList[_n].penisdesc against your <<pussy>>, preparing to penetrate.</span>
 					<<sex 5 "genital" _n>><<set $vaginause to "penis">><<set $NPCList[_n].penis to "vaginaimminent">><<set $vaginastate to "imminent">><<set $speechvaginaimminent to 1>><<set $vaginatarget to _n>>
 				<<elseif $worn.under_lower.vagina_exposed is 0>>
@@ -6103,7 +6108,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<elseif $enemyanger + $rng lte 50 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals"
 			and ($player.penisExist or playerHasStrapon()) and $penisuse is 0 and $analdisable is "f" and $walltype isnot "front">>
 		<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
-			<<if $worn.genitals.type.includes("chastity")>>
+			<<if playerChastity("penis")>>
 				<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 				<<set $NPCList[_n].condom.willUse to false>>
 			<<else>>
@@ -6163,7 +6168,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<!-- mount and prepare for vaginal sex -->
 		<<set $penisuse to "othervagina">><<set $NPCList[_n].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $penistarget to _n>>
 		<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
-			<<if $worn.genitals.type.includes("chastity")>>
+			<<if playerChastity("penis")>>
 				<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 				<<set $NPCList[_n].condom.willUse to false>>
 			<<else>>
@@ -6178,11 +6183,11 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<set $vaginause to "othervagina">><<set $vaginastate to "othervaginaentrance">><<set $NPCList[_n].vagina to "vaginaentrance">><<sex 5 "genital" _n>><<set $vaginatarget to _n>>
 		<span class="blue"><<He>> moves <<his>> pussy close to yours.</span>
 		<<set $NPCList[_n].location.genitals = "genitals">><<set $speechtribentrance to 1>>
-	<<elseif $enemyanger + $rng lte 120 and $penisuse is 0 and ($player.penisExist or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1 and $worn.over_lower.vagina_exposed is 1 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals" and !$worn.genitals.type.includes("chastity") and $walltype isnot "front">>
+	<<elseif $enemyanger + $rng lte 120 and $penisuse is 0 and ($player.penisExist or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1 and $worn.over_lower.vagina_exposed is 1 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals" and !playerChastity("penis") and $walltype isnot "front">>
 		<!-- forceful vaginal sex -->
 		<<set $penisuse to "othervagina">><<set $NPCList[_n].vagina to "penisimminent">><<set $penisstate to "imminent">><<set $penistarget to _n>>
 		<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
-			<<if $worn.genitals.type.includes("chastity")>>
+			<<if playerChastity("penis")>>
 				<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 				<<set $NPCList[_n].condom.willUse to false>>
 			<<else>>
