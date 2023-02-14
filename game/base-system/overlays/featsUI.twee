@@ -39,12 +39,11 @@
 <</widget>>
 
 <<widget "featsList">>
-	<<featsData>>
 	<<set _skip to []>>
 	<<set _filter to "All">>
-	<<set _keys to Object.keys(_feats)>>
+	<<set _keys to Object.keys(setup.feats)>>
 	<<for _i to 0; _i lt _keys.length; _i++>>
-		<<if _skip.includes(_feats[_keys[_i]].series) or !_feats[_keys[_i]].filter.includes($feats.filter)>>
+		<<if _skip.includes(setup.feats[_keys[_i]].series) or !setup.feats[_keys[_i]].filter.includes($feats.filter)>>
 			<<continue>>
 		<</if>>
 		<<if Object.keys($feats.currentSave).includes(_keys[_i])>>
@@ -53,17 +52,17 @@
 			<<set _owned to 1>>
 		<<else>>
 			<<set _owned to 0>>
-			<<if _feats[_keys[_i]].hidden>>
+			<<if setup.feats[_keys[_i]].hidden>>
 				<<continue>>
 			<</if>>
-			<<if _feats[_keys[_i]].series isnot "">>
-				<<set _skip.push(_feats[_keys[_i]].series)>>
+			<<if setup.feats[_keys[_i]].series isnot "">>
+				<<set _skip.push(setup.feats[_keys[_i]].series)>>
 			<</if>>
 		<</if>>
 		<div class="featList">
 			<div class="featImage">
 				<<if _owned gt 0>>
-					<<switch _feats[_keys[_i]].difficulty>>
+					<<switch setup.feats[_keys[_i]].difficulty>>
 						<<case 1>><img @src="'img/ui/CopperCoin'+(_owned is 1 ? 'Dull':'')+'.png'" class="featCoin" @style="(_owned is 1 ? 'filter:brightness(65%) contrast(85%);':'')">
 						<<case 2>><img @src="'img/ui/SilverCoin'+(_owned is 1 ? 'Dull':'')+'.png'" class="featCoin" @style="(_owned is 1 ? 'filter:brightness(75%) contrast(85%);':'')">
 						<<case 3>><img @src="'img/ui/GoldCoin'+(_owned is 1 ? 'Dull':'')+'.png'" class="featCoin" @style="(_owned is 1 ? 'filter:brightness(65%) contrast(85%);':'')">
@@ -75,19 +74,19 @@
 				<</if>>
 			</div>
 			<div class="featText">
-				<<if ($feats.pregnancyLocked and _feats[_keys[_i]].pregnancyLockable) or ($feats.soft and _feats[_keys[_i]].softLockable) or $feats.locked or ($gamemode is "soft" or $alluremod lt 1)>>
+				<<if ($feats.pregnancyLocked and setup.feats[_keys[_i]].pregnancyLockable) or ($feats.soft and setup.feats[_keys[_i]].softLockable) or $feats.locked or ($gamemode is "soft" or $alluremod lt 1)>>
 					<<set _titleColor to " red">>
 				<<else>>
 					<<set _titleColor to "">>
 				<</if>>
-				<<if _owned gt 0 or _feats[_keys[_i]].hint is undefined>>
-					<span @class="'title' + _titleColor"><<print _feats[_keys[_i]].title>></span>
+				<<if _owned gt 0 or setup.feats[_keys[_i]].hint is undefined>>
+					<span @class="'title' + _titleColor"><<print setup.feats[_keys[_i]].title>></span>
 					<br>
-					<span class="text"><<print _feats[_keys[_i]].desc>></span>
+					<span class="text"><<print setup.feats[_keys[_i]].desc>></span>
 				<<else>>
 					<span @class="'title' + _titleColor">?????</span>
 					<br>
-					<span class="text"><<print _feats[_keys[_i]].hint>></span>
+					<span class="text"><<print setup.feats[_keys[_i]].hint>></span>
 				<</if>>
 				<br>
 				<<if _owned is 2>>
@@ -104,7 +103,6 @@
 /*Feat Popup*/
 <<widget "displayFeat">>
 	<<silently>>
-		<<featsData>>
 		<<if _featsCount is undefined>>
 			<<set _featsCount to 0>>
 		<<else>>
@@ -114,7 +112,7 @@
 	<<capture _featsCount>>
 	<div @id="'feat-' + _featsCount" @class="'feat feat' + _featsCount + (_featsCount gte 3 ? ' hiddenFeat' : '')">
 		<div class="featImage">
-			<<switch _feats[_args[0]].difficulty>>
+			<<switch setup.feats[_args[0]].difficulty>>
 				<<case 1>><img src="img/ui/CopperCoin.gif" class="featCoin">
 				<<case 2>><img src="img/ui/SilverCoin.gif" class="featCoin">
 				<<case 3>><img src="img/ui/GoldCoin.gif" class="featCoin">
@@ -123,9 +121,9 @@
 			<</switch>>
 		</div>
 		<div class="featText">
-			<span class="title"><<print _feats[_args[0]].title>></span>
+			<span class="title"><<print setup.feats[_args[0]].title>></span>
 			<br>
-			<span class="text"><<print _feats[_args[0]].desc>></span>
+			<span class="text"><<print setup.feats[_args[0]].desc>></span>
 		</div>
 		<div @id="'closeFeat-' + _featsCount" class="closeFeat" @onclick="'closeFeats('+ _featsCount +')'"></div>
 	</div>
@@ -402,7 +400,6 @@
 <<widget "displayFeatFake">>
 	<<if _args[0] and $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1>>
 		<<silently>>
-			<<featsData>>
 			<<if _featsCount is undefined>>
 				<<set _featsCount to 0>>
 			<<else>>
@@ -411,7 +408,7 @@
 		<</silently>>
 		<div @id="'feat-' + _featsCount" class="feat">
 			<div class="featImage">
-				<<switch _feats[_args[0]].difficulty>>
+				<<switch setup.feats[_args[0]].difficulty>>
 					<<case 1>><img src="img/ui/CopperCoinFake.gif" class="featCoin">
 					<<case 2>><img src="img/ui/SilverCoinFake.gif" class="featCoin">
 					<<case 3>><img src="img/ui/GoldCoinFake.gif" class="featCoin">
@@ -424,12 +421,12 @@
 					<<case "It Belongs in a Museum">>
 						<span class="title">It Belongs in a Museum?</span>
 					<<default>>
-						<<if _feats[_args[0]].title.endsWith("?")>>
-							<span class="text"><<print _feats[_args[0]].title>></span>
+						<<if setup.feats[_args[0]].title.endsWith("?")>>
+							<span class="text"><<print setup.feats[_args[0]].title>></span>
 						<<else>>
-							<span class="text"><<print _feats[_args[0]].title>>?</span>
+							<span class="text"><<print setup.feats[_args[0]].title>>?</span>
 						<</if>>
-						<span class="title"><<print _feats[_args[0]].title>>?</span>
+						<span class="title"><<print setup.feats[_args[0]].title>>?</span>
 				<</switch>>
 				<br>
 				<<switch _args[0]>>
@@ -440,10 +437,10 @@
 					<<case "Anti-Social Moth">>
 						<span class="text">Who needs friends... right?</span>
 					<<default>>
-						<<if _feats[_args[0]].desc.endsWith(".")>>
-							<span class="text"><<print _feats[_args[0]].desc>>.. right?</span>
+						<<if setup.feats[_args[0]].desc.endsWith(".")>>
+							<span class="text"><<print setup.feats[_args[0]].desc>>.. right?</span>
 						<<else>>
-							<span class="text"><<print _feats[_args[0]].desc>>... right?</span>
+							<span class="text"><<print setup.feats[_args[0]].desc>>... right?</span>
 						<</if>>
 				<</switch>>
 			</div>
