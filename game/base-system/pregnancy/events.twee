@@ -592,54 +592,10 @@ Extra passage example
 
 :: Pregnancy Birth Hospital Wolf 4
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
-Player reaches the wolf cave, is guided to the inside of the cave to give birth. Clothes are removed.
+Player reaches the wolf cave, is guided to the inside of the cave to give birth.
 <br><br>
 <<strip>>
-<<if $worn.genitals.type.includes("hidden")>>
-	Chastity Belt is broken if equipped.
-	"The pack feels your distress" later "Most of the pack has injured mouths after chewing the belt so fiercely to free you"?
-	<<set $worn.genitals.type.push("broken")>>
-	<<genitalsruined>>
-	<br><br>
-<</if>>
-<<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 5]]>><<pass 15>><<endevent>><</link>>
-
-:: Pregnancy Birth Hospital Wolf 5
-<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
-The others wolves leave the player alone for them to give birth, sequence should follow similar to the normal birth, though alone this time.
-<br><br>
-<<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 6]]>><<pass 15>><<playerEndWaterBreaking>><<endevent>><</link>>
-
-:: Pregnancy Birth Hospital Wolf 6
-<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
-Player is finished with giving birth and spends some time to recover and start to have special time with their newborns. Option to name occurs here.
-<br><br>
-
-<<birthUi "pc" "wolf_cave" "wolf_cave" "Pregnancy Birth Hospital Wolf 7" 60>>
-
-:: Pregnancy Birth Hospital Wolf 7
-<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
-Player spends time looking after and feeding their children.
-<br><br>
-Player re-equips clothes.
-<<clotheson>>
-<br><br>
-<<if $syndromewolves isnot 1>>
-	<<if $bestialitydisable is "f">>
-		<span class="red"><i>After giving birth to pups of your own, you see they're just cute animals.</i> You've gained the "Stockholm Syndrome: Wolves" trait.</span>
-		<br><br>
-	<<else>>
-		<span class="red"><i>After giving birth to pups of your own, you see they're just cute monsters.</i> You've gained the "Stockholm Syndrome: Wolf People" trait.</span>
-		<br><br>
-	<</if>>
-	<<set $syndromewolves to 1>>
-	<<set $wolfevent to 0>>
-	<<set $wolfstate to "cave">>
-	<<set $wolfpackferocity to 10>>
-	<<set $wolfpackharmony to 10>>
-<</if>>
-<<link [[Next (24:00)|Wolf Cave]]>><<pass 15>><<endevent>><<set $wolfevent to 0>><</link>>
-/*Player giving birth ends here*/
+<<link [[Next (00:15)|Pregnancy Birth Wolf Cave 1]]>><<pass 15>><<strip>><<endevent>><</link>>
 
 /*ToD0: Pregnancy Story Content: add in additional location*/
 :: pregnancyTest
@@ -659,23 +615,23 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <br><br>
 <<set $pregnancyStats.pregnancyTestsTaken++>>
 <<if !$player.vaginaExist>>
-	<<set $_pregnancy to $sexStats.anus.pregnancy>>
-	<<if $_pregnancy.type is null or $_pregnancy.type is "parasite" or $_pregnancy.timer is 0 or (between($_pregnancy.timer, 0, 3) and random(0,100) gte 10) or (between($_pregnancy.timer, 3, 6) and random(0,100) gte 15)>>
+	<<set _pregnancyTest to $sexStats.anus.pregnancy>>
+	<<if _pregnancyTest.type is null or _pregnancyTest.type is "parasite" or _pregnancyTest.timer is 0 or (between(_pregnancyTest.timer, 0, 3) and random(0,100) gte 10) or (between(_pregnancyTest.timer, 3, 6) and random(0,100) gte 15)>>
 		<span class="green">It's negative.</span> You wonder how it could ever be positive.
-	<<elseif $_pregnancy.givenBirth >= 1>>
+	<<elseif _pregnancyTest.givenBirth >= 1>>
 		<span class="lewd">It's positive.</span> Many thoughts rush through your head, and you sit to collect yourself. <<gstress>><<stress 3>><<garousal>><<arousal 100>>
-		<<set $_pregnancy.awareOf to true>>
+		<<set _pregnancyTest.awareOf to true>>
 	<<else>>
 		<span class="lewd">It's positive.</span> You briefly wonder if you're seeing things or have gone crazy. Many thoughts rush through your head, and you sit to collect yourself. <<ggstress>><<stress 10>><<ggarousal>><<arousal 200>>
-		<<set $_pregnancy.awareOf to true>>
+		<<set _pregnancyTest.awareOf to true>>
 	<</if>>
 <<else>>
-	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-	<<if $_pregnancy.type is null or $_pregnancy.type is "parasite" or $_pregnancy.timer is 0 or (between($_pregnancy.timer, 0, 3) and random(0,100) gte 10) or (between($_pregnancy.timer, 3, 6) and random(0,100) gte 15)>>
+	<<set _pregnancyTest to $sexStats.vagina.pregnancy>>
+	<<if _pregnancyTest.type is null or _pregnancyTest.type is "parasite" or _pregnancyTest.timer is 0 or (between(_pregnancyTest.timer, 0, 3) and random(0,100) gte 10) or (between(_pregnancyTest.timer, 3, 6) and random(0,100) gte 15)>>
 		<span class="green">It's negative.</span>
 	<<else>>
 		<span class="lewd">It's positive.</span> Many thoughts rush through your head, and you sit to collect yourself. <<gstress>><<stress 3>><<garousal>><<arousal 100>>
-		<<set $_pregnancy.awareOf to true>>
+		<<set _pregnancyTest.awareOf to true>>
 	<</if>>
 <</if>>
 
@@ -702,11 +658,6 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 /* Ultrasounds not performed before 12 weeks in normal circumstances, or before 8 in high-risk. Prior to 12 weeks, ultrasounds are usually performed transvaginally. Future commit will address this.*/
 
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<if $player.vaginaExist>>
-	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-<<else>>
-	<<set $_pregnancy to $sexStats.anus.pregnancy>>
-<</if>>
 <<harper_intro>>
 <<if $ultrasoundIntro isnot 1>>
 	<<set $ultrasoundIntro to 1>>
@@ -714,7 +665,6 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 	"So, I guess congratulations are in order?" says Doctor Harper. "The next step is to run a diagnostic ultrasound to look at the child. If you are far enough along, we can determine the child's sex," <<he>> says.<br>
 	"Please follow the nurse to Radiology."<br><br>
 <<else>>
-
 	You follow the signs to Radiology for your ultrasound appointment.
 <</if>>
 

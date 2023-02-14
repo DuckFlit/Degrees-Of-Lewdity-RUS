@@ -110,7 +110,10 @@
 				<<else>>
 					<span class="pink">You are overcome by sensation and ejaculate in your mouth, forcing you to quickly drink it down.</span>
 				<</if>>
-				<<cumswallow "human">>
+				<<set $_released to calculateSemenReleased()>>
+				<<if $_released gt 0>>
+					<<cumswallow "pc" $_released>>
+				<</if>>
 			<<elseif $worn.genitals.type.includes("chastity")>>
 				<span class="pink">You are overcome by sensation. A surge of cum erupts from your penis into your $worn.genitals.name.</span>
 			<<elseif $leftarm is "mpenisentrance" or $rightarm is "mpenisentrance">>
@@ -304,7 +307,7 @@
 	<</if>>
 
 	<!-- Chance to get "dick drunk" after 3rd orgasm, chance is 45% for consensual and 15% otherwise, +5% for each following orgasm, but aphrodisiacs make it 100% -->
-	<<if $orgasmcount gte 3 and $drunk lte 1000 and playerIsPenetrated()>>
+	<<if $orgasmcount gte 3 and $drunk lte 1000 and playerIsPenetrated() and $mouth isnot "mpenis">>
 		<<if $drugged gt 0 or (random(1,100) + ($orgasmcount * 5) gte ($consensual ? 70 : 100))>>
 			<<alcohol 25>>
 			<span class="purple"><<print either("You feel dizzy.", "You feel lightheaded.", "You can't think straight.")>></span>
@@ -825,24 +828,7 @@
 <</widget>>
 
 <<widget "semenOrgasm">>
-	<<set $_semen_released to 30>>
-	<<set $_semen_released += ($semen_volume / 30)>>
-	<<if $femaleclimax is 1>>
-		<<set $_semen_released /= 30>>
-	<</if>>
-	<<if $orgasmtrait gte 1>>
-		<<set $_semen_released *= 2.5>>
-	<</if>>
-	<<if $cow gte 6>>
-		<<set $_semen_released *= 2>>
-	<</if>>
-
-	/* if the player doesn't have enough semen, set $_semen_released to whatever they have left */
-	<<if $semen_amount lt $_semen_released>>
-		<<set $_semen_released to $semen_amount>>
-	<</if>>
-
-	<<set $_semen_released to parseFloat($_semen_released.toFixed(1))>>
+	<<set $_semen_released to calculateSemenReleased()>>
 
 	<<if $masturbation_bowl is 1 and $semen_amount gte 1 and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1 and $mouth isnot "mpenis">>
 		<<set $masturbation_semen += $_semen_released>>

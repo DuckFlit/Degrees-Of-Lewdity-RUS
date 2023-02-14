@@ -76,6 +76,7 @@
 	<<set $playerPregnancyHumanDisable to "f">>
 	<<set $playerPregnancyBeastDisable to "f">>
 	<<set $npcPregnancyDisable to "f">>
+	<<set $incompletePregnancyDisable to "t">>
 	<<set $cycledisable to "f">>
 	<<set $pregnancytype to "realistic">>
 	<<set $rentmod to 1>>
@@ -304,6 +305,10 @@
 	<<if $player.freckles is "random">>
 		<<set $player.freckles to (random(1, 5) is 1)>>
 	<</if>>
+
+	/* Updates the npc's in case $incompletePregnancyDisable has been changed by the player */
+	<<npcPregnancyUpdater>>
+
 	/* this never worked as intended
 	<!-- check if specified face style is installed -->
 	<img id="testImage" class="hidden" @scr="'img/face/' + $facestyle + '/base.png'">
@@ -1158,20 +1163,18 @@
 			valSpan.text((i, value) => "1 in " + (100 - value));
 		}).trigger('change') })>>
 
-		/*ToDo: NPC Pregnancy - Remove when adding pregnancy for named npc's */
-		<<if $pregnancyTesting>>
-			<div class="numberslider-inline basenpcpregnancychance-container">
-				<span class="gold">Base NPC Pregnancy Chance</span>
-				<div class="small-description">Chance of an npc conceiving when only being inseminated once at the right time.</div>
-				<<numberslider "$baseNpcPregnancyChance" $baseNpcPregnancyChance 0 16 4>>
-			</div>
-			<<run $(() => { $('.basenpcpregnancychance-container input').on('input change', e => {
-				let valSpan = $(e.currentTarget).siblings().first();
-				let value = valSpan.text();
+		<div class="numberslider-inline basenpcpregnancychance-container">
+			<span class="gold">Base NPC Pregnancy Chance</span>
+			<div class="small-description">Chance of an npc conceiving when only being inseminated once at the right time.</div>
+			<<numberslider "$baseNpcPregnancyChance" $baseNpcPregnancyChance 0 16 4>>
+		</div>
+		<<run $(() => { $('.basenpcpregnancychance-container input').on('input change', e => {
+			let valSpan = $(e.currentTarget).siblings().first();
+			let value = valSpan.text();
 
-				valSpan.text((i, value) => "1 in " + (20 - value));
-			}).trigger('change') })>>
-		<</if>>
+			valSpan.text((i, value) => "1 in " + (20 - value));
+		}).trigger('change') })>>
+
 		<<if playerPregnancyProgress() gte 0.9>>
 			<span class="red">Controls disabled due to nearing the end of the player's pregnancy.</span>
 		<</if>>
@@ -1203,12 +1206,23 @@
 		<label><div class="settingsToggle">
 			<<checkbox "$playerPregnancyBeastDisable" "t" "f" autocheck>> Enable player beast pregnancy
 		</div></label>
-		/*ToDo: NPC Pregnancy - Remove when adding pregnancy for named npc's */
-		<<if $pregnancyTesting>>
-			<label><div class="settingsToggle">
-				<<checkbox "$npcPregnancyDisable" "t" "f" autocheck>> Enable NPC pregnancy
+		<label><div class="settingsToggle">
+			<<checkbox "$npcPregnancyDisable" "t" "f" autocheck>> Enable NPC pregnancy
+		</div></label>
+		<<set _foundPregnancy to !!Object.values($NPCName).find(npc => npc.pregnancy && npc.pregnancy.enabled && npc.pregnancy.type && !setup.pregnancy.canBePregnant.includes(npc.fullDescription))>>
+		<span data-target="incompletePregnancyDisable" data-disabledif="T.foundPregnancy&&V.incompletePregnancyDisable==='f'">
+			<label><div class="settingsToggle humanPregnancyMonths-container">
+				<<checkbox "$incompletePregnancyDisable" "t" "f" autocheck>> Enable incomplete pregnancy content
+				<<if _foundPregnancy>>
+					<mouse class="tooltip linkBlue">(!!!)<span>Can not be disabled while a named NPC is pregnant.</span></mouse>
+				<<else>>
+					<mouse class="tooltip linkBlue">(?)<span>
+						<div>When enabled, the player will be able to impregnate and be impregnated by all fertile named NPCs. This includes NPCs that have no pregnancy interactions.</div>
+						<div class="red">WARNING: This will lead to situations where the named NPC will not react to the player's pregnancy or their own pregnancy, and existing saves may end up skipping future content.</div>
+					</span></mouse>
+				<</if>>
 			</div></label>
-		<</if>>
+		</span>
 		<label><div class="settingsToggle">
 			<<checkbox "$parasitepregdisable" "t" "f" autocheck>> Enable parasitic pregnancy
 		</div></label>
@@ -1408,6 +1422,8 @@
 			<</if>>
 		<</if>>
 
+		/* Updates the npc's in case $incompletePregnancyDisable has been changed by the player */
+		<<npcPregnancyUpdater>>
 		<div id="npcSettingsMenu">
 			<<npcSettingsMenu>>
 		</div>
@@ -1521,6 +1537,9 @@
 		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
 	<</link>>
 	<br><br>
+	<<if V.NPCName[T.npcId].pregnancy.type>>
+		Unable to change some settings due to their pregnancy.
+	<</if>>
 
 	<span class="gold">$NPCName[_npcId].nam the $NPCName[_npcId].title</span>
 	<br>
@@ -1531,42 +1550,35 @@
 		</span>
 	</div>
 	<div class="settingsToggle">
-		<<if !$NPCName[_npcId].pregnancy or $NPCName[_npcId].pregnancy.enabled is undefined or !$NPCName[_npcId].pregnancy.fetus.length>>
+		<span data-target="npcname-pregnancy" data-disabledif="V.NPCName[T.npcId].pregnancy.type">
 			<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> Vagina</label> |
 			<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> Penis</label>
 			<<if $debug is 1>>| <label><<radiobutton "$NPCName[_npcId].gender" "h" autocheck>> Both</label><</if>>
-		<<else>>
-			Unable to change the npc genitals due to their pregnancy.
-		<</if>>
+		</span>
 	</div>
 	<div class="settingsToggle">
 		Penis size - if applicable:
 		<br>
 		<<set _penisNames to ["", "Tiny", "Average", "Thick", "Huge"]>> /* the empty first element is necessary because _j starts at 1 */
 		<span data-target="npcname-npcidgender" data-disabledif="V.NPCName[T.npcId].gender==='f'">
-		<<for _j to 1; _j lt _penisNames.length; _j++>>
-			<label>
-				<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
-				<<print _penisNames[_j]>>
-			</label>
-			<<if _j isnot _penisNames.length -1>>|<</if>>
-		<</for>>
+			<<for _j to 1; _j lt _penisNames.length; _j++>>
+				<label>
+					<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
+					<<print _penisNames[_j]>>
+				</label>
+				<<if _j isnot _penisNames.length -1>>|<</if>>
+			<</for>>
 		</span>
 	</div>
-
-	<<if $NPCName[_npcId].pregnancy && $NPCName[_npcId].pregnancy.enabled isnot undefined>>
-		<div class="settingsToggle">
-			<<if !$NPCName[_npcId].pregnancy.fetus.length>>
-				Enable pregnancy for npc - if applicable:
-				<mouse class="tooltip linkBlue">(?)<span>Still requires 'NPC Pregnancy' toggle to be enabled. Will not stop an existing pregnancy.</span></mouse>
-				<br>
-				<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" true autocheck>> True</label> |
-				<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" false autocheck>> False</label>
-			<<else>>
-				Unable to change the npc pregnancy settings due to their pregnancy.
-			<</if>>
-		</div>
-	<</if>>
+	<div class="settingsToggle">
+		<span data-target="npcname-pregnancy" data-disabledif="setup.pregnancy.infertile.includes(V.NPCName[T.npcId].nam)||V.NPCName[T.npcId].pregnancy.enabled===undefined||V.NPCName[T.npcId].pregnancy.type||!setup.pregnancy.typesEnabled.includes(V.NPCName[T.npcId].type)">
+			Enable pregnancy for npc - if applicable:
+			<mouse class="tooltip linkBlue">(?)<span>Still requires 'NPC Pregnancy' toggle to be enabled. Will not stop an existing pregnancy.</span></mouse>
+			<br>
+			<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" true autocheck>> True</label> |
+			<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" false autocheck>> False</label>
+		</span>
+	</div>
 
 	<div class="settingsToggle" style="display: inline-flex;">
 	Breast size
