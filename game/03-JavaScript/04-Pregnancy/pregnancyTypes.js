@@ -284,6 +284,24 @@ window.pregnancyGenerator = {
 		if (typeof motherObject === "string" || motherObject instanceof String) return motherObject;
 		if (typeof fatherObject === "string" || fatherObject instanceof String) return fatherObject;
 
+		if (
+			V.incompletePregnancyDisable !== "f" &&
+			motherObject.name === "pc" &&
+			C.npc[fatherObject.name] &&
+			!setup.pregnancy.canImpregnatePlayer.includes(fatherObject.name)
+		) {
+			return false;
+		}
+
+		if (
+			V.incompletePregnancyDisable !== "f" &&
+			fatherObject.name === "pc" &&
+			C.npc[motherObject.name] &&
+			!setup.pregnancy.canBePregnant.includes(motherObject.name)
+		) {
+			return false;
+		}
+
 		const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital });
 		if (typeof pregnancy === "string" || pregnancy instanceof String) {
 			return pregnancy;
@@ -341,6 +359,24 @@ window.pregnancyGenerator = {
 		const fatherObject = npcPregObject(father);
 		if (typeof motherObject === "string" || motherObject instanceof String) return motherObject;
 		if (typeof fatherObject === "string" || fatherObject instanceof String) return fatherObject;
+
+		if (
+			V.incompletePregnancyDisable !== "f" &&
+			motherObject.name === "pc" &&
+			C.npc[fatherObject.name] &&
+			!setup.pregnancy.canImpregnatePlayer.includes(fatherObject.name)
+		) {
+			return false;
+		}
+
+		if (
+			V.incompletePregnancyDisable !== "f" &&
+			fatherObject.name === "pc" &&
+			C.npc[motherObject.name] &&
+			!setup.pregnancy.canBePregnant.includes(motherObject.name)
+		) {
+			return false;
+		}
 
 		const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital });
 		if (typeof pregnancy === "string" || pregnancy instanceof String) return pregnancy;

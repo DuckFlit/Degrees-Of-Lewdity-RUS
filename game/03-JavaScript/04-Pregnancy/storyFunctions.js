@@ -24,11 +24,11 @@ function playerBellySize(pregnancyOnly = false) {
 				if (!pregnancyOnly) bellySize += Math.clamp(vpregnancy.fetus.length, 0, 4);
 				break;
 			case "human":
-				maxSize += 21 + Math.clamp(vpregnancy.fetus.length, 1, 3);
+				if (!vpregnancy.gaveBirth) maxSize += 21 + Math.clamp(vpregnancy.fetus.length, 1, 3);
 				break;
 			// For human offspring, max sizes are 22 for single fetus, 23 for twins, and 24 for triplets.
 			case "wolf":
-				maxSize += 20 + Math.clamp(vpregnancy.fetus.length / 2, 1, 4);
+				if (!vpregnancy.gaveBirth) maxSize += 20 + Math.clamp(vpregnancy.fetus.length / 2, 1, 4);
 				break;
 		}
 		switch (apregnancy.type) {
@@ -36,10 +36,10 @@ function playerBellySize(pregnancyOnly = false) {
 				if (!pregnancyOnly) bellySize += Math.clamp(apregnancy.fetus.length, 0, 4);
 				break;
 			case "human":
-				maxSize += 21 + Math.clamp(apregnancy.fetus.length, 1, 3);
+				if (!apregnancy.gaveBirth) maxSize += 21 + Math.clamp(apregnancy.fetus.length, 1, 3);
 				break;
 			case "wolf":
-				maxSize += 20 + Math.clamp(apregnancy.fetus.length / 2, 1, 4);
+				if (!apregnancy.gaveBirth) maxSize += 20 + Math.clamp(apregnancy.fetus.length / 2, 1, 4);
 				break;
 		}
 		bellySize += pregnancyProgress * Math.clamp(maxSize, 0, 24);
@@ -128,7 +128,11 @@ function playerPregnancyProgress(percent = true) {
 window.playerPregnancyProgress = playerPregnancyProgress;
 
 function isPlayerNonparasitePregnancyEnding() {
-	return V.sexStats.vagina.pregnancy.waterBreaking || V.sexStats.anus.pregnancy.waterBreaking || false;
+	return (
+		(V.sexStats.vagina.pregnancy.waterBreaking && !V.sexStats.vagina.pregnancy.gaveBirth) ||
+		(V.sexStats.anus.pregnancy.waterBreaking && !V.sexStats.anus.pregnancy.gaveBirth) ||
+		false
+	);
 }
 window.isPlayerNonparasitePregnancyEnding = isPlayerNonparasitePregnancyEnding;
 
@@ -319,20 +323,21 @@ function dailyPregnancyEvent() {
 }
 window.dailyPregnancyEvent = dailyPregnancyEvent;
 
-function pregnancyNameCorrection(name) {
+function pregnancyNameCorrection(name, caps = false) {
 	switch (name) {
 		case "Black Wolf":
 		case "Great Hawk":
 		case "Ivory Wraith":
-			name = "the " + name;
+		case "cum bucket":
+			name = (caps ? "The " : "the ") + name;
 			break;
 		case "pc":
-			name = "yourself";
+			name = caps ? "Yourself" : "yourself";
 			break;
 		default:
-			name = (name[0] == name[0].toLowerCase() ? "a " + name : name);
+			name = name[0] === name[0].toLowerCase() ? (caps ? "A " : "a ") + name : name;
 			break;
-		}
+	}
 	return name;
 }
 window.pregnancyNameCorrection = pregnancyNameCorrection;

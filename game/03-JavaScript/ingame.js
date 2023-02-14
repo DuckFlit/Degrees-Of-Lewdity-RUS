@@ -119,7 +119,7 @@ const combatActionColours = {
 			/* fencing */
 			"otherpenisrub", "penistopenis", "penistopenisfuck", "fencingcooperate",
 			/* vaginaaction */
-			"vaginatopenis", "vaginapenisfuck", "othervaginarub", "vaginatovagina", "vaginatovaginafuck", "tribcooperate", "penisEdging", "tribedge", "vaginatopenisdouble", "vaginapenisdoublefuck", "penispussydouble", "penisanusdvp",
+			"vaginatopenis", "vaginapenisfuck", "othervaginarub", "vaginatovagina", "vaginatovaginafuck", "tribcooperate", "penisEdging", "tribedge", "vaginatopenisdouble", "vaginapenisdoublefuck", "penispussydouble", "penisanusdvp", "forceImpregnation",
 			/* anusaction */
 			"anustopenis", "anuspenisfuck", "penistease", "otherMouthAnusRub", "otherAnusRub", "penisEdging",
 			/* doubleanusaction */
@@ -1840,3 +1840,28 @@ function convertHairLengthToStage(hair, length){
 }
 
 window.convertHairLengthToStage = convertHairLengthToStage;
+
+function calculateSemenReleased(){
+	let released = 30;
+
+	released += (V.semen_volume / 30);
+
+	if(V.femaleclimax === 1) released /= 30;
+	if(V.orgasmtrait >= 1) released *= 2.5;
+	if(V.cow >= 6) released *= 2;
+
+	/* if the player doesn't have enough semen, set $_semen_released to whatever they have left */
+	if(V.semen_amount < released) released = V.semen_amount;
+
+	return parseFloat(released.toFixed(1));
+}
+window.calculateSemenReleased = calculateSemenReleased;
+
+function npcSemenMod(penisSize){
+	switch(penisSize) {
+		case 4: return "large";
+		case 1: return "tiny";
+		default: return "";
+	}
+}
+window.npcSemenMod = npcSemenMod;

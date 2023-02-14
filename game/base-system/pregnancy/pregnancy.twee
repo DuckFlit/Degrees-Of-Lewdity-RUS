@@ -291,6 +291,16 @@
 	<<set _menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
 <</widget>>
 
+/* Used for the passage where the player has given birth in */
+<<widget "playerPrebirth">>
+	<<if $player.vaginaExist>>
+		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+	<<else>>
+		<<set $_pregnancy to $sexStats.anus.pregnancy>>
+	<</if>>
+	<<set $_pregnancy.gaveBirth to true>>
+<</widget>>
+
 /*args[0] - mother, args[1] - birth location, args[2] - location of where the clildren should go to, _args[3] - next passage, _args[4] - time passage*/
 /*args[0] - birth location, args[1] - location of where the clildren should go to, _args[2] - next passage, _args[3] - time passage*/
 <<widget "birthUi">>
@@ -321,6 +331,7 @@
 		<</if>>
 		<<link [["Next" + (_args[4] ? _timeString : "")|_args[3]]]>>
 			<<if _args[0] is "pc">>
+				<<run delete _pregnancyBirth.gaveBirth>>
 				<<endPlayerPregnancy _args[1] _args[2]>>
 			<<elseif $NPCNameList.includes(_args[0])>>
 				<<endNpcPregnancy _args[0] _args[1] _args[2]>>
@@ -711,7 +722,10 @@
 			<<set $NPCName[$NPCNameList.indexOf($_name)].pregnancy to {}>>
 		<</if>>
 		<<set $_pregnancy to $NPCName[$NPCNameList.indexOf($_name)].pregnancy>>
-		<<if setup.npcPregnancy.canBePregnant.includes($_name) and $NPCName[$NPCNameList.indexOf($_name)].pregnancy.enabled is undefined>>
+		<<if !setup.pregnancy.infertile.includes($_name) and
+		setup.pregnancy.typesEnabled.includes($NPCName[$NPCNameList.indexOf($_name)].type) and
+		(($incompletePregnancyDisable is "f" and $NPCName[$NPCNameList.indexOf($_name)].pregnancy.enabled is undefined) or (setup.pregnancy.canBePregnant.includes($_name) and $NPCName[$NPCNameList.indexOf($_name)].pregnancy.enabled is undefined))>>
+			<<run console.log("npc pregnancy setup", $_name)>>
 			<<set $_pregnancy.fetus to []>>
 			<<set $_pregnancy.givenBirth to 0>>
 			<<set $_pregnancy.totalBirthEvents to 0>>
@@ -733,7 +747,7 @@
 				<<case "Alex" "Wren">><<set $_pregnancy.pills to "contraceptive">>
 				<<default>><<set $_pregnancy.pills to null>>
 			<</switch>>
-		<<elseif !setup.npcPregnancy.canBePregnant.includes($_name)>>
+		<<elseif setup.pregnancy.infertile.includes($_name) or (!setup.pregnancy.canBePregnant.includes($_name) and $incompletePregnancyDisable isnot "f")>>
 			/*For saves that have the variables set, but have no need to be there*/
 			<<set $NPCName[$NPCNameList.indexOf($_name)].pregnancy to {}>>
 		<</if>>
@@ -765,12 +779,45 @@
 			<span class="green">A fulfilled warmth fills you.</span>
 			You almost forget the strife of the world. You can tell it's the slimes in your ears, rewarding you for giving birth <<print $_babiesText>>.
 			<<lllcorruption>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption `Math.floor($corruption_slime * -0.4)`>>
-			<br>
+			<br><br>
 		<<elseif $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
 			<span class="green">A fulfilled warmth fills you.</span>
 			You almost forget the strife of the world. You can tell it's the slime in your ear, rewarding you for giving birth <<print $_babiesText>>.
 			<<llcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption `Math.floor($corruption_slime * -0.2)`>>
-			<br>
+			<br><br>
 		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "fetishPregnancyImg">>
+	<<if _playerIsPregnant or _npcIsPregnant>>
+		<div class="impregnatedGrid">
+			<<if _playerIsPregnant>>
+				<div @class="$options.images is 1 ? 'impregnated' : ''">
+					<div>
+						<<if _playerIsPregnant is "pc">>
+							<span class="lewd">You just got yourself pregnant.</span>
+						<<else>>
+							<span class="lewd"><<print pregnancyNameCorrection(_playerIsPregnant, true)>> just got you pregnant.</span>
+						<</if>>
+					</div>
+					<<if $options.images is 1>>
+						<<if $player.vaginaExist>>
+							<<set $_fCum to Math.clamp(setup.bodyliquid.combined("vagina"),1,5)>>
+						<<else>>
+							<<set $_fCum to Math.clamp(setup.bodyliquid.combined("anus"),1,5)>>
+						<</if>>
+						<img class="fertilization" @src="'img/sex/fertilization/fert' + $_fCum + '.gif'">
+					<</if>>
+				</div>
+			<</if>>
+			<<if _npcIsPregnant>>
+				<div @class="$options.images is 1 ? 'impregnated' : ''">
+					<div><span class="lewd">You just impregnated <<print pregnancyNameCorrection(_npcIsPregnant, true)>>.</span></div>
+					<<if $options.images is 1>><img class="fertilization" src="img/sex/fertilization/fert6.gif"><</if>>
+				</div>
+			<</if>>
+		</div>
+		<br>
 	<</if>>
 <</widget>>

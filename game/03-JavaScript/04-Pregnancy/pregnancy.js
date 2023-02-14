@@ -43,7 +43,9 @@ function spermObjectToArray(spermObject = [], player) {
 	const spermArray = [];
 	const trackedNPCs = [];
 	for (const sperm of spermObject) {
-		if (V.NPCNameList.includes(sperm.source) && !setup.npcPregnancy.canImpregnatePlayer.includes(sperm.source)) continue;
+		if (V.incompletePregnancyDisable !== "f" && V.NPCNameList.includes(sperm.source) && !setup.pregnancy.canImpregnatePlayer.includes(sperm.source)) {
+			continue;
+		}
 
 		switch (sperm.type) {
 			case "human":
@@ -71,7 +73,8 @@ function spermObjectToArray(spermObject = [], player) {
 window.spermObjectToArray = spermObjectToArray;
 
 /* V.pregnancytype === "fetish" uses this function */
-function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null, spermType, rngModifier = 100, quantity = 1 }) {
+function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null, spermType = null, rngModifier = 100, quantity = 1, forcePregnancy = false }) {
+	if (!["vagina", "anus"].includes(genital) || !target || !spermOwner || !spermType) return false;
 	const motherObject = npcPregObject(target);
 	const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital });
 
@@ -100,14 +103,14 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 	if (pregnancy && pregnancy.type === null) {
 		const chance = 100 / (target === "pc" ? 100 - V.baseVaginalPregnancyChance : 20 - V.baseNpcPregnancyChance);
 
-		if (chance * quantity * (rngModifier / 100) * (1 + fertility + magicTattoo) * multi < random(1, 100) - 15) return false;
+		if (!forcePregnancy && chance * quantity * (rngModifier / 100) * (1 + fertility + magicTattoo) * multi < random(1, 100) - 15) return false;
 
 		if (target === "pc") {
 			const result = playerPregnancy(spermOwner, spermType, true, genital, undefined, true);
-			if (result === true) T.playerIsPregnant = true;
+			if (result === true) T.playerIsPregnant = spermOwner;
 		} else if (C.npc[target]) {
 			const result = namedNpcPregnancy(target, spermOwner, spermType, true);
-			if (result === true) T.npcIsPregnant = true;
+			if (result === true) T.npcIsPregnant = target;
 		}
 		if (target !== "pc" && spermOwner === "pc") Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>');
 		return true;
@@ -314,7 +317,6 @@ function endPlayerPregnancy(birthLocation, location) {
 		waterBreaking: false,
 		waterBreakingTimer: null,
 		type: null,
-		bellySize: 0,
 		timer: null,
 		timerEnd: null,
 		awareOf: null,
@@ -524,7 +526,6 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 	V.NPCName[V.NPCNameList.indexOf(npcName)].pregnancy = {
 		...pregnancy,
 		fetus: [],
-		bellySize: 0,
 		birthEvents,
 		timer: null,
 		timerEnd: null,
@@ -617,12 +618,32 @@ function recordSperm({
 	if (V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false; // Human player pregnancy disabled
 	if (V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false; // Beast player pregnancy disabled
 	if (V.npcPregnancyDisable === "t" && target !== "pc") return false; // Npc pregnancy disabled
-	if (!target || !spermOwner || !spermType || !["anus", "vagina"].includes(genital)) return null;
+	if (!target || !spermOwner || !setup.pregnancy.typesEnabled.includes(spermType) || !["anus", "vagina"].includes(genital)) return null;
 
-	if (V.pregnancytype === "fetish") {
+	let spermOwnerName;
+	if (typeof spermOwner === "string" || spermOwner instanceof String) {
+		spermOwnerName = spermOwner;
+	} else if (C.npc[spermOwner.fullDescription]) {
+		spermOwnerName = spermOwner.fullDescription;
+	} else {
+		if (!spermOwner.role) {
+			spermOwnerName = spermOwner.fullDescription;
+		} else if (spermOwner.role && spermOwner.role !== "normal" && spermOwner.name_known) {
+			spermOwnerName = spermOwner.name + " the " + spermOwner.role;
+		} else {
+			spermOwnerName = spermOwner.fullDescription + (spermOwner.role && spermOwner.role !== "normal" ? " the " + spermOwner.role : "");
+		}
+	}
+	if (setup.pregnancy.infertile.includes(spermOwnerName) || setup.pregnancy.infertile.includes(target)) return null;
+
+	const forcePregnancy =
+		target === "pc" && ((V.vaginaaction === "forceImpregnation" && genital === "vagina") || (V.anusaction === "forceImpregnation" && genital === "anus"));
+
+	if (V.pregnancytype === "fetish" || forcePregnancy) {
 		// Sperm on the outside should not be able to get the player pregnant
 		if (rngType === "canWash") return null;
-		return fetishPregnancy({ genital, target, spermOwner, spermType, rngModifier, quantity });
+
+		return fetishPregnancy({ genital, target, spermOwner: spermOwnerName, spermType, rngModifier, quantity, forcePregnancy });
 	}
 
 	let sperm;
@@ -638,19 +659,6 @@ function recordSperm({
 		if (V.cycledisable === "t") daysTillRemoval = Math.ceil(daysTillRemoval / 8);
 
 		rngModifier = !isNaN(rngModifier) ? rngModifier : 100;
-
-		let spermOwnerName;
-		if (typeof spermOwner === "string" || spermOwner instanceof String) {
-			spermOwnerName = spermOwner;
-		} else if (C.npc[spermOwner.fullDescription]) {
-			spermOwnerName = spermOwner.fullDescription;
-		} else {
-			if (spermOwner.role && spermOwner.role !== "normal" && spermOwner.name_known) {
-				spermOwnerName = spermOwner.name + " the " + spermOwner.role;
-			} else {
-				spermOwnerName = spermOwner.fullDescription + (spermOwner.role && spermOwner.role !== "normal" ? " the " + spermOwner.role : "");
-			}
-		}
 
 		if (spermOwnerName === "pc") {
 			const pills = V.sexStats.pills;
@@ -796,12 +804,12 @@ function playerPregnancyPossibleWith(NPC) {
 	if (typeof NPC === "string" || V.NPCNameList.includes(NPC.fullDescription)) {
 		// Check if this is a named NPC, whether the function is provided a string or NPCList object that belongs to a named NPC
 		NPCObject = V.NPCName[V.NPCNameList.indexOf(typeof NPC === "string" ? NPC : NPC.fullDescription)];
-		const NPCNameCheck = NPCObject.fullDescription;
-		if (!C.npc[NPCNameCheck]) {
-			Errors.report("Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check.");
-			return false;
-		}
-		if (!NPCObject.pregnancy.enabled) {
+
+		const NPCNameCheck = NPCObject.fullDescription || NPCObject.description; // .description is only for backup, should not be needed in normal cases
+		if (
+			setup.pregnancy.infertile.includes(NPCNameCheck) ||
+			(V.incompletePregnancyDisable !== "f" && C.npc[NPCNameCheck] && !setup.pregnancy.canImpregnatePlayer.includes(NPCNameCheck))
+		) {
 			T.pregFalseReason = "infertile";
 			return false; // Check for named NPC being "infertile"
 			// "this check is placed here because it only applies to named NPCs" - hwp told me to put this here
@@ -826,7 +834,9 @@ function playerPregnancyPossibleWith(NPC) {
 				return false;
 			} else break; // Check Human and Beast pregnancy settings
 		case "wolf":
-		case "bird":
+		case "wolfboy":
+		case "wolfgirl":
+			// case "bird":
 			if (V.playerPregnancyBeastDisable === "t") {
 				T.pregFalseReason = "pregnantDisabled";
 				return false;
@@ -836,7 +846,7 @@ function playerPregnancyPossibleWith(NPC) {
 			T.pregFalseReason = "pregnantTypeUnsupported";
 			return false;
 	}
-	if (!V.player.vaginaExist || NPCObject.gender === "f") {
+	if (!((V.player.vaginaExist || canBeMPregnant()) && NPCObject.gender === "m") && !(V.player.penisExist && NPCObject.gender === "f")) {
 		T.pregFalseReason = "genitals";
 		return false; // Check for genital compatibility for player pregnancy
 	}
@@ -859,7 +869,7 @@ function NPCPregnancyPossibleWithPlayer(NPC) {
 			Errors.report("Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check.");
 			return false;
 		}
-		if (!NPCObject.pregnancy.enabled) {
+		if (setup.pregnancy.infertile.includes(NPCNameCheck) || !NPCObject.pregnancy.enabled) {
 			T.pregFalseReason = "infertile";
 			return false; // Check for named NPC being "infertile"
 			// "this check is placed here because it only applies to named NPCs" - hwp told me to put this here too
@@ -879,7 +889,7 @@ function NPCPregnancyPossibleWithPlayer(NPC) {
 		T.pregFalseReason = "pregnantDisabled";
 		return false; // Check if NPC pregnancy is enabled or possible in settings
 	}
-	if (!["human", "wolf"].includes(NPCObject.type)) {
+	if (!setup.pregnancy.typesEnabled.includes(NPCObject.type)) {
 		T.pregFalseReason = "pregnantTypeUnsupported";
 		return false; // Check if NPC species can get impregnated by the player yet
 	}
