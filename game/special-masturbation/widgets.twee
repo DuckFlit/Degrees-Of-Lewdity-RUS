@@ -8,7 +8,7 @@
 		<</if>>
 	<<else>>
 		<<if $masturbationorgasm is 0>>
-			<<if $purity gte 990 and $worn.genitals.type.includes("chastity")>>
+			<<if $purity gte 990 and playerChastity()>>
 				You didn't cum, but you feel guilty regardless.
 			<<elseif $purity gte 900>>
 				You didn't cum, but that's okay.
@@ -46,7 +46,7 @@
 	<<if $masturbationorgasm gt 100 or ($masturbation_bowl is 1 and Math.floor(($masturbation_fluid / 30)) gte 15)>>
 		<<earnFeat "Literally Buckets">>
 	<</if>>
-	<<if $purity gte 990 and $worn.genitals.type.includes("chastity")>>
+	<<if $purity gte 990 and playerChastity()>>
 		Do other <<girls>> do this, or are you a freak?
 	<</if>>
 	<br>
@@ -198,7 +198,7 @@
 		<<else>>
 			Despite your better judgement, you yearn to be touched.
 		<</if>>
-	<<elseif !$worn.genitals.type.includes("chastity")>>
+	<<elseif !playerChastity()>>
 		You fondle your <<genitals 1>>.
 		<<if $purity gte 990>>
 			You know you'd feel guilty if you went further, but it feels so good.
@@ -244,25 +244,24 @@
 
 /* these checks only determine if it could be possible. they do not check for current obstructions like clothing or hands. */
 <<widget "selfsuckchecks">>
-	<<if $worn.genitals.type.includes("chastity")>>
-		<<set $canSelfSuckVagina to false>>
-		<<set $canSelfSuckPenis to false>>
-	<<else>>
-		<<set $_danceSkillLimit to Math.clamp(Math.ceil((800 - $danceskill)/200), 0, 4)>>
-		<<set $_catFlexLimit to Math.clamp((6 - $cat), 0, 4)>>
-		<<if $player.penisExist>>
-			/* <<set setup.penisHeightLevels to ["base", "waist", "midriff", "chest"]>> */
-			/* the above comment is a reminder of how high the player's penis can reach. however, it's not useful in the code at the moment. */
+	<<set $_danceSkillLimit to Math.clamp(Math.ceil((800 - $danceskill)/200), 0, 4)>>
+	<<set $_catFlexLimit to Math.clamp((6 - $cat), 0, 4)>>
+	<<if $player.penisExist and !playerChastity("penis")>>
+		/* <<set setup.penisHeightLevels to ["base", "waist", "midriff", "chest"]>> */
+		/* the above comment is a reminder of how high the player's penis can reach. however, it's not useful in the code at the moment. */
 
-			/* lower number means harder to reach; the player has to get their head lower down to reach it. */
-			<<set $penisHeight to [0,0,0,1,1,2,3][$player.penissize + 2]>>
-			<<set $canSelfSuckPenis to ($penisHeight gte $_danceSkillLimit) or ($penisHeight gte $_catFlexLimit)>>
-			<<set $selfsuckLimit to $penisHeight - ($_danceSkillLimit lt $_catFlexLimit ? $_danceSkillLimit : $_catFlexLimit)>>
-			<<set $selfsuckDepth to 0>>
-		<</if>>
-		<<if $player.vaginaExist>>
-			<<set $canSelfSuckVagina to ((0 gte $_danceSkillLimit) or (0 gte $_catFlexLimit))>>
-		<</if>>
+		/* lower number means harder to reach; the player has to get their head lower down to reach it. */
+		<<set $penisHeight to [0,0,0,1,1,2,3][$player.penissize + 2]>>
+		<<set $canSelfSuckPenis to ($penisHeight gte $_danceSkillLimit) or ($penisHeight gte $_catFlexLimit)>>
+		<<set $selfsuckLimit to $penisHeight - ($_danceSkillLimit lt $_catFlexLimit ? $_danceSkillLimit : $_catFlexLimit)>>
+		<<set $selfsuckDepth to 0>>
+	<<else>>
+		<<set $canSelfSuckPenis to false>>
+	<</if>>
+	<<if $player.vaginaExist and !playerChastity("vagina")>>
+		<<set $canSelfSuckVagina to ((0 gte $_danceSkillLimit) or (0 gte $_catFlexLimit))>>
+	<<else>>
+		<<set $canSelfSuckVagina to false>>
 	<</if>>
 <</widget>>
 

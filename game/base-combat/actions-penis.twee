@@ -1,32 +1,6 @@
 :: Widgets Actions Penis [widget]
-<!-- Deprecated, not in use. See "actionspenistovaginanew"-->
-<<widget "actionspenistovagina">>
-	<<if $combattype is "train">>
-		<<set _end to $enemyno-1>>
-	<<else>>
-		<<set _end to 0>>
-	<</if>>
-
-	<<if !$worn.genitals.type.includes("chastity")>>
-		<<for _j = $enemyno-1; _j gte _end; _j-->>
-			<<if $NPCList[_j].vagina is 0>>
-				<<if $consensual is 1 and ($enemytype is man ? $promiscuity : $deviancy) lte 74>>
-				<!-- Do Nothing -->
-				<<elseif $NPCList[_j].stance isnot "topface">>
-					<<if $penisactiondefault is "penistovagina">>
-						| <label><span class="sub">Press against <<his>> pussy</span> <<radiobutton "$penisaction" "penistovagina" checked>><<peniledifficulty>> <<combatpromiscuous5>></label>
-					<<else>>
-						| <label><span class="sub">Press against <<his>> pussy</span> <<radiobutton "$penisaction" "penistovagina">><<peniledifficulty>> <<combatpromiscuous5>></label>
-					<</if>>
-					<<break>>
-				<</if>>
-			<</if>>
-		<</for>>
-	<</if>>
-<</widget>>
-
 <<widget "actionspenistovaginanew">>
-	<<if !$worn.genitals.type.includes("chastity") or playerHasStrapon()>>
+	<<if !playerChastity("penis") or playerHasStrapon()>>
 		<<set $_target to $NPCList[$penistarget]>>
 		<<if $_target.vagina is 0>>
 			<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore>>
@@ -58,7 +32,7 @@
 			<</if>>
 			<<if playerHasStrapon()>>
 				<<set _penisaction["Push your strap-on against " + $_target.pronouns.his + " " + _pp] to "penistopenisfuck">>
-			<<elseif $worn.genitals.type.includes("chastity")>>
+			<<elseif playerChastity("penis")>>
 				<<set _penisaction["Push your chastity against " + $_target.pronouns.his + " " + _pp] to "penistopenisfuck">>
 			<<else>>
 				<<set _penisaction["Push your penis against " + $_target.pronouns.his + " " + _pp] to "penistopenisfuck">>
@@ -93,16 +67,16 @@
 	<<if $thighuse is 0>>
 		<<set _penisaction["Try to keep it away with your thighs"] to "penisthighs">>
 	<</if>>
-	<<if $analdisable is "f" and $anususe is 0 and $worn.genitals.anal_shield isnot 1>>
+	<<if $analdisable is "f" and $anususe is 0 and !playerChastity("anus")>>
 		<<set _penisaction["Offer your anus instead"] to "penisanus">>
 	<</if>>
-	<<if $vaginause is 0 and !$worn.genitals.type.includes("chastity")>>
+	<<if $vaginause is 0 and !playerChastity("vagina")>>
 		<<set _penisaction["Offer your pussy instead"] to "penispussy">>
 	<</if>>
-	<<if $vaginaldoubledisable is "f" and $awareness gt 300 and $vaginause is "penis" and $NPCList[$vaginatarget].penissize gte 2 and $NPCList[$penistarget].penissize gte 2 and !$worn.genitals.type.includes("chastity")>>
+	<<if $vaginaldoubledisable is "f" and $awareness gt 300 and $vaginause is "penis" and $NPCList[$vaginatarget].penissize gte 2 and $NPCList[$penistarget].penissize gte 2 and !playerChastity("vagina")>>
 		<<set _penisaction["Offer double vaginal instead"] to "penispussydouble">>
 	<</if>>
-	<<if $analdoubledisable is "f" and $awareness gt 300 and $anususe is "penis" and $worn.genitals.anal_shield isnot 1 and $NPCList[$anustarget].penissize gte 2 and $NPCList[$penistarget].penissize gte 2>>
+	<<if $analdoubledisable is "f" and $awareness gt 300 and $anususe is "penis" and !playerChastity("anus") and $NPCList[$anustarget].penissize gte 2 and $NPCList[$penistarget].penissize gte 2>>
 		<<set _penisaction["Offer double anal instead"] to "penisanusdouble">>
 	<</if>>
 <</widget>>
@@ -113,50 +87,24 @@
 	<<else>>
 		<<set _penisaction["Rub"] to "otherpenisrub">>
 	<</if>>
-	<<if $analdisable is "f" and $anususe is 0 and $worn.genitals.anal_shield isnot 1>>
+	<<if $analdisable is "f" and $anususe is 0 and !playerChastity("anus")>>
 		<<set _penisaction["Offer your anus instead"] to "penisanus">>
 	<</if>>
-	<<if $vaginause is 0 and !$worn.genitals.type.includes("chastity")>>
+	<<if $vaginause is 0 and !playerChastity("vagina")>>
 		<<set _penisaction["Offer your pussy instead"] to "penispussy">>
 	<</if>>
-	<<if $vaginaldoubledisable is "f" and $awareness gt 300 and $vaginause is "penis" and $NPCList[$vaginatarget].penissize gte 2 and $NPCList[$penistarget].penissize gte 2 and !$worn.genitals.type.includes("chastity")>>
+	<<if $vaginaldoubledisable is "f" and $awareness gt 300 and $vaginause is "penis" and $NPCList[$vaginatarget].penissize gte 2 and $NPCList[$penistarget].penissize gte 2 and !playerChastity("vagina")>>
 		<<set _penisaction["Offer double vaginal instead"] to "penispussydouble">>
 	<</if>>
-	<<if $analdoubledisable is "f" and $awareness gt 300 and $anususe is "penis" and $worn.genitals.anal_shield isnot 1 and $NPCList[$anustarget].penissize gte 2 and $NPCList[$penistarget].penissize gte 2>>
+	<<if $analdoubledisable is "f" and $awareness gt 300 and $anususe is "penis" and !playerChastity("anus") and $NPCList[$anustarget].penissize gte 2 and $NPCList[$penistarget].penissize gte 2>>
 		<<set _penisaction["Offer double anal instead"] to "penisanusdouble">>
 	<</if>>
 	<<set _penisaction["Pull away"] to "fencingescape">>
 <</widget>>
 
-<!-- Deprecated, not in use. See "actionspenistoanusnew"-->
-<<widget "actionspenistoanus">>
-	<<if $combattype is "train">>
-		<<set _end to $enemyno-1>>
-	<<else>>
-		<<set _end to 0>>
-	<</if>>
-
-	<<for _j = $enemyno-1; _j gte _end; _j-->>
-		<<if !$worn.genitals.type.includes("chastity") and $NPCList[_j].stance isnot "topface">>
-			<<if $NPCList[_j].vagina is 0 or $NPCList[_j].penis is 0>>
-				<<if $consensual is 1 and ($enemytype is man ? $promiscuity : $deviancy) lte 74>>
-					<!-- Do Nothing -->
-				<<else>>
-					<<if $penisactiondefault is "penistoanus">>
-						| <label><span class="sub">Press against <<his>> ass</span> <<radiobutton "$penisaction" "penistoanus" checked>><<peniledifficulty>> <<combatpromiscuous5>></label>
-					<<else>>
-						| <label><span class="sub">Press against <<his>> ass</span> <<radiobutton "$penisaction" "penistoanus">><<peniledifficulty>> <<combatpromiscuous5>></label>
-					<</if>>
-					<<break>>
-				<</if>>
-			<</if>>
-		<</if>>
-	<</for>>
-<</widget>>
-
 <<widget "actionspenistoanusnew">>
 	<<set $_target to $NPCList[$penistarget]>>
-	<<if !$worn.genitals.type.includes("chastity") or playerHasStrapon()>>
+	<<if !playerChastity("penis") or playerHasStrapon()>>
 		<<if $_target.stance isnot "topface">>
 			<<if $_target.vagina is 0 or $_target.penis is 0>>
 				<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore>>
@@ -173,34 +121,8 @@
 	<</if>>
 <</widget>>
 
-<!-- Deprecated, not in use. See "actionspenisvaginafucknew"-->
-<<widget "actionspenisvaginafuck">>
-	<<if $combattype is "train">>
-		<<set _end to $enemyno-1>>
-	<<else>>
-		<<set _end to 0>>
-	<</if>>
-
-	<<if !$worn.genitals.type.includes("chastity") and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
-		<<for _j = $enemyno-1; _j gte _end; _j-->>
-			<<if $NPCList[_j].vagina is "penisentrance" or $NPCList[_j].vagina is "penisimminent">>
-				<<if $consensual is 1 and ($enemytype is man ? $promiscuity : $deviancy) lte 74>>
-					<!-- Do Nothing -->
-				<<else>>
-					<<if $penisactiondefault is "penisvaginafuck">>
-						| <label><span class="sub">Penetrate <<his>> pussy</span> <<radiobutton "$penisaction" "penisvaginafuck" checked>> <<combatpromiscuous5>><<penilevirginitywarning>><<NPCvirginitywarning $NPCList[_j].fullDescription "vaginal">></label>
-					<<else>>
-						| <label><span class="sub">Penetrate <<his>> pussy</span> <<radiobutton "$penisaction" "penisvaginafuck">> <<combatpromiscuous5>><<penilevirginitywarning>><<NPCvirginitywarning $NPCList[_j].fullDescription "vaginal">></label>
-					<</if>>
-					<<break>>
-				<</if>>
-			<</if>>
-		<</for>>
-	<</if>>
-<</widget>>
-
 <<widget "actionspenisvaginafucknew">>
-	<<if (!$worn.genitals.type.includes("chastity") or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+	<<if (!playerChastity("penis") or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
 		<<set $_target to $NPCList[$penistarget]>>
 		<<if $_target.vagina is "penisentrance" or $_target.vagina is "penisimminent">>
 			<<if $consensual is 1 and (($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore) or $_target.chastity.vagina.includes("chastity")>>
@@ -212,34 +134,8 @@
 	<</if>>
 <</widget>>
 
-<!-- Deprecated, not in use. See "actionspenisanusfucknew"-->
-<<widget "actionspenisanusfuck">>
-	<<if $combattype is "train">>
-		<<set _end to $enemyno-1>>
-	<<else>>
-		<<set _end to 0>>
-	<</if>>
-
-	<<if !$worn.genitals.type.includes("chastity") and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
-		<<for _j = $enemyno-1; _j gte _end; _j-->>
-			<<if $NPCList[_j].vagina is "otheranusentrance" or $NPCList[_j].vagina is "otheranusimminent" or $NPCList[_j].penis is "otheranusentrance" or $NPCList[_j].penis is "otheranusimminent">>
-				<<if $consensual is 1 and ($enemytype is man ? $promiscuity : $deviancy) lte 74>>
-					<!-- Do Nothing -->
-				<<else>>
-					<<if $penisactiondefault is "penisanusfuck">>
-						| <label><span class="sub">Penetrate <<his>> ass</span> <<radiobutton "$penisaction" "penisanusfuck" checked>> <<combatpromiscuous5>><<penilevirginitywarning>><<NPCvirginitywarning $NPCList[_j].fullDescription "anal">></label>
-					<<else>>
-						| <label><span class="sub">Penetrate <<his>> ass</span> <<radiobutton "$penisaction" "penisanusfuck">> <<combatpromiscuous5>><<penilevirginitywarning>><<NPCvirginitywarning $NPCList[_j].fullDescription "anal">></label>
-					<</if>>
-					<<break>>
-				<</if>>
-			<</if>>
-		<</for>>
-	<</if>>
-<</widget>>
-
 <<widget "actionspenisanusfucknew">>
-	<<if (!$worn.genitals.type.includes("chastity") or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+	<<if (!playerChastity("penis") or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
 		<<set $_target to $NPCList[$penistarget]>>
 		<<if $_target.vagina is "otheranusentrance" or $_target.vagina is "otheranusimminent" or $_target.penis is "otheranusentrance" or $_target.penis is "otheranusimminent">>
 			<<if $_target.chastity.anus.includes("shield") or ($consensual is 1 and !$promiscuityIgnore and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74)>>
@@ -387,7 +283,7 @@
 
 				<span class="lblue">You press your <<penis>> against <<combatpersons>> <<npcVagina $penistarget>>.</span>
 				<<if $NPCList[$penistarget].condom and $NPCList[$penistarget].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
-					<<if $worn.genitals.type.includes("chastity")>>
+					<<if playerChastity("penis")>>
 						<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 						<<set $NPCList[$penistarget].condom.willUse to false>>
 					<<else>>
@@ -435,7 +331,7 @@
 				<span class="blue">You try to press your <<penis>> against <<combatpersons>> <<npcAnus $penistarget>>, but your position won't let you.</span>
 				<<set $penisactiondefault to "penistoanus">>
 				<<if $NPCList[$penistarget].condom and $NPCList[$penistarget].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
-					<<if $worn.genitals.type.includes("chastity")>>
+					<<if playerChastity("penis")>>
 						<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 						<<set $NPCList[$penistarget].condom.willUse to false>>
 					<<else>>
@@ -448,7 +344,7 @@
 			<span class="blue">You try to press your <<penis>> against <<combatpersons>> <<npcAnus $penistarget>> but <<he>> pushes you away.</span>
 			<<set $penisactiondefault to "penistoanus">>
 			<<if $NPCList[$penistarget].condom and $NPCList[$penistarget].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
-				<<if $worn.genitals.type.includes("chastity")>>
+				<<if playerChastity("penis")>>
 					<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 					<<set $NPCList[$penistarget].condom.willUse to false>>
 				<<else>>
@@ -549,7 +445,7 @@
 				<<if $rightarm is "coverpenis">>
 					<<set $rightarm to 0>>
 				<</if>>
-				<span class="lblue">You caress <<combatpersons>> <<npcPenisSimple $penistarget>> with your <<penisSimple>><<if $worn.genitals.type.includes("chastity")>>, through your $worn.genitals.name<</if>>.</span>
+				<span class="lblue">You caress <<combatpersons>> <<npcPenisSimple $penistarget>> with your <<penisSimple>><<if playerChastity("penis")>>, through your $worn.genitals.name<</if>>.</span>
 				<<if $enemytype is "beast">>
 					<<set $_target.stance to "top">>
 				<</if>>
@@ -570,7 +466,7 @@
 		<<if combatSkillCheck("penile", $penistarget)>>
 			<<submission 5>><<set $penisuse to "otherpenis">><<set $penisstate to "otherpenis">>
 			<<set $NPCList[$penistarget].penis to "penis">><<set $penisactiondefault to "fencingcooperate">>
-			<span class="blue">You press <<combatpersons>> <<npcPenisSimple $penistarget>> with your penis<<if $worn.genitals.type.includes("chastity")>>, through your $worn.genitals.name<</if>>.</span>
+			<span class="blue">You press <<combatpersons>> <<npcPenisSimple $penistarget>> with your penis<<if playerChastity("penis")>>, through your $worn.genitals.name<</if>>.</span>
 		<<else>>
 			<span class="blue">You try to press your <<penis>> against <<combatpersons>>, but <<ohe>> keeps you away.</span>
 			<<set $penisactiondefault to "penistopenisfuck">>
