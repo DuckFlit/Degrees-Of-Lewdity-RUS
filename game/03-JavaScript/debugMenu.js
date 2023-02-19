@@ -383,6 +383,30 @@ setup.debugMenu.eventList = {
 			condition() { return V.pregnancyTesting },
 		},
 		{
+			link: [`Basic NPC Compression Test`, stayOnPassageFn],
+			widgets: [() =>{
+				//Copy this debug option for use with other compressor debugging.
+				let testList = {}, invalidList = [], currentNPC;
+
+				for (let i = 0; i < 6; i++) {
+					currentNPC = V.NPCList[i].fullDescription;
+
+					if (currentNPC) {
+							if (!V.NPCNameList.includes(currentNPC)) {
+								testList["NPCList" + i] = V.NPCList[i];
+							}
+							else invalidList.push(currentNPC);
+					}
+				}
+
+				if (Object.keys(testList).length != 0) compressionVerifier(testList, false, true)
+				if (Object.keys(invalidList).length != 0) console.log("The following NPC(s) in $NPCList could not be tested: " + invalidList.join(", "));
+				else if (Object.keys(testList).length === 0 && Object.keys(invalidList).length === 0) console.log("There are no NPCs in the NPCList to test.");
+
+				return '';
+			}]
+		},
+		{
 			link: [`Enable Debug Lines`, stayOnPassageFn],
 			widgets: [`<<set $debugLines to true>>`],
 		},
