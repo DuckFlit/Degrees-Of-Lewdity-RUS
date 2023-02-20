@@ -1,4 +1,6 @@
+/* eslint-disable no-new */
 /* eslint-disable jsdoc/require-description-complete-sentence */
+/* eslint-disable no-undef */
 function setfemininitymultiplierfromgender(gender) {
 	if (gender === "f") {
 		T.femininity_multiplier = 1;
@@ -70,29 +72,29 @@ const hairStyleCap = {
 };
 
 window.calculatePenisBulge = () => {
-	let compressed = V.player.penisExist && V.worn.genitals.type.includes("hidden");
-	if(!V.player.penisExist || compressed) return 0;
+	const compressed = V.player.penisExist && V.worn.genitals.type.includes("hidden");
+	if (!V.player.penisExist || compressed) return 0;
 
-	if(V.worn.genitals.type.includes("cage")){
+	if (V.worn.genitals.type.includes("cage")) {
 		return Math.clamp(V.player.penissize, 0, Infinity);
 	}
-	//Mentioned in combat about npcs `trying to force an erection`, when below the specific arousal checks
-	if((V.arousal > 9000 && V.player.penissize === -1) || (V.arousal > 9500 && V.player.penissize === -2)) return 1;
+	// Mentioned in combat about npcs `trying to force an erection`, when below the specific arousal checks
+	if ((V.arousal > 9000 && V.player.penissize === -1) || (V.arousal > 9500 && V.player.penissize === -2)) return 1;
 
 	let erectionState = 1;
-	if(V.arousal >= 8000){
+	if (V.arousal >= 8000) {
 		erectionState = 3;
-	} else if(V.arousal >= 6000){
+	} else if (V.arousal >= 6000) {
 		erectionState = 2;
 	}
 	return Math.clamp((V.player.penissize + 1) * erectionState, 0, Infinity);
-}
+};
 
 /** Calculate the player's gender appearance */
 function genderappearancecheck() {
 	/* Calculate bulge size */
 	T.bulge_size = calculatePenisBulge();
-	/*T.penis_compressed = V.player.penisExist && V.worn.genitals.type.includes("hidden");
+	/* T.penis_compressed = V.player.penisExist && V.worn.genitals.type.includes("hidden");
 	if (V.worn.genitals.type.includes("cage")) {
 		T.bulge_size = Math.clamp(V.player.penissize, 0, Infinity);
 	} else {
@@ -108,12 +110,10 @@ function genderappearancecheck() {
 			T.erection_state = 2;
 		}
 		T.bulge_size = Math.clamp(V.player.penissize * T.erection_state, 0, Infinity);
-	}*/
+	} */
 	/* Determine how visible the player's bottom is */
 	if (
-		(setup.clothes.lower[clothesIndex("lower", V.worn.lower)].skirt === 1 &&
-			V.worn.lower.skirt_down === 1 &&
-			V.worn.lower.state === "waist") ||
+		(setup.clothes.lower[clothesIndex("lower", V.worn.lower)].skirt === 1 && V.worn.lower.skirt_down === 1 && V.worn.lower.state === "waist") ||
 		(setup.clothes.over_lower[clothesIndex("over_lower", V.worn.over_lower)].skirt === 1 &&
 			V.worn.over_lower.skirt_down === 1 &&
 			V.worn.over_lower.state === "waist")
@@ -153,10 +153,10 @@ function genderappearancecheck() {
 	addfemininityfromfactor(V.makeup.eyeshadow ? 50 : 0, "Eye shadow");
 	addfemininityfromfactor(V.makeup.mascara ? 50 : 0, "Mascara");
 	/* Body structure */
-	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50),	"Bottom size (" + Math.trunc(T.bottom_visibility * 100) + "% visible)");
+	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "Bottom size (" + Math.trunc(T.bottom_visibility * 100) + "% visible)");
 	setfemininitymultiplierfromgender(V.player.gender_body);
 	addfemininityfromfactor(T.femininity_multiplier * 200, "Natural features");
-	addfemininityfromfactor(Math.trunc((V.physique + V.physiquesize / 2) / V.physiquesize * -100), "Toned muscles");
+	addfemininityfromfactor(Math.trunc(((V.physique + V.physiquesize / 2) / V.physiquesize) * -100), "Toned muscles");
 	/* Behaviour */
 	setfemininitymultiplierfromgender(V.player.gender_posture);
 	T.acting_multiplier = V.englishtrait + 1;
@@ -167,9 +167,15 @@ function genderappearancecheck() {
 	T.under_lower_protected = !V.worn.under_lower.exposed;
 	T.apparent_femininity_noow = T.apparent_femininity;
 	T.gender_appearance_factors_noow = clone(T.gender_appearance_factors);
-	T.over_lower_femininity = setup.clothes.over_lower[clothesIndex("over_lower", V.worn.over_lower)].femininity ? setup.clothes.over_lower[clothesIndex("over_lower", V.worn.over_lower)].femininity : 0; 
-	T.lower_femininity = setup.clothes.lower[clothesIndex("lower", V.worn.lower)].femininity ? setup.clothes.lower[clothesIndex("lower", V.worn.lower)].femininity : 0;
-	T.under_lower_femininity = setup.clothes.under_lower[clothesIndex("under_lower", V.worn.under_lower)].femininity ? setup.clothes.under_lower[clothesIndex("under_lower", V.worn.under_lower)].femininity : 0;
+	T.over_lower_femininity = setup.clothes.over_lower[clothesIndex("over_lower", V.worn.over_lower)].femininity
+		? setup.clothes.over_lower[clothesIndex("over_lower", V.worn.over_lower)].femininity
+		: 0;
+	T.lower_femininity = setup.clothes.lower[clothesIndex("lower", V.worn.lower)].femininity
+		? setup.clothes.lower[clothesIndex("lower", V.worn.lower)].femininity
+		: 0;
+	T.under_lower_femininity = setup.clothes.under_lower[clothesIndex("under_lower", V.worn.under_lower)].femininity
+		? setup.clothes.under_lower[clothesIndex("under_lower", V.worn.under_lower)].femininity
+		: 0;
 	/* find maximum possible femininity of the last lower piece you can strip down to, and add it to the counter */
 	addfemininityfromfactor(Math.max(T.over_lower_femininity, T.lower_femininity, T.under_lower_femininity), "Lower clothes", "noow");
 	/* bulge and genitals checks for topless gender */
@@ -255,12 +261,15 @@ function genderappearancecheck() {
 		addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 4) * 100, 0, Infinity), "Breast size visible through clothing");
 	}
 	/* Pregnant Belly */
-	if (V.sexStats === undefined) {
+	if (V.sexStats === undefined || pregnancyBellyVisible()) {
 		// do glorious nothing
+	} else if (playerBellySize() >= 18) {
+		addfemininityfromfactor(Math.clamp(10000, 0, Infinity), playerAwareTheyArePregnant() ? "Pregnant Belly" : "Pregnant Looking Belly");
 	} else if (playerBellySize() >= 8) {
-		addfemininityfromfactor(Math.clamp(100000, 0, Infinity), "Pregnant Belly");
-	} else if (playerBellySize() >= 5) {
-		addfemininityfromfactor(Math.clamp((playerBellySize() - 4) * 500, 0, Infinity), "Pregnant Belly");
+		addfemininityfromfactor(
+			Math.clamp((playerBellySize() - 7) * 250, 0, Infinity),
+			playerAwareTheyArePregnant() ? "Pregnant Belly" : "Pregnant Looking Belly"
+		);
 	}
 	/* Body writing */
 	Wikifier.wikifyEval("<<bodywriting_exposure_check>>"); // TODO convert to JS when possible
@@ -322,17 +331,29 @@ function genderAppearanceHermTiebreak() {
 
 function apparentbreastsizecheck() {
 	T.tempbreast = V.player.breastsize;
-	if (clothingData("upper", V.worn.upper, "bustresize") != null) { T.tempbreast += clothingData("upper", V.worn.upper, "bustresize"); }
-	if (clothingData("under_upper", V.worn.under_upper, "bustresize") != null) { T.tempbreast += clothingData("under_upper", V.worn.under_upper, "bustresize"); }
-	if (clothingData("over_upper", V.worn.over_upper, "bustresize") != null) { T.tempbreast += clothingData("over_upper", V.worn.over_upper, "bustresize"); }
+	if (clothingData("upper", V.worn.upper, "bustresize") != null) {
+		T.tempbreast += clothingData("upper", V.worn.upper, "bustresize");
+	}
+	if (clothingData("under_upper", V.worn.under_upper, "bustresize") != null) {
+		T.tempbreast += clothingData("under_upper", V.worn.under_upper, "bustresize");
+	}
+	if (clothingData("over_upper", V.worn.over_upper, "bustresize") != null) {
+		T.tempbreast += clothingData("over_upper", V.worn.over_upper, "bustresize");
+	}
 	V.player.perceived_breastsize = Math.clamp(V.breastsizemin, T.tempbreast, V.breastsizemax);
 }
 
 function apparentbottomsizecheck() {
 	T.tempbutt = V.player.bottomsize;
-	if (V.worn.lower.rearresize != null) { T.tempbutt += V.worn.lower.rearresize }
-	if (V.worn.under_lower.rearresize != null) { T.tempbutt += V.worn.under_lower.rearresize }
-	if (V.worn.lower.rearresize != null) { T.tempbutt += V.worn.over_lower.rearresize }
+	if (V.worn.lower.rearresize != null) {
+		T.tempbutt += V.worn.lower.rearresize;
+	}
+	if (V.worn.under_lower.rearresize != null) {
+		T.tempbutt += V.worn.under_lower.rearresize;
+	}
+	if (V.worn.lower.rearresize != null) {
+		T.tempbutt += V.worn.over_lower.rearresize;
+	}
 	V.player.perceived_bottomsize = Math.clamp(V.bottomsizemin, T.tempbutt, V.bottomsizemax);
 }
 
@@ -341,19 +362,18 @@ function exposedcheck() {
 		apparentbreastsizecheck();
 		apparentbottomsizecheck();
 		genderappearancecheck();
-		
+
 		V.player.gender_appearance = T.gender_appearance;
 		T.gender_appearance_factors.sort((a, b) => a.femininity > b.femininity);
 		V.player.gender_appearance_factors = T.gender_appearance_factors;
 		V.player.femininity = T.apparent_femininity;
-		
+
 		V.player.gender_appearance_without_overwear = T.gender_appearance_noow;
 		T.gender_appearance_factors_noow.sort((a, b) => a.femininity > b.femininity);
 		V.player.gender_appearance_without_overwear_factors = T.gender_appearance_factors_noow;
 		V.player.femininity_without_overwear = T.apparent_femininity_noow;
-		
+
 		V.breastindicator = T.breast_indicator;
-		
 	}
 }
 DefineMacro("exposedcheck", exposedcheck);
