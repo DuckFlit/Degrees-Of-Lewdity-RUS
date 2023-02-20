@@ -4,7 +4,7 @@
 	/*For older saves in existing masturbation scene*/
 	<<if !$masturbation_oralSkill>><<set $masturbation_oralSkill to 0>><</if>>
 
-	<<set _playerToys to window.listUniqueCarriedSextoys().filter(toy => (V.player.penisExist && !playerChastity("penis") && toy.type.includesAny("stroker")) || toy.type.includesAny("dildo"))>>
+	<<set _playerToys to window.listUniqueCarriedSextoys().filter(toy => (V.player.penisExist && !playerChastity("penis") && toy.type.includesAny("stroker")) || toy.type.includesAny("dildo","breastpump"))>>
 	<<if $currentToyLeft isnot undefined and $currentToyLeft isnot "none">>
 		<<set $_lefttoy to _playerToys[$currentToyLeft].name>>
 		<<set $_lefttoycolour to _playerToys[$currentToyLeft].colour>>
@@ -186,6 +186,7 @@
 	<</if>>
 
 	<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1>>
+	<<set $_breasts_exposed to $worn.over_upper.exposed gte 1 and $worn.upper.exposed gte 1 and $worn.under_upper.exposed gte 1>>
 
 	<<if $leftaction is "msemencover" and $rightaction is "msemencover">>
 		<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftFingersSemen to 1>>
@@ -208,6 +209,7 @@
 			<<set _handsOnBreasts += 1>>
 			<<set $leftactiondefault to $leftaction>><<set $leftaction to 0>>
 			<<arousal 100 "masturbationBreasts">><<playWithBreasts 1>><<milkvolume 1>><<set _handsCount++>>
+			<<set >>
 		<</if>>
 		<<if $rightaction is "mchest">>
 			<<set _handsOnBreasts += 1>>
@@ -243,18 +245,6 @@
 					You stroke your <<breasts>> and rub your nipples between your fingers, feeling the lewd warmth grow.
 				<</if>>
 			<</if>>
-
-			<<if $lactating is 1 and $breastfeedingdisable is "f">>
-				<<if $milk_amount gte 1>>
-					<span class="lewd">Milk leaks from your buds.</span>
-
-					<!-- Run twice if both hands are on the player's breasts -->
-					<<breastfeed 1>>
-					<<if _handsOnBreasts is 2>><<breastfeed 2>><</if>>
-				<<else>>
-					No milk leaks from your buds. You must be dry.
-				<</if>>
-			<</if>>
 		<<else>>
 			<<if $player.breastsize lte 2>>
 				<<if $arousal gte ($arousalmax / 5) * 4>>
@@ -284,18 +274,16 @@
 					You stroke your <<breasts>> and rub your nipples between your fingers. It feels good, even with your <<topaside>> in the way.
 				<</if>>
 			<</if>>
-
-			<<if $lactating is 1 and $breastfeedingdisable is "f">>
-				<<if $milk_amount gte 1>>
-					<span class="lewd">Milk leaks from your buds, flowing into your top.</span>
-					<<if $masturbation_bowl is 1>>
-						<i>You should remove your top if you want to gather any.</i>
-					<</if>>
-					<<breastfeed>>
-					<<if _handsOnBreasts is 2>><<breastfeed>><</if>>
-				<<else>>
-					No milk leaks from your buds. You must be dry.
+		<</if>>
+		<<if $lactating is 1 and $breastfeedingdisable is "f" and _handsOnBreasts gte 0>>
+			<<if $milk_amount gte 1>>
+				<span class="lewd">Milk leaks from your buds, flowing into your top.</span>
+				<<if $masturbation_bowl is 1>>
+					<i>You should remove your top if you want to gather any.</i>
 				<</if>>
+				<<breastfeed _handsOnBreasts>>
+			<<else>>
+				No milk leaks from your buds. You must be dry.
 			<</if>>
 		<</if>>
 	<</if>>
@@ -1322,16 +1310,19 @@
 	<<if $leftaction is "mpickupdildo" or $rightaction is "mpickupdildo">>
 		<<set $_actiondefault to ($player.vaginaExist ? "mvaginaentrancedildo" : "manusentrancedildo")>>
 		<<set $_actiondefaultstroker to "mpenisentrancestroker">>
+		<<set $_actiondefaultbreastpump to "mbreastpump">>
 
 		<<if $leftaction is "mpickupdildo" and $rightaction is "mpickupdildo">>
 			<<set $currentToyLeft to $selectedToyLeft>>
 			<<set $leftactiondefault to (_playerToys[$currentToyLeft].type.includes("stroker") ? $_actiondefaultstroker : $_actiondefault)>>
+			<<set $leftactiondefault to (_playerToys[$currentToyLeft].type.includes("breastpump") ? $_actiondefaultbreastpump : $_actiondefault)>>
 			<<set $leftaction to 0>><<set $leftarm to "mpickupdildo">>
 			<<arousal 200 "masturbation">>
 			You pick up your _playerToys[$currentToyLeft].colour _playerToys[$currentToyLeft].name with your left hand.
 
 			<<set $currentToyRight to $selectedToyRight>>
 			<<set $rightactiondefault to (_playerToys[$currentToyRight].type.includes("stroker") ? $_actiondefaultstroker : $_actiondefault)>>
+			<<set $rightactiondefault to (_playerToys[$currentToyRight].type.includes("breastpump") ? $_actiondefaultbreastpump : $_actiondefault)>>
 			<<set $rightaction to 0>><<set $rightarm to "mpickupdildo">>
 			<<arousal 200 "masturbation">>
 			You pick up your _playerToys[$currentToyRight].colour _playerToys[$currentToyRight].name with your right hand.
@@ -1339,6 +1330,7 @@
 		<<elseif $leftaction is "mpickupdildo">>
 			<<set $currentToyLeft to $selectedToyLeft>>
 			<<set $leftactiondefault to (_playerToys[$currentToyLeft].type.includes("stroker") ? $_actiondefaultstroker : $_actiondefault)>>
+			<<set $leftactiondefault to (_playerToys[$currentToyLeft].type.includes("breastpump") ? $_actiondefaultbreastpump : $_actiondefault)>>
 			<<set $leftaction to 0>><<set $leftarm to "mpickupdildo">>
 			<<arousal 200 "masturbation">>
 			You pick up your _playerToys[$currentToyLeft].colour _playerToys[$currentToyLeft].name with your left hand.
@@ -1346,6 +1338,7 @@
 		<<elseif $rightaction is "mpickupdildo">>
 			<<set $currentToyRight to $selectedToyRight>>
 			<<set $rightactiondefault to (_playerToys[$currentToyRight].type.includes("stroker") ? $_actiondefaultstroker : $_actiondefault)>>
+			<<set $rightactiondefault to (_playerToys[$currentToyRight].type.includes("breastpump") ? $_actiondefaultbreastpump : $_actiondefault)>>
 			<<set $rightaction to 0>><<set $rightarm to "mpickupdildo">>
 			<<arousal 200 "masturbation">>
 			You pick up your _playerToys[$currentToyRight].colour _playerToys[$currentToyRight].name with your right hand.
@@ -1456,6 +1449,68 @@
 		<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>><<set $penisuse to 0>>
 		<<if !["mpenisentrancestroker","mpenisstroker"].includes($leftarm)>><<set $penisuse to 0>><</if>>
 		<span class="purple">You move your _playerToys[$currentToyRight].name in your right hand away from your <<penis>>.</span>
+	<</if>>
+
+	/* Breast pump actions*/
+
+	<<if $leftaction is "mbreastpump" and $rightaction is "mbreastpump">>
+		<<set $_actiondefault to "mbreastpumppump">>
+		<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mbreastpump">>
+		<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mbreastpump">>
+		<span class="blue">You seal your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy over your <<breasts>>, preparing to milk them.</span>
+	<<elseif $leftaction is "mbreastpump">>
+		<<set $_actiondefault to "mbreastpumppump">>
+		<<set $leftactiondefault to $_actiondefault>><<set $leftaction to 0>><<set $leftarm to "mbreastpump">>
+		<span class="blue">You seal your $_lefttoycolour $_lefttoy over your <<breasts>>, preparing to milk them.</span>
+	<<elseif $rightaction is "mbreastpump">>
+		<<set $_actiondefault to "mbreastpumppump">>
+		<<set $rightactiondefault to $_actiondefault>><<set $rightaction to 0>><<set $rightarm to "mbreastpump">>
+		<span class="blue">You seal your $_righttoycolour $_righttoy over your <<breasts>>, preparing to milk them.</span>
+	<</if>>
+
+	<<set _pumpsOnBreasts to 0>>
+	<<if $leftaction is "mbreastpumppump">>
+		<<set $leftactiondefault to "mbreastpumppump">>
+		<<arousal 100 "masturbationNipples">><<playWithBreasts 3>>
+		<<set _pumpsOnBreasts++>>
+	<</if>>
+	<<if $rightaction is "mbreastpumppump">>
+		<<set $rightactiondefault to "mbreastpumppump">>
+		<<arousal 100 "masturbationNipples">><<playWithBreasts 3>>
+		<<set _pumpsOnBreasts++>>
+	<</if>>
+
+	<<if _pumpsOnBreasts>>
+		You attempt to use your <<if $_lefttoy>>$_lefttoycolour $_lefttoy<</if>><<if $_lefttoy and $_righttoy>> and <</if>><<if $_righttoy>>$_righttoycolour $_righttoy<</if>> on your <<breasts>>
+		<<if $lactating is 1 and $breastfeedingdisable is "f">>
+			<<if $milk_amount gte 1>>
+				<span class="lewd">and milk flows from your buds into the bottle.</span>
+				<<breastfeed `Math.floor(_pumpsOnBreasts * 2.5)`>>
+			<<else>>
+				but no milk flows from your buds. You must be dry.
+			<</if>>
+		<<else>>
+			but no milk flows from your buds. You must not be producing milk yet.
+			<<if (!$daily.lactatingPressure or $daily.lactatingPressure lte 5) and random(0,100) gte 90>>
+				<<if !$daily.lactatingPressure>><<set $daily.lactatingPressure to 0>><</if>>
+				<<set $daily.lactatingPressure++>>
+				<<milkvolume _pumpsOnBreasts>>
+			<</if>>
+		<</if>>
+		<<if $leftaction is "mbreastpumppump">><<set $leftaction to 0>><</if>>
+		<<if $rightaction is "mbreastpumppump">><<set $rightaction to 0>><</if>>
+	<</if>>
+
+	<<if $leftaction is "mstopbreastpump" and $rightaction is "mstopbreastpump">>
+		<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftarm to 0>>
+		<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>>
+		<span class="purple">You move your $_lefttoycolour $_lefttoy and $_righttoycolour $_righttoy away from your <<breasts>>.</span>
+	<<elseif $leftaction is "mstopbreastpump">>
+		<<set $leftactiondefault to "mrest">><<set $leftaction to 0>><<set $leftarm to 0>>
+		<span class="purple">You move your _playerToys[$currentToyLeft].name in your left hand away from your <<breasts>>.</span>
+	<<elseif $rightaction is "mstopbreastpump">>
+		<<set $rightactiondefault to "mrest">><<set $rightaction to 0>><<set $rightarm to 0>>
+		<span class="purple">You move your _playerToys[$currentToyRight].name in your right hand away from your <<breasts>>.</span>
 	<</if>>
 
 	/* Bullet vibrator actions*/

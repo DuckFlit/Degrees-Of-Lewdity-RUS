@@ -761,6 +761,8 @@
 	<<set $_milk_released /= 10>>
 	<<set $_milk_released to parseFloat($_milk_released.toFixed(1))>>
 
+	<<if _args[0]>><<set $_milk_released *= _args[0]>><</if>>
+
 	/* if the player doesn't have enough milk, set $_milk_released to whatever they have left */
 	<<if $milk_amount lt $_milk_released>>
 		<<set $_milk_released to $milk_amount>>
@@ -769,14 +771,16 @@
 
 	<<milkvolume 1>>
 
-	<<if $masturbation_bowl is 1 and $worn.upper.exposed gte 2 and $worn.under_upper.exposed gte 1>>
+	<<if $worn.over_upper.exposed is 0 and $worn.upper.exposed is 0 and $worn.under_upper.exposed is 0>>
+	<<elseif $masturbation_bowl is 1>>
 		<<set $masturbation_milk += $_milk_released>>
 		<!-- If the player is using both hands, only print this text the second time, and report the total milk released this turn -->
 		<<set _milk_this_turn to (_milk_this_turn is undefined ? $_milk_released : _milk_this_turn + $_milk_released)>>
 		<!-- _args[0] is how many times this widget has been called this turn -->
-		<<if _args[0] and _args[0] is _handsOnBreasts>>
-			<span class="gold">You gather <<print (_milk_this_turn).toFixed(1)>> mL of your breast milk.</span>
-		<</if>>
+		<span class="gold">You gather <<print (_milk_this_turn).toFixed(1)>> mL of your breast milk.</span>
+	<<elseif $leftaction is "mbreastpumppump" or $rightaction is "mbreastpumppump">>
+		<<set $masturbation_milk += $_milk_released>>
+		<span class="gold">You store <<print ($_milk_released).toFixed(1)>> mL of your breast milk.</span>
 	<</if>>
 
 	<<milk_amount `-$_milk_released`>>
