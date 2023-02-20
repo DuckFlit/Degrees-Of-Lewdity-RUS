@@ -33,9 +33,23 @@
 
 <<widget "mirror">>
 	<div id="mirror">
-		<<switch $mirrorMenu>>
+		<<mirrorDisplay>>
+	</div>
+<</widget>>
+
+<<widget "mirrorDisplay">>
+	<<switch $mirrorMenu>>
 		<<case "appearance">>
-			<<mirrorAppearance>>
+			<<if $player.vaginaExist>>
+				<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+			<<else>>
+				<<set $_pregnancy to $sexStats.anus.pregnancy>>
+			<</if>>
+			<<if pregnancyBellyVisible(true) and !$_pregnancy.awareOf>>
+				<<mirrorAppearancePregnancy>>
+			<<else>>
+				<<mirrorAppearance>>
+			<</if>>
 		<<case "skin">>
 			<<mirrorSkin>>
 		<<case "hair">>
@@ -48,10 +62,8 @@
 			<<mirrorDebug>>
 		<<default>>
 			<<mirrorMenu _args[0]>>
-		<</switch>>
-	</div>
+	<</switch>>
 	<<calchairlengthstage>>
-
 	<br><br>
 <</widget>>
 
@@ -143,28 +155,28 @@
 		<span class="fading">A pale figure stands behind.</span>
 	<</if>>
 	<br>
-	<<link "Examine how you are seen by others">><<replace #mirror>><<mirrorAppearance>><</replace>><<numberify "#passages > .passage">><<set $mirrorMenu to "appearance">><</link>>
+	<<link "Examine how you are seen by others">><<set $mirrorMenu to "appearance">><<replace #mirror>><<mirrorDisplay>><</replace>><<numberify "#passages > .passage">><</link>>
 	<br><br>
 	<<if !$simpleMirror>>
 		__Skin__
 		<br>
-		<<link "Examine your skin">><<replace #mirror>><<mirrorSkin>><</replace>><<numberify "#passages > .passage">><<set $mirrorMenu to "skin">><</link>>
+		<<link "Examine your skin">><<set $mirrorMenu to "skin">><<replace #mirror>><<mirrorDisplay>><</replace>><<numberify "#passages > .passage">><</link>>
 		<br><br>
 	<</if>>
 	__Hair__
 	<br>
-	<<link "Change your hair style">><<replace #mirror>><<mirrorHair>><</replace>><<numberify "#passages > .passage">><<set $mirrorMenu to "hair">><</link>>
+	<<link "Change your hair style">><<set $mirrorMenu to "hair">><<replace #mirror>><<mirrorDisplay>><</replace>><<numberify "#passages > .passage">><</link>>
 	<br><br>
 	__Makeup__
 	<br>
-	<<link "Apply makeup">><<replace #mirror>><<mirrorMakeup>><</replace>><<numberify "#passages > .passage">><<set $mirrorMenu to "makeup">><</link>>
+	<<link "Apply makeup">><<set $mirrorMenu to "makeup">><<replace #mirror>><<mirrorDisplay>><</replace>><<numberify "#passages > .passage">><</link>>
 	<br><br>
 
 	<<if !$simpleMirror>>
 		<<if $specialTransform is 1 or $physicalTransform is 1>>
 			__Transformation__
 			<br>
-			<<link "Examine your inner self">><<replace #mirror>><<mirrorTransformation>><</replace>><<numberify "#passages > .passage">><<set $mirrorMenu to "transformation">><</link>>
+			<<link "Examine your inner self">><<set $mirrorMenu to "transformation">><<replace #mirror>><<mirrorDisplay>><</replace>><<numberify "#passages > .passage">><</link>>
 		<<else>>
 			Obtain otherworldly powers to examine further.
 		<</if>>
@@ -172,7 +184,7 @@
 	<br><br>
 
 	<<if $debug is 1>>
-		<<link "Debug">><<replace #mirror>><<mirrorDebug>><</replace>><<set $mirrorMenu to "debug">><</link>>
+		<<link "Debug">><<set $mirrorMenu to "debug">><<replace #mirror>><<mirrorDisplay>><</replace>><</link>>
 	<</if>>
 <</widget>>
 
@@ -180,12 +192,12 @@
 	<<link "Back">><<replace #mirror>><<mirrorMenu>><</replace>><<numberify "#passages > .passage">><<unset $mirrorMenu>><</link>>
 	<br><br>
 	<<settextcolorfromgender $player.gender_appearance>>
-	You look like a <span @class="_text_color"><<if playerBellySize() gte 9>>pregnant <</if>><<girl>>.</span>
+	You look like a <span @class="_text_color"><<if pregnancyBellyVisible(true)>>pregnant <</if>><<girl>>.</span>
 	<br>
 	The following factors are contributing:
 	<br>
 	<<for _x range $player.gender_appearance_factors>>
-		<<if _x.femininity is 0>>
+		<<if _x.femininity is 0 or !_x.factor>>
 			<<continue>>
 		<</if>>
 		<<settextcolorfromfemininity _x.femininity>>
@@ -762,6 +774,21 @@
 		"Take a feminine posture": "f",
 		"Take a masculine posture": "m",
 	}`>>
+<</widget>>
+
+<<widget "mirrorAppearancePregnancy">>
+	<<run updateMoment()>>
+	<<type 100ms none>>
+		You look like a <span class="lewd">pregnant <<girl>>...</span><<garousal>><<gstress>>
+	<</type>>
+	<<arousal 300>><<stress 10>>
+	
+	<<if $player.vaginaExist>>
+		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+	<<else>>
+		<<set $_pregnancy to $sexStats.anus.pregnancy>>
+	<</if>>
+	<<set $_pregnancy.awareOf to true>>
 <</widget>>
 
 <<widget "mirrorSkin">>

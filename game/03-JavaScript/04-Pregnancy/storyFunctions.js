@@ -160,20 +160,20 @@ function wakingPregnancyEvent() {
 	const pregnancyStage = pregnancy.timerEnd ? Math.clamp(pregnancy.timer / pregnancy.timerEnd, 0, 1) : false;
 	let wakingEffects;
 
-	if (playerBellySize(true) >= 8 && !pregnancy.awareOf) {
+	if (pregnancyBellyVisible(true) && !pregnancy.awareOf) {
 		return "bellySize";
-	} else if (playerBellySize() >= 9 && V.worn.genitals.type.includes("hidden")) {
-		return "chastityBeltRemoval";
 	} else if (
 		V.cycledisable === "f" &&
 		!menstruation.awareOfPeriodDelay &&
-		V.awareness >= 100 &&
-		V.sciencetrait >= 3 &&
+		V.awareness >= 200 &&
 		!pregnancy.awareOf &&
 		pregnancyStage !== false &&
-		between(pregnancy.timer - (menstruation.currentDaysMax - menstruation.currentDay), 4, 8)
+		between(menstruation.currentDays, 3, 5) &&
+		(random(0, 100) >= 105 - V.sciencetrait * 5 || playerNormalPregnancyTotal() >= 3)
 	) {
 		return "missedPeriod";
+	} else if (playerBellySize() >= 12 && V.worn.genitals.type.includes("hidden")) {
+		return "chastityBeltRemoval";
 	} else if (between(pregnancyStage, 0.9, 1)) {
 		wakingEffects = "nearBirthEvent";
 	} else if (between(pregnancyStage, 0.7, 0.9)) {
@@ -471,6 +471,13 @@ function playerAwareTheyCanBePregnant() {
 	return V.player.vaginaExist || (canBeMPregnant() && V.sexStats.anus.pregnancy.totalBirthEvents >= 1);
 }
 window.playerAwareTheyCanBePregnant = playerAwareTheyCanBePregnant;
+
+function playerAwareTheyArePregnant() {
+	if (V.player.vaginaExist && V.sexStats.vagina.pregnancy.awareOf) return true;
+	if (!V.player.vaginaExist && V.sexStats.anus.pregnancy.awareOf) return true;
+	return false;
+}
+window.playerAwareTheyArePregnant = playerAwareTheyArePregnant;
 
 function playerAwareTheyAreInHeat() {
 	return playerHeatMinArousal() && playerAwareTheyCanBePregnant();
