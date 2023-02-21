@@ -46,7 +46,18 @@
 		<br><br>
 	<</if>>
 
-	<<if $location is "school" and $hour isnot 12>>
+	<<if $location is "school" and $hour gte 17>>
+		<<if $syndromekylar is 1>>
+			<<He>> looks at <<his>> watch. "I need to go," <<he>> says. "They're waiting for me." <<He>> looks at you.
+		<<elseif _kylarStatus.includes("Love")>>
+			<<He>> looks at <<his>> watch. "I need to go," <<he>> says. "They're waiting for me." <<He>> keeps looking over <<his>> shoulder as <<he>> walks.
+		<<else>>
+			<<He>> looks at <<his>> watch, mumbles something, then walks away.
+		<</if>>
+		<br><br>
+
+		<<kylaroptionsleave "manor">>
+	<<elseif $location is "school" and $hour isnot 12 and $schoolstate isnot "afternoon">>
 		<<if _kylarStatus.includes("Love")>>
 			<<He>> looks at <<his>> watch. "I need to go," <<he>> says. "I'll be late for my lesson." <<He>> keeps looking over <<his>> shoulder as <<he>> walks.
 		<<else>>
@@ -101,6 +112,10 @@
 		<<if !$daily.kylar.walkKiss and $kylar_action is "walk">>
 			<<link [[Kiss|Kylar Walk In The Park End 2]]>><</link>><<glove>><<glust>><<llksuspicion>><<kissvirginitywarning>><<NPCvirginitywarning "Kylar" "kiss">>
 			<br>
+		<</if>>
+		<<if $location is "school" and $englishPlay is "ongoing" and $englishPlayRoles.Kylar isnot "none" and $englishPlayRoles.KylarKnown and $schoolstate is "afternoon">>
+			<<link [[Rehearse your roles (2:00)|English Play Rehearse Kylar]]>><<pass 2 hours>><<npcincr Kylar rage -5>><<englishskill 18>><</link>><<llksuspicion>><<gggenglish>><<ggreadiness>>
+			<br><br>
 		<</if>>
 		<<link [[Chat (0:15)|Kylar Chat]]>><<pass 15>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><<stress -2>><</link>><<lstress>><<glove>><<lksuspicion>>
 		<br>
@@ -158,8 +173,10 @@
 				<<set $_dest to "Arcade">>
 			<<case "kylarmanor">>
 				<<set $_dest to "Manor Kylar Room">>
+			<<case "rehearsal">>
+				<<set $_dest to "Oxford Street">>
 			<<default>>
-				<<set $_dest to "School Rear Playground">>
+				<<set $_dest to "School Rear Courtyard">>
 		<</switch>>
 		<<if _args[0] is "manor" and $syndromekylar is 1>>
 			<<link [["Walk with " + _kylar.pronouns.him + " (0:20)"|Kylar Walk Manor]]>><</link>>
@@ -219,7 +236,22 @@
 			<<He>> smiles at you.
 		<</if>>
 	<<else>>
-		<<if _kylar.love gte 90 and $spray lt $spraymax and !$daily.kylar.spray>>
+		<<if $englishPlay is "ongoing" and $englishPlayRoles.Kylar isnot "none" and !$englishPlayRoles.KylarKnown>>
+			<<set $englishPlayRoles.KylarKnown to true>>
+			"H-Hey," Kylar says, squeezing your arm gently. "I got a surprise for you. We'll be performing together for the stage play." <<he>> pulls a small booklet from <<his>> bag, and shows it to you.
+			<br><br>
+
+			<<switch $englishPlayRoles.Kylar>>
+				<<case "Sterling">>
+					<<set _playPronoun to (C.npc.Kylar.pronoun is "m" ? "Mr" : "Mrs")>>
+					"I'll be playing the parent, _playPronoun Sterling," <<he>> says. "There's always someone getting in the way, but love always wins in the end, don't you think?" <<He>> draws closer to you before coming to <<his>> senses and withdrawing. "Sorry."
+				<<default>>
+					"I get to play as that rich kid, Taylor, who falls in love with someone." <<He>> blushes deeply and looks you in the eyes. "I... still don't know who, though."
+			<</switch>>
+			<br><br>
+
+			<<He>> looks down timidly. "Say, maybe we should spend some time together? T-To practice, I mean." <<Hes>> about to say something else, but stops <<himself>>. "Just... come see me<<if $schoolstate isnot "afternoon">> after school<</if>>, alright? <span class="gold>I'll be in the rear courtyard.</span>"
+		<<elseif _kylar.love gte 90 and $spray lt $spraymax and !$daily.kylar.spray>>
 			<<set $daily.kylar.spray to true>>
 			"I made you something," <<he>> says as <<he>> rummages in <<his>> bag. <<He>> hands you a charge for your pepper spray.
 			"I made it myself. It'll keep sluts and perverts away." <<He>> beams.
@@ -259,6 +291,12 @@
 		<span class="red">Kylar has been imprisoned. <<nnpc_He "Kylar">> can no longer be claimed as your love interest.</span>
 	<<else>>
 		<span class="red">Kylar has been imprisoned.</span>
+	<</if>>
+	<<if $englishPlay is "ongoing">>
+		<<if $englishPlayRoles.Kylar isnot "none">>
+			<<set $englishPlayKylarReplace to true>>
+			<<set $englishPlayRoles.Kylar to "none">>
+		<</if>>
 	<</if>>
 	<br><br>
 <</widget>>
@@ -1106,7 +1144,7 @@ They arrest Kylar. They untie you too, after you make a bit of noise. They decid
 	You climb the stairs and emerge into the school hallways. Students are being lined up outside and a register taken. They march Kylar through to reach the waiting car, giving the students one last chance to jeer at <<him>>.
 	<br><br>
 <<else>>
-	You climb the stairs and emerge into the school hallways. They march Kylar across the playground and into a waiting car.
+	You climb the stairs and emerge into the school hallways. They march Kylar across the courtyard and into a waiting car.
 	<br><br>
 <</if>>
 
@@ -2291,7 +2329,7 @@ The bathroom is empty. You make your way to a stall and pull Kylar in. <<Hes>> u
 	<<link [[Next|_destination]]>><<endevent>><</link>>
 
 <<else>>
-	"Let's go back to the <<print ($weather is "rain" or $weather is "snow" ? "library" : "playground")>>," <<he>> says.
+	"Let's go back to the <<print ($weather is "rain" or $weather is "snow" ? "library" : "courtyard")>>," <<he>> says.
 	<br><br>
 	<<link [[Next|Kylar Bathroom Return]]>><</link>>
 <</if>>
@@ -2303,8 +2341,8 @@ The bathroom is empty. You make your way to a stall and pull Kylar in. <<Hes>> u
 	<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<set $bus to "schoollibrary">>
 	You and Kylar return to your spots at the library.
 <<else>>
-	<<set $outside to 1>><<set $location to "school">><<schooleffects>><<effects>><<set $bus to "schoolrearplayground">>
-	You and Kylar return to the stump in the rear playground.
+	<<set $outside to 1>><<set $location to "school">><<schooleffects>><<effects>><<set $bus to "schoolrearcourtyard">>
+	You and Kylar return to the stump in the rear courtyard.
 <</if>>
 <br><br>
 
@@ -2529,7 +2567,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 				<<default>>
 					"That won't stay on forever, you know," <<he>> says. "I used to write on myself a lot when I was younger. The ink always fades away eventually."
 			<</switch>>
-			<</if>>
+		<</if>>
 	<<elseif $rng gte 96>>
 		You chat with Kylar. "You haven't been thinking of anyone else, right?" <<he>> says. "I'll know."
 		<<if $loveInterest.primary is "Kylar" and $loveInterest.secondary is "None">>
@@ -3353,7 +3391,7 @@ You sit beside Kylar and say hello.
 	<</if>>
 	<br><br>
 
-	You finish your food. Kylar carries your trays away, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+	You finish your food. Kylar carries your trays away, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[Next|Canteen]]>><<endevent>><</link>>
@@ -3363,7 +3401,7 @@ You sit beside Kylar and say hello.
 	<<He>> stops spearing <<his>> food, but doesn't respond. You try to make small talk. You think <<hes>> listening.
 	<br><br>
 
-	You finish your food and depart. Kylar walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+	You finish your food and depart. Kylar walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[Next|Canteen]]>><<endevent>><</link>>
@@ -3415,7 +3453,7 @@ Heads turn around the canteen. You pull Kylar closer.
 "Fucking freaks," Whitney says. "I'm done with you losers." <<He>> leaves the canteen, <<his>> cronies in tow.
 <br><br>
 
-The other students lose interest. You finish your food beside a relieved Kylar. <<person1>><<He>> carries your trays away once finished, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+The other students lose interest. You finish your food beside a relieved Kylar. <<person1>><<He>> carries your trays away once finished, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 <br><br>
 
 <<link [[Next|Canteen]]>><<endevent>><</link>>
@@ -3519,7 +3557,7 @@ Excited at the prospect of violence, other students gather around.
 	Kylar hugs you from behind. "I-I knew you'd save me," <<person1>><<he>> says.<<gglove>><<npcincr Kylar love 3>>
 	<br><br>
 
-	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[Next|Canteen]]>><<endevent>><</link>>
@@ -3537,7 +3575,7 @@ Excited at the prospect of violence, other students gather around.
 	Kylar hugs you from behind. "I-I knew you'd save me," <<he>> says.<<gglove>><<npcincr Kylar love 3>>
 	<br><br>
 
-	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[Next|Canteen]]>><<endevent>><</link>>
@@ -3568,7 +3606,7 @@ Excited at the prospect of violence, other students gather around.
 	Kylar hugs you from behind. "I-I knew you'd save me," <<he>> says.<<gglove>><<npcincr Kylar love 3>>
 	<br><br>
 
-	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away once you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away once you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[Next|Canteen]]>><<endevent>><</link>>
@@ -3592,7 +3630,7 @@ Excited at the prospect of violence, other students gather around.
 		"I want to be able to stand up to <<nnpc_him "Whitney">>. Especially for you. B-but <<nnpc_hes "Whitney">> so..." <<He>> trails off.
 	<</if>>
 
-	<<tearful>> you finish your food beside a brooding Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+	<<tearful>> you finish your food beside a brooding Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[Next|Canteen]]>><<endevent>><</link>>
@@ -3696,7 +3734,7 @@ You smile and squeeze <<his>> other hand. <<He>> drops the knife with a horrifie
 "You really are perfect," <<he>> says into your shoulder, <<his>> grip a little too tight.
 <br><br>
 
-You continue eating, sat beside a dazed Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+You continue eating, sat beside a dazed Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 <br><br>
 
 <<link [[Next|Canteen]]>><<endevent>><</link>>
@@ -3775,7 +3813,7 @@ You approach Kylar's desk.
 <br><br>
 <<kylaroptions>>
 
-:: Kylar Playground
+:: Kylar Courtyard
 <<set $outside to 1>><<set $location to "school">><<schooleffects>><<effects>><<run statusCheck("Kylar")>>
 
 <<npc Kylar>><<person1>>

@@ -201,6 +201,14 @@ setup.feats = {
 		filter: ["All", "General"],
 		softLockable: true,
 	},
+	"Rich Hearts": {
+		title: "Rich Hearts",
+		desc: "Perform well during the English class stage play.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "General"],
+		softLockable: true,
+	},
 	"Most Aware": {
 		title: "Most Aware",
 		desc: "You see things others don't.",
