@@ -145,7 +145,10 @@ Config.navigation.override = function (dest) {
 			V.bypassHeader = true;
 			return "Downgrade Waiting Room";
 		}
-
+		if (dest.includes("Playground")) {
+			return dest.replace("Playground", "Courtyard");
+			/* Try not to include "Playground" in any passage names after this. */
+		}
 		switch (dest) {
 			case "Downgrade Waiting Room":
 				return V.passage;

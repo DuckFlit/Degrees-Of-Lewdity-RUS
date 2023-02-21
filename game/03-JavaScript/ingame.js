@@ -590,6 +590,8 @@ function getRobinLocation() {
 		T.robin_location = "halloween";
 	} else if ((V.weekday === 7 || V.weekday === 1) && between(V.hour, 9, 16) && C.npc.Robin.trauma < 80) {
 		T.robin_location = V.season === "winter" ? "park" : "beach";
+	} else if (V.englishPlay === "ongoing" && V.englishPlayDays === 0 && V.hour >= 17 && V.hour < 21) {
+		T.robin_location = "englishPlay";
 	} else {
 		T.robin_location = "orphanage";
 	}
