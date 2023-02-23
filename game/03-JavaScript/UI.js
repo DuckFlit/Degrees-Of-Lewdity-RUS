@@ -219,6 +219,7 @@ function skinColor(enabled, percent, overwrite) {
 window.skinColor = skinColor;
 
 // feats related widgets
+// This needs updating, it's poorly designed.
 function closeFeats(id) {
 	const div1 = document.getElementById("feat-" + id);
 	const div2 = document.getElementById("closeFeat-" + id);
