@@ -235,6 +235,7 @@ function closeFeats(id) {
 				otherFeatDisplay.removeAttribute("class");
 				otherFeatDisplay.classList.add("feat");
 				otherFeatDisplay.classList.add("feat" + newId);
+				otherFeatDisplay.classList.add("feat-overlay");
 				if (newId >= 3) {
 					otherFeatDisplay.classList.add("hiddenFeat");
 				}

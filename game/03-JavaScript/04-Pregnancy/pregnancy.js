@@ -308,7 +308,8 @@ function endPlayerPregnancy(birthLocation, location) {
 	Wikifier.wikifyEval('<<earnFeat "Miracle of Life">>');
 	if ((V.player.virginity.anal === true && !V.player.vaginaExist) || (V.player.virginity.vaginal === true && V.player.vaginaExist))
 		Wikifier.wikifyEval('<<earnFeat "Hail Mary">>');
-	if (!V.player.vaginaExist) Wikifier.wikifyEval('<<earnFeat "Life begins when you least expect">>');
+	// ToDo: Pregnancy: uncomment once MPreg is possable in-game
+	/* if (!V.player.vaginaExist) Wikifier.wikifyEval('<<earnFeat "Life begins when you least expect">>'); */
 
 	V.sexStats[type].pregnancy = {
 		...pregnancy,
@@ -568,11 +569,11 @@ function giveBirthToChildren(mother, birthLocation, location) {
 			...childObject,
 			name: generateBabyName(childObject.name, childObject.gender, childObject.childId),
 			born: { day: clone(V.monthday), month: clone(V.month.toUpperFirst()), year: clone(V.year) },
-			birthId,
 			childId,
 			location,
 			birthLocation,
 		};
+		if (!V.children[childId].birthId) V.children[childId].birthId = birthId;
 		if (childObject.mother === "pc") {
 			V.pregnancyStats.playerChildren++;
 			switch (childObject.type) {
@@ -637,7 +638,9 @@ function recordSperm({
 	if (setup.pregnancy.infertile.includes(spermOwnerName) || setup.pregnancy.infertile.includes(target)) return null;
 
 	const forcePregnancy =
-		target === "pc" && ((V.vaginaaction === "forceImpregnation" && genital === "vagina") || (V.anusaction === "forceImpregnation" && genital === "anus"));
+		(target === "pc" &&
+			((V.vaginaaction === "forceImpregnation" && genital === "vagina") || (V.anusaction === "forceImpregnation" && genital === "anus"))) ||
+		(target !== "pc" && spermOwner === "pc" && genital === "vagina" && T.npcForceImpregnation);
 
 	if (V.pregnancytype === "fetish" || forcePregnancy) {
 		// Sperm on the outside should not be able to get the player pregnant
@@ -846,7 +849,7 @@ function playerPregnancyPossibleWith(NPC) {
 			T.pregFalseReason = "pregnantTypeUnsupported";
 			return false;
 	}
-	if (!((V.player.vaginaExist || canBeMPregnant()) && NPCObject.gender === "m") && !(V.player.penisExist && NPCObject.gender === "f")) {
+	if (!((V.player.vaginaExist || canBeMPregnant()) && NPCObject.gender === "m")) {
 		T.pregFalseReason = "genitals";
 		return false; // Check for genital compatibility for player pregnancy
 	}
@@ -864,7 +867,7 @@ function NPCPregnancyPossibleWithPlayer(NPC) {
 	if (typeof NPC === "string" || V.NPCNameList.includes(NPC.fullDescription)) {
 		// Check if this is a named NPC, whether the function is provided a string or NPCList object that belongs to a named NPC
 		NPCObject = V.NPCName[V.NPCNameList.indexOf(typeof NPC === "string" ? NPC : NPC.fullDescription)];
-		const NPCNameCheck = NPCObject.fullDescription;
+		const NPCNameCheck = NPCObject.fullDescription || NPCObject.description;
 		if (!C.npc[NPCNameCheck]) {
 			Errors.report("Named NPC " + NPCNameCheck + " is undefined for pregnancy compatibility check.");
 			return false;

@@ -82,6 +82,8 @@
 
 		<<set _tattoosFeats to _keys.count("A Living Canvas") + _keys.count("Billboard")>>
 
+		<<set _sexToysFeats to _keys.count("Opened Pandoras Box") + _keys.count("Opened Pandoras Cocks")>>
+
 		<<set $featsBoosts to {
 			upgrades:{
 				money:0,
@@ -101,6 +103,7 @@
 				defaultMoves: 0,
 				randomClothing:0,
 				specialClothing:0,
+				sexToys:0,
 			},
 			upgradeDetails:{
 				money:{cost:5, limit: _moneyFeatsLimit, minCount: 1, count:_moneyFeats, exclusive:""},
@@ -120,6 +123,7 @@
 				defaultMoves:{cost:5, limit: 25, minCount: 1, count:_keys.count("A New Life"), exclusive:""},
 				randomClothing:{cost:1, limit: 20, minCount: 0, count:0, exclusive:""},
 				specialClothing:{cost:40, limit: 40, minCount: 1, count:_keys.count("Curious Attire"), exclusive:""},
+				sexToys:{cost:30, limit: 30 * _sexToysFeats, minCount: 1, count:_sexToysFeats, exclusive:""},
 			},
 			missing:{
 				money:"Missing money feat",
@@ -138,6 +142,7 @@
 				defaultMoves:"Missing a '?????' feat (" + setup.feats["A New Life"].hint + ")",
 				randomClothing:"",
 				specialClothing:"Missing a '?????' feat (" + setup.feats["Curious Attire"].hint + ")",
+				sexToys:"Not been opened"
 			},
 			name:{
 				money:"Money",
@@ -157,6 +162,7 @@
 				defaultMoves:"Default Moves",
 				randomClothing:"Random Clothing",
 				specialClothing:"Special Clothing",
+				sexToys:"Sex Toys",
 			},
 			pointsUsed: 0,
 			clothingGender:"Either",
@@ -167,7 +173,8 @@
 				3:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
 				4:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
 				5:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
-			}
+			},
+			sexToys:[{},{},{},{},{},{}],
 		}>>
 	<</if>>
 <</widget>>
@@ -394,7 +401,7 @@
 				<</if>>
 			<</for>>
 		<</for>>
-		<<bodywriting_exposure_check true>>
+		<<bodywritingExposureCheck true>>
 	<</if>>
 	<<if _upgrades.defaultMoves gt 0>>
 		<<set $maxDefaultActionSets to 2 + _upgrades.defaultMoves / _details.defaultMoves.cost>>
@@ -406,6 +413,30 @@
 			<<set $specialClothes[$_label] to $_value>>
 		<</for>>
 	<</if>>
+	<<if _upgrades.sexToys gt 0>>
+		<<set _totalToys to _upgrades.sexToys / 10>>
+		<<set _indexList to []>>
+		<<run Object.values(setup.sextoys).forEach(toy => T.indexList.push(toy.index))>>
+		<<for _i to 0; _i lt _totalToys; _i++>>
+			<<if $featsBoosts.sexToys[_i].index isnot undefined and $featsBoosts.sexToys[_i].index isnot -1>>
+				<<set _sexToyIndex to $featsBoosts.sexToys[_i].index>>
+				<<set _sexToyColour to $featsBoosts.sexToys[_i].colour>>
+				<<run _indexList.delete(_sexToyIndex)>>
+			<<else>>
+				<<set _sexToyIndex to _indexList.pluck()>>
+			<</if>>
+			<<run sexShopOnBuyClick(_sexToyIndex, false, _sexToyColour, false)>>
+			<<unset _sexToyColour>>
+		<</for>>
+	<</if>>
+	/* Clean Up */
+	<<run delete $featsBoosts.name>>
+	<<run delete $featsBoosts.missing>>
+	<<run delete $featsBoosts.clothingCustomColors>>
+	<<run delete $featsBoosts.clothingGender>>
+	<<run delete $featsBoosts.upgradeDetails>>
+	<<run delete $featsBoosts.tattoos>>
+	<<run delete $featsBoosts.sexToys>>
 <</widget>>
 
 <<widget "earnAllFeats">>

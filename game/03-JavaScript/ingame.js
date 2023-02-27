@@ -1854,6 +1854,7 @@ function calculateSemenReleased(){
 
 	/* if the player doesn't have enough semen, set $_semen_released to whatever they have left */
 	if(V.semen_amount < released) released = V.semen_amount;
+	if(parseFloat(released.toFixed(1)) === 0 && V.semen_amount < 0.1) V.semen_amount = 0; // Prevents really low floating numbers
 
 	return parseFloat(released.toFixed(1));
 }

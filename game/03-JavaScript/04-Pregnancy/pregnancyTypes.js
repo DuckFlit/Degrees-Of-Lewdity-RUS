@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 function maxParasites(genital = "anus") {
 	switch (V.sexStats[genital].pregnancy.motherStatus) {
 		case 1:
@@ -265,7 +266,8 @@ const babyBase = ({
 			divineTransform,
 		},
 		name: null,
-		birthId,
+		// eslint-disable-next-line no-unneeded-ternary
+		birthId: !birthId && mother && totalBirthEvents(mother) !== undefined ? (mother + totalBirthEvents(mother)).replace(" ", "") : birthId,
 		childId: null,
 		location: null,
 		birthLocation: null,

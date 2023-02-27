@@ -109,7 +109,7 @@
 		<</if>>
 	<</silently>>
 	<<capture _featsCount>>
-	<div @id="'feat-' + _featsCount" @class="'feat feat-overlay feat' + _featsCount + (_featsCount gte 3 ? ' hiddenFeat' : '')">
+	<div @id="'feat-' + _featsCount" @class="'feat feat' + _featsCount + (_featsCount gte 3 ? ' hiddenFeat' : '') + ' feat-overlay'">
 		<div class="featImage">
 			<<switch setup.feats[_args[0]].difficulty>>
 				<<case 1>><img src="img/ui/CopperCoin.gif" class="featCoin">
@@ -227,6 +227,8 @@
 					<span class="gold">Extra default moves:</span> +<<print $featsBoosts.upgrades.defaultMoves / _details.cost>>
 				<<case "specialClothing">>
 					<span class="gold">Unlock previously unlocked special clothes:</span> <<print ($featsBoosts.upgrades.specialClothing is 0?"False":"True")>>
+				<<case "sexToys">>
+					<span class="gold">Sex Toys</span>
 				<<default>>
 					<span class="gold">Starting _name grade:</span> +<<print $featsBoosts.upgrades[_name] / _details.cost>>
 			<</switch>>
@@ -312,6 +314,9 @@
 					<br>
 				<</if>>
 			<</if>>
+			<<if _name is "sexToys">>
+				<div id="sexToys"><<sexToysFeatUI>></div>
+			<</if>>
 		<<else>>
 			<span class="red"><<print $featsBoosts.missing[_name]>></span>
 		<</if>>
@@ -370,6 +375,68 @@
 			<</if>>
 		<</if>>
 	<</capture>>
+<</widget>>
+
+<<widget "sexToysFeatUI">>
+	<<set _totalToys to $featsBoosts.upgrades.sexToys / 10>>
+	<<if _toyNumber is undefined or _toyNumber gt _totalToys>>
+		<<set _toyNumber to 0>>
+	<</if>>
+	<<if _toys is undefined>>
+		<<set _toys to {}>>
+		<<run Object.values(setup.sextoys).forEach(toy => T.toys[toy.namecap] = toy.index)>>
+	<</if>>
+	<<if _totalToys gt 1>>
+		<br>
+		<span class="gold">Toy selected:</span> <<print _toyNumber + 1>> of <<print _totalToys>>
+		<br>
+		<<if _toyNumber gt 0>>
+			<<link "Previous Toy">>
+				<<set _toyNumber -= 1>>
+				<<replace #sexToys>><<sexToysFeatUI>><</replace>>
+			<</link>> |
+		<<else>>
+			Previous Toy |
+		<</if>>
+		<<if _toyNumber lt _totalToys - 1>>
+			<<link "Next Toy">>
+				<<set _toyNumber += 1>>
+				<<replace #sexToys>><<sexToysFeatUI>><</replace>>
+			<</link>> |
+		<<else>>
+			Next Toy |
+		<</if>>
+		<div id="sexToysFeatUIIndex">
+			Sex Toy:
+			<<listbox "$featsBoosts.sexToys[_toyNumber].index" autoselect>>
+				<<option "Random" -1>>
+				<<optionsfrom _toys>>
+			<</listbox>>
+		</div>
+		<div id="sexToysFeatUIColour"><<sexToysFeatUIColour>></div>
+		<<run $(() => { $('#sexToysFeatUIIndex select').on('input change', e => {
+			new Wikifier(null, "<<replace '#sexToysFeatUIColour'>><<sexToysFeatUIColour>><</replace>>")
+		}).trigger('change') })>>
+	<</if>>
+<</widget>>
+
+<<widget "sexToysFeatUIColour">>
+	<<if $featsBoosts.sexToys[_toyNumber].index isnot undefined and $featsBoosts.sexToys[_toyNumber].index isnot -1>>
+		<<set _toyColours to {}>>
+		<<set _selectedToy to Object.values(setup.sextoys).find(toy => toy.index === V.featsBoosts.sexToys[T.toyNumber].index)>>
+		<<if _selectedToy and _selectedToy.colour_options and _selectedToy.colour_options.length>>
+			<<run _selectedToy.colour_options.forEach(colour => _toyColours[colour] = colour)>>
+		<</if>>
+	<<else>>
+		<<set _toyColours to {}>>
+	<</if>>
+	<<if Object.values(_toyColours).length gt 1>>
+		Sex Toy Colour:
+		<<listbox "$featsBoosts.sexToys[_toyNumber].colour" autoselect>>
+			<<option "Random" -1>>
+			<<optionsfrom _toyColours>>
+		<</listbox>>
+	<</if>>
 <</widget>>
 
 <<widget "updateFeatsPointsMenu">>
