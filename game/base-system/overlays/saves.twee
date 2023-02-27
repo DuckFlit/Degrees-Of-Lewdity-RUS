@@ -45,6 +45,12 @@
 	<<elseif _saveDetails.autosave is undefined or _saveDetails.slots is undefined>>
 		<<set _saveDetails to returnSaveDetails()>>
 	<</if>>
+	<<set _lastSlot to _saveDetails.autosave ? { slot: "autosave", date: _saveDetails.autosave.date } : { slot: "", date: 0 }>>
+	<<for _slot, _data range _saveDetails.slots>>
+		<<if _data and _data.date gt _lastSlot.date>>
+			<<set _lastSlot to { slot: _slot, date: _data.date }>>
+		<</if>>
+	<</for>>
 	<<set _currentTime to new Date().getTime()>>
 	<div id="savesListContainer">
 		<div class="savesListRow">
@@ -60,7 +66,14 @@
 			<<if _i != 9 or (_i == 9 and _saveDetails.slots[_i - 1] != null)>>
 				<div class="savesListRow">
 					<<if _i is 0>>
-						<<if _saveDetails.autosave isnot null>>
+						<<if _saveDetails.autosave neq null>>
+							<<if _lastSlot.slot is "autosave">>
+								<<set _highlight to " green">>
+							<<elseif _saveDetails.autosave.date gte _currentTime - 1800000>>
+								<<set _highlight to " gold">>
+							<<else>>
+								<<set _highlight to "">>
+							<</if>>
 							<div class="saveGroup">
 								<div class="saveId">A</div>
 								<div class="saveButton">
@@ -80,7 +93,7 @@
 								<</if>>
 								<div class="saveDetails">
 									<span><<print Util.escapeMarkup(_saveDetails.autosave.title.replace(/</g, "< "))>></span>
-									<span @class="'datestamp' + (_saveDetails.autosave.date gte _currentTime - 1800000 ? ' gold':'')"><<print new Date(_saveDetails.autosave.date).toLocaleString()>></span>
+									<span @class="'datestamp' + _highlight"><<print new Date(_saveDetails.autosave.date).toLocaleString()>></span>
 								</div>
 							</div>
 							<div class="deleteButton">
@@ -102,7 +115,14 @@
 					<<elseif _i lt 10>>
 						<<set _slot to _i - 1>>
 						<<set _ironmanSlot to 9>>
-						<<if _saveDetails.slots[_slot] isnot null>>
+						<<if _saveDetails.slots[_slot] neq null>>
+							<<if _lastSlot.slot eq _slot>>
+								<<set _highlight to " green">>
+							<<elseif _saveDetails.slots[_slot].date gte _currentTime - 1800000>>
+								<<set _highlight to " gold">>
+							<<else>>
+								<<set _highlight to "">>
+							<</if>>
 							<div class="saveGroup">
 								<<if _saveDetails.slots[_slot].metadata.ironman === true>>
 									<div class="saveId" style="width: 10px;">
@@ -133,7 +153,7 @@
 								</div>
 								<div class="saveDetails">
 									<span><<print Util.escapeMarkup(_saveDetails.slots[_slot].title.replace(/</g, "< "))>></span>
-									<span @class="'datestamp' + (_saveDetails.slots[_slot].date gte _currentTime - 1800000 ? ' gold':'')"><<print new Date(_saveDetails.slots[_slot].date).toLocaleString()>></span>
+									<span @class="'datestamp' + _highlight"><<print new Date(_saveDetails.slots[_slot].date).toLocaleString()>></span>
 								</div>
 							</div>
 							<<if _i is _ironmanSlot>>
