@@ -2309,7 +2309,7 @@
 <</widget>>
 
 <<widget "bodywriting">>
-	<<bodywriting_exposure_check>>
+	<<bodywritingExposureCheck>>
 	<<for _active_bodypart range setup.bodyparts>>
 		<<if $skin[_active_bodypart].writing>>
 			<<if $skin[_active_bodypart].type is "text">>
@@ -2378,48 +2378,6 @@
 		<br>
 		<</if>>
 	<</for>>
-<</widget>>
-
-<<widget "bodywriting_exposure_check">>/*Checks if bodywriting or tattoos are visible to NPCs.*/
-	<<if _skin_array is undefined or _args[0] is true>>
-		<<set _visible_areas to []>>
-		<<set _bodywriting_exposed to 0>>
-
-		<!-- first: construct a set of all locations where writing COULD be seen (doesn't matter if there is any writing or not) -->
-		<<set _visible_areas.push("forehead")>>
-		<<if !$worn.face.type.includes("mask")>>
-			<<set _visible_areas.push("left_cheek", "right_cheek")>>
-		<</if>>
-		<<if ($worn.over_upper.exposed gte 1 or $worn.over_upper.open is 1) and ($worn.upper.exposed gte 1 or $worn.upper.open is 1) and ($worn.under_upper.exposed gte 1 or $worn.under_upper.open is 1)>>
-			<<set _visible_areas.push("left_shoulder", "right_shoulder")>>
-		<</if>>
-		<<if ($worn.over_upper.exposed gte 1) and ($worn.upper.exposed gte 1) and ($worn.under_upper.exposed gte 1)>>
-			<<set _visible_areas.push("breasts")>>
-		<</if>>
-		<<if ($worn.over_upper.exposed gte 1 or $worn.over_upper.state isnot "waist") and ($worn.upper.exposed gte 1 or $worn.upper.state isnot "waist") and ($worn.under_upper.exposed gte 1 or $worn.under_upper.state isnot "waist")>>
-			<<set _visible_areas.push("back")>>
-		<</if>>
-		<<if ($worn.over_lower.exposed gte 1 or $worn.over_lower.anus_exposed gte 1) and ($worn.lower.exposed gte 1 or $worn.lower.anus_exposed gte 1) and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic"))>>
-			<<set _visible_areas.push("left_bottom", "right_bottom")>>
-		<</if>>
-		<<if $worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1 and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic"))>>
-			<<set _visible_areas.push("pubic")>>
-		<</if>>
-		<<if $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and !$worn.under_lower.type.includes("athletic")>>
-			<<set _visible_areas.push("left_thigh", "right_thigh")>>
-		<</if>>
-
-		<!-- second: filter out every area where there is no writing and store it in _skin_array -->
-		<<set _skin_array to _visible_areas.filter(loc => $skin[loc].writing)>>
-
-		<!-- third: make an array of all the special properties of the visible bodywriting -->
-		<<set _skin_array_special to _skin_array.map(loc => $skin[loc].special)>>
-
-		<<if _skin_array.length gte 1>>
-			<<set _bodywriting_exposed to 1>>
-		<</if>>
-	<</if>>
-	<<set _bodypart to _skin_array.random()>>
 <</widget>>
 
 <<widget "bodywriting_prostitution_check">>

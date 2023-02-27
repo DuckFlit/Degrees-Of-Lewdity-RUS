@@ -60,8 +60,8 @@ window.pregnancyBellyVisible = pregnancyBellyVisible;
 
 function npcBellySize(npc) {
 	let bellySize = 0;
-	if (C.npc(npc) && C.npc(npc).pregnancy && C.npc(npc).pregnancy.enabled === undefined) {
-		const pregnancy = C.npc(npc).pregnancy;
+	if (C.npc[npc] && C.npc[npc].pregnancy && C.npc[npc].pregnancy.enabled !== undefined) {
+		const pregnancy = C.npc[npc].pregnancy;
 		let pregnancyProgress = 0;
 		if (pregnancy.timerEnd) pregnancyProgress = Math.clamp(pregnancy.timer / pregnancy.timerEnd, 0, 1);
 		let maxSize = 0;
@@ -89,13 +89,7 @@ function npcPregnancyBellyVisible(npc) {
 window.npcPregnancyBellyVisible = npcPregnancyBellyVisible;
 
 function npcIsPregnant(npc) {
-	return (
-		C.npc[npc] &&
-		C.npc[npc].pregnancy &&
-		C.npc[npc].pregnancy.enabled === undefined &&
-		C.npc[npc].pregnancy.type &&
-		C.npc[npc].pregnancy.type !== "parasite"
-	);
+	return C.npc[npc] && C.npc[npc].pregnancy && C.npc[npc].pregnancy.enabled !== undefined && C.npc[npc].pregnancy.type;
 }
 window.npcIsPregnant = npcIsPregnant;
 
@@ -507,3 +501,77 @@ function pregnancyDaysEta(pregnancyObject) {
 	}
 }
 window.pregnancyDaysEta = pregnancyDaysEta;
+
+function knowsAboutPregnancy(motherOrId, whoToCheck) {
+	const awareOfBirthId = V.pregnancyStats.awareOfBirthId;
+	let birthId;
+	let whoToCheckConverted;
+	if (whoToCheck === "pc") {
+		whoToCheckConverted = whoToCheck;
+	} else if (V.NPCNameList.includes(whoToCheck)) {
+		whoToCheckConverted = V.NPCNameList.indexOf(whoToCheck);
+	} else {
+		return false;
+	}
+
+	if (awareOfBirthId[motherOrId] && awareOfBirthId[motherOrId].includes(whoToCheckConverted)) return true;
+
+	if (motherOrId === "pc" && playerIsPregnant()) {
+		if (V.player.vaginaExist) {
+			birthId = V.sexStats.vagina.pregnancy.fetus[0].birthId;
+		} else {
+			birthId = V.sexStats.anus.pregnancy.fetus[0].birthId;
+		}
+	} else if (C.npc[motherOrId] && npcIsPregnant(motherOrId)) {
+		birthId = C.npc[motherOrId].pregnancy.fetus[0].birthId;
+	}
+
+	if (birthId && awareOfBirthId[birthId] && awareOfBirthId[birthId].includes(whoToCheckConverted)) return true;
+
+	return false;
+}
+window.knowsAboutPregnancy = knowsAboutPregnancy;
+
+/*
+	<<setKnowsAboutPregnancy "pc" "Whitney">> - When whitney is aware of the pc's current pregnancy
+	<<setKnowsAboutPregnancy "pc1" "Whitney">> - When whitney is aware of the pc's first pregnancy
+
+	Be sure to double check the usage when your providing an ID rather than "pc" or named npc's name
+*/
+function setKnowsAboutPregnancy(motherOrId, whoNowKnows) {
+	const awareOfBirthId = V.pregnancyStats.awareOfBirthId;
+	let birthId;
+	let whoNowKnowsConverted;
+	if (whoNowKnows === "pc") {
+		whoNowKnowsConverted = whoNowKnows;
+	} else if (V.NPCNameList.includes(whoNowKnows)) {
+		whoNowKnowsConverted = V.NPCNameList.indexOf(whoNowKnows);
+	} else {
+		return false;
+	}
+
+	if (awareOfBirthId[motherOrId]) {
+		birthId = motherOrId;
+	} else if (motherOrId === "pc") {
+		if (playerIsPregnant()) {
+			if (V.player.vaginaExist) {
+				birthId = V.sexStats.vagina.pregnancy.fetus[0].birthId;
+			} else {
+				birthId = V.sexStats.anus.pregnancy.fetus[0].birthId;
+			}
+		}
+	} else if (C.npc[motherOrId]) {
+		if (npcIsPregnant(motherOrId)) birthId = C.npc[motherOrId].pregnancy.fetus[0].birthId;
+	}
+
+	if (birthId) {
+		if (!awareOfBirthId[birthId]) awareOfBirthId[birthId] = [];
+		if (!awareOfBirthId[birthId].includes(whoNowKnowsConverted)) {
+			awareOfBirthId[birthId].push(whoNowKnowsConverted);
+			return true;
+		}
+	}
+
+	return false;
+}
+DefineMacro("setKnowsAboutPregnancy", setKnowsAboutPregnancy);

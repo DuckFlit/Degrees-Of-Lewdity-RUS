@@ -313,7 +313,7 @@ setup.sextoys = [
 	{
 		index: 9,
 		name: "stroker",
-		namecap: "stroker",
+		namecap: "Stroker",
 		name_underscore: "stroker",
 		description: "A penile masturbator sleeve. Made with a material with a flesh-like feel.",
 		cost: 8000,
@@ -606,7 +606,7 @@ function sexShopOnGiftClick(index) {
 }
 window.sexShopOnGiftClick = sexShopOnGiftClick;
 
-function sexShopOnBuyClick(index, inSexShop = true) {
+function sexShopOnBuyClick(index, inSexShop = true, colour, costsMoney = true) {
 	const item = setup.sextoys[index];
 	let iconClassName = "";
 	if (inSexShop) {
@@ -638,10 +638,11 @@ function sexShopOnBuyClick(index, inSexShop = true) {
 	if (item.category === "strap-on") {
 		obj.clothes_index = item.clothes_index;
 	}
+	if (colour && item.colour_options.includes(colour)) obj.colour = colour;
 	if (Array.isArray(obj.colour)) obj.colour = obj.colour[random(0, obj.colour.length)];
 	V.player.inventory.sextoys[item.name].push(obj);
 	/* withdraw money from player */
-	V.money -= item.cost;
+	if(costsMoney) V.money -= item.cost;
 	if(inSexShop){
 		/* update sidebar money */
 		updateSideBarMoney();

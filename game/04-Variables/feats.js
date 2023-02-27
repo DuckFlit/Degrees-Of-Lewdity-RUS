@@ -1436,6 +1436,22 @@ setup.feats = {
 		hint: "Hint: The best defence is a good offence.",
 		softLockable: true,
 	},
+	"Opened Pandoras Box": {
+		title: "Opened Pandora's Box",
+		desc: "Helped with rebuilding the Adult Shop.",
+		difficulty: 1,
+		series: "Adult Shop",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Is it worth opening the toybox?",
+	},
+	"Opened Pandoras Cocks": {
+		title: "Opened Pandora's Cocks",
+		desc: "The Adult Shop couldn't've done it without you.",
+		difficulty: 3,
+		series: "Adult Shop",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Was worth opening the toybox so fast?",
+	},
 	"Ear Slime Lover": {
 		title: "Ear Slime Lover",
 		desc: "It is your best friend.",

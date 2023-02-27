@@ -272,7 +272,7 @@ function genderappearancecheck() {
 		);
 	}
 	/* Body writing */
-	Wikifier.wikifyEval("<<bodywriting_exposure_check>>"); // TODO convert to JS when possible
+	bodywritingExposureCheck(true);
 	T.skinValue = 0;
 	T.skinValue_noow = 0;
 	Object.keys(V.skin).forEach(label => {
@@ -377,6 +377,56 @@ function exposedcheck() {
 	}
 }
 DefineMacro("exposedcheck", exposedcheck);
+
+/* Checks if bodywriting or tattoos are visible to NPCs. */
+function bodywritingExposureCheck(overwrite) {
+	if (!T.skin_array || overwrite) {
+		T.visible_areas = ["forehead"];
+		T.bodywriting_exposed = 0;
+
+		if (!V.worn.face.type.includes("mask")) T.visible_areas.push("left_cheek", "right_cheek");
+		if (
+			(V.worn.over_upper.exposed >= 1 || V.worn.over_upper.open === 1) &&
+			(V.worn.upper.exposed >= 1 || V.worn.upper.open === 1) &&
+			(V.worn.under_upper.exposed >= 1 || V.worn.under_upper.open === 1)
+		) {
+			T.visible_areas.push("left_shoulder", "right_shoulder");
+		}
+		if (V.worn.over_upper.exposed >= 1 && V.worn.upper.exposed >= 1 && V.worn.under_upper.exposed >= 1) {
+			T.visible_areas.push("breasts");
+		}
+		if (
+			(V.worn.over_upper.exposed >= 1 || V.worn.over_upper.state === "waist") &&
+			(V.worn.upper.exposed >= 1 || V.worn.upper.state === "waist") &&
+			(V.worn.under_upper.exposed >= 1 || V.worn.under_upper.state === "waist")
+		) {
+			T.visible_areas.push("back");
+		}
+		if (
+			(V.worn.over_lower.exposed >= 1 || V.worn.over_lower.anus_exposed >= 1) &&
+			(V.worn.lower.exposed >= 1 || V.worn.lower.anus_exposed >= 1) &&
+			(V.worn.under_lower.exposed >= 1 || !V.worn.under_lower.type.includes("athletic"))
+		) {
+			T.visible_areas.push("left_bottom", "right_bottom");
+		}
+		if (V.worn.over_lower.exposed >= 1 && V.worn.lower.exposed >= 1 && (V.worn.under_lower.exposed >= 1 || !V.worn.under_lower.type.includes("athletic"))) {
+			T.visible_areas.push("pubic");
+		}
+		if (V.worn.over_lower.vagina_exposed >= 1 && V.worn.lower.vagina_exposed >= 1 && !V.worn.under_lower.type.includes("athletic")) {
+			T.visible_areas.push("left_thigh", "right_thigh");
+		}
+
+		// second: filter out every area where there is no writing and store it in _skin_array
+		T.skin_array = T.visible_areas.filter(loc => V.skin[loc].writing);
+
+		// third: make an array of all the special properties of the visible bodywriting
+		T.skin_array_special = T.skin_array.map(loc => V.skin[loc].special);
+
+		if (T.skin_array.length >= 1) T.bodywriting_exposed = 1;
+	}
+	T.bodypart = T.skin_array[random(0, T.skin_array.length - 1)];
+}
+DefineMacro("bodywritingExposureCheck", bodywritingExposureCheck);
 
 /**
  * Jimmy: A potential improvement is to not wikify the hints that are appended to the ends of the links,
