@@ -969,14 +969,24 @@
 	<</if>>
 
 	/*ToDo: Pregnancy, remove to properly enable*/
-	<<if $pregnancyTesting and $condomLvl gte 2 and ($NPCList[_n].pregnancyAvoidance gte (100 - $condomChance) and !_condomIgnore)>>
-		<<set $NPCList[_n].condom to {
-			willUse: random(0,100),
-			state: (random(0,100) gt 98 ? "defective" : "normal"),
-			type: "plain",
-			colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
-			worn: false
-		}>>
+	<<if $pregnancyTesting and $condomLvl gte 2 and !_condomIgnore>>
+		<<if $NPCList[_n].pregnancyAvoidance gte (100 - $condomChance)>>
+			<<set $NPCList[_n].condom to {
+				willUse: random(0,100),
+				state: (random(0,100) gt 98 ? "defective" : "normal"),
+				type: "plain",
+				colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
+				worn: false
+			}>>
+		<<elseif $NPCList[_n].pregnancyAvoidance lte 2>>
+			<<set $NPCList[_n].condom to {
+				willUse: random(0,100),
+				state: "sabotaged",
+				type: "plain",
+				colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
+				worn: false
+			}>>
+		<</if>>
 	<</if>>
 	<<set $NPCList[_n].pregnancy to 0>>
 <</widget>>

@@ -433,6 +433,9 @@
 	<!-- to pass which enemy NPC is doing the fucking. I'd leave it to mean the later, but -->
 	<!-- I didn't want to make a decision about a system I'm not working on. -->
 	<!-- So I chose to leave args[2] unused -->
+
+	<!-- Comment Purity: args[2] is now used to check which NPC is causing it. -->
+	<!-- For double penetration, the widget is now called twice. Once for each NPC. -->
 	<<if _args[0] and (typeof _args[0]) is "number">>
 		<<if $consensual isnot 1>>
 			<<if $drunk gt 0>>
@@ -453,6 +456,23 @@
 				message : `Expected a second parameter, but none was provided.`,
 				source : "Called from " + Utils.GetStack()
 			}>>
+		<<elseif _args[2] and (typeof _args[2]) is "number">>
+			<<if wearingCondom(_args[2]) and ["genital","genitals","anal"].includes(_args[1])>>
+				<<switch $NPCList[_args[2]].condom.type>>
+					<<case "plain">>
+						<<set _arousal to Math.floor(_arousal * 0.9)>>
+						<<set _enemyarousal to to Math.floor(_enemyarousal * 0.9)>>
+					<<default>>
+				<</switch>>
+			<</if>>
+			<<if wearingCondom("player") and ["genital","genitals"].includes(_args[1])>>
+				<<switch $player.condom.type>>
+					<<case "plain">>
+						<<set _arousal to Math.floor(_arousal * 0.9)>>
+						<<set _enemyarousal to to Math.floor(_enemyarousal * 0.9)>>
+					<<default>>
+				<</switch>>
+			<</if>>
 		<</if>>
 		<<arousal _arousal _args[1]>>
 		<<enemyarousal _enemyarousal>>

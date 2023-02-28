@@ -276,6 +276,15 @@
 								<<continue>>
 							<</if>>
 						<</if>>
+						/*Check for preggy restriction*/
+						<<if playerBellySize() gte 12 and $_wardrobeItem.type.includes("constricting")>>
+							<<if $_wardrobeItem.type.includes("chest_bind")>>
+								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "constrictingChest"}>>
+							<<else>>
+								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "constricting"}>>
+							<</if>>
+							<<break>>
+						<</if>>
 						/*Check for slime corruption*/
 						<<if _corruptionEquipSkip.includes($_slot)>>
 							<<if $corruption_slime gte 80 and currentSkillValue('willpower') lt 800 and $_wardrobeItem.reveal lt 500 and !$_wardrobeItem.type.includesAny("school", "event")>>
@@ -387,7 +396,9 @@
 						<</if>>
 					<<else>>
 						<<if $worn[$_slot].name is $_incomingItemName>>
-							<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "not found replacement"}>>
+							<<if !_notEquipped[$_slot]>>
+								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "not found replacement"}>>
+							<</if>>
 							/*If the worn item was a hoodie, make sure the hood is in the correct position*/
 							<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.outfitPrimary.head isnot "broken" and $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
 								<<toggleHood>>
@@ -397,7 +408,9 @@
 								<<storeItem $wardrobe_location $_slot>>
 							<</if>>
 						<<else>>
-							<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "not found"}>>
+							<<if !_notEquipped[$_slot]>>
+								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "not found"}>>
+							<</if>>
 							<<if $wardrobe_location isnot "wardrobe" and $worn[$_slot].name isnot "naked">>
 								<<set _makeTempClothing to 1>>
 								<<storeItem $wardrobe_location $_slot>>
@@ -446,6 +459,30 @@
 							}
 						}
 						_resultStrings.notFoundReplacement.names.push(notEquippedItem.name);
+						break;
+					case "constricting":
+						if (_resultStrings.constricting === undefined) {
+							_resultStrings.constricting = {
+								"start": "Your <<bellyDescription 'pc'>> is too large to wear your ",
+								"joiner": "and",
+								"end": ".",
+								"names": [],
+								"color": "red"
+							}
+						}
+						_resultStrings.constricting.names.push(notEquippedItem.name);
+						break;
+					case "constrictingChest":
+						if (_resultStrings.constrictingChest === undefined) {
+							_resultStrings.constrictingChest = {
+								"start": "Your pregnant body is too sensitive to wear your ",
+								"joiner": "and",
+								"end": ".",
+								"names": [],
+								"color": "red"
+							}
+						}
+						_resultStrings.constrictingChest.names.push(notEquippedItem.name);
 						break;
 					case "corruption_slime_deny":
 						if (_resultStrings.corruption_slime_deny === undefined) {

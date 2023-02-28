@@ -439,11 +439,11 @@
 			<<case "lightHeaded">>
 				<<set $_text_output to "You wake feeling a little lightheaded for a moment.">>
 			<<case "dizzy">>
-				<<set $_text_output to "You wake feeling a little dizzy but it passes quickly.">>
+				<<set $_text_output to "You wake feeling a little dizzy, but it passes quickly.">>
 			<<case "mildNausea">>
-				<<set $_text_output to "You wake feeling a little nauseous but it passes quickly.">>
+				<<set $_text_output to "You wake feeling a little nauseous, but it passes quickly.">>
 			<<case "nausea">>
-				<<set $_text_output to "You wake feeling nauseous but it passes after some time.">>
+				<<set $_text_output to "You wake feeling nauseous, but it passes after some time.">>
 			<<case "dryheaving">>
 				<<if $location is "wolf_cave">>
 					<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the cave. You're forced to do a dry heave by it.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
@@ -468,30 +468,51 @@
 			<<case "earlyContractions">>
 				<<set $_text_output to "You wake up to a brief and sporadic contraction.<<stress 5>><<gstress>><<pain 1>><<gpain>>">>
 			<<case "bellySize">>
-				<<set $_text_output to "You wake and take a look at your growing belly.">>
+				<<set $_text_output to "You wake and take a look at your growing belly. It finally hits you; you're pregnant.">>
 				<<if $_pregnancy.potentialFathers.length is 1>>
-					<<set $_text_output += " It's clear that "+ $_pregnancy.potentialFathers[0].source +" was who got you pregnant.">>
+					<<set $_text_output += " It's clear that "+ $_pregnancy.potentialFathers[0].source +" is the father.">>
 				<<else>>
-					<<set $_text_output += " You wonder who got you pregnant.">>
+					<<set $_text_output += " You wonder who the father is.">>
 				<</if>>
 				<<set $_pregnancy.awareOf to true>>
 			<<case "missedPeriod">>
-				<<set $_text_output to "You wake and think about the last period you had, strangely, your current one is late.">>
+				<<set $_text_output to "You wake and come to a realisation. Your current cycle is late.">>
 				<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
-					<<set $_text_output += "You wonder if you got yourself pregnant again, <span class='red'>maybe you should get tested</span>.">>
+					<<set $_text_output += "You wonder if you're pregnant again. <span class='red'>Maybe you should get tested</span>.">>
 				<</if>>
 				<<set $sexStats.vagina.awareOfPeriodDelay to true>>
-			<<case "chastityBeltRemoval">>
-				<<if $worn.genitals.name is "gold chastity belt">>
-					<<set $_text_output to `<span class="blue">Your ${V.worn.genitals.name} feels loose.</span> It looks like it opened in your sleep due to your growing belly. Now that it's off, a collector may be interested in it.`>>
-					<<if $worn.genitals.integrity gt 0>>
-						<<set $antiquemoney += Math.floor(2000 / ($worn.genitals.integrity / clothingData('genitals',$worn.genitals,'integrity_max')))>>
+			<<case "clothesRemoval">>
+				<<set $_text_output to `<span class="red">You wake up to a heavy pressure on your body.</span> `>>
+				<<set $_slots to ["genitals","under_upper","upper","under_lower","lower"]>>
+				<<set $_broken to []>>
+				<<set $_removed to []>>
+				<<for $_slot range $_slots>>
+					<<if $worn[$_slot].type.includes("constricting")>>
+						<<if $worn[$_slot].cursed>>
+							<<if $worn[$_slot].name is "gold chastity belt" and $worn[$_slot].integrity gt 0>>
+								<<set $_goldenCB to true>>
+								<<set $antiquemoney += Math.floor(2000 / ($worn.genitals.integrity / clothingData('genitals',$worn.genitals,'integrity_max')))>>
+							<<else>>
+								<<set $_broken.pushUnique($worn[$_slot].name)>>
+							<</if>>
+							<<set $worn[$_slot].type.push("broken")>>
+							<<generalRuined $_slot>>
+						<<else>>
+							<<set $_removed.pushUnique($worn[$_slot].name)>>
+							<<generalUndress "wardrobe" $_slot>>
+						<</if>>
 					<</if>>
-				<<else>>
-					<<set $_text_output to `<span class="blue">Your ${V.worn.genitals.name} feels loose.</span> It must have broken apart in your sleep due to your growing belly.`>>
+				<</for>>
+				<<if $_removed.length gte 1>>
+					<<set $_text_output += "You scramble to remove your " + formatList($_removed, "and", true) + ". ">>
 				<</if>>
-				<<set $worn.genitals.type.push("broken")>>
-				<<genitalsruined>>
+				<<if $_broken.length gte 1>>
+					<<set $_text_output += "You look down to see your " + formatList($_broken, "and", true) + " broken. ">>
+				<</if>>
+				<<if $_goldenCB>>
+					<<set $_text_output += `Loosened by your growing belly, your gold chastity belt clatters to the ground once you apply some pressure. <span class="blue">A collector might be interested by it.</span> `>>
+				<</if>>
+				<<set $_text_output += `<br><span class="red">Your pregnant body no longer supports such clothing.</span> <<pain 2>><<gpain>>`>>
 		<</switch>>
 	<</if>>
 	<</silently>><<if $_text_output>><<print $_text_output>><</if>>
@@ -505,7 +526,7 @@
 		<</if>>
 		<<switch _event>>
 			<<case "tired">>
-				<<set $_text_output to "You yawn, everything seems to take more effort than usual.<<tiredness 2>><<gtiredness>>">>
+				<<set $_text_output to "You yawn. Everything seems to take more effort than usual.<<tiredness 2>><<gtiredness>>">>
 			<<case "crying">>
 				<<set $_text_output to "You suddenly burst into tears. You aren't even sure why you're crying, but the sadness passes as quickly as it came.<<stress 5>><<gstress>>">>
 			<<case "angry">>
@@ -521,11 +542,11 @@
 			<<case "lightHeaded">>
 				<<set $_text_output to "You feel a little lightheaded for a moment.">>
 			<<case "dizzy">>
-				<<set $_text_output to "You start feeling a little dizzy but it passes quickly.">>
+				<<set $_text_output to "You start feeling a little dizzy, but it passes quickly.">>
 			<<case "mildNausea">>
-				<<set $_text_output to "You start feeling a little nauseous but it passes quickly.">>
+				<<set $_text_output to "You start feeling a little nauseous, but it passes quickly.">>
 			<<case "nausea">>
-				<<set $_text_output to "You start feeling nauseous but it passes after some time.">>
+				<<set $_text_output to "You start feeling nauseous, but it passes after some time.">>
 			<<case "lightBabyKick">>
 				<<set $_text_output to "You feel a light kick coming from your baby.<<stress -10>><<lstress>>">>
 			<<case "babyKick">>
