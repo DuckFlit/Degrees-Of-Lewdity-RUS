@@ -533,6 +533,12 @@
 				<</for>>
 			<</if>>
 
+			<!-- Check if selected clothes can't be worn by pregnant players -->
+			<<unset _preggyPrevent>>
+			<<if playerBellySize() gte 12 and _temp_choice.type.includes("constricting")>>
+				<<set _preggyPrevent to true>>
+			<</if>>
+
 			<span>Warmth:</span>
 			<<warmthscale>>
 			<div id="warmth-description">
@@ -555,6 +561,8 @@
 				<<if $clothingShop.stolenClothes lte 20>>
 					<<if $worn[_realSlot].cursed is 1>>
 						<<printcursed>>
+					<<elseif _preggyPrevent>>
+						<<printpreggy _temp_choice>>
 					<<else>>
 						<<link "Steal and wear">>
 							<<shopbuyv2 _realSlot "steal" "wear" _realIndex>><<crimeup `getClothingCost(_temp_choice,$clothingShopSlot) / 100`>>
@@ -595,13 +603,15 @@
 			<<elseif $money >= getClothingCost(_temp_choice,$clothingShopSlot)>>
 				<<if _cursedPrevent>>
 					<<printcursed>>
+				<<elseif _preggyPrevent>>
+					<<printpreggy _temp_choice>>
 				<</if>>
 
 				<div class="buy-buttons">
-					<<set _cantWear = _cursedPrevent == true ? "disabled" : "div-link">>
+					<<set _cantWear = (_cursedPrevent == true || _preggyPrevent == true ? "disabled" : "div-link")>>
 					<div class="buy-button">
 						<div @class="'buy-button-inner ' + _cantWear">
-							<<if _cursedPrevent>>
+							<<if _cursedPrevent or _preggyPrevent>>
 								Buy and wear
 							<<else>>
 								<<link "Buy and wear">>
@@ -639,7 +649,7 @@
 				<br>
 			<</if>>
 
-			<<if _cursedPrevent != true and $tryOn.tryingOn>>
+			<<if _cursedPrevent != true and _preggyPrevent != true and $tryOn.tryingOn>>
 				<div class="try-buttons">
 					<div class="try-button div-link">
 						<<link "Try On">>
@@ -907,6 +917,20 @@
 	<br>
 <</widget>>
 
+<<widget "printpreggy">>
+	<<if _args[0]>>
+		<<set _blockedItem to _args[0]>>
+		<<set _blockedItemWord to (_blockedItem.word isnot "n" ? _blockedItem.word : "")>>
+		<<if _blockedItem.type.includes("chest_bind")>>
+			<span class="red">Your pregnant body is too sensitive to wear _blockedItemWord _blockedItem.name.</span>
+		<<else>>
+			<span class="red">Your <<bellyDescription "pc">> is too large to wear _blockedItemWord _blockedItem.name.</span>
+		<</if>>
+	<<else>>
+		<span class="red">ERROR: No argument provided for widget printpreggy</span>
+	<</if>>
+	<br>
+<</widget>>
 
 <<widget "shopbuyv2">>
 	<<set _slot to _args[0]>>

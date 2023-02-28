@@ -11,7 +11,7 @@ window.playerNormalPregnancyTotal = playerNormalPregnancyTotal;
 // `pregnancyOnly` is there intentially, please make use of it if you add to this function
 function playerBellySize(pregnancyOnly = false) {
 	if (!V.pregnancyTesting) return 0; // ToDo: Pregnancy, remove line
-	let bellySize = 0;
+	let bellySize = V.bellySizeDebug || 0;
 	const vpregnancy = V.sexStats.vagina.pregnancy;
 	const apregnancy = V.sexStats.anus.pregnancy;
 	if (vpregnancy.fetus.length || apregnancy.fetus.length) {
@@ -51,8 +51,8 @@ window.playerBellySize = playerBellySize;
 function pregnancyBellyVisible(pregnancyOnly = false) {
 	const size = playerBellySize(pregnancyOnly);
 	if (size <= 7) return false;
-	if (size <= 11 && V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) return false;
-	if (size <= 17 && V.worn.upper.type.includes("bellyHide")) return false;
+	if (size <= 12 && (V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow") || !V.worn.over_upper.type.includes("naked"))) return false;
+	if (size <= 17 && (V.worn.upper.type.includes("bellyHide") || !V.worn.over_upper.type.includes("naked"))) return false;
 
 	return true;
 }
@@ -67,10 +67,10 @@ function npcBellySize(npc) {
 		let maxSize = 0;
 		switch (pregnancy.type) {
 			case "human":
-				maxSize += 18 + Math.clamp(pregnancy.fetus.length, 1, 3);
+				maxSize += 21 + Math.clamp(pregnancy.fetus.length, 1, 3);
 				break;
 			case "wolf":
-				maxSize += 16 + Math.clamp(pregnancy.fetus.length / 2, 1, 4);
+				maxSize += 20 + Math.clamp(pregnancy.fetus.length / 2, 1, 4);
 				break;
 		}
 		bellySize += pregnancyProgress * Math.clamp(maxSize, 0, 20);
@@ -154,7 +154,7 @@ function wakingPregnancyEvent() {
 	const pregnancyStage = pregnancy.timerEnd ? Math.clamp(pregnancy.timer / pregnancy.timerEnd, 0, 1) : false;
 	let wakingEffects;
 
-	if (pregnancyBellyVisible(true) && !pregnancy.awareOf) {
+	if (playerBellySize(true) >= 8 && !pregnancy.awareOf) {
 		return "bellySize";
 	} else if (
 		V.cycledisable === "f" &&
@@ -166,8 +166,8 @@ function wakingPregnancyEvent() {
 		(random(0, 100) >= 105 - V.sciencetrait * 5 || playerNormalPregnancyTotal() >= 3)
 	) {
 		return "missedPeriod";
-	} else if (playerBellySize() >= 12 && V.worn.genitals.type.includes("hidden")) {
-		return "chastityBeltRemoval";
+	} else if (playerBellySize() >= 12 && ["genitals","under_upper","upper","under_lower","lower"].find(slot => V.worn[slot].type.includes("constricting"))) {
+		return "clothesRemoval";
 	} else if (between(pregnancyStage, 0.9, 1)) {
 		wakingEffects = "nearBirthEvent";
 	} else if (between(pregnancyStage, 0.7, 0.9)) {
