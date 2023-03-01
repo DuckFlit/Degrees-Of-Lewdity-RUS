@@ -2154,26 +2154,27 @@
 		<div id="cheatsImpregOptions-anus"><<cheatsImpregOptions "anus">></div>
 	<<elseif !($sexStats.anus.pregnancy.type is "parasite" or $sexStats.anus.pregnancy.type is null)>>
 		You're currently pregnant with "<<print $sexStats.anus.pregnancy.type>>" children and can't access these settings.
+		<br>
 	<<else>>
 		You need to enable anal pregnancy in the settings to access these settings.
+		<br>
 	<</if>>
-
+	<br>
 	<<if $parasitepregdisable is "f" && ($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
 		<div id="cheatsImpregOptions-vagina"><<cheatsImpregOptions "vagina">></div>
 	<<elseif !($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
 		You're currently pregnant with "<<print $sexStats.vagina.pregnancy.type>>" children and can't access these settings.
+		<br>
 	<<else>>
 		You need to enable anal pregnancy in the settings to access these settings.
+		<br>
 	<</if>>
-	<br><br>
+	<br>
 
 	/* ToDo: remove $pregnancyTesting to correctly enable */
 	<<if $pregnancyTesting and ($playerPregnancyBeastDisable == "f" or $playerPregnancyHumanDisable == "f")>>
-		<<if !$player.vaginaExist>>
-			You don't have a vagina. You can't do anything here at the moment. /* This will change when PC can inpregnate NPCs or when Mpreg */
-		<<else>>
-			<div id="cheatsPregnancyOptions"><<cheatsPregnancyOptions "vagina">></div>
-		<</if>>
+		<span class="gold">Pregnancy Cheats</span>
+		<div id="cheatsPregnancyOptions"><<cheatsPregnancyOptions>></div>
 	<</if>>
 <</widget>>
 
@@ -2213,7 +2214,7 @@
 		<<else>>
 			You have hit the maximum number of <<print (_args[0] is "anus" ? "Anal" : "Vaginal")>> pregnancies at one time.
 		<</if>>
-		<br><br>
+		<br>
 		<<set $_linkName to "Clear Current " + (_args[0] is "anus" ? "Anal" : "Vaginal") + " Pregnancies">>
 		<<link $_linkName>>
 			<<if $sexStats[_args[0]].pregnancy.type is "parasite">>
@@ -2225,7 +2226,7 @@
 			<</if>>
 			<<replace `"#cheatsImpregOptions-" + _args[0]`>><<cheatsImpregOptions _args[0]>><</replace>>
 		<</link>>
-		<br><br>
+		<br>
 	<</capture>>
 <</widget>>
 
@@ -2248,86 +2249,253 @@
 <</widget>>
 
 <<widget "cheatsPregnancyOptions">>
-<<capture _args>>
-	<<set _menstruation to $sexStats.vagina.menstruation>> /* Maybe it will change when Mpreg (menstruation linked to anal? rut?) */
-	<<set _pregnancy to $sexStats[_args[0]].pregnancy>>
-	<span class="gold">Pregnancy Cheats</span>
-	<br>
-	<<if !playerIsPregnant() and $cycledisable == "f">>
-		<<link "<<">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay - 5, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>> |
-		<<link "<">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay - 1, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>> |
-		Menstruation day:: <span id="cheatMenstruationDay"><<print Math.trunc(_menstruation.currentDay)>></span> of _menstruation.currentDaysMax
-		<<link "Ovulate">><<set _menstruation.currentDay to _menstruation.stages[2]>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
-		| <<link ">">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay + 1, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
-		| <<link ">>">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay + 5, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
-		<br>
-	<</if>>
-	<<if playerIsPregnant()>>
-		<<link "<<">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer - _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>> |
-		<<link "<">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer - _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>> |
-		Pregnancy progress: <span id="cheatPregnancyProgress"><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%</span>
-		| <<link ">">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd * .99)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
-		| <<link ">>">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd * .99)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
-		<br>
-		<<link [[Clear current pregnancy|$passage]]>>
-			<<set _pregnancy.type to null>>
-			<<set _pregnancy.fetus to []>>
-			<<set _pregnancy.waterBreaking to false>>
-			<<set _pregnancy.waterBreakingTimer to null>>
-			<<set _pregnancy.bellySize to 0>>
-			<<set _pregnancy.timer to null>>
-			<<set _pregnancy.timerEnd to null>>
-			<<set _pregnancy.awareOf to null>>
-			<<set _pregnancy.awareOfDetails to null>>
-			<<set _pregnancy.potentialFathers to []>>
-			<<set _menstruation.currentDay to .5>>
-			<<menstruationCycle>>
-		<</link>>
-		<span class="description">This is a cheat, not an abortion.</span>
+	<<set _elegible to ["Avery", "Eden", "Harper", "Kylar", "Morgan", "Robin", "Whitney", "Black Wolf", "Alex", "Wren", "Sydney"]>>
+	<<set _impregnatableNPC to []>>
+	<<set _impregnatorNPC to []>>
+	<<set _pregnantNPC to []>>
+	<<for _pregEnabled range $NPCName.filter(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
+		<<if playerPregnancyPossibleWith(_pregEnabled)>>
+			<<set _impregnatorNPC.push($NPCName.indexOf(_pregEnabled))>>
+		<</if>>
+		<<if NPCPregnancyPossibleWithPlayer(_pregEnabled.nam)>>
+			<<set _impregnatableNPC.push($NPCName.indexOf(_pregEnabled))>>
+		<</if>>
+	<</for>>
+	<<if $player.vaginaExist or canBeMPregnant()>>
+		<<set _womb to $player.vaginaExist ? "vagina" : "anus">>
+		<<set _menstruation to $sexStats[_womb].menstruation>>
+		<<set _pregnancy to $sexStats[_womb].pregnancy>>
+		<<if !playerIsPregnant() and $cycledisable == "f">>
+			You aren't pregnant:
+			<br>
+			<<link "<<">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay - 5, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>> |
+			<<link "<">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay - 1, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>> |
+			Menstruation day: <span id="cheatMenstruationDay"><<print Math.trunc(_menstruation.currentDay)>></span> of _menstruation.currentDaysMax
+			| <<link "Ovulate">><<set _menstruation.currentDay to _menstruation.stages[2]>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
+			| <<link ">">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay + 1, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
+			| <<link ">>">><<set _menstruation.currentDay to Math.clamp(_menstruation.currentDay + 5, 0, _menstruation.currentDaysMax)>><<replace "#cheatMenstruationDay">><<print Math.trunc(_menstruation.currentDay)>><</replace>><</link>>
+			<br><br>
+		<</if>>
+		<<if playerIsPregnant()>>
+			You are pregnant:
+			<br>
+			<<link "<<">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer - _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>> |
+			<<link "<">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer - _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>> |
+			Pregnancy progress: <span id="cheatPregnancyProgress"><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%</span>
+			| <<link ">">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.01, 0, _pregnancy.timerEnd * .99)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
+			| <<link ">>">><<set _pregnancy.timer to Math.clamp(_pregnancy.timer + _pregnancy.timerEnd * 0.05, 0, _pregnancy.timerEnd * .99)>><<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancy.timer / _pregnancy.timerEnd * 100, 0, 100))>>%<</replace>><</link>>
+			<br><br>
+			<<link [[Clear current pregnancy|$passage]]>>
+				<<set _pregnancy.type to null>>
+				<<set _pregnancy.fetus to []>>
+				<<set _pregnancy.waterBreaking to false>>
+				<<set _pregnancy.waterBreakingTimer to null>>
+				<<set _pregnancy.timer to null>>
+				<<set _pregnancy.timerEnd to null>>
+				<<set _pregnancy.awareOf to null>>
+				<<set _pregnancy.awareOfDetails to null>>
+				<<set _pregnancy.potentialFathers to []>>
+				<<set _pregnancy.sperm to []>>
+				<<set _menstruation.currentDay to .5>>
+				<<menstruationCycle>>
+			<</link>>
+			<span class="description">This is a cheat, not an abortion.</span>
+			<br><br>
+		<<else>>
+			<<if ($playerPregnancyHumanDisable == "f" or $playerPregnancyBeastDisable == "f") and !playerIsPregnant()>>
+				Get pregnant with: 
+				<<if $pregnancytype is "realistic">>
+					<span class="description">Instant (fetishised) pregnancy</span>
+				<</if>>
+				<br>
+				<<if $playerPregnancyHumanDisable == "f">>
+					<<link [[A random person|$passage]]>> /* checks if males or females have penises, if there is no people with penises a foreigner impregnates PC */
+					<<set _impregnator to "cheater ">>
+					<<if $dgchance gt 0 and $cbchance lt 100>>
+						<<set _impregnator += either("man", "boy", "woman", "girl")>>
+					<<elseif $dgchance gt 0 and $cbchance gt 99>>
+						<<set _impregnator += either("woman", "girl")>>
+					<<elseif $dgchance lt 1 and $cbchance lt 100>>
+						<<set _impregnator += either("man", "boy")>>
+					<<else>>
+						<<set _impregnator += "foreigner">>
+					<</if>>
+					<<playerPregnancy _impregnator "human" true _womb undefined true>>
+					<</link>>
+				<</if>>
+				<<if $playerPregnancyBeastDisable == "f">>
+					<<if $playerPregnancyHumanDisable == "f">>
+						| 
+					<</if>>
+					<<link [[A wolf|$passage]]>>
+					<<if $beastmalechance gt 0>> /* checks if there are male wolves, if not a foreigner wolf impregnates PC */
+						<<set _impregnator to "cheater wolf">>
+					<<else>>
+						<<set _impregnator to "cheater foreign wolf">>
+					<</if>>
+					<<playerPregnancy _impregnator "wolf" true _womb undefined true>>
+					<</link>>
+				<</if>>
+				<<for _pregEnabled range _impregnatorNPC>>
+					<<set _actor to $NPCName[_pregEnabled]>>
+					<<if !_elegible.includes(_actor.nam)>>
+						<<continue>>
+					<</if>>
+					<<set _spermType to (_actor.nam == "Black Wolf" ? "wolf" : "human")>>
+					<<capture _actor, _spermType, _womb>>
+					| <<link [[_actor.nam|$passage]]>> 
+						<<playerPregnancy _actor.nam _spermType true _womb undefined true>>
+					<</link>>
+					<</capture>>
+				<</for>>
+				<<if $player.penisExist>>
+					| <<link [[Yourself|$passage]]>>
+					<<playerPregnancy "pc" "human" true _womb undefined true>>
+					<</link>>
+				<</if>>
+				<br><br>
+				<<if $pregnancytype is "realistic">>
+					Add sperm from: <span id="cheatSpermSources" class="description">(you have $sexStats[_womb].sperm.length sources of sperm)</span>
+					<<if $playerPregnancyHumanDisable == "f">>
+						<<link "An anonymous donor">> /* The sperm owner is always the same, anonymous donor, so it helps pregnancy from only one sorce */
+							<<recordSperm `{target: "pc", spermOwner: "anonymous donor", spermType: "human", genital: _womb}`>>
+							<<replace "#cheatSpermSources">>(you have $sexStats[_womb].sperm.length sources of sperm)<</replace>>
+						<</link>>
+						| <<link "A random person">> /* checks if males or females have penises, if there is no people with penises a foreigner inseminates PC */
+							<<set _impregnator to either("arbitrary", "aimless", "by-the-way", "casual", "driftless", "hit-or-miss", "fluky", "promiscuous", "slapdash",  "irresponsible", "careless", "negligent") + " cheater ">>
+							<<if $dgchance gt 0 and $cbchance lt 100>>
+								<<set _impregnator += either("man", "boy", "woman", "girl")>>
+							<<elseif $dgchance gt 0 and $cbchance gt 99>>
+								<<set _impregnator += either("woman", "girl")>>
+							<<elseif $dgchance lt 1 and $cbchance lt 100>>
+								<<set _impregnator += either("man", "boy")>>
+							<<else>>
+								<<set _impregnator += "foreigner">>
+							<</if>>
+							<<recordSperm `{target: "pc", spermOwner: _impregnator, spermType: "human", genital: _womb}`>>
+							<<replace "#cheatSpermSources">>(you have $sexStats[_womb].sperm.length sources of sperm)<</replace>>
+						<</link>>
+					<</if>>
+					<<if $playerPregnancyBeastDisable == "f">>
+						<<if $playerPregnancyHumanDisable == "f">>
+							| 
+						<</if>>
+						<<link "A wolf">>
+							<<if $beastmalechance gt 0>> /* checks if there are male wolves, if not a foreigner wolf inseminates PC */
+								<<set _impregnator to "cheater wolf">>
+							<<else>>
+								<<set _impregnator to "cheater foreign wolf">>
+							<</if>>
+							<<recordSperm `{target: "pc", spermOwner: _impregnator, spermType: "wolf", genital: _womb}`>>
+							<<replace "#cheatSpermSources">>(you have $sexStats[_womb].sperm.length sources of sperm)<</replace>>
+						<</link>>
+					<</if>>
+					<<for _pregEnabled range _impregnatorNPC>>
+						<<set _actor to $NPCName[_pregEnabled]>>
+						<<if !_elegible.includes(_actor.nam)>>
+							<<continue>>
+						<</if>>
+						<<set _spermType to (_actor.nam === "Black Wolf" ? "wolf" : "human")>>
+						<<capture _actor, _spermType, _womb>>
+						| <<link _actor.nam>> 
+							<<recordSperm `{target: "pc", spermOwner: _actor.nam, spermType: "human", genital: _womb}`>>
+							<<replace "#cheatSpermSources">>(you have $sexStats[_womb].sperm.length sources of sperm)<</replace>>
+						<</link>>
+						<</capture>>
+					<</for>>
+					<<if $player.penisExist>>
+						| <<link "Yourself">>
+							<<recordSperm `{target: "pc", spermOwner: "pc", spermType: "human", genital: _womb}`>>
+							<<replace "#cheatSpermSources">>(you have $sexStats[_womb].sperm.length sources of sperm)<</replace>>
+						<</link>>
+					<</if>>
+					<br><br>
+				<</if>>
+			<</if>>
+		<</if>>
 	<<else>>
-		Get pregnant with:
+		You can't cheat a pregnancy for you.
+		<br><br>
+	<</if>>
+	<<if $player.penisExist and _impregnatableNPC.length>>
+		Fertile NPCs:
 		<br>
-		<<if $playerPregnancyHumanDisable == "f">>
-			<<link [[A random person|$passage]]>> /* checks if males or females have penises, if there's is no people with penises a foreigner impregnates PC */
-			<<set _impregnator to "cheater ">>
-			<<if $dgchance gt 0 and $cbchance lt 100>>
-				<<set _impregnator += either("man", "boy", "woman", "girl")>>
-			<<elseif $dgchance gt 0 and $cbchance gt 99>>
-				<<set _impregnator += either("woman", "girl")>>
-			<<elseif $dgchance lt 1 and $cbchance lt 100>>
-				<<set _impregnator += either("man", "boy")>>
-			<<else>>
-				<<set _impregnator += "foreigner">>
+		<<set _fertileNPC to 0>>
+		<<for _pregEnabled range _impregnatableNPC>>
+			<<set _actor to $NPCName[_pregEnabled]>>
+			<<if !_elegible.includes(_actor.nam) or _actor.pregnancy.fetus.length>>
+				<<continue>>
 			<</if>>
-			<<playerPregnancy _impregnator "human" true "vagina" undefined true>>
+			<<set _fertileNPC += 1>>
+			<<print _actor.nam>>:
+			<<capture _actor>>
+			<<set _linkText to "Impregnate " + _actor.pronouns.him>>
+			<<link [[_linkText|$passage]]>> 
+				<<namedNpcPregnancy _actor.nam "pc" "human" true undefined true>>
 			<</link>>
-			<br>
-		<</if>>
-		<<if $playerPregnancyBeastDisable == "f">>
-			<<link [[A wolf|$passage]]>>
-			<<if $beastmalechance gt 0>> /* checks if there are male wolves, if not a foreigner wolf impregnates PC */
-				<<set _impregnator to "cheater wolf">>
-			<<else>>
-				<<set _impregnator to "cheater foreign wolf">>
+			<<if $pregnancytype is "realistic">> 
+				<<set _linkText to "Inseminate " + _actor.pronouns.him>>
+				- <<link _linkText>>
+					<<recordSperm `{target: _actor.nam, spermOwner: "pc", spermType: "human", genital: "vagina"}`>>
+					<<replace `"#cheatSpermSources" + _actor.nam`>>(<<print _actor.pregnancy.sperm.length>> doses)<</replace>>
+				<</link>>
+				<span @id="'cheatSpermSources' + _actor.nam" class="description">(<<print _actor.pregnancy.sperm.length>> doses)</span>
 			<</if>>
-			<<playerPregnancy _impregnator "wolf" true "vagina" undefined true>>
-			<</link>>
+			<<if $cycledisable == "f">>
+				- <<link [[Fertile days|$passage]]>>
+					<<set _actor.pregnancy.cycleDay to _actor.pregnancy.cycleDangerousDay - 1>>
+				<</link>>
+			<</if>>
+			<</capture>>
 			<br>
+		<</for>>
+		<<if !_fertileNPC is 0>>
+			You can't impregnate any NPC.
 		<</if>>
-		<<if $playerPregnancyBeastDisable == "f" and $NPCName[$NPCNameList.indexOf("Black Wolf")].gender == "m">> /* playerPregnancyPossibleWith("Black Wolf") is not returning true */
-			<<link [[Black Wolf|$passage]]>>
-			<<playerPregnancy "Black Wolf" "wolf" true "vagina" undefined true>>
+	<<else>>
+		You can't impregnate any NPC<<if !$player.penisExist>> since you have no penis<</if>>.
+	<</if>>
+	<br>
+	<<for _pregEnabled range $NPCName>> /* Checks for any pregnant named NPC. Only elegible can be impregated by cheats, but maybe other NNPC are impregnated in game */
+		<<if npcIsPregnant(_pregEnabled.nam) and _pregEnabled.pregnancy.type != "parasite">>
+			<<set _pregnantNPC.push($NPCName.indexOf(_pregEnabled))>>
+		<</if>>
+	<</for>>
+	<<if _pregnantNPC.length>>
+		Pregnant NPCs:
+		<br>
+		<<for _actress range _pregnantNPC>>
+			<<set _pregnancyNPC to $NPCName[_actress].pregnancy>>
+			<<print $NPCName[_actress].nam>>: 
+			<<capture _actress _pregnancyNPC>>
+			<<link [[1st third|$passage]]>>
+				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .05>>
+			<</link>> -
+			<<link [[2nd third|$passage]]>>
+				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .35>>
+			<</link>> -
+			<<link [[3rd third|$passage]]>>
+				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .7>>
+			<</link>> -
+			<<link [[end of 3rd third|$passage]]>>
+				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .99>>
+			<</link>> -
+			<<link [[clear pregnancy|$passage]]>>
+				<<set _pregnancyNPC.type to null>>
+				<<set _pregnancyNPC.fetus to []>>
+				<<set _pregnancyNPC.waterBreaking to false>>
+				<<set _pregnancyNPC.timer to null>>
+				<<set _pregnancyNPC.timerEnd to null>>
+				<<set _pregnancyNPC.npcAwareOf to null>>
+				<<set _pregnancyNPC.pcAwareOf to null>>
+				<<set _pregnancyNPC.potentialFathers to []>>
+				<<set _pregnancyNPC.sperm to []>>
+				<<set _pregnancyNPC.cicleDay to 1>>
 			<</link>>
+			<</capture>>
 			<br>
-		<</if>>
-		<<if $player.penisExist>>
-			<<link [[Yourself|$passage]]>>
-			<<playerPregnancy "pc" "human" true "vagina" undefined true>>
-			<</link>>
-			<br>
-		<</if>>
+		<</for>>
 	<</if>>
 	<br>
 	<br>
-<</capture>>
 <</widget>>

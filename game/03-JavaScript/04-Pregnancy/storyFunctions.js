@@ -329,7 +329,7 @@ function pregnancyNameCorrection(name, caps = false) {
 			name = caps ? "Yourself" : "yourself";
 			break;
 		default:
-			name = name[0] === name[0].toLowerCase() ? (caps ? "A " : "a ") + name : name;
+			name = name[0] === name[0].toLowerCase() ? (caps ? "A" : "a") + (["a","e","i","o","u"].includes(name[0]) ? "n " : " ") + name : name;
 			break;
 	}
 	return name;
