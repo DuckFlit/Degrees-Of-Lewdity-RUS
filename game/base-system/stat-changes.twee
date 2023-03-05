@@ -279,10 +279,16 @@
 				<<set $_arousalPart to $mouthsensitivity>>
 			<<case "breast" "breasts" "chest" "nipple" "nipples" "masturbationBreasts" "masturbationNipples">>
 				<<set $_arousalPart to $breastsensitivity>>
+				<<if playerIsPregnant()>>
+					<<set $_arousalPart += 0.5>>
+				<</if>>
 			<<case "bottom" "anus" "anal" "ass" "butt" "masturbationAnal" "masturbationAss">>
 				<<set $_arousalPart to $bottomsensitivity>>
 			<<case "genital" "genitals" "penis" "penile" "pussy" "vaginal" "vagina" "masturbationGenital" "masturbationPenis" "masturbationVagina">>
 				<<set $_arousalPart to $genitalsensitivity>>
+				<<if playerIsPregnant()>>
+					<<set $_arousalPart += 0.5>>
+				<</if>>
 			<<case "maso">>
 				<<set $arousalmasochism += _gain * _mod>>
 			<<case "time">>
@@ -593,7 +599,7 @@
 <</widget>>
 
 <<widget "insecurity">>
-	<<if _args[0] and _args[1] and !$statFreeze and ["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big"].includes(_args[0])>>
+	<<if _args[0] and _args[1] and !$statFreeze and ["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"].includes(_args[0])>>
 		<<set
 			_type to _args[0];
 			_change to _args[1];
@@ -606,7 +612,8 @@
 				"penis_big": $player.penisExist and $player.penissize gte 4,
 				"breasts_tiny": $gender isnot "m",
 				"breasts_small": true,
-				"breasts_big": true
+				"breasts_big": true,
+				"pregnancy": playerBellySize() gte 8,
 			}[_type];
 		>>
 
@@ -646,7 +653,7 @@
 	*/
 	<<if _args[0] and _args[1] and $statFreeze isnot true>>
 		/* note: this does not check if a player is capable of gaining acceptance, so don't use this widget without checking. */
-		<<if ["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big"].includes(_args[0])>>
+		<<if ["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"].includes(_args[0])>>
 			<<set V["acceptance_"+_args[0]] += (_args[1] * 6)>>
 			<<set V["acceptance_"+_args[0]] = Math.clamp(V["acceptance_"+_args[0]], 0, 1000)>>
 		<<else>>

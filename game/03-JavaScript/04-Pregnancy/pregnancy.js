@@ -107,10 +107,10 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 
 		if (target === "pc") {
 			const result = playerPregnancy(spermOwner, spermType, true, genital, undefined, true);
-			if (result === true) T.playerIsPregnant = spermOwner;
+			if (result === true) T.playerIsNowPregnant = spermOwner;
 		} else if (C.npc[target]) {
 			const result = namedNpcPregnancy(target, spermOwner, spermType, true);
-			if (result === true) T.npcIsPregnant = target;
+			if (result === true) T.npcIsNowPregnant = target;
 		}
 		if (target !== "pc" && spermOwner === "pc") Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>');
 		return true;
