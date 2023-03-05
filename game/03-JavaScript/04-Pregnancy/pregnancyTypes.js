@@ -253,6 +253,7 @@ const babyBase = ({
 		fatherKnown: father && fatherKnown,
 		born: { day: null, month: null, year: null },
 		conceived: { day: V.monthday, month: V.month.toUpperFirst(), year: V.year },
+		conceivedLocation: mother === "pc" || (father === "pc" && (V.pregnancytype === "fetish" || T.npcForceImpregnation)) ? V.location : null,
 		gender,
 		features: {
 			size,
