@@ -782,19 +782,15 @@
 <</widget>>
 
 <<widget "removeButtplug">>
-	<<if _args[0]>>
+	<<if _args[0] and $options.targetYourself and ($lefttarget is "self" or $enemyno is 1) and playerHasButtPlug() and !playerChastity("anus")>>
 		<<if _args[0] is "left">>
-			<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-				<<if $worn.lower.anus_exposed gte 1 and $worn.under_lower.anus_exposed gte 1 and !["othermouthImminent","othermouth","imminent","doubleimminent","penetrated","doublepenetrated"].includes($anusstate) and playerHasButtPlug()>>
-					<<set _leftaction["Remove your "+$worn.butt_plug.name] to "removebuttplug">>
-				<</if>>
+			<<if ($worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1) or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked") and !["othermouthImminent","othermouth","imminent","doubleimminent","penetrated","doublepenetrated"].includes($anusstate)>>
+				<<set _leftaction["Remove your "+$worn.butt_plug.name] to "removebuttplug">>
 			<</if>>
 		<</if>>
 		<<if _args[0] is "right">>
-			<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-				<<if $worn.lower.anus_exposed gte 1 and $worn.under_lower.anus_exposed gte 1 and !["othermouthImminent","othermouth","imminent","doubleimminent","penetrated","doublepenetrated"].includes($anusstate) and playerHasButtPlug()>>
-					<<set _rightaction["Remove your "+$worn.butt_plug.name] to "removebuttplug">>
-				<</if>>
+			<<if ($worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1) or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked") and !["othermouthImminent","othermouth","imminent","doubleimminent","penetrated","doublepenetrated"].includes($anusstate)>>
+				<<set _rightaction["Remove your "+$worn.butt_plug.name] to "removebuttplug">>
 			<</if>>
 		<</if>>
 	<</if>>
@@ -802,24 +798,30 @@
 
 <<widget "combatMasturbate">>
 	<<if _args[0] isnot undefined>>
-		<<if ($worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked"))>>
+		<<if ($worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1) or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
 			<<if _args[0] is "left">>
-				<<if $promiscuity gt 14 and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
-					<<if $player.vaginaExist and !playerChastity("vagina")>>
-						<<set _leftaction["Play with your pussy"] to "leftmasturbatepussy">>
-					<</if>>
+				<<if $promiscuity gte 15 and $options.targetYourself and ($lefttarget is "self" or $enemyno is 1)>>
 					<<if $player.penisExist and $penisuse is 0 and !playerChastity("penis")>>
 						<<set _leftaction["Stroke your penis"] to "leftmasturbatepenis">>
+					<</if>>
+					<<if $player.vaginaExist and $vaginause is 0 and !playerChastity("vagina")>>
+						<<set _leftaction["Play with your pussy"] to "leftmasturbatepussy">>
+					<</if>>
+					<<if $promiscuity gte 35 and $awareness gte 200 and $anususe is 0 and !playerChastity("anus")>>
+						<<set _leftaction["Play with your anus"] to "leftmasturbateanus">>
 					<</if>>
 				<</if>>
 			<</if>>
 			<<if _args[0] is "right">>
-				<<if $promiscuity gt 14 and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
-					<<if $player.vaginaExist and !playerChastity("vagina")>>
-						<<set _rightaction["Play with your pussy"] to "rightmasturbatepussy">>
-					<</if>>
+				<<if $promiscuity gte 15 and $options.targetYourself and ($righttarget is "self" or $enemyno is 1)>>
 					<<if $player.penisExist and $penisuse is 0 and !playerChastity("penis")>>
 						<<set _rightaction["Stroke your penis"] to "rightmasturbatepenis">>
+					<</if>>
+					<<if $player.vaginaExist and $vaginause is 0 and !playerChastity("vagina")>>
+						<<set _rightaction["Play with your pussy"] to "rightmasturbatepussy">>
+					<</if>>
+					<<if $promiscuity gte 35 and $awareness gte 200 and $anususe is 0 and !playerChastity("anus")>>
+						<<set _rightaction["Play with your anus"] to "rightmasturbateanus">>
 					<</if>>
 				<</if>>
 			<</if>>
@@ -1986,12 +1988,11 @@
 <</widget>>
 
 <<widget "effectsremovebuttplug">>
-	<<if ($worn.genitals.anal_shield is undefined or $worn.genitals.anal_shield is 0)>>
+	<<if !playerChastity("anus")>>
 		<<if $leftaction is "removebuttplug" and playerHasButtPlug()>>
 			<<set $leftaction to 0>>
 			You remove your $worn.butt_plug.name, exposing your anus.
 			<<set $worn.butt_plug.state to "removed">>
-
 		<<elseif $rightaction is "removebuttplug" and playerHasButtPlug()>>
 			<<set $rightaction to 0>>
 			You remove your $worn.butt_plug.name, exposing your anus.

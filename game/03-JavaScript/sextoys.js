@@ -66,7 +66,7 @@ const randomSexToy = toyType => getSexToysofType(toyType).random();
 window.randomSexToy = randomSexToy;
 
 function playerHasButtPlug() {
-	return V.worn.butt_plug != null && V.worn.butt_plug.state === "worn" && V.worn.butt_plug.worn === 1;
-	// V.worn.butt_plug.worn === 1 is just as a safeguard for now
+	return V.worn.butt_plug != null && V.worn.butt_plug.state === "worn" && V.worn.butt_plug.worn;
+	// V.worn.butt_plug.worn is just as a safeguard for now
 }
 window.playerHasButtPlug = playerHasButtPlug;
