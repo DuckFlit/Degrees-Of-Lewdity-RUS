@@ -1,5 +1,5 @@
 /**
- * Version 1.0.0
+ * Version 1.1.0
  *
  * The npcCompressor function takes in an NPC object like those stored in NPCList and created using the $basenpc values.
  * 
@@ -74,6 +74,7 @@
  * - BIRTHID - child.birthId
  * - BIRTHLOCATION - child.birthLocation index
  * - LOCATION - child.location index
+ * - CONCEIVEDLOCATION - child.conceivedLocation index
  * - MOTHER - child.mother - The final value is created based on if the parent is a named, human npc, or beast npc
  * - FATHER - child.father - The final value is created based on if the parent is a named, human npc, or beast npc
  * - ".c" CONCEIVED - child.conceived the date of conception saved in DDMMYYYY format
@@ -111,6 +112,7 @@
  * 
  * Changes:
  *  1.0.0: The initial version.
+ * 	1.1.0: Added the conceivedLocation Key to the child compressor.
  * 
  */
 
@@ -156,8 +158,13 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
     }
     
     //All of these list will need to be expanded on in the future.
-    const birthLocationList = ["unknown", "home", "wolf_cave", "hospital"];
-    const childLocationList = ["unknown", "home", "wolf_cave"];
+	const locationList = ['unknown', 'home', 'wolf_cave', 'hospital', 'alley', 'beach', 'sea', 'school', 'schoolgrounds', 'pool', 'town', 'temple', 'spa', 'arcade', 'cafe', 'museum',
+	'docks', 'compound', 'landfill', 'underground', 'drain', 'sewers', 'brothel', 'strip_club', 'pub', 'estate', 'kylarmanor', 'pound', 'factory',
+	'park', 'parkmens', 'parkwomens', 'parkcafe', 'parktree', 'forest', 'cabin', 'lake', 'lake_ruin', 'moor', 'castle', 'tower', 'cliff',
+	'farm', 'plains', 'alex_farm', 'alex_cottage', 'riding_school', 'asylum', 'prison', 'tentworld', 'dance_studio', 'adult_shop', 'shopping_centre', 'police_station',
+	'changingroom', 'starfish', 'promenade', 'backyard', 'garden', 'seabeach', 'searocks', 'seadocks', 'seacliffs', 'coastpath', 'seapirates',
+	'residential', 'domus', 'barb', 'danube', 'commercial', 'connudatus', 'high', 'nightingale', 'oxford', 'industrial', 'mer', 'elk', 'harvest'];
+
     const childClothingList = ["naked", "clothed"]
 
     //base 64 conversion string.
@@ -494,11 +501,14 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         if(!birthID || birthID < 0) throw new Error("The child compressor was passed a child with an invalid birth ID of: " + birthID);
         birthID = "" + birthID.toString().length + birthID;
 
-        let birthLocation = birthLocationList.indexOf(passedChild.birthLocation);
+        let birthLocation = locationList.indexOf(passedChild.birthLocation);
         if (birthLocation < 0) birthLocation = 0;
 
-        let childLocation = childLocationList.indexOf(passedChild.location);
+        let childLocation = locationList.indexOf(passedChild.location);
         if (childLocation < 0) childLocation = 0;
+
+		let conceivedLocation = locationList.indexOf(passedChild.conceivedLocation);
+        if (conceivedLocation < 0) conceivedLocation = 0;
 
         let mother, father, parentTemp, parentTempList;
 
@@ -574,6 +584,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         child_data[11] = birthID; // this can have up to 10 places. 9 for the id and 1 for the id length.
         child_data[12] = birthLocation < 10 ? "0" + birthLocation : birthLocation; //preplan this having 2 palces.
         child_data[13] = childLocation < 10 ? "0" + childLocation : childLocation; //preplan this having 2 palces.
+		child_data[13] = conceivedLocation < 10 ? "0" + conceivedLocation : conceivedLocation; //preplan this having 2 palces.
         child_data[14] = mother;
         child_data[15] = father;
 
@@ -694,10 +705,13 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         let birthId = Number(expandedChild.slice(position, position + birthTemp));
         position+=birthTemp;
 
-        let birthLocation = birthLocationList[Number(expandedChild.slice(position, position + 2))];
+        let birthLocation = locationList[Number(expandedChild.slice(position, position + 2))];
         position +=2;
 
-        let location = childLocationList[Number(expandedChild.slice(position, position + 2))];
+        let location = locationList[Number(expandedChild.slice(position, position + 2))];
+        position +=2;
+
+		let conceivedLocation = locationList[Number(expandedChild.slice(position, position + 2))];
         position +=2;
 
         let parentTemp, parentTempList;
@@ -796,7 +810,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 
         //assignemnt of values
         childItems = {
-            "type": childType, gender, birthId, birthLocation, location, mother, motherKnown, father, fatherKnown, conceived, born, childId,
+            "type": childType, gender, birthId, conceivedLocation, birthLocation, location, mother, motherKnown, father, fatherKnown, conceived, born, childId,
             features: {beastTransform, divineTransform, monster, size, hairColour, eyeColour, skinColour, clothes, identical}
         }
 
