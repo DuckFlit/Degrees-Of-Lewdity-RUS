@@ -45,8 +45,15 @@
 		<<switch $location>>
 			<<case "home">>
 				<<set _robin to statusCheck("Robin")>>
+				<<set _kylar to statusCheck("Kylar")>>
 				<<if $sleepWraith>>
 					<!-- Do nothing. Wraith mimicking Robin guarantees an uninterrupted sleep -->
+				
+				<<elseif isLoveInterest("Kylar") and _kylarStatus.includes("Love") and _kylarStatus.includes("Lust") and $daystate is "night" and $kylarbed is undefined and $robinbed is undefined and $rng gte 96>>
+					<<set _sleepinterrupt to 1>>
+					<<set _kylarWake to 1>>
+					<<set $kylarSleepEvent to 1>>
+
 				<<elseif (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0>>
 					<!-- Robin climbs into bed with you -->
 					<<if $hour gte 18 or $hour lte 6>>
@@ -61,19 +68,25 @@
 					<</if>>
 				<<elseif wraithSleepEventCheck()>>
 					<<wraithEvent>>
+
 				<<elseif $baileydefeatedchain gte 1 and ($rng * 100) gte (9900 - ($allure / 5))>>
 					<<set _sleepinterrupt to 1>>
 					<<set $baileyrapewake to 1>>
+
 				<<elseif $christmas is 1 and $monthday is 25 and $hour lte 6 and $christmas_kylar is undefined and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
 					<<set _sleepinterrupt to 1>>
 					<<set $christmas_kylar to 1>>
+
 				<<elseif $schoolday is 1 and $hour is 7 and !$daily.baileyWake>>
 					<<set _sleepinterrupt to 1>>
 					<<set $daily.baileyWake to true>>
+
 				<<elseif $corruption_slime gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and $daystate is "night" and $slimeSleepEvent is 0 and $kylarbed isnot 1>>
 					<<set $slimeWake to 1>>
 					<<break>>
 				<</if>>
+				
+
 			<<case "asylum">>
 				<<asylumeffects>>
 				<<if $hour is 6 or ($asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1) or ($asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1) or ($asylumstate is "assessment" and $daily.asylumAssessment isnot 1)>>
