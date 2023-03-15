@@ -127,12 +127,12 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 	const genproList = ["mm", "fm", "hm", "mf", "ff", "hf"]; /* stores gender first, pronoun second. */
 	const breastdescList = ["nipple","budding","tiny","small","pert","modest","full","large","ample","massive","huge","gigantic","enormous"];
 	const sizeList = ["tiny", "small", "normal", "large"];
-    const skinColourList = ["white","black","light", "medium", "dark", "ylight", "ymedium", "ydark"];
+    const skinColourList = ["white","black","light", "medium", "dark", "ylight", "ymedium", "ydark", "ghostlyPale"];
 	const noClawList = ["dog","pig","wolf","dolphin","boar","fox","hawk","cow","bull"];
-	const teenFDescList = ["slight","lithe","lean","thin","slender","lissome","slim","taut","graceful","trim","mousy","cute","fit","petite","toned","shapely","robust","plump","wide-eyed","vulgar","minor demon"];
-	const teenMDescList = ["slight","lithe","lean","thin","slender","lissome","slim","taut","graceful","trim","mousy","cute","fit","petite","toned","shapely","robust","plump","wide-eyed","brutish","minor demon"];
-	const adultFDescList = ["slight","lithe","lean","thin","slender","lissome","slim","taut","petite","trim","muscular","curvy","toned","plump","plush","shapely","robust","voluptuous","lush","vulgar","demon"];
-	const adultMDescList = ["petite","slight","slim","thin","slender","lanky","lissome","lithe","trim","lean","taut","plump","toned","bulky","broad","robust","rugged","muscular","burly","brutish","demon"];
+	const teenFDescList = ["slight","lithe","lean","thin","slender","lissome","slim","taut","graceful","trim","mousy","cute","fit","petite","toned","shapely","robust","plump","wide-eyed","vulgar","minor demon", "tutorial", "debug"];
+	const teenMDescList = ["slight","lithe","lean","thin","slender","lissome","slim","taut","graceful","trim","mousy","cute","fit","petite","toned","shapely","robust","plump","wide-eyed","brutish","minor demon", "tutorial", "debug"];
+	const adultFDescList = ["slight","lithe","lean","thin","slender","lissome","slim","taut","petite","trim","muscular","curvy","toned","plump","plush","shapely","robust","voluptuous","lush","vulgar","demon", "tutorial", "debug"];
+	const adultMDescList = ["petite","slight","slim","thin","slender","lanky","lissome","lithe","trim","lean","taut","plump","toned","bulky","broad","robust","rugged","muscular","burly","brutish","demon", "tutorial", "debug"];
     const beastDescList = ["large","large","fat","enormous","bottlenose","scaly","brown","hairy","strange","huge","large","fierce","huge","slimy"];
     const penisDescList = {
         human: ["none","tiny penis", "penis", "thick cock","hefty cock","big cock","large cock","veiny cock","meaty cock", "massive cock","huge cock","humongous cock","immense cock","gigantic cock","enormous cock"],
@@ -143,7 +143,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 	const adultMHealthList = [125,125,150,150,150,150,175,175,200,200,200,200,250,250,250,250,275,275,275,400,600];
     const beastHealthList = [200,150,200,300,200,250,500,300,200,500,200,150,400];
 
-    const motherFatherList = ["Unknown","pc","Avery","Bailey","Briar","Charlie","Darryl","Doren","Eden","Gwylan","Harper","Jordan","Kylar","Landry","Leighton","Mason","Morgan","River","Robin","Sam","Sirris","Whitney","Winter","Black Wolf","Niki","Quinn","Remy","Alex","Great Hawk","Wren","Sydney","Ivory Wraith"];
+    const motherFatherList = [undefined, "Unknown","pc","Avery","Bailey","Briar","Charlie","Darryl","Doren","Eden","Gwylan","Harper","Jordan","Kylar","Landry","Leighton","Mason","Morgan","River","Robin","Sam","Sirris","Whitney","Winter","Black Wolf","Niki","Quinn","Remy","Alex","Great Hawk","Wren","Sydney","Ivory Wraith", "cum bucket", "Harper's Serum"];
 
     //child items
     const hairColourList =  {
@@ -165,7 +165,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 	'changingroom', 'starfish', 'promenade', 'backyard', 'garden', 'seabeach', 'searocks', 'seadocks', 'seacliffs', 'coastpath', 'seapirates',
 	'residential', 'domus', 'barb', 'danube', 'commercial', 'connudatus', 'high', 'nightingale', 'oxford', 'industrial', 'mer', 'elk', 'harvest'];
 
-    const childClothingList = ["naked", "clothed"]
+    const childClothingList = [undefined,"naked", "clothed"]
 
     //base 64 conversion string.
     const table = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_+";
@@ -231,16 +231,16 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         }
 
         //assigns all the values to their correct order. The number of items for beast and human type NPCs should be kept equal.
-        npc_data[0] = npcTypeIndex < 10 ? "0" + npcTypeIndex : npcTypeIndex; //can be above 10
+        npc_data[0] = npcTypeIndex.toString().padStart(2,"0"); //can be above 10
         npc_data[1] = genderPronoun;
         npc_data[2] = penisSize;
-        npc_data[3] = penisDesc < 10 ? "0" + penisDesc : penisDesc; //can be above 10
-        npc_data[4] = breastSize < 10 ? "0" + breastSize : breastSize; //can be above 10
-        npc_data[5] = insecurityIndex < 10 ? "0" + insecurityIndex : insecurityIndex; //can be above 10
+        npc_data[3] = penisDesc.toString().padStart(2,"0"); //can be above 10
+        npc_data[4] = breastSize.toString().padStart(2,"0"); //can be above 10
+        npc_data[5] = insecurityIndex.toString().padStart(2,"0"); //can be above 10
         npc_data[6] = sizeIndex;
         npc_data[7] = adult;
         npc_data[8] = monster ? monster : skin;
-        npc_data[9] = descriptionIndex < 10 ? "0" + descriptionIndex : descriptionIndex; //can be above 10
+        npc_data[9] = descriptionIndex.toString().padStart(2,"0"); //can be above 10
 
         npc_code =  (compressorVersion < 10 ? '~' : '') +  reduceZeros( compressorVersion.toString() + npc_data.join("") );
 
@@ -472,7 +472,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         }
         
         let childTypeIndex = typeList.indexOf(childType);
-		if (childTypeIndex === -1) throw new Error("An invalid child type: " + childType + ", was passed!");
+		if (childTypeIndex === -1) throw new Error(`An invalid child type: ${childType}, was passed.`);
 
         let gender = ["m", "f", "h"].indexOf(passedChild.gender);
         if (gender < 0) gender = 1;  
@@ -495,10 +495,16 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         let clothes = passedChild.features.clothes ? childClothingList.indexOf(passedChild.features.clothes) : 0; //make sure this can take in other types once clothing is more developed.
         if (clothes === -1) clothes = 0;
 
-        let twinplets = passedChild.features.identical ? 1 : 0;
+        // this needs to be expanded upon. talk about it later
+        let twinplets;
+        switch (passedChild.features.identical) {
+            case undefined: twinplets = 0; break;
+            case true: twinplets = 1; break;
+            case false: twinplets = 2; break;
+        }
 
         let birthID = passedChild.birthId;
-        if(!birthID || birthID < 0) throw new Error("The child compressor was passed a child with an invalid birth ID of: " + birthID);
+        if(!birthID || birthID < 0 || isNaN(birthID)) throw new Error(`The child compressor was passed a child with an invalid birth ID of: ${birthID}. birth ID values should be integers above 0.`);
         birthID = "" + birthID.toString().length + birthID;
 
         let birthLocation = locationList.indexOf(passedChild.birthLocation);
@@ -510,54 +516,57 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 		let conceivedLocation = locationList.indexOf(passedChild.conceivedLocation);
         if (conceivedLocation < 0) conceivedLocation = 0;
 
+		//Determines the needed information about the passed parents. There are three different groups: 0 for named NPCs =>  1 for human NPCs => 2 for beast NPCs
+		//Named NPCs looks through the list of named NPCs and determines if that is a valid choice. If it is not, then it checks if the npc is a beast by looking for the words male and female.
+		//If the npc is not a beast, then the age of the npc is determined and the index of the descriptors is added after it.
         let mother, father, parentTemp, parentTempList;
 
         //mothers
         if(!!passedChild.mother) {
-            //Order for checks goes: named => human npc => beast npc
 
             if(motherFatherList.includes(passedChild.mother)) {
                 mother = motherFatherList.indexOf(passedChild.mother);
-                mother = mother.toString().padStart(3, "0");
+                mother = mother.toString().padStart(4, "0");
             }
-            else if(!beast) {
-
+            else if(!passedChild.mother.includes("female")) {
+				
                 if (passedChild.mother.includes("girl")) {mother = 0; parentTempList = teenFDescList;}
-                else {mother = 40; parentTempList = adultFDescList;}
+                else {mother = 1; parentTempList = adultFDescList;}
 
                 parentTemp = passedChild.mother.replace(/ .*/,'');
                 parentTempList = parentTempList.indexOf(parentTemp);
-                parentTempList = parentTempList;
+                parentTempList = parentTempList < 0 ? 10 : parentTempList;
                 
-                mother = "1" + (parentTempList + mother);
+                mother = "1" + mother + parentTempList.toString().padStart(2,"0");
             }
             else {
                 parentTemp =  passedChild.mother.match(/\w+$/)[0];
                 parentTempList = typeList.indexOf(parentTemp);
-                mother = "2" + parentTempList.toString().padStart(2,"0");
+                mother = "2" + parentTempList.toString().padStart(3,"0");
             }
 
         }
-        else {mother = "000"}
+        else {mother = "0000"}
+
+        //console.log(`Input mother: ${passedChild.mother}; Index output: ${mother}`);
 
        //fathers
        if(!!passedChild.father) {
-            //Order for checks goes: named => human npc => beast npc
 
             if(motherFatherList.includes(passedChild.father)) {
                 father = motherFatherList.indexOf(passedChild.father);
-                father = father.toString().padStart(3, "0");
+                father = father.toString().padStart(4, "0");
             }
-            else if(!beast) {
+            else if(!passedChild.father.includes("male")) {
 
                 if (passedChild.father.includes("boy")) {father = 0; parentTempList = teenMDescList;}
-                else {father = 40; parentTempList = adultMDescList;}
+                else {father = 1; parentTempList = adultMDescList;}
 
                 parentTemp = passedChild.father.replace(/ .*/,'');
-                parentTempList = passedChild.father.indexOf(parentTemp);
-                parentTempList = parentTempList;
+                parentTempList = parentTempList.indexOf(parentTemp);
+                parentTempList = parentTempList < 0 ? 10 : parentTempList;
                 
-                father = "1" + (parentTempList + father);
+                father = "1" + father + parentTempList.toString().padStart(2,"0");
             }
             else {
                 parentTemp =  passedChild.mother.match(/\w+$/)[0];
@@ -566,65 +575,57 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
             }
 
         }
-        else {father = "000"}
+        else {father = "0000"}
+		
+        //console.log(`Input father: ${passedChild.father}; Index output: ${father}`);
 
+		//Used to determine whether or not the child's parents are known. The final value is a combination of the mother's and father's known states.
+		//mother: Unknown = 0 | known = 2; father: Unknown = 0 | known = 1;
+		let parentsKnown = 0;
+
+		if (passedChild.motherKnown) parentsKnown = 2;
+		else parentsKnown = 0;
+
+		if (passedChild.motherKnown) parentsKnown += 1;
+		else parentsKnown += 0;
 
         //assigns all the values to their correct order.
-        child_data[0] = childTypeIndex  < 10 ? "0" + childTypeIndex : childTypeIndex; //preplan this having 2 palces.
+        child_data[0] = childTypeIndex.toString().padStart(2,"0"); //preplan this having 2 places.
         child_data[1] = gender;
-        child_data[2] = tformBeast < 10 ? "0" + tformBeast : tformBeast;
-        child_data[3] = tformDivine < 10 ? "0" + tformDivine : tformDivine;
+        child_data[2] = tformBeast.toString().padStart(2,"0");
+        child_data[3] = tformDivine.toString().padStart(2,"0");
         child_data[4] = monster;
         child_data[5] = size;
-        child_data[6] = hair < 10 ? "0" + hair : hair; //needs 2 places
-        child_data[7] = eyes < 10 ? "0" + eyes : eyes; //needs 2 places
-        child_data[8] = skin; //shouldn't need another digit but double check
-        child_data[9] = clothes < 10 ? "0" + clothes : clothes; //preplan this having 2 palces.
+        child_data[6] = hair.toString().padStart(2,"0"); //needs 2 places
+        child_data[7] = eyes.toString().padStart(2,"0"); //needs 2 places
+        child_data[8] = skin.toString().padStart(2,"0"); //preplan this having 2 places.
+        child_data[9] = clothes.toString().padStart(2,"0"); //preplan this having 2 places.
         child_data[10] = twinplets;
         child_data[11] = birthID; // this can have up to 10 places. 9 for the id and 1 for the id length.
-        child_data[12] = birthLocation < 10 ? "0" + birthLocation : birthLocation; //preplan this having 2 palces.
-        child_data[13] = childLocation < 10 ? "0" + childLocation : childLocation; //preplan this having 2 palces.
-		child_data[13] = conceivedLocation < 10 ? "0" + conceivedLocation : conceivedLocation; //preplan this having 2 palces.
-        child_data[14] = mother;
-        child_data[15] = father;
+        child_data[12] = birthLocation.toString().padStart(3,"0"); //preplan this having 2 places.
+        child_data[13] = childLocation.toString().padStart(3,"0"); //preplan this having 2 places.
+		child_data[14] = conceivedLocation.toString().padStart(3,"0"); //preplan this having 2 places.
+        child_data[15] = mother;
+        child_data[16] = father;
+		child_data[17] = parentsKnown;
 
         child_code =  (compressorVersion < 10 ? '~' : '') +  reduceZeros( compressorVersion.toString() + child_data.join("") );
 
         //Currently we have both dates added if they are there.
-        let day, month, year, conceivedDate, birthDate;
+        let conceivedDate, birthDate;
 
         if (!!passedChild.conceived) {
-            conceivedDate = "";
-            day = passedChild.conceived.day;
-            if (day < 10) day = "0" + day;
-
-            month = monthNameList.indexOf(passedChild.conceived.month);
-            if (month < 10) month = "0" + month;
-
-            year = passedChild.conceived.year;
-            year = year.toString().padStart(4,"0");
-
-            conceivedDate +=".c" + day + month + year;
+            conceivedDate = ".c" + verifyPassedDate(passedChild.conceived);
         }
         else {
-            conceivedDate +=".c" + "00000000";
+            conceivedDate =".c" + "0".repeat(8);
         }
 
         if (!!passedChild.born) {
-            birthDate = "";
-            day = passedChild.born.day;
-            if (day < 10) day = "0" + day;
-
-            month = monthNameList.indexOf(passedChild.born.month);
-            if (month < 10) month = "0" + month;
-
-            year = passedChild.born.year;
-            year = year.toString().padStart(4,"0");
-
-            birthDate +=".b" + day + month + year;
+            birthDate = ".b" + verifyPassedDate(passedChild.born);
         }
         else {
-            //birthDate +=".b" + "00000000";
+            //birthDate +=".b" + "0".repeat(8);
         }
 
         if (bothDates) {
@@ -636,10 +637,16 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
             else child_code += conceivedDate;
         }
 
-        //this should be in the format motherID + "." + birth number for this child  + "|" + fatherID + "." + birth number for this child
+        //this should be in the format m#b#d#f#
         let childId = passedChild.childId;
 
-        child_code +=".i" + childId;
+        if (childId.match(/m(\d?[m,b,d,f]?[m,b,d,f]?\d+?)+/)) child_code +="." + childId;
+        else {
+            childId = `A child with either no childId or an invalid Id was passed to the compressor. Passed value: ${passedChild.childId}. Format should be m#b#d#f# with an unknown value being no number.
+        m# should be the mother's Id, b# should be the birth number of this child for the mother, d# should be the father's Id, f# should be the birth number of this child for the father.
+        In cases where a parent's information is not known, then no number should replace the # values. A known mother with an unknown father would be: m#b#df \n`;
+            throw new Error(childId); 
+        }
 
         return child_code;
     }
@@ -690,8 +697,8 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         let eyeColour = eyeColourList[Number(expandedChild.slice(position, position + 2))];
         position +=2;
 
-        let skinColour = skinColourList[Number(expandedChild[position])];
-        position ++;
+        let skinColour = skinColourList[Number(expandedChild.slice(position, position + 2))];
+        position +=2;
 
         let clothes = childClothingList[Number(expandedChild.slice(position, position + 2))];
         position +=2;
@@ -705,14 +712,14 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         let birthId = Number(expandedChild.slice(position, position + birthTemp));
         position+=birthTemp;
 
-        let birthLocation = locationList[Number(expandedChild.slice(position, position + 2))];
-        position +=2;
+        let birthLocation = locationList[Number(expandedChild.slice(position, position + 3))];
+        position +=3;
 
-        let location = locationList[Number(expandedChild.slice(position, position + 2))];
-        position +=2;
+        let location = locationList[Number(expandedChild.slice(position, position + 3))];
+        position +=3;
 
-		let conceivedLocation = locationList[Number(expandedChild.slice(position, position + 2))];
-        position +=2;
+		let conceivedLocation = locationList[Number(expandedChild.slice(position, position + 3))];
+        position +=3;
 
         let parentTemp, parentTempList;
 
@@ -721,17 +728,22 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         position ++;
 
         if (mother === 0) {
+			position ++;
             mother = motherFatherList[Number(expandedChild.slice(position, position + 2))];
         }
         else if (mother === 1) {
-            parentTemp = Number(expandedChild.slice(position, position + 2));
+            parentTemp = Number(expandedChild.slice(position, position + 1));
 
-            if (parentTemp >= 40) {mother = " woman"; parentTemp -=40; parentTempList = adultFDescList;}
-            else {mother = " girl"; parentTempList = teenFDescList;}
+			if (parentTemp === 1) {mother = " woman"; parentTempList = adultFDescList;}
+			else {mother = " girl"; parentTempList = teenFDescList;}
+
+			position ++;
+			parentTemp = Number(expandedChild.slice(position, position + 2));
 
             mother = parentTempList[parentTemp] + mother;
         }
         else if (mother === 2) {
+			position ++;
             parentTemp = Number(expandedChild.slice(position, position + 2));
             mother = " female " + typeList[parentTemp];
             parentTempList = beastDescList[parentTemp - 1];
@@ -739,23 +751,29 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         }
         position +=2;
 
-        motherKnown = !mother.includes("Unknown");
+        //console.log(`Output mother: ${mother}; Index input: ${expandedChild.slice(position-4, position)}`);        
 
         //father
         let father = Number(expandedChild[position]);
         position ++;
 
         if (father === 0) {
+			position ++;
             father = motherFatherList[Number(expandedChild.slice(position, position + 2))];
         }
         else if (father === 1) {
-            parentTemp = Number(expandedChild.slice(position, position + 2));
-            if (parentTemp >= 40) {father = " man"; parentTemp -=40; parentTempList = adultMDescList;}
+            parentTemp = Number(expandedChild.slice(position, position + 1));
+
+            if (parentTemp === 1) {father = " man"; parentTempList = adultMDescList;}
             else {father = " boy"; parentTempList = teenMDescList;}
+
+			position ++;
+			parentTemp = Number(expandedChild.slice(position, position + 2));
 
             father = parentTempList[parentTemp] + father;
         }
         else if (father === 2) {
+			position ++;
             parentTemp = Number(expandedChild.slice(position, position + 2));
             father = " male " + typeList[parentTemp];
             parentTempList = beastDescList[parentTemp - 1];
@@ -763,7 +781,18 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         }
         position +=2;
 
-        fatherKnown = !father.includes("Unknown");
+        //console.log(`Output father: ${father}; Index input: ${expandedChild.slice(position-4, position)}`);
+
+        let fatherKnown, motherKnown;
+
+		let parentsKnown = Number(expandedChild.slice(position, position + 1));
+
+        switch (parentsKnown) {
+            case 0: fatherKnown = false; motherKnown = false; break;
+            case 1: fatherKnown = true; motherKnown = false; break;
+            case 2: fatherKnown = false; motherKnown = true; break;
+            case 3: fatherKnown = true; motherKnown = true; break;
+        }
 
         if (beast) {
             if (childType === "cow" && gender === "m") type = "bull";
@@ -790,25 +819,27 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         let check;
 
         check = expandedChild.match(/\.c\d+/);
-        check = check ? check[0].slice(2) : "00000000";
+        check = check ? check[0].slice(2) : "01010000";
         let conceived = convertToDMYFormat(check);
         conceived.month = monthNameList[conceived.month];
 
         check = expandedChild.match(/\.b\d+/);
-        check = check ? check[0].slice(2) : "00000000";
+        check = check ? check[0].slice(2) : "01010000";
         let born = convertToDMYFormat(check);
         born.month = monthNameList[born.month];
 
-        check = expandedChild.match(/\.i-?\d+\.-?\d+\|-?\d+\.-?\d+/);
-        if (check) check = check[0].slice(2);
+        check = expandedChild.match(/\.m(\d?[m,b,d,f]?[m,b,d,f]?\d+?)+/);
+        if (check) check = check[0].slice(1);
         else {
-            check = `A child with either no childId or an invalid Id was passed to the decompressor. Passed value: ${expandedChild.match(/\.i.*/)}`;
+            check = `A child with either no childId or an invalid Id was passed to the decompressor. Passed value: ${expandedChild.match(/\.m.*/)}. Format should be .m#b#d#f# with an unknown being no number.
+        m# should be the mother's Id, b# should be the birth number of this child for the mother, d# should be the father's Id, f# should be the birth number of this child for the father.
+        In cases where a parent's information is not known, then no number should replace the # values. A known mother with an unknown father would be: m#b#df \n`;
             throw new Error(check); 
-        } 
+        }
         let childId = check;
 
 
-        //assignemnt of values
+        //assignment of values
         childItems = {
             "type": childType, gender, birthId, conceivedLocation, birthLocation, location, mother, motherKnown, father, fatherKnown, conceived, born, childId,
             features: {beastTransform, divineTransform, monster, size, hairColour, eyeColour, skinColour, clothes, identical}
@@ -821,13 +852,36 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
     }
 
 
-    //converts the passed number from base 10 to base 64. If the number you need converted is bigger than the allowable max integer number, store than number as a string and pass it the same way you would a number.
-    function toBase64(passedNum) {
+    /**
+     * @desc converts the passed number from base 10 to base 64. If the number you need converted is bigger than the allowable max integer number, store than number as a string and pass it the same way you would a number.
+     * @param {Number} passedNum The number you want to convert to base 64.
+     * @param {Boolean} safe If the number is smaller than the max safe integer then this can be set to true.
+     * @returns 
+     */
+    function toBase64(passedNum, safe = false) {
         if (!isFinite(passedNum)) return String(passedNum);
         if (passedNum === 0) return "0";
         if (passedNum < 0) return "-"+toBase64(-passedNum);
-        
-        if (passedNum.toString().length > 15) return toBase64(passedNum.toString().slice(0,15)) + "!" + toBase64(passedNum.toString().slice(15));
+
+        if (passedNum.toString().length > 15 && !safe) {
+            let zeroCheck = 0;
+            
+            while (passedNum.toString()[15 + zeroCheck] == 0) {
+                zeroCheck++;  
+            }
+
+            if (Number(passedNum.toString().slice(0,15 + zeroCheck)) > Number.MAX_SAFE_INTEGER) {
+                zeroCheck = 0;
+                while (passedNum.toString()[15 + zeroCheck] == 0) {
+                    zeroCheck--;  
+                }
+            }
+            
+            let frontSplit = passedNum.toString().slice(0,15 + zeroCheck);
+            let backSplit = passedNum.toString().slice(15 + zeroCheck);
+
+            return toBase64(frontSplit, true) + "!" + toBase64(backSplit);
+        }
 
         var str = "", r;
 
@@ -869,7 +923,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         if (isNaN(passedNumber)) return passedNumber;
         if (passedNumber === 0) return "0";
         let result = String(passedNumber);
-        
+
         result = result.replace(/0{3,}/g, (zeros) =>  '' + zeros.length % 9 + '|' + (zeros.length > 9 ? (zeros.length > 17 ? Math.floor(zeros.length / 9 ) + '>' : '>') : '') );
         result = result.replace(/[0-9]{2,}/g, (number) => toBase64(number) );
 
@@ -882,15 +936,39 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         if (passedString.length === 0 || passedString === "0") return 0;
         if (passedString === "NaN" || passedString === "Infinity") return Number(passedStr);
         let result = passedString;
-    
+        
         result = result.replace(/[a-zA-Z0-9_+]+/g, (group) => fromBase64(group));
         result = result.replace(/([0-9]+)>/g,(_str, p1) => "0".repeat( Number(p1) * 9 ));
         result = result.replace(/>/g,"9|");
         result = result.replace(/!/g,"");
         result = result.replace(/([0-9])\|/g, (_str, p1) => p1 > 0 ? "0".repeat( Number(p1)) : "0".repeat(9) ) ;
-    
+        
         return result;
     }
+
+
+	//Makes sure that the passed dates are valid. If they are not, then it assigns default values.
+    function verifyPassedDate(date = {day, month, year}) {
+        let returnDate, day, month, year;
+
+        if (!isNaN(date.day) && (date.day > 0 && date.day < 32) ) day = date.day.toString().padStart(2,"0");
+        else day = "01";
+
+        if (isNaN(date.month)) {
+            month = monthNameList.indexOf(date.month);
+            month = month > 0 ? month.toString().padStart(2,"0") : "01";
+        }
+        else if (!isNaN(date.month) && (date.day >= 0 && date.day < 12) ) month = date.month.toString().padStart(2,"0");
+        else month = "01";
+
+        if (!isNaN(date.year)) year = date.year.toString().padStart(4,"0");
+        else year = "0000";
+
+        returnDate = day + month + year;
+
+        return returnDate;
+    }
+
 
     return { npcCompressor, npcDecompressor, childCompressor, childDecompressor };
 })();
@@ -1223,46 +1301,60 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
 
     const {compareKeys, findDiffKeys, compareValues, findDiffValue, findByteSize, trun} = (function() {
 
-        //compares the keys of two objects to see if they are the same.
-        function compareKeys(a, b) {
-            var aKeys = Object.keys(a);
-            var bKeys = Object.keys(b);
-        
-            aKeys.forEach(key => {
-                if (typeof a[key] == "object") aKeys = aKeys.concat(Object.keys(a[key]));
-            })
-        
-            bKeys.forEach(key => {
-                if (typeof b[key] == "object") bKeys = bKeys.concat(Object.keys(b[key]));
+        //Gets all keys in an object, including those in a nested object
+        function getAllKeys(passedObject) {
+            let list = Object.keys(passedObject);
+            list.forEach(key => {
+                //console.log(`key: ${key}; type: ${typeof passedObject[key]}`);
+                if (typeof passedObject[key] == "object") list = list.concat(Object.keys(passedObject[key]));
             })
 
-			aKeys = aKeys.sort();
-			bKeys = bKeys.sort();
-
-            return JSON.stringify(aKeys) === JSON.stringify(bKeys);
-        }
-        
-        //finds the different keys between two objects
-        function findDiffKeys(a, b) {
-            let list = []
-            var aKeys = Object.keys(a).sort();
-            var bKeys = Object.keys(b).sort();
-        
-            aKeys.forEach(key => {
-                if (!bKeys.includes(key)) list.push( ("second list missing key: " + key).padEnd(38) + "\n");
-            });
-        
-            bKeys.forEach(key => {
-                if (!aKeys.includes(key) && !list.includes(key)) list.push(("first list missing key: " + key).padEnd(38) + "\n");
-            });
-        
             return list;
         }
+
+        //compares the keys of two objects to see if they are the same.
+        function compareKeys(a, b) {
+            var aKeys = getAllKeys(a).sort();
+            var bKeys = getAllKeys(b).sort();
+            return JSON.stringify(aKeys) === JSON.stringify(bKeys);
+        }
+
+        //finds the different keys between two objects
+        function findDiffKeys(a, b, inObj = null, caught = []) {
+            var aKeys = Object.keys(a).sort();
+            var bKeys = Object.keys(b).sort();
+            let str;
+
+            aKeys.forEach(key => {
+                str = `Second list missing key: ${key}`
+                if (typeof a[key] == "object") caught = caught.concat(findDiffKeys(a[key], b[key], key, caught)); 
+                if (inObj) str += ` in object ${inObj}`;
+
+                if (!bKeys.includes(key) && !caught.includes(key)) {
+                    caught.push(key);
+                    console.log( str.padEnd(38) + "\n");
+                }
+            });
+
+            bKeys.forEach(key => {
+                str = `First  list missing key: ${key}`
+                if (typeof b[key] == "object") caught = caught.concat(findDiffKeys(a[key], b[key], key, caught));
+
+                if (inObj) {str += ` in object ${inObj}`;}
+
+                if (!aKeys.includes(key) && !caught.includes(key)) {
+                    caught.push(key);
+                    console.log( str.padEnd(38) + "\n");
+                }
+            });
+
+            return caught
+        }
         
-        //compares the values of two objects to see if they are the same.
+       //compares the values of two objects to see if they are the same.
         function compareValues(a, b) {
             let equal = true;
-        
+
             if (compareKeys(a,b)) { 
                 Object.keys(a).forEach(key => {
                     if (typeof a[key] == "object") equal = compareValues(a[key], b[key]);
@@ -1272,23 +1364,21 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
             else {
                 equal = false;
             }
-        
+
             return equal
         }
-        
+
         //finds the values that are different between two objects with the same keys
-        function findDiffValue(a, b) {
-            let list = []
-        
+        function findDiffValue(a, b, inObj = null) {
+            let temp = "";
+
             Object.keys(a).forEach(key => {
-                if (typeof a[key] == "object") findDiffValue(a[key], b[key]);
+                if (typeof a[key] == "object") findDiffValue(a[key], b[key], key);
                 else if (a[key] != b[key] ) {
-                    console.log(("missing key / key value: " + key).padEnd(38))
-                    list.push((key + ": a: " + a[key] +" b: " + b[key]).padEnd(38) + "\n");
+                    if (inObj) temp = ` in object ${inObj}`
+                    console.log(`Key ${key}${temp} has mismatched values. First list = ${a[key]} and second list = ${b[key]}`)
                 }
             });
-        
-            return list;
         }
 
         //finds the size of a passed string or object.
@@ -1353,18 +1443,25 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
             // console.log("decompression time:  " + trun(decopmressTime, 3).toString().padEnd(5, " ") + " miliseconds")
         }
 
-        if (!compareKeys(currentNPC,decompressedNPCString)) {
-            if (detail) console.log("keys");
-            textOutput = "" + findDiffKeys(currentNPC,decompressedNPCString);
-            returnOutput.push(false);
-        }
-        else if (!compareValues(currentNPC,decompressedNPCString)) {
-            if (detail) console.log("values");
-            textOutput = "" + findDiffValue(currentNPC,decompressedNPCString);
-            returnOutput.push(false);
+        let keyStatus = compareKeys(currentNPC,decompressedNPCString);
+        let valueStatus = compareValues(currentNPC,decompressedNPCString);
+
+        //console.log(`keyStatus: ${keyStatus}, valueStatus ${valueStatus}`);
+
+        if (!keyStatus || !valueStatus) {
+            if (!keyStatus) {
+                if (detail) console.log("\nKeys");
+                findDiffKeys(currentNPC,decompressedNPCString);
+                returnOutput.push(false);
+            }
+            if (!valueStatus) {
+                if (detail) console.log("\nValues");
+                findDiffValue(currentNPC,decompressedNPCString);
+                returnOutput.push(false);
+            }
         }
         else {
-            textOutput = "All keys and their values match for " + type + " " + key;
+            textOutput = "\nAll keys and their values match for " + type + " " + key;
             returnOutput.push(true);
         }
 
