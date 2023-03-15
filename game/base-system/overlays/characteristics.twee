@@ -138,14 +138,27 @@
 			<<set _trimester to "third">>
 		<</if>>
 		<<if $_pregnancy.awareOfDetails || $_pregnancy.potentialFathers.every((father, index, array) => father.type === array[0].type)>>
-			<<set _number to $_pregnancy.awareOfDetails ? $_pregnancy.fetus.length : "an unknown number of">>
+			<<set $_number to $_pregnancy.awareOfDetails ? $_pregnancy.fetus.length : "an unknown number of">>
 			<<switch $_pregnancy.type>>
-				<<case "human">><<set _childType to "normal babies">>
-				<<case "wolf">><<set _childType to "wolf puppies">>
+				<<case "human">>
+					<<if $_number isnot "an unknown number of" and $_number gt 1>>
+						<<set _childType to "">>
+						<<if $_pregnancy.fetus[0].features.identical is true and $_pregnancy.awareOfDetails>>
+							<<set _childType += "identical ">>
+						<</if>>
+						<<set _childType += ($_number is 3 ? "triplets" : "twins")>>
+					<<else>>
+						<<set _childType to ($_number is 1 ? "baby" : "babies")>>
+					<</if>>
+				<<case "wolf">>
+					<<set _childType to ($_number is 1 ? "wolf pup" : "wolf pups")>>
 			<</switch>>
-			You're pregnant with _number _childType, in the _trimester third of your pregnancy.
+			You're pregnant with <<number $_number>> _childType, in the _trimester trimester of your pregnancy.
 		<<else>>
-			You know you're in the _trimester third of your pregnancy.
+			You know you're in the _trimester trimester of your pregnancy.
+		<</if>>
+		<<if !$_pregnancy.awareOfDetails>>
+			<span class="blue">You can get an ultrasound done at the hospital.</span>
 		<</if>>
 		<<if $_pregnancy.potentialFathers.length is 1>>
 			You know that the father is <<print pregnancyNameCorrection($_pregnancy.potentialFathers[0].source)>>.
@@ -154,7 +167,7 @@
 		<<elseif $_pregnancy.potentialFathers.length is 3>>
 			You're pretty sure that the father is either <<print pregnancyNameCorrection($_pregnancy.potentialFathers[0].source)>>, <<print pregnancyNameCorrection($_pregnancy.potentialFathers[1].source)>> or <<print pregnancyNameCorrection($_pregnancy.potentialFathers[2].source)>>.
 		<<else>>
-			You're unsure on who the father is.
+			You're unsure who the father is.
 		<</if>>
 		<br><br>
 	<<elseif $_knowsTheyCanBecomePregnant and $_lastPregPill is "contraceptive">>

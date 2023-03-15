@@ -458,11 +458,11 @@
 					<<set $_text_output += " <span class='red'>Maybe you should get tested</span>.">>
 				<</if>>
 			<<case "lightBabyKick">>
-				<<set $_text_output to "You wake up feeling a light kick coming from your baby.<<stress -10>><<lstress>>">>
+				<<set $_text_output to "You wake up feeling a light kick coming from your <<pregnancyBabyText 'pc'>>.<<stress -10>><<lstress>>">>
 			<<case "babyKick">>
-				<<set $_text_output to "You wake up feeling a kick coming from your baby.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
+				<<set $_text_output to "You wake up feeling a kick coming from your <<pregnancyBabyText 'pc'>>.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
 			<<case "babyMovement">>
-				<<set $_text_output to "You wake up feeling your baby moving around.<<stress -10>><<lstress>>">>
+				<<set $_text_output to "You wake up feeling your <<pregnancyBabyText 'pc'>> moving around.<<stress -10>><<lstress>>">>
 			<<case "babyHiccup">>
 				<<set $_text_output to "You wake up feeling some baby hiccups.<<stress -10>><<lstress>>">>
 			<<case "earlyContractions">>
@@ -548,11 +548,11 @@
 			<<case "nausea">>
 				<<set $_text_output to "You start feeling nauseous, but it passes after some time.">>
 			<<case "lightBabyKick">>
-				<<set $_text_output to "You feel a light kick coming from your baby.<<stress -10>><<lstress>>">>
+				<<set $_text_output to "You feel a light kick coming from your <<pregnancyBabyText 'pc'>>.<<stress -10>><<lstress>>">>
 			<<case "babyKick">>
-				<<set $_text_output to "You feel a kick coming from your baby.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
+				<<set $_text_output to "You feel a kick coming from your <<pregnancyBabyText 'pc'>>.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
 			<<case "babyMovement">>
-				<<set $_text_output to "You feel your baby moving around.<<stress -10>><<lstress>>">>
+				<<set $_text_output to "You feel your <<pregnancyBabyText 'pc'>> moving around.<<stress -10>><<lstress>>">>
 			<<case "babyHiccup">>
 				<<set $_text_output to "You feel some baby hiccups.<<stress -10>><<lstress>>">>
 			<<case "earlyContractions">>
@@ -735,6 +735,57 @@
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>
+
+<<widget "babyType">><<silently>>
+    <<if $_pregnancy.awareOfDetails || ((!_args[0] || _args[0] is "pc") and $_pregnancy.potentialFathers.every((father, index, array) => father.type === array[0].type))>>
+        <<switch $_pregnancy.type>>
+            <<case "human">>
+                <<if $_pregnancy.fetus.length gt 1>>
+                    <<set $_text_output to "babies">>
+                <<else>>
+                    <<set $_text_output to "baby">>
+                <</if>>
+            <<case "wolf">>
+                <<if $_pregnancy.fetus.length gt 1>>
+                    <<set $_text_output to "puppies">>
+                <<else>>
+                    <<set $_text_output to "puppy">>
+                <</if>>
+        <</switch>>
+    <<else>>
+        <<set $_text_output to "baby">>
+    <</if>>
+<</silently>><<print $_text_output>>
+<</widget>>
+
+<<widget "pregnancyBabyText">><<silently>>
+	<<if _args[0] isnot "pc" and C.npc[_args[0]] and C.npc[_args[0]].pregnancy.enabled isnot undefined>>
+		<<set $_pregnancy to C.npc[_args[0]].pregnancy>>
+	<<else>>
+		<<set $_pregnancy to ($player.vaginaExist ? $sexStats.vagina.pregnancy : $sexStats.anus.pregnancy)>>
+	<</if>>
+	<<if $_pregnancy.awareOfDetails || ((!_args[0] || _args[0] is "pc") and $_pregnancy.potentialFathers.every((father, index, array) => father.type === array[0].type))>>
+		<<set $_num to ($_pregnancy.awareOfDetails ? $_pregnancy.fetus.length : 1)>>
+		<<switch $_pregnancy.type>>
+			<<case "human">>
+				<<if $_num gt 1>>
+					<<set $_text_output to ($_num is 3 ? "triplets" : "twins")>>
+				<<else>>
+					<<set $_text_output to "baby">>
+				<</if>>
+			<<case "wolf">>
+				<<if $_num lte 3>>
+					<<set $_text_output to ($_num is 1 ? "pup" : "pups")>>
+				<<else>>
+					<<set $_text_output to "litter">>
+				<</if>>
+			<<default>>
+				<<set $_text_output to ($_num gt 1 ? "babies" : "baby")>>
+		<</switch>>
+	<<else>>
+		<<set $_text_output to "baby">>
+	<</if>>
+<</silently>><<print $_text_output>><</widget>>
 
 <<widget "npcPregnancyUpdater">>
 	<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
