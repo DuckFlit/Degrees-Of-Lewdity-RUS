@@ -1446,7 +1446,7 @@ setup.feats = {
 	},
 	"Opened Pandoras Cocks": {
 		title: "Opened Pandora's Cocks",
-		desc: "The Adult Shop couldn't've done it without you.",
+		desc: "The Adult Shop couldn't have done it without you.",
 		difficulty: 3,
 		series: "Adult Shop",
 		filter: ["All", "Discoveries"],

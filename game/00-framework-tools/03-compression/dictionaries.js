@@ -236,7 +236,7 @@ const DoLCompressorDictionaries = (() => {
 		"baseDaysRng",
 		"baseNPC",
 		"baseNpcPregnancyChance",
-		"baseVaginalPregnancyChance",
+		"basePlayerPregnancyChance",
 		"beastMotherStatus",
 		"beastTypes",
 		"beastgenderoverride",

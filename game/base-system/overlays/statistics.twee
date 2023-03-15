@@ -314,30 +314,41 @@
 		<br>
 	<</foldout>>
 
-	/*ToDo: Pregnancy, remove check to properly enable*/
-	<<if $pregnancyTesting>>
-		<<foldout false "_pregnancyFoldout">>
-			<span class="gold">Pregnancy</span>
-			Times given birth: <<print $sexStats.vagina.pregnancy.totalBirthEvents + $sexStats.anus.pregnancy.totalBirthEvents>>
+	<<foldout false "_pregnancyFoldout">>
+		<span class="gold">Pregnancy</span>
+		Times given birth: <<print $sexStats.vagina.pregnancy.totalBirthEvents + $sexStats.anus.pregnancy.totalBirthEvents>>
+		<br>
+		Total number of children you gave birth to: <<print $pregnancyStats.playerChildren>>
+		<br>
+		Total number of children you konw you fathered: <<print $pregnancyStats.npcChildren>>
+		<br>
+		Total number of human children: <<print $pregnancyStats.humanChildren>>
+		<br>
+		Total number of wolf children: <<print $pregnancyStats.wolfChildren>>
+		<br>
+		Children interactions: <<print $pregnancyStats.childInteractions>>
+		<br>
+		<!-- ToDo: Pregnancy - Move outside of commented area when interactions are added
+		Breastfed interactions: <<print $pregnancyStats.childBreastfedInteractions>>
+		<br>
+		Bottlefed interactions: <<print $pregnancyStats.childBottlefedInteractions>>
+		<br>
+		First Word interaction: <<print $pregnancyStats.childFirstWordInteractions>>
+		<br>
+		-->
+		Bottles of milk given to the orphanage: <<print $pregnancyStats.orphanageMilkBottlesTotal>>
+		<br>
+		After Morning pills taken: <<print $pregnancyStats.aftermorningpills>>
+		<br>
+		Pregnancy tests taken: <<print $pregnancyStats.pregnancyTestsTaken>>
+		<br>
+		<<if $player.vaginaExist>>
+			Vaginal Parasite Born: <<print $sexStats.vagina.pregnancy.parasiteBirthEvents>>
 			<br>
-			Total number of children: <<print $pregnancyStats.playerChildren>>
-			<br>
-			Total number of human children: <<print $pregnancyStats.humanChildren>>
-			<br>
-			Total number of wolf children: <<print $pregnancyStats.wolfChildren>>
-			<br>
-			After Morning pills taken: <<print $pregnancyStats.aftermorningpills>>
-			<br>
-			Pregnancy tests taken: <<print $pregnancyStats.pregnancyTestsTaken>>
-			<br>
-			<<if $player.vaginaExist>>
-				Vaginal Parasite Born: <<print $sexStats.vagina.pregnancy.parasiteBirthEvents>>
-				<br>
-			<</if>>
-			Anal Parasite Born: <<print $sexStats.anus.pregnancy.parasiteBirthEvents>>
-			<br><br>
-		<</foldout>>
-	<</if>>
+		<</if>>
+		Anal Parasite Born: <<print $sexStats.anus.pregnancy.parasiteBirthEvents>>
+		<br><br>
+	<</foldout>>
 
 	<<foldout false "_gamblingFoldout">>
 		<span class="gold">Gambling</span>
@@ -383,15 +394,6 @@
 		<br>
 		Passed out: $passoutstat
 		<br>
-		/*ToDo: Pregnancy, remove the duplicate stat*/
-		<<if $parasitepregdisable is "f">>
-			<<if $player.vaginaExist>>
-			Vaginal Pregnancy Births: <<print $sexStats.vagina.pregnancy.parasiteBirthEvents>>
-			<br>
-			<</if>>
-			Anal Pregnancy Births: <<print $sexStats.anus.pregnancy.parasiteBirthEvents>>
-			<br>
-		<</if>>
 		Crime History: $crimehistory
 		<br>
 		Distinctions won: $distinction_stat
@@ -681,12 +683,10 @@
 			<br>
 			Exhibitionism fame: <<print Math.trunc($fame.exhibitionism)>>
 			<br>
-			<<if $pregnancyTesting>> <!-- ToDo: pregnancy, remove to properly enable -->
-				Pregnancy fame: <<print Math.trunc($fame.pregnancy)>>
-				<br>
-				Impregnation fame: <<print Math.trunc($fame.impreg)>>
-				<br>
-			<</if>>
+			Pregnancy fame: <<print Math.trunc($fame.pregnancy)>>
+			<br>
+			Impregnation fame: <<print Math.trunc($fame.impreg)>>
+			<br>
 			Combat fame: <<print Math.trunc($fame.scrap)>>
 			<br>
 			Kindness fame: <<print Math.trunc($fame.good)>>
@@ -805,36 +805,65 @@
 				<</if>>
 			<</if>>
 		<</foldout>>
-		<!-- ToDo: Pregnancy - remove $pregnancyTesting check-->
-		<<if $pregnancyTesting>>
-			<<if $cycledisable is "f">>
-				<<set $_menstruation to $sexStats.vagina.menstruation>>
-				<<foldout false "_menstruationFoldout">>
-					<span class="gold">Menstruation cycle</span>
-					Running: <<print $_menstruation.running ? "true" : "false">>
-					<<if $_menstruation.running>>
+		<<if $cycledisable is "f">>
+			<<set $_menstruation to $sexStats.vagina.menstruation>>
+			<<foldout false "_menstruationFoldout">>
+				<span class="gold">Menstruation cycle</span>
+				Running: <<print $_menstruation.running ? "true" : "false">>
+				<<if $_menstruation.running>>
+					<br>
+					Current Day in cycle: <<print $_menstruation.currentDay>>
+					<br>
+					Last day in cycle: <<print $_menstruation.currentDaysMax>>
+					<br>
+					Most risky days: <<print $_menstruation.stages[2]>>
+				<</if>>
+				<br>
+			<</foldout>>
+		<</if>>
+		<<foldout false "_pregnancyFoldout">>
+			<span class="gold">Pregnancy</span>
+			<<if canBeMPregnant()>>
+			<<elseif !$player.vaginaExist>>
+				Can not currently get pregnant.
+			<<elseif $_vPregnancy.type is "parasite">>
+				Parasites in the womb are preventing normal pregnancy from occuring.
+			<<elseif $_vPregnancy.type isnot null>>
+				Currently pregnant with: <<print $_vPregnancy.fetus.length>>
+					<<extraStatisticsPregnancyType $_vPregnancy.type>>
+				<br>
+				<<set $_days to pregnancyDaysEta($_vPregnancy)>>
+				<<if $_days lt 1>>
+					ETA: Anytime.
+				<<elseif $_days>>
+					ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
+				<</if>>
+				<br>
+			<<else>>
+				Not currently pregnant.
+				<br>
+				<<if $pregnancytype is "realistic">>
+					<<set [_trackedNPCs, _spermArray] to spermObjectToArray($sexStats.vagina.sperm)>>
+					Number of sources of sperm that can get you pregnant: <<print _spermArray.length>>.
+					<<if _trackedNPCs.length>>
 						<br>
-						Current Day in cycle: <<print $_menstruation.currentDay>>
-						<br>
-						Last day in cycle: <<print $_menstruation.currentDaysMax>>
-						<br>
-						Most risky days: <<print $_menstruation.stages[2]>>
+						Those who's sperm you have inside you currently:
+						<ul>
+							<<for _name range _trackedNPCs>>
+								<li><<print pregnancyNameCorrection(_name.source)>></li>
+							<</for>>
+						</ul>
 					<</if>>
-					<br>
-				<</foldout>>
+				<</if>>
 			<</if>>
-			<<foldout false "_pregnancyFoldout">>
-				<span class="gold">Pregnancy</span>
-				<<if canBeMPregnant()>>
-				<<elseif !$player.vaginaExist>>
-					Can not currently get pregnant.
-				<<elseif $_vPregnancy.type is "parasite">>
+			<<if canBeMPregnant()>>
+				<<if $_aPregnancy.type is "parasite">>
 					Parasites in the womb are preventing normal pregnancy from occuring.
-				<<elseif $_vPregnancy.type isnot null>>
-					Currently pregnant with: <<print $_vPregnancy.fetus.length>>
-						<<extraStatisticsPregnancyType $_vPregnancy.type>>
+				<<elseif $_aPregnancy.type isnot null>>
+					Currently pregnant with: <<print $_aPregnancy.fetus.length>>
+					<<extraStatisticsPregnancyType $_aPregnancy.type>>
 					<br>
-					<<set $_days to pregnancyDaysEta($_vPregnancy)>>
+					<<set $_days to pregnancyDaysEta($_aPregnancy)>>
 					<<if $_days lt 1>>
 						ETA: Anytime.
 					<<elseif $_days>>
@@ -845,7 +874,7 @@
 					Not currently pregnant.
 					<br>
 					<<if $pregnancytype is "realistic">>
-						<<set [_trackedNPCs, _spermArray] to spermObjectToArray($sexStats.vagina.sperm)>>
+						<<set [_trackedNPCs, _spermArray] to spermObjectToArray($sexStats.anus.sperm)>>
 						Number of sources of sperm that can get you pregnant: <<print _spermArray.length>>.
 						<<if _trackedNPCs.length>>
 							<br>
@@ -858,63 +887,31 @@
 						<</if>>
 					<</if>>
 				<</if>>
-				<<if canBeMPregnant()>>
-					<<if $_aPregnancy.type is "parasite">>
-						Parasites in the womb are preventing normal pregnancy from occuring.
-					<<elseif $_aPregnancy.type isnot null>>
-						Currently pregnant with: <<print $_aPregnancy.fetus.length>>
-						<<extraStatisticsPregnancyType $_aPregnancy.type>>
-						<br>
-						<<set $_days to pregnancyDaysEta($_aPregnancy)>>
-						<<if $_days lt 1>>
-							ETA: Anytime.
-						<<elseif $_days>>
-							ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
-						<</if>>
-						<br>
-					<<else>>
-						Not currently pregnant.
-						<br>
-						<<if $pregnancytype is "realistic">>
-							<<set [_trackedNPCs, _spermArray] to spermObjectToArray($sexStats.anus.sperm)>>
-							Number of sources of sperm that can get you pregnant: <<print _spermArray.length>>.
-							<<if _trackedNPCs.length>>
-								<br>
-								Those who's sperm you have inside you currently:
-								<ul>
-									<<for _name range _trackedNPCs>>
-										<li><<print pregnancyNameCorrection(_name.source)>></li>
-									<</for>>
-								</ul>
-							<</if>>
-						<</if>>
-					<</if>>
-				<</if>>
-			<</foldout>>
-			<<if $NPCName.find(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
-				<<foldout false "_npcPregnancyFoldout">>
-					<span class="gold">NPC Pregnancy</span>
-					<<for $_npc range $NPCName.filter(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
-						<div>
-							<<print $_npc.nam>>:
-							<<if !$_npc.pregnancy.enabled and !$_npc.pregnancy.fetus.length>>
-								Pregnancy for NPC disabled by the player.
-							<<elseif !$_npc.pregnancy.fetus.length>>
-								Not Pregnant.
-							<<elseif $_npc.pregnancy.fetus.length>>
-								Pregnant with <<print $_npc.pregnancy.fetus.length>>
-								<<extraStatisticsPregnancyType $_npc.pregnancy.type>>
-								<<set $_days to pregnancyDaysEta($_npc.pregnancy)>>
-								<<if $_days lt 1>>
-									ETA: Anytime.
-								<<elseif $_days>>
-									ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
-								<</if>>
-							<</if>>
-						</div>
-					<</for>>
-				<</foldout>>
 			<</if>>
+		<</foldout>>
+		<<if $NPCName.find(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
+			<<foldout false "_npcPregnancyFoldout">>
+				<span class="gold">NPC Pregnancy</span>
+				<<for $_npc range $NPCName.filter(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
+					<div>
+						<<print $_npc.nam>>:
+						<<if !$_npc.pregnancy.enabled and !$_npc.pregnancy.fetus.length>>
+							Pregnancy for NPC disabled by the player.
+						<<elseif !$_npc.pregnancy.fetus.length>>
+							Not Pregnant.
+						<<elseif $_npc.pregnancy.fetus.length>>
+							Pregnant with <<print $_npc.pregnancy.fetus.length>>
+							<<extraStatisticsPregnancyType $_npc.pregnancy.type>>
+							<<set $_days to pregnancyDaysEta($_npc.pregnancy)>>
+							<<if $_days lt 1>>
+								ETA: Anytime.
+							<<elseif $_days>>
+								ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
+							<</if>>
+						<</if>>
+					</div>
+				<</for>>
+			<</foldout>>
 		<</if>>
 	</div>
 <</widget>>

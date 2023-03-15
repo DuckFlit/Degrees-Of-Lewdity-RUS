@@ -517,15 +517,11 @@ Player gets on the bed, midwife checking the player over and helping to prepare.
 Midwife give the ok to push
 <br><br>
 
-<<if $player.vaginaExist>>
-	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-<<else>>
-	<<set $_pregnancy to $sexStats.anus.pregnancy>>
-<</if>>
-<<if $_pregnancy.totalBirthEvents gte 5>>
+<<set _pregnancy to getPregnancyObject()>>
+<<if _pregnancy.totalBirthEvents gte 5>>
 	<<set _min to 15>>
 	<<set _max to 60>>
-<<elseif $_pregnancy.totalBirthEvents gte 3>>
+<<elseif _pregnancy.totalBirthEvents gte 3>>
 	<<set _min to 30>>
 	<<set _max to 120>>
 <<else>>
@@ -533,8 +529,8 @@ Midwife give the ok to push
 	<<set _max to 180>>
 <</if>>
 
-<<set _max to Math.floor(_max * (1 + Math.floor($_pregnancy.fetus.length * 0.2)))>>
-<<set _min to Math.floor(_min * (1 + Math.floor($_pregnancy.fetus.length * 0.2)))>>
+<<set _max to Math.floor(_max * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
+<<set _min to Math.floor(_min * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
 
 <<set $timeCalc to random(_min, _max)>>
 <<set _hours to Math.floor($timeCalc / 60)>>
@@ -686,10 +682,10 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <<widget "pregnancyTest">>
 	<<if _args[0]>>
 		<<if $pregnancyTest gt 0>>
-			<<if $sexStats.vagina.pregnancy.awareOf isnot true>>
+			<<if getPregnancyObject().awareOf isnot true>>
 				<<link [[Take a pregnancy test (00:05)|pregnancyTest]]>><<pass 5>><<set $lastPassage to _args[0]>><</link>>
 				<br>
-			<<elseif $sexStats.vagina.pregnancy.awareOf is true>>
+			<<elseif getPregnancyObject().awareOf is true>>
 				<span class="lewd">You have a pregnancy test, but you already know you're pregnant.</span>
 				<br>
 			<</if>>
@@ -725,11 +721,7 @@ A technician enters the room and asks you to lie down and remove your outerwear.
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 
 You strip and lie down.
-<<if $player.vaginaExist>>
-	<<set _pregnancy to $sexStats.vagina.pregnancy>>
-<<else>>
-	<<set _pregnancy to $sexStats.anus.pregnancy>>
-<</if>>
+<<set _pregnancy to getPregnancyObject()>>
 <<if _pregnancy.timer lte _pregnancy.timerEnd * 0.3>>
 	"You're not far along enough for an abdominal ultrasound," the technician remarks. "But we can use the doppler to listen for cardiac activity."
 	The technician picks up a small handheld instrument, twists a dial and begins pressing a small circular wand against your lower abdomen.<br>
@@ -756,7 +748,6 @@ You strip and lie down.
 	Finally, she turns to you and asks if you'd like to see the pictures now.<br>
 	You nod nervously, and the technician swings the monitor toward your face.
 
-	/*<<set $_pregnancy to $sexStats.vagina.pregnancy>> */
 	<<if _pregnancy.fetus.length gt 1>>
 		<<set _multiple to true>>
 	<<else>>
