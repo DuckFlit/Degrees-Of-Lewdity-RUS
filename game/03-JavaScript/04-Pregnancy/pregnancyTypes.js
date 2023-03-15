@@ -27,20 +27,29 @@ function canBeMPregnant() {
 }
 window.canBeMPregnant = canBeMPregnant;
 
-function npcPregObject(person) {
+function npcPregObject(person, mother) {
 	let result = "Invalid input";
+	const parentType = mother ? 0 : 1;
 
 	if (typeof person === "string" || person instanceof String) {
+		let parentId = parentFunction.findParent(person, parentType, true);
+		if (parentId === -1) {
+			parentId = addToParentList(person, undefined, parentType);
+		}
 		if (person === "pc") {
 			// pregnancy isnt required for the player
 			result = {
 				name: "pc",
 				gender: V.player.gender,
+				type: "human",
+				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
 			};
 		} else if (C.npc[person]) {
 			result = {
 				name: C.npc[person].nam,
-				pregnancy: clone(C.npc[person].pregnancy),
+				pregnancy: C.npc[person].pregnancy,
+				type: C.npc[person].type,
+				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
 			};
 			if (C.npc[person].vagina !== "none" && C.npc[person].penis !== "none") {
 				result.gender = "h";
@@ -56,13 +65,21 @@ function npcPregObject(person) {
 			// No NPC found, likely found from sperm name string
 			return {
 				name: person,
+				type: "unknown",
+				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
 			};
 		}
 	} else {
 		if (person.fullDescription) {
+			let parentId = parentFunction.findParent(person.fullDescription, parentType, true);
+			if (parentId === -1) {
+				parentId = addToParentList(person.fullDescription, C.npc[person.fullDescription] ? undefined : person, parentType);
+			}
 			result = {
 				name: person.fullDescription,
-				pregnancy: clone(person.fullDescription.pregnancy),
+				pregnancy: person.pregnancy,
+				type: person.type,
+				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
 			};
 			if (person.vagina !== undefined && person.vagina !== "none" && person.penis !== undefined && person.penis !== "none") {
 				result.gender = "h";
@@ -80,7 +97,7 @@ function npcPregObject(person) {
 }
 
 // When adding new types, be sure to adjust related checks in other pregnancy code that check for "human","wolf","wolfboy","wolfgirl" etc
-function pregPrep({ motherObject, parasiteType = null, genital = null }) {
+function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = null }) {
 	let pregnancy;
 	let fertility = 0;
 	let magicTattoo = 0;
@@ -110,21 +127,46 @@ function pregPrep({ motherObject, parasiteType = null, genital = null }) {
 		if (parasiteType && pregnancy.fetus.length >= maxParasites(genital)) return ["Player does not have room for more parasites"];
 
 		if (V.sexStats.pills.lastTaken.pregnancy === "fertility booster") {
-			fertility = V.sexStats.pills.pills["fertility booster"].doseTaken;
+			fertility += V.sexStats.pills.pills["fertility booster"].doseTaken;
 		}
 	} else if (!parasiteType) {
-		// Male NPC pregnancies unsupported right now
-		if (motherObject.gender === "m") return ["MPreg not supported for male NPCs"];
+		if (V.npcPregnancyDisable === "t") return ["NPC pregnancy disabled"];
 
-		pregnancy = motherObject.pregnancy;
+		// Male or Unknown NPC pregnancies unsupported right now
+		if (!motherObject.gender || motherObject.gender === "m") return ["Pregnancy not supported for NPC input"];
 
-		if (!pregnancy || !pregnancy.enabled) {
-			return ["Pregnancy not supported or disabled by the player"];
-		}
-		if (pregnancy.pills === "fertility") {
-			fertility = 1;
+		if (C.npc[motherObject.name]) {
+			pregnancy = motherObject.pregnancy;
+
+			if (!pregnancy || !pregnancy.enabled) {
+				return ["Pregnancy not supported or disabled by the player"];
+			}
+			if (pregnancy.pills === "fertility") {
+				fertility += 1;
+			}
+		} else {
+			// ToDo: Random npc pregnancy
+			pregnancy = {
+				type: motherObject.pregnancy === 0 ? null : motherObject.type,
+			};
 		}
 	}
+
+	if (fatherObject) {
+		if (fatherObject.name === "pc") {
+			if (V.skin.pubic.pen === "magic" && V.skin.pubic.special === "pregnancy") {
+				magicTattoo = 1;
+			}
+			if (V.sexStats.pills.lastTaken.pregnancy === "fertility booster") {
+				fertility += V.sexStats.pills.pills["fertility booster"].doseTaken;
+			}
+		} else if (C.npc[fatherObject.name]) {
+			if (fatherObject.pregnancy.pills === "fertility") {
+				fertility += 1;
+			}
+		}
+	}
+
 	return [pregnancy, fertility, magicTattoo];
 }
 
@@ -196,6 +238,8 @@ function hairColourCalc(name) {
 function skinColourCalc(name) {
 	if (name === "pc") {
 		return V.skinColor.natural;
+	} else if (name === "Ivory Wraith") {
+		return "ghostlyPale";
 	} else if (C.npc[name] && C.npc[name].skinColour) {
 		return C.npc[name].skinColour;
 	} else {
@@ -233,6 +277,7 @@ const babyBase = ({
 	father = null,
 	fatherKnown = false,
 	birthId = null,
+	childId = null,
 	type = null,
 	gender = "f",
 	identical = null,
@@ -268,8 +313,8 @@ const babyBase = ({
 		},
 		name: null,
 		// eslint-disable-next-line no-unneeded-ternary
-		birthId: !birthId && mother && totalBirthEvents(mother) !== undefined ? (mother + totalBirthEvents(mother)).replace(" ", "") : birthId,
-		childId: null,
+		birthId,
+		childId,
 		location: null,
 		birthLocation: null,
 		localVariables: {},
@@ -281,8 +326,7 @@ window.pregnancyGenerator = {
 		// Hard coded limit
 		const limit = Object.values(V.children).length;
 		if (limit >= 1000) return false;
-
-		const motherObject = npcPregObject(mother);
+		const motherObject = npcPregObject(mother, true);
 		const fatherObject = npcPregObject(father);
 		if (typeof motherObject === "string" || motherObject instanceof String) return motherObject;
 		if (typeof fatherObject === "string" || fatherObject instanceof String) return fatherObject;
@@ -305,7 +349,7 @@ window.pregnancyGenerator = {
 			return false;
 		}
 
-		const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital });
+		const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, fatherObject, genital });
 		if (typeof pregnancy === "string" || pregnancy instanceof String) {
 			return pregnancy;
 		} else if (pregnancy) {
@@ -324,10 +368,15 @@ window.pregnancyGenerator = {
 					result.fetus.push(result.fetus[0]);
 					continue;
 				}
+				const childId =
+					"m" + motherObject.parentId.id + "b" + motherObject.parentId.kids + "d" + fatherObject.parentId.id + "f" + fatherObject.parentId.kids;
+				const birthId = motherObject.parentId.births;
 				let gender = random(0, 100) > 50 ? "f" : "m";
 				if ((motherObject.gender === "h" || fatherObject.gender === "h") && (motherObject.name === fatherObject.name || random(0, 100) >= 75))
 					gender = "h";
 				const baby = babyBase({
+					childId,
+					birthId,
 					mother: motherObject.name,
 					father: fatherObject.name,
 					fatherKnown,
@@ -344,6 +393,8 @@ window.pregnancyGenerator = {
 				});
 				result.fetus.push(baby);
 
+				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
+
 				// Hard coded limit
 				if (limit + result.fetus.length >= 1000) break;
 			}
@@ -358,7 +409,7 @@ window.pregnancyGenerator = {
 		const limit = Object.values(V.children).length;
 		if (limit >= 1000) return false;
 
-		const motherObject = npcPregObject(mother);
+		const motherObject = npcPregObject(mother, true);
 		const fatherObject = npcPregObject(father);
 		if (typeof motherObject === "string" || motherObject instanceof String) return motherObject;
 		if (typeof fatherObject === "string" || fatherObject instanceof String) return fatherObject;
@@ -381,7 +432,7 @@ window.pregnancyGenerator = {
 			return false;
 		}
 
-		const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital });
+		const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, fatherObject, genital });
 		if (typeof pregnancy === "string" || pregnancy instanceof String) return pregnancy;
 
 		if (pregnancy) {
@@ -391,11 +442,16 @@ window.pregnancyGenerator = {
 				furColour.concat(["black", "black", "black"]);
 			}
 			for (let i = 0; i < 8; i++) {
+				const childId =
+					"m" + motherObject.parentId.id + "b" + motherObject.parentId.kids + "d" + fatherObject.parentId.id + "f" + fatherObject.parentId.kids;
+				const birthId = motherObject.parentId.births;
 				let gender = random(0, 100) > 50 ? "f" : "m";
 				if ((motherObject.gender === "h" || fatherObject.gender === "h") && (motherObject.name === fatherObject.name || random(0, 100) >= 75))
 					gender = "h";
 				if ((mother === "pc" || father === "pc") && V.player.gender === "h" && random(0, 100) >= 75) gender = "h";
 				const baby = babyBase({
+					childId,
+					birthId,
 					mother: motherObject.name,
 					father: fatherObject.name,
 					fatherKnown,
@@ -407,6 +463,7 @@ window.pregnancyGenerator = {
 					hairColour: furColour[random(0, furColour.length - 1)],
 				});
 				result.fetus.push(baby);
+				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
 				if (i > 4 && random(0, 100) > 100 - i * Math.clamp(4 - fertility, 0, 4) && !magicTattoo) break;
 
 				// Hard coded limit
@@ -419,7 +476,7 @@ window.pregnancyGenerator = {
 		return false;
 	},
 	parasite: ({ mother = null, parasiteType = null, hermParasite = null, genital = "anus" }) => {
-		const motherObject = npcPregObject(mother);
+		const motherObject = npcPregObject(mother, true);
 		if (typeof motherObject === "string" || motherObject instanceof String) return motherObject;
 
 		const [pregnancy /* , fertility, magicTattoo */] = pregPrep({ motherObject, parasiteType, genital });

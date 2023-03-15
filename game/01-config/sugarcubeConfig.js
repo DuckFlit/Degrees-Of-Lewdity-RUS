@@ -40,11 +40,13 @@ Save.onSave.add(save => {
 /* LinkNumberify and images will enable or disable the feature completely */
 /* debug will enable or disable the feature only for new games */
 /* sneaky will enable the Sneaky notice banner on the opening screen and save display */
+/* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
 window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.3.13.5",
+	version: "0.3.14.0",
+	versionName: "Pregnancy Test",
 	sneaky: false,
 };
 
@@ -125,11 +127,11 @@ function defaultSaveDetails(input) {
 		saveDetails.playTime = 0;
 		saveDetails.loadCount = 0;
 	}
-	if (saveDetails.f !== 1) {
+	if (!saveDetails.f || saveDetails.f < 1) {
 		saveDetails.f = 1;
 		saveDetails.playTime = 0;
 	}
-	if (saveDetails.f !== 3) {
+	if (saveDetails.f < 3) {
 		saveDetails.playTime = 0;
 		saveDetails.f = 3;
 	}

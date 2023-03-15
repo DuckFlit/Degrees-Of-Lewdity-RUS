@@ -1,5 +1,19 @@
 /* eslint-disable no-undef */
 
+function getPregnancyObject(mother = "pc") {
+	if (mother === "pc") {
+		if (V.player.vaginaExist) {
+			return V.sexStats.vagina.pregnancy;
+		} else {
+			return V.sexStats.anus.pregnancy;
+		}
+	} else if (C.npc[mother] && C.npc[mother].pregnancy.enabled !== undefined) {
+		return C.npc[mother].pregnancy;
+	}
+	return {};
+}
+window.getPregnancyObject = getPregnancyObject;
+
 // Determins how used to being pregnant the player is
 function playerNormalPregnancyTotal() {
 	const result = Math.clamp(V.sexStats.vagina.pregnancy.totalBirthEvents + V.sexStats.anus.pregnancy.totalBirthEvents, 0, 50);
@@ -10,7 +24,6 @@ window.playerNormalPregnancyTotal = playerNormalPregnancyTotal;
 
 // `pregnancyOnly` is there intentially, please make use of it if you add to this function
 function playerBellySize(pregnancyOnly = false) {
-	if (!V.pregnancyTesting) return 0; // ToDo: Pregnancy, remove line
 	let bellySize = V.bellySizeDebug || 0;
 	const vpregnancy = V.sexStats.vagina.pregnancy;
 	const apregnancy = V.sexStats.anus.pregnancy;
@@ -42,8 +55,11 @@ function playerBellySize(pregnancyOnly = false) {
 				if (!apregnancy.gaveBirth) maxSize += 20 + Math.clamp(apregnancy.fetus.length / 2, 1, 4);
 				break;
 		}
-		bellySize += pregnancyProgress * Math.clamp(maxSize, 0, 24);
+		// The '+ 5' inflates the pregnancy belly size, meaning that the early stages of pregnancy will have no belly size increase due to it being reduced by the '- 5'
+		bellySize += Math.clamp(pregnancyProgress * Math.clamp(maxSize + 5, 0, 24 + 5) - 5, 0, 24);
 	}
+	if (V.daily.bloated && !pregnancyOnly) bellySize += Math.clamp(V.daily.bloated, 1, 2);
+
 	return Math.floor(Math.clamp(bellySize, 0, 24));
 }
 window.playerBellySize = playerBellySize;
@@ -51,7 +67,7 @@ window.playerBellySize = playerBellySize;
 function pregnancyBellyVisible(pregnancyOnly = false) {
 	const size = playerBellySize(pregnancyOnly);
 	if (size <= 7) return false;
-	if (size <= 12 && (V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow") || !V.worn.over_upper.type.includes("naked"))) return false;
+	if (size <= 12 && ((V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) || !V.worn.over_upper.type.includes("naked"))) return false;
 	if (size <= 17 && (V.worn.upper.type.includes("bellyHide") || !V.worn.over_upper.type.includes("naked"))) return false;
 
 	return true;
@@ -141,12 +157,9 @@ function playerNormalPregnancyType() {
 window.playerNormalPregnancyType = playerNormalPregnancyType;
 
 function wakingPregnancyEvent() {
-	let pregnancy;
-	if (V.player.vaginaExist) {
-		pregnancy = V.sexStats.vagina.pregnancy;
-	} else {
-		pregnancy = V.sexStats.anus.pregnancy;
-	}
+	const pregnancy = getPregnancyObject();
+	if (!pregnancy.fetus) return false;
+
 	const rng = random(0, 100);
 	const menstruation = V.sexStats.vagina.menstruation;
 	const pills = V.sexStats.pills;
@@ -166,7 +179,10 @@ function wakingPregnancyEvent() {
 		(random(0, 100) >= 105 - V.sciencetrait * 5 || playerNormalPregnancyTotal() >= 3)
 	) {
 		return "missedPeriod";
-	} else if (playerBellySize() >= 12 && ["genitals","under_upper","upper","under_lower","lower"].find(slot => V.worn[slot].type.includes("constricting"))) {
+	} else if (
+		playerBellySize() >= 12 &&
+		["genitals", "under_upper", "upper", "under_lower", "lower"].find(slot => V.worn[slot].type.includes("constricting"))
+	) {
 		return "clothesRemoval";
 	} else if (between(pregnancyStage, 0.9, 1)) {
 		wakingEffects = "nearBirthEvent";
@@ -232,12 +248,9 @@ function wakingPregnancyEvent() {
 window.wakingPregnancyEvent = wakingPregnancyEvent;
 
 function dailyPregnancyEvent() {
-	let pregnancy;
-	if (V.player.vaginaExist) {
-		pregnancy = V.sexStats.vagina.pregnancy;
-	} else {
-		pregnancy = V.sexStats.anus.pregnancy;
-	}
+	const pregnancy = getPregnancyObject();
+	if (!pregnancy.fetus) return false;
+
 	const rng = random(0, 100) + (V.daily.pregnancyEvent || 0);
 	const menstruation = V.sexStats.vagina.menstruation;
 	const pills = V.sexStats.pills;
@@ -329,22 +342,12 @@ function pregnancyNameCorrection(name, caps = false) {
 			name = caps ? "Yourself" : "yourself";
 			break;
 		default:
-			name = name[0] === name[0].toLowerCase() ? (caps ? "A" : "a") + (["a","e","i","o","u"].includes(name[0]) ? "n " : " ") + name : name;
+			name = name[0] === name[0].toLowerCase() ? (caps ? "A" : "a") + (["a", "e", "i", "o", "u"].includes(name[0]) ? "n " : " ") + name : name;
 			break;
 	}
 	return name;
 }
 window.pregnancyNameCorrection = pregnancyNameCorrection;
-
-function pregnancyUINameCorrection(name) {
-	switch (name) {
-		case "pc":
-			name = "You";
-			break;
-	}
-	return name;
-}
-window.pregnancyUINameCorrection = pregnancyUINameCorrection;
 
 function playerPregnancyRisk() {
 	if (V.playerPregnancyHumanDisable === "t" && V.playerPregnancyBeastDisable === "t") return 6; // Player Pregnancy Disabled
@@ -467,9 +470,7 @@ function playerAwareTheyCanBePregnant() {
 window.playerAwareTheyCanBePregnant = playerAwareTheyCanBePregnant;
 
 function playerAwareTheyArePregnant() {
-	if (V.player.vaginaExist && V.sexStats.vagina.pregnancy.awareOf) return true;
-	if (!V.player.vaginaExist && V.sexStats.anus.pregnancy.awareOf) return true;
-	return false;
+	return getPregnancyObject().awareOf;
 }
 window.playerAwareTheyArePregnant = playerAwareTheyArePregnant;
 
@@ -502,7 +503,7 @@ function pregnancyDaysEta(pregnancyObject) {
 }
 window.pregnancyDaysEta = pregnancyDaysEta;
 
-function knowsAboutPregnancy(motherOrId, whoToCheck) {
+function knowsAboutPregnancy(mother, whoToCheck, existingId) {
 	const awareOfBirthId = V.pregnancyStats.awareOfBirthId;
 	let birthId;
 	let whoToCheckConverted;
@@ -514,16 +515,12 @@ function knowsAboutPregnancy(motherOrId, whoToCheck) {
 		return false;
 	}
 
-	if (awareOfBirthId[motherOrId] && awareOfBirthId[motherOrId].includes(whoToCheckConverted)) return true;
+	if (existingId !== undefined && awareOfBirthId[mother + existingId] && awareOfBirthId[mother + existingId].includes(whoToCheckConverted)) return true;
 
-	if (motherOrId === "pc" && playerIsPregnant()) {
-		if (V.player.vaginaExist) {
-			birthId = V.sexStats.vagina.pregnancy.fetus[0].birthId;
-		} else {
-			birthId = V.sexStats.anus.pregnancy.fetus[0].birthId;
-		}
-	} else if (C.npc[motherOrId] && npcIsPregnant(motherOrId)) {
-		birthId = C.npc[motherOrId].pregnancy.fetus[0].birthId;
+	if (mother === "pc" && playerIsPregnant()) {
+		birthId = mother + getPregnancyObject().fetus[0].birthId;
+	} else if (C.npc[mother] && npcIsPregnant(mother)) {
+		birthId = mother + getPregnancyObject(mother).fetus[0].birthId;
 	}
 
 	if (birthId && awareOfBirthId[birthId] && awareOfBirthId[birthId].includes(whoToCheckConverted)) return true;
@@ -534,11 +531,11 @@ window.knowsAboutPregnancy = knowsAboutPregnancy;
 
 /*
 	<<setKnowsAboutPregnancy "pc" "Whitney">> - When whitney is aware of the pc's current pregnancy
-	<<setKnowsAboutPregnancy "pc1" "Whitney">> - When whitney is aware of the pc's first pregnancy
+	<<setKnowsAboutPregnancy "pc" "Whitney" 0>> - When whitney is aware of the pc's first pregnancy
 
 	Be sure to double check the usage when your providing an ID rather than "pc" or named npc's name
 */
-function setKnowsAboutPregnancy(motherOrId, whoNowKnows) {
+function setKnowsAboutPregnancy(mother, whoNowKnows, existingId) {
 	const awareOfBirthId = V.pregnancyStats.awareOfBirthId;
 	let birthId;
 	let whoNowKnowsConverted;
@@ -550,18 +547,14 @@ function setKnowsAboutPregnancy(motherOrId, whoNowKnows) {
 		return false;
 	}
 
-	if (awareOfBirthId[motherOrId]) {
-		birthId = motherOrId;
-	} else if (motherOrId === "pc") {
+	if (awareOfBirthId[mother + existingId]) {
+		birthId = mother + existingId;
+	} else if (mother === "pc") {
 		if (playerIsPregnant()) {
-			if (V.player.vaginaExist) {
-				birthId = V.sexStats.vagina.pregnancy.fetus[0].birthId;
-			} else {
-				birthId = V.sexStats.anus.pregnancy.fetus[0].birthId;
-			}
+			birthId = mother + getPregnancyObject().fetus[0].birthId;
 		}
-	} else if (C.npc[motherOrId]) {
-		if (npcIsPregnant(motherOrId)) birthId = C.npc[motherOrId].pregnancy.fetus[0].birthId;
+	} else if (C.npc[mother] && npcIsPregnant(mother)) {
+		birthId = mother + getPregnancyObject(mother).fetus[0].birthId;
 	}
 
 	if (birthId) {
