@@ -21,7 +21,13 @@
 					<<if $danceSuccess>>
 						<span class="green">but you manage to keep your footing.</span>
 					<<else>>
-						<span class="red">and you lose your footing.</span> You land on your butt in the cold snow before climbing to your feet. <<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+						<span class="red">and you lose your footing.</span>
+						<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+							The soft, cold snow absorbs the shock of your fall as you land on your butt. You climb to your feet, grateful that the snow cushioned your <<bellyDescription "pc">> from harm.
+						<<else>>
+							You land on your butt in the cold snow before climbing to your feet.
+						<</if>>
+						<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
 						<br><br>
 						<<covered>>
 					<</if>>
@@ -31,10 +37,16 @@
 						You catch a brief ray of sunshine and warmth. <<stress -3>><<lstress>>
 					<</addinlineevent>>
 				<</if>>
+				<<if ["town", "park"].includes($location) and $hour gte 7 and $hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+					<<addinlineevent "winter_pregnant_watch">>
+						You see a group of kids playing. They're making a fort out of snow and pelting snowballs at one another.
+						You rub your <<bellyDescription "pc">> and wonder if your <<pregnancyBabyText "pc">> will be as boisterous as they are. <<stress -3>><<lstress>>
+					<</addinlineevent>>					
+				<</if>>
 				<<switch $location>>
 					<<case "town">>
 						<<addinlineevent "winter_anystreet_1" 0.5>>
-							<<athleticsdifficulty 0 1000 true>>
+							<<athleticsdifficulty 0 800 true>>
 							A car rushes by, sending a spray of slush onto the pavement.
 							<<if $athleticsSuccess>>
 								<span class="green">You manage to jump out of the way just in time.</span>
@@ -219,7 +231,12 @@
 						<</addinlineevent>>
 					<<case "park">>
 						<<addinlineevent "snow_park_1" 0.5>>
-							You slip on a patch of black ice, tripping and falling. You slide across the ground, dampening your clothes and leaving your bottom chilly. <<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+							<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+								You slip on a patch of black ice. Your hands instinctively curl around your <<bellyDescription "pc">> to protect it from harm as you fall flat on your ass. You use a nearby bench to safely haul yourself to your feet, careful not to slip again. Your bottom is left damp and chilly.
+							<<else>>
+								You slip on a patch of black ice, tripping and falling. You slide across the ground, dampening your clothes and leaving your bottom chilly. 
+							<</if>>
+							<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
 						<</addinlineevent>>
 						<<if $hour gte 6 and $hour lt 21>>
 							<<addinlineevent "snow_park_2">>
@@ -289,7 +306,7 @@
 			<</addinlineevent>>
 			<<addinlineevent "rain_anywhere_3" 0.33>>
 				The rain briefly gives way to hail. You're relentlessly pelted for a few moments. <<pain 4>><<stress 6>><<gpain>><<gstress>>
-			<</addinlineevent>>
+			<</addinlineevent>>			
 			<<switch $location>>
 				<<case "town">>
 					<<addinlineevent "rain_anystreet_1" 0.33>>
@@ -330,6 +347,16 @@
 						<<generate1>><<person1>>A <<person>> with an umbrella lets you walk alongside <<him>> for a while. <<He>> chats with you as you walk together. <<stress -3>><<lstress>>
 						<<endevent>>
 					<</addinlineevent>>
+					<<if $hour gte 7 and $hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+						<<addinlineevent "rain_pregnant_talk" 0.8>>
+							<<generate1>><<person1>>
+							The rain gives way to hail, and you take shelter under a nearby awning. A <<personsimple>> with a pram is already there, murmuring reassurances to <<his>> fussy newborn. <<He>> smiles and nods at your <<bellyDescription "pc">>. "When are you due?" <<he>> asks. The two of you make idle chit-chat as you wait for the hail to let up.
+							<br><br>
+
+							As it finally dies down, the <<father>> mentions that <<he>> lives on <<print either("Domus Street", "Danube Street")>> and suggests that you have a playdate once you give birth. When <<he>> asks where you live, you confess that you're a resident of the orphanage. The <<persons>> face twists in a mixture of pity and distaste, and <<he>> mumbles a hasty goodbye before stepping out into the rain once more. You watch as the pram disappears into the distance, feeling oddly bereft. <<trauma 6>><<gtrauma>>
+							<<endevent>>
+						<</addinlineevent>>					
+					<</if>>
 				<<case "alley">>
 					<<addinlineevent "rain_anyalley_1">>
 						<<beastNEWinit 1 dog>>
@@ -364,7 +391,11 @@
 						You catch sight of a couple kissing in the rain. <<stress -3>><<lstress>>
 					<</addinlineevent>>
 					<<addinlineevent "rain_park_3" 0.5>>
-							You slip and fall onto a patch of wet grass. Your bottom is left sore and damp. <<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+							You slip and fall onto a patch of wet grass.
+							<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+								Your hands instinctively curl around your <<bellyDescription "pc">> to protect it from harm as you fall flat on your ass. You use a nearby bench to safely haul yourself to your feet, careful not to slip again.
+							<</if>>
+							Your bottom is left sore and damp. <<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
 					<</addinlineevent>>
 				<<case "forest">>
 					<<addinlineevent "rain_forest_1">>
@@ -407,12 +438,29 @@
 				You trip up on a fallen branch,
 				<<if $danceSuccess>>
 					<span class="green">but you manage to keep your footing.</span>
+					<span class="red">and land in a pile of damp leaves.</span> 
+					<br><br>
+					<<covered>>				
 				<<else>>
-					<span class="red">and land in a pile of damp leaves.</span> You quickly stand, brushing off leaves and rubbing your now sore and wet bottom. <<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+					<span class="red">and land in a pile of damp leaves.</span>
+					<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+						Your hand automatically flies to your <<bellyDescription "pc">>. You're grateful that the leaves broke your fall. You quickly stand, brushing off leaves and rubbing your now sore and wet bottom.
+					<<else>>
+						You quickly stand, brushing off leaves and rubbing your now sore and wet bottom.
+					<</if>>
+					<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
 					<br><br>
 					<<covered>>
 				<</if>>
 			<</addinlineevent>>
+			<<if ["town", "park"].includes($location) and $hour gte 7 and $hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+				<<addinlineevent "autumn_pregnant_watch">>
+					<<generatey1>><<person1>>
+					You see a group of kids playing. A young <<persony>> hides in a pile of leaves before bursting out to scare <<his>> friend. The other child immediately bursts into tears.
+					You rub your <<bellyDescription "pc">> and wonder if your <<pregnancyBabyText "pc">> will be as troublesome as they are. <<stress -3>><<lstress>>
+					<<endevent>>
+				<</addinlineevent>>					
+			<</if>>
 			<<switch $location>>
 				<<case "town">>
 					<<addinlineevent "autumn_anystreet_1">>
@@ -501,6 +549,12 @@
 			<<addinlineevent "summer_anywhere_3" 0.5>>
 				A brutal wave of heat washes over you. You take a moment to wipe the sweat from your head. <<stress 1>><<gstress>>
 			<</addinlineevent>>
+			<<if ["town", "park"].includes($location) and $hour gte 7 and $hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+				<<addinlineevent "summer_pregnant_watch">>
+					You see a group of kids playing. Most are running and squealing as they spray each other with water guns, but a few are lazing on the grass. Occasionally, their friends cool them off with a blast of water, causing them to giggle.
+					You rub your <<bellyDescription "pc">> and wonder if your <<pregnancyBabyText "pc">> will be as easygoing as they are. <<stress -3>><<lstress>>
+				<</addinlineevent>>					
+			<</if>>
 			<<switch $location>>
 				<<case "town">>
 					<<if $hour gte 6 and $hour lt 21>>
@@ -613,6 +667,14 @@
 				<<addinlineevent "spring_anywhere_3">>
 					Birds chirp overhead as they return from their winter migration. <<stress -3>><<lstress>>
 				<</addinlineevent>>
+			<</if>>
+			<<if ["town", "park"].includes($location) and $hour gte 7 and $hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+				<<addinlineevent "spring_pregnant_watch">>
+					<<generatey1>><<person1>>
+					You see a group of kids playing. One <<persony>> is sitting apart from the others, making a chain of daisies. The other children ask <<him>> to help them make cakes out of mud, but <<he>> silently shakes <<his>> head. 
+					You rub your <<bellyDescription "pc">> and wonder if your <<pregnancyBabyText "pc">> will be as timid as <<he>> is. <<stress -3>><<lstress>>
+					<<endevent>>
+				<</addinlineevent>>					
 			<</if>>
 			<<switch $location>>
 				<<case "town">>

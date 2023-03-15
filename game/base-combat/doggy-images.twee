@@ -28,6 +28,13 @@
 		<<script>>T.colourEyeLeft = T.colourEyeLeft.replace(/\s/g, '-')<</script>>
 	<</if>>
 
+	<<if playerBellySize() || $bellySizeDebug>>
+		<<set _bellySize to playerBellySize() || $bellySizeDebug>>
+		<<if (($worn.upper.type.includes("bellyHide") && $worn.upper.exposed lt 2) or !($worn.over_upper.type.includes("naked")))>>
+			<<set _bellySize -= 5>>
+		<</if>>
+	<</if>>
+
 	<div class="char_combat i256">
 		<<switch _swarmcreature>>
 			<<case "fish">>
@@ -394,9 +401,19 @@
 			<img class="layer-sexmouth" @src="_img.doggyactiveclosedmouth" @style="'filter: '+_filters.body">
 
 			/* ToDo: Pregnancy - Figure out how this will work with clothes. */
-			<<if playerBellySize() || $bellySizeDebug>>
-				<<set _bellySize to playerBellySize() || $bellySizeDebug>>
-				<img class="layer-sexbelly anim-idle-2f" @src="_img.doggyactivepreggybelly+ _bellySize + '.png'" @style="'filter: '+_filters.body">
+			<<if _bellySize>>
+				<<if _bellySize lte 7 and (!$worn.upper.type.includesAny("naked", "bellyShow") and ["midriff", "waist"].includesAny($worn.upper.state, $worn.lower.state))>>
+				<<elseif $worn.upper.type.includesAny("naked", "bellyShow") or ($worn.upper.exposed gte 1 and !["midriff", "waist"].includes($worn.upper.state))>>
+					<<if ["midriff", "waist"].includes($worn.lower.state)>>
+						<img class="layer-sexlower anim-idle-2f" @src="_img.doggyactivepreggybelly+'overlay.png'" @style="'filter: '+_filters.body">
+					<<else>>
+						<img class="layer-sexlower anim-idle-2f" @src="_img.doggyactivepreggybelly+'overlay_exposed.png'" @style="'filter: '+_filters.body">
+					<</if>>
+					<img class="layer-sexlower anim-idle-2f" @src="_img.doggyactivepreggybelly+ _bellySize + '.png'" @style="'filter: '+_filters.body">
+				<<else>>
+					<img class="layer-sexaboveclothes colour-upper anim-idle-2f" @src="'img/sex/doggyRed/active/body/preggyBelly/pregnancy_belly_overlay.png'" @style="($worn.upper.colour is 'custom' ? $worn.upper.colourCustom + _upperOpacity : '')">
+					<img class="layer-sexaboveclothes colour-upper anim-idle-2f" @src="'img/sex/doggyRed/active/body/preggyBelly/pregnancy_belly_'+_bellySize+'.png'" @style="($worn.upper.colour is 'custom' ? $worn.upper.colourCustom + _upperOpacity : '')">
+				<</if>>
 			<</if>>
 
 			<<if $leftarm isnot "bound" and $leftarm isnot "grappled" and $leftarm isnot "behind">>
@@ -743,9 +760,19 @@
 			<img @class="'layer-sexmouth anim-doggy-4f-'+_animspeed" @src="_img.doggyactivemouth" @style="'filter: '+_filters.body">
 
 			/* ToDo: Pregnancy - Figure out how this will work with clothes. */
-			<<if playerBellySize() || $bellySizeDebug>>
-				<<set _bellySize to playerBellySize() || $bellySizeDebug>>
-				<img @class="'layer-sexbelly anim-doggy-4f-'+_animspeed" @src="_img.doggyactivepreggybelly+ _bellySize + '.png'" @style="'filter: '+_filters.body">
+			<<if _bellySize>>
+				<<if _bellySize lte 7 and (!$worn.upper.type.includesAny("naked", "bellyShow") and ["midriff", "waist"].includesAny($worn.upper.state, $worn.lower.state))>>
+				<<elseif $worn.upper.type.includesAny("naked", "bellyShow") or ($worn.upper.exposed gte 1 and !["midriff", "waist"].includes($worn.upper.state))>>
+					<<if ["midriff", "waist"].includes($worn.lower.state)>>
+						<img @class="'layer-sexlower anim-doggy-4f-'+_animspeed" @src="_img.doggyactivepreggybelly+'overlay.png'" @style="'filter: '+_filters.body">
+					<<else>>
+						<img @class="'layer-sexlower anim-doggy-4f-'+_animspeed" @src="_img.doggyactivepreggybelly+'overlay_exposed.png'" @style="'filter: '+_filters.body">
+					<</if>>
+					<img @class="'layer-sexlower anim-doggy-4f-'+_animspeed" @src="_img.doggyactivepreggybelly+ _bellySize + '.png'" @style="'filter: '+_filters.body">
+				<<else>>
+					<img @class="'layer-sexaboveclothes colour-upper anim-doggy-4f-'+_animspeed" @src="'img/sex/doggyRed/active/body/preggyBelly/pregnancy_belly_overlay.png'" @style="($worn.upper.colour is 'custom' ? $worn.upper.colourCustom + _upperOpacity : '')">
+					<img @class="'layer-sexaboveclothes colour-upper anim-doggy-4f-'+_animspeed" @src="'img/sex/doggyRed/active/body/preggyBelly/pregnancy_belly_'+_bellySize+'.png'" @style="($worn.upper.colour is 'custom' ? $worn.upper.colourCustom + _upperOpacity : '')">
+				<</if>>
 			<</if>>
 
 			<<if $feetuse is "penis">>
@@ -1195,7 +1222,11 @@
 					<<if $skin.pubic.type is "object">>
 						<img @class="'layer-sexskin anim-doggy-4f-'+_animspeed" @src="'img/sex/doggy/bodywriting/' + $skin.pubic.writing + '/pubic.png'">
 					<<elseif $skin.pubic.type is "text">>
-						<img @class="'layer-sexskin anim-doggy-4f-'+_animspeed" src="img/sex/doggy/bodywriting/pubic.png">
+						<<if playerBellySize(true) gte 15>>
+							<img @class="'layer-sexskin anim-doggy-4f-'+_animspeed" src="img/sex/missionary/bodywriting/pubic_belly.png">
+						<<else>>
+							<img @class="'layer-sexskin anim-doggy-4f-'+_animspeed" src="img/sex/doggy/bodywriting/pubic.png">
+						<</if>>
 					<</if>>
 				<</if>>
 				<<if $skin.left_bottom.writing>>
