@@ -95,7 +95,7 @@
 		<<setKnowsAboutPregnancy "pc" "Black Wolf">>
 		You find a secluded spot deep inside the cave and lay down. Your body contorts with each breath, sending jolts of pain down your back and abdomen.
 		<br><br>
-		<<if $wolfstate is "cave">>
+		<<if $wolfstate is "cave" and $syndromewolves is 1>>
 			The Black Wolf rushes in, and crouches down to eye level. "Is <<ppackbrother>> well?" <<bHe>> asks with concern. "Will stay here."
 			<br><br>
 			<<link [[Get them to leave (0:10)|Pregnancy Birth Wolf Cave 1]]>><<pass 10>><<set $phase to 1>><<strip>><</link>>
@@ -194,29 +194,28 @@ Having named your children, you hand them back to the Black Wolf. <<bHe>> remain
 <<set _max to Math.floor(_max * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
 <<set _min to Math.floor(_min * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
 
-<<set $timeCalc to random(_min, _max)>>
-<<set _hours to Math.floor($timeCalc / 60)>>
-<<set _minutes to $timeCalc % 60>>
+<<set _timeCalc to random(_min, _max)>>
+<<set _hours to Math.floor(_timeCalc / 60)>>
+<<set _minutes to _timeCalc % 60>>
+<<switch $phase>>
+	<<case 0>>
+		You gently push the Black Wolf away. <<bHe>> growls at you, before eventually leaving with a scoff.
+		<br><br>
+		You lay in the cold ground, trying fruitlessly to find some comfort amidst your contractions. Your breathing grows heavier by the second, and the pain becomes too intense for you to endure as you continue pushing. Having reached your limit, you pass out. /* Still not sure about the player passing out here - Lollipop scythe */
+		<<set $phase to 1>>
+	<<case 1>>
+		You shift around, trying your best to find a comfortable position, with no success. Black Wolf takes notice, and stands up to move closer to you. <<bHe>> lays down behind you, letting you rest your back on <<bhis>> side and easing your pain. <<bHe>> gives you a reassuring lick of support.
+		<br><br>
+		Your breathing grows heavier and your contractions become more unbearable every second. The pain becomes too much for you to endure as you continue pushing. Having reached your limit, you pass out. /* Still not sure about the player passing out here - Lollipop scythe */
+	<<case 2 3>>
+		<<set $phase to $phase is 2 ? 1 : 2>>
+		You shift around, trying your best to find a comfortable position, with no success.
+		<br><br>
+		Your breathing grows heavier and your contractions become more unbearable every second. The pain becomes too much for you to endure as you continue pushing. Having reached your limit, you pass out. /* Still not sure about the player passing out here - Lollipop scythe */
+<</switch>>
+<br><br>
 
-<<if $phase is 0>>
-	You gently push the Black Wolf away. <<bHe>> growls at you, before eventually leaving with a scoff.
-	<br><br>
-	You lay in the cold ground, trying fruitlessly to find some comfort amidst your contractions. Your breathing grows heavier by the second, and the pain becomes too intense for you to endure as you continue pushing. Having reached your limit, you pass out. /* Still not sure about the player passing out here - Lollipop scythe */
-	<br><br>
-	<<link [["Next (0"+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"|Pregnancy Birth Wolf Cave 2]]>><<pass $timeCalc>><<set $phase to 1>><<playerPrebirth>><</link>>
-<<elseif $phase is 1>>
-	You shift around, trying your best to find a comfortable position, with no success. Black Wolf takes notice, and stands up to move closer to you. <<bHe>> lays down behind you, letting you rest your back on <<bhis>> side and easing your pain. <<bHe>> gives you a reassuring lick of support.
-	<br><br>
-	Your breathing grows heavier and your contractions become more unbearable every second. The pain becomes too much for you to endure as you continue pushing. Having reached your limit, you pass out. /* Still not sure about the player passing out here - Lollipop scythe */
-	<br><br>
-	<<link [["Next (0"+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"|Pregnancy Birth Wolf Cave 2]]>><<pass $timeCalc>><<playerPrebirth>><</link>>
-<<elseif $phase is 2>>
-	You shift around, trying your best to find a comfortable position, with no success.
-	<br><br>
-	Your breathing grows heavier and your contractions become more unbearable every second. The pain becomes too much for you to endure as you continue pushing. Having reached your limit, you pass out. /* Still not sure about the player passing out here - Lollipop scythe */
-	<br><br>
-	<<link [["Next (0"+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"|Pregnancy Birth Wolf Cave 2]]>><<pass $timeCalc>><<set $phase to 1>><<playerPrebirth>><</link>>
-<</if>>
+<<link [["Next (0"+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"|Pregnancy Birth Wolf Cave 2]]>><<playerPrebirth>><</link>>
 
 :: Pregnancy Birth Wolf Cave 2
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
@@ -225,27 +224,40 @@ Having named your children, you hand them back to the Black Wolf. <<bHe>> remain
 
 As you regain your consciousness, you feel a faint sound of weeping nearby. You open your eyes and look around, only to spot the Black Wolf carrying a small furry bundle of puppies flailing around and nibbling on each other. Your children have finally been born.
 <br><br>
-<<if $phase is 1>>
-	<<if $monster is 1>>
-		The Black Wolf turns around, presenting you the handful of pups. "<<pPackbrother>> had rough delivery," <<bhe>> says. "Came running to make sure pups were fine. Glad to see them healthy." <<bHe>> smiles with relief.
-		<br><br>
-		You reach out for your pups, but Black Wolf pulls away. The pups whine and whimper. Black Wolf inspects them once more, before finally handing them to you.
+<<if $phase is 2>>
+	<<npc "Black Wolf">>
+	<<if $monster is 1 and false>>
+		The Black Wolf turns around, presenting you the handful of pups. "<<pPackbrother>> had rough delivery," <<bhe>> says.
+		<<if $syndromewolves isnot 1>>
+			"Came running to make sure pups were fine. <span class="gold">You make a good pack mother, welcome to pack.</span>"
+		<<else>>
+			"Pleased you made it back safe. Came running to make sure pups were fine. Glad to see them healthy."
+		<</if>>
+		<<bHe>> smiles with relief.
 	<<else>>
-		The Black Wolf turns around, presenting you the handful of pups. <<bHe>> must have rushed toward you after noticing your very difficult delivery. You think that the wolf must have somehow helped during labor.
-		<br><br>
-		You reach out for your pups, but Black Wolf pulls away. The pups whine and whimper. Black Wolf inspects them once more, before finally handing them to you.
+		The Black Wolf turns around, presenting you the handful of pups. <<bHe>> must have rushed toward you after noticing your very difficult delivery. You think that the wolf must have somehow helped during labor<<if $syndromewolves isnot 1>>, <span class="gold">despite you not being part of the pack</span><</if>>.
+	<</if>>
+<<elseif $phase is 1>>
+	<<if $monster is 1>>
+		The Black Wolf turns around, presenting you the handful of pups. "<<pPackbrother>> had rough delivery," <<bhe>> says. "Came running to make sure pups were fine.
+		<<if $syndromewolves isnot 1>>
+			<span class="gold">You make a good pack mother, welcome to pack.</span>"
+		<<else>>
+			Glad to see them healthy."
+		<</if>>
+		<<bHe>> smiles with relief.
+	<<else>>
+		The Black Wolf turns around, presenting you the handful of pups. <<bHe>> must have rushed toward you after noticing your very difficult delivery. You think that the wolf must have somehow helped during labor<<if $syndromewolves isnot 1>>, <span class="gold">despite you not being part of the pack</span><</if>>.
 	<</if>>
 <<else>>
 	<<if $monster is 1>>
 		The Black Wolf turns around, presenting you the handful of pups. "<<pPackbrother>> had rough delivery," <<bhe>> says. "Glad decided to stay. Had to make sure little ones had no trouble at birth" <<bHe>> smiles with relief.
-		<br><br>
-		You reach out for your pups, but Black Wolf pulls away. The pups whine and whimper. Black Wolf inspects them once more, before finally handing them to you.
 	<<else>>
 		The Black Wolf turns around, presenting you the handful of pups. <<bHe>> must have somehow aided during your delivery, as well keeping the pups safe while you came to.
-		<br><br>
-		You reach out for your pups, but Black Wolf pulls away. The pups whine and whimper. Black Wolf inspects them once more, before finally handing them to you.
 	<</if>>
 <</if>>
+<br><br>
+You reach out for your pups, but Black Wolf pulls away. The pups whine and whimper. Black Wolf inspects them once more, before finally handing them to you.
 <br><br>
 <<link [[Next|Pregnancy Birth Wolf Cave 3]]>><</link>>
 
@@ -265,6 +277,10 @@ Perhaps from your connection to them, the excruciating pain of delivery, or mayb
 
 :: Pregnancy Birth Wolf Cave 4
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+
+Having named them, you gather your children and carry them with the others. A secluded spot in the cave houses all the young and newborn pups from the pack. Your own children are quickly accepted into the group by the pups, as well as the <<wolf_cave_plural>> who look after them.
+<br><br>
+
 <<if $syndromewolves isnot 1>>
 	<<if $bestialitydisable is "f">>
 		<span class="red"><i>After giving birth to pups of your own, you see they're just cute animals.</i> You've gained the "Stockholm Syndrome: Wolves" trait.</span>
@@ -273,14 +289,23 @@ Perhaps from your connection to them, the excruciating pain of delivery, or mayb
 		<span class="red"><i>After giving birth to pups of your own, you see they're just cute monsters.</i> You've gained the "Stockholm Syndrome: Wolf People" trait.</span>
 		<br><br>
 	<</if>>
+	<<if $loveInterest.primary is "None" and $deviancy gte 35>>
+		<<set $loveInterest.primary to "Black Wolf">>
+		<span class="gold">The Black Wolf is now your love interest! <<bHe>> seems happy to have found a mate.</span>
+	<<elseif $deviancy gte 35>>
+		<span class="gold">The Black Wolf can now be claimed as your love interest! <<bHe>> seems happy to have found a mate.
+		<br>
+		You can change your love interest in the "Attitudes" menu.</span>
+	<<else>>
+		<span class="blue">You aren't sure if a <<beasttype>> would make a good love interest...</span>
+	<</if>>
+	<br><br>
 	<<set $syndromewolves to 1>>
 	<<set $wolfevent to 0>>
 	<<set $wolfstate to "cave">>
 	<<set $wolfpackferocity to 10>>
 	<<set $wolfpackharmony to 10>>
 <</if>>
-Having named them, you gather your children and carry them with the others. A secluded spot in the cave houses all the young and newborn pups from the pack. Your own children are quickly accepted into the group by the pups, as well as the <<wolf_cave_plural>> who look after them.
-<br><br>
 <<link [[Next|Wolf Cave]]>><<clotheson>><<set $eventskip to 1>><<set $wolfevent to 0>><<endevent>><</link>>
 
 :: Player Presents Pregnancy To Black Wolf
@@ -295,8 +320,14 @@ You lean back and expose your belly to Black Wolf. <<bHe>> takes notice, and get
 
 <<if !_pregnancy or !_pregnancy.type or !_pregnancy.fetus or !_pregnancy.fetus.length>>
 	The Black Wolf sniffs your none-existant baby belly, wondering how you could reach such a scene when you shouldn't be able to. Clearly an error has occured.
-<<elseif _pregnancy.type isnot "wolf" or _pregnancy.fetus[0].father isnot "Black Wolf">>
-	ToDo: Pregnancy - Scene where the black wolf is not interested in the players pregnancy.
+<<elseif _pregnancy.type isnot "wolf">>
+	<<if $monster is 1>>
+		"What is <<ppackbrother>>..." <<bhe>> manages. <<bHe>> brings <<bhimself>> closer to your crotch and sniffs you down. <<bHis>> ears fall in response.
+		<br><br>
+		<<bHe>> pulls back from you. "<<pPackbrother>> may be better off finding their real mate."
+	<<else>>
+		<<bHe>> is caught by surprise. The wolf brings <<bhimself>> closer to your crotch and sniffs you down. <<bHis>> ears fall in response and <<bhe>> walks away from you.
+	<</if>>
 <<elseif $wolfpackferocity gte 20 and $wolfpackharmony gte 20>>
 	<<if $monster is 1>>
 		"What is <<ppackbrother>>..." <<bhe>> manages. <<bHe>> brings <<bhimself>> closer to your crotch and sniffs you down. <<bHis>> ears perk up in response. "Cannot believe, will have first ever litter with <<ppackbrother>>," <<bhe>> nuzzles your neck. "Pack is fortunate to have <<ppackbrother>>, but not as fortunate as me."
