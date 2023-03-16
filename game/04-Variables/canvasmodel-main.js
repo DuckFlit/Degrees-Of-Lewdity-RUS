@@ -2474,11 +2474,10 @@ Renderer.CanvasModels["main"] = {
 				return options.worn_lower_setup.high_img ? ZIndices.under_lower_high : ZIndices.under_lower;
 			},
 			showfn(options) {
-				return options.belly > 7
-					&& options.show_clothes
-					&& !options.belly_hides_under_lower
-					&& options["worn_" + slot] > 0
-					&& options["worn_" + slot + "_setup"].mainImage !== 0
+				return options.show_clothes &&
+					!options.belly_hides_under_lower &&
+					options.worn_under_lower > 0 &&
+					options.worn_under_lower_setup.mainImage !== 0
 			}
 		}),
 		"under_lower_belly_2": genlayer_clothing_belly_2("under_lower", {
@@ -2492,8 +2491,8 @@ Renderer.CanvasModels["main"] = {
 				return options.belly > 7
 					&& options.show_clothes
 					&& !options.belly_hides_under_lower
-					&& options["worn_" + slot] > 0
-					&& options["worn_" + slot + "_setup"].mainImage !== 0
+					&& options.worn_under_lower > 0
+					&& options.worn_under_lower_setup.mainImage !== 0
 			}
 		}),
 		"under_lower_belly": genlayer_clothing_belly("under_lower", {
@@ -2507,8 +2506,8 @@ Renderer.CanvasModels["main"] = {
 				return options.belly > 7
 					&& options.show_clothes
 					&& !options.belly_hides_under_lower
-					&& options["worn_" + slot] > 0
-					&& options["worn_" + slot + "_setup"].mainImage !== 0
+					&& options.worn_under_lower > 0
+					&& options.worn_under_lower_setup.mainImage !== 0
 			}
 		}),
 		"under_lower_belly_shadow": genlayer_clothing_belly_shadow("under_lower", {
@@ -2522,8 +2521,8 @@ Renderer.CanvasModels["main"] = {
 				return options.belly > 7
 					&& options.show_clothes
 					&& !options.belly_hides_under_lower
-					&& options["worn_" + slot] > 0
-					&& options["worn_" + slot + "_setup"].mainImage !== 0
+					&& options.worn_under_lower > 0
+					&& options.worn_under_lower_setup.mainImage !== 0
 			},
 		}),
 		"under_lower_belly_acc": genlayer_clothing_belly_acc("under_lower", {
@@ -2537,8 +2536,8 @@ Renderer.CanvasModels["main"] = {
 				return options.belly > 7
 					&& options.show_clothes
 					&& !options.belly_hides_under_lower
-					&& options["worn_" + slot] > 0
-					&& options["worn_" + slot + "_setup"].accessory === 1
+					&& options.worn_under_lower > 0
+					&& options.worn_under_lower_setup.accessory === 1
 			}
 		}),
 		"under_lower_acc": genlayer_clothing_accessory('under_lower'),
