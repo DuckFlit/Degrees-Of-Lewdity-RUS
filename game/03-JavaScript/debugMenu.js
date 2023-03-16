@@ -375,8 +375,8 @@ setup.debugMenu.eventList = {
 			widgets: [`<<namedNpcPregnancy "Robin" "pc" "human" true undefined true>>`],
 		},
 		{
-			link: [`Get Bailey Pregnant with Black wolfs pups`, stayOnPassageFn],
-			widgets: [`<<namedNpcPregnancy "Bailey" "Black Wolf" "wolf" true undefined true>>`],
+			link: [`Get Whitney Pregnant with Black wolf pups`, stayOnPassageFn],
+			widgets: [`<<namedNpcPregnancy "Whitney" "Black Wolf" "wolf" true undefined true>>`],
 		},
 		{
 			link: [`Basic NPC Compression Test`, stayOnPassageFn],
