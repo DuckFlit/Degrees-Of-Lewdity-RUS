@@ -117,7 +117,7 @@ const Time = (() => {
 			return currentDate.year;
 		},
 		get days() {
-			return Math.ceil((currentDate.timeStamp - this.startDate.timeStamp) / DateTime.secondsPerDay);
+			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / DateTime.secondsPerDay);
 		},
 		get season() {
 			return this.month > 11 || this.month < 3 ? "winter" : this.month > 8 ? "autumn" : this.month > 4 ? "summer" : "spring";
@@ -304,7 +304,7 @@ function dayPassed() {
 		V.bullytimeroutside += 5;
 	}
 	if (Time.weekDay === 7) {
-		if (V.brothelshowdata.type !== "none" && !brothelshowdata.done && V.brothelshowdata.intro) {
+		if (V.brothelshowdata.type !== "none" && !V.brothelshowdata.done && V.brothelshowdata.intro) {
 			V.brothelshowdata.missed = true;
 			V.brothelshowdata.type = "none";
 		}
@@ -882,7 +882,7 @@ function dailyPlayerEffects() {
 		V.vore_trait_message = 1;
 		V.voretrait = 1;
 	}
-	if (V.milk_drank_stat >= 20 && V.milkdranktrait === 0) {
+	if (V.milk_drank_stat >= 1000 && V.milkdranktrait === 0) {
 		V.effectsmessage = 1;
 		V.milk_trait_message = 1;
 		V.milkdranktrait = 1;
@@ -1052,7 +1052,7 @@ function yearlyEventChecks() {
 		V.halloween = 1;
 	} else if (V.halloween) {
 		if (V.halloween_robin_costume && C.npc.Robin.outfits && C.npc.Robin.outfits.includes(V.halloween_robin_costume))
-			wikifier("removeNNPCOutift", "Robin", V.halloween_robin_costume);
+			wikifier("removeNNPCOutfit", "Robin", V.halloween_robin_costume);
 		delete V.halloween;
 		delete V.halloween_whitney;
 		delete V.halloween_whitney_proposed;
