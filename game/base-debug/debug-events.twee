@@ -69,11 +69,12 @@
 		<<set $_npc to $NPCList[$_i]>>
 		<<set $_eventNPC to EventSystem.get($_i)>>
 		<<if $_npc.type isnot undefined and $_eventNPC isnot undefined>>
+			<<set $_time to new DateTime($_eventNPC.time)>>
 			<div class="debug-event-item debug-event-success">
 				ID: $_i | $_npc.fullDescription<br>
 				Sex: $_npc.gender | Gender: $_npc.pronouns.man<br>
 				Description: $_npc.description<<if $_npc.role>> | Role: $_npc.role<</if>><br>
-				Source: <<print $_eventNPC.area[0]>>, at: <<ampm `Math.floor($_eventNPC.time / 60)` `$_eventNPC.time % 60`>>.<br>
+				Source: <<print $_eventNPC.area[0]>>, at: <<ampm $_time.getHours() $_time.getMinutes()>>.<br>
 			</div>
 		<<else>>
 			<div class="debug-event-item debug-event-empty">
@@ -87,8 +88,9 @@
 		<br>Extra debugging:<br>
 		<<for $_i to 0; $_i lt $event.buffer.length; $_i++>>
 			<<set $_eventNPC to $event.buffer[$_i]>>
+			<<set $_time to new DateTime($_eventNPC.time)>>
 			<<print ($NPCList[$_eventNPC.slot] || {}).fullDescription || "No description.">><br>
-			Defined in passage <<print $_eventNPC.area[0]>>, at <<ampm `Math.floor($_eventNPC.time / 60)` `$_eventNPC.time % 60`>>.<br>
+			Defined in passage <<print $_eventNPC.area[0]>>, at <<ampm $_time.getHours() $_time.getMinutes()>>.<br>
 			<<if $_eventNPC.area.length gt 1>>
 				Widget Stack:
 				<<set $_widgetStack to $_eventNPC.area.slice(1)>>

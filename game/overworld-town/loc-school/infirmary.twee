@@ -1,7 +1,7 @@
 :: School Infirmary
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
-<<if $schoolday is 1 and !["early","late"].includes($schoolstate)>>
+<<if Time.schoolDay and !["early","late"].includes($schoolstate)>>
 	<<if $per_npc.school_nurse>>
 		You are in the school infirmary. The cabinets are filled with drugs and medical supplies. The beds are unoccupied.
 		<br><br>
@@ -29,9 +29,9 @@
 	The beds are unoccupied, but trying to sleep in them now might be a bad idea. You'll get in trouble if you're caught.
 	<br><br>
 
-	<<if $infirmarydrugstheft is "stolen">>
+	<<if $weekly.theft.infirmaryDrugs is "stolen">>
 		<span class="blue">You've already stolen some drugs. You should wait for a restock before taking any more.</span>
-	<<elseif $infirmarydrugstheft is "failed">>
+	<<elseif $weekly.theft.infirmaryDrugs is "failed">>
 		<span class="purple">The lock on the cabinet is broken. You won't be able to break in until it's fixed.</span>
 	<<else>>
 		<<link [[Rummage through the cabinets|School Infirmary Drugs]]>><</link>>
@@ -152,7 +152,7 @@ The nurse shrugs. "Suit yourself." <<He>> places the bottle back in the cabinet,
 	<<He>> starts to lecture you, but <<he>> soon gives up with a sigh. <<He>> glances at <<his>> watch.
 	<br><br>
 
-	<<if $hour is 8 and $minute gte 30>>
+	<<if Time.hour is 8 and Time.minute gte 30>>
 		"Class is supposed to start soon, isn't it? Pop by if you're still feeling tuckered out by then. But you best believe I'm not letting you sleep through class before the school day's even started, young <<if $player.gender_appearance is "m">>man<<else>>lady<</if>>."
 		<br><br>
 
@@ -172,7 +172,7 @@ The nurse shrugs. "Suit yourself." <<He>> places the bottle back in the cabinet,
 	<</if>>
 <<elseif $schoolstate is "lunch">>
 	The nurse looks at <<his>> watch,
-	<<if $minute gte 30>>
+	<<if Time.minute gte 30>>
 		and frowns. "You'd be late to class."
 		<<if $daily.infirmaryBed is 1>>
 			<<He>> gives you a stern look. "I already bent the rules for you once today. You'll just have to tough it out, <<girl>>."
@@ -253,18 +253,18 @@ The nurse nods. "If you say so. Just don't push yourself, <<girl>>."
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 You walk up to one of the glass cabinets. Countless bottles of pills and assorted medication line the shelves.
-<<if $skulduggery gte 100 and !$infirmarydrugstheft>>
+<<if $skulduggery gte 100 and !$weekly.theft.infirmaryDrugs>>
 	<span class="blue">If you were alone, you might be able to snatch some for yourself.</span>
 <</if>>
 <br><br>
 
-<<if $delinquency gte 200 or $infirmarydrugstheft>>
+<<if $delinquency gte 200 or $weekly.theft.infirmaryDrugs>>
 	The sound of the nurse clearing <<his>> throat behind you snaps you back to reality. <<He>> watches you with a glare, <<his>> arms crossed. You sheepishly back away from the cabinet.
 	<br><br>
 
-	<<if $infirmarydrugstheft is "failed">>
+	<<if $weekly.theft.infirmaryDrugs is "failed">>
 		"Some punk tried breaking in. Broke the lock, too," <<he>> explains. "Sorry if I'm a little on edge."<<stress 2>><<gstress>>
-	<<elseif $infirmarydrugstheft is "stolen">>
+	<<elseif $weekly.theft.infirmaryDrugs is "stolen">>
 		"Some punk broke in and got ahold of some drugs," <<he>> huffs. "I'm not keen on getting another earful from the <<nnpc_title "Leighton">>, so keep your mitts away from that cabinet."
 	<<else>>
 		"Don't even think about it," <<he>> warns in a deadpan tone. "It's locked for a reason."
@@ -318,10 +318,10 @@ You approach the cabinets. They're locked up tight. Behind the glass, you see se
 	<br><br>
 
 	Satisfied with your haul, you close the cabinet door. It clicks shut.
-	<<set $infirmarydrugstheft to "stolen">>
+	<<set $weekly.theft.infirmaryDrugs to "stolen">>
 <<else>>
 	You try to pry open the cabinets, <span class="red">but the lock proves too complex for you.</span> Worse yet, you hear a snap within the mechanism. You must've broken something.<<stress 2>><<gstress>><<crimeup 50>><<crime>>
-	<<set $infirmarydrugstheft to "failed">>
+	<<set $weekly.theft.infirmaryDrugs to "failed">>
 <</if>>
 <br><br>
 
@@ -375,7 +375,7 @@ You wake up in an unfamiliar bed. Thin curtains surround you, hiding the rest of
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 /* overrides random outcome if it's too late for anyone else to be at school, or if the pc meets conditions for unlocking Harper's therapy but hasn't yet done so */
-<<if $hour gte 17 or ($trauma gt ($traumamax / 10) * 2 and $psych is 0 and !$schoolPsych)>>
+<<if Time.hour gte 17 or ($trauma gt ($traumamax / 10) * 2 and $psych is 0 and !$schoolPsych)>>
 	<<set _infirmaryVisitor to "nurse">>
 <<else>>
 	<<set _possibleVisitors to []>>
@@ -438,13 +438,13 @@ You don't know how much time has passed by the time you wake up, but your head f
 				<<He>> rummages through <<his>> desk drawer, then hands you a small card. "Doctor Harper - Psychiatric Specialist" is emblazoned across the top in crisp letters. Underneath is an address to the civic hospital on Nightingale Street.
 				<br><br>
 
-				"<span class="gold"><<nnpc_He "Harper">> holds private therapy sessions every Friday</span>," the nurse explains. "Do yourself a favour and give <<nnpc_him "Harper">> a visit <<if $weekday is 6>>later<<else>>sometime<</if>>, okay?"
+				"<span class="gold"><<nnpc_He "Harper">> holds private therapy sessions every Friday</span>," the nurse explains. "Do yourself a favour and give <<nnpc_him "Harper">> a visit <<if Time.weekDay is 6>>later<<else>>sometime<</if>>, okay?"
 			<<else>>
 				<<He>> sighs. "Can't be helped, I guess. Just try not to push yourself, okay?"
 			<</if>>
 		<</if>>
 		<br><br>
-		<<if $hour gte 17>>
+		<<if Time.hour gte 17>>
 			<<He>> glances at <<his>> watch. "Right, you ought to hurry on home." <<He>> looks back to you. "It wouldn't do to let you out by yourself after your episode. How about a ride?"
 			<br><br>
 
@@ -978,7 +978,7 @@ Before you can finish, Kylar takes your arm and starts down the hallway. You're 
 	<br><br>
 <</if>>
 
-<<if $hour gte 17>>
+<<if Time.hour gte 17>>
 	You don't stray far from school, opting for a quiet stroll down Oxford Street. After some time, Kylar checks <<his>> watch.
 	<br><br>
 

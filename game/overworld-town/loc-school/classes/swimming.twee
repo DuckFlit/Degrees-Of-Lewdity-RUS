@@ -2,8 +2,8 @@
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>>
 
 <<if $poolroomstate is "own">>
-	<<if $time gte ($hour * 60 + 50)>>
-		<<if $swimmingattended is 1>>
+	<<if Time.minute gte 45>>
+		<<if $daily.school.attended.swimming>>
 			You enter the swimming pool room.
 			<br><br>
 			The lesson has just ended. A few stragglers are still on their way to the changing rooms. Mason is gathering up towels that have been left behind.
@@ -19,11 +19,11 @@
 			<</if>>
 		<<else>>
 			<<include "School Swimming Late">>
-			<<set $swimmingattended to 2>><!-- still a missed lesson -->
+			<<set $daily.school.swimmingLate to true>><!-- still a missed lesson -->
 		<</if>>
 	<<elseif $exposed gte 2 and $swimall is 1>>
 		<<npc Mason>><<person1>>
-		<<if $swimmingattended is 1>>
+		<<if $daily.school.attended.swimming>>
 			You rejoin the swimming lesson.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 				Mason instantly notices your bound <<if $rightarm is "bound" or $leftarm is "bound">>arms<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">> and <</if>><<if $feetuse is "bound">>legs<</if>>. "It wouldn't be safe to let you swim like that."
@@ -33,7 +33,7 @@
 			<br><br>
 			<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
 			<br>
-		<<elseif $time lte ($hour * 60 + 5)>>
+		<<elseif Time.minute lte 5>>
 			You enter the swimming pool room.
 			Mason stands by the pool, covering <<his>> body as <<he>> tries to encourage students to stretch while the rest of the class pours in.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
@@ -76,7 +76,7 @@
 		<</if>>
 	<<elseif $swimall is 1>>
 		<<npc Mason>><<person1>>
-		<<if $swimmingattended is 1>>
+		<<if $daily.school.attended.swimming>>
 			You rejoin the swimming lesson.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 				Mason instantly notices your bound <<if $rightarm is "bound" or $leftarm is "bound">>arms<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">> and <</if>><<if $feetuse is "bound">>legs<</if>>. "Well... obviously it wouldn't be safe to let you swim like that."
@@ -97,10 +97,10 @@
 			<<link [[Swim naked|Swimming Lesson]]>><<schoolpoolundress>><<endevent>><</link>>
 		<</if>>
 	<<elseif ($worn.under_lower.type.includes("swim") or $worn.lower.type.includes("swim"))
-	and ($worn.under_upper.type.includes("swim") or $worn.upper.type.includes("swim") or ($worn.under_upper.type.includes("naked") and $worn.upper.type.includes("naked") and ($player.gender_appearance is "m" or $swimCrossdressPermission is true)))
+	and ($worn.under_upper.type.includes("swim") or $worn.upper.type.includes("swim") or ($worn.under_upper.type.includes("naked") and $worn.upper.type.includes("naked") and ($player.gender_appearance is "m" or $daily.swimCrossdressPermission)))
 	and (($worn.upper.type.includes("naked") or $worn.upper.type.includes("swim")) and ($worn.lower.type.includes("naked") or $worn.lower.type.includes("swim")))>>
 		<<npc Mason>><<person1>>
-		<<if $swimmingattended is 1>>
+		<<if $daily.school.attended.swimming>>
 			You rejoin the swimming lesson.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 				Mason instantly notices your bound <<if $rightarm is "bound" or $leftarm is "bound">>arms<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">> and <</if>><<if $feetuse is "bound">>legs<</if>>. "Well... obviously it wouldn't be safe to let you swim like that."
@@ -110,7 +110,7 @@
 			<br><br>
 			<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
 			<br>
-		<<elseif $time lte ($hour * 60 + 5)>>
+		<<elseif Time.minute lte 5>>
 			You enter the swimming pool room.
 			Mason stands by the pool, encouraging students to stretch while waiting for the rest of the class.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
@@ -163,14 +163,14 @@
 			<br>
 		<</if>>
 		<<if $player.gender is "f" or ($player.gender is "h" and $player.gender_appearance is "f")>>
-			<<if $swimCrossdressPermission is undefined>>
+			<<if !$daily.swimCrossdressPermission>>
 				<<link [[Say you only have a boy's swimming costume|School Pool Wrong]]>><</link>>
 				<br>
 			<</if>>
 			<<link [[Say you don't have anything to change into|School Pool Spare]]>><</link>>
 			<br>
 		<<else>>
-			<<if $swimCrossdressPermission is undefined>>
+			<<if !$daily.swimCrossdressPermission>>
 				<<if ($worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked")) and
 				($worn.lower.type.includes("swim") or ($worn.lower.type.includes("naked") and $worn.under_lower.type.includes("swim")))>>
 					<<link [[Say you only have a boy's swimming costume|School Pool Wrong]]>><<set $phase to 1>><</link>>
@@ -350,7 +350,7 @@ Once done, Leighton takes the swimwear and puts it in a hamper.
 
 :: Swimming Lesson
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>><<set $phase to 0>>
-<<set $swimmingattended to 1>>
+<<set $daily.school.attended.swimming to true>>
 
 <<if $swimnudecounter gte 10 and $swimall isnot 1>>
 	<<npc Leighton>><<person1>> Leighton storms into the pool room, furious. "Mason!" <<he>> shouts. "Explain this! Why is this class swimming naked?"
@@ -366,7 +366,7 @@ Once done, Leighton takes the swimwear and puts it in a hamper.
 
 	<<link [[Next|Pool Leighton Nude Punishment]]>><<pass 5>><</link>>
 <<else>>
-	<<if $time lte ($hour * 60 + 5)>>
+	<<if Time.minute lte 5>>
 		<<if $swimall is 1 and $exposed gte 2>>
 			You don't bother worrying about your <<lewdness>>, everyone is naked at this point.
 			<br><br>
@@ -412,7 +412,7 @@ Once done, Leighton takes the swimwear and puts it in a hamper.
 <</if>>
 
 :: School Pool Wrong
-<<set $outside to 0>><<set $location to "pool">><<set $swimCrossdressPermission to true>><<set _alreadyWearing to false>><<schooleffects>><<effects>>
+<<set $outside to 0>><<set $location to "pool">><<set $daily.swimCrossdressPermission to true>><<set _alreadyWearing to false>><<schooleffects>><<effects>>
 
 You speak in a low voice, so only the teacher will hear you.
 
@@ -708,7 +708,7 @@ You manage to get beneath the flimsy protection of the water, but not before the
 		<</if>>
 	<</if>>
 <</if>>
-	<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
+	<<if Time.minute gte 5 and Time.minute lte 57>>
 	<<else>>
 		<<if $player.gender_appearance is "m">>
 			<<link [[Wait for the girls to leave (0:05)|School Pool]]>><<pass 5>><</link>>

@@ -1,6 +1,7 @@
 :: Widgets Effects [widget]
 
-<<widget "effectstime">>
+/* Deprecated */
+/* <<widget "effectstime">>
 	<<time>>
 	<<if $time gte 1440>>
 		<<set $time -= 1440>><<set $days += 1>><<set $weekday += 1>>
@@ -14,7 +15,7 @@
 	<<if $minute gte 60>>
 		<<hour>>
 	<</if>>
-<</widget>>
+<</widget>> */
 
 <<widget "effectswater">>
 	<<set $wetintro to 0>>
@@ -198,10 +199,8 @@
 		<<newversionnotification>>
 	<</if>>
 
-	<<compatibility>>
-
 	<<autoTakePillCheck>>
-	<<effectstime>>
+	
 	<<effectswater>>
 	<<effectsmakeup>>
 	<<temperature>>
@@ -301,6 +300,32 @@
 		<<if $recovered_from_pregnancy>>
 			<<unset $recovered_from_pregnancy>>
 			<span class="green">You feel a familiar emptiness return in your womb.</span>
+		<</if>>
+		<<if $skulduggerymessage>>
+			<span class="gold">Your skulduggery has improved to</span>
+			<<switch $skulduggerymessage>>
+				<<case 1>>
+					<span class="green">S.</span>
+				<<case 2>>
+					<span class="teal">A+.</span>
+				<<case 3>>
+					<span class="teal">A.</span>
+				<<case 4>>
+					<span class="lblue">B+.</span>
+				<<case 5>>
+					<span class="lblue">B.</span>
+				<<case 6>>
+					<span class="blue">C+.</span>
+				<<case 7>>
+					<span class="blue">C.</span>
+				<<case 8>>
+					<span class="purple">D+.</span>
+				<<case 9>>
+					<span class="purple">D.</span>
+				<<case 10>>
+					<span class="pink">F+.</span>
+			<</switch>>
+			<<unset $skulduggerymessage>>
 		<</if>>
 		<<if $hypnosis_deviancy_message is 1>>
 			<<unset $hypnosis_deviancy_message>>
@@ -725,6 +750,37 @@
 			<<unset $toy_message>>
 			<span class="purple">Sex toys are becoming more popular throughout town.</span>
 		<</if>>
+		<<if $loveInterest_message is 1>>
+			<<unset $loveInterest_message>>
+			<span class = "blue"><i>You feel that having multiple lovers is wrong. You can no longer choose more than one love interest.</i></span>
+		<<elseif $loveInterest_message is 2>>
+			<<unset $loveInterest_message>>
+			<span class = "pink"><i>Your mind is open to the possibility of multiple lovers. You may now choose a second love interest.</i></span>
+		<</if>>
+		<<if $fallenangelmessage is 1>>
+			<<unset $fallenangelmessage>>
+			<span class="red">You feel dark presence clawing at your skin.</span>
+			<<gstress>><<set $stress += $stressmax>>
+		<</if>>
+		<<if $demonmessage is 1>>
+			<<unset $demonmessage>>
+			<span class="red">You feel a terrible light sear through you.</span>
+			<<gstress>><<set $stress += $stressmax>>
+		<</if>>
+		<<if $bookoverduemessage is 1>>
+			<<unset $bookoverduemessage>>
+			<<crimeup 1>>
+			<<delinquency `5 / 4`>>
+			<span class="red">You have a book severely overdue, and the police have been informed.</span>
+		<<elseif $bookoverduemessage is 2>>
+			<<unset $bookoverduemessage>>
+			<<delinquency `3 / 4`>>
+			<span class="red">You have a book overdue, and have incurred delinquency.</span>
+		<</if>>
+		<<if $wraithcompoundmessage is 1>>
+			<<unset $wraithcompoundmessage>>
+			<span class="red">A fell mist hangs over Elk Street.</span>
+		<</if>>
 	<</if>>
 
 	<<if $pregnancyDailyEvent>>
@@ -779,7 +835,7 @@
 		<<run delete $daily.parasiteEvent>>
 	<</if>>
 
-	<<if $slimeEvent isnot undefined and $daystate isnot "night">>
+	<<if $slimeEvent isnot undefined and Time.dayState isnot "night">>
 		<span class="red">The slime in you ear punishes you for failing to complete your task.</span>
 		<<ggpain>><<ggtrauma>><<ggstress>><<pain 16>><<stress 12>><<trauma 12>><<unset $slimeEvent>>
 		<br>
@@ -810,7 +866,7 @@
 	<<heelsUpdate>>
 
 	<<if $combat is 1>>
-		<<pass10sec>>
+		<<pass 10 seconds>>
 	<</if>>
 	<br>
 	<<set $menu to 0>>
@@ -864,7 +920,7 @@
 	<</for>>
 
 	<<if $inwater is 1>>
-		<<if $season is "winter" and !["sea", "beach", "school", "underground", "pool"].includes($location)>>
+		<<if Time.season is "winter" and !["sea", "beach", "school", "underground", "pool"].includes($location)>>
 			<<if $warmth gte 80>>
 				<<set $body_temperature_outside to "comfy">>
 			<<elseif $warmth gte 40>>
@@ -894,10 +950,4 @@
 	<<else>>
 		<<set $body_temperature to "comfy">>
 	<</if>>
-<</widget>>
-
-:: Widgets Compatibility [widget]
-
-<<widget "compatibility">>
-	<!-- Does nothing -->
 <</widget>>

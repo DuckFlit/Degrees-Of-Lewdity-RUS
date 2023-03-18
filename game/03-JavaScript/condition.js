@@ -6,7 +6,7 @@
  * but its body is a condition like in <<if>>. Example:
  *
  * <<condition "afternoon">>
- *   $hour gt 14 and $hour lt 18
+ *   Time.hour gt 14 and Time.hour lt 18
  * <</condition>>
  *
  * Later you can use your new condition like this:
@@ -32,7 +32,7 @@
  * "C." value. It can also be used for non-condition definitions, e.g.:
  *
  * <<compute "time">>
- *   ($hour / 24 * 10) + ":" + ($minute / 60 * 100)
+ *   (Time.hour / 24 * 10) + ":" + ($minute / 60 * 100)
  * <</time>>
  *
  * For hardcore recolutionists it is <<= C.time >> o'decimal'clock.
@@ -91,11 +91,7 @@ Macro.add(["condition", "compute"], {
 								this.output = Wikifier.wikifyEval(this.payload[0].contents);
 							}
 						} catch (ex) {
-							return this.error(
-								`bad conditional expression in <<condition "${widgetName}">>: ${
-									typeof ex === "object" ? ex.message : ex
-								}`
-							);
+							return this.error(`bad conditional expression in <<condition "${widgetName}">>: ${typeof ex === "object" ? ex.message : ex}`);
 						}
 					};
 				})(widgetName),

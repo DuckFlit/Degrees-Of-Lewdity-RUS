@@ -1742,9 +1742,9 @@
 		<<set $machine_stat to 0>>
 	<</if>>
 
-	<<if $year % 4 is 0 and $yeardays gte 366 or $yeardays gte 365>>
+	/* <<if $year % 4 is 0 and $yeardays gte 366 or $yeardays gte 365>>
 		<<year>>
-	<</if>>
+	<</if>> */
 
 	<<if $mason_pond is 5 and $garden_flowers_intro is 1>>
 		<<unset $garden_flowers_intro>>
@@ -4002,6 +4002,239 @@
 	<<if $debugdisable is undefined>>
 		<<set $options.debugdisable to $debugdisable>>
 		<<unset $debugdisable>>
+	<</if>>
+
+	
+	<!-- v0.4 Time refactor -->
+	<<if $time isnot undefined>>
+		<<if !$timeStamp>>
+			/* Tries to set the date to the same as the previous version's date. If weekday is different from the real date, move the date back until the weekday matches.  */
+			<<script>>
+				const month = DateTime.monthNames.map(month => month.toLowerCase()).indexOf(V.month) + 1;
+				const date = new DateTime(V.year, month, V.monthday, V.hour, V.minute).getPreviousWeekdayDate(V.weekday);
+				const startDate = new DateTime(date);
+				Time.startDate = startDate.addDays(-V.days);
+				Time.setDate(date);
+			<</script>>
+		<</if>>
+		<<unset $time>>
+		<<unset $yeardays>>
+		<<unset $year>>
+		<<unset $season>>
+		<<unset $month>>
+		<<unset $monthday>>
+		<<unset $weekday>>
+		<<unset $schoolday>>
+		<<unset $days>>
+		<<unset $daystate>>
+		<<unset $dayname>>
+		<<unset $hour>>
+		<<unset $minute>>
+		<<unset $seconds>>
+		<<unset $pass>>
+	<</if>>
+	<<if $real_season isnot undefined>>
+		<<set $real_timeStamp to new DateTime($real_year, $real_month, $real_monthday, $real_hour, $real_minute).timeStamp>>
+		<<unset $real_season>>
+		<<unset $real_weekday>>
+		<<unset $real_monthday>>
+		<<unset $real_month>>
+		<<unset $real_year>>
+		<<unset $real_hour>>
+		<<unset $real_minute>>
+		<<unset $real_time>>
+	<</if>>
+	<<if $masturbationtimestat isnot undefined>>
+		<<if !$secondsSpentMasturbating>>
+			<<set $secondsSpentMasturbating to $masturbationtimestat * 60>>
+		<</if>>
+		<<unset $masturbationtimestat>>
+	<</if>>
+	<<if $prison_scarred_done isnot undefined>>
+		<<unset $prison_scarred_done>>
+		<<set $daily.prison.scarredDone to true>>
+	<</if>>
+	<<if $prison_relaxed_spoke isnot undefined>>
+		<<unset $prison_relaxed_spoke>>
+		<<set $daily.prison.relaxedSpoke to true>>
+	<</if>>
+	<<if $prison_relaxed_greet isnot undefined>>
+		<<unset $prison_relaxed_greet>>
+		<<set $daily.prison.relaxedGreet to true>>
+	<</if>>
+	<<if $prison_anxious_spoke isnot undefined>>
+		<<unset $prison_anxious_spoke>>
+		<<set $daily.prison.anxiousSpoke to true>>
+	<</if>>
+	<<if $prison_anxious_greet isnot undefined>>
+		<<unset $prison_anxious_greet>>
+		<<set $daily.prison.anxiousGreet to true>>
+	<</if>>
+	<<if $prison_veteran_spoke isnot undefined>>
+		<<unset $prison_veteran_spoke>>
+	<</if>>
+	<<if $prison_veteran_greet isnot undefined>>
+		<<unset $prison_veteran_greet>>
+		<<set $daily.prison.veteranGreet to true>>
+	<</if>>
+	<<if $prison_methodical_spoke isnot undefined>>
+		<<unset $prison_methodical_spoke>>
+		<<set $daily.prison.methodicalSpoke to true>>
+	<</if>>
+	<<if $prisonwake isnot undefined>>
+		<<unset $prisonwake>>
+		<<set $daily.prison.wake to true>>
+	<</if>>
+	<<if $prison_attention_day isnot undefined>>
+		<<unset $prison_attention_day>>
+		<<set $daily.prison.attentionDay to true>>
+	<</if>>
+	<<if $glideScared isnot undefined>>
+		<<unset $glideScared>>
+		<<set $daily.glideScared to true>>
+	<</if>>
+	<<if !$daily.school.attended>>
+		<<set $daily.school.attended to {}>>
+	<</if>>
+	<<if $scienceattended isnot undefined>>
+		<<unset $sciencemissed>>
+		<<unset $mathsmissed>>
+		<<unset $englishmissed>>
+		<<unset $historymissed>>
+		<<unset $swimmingmissed>>
+		<<set $daily.school.attended.science to $scienceattended == 1>>
+		<<unset $scienceattended>>
+		<<set $daily.school.attended.maths to $mathsattended == 1>>
+		<<unset $mathsattended>>
+		<<set $daily.school.attended.english to $englishattended == 1>>
+		<<unset $englishattended>>
+		<<set $daily.school.attended.history to $historyattended == 1>>
+		<<unset $historyattended>>
+		<<set $daily.school.attended.swimming to $swimmingattended == 1>>
+		<<unset $swimmingattended>>
+	<</if>>
+	<<if $weekly is undefined>>
+		<<set $weekly to { theft: {}, sewers: {} }>>
+	<</if>>
+	<<if $robinBrothelWeekly isnot undefined>>
+		<<set $weekly.robinBrothel to $robinBrothelWeekly>>
+		<<unset $robinBrothelWeekly>>
+	<</if>>
+	<<if $edenPreyWeekly isnot undefined>>
+		<<set $weekly.edenPrey to $edenPreyWeekly>>
+		<<unset $edenPreyWeekly>>
+	<</if>>
+	<<if $leightondancerefused isnot undefined>>
+		<<set $weekly.leightonDanceRefused to $leightondancerefused>>
+		<<unset $leightondancerefused>>
+	<</if>>
+	<<if $dancestudiotheft isnot undefined>>
+		<<set $weekly.theft.danceStudio to $dancestudiotheft>>
+		<<unset $dancestudiotheft>>
+	<</if>>
+	<<if $oceanbreezetheft isnot undefined>>
+		<<set $weekly.theft.oceanBreeze to $oceanbreezetheft>>
+		<<unset $oceanbreezetheft>>
+	<</if>>
+	<<if $stripclubtheft isnot undefined>>
+		<<set $weekly.theft.stripClub to $stripclubtheft>>
+		<<unset $stripclubtheft>>
+	<</if>>
+	<<if $clothingshoptheft isnot undefined>>
+		<<set $weekly.theft.clothingShop to $clothingshoptheft>>
+		<<unset $clothingshoptheft>>
+	<</if>>
+	<<if $adultshoptheft isnot undefined>>
+		<<set $weekly.theft.adultShop to $adultshoptheft>>
+		<<unset $adultshoptheft>>
+	<</if>>
+	<<if $hairdresserstheft isnot undefined>>
+		<<set $weekly.theft.hairDressers to $hairdresserstheft>>
+		<<unset $hairdresserstheft>>
+	<</if>>
+	<<if $tailortheft isnot undefined>>
+		<<set $weekly.theft.tailor to $tailortheft>>
+		<<unset $tailortheft>>
+	<</if>>
+	<<if $petshoptheft isnot undefined>>
+		<<set $weekly.theft.petShop to $petshoptheft>>
+		<<unset $petshoptheft>>
+	<</if>>
+	<<if $toyshoptheft isnot undefined>>
+		<<set $weekly.theft.toyShop to $toyshoptheft>>
+		<<unset $toyshoptheft>>
+	<</if>>
+	<<if $tattooparlourtheft isnot undefined>>
+		<<set $weekly.theft.tattooParlour to $tattooparlourtheft>>
+		<<unset $tattooparlourtheft>>
+	<</if>>
+	<<if $ridingschooltheft isnot undefined>>
+		<<set $weekly.theft.ridingSchool to $ridingschooltheft>>
+		<<unset $ridingschooltheft>>
+	<</if>>
+	<<if $spatheft isnot undefined>>
+		<<set $weekly.theft.spa to $spatheft>>
+		<<unset $spatheft>>
+	<</if>>
+	<<if $schoollibrarymoneytheft isnot undefined>>
+		<<set $weekly.theft.schoolLibraryMoney to $schoollibrarymoneytheft>>
+		<<unset $schoollibrarymoneytheft>>
+	<</if>>
+	<<if $infirmarydrugstheft isnot undefined>>
+		<<set $weekly.theft.infirmaryDrugs to $infirmarydrugstheft>>
+		<<unset $infirmarydrugstheft>>
+	<</if>>
+	<<if $furnitureshoptheft isnot undefined>>
+		<<set $weekly.theft.furnitureShop to $furnitureshoptheft>>
+		<<unset $furnitureshoptheft>>
+	<</if>>
+	<<if $streetpolice isnot undefined>>
+		<<set $weekly.streetPolice to $streetpolice>>
+		<<unset $streetpolice>>
+	<</if>>
+	<<if $sewersantiquecrystal isnot undefined>>
+		<<set $weekly.sewers.antiqueCrystal to $sewersantiquecrystal>>
+		<<unset $sewersantiquecrystal>>
+	<</if>>
+	<<if $sewersantiquewatch isnot undefined>>
+		<<set $weekly.sewers.antiqueWatch to $sewersantiquewatch>>
+		<<unset $sewersantiquewatch>>
+	<</if>>
+	<<if $sewersantiquedildo isnot undefined>>
+		<<set $weekly.sewers.antiqueDildo to $sewersantiquedildo>>
+		<<unset $sewersantiquedildo>>
+	<</if>>
+	<<if $sewersantiquecandlestick isnot undefined>>
+		<<set $weekly.sewers.antiqueCandlestick to $sewersantiquecandlestick>>
+		<<unset $sewersantiquecandlestick>>
+	<</if>>
+	<<if $sewersantiquehorn isnot undefined>>
+		<<set $weekly.sewers.antiqueHorn to $sewersantiquehorn>>
+		<<unset $sewersantiquehorn>>
+	<</if>>
+	<<if $temple_fire isnot undefined>>
+		<<set $weekly.templeFire to $temple_fire>>
+		<<unset $temple_fire>>
+	<</if>>
+	<<if $police_high isnot undefined>>
+		<<set $weekly.policeHigh to $police_high>>
+		<<unset $police_high>>
+	<</if>>
+	<<if $school_pool_swap isnot undefined>>
+		<<set $weekly.schoolPoolSwap to $school_pool_swap>>
+		<<unset $school_pool_swap>>
+	<</if>>
+	<<if $beach_cave_compass isnot undefined>>
+		<<set $weekly.beachCaveCompass to $beach_cave_compass>>
+		<<unset $beach_cave_compass>>
+	<</if>>
+	<<if $dance_job isnot undefined>>
+		<<set $weekly.danceJob to $dance_job>>
+		<<unset $dance_job>>
+	<</if>>
+	<<if $whitneyPub isnot undefined>>
+		<<set $weekly.whitneyPub to $whitneyPub>>
+		<<unset $whitneyPub>>
 	<</if>>
 
 	<<if $hypnosisdisable is undefined>>

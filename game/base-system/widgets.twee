@@ -47,91 +47,104 @@
 
 <<widget "wateraction">>
 	<<if currentSkillValue('swimmingskill') lt 100>>
-		<<set $seconds += 18>><<set $oxygen -= 180>>
+		<<pass 18 sec>>
+		<<set $oxygen -= 180>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 18>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 200>>
-		<<set $seconds += 15>><<set $oxygen -= 150>>
+		<<pass 15 sec>>
+		<<set $oxygen -= 150>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 15>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 300>>
-		<<set $seconds += 12>><<set $oxygen -= 120>>
+		<<pass 12 sec>>
+		<<set $oxygen -= 120>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 12>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 400>>
-		<<set $seconds += 10>><<set $oxygen -= 100>>
+		<<pass 10 sec>>
+		<<set $oxygen -= 100>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 10>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 500>>
-		<<set $seconds += 8>><<set $oxygen -= 80>>
+		<<pass 8 sec>>
+		<<set $oxygen -= 80>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 8>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 600>>
-		<<set $seconds += 8>><<set $oxygen -= 80>>
+		<<pass 8 sec>>
+		<<set $oxygen -= 80>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 8>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 700>>
-		<<set $seconds += 7>><<set $oxygen -= 70>>
+		<<pass 7 sec>>
+		<<set $oxygen -= 70>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 7>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 800>>
-		<<set $seconds += 7>><<set $oxygen -= 70>>
+		<<pass 7 sec>>
+		<<set $oxygen -= 70>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 7>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 900>>
-		<<set $seconds += 6>><<set $oxygen -= 60>>
+		<<pass 6 sec>>
+		<<set $oxygen -= 60>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 6>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 1000>>
-		<<set $seconds += 6>><<set $oxygen -= 60>>
+		<<pass 6 sec>>
+		<<set $oxygen -= 60>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 6>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 1100>>
-		<<set $seconds += 5>><<set $oxygen -= 50>>
+		<<pass 5 sec>>
+		<<set $oxygen -= 50>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 5>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<elseif currentSkillValue('swimmingskill') lt 1200>>
-		<<set $seconds += 4>><<set $oxygen -= 40>>
+		<<pass 4 sec>>
+		<<set $oxygen -= 40>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 4>>
 				<<unset $lake_ice_broken>>
 			<</if>>
 		<</if>>
 	<<else>>
-		<<set $seconds += 3>><<set $oxygen -= 30>>
+		<<pass 3 sec>>
+		<<set $oxygen -= 30>>
 		<<if $lake_ice_broken gte 1>>
 			<<if random(1, 120) lte 3>>
 				<<unset $lake_ice_broken>>
@@ -143,10 +156,6 @@
 <<widget "underwater">>
 	<<water>><<set $underwater to 1>><<set $underwatercheck to 1>>
 	<<if $combat isnot 1>>
-		<<if $seconds gte 60>>
-			<<set $seconds -= 60>>
-			<<pass 1>>
-		<</if>>
 		<<if $oxygen lt 0 and $nooxygen is 1>>
 			<<set $stress += 1000>>
 		<<elseif $oxygen lt 0 and $nooxygen isnot 1>>
@@ -179,201 +188,6 @@
 		<<set _strangle to 1>>
 	<</if>>
 	<<set $oxygen = Math.clamp($oxygen, 0, $oxygenmax)>>
-<</widget>>
-
-<<widget "passwater">>
-	<<if $outside is 1 and $weather is "clear">>
-		<<if $upperwet gte 1>>
-			<<upperwet `($pass * -2)`>>
-		<</if>>
-		<<if $lowerwet gte 1>>
-			<<lowerwet `($pass * -2)`>>
-		<</if>>
-		<<if $underlowerwet gte 1>>
-			<<if $worn.lower.type.includes("naked")>>
-				<<underlowerwet `($pass * -2)`>>
-			<<else>>
-				<<underlowerwet `-$pass`>>
-			<</if>>
-		<</if>>
-		<<if $underupperwet gte 1>>
-			<<if $worn.upper.type.includes("naked")>>
-				<<underupperwet `($pass * -2)`>>
-			<<else>>
-				<<underupperwet `-$pass`>>
-			<</if>>
-		<</if>>
-	<<elseif $outside is 1 and $weather is "rain" and !$worn.head.type.includes("rainproof")>>
-		<<if !$worn.upper.type.includes("naked") and !waterproofCheck($worn.upper) and !waterproofCheck($worn.over_upper)>>
-			<<upperwet $pass>>
-		<</if>>
-		<<if !$worn.lower.type.includes("naked") and !waterproofCheck($worn.lower) and !waterproofCheck($worn.over_lower)>>
-			<<lowerwet $pass>>
-		<</if>>
-		<<if !$worn.under_lower.type.includes("naked") and !waterproofCheck($worn.under_lower) and !waterproofCheck($worn.lower) and !waterproofCheck($worn.over_lower)>>
-			<<underlowerwet $pass>>
-		<</if>>
-		<<if !$worn.under_upper.type.includes("naked") and !waterproofCheck($worn.under_upper) and !waterproofCheck($worn.upper) and !waterproofCheck($worn.over_upper)>>
-			<<underupperwet $pass>>
-		<</if>>
-	<<else>>
-		<<if $upperwet gte 1>>
-			<<upperwet `-$pass`>>
-		<</if>>
-		<<if $lowerwet gte 1>>
-			<<lowerwet `-$pass`>>
-		<</if>>
-		<<if $underlowerwet gte 1>>
-			<<underlowerwet `-$pass`>>
-		<</if>>
-		<<if $underupperwet gte 1>>
-			<<underupperwet `-$pass`>>
-		<</if>>
-	<</if>>
-	/* Commented out, new system is the "passArousalWetness" widget
-	<!-- Soak underwear if vagina is wet enough -->
-	<<if $vaginaWetness gte 60 and !$worn.under_lower.type.includes("naked") and !$worn.under_lower.type.includes("swim")>>
-		<<set $underlowerwet += Math.log10($vaginaWetness - 59) * 2 * $pass>><!-- 59 is to have at minimum log10(1) and not log10(0), which is NaN -->
-		<<set $pantiesSoaked to ($underlowerwet gte 100)>>
-		<!-- Wetness accumulates at vaginaWetness >= 63 (or at >= 70 in direct sunlight), otherwise it dries out faster than it soaks.
-			At maximum wetness (90, drenched) panties become damp in 25 minutes and soaked in 50 min, at 65 wetness - damp in 1.5 hours and soaked in 3h-->
-	<</if>>
-	*/
-<</widget>>
-
-<<widget "passArousalWetness">>
-	<<if $player.vaginaExist>>
-		<<set $_wetnessChange to 0>>
-		<<set $_arousalPercent to Math.clamp($arousal / $arousalmax, 0, 1)>>
-
-		<!-- Vaginal lube is produced at a fairly linear rate, between 1-3 per minute based on arousal. -->
-		<<if $arousal gte $arousalmax * (2/5)>>
-			<<set $_wetnessChange to 1 + ($_arousalPercent * 2)>>
-			<!-- It also gets harder to build up the closer you get to full wetness -->
-			<<set $_wetnessPercent to Math.clamp($vaginaArousalWetness / 100, 0, 1)>>
-			<<set $_wetnessChange to Math.floor($_wetnessChange * 2 * (1 - $_wetnessPercent))>>
-		<</if>>
-
-		<!-- It dries up at a gradually increasing rate, starting at 0.1 per minute, but increasing the longer it's been since last arousal. -->
-		<!-- It also dries slower at high arousal, in an inverse relationship. -->
-		<<set $_wetnessChange -= 0.1 * $timeSinceArousal * (1-$_arousalPercent)>>
-
-		<!-- If wetnessChange would go negative, and arousal is high enough, wetness instead does not change. -->
-		<<if $arousal gte $arousalmax * (3/5) and $_wetnessChange lt 0>>
-			<<set $_wetnessChange to 0>>
-		<</if>>
-
-		<<set $vaginaArousalWetness += Math.round($_wetnessChange * $pass)>>
-
-		<!-- Arbitrarily, we'll say that the player's vagina holds up to 60 units of lube, and it begins to leak out above 60. -->
-		<<if $vaginaArousalWetness gte 60>>
-			<<set $vaginaArousalWetness to Math.floor(120 - (3600/$vaginaArousalWetness))>>
-
-			<!-- Clothing dries at a rate of -1 * $pass. To offset that, it needs to be wet by at least 1 * $pass. -->
-			<!-- Expected rate: between 1 and 2.61, usually around 1.8 -->
-			<<set $_change to 1 + Math.log10($vaginaArousalWetness - 59)>>
-			<<set $_change to Math.clamp($_change, 1, 3)>>
-
-			<<if !$worn.under_lower.type.includes("naked") and !$worn.under_lower.type.includes("swim")>>
-				<<underlowerwet `Math.round($_change * $pass)`>>
-				<<underlowerwet `Math.clamp($underlowerwet, 0, 100 + $pass)`>>
-				<<set $pantiesSoaked to ($underlowerwet gte 100)>>
-			<</if>>
-			<!-- Commented out for now because the wetness messages aren't updated to account for it -->
-			/* <<if ($underlowerwet gte 100 or $worn.under_lower.type.includes("naked")) and !$worn.lower.type.includes("naked") and !$worn.lower.type.includes("swim")>>
-				<<set $lowerwet += Math.round($_change * $pass)>>
-			<</if>> */
-		<</if>>
-
-		<<set $vaginaArousalWetness to Math.clamp($vaginaArousalWetness, 0, 100)>>
-		<<vaginaWetnessCalculate>>
-	<</if>>
-<</widget>>
-
-<<widget "pass">>
-	<<if _args[1]>>
-		<<if _args[1].includes("h", 0)>>
-			<<set $pass to (_args[0]*60)>>
-		<<elseif _args[1].includes("d", 0)>>
-			<<set $pass to (_args[0]*1440)>>
-		<</if>>
-	<<elseif _args[0]>>
-		<<set $pass to _args[0]>>
-	<<else>>
-		<<set $pass to 0>>
-	<</if>>
-	<<parasiteProgressTime $pass>>
-	<<if isPlayerNonparasitePregnancyEnding()>>
-		<<stress `Math.ceil($pass * 0.75)`>>
-	<</if>>
-	<<if $controlled is 0 and $anxiety gte 2>>
-		<<set $stress += $pass>>
-		<<if $backgroundTraits.includes("crossdresser") and ($player.gender is $player.gender_appearance) and $player.gender isnot "h">>
-			<<set $stress += $pass>>
-		<</if>>
-	<<elseif $controlled is 0 and $anxiety gte 1 or $stress gte $stressmax>>
-	<<else>>
-		<<set $stress -= $pass>>
-		<<if $backgroundTraits.includes("crossdresser") and ($player.gender isnot $player.gender_appearance) and $player.gender isnot "h">>
-			<<set $stress -= $pass>>
-		<</if>>
-	<</if>>
-	<<if $body_temperature is "cold">>
-		<<set $stress += ($pass * 2)>>
-	<<elseif $body_temperature is "chilly">>
-		<<set $stress += $pass>>
-	<</if>>
-
-	<<if $hallucinogen gt 0>>
-		<<hallucinogen `-$pass`>>
-	<</if>>
-	<<if $drunk gt 0>>
-		<<tiredness $pass pass>>
-		<<alcohol `-$pass`>>
-		<<set $drunk to Math.clamp($drunk, 0, 1000)>>
-	<</if>>
-	<<if $drugged gt 0>>
-		<<drugs `-$pass`>>
-	<</if>>
-
-	<<pain $pass -1>>
-
-	<<if $pass gt 1200>>
-		<<set $tiredness to 0>>
-	<<else>>
-		<<tiredness $pass pass>>
-	<</if>>
-	<<set $time += $pass>><<set $minute += $pass>>
-	<<if $backgroundTraits.includes("lustful")>>
-		<<set _arousalMult to 0.2 * (12 - Math.floor($purity / 80)) + 1>>
-		<<if $purity lte 50>>
-			<<set _arousalMult++>>
-			<<set _arousalmax to 10000>>
-		<<else>>
-			<<set _arousalmax to 9000>>
-		<</if>>
-		<<arousal `_arousalMult * $pass`>><<arousalpass>>
-	<<else>>
-		<<arousal `$pass * -10`>><<arousalpass>>
-	<</if>>
-	<<if $arousal lt ($arousalmax / 4)>>
-		<<set $timeSinceArousal += $pass>>
-	<<else>>
-		<<set $timeSinceArousal to 1>>
-	<</if>>
-	<<if $player.vaginaExist>>
-		<<passArousalWetness>>
-	<</if>>
-	<<passwater>>
-	<<if $daystate is "day" and $weather is "clear" and $outside is 1 and $location isnot "forest" and !$worn.head.type.includes("shade")>>
-		<<if $season is "winter">>
-			<<tanned `$pass / 4`>>
-		<<elseif $season is "summer">>
-			<<tanned `$pass`>>
-		<<else>>
-			<<tanned `$pass / 2`>>
-		<</if>>
-	<</if>>
 <</widget>>
 
 <<widget "virginitylosttext">>
@@ -835,8 +649,7 @@
 			<</if>>
 		<</if>>
 
-		<<set V[$_subject + "_exam"] += ($_gain * _skill_mod)>>
-		<<exam_clamp $_subject>>
+		<<set V[$_subject + "_exam"] to Math.clamp(V[$_subject + "_exam"] + ($_gain * _skill_mod), -107, 200)>>
 	<</if>>
 <</widget>>
 
@@ -1712,14 +1525,14 @@
 <</widget>>
 
 <<widget "weatherdisplay">>
-	<<if $season is "winter">>
+	<<if Time.season is "winter">>
 		<<set _weather_display to "winter">>
 	<<else>>
 		<<set _weather_display to "normal">>
 	<</if>>
 
 	<<if $options.images is 1>>
-		<<if $daystate is "day">>
+		<<if Time.dayState is "day">>
 			<<if $location is "tentworld">>
 				<img id="daystate" src="img/misc/tentskyday.png">
 			<<else>>
@@ -1769,7 +1582,7 @@
 				<<case "school">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/schoolday.png'">
 				<<case "cabin">>
-					<<if $season is "winter">>
+					<<if Time.season is "winter">>
 						<img id="location" @src="'img/misc/' + _weather_display + '/cabinday.png'">
 					<<else>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/cabinday.gif'">
@@ -1786,7 +1599,7 @@
 						<img id="location" @src="'img/misc/' + _weather_display + '/sex_shop_day_open.gif'">
 					<</if>>
 				<<case "temple">>
-					<<if $year is 361>>
+					<<if Time.year is 361>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/templeday_old.png'">
 					<<else>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/templeday.png'">
@@ -1798,7 +1611,7 @@
 				<<case "police_station">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/police_station_day.png'">
 				<<case "park">>
-					<<if $season is "winter">>
+					<<if Time.season is "winter">>
 						<img id="location" src="img/misc/winter/park_day.png">
 					<<else>>
 						<img id="location" src="img/misc/normal/park_day.gif">
@@ -1880,7 +1693,7 @@
 				<<case "mines">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/undergroundday.png'">
 			<</switch>>
-		<<elseif $daystate is "night">>
+		<<elseif Time.dayState is "night">>
 			<!-- if bloodmoon -->
 			<<set _bloodmoon to (isBloodmoon() or $forcedBloodmoon)>>
 
@@ -1933,7 +1746,7 @@
 				<<case "school">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/schoolnight.png'">
 				<<case "cabin">>
-					<<if $season is "winter">>
+					<<if Time.season is "winter">>
 						<img id="location" @src="'img/misc/' + _weather_display + '/cabinnight.png'">
 					<<else>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/cabinnight.gif'">
@@ -1945,7 +1758,7 @@
 				<<case "landfill">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/landfillnight.png'">
 				<<case "temple">>
-					<<if $year is 361>>
+					<<if Time.year is 361>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/templenight_old.png'">
 					<<else>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/templenight.png'">
@@ -1957,7 +1770,7 @@
 				<<case "police_station">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/police_station_night.png'">
 				<<case "park">>
-					<<if $season is "winter">>
+					<<if Time.season is "winter">>
 						<img id="location" src="img/misc/winter/park_night.png">
 					<<else>>
 						<img id="location" src="img/misc/normal/park_night.gif">
@@ -2039,7 +1852,7 @@
 				<<case "mines">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/undergroundnight.png'">
 			<</switch>>
-		<<elseif $daystate is "dawn">>
+		<<elseif Time.dayState is "dawn">>
 			<<if $location is "tentworld">>
 				<img id="daystate" src="img/misc/tentskydawn.png">
 			<<else>>
@@ -2089,7 +1902,7 @@
 				<<case "school">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/schooldawn.png'">
 				<<case "cabin">>
-					<<if $season is "winter">>
+					<<if Time.season is "winter">>
 						<img id="location" @src="'img/misc/' + _weather_display + '/cabindawn.png'">
 					<<else>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/cabindawn.gif'">
@@ -2101,7 +1914,7 @@
 				<<case adult_shop>>
 				<img id="location" @src="'img/misc/' + _weather_display + '/sex_shop_dawn.png'">
 				<<case "temple">>
-					<<if $year is 361>>
+					<<if Time.year is 361>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/templedawn_old.png'">
 					<<else>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/templedawn.png'">
@@ -2191,7 +2004,7 @@
 				<<case "mines">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/undergrounddawn.png'">
 			<</switch>>
-		<<elseif $daystate is "dusk">>
+		<<elseif Time.dayState is "dusk">>
 			<<if $location is "tentworld">>
 				<img id="daystate" src="img/misc/tentskydusk.png">
 			<<else>>
@@ -2241,7 +2054,7 @@
 				<<case "school">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/schooldusk.png'">
 				<<case "cabin">>
-					<<if $season is "winter">>
+					<<if Time.season is "winter">>
 						<img id="location" @src="'img/misc/' + _weather_display + '/cabindusk.png'">
 					<<else>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/cabindusk.gif'">
@@ -2253,7 +2066,7 @@
 				<<case adult_shop>>
 				<img id="location" @src="'img/misc/' + _weather_display + '/sex_shop_dusk.gif'">
 				<<case "temple">>
-					<<if $year is 361>>
+					<<if Time.year is 361>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/templedusk_old.png'">
 					<<else>>
 						<img id="location" @src="'img/misc/' + _weather_display + '/templedusk.png'">
@@ -2265,7 +2078,7 @@
 				<<case "police_station">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/police_station_dusk.png'">
 				<<case "park">>
-					<<if $season is "winter">>
+					<<if Time.season is "winter">>
 						<img id="location" src="img/misc/winter/park_dusk.png">
 					<<else>>
 						<img id="location" src="img/misc/normal/park_dusk.gif">
@@ -2349,7 +2162,7 @@
 			<</switch>>
 		<</if>>
 	<<else>>
-		<<switch $daystate>>
+		<<switch Time.dayState>>
 			<<case "day">>
 				<<switch $weather>>
 					<<case "clear">>It's a bright and sunny day.
@@ -2772,7 +2585,7 @@
 	<<waterwash>>
 	<<set $inwater to 1>>
 	<<set _water_warmth to 0>>
-	<<if $location isnot "sea" and $outside is 1 and $season is "winter">>
+	<<if $location isnot "sea" and $outside is 1 and Time.season is "winter">>
 		<<if $worn.upper.type.includes("diving") or $worn.under_upper.type.includes("diving")>>
 			<<set _water_warmth += 1>>
 		<</if>>
@@ -2843,59 +2656,6 @@
 	<<unset $action_unclad_head>>
 	<<unset $action_unclad_face>>
 	<<unset $action_unclad_hands>>
-<</widget>>
-
-<<widget "arousalpass">>
-	<<set $_arousal to 0>>
-	<<if $penilechastityparasite isnot 0>>
-		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
-	<</if>>
-	<<if $vaginalchastityparasite isnot 0>>
-		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
-	<</if>>
-	<<if $analchastityparasite isnot 0>>
-		<<set $_arousal += $pass * 10>>
-	<</if>>
-	<<if $parasite.nipples.name>>
-		<<set $_arousal += $pass * 10 * $breastsensitivity>>
-	<</if>>
-	<<if $parasite.penis.name>>
-		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
-	<</if>>
-	<<if $parasite.clit.name>>
-		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
-	<</if>>
-	<<if $parasite.bottom.name>>
-		<<set $_arousal += $pass * 10 * $bottomsensitivity>>
-	<</if>>
-	<<if $parasite.tummy.name>>
-		<<set $_arousal += $pass * 10>>
-	<</if>>
-	<<if $parasite.left_arm.name>>
-		<<set $_arousal += $pass * 10>>
-	<</if>>
-	<<if $parasite.right_arm.name>>
-		<<set $_arousal += $pass * 10>>
-	<</if>>
-	<<if $parasite.left_thigh.name>>
-		<<set $_arousal += $pass * 10>>
-	<</if>>
-	<<if $parasite.right_thigh.name>>
-		<<set $_arousal += $pass * 10>>
-	<</if>>
-	<<if $drugged gt 1>>
-		<<set $_arousal += $pass * 10>>
-	<</if>>
-	<<if playerHasButtPlug()>>
-		<<set $_arousal += $pass * 12>>
-	<</if>>
-	<<if $parasite.left_ear.name is "slime" and random(1, 100) gte 90>>
-		<<drugs $pass>>
-	<</if>>
-	<<if $parasite.right_ear.name is "slime" and random(1, 100) gte 90>>
-		<<drugs $pass>>
-	<</if>>
-	<<arousal $_arousal>>
 <</widget>>
 
 <<widget "undiestrauma">>
@@ -4280,12 +4040,12 @@
 	<<set $pillory_tenant.exists to 1>>
 	<<set $pillory_tenant.person to clone($NPCList[0])>>
 	<<set $pillory_tenant.duration to random(4,27)>>
-	<<set $pillory_tenant.startday to $days>>
-	<<set $pillory_tenant.starthour to ($hour - _already_served)>>
+	<<set $pillory_tenant.startday to Time.days>>
+	<<set $pillory_tenant.starthour to (Time.hour - _already_served)>>
 	<<set _endhour to ($pillory_tenant.starthour + $pillory_tenant.duration)>>
-	<<set $pillory_tenant.endday to $days>>
+	<<set $pillory_tenant.endday to Time.days>>
 	<<if _endhour gte 24>><<set $pillory_tenant.endday += 1>><<set _endhour -= 24>><</if>>
-	/*Repeat incase $duration is gte 24hrs and starting time gte 21. E.g. worst case: $hour = 23 and duration=27hrs, end time should be 0200 @ +2days.
+	/*Repeat incase $duration is gte 24hrs and starting time gte 21. E.g. worst case: Time.hour = 23 and duration=27hrs, end time should be 0200 @ +2days.
 	So 23 + 27 = 50; add 1 to end-day and minus 24hrs gives 26; add 1 to end-day and minus 24 gives hr 2.*/
 	<<if _endhour gte 24>><<set $pillory_tenant.endday += 1>><<set _endhour -= 24>><</if>>
 	<<set $pillory_tenant.endhour to _endhour>>
@@ -4300,8 +4060,8 @@
 	<<set $pillory_tenant.ass to 0>>
 	<<set $pillory_tenant.genital to 0>>
 	<<set $pillory_tenant.broken to 0>>
-	<<set $pillory_tenant.lastviewed.day to $days>>
-	<<set $pillory_tenant.lastviewed.hour to $hour>>
+	<<set $pillory_tenant.lastviewed.day to Time.days>>
+	<<set $pillory_tenant.lastviewed.hour to Time.hour>>
 
 	<<person1>>
 	<<if $pillory_tenant.special.name is "">>
@@ -4430,7 +4190,7 @@
 <<widget "npc_pillory_appearance">>
 	<<update_npc_pillory_appearance>>
 	/*Desc*/
-	<<if $daystate is "night">>
+	<<if Time.dayState is "night">>
 		<<if $pillory_tenant.crowd gte 10>>A huge, drunken mob surround
 		<<elseif $pillory_tenant.crowd gte 6>>A large, rowdy mob crowd around
 		<<elseif $pillory_tenant.crowd gte 4>>A sinister crowd huddle around
@@ -4503,10 +4263,10 @@
 <</widget>>
 
 <<widget "update_npc_pillory_appearance">>
-	<<if ($pillory_tenant.lastviewed.day isnot $days) or ($hour gte $pillory_tenant.lastviewed.hour + 2)>>
+	<<if ($pillory_tenant.lastviewed.day isnot Time.days) or (Time.hour gte $pillory_tenant.lastviewed.hour + 2)>>
 		/* last viewed time tracked to avoid this firing on every viewing */
-		<<set $pillory_tenant.lastviewed.day to $days>>
-		<<set $pillory_tenant.lastviewed.hour to $hour>>
+		<<set $pillory_tenant.lastviewed.day to Time.days>>
+		<<set $pillory_tenant.lastviewed.hour to Time.hour>>
 
 		/*Weather effects*/
 		<<if $weather is "rain">><<set $pillory_tenant.wet to 2>>
@@ -4515,15 +4275,15 @@
 		<</if>>
 
 		/*Chance of abuse based on crowd and time passed*/
-		<<if $days - $pillory_tenant.startday is 2>><<set _chance to 24>>
-		<<elseif $days - $pillory_tenant.startday is 1>><<set _chance to 12>>
-		<<else>><<set _chance to ($hour - $pillory_tenant.starthour)>>
+		<<if Time.days - $pillory_tenant.startday is 2>><<set _chance to 24>>
+		<<elseif Time.days - $pillory_tenant.startday is 1>><<set _chance to 12>>
+		<<else>><<set _chance to (Time.hour - $pillory_tenant.starthour)>>
 		<</if>>
 		<<set _chance *= $pillory_tenant.crowd>>
 		/*increased by spectacle*/
 		<<set _factor to ($pillory_tenant.upperexposed + $pillory_tenant.lowerexposed + $pillory_tenant.fruit
 							+ $pillory_tenant.spank + $pillory_tenant.face + $pillory_tenant.ass + $pillory_tenant.genital)>>
-		<<if $daystate is "night">><<set _factor += 3>><</if>>
+		<<if Time.dayState is "night">><<set _factor += 3>><</if>>
 		<<if $pillory_tenant.wet is 2>><<set _factor += 4>><</if>>
 		<<set _prob to (_chance * _factor)>>
 
@@ -4557,11 +4317,11 @@
 
 <<widget "npc_pillory_abuse">>
 	<br>
-	<<if ($pillory_tenant.lastviewed.day isnot $days) or ($hour gte $pillory_tenant.lastviewed.hour + 1)>>
-		<<set $pillory_tenant.lastviewed.hour to $hour>>
+	<<if ($pillory_tenant.lastviewed.day isnot Time.days) or (Time.hour gte $pillory_tenant.lastviewed.hour + 1)>>
+		<<set $pillory_tenant.lastviewed.hour to Time.hour>>
 		<<rng>><<generate2>><<person2>>
 		<<set _ly to either("violently","openly","angrily","furiously","cheekily","repeatedly","clumsily","roughly","theatrically","dutifully","merrily","gleefully","drunkenly","ineptly")>>
-		<<if $daystate isnot "night">>
+		<<if Time.dayState isnot "night">>
 			<<if $rng gte 56>> /* 45% chance of jeer and shout only, 55% chance of something active */
 				A number of people, led by a <<person>> jeer and shout abuse at the prisoner.
 			<<elseif $rng gte 41>> /* 15% */
@@ -4649,7 +4409,7 @@
 					<br>
 					<<The_pillory_person>> looks mortified, <<his>> face flitting between shock, shame and sexual exhaustion.
 				<<else>>
-					<<if $month is "may" or $month is "june" or $month is "july" or $month is "august" and $rng % 4>>
+					<<if Time.month > 4 && Time.month < 9 and $rng % 4>>
 						<<set _bug to either("bee","wasp","bumblebee")>>
 						<<The_pillory_person>> shouts and helplessly wriggles and flaps as a _bug starts to circle <<him>>.
 						<br>
@@ -4796,7 +4556,7 @@
 		<</if>>
 	<<else>>/* already abused this hour - no action, don't want spamming this scene to accelerate things ridiculously */
 		The people around <<print either("jeer at","laugh at","point at","shout abuse at","taunt","mock","leer at")>>
-		<<if $weekday isnot 1 and $weekday isnot 7 and (($hour gte 7 and $hour lte 8) or ($hour is 15)) and $schoolday is 1 and $rng lte 34>>
+		<<if Time.schoolDay and ((Time.hour gte 7 and Time.hour lte 8) or Time.hour is 15) and $rng lte 34>>
 			the <<pillory_type>>. A group of students from the nearby school pass by, gaping at
 			<<if $pillory_tenant.lowerexposed gte 2 or $pillory_tenant.upperexposed gte 3>>the lewdly exposed prisoner.
 				<<if $rng % 3 is 0>>
@@ -4804,7 +4564,7 @@
 				<<set $pillory_tenant.lowerexposed to 0>><<set $pillory_tenant.upperexposed to 0>><</if>>
 			<<else>>the prisoner.
 			<</if>>
-		<<elseif $daystate isnot "night">>
+		<<elseif Time.dayState isnot "night">>
 			<<if $rng lte 80>>
 				the <<pillory_type>> and <<print either("mutter among themselves.","take photos.","amuse themselves.")>>
 			<<elseif $rng lte 93>>
@@ -4835,14 +4595,14 @@
 <<widget "npc_pillory_release_schedule">>
 	<<get_pillory_npc>>
 	<br>
-	<<if $days is $pillory_tenant.endday>>
-	<<set _a_few to ($pillory_tenant.endhour - $hour)>>
+	<<if Time.days is $pillory_tenant.endday>>
+	<<set _a_few to ($pillory_tenant.endhour - Time.hour)>>
 		<<He>> will be released
 		<<if _a_few gt 0>>in _a_few hours.
 		<<else>>imminently.
 		<</if>>
 	<<else>>
-		<<set _days_left to ($pillory_tenant.endday - $days)>>
+		<<set _days_left to ($pillory_tenant.endday - Time.days)>>
 		<<He>> is scheduled for release <<if _days_left is 1>>tomorrow<<else>>in two days<</if>> at
 		<<switch $pillory_tenant.endhour>>
 			<<case 0>>midnight.
@@ -4855,10 +4615,10 @@
 
 <<widget "end_npc_pillory">>
 	<<get_pillory_npc>>
-	<<if $minute lte 15>>
+	<<if Time.minute lte 15>>
 		A police officer <<print either("is releasing","has just released","is struggling to release","is about to release")>>
 		<<the_pillory_person>> from the pillory. <<if $weather is "rain">><<His>> clothes are see-through from the rain.<<elseif $weather is "snow">><<He>> shivers in the cold.<</if>>
-	<<elseif $minute lte 30>>
+	<<elseif Time.minute lte 30>>
 		<<The_pillory_person>> staggers away from the pillory with <<print either("tears","defiance","signs of trauma","fury")>> in <<his>> eyes.
 		<<if $weather is "rain">><<His>> clothes are see-through from the rain.<</if>>
 	<<else>>
@@ -4962,7 +4722,7 @@
 <<widget "cheatStart">>
 	<<set $cheatdisable to "f">><<set $money to 500000>>
 	<<set $rentmoney to 10000>><<rentmod>>
-	<<set $renttime to 7>><<set $rentday to $weekday>>
+	<<set $renttime to 7>><<set $rentday to Time.weekDay>>
 	<<set $rentstage to 1>>
 <</widget>>
 

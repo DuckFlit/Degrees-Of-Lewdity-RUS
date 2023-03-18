@@ -605,7 +605,7 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 		V.children[childObject.childId] = {
 			...childObject,
 			name: generateBabyName(childObject.name, childObject.gender, childObject.childId),
-			born: { day: clone(V.monthday), month: clone(V.month.toUpperFirst()), year: clone(V.year) },
+			born: { day: clone(Time.monthDay), month: clone(Time.monthName), year: clone(Time.year) },
 			location,
 			birthLocation,
 		};

@@ -1944,19 +1944,19 @@
 <</widget>>
 
 <<widget "gattention">>
-	<<if (_args[0] is "prison" and $prison_attention_day isnot true) and $statdisable is "f">> |
+	<<if (_args[0] is "prison" and !$daily.prison.attentionDay) and $statdisable is "f">> |
 		<span class="lewd">+ Attention</span>
 	<</if>>
 <</widget>>
 
 <<widget "ggattention">>
-	<<if (_args[0] is "prison" and $prison_attention_day isnot true) and $statdisable is "f">> |
+	<<if (_args[0] is "prison" and !$daily.prison.attentionDay) and $statdisable is "f">> |
 		<span class="lewd">+ + Attention</span>
 	<</if>>
 <</widget>>
 
 <<widget "gggattention">>
-	<<if (_args[0] is "prison" and $prison_attention_day isnot true) and $statdisable is "f">> |
+	<<if (_args[0] is "prison" and !$daily.prison.attentionDay) and $statdisable is "f">> |
 		<span class="lewd">+ + + Attention</span>
 	<</if>>
 <</widget>>
@@ -4793,68 +4793,14 @@
 
 <<widget "schoolday">>
 	<<if $location isnot "prison" and $location isnot "asylum">>
-		<<if $schoolterm is 1 and $weekday is 1>>
+		<<if !Time.schoolDay && Time.isSchoolDay(Time.tomorrow)>>
 			You have school tomorrow.
-			<br>
-		<<elseif $schoolterm is 1 and $weekday isnot 1 and $weekday isnot 7>>
+		<<elseif Time.schoolDay>>
 			It's a school day.
-			<br>
-		<<elseif $schoolterm is 0 and $weekday is 1>>
+		<<else>>
 			There's no school tomorrow.
-			<br>
 		<</if>>
-	<</if>>
-<</widget>>
-
-<<widget "schoolterm">>
-	<<if $month is "january">>
-		<<if $schoolterm is 1>>
-			School finishes on the first Monday of April.
-		<<else>>
-			School starts on the first Monday of January.
-		<</if>>
-	<<elseif $month is "february">>
-		School finishes on the first Monday of April.
-	<<elseif $month is "march">>
-		School finishes on the first Monday of April.
-	<<elseif $month is "april">>
-		<<if $schoolterm is 1>>
-			School finishes on the first Monday of April.
-		<<else>>
-			School starts on the first Monday of May.
-		<</if>>
-	<<elseif $month is "may">>
-		<<if $schoolterm is 1>>
-			School finishes on the first Monday of July.
-		<<else>>
-			School starts on the first Monday of May.
-		<</if>>
-	<<elseif $month is "june">>
-		School finishes on the first Monday of July.
-	<<elseif $month is "july">>
-		<<if $schoolterm is 1>>
-			School finishes on the first Monday of July.
-		<<else>>
-			School starts on the first Monday of September.
-		<</if>>
-	<<elseif $month is "august">>
-		School starts on the first Monday of September.
-	<<elseif $month is "september">>
-		<<if $schoolterm is 1>>
-			School finishes on the first Monday of December.
-		<<else>>
-			School starts on the first Monday of September.
-		<</if>>
-	<<elseif $month is "october">>
-		School finishes on the first Monday of December.
-	<<elseif $month is "november">>
-		School finishes on the first Monday of December.
-	<<elseif $month is "december">>
-		<<if $schoolterm is 1>>
-			School finishes on the first Monday of December.
-			<<else>>
-		School starts on the first Monday of January.
-		<</if>>
+		<br>
 	<</if>>
 <</widget>>
 
@@ -7031,14 +6977,14 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "daylight">>
-	<<if $daystate is "day">>
+	<<if Time.dayState is "day">>
 		<<set _text_output to "daylight">>
-	<<elseif $daystate is "dawn">>
+	<<elseif Time.dayState is "dawn">>
 		<<set _text_output to "dawn's light">>
-	<<elseif $daystate is "dusk">>
+	<<elseif Time.dayState is "dusk">>
 		<<set _text_output to "fading light">>
 	<<else>>
-		<<if $hour is 9 or $season is "summer">>
+		<<if Time.hour is 9 or Time.season is "summer">>
 			<<set _text_output to "twilight">>
 		<<else>>
 			<<set _text_output to "night breeze">>
@@ -7059,14 +7005,15 @@
 	$worn.genitals.name
 <</widget>>
 
-<<widget "timeAfterXHours">><<silently>>
+/* Replaced with js macro (timeMacros.js)
+ <<widget "timeAfterXHours">><<silently>>
 	<<if _args[0]>>
 		<<if $options.timestyle is "military">>
-			<<set $_hour to ($hour + _args[0]) % 24>>
+			<<set $_hour to (Time.hour + _args[0]) % 24>>
 			<<print $_hour>>:<<print $minute + ($minute lt 10? "0":"")>>
 			<<set _text_output to ($_hour lt 10 ? "0":"") + $_hour + ":" + ($minute lt 10 ? "0":"") + $minute>>
 		<<else>>
-			<<set $_hour to ($hour + _args[0]) % 24>>
+			<<set $_hour to (Time.hour + _args[0]) % 24>>
 			<<if $_hour gte 13>>
 				<<set _text_output to ($_hour - 12) + ":" + ($minute lt 10 ? "0":"") + $minute + "pm">>
 			<<else>>
@@ -7074,7 +7021,7 @@
 			<</if>>
 		<</if>>
 	<</if>>
-<</silently>><<print _text_output>><</widget>>
+<</silently>><<print _text_output>><</widget>> */
 
 <<widget "beast_jaws_text">>
 	<<if $NPCList[_n].type is "hawk">>
@@ -7506,22 +7453,23 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 	<</if>>
 <</widget>>
 
+/* Replaced with js macro
 <<widget "ampm">><!-- [hour] [minute] -->
-	/* displays time in accordance with player-set time format */
+	/* displays time in accordance with player-set time format *//*
 	<<if ndef _args[0]>>
-		/* when called without arguments, display current time */
-		<<set _hour to $hour>>
+		/* when called without arguments, display current time *//*
+		<<set _hour to Time.hour>>
 		<<set _minute to $minute>>
 	<<elseif typeof(_args[0]) is "string">>
-		/* if string, assume format H:mm or hh:mm */
+		/* if string, assume format H:mm or hh:mm *//*
 		<<set _numberstring to _args[0].replace(":", ".")>>
 		<<set _hour to Math.trunc(_numberstring)>>
 		<<set _minute to _numberstring * 100 % 100>>
 	<<else>>
-		/* assume first numeric argument is hour */
+		/* assume first numeric argument is hour *//*
 		<<set _hour to _args[0]>>
 		<<if ndef _args[1]>>
-			/* without a second argument, assume 00 */
+			/* without a second argument, assume 00 */ /*
 			<<set _minute to 0>>
 		<<else>>
 			<<set _minute to _args[1]>>
@@ -7539,6 +7487,7 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 	<</if>>
 	<<print _text_output>>
 <</widget>>
+*/
 
 <!-- usage
 	<<number -69>> -> "negative sixty-nine"
@@ -7616,7 +7565,7 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 
 <<widget "plant_details">><<silently>>
 	<<if ($location is "moor" and _args[0] isnot "forest") or _args[0] is "moor">>
-		<<switch $season>>
+		<<switch Time.season>>
 			<<case "spring">>
 				<<set _text_output to "yellow willow leaves">>
 			<<case "summer">>
@@ -7627,7 +7576,7 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 				<<set _text_output to "straw-coloured reeds">>
 		<</switch>>
 	<<else>>
-		<<switch $season>>
+		<<switch Time.season>>
 			<<case "spring">>
 				<<set _text_output to "pink blossoms">>
 			<<case "summer">>

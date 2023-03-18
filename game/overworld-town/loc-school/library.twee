@@ -1,7 +1,7 @@
 :: School Library
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<set $bus to "schoollibrary">>
 You are in the school library.
-<<if $schoolday is 1>>
+<<if Time.schoolDay>>
 	/* indev - double <br> replaced with single */
 	<<if $schoolstate is "early">>
 		The library is devoid of people, it being so early in the day.
@@ -16,7 +16,7 @@ You are in the school library.
 		Several students are present, working at the desks and searching among the bookshelves.
 		<br>
 	<</if>>
-<<elseif $schoolday isnot 1>>
+<<else>>
 	The library is devoid of people.
 	<br>
 <</if>>
@@ -26,7 +26,7 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 There are several shelves with typical academic literature. You see books on engineering, biology, social sciences and language learning. Everything that is useful in catching up.
 <br>
 Next to it is a small basket with returned and not yet sorted books.
-<<if ($month is "november" and $monthday gte 24) or $month is "december">>
+<<if (Time.monthName is "November" and Time.monthDay gte 24) or Time.monthName is "December">>
 	You notice a strange, olive-coloured book tucked amidst the rest.
 <</if>>
 <<if currentSkillValue('english') lt 200>>
@@ -34,7 +34,7 @@ Next to it is a small basket with returned and not yet sorted books.
 <</if>>
 
 /* Just some hints and tips for the player */
-<<if $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late" and random(1, 3) is 1>>
+<<if Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late" and random(1, 3) is 1>>
 	<br><br>
 	You overhear some students talking to each other.
 	<br>
@@ -132,7 +132,7 @@ Next to it is a small basket with returned and not yet sorted books.
 
 <br><br>
 <<if $exposed gte 1>>
-	<<if $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+	<<if Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late">>
 		You hide between the bookshelves, doing your best to conceal your <<nudity>>.
 		<br>
 	<<else>>
@@ -169,7 +169,7 @@ Next to it is a small basket with returned and not yet sorted books.
 	<<if $arousal gte $arousalmax>>
 		<<orgasmLocation "library">>
 	<</if>>
-	<<if $exposed gte 1 and $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+	<<if $exposed gte 1 and Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late">>
 	<<else>>
 		<<if $exposed lte 0>>
 			<<if _sydney_location is "library" and ($sydneySeen is undefined or !$sydneySeen.includes("library"))>>
@@ -188,7 +188,7 @@ Next to it is a small basket with returned and not yet sorted books.
 			<</if>>
 		<</if>>
 		<<projectoptions>>
-		<<if $exposed lte 0 and $schoolday is 1 and ($schoolstate is "morning" or $schoolstate is "afternoon" or $schoolstate is "lunch") and $mathsproject is "ongoing" and $mathslibrarystudent isnot 1 and $mathslibraryknown isnot 1>>
+		<<if $exposed lte 0 and Time.schoolDay and ($schoolstate is "morning" or $schoolstate is "afternoon" or $schoolstate is "lunch") and $mathsproject is "ongoing" and $mathslibrarystudent isnot 1 and $mathslibraryknown isnot 1>>
 			You see a student working on a solution for the maths competition.
 			<br>
 
@@ -238,7 +238,7 @@ Next to it is a small basket with returned and not yet sorted books.
 			<<scarleticon>><<link [[Take the medium-sized scarlet book from the basket (0:01)|ScarletBook1]]>><<pass 1>><</link>>
 			<br>
 		<</if>>
-		<<if ($month is "november" and $monthday gte 24) or $month is "december">>
+		<<if (Time.monthName is "November" and Time.monthDay gte 24) or Time.monthName is "December">>
 			<<oliveicon>><<link [[Take the olive-coloured book from the basket (0:01)|Olive Book 1]]>><<set $oliveExitPassage to "School Library">><<pass 1>><</link>>
 			<br>
 		<</if>>
@@ -263,7 +263,7 @@ Next to it is a small basket with returned and not yet sorted books.
 <br><br>
 
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-<<if $danger gte (9900 - $allure) and $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+<<if $danger gte (9900 - $allure) and Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late">>
 	<<if $rng gte 51>>
 		<<generatey1>><<generatey2>>While you are minding your own business, a <<fullGroup>> start harassing you.
 		<br><br>
@@ -709,17 +709,17 @@ You follow <<him>> down the corridor toward the entrance. "H-here," <<he>> says 
 		<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
 	<<default>>
-		<<if $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late" and _counterApproach is 1>>
+		<<if Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late" and _counterApproach is 1>>
 			No one's there. You ring the bell. No one responds.
-			<<if $hour lt 8 and $sydneyLate is 1 and $sydneySeen and $sydneySeen.includes("library")>>
+			<<if Time.hour lt 8 and $sydneyLate is 1 and $sydneySeen and $sydneySeen.includes("library")>>
 				It seems Sydney is late<<if $sydneySeen.includes("science")>> again<</if>>.
 			<</if>>
 		<</if>>
-		<<if ($schoolday isnot 1 or $schoolstate is "early" or $schoolstate is "late")>>
+		<<if (Time.schoolDay or $schoolstate is "early" or $schoolstate is "late")>>
 			<br><br>
 			<<bookRentalOptions>>
 		<</if>>
-		<<if $schoollibrarymoneytheft isnot 1>>
+		<<if !$weekly.theft.schoolLibraryMoney>>
 			<br><br>
 			<<link [[Examine the cash register|School Library Register]]>><</link>>
 			<br>

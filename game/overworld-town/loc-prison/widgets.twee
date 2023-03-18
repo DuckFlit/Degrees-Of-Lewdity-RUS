@@ -70,7 +70,7 @@
 <</widget>>
 
 <<widget "prison_attention">>
-	<<if _args[0] and ($prison_attention_day isnot true or $prison.schedule is "revolt")>>
+	<<if _args[0] and (!$daily.prison.attentionDay or $prison.schedule is "revolt")>>
 		<<set $prison.attention += (_args[0] * 10)>>
 	<</if>>
 <</widget>>
@@ -137,7 +137,7 @@
 <</widget>>
 
 <<widget "effects_prison">>
-	<<if $prison.work_check isnot 1 and $hour gte 7>>
+	<<if $prison.work_check isnot 1 and Time.hour gte 7>>
 		<<set $prison.work_check to 1>>
 		<<set $prison.hours_worked to 0>>
 	<</if>>
@@ -146,7 +146,7 @@
 	<<elseif $prison.schedule is "revolt">>
 		<span class="red">The inmates are revolting.</span>
 	<<else>>
-		<<switch $hour>>
+		<<switch Time.hour>>
 			<<case 6>>
 				<<if $prison.morning is 1>>
 					<<set $prison.schedule to "wake">>
@@ -235,15 +235,7 @@
 			<<set $prison.job to $prison_job_change>>
 			<<unset $prison_job_change>>
 		<</if>>
-		<<unset $prison_scarred_done>>
-		<<unset $prisonwake>>
-		<<unset $prison_relaxed_spoke>>
-		<<unset $prison_relaxed_greet>>
-		<<unset $prison_anxious_spoke>>
-		<<unset $prison_anxious_greet>>
-		<<unset $prison_veteran_spoke>>
-		<<unset $prison_veteran_greet>>
-		<<unset $prison_methodical_spoke>>
+
 		<<set $prison.morning to 0>>
 		<<set $prison.evening to 0>>
 		<<if $prison_punished_days gte 1>>
@@ -266,7 +258,6 @@
 			<<unset $prison_kylar_timer>>
 			<<set $prison.kylar to "active">>
 		<</if>>
-		<<unset $prison_attention_day>>
 	<</if>>
 <</widget>>
 
@@ -710,7 +701,7 @@
 <</widget>>
 
 <<widget "destination_prison_walkway">>
-	<<if $prison.schedule is "lockdown" or $prison.schedule is "wake" or $hour is 6>>
+	<<if $prison.schedule is "lockdown" or $prison.schedule is "wake" or Time.hour is 6>>
 		You are escorted back to your cell.
 		<br><br>
 		<<link [[Next|Prison Cell]]>><<endevent>><</link>>
@@ -820,7 +811,7 @@
 <<widget "prison_guard_greet">>
 	<<switch _args[0]>>
 		<<case "relaxed">>
-			<<set $prison_relaxed_greet to 1>>
+			<<set $daily.prison.prisonRelaxedGreet to true>>
 			<<generate_relaxed_guard 0>><<person1>><<relaxed_guard 0 cap>> glances up as you approach.
 			<<if $prison.relaxed gte 45>>
 				<<He>> grins. "My favourite <<girl>>. Feeling lucky today?"
@@ -837,7 +828,7 @@
 				<</if>>
 			<</if>>
 		<<case "anxious">>
-			<<set $prison_anxious_greet to 1>>
+			<<set $daily.prison.anxiousGreet to true>>
 			<<generate_anxious_guard 0>><<person1>><<anxious_guard 0 cap>> startles at the sound of your footsteps.
 			<<if $prison.anxious gte 45>>
 				<<He>> calms down when <<he>> sees you. A smile flashes on <<his>> face briefly, before <<he>> straightens it into a stern look.
@@ -868,7 +859,7 @@
 				<</switch>>
 			<</if>>
 		<<case "veteran">>
-			<<set $prison_veteran_greet to 1>>
+			<<set $daily.prison.veteranGreet to true>>
 			<<generate_veteran_guard 0>><<person1>>
 			<<if $prison.veteran gte 45>>
 				Someone claps you on the shoulder. It's <<veteran_guard 0>>. <<He>> passes without looking at you.
@@ -1223,7 +1214,7 @@
 
 <<widget "events_prison_attention">>
 	<<set $prison.attention to 0>>
-	<<set $prison_attention_day to true>>
+	<<set $daily.prison.attentionDay to true>>
 	<<if $prison.schedule is "revolt">>
 		The riotous noise quells. An inmate staggers by, and collapses. You find it hard to remain on your feet yourself. <span class="red">Something is wrong.</span>
 		<br><br>
@@ -1298,7 +1289,7 @@
 
 <<widget "prison_laundry_options">>
 	<<endevent>>
-	<<if $hour is 12>>
+	<<if Time.hour is 12>>
 		<<generate_relaxed_guard 0>><<person1>>"Shift over," <<relaxed_guard 0>> shouts. "Lunch time."
 		<br><br>
 		You shuffle from the room with the other inmates.
@@ -1306,7 +1297,7 @@
 
 		<<link [[Next|Prison Block]]>><<endevent>><</link>>
 		<br>
-	<<elseif $hour is 18>>
+	<<elseif Time.hour is 18>>
 		<<generate_relaxed_guard 0>><<person1>>"Shift over," <<relaxed_guard 0>> shouts. "Dinner time."
 		<br><br>
 		You shuffle from the room with the other inmates.
@@ -1319,7 +1310,7 @@
 		<br>
 		<<link [[Socialise with inmates (1:00)|Prison Laundry Work Socialise]]>><<prison_work 1>><<pass 1>><<advancetohour>><</link>><<note "Will give opportunities to raise respect" "green">>
 		<br>
-		<<if $prison_relaxed_spoke isnot 1>>
+		<<if !$daily.prison.prisonRelaxedSpoke>>
 			<<link [[Speak with guard (1:00)|Prison Laundry Work Chat]]>><</link>><<note "Will give opportunities to raise love" "green">>
 			<br>
 		<</if>>
@@ -1330,13 +1321,13 @@
 
 <<widget "prison_medical_options">>
 	<<endevent>>
-	<<if $hour is 12>>
+	<<if Time.hour is 12>>
 		<<generate_methodical_guard 0>><<person1>>"Lunch time," <<methodical_guard 0>> says. <<He>> pulls a prayer book from <<his>> pocket, and walks towards the door.
 		<br><br>
 
 		<<link [[Next|Prison Medical]]>><<endevent>><</link>>
 		<br>
-	<<elseif $hour is 18>>
+	<<elseif Time.hour is 18>>
 		<<generate_methodical_guard 0>><<person1>>"Dinner time," <<methodical_guard 0>> says. <<He>> pulls a prayer book from <<his>> pocket, and walks towards the door.
 		<br><br>
 
@@ -1345,7 +1336,7 @@
 	<<else>>
 		<<link [[Assist (1:00)|Prison Medical Work Hard]]>><<prison_work 1>><<pass 1>><<advancetohour>><</link>>
 		<br>
-		<<if $prison_methodical_spoke isnot 1>>
+		<<if !$daily.prison.methodicalSpoke>>
 			<<link [[Speak with guard|Prison Medical Work Chat]]>><</link>>
 			<br>
 		<</if>>
@@ -1356,13 +1347,13 @@
 
 <<widget "prison_spire_options">>
 	<<endevent>>
-	<<if $hour is 12>>
+	<<if Time.hour is 12>>
 		<<generate_anxious_guard 0>><<person1>>"Lunch," <<anxious_guard 0>> says. <<He>> takes a deep breath, and runs for the staircase down.
 		<br><br>
 
 		<<link [[Next|Prison Spire]]>><<endevent>><</link>>
 		<br>
-	<<elseif $hour gte 18>>
+	<<elseif Time.hour gte 18>>
 		<<generate_anxious_guard 0>><<person1>>"Dinner," <<anxious_guard 0>> says. <<He>> takes a deep breath, and runs for the staircase down.
 		<br><br>
 
@@ -1385,7 +1376,7 @@
 	<<else>>
 		<<link [[Work (1:00)|Prison Spire Work Hard]]>><<prison_work 1>><<pass 1>><<advancetohour>><</link>>
 		<br>
-		<<if $prison_anxious_spoke isnot 1>>
+		<<if !$daily.prison.anxiousSpoke>>
 			<<link [[Speak with guard|Prison Spire Work Chat]]>><</link>>
 			<br>
 		<</if>>
@@ -1573,7 +1564,7 @@
 	<<if $options.images is 1>>
 		<br>
 		<div id="prison_map">
-			<<if $season is "winter">>
+			<<if Time.season is "winter">>
 				<img src="img/misc/prison_map_winter.gif">
 			<<else>>
 				<img src="img/misc/prison_map.gif">

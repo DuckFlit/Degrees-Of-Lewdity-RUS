@@ -1,0 +1,1435 @@
+/* eslint-disable jsdoc/require-description-complete-sentence */
+/* eslint-disable no-undef */
+const Time = (() => {
+	const holidayMonths = [4, 8, 12];
+	let currentDate = {};
+
+	function set(timeStamp = V.timeStamp) {
+		currentDate = new DateTime((V.startDate || 0) + timeStamp);
+		V.timeStamp = timeStamp;
+	}
+	/*
+	 * Changes date without "passing time"
+	 */
+	function setDate(date) {
+		set(date.timeStamp - V.startDate);
+	}
+
+	function setTime(hour, minute) {
+		setDate(new DateTime(currentDate.year, currentDate.month, currentDate.day, hour || 0, minute || 0));
+	}
+
+	/**
+	 *
+	 * Pass X amount of seconds, executing code after reaching certain thresholds.
+	 * Checks for: year, week, day, hour, minute, dawn, noon.
+	 * Currently no function is called when only passing seconds (if minute mark is not reached)
+	 *
+	 * @param {number} seconds
+	 */
+	function pass(seconds) {
+		if (seconds < 0) return;
+
+		const prevDate = new DateTime(currentDate);
+		set(V.timeStamp + seconds);
+
+		const minutes = Math.floor((currentDate.timeStamp - prevDate.timeStamp) / 60) || (60 + (currentDate.minute - prevDate.minute)) % 60;
+		if (!minutes) return;
+
+		minutePassed(minutes);
+
+		const hours = Math.floor(minutes / 60) || (24 + (currentDate.hour - prevDate.hour)) % 24;
+		if (!hours) return;
+
+		hourPassed(hours);
+		if (!V.statFreeze && currentDate.hour >= 6 && !V.daily.dawnCheck) {
+			V.daily.dawnCheck = true;
+			dawnCheck();
+		}
+		if (!V.statFreeze && currentDate.hour >= 12 && !V.daily.noonCheck) {
+			V.daily.noonCheck = true;
+			noonCheck();
+		}
+
+		const days = Math.floor(hours / 24) || (prevDate.lastDayOfMonth + currentDate.day - prevDate.day) % prevDate.lastDayOfMonth;
+		if (!days) return;
+
+		dayPassed();
+		if (prevDate.weekDay === 6 && currentDate.weekDay === 0) weekPassed();
+		if (prevDate.yearDay < Time.startDate.yearDay && currentDate.yearDay >= Time.startDate.yearDay) yearPassed();
+	}
+
+	function nextSchoolTermStartDate(date) {
+		const newDate = new DateTime(date);
+		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
+		return newDate.getFirstWeekdayOfMonth(2);
+	}
+
+	function nextSchoolTermEndDate(date) {
+		const newDate = new DateTime(date);
+		newDate.addMonths(holidayMonths.find(e => e > newDate.month) - newDate.month);
+		return newDate.getFirstWeekdayOfMonth(2).addDays(-3);
+	}
+
+	function isSchoolTerm(date) {
+		const firstMonday = date.getFirstWeekdayOfMonth(2).day;
+		return !holidayMonths.some(month => (month === date.month && date.day >= firstMonday) || (month % 12 === date.month && date.day < firstMonday));
+	}
+	function isSchoolDay(date) {
+		return isSchoolTerm(date) && date.weekDay > 1 && date.weekDay < 7;
+	}
+	function isSchoolTime(date) {
+		return isSchoolDay(date) && date.hour >= 8 && date.hour <= 15;
+	}
+
+	return Object.create({
+		get date() {
+			return currentDate;
+		},
+		get holidayMonths() {
+			return holidayMonths;
+		},
+		get second() {
+			return currentDate.second;
+		},
+		get minute() {
+			return currentDate.minute;
+		},
+		get hour() {
+			return currentDate.hour;
+		},
+		get weekDay() {
+			return currentDate.weekDay;
+		},
+		get weekDayName() {
+			return currentDate.weekDayName;
+		},
+		get monthDay() {
+			return currentDate.day;
+		},
+		get month() {
+			return currentDate.month;
+		},
+		get monthName() {
+			return currentDate.monthName;
+		},
+		get year() {
+			return currentDate.year;
+		},
+		get days() {
+			return Math.ceil((currentDate.timeStamp - this.startDate.timeStamp) / DateTime.secondsPerDay);
+		},
+		get season() {
+			return this.month > 11 || this.month < 3 ? "winter" : this.month > 8 ? "autumn" : this.month > 4 ? "summer" : "spring";
+		},
+		set startDate(value) {
+			V.startDate = value.timeStamp;
+		},
+		get startDate() {
+			return new DateTime(V.startDate);
+		},
+		get tomorrow() {
+			const date = new DateTime(currentDate);
+			return date.addDays(1);
+		},
+		get yesterday() {
+			const date = new DateTime(currentDate);
+			return date.addDays(-1);
+		},
+		get schoolTerm() {
+			return isSchoolTerm(currentDate);
+		},
+		get schoolDay() {
+			return isSchoolDay(currentDate);
+		},
+		get schoolTime() {
+			return isSchoolTime(currentDate);
+		},
+		get dayState() {
+			const hour = this.hour;
+			return hour < 6 || hour >= 21 ? "night" : hour >= 18 ? "dusk" : hour >= 9 ? "day" : "dawn";
+		},
+		get nightState() {
+			const hour = this.hour;
+			return hour < 6 ? "morning" : hour >= 9 ? "evening" : undefined;
+		},
+		get nextSchoolTermStartDate() {
+			return nextSchoolTermStartDate(currentDate);
+		},
+		get nextSchoolTermEndDate() {
+			return nextSchoolTermEndDate(currentDate);
+		},
+		get lastDayOfMonth() {
+			return currentDate.lastDayOfMonth;
+		},
+		set,
+		setDate,
+		setTime,
+		pass,
+		isSchoolTerm,
+		isSchoolDay,
+		isSchoolTime,
+		getNextSchoolTermStartDate: nextSchoolTermStartDate,
+		getNextSchoolTermEndDate: nextSchoolTermEndDate,
+		getNextWeekdayDate: weekDay => currentDate.getNextWeekdayDate(weekDay),
+		getPreviousWeekdayDate: weekDay => currentDate.getPreviousWeekdayDate(weekDay),
+		isWeekEnd: () => currentDate.weekEnd,
+	});
+})();
+window.Time = Time;
+
+/* Local functions */
+
+// Replaces <<year>>
+function yearPassed() {
+	V.scienceproject = "none";
+	V.mathsproject = "none";
+	V.englishPlay = "none";
+}
+
+// Replaces <<week>>
+function weekPassed() {
+	if (V.science_exam >= 200 && V.sciencetrait < 4) {
+		V.effectsmessage = 1;
+		V.science_up_message = 1;
+		wikifier("school_skill_up", "science");
+	} else if (V.science_exam <= -100 && V.sciencetrait >= 0) {
+		V.effectsmessage = 1;
+		V.science_down_message = 1;
+		wikifier("school_skill_down", "science");
+	}
+	if (V.maths_exam >= 200 && V.mathstrait < 4) {
+		V.effectsmessage = 1;
+		V.maths_up_message = 1;
+		wikifier("school_skill_up", "maths");
+	} else if (V.maths_exam <= -100 && V.mathstrait >= 0) {
+		V.effectsmessage = 1;
+		V.maths_down_message = 1;
+		wikifier("school_skill_down", "maths");
+	}
+	if (V.english_exam >= 200 && V.englishtrait < 4) {
+		V.effectsmessage = 1;
+		V.english_up_message = 1;
+		wikifier("school_skill_up", "english");
+	} else if (V.english_exam <= -100 && V.englishtrait >= 0) {
+		V.effectsmessage = 1;
+		V.english_down_message = 1;
+		wikifier("school_skill_down", "english");
+	}
+	if (V.history_exam >= 200 && V.historytrait < 4) {
+		V.effectsmessage = 1;
+		V.history_up_message = 1;
+		wikifier("school_skill_up", "history");
+	} else if (V.history_exam <= -100 && V.historytrait >= 0) {
+		V.effectsmessage = 1;
+		V.history_down_message = 1;
+		wikifier("school_skill_down", "history");
+	}
+	if (Time.schoolTerm) {
+		V.science_exam = Math.clamp(V.science_exam - 7, -107, 200);
+		V.maths_exam = Math.clamp(V.science_exam - 7, -107, 200);
+		V.english_exam = Math.clamp(V.science_exam - 7, -107, 200);
+		V.history_exam = Math.clamp(V.science_exam - 7, -107, 200);
+		wikifier("exam_difficulty");
+	}
+	if (V.robinpaid === 1) V.robinPayout = 0;
+	else {
+		V.robinmoney -= 400;
+		if (V.robinmoney <= 0 && V.robindebt >= 0) {
+			V.robinmoney = 0;
+			V.robindebt++;
+		}
+	}
+	if (V.robinpaid !== 1 && V.robindebt >= V.robindebtlimit && V.robindebtevent <= 0) {
+		wikifier("robinPunishment", "docks");
+		V.robineventnote = 1;
+	}
+	V.robinmoney += 300;
+
+	if (V.edenfreedom >= 1 && V.edenshopping === 2) V.edenshopping = 0;
+	if (V.loft_kylar) V.loft_spray = 0;
+	if (V.farm) {
+		if (V.farm.tower_guard) {
+			V.farm.tower_guard_unpaid++;
+			V.farm.tower_guard_patience = 0;
+		}
+	}
+	if (V.sydney) {
+		if (V.sydney.glasses === "broken" || V.sydney.glasses === "playerbroken") {
+			V.sydney.glasses = "glasses";
+			V.sydneyGlassesNotice = 1;
+		}
+	}
+	if (V.syndromewolves === 1) V.wolfcavepatrol = 1;
+	if (V.photo) {
+		if (V.photo.silly === "paid") V.photo.silly = 0;
+		V.photo.shoot = 0;
+	}
+	if (V.nightmareTimer > 0) {
+		V.nightmareTimer--;
+		if (V.nightmareTimer <= 0) delete V.nightmareTimer;
+	}
+
+	delete V.weekly;
+	V.weekly = { theft: {}, sewers: {} };
+}
+
+// Replaces <<day>>
+function dayPassed() {
+	if (V.statFreeze) return;
+
+	wikifier("seenPassageChecks");
+	wikifier("earnAllFeats", true);
+	wikifier("corruption", -1);
+	wikifier("prison_day");
+	wikifier("clearNPC", "pharmNurse");
+	wikifier("weather_select");
+
+	V.physiquechange = 1;
+	V.home_event_timer--;
+	V.park_fame = Math.clamp(V.park_fame - 7, 0, 100);
+	V.museuminterest = Math.clamp(V.museuminterest - (V.museuminterest >= 60 ? 5 : 2), 0, 100);
+
+	if (V.gamemode !== "hard" && V.uncomfortable.lewd) {
+		V.exhibitionism = Math.max(V.exhibitionism - 1, 0);
+		V.promiscuity = Math.max(V.promiscuity - 1, 0);
+		V.deviancy = Math.max(V.deviancy - 1, 0);
+	}
+	if (V.locker_suspicion > 0) wikifier("locker_suspicion", -1);
+	if (V.whitneyromance || C.npc.Whitney.dom >= 20) {
+		V.bullytimer += 20;
+		V.bullytimeroutside += 10;
+	} else {
+		V.bullytimer += 10;
+		V.bullytimeroutside += 5;
+	}
+	if (Time.weekDay === 7) {
+		if (V.brothelshowdata.type !== "none" && !brothelshowdata.done && V.brothelshowdata.intro) {
+			V.brothelshowdata.missed = true;
+			V.brothelshowdata.type = "none";
+		}
+		V.brothelshowdata.done = false;
+	}
+	if (Time.weekDay === 2) {
+		delete V.museumhorse;
+		delete V.museumduck;
+	}
+
+	if (V.medicated) V.medicated = Math.max(Math.trunc((V.medicated - 1) * 0.5), 0);
+	if (V.asylummedicated) V.asylummedicated = Math.max(Math.trunc((V.asylummedicated - 1) * 0.5), 0);
+	if (V.brothel_rivalry_timer) V.brothel_rivalry_timer--;
+	if (V.museuminterest >= 60) V.museuminterest -= 3;
+	if (V.orphanageWardIntro) V.home_event_ward_timer--;
+	if (V.location === "asylum") V.asylumbound--;
+
+	const rng = random(1, 100);
+	if (rng >= 95) V.brothel_basement_price = 3000;
+	else if (rng >= 85) V.brothel_basement_price = 2000;
+	else if (rng >= 45) V.brothel_basement_price = 1000;
+	else V.brothel_basement_price = 500;
+
+	if (V.chef_rework) V.chef_rework--;
+	if (V.chef_sus) V.chef_sus--;
+	if (V.stall_rejected >= 1) V.stall_rejected = Math.clamp(V.stall_rejected - 1, 0, 100);
+	if (V.temple_garden >= 1) V.temple_garden = Math.clamp(V.temple_garden - 10, 0, 100);
+	if (V.temple_quarters >= 1) V.temple_quarters = Math.clamp(V.temple_quarters - 10, 0, 100);
+	if (V.temple_chastity_timer > 0) V.temple_chastity_timer--;
+	if (V.temple_rank !== "prospective" && V.temple_rank !== "initiate") {
+		if (V.grace >= 1) wikifier("grace", -1);
+	}
+	if (V.temple_evaluation) {
+		V.temple_evaluation--;
+		if (V.temple_evaluation <= 0) delete V.temple_evaluation;
+	}
+	if (V.wolfcavebreast >= 1) delete V.wolfcavebreast;
+	if (V.wolfcavepatrol === 1) V.wolfcavepatrolchance = random(1, 3);
+	if (V.temple_jordan_prayer === 1) delete V.temple_jordan_prayer;
+	if (V.temple_event) V.temple_event = 1;
+	if (V.school_crossdress_message >= 1 || V.school_herm_message >= 1) V.effectsmessage = 1;
+	if (V.syndromewolves === 1) {
+		wikifier("wolf_cave_update");
+		if (V.wolfchallengetimer === undefined) V.wolfchallengetimer = 14;
+		else V.wolfchallengetimer--;
+	}
+	if (V.estatePersistent) {
+		if (V.estatePersistent.suspicion && V.estatePersistent.suspicion >= 1) wikifier("blackjackSuspicion", -5 - C.npc.Wren.love / 5);
+		if (V.estatePersistent.newDeckTimer > 0 && V.estatePersistent.markedCards && V.estatePersistent.markedCards.size > 0) {
+			/*  we don't re-set this to 3 here - we only do that in the same
+				passage where we actually reset the deck.
+				we don't do that here because we acknowledge the timer and actually reset it
+				when the player enters the cottage, to not confuse things mid-game
+			*/
+			V.estatePersistent.newDeckTimer--;
+		}
+	}
+
+	if (V.bell_timer) V.bell_timer--;
+
+	if (V.slimeSleepEvent >= 1) V.slimeSleepEvent--;
+	if (V.slimeSleepEvent < 1) delete V.slimeEvent;
+	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
+	if (V.lake_ice_broken < 1) delete V.lake_ice_broken;
+	if (V.community_service >= 1) {
+		if (!["asylum", "prison"].includes(V.location)) {
+			wikifier("crimeup", 200);
+			V.effectsmessage = 1;
+			V.community_message = "missed";
+		}
+		delete V.community_service_done;
+	}
+
+	if (V.awareness >= 300) V.awarelevel = 2;
+	else if (V.awareness >= 200) V.awarelevel = 1;
+	else if (V.awareness <= -1) V.awarelevel = -1;
+	else V.awarelevel = 0;
+
+	if (V.awarelevel <= 1 && V.loveInterest.secondary !== "None") {
+		V.loveInterest_message = 1;
+		V.loveInterest.secondary = "None";
+		delete V.loveInterestAwareMessage;
+		V.effectsmessage = 1;
+	} else if (V.awarelevel >= 2 && V.loveInterest.primary !== "None" && V.loveInterest.secondary === "None" && !V.loveInterestAwareMessage) {
+		V.loveInterest_message = 2;
+		V.loveInterestAwareMessage = 1;
+		V.effectsmessage = 1;
+	}
+	if (V.pound) {
+		V.pound.compete = 0;
+		wikifier("stray_happiness", -1);
+		V.pound.tasks = [];
+	}
+	if (V.renttime < 1) V.baileyOverdue++;
+	V.renttime--;
+
+	if (V.flashbacktown > 0) V.flashbacktown--;
+	if (V.flashbackhome > 0) V.flashbackhome--;
+	if (V.flashbackbeach > 0) V.flashbackbeach--;
+	if (V.flashbackunderground > 0) V.flashbackunderground--;
+	if (V.flashbackschool > 0) V.flashbackschool--;
+
+	if (V.flashbacktown === 1) V.flashbacktownready = 1;
+	if (V.flashbackhome === 1) V.flashbackhomeready = 1;
+	if (V.flashbackbeach === 1) V.flashbackbeachready = 1;
+	if (V.flashbackunderground === 1) V.flashbackundergroundready = 1;
+	if (V.flashbackschool === 1) V.flashbackschoolready = 1;
+
+	if (V.smuggle_timer) {
+		V.smuggle_timer--;
+		if (V.smuggle_timer < 0) {
+			V.smuggle_timer = random(4, 7);
+			const rng = random(1, 100);
+			if (rng >= 76) V.smuggle_location = "forest";
+			else if (rng >= 51) V.smuggle_location = "sewer";
+			else if (rng >= 26) V.smuggle_location = "beach";
+			else V.smuggle_location = "bus";
+			delete V.smuggler_known;
+		}
+	}
+
+	if (V.tailorMonthlyService > 0) V.tailorMonthlyService--;
+	else if (V.tailorMonthlyService === 0) delete V.tailorMonthlyService;
+
+	if (V.wardrobeRepair && V.wardrobeRepair.timeLeft === 1) V.wardrobeRepair.timeLeft = 0;
+	if (V.clothingShop.ban > 0) V.clothingShop.ban--;
+	else V.clothingShop.banExtension = false;
+
+	if (V.adultShop) {
+		if (V.adultShop.ban > 0) V.adultShop.ban--;
+		else V.adultShop.banExtension = false;
+	} else if (V.adultShop === undefined) {
+		V.adultShop = { ban: 0, banExtension: false, spotted: false, stolenClothes: 0, totalStolenClothes: 0, banCount: 0, rng: random(0, 1000) };
+	}
+
+	if (V.farm) {
+		if (V.farm.milking.catchChance > random(10, 1000) / 10) V.farm.milking.caught = true;
+		if (V.farm.milking.catchChance >= 4) V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.9, 0, 100).toFixed(3);
+		else V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.95, 0, 100).toFixed(3);
+	}
+
+	if (V.officejobintro === 1) V.officelastcomplaintday++;
+	if (V.moorLuck > 0) V.moorLuck--;
+
+	delete V.masturbation_oralSkillMax;
+
+	if (V.pubfame) {
+		if (V.pubfame.timer >= 1) V.pubfame.timer--;
+		else if (V.pubfame.timer <= 0) {
+			if (V.pubfame.status === "hiding") V.pubfame.detail = "hiding";
+			if (V.pubfame.target) V.pubfame.status = "accepted";
+			else V.pubfame.status = "ready";
+			delete V.pubfame.timer;
+		}
+		for (const fameKeys of Object.keys(V.fameDecay)) {
+			if (V.fameDecayTimer[fameKeys] >= 1) {
+				V.fameDecayTimer[fameKeys]--;
+				V.fame[fameKeys] -= V.fameDecay[fameKeys];
+			} else if (V.fameDecayTimer[fameKeys] <= 0) {
+				delete fameDecayTimer[fameKeys];
+				delete fameDecay[fameKeys];
+				V.fame[fameKeys] = Math.round(V.fame[fameKeys]);
+			}
+		}
+	}
+
+	if (V.randomNNPCStraponsToClear) {
+		V.NPCName.forEach(npc => {
+			if (npc.strapons && npc.strapons.length >= 1) {
+				/* This removes all strapons that have the temp tag, and ignores any that lack this variable */
+				npc.strapons = npc.strapons.filter(strapon => !strapon.temp);
+				console.log("Removed temp strap-ons");
+			}
+		});
+	}
+
+	wikifier("menstruationCycle", "daily");
+	wikifier("pregnancyProgress");
+	wikifier("pregnancyProgress", "anus");
+	wikifier("rutCycle");
+	wikifier("npcPregnancyCycle");
+	wikifier("randomPregnancyProgress");
+
+	dailyPlayerEffects();
+	dailyMasochismSadismEffects();
+	dailySchoolEffects();
+	dailyFarmEvents();
+	dailyLiquidEffects();
+	dailyTransformationEffects();
+	dailyNPCEffects();
+	yearlyEventChecks();
+	moonState();
+
+	wikifier("parasiteProgressDay");
+	wikifier("tending_day");
+	wikifier("creatureContainersProgressDay");
+	wikifier("physicalAdjustments");
+
+	if (V.pillory_tenant.exists && V.pillory_tenant.endday < Time.days) wikifier("clear_pillory");
+
+	delete V.daily;
+	V.daily = { school: { attended: {} }, whitney: {}, robin: {}, kylar: {}, morgan: {}, eden: {}, alex: {}, sydney: {}, ex: {}, pharm: {}, prison: {} };
+}
+
+// Replaces <<hour>>
+function hourPassed(hours) {
+	if (V.statFreeze) return;
+
+	for (let i = 0; i < hours; i++) {
+		wikifier("control", 1);
+		wikifier("orgasmHourlyRecovery");
+		wikifier("arousal", 0, "time");
+		wikifier("wetnessCalculate");
+		wikifier("bimboCheck", "upper");
+		wikifier("bimboCheck", "lower");
+		wikifier("bimboCheck", "feet");
+
+		if (V.ejactrait >= 1) V.stress -= (V.goocount + V.semencount) * 10;
+		if (V.innocencestate === 1 && V.control <= 0) wikifier("awareness", 1);
+		if (V.kylarwatched) V.kylarwatchedtimer--;
+		if (V.parasite.nipples.name) wikifier("milkvolume", 1);
+		if (V.worn.head.name === "hairpin") {
+			V.hairlength++;
+			V.fringelength++;
+			wikifier("calchairlengthstage");
+		}
+		if (V.slimeDefyCooldown) {
+			V.slimeDefyCooldown--;
+			if (V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime") V.slimeDefyCooldown--;
+			if (V.slimeDefyCooldown < 1) delete V.slimeDefyCooldown;
+		}
+	}
+
+	if (
+		V.sexStats.vagina.menstruation.running &&
+		(V.sexStats.vagina.menstruation.currentState === "pregnant" ||
+			(V.sexStats.vagina.menstruation.currentState === "normal" && (V.playerPregnancyHumanDisable === "f" || V.playerPregnancyBeastDisable === "f")))
+	) {
+		V.pregnancyDailyEvent = true;
+	}
+
+	V.openinghours = Time.hour >= 8 && Time.hour < 21 ? 1 : 0;
+	if (V.cheatdisable === "f") V.feats.locked = true;
+	wikifier("earnAllFeats");
+	wikifier("playerEndWaterProgress");
+	wikifier("playerEndWaterProgress", "anus");
+
+	temperatureHour();
+
+	if (!V.wolfevent) V.wolfevent = 1;
+	if (V.wolfpatrolsent >= 24) delete V.wolfpatrolsent;
+	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
+	if (V.robinPillory && V.robinPillory.danger) wikifier("robinPilloryHour");
+	if (V.pillory_tenant.exists && V.pillory_tenant.endday === Time.days && V.pillory_tenant.endhour < Time.hour) wikifier("clear_pillory");
+	if (C.npc.Sydney.init) {
+		wikifier("sydneySchedule");
+		if (
+			T.sydney_location === "temple" &&
+			V.temple_rank !== undefined &&
+			V.temple_rank !== "prospective" &&
+			(V.sydney_templeWork === "garden" || V.sydney_templeWork === "quarters")
+		) {
+			if (V.temple_garden >= 1) V.temple_garden++;
+		}
+	}
+	if (V.per_npc.pubfame_receptionist) {
+		wikifier("clearNPC", "pubfame_receptionist");
+		V.pubfame.hospital = {};
+		if (V.per_npc.pubfame_nurse) wikifier("clearNPC", "pubfame_nurse");
+	}
+
+	V.home_gone++;
+}
+
+function minutePassed(minutes) {
+	// Stress
+	const stressMultiplier = V.backgroundTraits.includes("crossdresser") && V.player.gender !== V.player.gender_appearance && V.player.gender !== "h" ? 2 : 1;
+	if (V.controlled === 0 && V.anxiety >= 2) V.stress += minutes * stressMultiplier;
+	else if (!((V.controlled === 0 && V.anxiety >= 1) || V.stress >= V.stressmax)) V.stress -= minutes * stressMultiplier;
+
+	if (isPlayerNonparasitePregnancyEnding()) V.stress += Math.ceil(minutes * 0.75);
+
+	if (V.body_temperature === "cold") V.stress += minutes * 2;
+	else if (V.body_temperature === "chilly") V.stress += minutes;
+
+	V.stress = Math.min(V.stress, V.stressmax);
+
+	// Effects
+	if (V.drunk > 0) wikifier("alcohol", -minutes);
+	if (V.hallucinogen > 0) wikifier("hallucinogen", -minutes);
+	if (V.drugged > 0) wikifier("drugs", -minutes);
+	if (minutes < 1200) wikifier("tiredness", minutes * (V.drunk > 0 ? 2 : 1), "pass");
+	wikifier("pain", minutes, -1);
+
+	// Arousal
+	const arousalMultiplier = V.backgroundTraits.includes("lustful") ? 0.2 * (12 - Math.floor(V.purity / 80)) + 1 + (V.purity <= 50 ? 1 : 0) : -10;
+	wikifier("arousal", minutes * arousalMultiplier + passArousal(minutes));
+	V.timeSinceArousal = V.arousal < V.arousalmax / 4 ? V.timeSinceArousal + minutes : 1;
+	if (V.player.vaginaExists) passArousalWetness(minutes);
+
+	// Tanning
+	if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade"))
+		wikifier("tanned", minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2));
+
+	passWater(minutes);
+}
+
+function noonCheck() {
+	delete V.bartend_info;
+	delete V.bartend_info_other;
+	if (V.per_npc.bartend) wikifier("clearNPC", "bartend");
+	V.clothingShop.spotted = false;
+	V.adultShop.spotted = false;
+	wikifier("dailySellProduce");
+	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
+	if (V.lake_ice_broken <= 0) delete V.lake_ice_broken;
+
+	wikifier("menstruationCycle");
+	wikifier("pregnancyProgress");
+	wikifier("pregnancyProgress", "anus");
+
+	delete V.birdSleep;
+	delete V.edenbed;
+	if (V.pound) V.pound.sneak = 0;
+}
+
+function dawnCheck() {
+	V.robinwakeday = 0;
+	V.wolfwake = 0;
+	V.edenwake = 0;
+	delete V.skul_dock_init;
+	delete V.skul_dock;
+	delete V.dock_security;
+	delete V.alexwake;
+	delete V.alex_bed;
+	delete V.alex_bed_spurned;
+	delete V.connudatus_stripped;
+}
+
+function dailyNPCEffects() {
+	delete V.bird.satisfied;
+	delete V.robinlocationoverride;
+
+	// Winter
+	if (Time.weekDay === 7) V.winterHint = "notGiven";
+
+	// Whitney
+	if (C.npc.Whitney.lust >= 1) {
+		V.bullytimer += C.npc.Whitney.lust / 5;
+		V.bullytimeroutside += C.npc.Whitney.lust / 10;
+	}
+
+	// Robin
+	if (V.robindebtevent > 0) {
+		V.robindebtevent--;
+		switch (V.robinmissing) {
+			case "dinner":
+				wikifier("npcincr", "Robin", "trauma", 40);
+				break;
+			case "docks":
+				wikifier("npcincr", "Robin", "trauma", 15);
+				break;
+			case "landfill":
+				wikifier("npcincr", "Robin", "trauma", V.robindebtevent >= 1 ? 10 : 25);
+				break;
+		}
+	}
+	if (C.npc.Robin.trauma > 0) wikifier("npcincr", "Robin", "trauma", -1);
+
+	if (V.robindebtevent === 0) V.robinmissing = 0;
+	if (V.robinpaid >= 1) wikifier("trauma", -25);
+	if (V.robinromance && C.npc.Robin.dom >= 40) wikifier("npcincr", "Robin", "lust", 1);
+	if (V.robinPilloryFail) {
+		delete V.robinPilloryFail;
+		delete V.robinPillory;
+	}
+
+	// Alex
+	if (V.farm_stage >= 7 && C.npc.Alex.dom >= 40) wikifier("npcincr", "Alex", "lust", 1);
+
+	// Mason
+	if (V.mason_pond === 3) {
+		if (V.weather !== "rain" && V.weather !== "snow") V.mason_pond_timer--;
+		if (V.mason_pond_timer < 1) {
+			delete V.mason_pond_timer;
+			V.mason_pond = 4;
+		}
+	}
+
+	// Eden
+	if (V.edencoat === 1) V.edencoat = 2;
+	if (Time.monthName !== "November" && V.edenprepare) {
+		delete V.edenprepare;
+		delete V.edenwall;
+		delete V.edenchimney;
+		delete V.edenroof;
+	}
+	if (V.edenshoutrescue !== 1) V.edenwhip = 0;
+	if (V.edendays) V.edendays++;
+	if (V.edengarden >= 1) V.edengarden--;
+	if (V.edenshrooms >= 1) V.edenshrooms--;
+	if (V.edenspring >= 1) V.edenspring--;
+
+	if (C.npc.Eden.init === 1) wikifier("npcincr", "Eden", "lust", 1);
+
+	// Kylar
+	if (C.npc.Kylar.state === "active") {
+		/* prevent kylar's stalker routine before they're even introduced to the player */
+		wikifier("npcincr", "Kylar", "lust", 1);
+		C.npc.Kylar.lust = Math.clamp(C.npc.Kylar.lust, 0, 100);
+		C.npc.Kylar.love = Math.clamp(C.npc.Kylar.love, 0, 100);
+		C.npc.Kylar.rage = Math.clamp(C.npc.Kylar.rage, 0, 100);
+		V.kylar.timer.halls += 10 + C.npc.Kylar.lust / 4;
+		V.kylar.timer.home += 10 + C.npc.Kylar.lust / 4;
+		V.kylar.timer.street += 10 + C.npc.Kylar.lust / 4;
+		if (V.kylar.riddle === 1) V.kylar.riddle = 2;
+		else V.kylar.riddle = 0;
+		if (V.kylarSeen.includes("fountainIntro") && random(1, 10) >= 2) V.kylar.fountain = 1;
+		else V.kylar.fountain = 0;
+	}
+
+	// Avery
+	if (C.npc.Avery.state !== "dismissed") {
+		V.averyschoolpickup = 0;
+		V.averyseen = 0;
+		if (V.averydate) {
+			V.averydate = 0;
+			if (V.averydateattended !== 1) V.averydatemissed = 1;
+			V.averydateattended = 0;
+		}
+		delete V.averydatedone;
+		if (V.averyPub) {
+			delete V.averyPub;
+			wikifier("clearNPC", "avery_sidepiece");
+		}
+	} else {
+		delete V.averyDismissalSceneWait;
+	}
+
+	// Sydney
+	if (C.npc.Sydney.init === 1) {
+		statusCheck("Sydney");
+		if (C.npc.Sydney.purity >= 1 && C.npc.Sydney.virginity.temple) wikifier("npcincr", "Sydney", "purity", 1);
+		if (T.sydneyStatus.includes("corrupt")) C.npc.Sydney.title = "fallen";
+		else C.npc.Sydney.title = "faithful";
+		if (V.sydneyScience !== 1 || V.sydneySeen.includes("science")) delete V.sydneyLate;
+		if (Time.schoolDay && random(1, 4) === 1) V.sydneyLate = 1;
+		if (
+			V.sydneySeen.includes("library") &&
+			C.npc.Sydney.love >= 60 &&
+			V.sydneyLibraryEvent === undefined &&
+			C.npc.Whitney.init === 1 &&
+			C.npc.Whitney.state !== "dungeon" &&
+			!V.sydneyLeightonConfrontTimer
+		) {
+			V.sydneyLibraryEvent = 1;
+		}
+		if (V.sydneySeen.includes("library") && (V.sydneyLibraryEvent === 2 || V.libraryMoneyStolen) && !V.sydneyLeightonConfrontTimer) {
+			if (V.sydneyLibraryEvent === 2) {
+				V.sydneyLeightonConfront = 1;
+				V.sydneyLeightonWhitneyGuilty = 1;
+			} else if (V.libraryMoneyStolen >= 100 || V.sydneyStolenKnown) {
+				V.sydneyLeightonConfront = 1;
+				V.sydneyLeightonPlayerGuilty = 1;
+			}
+		} else if (V.sydneyLeightonConfrontTimer) {
+			V.sydneyLeightonConfrontTimer--;
+			if (V.sydneyLeightonConfrontTimer <= 0) delete V.sydneyLeightonConfrontTimer;
+		}
+		if (
+			V.sydneyromance === 1 &&
+			V.sydneyChastityKnown &&
+			C.npc.Sydney.love >= 90 &&
+			T.sydneyStatus.includes("Lust") &&
+			C.npc.Sydney.chastity.anus.includes("shield")
+		) {
+			C.npc.Sydney.chastity.anus = "";
+			V.sydneyAnalShieldComment = true;
+		}
+	}
+
+	// Wraith
+	if (V.wraith.state) {
+		if (V.wraithAngerCooldown) {
+			if (V.wraithAngerCooldown > 0) V.wraithAngerCooldown--;
+			else {
+				V.wraith.offspring = "";
+				delete V.wraithAngerCooldown;
+			}
+		}
+		V.wraith.days++;
+		if (V.wraith.days >= 31 && V.wraithIntro && !V.wraithCompoundCooldown && !V.wraithCompoundEvent && V.compoundcard === 2) {
+			if (!V.wraithCompoundChance) {
+				V.wraithCompoundChance = 0;
+				if (V.wraith.offspring === "sold") V.wraithCompoundChance += 10;
+			}
+			V.wraithCompoundChance++;
+			if (V.wraithCompoundChance >= random(5, 60 - C.npc["Ivory Wraith"].lust)) {
+				V.wraithCompoundEvent = true;
+				delete V.wraithCompoundChance;
+				V.wraithcompoundmessage = 1;
+				V.effectsmessage = 1;
+			}
+		} else if (V.wraithCompoundCooldown > 0) V.wraithCompoundCooldown--;
+		else if (V.wraithCompoundCooldown < 1) delete V.wraithCompoundCooldown;
+	}
+
+	wikifier("relationshipclamp");
+}
+
+function dailyPlayerEffects() {
+	V.willpower *= 0.99;
+
+	if (V.parasite.left_ear.name === "slime") wikifier("corruption", 1);
+	if (V.parasite.right_ear.name === "slime") wikifier("corruption", 1);
+
+	if (V.awareness <= -200 && V.innocencestate !== 1) {
+		V.innocencestate = 1;
+		V.innocencemessage = "start";
+		V.innocencetrauma = V.trauma;
+		V.trauma = 0;
+	} else if (V.awareness >= 0 && V.innocencestate === 1) {
+		V.innocencestate = 0;
+		V.trauma = V.innocencetrauma;
+		V.innocencemessage = "end";
+	}
+
+	if (V.physique >= 1000) {
+		if (V.farm_stage >= 6) V.physique = V.physique - V.physique / 3000;
+		else V.physique = V.physique - V.physique / 2500;
+	}
+
+	/* PC loses 60 minutes of tanning every day */
+	wikifier("tanned", -60, true);
+	V.skinColor.sunBlock = false;
+
+	V.hairlength += 3;
+	V.fringelength += 3;
+	wikifier("calchairlengthstage");
+	wikifier("beauty", 100 - (V.trauma / V.traumamax) * 100);
+	wikifier("bimboUpdate");
+
+	if (V.orgasmstat >= 1000 && V.orgasmtrait === 0) {
+		V.effectsmessage = 1;
+		V.orgasm_trait_message = 1;
+		V.orgasmtrait = 1;
+	}
+	if (V.ejacstat >= 1000 && V.ejactrait === 0) {
+		V.effectsmessage = 1;
+		V.cum_trait_message = 1;
+		V.ejactrait = 1;
+	}
+	if (V.moleststat >= 1000 && V.molesttrait === 0) {
+		V.effectsmessage = 1;
+		V.molest_trait_message = 1;
+		V.molesttrait = 1;
+	}
+	if (V.rapestat >= 500 && V.rapetrait === 0) {
+		V.effectsmessage = 1;
+		V.rape_trait_message = 1;
+		V.rapetrait = 1;
+	}
+	if (V.beastrapestat >= 100 && V.bestialitytrait === 0) {
+		V.effectsmessage = 1;
+		V.bestiality_trait_message = 1;
+		V.bestialitytrait = 1;
+	}
+	if (V.tentaclerapestat >= 50 && V.tentacletrait === 0) {
+		V.effectsmessage = 1;
+		V.tentacle_trait_message = 1;
+		V.tentacletrait = 1;
+	}
+	if (V.swallowedstat >= 20 && V.voretrait === 0) {
+		V.effectsmessage = 1;
+		V.vore_trait_message = 1;
+		V.voretrait = 1;
+	}
+	if (V.milk_drank_stat >= 20 && V.milkdranktrait === 0) {
+		V.effectsmessage = 1;
+		V.milk_trait_message = 1;
+		V.milkdranktrait = 1;
+	}
+
+	if (V.skulduggery >= 1000 && V.skulduggeryday < 1000) V.skulduggerymessage = 1;
+	else if (V.skulduggery >= 900 && V.skulduggeryday < 900) V.skulduggerymessage = 2;
+	else if (V.skulduggery >= 800 && V.skulduggeryday < 800) V.skulduggerymessage = 3;
+	else if (V.skulduggery >= 700 && V.skulduggeryday < 700) V.skulduggerymessage = 4;
+	else if (V.skulduggery >= 600 && V.skulduggeryday < 600) V.skulduggerymessage = 5;
+	else if (V.skulduggery >= 500 && V.skulduggeryday < 500) V.skulduggerymessage = 6;
+	else if (V.skulduggery >= 400 && V.skulduggeryday < 400) V.skulduggerymessage = 7;
+	else if (V.skulduggery >= 300 && V.skulduggeryday < 300) V.skulduggerymessage = 8;
+	else if (V.skulduggery >= 200 && V.skulduggeryday < 200) V.skulduggerymessage = 9;
+	else if (V.skulduggery >= 100 && V.skulduggeryday < 100) V.skulduggerymessage = 10;
+	if (V.skulduggerymessage) V.effectsmessage = 1;
+
+	if (V.pbdisable === "f") {
+		V.pbgrowth++;
+		if (V.pbgrowth >= 24) V.pblevel = 9;
+		else if (V.pbgrowth >= 19) V.pblevel = 8;
+		else if (V.pbgrowth >= 14) V.pblevel = 7;
+		else if (V.pbgrowth >= 10) V.pblevel = 6;
+		else if (V.pbgrowth >= 7) V.pblevel = 5;
+		else if (V.pbgrowth >= 5) V.pblevel = 3;
+		else if (V.pbgrowth >= 2) V.pblevel = 2;
+		else if (V.pbgrowth >= 1) V.pblevel = 1;
+		if (V.player.ballsExist) {
+			V.pbgrowthballs++;
+			if (V.pbgrowthballs >= 24) V.pblevelballs = 9;
+			else if (V.pbgrowthballs >= 19) V.pblevelballs = 7;
+			else if (V.pbgrowthballs >= 10) V.pblevelballs = 5;
+			else if (V.pbgrowthballs >= 5) V.pblevelballs = 3;
+		}
+	}
+
+	wikifier("insecurity", "penis_tiny", -1);
+	wikifier("insecurity", "penis_small", -1);
+	wikifier("insecurity", "penis_big", -1);
+	wikifier("insecurity", "breasts_tiny", -1);
+	wikifier("insecurity", "breasts_small", -1);
+	wikifier("insecurity", "breasts_big", -1);
+
+	V.insecurity_penis_tiny = Math.clamp(V.insecurity_penis_tiny, 0, 1000);
+	V.insecurity_penis_small = Math.clamp(V.insecurity_penis_small, 0, 1000);
+	V.insecurity_penis_big = Math.clamp(V.insecurity_penis_big, 0, 1000);
+	V.insecurity_breasts_tiny = Math.clamp(V.insecurity_breasts_tiny, 0, 1000);
+	V.insecurity_breasts_small = Math.clamp(V.insecurity_breasts_small, 0, 1000);
+	V.insecurity_breasts_big = Math.clamp(V.insecurity_breasts_big, 0, 1000);
+
+	for (const bodypart of setup.bodyparts) {
+		if (V.skin[bodypart].pen === "marker" && random(0, 1)) wikifier("bodywriting_clear", bodypart);
+	}
+}
+
+function dailyTransformationEffects() {
+	if (V.purity <= 0) {
+		if (V.fallenangel >= 2) wikifier("fallenDescend");
+		if (V.fallenangel >= 4) {
+			V.fallenangelmessage = 1;
+			V.effectsmessage = 1;
+		} else {
+			wikifier("transform", "demon", 1);
+		}
+	} else {
+		wikifier("transform", "demon", -1);
+	}
+
+	if (V.fallenangel >= 2 && V.fallenangel <= 3) {
+		if (V.purity >= 900) wikifier("transform", "fallen", 1);
+		else wikifier("transform", "fallen", -1);
+	}
+
+	if (V.purity >= 1 && (V.demon >= 6 || (V.demon >= 1 && V.demonFeat))) {
+		V.demonmessage = 1;
+		V.effectsmessage = 1;
+	}
+
+	let dailyPurity = 1;
+	if (V.featsPurityBoost) dailyPurity += V.featsPurityBoost;
+	if (V.fallenangel >= 2) dailyPurity -= 10;
+	if (V.player.virginity.vaginal && V.player.virginity.penile) dailyPurity += 2;
+	wikifier("purity", dailyPurity);
+
+	if (V.purity >= 1000) wikifier("transform", "angel", 1);
+	else wikifier("transform", "angel", -1);
+
+	if (V.angel >= 4) {
+		V.angelBanishMax = Math.floor(V.angelbuild / 10);
+		V.angelBanish = V.angelBanishMax;
+	} else {
+		V.angelBanish = 0;
+	}
+
+	delete V.demon_window_orphan;
+
+	wikifier("transformationStateUpdate");
+}
+
+function dailyLiquidEffects() {
+	if (V.player.penisExist) {
+		let amount = V.player.penissize - 1;
+		if (V.semen_volume <= 24) amount++;
+		amount -= Math.floor(V.semen_volume / 250);
+		wikifier("semenvolume", amount);
+	} else {
+		V.semen_volume = 0;
+		V.semen_amount = 0;
+	}
+
+	wikifier("milkvolume", -2);
+	wikifier("lactation_pressure", -1);
+
+	if (V.purity + V.semen_volume < 980) wikifier("semenvolume", 3);
+	if (V.purity + V.milk_volume < 1000) V.milk_volume += 10;
+
+	if (V.lactating) {
+		if (V.lactation_pressure < 30 || V.player.breastsize <= 0) {
+			V.lactating = 0;
+			V.effectsmessage = 1;
+			V.lactationmessage = 1;
+		}
+	} else {
+		if (V.lactation_pressure >= 30 && V.breastfeedingdisable === "f" && V.player.breastsize >= 1) {
+			V.lactating = 1;
+			V.effectsmessage = 1;
+			V.lactationmessage = 1;
+		}
+	}
+
+	V.nectar_addiction = Math.clamp(V.nectar_addiction - 5, 0, 200);
+	if (V.backgroundTraits.includes("plantlover")) {
+		V.nectar_timer--;
+		if (V.nectar_timer <= 0) {
+			V.backgroundTraits.delete("plantlover");
+			V.effectsmessage = 1;
+			V.nectarmessage = "traitLost";
+			V.nectar_addiction = 0;
+		} else if (V.nectar_timer <= 14) {
+			V.effectsmessage = 1;
+			V.nectarmessage = "withdrawals";
+		}
+	} else {
+		if (V.nectar_addiction >= 150) {
+			V.backgroundTraits.pushUnique("plantlover");
+			V.effectsmessage = 1;
+			V.nectarmessage = "traitGain";
+			V.nectar_timer = 21;
+		}
+	}
+}
+
+function yearlyEventChecks() {
+	// Valentines
+	if (Time.monthName === "February" && Time.monthDay >= 6 && Time.monthDay <= 14) {
+		V.valentines = 1;
+	} else if (V.valentines) {
+		delete V.valentines;
+		delete V.valentines_eden;
+		delete V.valentines_eden_bought;
+		delete V.valentines_eden_bath;
+		delete V.valentines_eden_breakfast;
+	}
+
+	// Halloween
+	if (Time.monthName === "October" && Time.monthDay >= 21) {
+		V.halloween = 1;
+	} else if (V.halloween) {
+		if (V.halloween_robin_costume && C.npc.Robin.outfits && C.npc.Robin.outfits.includes(V.halloween_robin_costume))
+			wikifier("removeNNPCOutift", "Robin", V.halloween_robin_costume);
+		delete V.halloween;
+		delete V.halloween_whitney;
+		delete V.halloween_whitney_proposed;
+		delete V.halloween_robin;
+		delete V.halloween_robin_scare;
+		delete V.halloween_robin_costume;
+		delete V.halloween_winter_key;
+		delete V.halloween_eden;
+		delete V.halloween_eden_bought;
+		delete V.halloween_eden_candy_given;
+		delete V.halloween_trick_NPC;
+	}
+	if (Time.monthName === "November" && Time.monthDay >= 2) {
+		delete V.halloween_kylar;
+		delete V.halloween_kylar_proposed;
+	}
+
+	// Christmas
+	if (Time.monthName === "December" && Time.monthDay >= 18 && Time.monthDay <= 25) {
+		V.christmas = 1;
+	} else if (V.christmas) {
+		delete V.christmas;
+		delete V.christmas_event;
+		delete V.christmas_event_2;
+		delete V.christmas_gift;
+		delete V.christmas_gift_robin;
+		delete V.christmas_wrap;
+		delete V.christmas_gift_robin_wrapped;
+		delete V.christmas_robin_lewd;
+		delete V.christmas_robin_gift_received;
+		delete V.christmas_gift_robin_given;
+		delete V.christmas_gift_eden;
+		delete V.christmas_gift_eden_given;
+		delete V.christmas_kylar;
+		delete V.christmas_whitney;
+		delete V.edenmeal;
+		delete V.eden_christmas_dinner;
+		delete V.christmas_wraith;
+	}
+}
+
+function moonState() {
+	if (Time.monthDay === Time.lastDayOfMonth) {
+		V.moonstate = "evening";
+		V.moonEvent = true;
+		wikifier("checkWraith", true);
+	} else if (Time.monthDay === 1) {
+		V.moonstate = "morning";
+		wikifier("checkWraith", true);
+	} else if (V.moonstate > 0) {
+		V.moonstate = 0;
+		delete V.moonEvent;
+		wikifier("clearWraith");
+		delete V.noEarSlime;
+	}
+}
+
+function dailySchoolEffects() {
+	V.schooleventtimer--;
+	if (V.scienceproject === "ongoing") {
+		V.scienceprojectdays--;
+		if (V.scienceprojectdays < 0) {
+			V.scienceproject = "done";
+			wikifier("scienceprojectfinish");
+		}
+	}
+	if (V.mathsproject === "ongoing") {
+		V.mathsprojectdays--;
+		if (V.mathsprojectdays < 0) {
+			V.mathsproject = "done";
+			wikifier("mathsprojectfinish");
+		}
+		V.mathslibrarystudent = 0;
+	}
+	if (V.englishPlay === "ongoing") {
+		V.englishPlayDays--;
+		if (V.englishPlayLate) {
+			V.englishPlayLate--;
+			if (V.englishPlayLate < 0) {
+				delete V.englishPlayLate;
+				V.englishPlayRoles.Sydney = "Cass";
+			}
+		}
+		if (V.englishPlayDays < 0) {
+			wikifier("englishplayfinish");
+			V.englishPlay = "missed";
+		}
+	}
+	if (V.schooltrait >= 4) wikifier("trauma", -50);
+	else if (V.schooltrait === 3) wikifier("trauma", -40);
+	else if (V.schooltrait === 2) wikifier("trauma", -30);
+	else if (V.schooltrait === 1) wikifier("trauma", -20);
+	else wikifier("trauma", -10);
+
+	if (Time.schoolDay && V.location !== "prison") {
+		const attended = Object.keys(V.daily.school.attended).length;
+		V.lessonmissed += 5 - attended;
+		V.lessonmissedtext = 5 - attended;
+	}
+
+	// Reset inspections before every term
+	if (!Time.isSchoolTerm && V.schoolevent > 0) {
+		V.schoolevent = 0;
+		V.schooleventtimer = 10;
+	}
+
+	wikifier("schoolclothesreset");
+
+	if (Time.schoolTerm && Time.weekDay > 2) {
+		let deliquencyDecay = 1;
+		if (C.npc.Leighton.love >= V.npclovehigh) deliquencyDecay++;
+		if (C.npc.Sirris.love >= V.npclovehigh) deliquencyDecay++;
+		if (C.npc.River.love >= V.npclovehigh) deliquencyDecay++;
+		if (C.npc.Doren.love >= V.npclovehigh) deliquencyDecay++;
+		if (C.npc.Winter.love >= V.npclovehigh) deliquencyDecay++;
+		if (C.npc.Mason.love >= V.npclovehigh) deliquencyDecay++;
+		if (V.lessonmissedtext) deliquencyDecay = Math.floor(deliquencyDecay / 2);
+		wikifier("delinquency", deliquencyDecay / 4);
+		if (V.schoolfameblackmail) V.schoolfameblackmail++;
+	}
+
+	if (V.science_star >= 1) {
+		wikifier("scienceskill", Math.clamp(V.science_star, 0, 3));
+		V.science_star = 0;
+	}
+	if (V.maths_star >= 1) {
+		wikifier("mathsskill", Math.clamp(V.maths_star, 0, 3));
+		V.maths_star = 0;
+	}
+	if (V.english_star >= 1) {
+		wikifier("englishskill", Math.clamp(V.english_star, 0, 3));
+		V.english_star = 0;
+	}
+	if (V.history_star >= 1) {
+		wikifier("historyskill", Math.clamp(V.history_star, 0, 3));
+		V.history_star = 0;
+	}
+
+	V.school = V.science + V.english + V.maths + V.history;
+	V.schooltrait = V.school >= 2800 ? 4 : V.school >= 2000 ? 3 : V.school >= 1600 ? 2 : V.school >= 1200 ? 1 : 0;
+
+	if (V.studyBooks) {
+		wikifier("passiveStudy");
+		if (V.studyBooks.rented !== "none" && Time.schoolTerm) {
+			if (V.book_rent_timer >= 0) {
+				V.book_rent_timer--;
+			} else if (V.book_rent_timer < 0) {
+				if (V.bookOverdue === undefined) V.bookOverdue = 0;
+				V.bookOverdue++;
+				if (bookOverdue >= 7) {
+					V.bookoverduemessage = 1;
+					V.effectsmessage = 1;
+				} else {
+					V.bookoverduemessage = 2;
+					V.effectsmessage = 1;
+				}
+			}
+		}
+		if (V.studyBooks.stolen !== "none" && Time.schoolTerm) wikifier("crimeup", 1);
+		if (V.recentReturnTimer) {
+			V.recentReturnTimer--;
+			if (V.recentReturnTimer <= 0) delete V.recentReturnTimer;
+		}
+	}
+	if (V.bookStolen === 1) {
+		delete V.bookStolen;
+		if (V.bookStolenKnown === undefined) V.bookStolenKnown = 1;
+		if (V.libraryMoneyStolen === undefined) V.libraryMoneyStolen = 0;
+		V.libraryMoneyStolen += 20;
+		wikifier("crimeup", 20);
+	}
+}
+
+function dailyMasochismSadismEffects() {
+	const effects = (level, stat) => {
+		switch (level) {
+			case 0:
+				if (stat >= 100) return { level: 1, message: "up 1" };
+				break;
+			case 1:
+				if (stat >= 300) return { level: 2, message: "up 2" };
+				else if (stat <= 50) return { level: 0, message: "down 1" };
+				break;
+			case 2:
+				if (stat >= 500) return { level: 3, message: "up 3" };
+				else if (stat <= 200) return { level: 1, message: "down 1" };
+				break;
+			case 3:
+				if (stat >= 800) return { level: 4, message: "up 4" };
+				else if (stat <= 400) return { level: 2, message: "down 2" };
+				break;
+			case 4:
+				if (stat <= 700) return { level: 3, message: "down 3" };
+				break;
+		}
+		return false;
+	};
+
+	V.masochism *= 0.985;
+	const masochism = effects(V.masochism_level, V.masochism);
+	if (masochism) {
+		V.masochism_level = masochism.statLevel;
+		V.masochism_message = masochism.message;
+		V.effectsmessage = 1;
+	}
+	V.sadism *= 0.985;
+	const sadism = effects(V.masochism_level, V.masochism);
+	if (sadism) {
+		V.masochism_level = sadism.statLevel;
+		V.masochism_message = sadism.message;
+		V.effectsmessage = 1;
+	}
+}
+
+function dailyFarmEvents() {
+	if (V.alex_greenhouse === 1) {
+		if (V.weather !== "rain" && V.weather !== "snow") V.alex_greenhouse_timer--;
+		if (V.alex_greenhouse_timer < 1) {
+			delete V.alex_greenhouse_timer;
+			V.alex_greenhouse = 2;
+		}
+	}
+	if (V.farm_stage >= 2) wikifier("farm_work_update", "midnight");
+	if (V.farm_stage >= 5) {
+		if (V.bailey_encroach >= 1) wikifier("farm_aggro", 15);
+		if (V.bailey_encroach >= 2) wikifier("farm_aggro", V.bailey_encroach * 3);
+		if (V.farm_stage >= 7) wikifier("farm_aggro", 5);
+		wikifier("farm_aggro", 5);
+	}
+	if (V.farm_stage >= 7) {
+		V.farm_attack_timer--;
+		if (V.farm_attack_timer < 0) wikifier("farm_attack_auto");
+		if (V.farm.stock) {
+			V.farm.stock.truffles = Math.trunc(V.farm.stock.truffles * 0.8);
+			V.farm.stock.milk = Math.trunc(V.farm.stock.milk * 0.8);
+			V.farm.stock.eggs = Math.trunc(V.farm.stock.eggs * 0.8);
+		}
+		if (V.farm.woodland >= 3) {
+			wikifier("farm_stock", "truffles", 6, 12);
+			wikifier("farm_pigs", -2);
+		} else if (V.farm.woodland >= 1) {
+			wikifier("farm_stock", "truffles", 3, 6);
+			wikifier("farm_pigs", -1);
+		}
+		if (V.farm.barn >= 2) {
+			wikifier("farm_stock", "milk", 12, 24);
+		} else if (V.farm.barn >= 1) {
+			wikifier("farm_stock", "milk", 6, 12);
+		}
+		if (V.farm.coop >= 2) {
+			wikifier("farm_stock", "eggs", 12, 24);
+		} else if (V.farm.coop >= 1) {
+			wikifier("farm_stock", "eggs", 6, 12);
+		}
+		if (V.farm.kennel >= 1) {
+			wikifier("farm_dogs", -2);
+			wikifier("farm_cattle", -1);
+		}
+		wikifier("farm_build_day");
+	}
+	if (V.farm_stage >= 9) {
+		if (V.lurkers_stored >= 1) {
+			V.farm.still_timer--;
+			if (V.farm.still_timer < 1) {
+				V.lurkers_stored--;
+				V.phials_stored++;
+				V.farm.still_timer = 7;
+			}
+		}
+	}
+	if (V.farm_countdown >= 1) V.farm_countdown--;
+	if (V.farm_yield) {
+		if (V.farm_yield_alex) V.farm_yield_alex = 0;
+		V.farm_yield_alex += V.farm_yield;
+		delete V.farm_yield;
+	}
+	if (V.alex_countdown >= 1) V.alex_countdown--;
+
+	delete V.farm_work;
+	delete V.farm_count;
+	delete V.farm_naked;
+	delete V.farm_event;
+	delete V.farm_end;
+	delete V.alex_breakfast;
+	delete V.alex_tea;
+	delete V.alex_to_bed;
+}
+
+function temperatureHour() {
+	V.chill = V.chill_day;
+	if (Time.dayState === "night") V.chill += V.weather === "clear" ? 50 : 30;
+	else if (Time.dayState === "dusk") V.chill = V.weather === "clear" ? V.chill - 5 : V.chill + 15;
+	else if (Time.dayState === "day") V.chill = V.weather === "clear" ? V.chill - 10 : V.chill + 10;
+	else V.chill += V.weather === "clear" ? 20 : 0;
+}
+
+// (Directly converted from passWater widget)
+function passWater(passMinutes) {
+	if (V.outside && V.weather === "clear") {
+		if (V.upperwet) wikifier("upperwet", -passMinutes * 2);
+		if (V.lowerwet) wikifier("lowerwet", -passMinutes * 2);
+		if (V.underlowerwet) wikifier("underlowerwet", -passMinutes * (V.worn.lower.type.includes("naked") ? 2 : 1));
+		if (V.underupperwet) wikifier("underupperwet", -passMinutes * (V.worn.upper.type.includes("naked") ? 2 : 1));
+	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof")) {
+		if (!V.worn.upper.type.includes("naked") && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) wikifier("upperwet", passMinutes);
+		if (!V.worn.lower.type.includes("naked") && !waterproofCheck(V.worn.lower) && !waterproofCheck(V.worn.over_lower)) wikifier("lowerwet", passMinutes);
+		// eslint-disable-next-line prettier/prettier
+		if (!V.worn.under_lower.type.includes("naked") && !waterproofCheck(V.worn.under_lower) && !waterproofCheck(V.worn.lower) && !waterproofCheck(V.worn.over_lower)) wikifier("underlowerwet", passMinutes);
+		// eslint-disable-next-line prettier/prettier
+		if (!V.worn.under_upper.type.includes("naked") && !waterproofCheck(V.worn.under_upper) && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) wikifier("underupperwet", passMinutes);
+	} else {
+		if (V.upperwet) wikifier("upperwet", -passMinutes);
+		if (V.lowerwet) wikifier("lowerwet", -passMinutes);
+		if (V.underlowerwet) wikifier("underlowerwet", -passMinutes);
+		if (V.underupperwet) wikifier("underupperwet", -passMinutes);
+	}
+}
+
+// (Directly converted from passArousalWetness widget - included comments)
+function passArousalWetness(passMinutes) {
+	let wetnessChange = 0;
+	const arousalPercent = Math.clamp(V.arousal / V.arousalmax, 0, 1);
+
+	// Vaginal lube is produced at a fairly linear rate, between 1-3 per minute based on arousal.
+	if (V.arousal >= V.arousalmax * (2 / 5)) {
+		wetnessChange = 1 + arousalPercent * 2;
+		// It also gets harder to build up the closer you get to full wetness
+		wetnessPercent = Math.clamp(V.vaginaArousalWetness / 100, 0, 1);
+		wetnessChange = Math.floor(wetnessChange * 2 * (1 - wetnessPercent));
+	}
+
+	// It dries up at a gradually increasing rate, starting at 0.1 per minute, but increasing the longer it's been since last arousal.
+	// It also dries slower at high arousal, in an inverse relationship.
+	wetnessChange -= 0.1 * V.timeSinceArousal * (1 - arousalPercent);
+
+	// If wetnessChange would go negative, and arousal is high enough, wetness instead does not change.
+	if (V.arousal >= V.arousalmax * (3 / 5) && wetnessChange < 0) wetnessChange = 0;
+	V.vaginaArousalWetness += Math.round(wetnessChange * passMinutes);
+
+	// Arbitrarily, we'll say that the player's vagina holds up to 60 units of lube, and it begins to leak out above 60.
+	if (V.vaginaArousalWetness >= 60) {
+		V.vaginaArousalWetness = Math.floor(120 - 3600 / V.vaginaArousalWetness);
+
+		// Clothing dries at a rate of -1 * passMinutes. To offset that, it needs to be wet by at least 1 * passMinutes. -->
+		// Expected rate: between 1 and 2.61, usually around 1.8
+		const change = Math.clamp(1 + Math.log10(V.vaginaArousalWetness - 59), 1, 3);
+		if (!V.worn.under_lower.type.includes("naked") && !V.worn.under_lower.type.includes("swim")) {
+			wikifier("underlowerwet", Math.round(change * passMinutes));
+			wikifier("underlowerwet", Math.clamp(V.underlowerwet, 0, 100 + passMinutes));
+			V.pantiesSoaked = V.underlowerwet >= 100;
+		}
+	}
+
+	V.vaginaArousalWetness = Math.clamp(vaginaArousalWetness, 0, 100);
+	wikifier("vaginaWetnessCalculate");
+}
+
+function passArousal(passMinutes) {
+	const minuteMultiplier = passMinutes * 10;
+	let addedArousal = 0;
+
+	if (V.penilechastityparasite) addedArousal += minuteMultiplier * V.genitalsensitivity;
+	if (V.vaginalchastityparasite) addedArousal += minuteMultiplier * V.genitalsensitivity;
+	if (V.parasite.nipples.name) addedArousal += minuteMultiplier * V.breastsensitivity;
+	if (V.parasite.penis.name) addedArousal += minuteMultiplier * V.genitalsensitivity;
+	if (V.parasite.clit.name) addedArousal += minuteMultiplier * V.genitalsensitivity;
+	if (V.parasite.bottom.name) addedArousal += minuteMultiplier * V.bottomsensitivity;
+	if (V.analchastityparasite) addedArousal += minuteMultiplier;
+	if (V.parasite.tummy.name) addedArousal += minuteMultiplier;
+	if (V.parasite.left_arm.name) addedArousal += minuteMultiplier;
+	if (V.parasite.right_arm.name) addedArousal += minuteMultiplier;
+	if (V.parasite.left_thigh.name) addedArousal += minuteMultiplier;
+	if (V.parasite.right_thigh.name) addedArousal += minuteMultiplier;
+	if (V.drugged > 1) addedArousal += minuteMultiplier;
+	if (playerHasButtPlug()) addedArousal += minuteMultiplier;
+	if (V.parasite.left_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
+	if (V.parasite.right_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
+
+	return addedArousal;
+}

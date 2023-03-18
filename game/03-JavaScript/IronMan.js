@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-var */
 var IronMan = (Save => {
 	"use strict";
@@ -16,7 +17,7 @@ var IronMan = (Save => {
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
-	const schema = 3;
+	const schema = 4;
 	const keys = [
 		"ironmanmode",
 		"debug",
@@ -30,7 +31,8 @@ var IronMan = (Save => {
 		"enemystrength",
 		"passage",
 		"money",
-		"time",
+		"timeStamp",
+		"startDate",
 	];
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
 	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
@@ -66,11 +68,7 @@ var IronMan = (Save => {
 				const parts = key.split(".");
 				const prop = parts.pop();
 				// Only process enemy values if in combat.
-				if (
-					V.combat !== 1 &&
-					["enemyhealth", "enemyarousal", "enemytrust", "enemystrength"].includes(prop)
-				)
-					continue;
+				if (V.combat !== 1 && ["enemyhealth", "enemyarousal", "enemytrust", "enemystrength"].includes(prop)) continue;
 				const parent = resolve(V, parts.join(".") || "");
 				internals[key] = target;
 				Object.defineProperty(parent, prop, {
@@ -168,14 +166,10 @@ var IronMan = (Save => {
 						);
 					}
 					if (document.getElementById("sliderRentMode")) {
-						Wikifier.wikifyEval(
-							'<<replace #sliderRentMode>><<numberslider "$rentmod" $rentmod 0.1 3 0.1 $ironmanmode>><</replace>>'
-						);
+						Wikifier.wikifyEval('<<replace #sliderRentMode>><<numberslider "$rentmod" $rentmod 0.1 3 0.1 $ironmanmode>><</replace>>');
 					}
 					if (document.getElementById("sliderAllureMode")) {
-						Wikifier.wikifyEval(
-							'<<replace #sliderAllureMode>><<numberslider "$alluremod" $alluremod 0.2 2 0.1 $ironmanmode>><</replace>>'
-						);
+						Wikifier.wikifyEval('<<replace #sliderAllureMode>><<numberslider "$alluremod" $alluremod 0.2 2 0.1 $ironmanmode>><</replace>>');
 					}
 					V.options.maxStates = 1;
 					V.cheatdisabletoggle = "t";
@@ -184,14 +178,10 @@ var IronMan = (Save => {
 						.on("input change", e => sliderPerc(e))
 						.trigger("change");
 				} else {
-					if (document.getElementById("numberslider-input-alluremod"))
-						document.getElementById("numberslider-input-alluremod").disabled = false;
-					if (document.getElementById("numberslider-input-rentmod"))
-						document.getElementById("numberslider-input-rentmod").disabled = false;
+					if (document.getElementById("numberslider-input-alluremod")) document.getElementById("numberslider-input-alluremod").disabled = false;
+					if (document.getElementById("numberslider-input-rentmod")) document.getElementById("numberslider-input-rentmod").disabled = false;
 					if (document.getElementById("numberslider-input-tending-yield-factor"))
-						document.getElementById(
-							"numberslider-input-tending-yield-factor"
-						).disabled = false;
+						document.getElementById("numberslider-input-tending-yield-factor").disabled = false;
 				}
 			} else {
 				checkbox.checked = V.ironmanmode === true;
@@ -232,9 +222,7 @@ var IronMan = (Save => {
 		const data = Save.slots.get(slot);
 		const saveId = data.metadata.saveId;
 		const saveName = data.metadata.saveName;
-		const exportName = `${data.id}-${
-			saveName === "" ? saveId : saveName
-		}-${getDatestamp()}.save`;
+		const exportName = `${data.id}-${saveName === "" ? saveId : saveName}-${getDatestamp()}.save`;
 		const saveObj = LZString.compressToBase64(JSON.stringify(data));
 		saveAs(new Blob([saveObj], { type: "text/plain;charset=UTF-8" }), exportName);
 	}
@@ -270,9 +258,7 @@ var IronMan = (Save => {
 		const finalData = btoa(encodedData);
 		/* Navigate to the export-import page. */
 		T.presetData = finalData;
-		Wikifier.wikifyEval(
-			"<<toggleTab>><<replace #customOverlayContent>><<optionsExportImport>><</replace>>"
-		);
+		Wikifier.wikifyEval("<<toggleTab>><<replace #customOverlayContent>><<optionsExportImport>><</replace>>");
 		return finalData;
 	}
 
@@ -301,9 +287,7 @@ var IronMan = (Save => {
 	function exportFile(saveData) {
 		const saveId = saveData.metadata.saveId;
 		const saveName = saveData.metadata.saveName;
-		const exportName = `${saveData.id}-${
-			saveName === "" ? saveId : saveName
-		}-${getDatestamp()}.save`;
+		const exportName = `${saveData.id}-${saveName === "" ? saveId : saveName}-${getDatestamp()}.save`;
 		const saveObj = LZString.compressToBase64(JSON.stringify(saveData));
 		saveAs(new Blob([saveObj], { type: "text/plain;charset=UTF-8" }), exportName);
 	}
@@ -341,16 +325,14 @@ var IronMan = (Save => {
 	}
 
 	function scheduledSaves() {
-		const date = new Date(V.month + " " + V.monthday + ", " + V.year);
+		const date = new Date(Time.date);
 
 		if (!V.ironmanautosaveschedule) V.ironmanautosaveschedule = date.getTime().toString(8);
 		if (parseInt(V.ironmanautosaveschedule, 8) < date.getTime()) {
 			// autosave
 			ironmanAutoSave();
 			//
-			V.ironmanautosaveschedule = (date.getTime() + random(432000, 777600) * 1000).toString(
-				8
-			);
+			V.ironmanautosaveschedule = (date.getTime() + random(432000, 777600) * 1000).toString(8);
 		}
 	}
 

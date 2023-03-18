@@ -94,7 +94,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 <<widget "childAge">><<silently>>
 	<<if _args[0]>>
 		<<set _date1 to $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>>
-		<<set _date2 to $monthday + " " + $month + " " + $year>>
+		<<set _date2 to Time.monthDay + " " + Time.month + " " + Time.year>>
 		<<set $_calc to Math.abs(Date.parse(_date2) - Date.parse(_date1))>>
 		<<set _childTotalDays to Math.ceil($_calc / (1000 * 60 * 60 * 24))>>
 		<<set _childYears to Math.floor(_childTotalDays / 360)>>
@@ -637,8 +637,8 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<childAge _args[0]>>
 		<<childSelect _args[0]>>
 		<<if $children[_args[0]].localVariables.activityDay is undefined>>
-			<<set $children[_args[0]].localVariables.activityDay to $days - 1>>
-			<<set $children[_args[0]].localVariables.activityHour to $hour>>
+			<<set $children[_args[0]].localVariables.activityDay to Time.days - 1>>
+			<<set $children[_args[0]].localVariables.activityHour to Time.hour>>
 			<<set $children[_args[0]].localVariables.crawling to 0>>
 			<<set $children[_args[0]].localVariables.talking to 0>>
 		<</if>>
@@ -646,10 +646,10 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 			<<case "human">><<humanChildActivity _args[0]>>
 			<<case "wolf" "wolfboy" "wolfgirl">><<wolfChildActivity _args[0]>>
 		<</switch>>
-		<<if $children[_args[0]].localVariables.activityDay is $days and ($children[_args[0]].localVariables.activityHour + 4) gt $hour>>
+		<<if $children[_args[0]].localVariables.activityDay is Time.days and ($children[_args[0]].localVariables.activityHour + 4) gt Time.hour>>
 		<<else>>
-			<<set $children[_args[0]].localVariables.activityDay to $days>>
-			<<set $children[_args[0]].localVariables.activityHour to $hour>>
+			<<set $children[_args[0]].localVariables.activityDay to Time.days>>
+			<<set $children[_args[0]].localVariables.activityHour to Time.hour>>
 		<</if>>
 		<span class="no-numberify">
 			<<link "Extra Details">><<childViewerHiddenElementsUnhide _args[0]>><</link>>
@@ -659,7 +659,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 
 /*ToDo: Pregnancy Story Content: Lacking events. Human children events which the place accesses by going to the childrens UI*/
 <<widget "humanChildActivity">><<silently>>
-	<<if $children[_args[0]].localVariables.activity && $children[_args[0]].localVariables.activityDay is $days and ($children[_args[0]].localVariables.activityHour + 4) gt $hour>>
+	<<if $children[_args[0]].localVariables.activity && $children[_args[0]].localVariables.activityDay is Time.days and ($children[_args[0]].localVariables.activityHour + 4) gt Time.hour>>
 	<<else>>
 		/*The baby toys avaliable in events*/
 		<<set _toySets to []>>
@@ -672,7 +672,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<</if>>
 		/*Which event is picked, should match the case where the event is shown to the player*/
 		<<if between(_childTotalDays, 0, 100)>>
-			<<if $daystate is "night">>
+			<<if Time.dayState is "night">>
 				<<set _activity to ["sleeping", "sleeping", "sleeping", "sleeping", "sleeping", "restlessSleep", "restlessSleep", "crying","nappyChange"]>>
 			<<else>>
 				<<set _activity to ["sleeping", "sleeping", "sleeping", "crying", "crying", "crying", "happy", "nappyChange", "thumbSucking", "grumpyChild"]>>
@@ -695,7 +695,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				<</if>>
 			<</if>>
 		<<elseif between(_childTotalDays, 101, 200)>>
-			<<if $daystate is "night">>
+			<<if Time.dayState is "night">>
 				<<set _activity to ["sleeping", "sleeping", "sleeping", "sleeping", "sleeping", "restlessSleep", "restlessSleep", "crying","nappyChange"]>>
 			<<else>>
 				<<set _activity to ["sleeping", "sleeping", "sleeping", "crying", "happy", "nappyChange", "thumbSucking", "talking", "grumpyChild","readingAttempt"]>>
@@ -880,7 +880,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 
 /*ToDo: Pregnancy Story Content: Lacking events, no puppy toy events at all. Wolf pups events which the place accesses by going to the childrens UI*/
 <<widget "wolfChildActivity">><<silently>>
-	<<if $children[_args[0]].localVariables.activity && $children[_args[0]].localVariables.activityDay is $days and ($children[_args[0]].localVariables.activityHour + 4) gt $hour>>
+	<<if $children[_args[0]].localVariables.activity && $children[_args[0]].localVariables.activityDay is Time.days and ($children[_args[0]].localVariables.activityHour + 4) gt Time.hour>>
 	<<else>>
 		/*The puppy toys avaliable in events*/
 		<<set _toySets to []>>
@@ -894,14 +894,14 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		/*Which event is picked, should match the case where the event is shown to the player*/
 		<<if between(_childTotalDays, 0, 100)>>
 			<<set $children[_args[0]].localVariables.event to true>>
-			<<if $daystate is "night">>
+			<<if Time.dayState is "night">>
 				<<set _activity to ["sleepingWithWolf", "sleepingWithWolf", "sleepingWithWolf", "sleeping"]>>
 			<<else>>
 				<<set _activity to ["sleepingWithWolf", "sleeping", "sleeping", "sleeping", "crying", "playing","watchingCurious", "watchingLonging", "staringOutside", "hungeryWolf", "grumpyWolf"]>>
 			<</if>>
 		<<elseif between(_childTotalDays, 101, 200)>>
 			<<set $children[_args[0]].localVariables.event to true>>
-			<<if $daystate is "night">>
+			<<if Time.dayState is "night">>
 				<<set _activity to ["sleepingWithWolf", "sleepingWithWolf", "sleepingWithWolf", "sleeping"]>>
 			<<else>>
 				<<set _activity to ["sleepingWithWolf", "sleeping", "sleeping", "sleeping", "crying", "playing","watchingCurious", "watchingLonging", "playFighting", "staringOutside", "staringOutside", "hungeryWolf", "grumpyWolf"]>>
