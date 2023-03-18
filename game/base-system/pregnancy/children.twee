@@ -64,6 +64,9 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<if _birthChildrenIds[_args[1]] isnot undefined>>
 			<<for $_i to 0; $_i lt _birthChildrenIds[_args[1]].length; $_i++>>
 				<<set $children[_birthChildrenIds[_args[1]][$_i]].location to _args[2]>>
+				<<if _args[2] is "home">>
+					<<run setKnowsAboutPregnancy($children[_birthChildrenIds[_args[1]][$_i]].mother, "Bailey", $children[_birthChildrenIds[_args[1]][$_i]].mother + $children[_birthChildrenIds[_args[1]][$_i]].birthId)>>
+				<</if>>
 			<</for>>
 		<</if>>
 	<</if>>
@@ -94,7 +97,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 <<widget "childAge">><<silently>>
 	<<if _args[0]>>
 		<<set _date1 to $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>>
-		<<set _date2 to Time.monthDay + " " + Time.month + " " + Time.year>>
+		<<set _date2 to Time.monthDay + " " + Time.monthName + " " + Time.year>>
 		<<set $_calc to Math.abs(Date.parse(_date2) - Date.parse(_date1))>>
 		<<set _childTotalDays to Math.ceil($_calc / (1000 * 60 * 60 * 24))>>
 		<<set _childYears to Math.floor(_childTotalDays / 360)>>
@@ -671,6 +674,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 			<</for>>
 		<</if>>
 		/*Which event is picked, should match the case where the event is shown to the player*/
+		<<set _activity to 'noEvent'>>
 		<<if between(_childTotalDays, 0, 100)>>
 			<<if Time.dayState is "night">>
 				<<set _activity to ["sleeping", "sleeping", "sleeping", "sleeping", "sleeping", "restlessSleep", "restlessSleep", "crying","nappyChange"]>>
@@ -724,14 +728,21 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				<</if>>
 			<</if>>
 		<</if>>
-		<<set $children[_args[0]].localVariables.activity to _activity[random(0,_activity.length - 1)]>>
-		<<set $children[_args[0]].localVariables.event to true>>
+		<<if Array.isArray(_activity) and _activity.length>>
+			<<set $children[_args[0]].localVariables.activity to _activity[random(0,_activity.length - 1)]>>
+			<<set $children[_args[0]].localVariables.event to true>>
+		<<elseif _activity>>
+			<<set $children[_args[0]].localVariables.activity to _activity>>
+			<<set $children[_args[0]].localVariables.event to true>>
+		<</if>>
 	<</if>>
 	<<set _childid to clone(_args[0])>>
 <</silently>>
 
 /*Which event is shown to the player*/
 <<switch $children[_args[0]].localVariables.activity>>
+	<<case "noEvent">>
+		<<childHe>>'s sleeping soundly.
 	<<case "sleeping">>
 		<<childHe>>'s sleeping soundly.
 		<<if $children[_args[0]].localVariables.event is true>>
@@ -892,6 +903,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 			<</for>>
 		<</if>>
 		/*Which event is picked, should match the case where the event is shown to the player*/
+		<<set _activity to ['noEvent']>>
 		<<if between(_childTotalDays, 0, 100)>>
 			<<set $children[_args[0]].localVariables.event to true>>
 			<<if Time.dayState is "night">>
@@ -907,14 +919,21 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				<<set _activity to ["sleepingWithWolf", "sleeping", "sleeping", "sleeping", "crying", "playing","watchingCurious", "watchingLonging", "playFighting", "staringOutside", "staringOutside", "hungeryWolf", "grumpyWolf"]>>
 			<</if>>
 		<</if>>
-		<<set $children[_args[0]].localVariables.activity to _activity[random(0,_activity.length - 1)]>>
-		<<set $children[_args[0]].localVariables.event to true>>
+		<<if Array.isArray(_activity) and _activity.length>>
+			<<set $children[_args[0]].localVariables.activity to _activity[random(0,_activity.length - 1)]>>
+			<<set $children[_args[0]].localVariables.event to true>>
+		<<elseif _activity>>
+			<<set $children[_args[0]].localVariables.activity to _activity>>
+			<<set $children[_args[0]].localVariables.event to true>>
+		<</if>>
 	<</if>>
 	<<set _childid to clone(_args[0])>>
 <</silently>>
 
 /*Which event is shown to the player*/
 <<switch $children[_args[0]].localVariables.activity>>
+	<<case "noEvent">>
+		<<childHe>>'s sleeping soundly.
 	<<case "sleeping">>
 		<<childHe>>'s sleeping on <<childhis>> own.
 		<<if $children[_args[0]].localVariables.event is true>>

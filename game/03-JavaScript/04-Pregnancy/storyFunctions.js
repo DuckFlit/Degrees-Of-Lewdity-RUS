@@ -568,3 +568,33 @@ function setKnowsAboutPregnancy(mother, whoNowKnows, existingId) {
 	return false;
 }
 DefineMacro("setKnowsAboutPregnancy", setKnowsAboutPregnancy);
+
+function setKnowsAboutPregnancyCurrentLoaded() {
+	if (playerIsPregnant() && pregnancyBellyVisible(true)) {
+		V.NPCList.forEach(npc => {
+			if (V.NPCList.includes(npc.fullDescription)) setKnowsAboutPregnancy("pc", npc.fullDescription);
+		});
+	}
+}
+DefineMacro("setKnowsAboutPregnancyCurrentLoaded", setKnowsAboutPregnancyCurrentLoaded);
+
+function knowsAboutPregnancyTotal(motherOrFather, whoToCheck) {
+	let whoToCheckConverted;
+	if (whoToCheck === "pc") {
+		whoToCheckConverted = whoToCheck;
+	} else if (V.NPCNameList.includes(whoToCheck)) {
+		whoToCheckConverted = V.NPCNameList.indexOf(whoToCheck);
+	} else {
+		return false;
+	}
+	const awareOfBirthId = Object.entries(V.pregnancyStats.awareOfBirthId).filter(awareOf => awareOf[1].includes(whoToCheckConverted));
+
+	return awareOfBirthId.reduce((prev, curr) => {
+		if (curr[0].includes(motherOrFather)) return prev + 1;
+		const splitId = curr[0].split(/(\d+)/);
+		const child = Object.values(V.children).find(child => child.mother === splitId[0] && child.birthId === splitId[1]);
+		if (child && child.father === motherOrFather) return prev + 1;
+		return prev;
+	}, 0);
+}
+window.knowsAboutPregnancyTotal = knowsAboutPregnancyTotal;

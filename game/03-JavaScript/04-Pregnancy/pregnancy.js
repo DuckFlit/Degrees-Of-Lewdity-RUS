@@ -372,7 +372,7 @@ function npcPregnancyCycle() {
 							break;
 					}
 					[birthLocation, location] = defaultBirthLocations(pregnancy.type, birthLocation, location);
-					endNPCPregnancy(npcName, birthLocation, location);
+					endNpcPregnancy(npcName, birthLocation, location);
 				} else {
 					/* Can deal with the npc in the next event */
 					pregnancy.waterBreaking = true;
@@ -581,11 +581,7 @@ function defaultBirthLocations(type, birthLocation, location) {
 function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride) {
 	let pregnancy;
 	if (mother === "pc") {
-		if (V.player.vaginaExist) {
-			pregnancy = V.sexStats.vagina.pregnancy;
-		} else {
-			pregnancy = V.sexStats.anus.pregnancy;
-		}
+		pregnancy = getPregnancyObject();
 	} else if (C.npc[mother]) {
 		pregnancy = C.npc[mother].pregnancy;
 	} else {
@@ -598,6 +594,18 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 			if (Array.isArray(parentId)) parentId = parentId[0];
 			parentFunction.increaseBirths(parentId.id, 0);
 		}
+	}
+
+	const birthId = mother + pregnancy.fetus[0].birthId;
+	switch (location) {
+		case "home":
+			setKnowsAboutPregnancy(mother, "Bailey", birthId);
+			break;
+		case "wolf_cave":
+			setKnowsAboutPregnancy(mother, "Black Wolf", birthId);
+			break;
+		default:
+			break;
 	}
 
 	pregnancy.fetus.forEach(childObject => {

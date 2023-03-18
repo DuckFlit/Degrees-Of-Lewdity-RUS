@@ -316,11 +316,15 @@ setup.debugMenu.eventList = {
 		},
 		{
 			text_only: `\nVaginal Pregnancy<br>(New Pregnancy will only occur if not pregnant)\n`,
-			condition() { return V.player.penisExist === false },
+			condition() {
+				return V.player.penisExist === false;
+			},
 		},
 		{
 			text_only: `Player is already pregnant\n`,
-			condition() { return V.player.penisExist === false && getPregnancyObject().fetus.length !== 0 },
+			condition() {
+				return V.player.penisExist === false && getPregnancyObject().fetus.length !== 0;
+			},
 		},
 		{
 			link: [`Get Pregnant with humans`, stayOnPassageFn],
@@ -329,7 +333,9 @@ setup.debugMenu.eventList = {
 					return `<<playerPregnancy "Debug Man" "human" true "vagina" undefined true>>`;
 				},
 			],
-			condition() { return V.player.penisExist === false && getPregnancyObject().fetus.length === 0},
+			condition() {
+				return V.player.penisExist === false && getPregnancyObject().fetus.length === 0;
+			},
 		},
 		{
 			link: [`Get Pregnant with wolves`, stayOnPassageFn],
@@ -338,30 +344,38 @@ setup.debugMenu.eventList = {
 					return `<<playerPregnancy "Debug Wolf" "wolf" true "vagina" undefined true>>`;
 				},
 			],
-			condition() { return V.player.penisExist === false && getPregnancyObject().fetus.length === 0 },
+			condition() {
+				return V.player.penisExist === false && getPregnancyObject().fetus.length === 0;
+			},
 		},
 		{
 			link: [`Progress Pregnancy to the end`, stayOnPassageFn],
 			widgets: [`<<set $sexStats.vagina.pregnancy.timer to $sexStats.vagina.pregnancy.timerEnd>>`],
-			condition() { return V.player.penisExist === false && getPregnancyObject().fetus.length !== 0 },
+			condition() {
+				return V.player.penisExist === false && getPregnancyObject().fetus.length !== 0;
+			},
 		},
 		{
 			link: [`End pregnancy and send children to default locations`, stayOnPassageFn],
-			widgets: [() => {
-				switch(getPregnancyObject().type){
-					case "human":
-						endPlayerPregnancy("hospital","home");
-					break;
-					case "wolf":
-						endPlayerPregnancy("wolf_cave","wolf_cave");
-					break;
-					default:
-						endPlayerPregnancy("unknown","unknown");
-					break;
-				};
-				return '';
-			}],
-			condition() { return V.player.penisExist === false && getPregnancyObject().fetus.length !== 0 },
+			widgets: [
+				() => {
+					switch (getPregnancyObject().type) {
+						case "human":
+							endPlayerPregnancy("hospital", "home");
+							break;
+						case "wolf":
+							endPlayerPregnancy("wolf_cave", "wolf_cave");
+							break;
+						default:
+							endPlayerPregnancy("unknown", "unknown");
+							break;
+					}
+					return "";
+				},
+			],
+			condition() {
+				return V.player.penisExist === false && getPregnancyObject().fetus.length !== 0;
+			},
 		},
 		{
 			text_only: `\nNPC Pregnancies`,
