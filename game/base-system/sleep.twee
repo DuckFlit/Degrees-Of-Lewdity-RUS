@@ -39,9 +39,6 @@
 	<<for $sleephour gte 1 or $sleephour lte -1>>
 		<<set $sleephour -= 1>>
 
-		<<if $location isnot "asylum">>
-			<<effectstime>>
-		<</if>>
 		<<switch $location>>
 			<<case "home">>
 				<<set _robin to statusCheck("Robin")>>
@@ -49,20 +46,20 @@
 				<<if $sleepWraith>>
 					<!-- Do nothing. Wraith mimicking Robin guarantees an uninterrupted sleep -->
 				
-				<<elseif isLoveInterest("Kylar") and _kylarStatus.includes("Love") and _kylarStatus.includes("Lust") and $daystate is "night" and $kylarbed is undefined and $robinbed is undefined and $rng gte 96>>
+				<<elseif isLoveInterest("Kylar") and _kylarStatus.includes("Love") and _kylarStatus.includes("Lust") and Time.dayState is "night" and $kylarbed is undefined and $robinbed is undefined and $rng gte 96>>
 					<<set _sleepinterrupt to 1>>
 					<<set _kylarWake to 1>>
 					<<set $kylarSleepEvent to 1>>
 
 				<<elseif (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0>>
 					<!-- Robin climbs into bed with you -->
-					<<if $hour gte 18 or $hour lte 6>>
+					<<if Time.hour gte 18 or Time.hour lte 6>>
 						<<set _sleepinterrupt to 1>>
 						<<set _robin.lovewake to 1>>
 						<<set $robinwakeday to 1>>
 					<</if>>
 				<<elseif _robin.love gte 100 and $robinbed is undefined and $robindebtknown isnot 1 and $kylarbed isnot 1 and $robinmissing is 0>>
-					<<if $hour gte 18 or $hour lte 6>>
+					<<if Time.hour gte 18 or Time.hour lte 6>>
 						<<set _sleepinterrupt to 1>>
 						<<set $robindebtwake to 1>>
 					<</if>>
@@ -72,16 +69,13 @@
 				<<elseif $baileydefeatedchain gte 1 and ($rng * 100) gte (9900 - ($allure / 5))>>
 					<<set _sleepinterrupt to 1>>
 					<<set $baileyrapewake to 1>>
-
-				<<elseif $christmas is 1 and $monthday is 25 and $hour lte 6 and $christmas_kylar is undefined and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+				<<elseif $christmas is 1 and Time.monthDay is 25 and Time.hour lte 6 and $christmas_kylar is undefined and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
 					<<set _sleepinterrupt to 1>>
 					<<set $christmas_kylar to 1>>
-
-				<<elseif $schoolday is 1 and $hour is 7 and !$daily.baileyWake>>
+				<<elseif Time.schoolDay and Time.hour is 7 and !$daily.baileyWake>>
 					<<set _sleepinterrupt to 1>>
 					<<set $daily.baileyWake to true>>
-
-				<<elseif $corruption_slime gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and $daystate is "night" and $slimeSleepEvent is 0 and $kylarbed isnot 1>>
+				<<elseif $corruption_slime gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and Time.dayState is "night" and $slimeSleepEvent is 0 and $kylarbed isnot 1>>
 					<<set $slimeWake to 1>>
 					<<break>>
 				<</if>>
@@ -89,33 +83,33 @@
 
 			<<case "asylum">>
 				<<asylumeffects>>
-				<<if $hour is 6 or ($asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1) or ($asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1) or ($asylumstate is "assessment" and $daily.asylumAssessment isnot 1)>>
+				<<if Time.hour is 6 or ($asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1) or ($asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1) or ($asylumstate is "assessment" and $daily.asylumAssessment isnot 1)>>
 					<<set _sleepinterrupt to 1>>
-				<<elseif $hour is 6 and $location is "asylum" or $asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1 and $location is "asylum" or $asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1 and $location is "asylum" or $asylumstate is "assessment" and $daily.asylumAssessment isnot 1 and $location is "asylum">>
+				<<elseif Time.hour is 6 and $location is "asylum" or $asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1 and $location is "asylum" or $asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1 and $location is "asylum" or $asylumstate is "assessment" and $daily.asylumAssessment isnot 1 and $location is "asylum">>
 					<<set _sleepinterrupt to 1>>
 				<<elseif $suspicion gte 80 and random(1, 10) gte 10>>
 					<<set _sleepinterrupt to 1>>
 					<<set $rapewake to 1>>
 				<</if>>
 			<<case "prison">>
-				<<if $hour is 6>>
+				<<if Time.hour is 6>>
 					<<set _sleepinterrupt to 1>>
-					<<set $prisonwake to 1>>
+					<<set $daily.prison.wake to true>>
 				<</if>>
 			<<case "alex_cottage">>
 				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
-				<<elseif ($hour gte 21 or $hour lte 5) and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and $alexwake isnot 1>>
+				<<elseif (Time.hour gte 21 or Time.hour lte 5) and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and $alexwake isnot 1>>
 					<<set $alexwake to 1>>
 					<<set _sleepinterrupt to 1>>
-				<<elseif $farm_attack_timer is 0 and $hour gte 21>>
+				<<elseif $farm_attack_timer is 0 and Time.hour gte 21>>
 					<<set $remywake to 1>>
 					<<set _sleepinterrupt to 1>>
 				<</if>>
 			<<case "cabin">>
 				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
-				<<elseif $hour lte 6 and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and $edenwake isnot 1>>
+				<<elseif Time.hour lte 6 and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and $edenwake isnot 1>>
 					<<set $edenwake to 1>>
 					<<set _sleepinterrupt to 1>>
 				<</if>>
@@ -137,7 +131,7 @@
 					<<wraithEvent>>
 				<</if>>
 			<<case "pound">>
-				<<if $hour is 6 or $hour is 12 or $hour is 18>>
+				<<if Time.hour is 6 or Time.hour is 12 or Time.hour is 18>>
 					<<set _sleepinterrupt to 1>>
 				<</if>>
 		<</switch>>
@@ -146,38 +140,29 @@
 		<<if _sleepinterrupt>>
 			<<break>>
 		<</if>>
-
+		
 		<<set $sleepHoursTotal += 1>><<set $sleepStat++>>
-
-		<!-- fatigue is lowered by 200 for every hour slept, and another 50 more if the player has no trauma. -->
-		<<set $tiredness -= 200>>
-		<<if !($sleeptrouble is 1 and $controlled is 0)>>
-			<<set $tiredness -= 50>>
-		<</if>>
-		<<set $tiredness -= $_bonusFatigueLoss>>
-
-		<<if $location is "tower">>
-			<<bird_pass 60>>
-		<<else>>
-			<<pass 60>>
-		<</if>>
 
 		<<if _wraithinterrupt is 1>>
 			<<set _sleepinterrupt to 1>>
 			<<break>>
 		<</if>>
 
-		<<if $nightmares gte 1 and $controlled is 0>>
-			<<stress 6>>
-		<</if>>
-
-		<<sleep_clamp>>
-
 		<!-- for "just sleep" option, if sleep is no longer required OR the player has slept for 10 hours, interrupt it. -->
 		<<if $sleephour lte -1 and ($tiredness lte 0 or $sleephour lte -11)>>
 			<<break>>
 		<</if>>
 	<</for>>
+	
+	<<set $sleepStat += $sleepHoursTotal>>
+	<!-- fatigue is lowered by 200 for every hour slept, and another 50 more if the player has no trauma. -->
+	<<set $tiredness -= $sleepHoursTotal * (200 + $_bonusFatigueLoss + !($sleeptrouble and !$controlled) * 50)>>
+	<<stress `($sleepHoursTotal * (($nightmares gte 1 and $controlled is 0) * 6))`>>
+	<<if $location is "tower">>
+		<<bird_pass $sleepHoursTotal * 60>>
+	<<else>>
+		<<pass $sleepHoursTotal hours>>
+	<</if>>
 	<<sleep_clamp>>/*Prevents bugged out values affecting events in anyway, -2000 fatigue and -360 stress arnt helpful*/
 <</widget>>
 

@@ -295,7 +295,7 @@
 <</widget>>
 
 <<widget "farm_work_time">>
-	<<set _farm_work_time to Math.trunc(($time / 20) - 17)>>
+	<<set _farm_work_time to Math.trunc(((Time.hour * 60) / 20) - 17)>>
 	<<if _farm_work_time gte 46 or _args[0] is "midnight">>
 		<<set _farm_work_time to 46>>
 	<</if>>
@@ -640,9 +640,9 @@
 			<<case "dogs_fed">>
 				Alex is feeding the <<farm_text_many dog>>.
 			<<case "hay">>
-				<<if $season is "winter">>
+				<<if Time.season is "winter">>
 					Alex is checking the buildings for frost damage.
-				<<elseif $season is "spring">>
+				<<elseif Time.season is "spring">>
 					Alex is tending to the hay field.
 				<<else>>
 					Alex is gathering hay.
@@ -819,7 +819,7 @@
 		<<ind>><<link [[Spy on Alex (0:20)|Farm Spy]]>><<pass 20>><</link>><<promiscuous1>><<skulduggerydifficulty>>
 		<br>
 	<</if>>
-	<<if $hour gte 6>>
+	<<if Time.hour gte 6>>
 		<<if $farm_work.border lt 1>>
 			<<ind>><<link [[Investigate the perimeter (0:20)|Farm Border]]>><<farm_count 20>><<set $farm_work.border to 1>><<pass 20>><</link>><<run _actions++>>
 			<br>
@@ -837,7 +837,7 @@
 			<<ind>><<link [[Clear the yard (0:20)|Farm Yard]]>><<farm_count 20>><<set $farm_work.yard to 1>><<pass 20>><<tiredness 2>><</link>><<gtiredness>><<run _actions++>>
 			<br>
 		<</if>>
-	<<if $hour gte 6>>
+	<<if Time.hour gte 6>>
 		<<if $farm_work.chickens_panic gte 1>>
 			<<chickenicon>><<link [[Calm the chickens (0:20)|Farm Chickens Calm]]>><<farm_count 20>><<pass 20>><</link>><<tendingdifficulty 1 300>><<run _actions++>>
 			<br>
@@ -985,7 +985,7 @@
 			<br>
 		<</if>>
 	<</if>>
-	<<if $farm_stage isnot 12 and $farm_work.alex is "clearing" and ($exposed lt 2 or $exhibitionism gte 75) and $daystate isnot "night">>
+	<<if $farm_stage isnot 12 and $farm_work.alex is "clearing" and ($exposed lt 2 or $exhibitionism gte 75) and Time.dayState isnot "night">>
 		<<ind>><<link [[Help Alex clear a field (0:20)|Farm Clearing]]>><<farm_count 20>><<pass 20>><<tiredness 2>><<physique 2>><<set $farm.clearing -= 1>><</link>><<gtiredness>><<run _actions++>>
 		<br>
 	<</if>>
@@ -1003,7 +1003,7 @@
 <</widget>>
 
 <<widget "farm_work">>
-	<<if $daystate isnot "night">>
+	<<if Time.dayState isnot "night">>
 		<<farm_alex>>
 		<<farm_status>>
 	<</if>>
@@ -1208,10 +1208,10 @@
 	<</if>>
 	<br><br>
 
-	<<if $hour is 21 and $farm_end is undefined and $alex_to_bed isnot 1>>
+	<<if Time.hour is 21 and $farm_end is undefined and $alex_to_bed isnot 1>>
 		<<set $farm_end to 1>>
 		<<npc Alex>><<person1>>
-		<<if $exposed gt 0 and $season is "winter">>
+		<<if $exposed gt 0 and Time.season is "winter">>
 			Alex enters the barn, wiping the sweat off <<his>> forehead as <<he>> approaches you. "Done for another day," <<he>> says, blushing. "It's getting rather cold, you might want to wear something warmer." <<glust>><<npcincr Alex lust 1>>
 		<<elseif $exposed gt 0>>
 			Alex enters the barn, wiping the sweat off <<his>> forehead as <<he>> approaches you. "Done for another day," <<he>> says, blushing. "It'll be getting colder, you might want to wear a little more." <<glust>><<npcincr Alex lust 1>>
@@ -1371,7 +1371,7 @@
 <</widget>>
 
 <<widget "eventsfarm">>
-	<<if $farm.build isnot undefined and $farm.build isnot 0 and $hour gte 6 and random(1, 3) gte 2>>
+	<<if $farm.build isnot undefined and $farm.build isnot 0 and Time.hour gte 6 and random(1, 3) gte 2>>
 		<<if $exposed gte 2 and $uncomfortable.nude is true or $exposed is 1 and $uncomfortable.underwear is true>>
 			You peek around a shed. The yard beyond looks clear. You take a deep breath, and run into the open.
 			<br><br>
@@ -1913,7 +1913,7 @@
 
 			<<link [[Keep working|Farm Tending Lurker Work]]>><</link>>
 			<br>
-			<<if $hour lt 21 or $hour gt 4>>
+			<<if Time.hour lt 21 or Time.hour gt 4>>
 				<<link [[Call for Alex (0:05)|Farm Tending Lurker Alex]]>><<npcincr Alex dom 1>><<farm_count 5>><<pass 5>><</link>><<gdom "Alex">>
 			<<else>>
 				<<link [[Call for Alex (0:05)|Farm Tending Lurker Alex Fail]]>><<farm_count 5>><<pass 5>><</link>><<gdom "Alex">>
@@ -1939,7 +1939,7 @@
 			<br>
 			<<link [[Struggle|Farm Tending Tentacle Struggle]]>><</link>><<physiquedifficulty 1 24000>>
 			<br>
-			<<if $hour lt 21 or $hour gt 4>>
+			<<if Time.hour lt 21 or Time.hour gt 4>>
 				<<link [[Scream|Farm Tending Scream]]>><<npcincr Alex dom 3>><<sub 1>><</link>><<ggdom "Alex">>
 			<<else>>
 				<<link [[Scream|Farm Tending Scream Fail]]>><<sub 1>><</link>><<ggdom "Alex">>
@@ -1992,7 +1992,7 @@
 				<<if currentSkillValue('skulduggery') gte random(500, 700)>>
 					<span class="green">You shiver.</span> Something's wrong. This isn't your usual pervert. You glance around, and spot them. A <<person2>><<person>> and <<person3>><<person>> creep through the crops, trying to sneak up on you.
 					<br><br>
-					<<if $hour lt 21 or $hour gt 4>>
+					<<if Time.hour lt 21 or Time.hour gt 4>>
 						<<link [[Scream|Farm Tending Group Alex]]>><<sub 1>><<npcincr Alex dom 1>><</link>><<gdom "Alex">>
 					<<else>>
 						<<link [[Scream|Farm Tending Group Alex Fail]]>><<sub 1>><</link>><<gdom "Alex">>
@@ -2039,7 +2039,7 @@
 	<<cleareventpool>>
 
 	/* seasonal events */
-	<<if $season is "summer" and $weather is "clear">>
+	<<if Time.season is "summer" and $weather is "clear">>
 		<<addinlineevent "farm_tending_alex_summer_1">>
 			<<npc Alex>><<person1>>
 
@@ -2517,7 +2517,7 @@
 			"Takes some serious hustle. I respect it."
 		<</if>>
 	<<else>>
-		You shrug and gaze <<if $hour is 5>>out the window.<<else>>up at the sky.<</if>> <<He>> does likewise.
+		You shrug and gaze <<if Time.hour is 5>>out the window.<<else>>up at the sky.<</if>> <<He>> does likewise.
 	<</if>>
 <</widget>>
 

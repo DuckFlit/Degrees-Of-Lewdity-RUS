@@ -524,7 +524,7 @@ window.copySavedata = function (id) {
 
 window.updateExportDay = function () {
 	if (V.saveDetails != null && State.history[0].variables.saveDetails != null) {
-		V.saveDetails.exported.days = clone(V.days);
+		V.saveDetails.exported.days = clone(Time.days);
 		State.history[0].variables.saveDetails.exported.days = clone(State.history[0].variables.days);
 		V.saveDetails.exported.count++;
 		State.history[0].variables.saveDetails.exported.count++;
@@ -532,7 +532,7 @@ window.updateExportDay = function () {
 		State.history[0].variables.saveDetails.exported.dayCount++;
 		const sessionState = session.get("state");
 		if (sessionState != null) {
-			sessionState.delta[0].variables.saveDetails.exported.days = clone(V.days);
+			sessionState.delta[0].variables.saveDetails.exported.days = clone(Time.days);
 			sessionState.delta[0].variables.saveDetails.exported.dayCount++;
 			sessionState.delta[0].variables.saveDetails.exported.count++;
 			session.set("state", sessionState);

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const setChildFirstWord = (childId, word, playerAbsent = false) => {
 	if (!childId && V.childSelected) childId = V.childSelected.childId;
 	if (!childId && !V.childSelected) return false;
@@ -18,7 +19,7 @@ const setChildFirstWord = (childId, word, playerAbsent = false) => {
 	}
 	child.localVariables.firstWord = {
 		word,
-		date: { day: V.monthday, month: V.month.toUpperFirst(), year: V.year },
+		date: { day: Time.monthDay, month: Time.monthName, year: Time.year },
 		playerAbsent,
 	};
 	return true;

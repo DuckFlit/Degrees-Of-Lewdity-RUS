@@ -11,47 +11,6 @@ Mousetrap.bind(["z", "n", "enter", "space"], function () {
 	$("#passages #next a.macro-link").trigger("click");
 });
 
-/* obsolete
-// add bind for fixing stuck animations
-// eslint-disable-next-line no-undef
-Mousetrap.bind(["f"], function () {
-	if (document.activeElement.tagName === "INPUT" && document.activeElement.type !== "radio" && document.activeElement.type !== "checkbox")
-		return;
-
-	fixStuckAnimations();
-});
-*/
-
-Macro.add("time", {
-	handler() {
-		let daystate; // Never checked and always overwritten - no need to init with old value
-		let nightstate; // Tracks whether it's before midnight or after
-		let time = V.time;
-		// Sanity check
-		if (time < 0) time = 0;
-		if (time >= 24 * 60) time = (24 * 60) - 1; //note: no changes are made to V.time in this function
-
-		const hour = Math.floor(time / 60);
-		if (hour < 6) {
-			daystate = "night";
-			nightstate = "morning";
-		} else if (hour < 9) {
-			daystate = "dawn";
-		} else if (hour < 18) {
-			daystate = "day";
-		} else if (hour < 21) {
-			daystate = "dusk";
-		} else {
-			daystate = "night";
-			nightstate = "evening";
-		}
-		V.hour = hour;
-		V.daystate = daystate;
-		T.nightstate = nightstate;
-		T.timeChecked = true;
-	},
-});
-
 /*
  * Similar to <<script>>, but preprocesses the contents, so $variables are accessible.
  * The variable "output" is also exposed (unlike <<run>>, <<set>>)
@@ -388,44 +347,6 @@ function numberify(selector) {
 }
 DefineMacroS("numberify", numberify);
 
-/* obsolete
-// blink entire page to fix a bug in Chrome where animation on images doesn't start
-function fixStuckAnimations() {
-	const scrollX = window.scrollX;
-	const scrollY = window.scrollY;
-	const imgs = $("#story").add($("#ui-bar"));
-	imgs.toggleClass("hidden");
-	window.setTimeout(() => {
-		imgs.toggleClass("hidden");
-		window.scroll(scrollX, scrollY);
-	}, 5);
-}
-window.fixStuckAnimations = fixStuckAnimations;
-
-// attaches event listeners to combat images
-function initTouchToFixAnimations() {
-	$(document).on("click", "#divsex img", fixStuckAnimations);
-}
-
-$(document).on(":passagedisplay", function (ev) {
-	if (V.combat) {
-		initTouchToFixAnimations();
-	}
-	function checkFadingSpans() {
-		const spans = $(".fading");
-		if (spans.length > 0) {
-			const span = spans[Math.floor(Math.random() * spans.length)];
-			setTimeout(() => {
-				$(span).removeClass("fading").addClass("faded");
-				checkFadingSpans();
-			}, Math.random() * 1000 + 500);
-		}
-	}
-
-	setTimeout(checkFadingSpans, 1000);
-});
-*/
-
 function saveDataCompare(save1, save2) {
 	const result = {};
 	const keys = Object.keys(save1);
@@ -625,16 +546,3 @@ Macro.add("foldout", {
 		e.appendTo(this.output);
 	},
 });
-
-/**
- * If no arguments provided, uses in-game current month and year.
- *
- * @param {number} month
- * @param {number} year
- * @returns {number} 30 for November, 31 for December, 28 for February (29 if leap year), et cetera.
- */
-function getLastDayOfMonth(month, year) {
-	const monthNumber = new Date(Date.parse((month || V.month) + " 1 " + (year || V.year))).getMonth() + 1;
-	return new Date(year || V.year, monthNumber, 0).getDate();
-}
-window.getLastDayOfMonth = getLastDayOfMonth;

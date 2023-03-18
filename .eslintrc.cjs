@@ -75,6 +75,7 @@ module.exports = {
 		StartConfig: "readonly",
 		Utils: "readonly",
 		ZIndices: "readonly",
+		Time: "readonly",
 		// DoL functions
 		assignDefaults: "readonly",
 		between: "readonly",

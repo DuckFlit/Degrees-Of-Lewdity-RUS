@@ -556,7 +556,7 @@ DefineMacroS("updateAskColour", updateAskColour);
 function bulkProduceValue(plant, quantity = 250) {
 	if (plant != null) {
 		const baseCost = (plant.plant_cost * quantity) / 2;
-		const seasonBoost = !plant.season.includes(V.season) ? 1.1 : 1;
+		const seasonBoost = !plant.season.includes(Time.season) ? 1.1 : 1;
 		return Math.floor(baseCost * seasonBoost);
 	}
 }
@@ -575,22 +575,22 @@ window.numbersBetween = numbersBetween;
 function getRobinLocation() {
 	if (C.npc.Robin.init !== 1) {
 		return;
-	} else if (V.robinlocationoverride && V.robinlocationoverride.during.includes(V.hour)) {
+	} else if (V.robinlocationoverride && V.robinlocationoverride.during.includes(Time.hour)) {
 		T.robin_location = V.robinlocationoverride.location;
 	} else if (["docks", "landfill", "dinner", "pillory"].includes(V.robinmissing)) {
 		T.robin_location = V.robinmissing;
-	} else if (!between(V.hour, 7, 20)) {
+	} else if (!between(Time.hour, 7, 20)) {
 		// if hour is 6 or lower, or 21 or higher.
 		T.robin_location = "sleep";
-	} else if (V.schoolday === 1 && between(V.hour, 8, 15)) {
+	} else if (Time.schoolTime) {
 		T.robin_location = "school";
-	} else if (V.hour === 16 && between(V.minute, 31, 59) && !V.daily.robin.bath) {
+	} else if (Time.hour === 16 && between(Time.minute, 31, 59) && !V.daily.robin.bath) {
 		T.robin_location = "bath";
-	} else if (V.halloween === 1 && between(V.hour, 16, 18) && V.monthday === 31) {
+	} else if (V.halloween === 1 && between(Time.hour, 16, 18) && Time.monthDay === 31) {
 		T.robin_location = "halloween";
-	} else if ((V.weekday === 7 || V.weekday === 1) && between(V.hour, 9, 16) && C.npc.Robin.trauma < 80) {
-		T.robin_location = V.season === "winter" ? "park" : "beach";
-	} else if (V.englishPlay === "ongoing" && V.englishPlayDays === 0 && V.hour >= 17 && V.hour < 21) {
+	} else if ((Time.isWeekEnd()) && between(Time.hour, 9, 16) && C.npc.Robin.trauma < 80) {
+		T.robin_location = Time.season === "winter" ? "park" : "beach";
+	} else if (V.englishPlay === "ongoing" && V.englishPlayDays === 0 && Time.hour >= 17 && Time.hour < 21) {
 		T.robin_location = "englishPlay";
 	} else {
 		T.robin_location = "orphanage";
@@ -653,13 +653,13 @@ function isInPark(name) {
 		case "kylar":
 			return V.NPCName[V.NPCNameList.indexOf("Kylar")].state === "active" 
 				&& !["rain", "snow"].includes(V.weather) 
-				&& V.daystate === "day" && V.kylarwatched !== 1;
+				&& Time.dayState === "day" && V.kylarwatched !== 1;
 		case "robin":
 			return getRobinLocation() === "park";
 		case "whitney":
 			return ["active", "rescued"].includes(V.NPCName[V.NPCNameList.indexOf("Whitney")].state)
 				&& V.NPCName[V.NPCNameList.indexOf("Whitney")].init === 1 && ["snow", "rain"].includes(V.weather)
-				&& V.daystate === "day" && (V.schoolday !== 1 || V.hour <= 8 || V.hour >= 15)
+				&& Time.dayState === "day" && Time.schoolTime
 				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
 		default:
 			return false;
@@ -1241,9 +1241,9 @@ window.playerIsPenetrated = playerIsPenetrated;
  */
 function getTimeString(...args) {
 	if(args[0] == null) return;
-	const hours = args[1] ? args[0] : 0;
-	const minutes = Math.max(args[1] || args[0], 0) + (hours * 60);
-	return Math.trunc(minutes / 60) + ":" + ('0' + Math.trunc(minutes % 60)).slice(-2);
+	const hours = args[1] != null ? args[0] : 0;
+	const minutes = Math.max(args[1] != null ? args[1] : args[0], 0) + (hours * 60);
+	return ("0" + Math.clamp(Math.trunc(minutes / 60), 0, 23)).slice(-2) + ":" + ("0" + Math.trunc(minutes % 60)).slice(-2);
 }
 window.getTimeString = getTimeString;
 
@@ -1324,16 +1324,6 @@ function npcClothes(npc, type) {
 }
 window.npcClothes = npcClothes;
 
-function getWeekDay(day) {
-	// NOTE: This function takes an argument from 1 to 7. Avoid off-by-1 errors! It is NOT 0-6.
-	if (day && day >= 1 && day <= 7) {
-		return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day - 1];
-	} else {
-		throw new Error("INVALID DAY, day index: [" + day + "]");
-	}
-}
-window.getWeekDay = getWeekDay;
-
 function waterproofCheck(clothing) {
 	return clothing.type.includes("swim") || clothing.type.includes("stealthy");
 }
@@ -1345,13 +1335,13 @@ function isLoveInterest(name) {
 }
 window.isLoveInterest = isLoveInterest;
 
-/** This function will determine if the date is right for a blood moon, and which part of the night it will happen in */
+/** This function will determine if the date is right for a blood moon, and which part of the night it will happen in. */
 function getTodaysMoonState() {
 	const todaysMoonState = 0;
-	if (V.monthday === getLastDayOfMonth()) {
+	if (Time.monthDay === Time.lastDayOfMonth) {
 		// blood moon happens on the last night of the month
 		T.todaysMoonState = "evening";
-	} else if (V.monthday === 1) {
+	} else if (Time.monthDay === 1) {
 		// blood moon happens on the first morning of the month
 		T.todaysMoonState = "morning";
 	}
@@ -1362,7 +1352,7 @@ function getMoonState() {
 	let moonstate = 0;
 	T.todaysMoonState = getTodaysMoonState();
 
-	if (T.nightstate === T.todaysMoonState) { // if the current time of night matches the time a blood moon will happen, set moonstate
+	if (Time.nightState === T.todaysMoonState) { // if the current time of night matches the time a blood moon will happen, set moonstate
 		moonstate = T.todaysMoonState;
 	}
 	// V.moonstate = moonstate; //commenting this out to make sure this function doesn't modify save variables
@@ -1371,12 +1361,12 @@ function getMoonState() {
 window.getMoonState = getMoonState;
 
 function isBloodmoon() {
-	return V.daystate === "night" && V.moonstate === T.nightstate; // it's only a blood moon if it's night, and the current moon state matches the current night state
+	return Time.dayState === "night" && V.moonstate === Time.nightState; // it's only a blood moon if it's night, and the current moon state matches the current night state
 }
 window.isBloodmoon = isBloodmoon;
 
 function wraithCanHunt() {
-	return isBloodmoon() && V.hour !== 5; // wraith events can't start at 5 AM.
+	return isBloodmoon() && Time.hour !== 5; // wraith events can't start at 5 AM.
 }
 window.wraithCanHunt = wraithCanHunt;
 

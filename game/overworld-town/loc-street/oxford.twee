@@ -2,28 +2,28 @@
 
 <<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "oxford">><<getTarget true>>
 You are on Oxford Street. There's an eclectic mix of buildings, but most notable is the school.
-<<if $schoolday is 1>>
-	<<if $daystate is "day">>
+<<if Time.schoolDay>>
+	<<if Time.dayState is "day">>
 		<<if $weather is "rain">>
 			The street is busy despite the rain.
 		<<elseif $weather is "snow">>
 			The street is busy despite the cold.
 		<<else>>
-			<<if $hour gte 7 and $hour lte 16>>
+			<<if Time.hour gte 7 and Time.hour lte 16>>
 				Chatter and laughter emerges from the school grounds.
 			<<else>>
 				Students are hanging out nearby.
 			<</if>>
 		<</if>>
-	<<elseif $daystate is "dawn">>
+	<<elseif Time.dayState is "dawn">>
 		Students are hanging out nearby.
-	<<elseif $daystate is "dusk">>
+	<<elseif Time.dayState is "dusk">>
 		Some students linger in groups, still wearing their uniforms.
-	<<elseif $daystate is "night">>
+	<<elseif Time.Time.dayState is "night">>
 		Due to its central location, people are passing through despite the hour.
 	<</if>>
 <<else>>
-	<<if $daystate is "day">>
+	<<if Time.dayState is "day">>
 		<<if $weather is "rain">>
 			The street is busy despite the rain.
 		<<elseif $weather is "snow">>
@@ -31,7 +31,7 @@ You are on Oxford Street. There's an eclectic mix of buildings, but most notable
 		<<else>>
 			Many cars and pedestrians are passing by.
 		<</if>>
-	<<elseif $daystate is "dawn">>
+	<<elseif Time.dayState is "dawn">>
 		<<if $weather is "rain">>
 			People hurry to work, eager to escape the rain.
 		<<elseif $weather is "snow">>
@@ -39,7 +39,7 @@ You are on Oxford Street. There's an eclectic mix of buildings, but most notable
 		<<else>>
 			People are arriving at their workplaces.
 		<</if>>
-	<<elseif $daystate is "dusk">>
+	<<elseif Time.dayState is "dusk">>
 		<<if $weather is "rain">>
 			People hurry home, eager to be out of the rain.
 		<<elseif $weather is "snow">>
@@ -47,7 +47,7 @@ You are on Oxford Street. There's an eclectic mix of buildings, but most notable
 		<<else>>
 			People are heading home for the day.
 		<</if>>
-	<<elseif $daystate is "night">>
+	<<elseif Time.dayState is "night">>
 		<<if $weather is "rain">>
 			People are passing through despite the rain and hour.
 		<<elseif $weather is "snow">>
@@ -84,7 +84,7 @@ You are on Oxford Street. There's an eclectic mix of buildings, but most notable
 	<<link [[Next|Oxford Street]]>><<endevent>><</link>>
 	<br>
 
-<<elseif $NPCName[$NPCNameList.indexOf("Avery")].state is "active" and $averyschoolpickup is 0 and $schoolday is 1 and $hour is 15 and $exposed lte 0 and (($NPCName[$NPCNameList.indexOf("Avery")].love gte random(20, 100) and ($rng gte 50 or $weather is "rain" or $weather is "snow")) or ($NPCName[$NPCNameList.indexOf("Avery")].love gte 20 and $weekday is 2))>>
+<<elseif $NPCName[$NPCNameList.indexOf("Avery")].state is "active" and $averyschoolpickup is 0 and Time.schoolDay and Time.hour is 15 and $exposed lte 0 and (($NPCName[$NPCNameList.indexOf("Avery")].love gte random(20, 100) and ($rng gte 50 or $weather is "rain" or $weather is "snow")) or ($NPCName[$NPCNameList.indexOf("Avery")].love gte 20 and Time.weekDay is 2))>>
 <<npc Avery>><<person1>>
 <<set $averyschoolpickup to 1>>
 
@@ -115,7 +115,7 @@ You are on Oxford Street. There's an eclectic mix of buildings, but most notable
 		<</if>>
 		<<set _robin to statusCheck("Robin")>>
 		<<if $robindebtevent gte 1>>
-		<<elseif $hour is 15 and _robin_location is "school" and $exposed lte 0>>
+		<<elseif Time.hour is 15 and _robin_location is "school" and $exposed lte 0>>
 			You see Robin looking through shop windows.
 			<br><br>
 			<<if _robin.trauma gte 80>>
@@ -130,7 +130,7 @@ You are on Oxford Street. There's an eclectic mix of buildings, but most notable
 				<br><br>
 			<</if>>
 		<</if>>
-		<<if $schoolday is 1 and $hour is 15 and $exposed lte 0 and $weather isnot "rain" and $weather isnot "snow">>
+		<<if Time.schoolDay and Time.hour is 15 and $exposed lte 0 and $weather isnot "rain" and $weather isnot "snow">>
 			A group of students chat nearby. They say they're going to the lake.
 			<br><br>
 			<<if $town_projects.road gte 4>>
@@ -142,14 +142,14 @@ You are on Oxford Street. There's an eclectic mix of buildings, but most notable
 		<</if>>
 		Places of interest
 		<br>
-		<<if $schoolday is 1 and $hour gte 7 and $hour lte 16>>
+		<<if Time.schoolDay and Time.hour gte 7 and Time.hour lte 16>>
 			<<schoolicon>><<link [[School (0:02)|School Front Courtyard]]>><<pass 2>><</link>>
 			<br>
 		<<else>>
 			<<schoolicon>><<link [[School (0:01)|School Locked]]>><<pass 1>><</link>>
 			<br>
 		<</if>>
-		<<if $daystate is "day" and $weekday is 7 or $daystate is "day" and $weekday is 1>>
+		<<if Time.isWeekEnd() and Time.dayState is "day">>
 			<<if $exposed lte 0>>
 				<<museumicon>><<link [[Museum (0:01)|Museum]]>><<pass 1>><</link>>
 				<br>
@@ -165,7 +165,7 @@ You are on Oxford Street. There's an eclectic mix of buildings, but most notable
 			<br>
 		<</if>>
 		<br>
-		<<if $exposed gte 1 and $daystate isnot "night">>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
 		<<else>>
 		<<add_link "Travel<br>">><<hideDisplay>>
 			<<starfish>>

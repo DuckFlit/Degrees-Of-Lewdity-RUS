@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable no-eval */
+/* eslint-disable no-undef */
 /* A standard function to reference to avoid declaring an anonymous function repeatedly. */
 const stayOnPassageFn = function () {
 	return V.passage;
@@ -121,7 +124,9 @@ setup.debugMenu.eventList = {
 		{
 			link: [`Roll Over`, stayOnPassageFn],
 			widgets: [() => `<<set $position to ` + (V.position === "doggy" ? "doggy" : "missionary") + `>>`],
-			condition() { return (V.position === "doggy" || V.position === "missionary" ? 1 : 0) },
+			condition() {
+				return V.position === "doggy" || V.position === "missionary" ? 1 : 0;
+			},
 		},
 		{
 			link: [`RNG 1`, stayOnPassageFn],
@@ -173,13 +178,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`RNG reroll x5`, stayOnPassageFn],
-			widgets: [
-				`<<run random(1,100)>>`,
-				`<<run random(1,100)>>`,
-				`<<run random(1,100)>>`,
-				`<<run random(1,100)>>`,
-				`<<set $rng to random(1,100)>>`,
-			],
+			widgets: [`<<run random(1,100)>>`, `<<run random(1,100)>>`, `<<run random(1,100)>>`, `<<run random(1,100)>>`, `<<set $rng to random(1,100)>>`],
 		},
 		{
 			link: [`Wear sundress`, stayOnPassageFn],
@@ -229,19 +228,19 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Spring`, stayOnPassageFn],
-			widgets: [`<<set $season to "spring">>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, 3))>>`],
 		},
 		{
 			link: [`Summer`, stayOnPassageFn],
-			widgets: [`<<set $season to "summer">>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, 6))>>`],
 		},
 		{
 			link: [`Autumn`, stayOnPassageFn],
-			widgets: [`<<set $season to "autumn">>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, 9))>>`],
 		},
 		{
 			link: [`Winter`, stayOnPassageFn],
-			widgets: [`<<set $season to "winter">>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, 12))>>`],
 		},
 		{
 			text_only: `\n`,
@@ -256,7 +255,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Fertilise New Eggs`, stayOnPassageFn],
-			widgets: [`<<fertiliseParasites>>`,`<<fertiliseParasites "vagina">>`],
+			widgets: [`<<fertiliseParasites>>`, `<<fertiliseParasites "vagina">>`],
 		},
 		{
 			link: [`Pregnancy Progress Day`, stayOnPassageFn],
@@ -276,7 +275,7 @@ setup.debugMenu.eventList = {
 			],
 		},
 		{
-			link: [() => `Set all pregnancy events to next ` + V.pass, stayOnPassageFn],
+			link: [() => `Set all pregnancy events to next `, stayOnPassageFn],
 			widgets: [
 				`<<set _pregnancy to $sexStats.anus.pregnancy>>`,
 				() => (T.pregnancy[0] == null ? "" : `<<set _pregnancy.fetus[0].timeLeft to 1>>`),
@@ -380,27 +379,31 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Basic NPC Compression Test`, stayOnPassageFn],
-			widgets: [() =>{
-				//Copy this debug option for use with other compressor debugging.
-				let testList = {}, invalidList = [], currentNPC;
+			widgets: [
+				() => {
+					// Copy this debug option for use with other compressor debugging.
+					const testList = {};
+					const invalidList = [];
+					let currentNPC;
 
-				for (let i = 0; i < 6; i++) {
-					currentNPC = V.NPCList[i].fullDescription;
+					for (let i = 0; i < 6; i++) {
+						currentNPC = V.NPCList[i].fullDescription;
 
-					if (currentNPC) {
+						if (currentNPC) {
 							if (!V.NPCNameList.includes(currentNPC)) {
 								testList["NPCList" + i] = V.NPCList[i];
-							}
-							else invalidList.push(currentNPC);
+							} else invalidList.push(currentNPC);
+						}
 					}
-				}
 
-				if (Object.keys(testList).length != 0) compressionVerifier(testList, false, true)
-				if (Object.keys(invalidList).length != 0) console.log("The following NPC(s) in $NPCList could not be tested: " + invalidList.join(", "));
-				else if (Object.keys(testList).length === 0 && Object.keys(invalidList).length === 0) console.log("There are no NPCs in the NPCList to test.");
+					if (Object.keys(testList).length != 0) compressionVerifier(testList, false, true);
+					if (Object.keys(invalidList).length != 0) console.log("The following NPC(s) in $NPCList could not be tested: " + invalidList.join(", "));
+					else if (Object.keys(testList).length === 0 && Object.keys(invalidList).length === 0)
+						console.log("There are no NPCs in the NPCList to test.");
 
-				return '';
-			}]
+					return "";
+				},
+			],
 		},
 		{
 			link: [`Enable Debug Lines`, stayOnPassageFn],
@@ -542,13 +545,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Beast Gang Test (currently broken)`, `The Farm`],
-			widgets: [
-				`<<endcombat>>`,
-				`<<set $molestationstart to 1>>`,
-				`<<set $outside to 1>>`,
-				`<<location "forest">>`,
-				`<<set $bus to "forest">>`,
-			],
+			widgets: [`<<endcombat>>`, `<<set $molestationstart to 1>>`, `<<set $outside to 1>>`, `<<location "forest">>`, `<<set $bus to "forest">>`],
 		},
 		{
 			link: [`Dolphin Sex Me`, `Sea Dolphins Sex`],
@@ -631,7 +628,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Avery Date`, `Domus Street`],
-			widgets: [`<<set $averydate to 1>>`, `<<set $time to 1200>>`],
+			widgets: [`<<set $averydate to 1>>`, `<<set Time.setTime(20, 0)>>`],
 		},
 		{
 			link: [`Black Wolf Forced`, `Forest Wolf Molestation`],
@@ -696,30 +693,23 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Halloween`, stayOnPassageFn],
-			widgets: [`<<set $days to 47>>`, `<<set $monthday to 21>>`, `<<set $yeardays to 47>>`, `<<set $month to "october">>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, 10, 21, 7))>>`],
 		},
 		{
 			link: [`Full winter`, stayOnPassageFn],
-			widgets: [`<<set $days to 92>>`, `<<set $yeardays to 92>>`, `<<set $monthday to 1>>`, `<<set $month to "december">>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, 12, 1, 7))>>`],
 		},
 		{
 			link: [`Christmas`, stayOnPassageFn],
-			widgets: [`<<set $days to 110>>`, `<<set $yeardays to 110>>`, `<<set $monthday to 18>>`, `<<set $month to "december">>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, 12, 18, 7))>>`],
 		},
 		{
 			link: [`Blood moon`, stayOnPassageFn],
-			widgets: [
-				`<<set $monthday to 31>>`,
-				`<<set $daystate to "night">>`,
-				`<<set $hour to 21>>`,
-				`<<set $minute to 0>>`,
-				`<<set $time to 1260>>`,
-				`<<set $moonstate to "evening">>`,
-			],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, Time.month, Time.lastDayOfMonth, 21, 0))>>`, `<<set $moonstate to "evening">>`],
 		},
 		{
 			link: [`Month is October`, stayOnPassageFn],
-			widgets: [`<<set $month to "october">>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.year, 10))>>`],
 		},
 		{
 			link: [`Ambulance Rescue Wakeup`, `Ambulance rescue`],
@@ -727,7 +717,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Harper Appointment`, `Hospital Foyer`],
-			widgets: [`<<set $weekday to 6>>`, `<<set $time to 960>>`],
+			widgets: [`<<set Time.setDate(Time.getNextWeekdayDate(6))>>`, `<<set Time.setTime(16)>>`],
 		},
 		{
 			link: [`Deep forest`, `Forest`],
@@ -804,15 +794,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Prison`, `Police Prison Intro Bailey`],
-			widgets: [
-				`<<npc Bailey>>`,
-				`<<generate2>>`,
-				`<<generate3>>`,
-				`<<generate4>>`,
-				`<<person2>>`,
-				`<<neckwear 1>>`,
-				`<<crimeup 5000>>`,
-			],
+			widgets: [`<<npc Bailey>>`, `<<generate2>>`, `<<generate3>>`, `<<generate4>>`, `<<person2>>`, `<<neckwear 1>>`, `<<crimeup 5000>>`],
 		},
 		{
 			link: [`Remy's Farm`, `Livestock Intro`],
@@ -832,7 +814,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Stall Rent`, `Stall Rent`],
-			widgets: [`<<set $time to 360>>`, `<<set $daystate to "dawn">>`],
+			widgets: [`<<run Time.setTime(6, 0)>>`],
 		},
 		{
 			link: [`Estate`, `Estate`],
@@ -861,11 +843,7 @@ setup.debugMenu.eventList = {
 			link: [`Summon the Wraith`, `Wraith Test Start`],
 			widgets: [
 				`<<endcombat>>`,
-				`<<set $monthday to getLastDayOfMonth()>>`,
-				`<<set $daystate to "night">>`,
-				`<<set $hour to 21>>`,
-				`<<set $minute to 0>>`,
-				`<<set $time to 1260>>`,
+				`<<run Time.setDate(new DateTime(Time.year, Time.month, Time.lastDayOfMonth, 21, 0))>>`,
 				`<<set $moonstate to "evening">>`,
 			],
 		},
@@ -913,11 +891,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Ruin Fish`, `Swarm Test`],
-			widgets: [
-				`<<set $molestationstart to 1>>`,
-				`<<swarminit "fish" "container" "shaking" "shatter" "steady" 4 6>>`,
-				`<<set $water to 1>>`,
-			],
+			widgets: [`<<set $molestationstart to 1>>`, `<<swarminit "fish" "container" "shaking" "shatter" "steady" 4 6>>`, `<<set $water to 1>>`],
 		},
 		{
 			link: [`Lake Fish`, `Swarm Test`],
@@ -937,10 +911,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Bath Slimes`, `Swarm Test`],
-			widgets: [
-				`<<set $molestationstart to 1>>`,
-				`<<swarminit "slimes" "slime mass" "moving towards you" "encircle you" "fend off" 8 0>>`,
-			],
+			widgets: [`<<set $molestationstart to 1>>`, `<<swarminit "slimes" "slime mass" "moving towards you" "encircle you" "fend off" 8 0>>`],
 		},
 		{
 			link: [`Trash Maggots`, `Swarm Test`],
@@ -948,10 +919,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Science Worms`, `Swarm Test`],
-			widgets: [
-				`<<set $molestationstart to 1>>`,
-				`<<swarminit "worms" "jar" "held above the terrarium" "fall into the terrarium" "block" 0 10>>`,
-			],
+			widgets: [`<<set $molestationstart to 1>>`, `<<swarminit "worms" "jar" "held above the terrarium" "fall into the terrarium" "block" 0 10>>`],
 		},
 		{
 			link: [`Sea Eels`, `Swarm Test`],
@@ -981,27 +949,37 @@ setup.debugMenu.eventList = {
 		{
 			link: [`Default allure`, stayOnPassageFn],
 			widgets: [`<<set $alluretest to 0>>`],
-			condition() { return V.alluretest >= 1; },
+			condition() {
+				return V.alluretest >= 1;
+			},
 		},
 		{
 			link: [`Become Alluring`, stayOnPassageFn],
 			widgets: [`<<set $alluretest to 1>>`],
-			condition() { return V.alluretest < 1 },
+			condition() {
+				return V.alluretest < 1;
+			},
 		},
 		{
 			link: [`Become Unalluring`, stayOnPassageFn],
 			widgets: [`<<set $alluretest to 2>>`],
-			condition() { return V.alluretest < 1 },
+			condition() {
+				return V.alluretest < 1;
+			},
 		},
 		{
 			link: [`Hide`, stayOnPassageFn],
 			widgets: [`<<dontHideRevert>>`],
-			condition() { return V.dontHide; },
+			condition() {
+				return V.dontHide;
+			},
 		},
 		{
 			link: [`Don't hide`, stayOnPassageFn],
 			widgets: [`<<dontHideForNow>>`],
-			condition() { return !V.dontHide },
+			condition() {
+				return !V.dontHide;
+			},
 		},
 		{
 			text_only: "\n\n",
@@ -1249,7 +1227,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Month`, stayOnPassageFn],
-			widgets: [`<<set $monthday += 31>>`, `<<day>>`],
+			widgets: [`<<run Time.setDate(new DateTime(Time.date).addMonth(1)>>`],
 		},
 		{
 			text_only: "\n\n",
@@ -1278,12 +1256,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`School Exam Skill`, stayOnPassageFn],
-			widgets: [
-				`<<set $science_exam += 1000>>`,
-				`<<set $maths_exam += 1000>>`,
-				`<<set $english_exam += 1000>>`,
-				`<<set $history_exam += 1000>>`,
-			],
+			widgets: [`<<set $science_exam += 1000>>`, `<<set $maths_exam += 1000>>`, `<<set $english_exam += 1000>>`, `<<set $history_exam += 1000>>`],
 		},
 		{
 			link: [`All Skills`, stayOnPassageFn],
@@ -1505,12 +1478,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Drench me`, stayOnPassageFn],
-			widgets: [
-				`<<set $upperwet to 200>>`,
-				`<<set $lowerwet to 200>>`,
-				`<<set $underupperwet to 200>>`,
-				`<<set $underlowerwet to 200>>`,
-			],
+			widgets: [`<<set $upperwet to 200>>`, `<<set $lowerwet to 200>>`, `<<set $underupperwet to 200>>`, `<<set $underlowerwet to 200>>`],
 		},
 		{
 			link: [`Drench over-outfit only`, stayOnPassageFn],
@@ -1621,11 +1589,9 @@ function returnEventList() {
 window.returnEventList = returnEventList;
 
 function getNameAndPassage(section, index) {
-	if (typeof setup.debugMenu.eventList[section][index].link[0] === "function")
-		T.link_name = setup.debugMenu.eventList[section][index].link[0]();
+	if (typeof setup.debugMenu.eventList[section][index].link[0] === "function") T.link_name = setup.debugMenu.eventList[section][index].link[0]();
 	else T.link_name = setup.debugMenu.eventList[section][index].link[0];
-	if (typeof setup.debugMenu.eventList[section][index].link[1] === "function")
-		T.link_passage = setup.debugMenu.eventList[section][index].link[1]();
+	if (typeof setup.debugMenu.eventList[section][index].link[1] === "function") T.link_passage = setup.debugMenu.eventList[section][index].link[1]();
 	else T.link_passage = setup.debugMenu.eventList[section][index].link[1];
 }
 window.getNameAndPassage = getNameAndPassage;
@@ -1732,8 +1698,7 @@ function onClickFavourite(section, index, id) {
 			const favObject = {
 				link: setup.debugMenu.eventList[section][index].link,
 				widgets: setup.debugMenu.eventList[section][index].widgets,
-				condition:
-					setup.debugMenu.eventList[section][index].condition != null ? setup.debugMenu.eventList[section][index].condition : 1,
+				condition: setup.debugMenu.eventList[section][index].condition != null ? setup.debugMenu.eventList[section][index].condition : 1,
 			};
 			V.debug_favourite.push(favObject); // constant variable
 			setup.debugMenu.eventList.Favourites = V.debug_favourite;
@@ -1798,8 +1763,7 @@ function debugCreateLinkAndRedirect(section, index, id) {
 					: setup.debugMenu.eventList[section][index].link[1];
 			let widgets = "";
 
-			for (const widget of setup.debugMenu.eventList[section][index].widgets)
-				widgets += typeof widget === "function" ? widget() : widget;
+			for (const widget of setup.debugMenu.eventList[section][index].widgets) widgets += typeof widget === "function" ? widget() : widget;
 			const newLink = new Wikifier(null, `<<link [[` + passageTitle + `|` + passageName + `]]>>` + widgets + `<</link>>`);
 			newLink.output.children[0].click();
 		}
@@ -1841,9 +1805,7 @@ function toggleClassDebug(selected, mode) {
 			}
 		} else if (mode === "classicHide") {
 			for (const div of list)
-				div !== selected
-					? document.getElementById(div).classList.add("hidden")
-					: document.getElementById(div).classList.remove("hidden");
+				div !== selected ? document.getElementById(div).classList.add("hidden") : document.getElementById(div).classList.remove("hidden");
 		}
 	});
 }
@@ -1885,10 +1847,7 @@ function checkEventCondition() {
 			const ev = setup.debugMenu.eventList[section];
 			for (const i in ev) {
 				if (Object.hasOwn(ev[i], "condition")) {
-					if (
-						(typeof ev[i].condition === "function" && ev[i].condition()) ||
-						(typeof ev[i].condition !== "function" && ev[i].condition)
-					) {
+					if ((typeof ev[i].condition === "function" && ev[i].condition()) || (typeof ev[i].condition !== "function" && ev[i].condition)) {
 						if (document.getElementById(section + "-" + i) == null) return;
 						document.getElementById(section + "-" + i).classList.remove("condhide");
 					} else {
@@ -1907,8 +1866,7 @@ function addDebugForm() {
 		let op = "";
 		if (V.debug_custom_events == null) V.debug_custom_events = { Main: [], Character: [], Events: [] };
 		for (const section of ["Main", "Character", "Events"]) {
-			for (const ev of V.debug_custom_events[section])
-				op += "<option value=" + '"' + ev.link[0] + '" ' + ">" + ev.link[0] + "</option>";
+			for (const ev of V.debug_custom_events[section]) op += "<option value=" + '"' + ev.link[0] + '" ' + ">" + ev.link[0] + "</option>";
 		}
 		if (document.getElementById("debugEventsAdd") != null)
 			document.getElementById("debugEventsAdd").innerHTML =
@@ -1957,10 +1915,7 @@ function submitNewDebugPassage() {
 	let sigerror = 0;
 
 	for (const element of inputList) {
-		if (
-			(element.id === "addEventsTitle" || element.id === "addEventsPassage" || element.id === "debugCatList") &&
-			element.value.length < 1
-		) {
+		if ((element.id === "addEventsTitle" || element.id === "addEventsPassage" || element.id === "debugCatList") && element.value.length < 1) {
 			element.setCustomValidity("Fill this value!");
 			element.reportValidity();
 			document.getElementById("debugAddResult").innerHTML = "";
@@ -2023,17 +1978,13 @@ function removeDebugCustomPassage() {
 		for (const ev in V.debug_custom_events[section]) {
 			if (V.debug_custom_events[section][ev].link[0] === selectedForRemoval) V.debug_custom_events[section].splice(ev, 1);
 			for (const ev2 in setup.debugMenu.eventList[section]) {
-				if (
-					Object.hasOwn(setup.debugMenu.eventList[section][ev2], "link") &&
-					setup.debugMenu.eventList[section][ev2].link[0] === selectedForRemoval
-				) {
+				if (Object.hasOwn(setup.debugMenu.eventList[section][ev2], "link") && setup.debugMenu.eventList[section][ev2].link[0] === selectedForRemoval) {
 					setup.debugMenu.eventList[section].splice(ev2, 1);
 					document.getElementById("debugRemoveResult").innerHTML =
 						'<span style="color: #5eac5e;">Event Removed<br>Click any blue regular link in-game<br>for changes to apply.<br>(No reload, No links in debug menu)</span>';
 					let op = "<br>";
 					for (const section of ["Main", "Character", "Events"]) {
-						for (const ev of V.debug_custom_events[section])
-							op += "<option value=" + '"' + ev.link[0] + '" ' + ">" + ev.link[0] + "</option>";
+						for (const ev of V.debug_custom_events[section]) op += "<option value=" + '"' + ev.link[0] + '" ' + ">" + ev.link[0] + "</option>";
 					}
 					document.getElementById("debugEvList").innerHTML = op;
 					setup.debugMenu.cacheDebugDiv = {};

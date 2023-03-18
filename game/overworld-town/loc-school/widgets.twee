@@ -1,34 +1,33 @@
 :: Widgets School [widget]
 <<widget "schooleffects">>
-	<<effectstime>>
-	<<if $schoolday is 1>>
-		<<if $hour lte 6>>
+	<<if Time.schoolDay>>
+		<<if Time.hour lte 6>>
 			<<set $schoolstate to "early">><<set $schoollesson to 0>>
-		<<elseif $hour lte 8>>
+		<<elseif Time.hour lte 8>>
 			<<set $schoolstate to "morning">><<set $schoollesson to 0>>
-		<<elseif $hour is 9>>
+		<<elseif Time.hour is 9>>
 			<<set $schoolstate to "first">><<set $schoollesson to 1>>
-		<<elseif $hour is 10>>
+		<<elseif Time.hour is 10>>
 			<<set $schoolstate to "second">><<set $schoollesson to 1>>
-		<<elseif $hour is 11>>
+		<<elseif Time.hour is 11>>
 			<<set $schoolstate to "third">><<set $schoollesson to 1>>
-		<<elseif $hour is 12>>
+		<<elseif Time.hour is 12>>
 			<<set $schoolstate to "lunch">><<set $schoollesson to 0>>
-		<<elseif $hour is 13>>
+		<<elseif Time.hour is 13>>
 			<<set $schoolstate to "fourth">><<set $schoollesson to 1>>
-		<<elseif $hour is 14>>
+		<<elseif Time.hour is 14>>
 			<<set $schoolstate to "fifth">><<set $schoollesson to 1>>
-		<<elseif $hour lte 16>>
+		<<elseif Time.hour lte 16>>
 			<<set $schoolstate to "afternoon">><<set $schoollesson to 0>>
-		<<elseif $hour gte 17>>
+		<<elseif Time.hour gte 17>>
 			<<set $schoolstate to "late">><<set $schoollesson to 0>>
 		<</if>>
 
 		<!-- changing room is in use a bit longer than school is in session. also include changing times before first, after fifth and during midday break -->
 		<<set $changingroomstate to "empty">>
-		<<if $time gte (9 * 60 - 2) and $time lte (15 * 60 + 4)>>
-			<<if $time lte ($hour * 60 + 4) or $time gte ($hour * 60 + 58)>>
-				<<if $time gte (14 * 60 - 2)>>
+		<<if (Time.hour gte 8 and Time.minute gte 58) and (Time.hour lte 15 and Time.minute lte 4)>>
+			<<if Time.minute lte 4 or Time.minute gte 58>>
+				<<if Time.hour gte 14 and Time.minute gte 58>>
 					<<set $changingroomstate to "own">>
 				<<else>>
 					<<set $changingroomstate to "other">>
@@ -51,9 +50,9 @@
 			<<set $poolroomstate to "empty">>
 		<</if>>
 	<<else>>
-		<<if $hour lte 6>>
+		<<if Time.hour lte 6>>
 			<<set $schoolstate to "earlynoschool">><<set $schoollesson to 0>>
-		<<elseif $hour gte 17>>
+		<<elseif Time.hour gte 17>>
 			<<set $schoolstate to "daynoschool">><<set $schoollesson to 0>>
 		<<else>>
 			<<set $schoolstate to "latenoschool">><<set $schoollesson to 0>>
@@ -64,10 +63,11 @@
 <</widget>>
 
 <<widget "advancelesson">><!-- advances time during a lesson and sets $phase to 1 if the lesson has ended -->
-	<<set _time_left to 59 - $minute>>
+	<<set _time_left to 59 - Time.minute>>
 	<!-- the lesson ends at 59th minute to give time to walk to the next class -->
 	<<set _state to $schoolstate>>
 	<<schooleffects>>
+
 	<<if _state isnot $schoolstate>>
 		<!-- only happens if we somehow jumped into another lesson, abort! -->
 		<<set $phase to 1>>
@@ -87,24 +87,24 @@
 
 <<widget "schoolperiod">>
 	<<if $exposed lte 0>>
-		<<if $schoolstate is "morning" or ($schoolstate is "first" and $minute lte 58)>>
+		<<if $schoolstate is "morning" or ($schoolstate is "first" and Time.minute lte 58)>>
 			<<scienceicon>><<link [[Go to your science lesson (0:01)|Science Classroom]]>><<pass 1>><</link>>
 			<br><br>
-		<<elseif $schoolstate is "first" or ($schoolstate is "second" and $minute lte 58)>>
+		<<elseif $schoolstate is "first" or ($schoolstate is "second" and Time.minute lte 58)>>
 			<<mathicon>><<link [[Go to your maths lesson (0:01)|Maths Classroom]]>><<pass 1>><</link>>
 			<br><br>
-		<<elseif $schoolstate is "second" or ($schoolstate is "third" and $minute lte 58)>>
+		<<elseif $schoolstate is "second" or ($schoolstate is "third" and Time.minute lte 58)>>
 			<<englishicon>><<link [[Go to your English lesson (0:01)|English Classroom]]>><<pass 1>><</link>>
 			<br><br>
-		<<elseif $schoolstate is "third" or ($schoolstate is "lunch" and $minute lte 58)>>
+		<<elseif $schoolstate is "third" or ($schoolstate is "lunch" and Time.minute lte 58)>>
 			<<eaticon>><<link [[Join the masses in the canteen (0:01)|Canteen]]>><<pass 1>><</link>>
 			<br>
 			<<historyicon>><<link [[Wait in the history classroom (0:01)|History Classroom]]>><<pass 1>><</link>>
 			<br><br>
-		<<elseif $schoolstate is "lunch" or ($schoolstate is "fourth" and $minute lte 58)>>
+		<<elseif $schoolstate is "lunch" or ($schoolstate is "fourth" and Time.minute lte 58)>>
 			<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<pass 1>><</link>>
 			<br><br>
-		<<elseif $schoolstate is "fourth" or ($schoolstate is "fifth" and $minute lte 58)>>
+		<<elseif $schoolstate is "fourth" or ($schoolstate is "fifth" and Time.minute lte 58)>>
 			<<swimmingicon>><<link [[Go to your swimming lesson (0:01)|School Pool Entrance]]>><<pass 1>><</link>>
 			<br><br>
 		<</if>>
@@ -115,25 +115,25 @@
 	<<if $schoolstate is "morning">>
 		Your science lesson starts at <<ampm 9 00>>.
 		<br><br>
-	<<elseif $schoolstate is "first" and $minute lte 58>>
+	<<elseif $schoolstate is "first" and Time.minute lte 58>>
 		Your science lesson started at <<ampm 9 00>>!
 		<br><br>
 	<<elseif $schoolstate is "first">>
 		Your maths lesson starts at <<ampm 10 00>>.
 		<br><br>
-	<<elseif $schoolstate is "second" and $minute lte 58>>
+	<<elseif $schoolstate is "second" and Time.minute lte 58>>
 		Your maths lesson started at <<ampm 10 00>>!
 		<br><br>
 	<<elseif $schoolstate is "second">>
 		Your English lesson starts at <<ampm 11 00>>.
 		<br><br>
-	<<elseif $schoolstate is "third" and $minute lte 58>>
+	<<elseif $schoolstate is "third" and Time.minute lte 58>>
 		Your English lesson started at <<ampm 11 00>>!
 		<br><br>
 	<<elseif $schoolstate is "lunch">>
 		Your history lesson starts at <<ampm 13 00>>.
 		<br><br>
-	<<elseif $schoolstate is "fourth" and $minute lte 58>>
+	<<elseif $schoolstate is "fourth" and Time.minute lte 58>>
 		Your history lesson started at <<ampm 13 00>>!
 		<br><br>
 	<<elseif $schoolstate is "fourth">>
@@ -355,8 +355,8 @@
 
 		<i>Condoms will stop lewd fluids, preventing unintended insemination and keeping you clean, both inside and out. This will also help mitigate loss of purity, and lower arousal gains. However, they have a small chance to break, especially during intense sex. Combine with birth control for best results.</i>
 		<<endevent>>
-	<<elseif $scienceproject is "none" and $days gte 2 and $mathsprojectdays isnot (21 + (7 - $weekday))>>
-		<<set $scienceproject to "ongoing">><<set $scienceprojectdays to (21 + (7 - $weekday))>>
+	<<elseif $scienceproject is "none" and Time.days gte 2 and $mathsprojectdays isnot (21 + (7 - Time.weekDay))>>
+		<<set $scienceproject to "ongoing">><<set $scienceprojectdays to (21 + (7 - Time.weekDay))>>
 		<<scienceprojectstart>>
 		"The science fair will be held in a few weeks," Sirris announces. "Taking part is optional, but it's a good opportunity to learn in a more practical way. The theme is local wildlife. I have a project idea for each of you, but you can come up with your own if you like."
 		<br><br>
@@ -393,7 +393,7 @@
 		Some delinquents pick on one of the nerdy students. Sirris has the offenders move to the other side of the classroom.
 	<<elseif $rng gte 31>>
 		Sirris puts on a video about human reproduction.
-		<<if $days gte 25 and $rng % 3 is 0>>/*1 in 3 chance, and won't happen too early*/
+		<<if Time.days gte 25 and $rng % 3 is 0>>/*1 in 3 chance, and won't happen too early*/
 			<br><br>
 			It doesn't seem like an educational film at all - it's graphic. Very graphic. Primarily just a 14 minute home-sex-tape. The only 'educational' input comes from Sirris periodically freezing the video to quiz students on which body parts are being licked, stroked, sucked, bitten or penetrated.
 			While the video never shows faces, you start to suspect that one of the participants is Sirris.
@@ -875,8 +875,8 @@
 <</widget>>
 
 <<widget "eventsmathssafe">>
-	<<if $mathsproject is "none" and $days gte 23 and $scienceprojectdays isnot (21 + (7 - $weekday))>>
-		<<set $mathsproject to "ongoing">><<set $mathsprojectdays to (21 + (7 - $weekday))>>
+	<<if $mathsproject is "none" and Time.days gte 23 and $scienceprojectdays isnot (21 + (7 - Time.weekDay))>>
+		<<set $mathsproject to "ongoing">><<set $mathsprojectdays to (21 + (7 - Time.weekDay))>>
 		<<mathsprojectstart>>
 		<<npc River>><<person1>><<generatey2>>"Everyone listen," River announces. <<He>> knocks on <<his>> desk. "That includes you at the back. I have something special for you today. We hold an annual competition for students in your year." This grabs a <<person2>><<person>> at the front's attention. <<He>> sits upright.
 		<<if $whitneymaths is "active" or $whitneymaths is "seat">>
@@ -1026,7 +1026,7 @@
 
 <<widget "mathsWhitneyAttendChance">>
 	<<if !$whitneymaths or $whitneymaths is "absent">>
-		<<if C.npc.Whitney.state is "active" and $minute lte 40>>
+		<<if C.npc.Whitney.state is "active" and Time.minute lte 40>>
 			<<if !$whitneymaths>>
 				<!-- Whitney attending Maths class for the first time during the game -->
 				<<npc Whitney 1>><<person1>>
@@ -1045,7 +1045,7 @@
 				<br><br>
 			<<else>>
 				<<set $_whitney_maths_chance to ((C.npc.Whitney.love / 3) + (C.npc.Whitney.dom * 3) + (C.npc.Whitney.lust / 3))>>
-				<<set $_whitney_tardy_modifier to ($minute lte 20 ? $minute : -$minute + 40) - 10>>
+				<<set $_whitney_tardy_modifier to (Time.minute lte 20 ? Time.minute : -Time.minute + 40) - 10>>
 				<!-- whitney_tardy_modifier starts out negative, becomes positive at 10 minutes late, peaks at 20 minutes late, and hits negative again at 30 minutes late -->
 				<<set $_whitney_maths_chance += $_whitney_tardy_modifier>>
 				<<if random(1, 100) lte $_whitney_maths_chance>>
@@ -1105,7 +1105,7 @@
 <<widget "eventsenglish">>
 	<<if $halloween is 1 and $kylarenglishstate is "active" and $halloween_kylar is undefined>>
 		<<npc Kylar>><<person1>>
-		<<if $monthday is 31>>
+		<<if Time.monthDay is 31>>
 			Kylar leans closer. "There's something I want to show you tonight," <<he>> whispers. "Meet me in the park, after <span class="gold"><<ampm 21 00>>.</span>"
 		<<else>>
 			Kylar leans closer. "There's something I want to show you on Halloween," <<he>> whispers. "Meet me in the park, after <span class="gold"><<ampm 21 00>>.</span>"
@@ -1372,8 +1372,8 @@
 <</widget>>
 
 <<widget "eventsenglishsafe">>
-	<<if $englishPlay is "none" and $month is "november" and $monthday gte 7 and C.npc.Kylar.init is 1 and C.npc.Sydney.init is 1>>
-		<<set $englishPlay to "ongoing">><<set $englishPlayDays to (14 + (7 - $weekday))>>
+	<<if $englishPlay is "none" and Time.monthName is "November" and Time.monthDay gte 7 and C.npc.Kylar.init is 1 and C.npc.Sydney.init is 1>>
+		<<set $englishPlay to "ongoing">><<set $englishPlayDays to (14 + (7 - Time.weekDay))>>
 		<<englishplaystart>>
 
 		<<npc Doren>><<person1>>
@@ -1401,7 +1401,7 @@
 		
 	<<elseif $halloween is 1 and $kylarenglishstate is "active" and $halloween_kylar is undefined>>
 		<<npc Kylar>><<person1>>
-		<<if $monthday is 31>>
+		<<if Time.monthDay is 31>>
 			Kylar leans closer. "There's something I want to show you tonight," <<he>> whispers. "Meet me in the park, after <span class="gold"><<ampm 21 00>>.</span>"
 		<<else>>
 			Kylar leans closer. "There's something I want to show you on Halloween," <<he>> whispers. "Meet me in the park, after <span class="gold"><<ampm 21 00>>.</span>"
@@ -1417,14 +1417,14 @@
 	<<elseif $rng gte 91>>
 		<<npc Doren>><<person1>>
 		Doren gets the class's attention.<br><br>
-		<<if $days % 42 gte 39>> /* every 6 weeks: day 39-41, 80-83, ... */
+		<<if Time.days % 42 gte 39>> /* every 6 weeks: day 39-41, 80-83, ... */
 			"We're almost done with this <<print either("topic","text","book","play")>> now," <<he>> says. "Time to finish it off. It will be on the exam."
 			<br><br>
 			The class break into small groups to review the topic, while Doren moves between the groups asking and answering questions.
 			<<if currentSkillValue('english') lte 300>><br><br>Your group are struggling, so Doren spends extra time with you.<<genglish>><<englishskill>><br><br>
 			<<elseif currentSkillValue('english') gte 700>>Doren listens to your group for a little while, nods and smiles.<br><br>"Excellent work! Carry on." <<lstress>><<stress -6>><br><br>
 			<</if>>
-		<<elseif $days % 42 lte 2>> /* every 6 weeks: day 1-2, 42-44, ... */
+		<<elseif Time.days % 42 lte 2>> /* every 6 weeks: day 1-2, 42-44, ... */
 			"Listen up," <<he>> says. "We're starting a new topic. <<print either("This one's fun. I think you're going to like it.","This module is one of my favourites. I really hope you like it too.","This one is tough - I'm not gonna lie - but it's worth the work. You can learn so much from it.")>>"
 			<br><br>
 			Doren outlines the upcoming content.
@@ -1469,7 +1469,7 @@
 		<<link [[Next|English Lesson]]>><<endevent>><</link>>
 		<br>
 	<<elseif $rng gte 71>>
-		<<if $season is "summer" and $weather isnot "rain">>
+		<<if Time.season is "summer" and $weather isnot "rain">>
 			<<npc Doren>><<person1>>
 			A student squeals as a wasp flies in a window and lands on their book. Doren holds up a calming hand.<br>
 			"Ignore it," <<he>> says. "It be gone soon enough."<br>
@@ -1477,7 +1477,7 @@
 			<<if $kylarenglishstate is "active">>One time, it comes toward you and Kylar leaps to your defence. <</if>>
 			<br><br>
 			Finally Doren chases it away, and the lesson can resume.
-		<<elseif $season is "summer">>
+		<<elseif Time.season is "summer">>
 			<<npc Doren>><<person1>>
 			"Poetry," Doren says. "Finds inspiration in the natural world."
 			<br>
@@ -1485,7 +1485,7 @@
 			A few seconds pass, then a rumble of thunder.<br>
 			"The raw, animal fury of nature," Doren grins widely. "Now capture it. Adjectives, obviously, but don't neglect verbs."<br>
 			You write.
-		<<elseif $season is "winter">>
+		<<elseif Time.season is "winter">>
 			<<if $rng % 3 == 0>>
 				<<generates1>><<person1>>
 				A window won't close and is letting in a cold wind from outside. One student's fingers have turned blue.<br>
@@ -1503,9 +1503,9 @@
 			<<npc Doren>><<person1>>
 			"Poetry," Doren says. "Finds inspiration in the natural world."
 			<br>
-			<<if $season is "spring">>
+			<<if Time.season is "spring">>
 				<<He>> brings around blossom from the park. One student starts sneezing.
-			<<elseif $season is "autumn">>
+			<<elseif Time.season is "autumn">>
 				<<He>> brings around fallen leaves from the park in all different colours.
 			<</if>>
 			<br><br>
@@ -1543,7 +1543,7 @@
 		<br>
 		<<link [[Nod|English Kylar Nod]]>><</link>>
 		<br>
-	<<elseif $rng gte 51 and $minute lte 40>> /* first session only, mostly only runs when Kylar inactive */
+	<<elseif $rng gte 51 and Time.minute lte 40>> /* first session only, mostly only runs when Kylar inactive */
 		Doren goes to collect something from the supply closet at the back and is surprised to find
 		<<generates1>><<generateyp2>>a <<person1>><<person>> and a <<person2>><<person>>
 		<<if $awareness gte 400>>
@@ -2587,7 +2587,7 @@
 		<<set $studyBooks.rented to "none">>
 		<<set $studyBooks.stolen to "none">>
 	<</if>>
-	<<if ($schoolday isnot 1 or $schoolstate is "early" or $schoolstate is "late")>>
+	<<if (Time.schoolDay or $schoolstate is "early" or $schoolstate is "late")>>
 		The library is eerily quiet.
 	<<else>>
 		There are a number of textbooks available for rental.
@@ -2664,7 +2664,7 @@
 					<<link [[Rent "Raul and Janet" (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 5>><<set $studyBooks.rented to "Raul and Janet">><</link>>
 					<br>
 				<</if>>
-				<<if (($month is "november" and $monthday gte 24) or $month is "december") and $studyBooks.stolen isnot "Pinch">>
+				<<if ((Time.monthName is "November" and Time.monthDay gte 24) or Time.monthName is "December") and $studyBooks.stolen isnot "Pinch">>
 					<<link [[Rent the olive-coloured book (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 6>><<set $studyBooks.rented to "Pinch">><</link>>
 					<br>
 				<</if>>
@@ -2683,7 +2683,7 @@
 			<br>
 		<</if>>
 	<<else>>
-		<<if ($schoolday isnot 1 or $schoolstate is "early" or $schoolstate is "late")>>
+		<<if (Time.schoolDay isnot 1 or $schoolstate is "early" or $schoolstate is "late")>>
 			<<if $studyBooks.stolen is "none">>
 				<<if $studyBooks.rented isnot "science">>
 					<<link [[Steal a science textbook|Book Rental]]>><<set $bookRent to "steal">><<set $studyBooks.stolen to "science">><</link>><<crime>><<note "+ Passive Science" "green">>
@@ -2705,7 +2705,7 @@
 					<<link [[Steal "Raul and Janet"|Book Rental]]>><<set $phase to 5>><<set $bookRent to "steal">><<set $studyBooks.stolen to "Raul and Janet">><</link>><<crime>>
 					<br>
 				<</if>>
-				<<if (($month is "november" and $monthday gte 24) or $month is "december") and $studyBooks.stolen isnot "Pinch">>
+				<<if ((Time.monthName is "November" and Time.monthDay gte 24) or Time.monthName is "December") and $studyBooks.stolen isnot "Pinch">>
 					<<link [[Steal the olive-coloured book|Book Rental]]>><<set $phase to 6>><<set $bookRent to "steal">><<set $studyBooks.stolen to "Pinch">><</link>><<crime>>
 					<br>
 				<</if>>

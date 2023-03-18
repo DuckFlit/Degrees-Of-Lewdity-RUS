@@ -5,6 +5,7 @@
 	<<if $debug is 1>>
 		<div id="debugOverlay" class="debugOverlay unstowable"></div>
 	<</if>>
+
 	<<weatherdisplay>>
 	<<if $gamemode is "soft">>
 		<<set $pain to 0>>
@@ -73,8 +74,6 @@
 			<</if>>
 			<<unset $endeventerror>>
 		<</if>>
-		
-		<<effectstime>>
 
 		<<if $physiquechange is 1>><<set $physiquechange to 0>>
 			<<if $physiqueuse gte $physique / 1000>>
@@ -94,7 +93,7 @@
 			<<elseif $lessonmissedtext gte 2>>
 				<span class="pink">You missed $lessonmissedtext lessons yesterday.</span>
 			<</if>>
-			<<if $lessonmissed gte 50>>
+			<<if $lessonmissed gte 25>>
 				<span class="red">You've missed many lessons. The police have been informed.</span>
 				<<crimeup 25>>
 			<</if>>
@@ -109,7 +108,7 @@
 
 			It is <<ampm>>.
 			<br>
-			It is <<print getWeekDay($weekday)>>.
+			It is <<print Time.weekDay>>.
 			<br>
 		<</if>>
 		<<schoolday>>
@@ -395,7 +394,7 @@
 <</widget>>
 
 <<widget "calculateallure">>
-	<<if $daystate is "night">>
+	<<if Time.dayState is "night">>
 		<<set $nightmod to 1.5>>
 	<<else>>
 		<<set $nightmod to 1>>
@@ -448,7 +447,7 @@
 	<<if $debug is 1>>
 		<<set $allure -= ($fame.pimp / 2)>>
 	<</if>>
-	<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
+	<<if $moonstate is "evening" and Time.hour gte 21 or $moonstate is "morning" and Time.hour lt 6>>
 		<<set $allure += 2000>>
 	<</if>>
 	<<set $baseAllure to $allure>>
@@ -814,13 +813,14 @@
 <</widget>>
 -->
 
+/* Obsolete - replaced with js
 <<widget "clock">><<silently>>
-	<<if $hour gte 12>>
-		<<set _hour to $hour - 12>>
+	<<if Time.hour gte 12>>
+		<<set _hour to Time.hour - 12>>
 	<<else>>
-		<<set _hour to $hour>>
+		<<set _hour to Time.hour>>
 	<</if>>
-	<<if $time - $hour * 60 lt 30>>
+	<<if Time.minute lt 30>>
 		<<switch _hour>>
 			<<case 1>><<set _text_output to "🕐">>
 			<<case 2>><<set _text_output to "🕑">>
@@ -853,7 +853,7 @@
 			<<default>><<set _text_output to "OHNO">>
 		<</switch>>
 	<</if>>
-<</silently>><<print _text_output>><</widget>>
+<</silently>><<print _text_output>><</widget>> */
 
 <<widget "statsCaption">>
 	<<printmoney $money true>>
@@ -869,11 +869,9 @@
 		<br>
 	<</if>>
 	<img class="icon_ui" src="img/ui/icon_day.png">
-	<<switch $weekday>>
-	<<case 1>>Sun<<case 2>>Mon<<case 3>>Tue<<case 4>>Wed<<case 5>>Thu<<case 6>>Fri<<case 7>>Sat
-	<</switch>>
+	<<print Time.weekDayName.slice(0, 3)>>
 	<<if $extendedStats>>
-		<<displayMonthday>> <<month true>>
+		<<print ordinalSuffixOf(Time.monthDay) + " " + Time.monthName.slice(0,3)>>
 	<</if>>
 <</widget>>
 

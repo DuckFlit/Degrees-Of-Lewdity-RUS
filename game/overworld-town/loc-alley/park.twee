@@ -2,9 +2,9 @@
 
 <<set $outside to 1>><<set $location to "park">><<effects>><<set $bus to "park">><<getTarget true>>
 You are in the park.
-<<if $daystate is "dawn">>
+<<if Time.dayState is "dawn">>
 	There are a few people out walking or jogging. Some have dogs with them.
-<<elseif $daystate is "day">>
+<<elseif Time.dayState is "day">>
 	<<if $weather is "rain">>
 		Very few people are out, walking around the puddles that dot the paths.
 	<<elseif $weather is "snow">>
@@ -12,9 +12,9 @@ You are in the park.
 	<<else>>
 		Many people are out, walking their dogs or jogging. You hear children in the playground.
 	<</if>>
-<<elseif $daystate is "dusk">>
+<<elseif Time.dayState is "dusk">>
 	There are many people around. Students hang out near the playground.
-<<elseif $daystate is "night">>
+<<elseif Time.dayState is "night">>
 	<<if $park_fame gte 60>>
 		<span class="pink">Creepy figures lurk in the shadows.</span> <i>News of your lewd running has spread. Don't run while exposed for several days if you want it to cool off.</i>
 	<<elseif $park_fame gte 20>>
@@ -30,7 +30,7 @@ Tulips grow in great patches near the riverbank.
 <br><br>
 <<if $exposed gte 1>>
 	<<exhibitionismpark>>
-	<<if $daystate isnot "night">>
+	<<if Time.dayState isnot "night">>
 		You can hear the commotion of the High Street, there's no way you'll be able to cross like this. However, there's a depot from which crates are being carried across the road, maybe you could hide in one of them.
 		<br><br>
 	<</if>>
@@ -43,7 +43,7 @@ Tulips grow in great patches near the riverbank.
 <<else>>
 	<<run statusCheck("Robin")>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if ($halloween_kylar is 1 or $NPCName[$NPCNameList.indexOf("Kylar")].love gte 60) and $halloween_kylar_proposed isnot 1 and $daystate is "night" and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($halloween is 1 and $monthday is 31 and $hour gte 21 or $month is "november" and $monthday is 1 and $hour lte 6) and !$possessed>>
+	<<if ($halloween_kylar is 1 or $NPCName[$NPCNameList.indexOf("Kylar")].love gte 60) and $halloween_kylar_proposed isnot 1 and Time.dayState is "night" and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and (($halloween is 1 and Time.monthDay is 31 and Time.hour gte 21) or (Time.monthName is "November" and Time.monthDay is 1 and Time.hour lte 6)) and !$possessed>>
 		<<halloweenkylar>>
 	<<elseif ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
 		<<eventsstreet>>
@@ -127,7 +127,7 @@ Tulips grow in great patches near the riverbank.
 			<<link [[Next|Park]]>><<set $eventskip to 1>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and $season is "winter" and ($weekday is 7 or $weekday is 1) and between($hour, 9, 16) and $exposed lte 0 and !$possessed>>
+	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and Time.season is "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0 and !$possessed>>
 		<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 		<<npc Robin>><<person1>>You see someone familiar working at a stand in the park. <<He>> notices you at the same time. "Hey!" It's Robin. <<Hes>> another resident at the orphanage. <<Hes>> always looked up to you, despite being about the same age. <<He>> motions you over, while cleaning a mug. <<He>> puts it down and hugs you when you approach.
 		<br><br>
@@ -164,8 +164,8 @@ Tulips grow in great patches near the riverbank.
 				<<link [[Robin's hot chocolate stand|Robin Chocolate]]>><</link>>
 				<br>
 			<</if>>
-			<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and !["rain", "snow"].includes($weather) and $daystate is "day" and $kylarwatched isnot 1>>
-				<<if $schoolday isnot 1 or $hour lte 8 or $hour gte 15>>
+			<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and !["rain", "snow"].includes($weather) and Time.dayState is "day" and $kylarwatched isnot 1>>
+				<<if Time.schoolDay isnot 1 or Time.hour lte 8 or Time.hour gte 15>>
 					<<if $kylar.fountain is 1>>
 						<br>
 						Kylar sits at the fountain, occasionally tossing coins in.
@@ -179,7 +179,7 @@ Tulips grow in great patches near the riverbank.
 					<br><br>
 				<</if>>
 			<</if>>
-			<<if C.npc.Whitney.state is "active" and C.npc.Whitney.init is 1 and ["snow", "rain"].includes($weather) and $daystate is "day" and ($schoolday isnot 1 or $hour lte 8 or $hour gte 15) and $daily.whitney.park is undefined>>
+			<<if C.npc.Whitney.state is "active" and C.npc.Whitney.init is 1 and ["snow", "rain"].includes($weather) and Time.dayState is "day" and Time.schoolTime and $daily.whitney.park is undefined>>
 				<br>
 				You see smoke trailing from beneath an umbrella. It's Whitney. <<nnpc_He "Whitney">> stands under a tree near the park's fountain.
 				<br>
@@ -194,10 +194,10 @@ Tulips grow in great patches near the riverbank.
 		<<if $leftleg is "bound" or $rightleg is "bound">>
 			<<set $_boundType to ($leftleg is "bound" ? ($rightleg is "bound" ? "both legs" : "your left leg") : "your right leg")>>
 			You cannot go for a run with $_boundType bound.
-		<<elseif $worn.feet.type.includes("heels") and ($exposed is 0 or $daystate is "night")>>
+		<<elseif $worn.feet.type.includes("heels") and ($exposed is 0 or Time.dayState is "night")>>
 			<<link [[Exercise in heels (0:30)|Park Exercise Heels]]>><<pass 30>><<tiredness 3>><<stress -1>><<athletics 2>><<slimeEventEnd>><</link>><<ggtiredness>><<gathletics>><<lstress>>
 		<<else>>
-			<<if $daystate is "night">>
+			<<if Time.dayState is "night">>
 				<<if $exposed gte 2 and $exhibitionism gte 35>>
 					<<runicon>><<link [[Go for a run (0:30)|Park Run Exposed]]>><<pass 30>><<set $phase to 0>><<tiredness 3>><<stress -3>><<athletics 3>><<slimeEventEnd>><</link>><<exhibitionist3>><<gtiredness>><<gathletics>><<lstress>>
 				<<elseif $exposed is 1>>
@@ -210,11 +210,11 @@ Tulips grow in great patches near the riverbank.
 			<</if>>
 		<</if>>
 		<br>
-		<<if $daystate is "night" and $exhibitionism gte 55 and $daily.ex.fountain is undefined>>
+		<<if Time.dayState is "night" and $exhibitionism gte 55 and $daily.ex.fountain is undefined>>
 			<<ind>><<link [[Bathe in the fountain (0:10)|Park Fountain]]>><<set $daily.ex.fountain to 1>><</link>><<exhibitionist4>>
 			<br>
 		<</if>>
-		<<if $exposed gte 1 and $daystate isnot "night">>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
 			<<link [[Hide in a crate (0:10)|Crate Ex]]>><<pass 10>><</link>>
 			<br>
 			<<if $exposed gte 2 and $exhibitionism gte 75>>
@@ -234,7 +234,7 @@ Tulips grow in great patches near the riverbank.
 			<<loiter>>
 		<</if>>
 		<<add_link "<br>Alternate routes<br>">>
-		<<if $exposed gte 1 and $daystate isnot "night">><<hideDisplay>>
+		<<if $exposed gte 1 and Time.dayState isnot "night">><<hideDisplay>>
 		<<else>>
 			<<commercial>>
 			<<industrial>>

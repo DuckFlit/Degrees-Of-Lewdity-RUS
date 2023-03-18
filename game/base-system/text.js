@@ -1,14 +1,12 @@
 /* eslint-disable no-undef */
+
 function displayMonthday() {
-	return ordinalSuffixOf(V.monthday);
+	return ordinalSuffixOf(Time.monthDay);
 }
 DefineMacroS("displayMonthday", displayMonthday);
 
-function month() {
-	T.month = V.month[0].toUpperCase() + V.month.substring(1);
-	if (T.args[0]) {
-		T.month = T.month.slice(0, 3);
-	}
-	return T.month;
-}
-DefineMacroS("month", month);
+/* Redundant - use Time.monthName */
+// function month() {
+// 	return Time.monthName.slice(0, 3);
+// }
+// DefineMacroS("month", month);
