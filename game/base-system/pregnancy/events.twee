@@ -470,6 +470,7 @@ You collapse on the spot. The last thing you hear is a rush of footsteps.
 	<<set $first_birth to 1>>
 <</if>>
 <<npc "Harper">><<person1>>
+<<setKnowsAboutPregnancy "pc" "Harper">>
 <<if $hospitalintro is 0>>
 	<<set $hospitalintro to 1>>
 	<<if $phase is 1>>
@@ -545,6 +546,7 @@ The midwife places a mask over your face. You feel your consciousness fade. Seve
 /* Note: Pregnancy species */
 <<switch playerNormalPregnancyType()>>
 	<<case "human">>
+		<<setKnowsAboutPregnancy "pc" "Bailey">>
 		Harper's voice floats through the fog. "Normal human, but keep the others on the line, just in case..."
 		<br><br>
 		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Hospital 3]]>><<endevent>><<pass $timeCalc>><</link>>
@@ -683,11 +685,13 @@ Bailey waits for you in the hospital foyer. <<He>> smiles when <<he>> sees you. 
 <<He>> leads you outside, where <<his>> car waits. <<He>> holds open the passenger door for you, before climbing in the other side.
 <br><br>
 The engine comes to life.
-<<if $first_birth is 1>>
+<!-- Bailey may not know about all your pregnancies -->
+<<set _knownPregnancyCount to knowsAboutPregnancyTotal("pc","Bailey")>>
+<<if _knownPregnancyCount is 1>>
 	"You're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a day."
 	<br><br>
 	"They don't leave the nursery," <<he>> adds as <<he>> drives from the hospital car park. "Ever."
-<<elseif playerNormalPregnancyTotal() lte 4>>
+<<elseif _knownPregnancyCount lte 4>>
 	"Remember that you're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a day."
 	<br><br>
 <<else>>
@@ -920,6 +924,7 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 <<harper_intro>>
+<<setKnowsAboutPregnancy "pc" "Harper">>
 <<if $ultrasoundIntro isnot 1>>
 	<<set $ultrasoundIntro to 1>>
 	/* player is introduced to what ultrasounds are, how it occurs and the reasons why they are done. */
