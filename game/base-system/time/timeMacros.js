@@ -77,7 +77,7 @@ function schoolTerm() {
 		return "School term finishes on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
 	} else {
 		const date = Time.nextSchoolTermStartDate;
-		return "School term starts on " + date.weekDayName + " the " + ordinalSuffixOf(date.gday) + " of " + date.monthName;
+		return "School term starts on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
 	}
 }
 DefineMacroS("schoolterm", schoolTerm);
