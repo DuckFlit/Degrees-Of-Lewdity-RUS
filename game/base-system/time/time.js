@@ -55,7 +55,7 @@ const Time = (() => {
 		if (!days) return;
 
 		dayPassed();
-		if (prevDate.weekDay === 6 && currentDate.weekDay === 0) weekPassed();
+		if (prevDate.weekDay === 7 && currentDate.weekDay === 1) weekPassed();
 		if (prevDate.yearDay < Time.startDate.yearDay && currentDate.yearDay >= Time.startDate.yearDay) yearPassed();
 	}
 
@@ -280,7 +280,6 @@ function dayPassed() {
 
 	wikifier("seenPassageChecks");
 	wikifier("earnAllFeats", true);
-	wikifier("corruption", -1);
 	wikifier("prison_day");
 	wikifier("clearNPC", "pharmNurse");
 	wikifier("weather_select");
@@ -318,7 +317,6 @@ function dayPassed() {
 	if (V.medicated) V.medicated = Math.max(Math.trunc((V.medicated - 1) * 0.5), 0);
 	if (V.asylummedicated) V.asylummedicated = Math.max(Math.trunc((V.asylummedicated - 1) * 0.5), 0);
 	if (V.brothel_rivalry_timer) V.brothel_rivalry_timer--;
-	if (V.museuminterest >= 60) V.museuminterest -= 3;
 	if (V.orphanageWardIntro) V.home_event_ward_timer--;
 	if (V.location === "asylum") V.asylumbound--;
 
@@ -328,8 +326,8 @@ function dayPassed() {
 	else if (rng >= 45) V.brothel_basement_price = 1000;
 	else V.brothel_basement_price = 500;
 
-	if (V.chef_rework) V.chef_rework--;
-	if (V.chef_sus) V.chef_sus--;
+	if (V.chef_rework > 0) V.chef_rework--;
+	if (V.chef_sus > 0) V.chef_sus--;
 	if (V.stall_rejected >= 1) V.stall_rejected = Math.clamp(V.stall_rejected - 1, 0, 100);
 	if (V.temple_garden >= 1) V.temple_garden = Math.clamp(V.temple_garden - 10, 0, 100);
 	if (V.temple_quarters >= 1) V.temple_quarters = Math.clamp(V.temple_quarters - 10, 0, 100);
@@ -364,7 +362,6 @@ function dayPassed() {
 	}
 
 	if (V.bell_timer) V.bell_timer--;
-
 	if (V.slimeSleepEvent >= 1) V.slimeSleepEvent--;
 	if (V.slimeSleepEvent < 1) delete V.slimeEvent;
 	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
@@ -433,10 +430,10 @@ function dayPassed() {
 	if (V.clothingShop.ban > 0) V.clothingShop.ban--;
 	else V.clothingShop.banExtension = false;
 
-	if (V.adultShop) {
+	if (V.adultShop !== undefined) {
 		if (V.adultShop.ban > 0) V.adultShop.ban--;
 		else V.adultShop.banExtension = false;
-	} else if (V.adultShop === undefined) {
+	} else {
 		V.adultShop = { ban: 0, banExtension: false, spotted: false, stolenClothes: 0, totalStolenClothes: 0, banCount: 0, rng: random(0, 1000) };
 	}
 
@@ -446,9 +443,11 @@ function dayPassed() {
 		else V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.95, 0, 100).toFixed(3);
 	}
 
-	if (V.officejobintro === 1) V.officelastcomplaintday++;
 	if (V.moorLuck > 0) V.moorLuck--;
+	if (V.officejobintro === 1) V.officelastcomplaintday++;
 
+	delete V.glideScared;
+	delete V.swimCrossdressPermission;
 	delete V.masturbation_oralSkillMax;
 
 	if (V.pubfame) {
@@ -481,12 +480,30 @@ function dayPassed() {
 		});
 	}
 
+	if (V.adultshopprogress < 22 && Time.weekDay === 6) V.adultshopprogress++;
+	else if (V.adultshopgrandopening) wikifier("unlockAdultShop");
+	else if (V.adultshopprogress >= 22 && !V.adultshopunlocked) V.adultshopgrandopening = true;
+	else if (V.adultshopdegree < 15) V.adultshopdegree += 0.1;
+	delete V.adultshophelped;
+
+	V.smuggler_timer--;
+	if (V.smuggler_timer < 0) {
+		const rng = random(1, 100);
+		V.smuggler_timer = random(4, 7);
+		if (rng >= 76) V.smuggler_location = "forest";
+		else if (rng >= 51) V.smuggler_location = "sewer";
+		else if (rng >= 26) V.smuggler_location = "beach";
+		else V.smuggler_location = "bus";
+		delete V.smuggler_known;
+	}
+
 	wikifier("menstruationCycle", "daily");
 	wikifier("pregnancyProgress");
 	wikifier("pregnancyProgress", "anus");
 	wikifier("rutCycle");
 	wikifier("npcPregnancyCycle");
 	wikifier("randomPregnancyProgress");
+	wikifier("physicalAdjustments");
 
 	dailyPlayerEffects();
 	dailyMasochismSadismEffects();
@@ -501,7 +518,6 @@ function dayPassed() {
 	wikifier("parasiteProgressDay");
 	wikifier("tending_day");
 	wikifier("creatureContainersProgressDay");
-	wikifier("physicalAdjustments");
 
 	if (V.pillory_tenant.exists && V.pillory_tenant.endday < Time.days) wikifier("clear_pillory");
 
@@ -514,6 +530,7 @@ function hourPassed(hours) {
 	if (V.statFreeze) return;
 
 	for (let i = 0; i < hours; i++) {
+		if (V.innocencestate === 1 && V.control <= 0) wikifier("awareness", 1);
 		wikifier("control", 1);
 		wikifier("orgasmHourlyRecovery");
 		wikifier("arousal", 0, "time");
@@ -523,7 +540,6 @@ function hourPassed(hours) {
 		wikifier("bimboCheck", "feet");
 
 		if (V.ejactrait >= 1) V.stress -= (V.goocount + V.semencount) * 10;
-		if (V.innocencestate === 1 && V.control <= 0) wikifier("awareness", 1);
 		if (V.kylarwatched) V.kylarwatchedtimer--;
 		if (V.parasite.nipples.name) wikifier("milkvolume", 1);
 		if (V.worn.head.name === "hairpin") {
@@ -559,15 +575,14 @@ function hourPassed(hours) {
 	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
 	if (V.robinPillory && V.robinPillory.danger) wikifier("robinPilloryHour");
 	if (V.pillory_tenant.exists && V.pillory_tenant.endday === Time.days && V.pillory_tenant.endhour < Time.hour) wikifier("clear_pillory");
-	if (C.npc.Sydney.init) {
+	if (C.npc.Sydney.init === 1) {
 		wikifier("sydneySchedule");
-		if (
-			T.sydney_location === "temple" &&
-			V.temple_rank !== undefined &&
-			V.temple_rank !== "prospective" &&
-			(V.sydney_templeWork === "garden" || V.sydney_templeWork === "quarters")
-		) {
-			if (V.temple_garden >= 1) V.temple_garden++;
+		if (T.sydney_location === "temple" && V.temple_rank !== undefined && V.temple_rank !== "prospective") {
+			if (V.sydney_templeWork === "garden") {
+				if (V.temple_garden >= 1) V.temple_garden++;
+			} else if (V.sydney_templeWork === "quarters") {
+				if (V.temple_quarters >= 1) V.temple_quarters++;
+			}
 		}
 	}
 	if (V.per_npc.pubfame_receptionist) {
@@ -628,6 +643,7 @@ function noonCheck() {
 
 	delete V.birdSleep;
 	delete V.edenbed;
+	delete V.glideScared;
 	if (V.pound) V.pound.sneak = 0;
 }
 
@@ -676,7 +692,7 @@ function dailyNPCEffects() {
 
 	if (V.robindebtevent === 0) V.robinmissing = 0;
 	if (V.robinpaid >= 1) wikifier("trauma", -25);
-	if (V.robinromance && C.npc.Robin.dom >= 40) wikifier("npcincr", "Robin", "lust", 1);
+	if (V.robinromance === 1 && C.npc.Robin.dom >= 40) wikifier("npcincr", "Robin", "lust", 1);
 	if (V.robinPilloryFail) {
 		delete V.robinPilloryFail;
 		delete V.robinPillory;
@@ -762,7 +778,7 @@ function dailyNPCEffects() {
 		) {
 			V.sydneyLibraryEvent = 1;
 		}
-		if (V.sydneySeen.includes("library") && (V.sydneyLibraryEvent === 2 || V.libraryMoneyStolen) && !V.sydneyLeightonConfrontTimer) {
+		if (V.sydneySeen.includes("library") && (V.sydneyLibraryEvent === 2 || V.libraryMoneyStolen || V.sydneyStolenKnown) && !V.sydneyLeightonConfrontTimer) {
 			if (V.sydneyLibraryEvent === 2) {
 				V.sydneyLeightonConfront = 1;
 				V.sydneyLeightonWhitneyGuilty = 1;
@@ -818,6 +834,7 @@ function dailyNPCEffects() {
 function dailyPlayerEffects() {
 	V.willpower *= 0.99;
 
+	wikifier("corruption", -1);
 	if (V.parasite.left_ear.name === "slime") wikifier("corruption", 1);
 	if (V.parasite.right_ear.name === "slime") wikifier("corruption", 1);
 
@@ -1147,7 +1164,7 @@ function dailySchoolEffects() {
 	else if (V.schooltrait === 1) wikifier("trauma", -20);
 	else wikifier("trauma", -10);
 
-	if (Time.schoolDay && V.location !== "prison") {
+	if (Time.isSchoolDay(Time.yesterday) && V.location !== "prison") {
 		const attended = Object.keys(V.daily.school.attended).length;
 		V.lessonmissed += 5 - attended;
 		V.lessonmissedtext = 5 - attended;
@@ -1325,7 +1342,7 @@ function dailyFarmEvents() {
 	}
 	if (V.farm_countdown >= 1) V.farm_countdown--;
 	if (V.farm_yield) {
-		if (V.farm_yield_alex) V.farm_yield_alex = 0;
+		if (!V.farm_yield_alex) V.farm_yield_alex = 0;
 		V.farm_yield_alex += V.farm_yield;
 		delete V.farm_yield;
 	}
