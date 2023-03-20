@@ -1,16 +1,20 @@
 /* eslint-disable no-undef */
 
-function getPregnancyObject(mother = "pc") {
+function getPregnancyObject(mother = "pc", returnGenital = false) {
+	let pregnancy = {};
+	let genital = "vagina";
 	if (mother === "pc") {
 		if (V.player.vaginaExist) {
-			return V.sexStats.vagina.pregnancy;
+			pregnancy = V.sexStats.vagina.pregnancy;
 		} else {
-			return V.sexStats.anus.pregnancy;
+			pregnancy = V.sexStats.anus.pregnancy;
+			genital = "anus";
 		}
 	} else if (C.npc[mother] && C.npc[mother].pregnancy.enabled !== undefined) {
-		return C.npc[mother].pregnancy;
+		pregnancy = C.npc[mother].pregnancy;
 	}
-	return {};
+	if (returnGenital) return [pregnancy, genital];
+	return pregnancy;
 }
 window.getPregnancyObject = getPregnancyObject;
 

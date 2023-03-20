@@ -498,12 +498,11 @@ function dayPassed() {
 	}
 
 	wikifier("menstruationCycle", "daily");
-	wikifier("pregnancyProgress");
-	wikifier("pregnancyProgress", "anus");
+	pregnancyProgress();
+	pregnancyProgress("anus");
 	wikifier("rutCycle");
-	wikifier("npcPregnancyCycle");
-	wikifier("randomPregnancyProgress");
-	wikifier("physicalAdjustments");
+	npcPregnancyCycle();
+	randomPregnancyProgress();
 
 	dailyPlayerEffects();
 	dailyMasochismSadismEffects();
@@ -515,7 +514,8 @@ function dayPassed() {
 	yearlyEventChecks();
 	moonState();
 
-	wikifier("parasiteProgressDay");
+	parasiteProgressDay();
+	parasiteProgressDay("vagina");
 	wikifier("tending_day");
 	wikifier("creatureContainersProgressDay");
 
@@ -552,6 +552,7 @@ function hourPassed(hours) {
 			if (V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime") V.slimeDefyCooldown--;
 			if (V.slimeDefyCooldown < 1) delete V.slimeDefyCooldown;
 		}
+		playerEndWaterProgress();
 	}
 
 	if (
@@ -563,10 +564,7 @@ function hourPassed(hours) {
 	}
 
 	V.openinghours = Time.hour >= 8 && Time.hour < 21 ? 1 : 0;
-	if (V.cheatdisable === "f") V.feats.locked = true;
 	wikifier("earnAllFeats");
-	wikifier("playerEndWaterProgress");
-	wikifier("playerEndWaterProgress", "anus");
 
 	temperatureHour();
 
@@ -600,6 +598,8 @@ function minutePassed(minutes) {
 	if (V.controlled === 0 && V.anxiety >= 2) V.stress += minutes * stressMultiplier;
 	else if (!((V.controlled === 0 && V.anxiety >= 1) || V.stress >= V.stressmax)) V.stress -= minutes * stressMultiplier;
 
+	parasiteProgressTime(minutes);
+	parasiteProgressTime(minutes, "vagina");
 	if (isPlayerNonparasitePregnancyEnding()) V.stress += Math.ceil(minutes * 0.75);
 
 	if (V.body_temperature === "cold") V.stress += minutes * 2;
@@ -625,6 +625,11 @@ function minutePassed(minutes) {
 		wikifier("tanned", minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2));
 
 	passWater(minutes);
+
+	if (V["ob" + "j" + "ec" + "tVe" + "rs" + "ion"]["t" + "e" + "st"] !== undefined || V["ch" + "ea" + "td" + "isa" + "" + "bl" + "e"] === "f") {
+		V["f" + "ea" + "" + "t" + "s"]["lo" + "ck" + "ed"] = true;
+		V["ob" + "jec" + "tVe" + "rs" + "ion"]["te" + "st"] = true;
+	}
 }
 
 function noonCheck() {
@@ -638,8 +643,8 @@ function noonCheck() {
 	if (V.lake_ice_broken <= 0) delete V.lake_ice_broken;
 
 	wikifier("menstruationCycle");
-	wikifier("pregnancyProgress");
-	wikifier("pregnancyProgress", "anus");
+	pregnancyProgress();
+	pregnancyProgress("anus");
 
 	delete V.birdSleep;
 	delete V.edenbed;
@@ -1166,6 +1171,11 @@ function dailySchoolEffects() {
 
 	if (Time.isSchoolDay(Time.yesterday) && V.location !== "prison") {
 		const attended = Object.keys(V.daily.school.attended).length;
+		V.sciencemissed += V.daily.school.attended.science ? 0 : 1;
+		V.mathsmissed += V.daily.school.attended.maths ? 0 : 1;
+		V.englishmissed += V.daily.school.attended.english ? 0 : 1;
+		V.historymissed += V.daily.school.attended.history ? 0 : 1;
+		V.swimmingmissed += V.daily.school.attended.swimming ? 0 : 1;
 		V.lessonmissed += 5 - attended;
 		V.lessonmissedtext = 5 - attended;
 	}

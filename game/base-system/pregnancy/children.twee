@@ -99,7 +99,11 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<set _date1 to $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>>
 		<<set _date2 to Time.monthDay + " " + Time.monthName + " " + Time.year>>
 		<<set $_calc to Math.abs(Date.parse(_date2) - Date.parse(_date1))>>
-		<<set _childTotalDays to Math.ceil($_calc / (1000 * 60 * 60 * 24))>>
+		<<switch  $children[_args[0]].type>>
+			<<case "human" "wolf">><<set _childTotalDaysCap to 200>>
+			<<default>><<set _childTotalDaysCap to 0>>
+		<</switch>>
+		<<set _childTotalDays to Math.clamp(Math.ceil($_calc / (1000 * 60 * 60 * 24)), 0, _childTotalDaysCap)>>
 		<<set _childYears to Math.floor(_childTotalDays / 360)>>
 		<<set _childDays to Math.floor(_childTotalDays % 360)>>
 		<<switch _args[1]>>
@@ -113,7 +117,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				<<set $_text_output to _childTotalDays>>
 		<</switch>>
 	<</if>>
-<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
+<</silently>><<if $_text_output>><<print $_text_output>><<if _childTotalDaysCap is _childTotalDays>> <mouse class="tooltip linkBlue">(Capped)<span>Reached end of current child activity content</span></mouse><</if>><</if>><</widget>>
 
 /*:: Widgets children2 [widget]*/
 

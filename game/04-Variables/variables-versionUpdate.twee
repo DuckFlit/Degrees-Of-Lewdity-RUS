@@ -3512,6 +3512,50 @@
 		<<set $acceptance_pregnancy to 0>>
 	<</if>>
 
+	/* For saves where it was set to undefined */
+	<<if $sciencemissed is undefined>>
+		<<set $sciencemissed to 0>>
+		<<set $mathsmissed to 0>>
+		<<set $englishmissed to 0>>
+		<<set $historymissed to 0>>
+		<<set $swimmingmissed to 0>>
+	<</if>>
+	/* To correct some bad math that let it get into the negatives */
+	<<if Math.min($sciencemissed,$mathsmissed,$englishmissed,$historymissed,$swimmingmissed) lt 0>>
+		<<set $_min to Math.min($sciencemissed,$mathsmissed,$englishmissed,$historymissed,$swimmingmissed)>>
+		<<set $sciencemissed -= $_min>>
+		<<set $mathsmissed -= $_min>>
+		<<set $englishmissed -= $_min>>
+		<<set $historymissed -= $_min>>
+		<<set $swimmingmissed -= $_min>>
+	<</if>>
+	/* Attempt to sync up individual lessons missed with $lessonmissed */
+	<<set $_totalMissed to $sciencemissed + $mathsmissed + $englishmissed + $historymissed + $swimmingmissed>>
+	<<if $_totalMissed gt $lessonmissed>>
+		<<set $lessonmissed to $_totalMissed>>
+	<<elseif $_totalMissed lt $lessonmissed>>
+		<<set $_totalToAdd to $lessonmissed - $_totalMissed>>
+		<<set $_toAdd to Math.ceil($_totalToAdd / 5)>>
+		<<if $_totalToAdd gt 0>>
+			<<set $sciencemissed += $_toAdd lt $_totalToAdd ? $_toAdd : $_totalToAdd>>
+			<<set $_totalToAdd -= $_toAdd lt $_totalToAdd ? $_toAdd : $_totalToAdd>>
+		<</if>>
+		<<if $_totalToAdd gt 0>>
+			<<set $mathsmissed += $_toAdd lt $_totalToAdd ? $_toAdd : $_totalToAdd>>
+			<<set $_totalToAdd -= $_toAdd lt $_totalToAdd ? $_toAdd : $_totalToAdd>>
+		<</if>>
+		<<if $_totalToAdd gt 0>>
+			<<set $englishmissed += $_toAdd lt $_totalToAdd ? $_toAdd : $_totalToAdd>>
+			<<set $_totalToAdd -= $_toAdd lt $_totalToAdd ? $_toAdd : $_totalToAdd>>
+		<</if>>
+		<<if $_totalToAdd gt 0>>
+			<<set $historymissed += $_toAdd lt $_totalToAdd ? $_toAdd : $_totalToAdd>>
+			<<set $_totalToAdd -= $_toAdd lt $_totalToAdd ? $_toAdd : $_totalToAdd>>
+		<</if>>
+		<<if $_totalToAdd gt 0>>
+			<<set $swimmingmissed += $_totalToAdd>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "backComp">>
@@ -4097,11 +4141,6 @@
 		<<set $daily.school.attended to {}>>
 	<</if>>
 	<<if $scienceattended isnot undefined>>
-		<<unset $sciencemissed>>
-		<<unset $mathsmissed>>
-		<<unset $englishmissed>>
-		<<unset $historymissed>>
-		<<unset $swimmingmissed>>
 		<<set $daily.school.attended.science to $scienceattended == 1>>
 		<<unset $scienceattended>>
 		<<set $daily.school.attended.maths to $mathsattended == 1>>
@@ -4235,6 +4274,10 @@
 	<<if $whitneyPub isnot undefined>>
 		<<set $weekly.whitneyPub to $whitneyPub>>
 		<<unset $whitneyPub>>
+	<</if>>
+	<<if $adultShopWhitney isnot undefined>>
+		<<set $weekly.adultShopWhitney to $adultShopWhitney>>
+		<<unset $adultShopWhitney>>
 	<</if>>
 
 	<<if $hypnosisdisable is undefined>>

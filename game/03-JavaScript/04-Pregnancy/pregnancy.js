@@ -196,9 +196,14 @@ window.playerPregnancyTest = (npc, npcType, fatherKnown, genital, trackedNPCs, a
 	if (V.pregnancyTesting) return playerPregnancy(npc, npcType, fatherKnown, genital, trackedNPCs, awareOf);
 }; // V.pregnancyTesting Check should not be removed, debugging purposes only
 
+// Run 2 times per day, math should reflect that
+// eslint-disable-next-line no-unused-vars
 function pregnancyProgress(genital = "vagina") {
 	const pregnancy = V.sexStats[genital].pregnancy;
 	if (!pregnancy || pregnancy.type === null || pregnancy.type === "parasites") return null;
+
+	V.pregnancyStats.totalDaysPregnant += 0.5;
+	if (pregnancy.awareOf) V.pregnancyStats.totalDaysPregnancyKnown += 0.5;
 
 	if (pregnancy.timer < pregnancy.timerEnd) {
 		let multiplier = 1;
@@ -250,10 +255,10 @@ function pregnancyProgress(genital = "vagina") {
 		}
 	}
 }
-DefineMacro("pregnancyProgress", pregnancyProgress);
 
-function playerEndWaterProgress(genital = "vagina") {
-	const pregnancy = V.sexStats[genital].pregnancy;
+// eslint-disable-next-line no-unused-vars
+function playerEndWaterProgress() {
+	const pregnancy = getPregnancyObject();
 	if (!pregnancy || pregnancy.type === null || pregnancy.type === "parasites" || pregnancy.timer < pregnancy.timerEnd) return null;
 
 	if (!isNaN(pregnancy.waterBreakingTimer) && pregnancy.waterBreakingTimer > 0) {
@@ -265,7 +270,6 @@ function playerEndWaterProgress(genital = "vagina") {
 		return false;
 	}
 }
-DefineMacro("playerEndWaterProgress", playerEndWaterProgress);
 
 // Used only when the player is about to give birth to their children and the player can name them
 function playerEndWaterBreaking() {
@@ -277,13 +281,7 @@ function playerEndWaterBreaking() {
 DefineMacro("playerEndWaterBreaking", playerEndWaterBreaking);
 
 function endPlayerPregnancy(birthLocation, location) {
-	let type;
-	if (V.player.vaginaExist) {
-		type = "vagina";
-	} else {
-		type = "anus";
-	}
-	const pregnancy = V.sexStats[type].pregnancy;
+	const [pregnancy, genital] = getPregnancyObject("pc", true);
 	const menstruation = V.sexStats.vagina.menstruation;
 
 	if (!pregnancy || !pregnancy.fetus.length) return false;
@@ -310,7 +308,11 @@ function endPlayerPregnancy(birthLocation, location) {
 	// ToDo: Pregnancy: uncomment once MPreg is possable in-game
 	/* if (!V.player.vaginaExist) Wikifier.wikifyEval('<<earnFeat "Life begins when you least expect">>'); */
 
-	V.sexStats[type].pregnancy = {
+	if ((genital === "vagina" && V.player.virginity.vaginal === true) || (genital === "anus" && V.player.virginity.anal === true)) {
+		V.pregnancyStats.playerVirginBirths.pushUnique(pregnancy.fetus[0].birthId);
+	}
+
+	V.sexStats[genital].pregnancy = {
 		...pregnancy,
 		totalBirthEvents: (pregnancy.totalBirthEvents || 0) + 1,
 		fetus: [],
@@ -341,6 +343,7 @@ window.endPlayerPregnancyTest = (birthLocation, location) => {
 /* Player pregnancy ends here */
 
 /* Named NPC pregnancy starts here */
+// eslint-disable-next-line no-unused-vars
 function npcPregnancyCycle() {
 	for (const npcName of V.NPCNameList) {
 		const npc = C.npc[npcName];
@@ -394,7 +397,6 @@ function npcPregnancyCycle() {
 		updateRecordedSperm("vagina", npcName, 1);
 	}
 }
-DefineMacro("npcPregnancyCycle", npcPregnancyCycle);
 
 /* V.pregnancytype === "realistic" uses this function */
 function namedNpcPregnancyAttempt(npcName) {
@@ -531,6 +533,7 @@ window.endNpcPregnancyTest = (npcName, birthLocation, location) => {
 }; // V.pregnancyTesting Check should not be removed, debugging purposes only
 /* Named NPC pregnancy ends here */
 
+// eslint-disable-next-line no-unused-vars
 function randomPregnancyProgress() {
 	if (!V || !V.storedNPCs) return false;
 	const toDelete = [];
@@ -558,7 +561,6 @@ function randomPregnancyProgress() {
 	toDelete.forEach(npcKey => delete V.storedNPCs[npcKey]);
 	return true;
 }
-DefineMacro("randomPregnancyProgress", randomPregnancyProgress);
 
 function defaultBirthLocations(type, birthLocation, location) {
 	switch (type) {
