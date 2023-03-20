@@ -1102,7 +1102,7 @@ function moonState() {
 	} else if (Time.monthDay === 1) {
 		V.moonstate = "morning";
 		wikifier("checkWraith", true);
-	} else if (V.moonstate > 0) {
+	} else if (V.moonstate !== 0) {
 		V.moonstate = 0;
 		delete V.moonEvent;
 		wikifier("clearWraith");
