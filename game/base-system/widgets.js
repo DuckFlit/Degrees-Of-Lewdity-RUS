@@ -261,7 +261,7 @@ function genderappearancecheck() {
 		addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 4) * 100, 0, Infinity), "Breast size visible through clothing");
 	}
 	/* Pregnant Belly */
-	if (V.sexStats === undefined || pregnancyBellyVisible()) {
+	if (V.sexStats === undefined || !pregnancyBellyVisible()) {
 		// do glorious nothing
 	} else if (playerBellySize() >= 18) {
 		addfemininityfromfactor(Math.clamp(10000, 0, Infinity), playerAwareTheyArePregnant() ? "Pregnant Belly" : "Pregnant Looking Belly");
@@ -379,7 +379,7 @@ function exposedcheck() {
 DefineMacro("exposedcheck", exposedcheck);
 
 /* Checks if bodywriting or tattoos are visible to NPCs. */
-function bodywritingExposureCheck(overwrite) {
+function bodywritingExposureCheck(overwrite, skipRng) {
 	if (!T.skin_array || overwrite) {
 		T.visible_areas = ["forehead"];
 		T.bodywriting_exposed = 0;
@@ -424,7 +424,7 @@ function bodywritingExposureCheck(overwrite) {
 
 		if (T.skin_array.length >= 1) T.bodywriting_exposed = 1;
 	}
-	T.bodypart = T.skin_array.pluck();
+	if (!skipRng) T.bodypart = T.skin_array[random(0, T.skin_array.length - 1)];
 }
 DefineMacro("bodywritingExposureCheck", bodywritingExposureCheck);
 

@@ -17,6 +17,7 @@ function fertiliseParasites(genital = "anus") {
 }
 DefineMacro("fertiliseParasites", fertiliseParasites);
 
+// eslint-disable-next-line no-unused-vars
 function parasiteProgressDay(genital = "anus") {
 	const pregnancy = V.sexStats[genital].pregnancy;
 	V.pregnancyStats.namesParasitesChild = V.deviancy >= 75;
@@ -34,11 +35,8 @@ function parasiteProgressDay(genital = "anus") {
 		pregnancy.fetus = pregnancy.fetus.filter(parasite => parasite.daysLeft > 0 || parasite.fertilised);
 	}
 }
-DefineMacro("parasiteProgressDay", () => {
-	parasiteProgressDay();
-	parasiteProgressDay("vagina");
-});
 
+// eslint-disable-next-line no-unused-vars
 function parasiteProgressTime(pass, genital = "anus") {
 	const pregnancy = V.sexStats[genital].pregnancy;
 	if (pregnancy.type === "parasite") {
@@ -74,10 +72,6 @@ function parasiteProgressTime(pass, genital = "anus") {
 		});
 	}
 }
-DefineMacro("parasiteProgressTime", pass => {
-	parasiteProgressTime(pass);
-	parasiteProgressTime(pass, "vagina");
-});
 
 function impregnateParasite(parasiteType, chance, genital = "anus", hermParasite) {
 	if (V.parasitepregdisable === "t" || !parasiteType || (!V.player.vaginaExist && genital === "vagina")) return false;
