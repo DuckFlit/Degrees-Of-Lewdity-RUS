@@ -111,9 +111,9 @@ function impregnateParasite(parasiteType, chance, genital = "anus", hermParasite
 				...pregnancy,
 				...newPregnancy,
 			};
+			if (!hermParasite) T.impreg = true;
+			return true;
 		}
-		if (!hermParasite) T.impreg = true;
-		return true;
 	}
 	return false;
 }

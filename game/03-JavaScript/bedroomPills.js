@@ -370,7 +370,7 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/pregnancyFertility.png",
+		icon: "img/misc/icon/fertility_booster.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
@@ -400,7 +400,7 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/pregnancyContraceptive.png",
+		icon: "img/misc/icon/contraceptive_pills.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
