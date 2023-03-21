@@ -707,10 +707,12 @@ Renderer.CanvasModels["main"] = {
 				options.belly_mask_src = "img/clothes/belly/mask_" + options.belly + ".png";
 			}
 			if (V.worn.upper.outfitPrimary == undefined) {
-				options.belly_hides_under_lower = true;
 				if (options.belly >= 19) {
 					options.belly_hides_lower = true;
 				}
+			}
+			if (V.worn.under_upper.outfitPrimary == undefined) {
+				options.belly_hides_under_lower = true;
 			}
 		}
 		if (between(options.belly, 19, 24) && V.worn.upper.outfitPrimary == undefined) {
@@ -2411,7 +2413,11 @@ Renderer.CanvasModels["main"] = {
 				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
 			}
 		}),
-		"lower_acc": genlayer_clothing_accessory('lower'),
+		"lower_acc": genlayer_clothing_accessory("lower", {
+			masksrcfn(options) {
+				return options.belly_mask_clip_src;
+			}
+		}),
 		"lower_penis": {
 			srcfn(options) {
 				//ToDo: add images for lower penis bulges. check against pregnancy belly
@@ -2420,6 +2426,7 @@ Renderer.CanvasModels["main"] = {
 			},
 			showfn(options) {
 				return options.show_clothes &&
+					!options.belly_hides_lower &&
 					options.worn_lower > 0 &&
 					options.worn_lower_setup.penis_img === 1 &&
 					calculatePenisBulge() - 6 > 0;
@@ -2436,6 +2443,7 @@ Renderer.CanvasModels["main"] = {
 			},
 			showfn(options) {
 				return options.show_clothes &&
+					!options.belly_hides_lower &&
 					options.worn_lower > 0 &&
 					options.worn_lower_setup.penis_img === 1 &&
 					options.worn_lower_setup.accessory === 1 &&
@@ -2549,6 +2557,7 @@ Renderer.CanvasModels["main"] = {
 			},
 			showfn(options) {
 				return options.show_clothes &&
+					!options.belly_hides_under_lower &&
 					options.worn_under_lower > 0 &&
 					options.worn_under_lower_setup.penis_img === 1 &&
 					calculatePenisBulge() > 0;
@@ -2565,6 +2574,7 @@ Renderer.CanvasModels["main"] = {
 			},
 			showfn(options) {
 				return options.show_clothes &&
+					!options.belly_hides_under_lower &&
 					options.worn_under_lower > 0 &&
 					options.worn_under_lower_setup.penis_img === 1 &&
 					options.worn_under_lower_setup.accessory === 1 &&
@@ -2585,7 +2595,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"under_upper": genlayer_clothing_main('under_upper', {
 			masksrcfn(options) {
-				return options.shirt_mask_clip_src;
+				return options.belly_mask_src;
 			}
 		}),
 		"under_upper_belly_2": genlayer_clothing_belly_2("under_upper", {
@@ -2947,6 +2957,11 @@ function genlayer_clothing_belly(slot, overrideOptions) {
 				&& !options.belly_hides_lower
 				&& options["worn_" + slot] > 0
 				&& options["worn_" + slot + "_setup"].mainImage !== 0
+			} else if (slot == "under_upper") {
+				return options.belly > 7
+				&& options.show_clothes
+				&& options["worn_" + slot] > 0
+				&& options["worn_" + slot + "_setup"].mainImage !== 0
 			} else {
 				return options.belly > 7
 				&& options.show_clothes
@@ -2992,6 +3007,11 @@ function genlayer_clothing_belly_2(slot, overrideOptions) {
 				return options.belly > 7
 				&& options.show_clothes
 				&& !options.belly_hides_lower
+				&& options["worn_" + slot] > 0
+				&& options["worn_" + slot + "_setup"].mainImage !== 0
+			} else if (slot == "under_upper") {
+				return options.belly > 7
+				&& options.show_clothes
 				&& options["worn_" + slot] > 0
 				&& options["worn_" + slot + "_setup"].mainImage !== 0
 			} else {
@@ -3146,10 +3166,18 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 			return gray_suffix(path, options.filters['worn_' + slot + '_acc']);
 		},
 		showfn(options) {
+			if (slot.includes("lower")) {
+				return options.belly > 7
+				&& options.show_clothes
+				&& !options.belly_hides_lower
+				&& options["worn_" + slot] > 0
+				&& options["worn_" + slot + "_setup"].accessory === 1
+			} else {
 			return options.belly > 7
 				&& options.show_clothes
 				&& options["worn_" + slot] > 0
 				&& options["worn_" + slot + "_setup"].accessory === 1
+			}
 		},
 		alphafn(options) {
 			return options["worn_" + slot + "_alpha"]

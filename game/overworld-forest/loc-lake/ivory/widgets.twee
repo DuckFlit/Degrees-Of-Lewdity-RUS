@@ -329,9 +329,14 @@
 		<<set $wraith to {init: 1, seen: 0, days: 0, defeated: 0, evaded: 0, nightmare: 0, timer: 0, hunt: 0, state: "", mimic: "", revealed: false, offspring: "", exit: ""}>>
 	<</if>>
 	<<if Time.days gte 32 and Time.monthName isnot "October" and !$wraithSkip>>
-		<<set $wraith.state to "active">>
 		<<if $museumAntiques.antiques.antiqueivorynecklace isnot "notFound">>
-			<<set $wraith.state to "haunt">>
+			<<if $necklaceThief is "player">>
+				<<set $wraith.state to "haunt">>
+			<<else>>
+				<<set $wraith.state to "despair">>
+			<</if>>
+		<<else>>
+			<<set $wraith.state to "active">>
 		<</if>>
 	<</if>>
 	<<if _args[0]>>
@@ -392,7 +397,7 @@
 <</widget>>
 
 <<widget "wraithEyes">><<silently>>
-	<<set _text_output to ($wraith.state is "haunt" ? "red" : "blue")>>
+	<<set _text_output to (["haunt", "despair"].includes($wraith.state) ? "red" : "blue")>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "wraithShamble">><<silently>>
@@ -701,7 +706,7 @@
 				)>>
 			<<default>>
 		<</switch>>
-	<<elseif $wraith.state isnot "haunt" and $rng lte 8 and _args[0] isnot "lines">>
+	<<elseif $wraith.state is "active" and $rng lte 8 and _args[0] isnot "lines">>
 		<<set _speechWraith to "<<He>> holds <<his>> necklace close.">>
 	<<else>>
 		<<if _args[0] isnot "lines">>
@@ -765,7 +770,6 @@
 				"Give it back.",
 				"Sleep forever.",
 				"Cut you to perfection.",
-				"Never to see the moon again.",
 				"Wrath wrath ?sin ?sin ?sin ?sin ?sin wrath.",
 				"Water down your shame, until the lake runs dry.",
 				"Shoot for the stars, that you may crash and burn.",
@@ -779,6 +783,21 @@
 				"I'm sorry that you put your trust in me.",
 				"Can I pretend you're back, if only for a while?"
 			)>>
+		<</if>>
+		<<if $wraith.state is "despair">>
+			<<run _linePool.pushUnique(
+				"Where is it?",
+				"You're so warm.",
+				"Don't leave me.",
+				"I can't find it.",
+				"So cold.", "So cold.",
+				"Can the innocent repent?",
+				"Where did you go? Come back.",
+				"Never to see the moon again.",
+				"I see you. I see you. I see through you.",
+				"Through my closed eyelids, you still glare.",
+				"Have you seen my necklace?", "Have you seen my necklace?"
+			)>>			
 		<</if>>
 		<<if C.npc["Ivory Wraith"].lust gte 10>>
 			<<run _linePool.pushUnique(
@@ -836,7 +855,7 @@
 		<<if $museumAntiques.antiques.antiquebell isnot "notFound">>
 			<<run _linePool.pushUnique("The cold iron bell rings again.")>>
 		<</if>>
-		<<if $town_projects and $town_projects.diving gte 3>>
+		<<if $town_projects and $town_projects.road gte 3>>
 			<<run _linePool.pushUnique(
 				"Let the roads remain buried.",
 				"Trespassers. Trespassers. It was you, wasn't it?",
@@ -1448,7 +1467,7 @@
 				<<case "tentacles">><<set _wraithTitle to "writhing">>
 				<<case "abomination">><<set _wraithTitle to "profane">>
 				<<case "arms">><<set _wraithTitle to "vain">>
-				<<default>><<set _wraithTitle to ($wraith.state is "haunt" ? "forlorn" : "reflection")>>
+				<<default>><<set _wraithTitle to (["haunt", "despair"].includes($wraith.state) ? "forlorn" : "reflection")>>
 			<</switch>>
 		<</if>>
 	<</if>>
@@ -1484,6 +1503,15 @@
 						<span class="lewd">You feel the slime in your head command you to</span> <span class="red">give it back.</span>
 						<br><br>
 					<</if>>
+				<<elseif $wraith.state is "despair">>
+					It then raises a hand to its neck, seemingly trying to grab something that isn't there. Its hand clenches.
+					<br><br>
+					"<span class="wraith">It's so cold. You're so warm.</span>"
+					<br><br>
+					<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+						<span class="lewd">You feel the slime in your head command you to</span> <span class="red">kneel.</span>
+						<br><br>
+					<</if>>				
 				<<else>>
 					It raises a hand to its chest, rubbing its ivory necklace. The glint of the inlaid blue gemstones match its glowing eyes.
 					<br><br>
@@ -1642,6 +1670,15 @@
 							<span class="lewd">You feel the slime in your head command you to</span> <span class="red">give it back.</span>
 							<br><br>
 						<</if>>
+					<<elseif $wraith.state is "despair">>
+						It then raises a hand to its neck, seemingly trying to grab something that isn't there. Its hand clenches.
+						<br><br>
+						"<span class="wraith">It's so cold. You're so warm.</span>"
+						<br><br>
+						<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+							<span class="lewd">You feel the slime in your head command you to</span> <span class="red">kneel.</span>
+							<br><br>
+						<</if>>
 					<<else>>
 						It raises a hand to its chest, rubbing its ivory necklace. The glint of the inlaid blue gemstones match its glowing eyes.
 						<br><br>
@@ -1760,6 +1797,15 @@
 			<span class="lewd">You feel the slime in your head command you to</span> <span class="red">give it back.</span>
 			<br><br>
 		<</if>>
+	<<elseif $wraith.state is "despair">>
+		It then raises a hand to its neck, seemingly trying to grab something that isn't there. Its hand clenches.
+		<br><br>
+		"<span class="wraith">H...have you seen my necklace?</span>"
+		<br><br>
+		<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+			<span class="lewd">You feel the slime in your head command you to</span> <span class="red">kneel.</span>
+			<br><br>
+		<</if>>	
 	<<else>>
 		It raises a hand to its chest, rubbing its ivory necklace. The glint of the inlaid blue gemstones match its glowing eyes.
 		<br><br>
@@ -1793,6 +1839,10 @@
 				It holds a clenched hand to its neck, and bares its teeth at you.
 				<br><br>
 				"<span class="wraith">Drown.</span>"
+			<<elseif $wraith.state is "despair">>
+				It holds a clenched hand to its neck, and frowns at you.
+				<br><br>
+				"<span class="wraith">Where is it? So cold.</span>"				
 			<<else>>
 				Its necklace shimmers blue, despite the red moonlight.
 				<br><br>
@@ -1806,6 +1856,10 @@
 				It holds a clenched hand to its scarred neck, and bares its teeth at you.
 				<br><br>
 				"<span class="wraith">Thief. Give it back.</span>"
+			<<elseif $wraith.state is "despair">>
+				It holds a clenched hand to its neck, and frowns at you.
+				<br><br>
+				"<span class="wraith">H...have you seen my necklace?</span>"	
 			<<else>>
 				Its necklace shimmers blue, despite the red moonlight.
 				<br><br>
@@ -1833,6 +1887,10 @@
 				It holds a clenched hand to its neck, and bares its teeth at you.
 				<br><br>
 				"<span class="wraith">Drown.</span>"
+			<<elseif $wraith.state is "despair">>
+				It holds a clenched hand to its neck, and smiles at you.
+				<br><br>
+				"<span class="wraith"><<pcPetname "Wraith">>. You've returned. Have you seen my necklace?</span>"					
 			<<else>>
 				Its necklace shimmers a striking blue, causing reflections in the water all around you.
 				<br><br>
@@ -1846,6 +1904,10 @@
 				It scratches at its bare neck, and regards you with striking red eyes.
 				<br><br>
 				"<span class="wraith">Thief. You've returned. Give it back at once.</span>"
+			<<elseif $wraith.state is "despair">>
+				It holds a clenched hand to its neck, and frowns at you.
+				<br><br>
+				"<span class="wraith">H...have you seen my necklace?</span>"	
 			<<else>>
 				It places a hand over its ivory necklace, as if to guard it from you.
 				<br><br>
@@ -1856,7 +1918,7 @@
 		You suddenly feel like you're walking through waist-high water. Your arms<<if $exposed lte 0>> and clothes<</if>> grow heavy, and your feet don't seem to hit the ground anymore.
 		<br><br>
 		As soon as you look behind you, you feel something violently grab into your neck and lift you clear off the ground. A pale figure stands before you.
-		<<if $wraith.state is "haunt">>
+		<<if ["haunt", "despair"].includes($wraith.state)>>
 			It has a hand pressed to its own bare neck, and regards you with striking red eyes.
 		<<else>>
 			Its silver hair flows in a breeze you can't feel. It places its free hand over its necklace.
@@ -1864,6 +1926,8 @@
 		<br><br>
 		<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
 			"<span class="wraith">Drown.</span>"
+		<<elseif $wraith.state is "despair">>
+			"<span class="wraith">So cold. Where is it?</span>"
 		<<else>>
 			"<span class="wraith">You belong to me.</span>"
 		<</if>>
