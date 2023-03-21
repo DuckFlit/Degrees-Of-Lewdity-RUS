@@ -11,10 +11,10 @@ function ampm(hour, minute) {
 	hour = hour !== undefined ? hour : Time.hour;
 	minute = minute !== undefined ? minute : Time.minute;
 	if (V.options.timestyle === "ampm") {
-		ampm = hour >= 12 ? "pm" : "am";
+		ampm = hour >= 12 ? " pm" : " am";
 		hour = hour ? hour % 12 : 12;
 	}
-	return getTimeString(hour, minute) + (ampm ? " " + ampm : "");
+	return !ampm ? ("0" + getTimeString(hour, minute)).slice(-5) : getTimeString(hour, minute) + ampm;
 }
 DefineMacroS("ampm", ampm);
 
