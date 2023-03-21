@@ -1231,7 +1231,7 @@ window.playerIsPenetrated = playerIsPenetrated;
 
 /**
  * Overloads:
- * 	getTimeString(minutes)
+ * 	 (minutes)
  * 	getTimeString(hours, minutes)
  * Examples:
  * 	getTimeString(20) returns "0:20"
@@ -1243,7 +1243,7 @@ function getTimeString(...args) {
 	if(args[0] == null) return;
 	const hours = args[1] != null ? args[0] : 0;
 	const minutes = Math.max(args[1] != null ? args[1] : args[0], 0) + (hours * 60);
-	return ("0" + Math.clamp(Math.trunc(minutes / 60), 0, 23)).slice(-2) + ":" + ("0" + Math.trunc(minutes % 60)).slice(-2);
+	return Math.clamp(Math.trunc(minutes / 60), 0, 23) + ":" + ("0" + Math.trunc(minutes % 60)).slice(-2);
 }
 window.getTimeString = getTimeString;
 
