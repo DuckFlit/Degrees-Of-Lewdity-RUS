@@ -649,6 +649,7 @@ function recordSperm({
 	quantity = 1,
 }) {
 	if (V.activeNightmare) return false; // Should not work if the player is in a nightmare
+	if (V.disableImpregnation) return false; // To be set at the start of sex scenes, unset with <<endcombat>>
 	if (V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false; // Human player pregnancy disabled
 	if (V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false; // Beast player pregnancy disabled
 	if (V.npcPregnancyDisable === "t" && target !== "pc") return false; // Npc pregnancy disabled
@@ -674,6 +675,8 @@ function recordSperm({
 		(target === "pc" &&
 			((V.vaginaaction === "forceImpregnation" && genital === "vagina") || (V.anusaction === "forceImpregnation" && genital === "anus"))) ||
 		(target !== "pc" && spermOwner === "pc" && genital === "vagina" && T.npcForceImpregnation);
+
+	if (!forcePregnancy && V.disableNormalImpregnation) return false; // To be set at the start of sex scenes, unset with <<endcombat>>
 
 	if (V.pregnancytype === "fetish" || forcePregnancy) {
 		// Sperm on the outside should not be able to get the player pregnant

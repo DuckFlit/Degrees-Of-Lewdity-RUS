@@ -141,29 +141,38 @@
 			<<break>>
 		<</if>>
 		
-		<<set $sleepHoursTotal += 1>><<set $sleepStat++>>
-
 		<<if _wraithinterrupt is 1>>
 			<<set _sleepinterrupt to 1>>
 			<<break>>
 		<</if>>
 
+		<!-- Keep events above this comment -->
+		<<set $sleepHoursTotal += 1>><<set $sleepStat++>>
+
 		<!-- for "just sleep" option, if sleep is no longer required OR the player has slept for 10 hours, interrupt it. -->
 		<<if $sleephour lte -1 and ($tiredness lte 0 or $sleephour lte -11)>>
 			<<break>>
 		<</if>>
+
+		<!-- fatigue is lowered by 200 for every hour slept, and another 50 more if the player has no trauma. -->
+		<<set $tiredness -= 200>>
+		<<if !($sleeptrouble is 1 and $controlled is 0)>>
+			<<set $tiredness -= 50>>
+		<</if>>
+		<<set $tiredness -= $_bonusFatigueLoss>>
+
+		<<if $location is "tower">>
+			<<bird_pass 60>>
+		<<else>>
+			<<pass 1 hours>>
+		<</if>>
+
+		<<if $nightmares gte 1 and $controlled is 0>>
+			<<stress 6>>
+		<</if>>
+
+		<<sleep_clamp>>/*Prevents bugged out values affecting events in anyway, -2000 fatigue and -360 stress arnt helpful*/
 	<</for>>
-	
-	<<set $sleepStat += $sleepHoursTotal>>
-	<!-- fatigue is lowered by 200 for every hour slept, and another 50 more if the player has no trauma. -->
-	<<set $tiredness -= $sleepHoursTotal * (200 + $_bonusFatigueLoss + !($sleeptrouble and !$controlled) * 50)>>
-	<<stress `($sleepHoursTotal * (($nightmares gte 1 and $controlled is 0) * 6))`>>
-	<<if $location is "tower">>
-		<<bird_pass $sleepHoursTotal * 60>>
-	<<else>>
-		<<pass $sleepHoursTotal hours>>
-	<</if>>
-	<<sleep_clamp>>/*Prevents bugged out values affecting events in anyway, -2000 fatigue and -360 stress arnt helpful*/
 <</widget>>
 
 <<widget "sleepeffects">>
