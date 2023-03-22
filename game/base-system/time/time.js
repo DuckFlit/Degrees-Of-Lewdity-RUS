@@ -1050,6 +1050,7 @@ function dailyTransformationEffects() {
 	}
 
 	delete V.demon_window_orphan;
+	delete V.robin_kicked_out;
 
 	fragment.append(wikifier("transformationStateUpdate"));
 
