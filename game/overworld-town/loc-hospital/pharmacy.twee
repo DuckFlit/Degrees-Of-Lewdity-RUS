@@ -612,19 +612,96 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding,
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 You ask the nurse for after morning pills.
 <br><br>
-"£500 please. For legal reasons, we're unable to sell these in bulk. You'll have to take it while I'm supervising you, just in case issues occur."
-<br><br>
-<<if $money gte 50000>>
-	<<link [[Hand over the money and take the pill|Pharmacy Morning After pill 2]]>><<set $money -= 50000>><<set $pregnancyStats.aftermorningpills++>><</link>>
+<<if pregnancyBellyVisible()>>
+	"You <<if $pregnancyStats.aftermorningpills>>already know you <</if>>can't take these pills if you are pregnant, and it's obvious you are. It's very dangerous for your health and it won't have the desired effects", <<he>> tells you while looking openly at your <<bellyDescription "pc">>. "If you still want to take it, £500 please. For legal reasons, we're unable to sell these in bulk. You'll have to take it while I'm supervising you, just in case issues occur."
+	<br><br>
+	<<if  not getPregnancyObject().awareOf>>
+		<<if $money gte 50000>>
+			<<link [[Hand over the money and take the pill anyway (0:15)|Pharmacy Morning After pill 2]]>><<pass 15>><</link>>
+		<<else>>
+			<span class="purple">You cannot afford them.</span>
+		<</if>>
+	<</if>>
+	<br>
+	<<link [["Don't buy"|Pharmacy]]>><</link>>
 <<else>>
-	<span class="purple">You cannot afford them.</span>
+	"These pills are only effective for a short period after intercourse. If an egg has been fertilized and nestled in your uterus, taking them can be dangerous to your health.<<if $pregnancyStats.aftermorningpills>> Keep in mind that these pills are not a contraceptive method. Perhaps you should consider the option of using condoms or contraceptive pills that you can buy here, they are less harmful.<</if>>"
+	<br><br>
+	<<He>> opens a drawer and pulls out a blister with a single pill. "£500 please. For legal reasons, we're unable to sell these in bulk. You'll have to take it while I'm supervising you, just in case issues occur."
+	<br><br>
+	<<if $money gte 50000>>
+		<<link [[Hand over the money and take the pill anyway (0:15)|Pharmacy Morning After pill 2]]>><<pass 15>><</link>>
+	<<else>>
+		<span class="purple">You cannot afford them.</span>
+	<</if>>
+	<br>
+	<<link [["Don't buy"|Pharmacy]]>><</link>>
 <</if>>
-<br>
-<<link [[Don't buy|Pharmacy]]>><</link>>
+
 
 :: Pharmacy Morning After pill 2
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<set $money -= 50000>>
+<<set $pregnancyStats.aftermorningpills++>>
 <<pregnancyMorningAfterPill>>
-ToDo: Morning After pill scene
+
+The nurse points you to a chair to sit on and you take the pill while <<he>> watches you carefully.
 <br><br>
-<<link [[Next|Pharmacy]]>><<set $eventskip to 1>><</link>>
+<<switch _morningAfterPillResult>>
+	<<case "no pregnant">>
+		You sit on the chair and wait for it to take effect. You only feel a cold sensation in your belly. After a few minutes, the nurse checks your pupils and your blood pressure. "Everything is fine, you can go." <<lllarousal>> <<llstress>>
+		<br><br>
+		<<arousal -5000>>
+		<<stress -12>>
+		<<clamp>>
+		<<link [[Go back|Pharmacy]]>><</link>>
+	<<case "successful">>
+		You sit on the chair and wait for it to take effect. You feel a cold sensation in your belly and a little pain. After a few minutes, the nurse checks your pupils and your blood pressure. <<He>> can see the discomfort in your face. "It seems that the pill has taken effect. You may feel some pain, but it will pass quickly. You can go now." <<lllarousal>> <<llstress>> <<gpain>>
+		<br><br>
+		<<arousal -5000>>
+		<<stress -12>>
+		<<pain 2>>
+		<<clamp>>
+		<<link [[Go back|Pharmacy]]>><</link>>
+	<<case "a little late">>
+		You sit on the chair and wait for it to take effect. You feel an unpleasant sensation in your belly and a sharp pain. The nurse notices your pained face and approaches you. <<He>> check your pupils and your blood pressure. "It seems that the pill has taken effect, but you have reached the limit of time. If you ever need this pill again, don't wait for so long. The pain you feel now will disappear after a while. You can go now." <<lllarousal>> <<llstress>> <<ggpain>>
+		<br><br>
+		<<arousal -5000>>
+		<<stress -12>>
+		<<pain 8>>
+		<<clamp>>
+		<<link [[Go back|Pharmacy]]>><</link>>
+	<<case "late">>
+		You sit on the chair and wait for it to take effect. You feel a strange sensation in your belly and immediately you writhe in pain. The nurse rushes over to you and checks your pupils and your blood pressure. <<He>> can see the discomfort in your face. "It seems like it's been too long since..." You feel a sharp pinch in your belly and wince in pain. The nurse notices your pained face. "Well, in any case, the pill has taken effect. You will feel pain for a while, it's normal, it will pass. If you ever need this pill again, don't wait for so long. You can go now." <<lllarousal>> <<ggtrauma>> <<ggpain>>
+		<br><br>
+		<<arousal -5000>>
+		<<trauma 20>>
+		<<pain 20>>
+		<<clamp>>
+		<<link [[Go back|Pharmacy]]>><</link>>
+	<<case "too late">>
+		You sit on the chair and wait for it to take effect. You feel an unpleasant sensation in your belly and immediately writhe in pain. The nurse rushes over to you and checks your pupils and your blood pressure. <<He>> can see the discomfort in your face. "It seems like it's been too long since..." You notice a very sharp pain in your belly, you bend over and fall from the chair. Your vision blurs, the pain is unbearable. <<lllarousal>> <<ggtrauma>> <<ggpain>>
+		<br><br>
+		<<set $arousal to 0>>
+		<<trauma 50>>
+		<<pain 200>>
+		<<clamp>>
+		<<link [[Everything fades to black...|Pharmacy Morning After pill passout]]>><<pass 60>><<endevent>><</link>>
+	<<default>>
+		There must be an error... 
+		<br><br>
+		<<link [[Go back|Pharmacy]]>><</link>>
+<</switch>>
+ 
+:: Pharmacy Morning After pill passout
+You feel your body rise, being moved, you hear voices around you. You open your eyes for a moment and you see the nurse with a worried face. Another person in a white coat approaches and you recognize Dr. Harper. "I don't know if you were aware of it, but you're pregnant. You shouldn't have taken that pill." <<lllarousal>> <<ggstress>>
+<br><br> 
+Before you can answer, you feel another intense and painful cramp in your belly. <<ggtrauma>> <<gggpain>>
+<br><br>
+<<set getPregnancyObject().awareOf to true>>
+<<arousal -5000>>
+<<stress 12>>
+<<trauma 50>>
+<<pain 200>>
+<<clamp>>
+<<link [[Next|Passout hospital]]>><<pass 60>><</link>>
