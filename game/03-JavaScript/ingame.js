@@ -960,9 +960,10 @@ function clothesDataTrimmer(item) {
 		"cost", // use `Setup example`
 		"shop", // use `Setup example`, should never be added back on to clothing items due to being in `trimmerVersion`
 		"short", // use `Setup example`, should never be added back on to clothing items due to being in `trimmerVersion`
+		"oldVariable", // use `Setup example`, should never be added back on to clothing items due to being in `trimmerVersion`
 	];
 	// To prevent it from running on variables multiple times, when updating toDelete, the last of the new additions should be added here
-	const trimmerVersion = ["shop", "short"];
+	const trimmerVersion = ["shop", "short", "oldVariable"];
 	let version = 0;
 	let indexToUpdateVersion = toDelete.indexOf(trimmerVersion[version]);
 	toDelete.forEach((v, index) => {
@@ -1087,17 +1088,41 @@ function clothesIndex(slot, itemToIndex) {
 		});
 		return 0;
 	}
-	let index = setup.clothes[slot].findIndex(item => item.variable === itemToIndex.variable && item.modder === itemToIndex.modder);
+	const index = setup.clothes[slot].findIndex(item => item.variable === itemToIndex.variable && item.modder === itemToIndex.modder);
 	if (index === -1) {
 		console.log(`clothesIndex - ${slot} clothing item index not found for the '${itemToIndex.name}' with the modder set to '${itemToIndex.modder}'`);
 		/* try and correct .modder mismatches */
-		const matches = setup.clothes[slot].filter(item => item.variable === itemToIndex.variable);
+		let oldVariable = false;
+		let matches = setup.clothes[slot].filter(item => item.variable === itemToIndex.variable);
+		if (matches.length === 0) {
+			/* try to find and item that had its variable changed */
+			matches = setup.clothes[slot].filter(item => Array.isArray(item.oldVariable) && item.oldVariable.find(oldVariableItem => oldVariableItem.name === itemToIndex.name && oldVariableItem.variable === itemToIndex.variable));
+			oldVariable = true;
+		}
 		if (matches.length === 1) {
-			const recovery = setup.clothes[slot].find(item => item.variable === itemToIndex.variable);
+			const recovery = matches[0];
+			itemToIndex.index = recovery.index;
 			itemToIndex.modder = recovery.modder;
-			index = recovery.index;
-			console.log(`attempting to recover the mismatch, new modder is '${recovery.modder}'`);
-			return index;
+			if (oldVariable) {
+				itemToIndex.name = recovery.name;
+				itemToIndex.name_cap = recovery.name_cap;
+				itemToIndex.variable = recovery.variable;
+				itemToIndex.set = recovery.set;
+				itemToIndex.iconFile = recovery.iconFile;
+				if(recovery.outfitPrimary) {
+					Object.entries(recovery.outfitPrimary).forEach(([key, value]) => {
+						if(itemToIndex.outfitPrimary && itemToIndex.outfitPrimary[key] === "broken"){
+							// Do Nothing
+						} else {
+							itemToIndex.outfitPrimary[key] = value;
+						}
+					})
+					itemToIndex.outfitPrimary = recovery.outfitPrimary;
+				}
+				if(recovery.outfitSecondary && itemToIndex.outfitSecondary[1] !== "broken") itemToIndex.outfitSecondary[1] = recovery.outfitSecondary[1];
+			}
+			console.log(`attempting to recover the mismatch, new index is '${recovery.index}'`);
+			return recovery.index;
 		} else {
 			console.log("recovery failed, matches: " + matches);
 			return 0;

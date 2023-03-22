@@ -33,6 +33,7 @@ function parasiteProgressDay(genital = "anus") {
 			}
 		});
 		pregnancy.fetus = pregnancy.fetus.filter(parasite => parasite.daysLeft > 0 || parasite.fertilised);
+		if (!pregnancy.fetus.length) pregnancy.type = null;
 	}
 }
 
