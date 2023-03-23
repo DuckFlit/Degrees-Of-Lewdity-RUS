@@ -364,12 +364,15 @@ window.pregnancyGenerator = {
 			if (random(0, 100) > 98 - tripletBoost) count++;
 			/* Ready for the cloning of PurityGuy to begin */
 			for (let i = 0; i < count; i++) {
-				if (identical && result.fetus.length) {
-					result.fetus.push(result.fetus[0]);
-					continue;
-				}
 				const childId =
 					"m" + motherObject.parentId.id + "b" + motherObject.parentId.kids + "d" + fatherObject.parentId.id + "f" + fatherObject.parentId.kids;
+				if (identical && result.fetus.length) {
+					console.log(childId);
+					result.fetus.push(clone(result.fetus[0]));
+					result.fetus.last().childId = childId;
+					parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
+					continue;
+				}
 				const birthId = motherObject.parentId.births;
 				let gender = random(0, 100) > 50 ? "f" : "m";
 				if ((motherObject.gender === "h" || fatherObject.gender === "h") && (motherObject.name === fatherObject.name || random(0, 100) >= 75))
