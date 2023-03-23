@@ -82,6 +82,8 @@
 
 	<br>
 
+	<<set _loveIntStart1 to $loveInterest.primary>>
+	<<set _loveIntStart2 to $loveInterest.secondary>>
 	<div id="loveInterest">
 		<<loveInterest>>
 	</div>
@@ -732,62 +734,69 @@
 
 <<widget "loveInterest">>
 	Who do you consider to be your primary love interest?
+	<br>
+	<<set _npc = ["None","Robin","Whitney","Kylar","Sydney","Eden","Avery","Black Wolf","Great Hawk","Alex"]>>
+	<<set _potentialLoveInterests = ["None"]>>
+	<<if $robinromance is 1>>
+		<<run _potentialLoveInterests.push("Robin")>>
+	<</if>>
+	<<if $whitneyromance is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon">>
+		<<run _potentialLoveInterests.push("Whitney")>>
+	<</if>>
+	<<if $kylarenglish gte 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
+		<<run _potentialLoveInterests.push("Kylar")>>
+	<</if>>
+	<<if $sydneyromance is 1>>
+		<<run _potentialLoveInterests.push("Sydney")>>
+	<</if>>
+	<<if $syndromeeden is 1>>
+		<<run _potentialLoveInterests.push("Eden")>>
+	<</if>>
+	<<if $dateCount.Avery gte 3 and $NPCName[$NPCNameList.indexOf("Avery")].state isnot "dismissed">>
+		<<run _potentialLoveInterests.push("Avery")>>
+	<</if>>
+	<<if $syndromewolves is 1 and $deviancy gte 35>>
+		<<run _potentialLoveInterests.push("Black Wolf")>>
+	<</if>>
+	<<if $syndromebird is 1>>
+		<<run _potentialLoveInterests.push("Great Hawk")>>
+	<</if>>
+	<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+		<<run _potentialLoveInterests.push("Alex")>>
+	<</if>>
+	<<if _potentialLoveInterests.length lte 1>>
+		<span class="black"><i>You haven't developed feelings for anyone yet.</i></span>
+	<<else>>
+		<<listbox "$loveInterest.primary" autoselect>>
+			<<optionsfrom _potentialLoveInterests>>
+		<</listbox>>
+		<<if $loveInterest.primary isnot "None">>
+			<<run _potentialLoveInterests.delete($loveInterest.primary)>>
+		<</if>>
 		<br>
-		<<set _npc = ["None","Robin","Whitney","Kylar","Sydney","Eden","Avery","Black Wolf","Great Hawk","Alex"]>>
-			<<set _potentialLoveInterests = ["None"]>>
-			<<if $robinromance is 1>>
-				<<run _potentialLoveInterests.push("Robin")>>
-			<</if>>
-			<<if $whitneyromance is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon">>
-				<<run _potentialLoveInterests.push("Whitney")>>
-			<</if>>
-			<<if $kylarenglish gte 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
-				<<run _potentialLoveInterests.push("Kylar")>>
-			<</if>>
-			<<if $sydneyromance is 1>>
-				<<run _potentialLoveInterests.push("Sydney")>>
-			<</if>>
-			<<if $syndromeeden is 1>>
-				<<run _potentialLoveInterests.push("Eden")>>
-			<</if>>
-			<<if $dateCount.Avery gte 3 and $NPCName[$NPCNameList.indexOf("Avery")].state isnot "dismissed">>
-				<<run _potentialLoveInterests.push("Avery")>>
-			<</if>>
-			<<if $syndromewolves is 1 and $deviancy gte 35>>
-				<<run _potentialLoveInterests.push("Black Wolf")>>
-			<</if>>
-			<<if $syndromebird is 1>>
-				<<run _potentialLoveInterests.push("Great Hawk")>>
-			<</if>>
-			<<if $farm_stage gte 7 and $alex_countdown is undefined>>
-				<<run _potentialLoveInterests.push("Alex")>>
-			<</if>>
-			<<if _potentialLoveInterests.length lte 1>>
-				<span class="black"><i>You haven't developed feelings for anyone yet.</i></span>
+		<<if $awarelevel gte 2>>
+			<<if $loveInterest.primary is "None">>
+				<<set $loveInterest.secondary to "None">>
+				<span class="black">You need to choose primary love interest before you can choose a secondary.</span>
 			<<else>>
-				<<listbox "$loveInterest.primary" autoselect>>
-					<<optionsfrom _potentialLoveInterests>>
-				<</listbox>>
-				<<if $loveInterest.primary isnot "None">>
-					<<run _potentialLoveInterests.delete($loveInterest.primary)>>
-				<</if>>
-				<br>
-				<<if $awarelevel gte 2>>
-					<<if $loveInterest.primary is "None">>
-						<<set $loveInterest.secondary to "None">>
-						<span class="black">You need to choose primary love interest before you can choose a secondary.</span>
-					<<else>>
-					Who do you consider to be your secondary love interest?
-					<br>
-					<<listbox "$loveInterest.secondary" autoselect>>
-						<<optionsfrom _potentialLoveInterests>>
-					<</listbox>>
-					<</if>>
-				<<else>>
-					<span class="black">You don't consider it possible to have more than one love interest.</span>
-					<<set $loveInterest.secondary to "None">>
-				<</if>>
+			Who do you consider to be your secondary love interest?
+			<br>
+			<<listbox "$loveInterest.secondary" autoselect>>
+				<<optionsfrom _potentialLoveInterests>>
+			<</listbox>>
 			<</if>>
+		<<else>>
+			<span class="black">You don't consider it possible to have more than one love interest.</span>
+			<<set $loveInterest.secondary to "None">>
+		<</if>>
+	<</if>>
+	<<if $transformationParts.traits.mateForLife isnot "disabled" and (!isLoveInterest(_loveIntStart1) or (_loveIntStart2 isnot "None" and !isLoveInterest(_loveIntStart2)))>>
+		<<set $LIChanged to true>>
+		<br>
+		<span class="red">Changing your partners goes against your instincts to mate for life. It will take a toll on your mental state.</span>
+	<<else>>
+		<<unset $LIChanged>>
+	<</if>>
 <</widget>>
 
 <<widget "attitudesControlCheck">>

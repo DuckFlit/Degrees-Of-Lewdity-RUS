@@ -440,6 +440,7 @@ function playerHeatMinArousal() {
 		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10 * (2 - risk);
 		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10 * (2 - risk);
 		if (V.cow >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10 * (2 - risk);
+		if (V.fox >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10 * (2 - risk);
 	}
 	if (pills["fertility booster"].doseTaken > 2) {
 		minArousal += 500;
@@ -459,6 +460,7 @@ function playerRutMinArousal() {
 		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10;
 		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10;
 		if (V.cow >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10;
+		if (V.fox >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10 * (2 - risk);
 	}
 	if (pills["fertility booster"].doseTaken > 2) {
 		minArousal += 500;
