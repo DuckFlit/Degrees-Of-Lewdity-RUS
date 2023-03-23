@@ -30,17 +30,27 @@ function passTimeUntil(hour, minute) {
 }
 DefineMacro("passTimeUntil", passTimeUntil);
 
+/* Looks ugly, works, is clear. Ideally we shouldn't allow variance in the argument for <<pass>> like this.
+	In the future someone can do a revision of calls to eliminate such variance. */
+const secondsMapper = {
+	sec: 1,
+	seconds: 1,
+	min: DateTime.secondsPerMinute,
+	mins: DateTime.secondsPerMinute,
+	minute: DateTime.secondsPerMinute,
+	minutes: DateTime.secondsPerMinute,
+	hour: DateTime.secondsPerHour,
+	hours: DateTime.secondsPerHour,
+	day: DateTime.secondsPerDay,
+	days: DateTime.secondsPerDay,
+	week: DateTime.secondsPerDay * 7,
+	weeks: DateTime.secondsPerDay * 7,
+};
+
 function passTime(time = 0, type = "min") {
-	const multiplier = type.includes("sec")
-		? 1
-		: type.includes("hour")
-		? DateTime.secondsPerHour
-		: type.includes("day")
-		? DateTime.secondsPerDay
-		: type.includes("week")
-		? 604800
-		: DateTime.secondsPerMinute;
-	Time.pass(time * multiplier);
+	const multiplier = secondsMapper[type] || 1;
+	const fragment = Time.pass(time * multiplier);
+	this.output.append(fragment);
 }
 DefineMacro("pass", passTime);
 

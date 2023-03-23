@@ -42,12 +42,12 @@ function shopClothingFilterSortOnDescription(traitOne, traitTwo) {
 }
 window.shopClothingFilterSortOnDescription = shopClothingFilterSortOnDescription;
 
-// Now also returns the value from wikifyEval
-// Not limited to number of parameters
-window.wikifier = function (widget, ...args) {
-	if(widget == null) return;
+// A wrapper for wikifyEval, only use for singular macro calls.
+function wikifier(widget, ...args) {
+	if (widget == null) return document.createDocumentFragment();
 	return Wikifier.wikifyEval("<<" + widget + (args.length ? " " + args.join(" ") : "") + ">>");
 };
+window.wikifier = wikifier;
 
 function actionsreplace(bodypart) {
 	const check = bodypart + "target";
