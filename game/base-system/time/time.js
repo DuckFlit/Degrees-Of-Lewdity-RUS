@@ -523,6 +523,7 @@ function dayPassed() {
 	fragment.append(wikifier("rutCycle"));
 	npcPregnancyCycle();
 	randomPregnancyProgress();
+	fragment.append(wikifier("physicalAdjustments"));
 
 	fragment.append(dailyPlayerEffects());
 	fragment.append(dailyMasochismSadismEffects());
