@@ -83,6 +83,12 @@
 					text: "You're more vulnerable to aphrodisiacs and alcohol. You draw nourishment from nectar. Drinking it invigorates your body, improving physique and reducing stress. Failing to consume nectar for an extended period will take its toll on your body, and eventually cause this trait and the <<if $submissive lte 850>><span class='lewd'>Dendrophile</span><<else>><span class='lewd'>Plant Lover</span><</if>> trait to disappear.<span class='hidden'></span>",
 				},
 				{
+					name: "Pregnant",
+					colour: "lewd",
+					has: playerNormalPregnancyTotal() is 1,
+					text: "You have given birth to your first child. Reduces the physical penalties for being pregnant.",
+				},
+				{
 					name: "First Time Mother",
 					colour: "lewd",
 					has: playerNormalPregnancyTotal() is 1,
@@ -149,30 +155,6 @@
 					text: "Your body is not your own.",
 				},
 				{
-					name: "Fangs",
-					colour: "def",
-					has: $transformationParts.traits.fangs isnot "disabled",
-					text: "Biting is three times as effective.",
-				},
-				{
-					name: "Compound Horns",
-					colour: "def",
-					has: $cow gte 2 and $demon gte 2,
-					text: "Your headbutts are vicious. Headbutts are four times as powerful, and no longer hurt you.",
-				},
-				{
-					name: "Sturdy Horns",
-					colour: "def",
-					has: $cow gte 2 and $demon lt 2,
-					text: "Headbutts no longer hurt you.",
-				},
-				{
-					name: "Dark Horns",
-					colour: "def",
-					has: $cow lt 2 and $demon gte 2,
-					text: "Headbutts deal twice as much damage.",
-				},
-				{
 					name: "Wolf <<girl>>",
 					colour: "grey",
 					has: $wolfgirl gte 6,
@@ -183,13 +165,6 @@
 					colour: "grey",
 					has: $cat gte 6,
 					text: 'You have an urge to lap up cream. Unlocks the "groom" action while dancing with lewd fluid on your person. Your ears and tail make you more conspicuous.',
-				},
-				{
-					name: "Heterochromia",
-					colour: "",
-					style: `background: linear-gradient(to right,${setup.colours.eyes_map[$rightEyeColour].canvasfilter.blend} 0%, ${setup.colours.eyes_map[$leftEyeColour].canvasfilter.blend} 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
-					has: $heterochromia is 1,
-					text: "Your eyes are two different colours.",
 				},
 				{
 					name: () => {
@@ -210,28 +185,61 @@
 					text: "You yearn to be milked. Milk and semen volume is increased. Certain body parts might grow. Your horns, ears and tail make you more conspicuous.",
 				},
 				{
+					name: () => V.hallucinations gte 2 || V.bestialitydisable is "t" ? "Harpy" : "Bird <<girl>>",
+					colour: "grey",
+					has: $harpy gte 6,
+					text: "The skies call.",
+				},
+				{
+					name: () => {
+						if(V.player.gender_appearance is "m"){
+							if(V.player.gender is "f"){
+								return "Fox (female)";
+							}
+							return "Fox";
+						}else{
+							if(V.player.gender is "m"){
+								return "Vixen (male)";
+							}
+							return "Vixen";
+						}
+					},
+					colour: "",
+					style: `background: linear-gradient(to right,#fe9000 0%, #ffffff 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $fox gte 6,
+					text: "You have the urge to keep what's not yours. Improves skulduggery. Your ears and tail make you more alluring and attractive.",
+				},
+				{
+					name: "Fangs",
+					colour: "def",
+					has: $transformationParts.traits.fangs isnot "disabled",
+					text: "Biting is three times as effective.",
+				},
+				{
 					name: "Sharp eyes",
 					colour: "def",
 					has: $transformationParts.traits.sharpEyes isnot "disabled",
 					text: "Little escapes your notice. +5% skulduggery.",
 				},
 				{
-					name: "Strong wings",
-					colour: "gold",
-					has: $harpy gte 6 and $birdFly gte 1,
-					text: "Can glide from high locations. Can fly where the wind is willing.",
+					name: "Heterochromia",
+					colour: "",
+					style: `background: linear-gradient(to right,${setup.colours.eyes_map[$rightEyeColour].canvasfilter.blend} 0%, ${setup.colours.eyes_map[$leftEyeColour].canvasfilter.blend} 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $heterochromia is 1,
+					text: "Your eyes are two different colours.",
 				},
 				{
-					name: "Wings",
-					colour: "grey",
-					has: !($harpy gte 6 and $birdFly gte 1) and ($angel gte 6 or $fallenangel gte 2 or $demon gte 6 or $harpy gte 6),
-					text: "Can glide from high locations.",
+					name: "Sturdy Horns",
+					colour: "def",
+					has: $cow gte 2 and $demon lt 2,
+					text: "Headbutts no longer hurt you.",
 				},
 				{
-					name: () => V.hallucinations gte 2 || V.bestialitydisable is "t" ? "Harpy" : "Bird <<girl>>",
-					colour: "grey",
-					has: $harpy gte 6,
-					text: "The skies call.",
+					name: "Mate For Life",
+					colour: "",
+					style: `background: linear-gradient(to right,#e646c6 0%, #ffffff 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $transformationParts.traits.mateForLife isnot "disabled",
+					text: "Gain bonuses when sleeping or copulating with your Love Interest. Changing Love Interests causes stress and trauma.",
 				},
 				{
 					name: "Fallen angel",
@@ -252,12 +260,6 @@
 					text: 'You radiate purity. Unlocks the "forgive" action once per encounter, removing any trauma gained so far. Beware, losing your virginity will remove this trait and leave you broken.',
 				},
 				{
-					name: "Radiant",
-					colour: "gold",
-					has: between($angel,4,5),
-					text: 'You are pure. Unlocks the "banish" action a number of times per day based on your angelicness, dealing heavy damage to a tentacle. Its strength is greatly increased while at maximum purity. Uses remaining today: ($angelBanish / $angelBanishMax)',
-				},
-				{
 					name: () => {
 						if(V.player.gender_appearance is "m"){
 							if(V.player.gender is "f"){
@@ -276,6 +278,36 @@
 					text: "You're devoid of purity. You lose trauma when something cums inside you, or you cum inside something else. Tentacles reduce stress and pain instead of trauma. Beware, ending a day with anything but minimum purity will be very stressful.",
 				},
 				{
+					name: "Radiant",
+					colour: "gold",
+					has: between($angel,4,5),
+					text: 'You are pure. Unlocks the "banish" action a number of times per day based on your angelicness, dealing heavy damage to a tentacle. Its strength is greatly increased while at maximum purity. Uses remaining today: ($angelBanish / $angelBanishMax)',
+				},
+				{
+					name: "Dark Horns",
+					colour: "def",
+					has: $cow lt 2 and $demon gte 2,
+					text: "Headbutts deal twice as much damage.",
+				},
+				{
+					name: "Compound Horns",
+					colour: "def",
+					has: $cow gte 2 and $demon gte 2,
+					text: "Your headbutts are vicious. Headbutts are four times as powerful, and no longer hurt you.",
+				},
+				{
+					name: "Strong wings",
+					colour: "gold",
+					has: $harpy gte 6 and $birdFly gte 1,
+					text: "Can glide from high locations. Can fly where the wind is willing.",
+				},
+				{
+					name: "Wings",
+					colour: "grey",
+					has: !($harpy gte 6 and $birdFly gte 1) and ($angel gte 6 or $fallenangel gte 2 or $demon gte 6 or $harpy gte 6),
+					text: "Can glide from high locations.",
+				},
+				{
 					name: "Meek",
 					colour: "meek",
 					has: $submissive gte 1150 and $submissive lt 1500,
@@ -285,19 +317,19 @@
 					name: "Submissive",
 					colour: "sub",
 					has: $submissive gte 1500,
-					text: 'unlocks the "Moan" action.',
+					text: 'Unlocks the "Moan" action.',
 				},
 				{
 					name: "Bratty",
 					colour: "brat",
 					has: $submissive lte 850 and $submissive gt 500,
-					text: 'unlocks the "Demand" action.',
+					text: 'Unlocks the "Demand" action.',
 				},
 				{
 					name: "Defiant",
 					colour: "def",
 					has: $submissive lte 500,
-					text: 'unlocks the "Demand" action.',
+					text: 'Unlocks the "Demand" action.',
 				},
 				{
 					name: "Innocent",
@@ -837,7 +869,7 @@
 					name: () => playerAwareTheyArePregnant() ? "Acceptance: Pregnant Belly" : "Acceptance: Pregnant Looking Belly",
 					colour: "green",
 					has: $acceptance_pregnancy gte 1000 and playerBellySize() gte 8,
-					text: "You're proud of your large belly.",
+					text: () => playerAwareTheyArePregnant() ? "You're proud of your lifebearing belly." : "You're proud of your large belly.",
 				},
 			],
 		},

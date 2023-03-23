@@ -1455,6 +1455,22 @@ setup.debugMenu.eventList = {
 			widgets: [`<<set $wolfbuild -= 40>>`],
 		},
 		{
+			link: [`Oh For Fox Sake`, stayOnPassageFn],
+			widgets: [`<<set $fox to 0>>`],
+		},
+		{
+			link: [`Go Fox Yourself`, stayOnPassageFn],
+			widgets: [`<<set $fox += 1>>`],
+		},
+		{
+			link: [`Fox build up`, stayOnPassageFn],
+			widgets: [`<<set $foxbuild += 40>>`],
+		},
+		{
+			link: [`Fox build down`, stayOnPassageFn],
+			widgets: [`<<set $foxbuild -= 40>>`],
+		},
+		{
 			link: [`Cow build up`, stayOnPassageFn],
 			widgets: [`<<set $cowbuild += 40>>`],
 		},

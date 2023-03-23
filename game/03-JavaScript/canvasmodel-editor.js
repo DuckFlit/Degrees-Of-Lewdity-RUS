@@ -683,6 +683,9 @@ Macro.add('canvasModelEditor', {
 						selectOption("bird_malar_type", ["disabled", "hidden", "default"]),
 						selectOption("bird_plumage_type", ["disabled", "hidden", "default"]),
 						selectOption("bird_pubes_type", ["disabled", "hidden", "default"]),
+						selectOption("fox_tail_type", ["disabled", "hidden", "default"]),
+						selectOption("fox_ears_type", ["disabled", "hidden", "default"]),
+						selectOption("fox_cheeks_type", ["disabled", "hidden", "default"]),
 
 						optionCategory("Body writings"),
 						selectOption("writing_forehead", bodyWritings),

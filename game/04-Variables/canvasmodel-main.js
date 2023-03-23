@@ -139,6 +139,9 @@ replace (?<!["'\w])_(?=\w) with T.
  * "bird_malar_type": "disabled"|"hidden"|"default"
  * "bird_plumage_type": "disabled"|"hidden"|"default"
  * "bird_pubes_type": "disabled"|"hidden"|"default"
+ * "fox_tail_type": "disabled"|"hidden"|"default"|
+ * "fox_ears_type": "disabled"|"hidden"|"default"|
+ * "fox_cheeks_type": "disabled"|"hidden"|
  *
  * BODY WRITING OPTIONS:
  * --------------------
@@ -339,6 +342,9 @@ Renderer.CanvasModels["main"] = {
 			"bird_malar_type": "disabled",
 			"bird_plumage_type": "disabled",
 			"bird_pubes_type": "disabled",
+			"fox_tail_type": "disabled",
+			"fox_ears_type": "disabled",
+			"fox_cheeks_type": "disabled",
 			// body writings
 			"writing_forehead": "",
 			"writing_left_cheek": "",
@@ -1860,7 +1866,51 @@ Renderer.CanvasModels["main"] = {
 			z: ZIndices.hirsute,
 			animation: "idle"
 		},
-
+		/***
+		 *    ███████  ██████  ██   ██ 
+		 *    ██      ██    ██  ██ ██  
+		 *    █████   ██    ██   ███   
+		 *    ██      ██    ██  ██ ██  
+		 *    ██       ██████  ██   ██ 
+		 *                             
+		 *                             
+		 */
+		"fox_tail": {
+			srcfn(options) {
+				return `img/transformations/fox/tail/${options.fox_tail_type}.png`;
+			},
+			showfn(options) {
+				return options.show_tf && isPartEnabled(options.fox_tail_type);
+			},
+			filters: ["hair"],
+			z: ZIndices.backhair,
+			animation: "idle"
+		},
+		"fox_ears": {
+			srcfn(options) {
+				return `img/transformations/fox/ears/${options.fox_ears_type}.png`;
+			},
+			showfn(options) {
+				return options.show_tf && isPartEnabled(options.fox_ears_type);
+			},
+			masksrcfn(options) {
+				return options.head_mask_src;
+			},
+			filters: ["hair"],
+			z: ZIndices.backhair,
+			animation: "idle"
+		},
+		"fox_cheeks": {
+			srcfn(options) {
+				return `img/transformations/fox/cheeks/${options.fox_cheeks_type}.png`;
+			},
+			showfn(options) {
+				return options.show_tf && isPartEnabled(options.fox_cheeks_type);
+			},
+			filters: ["hair"],
+			z: ZIndices.lower,
+			animation: "idle"
+		},
 		/***
 		 *    ██     ██ ██████  ██ ████████ ██ ███    ██  ██████  ███████
 		 *    ██     ██ ██   ██ ██    ██    ██ ████   ██ ██       ██

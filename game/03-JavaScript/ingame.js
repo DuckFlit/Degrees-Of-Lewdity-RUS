@@ -1177,7 +1177,8 @@ function currentSkillValue(skill) {
 	switch (skill) {
 		case "skulduggery":
 			if (V.worn.hands.type.includes("sticky_fingers")) modifier += 0.05;
-			if (V.harpy >= 2 || V.cat >= 2) modifier += 0.05;
+			if (V.transformationParts.traits.sharpEyes !== "disabled") modifier += 0.05;
+			if (V.fox >= 6) modifier += 0.10;
 			result = Math.floor(result * modifier);
 			break;
 		case "physique":
@@ -1604,6 +1605,8 @@ function getHalloweenCostume() {
 		return "cow TF";
 	} else if (T.tf.birdWings && T.tf.birdEyes) {
 		return "harpy TF";
+	} else if (T.tf.foxEars && T.tf.foxTail) {
+		return "fox TF";
 
 	/* Misc outcomes */
 	} else if (
