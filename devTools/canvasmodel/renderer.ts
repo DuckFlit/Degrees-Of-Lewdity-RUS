@@ -84,7 +84,7 @@ namespace Renderer {
 		return {
 			desaturate: false,
 			blend: "",
-			blendMode: "",
+			blendMode: "source-over",
 			brightness: 0.0,
 			contrast: 1.0
 		}
@@ -130,9 +130,11 @@ namespace Renderer {
 	/**
 	 * Creates a cutout of color in shape of sourceImage
 	 */
-	export function cutout(sourceImage: CanvasImageSource,
-	                       color: string,
-	                       canvas: CanvasRenderingContext2D = createCanvas(sourceImage.width as number, sourceImage.height as number)): CanvasRenderingContext2D {
+	export function cutout(
+		sourceImage: CanvasImageSource,
+		color: string,
+		canvas: CanvasRenderingContext2D = createCanvas(sourceImage.width as number, sourceImage.height as number)
+	): CanvasRenderingContext2D {
 		let sw = sourceImage.width as number;
 		let sh = sourceImage.height as number;
 		canvas.clearRect(0, 0, sw, sh);
@@ -158,10 +160,11 @@ namespace Renderer {
 	/**
 	 * Paints sourceImage over cutout of it filled with color.
 	 */
-	export function composeOverCutout(sourceImage: CanvasImageSource,
-	                                  color: string,
-	                                  blendMode: string = 'multiply',
-	                                  canvas: CanvasRenderingContext2D = createCanvas(sourceImage.width as number, sourceImage.height as number)
+	export function composeOverCutout(
+		sourceImage: CanvasImageSource,
+		color: string,
+		blendMode: GlobalCompositeOperation = 'multiply',
+		canvas: CanvasRenderingContext2D = createCanvas(sourceImage.width as number, sourceImage.height as number)
 	): CanvasRenderingContext2D {
 		canvas = cutout(sourceImage, color, canvas);
 		// Multiply cutout with original
@@ -176,13 +179,14 @@ namespace Renderer {
 	 * (Makes sense with gradient and pattern fills, to keep consistents across all sub-frames)
 	 */
 	export function fillFrames(
-		fillStyle: string|CanvasGradient|CanvasPattern,
+		fillStyle: string | CanvasGradient | CanvasPattern,
 		canvas: CanvasRenderingContext2D,
 		frameCount: number,
-		frameWidth: number
+		frameWidth: number,
+		blendMode: GlobalCompositeOperation,
 	) {
 		const frameHeight = canvas.canvas.height;
-		canvas.globalCompositeOperation = 'source-over';
+		canvas.globalCompositeOperation = blendMode;
 		canvas.fillStyle = fillStyle;
 		canvas.fillRect(0, 0, frameWidth, frameHeight);
 		if (pixelSize > 1) {
@@ -232,8 +236,8 @@ namespace Renderer {
 				break;
 			case "radial":
 				gradient = globalC2D.createRadialGradient(
-					spec.values[1], spec.values[2], spec.values[3],
-					spec.values[4], spec.values[5], spec.values[6]
+					spec.values[0], spec.values[1], spec.values[2],
+					spec.values[3], spec.values[4], spec.values[5]
 				);
 				break;
 			default:
@@ -260,8 +264,8 @@ namespace Renderer {
 	 */
 	export function composeOverSpecialRect(
 		sourceImage: CanvasImageSource,
-		fillStyle: CanvasGradient|CanvasPattern,
-		blendMode: string,
+		fillStyle: CanvasGradient | CanvasPattern,
+		blendMode: GlobalCompositeOperation,
 		frameCount: number,
 		targetCanvas: CanvasRenderingContext2D = createCanvas(
 			sourceImage.width as number,
@@ -269,7 +273,7 @@ namespace Renderer {
 		)
 	): CanvasRenderingContext2D {
 		let fw = (sourceImage.width as number)/frameCount;
-		fillFrames(fillStyle, targetCanvas, frameCount, fw);
+		fillFrames(fillStyle, targetCanvas, frameCount, fw, 'source-over');
 
 		targetCanvas.globalCompositeOperation = blendMode;
 		targetCanvas.drawImage(sourceImage, 0, 0);
@@ -277,13 +281,37 @@ namespace Renderer {
 	}
 
 	/**
+	 * Paints sourceImage under same-sized canvas filled with pattern or gradient
+	 */
+	export function composeUnderSpecialRect(
+		sourceImage: CanvasImageSource,
+		fillStyle: CanvasGradient | CanvasPattern,
+		blendMode: GlobalCompositeOperation,
+		frameCount: number,
+		targetCanvas: CanvasRenderingContext2D = createCanvas(
+			sourceImage.width as number,
+			sourceImage.height as number
+		)
+	): CanvasRenderingContext2D {
+		let fw = (sourceImage.width as number) / frameCount;
+		const fill = createCanvas(sourceImage.width as number, sourceImage.height as number);
+		fillFrames(fillStyle, fill, frameCount, fw, 'source-over');
+
+		targetCanvas.globalCompositeOperation = 'source-over';
+		targetCanvas.drawImage(sourceImage, 0, 0);
+		targetCanvas.globalCompositeOperation = blendMode;
+		targetCanvas.drawImage(fill.canvas, 0, 0)
+		return targetCanvas;
+	}
+
+	/**
 	 * Paints sourceImage over same-sized canvas filled with color
 	 */
 	export function composeOverRect(sourceImage: CanvasImageSource,
-	                                color: string,
-	                                blendMode: string,
-	                                targetCanvas: CanvasRenderingContext2D = createCanvas(sourceImage.width as number,
-		                                sourceImage.height as number)
+		color: string,
+		blendMode: GlobalCompositeOperation,
+		targetCanvas: CanvasRenderingContext2D = createCanvas(sourceImage.width as number,
+			sourceImage.height as number)
 	): CanvasRenderingContext2D {
 		// Fill with target color
 		targetCanvas.globalCompositeOperation = 'source-over';
@@ -299,10 +327,10 @@ namespace Renderer {
 	 * Paints over sourceImage a cutout of it filled with color.
 	 */
 	export function composeUnderCutout(sourceImage: CanvasImageSource,
-	                                   color: string,
-	                                   blendMode: string = 'multiply',
-	                                   canvas: CanvasRenderingContext2D =
-		                                   createCanvas(sourceImage.width as number, sourceImage.height as number)) {
+		color: string,
+		blendMode: GlobalCompositeOperation = 'multiply',
+		canvas: CanvasRenderingContext2D =
+			createCanvas(sourceImage.width as number, sourceImage.height as number)) {
 		const cut = cutout(sourceImage, color);
 		// Create a copy of sourceImage
 		canvas.globalCompositeOperation = 'source-over';
@@ -318,10 +346,11 @@ namespace Renderer {
 	 * Paints over sourceImage a same-sized canvas filled with color
 	 */
 	export function composeUnderRect(sourceImage: CanvasImageSource,
-	                                   color: string,
-	                                   blendMode: string = 'multiply',
-	                                   targetCanvas: CanvasRenderingContext2D =
-		                                   createCanvas(sourceImage.width as number, sourceImage.height as number)): CanvasRenderingContext2D {
+		color: string,
+		blendMode: GlobalCompositeOperation = 'multiply',
+		targetCanvas: CanvasRenderingContext2D =
+			createCanvas(sourceImage.width as number, sourceImage.height as number)
+	): CanvasRenderingContext2D {
 		let fill = createCanvas(sourceImage.width as number, sourceImage.height as number, color);
 		targetCanvas.globalCompositeOperation = 'source-over';
 		targetCanvas.drawImage(sourceImage, 0, 0);
@@ -345,7 +374,7 @@ namespace Renderer {
 		doCutout: boolean,
 		sourceImage: CanvasImageSource,
 		color: string,
-		blendMode: string,
+		blendMode: GlobalCompositeOperation,
 		targetCanvas: CanvasRenderingContext2D = createCanvas(
 			sourceImage.width as number,
 			sourceImage.height as number)
@@ -374,7 +403,29 @@ namespace Renderer {
 	export function mergeLayerData(target: CompositeLayerSpec, source: CompositeLayerParams, overwrite: boolean = false): CompositeLayerSpec {
 		for (let k of Object.keys(source)) {
 			if (k === 'brightness' && 'brightness' in target) {
-				target.brightness += source.brightness;
+				if (typeof target.brightness === 'object' && typeof source.brightness === 'number') {
+					for (const [adjustmentIndex, adjustment] of target.brightness.adjustments.entries()) {
+						if (typeof adjustment === 'number') {
+							(target.brightness.adjustments[adjustmentIndex] as number) += source.brightness;
+						} else {
+							target.brightness.adjustments[adjustmentIndex][1] += source.brightness;
+						}
+					}
+				} else if (typeof target.brightness === 'number' && typeof source.brightness === 'object') {
+					const brightnessToAdd = target.brightness;
+					target.brightness = { ...source.brightness };
+					for (const [adjustmentIndex, adjustment] of target.brightness.adjustments.entries()) {
+						if (typeof adjustment === 'number') {
+							(target.brightness.adjustments[adjustmentIndex] as number) += brightnessToAdd;
+						} else {
+							target.brightness.adjustments[adjustmentIndex][1] += brightnessToAdd;
+						}
+					}
+				} else if (typeof target.brightness === 'number' && typeof source.brightness === 'number') {
+					target.brightness += source.brightness;
+				} else {
+					throw new Error("Not implemented: cannot merge two gradient brightnesses.")
+				}
 			} else if (k === 'contrast' && 'contrast' in target) {
 				target.contrast *= source.contrast;
 			} else if (overwrite || !(k in target)) {
@@ -404,8 +455,8 @@ namespace Renderer {
 	}
 
 	export function desaturateImage(image: CanvasImageSource,
-	                                resultCanvas?: CanvasRenderingContext2D,
-	                                doCutout: boolean = true): HTMLCanvasElement {
+		resultCanvas?: CanvasRenderingContext2D,
+		doCutout: boolean = true): HTMLCanvasElement {
 		return compose(false, doCutout, image, '#000000', 'saturation', resultCanvas).canvas;
 	}
 
@@ -418,6 +469,76 @@ namespace Renderer {
 		resultCanvas.drawImage(image, 0, 0);
 		resultCanvas.filter = '';
 		return resultCanvas.canvas;
+	}
+
+	export function adjustGradientBrightness(image: CanvasImageSource,
+		frameCount: number,
+		brightness: AdjustmentGradientSpec,
+		resultCanvas?: CanvasRenderingContext2D): HTMLCanvasElement {
+		if (brightness.adjustments.length !== 2) {
+			throw new Error("Not Implemented: Brightness gradients can have only exactly 2 stops.")
+		}
+
+		const gradientInitializations: { grey: string, neutral: string, offset: number, blendMode: GlobalCompositeOperation }[] = [];
+		for (const [i, adjustment] of brightness.adjustments.entries()) {
+			let brightnessValue: number;
+			let offsetValue: number;
+
+			// [color |[offset, color]]
+			if (typeof adjustment === 'number') {
+				brightnessValue = adjustment;
+				offsetValue = i;
+			} else {
+				brightnessValue = adjustment[1];
+				offsetValue = adjustment[0];
+			}
+
+			// lightnenig or darkening
+			if (brightnessValue > 0) {
+				gradientInitializations.push({
+					grey: gray(brightnessValue),
+					neutral: "#000000",
+					offset: offsetValue,
+					blendMode: 'color-dodge',
+				})
+			} else {
+				gradientInitializations.push({
+					grey: gray(1 + brightnessValue),
+					neutral: "#FFFFFF",
+					offset: offsetValue,
+					blendMode: 'multiply',
+				})
+			}
+		}
+
+		// we needmultiple gradients if we are darkening and lightening at the same time
+		if (gradientInitializations[0].blendMode != gradientInitializations[1].blendMode) {
+			const gradients = [];
+			for (const [i, gradientInit] of gradientInitializations.entries()) {
+				gradients.push(createGradient({
+					...brightness,
+					colors: [
+						[gradientInitializations[0].offset, i === 0 ? gradientInit.grey : gradientInit.neutral],
+						[gradientInitializations[1].offset, i === 0 ? gradientInit.neutral : gradientInit.grey]
+					]
+				}));
+			}
+
+			const firstGradientApplied = composeUnderSpecialRect(image, gradients[0], gradientInitializations[0].blendMode, frameCount);
+			const secondGradientApplied = composeUnderSpecialRect(firstGradientApplied.canvas, gradients[1], gradientInitializations[1].blendMode, frameCount, resultCanvas);
+
+			return secondGradientApplied.canvas;
+		} else {
+			const brightnessGradient = createGradient({
+				...brightness,
+				colors: [
+					[gradientInitializations[0].offset, gradientInitializations[0].grey],
+					[gradientInitializations[1].offset, gradientInitializations[1].grey]
+				]
+			});
+			return composeUnderSpecialRect(image, brightnessGradient, gradientInitializations[0].blendMode, frameCount, resultCanvas).canvas;
+		}
+
 	}
 
 	export function adjustBrightness(image: CanvasImageSource,
@@ -576,11 +697,23 @@ namespace Renderer {
 
 		render(image: CanvasImageSource, layer: CompositeLayer, context: Renderer.RenderPipelineContext): HTMLCanvasElement {
 			context.needsCutout = true;
-			return adjustBrightness(image, layer.brightness, undefined, false);
+			return adjustBrightness(image, layer.brightness as number, undefined, false);
 		}
 	}
 
-	const RenderingStepContrast:RenderingStep = {
+	const RenderingStepBrightnessGradient: RenderingStep = {
+		name: "brightness:gradient",
+		condition(layer: CompositeLayer, context: Renderer.RenderPipelineContext): boolean {
+			return layer.brightness && typeof layer.brightness === 'object' && 'gradient' in layer.brightness;
+		},
+
+		render(image: CanvasImageSource, layer: CompositeLayer, context: Renderer.RenderPipelineContext): HTMLCanvasElement {
+			context.needsCutout = true;
+			return adjustGradientBrightness(image, context.rects.subspriteFrameCount, layer.brightness as AdjustmentGradientSpec, undefined);
+		}
+	}
+
+	const RenderingStepContrast: RenderingStep = {
 		name: "contrast",
 
 		condition(layer: CompositeLayer, context: Renderer.RenderPipelineContext): boolean {
@@ -594,7 +727,7 @@ namespace Renderer {
 
 	}
 
-	const RenderingStepBlendColor:RenderingStep = {
+	const RenderingStepBlendColor: RenderingStep = {
 		name: "blend:color",
 
 		condition(layer: CompositeLayer, context: Renderer.RenderPipelineContext): boolean {
@@ -607,7 +740,7 @@ namespace Renderer {
 		}
 	}
 
-	const RenderingStepBlendGradient:RenderingStep = {
+	const RenderingStepBlendGradient: RenderingStep = {
 		name: "blend:gradient",
 
 		condition(layer: CompositeLayer, context: Renderer.RenderPipelineContext): boolean {
@@ -621,7 +754,7 @@ namespace Renderer {
 		}
 	}
 
-	const RenderingStepBlendPattern:RenderingStep = {
+	const RenderingStepBlendPattern: RenderingStep = {
 		name: "blend:pattern",
 
 		condition(layer: CompositeLayer, context: Renderer.RenderPipelineContext): boolean {
@@ -638,7 +771,7 @@ namespace Renderer {
 		}
 	}
 
-	const RenderingStepMask:RenderingStep = {
+	const RenderingStepMask: RenderingStep = {
 		name: "mask",
 
 		condition(layer: CompositeLayer, context: Renderer.RenderPipelineContext): boolean {
@@ -650,7 +783,7 @@ namespace Renderer {
 		}
 	}
 
-	const RenderingStepCutout:RenderingStep = {
+	const RenderingStepCutout: RenderingStep = {
 		name: "cutout",
 
 		condition(layer: CompositeLayer, context: Renderer.RenderPipelineContext): boolean {
@@ -668,6 +801,7 @@ namespace Renderer {
 	export const RenderingPipeline: RenderingStep[] = [
 		RenderingStepDesaturate,
 		RenderingStepPrefilter,
+		RenderingStepBrightnessGradient,
 		RenderingStepBrightness,
 		RenderingStepContrast,
 		RenderingStepBlendPattern,

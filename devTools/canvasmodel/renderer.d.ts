@@ -52,7 +52,7 @@ declare namespace Renderer {
     /**
      * Creates a cutout of color in shape of sourceImage
      */
-    export function cutout(sourceImage: CanvasImageSource, color: string, canvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
+    export function cutout(sourceImage: CanvasImageSource, color: string | CanvasGradient | CanvasPattern, canvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
     /**
      * Cuts out from base a shape in form of stencil.
      * Modifies and returns base.
@@ -61,12 +61,12 @@ declare namespace Renderer {
     /**
      * Paints sourceImage over cutout of it filled with color.
      */
-    export function composeOverCutout(sourceImage: CanvasImageSource, color: string, blendMode?: string, canvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
+    export function composeOverCutout(sourceImage: CanvasImageSource, color: string | CanvasGradient | CanvasPattern, blendMode?: GlobalCompositeOperation, canvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
     /**
      * Repeatedly fill all sub-frames of canvas with same style.
      * (Makes sense with gradient and pattern fills, to keep consistents across all sub-frames)
      */
-    export function fillFrames(fillStyle: string | CanvasGradient | CanvasPattern, canvas: CanvasRenderingContext2D, frameCount: number, frameWidth: number): void;
+    export function fillFrames(fillStyle: string | CanvasGradient | CanvasPattern, canvas: CanvasRenderingContext2D, frameCount: number, frameWidth: number, blendMode: GlobalCompositeOperation): void;
     export let Patterns: Dict<CanvasPattern>;
     /**
      * CanvasPattern generator/provider.
@@ -78,19 +78,23 @@ declare namespace Renderer {
     /**
      * Paints sourceImage over same-sized canvas filled with pattern or gradient
      */
-    export function composeOverSpecialRect(sourceImage: CanvasImageSource, fillStyle: CanvasGradient | CanvasPattern, blendMode: string, frameCount: number, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
+    export function composeOverSpecialRect(sourceImage: CanvasImageSource, fillStyle: CanvasGradient | CanvasPattern, blendMode: GlobalCompositeOperation, frameCount: number, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
+    /**
+     * Paints sourceImage under same-sized canvas filled with pattern or gradient
+     */
+    export function composeUnderSpecialRect(sourceImage: CanvasImageSource, fillStyle: CanvasGradient | CanvasPattern, blendMode: GlobalCompositeOperation, frameCount: number, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
     /**
      * Paints sourceImage over same-sized canvas filled with color
      */
-    export function composeOverRect(sourceImage: CanvasImageSource, color: string, blendMode: string, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
+    export function composeOverRect(sourceImage: CanvasImageSource, color: string, blendMode: GlobalCompositeOperation, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
     /**
      * Paints over sourceImage a cutout of it filled with color.
      */
-    export function composeUnderCutout(sourceImage: CanvasImageSource, color: string, blendMode?: string, canvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
+    export function composeUnderCutout(sourceImage: CanvasImageSource, color: string, blendMode?: GlobalCompositeOperation, canvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
     /**
      * Paints over sourceImage a same-sized canvas filled with color
      */
-    export function composeUnderRect(sourceImage: CanvasImageSource, color: string, blendMode?: string, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
+    export function composeUnderRect(sourceImage: CanvasImageSource, color: string, blendMode?: GlobalCompositeOperation, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
     export let ImageCaches: {
         [index: string]: HTMLImageElement;
     };
@@ -100,7 +104,7 @@ declare namespace Renderer {
     /**
      * Switch between compose(Over|Under)(Rect|Cutout)
      */
-    export function compose(composeOver: boolean, doCutout: boolean, sourceImage: CanvasImageSource, color: string, blendMode: string, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
+    export function compose(composeOver: boolean, doCutout: boolean, sourceImage: CanvasImageSource, color: string, blendMode: GlobalCompositeOperation, targetCanvas?: CanvasRenderingContext2D): CanvasRenderingContext2D;
     /**
      * Fills properties in `target` from `source`.
      * If `overwrite` is false, only missing properties are copied.
@@ -112,6 +116,7 @@ declare namespace Renderer {
     export function composeLayersAgain(): void;
     export function desaturateImage(image: CanvasImageSource, resultCanvas?: CanvasRenderingContext2D, doCutout?: boolean): HTMLCanvasElement;
     export function filterImage(image: CanvasImageSource, filter: string, resultCanvas?: CanvasRenderingContext2D): HTMLCanvasElement;
+    export function adjustGradientBrightness(image: CanvasImageSource, frameCount: number, brightness: AdjustmentGradientSpec, resultCanvas?: CanvasRenderingContext2D): HTMLCanvasElement;
     export function adjustBrightness(image: CanvasImageSource, brightness: number, resultCanvas?: CanvasRenderingContext2D, doCutout?: boolean): HTMLCanvasElement;
     export function adjustLevels(image: CanvasImageSource, 
     /**
