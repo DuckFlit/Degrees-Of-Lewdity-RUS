@@ -46,6 +46,7 @@ module.exports = {
 		variables: "readonly",
 		visited: "readonly",
 		visitedTags: "readonly",
+		throwError: "writeable",
 		// Dol shortcuts
 		C: "readonly",
 		DeserializeGame: "readonly",
@@ -76,6 +77,7 @@ module.exports = {
 		Utils: "readonly",
 		ZIndices: "readonly",
 		Time: "readonly",
+		EventSystem: "readonly",
 		// DoL functions
 		assignDefaults: "readonly",
 		between: "readonly",
