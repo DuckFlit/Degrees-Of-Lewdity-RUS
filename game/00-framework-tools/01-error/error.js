@@ -23,15 +23,8 @@ Errors.report = (message, copyData) => {
 	try {
 		error = Errors.registerMessage(message, copyData);
 	} catch (e) {
-		console.error(
-			`Failed to append an error log. Something went really wrong: `,
-			message,
-			copyData,
-			e
-		);
-		alert(
-			`A critical error occurred. Please report this issue to the devs. [Errors.report/registerMessage]`
-		);
+		console.error(`Failed to append an error log. Something went really wrong: `, message, copyData, e);
+		alert(`A critical error occurred. Please report this issue to the devs. [Errors.report/registerMessage]`);
 		return;
 	}
 	try {
@@ -45,15 +38,8 @@ Errors.report = (message, copyData) => {
 			}
 		}
 	} catch (e) {
-		console.error(
-			`Failed to render and open in Error console. \nRendering error: `,
-			e,
-			`\n\nError log: `,
-			Errors.log
-		);
-		alert(
-			`A critical error occurred. Please report this issue to the devs. [Errors.report/displayMessage]`
-		);
+		console.error(`Failed to render and open in Error console. \nRendering error: `, e, `\n\nError log: `, Errors.log);
+		alert(`A critical error occurred. Please report this issue to the devs. [Errors.report/displayMessage]`);
 	}
 };
 
@@ -172,73 +158,6 @@ Errors.report = (message, copyData) => {
 		}, 5000);
 	};
 }
-
-/**
- * Jimmy: Uses SugarCube's source code, modified for use as a macro.
- * Likely should be updated after SugarCube updates their error system.
- *
- * @param {string} message Hello.
- * @param {string} source Hello.
- * @param {boolean} isExportable Hello.
- */
-Errors.inlineReport = (message, source, isExportable = true) => {
-	const $wrapper = jQuery(document.createElement("div"));
-	const $toggle = jQuery(document.createElement("button"));
-	const $source = jQuery(document.createElement("pre"));
-	const mesg = `${L10n.get("errorTitle")}: ${message || "unknown error"}`;
-
-	$toggle
-		.addClass("error-toggle")
-		.ariaClick(
-			{
-				label: L10n.get("errorToggle"),
-			},
-			() => {
-				if ($toggle.hasClass("enabled")) {
-					$toggle.removeClass("enabled");
-					$source.attr({
-						"aria-hidden": true,
-						hidden: "hidden",
-					});
-				} else {
-					$toggle.addClass("enabled");
-					$source.removeAttr("aria-hidden hidden");
-				}
-			}
-		)
-		.appendTo($wrapper);
-	jQuery(document.createElement("span")).text(mesg).appendTo($wrapper);
-
-	if (isExportable && !Browser.isMobile.any()) {
-		jQuery(document.createElement("button"))
-			.addClass("error-export macro-button")
-			.text("Export")
-			.ariaClick(
-				{
-					label: "Export",
-				},
-				() => {
-					updateExportDay();
-					Save.export("degrees-of-lewdity");
-				}
-			)
-			.appendTo($wrapper);
-	}
-
-	jQuery(document.createElement("code")).text(source).appendTo($source);
-	$source
-		.addClass("error-source")
-		.attr({
-			"aria-hidden": true,
-			hidden: "hidden",
-		})
-		.appendTo($wrapper);
-	$wrapper.addClass("error-view dol-error");
-
-	console.warn(`${mesg}\n\t${source.replace(/\n/g, "\n\t")}`);
-
-	return $wrapper;
-};
 
 function formatErrorObj(obj) {
 	/* turns object into a prettified JSON string for display */

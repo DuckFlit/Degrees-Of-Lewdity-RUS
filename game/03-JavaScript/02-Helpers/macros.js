@@ -37,7 +37,7 @@ const ErrorSystem = ((Scripting, Errors) => {
 				result
 			);
 			if (source === null) source = getTargetSource.call(this, depth);
-			Errors.inlineReport(message, source, exportable).appendTo(this.output);
+			throwError(this.output, message, source, exportable);
 		},
 	});
 
@@ -46,7 +46,7 @@ const ErrorSystem = ((Scripting, Errors) => {
 			if (this.args.length < 1) return this.error(`Missing <<errorP>> arguments. ${this.args}`);
 			const message = this.args[0];
 			const source = this.args[1] || this.parser.source.slice(0, this.parser.matchStart).slice(-128);
-			Errors.inlineReport(message, source).appendTo(this.output);
+			throwError(this.output, message, source);
 		},
 	});
 
@@ -62,7 +62,7 @@ const ErrorSystem = ((Scripting, Errors) => {
 				if (V.time !== V.hour * 60 + V.minute) {
 					const message = `$time: ${V.time} desynchronised from $hour: ${V.hour} and $minute: ${V.minute}. Total: ${V.hour * 60 + V.minute}.`;
 					const source = `Caught in Passage ${this.args[0]}. ${V.passage}, <<checkTimeSystem>>.`;
-					Errors.inlineReport(message, source).appendTo(this.output);
+					throwError(this.output, message, source);
 				}
 			} else {
 				console.debug(`One of the time variables is not accessible yet: ${V.passage}: ${DOL.Stack}.`);
@@ -196,7 +196,7 @@ var General = ((Macro, SexTypes) => {
 			const exp = this.args.full;
 			const map = Scripting.evalJavaScript(exp[0] === "{" ? `(${exp})` : exp);
 			if (typeof map !== "object") {
-				Errors.inlineReport("Incorrect argument used in <<reroute>>", { exp, map }, false).appendTo(this.output);
+				throwError(this.output, "Incorrect argument used in <<reroute>>", { exp, map }, false);
 				return this.output;
 			}
 			linkOverride(map);

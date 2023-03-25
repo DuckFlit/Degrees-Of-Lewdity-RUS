@@ -443,7 +443,7 @@ Macro.add("reqSkill", {
 				/* If <<reqSkill>> has no arguments, report an error.
 				   However, if <<reqElse>> had none, print out the section as normal, no need to add skill hints to the links. */
 				if (section.name === "reqSkill") {
-					Errors.inlineReport(`Missing arguments for <<${section.name}>>`, `${this.source}`).appendTo(this.output);
+					throwError(this.output, `Missing arguments for <<${section.name}>>`, `${this.source}`, exportable);
 				} else {
 					new Wikifier(this.output, section.contents);
 				}
@@ -458,7 +458,7 @@ Macro.add("reqSkill", {
 				const tier = Number.parseInt(arg.slice(-1));
 				/* Check if parseInt returned an actual number, and not NaN. */
 				if (!Number.isInteger(tier)) {
-					Errors.inlineReport(`Invalid argument (${arg}) for <<${section.name}>> | Tier`, `${this.source}`).appendTo(this.output);
+					throwError(this.output, `Invalid argument (${arg}) for <<${section.name}>> | Tier`, `${this.source}`, exportable);
 					return true;
 				}
 				switch (type) {
@@ -478,7 +478,7 @@ Macro.add("reqSkill", {
 						output += `<<deviant${tier}>>`;
 						return false;
 					default:
-						Errors.inlineReport(`Invalid argument (${arg}) for <<${section.name}>> | Type`, `${this.source}`).appendTo(this.output);
+						throwError(this.output, `Invalid argument (${arg}) for <<${section.name}>> | Type`, `${this.source}`, exportable);
 						return true;
 				}
 			});
