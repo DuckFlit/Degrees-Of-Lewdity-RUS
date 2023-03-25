@@ -1547,8 +1547,8 @@ function getArousal(passMinutes) {
 	if (V.parasite.right_thigh.name) addedArousal += minuteMultiplier;
 	if (V.drugged > 1) addedArousal += minuteMultiplier;
 	if (playerHasButtPlug()) addedArousal += minuteMultiplier;
-	if (V.parasite.left_ear.name === "slime" && random(1, 10) >= 9) fragment.append(wikifier("drugs", Math.min(60, passMinutes)));
-	if (V.parasite.right_ear.name === "slime" && random(1, 10) >= 9) fragment.append(wikifier("drugs", Math.min(60, passMinutes)));
+	if (V.parasite.left_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
+	if (V.parasite.right_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
 
 	return addedArousal;
 }
