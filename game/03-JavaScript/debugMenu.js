@@ -129,6 +129,10 @@ setup.debugMenu.eventList = {
 			},
 		},
 		{
+			link: [`Replay current passage with new RNG`, ""],
+			widgets: [`<<run updateSessionRNG()>>`],
+		},
+		{
 			link: [`RNG 1`, stayOnPassageFn],
 			widgets: [`<<set $rng to 1>>`],
 		},
@@ -1794,7 +1798,10 @@ function debugCreateLinkAndRedirect(section, index, id) {
 			let widgets = "";
 
 			for (const widget of setup.debugMenu.eventList[section][index].widgets) widgets += typeof widget === "function" ? widget() : widget;
-			const newLink = new Wikifier(null, `<<link [[` + passageTitle + `|` + passageName + `]]>>` + widgets + `<</link>>`);
+			const newLink = new Wikifier(
+				null,
+				`<<link ${passageName ? "[[" + passageTitle + "|" + passageName + "]]" : '"' + passageTitle + '"'}>>${widgets}<</link>>`
+			);
 			newLink.output.children[0].click();
 		}
 	});
