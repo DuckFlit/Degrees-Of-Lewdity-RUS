@@ -1,7 +1,10 @@
 /* eslint-disable jsdoc/require-description-complete-sentence */
 // adjust mousetrap behavior, see mousetrap.js
-// eslint-disable-next-line no-undef
+const Mousetrap = window.Mousetrap;
 Mousetrap.prototype.stopCallback = function (e, element, combo) {
+	// game uses V.tempDisable to indicate when the keyboard shortcuts shouldn't trigger
+	// e.g. when typing a name of a new outfit
+	if (V.tempDisable) return true; // don't trigger shortcut actions when it's set
 	return false;
 };
 
@@ -360,6 +363,40 @@ function saveDataCompare(save1, save2) {
 	return result;
 }
 window.saveDataCompare = saveDataCompare;
+
+/**
+ * Replays current passage with different RNG and records updated RNG into sessionStorage
+ */
+function updateSessionRNG() {
+	if (!(V.debug || V.cheatdisable === "f" || V.testing)) return; // do nothing unless debug is enabled
+	State.restore(); // restore game state before the passage was processed
+	const sessionData = session.get("state"); // get game state from session storage
+	State.random(); // re-roll rng
+	const sprng = State.prng.state; // get new prng state
+	const deltaprng =
+		sessionData.delta.length === 1 // delta objects differ when there's more than 1 of them
+			? sprng
+			: { S: [2, sprng.S], i: [2, sprng.i], j: [2, sprng.j] };
+	// TODO: figure out how to stop SC from delta-coding session data, this thing can't be fast
+	sessionData.delta[sessionData.index].prng = deltaprng; // save new rng state into active delta
+	session.set("state", sessionData); // send altered session data back into storage
+	Engine.show(); // replay the passage with new rng
+}
+window.updateSessionRNG = updateSessionRNG;
+
+// Add binds for going back and forth in history and re-rolling RNG
+Mousetrap.bind("/", () => {
+	Engine.backward();
+	return false;
+});
+Mousetrap.bind("*", () => {
+	updateSessionRNG();
+	return false;
+});
+Mousetrap.bind("-", () => {
+	Engine.forward();
+	return false;
+});
 
 // For the optional numpad to the right of the screen
 function mobClick(index) {
