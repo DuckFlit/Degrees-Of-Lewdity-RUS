@@ -322,6 +322,7 @@ function endPlayerPregnancy(birthLocation, location) {
 		timer: null,
 		timerEnd: null,
 		awareOf: null,
+		awareOfMultiple: null,
 		awareOfDetails: null,
 		potentialFathers: [],
 	};
