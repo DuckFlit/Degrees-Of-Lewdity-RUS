@@ -1036,7 +1036,7 @@ function dailyTransformationEffects() {
 	let dailyPurity = 1;
 	if (V.featsPurityBoost) dailyPurity += V.featsPurityBoost;
 	if (V.fallenangel >= 2) dailyPurity -= 10;
-	if (V.player.virginity.vaginal && V.player.virginity.penile) dailyPurity += 2;
+	if (V.player.virginity.vaginal === true && V.player.virginity.penile === true) dailyPurity += 2;
 	fragment.append(wikifier("purity", dailyPurity));
 
 	if (V.purity >= 1000) fragment.append(wikifier("transform", "angel", 1));
@@ -1351,15 +1351,15 @@ function dailyMasochismSadismEffects() {
 	V.masochism *= 0.985;
 	const masochism = effects(V.masochism_level, V.masochism);
 	if (masochism) {
-		V.masochism_level = masochism.statLevel;
+		V.masochism_level = masochism.level;
 		V.masochism_message = masochism.message;
 		V.effectsmessage = 1;
 	}
 	V.sadism *= 0.985;
-	const sadism = effects(V.masochism_level, V.masochism);
+	const sadism = effects(V.sadism_level, V.sadism);
 	if (sadism) {
-		V.masochism_level = sadism.statLevel;
-		V.masochism_message = sadism.message;
+		V.sadism_level = sadism.level;
+		V.sadism_message = sadism.message;
 		V.effectsmessage = 1;
 	}
 
