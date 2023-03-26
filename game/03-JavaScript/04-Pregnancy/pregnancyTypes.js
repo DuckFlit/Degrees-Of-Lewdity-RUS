@@ -367,7 +367,6 @@ window.pregnancyGenerator = {
 				const childId =
 					"m" + motherObject.parentId.id + "b" + motherObject.parentId.kids + "d" + fatherObject.parentId.id + "f" + fatherObject.parentId.kids;
 				if (identical && result.fetus.length) {
-					console.log(childId);
 					result.fetus.push(clone(result.fetus[0]));
 					result.fetus.last().childId = childId;
 					parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
