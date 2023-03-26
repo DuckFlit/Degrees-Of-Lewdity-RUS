@@ -792,7 +792,7 @@ You feel a rumbling all around you. Then a pain in your abdomen. You're tied dow
 :: Pregnancy Birth Hospital Wolf 2
 <<location "forest">><<effects>>
 
-You awaken again. You hang limps between two figures. The branches of the forest hang overhead. You're being carried, but you're too weak to move. Your consciousness slips once more.
+You awaken again. You hang limp between two figures. The branches of the forest hang overhead. You're being carried, but you're too weak to move. Your consciousness slips once more.
 
 <br><br>
 <<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 3]]>><<pass 15>><<endevent>><</link>>
@@ -946,13 +946,16 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <<if $ultrasoundIntro isnot 1>>
 	<<set $ultrasoundIntro to 1>>
 	/* player is introduced to what ultrasounds are, how it occurs and the reasons why they are done. */
-	"First of all," the doctor says. "Congratulations. An ultrasound is a wise request. Please follow me to radiology."
+	"First of all," the doctor says. "Congratulations. An ultrasound is a wise request. Please follow me to radiology." <<He>> continues talking as you walk.
+	<br><br>
+
+	"If you're far enough along, we start by applying a gel to prevent air pockets, which could disrupt the sound waves we'll be pushing through your body. There's no risk. The gel is water-based and easy to remove, and the sound is harmless."
 <<else>>
 	"An ultrasound is a wise request. Please follow me to radiology."
 <</if>>
 <br><br>
 
-<<He>> leads you to a room in the hospital basement. Several machines blink, and make a soft pinging sound. There's a bed in one corner of the room, with a monitor next to it.
+<<He>> leads you to a room in the hospital basement. Several machines blink, and make a soft pinging sound. There's a bed in one corner of the room, with a monitor next to it. A technician waits to assist.
 <br><br>
 
 "Please undress down to your underwear," the doctor says.
@@ -966,9 +969,10 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 You strip and lie down.
 <<set _pregnancy to getPregnancyObject()>>
 <<if _pregnancy.timer lte _pregnancy.timerEnd * 0.3>>
+	<<set _pregnancy.awareOfMultiple to true>>
 	"I'm afraid you're not far enough along for an abdominal ultrasound," Doctor Harper remarks. "But we can use the doppler to listen for cardiac activity."
 	<br><br>
-	<<He>> picks up a small handheld instrument, twists a dial, and presses a small circular wand against your lower abdomen. <<He>> moves it across your body. The instrument makes static-sounding hisses, punctuated by occasional thrums. <<He>> slows, and the thrums becom ea rhythmic staccato dance.
+	<<He>> picks up a small handheld instrument, twists a dial, and presses a small circular wand against your lower abdomen. <<He>> moves it across your body. The instrument makes static-sounding hisses, punctuated by occasional thrums. <<He>> slows, and the thrums become a rhythmic staccato dance.
 	<br><br>
 	"There! Listen. A healthy child." A little more than two beats a second. The thrumming soothes you.<<lstress>>
 	<br><br>
@@ -983,17 +987,19 @@ You strip and lie down.
 	<br><br>
 	
 	<<if $cowbuild gte 20>>
-		<br>You surprise the urge to moo. Your teats tingle with anticipation.<<garousal>> <<arousal 3>> <br><br>
+		You supress the urge to moo. Your teats tingle with anticipation.<<garousal>> <<arousal 3>> <br><br>
 	<<elseif $wolfbuild gte 20>>
-		/* <br>Your wolf fur gets slightly matted by the gel.<br><br> */
+		/* Your wolf fur gets slightly matted by the gel.<br><br> */
 	<<elseif $catbuild gte 20>>
-		/* <br>Your cat fur gets slightly matted by the gel. <br><br> */
+		/* Your cat fur gets slightly matted by the gel. <br><br> */
 	<</if>>
 	<<He>> runs the wand left and right over your lower abdomen as the screen changes and flashes different shades of grey over <<his>> face.
 	<br>
-	There's a lot of clicking and typing on the computer as the technician measure different parts. Femur, head, humerous, and amniotic fluid levels. <<He>> at last turns to you. "Would you like to see?"
-	<br><br>
-	<<He>> swings the monitor to face you.
+	<<if _pregnancy.type isnot "human">>
+		Harper is quiet for a while as <<he>> pours over the equipment, and the technician gives a look of concern. It's making you nervous. There's a lot of clicking and typing on the computer as the technician measures different parts. Femur, head, humerous, and amniotic fluid levels.
+	<<else>>
+		There's a lot of clicking and typing on the computer as the technician measures different parts.
+	<</if>>
 	<br><br>
 
 	<<if _pregnancy.fetus.length gt 1>>
@@ -1020,12 +1026,53 @@ You strip and lie down.
 				<<set _gender to "hermaphrodite">>
 		<</switch>>
 	<</if>>
+	<<if _pregnancy.type isnot "human" and _pregnancy.fetus[0].monster>>
+		<<set _type to _pregnancy.fetus[0].type + "person">>
+	<<else>>
+		<<set _type to _pregnancy.fetus[0].type>>
+	<</if>>
 	<<switch _pregnancy.type>>
 		<<case "human">>
+			<<He>> at last turns to you. "Would you like to see?"
+			<<He>> swings the monitor to face you.
+			<<if !_pregnancy.awareOfMultiple and _pregnancy.fetus.length gt 1>>
+				You're surprised by what you see.
+			<</if>>
+			<br><br>
 
-			You see <<if _multiple>><<if _pregnancy.fetus.length is 3>>three<<else>>two<</if>> sets<<else>>a pair<</if>> of eyes, arms, hands, legs, and feet as the doctor moves the wand across your full belly. <<stress -5>><<lstress>><br><br>
-			"Perfect," the doctor says. "I'll print them out for you to take home."<br><br>
+			You see <<if _multiple>><<if _pregnancy.fetus.length is 3>>three<<else>>two<</if>> sets<<else>>a pair<</if>> of eyes, arms, hands, legs, and feet as the doctor moves the wand across your belly. <<stress -5>><<lstress>>
+			<br><br>
 
+			"Perfect," the doctor says. "I'll print them out for you to take home."
+			<br><br>
+
+			<<if !_pregnancy.genderKnown>>
+				<<set _pregnancy.genderKnown to true>>
+				"It's time," the doctor announces.
+				<<if _multiple>>
+					"I hope you're excited to know your childrens' sex."
+					<br><br>
+
+					<<He>> glides the wand over your gently bulging belly. The pressure is uncomfortable.
+					<<pregnancyGendersText>>
+					<br><br>
+				<<else>>
+					"Are you excited for the gender reveal?" <<he>> asks.
+					<br><br>
+
+					<<He>> glides the wand over your rounded abdomen. The pressure is uncomfortable.
+					<<if _pregnancy.fetus[0].gender is "m">>
+						"It's a boy," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
+						<br><br>
+					<<elseif _pregnancy.fetus[0].gender is "f">>
+						"It's a girl," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
+						<br><br>
+					<<else>>
+						"I'm afraid I can't tell if it's a boy or a girl," <<he>> says. "<span class="blue">It almost looks like both.</span> Regardless, they're healthy. Congratulations."
+						<br><br>
+					<</if>>
+				<</if>>
+			<</if>>
 			<<if _pregnancy.timer gte _pregnancy.timerEnd * 0.9>>
 			/* 36-40 weeks, full term */
 				<<if ! _multiple>>
@@ -1041,117 +1088,190 @@ You strip and lie down.
 				<br><br>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.7>>
 			/*28-32 weeks */
-				"Look, <<print _he>> is moving around," the doctor says. "Can you see the fingers?" It appears <<print _his>> hand is waving at the screen. You feel movements inside at the same time.<<llstress>><<stress -7>>
-				<br><br>
-				
-				<<if _multiple>>
-					"Your children look healthy," Harper continues. "They just need to keep growing, putting on weight and maturing their lungs.
+				<<if !_multiple>>
+					"Look, <<print _he>> is moving around," the doctor says. "Can you see the fingers?" It almost appears <<print _his>> hand is waving at the screen. You feel movements inside at the same time.<<llstress>><<stress -7>>
+					<br><br>
+
+					"Your child looks healthy," Harper continues. "<<print _He>> just needs to keep growing, putting on weight and maturing <<print _his>> lungs.
 					It's very important that you make healthy choices right now, as your children depend on your body for everything."
 				<<else>>
-					Harper continues. "Your child looks healthy. <<print _He>> just needs to keep growing, putting on weight and maturing <<print _his>> lungs.
-					It's very important that you make healthy choices right now, as your child depends on your body for everything."
+					"Look, they're moving around," the doctor says. "Can you see the fingers?" It almost appears one of their hands is waving at the screen. You feel movements inside at the same time.<<llstress>><<stress -7>>
+					Harper continues. "Your children look healthy. They just need to keep growing, putting on weight and maturing their lungs.
+					It's very important that you make healthy choices right now, as your children depend on your body for everything."
 				<</if>>
 				<br><br>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.6>>
 			/* 24-28 weeks */
 				<<if _multiple>>
-					The doctor continues to probe your belly. As <<he>> does, you feel like there is a swarm of butterflies inside as your children turn back and forth in response to the prodding.
+					The doctor continues to probe your belly. As <<he>> does, you feel like there's a swarm of butterflies inside as your children turn back and forth in response to the prodding.
 					<br><br>
-					"Everything seems in order," Harper says. "Your babies are measuring <<print _pregnancy.fetus[0].features.size>>, and are perfectly healthy. Please come see us in a few months, when you're almost ready to give birth.
+					"Everything seems in order," Harper says. "Your babies are measuring <<print _pregnancy.fetus[0].features.size>>, and are perfectly healthy. Please come see us in a few months, when you're almost ready to give birth."
 					<br><br>
 				<<else>>
-					The doctor continues to probe your belly. As <<he>> does, you feel like there is a swarm of butterflies inside as your children turn back and forth in response to the prodding.
+					The doctor continues to probe your belly. As <<he>> does, you feel like there's a swarm of butterflies inside as your child turns back and forth in response to the prodding.
 					<br><br>
-					"Everything seems in order," Harper says. "Your babies are measuring <<print _pregnancy.fetus[0].features.size>>, and is perfectly healthy. Please come see us in a few months, when you're almost ready to give birth.
+					"Everything seems in order," Harper says. "Your baby is measuring <<print _pregnancy.fetus[0].features.size>>, and is perfectly healthy. Please come see us in a few months, when you're almost ready to give birth."
 					<br><br>
 				<</if>>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.4>>
 			/* 16-24 weeks */
-				<<if ! _pregnancy.genderKnown>>
-					<<if $_multiple>>
-					    <<set _pregnancy.genderKnown to true>>
-						The doctor glides the wand over your bulging belly. The pressure is uncomfortable.
-						<br><br>
-						"Are you excited to know the sex of your babies?" <<he>> announces.
-						The technician moves the wand over your gently bulging belly. The wand glides smoothly, though the pressure she is using is uncomfortable.<br>
-						"Are you excited to know the sex of your babies?" she annouces. 
-						<<pregnancyGendersText>>
-					<<else>>
-							<<set _pregnancy.genderKnown to true>>
-							The doctor glides the wand over your rounded abdoment. The pressure is uncomfortable.
-							<br><br>
-							<<if _pregnancy.fetus[0].gender is "m">>
-								"It's a boy," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
-								<br><br>
-							<<elseif _pregnancy.fetus[0].gender is "f">>
-								"It's a girl," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
-								<br><br>
-							<<else>>
-								"I'm afraid I can't tell if it's a boy or a girl," <<he>> says. "<span class="blue">It almost looks like both.</span> Regardless, they're healthy. Congratulations." The screen just looks like a blur to you.
-								<br><br>
-							<</if>>
-					<</if>>
+				<<if _multiple>>
+					"Your babies are doing fine," the doctor says. "They're a little smaller than if you just had the one, but they are responsive and moving well. There's ample fluid as well, so it should be a normal pregnancy."
+					<<llstress>> <<stress -8>>
+					<br><br>
+					On the screen you can see them moving around, legs and arms switching places. One jerks. "Hiccups," Harper assures you.
+					<br><br>
 				<<else>>
-					<<if _multiple>>
-						"Your babies are doing fine," the doctor says. "They're a little smaller than if you just had the one, but they are responsive and moving well. There's ample fluid as well, so it should be a normal pregnancy."
-						<<llstress>> <<stress -8>>
-						<br><br>
-						On the screen you can see them moving around, legs and arms switching places. One jerks. "Hiccups," Harper assures you.
-						<br><br>
-					<<else>>
-						"Your baby is doing great. <<print _He>> is responsive and moving well," the doctor says. "There's ample fluid as well, so it should be a normal pregnancy."
-						<<llstress>> <<stress -8>>
-						<br><br>
-						On the screen you can see <<print _him>> moving around, legs and arms switching places. <<print _He>> jerks. "Hiccups," Harper assures you.
-						<br><br>
-					<</if>>
+					"Your baby is doing great. <<print _He>> is responsive and moving well," the doctor says. "There's ample fluid as well, so it should be a normal pregnancy."
+					<<llstress>> <<stress -8>>
+					<br><br>
+					On the screen you can see <<print _him>> moving around, legs and arms switching places. <<print _He>> jerks. "Hiccups," Harper assures you.
+					<br><br>
 				<</if>>
 			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.3>>
-				<<if ! _pregnancy.genderKnown>>
-				/* 12-16 weeks */
-					"It's time," the doctor announces.
-					<<if _multiple>>
-						<<He>> glides the wand over your gently bulging belly. The pressure is uncomfortable.
-						<br><br>
-						"Are you excited to know the sex of your babies?" <<he>> asks.
-						<br><br>
-						<<pregnancyGendersText>>
-						<<set _pregnancy.genderKnown to true>>
-					<<else>>
-						<<set _pregnancy.genderKnown to true>>
-						<<He>> glides the wand over your slightly rounded abdoment. The pressure is uncomfortable.
-						<br><br>
-						<<if _pregnancy.fetus[0].gender is "m">>
-							"It's a boy," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
-							<br><br>
-						<<elseif _pregnancy.fetus[0].gender is "f">>
-							"It's a girl," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
-							<br><br>
-						<<else>>
-							"I'm afraid I can't tell if it's a boy or a girl," <<he>> says. "<span class="blue">It almost looks like both.</span> Regardless, they're healthy. Congratulations." The screen just looks like a blur to you.
-							<br><br>
-						<</if>>
-					<</if>>
-				<<else>>
-					"Your baby is healthy," the doctor says. "<<He>> is reponsive, and moving well. There's ample fluid, so it should be a normal pregnancy."<<llstress>><<stress -8>>
+			/* 12-16 weeks */
+				<<if _multiple>>
+					"Your babies are healthy," the doctor says. "They are reponsive, and moving well. There's ample fluid, so it should be a normal pregnancy."<<llstress>><<stress -8>>
 					<br><br>
-					You can see <<print _him>> moving around on the screen, legs and arms switching places. <<print _He>> jerks. "Hiccups," Harper assures you.<br>
+					You can see them moving around on the screen, legs and arms switching places. One jerks. "Hiccups," Harper assures you.
+				<<else>>
+					"Your baby is healthy," the doctor says. "<<print _He>> is reponsive, and moving well. There's ample fluid, so it should be a normal pregnancy."<<llstress>><<stress -8>>
+					<br><br>
+					You can see <<print _him>> moving around on the screen, legs and arms switching places. <<print _He>> jerks. "Hiccups," Harper assures you.
 				<</if>>
 			<<else>>
 			/* Shouldn't get here. */
 			<</if>>
 
 		<<case "wolf">>
+			<<if !_pregnancy.awareOfDetails>>
+				"I'd like to congratulate you," <<he>> starts as <<he>> turns to you. "You're lucky to carry a very unusual pregnancy. Instead of a human child, <span class="lewd">you're pregnant with 
+				<<if _multiple>>
+					a litter of _type pups.
+				<<else>>
+					a _type pup.
+				<</if>>
+				</span>Remarkable."
+				<br><br>
 
+				Harper smiles at you. "There's nothing to worry about, your <<if _multiple>>children are<<else>>child is<</if>> in perfectly good health. Would you like to see?"
+			<<else>>
+				<<He>> at last turns to you. "Would you like to see?"
+			<</if>>
+			<<He>> swings the monitor to face you.
+			<br><br>
+
+			You see <<if _multiple>><<number _pregnancy.fetus.length>> sets<<else>>a pair<</if>> of eyes, legs, and paws as the doctor moves the wand across your full belly. <<stress -5>><<lstress>>
+			<br><br>
+			"Perfect," the doctor says. "I'll print them out for you to take home."
+			<br><br>
+
+			<<if !_pregnancy.genderKnown>>
+				<<set _pregnancy.genderKnown to true>>
+				"It's time," the doctor announces.
+				<<if _multiple>>
+					"I hope you're excited to know your childrens' sex."
+					<br><br>
+
+					<<He>> glides the wand over your gently bulging belly. The pressure is uncomfortable.
+					<<pregnancyGendersText>>
+					<br><br>
+				<<else>>
+					"Are you excited for the gender reveal?" <<he>> asks.
+					<br><br>
+
+					<<He>> glides the wand over your rounded abdomen. The pressure is uncomfortable.
+					<<if _pregnancy.fetus[0].gender is "m">>
+						"It's a boy," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
+						<br><br>
+					<<elseif _pregnancy.fetus[0].gender is "f">>
+						"It's a girl," <<he>> says. "Congratulations." You can't make out anything on the screen that would indicate this, but Harper seems confident.
+						<br><br>
+					<<else>>
+						"I'm afraid I can't tell if it's a boy or a girl," <<he>> says. "<span class="blue">It almost looks like both.</span> Regardless, they're healthy. Congratulations."
+						<br><br>
+					<</if>>
+				<</if>>
+			<</if>>
+			<<if _pregnancy.timer gte _pregnancy.timerEnd * 0.9>>
+			/* 36-40 weeks, full term */
+				<<if ! _multiple>>
+					"Good news," <<he>> continues. "Your pup has dropped and is head-down. This should ease some of the pressure you feel."
+				<</if>>
+				It'll be time to deliver soon. The doctor hands you some literature about labour, and what to do when it begins. There's nothing in it about wolves, though. "Please come see us when your waters break. We will take good care of you."
+				<br><br>
+			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.8>>
+			/*32-36 weeks, preterm */
+				You feel several fluttery kicks as the doctor continues to probe. "Based on these measurements," the technician says, "You'll be full term very soon. We think. It's very hard to tell with a... non-human pregnancy. Have you made birth plans yet? Make sure you're getting rest and nutrition."
+				<br><br>
+				You know you'll need rest, and money. You wonder where you'll keep them.<<gstress>><<stress 6>>
+				<br><br>
+			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.7>>
+			/*28-32 weeks */
+				<<if !_multiple>>
+					"Look, <<print _he>> is moving around," the doctor says. "Can you see the toes?" It almost appears <<print _his>> paw is waving at the screen. You feel movements inside at the same time.<<llstress>><<stress -7>>
+					<br><br>
+
+					"Your pup looks healthy," Harper continues. "<<print _He>> just need to keep growing, putting on weight and maturing <<print _his>> lungs.
+					It's very important that you make healthy choices right now, as your children depend on your body for everything."
+				<<else>>
+					"Look, they're moving around," the doctor says. "Can you see the toes?" It almost appears one of their paws is waving at the screen. You feel movements inside at the same time.<<llstress>><<stress -7>>
+					Harper continues. "Your children look healthy. They just need to keep growing, putting on weight and maturing their lungs.
+					It's very important that you make healthy choices right now, as your children depend on your body for everything. It's especially important that you take care with such an unusual pregnancy."
+				<</if>>
+				<br><br>
+			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.6>>
+			/* 24-28 weeks */
+				<<if _multiple>>
+					The doctor continues to probe your belly. As <<he>> does, you feel like there's a swarm of butterflies inside as your litter turns back and forth in response to the prodding.
+					<br><br>
+					"Everything seems in order," Harper says. "Your pups are measuring <<print _pregnancy.fetus[0].features.size>>, and are perfectly healthy. Please come see us in a few weeks, when you're almost ready to give birth."
+					<br><br>
+				<<else>>
+					The doctor continues to probe your belly. As <<he>> does, you feel like there's a swarm of butterflies inside as your pup turns back and forth in response to the prodding.
+					<br><br>
+					"Everything seems in order," Harper says. "Your pup is measuring <<print _pregnancy.fetus[0].features.size>>, and is perfectly healthy. Please come see us in a few weeks, when you're almost ready to give birth."
+					<br><br>
+				<</if>>
+			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.4>>
+			/* 16-24 weeks */
+				<<if _multiple>>
+					"Your ba... litter, is doing fine," the doctor says. "They're a little smaller than if you just had the one, but they are responsive and moving well. There's ample fluid as well, so it should be a normal pregnancy. As normal as a pregnancy like this can be."
+					<<llstress>> <<stress -8>>
+					<br><br>
+					On the screen you can see them moving around, legs switching places. One jerks. "Hiccups," Harper assures you.
+					<br><br>
+				<<else>>
+					"Your pup is doing great. <<print _He>> is responsive and moving well," the doctor says. "There's ample fluid as well, so it should be a normal pregnancy. As normal as a pregnancy like this can be."
+					<<llstress>> <<stress -8>>
+					<br><br>
+					On the screen you can see <<print _him>> moving around, legs switching places. <<print _He>> jerks. "Hiccups," Harper assures you.
+					<br><br>
+				<</if>>
+			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.3>>
+			/* 12-16 weeks */
+				<<if _multiple>>
+					"Your pups are healthy," the doctor says. "They are reponsive, and moving well. There's ample fluid, so it should be a normal pregnancy. As normal as a pregnancy like this can be."<<llstress>><<stress -8>>
+					<br><br>
+					You can see them moving around on the screen, legs switching places. One jerks. "Hiccups," Harper assures you.
+				<<else>>
+					"Your pup is healthy," the doctor says. "<<print _He>> is reponsive, and moving well. There's ample fluid, so it should be a normal pregnancy. As normal as a pregnancy like this can be."<<llstress>><<stress -8>>
+					<br><br>
+					You can see <<print _him>> moving around on the screen, legs switching places. <<print _He>> jerks. "Hiccups," Harper assures you.
+				<</if>>
+			<<else>>
+			/* Shouldn't get here. */
+			<</if>>
 		<<default>>
 	<</switch>>
+	<<set _pregnancy.awareOfDetails to true>>
+	<<set _pregnancy.awareOfMultiple to true>>
 <</if>>
 
 <<link [[Next|Pregnancy ultrasound 3]]>><</link>>
 
 :: Pregnancy ultrasound 3
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-
 
 You thank Doctor Harper for the scan as <<he>> hands you a warm towel. You wipe off the gel.
 <br><br> <<bodyliquid "vaginaoutside" "goo" -1>>
