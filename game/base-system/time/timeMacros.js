@@ -8,8 +8,12 @@ DefineMacroS("timeAfterXHours", timeAfterXHours);
 
 function ampm(hour, minute) {
 	let ampm;
-	hour = hour !== undefined ? hour : Time.hour;
-	minute = minute !== undefined ? minute : Time.minute;
+	if (hour !== undefined) {
+		minute = minute !== undefined ? minute : "00";
+	} else {
+		hour = Time.hour;
+		minute = Time.minute;
+	}
 	if (V.options.timestyle === "ampm") {
 		ampm = hour >= 12 ? " pm" : " am";
 		hour = hour ? hour % 12 : 12;
