@@ -173,9 +173,9 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
     
 
      /**
-     * @desc Takes in a passed NPC object and turns them into a coded string for the values that are required to make them again.
+     * @desc Takes in a passed NPC object and turns them in a coded string for the values that are required to make them again.
      * @param {Object} passedNPC The NPC the user wants to compress. The NPC should be an object with all keys.
-     * @returns {string} The NPC as a coded string.
+     * @returns {String} The NPC as a coded string.
      */
     function npcCompressor(passedNPC) {
         //values to encode before all '.' values 
@@ -193,9 +193,9 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
                 npcType = npcType.replace(/boy|girl/,"");
                 monster = 1;
             }
-            if (npcType  == "centaur") {npcType  = "horse"; monster = 1;}
-            else if (npcType == "harpy") {npcType  = "hawk"; monster = 1;}
-            else if (npcType == "bull") {npcType  = "cow"; monster = 1;}
+            if (npcType  === "centaur") {npcType  = "horse"; monster = 1;}
+            else if (npcType === "harpy") {npcType  = "hawk"; monster = 1;}
+            else if (npcType === "bull") {npcType  = "cow"; monster = 1;}
         }
 
         let npcTypeIndex = typeList.indexOf(npcType);
@@ -204,8 +204,8 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         let genderPronoun = genproList.indexOf(passedNPC.gender + passedNPC.pronoun);
         if (genderPronoun === -1) genderPronoun = 0;
 
-        let penisSize = (passedNPC.gender != "f" && passedNPC.penissize) ? passedNPC.penissize : 0;
-        let penisDesc = !passedNPC.penisdesc ? (passedNPC.gender != "f" ? 2 : 0) : 
+        let penisSize = (passedNPC.gender !== "f" && passedNPC.penissize) ? passedNPC.penissize : 0;
+        let penisDesc = !passedNPC.penisdesc ? (passedNPC.gender !== "f" ? 2 : 0) : 
             (beast ? penisDescList.beast.indexOf(passedNPC.penisdesc) : penisDescList.human.indexOf(passedNPC.penisdesc));
         if (penisDesc === -1) penisDesc = 0;
         let breastSize = passedNPC.breastsize ? passedNPC.breastsize : 0;
@@ -249,9 +249,8 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         npc_code += ".a" + passedNPC.pregnancyAvoidance;
 
         /**
-         * @checks Any timers that the NPC has. Types are none (.n), pregnant (.p), or event (.t).
-         * @addedValue Adds the timer type and then the value of the timer. A valid timer requires a value other than 0.
-         * @notes For pregnancy, NPCs that are pregnant with kids not from the PC have a negative pregnancy timer. The final end value is the same just negative.
+         * checks any timers that the NPC has. Types are none (.n), pregnant (.p), or event (.t).
+         * notes For pregnancy, NPCs that are pregnant with kids not from the PC have a negative pregnancy timer. The final end value is the same just negative.
          */
         if (!(passedNPC.pregnancyTimer || passedNPC.eventTimer)) {
             npc_code += ".n";
@@ -272,7 +271,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 
     /**
      * @desc Takes in a passed coded string and turns them into a NPC with the required key values.
-     * @param {string} passedNPC The npc code as a string that you want returned as an object.
+     * @param {String} passedNPC The npc code as a string that you want returned as an object.
      * @returns {Object} The passed npc as an object with all relevent key's filled.
      */
     function npcDecompressor(passedNPC) {
@@ -287,7 +286,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 
         //Sets the type of NPC
         let npcType = typeList[Number(expandedNPC.slice(position, position + 2))];
-        let beast = !(npcType === "human" || npcType === "plant") ? beastList.indexOf(npcType): 0;
+        let beast = !(npcType === "human" || npcType === "plant") ? beastList.indexOf(npcType) : 0;
         position+=2;
 
         //sets gender, pronoun, and genitals of the NPC
@@ -346,7 +345,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 
             if (npcType === "cow" && gender === "m") npcType = "bull";
 
-			if (monster != 0) {
+			if (monster !== 0) {
                 //removes the claws on the monsters than don't keep them.
                 if (noClawList.includes(npcType)) claws = null;
 
@@ -448,8 +447,8 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
     /**
      * @desc Takes in a passed child object and turns them into a coded string for the values that are required to make them again.
      * @param {Object} passedChild The child the user wants to compress. The child should be an object with all keys.
-     * @param {boolean} bothDates If true, both the conception and birth date will be added to the end of the compressed string. If false, it will add the more relevant one.
-     * @returns {string} The child as a coded string.
+     * @param {Boolean} bothDates If true, both the conception and birth date will be added to the end of the compressed string. If false, it will add the more relevant one.
+     * @returns {String} The child as a coded string.
      */
     function childCompressor(passedChild, bothDates = true) {
         let child_data = [];
@@ -466,9 +465,9 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
                 childType = childType.replace(/boy|girl/,"");
                 monster = 1;
             }
-            if (childType  == "centaur") {childType  = "horse"; monster = 1;}
-            else if (childType == "harpy") {childType  = "hawk"; monster = 1;}
-            else if (childType == "bull") {childType  = "cow"; monster = 1;}
+            if (childType  === "centaur") {childType  = "horse"; monster = 1;}
+            else if (childType === "harpy") {childType  = "hawk"; monster = 1;}
+            else if (childType === "bull") {childType  = "cow"; monster = 1;}
         }
         
         let childTypeIndex = typeList.indexOf(childType);
@@ -654,8 +653,8 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
 
     /**
      * @desc Takes in a passed coded string and turns them into a child with the required key values.
-     * @param {string} passedChild The child code as a string that you want returned as an object.
-     * @param {string} passedName The name of the Child that is being decompressed.
+     * @param {String} passedChild The child code as a string that you want returned as an object.
+     * @param {String} passedName The name of the Child that is being decompressed.
      * @returns {Object} The passed child as an object with all relevent key's filled.
      */
     function childDecompressor(passedChild, passedName = null) {
@@ -795,7 +794,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         }
 
         if (beast) {
-            if (childType === "cow" && gender === "m") type = "bull";
+            if (childType === "cow" && gender === "m") childType = "bull";
 
 			if (monster) {
 				switch (childType) {
@@ -810,7 +809,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         }
         else {
             const man = gender === "m" ? "boy" : "girl";
-            childType = childType + (childType === "plant" ? man : "");
+            childType += (childType === "plant" ? man : "");
         }
         
 
@@ -856,7 +855,7 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
      * @desc converts the passed number from base 10 to base 64. If the number you need converted is bigger than the allowable max integer number, store than number as a string and pass it the same way you would a number.
      * @param {Number} passedNum The number you want to convert to base 64.
      * @param {Boolean} safe If the number is smaller than the max safe integer then this can be set to true.
-     * @returns 
+     * @returns {String} A string of base 64 characters with break points for overly large numbers.
      */
     function toBase64(passedNum, safe = false) {
         if (!isFinite(passedNum)) return String(passedNum);
@@ -866,13 +865,13 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
         if (passedNum.toString().length > 15 && !safe) {
             let zeroCheck = 0;
             
-            while (passedNum.toString()[15 + zeroCheck] == 0) {
+            while (passedNum.toString()[15 + zeroCheck] === 0) {
                 zeroCheck++;  
             }
 
             if (Number(passedNum.toString().slice(0,15 + zeroCheck)) > Number.MAX_SAFE_INTEGER) {
                 zeroCheck = 0;
-                while (passedNum.toString()[15 + zeroCheck] == 0) {
+                while (passedNum.toString()[15 + zeroCheck] === 0) {
                     zeroCheck--;  
                 }
             }
@@ -896,7 +895,11 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
     }
 
 
-    //converts the passed string from base 64 to base 10.
+	/**
+	 * @desc converts the passed string from base 64 to base 10.
+	 * @param {String} passedStr The base 64 string that is to be converted to base 10.
+	 * @returns {String} The base 10 number as a string.
+	 */
     function fromBase64(passedStr) {
         if (passedStr.length === 0 || passedStr === "0") return 0;
         if (passedStr === "NaN" || passedStr === "Infinity") return Number(passedStr);
@@ -917,8 +920,11 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
     }
 
 
-    //Takes groups of 3 or more zeros and reduces them down to the number of zeros and a "|". If the number of consecutive zeros is greater than 9, a ">" is added with a value in front of it for the number of 9s it represents (27 = 3>).
-    //It then passes the result to the base 10 to base 64 converter above and finishes compressing it.
+	/**
+	 * @desc Takes groups of 3 or more zeros and reduces them down to the number of zeros and a "|". If the number of consecutive zeros is greater than 9, a ">" is added with a value in front of it for the number of 9s it represents (27 = 3>). It then passes the result to the base 10 to base 64 converter above and finishes compressing it.
+	 * @param {*} passedNumber An integer number as either a String or Number
+	 * @returns {String} The passed number as a compressed string with no zeros and in base 64 format.
+	 */
     function reduceZeros(passedNumber) {
         if (isNaN(passedNumber)) return passedNumber;
         if (passedNumber === 0) return "0";
@@ -931,7 +937,11 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
     }
 
 
-    //Converts the condensed zeros back to the correct number of zeros. It then passes the result to the base 64 to base 10 converter above and finishes decompressing it.
+	/**
+	 * @desc Converts condensed zeros back to the correct number of zeros. It then passes the result to the base 64 to base 10 converter above and finishes decompressing it.
+	 * @param {*} passedString The base 64 number with compressed zeros in it.
+	 * @returns {String} The passed coded string as a number in base 10 as a string.
+	 */
     function expandZeros(passedString) {
         if (passedString.length === 0 || passedString === "0") return 0;
         if (passedString === "NaN" || passedString === "Infinity") return Number(passedStr);
@@ -947,26 +957,32 @@ const {npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (f
     }
 
 
-	//Makes sure that the passed dates are valid. If they are not, then it assigns default values.
-    function verifyPassedDate(date = {day, month, year}) {
-        let returnDate, day, month, year;
+	/**
+	 * @desc Makes sure that the passed dates are valid. If they are not, then it assigns default values.
+	 * @param {Object} dateObject The passed date in {day:#, month:#, year:#} format. The day in either type Number or String. The month as either a number or string name. The year as a 4 digit number in either type Number or String.
+	 * @param {*} dateObject.day 
+	 * @param {*} dateObject.month 
+	 * @param {*} dateObject.year 
+	 * @returns {String} A string that is in the format DDMMYYYY for the passed date.
+	 */
+    function verifyPassedDate({day, month, year}) {
+        let tempDay, tempMonth, tempYear;
+		let date = {day, month, year};
 
-        if (!isNaN(date.day) && (date.day > 0 && date.day < 32) ) day = date.day.toString().padStart(2,"0");
-        else day = "01";
+        if (!isNaN(date.day) && (date.day > 0 && date.day < 32) ) tempDay = date.day.toString().padStart(2,"0");
+        else tempDay = "01";
 
         if (isNaN(date.month)) {
-            month = monthNameList.indexOf(date.month);
-            month = month > 0 ? month.toString().padStart(2,"0") : "01";
+            tempMonth = monthNameList.indexOf(date.month);
+            tempMonth = tempMonth > 0 ? tempMonth.toString().padStart(2,"0") : "01";
         }
-        else if (!isNaN(date.month) && (date.day >= 0 && date.day < 12) ) month = date.month.toString().padStart(2,"0");
-        else month = "01";
+        else if (!isNaN(date.month) && (date.day >= 0 && date.day < 12) ) tempMonth = date.month.toString().padStart(2,"0");
+        else tempMonth = "01";
 
-        if (!isNaN(date.year)) year = date.year.toString().padStart(4,"0");
-        else year = "0000";
+        if (!isNaN(date.year)) tempYear = date.year.toString().padStart(4,"0");
+        else tempYear = "0000";
 
-        returnDate = day + month + year;
-
-        return returnDate;
+        return tempDay + tempMonth + tempYear;
     }
 
 
@@ -980,9 +996,9 @@ window.childDecompressor = childDecompressor;
 
 /**
  * @desc Takes in a coded NPC string and modifies the NPC's pregnancy avoidance.
- * @param {string} passedNPC The NPC code that is to be modified.
- * @param {number} incriment The amount added to the pregnancy avoidance.
- * @returns {string} The passed NPC code with the changed pregnancy avoidance.
+ * @param {String} npcString The compressed NPC string.
+ * @param {Number} increment The amount added to the pregnancy avoidance.
+ * @returns {String} The passed NPC code with the changed pregnancy avoidance.
  */
 function changeCNPCPregnancyAvoidance(npcString, increment) {
     return npcString.replace(/\.a(\d+)/, (_str, p1) => ".a" + Math.max(1, Math.min(100, (Number(p1) + increment))) );
@@ -994,7 +1010,7 @@ DefineMacroS("changeCNPCPregnancyAvoidance", changeCNPCPregnancyAvoidance);
 /**
  * @desc Takes a compressed NPC and returns the current event timer value.
  * @param {String} npcString The compressed NPC string.
- * @returns {number} The current value of the event timer. Returns 0 if there is no timer.
+ * @returns {Number} The current value of the event timer. Returns 0 if there is no timer.
  */
  function getCNPCPregnancyAvoidance(npcString) {
     let match = npcString.match(/\.a(\d+)/);
@@ -1006,19 +1022,19 @@ DefineMacro("getCNPCPregnancyAvoidance", getCNPCPregnancyAvoidance);
 
 /**
  * @desc Takes in a coded NPC string and modifies the NPC's pregnancy timer. If not timer is present it will add it.
- * @param {string} npcString The NPC code that is to be modified.
- * @param {number} incriment The amount of time added to the pregnancy timer.
- * @returns {string} The passed NPC code with the changed pregnancy timer.
+ * @param {String} npcString The NPC code that is to be modified.
+ * @param {Number} increment The amount of time added to the pregnancy timer.
+ * @returns {String} The passed NPC code with the changed pregnancy timer.
  */
  function changeCNPCPregnancyTimer(npcString, increment) {
     //There is no timer, replace the no timer value (.n) with the pregnancy timer if the passed value isn't 0.
-    if (npcString.indexOf(".n") > 0 && increment != 0) return npcString.replace(/\.n/, ".p" + increment);
+    if (npcString.indexOf(".n") > 0 && increment !== 0) return npcString.replace(/\.n/, ".p" + increment);
 
     //The pregnancy timer is present so its value is changed. removes the timer if the new value is 0.
-    if (npcString.indexOf(".p") > 0) return npcString.replace(/\.p(-?\d+)/, (_str, p1) => (Number(p1) + increment) != 0 ? ".p" + (Number(p1) + increment) : (npcString.indexOf(".t") > 0 ? "" : ".n"));
+    if (npcString.indexOf(".p") > 0) return npcString.replace(/\.p(-?\d+)/, (_str, p1) => (Number(p1) + increment) !== 0 ? ".p" + (Number(p1) + increment) : (npcString.indexOf(".t") > 0 ? "" : ".n"));
 
     //There is an event timer present. Places the pregnancy timer before the event timer.
-    if (npcString.indexOf(".t") > 0) return npcString.replace(/\.t\d+/, (_str) =>  increment != 0 ? ".p" + increment + _str : _str);
+    if (npcString.indexOf(".t") > 0) return npcString.replace(/\.t\d+/, (_str) =>  increment !== 0 ? ".p" + increment + _str : _str);
 
     //If none of these work, returns the passed value unchanged.
     return npcString;
@@ -1030,7 +1046,7 @@ DefineMacroS("changeCNPCPregnancyTimer", changeCNPCPregnancyTimer);
 /**
  * @desc Takes a compressed NPC and returns the current pregnancy timer value.
  * @param {String} npcString The compressed NPC string.
- * @returns {number} The current value of the pregnancy timer. Returns 0 if there is no timer.
+ * @returns {Number} The current value of the pregnancy timer. Returns 0 if there is no timer.
  */
  function getCNPCPregnancyTimer(npcString) {
     let match = npcString.match(/\.p(-?\d+)/);
@@ -1039,7 +1055,12 @@ DefineMacroS("changeCNPCPregnancyTimer", changeCNPCPregnancyTimer);
 window.getCNPCPregnancyTimer = getCNPCPregnancyTimer;
 DefineMacro("getCNPCPregnancyTimer", getCNPCPregnancyTimer);
 
-//remove preg timer
+
+/**
+ * @desc Takes in a string containing a compressed npc and removes the pregnancy timer from them if they have one.
+ * @param {String} npcString The NPC that has a pregnancy timer
+ * @returns {String} The passed string without the prenancy timer.
+ */
 function removeCNPCPregnancyTimer(npcString) {
     //There is an event timer present
     if (npcString.indexOf(".t") > 0)return npcString.replace(/\.p-?\d+/, '')
@@ -1053,19 +1074,19 @@ DefineMacro("removeCNPCPregnancyTimer", removeCNPCPregnancyTimer);
 
 /**
  * @desc Takes in a coded NPC string and modifies the NPC's event timer. Adds the timer if it's not present.
- * @param {string} npcString The NPC code that is to be modified.
- * @param {number} incriment The amount of time added to the event timer.
- * @returns {string} The passed NPC code with the changed event timer.
+ * @param {String} npcString The NPC code that is to be modified.
+ * @param {Number} increment The amount of time added to the event timer.
+ * @returns {String} The passed NPC code with the changed event timer.
  */
 function changeCNPCEventTimer(npcString, increment) {
     //There is no timer, replace the no timer value (.n) with the event timer (.t) if the passed value isn't 0.
-    if (npcString.indexOf(".n") > 0 && increment != 0) return npcString.replace(".n", ".t" + increment);
+    if (npcString.indexOf(".n") > 0 && increment !== 0) return npcString.replace(".n", ".t" + increment);
 
     //The event timer is present so its value is changed.
-    if (npcString.indexOf(".t") > 0) return npcString.replace(/\.t(\d+)/, (_str, p1) => (Number(p1) + increment) != 0 ? ".t" + (Number(p1) + increment) : (npcString.indexOf(".p") > 0 ? "" : ".n"));
+    if (npcString.indexOf(".t") > 0) return npcString.replace(/\.t(\d+)/, (_str, p1) => (Number(p1) + increment) !== 0 ? ".t" + (Number(p1) + increment) : (npcString.indexOf(".p") > 0 ? "" : ".n"));
 
     //The pregnancy timer is present, add the event timer after the pregnancy timer
-    if (npcString.indexOf(".p") > 0) return npcString.replace(/\.p(-?\d+)/, (_str) => _str +  (increment != 0 ? ".t" + increment : "") );
+    if (npcString.indexOf(".p") > 0) return npcString.replace(/\.p(-?\d+)/, (_str) => _str +  (increment !== 0 ? ".t" + increment : "") );
 
     //If none of these work, returns the passed value unchanged.
     return npcString;
@@ -1077,7 +1098,7 @@ DefineMacroS("changeCNPCEventTimer", changeCNPCEventTimer);
 /**
  * @desc Takes a compressed NPC and returns the current event timer value.
  * @param {String} npcString The compressed NPC string.
- * @returns {number} The current value of the event timer. Returns 0 if there is no timer.
+ * @returns {Number} The current value of the event timer. Returns 0 if there is no timer.
  */
  function getCNPCEventTimer(npcString) {
     let match = npcString.match(/\.t(\d+)/);
@@ -1087,7 +1108,11 @@ window.getCNPCEventTimer = getCNPCEventTimer;
 DefineMacro("getCNPCEventTimer", getCNPCEventTimer);
 
 
-//remove event timer
+/**
+ * @desc Takes in a string containing a compressed npc and removes the event timer from them if they have one.
+ * @param {String} npcString The NPC that has an event timer
+ * @returns {String} The passed string without the event timer.
+ */
 function removeCNPCEventTimer(npcString) {
     //There is another timer present
     if (npcString.indexOf(".p") > 0) {return npcString.replace(/\.t(\d+)/, "")}
@@ -1114,9 +1139,9 @@ DefineMacro("mergeNPCData", mergeNPCData);
 
 /**
  * @desc Turns a date saved as a string to an object.
- * @param {string} dateString The date in ddmmyyyy format.
- * @param {boolean} stringMonth If true, then returns the month as it's string equivalent.
- * @returns The passed date in {day:#, month:#, year:#} format. Values will be numbers. Month will be a string if stringMonth is true.
+ * @param {String} dateString The date in ddmmyyyy format.
+ * @param {Boolean} stringMonth If true, then returns the month as it's string equivalent.
+ * @returns {Object} The passed date in {day:#, month:#, year:#} format. Values will be numbers. Month will be a string if stringMonth is true.
  */
 const convertToDMYFormat = (dateString, stringMonth = false) => {
     let day = Number(dateString.slice(0,2));
@@ -1133,8 +1158,11 @@ DefineMacro("convertToDMYFormat", convertToDMYFormat);
 
 /**
  * @desc Turns a date saved as an object to a string.
- * @param {Object} dateObject The passed date in {day:#, month:#, year:#} format.
- * @returns The date in ddmmyyyy format.
+ * @param {Object} dateObject The passed date in {day:#, month:#, year:#} format. The day in either type Number or String. The month as either a number or string name. The year as a 4 digit number in either type Number or String.
+ * @param {*} dateObject.day 
+ * @param {*} dateObject.month 
+ * @param {*} dateObject.year 
+ * @returns {String} The date in ddmmyyyy format.
  */
 const convertToDDFormat = ({day, month, year}) => {
     if (isNaN(month)) month = ["","January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].indexOf(month);
@@ -1146,9 +1174,9 @@ DefineMacro("convertToDDFormat", convertToDDFormat);
 
 /**
  * @desc Takes in a compressed child string and returns the child's conception date.
- * @param {string} childString A string that contains a compressed child's information.
- * @param {boolean} asString If true, returns the date in ddmmyyyy format.
- * @returns RSeturns the date in {day:#, month:#, year:#} format. returns null if there is no conception date or an invalid date on the passed string.
+ * @param {String} childString A string that contains a compressed child's information.
+ * @param {Boolean} asString If true, returns the date in ddmmyyyy format.
+ * @returns {Object} Returns the date in {day:#, month:#, year:#} format. returns null if there is no conception date or an invalid date on the passed string.
  */
 function getCChildConceptionDate(childString, asString = false) {
     let check = childString.match(/\.c\d+/);
@@ -1162,9 +1190,9 @@ DefineMacro("getCChildConceptionDate", getCChildConceptionDate);
 
 /**
  * @desc Changes the conception date of the passed child string to the passed date. Adds the conceptino date if it is not present.
- * @param {string} childString A string that contains a compressed child's information.
+ * @param {String} childString A string that contains a compressed child's information.
  * @param {*} date The new date. can be in ddmmyyyy, {day:#, month:String, year:#}, or {day:#, month:#, year:#} format.
- * @returns The child string with the new date in place of the old one.
+ * @returns {String} The child string with the new date in place of the old one.
  */
 function changeCChildConceptionDate(childString, date) {
     if (typeof date === "object") date = convertToDDFormat(date);
@@ -1180,8 +1208,8 @@ DefineMacro("changeCChildConceptionDate", changeCChildConceptionDate);
 
 /**
  * @desc Removes the conceptino date from the child string if it is present.
- * @param {string} childString A string that contains a compressed child's information.
- * @returns The child string with without the conception date.
+ * @param {String} childString A string that contains a compressed child's information.
+ * @returns {String} The child string with without the conception date.
  */
 function removeCChildConceptionDate(childString) {
     if (childString.includes(".c")) childString = childString.replace(/.c\d+/, "")
@@ -1193,14 +1221,14 @@ DefineMacro("removeCChildConceptionDate", removeCChildConceptionDate);
 
 /**
  * @desc Takes in a compressed child string and returns the child's birth date.
- * @param {string} childString A string that contains a compressed child's information.
- * @returns Returns the date in {day:#, month:#, year:#} format. returns null if there is no birth date or an invalid date on the passed string.
+ * @param {String} childString A string that contains a compressed child's information.
+ * @returns {Object} Returns the date in {day:#, month:#, year:#} format. returns null if there is no birth date or an invalid date on the passed string.
  */
 function getCChildBirthDate(childString) {
     let check = childString.match(/\.b\d+/);
     check = check ? check[0].slice(2) : null;
 
-    if (check && !asString) return convertToDMYFormat(check);
+    if (check) return convertToDMYFormat(check);
     else return check;
 }
 window.getCChildBirthDate = getCChildBirthDate;
@@ -1209,9 +1237,9 @@ DefineMacro("getCChildBirthDate", getCChildBirthDate);
 
 /**
  * @desc Changes the birth date of the passed child string to the passed date. Adds the birth date if it is not present.
- * @param {string} childString A string that contains a compressed child's information.
+ * @param {String} childString A string that contains a compressed child's information.
  * @param {*} date The new date. can be in ddmmyyyy, {day:#, month:String, year:#}, or {day:#, month:#, year:#} format.
- * @returns The child string with the new date in place of the old one.
+ * @returns {String} The child string with the new date in place of the old one.
  */
 function changeCChildbirthDate(childString, date) {
     if (typeof date === "object") date = convertToDDFormat(date);
@@ -1219,7 +1247,7 @@ function changeCChildbirthDate(childString, date) {
     if (childString.includes(".b")) childString = childString.replace(/.b\d+/, ".b" + date);
     else childString = childString.slice(0, childString.indexOf(".")) + ".b" + date + childString.slice(childString.indexOf("."));
 
-    return childString;
+    return childString;getCChildId
 }
 window.changeCChildbirthDate = changeCChildbirthDate;
 DefineMacro("changeCChildbirthDate", changeCChildbirthDate);
@@ -1227,8 +1255,8 @@ DefineMacro("changeCChildbirthDate", changeCChildbirthDate);
 
 /**
  * @desc Removes the birth date from the child string if it is present.
- * @param {string} childString A string that contains a compressed child's information.
- * @returns The child string with without the birth date.
+ * @param {String} childString A string that contains a compressed child's information.
+ * @returns {String} The child string with without the birth date.
  */
 function removeCChildBirthDate(childString) {
     if (childString.includes(".b")) childString = childString.replace(/.b\d+/, "")
@@ -1240,12 +1268,12 @@ DefineMacro("removeCChildBirthDate", removeCChildBirthDate);
 
 /**
  * @desc Takes in a compressed child string and returns the child's childId.
- * @param {string} childString A string that contains a compressed child's information.
- * @returns Returns null if there is no child ID or an invalid Id on the passed string. 
+ * @param {String} childString A string that contains a compressed child's information.
+ * @returns {Boolean} Returns false if there is no child ID or an invalid Id on the passed string. 
  */
 function getCChildId(childString) {
     let check = childString.match(/\.i-?\d+\.-?\d+\|-?\d+\.-?\d+/);
-    check = check ? check[0].slice(2) : null;
+    check = check ? check[0].slice(2) : false;
     return check;
 }
 window.getCChildId = getCChildId;
@@ -1253,27 +1281,27 @@ DefineMacro("getCChildId", getCChildId);
 
 
 /**
- * @desc 
- * @param {string} childString A string that contains a compressed child's information.
- * @param {string} id The new id that will be used. Pass a full id: x.x|x.x, a partial id: x.x, or a singe number for both, single parent, or single value respectively.
- * @param {number} parentChoice 0: Changes entire Id, 1: just the mother's Id, 2: just the father's Id.
- * @param {number} birthNumber 0 for nothing, 1 for the parent, 2 for the birth number
+ * @desc Takes in a child string and changes the child Id value on the end of the string.
+ * @param {String} childString A string that contains a compressed child's information.
+ * @param {String} id The new id that will be used. Pass a full id: x.x|x.x, a partial id: x.x, or a singe number for both, single parent, or single value respectively.
+ * @param {Number} parentChoice 0: Changes entire Id, 1: just the mother's Id, 2: just the father's Id.
+ * @param {Number} birthNumber 0 for nothing, 1 for the parent, 2 for the birth number
  */
 function changeCChildId(childString, id, parentChoice = 0, birthNumber = 0) {
     let cId = getCChildId(childString);
 
     if(!cId) return childString;
 
-    if (parentChoice == 0) childString = childString.replace(".i" + cId, ".i" + id);
+    if (parentChoice === 0) childString = childString.replace(".i" + cId, ".i" + id);
 
-    else if (parentChoice == 1) {
-        if (birthNumber == 2) childString = childString.replace(/\.-?\d+\|/, "." + id + "|");
-        else if (birthNumber == 1) childString = childString.replace(/\.i-?\d+/, ".i" + id);
+    else if (parentChoice === 1) {
+        if (birthNumber === 2) childString = childString.replace(/\.-?\d+\|/, "." + id + "|");
+        else if (birthNumber === 1) childString = childString.replace(/\.i-?\d+/, ".i" + id);
         else childString = childString.replace(/\.i-?\d+\.-?\d+/, ".i" + id);
     }
-    else if (parentChoice == 2) {
-        if (birthNumber == 2) childString = childString.replace(/\.-?\d+$/, "." + id);
-        else if (birthNumber == 1) childString = childString.replace(/\|-?\d+\./, "|" + id + ".");
+    else if (parentChoice === 2) {
+        if (birthNumber === 2) childString = childString.replace(/\.-?\d+$/, "." + id);
+        else if (birthNumber === 1) childString = childString.replace(/\|-?\d+\./, "|" + id + ".");
         else childString = childString.replace(/-?\d+\.-?\d+$/, id);
     }
     
@@ -1286,17 +1314,17 @@ DefineMacro("changeCChildId", changeCChildId);
 
 
 /**
- * @desc takes in an object that contains npcs or children objects and compares them before and after compression.
+ * @desc Takes in an object that contains npcs or children objects and compares them before and after compression.
  * @param {Object} npcList An object that contains at least one npc or child object.
- * @param {boolean} result If true, returns an array containing whether each passed npc/child is correctly compressed.
- * @param {boolean} detail Prints basic details to the console if true.
- * @param {boolean} verboseDetail Prints more extensive details to the console if true.
- * @returns 
+ * @param {Boolean} result If true, returns an array containing whether each passed npc/child is correctly compressed.
+ * @param {Boolean} detail Prints basic details to the console if true.
+ * @param {Boolean} verboseDetail Prints more extensive details to the console if true.
+ * @returns {Boolean} True is all values are the same for the passed NPCs or children. Returns false otherwise
  */
 function compressionVerifier(npcList, result = true, detail = false, verboseDetail = false) {
     let npcAsString = "";
     let returnOutput = [];
-    let decompressedNPCString, currentNPC, type, textOutput, name, startTime, endTime, compressTime, decopmressTime, compressTimeAvg, decopmressTimeAvg;
+    let decompressedNPCString, currentNPC, type, textOutput, name;//, startTime, endTime, compressTime, decopmressTime, compressTimeAvg, decopmressTimeAvg;
     // const { performance } = require('perf_hooks');
 
     const {compareKeys, findDiffKeys, compareValues, findDiffValue, findByteSize, trun} = (function() {
@@ -1306,7 +1334,7 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
             let list = Object.keys(passedObject);
             list.forEach(key => {
                 //console.log(`key: ${key}; type: ${typeof passedObject[key]}`);
-                if (typeof passedObject[key] == "object") list = list.concat(Object.keys(passedObject[key]));
+                if (typeof passedObject[key] === "object") list = list.concat(Object.keys(passedObject[key]));
             })
 
             return list;
@@ -1327,7 +1355,7 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
 
             aKeys.forEach(key => {
                 str = `Second list missing key: ${key}`
-                if (typeof a[key] == "object") caught = caught.concat(findDiffKeys(a[key], b[key], key, caught)); 
+                if (typeof a[key] === "object") caught = caught.concat(findDiffKeys(a[key], b[key], key, caught)); 
                 if (inObj) str += ` in object ${inObj}`;
 
                 if (!bKeys.includes(key) && !caught.includes(key)) {
@@ -1338,7 +1366,7 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
 
             bKeys.forEach(key => {
                 str = `First  list missing key: ${key}`
-                if (typeof b[key] == "object") caught = caught.concat(findDiffKeys(a[key], b[key], key, caught));
+                if (typeof b[key] === "object") caught = caught.concat(findDiffKeys(a[key], b[key], key, caught));
 
                 if (inObj) {str += ` in object ${inObj}`;}
 
@@ -1357,7 +1385,7 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
 
             if (compareKeys(a,b)) { 
                 Object.keys(a).forEach(key => {
-                    if (typeof a[key] == "object") equal = compareValues(a[key], b[key]);
+                    if (typeof a[key] === "object") equal = compareValues(a[key], b[key]);
                     else if (a[key] != b[key] ) equal = false;
                 });
             }
@@ -1373,7 +1401,7 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
             let temp = "";
 
             Object.keys(a).forEach(key => {
-                if (typeof a[key] == "object") findDiffValue(a[key], b[key], key);
+                if (typeof a[key] === "object") findDiffValue(a[key], b[key], key);
                 else if (a[key] != b[key] ) {
                     if (inObj) temp = ` in object ${inObj}`
                     console.log(`Key ${key}${temp} has mismatched values. First list = ${a[key]} and second list = ${b[key]}`)
@@ -1384,7 +1412,7 @@ function compressionVerifier(npcList, result = true, detail = false, verboseDeta
         //finds the size of a passed string or object.
         function findByteSize(input) {
             let str = null;
-            if (typeof input == "string") str = input;
+            if (typeof input === "string") str = input;
             else str = JSON.stringify(input);
             const bytes = new TextEncoder().encode(str).length;
             return bytes;
