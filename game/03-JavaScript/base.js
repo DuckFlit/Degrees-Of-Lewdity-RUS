@@ -1,6 +1,5 @@
 /* eslint-disable jsdoc/require-description-complete-sentence */
 // adjust mousetrap behavior, see mousetrap.js
-const Mousetrap = window.Mousetrap;
 Mousetrap.prototype.stopCallback = function (e, element, combo) {
 	// game uses V.tempDisable to indicate when the keyboard shortcuts shouldn't trigger
 	// e.g. when typing a name of a new outfit

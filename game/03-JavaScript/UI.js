@@ -176,47 +176,12 @@ $(document).on("keyup", function (ev) {
 	}
 });
 
-const defaultSkinColorRanges = {
-	hStart: 45,
-	hEnd: 45,
-	sStart: 0.2,
-	sEnd: 0.4,
-	bStart: 4.5,
-	bEnd: 0.7,
-};
-
 function ensureIsArray(x, check = false) {
 	if (check) x = x != null ? x : [];
 	if (Array.isArray(x)) return x;
 	return [x];
 }
 window.ensureIsArray = ensureIsArray;
-
-function skinColor(enabled, percent, overwrite) {
-	if (enabled === false) {
-		return "";
-	}
-
-	const ranges = ensureIsArray(overwrite || defaultSkinColorRanges);
-	const totalProgress = percent / 100;
-
-	const scaledProgress = ranges.length * totalProgress;
-	const rangeIndex = totalProgress === 1 ? ranges.length - 1 : Math.floor(scaledProgress);
-	const progress = totalProgress === 1 ? 1 : scaledProgress - rangeIndex;
-
-	const { hStart, hEnd, sStart, sEnd, bStart, bEnd } = ranges[rangeIndex];
-
-	const hue = (hEnd - hStart) * progress + hStart;
-	const saturation = (sEnd - sStart) * progress + sStart;
-	const brightness = (bEnd - bStart) * progress + bStart;
-
-	const hueCss = `hue-rotate(${hue}deg)`;
-	const saturationCss = `saturate(${saturation.toFixed(2)})`;
-	const brightnessCss = `brightness(${brightness.toFixed(2)})`;
-
-	return `${hueCss} ${saturationCss} ${brightnessCss}`;
-}
-window.skinColor = skinColor;
 
 // feats related widgets
 // This needs updating, it's poorly designed.
@@ -602,6 +567,7 @@ function updateOptions() {
 
 		State.restore();
 		V.options = optionsData;
+		tanned(0, "ignoreCoverage");
 		State.show();
 
 		T.key = tmpKey;
