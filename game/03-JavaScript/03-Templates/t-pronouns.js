@@ -11,11 +11,7 @@ function getHe() {
 		case "t":
 			return "they";
 		default:
-			Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			return "they";
 	}
 }
@@ -40,11 +36,7 @@ function getHim() {
 		case "t":
 			return "them";
 		default:
-			Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			return "them";
 	}
 }
@@ -70,11 +62,7 @@ function getHis() {
 		case "t":
 			return "their";
 		default:
-			Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			return "their";
 	}
 }
@@ -97,11 +85,7 @@ function getHeIs() {
 		case "t":
 			return getHe.call(this) + "'re";
 		default:
-			DOL.Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			DOL.Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			return "they're";
 	}
 }
@@ -127,11 +111,7 @@ function getHers() {
 		case "t":
 			return "theirs";
 		default:
-			Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			return "theirs";
 	}
 }
@@ -191,7 +171,5 @@ function getPeopleYoung() {
  */
 /** ?Peopley - Capitalised version of above. */
 Template.add(["peopley", "Peopley"], function () {
-	return this.name === "Peopley"
-		? getPeopleYoung.call(this).toUpperFirst()
-		: getPeopleYoung.call(this);
+	return this.name === "Peopley" ? getPeopleYoung.call(this).toUpperFirst() : getPeopleYoung.call(this);
 });

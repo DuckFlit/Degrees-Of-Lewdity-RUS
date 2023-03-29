@@ -354,7 +354,8 @@ setup.pills = [
 		description:
 			"Each pill contains 50mg of clomiphene citrate, a structural analogue of estrogens. It also acts on your hypothalamus which secretes the hormones necessary to trigger ovulation. In some cases effectively inducing your ovary to release eggs.",
 		onTakeMessage: "You take the pills intended to increase your fertility. You hope it will be as effective as advertised.",
-		warning_label: "Warning: Mild side effects may occur with the prescribed dosage, including those that may mimic the signs of early pregnancy. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",
+		warning_label:
+			"Warning: Mild side effects may occur with the prescribed dosage, including those that may mimic the signs of early pregnancy. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",
 		autoTake() {
 			return V.sexStats.pills["pills"][this.name].autoTake;
 		},
@@ -384,7 +385,8 @@ setup.pills = [
 		description:
 			"Estroprogestatifs associating 24mg of ethinylestradiol(synthetic estrogen) and 31mg of a synthetic progestin for a near-perfect contraceptive effect.",
 		onTakeMessage: "You take the contraceptive pill. You hope it will be as effective as advertised.",
-		warning_label: "Warning: Mild side effects may occur with the prescribed dosage. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",
+		warning_label:
+			"Warning: Mild side effects may occur with the prescribed dosage. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",
 		autoTake() {
 			return V.sexStats.pills["pills"][this.name].autoTake;
 		},
@@ -411,9 +413,11 @@ setup.pills = [
 	},
 	{
 		name: "Anti-Parasite Cream",
-		description: "A parasite-repelling cream containing Permethrin. When applied, it prevents new parasitic infestation from occurring, although it has no effect on any ongoing parasitic infections. Effective for 14 days on application.",
+		description:
+			"A parasite-repelling cream containing Permethrin. When applied, it prevents new parasitic infestation from occurring, although it has no effect on any ongoing parasitic infections. Effective for 14 days on application.",
 		onTakeMessage: "You apply the cream around your genitals. You hope it prevents them from leaving any offspring behind.",
-		warning_label: "Warning: Please consult your doctor if they are not reachable or you have an allergic reaction shortly after application. Please contact your doctor immediately if you get cream in your mouth or eyes.",
+		warning_label:
+			"Warning: Please consult your doctor if they are not reachable or you have an allergic reaction shortly after application. Please contact your doctor immediately if you get cream in your mouth or eyes.",
 		autoTake() {
 			return false;
 		},
@@ -427,9 +431,11 @@ setup.pills = [
 			return "Apply to skin";
 		},
 		hpi_doseTaken() {
-			if(V.sexStats.pills["pills"][this.name].doseTaken){
-				return "Effective for " + V.sexStats.pills["pills"][this.name].doseTaken + " day" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "s" : "");
-			}else{
+			if (V.sexStats.pills["pills"][this.name].doseTaken) {
+				return (
+					"Effective for " + V.sexStats.pills["pills"][this.name].doseTaken + " day" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "s" : "")
+				);
+			} else {
 				return "Not Applied";
 			}
 		},
@@ -608,9 +614,9 @@ window.addIndicators = addIndicators;
 
 function initPillContextButtons(item) {
 	// create button to "Take everyone morning" / "Stop taking them" (every morning)
-	if(item.hpi_take_every_morning){
+	if (item.hpi_take_every_morning) {
 		document.getElementById("hpi_take_every_morning").innerHTML = item.hpi_take_every_morning();
-	}else{
+	} else {
 		document.getElementById("hpi_take_every_morning").innerHTML = item.autoTake() ? "Stop taking them" : "Take every morning";
 	}
 
@@ -624,17 +630,17 @@ function initPillContextButtons(item) {
 
 	// If the button doesnt exist, create it. If it exists, display the right dose Taken for that pill
 	if (document.getElementById("hpi_doseTaken") != null) {
-		if(item.hpi_doseTaken){
+		if (item.hpi_doseTaken) {
 			document.getElementById("hpi_doseTaken").outerHTML =
 				"<span id='hpi_doseTaken' style='font-size: 0.88em;color: #979797;'> [" + item.hpi_doseTaken() + "]</span>";
-		} else{
+		} else {
 			// todo: replace style with a proper css class
 			document.getElementById("hpi_doseTaken").outerHTML =
 				"<span id='hpi_doseTaken' style='font-size: 0.88em;color: #979797;'> [" + item.doseTaken() + " Taken]</span>";
 		}
-	// Display today taken doses for specific pill
+		// Display today taken doses for specific pill
 	} else {
-		if(item.hpi_doseTaken){
+		if (item.hpi_doseTaken) {
 			document.getElementById("hpi_take_pills").outerHTML +=
 				`<span id="hpi_doseTaken" style="font-size: 0.88em;color: #979797;"> [` + item.hpi_doseTaken() + `]</span>`; // Display today taken doses for specific pill
 		} else {
@@ -691,15 +697,11 @@ function redetermineMostTaken(type, subtype, fullname = null) {
 		// we enter here when there's unbalance between growth/reduction
 		if (ret < 0)
 			// if reduction won
-			return ret + result.blocker >= 0
-				? (V.sexStats.pills.mostTaken[type] = "blocker")
-				: (V.sexStats.pills.mostTaken[type] = "reduction");
+			return ret + result.blocker >= 0 ? (V.sexStats.pills.mostTaken[type] = "blocker") : (V.sexStats.pills.mostTaken[type] = "reduction");
 		// determine if blocker win
 		else if (ret > 0)
 			// if growth won
-			return ret - result.blocker <= 0
-				? (V.sexStats.pills.mostTaken[type] = "blocker")
-				: (V.sexStats.pills.mostTaken[type] = "growth"); // determine if blocker win
+			return ret - result.blocker <= 0 ? (V.sexStats.pills.mostTaken[type] = "blocker") : (V.sexStats.pills.mostTaken[type] = "growth"); // determine if blocker win
 	}
 }
 window.redetermineMostTaken = redetermineMostTaken;
@@ -707,9 +709,13 @@ window.redetermineMostTaken = redetermineMostTaken;
 function onTakeClick(itemName) {
 	V.sexStats.pills["pills"][itemName].owned -= 1;
 
-	switch(itemName){
-		case "Anti-Parasite Cream": V.sexStats.pills["pills"][itemName].doseTaken += 14; break;
-		default: V.sexStats.pills["pills"][itemName].doseTaken += 1; break; // Stat for specific pill consumptionbreak;
+	switch (itemName) {
+		case "Anti-Parasite Cream":
+			V.sexStats.pills["pills"][itemName].doseTaken += 14;
+			break;
+		default:
+			V.sexStats.pills["pills"][itemName].doseTaken += 1;
+			break; // Stat for specific pill consumptionbreak;
 	}
 
 	V.pillsConsumed = typeof V.pillsConsumed === "undefined" || V.pillsConsumed == null ? 1 : V.pillsConsumed + 1; // Stat for total pills consumption
@@ -720,10 +726,15 @@ function onTakeClick(itemName) {
 			V.sexStats.pills.lastTaken[item.type] = item.subtype; // keep track of the category of pill we last took
 			V.sexStats.pills.mostTaken[item.type] = window.redetermineMostTaken(item.type, item.subtype);
 			if (item.doseTaken() > 1 && item.name.contains("blocker") === false) {
-				switch(item.type){
-					case "parasite": break;
-					case "pregnancy": Engine.play("PillCollectionSecondDosePregnancy"); return;
-					default: Engine.play("PillCollectionSecondDose"); return;
+				switch (item.type) {
+					case "parasite":
+						break;
+					case "pregnancy":
+						Engine.play("PillCollectionSecondDosePregnancy");
+						return;
+					default:
+						Engine.play("PillCollectionSecondDose");
+						return;
 				}
 			}
 			V.lastPillTakenDescription = item.onTakeMessage;
@@ -751,8 +762,7 @@ function syncAutoTakeDisplayedState() {
 		const capitalisedName = item.name[0].toUpperCase() + item.name.slice(1);
 		if (document.getElementById("hpi_name_" + capitalisedName) != null) {
 			document.getElementById("hpi_name_" + capitalisedName).innerHTML = capitalisedName;
-			document.getElementById("hpi_name_" + capitalisedName).innerHTML +=
-				item.autoTake() === true ? "<span class='hpi_auto_label'> [Auto]</span>" : "";
+			document.getElementById("hpi_name_" + capitalisedName).innerHTML += item.autoTake() === true ? "<span class='hpi_auto_label'> [Auto]</span>" : "";
 		}
 	}
 }
@@ -807,7 +817,7 @@ function backCompPillsInventory() {
 	const pills = {};
 	if (typeof oPills === "object") {
 		/* If our $sexStats.pills is an object and has this property, it is ready for production. */
-		if (oPills.hasOwnProperty("mostTaken")) return;
+		if (Object.hasOwn.call(oPills, "mostTaken")) return;
 		try {
 			pillsObjectRepair(oPills, pills);
 		} catch (error) {
@@ -898,15 +908,18 @@ window.determineAutoTakePill = determineAutoTakePill;
 
 function resetAllDoseTaken() {
 	for (const pill in V.sexStats.pills["pills"]) {
-		switch(pill){
-			case "Anti-Parasite Cream": case "fertility booster": case "contraceptive":
-				if(V.sexStats.pills["pills"][pill].doseTaken > 0){
+		switch (pill) {
+			case "Anti-Parasite Cream":
+			case "fertility booster":
+			case "contraceptive":
+				if (V.sexStats.pills["pills"][pill].doseTaken > 0) {
 					V.sexStats.pills["pills"][pill].doseTaken--;
 				}
-			break;
-			default: V.sexStats.pills["pills"][pill].doseTaken = 0; break;
+				break;
+			default:
+				V.sexStats.pills["pills"][pill].doseTaken = 0;
+				break;
 		}
-		
 	}
 }
 window.resetAllDoseTaken = resetAllDoseTaken;

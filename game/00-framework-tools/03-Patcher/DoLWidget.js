@@ -33,9 +33,7 @@ function trace() {
 }
 
 function allMagical() {
-	return Object.keys(State.variables).filter(
-		key => key.startsWith(VIRTUAL_CURRENT) && key !== VIRTUAL_CURRENT
-	);
+	return Object.keys(State.variables).filter(key => key.startsWith(VIRTUAL_CURRENT) && key !== VIRTUAL_CURRENT);
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -93,11 +91,7 @@ Macro.add("widget", {
 								delete State.variables[key];
 							});
 						} else if (magicals.length > 0) {
-							console.warn(
-								`Found variables: ${JSON.stringify(magicals)} declared in :: ${
-									State.passage
-								}`
-							);
+							console.warn(`Found variables: ${JSON.stringify(magicals)} declared in :: ${State.passage}`);
 						}
 						// End custom code
 
@@ -141,9 +135,7 @@ Macro.add("widget", {
 							const errList = [];
 
 							// Wikify the widget's code.
-							const resFrag = Wikifier.wikifyEval(
-								widgetCode.replace(/^\n+|\n+$/g, "").replace(/\n+/g, " ")
-							);
+							const resFrag = Wikifier.wikifyEval(widgetCode.replace(/^\n+|\n+$/g, "").replace(/\n+/g, " "));
 
 							// Carry over the output, unless there were errors.
 							Array.from(resFrag.querySelectorAll(".error")).forEach(errEl => {
@@ -154,11 +146,7 @@ Macro.add("widget", {
 								this.output.appendChild(resFrag);
 							} else {
 								console.error(`Error rendering widget ${widgetName}`, errList);
-								return this.error(
-									`error${
-										errList.length > 1 ? "s" : ""
-									} within widget code (${errList.join("; ")})`
-								);
+								return this.error(`error${errList.length > 1 ? "s" : ""} within widget code (${errList.join("; ")})`);
 							}
 						} catch (ex) {
 							return this.error(`cannot execute widget: ${ex.message}`);

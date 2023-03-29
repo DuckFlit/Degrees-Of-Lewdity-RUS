@@ -1,4 +1,4 @@
-var ZIndices = {
+const ZIndices = {
 	bg: 0,
 
 	over_head_back: 0,
@@ -88,6 +88,6 @@ var ZIndices = {
 	over_lower: 170,
 	over_upper: 171,
 	over_upper_arms: 170,
-	over_upper_arms_cover: 174
+	over_upper_arms_cover: 174,
 };
 window.ZIndices = ZIndices;

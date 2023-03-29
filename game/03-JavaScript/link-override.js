@@ -18,9 +18,7 @@ Macro.add(["button", "link"], {
 		if (typeof this.args[0] === "object") {
 			if (this.args[0].isImage) {
 				// Argument was in wiki image syntax.
-				const $image = jQuery(document.createElement("img"))
-					.attr("src", this.args[0].source)
-					.appendTo($link);
+				const $image = jQuery(document.createElement("img")).attr("src", this.args[0].source).appendTo($link);
 
 				if (Object.hasOwn(this.args[0], "passage")) {
 					$image.attr("data-passage", this.args[0].passage);
@@ -127,21 +125,10 @@ Wikifier.Parser.add({
 		// text=(text), forceInternal=(~), link=link, setter=(setter)
 		const link = Wikifier.helpers.evalPassageId(markup.link);
 		const text = Object.hasOwn(markup, "text") ? Wikifier.helpers.evalText(markup.text) : link;
-		const setFn = Object.hasOwn(markup, "setter")
-			? Wikifier.helpers.createShadowSetterCallback(Scripting.parse(markup.setter))
-			: null;
+		const setFn = Object.hasOwn(markup, "setter") ? Wikifier.helpers.createShadowSetterCallback(Scripting.parse(markup.setter)) : null;
 
 		// Debug view setup.
-		const output = (
-			Config.debug
-				? new DebugView(
-						w.output,
-						"link-markup",
-						"[[link]]",
-						w.source.slice(w.matchStart, w.nextMatch)
-				  )
-				: w
-		).output;
+		const output = (Config.debug ? new DebugView(w.output, "link-markup", "[[link]]", w.source.slice(w.matchStart, w.nextMatch)) : w).output;
 
 		if (markup.forceInternal || !Wikifier.isExternalLink(link)) {
 			/* Wikifier.createInternalLink(output, link, text, setFn); */
@@ -183,8 +170,7 @@ function createInternalLink(destination, passage, text, callback) {
 			// save sidebar scrolling position
 			window.scrollUIBar = document.querySelector("#storyCaptionDiv").scrollTop;
 			// if passage hasn't changed (i.e. during combat), store scrolling position
-			window.scrollMain =
-				V.passage === V.passagePrev ? document.scrollingElement.scrollTop : 0;
+			window.scrollMain = V.passage === V.passagePrev ? document.scrollingElement.scrollTop : 0;
 			Engine.play(passage);
 		});
 	}

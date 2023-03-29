@@ -9,7 +9,7 @@ function initCNPC() {
 				return V.NPCName[setup.NPCNameList.indexOf(name)];
 			},
 			set(val) {
-				return (V.NPCName[setup.NPCNameList.indexOf(name)] = val);
+				V.NPCName[setup.NPCNameList.indexOf(name)] = val;
 			},
 		});
 	}
