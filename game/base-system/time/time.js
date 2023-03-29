@@ -130,7 +130,7 @@ const Time = (() => {
 			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / DateTime.secondsPerDay);
 		},
 		get season() {
-			return this.month > 11 || this.month < 3 ? "winter" : this.month > 8 ? "autumn" : this.month > 4 ? "summer" : "spring";
+			return this.month > 11 || this.month < 3 ? "winter" : this.month > 8 ? "autumn" : this.month > 5 ? "summer" : "spring";
 		},
 		set startDate(value) {
 			V.startDate = value.timeStamp;
