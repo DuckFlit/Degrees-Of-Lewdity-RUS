@@ -127,6 +127,7 @@ module.exports = {
 		updateMannequin: "readonly",
 		updateSavesCount: "readonly",
 		validateValue: "readonly",
+		tanned: "readonly",
 		// DoL classes
 		ObservableValue: "readonly",
 		CanvasModel: "readonly",
@@ -138,6 +139,7 @@ module.exports = {
 		LZString: "readonly",
 		md5: "readonly",
 		tinycolor: "readonly",
+		Mousetrap: "readonly",
 		// Unknown (Can't find declaration either in SugarCube docs nor in codebase)
 		config: "readonly",
 		saveAs: "readonly",
