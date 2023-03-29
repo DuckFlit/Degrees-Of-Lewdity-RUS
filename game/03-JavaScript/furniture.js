@@ -75,8 +75,7 @@ const Furniture = (() => {
 			category: ["chair"],
 			type: [],
 			cost: setPrice(2420, 50),
-			description:
-				"A set of armchairs with a rounded back, in exotic colours. A chore to set up.",
+			description: "A set of armchairs with a rounded back, in exotic colours. A chore to set up.",
 			iconFile: "armchairegg.png",
 		});
 
@@ -165,8 +164,7 @@ const Furniture = (() => {
 			category: ["bed"],
 			type: ["double", "comfy"],
 			cost: setPrice(4884),
-			description:
-				"A bed made in a contemporary, minimalist style. Very comfortable, fits two.",
+			description: "A bed made in a contemporary, minimalist style. Very comfortable, fits two.",
 			iconFile: "doublebedexotic.png",
 			tier: 2,
 			showFn() {
@@ -194,8 +192,7 @@ const Furniture = (() => {
 			category: ["windowsill"],
 			type: [],
 			cost: setPrice(680),
-			description:
-				"A clay pot with good soil. Flowers come pre-planted. Can be put on your windowsill.",
+			description: "A clay pot with good soil. Flowers come pre-planted. Can be put on your windowsill.",
 			iconFile: "flower.png",
 		});
 		mapper.set("jar", {
@@ -371,10 +368,7 @@ const Furniture = (() => {
 			return setup.furniture.get(type);
 		}
 		if (!V) {
-			console.debug(
-				"furnitureGet called before SugarCube is ready, postpone execution next time.",
-				type
-			);
+			console.debug("furnitureGet called before SugarCube is ready, postpone execution next time.", type);
 			return null;
 		}
 		const area = V.furniture[target];
@@ -390,9 +384,7 @@ const Furniture = (() => {
 
 	function furnitureSet(id, category, propertyMap) {
 		if (!setup.furniture.has(id)) {
-			Errors.report(
-				`Furniture.Set was incorrectly passed an id not listed in furniture: ${id}`
-			);
+			Errors.report(`Furniture.Set was incorrectly passed an id not listed in furniture: ${id}`);
 			return false;
 		}
 		if (!Object.hasOwn(Categories, category)) {
@@ -413,9 +405,7 @@ const Furniture = (() => {
 		if (Object.values(Locations).includes(location)) {
 			target = location;
 		} else {
-			Errors.report(
-				`Location provided (${location}) does not exist in the furniture system.`
-			);
+			Errors.report(`Location provided (${location}) does not exist in the furniture system.`);
 		}
 		return Furniture;
 	}

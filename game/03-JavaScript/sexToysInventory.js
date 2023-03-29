@@ -25,10 +25,7 @@ function sexToysInventoryInit() {
 				}
 			});
 		});
-		while (
-			mainGrid.childElementCount - 1 < minCells ||
-			(mainGrid.childElementCount - 1) % 4 !== 0
-		) {
+		while (mainGrid.childElementCount - 1 < minCells || (mainGrid.childElementCount - 1) % 4 !== 0) {
 			// minimum of 12 cells. minimum 4 cells per row
 			mainGrid.innerHTML += '<div class="sti_cell sti_empty"></div>';
 		}
@@ -50,9 +47,7 @@ function sexToysInventoryOnItemClick(index, category) {
 	if (selectedBox) selectedBox.classList.remove("sti_selected");
 
 	const invItem = V.player.inventory.sextoys[category][index];
-	const invItemClassName = document.getElementById(
-		`sti_item_icon_${item.name_underscore}_${index}`
-	).className;
+	const invItemClassName = document.getElementById(`sti_item_icon_${item.name_underscore}_${index}`).className;
 
 	$(`#sti_item_${item.name_underscore}_${index}`)[0].classList.add("sti_selected");
 	/* description box */
@@ -107,13 +102,9 @@ function sexToysInventoryOnCarryClick(index, category) {
 	// if player chose "Put back in the cupboard", also unwear the item
 	if (!toy.carried) toy.worn = false;
 	document.getElementById("stiWearButton").textContent = toy.worn ? "Take off" : "Wear it"; // update button text value
-	document.getElementById("stiCarryButton").textContent = toy.carried
-		? "Carry it"
-		: "Put back in the cupboard"; // update button text value
+	document.getElementById("stiCarryButton").textContent = toy.carried ? "Carry it" : "Put back in the cupboard"; // update button text value
 	// update worn/carried tag on cell
-	document.getElementById(
-		"sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index
-	).textContent = toy.worn ? "worn" : toy.carried ? "carried" : "";
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index).textContent = toy.worn ? "worn" : toy.carried ? "carried" : "";
 
 	// this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
 	if (setupCategory === "strap-on" && !toy.worn) {
@@ -140,9 +131,7 @@ function sexToysInventoryOnWearClick(index, category) {
 	// if player tries to wear a strapon but that under_lower is cursed
 	if (setupCategory === "strap-on" && V.worn.under_lower.cursed === 1) {
 		document.getElementById("stiCursedText").outerHTML =
-			`<div id="stiCursedText" class="ssm_fade_in">You try to remove the ` +
-			V.worn.under_lower.name +
-			` but fail</div>`;
+			`<div id="stiCursedText" class="ssm_fade_in">You try to remove the ` + V.worn.under_lower.name + ` but fail</div>`;
 		return;
 	}
 
@@ -150,11 +139,7 @@ function sexToysInventoryOnWearClick(index, category) {
 		if (V.worn.genitals.cursed === 1 && V.worn.genitals.anal_shield === 1) {
 			// if player tries to wear a butt plug but there is a cursed chastity belt fitted with an anal shield
 			document.getElementById("stiCursedText").outerHTML =
-				`<div id="stiCursedText" class="ssm_fade_in">You can't push the ` +
-				toy.name +
-				` past the ` +
-				V.worn.genitals.name +
-				`'s anal shield</div>`;
+				`<div id="stiCursedText" class="ssm_fade_in">You can't push the ` + toy.name + ` past the ` + V.worn.genitals.name + `'s anal shield</div>`;
 			return;
 		}
 	}
@@ -194,20 +179,12 @@ function sexToysInventoryOnWearClick(index, category) {
 	}
 	toy.carried = true; // also carry the item if not done alreadys
 	document.getElementById("stiWearButton").textContent = toy.worn ? "Take off" : "Wear it"; // update button text value
-	document.getElementById("stiCarryButton").textContent = !toy.carried
-		? "Carry it"
-		: "Put back in the cupboard"; // update button text value
-	document.getElementById(
-		"sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index
-	).textContent = toy.worn ? "worn" : toy.carried ? "carried" : "";
+	document.getElementById("stiCarryButton").textContent = !toy.carried ? "Carry it" : "Put back in the cupboard"; // update button text value
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index).textContent = toy.worn ? "worn" : toy.carried ? "carried" : "";
 	$("[id*='sti_already_owned_']").each(function (i, element) {
 		const c = element.getAttribute("data-category");
 		const ind = element.getAttribute("data-index");
-		element.textContent = V.player.inventory.sextoys[c][ind].worn
-			? "worn"
-			: V.player.inventory.sextoys[c][ind].carried
-			? "carried"
-			: "";
+		element.textContent = V.player.inventory.sextoys[c][ind].worn ? "worn" : V.player.inventory.sextoys[c][ind].carried ? "carried" : "";
 	});
 	// this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
 	if (setupCategory === "strap-on") {
@@ -234,9 +211,7 @@ function sexToysInventoryOnThrowClick(index, category) {
 	/* remove div */
 	document.getElementById(`sti_item_${categoryName}_${index}`).remove();
 	/* add new empty div */
-	document.getElementById("sti_grid").children[
-		lastIndex - 2
-	].outerHTML += `<div class="sti_cell sti_empty"></div>`;
+	document.getElementById("sti_grid").children[lastIndex - 2].outerHTML += `<div class="sti_cell sti_empty"></div>`;
 	/* close description */
 	sextoysOnCloseDesc("stiDescPillContainer");
 	if (playerItem.worn && setupCategory !== "strap-on") {
@@ -279,11 +254,7 @@ function updateNumberInString(element, indexMin, category) {
 	if (index < indexMin || index <= 0) return;
 
 	element.id = element.id.replace(/\d+/, index - 1);
-	if (element.getAttribute("onclick"))
-		element.setAttribute(
-			"onclick",
-			`window.sexToysInventoryOnItemClick(${index - 1},\`${category}\`)`
-		);
+	if (element.getAttribute("onclick")) element.setAttribute("onclick", `window.sexToysInventoryOnItemClick(${index - 1},\`${category}\`)`);
 }
 
 function checkSextoysGift(npcName) {
@@ -291,18 +262,14 @@ function checkSextoysGift(npcName) {
 	if (!npc) {
 		throw new Error("Invalid NPC name given!");
 	} else {
-		return Object.values(npc.sextoys).some(category =>
-			category.some(item => item.gift_state === "held")
-		);
+		return Object.values(npc.sextoys).some(category => category.some(item => item.gift_state === "held"));
 	}
 }
 window.checkSextoysGift = checkSextoysGift;
 
 function listUniqueCarriedSextoys() {
 	const list = [];
-	Object.values(V.player.inventory.sextoys).forEach(category =>
-		category.filter(item => item.carried).forEach(item => list.push(item))
-	);
+	Object.values(V.player.inventory.sextoys).forEach(category => category.filter(item => item.carried).forEach(item => list.push(item)));
 	return list;
 }
 window.listUniqueCarriedSextoys = listUniqueCarriedSextoys;
@@ -349,8 +316,7 @@ function checkIfNPCHasCategorySextoy(npcName, category) {
 	const npcSexToys = [];
 	Object.values(npc.sextoys).forEach(category => {
 		category.forEach(item => {
-			if (categoryToyNames.includes(item.name) && item.gift_state !== "held")
-				npcSexToys.push(item);
+			if (categoryToyNames.includes(item.name) && item.gift_state !== "held") npcSexToys.push(item);
 		});
 	});
 	return npcSexToys;
@@ -389,9 +355,7 @@ window.countCarriedSextoys = countCarriedSextoys;
 
 function updateCarryCountUI() {
 	const colour = countCarriedSextoys() >= maxCarried ? "red" : "";
-	document.getElementById(
-		"carryCount"
-	).outerHTML = `<div id="carryCount" class="sti_grid_carried_count">
+	document.getElementById("carryCount").outerHTML = `<div id="carryCount" class="sti_grid_carried_count">
 		Items carried: <span class="${colour}">${countCarriedSextoys()}/${maxCarried}</span>
 	</div>`;
 }
@@ -402,8 +366,7 @@ function greyButtonsIfCarryLimitReached(index, category) {
 		const item = V.player.inventory.sextoys[category][index];
 		if (!item.carried) {
 			document.getElementById("stiCarryButton").classList.add("sti_carry_limit_reached");
-			if (!item.worn)
-				document.getElementById("stiWearButton").classList.add("sti_carry_limit_reached");
+			if (!item.worn) document.getElementById("stiWearButton").classList.add("sti_carry_limit_reached");
 		}
 	}
 }

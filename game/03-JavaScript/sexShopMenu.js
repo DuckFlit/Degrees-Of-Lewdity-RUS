@@ -51,17 +51,7 @@ setup.sextoys = [
 		type: ["dildo"],
 		icon: "img/misc/icon/sexToys/dildo.png",
 		colour: 1,
-		colour_options: [
-			"black",
-			"blue",
-			"teal",
-			"lime-green",
-			"light-pink",
-			"purple",
-			"tan",
-			"brown",
-			"red",
-		],
+		colour_options: ["black", "blue", "teal", "lime-green", "light-pink", "purple", "tan", "brown", "red"],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
@@ -82,17 +72,7 @@ setup.sextoys = [
 		type: ["dildo"],
 		icon: "img/misc/icon/sexToys/dildo_small.png",
 		colour: 1,
-		colour_options: [
-			"black",
-			"blue",
-			"teal",
-			"lime-green",
-			"light-pink",
-			"purple",
-			"tan",
-			"brown",
-			"red",
-		],
+		colour_options: ["black", "blue", "teal", "lime-green", "light-pink", "purple", "tan", "brown", "red"],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
@@ -113,17 +93,7 @@ setup.sextoys = [
 		size: 2,
 		icon: "img/misc/icon/sexToys/analbeads.png",
 		colour: 1,
-		colour_options: [
-			"black",
-			"blue",
-			"teal",
-			"lime-green",
-			"light-pink",
-			"purple",
-			"tan",
-			"brown",
-			"red",
-		],
+		colour_options: ["black", "blue", "teal", "lime-green", "light-pink", "purple", "tan", "brown", "red"],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
@@ -136,8 +106,7 @@ setup.sextoys = [
 		name: "bullet vibe",
 		namecap: "Bullet vibe",
 		name_underscore: "bullet_vibe",
-		description:
-			"The vibrations produced from this item give powerful orgasms. Good for people new to sex toys.",
+		description: "The vibrations produced from this item give powerful orgasms. Good for people new to sex toys.",
 		cost: 12000,
 		wearable: 0,
 		size: 0,
@@ -167,17 +136,7 @@ setup.sextoys = [
 		type: ["dildo", "anal"],
 		icon: "img/misc/icon/sexToys/buttplug.png",
 		colour: 1,
-		colour_options: [
-			"black",
-			"blue",
-			"teal",
-			"lime-green",
-			"light-pink",
-			"purple",
-			"tan",
-			"brown",
-			"red",
-		],
+		colour_options: ["black", "blue", "teal", "lime-green", "light-pink", "purple", "tan", "brown", "red"],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
@@ -200,18 +159,7 @@ setup.sextoys = [
 		icon: "img/misc/icon/clothes/strap-on.png",
 		colour: 1,
 		shape: "cock",
-		colour_options: [
-			"black",
-			"blue",
-			"green",
-			"pink",
-			"purple",
-			"red",
-			"white",
-			"yellow",
-			"tan",
-			"brown",
-		],
+		colour_options: ["black", "blue", "green", "pink", "purple", "red", "white", "yellow", "tan", "brown"],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
@@ -234,18 +182,7 @@ setup.sextoys = [
 		icon: "img/misc/icon/clothes/strap-on_horse_cock.png",
 		colour: 1,
 		shape: "horse cock",
-		colour_options: [
-			"black",
-			"blue",
-			"green",
-			"pink",
-			"purple",
-			"red",
-			"white",
-			"yellow",
-			"tan",
-			"brown",
-		],
+		colour_options: ["black", "blue", "green", "pink", "purple", "red", "white", "yellow", "tan", "brown"],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
@@ -267,18 +204,7 @@ setup.sextoys = [
 		type: ["strap-on", "fetish"],
 		icon: "img/misc/icon/clothes/strap-on_knotted_cock.png",
 		colour: 1,
-		colour_options: [
-			"black",
-			"blue",
-			"green",
-			"pink",
-			"purple",
-			"red",
-			"white",
-			"yellow",
-			"tan",
-			"brown",
-		],
+		colour_options: ["black", "blue", "green", "pink", "purple", "red", "white", "yellow", "tan", "brown"],
 		shape: "knotted cock",
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
@@ -322,17 +248,7 @@ setup.sextoys = [
 		type: ["stroker"],
 		icon: "img/misc/icon/sexToys/onahole.png",
 		colour: 1,
-		colour_options: [
-			"black",
-			"blue",
-			"teal",
-			"lime-green",
-			"light-pink",
-			"purple",
-			"tan",
-			"brown",
-			"red",
-		],
+		colour_options: ["black", "blue", "teal", "lime-green", "light-pink", "purple", "tan", "brown", "red"],
 		owned: setup.sextoyFunctions.owned,
 		isCarried: setup.sextoyFunctions.isCarried,
 		isWorn: setup.sextoyFunctions.isWorn,
@@ -345,8 +261,7 @@ setup.sextoys = [
 		name: "aphrodisiac pills",
 		namecap: "Aphrodisiac pills",
 		name_underscore: "aphrodisiac_pills",
-		description:
-			"A pack of three aphrodisiac pills. The instructions say to take 'a suitable number' before sex for an enhanced experience.",
+		description: "A pack of three aphrodisiac pills. The instructions say to take 'a suitable number' before sex for an enhanced experience.",
 		cost: 4000,
 		wearable: 0,
 		size: 3,
@@ -399,13 +314,9 @@ window.sexShopGridInit = sexShopGridInit;
 
 function sexShopGridAddItemBox(item) {
 	document.getElementById("sexShopMenuContainer").innerHTML += `
-	<div class="ssm_item" id="ssm_item_${item.name_underscore}" onclick="window.sexShopOnItemClick(${
-		item.index
-	})">
+	<div class="ssm_item" id="ssm_item_${item.name_underscore}" onclick="window.sexShopOnItemClick(${item.index})">
 		<div class="ssm_icon">
-			<img id="ssm_item_icon_${item.name_underscore}" src="${item.icon}" class="${
-		item.colour === 1 ? "clothes-" + item.colour_options.random() : ""
-	}">
+			<img id="ssm_item_icon_${item.name_underscore}" src="${item.icon}" class="${item.colour === 1 ? "clothes-" + item.colour_options.random() : ""}">
 		</div>
 		<div class="ssm_details">
 			<div class="ssm_item_name">
@@ -421,8 +332,7 @@ function sexShopGridAddItemBox(item) {
 window.sexShopGridAddItemBox = sexShopGridAddItemBox;
 
 function sexShopOnColourClick(colour) {
-	for (const elem of document.getElementsByClassName("colour-button div-link "))
-		elem.classList.remove("active");
+	for (const elem of document.getElementsByClassName("colour-button div-link ")) elem.classList.remove("active");
 	document.querySelectorAll(`[colour-name="${colour}"]`)[0].classList.add("active");
 	document.getElementById("ssm_desc_img").className = "clothes-" + colour;
 }
@@ -468,12 +378,8 @@ function sexShopOnItemClick(index) {
 	removeClassNameAt("ssm_selected_b");
 	removeClassNameAt("ssm_selected_c");
 	$(`#ssm_item_${item.name_underscore}`)[0].classList.add("ssm_selected_a");
-	$(`#ssm_item_${item.name_underscore} > .ssm_details > .ssm_item_name`)[0].classList.add(
-		"ssm_selected_b"
-	);
-	$(`#ssm_item_${item.name_underscore} > .ssm_details > .ssm_already_owned`)[0].classList.add(
-		"ssm_selected_c"
-	);
+	$(`#ssm_item_${item.name_underscore} > .ssm_details > .ssm_item_name`)[0].classList.add("ssm_selected_b");
+	$(`#ssm_item_${item.name_underscore} > .ssm_details > .ssm_already_owned`)[0].classList.add("ssm_selected_c");
 	/* description/buying box */
 	for (const index in item.colour_options) {
 		coloringDiv +=
@@ -540,9 +446,7 @@ function determineRecipient(index) {
 	}
 	// if no possible recipient, return.
 	if (optionBuilder === "") return "";
-	const builder = `<br id="giftBr"><a id="ssmGiftButton" onclick="window.sexShopOnGiftClick(${
-		item.index
-	})" class="ssm_gift_button">
+	const builder = `<br id="giftBr"><a id="ssmGiftButton" onclick="window.sexShopOnGiftClick(${item.index})" class="ssm_gift_button">
 	Make a gift for :  </a><select name="recipient" id="recipientList">${optionBuilder}</select>
 	<div id="spanGift">(<span class="gold">£${item.cost / 100 + 15}</span>)</div>`;
 	return builder;
@@ -561,16 +465,12 @@ function sexShopOnGiftClick(index) {
 	sexShopOnGiftClick.counter = sexShopOnGiftClick.counter || "off";
 	/* add item to NPC's inventory */
 	if (V.NPCName[recipient].sextoys == null) V.NPCName[recipient].sextoys = {};
-	if (V.NPCName[recipient].sextoys[item.name] == null)
-		V.NPCName[recipient].sextoys[item.name] = [];
+	if (V.NPCName[recipient].sextoys[item.name] == null) V.NPCName[recipient].sextoys[item.name] = [];
 	const obj = {
 		index: item.index,
 		name: item.name,
 		namecap: item.namecap,
-		colour:
-			iconClassName === ""
-				? item.default_colour
-				: iconClassName.substring(iconClassName.indexOf("-") + 1),
+		colour: iconClassName === "" ? item.default_colour : iconClassName.substring(iconClassName.indexOf("-") + 1),
 		worn: false,
 		size: item.size,
 		carried: false,
@@ -592,9 +492,7 @@ function sexShopOnGiftClick(index) {
 	updateSideBarMoney();
 
 	/* fade in/out bought green text indicator */
-	document.getElementById(
-		"ssmGiftButton"
-	).outerHTML = `<span class="ssm_gift_button ssm_fade_in" id="ssmGiftButton" style="color:#97de97">Bought!</span>`;
+	document.getElementById("ssmGiftButton").outerHTML = `<span class="ssm_gift_button ssm_fade_in" id="ssmGiftButton" style="color:#97de97">Bought!</span>`;
 	document.getElementById("recipientList").remove();
 	document.getElementById("spanGift").remove();
 	if (sexShopOnGiftClick.counter === "off") {
@@ -614,14 +512,10 @@ function sexShopOnBuyClick(index, inSexShop = true, colour, costsMoney = true) {
 		sexShopOnBuyClick.counter = sexShopOnBuyClick.counter || "off";
 	}
 	/* add item to player inventory */
-	if (V.player.inventory.sextoys[item.name] === undefined)
-		V.player.inventory.sextoys[item.name] = [];
+	if (V.player.inventory.sextoys[item.name] === undefined) V.player.inventory.sextoys[item.name] = [];
 	const obj = {
 		index: item.index,
-		colour:
-			iconClassName === ""
-				? item.default_colour
-				: iconClassName.substring(iconClassName.indexOf("-") + 1),
+		colour: iconClassName === "" ? item.default_colour : iconClassName.substring(iconClassName.indexOf("-") + 1),
 		name: item.name,
 		namecap: item.namecap,
 		worn: false,
@@ -642,28 +536,22 @@ function sexShopOnBuyClick(index, inSexShop = true, colour, costsMoney = true) {
 	if (Array.isArray(obj.colour)) obj.colour = obj.colour[random(0, obj.colour.length)];
 	V.player.inventory.sextoys[item.name].push(obj);
 	/* withdraw money from player */
-	if(costsMoney) V.money -= item.cost;
-	if(inSexShop){
+	if (costsMoney) V.money -= item.cost;
+	if (inSexShop) {
 		/* update sidebar money */
 		updateSideBarMoney();
 		/* fade in "owned" icon */
 		document
 			.getElementById("ssm_item_" + item.name_underscore)
-			.getElementsByClassName(
-				"ssm_already_owned"
-			)[0].innerHTML = `<span class="ssm_owned_text ssm_fade_in">owned</span>`;
+			.getElementsByClassName("ssm_already_owned")[0].innerHTML = `<span class="ssm_owned_text ssm_fade_in">owned</span>`;
 		/* fade in/out bought green text indicator */
-		document.getElementById(
-			"ssmBuyButton"
-		).outerHTML = `<span class="ssm_buy_button ssm_fade_in" id="ssmBuyButton" style="color:#97de97">Bought!</span>`;
+		document.getElementById("ssmBuyButton").outerHTML = `<span class="ssm_buy_button ssm_fade_in" id="ssmBuyButton" style="color:#97de97">Bought!</span>`;
 		if (sexShopOnBuyClick.counter === "off") {
 			sexShopOnBuyClick.counter = setTimeout(function () {
 				if (document.getElementById("ssmBuyButton"))
 					document.getElementById("ssmBuyButton").outerHTML =
 						V.money > item.cost
-							? `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` +
-							index +
-							`)" class="ssm_buy_button ssm_fade_in_fast">Buy it</a>`
+							? `<a id="ssmBuyButton" onclick="window.sexShopOnBuyClick(` + index + `)" class="ssm_buy_button ssm_fade_in_fast">Buy it</a>`
 							: `<span class="ssm_not_enough_money">Not enough money</span>`;
 				sexShopOnBuyClick.counter = "off";
 			}, 1400);

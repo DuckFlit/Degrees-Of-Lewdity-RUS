@@ -113,9 +113,7 @@ Template.add("animals", () =>
 );
 
 /* ?garden */
-Template.add("garden", () =>
-	either("prune flowers", "prune trees", "prune bushes", "water flowers", "remove weeds")
-);
+Template.add("garden", () => either("prune flowers", "prune trees", "prune bushes", "water flowers", "remove weeds"));
 
 /* ?admires */
 Template.add("admires", () => either("leers at", "admires", "ogles", "eyes up"));
@@ -153,6 +151,4 @@ Template.add("gwylanItem", () =>
 );
 
 /* ?sin */
-Template.add("sin", () =>
-	either("pride", "wrath", "envy", "lust", "gluttony", "greed", "sloth")
-);
+Template.add("sin", () => either("pride", "wrath", "envy", "lust", "gluttony", "greed", "sloth"));

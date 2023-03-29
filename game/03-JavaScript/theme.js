@@ -77,6 +77,6 @@ var ThemeManager = (() => {
 					setPreference(event.currentTarget.value);
 				});
 			});
-		}
+		},
 	};
 })();

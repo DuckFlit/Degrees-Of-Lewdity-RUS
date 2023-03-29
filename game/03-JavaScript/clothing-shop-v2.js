@@ -237,12 +237,18 @@ function getFilterRevealOptions(type) {
 		// this line removes values that are larger than reveal.to
 		return Object.keys(optionsFrom)
 			.filter(x => optionsFrom[x] < V.shopClothingFilter.reveal.to)
-			.reduce((res, key) => ((res[key] = optionsFrom[key]), res), {});
+			.reduce((res, key) => {
+				res[key] = optionsFrom[key];
+				return res;
+			}, {});
 	} else {
 		// this line removes values that are smaller than reveal.from
 		return Object.keys(optionsTo)
 			.filter(x => optionsTo[x] > V.shopClothingFilter.reveal.from)
-			.reduce((res, key) => ((res[key] = optionsTo[key]), res), {});
+			.reduce((res, key) => {
+				res[key] = optionsTo[key];
+				return res;
+			}, {});
 	}
 }
 window.getFilterRevealOptions = getFilterRevealOptions;
@@ -279,15 +285,15 @@ function applyClothingShopFilters(items) {
 		.filter(x => f.gender[x])
 		.map(x => x.first());
 
-	const filterOutfit = f.outfit.index !== "none";
+	let filterOutfit = f.outfit.index !== "none";
 	if (filterOutfit && f.outfit.index >= V.outfit.length) {
 		filterOutfit = false;
 	}
 
-	let filteredOutfitClothes = new Set();
+	const filteredOutfitClothes = new Set();
 	if (filterOutfit) {
-		let outfit = V.outfit[f.outfit.index];
-		for (let slot of setup.clothingLayer.all) {
+		const outfit = V.outfit[f.outfit.index];
+		for (const slot of setup.clothingLayer.all) {
 			if (outfit[slot] != null) {
 				filteredOutfitClothes.add(outfit[slot]);
 			}
@@ -352,23 +358,24 @@ function applyClothingShopFilters(items) {
 		It will definitely drastically improve speed, but it will probably not have a noticable difference in performance.
 		*/
 
-
-		let getSlot = (item_) => {
+		const getSlot = item_ => {
 			if (V.clothingShopSlot === "all") {
 				return item_.realSlot;
 			}
 			return V.clothingShopSlot;
-		}
-		
+		};
+
 		// items is a shallow copy, so we're not mutating the passed array
 		if (prop === "price") {
-			items.sort((a, b) => isAsc ? getClothingCost(a, getSlot(a)) - getClothingCost(b, getSlot(b)) : getClothingCost(b, getSlot(b)) - getClothingCost(a, getSlot(a)));
+			items.sort((a, b) =>
+				isAsc ? getClothingCost(a, getSlot(a)) - getClothingCost(b, getSlot(b)) : getClothingCost(b, getSlot(b)) - getClothingCost(a, getSlot(a))
+			);
 		} else if (prop === "protection") {
-			items.sort((a, b) => isAsc ? a.integrity_max - b.integrity_max : b.integrity_max - a.integrity_max);
+			items.sort((a, b) => (isAsc ? a.integrity_max - b.integrity_max : b.integrity_max - a.integrity_max));
 		} else if (prop === "reveal") {
-			items.sort((a, b) => isAsc ? a.reveal - b.reveal : b.reveal - a.reveal);
+			items.sort((a, b) => (isAsc ? a.reveal - b.reveal : b.reveal - a.reveal));
 		} else if (prop === "warmth") {
-			items.sort((a, b) => isAsc ? getTrueWarmth(a) - getTrueWarmth(b) : getTrueWarmth(b) - getTrueWarmth(a));
+			items.sort((a, b) => (isAsc ? getTrueWarmth(a) - getTrueWarmth(b) : getTrueWarmth(b) - getTrueWarmth(a)));
 		}
 	}
 
@@ -463,7 +470,7 @@ function importCustomColour(acc) {
 		let color;
 		try {
 			color = JSON.parse(window.atob(setName));
-		} catch (e){
+		} catch (e) {
 			document.getElementById("export-custom-colour-box").outerHTML = `
 			<div id="export-custom-colour-box">
 				<span class="export-custom-colour-error">Invalid string, make sure you copied it correctly without any spaces around it.</span>
@@ -517,8 +524,7 @@ function exportCustomColour(acc) {
 		<span class="export-custom-colour-alert">Copied to clipboard!</span>
 	</div>`;
 	window.setTimeout(() => {
-		if (document.getElementById("export-custom-colour-box"))
-			document.getElementById("export-custom-colour-box").classList.add("successfully-exported");
+		if (document.getElementById("export-custom-colour-box")) document.getElementById("export-custom-colour-box").classList.add("successfully-exported");
 	}, 100);
 }
 window.exportCustomColour = exportCustomColour;
@@ -591,11 +597,11 @@ window.addEventListener(
 
 Macro.add("shopclothingcustomcolourwheel", {
 	handler() {
-		if (this.args[0]){
+		if (this.args[0]) {
 			const resp = shopClothCustomColorWheel(this.args[0], this.args[1]);
 			this.output.append(resp.children[0]);
 		}
-	}
+	},
 });
 
 window.colourPickerShopCustom = colourPickerShopCustom;

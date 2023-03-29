@@ -147,6 +147,9 @@ module.exports = {
 		session: "readonly",
 		Util: "readonly",
 		version: "readonly",
+		getClothingCost: "readonly",
+		isLoveInterest: "readonly",
+		skinColor: "readonly",
 	},
 
 	ignorePatterns: [
@@ -193,7 +196,7 @@ module.exports = {
 		/* eslint-plugin-jsdoc */
 
 		// Descriptions should be sentence-like not comment-like
-		"jsdoc/require-description-complete-sentence": "warn",
+		"jsdoc/require-description-complete-sentence": "off",
 		"jsdoc/require-hyphen-before-param-description": ["error", "never", { tags: { property: "never" } }],
 		// Adding JSDoc is preferable but not required
 		"jsdoc/require-jsdoc": "off",

@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/no-undefined-types */
 /*
  * On caching.
  *
@@ -53,21 +54,21 @@
  * The following functions can be used instead of constant properties. Their arguments are (options) where options are model options provided in render call (from _modeloptions variable for <<rendermodel>>/<<animatemodel>> widget).
  * @property {Function} [showfn] (options)=>boolean Function generating `show` property. Should return boolean, do not use undefined/null/0/"" to hide layer, use of !! (double not) operator recommended.
  * @property {Function} [srcfn] (options)=>string.
- * @property {function} [zfn] (options)=>number
- * @property {function} [alphafn] (options)=>number
- * @property {function} [desaturatefn] (options)=>boolean
- * @property {function} [brightnessfn] (options)=>number
- * @property {function} [contrastftn] (options)=>number
- * @property {function} [blendModefn] (options)=>(string|object)
- * @property {function} [blendfn] (options)=>string
- * @property {function} [masksrcfn] (options)=>string
- * @property {function} [animationfn] (options)=>string
- * @property {function} [framesfn] (options)=>number[]
- * @property {function} [filtersfn] (options)=>string[]
- * @property {function} [dxfn] (options)=>number
- * @property {function} [dyfn] (options)=>number
- * @property {function} [widthfn] (options)=>number
- * @property {function} [heightfn] (options)=>number
+ * @property {Function} [zfn] (options)=>number.
+ * @property {Function} [alphafn] (options)=>number.
+ * @property {Function} [desaturatefn] (options)=>boolean.
+ * @property {Function} [brightnessfn] (options)=>number.
+ * @property {Function} [contrastftn] (options)=>number.
+ * @property {Function} [blendModefn] (options)=>(string|object).
+ * @property {Function} [blendfn] (options)=>string.
+ * @property {Function} [masksrcfn] (options)=>string.
+ * @property {Function} [animationfn] (options)=>string.
+ * @property {Function} [framesfn] (options)=>number[].
+ * @property {Function} [filtersfn] (options)=>string[].
+ * @property {Function} [dxfn] (options)=>number.
+ * @property {Function} [dyfn] (options)=>number.
+ * @property {Function} [widthfn] (options)=>number.
+ * @property {Function} [heightfn] (options)=>number.
  */
 
 /**
@@ -184,7 +185,7 @@ window.CanvasModel = class CanvasModel {
 	 *
 	 * @param {CanvasRenderingContext2D} canvas Canvas to render on (can be created with {@link createCanvas}).
 	 * @param {object} options Options to use when rendering model.
-	 * @param [listener] Listener for Renderer events.
+	 * @param {listener} listener For Renderer events.
 	 */
 	render(canvas, options, listener) {
 		if (typeof options === "undefined") options = this.options;
@@ -200,7 +201,7 @@ window.CanvasModel = class CanvasModel {
 	 *
 	 * @param {CanvasRenderingContext2D} canvas Canvas to render on (can be created with {@link createCanvas}).
 	 * @param {object} options Options to use when rendering model.
-	 * @param [listener] Listener for Renderer events.
+	 * @param {listener} listener For Renderer events.
 	 * @returns {AnimatingCanvas} AnimatingCanvas object.
 	 */
 	animate(canvas, options, listener) {
@@ -231,14 +232,14 @@ window.CanvasModel = class CanvasModel {
 	 * Pre-process options. Typically you calculate some expression here and store them as generated options
 	 * Override in subclass.
 	 *
-	 * @param options Model options.
+	 * @param {options} options Model options.
 	 */
 	preprocess(options) {}
 
 	/**
 	 * Compile list of layers according to options.
 	 *
-	 * @param options Model options.
+	 * @param {options} options Model options.
 	 * @returns {CompositeLayerSpec[]} Layers.
 	 */
 	compile(options) {
