@@ -701,6 +701,7 @@ function dawnCheck() {
 	delete V.alex_bed;
 	delete V.alex_bed_spurned;
 	delete V.connudatus_stripped;
+	delete V.robin_kicked_out;
 
 	return fragment;
 }
@@ -1048,9 +1049,6 @@ function dailyTransformationEffects() {
 	} else {
 		V.angelBanish = 0;
 	}
-
-	delete V.demon_window_orphan;
-	delete V.robin_kicked_out;
 
 	fragment.append(wikifier("transformationStateUpdate"));
 
