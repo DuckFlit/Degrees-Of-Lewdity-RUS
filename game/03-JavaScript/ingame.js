@@ -109,7 +109,7 @@ const combatActionColours = {
 		],
 		sub: [
 			/* leftaction or rightaction */
-			"leftplay", "leftgrab", "leftstroke", "leftchest", "rightplay", "rightgrab", "rightstroke", "rightchest", "leftchest", "rightchest", "leftwork", "rightwork", "leftclit", "rightclit", "handedge", "keepchoke", "leftmasturbatepussy", "rightmasturbatepussy", "leftmasturbatepenis", "rightmasturbatepenis", "lefthandholdkeep", "righthandholdkeep", "lefthandholdnew", "righthandholdnew", "handguide", "lubeanus", "lubepussy", "lubepenis", "removebuttplug", "dildoOtherPussyTease", "dildoOtherPussyFuck", "dildoOtherAnusTease", "dildoOtherAnusFuck", "strokerOtherPenisTease", "strokerOtherPenisFuck", "dildoSelfPussyEntrance", "dildoSelfAnusEntrance", "dildoSelfPussy", "dildoSelfAnus", "strokerSelfPenisEntrance", "strokerSelfPenis",
+			"leftplay", "leftgrab", "leftstroke", "leftchest", "rightplay", "rightgrab", "rightstroke", "rightchest", "leftchest", "rightchest", "leftwork", "rightwork", "leftclit", "rightclit", "handedge", "keepchoke", "leftmasturbatepussy", "rightmasturbatepussy", "leftmasturbateanus", "rightmasturbateanus", "leftmasturbatepenis", "rightmasturbatepenis", "lefthandholdkeep", "righthandholdkeep", "lefthandholdnew", "righthandholdnew", "handguide", "lubeanus", "lubepussy", "lubepenis", "removebuttplug", "dildoOtherPussyTease", "dildoOtherPussyFuck", "dildoOtherAnusTease", "dildoOtherAnusFuck", "strokerOtherPenisTease", "strokerOtherPenisFuck", "dildoSelfPussyEntrance", "dildoSelfAnusEntrance", "dildoSelfPussy", "dildoSelfAnus", "strokerSelfPenisEntrance", "strokerSelfPenis",
 			/* feetaction */
 			"grab", "vaginagrab", "grabrub", "vaginagrabrub", "rub",
 			/* mouthaction */

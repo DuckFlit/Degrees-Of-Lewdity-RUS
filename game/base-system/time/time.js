@@ -1254,15 +1254,15 @@ function dailySchoolEffects() {
 	fragment.append(wikifier("schoolclothesreset"));
 
 	if (Time.schoolTerm && Time.weekDay > 2) {
-		let deliquencyDecay = 1;
-		if (C.npc.Leighton.love >= V.npclovehigh) deliquencyDecay++;
-		if (C.npc.Sirris.love >= V.npclovehigh) deliquencyDecay++;
-		if (C.npc.River.love >= V.npclovehigh) deliquencyDecay++;
-		if (C.npc.Doren.love >= V.npclovehigh) deliquencyDecay++;
-		if (C.npc.Winter.love >= V.npclovehigh) deliquencyDecay++;
-		if (C.npc.Mason.love >= V.npclovehigh) deliquencyDecay++;
-		if (V.lessonmissedtext) deliquencyDecay = Math.floor(deliquencyDecay / 2);
-		fragment.append(wikifier("delinquency", deliquencyDecay / 4));
+		let delinquencyDecay = 1;
+		if (C.npc.Leighton.love >= V.npclovehigh) delinquencyDecay++;
+		if (C.npc.Sirris.love >= V.npclovehigh) delinquencyDecay++;
+		if (C.npc.River.love >= V.npclovehigh) delinquencyDecay++;
+		if (C.npc.Doren.love >= V.npclovehigh) delinquencyDecay++;
+		if (C.npc.Winter.love >= V.npclovehigh) delinquencyDecay++;
+		if (C.npc.Mason.love >= V.npclovehigh) delinquencyDecay++;
+		if (V.lessonmissedtext) delinquencyDecay = Math.floor(delinquencyDecay / 2);
+		fragment.append(wikifier("delinquency", -delinquencyDecay / 4));
 		if (V.schoolfameblackmail) V.schoolfameblackmail++;
 	}
 

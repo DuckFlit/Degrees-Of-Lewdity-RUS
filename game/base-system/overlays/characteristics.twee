@@ -139,29 +139,31 @@
 			<<if $_pregnancy.awareOfDetails>>
 				<<set $_number to $_pregnancy.fetus.length>>
 			<<elseif $_pregnancy.awareOfMultiple>>
-				<<set $_number to $_pregnancy.fetus.length is 1 ? 1 : "at least one">>
+				<<set $_number to $_pregnancy.fetus.length is 1 ? 1 : "more than one">>
 			<<else>>
 				<<set $_number to "an unknown number of">>
 			<</if>>
 			<<switch $_pregnancy.type>>
 				<<case "human">>
-					<<if $_number isnot "an unknown number of" and $_number isnot "at least one" and $_number gt 1>>
+					<<if $_number isnot "an unknown number of" and $_number isnot "more than one" and $_number gt 1>>
 						<<set _childType to "">>
 						<<if $_pregnancy.fetus[0].features.identical is true and $_pregnancy.awareOfDetails>>
 							<<set _childType += "identical ">>
 						<</if>>
 						<<set _childType += ($_number is 3 ? "triplets" : "twins")>>
 					<<else>>
-						<<set _childType to ($_number is 1 || $_number is "at least one" ? "baby" : "babies")>>
+						<<set _childType to ($_number is 1 || $_number is "more than one" ? "baby" : "babies")>>
 					<</if>>
 				<<case "wolf">>
-					<<set _childType to ($_number is 1 || $_number is "at least one" ? "wolf pup" : "wolf pups")>>
+					<<set _childType to ($_number is 1 || $_number is "more than one" ? "wolf pup" : "wolf pups")>>
 			<</switch>>
 			You're pregnant with <<number $_number>> _childType, in the _trimester trimester of your pregnancy.
 		<<else>>
 			You know you're in the _trimester trimester of your pregnancy.
 		<</if>>
-		<span class="blue">You can get an ultrasound done at the hospital.</span>
+		<<if between($_pregnancy.timer / $_pregnancy.timerEnd, 0.1, 1) and !$daily.ultrasoundDone>>
+			<span class="blue">You can get an ultrasound done at the hospital.</span>
+		<</if>>
 		<<if $_pregnancy.potentialFathers.length is 1>>
 			You know that the father is <<print pregnancyNameCorrection($_pregnancy.potentialFathers[0].source)>>.
 		<<elseif $_pregnancy.potentialFathers.length is 2>>

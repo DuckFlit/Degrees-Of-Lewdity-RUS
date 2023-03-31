@@ -297,6 +297,11 @@
 			<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
 		<</addinlineevent>>
 		<<addevent "forestcutter" 0.15>>
+		<<set _forestNestUnsafe to true>>
+		<<addevent "forest_nest" 0.15>>
+		<<if $fox_grudge>>
+			<<addevent "fox_grudge" 0.33>>
+		<</if>>
 		<<runeventpool>>
 	<</if>>
 <</widget>>
@@ -411,6 +416,11 @@
 
 		<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
 	<</addinlineevent>>
+	<<set _forestNestUnsafe to true>>
+	<<addevent "forest_nest">>
+	<<if $fox_grudge>>
+		<<addevent "fox_grudge" 0.33>>
+	<</if>>
 		<<runeventpool>>
 	<</if>>
 <</widget>>
@@ -483,6 +493,7 @@
 	<<cleareventpool>>
 	<<addevent "forestgather">>
 	<<addevent "mushroompick" 0.33>>
+	<<addevent "forest_nest" 0.25>>
 	<<if $forest lte 20>>
 		<<addevent "forestarrow" 0.5>>
 	<<elseif $forest lte 50>>
@@ -1034,9 +1045,8 @@
 	<<if _forest_shrooms is 2>>
 		<<if currentSkillValue('science') gte 200>>
 			You remember from school that they're called <<icon "tending/wolfshroom.png">> wolfshrooms, and were prized by warriors in ancient times.
+			<br><br>
 		<</if>>
-
-		<br><br>
 	<</if>>
 
 	<<if _forest_shrooms is 1>>
@@ -1065,6 +1075,144 @@
 	<br>
 	<<link [[Best leave them alone|Forest]]>><<set $eventskip to 1>><</link>>
 	<br>
+<</widget>>
+
+<<widget "forest_nest">>
+	<<if !$forest_nest_intro>>
+		<<set $forest_nest_intro to true>>
+		<<set $forest_nest to {type: 2, fox: 3, eggs: 7}>>
+		<<beastNEWinit 1 fox>>
+		You hear some rustling from a tree up ahead. <<if $anxiety gte 1>>You instinctively hide behind the nearest tree.<<else>>You cautiously approach to take a look.<</if>>
+		<br><br>
+
+		You spot a fluffy orange tail peeking out from a cluster of branches in the canopy. The soft face of a <<beasttype>> suddenly looks up. There's an egg in <<bhis>> mouth.
+		<br><br>
+
+		<<bHe>> briefly looks around, before noisily chomping down on the egg. Some of the yolk dribbles down <<bhis>> chin. <<bHe>> reaches into the nest for more,
+		<<if $monster is 1>>
+			grabbing a handful before deftly leaping down from the tree. <<bHe>> puts them in a pile on the ground.
+		<<else>>
+			putting one in <<bhis>> mouth before leaping down from the tree. <<bHe>> begins making a pile of them on the ground.
+		<</if>>
+		<br><br>
+
+		<i><span class="blue">If you could raid a nest like that, you might be able to sell any unfertilised <<icon "tending/bird_egg.png">> bird eggs you find.</span></i>
+		<br><br>
+
+		<<link [[Just watch (0:05)|Forest Fox Nest Watch]]>><<pass 5>><<stress -3>><</link>><<lstress>>
+		<br>
+		<<if $harpy gte 6>>
+			<<link [[Challenge|Forest Fox Nest Challenge]]>><</link>><<harpy>>
+			<br>
+		<<else>>
+			<<link [[Challenge|Forest Fox Nest Challenge]]>><</link>><<physiquedifficulty 1 $physiquemax>>
+			<br>
+		<</if>>
+		<<set $skulduggerydifficulty to 300>>
+		<<link [[Sneak up|Forest Fox Nest Sneak]]>><</link>><<skulduggerydifficulty>>
+		<br>
+		<<if $fox gte 6>>
+			<<link [[Chase!|Forest Fox Nest Chase]]>><<set $phase2 to 1>><<stress -6>><<transform 1 fox>><</link>><<llstress>><<fox>> | <span class="red">No eggs</span>
+			<br>
+		<<else>>
+			<<link [[Chase|Forest Fox Nest Chase]]>><<set $phase2 to 1>><<tiredness 6>><</link>><<gtiredness>><<athleticsdifficulty 1 300>> | <span class="red">No eggs</span>
+			<br>
+		<</if>>
+	<<else>>
+		<<set $forest_nest to {type: 0, fox: 0, bird: 0, eggs: 0}>>
+		<!-- 1 = abandoned nest, 2 = active nest, 3 = fallen nest, 4 = snake nest -->
+		<<rng 4>><<set $forest_nest.type to ($forest lte 50 ? Math.clamp($rng, 1, 3) : Math.clamp($rng, 2, 4))>>
+		<!-- 1 = no fox, 2 = fox, 3 = player aware of fox -->
+		<<if _forestNestUnsafe>>
+			<<set $forest_nest.fox to 2>>
+		<<else>>
+			<<rng 2>><<set $forest_nest.fox to $rng>>
+		<</if>>
+		<<rng>>
+		<<switch $forest_nest.type>>
+			<<case 1>>
+				<<set $forest_nest.eggs to random(1, 3)>>
+				You spot an <span class="purple">abandoned</span> bird's nest in a nearby tree.
+			<<case 2>>
+				<<set $forest_nest.eggs to ($forest gte 50 ? random(7, 14) : random(5, 10))>>
+				You spot a <span class="teal">well-maintained</span> bird's nest in a nearby tree. <<if $forest gt 50>>It sticks out against the decaying branches.<</if>>
+			<<case 3>>
+				<<set $forest_nest.eggs to random(3, 8)>>
+				You spot a large cluster of <<if $forest gt 50>>mud<<else>>twigs<</if>> and foliage on the ground. It looks like a <span class="teal">fallen bird's nest</span>. 
+			<<case 4>>
+				<<set $forest_nest.eggs to 0>>
+				You spot a large cluster of <<if $forest gt 50>>mud<<else>>twigs<</if>> and foliage on the ground. It looks like a <span class="teal">fallen bird's nest</span>.
+				<<if currentSkillValue('tending') gte 800>>
+					<<set _snakeKnown to true>>
+					However, thanks to your tending skill, you spot nearby tracks and holes in the ground. You realise <span class="red">it's a snake's nest</span>.
+				<</if>>
+		<</switch>>
+		<br>
+		<<if $forest_nest.fox is 2>>
+			<<beastNEWinit 1 fox>>
+			<<if $fox gte 6>>
+				<<set $forest_nest.fox to 3>>
+				<span class="orange">You smell a <<beasttype>> nearby</span>. You can tell <<bhes>>
+				<<if $NPCList[0].traits.includes("cowardly")>><span class="teal">cowardly</span>.
+				<<elseif $NPCList[0].traits.includes("territorial")>><span class="red">territorial</span>.
+				<<elseif $NPCList[0].traits.includes("clever")>><span class="purple">clever</span>.
+				<<elseif $NPCList[0].traits.includes("friendly")>><span class="green">friendly</span>.
+				<<elseif $NPCList[0].traits.includes("clumsy")>><span class="blue">clumsy</span>.
+				<</if>>
+				<br>
+			<<elseif currentSkillValue('skulduggery') gte $NPCList[0].skills.security>>
+				<<set $forest_nest.fox to 3>>
+				<span class="blue">You hear a rustle nearby.</span> Something else is eyeing up the nest, too.
+				<br>
+			<</if>>
+		<</if>>
+		<br>
+
+		<<if $forest_nest.type lte 2>>
+			<<link [[Climb up to the nest|Forest Nest Climb]]>><</link>><<athleticsdifficulty 0 800>>
+			<br>
+			<<link [[Knock the nest down|Forest Nest Throw]]>><<set $forest_nest.eggs -= 4>><<set $forest_nest.type to 3>><</link>><<note "Less eggs" "red">>
+			<br>
+		<<elseif $forest_nest.type is 3>>
+			<<link [[Search the nest|Forest Nest Search]]>><</link>>
+			<br>
+		<<elseif !_snakeKnown>>
+			<<link [[Search the nest|Forest Nest Snake]]>><</link>>
+			<br>
+		<<elseif _snakeKnown and $deviancy gte 55 and $voredisable is "f">>
+			<<link [[Present yourself as food|Forest Nest Snake Vore 1]]>><</link>><<deviant4>>
+			<br>
+		<</if>>
+		<<if $forest_nest.fox is 3>>
+			<<link [[Hide and wait (0:05)|Forest Nest Hide]]>><<unset $athleticsSuccess>><<set $forest_nest.eggs -= 2>><<pass 5>><</link>><<note "Less eggs" "red">>
+			<br>
+		<</if>>
+	<</if>>
+	<<link [[Leave|Forest]]>><<endevent>><<unset $forest_nest>><<set $eventskip to 1>><</link>>
+	<br>
+<</widget>>
+
+<<widget "fox_grudge">>
+	<<loadNPC 0 "fox_grudge">>
+	<<loadNPC 1 "fox_grudge">>
+	<<loadNPC 2 "fox_grudge">>
+	<<clearNPC "fox_grudge">>
+	<<unset $fox_grudge>>
+	A <<beasttype>> emerges from between the trees. Another one emerges behind you, and a final, larger one appears right in front of you. <span class="red">You recognise <<bhim>></span>. <<bHes>> the one you scared off from a nest.
+	<<if $monster is 1>>
+		"Hold still, <<foxnickname>>. We're going to enjoy this."
+	<</if>>
+	<br><br>
+	<<if $monster is 1 or $bestialitydisable is "f">>
+		<<link [[Next|Forest Fox Revenge]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		They chase you through the woods. You run until you can no longer hear them behind you. You're not sure if you outran it or it grew bored.
+		<<beastescape>><<gtiredness>><<tiredness 4>><<gathletics>><<athletics 2>><<physique 2>>
+		<br><br>
+
+		<<link [[Next (0:20)|Forest]]>><<endevent>><<pass 20>><<set $eventskip to 1>><</link>>
+	<</if>>
 <</widget>>
 
 
@@ -1359,4 +1507,27 @@
 	<br>
 	<<link [[Say goodbye|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
 	<br>
+<</widget>>
+
+<!-- Argument one is minimum -->
+<<widget "tending_bird_eggs">>
+	<<if _args[0] gt 0>>
+		<<set $_min to _args[0]>>
+		<<if _args[1]>>
+			<<set $_max to _args[0]>>
+		<<else>>
+			<<if $forest_nest and $forest_nest.type>>
+				<<switch $forest_nest.type>>
+					<<case 1>><<set $_max to (_args[0] + 2)>>
+					<<case 2>><<set $_max to (_args[0] + 7)>>
+					<<case 3>><<set $_max to (_args[0] + 4)>>
+				<</switch>>
+			<<else>>
+				<<set $_max to (_args[0] + 4)>>
+			<</if>>
+		<</if>>
+		<span class="green"><<tending_pick bird_egg $_min $_max>></span>
+	<<else>>
+		<span class="red">There's no intact eggs left.</span>
+	<</if>>
 <</widget>>

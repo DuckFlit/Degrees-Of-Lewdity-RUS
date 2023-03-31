@@ -2653,7 +2653,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"under_upper": genlayer_clothing_main('under_upper', {
 			masksrcfn(options) {
-				return options.belly_mask_src;
+				return options.shirt_mask_clip_src;
 			}
 		}),
 		"under_upper_belly_2": genlayer_clothing_belly_2("under_upper", {
