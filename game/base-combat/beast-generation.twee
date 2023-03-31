@@ -90,7 +90,7 @@
 	<!-- v2.7 $BeastList is 0-7: "dog", "cat", "pig", "wolf", "dolphin", "lizard", "bear", "creature" -->
 	<!-- v2.13 "horse" added to $BeastList -->
 
-	<<set _h to [200,150,200,300,200,250,500,300,200,500,200,150,400]>> <!-- Health Max per type -->
+	<<set _h to [200,150,200,300,200,250,500,300,200,500,225,150,400,300]>> <!-- Health Max per type -->
 	<<set _t to ["dog","cat","pig","wolf","dolphin","lizard","bear","boar","creature","horse","fox","hawk","cow","spider"]>> <!-- Name of each type -->
 	<<set _d to ["large","large","fat","enormous","bottlenose","scaly","brown","hairy","strange","huge","large","fierce","huge","slimy"]>> <!-- Descriptor of each type -->
 	<<set _pd to ["knotted penis","spiked penis","penis","knotted penis","strange penis","penis","penis","penis","penis","equine cock","knotted penis","avian cock","bovine cock","arachnid penis"]>> <!-- Descriptor of Penises -->
@@ -178,6 +178,11 @@
 				<<set $NPCList[_n].breastsdesc to _brdes[_rngbr]+" breasts">>
 				<<set $NPCList[_n].breastdesc to _brdes[_rngbr]+" breast">>
 			<</switch>>
+			<<if random(1, 100) gte 61 or $NPCList[_n].type is "cowgirl">>
+				<<set $NPCList[_n].lactation to 1>>
+			<<else>>
+				<<set $NPCList[_n].lactation to 0>>
+			<</if>>
 		<</if>>
 		<<if random(1, 100) lte $blackchance>>
 			<<set $NPCList[_n].skincolour to "black">>
@@ -197,6 +202,33 @@
 		<</if>>
 	<</if>>
 	<<set $NPCList[_n].fullDescription += $NPCList[_n].type>>
+
+	<<if $NPCList[_n].type.includes("fox")>>
+		<<generate_npc_skills>>
+		<<generate_beast_traits>>
+		<<if $NPCList[_n].traits.includes("cowardly")>>
+			<<set $NPCList[_n].skills.security += 200>>
+			<<set $NPCList[_n].skills.security to Math.clamp($NPCList[_n].skills.security, 1, 1000)>>
+		<<elseif $NPCList[_n].traits.includes("territorial")>>
+			<<set $NPCList[_n].healthmax += 125>>
+			<<set $NPCList[_n].health += 125>>
+			<<set $NPCList[_n].skills.security += 100>>
+			<<set $NPCList[_n].skills.security to Math.clamp($NPCList[_n].skills.security, 1, 1000)>>
+		<<elseif $NPCList[_n].traits.includes("clever")>>
+			<<set $NPCList[_n].skills.security += 150>>
+			<<set $NPCList[_n].skills.security to Math.clamp($NPCList[_n].skills.security, 1, 1000)>>
+			<<set $NPCList[_n].skills.athletics += 100>>
+			<<set $NPCList[_n].skills.athletics to Math.clamp($NPCList[_n].skills.athletics, 1, 1000)>>
+		<<elseif $NPCList[_n].traits.includes("friendly")>>
+			<<set $NPCList[_n].healthmax -= 75>>
+			<<set $NPCList[_n].health -= 75>>
+		<<elseif $NPCList[_n].traits.includes("clumsy")>>
+			<<set $NPCList[_n].skills.security -= 200>>
+			<<set $NPCList[_n].skills.security to Math.clamp($NPCList[_n].skills.security, 1, 1000)>>
+			<<set $NPCList[_n].skills.athletics -= 200>>
+			<<set $NPCList[_n].skills.athletics to Math.clamp($NPCList[_n].skills.athletics, 1, 1000)>>
+		<</if>>
+	<</if>>
 
 
 	<!-- Gender-swap monsters if needed -->
@@ -233,6 +265,24 @@
 		<<set $NPCList[_n].penisdesc to "none">>
 		<<set $NPCList[_n].penissize to 0>>
 	<</if>>
+<</widget>>
+
+<!-- rng is rolled right after this widget runs, so it shouldn't need correction unless this widget is manually called somewhere outside of beast generation -->
+<<widget "generate_beast_traits">>
+	<<set $NPCList[_n].traits to []>>
+	<<rng 5>>
+	<<switch $rng>>
+		<<case 1>>
+			<<set $NPCList[_n].traits.push("cowardly")>>
+		<<case 2>>
+			<<set $NPCList[_n].traits.push("territorial")>>
+		<<case 3>>
+			<<set $NPCList[_n].traits.push("clever")>>
+		<<case 4>>
+			<<set $NPCList[_n].traits.push("friendly")>>
+		<<case 5>>
+			<<set $NPCList[_n].traits.push("clumsy")>>
+	<</switch>>
 <</widget>>
 
 <!-- Dolphin generate calls -->
