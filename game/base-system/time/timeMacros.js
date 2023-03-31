@@ -23,16 +23,26 @@ function ampm(hour, minute) {
 DefineMacroS("ampm", ampm);
 
 function advanceToHour() {
-	passTime(60 - Time.minute);
+	return passTime(60 - Time.minute);
 }
-DefineMacro("advancetohour", advanceToHour);
+Macro.add("advancetohour", {
+	handler() {
+		const fragment = advanceToHour();
+		this.output.append(fragment);
+	},
+});
 
 function passTimeUntil(hour, minute) {
 	const diffHour = (24 - Time.hour + hour) % 24;
 	const diffMinute = (60 + Time.minute - (minute || 0)) % 60;
-	passTime(diffHour * 60 + diffMinute);
+	return passTime(diffHour * 60 + diffMinute);
 }
-DefineMacro("passTimeUntil", passTimeUntil);
+Macro.add("passTimeUntil", {
+	handler() {
+		const fragment = passTimeUntil(...this.args);
+		this.output.append(fragment);
+	},
+});
 
 /* Looks ugly, works, is clear. Ideally we shouldn't allow variance in the argument for <<pass>> like this.
 	In the future someone can do a revision of calls to eliminate such variance. */
@@ -51,12 +61,24 @@ const secondsMapper = {
 	weeks: DateTime.secondsPerDay * 7,
 };
 
+/**
+ * Pass an alloted time.
+ *
+ * @param {number} time The interval of units of time
+ * @param {'sec'|'min'|'hour'|'day'|'week'} type The spans of time to pass.
+ * @returns {DocumentFragment} The fragment to render elements from.
+ */
 function passTime(time = 0, type = "min") {
 	const multiplier = secondsMapper[type] || 1;
 	const fragment = Time.pass(time * multiplier);
-	this.output.append(fragment);
+	return fragment;
 }
-DefineMacro("pass", passTime);
+Macro.add("pass", {
+	handler() {
+		const fragment = passTime(...this.args);
+		this.output.append(fragment);
+	},
+});
 
 Macro.add("clock", {
 	handler() {
