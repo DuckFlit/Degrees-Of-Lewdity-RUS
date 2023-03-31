@@ -162,8 +162,8 @@ class DateTime {
 			((DateTime.getTotalDaysSinceStart(this.year) +
 				(DateTime.standardYearMonths.slice(0, this.month - 1).reduce((a, b) => a + b, 0) -
 					(DateTime.isLeapYear(this.year) && this.month < 3) +
-					this.day -
-					1)) %
+					this.day +
+					(V.weekDayOffset !== undefined ? V.weekDayOffset : 6))) % // teach the bird to f
 				7)
 		);
 	}
