@@ -88,7 +88,7 @@
  * childDecompressor will take this coded string and return it as an object that contains all of the stored values.
  * In order for the child to be ready for use, a new child should be generated and the following function should be used: mergeNPCData()
  *
- * NOTE: An child generated this way does not have a name. The name should be the key used to store the child string and then be added once the child has been decompressed.
+ * NOTE: A child generated this way does not have a name. The name should be the key used to store the child string and then be added once the child has been decompressed.
  *
  * RELEVANT FUNCTIONS:
  * - convertToDMYFormat() - converts a date in DDMMYYYY format to {day:#, month:[# or string], year:#} format.
