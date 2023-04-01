@@ -1294,7 +1294,7 @@ function dailySchoolEffects() {
 			} else if (V.book_rent_timer < 0) {
 				if (V.bookOverdue === undefined) V.bookOverdue = 0;
 				V.bookOverdue++;
-				if (bookOverdue >= 7) {
+				if (V.bookOverdue >= 7) {
 					V.bookoverduemessage = 1;
 					V.effectsmessage = 1;
 				} else {
