@@ -32,13 +32,14 @@ const ZIndices = {
 	tears: 55,
 	hair: 60,
 	penis_chastity: 64,
-	legs: 64,
+	legs: 66.6, // above underParasite but below under_lower
 	pbhair: 64,
 	penisunderclothes: 64.3,
 	pbhairballsunderclothes: 64.6,
 	genitals: 65,
-	penis: 160, // when exposed
-	pbhairballs: 161, // when exposed
+	penis: 104, // when exposed
+	pbhairballs: 104.3, // when exposed
+	parasite: 104.6, // when exposed
 	underParasite: 66,
 	under_lower: 67,
 	under_lower_top: 68,
@@ -79,8 +80,6 @@ const ZIndices = {
 	face: 145,
 	head: 150,
 	over_head: 152,
-
-	parasite: 160,
 
 	tailPenisCover: 165,
 	tailPenisCoverOverlay: 166,
