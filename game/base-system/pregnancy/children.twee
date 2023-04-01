@@ -666,297 +666,300 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 <</widget>>
 
 /*ToDo: Pregnancy Story Content: Lacking events. Human children events which the place accesses by going to the childrens UI*/
-<<widget "humanChildActivity">><<silently>>
-	<<if $children[_args[0]].localVariables.activity && $children[_args[0]].localVariables.activityDay is Time.days and ($children[_args[0]].localVariables.activityHour + 4) gt Time.hour>>
-	<<else>>
-		/*The baby toys avaliable in events*/
-		<<set _toySets to []>>
-		<<set _toyNames to []>>
-		<<if $storedChildrenToys and $storedChildrenToys[$location]>>
-			<<for $_i to 0; $_i lt $storedChildrenToys[$location].length; $_i++>>
-				<<run _toySets.pushUnique($storedChildrenToys[$location][$_i].set)>>
-				<<run _toyNames.pushUnique($storedChildrenToys[$location][$_i].name)>>
-			<</for>>
-		<</if>>
-		/*Which event is picked, should match the case where the event is shown to the player*/
-		<<run statusCheck("Robin")>>
-		<<set _activity to 'noEvent'>>
-		<<if between(_childTotalDays, 0, 100)>>
-			<<if Time.dayState is "night">>
-				<<set _activity to ["sleeping", "sleeping", "sleeping", "sleeping", "sleeping", "restlessSleep", "restlessSleep", "crying","nappyChange"]>>
-			<<else>>
-				<<set _activity to ["sleeping", "sleeping", "sleeping", "crying", "crying", "crying", "happy", "nappyChange", "thumbSucking", "grumpyChild"]>>
-				<<if _toySets.includes("baby rattles")>>
-					<<run _activity.push("babyRattle")>>
-				<</if>>
-				<<if _toySets.includes("teddy bears")>>
-					<<run _activity.push("teddyBear")>>
-				<</if>>
-				<<if _toySets.includes("toy cars")>>
-					<<run _activity.push("toyCar")>>
-				<</if>>
-				<<if _toySets.includes("dummies")>>
-					<<run _activity.push("dummy")>>
+<<widget "humanChildActivity">>
+	<<silently>>
+		<<if $children[_args[0]].localVariables.activity && $children[_args[0]].localVariables.activityDay is Time.days and ($children[_args[0]].localVariables.activityHour + 4) gt Time.hour>>
+		<<else>>
+			/*The baby toys avaliable in events*/
+			<<set _toySets to []>>
+			<<set _toyNames to []>>
+			<<if $storedChildrenToys and $storedChildrenToys[$location]>>
+				<<for $_i to 0; $_i lt $storedChildrenToys[$location].length; $_i++>>
+					<<run _toySets.pushUnique($storedChildrenToys[$location][$_i].set)>>
+					<<run _toyNames.pushUnique($storedChildrenToys[$location][$_i].name)>>
+				<</for>>
+			<</if>>
+			/*Which event is picked, should match the case where the event is shown to the player*/
+			<<run statusCheck("Robin")>>
+			<<set _activity to 'noEvent'>>
+			<<if between(_childTotalDays, 0, 100)>>
+				<<if Time.dayState is "night">>
+					<<set _activity to ["sleeping", "sleeping", "sleeping", "sleeping", "sleeping", "restlessSleep", "restlessSleep", "crying","nappyChange"]>>
 				<<else>>
-					<<run _activity.push("crying")>>
+					<<set _activity to ["sleeping", "sleeping", "sleeping", "crying", "crying", "crying", "happy", "nappyChange", "thumbSucking", "grumpyChild"]>>
+					<<if _toySets.includes("baby rattles")>>
+						<<run _activity.push("babyRattle")>>
+					<</if>>
+					<<if _toySets.includes("teddy bears")>>
+						<<run _activity.push("teddyBear")>>
+					<</if>>
+					<<if _toySets.includes("toy cars")>>
+						<<run _activity.push("toyCar")>>
+					<</if>>
+					<<if _toySets.includes("dummies")>>
+						<<run _activity.push("dummy")>>
+					<<else>>
+						<<run _activity.push("crying")>>
+					<</if>>
+					<<if _toyNames.includes("clown")>>
+						<<run _activity.push("clown")>>
+					<</if>>
+					<<if _robin_location is "orphanage">>
+						<<run _activity.push("Robin")>>
+					<</if>>
 				<</if>>
-				<<if _toyNames.includes("clown")>>
-					<<run _activity.push("clown")>>
-				<</if>>
-				<<if _robin_location is "orphanage">>
-					<<run _activity.push("Robin")>>
+			<<elseif between(_childTotalDays, 101, 200)>>
+				<<if Time.dayState is "night">>
+					<<set _activity to ["sleeping", "sleeping", "sleeping", "sleeping", "sleeping", "restlessSleep", "restlessSleep", "crying","nappyChange"]>>
+				<<else>>
+					<<set _activity to ["sleeping", "sleeping", "sleeping", "crying", "happy", "nappyChange", "thumbSucking", "talking", "grumpyChild","readingAttempt"]>>
+					<<if _toySets.includes("baby rattles")>>
+						<<run _activity.push("babyRattle")>>
+					<</if>>
+					<<if _toySets.includes("teddy bears")>>
+						<<run _activity.push("teddyBear")>>
+					<</if>>
+					<<if _toySets.includes("toy cars")>>
+						<<run _activity.push("toyCar")>>
+					<</if>>
+					<<if _toySets.includes("dummies")>>
+						<<run _activity.push("dummy")>>
+					<</if>>
+					<<if _toyNames.includes("clown")>>
+						<<run _activity.push("clown")>>
+					<</if>>
+					<<if $children[_args[0]].localVariables.crawling gte 5>>
+						<<run _activity.push("crawlingAttempt")>>
+					<<else>>
+						<<run _activity.push("crawlingAttempt2")>>
+					<</if>>
+					<<if $children[_args[0]].localVariables.talking gte 10>>
+						<<run _activity.push("talking2")>>
+					<</if>>
 				<</if>>
 			<</if>>
-		<<elseif between(_childTotalDays, 101, 200)>>
-			<<if Time.dayState is "night">>
-				<<set _activity to ["sleeping", "sleeping", "sleeping", "sleeping", "sleeping", "restlessSleep", "restlessSleep", "crying","nappyChange"]>>
-			<<else>>
-				<<set _activity to ["sleeping", "sleeping", "sleeping", "crying", "happy", "nappyChange", "thumbSucking", "talking", "grumpyChild","readingAttempt"]>>
-				<<if _toySets.includes("baby rattles")>>
-					<<run _activity.push("babyRattle")>>
-				<</if>>
-				<<if _toySets.includes("teddy bears")>>
-					<<run _activity.push("teddyBear")>>
-				<</if>>
-				<<if _toySets.includes("toy cars")>>
-					<<run _activity.push("toyCar")>>
-				<</if>>
-				<<if _toySets.includes("dummies")>>
-					<<run _activity.push("dummy")>>
-				<</if>>
-				<<if _toyNames.includes("clown")>>
-					<<run _activity.push("clown")>>
-				<</if>>
-				<<if $children[_args[0]].localVariables.crawling gte 5>>
-					<<run _activity.push("crawlingAttempt")>>
-				<<else>>
-					<<run _activity.push("crawlingAttempt2")>>
-				<</if>>
-				<<if $children[_args[0]].localVariables.talking gte 10>>
-					<<run _activity.push("talking2")>>
-				<</if>>
+			<<if Array.isArray(_activity) and _activity.length>>
+				<<set $children[_args[0]].localVariables.activity to _activity[random(0,_activity.length - 1)]>>
+				<<set $children[_args[0]].localVariables.event to true>>
+			<<elseif _activity>>
+				<<set $children[_args[0]].localVariables.activity to _activity>>
+				<<set $children[_args[0]].localVariables.event to true>>
 			<</if>>
 		<</if>>
-		<<if Array.isArray(_activity) and _activity.length>>
-			<<set $children[_args[0]].localVariables.activity to _activity[random(0,_activity.length - 1)]>>
-			<<set $children[_args[0]].localVariables.event to true>>
-		<<elseif _activity>>
-			<<set $children[_args[0]].localVariables.activity to _activity>>
-			<<set $children[_args[0]].localVariables.event to true>>
-		<</if>>
-	<</if>>
-	<<set _childid to clone(_args[0])>>
-<</silently>>
+		<<set _childid to clone(_args[0])>>
+	<</silently>>
 
 /*Which event is shown to the player*/
-<<switch $children[_args[0]].localVariables.activity>>
-	<<case "noEvent">>
-		<<childHe>>'s sleeping soundly.
-	<<case "sleeping">>
-		<<childHe>>'s sleeping soundly.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<set _rng to random(1, 6)>>
-			<<switch _rng>>
-				<<case 1>>
-					<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"transfixed", childid:_childid}>><</link>><</capture>> |
-				<<case 2>>
-					<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"stroke", childid:_childid}>><</link>><</capture>> |
-				<<case 3>>
-					<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"yawn", childid:_childid}>><</link>><</capture>> |
-				<<case 4>>
-					<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"murmur", childid:_childid}>><</link>><</capture>> |
-				<<case 5>>
-					<<capture _childid>><<link [[Nap (0:30)|Children Activity Events]]>><<pass 30>><<set $childActivityEvent to {event:"cotNap", childid:_childid}>><</link>><</capture>> |
-				<<default>>
-					<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"shiverInCot", childid:_childid}>><</link>><</capture>> |
-			<</switch>>
-		<</if>>
-	<<case "restlessSleep">>
-		<<childHe>>'s moving restlessly in <<childhis>> sleep.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid>><<link [[Calm them down (0:30)|Children Activity Events]]>><<pass 30>><<set $childActivityEvent to {event:"restlessSleep", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<case "crying">>
-		<<childHe>>'s distressed and crying.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<set _rng to random(1, 6)>>
-			<<switch _rng>>
-				<<case 1>>
-					<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"holdToShoulder", childid:_childid}>><</link>><</capture>> |
-				<<case 2>>
-					<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"melodicLullaby", childid:_childid}>><</link>><</capture>> |
-				<<case 3>>
-					<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"foreheadKiss", childid:_childid}>><</link>><</capture>> |
-				<<case 4>>
-					<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"objectShow", childid:_childid}>><</link>><</capture>> |
-				<<case 5>>
-					<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"carryRevolt", childid:_childid}>><</link>><</capture>> |
-				<<default>>
-					<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"rockToSleep", childid:_childid}>><</link>><</capture>> |
-			<</switch>>
-			<<set _rng to random(1, 10)>>
-			<<switch _rng>>
-				<<case 1>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"nurseryRhymes", childid:_childid}>><</link>><</capture>> |
-				<<case 2>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"FeetCup", childid:_childid}>><</link>><</capture>> |
-				<<case 3>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"shareThoughts", childid:_childid}>><</link>><</capture>> |
-				<<case 4>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"speakCry", childid:_childid}>><</link>><</capture>> |
-				<<case 5>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"waveTongue", childid:_childid}>><</link>><</capture>> |
-				<<case 6>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"handsClap", childid:_childid}>><</link>><</capture>> |
-				<<case 7>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"peekaboo", childid:_childid}>><</link>><</capture>> |
-				<<case 8>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"blowRaspberriesHappy", childid:_childid}>><</link>><</capture>> |
-				<<case 9>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"blowRaspberriesUpset", childid:_childid}>><</link>><</capture>> |
-				<<default>>
-					<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"faceStudy", childid:_childid}>><</link>><</capture>> |
-			<</switch>>
-		<</if>>
-	<<case "happy">>
-		<<childHe>>'s smiling and happily cooing.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid>><<link [[Smile and laugh (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"smilesAndLaughs", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<case "talking">>
-		<<childHe>>'s gurgling and babbling to <<childherself>>.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid>><<link [[Join in the babbling (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"talking", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<case "talking2">>
-		<<childHe>>'s gurgling and attempting to make sounds to <<childherself>>.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid>><<link [[Join in the talking (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"talking2", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<case "nappyChange">>
-		<<childHe>>'s looking uncomfortable and smells.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<set _rng to random(1, 5)>>
-			<<switch _rng>>
-				<<case 1>>
-					<<capture _childid>><<link [[Bathe (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"batheGentle", childid:_childid}>><</link>><</capture>> |
-				<<case 2>>
-					<<capture _childid>><<link [[Bathe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"batheShampoo", childid:_childid}>><</link>><</capture>> |
-				<<case 3>>
-					<<capture _childid>><<link [[Bathe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"BatheCalm", childid:_childid}>><</link>><</capture>> |
-				<<case 4>>
-					<<capture _childid>><<link [[Bathe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"batheTantrum", childid:_childid}>><</link>><</capture>> |
-				<<default>>
-					<<capture _childid>><<link [[Clean up (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"nappyChange", childid:_childid}>><</link>><</capture>> |
-			<</switch>>
-		<</if>>
-	<<case "thumbSucking">>
-		<<childHe>>'s happily sucking on <<childhis>> thumb.
-	<<case "grumpyChild">>
-		<<childHe>>'s being irritable.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid>><<link [[Tickle (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"grumpyChild", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<case "crawlingAttempt">>
-		<<childHe>>'s lying on <<childhis>> belly and flailing about.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid>><<link [[Help them out (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"crawlingAttempt", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<case "crawlingAttempt2">>
-		<<childHe>>'s slowly crawling about the room.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid>><<link [[Help them out (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"crawlingAttempt2", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<case "readingAttempt">>
-		<<childHe>>'s looking at a children's book upside down.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid>><<link [[Flip the book (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"readingAttempt", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<case "readingCorrected">>
-		<<childHe>>'s looking at a children's book.
-	<<case "babyRattle">>
-		<<childtoy $location "baby rattles" "notext">>
-		<<if _toyid>>
-			<<childHe>>'s staring at a <<childtoy $location _toyid "lowercase">>.
+<span class="no-numberify">
+	<<switch $children[_args[0]].localVariables.activity>>
+		<<case "noEvent">>
+			<<childHe>>'s sleeping soundly.
+		<<case "sleeping">>
+			<<childHe>>'s sleeping soundly.
 			<<if $children[_args[0]].localVariables.event is true>>
 				<br>
-				<<capture _childid _toyid>><<link [[Shake it (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"babyRattle", childid:_childid, toyid:_toyid}>><</link>><</capture>> |
+				<<set _rng to random(1, 6)>>
+				<<switch _rng>>
+					<<case 1>>
+						<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"transfixed", childid:_childid}>><</link>><</capture>> |
+					<<case 2>>
+						<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"stroke", childid:_childid}>><</link>><</capture>> |
+					<<case 3>>
+						<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"yawn", childid:_childid}>><</link>><</capture>> |
+					<<case 4>>
+						<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"murmur", childid:_childid}>><</link>><</capture>> |
+					<<case 5>>
+						<<capture _childid>><<link [[Nap (0:30)|Children Activity Events]]>><<pass 30>><<set $childActivityEvent to {event:"cotNap", childid:_childid}>><</link>><</capture>> |
+					<<default>>
+						<<capture _childid>><<link [[Watch them (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"shiverInCot", childid:_childid}>><</link>><</capture>> |
+				<</switch>>
 			<</if>>
-		<<else>>
-			<<humanChildActivityNoToy _args[0]>>
-		<</if>>
-	<<case "teddyBear">>
-		<<childtoy $location "teddy bears" "notext">>
-		<<if _toyid>>
-			<<childHe>>'s turning and tossing in <<childhis>> sleep by a <<childtoy $location _toyid "lowercase">>.
+		<<case "restlessSleep">>
+			<<childHe>>'s moving restlessly in <<childhis>> sleep.
 			<<if $children[_args[0]].localVariables.event is true>>
 				<br>
-				<<capture _childid _toyid>><<link [["Give " + _toyName + " (0:05)"|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"teddyBear", childid:_childid, toyid:_toyid}>><</link>><</capture>> |
+				<<capture _childid>><<link [[Calm them down (0:30)|Children Activity Events]]>><<pass 30>><<set $childActivityEvent to {event:"restlessSleep", childid:_childid}>><</link>><</capture>> |
 			<</if>>
-		<<else>>
-			<<humanChildActivityNoToy _args[0]>>
-		<</if>>
-	<<case "teddyBear2">>
-		<<childHe>>'s sleeping soundly by <<childhis>> <<print $children[_args[0]].localVariables.toy>>.
-	<<case "toyCar">>
-		<<childtoy $location "toy cars" "notext">>
-		<<if _toyid>>
-			<<childHe>>'s waving a <<childtoy $location _toyid "lowercase">> in the air.
+		<<case "crying">>
+			<<childHe>>'s distressed and crying.
 			<<if $children[_args[0]].localVariables.event is true>>
 				<br>
-				<<capture _childid _toyid>><<link [[Play with (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"toyCar", childid:_childid, toyid:_toyid}>><</link>><</capture>> |
+				<<set _rng to random(1, 6)>>
+				<<switch _rng>>
+					<<case 1>>
+						<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"holdToShoulder", childid:_childid}>><</link>><</capture>> |
+					<<case 2>>
+						<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"melodicLullaby", childid:_childid}>><</link>><</capture>> |
+					<<case 3>>
+						<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"foreheadKiss", childid:_childid}>><</link>><</capture>> |
+					<<case 4>>
+						<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"objectShow", childid:_childid}>><</link>><</capture>> |
+					<<case 5>>
+						<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"carryRevolt", childid:_childid}>><</link>><</capture>> |
+					<<default>>
+						<<capture _childid>><<link [[Comfort (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"rockToSleep", childid:_childid}>><</link>><</capture>> |
+				<</switch>>
+				<<set _rng to random(1, 10)>>
+				<<switch _rng>>
+					<<case 1>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"nurseryRhymes", childid:_childid}>><</link>><</capture>> |
+					<<case 2>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"FeetCup", childid:_childid}>><</link>><</capture>> |
+					<<case 3>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"shareThoughts", childid:_childid}>><</link>><</capture>> |
+					<<case 4>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"speakCry", childid:_childid}>><</link>><</capture>> |
+					<<case 5>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"waveTongue", childid:_childid}>><</link>><</capture>> |
+					<<case 6>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"handsClap", childid:_childid}>><</link>><</capture>> |
+					<<case 7>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"peekaboo", childid:_childid}>><</link>><</capture>> |
+					<<case 8>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"blowRaspberriesHappy", childid:_childid}>><</link>><</capture>> |
+					<<case 9>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"blowRaspberriesUpset", childid:_childid}>><</link>><</capture>> |
+					<<default>>
+						<<capture _childid>><<link [[Soothe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"faceStudy", childid:_childid}>><</link>><</capture>> |
+				<</switch>>
 			<</if>>
-		<<else>>
-			<<humanChildActivityNoToy _args[0]>>
-		<</if>>
-	<<case "dummy">>
-		<<childtoy $location "dummies" "notext">>
-		<<if _toyid>>
-			<<set _rng to random(1,4)>>
-			<<childHe>>'s <<childcry _rng>>. There's a <<childtoy $location _toyid "lowercase">> on the floor nearby.
+		<<case "happy">>
+			<<childHe>>'s smiling and happily cooing.
 			<<if $children[_args[0]].localVariables.event is true>>
 				<br>
-				<<capture _childid _toyid _rng>><<link [[Pacify (0:15)|Children Activity Events]]>><<pass 15>><<set $childActivityEvent to {event:"dummy", childid:_childid, toyid:_toyid, childCry:_rng}>><</link>><</capture>> |
+				<<capture _childid>><<link [[Smile and laugh (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"smilesAndLaughs", childid:_childid}>><</link>><</capture>> |
 			<</if>>
-		<<else>>
-			<<humanChildActivityNoToy _args[0]>>
-		<</if>>
-	<<case "dummySucking">>
-		<<childHe>>'s suckling loudly on <<childhis>> dummy.
-	<<case "clown">>
-		<<childtoy $location "clown" "notext">>
-		<<if _toyid>>
-			<<childHe>>'s looking at a <<childtoy $location _toyid "lowercase">> with an unsure expression.
+		<<case "talking">>
+			<<childHe>>'s gurgling and babbling to <<childherself>>.
 			<<if $children[_args[0]].localVariables.event is true>>
 				<br>
-				<<capture _childid _toyid>><<link [[Play with (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"clown", childid:_childid, toyid:_toyid}>><</link>><</capture>> |
+				<<capture _childid>><<link [[Join in the babbling (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"talking", childid:_childid}>><</link>><</capture>> |
 			<</if>>
-		<<else>>
-			<<humanChildActivityNoToy _args[0]>>
-		<</if>>
-	<<case "clownHappy">>
-		<<childHe>>'s playing happily with the clown, pulling its cord and making it chuckle every now and then.
-	<<case "Robin">>
-		Robin cradles <<childhim>>.
-		<<if $children[_args[0]].localVariables.event is true>>
-			<br>
-			<<capture _childid _toyid>><<link [[Hold (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"Robin", childid:_childid}>><</link>><</capture>> |
-		<</if>>
-	<<default>>
-		<<childHe>>'s has figured out that they're in a video game (This is an error, please report).
-		<<print $children[_args[0]].localVariables.activity>>
-<</switch>>
+		<<case "talking2">>
+			<<childHe>>'s gurgling and attempting to make sounds to <<childherself>>.
+			<<if $children[_args[0]].localVariables.event is true>>
+				<br>
+				<<capture _childid>><<link [[Join in the talking (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"talking2", childid:_childid}>><</link>><</capture>> |
+			<</if>>
+		<<case "nappyChange">>
+			<<childHe>>'s looking uncomfortable and smells.
+			<<if $children[_args[0]].localVariables.event is true>>
+				<br>
+				<<set _rng to random(1, 5)>>
+				<<switch _rng>>
+					<<case 1>>
+						<<capture _childid>><<link [[Bathe (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"batheGentle", childid:_childid}>><</link>><</capture>> |
+					<<case 2>>
+						<<capture _childid>><<link [[Bathe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"batheShampoo", childid:_childid}>><</link>><</capture>> |
+					<<case 3>>
+						<<capture _childid>><<link [[Bathe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"BatheCalm", childid:_childid}>><</link>><</capture>> |
+					<<case 4>>
+						<<capture _childid>><<link [[Bathe (0:20)|Children Activity Events]]>><<pass 20>><<set $childActivityEvent to {event:"batheTantrum", childid:_childid}>><</link>><</capture>> |
+					<<default>>
+						<<capture _childid>><<link [[Clean up (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"nappyChange", childid:_childid}>><</link>><</capture>> |
+				<</switch>>
+			<</if>>
+		<<case "thumbSucking">>
+			<<childHe>>'s happily sucking on <<childhis>> thumb.
+		<<case "grumpyChild">>
+			<<childHe>>'s being irritable.
+			<<if $children[_args[0]].localVariables.event is true>>
+				<br>
+				<<capture _childid>><<link [[Tickle (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"grumpyChild", childid:_childid}>><</link>><</capture>> |
+			<</if>>
+		<<case "crawlingAttempt">>
+			<<childHe>>'s lying on <<childhis>> belly and flailing about.
+			<<if $children[_args[0]].localVariables.event is true>>
+				<br>
+				<<capture _childid>><<link [[Help them out (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"crawlingAttempt", childid:_childid}>><</link>><</capture>> |
+			<</if>>
+		<<case "crawlingAttempt2">>
+			<<childHe>>'s slowly crawling about the room.
+			<<if $children[_args[0]].localVariables.event is true>>
+				<br>
+				<<capture _childid>><<link [[Help them out (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"crawlingAttempt2", childid:_childid}>><</link>><</capture>> |
+			<</if>>
+		<<case "readingAttempt">>
+			<<childHe>>'s looking at a children's book upside down.
+			<<if $children[_args[0]].localVariables.event is true>>
+				<br>
+				<<capture _childid>><<link [[Flip the book (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"readingAttempt", childid:_childid}>><</link>><</capture>> |
+			<</if>>
+		<<case "readingCorrected">>
+			<<childHe>>'s looking at a children's book.
+		<<case "babyRattle">>
+			<<childtoy $location "baby rattles" "notext">>
+			<<if _toyid>>
+				<<childHe>>'s staring at a <<childtoy $location _toyid "lowercase">>.
+				<<if $children[_args[0]].localVariables.event is true>>
+					<br>
+					<<capture _childid _toyid>><<link [[Shake it (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"babyRattle", childid:_childid, toyid:_toyid}>><</link>><</capture>> |
+				<</if>>
+			<<else>>
+				<<humanChildActivityNoToy _args[0]>>
+			<</if>>
+		<<case "teddyBear">>
+			<<childtoy $location "teddy bears" "notext">>
+			<<if _toyid>>
+				<<childHe>>'s turning and tossing in <<childhis>> sleep by a <<childtoy $location _toyid "lowercase">>.
+				<<if $children[_args[0]].localVariables.event is true>>
+					<br>
+					<<capture _childid _toyid>><<link [["Give " + _toyName + " (0:05)"|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"teddyBear", childid:_childid, toyid:_toyid}>><</link>><</capture>> |
+				<</if>>
+			<<else>>
+				<<humanChildActivityNoToy _args[0]>>
+			<</if>>
+		<<case "teddyBear2">>
+			<<childHe>>'s sleeping soundly by <<childhis>> <<print $children[_args[0]].localVariables.toy>>.
+		<<case "toyCar">>
+			<<childtoy $location "toy cars" "notext">>
+			<<if _toyid>>
+				<<childHe>>'s waving a <<childtoy $location _toyid "lowercase">> in the air.
+				<<if $children[_args[0]].localVariables.event is true>>
+					<br>
+					<<capture _childid _toyid>><<link [[Play with (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"toyCar", childid:_childid, toyid:_toyid}>><</link>><</capture>> |
+				<</if>>
+			<<else>>
+				<<humanChildActivityNoToy _args[0]>>
+			<</if>>
+		<<case "dummy">>
+			<<childtoy $location "dummies" "notext">>
+			<<if _toyid>>
+				<<set _rng to random(1,4)>>
+				<<childHe>>'s <<childcry _rng>>. There's a <<childtoy $location _toyid "lowercase">> on the floor nearby.
+				<<if $children[_args[0]].localVariables.event is true>>
+					<br>
+					<<capture _childid _toyid _rng>><<link [[Pacify (0:15)|Children Activity Events]]>><<pass 15>><<set $childActivityEvent to {event:"dummy", childid:_childid, toyid:_toyid, childCry:_rng}>><</link>><</capture>> |
+				<</if>>
+			<<else>>
+				<<humanChildActivityNoToy _args[0]>>
+			<</if>>
+		<<case "dummySucking">>
+			<<childHe>>'s suckling loudly on <<childhis>> dummy.
+		<<case "clown">>
+			<<childtoy $location "clown" "notext">>
+			<<if _toyid>>
+				<<childHe>>'s looking at a <<childtoy $location _toyid "lowercase">> with an unsure expression.
+				<<if $children[_args[0]].localVariables.event is true>>
+					<br>
+					<<capture _childid _toyid>><<link [[Play with (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"clown", childid:_childid, toyid:_toyid}>><</link>><</capture>> |
+				<</if>>
+			<<else>>
+				<<humanChildActivityNoToy _args[0]>>
+			<</if>>
+		<<case "clownHappy">>
+			<<childHe>>'s playing happily with the clown, pulling its cord and making it chuckle every now and then.
+		<<case "Robin">>
+			Robin cradles <<childhim>>.
+			<<if $children[_args[0]].localVariables.event is true>>
+				<br>
+				<<capture _childid _toyid>><<link [[Hold (0:05)|Children Activity Events]]>><<pass 5>><<set $childActivityEvent to {event:"Robin", childid:_childid}>><</link>><</capture>> |
+			<</if>>
+		<<default>>
+			<<childHe>>'s has figured out that they're in a video game (This is an error, please report).
+			<<print $children[_args[0]].localVariables.activity>>
+	<</switch>>
+</span>
 <</widget>>
 
 <<widget "humanChildActivityNoToy">>
