@@ -424,7 +424,7 @@ function bodywritingExposureCheck(overwrite, skipRng) {
 
 		if (T.skin_array.length >= 1) T.bodywriting_exposed = 1;
 	}
-	if (!skipRng) T.bodypart = T.skin_array[random(0, T.skin_array.length - 1)];
+	T.bodypart = T.skin_array.pluck();
 }
 DefineMacro("bodywritingExposureCheck", bodywritingExposureCheck);
 
