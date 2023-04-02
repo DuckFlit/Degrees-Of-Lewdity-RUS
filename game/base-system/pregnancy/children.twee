@@ -164,7 +164,17 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<set $_id to $childSelected.childId>>
 	<</if>>
 	<<if $_id>>
-		<<set $children[$_id].localVariables.interactions = $children[$_id].localVariables.interactions ? $children[$_id].localVariables.interactions + 1 : 1>>
+		<<set $_localVariables to $children[$_id].localVariables>>
+		<<if $_localVariables.interactionsTotal is undefined>>
+			<<set $_localVariables.interactionsTotal to 0>>
+			<<set $_localVariables.interactions to 0>>
+		<</if>>
+		<<set $_localVariables.interactionsTotal++>>
+		<<if $daily.childInteractions is undefined>><<set $daily.childInteractions to []>><</if>>
+		<<if !$daily.childInteractions.includes($_id)>>
+			<<set $_localVariables.interactions++>>
+			<<run $daily.childInteractions.push($_id)>>
+		<</if>>
 		<<set $pregnancyStats.childInteractions++>>
 		<<if $location is "home">><<set $pregnancyStats.orphanageInteractions++>><</if>>
 	<</if>>
@@ -635,6 +645,10 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				Identical: <<print $children[_args[0]].features.identical>>
 				<br>
 			<</if>>
+			<<if $children[_args[0]].localVariables.interactionsTotal>>
+				Total Interactions: <<print $children[_args[0]].localVariables.interactionsTotal>>
+				<br>
+			<</if>>
 			<span class="no-numberify">
 			<<link "Rename">>
 				<<set $children[_args[0]].name to generateBabyName(_children[_args[0]], $children[_args[0]].gender, _args[0])>>
@@ -683,7 +697,8 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 
 /*ToDo: Pregnancy Story Content: Lacking events. Human children events which the place accesses by going to the childrens UI*/
 <<widget "humanChildActivity">>
-	<span class="no-numberify">
+	<<set _activityColour to !$daily.childInteractions or !$daily.childInteractions.includes(_args[0]) ? " childrensActivityGold" : "">>
+	<span @class="'no-numberify' + _activityColour">
 		<<switch $children[_args[0]].localVariables.activity>>
 			<<case "noEvent">>
 				<<childHe>>'s sleeping soundly.
@@ -736,6 +751,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 			<<case "lonely">>
 				<<childHe>>'s looking lonely.
 				<<if $children[_args[0]].localVariables.event>>
+					<br>
 					<<set _rng to random(1, 10)>>
 					<<switch _rng>>
 						<<case 1>>
