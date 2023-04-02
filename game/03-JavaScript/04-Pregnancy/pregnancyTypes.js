@@ -254,6 +254,7 @@ function beastTransform(mother, father) {
 		if (V.cow >= 6) return "cow";
 		if (V.wolfgirl >= 6) return "wolf";
 		if (V.harpy >= 6) return "bird";
+		if (V.fox >= 6) return "fox";
 	}
 	return null;
 }

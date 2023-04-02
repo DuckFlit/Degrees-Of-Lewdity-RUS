@@ -34,7 +34,7 @@ class DateTime {
 	 * Total days since start of timeStamp calculation (year 1)
 	 */
 	static getTotalDaysSinceStart(year) {
-		return ((year - 1) * 365) + Math.floor((year - 1) / 4) - Math.floor((year - 1) / 100) + Math.floor((year - 1) / 400);
+		return (year - 1) * 365 + Math.floor((year - 1) / 4) - Math.floor((year - 1) / 100) + Math.floor((year - 1) / 400);
 	}
 
 	static isLeapYear(year) {
@@ -79,14 +79,14 @@ class DateTime {
 		const second = timestamp;
 
 		// Maps the total number of days to the corresponding year and day.
-		while (day > (DateTime.getDaysOfYear(year))){
+		while (day > DateTime.getDaysOfYear(year)) {
 			day -= DateTime.getDaysOfYear(year++);
 		}
 
 		const daysPerMonth = DateTime.getDaysOfMonthFromYear(year);
 
 		// Determines the month and day by subtracting the number of days in each month and incrementing the month value.
-		while (day >= daysPerMonth[month]){
+		while (day >= daysPerMonth[month]) {
 			day -= daysPerMonth[month++];
 			if (month > 11) {
 				month = 0;
@@ -194,10 +194,10 @@ class DateTime {
 		const daysInMonth = DateTime.standardYearMonths.slice(0, this.month - 1).reduce((a, b) => a + b, 0);
 		const isLeapYear = DateTime.isLeapYear(this.year) && this.month < 3;
 		const weekDayOffset = V.weekDayOffset !== undefined ? V.weekDayOffset : 6;
-	  
+
 		const totalDays = daysSinceStart + daysInMonth + this.day + Number(isLeapYear) + weekDayOffset;
 		const weekDay = (totalDays % 7) + 1;
-	  
+
 		return weekDay;
 	}
 

@@ -39,7 +39,6 @@
 	<<else>>
 		<<childrenEvents "wolf_cave" $passage>>
 		<<if npcIsPregnant("Black Wolf") and npcPregnancyBellyVisible("Black Wolf") and !knowsAboutPregnancy("Black Wolf","pc")>>
-			<<run console.log("blackWolfPresentsPregnancyToPlayer")>>
 			<<addevent "blackWolfPresentsPregnancyToPlayer" 5000>>
 		<</if>>
 		<<if $wolfpackferocity + random(1, 20) gte $wolfpackharmony + random(1, 20)>>
@@ -183,35 +182,58 @@
 <</widget>>
 
 <<widget "wolfcaveselect">>
-	<<if Time.dayState is "day" or Time.dayState is "dawn">>
-		<<set $huntstate to "failed">>
-	<</if>>
-
-	<<if $wolfstate is "hunt" and Time.dayState is "dawn" or $wolfstate is "hunt" and Time.dayState is "day">>
-		<<set $wolfstate to "cave">>
-		<<if $blackWolfPregnancyHunt and playerIsPregnant()>>
-			The pack returns from the hunt. Many carry pieces of meat for the younger <<wolf_cave_plural>> that stayed at the cave. The Black Wolf drops some by your side before moving away. The hunt was successful.
-			<<gharmony>><<gferocity>>
-			<br><br>
-		<<elseif $rng + $wolfpackferocity + $wolfpackharmony gte 80>>
-			The pack returns from the hunt. Some carry pieces of meat for the younger <<wolf_cave_plural>> that stayed at the cave. The hunt was successful.
-			<<gharmony>><<lferocity>>
-			<br><br>
+	<<if $huntstate is "ongoing" and ["dawn", "day"].includes(Time.dayState)>>
+		<<if $wolfstate is "hunt">>
+			<<set $wolfstate to "cave">>
+			<<if $blackWolfPregnancyHunt and playerIsPregnant()>>
+				The pack returns from the hunt. Many carry pieces of meat for the younger <<wolf_cave_plural>> that stayed at the cave. The Black Wolf drops some by your side before moving away. The hunt was successful.
+				<<gharmony>><<gferocity>>
+				<br><br>
+			<<elseif $rng + $wolfpackferocity + $wolfpackharmony gte 80>>
+				The pack returns from the hunt. Some carry pieces of meat for the younger <<wolf_cave_plural>> that stayed at the cave. The hunt was successful.
+				<<gharmony>><<lferocity>>
+				<br><br>
+			<<else>>
+				The pack returns from the hunt. They failed to catch anything.
+				<<gferocity>><<lharmony>>
+				<br><br>
+			<</if>>
 		<<else>>
-			The pack returns from the hunt. They failed to catch anything.
-			<<gferocity>><<lharmony>>
-			<br><br>
+			<<if $rng + $wolfpackferocity + $wolfpackharmony gte 80>>
+				The pack returns from the hunt. Some carry pieces of meat for the younger <<wolf_cave_plural>> that stayed at the cave.
+				<<if npcIsPregnant("Black Wolf")>>
+					Some of it is brought to the Black Wolf. <<nnpc_He "Black Wolf">> scarfs it down quickly.
+				<</if>>
+				The hunt was successful.
+				<<gharmony>><<lferocity>>
+				<br><br>
+			<<else>>
+				The pack returns from the hunt. They failed to catch anything.
+				<<gferocity>><<lharmony>>
+				<br><br>
+			<</if>>
 		<</if>>
+		<<unset $blackWolfNotHunting>>
 		<<unset $blackWolfPregnancyHunt>>
 		<<destinationwolfcave>>
-	<<elseif $wolfstate is "cave" and $huntstate isnot "finished" and Time.dayState is "dusk" or $wolfstate is "cave" and $huntstate isnot "finished" and Time.dayState is "night">>
-		<<set $wolfstate to "hunt">><<set $huntstate to "failed">><<set $wolfpackpoisoned to 0>>
-		The Black Wolf howls and the others join in.
+	<<elseif $wolfstate is "cave" and !["finished","ongoing"].includes($huntstate) and ["dusk", "night"].includes(Time.dayState)>>
+		<<set $huntstate to "ongoing">><<set $wolfpackpoisoned to 0>>
 		<<npc "Black Wolf">>
-		<<if $monster is 1>>
-			"We hunt soon. Be ready."
+		<<if npcBellySize("Black Wolf") lte 15>>
+			<<set $wolfstate to "hunt">>
+			The Black Wolf howls and the others join in.
+			<<if $monster is 1>>
+				"We hunt soon. Be ready."
+			<<else>>
+				They're going hunting.
+			<</if>>
 		<<else>>
-			They're going hunting.
+			<<set $blackWolfNotHunting to true>>
+			The pack begins to howl and bay as they run through the trees. One usual member is missing. Turning, you see the Black Wolf resting on <<bhis>> usual rock, nudging <<bhis>> pregnant belly.
+			<<if $monster is 1>>
+				<br><br>
+				<<bHe>> sighs, laying down and looking on after the pack.
+			<</if>>
 		<</if>>
 		<<endevent>>
 		<br><br>
@@ -244,6 +266,10 @@
 	<<else>>
 		<<wolfcaveevent>>
 	<</if>>
+
+	<<if Time.dayState is "day" or Time.dayState is "dawn">>
+		<<set $huntstate to "notStarted">>
+	<</if>>
 <</widget>>
 
 <<widget "destinationwolfcave">>
@@ -259,21 +285,29 @@
 <<widget "wolfhuntevents">>
 	<<if $huntstate is "success">>
 		<<set $huntstate to "finished">>
-		<<set $wolfstate to "cave">>
-		Satiated, the pack heads back to the cave. Some carry food for the younger <<wolf_cave_plural>>.
+		<<if $wolfstate is "hunt">><<set $wolfstate to "cave">><</if>>
+		Satiated, the pack heads back to the cave. Some carry food for the younger <<wolf_cave_plural>><<if $blackWolfNotHunting>> and the Black Wolf. <<nnpc_He "Black Wolf">> scarfs it down quickly<</if>>.
 		<<lferocity>><<gharmony>>
 		<br><br>
 
-		<<link [[Next|Wolf Cave]]>><</link>>
+		<<link [[Next|Wolf Cave]]>><<unset $blackWolfNotHunting>><</link>>
 		<br>
-	<<elseif Time.dayState is "dawn" or Time.dayState is "day">>
+	<<elseif $huntstate is "ongoing" and (Time.dayState is "dawn" or Time.dayState is "day")>>
 		<<set $huntstate to "finished">>
-		<<set $wolfstate to "cave">>
+		<<if $wolfstate is "hunt">><<set $wolfstate to "cave">><</if>>
 		With the sun rising on the horizon, the pack returns to the cave. The failure of the hunt has the pack riled.
 		<<gferocity>><<lharmony>>
 		<br><br>
 
-		<<link [[Next|Wolf Cave]]>><</link>>
+		<<link [[Next|Wolf Cave]]>><<unset $blackWolfNotHunting>><</link>>
+		<br>
+	<<elseif $huntstate is "failure">>
+		<<set $huntstate to "finished">>
+		<<if $wolfstate is "hunt">><<set $wolfstate to "cave">><</if>>		
+		<<gferocity>><<lharmony>>
+		<<if $wolfstate is "hunt">><<set $wolfstate to "cave">><</if>>
+		<br><br>
+		<<link [[Next|Wolf Cave]]>><<unset $blackWolfNotHunting>><</link>>
 		<br>
 	<<else>>
 		<<rng>>
@@ -466,5 +500,24 @@
 		<</if>>
 	<<else>>
 		<<set _text_output to "wolves">>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "wolf_cave_singular">><<silently>>
+	<<if _args[0]>>
+		<<set _wolves_singular to _args[0]>>
+	<<elseif $beastmalechance gte 100 or ($beastmalechance gte 1 and $beastmalechance gte random(0,100))>>
+		<<set _wolves_singular to "m">>
+	<<else>>
+		<<set _wolves_singular to "f">>
+	<</if>>
+	<<if $bestialitydisable is "t" or $wolfcave_monster_roll is true or ($monsterchance gte random(1, 100) and ($hallucinations gte 1 or $monsterhallucinations is "f"))>>
+		<<if _wolves_singular is "m">>
+			<<set _text_output to "wolfboy">>
+		<<else>>
+			<<set _text_output to "wolfgirl">>
+		<</if>>
+	<<else>>
+		<<set _text_output to "wolf">>
 	<</if>>
 <</silently>><<print _text_output>><</widget>>

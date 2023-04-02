@@ -3,7 +3,7 @@
 
 <<if $wolfpacktrust gte 18 or $wolfpackleader gte 1>>
 	<<if playerIsPregnant() and playerBellySize() gte 15>>
-		<<set _pregnancy to $sexStats[$player.vaginaExist ? "vagina" : "anus"].pregnancy>>
+		<<set _pregnancy to getPregnancyObject()>>
 		<<npc "Black Wolf">>
 		You try to follow the <<wolf_cave_plural>>, but the Black Wolf turns and sniffs around your belly. 
 		<<if $monster is 1>>
@@ -25,6 +25,21 @@
 		<br><br>
 
 		<<destinationwolfcave>>
+	<<elseif $blackWolfNotHunting>>
+		<<npc "Black Wolf">>
+		The Black Wolf sits, watching from <<bhis>> rock with <<bhis>> extended belly showing.
+		<<endevent>>
+		<br><br>
+		<<if $wolfpackleader gte 1>>
+			The pack bays and howls as members nip and bite each other in excitement. But no one has started running yet. They're all looking at you.
+		<<else>>
+			Members of the pack snarl and bite over who gets to lead the hunt.
+		<</if>>
+		<<set $outside to 1>>
+		<br><br>
+		<<link [[Take the lead (0:15)|Wolf Cave Hunt No Black Wolf Start]]>><<set $phase to 1>><<pass 15>><</link>>
+		<br>
+		<<link [[Look away (0:30)|Wolf Cave Hunt No Black Wolf Start]]>><<pass 30>><</link>>
 	<<else>>
 		<<set $dateCount.BlackWolfHunts++>>
 
@@ -60,7 +75,19 @@
 :: Wolf Cave Hunt Leave
 
 <<set $location to "wolf_cave">><<effects>>
-The pack departs between the trees, leaving you with the younger <<wolf_cave_plural>>.
+<<if $blackWolfNotHunting>>
+	The pack departs between the trees, leaving you and the Black Wolf with the younger <<wolf_cave_plural>>.
+	<<if $wolfpackleader gte 1>>
+		<<npc "Black Wolf">>
+		<<if $monster is 1>>
+			<br><br>
+			"Alpha should be leading," <<bHe>> huffs when <<bHe>> notices you staring, <<bhe>> huffs, seemingly disappointed.
+		<</if>>
+		<<endevent>>
+	<</if>>
+<<else>>
+	The pack departs between the trees, leaving you with the younger <<wolf_cave_plural>>.
+<</if>>
 <br><br>
 
 <<destinationwolfcave>>
@@ -1074,3 +1101,167 @@ The Black Wolf stops by your side, looking at you with sadness.
 
 <<endevent>>
 <<wolfpackhuntoptions>>
+
+:: Wolf Cave Hunt No Black Wolf Start
+<<effects>>
+
+<<if $phase is 1>>
+	You take a deep breath before running into the trees. Pack members chase on behind you, some following, some trying to take over your lead. One <<wolf_cave_singular>> in particular seems intent on taking over the hunt. <<gathletics>><<athletics 6>><<physique 6>>
+	<br><br>
+	<<link [[Trip (0:30)|Wolf Cave Hunt Outrun]]>><<set $phase to 1>><<pass 30>><</link>><<dancedifficulty 600 1200>>
+	<br>
+	<<link [[Try to outrun (0:30)|Wolf Cave Hunt Outrun]]>><<set $phase to 0>><<pass 30>><</link>><<athleticsdifficulty 600 1200>>
+<<else>>
+	Not wanting to lead, you keep your head down and wait for someone else to take over.<<if $wolfpackleader gte 1>> You hear the Black Wolf snarl behind you.<</if>>
+	<br><br>
+	Eventually, a larger wolf takes charge, and the hunt begins.
+	<br><br>
+	Several other wolves still fight for the right to lead as they run. <<gathletics>><<athletics 3>><<physique 3>>
+	<br><br>
+	<<link [[Next (1:00)|Wolf Cave Hunt Not Taking the Lead]]>><<pass 60>><</link>>
+<</if>>
+
+:: Wolf Cave Hunt Outrun
+<<effects>>
+
+<<if $phase is 1>>
+	<<if $danceSuccess>>
+		You keep your lead up for a while before a strain begins in your leg. Not wanting to lose, you strike out with your foot, <span class="green">tripping up the <<wolf_cave_singular>></span>. You hear <<bhim>> whine as <<bhe>> falls. <<gferocity>>
+		<br><br>
+		<<link [[Next (0:15)|Wolf Cave Hunt Taking the Lead]]>><<pass 15>><</link>>
+	<<else>>
+		You keep up your lead for a while before a strain begins in your leg. Not wanting to lose, you strike out with your foot, but the <<wolf_cave_singular>> dodges quickly and you end up tripping instead.
+		<<gdanceskill>><<danceskill 6>><<physique 6>>
+		<br><br>
+		<<link [[Next (0:30)|Wolf Cave Hunt Not Taking the Lead]]>><<pass 30>><</link>>
+	<</if>>
+	<br><br>
+<<else>>
+	<<if $athleticsSuccess>>
+		You push hard to stay ahead in the race, sweat dripping down your brow the longer you go on. <span class="green">You keep your lead</span>, your challenger eventually breaking away to drink some water from a small pond.
+		<br><br>
+		The pack had pushed hard to keep up, most members pausing to take drinks themselves. <<gharmony>>
+		<br><br>
+		<<link [[Next (0:15)|Wolf Cave Hunt Taking the Lead]]>><<pass 15>><</link>>
+	<<else>>
+		You push hard to stay ahead in the race, sweat dripping down your brow the longer you go on. You end up falling behind, the burn in your legs too great to ignore.
+		<<gathletics>><<athletics 6>><<physique 6>>
+		<br><br>
+		Other members pant just as hard. The sight of a small pond is a welcome respite for you all to drink from.
+		<br><br>
+		<<link [[Next (0:30)|Wolf Cave Hunt Not Taking the Lead]]>><<pass 30>><</link>>
+	<</if>>
+<</if>>
+
+:: Wolf Cave Hunt Taking the Lead
+<<effects>>
+<<if $wolfgirl gte 6>>
+	In charge, a scent hits your nose. It's familiar. Deer. Several of the pack members catch the scent too, looking over to you.
+<<else>>
+	In charge, you see tracks in the mud. Hooves, likely a deer. Pack members sniff at them, tails wagging in excitement.
+<</if>>
+<br><br>
+You once again begin to run, this time with a target in mind.
+<br><br>
+<<link [[Next (1:00)|Wolf Cave Hunt Taking the Lead 2]]>><<pass 60>><</link>>
+
+:: Wolf Cave Hunt Taking the Lead 2
+<<effects>>
+You try to keep the pack uniform, remembering how the Black Wolf would lead. This is difficult, with older members trying to take over or the younger ones falling behind to play.
+<br><br>
+The pack makes it close enough to see the deer in the clearing. It seems to be on high alert, looking up frequently and eating little. Thankfully, you are all downwind, obscured by the brush.
+<br><br>
+The thought of taking it down still doesn't appease you. Instead, you pick a member with experience, who seems eager to take the role.
+<br><br>
+Pack members move into place before striking out. Panicked, the deer bolts, but the pack keeps up.
+<br><br>
+<<link [[Next (0:30)|Wolf Cave Hunt No Black Wolf Deer]]>><<pass 30>><</link>>
+
+:: Wolf Cave Hunt Not Taking the Lead
+<<effects>>
+
+You just begin to catch your breath when excited yips and whines sound off. A scent has been found, the proper hunt beginning. 
+<br><br>
+<<link [[Next (1:00)|Wolf Cave Hunt Not Taking the Lead 2]]>><<pass 60>><</link>>
+
+:: Wolf Cave Hunt Not Taking the Lead 2
+<<effects>>
+There seems to be further struggles for power as more wolves try to organise the pack. Some nip, some bark, some barge to ensure everyone stays together.
+<br><br>
+All sounds fall quiet when the pack gets in range of the deer. Downwind and hidden by the brush, you see as one <<wolf_cave_singular>> directs the others into place, ready to jump out at the prey.
+<br><br>
+The leader begins, starting at a slow trot. The deer bolts, and the chase begins anew.
+<br><br>
+<<link [[Next (0:30)|Wolf Cave Hunt No Black Wolf Deer]]>><<pass 30>><</link>>
+
+:: Wolf Cave Hunt No Black Wolf Deer
+<<effects>>
+You manage to keep up with the deer on its left side, further away than other pack members nipping at its ankles.
+<br><br>
+Weaving between the trees, you come ahead of the hunt. The deer is slowly being worn down, more and more wolves catching up to it.
+<br><br>
+It seems the hunt will be successful when the deer pushes with all of its might. Sharp teeth snap after it as the deer almost escapes their grasps.
+<br><br>
+Behind you the river roars over rapids, a fallen tree acting as a bridge. If the deer escapes and makes it across, the pack will go hungry.
+<br><br>
+You make it to the tree trunk. The chaos of the hunt grows louder behind you, the deer narrowly being caught again.
+<br><br>
+<<link [[Push the trunk|Wolf Cave Hunt Push the trunk]]>><<tiredness 2>><</link>><<physiquedifficulty 5000 16000>><<gtiredness>>
+<br>
+<<link [[Do nothing|Wolf Cave Hunt Do nothing]]>><</link>>
+
+:: Wolf Cave Hunt Push the trunk
+<<effects>>
+<<if $physiqueSuccess>>
+	After all of the running, your limbs strain and ache. Despite this, you are able to grit your teeth and roll the log until it splashes into the water.
+	<br><br>
+	A split second later, the deer bules, having escaped the pack only to stumble at the edge of the river bank. With nowhere to run, it tries to leap over the pack to run back to the clearing... <span class="green">it doesn't make it</span>.
+	<br><br>
+	The pack howls in excitement. It was a big catch, and they'll all be full tonight.
+	<br><br>
+	Hungry in your own right, you let your eyes wander. They land on a low apple tree, the fruit ripe and delicious.
+	<<endevent>>
+
+	<<set $huntstate to "success">>
+	<<wolfhuntevents>>
+<<else>>
+	After all of the running, your limbs strain and ache. The ache is too much, you feel it too deeply, and a cramp begins to spread up your leg. You collapse to the ground before you can roll the log away.
+	<br><br>
+	The deer makes its final escape attempt, bounding over you and onto the log. A <<wolf_cave_singular>> goes to follow, but the fallen tree breaks in half just as the deer makes it to the other side.
+	<br><br>
+	The pack whines and howls, disappointed and hungry. They leave you alone soon after, still desperate for food. You eat well enough, grabbing the small rabbit for the Black Wolf to eat.
+	<br><br>
+
+	<<set $huntstate to "failure">>
+	<<wolfhuntevents>>
+<</if>>
+
+:: Wolf Cave Hunt Do nothing
+<<effects>>
+
+Not wanting to be part of the fight, you go looking for easier food. An apple tree stands a few metres away, you will be able to eat. You notice a rabbit caught in a hunter's trap as you forage.
+<br><br>
+<<if $wolfpackharmony + $wolfpackferocity gte $rng>>
+	The deer makes its final escape attempt, bounding over you towards a log, <span class="green">but is tackled by a <<wolf_cave_singular>> before it is able to make it</span>.
+	<br><br>
+	The pack howls in excitement. It was a big catch, and they'll all be full tonight.
+	<br><br>
+	Hungry in your own right, you let your eyes wander. They land on a low apple tree, the fruit ripe and delicious.
+	<<endevent>>
+
+	<<set $huntstate to "success">>
+	<<wolfhuntevents>>
+<<else>>
+	The deer makes its final escape attempt, bounding over you and onto the log. A <<wolf_cave_singular>> goes to follow, but the fallen tree breaks in half just as the deer makes it to the other side.
+	<br><br>
+	<<if $wolfpackleader gte 1>>
+		Pack members turn on you, snarling and nipping at your skin. Some elder <<wolf_cave_plural>> chastise you for standing there and doing nothing.
+		"<<print ["Is Alpha truly worthy?", "Packmate is weak."][random(0,1)]>>"
+		<br><br>
+	<</if>>
+	They leave you alone soon after, still desperate for food. You eat well enough, grabbing the small rabbit for the Black Wolf to eat.
+	<<endevent>>
+
+	<<set $huntstate to "failure">>
+	<<wolfhuntevents>>
+<</if>>
