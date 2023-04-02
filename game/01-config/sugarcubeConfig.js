@@ -186,6 +186,12 @@ Config.navigation.override = function (dest) {
 			case "Shoe Shop":
 				return "Clothing Shop";
 
+			case "Danube Oak":
+				return "Danube Challenge";
+
+			case "Danube Oak Strip":
+				return "Danube Challenge";
+
 			case "Penis Inspection Flaunt Crossdress":
 				return "Penis Inspection Flaunt No Penis";
 
