@@ -870,6 +870,21 @@ setup.debugMenu.eventList = {
 			widgets: [`<<set $control to 0>>`, `<<set $possessed to true>>`],
 		},
 		{
+			text_only: "\n\nBeast encounters",
+		},
+		{
+			link: ["Horse", "Livestock Field Horse Lewd Sex"],
+			widgets: ["<<endcombat>>", "<<set $sexstart to 1>>"],
+		},
+		{
+			link: ["Pig", "Livestock Job Pig Rape"],
+			widgets: ["<<endcombat>>", "<<beastNEWinit 1 'pig'>>", "<<person1>>", "<<set $molestationstart to 1>>"],
+		},
+		{
+			link: ["Boar", "Forest Boar Rape"],
+			widgets: ["<<endcombat>>", "<<beastNEWinit 1 'boar'>>", "<<person1>>", "<<set $molestationstart to 1>>"],
+		},
+		{
 			text_only: "\n\nTurn beast into: ",
 		},
 		{
