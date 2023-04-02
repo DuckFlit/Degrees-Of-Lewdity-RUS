@@ -2855,7 +2855,11 @@ Renderer.CanvasModels["main"] = {
 		 *
 		 *
 		 */
-		"legs": genlayer_clothing_main('legs'),
+		"legs": genlayer_clothing_main('legs', {
+			masksrcfn(options) {
+				return options.belly_mask_clip_src;
+			},
+		}),
 		"legs_acc": genlayer_clothing_accessory('legs'),
 		"legs_back": genlayer_clothing_back_img('legs'),
 		/***
@@ -3230,6 +3234,12 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 				&& !options.belly_hides_lower
 				&& options["worn_" + slot] > 0
 				&& options["worn_" + slot + "_setup"].accessory === 1
+			} else if (slot.includes("upper")){
+				return options.belly > 7
+				&& options.show_clothes
+				&& options.worn_upper_setup.pregType != "min"
+				&& options["worn_" + slot] > 0
+				&& options["worn_" + slot + "_setup"].accessory === 1				
 			} else {
 			return options.belly > 7
 				&& options.show_clothes

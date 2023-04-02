@@ -448,7 +448,7 @@ Harper nods approvingly. "It's good that you want to know more." <<He>> brings o
 
 <<link [[Next|Pregnancy Discussion]]>><</link>>
 
-/*ToDo: Pregnancy Story Content: Has placeholder text, Player giving birth starts here, all placeholder at the moment*/
+/*Passing out without rescue*/
 :: Pregnancy Birth Hospital Passout
 <<set $outside to 0>><<effects>>
 
@@ -464,11 +464,25 @@ You collapse on the spot. The last thing you hear is a rush of footsteps.
 <<set _minutes to _time % 60>>
 <<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Hospital]]>><<pass _time>><<set $phase to 1>><</link>>
 
+/*Rescued by someone*/
+:: Pregnancy Birth Hospital Rescue
+<<set $outside to 0>><<effects>>
+
+You feel yourself being lifted. You hear a voice, but the words don't make sense.
+<br><br>
+
+<<switch $location>>
+	<<case "moor" "forest">><<set _time to 60>>
+	<<case "town">><<set _time to 15>>
+	<<default>><<set _time to 30>>
+<</switch>>
+<<set _hours to Math.floor(_time / 60)>>
+<<set _minutes to _time % 60>>
+<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Hospital]]>><<pass _time>><<set $phase to 1>><</link>>
+
 :: Pregnancy Birth Hospital
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<if playerNormalPregnancyTotal() is 0>>
-	<<set $first_birth to 1>>
-<</if>>
+<<set $first_birth to !$pregnancyStats.humanToysUnlocked>>
 <<npc "Harper">><<person1>>
 <<setKnowsAboutPregnancy "pc" "Harper">>
 <<if $hospitalintro is 0>>
@@ -595,6 +609,9 @@ You awaken in another room. A smiling midwife stands beside your bed,
 	<br><br>
 <</if>>
 
+<<set $bornChildrenIds to []>>
+<<run getPregnancyObject().fetus.forEach(child => $bornChildrenIds.push(child.childId))>>
+
 <<birthUi "pc" "hospital" "home" "Pregnancy Birth Hospital 4" _time>>
 
 :: Pregnancy Birth Hospital 4
@@ -606,12 +623,10 @@ You awaken in another room. A smiling midwife stands beside your bed,
 	<br><br>
 	The midwife returns.
 
-	<<if $first_birth is 1>>
+	<<if $first_birth>>
 		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
-
 	<<else>>
 		<<He>> assists you with changing <<childname>>'s nappy, and bathing <<childhim>>. 
-
 	<</if>>
 	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime."
 	<br><br>
@@ -622,14 +637,12 @@ You awaken in another room. A smiling midwife stands beside your bed,
 	<br><br>
 	The midwife returns.
 
-	<<if $first_birth is 1>>
-		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
-
+	<<if $first_birth>>
+		<<He>> teaches you how to change their nappies and how to bathe them.
 	<<else>>
-		<<He>> assists you with changing <<childname>>'s nappy, and with bathing <<childhim>>. 
-
+		<<He>> assists you with changing their nappies, and with bathing them. 
 	<</if>>
-	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime."
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your babies in the meantime."
 	<br><br>
 	You want nothing more than to hold the twins, but you find yourself dozing all the same.
 	<br><br>
@@ -638,12 +651,12 @@ You awaken in another room. A smiling midwife stands beside your bed,
 	<br><br>
 	The midwife returns.
 
-	<<if $first_birth is 1>>
-		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
+	<<if $first_birth>>
+		<<He>> teaches you how to change their nappies, and how to bathe them.
 	<<else>>
-		<<He>> assists you with changing <<childname>>'s nappy, and with bathing <<childhim>>. 
+		<<He>> assists you with changing their nappies, and with bathing them. 
 	<</if>>
-	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime."
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your babies in the meantime."
 	<br><br>
 	You want nothing more than to hold the triplets, but you find yourself dozing all the same.
 	<br><br>
@@ -656,13 +669,49 @@ You awaken in another room. A smiling midwife stands beside your bed,
 :: Pregnancy Birth Hospital 5
 <<effects>>
 
-<<if $littersize gte 2>>Your babies<<else>><<childname>><</if>> lies in a cradle while the midwife helps you stand. You feel your insides drop as you stand, but <<he>> assures you that's normal.
-<br><br>
+<<if $litter_size gte 2>><<childrenNames $bornChildrenIds>><<else>><<childname>> lies<</if>> in a cradle while the midwife helps you stand.
 
-Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
-<br><br>
+<<if $first_birth or playerNormalPregnancyTotal() is 0>>
+	You feel your insides drop as you stand, but <<he>> assures you that's normal.
+	<br><br>
 
-The midwife helps you to dress. "You should be good to go," <<he>> says. "Someone's waiting for you. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].gender is "f">>mum<<else>>dad<</if>> I think."
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+	<br><br>
+
+	The midwife helps you to dress. "You should be good to go," <<he>> says. "Someone's waiting for you. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].gender is "f">>mum<<else>>dad<</if>> I think."
+<<elseif between(playerNormalPregnancyTotal(), 1, 2)>>
+	You feel your insides drop as you stand. You remember this feeling from your last birth, and know it's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+	<br><br>
+
+	The midwife helps you to dress. "You should be good to go," <<he>> says. "Someone's waiting for you. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].gender is "f">>mum<<else>>dad<</if>> I think."
+<<elseif between(playerNormalPregnancyTotal(), 3, 7)>>
+	You feel your insides drop as you stand. You're still not used to the feeling.
+	<br><br>
+
+	You get walking again quite easily. It's a little awkward, but the transition isn't as bad as it used to be. It's still easier to move around when there isn't another human inside you.
+	<br><br>
+
+	The midwife still insists on helping you dress. "You should be good to go," <<he>> says. "Someone's waiting for you. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].gender is "f">>mum<<else>>dad<</if>> I think."
+<<elseif between(playerNormalPregnancyTotal(), 8, 49)>>
+	You stand up without a hitch. There's hardly any difference in feeling anymore, although you do feel much more nimble.
+	<br><br>
+
+	<<He>> looks impressed at your mobility, only keeping an arm around you for stability. "I don't see many people get back up that quickly. You must be hardy!"
+	<br><br>
+
+	The midwife still insists on helping you dress. "You should be good to go," <<he>> says. "Someone's waiting for you. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].gender is "f">>mum<<else>>dad<</if>> I think."
+<<elseif playerNormalPregnancyTotal() gte 50>>
+	You stand up without assistace, feeling empty inside. You already miss the feeling of being pregnant.
+	<br><br>
+
+	<<He>> stares at you, mouth agape, as you walk without any assistance. You throw your clothes back on quickly.
+	<br><br>
+
+	"Y-you should be good to go," <<he>> says. "Someone's waiting for you. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].gender is "f">>mum<<else>>dad<</if>> I think."
+<</if>>
 <br><br>
 
 <<link [[Next|Pregnancy Birth Hospital 6]]>><<endevent>><</link>>
@@ -684,18 +733,21 @@ Bailey waits for you in the hospital foyer. <<He>> smiles when <<he>> sees you. 
 <br><br>
 The engine comes to life.
 <!-- Bailey may not know about all your pregnancies -->
-<<set _knownPregnancyCount to knowsAboutPregnancyTotal("pc","Bailey")>>
+<<set _knownPregnancyCount to knowsAboutPregnancyTotal("pc","Bailey","home")>>
 <<if _knownPregnancyCount is 1>>
-	"You're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a day."
+	"You're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a day.<<if $litter_size gte 2>> Each.<</if>>"
 	<br><br>
 	"They don't leave the nursery," <<he>> adds as <<he>> drives from the hospital car park. "Ever."
 <<elseif _knownPregnancyCount lte 4>>
-	"Remember that you're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a day."
+	"Remember that you're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a day.<<if $litter_size gte 2>> Each.<</if>>"
 	<br><br>
 <<else>>
-	"You're an irresponsible slut," <<he>> says. "Remember that if I have to intervene in the care of your offspring, it'll cost you an extra <span class="red">£100</span> a day."
+	"You're an irresponsible slut," <<he>> says. "Remember that if I have to intervene in the care of your offspring, it'll cost you an extra <span class="red">£100</span> a day.<<if $litter_size gte 2>> Each.<</if>>"
 <</if>>
-<br><br>
+<<if $baileydefeatedchain gte 3>>
+	You see <<him>> sneer, but only for a brief instant. "I'd rather not make someone else take care of your twerps, but if you keep being a difficult little shit, don't think you'll be allowed to see them again."
+<</if>>
+br><br>
 
 <<if $litter_size is 1>>
 	<<link [[Tell Bailey your baby's name|Pregnancy Birth Hospital 7]]>><<set $phase to 1>><</link>>
@@ -703,7 +755,7 @@ The engine comes to life.
 	<<link [[Just hold the baby tight|Pregnancy Birth Hospital 7]]>><</link>>
 	<br>
 <<else>>
-	<<link [[Tell Bailey your babies' names|Pregnancy Birth Hospital 7]]>><<set $phase to 0>><</link>>
+	<<link [[Tell Bailey your babies' names|Pregnancy Birth Hospital 7]]>><<set $phase to 1>><</link>>
 	<br>
 	<<link [[Just hold your babies tight|Pregnancy Birth Hospital 7]]>><</link>>
 	<br>
@@ -714,7 +766,12 @@ The engine comes to life.
 
 Bailey drives past the temple, onto Danube Street.
 <<if $phase is 1>>
-	"This is <<childname>>," you begin, holding <<childhim>> closer to Bailey's arm. You tell Bailey everything that happened from when you arrived at the hospital. <<He>> doesn't interrupt, but doesn't respond either.
+	<<if $litter_size is 1>>
+		"This is <<childname>>," you begin, holding <<childhim>> closer to Bailey's arm.
+	<<else>>
+		"These are <<childrenNames $bornChildrenIds>>," you begin, holding them closer to Bailey's arms one by one.
+	<</if>>
+	You tell Bailey everything that happened from when you arrived at the hospital. <<He>> doesn't interrupt, but doesn't respond either.
 <<else>>
 	<<if $litter_size gte 2>>
 		You hold your babies to your chest. <<childname>> yawns.
@@ -749,19 +806,19 @@ You arrive at Domus Street. Bailey holds open the car door for you.
 	One of Baileys goons, a <<person>> exits the youth ward, pushing a cradle. You place <<childname>> within. "My staff keep an eye on things here," Bailey says. "They'll make sure your brat doesn't starve or anything, <span class="gold">but make sure you spend some time with them every day.</span> Or I'll charge."
 	<br><br>
 	<<person1>>
-	"Later though," <<he>> adds. "You need to freshen up, and your brat is asleep anyway. The <<person2>><<person>> pushes <<childname>> through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on <<childname>> until <<childhe>>'s safely within.
+	"Later though," <<he>> adds. "You need to freshen up, and your brat is asleep anyway." The <<person2>><<person>> pushes <<childname>> through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on <<childname>> until <<childhe>>'s safely within.
 	<br><br>
 <<elseif $litter_size is 2>>
 	One of Baileys goons, a <<person>> exits the youth ward, pushing a pair of cradles. You place the twins within. "My staff keep an eye on things here," Bailey says. "They'll make sure your brats don't starve or anything, <span class="gold">but make sure you spend some time with them every day.</span> Or I'll charge."
 	<br><br>
 	<<person1>>
-	"Later though," <<he>> adds. "You need to freshen up, and your brats are asleep anyway. The <<person2>><<person>> pushes the twins through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on them until they're safely within.
+	"Later though," <<he>> adds. "You need to freshen up, and your brats are asleep anyway." The <<person2>><<person>> pushes the twins through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on <<childrenNames $bornChildrenIds>> until they're safely within.
 	<br><br>
 <<else>>
 	One of Baileys goons, a <<person>> exits the youth ward, pushing a trio of cradles. You place the triplets within. "My staff keep an eye on things here," Bailey says. "They'll make sure your brats don't starve or anything, <span class="gold">but make sure you spend some time with them every day.</span> Or I'll charge."
 	<br><br>
 	<<person1>>
-	"Later though," <<he>> adds. "You need to freshen up, and your brats are asleep anyway. The <<person2>><<person>> pushes the triplets through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on them until they're safely within.
+	"Later though," <<he>> adds. "You need to freshen up, and your brats are asleep anyway." The <<person2>><<person>> pushes the triplets through the ward doors. <<person1>>Bailey keeps <<his>> gaze fixed on <<childrenNames $bornChildrenIds>> until they're safely within.
 	<br><br>
 <</if>>
 <<if $first_birth>>
@@ -769,7 +826,7 @@ You arrive at Domus Street. Bailey holds open the car door for you.
 	<br><br>
 <</if>>
 
-<<link [[Next|Orphanage]]>><<unset $litter_size>><<unset $first_birth>><<endevent>><</link>>
+<<link [[Next|Orphanage]]>><<unset $litter_size>><<unset $first_birth>><<endevent>><<set $ward_unlocked to true>><<unset $bornChildrenIds>><</link>>
 
 :: Pregnancy Birth Hospital Wolf
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
@@ -794,6 +851,7 @@ You awaken again. You hang limp between two figures. The branches of the forest 
 <br><br>
 <<link [[Next (00:15)|Pregnancy Birth Hospital Wolf 3]]>><<pass 15>><<endevent>><</link>>
 
+/* From the hospital or dropped by non-wolf rescuers */
 :: Pregnancy Birth Hospital Wolf 3
 <<location "forest">><<effects>>
 You hit the ground. A pair of footsteps rush away from you.
@@ -802,6 +860,19 @@ You hit the ground. A pair of footsteps rush away from you.
 	You remember this smell. You're outside the wolf cave.
 <<else>>
 	You're outside a cave. It's shelter, at least. You stumble inside.
+<</if>>
+<br><br>
+<<link [[Next (00:15)|Pregnancy Birth Wolf Cave 1]]>><<pass 15>><<endevent>><<set $phase to 3>><</link>>
+
+/* Rescued by wolves */
+:: Pregnancy Birth Wolf Rescue
+<<location "forest">><<effects>>
+The movement stops. You feel yourself being lowered onto something soft.
+<br><br>
+<<if $syndromewolves is 1>>
+	You remember this smell. You're in the wolf cave.
+<<else>>
+	You're in a cave. It's shelter, at least.
 <</if>>
 <br><br>
 <<link [[Next (00:15)|Pregnancy Birth Wolf Cave 1]]>><<pass 15>><<endevent>><<set $phase to 3>><</link>>
