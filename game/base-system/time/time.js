@@ -631,7 +631,11 @@ function minutePassed(minutes) {
 
 	parasiteProgressTime(minutes);
 	parasiteProgressTime(minutes, "vagina");
-	if (isPlayerNonparasitePregnancyEnding()) V.stress += Math.ceil(minutes * 0.75);
+	if (isPlayerNonparasitePregnancyEnding()) {
+		// To prevent new events from occuring, allowing players to more easily go to the hospital or similar locations
+		V.eventskip = 1;
+		V.stress += Math.floor(minutes * 40);
+	}
 
 	if (V.body_temperature === "cold") V.stress += minutes * 2;
 	else if (V.body_temperature === "chilly") V.stress += minutes;
