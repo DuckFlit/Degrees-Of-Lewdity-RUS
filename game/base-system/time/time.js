@@ -545,8 +545,10 @@ function dayPassed() {
 	delete V.daily;
 	V.daily = { school: { attended: {} }, whitney: {}, robin: {}, kylar: {}, morgan: {}, eden: {}, alex: {}, sydney: {}, ex: {}, pharm: {}, prison: {} };
 
-	V.challengetimer--;
-	if(V.challengetimer < 0) delete V.challengetimer;
+	if (Number.isInteger(V.challengetimer)) {
+		V.challengetimer--;
+		if (V.challengetimer < 0) delete V.challengetimer;
+	}
 
 	return fragment;
 }
