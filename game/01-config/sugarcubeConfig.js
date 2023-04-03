@@ -45,9 +45,9 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.3.14.0",
-	versionName: "Pregnancy Test",
-	sneaky: false,
+	version: "0.4.0.0",
+	versionName: "",
+	sneaky: true,
 };
 
 /* convert version string to numeric value */

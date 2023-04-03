@@ -20,7 +20,7 @@ setup.hair = {
 		},
 		{
 			name: "single tail",
-			list: ["flat ponytail", "ponytail", "side tail left", "side tail right", "fluffy ponytail"],
+			list: ["flat ponytail", "ponytail", "side tail left", "side tail right", "fluffy ponytail", "side thicktail"],
 			devolve: ["ponytail"],
 		},
 		{
@@ -77,8 +77,10 @@ setup.hair = {
 				"sidecut",
 				"drill ringlets",
 				"front braids",
+				"blunt sidelocks",
+				"ruffled",
 			],
-			devolve: ["messy", "trident", "thin flaps"],
+			devolve: ["messy", "trident", "thin flaps", "ruffled"],
 		},
 	],
 };
