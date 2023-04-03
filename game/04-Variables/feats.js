@@ -737,7 +737,7 @@ setup.feats = {
 	},
 	"Diversity of Life": {
 		title: "Diversity of Life",
-		desc: "Gave birth to chidren of many different species.",
+		desc: "Gave birth to children of many different species.",
 		difficulty: 4,
 		series: "",
 		filter: ["All", "Pregnancy"],

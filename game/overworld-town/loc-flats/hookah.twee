@@ -1,91 +1,96 @@
 :: Flats Hookah
 <<effects>>
 
-<<if $hookah_state is 3>>
-    You are in your hookah parlour. The hookah itself sits in the centre, surrounded by cushions.
-    <br><br>
+<<if isPlayerNonparasitePregnancyEnding()>>
+    <<set _noWake to true>>
+	<<pregnancyWatersBrokenPassout "hookah">>
+<<else>>
+    <<if $hookah_state is 3>>
+        You are in your hookah parlour. The hookah itself sits in the centre, surrounded by cushions.
+        <br><br>
 
-    <<hookah_juice>>
+        <<hookah_juice>>
 
-    <<if $hookah.juice gte 1>>
-        <<if $daily.hookah is 1>>
-            <span class="red">You were warned that smoking for more than an hour a day could be dangerous.</span>
-            <br>
-            <<if random(1, 2) is 2>>
-                <<link [[Partake anyway (1:00)|Flats Hookah Smoke]]>><<set $hookah.juice -= 1>><<hallucinogen 60>><</link>>
+        <<if $hookah.juice gte 1>>
+            <<if $daily.hookah is 1>>
+                <span class="red">You were warned that smoking for more than an hour a day could be dangerous.</span>
                 <br>
+                <<if random(1, 2) is 2>>
+                    <<link [[Partake anyway (1:00)|Flats Hookah Smoke]]>><<set $hookah.juice -= 1>><<hallucinogen 60>><</link>>
+                    <br>
+                <<else>>
+                    <<link [[Partake anyway (1:00)|Flats Hookah Smoke Danger]]>><<set $hookah.juice -= 1>><<hallucinogen 60>><</link>>
+                    <br>
+                <</if>>
             <<else>>
-                <<link [[Partake anyway (1:00)|Flats Hookah Smoke Danger]]>><<set $hookah.juice -= 1>><<hallucinogen 60>><</link>>
+                <<link [[Partake (1:00)|Flats Hookah Smoke]]>><<set $hookah.juice -= 1>><<set $daily.hookah to 1>><<hallucinogen 60>><</link>>
                 <br>
             <</if>>
+            <<if $exposed lte 0>>
+                <<link [[Entice customers (1:00)|Flats Hookah Work]]>><<set $hookah.juice -= 1>><<hallucinogen 60>><</link>>
+                <br>
+            <</if>>
+        <</if>>
+        <<link [[Leave|Flats]]>><</link>>
+        <br>
+    <<elseif $hookah_state is 2>>
+        You are in your hookah parlour. The hookah itself lies broken on the floor, but the smell of incense remains.
+        <br><br>
+
+        <<link [[Clean (3:00)|Flats Hookah Clean]]>><<set $hookah_state to 3>><<pass 180>><</link>>
+        <br>
+        <<link [[Leave|Flats]]>><</link>>
+        <br>
+    <<elseif $hookah_state is undefined>>
+        <<set $hookah_state to 1>>
+        <<generate1>><<person1>><<generate2>><<generate3>><<generate4>><<generate5>><<generate6>>
+        You push open the door, and peer inside. Five people lie on velvet cushions around a hookah pipe. The smell is intoxicating.
+        <br><br>
+        A <<person1>><<person>> enters from an adjoining room, carrying a bowl and pair of tongs. <<He>> lifts a squirming something from the vessel, and places it in the hookah pipe.
+        <br><br>
+        "Aha," <<he>> says, noticing you. You hear a jingle as <<he>> turns. A pair of tiny spectacles sits on the end of <<his>> nose. "Another visitor. It's £50 for an hour on the hookah."
+        <br><br>
+        "No two people have the same experience," <<he>> adds, as if predicting a question. "I'm afraid the substance itself must remain a secret."
+        <<if pregnancyBellyVisible()>>
+            <<He>> looks down at your <<bellyDescription "pc">>. "Don't worry, it's completely safe. For your baby, I mean."
+        <</if>>
+        <br><br>
+        <span class="gold">You've discovered the hookah parlour.</span>
+        <br><br>
+        <<saveNPC 0 "hookah">>
+        <<link [[Leave|Flats]]>><<endevent>><<set $eventskip to 1>><</link>>
+        <br>
+    <<else>>
+        <<loadNPC 0 "hookah">><<person1>>
+        The hookah parlour isn't quite where you remember it, but you catch a whiff of the familiar incense, which helps track it down. The front door is open, and a purple light glows within. You push it ajar, and peer inside.
+        <br><br>
+        <<if $rng gte 81>>
+            The spectacled hookah <<hookah_master>> sits on one of the cushions <<himself>>, reading a newspaper.
+        <<elseif $rng gte 61>>
+            The spectacled hookah <<hookah_master>> kneels in front of a cabinet and rummages within.
+        <<elseif $rng gte 41>>
+            The spectacled hookah <<hookah_master>> is polishing the pipe.
+        <<elseif $rng gte 21>>
+            The spectacled hookah <<hookah_master>> leans on a window and watches <<if $weather is "rain">>the rain<<elseif $weather is "snow">>the snow<<else>>the street below.<</if>>
         <<else>>
-            <<link [[Partake (1:00)|Flats Hookah Smoke]]>><<set $hookah.juice -= 1>><<set $daily.hookah to 1>><<hallucinogen 60>><</link>>
+            The spectacled hookah <<hookah_master>> sits on a stool and sips from a teacup.
+        <</if>>
+        <br><br>
+        <<if $daily.hookah is 1>>
+            <<He>> looks at you. "I'm afraid we don't allow someone to spend more than an hour a day on the hookah," <<he>> says. "For your safety."
+            <br><br>
+        <<else>>
+            <<He>> looks at you. "£50 for an hour on the hookah."
+            <br><br>
+        <</if>>
+
+        <<if $money gte 5000 and $daily.hookah is undefined>>
+            <<link [[Smoke (1:00)|Flats Hookah Smoke]]>><<set $daily.hookah to 1>><<set $money -= 5000>><</link>>
             <br>
         <</if>>
-        <<if $exposed lte 0>>
-            <<link [[Entice customers (1:00)|Flats Hookah Work]]>><<set $hookah.juice -= 1>><<hallucinogen 60>><</link>>
-            <br>
-        <</if>>
-    <</if>>
-    <<link [[Leave|Flats]]>><</link>>
-    <br>
-<<elseif $hookah_state is 2>>
-    You are in your hookah parlour. The hookah itself lies broken on the floor, but the smell of incense remains.
-    <br><br>
-
-    <<link [[Clean (3:00)|Flats Hookah Clean]]>><<set $hookah_state to 3>><<pass 180>><</link>>
-    <br>
-    <<link [[Leave|Flats]]>><</link>>
-    <br>
-<<elseif $hookah_state is undefined>>
-    <<set $hookah_state to 1>>
-    <<generate1>><<person1>><<generate2>><<generate3>><<generate4>><<generate5>><<generate6>>
-    You push open the door, and peer inside. Five people lie on velvet cushions around a hookah pipe. The smell is intoxicating.
-    <br><br>
-    A <<person1>><<person>> enters from an adjoining room, carrying a bowl and pair of tongs. <<He>> lifts a squirming something from the vessel, and places it in the hookah pipe.
-    <br><br>
-    "Aha," <<he>> says, noticing you. You hear a jingle as <<he>> turns. A pair of tiny spectacles sits on the end of <<his>> nose. "Another visitor. It's £50 for an hour on the hookah."
-    <br><br>
-    "No two people have the same experience," <<he>> adds, as if predicting a question. "I'm afraid the substance itself must remain a secret."
-    <<if pregnancyBellyVisible()>>
-        <<He>> looks down at your <<bellyDescription "pc">>. "Don't worry, it's completely safe. For your baby, I mean."
-    <</if>>
-    <br><br>
-    <span class="gold">You've discovered the hookah parlour.</span>
-    <br><br>
-    <<saveNPC 0 "hookah">>
-    <<link [[Leave|Flats]]>><<endevent>><<set $eventskip to 1>><</link>>
-    <br>
-<<else>>
-    <<loadNPC 0 "hookah">><<person1>>
-    The hookah parlour isn't quite where you remember it, but you catch a whiff of the familiar incense, which helps track it down. The front door is open, and a purple light glows within. You push it ajar, and peer inside.
-    <br><br>
-    <<if $rng gte 81>>
-        The spectacled hookah <<hookah_master>> sits on one of the cushions <<himself>>, reading a newspaper.
-    <<elseif $rng gte 61>>
-        The spectacled hookah <<hookah_master>> kneels in front of a cabinet and rummages within.
-    <<elseif $rng gte 41>>
-        The spectacled hookah <<hookah_master>> is polishing the pipe.
-    <<elseif $rng gte 21>>
-        The spectacled hookah <<hookah_master>> leans on a window and watches <<if $weather is "rain">>the rain<<elseif $weather is "snow">>the snow<<else>>the street below.<</if>>
-    <<else>>
-        The spectacled hookah <<hookah_master>> sits on a stool and sips from a teacup.
-    <</if>>
-    <br><br>
-    <<if $daily.hookah is 1>>
-        <<He>> looks at you. "I'm afraid we don't allow someone to spend more than an hour a day on the hookah," <<he>> says. "For your safety."
-        <br><br>
-    <<else>>
-        <<He>> looks at you. "£50 for an hour on the hookah."
-        <br><br>
-    <</if>>
-
-    <<if $money gte 5000 and $daily.hookah is undefined>>
-        <<link [[Smoke (1:00)|Flats Hookah Smoke]]>><<set $daily.hookah to 1>><<set $money -= 5000>><</link>>
+        <<link [[Leave|Flats]]>><<endevent>><<set $eventskip to 1>><</link>>
         <br>
     <</if>>
-    <<link [[Leave|Flats]]>><<endevent>><<set $eventskip to 1>><</link>>
-    <br>
 <</if>>
 
 :: Flats Hookah Smoke

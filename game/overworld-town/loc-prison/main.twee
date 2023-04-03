@@ -18,7 +18,9 @@ You are in your cell. There's a bed in one corner, and a cupboard in another. A 
 	The door is locked.
 	<br><br>
 <</if>>
-<<if $prison.schedule is "hunt" and $prison.morning isnot 1>>
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "prisonCell">>
+<<elseif $prison.schedule is "hunt" and $prison.morning isnot 1>>
 	<<set $prison.schedule to "wake">>
 	<<generate_methodical_guard 0>><<person1>>
 	The lights buzz into life, and a rattle echoes as the cell doors slide open. A <<personsimple "normal">>'s voice rings through the hall. "Roll call." You see other prisoners lining up.
@@ -1095,7 +1097,9 @@ You are in the laundry room. The walls give way to raw rock part way in. Thick p
 <</if>>
 
 
-<<if Time.hour is 20>>
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "prisonLaundry">>
+<<elseif Time.hour is 20>>
 	You hear a bell ring. "Lockdown," <<generate_relaxed_guard 0>><<relaxed_guard 0>> shouts. "Back to your cells."
 	<br><br>
 	You're shuffled along with the other prisoners.
@@ -1992,3 +1996,346 @@ The inmates cheer. A <<person>> grasps the bars of a nearby window, and pulls th
 <br><br>
 <<set $prison.attention to 0>>
 <<destination_prison>>
+
+:: Pregnancy Birth Prison
+<<set $outside to 0>><<effects>>
+<<set $first_birth to !$pregnancyStats.humanToysUnlocked>>
+<<generate_methodical_guard 0>><<person1>>
+<<generate_relaxed_guard 1>>
+<<generate_anxious_guard 2>>
+<<generate_veteran_guard 3>>
+You awaken on a medical bed. Several blurry figures move around. One leans closer, <<his>> features coalescing into those of <<methodical_guard 0>>. "Relax. In case you've forgotten, you're in medical. You're in labour."
+<br><br>
+
+You feel a light prick on your arm, and you start to feel fuzzy. "You'll be feeling the effects of the sedative shortly..." <<his>> voice fades again. The pain starts to blissfully trickle away.
+<br><br>
+
+<<person3>>
+Another voice cuts through the haze. It sounds like <<anxious_guard 2>> "I-I can't believe this. Are you sure you know what you're doing? Maybe we should take <<phim>> to the mainland-"
+<br>
+"Shut it. <<pShe>>'ll never make that trip. Look at <<phim>>, <<pshes>> ready to pop!" That sounded like <<veteran_guard 2>>.
+<br>
+"<<He>> has it under control. This is the best we can do until help from the mainland comes," says the voice of <<relaxed_guard 1>>.
+<br><br>
+
+"Quiet, please. I'm going to need to undress you."
+<<if playerChastity("hidden")>>
+	<<He>> notices your chastity belt, and opens a chest-high cupboard. <<He>> retrieves a tool shaped like a pair of prongs, but bulkier. "We need to remove that device. This won't hurt."
+	<br><br>
+	<<He>> grasps your <<print $worn.genitals.name>> with the prongs, and presses a button on the handle. You hear a whirring noise within the tool, <span class="pink">and they snap the metal.</span>
+	<<set $worn.genitals.type.push("broken")>>
+<</if>>
+<br><br>
+<<wash>><<undress "prison_birth">>
+
+<<link [[Next|Pregnancy Birth Prison 2]]>><</link>>
+<br>
+
+:: Pregnancy Birth Prison 2
+<<effects>>
+
+<<methodical_guard 0 cap>> places a mask over your face. You feel your consciousness fade again.
+<br><br>
+
+<<set _pregnancy to getPregnancyObject()>>
+<<if _pregnancy.totalBirthEvents gte 5>>
+	<<set _min to 15>>
+	<<set _max to 60>>
+<<elseif _pregnancy.totalBirthEvents gte 3>>
+	<<set _min to 30>>
+	<<set _max to 120>>
+<<else>>
+	<<set _min to 60>>
+	<<set _max to 180>>
+<</if>>
+
+<<set _max to Math.floor(_max * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
+<<set _min to Math.floor(_min * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
+
+<<set _timeCalc to random(_min, _max)>>
+<<set _hours to Math.floor(_timeCalc / 60)>>
+<<set _minutes to _timeCalc % 60>>
+
+<<switch playerNormalPregnancyType()>>
+	<<case "human">>
+		<<methodical_guard 0 capo>> voice floats through the fog. "It's head is down. We're lucky. I'm going to need you to..."
+		<br><br>
+
+		The pain grows as time seems to rapidly speed up and slow down. You hear the words "breathe" and "push" many times, and you do your best to comply.
+		<br><br>
+
+		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Prison 3]]>><<endevent>><<pass _timeCalc>><<playerPrebirth>><</link>>
+	<<case "wolf">>
+		<<methodical_guard 0 capo>> voice floats through the fog. "This is... unexpected. Non-human pegnancy. Focus..."
+		<br><br>
+
+		The pain grows as time seems to rapidly speed up and slow down. You hear the words "breathe" and "push" many times, and you do your best to comply.
+		<br><br>
+
+		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Prison Wolf]]>><<endevent>><<pass _timeCalc>><<playerPrebirth>><</link>>
+<</switch>>
+
+:: Pregnancy Birth Prison 3
+<<effects>>
+<<generate5>><<person5>>
+<<set $litter_size to getPregnancyObject().fetus.length>>
+You awaken in the medical room. A smiling midwife stands beside your bed, 
+<<if $litter_size is 1>>
+	holding a bundled baby in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you the baby. They sit in your arms, eyes shut, chest rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your baby. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of a name?"
+	<br><br>
+
+<<elseif $litter_size is 2>>
+	holding two bundled babies in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you one, and then the other. One sits in each of your arms, eyes shut, chests rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your babies. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+
+<<else>>
+
+	holding a trio of bundled babies in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you one, and then another. One sits in each of your arms. The midwife holds the third right in front of your chest. Their eyes are shut, their chests rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your babies. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+<</if>>
+
+<<set $bornChildrenIds to []>>
+<<run getPregnancyObject().fetus.forEach(child => $bornChildrenIds.push(child.childId))>>
+
+<<birthUi "pc" "prison" "home" "Pregnancy Birth Prison 4" 120>>
+
+:: Pregnancy Birth Prison 4
+<<effects>>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+<<set _pregFame to ($litter_size * 5)>>
+<<famepregnancy _pregFame>>
+<<if $litter_size is 1>>
+
+	You cradle your baby for a while longer, enjoying <<childhis>> tiny breaths and movements. <<childHe>> spends most of the time sleeping, but opens <<childhis>> eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+	<<if $first_birth>>
+		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
+	<<else>>
+		<<He>> assists you with changing <<childname>>'s nappy, and bathing <<childhim>>. 
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime. You've been exempted from your duties for the day."
+	<br><br>
+	You want nothing more than to hold <<childname>>, but you find yourself dozing all the same.
+	<br><br>
+<<elseif $litter_size is 2>>
+	You cradle your babies for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth>>
+		<<He>> teaches you how to change their nappies and how to bathe them.
+	<<else>>
+		<<He>> assists you with changing their nappies, and with bathing them. 
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your babies in the meantime. You've been exempted from your duties for the day."
+	<br><br>
+	You want nothing more than to hold the twins, but you find yourself dozing all the same.
+	<br><br>
+<<elseif $litter_size is 3>>
+	You cradle your babies for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth>>
+		<<He>> teaches you how to change their nappies, and how to bathe them.
+	<<else>>
+		<<He>> assists you with changing their nappies, and with bathing them. 
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your babies in the meantime. You've been exempted from your duties for the day."
+	<br><br>
+	You want nothing more than to hold the triplets, but you find yourself dozing all the same.
+	<br><br>
+<</if>>
+
+<<link [[Next|Pregnancy Birth Prison 5]]>><<storeon "prison_birth">><<pass 24 hour>><</link>>
+<br><br>
+
+:: Pregnancy Birth Prison 5
+<<effects>>
+
+<<if $litter_size gte 2>><<childrenNames $bornChildrenIds>> lie<<else>><<childname>> lies<</if>> in a cradle while the midwife helps you stand.
+
+<<if $first_birth or playerNormalPregnancyTotal() is 0>>
+	You feel your insides drop as you stand, but <<he>> assures you that's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 1, 2)>>
+	You feel your insides drop as you stand. You remember this feeling from your last birth, and know it's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 3, 7)>>
+	You feel your insides drop as you stand. You're still not used to the feeling.
+	<br><br>
+
+	You get walking again quite easily. It's a little awkward, but the transition isn't as bad as it used to be. It's still easier to move around when there isn't another human inside you.
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif between(playerNormalPregnancyTotal(), 8, 49)>>
+	You stand up without a hitch. There's hardly any difference in feeling anymore, although you do feel much more nimble.
+	<br><br>
+
+	<<He>> looks impressed at your mobility, only keeping an arm around you for stability. "I don't see many people get back up that quickly. You must be hardy!"
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif playerNormalPregnancyTotal() gte 50>>
+	You stand up without assistace, feeling empty inside. You already miss the feeling of being pregnant.
+	<br><br>
+
+	<<He>> stares at you, mouth agape, as you walk without any assistance. You throw your clothes back on quickly.
+	<br><br>
+
+	"Y-you should be good to go," <<he>> says.
+<</if>>
+"Your children will be sent to the orphanage for temporary care until your release, at which point they will be returned to your custody."
+<br><br>
+
+<<link [[Next|Pregnancy Birth Prison 6]]>><<endevent>><</link>>
+
+:: Pregnancy Birth Prison 6
+<<effects>>
+
+You're returned to your cell. You alreasy miss the embrace of <<childrenNames $bornChildrenIds>>. You feel a renewed sense of determination to leave this place. <<stress -10>><<llstress>><<trauma -10>><<lltrauma>>
+<br><br>
+
+<<link [[Next|Prison Cell]]>><<unset $litter_size>><<unset $first_birth>><<endevent>><<unset $bornChildrenIds>><</link>>
+<br>
+
+:: Pregnancy Birth Prison Wolf
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<endevent>>
+<<generate1>><<person1>>
+<<set $litter_size to getPregnancyObject().fetus.length>>
+<<set _baby_type to getPregnancyObject().fetus[0].type>>
+You awaken in another room. You hear faint whimpering. A smiling midwife stands beside your bed, 
+<<if $litter_size is 1>>
+	holding a bundled _baby_type pup in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you the pup. They sit in your arms, eyes shut, chest rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your babies. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of a name?"
+	<br><br>
+
+<<else>>
+	pushing a cot with <<number $litter_size>> _baby_type pups inside.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, pushing the cot into your reach. You hold them one by one, their eyes shut, chests rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your babies. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+
+<</if>>
+
+<<set $bornChildrenIds to []>>
+<<run getPregnancyObject().fetus.forEach(child => $bornChildrenIds.push(child.childId))>>
+
+<<birthUi "pc" "prison" "wolf_cave" "Pregnancy Birth Prison Wolf 2" 180>>
+
+:: Pregnancy Birth Prison Wolf 2
+<<effects>>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+<<famebestiality $litter_size>>
+<<if $litter_size is 1>>
+	You cradle your <<childtype>> for a while longer, enjoying <<childhis>> tiny breaths and movements. <<childHe>> spends most of the time sleeping, but opens <<childhis>> eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your pup in the meantime."
+	<br><br>
+	You want nothing more than to hold <<childname>>, but you find yourself dozing all the same.
+	<br><br>
+<<else>>
+	You cradle your pups for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your pups in the meantime."
+	<br><br>
+	You want nothing more than to hold them, but you find yourself dozing all the same.
+	<br><br>
+<</if>>
+
+<<link [[Next|Pregnancy Birth Prison Wolf 3]]>><<storeon "prison_birth">><<pass 24 hour>><</link>>
+<br>
+
+:: Pregnancy Birth Prison Wolf 3
+<<effects>>
+
+<<if $litter_size gte 2>><<childrenNames $bornChildrenIds>> lie<<else>><<childname>> lies<</if>> in a cradle while the midwife helps you stand.
+
+<<if $first_birth or playerNormalPregnancyTotal() is 0>>
+	You feel your insides drop as you stand, but <<he>> assures you that's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without wolves inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 1, 2)>>
+	You feel your insides drop as you stand. You remember this feeling from your last birth, and know it's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without wolves inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 3, 7)>>
+	You feel your insides drop as you stand. You're still not used to the feeling.
+	<br><br>
+
+	You get walking again quite easily. It's a little awkward, but the transition isn't as bad as it used to be. It's still easier to move around when there isn't a litter of wolves inside you.
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif between(playerNormalPregnancyTotal(), 8, 49)>>
+	You stand up without a hitch. There's hardly any difference in feeling anymore, although you do feel much more nimble.
+	<br><br>
+
+	<<He>> looks impressed at your mobility, only keeping an arm around you for stability. "I don't see many people get back up that quickly. You must be hardy!"
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif playerNormalPregnancyTotal() gte 50>>
+	You stand up without assistace, feeling empty inside. You already miss the feeling of being pregnant.
+	<br><br>
+
+	<<He>> stares at you, mouth agape, as you walk without any assistance. You throw your clothes back on quickly.
+	<br><br>
+
+	"Y-you should be good to go," <<he>> says.
+<</if>>
+"The pups will be released into the forest once they can fend for themselves."
+<br><br>
+
+<<link [[Next|Pregnancy Birth Asylum 6]]>><<endevent>><</link>>
+<br>
