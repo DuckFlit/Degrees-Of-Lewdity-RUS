@@ -208,6 +208,14 @@
 						<<set _menstruation.currentDay to 0.5>>
 					<</if>>
 				<</if>>
+				/*To deal with an issues that occured when players cheated with the bugged 'Clear current pregnancy'*/
+				<<if !getPregnancyObject().type is null or getPregnancyObject().type is "parasite">>
+					<<restartMenstruationCycle>>
+					<<set _menstruation.currentState to "normal">>
+					<<set _menstruation.recoveryTime to null>>
+					<<set _menstruation.recoveryTimeStart to null>>
+					<<set _menstruation.recoveryStage to null>>
+				<</if>>
 			<<case "recovering">>
 				<<set _menstruation.recoveryTime -= 0.5>>
 				<<switch _pills.pills["fertility booster"].doseTaken>>
@@ -1115,11 +1123,10 @@
 			<<set $_pregnancy.awareOfDetails to null>>
 			<<set $_pregnancy.potentialFathers to []>>
 			<<set $sexStats[($player.vaginaExist ? "vagina" : "anus")].sperm to []>>
-			<<set $_menstruation.currentDay to .5>>
-			<<set $_menstruation.currentState to "normal">>
-			<<menstruationCycle>>
+			<<restartMenstruationCycle>>
+			<<set _menstruation.currentState to "normal">>
 			<<set _morningAfterPillResult to "successful">>
-		<<elseif _currentDay lte 6 - ($_pregnancy.type === "wolf" ? 2 : 0)>> /* the days between 3 and 6 or 4 for humans or wolves the pill clears the pregnancy and restarts the menstrual cycle, but returns the "a little late" message */
+		<<elseif _currentDay lte 3>>
 			<<set $_pregnancy.type to null>>
 			<<set $_pregnancy.fetus to []>>
 			<<set $_pregnancy.waterBreaking to false>>
@@ -1132,10 +1139,10 @@
 			<<set $_pregnancy.potentialFathers to []>>
 			<<set $sexStats[($player.vaginaExist ? "vagina" : "anus")].sperm to []>>
 			<<set $_menstruation.currentDay to .5>>
-			<<set $_menstruation.currentState to "normal">>
-			<<menstruationCycle>>
+			<<restartMenstruationCycle>>
+			<<set _menstruation.currentState to "normal">>
 			<<set _morningAfterPillResult to "a little late">>
-		<<elseif _currentDay lte 10 - ($_pregnancy.type === "wolf" ? 4 : 0)>> /* The days from 7 to 10/5 to 6 for humans/wolves the pills clears pregnancy but puts mestruation in the recovery state, returns the "late" message*/
+		<<elseif _currentDay lte 4>>
 			<<set $_pregnancy.type to null>>
 			<<set $_pregnancy.fetus to []>>
 			<<set $_pregnancy.waterBreaking to false>>
@@ -1155,7 +1162,7 @@
 			<<set $_menstruation.periodEnabled to false>>
 			<<menstruationCycle>>
 			<<set _morningAfterPillResult to "late">>
-		<<elseif _currentDay lte 999>>
+		<<else>>
 			<<set _morningAfterPillResult to "too late">> /* It's too late, the pill does nothing to the pregnancy */
 		<</if>>
 	<<else>>
