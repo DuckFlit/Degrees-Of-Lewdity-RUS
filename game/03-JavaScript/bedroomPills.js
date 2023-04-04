@@ -817,7 +817,8 @@ function backCompPillsInventory() {
 	const pills = {};
 	if (typeof oPills === "object") {
 		/* If our $sexStats.pills is an object and has this property, it is ready for production. */
-		if (Object.hasOwn.call(oPills, "mostTaken")) return;
+		/* Man on the internet said this is right */
+		if (typeof oPills.mostTaken === "object") return;
 		try {
 			pillsObjectRepair(oPills, pills);
 		} catch (error) {
