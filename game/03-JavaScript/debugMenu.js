@@ -885,6 +885,10 @@ setup.debugMenu.eventList = {
 			widgets: ["<<endcombat>>", "<<beastNEWinit 1 'boar'>>", "<<person1>>", "<<set $molestationstart to 1>>"],
 		},
 		{
+			link: ["Dog", "Wolf Pack"],
+			widgets: ["<<endcombat>>", "<<beastNEWinit 1 'dog'>>", "<<person1>>", "<<set $molestationstart to 1>>"],
+		},
+		{
 			text_only: "\n\nTurn beast into: ",
 		},
 		{
