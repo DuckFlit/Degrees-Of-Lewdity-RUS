@@ -180,7 +180,7 @@ function wakingPregnancyEvent() {
 		V.awareness >= 200 &&
 		!pregnancy.awareOf &&
 		pregnancyStage !== false &&
-		between(menstruation.currentDays, 3, 5) &&
+		between(menstruation.currentDay, 3, 5) &&
 		(random(0, 100) >= 105 - V.sciencetrait * 5 || playerNormalPregnancyTotal() >= 3)
 	) {
 		return "missedPeriod";
@@ -559,7 +559,6 @@ function setKnowsAboutPregnancy(mother, whoNowKnows, existingId, track, pregnanc
 	}
 
 	if (track && !V.babyIntros) V.babyIntros = {};
-	if (track && !V.babyIntros[whoNowKnows]) V.babyIntros[whoNowKnows] = [];
 
 	if (awareOfBirthId[mother + existingId]) {
 		birthId = mother + existingId;
@@ -592,7 +591,10 @@ function setKnowsAboutPregnancy(mother, whoNowKnows, existingId, track, pregnanc
 		if (!awareOfBirthId[birthId]) awareOfBirthId[birthId] = [];
 		if (!awareOfBirthId[birthId].includes(whoNowKnowsConverted)) {
 			awareOfBirthId[birthId].push(whoNowKnowsConverted);
-			if (track) V.babyIntros[whoNowKnows].push(tracked);
+			if (track) {
+				if (!V.babyIntros[whoNowKnows]) V.babyIntros[whoNowKnows] = [];
+				V.babyIntros[whoNowKnows].push(tracked);
+			}
 			return true;
 		}
 	}
@@ -622,15 +624,16 @@ function setKnowsAboutPregnancyInLocation(motherOrFather, whoNowKnows, location,
 		child => child.location === location && (child.mother === motherOrFather || child.father === motherOrFather)
 	);
 	if (track && !V.babyIntros) V.babyIntros = {};
-	if (track && !V.babyIntros[whoNowKnows]) V.babyIntros[whoNowKnows] = [];
 
 	children.forEach(child => {
 		if (!knowsAboutPregnancy(child.mother, whoNowKnows, child.birthId)) {
 			if (track) {
-				const existing = V.babyIntros[whoNowKnows].find(item => item.birthId === child.birthId && item.mother === child.mother);
+				let existing = V.babyIntros[whoNowKnows];
+				if (existing) existing = existing.find(item => item.birthId === child.birthId && item.mother === child.mother);
 				if (existing) {
 					existing.children++;
 				} else {
+					if (!V.babyIntros[whoNowKnows]) V.babyIntros[whoNowKnows] = [];
 					V.babyIntros[whoNowKnows].pushUnique({ birthId: child.birthId, mother: child.mother, children: 1 });
 				}
 			}

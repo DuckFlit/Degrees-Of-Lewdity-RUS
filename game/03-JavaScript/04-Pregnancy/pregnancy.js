@@ -255,7 +255,7 @@ function pregnancyProgress(genital = "vagina") {
 // eslint-disable-next-line no-unused-vars
 function playerEndWaterProgress() {
 	const pregnancy = getPregnancyObject();
-	if (!pregnancy || pregnancy.type === null || pregnancy.type === "parasites" || pregnancy.timer < pregnancy.timerEnd || V.statFreeze) return null;
+	if (!pregnancy || !pregnancy.type || pregnancy.type === "parasites" || pregnancy.timer < pregnancy.timerEnd || V.statFreeze) return null;
 
 	if (
 		!isNaN(pregnancy.waterBreakingTimer) &&
@@ -270,6 +270,11 @@ function playerEndWaterProgress() {
 			return true;
 		}
 		return false;
+	} else if (!pregnancy.waterBreaking && pregnancy.waterBreakingTimer <= 0) {
+		pregnancy.waterBreaking = true;
+		// To prevent new events from occuring, allowing players to more easily go to the hospital or similar locations
+		V.eventskip = 1;
+		return true;
 	}
 }
 
@@ -516,6 +521,7 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 
 	V.NPCName[V.NPCNameList.indexOf(npcName)].pregnancy = {
 		...pregnancy,
+		totalBirthEvents: (pregnancy.totalBirthEvents || 0) + 1,
 		fetus: [],
 		birthEvents,
 		timer: null,
@@ -599,6 +605,8 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 		if (parentId) {
 			if (Array.isArray(parentId)) parentId = parentId[0];
 			parentFunction.increaseBirths(parentId.id, 0);
+			// Fix for previous named npc's not updating totalBirthEvents
+			if (mother !== "pc") pregnancy.totalBirthEvents = parentId.births;
 		}
 	}
 
