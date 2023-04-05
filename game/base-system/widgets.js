@@ -396,9 +396,9 @@ function bodywritingExposureCheck(overwrite, skipRng) {
 			T.visible_areas.push("breasts");
 		}
 		if (
-			(V.worn.over_upper.exposed >= 1 || V.worn.over_upper.state === "waist") &&
-			(V.worn.upper.exposed >= 1 || V.worn.upper.state === "waist") &&
-			(V.worn.under_upper.exposed >= 1 || V.worn.under_upper.state === "waist")
+			(V.worn.over_upper.exposed >= 1 || V.worn.over_upper.state !== "waist") &&
+			(V.worn.upper.exposed >= 1 || V.worn.upper.state !== "waist") &&
+			(V.worn.under_upper.exposed >= 1 || V.worn.under_upper.state !== "waist")
 		) {
 			T.visible_areas.push("back");
 		}
