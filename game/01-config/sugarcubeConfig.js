@@ -18,6 +18,11 @@ Save.onLoad.add(save => {
 	DoLSave.decompressIfNeeded(save);
 
 	save.state.history.forEach(h => {
+		if (h.prng && Array.isArray(h.prng.S)) {
+			h.prng.S.forEach((i, index, array) => {
+				if (i < 0 || i > 255) array[index] %= 256;
+			});
+		}
 		h.variables.saveDetails = defaultSaveDetails(h.variables.saveDetails);
 		h.variables.saveDetails.loadTime = new Date();
 	});

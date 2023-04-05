@@ -193,19 +193,21 @@
 				<</if>>
 			<<case "pregnant">>
 				/*To progress as normal so that the heat cycle and pregnancy risk still works as normal, will be reset in the recovering stage*/
-				<<if (_pills.pills["contraceptive"].doseTaken gte 1 and random(0,100) gte 50) or _pills.pills["contraceptive"].doseTaken gte 2>>
-				<<else>>
-					<<set _menstruation.currentDay += 0.5>>
-				<</if>>
-				<<if _menstruation.currentDay lt _menstruation.stages[3]>>
-					<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
+				<<if _menstruation.currentDay lt _menstruation.currentDaysMax>>
+					<<if (_pills.pills["contraceptive"].doseTaken gte 1 and random(0,100) gte 50) or _pills.pills["contraceptive"].doseTaken gte 2>>
+					<<else>>
 						<<set _menstruation.currentDay += 0.5>>
 					<</if>>
-					<<if _pills.pills["fertility booster"].doseTaken gte 2>>
-						<<set _menstruation.currentDay += 0.5>>
-					<</if>>
-					<<if _menstruation.currentDay lt _menstruation.currentDaysMax>>
-						<<set _menstruation.currentDay to 0.5>>
+					<<if _menstruation.currentDay lt _menstruation.stages[3]>>
+						<<if $skin.pubic.type is "magic" and $skin.pubic.special is "pregnancy">>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						<<if _pills.pills["fertility booster"].doseTaken gte 2>>
+							<<set _menstruation.currentDay += 0.5>>
+						<</if>>
+						<<if _menstruation.currentDay lt _menstruation.currentDaysMax>>
+							<<set _menstruation.currentDay to 0.5>>
+						<</if>>
 					<</if>>
 				<</if>>
 				/*To deal with an issues that occured when players cheated with the bugged 'Clear current pregnancy'*/
@@ -285,19 +287,20 @@
 
 /*Don't call outside of the menstruationCycle widget*/
 <<widget "restartMenstruationCycle">>
-	<<set _menstruation.currentDay to 0.5>>
-	<<set _menstruation.currentDaysMax to _menstruation.baseDays + random(0, _menstruation.baseDaysRng)>>
-	<<set _stage2 to Math.round(_menstruation.currentDaysMax * 0.17)>>
+	<<set $_menstruation to $sexStats.vagina.menstruation>>
+	<<set $_menstruation.currentDay to 0.5>>
+	<<set $_menstruation.currentDaysMax to $_menstruation.baseDays + random(0, $_menstruation.baseDaysRng)>>
+	<<set _stage2 to Math.round($_menstruation.currentDaysMax * 0.17)>>
 	<<if _stage2 gte 4>>
 		<<set _stage2-->>
 	<</if>>
-	<<set _stage3 to Math.round(_menstruation.currentDaysMax * 0.5)>>
+	<<set _stage3 to Math.round($_menstruation.currentDaysMax * 0.5)>>
 	<<if _stage3 lt 13>>
 		<<set _stage3++>>
 	<<elseif _stage3 gte 18>>
 		<<set _stage3-->>
 	<</if>>
-	<<set _menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
+	<<set $_menstruation.stages to [0, _stage2, _stage3, _stage3 + random(1,2) * 0.5]>>
 <</widget>>
 
 /* Used for the passage where the player has given birth in */
@@ -1124,7 +1127,7 @@
 			<<set $_pregnancy.potentialFathers to []>>
 			<<set $sexStats[($player.vaginaExist ? "vagina" : "anus")].sperm to []>>
 			<<restartMenstruationCycle>>
-			<<set _menstruation.currentState to "normal">>
+			<<set $_menstruation.currentState to "normal">>
 			<<set _morningAfterPillResult to "successful">>
 		<<elseif _currentDay lte 3>>
 			<<set $_pregnancy.type to null>>
@@ -1140,7 +1143,7 @@
 			<<set $sexStats[($player.vaginaExist ? "vagina" : "anus")].sperm to []>>
 			<<set $_menstruation.currentDay to .5>>
 			<<restartMenstruationCycle>>
-			<<set _menstruation.currentState to "normal">>
+			<<set $_menstruation.currentState to "normal">>
 			<<set _morningAfterPillResult to "a little late">>
 		<<elseif _currentDay lte 4>>
 			<<set $_pregnancy.type to null>>
