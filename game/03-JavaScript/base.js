@@ -370,14 +370,14 @@ function updateSessionRNG() {
 	if (!(V.debug || V.cheatdisable === "f" || V.testing)) return; // do nothing unless debug is enabled
 	State.restore(); // restore game state before the passage was processed
 	const sessionData = session.get("state"); // get game state from session storage
+	const delta = sessionData.delta[sessionData.index]; // current history frame
 	State.random(); // re-roll rng
 	const sprng = State.prng.state; // get new prng state
 	const deltaprng =
-		sessionData.delta.length === 1 // delta objects differ when there's more than 1 of them
+		typeof delta.prng.i === "number" // check if encoded
 			? sprng
 			: { S: [2, sprng.S], i: [2, sprng.i], j: [2, sprng.j] };
-	// TODO: figure out how to stop SC from delta-coding session data, this thing can't be fast
-	sessionData.delta[sessionData.index].prng = deltaprng; // save new rng state into active delta
+	delta.prng = deltaprng; // save new rng state
 	session.set("state", sessionData); // send altered session data back into storage
 	Engine.show(); // replay the passage with new rng
 }
