@@ -1554,7 +1554,7 @@ setup.feats = {
 		difficulty: 3,
 		series: "Adult Shop",
 		filter: ["All", "Discoveries"],
-		hint: "Hint: Was worth opening the toybox so fast?",
+		hint: "Hint: Was it worth opening the toybox so fast?",
 	},
 	"Ear Slime Lover": {
 		title: "Ear Slime Lover",

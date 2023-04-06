@@ -1424,7 +1424,7 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.angel_halo_type);
 			},
-			z: ZIndices.parasite,
+			z: ZIndices.over_upper,
 			animation: "idle"
 		},
 
