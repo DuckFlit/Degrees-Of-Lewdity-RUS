@@ -188,6 +188,7 @@ function wolfChildActivity(childId) {
 				"staringOutside",
 				"hungeryWolf",
 				"grumpyWolf",
+				"gnawing",
 			]);
 		}
 	} else if (between(T.childTotalDays, 100, 200)) {
@@ -208,6 +209,7 @@ function wolfChildActivity(childId) {
 				"staringOutside",
 				"hungeryWolf",
 				"grumpyWolf",
+				"gnawing",
 			]);
 		}
 	}
