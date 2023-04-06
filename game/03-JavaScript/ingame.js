@@ -386,8 +386,16 @@ function loveInterestFunction() {
 }
 DefineMacro("loveInterestFunction", loveInterestFunction);
 
+/**
+ * Checks if x is equal or higher than min and lower or equal to max
+ *
+ * @param {number} x
+ * @param {any} min
+ * @param {any} max
+ * @returns {boolean}
+ */
 function between(x, min, max) {
-	return x >= min && x <= max;
+	return typeof x === "number" && x >= min && x <= max;
 }
 window.between = between;
 
