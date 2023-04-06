@@ -196,7 +196,7 @@ window.playerPregnancyTest = (npc, npcType, fatherKnown, genital, trackedNPCs, a
 // eslint-disable-next-line no-unused-vars
 function pregnancyProgress(genital = "vagina") {
 	const pregnancy = V.sexStats[genital].pregnancy;
-	if (!pregnancy || pregnancy.type === null || pregnancy.type === "parasites" || V.statFreeze) return null;
+	if (!pregnancy || pregnancy.type === null || pregnancy.type === "parasite" || V.statFreeze) return null;
 
 	V.pregnancyStats.totalDaysPregnant += 0.5;
 	if (pregnancy.awareOf) V.pregnancyStats.totalDaysPregnancyKnown += 0.5;
@@ -255,7 +255,11 @@ function pregnancyProgress(genital = "vagina") {
 // eslint-disable-next-line no-unused-vars
 function playerEndWaterProgress() {
 	const pregnancy = getPregnancyObject();
-	if (!pregnancy || !pregnancy.type || pregnancy.type === "parasites" || pregnancy.timer < pregnancy.timerEnd || V.statFreeze) return null;
+	if (!pregnancy || !pregnancy.type || pregnancy.type === "parasite" || pregnancy.timer < pregnancy.timerEnd || V.statFreeze) {
+		// Fixes an issue when the above "parasite" was "parasites"
+		if (pregnancy && (!pregnancy.type || pregnancy.type === "parasite") && pregnancy.waterBreaking) waterBreaking = false;
+		return null;
+	}
 
 	if (
 		!isNaN(pregnancy.waterBreakingTimer) &&
@@ -270,7 +274,7 @@ function playerEndWaterProgress() {
 			return true;
 		}
 		return false;
-	} else if (!pregnancy.waterBreaking && pregnancy.waterBreakingTimer <= 0) {
+	} else if (!isNaN(pregnancy.waterBreakingTimer) && !pregnancy.waterBreaking && pregnancy.waterBreakingTimer <= 0) {
 		pregnancy.waterBreaking = true;
 		// To prevent new events from occuring, allowing players to more easily go to the hospital or similar locations
 		V.eventskip = 1;
