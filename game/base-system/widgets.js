@@ -357,8 +357,8 @@ function apparentbottomsizecheck() {
 	V.player.perceived_bottomsize = Math.clamp(V.bottomsizemin, T.tempbutt, V.bottomsizemax);
 }
 
-function exposedcheck() {
-	if (!V.combat || V.args[0] === true) {
+function exposedcheck(alwaysRun) {
+	if (!V.combat || alwaysRun) {
 		apparentbreastsizecheck();
 		apparentbottomsizecheck();
 		genderappearancecheck();
