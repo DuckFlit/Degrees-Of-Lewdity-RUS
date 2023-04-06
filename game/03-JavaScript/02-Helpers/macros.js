@@ -27,17 +27,18 @@ const ErrorSystem = ((Scripting, Errors) => {
 		handler() {
 			const exp = this.args.full;
 			const result = Scripting.evalJavaScript(exp[0] === "{" ? `(${exp})` : exp);
-			let { message, source, depth, exportable } = Object.assign(
+			let { message, source, depth, exportable, logged } = Object.assign(
 				{
 					message: "Message not set",
 					source: null,
 					depth: 0,
 					exportable: true,
+					logged: true,
 				},
 				result
 			);
 			if (source === null) source = getTargetSource.call(this, depth);
-			throwError(this.output, message, source, exportable);
+			throwError(this.output, message, source, exportable, logged);
 		},
 	});
 
@@ -46,7 +47,9 @@ const ErrorSystem = ((Scripting, Errors) => {
 			if (this.args.length < 1) return this.error(`Missing <<errorP>> arguments. ${this.args}`);
 			const message = this.args[0];
 			const source = this.args[1] || this.parser.source.slice(0, this.parser.matchStart).slice(-128);
-			throwError(this.output, message, source);
+			const isExportable = this.args[2] || true;
+			const isLogged = this.args[3] || true;
+			throwError(this.output, message, source, isExportable, isLogged);
 		},
 	});
 

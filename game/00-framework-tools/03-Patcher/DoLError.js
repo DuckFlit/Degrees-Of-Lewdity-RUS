@@ -1,63 +1,74 @@
 function getDebuggingInfo() {
+	if (V == null) return "SugarCube variables could not be loaded.";
 	const response = {
 		passage: V.passage,
-		index: V.index,
+		stack: [...DOL.Stack],
+		phase: V.phase,
 		rng: V.rng,
 		danger: V.danger,
-		phase: V.phase,
-		npcCount: EventSystem.count(),
-		player: {
-			penis: V.player.penis,
-			vagina: V.player.vagina,
-			leftarm: V.leftarm,
-			rightarm: V.rightarm,
-			feetuse: V.feetuse,
-			mouthuse: V.mouthuse,
-			penisuse: V.penisuse,
-			penisstate: V.penisstate,
-			vaginause: V.vaginause,
-			vaginastate: V.vaginastate,
-			anususe: V.anususe,
-			anusstate: V.anusstate,
-			bottomuse: V.bottomuse,
-			chestuse: V.chestuse,
-			thighuse: V.thighuse,
-			mouthstate: V.mouthstate,
-			cheststate: V.cheststate,
-			head: V.head,
-			front: V.front,
-			back: V.back,
-			chest: V.chest,
-		},
-		anustarget: V.anustarget,
-		chesttarget: V.chesttarget,
-		feettarget: V.feettarget,
-		handtarget: V.handtarget,
-		lefttarget: V.lefttarget,
-		mouthtarget: V.mouthtarget,
-		penistarget: V.penistarget,
-		righttarget: V.righttarget,
-		stealtarget: V.stealtarget,
-		thightarget: V.thightarget,
-		tooltarget: V.tooltarget,
-		vaginatarget: V.vaginatarget,
+		index: V.index,
 	};
+	if (V.combat) {
+		Object.assign(response, {
+			player: {
+				penis: V.player.penis,
+				vagina: V.player.vagina,
+				leftarm: V.leftarm,
+				rightarm: V.rightarm,
+				feetuse: V.feetuse,
+				mouthuse: V.mouthuse,
+				penisuse: V.penisuse,
+				penisstate: V.penisstate,
+				vaginause: V.vaginause,
+				vaginastate: V.vaginastate,
+				anususe: V.anususe,
+				anusstate: V.anusstate,
+				bottomuse: V.bottomuse,
+				chestuse: V.chestuse,
+				thighuse: V.thighuse,
+				mouthstate: V.mouthstate,
+				cheststate: V.cheststate,
+				head: V.head,
+				front: V.front,
+				back: V.back,
+				chest: V.chest,
+			},
+			npcCount: EventSystem.count(),
+			anustarget: V.anustarget,
+			chesttarget: V.chesttarget,
+			feettarget: V.feettarget,
+			handtarget: V.handtarget,
+			lefttarget: V.lefttarget,
+			mouthtarget: V.mouthtarget,
+			penistarget: V.penistarget,
+			righttarget: V.righttarget,
+			stealtarget: V.stealtarget,
+			thightarget: V.thightarget,
+			tooltarget: V.tooltarget,
+			vaginatarget: V.vaginatarget,
+		});
+	}
 	for (let i = 0; i < EventSystem.count(); i++) {
 		const npc = V.NPCList[i];
-		response["npc" + i] = {
+		const npcData = {
 			active: npc.active,
 			index: npc.index,
-			lefthand: npc.lefthand,
-			mouth: npc.mouth,
-			penis: npc.penis,
-			righthand: npc.righthand,
-			vagina: npc.vagina,
 		};
+		if (V.combat) {
+			Object.apply(npcData, {
+				mouth: npc.mouth,
+				penis: npc.penis,
+				lefthand: npc.lefthand,
+				righthand: npc.righthand,
+				vagina: npc.vagina,
+			});
+		}
+		response["npc" + i] = npcData;
 	}
 	return response;
 }
 
-throwError = function (place, message, source, isExportable = true) {
+throwError = function (place, message, source, isExportable = true, isLogged = true) {
 	if (typeof message === "string") message = message.replace(/Export$/, "");
 
 	const $wrapper = jQuery(document.createElement("div"));
@@ -121,7 +132,7 @@ throwError = function (place, message, source, isExportable = true) {
 	const formattedSource = source.replace(/\n/g, "\n\t");
 	console.warn(`${mesg}\n\t${formattedSource}`);
 
-	Errors.report(mesg, JSON.stringify(getDebuggingInfo()));
+	if (isLogged && V && V.options && V.options.debugdisable === "f") Errors.report(mesg, getDebuggingInfo());
 
 	return false;
 };
