@@ -243,9 +243,9 @@ function weekPassed() {
 	}
 	if (Time.schoolTerm) {
 		V.science_exam = Math.clamp(V.science_exam - 7, -107, 200);
-		V.maths_exam = Math.clamp(V.science_exam - 7, -107, 200);
-		V.english_exam = Math.clamp(V.science_exam - 7, -107, 200);
-		V.history_exam = Math.clamp(V.science_exam - 7, -107, 200);
+		V.maths_exam = Math.clamp(V.maths_exam - 7, -107, 200);
+		V.english_exam = Math.clamp(V.english_exam - 7, -107, 200);
+		V.history_exam = Math.clamp(V.history_exam - 7, -107, 200);
 		fragment.append(wikifier("exam_difficulty"));
 	}
 	if (V.robinpaid === 1) V.robinPayout = 0;
