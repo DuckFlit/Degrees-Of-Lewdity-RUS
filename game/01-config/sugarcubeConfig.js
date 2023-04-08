@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 Config.history.controls = false;
 Config.saves.slots = 9;
-Config.history.maxStates = 5;
+Config.history.maxStates = 1;
 
 State.prng.init();
 
@@ -50,9 +50,9 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.0.4",
+	version: "0.4.0.5",
 	versionName: "",
-	sneaky: true,
+	sneaky: false,
 };
 
 /* convert version string to numeric value */
