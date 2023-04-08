@@ -248,9 +248,9 @@ window.clothesColour = clothesColour;
  * @returns {void}
  */
 function outfitChecks() {
-	T.underOutfit = V.worn.under_lower.outfitSecondary && V.worn.under_lower.outfitSecondary[1] === V.worn.under_upper.name;
-	T.middleOutfit = V.worn.lower.outfitSecondary && V.worn.lower.outfitSecondary[1] === V.worn.upper.name;
-	T.overOutfit = V.worn.over_lower.outfitSecondary && V.worn.over_lower.outfitSecondary[1] === V.worn.over_upper.name;
+	T.underOutfit = (V.worn.under_lower.outfitSecondary && V.worn.under_lower.outfitSecondary[1] === V.worn.under_upper.name) || false;
+	T.middleOutfit = (V.worn.lower.outfitSecondary && V.worn.lower.outfitSecondary[1] === V.worn.upper.name) || false;
+	T.overOutfit = (V.worn.over_lower.outfitSecondary && V.worn.over_lower.outfitSecondary[1] === V.worn.over_upper.name) || false;
 
 	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
 	T.middleNaked = V.worn.lower.name === "naked" && V.worn.upper.name === "naked";
@@ -260,6 +260,7 @@ function outfitChecks() {
 	T.fullyNaked = T.topless && T.bottomless;
 }
 window.outfitChecks = outfitChecks;
+DefineMacro("outfitChecks", outfitChecks);
 
 /**
  * @returns {boolean} whether or not any main-body clothing is out of place or wet
