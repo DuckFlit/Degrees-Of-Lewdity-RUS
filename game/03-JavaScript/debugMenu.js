@@ -751,7 +751,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Street Police Extreme`, `Street Police Extreme`],
-			widgets: [`<pass 1 week>>`, `<<pass 1 week>>`, `<<npc Leighton>>`, `<<person1>>`],
+			widgets: [`<<pass 1 week>>`, `<<pass 1 week>>`, `<<npc Leighton>>`, `<<person1>>`],
 		},
 		{
 			link: [`Brothel Show Swarm`, `Brothel Show Swarm`],

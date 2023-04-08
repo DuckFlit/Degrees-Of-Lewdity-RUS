@@ -300,6 +300,7 @@
 	<</if>>
 	<<set $active_enemy to 0>>
 	<<unset $hypnosis_deviancy_check>>
+	<<unset $otherFilled>>
 <</widget>>
 
 <<widget "beastTrainGenerate">>/*Saves all beasts/monsters in $NPCList, then loads the first into slot 0.*/
@@ -407,12 +408,17 @@
 		<<else>>
 			<<set _text_output to "ERROR: Condom $_condom invalid">>
 		<</if>>
+		<<if $_condomDesc.colour is "lblue">>
+			<<set $_colourName to "light blue">>
+		<<else>>
+			<<set $_colourName to $_condomDesc.colour>>
+		<</if>>
 		<<if $_condomArticle is "a">>
-			<<set _text_output += (["a","e","i","o","u","A","E","I","O","U"].some(letter => $_condomDesc.colour.startsWith(letter)) ? "n " + $_condomDesc.colour + " " : " " + $_condomDesc.colour + " ")>>
+			<<set _text_output += (["a","e","i","o","u","A","E","I","O","U"].some(letter => $_colourName.startsWith(letter)) ? "n " + $_colourName + " " : " " + $_colourName + " ")>>
 		<<elseif $_condomArticle is "the">>
 			<<set _text_output += " ">>
 		<<else>>
-			<<set _text_output += " " + $_condomDesc.colour + " ">>
+			<<set _text_output += " " + $_colourName + " ">>
 		<</if>>
 		<<if $_condomDesc.type isnot "plain">>
 			<<set _text_output += $_condomDesc.type + " ">>
@@ -454,7 +460,7 @@
 	<<set $player.condom to {
 		state: (random(0,100) gt 98 ? "defective" : "normal"),
 		type: "plain",
-		colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].name,
+		colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
 		worn: true
 	}>>
 	<<set $condoms -= 1>>
@@ -474,7 +480,7 @@
 			willUse: true,
 			state: (random(0,100) gt 98 ? "defective" : "normal"),
 			type: "plain",
-			colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].name,
+			colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
 			worn: false
 		}>>
 		<<set $condoms -= 1>>

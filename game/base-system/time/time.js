@@ -403,11 +403,9 @@ function dayPassed() {
 	if (V.awarelevel <= 1 && V.loveInterest.secondary !== "None") {
 		V.loveInterest_message = 1;
 		V.loveInterest.secondary = "None";
-		delete V.loveInterestAwareMessage;
 		V.effectsmessage = 1;
 	} else if (V.awarelevel >= 2 && V.loveInterest.primary !== "None" && V.loveInterest.secondary === "None" && !V.loveInterestAwareMessage) {
 		V.loveInterest_message = 2;
-		V.loveInterestAwareMessage = 1;
 		V.effectsmessage = 1;
 	}
 	if (V.pound) {
