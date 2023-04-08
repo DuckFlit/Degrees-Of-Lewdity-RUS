@@ -168,7 +168,6 @@ function wakingPregnancyEvent() {
 	const rng = random(0, 100);
 	const menstruation = V.sexStats.vagina.menstruation;
 	const pills = V.sexStats.pills;
-	const lastPregPill = pills.lastTaken.pregnancy;
 	const pregnancyStage = pregnancy.timerEnd ? Math.clamp(pregnancy.timer / pregnancy.timerEnd, 0, 1) : false;
 	let wakingEffects;
 
@@ -201,9 +200,9 @@ function wakingPregnancyEvent() {
 	} else if (V.pregnancyStats.morningSicknessWaking >= 1 && rng >= 50) {
 		wakingEffects = "morningSicknessPills";
 		V.pregnancyStats.morningSicknessWaking = 0;
-	} else if (["contraceptive", "fertility booster"].includes(lastPregPill) && pills.pills[lastPregPill].doseTaken >= 2 && rng >= 50) {
+	} else if ((pills.pills.contraceptive.doseTaken >= 2 || pills.pills["fertility booster"].doseTaken >= 2) && rng >= 50) {
 		wakingEffects = "morningSicknessPills";
-	} else if (["contraceptive", "fertility booster"].includes(lastPregPill) && pills.pills[lastPregPill].doseTaken >= 1 && rng >= 75) {
+	} else if ((pills.pills.contraceptive.doseTaken >= 1 || pills.pills["fertility booster"].doseTaken >= 1) && rng >= 75) {
 		wakingEffects = "mildIssues";
 	}
 	const result = [];
@@ -259,7 +258,6 @@ function dailyPregnancyEvent() {
 	const rng = random(0, 100) + (V.daily.pregnancyEvent || 0);
 	const menstruation = V.sexStats.vagina.menstruation;
 	const pills = V.sexStats.pills;
-	const lastPregPill = pills.lastTaken.pregnancy;
 	const pregnancyStage = pregnancy.timerEnd ? Math.clamp(pregnancy.timer / pregnancy.timerEnd, 0, 1) : false;
 	let dailyEffects;
 
@@ -275,9 +273,9 @@ function dailyPregnancyEvent() {
 	} else if (V.pregnancyStats.morningSicknessGeneral >= 1 && rng >= 90) {
 		dailyEffects = "morningSicknessPills";
 		V.pregnancyStats.morningSicknessGeneral--;
-	} else if (["contraceptive", "fertility booster"].includes(lastPregPill) && pills.pills[lastPregPill].doseTaken >= 2 && rng >= 90) {
+	} else if ((pills.pills.contraceptive.doseTaken >= 2 || pills.pills["fertility booster"].doseTaken >= 2) && rng >= 90) {
 		dailyEffects = "morningSicknessPills";
-	} else if (["contraceptive", "fertility booster"].includes(lastPregPill) && pills.pills[lastPregPill].doseTaken >= 1 && rng >= 95) {
+	} else if ((pills.pills.contraceptive.doseTaken >= 1 || pills.pills["fertility booster"].doseTaken >= 1) && rng >= 95) {
 		dailyEffects = "mildIssues";
 	} else if (
 		V.cycledisable === "f" &&
@@ -362,24 +360,29 @@ function playerPregnancyRisk() {
 	if (V.cycledisable === "t") return menstruation.nonCycleRng[0];
 
 	const pills = V.sexStats.pills;
-	const lastPregPill = pills.lastTaken.pregnancy;
 
 	let risk;
 	let daysTillEnd;
 	let multi = 1;
 	switch (V.pregnancytype) {
 		case "realistic":
-			// Was a pain to calculate, might need to be adjusted
-			if (menstruation.currentDay > menstruation.stages[3] + 4) {
-				daysTillEnd = menstruation.currentDaysMax - menstruation.currentDay + menstruation.stages[3];
-			} else {
-				daysTillEnd = menstruation.stages[3] - menstruation.currentDay;
+			// Was a pain to calculate, has already been adjusted once
+			daysTillEnd = menstruation.stages[3] - menstruation.currentDay;
+			if (daysTillEnd > 2) {
+				if (V.skin.pubic.type === "magic" && V.skin.pubic.special === "pregnancy") multi += 1;
+				if (pills.pills["fertility booster"].doseTaken >= 2) multi += 1;
+				daysTillEnd = Math.clamp(Math.ceil(daysTillEnd / multi), 2, Infinity);
 			}
-
-			if (V.skin.pubic.type === "magic" && V.skin.pubic.special === "pregnancy") multi += 1;
-			if (lastPregPill === "fertility booster" && pills.pills["fertility booster"].doseTaken >= 2) multi += 1;
-			daysTillEnd = daysTillEnd / multi;
 			daysTillEnd += 4;
+
+			// Re-calculate as the chance for pregnancy has ended
+			if (daysTillEnd <= 0) {
+				daysTillEnd = menstruation.currentDaysMax - menstruation.currentDay + menstruation.stages[3];
+				if (V.skin.pubic.type === "magic" && V.skin.pubic.special === "pregnancy") multi += 1;
+				if (pills.pills["fertility booster"].doseTaken >= 2) multi += 1;
+				daysTillEnd = Math.clamp(Math.ceil(daysTillEnd / multi), 2, Infinity);
+				daysTillEnd += 4;
+			}
 
 			if (between(daysTillEnd, 4, 10)) {
 				risk = 0;
@@ -431,18 +434,21 @@ window.playerPregnancyRisk = playerPregnancyRisk;
 function playerHeatMinArousal() {
 	if (!V.sexStats || !V.sexStats.pills || V.statFreeze) return 0;
 	if (!V.player.vaginaExist && !canBeMPregnant()) return 0;
-	if (playerIsPregnant() && playerPregnancyProgress(false) > 10) return 0;
+	if (playerIsPregnant() && !V.pregnancyStats.heatStillEnabled) return 0;
 
 	const pills = V.sexStats.pills.pills;
 	const risk = playerPregnancyRisk();
 	let minArousal = 0;
 
+	// Should always be the first to modify minArousal
 	if (risk <= 1 && pills.contraceptive.doseTaken === 0) {
 		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10 * (2 - risk);
 		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10 * (2 - risk);
 		if (V.cow >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10 * (2 - risk);
 		if (V.fox >= 2) minArousal += Math.clamp(V.foxbuild, 0, 100) * 10 * (2 - risk);
 	}
+	if (minArousal === 0) V.pregnancyStats.heatStillEnabled = !playerIsPregnant();
+
 	if (pills["fertility booster"].doseTaken > 2) {
 		minArousal += 500;
 	}
