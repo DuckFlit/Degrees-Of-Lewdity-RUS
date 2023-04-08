@@ -386,7 +386,7 @@ function dayPassed() {
 	if (V.slimeSleepEvent < 1) delete V.slimeEvent;
 	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
 	if (V.lake_ice_broken < 1) delete V.lake_ice_broken;
-	if (V.community_service >= 1) {
+	if (V.community_service >= 1 && !V.community_service_done !== 1) {
 		if (!["asylum", "prison"].includes(V.location)) {
 			fragment.append(wikifier("crimeup", 200));
 			V.effectsmessage = 1;
