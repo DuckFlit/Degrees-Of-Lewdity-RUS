@@ -685,3 +685,20 @@ function knowsAboutChildrenTotal(motherOrFather, whoToCheck, location) {
 	}, 0);
 }
 window.knowsAboutChildrenTotal = knowsAboutChildrenTotal;
+
+function childrenCountBetweenParents(parent1, parent2){
+    return Object.values(V.children).reduce((prev, curr) => {
+      if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1,parent2].includes(curr.father)) return prev + 1;
+      return prev;
+    }, 0)
+}
+window.childrenCountBetweenParents = childrenCountBetweenParents;
+
+function pregnancyCountBetweenParents(parent1, parent2) {
+    return Object.values(V.children).reduce((prev, curr) => {
+        if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1, parent2].includes(curr.father))
+            prev.pushUnique(curr.mother + curr.birthId);
+        return prev;
+    }, []).length;
+}
+window.pregnancyCountBetweenParents = pregnancyCountBetweenParents;
