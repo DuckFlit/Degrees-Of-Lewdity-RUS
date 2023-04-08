@@ -1880,7 +1880,9 @@ function tempEditPlayerEyeValues(tmp_save, eye, eye_name, color, s_c){
 	return tmp_save
 }
 
-window.colorWheelContactLenses = function(){
+window.colorWheelContactLenses = function() {
+	// At the very least set it to an array just in case.
+	T.color_lenses_temp = [];
 	$(function(){
 		let p_eyes = [(V.makeup.eyelenses.left != 0 ? V.makeup.eyelenses.left : V.leftEyeColour),(V.makeup.eyelenses.right != 0 ? V.makeup.eyelenses.right : V.rightEyeColour)]
 		p_eyes = [hexToRgb(setup.colours.eyes_map[p_eyes[0]].canvasfilter.blend), hexToRgb(setup.colours.eyes_map[p_eyes[1]].canvasfilter.blend)]
@@ -1913,32 +1915,33 @@ window.colorWheelContactLenses = function(){
 			}
 			]
 		});
+		T.color_lenses_temp = colorPicker.colors;
 		colorPicker.on(['input:end'], function(color) {
 			let check_condition = 0;
-			let tmp_object = {"0":{"normal":{"blend":undefined,"brightness":undefined},"custom":{"blend":undefined,"brightness":undefined}},"1":{"normal":{"blend":undefined,"brightness":undefined},"custom":{"blend":undefined,"brightness":undefined}}}
+			let tmp_object = {"0":{"normal":{"blend":undefined,"brightness":undefined},"custom":{"blend":undefined,"brightness":undefined}},"1":{"normal":{"blend":undefined,"brightness":undefined},"custom":{"blend":undefined,"brightness":undefined}}};
 			let eye;
 			let save_index = [];
-			let eyes = [(V.makeup.eyelenses.left ? V.makeup.eyelenses.left : V.leftEyeColour), (V.makeup.eyelenses.right ? V.makeup.eyelenses.right : V.rightEyeColour)]
-			let remember_eye = [eyes[0], eyes[1]]
+			let eyes = [(V.makeup.eyelenses.left ? V.makeup.eyelenses.left : V.leftEyeColour), (V.makeup.eyelenses.right ? V.makeup.eyelenses.right : V.rightEyeColour)];
+			let remember_eye = [eyes[0], eyes[1]];
 
-			color = colorPicker.colors
+			color = colorPicker.colors;
 			for (eye in eyes){
 				for (let s_colours in setup.colours.eyes){ // We loop through every colours currently known in the game("currently know" because new ones can be added as you get new lenses)
 					if (setup.colours.eyes[s_colours].variable == eyes[eye]){ // When we found the right colour object that matches the eye colour
 						check_condition = 1
 						tempEditEyeName(eye, "colorWheelTemporary"+eye, s_colours) // we replace its colour by "colorWheelTemporary" and have this temporary colour match player's one
 						tmp_object = tempEditPlayerEyeValues(tmp_object, eye, "colorWheelTemporary"+eye, color[(V.pharmacy_order_colours == 1 ? 0 : eye)], s_colours); // we temporarily change the player eye colour, and save the original values, as to set them back afterward.
-						save_index[eye] = s_colours
+						save_index[eye] = s_colours;
 						break;
 					}
 				}
 			}
 			if (check_condition == 0)
-				Errors.report("No match found between your eyelenses color and the ones in setup.colours.eyes\neye_color : " + V.leftEyeColour + "/" + V.rightEyeColour + " eyelens : " + V.makeup.eyelenses.left + "/" + V.rightEyeColour.right + "\nPlease report this issue.")
+				Errors.report("No match found between your eyelenses color and the ones in setup.colours.eyes\neye_color : " + V.leftEyeColour + "/" + V.rightEyeColour + " eyelens : " + V.makeup.eyelenses.left + "/" + V.rightEyeColour.right + "\nPlease report this issue.");
 			else
 				redrawImg(tmp_object, save_index, remember_eye);
-			T.color_lenses_temp = color
-			remember_eye = undefined
+			T.color_lenses_temp = color;
+			remember_eye = undefined;
 			eyes = undefined;
 		});
 	});
