@@ -634,7 +634,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Robin Pillory Watch`, `Robin Pillory Watch`],
-			widgets: [`<<robinPunishment "pillory">>`,`<<set $robinmissing to "pillory">>`,`<<set $robinPillory.known to 1>>`],
+			widgets: [`<<robinPunishment "pillory">>`, `<<set $robinmissing to "pillory">>`, `<<set $robinPillory.known to 1>>`],
 		},
 		{
 			link: [`Distract Robin Crowd`, stayOnPassageFn],
