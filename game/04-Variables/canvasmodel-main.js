@@ -702,7 +702,11 @@ Renderer.CanvasModels["main"] = {
 			options.head_mask_src = "img/clothes/head/" + options.worn_over_head_setup.variable + "/mask.png";
 		} else if (options.worn_head_setup.mask_img === 1 &&
 			!(options.hood_down && options.worn_head_setup.hood && options.worn_head_setup.outfitSecondary !== undefined)) {
-			options.head_mask_src = "img/clothes/head/" + options.worn_head_setup.variable + "/mask.png";
+			if (options.worn_head_setup.mask_img_ponytail === 1 && ["curly pigtails", "fluffy ponytail", "side thicktail", "thick twintails"].includes(options.hair_sides_type)) {
+				options.head_mask_src = "img/clothes/head/" + options.worn_head_setup.variable + "/mask_ponytail.png";
+			} else {
+				options.head_mask_src = "img/clothes/head/" + options.worn_head_setup.variable + "/mask.png";
+			}
 		} else {
 			options.head_mask_src = null;
 		}
