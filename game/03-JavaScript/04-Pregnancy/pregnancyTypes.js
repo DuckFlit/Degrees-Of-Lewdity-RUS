@@ -236,8 +236,8 @@ function skinColourCalc(name) {
 		return V.skinColor.natural;
 	} else if (name === "Ivory Wraith") {
 		return "ghostlyPale";
-	} else if (C.npc[name] && C.npc[name].skinColour) {
-		return C.npc[name].skinColour;
+	} else if (C.npc[name] && C.npc[name].skincolour) {
+		return C.npc[name].skincolour;
 	} else {
 		return ["light", "medium", "dark", "ylight", "ymedium", "ydark"][random(0, 5)];
 	}
