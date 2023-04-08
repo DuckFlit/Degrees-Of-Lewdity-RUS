@@ -365,6 +365,18 @@ setup.pills = [
 		owned() {
 			return V.sexStats.pills["pills"][this.name].owned;
 		},
+		hpi_doseTaken() {
+			if (V.sexStats.pills["pills"][this.name].doseTaken) {
+				return (
+					"Effective for " + V.sexStats.pills["pills"][this.name].doseTaken + " day" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "s" : "")
+				);
+			} else {
+				return "Not Applied";
+			}
+		},
+		hpi_take_every_morning() {
+			return this.autoTake() ? "Take when required" : "Stop Taking them";
+		},
 		type: "pregnancy",
 		subtype: "fertility booster",
 		shape: "pill",
@@ -395,6 +407,18 @@ setup.pills = [
 		},
 		owned() {
 			return V.sexStats.pills["pills"][this.name].owned;
+		},
+		hpi_doseTaken() {
+			if (V.sexStats.pills["pills"][this.name].doseTaken) {
+				return (
+					"Effective for " + V.sexStats.pills["pills"][this.name].doseTaken + " day" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "s" : "")
+				);
+			} else {
+				return "Not Applied";
+			}
+		},
+		hpi_take_every_morning() {
+			return this.autoTake() ? "Take when required" : "Stop Taking them";
 		},
 		type: "pregnancy",
 		subtype: "contraceptive",

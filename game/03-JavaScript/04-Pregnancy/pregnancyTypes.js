@@ -126,9 +126,7 @@ function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = n
 		// Prevent a parasitic pregnancy if there is not enough space
 		if (parasiteType && pregnancy.fetus.length >= maxParasites(genital)) return ["Player does not have room for more parasites"];
 
-		if (V.sexStats.pills.lastTaken.pregnancy === "fertility booster") {
-			fertility += V.sexStats.pills.pills["fertility booster"].doseTaken;
-		}
+		fertility += Math.clamp(V.sexStats.pills.pills["fertility booster"].doseTaken || 0, 0, Infinity);
 	} else if (!parasiteType) {
 		if (V.npcPregnancyDisable === "t") return ["NPC pregnancy disabled"];
 
@@ -157,9 +155,7 @@ function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = n
 			if (V.skin.pubic.pen === "magic" && V.skin.pubic.special === "pregnancy") {
 				magicTattoo = 1;
 			}
-			if (V.sexStats.pills.lastTaken.pregnancy === "fertility booster") {
-				fertility += V.sexStats.pills.pills["fertility booster"].doseTaken;
-			}
+			fertility += Math.clamp(V.sexStats.pills.pills["fertility booster"].doseTaken || 0, 0, Infinity);
 		} else if (C.npc[fatherObject.name]) {
 			if (fatherObject.pregnancy.pills === "fertility") {
 				fertility += 1;
