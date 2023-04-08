@@ -53,6 +53,12 @@ const ErrorSystem = ((Scripting, Errors) => {
 		},
 	});
 
+	Macro.add("log", {
+		handler() {
+			console.log(...this.args);
+		},
+	});
+
 	/**
 	 * DEPRECATED: Time should no longer be able to desynchronise, so this check is unnecessary.
 	 *
