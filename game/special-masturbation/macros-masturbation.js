@@ -1,4 +1,4 @@
-function getToyName(index, capitalise = false) {
+function getToyName(index, capitalize = false) {
 	const toy = T.playerToys[index];
 	if (toy == null) {
 		let msg = "Could not find the player's toy name.";
@@ -6,7 +6,7 @@ function getToyName(index, capitalise = false) {
 		Errors.report(msg, { index });
 		return "toy duck";
 	}
-	const name = capitalise ? toy.namecap : toy.name;
+	const name = capitalize ? toy.namecap : toy.name;
 	return toy.colour ? toy.colour + " " + name : name;
 }
-DefineMacroS("toyName", getToyName);
+DefineMacroS("getToyName", getToyName);
