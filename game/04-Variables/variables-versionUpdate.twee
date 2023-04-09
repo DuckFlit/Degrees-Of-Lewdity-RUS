@@ -4358,19 +4358,53 @@
 		<</script>>
 	<</if>>
 
-	<<for _garment range Object.keys($worn)>>
-		<<if $worn[_garment].outfitPrimary || $worn[_garment].outfitSecondary>>
+	<<for _garmentLayer range Object.keys($worn)>>
+		<<if $worn[_garmentLayer].outfitPrimary || $worn[_garmentLayer].outfitSecondary>>
 
-			<<if Object.values($worn[_garment].outfitPrimary) isnot "broken" and Object.values($worn[_garment].outfitPrimary) isnot setup.clothes[_garment][$worn[_garment].index].outfitPrimary>>
-					<<set $worn[_garment].outfitPrimary to clone(setup.clothes[_garment][$worn[_garment].index].outfitPrimary)>>
+			<<if Object.values($worn[_garmentLayer].outfitPrimary) isnot "broken" and Object.values($worn[_garmentLayer].outfitPrimary) isnot setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitPrimary>>
+					<<set $worn[_garmentLayer].outfitPrimary to clone(setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitPrimary)>>
 			<</if>>
 			
-			<<if $worn[_garment].outfitSecondary[1] isnot "broken" and $worn[_garment].outfitSecondary[1] isnot setup.clothes[_garment][$worn[_garment].index].outfitSecondary[1]>>
-					<<set $worn[_garment].outfitSecondary to clone(setup.clothes[_garment][$worn[_garment].index].outfitSecondary)>>
+			<<if $worn[_garmentLayer].outfitSecondary[1] isnot "broken" and $worn[_garmentLayer].outfitSecondary[1] isnot setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitSecondary[1]>>
+					<<set $worn[_garmentLayer].outfitSecondary to clone(setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitSecondary)>>
 			<</if>>
 
 		<</if>>
-<</for>>
+	<</for>>
 
+	<<for _garmentLayer range ["upper", "lower", "under_upper", "under_lower", "over_upper", "over_lower"]>>
+
+		<<if _garmentLayer.includes("upper")>>
+
+			/*Worn*/
+			<<if $worn[_garmentLayer].outfitPrimary and Object.values($worn[_garmentLayer].outfitPrimary) isnot "broken" and Object.values($worn[_garmentLayer].outfitPrimary) isnot setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitPrimary>>
+				<<set $worn[_garmentLayer].outfitPrimary to clone(setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitPrimary)>>
+			<</if>>
+
+			/*wardrobe */
+			<<for _wardrobeOption 0 to $wardrobe[_garmentLayer].length>>
+				<<if $wardrobe[_garmentLayer][_wardrobeOption].outfitPrimary and $wardrobe[_garmentLayer][_wardrobeOption].outfitPrimary isnot "broken" and $wardrobe[_garmentLayer][_wardrobeOption].outfitPrimary isnot setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitPrimary>>
+						<<set $wardrobe[_garmentLayer][_wardrobeOption].outfitPrimary to clone(setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitPrimary)>>
+				<</if>>
+			<</for>>
+
+			
+		<<elseif _garmentLayer.includes("lower")>>
+
+			/*Worn*/
+			<<if $worn[_garmentLayer].outfitPrimary and $worn[_garmentLayer].outfitSecondary[1] isnot "broken" and $worn[_garmentLayer].outfitSecondary[1] isnot setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitSecondary[1]>>
+				<<set $worn[_garmentLayer].outfitSecondary to clone(setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitSecondary)>>
+			<</if>>
+
+			/*wardrobe */
+			<<for _wardrobeOption 0 to $wardrobe[_garmentLayer].length>>
+				<<if $wardrobe[_garmentLayer][_wardrobeOption].outfitSecondary and $wardrobe[_garmentLayer][_wardrobeOption].outfitSecondary[1] isnot "broken" and $wardrobe[_garmentLayer][_wardrobeOption].outfitSecondary[1] isnot setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitSecondary[1]>>
+						<<set $wardrobe[_garmentLayer][_wardrobeOption].outfitSecondary to clone(setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitSecondary)>>
+				<</if>>
+			<</for>>
+			
+		<</if>>
+
+	<</for>>
 
 <</widget>>
