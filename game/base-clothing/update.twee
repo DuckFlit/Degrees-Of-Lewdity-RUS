@@ -1,11 +1,12 @@
+/*
 :: Widgets updateClothes [widget]
-<<widget "updateClothes">>
+<<widget "updateClothes-obsolete">>
 	<<set _equip to setup.clothes_all_slots>>
 	<<set _skip to ["integrity","integrity_max","colour","accessory_colour", "exposed", "vagina_exposed", "anus_exposed", "anal_shield", "one_piece", "skirt_down", "state", "state_top","name_cap","iconFile","accIcon","notuck","skirt","description","colour_options","accessory_colour_options","fabric_strength","integrity_max","bustresize","sleeve_img","breast_img","exposed_base","vagina_exposed_base","anus_exposed_base","state_top_base","state_base","word","femininity","strap","cost","shop","cursed","collared"]>>
 	<<set _remap_colours to {"light-pink":"light pink", "blue-steel":"blue steel"}>>
 
-	/*0.3.9.3: adding "hoodposition" variable to all hoodies*/
-	/*Just add the variable to hoodies that don't have it, skip it after this*/
+	<!-- 0.3.9.3: adding "hoodposition" variable to all hoodies 
+	Just add the variable to hoodies that don't have it, skip it after this -->
 	<<if $objectVersion.updateClothes gte 31>>
 		<<set _skip.push("hoodposition")>>
 	<</if>>
@@ -163,132 +164,7 @@
 	<</for>>
 <</widget>>
 
-<!--New isolated wardrobes also need updates to the `clothesReturnLocation` function in ingame.js-->
-<<widget "wardrobesUpdate">>
-	<<script>>
-		/* default wardrobe object */
-		const def_wardrobe = {
-			face: [],
-			feet: [],
-			hands: [],
-			head: [],
-			legs: [],
-			lower: [],
-			neck: [],
-			over_head: [],
-			over_lower: [],
-			over_upper: [],
-			genitals: [],
-			under_lower: [],
-			under_upper: [],
-			upper: [],
-			unlocked: false,
-			shopSend: false,
-			transfer: true,
-			isolated: false,
-			locationRequirement: [],
-			space: 5,
-		};
-		/* initialise multiple wardrobes. works for both old saves and new games */
-		if (V.wardrobes === undefined) {
-			V.wardrobes = {
-				shopReturn: "wardrobe",
-				wardrobe: {
-					NOTE: "DO NOT USE THIS OBJECT TO STORE CLOTHES",
-					unlocked: true,
-					shopSend: true,
-					name: "Orphanage",
-				},
-				changingRoom: clone(def_wardrobe),
-				edensCabin: clone(def_wardrobe),
-				asylum: clone(def_wardrobe),
-				alexFarm: clone(def_wardrobe),
-				stripClub: clone(def_wardrobe),
-				brothel: clone(def_wardrobe),
-				schoolBoys: clone(def_wardrobe),
-				schoolGirls: clone(def_wardrobe),
-				prison: clone(def_wardrobe),
-			};
-			/* beach */
-			V.wardrobes.changingRoom.name = "Beach changing room";
-			V.wardrobes.changingRoom.unlocked = true;
-			/* eden's */
-			V.wardrobes.edensCabin.name = "Eden's Cabin";
-			V.wardrobes.edensCabin.space = 10;
-			if (V.syndromeeden) V.wardrobes.edensCabin.unlocked = true;
-			/* asylum */
-			V.wardrobes.asylum.locationRequirement.push("asylum");
-			V.wardrobes.asylum.name = "Asylum";
-			V.wardrobes.asylum.transfer = false;
-			V.wardrobes.asylum.isolated = true;
-			/* alex's */
-			V.wardrobes.alexFarm.name = "Alex's Farm";
-			V.wardrobes.alexFarm.shopSend = true;
-			V.wardrobes.alexFarm.space = 40;
-			if (V.farm_stage >= 7) V.wardrobes.alexFarm.unlocked = true;
-			/* strip club */
-			V.wardrobes.stripClub.name = "Strip Club";
-			V.wardrobes.stripClub.space = 10;
-			if (V.stripclubdancingintro) V.wardrobes.stripClub.unlocked = true;
-			/* brothel */
-			V.wardrobes.brothel.name = "Brothel";
-			V.wardrobes.brothel.space = 10;
-			if (V.brotheljob) V.wardrobes.brothel.unlocked = true;
-			/* school pool boys */
-			V.wardrobes.schoolBoys.name = "Schools boy's locker";
-			V.wardrobes.schoolBoys.unlocked = true;
-			V.wardrobes.schoolBoys.under_lower.push(setup.clothes.under_lower[7]);
-			V.wardrobes.schoolBoys.under_lower.last().colour = "blue";
-			/* school pool girls */
-			V.wardrobes.schoolGirls.name = "Schools girl's locker";
-			V.wardrobes.schoolGirls.unlocked = true;
-			V.wardrobes.schoolGirls.under_lower.push(setup.clothes.under_lower[6]);
-			V.wardrobes.schoolGirls.under_lower.last().colour = "blue";
-			V.wardrobes.schoolGirls.under_upper.push(setup.clothes.under_upper[2]);
-			V.wardrobes.schoolGirls.under_upper.last().colour = "blue";
-			/* prison */
-			V.wardrobes.prison.name = "Prison locker";
-			V.wardrobes.prison.transfer = false;
-			V.wardrobes.prison.isolated = true;
-			/* add .lastTaken prop to everything */
-			if (V.worn !== undefined) Object.keys(V.worn).forEach(s => V.worn[s].lastTaken = "wardrobe");
-			if (V.carried !== undefined) Object.keys(V.carried).forEach(s => V.carried[s].lastTaken = "wardrobe");
-			if (V.store !== undefined) Object.keys(V.store).forEach(s => V.store[s].forEach(i => i.lastTaken = "wardrobe"));
-		};
-		/* fix prison wardrobe name */
-		if (V.wardrobes.prison.name === "Prison Locker") V.wardrobes.prison.name = "Prison locker";
-		/* very old saves */
-		if (V.objectVersion.wardrobes < 2) {
-			for (const slot in setup.clothes_all_slots) {
-				/* skip slots that didn't exist in old saves */
-				if (V.wardrobe[slot] === undefined) continue;
-				/* remove all temporary items */
-				for (let j = V.wardrobe[slot].length - 1; j >= 0; j--) {
-					if (V.wardrobe[slot][j].temp) V.wardrobe[slot].deleteAt(j);
-				};
-				for (let j = V.wardrobes.prison[slot].length - 1; j >= 0; j--) {
-					if (V.wardrobes.prison[slot][j].temp) V.wardrobes.prison[slot].deleteAt(j);
-				};
-				for (let j = V.wardrobes.asylum[slot].length - 1; j >= 0; j--) {
-					if (V.wardrobes.asylum[slot][j].temp) V.wardrobes.asylum[slot].deleteAt(j);
-				};
-			};
-		};
-		/* less old saves */
-		if (V.objectVersion.wardrobes < 4) {
-			/* remove unnecessary vars */
-			clothesDataTrimmerLoop();
-			/* add a slot for genitals to all wardrobes */
-			if (V.wardrobe.genitals === undefined) V.wardrobe.genitals = [];
-			for (const w in V.wardrobes) {
-				if (w !== "wardrobe" && V.wardrobes[w].unlocked !== undefined && V.wardrobes[w].genitals === undefined)
-					V.wardrobes[w].genitals = [];
-			}
-		}
-	<</script>>
-<</widget>>
-
-<<widget "updateClothingColours">>
+<<widget "updateClothingColours-obsolete">>
 	<!-- Used for making clothes colour customisable. Structured in such a way that primary and accessory colours can be updated separately without affecting the other, if applicable. -->
 	<!-- This widget should be updated whenever a new clothing item is made colour customisable with the clothing item in question. Colours should be specifically chosen based on whatever best matches the original. -->
 
@@ -310,3 +186,4 @@
 			<<set _args[0].accessory_colour to (_args[0].accessory_colour is 0 ? _default.accessory_colour_options.random() : _args[0].accessory_colour)>>
 	<</switch>>
 <</widget>>
+*/
