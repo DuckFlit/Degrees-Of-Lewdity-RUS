@@ -4362,21 +4362,49 @@
 		<</script>>
 	<</if>>
 
-/* 
-	<<for _garmentLayer range Object.keys($worn)>>
-		<<if $worn[_garmentLayer].outfitPrimary || $worn[_garmentLayer].outfitSecondary>>
 
-			<<if Object.values($worn[_garmentLayer].outfitPrimary) isnot "broken" and Object.values($worn[_garmentLayer].outfitPrimary) isnot setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitPrimary>>
-					<<set $worn[_garmentLayer].outfitPrimary to clone(setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitPrimary)>>
+	<!-- V0.4.0.5 repair transformationParts object after damage from mid-prayer room or nightmare saves -->
+	<<if $transformationParts.fox is undefined and $tfFIX is undefined>>
+		<<set $tfFIX to 1>>
+		<<set $transformationParts.fox to {ears:"disabled", tail:"disabled", cheeks:"disabled"}>>
+		<<if $transformationParts.traits.mateForLife is undefined or $transformationParts.traits.flaunting is undefined>>
+			<<set $transformationParts.traits to {fangs:"disabled", sharpEyes:"disabled", mateForLife:"disabled", flaunting:"disabled"}>>
+			<<if $wolfgirl gte 2 or $cat gte 2 or $fox gte 2>>
+				<<set $transformationParts.traits.fangs to "default">>
 			<</if>>
-			
-			<<if $worn[_garmentLayer].outfitSecondary[1] isnot "broken" and $worn[_garmentLayer].outfitSecondary[1] isnot setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitSecondary[1]>>
-					<<set $worn[_garmentLayer].outfitSecondary to clone(setup.clothes[_garmentLayer][$worn[_garmentLayer].index].outfitSecondary)>>
+			<<if $cat gte 2 or $harpy gte 2 or $fox gte 2>>
+				<<set $transformationParts.traits.sharpEyes to "default">>
 			<</if>>
-
+			<<if $fox gte 3 or $harpy gte 3>>
+				<<set $transformationParts.traits.mateForLife to "default">>
+			<<else>>
+				<<set $transformationParts.traits.mateForLife to "disabled">>
+			<</if>>
+			<<set $transformationParts.traits.flaunting to "disabled">>
 		<</if>>
-	<</for>>
-*/
+		<<if $fox gte 4>>
+			<<set $transformationParts.fox.ears to "default">>
+		<</if>>
+		<<if $fox gte 5>>
+			<<set $transformationParts.fox.cheeks to "default">>
+		<</if>>
+		<<if $fox gte 6>>
+			<<set $transformationParts.fox.tail to "default">>
+		<</if>>
+	<</if>>
+
+	<!-- V0.4.0.5 Stop any saves in the above situation from being broke upon leaving -->
+	<<if $real_transformationParts and !$real_transformationParts.fox>>
+		<<set $real_transformationParts.fox to {ears:"disabled", tail:"disabled", cheeks:"disabled"}>>
+		<<if $real_transformationParts.traits.mateForLife is undefined or $real_transformationParts.traits.flaunting is undefined>>
+			<<if $fox gte 3 or $harpy gte 3>>
+				<<set $real_transformationParts.traits.mateForLife to "default">>
+			<<else>>
+				<<set $real_transformationParts.traits.mateForLife to "disabled">>
+			<</if>>
+			<<set $real_transformationParts.traits.flaunting to "disabled">>
+		<</if>>
+	<</if>>
 
 	<<for _garmentLayer range ["upper", "lower", "under_upper", "under_lower", "over_upper", "over_lower"]>>
 		<<set $_indexTemp to $worn[_garmentLayer].index>>
