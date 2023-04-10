@@ -3,6 +3,12 @@ function playerHasStrapon() {
 }
 window.playerHasStrapon = playerHasStrapon;
 
+function playerPenisSize() {
+	if (playerHasStrapon() && V.worn.under_lower.size !== undefined) return V.worn.under_lower.size;
+	return V.player.penissize;
+}
+window.playerPenisSize = playerPenisSize;
+
 function npcHasStrapon(index) {
 	if (typeof index !== "number") {
 		if (V.options.debugdisable === "f" || V.debug === 1)
