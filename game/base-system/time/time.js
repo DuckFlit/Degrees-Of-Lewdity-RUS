@@ -774,7 +774,7 @@ function dailyNPCEffects() {
 		delete V.edenroof;
 	}
 	if (V.edenshoutrescue !== 1) V.edenwhip = 0;
-	if (V.edendays) V.edendays++;
+	if (V.edendays !== undefined) V.edendays++;
 	if (V.edengarden >= 1) V.edengarden--;
 	if (V.edenshrooms >= 1) V.edenshrooms--;
 	if (V.edenspring >= 1) V.edenspring--;
