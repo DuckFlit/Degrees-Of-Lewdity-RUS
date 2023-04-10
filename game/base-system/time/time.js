@@ -1243,12 +1243,12 @@ function dailySchoolEffects() {
 
 	if (Time.isSchoolDay(Time.yesterday) && V.location !== "prison") {
 		const attended = Object.keys(V.daily.school.attended).length;
-		V.sciencemissed += V.daily.school.attended.science ? 0 : 1;
-		V.mathsmissed += V.daily.school.attended.maths ? 0 : 1;
-		V.englishmissed += V.daily.school.attended.english ? 0 : 1;
-		V.historymissed += V.daily.school.attended.history ? 0 : 1;
-		V.swimmingmissed += V.daily.school.attended.swimming ? 0 : 1;
-		V.lessonmissed += 5 - attended;
+		V.schoolLessonsMissed.science += !Number(V.daily.school.attended.science);
+		V.schoolLessonsMissed.maths += !Number(V.daily.school.attended.maths);
+		V.schoolLessonsMissed.english += !Number(V.daily.school.attended.english);
+		V.schoolLessonsMissed.history += !Number(V.daily.school.attended.history);
+		V.schoolLessonsMissed.swimming += !Number(V.daily.school.attended.swimming);
+		V.lessonmissed += 5 - attended * 2; // Reduce lessonmissed if lessons are attended
 		V.lessonmissedtext = 5 - attended;
 	}
 
