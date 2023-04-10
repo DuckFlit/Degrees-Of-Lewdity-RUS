@@ -89,7 +89,7 @@ const Time = (() => {
 	}
 
 	function isSchoolTime(date) {
-		return isSchoolDay(date) && date.hour >= 8 && date.hour <= 15;
+		return isSchoolDay(date) && date.hour > 8 && date.hour < 15;
 	}
 
 	return Object.create({

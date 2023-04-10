@@ -152,7 +152,7 @@ function updateClothes() {
 		}
 		if (V.wardrobes !== undefined) {
 			for (const wardrobe in V.wardrobes) {
-				if (wardrobe === "wardrobe" || wardrobe === "shopReturn") continue;
+				if (wardrobe === "wardrobe" || wardrobe === "shopReturn" || !V.wardrobes[wardrobe][slot]) continue;
 				for (const item of V.wardrobes[wardrobe][slot]) updateClothesItem(slot, item);
 			}
 		}
