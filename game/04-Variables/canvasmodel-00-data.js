@@ -75,6 +75,7 @@ const ZIndices = {
 
 	hairforwards: 132,
 	fronthair: 133,
+	semencough: 135,
 	brow: 138,
 	horns: 140,
 	face: 145,
