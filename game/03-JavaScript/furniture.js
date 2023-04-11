@@ -3,8 +3,14 @@ const Furniture = (() => {
 
 	/* Keep set to false, unless during developer testing. If on true, set to false unless in use. */
 	const FORCE_UPDATE = false; /* IMPORTANT: Switch to false before the next update. */
+	const DEBUG_ENABLED = false;
+
+	const print = (...args) => {
+		if (DEBUG_ENABLED) console.debug(...args);
+	};
 
 	const Categories = Object.freeze({
+		/* Generic categories */
 		bed: "bed",
 		table: "table",
 		chair: "chair",
@@ -13,6 +19,8 @@ const Furniture = (() => {
 		windowsill: "windowsill",
 		poster: "poster",
 		wallpaper: "wallpaper",
+		/* Special category for Kylar event */
+		owlplushie: "owlplushie",
 	});
 
 	const Locations = Object.freeze({
@@ -263,7 +271,7 @@ const Furniture = (() => {
 		mapper.set("owlplushie", {
 			name: "owl plushie",
 			nameCap: "Owl plushie",
-			category: ["decoration"],
+			category: ["owlplushie"],
 			type: [],
 			cost: setPrice(),
 			description: "Large eyes stare at the world.",
@@ -359,21 +367,26 @@ const Furniture = (() => {
 		});
 	}
 
-	function furnitureGet(type, onlySetup = false) {
-		if (typeof type !== "string") {
-			console.debug("furnitureGet expected an argument of type: string.", type);
+	function furnitureGet(category, onlySetup = false) {
+		print("Furniture.get > getting:", category);
+		if (typeof category !== "string") {
+			print("Furniture.Get expected an argument of type: string.", category);
 			return null;
 		}
 		if (onlySetup) {
-			return setup.furniture.get(type);
+			return setup.furniture.get(category);
 		}
 		if (!V) {
-			console.debug("furnitureGet called before SugarCube is ready, postpone execution next time.", type);
+			print("Furniture.Get called before SugarCube is ready, postpone execution next time.", category);
 			return null;
 		}
 		const area = V.furniture[target];
-		if (Object.hasOwn(area, type)) {
-			const current = area[type];
+		if (typeof area !== "object" && area === null) {
+			print("Furniture.Get called with a location that doesn't exist:", target, area);
+			return null;
+		}
+		const current = area[category];
+		if (typeof current === "object" && current !== null) {
 			const defaults = setup.furniture.get(current.id);
 			const composite = Object.assign({}, defaults, current);
 			return composite;
@@ -382,22 +395,31 @@ const Furniture = (() => {
 		}
 	}
 
-	function furnitureSet(id, category, propertyMap) {
+	function furnitureSet(id, category, overrides) {
+		print("Furniture.set > setting:", id, category, overrides);
 		if (!setup.furniture.has(id)) {
 			Errors.report(`Furniture.Set was incorrectly passed an id not listed in furniture: ${id}`);
 			return false;
 		}
-		if (!Object.hasOwn(Categories, category)) {
+		if (!Categories[category]) {
 			Errors.report(`Furniture.Set was incorrectly passed an invalid category : ${category}`);
 			return false;
 		}
 		const home = V.furniture[target];
 
 		home[category] = { id };
-		if (propertyMap) {
+		if (typeof overrides === "object" && overrides !== null) {
 			/* Object.defineProperties(home[category], propertyMap); */
-			Object.assign(home[category], propertyMap);
+			Object.assign(home[category], overrides);
 		}
+		// Log the id in case mistakes in the future occur and we need to track previous ownership.
+		furnitureLog(id);
+		return true;
+	}
+
+	function furnitureDelete(category) {
+		print("Furniture.delete > Deleting:", category);
+		delete V.furniture[target][category];
 		return true;
 	}
 
@@ -411,8 +433,10 @@ const Furniture = (() => {
 	}
 
 	function furnitureUpdate(fromBackComp = false) {
+		print("Furniture.update > Updating - from backcomp:", fromBackComp);
 		const versions = V.objectVersion;
 		let wallpaper;
+		let decoration;
 		let poster;
 		if (versions.furniture === undefined || FORCE_UPDATE) {
 			versions.furniture = 0;
@@ -454,6 +478,28 @@ const Furniture = (() => {
 					});
 				}
 				versions.furniture = 2;
+			// eslint-disable-next-line no-fallthrough
+			case 2:
+				/* Start log of existing items owned. */
+				updaterLogAll();
+				/* Fix owl-plushie being in the decoration category, as it can then be deleted,
+					or potentially lock out decorations in the current system. */
+				furnitureIn(Locations.bedroom);
+				decoration = furnitureGet(Categories.decoration);
+				if (decoration !== null && decoration.id === "owlplushie") {
+					furnitureSet("owlplushie", Categories.owlplushie, {
+						name: "owl plushie",
+						nameCap: "Owl plushie",
+					});
+					furnitureDelete(Categories.decoration);
+				}
+				if ([2, 4, 7].includes(V.kylar_camera)) {
+					furnitureSet("owlplushie", Categories.owlplushie, {
+						name: "owl plushie",
+						nameCap: "Owl plushie",
+					});
+				}
+				versions.furniture = 3;
 				break;
 		}
 	}
@@ -495,6 +541,26 @@ const Furniture = (() => {
 		return () => Math.floor((pounds * 100 + pence) * V.furniturePriceFactor);
 	}
 
+	function updaterLogAll() {
+		print("updaterLogAll > Logging all existing items.");
+		for (const location in V.furniture) {
+			const items = V.furniture[location];
+			if (typeof items !== "object" || items === null) continue;
+			for (const key in items) {
+				const item = items[key];
+				if (typeof item !== "object" || item === null) continue;
+				furnitureLog(item.id);
+			}
+		}
+	}
+
+	function furnitureLog(id) {
+		print("Furniture.log > Logging:", id);
+		// Ensure furniture log exists.
+		if (!Array.isArray(V.furnitureLog)) V.furnitureLog = [];
+		if (!V.furnitureLog.includes(id)) V.furnitureLog.push(id);
+	}
+
 	$(document).on(":start2", function () {
 		furnitureUpdate();
 	});
@@ -506,9 +572,11 @@ const Furniture = (() => {
 		init: furnitureInit,
 		get: furnitureGet,
 		set: furnitureSet,
+		delete: furnitureDelete,
 		in: furnitureIn,
 		update: furnitureUpdate,
 		wardrobeUpdate: wardrobeSpaceUpdater,
+		log: furnitureLog,
 		get target() {
 			return target;
 		},
