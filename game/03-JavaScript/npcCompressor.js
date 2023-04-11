@@ -124,7 +124,7 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 	const genproList = ["mm", "fm", "hm", "mf", "ff", "hf"]; /* stores gender first, pronoun second. */
 	const breastdescList = ["nipple", "budding", "tiny", "small", "pert", "modest", "full", "large", "ample", "massive", "huge", "gigantic", "enormous"];
 	const sizeList = ["tiny", "small", "normal", "large"];
-	const skinColourList = ["white", "black", "light", "medium", "dark", "ylight", "ymedium", "ydark", "ghostlyPale"];
+	const skinColourList = ["white", "black", "light", "medium", "dark", "ylight", "ymedium", "ydark", "ghostlyPale", "gyaru", "ygyaru"];
 	const noClawList = ["dog", "pig", "wolf", "dolphin", "boar", "fox", "hawk", "cow", "bull"];
 	const teenFDescList = [
 		"slight",
