@@ -336,7 +336,7 @@ function dayPassed() {
 
 	if (V.medicated) V.medicated = Math.max(Math.trunc((V.medicated - 1) * 0.5), 0);
 	if (V.asylummedicated) V.asylummedicated = Math.max(Math.trunc((V.asylummedicated - 1) * 0.5), 0);
-	if (V.brothel_rivalry_timer) V.brothel_rivalry_timer--;
+	if (V.brothel_rivalry_timer !== undefined) V.brothel_rivalry_timer--;
 	if (V.orphanageWardIntro) V.home_event_ward_timer--;
 	if (V.location === "asylum") V.asylumbound--;
 
@@ -362,7 +362,7 @@ function dayPassed() {
 	if (V.wolfcavebreast >= 1) delete V.wolfcavebreast;
 	if (V.wolfcavepatrol === 1) V.wolfcavepatrolchance = random(1, 3);
 	if (V.temple_jordan_prayer === 1) delete V.temple_jordan_prayer;
-	if (V.temple_event === 0) V.temple_event = 1;
+	if (V.temple_event !== undefined) V.temple_event = 1;
 	if (V.school_crossdress_message >= 1 || V.school_herm_message >= 1) V.effectsmessage = 1;
 	if (V.syndromewolves === 1) {
 		fragment.append(wikifier("wolf_cave_update"));
@@ -599,7 +599,7 @@ function hourPassed(hours) {
 	if (!V.wolfevent) V.wolfevent = 1;
 	if (V.wolfpatrolsent >= 24) delete V.wolfpatrolsent;
 	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
-	if (V.robinPillory && V.robinPillory.danger) fragment.append(wikifier("robinPilloryHour"));
+	if (V.robinPillory && V.robinPillory.danger !== undefined) fragment.append(wikifier("robinPilloryHour"));
 	if (V.pillory_tenant.exists && V.pillory_tenant.endday === Time.days && V.pillory_tenant.endhour < Time.hour) fragment.append(wikifier("clear_pillory"));
 	if (C.npc.Sydney.init === 1) {
 		fragment.append(wikifier("sydneySchedule"));
@@ -1270,7 +1270,7 @@ function dailySchoolEffects() {
 		if (C.npc.Mason.love >= V.npclovehigh) delinquencyDecay++;
 		if (V.lessonmissedtext) delinquencyDecay = Math.floor(delinquencyDecay / 2);
 		fragment.append(wikifier("delinquency", -delinquencyDecay / 4));
-		if (V.schoolfameblackmail) V.schoolfameblackmail++;
+		if (V.schoolfameblackmail !== undefined) V.schoolfameblackmail++;
 	}
 
 	if (V.science_star >= 1) {
@@ -1431,7 +1431,7 @@ function dailyFarmEvents() {
 		}
 	}
 	if (V.farm_countdown >= 1) V.farm_countdown--;
-	if (V.farm_yield) {
+	if (V.farm_yield !== undefined) {
 		if (!V.farm_yield_alex) V.farm_yield_alex = 0;
 		V.farm_yield_alex += V.farm_yield;
 		delete V.farm_yield;
