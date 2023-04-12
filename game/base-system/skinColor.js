@@ -136,7 +136,7 @@ window.skinColor = skinColor;
 
 function tannedCoverage() {
 	const clothesList = [];
-	window.getVisibleClothesList().forEach(i => clothesList.push(i));
+	window.getVisibleClothesList().forEach(i => clothesList.push(i.name));
 
 	if (clothesList.includes("bikini top")) {
 		T.coverage[setup.skinColor.tanLoc.indexOf("bikiniTop")] = 1;
