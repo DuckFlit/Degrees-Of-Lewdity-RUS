@@ -97,18 +97,20 @@ function updateClothesItem(slot, item) {
 		if (skip.includes(key)) continue;
 		if (key === "hoodposition" && V.objectVersion.updateClothes >= 31) continue;
 		if (key === "outfitPrimary") {
-			if (item[key] === undefined && itemRef[key] !== undefined) {
-				item[key] = clone(itemRef[key]);
-				if (item.one_piece === "broken") {
-					if (slot === "upper") item[key].lower = "broken";
-					else if (slot === "under_upper") item[key].under_lower = "broken";
+			if (itemRef.outfitPrimary !== undefined) {
+				if (item.outfitPrimary === undefined) item.outfitPrimary = clone(itemRef.outfitPrimary);
+				for (const k in itemRef.outfitPrimary) {
+					// if one_piece is broken, everything is broken
+					if (item.one_piece === "broken") item.outfitPrimary[k] = "broken";
+					// if an item is still in one piece, it's safe to regenerate it's value from itemRef
+					else if (item.outfitPrimary[k] !== "broken") item.outfitPrimary[k] = clone(itemRef.outfitPrimary[k]);
 				}
 			}
 			continue;
 		}
 		if (key === "outfitSecondary") {
-			if (item[key] === undefined && itemRef[key] !== undefined) {
-				item[key] = clone(itemRef[key]);
+			if (itemRef[key] !== undefined) {
+				if (item[key] === undefined) item[key] = clone(itemRef[key]);
 				if (item.one_piece === "broken") item[key][1] = "broken";
 			}
 			continue;
