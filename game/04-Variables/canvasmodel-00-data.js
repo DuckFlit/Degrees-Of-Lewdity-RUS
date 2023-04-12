@@ -4,6 +4,7 @@ const ZIndices = {
 	over_head_back: 0,
 	head_back: 1,
 	basehead: 5,
+	tail: 9,
 	backhair: 10,
 	back_lower: 15,
 	base: 20,

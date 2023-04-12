@@ -56,10 +56,10 @@ const Time = (() => {
 		const days = Math.floor(hours / 24) || (prevDate.lastDayOfMonth + currentDate.day - prevDate.day) % prevDate.lastDayOfMonth;
 		if (!days) return fragment;
 
-		fragment.append(dayPassed());
 		if (prevDate.weekDay === 7 && currentDate.weekDay === 1) {
 			fragment.append(weekPassed());
 		}
+		fragment.append(dayPassed());
 		if (prevDate.yearDay < Time.startDate.yearDay && currentDate.yearDay >= Time.startDate.yearDay) {
 			fragment.append(yearPassed());
 		}
@@ -386,8 +386,8 @@ function dayPassed() {
 	if (V.slimeSleepEvent < 1) delete V.slimeEvent;
 	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
 	if (V.lake_ice_broken < 1) delete V.lake_ice_broken;
-	if (V.community_service >= 1 && V.community_service_done !== 1) {
-		if (!["asylum", "prison"].includes(V.location)) {
+	if (V.community_service >= 1) {
+		if (V.community_service_done !== 1 && !["asylum", "prison"].includes(V.location)) {
 			fragment.append(wikifier("crimeup", 200));
 			V.effectsmessage = 1;
 			V.community_message = "missed";
@@ -515,6 +515,10 @@ function dayPassed() {
 		delete V.smuggler_known;
 	}
 
+	if (V.location !== "tentworld") {
+		delete V.tentacle_forest_lurker;
+	}
+
 	fragment.append(wikifier("menstruationCycle", "daily"));
 	pregnancyProgress();
 	pregnancyProgress("anus");
@@ -599,7 +603,7 @@ function hourPassed(hours) {
 	if (!V.wolfevent) V.wolfevent = 1;
 	if (V.wolfpatrolsent >= 24) delete V.wolfpatrolsent;
 	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
-	if (V.robinPillory && V.robinPillory.danger) fragment.append(wikifier("robinPilloryHour"));
+	if (V.robinPillory && V.robinPillory.danger !== undefined) fragment.append(wikifier("robinPilloryHour"));
 	if (V.pillory_tenant.exists && V.pillory_tenant.endday === Time.days && V.pillory_tenant.endhour < Time.hour) fragment.append(wikifier("clear_pillory"));
 	if (C.npc.Sydney.init === 1) {
 		fragment.append(wikifier("sydneySchedule"));
@@ -1154,6 +1158,8 @@ function yearlyEventChecks() {
 	if (Time.monthName === "November" && Time.monthDay >= 2) {
 		delete V.halloween_kylar;
 		delete V.halloween_kylar_proposed;
+		delete V.halloween_lake;
+		delete V.halloweenWolves;
 	}
 
 	// Christmas
@@ -1270,7 +1276,7 @@ function dailySchoolEffects() {
 		if (C.npc.Mason.love >= V.npclovehigh) delinquencyDecay++;
 		if (V.lessonmissedtext) delinquencyDecay = Math.floor(delinquencyDecay / 2);
 		fragment.append(wikifier("delinquency", -delinquencyDecay / 4));
-		if (V.schoolfameblackmail) V.schoolfameblackmail++;
+		if (V.schoolfameblackmail !== undefined) V.schoolfameblackmail++;
 	}
 
 	if (V.science_star >= 1) {
