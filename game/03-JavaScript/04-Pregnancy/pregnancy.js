@@ -35,7 +35,7 @@ function generateBabyName(name, gender, childId) {
 }
 window.generateBabyName = generateBabyName;
 
-function spermObjectToArray(spermObject = [], player) {
+function spermObjectToArray(spermObject = [], player, disableRng) {
 	const spermArray = [];
 	const trackedNPCs = [];
 	for (const sperm of spermObject) {
@@ -58,10 +58,10 @@ function spermObjectToArray(spermObject = [], player) {
 
 		if (!trackedNPCs.find(npc => npc.source === sperm.source)) trackedNPCs.push({ type: sperm.type, source: sperm.source });
 		for (let i = 0, l = sperm.quantity; i < l; i++) {
-			if (sperm.mod < random(0, 100)) continue;
+			if (!disableRng && sperm.mod < random(0, 100)) continue;
 
 			spermArray.push({ type: sperm.type, source: sperm.source });
-			if (sperm.mod > random(100, 200)) spermArray.push({ type: sperm.type, source: sperm.source });
+			if (!disableRng && sperm.mod > random(100, 200)) spermArray.push({ type: sperm.type, source: sperm.source });
 		}
 	}
 	return [trackedNPCs, spermArray];
@@ -99,7 +99,7 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 	if (pregnancy && pregnancy.type === null) {
 		const chance = 100 / (target === "pc" ? 100 - V.basePlayerPregnancyChance : 20 - V.baseNpcPregnancyChance);
 
-		if (!forcePregnancy && chance * quantity * (rngModifier / 100) * (1 + fertility + magicTattoo) * multi < random(1, 100) - 15) return false;
+		if (!forcePregnancy && chance * quantity * (rngModifier / 100) * (1 + fertility + magicTattoo) * multi < random(1, 100)) return false;
 
 		if (target === "pc") {
 			const result = playerPregnancy(spermOwner, spermType, true, genital, undefined, true);
@@ -113,6 +113,7 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 	}
 	return false;
 }
+window.fetishPregnancy = fetishPregnancy;
 
 /* Player pregnancy starts here */
 /* V.pregnancytype === "realistic" uses this function */

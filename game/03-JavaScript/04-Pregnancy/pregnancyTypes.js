@@ -43,6 +43,9 @@ function npcPregObject(person, mother) {
 				gender: V.player.gender,
 				type: "human",
 				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
+				skinColour: V.skinColor.natural,
+				hairColour: V.naturalhaircolour,
+				eyeColour: V.eyeselected,
 			};
 		} else if (C.npc[person]) {
 			result = {
@@ -50,6 +53,9 @@ function npcPregObject(person, mother) {
 				pregnancy: C.npc[person].pregnancy,
 				type: C.npc[person].type,
 				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
+				skinColour: C.npc[person].skincolour,
+				hairColour: C.npc[person].hairColour,
+				eyeColour: C.npc[person].eyeColour,
 			};
 			if (C.npc[person].vagina !== "none" && C.npc[person].penis !== "none") {
 				result.gender = "h";
@@ -67,6 +73,7 @@ function npcPregObject(person, mother) {
 				name: person,
 				type: "unknown",
 				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
+				skinColour: random(0, 100) >= V.blackchance ? "black" : "white",
 			};
 		}
 	} else {
@@ -80,7 +87,14 @@ function npcPregObject(person, mother) {
 				pregnancy: person.pregnancy,
 				type: person.type,
 				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
+				skinColour: person.skincolour,
+				hairColour: person.hairColour,
+				eyeColour: person.eyeColour,
 			};
+			if (C.npc[person.fullDescription].fullDescription) {
+				if (!result.hairColour) result.hairColour = C.npc[person.fullDescription].hairColour;
+				if (!result.eyeColour) result.eyeColour = C.npc[person.fullDescription].eyeColour;
+			}
 			if (person.vagina !== undefined && person.vagina !== "none" && person.penis !== undefined && person.penis !== "none") {
 				result.gender = "h";
 			} else if (person.vagina !== undefined && person.vagina !== "none") {
@@ -196,51 +210,34 @@ function sizeName(bodysize) {
 	}
 }
 
-function eyeColourCalc(name) {
-	if (name === "pc") {
-		return V.eyeselected;
-	} else if (C.npc[name] && C.npc[name].eyeColour) {
-		return C.npc[name].eyeColour;
-	} else {
-		return ["purple", "dark blue", "light blue", "amber", "hazel", "green", "lime green", "red", "pink", "grey", "light grey"][random(0, 10)];
-	}
+function eyeColourCalc(colour) {
+	if (colour) return colour;
+	return ["purple", "dark blue", "light blue", "amber", "hazel", "green", "lime green", "red", "pink", "grey", "light grey"][random(0, 10)];
 }
 
-function hairColourCalc(name) {
-	if (name === "pc") {
-		return V.naturalhaircolour;
-	} else if (C.npc[name] && C.npc[name].hairColour) {
-		return C.npc[name].hairColour;
-	} else {
-		return [
-			"red",
-			"jetblack",
-			"black",
-			"brown",
-			"softbrown",
-			"lightbrown",
-			"burntorange",
-			"blond",
-			"softblond",
-			"platinumblond",
-			"ashyblond",
-			"strawberryblond",
-			"ginger",
-			"dark brown",
-		][random(0, 13)];
-	}
+function hairColourCalc(colour) {
+	if (colour) return colour;
+	return [
+		"red",
+		"jetblack",
+		"black",
+		"brown",
+		"softbrown",
+		"lightbrown",
+		"burntorange",
+		"blond",
+		"softblond",
+		"platinumblond",
+		"ashyblond",
+		"strawberryblond",
+		"ginger",
+		"dark brown",
+	][random(0, 13)];
 }
 
-function skinColourCalc(name) {
-	if (name === "pc") {
-		return V.skinColor.natural;
-	} else if (name === "Ivory Wraith") {
-		return "ghostlyPale";
-	} else if (C.npc[name] && C.npc[name].skincolour) {
-		return C.npc[name].skincolour;
-	} else {
-		return ["light", "medium", "dark", "ylight", "ymedium", "ydark"][random(0, 5)];
-	}
+function skinColourCalc(colour) {
+	if (colour) return colour;
+	return ["light", "medium", "dark", "ylight", "ymedium", "ydark"][random(0, 5)];
 }
 
 // Only applies to the pc
@@ -383,9 +380,9 @@ window.pregnancyGenerator = {
 					gender,
 					identical: count > 1 ? identical : null,
 					size: alwaysIdentical ? sizeName(V.bodysize) : bodySizeCalc(V.bodysize),
-					eyeColour: [eyeColourCalc(motherObject.name), eyeColourCalc(fatherObject.name)][random(0, 1)],
-					hairColour: [hairColourCalc(motherObject.name), hairColourCalc(fatherObject.name)][random(0, 1)],
-					skinColour: [skinColourCalc(motherObject.name), skinColourCalc(fatherObject.name)][random(0, 1)],
+					eyeColour: [eyeColourCalc(motherObject.eyeColour), eyeColourCalc(fatherObject.eyeColour)][random(0, 1)],
+					hairColour: [hairColourCalc(motherObject.hairColour), hairColourCalc(fatherObject.hairColour)][random(0, 1)],
+					skinColour: [skinColourCalc(motherObject.skinColour), skinColourCalc(fatherObject.skinColour)][random(0, 1)],
 					beastTransform: beastTransform(motherObject.name, fatherObject.name),
 					divineTransform: divineTransform(motherObject.name, fatherObject.name),
 					clothes: "naked",

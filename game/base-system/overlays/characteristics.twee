@@ -124,8 +124,9 @@
 	<<set $_menstruation to $sexStats.vagina.menstruation>>
 	<<set $_pills to $sexStats.pills>>
 	<<set $_knowsTheyCanBecomePregnant to ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f") and playerAwareTheyCanBePregnant()>>
-	<<set $_heatArousal to playerHeatMinArousal() + playerRutMinArousal()>>
-
+	<<set $_heatArousal to playerHeatMinArousal()>>
+	<<set $_rutArousal to playerRutMinArousal()>>
+	<<set $_heatRutDisplay to ($_heatArousal and playerAwareTheyAreInHeat() ? "heat" : "") + ($_heatArousal and playerAwareTheyAreInHeat() and $_rutArousal ? " and " : "") + ($_rutArousal ? "rut" : "")>>
 	<<if $_pregnancy.fetus.length and $_pregnancy.awareOf>>
 		<<if $_pregnancy.timer / $_pregnancy.timerEnd lte 0.33>>
 			<<set _trimester to "first">>
@@ -191,9 +192,9 @@
 				<<case 0>><<set $_pregnancyRisk to "dangerous">><<set $_pregnancyRiskColour to "red">>
 			<</switch>>
 
-			<<if $_heatArousal>>
+			<<if $_heatArousal or $_rutArousal>>
 				<<if $wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2>>
-					Your inner beast is sending you into heat.
+					Your inner beast is sending you into <<print $_heatRutDisplay>>.
 				<<else>>
 					Something is keeping you aroused.
 				<</if>>
@@ -203,11 +204,9 @@
 			<</if>>
 			<br><br>
 		<</if>>
-	<<elseif $_heatArousal>>
-		<<if ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2) and playerAwareTheyAreInHeat()>>
-			Your inner beast is sending you into heat.
-		<<elseif ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2) and !$player.vaginaExist>>
-			Your inner beast is sending you into rut.
+	<<elseif $_heatArousal or $_rutArousal>>
+		<<if ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2)>>
+			Your inner beast is sending you into <<print $_heatRutDisplay>>.
 		<<else>>
 			Something is keeping you aroused.
 		<</if>>
