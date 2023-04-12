@@ -1607,7 +1607,7 @@ Renderer.CanvasModels["main"] = {
 				return options.show_tf && isPartEnabled(options.wolf_tail_type);
 			},
 			filters: ["hair"],
-			z: ZIndices.backhair,
+			z: ZIndices.tail,
 			animation: "idle"
 		},
 		"wolf_ears": {
@@ -1677,7 +1677,7 @@ Renderer.CanvasModels["main"] = {
 				return options.show_tf && isPartEnabled(options.cat_tail_type) && options.cat_tail_state === "idle";
 			},
 			filters: ["hair"],
-			z: ZIndices.backhair,
+			z: ZIndices.tail,
 			animation: "idle"
 		},
 		"cat_tail_flaunt": {
@@ -1765,7 +1765,7 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.cow_tail_type);
 			},
-			z: ZIndices.backhair,
+			z: ZIndices.tail,
 			animation: "idle"
 		},
 		/***
@@ -1830,7 +1830,7 @@ Renderer.CanvasModels["main"] = {
 				return options.show_tf && isPartEnabled(options.bird_tail_type);
 			},
 			filters: ["hair"],
-			z: ZIndices.lower,
+			z: ZIndices.tail,
 			animation: "idle"
 		},
 		"bird_eyes": {
@@ -1895,7 +1895,7 @@ Renderer.CanvasModels["main"] = {
 				return options.show_tf && isPartEnabled(options.fox_tail_type);
 			},
 			filters: ["hair"],
-			z: ZIndices.backhair,
+			z: ZIndices.tail,
 			animation: "idle"
 		},
 		"fox_ears": {
