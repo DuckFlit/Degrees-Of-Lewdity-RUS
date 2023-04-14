@@ -303,12 +303,10 @@ function endPlayerPregnancy(birthLocation, location) {
 
 	switch (pregnancy.type) {
 		case "human":
-			V.pregnancyStats.humanToysUnlocked = true;
 			menstruation.recoveryTime = random(2, 3) * V.humanPregnancyMonths;
 			if (pregnancy.fetus.length === 3) Wikifier.wikifyEval('<<earnFeat "Life Comes in Threes">>');
 			break;
 		case "wolf":
-			V.pregnancyStats.wolfToysUnlocked = true;
 			menstruation.recoveryTime = random(1, 2) * V.wolfPregnancyWeeks;
 			break;
 	}
@@ -510,16 +508,7 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 	if (pregnancy.fetus.mother !== "pc" && pregnancy.fetus.father === "pc") Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>');
 
 	giveBirthToChildren(npcName, birthLocation, location);
-	switch (pregnancy.type) {
-		case "human":
-			V.pregnancyStats.humanToysUnlocked = true;
-			// menstruation.recoveryTime = random(2, 3) * V.humanPregnancyMonths;
-			break;
-		case "wolf":
-			V.pregnancyStats.wolfToysUnlocked = true;
-			// menstruation.recoveryTime = random(1, 2) * V.wolfPregnancyWeeks;
-			break;
-	}
+
 	const birthEvents = clone(pregnancy.totalBirthEvents) + 1;
 	const cycleDay = clone(pregnancy.cycleDaysTotal) - 3;
 
@@ -623,6 +612,15 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 			setKnowsAboutPregnancy(mother, "Black Wolf", birthId);
 			break;
 		default:
+			break;
+	}
+
+	switch (pregnancy.type) {
+		case "human":
+			V.pregnancyStats.humanToysUnlocked = true;
+			break;
+		case "wolf":
+			V.pregnancyStats.wolfToysUnlocked = true;
 			break;
 	}
 

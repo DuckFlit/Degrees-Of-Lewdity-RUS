@@ -403,21 +403,27 @@ function playerPregnancyRisk() {
 		case "fetish":
 			switch (Math.abs(menstruation.stages[2] - menstruation.currentDay)) {
 				case 0:
+				case 0.5:
 					risk = 0;
 					break;
 				case 1:
+				case 1.5:
 					risk = 1;
 					break;
 				case 2:
+				case 2.5:
 					risk = 2;
 					break;
 				case 3:
+				case 3.5:
 					risk = 3;
 					break;
 				case 4:
+				case 4.5:
 				case 5:
 					risk = 4;
 					break;
+				case 5.5:
 				case 6:
 					risk = 5;
 					break;
@@ -692,19 +698,19 @@ function knowsAboutChildrenTotal(motherOrFather, whoToCheck, location) {
 }
 window.knowsAboutChildrenTotal = knowsAboutChildrenTotal;
 
-function childrenCountBetweenParents(parent1, parent2){
-    return Object.values(V.children).reduce((prev, curr) => {
-      if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1,parent2].includes(curr.father)) return prev + 1;
-      return prev;
-    }, 0)
+function childrenCountBetweenParents(parent1, parent2) {
+	return Object.values(V.children).reduce((prev, curr) => {
+		if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1, parent2].includes(curr.father)) return prev + 1;
+		return prev;
+	}, 0);
 }
 window.childrenCountBetweenParents = childrenCountBetweenParents;
 
 function pregnancyCountBetweenParents(parent1, parent2) {
-    return Object.values(V.children).reduce((prev, curr) => {
-        if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1, parent2].includes(curr.father))
-            prev.pushUnique(curr.mother + curr.birthId);
-        return prev;
-    }, []).length;
+	return Object.values(V.children).reduce((prev, curr) => {
+		if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1, parent2].includes(curr.father))
+			prev.pushUnique(curr.mother + curr.birthId);
+		return prev;
+	}, []).length;
 }
 window.pregnancyCountBetweenParents = pregnancyCountBetweenParents;
