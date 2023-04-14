@@ -2782,7 +2782,7 @@ function masturbationeffectsPhallusFlower({ span, otherElement, additionalEffect
 	return fragment;
 }
 
-Macro.add("masturbationeffects", {
+Macro.add("masturbationeffectsNew", {
 	handler() {
 		const fragment = masturbationeffects();
 		this.output.append(fragment);
