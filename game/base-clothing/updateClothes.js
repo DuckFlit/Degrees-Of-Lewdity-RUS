@@ -76,6 +76,7 @@ const skip = [
 	"shop",
 	"cursed",
 	"collared",
+	"location",
 ];
 const remapColours = {
 	"light-pink": "light pink",
@@ -87,10 +88,12 @@ const remapColours = {
  *
  * @param {string} slot equip slot
  * @param {object} item clothes item object
+ * @param {boolean} debug print old and new object to the console
  */
-function updateClothesItem(slot, item) {
+function updateClothesItem(slot, item, debug) {
 	if (!item) return; // might be old save that didn't have a new slot
-
+	if (item.temp) return; // temp items are not meant to be proper clothes
+	const itemOld = clone(item);
 	// transfer new properties from itemRef to the item
 	const itemRef = setup.clothes[slot][clothesIndex(slot, item)];
 	for (const key in itemRef) {
@@ -102,6 +105,7 @@ function updateClothesItem(slot, item) {
 				for (const k in itemRef.outfitPrimary) {
 					// if one_piece is broken, everything is broken
 					if (item.one_piece === "broken") item.outfitPrimary[k] = "broken";
+					else if (k === "head" && item.hoodposition === "down") item.outfitPrimary[k] = "broken";
 					// if an item is still in one piece, it's safe to regenerate it's value from itemRef
 					else if (item.outfitPrimary[k] !== "broken") item.outfitPrimary[k] = clone(itemRef.outfitPrimary[k]);
 				}
@@ -136,6 +140,7 @@ function updateClothesItem(slot, item) {
 			else if (item.outfitPrimary.lower === "overalls") item.outfitPrimary.lower = "overall bottoms";
 			break;
 	}
+	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));
 }
 
 function updateClothes() {
