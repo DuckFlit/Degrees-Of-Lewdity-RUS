@@ -91,7 +91,7 @@ function npcPregObject(person, mother) {
 				hairColour: person.hairColour,
 				eyeColour: person.eyeColour,
 			};
-			if (C.npc[person.fullDescription].fullDescription) {
+			if (C.npc[person.fullDescription]) {
 				if (!result.hairColour) result.hairColour = C.npc[person.fullDescription].hairColour;
 				if (!result.eyeColour) result.eyeColour = C.npc[person.fullDescription].eyeColour;
 			}

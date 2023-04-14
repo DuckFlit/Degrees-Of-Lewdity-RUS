@@ -34,54 +34,52 @@
 				<span class="pink">You are overcome by sensation, and ejaculate into the condom that covers your penis.</span>
 				<<set $player.condom.state to "used">>
 			<<elseif $penisuse is "othervagina">>
-				<<for $_i = 0; $_i lt $enemynomax; $_i++>>
-					<<if $NPCList[$_i].vagina is "penis">>
-						<<personselect $_i>>
-						<<penileejacstat>>
-						<span class="pink">You are overcome by sensation and ejaculate deep into <<his>> womb.</span>
-						<<purity -1>><<internalejac>><<creampie "npc" "vagina">>
-						<<if $abomination is 1>>
-							/*ToDo: Pregnancy, figure out how the Wraith, plantpeople, etc will handle pregnancy.*/
-						<<elseif $npcrow.includes($_i)>>
-							<<recordSperm `{target: $NPCList[$_i].fullDescription, spermOwner: "pc", spermType: "human", rngModifier: 100}`>>
-						<<elseif $NPCList[$_i].pregnancy is 0 and $consensual is 1>>
-							/* Pregnancy Count */
-							<<set $_count to Object.values($storedNPCs).reduce((prev, curr) => {
-								if(curr.pregnancy) return prev + 1;
-								return prev;
-							},0)>>
-							/* Pregnancy chance checks */
-							<<set $_impregnatedChance to 200 / (20 - $baseNpcPregnancyChance)>>
-							<<if V.sexStats.pills.pills["fertility booster"].doseTaken gt 0>>
-								<<set $_impregnatedChance to Math.ceil($_impregnatedChance * (1 + (V.sexStats.pills.pills["fertility booster"].doseTaken * 0.5)))>>
-							<</if>>
-							<<if V.sexStats.pills.pills["contraceptive"].doseTaken gt 0>>
-								<<set $_impregnatedChance to Math.ceil($_impregnatedChance * 0.1)>>
-							<</if>>
-							/*If random NPC is impregnated, compress NPC and fetus*/
-							<<if ($_impregnatedChance gte random(0,200) or _npcForceImpregnation) and $_count lte 10>>
-								<<switch $NPCList[$_i].type>>
-									<<case "human">><<set $_pregnancy to pregnancyGenerator.human(V.NPCList[$_i], "pc", true)>>
-									<<case "wolf">><<set $_pregnancy to pregnancyGenerator.wolf(V.NPCList[$_i], "pc", true, "vagina", false)>>
-									<<case "wolfgirl" "wolfboy">><<set $_pregnancy to pregnancyGenerator.wolf(V.NPCList[$_i], "pc", true, "vagina", true)>>
-								<</switch>>
-								<<if $_pregnancy and !(typeof $_pregnancy is "string" || $_pregnancy instanceof String)>>
-									<<if random(0,2) is 0 or setup.pregnancy.randomAlwaysKeep.includes($location)>>
-										<<compressNPC $_i "pregnancy">>
-										<<set $storedNPCs[_lastCompressedName].pregnancy to $_pregnancy>>
-										/* ToDo: Uncomment when compression when is ready */
-										/*<<run $storedNPCs[_lastCompressedName].pregnancy.fetus.forEach((child, index, array) => array[index] to childCompressor(child, false))>>*/
-									<</if>>
-									<<if $pregnancytype is "fetish">><<set _npcIsNowPregnant to $NPCList[$_i].fullDescription>><</if>>
-									<<set $NPCList[$_i].pregnancy to 1>>
+				<<if $NPCList[$vaginatarget].vagina is "penis">>
+					<<personselect $vaginatarget>>
+					<<penileejacstat>>
+					<span class="pink">You are overcome by sensation and ejaculate deep into <<his>> womb.</span>
+					<<purity -1>><<internalejac>><<creampie "npc" "vagina">>
+					<<if $abomination is 1>>
+						/*ToDo: Pregnancy, figure out how the Wraith, plantpeople, etc will handle pregnancy.*/
+					<<elseif $npcrow.includes($vaginatarget)>>
+						<<recordSperm `{target: $NPCList[$vaginatarget].fullDescription, spermOwner: "pc", spermType: "human", rngModifier: 100}`>>
+					<<elseif $NPCList[$vaginatarget].pregnancy is 0 and $consensual is 1>>
+						/* Pregnancy Count */
+						<<set $_count to Object.values($storedNPCs).reduce((prev, curr) => {
+							if(curr.pregnancy) return prev + 1;
+							return prev;
+						},0)>>
+						/* Pregnancy chance checks */
+						<<set $_impregnatedChance to 200 / (20 - $baseNpcPregnancyChance)>>
+						<<if V.sexStats.pills.pills["fertility booster"].doseTaken gt 0>>
+							<<set $_impregnatedChance to Math.ceil($_impregnatedChance * (1 + (V.sexStats.pills.pills["fertility booster"].doseTaken * 0.5)))>>
+						<</if>>
+						<<if V.sexStats.pills.pills["contraceptive"].doseTaken gt 0>>
+							<<set $_impregnatedChance to Math.ceil($_impregnatedChance * 0.1)>>
+						<</if>>
+						/*If random NPC is impregnated, compress NPC and fetus*/
+						<<if ($_impregnatedChance gte random(0,200) or _npcForceImpregnation) and $_count lte 10>>
+							<<switch $NPCList[$vaginatarget].type>>
+								<<case "human">><<set $_pregnancy to pregnancyGenerator.human(V.NPCList[$vaginatarget], "pc", true)>>
+								<<case "wolf">><<set $_pregnancy to pregnancyGenerator.wolf(V.NPCList[$vaginatarget], "pc", true, "vagina", false)>>
+								<<case "wolfgirl" "wolfboy">><<set $_pregnancy to pregnancyGenerator.wolf(V.NPCList[$vaginatarget], "pc", true, "vagina", true)>>
+							<</switch>>
+							<<if $_pregnancy and !(typeof $_pregnancy is "string" || $_pregnancy instanceof String)>>
+								<<if random(0,2) is 0 or setup.pregnancy.randomAlwaysKeep.includes($location)>>
+									<<compressNPC $vaginatarget "pregnancy">>
+									<<set $storedNPCs[_lastCompressedName].pregnancy to $_pregnancy>>
+									/* ToDo: Uncomment when compression when is ready */
+									/*<<run $storedNPCs[_lastCompressedName].pregnancy.fetus.forEach((child, index, array) => array[index] to childCompressor(child, false))>>*/
 								<</if>>
+								<<if $pregnancytype is "fetish">><<set _npcIsNowPregnant to $NPCList[$vaginatarget].fullDescription>><</if>>
+								<<set $NPCList[$vaginatarget].pregnancy to 1>>
 							<</if>>
 						<</if>>
-					<<elseif $NPCList[$_i].vagina is "penisimminent" or $NPCList[$_i].vagina is "penisentrance">>
-						<<personselect $_i>>
-						<span class="pink">You are overcome by sensation and ejaculate on <<his>> pussy.</span>
 					<</if>>
-				<</for>>
+				<<elseif $NPCList[$vaginatarget].vagina is "penisimminent" or $NPCList[$vaginatarget].vagina is "penisentrance">>
+					<<personselect $vaginatarget>>
+					<span class="pink">You are overcome by sensation and ejaculate on <<his>> pussy.</span>
+				<</if>>
 			<<elseif $penisuse is "otheranus">>
 				<<for $_i = 0; $_i lt $enemynomax; $_i++>>
 					<<if $NPCList[$_i].penis is "otheranus" or $NPCList[$_i].vagina is "otheranus">>
