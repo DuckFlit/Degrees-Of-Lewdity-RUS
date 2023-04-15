@@ -440,17 +440,11 @@
 	<<if _args[0] and $statFreeze isnot true>>
 		<<if _args[0] gt 0>>
 			<<set $cool += (_args[0] * 1)>>
-			<<if $worn.face.type.includes("cool")>>
-				<<set $cool += (_args[0] * 1)>>
-			<</if>>
-			<<if $worn.head.type.includes("cool")>>
-				<<set $cool += (_args[0] * 1)>>
-			<</if>>
-			<<if $worn.upper.type.includes("cool")>>
-				<<set $cool += (_args[0] * 1)>>
-			<</if>>
+			<!-- find how many visible clothes have "cool" in their type (if they have type), and add 1 -->
+			<<set $_mult to getVisibleClothesList().reduce((mult, slot) => mult + (slot.type && slot.type.includes("cool")), 1)>>
+			<<set $cool += (_args[0] * $_mult)>>
 		<<elseif _args[0] lt 0>>
-			<<set $cool *= (1 - (_args[0] / -100))>>
+			<<set $cool *= (1 + (_args[0] / 100))>>
 			<<set $cool -= 1>>
 		<</if>>
 		<<set $cool to Math.clamp($cool, 0, $coolmax)>>

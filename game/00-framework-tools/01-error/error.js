@@ -11,17 +11,18 @@ Errors.config = {
 
 Errors.log = [];
 
-Errors.registerMessage = (message, copyData) => {
+Errors.registerMessage = (message, copyData, noClone) => {
 	while (Errors.log.length >= Errors.config.maxLogs) Errors.log.shift();
 	const error = { message, copyData };
-	Errors.log.push(error);
+	if (noClone) Errors.log.push(error);
+	else Errors.log.push(JSON.parse(JSON.stringify(error)));
 	return error;
 };
 
-Errors.report = (message, copyData) => {
+Errors.report = (message, copyData, noClone) => {
 	let error;
 	try {
-		error = Errors.registerMessage(message, copyData);
+		error = Errors.registerMessage(message, copyData, noClone);
 	} catch (e) {
 		console.error(`Failed to append an error log. Something went really wrong: `, message, copyData, e);
 		alert(`A critical error occurred. Please report this issue to the devs. [Errors.report/registerMessage]`);
