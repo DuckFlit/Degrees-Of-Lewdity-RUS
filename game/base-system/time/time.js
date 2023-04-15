@@ -1024,10 +1024,11 @@ function dailyTransformationEffects() {
 	const fragment = document.createDocumentFragment();
 
 	if (V.purity <= 0) {
-		if (V.fallenangel >= 2) fragment.append(wikifier("fallenDescend"));
 		if (V.fallenangel >= 4) {
 			V.fallenangelmessage = 1;
 			V.effectsmessage = 1;
+		} else if (V.fallenangel >= 2) {
+			fragment.append(wikifier("fallenDescend"));
 		} else {
 			fragment.append(wikifier("transform", "demon", 1));
 		}
