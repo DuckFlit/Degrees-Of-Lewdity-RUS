@@ -14,6 +14,10 @@ Save.onLoad.add(save => {
 	pageLoading = true;
 	window.onLoadUpdateCheck = true;
 
+	// clear errors from previous save and reset imageError cache so (possibly) save-specific errors might be logged again
+	Errors.Reporter.hide(true);
+	Renderer.ImageErrors = {};
+
 	// decompression should be the FIRST save modification
 	DoLSave.decompressIfNeeded(save);
 

@@ -105,7 +105,7 @@ function updateClothesItem(slot, item, debug) {
 				for (const k in itemRef.outfitPrimary) {
 					// if one_piece is broken, everything is broken
 					if (item.one_piece === "broken") item.outfitPrimary[k] = "broken";
-					else if (k === "head" && item.hoodposition === "down") item.outfitPrimary[k] = "broken";
+					else if (k === "head" && item.hoodposition === "down") delete item.outfitPrimary[k];
 					// if an item is still in one piece, it's safe to regenerate it's value from itemRef
 					else if (item.outfitPrimary[k] !== "broken") item.outfitPrimary[k] = clone(itemRef.outfitPrimary[k]);
 				}
