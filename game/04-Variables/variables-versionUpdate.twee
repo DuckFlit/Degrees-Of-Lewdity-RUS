@@ -3928,14 +3928,6 @@
 		<<set $real_purity to $purity>>
 	<</if>>
 
-	<!-- v0.3.13.5 Fix for virgin fallen angels -->
-	<<if $fallenangel is 2 and (($player.vaginaExist and $player.virginity.vaginal is true) or ($player.penisExist and $player.virginity.penile is true))>>
-		<<set $fallenangel to 0>>
-		<<angelTransform>>
-		<<set $transformationParts.fallenAngel.halo to "disabled">>
-		<<set $transformationParts.fallenAngel.wings to "disabled">>
-	<</if>>
-
 	<!-- v0.3.13.5 Pregnancy Utilities -->
 	<<if $storedNPCs is undefined>>
 		<!-- Separated object for compressing NPCs -->
@@ -4387,34 +4379,61 @@
 		<</script>>
 	<</if>>
 
-	<!-- V0.4.0.5 repair transformationParts object after damage from mid-prayer room or nightmare saves -->
-	<<if $transformationParts.fox is undefined and $tfFIX is undefined>>
-		<<set $tfFIX to 1>>
-		<<set $transformationParts.fox to {ears:"disabled", tail:"disabled", cheeks:"disabled"}>>
-		<<if $transformationParts.traits.mateForLife is undefined or $transformationParts.traits.flaunting is undefined>>
-			<<set $transformationParts.traits to {fangs:"disabled", sharpEyes:"disabled", mateForLife:"disabled", flaunting:"disabled"}>>
-			<<if $wolfgirl gte 2 or $cat gte 2 or $fox gte 2>>
-				<<set $transformationParts.traits.fangs to "default">>
+	<!-- Fixing broken transformation stuff -->
+	<<if $tfFIX is undefined or $tfFIX lte 1>>
+		<<if $tfFIX is undefined>>
+			<!-- V0.4.0.5 repair transformationParts object after damage from mid-prayer room or nightmare saves -->
+			<<if $transformationParts.fox is undefined>>
+				<<set $transformationParts.fox to {ears:"disabled", tail:"disabled", cheeks:"disabled"}>>
+				<<if $transformationParts.traits.mateForLife is undefined or $transformationParts.traits.flaunting is undefined>>
+					<<set $transformationParts.traits to {fangs:"disabled", sharpEyes:"disabled", mateForLife:"disabled", flaunting:"disabled"}>>
+					<<if $wolfgirl gte 2 or $cat gte 2 or $fox gte 2>>
+						<<set $transformationParts.traits.fangs to "default">>
+					<</if>>
+					<<if $cat gte 2 or $harpy gte 2 or $fox gte 2>>
+						<<set $transformationParts.traits.sharpEyes to "default">>
+					<</if>>
+					<<if $fox gte 3 or $harpy gte 3>>
+						<<set $transformationParts.traits.mateForLife to "default">>
+					<<else>>
+						<<set $transformationParts.traits.mateForLife to "disabled">>
+					<</if>>
+					<<set $transformationParts.traits.flaunting to "disabled">>
+				<</if>>
+				<<if $fox gte 4>>
+					<<set $transformationParts.fox.ears to "default">>
+				<</if>>
+				<<if $fox gte 5>>
+					<<set $transformationParts.fox.cheeks to "default">>
+				<</if>>
+				<<if $fox gte 6>>
+					<<set $transformationParts.fox.tail to "default">>
+				<</if>>
 			<</if>>
-			<<if $cat gte 2 or $harpy gte 2 or $fox gte 2>>
-				<<set $transformationParts.traits.sharpEyes to "default">>
+		<</if>>
+
+		<<if $tfFIX is undefined or $tfFIX is 1>>
+			<!-- v0.3.13.5 - v0.4.0.8 Fix for virgin fallen angels, moved and fixed from earlier part of versionupdate -->
+			<<if $fallenangel is 2>>
+				<<set $_isHerm to $player.gender is "h">>
+				<<set $_hasVaginalVirginity to $player.vaginaExist and $player.virginity.vaginal is true>>
+				<<set $_hasPenileVirginity to $player.penisExist and $player.virginity.penile is true>>
+				<<if !$_isHerm and ($_hasVaginalVirginity or $_hasPenileVirginity)
+				or $_isHerm and $_hasVaginalVirginity and $_hasPenileVirginity>>
+					<<set $fallenangel to 0>>
+					<<angelTransform>>
+					<<set $transformationParts.fallenAngel.halo to "disabled">>
+					<<set $transformationParts.fallenAngel.wings to "disabled">>
+				<</if>>
 			<</if>>
-			<<if $fox gte 3 or $harpy gte 3>>
-				<<set $transformationParts.traits.mateForLife to "default">>
-			<<else>>
-				<<set $transformationParts.traits.mateForLife to "disabled">>
+
+			<!-- V0.4.0.8 Fix for non-virgin herm angels from bad fix earlier that didn't take herms into account -->
+			<<if $angel gte 6 and $player.gender is "h" and !$virginityProtected and ($player.virginity.vaginal isnot true or $player.virginity.penile isnot true)>>
+				<<fallenTransform>>
 			<</if>>
-			<<set $transformationParts.traits.flaunting to "disabled">>
 		<</if>>
-		<<if $fox gte 4>>
-			<<set $transformationParts.fox.ears to "default">>
-		<</if>>
-		<<if $fox gte 5>>
-			<<set $transformationParts.fox.cheeks to "default">>
-		<</if>>
-		<<if $fox gte 6>>
-			<<set $transformationParts.fox.tail to "default">>
-		<</if>>
+
+		<<set $tfFIX to 2>>
 	<</if>>
 
 	<!-- V0.4.0.5 Stop any saves in the above situation from being broke upon leaving -->
