@@ -1359,7 +1359,7 @@ function npcClothes(npc, type) {
 window.npcClothes = npcClothes;
 
 function waterproofCheck(clothing) {
-	return clothing.type.includes("swim") || clothing.type.includes("stealthy");
+	return clothing.type.includesAny("swim", "stealthy", "rainproof");
 }
 window.waterproofCheck = waterproofCheck;
 
