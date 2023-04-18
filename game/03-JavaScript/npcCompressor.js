@@ -75,8 +75,8 @@
  * - BIRTHLOCATION - child.birthLocation index
  * - LOCATION - child.location index
  * - CONCEIVEDLOCATION - child.conceivedLocation index
- * - MOTHER - child.mother - The final value is created based on if the parent is a named, human npc, or beast npc
- * - FATHER - child.father - The final value is created based on if the parent is a named, human npc, or beast npc
+ * - MOTHER - child.mother - created from the child ID
+ * - FATHER - child.father - created from the child ID
  * - ".c" CONCEIVED - child.conceived the date of conception saved in DDMMYYYY format
  * - ".b" BORN - child.born the date of birth saved in DDMMYYYY format
  * - ".i" CHILDID - child.childId - this should be in the format motherID + "." + kid number for this child  + "|" + fatherID + "." + kid number for this child
@@ -117,7 +117,8 @@
  */
 
 const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (function () {
-	const compressorVersion = 1;
+	const compressorVersionNPC = 1;
+	const compressorVersionChild = 2;
 	const typeList = ["human", "dog", "cat", "pig", "wolf", "dolphin", "lizard", "bear", "boar", "creature", "horse", "fox", "hawk", "cow", "spider", "plant"];
 	const beastList = ["dog", "cat", "pig", "wolf", "dolphin", "lizard", "bear", "boar", "creature", "horse", "fox", "hawk", "cow", "spider"];
 	const insecurityList = ["none", "vagina", "penis", "ethics", "weak", "skill", "looks"];
@@ -266,44 +267,6 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 	const adultFHealthList = [125, 175, 150, 150, 150, 175, 150, 200, 125, 200, 275, 200, 250, 250, 200, 200, 250, 200, 200, 350, 600];
 	const adultMHealthList = [125, 125, 150, 150, 150, 150, 175, 175, 200, 200, 200, 200, 250, 250, 250, 250, 275, 275, 275, 400, 600];
 	const beastHealthList = [200, 150, 200, 300, 200, 250, 500, 300, 200, 500, 200, 150, 400];
-
-	const motherFatherList = [
-		undefined,
-		"Unknown",
-		"pc",
-		"Avery",
-		"Bailey",
-		"Briar",
-		"Charlie",
-		"Darryl",
-		"Doren",
-		"Eden",
-		"Gwylan",
-		"Harper",
-		"Jordan",
-		"Kylar",
-		"Landry",
-		"Leighton",
-		"Mason",
-		"Morgan",
-		"River",
-		"Robin",
-		"Sam",
-		"Sirris",
-		"Whitney",
-		"Winter",
-		"Black Wolf",
-		"Niki",
-		"Quinn",
-		"Remy",
-		"Alex",
-		"Great Hawk",
-		"Wren",
-		"Sydney",
-		"Ivory Wraith",
-		"cum bucket",
-		"Harper's Serum",
-	];
 
 	// child items
 	const hairColourList = {
@@ -505,7 +468,7 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 		npcData[8] = monster || skin;
 		npcData[9] = descriptionIndex.toString().padStart(2, "0"); // can be above 10
 
-		npcCode = (compressorVersion < 10 ? "~" : "") + reduceZeros(compressorVersion.toString() + npcData.join(""));
+		npcCode = (compressorVersionNPC < 10 ? "~" : "") + reduceZeros(compressorVersionNPC.toString() + npcData.join(""));
 
 		// The pregnancy avoidance that the NPC has. Adds .a and then the avoidance value. Ranges between 1 to 100
 		if (!passedNPC.pregnancyAvoidance) passedNPC.pregnancyAvoidance = 0;
@@ -788,71 +751,6 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 		let conceivedLocation = locationList.indexOf(passedChild.conceivedLocation);
 		if (conceivedLocation < 0) conceivedLocation = 0;
 
-		// Determines the needed information about the passed parents. There are three different groups: 0 for named NPCs =>  1 for human NPCs => 2 for beast NPCs
-		// Named NPCs looks through the list of named NPCs and determines if that is a valid choice. If it is not, then it checks if the npc is a beast by looking for the words male and female.
-		// If the npc is not a beast, then the age of the npc is determined and the index of the descriptors is added after it.
-		let mother, father, parentTemp, parentTempList;
-
-		// mothers
-		if (passedChild.mother) {
-			if (motherFatherList.includes(passedChild.mother)) {
-				mother = motherFatherList.indexOf(passedChild.mother);
-				mother = mother.toString().padStart(4, "0");
-			} else if (!passedChild.mother.includes("female")) {
-				if (passedChild.mother.includes("girl")) {
-					mother = 0;
-					parentTempList = teenFDescList;
-				} else {
-					mother = 1;
-					parentTempList = adultFDescList;
-				}
-
-				parentTemp = passedChild.mother.replace(/ .*/, "");
-				parentTempList = parentTempList.indexOf(parentTemp);
-				parentTempList = parentTempList < 0 ? 10 : parentTempList;
-
-				mother = "1" + mother + parentTempList.toString().padStart(2, "0");
-			} else {
-				parentTemp = passedChild.mother.match(/\w+$/)[0];
-				parentTempList = typeList.indexOf(parentTemp);
-				mother = "2" + parentTempList.toString().padStart(3, "0");
-			}
-		} else {
-			mother = "0000";
-		}
-
-		// console.log(`Input mother: ${passedChild.mother}; Index output: ${mother}`);
-
-		// fathers
-		if (passedChild.father) {
-			if (motherFatherList.includes(passedChild.father)) {
-				father = motherFatherList.indexOf(passedChild.father);
-				father = father.toString().padStart(4, "0");
-			} else if (!passedChild.father.includes("male")) {
-				if (passedChild.father.includes("boy")) {
-					father = 0;
-					parentTempList = teenMDescList;
-				} else {
-					father = 1;
-					parentTempList = adultMDescList;
-				}
-
-				parentTemp = passedChild.father.replace(/ .*/, "");
-				parentTempList = parentTempList.indexOf(parentTemp);
-				parentTempList = parentTempList < 0 ? 10 : parentTempList;
-
-				father = "1" + father + parentTempList.toString().padStart(2, "0");
-			} else {
-				parentTemp = passedChild.mother.match(/\w+$/)[0];
-				parentTempList = typeList.indexOf(parentTemp);
-				father = "2" + parentTempList.toString().padStart(2, "0");
-			}
-		} else {
-			father = "0000";
-		}
-
-		// console.log(`Input father: ${passedChild.father}; Index output: ${father}`);
-
 		// Used to determine whether or not the child's parents are known. The final value is a combination of the mother's and father's known states.
 		// mother: Unknown = 0 | known = 2; father: Unknown = 0 | known = 1;
 		let parentsKnown = 0;
@@ -879,11 +777,9 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 		childData[12] = birthLocation.toString().padStart(3, "0"); // preplan this having 2 places.
 		childData[13] = childLocation.toString().padStart(3, "0"); // preplan this having 2 places.
 		childData[14] = conceivedLocation.toString().padStart(3, "0"); // preplan this having 2 places.
-		childData[15] = mother;
-		childData[16] = father;
-		childData[17] = parentsKnown;
+		childData[15] = parentsKnown;
 
-		childCode = (compressorVersion < 10 ? "~" : "") + reduceZeros(compressorVersion.toString() + childData.join(""));
+		childCode = (compressorVersionChild < 10 ? "~" : "") + reduceZeros(compressorVersionChild.toString() + childData.join(""));
 
 		// Currently we have both dates added if they are there.
 		let conceivedDate, birthDate;
@@ -991,73 +887,17 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 		const conceivedLocation = locationList[Number(expandedChild.slice(position, position + 3))];
 		position += 3;
 
-		let parentTemp, parentTempList;
+		if (cVersion === 1) position +=6;
 
-		// mother
-		let mother = Number(expandedChild[position]);
-		position++;
-
-		if (mother === 0) {
-			position++;
-			mother = motherFatherList[Number(expandedChild.slice(position, position + 2))];
-		} else if (mother === 1) {
-			parentTemp = Number(expandedChild.slice(position, position + 1));
-
-			if (parentTemp === 1) {
-				mother = " woman";
-				parentTempList = adultFDescList;
-			} else {
-				mother = " girl";
-				parentTempList = teenFDescList;
-			}
-
-			position++;
-			parentTemp = Number(expandedChild.slice(position, position + 2));
-
-			mother = parentTempList[parentTemp] + mother;
-		} else if (mother === 2) {
-			position++;
-			parentTemp = Number(expandedChild.slice(position, position + 2));
-			mother = " female " + typeList[parentTemp];
-			parentTempList = beastDescList[parentTemp - 1];
-			mother = parentTempList + mother;
-		}
-		position += 2;
-
-		// console.log(`Output mother: ${mother}; Index input: ${expandedChild.slice(position-4, position)}`);
-
-		// father
-		let father = Number(expandedChild[position]);
-		position++;
-
-		if (father === 0) {
-			position++;
-			father = motherFatherList[Number(expandedChild.slice(position, position + 2))];
-		} else if (father === 1) {
-			parentTemp = Number(expandedChild.slice(position, position + 1));
-
-			if (parentTemp === 1) {
-				father = " man";
-				parentTempList = adultMDescList;
-			} else {
-				father = " boy";
-				parentTempList = teenMDescList;
-			}
-
-			position++;
-			parentTemp = Number(expandedChild.slice(position, position + 2));
-
-			father = parentTempList[parentTemp] + father;
-		} else if (father === 2) {
-			position++;
-			parentTemp = Number(expandedChild.slice(position, position + 2));
-			father = " male " + typeList[parentTemp];
-			parentTempList = beastDescList[parentTemp - 1];
-			father = parentTempList + father;
-		}
-		position += 2;
-
-		// console.log(`Output father: ${father}; Index input: ${expandedChild.slice(position-4, position)}`);
+		let mother = expandedChild.match(/m-?\d+/);
+		mother = mother ? findParent(Number(mother[0].replace("m",""))) : mother;
+		if (!mother && mother !== 0) throw new Error(`The passed child string did not contain a valid child Id and was missing the mother ID property 'm'. Passed string: ${passedChild}`);
+		mother = mother === -1 ? "unknown" : mother.name;
+		
+		let father = expandedChild.match(/d-?\d+/);
+		father = father ? findParent(Number(father[0].replace("m",""))) : father;
+		if (!father && father !== 0) throw new Error(`The passed child string did not contain a valid child Id and was missing the father ID property 'd'. Passed string: ${passedChild}`);
+		father = father === -1 ? "unknown" : father.name;
 
 		let fatherKnown, motherKnown;
 
@@ -1110,7 +950,7 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 			childType += childType === "plant" ? man : "";
 		}
 
-		if (cVersion > 1) throw new Error("This should be unreachable.");
+		if (cVersion > 2) throw new Error("This should be unreachable.");
 
 		let check;
 
