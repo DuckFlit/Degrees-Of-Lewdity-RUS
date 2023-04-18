@@ -353,3 +353,137 @@ function playerChastity(slots, inAllSlots = false) {
 	return chastity;
 }
 window.playerChastity = playerChastity;
+
+/**
+ * @desc Looks over the clothing the player is wearing and returns any outfits halves that are missing. If no halves are missing, it returns 0.
+ * @returns {Object} An object that contains any missing halves of an outfit the player is wearing. Each outfit will have the values: wornHalf, brokenHalf, outfitSet, outfitName, outfitCost, and the index of the broken item
+ */
+function getOutfitPair() {
+	let upperGarment = ["upper", "under_upper", "over_upper"];
+	let lowerGarment = ["lower", "under_lower", "over_lower"];
+	let layerList = ["covering","under","over"];
+	let broken = {
+		under: {},
+		covering: {},
+		over: {}
+	};
+	let hasReturn = 0;
+
+	for (let i = 0; i <= 2; i++) {
+		//check if an item is being worn in these places
+		if( (V.worn[upperGarment[i]] && V.worn[upperGarment[i]].name !== "naked") || (V.worn[lowerGarment[i]] && V.worn[lowerGarment[i]].name !== "naked") ) {
+			//check if the upper or lower is a set
+			if (V.worn[upperGarment[i]].set !== upperGarment[i] || V.worn[lowerGarment[i]].set !== lowerGarment[i] || ( V.worn[lowerGarment[i]].outfitSecondary && V.worn[lowerGarment[i]].outfitSecondary[1] === "broken")) {
+				//if they are then make sure both pieces are there
+				if (V.worn[upperGarment[i]].set !== V.worn[lowerGarment[i]].set) {
+					hasReturn = true;
+					//find the one that is missing. The if statement here looks to see if the top is the missing part. If it's not, then the lower part must be the missing one.
+					if (V.worn[upperGarment[i]].outfitPrimary) {
+						//The bottom is the missing piece
+						broken[layerList[i]].wornHalf = upperGarment[i];
+						broken[layerList[i]].brokenHalf = lowerGarment[i];
+						broken[layerList[i]].outfitSet = V.worn[upperGarment[i]].set;
+						broken[layerList[i]].wornIndex = V.worn[upperGarment[i]].index;
+
+						let indexFound = 0;
+						let loopList = setup.clothes[upperGarment[i]].length;
+
+						for (let j = 0; j < loopList; j++) {
+							if (setup.clothes[lowerGarment[i]][j].set === V.worn[upperGarment[i]].name) {indexFound = j; break;}
+						};
+
+						broken[layerList[i]].index = indexFound;
+						broken[layerList[i]].outfitName = setup.clothes[lowerGarment[i]][indexFound].name;
+						broken[layerList[i]].outfitCost = setup.clothes[upperGarment[i]][V.worn[upperGarment[i]].index].cost;
+
+						broken[layerList[i]].colour = V.worn[upperGarment[i]].colour;
+						broken[layerList[i]].colour_options = V.worn[upperGarment[i]].colour_options;
+						broken[layerList[i]].colour_sidebar = V.worn[upperGarment[i]].colour_sidebar;
+						broken[layerList[i]].colour_combat = V.worn[upperGarment[i]].colour_combat;
+						broken[layerList[i]].accessory = V.worn[upperGarment[i]].accessory;
+						broken[layerList[i]].accessory_colour = V.worn[upperGarment[i]].accessory_colour;
+						broken[layerList[i]].accessory_colour_options = V.worn[upperGarment[i]].accessory_colour_options;
+						broken[layerList[i]].location = V.worn[upperGarment[i]].location;
+					}
+					else {
+						//the top is the missing piece
+						broken[layerList[i]].wornHalf = lowerGarment[i];
+						broken[layerList[i]].brokenHalf = upperGarment[i];
+
+						let garmentName = V.worn[lowerGarment[i]].name.replace(/ skirt| bottoms?| trousers| pants/, "")
+
+						broken[layerList[i]].outfitSet = garmentName;
+						broken[layerList[i]].outfitName = garmentName;
+						broken[layerList[i]].wornIndex = V.worn[lowerGarment[i]].index;
+
+						let indexFound = 0;
+						let loopList = setup.clothes[upperGarment[i]].length;
+
+						for (let j = 0; j < loopList; j++) {
+							if (setup.clothes[upperGarment[i]][j].set === garmentName) {indexFound = j; break;}
+						};
+
+						broken[layerList[i]].index = indexFound;
+						broken[layerList[i]].outfitCost = setup.clothes[upperGarment[i]][indexFound].cost;
+
+						broken[layerList[i]].colour = V.worn[lowerGarment[i]].colour;
+						broken[layerList[i]].colour_options = V.worn[lowerGarment[i]].colour_options;
+						broken[layerList[i]].colour_sidebar = V.worn[lowerGarment[i]].colour_sidebar;
+						broken[layerList[i]].colour_combat = V.worn[lowerGarment[i]].colour_combat;
+						broken[layerList[i]].accessory = V.worn[lowerGarment[i]].accessory;
+						broken[layerList[i]].accessory_colour = V.worn[lowerGarment[i]].accessory_colour;
+						broken[layerList[i]].accessory_colour_options = V.worn[lowerGarment[i]].accessory_colour_options;
+						broken[layerList[i]].location = V.worn[lowerGarment[i]].location;
+					}
+				}
+			}
+		}
+		if (Object.keys(broken[layerList[i]]).length === 0) delete broken[layerList[i]];
+	}
+
+	Object.keys(broken).forEach(key => {
+		Object.keys(broken[key]).forEach(item => {
+			if(broken[key][item] == undefined) { delete broken[key][item]}
+		})
+	});
+
+
+	if (hasReturn) return broken
+	else return hasReturn
+}
+window.getOutfitPair = getOutfitPair;
+
+
+//is passed an object
+function makeMissingOutfit(brokenOutfit) {
+	//copies the missing item
+	let tempOutfit = clone(setup.clothes[brokenOutfit.brokenHalf][brokenOutfit.index]);
+
+	//this correctly resets the remaining part. For lower items, make sure to change the set
+	if (brokenOutfit.wornHalf.includes("upper")) V.worn[brokenOutfit.wornHalf].outfitPrimary = setup.clothes[brokenOutfit.wornHalf][brokenOutfit.wornIndex].outfitPrimary;
+	else {
+		V.worn[brokenOutfit.wornHalf].outfitSecondary = setup.clothes[brokenOutfit.wornHalf][brokenOutfit.wornIndex].outfitSecondary;
+		V.worn[brokenOutfit.wornHalf].set = brokenOutfit.outfitSet;
+	}
+
+	//sets the one_piece value to 1
+	V.worn[brokenOutfit.wornHalf].one_piece = 1;
+
+	//checks for any item worn in that place then puts it in the wardrobe
+	if ( V.worn[brokenOutfit.brokenHalf].name !== "naked") {
+		$.wiki('<<generalUndress "wardrobe" ' + brokenOutfit.brokenHalf + '>>')
+	}
+
+	//set known colour values to be the same
+	let removalList = ["wornHalf","brokenHalf","outfitSet","outfitName","index","wornIndex","outfitCost"]
+	let copiedValues = {...brokenOutfit};
+	for (let i = removalList.length - 1; i >= 0; i--) {
+		delete copiedValues[removalList[i]];
+	}
+
+	tempOutfit = {...tempOutfit, ...copiedValues};
+	
+	//equips the new piece into the now empty slot
+	V.worn[brokenOutfit.brokenHalf] = tempOutfit;
+}
+window.makeMissingOutfit = makeMissingOutfit;
