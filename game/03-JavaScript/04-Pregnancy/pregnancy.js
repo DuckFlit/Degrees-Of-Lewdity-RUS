@@ -344,6 +344,8 @@ function endPlayerPregnancy(birthLocation, location) {
 		periodEnabled: false,
 		awareOfPeriodDelay: false,
 	};
+
+	delete V.templeVirginPregnancy;
 	return true;
 }
 DefineMacro("endPlayerPregnancy", endPlayerPregnancy);
