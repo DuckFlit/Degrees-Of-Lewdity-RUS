@@ -12,7 +12,9 @@ You are in the main hall of the temple. Stone walls and pillars tower into darkn
 	You hide behind one of the pillars to conceal your <<nudity>>.
 <</if>>
 <br><br>
-<<if $stress gte $stressmax>>
+<<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
+	<<pregnancyWatersBrokenPassout "temple">>
+<<elseif $stress gte $stressmax>>
 	<<passouttemple>>
 <<elseif $temple_chastity_timer lte 0 and $temple_rank isnot undefined and $temple_rank isnot "prospective" and $exposed lte 0>><<set $temple_chastity_timer to 30>>
 	<<if $templePromised is "Sydney">>
@@ -157,16 +159,16 @@ You are in the main hall of the temple. Stone walls and pillars tower into darkn
 
 	<<if Time.weekDay is 1 and Time.hour gte 11 and Time.hour lte 12 and $daily.massAttended isnot 1 and $exposed lte 0 and $NPCName[$NPCNameList.indexOf("Jordan")].init is 1>>
 		<<if $angel gte 6>>
-			<<link [[Attend mass (1:00)|Temple Mass Angel]]>><<purity 10>><<pass 60>><<trauma -18>><<stress -18>><<alcohol 10>><<set $daily.massAttended to 1>><</link>><<gpurity>><<lltrauma>><<llstress>>
+			<<link [[Attend mass (1:00)|Temple Mass Angel]]>><<purity 10>><<pass 60>><<trauma -18>><<stress -18>><<set $daily.massAttended to 1>><</link>><<gpurity>><<lltrauma>><<llstress>>
 			<br>
 		<<elseif $fallenangel gte 2>>
-			<<link [[Attend mass (1:00)|Temple Mass Fallen Angel]]>><<purity 70>><<pass 60>><<trauma 6>><<stress 6>><<pain 6>><<alcohol 10>><<set $daily.massAttended to 1>><</link>><<gggpurity>><<gtrauma>><<gstress>><<gpain>>
+			<<link [[Attend mass (1:00)|Temple Mass Fallen Angel]]>><<purity 70>><<pass 60>><<trauma 6>><<stress 6>><<pain 6>><<set $daily.massAttended to 1>><</link>><<gggpurity>><<gtrauma>><<gstress>><<gpain>>
 			<br>
 		<<elseif $demon gte 6>>
-			<<link [[Attend mass (1:00)|Temple Mass Demon]]>><<purity 10>><<pass 60>><<trauma 6>><<stress 6>><<pain 6>><<alcohol 10>><<set $daily.massAttended to 1>><</link>><<gggpurity>><<gtrauma>><<gstress>><<gpain>>
+			<<link [[Attend mass (1:00)|Temple Mass Demon]]>><<purity 10>><<pass 60>><<trauma 6>><<stress 6>><<pain 6>><<set $daily.massAttended to 1>><</link>><<gggpurity>><<gtrauma>><<gstress>><<gpain>>
 			<br>
 		<<else>>
-			<<link [[Attend mass (1:00)|Temple Mass]]>><<purity 10>><<pass 60>><<alcohol 10>><<set $daily.massAttended to 1>><</link>><<gpurity>>
+			<<link [[Attend mass (1:00)|Temple Mass]]>><<purity 10>><<pass 60>><<set $daily.massAttended to 1>><</link>><<gpurity>>
 			<br>
 		<</if>>
 	<<elseif $exposed lte 0>>
@@ -672,9 +674,17 @@ You look away from the <<monk>>, and <<he>> continues down the aisle.
 	<<sydneyMass>>
 <<else>>
 	<br><br>
-	You are called to the front for communion. You kneel in front of Jordan as the other <<if $pronoun is "m">>monks<<else>>nuns<</if>> watch. <<He>> pushes a small piece of bread into your mouth, and holds a cup in front of you. You take a sip of the bitter fluid and make way for the next person.
-	<<sydneyMass>>
+	You are called to the front for communion. You kneel in front of Jordan as the other <<if $pronoun is "m">>monks<<else>>nuns<</if>> watch. <<He>> pushes a small piece of bread into your mouth, and holds a cup in front of you.
+	<<if pregnancyBellyVisible() or knowsAboutPregnancy("pc", "Jordan")>>
+		<<He>> gives you a reassuring smile. "It's a substitute. No alcohol," <<he>> whispers. You take a sip of the sweet fluid and make way for the next person.
+	<<elseif playerIsPregnant() and playerAwareTheyArePregnant()>>
+		<<setKnowsAboutPregnancy "pc" "Jordan">>
+		You give Jordan a concerned look, and place a hand over your belly. <<He>> seems to understand immediately, and grabs a different cup. You take a sip of the sweet fluid and make way for the next person, noting the lack of an alcoholic aftertaste.
+	<<else>>
+		You take a sip of the bitter fluid and make way for the next person.<<alcohol 15>>
+	<</if>>
 	<br><br>
+	<<sydneyMass>>
 	Jordan finishes with a prayer.
 	<br><br>
 <</if>>
@@ -690,9 +700,23 @@ You look away from the <<monk>>, and <<he>> continues down the aisle.
 	<<sydneyMass>>
 <<else>>
 	<br><br>
-	You are called to the front for communion. You kneel in front of Jordan as the other <<if $pronoun is "m">>monks<<else>>nuns<</if>> watch. <<He>> pushes a small piece of bread into your mouth, and holds a cup in front of you. You take a sip of the sweet fluid and make way for the next person.
+	You are called to the front for communion. You kneel in front of Jordan as the other <<if $pronoun is "m">>monks<<else>>nuns<</if>> watch. <<He>> pushes a small piece of bread into your mouth, and holds a cup in front of you.
+	<<if pregnancyBellyVisible() or knowsAboutPregnancy("pc", "Jordan")>>
+		As you sip the sweet fluid, you note the lack of an alcoholic aftertaste. You begin to move aside for the next person, but Jordan gently grabs your wrist, pulling you up next to <<him>>.
+		<br><br>
+
+		<<He>> reads another section of scripture, seemingly from memory. Many of the other <<if $pronoun is "m">>monks<<else>>nuns<</if>> look surprised. The mass listens in rapt attention. You think some are hiding tears. Jordan's words ring through your head, as if you're hearing them before they're spoken.
+		<br><br>
+
+		As <<he>> finishes, <<he>> places a hand on your <<bellyDescription "pc">>. A wave of warmth floods you. The gaze of the entire flock is fixed on you in reverence. Jordan motions for you to take your seat again, bringing attention back to <<him>> as <<he>> resumes communion. <<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<gggrace>><<grace 5>><</if>>
+	<<elseif playerIsPregnant() and playerAwareTheyArePregnant()>>
+		<<setKnowsAboutPregnancy "pc" "Jordan">>
+		You give Jordan a concerned look, and place a hand over your belly. <<He>> seems to understand immediately, and grabs a different cup. You take a sip of the sweet fluid and make way for the next person, noting the lack of an alcoholic aftertaste.
+	<<else>>
+		You take a sip of the sweet fluid and make way for the next person.<<alcohol 15>>
+	<</if>>
+	<br><br>	
 	<<sydneyMass>>
-	<br><br>
 	Jordan finishes with a prayer.
 	<br><br>
 <</if>>
@@ -709,8 +733,12 @@ You look away from the <<monk>>, and <<he>> continues down the aisle.
 <<else>>
 	<br><br>
 	You are called to the front for communion. You kneel in front of Jordan, but the other <<if $pronoun is "m">>monks<<else>>nuns<</if>> refuse to look at you. The bread slips from Jordan's fingers before reaching your mouth. The wine evaporates before touching your lips. Despite that, you feel vindicated by your effort.
-	<<sydneyMass>>
+	<<if pregnancyBellyVisible() or knowsAboutPregnancy("pc", "Jordan")>>
+	<<else>>
+		<<alcohol 15>>
+	<</if>>
 	<br><br>
+	<<sydneyMass>>
 	Jordan finishes with a prayer.
 	<br><br>
 <</if>>
@@ -727,8 +755,12 @@ You look away from the <<monk>>, and <<he>> continues down the aisle.
 <<else>>
 	<br><br>
 	You are called to the front for communion. You kneel in front of Jordan, but the other <<if $pronoun is "m">>monks<<else>>nuns<</if>> refuse to look at you. The bread tastes like ash. The wine like blood.
-	<<sydneyMass>>
+	<<if pregnancyBellyVisible() or knowsAboutPregnancy("pc", "Jordan")>>
+	<<else>>
+		<<alcohol 15>>
+	<</if>>
 	<br><br>
+	<<sydneyMass>>
 	Jordan finishes with a prayer.
 	<br><br>
 <</if>>
@@ -930,6 +962,7 @@ You tell Jordan you were attacked. <<He>> listens without a word, only speaking 
 	<br><br>
 <<else>>
 	<<if pregnancyBellyVisible()>>
+		<<setKnowsAboutPregnancy("pc", "Jordan")>>
 		"We should remove yours immediately. It's unsafe to wear one whilst pregnant."
 	<<elseif $player.virginity.penile is true and $player.virginity.vaginal is true>>
 		"It is written that we should never remove the chastity belt from a virgin. However, if you really want it removed, we will overlook that rule in return for an £80 donation."
@@ -943,7 +976,7 @@ You tell Jordan you were attacked. <<He>> listens without a word, only speaking 
 		<br><br>
 	<</if>>
 <</if>>
-<<if !playerChastity() and !pregnancyBellyVisible()>>
+<<if !playerChastity() and !pregnancyBellyVisible() and !knowsAboutPregnancy("pc", "Jordan")>>
 	<<if $templetest isnot "failed">>
 		<<link [[Virginity test (0:05)|Temple Test]]>><<set $phase to 0>><<pass 5>><</link>>
 		<br>
@@ -993,9 +1026,8 @@ Jordan gives you a solemn nod. "Please come with me."
 You remove your clothing, wishing it wasn't quite so cold in here. Jordan rubs white powder between <<his>> hands, then kneels in front of you.
 <<if ($phase is 1 or $phase is 2) and playerChastity() and $worn.genitals.origin is "temple">>
 	<<He>> holds a strange rod against your $worn.genitals.name, and the device clatters to the floor.
-	<<if playerBellySize() gte 8>>
-		<<if playerIsPregnant()>><<setKnowsAboutPregnancy "pc" "Jordan">><</if>>
-		<<Hes>> briefly taken aback upon seeing your belly. "You are with child?" <<He>> pauses. "The examination will continue. But I can not return your chastity device, for safety reasons."
+	<<if playerIsPregnant() and knowsAboutPregnancy("pc", "Jordan")>>
+		"I'm sorry, but I can't return your chastity device while you are bearing children. It's unsafe."
 		<<set $worn.genitals.type.push("broken")>>
 		<<genitalsruined>>
 		<br><br>
@@ -1033,10 +1065,45 @@ The fondling continues for a few minutes. Finally, <<he>> finishes <<his>> work.
 <<arousal 1000 "genitals">>
 <<if $phase is 2>>
 	<<if $player.virginity.penile is true and $player.virginity.vaginal is true or $player.virginity.temple is true>>
+		<<if playerIsPregnant() and $player.virginity.vaginal is true and !$templeVirginPregnancy>>
+			<<set _preggy to getPregnancyObject()>><<setKnowsAboutPregnancy "pc" "Jordan">><<set $templeVirginPregnancy to true>>
+			<<He>> fails to conceal <<his>> happiness.
+			<<if !_preggy.awareOf>>
+				<<set _preggy.awareOf to true>>
+				"<span class="green">You are unblemished</span>. And yet, <span class="lewd">you are with child</span>. My sincerest congratulations. You've been blessed with a miracle."
+				<br><br>
 
-		"You are unblemished, and may it stay that way."
-		<<if playerChastity() and $worn.genitals.origin is "temple">>
-			With one anxious motion, <<he>> returns your $worn.genitals.name to its place, guarding your crotch.
+				Your legs feel weak. Jordan quickly helps you sit.
+				<<if _preggy.potentialFathers.length is 1>>
+					<span class="lewd">It's clear that _preggy.potentialFathers[0].source is the father.</span>
+				<<else>>
+					<span class="red">You wonder who the father is.</span>
+				<</if>>
+				<br><br>
+
+				"I'm sorry. It was careless of me to reveal this to you so suddenly." <<He>> sits by your side until you're confident you can stand again.
+			<<else>>
+				"<span class="green">You are unblemished</span>. And yet, you are with child. My sincerest congratulations. You've been blessed with a miracle."
+			<</if>>
+			<<ggggrace>><<grace 15>>
+			<br><br>
+
+			<<if playerChastity() and $worn.genitals.origin is "temple">>
+				"I can not return your chastity device while you're pregnant, for safety reasons."
+				<<set $worn.genitals.type.push("broken")>>
+				<<genitalsruined>>
+			<</if>>
+		<<else>>
+			"<span class="green">You are unblemished</span>, and may it stay that way."
+			<<if playerChastity() and $worn.genitals.origin is "temple">>
+				<<if playerIsPregnant() and knowsAboutPregnancy("pc", "Jordan")>>
+					"I'm sorry, but I can't return your chastity device while you are bearing children. It's unsafe."
+					<<set $worn.genitals.type.push("broken")>>
+					<<genitalsruined>>			
+				<<else>>
+					With one anxious motion, <<he>> returns your $worn.genitals.name to its place, guarding your crotch.
+				<</if>>
+			<</if>>
 		<</if>>
 		<br><br>
 
@@ -1067,7 +1134,24 @@ The fondling continues for a few minutes. Finally, <<he>> finishes <<his>> work.
 		<<link [[Next|Temple]]>><</link>>
 	<<else>>
 		<<set $templetest to "failed">>
-		"I'm sorry, but you are spoiled." <<His>> voice shakes slightly, you're not sure if you imagined it. "You must be purified. I will summon the specialists. Please cooperate with them." <<He>> produces a small bell from <<his>> robes, and rings.
+		"I'm sorry, but you are spoiled." <<His>> voice shakes slightly, you're not sure if you imagined it.
+		<<if playerIsPregnant() and !playerAwareTheyArePregnant>>
+			<<set _preggy to getPregnancyObject()>><<setKnowsAboutPregnancy "pc" "Jordan">>
+			<<if !_preggy.awareOf>>
+				<<set _preggy.awareOf to true>>
+				"And... <span class="red">you are with child</span>."
+				<br><br>
+
+				Your legs feel weak.
+				<<if _preggy.potentialFathers.length is 1>>
+					<span class="lewd">It's clear that _preggy.potentialFathers[0].source is the father.</span>
+				<<else>>
+					<span class="red">You wonder who the father is.</span>
+				<</if>>
+				<br><br>
+			<</if>>			
+		<</if>>
+		"You must be purified. I will summon the specialists. Please cooperate with them." <<He>> produces a small bell from <<his>> robes, and rings.
 		<br><br>
 		<<endevent>>
 		<<link [[Next|Temple Arcade Intro]]>><</link>>
@@ -1077,35 +1161,127 @@ The fondling continues for a few minutes. Finally, <<he>> finishes <<his>> work.
 <<elseif $phase is 1>>
 	<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
 		<<inittemple>>
-		"You are unblemished, and may it stay that way. You are now an initiate of the temple. Welcome, <<if $player.gender_appearance is "m">>brother.<<else>>sister.<</if>>"
-		<<if playerChastity() and $worn.genitals.origin is "temple">>
-			With one anxious motion, <<he>> returns your $worn.genitals.name to its place, guarding your crotch.
+		<<if playerIsPregnant() and !$templeVirginPregnancy>>
+			<<set _preggy to getPregnancyObject()>><<setKnowsAboutPregnancy "pc" "Jordan">><<set $templeVirginPregnancy to true>>
+			<<He>> fails to conceal <<his>> happiness.
+			<<if !_preggy.awareOf>>
+				<<set _preggy.awareOf to true>>
+				"<span class="green">You are unblemished</span>. And yet, <span class="lewd">you are with child</span>. My sincerest congratulations. You've been blessed with a miracle."
+				<br><br>
+
+				Your legs feel weak. Jordan quickly helps you sit.
+				<<if _preggy.potentialFathers.length is 1>>
+					<span class="lewd">It's clear that _preggy.potentialFathers[0].source is the father.</span>
+				<<else>>
+					<span class="red">You wonder who the father is.</span>
+				<</if>>
+				<br><br>
+
+				"I'm sorry. It was careless of me to reveal this to you so suddenly." <<He>> sits by your side until you're confident you can stand again.
+			<<else>>
+				"<span class="green">You are unblemished</span>. And yet, you are with child. My sincerest congratulations. You've been blessed with a miracle."
+			<</if>>
+			<<ggggrace>><<grace 15>>
+			<br><br>
+
+			<<if playerChastity() and $worn.genitals.origin is "temple">>
+				"I can not return your chastity device while you're pregnant, for safety reasons."
+				<<set $worn.genitals.type.push("broken")>>
+				<<genitalsruined>>
+				<br><br>
+			<</if>>
+			"You are now an initiate of the temple. Welcome, <<if $player.gender_appearance is "m">>brother.<<else>>sister.<</if>>"
+			<<if playerChastity() and $worn.genitals.origin is "temple">>
+				With one anxious motion, <<he>> returns your $worn.genitals.name to its place, guarding your crotch.
+			<</if>>
+			<br><br>
+			<<He>> turns away to let you dress. "Initiates are tasked with menial work around the temple proper. Cleaning, gardening, and servicing your elders. In return you have full access to the temple grounds, with the exception of areas behind doors painted with a red cross."
+			<br><br>
+			"We have some other rules. No stealing. No violence. No sex, <span class="pink">everyone has their chastity checked monthly.</span> No refusing your elders. If someone behaves in an improper manner towards you, tolerate it until you can inform me. Dealing with that is one of my responsibilities."
+			<br><br>
+			"I'll let the others know you've joined us," <<he>> continues, smiling. "It's an honor to have you."
+			<br><br>
+			<<clotheson>>
+			<<endevent>>
+			<<link [[Next|Temple]]>><</link>>
+		<<else>>
+			"You are unblemished, and may it stay that way. You are now an initiate of the temple. Welcome, <<if $player.gender_appearance is "m">>brother.<<else>>sister.<</if>>"
+			<<if playerChastity() and $worn.genitals.origin is "temple">>
+				<<if playerIsPregnant() and knowsAboutPregnancy("pc", "Jordan")>>
+					"I'm sorry, but I can't return your chastity device while you are bearing children. It's unsafe."
+					<<set $worn.genitals.type.push("broken")>>
+					<<genitalsruined>>			
+				<<else>>
+					With one anxious motion, <<he>> returns your $worn.genitals.name to its place, guarding your crotch.
+				<</if>>
+			<</if>>
+			<br><br>
+			<<He>> turns away to let you dress. "Initiates are tasked with menial work around the temple proper. Cleaning, gardening, and servicing your elders. In return you have full access to the temple grounds, with the exception of areas behind doors painted with a red cross."
+			<br><br>
+			"We have some other rules. No stealing. No violence. No sex, <span class="pink">everyone has their chastity checked monthly.</span> No refusing your elders. If someone behaves in an improper manner towards you, tolerate it until you can inform me. Dealing with that is one of my responsibilities."
+			<br><br>
+			"I'll let the others know you've joined us," <<he>> continues, smiling. "I'm pleased to have you."
+			<br><br>
+			<<clotheson>>
+			<<endevent>>
+			<<link [[Next|Temple]]>><</link>>
 		<</if>>
-		<br><br>
-		<<He>> turns away to let you dress. "Initiates are tasked with menial work around the temple proper. Cleaning, gardening, and servicing your elders. In return you have full access to the temple grounds, with the exception of areas behind doors painted with a red cross."
-		<br><br>
-		"We have some other rules. No stealing. No violence. No sex, <span class="pink">everyone has their chastity checked monthly.</span> No refusing your elders. If someone behaves in an improper manner towards you, tolerate it until you can inform me. Dealing with that is one of my responsibilities."
-		<br><br>
-		"I'll let the others know you've joined us," <<he>> continues, smiling. "I'm pleased to have you."
-		<br><br>
-		<<clotheson>>
-		<<endevent>>
-		<<link [[Next|Temple]]>><</link>>
 	<<else>>
 		<<set $templetest to "failed">>
-		"I'm sorry, but you are spoiled." <<His>> voice shakes slightly, you're not sure if you imagined it. "You can still become an initiate, but you must pass the trial of purity." <<He>> walks out of the room, but stops in the doorway. "I'm sorry you were taken while still so young." <<He>> disappears around the corner.
+		"I'm sorry, but you are spoiled." <<His>> voice shakes slightly, you're not sure if you imagined it.
+		<<if playerIsPregnant() and !playerAwareTheyArePregnant()>>
+			<<set _preggy to getPregnancyObject()>><<setKnowsAboutPregnancy "pc" "Jordan">>
+			<<if !_preggy.awareOf>>
+				<<set _preggy.awareOf to true>>
+				"And... <span class="red">you are with child</span>."
+				<br><br>
+
+				Your legs feel weak.
+				<<if _preggy.potentialFathers.length is 1>>
+					<span class="lewd">It's clear that _preggy.potentialFathers[0].source is the father.</span>
+				<<else>>
+					<span class="red">You wonder who the father is.</span>
+				<</if>>
+				<br><br>
+			<</if>>
+		<</if>>
+		"You can still become an initiate, but you must pass the trial of purity." <<He>> walks out of the room, but stops in the doorway. "I'm sorry you were taken while still so young." <<He>> disappears around the corner.
 		<br><br>
 		<<link [[Next|Temple]]>><<endevent>><</link>>
 	<</if>>
-
 <<else>>
 	<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
-		"You are unblemished, and may it stay that way.
-		<<if playerBellySize() gte 8>>
-			<<if playerIsPregnant()>><<setKnowsAboutPregnancy "pc" "Jordan">><</if>>
-			However, due to your pregnancy, I can not fit you with a chastity device. Congratulations on your immaculate conception."
+		<<if playerIsPregnant() and !$templeVirginPregnancy>>
+			<<set _preggy to getPregnancyObject()>><<setKnowsAboutPregnancy "pc" "Jordan">><<set $templeVirginPregnancy to true>>
+			<<He>> fails to conceal <<his>> happiness.
+			<<if !_preggy.awareOf>>
+				<<set _preggy.awareOf to true>>
+				"<span class="green">You are unblemished</span>. And yet, <span class="lewd">you are with child</span>. My sincerest congratulations. You've been blessed with a miracle."
+				<br><br>
+
+				Your legs feel weak. Jordan quickly helps you sit.
+				<<if _preggy.potentialFathers.length is 1>>
+					<span class="lewd">It's clear that _preggy.potentialFathers[0].source is the father.</span>
+				<<else>>
+					<span class="red">You wonder who the father is.</span>
+				<</if>>
+				<br><br>
+
+				"I'm sorry. It was careless of me to reveal this to you so suddenly." <<He>> sits by your side until you're confident you can stand again.
+			<<else>>
+				"<span class="green">You are unblemished</span>. And yet, you are with child. My sincerest congratulations. You've been blessed with a miracle."
+			<</if>>
+			<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">>
+				<<ggggrace>><<grace 15>>
+			<</if>>
 			<br><br>
-			<<clotheson>>
+
+			"Unfortunately, I can not fit you with a chastity device. For safety reasons."
+			<<if $temple_rank is undefined>>
+				<<He>> pauses. "However, it would be an honor to have someone like you in our flock."
+			<</if>>
+			<br><br>
+
 			<<link [[Next|Temple]]>><<endevent>><</link>>
 		<<else>>
 			Please be patient, I'll return shortly with your belt." <<He>> leaves you briefly, and returns with the
@@ -1136,8 +1312,28 @@ The fondling continues for a few minutes. Finally, <<he>> finishes <<his>> work.
 		<</if>>
 	<<else>>
 		<<set $templetest to "failed">>
-		"I'm sorry, but you are spoiled." <<His>> voice shakes slightly, you're not sure if you imagined it. "We can still fit you with a belt, but you'll need to pay for it." <<He>> walks out of the room, but stops in the doorway. "I'm sorry you were taken while still so young." <<He>> disappears around the corner.
+		"I'm sorry, but you are spoiled." <<His>> voice shakes slightly, you're not sure if you imagined it.
+		<<if playerIsPregnant() and !playerAwareTheyArePregnant()>>
+			<<set _preggy to getPregnancyObject()>><<setKnowsAboutPregnancy "pc" "Jordan">>
+			<<if !_preggy.awareOf>>
+				<<set _preggy.awareOf to true>>
+				"And... <span class="red">you are with child</span>."
+				<br><br>
+
+				Your legs feel weak.
+				<<if _preggy.potentialFathers.length is 1>>
+					<span class="lewd">It's clear that _preggy.potentialFathers[0].source is the father.</span>
+				<<else>>
+					<span class="red">You wonder who the father is.</span>
+				<</if>>
+				<br><br>
+				"We won't be able to fit y with a belt for safety reasons." <<He>> walks out of the room, but stops in the doorway. "I'm sorry you were taken while still so young." <<He>> disappears around the corner.
+			<</if>>
+		<<else>>
+			"We can still fit you with a belt, but you'll need to pay for it." <<He>> walks out of the room, but stops in the doorway. "I'm sorry you were taken while still so young." <<He>> disappears around the corner.
+		<</if>>	
 		<br><br>
+
 		<<link [[Next|Temple]]>><<endevent>><</link>>
 	<</if>>
 <</if>>
@@ -1162,8 +1358,8 @@ You look down to examine it yourself. It doesn't feel as tight or uncomfortable 
 <<set $outside to 0>><<set $location to "temple">><<temple_effects>><<effects>>
 <<He>> leads you out of the main hall and into a small room. "Please undress, I'll be back shortly." You remove your clothing, wishing the room were warmer. This is embarrassing, but it'll be worth it. <<He>> soon returns, carrying a metallic belt and cage.
 <br><br>
-<<if playerBellySize() gte 8>>
-	<<if playerIsPregnant()>><<setKnowsAboutPregnancy "pc" "Jordan">><</if>>
+<<if playerIsPregnant() and playerBellySize() gte 8>>
+	<<setKnowsAboutPregnancy "pc" "Jordan">>
 	<<He>> pauses upon seeing your belly. "You are... with child? I'm sorry, but we can't provide chastity devices to those bearing children. It's unsafe."
 	<br><br>
 	<<He>> gives you your money back. <<set $money += 8000>>
