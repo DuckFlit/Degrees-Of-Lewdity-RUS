@@ -5,15 +5,15 @@
 	<br>
 	It has been <<print Time.days>> days since the game started.
 	<br>
-	The game started in $startingseason.
-	<br>
 	<<if $hardmodedays isnot undefined>>
 		You survived <span class="gold">$hardmodedays</span> days on hard mode.
 		<br>
 	<</if>>
-	<<schoolterm>>
+	The game started in $startingseason.
 	<br>
 	It is <<print Time.season>>.
+	<br><br>
+	<<schoolterm>>
 	<br><br>
 	<<if $antiquemoney gt 0>>
 		You are carrying antiques worth £<<print $antiquemoney>>.
@@ -23,21 +23,6 @@
 		You are carrying £<<print $blackmoney>> in stolen goods.
 		<br>
 	<</if>>
-	<<set _plant_keys to Object.keys($plants)>>
-	<<for _t to 0; _t lt _plant_keys.length; _t++>>
-		<<if $plants[_plant_keys[_t]].amount gte 1>><<set _plant_temp to 1>>
-			You have <span class="gold"><<print $plants[_plant_keys[_t]].amount>></span>
-			<<if $options.images is 1 and setup.plants[_plant_keys[_t]].icon>>
-				<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[_plant_keys[_t]].icon">
-			<</if>>
-			<<if setup.plants[$plants[_plant_keys[_t]].name].singular and $plants[_plant_keys[_t]].amount === 1>>
-				<<print setup.plants[$plants[_plant_keys[_t]].name].singular>>. |
-			<<else>>
-				<<print $plants[_plant_keys[_t]].plural>>. |
-			<</if>>
-		<</if>>
-	<</for>>
-	<<if _plant_temp is 1>>You can sell them by renting a stand on Connudatus Street at dawn.<br><</if>>
 	<<if $phials_held gte 2>>
 		You are carrying $phials_held phials of aphrodisiac. You can sell them on Elk Street. <br>
 	<<elseif $phials_held gte 1>>
@@ -50,6 +35,16 @@
 	<</if>>
 	<br>
 
+	<<if $location is "prison">>
+		You have <span class="gold"><<number $prison.teeth>></span> shark's teeth.
+		<br>
+		<<if $prison_wren_intro isnot 1>>
+			You can find Wren in the yard on Fridays after lunch.
+			<br>
+		<</if>>
+		<br>
+	<</if>>
+
 	<<if $options.images is 1>>
 		<<if Time.season is "winter">>
 			<img id="world_map" src="img/misc/world_map_winter.png">
@@ -58,7 +53,7 @@
 		<</if>>
 		<br>
 	<</if>>
-
+	<br>
 
 	<<if $rentday isnot undefined>>
 		<<if $renttime lte 0>>
@@ -453,6 +448,23 @@
 		<br>
 	<</if>>
 
+	<<if $studyBooks isnot undefined and $studyBooks.rented isnot "none">>
+		<<if $book_rent_timer is 0>>
+			<span class="blue">You have a library book due.</span>
+		<<elseif $book_rent_timer lt 0>>
+			<span class="red">You have a library book overdue.</span>
+		<<else>>
+			You have a library book due in <span class="gold">$book_rent_timer day<<if $book_rent_timer gt 1>>s<</if>>.</span>
+		<</if>>
+	<</if>>
+
+	<<if $farm>>
+		<br>
+		<<farm_upgrades_current>>
+	<</if>>
+
+	<<adultShopOpeningProgressJournal>>
+
 	<br>
 	<<if $scienceproject is "ongoing">>
 		<hr>
@@ -464,7 +476,7 @@
 			<br>
 		<</if>>
 		You have the following ongoing science projects. You'll choose one to present at the fair.
-		<br>
+		<br><br>
 		<<if $sciencelichenknown is 1>>
 			-<span class="green">Local lichen</span>
 			<br>
@@ -565,10 +577,10 @@
 			<</if>>
 			<br>
 			As it is, this project has a <<print ($sciencephallusready * 10)>>% chance of winning the fair. Winning with this project will greatly reduce trauma and make you more famous.
-			<br><br>
+			<br>
 		<<else>>
 			<span class="black">????????????</span> - Become more promiscuous to discover.
-			<br><br>
+			<br>
 		<</if>>
 		<hr>
 	<</if>>
@@ -580,7 +592,9 @@
 			The maths competition is being held at the town hall on Cliff street today from <<ampm 9 00>> until <<ampm 18 00>>.
 			<br>
 		<<else>>
-			The maths competition will be held at the town hall on Cliff Street in $mathsprojectdays <<if $mathsprojectdays is 1>>day<<else>>days<</if>>. Your solution must be ready before then. You can work on your project at the orphanage or the school library.
+			The maths competition will be held at the town hall on Cliff Street in $mathsprojectdays <<if $mathsprojectdays is 1>>day<<else>>days<</if>>. 
+			<br>
+			Your solution must be ready before then. You can work on your project at the orphanage or the school library.
 			<br>
 		<</if>>
 		<<if $mathschance is 0>>
@@ -598,7 +612,7 @@
 		<<else>>
 			<span class="green">Your solution is perfect. You have a $mathschance% chance of winning the competition.</span>
 		<</if>>
-		<br>
+		<br><br>
 		You have <span class="gold">$mathsinfo</span> insights.
 		<br>
 		<<if $stimdealerknown is 1>>
@@ -611,6 +625,7 @@
 	<</if>>
 
 	<<if $englishPlay is "ongoing">>
+		<hr>
 		<<if $englishPlayDays is 0>>
 			The school plays are being held at the town hall on Cliff street tonight from <<ampm 17 00>> until <<ampm 21 00>>.
 		<<else>>
@@ -647,38 +662,12 @@
 				It's too late for you to take a role, but you can still help other students rehearse and watch the plays with the audience.
 			<</if>>
 		<</if>>
-		<br>
-	<</if>>
-
-	<<if $studyBooks isnot undefined and $studyBooks.rented isnot "none">>
-		<<if $book_rent_timer is 0>>
-			<span class="blue">You have a library book due.</span>
-		<<elseif $book_rent_timer lt 0>>
-			<span class="red">You have a library book overdue.</span>
-		<<else>>
-			You have a library book due in <span class="gold">$book_rent_timer day<<if $book_rent_timer gt 1>>s<</if>>.</span>
-		<</if>>
-	<</if>>
-
-	<<adultShopOpeningProgressJournal>>
-
-	<<if $farm>>
-		<br>
-		<<farm_upgrades_current>>
-	<</if>>
-
-	<<if $location is "prison">>
-		You have <span class="gold"><<number $prison.teeth>></span> shark's teeth.
-		<br>
-		<<if $prison_wren_intro isnot 1>>
-			You can find Wren in the yard on Fridays after lunch.
-			<br>
-		<</if>>
+		<hr>
 	<</if>>
 
 	<<if $museumAntiqueJournalHints.length gte 1>>
+		<hr>
 		<<museumAntiqueText>>
-		<br><br>
 		<h4>Winter has mentioned some items missing from the museum</h4>
 		<ul>
 		<<set _hintslist to clone($museumAntiqueJournalHints).reverse()>>
@@ -692,9 +681,12 @@
 			<</if>>
 		<</for>>
 		</ul>
+		<hr>
 	<</if>>
 
+
 	<<if $plants_known.length gt 0>>
+	<hr>
 		<h4>Seeds</h4>
 		<<set _plant_keys to Object.keys(setup.plants)>>
 		<<for _i to 0; _i lt _plant_keys.length; _i++>>
@@ -710,4 +702,22 @@
 			<</if>>
 		<</for>>
 	<</if>>
+
+	<<set _plant_keys to Object.keys($plants)>>
+	<hr>
+	<<for _t to 0; _t lt _plant_keys.length; _t++>>
+		<<if $plants[_plant_keys[_t]].amount gte 1>><<set _plant_temp to 1>>
+			You have <span class="gold"><<print $plants[_plant_keys[_t]].amount>></span>
+			<<if $options.images is 1 and setup.plants[_plant_keys[_t]].icon>>
+				<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[_plant_keys[_t]].icon">
+			<</if>>
+			<<if setup.plants[$plants[_plant_keys[_t]].name].singular and $plants[_plant_keys[_t]].amount === 1>>
+				<<print setup.plants[$plants[_plant_keys[_t]].name].singular>>. |
+			<<else>>
+				<<print $plants[_plant_keys[_t]].plural>>. |
+			<</if>>
+		<</if>>
+	<</for>>
+	<br><br>
+	<<if _plant_temp is 1>>You can sell them by renting a stand on Connudatus Street at dawn.<br><hr><</if>>
 <</widget>>
