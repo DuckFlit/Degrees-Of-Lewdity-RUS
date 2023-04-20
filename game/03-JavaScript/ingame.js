@@ -1442,11 +1442,11 @@ function checkTFparts() {
 window.checkTFparts = checkTFparts;
 
 function getSexesFromRandomGroup() {
-	if (V.malechance <= 0) { /* Only females. */
+	if (maleChance() <= 0) { /* Only females. */
 		if (V.dgchance <= 0) return SexTypes.ALL_FEMALES;		/* All females, no dickgirls. Always vaginal. */
 		if (V.dgchance >= 100) return SexTypes.ALL_DICKGIRLS;	/* All females, all dickgirls. Always penises. */
 	}
-	if (V.malechance >= 100) { /* Only males. */
+	if (maleChance() >= 100) { /* Only males. */
 		if (V.cbchance <= 0) return SexTypes.ALL_MALES;			/* All males, no cuntboys. Always males. */
 		if (V.cbchance >= 100) return SexTypes.ALL_CUNTBOYS;	/* All males, all cuntboys. Always vaginal. */
 	}
@@ -1894,3 +1894,28 @@ function npcSemenMod(penisSize){
 	}
 }
 window.npcSemenMod = npcSemenMod;
+
+function maleChance(override){
+	if (V.maleChanceSplit === "f") return V.malechance;
+	const appearence = override || V.player.gender_appearance;
+	if (appearence === "m") return V.maleChanceMale;
+	if (appearence === "f") return V.maleChanceFemale;
+	return 50;	
+}
+window.maleChance = maleChance;
+
+// gender of the npc, rng (between 1 and 100) of their generation
+function attractedToBothChance(gender, rng){
+	if (gender === "m") return maleChance("m") >= rng && maleChance("f") >= rng;
+	return maleChance("m") < rng && maleChance("f") < rng;
+}
+window.attractedToBothChance = attractedToBothChance;
+
+function beastMaleChance(override){
+	if (V.beastMaleChanceSplit === "f") return V.beastmalechance;
+	const appearence = override || V.player.gender_appearance;
+	if (appearence === "m") return V.beastMaleChanceMale;
+	if (appearence === "f") return V.beastMaleChanceFemale;
+	return 50;	
+}
+window.beastMaleChance = beastMaleChance;
