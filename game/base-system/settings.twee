@@ -338,9 +338,33 @@
 	<<if _quickStartOptions is undefined>>
 		<<set _quickStartOptions to {
 			player:{"Female Waif":"femaleWaif","Male Waif":"maleWaif", "Hermaphrodite Waif":"hermaphroditeWaif", "Vrelnir PC":"vrel", "Crossdresser":"crossdresser","Tough Guy":"toughGuy"},
-			genericNpc:{"Default Genders":"genericNpcDefaultGender", "All Male":"genericNpcAllMaleGender", "All Female":"genericNpcAllFemaleGender"},
+			genericNpc:{
+				"Default Genders":"genericNpcDefaultGender",
+				"All Male":"genericNpcAllMaleGender",
+				"75% Male":"genericNpc75MaleGender",
+				"All Female":"genericNpcAllFemaleGender",
+				"75% Female":"genericNpc75FemaleGender",
+				"All Opposite Gender":"genericNpcAllOppositeGenders",
+				"90% Opposite Gender":"genericNpc90OppositeGenders",
+				"75% Opposite Gender":"genericNpc75OppositeGenders",
+				"All Same Gender":"genericNpcAllSameGenders",
+				"90% Same Gender":"genericNpc90SameGenders",
+				"75% Same Gender":"genericNpc75SameGenders",
+			},
 			namedNpc:{"Default Genders":"namedNpcDefaultGender", "All Male":"namedNpcAllMaleGender", "All Female":"namedNpcAllFemaleGender"},
-			beasts:{"Default Genders":"beastDefaultGenders", "All Male":"beastMaleGenders", "All Female":"beastFemaleGenders"},
+			beasts:{
+				"Default Genders":"beastDefaultGenders",
+				"All Male":"beastMaleGenders",
+				"75% Male":"beast75MaleGenders",
+				"All Female":"beastFemaleGenders",
+				"75% Female":"beast75FemaleGenders",
+				"All Opposite Gender":"beastOppositeGenders",
+				"90% Opposite Gender":"beast90OppositeGenders",
+				"75% Opposite Gender":"beast75OppositeGenders",
+				"All Same Gender":"beastSameGenders",
+				"90% Same Gender":"beast90SameGenders",
+				"75% Same Gender":"beast75SameGenders",
+			},
 			monsters:{"When Hallucinating":"monstersDefault", "No Monsters":"monstersNone", "All Monsters":"monstersAll"},
 			kink:{"Reasonably Debauched":"kinkDefault", "Vanilla":"kinkVanilla", "No Beasts":"kinkNoBeasts", "Everything Goes":"kinkEverything"},
 			game:{
@@ -823,19 +847,36 @@
 <<widget "humanSettings">>
 	<div class="solidBorderContainer settings-container">
 		<span class="bold gold">Human Settings</span>
-		<div class="numberslider-group">
-			<div class="numberslider-inline">
+		<div id="simpleGenders" @class="'numberslider-group' + (V.maleChanceSplit === 't' ? ' hidden' : '')">
+			<<link "Split By Gender Appearence">>
+				<<set $maleChanceSplit to "t">>
+				<<addclass "#simpleGenders" "hidden">>
+				<<replace "#splitGenders">><<maleChanceSplitControls>><</replace>>
+				<<removeclass "#splitGenders" "hidden">>
+			<</link>>
+			<div class="numberslider-inline maleChance">
 				<span class="gold">Percentage of people attracted to you that are male</span>
 				<<numberslider "$malechance" $malechance 0 100 1>>
 			</div>
+			<<run $(() => { $('.maleChance input').on('input change', e => {
+				let valSpan = $(e.currentTarget).siblings().first();
+				let value = valSpan.text();
+				V.maleChanceMale = parseInt(value);
+				V.maleChanceFemale = parseInt(value);
+			}).trigger('change') })>>
+		</div>
+		<div id="splitGenders" @class="'numberslider-group' + (V.maleChanceSplit === 'f' ? ' hidden' : '')">
+			<<maleChanceSplitControls>>
+		</div>
+		<div class="numberslider-group">
 			<div class="numberslider-inline">
 				<span class="gold">Percentage of other victims that are male</span>
 				<<numberslider "$malevictimchance" $malevictimchance 0 100 1>>
 			</div>
-			<div class="numberslider-inline">
+			/*<div class="numberslider-inline">
 				<span class="gold">Proportion of same-sex couples</span>
 				<<numberslider "$homochance" $homochance 0 100 1>>
-			</div>
+			</div>*/
 		</div>
 		<div class="numberslider-group">
 			<div class="numberslider-inline">
@@ -888,14 +929,71 @@
 	</div>
 <</widget>>
 
+<<widget "maleChanceSplitControls">>
+	<<link "Simplify">>
+		<<set $maleChanceSplit to "f">>
+		<<removeclass "#simpleGenders" "hidden">>
+		<<addclass "#splitGenders" "hidden">>
+	<</link>>
+	<div class="numberslider-inline maleChanceMale">
+		<span class="gold">NPCs who are attracted to men: <mouse class="tooltip linkBlue">(?)<span>When the players gender appearence is male, this will lead the NPCs gender being chosen by percentages for this setting</span></mouse></span>
+		<div class="numberSliderCompare">
+			<div id="maleChanceMale-female">Female: <<print 100 - $maleChanceMale>>%</div>
+			<span class="control"><<numberslider "$maleChanceMale" $maleChanceMale 0 100 1>></span>
+			<div id="maleChanceMale-male" class="rightDiv">Male: <<print $maleChanceMale>>%</div>
+		</div>
+	</div>
+	<<run $(() => { $('.maleChanceMale input').on('input change', e => {
+		let valSpan = $(e.currentTarget).siblings().first();
+		let value = valSpan.text();
+		$('#maleChanceMale-female')[0].textContent = "Female: " + (100 - value) + "%";
+		$('#maleChanceMale-male')[0].textContent = "Male: " + value + "%";
+		valSpan.text(() => "");
+	}).trigger('change') })>>
+
+	<div class="numberslider-inline maleChanceFemale">
+		<span class="gold">NPCs who are attracted to women: <mouse class="tooltip linkBlue">(?)<span>When the players gender appearence is female, this will lead the NPCs gender being chosen by percentages for this settingn</span></mouse></span>
+		<div class="numberSliderCompare">
+			<div id="maleChanceFemale-female">Female: <<print 100 - $maleChanceFemale>>%</div>
+			<span class="control"><<numberslider "$maleChanceFemale" $maleChanceFemale 0 100 1>></span>
+			<div id="maleChanceFemale-male" class="rightDiv">Male: <<print $maleChanceFemale>>%</div>
+		</div>
+	</div>
+	<<run $(() => { $('.maleChanceFemale input').on('input change', e => {
+		let valSpan = $(e.currentTarget).siblings().first();
+		let value = valSpan.text();
+
+		$('#maleChanceFemale-female')[0].textContent = "Female: " + (100 - value) + "%";
+		$('#maleChanceFemale-male')[0].textContent = "Male: " + value + "%";
+		valSpan.text(() => "");
+	}).trigger('change') })>>
+<</widget>>
+
 <<widget "beastSettings">>
 	<div class="solidBorderContainer settings-container">
 		<span class="bold gold">Beast Settings</span>
-		<div class="numberslider-group">
-			<div class="numberslider-inline">
+		<div id="simpleBeastGenders" @class="'numberslider-group' + (V.beastMaleChanceSplit === 't' ? ' hidden' : '')">
+			<<link "Split By Gender Appearence">>
+				<<set $beastMaleChanceSplit to "t">>
+				<<addclass "#simpleBeastGenders" "hidden">>
+				<<replace "#splitBeastGenders">><<beastMaleChanceSplitControls>><</replace>>
+				<<removeclass "#splitBeastGenders" "hidden">>
+			<</link>>
+			<div class="numberslider-inline beastmalechance">
 				<span class="gold">Percentage of beasts or monsters attracted to you that are male</span>
 				<<numberslider "$beastmalechance" $beastmalechance 0 100 1>>
 			</div>
+			<<run $(() => { $('.beastmalechance input').on('input change', e => {
+				let valSpan = $(e.currentTarget).siblings().first();
+				let value = valSpan.text();
+				V.beastMaleChanceMale = parseInt(value);
+				V.beastMaleChanceFemale = parseInt(value);
+			}).trigger('change') })>>
+		</div>
+		<div id="splitBeastGenders" @class="'numberslider-group' + (V.beastMaleChanceSplit === 'f' ? ' hidden' : '')">
+			<<beastMaleChanceSplitControls>>
+		</div>
+		<div class="numberslider-group">
 			<div class="numberslider-inline">
 				<span class="gold">Percentage of beasts that are replaced with monster girls or boys</span>
 				<<numberslider "$monsterchance" $monsterchance 0 100 1>>
@@ -962,6 +1060,45 @@
 		</div></label>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
+<</widget>>
+
+<<widget "beastMaleChanceSplitControls">>
+	<<link "Simplify">>
+		<<set $beastMaleChanceSplit to "f">>
+		<<removeclass "#simpleBeastGenders" "hidden">>
+		<<addclass "#splitBeastGenders" "hidden">>
+	<</link>>
+	<div class="numberslider-inline beastMaleChanceMale">
+		<span class="gold">Beast NPCs who are attracted to men: <mouse class="tooltip linkBlue">(?)<span>When the players gender appearence is male, this will lead the NPCs gender being chosen by percentages for this setting</span></mouse></span>
+		<div class="numberSliderCompare">
+			<div id="beastMaleChanceMale-female">Female: <<print 100 - $beastMaleChanceMale>>%</div>
+			<span class="control"><<numberslider "$beastMaleChanceMale" $beastMaleChanceMale 0 100 1>></span>
+			<div id="beastMaleChanceMale-male" class="rightDiv">Male: <<print $beastMaleChanceMale>>%</div>
+		</div>
+	</div>
+	<<run $(() => { $('.beastMaleChanceMale input').on('input change', e => {
+		let valSpan = $(e.currentTarget).siblings().first();
+		let value = valSpan.text();
+		$('#beastMaleChanceMale-female')[0].textContent = "Female: " + (100 - value) + "%";
+		$('#beastMaleChanceMale-male')[0].textContent = "Male: " + value + "%";
+		valSpan.text(() => "");
+	}).trigger('change') })>>
+
+	<div class="numberslider-inline beastMaleChanceFemale">
+		<span class="gold">Beast NPCs who are attracted to women: <mouse class="tooltip linkBlue">(?)<span>When the players gender appearence is female, this will lead the NPCs gender being chosen by percentages for this setting</span></mouse></span>
+		<div class="numberSliderCompare">
+			<div id="beastMaleChanceFemale-female">Female: <<print 100 - $beastMaleChanceFemale>>%</div>
+			<span class="control"><<numberslider "$beastMaleChanceFemale" $beastMaleChanceFemale 0 100 1>></span>
+			<div id="beastMaleChanceFemale-male" class="rightDiv">Male: <<print $beastMaleChanceFemale>>%</div>
+		</div>
+	</div>
+	<<run $(() => { $('.beastMaleChanceFemale input').on('input change', e => {
+		let valSpan = $(e.currentTarget).siblings().first();
+		let value = valSpan.text();
+		$('#beastMaleChanceFemale-female')[0].textContent = "Female: " + (100 - value) + "%";
+		$('#beastMaleChanceFemale-male')[0].textContent = "Male: " + value + "%";
+		valSpan.text(() => "");
+	}).trigger('change') })>>
 <</widget>>
 
 <<widget "fetishSettings">>
