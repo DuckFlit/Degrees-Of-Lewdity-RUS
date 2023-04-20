@@ -100,7 +100,7 @@ function masturbationSlimeControl() {
 			const actions = [];
 			switch (V[arm + "arm"]) {
 				case 0:
-					if (random(0, 100) >= 80 && toysId.length >= 0 && (["home", "brothel", "cafe"].includes(V.location) || _enableSexToys)) {
+					if (random(0, 100) >= 80 && toysId.length >= 0 && (["home", "brothel", "cafe"].includes(V.location) || T.enableSexToys)) {
 						V[armAction] = "mpickupdildo";
 						V["selectedToy" + armCap] = toysId[random(0, toysId.length - 1)];
 					} else if (
@@ -131,7 +131,7 @@ function masturbationSlimeControl() {
 					V[armAction] = "mpenisshaft";
 					break;
 				case "mvaginaentrance":
-					if (["mvagina", "mvaginafingerstarttwo"].includes(V[armAction])) {
+					if (V.vaginause === 0 && ["mvagina", "mvaginafingerstarttwo"].includes(V[armAction])) {
 						// Do Nothing
 					} else if (random(0, 100) >= 50) {
 						V[armAction] = "mvaginaclit";
@@ -156,11 +156,17 @@ function masturbationSlimeControl() {
 					V[armAction] = "mvaginafist";
 					break;
 				case "manusentrance":
-					V[armAction] = "manus";
+					if ([0, "manus"].includes(V.anususe) && random(0, 100) > 50) {
+						V[armAction] = "manus";
+					} else {
+						V[armAction] = "manusrub";
+					}
 					break;
 				case "manus":
-					if (V.player.penisExist) {
+					if (V.player.penisExist && random(0, 100) > 20) {
 						V[armAction] = "manusprostate";
+					} else {
+						V[armAction] = "manustease";
 					}
 					break;
 				case "mpickupdildo":
