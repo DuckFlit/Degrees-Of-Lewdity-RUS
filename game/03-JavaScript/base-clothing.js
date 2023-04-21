@@ -354,136 +354,131 @@ function playerChastity(slots, inAllSlots = false) {
 }
 window.playerChastity = playerChastity;
 
+
 /**
- * @desc Looks over the clothing the player is wearing and returns any outfits halves that are missing. If no halves are missing, it returns 0.
+ * @description Takes in a passed item of clothing and returns its corresponding pair if it's an outfit part.
+ * @param {Object} garment The item of clothing that we want the second half of.
+ * @param {String} layer  The layer the garment in being worn on.
+ * @returns {Object} If found, it will return the item of clothing that is the other half. If not, it returns null.
+ */
+function findOutfitPair(garment, layer) {
+	let findLayer = layer.includes("upper") ? layer.replace("upper", "lower") : layer.replace("lower", "upper");
+	let pair = null;
+	
+	//Makes sure that the clothing slot is not naked and contains the outfitPrimary or outfitSecondary value.
+	if (garment.name !== "naked" && (garment.outfitPrimary || garment.outfitSecondary) ) {
+		let tempSet = setup.clothes[layer][garment.index].set;
+		let costMod;
+		if (layer.includes("under")) costMod = V.clothesPriceUnderwear;
+		else costMod = V.clothesPrice;
+
+		if (layer.includes("upper")) {
+			//We are looking for lower items in this section
+			//Does a quick check of the closest match indexes
+			if (garment.index + 7 < setup.clothes[findLayer].length) {
+				for (let i = 0; i <= 7; i++) {
+					if (tempSet === setup.clothes[findLayer][garment.index + i].set) {pair = {...setup.clothes[findLayer][garment.index + i]}; break;}
+					if (i >=3) i++;
+				}
+			}
+			//Searches the entire setup.clothing list for corresponding pair in ascending order as upper items are typically lower indexed than their lower counterpart.
+			if (!pair) {
+				for (let i = 1; i < setup.clothes[findLayer].length; i++) {
+					if (tempSet === setup.clothes[findLayer][i].set) {pair = {...setup.clothes[findLayer][i]}; break;}
+				}
+			}
+
+			if(pair) {pair.cost = setup.clothes[layer][garment.index].cost * costMod;}
+		}
+		else if (layer.includes("lower")) {
+			//We are looking for upper items in this section
+			//Does a quick check of the closest match indexes
+			if (garment.index - 7 < setup.clothes[findLayer].length) {
+				for (let i = 0; i <= 7; i++) {
+					if (garment.index - i < 0) break;
+					if (tempSet === setup.clothes[findLayer][garment.index - i].set) {pair = {...setup.clothes[findLayer][garment.index - i]}; break;}
+					if (i >=3) i++;
+				}
+			}
+			//Searches the entire setup.clothing list for corresponding pair in descending order as upper items are typically lower indexed than their lower counterpart.
+			if (!pair) {
+				for (let i = setup.clothes[findLayer].length - 1; i >= 0; i--) {
+					if (tempSet === setup.clothes[findLayer][i].set) {pair = {...setup.clothes[findLayer][i]}; break;}
+				}
+			}
+
+			pair.cost *= costMod;
+		}
+
+		if(!pair) console.log(`No pair was found for ${garment.name} using the set name of ${tempSet} from the setup.clothes value. The passed item has set name ${garment.set}`)
+	}
+	
+	return pair;
+}
+window.findOutfitPair = findOutfitPair;
+
+
+/**
+ * @desc Looks over the clothing the player is wearing and returns any outfits halves that are missing. If no halves are missing, it returns an empty array.
  * @returns {Object} An object that contains any missing halves of an outfit the player is wearing. Each outfit will have the values: wornHalf, brokenHalf, outfitSet, outfitName, outfitCost, and the index of the broken item
  */
 function getOutfitPair() {
-	let upperGarment = ["upper", "under_upper", "over_upper"];
-	let lowerGarment = ["lower", "under_lower", "over_lower"];
-	let layerList = ["covering","under","over"];
-	let broken = {
-		under: {},
-		covering: {},
-		over: {}
-	};
-	let hasReturn = 0;
+	let garmentLayers = ["upper", "under_upper", "over_upper", "lower", "under_lower", "over_lower"];
+	let foundPairs = [];
 
-	for (let i = 0; i <= 2; i++) {
-		//check if an item is being worn in these places
-		if( (V.worn[upperGarment[i]] && V.worn[upperGarment[i]].name !== "naked") || (V.worn[lowerGarment[i]] && V.worn[lowerGarment[i]].name !== "naked") ) {
-			//check if the upper or lower is a set
-			if (V.worn[upperGarment[i]].set !== upperGarment[i] || V.worn[lowerGarment[i]].set !== lowerGarment[i] || ( V.worn[lowerGarment[i]].outfitSecondary && V.worn[lowerGarment[i]].outfitSecondary[1] === "broken")) {
-				//if they are then make sure both pieces are there
-				if (V.worn[upperGarment[i]].set !== V.worn[lowerGarment[i]].set) {
-					hasReturn = true;
-					//find the one that is missing. The if statement here looks to see if the top is the missing part. If it's not, then the lower part must be the missing one.
-					if (V.worn[upperGarment[i]].outfitPrimary) {
-						//The bottom is the missing piece
-						broken[layerList[i]].wornHalf = upperGarment[i];
-						broken[layerList[i]].brokenHalf = lowerGarment[i];
-						broken[layerList[i]].outfitSet = V.worn[upperGarment[i]].set;
-						broken[layerList[i]].wornIndex = V.worn[upperGarment[i]].index;
-
-						let indexFound = 0;
-						let loopList = setup.clothes[upperGarment[i]].length;
-
-						for (let j = 0; j < loopList; j++) {
-							if (setup.clothes[lowerGarment[i]][j].set === V.worn[upperGarment[i]].name) {indexFound = j; break;}
-						};
-
-						broken[layerList[i]].index = indexFound;
-						broken[layerList[i]].outfitName = setup.clothes[lowerGarment[i]][indexFound].name;
-						broken[layerList[i]].outfitCost = setup.clothes[upperGarment[i]][V.worn[upperGarment[i]].index].cost;
-
-						broken[layerList[i]].colour = V.worn[upperGarment[i]].colour;
-						broken[layerList[i]].colour_options = V.worn[upperGarment[i]].colour_options;
-						broken[layerList[i]].colour_sidebar = V.worn[upperGarment[i]].colour_sidebar;
-						broken[layerList[i]].colour_combat = V.worn[upperGarment[i]].colour_combat;
-						broken[layerList[i]].accessory = V.worn[upperGarment[i]].accessory;
-						broken[layerList[i]].accessory_colour = V.worn[upperGarment[i]].accessory_colour;
-						broken[layerList[i]].accessory_colour_options = V.worn[upperGarment[i]].accessory_colour_options;
-						broken[layerList[i]].location = V.worn[upperGarment[i]].location;
-					}
-					else {
-						//the top is the missing piece
-						broken[layerList[i]].wornHalf = lowerGarment[i];
-						broken[layerList[i]].brokenHalf = upperGarment[i];
-
-						let garmentName = V.worn[lowerGarment[i]].name.replace(/ skirt| bottoms?| trousers| pants/, "")
-
-						broken[layerList[i]].outfitSet = garmentName;
-						broken[layerList[i]].outfitName = garmentName;
-						broken[layerList[i]].wornIndex = V.worn[lowerGarment[i]].index;
-
-						let indexFound = 0;
-						let loopList = setup.clothes[upperGarment[i]].length;
-
-						for (let j = 0; j < loopList; j++) {
-							if (setup.clothes[upperGarment[i]][j].set === garmentName) {indexFound = j; break;}
-						};
-
-						broken[layerList[i]].index = indexFound;
-						broken[layerList[i]].outfitCost = setup.clothes[upperGarment[i]][indexFound].cost;
-
-						broken[layerList[i]].colour = V.worn[lowerGarment[i]].colour;
-						broken[layerList[i]].colour_options = V.worn[lowerGarment[i]].colour_options;
-						broken[layerList[i]].colour_sidebar = V.worn[lowerGarment[i]].colour_sidebar;
-						broken[layerList[i]].colour_combat = V.worn[lowerGarment[i]].colour_combat;
-						broken[layerList[i]].accessory = V.worn[lowerGarment[i]].accessory;
-						broken[layerList[i]].accessory_colour = V.worn[lowerGarment[i]].accessory_colour;
-						broken[layerList[i]].accessory_colour_options = V.worn[lowerGarment[i]].accessory_colour_options;
-						broken[layerList[i]].location = V.worn[lowerGarment[i]].location;
-					}
-				}
-			}
+	for (let i = 0; i < 6; i++) {
+		if (V.worn[garmentLayers[i]].name === "naked") {continue;}
+		let brokenHalf = i < 3 ? garmentLayers[i].replace("upper", "lower") : garmentLayers[i].replace("lower", "upper");
+		if (V.worn[garmentLayers[i]].set === V.worn[brokenHalf].set) {continue;}
+		let check = findOutfitPair(V.worn[garmentLayers[i]], garmentLayers[i])
+		if (check) {
+			check.wornHalf = garmentLayers[i];
+			check.brokenHalf = brokenHalf;
+			check.colour = V.worn[garmentLayers[i]].colour;
+			check.colour_sidebar = V.worn[garmentLayers[i]].colour_sidebar;
+			check.colour_combat = V.worn[garmentLayers[i]].colour_combat;
+			check.accessory = V.worn[garmentLayers[i]].accessory;
+			check.accessory_colour = V.worn[garmentLayers[i]].accessory_colour;
+			check.location = V.worn[garmentLayers[i]].location;
+			foundPairs.push(check);
 		}
-		if (Object.keys(broken[layerList[i]]).length === 0) delete broken[layerList[i]];
 	}
 
-	Object.keys(broken).forEach(key => {
-		Object.keys(broken[key]).forEach(item => {
-			if(broken[key][item] == undefined) { delete broken[key][item]}
-		})
-	});
-
-
-	if (hasReturn) return broken
-	else return hasReturn
+	return foundPairs
 }
 window.getOutfitPair = getOutfitPair;
 
 
-//is passed an object
+/**
+ * @description Takes in an article of clothing that has been modified to contain the values brokenHalf and wornHalf that have the V.worn location of the outfit part that is broken or warn.
+ * @param {Object} brokenOutfit The clothing object. Currently it takes in a slightly modified setup.clothes values.
+ */
 function makeMissingOutfit(brokenOutfit) {
-	//copies the missing item
-	let tempOutfit = clone(setup.clothes[brokenOutfit.brokenHalf][brokenOutfit.index]);
+	let brokenHalf = brokenOutfit.brokenHalf;
 
-	//this correctly resets the remaining part. For lower items, make sure to change the set
-	if (brokenOutfit.wornHalf.includes("upper")) V.worn[brokenOutfit.wornHalf].outfitPrimary = setup.clothes[brokenOutfit.wornHalf][brokenOutfit.wornIndex].outfitPrimary;
+	//Resets the remaining part. For lower items, make sure to change the set
+	if (brokenOutfit.wornHalf.includes("upper")) { 
+		V.worn[brokenOutfit.wornHalf].outfitPrimary[brokenHalf] = brokenOutfit.name;	
+		brokenOutfit.cost = 0;
+	}
 	else {
-		V.worn[brokenOutfit.wornHalf].outfitSecondary = setup.clothes[brokenOutfit.wornHalf][brokenOutfit.wornIndex].outfitSecondary;
-		V.worn[brokenOutfit.wornHalf].set = brokenOutfit.outfitSet;
+		V.worn[brokenOutfit.wornHalf].outfitSecondary[1] = brokenOutfit.name;
 	}
 
-	//sets the one_piece value to 1
+	//Resets the one_piece value and set values
 	V.worn[brokenOutfit.wornHalf].one_piece = 1;
+	V.worn[brokenOutfit.wornHalf].set = brokenOutfit.set;
 
-	//checks for any item worn in that place then puts it in the wardrobe
-	if ( V.worn[brokenOutfit.brokenHalf].name !== "naked") {
-		$.wiki('<<generalUndress "wardrobe" ' + brokenOutfit.brokenHalf + '>>')
+	//Checks for any item worn in that place then puts it in the wardrobe
+	if ( V.worn[brokenHalf].name !== "naked") {
+		$.wiki('<<generalUndress "wardrobe" ' + brokenHalf + '>>')
 	}
 
-	//set known colour values to be the same
-	let removalList = ["wornHalf","brokenHalf","outfitSet","outfitName","index","wornIndex","outfitCost"]
-	let copiedValues = {...brokenOutfit};
-	for (let i = removalList.length - 1; i >= 0; i--) {
-		delete copiedValues[removalList[i]];
-	}
-
-	tempOutfit = {...tempOutfit, ...copiedValues};
+	//Remove temporary values
+	delete brokenOutfit.brokenHalf
+	delete brokenOutfit.wornHalf
 	
-	//equips the new piece into the now empty slot
-	V.worn[brokenOutfit.brokenHalf] = tempOutfit;
+	//Equips the new piece into the now empty slot
+	V.worn[brokenHalf] = brokenOutfit;
 }
 window.makeMissingOutfit = makeMissingOutfit;
