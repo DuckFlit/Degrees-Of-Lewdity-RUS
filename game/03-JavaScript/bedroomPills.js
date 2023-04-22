@@ -72,7 +72,7 @@ setup.pills = [
 	{
 		name: "bottom growth",
 		description:
-			"This pill contains a molecule, the Nynthroptechloxin, a technological prowess made possible by our most eminent pharmaceutical scientist, Dr Bancel. It increases the body production of a very particular hormone responsible for hips and buttocks' weight gains. 190mg of this molecule is present per pill. ",
+			"This pill contains the molecule Nynthroptechloxin, created by our eminent pharmaceutical scientist Dr Bancel's technological prowess. It increases the body's production of the particular hormone responsible for hip and buttock weight gains. 190mg of this molecule is present per pill.",
 		onTakeMessage: "You take the pills intended to boost your butt's growth. You hope it will be as effective as advertised.",
 		warning_label:
 			"Warning: Severe side effects upon exceeding the maximum doses per day. Refer to your doctor if in doubts. Not to be associated with any other hormonal treatment.",
@@ -107,7 +107,7 @@ setup.pills = [
 	{
 		name: "bottom blocker",
 		description:
-			"Each pill contains 200mg of Praberrhol-NG2, a derived molecule crafted specifically to attach to the triglyceride present in your buttocks and dissolve them over time. The right dosage allowing to keep a balance between gained fat and dissolved fat.",
+			"Each pill contains Praberrhol-NG2, a derived molecule crafted specifically to attach to triglycerides and dissolve them over time. Inactive ingredient Trinelca triggers strong binding with subcutaneous adipose tissues present in your buttocks. 200mg is the correct dosage allowing a balance between gained fat and dissolved fat.",
 		onTakeMessage: "You take the pills intended to block your butt's growth. You hope it will be as effective as advertised.",
 		warning_label:
 			"<span class='hpi_notice_label'>Notice: No side effects were determined during the trials for this drug. Taking more than 1 pill per 24 hours is ineffective</span>",
@@ -142,7 +142,7 @@ setup.pills = [
 	{
 		name: "breast reduction",
 		description:
-			"Each pill contains 500mg of Praberrhol (NG2), a derived molecule crafted specifically to attach to the triglyceride present in your breast and dissolve them over time.",
+			"Each pill contains 500mg of Praberrhol-NG2, a derived molecule crafted specifically to attach to triglycerides and dissolve them over time. Inactive ingredient Abflutyx triggers strong binding with fatty tissues present in your breasts.",
 		onTakeMessage: "You take the pills intended to reduce your breasts' size. You hope it will be as effective as advertised.",
 		warning_label:
 			"Warning: Severe side effects upon exceeding the maximum doses per day. Refer to your doctor if in doubts. Not to be associated with any other hormonal treatment.",
@@ -177,7 +177,7 @@ setup.pills = [
 	{
 		name: "breast growth",
 		description:
-			"An hormonal mRNA therapy-pill. The 5mg of Dipardyn present aim at triggering natural secretion of the specific hormones in cause in breasts growth. While the mRNA will help have your cells produce a new kind of hormone increasing the tissue production in your breasts, and their capabilities to store fat, effectively making your breasts grow faster.",
+			"A hormonal mRNA-therapy pill. The 5mg of Dipardyn present aim to trigger natural secretion of the specific hormones responsible for causing breast growth, while the mRNA will help your cells produce a new kind of hormone to increase breast tissue production and their capability to store fat, effectively making your breasts grow faster.",
 		onTakeMessage: "You take the pills intended to boost your breasts' growth. You hope it will be as effective as advertised.",
 		warning_label:
 			"Warning: Severe side effects upon exceeding the maximum doses per day. Refer to your doctor if in doubts. Not to be associated with any other hormonal treatment.",
@@ -212,7 +212,7 @@ setup.pills = [
 	{
 		name: "breast blocker",
 		description:
-			"A selective estrogen receptor modulator (SERM), blocking the protein receptors in cause in breast growth; Supplemented by 269mg of Tetraozealpostigyl.",
+			"A selective estrogen receptor modulator (SERM), blocking the protein receptors responsible for breast growth; supplemented by 269mg of Tetraozealpostigyl.",
 		onTakeMessage: "You take the pills intended to block your breasts' growth. You hope it will be as effective as advertised.",
 		warning_label:
 			'<span class="hpi_notice_label">Notice: No side effects were determined during the trials for this drug. Taking more than 1 pill per 24 hours is ineffective</span>',
@@ -247,7 +247,7 @@ setup.pills = [
 	{
 		name: "penis reduction",
 		description:
-			"Each pill contains 50mg of Chliustose which has limited anti-androgen effects. In addition of 450mg of Phirhyn that will reduce the amount and thickness of the erectile tissue.",
+			"Each pill contains 50mg of Chliustose which has limited anti-androgen effects. Additionally, 450mg of Phirhyn will reduce the amount and thickness of the erectile tissue.",
 		onTakeMessage: "You take the pills intended to reduce your penis' size. You hope it will be as effective as advertised.",
 		warning_label:
 			"Warning: Severe side effects upon exceeding the maximum doses per day. Refer to your doctor if in doubts. Not to be associated with any other hormonal treatment.",
@@ -282,7 +282,7 @@ setup.pills = [
 	{
 		name: "penis growth",
 		description:
-			"Each pill contains 780mg of Cumnictondyl, 240mg of Iphopol and 149mg of testosterone undecanoate. The two molecules enable and facilitate the action of the androgen, which has for effect to resume the natural growth of your penis.",
+			"Each pill contains 780mg of Cumnictondyl, 240mg of Iphopol, and 149mg of testosterone undecanoate. The two molecules enable and facilitate the action of the androgen, which has for effect the resumption of your penis' natural growth.",
 		onTakeMessage: "You take the pills intended to boost your penis' growth. You hope it will be as effective as advertised.",
 		warning_label:
 			"Warning: Severe side effects upon exceeding the maximum doses per day. Refer to your doctor if in doubts. Not to be associated with any other hormonal treatment.",
@@ -441,7 +441,7 @@ setup.pills = [
 			"A parasite-repelling cream containing Permethrin. When applied, it prevents new parasitic infestation from occurring, although it has no effect on any ongoing parasitic infections. Effective for 14 days on application.",
 		onTakeMessage: "You apply the cream around your genitals. You hope it prevents them from leaving any offspring behind.",
 		warning_label:
-			"Warning: Please consult your doctor if they are not reachable or you have an allergic reaction shortly after application. Please contact your doctor immediately if you get cream in your mouth or eyes.",
+			"Warning: Please consult your doctor if you have an allergic reaction shortly after application. Contact your doctor immediately if you get the cream in your mouth or eyes.",
 		autoTake() {
 			return false;
 		},
@@ -516,7 +516,7 @@ setup.pills = [
 		description: "Antipsychotic medication.",
 		onTakeMessage: "You take the pills Doctor Harper prescribed. You feel dizzy.",
 		warning_label:
-			"Warning: The side effects upon reaching maximum dosage have not been studied enough. Proceed with caution. <span class='hpi_blur'></span>",
+			"Warning: The side effects upon reaching maximum dosage have not undergone sufficient study. Proceed with caution. <span class='hpi_blur'></span>",
 		indicators: ["<span class='hpi_indic_green'>+ Control</span>", "<span class='hpi_indic_blue'>- Awareness</span>"],
 		autoTake() {
 			return V.sexStats.pills["pills"][this.name].autoTake;
