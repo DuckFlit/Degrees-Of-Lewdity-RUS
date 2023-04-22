@@ -50,7 +50,7 @@ You are in the wolf cave. The ceiling hangs low. There's a breeze blowing from t
 	<<elseif $wolfcavedig gte 10 and $physiquesize lte 6000>>
 		<<link [[Go down the hole|Forest Wolf Cave Hole]]>><</link>><<small_text>>
 	<<elseif $wolfcavedig gte 1>>
-		<<link [[Dig at the back of the cave (1:00)|Forest Wolf Cave Dig]]>><<pass 1 hour>><<set $wolfcavedig += 1>><</link>>
+		<<ind>><<link [[Dig at the back of the cave (1:00)|Forest Wolf Cave Dig]]>><<pass 1 hour>><<set $wolfcavedig += 1>><</link>>
 	<<else>>
 		<<ind>><<link [[Examine the back of the cave|Forest Wolf Cave Examine]]>><<set $wolfcavedig to 1>><</link>>
 	<</if>>
@@ -95,6 +95,7 @@ You are in the wolf cave. The ceiling hangs low. There's a breeze blowing from t
 
 :: Wolf Cave Clearing
 <<set $outside to 1>><<set $location to "wolf_cave">><<effects>><<getTarget true>>
+<<set _bwmother to Object.values($children).find(child => child.mother === "Black Wolf" && child.location === "wolf_cave")>>
 
 <<set $wolfpackharmony = Math.clamp($wolfpackharmony, 0, 22)>>
 <<set $wolfpackferocity = Math.clamp($wolfpackferocity, 0, 22)>><<set $bus to "wolfcaveclearing">>
@@ -204,7 +205,12 @@ You are in the clearing outside the wolf cave. A stream runs by.
 	<<pregnancyTest "Wolf Cave Clearing">>
 	<br>
 	<<if $wolfstate is "cave" and npcPregnancyEnding("Black Wolf")>>
-	<<elseif $wolfstate is "cave" and Time.dayState isnot "night">>
+	<<elseif _bwmother and ((Time.hour gte 8 and Time.hour lte 15) or (Time.hour gte 18 and Time.hour lte 21))>>
+		You see the Black Wolf resting by a rock, overlooking the cave and its surroundings.
+		<br>
+		<<link [[Approach|Wolf Relax]]>><<npc "Black Wolf">><<set $phase to 1>><</link>>
+		<br><br>
+	<<elseif !_bwmother and $wolfstate is "cave" and Time.dayState isnot "night">>
 		You see the Black Wolf resting by a rock, overlooking the cave and its surroundings.
 		<br>
 		<<link [[Approach|Wolf Relax]]>><<npc "Black Wolf">><<set $phase to 1>><</link>>
