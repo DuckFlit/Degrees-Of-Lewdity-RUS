@@ -45,7 +45,7 @@ function npcPregObject(person, mother) {
 				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
 				skinColour: V.skinColor.natural,
 				hairColour: V.naturalhaircolour,
-				eyeColour: V.eyeselected,
+				eyeColour: V.eyeselect,
 			};
 		} else if (C.npc[person]) {
 			result = {

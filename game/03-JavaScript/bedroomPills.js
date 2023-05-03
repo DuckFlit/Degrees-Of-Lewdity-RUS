@@ -375,7 +375,7 @@ setup.pills = [
 			}
 		},
 		hpi_take_every_morning() {
-			return this.autoTake() ? "Take when required" : "Stop Taking them";
+			return this.autoTake() ? "Stop Taking them" : "Take when required";
 		},
 		type: "pregnancy",
 		subtype: "fertility booster",
@@ -418,7 +418,7 @@ setup.pills = [
 			}
 		},
 		hpi_take_every_morning() {
-			return this.autoTake() ? "Take when required" : "Stop Taking them";
+			return this.autoTake() ? "Stop Taking them" : "Take when required";
 		},
 		type: "pregnancy",
 		subtype: "contraceptive",

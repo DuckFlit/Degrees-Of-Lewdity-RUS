@@ -164,6 +164,7 @@ window.playerNormalPregnancyType = playerNormalPregnancyType;
 function wakingPregnancyEvent() {
 	const pregnancy = getPregnancyObject();
 	if (!pregnancy.fetus || V.statFreeze) return false;
+	if (!V.player.vaginaExist && playerNormalPregnancyTotal() === 0 && (!pregnancy.fetus.length || pregnancy.type === "parasite")) return false;
 
 	const rng = random(0, 100);
 	const menstruation = V.sexStats.vagina.menstruation;
@@ -254,6 +255,7 @@ window.wakingPregnancyEvent = wakingPregnancyEvent;
 function dailyPregnancyEvent() {
 	const pregnancy = getPregnancyObject();
 	if (!pregnancy.fetus || V.statFreeze) return false;
+	if (!V.player.vaginaExist && playerNormalPregnancyTotal() === 0 && (!pregnancy.fetus.length || pregnancy.type === "parasite")) return false;
 
 	const rng = random(0, 100) + (V.daily.pregnancyEvent || 0);
 	const menstruation = V.sexStats.vagina.menstruation;
@@ -676,6 +678,21 @@ function knowsAboutPregnancyTotal(motherOrFather, whoToCheck, location) {
 	}, 0);
 }
 window.knowsAboutPregnancyTotal = knowsAboutPregnancyTotal;
+
+function knowsAboutAnyPregnancy(mother, whoToCheck) {
+	let whoToCheckConverted;
+	if (whoToCheck === "pc") {
+		whoToCheckConverted = whoToCheck;
+	} else if (V.NPCNameList.includes(whoToCheck)) {
+		whoToCheckConverted = V.NPCNameList.indexOf(whoToCheck);
+	} else {
+		return false;
+	}
+	return !!Object.entries(V.pregnancyStats.awareOfBirthId)
+		.filter(awareOf => awareOf[0].includes(mother))
+		.find(awareOf => awareOf.includes(whoToCheckConverted));
+}
+window.knowsAboutAnyPregnancy = knowsAboutAnyPregnancy;
 
 function knowsAboutChildrenTotal(motherOrFather, whoToCheck, location) {
 	let whoToCheckConverted;

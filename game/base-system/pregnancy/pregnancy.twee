@@ -123,7 +123,7 @@
 	<<menstruationCycleState>>
 
 	<<if _menstruation.running is true>>
-		<<set $_pregnancy to getPregnancyObject()>>
+		<<set [$_pregnancy, $_pregLocation] to getPregnancyObject("pc", true)>>
 		<<set _pills to $sexStats.pills>>
 		<<switch _menstruation.currentState>>
 			<<case "normal">>
@@ -317,6 +317,7 @@
 		<<set _pregnancyBirth to getPregnancyObject(_args[0])>>
 	<</if>>
 	<<if _pregnancyBirth and _pregnancyBirth.fetus>>
+		<<pregnancyFeats _args[0]>>
 		<div id="birthUi">
 			<<for _i to 0; _i lt _pregnancyBirth.fetus.length; _i++>>
 				<<capture _i>>
@@ -342,6 +343,31 @@
 		<</link>>
 	<<else>>
 		Error Pregnancy Object not found in the passage '<<print $passage>>'.
+	<</if>>
+<</widget>>
+
+<<widget "pregnancyFeats">>
+	<<if _args[0] is "pc">>
+		<<earnFeat "Miracle of Life">>
+		<<if _pregnancyBirth.potentialFathers.filter(npc => npc.type === T.pregnancyBirth.type).length gte 5>>
+			<<earnFeat "Bicycle Mother">>
+		<</if>>
+		<<if _pregnancyBirth.type is "human" and _pregnancyBirth.fetus.length is 3>>
+			<<earnFeat "Life Comes in Threes">>
+		<</if>>
+		<<if ($player.virginity.anal is true && !$player.vaginaExist) || ($player.virginity.vaginal is true && $player.vaginaExist)>>
+			<<earnFeat "Hail Mary">>
+		<</if>>
+		<<if !$player.vaginaExist>>
+			/* ToDo: Pregnancy: uncomment once MPreg is possable in-game
+				<<earnFeat "Life begins when you least expect">>
+			*/
+		<</if>>
+	<</if>>
+	<<if _args[0] isnot "pc">>
+		<<if _pregnancyBirth.fetus[0].mother isnot "pc" && _pregnancyBirth.fetus[0].father is "pc">>
+			<<earnFeat "First Fatherhood">>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -469,7 +495,8 @@
 			<<case "bellySize">>
 				<<set $_text_output to "You wake and take a look at your growing belly. It finally hits you; you're pregnant.">>
 				<<if $_pregnancy.potentialFathers.length is 1>>
-					<<set $_text_output += " <span class='lewd'>It's clear that "+ $_pregnancy.potentialFathers[0].source +" is the father.</span>">>
+					<<set $_fatherName to pregnancyNameCorrection($_pregnancy.potentialFathers[0].source)>>
+					<<set $_text_output += " <span class='lewd'>It's clear that "+ ($_fatherName === "yourself" ? "you are" : $_fatherName + " is") +" the father.</span>">>
 				<<else>>
 					<<set $_text_output += " <span class='red'>You wonder who the father is.</span>">>
 				<</if>>
@@ -518,12 +545,12 @@
 <</widget>>
 
 <<widget "pregnancyDailyEvent">><<silently>>
-	<<if !["Asylum Sleep","Cabin Sleep","Wolf Cave Sleep","Bird Tower Sleep","Livestock Sleep","Farm Abduction wake 4","Sleep","Avery Hotel Morning"].includes($passage)>>
-		<<set _event to dailyPregnancyEvent(_rng)>>
-		<<if Array.isArray(_event)>>
-			<<set _event to _event[random(0,_event.length - 1)]>>
+	<<if !["Asylum Sleep","Cabin Sleep","Wolf Cave Sleep","Bird Tower Sleep","Livestock Sleep","Farm Abduction wake 4","Sleep","Avery Hotel Morning","Avery Hotel Trauma Drink 2","Prison Sleep","Robin Trauma Visit Sleep","Pound Sleep","Robin Sleep"].includes($passage)>>
+		<<set _pregnancyDailyEvent to dailyPregnancyEvent(_rng)>>
+		<<if Array.isArray(_pregnancyDailyEvent)>>
+			<<set _pregnancyDailyEvent to _pregnancyDailyEvent[random(0,_pregnancyDailyEvent.length - 1)]>>
 		<</if>>
-		<<switch _event>>
+		<<switch _pregnancyDailyEvent>>
 			<<case "tired">>
 				<<set $_text_output to "You yawn. Everything seems to take more effort than usual.<<tiredness 2>><<gtiredness>>">>
 			<<case "crying">>
@@ -535,7 +562,7 @@
 			<<case "foodCraving">>
 				<<set $_text_output to `You have a sudden, strange craving for something ${["sweet","spicy","sour","savory","bitter"][random(0,4)]}.`>>
 			<<case "cramping">>
-				<<set $_text_output to "You feel some cramping near your vagina.<<stress 5>><<gstress>><<pain 5>><<gpain>>">>
+				<<set $_text_output to `You feel some cramping around the lower part of your stomach.<<stress 5>><<gstress>><<pain 5>><<gpain>>`>>
 			<<case "bloated">>
 				<<set $_text_output to "You feel a little bloated.<<stress 3>><<gstress>>">>
 				<<set $daily.bloated to random(1,2)>>
@@ -558,7 +585,7 @@
 			<<case "earlyContractions">>
 				<<set $_text_output to "You feel a brief and sporadic contraction.<<stress 5>><<gstress>>">>
 		<</switch>>
-		<<if _event>>
+		<<if _pregnancyDailyEvent>>
 			<<run delete $daily.pregnancyEvent>>
 		<<else>>
 			<<if !$daily.pregnancyEvent>>
@@ -1392,8 +1419,8 @@
 					<div><span class="lewd">You just impregnated <<print pregnancyNameCorrection(_npcIsNowPregnant)>>.</span></div>
 					<<if $options.images is 1>><img class="fertilization" src="img/sex/fertilization/fert6.gif"><</if>>
 				</div>
+				<<earnFeat "First Fatherhood">>
 			<</if>>
 		</div>
-		<br>
 	<</if>>
 <</widget>>

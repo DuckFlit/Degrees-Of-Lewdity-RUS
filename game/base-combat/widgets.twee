@@ -84,6 +84,17 @@
 
 <<widget "takeHandholdingVirginity">>
 	<<takeNPCVirginity _args[0] "handholding">>
+	<<if typeof _args[0] === 'string' or _args[0] instanceof String>>
+		<<set $_fullDescription to _args[0]>>
+		<<if C.npc[_args[0]]>>
+			<<set $_type to C.npc[_args[0]].type>>
+		<<else>>
+			<<set $_type to _args[2]>>
+		<</if>>
+	<<else>>
+		<<set $_fullDescription to _args[0].fullDescription>>
+		<<set $_type to _args[0].type>>
+	<</if>>
 	<<if $player.virginity.handholding is true>>
 		<<switch _args[1]>>
 			<<case "romantic">>
@@ -98,12 +109,26 @@
 			<<default>>
 				<span class="blue">You feel nervous holding the hands of someone you're not close to.</span><<stress 20>><<gstress>>
 		<</switch>>
-		<<takeVirginity _args[0] "handholding">>
+		<<takeVirginity $_fullDescription "handholding">>
 	<</if>>
+	<<recordSperm `{target: "pc", spermOwner: _args[0], spermType: $_type, genital: "hand"}`>>
+	<<recordSperm `{target: _args[0], spermOwner: "pc", spermType: "human", genital: "hand"}`>>
+	<<if !$combat>><<fetishPregnancyImg>><</if>>
 <</widget>>
 
 <<widget "takeKissVirginity">>
 	<<takeNPCVirginity _args[0] "kiss">>
+	<<if typeof _args[0] === 'string' or _args[0] instanceof String>>
+		<<set $_fullDescription to _args[0]>>
+		<<if C.npc[_args[0]]>>
+			<<set $_type to C.npc[_args[0]].type>>
+		<<else>>
+			<<set $_type to _args[2]>>
+		<</if>>
+	<<else>>
+		<<set $_fullDescription to _args[0].fullDescription>>
+		<<set $_type to _args[0].type>>
+	<</if>>
 	<<if $player.virginity.kiss is true>>
 		<<if _args[0].type is "plant" and $backgroundTraits.includes("plantlover") and $nectar_timer lte 14>>
 			<<set $_kissType to "addiction">>
@@ -113,13 +138,13 @@
 		<<switch $_kissType>>
 			<<case "loveInterest">>
 				<span class="lewd">You're happy your first kiss went to a love interest.</span><<arousal 3000>><<stress -12>><<trauma -12>><<ggarousal>><<llstress>>
-				<<if ($wraith.mimic isnot _args[0])>><<earnFeat "First Kiss">><</if>>
+				<<if ($wraith.mimic isnot $_fullDescription)>><<earnFeat "First Kiss">><</if>>
 			<<case "romantic">>
 				<span class="lewd">You're happy your first kiss was taken in such a romantic way.</span><<arousal 1500>><<stress -6>><<trauma -6>><<garousal>><<lstress>>
 			<<case "rape">>
 				<span class="red">They stole your first kiss. You feel horrible.</span><<stress 40>><<gggstress>>
 			<<case "loveRape">>
-				<span class="red">You didn't want your first kiss with <<nnpc_him _args[0]>> to be like this.</span><<stress 40>><<gggstress>>
+				<span class="red">You didn't want your first kiss with <<nnpc_him $_fullDescription>> to be like this.</span><<stress 40>><<gggstress>>
 			<<case "tentacle">>
 				<span class="lewd">You wonder what others would say about giving a tentacle your first kiss, if they would even believe you.</span><<arousal 3000>>
 			<<case "addiction">>
@@ -127,8 +152,11 @@
 			<<default>>
 				<span class="blue">You feel conflicted about giving them your first kiss.</span><<stress 20>><<ggstress>>
 		<</switch>>
-		<<takeVirginity _args[0] "kiss">>
+		<<takeVirginity $_fullDescription "kiss">>
 	<</if>>
+	<<recordSperm `{target: "pc", spermOwner: _args[0], spermType: $_type, genital: "kiss"}`>>
+	<<recordSperm `{target: _args[0], spermOwner: "pc", spermType: "human", genital: "kiss"}`>>
+	<<if !$combat>><<fetishPregnancyImg>><</if>>
 <</widget>>
 
 <<widget "takeKissVirginityNamed">>
