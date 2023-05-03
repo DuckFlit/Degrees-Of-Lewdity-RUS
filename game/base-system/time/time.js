@@ -413,7 +413,6 @@ function dayPassed() {
 		fragment.append(wikifier("stray_happiness", -1));
 		V.pound.tasks = [];
 	}
-	if (V.renttime < 1) V.baileyOverdue++;
 	V.renttime--;
 
 	if (V.flashbacktown > 0) V.flashbacktown--;

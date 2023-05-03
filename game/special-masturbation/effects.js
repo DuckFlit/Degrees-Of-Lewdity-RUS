@@ -446,9 +446,9 @@ function masturbationeffectsArms(
 	if (V.vaginause === "mdildopenetrate" || V.anususe === "mdildopenetrate") {
 		if (["mvaginaentrancedildo", "mvaginadildo", "manusentrancedildo", "manusdildo"].includes(V.leftarm)) {
 			if (V.leftarm.includes("vagina")) {
-				fragment.append(span(`You move your ${toyDisplay(selectedToy("left"))} from your anus after finding it difficult to reach.`, "red"));
-			} else {
 				fragment.append(span(`You move your ${toyDisplay(selectedToy("left"))} from your vagina after finding it difficult to reach.`, "red"));
+			} else {
+				fragment.append(span(`You move your ${toyDisplay(selectedToy("left"))} from your anus after finding it difficult to reach.`, "red"));
 			}
 			fragment.append(" ");
 			V.leftarm = "mpickupdildo";
@@ -457,9 +457,9 @@ function masturbationeffectsArms(
 		}
 		if (["mvaginaentrancedildo", "mvaginadildo", "manusentrancedildo", "manusdildo"].includes(V.rightarm)) {
 			if (V.rightarm.includes("vagina")) {
-				fragment.append(span(`You move your ${toyDisplay(selectedToy("right"))} from your anus after finding it difficult to reach.`, "red"));
-			} else {
 				fragment.append(span(`You move your ${toyDisplay(selectedToy("right"))} from your vagina after finding it difficult to reach.`, "red"));
+			} else {
+				fragment.append(span(`You move your ${toyDisplay(selectedToy("right"))} from your anus after finding it difficult to reach.`, "red"));
 			}
 			fragment.append(" ");
 			V.rightarm = "mpickupdildo";
@@ -1526,6 +1526,7 @@ function masturbationeffectsArms(
 				wikifier("addVaginalWetness", 1);
 				altText.lubricated = (arm === "left" && V.leftFingersSemen >= 1) || (arm === "right" && V.rightFingersSemen >= 1) ? " semen-lubricated" : "";
 				altText.finger = V.mVaginaFingerAdd === 2 ? `two${altText.lubricated} fingers` : `a${altText.lubricated} finger`;
+				if (altText.lubricated.includes("semen")) V.semenInVagina = true;
 				if (hymenIntact) {
 					fragment.append(
 						Wikifier.wikifyEval(
@@ -1776,6 +1777,7 @@ function masturbationeffectsArms(
 			} else {
 				altText.lubricated = V[arm + "FingersSemen"] >= 1 ? "semen-lubricated" : "";
 			}
+			if (altText.lubricated.includes("semen")) V.semenInVagina = true;
 			wikifier("arousal", 150 * handsOn, "masturbationVagina");
 			wikifier("addVaginalWetness", 1);
 			altText.toyDisplay = toyDisplay(altText.selectedToy, altText.selectedOtherToy);
@@ -1944,6 +1946,7 @@ function masturbationeffectsArms(
 						(arm === "left" && V.leftFingersSemen >= 1) || (arm === "right" && V.rightFingersSemen >= 1) ? " semen-lubricated" : "";
 					fragment.append(Wikifier.wikifyEval(`<span class="purple">You push a ${altText.lubricated} finger into your <<bottom>>.</span>`));
 				}
+				if (altText.lubricated.includes("semen")) V.semenInAnus = true;
 			} else {
 				clearAction("manusrub");
 			}
@@ -2072,6 +2075,7 @@ function masturbationeffectsArms(
 					)
 				);
 			}
+			if (altText.lubricated.includes("semen")) V.semenInAnus = true;
 			break;
 		case "manusrubdildo":
 			clearAction();
