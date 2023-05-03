@@ -241,7 +241,7 @@ function pregnancyProgress(genital = "vagina") {
 				V.breastgrowthmessage = V.player.breastsize;
 				V.effectsmessage = 1;
 			}
-			if (V.lactating !== 1 && V.player.breastsize > 0) {
+			if (V.lactating !== 1 && V.breastfeedingdisable === "f" && V.player.breastsize > 0) {
 				V.lactating = 1;
 				V.lactation_pressure = 100;
 				Wikifier.wikifyEval("<<milkvolume 50>>");
