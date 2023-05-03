@@ -840,8 +840,8 @@
 				<</if>>
 			<</if>>
 		<</foldout>>
+		<<set $_menstruation to $sexStats.vagina.menstruation>>
 		<<if $cycledisable is "f">>
-			<<set $_menstruation to $sexStats.vagina.menstruation>>
 			<<foldout false "_menstruationFoldout">>
 				<span class="gold">Menstruation cycle</span>
 				Running: <<print $_menstruation.running ? "true" : "false">>
@@ -865,10 +865,12 @@
 			Total days knowingly being pregnant: <<print Math.floor($pregnancyStats.totalDaysPregnancyKnown)>>
 			<br>
 			<<if canBeMPregnant()>>
-			<<elseif !$player.vaginaExist>>
+			<<elseif !$player.vaginaExist or !$_menstruation.running>>
 				Can not currently get pregnant.
 			<<elseif $_vPregnancy.type is "parasite">>
 				Parasites in the womb are preventing normal pregnancy from occuring.
+			<<elseif $_menstruation.currentState is "recovering">>
+				You are not quite ready to get pregnant so soon after your last one.
 			<<elseif $_vPregnancy.type isnot null and playerAwareTheyArePregnant()>>
 				Currently pregnant with: <<print $_vPregnancy.fetus.length>>
 					<<extraStatisticsPregnancyType $_vPregnancy.type>>
@@ -900,6 +902,10 @@
 			<<if canBeMPregnant()>>
 				<<if $_aPregnancy.type is "parasite">>
 					Parasites in the womb are preventing normal pregnancy from occuring.
+				<<elseif !$_menstruation.running>>
+					You can not current get pregnant.
+				<<elseif $_menstruation.currentState is "recovering">>
+					You are not quite ready to get pregnant so soon after your last one.
 				<<elseif $_aPregnancy.type isnot null and playerAwareTheyArePregnant()>>
 					Currently pregnant with: <<print $_aPregnancy.fetus.length>>
 					<<extraStatisticsPregnancyType $_aPregnancy.type>>

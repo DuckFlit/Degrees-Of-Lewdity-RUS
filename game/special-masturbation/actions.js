@@ -124,7 +124,7 @@ function masturbationActions() {
 	return fragment;
 }
 
-function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExposed, ballsExposed }) {
+function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExposed, breastsExposed, ballsExposed }) {
 	const result = {
 		text: "",
 		options: [],
@@ -653,9 +653,9 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 	}
 
 	if (V[arm + "arm"] !== "bound") {
-		if (V.worn.over_upper.exposed < 1) result.options.push({ action: "moverupper", text: `Displace your ${V.worn.over_upper.name}` });
-		if (V.worn.upper.exposed < 1) result.options.push({ action: "mupper", text: `Displace your ${V.worn.upper.name}` });
-		if (V.worn.under_upper.exposed < 0) result.options.push({ action: "munder_upper", text: `Displace your ${V.worn.under_upper.name}` });
+		if (V.worn.over_upper.exposed <= 1) result.options.push({ action: "moverupper", text: `Displace your ${V.worn.over_upper.name}` });
+		if (V.worn.upper.exposed <= 1) result.options.push({ action: "mupper", text: `Displace your ${V.worn.upper.name}` });
+		if (V.worn.under_upper.exposed <= 0) result.options.push({ action: "munder_upper", text: `Displace your ${V.worn.under_upper.name}` });
 
 		if (V.worn.over_lower.exposed <= 1) result.options.push({ action: "moverlower", text: `Displace your ${V.worn.over_lower.name}` });
 		if (V.worn.lower.exposed <= 1) result.options.push({ action: "mlower", text: `Displace your ${V.worn.lower.name}` });
