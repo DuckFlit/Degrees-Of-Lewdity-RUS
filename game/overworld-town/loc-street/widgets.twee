@@ -2317,6 +2317,35 @@
 	<</switch>>
 <</widget>>
 
+<<widget "rainyDayHarass">>
+	<<generate1>><<person1>>
+
+	A <<person>> calls out to you from the doorway of a nearby <<if $bus is "domus">>house<<else>>mansion<</if>>.
+	<br><br>
+
+	<<switch random(1,5)>>
+		<<case 1>>
+			"What're you doing out alone in this awful weather, <<girl>>? C'mon inside, I'll let you dry off," <<he>> says, gesturing towards the door.
+		<<case 2>>
+			"Good lord, <<girl>>, you're drenched!" <<he>> laughs. "C'mon in, I'll let you hide from the rain for a bit," <<he>> says, gesturing towards the door.
+		<<case 3>>
+			"You're going to get yourself sick walking around like that," <<he>> tuts. "C'mere and get dried off," <<he>> says, gesturing towards the door.
+		<<case 4>>
+			"You seem like you're lost, <<girl>>. How about you come inside and dry off while you get your bearings?" <<he>> asks, gesturing towards the door.
+		<<case 5>>
+			"Cats and dogs today, 'eh <<girl>>? Need somewhere to take shelter for a bit?" <<he>> asks, gesturing towards the door.
+	<</switch>>
+	<br><br>
+
+	<<link [["Follow " + $NPCList[0].pronouns.him|Street Rainy Follow]]>><</link>>
+	<br>
+	<<if $bus is "domus">>
+		<<link [[Keep walking|Street Rainy Walk]]>><</link>>
+	<<else>>
+		<<link [[Keep walking|Street Rainy Walk]]>><</link>>
+	<</if>>
+<</widget>>
+
 :: Widget Passout Street [widget]
 <<widget "passoutstreet">>
 	<<if isPlayerNonparasitePregnancyEnding()>>
@@ -3259,7 +3288,7 @@
 <</widget>>
 
 <<widget "eventsstreetday">>
-	<<set $dangerevent to random(1, 184)>>
+	<<set $dangerevent to random(1, 190)>>
 	<<rng>>
 	<<if $location is "alley" and !Time.schoolDay and $bullytimer gte $rng and C.npc.Whitney.init is 1 and !["dungeon", "pillory"].includes(C.npc.Whitney.state) and $daily.whitney.park is undefined>>
 		<<set $bullytimer to 0>>
@@ -3318,6 +3347,13 @@
 		<<streetmodelshow>>
 	<<elseif $dangerevent lte 184>>
 		<<streetnpcflash>>
+	<<elseif $dangerevent lte 190>>
+		<<if ($bus is "domus" or $bus is "danube") and $weather is "rainy" and ($upperwetstage is 1 or $lowerwetstage is 1)>>
+			<<rainyDayHarass>>
+		<<else>>
+			<<eventAmbient>>
+			<<destinationeventend>>
+		<</if>>
 	<</if>>
 <</widget>>
 
