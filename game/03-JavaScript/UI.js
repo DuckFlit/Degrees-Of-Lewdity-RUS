@@ -503,51 +503,14 @@ function closeOverlay() {
 window.closeOverlay = closeOverlay;
 
 function updatehistorycontrols() {
-	if (V.options.maxStates === undefined || V.options.maxStates > 20) {
-		/* initiate new variable based on engine config and limit it to 20 */
-		V.options.maxStates = Math.clamp(1, 20, Config.history.maxStates);
-	}
-	if (V.options.maxStates === 1) {
-		/* when disabled, irreversibly delete history controls the way sugarcube intended */
-		Config.history.maxStates = 1;
-		jQuery("#ui-bar-history").remove();
-	} else {
-		/* set actual maxStates in accordance with our new variable */
-		Config.history.maxStates = V.options.maxStates;
-		/* ensure that controls are enabled so sugarcube won't destroy them on reload */
+	// if undefined, initiate new variable based on engine config
+	if (V.options.maxStates === undefined) V.options.maxStates = Config.history.maxStates;
+	else Config.history.maxStates = V.options.maxStates; // update engine config
+
+	if (V.options.maxStates === 1) jQuery("#ui-bar-history").hide(); // hide nav panel when it's useless
+	else {
+		// or unhide it otherwise
 		Config.history.controls = true;
-		/* if irreversibly deleted, restore #ui-bar-history from oblivion and pop it after #ui-bar-toggle */
-		if (jQuery("#ui-bar-history").length === 0) {
-			jQuery("#ui-bar-toggle").after(`
-				<div id="ui-bar-history">
-					<button id="history-backward" tabindex="0" title="'+t+'" aria-label="'+t+'">\uE821</button>
-					<button id="history-forward" tabindex="0" title="'+n+'" aria-label="'+n+'">\uE822</button>
-				</div>`);
-			/* make buttons active/inactive based on the available history states */
-			jQuery(document).on(
-				":historyupdate.ui-bar",
-				(($backward, $forward) => () => {
-					$backward.ariaDisabled(State.length < 2);
-					$forward.ariaDisabled(State.length === State.size);
-				})(jQuery("#history-backward"), jQuery("#history-forward"))
-			);
-			jQuery("#history-backward")
-				.ariaDisabled(State.length < 2)
-				.ariaClick(
-					{
-						label: L10n.get("uiBarBackward"),
-					},
-					() => Engine.backward()
-				);
-			jQuery("#history-forward")
-				.ariaDisabled(State.length === State.size)
-				.ariaClick(
-					{
-						label: L10n.get("uiBarForward"),
-					},
-					() => Engine.forward()
-				);
-		}
 		jQuery("#ui-bar-history").show();
 	}
 }
@@ -565,7 +528,7 @@ function updateOptions() {
 		const tmpButtons = T.buttons;
 		const tmpKey = T.key;
 
-		State.restore();
+		if (!State.restore()) return; // don't do anything if state couldn't be restored
 		V.options = optionsData;
 		tanned(0, "ignoreCoverage");
 		State.show();

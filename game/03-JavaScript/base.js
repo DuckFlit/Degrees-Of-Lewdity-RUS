@@ -365,21 +365,69 @@ function saveDataCompare(save1, save2) {
 window.saveDataCompare = saveDataCompare;
 
 /**
+ * @returns {object} decoded session state
+ */
+function getSessionState() {
+	if (Config.history.maxSessionStates === 0) return;
+
+	const sessionState = session.get("state");
+	if (Object.hasOwn(sessionState, "delta")) {
+		sessionState.history = State.deltaDecode(sessionState.delta);
+		delete sessionState.delta;
+	}
+	return sessionState;
+}
+window.getSessionState = getSessionState;
+
+/**
+ * Tries saving sessionState into sessionStorage until it fits the quota.
+ * sessionState must have history property.
+ *
+ * @param {object} sessionState decoded session state
+ */
+function setSessionState(sessionState) {
+	if (!sessionState || !sessionState.history) throw new Error("setSessionState error: not a valid sessionState object");
+	let pass = false;
+	let sstates = Config.history.maxSessionStates;
+	if (sstates === 0) return pass;
+
+	try {
+		// if history is bigger than session states limit, reduce the history to match
+		if (sessionState.history.length > sstates) sessionState.history = State.marshalForSave(sstates).history;
+		if (sstates) session.set("state", sessionState); // don't do session writes if sstates is 0, NaN, undefined, etc.
+		pass = true;
+	} catch {
+		console.log("session.set failed, recovering");
+		if (sstates > sessionState.history.length) sstates = sessionState.length;
+		while (sstates && !pass) {
+			try {
+				sstates--;
+				sessionState.history = State.marshalForSave(sstates).history;
+				sessionState.history.forEach(s => (s.variables.options.maxStates = sstates));
+				session.set("state", sessionState);
+				pass = true;
+			} catch {
+				continue;
+			}
+		}
+		V.options.maxStates = Config.history.maxStates = Config.history.maxSessionStates = sstates;
+		Errors.report("Save data is too big for current History depth setting. It's value was automatically adjusted to " + V.maxStates);
+	}
+	return pass;
+}
+window.setSessionState = setSessionState;
+
+/**
  * Replays current passage with different RNG and records updated RNG into sessionStorage
  */
 function updateSessionRNG() {
 	if (!(V.debug || V.cheatdisable === "f" || V.testing)) return; // do nothing unless debug is enabled
-	State.restore(); // restore game state before the passage was processed
-	const sessionData = session.get("state"); // get game state from session storage
-	const delta = sessionData.delta[sessionData.index]; // current history frame
+	if (!State.restore()) return; // restore game state before the passage was processed. do nothing if failed
+	const sessionState = getSessionState(); // get game state from session storage
+	const frame = sessionState.history[sessionState.index]; // current history frame
 	State.random(); // re-roll rng
-	const sprng = State.prng.state; // get new prng state
-	const deltaprng =
-		typeof delta.prng.i === "number" // check if encoded
-			? sprng
-			: { S: [2, sprng.S], i: [2, sprng.i], j: [2, sprng.j] };
-	delta.prng = deltaprng; // save new rng state
-	session.set("state", sessionData); // send altered session data back into storage
+	frame.prng = State.prng.state; // save new rng state
+	setSessionState(sessionState); // send altered session data back into storage
 	Engine.show(); // replay the passage with new rng
 }
 window.updateSessionRNG = updateSessionRNG;
