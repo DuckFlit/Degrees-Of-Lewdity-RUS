@@ -391,7 +391,9 @@ const DoLSave = ((Story, Save) => {
 		V.compressSave = false;
 	}
 	function isCompressionEnabled() {
-		return V.compressSave;
+		// for now, save compressor and delta-encoder work against each other, leading to bigger saves when both are active
+		// todo: make them friends?
+		return V.compressSave && State.history.length === 1;
 	}
 
 	/**
@@ -523,34 +525,38 @@ window.copySavedata = function (id) {
 };
 
 window.updateExportDay = function () {
-	if (V.saveDetails != null && State.history[0].variables.saveDetails != null) {
+	const idx = State.activeIndex;
+	if (V.saveDetails != null && State.history[idx].variables.saveDetails != null) {
 		V.saveDetails.exported.days = clone(Time.days);
-		State.history[0].variables.saveDetails.exported.days = clone(State.history[0].variables.days);
+		State.history[idx].variables.saveDetails.exported.days = clone(Time.days);
 		V.saveDetails.exported.count++;
-		State.history[0].variables.saveDetails.exported.count++;
+		State.history[idx].variables.saveDetails.exported.count++;
 		V.saveDetails.exported.dayCount++;
-		State.history[0].variables.saveDetails.exported.dayCount++;
-		const sessionState = session.get("state");
+		State.history[idx].variables.saveDetails.exported.dayCount++;
+		const sessionState = getSessionState();
 		if (sessionState != null) {
-			sessionState.delta[0].variables.saveDetails.exported.days = clone(Time.days);
-			sessionState.delta[0].variables.saveDetails.exported.dayCount++;
-			sessionState.delta[0].variables.saveDetails.exported.count++;
-			session.set("state", sessionState);
+			const sidx = sessionState.index;
+			sessionState.history[sidx].variables.saveDetails.exported.days = clone(Time.days);
+			sessionState.history[sidx].variables.saveDetails.exported.dayCount++;
+			sessionState.history[sidx].variables.saveDetails.exported.count++;
+			setSessionState(sessionState);
 		}
 	}
 };
 
 window.updateSavesCount = function () {
-	if (V.saveDetails != null && State.history[0].variables.saveDetails != null) {
+	const idx = State.activeIndex;
+	if (V.saveDetails != null && State.history[idx].variables.saveDetails != null) {
 		V.saveDetails.slot.count++;
-		State.history[0].variables.saveDetails.slot.count++;
+		State.history[idx].variables.saveDetails.slot.count++;
 		V.saveDetails.slot.dayCount++;
-		State.history[0].variables.saveDetails.slot.dayCount++;
-		const sessionState = session.get("state");
+		State.history[idx].variables.saveDetails.slot.dayCount++;
+		const sessionState = getSessionState();
 		if (sessionState != null) {
-			sessionState.delta[0].variables.saveDetails.slot.dayCount++;
-			sessionState.delta[0].variables.saveDetails.slot.count++;
-			session.set("state", sessionState);
+			const sidx = sessionState.index;
+			sessionState.history[sidx].variables.saveDetails.slot.dayCount++;
+			sessionState.history[sidx].variables.saveDetails.slot.count++;
+			setSessionState(sessionState);
 		}
 	}
 };
@@ -1184,22 +1190,17 @@ window.randomizeSettings = function (filter) {
 
 // !!Hack warning!! Don't use it maybe?
 window.updateMoment = function () {
-	// change last (and only) moment in local history
-	State.history[State.history.length - 1].variables = JSON.parse(JSON.stringify(V));
+	// change current (and only) moment in local history
+	State.history[State.activeIndex].variables = JSON.parse(JSON.stringify(V));
 	// prepare the moment object with modified history
 	const moment = State.marshalForSave();
+	// if sessionStorage compression is enabled again,
 	// replace moment.history with moment.delta, because that's what SugarCube expects to find
-	// this is a bad thing to do probably btw, because while history and delta appear to look very similar,
-	// they're not always the same thing, SugarCube actually decodes delta into history (see: https://github.com/tmedwards/sugarcube-2/blob/36a8e1600160817c44866205bc4d2b7730b2e70c/src/state.js#L527)
-	// but for my purpose it works (i think?)
-	// delete Object.assign(moment, {delta: moment.history}).history;
 	// delta-encode the state
-	delete Object.assign(moment, { delta: State.deltaEncode(moment.history) }).history;
+	// delete Object.assign(moment, { delta: State.deltaEncode(moment.history) }).history;
+
 	// replace saved moment in session with the new one
-	const gameName = Story.domId;
-	sessionStorage[gameName + ".state"] = JSON.stringify(moment);
-	// it appears that this line is not necessary for it to work
-	// SugarCube.session._engine[gameName + ".state"] = JSON.stringify(moment);
+	setSessionState(moment);
 
 	// Voilà! F5 will reload the current state now without going to another passage!
 };

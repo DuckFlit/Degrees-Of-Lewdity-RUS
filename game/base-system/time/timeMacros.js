@@ -69,6 +69,7 @@ const secondsMapper = {
  * @returns {DocumentFragment} The fragment to render elements from.
  */
 function passTime(time = 0, type = "min") {
+	if (!Number.isInteger(time)) return Errors.report("Invalid time to pass: " + time, Utils.GetStack());
 	const multiplier = secondsMapper[type] || 1;
 	const fragment = Time.pass(time * multiplier);
 	return fragment;
