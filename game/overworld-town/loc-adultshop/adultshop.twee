@@ -42,6 +42,22 @@
 	You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and all manner of sex toys line the shelves.
 <</if>>
 <br>
+<<if !$brothelVending and $fame.business gte 100>>
+	<<set $brothelVending to {status: "idea", products: 0, condoms: 0, lube: 0, condomsSold: 0, lubeSold: 0, condomsToRefill: 0, lubeToRefill: 0, weeksRent: 0, weeksEmpty: 0}>>
+	/* $brothelVending.status
+	idea - PC has had the idea but not talked to Briar
+	asked - Talked with Briar But not bought the machine
+	bought Bought the vending machine but not installed it
+	sold - Briar sold the machine since it was empty for so long
+	set Installed the vending machine
+	BITS of $brothelVending.products
+	bit 0 - 1 Talked to the pharmacy nurse about reselling condoms
+	bit 1 - 2 Talked to Sirris about selling lube */
+	<br>
+	Seeing the products on sale at the adult shop an idea strikes you. You think it might be a good idea to set up a vending machine in the brothel's dressing room, so the staff can buy lube or other useful items for their work. <span class="gold">You decide you'll talk to Briar about it.</span>
+	<br><br>
+<</if>>
+
 <<if $adultshopstate isnot "closed">>
 	<<print _shopmusic[random(0,_shopmusic.length-1)]>> music plays softly in the background.
 	<br><br>
@@ -251,6 +267,15 @@ Sirris smiles as you approach.
 	<<link [[Ask for work|Adult Shop Approach Sirris Ask]]>><</link>>
 	<br>
 <</if>>
+<<if $brothelVending and $brothelVending.status is "set" and $brothelVending.weeksEmpty lt 4>>
+	<<if $brothelVending.products gte 2 and !$weekly.brothelVMLube and $brothelVending.lubeToRefill gte 10>>
+		<<link [[Buy lube for the brothel (0:10)|Adult Shop Buy Lube in Bulk]]>><<pass 10>><</link>>
+		<br>
+	<<elseif $brothelVending.products lt 2>>
+		<<link [[Ask about buying lube in bulk (0:15)|Adult Shop Buy Lube in Bulk]]>><<pass 15>><</link>>
+		<br>
+	<</if>>
+<</if>>
 <<link [[Back|Adult Shop]]>><</link>>
 
 
@@ -335,3 +360,127 @@ You work behind the counter, selling adult products and stocking shelves.
 <br><br><br>
 	<<link [[Debug return|Adult Shop]]>><</link>>
 <</if>>
+
+:: Adult Shop Buy Lube in Bulk
+<<effects>>
+<<if $brothelVending.products gte 2>>
+	<<if $weekly.brothelVMLube>>
+		You already have refilled the vending machine with lube this week.
+		<br><br>
+		<<link [[Return|Adult Shop Approach Sirris]]>><</link>>
+	<<elseif $brothelVending.lubeToRefill lt 10>>
+		You don't need to refill the vending machine with lube.
+		<br><br>
+		<<link [[Return|Adult Shop Approach Sirris]]>><</link>>
+	<<elseif $money lt 20000>>
+		You can't afford lube to refill the vending machine.
+		<br><br>
+		<<link [[Return|Adult Shop Approach Sirris]]>><</link>>
+	<<else>>
+		You ask Sirris for the quantity of lube you need:
+		<br><br>
+		<<lubePrice 10>>
+		<<link [[Buy 10 bottles (£200)|Adult Shop Bought Condoms in Bulk]]>><<set $lubeBought to 10>><</link>>
+		<br>
+		<<if $brothelVending.lubeToRefill gte 25>>
+			<<lubePrice 25>>
+			<<if $money gte 25 * _price>>
+			<<formatmoney _price>>
+				<<link [[`Buy 25 bottles (${_printmoney})`|Adult Shop Bought Condoms in Bulk]]>><<set $lubeBought to 25>><</link>>
+				<br>
+			<<else>>
+				You can't afford 25 bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.lubeToRefill gte 50>>
+			<<if $money gte 50 * _price>>
+			<<formatmoney _price>>
+				<<link [[`Buy 50 bottles (${_printmoney})`|Adult Shop Bought Condoms in Bulk]]>><<set $lubeBought to 50>><</link>>
+				<br>
+			<<else>>
+				You can't afford 50 bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.lubeToRefill gte 100>>
+			<<lubePrice 100>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy 100 bottles (${_printmoney})`|Adult Shop Bought Condoms in Bulk]]>><<set $lubeBought to 100>><</link>>
+				<br>
+			<<else>>
+				You can't afford 100 bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.lubeToRefill gte 150>>
+			<<lubePrice 150>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy 150 bottles (${_printmoney})`|Adult Shop Bought Condoms in Bulk]]>><<set $lubeBought to 150>><</link>>
+				<br>
+			<<else>>
+				You can't afford 150 bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.lubeToRefill gte 11>>
+			<<condomsPrice $brothelVending.lubeToRefill>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy ${$brothelVending.lubeToRefill} bottles (${_printmoney})`|Adult Shop Bought Condoms in Bulk]]>><<set $lubeBought to $brothelVending.lubeToRefill>><</link>>
+				<br>
+			<<else>>
+				You can't afford $brothelVending.lubeToRefill bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<link [["Don't buy"|Adult Shop Approach Sirris]]>><</link>>
+	<</if>>
+<<else>>
+	You explain to Sirris that you have managed to install a vending machine in the brothel and that you plan to supply it with bottles of lube. "It's a business opportunity for both of us, you will increase your sales and I will be able to make a profit". You ask <<nnpc_him Sirris>> if <<nnpc_he Sirris>> can give you a discount if you buy a few bottles of lube.
+	<br><br>
+	"The brothel?" <<nnpc_he Sirris>> answers, shocked. "The brothel isn't a safe place for students, be careful. Anyway, if you already have the machine there, we can talk about a bulk discount. Let me see." Sirris rummages through <<nnpc_his Sirris>> papers until <<nnpc_he Sirris>> finds one that looks like a bill.
+	<br><br>
+	"All right, here. I can cut the price by 2%, but only if you buy more than 10 units, up to 50. If you buy more than 50 I can apply a discount of 5%, 8% for the bottles you buy above 150. Is this fair for you?" <<nnpc_He Sirris>> thinks for a bit, with an absent look and, without waiting for your answer, <<nnpc_he Sirris>> tells you that <<nnpc_he Sirris>> will take care of delivering the products to the brothel so you don't have to go there.
+	<br><br>
+	<<set $brothelVending.products += 2>>
+	<<set $brothelVending.lubeToRefill to 200>>
+	<<link [[Buy lube for the brothel (0:10)|Adult Shop Buy Lube in Bulk]]>><<pass 10>><</link>>
+	<br>
+	<<link [["Don't buy"|Adult Shop Approach Sirris]]>><</link>>
+<</if>>
+
+:: Adult Shop Bought Condoms in Bulk
+<<effects>>
+<<set _partial to Math.min($lubeBought, 50)>>
+<<lubePrice _partial>>
+<<formatmoney _price>>
+"Well, <<girl>>, lets count. They are $lubeBought bottles of lube." <<nnpc_He Sirris>> tells you while putting the products carefully in a cardboard box. "There are _partial units at £20 with a 2% discount, _printmoney.
+<<lubePrice $lubeBought>>
+<<if $lubeBought gt 50>>
+	<<set _partial to Math.min($lubeBought - 50, 100)>>
+	<<set _price2 to _partial * 2000 * .95>>
+	<<formatmoney _price2>>
+	Plus _partial units, £20 each, with a 5% cut, _printmoney.
+	<<if $lubeBought gt 150>>
+		<<set _partial to $lubeBought - 150>>
+		<<set _price2 to _partial * 2000 * .92>>
+		<<formatmoney _price2>>
+		And _partial units, £20 each, reduced by 8%, _printmoney.
+	<</if>>
+	Yes, a total of <<printmoney _price>>.
+<</if>>
+I will see that it is delivered to the brothel immediately. Thank you for helping in my business."
+<br><br>
+You count the money and give it to <<nnpc_him Sirris>>.
+<br><br>
+<<set $money -= _price>>
+<<set $brothelVending.lube += $lubeBought>>
+<<set $brothelVending.lubeToRefill -= $lubeBought>>
+<<set $brothelVending.weeksEmpty to 0>>
+<<set $weekly.brothelVMLube to true>>
+<<unset $lubeBought>>
+<<earnFeat "Brothel Provider">>
+<<link [[Next|Adult Shop]]>><</link>>

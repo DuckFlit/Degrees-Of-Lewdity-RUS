@@ -32,6 +32,11 @@
 		A $description <<male>> nurse sits by the till and reads a book.
 	<</if>>
 	<br>
+	<<if $brothelVending and $brothelVending.status is "set" and $condomLvl gte 1 and !($brothelVending.products % 2)>>
+		<br>
+		<<link [[Ask about buying condoms in bulk (0:15)|Pharmacy Buy Condoms in Bulk]]>><<pass 15>><</link>>
+		<br><br>
+	<</if>>
 	Looking at the items on the shelves, you notice a few objects of interest.
 	<br>
 
@@ -62,6 +67,10 @@
 	<br><br>
 	<<link [[Breast Pump|Pharmacy Sale]]>><<set $pharmacyItem to setup.pharmacyItems["breast_pump"]>><</link>>
 	<br><br>
+	<<if $brothelVending and $brothelVending.status is "set" and $brothelVending.products % 2 and $brothelVending.condomsToRefill gte 10 and $condomLvl gte 1 and !$weekly.brothelVMCondoms and $brothelVending.weeksEmpty lt 4>>
+		<<link [[Buy condoms for the brothel (0:10)|Pharmacy Buy Condoms in Bulk]]>><<pass 10>><</link>>
+		<br><br>
+	<</if>>
 	<<if $condomLvl gte 1>>
 		<<link [[Pack of 3 condoms|Pharmacy Sale]]>><<set $pharmacyItem to setup.pharmacyItems["condoms"]>><</link>>
 		<br>
@@ -707,3 +716,125 @@ Before you can answer, you feel another intense and painful cramp in your belly.
 <<arousal -5000>>
 <<clamp>>
 <<link [[Next|Passout hospital]]>><<endevent>><<pass 60>><</link>>
+
+:: Pharmacy Buy Condoms in Bulk
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<if $brothelVending.products % 2>>
+	<<if $weekly.brothelVMCondoms>>
+		You already have refilled the vending machine with condoms this week.
+		<br><br>
+		<<link [[Return|Pharmacy]]>><</link>>
+	<<elseif $brothelVending.condomsToRefill lt 10>>
+		The vending machine doesn't need to be refilled with condoms right now.
+		<br><br>
+		<<link [[Return|Pharmacy]]>><</link>>
+	<<elseif $money lt 60000>>
+		You can't afford condoms to refill the vending machine.
+		<br><br>
+		<<link [[Return|Pharmacy]]>><</link>>
+	<<else>>
+		You ask the nurse for the quantity of condoms you need:
+		<br><br>
+		<<link [[Buy 10 packs (£600)|Pharmacy Bought Condoms in Bulk]]>><<set $condomsBought to 10>><</link>>
+		<br>
+		<<if $brothelVending.condomsToRefill gte 25>>
+			<<if $money gte 25 * 6000>>
+				<<link [[Buy 25 packs (£1,500)|Pharmacy Bought Condoms in Bulk]]>><<set $condomsBought to 25>><</link>>
+				<br>
+			<<else>>
+				You can't afford 25 packs.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.condomsToRefill gte 50>>
+			<<if $money gte 50 * 6000>>
+				<<link [[Buy 50 packs (£3,000)|Pharmacy Bought Condoms in Bulk]]>><<set $condomsBought to 50>><</link>>
+				<br>
+			<<else>>
+				You can't afford 50 packs.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.condomsToRefill gte 100>>
+			<<condomsPrice 100>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy 100 packs (${_printmoney})`|Pharmacy Bought Condoms in Bulk]]>><<set $condomsBought to 100>><</link>>
+				<br>
+			<<else>>
+				You can't afford 100 packs.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.condomsToRefill gte 150>>
+			<<condomsPrice 150>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy 150 packs (${_printmoney})`|Pharmacy Bought Condoms in Bulk]]>><<set $condomsBought to 150>><</link>>
+				<br>
+			<<else>>
+				You can't afford 150 packs.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.condomsToRefill gte 11>>
+			<<condomsPrice $brothelVending.condomsToRefill>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy ${$brothelVending.condomsToRefill} packs (${_printmoney})`|Pharmacy Bought Condoms in Bulk]]>><<set $condomsBought to $brothelVending.condomsToRefill>><</link>>
+				<br>
+			<<else>>
+				You can't afford $brothelVending.condomsToRefill packs.
+				<br>
+			<</if>>
+		<</if>>
+		<<link [["Don't buy"|Pharmacy]]>><</link>>
+	<</if>>
+<<else>>
+	You tell the nurse about the vending machine in the brothel and ask <<him>> for a discount for buying large quantities of condoms.
+	<br><br>
+	<<He>> makes an incredulous face. "What is a large quantity for you? Hundreds, thousands, millions? Maybe it's better if you look for a wholesaler".
+	<br><br>
+	You answer that the vending machine has room for 200 packs and that you're thinking of buying them from 10 above.
+	<br><br>
+	"This is not a large quantity, <<girl>>. I can't give you a discount under 50 units. From 51 to 100 I can cut 2%. Above 100 I will give you a 5% discount. No more than that, the margin I work with isn't very high, condoms are very expensive here. I will add, as a gift, the delivery of the condoms you buy to the brothel."
+	<br><br>
+	<<set $brothelVending.products += 1>>
+	<<set $brothelVending.condomsToRefill to 200>>
+	<<link [[Buy condoms for the brothel (0:10)|Pharmacy Buy Condoms in Bulk]]>><<pass 10>><</link>>
+	<br>
+	<<link [["Don't buy"|Pharmacy]]>><</link>>
+<</if>>
+
+:: Pharmacy Bought Condoms in Bulk
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<set _partial to Math.min($condomsBought, 50)>>
+<<condomsPrice _partial>>
+<<formatmoney _price>>
+"All right, $condomsBought 3-packs of condoms." <<He>> prepares the packages in a<<if $condomsBought lte 25>>small<</if>> cardboard box while calculating the money so you can hear it. "This is, _partial units, £60 each, _printmoney.
+<<condomsPrice $condomsBought>>
+<<if $condomsBought gt 50>>
+	<<set _partial to Math.min($condomsBought - 50, 50)>>
+	<<set _price2 to _partial * 6000 * .98>>
+	<<formatmoney _price2>>
+	Plus _partial units, £60 each, with a 2% discount, _printmoney.
+	<<if $condomsBought gt 100>>
+		<<set _partial to $condomsBought - 100>>
+		<<set _price2 to _partial * 6000 * .95>>
+		<<formatmoney _price2>>
+		And _partial units, £60 each, reduced by 5%, _printmoney.
+	<</if>>
+	Total, <<printmoney _price>>.
+<</if>>
+It is ready to be delivered. Thanks for your purchase."
+<br><br>
+You count the money and give it to <<him>>.
+<br><br>
+<<set $money -= _price>>
+<<set $brothelVending.condoms += $condomsBought>>
+<<set $brothelVending.condomsToRefill -= $condomsBought>>
+<<set $brothelVending.weeksEmpty to 0>>
+<<set $weekly.brothelVMCondoms to true>>
+<<unset $condomsBought>>
+<<earnFeat "Brothel Provider">>
+<<link [[Next|Pharmacy]]>><</link>>

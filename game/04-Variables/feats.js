@@ -1548,6 +1548,14 @@ setup.feats = {
 		filter: ["All", "Discoveries"],
 		hint: "Hint: Is it worth opening the toybox?",
 	},
+	"Brothel Provider": {
+		title: "Brothel Provider",
+		desc: "Installed a vending machine to sell products at a profit.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Convince Briar to do business.",
+	},
 	"Opened Pandoras Cocks": {
 		title: "Opened Pandora's Cocks",
 		desc: "The Adult Shop couldn't have done it without you.",
