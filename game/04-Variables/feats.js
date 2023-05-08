@@ -717,6 +717,7 @@ setup.feats = {
 		filter: ["All", "Pregnancy"],
 		hint: "Hint: Gained something but not at the cost of something else.",
 		pregnancyLockable: true,
+		pregnancySillyLockable: true,
 	},
 	"Bicycle Mother": {
 		title: "Bicycle Mother",

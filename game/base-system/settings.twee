@@ -213,7 +213,7 @@
 		<<set _buttonName to "Confirm">>
 	<</if>>
 	<<link _buttonName>>
-		<<if ($feats.locked or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft or ($gamemode isnot "soft" and $alluremod gte 1)) and ($feats.pregnancyLocked or ($humanPregnancyMonths gte 3 or $wolfPregnancyWeeks gte 4)) and $options.maxStates lte 5>>
+		<<if ($feats.locked or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft or ($gamemode isnot "soft" and $alluremod gte 1)) and ($feats.pregnancyLocked or ($humanPregnancyMonths gte 3 and $wolfPregnancyWeeks gte 4)) and ($feats.pregnancySillyLocked or $pregnancytype isnot "silly") and $options.maxStates lte 5>>
 			<<settingsExitFunction>>
 		<<elseif $options.maxStates lte 5>><!-- confirm cheats -->
 			<<replace #settingsExit>><<settingsExitConfirm>><</replace>>
@@ -233,6 +233,7 @@
 		<<if !$feats.soft and $alluremod lt 1>><li>Lowering the allure mode below 1 will disable some feats</li><</if>>
 		<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>><li>Human pregnancy being set below 3 months will disable some pregnancy feats.</li><</if>>
 		<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>><li>Wolf pregnancy being set below 4 weeks will disable some pregnancy feats.</li><</if>>
+		<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">><li>The pregnancy type "silly" will disable some pregnancy feats.</li><</if>>
 	</ul>
 	<<link "No, please undo these changes">>
 		<<set $cheatdisabletoggle to "t">>
@@ -245,11 +246,14 @@
 		<<if $rentmod lt 1>>
 			<<set $rentmod to 1>>
 		<</if>>
-		<<if $humanPregnancyMonths lt 3>>
+		<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>>
 			<<set $humanPregnancyMonths to 3>>
 		<</if>>
-		<<if $wolfPregnancyWeeks lt 4>>
+		<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>>
 			<<set $wolfPregnancyWeeks to 4>>
+		<</if>>
+		<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">>
+			<<set $pregnancytype to "realistic">>
 		<</if>>
 		<<replace #settingsExit>><<settingsExit>><</replace>>
 		<<displaySettings>>
@@ -298,6 +302,9 @@
 	<</if>>
 	<<if $humanPregnancyMonths lt 3 or $wolfPregnancyWeeks lt 4>>
 		<<set $feats.pregnancyLocked to true>>
+	<</if>>
+	<<if $pregnancytype is "silly">>
+		<<set $feats.pregnancySillyLocked to true>>
 	<</if>>
 	<<updatehistorycontrols>>
 	<<initnpcgender>>
