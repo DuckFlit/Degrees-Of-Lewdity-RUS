@@ -4356,6 +4356,17 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<span class="lblue"><<He>> moves <<his>> ass away from your <<penis>>.</span>
 				<<set $NPCList[_n].vagina to 0>><<set $penisuse to 0>><<set $penisstate to 0>>
 			<<elseif $rng gte 1>>
+				<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined and
+				$worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1 and $worn.over_lower.vagina_exposed is 1>>
+					<<if playerChastity("penis")>>
+						<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
+						<<set $NPCList[_n].condom.willUse to false>>
+					<<else>>
+						<span class="green"><<He>> slips <<condomDesc _n>> on your <<penis>>.</span>
+						<<equipNPCCondom _n "player">>
+					<</if>>
+				<</if>>
+
 				<<if $worn.over_lower.vagina_exposed is 0>>
 					<<if $npcSub>>You rub<<else>><<He>> rubs<</if>> <<his>> ass against your <<penis>> through your $worn.over_lower.name.
 					<<sex 5 "genital" _n>><<set $worn.over_lower.integrity -= 10>><<set $speechotheranusentrance to 1>>
@@ -5739,7 +5750,8 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<if $player.penisExist or playerHasStrapon()>>
 			<<if $penisuse is 0>>
 				<<if $analdisable is "f" and $consensual is 1>>
-					<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
+					<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined and
+					$worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1 and $worn.over_lower.vagina_exposed is 1>>
 						<<if playerChastity("penis")>>
 							<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 							<<set $NPCList[_n].condom.willUse to false>>
@@ -6104,7 +6116,8 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<neutral 3 _n>><<set $speechvaginaflaunt to 1>>
 	<<elseif $enemyanger + $rng lte 50 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals"
 			and ($player.penisExist or playerHasStrapon()) and $penisuse is 0 and $analdisable is "f" and $walltype isnot "front">>
-		<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined>>
+		<<if $NPCList[_n].condom and $NPCList[_n].condom.willUse is true and !$player.condom and $parasite.penis.name is undefined and
+		$worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1 and $worn.over_lower.vagina_exposed is 1>>
 			<<if playerChastity("penis")>>
 				<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
 				<<set $NPCList[_n].condom.willUse to false>>
@@ -6558,14 +6571,8 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 <<widget "suffocatepass">>
 	<<set $suffocating = Math.clamp($suffocating + (_args[0] or 1), 0, 10)>>
 	<<if $suffocating gte 1 and $suffocationPhase isnot 2>><span class="red"> You're about to lose consciousness.</span><</if>>
-	<!-- Lose consciousness if it has been 20+ seconds since PC ran out of air -->
-	<<if $suffocating gte 2 and $suffocated isnot 1>>
-		<<set $previousPassage = $passage>>
-		<<set $suffocationPhase to 1>>
-		<<set $suffocated to 1>>
 
-		<<set $nextPassage to "Man combat suffocated">>
-	<</if>>
+	<!-- see "actionsman" widget for the code relating to the PC passing out from suffocation -->
 <</widget>>
 
 :: Man combat suffocated
