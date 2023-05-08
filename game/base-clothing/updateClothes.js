@@ -30,6 +30,9 @@ function updateClothingColours(item, itemRef) {
 		case "glasses":
 			if (item.colour === 0) item.colour = "silver";
 			break;
+		case "lace choker":
+			if (item.colour === 0) item.colour = "black";
+			break;
 		default:
 			// Catch-all case if people forget to adjust this widget for whatever clothing item is updated. Can make weird looking clothes if "custom" is selected.
 			if (item.colour === 0) item.colour = itemRef.colour_options.random();
