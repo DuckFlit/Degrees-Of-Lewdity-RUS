@@ -119,6 +119,65 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
     <br><br>
 <</if>>
 
+<<if $brothelVending>>
+	<<if $brothelVending.status is "asked" or $brothelVending.status is "sold">>
+		You can buy a vending machine at the shopping center to set up here.
+		<br><br>
+	<<elseif $brothelVending.status is "bought">>
+		<<link [[Install the vending machine (0:30)|Brothel Dressing Room]]>><<set $brothelVending.status to "set">><<set $weekly.brothelVMCollect to true>><<pass 30>><</link>>
+		<br><br>
+	<<elseif $brothelVending.status is "set" and $brothelVending.weeksEmpty lt 4>>
+		<<if !($brothelVending.products % 2) and $condomLvl gte 1>>
+			You can talk with the pharmacy nurse about reselling condoms.
+			<br><br>
+		<</if>>
+		<<if $brothelVending.products lt 2 and $adultshopunlocked>>
+			You can talk with Sirris about reselling lube.
+			<br><br>
+		<</if>>
+		<<if $brothelVending.products>>
+			You check the stock of the vending machine.
+			<<if $brothelVending.products % 2>>
+				<<if $brothelVending.condoms lte 1>>
+					The condom dispenser is empty. You can get them at the pharmacy.
+					<br><br>
+				<<else>>
+					<<if $brothelVending.condoms gte 200>>
+						The condom dispenser is full.
+					<<else>>
+						<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
+						You count $brothelVending.condoms packs of condoms, there is room for $brothelVending.condomsToRefill 3-packs. You can get them at the pharmacy.
+					<</if>>
+					<br>
+					You have set the price of the 3 condoms pack to £80, while in the pharmacy they cost £60.
+					<br>
+					<<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>>
+					<br><br>
+				<</if>>
+			<</if>>
+			<<if $brothelVending.products gte 2>>
+				<<if $brothelVending.lube lte 1>>
+					The lube bottles dispenser is empty. You can get them at the adult shop.
+					<br><br>
+				<<else>>
+					<<if $brothelVending.lube gte 200>>
+						The lube bottles dispenser is full.
+					<<else>>
+						<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
+						You count $brothelVending.lube bottles of lube, there is room for $brothelVending.lubeToRefill bottles. You can get them at the adult shop.
+					<</if>>
+					<br>
+					You have set the price of the lube to £30, while in the adult shop it costs £30.
+					<br>
+					<<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>>
+					<br><br>
+				<</if>>
+			<</if>>
+			<br><br>
+		<</if>>
+	<</if>>
+<</if>>
+
 <<wardrobeicon>><<link [[Wardrobe|Brothel Wardrobe]]>><</link>>
 <br>
 <<if playerHasSexToys()>>
@@ -450,6 +509,14 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 		<<link [[Distract Briar|Briar Hack]]>><</link>>
 		<br><br>
 	<</if>>
+	<<if $brothelVending>>
+		<<if $brothelVending.status is "idea">>
+			<<link [[Ask Briar to set up a vending machine (0:20)|Brothel VM ask]]>><<pass 20>><</link>>
+			<br>
+		<<elseif $brothelVending.products and $brothelVending.status is "set" and !$weekly.brothelVMCollect>>
+			<<link [[Collect money from the vending machine (0:10)|Brothel VM income]]>><<pass 10>><</link>>
+			<br>
+	<</if>>
 	<<if $brothelshowdata.intro and $brothelshowdata.type is "none">>
 		<<link [[Set up a show|"Briar's Office Show"]]>><</link>>
 		<br>
@@ -464,6 +531,7 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 	<<elseif $brothel_machine_repair is 3>>
 		<<link [[Give Briar the gel|Briar Gel Give]]>><<set $brothel_machine_repair to 4>><</link>>
 		<br>
+	<</if>>
 	<</if>>
 	<<link [[Leave|Brothel]]>><<endevent>><</link>>
 	<br>
@@ -2288,3 +2356,123 @@ The car comes to a stop, and Briar pulls you out. "I like avoiding this place. I
 <br><br>
 
 <<link [[Next|Underground Intro]]>><<generate2>><<generate3>><</link>>
+
+:: Brothel VM income
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+You ask Briar if <<he>> has already checked the stock of the vending machine and collected the money this week.
+<br><br>
+<<if $brothelVending.weeksEmpty gte 4>>
+	"The stock of your vending machine has been zero for $brothelVending.weeksEmpty. I told you if it was empty for three weeks in a row I was going to throw it away. You have no vending machine anymore."
+	<br><br>
+	You try to explain why you haven't been able to refill the machine for so long, but Briar cuts you.
+	<br><br>
+	"I don't give a shit about your life, your time or your money. To do business you need time, money, both of them, or luck. If you don't have time to buy products every week, you need money to refill the machine with a lot of them. If You don't have enough money to fully recharge the machine, you need time to recharge a little bit every week." Briar takes some bills out of a drawer. "But you were lucky. A friend of mine needed a vending machine for the school toilets because someone broke one there. I sold yours to <<nnpc_him Leighton>> instead of throwing it away. Here, £1,000 for you. Now, if you want, <span class="gold"> you can buy a new vending machine and set it up in the dressing rooms</span>, but be sure to have it always with product, same rules as before."
+	<br><br>
+	<<set $money += 100000>>
+	<<set $brothelVending.status to "sold">>
+	<<if $brothelVending.condomsSold + $brothelVending.lubeSold>>
+		"However, before it was emptied there were still some sales,
+	<</if>>
+<<else>>
+	"Yes, just 5 minutes ago. The sales are
+<</if>>
+<<if $brothelVending.condomsSold + $brothelVending.lubeSold>>
+	<<if $brothelVending.condomsSold>>
+		$brothelVending.condomsSold condom<<if $brothelVending.condomsSold gt 1>>s<</if>>, <<formatmoney `$brothelVending.condomsSold * 6000`>>_printmoney to pay the product and <<formatmoney `$brothelVending.condomsSold * 2000`>>_printmoney of benefits.
+	<</if>>
+	<<print $brothelVending.condomsSold && $brothelVending.lubeSold ? " And " : "">>
+	<<if $brothelVending.lubeSold>>
+		$brothelVending.lubeSold bottle<<if $brothelVending.lubeSold gt 1>>s<</if>> of lube, <<formatmoney `$brothelVending.lubeSold * 2000`>>_printmoney to pay the product and <<formatmoney `$brothelVending.lubeSold * 1000`>>_printmoney of benefits.
+	<</if>>
+	<<set _BVMBenefits to $brothelVending.condomsSold *2000 + $brothelVending.lubeSold * 1000>>
+	From the profits I take £50 <<if $brothelVending.weeksRent gt 1>>per week, <<formatmoney $brothelVending.weeksRent * 5000>>_printmoney,<<else>>for the weekly rent,<</if>>
+	<<set _BVMBenefits to Math.max(0, _BVMBenefits - $brothelVending.weeksRent * 5000)>>
+	<<if _BVMBenefits>>
+		this makes a net profit of <<formatmoney _BVMBenefits>>_printmoney. Of this profit, 40% is yours,
+		<<set _BVMBenefits *= .4>>
+		a total of <<printmoney _BVMBenefits>>."
+		<<famebusiness 2>>
+		<<set $money += _BVMBenefits>>
+	<<else>>
+		so all for me, nothing for you."
+	<</if>>
+	<<set $money += $brothelVending.condomsSold * 6000 + $brothelVending.lubeSold * 2000>>
+	<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
+	<<set $brothelVending.condomsSold to 0>>
+	<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
+	<<set $brothelVending.lubeSold to 0>>
+	<<set $weekly.brothelVMCollect to true>>
+<</if>>
+<br><br>
+<<link [[Next|"Briar's Office"]]>><</link>>
+
+:: Brothel VM ask
+<<effects>>
+You tell Briar you had the idea of setting up a vending machine in the brothel bathrooms so the people working here could buy useful products for their work like <<if $condomLvl gte 1>>condoms<</if>><<if $condomLvl gte 1 and $adultshopunlocked>> or <</if>><<if $adultshopunlocked>>lube<</if>>.
+<br><br>
+Briar makes a disgusted grin. "I think I've already told you that I'm not my whores' <<mummy>>. When you work here it is your obligation to have the clothes and the products you think that are convenient for whatever you do here. So no. I'm not going to waste my time or use my money in that silly idea of yours"
+<br><br>
+<<link [[Insist (0:10)|Brothel VM insist]]>><<pass 10>><</link>>
+<br>
+<<link [[Walk away|Brothel VM desist]]>><<pass 1>><</link>>
+
+:: Brothel VM insist
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+"I will take care of all." you tell Briar, "I can buy the vending machine, set it up in the bathrooms and fill it with products. I will set the price a little above the cost so you can obtain the profits of it. We can split the profit 50-50."
+<br><br>
+"No," <<he>> tells you. He thinks for a moment. "Yes and no. Yes to you buying the machine, you setting it up and you filling it with products. No to the bathrooms, I want it in the dressing rooms. No to 50-50, I want 60 for me, 40 for you. And I will keep the first <span class="blue">£50</span> per week to pay the rent of the space. <span class="blue">If the machine gets empty for three weeks in a row, I'll take it out and throw it away.</span> This is my only and final offer."
+<br><br>
+<<link [[Accept|Brothel VM Accept]]>><<set $brothelVending.status to "asked">><</link>>
+<br>
+<<link [[Decline|Brothel VM decline]]>><</link>>
+<br>
+
+:: Brothel VM desist
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+Your turn to leave Briar's office, but before you grab the doorknob <<he>> calls you back.
+<br><br>
+"Listen, if you wanna do this, I'll let you, but under my conditions. You must afford the vending machine. You will set up in the dressing rooms. And you will be responsible for filling it with products. I expect profits from the machine, so the sale prices of the products must be higher than the price at which you buy them. Of those profits, the first £50 per week will be mine to pay the rent of the space, and the rest will be 60% for me and 40% for you."
+<br><br>
+<<He>> pauses a moment. <span class="blue">"If the machine gets empty for three weeks in a row, I'll take it out and throw it away.</span> This is my only and final offer."
+<br><br>
+<<link [[Accept|Brothel VM Accept]]>><<set $brothelVending.status to "asked">><</link>>
+<br>
+<<link [[Decline|Brothel VM decline]]>><</link>>
+<br>
+
+:: Brothel VM Accept
+<<effects>>
+You accept Briar's conditions and tell <<him>> you will buy the vending machine and be sure it will be filled with products.
+<br><br>
+<<link [[Next|"Briar's Office"]]>><</link>>
+
+:: Brothel VM decline
+<<effects>>
+You tell Briar you are not interested in <<his>> conditions.
+<br><br>
+"Suit yourself. I'm not going to change my mind.", <<he>> tells you.
+<br><br>
+<<link [[Next|"Briar's Office"]]>><</link>>
+
+:: Brothel Vending Machine Buy
+<<effects>>
+<<if $phase is 1>>
+	You insert the money into the machine and a 3-pack of condoms slides into a drawer. You take them.
+	<br><br>
+	<<set $money -= 8000>>
+	<<set $condoms += 3>>
+	<<set $brothelVending.condoms -=1>>
+	<<set $brothelVending.condomsSold +=1>>
+	<<link [[Back|Brothel Dressing Room]]>><<endevent>><</link>>
+<<else>>
+	You insert the money into the machine and a bottle of lube slides into a drawer. You take it.
+	<br><br>
+	<<set $money -= 3000>>
+	<<if !$player.inventory.sextoys.lube>>
+		<<set $player.inventory.sextoys.lube to []>>
+	<</if>>
+	<<set $player.inventory.sextoys.lube.push(clone(setup.sextoys[8]))>>
+	<<set $brothelVending.lube -=1>>
+	<<set $brothelVending.lubeSold +=1>>
+	<<link [[Back|Brothel Dressing Room]]>><<endevent>><</link>>
+<</if>>

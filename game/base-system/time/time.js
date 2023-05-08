@@ -285,6 +285,9 @@ function weekPassed() {
 		V.nightmareTimer--;
 		if (V.nightmareTimer <= 0) delete V.nightmareTimer;
 	}
+	if (V.brothelVending) {
+		if (V.brothelVending.condoms === 0 && V.brothelVending.lube === 0) V.brothelVending.weeksEmpty += 1;
+	}
 
 	delete V.weekly;
 	V.weekly = { theft: {}, sewers: {} };
@@ -516,6 +519,18 @@ function dayPassed() {
 
 	if (V.location !== "tentworld") {
 		delete V.tentacle_forest_lurker;
+	}
+
+	if (V.brothelVending) {
+		const rng = random(Math.min(1, V.brothelVending.condoms), Math.min(10, V.brothelVending.condoms));
+		V.brothelVending.condoms -= rng;
+		V.brothelVending.condomsSold +=rng;
+	}
+
+	if (V.brothelVending) {
+		const rng = random(Math.min(1, V.brothelVending.lube), Math.min(10, V.brothelVending.lube));
+		V.brothelVending.lube -= rng;
+		V.brothelVending.lubeSold +=rng;
 	}
 
 	fragment.append(wikifier("menstruationCycle", "daily"));
