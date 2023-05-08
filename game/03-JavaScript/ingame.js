@@ -42,6 +42,13 @@ function shopClothingFilterSortOnDescription(traitOne, traitTwo) {
 }
 window.shopClothingFilterSortOnDescription = shopClothingFilterSortOnDescription;
 
+function toggleAllHairTraitsFilter() {
+	const chboxes = $("#hairContainerTraits  input:not(:checked)");
+	if (chboxes.length > 0) chboxes.click();
+	else $("#hairContainerTraits input:checked").click();
+}
+window.toggleAllHairTraitsFilter = toggleAllHairTraitsFilter;
+
 // A wrapper for wikifyEval, only use for singular macro calls.
 function wikifier(widget, ...args) {
 	if (widget == null) return document.createDocumentFragment();
