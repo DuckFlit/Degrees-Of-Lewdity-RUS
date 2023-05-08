@@ -23,7 +23,13 @@
 	<</if>>
 
 	<div id="saveList">
-		<<saveList>>
+		<<if idb.active and !$ironmanmode and !sessionStorage.getItem("noidb")>>
+			<<run setTimeout(() => idb.saveList())>>
+		<<else>>
+			/* record idb status between page reloads within the same session */
+			<<run sessionStorage.setItem("noidb", true); idb.active = false>>
+			<<saveList>>
+		<</if>>
 	</div>
 <</widget>>
 
@@ -210,6 +216,15 @@
 	<label>
 		<<checkbox "$confirmDelete" false true autocheck>>
 		Require Confirmation on Delete
+	</label>
+	<br>
+	<label id="idbToggleSaves">
+		/* checkbox macro doesn't allow changing variables that do not start with "$" or "_". this is a bypass hack. */
+		<<run setTimeout(() => jQuery(document.createElement("input"))
+			.attr({ id: "checkbox-idbactive", name: "checkbox-idbactive", type: "checkbox", checked: idb.active && !V.ironmanmode, disabled: idb.lock || V.ironmanmode })
+			.addClass("macro-checkbox")
+			.on("change.macros", () => { idb.active = document.getElementById("checkbox-idbactive").checked; if (idb.active) { sessionStorage.removeItem("noidb"); idb.saveList() } })
+			.prependTo("#idbToggleSaves"))>> Enable indexedDB<<if $ironmanmode>> (unavailable in ironman mode)<</if>>
 	</label>
 	<br><br>
 	<<if $saveDetails isnot undefined>>
