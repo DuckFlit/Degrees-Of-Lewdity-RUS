@@ -1214,7 +1214,7 @@ window.isJsonString = function (s) {
 };
 
 /**
- * Recursively traverses an object, reporting an error for any NaN values or null objects\
+ * Recursively traverses an object, reporting an error for any NaN values or null objects or functions\
  * Example: `let result = recurseNaN(a, "a");`.
  *
  * @param {object} obj The head of the object tree.
@@ -1224,7 +1224,7 @@ window.isJsonString = function (s) {
  */
 
 function recurseNaN(obj, path, result = null, hist = null) {
-	result = Object.assign({ nulls: [], nan: [], cycle: [] }, result);
+	result = Object.assign({ nulls: [], nan: [], functions: [], cycle: [] }, result);
 	if (hist == null) hist = new Set([obj]);
 	/* let result = {"nulls" : [], "nan" : [], "cycle" : []}; */
 	for (const [key, val] of Object.entries(obj)) {
@@ -1233,6 +1233,7 @@ function recurseNaN(obj, path, result = null, hist = null) {
 			result.nan.push(newPath);
 			continue;
 		}
+		if (typeof val === "function") result.functions.push(newPath);
 		if (typeof val === "object") {
 			if (val === null) {
 				result.nulls.push(newPath);
