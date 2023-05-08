@@ -185,7 +185,9 @@ function masturbationSlimeControl() {
 						} else if (currentToyType.includes("breastpump")) {
 							V[armAction] = "mbreastpump";
 						} else if (currentToyType.includes("dildo")) {
-							if (V.player.vaginaExist && random(0, 100) >= 75) {
+							if (["manusentrancedildofloor", "mvaginaentrancedildofloor"].includes(V[armAction])) {
+								// Do Nothing
+							} else if (V.player.vaginaExist && random(0, 100) >= 75) {
 								V[armAction] = "mvaginaentrancedildo";
 							} else if (random(0, 100) >= 75) {
 								V[armAction] = "manusentrancedildo";

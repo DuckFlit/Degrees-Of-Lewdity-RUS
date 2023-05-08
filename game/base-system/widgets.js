@@ -261,7 +261,7 @@ function genderappearancecheck() {
 		addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 4) * 100, 0, Infinity), "Breast size visible through clothing");
 	}
 	/* Pregnant Belly */
-	if (V.sexStats === undefined || !pregnancyBellyVisible()) {
+	if (V.sexStats === undefined || !playerBellyVisible()) {
 		// do glorious nothing
 	} else if (playerBellySize() >= 18) {
 		addfemininityfromfactor(Math.clamp(10000, 0, Infinity), playerAwareTheyArePregnant() ? "Pregnant Belly" : "Pregnant Looking Belly");

@@ -68,7 +68,7 @@ function playerBellySize(pregnancyOnly = false) {
 }
 window.playerBellySize = playerBellySize;
 
-function pregnancyBellyVisible(pregnancyOnly = false) {
+function playerBellyVisible(pregnancyOnly = false) {
 	const size = playerBellySize(pregnancyOnly);
 	if (size <= 7) return false;
 	if (size <= 12 && ((V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) || !V.worn.over_upper.type.includes("naked"))) return false;
@@ -76,7 +76,7 @@ function pregnancyBellyVisible(pregnancyOnly = false) {
 
 	return true;
 }
-window.pregnancyBellyVisible = pregnancyBellyVisible;
+window.playerBellyVisible = playerBellyVisible;
 
 function npcBellySize(npc) {
 	let bellySize = 0;
@@ -93,20 +93,21 @@ function npcBellySize(npc) {
 				maxSize += 20 + Math.clamp(pregnancy.fetus.length / 2, 1, 4);
 				break;
 		}
-		bellySize += pregnancyProgress * Math.clamp(maxSize, 0, 20);
+		// The '+ 5' inflates the pregnancy belly size, meaning that the early stages of pregnancy will have no belly size increase due to it being reduced by the '- 5'
+		bellySize += Math.clamp(pregnancyProgress * Math.clamp(maxSize + 5, 0, 24 + 5) - 5, 0, 24);
 	}
 
-	return Math.floor(Math.clamp(bellySize, 0, 20));
+	return Math.floor(Math.clamp(bellySize, 0, 24));
 }
 window.npcBellySize = npcBellySize;
 
-function npcPregnancyBellyVisible(npc) {
+function npcBellyVisible(npc) {
 	const size = npcBellySize(npc);
 	if (size <= 7) return false;
 
 	return true;
 }
-window.npcPregnancyBellyVisible = npcPregnancyBellyVisible;
+window.npcBellyVisible = npcBellyVisible;
 
 function npcIsPregnant(npc) {
 	return C.npc[npc] && C.npc[npc].pregnancy && C.npc[npc].pregnancy.enabled !== undefined && C.npc[npc].pregnancy.type;
@@ -621,7 +622,7 @@ DefineMacro("setKnowsAboutPregnancy", setKnowsAboutPregnancy);
 
 function setKnowsAboutPregnancyCurrentLoaded() {
 	if (V.statFreeze) return null;
-	if (playerIsPregnant() && pregnancyBellyVisible(true)) {
+	if (playerIsPregnant() && playerBellyVisible(true)) {
 		V.NPCList.forEach(npc => {
 			if (V.NPCList.includes(npc.fullDescription)) setKnowsAboutPregnancy("pc", npc.fullDescription);
 		});
