@@ -727,23 +727,24 @@ Renderer.CanvasModels["main"] = {
 			if (V.worn.upper.outfitPrimary == undefined) {
 				if (options.belly >= 19) {
 					options.belly_hides_lower = true;
+					options.belly_mask_clip_src = "img/clothes/belly/mask_clip_" + options.belly + ".png";
+					if (options.worn_upper_setup.pregType == "split") {
+						options.shirt_mask_clip_src = "img/clothes/belly/mask_shirt_left.png";
+						options.shirt_mask_move_src = "img/clothes/belly/mask_shirt_right.png";
+					} else {
+						options.shirt_mask_clip_src = null;
+						options.shirt_mask_move_src = null;
+					}
+				} else {
+					options.belly_mask_clip_src = null;
 				}
 			}
 			if (V.worn.under_upper.outfitPrimary == undefined) {
 				options.belly_hides_under_lower = true;
-			}
-		}
-		if (between(options.belly, 19, 24) && V.worn.upper.outfitPrimary == undefined) {
-			options.belly_mask_clip_src = "img/clothes/belly/mask_clip_" + options.belly + ".png";
-			if (options.worn_upper_setup.pregType == "split") {
-				options.shirt_mask_clip_src = "img/clothes/belly/mask_shirt_left.png";
-				options.shirt_mask_move_src = "img/clothes/belly/mask_shirt_right.png";
+				options.belly_mask_under_clip_src = "img/clothes/belly/mask_clip_" + options.belly + ".png";
 			} else {
-				options.shirt_mask_clip_src = null;
-				options.shirt_mask_move_src = null;
+				options.belly_mask_under_clip_src = null;
 			}
-		} else {
-			options.belly_mask_clip_src = null
 		}
 
 		options.genitals_chastity = options.worn_genitals_setup.type.includes("chastity");
@@ -1498,7 +1499,7 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.fallen_halo_type);
 			},
-			z: ZIndices.parasite,
+			z: ZIndices.over_upper,
 			animation: "idle"
 		},
 
@@ -2543,11 +2544,8 @@ Renderer.CanvasModels["main"] = {
 			zfn(options) {
 				return options.worn_lower_setup.high_img ? ZIndices.under_lower_high : ZIndices.under_lower;
 			},
-			showfn(options) {
-				return options.show_clothes &&
-					!options.belly_hides_under_lower &&
-					options.worn_under_lower > 0 &&
-					options.worn_under_lower_setup.mainImage !== 0
+			masksrcfn(options) {
+				return options.belly_mask_under_clip_src;
 			}
 		}),
 		"under_lower_belly_2": genlayer_clothing_belly_2("under_lower", {
