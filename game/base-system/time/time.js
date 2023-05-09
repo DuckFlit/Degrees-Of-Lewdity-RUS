@@ -525,12 +525,14 @@ function dayPassed() {
 		const rng = random(Math.min(1, V.brothelVending.condoms), Math.min(10, V.brothelVending.condoms));
 		V.brothelVending.condoms -= rng;
 		V.brothelVending.condomsSold +=rng;
+		V.brothelVending.total = (V.brothelVending.total || 0) + 1;
 	}
 
 	if (V.brothelVending) {
 		const rng = random(Math.min(1, V.brothelVending.lube), Math.min(10, V.brothelVending.lube));
 		V.brothelVending.lube -= rng;
 		V.brothelVending.lubeSold +=rng;
+		V.brothelVending.total = (V.brothelVending.total || 0) + 1;
 	}
 
 	fragment.append(wikifier("menstruationCycle", "daily"));
