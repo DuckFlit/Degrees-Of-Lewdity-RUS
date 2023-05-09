@@ -269,6 +269,30 @@
 	<<if $parentList is undefined>>
 		<<set $parentList to parentFunction.parentList>>
 	<</if>>
+	<<if !$objectVersion.pregnancyFix>>
+		<<run $sexStats.vagina.sperm.forEach(s => {if(s.source.toLowerCase().includes("wolf") && s.type === "human") s.type = "wolf"})>>
+		<<run $sexStats.vagina.pregnancy.potentialFathers.forEach(s => {if(s.source.toLowerCase().includes("wolf") && s.type === "human") s.type = "wolf"})>>
+		<<run $sexStats.anus.sperm.forEach(s => {if(s.source.toLowerCase().includes("wolf") && s.type === "human") s.type = "wolf"})>>
+		<<run $sexStats.anus.pregnancy.potentialFathers.forEach(s => {if(s.source.toLowerCase().includes("wolf") && s.type === "human") s.type = "wolf"})>>
+		<<if $sexStats.vagina.pregnancy.type is "human" and $sexStats.vagina.pregnancy.fetus[0].father.toLowerCase().includes("wolf")>>
+			<<set $sexStats.vagina.pregnancy.type to "wolf">>
+
+			<<run $sexStats.vagina.pregnancy.fetus.forEach(child => {
+				child.type = "wolf";
+				const furColour = ["gray", "brown", "tan", "white"];
+				if (child.father === "Black Wolf") {
+					furColour.concat(["black", "black", "black"]);
+				}
+				child.features.hairColour = furColour[random(0, furColour.length - 1)];
+				child.features.monster = 0;
+				delete child.features.skinColor;
+				delete child.features.beastTransform;
+				delete child.features.divineTransform;
+				delete child.features.clothes;
+			})>>
+		<</if>>
+		<<set $objectVersion.pregnancyFix to 1>>
+	<</if>>
 <</widget>>
 
 :: Widgets physicalAdjustments [widget]
