@@ -48,22 +48,24 @@ function getDebuggingInfo() {
 			vaginatarget: V.vaginatarget,
 		});
 	}
-	for (let i = 0; i < EventSystem.count(); i++) {
+	for (let i = 0; i < V.NPCList.length; i++) {
 		const npc = V.NPCList[i];
-		const npcData = {
-			active: npc.active,
-			index: npc.index,
-		};
-		if (V.combat) {
-			Object.apply(npcData, {
-				mouth: npc.mouth,
-				penis: npc.penis,
-				lefthand: npc.lefthand,
-				righthand: npc.righthand,
-				vagina: npc.vagina,
-			});
+		if (npc.type) {
+			const npcData = {
+				active: npc.active,
+				index: npc.index,
+			};
+			if (V.combat) {
+				Object.apply(npcData, {
+					mouth: npc.mouth,
+					penis: npc.penis,
+					lefthand: npc.lefthand,
+					righthand: npc.righthand,
+					vagina: npc.vagina,
+				});
+			}
+			response["npc" + i] = npcData;
 		}
-		response["npc" + i] = npcData;
 	}
 	return response;
 }

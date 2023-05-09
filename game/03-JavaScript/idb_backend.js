@@ -56,6 +56,27 @@ const idb = (() => {
 	openRequest.onblocked = () => console.log("something went wrong");
 
 	/**
+	 * scan and delete functions that wormed their way into story vars
+	 * there should never be any functions in there, period.
+	 *
+	 * @param {object} target to scan
+	 * @param {object} path to report
+	 */
+	function funNuke(target = V, path = "V") {
+		for (const key in target) {
+			const value = target[key];
+			const newPath = path !== false ? path + "." + key : false;
+			if (value && typeof value === "object") funNuke(value, newPath);
+			else if (typeof value === "function") {
+				// we've got a baddie
+				delete target[key];
+				if (path !== false) Errors.report("Corrupt variable detected, please report!", newPath);
+			}
+		}
+	}
+	window.funNuke = funNuke;
+
+	/**
 	 * copy saves from localStorage into indexedDB, without regard to what's already in there
 	 *
 	 * @returns {boolean} success of the operation
@@ -171,14 +192,37 @@ const idb = (() => {
 			slot,
 			data: { id: Story.domId, title: Story.get(saveVars.passage || "Start").description(), date: Date.now(), metadata },
 		};
-		// open a request to set or replace an existing slot
-		const transactionRequest = db.transaction(["saves", "details"], "readwrite");
-		transactionRequest.objectStore("saves").delete(slot);
-		transactionRequest.objectStore("saves").add(savesItem);
-		transactionRequest.objectStore("details").delete(slot);
-		transactionRequest.objectStore("details").add(detailsItem);
 
-		return makePromise(transactionRequest);
+		// expect failures here
+		try {
+			// open a request to set or replace an existing slot
+			const transactionRequest = db.transaction(["saves", "details"], "readwrite");
+			transactionRequest.objectStore("saves").delete(slot);
+			transactionRequest.objectStore("saves").add(savesItem);
+			transactionRequest.objectStore("details").delete(slot);
+			transactionRequest.objectStore("details").add(detailsItem);
+
+			return makePromise(transactionRequest);
+		} catch {
+			// dispose of the possible functions in story vars and try again
+			funNuke();
+			saveObj.history.forEach(s => funNuke(s.variables, false));
+			try {
+				const transactionRequest = db.transaction(["saves", "details"], "readwrite");
+				transactionRequest.objectStore("saves").delete(slot);
+				transactionRequest.objectStore("saves").add(savesItem);
+				transactionRequest.objectStore("details").delete(slot);
+				transactionRequest.objectStore("details").add(detailsItem);
+
+				return makePromise(transactionRequest);
+			} catch {
+				// admit the defeat and go home
+				Errors.report("idb.setItem failure unknown. Couldn't complete the save in slot " + slot);
+				lock = false;
+				// return a promise, because some code down the line expects .then()
+				return new Promise(resolve => resolve(false));
+			}
+		}
 	}
 
 	/**
