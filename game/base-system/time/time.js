@@ -261,7 +261,7 @@ function weekPassed() {
 		V.robineventnote = 1;
 	}
 	V.robinmoney += 300;
-
+	V.compoundcentre = 0;
 	if (V.edenfreedom >= 1 && V.edenshopping === 2) V.edenshopping = 0;
 	if (V.loft_kylar) V.loft_spray = 0;
 	if (V.farm) {
