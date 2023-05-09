@@ -446,7 +446,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 			break;
 		case "mpenisentrancestroker":
 			result.text = `You tease your glans with the ${toyDisplay(selectedToy(arm))} your ${arm} hand.`;
-			if (genitalsExposedq()) {
+			if (genitalsExposed()) {
 				result.options.push({
 					action: "mpenisstroker",
 					text: `Penetrate your ${toyDisplay(selectedToy(arm))}`,
