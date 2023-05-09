@@ -507,6 +507,11 @@ function updatehistorycontrols() {
 	if (V.options.maxStates === undefined) V.options.maxStates = Config.history.maxStates;
 	else Config.history.maxStates = V.options.maxStates; // update engine config
 
+	// option to only save active state into sessionStorage, for better performance
+	if (V.options.sessionHistory === undefined) V.options.sessionHistory = true; // todo: delete this line in 0.4.2.x
+	if (V.options.sessionHistory) Config.history.maxSessionStates = V.options.maxStates;
+	else Config.history.maxSessionStates = 1;
+
 	if (V.options.maxStates === 1) jQuery("#ui-bar-history").hide(); // hide nav panel when it's useless
 	else {
 		// or unhide it otherwise
