@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-description-complete-sentence */
 /* eslint-disable no-undef */
 const Time = (() => {
-	const holidayMonths = [4, 8, 12];
+	const holidayMonths = [4, 7, 8, 12];
 	let currentDate = {};
 
 	function set(timeStamp = V.timeStamp) {
