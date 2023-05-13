@@ -1233,6 +1233,19 @@
 		<<else>>
 			Currently, your fringe is in the <span class="gold">$fringetype</span> style. Your sides are in the <span class="gold">$hairtype</span> style and are positioned <<if $hairposition is "front">>in front of<<else>>behind<</if>> your body.
 		<</if>>
+			Your hair is 
+			<<if $hairgelBottles is undefined>><<set $hairgelBottles to 0>><</if>>
+			<<if $ruffledisable is "t">>
+				<mouse class = "gold tooltip-small" style="border-bottom-color:white">
+					fixed in place.
+					<span class="black">Your hairstyle cannot be ruined. <br> <i class="red">Selecting a new hairstyle will re-enable hair ruffling. <<print ($hairgelBottles is 0 ? "Hair gel can be acquired at the shops." : "Hair gel will need to be re-applied.")>></i></span>
+				</mouse>							
+			<<else>>
+				<mouse class = "gold tooltip-small" style="border-bottom-color:white">
+					not fixed in place.
+					<span class="black">Certain situations may change your hair to a messier style. <br> <i class="teal">You can apply hair gel to disable hair ruffling.<<print ($hairgelBottles is 0 ? " Hair gel can be acquired at the shops." : "")>></i> </span>
+				</mouse>
+			<</if>>								
 		<div class="no-numberify">
 			<<link [[Randomise your hairstyle|$passage]]>>
 				<<set _hairType to Object.values(_hairTypeByName)>>
@@ -1271,10 +1284,10 @@
 	<<hairDescription>>
 	</div>
 
-	<div class="hairToggle">
-		<<link [[($showMannequins ? "Hide" : "Show") + " Mannequins"|$passage]]>><<set $showMannequins to 1 - ($showMannequins or 0)>><</link>>
-		<mouse class="tooltip-small linkBlue">(?)<span>Disable preview images for hairstyles. <i class="red">Enabling mannequins may cause performance issues on some devices.</i></span></mouse>
+	<div id="hairgelLinks">
+		<<hairgelLinks>>
 	</div>
+
 	<br> 
 
 	<<set _hairTypeByName to {}>>
@@ -1293,8 +1306,41 @@
 		</div>
 		<<mirrorhairdisplay "$hairtype" "sides">>
 	</div>
-
 	<br><br>
+<</widget>>
+
+<<widget "hairgelLinks">>
+	<div class="no-numberify">
+	<<link [[($showMannequins ? "Hide" : "Show") + " Mannequins"|$passage]]>><<set $showMannequins to 1 - ($showMannequins or 0)>><</link>>
+	<mouse class="tooltip-small linkBlue">(?)<span>Disable preview images for hairstyles. <i class="red">Enabling mannequins may cause performance issues on some devices.</i></span></mouse>
+	<<if $hairgelBottles isnot undefined and $hairgelBottles gte 1>>
+		| <<hairgelicon>>
+		<<if $ruffledisable is "f">>
+			<<link "Apply hair gel">><<replace #hairDescription>><<hairgelApply>><</replace>><<replace #hairgelDesc>><<hairgelDesc>><</replace>><<replace#hairgelLinks>><<hairgelLinks>><</replace>><</link>>
+		| 
+		<</if>>
+		<div id="hairgelDesc" style="display:inline"><<hairgelDesc>></div>
+	<</if>>
+	</div>
+<</widget>>
+
+<<widget "hairgelApply">>
+	<<if $leftarm isnot "bound" and $rightarm isnot "bound">>
+		<<set $ruffledisable to "t">>
+		<<set $hairgelBottles += -1>>
+	<</if>>
+	<<hairDescription>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">Both of your arms are bound</span>, and you find it difficult to do anything about your hair this way.
+		<br>
+	<<else>>
+		You squirt a hefty dollop of hair gel onto your hand and slick it through your hair. By the time you're finished, your hairstyle is securely in place, and the small bottle is empty. <span class="pink">If you decide to change up your hairstyle, you'll need to <<print ($hairgelBottles is 0) ? "acquire" : "apply">> more.</span>
+		<hr>
+	<</if>>
+<</widget>>
+
+<<widget "hairgelDesc">>
+	You have <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "bottle" : "bottles">> of hair gel remaining.
 <</widget>>
 
 <<widget "mirrormodel">>
@@ -1331,24 +1377,36 @@
 <</widget>>
 
 <<widget "mirrorhairControls">>
+	<<set _pagereal to _page + 1>>
+	<<set _pagemaxreal to _pageMax + 1>>
 	<<if $showMannequins>>
-		<div class="tab">
-		<<if _page gt 0>>
-			<<button '<span class="fa-icon fa-left"></span> Previous'>>
-				<<if _page gt 0>><<set _page-->><</if>>
-				<<mirrorhairOptions _args[0]>>
-				<<replace "#hairContainerElements">><<mirrorhairdisplayElements _hairOptions>><</replace>>
-				<<replace "#hairContainerPages">><<mirrorhairControls _args[0]>><</replace>>
-			<</button>>
-		<</if>>
-		<<if _page lt _pageMax>>
-			<<button 'Next <span class="fa-icon fa-right"></span>'>>
-				<<if _page lt _pageMax>><<set _page++>><</if>>
-				<<mirrorhairOptions _args[0]>>
-				<<replace "#hairContainerElements">><<mirrorhairdisplayElements _hairOptions>><</replace>>
-				<<replace "#hairContainerPages">><<mirrorhairControls _args[0]>><</replace>>
-			<</button>>
-		<</if>>
+		<div id="hairContainerFooter">
+			<div class="tab">
+			<<if _page gt 0>>
+				<<button '<span class="fa-icon fa-left"></span> Previous'>>
+					<<if _page gt 0>><<set _page-->><</if>>
+					<<mirrorhairOptions _args[0]>>
+					<<replace "#hairContainerElements">><<mirrorhairdisplayElements _hairOptions>><</replace>>
+					<<replace "#hairContainerPages">><<mirrorhairControls _args[0]>><</replace>>
+				<</button>>
+			<</if>>
+			</div>
+			<div class="tab">
+			<<if _page lt _pageMax>>
+				<<button 'Next <span class="fa-icon fa-right"></span>'>>
+					<<if _page lt _pageMax>><<set _page++>><</if>>
+					<<mirrorhairOptions _args[0]>>
+					<<replace "#hairContainerElements">><<mirrorhairdisplayElements _hairOptions>><</replace>>
+					<<replace "#hairContainerPages">><<mirrorhairControls _args[0]>><</replace>>
+				<</button>>
+			<</if>>
+			</div>
+			<div class="tab">
+				<div id="buttonpage">
+					<<button '_pagereal/_pagemaxreal'>>
+					<</button>>		
+				</div>
+			</div>
 		</div>
 	<</if>>
 <</widget>>
@@ -1472,9 +1530,11 @@
 		<</if>>
 		<<set V[_args[0]] to _args[1].replace(/_/g," ")>>
 		<<set _id2 to "#hairGrid-" + _args[0] + "-" + _args[1].replace(/_/g,"")>>
+		<<set $ruffledisable to "f">>
 		<<addclass _id2 "selectedHair">>
 		<<updatesidebarimg>>
 		<<replace #hairDescription>><<hairDescription>><</replace>> 
+		<<replace #hairgelLinks>><<hairgelLinks>><</replace>>		
 	<</if>>
 <</widget>>
 
@@ -1603,6 +1663,7 @@
 			<<set $hairtype to $savedHairStyles[_selectedSavedHairStyle].hairtype>>
 			<<set $fringetype to $savedHairStyles[_selectedSavedHairStyle].fringetype>>
 			<<set $hairposition to $savedHairStyles[_selectedSavedHairStyle].hairposition>>
+			<<set $ruffledisable to "f">>
 			<<updatesidebarimg>>
 		<</button>> 
 		<<button '<span class="fa-icon fa-overwrite"></span> Overwrite'>>

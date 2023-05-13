@@ -9,6 +9,7 @@ declare interface ClothesItem {
 	index: number;
 	name: string;
 	name_cap: string;
+	name_simple: string;
 	/**
 	 * Folder name
 	 */

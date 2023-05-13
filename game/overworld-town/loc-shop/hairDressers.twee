@@ -17,13 +17,16 @@
 :: Hairdressers
 
 <<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
-You are in the hairdressers. Here you can have your hair cut or dyed.
+You are in the hairdressers. Various hair products are available for sale. You can also have your hair cut or dyed.
 <<if Time.dayState is "night">>
 	You are alone in the darkness.
 <<elseif $exposed gte 1>>
 	You hide in a cupboard to protect your dignity.
 <<else>>
 	There's a seat available.
+<</if>>
+<<if $hairgelBottles is undefined>>
+	<<set $hairgelBottles to 0>>
 <</if>>
 <br><br>
 <<if $stress gte $stressmax>>
@@ -42,22 +45,45 @@ You are in the hairdressers. Here you can have your hair cut or dyed.
 			<<link [["Hide until it's over (1:00)"|Hairdressers]]>><<pass 1 hour>><</link>>
 		<</if>>
 	<<else>>
-		<<if Time.dayState is "night" and Time.hour isnot $closinghour and !$weekly.theft.hairDressers>>
-			<<link [[Examine the cash register|Hairdressers Register]]>><</link>>
+		<<if Time.dayState is "night" and Time.hour isnot $closinghour>>
+			<<hairgelicon>><<link [[Steal a bottle of hair gel|$passage]]>><<crimeup 8/100>><<crime>><<set $hairgelBottles += 1>><</link>>
+			<<if !$weekly.theft.hairDressers>>
 			<br>
+			<<ind>><<link [[Examine the cash register|Hairdressers Register]]>><</link>>
+			<br><br>
+			<</if>>
 		<</if>>
 		<<if $exposed lte 1 and Time.dayState isnot "night" and Time.hour isnot 21>>
-			<<link [[Take a seat|Hairdressers Seat]]>><</link>>
+			<<if $money gte 800>>
+				<<hairgelicon>> <<link [[Purchase hair gel (£8)|Hairdressers Gel]]>><<set $money -= 800>><<set $hairgelBottles += 1>><</link>>
+				<br>
+			<<else>>
+				<<hairgelicon>> <span class="blue">You can't afford any hair gel.</span>
+				<br>
+			<</if>>
+			<<hairchairicon>><<link [[Take a seat|Hairdressers Seat]]>><</link>>
 			<br><br>
 		<</if>>
-		<<link [[Leave|Shopping Centre]]>><</link>>
+		<<ind>><<link [[Leave|Shopping Centre]]>><</link>>
 		<br>
 	<</if>>
 <</if>>
 
+:: Hairdressers Gel
+<<generate1>><<person1>>You browse the hair products for sale. You decide on a tiny bottle labelled "No muss, no fuss!"
+<br><br>
+The hairdresser makes small talk as <<he>> rings up your purchase. "That stuff's great," <<he>> says. "The bottle's small, so you'll only get <span class="teal">one use</span> out of it, but it's got a rock-solid hold. You won't have to worry about your hair getting mussed up. Not until you decide to change up your 'do, at least."
+<br><br>
+<<He>> hands you your bag with a smile. "<<print either("Thanks for shopping with us!","Have a great day.","Take care.","Pleasure doing business with ya.","Come back soon!")>>"
+<br><br>
+You have <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "bottle" : "bottles">> of hair gel.
+<br><br>
+
+<<link [[Next|Hairdressers]]>><</link>>
+
 :: Hairdressers Seat
 
-<<generate1>><<person1>>You take a seat, and a hairdresser soon appears behind you. "What'll it be hun?" <<hairdressersPricelist>>
+<<generate1>><<person1>>You take a seat, and a hairdresser soon appears behind you. "What'll it be, hun?" <<hairdressersPricelist>>
 <<set $hairOption to $hairlength>>
 <<set $fringeOption to $fringelength>>
 <<set $dyeOption to "noChange">>
