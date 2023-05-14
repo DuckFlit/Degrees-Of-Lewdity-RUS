@@ -1,21 +1,30 @@
+:: Robin's Stand widgets [widgets]
+
+<<widget "lemonade_stand_options">>
+
+
+
+<</widget>>
+
 :: Robin's Lemonade
 
 <<location "beach">><<effects>>
 <<set _robin to statusCheck("Robin")>>
 
-<<if $robinlemonadeintro isnot 1>><<set $robinlemonadeintro to 1>>
+<<if $robinlemonadeintro isnot 1>><<set $robinlemonadeintro to 1>><<set $daily.robin.freeDrink to 1>>
 	<<npc Robin>><<person1>>You see Robin stood behind <<his>> lemonade stand. <<He>> waves when <<he>> sees you.
 	<br><br>
 
 	"Hey," <<he>> says as you draw close. <<He>> beams. "It's nice to see you. I want you to try my lemonade." <<He>> mixes together water, lemon juice, and sugar and hands you the glass. "On the house." It's very sweet.
 	<br><br>
+
 	<<else>>
 	<<npc Robin>><<person1>>
 	<<if _robin.trauma gte 40>>
 		You see Robin stood behind <<his>> lemonade stand. <<He>> flinches whenever somebody passes <<him>>.
 		When <<he>> sees you, <<he>> gives a timid wave.
 	<<elseif $robinromance is 1 and $worn.under_upper.type.includesAny("swim", "naked") and $worn.under_lower.type.includesAny("swim", "naked")	and $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_upper.reveal gte 800 and $worn.under_lower.reveal gte 800>>
-		Robin stares at you with <<his>> mouth wide agape as you approach <<his>> lemonade stand. <<Hes>> taken aback by your swimwear.
+		Robin stares at you with <<his>> mouth wide agape as you approach <<his>> lemonade stand. <<He>> is scandalised by your swimwear.
 	<<else>>
 		You see Robin stood behind <<his>> lemonade stand. <<He>> waves when <<he>> sees you.
 	<</if>>
@@ -41,10 +50,61 @@
 
 <</if>>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><<endevent>><</link>>
-<br>
+
+<<lemonade_stand_options>>
+
+:: Robin's Lemonade Purchase
+
+<<location "beach">><<effects>>
+<<npc Robin>><<person1>>
+<<set $money -= 100>>
+
+"Sure! Just give me a minute..." Robin says, pouring the lemonade into a glass.
+<br><br>
+
+<<He>> hands you the glass with a smile, and you slide £1 across the counter.
+<br><br>
+
+<<if $robinpaid is 1 and $daily.robin.freeDrink isnot 1>>
+	<<set $daily.robin.freeDrink to 1>>
+	"I-I can't take this from you..." <<He>> says, pushing the money back across to you. "You're already paying Bailey for me. Besides, I'd just end up giving it back to you."
+	<<set $money += 100>>
+
+<<elseif $robinpaid is 1>>
+	<<set $robinmoney += 1>>
+	"I... do have to take it from you this time." <<He>> says, frowning as <<he>> looks down at the money. "I have to pay for the ingredients. I can't keep giving it away, even if I want to."
+
+<<else>>
+	<<set $robinmoney += 1>>
+	"Thanks for your purchase!" <<He>> says with a smile, putting the money under the counter.
+
+<</if>>
+<br><br>
+
+You down the glass almost in one go, listening to the waves as you watch the tide roll.
+<br><br>
+
+"<<print either(
+"...Have you ever watched the sky on a clear night? There's so many stars out there... so many worlds just like ours. ...I wish the orphanage had a telescope.",
+"Sometimes I like just watching people on the beach. They seem like they're have so much fun...",
+"One of these days, I want to go swimming out in the ocean. Do you think anyone would look at me weird for having a school swimsuit?")>>"
+<br><br>
+
+<<if Time.hour gte 17>>
+	"I need to start carrying my stuff home." Robin says. "Business drops off around now. Could you please help me pack this up?"
+	<<endevent>>
+	<br><br>
+	<<link [[Accept (0:30)|Orphanage]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<br>
+	<<link [[Refuse|Beach]]>><</link>>
+	<br>
+
+<<else>>
+	<<endevent>>
+	<<lemonade_stand_options>>
+
+<</if>>
+
 
 :: Robin's Lemonade Help
 
@@ -124,10 +184,7 @@
 			<br><br>
 
 			<<endevent>>
-			<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-			<br>
-			<<link [[Leave|Beach]]>><</link>>
-			<br>
+			<<lemonade_stand_options>>
 		<</if>>
 	<<elseif $rng gte 61>>
 		<<if $robinsignintro isnot 1>>
@@ -247,10 +304,7 @@
 			<</if>>
 			<br>
 			<<endevent>>
-			<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-			<br>
-			<<link [[Leave|Beach]]>><</link>>
-			<br>
+			<<lemonade_stand_options>>
 		<</if>>
 	<</if>>
 <</if>>
@@ -301,10 +355,7 @@ You walk to the other end of the populated part of the beach, and then back to R
 	<br><br>
 <</if>>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Flirt
 <<location "beach">><<effects>>
@@ -323,10 +374,7 @@ You walk to the other end of the populated part of the beach, and then back to R
 	<<glove>><<npcincr Robin love 1>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>><<set $robinmoney += 5>>
 	<br><br>
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-	<br>
-	<<link [[Leave|Beach]]>><</link>>
-	<br>
+	<<lemonade_stand_options>>
 <<else>>
 	<<generate2>><<person2>>
 	You turn on the charm, but still can't get anyone interested. You return to Robin. <<person1>><<Hes>> servicing a <<person2>><<person>>.
@@ -363,10 +411,7 @@ You walk to the other end of the populated part of the beach, and then back to R
 	<</if>>
 	<br><br>
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-	<br>
-	<<link [[Leave|Beach]]>><</link>>
-	<br>
+	<<lemonade_stand_options>>
 <</if>>
 
 :: Robin's Lemonade High
@@ -393,10 +438,7 @@ You walk to the High Street and buy a large bottle of water. You return to the b
 	<br><br>
 <</if>>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Buy
 
@@ -429,10 +471,7 @@ You buy four large bottles of water and haul them back to Robin. Their weight ma
 
 <<endevent>>
 
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Steal
 
@@ -457,10 +496,7 @@ You buy four large bottles of water and haul them back to Robin. Their weight ma
 	<br><br>
 	<<skulduggeryuse>>
 	<<endevent>>
-	<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-	<br>
-	<<link [[Leave|Beach]]>><</link>>
-	<br>
+	<<lemonade_stand_options>>
 <<else>>
 	You enter the shop and start loading up a trolley with large bottles of water. Once done, you pretend to browse and wait. A talkative customer strikes up a conversation with the <<person>> behind the counter, giving you your chance. You push the trolley from the shop.
 	<br><br>
@@ -586,10 +622,7 @@ You buy four large bottles of water and haul them back to Robin. Their weight ma
 <<npcincr Robin love 1>><<glove>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Comfort
 
@@ -601,10 +634,7 @@ Once they're gone, Robin bursts into tears and buries <<his>> head in your shoul
 <<npcincr Robin trauma 3>><<grtrauma>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Pay
 
@@ -616,10 +646,7 @@ Once they're gone, Robin bursts into tears and buries <<his>> head in your shoul
 <br><br>
 <<npcincr Robin trauma -3>><<lrtrauma>>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Offer
 
@@ -660,10 +687,7 @@ Robin bursts into tears and buries <<his>> head in your shoulder. "I-I," <<he>> 
 <<npcincr Robin trauma -3>><<lrtrauma>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Offer Molestation
 <<if $molestationstart is 1>>
@@ -721,10 +745,7 @@ Robin bursts into tears and buries <<his>> head in your shoulder. "I-I," <<he>> 
 <<npcincr Robin love 1>><<glove>><<npcincr Robin trauma -3>><<lrtrauma>>
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Set
 
@@ -740,10 +761,7 @@ You help Robin carry <<his>> equipment to the beach.
 
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><<endevent>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Set Tutorial
 <<set $outside to 1>><<set $location to "town">><<effects>>
@@ -760,10 +778,7 @@ Robin spots you exiting the alley. "A-Are you okay?" <<he>> asks, with a worried
 You nod, pick up <<his>> dropped equipment and continue to walk to the beach with Robin. The rest of the trip is uneventful.
 <br><br>
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><<endevent>><</link>>
-<br>
+<<lemonade_stand_options>>
 
 :: Robin's Lemonade Cow
 <<effects>>
@@ -815,7 +830,4 @@ The other customers are less creepy.
 <br><br>
 
 <<endevent>>
-<<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-<br>
-<<link [[Leave|Beach]]>><</link>>
-
+<<lemonade_stand_options>>
