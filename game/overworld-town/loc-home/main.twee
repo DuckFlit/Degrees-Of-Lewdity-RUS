@@ -4,6 +4,7 @@
 <<set $outside to 0>><<set $location to "home">><<home_effects>><<effects>><<getTarget true>>
 You are in your bedroom.
 
+/* Wallpaper */
 <<set _furniture to $furniture.bedroom>>
 <<if _furniture.wallpaper>>
 	<<switch _furniture.wallpaper.name>>
@@ -41,6 +42,19 @@ You are in your bedroom.
 	Bleak walls protect you from the outside.
 <</if>>
 
+/* Misc Furniture */
+<<set _desk to Furniture.get('desk')>>
+<<if _desk is null>>
+	<<set _desk to Furniture.set('desk','desk')>>
+<</if>>
+<<set _chair to Furniture.get('chair')>>
+<<if _chair is null>>
+	<<set _chair to Furniture.set('chair','chair')>>
+<</if>>
+	<<deskText "icon">> /* If no desk options (read a book, work on project, etc.) are available, desk and icon appear here */
+	<<tableText "icon">> /* If no fish tank is available to be placed on an owned table or chairs, table and chairs appear here */
+
+/* Decorations */
 <<set _deco to Furniture.get('decoration')>>
 <<if _deco>>
 	<br>
@@ -72,17 +86,18 @@ You are in your bedroom.
 	<</switch>>
 <</if>>
 
+<<set _poster to Furniture.get('poster')>>
 <<if _furniture.poster>>
 	<br>
 	<<switch _furniture.poster.name>>
 		<<case "cowgirl">>
-			A cowgirl poster hangs on a wall.
+			<<furnitureicon _poster.iconFile>>A cowgirl poster hangs on a wall.
 		<<case "cat">>
-			A poster of a cat hangs on a wall. The text below reads, "Hang in there!"
+			<<furnitureicon _poster.iconFile>>A poster of a cat hangs on a wall. The text below reads, "Hang in there!"
 		<<case "puppy">>
-			A puppy poster hangs on a wall.
+			<<furnitureicon _poster.iconFile>>A puppy poster hangs on a wall.
 		<<default>> /* Custom */
-			A poster of _furniture.poster.name hangs on a wall.
+			<<furnitureicon _poster.iconFile>>A poster of _furniture.poster.name hangs on a wall.
 			<<if ['dol', 'degrees of lewdity'].some(e => _furniture.poster.name === e)>>
 				You feel an odd sense of familiarity.
 			<<elseif _furniture.poster.name.startsWith('&lt;&lt;')>>
@@ -91,6 +106,7 @@ You are in your bedroom.
 	<</switch>>
 <</if>>
 
+/* Events */
 <br><br>
 <<if $robinbed is "yours" and Time.hour gte 6 and !$possessed>>
 	<<unset $robinbed>>
@@ -104,24 +120,24 @@ You are in your bedroom.
 		You stare down at your bindings. You pull, and they fall apart, unable to hold against you. <<unbind>>
 		<br><br>
 	<<else>>
-		You rub your bindings against your desk. It takes some effort, but eventually the material yields, freeing your limbs.
+		<span class="green">You rub your bindings against your <span style="position:relative;top:-5px"><<furnitureicon _desk.iconFile>></span> desk.</span> It takes some effort, but eventually the material yields, freeing your limbs.
 		<br><br>
 	<</if>>
 <</if>>
 <<if $study is 1>>
 	<<unset $study>>
 	<<if $phase is 1>>
+		You crack open your science textbook and read through the material.
 		<<scienceskill>>
-		You settle down on your bed with a science textbook and read through the material.
 	<<elseif $phase is 2>>
+		You crack open your maths textbook and read through the material.
 		<<mathsskill>>
-		You settle down on your bed with a maths textbook and read through the material.
 	<<elseif $phase is 3>>
+		You crack open your English textbook and read through the material.
 		<<englishskill>>
-		You settle down on your bed with an English textbook and read through the material.
 	<<elseif $phase is 4>>
+		You crack open your history textbook and read through the material.
 		<<historyskill>>
-		You settle down on your bed with a history textbook and read through the material.
 	<</if>>
 	<<endevent>>
 	<br><br>
@@ -146,10 +162,11 @@ You are in your bedroom.
 		<<link [[Read it|Robin Note]]>><<set $robinnote to 1>><</link>>
 		<br><br>
 	<</if>>
-	<<projectoptions>>
-	<<homeStudyOptions>>
-	<br>
-	<<christmas_options>>
+
+/* Desk */
+	<<deskText "noicon">> /* If project, study, or Christmas options are available, desk location appears here, in line with bed/wardrobe/etc locations */
+
+
 	/* <<if $debug is 1>>
 		<span class="green">Debugging starts here</span>
 		<br>
@@ -183,6 +200,8 @@ You are in your bedroom.
 		<span class="green">Debugging end here</span>
 		<br><br>
 	<</if>> */
+
+/* Bed */
 	Your bed takes up most of the room.
 	<<set _bed to Furniture.get('bed')>>
 	<<if $nextPassageCheck is "Bed">>
@@ -215,9 +234,10 @@ You are in your bedroom.
 	<</if>>
 	<<roomoptions>>
 	<br>
+/* Wardrobe */	
 	<<set _wardrobe to Furniture.get('wardrobe')>>
 	<<if _wardrobe>>
-		Your clothes are kept in the wardrobe.
+		Your clothes are kept in the _wardrobe.name.
 	<</if>>
 	<br>
 	<<furnitureicon _wardrobe.iconFile>><<link [[Wardrobe|Wardrobe]]>><</link>>
@@ -246,46 +266,39 @@ You are in your bedroom.
 		<br>
 	<</if>>
 
-	<<set _table to Furniture.get('table')>>
-	<<set _chair to Furniture.get('chair')>>
-	<<if _table>>
-		<br>
-		Your _table.name <<if _chair>>and a pair of _chair.name are <<else>>is <</if>> situated next to a wall.
-		<br>
-		<!-- <<if $debug>>
-			<<bedroomtablechairicon>><<link [[Table (Debug)|Bedroom Table]]>><</link>>
-			<br><br>
-		<</if>> -->
-	<</if>>
+/*Table*/
+	<<tableText "noicon">> /* If fish tank option available, table/chair location appears here, in line with bed/wardrobe locations */
 
-	<<if $pregnancyStats.parasiteDoctorEvents gte 2>>
-		<<fishtankicon>><<containersLink>>
-	<</if>>
+/* Travel */
 	<br>
 	The hallway outside connects to the rest of the orphanage.
-	<br>
-	<<orphanageWard>>
-	<br>
 	<<if $exposed gte 2>>
 		<<if Time.dayState isnot "night">>
 			<<if $exhibitionism gte 75>>
-				The thought of going out with your <<genitals>> on display excites you. You'll be safe if you're careful, right?
-				<br><br>
+				<br>
+				<span class="purple">The thought of going out with your <<genitals>> on display excites you. You'll be safe if you're careful, right?</span>
+				<<orphanageWard>>
+				<br>
 				<<bathroomLink>>
 				<br>
 				<<home_outside>>
 				<br><br>
 			<<elseif $exhibitionism gte 55>>
-				The thought of going out with your <<genitals>> on display excites you. But there's no way you could get away with it at this hour. Maybe after dark.
+				<br>
+				<span class="purple">The thought of going out with your <<genitals>> on display excites you. But there's no way you could get away with it at this hour. Maybe after dark.</span>
 				<br><br>
 			<<else>>
-				There's no way you can go out dressed like this!
+				<<orphanageWard>>
+				<br>
+				<span class="red">There's no way you can leave your room like this!</span>
 				<br><br>
 			<</if>>
 		<<else>>
 			<<if $exhibitionism gte 55>>
-				The thought of going out with your <<genitals>> on display excites you. It is night after all, what could go wrong?
-				<br><br>
+				<br>
+				<span class="purple">The thought of going out with your <<genitals>> on display excites you. It is night after all, what could go wrong?</span>
+				<<orphanageWard>>
+				<br>
 				<<bathroomLink>>
 				<br>
 				<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $exposed lte 0>>
@@ -297,30 +310,40 @@ You are in your bedroom.
 				<<home_outside>>
 				<br><br>
 			<<else>>
-				There's no way you can go out dressed like this!
+				<<orphanageWard>>
+				<br>
+				<span class="red">There's no way you can leave your room like this!</span>
 				<br><br>
 			<</if>>
 		<</if>>
 	<<elseif $exposed gte 1>>
 		<<if Time.dayState isnot "night">>
 			<<if $exhibitionism gte 35>>
-				The thought of going out in such a lewd state of dress excites you. You'll be safe if you're careful, right?
-				<br><br>
+				<br>
+				<span class="purple">The thought of going out in such a lewd state of dress excites you. You'll be safe if you're careful, right?</span>
+				<<orphanageWard>>
+				<br>
 				<<bathroomLink>>
 				<br>
 				<<home_outside>>
 				<br><br>
 			<<elseif $exhibitionism gte 15>>
-				The thought of going out in such a lewd state of dress excites you. But there's no way you could get away with it at this hour. Maybe after dark.
+				<br>
+				<span class="purple">The thought of going out in such a lewd state of dress excites you. But there's no way you could get away with it at this hour. Maybe after dark.</span>
 				<br><br>
 			<<else>>
-				There's no way you can go out dressed like this!
+				<<orphanageWard>>
+				<br>
+				<span class="red">There's no way you can leave your room like this!</span>
 				<br><br>
 			<</if>>
 		<<else>>
 			<<if $exhibitionism gte 15>>
+				<br>
 				The thought of going out in such a lewd state of dress excites you. It is night after all, what could go wrong?
-				<br><br>
+				<br>
+				<<orphanageWard>>
+				<br>
 				<<bathroomLink>>
 				<br>
 				<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $exposed lte 0>>
@@ -332,12 +355,16 @@ You are in your bedroom.
 				<<home_outside>>
 				<br><br>
 			<<else>>
-				There's no way you can go out dressed like this!
+				<<orphanageWard>>
+				<br>
+				<span class="red">There's no way you can leave your room like this!</span>
 				<br><br>
 			<</if>>
 		<</if>>
 	<<elseif $worn.under_lower.type.includes("naked")>>
 		<<if $underwarningskip is 1>>
+			<<orphanageWard>>
+			<br>
 			<<bathroomLink>>
 			<br>
 			<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $exposed lte 0>>
@@ -375,12 +402,15 @@ You are in your bedroom.
 				<br><br>
 			<</if>>
 		<<else>>
-			You are not wearing underwear! The thought of going out like this quickens your pulse.
-			<br><br>
+			<br>
+			<span class="pink">You are not wearing underwear! The thought of going out like this quickens your pulse.</span>
+			<br>
 			<<link [[It won't hurt|Bedroom]]>><<set $underwarningskip to 1>><</link>>
 			<br><br>
 		<</if>>
 	<<else>>
+		<<orphanageWard>>
+		<br>
 		<<bathroomLink>>
 		<br>
 		<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $exposed lte 0>>
@@ -397,6 +427,8 @@ You are in your bedroom.
 		<</if>>
 		<<home_outside>>
 		<br><br>
+
+/* Kylar */		
 		<<set _kylar to statusCheck("Kylar")>>
 		<<if $kylar_camera is 4>>
 			The owl plushie watches you from the wardrobe. You know there's a camera inside.
@@ -418,6 +450,8 @@ You are in your bedroom.
 			<br><br>
 		<</if>>
 	<</if>>
+
+/* Settings */	
 	<<link [[Settings]]>><<set $settingsExitPassage to "Bedroom">><</link>>
 	<br>
 	<<attitudesControlCheck>>
@@ -1849,7 +1883,7 @@ You've pushed yourself too much.
 	<<He>> rolls off and turns to face you, looking at you with love in <<his>> eyes. "I'm so lucky to have you," <<he>> says.<<lllust>><<npcincr Kylar lust -20>>
 	<br><br>
 
-	<<His>> hands find <<his>> way back around your body, making it evident that <<he>> intended to stay the night with you.
+	<<His>> hands find their way back around your body, making it evident that <<he>> intended to stay the night with you.
 	<br><br>
 
 <</if>>
@@ -1931,7 +1965,7 @@ Before you know it, Kylar has already fallen asleep. Although you didn't plan to
 You struggle against <<his>> hold, and you manage to push <<him>> off of you, leaping off the bed and onto the bedroom floor. You take a bit to regain your composure, but you come face to face with Kylar. <<He>> sits there, still, with a dejected look on <<his>> face.
 <br><br>
 
-"I'm sorry," <<he>> says, meekly. "I-I didn't mean to scare you. I just had to come see you. Please forgive me," <<he>> pleads, and takes <<his>> hands into your own. "Please let me stay. W-we can just cuddle if that's what you want."
+"I'm sorry," <<he>> says, meekly. "I-I didn't mean to scare you. I just had to come see you. Please forgive me," <<he>>pleads and takes <<his>> hands into your own. "Please let me stay. W-we can just cuddle if that's what you want."
 <br><br>
 
 <<link [[Let Kylar stay the night|Bedroom Kylar Sneak Stay 2]]>><<npcincr Kylar love 2>><<npcincr Kylar rage -6>><</link>><<gglove>><<llksuspicion>>
@@ -2711,9 +2745,9 @@ You find a deserted part of the garden and bask in the sun. You feel the warmth 
 <br><br>
 It might feel even better if you were undressed...
 <br><br>
-<<link [[Strip|Nude Bask]]>><<set $stress -= 40>><</link>><<exhibitionist1>><<lstress>>
+<<baskicon>><<link [[Strip|Nude Bask]]>><<set $stress -= 40>><</link>><<exhibitionist1>><<lstress>>
 <br>
-<<link [[Stop|Garden]]>><</link>>
+<<ind>><<link [[Stop|Garden]]>><</link>>
 
 :: Nude Bask
 

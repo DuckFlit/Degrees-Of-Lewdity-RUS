@@ -14,6 +14,7 @@ const Furniture = (() => {
 		bed: "bed",
 		table: "table",
 		chair: "chair",
+		desk: "desk",
 		wardrobe: "wardrobe",
 		decoration: "decoration",
 		windowsill: "windowsill",
@@ -50,41 +51,96 @@ const Furniture = (() => {
 		*/
 
 		/* ------------- CHAIRS ------------- */
+		mapper.set("chair", {
+			name: "chair",
+			nameCap: "Chair",
+			article: "a",
+			nameSolo: "chair",
+			category: ["chair"],
+			type: ["starter"],
+			cost: setPrice(0),
+			description: "An old, hand-me-down chair. Wobbly and uncomfortable.",
+			iconFile: "basicChair.png",
+			iconFile2: "basicChairDesk.png",
+			tier: 0,
+		});		
 		mapper.set("stool", {
 			name: "stools",
 			nameCap: "Wooden stools",
+			article: "a",
+			nameSolo: "wooden stool",
 			category: ["chair"],
 			type: [],
 			cost: setPrice(460),
 			description: "A set of stools. Uncomfortable, but better than nothing.",
 			iconFile: "stool.png",
+			iconFile2: "stoolDesk.png",
+			tier: 0,
 		});
-		mapper.set("chair", {
+		mapper.set("woodenchair", {
 			name: "wooden chairs",
 			nameCap: "Wooden chairs",
+			article: "a",
+			nameSolo: "wooden chair",
 			category: ["chair"],
 			type: [],
 			cost: setPrice(1280),
-			description: "A set of regular wooden chairs.",
+			description: "A set of regular wooden chairs. Not the most comfortable.",
 			iconFile: "chair.png",
+			iconFile2: "chairDesk.png",
+			tier: 0,
 		});
+		mapper.set("swivelchair", {
+			name: "swivel chairs",
+			nameCap: "Swivel chairs",
+			article: "a",
+			nameSolo: "swivel chair",
+			category: ["chair"],
+			type: ["comfy"],
+			cost: setPrice(1480),
+			description: "A pair of swivel chairs. Comfortable and ergonomic.",
+			iconFile: "swivelChair.png",
+			iconFile2: "swivelChairDesk.png",
+			tier: 1,
+		});	
+		mapper.set("shellchair", {
+			name: "shell chairs",
+			nameCap: "Shell chairs",
+			article: "a",
+			nameSolo: "shell chair",
+			category: ["chair"],
+			type: ["comfy"],
+			cost: setPrice(1750),
+			description: "A set of wheeled chairs with a shell-shaped back. Luxurious.",
+			iconFile: "shellChair.png",
+			iconFile2: "shellChairDesk.png",
+			tier: 1,
+		});						
 		mapper.set("armchair", {
 			name: "armchairs",
 			nameCap: "Armchairs",
+			article: "an",
+			nameSolo: "armchair",
 			category: ["chair"],
-			type: [],
+			type: ["comfy"],
 			cost: setPrice(1970),
-			description: "A set of armchairs. Soft, relaxing and expensive.",
+			description: "A set of armchairs. Soft, relaxing, and expensive.",
 			iconFile: "armchair.png",
+			iconFile2: "armchairDesk.png",
+			tier: 1,
 		});
 		mapper.set("egg", {
 			name: "egg armchairs",
 			nameCap: "Egg armchairs",
+			article: "an",
+			nameSolo: "egg armchair",
 			category: ["chair"],
-			type: [],
-			cost: setPrice(2420, 50),
+			type: ["comfy"],
+			cost: setPrice(2420),
 			description: "A set of armchairs with a rounded back, in exotic colours. A chore to set up.",
 			iconFile: "armchairegg.png",
+			iconFile2: "armchaireggDesk.png",
+			tier: 1,
 		});
 
 		/* ------------- TABLES ------------- */
@@ -108,6 +164,45 @@ const Furniture = (() => {
 			iconFile: "marbletable.png",
 			tier: 1,
 		});
+
+		/* ------------- DESKS ------------- */
+		mapper.set("desk", {
+			name: "basic desk",
+			nameCap: "Basic desk",
+			category: ["desk"],
+			type: ["stable", "starter"],
+			cost: setPrice(0),
+			description: "An old, hand-me-down desk. Desecrated with carvings from orphans of yesteryear.",
+			iconFile: "desk.png",
+		});
+		mapper.set("deskGlass", {
+			name: "glass desk",
+			nameCap: "Glass desk",
+			category: ["desk"],
+			type: ["fragile"],
+			cost: setPrice(1250),
+			description: "A sleek, contemporary desk. Breakable.",
+			iconFile: "deskGlass.png",
+		});
+		mapper.set("deskMidcentury", {
+			name: "mid-century modern desk",
+			nameCap: "Mid-century modern desk",
+			category: ["desk"],
+			type: ["stable"],
+			cost: setPrice(1550),
+			description: "A simple desk with modernist appeal. Popular in the mid-twentieth century.",
+			iconFile: "deskMidcentury.png",
+		});				
+		mapper.set("deskAntique", {
+			name: "antique desk",
+			nameCap: "Antique desk",
+			category: ["desk"],
+			type: ["sturdy"],
+			cost: setPrice(3820),
+			description: "An ornate, antique desk. Built to last a lifetime.",
+			iconFile: "deskAntique.png",
+		});
+
 
 		/* ------------- BEDS ------------- */
 		mapper.set("bed", {
@@ -202,6 +297,15 @@ const Furniture = (() => {
 			cost: setPrice(680),
 			description: "A clay pot with good soil. Flowers come pre-planted. Can be put on your windowsill.",
 			iconFile: "flower.png",
+		});
+		mapper.set("bunnySucculent", {
+			name: "bunny succulent",
+			nameCap: "Bunny succulent",
+			category: ["windowsill"],
+			type: [],
+			cost: setPrice(840),
+			description: "A cement planter for small succulents. Pre-planted with 'Monilaria obconica', also known as a bunny succulent.",
+			iconFile: "bunnySucculent.png",
 		});
 		mapper.set("jar", {
 			name: "jar",
@@ -451,6 +555,9 @@ const Furniture = (() => {
 						},
 						wardrobe: {
 							id: fromBackComp ? "organiser" : "wardrobe",
+						},
+						desk: {
+							id: "desk",
 						},
 					},
 				};
