@@ -2,17 +2,22 @@
 
 <<widget "robinChocolateOfferHelp">>
 	<!-- Note: Don't try to move the <<endevent>> outside these links, that would make this widget less portable. -->
-	<<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
+	<<if $money gte 200>>
+		<<hotchocicon>><<link [[Buy hot chocolate (0:15)|Robin Chocolate Purchase]]>><<stress -6>><<trauma -1>><<pass 15>><</link>><<lstress>><<ltrauma>>
+		<br>
+	<</if>>
+	<<ind>><<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
-	<<link [[Leave|Park]]>><<endevent>><</link>>
+	<<ind>><<link [[Leave|Park]]>><<endevent>><</link>>
 	<br>
 <</widget>>
 
 :: Robin Chocolate
 <<set $outside to 0>><<set $location to "park">><<effects>>
 <<npc Robin>><<person1>>
+
 <<if $robinchocolateintro isnot 1>>
-	<<set $robinchocolateintro to 1>>
+	<<set $robinchocolateintro to 1>><<set $daily.robin.freeDrink to 1>>
 
 	Robin waves when <<he>> sees you. <<He>> stirs a steaming pot with <<his>> other hand. "Hey," <<he>> says. "People don't buy much lemonade when it's so cold. I'm selling hot chocolate instead. Here." <<He>> mixes warm milk from the pot with cocoa powder and sugar, then hands you the mug. It's very sweet.<<lstress>><<stress -6>>
 <<else>>
@@ -21,6 +26,58 @@
 <br><br>
 
 <<robinChocolateOfferHelp>>
+
+:: Robin Chocolate Purchase
+
+<<effects>><<npc Robin>><<person1>>
+<<set $money -= 200>>
+
+"Sure! One hot chocolate, coming right up!" Robin says, turning to warm up the milk.
+<br><br>
+
+You slip £2 across the counter to <<him>>, and accept the offered mug once it's ready.
+<br><br>
+
+<<if $robinpaid is 1 and $daily.robin.freeDrink isnot 1>>
+	<<set $daily.robin.freeDrink to 1>>
+	"I-I can't take this from you..." <<He>> says, sliding the money back across the counter to you. "You're already paying Bailey for me. Besides, I'd just end up giving it back to you."
+	<<set $money += 200>>
+
+<<elseif $robinpaid is 1>>
+	<<set $robinmoney += 2>>
+	"I... do have to take it from you this time." <<He>> says, frowning as <<he>> looks down at the money. "I have to pay for the powder and milk. I can't keep giving it away, even if I want to."
+
+<<else>>
+	<<set $robinmoney += 2>>
+	"Thanks for your purchase!" <<He>> says with a smile, putting the money somewhere under the counter.
+
+<</if>>
+<br><br>
+
+You take your time with the mug, letting it warm your hands as you sip away at the hot chocolate.
+<br><br>
+
+"<<print either(
+"...Have you ever watched the sky on a clear night? There's so many stars out there… So many worlds just like ours. ...It might be a little too cold for that now, though.",
+"...Do you think Bailey will ever be gone? There has to be someone powerful out there who hates <<nnpc_him Bailey>>, right?",
+"It's hard to keep the stand running some days. But it's worth it in the end.")>>"
+<br><br>
+
+<<if Time.hour gte 17>>
+	"It's getting nippy out," Robin says. "Could you help me carry my stuff home?"
+	<<endevent>>
+	<br><br>
+	<<link [[Accept (0:30)|Orphanage]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<br>
+	<<link [[Refuse|Park]]>><</link>>
+	<br>
+
+<<else>>
+	<<endevent>>
+
+	<<robinChocolateOfferHelp>>
+
+<</if>>
 
 :: Robin Chocolate Help
 <<npc Robin>><<person1>>
