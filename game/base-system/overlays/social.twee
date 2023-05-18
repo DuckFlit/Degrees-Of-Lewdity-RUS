@@ -3,6 +3,9 @@
 <<widget "social">>
 	<div id="relation-display">
 		<<silently>>
+			<<set C.npc["Black Wolf"].harmony to $wolfpackharmony>>
+				<<set C.npc["Black Wolf"].ferocity to $wolfpackferocity>>
+
 			<<script>>
 				/*data config for non-standard NPCs boxes, allows for different stat configs, custom display data, and dynamic requirements*/
 				T.npcConfig = {
@@ -31,6 +34,11 @@
 					"Great Hawk" : {
 						important : true,
 					},
+					"Black Wolf" : {
+						important : true,
+						harmony : { name : "Wolf Pack Harmony", maxValue: 20, activeIcon : "img/ui/wolfharmony.png" },
+						ferocity : { name : "Wolf Pack Ferocity", maxValue: 20, activeIcon : "img/ui/wolfferocity.png" }
+					},					
 					"Sydney" : {
 						important : true,
 						love : { maxValue: 150 },
@@ -61,7 +69,7 @@
 				};
 
 				/* This list dictates the order that the important NPCs will show up in on the social menu screen */
-				T.importantNpcOrder = ["Robin", "Whitney", "Eden", "Kylar", "Sydney", "Avery", "Great Hawk", "Alex"];
+				T.importantNpcOrder = ["Robin", "Whitney", "Eden", "Kylar", "Sydney", "Avery", "Great Hawk", "Black Wolf", "Alex"];
 				T.specialNPCs = ["Ivory Wraith"];
 
 				/* this list is sorted */
@@ -284,6 +292,17 @@
 					<<set _guardBoxConfig = { name : "Prison guards", icon : "img/misc/icon/police.png", description: "<<relation-text _guardRepConfig>>"}>>
 					<<set _inmateBoxConfig = { name : "Prison inmates", icon : "img/misc/icon/police.png", description: "<<relation-text _inmateRepConfig>>"}>>
 				<</if>>
+				/*Docks */
+				<<if $dockwork gte 2>>
+					<<set _dockRepConfig = { currentValue: $dockstatus, preText: 'The other workers ', states : [
+						{ requiredValue: 0,	    color: 'purple',	description: 'view you with contempt.'},
+						{ requiredValue: 10,	color: 'blue',		description: 'view you with suspicion.'},
+						{ requiredValue: 30,	color: 'lblue',		description: 'tolerate you.'},
+						{ requiredValue: 80,	color: 'teal',		description: 'accept you.'},
+						{ requiredValue: 100,	color: 'green',		description: 'respect you.'}
+					]}>>
+					<<set _dockBoxConfig = { name : "Docks", icon : "img/misc/icon/mer.png", description : '<<relation-text _dockRepConfig>>'}>>
+				<</if>>		
 			<</silently>>
 			<<relation-box-simple _policeBoxConfig>>
 			<<relation-box-simple _orphanageBoxConfig>>
@@ -299,6 +318,9 @@
 				<<relation-box-simple _guardBoxConfig>>
 				<<relation-box-simple _inmateBoxConfig>>
 				<<relation-box-simple _prisonBoxConfig>>
+			<</if>>
+			<<if $dockwork gte 2>>
+				<<relation-box-simple _dockBoxConfig>>
 			<</if>>
 		</div>
 		<<if $farm_stage gte 2>>
@@ -463,51 +485,16 @@
 			<<relation-box-simple _businessFameBoxConfig>>
 			<<relation-box-simple _socialFameBoxConfig>>
 			<<relation-box-simple _overallFameBoxConfig>>
+
+			<div class="relation-box" @style="(_boxConfig.style || '')">
+				<div class="relation-description">
+				The townsfolk know you as <span class="teal"><<overworld_nickname>>.</span> Those in the criminal underworld call you <span class="pink"><<underworld_nickname>>.</span>
+				</div>
+			</div>
+
 		</div>
 
 		<br>
-		The townsfolk know you as <span class="teal"><<overworld_nickname>>.</span> Those in the criminal underworld call you <span class="pink"><<underworld_nickname>>.</span>
-
-		<<if $syndromewolves is 1 or $dockwork gte 2>>
-			<br><br>
-			<span class="gold">Other</span>
-		<</if>>
-		<<if $syndromewolves is 1>>
-			<div id="other-relation-blocks">
-					<b>Wolf pack harmony:</b> <img id="statbar" src="img/ui/wolfharmony.png">
-					<div class="meter">
-						<<set $percent=Math.floor((Math.min(20, $wolfpackharmony)/20)*100)>>
-						<<print '<div class="goldbar" style="width:' + $percent + '%"></div>'>>
-					</div>
-
-					<b>Wolf pack ferocity:</b> <img id="statbar" src="img/ui/wolfferocity.png">
-					<div class="meter">
-						<<set $percent=Math.floor((Math.min(20, $wolfpackferocity)/20)*100)>>
-						<<print '<div class="goldbar" style="width:' + $percent + '%"></div>'>>
-					</div>
-			</div>
-			<br>
-		<</if>>
-
-		<<if $dockwork gte 2>>
-			<div id="other-relation-blocks">
-					<b>Docks:</b>
-					<<set $dockstatus = Math.clamp($dockstatus, 0, 100)>>
-					<<if $dockstatus gte 100>>
-						<span class="green">The other workers respect you.</span>
-					<<elseif $dockstatus gte 80>>
-						<span class="teal">The other workers accept you.</span>
-					<<elseif $dockstatus gte 30>>
-						<span class="lblue">The other workers tolerate you.</span>
-					<<elseif $dockstatus gte 10>>
-						<span class="blue">The other workers view you with suspicion.</span>
-					<<else>>
-						<span class="purple">The other workers view you with contempt.</span>
-					<</if>>
-			</div>
-			<br>
-		<</if>>
-
 	</div>
 	<br>
 <</widget>>
