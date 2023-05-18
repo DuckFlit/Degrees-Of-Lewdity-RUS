@@ -2398,10 +2398,10 @@ function masturbationeffectsMouth({ span, otherElement, additionalEffect, select
 			clearAction(V.selfsuckDepth < V.selfsuckLimit ? "mpenisdeepthroat" : "mpenissuck");
 			V.selfsuckDepth++;
 			wikifier("arousal", 200 + 50 * V.selfsuckDepth, "masturbationGenital");
-			fragment.append(Wikifier.wikifyEval(`You push your <<penis>> deeper into your mouth.`));
+			fragment.append(Wikifier.wikifyEval(`You push your <<penis>> deeper into your mouth. `));
 			if (V.selfsuckDepth === V.penisHeight) {
 				if (V.leftarm === "mpenisentrance" && V.rightarm === "mpenisentrance") {
-					altText.hands = "both hands";
+					altText.hands = "hands";
 					V.leftarm = 0;
 					V.leftarmaction = "mrest";
 					V.rightarm = 0;
@@ -2415,8 +2415,7 @@ function masturbationeffectsMouth({ span, otherElement, additionalEffect, select
 					V.rightarm = 0;
 					V.rightarmaction = "mrest";
 				}
-				fragment.append(Wikifier.wikifyEval(`<span class="lblue">You move your ${altText.hands} away from your <<penis>> to make room.</span>`));
-				fragment.append(" ");
+				if (altText.hands) fragment.append(Wikifier.wikifyEval(`<span class="lblue">You move your ${altText.hands} away from your <<penis>> to make room.</span> `));
 				fragment.append(deepthroateffects(span));
 			}
 			break;
