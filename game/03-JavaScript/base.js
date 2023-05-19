@@ -396,7 +396,7 @@ function setSessionState(sessionState) {
 		if (sessionState.history.length > sstates) sessionState.history = State.marshalForSave(sstates).history;
 		if (sstates) session.set("state", sessionState); // don't do session writes if sstates is 0, NaN, undefined, etc.
 		pass = true;
-	} catch {
+	} catch (ex) {
 		console.log("session.set failed, recovering");
 		if (sstates > sessionState.history.length) sstates = sessionState.length;
 		while (sstates && !pass) {
@@ -406,7 +406,7 @@ function setSessionState(sessionState) {
 				sessionState.history.forEach(s => (s.variables.options.maxStates = sstates));
 				session.set("state", sessionState);
 				pass = true;
-			} catch {
+			} catch (ex) {
 				continue;
 			}
 		}
