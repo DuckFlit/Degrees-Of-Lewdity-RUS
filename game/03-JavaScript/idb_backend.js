@@ -203,7 +203,7 @@ const idb = (() => {
 			transactionRequest.objectStore("details").add(detailsItem);
 
 			return makePromise(transactionRequest);
-		} catch {
+		} catch (ex) {
 			// dispose of the possible functions in story vars and try again
 			funNuke();
 			saveObj.history.forEach(s => funNuke(s.variables, false));
@@ -215,7 +215,7 @@ const idb = (() => {
 				transactionRequest.objectStore("details").add(detailsItem);
 
 				return makePromise(transactionRequest);
-			} catch {
+			} catch (ex) {
 				// admit the defeat and go home
 				Errors.report("idb.setItem failure unknown. Couldn't complete the save in slot " + slot);
 				lock = false;

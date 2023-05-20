@@ -63,7 +63,7 @@ const Furniture = (() => {
 			iconFile: "basicChair.png",
 			iconFile2: "basicChairDesk.png",
 			tier: 0,
-		});		
+		});
 		mapper.set("stool", {
 			name: "stools",
 			nameCap: "Wooden stools",
@@ -102,7 +102,7 @@ const Furniture = (() => {
 			iconFile: "swivelChair.png",
 			iconFile2: "swivelChairDesk.png",
 			tier: 1,
-		});	
+		});
 		mapper.set("shellchair", {
 			name: "shell chairs",
 			nameCap: "Shell chairs",
@@ -115,7 +115,7 @@ const Furniture = (() => {
 			iconFile: "shellChair.png",
 			iconFile2: "shellChairDesk.png",
 			tier: 1,
-		});						
+		});
 		mapper.set("armchair", {
 			name: "armchairs",
 			nameCap: "Armchairs",
@@ -192,7 +192,7 @@ const Furniture = (() => {
 			cost: setPrice(1550),
 			description: "A simple desk with modernist appeal. Popular in the mid-twentieth century.",
 			iconFile: "deskMidcentury.png",
-		});				
+		});
 		mapper.set("deskAntique", {
 			name: "antique desk",
 			nameCap: "Antique desk",
@@ -202,7 +202,6 @@ const Furniture = (() => {
 			description: "An ornate, antique desk. Built to last a lifetime.",
 			iconFile: "deskAntique.png",
 		});
-
 
 		/* ------------- BEDS ------------- */
 		mapper.set("bed", {

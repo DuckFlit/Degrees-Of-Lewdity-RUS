@@ -525,14 +525,14 @@ function dayPassed() {
 	if (V.brothelVending) {
 		const rng = random(Math.min(1, V.brothelVending.condoms), Math.min(10, V.brothelVending.condoms));
 		V.brothelVending.condoms -= rng;
-		V.brothelVending.condomsSold +=rng;
+		V.brothelVending.condomsSold += rng;
 		V.brothelVending.total = (V.brothelVending.total || 0) + rng;
 	}
 
 	if (V.brothelVending) {
 		const rng = random(Math.min(1, V.brothelVending.lube), Math.min(10, V.brothelVending.lube));
 		V.brothelVending.lube -= rng;
-		V.brothelVending.lubeSold +=rng;
+		V.brothelVending.lubeSold += rng;
 		V.brothelVending.total = (V.brothelVending.total || 0) + rng;
 	}
 
@@ -573,17 +573,17 @@ function dayPassed() {
 		if (V.whitneyRescueHumiliated === undefined) V.whitneyRescueHumiliated = 7;
 		else V.whitneyRescueHumiliated--;
 		if (V.whitneyRescueHumiliated <= 0) {
-			delete V.whitneyRescueHumiliated; 
-			V.whitneyRescueShaken = 14; 
+			delete V.whitneyRescueHumiliated;
+			V.whitneyRescueShaken = 14;
 			V.whitneyRescueSocial = 0;
 		}
 	}
 
-	if (V.whitneyRescueSocial === 0)  {
+	if (V.whitneyRescueSocial === 0) {
 		if (V.whitneyRescueShaken === undefined) V.whitneyRescueShaken = 14;
 		else V.whitneyRescueShaken--;
-		if (V.whitneyRescueShaken <= 0) { 
-			delete V.whitneyRescueShaken; 
+		if (V.whitneyRescueShaken <= 0) {
+			delete V.whitneyRescueShaken;
 			delete V.whitneyRescueSocial;
 		}
 	}
@@ -591,10 +591,10 @@ function dayPassed() {
 	if (V.whitneyRescueSocial === 2) {
 		if (V.whitneyRescueGrateful === undefined) V.whitneyRescueGrateful = 7;
 		else V.whitneyRescueGrateful--;
-		if (V.whitneyRescueGrateful <= 0) { 
-			delete V.whitneyRescueGrateful; 
-			delete V.whitneyRescueSocial 
-		};
+		if (V.whitneyRescueGrateful <= 0) {
+			delete V.whitneyRescueGrateful;
+			delete V.whitneyRescueSocial;
+		}
 	}
 
 	return fragment;
