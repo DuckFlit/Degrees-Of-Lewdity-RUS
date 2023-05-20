@@ -1,7 +1,16 @@
 /* eslint-disable jsdoc/require-description-complete-sentence */
 /* eslint-disable no-undef */
 const Time = (() => {
+	const secondsPerDay = 86400;
+	const secondsPerHour = 3600;
+	const secondsPerMinute = 60;
+	const standardYearMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	const leapYearMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 	const holidayMonths = [4, 7, 8, 12];
+
 	let currentDate = {};
 
 	function set(timeStamp = V.timeStamp) {
@@ -127,7 +136,7 @@ const Time = (() => {
 			return currentDate.year;
 		},
 		get days() {
-			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / DateTime.secondsPerDay);
+			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / Time.secondsPerDay);
 		},
 		get season() {
 			return this.month > 11 || this.month < 3 ? "winter" : this.month > 8 ? "autumn" : this.month > 5 ? "summer" : "spring";
@@ -179,6 +188,15 @@ const Time = (() => {
 		isSchoolTerm,
 		isSchoolDay,
 		isSchoolTime,
+
+		secondsPerDay,
+		secondsPerHour,
+		secondsPerMinute,
+		standardYearMonths,
+		leapYearMonths,
+		monthNames,
+		daysOfWeek,
+
 		getNextSchoolTermStartDate: nextSchoolTermStartDate,
 		getNextSchoolTermEndDate: nextSchoolTermEndDate,
 		getNextWeekdayDate: weekDay => currentDate.getNextWeekdayDate(weekDay),

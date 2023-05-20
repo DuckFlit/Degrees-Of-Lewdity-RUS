@@ -1,12 +1,14 @@
-const secondsPerDay = 86400;
-const secondsPerHour = 3600;
-const secondsPerMinute = 60;
-const standardYearMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-const leapYearMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
 class DateTime {
+	/* plain static variables are still too new of a feature for a considerable number of old mobiles, they are re-declared in Time object instead
+	static secondsPerDay = 86400;
+	static secondsPerHour = 3600;
+	static secondsPerMinute = 60;
+	static standardYearMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	static leapYearMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	static monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	static daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	*/
+
 	constructor(year = 2020, month = 1, day = 1, hour = 0, minute = 0, second = 0) {
 		if (arguments.length === 1) {
 			// If the argument is a DateTime object, copy its properties
@@ -42,7 +44,7 @@ class DateTime {
 	}
 
 	static getDaysOfMonthFromYear(year) {
-		return DateTime.isLeapYear(year) ? leapYearMonths : standardYearMonths;
+		return DateTime.isLeapYear(year) ? Time.leapYearMonths : Time.standardYearMonths;
 	}
 
 	static getDaysOfYear(year) {
@@ -57,7 +59,7 @@ class DateTime {
 		if (day < 1 || day > daysInMonth[month - 1]) throw new Error("Invalid date: Day must be between 1-" + daysInMonth[month - 1] + ".");
 
 		const totalDays = DateTime.getTotalDaysSinceStart(year) + daysInMonth.slice(0, month - 1).reduce((a, b) => a + b, 0) + day - 1;
-		const totalSeconds = totalDays * secondsPerDay + hour * secondsPerHour + minute * secondsPerMinute + second;
+		const totalSeconds = totalDays * Time.secondsPerDay + hour * Time.secondsPerHour + minute * Time.secondsPerMinute + second;
 
 		this.timeStamp = totalSeconds;
 		this.year = year;
@@ -73,9 +75,9 @@ class DateTime {
 		// Initialize the year to 1
 		let year = 1;
 		let month = 0;
-		let day = (timestamp / secondsPerDay) | 0;
-		const hour = (timestamp / secondsPerHour) | 0;
-		const minute = (timestamp / secondsPerMinute) | 0;
+		let day = (timestamp / Time.secondsPerDay) | 0;
+		const hour = (timestamp / Time.secondsPerHour) | 0;
+		const minute = (timestamp / Time.secondsPerMinute) | 0;
 		const second = timestamp;
 
 		// Maps the total number of days to the corresponding year and day.
@@ -157,7 +159,7 @@ class DateTime {
 	// Adding a negative value (e.g. -1) subtracts the days instead
 	addDays(days) {
 		if (days === 0) return this;
-		this.fromTimestamp(this.timeStamp + days * secondsPerDay);
+		this.fromTimestamp(this.timeStamp + days * Time.secondsPerDay);
 		return this;
 	}
 
@@ -165,7 +167,7 @@ class DateTime {
 	// Adding a negative value (e.g. -1) subtracts the hours instead
 	addHours(hours) {
 		if (hours === 0) return this;
-		this.timeStamp += hours * secondsPerHour;
+		this.timeStamp += hours * Time.secondsPerHour;
 		this.fromTimestamp(this.timeStamp);
 		return this;
 	}
@@ -174,7 +176,7 @@ class DateTime {
 	// Adding a negative value (e.g. -1) subtracts the minutes instead
 	addMinutes(minutes) {
 		if (minutes === 0) return this;
-		this.timeStamp += minutes * secondsPerMinute;
+		this.timeStamp += minutes * Time.secondsPerMinute;
 		this.fromTimestamp(this.timeStamp);
 		return this;
 	}
@@ -191,7 +193,7 @@ class DateTime {
 	// Returns the weekday (1-7 for Sun-Sat) of the current object's date.
 	get weekDay() {
 		const daysSinceStart = DateTime.getTotalDaysSinceStart(this.year + 1);
-		const daysInMonth = standardYearMonths.slice(0, this.month - 1).reduce((a, b) => a + b, 0);
+		const daysInMonth = Time.standardYearMonths.slice(0, this.month - 1).reduce((a, b) => a + b, 0);
 		const isLeapYear = DateTime.isLeapYear(this.year) && this.month < 3;
 		const weekDayOffset = V.weekDayOffset !== undefined ? V.weekDayOffset : 6;
 
@@ -203,12 +205,12 @@ class DateTime {
 
 	// Returns the name of the weekday (e.g. "Sunday") of the current object's date.
 	get weekDayName() {
-		return daysOfWeek[this.weekDay - 1];
+		return Time.daysOfWeek[this.weekDay - 1];
 	}
 
 	// Returns the name of the month (e.g. "January") of the current object's date.
 	get monthName() {
-		return monthNames[this.month - 1];
+		return Time.monthNames[this.month - 1];
 	}
 
 	// Returns a boolean indicating whether the current object's date falls on a weekend (Saturday or Sunday).
