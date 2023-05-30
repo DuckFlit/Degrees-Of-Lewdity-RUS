@@ -84,13 +84,16 @@ const Time = (() => {
 
 	function nextSchoolTermEndDate(date) {
 		const newDate = new DateTime(date);
-		newDate.addMonths(holidayMonths.find(e => e > newDate.month) - newDate.month);
-		return newDate.getFirstWeekdayOfMonth(2).addDays(-3);
+		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month);
+		return newDate.getFirstWeekdayOfMonth(2).addDays(-3).addHours(15);
 	}
 
 	function isSchoolTerm(date) {
-		const firstMonday = date.getFirstWeekdayOfMonth(2).day;
-		return !holidayMonths.some(month => (month === date.month && date.day >= firstMonday) || (month % 12 === date.month && date.day < firstMonday));
+		const firstMonday = date.getFirstWeekdayOfMonth(2);
+		const startOfHoliday = firstMonday.addDays(-2);
+		return !holidayMonths.some(
+			month => (month === date.month && date.day >= startOfHoliday.day) || (month % 12 === date.month && date.day < startOfHoliday.day)
+		);
 	}
 
 	function isSchoolDay(date) {
