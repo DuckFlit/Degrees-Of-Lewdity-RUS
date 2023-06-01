@@ -46,13 +46,13 @@ const idb = (() => {
 		console.log("idbOpen success");
 		lock = false;
 		active = true;
-		// this only triggers after initial db creation, but can't be put into onupgradeneeded because you need database to be successfuly open before putting stuff into it
+		// this only triggers after initial db creation, but can't be put into onupgradeneeded because you need database to be successfully open before putting stuff into it
 		if (migrationNeeded) {
 			importFromLocalStorage();
 			migrationNeeded = false;
 		}
 	};
-	// this actually should never happen, but none can say that i'm not thourough
+	// this actually should never happen, but none can say that i'm not thorough
 	openRequest.onblocked = () => console.log("something went wrong");
 
 	/**
@@ -177,7 +177,7 @@ const idb = (() => {
 	 * @param {number} slot slot to write into
 	 * @param {object} saveObj valid save object with unencoded history
 	 * @param {object} details optional save details to override what's going into details store
-	 * @returns {Promise} promise to report on success of this operation some day
+	 * @returns {Promise | undefined} promise to report on success of this operation some day or return early
 	 */
 	function setItem(slot, saveObj, details) {
 		if (lock) return;
@@ -229,7 +229,7 @@ const idb = (() => {
 	 * delete save data in a specified slot
 	 *
 	 * @param {number} slot
-	 * @returns {Promise} promise to report on success
+	 * @returns {Promise | undefined} promise to report on success or return early
 	 */
 	function deleteItem(slot) {
 		if (lock) return;
@@ -287,7 +287,7 @@ const idb = (() => {
 	/**
 	 * mercilessly clear all object stores one step short from outright deleting the db itself
 	 *
-	 * @returns {Promise} promise to maybe report when the deed is done
+	 * @returns {Promise | undefined} promise to maybe report when the deed is done or return early
 	 */
 	function clearAll() {
 		if (lock) return;
@@ -298,13 +298,14 @@ const idb = (() => {
 		return makePromise(transactionRequest);
 	}
 
-	let listLength = 10; // store save list length in idb
-	let listPage = 1; // same with the current page
+	let listLength; // store save list length in idb
+	let listPage; // same with the current page
 	const listLengthMax = 20; // maximum number of rows
 	const listPageMax = 20; // maximum number of pages
 	let requireConfirmDelete = true; // require confirmation on deleting saves from the list menu
 	let requireConfirmSave = false; // require confirmation when saving. even when false, overwriting saves with different saveId will prompt confirmation
 	let requireConfirmLoad = false; // require confirmation before loading
+	let latestSave = { slot: 1, date: 0 }; // keep track of the most recent save, separately from autosave on slot 0
 
 	/**
 	 * construct a saves list page, with configurable length
@@ -329,22 +330,44 @@ const idb = (() => {
 
 			const saveUnlock = !tags().includes("nosave") && V.replayScene === undefined;
 
-			// find the most recent save
-			const latestSaveSlot = { slot: 0, date: 0 };
+			// find the most recent save that is not autosave
+			latestSave = { slot: 1, date: 0 }; // re-init latest slot every time
+			let autoSaveDate; // store timestamp for the autosave separately
 			details.forEach(d => {
-				if (d.data.date > latestSaveSlot.date) {
-					latestSaveSlot.slot = d.slot;
-					latestSaveSlot.date = d.data.date;
+				if (d.slot === 0) autoSaveDate = d.data.date;
+				else if (d.data.date > latestSave.date) {
+					latestSave.slot = d.slot;
+					latestSave.date = d.data.date;
 				}
 			});
+			// default list length is set here
+			if (!listLength) {
+				// idb is indexed by slot, so the highest is always last
+				const slot = details.length ? details.last().slot : 0;
+				// adjust list length to include saves in the highest slot
+				for (listLength = 10; slot > listLength * listPageMax && listLength < listLengthMax; listLength++);
+				length = listLength;
+			}
+			// if not set to a correct value, show the page with the most recent save
+			if (!Number.isInteger(page)) {
+				// autosave is shown on every page, so if autosave is the most recent save - open the page with the most recent non-autosave with the same ID
+				const latestSlot = details.find(d => d.slot === latestSave.slot);
+				const autoSaveExists = details[0].slot === 0;
+				const autoSaveIsLatestButSameId =
+					latestSlot && autoSaveDate > latestSlot.data.date && latestSlot.data.metadata.saveId === details[0].data.metadata.saveId;
+				if (latestSlot && (!autoSaveExists || autoSaveIsLatestButSameId)) page = Math.floor((latestSave.slot - 1) / length);
+				else page = 0; // and if the most recent save has a different ID, start from 0
+				listPage = page + 1;
+			}
 			// default object details for an empty slot
 			const defaultDetailsObj = { date: "", title: "", metadata: { saveId: "", saveName: "" } };
 
 			// always show autosave on top
 			const autoDetailsObj = details[0] && details[0].slot === 0 ? details[0].data : clone(defaultDetailsObj);
-			if (Number(latestSaveSlot.slot) === 0) autoDetailsObj.latestSlot = true;
+			if (autoSaveDate > latestSave.date) autoDetailsObj.latestSlot = true;
 			autoDetailsObj.slot = 0;
-			listContainer.appendChild(generateSaveRow(autoDetailsObj));
+			// don't show if autosaves are disabled by the engine
+			if (Save.autosave.ok()) listContainer.appendChild(generateSaveRow(autoDetailsObj));
 
 			// main loop for adding the save rows
 			for (let slot = length * page + 1; slot < length * (page + 1) + 1; slot++) {
@@ -355,7 +378,7 @@ const idb = (() => {
 				if (detailsIndex !== -1) {
 					detailsObj = details[detailsIndex].data;
 					// add a flag to highlight the most recent save
-					if (Number(latestSaveSlot.slot) === slot) detailsObj.latestSlot = true;
+					if (Number(latestSave.slot) === slot) detailsObj.latestSlot = true;
 				}
 				detailsObj.slot = slot;
 				detailsObj.saveUnlock = saveUnlock;
@@ -369,12 +392,12 @@ const idb = (() => {
 				"<div class=saveGroup><span style='margin: 0'>Special thanks to all those who <a class='link-external' target='_blank' href='https://subscribestar.adult/vrelnir'>Support Degrees of Lewdity</span><div class='saveId'></div><div class='saveButton'></div><div class='saveName'></div><div class='saveDetails'></div></div>";
 			listContainer.appendChild(footer);
 			const clearButton = document.createElement("input");
-			clearButton.type = "button";
-			clearButton.classList.add("saveButton");
-			clearButton.classList.add("saveMenuButton");
-			clearButton.classList.add("right");
-			clearButton.value = "Delete All";
-			clearButton.onclick = () => saveList("confirm clear");
+			Object.assign(clearButton, {
+				type: "button",
+				className: "saveButton saveMenuButton right",
+				value: "Delete All",
+				onclick: () => saveList("confirm clear"),
+			});
 			listContainer.lastChild.appendChild(clearButton);
 		});
 		return listContainer;
@@ -388,9 +411,13 @@ const idb = (() => {
 	 * @returns {DocumentFragment}
 	 */
 	function generateSaveRow(details) {
+		// save row to be returned
 		const row = document.createElement("div");
+		// add a fancy transition that would highlight the row with this id
+		if (details.latestSlot && details.slot !== 0) row.id = "latestSaveRow";
 		row.className = "savesListRow";
 
+		// save group container
 		const group = document.createElement("div");
 		group.className = "saveGroup";
 
@@ -398,11 +425,13 @@ const idb = (() => {
 		const saveId = document.createElement("div");
 		saveId.className = "saveId";
 		saveId.innerText = details.slot === 0 ? "A" : details.slot;
+		if (details.slot > listPageMax * listLengthMax || details.slot < 0) saveId.classList.add("red");
 		group.appendChild(saveId);
 
-		// save/load buttons
+		// save/load buttons container
 		const saveload = document.createElement("div");
 		saveload.className = "saveButton";
+
 		// save button
 		const saveButton = document.createElement("input");
 		saveButton.type = "button";
@@ -413,6 +442,7 @@ const idb = (() => {
 		} else {
 			saveButton.disabled = true;
 		}
+
 		// load button
 		const loadButton = document.createElement("input");
 		loadButton.type = "button";
@@ -430,7 +460,7 @@ const idb = (() => {
 		// save name
 		const saveName = document.createElement("div");
 		saveName.className = "saveName";
-		// highlight saves with the same save id
+		// highlight saves with currently loaded save's id
 		if (V.saveId === details.metadata.saveId) saveName.classList.add("gold");
 		saveName.innerText = details.metadata.saveName ? details.metadata.saveName.slice(0, 10) : details.metadata.saveId;
 		group.appendChild(saveName);
@@ -456,10 +486,11 @@ const idb = (() => {
 
 		// delete button
 		const deleteButton = document.createElement("input");
-		deleteButton.className = "deleteButton";
-		deleteButton.type = "button";
-		deleteButton.value = "Delete";
-		deleteButton.classList.add("right");
+		Object.assign(deleteButton, {
+			className: "deleteButton right",
+			type: "button",
+			value: "Delete",
+		});
 		if (details.date) {
 			deleteButton.classList.add("saveMenuButton");
 			deleteButton.onclick = () => saveList("confirm delete", details);
@@ -485,11 +516,12 @@ const idb = (() => {
 
 		// prepare a re-usable cancel button
 		const cancelButton = document.createElement("input");
-		cancelButton.type = "button";
-		cancelButton.classList.add("saveMenuButton");
-		cancelButton.classList.add("saveMenuConfirm");
-		cancelButton.value = "Cancel";
-		cancelButton.onclick = () => saveList("show saves");
+		Object.assign(cancelButton, {
+			type: "button",
+			className: "saveMenuButton saveMenuConfirm",
+			value: "Cancel",
+			onclick: () => saveList("show saves"),
+		});
 
 		// prepare old save info (if provided)
 		const oldSaveDescription = document.createDocumentFragment();
@@ -506,62 +538,92 @@ const idb = (() => {
 		switch (mode) {
 			case "show saves": {
 				// print saves list
-				if (V.replayScene) {
+				if (V.replayScene || tags().includes("nosave")) {
 					list.appendChild(document.createElement("h3"));
 					list.lastChild.className = "red";
-					list.lastChild.innerText = "The scene viewer is currently in use, preventing the use of the save system.";
-				} else if (tags().includes("nosave")) {
-					list.appendChild(document.createElement("h3"));
-					list.lastChild.className = "red";
-					list.lastChild.innerText = "You can't save here!";
+					if (V.replayScene) list.lastChild.innerText = "The scene viewer is currently in use, preventing the use of the save system.";
+					else list.lastChild.innerText = "You can't save here!";
 				}
 				list.appendChild(document.createElement("p"));
 				list.lastChild.innerText =
-					"Saves here will be lost if your browser cache is cleared. Exporting is recommended to prevent the loss of saves from occuring.";
+					"Saves here will be lost if your browser cache is cleared. Exporting is recommended to prevent the loss of saves from occurring.";
 
 				// THE SAVES LIST
 				list.appendChild(showSavesList());
 
 				// add pager
+				// previous page button
 				const prevPage = document.createElement("input");
-				prevPage.type = "button";
-				prevPage.value = " < ";
-				prevPage.disabled = listPage === 1;
-				prevPage.onclick = () => {
-					if (listPage > 1) listPage--;
-					saveList();
-				};
+				Object.assign(prevPage, {
+					type: "button",
+					value: " < ",
+					disabled: listPage === 1,
+					onclick: () => {
+						if (listPage > 1) listPage--;
+						saveList();
+					},
+				});
 
+				// page number input
 				const pageNum = document.createElement("input");
-				pageNum.type = "number";
-				pageNum.value = listPage;
-				pageNum.style.width = "3em";
-				pageNum.min = 1;
-				pageNum.max = listPageMax;
-				pageNum.onchange = () => {
-					listPage = Math.clamp(pageNum.value, 1, listPageMax);
-					saveList();
-				};
+				Object.assign(pageNum, {
+					id: "pageNum",
+					type: "number",
+					value: listPage,
+					style: "width: 3em",
+					min: 1,
+					max: listPageMax,
+					onchange: () => {
+						listPage = Math.clamp(Math.round(pageNum.value), 1, listPageMax);
+						saveList();
+					},
+				});
 
+				// next page button
 				const nextPage = document.createElement("input");
-				nextPage.type = "button";
-				nextPage.value = " > ";
-				nextPage.disabled = listPage >= listPageMax;
-				nextPage.onclick = () => {
-					if (listPage < listPageMax) listPage++;
-					saveList();
-				};
+				Object.assign(nextPage, {
+					type: "button",
+					value: " > ",
+					disabled: listPage >= listPageMax,
+					onclick: () => {
+						if (listPage < listPageMax) listPage++;
+						saveList();
+					},
+				});
 
+				// list length input
 				const pageLen = document.createElement("input");
-				pageLen.type = "number";
-				pageLen.value = listLength;
-				pageLen.style.width = "3em";
-				pageLen.min = 1;
-				pageLen.max = listLengthMax;
-				pageLen.onchange = () => {
-					listLength = Math.clamp(pageLen.value, 1, listLengthMax);
-					saveList();
-				};
+				Object.assign(pageLen, {
+					id: "pageLen",
+					type: "number",
+					value: listLength,
+					style: "width: 3em",
+					min: 1,
+					max: listLengthMax,
+					onchange: () => {
+						listLength = Math.clamp(pageLen.value, 1, listLengthMax);
+						saveList();
+					},
+				});
+
+				// jump to most recent save button
+				const jumpToLatest = document.createElement("input");
+				Object.assign(jumpToLatest, {
+					type: "button",
+					value: " Jump to most recent manual save ",
+					onclick: () => {
+						// potentially exploitable to allow saving to slots way above the limit, but the limit is arbitrary to begin with, and idb doesn't actually suffer one bit from going beyond that limit
+						listPage = Math.floor((latestSave.slot - 1) / listLength + 1);
+						saveList();
+						setTimeout(() => {
+							const el = document.getElementById("latestSaveRow");
+							if (el != null) {
+								el.classList.remove("jumpToSaveTransition");
+								el.classList.add("jumpToSaveTransition");
+							}
+						}, Engine.minDomActionDelay);
+					},
+				});
 
 				const pager = document.createElement("div");
 				pager.append("Page: ");
@@ -569,33 +631,40 @@ const idb = (() => {
 				pager.appendChild(pageNum);
 				pager.appendChild(nextPage);
 				pager.append(" Saves per page: ");
-				pager.append(pageLen);
+				pager.appendChild(pageLen);
+				pager.appendChild(jumpToLatest);
 
 				list.appendChild(pager);
 
 				// add confirmation toggles
 				const reqSave = document.createElement("input");
-				reqSave.type = "checkbox";
-				reqSave.checked = requireConfirmSave;
-				reqSave.onchange = () => (requireConfirmSave = reqSave.checked);
+				Object.assign(reqSave, {
+					type: "checkbox",
+					checked: requireConfirmSave,
+					onchange: () => (requireConfirmSave = reqSave.checked),
+				});
 				list.appendChild(document.createElement("label"));
 				list.lastChild.append(reqSave);
 				list.lastChild.append(" Require confirmation on Save ");
 				list.append(document.createElement("br"));
 
 				const reqLoad = document.createElement("input");
-				reqLoad.type = "checkbox";
-				reqLoad.checked = requireConfirmLoad;
-				reqLoad.onchange = () => (requireConfirmLoad = reqLoad.checked);
+				Object.assign(reqLoad, {
+					type: "checkbox",
+					checked: requireConfirmLoad,
+					onchange: () => (requireConfirmLoad = reqLoad.checked),
+				});
 				list.appendChild(document.createElement("label"));
 				list.lastChild.append(reqLoad);
 				list.lastChild.append(" Require confirmation on Load ");
 				list.append(document.createElement("br"));
 
 				const reqDelete = document.createElement("input");
-				reqDelete.type = "checkbox";
-				reqDelete.checked = requireConfirmDelete;
-				reqDelete.onchange = () => (requireConfirmDelete = reqDelete.checked);
+				Object.assign(reqDelete, {
+					type: "checkbox",
+					checked: requireConfirmDelete,
+					onchange: () => (requireConfirmDelete = reqDelete.checked),
+				});
 				list.appendChild(document.createElement("label"));
 				list.lastChild.append(reqDelete);
 				list.lastChild.append(" Require confirmation on Delete ");
@@ -603,12 +672,14 @@ const idb = (() => {
 
 				// add instant idb switcher
 				const idbToggle = document.createElement("input");
-				idbToggle.type = "checkbox";
-				idbToggle.checked = idb.active;
-				idbToggle.onchange = () => {
-					idb.active = idbToggle.checked;
-					if (!idb.active) Wikifier.wikifyEval("<<replace #saveList>><<saveList>><</replace>>");
-				};
+				Object.assign(idbToggle, {
+					type: "checkbox",
+					checked: idb.active,
+					onchange: () => {
+						idb.active = idbToggle.checked;
+						if (!idb.active) Wikifier.wikifyEval("<<replace #saveList>><<saveList>><</replace>>");
+					},
+				});
 				list.appendChild(document.createElement("label"));
 				list.lastChild.append(idbToggle);
 				list.lastChild.append(" Enable indexedDB ");
@@ -616,6 +687,10 @@ const idb = (() => {
 				setTimeout(() => {
 					savesDiv.innerHTML = "";
 					savesDiv.append(list);
+					const pageField = document.getElementById("pageNum");
+					if (pageField != null) pageField.value = listPage;
+					const lengthField = document.getElementById("pageLen");
+					if (lengthField != null) lengthField.value = listLength;
 				}, Engine.minDomActionDelay);
 				break;
 			}
@@ -632,19 +707,19 @@ const idb = (() => {
 					confirmSave.lastChild.innerText = "Overwrite save in slot " + details.slot;
 					confirmSave.appendChild(oldSaveDescription);
 				}
-
 				if (details.date && V.saveId !== details.metadata.saveId) {
 					confirmSave.appendChild(document.createElement("span"));
 					confirmSave.lastChild.className = "red";
 					confirmSave.lastChild.innerText = "Save ID does not match, continue with overwrite?";
 				}
-				const saveButton = document.createElement("input");
-				saveButton.type = "button";
-				saveButton.classList.add("saveMenuButton");
-				saveButton.classList.add("saveMenuConfirm");
-				saveButton.value = "Save";
-				saveButton.onclick = () => saveState(details.slot).then(() => window.closeOverlay());
 
+				const saveButton = document.createElement("input");
+				Object.assign(saveButton, {
+					type: "button",
+					className: "saveMenuButton saveMenuConfirm",
+					value: "Save",
+					onclick: () => saveState(details.slot).then(() => window.closeOverlay()),
+				});
 				confirmSave.appendChild(document.createElement("div"));
 				confirmSave.lastChild.appendChild(saveButton);
 				confirmSave.lastChild.appendChild(cancelButton);
@@ -657,6 +732,7 @@ const idb = (() => {
 				break;
 			}
 			case "confirm delete": {
+				// skip confirmation if corresponding toggle is off
 				if (!requireConfirmDelete) return deleteItem(details.slot).then(() => saveList());
 				const confirmDelete = document.createElement("div");
 				confirmDelete.className = "saveBorder";
@@ -666,12 +742,12 @@ const idb = (() => {
 				confirmDelete.appendChild(oldSaveDescription);
 
 				const deleteButton = document.createElement("input");
-				deleteButton.type = "button";
-				deleteButton.classList.add("saveMenuButton");
-				deleteButton.classList.add("saveMenuConfirm");
-				deleteButton.value = "Delete";
-				deleteButton.onclick = () => deleteItem(details.slot).then(() => saveList());
-
+				Object.assign(deleteButton, {
+					type: "button",
+					className: "saveMenuButton saveMenuConfirm",
+					value: "Delete",
+					onclick: () => deleteItem(details.slot).then(() => saveList()),
+				});
 				confirmDelete.appendChild(document.createElement("div"));
 				confirmDelete.lastChild.append(deleteButton);
 				confirmDelete.lastChild.appendChild(cancelButton);
@@ -684,6 +760,7 @@ const idb = (() => {
 				break;
 			}
 			case "confirm load": {
+				// skip confirmation if corresponding toggle is off
 				if (!requireConfirmLoad) return loadState(details.slot);
 				const confirmLoad = document.createElement("div");
 				confirmLoad.className = "saveBorder";
@@ -693,12 +770,12 @@ const idb = (() => {
 				confirmLoad.appendChild(oldSaveDescription);
 
 				const loadButton = document.createElement("input");
-				loadButton.type = "button";
-				loadButton.classList.add("saveMenuButton");
-				loadButton.classList.add("saveMenuConfirm");
-				loadButton.value = "Load";
-				loadButton.onclick = () => loadState(details.slot);
-
+				Object.assign(loadButton, {
+					type: "button",
+					className: "saveMenuButton saveMenuConfirm",
+					value: "Load",
+					onclick: () => loadState(details.slot),
+				});
 				confirmLoad.appendChild(document.createElement("div"));
 				confirmLoad.lastChild.append(loadButton);
 				confirmLoad.lastChild.appendChild(cancelButton);
@@ -711,6 +788,7 @@ const idb = (() => {
 				break;
 			}
 			case "confirm clear": {
+				// storage wipes always require confirmation
 				const confirmClear = document.createElement("div");
 				confirmClear.className = "saveBorder";
 				confirmClear.appendChild(document.createElement("h2"));
@@ -718,12 +796,12 @@ const idb = (() => {
 				confirmClear.lastChild.innerText = "WARNING - Are you sure you would like to delete all saves?";
 
 				const clearButton = document.createElement("input");
-				clearButton.type = "button";
-				clearButton.classList.add("saveMenuButton");
-				clearButton.classList.add("saveMenuConfirm");
-				clearButton.value = "Clear All Saves";
-				clearButton.onclick = () => clearAll().then(() => saveList());
-
+				Object.assign(clearButton, {
+					type: "button",
+					className: "saveMenuButton saveMenuConfirm",
+					value: "Clear All Saves",
+					onclick: () => clearAll().then(() => saveList()),
+				});
 				confirmClear.appendChild(document.createElement("div"));
 				confirmClear.lastChild.append(clearButton);
 				confirmClear.lastChild.appendChild(cancelButton);
@@ -739,22 +817,54 @@ const idb = (() => {
 	}
 
 	return Object.freeze({
-		get dbName() { return dbName; },
-		set dbName(val) { dbName = val; },
-		get lock() { return lock; },
-		set lock(val) { lock = Boolean(val); },
-		get active() { return active; },
-		set active(val) { active = val; },
-		get listLength() { return listLength; },
-		set listLength(val) { listLength = val; },
-		get listPage() { return listPage; },
-		set listPage(val) { listPage = val; },
-		get requireConfirmLoad() { return requireConfirmLoad },
-		set requireConfirmLoad(val) { requireConfirmLoad = val },
-		get requireConfirmSave() { return requireConfirmSave },
-		set requireConfirmSave(val) { requireConfirmSave = val },
-		get requireConfirmDelete() { return requireConfirmDelete },
-		set requireConfirmDelete(val) { requireConfirmDelete = val },
+		get dbName() {
+			return dbName;
+		},
+		set dbName(val) {
+			dbName = val;
+		},
+		get lock() {
+			return lock;
+		},
+		set lock(val) {
+			lock = Boolean(val);
+		},
+		get active() {
+			return active;
+		},
+		set active(val) {
+			active = val;
+		},
+		get listLength() {
+			return listLength;
+		},
+		set listLength(val) {
+			listLength = val;
+		},
+		get listPage() {
+			return listPage;
+		},
+		set listPage(val) {
+			listPage = val;
+		},
+		get requireConfirmLoad() {
+			return requireConfirmLoad;
+		},
+		set requireConfirmLoad(val) {
+			requireConfirmLoad = val;
+		},
+		get requireConfirmSave() {
+			return requireConfirmSave;
+		},
+		set requireConfirmSave(val) {
+			requireConfirmSave = val;
+		},
+		get requireConfirmDelete() {
+			return requireConfirmDelete;
+		},
+		set requireConfirmDelete(val) {
+			requireConfirmDelete = val;
+		},
 		getItem,
 		setItem,
 		deleteItem,
