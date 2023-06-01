@@ -326,12 +326,18 @@
 				<<if $worn.genitals.name is "chastity belt" and !playerHasStrapon()>>
 					<img class="layer-sexmouth" src="img/sex/missionary/active/body/activepenischastity.png">
 				<<elseif $worn.lower.exposed gte 2 and ($worn.under_lower.exposed gte 1 or playerHasStrapon())>>
-					<<if $worn.genitals.name is "chastity cage" and !playerHasStrapon()>>
-						<img class="layer-sexlashes" src="img/sex/missionary/active/body/activechastitycagedown.png">
-						<<if $anususe is "penis">>
-							<img class="layer-sexmouth" @src="_img.activechastitycagedownpenis" @style="'filter: '+_filters.body">
+					<<if $worn.genitals.name.includes("cage") and !playerHasStrapon()>>
+						<<switch $worn.genitals.name>>
+							<<case "flat chastity cage">><<set $_chastityCage to "flat">>
+							<<case "small chastity cage">><<set $_chastityCage to "small">>
+							<<default>><<set $_chastityCage to "">>
+						<</switch>>
+						<img class="layer-sexlashes colour-genitals" @src="'img/sex/missionary/active/body/activechastitycagedown' + $_chastityCage + '.png'">
+						<<if $_chastityCage is "flat">>
+						<<elseif $anususe is "penis">>
+							<img class="layer-sexmouth" @src="_img['activechastitycagedownpenis' + $_chastityCage]" @style="'filter: '+_filters.body">
 						<<else>>
-							<img class="layer-sexmouth" @src="_img.activechastitycagedownpenis" @style="'filter: '+_filters.body">
+							<img class="layer-sexmouth" @src="_img['activechastitycagedownpenis' + $_chastityCage]" @style="'filter: '+_filters.body">
 						<</if>>
 					<<elseif playerHasStrapon()>>
 						<<if $anususe is "penis">>
@@ -968,7 +974,9 @@
 
 			<<if $player.penisExist or playerHasStrapon()>>
 				<<if playerChastity("penis") and !playerHasStrapon()>> /* PLAYER STRAP-ON IMPORTANT IMAGE */
-					<img @class="'layer-sexhair anim-doggy-4f-'+_animspeed" src="img/sex/missionary/active/body/activepenischastity.png">
+					<<if $worn.genitals.name is "chastity cage">>
+						<img @class="'layer-sexhair anim-doggy-4f-'+_animspeed" @src="'img/sex/missionary/active/body/activepenischastity'+$_chastityCage+'.png'">
+					<</if>>
 				<<elseif $penisstate is "penetrated" or $penisstate is "otheranus">>
 					<<if $enemytype isnot "beast" or $monster is 1>>
 						/* I was doing something important here. COlours maybe? */
