@@ -62,6 +62,10 @@ function compile() {
 		echoError "Build failed."
 		exit 1
 	else
+		if [ "$TARGET" != "Degrees of Lewdity.html" ]; then
+			# android builder expects to find a file by this name, and it has to be full copy, not just symlink
+			cp "$TARGET" "Degrees of Lewdity.html";
+		fi
 		echo "Done: \"$TARGET\""
 		exit 0
 	fi
