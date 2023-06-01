@@ -19,6 +19,9 @@ function colourContainerClasses() {
 		(V.underupperwet > 100 ? "wet" : "") +
 		(V.worn.under_upper.colour || "").replace(/ /g, "-") +
 		" " +
+		"genitals-" +
+		(V.worn.genitals.colour_combat || V.worn.genitals.colour || "").replace(/ /g, "-") +
+		" " +
 		"head-" +
 		(V.worn.head.colour_combat || V.worn.head.colour || "").replace(/ /g, "-") +
 		" " +

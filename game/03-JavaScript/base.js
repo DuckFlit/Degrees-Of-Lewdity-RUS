@@ -168,19 +168,38 @@ window.integrityKeyword = integrityKeyword;
  *
  * @param {object} worn clothing article, State.variables.worn.XXXX
  * @param {string} slot clothing article slot used
+ * @param {string} alt alt version for metal/plastic devices
  * @returns {string} printable integrity prefix
  */
 function integrityWord(worn, slot) {
 	const kw = integrityKeyword(worn, slot);
-	switch (kw) {
-		case "tattered":
-		case "torn":
-		case "frayed":
-			T.text_output = kw + " ";
-			break;
-		case "full":
-		default:
-			T.text_output = "";
+	const alt = setup.clothes[slot][clothesIndex(slot, worn)].altDamage;
+	if (alt) {
+		switch (kw) {
+			case "tattered":
+				T.text_output = "cracked ";
+				break;
+			case "torn":
+				T.text_output = "scratched ";
+				break;
+			case "frayed":
+				T.text_output = alt === "metal" ? "tarnished " : "discoloured ";
+				break;
+			case "full":
+			default:
+				T.text_output = "";
+		}
+	} else {
+		switch (kw) {
+			case "tattered":
+			case "torn":
+			case "frayed":
+				T.text_output = kw + " ";
+				break;
+			case "full":
+			default:
+				T.text_output = "";
+		}
 	}
 	return T.text_output;
 }
