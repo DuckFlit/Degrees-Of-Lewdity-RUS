@@ -765,7 +765,7 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 		case "mvaginaentrance":
 			result.text = corruptionCheck
 				? '<span class="red">The slimes in your ear are forcing you to lick your pussy.</span>'
-				: "Your mouth is in front of your penis.";
+				: "Your mouth is in front of your pussy.";
 			if (awarenessCheck) {
 				result.options.push({
 					action: "mvaginalick",
