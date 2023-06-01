@@ -587,31 +587,16 @@ function dayPassed() {
 		if (V.challengetimer < 0) delete V.challengetimer;
 	}
 
-	if (V.whitneyRescueSocial === 1) {
-		if (V.whitneyRescueHumiliated === undefined) V.whitneyRescueHumiliated = 7;
-		else V.whitneyRescueHumiliated--;
-		if (V.whitneyRescueHumiliated <= 0) {
-			delete V.whitneyRescueHumiliated;
-			V.whitneyRescueShaken = 14;
-			V.whitneyRescueSocial = 0;
-		}
-	}
-
-	if (V.whitneyRescueSocial === 0) {
-		if (V.whitneyRescueShaken === undefined) V.whitneyRescueShaken = 14;
-		else V.whitneyRescueShaken--;
-		if (V.whitneyRescueShaken <= 0) {
-			delete V.whitneyRescueShaken;
-			delete V.whitneyRescueSocial;
-		}
-	}
-
-	if (V.whitneyRescueSocial === 2) {
-		if (V.whitneyRescueGrateful === undefined) V.whitneyRescueGrateful = 7;
-		else V.whitneyRescueGrateful--;
-		if (V.whitneyRescueGrateful <= 0) {
-			delete V.whitneyRescueGrateful;
-			delete V.whitneyRescueSocial;
+	if (V.whitneyRescueStatus) {
+		V.whitneyRescueTimer = (V.whitneyRescueTimer || 8) - 1;
+		if (V.whitneyRescueTimer <= 0) {
+			if (V.whitneyRescueStatus === "humiliated") {
+				V.whitneyRescueStatus = "shaken";
+				V.whitneyRescueTimer = 14;
+			} else {
+				delete V.whitneyRescueTimer;
+				delete V.whitneyRescueStatus;
+			}
 		}
 	}
 

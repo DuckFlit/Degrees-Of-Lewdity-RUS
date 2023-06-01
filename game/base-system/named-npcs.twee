@@ -1286,29 +1286,31 @@ Zohar
 			Whitney
 			<<if $NPCName[_i].state is "dungeon">>
 				<span class="red">is gone.</span>
-			<<elseif $whitneyRescueSocial is 1 and !$whitneyRescueHumiliated and !$whitneyRescueShaken>>
-				<span class="red">is vulnerable.</span>	/*triggers immediately after rescue, remains until the next day*/	
-			<<elseif $whitneyRescueHumiliated and $whitneyRescueSocial is 1>> /*remains for up to 7 days after rescue, or until whitneyRescueTalk*/
-				<span class="red">is humiliated.</span>
-			<<elseif $whitneyRescueShaken and $whitneyRescueSocial is 0>> /*if player waits longer than seven days to talk to Whitney about rescue, status remains for two weeks, then Whitney adjusts back to their old self. They will still move onto the gratitude stage if you do ask what's wrong eventually.*/
-				<span class="pink">is unnerved and agitated.</span>
-			<<elseif $whitneyRescueGrateful and $whitneyRescueSocial is 2>> /*remains for 7 days after talking to Whitney post-rescue, then Whitney adjusts back to their old self*/
-				is <span class="green">grateful.</span> 
-			<<elseif $NPCName[_i].love gte 20>>		
-				<<if $NPCName[_i].lust gte 60>>	
+			 <<elseif $whitneyRescueStatus isnot undefined>>
+				<<if $whitneyRescueStatus is "humiliated" and !$whitneyRescueTimer>>
+					<span class="red">is vulnerable.</span>
+				<<elseif $whitneyRescueStatus is "humiliated">>
+					<span class="red">is humiliated.</span>
+				<<elseif $whitneyRescueStatus is "shaken">>
+					<span class="pink">is unnerved and agitated.</span>
+				<<elseif $whitneyRescueStatus is "grateful">>
+					is <span class="green">grateful.</span>
+				<</if>>
+			<<elseif $NPCName[_i].love gte 20>>
+				<<if $NPCName[_i].lust gte 60>>
 					<span class="lewd">is up for some fun.</span>
-				<<else>> 
+				<<else>>
 					<<if $NPCName[_i].dom gte 20>>
 						<span class="lewd">owns you.</span>
-					<<elseif $NPCName[_i].dom lte 8>>	
+					<<elseif $NPCName[_i].dom lte 8>>
 						thinks you're <span class="green"><<nnpc_his "Whitney">> <<girl>>friend.</span>
-					<<else>> 
+					<<else>>
 						<span class="lewd">thinks you're his pet.</span>
 					<</if>>
 				<</if>>
-			<<elseif $NPCName[_i].love lte 5>>			
-				<<if $NPCName[_i].lust gte 60>>				
-					<<if $NPCName[_i].dom gte 18>> 
+			<<elseif $NPCName[_i].love lte 5>>
+				<<if $NPCName[_i].lust gte 60>>
+					<<if $NPCName[_i].dom gte 18>>
 						<span class="pink">wants to make you beg.</span>
 					<<else>>
 						<span class="pink">wants to hear you beg.</span>
@@ -1327,11 +1329,11 @@ Zohar
 					<</if>>
 				<</if>>
 			<<else>>
-				<<if $NPCName[_i].dom gte 20>> 
+				<<if $NPCName[_i].dom gte 20>>
 					thinks you're <span class="teal">fun to pick on.</span>
-				<<elseif $NPCName[_i].dom lte 8>>	
+				<<elseif $NPCName[_i].dom lte 8>>
 					finds you <span class="purple">annoying.</span>
-				<<else>> 
+				<<else>>
 					thinks you're <span class="pink">an easy target.</span>
 				<</if>>
 			<</if>>
@@ -1502,7 +1504,7 @@ Zohar
 							<span class="pink">is in anguish.</span>
 						<<else>>
 							<span class="purple">is melancholy.</span>
-						<</if>>						
+						<</if>>
 					<<else>>
 						<<if $NPCName[_i].lust gte 15>>
 							<span class="purple">is obsessed with you.</span>
@@ -1542,7 +1544,7 @@ Zohar
 						is lonely.
 					<</if>>
 				<</if>>
-			<<else>>	
+			<<else>>
 				<span class="red">wants you to stay forever.</span>
 			<</if>>
 				<<case "Black Wolf">>
@@ -1552,9 +1554,9 @@ Zohar
 						<<if $wolfpackferocity gt $wolfpackharmony>>
 							<span class="lewd"><<print $blackwolfmonster gte 1 ? "is" : "seems">> proud you're <<nnpc_his "Black Wolf">> mate.</span>
 						<<elseif $wolfpackharmony gt $wolfpackferocity>>
-							<span class="lewd"><<print $blackwolfmonster gte 1 ? "is" : "seems">> glad you're <<nnpc_his "Black Wolf">> mate.</span>				
+							<span class="lewd"><<print $blackwolfmonster gte 1 ? "is" : "seems">> glad you're <<nnpc_his "Black Wolf">> mate.</span>
 						<<else>>
-							<span class="lewd">thinks of you as <<nnpc_his "Black Wolf">> mate.</span>				
+							<span class="lewd">thinks of you as <<nnpc_his "Black Wolf">> mate.</span>
 						<</if>>
 					<<elseif $NPCName[_i].love lte $npclovelow>>
 						<<if $wolfpackferocity gt $wolfpackharmony>>
@@ -1568,11 +1570,11 @@ Zohar
 						<<if $wolfpackferocity gt $wolfpackharmony>>
 							<span class="pink">thinks you're a strong addition to the pack.</span>
 						<<elseif $wolfpackharmony gt $wolfpackferocity>>
-							<span class="teal">thinks you're a valuable addition to the pack.</span>				
+							<span class="teal">thinks you're a valuable addition to the pack.</span>
 						<<else>>
-							<span class="teal">values your place in the pack.</span>				
+							<span class="teal">values your place in the pack.</span>
 						<</if>>
-					<</if>>						
+					<</if>>
 				<<else>>
 					<<if $NPCName[_i].love gte $npclovehigh>>
 						<<if $wolfpackferocity gt $wolfpackharmony>>
@@ -1594,11 +1596,11 @@ Zohar
 						<<if $wolfpackferocity gt $wolfpackharmony>>
 							<span class="pink">wants to tussle with you.</span>
 						<<elseif $wolfpackharmony gt $wolfpackferocity>>
-							<span class="teal">wants to spend more time with you.</span>				
+							<span class="teal">wants to spend more time with you.</span>
 						<<else>>
 							has no strong opinion of you.
 						<</if>>
-					<</if>>			
+					<</if>>
 				<</if>>
 
 		<!-- Default cases for all other NNPCs -->
