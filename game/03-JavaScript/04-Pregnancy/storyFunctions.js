@@ -165,7 +165,7 @@ window.playerNormalPregnancyType = playerNormalPregnancyType;
 function wakingPregnancyEvent() {
 	const pregnancy = getPregnancyObject();
 	if (!pregnancy.fetus || V.statFreeze) return false;
-	if (!V.player.vaginaExist && playerNormalPregnancyTotal() === 0 && (!pregnancy.fetus.length || pregnancy.type === "parasite")) return false;
+	if ((!V.player.vaginaExist && playerNormalPregnancyTotal() === 0) || pregnancy.type === "parasite") return false;
 
 	const rng = random(0, 100);
 	const menstruation = V.sexStats.vagina.menstruation;
@@ -256,7 +256,7 @@ window.wakingPregnancyEvent = wakingPregnancyEvent;
 function dailyPregnancyEvent() {
 	const pregnancy = getPregnancyObject();
 	if (!pregnancy.fetus || V.statFreeze) return false;
-	if (!V.player.vaginaExist && playerNormalPregnancyTotal() === 0 && (!pregnancy.fetus.length || pregnancy.type === "parasite")) return false;
+	if ((!V.player.vaginaExist && playerNormalPregnancyTotal() === 0) || pregnancy.type === "parasite") return false;
 
 	const rng = random(0, 100) + (V.daily.pregnancyEvent || 0);
 	const menstruation = V.sexStats.vagina.menstruation;
@@ -283,7 +283,8 @@ function dailyPregnancyEvent() {
 	} else if (
 		V.cycledisable === "f" &&
 		menstruation.currentState === "normal" &&
-		(menstruation.currentDay < 3 || (menstruation.currentDay >= menstruation.currentDaysMax - 1 && rng >= 80))
+		(menstruation.currentDay < 3 || (menstruation.currentDay >= menstruation.currentDaysMax - 1 && rng >= 80)) &&
+		menstruation.periodEnabled
 	) {
 		dailyEffects = "periodIssues";
 	}

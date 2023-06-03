@@ -639,19 +639,25 @@ function masturbationeffectsArms(
 			if (!V.worn.over_lower.vagina_exposed) {
 				fragment.append(
 					Wikifier.wikifyEval(
-						`<span class="blue">You run your fingers over your <<penis>>, feeling the bulge beneath your ${V.worn.over_lower.name}.</span>`
+						`<span class="blue">You run your fingers over your <<penis>>${
+							calculatePenisBulge() ? `, feeling the bulge beneath your ${V.worn.over_lower.name}` : ""
+						}.</span>`
 					)
 				);
 			} else if (!V.worn.lower.vagina_exposed) {
 				fragment.append(
 					Wikifier.wikifyEval(
-						`<span class="blue">You run your fingers over your <<penis>>, feeling the bulge beneath your ${V.worn.lower.name}.</span>`
+						`<span class="blue">You run your fingers over your <<penis>>${
+							calculatePenisBulge() ? `, feeling the bulge beneath your ${V.worn.over_lower.name}` : ""
+						}.</span>`
 					)
 				);
 			} else if (!V.worn.under_lower.vagina_exposed) {
 				fragment.append(
 					Wikifier.wikifyEval(
-						`<span class="blue">You run your fingers over your <<penis>>, feeling the bulge beneath your ${V.worn.under_lower.name}.</span>`
+						`<span class="blue">You run your fingers over your <<penis>>${
+							calculatePenisBulge() ? `, feeling the bulge beneath your ${V.worn.over_lower.name}` : ""
+						}.</span>`
 					)
 				);
 			} else {
@@ -2355,7 +2361,9 @@ function masturbationeffectsMouth({ span, otherElement, additionalEffect, select
 				} else {
 					fragment.append(
 						Wikifier.wikifyEval(
-							`<span class="blue">You run your tongue over your <<penis>>, feeling the bulge beneath your <<exposedlower>>.</span>`
+							`<span class="blue">You run your tongue over your <<penis>>${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
 						)
 					);
 				}
@@ -2376,7 +2384,11 @@ function masturbationeffectsMouth({ span, otherElement, additionalEffect, select
 				}
 			} else {
 				fragment.append(
-					Wikifier.wikifyEval(`<span class="blue">You run your tongue over your <<penis>>, feeling the bulge beneath your <<exposedlower>>.</span>`)
+					Wikifier.wikifyEval(
+						`<span class="blue">You run your tongue over your <<penis>>${
+							calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+						}.</span>`
+					)
 				);
 			}
 			break;
@@ -2415,7 +2427,8 @@ function masturbationeffectsMouth({ span, otherElement, additionalEffect, select
 					V.rightarm = 0;
 					V.rightarmaction = "mrest";
 				}
-				if (altText.hands) fragment.append(Wikifier.wikifyEval(`<span class="lblue">You move your ${altText.hands} away from your <<penis>> to make room.</span> `));
+				if (altText.hands)
+					fragment.append(Wikifier.wikifyEval(`<span class="lblue">You move your ${altText.hands} away from your <<penis>> to make room.</span> `));
 				fragment.append(deepthroateffects(span));
 			}
 			break;
