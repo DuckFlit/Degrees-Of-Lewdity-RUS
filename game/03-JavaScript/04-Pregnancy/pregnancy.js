@@ -978,3 +978,11 @@ function wearingCondom(npcNumber) {
 	return false;
 }
 window.wearingCondom = wearingCondom;
+
+function makeAwareOfDetails() {
+	let pregnancy;
+	pregnancy = getPregnancyObject()
+	pregnancy.awareOfDetails = true;
+	pregnancy.potentialFathers = pregnancy.potentialFathers.filter(s => s.type === pregnancy.fetus[0].type);
+}
+DefineMacro("makeAwareOfDetails", makeAwareOfDetails);
