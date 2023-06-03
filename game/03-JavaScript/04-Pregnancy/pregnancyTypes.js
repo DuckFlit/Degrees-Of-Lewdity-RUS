@@ -255,6 +255,7 @@ function beastTransform(mother, father) {
 function divineTransform(mother, father) {
 	if (mother === "pc" || father === "pc") {
 		if (V.angel >= 6) return "angel";
+		if (V.fallenangel >= 4) return "fallen";
 		if (V.demon >= 6) return "demon";
 	}
 	return null;

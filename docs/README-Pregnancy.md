@@ -247,3 +247,81 @@ Removes specific birth id's from the `V.babyIntro`, used when the introduction o
 -   `<<removeBabyIntro "pc" "Bailey" $recentBirthId>>`
 
 ## childrenStoryFunctions.js Usage
+
+### setChildFirstWord(childId, word, playerAbsent = false)
+
+Will set and return the first word that the child says.
+
+### Children Activity
+
+These are used when the `Childrens Home` passage is currently active, and a sub-function should exist for each type of baby the PC can have.
+
+#### updateChildActivity(childId)
+
+Manages the variables for children activities, then calls the specific function required for each baby type.
+
+#### humanChildActivity(childId)
+
+Sets the variable `child.localVariables.activity` to a new event when called. This allows the player to interact with their human children.
+
+#### wolfChildActivity(childId)
+
+Sets the variable `child.localVariables.activity` to a new event when called. This allows the player to interact with their wolf children.
+
+## pregnancyTypes.js Usage
+
+### Supporting Functions
+
+#### maxParasites(genital = "anus")
+
+Returns the number of parasites that can be in the vagina or anus.
+
+#### canImpregnateParasite(genital = "anus")
+
+Returns if the player can be impregnated by parasites in the vagina or anus.
+
+#### canBeMPregnant()
+
+Returns if the player can be impregnated in the anus. Only males are supported currently.
+
+#### npcPregObject(person, mother)
+
+Prepares an object with all the variables in place. See the function for examples.
+
+#### pregPrep({ motherObject, fatherObject, parasiteType = null, genital = null })
+
+Prepares specific variables that are required for the different pregnancy generators. Will return a string if the pregnancy is invalid and the reason for it. See the function for examples.
+
+#### bodySizeCalc(bodysize)
+
+Returns a string of the body size that a baby will have, the size returned will be adjusted with rng. Currently only checked against the pc's stat.
+
+#### sizeName(bodysize)
+
+Similar to the `bodySizeCalc(bodysize)` function, but does not have any rng with it. Currently only checked against the pc's stat.
+
+#### eyeColourCalc(colour)
+
+Currently ensures that a valid eye colour is provided.
+
+#### hairColourCalc(colour)
+
+Currently ensures that a valid hair colour is provided.
+
+#### skinColourCalc(colour)
+
+Currently ensures that a valid skin colour is provided.
+
+#### beastTransform(mother, father)
+
+Will set the beast transformation variable of that will be set for human babies. Currently only checks for the pc's current completed beast transformation.
+
+#### divineTransform(mother, father)
+
+Will set the divine transformation variable of that will be set for human babies. Currently only checks for the pc's current completed divine transformation.
+
+#### babyBase = ({mother = null, motherKnown = true, father = null, fatherKnown = false, birthId = null, childId = null,type = null, gender = "f", identical = null, size = null, hairColour = null, eyeColour = null, monster = null, skinColour = null, clothes = null, beastTransform = null, divineTransform = null})
+
+Returns a baby object in the expected format, using the many inputs.
+
+### Pregnancy Generator

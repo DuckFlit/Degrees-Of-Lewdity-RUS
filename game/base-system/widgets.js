@@ -72,6 +72,7 @@ const hairStyleCap = {
 };
 
 window.calculatePenisBulge = () => {
+	if (V.worn.under_lower.type.includes("strap-on")) return (V.worn.under_lower.size || 0) * 3;
 	const compressed = V.player.penisExist && V.worn.genitals.type.includes("hidden");
 	if (!V.player.penisExist || compressed) return 0;
 
@@ -153,7 +154,6 @@ function genderappearancecheck() {
 	addfemininityfromfactor(V.makeup.eyeshadow ? 50 : 0, "Eye shadow");
 	addfemininityfromfactor(V.makeup.mascara ? 50 : 0, "Mascara");
 	/* Body structure */
-	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "Bottom size (" + Math.trunc(T.bottom_visibility * 100) + "% visible)");
 	setfemininitymultiplierfromgender(V.player.gender_body);
 	addfemininityfromfactor(T.femininity_multiplier * 200, "Natural features");
 	addfemininityfromfactor(Math.trunc(((V.physique + V.physiquesize / 2) / V.physiquesize) * -100), "Toned muscles");
@@ -260,6 +260,8 @@ function genderappearancecheck() {
 		/* Breast fully covered */
 		addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 4) * 100, 0, Infinity), "Breast size visible through clothing");
 	}
+	/* Bottom */
+	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "Bottom size (" + Math.trunc(T.bottom_visibility * 100) + "% visible)");
 	/* Pregnant Belly */
 	if (V.sexStats === undefined || !playerBellyVisible()) {
 		// do glorious nothing

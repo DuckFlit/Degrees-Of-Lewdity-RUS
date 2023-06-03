@@ -22,7 +22,7 @@ const setChildFirstWord = (childId, word, playerAbsent = false) => {
 		date: { day: Time.monthDay, month: Time.monthName, year: Time.year },
 		playerAbsent,
 	};
-	return true;
+	return word;
 };
 DefineMacro("setChildFirstWord", setChildFirstWord);
 
