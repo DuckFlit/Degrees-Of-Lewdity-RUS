@@ -352,11 +352,12 @@ const idb = (() => {
 			if (!Number.isInteger(page)) {
 				// autosave is shown on every page, so if autosave is the most recent save - open the page with the most recent non-autosave with the same ID
 				const latestSlot = details.find(d => d.slot === latestSave.slot);
-				const autoSaveExists = details[0].slot === 0;
-				const autoSaveIsLatestButSameId =
-					latestSlot && autoSaveDate > latestSlot.data.date && latestSlot.data.metadata.saveId === details[0].data.metadata.saveId;
-				if (latestSlot && (!autoSaveExists || autoSaveIsLatestButSameId)) page = Math.floor((latestSave.slot - 1) / length);
-				else page = 0; // and if the most recent save has a different ID, start from 0
+				if (latestSlot) {
+					const autoSaveExists = details[0].slot === 0;
+					const ignoreAutoSave = latestSlot.data.date > autoSaveDate || latestSlot.data.metadata.saveId === details[0].data.metadata.saveId;
+					if (!autoSaveExists || ignoreAutoSave) page = Math.floor((latestSave.slot - 1) / length);
+					else page = 0;
+				} else page = 0;
 				listPage = page + 1;
 			}
 			// default object details for an empty slot
