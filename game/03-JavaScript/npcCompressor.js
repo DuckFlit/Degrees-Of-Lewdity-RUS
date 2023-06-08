@@ -227,7 +227,25 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 		"tutorial",
 		"debug",
 	];
-	const beastDescList = ["large", "large", "fat", "enormous", "bottlenose", "scaly", "brown", "hairy", "strange", "huge", "large", "fierce", "huge", "slimy"];
+	const beastDescList = ["large",
+		"large",
+		"fat",
+		"enormous",
+		"bottlenose",
+		"scaly",
+		"brown",
+		"hairy",
+		"strange",
+		"huge",
+		"large",
+		"fierce",
+		"slimy",
+		"girthy",
+		"mighty",
+		"hefty",
+		"colossal",
+		"humongous"
+	];
 	const penisDescList = {
 		human: [
 			"none",
@@ -596,7 +614,7 @@ const { npcCompressor, npcDecompressor, childCompressor, childDecompressor } = (
 		if (beast) {
 			health = beastHealthList[beast];
 			healthmax = health;
-			description = beastDescList[beast];
+			description = beastDescList[Number(expandedNPC.slice(position, position + 2))];
 			fullDescription = description + (!monster ? (gender === "m" ? " male " : " female ") : " ") + npcType;
 		} else {
 			let descType;
