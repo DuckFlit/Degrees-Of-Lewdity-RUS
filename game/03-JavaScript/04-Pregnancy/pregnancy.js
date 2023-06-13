@@ -209,10 +209,10 @@ function pregnancyProgress(genital = "vagina") {
 		let multiplier = 1;
 		switch (pregnancy.type) {
 			case "human":
-				multiplier = 1 / ((1 / 9) * V.humanPregnancyMonths);
+				multiplier = 9 / V.humanPregnancyMonths;
 				break;
 			case "wolf":
-				multiplier = 1 / ((1 / 12) * V.wolfPregnancyWeeks);
+				multiplier = 12 / V.wolfPregnancyWeeks;
 				break;
 		}
 		// The `0.5 * ` is because it runs at both midnight and noon
@@ -363,10 +363,10 @@ function npcPregnancyCycle() {
 			let multiplier = 1;
 			switch (pregnancy.type) {
 				case "human":
-					multiplier = 1 / ((1 / 9) * V.humanPregnancyMonths);
+					multiplier = 9 / V.humanPregnancyMonths;
 					break;
 				case "wolf":
-					multiplier = 1 / ((1 / 12) * V.wolfPregnancyWeeks);
+					multiplier = 12 / V.wolfPregnancyWeeks;
 					break;
 			}
 			pregnancy.timer += parseFloat(multiplier.toFixed(3));
@@ -548,10 +548,10 @@ function randomPregnancyProgress() {
 			let multiplier = 1;
 			switch (npc.pregnancy.type) {
 				case "human":
-					multiplier = 1 / ((1 / 9) * V.humanPregnancyMonths);
+					multiplier = 9 / V.humanPregnancyMonths;
 					break;
 				case "wolf":
-					multiplier = 1 / ((1 / 12) * V.wolfPregnancyWeeks);
+					multiplier = 12 / V.wolfPregnancyWeeks;
 					break;
 			}
 			npc.pregnancy.timer += parseFloat(multiplier.toFixed(3));
@@ -795,8 +795,8 @@ function updateRecordedSperm(genital, target, period = 1) {
 	if (genital !== "vagina" && target !== "pc") return null;
 	if (target === "pc") {
 		sperm = V.sexStats[genital].sperm;
-	} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].enabled) {
-		sperm = C.npc[target].sperm;
+	} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled) {
+		sperm = C.npc[target].pregnancy.sperm;
 	}
 	if (sperm) {
 		sperm.forEach(s => {
@@ -816,8 +816,8 @@ function updateRecordedSperm(genital, target, period = 1) {
 		// Remove sperm that is too old now
 		if (target === "pc") {
 			V.sexStats[genital].sperm = sperm.filter(s => s.daysLeft > 0);
-		} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].enabled) {
-			C.npc[target].sperm = sperm.filter(s => s.daysLeft > 0);
+		} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled) {
+			C.npc[target].pregnancy.sperm = sperm.filter(s => s.daysLeft > 0);
 		}
 	}
 }
@@ -827,8 +827,8 @@ function washRecordedSperm(genital, target) {
 	if (genital !== "vagina" && target !== "pc") return null;
 	if (target === "pc") {
 		V.sexStats[genital].sperm = V.sexStats[genital].sperm.filter(s => !s.tag || (s.tag && !s.tag.includes("canWash")));
-	} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].enabled) {
-		C.npc[target].sperm = C.npc[target].sperm.filter(s => !s.tag || (s.tag && !s.tag.includes("canWash")));
+	} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled) {
+		C.npc[target].pregnancy.sperm = C.npc[target].pregnancy.sperm.filter(s => !s.tag || (s.tag && !s.tag.includes("canWash")));
 	}
 }
 DefineMacro("washRecordedSperm", washRecordedSperm);

@@ -517,9 +517,9 @@ function pregnancyDaysEta(pregnancyObject) {
 	const timerLeft = pregnancyObject.timerEnd - pregnancyObject.timer;
 	switch (pregnancyObject.type) {
 		case "human":
-			return Math.floor(timerLeft / (1 / ((1 / 9) * V.humanPregnancyMonths)));
+			return Math.floor(timerLeft / (9 / V.humanPregnancyMonths));
 		case "wolf":
-			return Math.floor(timerLeft / (1 / ((1 / 12) * V.wolfPregnancyWeeks)));
+			return Math.floor(timerLeft / (12 / V.wolfPregnancyWeeks));
 		default:
 			return null;
 	}
