@@ -354,6 +354,11 @@ function dayPassed() {
 		}
 		V.brothelshowdata.done = false;
 	}
+
+	if (V.brothel_escortjob !== undefined && Time.date.timeStamp > V.brothel_escortjob.date){
+		V.brothel_escortjob.missed = true;
+	}
+
 	if (Time.weekDay === 2) {
 		delete V.museumhorse;
 		delete V.museumduck;
