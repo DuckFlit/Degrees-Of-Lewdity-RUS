@@ -1437,33 +1437,43 @@ You fondle yourself. <<if $phase2 is 1>>They watch<<else>>The <<person1>><<perso
 <</if>>
 <<masturbationeffects>>
 <<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and !$daily.robin.masturbation and $rng gte 91 and _robin_location is "orphanage" and _robin.lust gte 2 and _robin.love gte 50 and _robin.trauma lt 20>>
-	<<npc Robin>><<person1>>
 	<<set $daily.robin.masturbation to true>>
-
-	You hear a creak, then a gasp. <span @class="$robinromance ? 'lewd' : 'red'">Robin stands in the doorway,</span>
-	<<if $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1>>
-		eyes on your <<genitals>>.
-		<<if $exhibitionism gte 35>>
-			You don't bother covering up. <<Hes>> probably more embarrassed than you.
-		<<else>>
-			You pull the covers over your nudity, face flushed with shame.<<stress 6>><<gstress>>
-		<</if>>
-		<<arousal 500>><<npcincr Robin lust 2>><<garousal>><<glust>>
+	<<if $robinromance and _robin.lust gte 30 and _robin.love gte 80>>
+		<<set $timer to 20>>
+		<<set $robinWatchingMasturbation to 1>>
+		<<set $robinWatchingMasturbationCount to ($robinWatchingMasturbationCount or 0) + 1>>
 	<<else>>
-		eyes wide in shock.
-		<<if $exhibitionism gte 15>>
-			You pay the interruption little mind. <<Hes>> probably more embarrassed than you.
+		<<npc Robin>><<person1>>
+		You hear a creak, then a gasp. <span @class="$robinromance ? 'lewd' : 'red'">Robin stands in the doorway,</span>
+		<<if $worn.over_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1>>
+			eyes on your <<genitals>>.
+			<<if $exhibitionism gte 35>>
+				You don't bother covering up. <<Hes>> probably more embarrassed than you.
+			<<else>>
+				You pull the covers over your nudity, face flushed with shame.<<stress 6>><<gstress>>
+			<</if>>
+			<<arousal 500>><<npcincr Robin lust 2>><<garousal>><<glust>>
 		<<else>>
-			You jolt upright, face flushed with shame.<<stress 6>><<gstress>>
+			eyes wide in shock.
+			<<if $exhibitionism gte 15>>
+				You pay the interruption little mind. <<Hes>> probably more embarrassed than you.
+			<<else>>
+				You jolt upright, face flushed with shame.<<stress 6>><<gstress>>
+			<</if>>
+			<<arousal 200>><<npcincr Robin lust 1>><<garousal>><<glust>>
 		<</if>>
-		<<arousal 200>><<npcincr Robin lust 1>><<garousal>><<glust>>
-	<</if>>
-	<br><br>
+		<br><br>
 
-	"I-I'm sorry!" <<he>> stutters. <<He>> closes your door in a hurry.
+		"I-I'm sorry!" <<he>> stutters. <<He>> closes your door in a hurry.
+		<br><br>
+	<</if>>
+<</if>>
+<<if $robinWatchingMasturbation and $timer gt 0>>
+	<span class="lewd">You feel like you're being watched.</span>
 	<br><br>
 <</if>>
 <<masturbationactions>>
+<<if $robinWatchingMasturbation and $timer gt 0 and $orgasmdown is 3>><<set $robinWatchingMasturbation++>><</if>>
 
 <div id="masturbationButtons">
 	<div id="next"><<link [[Continue|Home Masturbation]]>><</link>><<nexttext>></div>
@@ -1479,21 +1489,32 @@ You fondle yourself. <<if $phase2 is 1>>They watch<<else>>The <<person1>><<perso
 <br>
 
 :: Home Masturbation Finish
-
 <<effects>>
-There's not much of a thrill doing this here, but at least you feel refreshed.
-<br><br>
+<<npcincr Robin lust `Math.clamp(($robinWatchingMasturbation or 0) * 3, 0, 15)`>>
 
-<<endmasturbation>>
-<<endcombat>>
-
-<<if isLoveInterest("Kylar") and $kylar_camera is 7>>
-	You look at the owl plushie on your wardrobe and wink.
+<<if $robinWatchingMasturbation and $timer gt 0>>
+	As you finish, you can hear the door close. You wonder who was there? <<arousal 500>><<garousal>><<if $exhibitionism lt 55>><<stress 2>><<gstress>><</if>>
 	<br><br>
-<</if>>
+	<<endmasturbation>>
+	<<endcombat>>
+	<br>
+	<<link [[Next|Bedroom]]>><<clotheson>><<endevent>><</link>>
+	<br><br>
+<<else>>
+	There's not much of a thrill doing this here, but at least you feel refreshed.
 
-<<link [[Next|Bedroom]]>><<clotheson>><</link>>
-<br>
+	<<endmasturbation>>
+	<<endcombat>>
+	<br>
+	<<if isLoveInterest("Kylar") and $kylar_camera is 7>>
+		You look at the owl plushie on your wardrobe and wink.
+		<br><br>
+	<</if>>
+
+	<<link [[Next|Bedroom]]>><<clotheson>><</link>>
+	<br>
+<</if>>
+<<unset $robinWatchingMasturbation>>
 
 :: Farm Shower Masturbation
 
