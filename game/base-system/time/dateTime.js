@@ -197,7 +197,7 @@ class DateTime {
 		const isLeapYear = DateTime.isLeapYear(this.year) && this.month < 3;
 		const weekDayOffset = V.weekDayOffset !== undefined ? V.weekDayOffset : 6;
 
-		const totalDays = daysSinceStart + daysInMonth + this.day + Number(isLeapYear) + weekDayOffset;
+		const totalDays = daysSinceStart + daysInMonth + this.day - Number(isLeapYear) + weekDayOffset;
 		const weekDay = (totalDays % 7) + 1;
 
 		return weekDay;
