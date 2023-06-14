@@ -131,10 +131,15 @@
 
 /*Feat Points Menu*/
 <<widget "featsPointsMenu">>
-	<div id="featsStats">
-		You have <span class="green"><<print $feats.allSaves.points - $featsBoosts.pointsUsed>> VrelCoins</span> remaining.
+	<div id="featsStats" class="settingsToggleIndent">
+		<<if $feats.allSaves.points is undefined or $feats.allSaves.points is 0>>
+			You have earned a lifetime total of <span class="red">0 VrelCoins</span> and cannot purchase Feat Boosters.
+			<br>
+			<span class="black small-description">If this is incorrect, please load your last save and restart.</span>
+		<<else>>
+			You have earned a lifetime total of <span class="green"><<print $feats.allSaves.points>> VrelCoins.</span>
+		<</if>>
 	</div>
-	<br>
 	/*Have to do this due to the `????` names*/
 	<<set _listbox to '<<listbox "_upgradeNameID" autoselect>>'>>
 	<<for $_i to 0; $_i lt _upgradeNames.length; $_i++>>
@@ -142,64 +147,112 @@
 			<<set _listbox += '<<option _visibleUpgradeNames[' + $_i + '] _visibleUpgradeIDs[' + $_i + ']>>'>>
 		<</if>>
 	<</for>>
-	<<set _listbox += '<</listbox>> |'>>
+	<<set _listbox += '<</listbox>>'>>
+	<span class="gold settingsToggleIndent">Jump to a specific feat boost:</span>
 	<<print _listbox>>
 
-	<<set _upgradeName to _upgradeNames[_upgradeNameID]>>
-	<<link "Previous">>
-		<<set _upgradeNameID-->>
-		<<if _upgradeNameID lt 0>>
-			<<set _upgradeNameID to _upgradeNames.length - 1>>
-		<</if>>
-		<<if $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden>>
-			<<for _upgradeNameID; $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden; _upgradeNameID-->>
-			<</for>>
-		<</if>>
+	<div class="settingsGridFeats">
+		<div class="settingsHeader">
+			<span id="featName"><<featName>></span>
+			<br>
+			<span style="font-size:80%;">
+				<<link "Previous">>
+					<<set _upgradeNameID-->>
+					<<if _upgradeNameID lt 0>>
+						<<set _upgradeNameID to _upgradeNames.length - 1>>
+					<</if>>
+					<<if $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden>>
+						<<for _upgradeNameID; $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden; _upgradeNameID-->>
+						<</for>>
+					<</if>>
+					<<set _upgradeName to _upgradeNames[_upgradeNameID]>>
+					<<updateFeatsPointsMenu>>
+					<<updateFeatName>>
+				<</link>> |
+				<<link "Next">>
+					<<set _upgradeNameID++>>
+					<<if _upgradeNameID gte _upgradeNames.length>>
+						<<set _upgradeNameID to 0>>
+					<</if>>
+					<<if $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden>>
+						<<for _upgradeNameID; $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden; _upgradeNameID++>>
+							<<if (_upgradeNameID + 1) gte _upgradeNames.length>>
+								<<set _upgradeNameID to 0>>
+								<<break>>
+							<</if>>
+						<</for>>
+					<</if>>
+					<<set _upgradeName to _upgradeNames[_upgradeNameID]>>
+					<<updateFeatsPointsMenu>>
+					<<updateFeatName>>
+				<</link>>
+			</span>
+		</div>
 		<<set _upgradeName to _upgradeNames[_upgradeNameID]>>
-		<<updateFeatsPointsMenu>>
-	<</link>> |
-	<<link "Next">>
-		<<set _upgradeNameID++>>
-		<<if _upgradeNameID gte _upgradeNames.length>>
-			<<set _upgradeNameID to 0>>
-		<</if>>
-		<<if $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden>>
-			<<for _upgradeNameID; $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden; _upgradeNameID++>>
-				<<if (_upgradeNameID + 1) gte _upgradeNames.length>>
-					<<set _upgradeNameID to 0>>
-					<<break>>
-				<</if>>
-			<</for>>
-		<</if>>
-		<<set _upgradeName to _upgradeNames[_upgradeNameID]>>
-		<<updateFeatsPointsMenu>>
-	<</link>> |
-	<br><br>
-	<div @id="'feats-' + _upgradeName">
-		<<featsMenu _upgradeName>>
+		<div @id="'feats-' + _upgradeName" class="settingsToggleItem">
+			<<featsMenu _upgradeName>>
+			<<if $featsBoosts.pointsUsed isnot 0>>
+				<hr>
+				Purchased Feat Boosts:
+				<ul>
+					<<for $_i to 0; $_i lt _upgradeNames.length; $_i++>>
+						<<if $featsBoosts.upgrades[_upgradeNames[$_i]] gt 0>>
+							<li>
+							<<switch _upgradeNames[$_i]>>
+								<<case "randomClothing">>
+									<<print ($featsBoosts.clothingGender is "Either" ? "Male and Female" : $featsBoosts.clothingGender)>> <<print $featsBoosts.name[_upgradeNames[$_i]]>>: <span class="gold"><<print $featsBoosts.upgrades[_upgradeNames[$_i]]>></span> coins
+								<<default>>
+									<<print $featsBoosts.name[_upgradeNames[$_i]]>>: <span class="gold"><<print $featsBoosts.upgrades[_upgradeNames[$_i]]>></span> coins
+							<</switch>>
+							</li>
+						<</if>>
+					<</for>>
+				</ul>
+				You have<span class="green"> <<print $feats.allSaves.points - $featsBoosts.pointsUsed>> VrelCoins</span> left to spend on Feat Boosts.
+			<</if>>
+		</div>
 	</div>
-	<br>
-	<<if $featsBoosts.pointsUsed is 0>>
-		You have spent <span class="green"><<print $featsBoosts.pointsUsed>> VrelCoins</span> so far.
-		<br><br>
-	<<else>>
-		You have spent <span class="green"><<print $featsBoosts.pointsUsed>> VrelCoins</span> so far on:
-		<br>
-		<ul>
-			<<for $_i to 0; $_i lt _upgradeNames.length; $_i++>>
-				<<if $featsBoosts.upgrades[_upgradeNames[$_i]] gt 0>>
-					<li>
-					<<switch _upgradeNames[$_i]>>
-						<<case "randomClothing">>
-							<<print $featsBoosts.clothingGender>> <<print $featsBoosts.name[_upgradeNames[$_i]]>>: <<print $featsBoosts.upgrades[_upgradeNames[$_i]]>>
-						<<default>>
-							<<print $featsBoosts.name[_upgradeNames[$_i]]>>: <<print $featsBoosts.upgrades[_upgradeNames[$_i]]>>
-					<</switch>>
-					</li>
-				<</if>>
-			<</for>>
-		</ul>
-	<</if>>
+<</widget>>
+
+<<widget "updateFeatName">>
+	<<replace #featName>>
+		<<featName>>
+	<</replace>>
+<</widget>>
+
+<<widget "featName">>
+	<<capture _name>>
+		<<set _details to $featsBoosts.upgradeDetails[_name]>>
+		<<set _count to _details.count>>
+		<<if _count gte _details.minCount>>
+			<<switch _name>>
+				<<case "money">>
+					<span class="gold">Starting Money</span>
+				<<case "grades">>
+					<span class="gold">Starting School Grades</span>
+				<<case "purity" "impurity">>
+					<span class="gold" style="text-transform: capitalize;">Daily _name Boost</span>
+				<<case "newLife">>
+					<span class="gold">A New Life</span>
+				<<case "aNewBestFriend">>
+					<span class="gold">A New Best Friend</span>
+				<<case "randomClothing">>
+					<span class="gold">Random Clothing</span>
+				<<case "tattoos">>
+					<span class="gold">Starting Tattoos</span>
+				<<case "defaultMoves">>
+					<span class="gold">Extra Default Moves</span>
+				<<case "specialClothing">>
+					<span class="gold">Special Clothing</span>
+				<<case "sexToys">>
+					<span class="gold">Sex Toys</span>
+				<<default>>
+					<span class="gold"  style="text-transform: capitalize;">Starting _name Grade</span>
+			<</switch>>
+		<<else>>
+			<span class="red">?????</span>
+		<</if>>
+	<</capture>>
 <</widget>>
 
 <<widget "featsMenu">>
@@ -208,114 +261,157 @@
 		<<set _details to $featsBoosts.upgradeDetails[_name]>>
 		<<set _count to _details.count>>
 		<<if _count gte _details.minCount>>
-			<<switch _name>>
-				<<case "money">>
-					<span class="gold">Starting Money:</span> £<<print $money/100 + $featsBoosts.upgrades.money * 50 * _count / _details.cost>>.00
-				<<case "grades">>
-					<span class="gold">Starting school grades:</span> +<<print $featsBoosts.upgrades.grades / _details.cost>>
-				<<case "purity" "impurity">>
-					<span class="gold">Daily _name boost:</span> +<<print $featsBoosts.upgrades[_name] / _details.cost>>
-				<<case "newLife">>
-					<span class="gold">A New Life, a new life:</span> +<<print $featsBoosts.upgrades.newLife / _details.cost>>
-				<<case "aNewBestFriend">>
-					<span class="gold">A new best friend:</span> +<<print $featsBoosts.upgrades.aNewBestFriend / _details.cost>>
-				<<case "randomClothing">>
-					<span class="gold">Random clothing item:</span> +<<print 3 * $featsBoosts.upgrades.randomClothing / _details.cost>>
-				<<case "tattoos">>
-					<span class="gold">Starting tattoos:</span> +<<print $featsBoosts.upgrades.tattoos / _details.cost>>
-				<<case "defaultMoves">>
-					<span class="gold">Extra default moves:</span> +<<print $featsBoosts.upgrades.defaultMoves / _details.cost>>
-				<<case "specialClothing">>
-					<span class="gold">Unlock previously unlocked special clothes:</span> <<print ($featsBoosts.upgrades.specialClothing is 0?"False":"True")>>
-				<<case "sexToys">>
-					<span class="gold">Sex Toys</span>
-				<<default>>
-					<span class="gold">Starting _name grade:</span> +<<print $featsBoosts.upgrades[_name] / _details.cost>>
-			<</switch>>
-			<br>
-			<span class="gold">VrelCoins per upgrade:</span> _details.cost
-			<br>
-			<span class="gold">Upgrades:</span> <<print $featsBoosts.upgrades[_name] / _details.cost>>/<<print _details.limit / _details.cost>>
-			<br>
-			<<if _name is "randomClothing">>
-				<span class="gold">Clothing Type: </span>
-				<label><<print '<<radiobutton "$featsBoosts.clothingGender" "Either" ' + ($featsBoosts.clothingGender is "Either" ? "checked" : "") + '>>'>>Either</label> |
-				<label><<print '<<radiobutton "$featsBoosts.clothingGender" "Male" ' + ($featsBoosts.clothingGender is "Male" ? "checked" : "") + '>>'>>Male</label> |
-				<label><<print '<<radiobutton "$featsBoosts.clothingGender" "Female" ' + ($featsBoosts.clothingGender is "Female" ? "checked" : "") + '>>'>>Female</label>
-				<br>
-				<span class="gold">Enable Custom Colour (expect crazy results): </span>
-					<label><<print '<<radiobutton "$featsBoosts.clothingCustomColors" false ' + ($featsBoosts.clothingCustomColors is false ? "checked" : "") + '>>'>>No</label> |
-					<label><<print '<<radiobutton "$featsBoosts.clothingCustomColors" true ' + ($featsBoosts.clothingCustomColors is true ? "checked" : "") + '>>'>>Yes</label>
-				<br>
-			<</if>>
-			<<if _details.exclusive is "" or $featsBoosts.upgrades[_details.exclusive] is 0>>
-				<<featsPointsMenuButtons _name _details.cost _details.limit>>
+			<<if $feats.allSaves.points is undefined or $feats.allSaves.points is 0>>
+				<span class="red">Earn some VrelCoins in order to purchase this feat boost!</span>
 			<<else>>
-				Remove _details.exclusive upgrades to make use of this upgrade.
-			<</if>>
-
-			<<if _name is "tattoos">>
-				<<set _totalTattoos to $featsBoosts.upgrades.tattoos / _details.cost>>
-				<<if _tattooNumber is undefined or _tattooNumber gt _totalTattoos>>
-					<<set _tattooNumber to Math.clamp(_totalTattoos, 1, $featsBoosts.upgradeDetails.tattoos.limit / _details.cost)>>
-				<</if>>
-
-				<<if _totalTattoos gt 0>>
-					<br>
-					<span class="gold">Tattoo Number:</span>
-					<<print _tattooNumber>>
-					<br>
-					<<if _tattooNumber gt 1>>
-						<<link "Previous Tattoo">>
-							<<set _tattooNumber -= 1>>
-							<<replace #featsPointsMenu>><<featsPointsMenu>><</replace>>
-						<</link>> |
-					<<else>>
-						Previous Tattoo |
-					<</if>>
-					<<if _tattooNumber lt _totalTattoos>>
-						<<link "Next Tattoo">>
-							<<set _tattooNumber += 1>>
-							<<replace #featsPointsMenu>><<featsPointsMenu>><</replace>>
-						<</link>> |
-					<<else>>
-						Next Tattoo |
-					<</if>>
-					<br>
-					<span class="gold">Where the tattoo is:</span>
-					<<set _bodyPartOptions to ["Forehead","Left cheek","Right cheek","Left shoulder","Right shoulder","Back","Breasts","Left bottom","Right bottom","Left thigh","Right thigh","Pubic"]>>
-					<<for _l to 1; _l lte _totalTattoos; _l++>>
-						<<if _tattooNumber is _l>>
-							<<continue>>
+				<<switch _name>>
+					<<case "money">>
+						You will start the game with <span class="green"> £<<print $money/100 + $featsBoosts.upgrades.money * 50 * _count / _details.cost>>.00</span>.
+					<<case "grades">>
+						You will start the game with <<if $featsBoosts.upgrades.grades / _details.cost is 2>><span class="lblue">B</span><<elseif $featsBoosts.upgrades.grades / _details.cost is 1>><span class="blue">C</span><<else>><span class="purple">D</span><</if>> grades.
+					<<case "purity">>
+						<<if ($featsBoosts.upgrades[_name] / _details.cost) is 0>>
+						You will always gain <span class="green">1</span> point of purity per day. Purchased purity boosts will increase your daily purity gain. <i>Actions you take can negate or amplify your purity gains.</i>
+						<<else>>
+						You will always gain <span class="green"><<print 1+$featsBoosts.upgrades[_name] / _details.cost>></span> points of purity per day. <i>Actions you take can negate or amplify your purity gains.</i>
 						<</if>>
-						<<run _bodyPartOptions.delete($featsBoosts.tattoos[_l].bodypart)>>
-					<</for>>
-					<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].bodypart"` autoselect>>
-						<<option "Random">>
-						<<optionsfrom _bodyPartOptions>>
-					<</listbox>>
+					<<case "impurity">>
+						<<if ($featsBoosts.upgrades[_name] / _details.cost) is 0>>
+						You will always gain <span class="green">1</span> point of purity per day. Purchased impurity boosts will counteract this daily purity gain. <i>Actions you take can negate or amplify your purity losses.</i>
+						<<elseif ($featsBoosts.upgrades[_name] / _details.cost) is 1>>
+						You will always lose <span class="red">1</span> point of purity per day. This cancels out the daily point of purity you would normally gain at midnight. <i>Actions you take can negate or amplify your purity losses.</i>
+						<<elseif ($featsBoosts.upgrades[_name] / _details.cost) is 2>>
+						You will always lose <span class="red">1</span> point of purity per day. <i>Actions you take can negate or amplify your purity losses.</i>
+						<<else>>
+						You will always lose <span class="red"><<print $featsBoosts.upgrades[_name] / _details.cost - 1>></span> points of purity per day. <i>Actions you take can negate or amplify your purity losses.</i>
+						<</if>>
+					<<case "newLife">>
+						You will start the game <<print ($featsBoosts.upgrades.newLife is 0 ? "<span class='red'>without</span>" : "<span class='green'>with</span>")>> a parasite.
+					<<case "aNewBestFriend">>
+						You will start the game <<print ($featsBoosts.upgrades.aNewBestFriend is 0 ? "<span class='red'>without</span>":"<span class='green'>with</span>")>> an ear slime.
+					<<case "randomClothing">>
+						You will start the game with <span class="gold"><<print 3 * $featsBoosts.upgrades.randomClothing / _details.cost>></span> random clothing items.
+					<<case "tattoos">>
+						<<if $featsBoosts.upgrades.tattoos / _details.cost is 0>>
+							You will start the game with <span class="red">no</span> tattoos.
+						<<elseif $featsBoosts.upgrades.tattoos / _details.cost is 1>>
+							You will start the game with <span class="green">1</span> tattoo.
+						<<else>>
+							You will start the game with <span class="green"><<print $featsBoosts.upgrades.tattoos / _details.cost>></span> tattoos.
+						<</if>>
+					<<case "defaultMoves">>
+							You will start the game with <span class="green"><<print 2 + $featsBoosts.upgrades.defaultMoves / _details.cost>></span> default movesets. These are sets of actions that can be chosen by default in combat, allowing you to speed up gameplay by not having to manually select your preferred actions. Movesets can be set up in the <span class="gold">Attitudes</span> menu.
+					<<case "specialClothing">>
+						You will start the game with special clothing from the Forest Shop <<print ($featsBoosts.upgrades.specialClothing is 0?"<span class='red'>locked</span>":"<span class='green'>unlocked</span>")>>. This booster won't automatically unlock new clothing items that have been added.
+					<<case "sexToys">>
+						You will start the game with
+						<<if $featsBoosts.upgrades[_name] / _details.cost is 0>>
+							<span class="red">no</span> sex toys.
+						<<elseif $featsBoosts.upgrades[_name] / _details.cost gte 1>>
+							<span class="green"><<print 3 * $featsBoosts.upgrades.sexToys / _details.cost>></span> sex toys.
+						<</if>>
+					<<default>>
+						You will start the game with
+						<<if $featsBoosts.upgrades[_name] / _details.cost is 1>>
+							_name at level <span class="pink">F+</span>.
+						<<elseif $featsBoosts.upgrades[_name] / _details.cost is 2>>
+							_name at level <span class="purple">D</span>.
+						<<elseif $featsBoosts.upgrades[_name] / _details.cost is 3>>
+							_name at level <span class="purple">D+</span>.
+						<<elseif $featsBoosts.upgrades[_name] / _details.cost is 4>>
+							_name at level <span class="blue">C</span>.
+						<<else>>
+							<span class="red">no</span> proficiency in _name.
+						<</if>>
+				<</switch>>
+				<<if _name is "randomClothing">>
 					<br>
-					<span class="listMargin">
-						<span class="gold">What the tattoo is:</span>
-						<<featsTattooOptions>>
-						<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].tattoo"` autoselect>>
-							<<option "Random">>
-							<<optionsfrom _featsTattooOptions>>
-						<</listbox>>
-					</span>
+					<span class="gold bold">Clothing Type: </span>
+					<label><<print '<<radiobutton "$featsBoosts.clothingGender" "Either" ' + ($featsBoosts.clothingGender is "Either" ? "checked" : "") + '>>'>> Either</label> |
+					<label><<print '<<radiobutton "$featsBoosts.clothingGender" "Male" ' + ($featsBoosts.clothingGender is "Male" ? "checked" : "") + '>>'>> Male</label> |
+					<label><<print '<<radiobutton "$featsBoosts.clothingGender" "Female" ' + ($featsBoosts.clothingGender is "Female" ? "checked" : "") + '>>'>> Female</label>
 					<br>
-					<span class="listMargin">
-						<span class="gold">Tattoo Type:</span>
-						<<set _penOptions to ["Tattoo","Brand"]>>
-						<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].pen"` autoselect>>
-							<<optionsfrom _penOptions>>
-						<</listbox>>
-					</span>
-					<br>
+					<span class="gold bold">Enable Custom Colour (expect crazy results): </span>
+						<label><<print '<<radiobutton "$featsBoosts.clothingCustomColors" false ' + ($featsBoosts.clothingCustomColors is false ? "checked" : "") + '>>'>> No</label> |
+						<label><<print '<<radiobutton "$featsBoosts.clothingCustomColors" true ' + ($featsBoosts.clothingCustomColors is true ? "checked" : "") + '>>'>> Yes</label>
 				<</if>>
-			<</if>>
-			<<if _name is "sexToys">>
-				<div id="sexToys"><<sexToysFeatUI>></div>
+				<<if _details.exclusive is "" or $featsBoosts.upgrades[_details.exclusive] is 0>>
+					<<featsPointsMenuButtons _name _details.cost _details.limit>>
+				<<else>>
+					<span class="red">Remove _details.exclusive upgrades to make use of this upgrade.</span>
+				<</if>>
+
+				<<if _name is "tattoos">>
+					<<set _totalTattoos to $featsBoosts.upgrades.tattoos / _details.cost>>
+					<<if _tattooNumber is undefined or _tattooNumber gt _totalTattoos>>
+						<<set _tattooNumber to Math.clamp(_totalTattoos, 1, $featsBoosts.upgradeDetails.tattoos.limit / _details.cost)>>
+					<</if>>
+
+					<<if _totalTattoos gt 0>>
+						<div class="settingsGrid" style="margin:10px 0px">
+							<div class="settingsHeader">Tattoo <<print _tattooNumber>>
+							<br>
+								<<if _tattooNumber gte 1 and _totalTattoos gt 1>>
+								<span style="font-size:80%;">
+									<<link "Previous Tattoo">>
+										<<set _tattooNumber-->>
+										<<if _tattooNumber lte 0>>
+											<<set _tattooNumber to _totalTattoos>>
+										<</if>>
+										<<replace #featsPointsMenu>><<featsPointsMenu>><</replace>>
+									<</link>> |
+									<<link "Next Tattoo">>
+										<<set _tattooNumber++>>
+										<<if _tattooNumber gt _totalTattoos>>
+											<<set _tattooNumber to 1>>
+										<</if>>
+										<<replace #featsPointsMenu>><<featsPointsMenu>><</replace>>
+									<</link>>
+								</span>
+								<</if>>
+							</div>
+							<div class="settingsToggleItem">
+								<span class="listMargin">
+									<span class="gold">Tattoo Type:</span>
+									<<set _penOptions to ["Tattoo","Brand"]>>
+									<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].pen"` autoselect>>
+										<<optionsfrom _penOptions>>
+									<</listbox>>
+								</span>
+							</div>
+							<div class="settingsToggleItem">
+								<span class="gold">Tattoo Location:</span>
+								<<set _bodyPartOptions to ["Forehead","Left cheek","Right cheek","Left shoulder","Right shoulder","Back","Breasts","Left bottom","Right bottom","Left thigh","Right thigh","Pubic"]>>
+								<<for _l to 1; _l lte _totalTattoos; _l++>>
+									<<if _tattooNumber is _l>>
+										<<continue>>
+									<</if>>
+									<<run _bodyPartOptions.delete($featsBoosts.tattoos[_l].bodypart)>>
+								<</for>>
+								<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].bodypart"` autoselect>>
+									<<option "Random">>
+									<<optionsfrom _bodyPartOptions>>
+								<</listbox>>
+							</div>
+							<div @id="_tattooNumber + 'tattooFilter'" class="settingsToggleItem">
+								<<tattooFilter>>
+							</div>
+							<div @id="_tattooNumber + 'tattooList'" class="settingsToggleItem">
+								<<tattooList>>
+							</div>
+						</div>
+						<<run $(() => {
+						const currentList = '#' + _tattooNumber + 'tattooList';
+						const currentFilterId = '#' + _tattooNumber + 'tattooFilter';
+							$(currentFilterId + ' select').on('input change', e => {
+							new Wikifier(null, `<<print "${currentList}">> <<replace "${currentList}">><<tattooList>><</replace>>`);
+							}).trigger('change');
+						})>>
+					<</if>>
+				<</if>>
+				<<if _name is "sexToys">>
+					<div id="sexToys"><<sexToysFeatUI>></div>
+				<</if>>
 			<</if>>
 		<<else>>
 			<span class="red"><<print $featsBoosts.missing[_name]>></span>
@@ -323,56 +419,190 @@
 	<</capture>>
 <</widget>>
 
+<<widget "tattooFilter">>
+	<span class="gold">Filter designs by:</span>
+	<<set _tattooFilters = {
+		"All" : "all",
+		"Image" : "object",
+		"Text" : "text",
+		"Masculine" : "m",
+		"Feminine" : "f",
+		"Bestiality" : "bestiality",
+		"Cattle" : "cattle",
+		"Combat" : "combat",
+		"Criminal" : "criminal",
+		"Exhibitionism" : "exhibitionism",
+		"Prostitution" : "prostitution",
+		"Rape" : "rape",
+		"Sex" : "sex",
+		"Violence" : "violence",
+		"Pregnancy" : "pregnancy",
+		"Impreg" : "impreg",
+		}>>
+	<<listbox `"$tattooFilter"+_tattooNumber` autoselect>>
+		<<optionsfrom _tattooFilters>>
+	<</listbox>>
+<</widget>>
+
+<<widget "tattooList">>
+	<span class="gold">Tattoo Design:</span>
+	<<featsTattooOptions>>
+	<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].tattoo"` autoselect>>
+		<<option "Random">>
+		<<optionsfrom _featsTattooOptions>>
+	<</listbox>>
+<</widget>>
+
+<<widget "featsTattooOptions">>
+	<<if _featsTattooAll is undefined>>
+		<<set _featsTattooAll to []>>
+		<<for _value range setup.bodywriting>>
+			<<if _value.featSkip is true>>
+				<<continue>>
+			<</if>>
+			<<run _featsTattooAll.push(_value.writing)>>
+		<</for>>
+	<</if>>
+	<<set _featsTattooOptions to []>>
+	<<switch _tattooNumber>>
+		<<case 1>><<set _tattooFilter to $tattooFilter1>>
+		<<case 2>><<set _tattooFilter to $tattooFilter2>>
+		<<case 3>><<set _tattooFilter to $tattooFilter3>>
+		<<case 4>><<set _tattooFilter to $tattooFilter4>>
+		<<case 5>><<set _tattooFilter to $tattooFilter5>>
+	<</switch>>
+	<<for _value range setup.bodywriting>>
+		<<if (_tattooFilter is "all" and _value.featSkip)
+		or (_tattooFilter is "object" and (_value.featSkip or _value.type isnot _tattooFilter))
+		or (_tattooFilter is "text" and (_value.featSkip or _value.type isnot _tattooFilter))
+		or (_tattooFilter is "m" and (_value.featSkip or _value.gender isnot _tattooFilter))
+		or (_tattooFilter is "f" and (_value.featSkip or _value.gender isnot _tattooFilter))
+		or (_tattooFilter isnot "all" and _tattooFilter isnot "object" and _tattooFilter isnot "text" and _tattooFilter isnot "m" and _tattooFilter isnot "f" and (_value.featSkip or _value.special isnot _tattooFilter))>>
+			<<continue>>
+		<</if>>
+		<<run _featsTattooOptions.push(_value.writing)>>
+	<</for>>
+<</widget>>
+
 <<widget "featsPointsMenuButtons">>
 	<<set _type to _args[0]>>
-	<<set _multi to _args[1]>>
-	<<set _max to _args[2]>>
+	<<set _multi to _args[1]>> /*_details.cost */
+	<<set _max to _args[2]>> /*_details.limit */
+	<<set _maxupgrades to _max/_multi - ($featsBoosts.upgrades[_name] / _details.cost)>>
+	<<set _totalUpgrades to _max/_multi>>
+	<<set _purchasedUpgrades to $featsBoosts.upgrades[_name] / _details.cost>>
+	<br><br>
+	<span class="gold bold">Upgrades:</span>
+	<br>
+	<div style="margin-bottom:10px;">
+	<<switch _name>>
+	<<case "money">>
+		Each purchased upgrade will add <span class="green">£<<print $featsBoosts.upgradeDetails.money.limit * 5>></span> to your starting money.
+	<<case "grades">>
+		Each purchased upgrade will raise your starting school grades by <span class="green">one letter grade.</span>
+	<<case "purity">>
+		Each purchased upgrade will increase your daily purity by one point per level.
+	<<case "impurity">>
+		Each purchased upgrade will decrease your daily purity by one point per level.
+	<<case "newLife">>
+		<<if _totalUpgrades is 2>>
+			Purchase the first upgrade to start the game with a hermaphrodite tentacle parasite. Purchase the second upgrade to give it perfect activity; otherwise it will have random activity.
+		<<else>>
+			Purchase the first upgrade to start the game with a hermaphrodite tentacle parasite with random activity. Acquire a second broodmother feat to give it perfect activity.
+		<</if>>
+	<<case "aNewBestFriend">>
+		Purchase this upgrade to start the game with a left ear slime parasite.
+	<<case "randomClothing">>
+		Each purchased upgrade gives you three random clothing items of the specified gender.
+	<<case "tattoos">>
+		Each purchased upgrade will allow you to get one starting tattoo or brand of your choice.
+ 	<<case "defaultMoves">>
+		Each purchased upgrade will grant you an additional action set.
+	<<case "specialClothing">>
+		Purchase this upgrade to unlock previously unlocked special clothes.
+	<<case "sexToys">>
+		Each purchased upgrade will give you three starting sex toys of your choice.
+	<<default>>
+		Each purchased upgrade will raise your _name level by <span class="green">one letter grade.</span>
+	<</switch>>
+	</div>
 	<<capture _type _multi _max>>
+		<div class="featButtonContainer">
 		<<if _multi is undefined>>
 			<<set _multi to 1>>
 		<</if>>
 		<<if _max is undefined>>
 			<<set _max to 20>>
 		<</if>>
-		<<if $featsBoosts.upgrades[_type] gte 5 * _multi>>
-			<<link "Decrease by 5">><<print "<<updateFeatsPointsMenu _type " + (-5 * _multi) +">>">><</link>> |
+		<<if $featsBoosts.upgrades[_type] gte 1 * _multi>>
+			<div class="featButton roundl">
+			<<button "<span class='fa-icon fa-left'></span><span class='fa-icon fa-left'></span>">>
+				<<print "<<updateFeatsPointsMenu _type " + (-1 * (_purchasedUpgrades * _multi)) +">>">>
+			<</button>>
+			</div>
 		<<else>>
-			Decrease by 5 |
+			<div class="featButtonGrey roundl">
+			<<button "<span class='fa-icon fa-left'></span><span class='fa-icon fa-left'></span>">>
+			<</button>>
+			</div>
 		<</if>>
 		<<if $featsBoosts.upgrades[_type] gte 1 * _multi>>
-		<<link "Decrease">><<print "<<updateFeatsPointsMenu _type " + (-1 * _multi) +">>">><</link>> |
+			<div class="featButton">
+			<<button "<span class='fa-icon fa-left'></span>">>
+				<<print "<<updateFeatsPointsMenu _type " + (-1 * _multi) +">>">>
+			<</button>>
+			</div>
 		<<else>>
-			Decrease |
+			<div class="featButtonGrey">
+			<<button "<span class='fa-icon fa-left'></span>">>
+			<</button>>
+			</div>
 		<</if>>
-		<<if $featsBoosts.upgrades[_type] / _multi lt _max / _multi
+		<div class="gold featButton buttonDisable">
+			<<button "_purchasedUpgrades / _totalUpgrades">>
+			<</button>>
+		</div>
+		<<if $featsBoosts.upgrades[_type] / _multi lt  _totalUpgrades
 		and $feats.allSaves.points - $featsBoosts.pointsUsed gte 1 * _multi>>
-			<<link "Increase">><<print "<<updateFeatsPointsMenu _type " + (1 * _multi) +">>">><</link>> |
+			<div class="featButton">
+			<<button "<span class='fa-icon fa-right'></span>">>
+				<<print "<<updateFeatsPointsMenu _type " + (1 * _multi) +">>">>
+			<</button>>
+			</div>
 		<<else>>
-			Increase |
+			<div class="featButtonGrey">
+			<<button "<span class='fa-icon fa-right'></span>">>
+			<</button>>
+			</div>
 		<</if>>
-		<<if $featsBoosts.upgrades[_type] / _multi lt (_max / _multi) - 4
-		and $feats.allSaves.points - $featsBoosts.pointsUsed gte 5 * _multi>>
-			<<link "Increase by 5">><<print "<<updateFeatsPointsMenu _type " + (5 * _multi) +">>">><</link>>
+		<<if $featsBoosts.upgrades[_type] / _multi lt _totalUpgrades
+		and $feats.allSaves.points - $featsBoosts.pointsUsed gte _maxupgrades * _multi>>
+			<div class="featButton roundr">
+			<<button "<span class='fa-icon fa-right'></span><span class='fa-icon fa-right'></span>">>
+				<<print "<<updateFeatsPointsMenu _type " + (_maxupgrades * _multi) +">>">>
+			<</button>>
+			</div>
 		<<else>>
-			Increase by 5
+			<div class="featButtonGrey roundr">
+			<<button "<span class='fa-icon fa-right'></span><span class='fa-icon fa-right'></span>">>
+			<</button>>
+			</div>
 		<</if>>
+		</div>
+		<div class=" black small-description" style="margin-top:10px;">(<span class="gold">_details.cost <<print (_details.cost is 1 ? "VrelCoin" : "VrelCoins")>></span> per upgrade)</div>
+
 		<<if _type is "tending">>
-			<br><br>
+			<div style="margin-top:10px;">
 			<span class="green">Green Thumb</span> - More bountiful crops and no decay when using fertiliser. Start with one fertiliser.
-			<br>
-			<span class="gold">VrelCoin cost:</span> <<print "$featsBoosts.upgradeDetails.greenThumb.cost">><br>
-			<span class="gold">Upgrades:</span> <<print $featsBoosts.upgrades.greenThumb / $featsBoosts.upgradeDetails.greenThumb.cost>>/<<print $featsBoosts.upgradeDetails.greenThumb.limit / $featsBoosts.upgradeDetails.greenThumb.cost>>
-			<br>
+			<div class="featButton roundl roundr" style="margin-top:5px;">
 			<<if $feats.allSaves.points - $featsBoosts.pointsUsed gte $featsBoosts.upgradeDetails.greenThumb.cost and !$featsBoosts.upgrades.greenThumb>>
-				<<link "Start with this trait">><<print "<<updateFeatsPointsMenu greenThumb $featsBoosts.upgradeDetails.greenThumb.cost>>">><</link>> |
-			<<else>>
-				Start with this trait |
+				<<button "Start with this trait">><<print "<<updateFeatsPointsMenu greenThumb $featsBoosts.upgradeDetails.greenThumb.cost>>">><</button>>
+			<<elseif $featsBoosts.upgrades.greenThumb>>
+				<<button "Remove this trait">><<print "<<updateFeatsPointsMenu greenThumb " + (-1 * $featsBoosts.upgradeDetails.greenThumb.cost) + ">>">><</button>>
 			<</if>>
-			<<if $featsBoosts.upgrades.greenThumb>>
-				<<link "Remove this trait">><<print "<<updateFeatsPointsMenu greenThumb " + (-1 * $featsBoosts.upgradeDetails.greenThumb.cost) + ">>">><</link>> |
-			<<else>>
-				Remove this trait |
-			<</if>>
+			</div>
+			</div>
+			<div class=" black small-description" style="margin-top:10px;">(<span class="gold"><<print "$featsBoosts.upgradeDetails.greenThumb.cost">> VrelCoins</span> to purchase)</div>
 		<</if>>
 	<</capture>>
 <</widget>>
@@ -387,35 +617,43 @@
 		<<run Object.values(setup.sextoys).forEach(toy => T.toys[toy.namecap] = toy.index)>>
 	<</if>>
 	<<if _totalToys gt 1>>
-		<br>
-		<span class="gold">Toy selected:</span> <<print _toyNumber + 1>> of <<print _totalToys>>
-		<br>
-		<<if _toyNumber gt 0>>
-			<<link "Previous Toy">>
-				<<set _toyNumber -= 1>>
-				<<replace #sexToys>><<sexToysFeatUI>><</replace>>
-			<</link>> |
-		<<else>>
-			Previous Toy |
-		<</if>>
-		<<if _toyNumber lt _totalToys - 1>>
-			<<link "Next Toy">>
-				<<set _toyNumber += 1>>
-				<<replace #sexToys>><<sexToysFeatUI>><</replace>>
-			<</link>> |
-		<<else>>
-			Next Toy |
-		<</if>>
-		<div id="sexToysFeatUIIndex">
-			Sex Toy:
-			<<listbox "$featsBoosts.sexToys[_toyNumber].index" autoselect>>
-				<<option "Random" -1>>
-				<<optionsfrom _toys>>
-			<</listbox>>
+		<div class="settingsGrid" style="margin:10px 0px">
+			<div class="settingsHeader">Toy <<print _toyNumber+1>>
+			<br>
+				<<if _toyNumber gte 0 and _totalToys gt 1>>
+				<span style="font-size:80%;">
+					<<link "Previous Toy">>
+						<<set _toyNumber-->>
+						<<if _toyNumber lt 0>>
+							<<set _toyNumber to _totalToys-1>>
+						<</if>>
+						<<replace #featsPointsMenu>><<featsPointsMenu>><</replace>>
+					<</link>> |
+					<<link "Next Toy">>
+						<<set _toyNumber++>>
+						<<if _toyNumber+1 gt _totalToys>>
+							<<set _toyNumber to 0>>
+						<</if>>
+						<<replace #featsPointsMenu>><<featsPointsMenu>><</replace>>
+					<</link>>
+				</span>
+				<</if>>
+			</div>
+			<div class="settingsToggleItem">
+				<span class="gold">Sex Toy:</span>
+				<div id="sexToysFeatUIIndex">
+					<<listbox "$featsBoosts.sexToys[_toyNumber].index" autoselect>>
+						<<option "Random" -1>>
+						<<optionsfrom _toys>>
+					<</listbox>>
+				</div>
+			</div>
+			<div id="sexToysFeatUIColour">
+				<<sexToysFeatUIColour>>
+			</div>
 		</div>
-		<div id="sexToysFeatUIColour"><<sexToysFeatUIColour>></div>
 		<<run $(() => { $('#sexToysFeatUIIndex select').on('input change', e => {
-			new Wikifier(null, "<<replace '#sexToysFeatUIColour'>><<sexToysFeatUIColour>><</replace>>")
+			new Wikifier(null, "<<replace '#sexToysFeatUIColour'>><<sexToysFeatUIColour>><</replace>>");
 		}).trigger('change') })>>
 	<</if>>
 <</widget>>
@@ -431,11 +669,13 @@
 		<<set _toyColours to {}>>
 	<</if>>
 	<<if Object.values(_toyColours).length gt 1>>
-		Sex Toy Colour:
+	<div class="settingsToggleItem">
+		<span class="gold">Colour:</span><br>
 		<<listbox "$featsBoosts.sexToys[_toyNumber].colour" autoselect>>
 			<<option "Random" -1>>
 			<<optionsfrom _toyColours>>
 		<</listbox>>
+	</div>
 	<</if>>
 <</widget>>
 
@@ -447,18 +687,6 @@
 	<<replace #featsPointsMenu>>
 		<<featsPointsMenu>>
 	<</replace>>
-<</widget>>
-
-<<widget "featsTattooOptions">>
-	<<if _featsTattooOptions is undefined>>
-		<<set _featsTattooOptions to []>>
-		<<for _value range setup.bodywriting>>
-			<<if _value.featSkip is true>>
-				<<continue>>
-			<</if>>
-			<<run _featsTattooOptions.push(_value.writing)>>
-		<</for>>
-	<</if>>
 <</widget>>
 
 /* Fake feats, for when you want to gaslight the player. Used for the Wraith, primarily */

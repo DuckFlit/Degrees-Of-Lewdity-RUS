@@ -449,6 +449,77 @@ function settingsNamedNpcBreastSize(id, persist) {
 }
 window.settingsNamedNpcBreastSize = settingsNamedNpcBreastSize;
 
+function settingsBeastGenders() {
+	const updateText = () => {
+		let val = V.beastmalechance;
+		let text = null;
+		switch (val) {
+			case 100:
+				text = "<span class='gold inline-colour'>All</span> beasts will be <span class='blue inline-colour'>male</span>.";
+				break;
+			case 75:
+				text = "<span class='gold inline-colour'>75%</span> of beasts will be <span class='blue inline-colour'>male.</span>";
+				break;
+			case 50:
+				text = "Beasts will be <span class='gold inline-colour'>evenly</span> split between <span class='blue inline-colour'>male</span> and <span class='pink inline-colour'>female</span> genders.";
+				break;
+			case 25:
+				text = "<span class='gold inline-colour'>75%</span> of beasts will be <span class='pink inline-colour'>female.</span>";
+				break;
+			case 0:
+				text = "<span class='gold inline-colour'>All</span> beasts will be <span class='pink inline-colour'>female.</span>";
+				break;
+			default:
+				text = "<span class='gold inline-colour'>" + V.beastmalechance + "%</span> of beasts will be <span class='blue inline-colour'>male.</span>";
+				break;		}
+		jQuery("#numberslider-value-beastmalechance").text("").append(text).addClass("small-description");
+	};
+
+	$(() => {
+		updateText();
+		$("#numberslider-input-beastmalechance").on("input change", function (e) {
+			updateText();
+		});
+	});
+}
+window.settingsBeastGenders = settingsBeastGenders;
+
+function settingsNpcGenders() {
+	const updateText = () => {
+		let val = V.malechance;
+		let text = null;
+		switch (val) {
+			case 100:
+				text = "<span class='gold inline-colour'>All</span> NPCs will be <span class='blue inline-colour'>male</span>.";
+				break;
+			case 75:
+				text = "<span class='gold inline-colour'>75%</span> of NPCs will be <span class='blue inline-colour'>male.</span>";
+				break;
+			case 50:
+				text = "NPCs will be <span class='gold inline-colour'>evenly</span> split between <span class='blue inline-colour'>male</span> and <span class='pink inline-colour'>female</span> genders.";
+				break;
+			case 25:
+				text = "<span class='gold inline-colour'>75%</span> of NPCs will be <span class='pink inline-colour'>female.</span>";
+				break;
+			case 0:
+				text = "<span class='gold inline-colour'>All</span> NPCs will be <span class='pink inline-colour'>female.</span>";
+				break;
+			default:
+				text = "<span class='gold inline-colour'>" + V.malechance + "%</span> of NPCs will be <span class='blue inline-colour'>male.</span>";
+				break;
+		}
+		jQuery("#numberslider-value-malechance").text("").append(text).addClass("small-description");
+	};
+
+	$(() => {
+		updateText();
+		$("#numberslider-input-malechance").on("input change", function (e) {
+			updateText();
+		});
+	});
+}
+window.settingsNpcGenders = settingsNpcGenders;
+
 // Checks current settings page for data attributes
 // Run only when settings tab is changed (probably in "displaySettings" widget)
 // data-target is the target element that needs to be clicked for the value to be updated
