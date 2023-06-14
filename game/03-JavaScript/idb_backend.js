@@ -190,7 +190,7 @@ const idb = (() => {
 		const metadata = { saveId: saveVars.saveId, saveName: saveVars.saveName };
 		const detailsItem = details || {
 			slot,
-			data: { id: Story.domId, title: Story.get(saveVars.passage || "Start").description(), date: Date.now(), metadata },
+			data: { id: Story.domId, title: Story.get(State.passage).description(), date: Date.now(), metadata },
 		};
 
 		// expect failures here
