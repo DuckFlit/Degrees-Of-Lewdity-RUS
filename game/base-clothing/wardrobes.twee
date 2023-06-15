@@ -84,7 +84,7 @@
 				<br>
 				<<if _wornOutfitPrimary isnot undefined>>
 					<<for $_outfitPieceSlot, $_outfitPieceName range _wornOutfitPrimary>>
-						<<if $_outfitPieceName isnot "broken" and $worn[$_outfitPieceSlot].name isnot "naked">>
+						<<if $_outfitPieceName isnot "broken" and $_outfitPieceName isnot "split" and $worn[$_outfitPieceSlot].name isnot "naked">>
 							You remove the <<print $worn[$_outfitPieceSlot].name>>.
 							<<generalUndress $wardrobe_location $_outfitPieceSlot>>
 						<</if>>
@@ -142,7 +142,7 @@
 		<<set _outfitPieceIds to {}>>
 		<<if _item.outfitPrimary isnot undefined>>
 			<<for $_outfitPieceSlot, $_outfitPieceName range _item.outfitPrimary>>
-				<<if $_outfitPieceName is "broken">>
+				<<if $_outfitPieceName is "broken" or $_outfitPieceName is "split">>
 					<<continue>>
 				<</if>>
 				<<for $_outfitPieceId, $_wardrobeItem range _selectedWardrobe[$_outfitPieceSlot]>>
@@ -191,11 +191,11 @@
 			<br>
 		<<elseif $wardrobeOption is "separateOutfits" and Object.values(_outfitPieceIds).length gt 0>>
 			<<for $_outfitSlot, $_outfitId range _outfitPieceIds>>
-				<<set _selectedWardrobe[$_outfitSlot][$_outfitId].outfitSecondary[1] to "broken">>
-				<<set _selectedWardrobe[$_outfitSlot][$_outfitId].one_piece to "broken">>
-				<<set _item.outfitPrimary[$_outfitSlot] to "broken">>
+				<<set _selectedWardrobe[$_outfitSlot][$_outfitId].outfitSecondary[1] to "split">>
+				<<set _selectedWardrobe[$_outfitSlot][$_outfitId].one_piece to "split">>
+				<<set _item.outfitPrimary[$_outfitSlot] to "split">>
 			<</for>>
-			<<set _item.one_piece to "broken">>
+			<<set _item.one_piece to "split">>
 			You cut up the <<print _item.name>>.
 			<<pass 10>>
 			<br>
@@ -314,7 +314,13 @@
 	<<if $location is "home" or $location is "town">>
 		<<if $tailorMonthlyService is "repair">>
 			__Wardrobe Repair Crate__
+			<br>
 			There is a small crate ready for sending clothes to be repaired.
+			<br>
+			<<link [[Add damaged items and send|Wardrobe Repair Crate]]>>
+				<<set $wardrobeReturnLink to $passage>>
+				<<set $crateContents to "damaged">>
+			<</link>>
 			<br>
 			<<link [[Add outfits and send|Wardrobe Repair Crate]]>>
 				<<set $wardrobeReturnLink to $passage>>
@@ -589,7 +595,7 @@
 	<<if $worn.upper.hoodposition is "up" and $worn.head.hood is 1 and $worn.upper.outfitPrimary.head is $worn.head.name>>
 		<<run delete $worn.upper.outfitPrimary.head>>
 		<<set $worn.upper.hoodposition to "down">>
-		<<if _args[0] is "shop" and $tryOn.ownedStored.head.name isnot $worn.head.name and !($tryOn.ownedStored.head.outfitSecondary and $tryOn.ownedStored.head.outfitSecondary[1] isnot "broken")>>
+		<<if _args[0] is "shop" and $tryOn.ownedStored.head.name isnot $worn.head.name and !($tryOn.ownedStored.head.outfitSecondary and $tryOn.ownedStored.head.outfitSecondary[1] isnot "broken" and $tryOn.ownedStored.head.outfitSecondary[1] isnot "split")>>
 			<<set $worn.head to clone($tryOn.ownedStored.head)>>
 		<<else>>
 			<<set $worn.head to clone(setup.clothes.head[0])>>
@@ -603,7 +609,7 @@
 	/* If hood is down, put it back up and remove anything on the head if necessary */
 	<<elseif $worn.upper.hoodposition is "down">>
 		<<if !$worn.head.cursed>> /* No cursed head items yet, but if one is made, should probably have some popup saying this was prevented */
-			<<if $worn.head.outfitSecondary and $worn.head.outfitSecondary[1] isnot "broken">>
+			<<if $worn.head.outfitSecondary and $worn.head.outfitSecondary[1] isnot "broken" and $worn.head.outfitSecondary[1] isnot "split">>
 				<<if $worn.head.hood is 1 and $worn.head.outfitSecondary[1] is $worn.upper.name and
 				$worn.head.colour is $worn.upper.colour and $worn.head.accessory_colour is $worn.upper.accessory_colour and
 				$worn.head.colourCustom is $worn.upper.colourCustom and $worn.head.accessory_colourCustom is $worn.upper.accessory_colourCustom>>
@@ -736,12 +742,18 @@
 				<<else>>
 						<span class="red">(Broken)</span>
 				<</if>>
+				<<if _wornItem.one_piece is "split">>
+					(Separated)
+				<</if>>
 			<</if>>
 			<<if _wornItem.outfitSecondary isnot undefined>>
 				<<if _wornItem.outfitSecondary[1] is "broken">>
 					<span class="red">(Broken)</span>
 				<<else>>
 					<span class="gold">(Outfit)</span>
+					<<if _wornItem.one_piece is "split">>
+						(Separated)
+					<</if>>
 				<</if>>
 			<</if>>
 			<<wardrobeintegrity _wornItem _wardrobe_list>>
@@ -796,7 +808,7 @@
 			<<set _item to _selectedWardrobe[_wardrobe_list][_i]>>
 			<<set _itemData to setup.clothes[_wardrobe_list][clothesIndex(_wardrobe_list,_item)]>>
 			<<if _item.outfitSecondary isnot undefined>>
-				<<if _item.outfitSecondary[1] isnot "broken">>
+				<<if _item.outfitSecondary[1] isnot "broken" and _item.outfitSecondary[1] isnot "split">>
 					<<continue>>
 				<</if>>
 			<</if>>
@@ -827,9 +839,16 @@
 				<<else>>
 					<span class="red">(Broken)</span>
 				<</if>>
+				<<if _item.one_piece is "split">>
+					(Separated)
+				<</if>>
 			<</if>>
 			<<if _item.outfitSecondary isnot undefined>>
-				<span class="red">(Broken)</span>
+				<<if _item.one_piece is "split">>
+					(Separated)
+				<<else>>
+					<span class="red">(Broken)</span>
+				<</if>>
 			<</if>>
 			<<wardrobeintegrity _item _wardrobe_list>> |
 			<<reveal _item.reveal>>
@@ -984,7 +1003,7 @@
 		<<for _i to 0; _i lt _selectedWardrobe[_wardrobe_list].length; _i++>>
 			<<set _item to _selectedWardrobe[_wardrobe_list][_i]>>
 			<<if _item.outfitSecondary isnot undefined>>
-				<<if _item.outfitSecondary[1] isnot "broken">>
+				<<if _item.outfitSecondary[1] isnot "broken" and _item.outfitSecondary[1] isnot "split">>
 					<<continue>>
 				<</if>>
 			<</if>>
@@ -1076,9 +1095,9 @@
 			<</for>>
 		<<case "outfit">>
 			<<if _descending>>
-				<<set _status to ["broken",0,1]>>
+				<<set _status to ["broken",0,1]>> /* NO SPLIT ADDED */
 			<<else>>
-				<<set _status to [1,0,"broken"]>>
+				<<set _status to [1,0,"broken"]>> /* NO SPLIT ADDED */
 			<</if>>
 			<<for _i to 0; _i lt _status.length; _i++>>
 				<<for _j to 0; _j lt _wardrobeItems.length; _j++>>
@@ -1124,7 +1143,7 @@
 			<<if _selectedWardrobe[_slot][$_i].outfitSecondary is undefined>>
 				<<continue>>
 			<</if>>
-			<<if _selectedWardrobe[_slot][$_i].outfitSecondary[1] is "broken">>
+			<<if _selectedWardrobe[_slot][$_i].outfitSecondary[1] is "broken" or _selectedWardrobe[_slot][$_i].outfitSecondary[1] is "split">>
 				<<continue>>
 			<</if>>
 
@@ -1181,11 +1200,23 @@
 				<<set _takenAway++>>
 				<<continue>>
 			<</if>>
-			<<generalSend "wardrobe" _equip[$_i] `$wardrobeRepair[_equip[$_i]][$_j][0]` `$wardrobeRepair[_equip[$_i]][$_j][1]` `$wardrobeRepair[_equip[$_i]][$_j][3]`>>
+			<<if $wardrobeRepair[_equip[$_i]][$_j][5]>>
+				<<generalSend "wardrobe" _equip[$_i] `$wardrobeRepair[_equip[$_i]][$_j][0]` `$wardrobeRepair[_equip[$_i]][$_j][1]` `$wardrobeRepair[_equip[$_i]][$_j][3]`>>
+				<<set _selectedWardrobe[_equip[$_i]].last().one_piece to "split">>
+				<<if _selectedWardrobe[_equip[$_i]].last().outfitPrimary>>
+					<<for $_label, $_value range _selectedWardrobe[_equip[$_i]].last().outfitPrimary>>
+						<<set _selectedWardrobe[_equip[$_i]].last().outfitPrimary[$_label] to "split">>
+					<</for>>
+				<<elseif _selectedWardrobe[_equip[$_i]].last().outfitSecondary>>
+					<<set _selectedWardrobe[_equip[$_i]].last().outfitSecondary[1] to "split">>
+				<</if>>
+			<<else>>
+				<<sendToWardrobeFromDefault "wardrobe" _equip[$_i] `$wardrobeRepair[_equip[$_i]][$_j][0]` `$wardrobeRepair[_equip[$_i]][$_j][1]` `$wardrobeRepair[_equip[$_i]][$_j][3]`>>
+			<</if>>
 			<<if $wardrobeRepair[_equip[$_i]][$_j][2] isnot undefined and $wardrobeRepair[_equip[$_i]][$_j][2] isnot null>>
 				/*colourCustom*/
 				<<set _selectedWardrobe[_equip[$_i]].last().colourCustom to $wardrobeRepair[_equip[$_i]][$_j][2]>>
-				<<if _selectedWardrobe[_equip[$_i]].last().outfitPrimary isnot undefined>>
+				<<if _selectedWardrobe[_equip[$_i]].last().outfitPrimary isnot undefined and _selectedWardrobe[_equip[$_i]].last().one_piece isnot "split">>
 					<<for $_label, $_value range _selectedWardrobe[_equip[$_i]].last().outfitPrimary>>
 						<<if _selectedWardrobe[$_label].last().name is $_value>>
 							<<set _selectedWardrobe[$_label].last().colourCustom to $wardrobeRepair[_equip[$_i]][$_j][2]>>
@@ -1196,7 +1227,7 @@
 			<<if $wardrobeRepair[_equip[$_i]][$_j][4] isnot undefined and $wardrobeRepair[_equip[$_i]][$_j][4] isnot null>>
 				/*accessory_colourCustom*/
 				<<set _selectedWardrobe[_equip[$_i]].last().accessory_colourCustom to $wardrobeRepair[_equip[$_i]][$_j][4]>>
-				<<if _selectedWardrobe[_equip[$_i]].last().outfitPrimary isnot undefined>>
+				<<if _selectedWardrobe[_equip[$_i]].last().outfitPrimary isnot undefined and _selectedWardrobe[_equip[$_i]].last().one_piece isnot "split">>
 					<<for $_label, $_value range _selectedWardrobe[_equip[$_i]].last().outfitPrimary>>
 						<<if _selectedWardrobe[$_label].last().name is $_value>>
 							<<set _selectedWardrobe[$_label].last().colourCustom to $wardrobeRepair[_equip[$_i]][$_j][2]>>
@@ -1226,7 +1257,7 @@
 	<<for $_slot range $_equip>>
 		<<if !_equipped.includes($_slot) and $worn[$_slot].name is "naked">>
 			<<set $_ids to _selectedWardrobe[$_slot].map((item, index) => {
-				if (!item.outfitSecondary or item.outfitSecondary[1] is "broken") return index;
+				if (!item.outfitSecondary or item.outfitSecondary[1] is "broken" or item.outfitSecondary[1] is "split") return index;
 			}).filter(Boolean)>>
 			<<if $_ids.length gt 0>>
 				<<set $_id to $_ids.random()>>
@@ -1234,7 +1265,7 @@
 					<<run _equipped.pushUnique($_slot)>>
 					<<if $_selectedItem.outfitPrimary isnot undefined>>
 						<<run Object.entries($_selectedItem.outfitPrimary).forEach((slot,value) => {
-							if (value !== "broken") _equipped.pushUnique(slot)
+							if (value !== "broken" && value !== "split") _equipped.pushUnique(slot)
 						})>>
 					<</if>>
 					<<set V["wear_" + $_slot] to $_id>>
@@ -1491,7 +1522,7 @@ It will earn you <<printmoney `_value + 5000`>>.
 
 :: Wardrobe Sale Crate Result
 
-<<set $tailorMonthlyService to 30>>
+<<set $tailorMonthlyService to 7>>
 <<set _value to 0>>
 <<set _equip to setup.clothingLayer.all>>
 <<for $_i to 0; $_i lt _equip.length; $_i++>>
@@ -1500,14 +1531,10 @@ It will earn you <<printmoney `_value + 5000`>>.
 		<<if setup.clothes[_equip[$_i]][clothesIndex(_equip[$_i],$wardrobe[_equip[$_i]][$_j])].shop.length is 0>>
 			<<continue>>
 		<</if>>
-		<<if $wardrobe[_equip[$_i]][$_j].outfitSecondary isnot undefined>>
-			<<run _toDelete.push(clone($_j))>>
-			<<continue>>
-		<</if>>
 		<<if $wardrobe[_equip[$_i]][$_j].outfitPrimary is undefined and $crateContents is "outfits">>
 			<<continue>>
 		<</if>>
-		<<set _value += Math.floor(getClothingCost($wardrobe[_equip[$_i]][$_j],_equip[$_i]) * ($wardrobe[_equip[$_i]][$_j].integrity / clothingData(_equip[$_i],$wardrobe[_equip[$_i]][$_j],'integrity_max')) / 3)>>
+		<<set _value += Math.floor(tailorClothingCost($wardrobe[_equip[$_i]][$_j],_equip[$_i]) * ($wardrobe[_equip[$_i]][$_j].integrity / clothingData(_equip[$_i],$wardrobe[_equip[$_i]][$_j],'integrity_max')) / 3)>>
 		<<run _toDelete.push(clone($_j))>>
 	<</for>>
 	<<for $_j to $wardrobe[_equip[$_i]].length; $_j gte 0; $_j-->>
@@ -1529,21 +1556,20 @@ The driver takes the crate away, leaving <<printmoney `_value + 5000`>> in its p
 Are you prepared to add all your
 <<if $crateContents is "all">>
 	clothes
+<<elseif $crateContents is "damaged">>
+	damaged clothes
 <<else>>
 	outfits
 <</if>>
 to the crate and send them to be repaired? Might be best to go shopping shortly after.
 <br><br>
-<<set _value to 0>>
+<<set _value to 0>> /* recalculated with adding lower or upper halves when missing */
 <<for _label, _items range $wardrobe>>
 	<<for _i to 0; _i lt _items.length; _i++>>
-		<<if _items[_i].outfitSecondary isnot undefined>>
+		<<if _items[_i].outfitPrimary is undefined and _items[_i].outfitSecondary is undefined and $crateContents is "outfits">>
 			<<continue>>
 		<</if>>
-		<<if _items[_i].outfitPrimary is undefined and $crateContents is "outfits">>
-			<<continue>>
-		<</if>>
-		<<set _value += Math.floor(getClothingCost(_items[_i],_label) * (1 - (_items[_i].integrity / clothingData(_label,_items[_i],'integrity_max'))) * 1.25)>>
+		<<set _value += Math.floor(tailorClothingCost(_items[_i],_label) * (1 - (_items[_i].integrity / clothingData(_label,_items[_i],'integrity_max'))) * 1.25)>>
 	<</for>>
 <</for>>
 It will cost you
@@ -1566,34 +1592,54 @@ It will cost you
 
 :: Wardrobe Repair Crate Result
 
-<<set $tailorMonthlyService to 30>>
+<<set $tailorMonthlyService to 7>>
 <<set $wardrobeRepair to {timeLeft: 1}>>
 <<set _equip to setup.clothingLayer.all>>
 <<set _value to 0>>
 <<for $_i to 0; $_i lt _equip.length; $_i++>>
 	<<set _toDelete to []>>
 	<<for $_j to 0; $_j lt $wardrobe[_equip[$_i]].length; $_j++>>
-		<<if $wardrobe[_equip[$_i]][$_j].outfitSecondary isnot undefined>>
-			<<run _toDelete.push(clone($_j))>>
+		<<if $wardrobe[_equip[$_i]][$_j].integrity is clothingData(_equip[$_i],$wardrobe[_equip[$_i]][$_j],'integrity_max') and $wardrobe[_equip[$_i]][$_j].one_piece isnot "broken" and $crateContents is "damaged">>
 			<<continue>>
 		<</if>>
-		<<if $wardrobe[_equip[$_i]][$_j].outfitPrimary is undefined and $crateContents is "outfits">>
+		<<if $wardrobe[_equip[$_i]][$_j].outfitPrimary is undefined and $wardrobe[_equip[$_i]][$_j].outfitSecondary is undefined and $crateContents is "outfits">>
 			<<continue>>
 		<</if>>
-		<<set _value += Math.floor(getClothingCost($wardrobe[_equip[$_i]][$_j],_equip[$_i]) * (1 - ($wardrobe[_equip[$_i]][$_j].integrity / clothingData(_equip[$_i],$wardrobe[_equip[$_i]][$_j],'integrity_max'))) * 1.25)>>
+		<<set _value += Math.floor(tailorClothingCost($wardrobe[_equip[$_i]][$_j],_equip[$_i]) * (1 - ($wardrobe[_equip[$_i]][$_j].integrity / clothingData(_equip[$_i],$wardrobe[_equip[$_i]][$_j],'integrity_max'))) * 1.25)>>
 
 		<<if $wardrobeRepair[_equip[$_i]] is undefined>>
 			<<set $wardrobeRepair[_equip[$_i]] to []>>
 		<</if>>
-		<<set _itemStats to [
-				clone(clothesIndex(_equip[$_i],$wardrobe[_equip[$_i]][$_j])),
-				clone($wardrobe[_equip[$_i]][$_j].colour),
-				clone($wardrobe[_equip[$_i]][$_j].colourCustom),
-				clone($wardrobe[_equip[$_i]][$_j].accessory_colour),
-				clone($wardrobe[_equip[$_i]][$_j].accessory_colourCustom)
-			]>>
-		<<run $wardrobeRepair[_equip[$_i]].push(clone(_itemStats))>>
-		<<run _toDelete.push(clone($_j))>>
+		<<if $wardrobe[_equip[$_i]][$_j].outfitSecondary and $wardrobe[_equip[$_i]][$_j].one_piece is "broken">>
+			/* If a secondary part of an outfit is broken adds the primary part so the complete outfit will be repaired */
+			<<set _upperSlot to $wardrobe[_equip[$_i]][$_j].outfitSecondary[0]>>
+			<<set _upperItem to setup.clothes[_upperSlot].findIndex(x => x.name === setup.clothes[_equip[$_i]][clothesIndex(_equip[$_i],$wardrobe[_equip[$_i]][$_j])].outfitSecondary[1])>>
+			<<if $wardrobeRepair[_upperSlot] is undefined>>
+				<<set $wardrobeRepair[_upperSlot] to []>>
+			<</if>>
+			<<set _itemStats to [
+					clone(_upperItem),
+					clone($wardrobe[_equip[$_i]][$_j].colour),
+					clone($wardrobe[_equip[$_i]][$_j].colourCustom),
+					clone($wardrobe[_equip[$_i]][$_j].accessory_colour),
+					clone($wardrobe[_equip[$_i]][$_j].accessory_colourCustom),
+					false
+				]>>
+			<<run $wardrobeRepair[_upperSlot].push(clone(_itemStats))>>
+			<<run _toDelete.push(clone($_j))>>
+		<<else>>
+			<<set _splitted to ($wardrobe[_equip[$_i]][$_j].one_piece === "split" ? true : false)>>
+			<<set _itemStats to [
+					clone(clothesIndex(_equip[$_i],$wardrobe[_equip[$_i]][$_j])),
+					clone($wardrobe[_equip[$_i]][$_j].colour),
+					clone($wardrobe[_equip[$_i]][$_j].colourCustom),
+					clone($wardrobe[_equip[$_i]][$_j].accessory_colour),
+					clone($wardrobe[_equip[$_i]][$_j].accessory_colourCustom),
+					clone(_splitted)
+				]>>
+			<<run $wardrobeRepair[_equip[$_i]].push(clone(_itemStats))>>
+			<<run _toDelete.push(clone($_j))>>
+		<</if>>
 	<</for>>
 	<<for $_j to $wardrobe[_equip[$_i]].length; $_j gte 0; $_j-->>
 		<<if _toDelete.includes($_j)>>

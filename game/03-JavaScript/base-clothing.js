@@ -169,6 +169,37 @@ function getClothingCost(item, slot) {
 }
 window.getClothingCost = getClothingCost;
 
+// Returns the price of the clothing item passed.
+// If it's part of an outfit the price is 80% of the full outfit for the primary half
+// and 80% for the other halves.
+function tailorClothingCost(item, slot) {
+	let cost = 0;
+	if (setup.clothes[slot][clothesIndex(slot, item)].outfitSecondary) {
+		let upperSlot = setup.clothes[slot][clothesIndex(slot, item)].outfitSecondary[0];
+		let upperItem = setup.clothes[upperSlot].findIndex(x => x.name === setup.clothes[slot][clothesIndex(slot, item)].outfitSecondary[1]);
+		if (upperItem >= 0) cost = setup.clothes[upperSlot][upperItem].cost * V.clothesPrice * .2;
+	} else if (setup.clothes[slot][clothesIndex(slot, item)].outfitPrimary) {
+		cost = setup.clothes[slot][clothesIndex(slot, item)].cost * V.clothesPrice * .8;
+	} else {
+		cost = setup.clothes[slot][clothesIndex(slot, item)].cost * V.clothesPrice;
+	}
+	
+	if (
+		setup.clothes.under_lower.findIndex(x => x.name === item.name && x.modder === item.modder) >= 0 ||
+		setup.clothes.under_upper.findIndex(x => x.name === item.name && x.modder === item.modder) >= 0
+	)
+		cost *= V.clothesPriceUnderwear;
+	else if (item.type.includes("school")) cost *= V.clothesPriceSchool;
+
+	// the lewder item is, the more affected by the multiplier it is
+	const lewdness = Math.clamp((item.reveal - 400) / 500, 0, 1);
+	const lewdCoef = 1 + (V.clothesPriceLewd - 1) * lewdness;
+	cost *= lewdCoef;
+
+	return Math.round(cost);
+}
+window.tailorClothingCost = tailorClothingCost;
+
 // makes all existing specified upper/lower clothes to be over_upper/over_lower
 // it assumes that over_xxx equipment slots are empty, otherwise it will overwrite anything in those slots
 // use this function in version update widget when over clothes will be ready
@@ -464,7 +495,7 @@ function getOutfitPair() {
 window.getOutfitPair = getOutfitPair;
 
 /**
- * @description Takes in an article of clothing that has been modified to contain the values brokenHalf and wornHalf that have the V.worn location of the outfit part that is broken or warn.
+ * @description Takes in an article of clothing that has been modified to contain the values brokenHalf and wornHalf that have the V.worn location of the outfit part that is broken or worn.
  * @param {object} brokenOutfit The clothing object. Currently it takes in a slightly modified setup.clothes values.
  */
 function makeMissingOutfit(brokenOutfit) {
