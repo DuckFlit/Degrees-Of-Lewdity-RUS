@@ -437,6 +437,13 @@ Config.navigation.override = function (dest) {
 			case "Robin Forest Witch Buy":
 				return "Robin Forest Costume Intro"; /* Send the player back to the start, they won't mind. */
 
+			case "Trash Compare Breasts Refuse":
+			case "Trash Compare Penis Refuse":
+				return "Trash Compare Show Refuse";
+			case "Trash Compare Penis Secret":
+			case "Trash Compare Breast Secret":
+				return "Trash Compare Secret";
+
 			default:
 				return false;
 		}
