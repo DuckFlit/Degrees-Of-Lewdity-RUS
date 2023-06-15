@@ -161,7 +161,7 @@
 			<<for $_label, $_value range $_outfitPrimary>>
 				<<set _pieceId to setup.clothes[$_label].findIndex(item => item.name is $_value)>>
 				<<if _pieceId isnot -1>> <!-- findIndex() returns -1 if no index is found -->
-					<<if !_hoodDown or $_label isnot "head">> /*If hood is down, don't make a hood*/
+					<<if (!_hoodDown or $_label isnot "head") and _pieceId.one_piece isnot "split">> /*If hood is down, don't make a hood. If an upper part of an outfit is separated don't add a lower part*/
 						<<sendToWardrobeFromDefault _args[0] $_label _pieceId _colour _accessory_colour>>
 					<</if>>
 				<<else>>
@@ -181,7 +181,7 @@
 		<<set $_selectedWardrobe to selectWardrobe()>>
 		<<if $_outfitPrimaryUndress isnot undefined>>
 			<<for _labelUndress, _valueUndress range $_outfitPrimaryUndress>>
-				<<if _valueUndress isnot "broken">>
+				<<if _valueUndress isnot "broken" and _valueUndress isnot "split">>
 					<<if !setup.wardrobeSkip.includes($carried[_labelUndress].name) and $carried[_labelUndress].name is _valueUndress>>
 						<<set $_selectedWardrobe[_labelUndress].push(clone($carried[_labelUndress]))>>
 						<<run _slots.push(_labelUndress)>>
@@ -511,7 +511,7 @@
 <<widget "generalRuined">>
 	<<if _args[0]>>
 		<<set $eventskipoverrule to 1>>
-		<<if $worn[_args[0]].cursed is 1 and !$worn[_args[0]].type.includes("broken") or ($worn[_args[0]].name is "naked" and $carried[_args[0]].name is "naked")>>
+		<<if $worn[_args[0]].cursed is 1 and !$worn[_args[0]].type.includes("broken") and !$worn[_args[0]].type.includes("split") or ($worn[_args[0]].name is "naked" and $carried[_args[0]].name is "naked")>>
 		<<else>>
 			<<switch _args[0]>>
 				<<case "upper">>
@@ -627,9 +627,9 @@
 		<<set $_setupItem to setup.clothes[$_slot][clothesIndex($_slot,$_item)]>>
 		<<set $_return to clothesReturnLocation($_item,"rebuy")>>
 
-		<<if $_setupItem.shop.length isnot 0 and $_item.one_piece isnot "broken" and $_setupItem.cursed isnot 1>>
+		<<if $_setupItem.shop.length isnot 0 and $_item.one_piece isnot "broken" and $_setupItem.cursed isnot 1>> /* NO SPLIT ADDED */
 			/*If item is half of an outfit, rebuy the primary half instead by redefining the variables defined above*/
-			<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] isnot "broken">>
+			<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] isnot "broken">> /* NO SPLIT ADDED */
 				<<set $_slot to $_item.outfitSecondary[0]>>
 				<<set $_item to _args[1][$_slot]>>
 				<<set $_setupItem to setup.clothes[$_slot][clothesIndex($_slot,$_item)]>>
@@ -640,7 +640,7 @@
 			<<if $_item.colourCustom isnot undefined>><<set _colourCustom to $_item.colourCustom>><</if>>
 			<<if $_item.accessory_colourCustom isnot undefined>><<set _accessory_colourCustom to $_item.accessory_colourCustom>><</if>>
 
-			<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] is "broken">>
+			<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] is "broken">> /* NO SPLIT ADDED */
 			<<elseif $money gte $_cost>>
 				<<generalSend $_return $_slot $_setupItem.index $_item.colour $_item.accessory_colour>>
 				<<set $money -= $_cost>>
@@ -1046,7 +1046,7 @@
 					<<set $_selectedWardrobe to selectWardrobe()>>
 					<<if _outfitPrimaryUndress isnot undefined>>
 						<<for _labelUndress, _valueUndress range _outfitPrimaryUndress>>
-							<<if _valueUndress isnot "broken">>
+							<<if _valueUndress isnot "broken" and _valueUndress isnot "split">>
 								<<if !setup.wardrobeSkip.includes($worn[_labelUndress].name) and $worn[_labelUndress].name is _valueUndress>>
 									<<set $_selectedWardrobe[_labelUndress].push(clone($worn[_labelUndress]))>>
 									<<run _slots.push(_labelUndress)>>
@@ -1513,7 +1513,7 @@
 			<<if _outfitPrimary isnot undefined>>
 				<<set _outfitPieceIds to {}>>
 				<<for _labelWW, _valueWW range _outfitPrimary>>
-					<<if _valueWW isnot "broken">>
+					<<if _valueWW isnot "broken" and _valueWW isnot "split">>
 						<<for _j to 0; _j lt $_selectedWardrobe[_labelWW].length; _j++>>
 							<<if $_selectedWardrobe[_labelWW][_j].name is _valueWW and _item.colour is $_selectedWardrobe[_labelWW][_j].colour and _item.accessory_colour is $_selectedWardrobe[_labelWW][_j].accessory_colour>>
 								<<if $_selectedWardrobe[_labelWW][_j].outfitSecondary[1] isnot _item.name>>
@@ -1591,7 +1591,7 @@
 	}>>
 	<<for $_label, $_value range _otherOutfits>>
 		<<if $worn[$_label].outfitSecondary is undefined>>
-		<<elseif $worn[$_label].outfitSecondary[1] is "broken">>
+		<<elseif $worn[$_label].outfitSecondary[1] is "broken" or $worn[$_label].outfitSecondary[1] is "split">>
 		<<else>>
 			<<set _otherOutfits[$_label] to true>>
 		<</if>>

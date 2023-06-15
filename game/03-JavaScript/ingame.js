@@ -1078,15 +1078,15 @@ function isConnectedToHood(slot) {
 	// Return false if slot is undefined or not a valid clothing category
 	if (!slot || !V.worn[slot]) return false;
 	// Return true if this item IS a hood
-	if (V.worn[slot].hood && V.worn[slot].outfitSecondary[1] !== "broken") return true;
+	if (V.worn[slot].hood && V.worn[slot].outfitSecondary[1] !== "broken" && V.worn[slot].outfitSecondary[1] !== "split") return true;
 
 	// Use the primary clothing slot for the next check if this item is connected to an outfit (and is not the primary item)
-	if (V.worn[slot].outfitSecondary && V.worn[slot].outfitSecondary[1] !== "broken") {
+	if (V.worn[slot].outfitSecondary && V.worn[slot].outfitSecondary[1] !== "broken" && V.worn[slot].outfitSecondary[1] !== "split") {
 		slot = V.worn[slot].outfitSecondary[0];
 	}
 	if (
 		V.worn[slot].hoodposition &&
-		(V.worn[slot].hoodposition === "down" || (V.worn[slot].hoodposition === "up" && V.worn[slot].outfitPrimary.head !== "broken" && V.worn.head.hood === 1))
+		(V.worn[slot].hoodposition === "down" || (V.worn[slot].hoodposition === "up" && V.worn[slot].outfitPrimary.head !== "broken" && V.worn[slot].outfitPrimary.head !== "split" && V.worn.head.hood === 1))
 	) {
 		return true;
 	}
@@ -1128,7 +1128,7 @@ function clothesIndex(slot, itemToIndex) {
 				itemToIndex.iconFile = recovery.iconFile;
 				if(recovery.outfitPrimary) {
 					Object.entries(recovery.outfitPrimary).forEach(([key, value]) => {
-						if(itemToIndex.outfitPrimary && itemToIndex.outfitPrimary[key] === "broken"){
+						if(itemToIndex.outfitPrimary && (itemToIndex.outfitPrimary[key] === "broken" || itemToIndex.outfitPrimary[key] === "split")){
 							// Do Nothing
 						} else {
 							itemToIndex.outfitPrimary[key] = value;
@@ -1136,7 +1136,7 @@ function clothesIndex(slot, itemToIndex) {
 					})
 					itemToIndex.outfitPrimary = recovery.outfitPrimary;
 				}
-				if(recovery.outfitSecondary && itemToIndex.outfitSecondary[1] !== "broken") itemToIndex.outfitSecondary[1] = recovery.outfitSecondary[1];
+				if(recovery.outfitSecondary && itemToIndex.outfitSecondary[1] !== "broken" && itemToIndex.outfitSecondary[1] !== "split") itemToIndex.outfitSecondary[1] = recovery.outfitSecondary[1];
 			}
 			console.log(`attempting to recover the mismatch, new index is '${recovery.index}'`);
 			return recovery.index;
