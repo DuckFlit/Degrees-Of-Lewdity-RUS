@@ -1606,6 +1606,9 @@ function getHalloweenCostume() {
 		return "skeleton";
 	} else if (upper.name === "futuristic bodysuit" && lower.name === "futuristic bodysuit pants") {
 		return "futuresuit";
+	// This is commented out because there are no nurse lines yet.
+	// } else if (upper.name.includes("nurse") && lower.name.includes("nurse")) {
+	// 	return "nurse"; 
 
 	/* Transformations */
 	} else if (T.tf.angelHalo && T.tf.angelWings) {
