@@ -1,3 +1,55 @@
+/*Time namespace
+	Use Time prefix when accessing any getters or functions (e.g. Time.second, Time.schoolDay, or Time.getLastDayOfMonth(), etc.)
+	Getters: (Most of these are being used in one way or another)
+	
+	Time.date - Returns Date object of current date.
+	
+	Time.holidayMonths - Returns array of all months that are considered holidays.
+
+	Time.second - Returns current number of seconds since last whole minute.
+
+	Time.minute - Returns current number of minutes since last whole hour.
+
+	Time.hour - Returns current hour of the day.
+
+	Time.weekDay - previously $weekday - Returns day of the week (1 being sunday, 7 being saturday)
+
+	Time.weekDayName - Returns the day of the week, with first letter in uppercase. (e.g. Monday)
+
+	Time.monthDay - Returns current date - (e.g. 12 if its the 12th)
+
+	Time.month - previously $month - Returns current month of the year (1 being january, 12 being december)
+
+	Time.monthName - Returns name of the current month, with first letter in uppercase. (e.g. January)
+
+	Time.year - Returns current year
+
+	Time.days - Returns total number of days since game start. (starts at 0)
+
+	Time.season - Previously $season - Returns string of current season (e.g. "winter")
+
+	Time.startDate - Returns Date object of start date
+
+	Time.tomorrow - Returns Date object of day after today
+
+	Time.yesterday - Returns Date object of day before today
+
+	Time.schoolTerm - Returns true if current day is during a school term, and false if a holiday.
+
+	Time.schoolDay - Returns true if current day is a school day, and false otherwise
+
+	Time.schoolTime - Returns true if current time is between 8-15 and is a school day
+
+	Time.dayState - previously $daystate - Returns string of day state (e.g. "dawn", or "day")
+
+	Time.nightState - previously $nightstate- Returns string of night state (e.g. "evening", or "morning")
+
+	Time.nextSchoolTermStartDate - Returns date object of the day when the next school term starts
+
+	Time.nextSchoolTermEndDate - Returns date object of the day when the current school term ends
+
+*/
+
 /* eslint-disable jsdoc/require-description-complete-sentence */
 /* eslint-disable no-undef */
 const Time = (() => {
