@@ -608,7 +608,7 @@ function masturbationeffectsArms(
 				if (V.milk_amount >= 1) {
 					if (V.worn.over_upper.exposed === 0 || V.worn.upper.exposed === 0 || V.worn.under_upper.exposed === 0) {
 						fragment.append(span("Milk leaks from your buds, flowing into your top", "lewd"));
-						if (V.masturbation_bowl === 1) fragment.append(otherElement("i", "You should remove your top if you want to gather any."));
+						if (V.masturbation_bowl === 1) fragment.append(otherElement("i", " You should remove your top if you want to gather any."));
 					} else {
 						fragment.append(span("Milk leaks from your buds.", "lewd"));
 					}
