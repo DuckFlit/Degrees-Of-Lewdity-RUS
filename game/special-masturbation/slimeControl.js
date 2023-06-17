@@ -100,7 +100,7 @@ function masturbationSlimeControl() {
 			const actions = [];
 			switch (V[arm + "arm"]) {
 				case 0:
-					if (random(0, 100) >= 80 && toysId.length >= 0 && (["home", "brothel", "cafe"].includes(V.location) || T.enableSexToys)) {
+					if (random(0, 100) >= 80 && toysId.length > 0 && (["home", "brothel", "cafe"].includes(V.location) || T.enableSexToys)) {
 						V[armAction] = "mpickupdildo";
 						V["selectedToy" + armCap] = toysId[random(0, toysId.length - 1)];
 					} else if (
