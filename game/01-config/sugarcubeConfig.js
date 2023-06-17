@@ -61,9 +61,9 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.1.2",
+	version: "0.4.1.3",
 	versionName: "",
-	sneaky: true,
+	sneaky: false,
 };
 
 /* convert version string to numeric value */
