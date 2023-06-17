@@ -139,7 +139,6 @@ const DoLCompressorDictionaries = (() => {
 		"antiquetrashcup",
 		"antiquewatch",
 		"antiquewhitecrystal",
-		"antiqueminesign",
 		"anus",
 		"anusWetness",
 		"anus_climax",
