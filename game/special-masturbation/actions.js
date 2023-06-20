@@ -467,7 +467,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 				text: "Masturbate",
 				colour: "sub",
 			});
-			result.options.push(stop("mstopbreastpump"));
+			result.options.push(stop("mpenisstopstroker"));
 			break;
 		case "mbreastpump":
 			result.text = `You hold your ${toyDisplay(selectedToy(arm))} against your <<breasts>>.`;
@@ -476,7 +476,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 				text: "Milk your <<breasts>>",
 				colour: "sub",
 			});
-			result.options.push(stop("mpenisstopstroker"));
+			result.options.push(stop("mstopbreastpump"));
 			break;
 		case "mdildomouthentrance":
 			result.text = `Your ${toyDisplay(selectedToy(arm))} is in your ${arm} hand by your mouth.`;
