@@ -1160,11 +1160,11 @@ window.randomizeSettings = function (filter) {
 	const randomNumber = function (min, max, decimals = 0) {
 		const decimalsMult = Math.pow(10, decimals);
 		const minMult = min * decimalsMult;
-		const maxMult = max * decimalsMult;
-		const rn = (Math.floor(Math.random() * (maxMult - minMult)) + minMult) / decimalsMult;
+		const maxMult = (max + 1) * decimalsMult;
+		const rn = Math.floor(Math.random() * (maxMult - minMult)) / decimalsMult + min;
 		return parseFloat(rn.toFixed(decimals));
 	};
-	const randomizeSettingSet = function (setting) {
+		  const randomizeSettingSet = function (setting) {
 		let result;
 		const keys = Object.keys(setting);
 		if (keys.includes("min")) {
