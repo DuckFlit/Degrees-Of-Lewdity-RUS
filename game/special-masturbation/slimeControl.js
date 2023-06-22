@@ -50,14 +50,14 @@ function masturbationSlimeControl() {
 
 	if (
 		["mdildostop", "mvaginastopdildo", "manusstopdildo", "mpenisstopstroker", "mmouthstopdildo", "mstopbreastpump"].includes(V.leftaction) &&
-		!(V.mouth !== 0 && _playerToys[V.currentToyLeft].type.includes("stroker"))
+		!(V.mouth !== 0 && playerToys[V.currentToyLeft].type.includes("stroker"))
 	) {
 		fragment.append(redText("The slime prevents you from putting the sex toy in your left hand down."));
 		V.leftaction = "slime";
 	}
 	if (
 		["mdildostop", "mvaginastopdildo", "manusstopdildo", "mpenisstopstroker", "mmouthstopdildo", "mstopbreastpump"].includes(V.rightaction) &&
-		!(V.mouth !== 0 && _playerToys[V.currentToyRight].type.includes("stroker"))
+		!(V.mouth !== 0 && playerToys[V.currentToyRight].type.includes("stroker"))
 	) {
 		fragment.append(redText("The slime prevents you from putting the sex toy in your right hand down."));
 		V.rightaction = "slime";
