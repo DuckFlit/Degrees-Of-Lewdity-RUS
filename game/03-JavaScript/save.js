@@ -1258,7 +1258,7 @@ window.recurseNaN = recurseNaN;
 /**
  * Recursively traverse target object, finding and returning an object containing all the NaN vars inside.
  *
- * Use with objectAssignDeep to re-assign 0 to all bad NaN'd vars.	Use with caution.
+ * Use with nukeNaNs to re-assign 0 to all bad NaN'd vars.	Use with caution.
  *
  * @param {object} target The object to traverse.	Defaults to V ($).
  * @returns {object} An object containing all the properties/sub-props that were NaN.
@@ -1291,3 +1291,12 @@ function scanNaNs(target = V) {
 	return isMutated ? current : null;
 }
 window.scanNaNs = scanNaNs;
+
+function nukeNaNs(target = V) {
+	for (const key in target) {
+		const value = target[key];
+		if (typeof value === "object" && value !== null) nukeNaNs(value);
+		else if (Number.isNaN(value)) target[key] = 0;
+	}
+}
+window.nukeNaNs = nukeNaNs;
