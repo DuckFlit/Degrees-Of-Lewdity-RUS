@@ -803,6 +803,38 @@ function initLegs() {
 			iconFile: "striped_kneehighs.png",
 			accIcon: "striped_kneehighs_acc.png",
 		},
+
+		{
+			index: 25,
+			name: "sheer leggings",
+			name_cap: "Sheer leggings",
+			variable: "sheerleggings",
+			integrity: 30,
+			integrity_max: 30,
+			fabric_strength: 20,
+			reveal: 50,
+			word: "n",
+			state: "waist",
+			state_base: "waist",
+			plural: 1,
+			colour: 0,
+			colour_options: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom"],
+			colour_sidebar: 1,
+			type: ["normal", "dance", "athletic"],
+			gender: "f",
+			femininity: 200,
+			warmth: 25,
+			cost: 1000,
+			description: "Too translucent to wear alone.",
+			shop: ["clothing", "adult"],
+			accessory: 0,
+			accessory_colour: 0,
+			accessory_colour_options: [],
+			cursed: 0,
+			location: 0,
+			iconFile: "leggings.png",
+			accIcon: 0,
+		}
 	];
 
 	/*

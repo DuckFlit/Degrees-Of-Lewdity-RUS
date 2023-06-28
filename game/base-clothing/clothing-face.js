@@ -1059,7 +1059,6 @@ function initFace() {
 			iconFile: "bamboomuzzle.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 37,
 			name: "monocle",
@@ -1089,6 +1088,34 @@ function initFace() {
 			iconFile: "monocle.png",
 			accIcon: "monocle_acc.png",
 		},
+		{
+			index: 38,
+			name: "islander mask",
+			name_cap: "Islander mask",
+			variable: "islandermask",
+			integrity: 50,
+			integrity_max: 50,
+			fabric_strength: 20,
+			reveal: 1,
+			word: "a",
+			plural: 0,
+			colour: 0,
+			colour_options: [],
+			type: ["mask", "covered", "costume"],
+			colour_combat: "black",
+			gender: "n",
+			warmth: 25,
+			cost: 5000,
+			description: "Worn by the islanders.",
+			shop: ["forest"],
+			accessory: 0,
+			accessory_colour: 0,
+			accessory_colour_options: [],
+			cursed: 0,
+			location: 0,
+			iconFile: "islander_mask.png",
+			accIcon: 0,
+		}
 	];
 
 	/*

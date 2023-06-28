@@ -920,6 +920,38 @@ function initNeck() {
 			iconFile: "serafuku_ribbon.png",
 			accIcon: 0,
 		},
+
+		{
+			index: 30,
+			name: "love locket",
+			name_cap: "Love locket",
+			variable: "lovelocket",
+			integrity: 40,
+			integrity_max: 40,
+			fabric_strength: 20,
+			reveal: 300,
+			word: "a",
+			plural: 0,
+			colour: 0,
+			colour_options: [],
+			colour_combat: "red",
+			type: ["normal"],
+			gender: "n",
+			femininity: 0,
+			warmth: 0,
+			cost: 3500,
+			description: "Opens to reveal space for a photo. Customise at a mirror.",
+			shop: ["clothing"],
+			collared: 0,
+			accessory: 0,
+			accessory_colour: 0,
+			accessory_colour_options: [],
+			cursed: 0,
+			location: 0,
+			iconFile: "love_locket.png",
+			accIcon: 0,
+		}
+		
 	];
 
 	/*

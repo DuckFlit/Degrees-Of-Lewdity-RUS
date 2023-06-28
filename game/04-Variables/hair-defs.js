@@ -15,7 +15,9 @@ setup.hair = {
 				"heart braid",
 				"ruffled",
 				"sidecut",
-				"space buns"
+				"space buns",
+				"all down",
+				"half-up"
 			],
 			devolve: ["ruffled"],
 		},
@@ -85,6 +87,9 @@ setup.hair = {
 				"drill ringlets",
 				"front braids",
 				"blunt sidelocks",
+				"short air vents",
+				"side-pinned",
+				"left fishtail braid",
 				"ruffled",
 				"sectioned",
 				"bowl",

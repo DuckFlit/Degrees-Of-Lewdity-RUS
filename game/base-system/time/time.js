@@ -1463,6 +1463,14 @@ function dailySchoolEffects() {
 		fragment.append(wikifier("crimeUp", 20, "thievery"));
 	}
 
+	if (V.island !== undefined) {
+		if (V.island.walnut >= 1) {
+			const rng = random(0, V.island.walnut);
+			V.island.walnut -= rng;
+			V.island.walnut_dried += rng;
+		}
+	}
+
 	return fragment;
 }
 
@@ -1554,7 +1562,7 @@ function dailyFarmEvents() {
 			fragment.append(wikifier("farm_stock", "eggs", 6, 12));
 		}
 		if (V.farm.kennel >= 1) {
-			fragment.append(wikifier("farm_dogs", -2));
+			fragment.append(wikifier("farm_dogs", -1));
 			fragment.append(wikifier("farm_cattle", -1));
 		}
 		fragment.append(wikifier("farm_build_day"));

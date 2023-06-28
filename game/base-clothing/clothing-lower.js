@@ -5438,7 +5438,7 @@ function initLower() {
 			location: 0,
 			iconFile: "dolphin_shorts.png",
 			accIcon: 0,
-		},
+		}
 	];
 
 	/*
