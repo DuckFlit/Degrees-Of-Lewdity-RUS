@@ -316,7 +316,31 @@ You can do nothing about your <<lewdness>> displayed for everyone to see, humili
 				<br>
 			<</if>>
 		<<elseif $rng gte 60>>
-			<<if $worn.lower.skirt_down is 1>>
+			<<rng>>
+			<<if $rng gte 96 and $toywhipdisable isnot 't' and $adultshopunlocked and $adultshopdegree >= 5 and 
+				($worn.lower.name isnot "naked" and $worn.lower.state is "waist") or ($worn.under_lower.name isnot "naked" and $worn.lower.state is "waist")>>
+				A <<generate1>><<person1>><<person>> emerges from the crowd, dressed in a flamboyant ringmaster's costume. 
+				<<He>> takes off <<his>> hat and lays it in front of the onlookers, before unfurling a whip and striding behind you. Everyone watches for a moment in fascination.
+				<br><br>
+
+				<<link [[Dodge|Pillory Whip Master]]>><<set $phase to 1>><</link>><<skill_difficulty "$danceskill" "Dance" 1 1000>>
+				<br>
+				<<link [[Brace|Pillory Whip Master]]>><<stress 6>><<trauma 6>><</link>><<gstress>><<gtrauma>>
+				<br>
+			<<elseif $rng gte 91 and $analdisable isnot 't' and $toydildodisable isnot 't' and $adultshopunlocked and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1 and 
+				!playerHasButtPlug() and countCarriedSextoys() lt 5 and $worn.genitals.anal_shield !== 1>>
+				<<run sexShopOnBuyClick(4, false, clone(setup.sextoys[4].colour_options).pluck(), false)>>
+				<<generate1>><<person1>>
+				A <<person>> emerges from the crowd, a gigantic 
+				<<print V.player.inventory.sextoys['butt plug'][V.player.inventory.sextoys['butt plug'].length - 1].colour>> 
+				butt plug in hand. <<He>> approaches you from behind.
+				<br><br>
+
+				<<link [[Warn them off|Pillory Butt Plug]]>><<set $phase = 1>><</link>><<skill_difficulty "Math.abs($submissive - 1000)" "" 1 850>>
+				<br>
+				<<link [[Brace yourself|Pillory Butt Plug]]>><</link>>
+				<br>
+			<<elseif $worn.lower.skirt_down is 1>>
 				A <<generate1>><<person1>><<person>> walks behind you and grabs the hem of your $worn.lower.name.
 				<br><br>
 
@@ -594,6 +618,118 @@ The <<person>> steps away from the pillory.
 <<link [[Next (1:00)|Pillory]]>><<pass 1 hour>><<set $pillorytime -= 1>><</link>>
 <br>
 <</if>>
+
+:: Pillory Whip Master
+<<set $outside to 1>><<set $location to "town">><<effects>>
+
+<<He>> cracks the whip a couple of times on the pavement before lashing out at you. 
+<br><br>
+<<if $phase is 1>>
+	<<if $danceskill gte random(1, 1000)>>
+		A couple of blows land on your <<bottom>> with a sharp sting, <span class="green">but you're able to avoid most of them.</span> 
+		A few of the audience members murmur to one another. It's clear you're ruining the <<personsimple>>'s act. 
+		Eventually <<he>> gives up, takes <<his>> hat, and storms off. The crowd boos, and a couple of delinquents throw fruit at <<him>>.
+		<<violence_noncombat 5 0.3>>
+		<br><br>
+
+		<<endevent>>
+		<<link [[Next (1:00)|Pillory]]>><<pass 1 hour>><<set $pillorytime -= 1>><</link>>
+	<<else>>
+		<span class="red">You're unable to dodge <<his>> blows.</span> You try to stifle your cries as the lashes strike your <<bottom>>. 
+		Behind you, the ringmaster draws in a sharp breath. Your clumsy movements seem to be making things worse than <<he>> intended.
+		<<violence_noncombat 20 0.3>>
+		<br><br>
+
+		<<link [[Next|Pillory Whip Master 2]]>><</link>>
+	<</if>>
+<<else>>
+	You brace yourself, prepared for a volley of painful blows. <span class="green">They're not as intense as anticipated.</span> 
+	<<His>> lashes twinge slightly, but it is immediately clear the ringmaster is not attempting to hurt you.
+	<<violence_noncombat 4 0.5 0.5 0.5>>
+	<br><br>
+
+	<<link [[Next|Pillory Whip Master 2]]>><</link>>
+<</if>>
+<br>
+
+:: Pillory Whip Master 2
+<<effects>>
+
+<<set _articles = []>>
+<<if $worn.lower.name isnot "naked" and $worn.lower.state is "waist">>
+	<<run _articles.push($worn.lower.name)>>
+	<<set _plural to $worn.lower.plural>>
+	<<lowerruined>>
+<</if>>
+<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state is "waist">>
+	<<run _articles.push($worn.under_lower.name)>>
+	<<set _plural to _plural || $worn.under_lower.plural>>
+	<<underlowerruined>>
+<</if>>
+After delivering one final strike, <<he>> swiftly withdraws the whip. The crowd goes silent. 
+Suddenly, to your horror, your <span class="red"><<print _articles.join(" and ")>> 
+<<if _plural>>fall 
+<<else>>falls <</if>>
+to the ground, cut to ribbons by the whip.</span> 
+The onlookers clap and applaud. Several toss money into <<his>> hat. 
+The ringmaster bows in front of your exposed lower half, scoops up <<his>> earnings, and leaves.
+<<fameexhibitionism 7>><<stress 6>><<bruise bottom>>
+
+<br><br>
+<<endevent>>
+<<link [[Next (1:00)|Pillory]]>><<pass 1 hour>><<set $pillorytime -= 1>><</link>>
+<br>
+
+:: Pillory Butt Plug
+<<set $outside to 1>><<set $location to "town">><<effects>>
+<<set _toys = $player.inventory.sextoys["butt plug"]>>
+<<set _toy = _toys[_toys.length - 1]>>
+<<set _mod = $phase ? 1 : 0.5>>
+
+<<if $phase is 1>>
+	<<if $speech_attitude is "bratty">>
+		"Don't even think about it." you say, glaring at the <<personsimple>>.
+	<<elseif $speech_attitude is "meek">>
+		"P-please don't." you say, hanging your head.
+	<<else>>
+		"Please don't." you say.
+	<</if>>
+	<br><br>
+	<<if Math.abs($submissive - 1000) - 150 gte random(1, 850)>> <!-- Bonus for bratty or meek but not neutral -->
+		The <<personsimple>> hesitates and looks down at the butt plug. "Ah, forget it." <<he>> mutters. <<He>> disappears back into the crowd.
+		<<set _skipplug to true>>
+	<<else>>
+		The <<personsimple>> laughs at you. "Shut up, you dumb 
+		<<if $player.gender_appearance is 'm'>>
+			asshole.
+		<<else>>
+			bitch.
+		<</if>>
+		You're in no position to tell me what to do." <<stress 2>>
+	<</if>>
+<<else>>
+	You brace yourself and get ready for what is coming.
+<</if>>
+<br><br>
+
+<<if _skipplug>>
+	<<run _toys.splice(-1,1)>>
+	<<if !_toys.length>>
+		<<run delete V.player.inventory.sextoys["butt plug"]>>
+	<</if>>
+<<else>>
+	<<He>> walks up to you and rams the butt plug into your <<bottom>>, heedless of your comfort. You scream in pain at the sudden insertion. 
+	Some members of the crowd appear disgusted and surprised, while others look on with lust. 
+	The <<person>> leaves the plug inside you and walks away, content with the discomfort <<he>> inflicted.
+	<<set _toy.state = "worn">><<set _toy.carried = true>><<set _toy.worn = true>><<set $worn["butt_plug"] = _toy>>
+	<<violence 50 _mod _mod _mod>><<bruise anus>>
+<</if>>
+<br><br>
+
+<<endevent>>
+<<link [[Next (1:00)|Pillory]]>><<pass 1 hour>><<set $pillorytime -= 1>><</link>>
+<br>
+
 
 :: Pillory Kick
 <<set $outside to 1>><<set $location to "town">><<effects>>
