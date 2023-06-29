@@ -1,5 +1,13 @@
 # CHANGELOG
 
+-   Updated labeling for delinquency so the threshold is clearer. 
+        (Detention - 1-4: g, 5-19: gg, 20+:ggg; 1-6: l, 7-19: ll, 20+: ggg)
+-   Tweaked hallway slap delequency, as it was almost equivalent to gut-punching Leighton (was 20, made it 18. Leighton is 24).
+-   Added delinquency reward for Distinctions. 
+        (Note to Reviewer: -6 is equivalent to 1/3 Math Participation and 1/9 of win, or rescuing an ODing math student. Feel free to adjust the value further if you think it deserves more credit.)
+-   Fixed check preventing home study of library books 
+        (Was only triggering if Raul & Janet or Pinch were available)
+
 ## 0.3.13.5
 
 -   Fixed a bug in the changing rooms. Thanks to note leven.
