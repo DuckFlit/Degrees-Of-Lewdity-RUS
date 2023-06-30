@@ -34,6 +34,11 @@
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 <<if $forcedcrossdressingdisable is "t">><<unset $whitneyskirtmaths>><</if>>
 <<if $whitneypantiesmaths or $whitneyskirtmaths>>
+	<<if $whitneypantiesmaths is "seen" and ($worn.under_lower.type.includes("naked") or ($whitneypantiescheck is 2 and $worn.under_lower.gender is "f"))>>
+		<<unset $whitneypantiesmaths>>
+		<!-- Adding this as a failsafe; If the player triggered this scene but somehow invalidated its conditions, skip the branches where Whitney is blatantly incorrect.
+		Admittedly, this approach isn't perfect either, but it's better than being obviously wrong. Either way, this should only matter in very strange, non-recurring cases. -->
+	<</if>>
 	<<if $whitneypantiesmaths is "seen">>
 		You've barely stepped into the hallway when <<npc Whitney>><<person1>>Whitney and <<his>> friends surround you. "You've been a bad <<girl>>," <<he>> grins. <<His>> friends look excited.
 		<<if $whitneypantiescheck is 1>>
@@ -41,11 +46,11 @@
 		<<elseif $whitneypantiescheck is 2>>
 			"I said you should wear panties, and I meant it. I'll have to take everything now."
 		<</if>>
-		<<if $forcedcrossdressingdisable is "t">>
-		<<elseif $whitneyskirtcheck is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.reveal gt 200>>
-			<<He>> sneers. "You're not even wearing a short skirt."
-		<<elseif $whitneyskirtcheck is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1>>
+		<<if $forcedcrossdressingdisable is "t" or $whitneyskirtcheck isnot 1>>
+		<<elseif clothingData('lower', $worn.lower, "skirt") isnot 1>>
 			<<He>> sneers. "You're not even wearing a skirt."
+		<<elseif $worn.lower.reveal lt 200>>
+			<<He>> sneers. "You're not even wearing a short skirt."
 		<</if>>
 		<br><br>
 
@@ -87,10 +92,8 @@
 			<br>
 		<</if>>
 	<</if>>
-	<<unset $whitneypantiesmaths>>
-	<<unset $whitneyskirtmaths>>
 <<elseif $stress gte $stressmax>>
-<<link [[Everything fades to black...|School Passout]]>><</link>>
+	<<link [[Everything fades to black...|School Passout]]>><</link>>
 
 <<elseif !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate) and $danger gte (9900 - $allure) and $eventskip is 0>>
 	<<if $exposed gte 1>>
