@@ -973,81 +973,49 @@ You unfurl the paper, and see a brief, scrawled message.
 :: Maths Whitney Undies Show
 <<effects>>
 
-<<if $worn.under_lower.type.includes("naked")>>
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		You lift your skirt at the thigh, high enough to show your waistline, confirming that you're not wearing underwear beneath. You cover yourself quickly.<<exhibitionism1>>
+<<set _wearingSkirt to (clothingData('lower', $worn.lower, "skirt") is 1)>>
+<<unset $whitneypantiesmaths>> <!-- this will be set to "seen" if whitney sees something to be angry about, and will stay undefined if they are happy. -->
 
-		"Nice," Whitney says, prompting River to turn and glare.
-		<br><br>
-		<<if $whitneyskirtcheck is 1 and $worn.lower.reveal lte 200 and $forcedcrossdressingdisable is "f">>
-			<<set $whitneyskirtmaths to true>>
-		<</if>>
-		<<unset $whitneypantiesmaths>>
+<<if $worn.under_lower.type.includes("naked")>>
+	<<if _wearingSkirt>>
+		You lift your skirt at the thigh, high enough to show your waistline, confirming that you're not wearing underwear beneath. You cover yourself quickly.<<exhibitionism1>>
 	<<else>>
 		You pull your $worn.lower.name down a little, confirming that you're not wearing underwear beneath. You cover yourself quickly.<<exhibitionism1>>
-
-		"Nice," Whitney says, prompting River to turn and glare.
-		<br><br>
-		<<if $whitneyskirtcheck is 1 and $forcedcrossdressingdisable is "f">>
-			<<set $whitneyskirtmaths to true>>
-		<</if>>
-		<<unset $whitneypantiesmaths>>
 	<</if>>
-<<elseif $whitneypantiescheck is 1>>
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+
+	"Nice," Whitney says, prompting River to turn and glare.
+<<elseif $whitneypantiescheck is 1>> <!-- whitney sees underwear, and they are expecting you to NOT be wearing underwear -->
+	<<if _wearingSkirt>>
 		You lift your skirt at the thigh, high enough to show your waistline, showing your $worn.under_lower.name beneath. You cover yourself quickly.<<exhibitionism1>>
-
-		Whitney glares at you, but doesn't say anything. This won't be the end of it.
-		<br><br>
-
-		<<set $whitneypantiesmaths to "seen">>
 	<<else>>
 		You pull your $worn.lower.name down a little, showing your $worn.under_lower.name beneath. You cover yourself quickly.<<exhibitionism1>>
-
-		Whitney glares at you, but doesn't say anything. This won't be the end of it.
-		<br><br>
-		<<unset $whitneypantiesmaths>>
 	<</if>>
-<<elseif $whitneypantiescheck is 2>>
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+
+	Whitney glares at you, but doesn't say anything. This won't be the end of it.
+	<<set $whitneypantiesmaths to "seen">>
+<<elseif $whitneypantiescheck is 2>> <!-- whitney sees underwear, and they are expecting you to be wearing feminine underwear -->
+	<<if _wearingSkirt>>
 		You lift your skirt at the thigh, high enough to show your waistline, showing your $worn.under_lower.name beneath. You cover yourself quickly.<<exhibitionism1>>
-		<<if $whitneyskirtcheck is 1 and $worn.lower.reveal lte 200 and $forcedcrossdressingdisable is "f">>
-			<<set $whitneyskirtmaths to true>>
-		<</if>>
 	<<else>>
 		You pull your $worn.lower.name down a little, showing your $worn.under_lower.name beneath. You cover yourself quickly.<<exhibitionism1>>
-		<<if $whitneyskirtcheck is 1 and $forcedcrossdressingdisable is "f">>
-			<<set $whitneyskirtmaths to true>>
-		<</if>>
 	<</if>>
-	<<if $whitneyskirtmaths>>
-		Whitney glares at you, but doesn't say anything. This won't be the end of it.
-		<<if $worn.under_lower.gender is "f">>
-			<<unset $whitneypantiesmaths>>
-		<</if>>
-	<<elseif $worn.under_lower.gender is "f">>
+
+	<<if $worn.under_lower.gender is "f">>
 		"Nice and cosy," Whitney says, prompting River to turn and glare.
-		<<unset $whitneypantiesmaths>>
 	<<else>>
 		Whitney glares at you, but doesn't say anything. This won't be the end of it.
 		<<set $whitneypantiesmaths to "seen">>
 	<</if>>
-	<br><br>
-<<else>>
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+<<else>> <!-- whitney sees underwear, and they only asked to see underwear -->
+	<<if _wearingSkirt>>
 		You lift your skirt at the thigh, high enough to show your $worn.under_lower.name. You cover yourself quickly.<<exhibitionism1>>
-
-		"Nice," Whitney says, prompting River to turn and glare.
-		<br><br>
-
 	<<else>>
 		You pull your $worn.lower.name down a little, low enough to show your $worn.under_lower.name. You cover yourself quickly.<<exhibitionism1>>
-
-		"Nice," Whitney says, prompting River to turn and glare.
-		<br><br>
-
 	<</if>>
+
+	"Nice," Whitney says, prompting River to turn and glare.
 <</if>>
+<br><br>
 
 <<link [[Next|Maths Lesson]]>><<endevent>><<set $eventskip to 1>><</link>>
 <br>
@@ -1056,7 +1024,7 @@ You unfurl the paper, and see a brief, scrawled message.
 :: Maths Whitney Undies Trick
 <<effects>>
 
-<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+<<if clothingData('lower', $worn.lower, "skirt") is 1>>
 	You lift your skirt to your waistline, and try to hoist up your $worn.under_lower.name, hoping to give the impression that you're wearing nothing beneath.
 <<else>>
 	You pull your $worn.lower.name and $worn.under_lower.name down a little, hoping to give the impression that you're wearing nothing beneath.
@@ -1065,29 +1033,20 @@ You unfurl the paper, and see a brief, scrawled message.
 
 <<skulduggerycheck>>
 <<if $skulduggerysuccess is 1>>
-
 	<span class="green">"Nice,"</span> Whitney says, fooled. River turns and glares at <<him>>.
-	<br><br>
 
-		<<skulduggeryuse>>
-
-	<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
-	<br>
-	<<if $whitneypantiesmaths is "refused">>
-		<<unset $whitneypantiesmaths>>
-	<</if>>
+	<<unset $whitneypantiesmaths>>
 <<else>>
-
-<span class="red">Whitney glares at you.</span> <<He>> saw through the ruse. <<He>> doesn't say anything, but this won't be the end of it.
-<br><br>
-
-	<<skulduggeryuse>>
-
-	<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
-	<br>
+	<span class="red">Whitney glares at you.</span> <<He>> saw through the ruse. <<He>> doesn't say anything, but this won't be the end of it.
 
 	<<set $whitneypantiesmaths to "seen">>
 <</if>>
+<br><br>
+
+<<skulduggeryuse>>
+
+<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+<br>
 
 :: Maths Whitney Undies Ignore
 <<effects>>
@@ -1120,9 +1079,7 @@ You ignore Whitney's demand and turn to face the front of the class. <<He>> barr
 	<br><br>
 
 	Whitney throws the paper once more, just as River turns. The teacher snatches it from the air, and drops it in the bin without reading it.
-	<<endevent>><<npc River>><<person1>>
-	<<He>> points at the door.
-	<<endevent>><<npc Whitney>><<person1>>
+	<<nnpc_He "River">> points at the door.
 	With an exasperated sigh, Whitney rises to	<<his>> feet and leaves the room.
 	<br><br>
 

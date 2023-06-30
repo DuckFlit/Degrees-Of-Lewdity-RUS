@@ -840,7 +840,7 @@
 			You brush the ruler away and fix your $worn.lower.name, but not before the class gets a good look at your <<print ($worn.under_lower.anus_exposed is 1 ? "bare ass" : $worn.under_lower.name)>>.
 			<<gtrauma>><<gstress>><<trauma 1>><<stress `($_skirt is 1 ? 1 : 2)`>>
 
-			<<if ($whitneypantiescheck is 1 or ($whitneypantiescheck is 2 or $worn.under_lower.gender isnot "f")) and $whitneymaths is "active">>
+			<<if $whitneymaths is "active" and ($whitneypantiescheck is 1 or ($whitneypantiescheck is 2 or $worn.under_lower.gender isnot "f"))>>
 				<br><br>
 
 				Whitney glares at you, but doesn't say anything. This won't be the end of it.
@@ -1088,27 +1088,26 @@
 <<widget "mathsWhitneyAttendChance">>
 	<<if !$whitneymaths or $whitneymaths is "absent">>
 		<<if C.npc.Whitney.state is "active" and Time.minute lte 40>>
+			<<set _wearingSkirt to (clothingData('lower', $worn.lower, "skirt") is 1)>>
+			<<set _whitneyMadAtSkirt to $whitneyskirtcheck is 1 and $forcedcrossdressingdisable is "f" and (!_wearingSkirt or $worn.lower.reveal lte 200)>>
+
 			<<if !$whitneymaths>>
 				<!-- Whitney attending Maths class for the first time during the game -->
 				<<npc Whitney 1>><<person1>>
 				Whitney swaggers in. "So you decided to show up," River says, pointing at an empty seat at the front. "Tuck your shirt in."
 				<br><br>
 
+				<<set $whitneyskirtmaths to _whitneyMadAtSkirt>>
+
 				<<if $whitneyromance is 1>>
 					<<set $whitneymaths to "seat">>
 					Whitney rolls <<his>> eyes,
-					<<if $whitneyskirtcheck is 1 and ((setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.reveal gt 200)) and $forcedcrossdressingdisable is "f">>
-						only to then glare at you as <<he>> spots your $worn.lower.name,
-						<<set $whitneyskirtmaths to true>>
-					<</if>>
+					<<if _whitneyMadAtSkirt>>only to then glare at you as <<he>> spots your $worn.lower.name,<</if>>
 					and instead takes a seat beside you.
 				<<else>>
 					<<set $whitneymaths to "active">>
 					Whitney rolls <<his>> eyes,
-					<<if $whitneyskirtcheck is 1 and ((setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.reveal gt 200)) and $forcedcrossdressingdisable is "f">>
-						only to then glare at you as <<he>> spots your $worn.lower.name,
-						<<set $whitneyskirtmaths to true>>
-					<</if>>
+					<<if _whitneyMadAtSkirt>>only to then glare at you as <<he>> spots your $worn.lower.name,<</if>>
 					and instead takes a seat at the back.
 				<</if>>
 				<<He>> tucks just the front of <<his>> shirt into <<his>> <<npcClothesText $NPCList[0] "lower">> as <<he>> sits.
@@ -1119,14 +1118,16 @@
 				<<set $_whitney_tardy_modifier to (Time.minute lte 20 ? Time.minute : -Time.minute + 40) - 10>>
 				<!-- whitney_tardy_modifier starts out negative, becomes positive at 10 minutes late, peaks at 20 minutes late, and hits negative again at 30 minutes late -->
 				<<set $_whitney_maths_chance += $_whitney_tardy_modifier>>
+
 				<<if random(1, 100) lte $_whitney_maths_chance>>
 					<<npc Whitney 1>><<person1>>
+					<<set $whitneyskirtmaths to _whitneyMadAtSkirt>>
 					<<if $whitneyromance is 1>>
 						<<set $whitneymaths to "seat">>
-						Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you.
+						Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you<<if _whitneyMadAtSkirt>>, only to then glare at you as <<he>> spots your $worn.lower.name<</if>>.
 					<<else>>
 						<<set $whitneymaths to "active">>
-						Whitney enters the class. <<He>> takes a seat at the back.
+						Whitney enters the class. <<He>> <<if _whitneyMadAtSkirt>>glares at you when <<he>> spots your $worn.lower.name, then<</if>> takes a seat at the back.
 					<</if>>
 					<<endevent>>
 					<br><br>
