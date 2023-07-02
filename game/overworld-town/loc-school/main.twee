@@ -412,17 +412,38 @@ The school gate is shut and sealed by a sturdy padlock.
 
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
+<<if $changingRoomGender>><<set _cameFrom to ($changingRoomGender is "boys" ? "m" : "f")>><</if>>
+
 <<unset $audienceforcegirl>>
 <<unset $audienceforceboy>>
 <<unset $changingRoomGender>>
 
+<<set _studentsKnow to ($schoolrep.crossdress gte 4 and $changingroomstate is "own") or ($schoolrep.crossdress gte 5 and $changingroomstate isnot "empty")>>
+
+<<set _seenGender to ($NudeGenderDC isnot -1 and $schoolrep.crossdress gte 4 and _studentsKnow ? $player.gender : $player.gender_appearance)>>
+<<set _uncomfortableGender to ($backgroundTraits.includes("crossdresser") ? $player.gender : false)>>
+<<set _delinquentGender to ($changingroomstate is "empty" ? false : _seenGender)>>
+
 <<if $changingroomstate is "empty">>
 	You are outside the school changing rooms. You need to pass through them to access the pool.
-	<br><br>
 <<else>>
 	You are outside the school changing rooms. You need to pass through them to access the pool. You hear chatter from both sides.
-	<br><br>
+
+	<<if $NudeGenderDC isnot -1 and _studentsKnow>>
+		<<if $schoolrep.crossdress gte 4>>
+			<br><br>
+			<<print ($changingroomstate is "own" ? "Your classmates know" : "Everyone knows")>> you should be using the <<print ($player.gender is "m" ? "boys'" : "girls'")>> changing room.
+			<<if _uncomfortableGender>>Doing so would make you uncomfortable.<</if>>
+		<<elseif $player.gender isnot $player.gender_appearance>>
+			<br><br>
+			You would look out of place if you entered the <<print ($player.gender_appearance is "m" ? "girls'" : "boys'")>> changing room now.
+		<<elseif _cameFrom and _seenGender isnot _cameFrom>>
+			<br><br>
+			You would look out of place if you re-entered the <<print (_cameFrom is "m" ? "boys'" : "girls'")>> changing room now.
+		<</if>>
+	<</if>>
 <</if>>
+<br><br>
 
 <<if $exposed gte 1>>
 	A stack of towels sits on a trolley beside the door.
@@ -431,33 +452,10 @@ The school gate is shut and sealed by a sturdy padlock.
 	<br><br>
 <</if>>
 
-<<if $player.gender is "f" and $changingroomstate is "empty">>
-	<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><<arousal 300>><</link>><<garousal>>
-	<br>
-<<elseif $player.gender is "f" and $schoolrep.crossdress gte 3>>
-	<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><<arousal 600>><<stress 12>><</link>><<ggarousal>>
-	<br>
-<<elseif $player.gender is "f">>
-	<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><<arousal 600>><</link>><<ggarousal>>
-	<br>
-<<else>>
-	<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><</link>>
-	<br>
-<</if>>
-
-<<if $player.gender is "m" and $changingroomstate is "empty">>
-	<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><<arousal 300>><</link>><<garousal>>
-	<br><br>
-<<elseif $player.gender is "m" and $schoolrep.crossdress gte 3>>
-	<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><<arousal 600>><<stress 12>><</link>><<ggarousal>>
-	<br><br>
-<<elseif $player.gender is "m">>
-	<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><<arousal 600>><</link>><<ggarousal>>
-	<br><br>
-<<else>>
-	<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><</link>>
-	<br><br>
-<</if>>
+<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><<set $justEntered to true>><</link>><<if _uncomfortableGender is "m">><<gstress>><</if>><<if _delinquentGender is "f">><<gdelinquency>><</if>>
+<br>
+<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><<set $justEntered to true>><</link>><<if _uncomfortableGender is "f">><<gstress>><</if>><<if _delinquentGender is "m">><<gdelinquency>><</if>>
+<br><br>
 
 <<if $changingroomstate isnot "empty" and $player.gender_appearance isnot $player.gender>>
 	<<if $player.gender_appearance is "m">>
