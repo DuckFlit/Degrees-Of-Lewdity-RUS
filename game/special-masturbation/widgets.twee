@@ -77,10 +77,10 @@
 			You've failed to produce any milk or other lewd fluids.
 		<</if>>
 		<br>
-	<<elseif $masturbation_milk gt 0>>
-		<span class="gold">You bottled <<print ($masturbation_milk).toFixed(1)>> mL of breast milk.</span>
-		<<if $masturbation_milk gte 100>>
-			<<set $_bottles to Math.floor($masturbation_milk / 100)>>
+	<<elseif $bottledMilk>>
+		<span class="gold">You bottled <<print ($bottledMilk).toFixed(1)>> mL of breast milk.</span>
+		<<if $bottledMilk gte 100>>
+			<<set $_bottles to Math.floor($bottledMilk / 100)>>
 			<<tending_give baby_bottle_of_breast_milk $_bottles>>
 			Enough to fill <<print $_bottles>> bottle<<print $_bottles gt 1 ? "s" : "">>.
 		<<else>>
@@ -150,6 +150,7 @@
 	<<unset $currentToyRight>>
 	<<unset $currentToyVagina>>
 	<<unset $currentToyAnus>>
+	<<unset $bottledMilk>>
 <</widget>>
 
 <<widget "masturbationstart">>
@@ -300,5 +301,34 @@
 		<!-- In summery: Having high arousal causes larger wetness gains, while being near max wetness causes lower wetness gains -->
 		<<set $vaginaArousalWetness += $_change>>
 		<<set $vaginaArousalWetness to Math.clamp($vaginaArousalWetness, 0, 100)>>
+	<</if>>
+<</widget>>
+
+<<widget "masturbationControls">>
+	<<set $_passage to _args[1] or $passage>>
+	<<if $corruptionMasturbation>>
+		<span class="red">The slime in your ear will not allow you to stop.</span>
+	<</if>>
+	<div id="masturbationButtons">
+		<<if $timer lte 0 and _args[0] and _args[0].includes("timer")>>
+			<div id="next"><<link [[Continue|$_passage + " Finish"]]>><</link>><<nexttext>></div>
+		<<elseif $orgasmcurrent and _args[0] and _args[0].includes("orgasmcurrent")>>
+			<div id="next"><<link [[Continue|$_passage + " Finish"]]>><</link>><<nexttext>></div>
+		<<else>>
+			<div id="next"><<link [[Continue|$_passage]]>><</link>><<nexttext>></div>
+		<</if>>
+		<<masturbationStopControls>>
+	</div>
+	<br><br><br><br><br>
+<</widget>>
+
+/* Used in situations with custom continue controls, but standard stop controls. Usage should be similar to <<masturbationControls>> above */
+<<widget "masturbationStopControls">>
+	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
+		<div id="stop"><<link [[Stop|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
+	<<elseif $corruptionMasturbation isnot true>>
+		<div id="stop"><<link [[Stop|$passage + " Finish"]]>><<set $finish to 1>><</link>></div>
+	<<else>>
+		<div id="noStop">Unable to stop</div>
 	<</if>>
 <</widget>>

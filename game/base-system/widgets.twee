@@ -499,9 +499,9 @@
 
 <<widget "crimeup">><<silently>>
 	<<if $statFreeze isnot true>>
-		<<if _args[0]>>
-			<<set $_crimemod to _args[0]>>
-			<<if _args[0] gte 1>>
+		<<if _args[0] and !isNaN(_args[0])>>
+			<<set $_crimemod to Number(_args[0])>>
+			<<if _args[0] gt 0>>
 				<!-- Our crime value is positive, adjust by stealth factor -->
 				<<set $_crimefactor to 1>>
 				/* The following commented code contains experimental factors for calculating stealth */
@@ -533,12 +533,14 @@
 			<</if>>
 			<<set $crime += $_crimemod>> <!-- This works for negative values as well! -->
 			<<set $crime to Math.clamp($crime, C.crime.min, C.crime.max)>> <!-- Auto-clamp crime -->
+		<<elseif isNaN(_args[0])>>
+			<<set _crimeError to `NaN input found: '${_args[0]}'`>>
 		<</if>>
 		<<if $slimeEvent is "steal something">>
 			<<unset $slimeEvent>>
 		<</if>>
 	<</if>>
-<</silently>><</widget>>
+<</silently>><<if _crimeError>><<error {message:T.crimeError}>><</if>><</widget>>
 
 <<widget "seductionskilluse">>
 	<<set $enemyarousal += ($seductionskill / 100)>><<seductionskill 5>>

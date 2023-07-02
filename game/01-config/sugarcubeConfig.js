@@ -443,7 +443,10 @@ Config.navigation.override = function (dest) {
 			case "Trash Compare Penis Secret":
 			case "Trash Compare Breast Secret":
 				return "Trash Compare Secret";
-
+			case "Garden Voyeurism Masturbate End":
+				return "Garden Voyeurism Masturbate Finish";
+			case "Danube Challenge Masturbate End":
+				return "Danube Challenge Masturbate Finish";
 			default:
 				return false;
 		}
