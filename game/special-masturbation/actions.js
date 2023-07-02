@@ -575,14 +575,16 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 						break;
 					case "small dildo":
 					case "dildo":
-						result.options.push({
-							action: "mdildomouthentrance",
-							text: "Hold against your mouth",
-							colour: "sub",
-						});
-						break;
+						if (V.mouth === 0) {
+							result.options.push({
+								action: "mdildomouthentrance",
+								text: "Hold against your mouth",
+								colour: "sub",
+							});
+							break;
+						}
 				}
-				result.options.push(stop("mvaginastopdildo"));
+				result.options.push(stop("mdildostop"));
 			}
 			break;
 		case "mballs":
