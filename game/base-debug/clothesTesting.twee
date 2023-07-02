@@ -54,9 +54,9 @@
 			penisVirgin: "virgin",
 			ballsExist: true,
 			bellySize: 0,
-			vaginaCum:"",
-			anusCum:"",
-			mouthCum:"",
+			vaginaCum: 0,
+			anusCum: 0,
+			mouthCum: 0,
 			angelHalo:"hidden",
 			angelWings:"hidden",
 			angelWingsLeftType:"idle",
@@ -313,9 +313,10 @@
 
 	<span class="gold">Breasts</span>
 	<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
-	<<for _i to 0; _i lt _name.length; _i++>>
-		<label><<print _name[_i]>> <<print '<<radiobutton "$characterViewer.bodyState.breastSize" _i ' + ($characterViewer.bodyState.breastSize is _i ? "checked" : "") + '>>'>></label> |
-	<</for>>
+	<<numberslider "$characterViewer.bodyState.breastSize" $characterViewer.bodyState.breastSize 0 _name.length-1 1>>
+	<<run $(() => { $('#numberslider-input-characterviewerbodystatebreastsize').on('input change', e => {
+		$('#numberslider-value-characterviewerbodystatebreastsize').html(" "+_name[$(e.currentTarget).siblings().first().text()]);
+	}).trigger('change') })>>
 	<br><br>
 
 	<span class="gold">Belly Size</span>
@@ -323,40 +324,33 @@
 	<<numberslider "$characterViewer.bodyState.bellySize" $characterViewer.bodyState.bellySize 0 24 1>>
 	<br><br>
 
-	<span class="gold">Vagina Cum</span>
+	<<set _liquidNames to ["None","Drops","Some","Lots","Dripping","Overflowing"]>>
+
+	<span class="gold">Vagina Cum Amount</span>
 	<br>
-	<<listbox "$characterViewer.bodyState.vaginaCum" autoselect>>
-		<<option "None" "">>
-		<<option "Start" "Start">>
-		<<option "Very Slow" "VerySlow">>
-		<<option "Slow" "Slow">>
-		<<option "Fast" "Fast">>
-		<<option "Very Fast" "VeryFast">>
-	<</listbox>>
+	<<numberslider "$characterViewer.bodyState.vaginaCum" $characterViewer.bodyState.vaginaCum 0 5 1>>
+	<<set _id to "$characterViewer.bodyState.vaginaCum".replace(/[.$]/g, "").toLowerCase()>>
+	<<run $(() => { $(`#numberslider-input-${_id}`).on('input change', e => {
+		$(`#numberslider-value-${_id}`).html(" "+_liquidNames[$(e.currentTarget).siblings().first().text()]);
+	}).trigger('change') })>>
 	<br><br>
 
-	<span class="gold">Anus Cum</span>
+	<span class="gold">Anus Cum Amount</span>
 	<br>
-	<<listbox "$characterViewer.bodyState.anusCum" autoselect>>
-		<<option "None" "">>
-		<<option "Start" "Start">>
-		<<option "Very Slow" "VerySlow">>
-		<<option "Slow" "Slow">>
-		<<option "Fast" "Fast">>
-		<<option "Very Fast" "VeryFast">>
-	<</listbox>>
+	<<numberslider "$characterViewer.bodyState.anusCum" $characterViewer.bodyState.anusCum 0 5 1>>
+	<<set _id to "$characterViewer.bodyState.anusCum".replace(/[.$]/g, "").toLowerCase()>>
+	<<run $(() => { $(`#numberslider-input-${_id}`).on('input change', e => {
+		$(`#numberslider-value-${_id}`).html(" "+_liquidNames[$(e.currentTarget).siblings().first().text()]);
+	}).trigger('change') })>>
 	<br><br>
 
-	<span class="gold">Mouth Cum</span>
+	<span class="gold">Mouth Cum Amount</span>
 	<br>
-	<<listbox "$characterViewer.bodyState.mouthCum" autoselect>>
-		<<option "None" "">>
-		<<option "Start" "Start">>
-		<<option "Very Slow" "VerySlow">>
-		<<option "Slow" "Slow">>
-		<<option "Fast" "Fast">>
-		<<option "Very Fast" "VeryFast">>
-	<</listbox>>
+	<<numberslider "$characterViewer.bodyState.mouthCum" $characterViewer.bodyState.mouthCum 0 5 1>>
+	<<set _id to "$characterViewer.bodyState.mouthCum".replace(/[.$]/g, "").toLowerCase()>>
+	<<run $(() => { $(`#numberslider-input-${_id}`).on('input change', e => {
+		$(`#numberslider-value-${_id}`).html(" "+_liquidNames[$(e.currentTarget).siblings().first().text()]);
+	}).trigger('change') })>>
 	<br><br>
 <</widget>>
 
@@ -825,9 +819,10 @@
 	<</if>>
 
 	/*Fluid*/
-	<<set _modeloptions.drip_vaginal to $characterViewer.bodyState.vaginaCum>>
-	<<set _modeloptions.drip_anal to $characterViewer.bodyState.anusCum>>
-	<<set _modeloptions.drip_mouth to $characterViewer.bodyState.mouthCum>>
+	<<set _baseArray to ["", "Start", "VerySlow", "Slow", "Fast", "VeryFast"]>>
+	<<set _modeloptions.drip_vaginal to _baseArray[$characterViewer.bodyState.vaginaCum]>>
+	<<set _modeloptions.drip_anal to _baseArray[$characterViewer.bodyState.anusCum]>>
+	<<set _modeloptions.drip_mouth to _baseArray[$characterViewer.bodyState.mouthCum]>>
 
 	/*Clothes*/
 	<<characterViewerModelClothes $_id "head">>
@@ -1000,7 +995,7 @@
 		<</link>>
 	<<else>>
 		<<link [[Enable|$passage]]>>
-			<<set $characterViewer.controls.autoRefresh to false>>
+			<<set $characterViewer.controls.autoRefresh to true>>
 		<</link>>
 	<</if>>
 	<br><br>
