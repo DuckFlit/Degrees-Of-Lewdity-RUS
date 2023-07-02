@@ -187,7 +187,7 @@ You successfully pick one of the lockers, and rummage inside.
 	<<set _apparel to either(_apparelArr)>>
 	You find a pair of _colour _apparel.
 	<<if _apparel is _apparelArr[0]>>
-		You're not sure what they're doing in a $changingRoomGender locker.
+		You're not sure what they're doing in a <<print ($changingRoomGender is "boys" ? "boy's" : "girl's")>> locker.
 	<<elseif _apparel is _apparelArr[_apparelArr.length]>>
 		Someone must be planning on a swim after school.
 	<</if>>
@@ -250,8 +250,7 @@ You successfully pick one of the lockers, and rummage inside.
 
 	Leighton emerges from <<nnpc_his Leighton>> office a moment later, almost bumping into the swimming teacher.
 	<br><br>
-	<<set _masonPronoun to $NPCName[$NPCNameList.indexOf("Mason")].pronoun>>
-	<<if _masonPronoun is C.npc.Leighton.pronoun and (maleChance(_masonPronoun) is (_masonPronoun is "m" ? 0 : 100))>>
+	<<if C.npc.Mason.pronoun is C.npc.Leighton.pronoun and (maleChance(C.npc.Mason.pronoun) is (C.npc.Mason.pronoun is "m" ? 0 : 100))>>
 		"Did a student run by?" Mason asks.
 		<br>
 		"No," Leighton replies. "You're getting the floor wet."
@@ -369,7 +368,7 @@ Mason seems unconvinced.
 		<<elseif $player.gender is "f" and $changingRoomGender is "boys">>
 			"Y-you shouldn't be in the boys' room in the first place, least of all dressed like that. Go get changed."
 		<<else>>
-			"Y-you should get dressed."
+			"I- I have to tell the head," <<he>> replies. "You should get dressed."
 		<</if>>
 	<<else>>
 		<<if $player.gender_appearance is "m" and $changingRoomGender is "girls">>
@@ -377,7 +376,7 @@ Mason seems unconvinced.
 		<<elseif $player.gender_appearance is "f" and $changingRoomGender is "boys">>
 			"Y-you shouldn't be in the boys' room in the first place, least of all dressed like that. Go get changed."
 		<<else>>
-			"Y-you should get dressed."
+			"I- I have to tell the head," <<he>> replies. "You should get dressed."
 		<</if>>
 	<</if>>
 <<else>>
@@ -387,7 +386,7 @@ Mason seems unconvinced.
 		<<elseif $player.gender is "f" and $changingRoomGender is "boys">>
 			"You shouldn't be in the boys' room in the first place."
 		<<else>>
-			"I hope <<nnpc_he Leighton>> goes easy on you."
+			"I'll have to tell the head," <<he>> replies. "I hope <<nnpc_he Leighton>> goes easy on you."
 		<</if>>
 	<<else>>
 		<<if $player.gender_appearance is "m" and $changingRoomGender is "girls">>
@@ -395,10 +394,11 @@ Mason seems unconvinced.
 		<<elseif $player.gender_appearance is "f" and $changingRoomGender is "boys">>
 			"Let's not meet in the boys' changing room again."
 		<<else>>
-			"I hope <<nnpc_he Leighton>> goes easy on you."
+			"I'll have to tell the head," <<he>> replies. "I hope <<nnpc_he Leighton>> goes easy on you."
 		<</if>>
 	<</if>>
 <</if>>
+<br><br>
 <<He>> returns to <<his>> class.
 <br><br>
 
@@ -470,15 +470,27 @@ Mason throws open your locker, but you're ready. "Aha," <<he>> says. "Got y-" Yo
 
 It's a tight fit.
 <<if $NPCList[0].penis isnot "none">>
-	<<if $NPCList[0].pronoun is "m">>
-		Your <<breasts>> press against Mason's chest.
-	<<else>>
+	<<if $NPCList[0].pronoun is "m" or $NPCList[0].breastsize is 0>>
+		Your <<breastsizedesc>> <<if $exposed gte 1>>bare<</if>> <<breastssimple>> press against Mason's chest.
+	<<elseif $player.breastsize lte 1>>
 		Mason's <<print $NPCList[0].breastsdesc>> press against your chest.
+	<<elseif $NPCList[0].breastsize gte $player.breastsize>>
+		Mason's <<print $NPCList[0].breastsdesc>> press against yours.
+		<<if $NPCList[0].breastsize gt $player.breastsize>><<Hes>> bigger<<if $NPCList[0].breastsize - $player.breastsize lt 2>>, but not by much<</if>>.<</if>>
+	<<else>>
+		Your <<breasts>> press against Mason's. You're bigger<<if $player.breastsize - $NPCList[0].breastsize lt 2>>, but not by much<</if>>.
 	<</if>>
+	<<if C.npc.Mason.lust gte 40>>
+		You can feel <<his>> hard nipples <<if $pronoun is "f">>through <<his>> swimsuit<<else>>on your body<</if>>.
+	<</if>>
+	<<if $exposed gte 2>><<npcincr Mason lust 10>><<gglust>><<else>><<npcincr Mason lust 5>><<glust>><</if>>
+	<br><br>
+
+	<<if $mason_count gte 1>><<His>> eyes widen when <<he>> recognizes you. "You're the underwear thief?"<</if>>
 	<<He>> gropes for the door, but you raise a leg in <<his>> way, and <<he>> gropes your thigh by mistake.
 	<br><br>
 
-	<<if $NPCName[$NPCNameList.indexOf("Mason")].lust gte 40>>
+	<<if C.npc.Mason.lust gte 40>>
 		You glance between <<his>> legs. <span class="lewd"><<His>> <<if $pronoun is "f">>swimsuit strains<<else>>trunks strain<</if>> to contain <<his>> erection.</span><<garousal>><<arousal 600>>
 		<br><br>
 
@@ -496,10 +508,21 @@ It's a tight fit.
 		<br>
 	<</if>>
 <<else>>
-	The teacher's ass presses against your crotch, and <<his>> chest against the locker wall. <<He>> tries to reach for the door, but it's an awkward and compromising position.
+	The teacher's ass presses against your crotch, and <<his>> <<print ($NPCList[0].breastsize gt 0 ? $NPCList[0].breastsdesc : "chest")>> against the locker wall.
+	<<if $player.penisExist>>
+		Your <<penissize>> <<if $exposed gte 2>>naked<</if>> penis pushes against <<him>>.
+	<<else>>
+		Your <<breastsizedesc>> <<if $exposed gte 1>>bare<</if>> <<breastssimple>> pushing into <<his>> back.
+	<</if>>
+	
+	<<if $exposed gte 1>><<npcincr Mason lust 10>><<gglust>><<else>><<npcincr Mason lust 5>><<glust>><</if>>
 	<br><br>
 
-	<<if $NPCName[$NPCNameList.indexOf("Mason")].lust gte 40>>
+	<<if $mason_count gte 1>><<He>> looks back at you, and <<his>> eyes widen as <<he>> recognizes you. "You're the underwear thief?"<</if>>
+	<<He>> tries to reach for the door, but it's an awkward and compromising position.
+	<br><br>
+
+	<<if C.npc.Mason.lust gte 40>>
 		You look over <<his>> shoulder, <span class="pink">at the wetness between <<his>> thighs.</span> That's not just water.<<garousal>><<arousal 600>>
 		<br><br>
 
@@ -558,7 +581,7 @@ You emerge from the locker behind Mason. "Th-this is unacceptable behaviour," <<
 :: School Pool Locker Penis
 <<effects>>
 
-You lower your hand beneath your raised thigh, and touch <<his>> <<print $NPCList[0].penisdesc>>. <<He>> tries to squirm away, but there's nowhere to go.
+You lower your hand beneath your raised thigh, and touch <<his>> cock through <<his>> <<print ($pronoun is "m" ? "trunks" : "swimsuit")>>. <<He>> tries to squirm away, but there's nowhere to go.
 
 <<if $speech_attitude is "meek">>
 	"Following a student into a locker," you tease. "Then getting hard! Naughty teacher."
@@ -588,32 +611,17 @@ You watch through the slits as a <<person>> rushes in, and opens the locker next
 <br><br>
 
 <<if $speech_attitude is "meek">>
-	"What would <<he>> think if <<he>> caught you molesting a student?" you whisper. The <<person>> glances at your locker, before continuing to undress. "I-I'll be good." You
-	<<person1>>
-	<<if $pronoun is "m">>
-		tug down Mason's trunks,
-	<<else>>
-		pull aside Mason's swimsuit,
-	<</if>>
-	<span class="pink">releasing <<his>> <<print $NPCList[0].penisdesc>>.</span> "If you are."
+	"What would <<he>> think if <<he>> caught you molesting a student?" you whisper. The <<person>> glances at your locker, before continuing to undress. "I-I'll be good." 
+	You <<person1>><<print ($pronoun is "m" ? "tug down Mason's trunks" : "pull aside Mason's swimsuit")>>, <span class="pink">revealing <<his>> <<print $NPCList[0].penisdesc>>.</span>
+	"If you are."
 <<elseif $speech_attitude is "bratty">>
-	"Best be a good <<nnpc_gendery "Mason">>, and keep quiet," you whisper. You
-	<<person1>>
-	<<if $pronoun is "m">>
-		tug down Mason's trunks,
-	<<else>>
-		pull aside Mason's swimsuit,
-	<</if>>
-	<span class="pink">releasing <<his>> <<print $NPCList[0].penisdesc>>.</span> "You wouldn't want to be caught molesting a student, would you?"
+	"Best be a good <<nnpc_gendery "Mason">>, and keep quiet," you whisper. 
+	You <<person1>><<print ($pronoun is "m" ? "tug down Mason's trunks" : "pull aside Mason's swimsuit")>>, <span class="pink">revealing <<his>> <<print $NPCList[0].penisdesc>>.</span>
+	"You wouldn't want to be caught molesting a student, would you?"
 <<else>>
-	"We'll be in trouble if we're caught," you whisper. You
-	<<person1>>
-	<<if $pronoun is "m">>
-		tug down Mason's trunks,
-	<<else>>
-		pull aside Mason's swimsuit,
-	<</if>>
-	<span class="pink">releasing <<his>> <<print $NPCList[0].penisdesc>>.</span> "Don't worry. I'll be discreet."
+	"We'll be in trouble if we're caught," you whisper. 
+	You <<person1>><<print ($pronoun is "m" ? "tug down Mason's trunks" : "pull aside Mason's swimsuit")>>, <span class="pink">revealing <<his>> <<print $NPCList[0].penisdesc>>.</span>
+	"Don't worry. I'll be discreet."
 <</if>>
 <br><br>
 
@@ -625,15 +633,39 @@ You watch through the slits as a <<person>> rushes in, and opens the locker next
 <<effects>>
 
 Mason struggles to remain silent as you pump <<his>> cock with your hand.
+<br><br>
 
-<<if $player.vaginaExist>>
+<<if $player.vaginaExist and ($exposed gte 2 or $player.gender_appearance is "f" or $genderknown.includes("Mason"))>>
+	<<set _huge to $NPCList[0].penissize gte 3 ? "huge":"">>
+	<<set _isVirgin to ($player.virginity.vaginal is false)>>
+	<<set _virgin to _isVirgin ? "virgin":"">>
+	<<set _unknownHerm to (!$genderknown.includes("Mason") and $player.penisExist)>>
+	<<set _visibleBalls to ($exposed gte 2 and $player.ballsExist)>>
 	<<if $speech_attitude is "meek">>
-		"I'm so helpless," you tease. "Trapped in here with teacher's thing so close." You angle <<his>> cock towards your pussy. "I couldn't stop you ravaging me."
+		"I'm so helpless," you tease. "Trapped in here with teacher's _huge thing so close."
+		You angle <<his>> cock towards your pussy<<if _visibleBalls>> as you lift your balls to give Mason a better look at it<</if>>.
+		"<<if _unknownHerm>>Did you know I have a pussy? <</if>>There's nothing to stop you from plunging that _huge cock into my <<print (_isVirgin ? "virgin" : "helpless")>> pussy...<<if _isVirgin>> But, you wouldn't take my virginity, would you?<</if>>"
 	<<elseif $speech_attitude is "bratty">>
-		"How's that feel?" you say. "Or do you want to fuck me properly?" You angle <<his>> cock towards your pussy. "Would you like that? Being forced to defile a student's womb?"
+		"How's that feel?" you say. "Or do you want to fuck me properly?"
+		You angle <<his>> cock towards your pussy<<if _visibleBalls>> as you lift your balls to give Mason a better look at it<</if>>.
+		"<<if _unknownHerm>>Did you know I have a pussy? <<if _isVirgin>>I haven't even used it yet. Do you wanna be my first?<</if>> <</if>>Would you like that?
+		Being forced to defile a student's _virgin womb<<if $NPCList[0].penissize gte 3>> with your huge cock<</if>>?"
 	<<else>>
-		"You're getting me all warm," you say, angling <<his>> cock towards your pussy. "Just knowing you could grasp my hips and force my pussy onto your cock is driving me wild."
+		"You're getting me all warm," you say, angling <<his>> cock towards your pussy.
+		<<if _visibleBalls>>You lift your balls, exposing your pussy to Mason.<</if>> 
+		"<<if _unknownHerm>>Did you know I have a pussy? <<if _isVirgin>>I haven't even used it yet. Do you wanna be my first?<</if>> <</if>>Just knowing you could grab my hips and
+		force your _huge cock into my _virgin pussy at any moment <<print ($player.penisExist ? "is getting me so hard" : "is driving me wild")>>."
 	<</if>>
+	<<if $exposed gte 2>>
+		<br><br>
+		"Look," you say, pushing the head of <<his>> cock against your pussy and rubbing it with your lips. You spread it open and hold <<his>> cock at the entrance.
+		<<print either(
+			`"If you cum right now, it's gonna go right inside my pussy. You don't even need to ask first."`,
+			`<<His>> precum oozes from <<his>> tip and drools into your pussy. "Look at how my pussy eats up your precum. Can't you give me more?"`,
+			`"Look at how much precum you're leaking. Are you about to pump a huge load into me? Am I gonna be able to take it all? Can you let me see it?"`
+		)>>
+	<</if>>
+	<<set $genderknown.push("Mason")>>
 <<else>>
 	<<if $speech_attitude is "meek">>
 		"I'm so helpless," you tease. "Trapped in here with teacher. Being forced to perform such a depraved act."
@@ -645,7 +677,8 @@ Mason struggles to remain silent as you pump <<his>> cock with your hand.
 <</if>>
 <br><br>
 
-At that, Mason's body shudders, and <<his>> <<print $NPCList[0].penisdesc>> twitches in your palm. <span class="lewd">Thick ropes of cum</span> erupt from the tip, splattering against the locker wall.<<lllust>><<npcincr Mason lust -10>>
+At that, Mason's body shudders, and <<his>> <<print $NPCList[0].penisdesc>> twitches in your palm. You aim <<his>> penis away from you and begin to stroke it much more quickly.
+<span class="lewd">Thick ropes of cum</span> erupt from the tip, splattering against the locker wall.<<lllust>><<npcincr Mason lust -10>>
 <br><br>
 
 <<link [[Next|School Pool Locker Hand End]]>><</link>>
@@ -654,7 +687,7 @@ At that, Mason's body shudders, and <<his>> <<print $NPCList[0].penisdesc>> twit
 :: School Pool Locker Pussy
 <<effects>>
 
-You reach around Mason's waist, and touch <<his>> pussy through <<his>> <<if $pronoun is "m">>trunks<<else>>swimsuit<</if>>. <<He>> tries to squirm away, but there's nowhere to go.
+You reach around Mason's waist, and touch <<his>> pussy through <<his>> <<print ($pronoun is "m" ? "trunks" : "swimsuit")>>. <<He>> tries to squirm away, but there's nowhere to go.
 
 <<if $speech_attitude is "meek">>
 	"Following a student into a locker," you tease. "Then getting wet! Naughty teacher."
@@ -683,32 +716,17 @@ You watch through the slits as a <<person>> rushes in, and opens the locker next
 <br><br>
 
 <<if $speech_attitude is "meek">>
-	"What would <<he>> think if <<he>> caught you molesting a student?" you whisper. The <<person>> glances at your locker, before continuing to undress. "I-I'll be good." You
-	<<person1>>
-	<<if $pronoun is "m">>
-		tug down Mason's trunks,
-	<<else>>
-		pull aside Mason's swimsuit,
-	<</if>>
-	<span class="pink">revealing <<his>> pussy.</span> "If you are."
+	"What would <<he>> think if <<he>> caught you molesting a student?" you whisper. The <<person>> glances at your locker, before continuing to undress. "I-I'll be good."
+	You <<person1>><<print ($pronoun is "m" ? "tug down Mason's trunks" : "pull aside Mason's swimsuit")>>, <span class="pink">revealing <<his>> pussy.</span>
+	"If you are."
 <<elseif $speech_attitude is "bratty">>
-	"Best be a good <<nnpc_gendery "Mason">>, and keep quiet," you whisper. You
-	<<person1>>
-	<<if $pronoun is "m">>
-		tug down Mason's trunks,
-	<<else>>
-		pull aside Mason's swimsuit,
-	<</if>>
-	<span class="pink">revealing <<his>> pussy.</span> "You wouldn't want to be caught molesting a student, would you?"
+	"Best be a good <<nnpc_gendery "Mason">>, and keep quiet," you whisper.
+	You <<person1>><<print ($pronoun is "m" ? "tug down Mason's trunks" : "pull aside Mason's swimsuit")>>, <span class="pink">revealing <<his>> pussy.</span>
+	"You wouldn't want to be caught molesting a student, would you?"
 <<else>>
-	"We'll be in trouble if we're caught," you whisper. You
-	<<person1>>
-	<<if $pronoun is "m">>
-		tug down Mason's trunks,
-	<<else>>
-		pull aside Mason's swimsuit,
-	<</if>>
-	<span class="pink">revealing <<his>> pussy.</span> "Don't worry. I'll be discreet."
+	"We'll be in trouble if we're caught," you whisper.
+	You <<person1>><<print ($pronoun is "m" ? "tug down Mason's trunks" : "pull aside Mason's swimsuit")>>, <span class="pink">revealing <<his>> pussy.</span>
+	"Don't worry. I'll be discreet."
 <</if>>
 <br><br>
 
@@ -719,15 +737,42 @@ You watch through the slits as a <<person>> rushes in, and opens the locker next
 :: School Pool Locker Pussy 3
 <<effects>>
 
-Mason struggles to remain silent as you slide a finger into <<his>> slit.
+Mason struggles to remain silent as you slide your fingers into <<his>> slit.
 
-<<if $player.penisExist>>
+<<if $player.penisExist and $player.penissize gte 1 and ($exposed gte 2 or $player.gender_appearance is "m" or $genderknown.includes("Mason"))>>
+	<<set _isVirgin to ($player.virginity.penile is false)>>
+	<<set _huge to $player.penissize gte 3 ? "huge":"">>
 	<<if $speech_attitude is "meek">>
-		"I'm so helpless," you tease. "Trapped in here with teacher. Forced to do perverted things." You thrust your pelvis against <<his>> butt. "What would people think?"
+		"I'm so helpless," you tease. "Trapped in here with teacher. Forced to do perverted things."
 	<<elseif $speech_attitude is "bratty">>
-		"How's that feel?" you say. "Or do you want to fuck me properly?" You thrust your pelvis against <<his>> butt. "Are you desperate for a student's cum?"
+		"How's that feel?" you say. "Or do you want to fuck me properly?"
 	<<else>>
-		"You're getting me all warm," you say, thrusting your pelvis against <<his>> butt. "Just knowing you could take my cock inside you at any moment is driving me wild."
+		"You're getting me all warm," you say. "Just knowing you could take my cock inside you at any moment is driving me wild."
+	<</if>>
+	<br><br>
+
+	<<if $exposed lt 2>>
+		You thrust your pelvis against <<his>> butt.
+	<<else>>
+		<<if $player.penissize gte 3>>
+			You grind your <<penissize>> cock between <<his>> legs, rubbing along <<his>> pussy without pushing into it, all while you continue pumping your fingers into <<him>>.
+			"It's like you're riding my cock. Can you imagine
+		<<else>>
+			You grind your cock between <<his>> cheeks and continue pumping your fingers into <<him>>.
+			"You're so wet. Can you imagine
+		<</if>>
+		<<if $speech_attitude is "meek">>this _huge thing<<elseif $speech_attitude is "bratty">>my _huge cock<<else>>this _huge dick<</if>>
+		going inside you?<<if _isVirgin>> I've never done that before. Do you really want to take a student's virginity with your pussy?<</if>>"
+		<br><br>
+
+		You position the head of your cock directly against Mason's pussy.
+	<</if>>
+	<<if $speech_attitude is "meek">>
+		"What would people think<<if $exposed gte 2>> if you made a student cum inside you<</if>>?"
+	<<elseif $speech_attitude is "bratty">>
+		"Are you <<if $exposed gte 2>>really that<</if>> desperate for a student's cum? <<if $exposed lt 2>>Just take out my cock and push yourself onto it<<else>>You can just push yourself down on my _huge cock<</if>> if you want it so bad."
+	<<else>>
+		"What's gonna happen when you get my cock inside you? Are you gonna make me cum inside you?"
 	<</if>>
 <<else>>
 	<<if $speech_attitude is "meek">>
