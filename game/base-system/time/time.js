@@ -1,4 +1,4 @@
-/*Time namespace
+/* Time namespace
 	Use Time prefix when accessing any getters or functions (e.g. Time.second, Time.schoolDay, or Time.getLastDayOfMonth(), etc.)
 	Getters: (Most of these are being used in one way or another)
 	
@@ -78,6 +78,10 @@ const Time = (() => {
 
 	function setTime(hour, minute) {
 		setDate(new DateTime(currentDate.year, currentDate.month, currentDate.day, hour || 0, minute || 0));
+	}
+
+	function setTimeRelative(hour, minute) {
+		setDate(new DateTime(currentDate.year, currentDate.month, currentDate.day, currentDate.hour + (hour || 0), currentDate.minute + (minute || 0)));
 	}
 
 	/**
@@ -239,6 +243,7 @@ const Time = (() => {
 		set,
 		setDate,
 		setTime,
+		setTimeRelative,
 		pass,
 		isSchoolTerm,
 		isSchoolDay,
@@ -407,7 +412,7 @@ function dayPassed() {
 		V.brothelshowdata.done = false;
 	}
 
-	if (V.brothel_escortjob !== undefined && Time.date.timeStamp > V.brothel_escortjob.date){
+	if (V.brothel_escortjob !== undefined && Time.date.timeStamp > V.brothel_escortjob.date) {
 		V.brothel_escortjob.missed = true;
 	}
 
