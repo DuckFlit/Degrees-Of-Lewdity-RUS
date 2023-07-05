@@ -369,7 +369,7 @@ function settingsNudeGenderAppearance() {
 				text = "Error: bad value: " + val;
 				val = 0;
 		}
-		$("#numberslider-value-nudegenderdc").text("").append(text).addClass("small-description").css("margin-left", "1em");
+		$("#numberslider-value-nudegenderdc").text("").append(text).addClass("small-description");
 	};
 
 	$(() => {
@@ -449,6 +449,109 @@ function settingsNamedNpcBreastSize(id, persist) {
 }
 window.settingsNamedNpcBreastSize = settingsNamedNpcBreastSize;
 
+function settingsGenericGenders(id) {
+	let slider = null;
+	const updateText = () => {
+		let val = null;
+		let attraction = null;
+		let men = null;
+		let women = null;
+
+		if (id === "beasts") {
+			val = V.beastmalechance;
+			slider = "beastmalechance";
+		} else if (id === "NPCs") {
+			val = V.malechance;
+			slider = "malechance";
+		} else if (id === "mlm") {
+			val = V.maleChanceMale;
+			slider = "malechancemale";
+			attraction = "<span class='blue inline-colour'>attracted to men</span>";
+			men = "men";
+			women = "women";
+		} else if (id === "wlw") {
+			val = V.maleChanceFemale;
+			slider = "malechancefemale";
+			attraction = "<span class='pink inline-colour'>attracted to women</span>";
+			men = "men";
+			women = "women";
+		} else if (id === "blm") {
+			val = V.beastMaleChanceMale;
+			slider = "beastmalechancemale";
+			attraction = "<span class='blue inline-colour'>attracted to men</span>";
+			men = "male beasts";
+			women = "female beasts";
+		} else if (id === "blw") {
+			val = V.beastMaleChanceFemale;
+			slider = "beastmalechancefemale";
+			attraction = "<span class='pink inline-colour'>attracted to women</span>";
+			men = "male beasts";
+			women = "female beasts";
+		} else {
+			val = V.malevictimchance;
+			slider = "malevictimchance";
+		}
+
+		let text = null;
+
+		if (id === "mlm" || id === "wlw" || id === "blw" || id === "blm") {
+			switch (val) {
+				case 100: text = `<span class='gold inline-colour'>No</span> <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>all</span> <span class='blue inline-colour'>${men}</span> will be ${attraction}.`; break;
+				case 0: text = `<span class='gold inline-colour'>All</span> <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>no</span> <span class='blue inline-colour'>${men}</span> will be  ${attraction}.`; break;
+				default: text = `<span class='gold inline-colour'>${(100 - val)}%</span> of <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>${val}%</span> of <span class='blue inline-colour'>${men}</span> will be ${attraction}.`; break;
+			}
+		} else {
+			if (val === 100) {
+				text = `<span class='gold inline-colour'>All</span> ${id} will be <span class='blue inline-colour'>male</span>.`;
+			} else if (val === 0) {
+				text = `<span class='gold inline-colour'>All</span> ${id} will be <span class='pink inline-colour'>female</span>.`;
+			} else if (val === 50) {
+				text = id.charAt(0).toUpperCase() + id.slice(1) + " will be <span class='gold inline-colour'>evenly</span> split between <span class='blue inline-colour'>male</span> and <span class='pink inline-colour'>female</span> genders.";
+			} else if (val > 50) {
+				text = `<span class='gold inline-colour'>${val}%</span> of ${id} will be <span class='blue inline-colour'>male</span>.`;
+			} else {
+				text = `<span class='gold inline-colour'>${(100 - val)}%</span> of ${id} will be <span class='pink inline-colour'>female</span>.`;
+			}
+		}
+
+		jQuery("#numberslider-value-" + slider).text("").append(text).addClass("small-description");
+		};
+
+		$(() => {
+		updateText();
+		$("#numberslider-input-" + slider).on("input change", function (e) {
+			updateText();
+		});
+	});
+}
+
+window.settingsGenericGenders = settingsGenericGenders;
+
+function settingsMonsterChance() {
+	const updateText = () => {
+		const val = V.monsterchance;
+		let text = null;
+
+		switch (val) {
+			case 100: text = "Beasts will <span class='gold inline-colour'>always</span> be monster girls and boys."; break;
+			case 0: text = "Beasts will <span class='gold inline-colour'>never</span> appear as monster girls and boys, unless allowed while hallucinating."; break;
+			case 50: text = "<span class='gold inline-colour'>Half</span> of all beasts will be replaced by monster girls and boys."; break;
+			default: text = `<span class='gold inline-colour'>${val}%</span> of beasts will be replaced by monster girls and boys.`; break;
+		}
+
+		jQuery("#numberslider-value-monsterchance").text("").append(text).addClass("small-description");
+		};
+
+		$(() => {
+		updateText();
+		$("#numberslider-input-monsterchance").on("input change", function (e) {
+			updateText();
+		});
+	});
+}
+
+window.settingsMonsterChance = settingsMonsterChance;
+
 function settingsBeastGenders(singleUpdate) {
 	const updateText = () => {
 		const val = T.beastmalechance;
@@ -470,7 +573,7 @@ function settingsBeastGenders(singleUpdate) {
 				break;
 			case 50:
 				if (T.beastMaleChanceSplit === "t") {
-					text = "Beasts sexual preferences will be <span class='gold inline-colour'>randomly</span> split.";
+					text = "Beast sexual preferences will be <span class='gold inline-colour'>randomly</span> split.";
 				} else {
 					text =
 						"Beasts will be <span class='gold inline-colour'>evenly</span> split between <span class='blue inline-colour'>male</span> and <span class='pink inline-colour'>female</span> genders.";
@@ -492,7 +595,7 @@ function settingsBeastGenders(singleUpdate) {
 				break;
 			default:
 				if (T.beastMaleChanceSplit === "t") {
-					text = "Beasts sexual preferences will be <span class='gold inline-colour'>randomly</span> split.";
+					text = "Beast sexual preferences will be <span class='gold inline-colour'>randomly</span> split.";
 				} else {
 					text = "<span class='gold inline-colour'>" + V.beastmalechance + "%</span> of beasts will be <span class='blue inline-colour'>male.</span>";
 				}
@@ -528,14 +631,14 @@ function settingsNpcGenders(singleUpdate) {
 				break;
 			case 75:
 				if (T.maleChanceSplit === "t") {
-					text = "<span class='gold inline-colour'>75%</span> NPCs will prefer the <span class='gold inline-colour'>opposite sex</span>.";
+					text = "<span class='gold inline-colour'>75%</span> of NPCs will prefer the <span class='gold inline-colour'>opposite sex</span>.";
 				} else {
 					text = "<span class='gold inline-colour'>75%</span> of NPCs will be <span class='blue inline-colour'>male.</span>";
 				}
 				break;
 			case 50:
 				if (T.maleChanceSplit === "t") {
-					text = "NPCs sexual preferences will be <span class='gold inline-colour'>randomly</span> split.";
+					text = "NPC sexual preferences will be <span class='gold inline-colour'>randomly</span> split.";
 				} else {
 					text =
 						"NPCs will be <span class='gold inline-colour'>evenly</span> split between <span class='blue inline-colour'>male</span> and <span class='pink inline-colour'>female</span> genders.";
@@ -543,7 +646,7 @@ function settingsNpcGenders(singleUpdate) {
 				break;
 			case 25:
 				if (T.maleChanceSplit === "t") {
-					text = "<span class='gold inline-colour'>75%</span> NPCs will prefer the <span class='gold inline-colour'>same sex</span>.";
+					text = "<span class='gold inline-colour'>75%</span> of NPCs will prefer the <span class='gold inline-colour'>same sex</span>.";
 				} else {
 					text = "<span class='gold inline-colour'>75%</span> of NPCs will be <span class='pink inline-colour'>female.</span>";
 				}
@@ -557,7 +660,7 @@ function settingsNpcGenders(singleUpdate) {
 				break;
 			default:
 				if (T.maleChanceSplit === "t") {
-					text = "NPCs sexual preferences will be <span class='gold inline-colour'>randomly</span> split.";
+					text = "NPC sexual preferences will be <span class='gold inline-colour'>randomly</span> split.";
 				} else {
 					text = "<span class='gold inline-colour'>" + V.malechance + "%</span> of NPCs will be <span class='blue inline-colour'>male.</span>";
 				}

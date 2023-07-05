@@ -158,6 +158,7 @@
 	<div @class="_settingsTab is _args[1] ? 'gold buttonSettingsSelected' : 'buttonSettings'" >
 		<<button _args[0]>>
 			<<set _settingsTab to _settingsTab is _args[1] ? "startDescriptions" : _args[1]>>
+			<<if _args[1] is "game">><<set _subsection to "human">><</if>>
 			<<replace #startOptions>><<startOptions>><</replace>>
 			<<displaySettings _settingsTab>>
 		<</button>>
@@ -215,12 +216,6 @@
 				<<settingsTabButton "Character Creation<span class='red'> *</span>" "character">>
 			/*Game Settings*/
 				<<settingsTabButton "Game Settings" "game">>
-			/*Size Limits -- Folded into Character Customisation
-				<<settingsTabButton "Size Limits" "size">>
-				*/
-			/*Named NPC Settings -- Folded into Game Settings
-				<<settingsTabButton "Named NPC Settings" "npc">>
-				*/
 			/*Feat Boosts*/
 				<<settingsTabButton _featTabName "feat">>
 			/*Gallery*/
@@ -406,6 +401,66 @@
 		<<case "adjusted">>
 				<div><span class="gold bold">Current Settings:</span> <i style="color:var(--000);">Adjustable</i></div>
 				<<button "Start Game!">>
+					<<presets _kinkPreset "save">>
+					<<presets _namedNpcPreset "save">>
+					<<presets _monstersPreset "save">>
+					<<set $malechance to _malechance>>
+					<<set $beastmalechance to _beastmalechance>>
+					<<set $maleChanceSplit to _maleChanceSplit or "f">>
+					<<set $beastMaleChanceSplit to _beastMaleChanceSplit or "f">>
+					<<if _maleChanceSplit is "t">>
+						<<switch _malechance>>
+							<<case 100>> /* All opposite sex */
+								<<set $maleChanceMale to 0>>
+								<<set $maleChanceFemale to 100>>
+							<<case 75>> /* 75% opposite sex */
+								<<set $maleChanceMale to 25>>
+								<<set $maleChanceFemale to 75>>
+							<<case 25>> /* 75% same sex */
+								<<set $maleChanceMale to 75>>
+								<<set $maleChanceFemale to 25>>
+							<<case 0>> /* All same sex */
+								<<set $maleChanceMale to 100>>
+								<<set $maleChanceFemale to 0>>
+							<<default>> /* Random sex */
+								<<set $maleChanceMale to random(1, 99)>>
+								<<set $maleChanceFemale to random(1, 99)>>
+						<</switch>>
+					<</if>>
+					<<if _beastMaleChanceSplit is "t">>
+						<<switch _beastmalechance>>
+							<<case 100>> /* All opposite sex */
+								<<set $beastMaleChanceMale to 0>>
+								<<set $beastMaleChanceFemale to 100>>
+							<<case 75>> /* 75% opposite sex */
+								<<set $beastMaleChanceMale to 25>>
+								<<set $beastMaleChanceFemale to 75>>
+							<<case 25>> /* 75% same sex */
+								<<set $beastMaleChanceMale to 75>>
+								<<set $beastMaleChanceFemale to 25>>
+							<<case 0>> /* All same sex */
+								<<set $beastMaleChanceMale to 100>>
+								<<set $beastMaleChanceFemale to 0>>
+							<<default>> /* Random sex */
+								<<set $beastMaleChanceMale to random(1, 99)>>
+								<<set $beastMaleChanceFemale to random(1, 99)>>
+						<</switch>>
+					<</if>>
+					<<if _pregnancytype is "disabled">>
+						<<set $playerPregnancyHumanDisable to "t">>
+						<<set $playerPregnancyBeastDisable to "t">>
+						<<set $npcPregnancyDisable to "t">>
+					<<else>>
+						<<set $pregnancytype to _pregnancytype>>
+						<<set $playerPregnancyHumanDisable to "f">>
+						<<set $playerPregnancyBeastDisable to "f">>
+						<<set $npcPregnancyDisable to "f">>
+					<</if>>
+					<<set $cycledisable to _cycledisable>>
+					<<if _incompletePregnancyDisable is "t" or (_incompletePregnancyDisable is "f" and !_foundPregnancy)>>
+						<<set $incompletePregnancyDisable to _incompletePregnancyDisable>>
+						<<npcPregnancyUpdater>>
+					<</if>>
 					<<if ($feats.locked or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft or ($gamemode isnot "soft" and $alluremod gte 1)) and ($feats.pregnancyLocked or ($humanPregnancyMonths gte 3 and $wolfPregnancyWeeks gte 4)) and ($feats.pregnancySillyLocked or $pregnancytype isnot "silly")>>
 						<<settingsExitFunction>>
 					<<else>><!-- confirm cheats -->
@@ -448,99 +503,99 @@
 
 <<widget "settingsExitConfirm">>
 	<<if _selectedStart is "random">>
-	<span class="red">Certain feats have been disabled due to randomly generated settings.</span>
-	<ul>
-		<<if $cheatdisabletoggle is "f">><li>Enabled cheats: disables all feats.</li><</if>>
-		<<if $rentmod lt 1>><li>Lowered rent: disables all feats.</li><</if>>
-		<<if !$feats.soft and $gamemode is "soft">><li>Soft mode: disables some feats.</li><</if>>
-		<<if !$feats.soft and $alluremod lt 1>><li>Lowered allure: disables some feats.</li><</if>>
-		<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>><li>Human pregnancy set to under 3 months: disables some pregnancy feats.</li><</if>>
-		<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>><li>Wolf pregnancy set to under 4 weeks: disables some pregnancy feats.</li><</if>>
-		<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">><li>Pregnancy mode set to "silly": disables some pregnancy feats.</li><</if>>
-	</ul>
-	Do you want to keep these changes?
-	<br>
-	<<button "No">>
-		<<set $cheatdisabletoggle to "t">>
-		<<if $gamemode is "soft">>
-			<<set $gamemode to "normal">>
-		<</if>>
-		<<if $alluremod lt 1>>
-			<<set $alluremod to 1>>
-		<</if>>
-		<<if $rentmod lt 1>>
-			<<set $rentmod to 1>>
-		<</if>>
-		<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>>
-			<<set $humanPregnancyMonths to 3>>
-		<</if>>
-		<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>>
-			<<set $wolfPregnancyWeeks to 4>>
-		<</if>>
-		<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">>
-			<<set $pregnancytype to "realistic">>
-		<</if>>
-		<<displaySettings "startDescriptions">>
-		<<replace #settingsExit>><<settingsExit>><</replace>>
-	<</button>>
-	<br>
-	<span class="gold small-description">(Undo these changes, allowing you to reroll your settings.)</span>
-	<br><br>
-	<<button "Yes">>
-		<<settingsExitFunction>>
-	<</button>>
-	<br>
-	<span class="red small-description">(Feats will be disabled for the duration of this save.)</span>
+		<span class="red">Certain feats have been disabled due to randomly generated settings.</span>
+		<ul>
+			<<if $cheatdisabletoggle is "f">><li>Enabled cheats: disables all feats.</li><</if>>
+			<<if $rentmod lt 1>><li>Lowered rent: disables all feats.</li><</if>>
+			<<if !$feats.soft and $gamemode is "soft">><li>Soft mode: disables some feats.</li><</if>>
+			<<if !$feats.soft and $alluremod lt 1>><li>Lowered allure: disables some feats.</li><</if>>
+			<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>><li>Human pregnancy set to under 3 months: disables some pregnancy feats.</li><</if>>
+			<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>><li>Wolf pregnancy set to under 4 weeks: disables some pregnancy feats.</li><</if>>
+			<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">><li>Pregnancy mode set to "silly": disables some pregnancy feats.</li><</if>>
+		</ul>
+		Do you want to keep these changes?
+		<br>
+		<<button "No">>
+			<<set $cheatdisabletoggle to "t">>
+			<<if $gamemode is "soft">>
+				<<set $gamemode to "normal">>
+			<</if>>
+			<<if $alluremod lt 1>>
+				<<set $alluremod to 1>>
+			<</if>>
+			<<if $rentmod lt 1>>
+				<<set $rentmod to 1>>
+			<</if>>
+			<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>>
+				<<set $humanPregnancyMonths to 3>>
+			<</if>>
+			<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>>
+				<<set $wolfPregnancyWeeks to 4>>
+			<</if>>
+			<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">>
+				<<set $pregnancytype to "realistic">>
+			<</if>>
+			<<displaySettings "startDescriptions">>
+			<<replace #settingsExit>><<settingsExit>><</replace>>
+		<</button>>
+		<br>
+		<span class="gold small-description">(Undo these changes, allowing you to reroll your settings.)</span>
+		<br><br>
+		<<button "Yes">>
+			<<settingsExitFunction>>
+		<</button>>
+		<br>
+		<span class="red small-description">(Feats will be disabled for the duration of this save.)</span>
 
 	<<else>>
-	<span class="red">You will not be able to obtain feats due to the settings you've selected.</span>
+		<span class="red">You will not be able to obtain feats due to the settings you've selected.</span>
 
-	<ul>
-		<<if $cheatdisabletoggle is "f">><li>Enabled cheats: disables all feats.</li><</if>>
-		<<if $rentmod lt 1>><li>Lowered rent: disables all feats.</li><</if>>
-		<<if !$feats.soft and $gamemode is "soft">><li>Soft mode: disables some feats.</li><</if>>
-		<<if !$feats.soft and $alluremod lt 1>><li>Lowered allure: disables some feats</li><</if>>
-		<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>><li>Human pregnancy set to under 3 months: disables some pregnancy feats.</li><</if>>
-		<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>><li>Wolf pregnancy set to under 4 weeks: disables some pregnancy feats.</li><</if>>
-		<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">><li>Pregnancy mode set to "silly": disables some pregnancy feats.</li><</if>>
-	</ul>
-	Do you want to keep these changes?
-	<br>
-	<<button "No">>
-		<<set $cheatdisabletoggle to "t">>
-		<<if $gamemode is "soft">>
-			<<set $gamemode to "normal">>
-		<</if>>
-		<<if $alluremod lt 1>>
-			<<set $alluremod to 1>>
-		<</if>>
-		<<if $rentmod lt 1>>
-			<<set $rentmod to 1>>
-		<</if>>
-		<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>>
-			<<set $humanPregnancyMonths to 3>>
-		<</if>>
-		<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>>
-			<<set $wolfPregnancyWeeks to 4>>
-		<</if>>
-		<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">>
-			<<set $pregnancytype to "realistic">>
-		<</if>>
-		<<if _settingsTab is 'tweak'>>
-			<<replace #gameModeQuick>><<gameMode>><</replace>>
-		<<elseif _settingsTab is 'game'>>
-			<<replace #gameMode>><<gameMode>><</replace>>
-		<</if>>
-		<<replace #settingsExit>><<settingsExit>><</replace>>
-	<</button>>
-	<br>
-	<span class="gold small-description">(Undo these changes, allowing feats to be obtained.)</span>
-	<br><br>
-	<<button "Yes">>
-		<<settingsExitFunction>>
-	<</button>>
-	<br>
-	<span class="red small-description">(Feats will be disabled for the duration of this save.)</span>
+		<ul>
+			<<if $cheatdisabletoggle is "f">><li>Enabled cheats: disables all feats.</li><</if>>
+			<<if $rentmod lt 1>><li>Lowered rent: disables all feats.</li><</if>>
+			<<if !$feats.soft and $gamemode is "soft">><li>Soft mode: disables some feats.</li><</if>>
+			<<if !$feats.soft and $alluremod lt 1>><li>Lowered allure: disables some feats</li><</if>>
+			<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>><li>Human pregnancy set to under 3 months: disables some pregnancy feats.</li><</if>>
+			<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>><li>Wolf pregnancy set to under 4 weeks: disables some pregnancy feats.</li><</if>>
+			<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">><li>Pregnancy mode set to "silly": disables some pregnancy feats.</li><</if>>
+		</ul>
+		Do you want to keep these changes?
+		<br>
+		<<button "No">>
+			<<set $cheatdisabletoggle to "t">>
+			<<if $gamemode is "soft">>
+				<<set $gamemode to "normal">>
+			<</if>>
+			<<if $alluremod lt 1>>
+				<<set $alluremod to 1>>
+			<</if>>
+			<<if $rentmod lt 1>>
+				<<set $rentmod to 1>>
+			<</if>>
+			<<if !$feats.pregnancyLocked and $humanPregnancyMonths lt 3>>
+				<<set $humanPregnancyMonths to 3>>
+			<</if>>
+			<<if !$feats.pregnancyLocked and $wolfPregnancyWeeks lt 4>>
+				<<set $wolfPregnancyWeeks to 4>>
+			<</if>>
+			<<if !$feats.pregnancySillyLocked and $pregnancytype is "silly">>
+				<<set $pregnancytype to "realistic">>
+			<</if>>
+			<<if _settingsTab is 'tweak'>>
+				<<replace #gameModeQuick>><<gameMode>><</replace>>
+			<<elseif _settingsTab is 'game'>>
+				<<replace #gameMode>><<gameMode>><</replace>>
+			<</if>>
+			<<replace #settingsExit>><<settingsExit>><</replace>>
+		<</button>>
+		<br>
+		<span class="gold small-description">(Undo these changes, allowing feats to be obtained.)</span>
+		<br><br>
+		<<button "Yes">>
+			<<settingsExitFunction>>
+		<</button>>
+		<br>
+		<span class="red small-description">(Feats will be disabled for the duration of this save.)</span>
 	<</if>>
 <</widget>>
 
@@ -670,60 +725,52 @@
 		<<if $passage is "Start">>
 			<i>Make broad changes to your game settings. For more fine-tuned settings, choose <span class="gold">Advanced Start</span> instead.</i>
 		<<else>>
-			<i>Quickly change game settings. Changes will only apply after saving and will <span class="red">overwrite all</span> related settings. To see your precise settings and fine-tune them further, visit the <span class="gold">Game Settings</span> tab.</i>
+			<i>Quickly change game settings. To fine-tune settings further, visit the <span class="gold">Game Settings</span> tab.</i>
 		<</if>>
 		</div>
 
 		<div class="settingsGrid">
+			<div id="gameModeQuick" class="settingsToggleItem">
+				<<gameMode>>
+			</div>
+
 			<<if $passage is "Start">>
-				<div id="gameModeQuick" class="settingsToggleItem">
-					<<gameMode>>
+				<div class="settingsToggleItem">
+					<span class="gold">Fetish Settings</span>
+					<br>
+					<<if _kinkPreset is undefined>><<set _kinkPreset to "kinkDefault">><</if>>
+					<label><mouse class="tooltip" style="border-bottom: 2px dotted var(--link)">Reasonably Debauched<span>Default settings. All kinks are enabled, except for watersports.</span></mouse>
+					<<radiobutton "_kinkPreset" "kinkDefault" autocheck>></label> |
+					<label><mouse class="tooltip" style="border-bottom: 2px dotted var(--link)">Vanilla<span>All beast-related toggles are disabled, as well as plant people, tentacles, slimes, lactation, facesitting, double penetration, and hypnosis.</span></mouse>
+					<<radiobutton "_kinkPreset" "kinkVanilla" autocheck>></label> |
+					<label><mouse class="tooltip" style="border-bottom: 2px dotted var(--link)">No Beasts<span>All beast-related settings are disabled, including bestiality, swarms, vore, parasites, spiders, slugs, wasps, lurkers, bees, and horses.</span></mouse>
+					<<radiobutton "_kinkPreset" "kinkNoBeasts" autocheck>></label> |
+					<label><mouse class="tooltip" style="border-bottom: 2px dotted var(--link)">Anything Goes<span>All kinks are enabled, including watersports.</span></mouse>
+					<<radiobutton "_kinkPreset" "kinkEverything" autocheck>></label>
 				</div>
 			<</if>>
 
 			<div class="settingsToggleItem">
-				<span class="gold">Fetish Settings</span>
-				<br>
-				<<if _kinkPreset is undefined>><<set _kinkPreset to "kinkDefault">><</if>>
-				<label><mouse class="tooltip" style="border-bottom: 2px dotted var(--link)">Reasonably Debauched<span>Default settings. All kinks are enabled, except for watersports.</span></mouse>
-				 <<radiobutton "_kinkPreset" "kinkDefault" autocheck>></label> |
-				<label><mouse class="tooltip" style="border-bottom: 2px dotted var(--link)">Vanilla<span>All beast-related toggles are disabled, as well as plant people, tentacles, slimes, lactation, facesitting, double penetration, and hypnosis.</span></mouse>
-				<<radiobutton "_kinkPreset" "kinkVanilla" autocheck>></label> |
-				<label><mouse class="tooltip" style="border-bottom: 2px dotted var(--link)">No Beasts<span>All beast-related settings are disabled, including bestiality, swarms, vore, parasites, spiders, slugs, wasps, lurkers, bees, and horses.</span></mouse>
-				<<radiobutton "_kinkPreset" "kinkNoBeasts" autocheck>></label> |
-				<label><mouse class="tooltip" style="border-bottom: 2px dotted var(--link)">Anything Goes<span>All kinks are enabled, including watersports.</span></mouse>
-				<<radiobutton "_kinkPreset" "kinkEverything" autocheck>></label>
-			</div>
-
-			<div class="settingsToggleItem">
 				<<set _foundPregnancy to !!Object.values($NPCName).find(npc => npc.pregnancy && npc.pregnancy.enabled && npc.pregnancy.type && !setup.pregnancy.canBePregnant.includes(npc.fullDescription))>>
 				<label>
-					<span class="gold">Pregnancy type</span>
+					<span class="gold">Pregnancy Mode</span>
 					<br>
-					<label><<radiobutton "_pregnancytype" "realistic" `_pregnancytype ? "autocheck" : ($pregnancytype is "realistic" ? "checked": "")`>> <mouse class="tooltip green">Realistic<span>Pregnancy will not happen immediately, and you won't know right away when it happens. You may need to use a pregnancy test, and the father may not be known to you initially. Cum on the outside of your vagina may get you pregnant as well, unless washed off within the next several hours.</span></mouse></label> |
-					<label><<radiobutton "_pregnancytype" "fetish" `_pregnancytype ? "autocheck" : ($pregnancytype is "fetish" ? "checked": "")`>> <mouse class="tooltip pink">Fetishised<span>Pregnancy may happen as soon as semen gets inside you. You will know as soon as it happens, and will immediately know the father.</span></mouse></label> |
-					<label><<radiobutton "_pregnancytype" "silly" `_pregnancytype ? "autocheck" : ($pregnancytype is "silly" ? "checked": "")`>> <mouse class="tooltip gold">Silly<span>Pregnancy may happen as soon as you hold hands or kiss, especially with those you love. <i class="red none">There may be story content related issues with this mode. Some feats will be disabled with this mode.</i></span></mouse></label> |
-					<label><<radiobutton "_pregnancytype" "disabled" autocheck>> <mouse class="tooltip red">Disabled<span>Pregnancy will be disabled. Will not prevent existing pregnancies or prevent the player from interacting with their children.</span></mouse></label>
+					<<if $passage is "Start">>
+						<label><<radiobutton "_pregnancytype" "realistic" `_pregnancytype ? "autocheck" : ($pregnancytype is "realistic" ? "checked": "")`>> <mouse class="tooltip green">Realistic<span>Pregnancy will not happen immediately, and you won't know right away when it happens. You may need to use a pregnancy test, and the father may not be known to you initially. Cum on the outside of your vagina may get you pregnant as well, unless washed off within the next several hours.</span></mouse></label> |
+						<label><<radiobutton "_pregnancytype" "fetish" `_pregnancytype ? "autocheck" : ($pregnancytype is "fetish" ? "checked": "")`>> <mouse class="tooltip pink">Fetishised<span>Pregnancy may happen as soon as semen gets inside you. You will know as soon as it happens, and will immediately know the father.</span></mouse></label> |
+						<label><<radiobutton "_pregnancytype" "silly" `_pregnancytype ? "autocheck" : ($pregnancytype is "silly" ? "checked": "")`>> <mouse class="tooltip gold">Silly<span>Pregnancy may happen as soon as you hold hands or kiss, especially with those you love. <i class="red none">There may be story content related issues with this mode. Some feats will be disabled with this mode.</i></span></mouse></label> |
+						<label><<radiobutton "_pregnancytype" "disabled" autocheck>> <mouse class="tooltip red">Disabled<span>Pregnancy will be disabled. Will not prevent existing pregnancies or prevent the player from interacting with their children.</span></mouse></label>
+					<<else>>
+						<<pregnancyType>>
+					<</if>>
 				</label>
 				<br>
 				<label>
-					<<checkbox "_cycledisable" "t" "f" `_cycledisable ? "autocheck" : ($cycledisable is "f" ? "checked": "")`>> Enable fertility cycles
-					<mouse class="tooltip linkBlue">(?)<span>
-						<div>When enabled, the player's menstruation cycle will determine when they can get pregnant.</div>
-						<div>When disabled, each day's pregnancy chance will be randomised. In addition, sperm inside the player will not last as long when the pregnancy type is set to "realistic".</div>
-					</span></mouse>
+					<<fertilityCycles>>
 				</label>
 				<br>
 				<label data-disabledif="T.foundPregnancy&&V.incompletePregnancyDisable==='f'">
-					<<checkbox "_incompletePregnancyDisable" "t" "f" `_incompletePregnancyDisable ? "autocheck" : ($incompletePregnancyDisable is "f" ? "checked": "")`>> Enable incomplete pregnancy content
-					<<if _foundPregnancy>>
-						<mouse class="tooltip linkBlue">(!!!)<span>Can not be disabled while a named NPC is pregnant.</span></mouse>
-					<<else>>
-						<mouse class="tooltip linkBlue">(?)<span>
-							<div>When enabled, the player will be able to impregnate and be impregnated by all fertile named NPCs. This includes NPCs that have no pregnancy interactions.</div>
-							<div class="red">WARNING: This will lead to situations where the named NPC will not react to the player's pregnancy or their own pregnancy, and existing saves may end up skipping future content.</div>
-						</span></mouse>
-					<</if>>
+					<<incompletePregnancy>>
 				</label>
 			</div>
 
@@ -738,93 +785,60 @@
 
 			<div class="settingsToggleItem">
 				<span class="gold">Generic NPC Genders</span>
-				<<numberslider "_malechance" `_malechance is undefined ? $malechance : _malechance` 0 100 25>>
-				<<run settingsNpcGenders()>>
-				<span id="humanSplitBy"><<humanSplitBy>></span>
+				<<if $passage is "Start">>
+					<<numberslider "_malechance" `_malechance is undefined ? $malechance : _malechance` 0 100 25>>
+					<<run settingsNpcGenders()>>
+					<span id="humanSplitBy"><<humanSplitBy>></span>
+				<<else>>
+					<<genericGenders>>
+				<</if>>
 			</div>
 
 			<div class="settingsToggleItem">
 				<span class="gold">Beast Genders</span>
-				<<numberslider "_beastmalechance" `_beastmalechance is undefined ? $beastmalechance : _beastmalechance` 0 100 25>>
-				<<run settingsBeastGenders()>>
-				<span id="beastSplitBy"><<beastSplitBy>></span>
+				<<if $passage is "Start">>
+					<<numberslider "_beastmalechance" `_beastmalechance is undefined ? $beastmalechance : _beastmalechance` 0 100 25>>
+					<<run settingsBeastGenders()>>
+					<span id="beastSplitBy"><<beastSplitBy>></span>
+				<<else>>
+					<<beastGenders>>
+				<</if>>
 			</div>
 
 			<div class="settingsToggleItem">
-				<<if _monstersPreset is undefined>><<set _monstersPreset to "monstersDefault">><</if>>
-				<span class="gold">Replace beasts with monster girls and boys</span>
-				<br>
-				<label>All the time <<radiobutton "_monstersPreset" "monstersAll" autocheck>></label> |
-				<label>Only when hallucinating <<radiobutton "_monstersPreset" "monstersDefault" autocheck>></label> |
-				<label>Never <<radiobutton "_monstersPreset" "monstersNone" autocheck>></label>
-			</div>
-
-			<div class="settingsToggleButton">
-				<<button "Save Adjusted Settings<span class='red'> *</span>">>
-					<<presets _kinkPreset "quickStart">>
-					<<presets _namedNpcPreset "quickStart">>
-					<<presets _monstersPreset "quickStart">>
-					<<set $malechance to _malechance>>
-					<<set $beastmalechance to _beastmalechance>>
-					<<set $maleChanceSplit to _maleChanceSplit or "f">>
-					<<set $beastMaleChanceSplit to _beastMaleChanceSplit or "f">>
-					<<if _maleChanceSplit is "t">>
-						<<switch _malechance>>
-							<<case 100>> /* All oposite sex */
-								<<set $maleChanceMale to 0>>
-								<<set $maleChanceFemale to 100>>
-							<<case 75>> /* 75% oposite sex */
-								<<set $maleChanceMale to 25>>
-								<<set $maleChanceFemale to 75>>
-							<<case 25>> /* 75% same sex */
-								<<set $maleChanceMale to 75>>
-								<<set $maleChanceFemale to 25>>
-							<<case 0>> /* All same sex */
-								<<set $maleChanceMale to 100>>
-								<<set $maleChanceFemale to 0>>
-							<<default>> /* Random sex */
-								<<set $maleChanceMale to random(1, 99)>>
-								<<set $maleChanceFemale to random(1, 99)>>
-						<</switch>>
-					<</if>>
-					<<if _beastMaleChanceSplit is "t">>
-						<<switch _beastmalechance>>
-							<<case 100>> /* All oposite sex */
-								<<set $beastMaleChanceMale to 0>>
-								<<set $beastMaleChanceFemale to 100>>
-							<<case 75>> /* 75% oposite sex */
-								<<set $beastMaleChanceMale to 25>>
-								<<set $beastMaleChanceFemale to 75>>
-							<<case 25>> /* 75% same sex */
-								<<set $beastMaleChanceMale to 75>>
-								<<set $beastMaleChanceFemale to 25>>
-							<<case 0>> /* All same sex */
-								<<set $beastMaleChanceMale to 100>>
-								<<set $beastMaleChanceFemale to 0>>
-							<<default>> /* Random sex */
-								<<set $beastMaleChanceMale to random(1, 99)>>
-								<<set $beastMaleChanceFemale to random(1, 99)>>
-						<</switch>>
-					<</if>>
-					<<if _pregnancytype is "disabled">>
-						<<set $playerPregnancyHumanDisable to "t">>
-						<<set $playerPregnancyBeastDisable to "t">>
-						<<set $npcPregnancyDisable to "t">>
-					<<else>>
-						<<set $pregnancytype to _pregnancytype>>
-						<<set $playerPregnancyHumanDisable to "f">>
-						<<set $playerPregnancyBeastDisable to "f">>
-						<<set $npcPregnancyDisable to "f">>
-					<</if>>
-					<<set $cycledisable to _cycledisable>>
-					<<if _incompletePregnancyDisable is "t" or (_incompletePregnancyDisable is "f" and !_foundPregnancy)>>
-						<<set $incompletePregnancyDisable to _incompletePregnancyDisable>>
-						<<npcPregnancyUpdater>>
-					<</if>>
-				<</button>>
+				<<if $passage is "Start">>
+					<<if _monstersPreset is undefined>><<set _monstersPreset to "monstersDefault">><</if>>
+					<span class="gold">Replace beasts with monster girls and boys</span>
+					<br>
+					<label>All the time <<radiobutton "_monstersPreset" "monstersAll" autocheck>></label> |
+					<label>Only when hallucinating <<radiobutton "_monstersPreset" "monstersDefault" autocheck>></label> |
+					<label>Never <<radiobutton "_monstersPreset" "monstersNone" autocheck>></label>
+				<<else>>
+					<<monsterSettings>>
+				<</if>>
 			</div>
 		</div>
 	</div>
+<</widget>>
+
+<<widget "humanSplitByFull">>
+	<<link `$maleChanceSplit is "t" ? "Ignore sexual orientation" : "Set sexual orientation"`>>
+		<<set $maleChanceSplit to $maleChanceSplit is "t" ? "f" : "t">>
+		<<toggleclass "#simpleGenders" "hidden">>
+		<<replace "#splitGenders">><<maleChanceSplitControls>><</replace>>
+		<<toggleclass "#splitGenders" "hidden">>
+		<<replace "#humanSplitByFull">><<humanSplitByFull>><</replace>>
+	<</link>>
+<</widget>>
+
+<<widget "beastSplitByFull">>
+	<<link `$beastMaleChanceSplit is "t" ? "Ignore sexual orientation" : "Set sexual orientation"`>>
+		<<set $beastMaleChanceSplit to $beastMaleChanceSplit is "t" ? "f" : "t">>
+		<<toggleclass "#simpleBeastGenders" "hidden">>
+		<<replace "#splitBeastGenders">><<beastMaleChanceSplitControls>><</replace>>
+		<<toggleclass "#splitBeastGenders" "hidden">>
+		<<replace "#beastSplitByFull">><<beastSplitByFull>><</replace>>
+	<</link>>
 <</widget>>
 
 <<widget "humanSplitBy">>
@@ -1214,39 +1228,45 @@
 	<span class="gold">Game Mode</span>
 	<br>
 	<label><mouse class="tooltip green">Normal mode<span>Survive in a dangerous world.</span></mouse>
-	<<if ($ironmanmode is true and $gamemode is "hard") and $passage != "Start">>
-		<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
-	<<else>>
-		<<radiobutton "$gamemode" "normal" autocheck>>
-	<</if>>
+		<<if ($ironmanmode is true and $gamemode is "hard") and $passage != "Start">>
+			<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
+		<<else>>
+			<<radiobutton "$gamemode" "normal" autocheck>>
+		<</if>>
 	</label>
 	<<ind>>
 	<label><mouse class = "tooltip blue">Soft mode<span>For those who prefer a light-hearted lewd adventure, though the game is still dark in places.<br><i class="red normal">This is an experimental feature, and contains gamebreaking bugs. It will be changed or removed in the future. Leaving the settings with soft mode will prevent you from earning feats until it is set to normal mode. Doing this will permanently prevent some feats from being earned in this save.</i></span></mouse>
-	<<if ($ironmanmode is true and ["hard","normal"].includes($gamemode) is true) and $passage != "Start">>
-		<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
-	<<else>>
-		<<radiobutton "$gamemode" "soft" autocheck>>
-	<</if>>
+		<<if ($ironmanmode is true and ["hard","normal"].includes($gamemode) is true) and $passage != "Start">>
+			<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
+		<<else>>
+			<<radiobutton "$gamemode" "soft" autocheck>>
+		<</if>>
 	</label>
 	<<ind>>
 	<<if $intro is 1 or $gamemode is "hard">>
 		<label><mouse class = "tooltip purple">Hard mode<span>Removes lewd stat decay (promiscuity, exhibitionism, deviancy), making trauma and control increasingly difficult to manage. Can only be chosen at the game's start, and being incarcerated in the asylum will put you in normal mode. <br><i class="red normal">This is an experimental feature, and will be changed or removed in the future.</i></span></mouse>
-		<<if $ironmanmode is true and $passage != "Start">>
-			<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
-		<<else>>
-			<<radiobutton "$gamemode" "hard" autocheck>>
-		<</if>>
+			<<if $ironmanmode is true and $passage != "Start">>
+				<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
+			<<else>>
+				<<radiobutton "$gamemode" "hard" autocheck>>
+			<</if>>
 		</label>
 	<</if>>
 	<br>
-	<label data-target="cheatdisabletoggle" data-disabledif="V.cheatdisabletoggle==='f'">
-		<input id="checkbox-ironmanmode" onclick="IronMan.UI.checkBox()" name="checkbox-ironmanmode" type="checkbox" tabindex="0" class="macro-checkbox"> <mouse class="tooltip white">Ironman mode<span>To prevent save-scumming and other practices in that spirit<br><br>You can save, you will then be led to Start Menu. You can then load that save, but then it will delete itself.<br><br>There will also be an additional save every 4-8 in-game days just in case you lose the other save.</span></mouse>&nbsp;<i class="ironman-clarify">(Cannot be unset after game start)</i>
-		<<run IronMan.UI.checkBox(`init`)>>
-	</label>
-	<br>
-	<label data-target="ironmanmode" data-disabledif="V.ironmanmode===true">
-		<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> <mouse class="tooltip red">Cheat mode<span>Leaving the settings with cheats enabled will prevent you from earning feats in a save.</span></mouse>&nbsp;<i class="ironman-clarify">(Button for cheats shows in sidebar)</i>
-	</label>
+	<<if $ironmanmode>>
+		<span class="red">Cheats cannot be enabled during Ironman mode.</span>
+	<<else>>
+		<<if $passage is "Start">>
+			<label data-target="cheatdisabletoggle" data-disabledif="V.cheatdisabletoggle==='f'">
+				<input id="checkbox-ironmanmode" onclick="IronMan.UI.checkBox()" name="checkbox-ironmanmode" type="checkbox" tabindex="0" class="macro-checkbox"> <mouse class="tooltip white">Ironman mode<span>To prevent save-scumming and other practices in that spirit<br><br>You can save, you will then be led to Start Menu. You can then load that save, but then it will delete itself.<br><br>There will also be an additional save every 4-8 in-game days just in case you lose the other save.</span></mouse>&nbsp;<i class="ironman-clarify">(Cannot be unset after game start)</i>
+				<<run IronMan.UI.checkBox(`init`)>>
+			</label>
+			<br>
+		<</if>>
+		<label data-target="ironmanmode" data-disabledif="V.ironmanmode===true">
+			<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> <mouse class="tooltip red">Cheat mode<span>Leaving the settings with cheats enabled will prevent you from earning feats in a save.</span></mouse>&nbsp;<i class="ironman-clarify">(Button for cheats shows in sidebar)</i>
+		</label>
+	<</if>>
 <</widget>>
 
 <<widget "gameSettings">>
@@ -1365,42 +1385,65 @@
 	</div>
 <</widget>>
 
+<<widget "genericGenders">>
+	<div class="numberslider-inline maleChance">
+		<<numberslider "$malechance" $malechance 0 100 1>>
+		<<run settingsGenericGenders("NPCs")>>
+	</div>
+	<<run $(() => { $('.maleChance input').on('input change', e => {
+		let value = parseInt(e.currentTarget.value);
+		V.maleChanceMale = value;
+		V.maleChanceFemale = value;
+	}).trigger('change') })>>
+<</widget>>
+
+<<widget "beastGenders">>
+	<div class="numberslider-inline beastmalechance">
+		<<numberslider "$beastmalechance" $beastmalechance 0 100 1>>
+		<<run settingsGenericGenders("beasts")>>
+	</div>
+	<<run $(() => { $('.beastmalechance input').on('input change', e => {
+		let value = parseInt(e.currentTarget.value);
+		V.beastMaleChanceMale = value;
+		V.beastMaleChanceFemale = value;
+	}).trigger('change') })>>
+<</widget>>
+
+<<widget "monsterSettings">>
+	<div class="numberslider-inline">
+		<span class="gold">Monster People</span>
+		<<numberslider "$monsterchance" $monsterchance 0 100 1>>
+		<<run settingsMonsterChance()>>
+	</div>
+	<label>
+		<<checkbox "$monsterhallucinations" "f" "t" autocheck>> Monster people can only appear during hallucinations
+	</label>
+<</widget>>
+
 <<widget "humanSettings">>
 	<div class="solidBorderContainer settings-container">
 		<div class="settingsGrid">
 			<div class="settingsHeader">
 				NPC Genders
 			</div>
-			<div id="simpleGenders" @class="'settingsToggleItemWide' + (V.maleChanceSplit === 't' ? ' hidden' : '')">
-				<<link "Split By Gender Appearance">>
-					<<set $maleChanceSplit to "t">>
-					<<addclass "#simpleGenders" "hidden">>
-					<<replace "#splitGenders">><<maleChanceSplitControls>><</replace>>
-					<<removeclass "#splitGenders" "hidden">>
-				<</link>>
-				<div class="numberslider-inline maleChance">
-					<span class="gold">Percentage of people attracted to you that are male</span>
-					<<numberslider "$malechance" $malechance 0 100 1>>
+			<div class="settingsToggleItem">
+				<div id="simpleGenders" @class="(V.maleChanceSplit === 't' ? ' hidden' : '')">
+					<span class="gold">Generic NPCs</span>
+					<<genericGenders>>
 				</div>
-				<<run $(() => { $('.maleChance input').on('input change', e => {
-					let valSpan = $(e.currentTarget).siblings().first();
-					let value = valSpan.text();
-					V.maleChanceMale = parseInt(value);
-					V.maleChanceFemale = parseInt(value);
-				}).trigger('change') })>>
+				<div id="splitGenders" @class="(V.maleChanceSplit === 'f' ? ' hidden' : '')">
+					<<maleChanceSplitControls>>
+				</div>
+				<span id="humanSplitByFull"><<humanSplitByFull>></span>
 			</div>
-			<div id="splitGenders" @class="'settingsToggleItemWide' + (V.maleChanceSplit === 'f' ? ' hidden' : '')">
-				<<maleChanceSplitControls>>
-			</div>
-			<div class="settingsToggleItemWide">
-				<div class="numberslider-inline">
-					<span class="gold">Percentage of other victims that are male</span>
+			<div class="settingsToggleItem">
+				<div class="numberslider-inline malevictimchance">
+					<span class="gold">Other Victims
+						<mouse class="tooltip linkBlue">(?)<span>Adjust the genders of NPcs you encounter who have been forced into compromising or abusive situations.</span></mouse>
+					</span>
 					<<numberslider "$malevictimchance" $malevictimchance 0 100 1>>
+					<<run settingsGenericGenders("other victims you encounter")>>
 				</div>
-				/*<div class="numberslider-inline">
-					<span class="gold">Proportion of same-sex couples</span>
-					<<numberslider "$homochance" $homochance 0 100 1>>
-				</div>*/
 			</div>
 		</div>
 		<hr>
@@ -1463,43 +1506,21 @@
 <</widget>>
 
 <<widget "maleChanceSplitControls">>
-	<<link "Split by NPC gender">>
-		<<set $maleChanceSplit to "f">>
-		<<removeclass "#simpleGenders" "hidden">>
-		<<addclass "#splitGenders" "hidden">>
-	<</link>>
-	<div class="settingsToggleItemWide numberslider-inline maleChanceMale">
-		<span class="gold">NPCs who are attracted to men: <mouse class="tooltip linkBlue">(?)<span>Affects the number of male/male NPC couples seen around town. <i class="blue none">If you appear to be male, the NPCs who are attracted to you will follow this pattern.</i></span></mouse></span>
+	<div class="numberslider-inline maleChanceMale">
+		<span class="gold">Generic NPCs Attracted to Men <mouse class="tooltip linkBlue">(?)<span>Affects the number of male/male NPC couples seen around town. <i class="blue none">If you appear to be male, the NPCs who are attracted to you will follow this pattern.</i></span></mouse></span>
 		<div class="numberSliderCompare">
-			<div id="maleChanceMale-female">Female: <<print 100 - $maleChanceMale>>%</div>
-			<span class="control"><<numberslider "$maleChanceMale" $maleChanceMale 0 100 1>></span>
-			<div id="maleChanceMale-male">Male: <<print $maleChanceMale>>%</div>
+			<<numberslider "$maleChanceMale" $maleChanceMale 0 100 1>>
+			<<run settingsGenericGenders("mlm")>>
 		</div>
 	</div>
-	<<run $(() => { $('.maleChanceMale input').on('input change', e => {
-		let valSpan = $(e.currentTarget).siblings().first();
-		let value = valSpan.text();
-		$('#maleChanceMale-female')[0].textContent = "Female: " + (100 - value) + "%";
-		$('#maleChanceMale-male')[0].textContent = "Male: " + value + "%";
-		valSpan.text(() => "");
-	}).trigger('change') })>>
 
-	<div class="settingsToggleItemWide numberslider-inline maleChanceFemale">
-		<span class="gold">NPCs who are attracted to women: <mouse class="tooltip linkBlue">(?)<span>Affects the number of female/female couples seen around town. <i class="pink none">If you appear to be female, the NPCs who are attracted to you will follow this pattern.</i></span></mouse></span>
+	<div class="numberslider-inline maleChanceFemale">
+		<span class="gold">Generic NPCs Attracted to Women <mouse class="tooltip linkBlue">(?)<span>Affects the number of female/female couples seen around town. <i class="pink none">If you appear to be female, the NPCs who are attracted to you will follow this pattern.</i></span></mouse></span>
 		<div class="numberSliderCompare">
-			<div id="maleChanceFemale-female">Female: <<print 100 - $maleChanceFemale>>%</div>
-			<span class="control"><<numberslider "$maleChanceFemale" $maleChanceFemale 0 100 1>></span>
-			<div id="maleChanceFemale-male" class="rightDiv">Male: <<print $maleChanceFemale>>%</div>
+			<<numberslider "$maleChanceFemale" $maleChanceFemale 0 100 1>>
+			<<run settingsGenericGenders("wlw")>>
 		</div>
 	</div>
-	<<run $(() => { $('.maleChanceFemale input').on('input change', e => {
-		let valSpan = $(e.currentTarget).siblings().first();
-		let value = valSpan.text();
-
-		$('#maleChanceFemale-female')[0].textContent = "Female: " + (100 - value) + "%";
-		$('#maleChanceFemale-male')[0].textContent = "Male: " + value + "%";
-		valSpan.text(() => "");
-	}).trigger('change') })>>
 <</widget>>
 
 <<widget "beastSettings">>
@@ -1508,39 +1529,18 @@
 			<div class="settingsHeader">
 				Beast Preferences
 			</div>
-			<div id="simpleBeastGenders" @class="'settingsToggleItemWide' + (V.beastMaleChanceSplit === 't' ? ' hidden' : '')">
-				<<link "Split By Gender Appearance">>
-					<<set $beastMaleChanceSplit to "t">>
-					<<addclass "#simpleBeastGenders" "hidden">>
-					<<replace "#splitBeastGenders">><<beastMaleChanceSplitControls>><</replace>>
-					<<removeclass "#splitBeastGenders" "hidden">>
-				<</link>>
-				<div class="numberslider-inline beastmalechance">
-					<span class="gold">Percentage of beasts or monsters attracted to you that are male</span>
-					<<numberslider "$beastmalechance" $beastmalechance 0 100 1>>
+			<div class="settingsToggleItem">
+				<div id="simpleBeastGenders" @class="(V.beastMaleChanceSplit === 't' ? ' hidden' : '')">
+					<span class="gold">Beast Genders</span>
+					<<beastGenders>>
 				</div>
-				<<run $(() => { $('.beastmalechance input').on('input change', e => {
-					let valSpan = $(e.currentTarget).siblings().first();
-					let value = valSpan.text();
-					V.beastMaleChanceMale = parseInt(value);
-					V.beastMaleChanceFemale = parseInt(value);
-				}).trigger('change') })>>
-			</div>
-			<div id="splitBeastGenders" @class="'settingsToggleItemWide' + (V.beastMaleChanceSplit === 'f' ? ' hidden' : '')">
-				<<beastMaleChanceSplitControls>>
+				<div id="splitBeastGenders" @class="(V.beastMaleChanceSplit === 'f' ? ' hidden' : '')">
+					<<beastMaleChanceSplitControls>>
+				</div>
+				<span id="beastSplitByFull"><<beastSplitByFull>></span>
 			</div>
 			<div class="settingsToggleItem">
-				<div class="numberslider-inline">
-					<span class="gold">Percentage of beasts that are replaced with monster girls or boys</span>
-					<<numberslider "$monsterchance" $monsterchance 0 100 1>>
-				</div>
-			</div>
-			<div class="settingsToggleItem">
-				<span class="gold">Replace beasts with monster girls and boys</span>
-				<br>
-				<label>Only when hallucinating <<radiobutton "$monsterhallucinations" "t" autocheck>></label> |
-				<label>At any time <<radiobutton "$monsterhallucinations" "f" autocheck>></label> |
-				<label>Never <<radiobutton "$monsterhallucinations" "f" autocheck>></label>
+				<<monsterSettings>>
 			</div>
 		</div>
 		<hr>
@@ -1632,42 +1632,20 @@
 <</widget>>
 
 <<widget "beastMaleChanceSplitControls">>
-	<<link "Split by beast gender">>
-		<<set $beastMaleChanceSplit to "f">>
-		<<removeclass "#simpleBeastGenders" "hidden">>
-		<<addclass "#splitBeastGenders" "hidden">>
-	<</link>>
 	<div class="numberslider-inline beastMaleChanceMale">
-		<span class="gold">Beast NPCs who are attracted to men: <mouse class="tooltip linkBlue">(?)<span>When the players gender appearence is male, this will lead the NPCs gender being chosen by percentages for this setting</span></mouse></span>
+		<span class="gold">Beasts Attracted to Men <mouse class="tooltip linkBlue">(?)<span>Affects the number of male/male beast pairings seen. <i class="blue none">If you appear to be male, the NPCs who are attracted to you will follow this pattern.</i></span></mouse></span>
 		<div class="numberSliderCompare">
-			<div id="beastMaleChanceMale-female">Female: <<print 100 - $beastMaleChanceMale>>%</div>
-			<span class="control"><<numberslider "$beastMaleChanceMale" $beastMaleChanceMale 0 100 1>></span>
-			<div id="beastMaleChanceMale-male" class="rightDiv">Male: <<print $beastMaleChanceMale>>%</div>
+			<<numberslider "$beastMaleChanceMale" $beastMaleChanceMale 0 100 1>>
+			<<run settingsGenericGenders("blm")>>
 		</div>
 	</div>
-	<<run $(() => { $('.beastMaleChanceMale input').on('input change', e => {
-		let valSpan = $(e.currentTarget).siblings().first();
-		let value = valSpan.text();
-		$('#beastMaleChanceMale-female')[0].textContent = "Female: " + (100 - value) + "%";
-		$('#beastMaleChanceMale-male')[0].textContent = "Male: " + value + "%";
-		valSpan.text(() => "");
-	}).trigger('change') })>>
-
 	<div class="numberslider-inline beastMaleChanceFemale">
-		<span class="gold">Beast NPCs who are attracted to women: <mouse class="tooltip linkBlue">(?)<span>When the players gender appearence is female, this will lead the NPCs gender being chosen by percentages for this setting</span></mouse></span>
+		<span class="gold">Beasts Attracted to Women <mouse class="tooltip linkBlue">(?)<span>Affects the number of female/female beast pairings seen. <i class="pink none">If you appear to be female, the NPCs who are attracted to you will follow this pattern.</i></span></mouse></span>
 		<div class="numberSliderCompare">
-			<div id="beastMaleChanceFemale-female">Female: <<print 100 - $beastMaleChanceFemale>>%</div>
 			<span class="control"><<numberslider "$beastMaleChanceFemale" $beastMaleChanceFemale 0 100 1>></span>
-			<div id="beastMaleChanceFemale-male" class="rightDiv">Male: <<print $beastMaleChanceFemale>>%</div>
+			<<run settingsGenericGenders("blw")>>
 		</div>
 	</div>
-	<<run $(() => { $('.beastMaleChanceFemale input').on('input change', e => {
-		let valSpan = $(e.currentTarget).siblings().first();
-		let value = valSpan.text();
-		$('#beastMaleChanceFemale-female')[0].textContent = "Female: " + (100 - value) + "%";
-		$('#beastMaleChanceFemale-male')[0].textContent = "Male: " + value + "%";
-		valSpan.text(() => "");
-	}).trigger('change') })>>
 <</widget>>
 
 <<widget "fetishSettings">>
@@ -1894,6 +1872,32 @@
 		})>>
 <</widget>>
 
+<<widget "incompletePregnancy">>
+	<<checkbox "$incompletePregnancyDisable" "t" "f" autocheck>> Enable incomplete pregnancy content
+	<<if _foundPregnancy>>
+		<mouse class="tooltip linkBlue">(!!!)<span>Can not be disabled while a named NPC is pregnant.</span></mouse>
+	<<else>>
+		<mouse class="tooltip linkBlue">(?)<span>
+			<div>When enabled, the player will be able to impregnate and be impregnated by all fertile named NPCs. This includes NPCs that have no pregnancy interactions.</div>
+			<div class="red">WARNING: This will lead to situations where the named NPC will not react to the player's pregnancy or their own pregnancy, and existing saves may end up skipping future content.</div>
+		</span></mouse>
+	<</if>>
+<</widget>>
+
+<<widget "fertilityCycles">>
+	<<checkbox "$cycledisable" "t" "f" autocheck>> Enable fertility cycles
+	<mouse class="tooltip linkBlue">(?)<span>
+		<div>When enabled, the player's menstruation cycle will determine when they can get pregnant.</div>
+		<div>When disabled, each day's pregnancy chance will be randomised. In addition, sperm inside the player will not last as long when the pregnancy type is set to "realistic".</div>
+	</span></mouse>
+<</widget>>
+
+<<widget "pregnancyType">>
+	<label><<radiobutton "$pregnancytype" "realistic" autocheck>> <mouse class="tooltip green">Realistic<span>Pregnancy will not happen immediately, and you won't know right away when it happens. You may need to use a pregnancy test, and the father may not be known to you initially. Cum on the outside of your vagina may get you pregnant as well, unless washed off within the next several hours.</span></mouse></label> |
+	<label><<radiobutton "$pregnancytype" "fetish" autocheck>> <mouse class="tooltip pink">Fetishised<span>Pregnancy may happen as soon as semen gets inside you. You will know as soon as it happens, and will immediately know the father.</span></mouse></label> |
+	<label><<radiobutton "$pregnancytype" "silly" autocheck>> <mouse class="tooltip gold">Silly<span>Pregnancy may happen as soon as you hold hands or kiss, especially with those you love. <i class="red none">There may be story content related issues with this mode. Some feats will be disabled with this mode.</i></span></mouse></label>
+<</widget>>
+
 <<widget "pregnancySettings">>
 	<div class="solidBorderContainer settings-container">
 		<div class="settingsGrid">
@@ -1988,15 +1992,7 @@
 			<span data-target="incompletePregnancyDisable" data-disabledif="T.foundPregnancy&&V.incompletePregnancyDisable==='f'">
 				<div class="settingsToggleItem humanPregnancyMonths-container">
 					<label>
-						<<checkbox "$incompletePregnancyDisable" "t" "f" autocheck>> Enable incomplete pregnancy content
-						<<if _foundPregnancy>>
-							<mouse class="tooltip linkBlue">(!!!)<span>Can not be disabled while a named NPC is pregnant.</span></mouse>
-						<<else>>
-							<mouse class="tooltip linkBlue">(?)<span>
-								<div>When enabled, the player will be able to impregnate and be impregnated by all fertile named NPCs. This includes NPCs that have no pregnancy interactions.</div>
-								<div class="red">WARNING: This will lead to situations where the named NPC will not react to the player's pregnancy or their own pregnancy, and existing saves may end up skipping future content.</div>
-							</span></mouse>
-						<</if>>
+						<<incompletePregnancy>>
 					</label>
 				</div>
 			</span>
@@ -2007,19 +2003,13 @@
 			</div>
 			<div class="settingsToggleItem">
 				<label>
-					<<checkbox "$cycledisable" "t" "f" autocheck>> Enable fertility cycles
-					<mouse class="tooltip linkBlue">(?)<span>
-						<div>When enabled, the player's menstruation cycle will determine when they can get pregnant.</div>
-						<div>When disabled, each day's pregnancy chance will be randomised. In addition, sperm inside the player will not last as long when the pregnancy type is set to "realistic".</div>
-					</span></mouse>
+					<<fertilityCycles>>
 				</label>
 			</div>
 			<div class="settingsToggleItem">
 				<label>
 					Pregnancy type:
-					<label><<radiobutton "$pregnancytype" "realistic" autocheck>> <mouse class="tooltip green">Realistic<span>Pregnancy will not happen immediately, and you won't know right away when it happens. You may need to use a pregnancy test, and the father may not be known to you initially. Cum on the outside of your vagina may get you pregnant as well, unless washed off within the next several hours.</span></mouse></label> |
-					<label><<radiobutton "$pregnancytype" "fetish" autocheck>> <mouse class="tooltip pink">Fetishised<span>Pregnancy may happen as soon as semen gets inside you. You will know as soon as it happens, and will immediately know the father.</span></mouse></label> |
-					<label><<radiobutton "$pregnancytype" "silly" autocheck>> <mouse class="tooltip gold">Silly<span>Pregnancy may happen as soon as you hold hands or kiss, especially with those you love. <i class="red none">There may be story content related issues with this mode. Some feats will be disabled with this mode.</i></span></mouse></label>
+					<<pregnancyType>>
 				</label>
 			</div>
 			<div class="settingsToggleItem">
@@ -2393,14 +2383,14 @@
 <<widget "startDescriptions">>
 	<div class="solidBorderContainer settings-container">
 		<div class="settings-intro">
-		<<switch _args[0]>>
-			<<case "default">><span class="gold bold">Basic Start:</span> Fetish toggles and difficulty settings will be left at their <span class="teal">default</span> settings. NPCs will be <span class="teal">randomly</span> generated. <i class="teal">Recommended for beginners.</i>
-			<<case "adjusted">><span class="gold bold">Moderate Start:</span> You can make <span class="teal">broad changes</span> to difficulty settings, preset kinks, and NPC genders. NPCs will be <span class="teal">randomly</span> generated according to these settings.
-			<<case "custom">><span class="gold bold">Advanced Start:</span> You can adjust <span class="teal">all settings</span>, including fetish toggles, difficulty settings, and NPC genders, to create a playthrough tailored to your desires.
-			<<case "random">><span class="gold bold">Randomised Start:</span> Starts the game with <span class="teal">all settings</span> randomised, including character appearance, character traits, and difficulty settings. Both your character and NPCs will be <span class="teal">randomly</span> generated.
-		<</switch>>
-		<br>
-		<div class="small-description">Most settings can be changed later in your room. <span class="red">You will not be able to change your character's genitalia or feat boosts after starting the game.</span></div>
+			<<switch _args[0]>>
+				<<case "default">><span class="gold bold">Basic Start:</span> Fetish toggles and difficulty settings will be left at their <span class="teal">default</span> settings. NPCs will be <span class="teal">randomly</span> generated. <i class="teal">Recommended for beginners.</i>
+				<<case "adjusted">><span class="gold bold">Moderate Start:</span> You can make <span class="teal">broad changes</span> to difficulty settings, preset kinks, and NPC genders. NPCs will be <span class="teal">randomly</span> generated according to these settings.
+				<<case "custom">><span class="gold bold">Advanced Start:</span> You can adjust <span class="teal">all settings</span>, including fetish toggles, difficulty settings, and NPC genders, to create a playthrough tailored to your desires.
+				<<case "random">><span class="gold bold">Randomised Start:</span> Starts the game with <span class="teal">all settings</span> randomised, including character appearance, character traits, and difficulty settings. Both your character and NPCs will be <span class="teal">randomly</span> generated.
+			<</switch>>
+			<br>
+			<div class="small-description">Most settings can be changed later in your room. <span class="red">You will not be able to change your character's genitalia or feat boosts after starting the game.</span></div>
 		</div>
 	</div>
 <</widget>>
