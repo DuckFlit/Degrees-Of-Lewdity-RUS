@@ -344,6 +344,7 @@ function apparentbreastsizecheck() {
 	}
 	V.player.perceived_breastsize = Math.clamp(V.breastsizemin, T.tempbreast, V.breastsizemax);
 }
+window.apparentbreastsizecheck = apparentbreastsizecheck;
 
 function apparentbottomsizecheck() {
 	T.tempbutt = V.player.bottomsize;
