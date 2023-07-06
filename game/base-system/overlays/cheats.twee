@@ -131,18 +131,20 @@
 		<br>
 		<<if $sexStats.vagina.menstruation.currentState is "normal">>
 			Change to:
-			<<link [[Become boy|$passage]]>>
-				<<set $vaginause to "none">>
-				<<set $vaginastate to "none">>
-				<<set $penisuse to 0>>
-				<<set $penisstate to 0>>
-				<<set $player.gender to "m">>
-				<<set $player.sex to "m">>
-				<<set $player.ballsExist to true>>
-				<<set $player.penisExist to true>>
-				<<set $player.vaginaExist to false>>
-				<<set $sexStats.vagina.menstruation.running = false>>
-			<</link>> |
+			<<if $player.gender isnot "m">>
+				<<link [[Become boy|$passage]]>>
+					<<set $vaginause to "none">>
+					<<set $vaginastate to "none">>
+					<<set $penisuse to 0>>
+					<<set $penisstate to 0>>
+					<<set $player.gender to "m">>
+					<<set $player.sex to "m">>
+					<<set $player.ballsExist to true>>
+					<<set $player.penisExist to true>>
+					<<set $player.vaginaExist to false>>
+					<<set $sexStats.vagina.menstruation.running = false>>
+				<</link>> |
+			<</if>>
 			<<if $player.gender isnot "f">>
 				<<link [[Become girl|$passage]]>>
 					<<set $vaginause to 0>>
@@ -185,54 +187,29 @@
 		Gender can only be changed when accessing your wardrobe to prevent potential issues.
 	<</if>>
 	<br><br>
-	Natural features:
-	<span id="statsNaturalFeatures">
-		<<switch $player.gender_body>>
-			<<case "m">>Masculine
-			<<case "f">>Feminine
-			<<case "a">>Androgynous
-		<</switch>>
+	<<set _gender_body_words to {"m": "Masculine", "f": "Feminine", "a": "Androgynous"}>>
+	Body type:
+	<span id="statsBodyType">
+		<<print _gender_body_words[$player.gender_body]>>
 	</span>
 	<br>
 	<<link "Masculine">>
 		<<set $player.gender_body to "m">>
-		<<replace "#statsNaturalFeatures">>
-			<<switch $player.gender_body>>
-				<<case "m">>Masculine
-				<<case "f">>Feminine
-				<<case "a">>Androgynous
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
 	<</link>> |
 	<<link "Feminine">>
 		<<set $player.gender_body to "f">>
-		<<replace "#statsNaturalFeatures">>
-			<<switch $player.gender_body>>
-				<<case "m">>Masculine
-				<<case "f">>Feminine
-				<<case "a">>Androgynous
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
 	<</link>> |
 	<<link "Androgynous">>
 		<<set $player.gender_body to "a">>
-		<<replace "#statsNaturalFeatures">>
-			<<switch $player.gender_body>>
-				<<case "m">>Masculine
-				<<case "f">>Feminine
-				<<case "a">>Androgynous
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
 	<</link>> |
 	<br><br>
+	<<set _bodysize_words to ["Tiny","Small","Normal","Large"]>>
 	Body size:
 	<span id="statsBodySize">
-		<<switch $bodysize>>
-			<<case 0>>Tiny
-			<<case 1>>Small
-			<<case 2>>Normal
-			<<case 3>>Large
-		<</switch>>
+		<<print _bodysize_words[$bodysize]>>
 	</span>
 	<br>
 	<<link "Tiny">>
@@ -240,56 +217,28 @@
 		<<set _physique_max_old to $physiquesize>>
 		<<set $physiquesize to 6000>>
 		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">>
-			<<switch $bodysize>>
-				<<case 0>>Tiny
-				<<case 1>>Small
-				<<case 2>>Normal
-				<<case 3>>Large
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
 	<</link>> |
 	<<link "Small">>
 		<<set $bodysize to 1>>
 		<<set _physique_max_old to $physiquesize>>
 		<<set $physiquesize to 10000>>
 		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">>
-			<<switch $bodysize>>
-				<<case 0>>Tiny
-				<<case 1>>Small
-				<<case 2>>Normal
-				<<case 3>>Large
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
 	<</link>> |
 	<<link "Normal">>
 		<<set $bodysize to 2>>
 		<<set _physique_max_old to $physiquesize>>
 		<<set $physiquesize to 12000>>
 		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">>
-			<<switch $bodysize>>
-				<<case 0>>Tiny
-				<<case 1>>Small
-				<<case 2>>Normal
-				<<case 3>>Large
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
 	<</link>> |
 	<<link "Large">>
 		<<set $bodysize to 3>>
 		<<set _physique_max_old to $physiquesize>>
 		<<set $physiquesize to 16000>>
 		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">>
-			<<switch $bodysize>>
-				<<case 0>>Tiny
-				<<case 1>>Small
-				<<case 2>>Normal
-				<<case 3>>Large
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
 	<</link>> |
 	<br><br>
 
@@ -543,8 +492,8 @@
 	| <<link ">>>">><<set $sadism += 1000>><<clamp>><<replace "#statssadism">><<print Math.trunc($sadism)>><</replace>> <<updatesidebarimg>><</link>>
 	<br><br>
 
-	Lactating: <span id="statslactatingspray">$lactating</span> |
-	<<link "Toggle">><<if $lactating is 1>><<set $lactating to 0>><<set $lactation_pressure to 0>><<else>><<set $lactating to 1>><<set $lactation_pressure to 100>><</if>><<replace "#statslactatingspray">><<print $lactating>><</replace>> <<updatesidebarimg>><</link>>
+	Lactating: <span id="statslactatingspray"><<print ($lactating is 1 ? "Yes" : "No")>></span> |
+	<<link "Toggle">><<set $lactating to ($lactating is 1 ? 0 : 1)>><<set $lactation_pressure to $lactating * 100>><<replace "#statslactatingspray">><<print ($lactating is 1 ? "Yes" : "No")>><</replace>><<updatesidebarimg>><</link>>
 	<br>
 
 	<<link "Refill fluids">><<set $semen_amount to $semen_volume>><<set $milk_amount to $milk_volume>><</link>>
@@ -1149,13 +1098,8 @@
 
 	<span class="gold">Freckles</span>
 		<br>
-		<<if $player.freckles>>
-			<label>Enabled <<radiobutton "$player.freckles" true checked>></label>
-			| <label>Disabled <<radiobutton "$player.freckles" false>></label>
-		<<else>>
-			<label>Enabled <<radiobutton "$player.freckles" true>></label>
-			| <label>Disabled <<radiobutton "$player.freckles" false checked>></label>
-		<</if>>
+		<label>Enabled <<radiobutton "$player.freckles" true autocheck>></label>
+		| <label>Disabled <<radiobutton "$player.freckles" false autocheck>></label>
 	<br><br>
 
 	<span class="gold">Body part sizes and sensitivity</span>
@@ -1166,6 +1110,17 @@
 	| <<link ">">><<set $player.breastsize += 1>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breasts>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $player.breastsize += 3>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breasts>><</replace>> <<updatesidebarimg>><</link>>
 	<br>
+	<span class="gold">Breasts</span>
+	<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
+	<<numberslider "$player.breastsize" $player.breastsize 0 _name.length-1 1>>
+	<<run $(() => { $('#numberslider-input-playerbreastsize').on('input change', e => {
+		$('#numberslider-value-playerbreastsize').html(" "+_name[e.currentTarget.value]);
+		wikifier('<<updatesidebarimg>>');
+	}).trigger('change') })>>
+	<br><br>
+	Cover Nudity (only if embarrassed): <<checkbox "$dontHide" true false autocheck>>
+	<<run $(() => $('#checkbox-donthide').on('change', e => wikifier('<<updatesidebarimg>>')))>>
+	<br><br>
 
 	<<link "<">><<set $player.bottomsize -= 1>><<clamp>><<replace "#statsbottomsize">><<print Math.trunc($player.bottomsize)>><</replace>> <<updatesidebarimg>><</link>> |
 	Butt size: <span id="statsbottomsize"><<print Math.trunc($player.bottomsize)>></span>
@@ -1425,7 +1380,31 @@
 	<span id="statsfoxbuild"><<print Math.trunc($foxbuild)>></span>
 	| <<link ">">><<set $foxbuild += 5>><<transformationAlteration>><<clamp>><<replace "#statsfoxbuild">><<print Math.trunc($foxbuild)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $foxbuild += 50>><<transformationAlteration>><<clamp>><<replace "#statsfoxbuild">><<print Math.trunc($foxbuild)>><</replace>> <<updatesidebarimg>><</link>>
-	<br>
+
+	<<if $debug is 1>>
+		<br><br>
+		<span class="gold">Clothes</span>
+		<br>
+		<span class="description">Send clothing with a given ID to your wardrobe.</span>
+		<br>
+		<<listbox "_slot" autoselect>>
+			<<optionsfrom setup.clothingLayer.body>>
+		<</listbox>>
+		<<set _clothesID to "1">>
+		<<textbox "_clothesID" "1">>
+		<br>
+		<<link "Send">>
+			<<if !between(+_clothesID, 1, setup.clothes[_slot].length)>>
+				<<replace "#ClothesSendResult">>That didn't work!<</replace>>
+			<<else>>
+				<<shopbuyv2 _slot "buy" "send" _clothesID 1>>
+				<<replace "#ClothesSendResult">>Sent <<print setup.clothes[_slot][_clothesID].name>> to your wardrobe!<</replace>>
+			<</if>>
+		<</link>>
+		<br>
+		<span id="ClothesSendResult"></span>
+		<br>
+	<</if>>
 <</widget>>
 
 <<widget "cheatMenuEyesSelected">>
