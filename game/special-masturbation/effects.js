@@ -2767,7 +2767,7 @@ function masturbationeffectsVaginaAnus({ span, otherElement, additionalEffect, s
 			wikifier("arousal", 300, "oral");
 			wikifier("drugs", 10);
 			if (V.player.virginity.oral === true) {
-				fragment.append(wikifier("takeVirginity", "phallus plant", "oral"));
+				fragment.append(wikifier("takeVirginity", "'phallus plant'", "oral"));
 				fragment.append(" ");
 				fragment.append(
 					Wikifier.wikifyEval('You suck on the plant. <span class="red">It tastes very strange</span>, and you feel yourself heating up.')
@@ -2844,10 +2844,10 @@ function masturbationeffectsVaginaAnus({ span, otherElement, additionalEffect, s
 			wikifier("vaginalstat");
 			wikifier("drugs", 10);
 			wikifier("vaginaraped");
-			if (V.player.virginity.oral === true) {
+			if (V.player.virginity.vaginal === true) {
 				fragment.append(span("You lower yourself down, allowing the plant to penetrate you."));
 				fragment.append(" ");
-				fragment.append(wikifier("takeVirginity", "phallus plant", "vaginal"));
+				fragment.append(wikifier("takeVirginity", "'phallus plant'", "vaginal"));
 				fragment.append(" ");
 				fragment.append(
 					Wikifier.wikifyEval(
@@ -2937,10 +2937,10 @@ function masturbationeffectsVaginaAnus({ span, otherElement, additionalEffect, s
 			wikifier("arousal", 1000, "anal");
 			wikifier("analstat");
 			wikifier("drugs", 10);
-			if (V.player.virginity.oral === true) {
+			if (V.player.virginity.anal === true) {
 				fragment.append(span("You lower yourself down, allowing the plant to penetrate you."));
 				fragment.append(" ");
-				fragment.append(wikifier("takeVirginity", "phallus plant", "anal"));
+				fragment.append(wikifier("takeVirginity", "'phallus plant'", "anal"));
 				fragment.append(" ");
 				fragment.append(
 					Wikifier.wikifyEval(
