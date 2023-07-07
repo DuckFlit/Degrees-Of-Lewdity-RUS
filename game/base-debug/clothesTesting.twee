@@ -57,6 +57,8 @@
 			vaginaCum: 0,
 			anusCum: 0,
 			mouthCum: 0,
+			rightArmCovering: false,
+			leftArmCovering: false,
 			angelHalo:"hidden",
 			angelWings:"hidden",
 			angelWingsLeftType:"idle",
@@ -126,7 +128,9 @@
 		<<set $characterViewer.controls to clone($tempCharacterViewerControls)>>
 		<<unset $tempCharacterViewerControls>>
 	<</if>>
-	<<clothesTestingGenerateClothes>>
+	<<if !_clothes>>
+		<<clothesTestingGenerateClothes>>
+	<</if>>
 	<div id="images">
 		<<clothesTestingImageGenerateAll>>
 	</div>
@@ -209,9 +213,9 @@
 		<<unset $characterViewer>>
 	<</link>>
 	<<if $characterViewer.controls.autoRefresh>>
-		<<run $(() => { $('#controls input, #controls select').on('input change', e => {
-			wikifier('<<clothesTestingImageUpdate>>');
-		}).trigger('change') })>>
+		<<run $(() =>
+			$('#controls input, #controls select').on('input change', e => wikifier('<<clothesTestingImageUpdate>>'))
+		)>>
 	<</if>>
 	<<if $characterViewer.controls.expand>>
 		<<addclass "#passages" "debugPassages">>
@@ -256,36 +260,56 @@
 	<<set _clothes to {}>>
 	<<set _equip to ["upper","lower","under_upper","under_lower","head","face","neck","hands","legs","feet","genitals"]>>
 	<<for _i to 0; _i lt _equip.length; _i++>>
-		<<set _clothes[_equip[_i]] to {}>>
-		<<set _keys to Object.keys(setup.clothes[_equip[_i]])>>
+		<<set _slot to _equip[_i]>>
+		<<set _clothes[_slot] to {}>>
+		<<set _keys to Object.keys(setup.clothes[_slot])>>
 		<<for _j to 0; _j lt _keys.length; _j++>>
-			<<set _clothes[_equip[_i]][setup.clothes[_equip[_i]][_j].name] to setup.clothes[_equip[_i]][_j].index>>
+			<<set _clothes[_slot][setup.clothes[_slot][_j].name] to setup.clothes[_slot][_j].index>>
 		<</for>>
 	<</for>>
 <</widget>>
 
 <<widget "clothesTestingBodyControls">>
 	<h4>Body</h4>
+	
+	<<set _bodytypename to ["Masculine", "Androgynous", "Feminine", "Original"]>>
+	Body Type:
+	<<numberslider "$characterViewer.bodyState.bodytype" $characterViewer.bodyState.bodytype 0 3 1>>
+	<br>
+	Breast Version: <<numberslider "_breastType" _breastType 0 3 1>>
+	<br>
+	Breast Cleavage: <<checkbox "$characterViewer.bodyState.cleavage" false true autocheck>>
+	<br>
+
+	<span class="gold">Breasts</span>
+	<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
+	<<numberslider "$characterViewer.bodyState.breastSize" $characterViewer.bodyState.breastSize 0 _name.length-1 1>>
+	<br>
+
+	<span class="gold">Belly Size</span>
+	<br>
+	<<numberslider "$characterViewer.bodyState.bellySize" $characterViewer.bodyState.bellySize 0 24 1>>
+	<br><br>
 
 	<span class="gold">Skin Colour</span>
 	<br>
-	<label>Enable <<print '<<radiobutton "$options.tanImgEnabled" true ' + ($options.tanImgEnabled ? "checked" : "") + '>>'>></label> |
-	<label>Disable <<print '<<radiobutton "$options.tanImgEnabled" false' + (!$options.tanImgEnabled ? "checked" : "") + '>>'>></label> |
+	<label>Enable <<radiobutton "$options.tanImgEnabled" true autocheck>></label> |
+	<label>Disable <<radiobutton "$options.tanImgEnabled" false autocheck>></label> |
 	<br>
 	Reddish:
-	<label>Light <<print '<<radiobutton "$characterViewer.skinColour.type" "light" ' + ($characterViewer.skinColour.type is "light" ? "checked" : "") + '>>'>></label> |
-	<label>Medium <<print '<<radiobutton "$characterViewer.skinColour.type" "medium" ' + ($characterViewer.skinColour.type is "medium" ? "checked" : "") + '>>'>></label> |
-	<label>Dark <<print '<<radiobutton "$characterViewer.skinColour.type" "dark" ' + ($characterViewer.skinColour.type is "dark" ? "checked" : "") + '>>'>></label> |
-	<label>Gyaru <<print '<<radiobutton "$characterViewer.skinColour.type" "gyaru" ' + ($characterViewer.skinColour.type is "gyaru" ? "checked" : "") + '>>'>> (Pale with no tan, very dark with full tan)</label>
+	<label>Light <<radiobutton "$characterViewer.skinColour.type" "light" autocheck>></label> |
+	<label>Medium <<radiobutton "$characterViewer.skinColour.type" "medium" autocheck>></label> |
+	<label>Dark <<radiobutton "$characterViewer.skinColour.type" "dark" autocheck>></label> |
+	<label>Gyaru <<radiobutton "$characterViewer.skinColour.type" "gyaru" autocheck>> (Pale with no tan, very dark with full tan)</label>
 	<br>
 	Yellowish:
-	<label>Light <<print '<<radiobutton "$characterViewer.skinColour.type" "ylight" ' + ($characterViewer.skinColour.type is "ylight" ? "checked" : "") + '>>'>></label> |
-	<label>Medium <<print '<<radiobutton "$characterViewer.skinColour.type" "ymedium" ' + ($characterViewer.skinColour.type is "ymedium" ? "checked" : "") + '>>'>></label> |
-	<label>Dark <<print '<<radiobutton "$characterViewer.skinColour.type" "ydark" ' + ($characterViewer.skinColour.type is "ydark" ? "checked" : "") + '>>'>></label> |
-	<label>Gyaru <<print '<<radiobutton "$characterViewer.skinColour.type" "ygyaru" ' + ($characterViewer.skinColour.type is "ygyaru" ? "checked" : "") + '>>'>></label>
+	<label>Light <<radiobutton "$characterViewer.skinColour.type" "ylight" autocheck>></label> |
+	<label>Medium <<radiobutton "$characterViewer.skinColour.type" "ymedium" autocheck>></label> |
+	<label>Dark <<radiobutton "$characterViewer.skinColour.type" "ydark" autocheck>></label> |
+	<label>Gyaru <<radiobutton "$characterViewer.skinColour.type" "ygyaru" autocheck>></label>
 	<br><br>
 
-	<label>Initial Tan: <<print '<<numberslider "$characterViewer.skinColour.range" '+($characterViewer.skinColour.range isnot undefined? $characterViewer.skinColour.range:0)+' 0 100 1>>'>></label>
+	<label>Initial Tan: <<numberslider "$characterViewer.skinColour.range" $characterViewer.skinColour.range 0 100 1>></label>
 	<br><br>
 
 	<span class="gold">Penis Size</span>
@@ -311,12 +335,11 @@
 	<label>No <<radiobutton "$characterViewer.bodyState.ballsExist" false autocheck>></label> |
 	<br><br>
 
+	<<set _breastNames to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
+	<<set _liquidNames to ["None","Drops","Some","Lots","Dripping","Overflowing"]>>
+
 	<span class="gold">Breasts</span>
-	<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
-	<<numberslider "$characterViewer.bodyState.breastSize" $characterViewer.bodyState.breastSize 0 _name.length-1 1>>
-	<<run $(() => { $('#numberslider-input-characterviewerbodystatebreastsize').on('input change', e => {
-		$('#numberslider-value-characterviewerbodystatebreastsize').html(" "+_name[$(e.currentTarget).siblings().first().text()]);
-	}).trigger('change') })>>
+	<<numberslider "$characterViewer.bodyState.breastSize" $characterViewer.bodyState.breastSize 0 _breastNames.length-1 1>>
 	<br><br>
 
 	<span class="gold">Belly Size</span>
@@ -324,34 +347,41 @@
 	<<numberslider "$characterViewer.bodyState.bellySize" $characterViewer.bodyState.bellySize 0 24 1>>
 	<br><br>
 
-	<<set _liquidNames to ["None","Drops","Some","Lots","Dripping","Overflowing"]>>
-
 	<span class="gold">Vagina Cum Amount</span>
 	<br>
-	<<numberslider "$characterViewer.bodyState.vaginaCum" $characterViewer.bodyState.vaginaCum 0 5 1>>
-	<<set _id to "$characterViewer.bodyState.vaginaCum".replace(/[.$]/g, "").toLowerCase()>>
-	<<run $(() => { $(`#numberslider-input-${_id}`).on('input change', e => {
-		$(`#numberslider-value-${_id}`).html(" "+_liquidNames[$(e.currentTarget).siblings().first().text()]);
-	}).trigger('change') })>>
+	<<numberslider "$characterViewer.bodyState.vaginaCum" $characterViewer.bodyState.vaginaCum 0 _liquidNames.length-1 1>>
 	<br><br>
 
 	<span class="gold">Anus Cum Amount</span>
 	<br>
-	<<numberslider "$characterViewer.bodyState.anusCum" $characterViewer.bodyState.anusCum 0 5 1>>
-	<<set _id to "$characterViewer.bodyState.anusCum".replace(/[.$]/g, "").toLowerCase()>>
-	<<run $(() => { $(`#numberslider-input-${_id}`).on('input change', e => {
-		$(`#numberslider-value-${_id}`).html(" "+_liquidNames[$(e.currentTarget).siblings().first().text()]);
-	}).trigger('change') })>>
+	<<numberslider "$characterViewer.bodyState.anusCum" $characterViewer.bodyState.anusCum 0 _liquidNames.length-1 1>>
 	<br><br>
 
 	<span class="gold">Mouth Cum Amount</span>
 	<br>
-	<<numberslider "$characterViewer.bodyState.mouthCum" $characterViewer.bodyState.mouthCum 0 5 1>>
-	<<set _id to "$characterViewer.bodyState.mouthCum".replace(/[.$]/g, "").toLowerCase()>>
-	<<run $(() => { $(`#numberslider-input-${_id}`).on('input change', e => {
-		$(`#numberslider-value-${_id}`).html(" "+_liquidNames[$(e.currentTarget).siblings().first().text()]);
-	}).trigger('change') })>>
+	<<numberslider "$characterViewer.bodyState.mouthCum" $characterViewer.bodyState.mouthCum 0 _liquidNames.length-1 1>>
 	<br><br>
+
+	<span class="gold">Left Arm Covering Chest:</span>
+	<<checkbox "$characterViewer.bodyState.leftArmCovering" false true autocheck>>
+	<br>
+	<span class="gold">Right Arm Covering Crotch:</span>
+	<<checkbox "$characterViewer.bodyState.rightArmCovering" false true autocheck>>
+	<br><br>
+
+	<<run $(() => {
+		function setupListener(name, labels) {
+			let className = name.toLowerCase();
+			$('#numberslider-input-characterviewerbodystate' + className).on('input change', e =>
+				$('#numberslider-value-characterviewerbodystate' + className).html(" "+labels[e.currentTarget.value]));
+			$('#numberslider-value-characterviewerbodystate' + className).html(" "+labels[$characterViewer.bodyState[name]]);	
+		}
+		setupListener("bodytype", _bodytypename);
+		setupListener("breastSize", _breastNames);
+		setupListener("vaginaCum", _liquidNames);
+		setupListener("anusCum", _liquidNames);
+		setupListener("mouthCum", _liquidNames);
+	})>>
 <</widget>>
 
 <<widget "clothesTestingFaceControls">>
@@ -430,13 +460,13 @@
 
 	<span class="gold">Hair Length</span>
 	<br>
-	<label>None <<print '<<radiobutton "$characterViewer.bodyState.hairStage" "none" ' + ($characterViewer.bodyState.hairStage is "none" ? "checked" : "") + '>>'>></label> |
-	<label>Short <<print '<<radiobutton "$characterViewer.bodyState.hairStage" "short" ' + ($characterViewer.bodyState.hairStage is "short" ? "checked" : "") + '>>'>></label> |
-	<label>Shoulder <<print '<<radiobutton "$characterViewer.bodyState.hairStage" "shoulder" ' + ($characterViewer.bodyState.hairStage is "shoulder" ? "checked" : "") + '>>'>></label> |
-	<label>Chest <<print '<<radiobutton "$characterViewer.bodyState.hairStage" "chest" ' + ($characterViewer.bodyState.hairStage is "chest" ? "checked" : "") + '>>'>></label> |
-	<label>Navel <<print '<<radiobutton "$characterViewer.bodyState.hairStage" "navel" ' + ($characterViewer.bodyState.hairStage is "navel" ? "checked" : "") + '>>'>></label> |
-	<label>Thighs <<print '<<radiobutton "$characterViewer.bodyState.hairStage" "thighs" ' + ($characterViewer.bodyState.hairStage is "thighs" ? "checked" : "") + '>>'>></label> |
-	<label>Feet <<print '<<radiobutton "$characterViewer.bodyState.hairStage" "feet" ' + ($characterViewer.bodyState.hairStage is "feet" ? "checked" : "") + '>>'>></label> |
+	<label>None <<radiobutton "$characterViewer.bodyState.hairStage" "none" autocheck>></label> |
+	<label>Short <<radiobutton "$characterViewer.bodyState.hairStage" "short" autocheck>></label> |
+	<label>Shoulder <<radiobutton "$characterViewer.bodyState.hairStage" "shoulder" autocheck>></label> |
+	<label>Chest <<radiobutton "$characterViewer.bodyState.hairStage" "chest" autocheck>></label> |
+	<label>Navel <<radiobutton "$characterViewer.bodyState.hairStage" "navel" autocheck>></label> |
+	<label>Thighs <<radiobutton "$characterViewer.bodyState.hairStage" "thighs" autocheck>></label> |
+	<label>Feet <<radiobutton "$characterViewer.bodyState.hairStage" "feet" autocheck>></label> |
 	<br><br>
 
 	<span class="gold">Hair Type</span>
@@ -762,7 +792,8 @@
 	<<set _modeloptions.show_face to $characterViewer.bodyState.show_face>>
 
 	/*body*/
-	<<set _modeloptions.breasts to "cleavage">>
+	<<set _modeloptions.arm_left to $characterViewer.bodyState.leftArmCovering ? "cover" : "idle">>
+	<<set _modeloptions.arm_right to $characterViewer.bodyState.rightArmCovering ? "cover" : "idle">>
 	<<switch $characterViewer.bodyState.breastSize>>
 		<<case 12>>
 			<<set _modeloptions.breast_size to 6>>

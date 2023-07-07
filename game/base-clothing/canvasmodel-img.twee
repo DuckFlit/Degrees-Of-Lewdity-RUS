@@ -100,6 +100,7 @@ Requires prior <<selectmodel "main">>
 		██████  ██   ██ ███████ ███████
 	-->
 
+	<<run apparentbreastsizecheck()>>
 	<<switch $player.perceived_breastsize>>
 		<<case 12>>
 			<<set _modeloptions.breast_size to 6>>
@@ -154,9 +155,10 @@ Requires prior <<selectmodel "main">>
 	-
 	-->
 
+	<<set _coverBreastsWithArm to false>>
 	<<if $leftarm isnot "bound" and $leftarm isnot "grappled">>
 		<<if $dontHide is false and $worn.over_upper.exposed gte 1 and ($worn.upper.exposed gte 1 or $upperwetstage gte 3)
-		and ($exposed gte 2 and $uncomfortable.nude is true or $exposed is 1 and $uncomfortable.underwear is true)>>
+		and (($uncomfortable.underwear is true and !$worn.under_upper.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_upper.exposed gte 1 or $underupperwetstage gte 3)))>>
 			<<set _coverBreasts to true>>
 			<<set _modeloptions.arm_left to "cover">> <!-- might be changed back to "idle" if covering with wings -->
 		<<else>>
@@ -169,7 +171,7 @@ Requires prior <<selectmodel "main">>
 
 	<<if $rightarm isnot "bound" and $rightarm isnot "grappled">>
 		<<if $dontHide is false and $worn.over_lower.exposed gte 1 and ($worn.lower.exposed gte 1 or $lowerwetstage gte 3)
-		and ($exposed gte 2 and $uncomfortable.nude is true or $exposed is 1 and $uncomfortable.underwear is true)>>
+		and (($uncomfortable.underwear is true and !$worn.under_lower.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_lower.exposed gte 1 or $underlowerwetstage gte 3)))>>
 			<<set _coverCrotch to true>>
 			<<set _modeloptions.arm_right to "cover">> <!-- might be changed back to "idle" if covering with wings/tail -->
 		<<else>>
@@ -204,6 +206,8 @@ Requires prior <<selectmodel "main">>
 			<<elseif !_disabled.includes($transformationParts.bird.wings)>>
 				<<set _modeloptions.bird_wing_right to "cover">>
 				<<set _modeloptions.arm_left to "idle">>
+			<<else>>
+				<<set _coverBreastsWithArm to true>>
 			<</if>>
 		<</if>>
 	<</if>>
@@ -506,7 +510,7 @@ Set model options & filters for player clothes
 -->
 <<widget "modelprepare-player-clothes">>
 	<<if $worn.upper.type.includes("naked") and $worn.over_upper.type.includes("naked")>>
-		<<if !$worn.under_upper.type.includes("naked")>>
+		<<if !$worn.under_upper.type.includes("naked") or _coverBreastsWithArm>>
 			<<set _modeloptions.breasts to "cleavage">>
 		<<else>>
 			<<set _modeloptions.breasts to "default">>
