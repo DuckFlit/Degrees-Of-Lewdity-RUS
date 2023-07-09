@@ -866,6 +866,14 @@
 	<</if>>
 	<<bodywriting>>
 	<br>
+
+	<<bodywritingOptions>>
+
+	/*Needs to be last*/
+	<<bodywritingMenuLinks>>
+<</widget>>
+
+<<widget "bodywritingOptions">>
 	<<set _bodyWritingOptions to {
 		General: {
 		"Cute boy":"cute_boy",
@@ -1105,8 +1113,9 @@
 		<br/>
 		<<print Object.values(setup.bodywriting).length>> known bodywriting options.
 	<</if>>
+<</widget>>
 
-	/*Needs to be last*/
+<<widget "bodywritingMenuLinks">>
 	<div id="bodywritingMenuLinks">
 	<<set _keys to Object.keys(_bodyWritingOptions)>>
 	<<if $bodywritingSet is undefined>>
@@ -1119,15 +1128,16 @@
 				<<removeclass `'#link-'+$bodywritingSet.replace(/ /g,'-')` "selected">>
 				<<set $bodywritingSet to clone(_keys[_i])>>
 				<<addclass `'#link-'+$bodywritingSet.replace(/ /g,'-')` "selected">>
-				<<replace "#bodywritingMenu">><<bodywritingMenu>><</replace>>
+				<<replace "#bodywritingMenu">><<bodywritingMenu _args[0]>><</replace>>
 			<</link>> |
 			</span>
 		<</capture>>
 	<</for>>
 	</div>
+
 	<br>
 	<div id="bodywritingMenu" class="no-numberify">
-		<<bodywritingMenu>>
+		<<bodywritingMenu _args[0]>>
 	</div>
 	<br><br>
 <</widget>>
@@ -1135,7 +1145,11 @@
 <<widget "bodywritingMenu">>
 	<<if Object.keys(_bodyWritingOptions[$bodywritingSet]).length gt 0>>
 		<<set _bodyPartOptions to {}>>
-		<<set _bodyPartOptionsSkip to ["back", "left_bottom", "right_bottom"]>>
+		<<if _args[0] isnot undefined>>
+			<<set _bodyPartOptionsSkip to _args[0]>>
+		<<else>>
+			<<set _bodyPartOptionsSkip to ["back", "left_bottom", "right_bottom"]>>
+		<</if>>
 		<<for _label, _value range $skin>>
 			<<if _bodyPartOptionsSkip.includes(_label)>>
 				<<continue>>
