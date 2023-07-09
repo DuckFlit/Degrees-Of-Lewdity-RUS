@@ -67,7 +67,9 @@ You are in the dance studio. Here you can pay for lessons to improve your dancin
 			<br>
 		<</if>>
 		<<if (Time.weekDay is 2 or Time.weekDay is 4 or Time.weekDay is 6)>>
-			<<link [[Take a yoga lesson (£22 1:00)|Yoga Classes Change Room]]>><</link>><<gtiredness>><<gwillpower>><<llstress>>
+			<<if $money gte 2200>>
+				<<link [[Take a yoga lesson (£22 1:00)|Yoga Classes Change Room]]>><</link>><<gtiredness>><<gwillpower>><<llstress>>
+			<</if>>
 			<br>
 		<<else>>
 			<<link [[Inquire about yoga lessons|Yoga Classes Inquire]]>><</link>>
@@ -132,61 +134,32 @@ Your heart beats faster as you walk away from the dance studio, and away from re
 <<link [[Leave|Barb Street]]>><</link>>
 <br>
 
-:: Dancing Lesson
-<<if $dancestudiointro is 1 and $phase is 0>><<pass 20>><</if>>
-<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
-<<if $dancestudiointro isnot 1>>
-	<<set $dancestudiointro to 1>>
-	<<npc Charlie>><<person1>>
-	You pay the receptionist who ushers you through the door to the left. You enter into a large room with wood panel floors and mirrors lining the walls. A dozen people are already inside. It's easy to pick out the instructor. Hands on hips, <<he>> stands addressing the class, explaining the importance of proper warm up exercises.
-	<br><br>
-	The door closes behind you, alerting <<him>> to your presence. <<He>> turns <<his>> emerald eyes to you and smiles. "We have a new student! Welcome." Short ginger hair crowns <<his>> freckled face. <<His>> skintight outfit shows off <<his>> toned and athletic body.
-	<<if $pronoun is "m">>
-		You can't help but notice the bulge of <<his>> penis pressing against <<his>> bottoms.
-	<<elseif $pronoun is "f">>
-		<<if $NPCList[0].breastsize gte 5>>
-			<<His>> generous breasts are held close to <<his>> torso, giving <<him>> a slim outline.
-		<<elseif $NPCList[0].breastsize gte 3>>
-			<<His>> breasts are held close to <<his>> torso, giving <<him>> a slim outline.
-		<<elseif $NPCList[0].breastsize gte 1>>
-			<<His>> small breasts are pressed flat against <<his>> torso, giving <<him>> a slim outline.
-		<<else>>
-			<<His>> flat chest gives <<him>> a slim outline.
-		<</if>>
-	<</if>>
-	<br><br>
-	If <<he>> noticed your lewd gaze, <<he>> gives no sign. You should introduce yourself, but how?
-	<br><br>
-	<<link [[Timidly|Dancing Lesson]]>><<npcincr Charlie love 20>><<set $phase to 1>><</link>><<ggglove>>
-	<br>
-	<<link [[Confidently|Dancing Lesson]]>><<set $phase to 2>><</link>>
-	<br>
-	<<link [[Flirtatiously|Dancing Lesson]]>><<npcincr Charlie love -10>><<stress -12>><<trauma -6>><<set $phase to 3>><</link>><<promiscuous1>><<lllove>><<lstress>><<ltrauma>>
-	<br>
-<<elseif $phase is 1>>
-	<<set $phase to 0>>
+:: Dance Studio Introduction
+
+<<if $phase is 1>>
 	"H-hello..." you mumble, eyes transfixed on your feet.
 	<br><br>
 	Without saying anything, the instructor walks over to you and puts a protective arm around your shoulders. <<He>> whispers, "Don't worry, I don't bite. My name's Charlie. I'll help you out of your shell." <<He>> gently escorts you over to the rest of the class before commencing the lesson.
-	<br><br>
-	<<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
-	<br>
 <<elseif $phase is 2>>
-	<<set $phase to 0>>
 	"Pleased to meet you! I can't wait to get started!"
 	<br><br>
 	The instructor responds, "Woah there, eagerness is all well and good, but too much will get your muscles strained." Despite <<his>> caution, <<he>> seems happy. "Come on over. I'm Charlie by the way. I'll be your teacher. Right then, where was I?" You head over as the lesson commences.
-	<br><br>
-	<<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
-	<br>
 <<elseif $phase is 3>>
-	<<set $phase to 0>>
 	<<promiscuity1>>"Nice outfit. Really shows off your assets." You let your eyes probe <<his>> body, letting <<him>> know exactly which assets you mean.
 	<br><br>
 	<<He>> shifts uncomfortably on the spot, as if suddenly self-conscious. <<He>> looks annoyed, "Would you like to take your place over here? My name's Charlie." <<He>> turns back to the rest of the class as you head over. The lesson soon commences.
-	<br><br>
-	<<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
-	<br>
+<</if>>
+<br><br>
+<<link [[Next|_nextPassage]]>><<set $phase to 0>><<unset _nextPassage>><<endevent>><</link>>
+<br>
+
+:: Dancing Lesson
+
+<<if $dancestudiointro is 1 and $phase is 0>><<pass 20>><</if>>
+<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
+
+<<if $dancestudiointro isnot 1>>
+	<<danceStudioIntro "Dancing Lesson">>
 <<elseif $dancestage gte 2>>
 	<<tiredness 4>><<danceskill 14>><<danceskilluse>><<wearandtear "dance">><<physique 2>>
 	The rest of the lesson passes uneventfully.
@@ -635,7 +608,7 @@ Charlie immediately recognises that something is wrong. <<He>> pulls you aside a
 
 :: Yoga Classes Inquire
 <<effects>>
-The receptionist looks at the advertisement. "Oh, that? It's the newest addition to our studio. Lessons happen every Monday, Wednesday and Friday. They can be a little more expensive than our dance lessons, but are great for flexibility." 
+The receptionist looks at the advertisement. "Oh, that? It's the newest addition to our studio. Lessons happen every Monday, Wednesday and Friday. They can be a little more expensive than our dance lessons, but are great for flexibility."
 <br><br>
 <<if playerBellyVisible()>>
 	The receptionist glances at your <<bellyDescription "pc">>. "Yoga is also a great form of prenatal exercise and has many benefits for you and your baby. Just keep in mind that if you want to participate, you better come with clothes that are easy to move in."
@@ -665,14 +638,16 @@ You enter the changing room, and think about how you would like to dress for the
 :: Yoga Classes Enter
 <<effects>>
 <<set $dancestage to 0>>
-<<if $worn.under_upper.type.includes("dance")>>
+<<if $dancestudiointro isnot 1>>
+	<<danceStudioIntro "Yoga Classes Start 2">>
+<<elseif $worn.under_upper.type.includes("dance")>>
 	In your yoga clothes, you enter the classroom. Several mats are scattered on the floor, many of them already taken by the other students. No one pays attention to you, and you choose a mat closer to the back of the class to sit down.
 	<br><br>
 	Soon, Charlie enters the classroom. <<nnpc_He "Charlie">> goes to the front, sitting on a mat facing the students. The lesson is about to start.
 	<br><br>
 	<<link [[Next|Yoga Classes Start 2]]>><</link>>
 <<else>>
-	You take off all your clothes. Feeling exposed, you take a deep breath before leaving the changing room and going to the class. Once you enter, you notice several mats scattered around the floor, many of them already taken by other students. At first no one notices you, but as you walk around more and more heads turn into your direction. Some are clearly too embarrassed to keep looking, while others let their discontent show on their faces. Most, however, look at you with clear lust in their eyes. 
+	You take off all your clothes. Feeling exposed, you take a deep breath before leaving the changing room and going to the class. Once you enter, you notice several mats scattered around the floor, many of them already taken by other students. At first no one notices you, but as you walk around more and more heads turn into your direction. Some are clearly too embarrassed to keep looking, while others let their discontent show on their faces. Most, however, look at you with clear lust in their eyes.
 	<br><br>
 	Charlie soon enters the room. Seeing you, however, <<nnpc_he "Charlie">> stops for a moment, surprised at your naked display. Still, <<nnpc_he "Charlie">> doesn't say anything. Averting <<nnpc_his "Charlie">> eyes, and with a slight blush on <<nnpc_his "Charlie">> face, <<nnpc_he "Charlie">> goes to the front of the class and sits on a mat facing the students. You also sit down, picking a mat closer to the front.
 	<br><br>
@@ -693,7 +668,7 @@ You enter the changing room, and think about how you would like to dress for the
 	<br><br>
 	A gentle hand on your shoulder nudges you back into the realm of consciousness. You groggily look around the room to see students chattering amongst themselves as they roll up their yoga mats and leave the studio.
 	<br><br>
-	"It's not unusual for one to fall asleep in shavasana," Charlie says with a smile. "But I'm afraid it's time to leave now." <<nnpc_He "Charlie">> sounds apologetic as <<nnpc_he "Charlie">> offers you a hand to help you to your feet. "You and your little one should go get some rest." <<nnpc_He "Charlie">> holds the door open for you as you leave. 
+	"It's not unusual for one to fall asleep in shavasana," Charlie says with a smile. "But I'm afraid it's time to leave now." <<nnpc_He "Charlie">> sounds apologetic as <<nnpc_he "Charlie">> offers you a hand to help you to your feet. "You and your little one should go get some rest." <<nnpc_He "Charlie">> holds the door open for you as you leave.
 	<<ltiredness>><<glove>><<tiredness -12>><<npcincr Charlie love 1>>
 	<br><br>
 	<<link [[Next|Dance Studio Changing Room]]>><<set $money -= 2200>><<if $exposed gte 2>><<clotheson>><</if>><<endevent>><</link>>
@@ -745,11 +720,11 @@ You enter the changing room, and think about how you would like to dress for the
 	<</if>>
 	<<tearful>> you struggle to your feet and make your way back to the studio. You hope you can put on a brave face.
 	<br><br>
-	
+
 	<<clotheson>>
 	<<endcombat>>
 	<<link [[Next|Yoga Classes Start 2]]>><</link>>
-	
+
 <<else>>
 	<<He>> yells out and falls to the ground. <span class="green"><<tearful>> you use the opportunity to flee the room and escape back to the studio.</span>
 	<br><br>
@@ -790,14 +765,14 @@ You enter the changing room, and think about how you would like to dress for the
 	<<neutral 1>>
 	<<maninit>>
 	<<if $speech_attitude is "meek">>
-		You feel the heat growing in your groin. You part your legs wide, giving them a full view of your <<genitals>>. "You... can do what you want..." 
+		You feel the heat growing in your groin. You part your legs wide, giving them a full view of your <<genitals>>. "You... can do what you want..."
 	<<elseif $speech_attitude is "bratty">>
 		You feel the heat growing in your groin. You smile at them. "Well... what if I am asking for it? What're you gonna do about it?"
 	<<else>>
 		You feel the heat growing in your groin. You don't say anything, but part your legs wide, giving them a full view of your <<genitals>>.
 	<</if>>
 	<br><br>
-	
+
 	That's all the incentive they need. The crowd jumps at you.
 	<<promiscuity5>>
 <</if>>
@@ -863,45 +838,7 @@ The receptionist looks you up and down. "We offer high heel classes every Tuesda
 <<set $outside to 0>><<set $location to "dance_studio">><<effects>>
 
 <<if $dancestudiointro isnot 1>>
-	<<set $dancestudiointro to 1>>
-	<<npc Charlie>><<person1>>
-	You pay the receptionist who ushers you through the door to her left. You enter into a large room with wood panel floors and mirrors lining the walls. A dozen people are already inside. It's easy to pick out the instructor. Hands on hips, <<he>> stands addressing the class, explaining the importance of proper posture when walking.
-	<br><br>
-	The door closes behind you, alerting <<him>> to your presence. <<He>> turns <<his>> emerald eyes to you and smiles. "We have a new student! Welcome." Short ginger hair crowns <<his>> freckled face. <<His>> skintight outfit shows off <<his>> toned and athletic body. <<if $pronoun is "m">>You can't help but notice the bulge of <<his>> penis pressing against <<his>> bottoms. <<elseif $pronoun is "f">><<His>> generous breasts are held close to <<his>> torso, giving <<him>> a slim outline.<</if>>
-	<br><br>
-	If <<he>> noticed your lewd gaze, <<he>> gives no sign. You should introduce yourself, but how?
-	<br><br>
-
-	<<link [[Timidly|Heel Lesson]]>><<npcincr Charlie love 20>><<set $phase to 1>><</link>><<ggglove>>
-	<br>
-	<<link [[Confidently|Heel Lesson]]>><<set $phase to 2>><</link>>
-	<br>
-	<<link [[Flirtatiously|Heel Lesson]]>><<npcincr Charlie love -10>><<stress -12>><<trauma -6>><<set $phase to 3>><</link>><<promiscuous1>><<lllove>><<lstress>><<ltrauma>>
-	<br>
-<<elseif $phase is 1>>
-	<<set $phase to 0>>
-	"H-hello..." you mumble, eyes transfixed on your feet.
-	<br><br>
-	Without saying anything, the instructor walks over to you and puts a protective arm around your shoulders. <<He>> whispers, "Don't worry, I don't bite. My name's Charlie. I'll help you out of your shell." <<He>> gently escorts you over to the rest of the class before commencing the lesson.
-	<br><br>
-	<<link [[Next|Heel Lesson]]>><<endevent>><</link>>
-	<br>
-<<elseif $phase is 2>>
-	<<set $phase to 0>>
-	"Pleased to meet you! I can't wait to get started!"
-	<br><br>
-	The instructor responds, "Woah there, eagerness is all well and good, but too much will get your muscles strained." Despite <<his>> caution, <<he>> seems happy. "Come on over. I'm Charlie by the way. I'll be your teacher. Right then, where was I?" You head over as the lesson commences.
-	<br><br>
-	<<link [[Next|Heel Lesson]]>><<endevent>><</link>>
-	<br>
-<<elseif $phase is 3>>
-	<<set $phase to 0>>
-	<<promiscuity1>>"Nice outfit. Really shows off your assets." You let your eyes probe <<his>> body, letting <<him>> know exactly which assets you mean.
-	<br><br>
-	<<He>> shifts uncomfortably on the spot, as if suddenly self-conscious. <<He>> looks annoyed, "Would you like to take your place over here? My name's Charlie." <<He>> turns back to the rest of the class as you head over. The lesson soon commences.
-	<br><br>
-	<<link [[Next|Heel Lesson]]>><<endevent>><</link>>
-	<br>
+	<<danceStudioIntro "Heel Lesson">>
 <<else>>
 	<<if $arousal gte $arousalmax>>
 		<<orgasmLocation "danceStudioHeelLesson">>
