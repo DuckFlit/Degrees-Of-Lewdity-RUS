@@ -270,6 +270,7 @@ Renderer.CanvasModels["main"] = {
 			"clit_parasite": "",
 			"arm_left": "idle",
 			"arm_right": "idle",
+			"body_type": "m",
 			// Skin & tan
 			"skin_type": "light",
 			"skin_tone": 0,
@@ -787,7 +788,7 @@ Renderer.CanvasModels["main"] = {
 		"base": {
 			srcfn(options) {
 				if (options.mannequin) return "img/body/mannequin/basenoarms.png"
-				return "img/body/basenoarms.png"
+				else return `img/body/basenoarms-${options.body_type}.png`
 			},
 			show: true,
 			filters: ["body"],
@@ -811,6 +812,7 @@ Renderer.CanvasModels["main"] = {
 						(options.breast_size - 1) +
 						(options.breasts === "cleavage" && options.breast_size >= 4 ? "_clothed" : "") + ".png"
 				} else {
+					if (options.breast_size <= 0) return "";
 					let fn = "breasts" + options.breast_size + (options.breasts === "cleavage" && options.breast_size >= 3 ? "_clothed" : "") + ".png";
 					if (fn === "breasts5_clothed.png") fn = "breasts6_clothed.png";
 					return "img/body/breasts/" + fn;
@@ -861,7 +863,7 @@ Renderer.CanvasModels["main"] = {
 				} else if (options.arm_left === "cover") {
 					return "img/body/leftarm.png"
 				} else {
-					return "img/body/leftarmidle.png"
+					return `img/body/leftarmidle-${options.body_type}.png`
 				}
 			},
 			showfn(options) {
@@ -881,7 +883,7 @@ Renderer.CanvasModels["main"] = {
 				} else if (options.arm_right === "cover") {
 					return "img/body/rightarm.png"
 				} else {
-					return "img/body/rightarmidle.png"
+					return `img/body/rightarmidle-${options.body_type}.png`
 				}
 			},
 			showfn(options) {

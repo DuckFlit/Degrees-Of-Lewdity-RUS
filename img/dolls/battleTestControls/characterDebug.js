@@ -294,7 +294,7 @@ var player = {
     },
     {
       femininity: -200,
-      factor: "Natural features"
+      factor: "Body type"
     },
     {
       femininity: -119,
@@ -328,7 +328,7 @@ var player = {
     },
     {
       femininity: -200,
-      factor: "Natural features"
+      factor: "Body type"
     },
     {
       femininity: -119,

@@ -155,7 +155,7 @@ function genderappearancecheck() {
 	addfemininityfromfactor(V.makeup.mascara ? 50 : 0, "Mascara");
 	/* Body structure */
 	setfemininitymultiplierfromgender(V.player.gender_body);
-	addfemininityfromfactor(T.femininity_multiplier * 200, "Natural features");
+	addfemininityfromfactor(T.femininity_multiplier * 200, "Body type");
 	addfemininityfromfactor(Math.trunc(((V.physique + V.physiquesize / 2) / V.physiquesize) * -100), "Toned muscles");
 	/* Behaviour */
 	setfemininitymultiplierfromgender(V.player.gender_posture);
@@ -251,7 +251,7 @@ function genderappearancecheck() {
 		if (V.worn.under_upper.exposed >= 1) {
 			/* Exposed breasts */
 			T.breast_indicator = 1;
-			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, "Exposed breasts");
+			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, (V.player.perceived_breastsize > 0 ? "Exposed breasts" : "Exposed flat chest"));
 		} else {
 			/* Breasts covered by only underwear */
 			addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 2) * 100, 0, Infinity), "Breast size visible through underwear");
@@ -323,7 +323,7 @@ function genderAppearanceHermTiebreak() {
 	// We rely on as many manually-chosen details as possible to break the tie in a way that favours the player's preference.
 
 	if (["m", "f"].includes(V.player.gender_body)) {
-		return V.player.gender_body; // break the tie with natural features, if player has masculine or feminine features.
+		return V.player.gender_body; // break the tie with body type, if player has masculine or feminine features.
 	} else if (["m", "f"].includes(V.player.gender_posture)) {
 		return V.player.gender_posture; // break the tie with gender posture, if gender posture is "m" or "f"
 	} else {
@@ -342,7 +342,7 @@ function apparentbreastsizecheck() {
 	if (clothingData("over_upper", V.worn.over_upper, "bustresize") != null) {
 		T.tempbreast += clothingData("over_upper", V.worn.over_upper, "bustresize");
 	}
-	V.player.perceived_breastsize = Math.clamp(V.breastsizemin, T.tempbreast, V.breastsizemax);
+	V.player.perceived_breastsize = Math.clamp(T.tempbreast, V.breastsizemin, V.breastsizemax);
 }
 window.apparentbreastsizecheck = apparentbreastsizecheck;
 
@@ -357,7 +357,7 @@ function apparentbottomsizecheck() {
 	if (V.worn.lower.rearresize != null) {
 		T.tempbutt += V.worn.over_lower.rearresize;
 	}
-	V.player.perceived_bottomsize = Math.clamp(V.bottomsizemin, T.tempbutt, V.bottomsizemax);
+	V.player.perceived_bottomsize = Math.clamp(T.tempbutt, V.bottomsizemin, V.bottomsizemax);
 }
 
 function exposedcheck(alwaysRun) {
