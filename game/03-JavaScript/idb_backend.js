@@ -495,9 +495,9 @@ const idb = (() => {
 		} else {
 			deleteButton.disabled = true;
 		}
-		group.appendChild(deleteButton);
 
 		row.appendChild(group);
+		row.appendChild(deleteButton);
 
 		return row;
 	}
