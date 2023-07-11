@@ -57,6 +57,7 @@
 			vaginaCum: 0,
 			anusCum: 0,
 			mouthCum: 0,
+			bodytype: 0,
 			rightArmCovering: false,
 			leftArmCovering: false,
 			angelHalo:"hidden",
@@ -132,7 +133,7 @@
 			charactersToShow: 1,
 			page: "body",
 			animations: true,
-			autoRefresh: false,
+			autoRefresh: true,
 			expand: false,
 		}>>
 	<</if>>
@@ -284,24 +285,10 @@
 <<widget "clothesTestingBodyControls">>
 	<h4>Body</h4>
 	
-	<<set _bodytypename to ["Masculine", "Androgynous", "Feminine", "Original"]>>
+	<<set _bodytypename to ["Masculine", "Androgynous", "Feminine"]>>
 	Body Type:
-	<<numberslider "$characterViewer.bodyState.bodytype" $characterViewer.bodyState.bodytype 0 3 1>>
+	<<numberslider "$characterViewer.bodyState.bodytype" $characterViewer.bodyState.bodytype 0 2 1>>
 	<br>
-	Breast Version: <<numberslider "_breastType" _breastType 0 3 1>>
-	<br>
-	Breast Cleavage: <<checkbox "$characterViewer.bodyState.cleavage" false true autocheck>>
-	<br>
-
-	<span class="gold">Breasts</span>
-	<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
-	<<numberslider "$characterViewer.bodyState.breastSize" $characterViewer.bodyState.breastSize 0 _name.length-1 1>>
-	<br>
-
-	<span class="gold">Belly Size</span>
-	<br>
-	<<numberslider "$characterViewer.bodyState.bellySize" $characterViewer.bodyState.bellySize 0 24 1>>
-	<br><br>
 
 	<span class="gold">Skin Colour</span>
 	<br>
@@ -352,6 +339,8 @@
 
 	<span class="gold">Breasts</span>
 	<<numberslider "$characterViewer.bodyState.breastSize" $characterViewer.bodyState.breastSize 0 _breastNames.length-1 1>>
+	<br>
+	Breast Cleavage: <<checkbox "$characterViewer.bodyState.cleavage" false true autocheck>>
 	<br><br>
 
 	<span class="gold">Belly Size</span>
@@ -877,6 +866,9 @@
 	<<set _modeloptions.show_face to $characterViewer.bodyState.show_face>>
 
 	/*body*/
+	<<set _modeloptions.body_type to ["m","a","f","o"][$characterViewer.bodyState.bodytype]>>
+	<<set _modeloptions.breasts to $characterViewer.bodyState.cleavage ? "cleavage" : "default">>
+	/* <<set _modeloptions.breasts to $characterViewer.clothesEquipped.under_upper isnot 0 ? "cleavage" : "default">> */
 	<<set _modeloptions.arm_left to $characterViewer.bodyState.leftArmCovering ? "cover" : "idle">>
 	<<set _modeloptions.arm_right to $characterViewer.bodyState.rightArmCovering ? "cover" : "idle">>
 	<<switch $characterViewer.bodyState.breastSize>>
@@ -890,8 +882,10 @@
 			<<set _modeloptions.breast_size to 3>>
 		<<case 3>>
 			<<set _modeloptions.breast_size to 2>>
-		<<case 0 1 2>>
+		<<case 1 2>>
 			<<set _modeloptions.breast_size to 1>>
+		<<default>>
+			<<set _modeloptions.breast_size to 0>>
 	<</switch>>
 	<<set _modeloptions.crotch_visible to $characterViewer.bodyState.penisSize !== "none">>
 	<<set _modeloptions.crotch_exposed to $characterViewer.bodyState.penisSize !== "none">>
