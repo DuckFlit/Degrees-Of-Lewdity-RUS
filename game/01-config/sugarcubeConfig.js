@@ -447,6 +447,10 @@ Config.navigation.override = function (dest) {
 				return "Garden Voyeurism Masturbate Finish";
 			case "Danube Challenge Masturbate End":
 				return "Danube Challenge Masturbate Finish";
+			case "Chalets Work One Rape":
+				return "Chalets Work One Sex";
+			case "Chalets Work One Rape Finish":
+				return "Chalets Work One Sex Finish";
 			default:
 				return false;
 		}
