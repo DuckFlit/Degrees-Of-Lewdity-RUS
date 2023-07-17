@@ -6,6 +6,7 @@
 	<<set _changingRoomGenderType to ($changingRoomGender is "girls" ? "f" : "m")>>
 	<<set _playerGenderAppearance to (_seenGender is _changingRoomGenderType ? "same" : "other")>>
 	<<set _uncomfortable to ($backgroundTraits.includes("crossdresser") and $player.gender is _changingRoomGenderType)>>
+	<<set _justChangedClothes to ["School Pool Wardrobe", "School Boy Changing Room", "School Girl Changing Room"].includes($passagePrev)>>
 	<<if $changingRoomGender is "girls">>
 		<<set _chance to 100 - maleChance()>>
 		<<set _playerGenitals to $player.vaginaExist and !$player.penisExist ? "same" : "other">>
@@ -69,7 +70,7 @@
 			<br><br>
 		<</if>>
 		<<schoolChangingRoomLinks>>
-	<<elseif !$justEntered and $changingroomstate isnot "empty">>
+	<<elseif _justChangedClothes and $changingroomstate isnot "empty">>
 		It's full of $changingRoomGender in various states of undress.
 		<br><br>
 		<<if $NudeGenderDC isnot -1>>
@@ -130,7 +131,7 @@
 				<<ind>><<link [[Apologise|School Changing Room Apologise]]>><</link>>
 			<<else>>
 				<<set $daily.school.changingRoomEntered to Time.hour>>
-				<<if $player.gender isnot $player.gender_appearance and $NudeGenderDC isnot -1>>
+				<<if $player.gender_appearance isnot _changingRoomGenderType and $NudeGenderDC isnot -1>>
 					It's full of $changingRoomGender in various states of undress who, thinking you're a <<girl>>, hastily cover up as you enter. Many look about to die from embarrassment, but some are angry and shoo you out.
 				<<else>>
 					It's full of $changingRoomGender in various states of undress who hastily cover up as you enter. Many look about to die from embarrassment, but some are angry and shoo you out.
@@ -152,7 +153,6 @@
 			<<schoolChangingRoomLinks>>
 		<</if>>
 	<</if>>
-	<<unset $justEntered>>
 <</widget>>
 
 <<widget "schoolChangingRoomLinks">>
@@ -362,4 +362,12 @@
 <<widget "schoolclothesreset">>
 	<<storeon "school pool boys" "return">>
 	<<storeon "school pool girls" "return">>
+<</widget>>
+
+<<widget "enterChangingRoomLink">>
+	<<if _args[0] is "m">>
+		<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><</link>>
+	<<else>>
+		<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><</link>>
+	<</if>>
 <</widget>>
