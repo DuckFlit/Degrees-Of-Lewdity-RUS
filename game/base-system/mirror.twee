@@ -1381,7 +1381,7 @@
 <<widget "mirrorhairdisplay">>
 	<<if _hairCategory isnot _args[0]>>
 		<<set _perPage to $showMannequins ? 14 : 100>>
-		<<set _page to 0>>
+		<<set _page to 1>>
 	<</if>>
 	<<set _hairCategory to _args[0]>>
 	<<mirrorhairOptions _args[1]>>
@@ -1395,14 +1395,12 @@
 <</widget>>
 
 <<widget "mirrorhairControls">>
-	<<set _pagereal to _page + 1>>
-	<<set _pagemaxreal to _pageMax + 1>>
 	<<if $showMannequins>>
 		<div id="hairContainerFooter">
 			<div class="tab">
-			<<if _page gt 0>>
+			<<if _page gt 1>>
 				<<button '<span class="fa-icon fa-left"></span> Previous'>>
-					<<if _page gt 0>><<set _page-->><</if>>
+					<<if _page gt 1>><<set _page-->><</if>>
 					<<mirrorhairOptions _args[0]>>
 					<<replace "#hairContainerElements">><<mirrorhairdisplayElements _hairOptions>><</replace>>
 					<<replace "#hairContainerPages">><<mirrorhairControls _args[0]>><</replace>>
@@ -1421,7 +1419,7 @@
 			</div>
 			<div class="tab">
 				<div id="buttonpage">
-					<<button '_pagereal/_pagemaxreal'>>
+					<<button '_page/_pageMax'>>
 					<</button>>
 				</div>
 			</div>
@@ -1453,10 +1451,10 @@
 	<<run setup.hairstyles[_args[0]].forEach(style => {
 		if (!V.shopClothingFilter.active || !V.shopClothingFilter.traits.length || style.type.find(type => V.shopClothingFilter.traits.includes(type))) T.hairOptions[style.name_cap] = style.variable;
 	})>>
-	<<set _pageMax to Math.floor(Object.keys(_hairOptions).length / (_perPage + 1))>>
+	<<set _pageMax to Math.ceil(Object.keys(_hairOptions).length / _perPage)>>
 
-	<<run Object.keys(clone(_hairOptions)).forEach((key, index) => {
-        if (!between(index, T.perPage * T.page, (T.perPage * (T.page + 1)) - 1)) {
+	<<run Object.keys(_hairOptions).forEach((key, index) => {
+    if (!between(index, T.perPage * (T.page - 1), (T.perPage * T.page) - 1)) {
             delete T.hairOptions[key];
         }
     })>>
