@@ -1023,6 +1023,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#c3ad91" },
 	},
 	{
+		variable: "fleshy",
+		name: "fleshy",
+		name_cap: "Fleshy",
+		csstext: "fleshy",
+		canvasfilter: { blend: "#ffddc8" },
+	},
+	{
 		variable: "grey",
 		name: "grey",
 		name_cap: "Grey",
