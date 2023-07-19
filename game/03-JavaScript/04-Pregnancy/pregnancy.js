@@ -108,12 +108,17 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 
 		if (target === "pc") {
 			const result = playerPregnancy(spermOwner, spermType, true, genital, undefined, true);
-			if (result === true) T.playerIsNowPregnant = spermOwner;
+			if (result === true) {
+				T.playerIsNowPregnant = spermOwner;
+				return true;
+			}
 		} else if (C.npc[target]) {
 			const result = namedNpcPregnancy(target, spermOwner, spermType, true);
-			if (result === true) T.npcIsNowPregnant = target;
+			if (result === true) {
+				T.npcIsNowPregnant = target;
+				return true;
+			}
 		}
-		return true;
 	}
 	return false;
 }
