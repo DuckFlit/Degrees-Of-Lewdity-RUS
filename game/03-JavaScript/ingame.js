@@ -1931,3 +1931,30 @@ function beastMaleChance(override){
 	return 50;	
 }
 window.beastMaleChance = beastMaleChance;
+
+/**
+ * Event listener for the 'beforeunload' event. Will prompt a dialog box asking the player if he wants to leave.
+ *
+ * @param {object} event 'beforeunload' event
+ * @returns {void}
+ */
+function onBrowserTabClose(event) {
+	event.preventDefault();
+	event.returnValue = 'Are you sure you want to leave?'; // the string here isn't important, it's mostly not considered by the browser.
+}
+
+/**
+ * Enable or disable the confirm dialog based on V.options.confirmDialogUponTabClose value evaluating to true or not
+ *
+ * @returns {void}
+ */
+function toggleConfirmDialogUponTabClose(){
+	if (V.options.confirmDialogUponTabClose === true) {
+		window.addEventListener('beforeunload', onBrowserTabClose);
+	}
+	else if (V.options.confirmDialogUponTabClose === false) {
+		window.removeEventListener('beforeunload', onBrowserTabClose);
+	}
+}
+
+window.toggleConfirmDialogUponTabClose = toggleConfirmDialogUponTabClose;
