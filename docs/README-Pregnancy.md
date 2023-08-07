@@ -246,6 +246,20 @@ Removes specific birth id's from the `V.babyIntro`, used when the introduction o
 
 -   `<<removeBabyIntro "pc" "Bailey" $recentBirthId>>`
 
+#### talkedAboutPregnancy(mother, whoToCheck, existingId)
+
+Returns the number of times someone has talked about a pregnancy to the mother.
+
+-   `<<if !talkedAboutPregnancy("pc","Alex")>>`
+-   `<<if talkedAboutPregnancy("pc","Alex") gte 5>>`
+
+#### setTalkedAboutPregnancy(mother, whoToIncrement, existingId)
+
+Increments then returns the number of times someone has talked about a pregnancy to the mother. This should normally only be used for current pregnancies.
+
+-   `<<setTalkedAboutPregnancy "pc" "Alex">>`
+-   `<<setTalkedAboutPregnancy "Alex" "pc">>`
+
 ## childrenStoryFunctions.js Usage
 
 ### setChildFirstWord(childId, word, playerAbsent = false)
