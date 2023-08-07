@@ -2251,15 +2251,15 @@ function masturbationeffectsArms(
 function fingersEffect(span, hymenIntact) {
 	const fragment = document.createDocumentFragment();
 	if (V.fingersInVagina === V.vaginaFingerLimit - 1) {
-		fragment.append(span("It's a tight fit.", "purple"));
 		fragment.append(" ");
+		fragment.append(span("It's a tight fit.", "purple"));
 	} else if (V.fingersInVagina === V.vaginaFingerLimit) {
 		if (hymenIntact) {
+			fragment.append(" ");
 			fragment.append(span("You can't fit any more without tearing your hymen.", "pink"));
-			fragment.append(" ");
 		} else {
-			fragment.append(span("You've reached your limit.", "pink"));
 			fragment.append(" ");
+			fragment.append(span("You've reached your limit.", "pink"));
 		}
 	}
 	return fragment;

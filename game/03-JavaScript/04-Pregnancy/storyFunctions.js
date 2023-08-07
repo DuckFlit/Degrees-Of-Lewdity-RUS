@@ -775,3 +775,69 @@ function removeBabyIntro(mother, introFor, birthId) {
 	}
 }
 DefineMacro("removeBabyIntro", removeBabyIntro);
+
+/* Returns the total times a someone has talked about someone elses pregnancy */
+function talkedAboutPregnancy(mother, whoToCheck, existingId) {
+	const talkedAbout = V.pregnancyStats.talkedAboutPregnancy;
+	let birthId;
+	let whoToCheckConverted;
+	if (whoToCheck === "pc") {
+		whoToCheckConverted = whoToCheck;
+	} else if (V.NPCNameList.includes(whoToCheck)) {
+		whoToCheckConverted = V.NPCNameList.indexOf(whoToCheck);
+	} else {
+		return 0;
+	}
+
+	if (existingId !== undefined && talkedAbout[mother + existingId] && talkedAbout[mother + existingId][whoToCheckConverted]) {
+		return talkedAbout[mother + existingId][whoToCheckConverted];
+	}
+
+	if (mother === "pc" && playerIsPregnant()) {
+		birthId = mother + getPregnancyObject().fetus[0].birthId;
+	} else if (C.npc[mother] && npcIsPregnant(mother)) {
+		birthId = mother + getPregnancyObject(mother).fetus[0].birthId;
+	}
+
+	if (birthId && talkedAbout[birthId] && talkedAbout[birthId][whoToCheckConverted]) return talkedAbout[birthId][whoToCheckConverted];
+
+	return 0;
+}
+window.talkedAboutPregnancy = talkedAboutPregnancy;
+
+/* Increments the total times a someone has talked about someone elses pregnancy, should only be used for the players current pregnancy */
+function setTalkedAboutPregnancy(mother, whoToIncrement, existingId) {
+	const talkedAbout = V.pregnancyStats.talkedAboutPregnancy;
+	let birthId;
+	let whoToIncrementConverted;
+	if (whoToIncrement === "pc") {
+		whoToIncrementConverted = whoToIncrement;
+	} else if (V.NPCNameList.includes(whoToIncrement)) {
+		whoToIncrementConverted = V.NPCNameList.indexOf(whoToIncrement);
+	} else {
+		return 0;
+	}
+
+	if (talkedAbout[mother + existingId]) {
+		birthId = mother + existingId;
+	} else if (mother === "pc") {
+		if (playerIsPregnant()) {
+			birthId = mother + getPregnancyObject().fetus[0].birthId;
+		}
+	} else if (C.npc[mother] && npcIsPregnant(mother)) {
+		birthId = mother + getPregnancyObject(mother).fetus[0].birthId;
+	} else {
+		return 0;
+	}
+
+	if (birthId) {
+		if (!talkedAbout[birthId]) talkedAbout[birthId] = {};
+		if (!talkedAbout[birthId][whoToIncrementConverted]) {
+			talkedAbout[birthId][whoToIncrementConverted] = 0;
+		}
+		talkedAbout[birthId][whoToIncrementConverted]++;
+		return talkedAbout[birthId][whoToIncrementConverted];
+	}
+	return 0;
+}
+DefineMacro("setTalkedAboutPregnancy", setTalkedAboutPregnancy);
