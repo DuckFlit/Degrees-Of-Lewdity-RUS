@@ -175,15 +175,15 @@ window.getClothingCost = getClothingCost;
 function tailorClothingCost(item, slot) {
 	let cost = 0;
 	if (setup.clothes[slot][clothesIndex(slot, item)].outfitSecondary) {
-		let upperSlot = setup.clothes[slot][clothesIndex(slot, item)].outfitSecondary[0];
-		let upperItem = setup.clothes[upperSlot].findIndex(x => x.name === setup.clothes[slot][clothesIndex(slot, item)].outfitSecondary[1]);
-		if (upperItem >= 0) cost = setup.clothes[upperSlot][upperItem].cost * V.clothesPrice * .2;
+		const upperSlot = setup.clothes[slot][clothesIndex(slot, item)].outfitSecondary[0];
+		const upperItem = setup.clothes[upperSlot].findIndex(x => x.name === setup.clothes[slot][clothesIndex(slot, item)].outfitSecondary[1]);
+		if (upperItem >= 0) cost = setup.clothes[upperSlot][upperItem].cost * V.clothesPrice * 0.2;
 	} else if (setup.clothes[slot][clothesIndex(slot, item)].outfitPrimary) {
-		cost = setup.clothes[slot][clothesIndex(slot, item)].cost * V.clothesPrice * .8;
+		cost = setup.clothes[slot][clothesIndex(slot, item)].cost * V.clothesPrice * 0.8;
 	} else {
 		cost = setup.clothes[slot][clothesIndex(slot, item)].cost * V.clothesPrice;
 	}
-	
+
 	if (
 		setup.clothes.under_lower.findIndex(x => x.name === item.name && x.modder === item.modder) >= 0 ||
 		setup.clothes.under_upper.findIndex(x => x.name === item.name && x.modder === item.modder) >= 0
@@ -340,7 +340,7 @@ function getVisibleClothesList() {
 	if (V.worn.over_lower.exposed >= 2 || V.overlowerwetstage >= 3) visibleClothes.push(V.worn.lower);
 	if (V.worn.upper.exposed >= 2 || V.upperwetstage >= 3) visibleClothes.push(V.worn.under_upper);
 	if (V.worn.lower.exposed >= 2 || V.lowerwetstage >= 3) visibleClothes.push(V.worn.under_lower);
-	if (V.worn.under_lower.exposed >= 2 || V.underlowerwetstage >= 3) visibleClothes.push(V.worn.genitals);
+	if (V.worn.under_lower.exposed >= 1 || V.underlowerwetstage >= 3) visibleClothes.push(V.worn.genitals);
 	return visibleClothes;
 }
 window.getVisibleClothesList = getVisibleClothesList;

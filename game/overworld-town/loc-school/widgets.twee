@@ -2576,6 +2576,10 @@
 <<widget "schoolpoolexposed">>
 	<<if $schoolstate is "fifth" and $swimnudecounter gte 1>>
 		You step into the pool room. <<covered>>
+		<<schoolpoolmasoncheck>>
+		<<if _masonCanUnlock>>
+			<<include "Mason Chastity Prompt">>
+		<</if>>
 		<br><br>
 	<<else>>
 		<<npc Mason>><<generatey2>><<generatey3>>You take a deep breath, and walk into the pool room with your <<lewdness>> on display.
@@ -2605,10 +2609,34 @@
 		Mason refuses to look at you. <<Hes>> blushing. "Get back in the changing room. P-please."
 		<br><br>
 	<</if>>
-	<<maleicon>><<link [[Boy's changing room|School Boy Changing Room]]>><<endevent>><</link>>
-	<br>
-	<<femaleicon>><<link [[Girl's changing room|School Girl Changing Room]]>><<endevent>><</link>>
-	<br>
+	<<if !_masonCanUnlock or $schoolstate isnot "fifth">>
+		<<maleicon>><<link [[Boy's changing room|School Boy Changing Room]]>><<endevent>><</link>>
+		<br>
+		<<femaleicon>><<link [[Girl's changing room|School Girl Changing Room]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "schoolpoolmasoncheck">>
+	<<set _anyBound to $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
+	<<if _anyBound>>
+		Mason instantly notices your bound <<boundBodyParts>>. 
+		<<print [
+			`"It wouldn't be safe to let you swim like that."`,
+			`"T-that's a little too much."`,
+			`"Well... obviously it wouldn't be safe to let you swim like that."`,
+			`"I can't let you swim like that."`
+		].random()>>
+		<br><br>
+		<<He>> moves behind you and <span class="green">you feel your limbs fall free.</span><<unbind>>
+	<</if>>
+	<<if !C.npc.Mason.chastityKeyCarried and playerChastity() and $worn.genitals.origin is "Winter" and (C.npc.Mason.love gte 5 or C.npc.Mason.lust gte 10)
+		and getVisibleClothesList().find(o => o === V.worn.genitals)>>
+		<<if _anyBound>><<He>>
+		<<else>>Mason<</if>> cannot help but notice and stare at the $worn.genitals.name.
+		<<He>> stares hard enough that it briefly becomes uncomfortable before <<he>> catches <<himself>> and turns away with a blush.
+		<<set C.npc.Mason.chastityKeyCarried to 1>><<set $daily.masonChastityRemovalDeclined to 1>>
+	<</if>>
 <</widget>>
 
 :: Lesson Effects Widget [widget]
