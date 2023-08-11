@@ -19,7 +19,7 @@ const ZIndices = {
 	lashes: 35,
 	mouth: 40,
 	armsidle_l: 30,
-	armsidle_r: 30,
+	armsidle_r: 93,
 	handsidle: 31.5,
 	under_upper_arms_r: 96,
 	under_upper_arms_l: 32,
