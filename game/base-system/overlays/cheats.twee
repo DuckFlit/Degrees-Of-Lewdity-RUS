@@ -2160,24 +2160,26 @@
 
 	<<if $parasitepregdisable is "f" && ($sexStats.anus.pregnancy.type is "parasite" or $sexStats.anus.pregnancy.type is null)>>
 		<div id="cheatsImpregOptions-anus"><<cheatsImpregOptions "anus">></div>
+		<br>
 	<<elseif !($sexStats.anus.pregnancy.type is "parasite" or $sexStats.anus.pregnancy.type is null)>>
 		You're currently pregnant with "<<print $sexStats.anus.pregnancy.type>>" children and can't access these settings.
-		<br>
+		<br><br>
 	<<else>>
-		You need to enable anal pregnancy in the settings to access these settings.
-		<br>
+		You need to enable parasite pregnancy in the settings to access these settings.
+		<br><br>
 	<</if>>
-	<br>
-	<<if $parasitepregdisable is "f" && ($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
+
+	<<if !$player.vaginaExist>>
+	<<elseif $parasitepregdisable is "f" && ($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
 		<div id="cheatsImpregOptions-vagina"><<cheatsImpregOptions "vagina">></div>
+		<br>
 	<<elseif !($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
 		You're currently pregnant with "<<print $sexStats.vagina.pregnancy.type>>" children and can't access these settings.
-		<br>
+		<br><br>
 	<<else>>
-		You need to enable anal pregnancy in the settings to access these settings.
-		<br>
+		You need to enable parasite pregnancy in the settings to access these settings.
+		<br><br>
 	<</if>>
-	<br>
 
 	<<if ($playerPregnancyBeastDisable is "f" or $playerPregnancyHumanDisable is "f")>>
 		<span class="gold">Pregnancy Cheats</span>
@@ -2200,8 +2202,10 @@
 			<<link "tentacle">><<impregnateParasite "tentacle" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "lurker">><<impregnateParasite "lurker" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "wasp">><<impregnateParasite "wasp" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "bee">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "squid">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "vine">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "slug">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 			<br>
 			<<if $_pregnancy.motherStatus lt 2>>
 				Get Pregnant with a Hermaphrodite |
@@ -2213,8 +2217,10 @@
 				<<link "tentacle">><<impregnateParasite "tentacle" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "lurker">><<impregnateParasite "lurker" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "wasp">><<impregnateParasite "wasp" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "bee">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "squid">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "vine">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "slug">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 			<<else>>
 				Can only have one Hermaphrodite at a time.
 			<</if>>
@@ -2260,7 +2266,7 @@
 	<<set _elegible to ["Avery", "Eden", "Harper", "Kylar", "Morgan", "Robin", "Whitney", "Black Wolf", "Alex", "Wren", "Sydney"]>>
 	<<set _impregnatableNPC to []>>
 	<<set _impregnatorNPC to []>>
-	<<set _pregnantNPC to []>>
+	<<set _pregnantNPC to {}>>
 	<<for _pregEnabled range $NPCName.filter(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
 		<<if playerPregnancyPossibleWith(_pregEnabled)>>
 			<<set _impregnatorNPC.push($NPCName.indexOf(_pregEnabled))>>
@@ -2446,7 +2452,7 @@
 		<br><br>
 	<</if>>
 	<<if $player.penisExist and _impregnatableNPC.length>>
-		Fertile NPCs:
+		<span class="gold">Fertile NPCs:</span>
 		<br>
 		<<set _fertileNPC to 0>>
 		<<for _pregEnabled range _impregnatableNPC>>
@@ -2484,46 +2490,80 @@
 		You can't impregnate any NPC<<if !$player.penisExist>> since you have no penis<</if>>.
 	<</if>>
 	<br>
+
 	<<for _pregEnabled range $NPCName>> /* Checks for any pregnant named NPC. Only elegible can be impregated by cheats, but maybe other NNPC are impregnated in game */
-		<<if npcIsPregnant(_pregEnabled.nam) and _pregEnabled.pregnancy.type != "parasite">>
-			<<set _pregnantNPC.push($NPCName.indexOf(_pregEnabled))>>
+		<<if npcIsPregnant(_pregEnabled.nam) and _pregEnabled.pregnancy.type isnot "parasite">>
+			<<set _pregnantNPC[_pregEnabled.nam] to $NPCName.indexOf(_pregEnabled)>>
 		<</if>>
 	<</for>>
-	<<if _pregnantNPC.length>>
-		Pregnant NPCs:
+	<<run console.log(_pregnantNPC)>>
+
+	<<if Object.keys(_pregnantNPC).length>>
+		<span class="gold">Pregnant NPCs:</span>
 		<br>
-		<<for _actress range _pregnantNPC>>
-			<<set _pregnancyNPC to $NPCName[_actress].pregnancy>>
-			<<print $NPCName[_actress].nam>>: 
-			<<capture _actress _pregnancyNPC>>
-			<<link [[1st trimester|$passage]]>>
-				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .05>>
-			<</link>> -
-			<<link [[2nd trimester|$passage]]>>
-				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .35>>
-			<</link>> -
-			<<link [[3rd trimester|$passage]]>>
-				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .7>>
-			<</link>> -
-			<<link [[end of 3rd trimester|$passage]]>>
-				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .99>>
-			<</link>> -
-			<<link [[clear pregnancy|$passage]]>>
-				<<set _pregnancyNPC.type to null>>
-				<<set _pregnancyNPC.fetus to []>>
-				<<set _pregnancyNPC.waterBreaking to false>>
-				<<set _pregnancyNPC.timer to null>>
-				<<set _pregnancyNPC.timerEnd to null>>
-				<<set _pregnancyNPC.npcAwareOf to null>>
-				<<set _pregnancyNPC.pcAwareOf to null>>
-				<<set _pregnancyNPC.potentialFathers to []>>
-				<<set _pregnancyNPC.sperm to []>>
-				<<set _pregnancyNPC.cicleDay to 1>>
-			<</link>>
-			<</capture>>
-			<br>
-		<</for>>
+		<<listbox "_pregnantNPCId" autoselect>>
+			<<optionsfrom _pregnantNPC>>
+		<</listbox>>
+		<br><br>
+		<div id="cheatPregnancyNPC">
+			<<cheatPregnancyNPC _pregnantNPCId>>
+		</div>
+		<<cheatPregnancyNPCReset>>
 	<</if>>
+<</widget>>
+
+<<widget "cheatPregnancyNPC">>
+	<<set _pregnancyNPC to $NPCName[_args[0]].pregnancy>>
+	<<set $_fatherName to pregnancyNameCorrection(_pregnancyNPC.fetus[0].father)>>
+	Pregnant with <<print _pregnancyNPC.type>>'s from  <<print $_fatherName === "yourself" ? "you" : $_fatherName>>.
 	<br>
+	<<link "<<">>
+		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer - _pregnancyNPC.timerEnd * 0.05, 0, _pregnancyNPC.timerEnd)>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> |
+	<<link "<">>
+		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer - _pregnancyNPC.timerEnd * 0.01, 0, _pregnancyNPC.timerEnd)>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> |
+	Pregnancy progress: <span id="cheatNPCPregnancyProgress"><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%</span>
+	| <<link ">">>
+		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer + _pregnancyNPC.timerEnd * 0.01, 0, _pregnancyNPC.timerEnd)>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>>
+	| <<link ">>">>
+		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer + _pregnancyNPC.timerEnd * 0.05, 0, _pregnancyNPC.timerEnd)>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>>
 	<br>
+
+	<<link "1st trimester">>
+		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .05>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> -
+	<<link "2nd trimester">>
+		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .35>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> -
+	<<link "3rd trimester">>
+		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .7>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> -
+	<<link "end of pregnancy">>
+		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>>
+	<br><br>
+
+	<<link [[clear pregnancy|$passage]]>>
+		<<set _pregnancyNPC.type to null>>
+		<<set _pregnancyNPC.fetus to []>>
+		<<set _pregnancyNPC.waterBreaking to false>>
+		<<set _pregnancyNPC.timer to null>>
+		<<set _pregnancyNPC.timerEnd to null>>
+		<<set _pregnancyNPC.npcAwareOf to null>>
+		<<set _pregnancyNPC.pcAwareOf to null>>
+		<<set _pregnancyNPC.potentialFathers to []>>
+		<<set _pregnancyNPC.sperm to []>>
+		<<set _pregnancyNPC.cicleDay to 1>>
+	<</link>>
 <</widget>>

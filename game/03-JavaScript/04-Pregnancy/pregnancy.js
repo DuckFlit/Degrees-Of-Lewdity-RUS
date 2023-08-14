@@ -566,7 +566,11 @@ function randomPregnancyProgress() {
 					npcDecompressed = npcDecompressor(npc.npc);
 				} catch (e) {
 					console.error("randomPregnancyProgress", e);
-					Errors.report("randomPregnancyProgress - Compressed NPC '" + npcKey + "' cannot be decompressed for pregnancy compatibility check. Please export your save if reporting.", e
+					Errors.report(
+						"randomPregnancyProgress - Compressed NPC '" +
+							npcKey +
+							"' cannot be decompressed for pregnancy compatibility check. Please export your save if reporting.",
+						e
 					);
 				}
 				const [birthLocation, location] = defaultBirthLocations(npc.pregnancy.type);
@@ -996,8 +1000,7 @@ function wearingCondom(npcNumber) {
 window.wearingCondom = wearingCondom;
 
 function makeAwareOfDetails() {
-	let pregnancy;
-	pregnancy = getPregnancyObject()
+	const pregnancy = getPregnancyObject();
 	pregnancy.awareOfDetails = true;
 	pregnancy.potentialFathers = pregnancy.potentialFathers.filter(s => s.type === pregnancy.fetus[0].type);
 }
