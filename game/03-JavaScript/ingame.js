@@ -393,6 +393,13 @@ function loveInterestFunction() {
 }
 DefineMacro("loveInterestFunction", loveInterestFunction);
 
+function cheatPregnancyNPCReset() {
+	jQuery("#customOverlayContent").on("change", "#listbox--pregnantnpcid", function (e) {
+		Wikifier.wikifyEval("<<replace #cheatPregnancyNPC>><<cheatPregnancyNPC _pregnantNPCId>><</replace>>");
+	});
+}
+DefineMacro("cheatPregnancyNPCReset", cheatPregnancyNPCReset);
+
 /**
  * Checks if x is equal or higher than min and lower or equal to max
  *

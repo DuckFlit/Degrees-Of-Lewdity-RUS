@@ -13,6 +13,8 @@ Pregnancy is split into different sections of JavaScript
 Please take these into consideration before changing any of the code.
 
 -   When referring to player character in the code, the string `"pc"` should be used in a similar way that `"Robin"` could be used for named NPCs. These are case sensitive.
+-   Search this doc for `Requires update to add new species` when looking to add a new pregnancy species.
+-   Search this doc for `Requires update to add new locations` when looking to add a place for children to go.
 
 ## storyFunctions.js Usage
 
@@ -339,3 +341,113 @@ Will set the divine transformation variable of that will be set for human babies
 Returns a baby object in the expected format, using the many inputs.
 
 ### Pregnancy Generator
+
+Requires update to add new species. The main functions that generates the children objects, one function per species type. This configures the setup of each child, including parasites and how many area created at one time.
+
+Current usage is in the following function, and required to be modified to add new species:
+
+-   `DefineMacro("playerPregnancy", playerPregnancy);` - to specifically get the player pregnant. Will need to be updated when a new species is added.
+-   `DefineMacro("namedNpcPregnancy", namedNpcPregnancy);` - to specifically get a named npc pregnant. Will need to be updated when a new species is added.
+-   `DefineMacro("impregnateParasite", impregnateParasite);` - to impregnate the player with a parasite pregnancy.
+-   Within `<<widget "orgasm">>` - Runs specific code to get random npc's pregnant. Will need to be updated when a new species is added.
+-   Within `<<widget "setupFeats">>` - Used to run `<<earnFeat "Diversity of Life">>`.
+
+## pregnancy.js Usage
+
+For all these function, they do not apply to parasite pregnancies.
+
+### Generic Functions
+
+#### generateBabyName(name, gender, childId)
+
+Used to automatically generate a name for children when not provided and prevents invalid names from being used. Includes a random mix of masculine and feminine names.
+
+#### spermObjectToArray(spermObject = [], player, disableRng)
+
+Requires update to add new species. Handles several specific purposes. It converts the sperm into a specific format that is to be used by the pregnancy functions. Manipulates the data when rng manipulation is required. Ensures that specific content toggles are preventing/allowing each potential pregnancy.
+
+#### fetishPregnancy({ genital = "vagina", target = null, spermOwner = null, spermType = null, rngModifier = 100, quantity = 1, forcePregnancy = false })
+
+Determines if a fetish pregnancy can occur and then attempts to impregnate.
+
+#### defaultBirthLocations(type, birthLocation, location)
+
+Requires update to add new species. Requires update to add new locations. Provides default birth and location values for children, specifically when they are not provided.
+
+#### giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
+
+Requires update to add new species. Requires update to add new locations. Moves children from `pregnancy` specific objects to `V.children` as well as updating them with details such as when they were born and other statistics.
+
+#### recordSperm({ genital = "vagina", target = null, spermOwner = null, spermType = null, daysTillRemovalOverride = null, rngModifier = 100, rngType, quantity = 1 })
+
+Is the starting points for getting someone pregnant, will either record the sperm if `realistic` mode is enabled, or call `fetishPregnancy` if it is not.
+
+#### updateRecordedSperm(genital, target, period = 1)
+
+Manages the decaying of sperm, as well as preventing washable sperm from being washed away after a specific time.
+
+#### washRecordedSperm(genital, target)
+
+Removes washable sperm from the records of the target.
+
+#### playerCanBreedWith(npc)
+
+#### pregnancyCompatible(NPC)
+
+#### playerPregnancyPossibleWith(NPC)
+
+#### NPCPregnancyPossibleWithPlayer(NPC)
+
+#### wearingCondom(npcNumber)
+
+#### makeAwareOfDetails()
+
+### Player specific pregnancy function
+
+#### playerPregnancyAttempt(baseMulti = 1, genital = "vagina")
+
+Determines if a realistic pregnancy can occur to the player and then attempts to impregnate.
+
+#### playerPregnancy(npc, npcType, fatherKnown = false, genital = "vagina", trackedNPCs, awareOf = false)
+
+Requires update to add new species. Runs the relevant `Pregnancy Generator` and if a valid result occur, sets up the player's pregnancy.
+
+#### pregnancyProgress(genital = "vagina")
+
+Requires update to add new species. Progresses the players pregnancy and enabling specific effects if applicable. At the end of the pregnancy, may increase the players breast size and start lactation.
+
+#### playerEndWaterProgress()
+
+At the end of the players pregnancy, runs a countdown timer till the `Water's broken` message is shown to the player and when the player can give birth.
+
+#### playerEndWaterBreaking()
+
+Disabled the `Water's broken` message and effects. Used only when the player is about to give birth to their children and the player can name them.
+
+#### endPlayerPregnancy(birthLocation, location)
+
+Requires update to add new species. Ends the players pregnancy and put's their menstruation cycle into recovery.
+
+### NPC specific pregnancy function
+
+#### npcPregnancyCycle()
+
+Requires update to add new species. Requires update to add new locations. Manages both the named npc's menstruation cycle and pregnancy progress.
+
+At the end of the pregnancy, if the player's hasn't visited the named npc in question, automatically ends the pregnancy and moves the children to the relevant location. I this situation, may also be used to set variables to track the fact the player missed the pregnancy.
+
+#### namedNpcPregnancyAttempt(npcName)
+
+Determines if a realistic pregnancy can occur to the named npc and then attempts to impregnate.
+
+#### namedNpcPregnancy(mother, father, fatherSpecies, fatherKnown = false, trackedNPCs, awareOf = false)
+
+Requires update to add new species. Runs the relevant `Pregnancy Generator` and if a valid result occur, sets up the named npc's pregnancy.
+
+#### endNpcPregnancy(npcName, birthLocation, location)
+
+Ends the named npc's pregnancy.
+
+#### randomPregnancyProgress()
+
+Requires update to add new species. Progresses random npc pregnancies as well as ending them.
