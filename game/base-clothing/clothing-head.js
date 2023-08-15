@@ -265,6 +265,7 @@ function initHead() {
 			word: "a",
 			plural: 0,
 			mask_img: 1,
+			mask_img_ponytail: 1,
 			colour: 0,
 			colour_options: [],
 			colour_combat: 0,

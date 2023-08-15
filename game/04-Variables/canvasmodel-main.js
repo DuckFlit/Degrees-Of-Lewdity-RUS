@@ -300,12 +300,14 @@ Renderer.CanvasModels["main"] = {
 			"hair_fringe_type": "default",
 			"hair_fringe_length": "short",
 			"brows_colour": "",
+			"brows_position": "front",
 			"pbhair_colour": "",
 			"pbhair_level": 0,
 			"pbhair_strip": 0,
 			"pbhair_balls": 0,
 			// Face
 			"facestyle": "default",
+			"ears_position": "back",
 			"freckles": false,
 			"trauma": false,
 			"blink": true,
@@ -481,6 +483,7 @@ Renderer.CanvasModels["main"] = {
 			"genitals_chastity": false, // generated option
 			"upper_tucked": false,
 			"hood_down": false,
+			"acc_under_boob": false,
 			"head_mask_src": "", // generated option
 			"belly_mask_src": "", // generated option
 			"blink_animation": "", // generated option
@@ -638,7 +641,7 @@ Renderer.CanvasModels["main"] = {
 			options.filters.mascara = Renderer.emptyLayerFilter();
 		}
 		if (options.condom_colour) options.filters.condom = lookupColour(setup.colours.condom_map, options.condom_colour, "condom", "condom_custom", "condom");
-		
+
 		// Clothing filters and options
 		for (let slot of setup.clothes_all_slots) {
 			let index = options["worn_" + slot];
@@ -1003,6 +1006,16 @@ Renderer.CanvasModels["main"] = {
 			filters: ["body"],
 			z: ZIndices.freckles
 		},
+		"ears": {
+			srcfn(options) {
+				return 'img/face/' + options.facestyle + '/ears.png'
+			},
+			showfn(options) {
+				return options.show_face && options.ears_position === "front";
+			},
+			filters: ["body"],
+			z: ZIndices.ears
+		},
 		"eyes": {
 			srcfn(options) {
 				return 'img/face/' + options.facestyle + '/eyes.png'
@@ -1093,6 +1106,13 @@ Renderer.CanvasModels["main"] = {
 		"brows": {
 			srcfn(options) {
 				return 'img/face/' + options.facestyle + '/brow' + options.brows + '.png'
+			},
+			zfn(options) {
+				if (options.brows_position === "back") {
+					return ZIndices.backbrow
+				} else {
+					return ZIndices.brow
+				}
 			},
 			showfn(options) {
 				return options.show_face && options.brows !== "none"
@@ -1396,7 +1416,7 @@ Renderer.CanvasModels["main"] = {
 					return ZIndices.underParasite
 				}
 			},
-			animation: "idle"		
+			animation: "idle"
 		},
 		/***
 		 *    ████████ ███████ ███████
@@ -2004,7 +2024,7 @@ Renderer.CanvasModels["main"] = {
 				return `img/transformations/bird/pubes/${options.bird_pubes_type}.png`;
 			},
 			showfn(options) {
-				return options.show_tf 
+				return options.show_tf
 				&& isPartEnabled(options.bird_pubes_type)
 				&& !options.belly_hides_under_lower;
 			},
@@ -2013,13 +2033,13 @@ Renderer.CanvasModels["main"] = {
 			animation: "idle"
 		},
 		/***
-		 *    ███████  ██████  ██   ██ 
-		 *    ██      ██    ██  ██ ██  
-		 *    █████   ██    ██   ███   
-		 *    ██      ██    ██  ██ ██  
-		 *    ██       ██████  ██   ██ 
-		 *                             
-		 *                             
+		 *    ███████  ██████  ██   ██
+		 *    ██      ██    ██  ██ ██
+		 *    █████   ██    ██   ███
+		 *    ██      ██    ██  ██ ██
+		 *    ██       ██████  ██   ██
+		 *
+		 *
 		 */
 		"fox_tail": {
 			srcfn(options) {
@@ -2289,8 +2309,8 @@ Renderer.CanvasModels["main"] = {
 		 *    ██   ██ ██████  ██ ██████  ███████
 		 *    ██   ██ ██   ██ ██ ██           ██
 		 *    ██████  ██   ██ ██ ██      ███████
-		 * 
-		 * 
+		 *
+		 *
 		 */
 
 		"drip_vaginal": {
@@ -2482,12 +2502,16 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"upper_breasts": genlayer_clothing_breasts("upper", {
 			zfn(options) {
-				return options.zupper
-			}
+				if (options.acc_under_boob) {
+					return ZIndices.upper + 1;
+				}else {
+					return ZIndices.upper;
+				}
+		}
 		}),
 		"upper_acc": genlayer_clothing_accessory("upper", {
 			zfn(options) {
-				return options.zupper
+				return ZIndices.upper;
 			}
 		}),
 		"upper_breasts_acc": genlayer_clothing_breasts_acc("upper", {
@@ -3392,7 +3416,7 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 				&& options.show_clothes
 				&& options.worn_upper_setup.pregType != "min"
 				&& options["worn_" + slot] > 0
-				&& options["worn_" + slot + "_setup"].accessory === 1				
+				&& options["worn_" + slot + "_setup"].accessory === 1
 			} else {
 			return options.belly > 7
 				&& options.show_clothes

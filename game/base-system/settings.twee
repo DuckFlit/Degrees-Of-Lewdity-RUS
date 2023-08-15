@@ -272,6 +272,7 @@
 	<div @class="_selectedSettings is 'game' ? 'gold buttonStartSelected' : 'buttonStart'" >
 		<<button "Game Settings">>
 			<<set _selectedSettings to "game">>
+			<<set _subsection to "human">>
 			<<replace #settingsOptions>><<settingsOptions>><</replace>>
 			<<replace #settingsExit>><<settingsExit>><</replace>>
 			<<displaySettings "gameSettings">>
@@ -775,34 +776,34 @@
 			</div>
 
 			<div class="settingsToggleItem">
+				<<if $passage is "Start">>
+				<span class="gold">Generic NPC Genders</span>
+					<<numberslider "_malechance" `_malechance is undefined ? $malechance : _malechance` 0 100 25>>
+					<<run settingsNpcGenders()>>
+					<span id="humanSplitBy"><<humanSplitBy>></span>
+				<<else>>
+					<<npcAttractionSettings>>
+				<</if>>
+			</div>
+
+			<div class="settingsToggleItem">
+				<<if $passage is "Start">>
+					<span class="gold">Beast Genders</span>
+					<<numberslider "_beastmalechance" `_beastmalechance is undefined ? $beastmalechance : _beastmalechance` 0 100 25>>
+					<<run settingsBeastGenders()>>
+					<span id="beastSplitBy"><<beastSplitBy>></span>
+				<<else>>
+					<<beastAttractionSettings>>
+				<</if>>
+			</div>
+
+			<div class="settingsToggleItem">
 				<span class="gold">Named NPC Genders</span>
 				<br>
 				<<if _namedNpcPreset is undefined>><<set _namedNpcPreset to "namedNpcDefaultGender">><</if>>
 				<label>All Male <<radiobutton "_namedNpcPreset" "namedNpcAllMaleGender" autocheck>></label> |
 				<label><<print $passage is "Start" ? "Random Genders" : "Current Genders">> <<radiobutton "_namedNpcPreset" "namedNpcDefaultGender" autocheck>></label> |
 				<label>All Female <<radiobutton "_namedNpcPreset" "namedNpcAllFemaleGender" autocheck>></label>
-			</div>
-
-			<div class="settingsToggleItem">
-				<span class="gold">Generic NPC Genders</span>
-				<<if $passage is "Start">>
-					<<numberslider "_malechance" `_malechance is undefined ? $malechance : _malechance` 0 100 25>>
-					<<run settingsNpcGenders()>>
-					<span id="humanSplitBy"><<humanSplitBy>></span>
-				<<else>>
-					<<genericGenders>>
-				<</if>>
-			</div>
-
-			<div class="settingsToggleItem">
-				<span class="gold">Beast Genders</span>
-				<<if $passage is "Start">>
-					<<numberslider "_beastmalechance" `_beastmalechance is undefined ? $beastmalechance : _beastmalechance` 0 100 25>>
-					<<run settingsBeastGenders()>>
-					<span id="beastSplitBy"><<beastSplitBy>></span>
-				<<else>>
-					<<beastGenders>>
-				<</if>>
 			</div>
 
 			<div class="settingsToggleItem">
@@ -1311,7 +1312,7 @@
 				</label>
 			</div>
 
-			<div class="settingsToggleItem">
+			<div class="settingsToggleItemWide">
 				<span class="gold">Randomise:</span><br>
 
 				<<link "Gameplay">><<presets "randomize" "gameSettings" `randomizeSettings('gameplay')`>><</link>>
@@ -1390,11 +1391,6 @@
 		<<numberslider "$malechance" $malechance 0 100 1>>
 		<<run settingsGenericGenders("NPCs")>>
 	</div>
-	<<run $(() => { $('.maleChance input').on('input change', e => {
-		let value = parseInt(e.currentTarget.value);
-		V.maleChanceMale = value;
-		V.maleChanceFemale = value;
-	}).trigger('change') })>>
 <</widget>>
 
 <<widget "beastGenders">>
@@ -1402,11 +1398,6 @@
 		<<numberslider "$beastmalechance" $beastmalechance 0 100 1>>
 		<<run settingsGenericGenders("beasts")>>
 	</div>
-	<<run $(() => { $('.beastmalechance input').on('input change', e => {
-		let value = parseInt(e.currentTarget.value);
-		V.beastMaleChanceMale = value;
-		V.beastMaleChanceFemale = value;
-	}).trigger('change') })>>
 <</widget>>
 
 <<widget "monsterSettings">>
@@ -1420,6 +1411,28 @@
 	</label>
 <</widget>>
 
+<<widget "npcAttractionSettings">>
+	<div id="simpleGenders" @class="(V.maleChanceSplit === 't' ? ' hidden' : '')">
+		<span class="gold">Generic NPC Genders</span>
+		<<genericGenders>>
+	</div>
+	<div id="splitGenders" @class="(V.maleChanceSplit === 'f' ? ' hidden' : '')">
+		<<maleChanceSplitControls>>
+	</div>
+	<span id="humanSplitByFull"><<humanSplitByFull>></span>
+<</widget>>
+
+<<widget "beastAttractionSettings">>
+	<div id="simpleBeastGenders" @class="(V.beastMaleChanceSplit === 't' ? ' hidden' : '')">
+		<span class="gold">Beast Genders</span>
+		<<beastGenders>>
+	</div>
+	<div id="splitBeastGenders" @class="(V.beastMaleChanceSplit === 'f' ? ' hidden' : '')">
+		<<beastMaleChanceSplitControls>>
+	</div>
+	<span id="beastSplitByFull"><<beastSplitByFull>></span>
+<</widget>>
+
 <<widget "humanSettings">>
 	<div class="solidBorderContainer settings-container">
 		<div class="settingsGrid">
@@ -1427,14 +1440,7 @@
 				NPC Genders
 			</div>
 			<div class="settingsToggleItem">
-				<div id="simpleGenders" @class="(V.maleChanceSplit === 't' ? ' hidden' : '')">
-					<span class="gold">Generic NPCs</span>
-					<<genericGenders>>
-				</div>
-				<div id="splitGenders" @class="(V.maleChanceSplit === 'f' ? ' hidden' : '')">
-					<<maleChanceSplitControls>>
-				</div>
-				<span id="humanSplitByFull"><<humanSplitByFull>></span>
+				<<npcAttractionSettings>>
 			</div>
 			<div class="settingsToggleItem">
 				<div class="numberslider-inline malevictimchance">
@@ -1530,14 +1536,7 @@
 				Beast Preferences
 			</div>
 			<div class="settingsToggleItem">
-				<div id="simpleBeastGenders" @class="(V.beastMaleChanceSplit === 't' ? ' hidden' : '')">
-					<span class="gold">Beast Genders</span>
-					<<beastGenders>>
-				</div>
-				<div id="splitBeastGenders" @class="(V.beastMaleChanceSplit === 'f' ? ' hidden' : '')">
-					<<beastMaleChanceSplitControls>>
-				</div>
-				<span id="beastSplitByFull"><<beastSplitByFull>></span>
+				<<beastAttractionSettings>>
 			</div>
 			<div class="settingsToggleItem">
 				<<monsterSettings>>
@@ -2048,7 +2047,7 @@
 		</div>
 
 		<div class="settingsToggleItem">
-			<span class="gold">Minimum breast size:</span> /*<mouse class="tooltip linkBlue">(?)<span>Breasts already below this size won't automatically grow.</span></mouse>*/
+			<span class="gold">Minimum breast size:</span> <mouse class="tooltip linkBlue">(?)<span>Breasts already below this size won't automatically grow.</span></mouse>
 			<br>
 			<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert"]>>
 			<<for _i to 0; _i lt _name.length; _i++>>
@@ -2060,7 +2059,7 @@
 		</div>
 
 		<div class="settingsToggleItem">
-			<span class="gold">Maximum breast size:</span> /*<mouse class="tooltip linkBlue">(?)<span>Breasts already above this size won't automatically shrink. Your breasts will grow regardless of gender. Males and those with high purity experience slower growth. Surgery, pills and parasites can influence growth in both directions. Having breasts played with and hosting internal parasites both increase growth.</span></mouse>*/
+			<span class="gold">Maximum breast size:</span> <mouse class="tooltip linkBlue">(?)<span>Breasts already above this size won't automatically shrink.</span></mouse>
 			<br>
 			<<set _name to ["Flat", "Budding", "Tiny", "Small", "Pert", "Modest", "Full", "Large", "Ample", "Massive", "Huge", "Gigantic", "Enormous"]>>
 			<<for _i to 0; _i lt _name.length; _i++>>
@@ -2072,7 +2071,7 @@
 		</div>
 
 		<div class="settingsToggleItem">
-			<span class="gold">Minimum ass size:</span> /*<mouse class="tooltip linkBlue">(?)<span>Bottoms already below this size won't automatically grow.</span></mouse>*/
+			<span class="gold">Minimum ass size:</span> <mouse class="tooltip linkBlue">(?)<span>Bottoms already below this size won't automatically grow.</span></mouse>
 			<br>
 			<<set _name to ["Slender", "Slim", "Modest", "Cushioned"]>>
 			<<for _i to 0; _i lt _name.length; _i++>>
@@ -2084,7 +2083,7 @@
 		</div>
 
 		<div class="settingsToggleItem">
-			<span class="gold">Maximum ass size:</span> /*<mouse class="tooltip linkBlue">(?)<span>Bottoms already above this size won't automatically shrink.</span></mouse>*/
+			<span class="gold">Maximum ass size:</span> <mouse class="tooltip linkBlue">(?)<span>Bottoms already above this size won't automatically shrink.</span></mouse>
 			<br>
 			<<set _name to ["Slender", "Slim", "Modest", "Cushioned", "Soft", "Round", "Plump", "Large", "Huge"]>>
 			<<for _i to 0; _i lt _name.length; _i++>>
@@ -2096,7 +2095,7 @@
 		</div>
 		<<if $passage is "Start" or $player.penisExist>>
 			<div class="settingsToggleItem">
-				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">Minimum penis size - if applicable:</span> /*<mouse class="tooltip linkBlue">(?)<span>Penises already below this size won't automatically grow. The smaller sizes have additional requirements to shrink to/grow from.</span></mouse>*/
+				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">Minimum penis size - if applicable:</span> <mouse class="tooltip linkBlue">(?)<span>Penises already below this size won't automatically grow.</span></mouse>
 				<br>
 				<<set _name to ["Micro","Mini", "Tiny"]>>
 				<<for _i to 0; _i lt _name.length; _i++>>
@@ -2108,7 +2107,7 @@
 			</div>
 
 			<div class="settingsToggleItem">
-				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">Maximum penis size - if applicable:</span> /*<mouse class="tooltip linkBlue">(?)<span>Penises already above this size won't automatically shrink. Surgery, pills and parasites can influence growth in both directions.</span></mouse>*/
+				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">Maximum penis size - if applicable:</span> <mouse class="tooltip linkBlue">(?)<span>Penises already above this size won't automatically shrink.</span></mouse>
 				<br>
 				<<set _name to ["Micro","Mini", "Tiny", "Small", "Normal", "Large", "Enormous"]>>
 				<<for _i to 0; _i lt _name.length; _i++>>
@@ -2387,7 +2386,7 @@
 				<<case "default">><span class="gold bold">Basic Start:</span> Fetish toggles and difficulty settings will be left at their <span class="teal">default</span> settings. NPCs will be <span class="teal">randomly</span> generated. <i class="teal">Recommended for beginners.</i>
 				<<case "adjusted">><span class="gold bold">Moderate Start:</span> You can make <span class="teal">broad changes</span> to difficulty settings, preset kinks, and NPC genders. NPCs will be <span class="teal">randomly</span> generated according to these settings.
 				<<case "custom">><span class="gold bold">Advanced Start:</span> You can adjust <span class="teal">all settings</span>, including fetish toggles, difficulty settings, and NPC genders, to create a playthrough tailored to your desires.
-				<<case "random">><span class="gold bold">Randomised Start:</span> Starts the game with <span class="teal">all settings</span> randomised, including character appearance, character traits, and difficulty settings. Both your character and NPCs will be <span class="teal">randomly</span> generated.
+				<<case "random">><span class="gold bold">Randomised Start:</span> Starts the game with <span class="teal">all settings</span> randomised, including character appearance, character traits, and difficulty settings. Both your character and NPCs will be <span class="teal">randomly</span> generated for a completely blind playthrough. <i><span class="teal">To randomise specific settings prior to starting the game, select</span> <span class="gold">Advanced Start</span><span class="teal"> instead.</span></i>
 			<</switch>>
 			<br>
 			<div class="small-description">Most settings can be changed later in your room. <span class="red">You will not be able to change your character's genitalia or feat boosts after starting the game.</span></div>

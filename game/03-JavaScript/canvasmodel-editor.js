@@ -783,6 +783,7 @@ Macro.add("canvasModelEditor", {
 						]),
 						selectOption("hair_fringe_length", ["short", "shoulder", "chest", "navel", "thighs", "feet"]),
 						selectOption("brows_colour", xhairColourOptions),
+						selectOption("brows_position", ["front", "back"]),
 						selectOption("pbhair_colour", xhairColourOptions),
 						numberOption("pbhair_level", 0, 9, 1),
 						numberOption("pbhair_strip", 0, 3, 1),
@@ -790,6 +791,7 @@ Macro.add("canvasModelEditor", {
 
 						optionCategory("Face"),
 						selectOption("facestyle", ["default"]),
+						selectOption("ears_position", ["front", "back"]),
 						booleanOption("freckles"),
 						booleanOption("toast"),
 						booleanOption("trauma"),

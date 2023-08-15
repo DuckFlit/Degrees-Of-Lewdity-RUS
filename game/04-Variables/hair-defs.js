@@ -1,3 +1,4 @@
+/*Add new hairstyles here to indicate how styles will be ruffled*/
 setup.hair = {
 	hairtype: [
 		{
@@ -14,7 +15,7 @@ setup.hair = {
 				"heart braid",
 				"ruffled",
 				"sidecut",
-				"space buns",
+				"space buns"
 			],
 			devolve: ["ruffled"],
 		},
@@ -40,13 +41,13 @@ setup.hair = {
 		},
 		{
 			name: "short",
-			list: ["messy", "short", "short spiky"],
+			list: ["messy", "short", "short spiky", "layered bob", "french bob"],
 			devolve: ["messy", "short spiky"],
 		},
 		{
 			/* immune to being ruined (because devolve list is empty) */
 			name: "special",
-			list: ["dreads", "bubble tails"],
+			list: ["dreads", "bubble tails", "fro", "afro puffs"],
 			devolve: [],
 		},
 	],
@@ -79,6 +80,8 @@ setup.hair = {
 				"front braids",
 				"blunt sidelocks",
 				"ruffled",
+				"sectioned",
+				"bowl"
 			],
 			devolve: ["messy", "trident", "thin flaps", "ruffled"],
 		},
