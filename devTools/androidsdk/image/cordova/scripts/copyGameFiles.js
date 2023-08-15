@@ -28,6 +28,6 @@ function copyFilesFromRoot() {
     }
 
     fs.ensureDirSync(paths.dest.android.img);
-    fs.copySync(paths.src.main, paths.dest.android.main);
+    fs.copySync(paths.src.main, paths.dest.android.main, {dereference: true});
     fs.copySync(paths.src.img, paths.dest.android.img);
 }
