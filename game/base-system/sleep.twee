@@ -241,20 +241,24 @@
 <</widget>>
 
 <<widget "slimeNoSleep">>
+	<<set _eventsList to ["go commando"]>>
 	<<if $corruption_slime gte 80>>
-		<<set _eventsList to ["have sex with someone or something", "only sleep naked from now on"]>>
+		<<run _eventsList.push("have sex with someone or something")>>
 
-		<<if $alwaysSleepNaked is true>>
-			<<set _eventsList.delete("only sleep naked from now on")>>
+		<<if !$alwaysSleepNaked>>
+			<<run _eventsList.push("only sleep naked from now on")>>
 		<</if>>
 	<<else>>
-		<<set _eventsList to ["have sex with someone", "go running or swimming for an hour"]>>
+		<<run _eventsList.push("have sex with someone")>>
 	<</if>>
-	<<if currentSkillValue('skulduggery') gt 200>>
-		<<set _eventsList.push("steal something")>>
-	<</if>>
-	<<if $exhibitionism gt 35>>
-		<<set _eventsList.push("go running or swimming naked for an hour")>>
+	<<if ["home"].includes($location)>>
+		<<run _eventsList.push("go running or swimming for an hour")>>
+		<<if currentSkillValue('skulduggery') gt 200>>
+			<<set _eventsList.push("steal something")>>
+		<</if>>
+		<<if $exhibitionism gt 35 and Time.dayState is "night">>
+			<<set _eventsList.push("go running or swimming naked for an hour")>>
+		<</if>>
 	<</if>>
 
 	<<set _maxEvents to _eventsList.length - 1>>
@@ -269,6 +273,10 @@
 <</widget>>
 
 <<widget "slimeEventResult">>
+	<<if !$slimeBedExit>>
+		<<set $slimeBedExit to "Bed">>
+		<<set $slimeBedroomExit to "Bedroom">>
+	<</if>>
 	<<if $slimeEvent is "go running or swimming naked for an hour" or "go running or swimming for an hour">>
 		<<set $slimeEventLength to 2>>
 	<</if>>
@@ -278,11 +286,20 @@
 		<<unset $slimeEvent>>
 		You strip before getting into bed.
 		<br><br>
-		<<link [[Next|Bed]]>><</link>>
+		<<link [[Next|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+	<<elseif $slimeEvent is "go commando">>
+		<<if !playerHasStrapon() and !$worn.under_lower.outfitSecondary and $worn.under_lower.name isnot "naked">>
+			<<underlowerstrip>>
+			You strip your $worn.under_lower.name before getting into bed.
+		<<else>>
+			You lie back down into bed.
+		<</if>>
+		<br><br>
+		<<link [[Next|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
 	<<else>>
 		You move away from your bed to do the task given to you.
 		<br><br>
-		<<link [[Next|Bedroom]]>><</link>>
+		<<link [[Next|$slimeBedroomExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
 	<</if>>
 <</widget>>
 
@@ -360,10 +377,17 @@
 <</widget>>
 
 :: SleepSlimeEventObey
-	You obey the slime's demand.
-	<<slimeEventResult>>
+<<effects>>
+
+You obey the slime's demand.
+<<slimeEventResult>>
 
 :: SleepSlimeEventDefy
+<<effects>>
+<<if !$slimeBedExit>>
+	<<set $slimeBedExit to "Bed">>
+	<<set $slimeBedroomExit to "Bedroom">>
+<</if>>
 <<if $corruption_slime gte (currentSkillValue('willpower') / 10)>>
 	The slime is able to force you to comply with its demand.
 	<<slimeEventResult>>
@@ -372,5 +396,5 @@
 	You are able to defy what the slime is demanding and get into bed without listening any further.
 	<<unset $slimeEvent>>
 	<br><br>
-	<<link [[Next|Bed]]>><</link>>
+	<<link [[Next|Bed]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
 <</if>>
