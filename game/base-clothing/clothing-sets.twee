@@ -340,8 +340,14 @@
 							<<break>>
 						<</if>>
 						/*Check for slime corruption*/
-						<<if _corruptionEquipSkip.includes($_slot)>>
-							<<if $corruption_slime gte 80 and currentSkillValue('willpower') lt 800 and $_wardrobeItem.reveal lt 500 and !$_wardrobeItem.type.includesAny("school", "event")>>
+						<<if _corruptionEquipSkip.includes($_slot) and $corruption_slime gte 10>>
+							<<if $daily.corruptionSlimeClothes is undefined>>
+								<<set $daily.corruptionSlimeClothes to random($corruption_slime * 5, $corruption_slime * 15) - currentSkillValue('willpower')>>
+							<</if>>
+							<<if $slimeEvent is "go commando" and $_slot is "under_lower">>
+								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny_commando"}>>
+								<<break>>
+							<<elseif ((["prison", "asylum"].includes($location) and $_wardrobeItem.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or ($_wardrobeItem.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !($_wardrobeItem.type.includesAny("school")) and Time.schoolDay) and !$_wardrobeItem.type.includesAny("event")>>
 								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny"}>>
 								<<break>>
 							<</if>>
@@ -550,6 +556,18 @@
 							}
 						}
 						_resultStrings.corruption_slime_deny.names.push(notEquippedItem.name);
+						break;
+					case "corruption_slime_deny_commando":
+						if (_resultStrings.corruption_slime_deny_commando === undefined) {
+							_resultStrings.corruption_slime_deny_commando = {
+								"start": "You were unable to equip your ",
+								"joiner": "and",
+								"end": " as the slime in your ear is forcing you to go commando.",
+								"names": [],
+								"color": "red"
+							}
+						}
+						_resultStrings.corruption_slime_deny_commando.names.push(notEquippedItem.name);
 						break;
 					case "cursed slot":
 						if (_resultStrings.cursed === undefined) {

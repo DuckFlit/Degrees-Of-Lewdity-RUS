@@ -488,7 +488,16 @@
 		<br><br>
 		<<shoptraits>>
 		<<set _slimeSlots to setup.clothingLayer.torso>>
-		<<if !_slimeSlots.includes($clothingShopSlot) or currentSkillValue('willpower') gte 800 or _temp_choice.reveal gte 500 or _temp_choice.type.includesAny("school", "event") or $corruption_slime lt 80>>
+		<<if $daily.corruptionSlimeClothes is undefined and $corruption_slime gte 10>>
+			<<set $daily.corruptionSlimeClothes to random($corruption_slime * 5, $corruption_slime * 15) - currentSkillValue('willpower')>>
+		<</if>>
+		<<if $slimeEvent is "go commando" and $clothingShopSlot is "under_lower">>
+			<span class="red">The slime in your ear refuses to allow you to try on or buy the  _temp_choice.name as it is forcing you to go commando.</span>
+			<br>
+		<<elseif _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and !(_temp_choice.type.includesAny("school") and Time.schoolDay) and !_temp_choice.type.includesAny("event")>>
+			<span class="red">The slime in your ear refuses to allow you to try on or buy the _temp_choice.name.</span>
+			<br>
+		<<else>>
 			<div class="clothing-colours-div">
 				<<set _hiddenMannequin = $options.images is 1 ? "" : "hidden">>
 				<!-- Item preview -->
@@ -692,9 +701,6 @@
 					<</if>>
 				</div>
 			<</if>>
-		<<else>>
-			<span class="red">The slime in your ear refuses to allow you to try on or buy the _temp_choice.name.</span>
-			<br>
 		<</if>>
 	<</if>>
 <</widget>>

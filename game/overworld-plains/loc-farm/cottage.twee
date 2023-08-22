@@ -206,13 +206,23 @@ You are in your room at Alex's cottage. It's cramped, but larger than your room 
 			<br><br>
 		<</if>>
 	<</if>>
-	<<bedicon>><<link [[Strip and get in bed|Farm Bed]]>><<undressSleep "Farm Bed">><</link>>
-	<br>
-	<<listsleepoutfits "Farm Bed">>
-	<<roomoptions>>
+	<<if $slimeEvent is undefined or ["go commando"].includes($slimeEvent)>>
+		<<bedicon>><<link [[Strip and get in bed|Farm Bed]]>><<undressSleep "Farm Bed">><</link>>
+		<br>
+		<<listsleepoutfits "Farm Bed">>
+		<<roomoptions>>
 
-	<<wardrobeicon>><<link [[Wardrobe|Farm Wardrobe]]>><</link>>
-	<br>
+		<<wardrobeicon>><<link [[Wardrobe|Farm Wardrobe]]>><</link>>
+		<br>
+	<<else>>
+		<br>
+		<<if $possessed>>
+			<span class="red">The slime in your head is silent.</span>
+		<<else>>
+			<span class="red">The slime wants you to <<print $slimeEvent>> before you can go to bed.</span>
+		<</if>>
+		<br>
+	<</if>>
 	<<if playerHasSexToys()>>
 		<<sextoysicon>><<link [[Sex toys|Sextoys Inventory]]>><<set $sextoyInvReturnLink to $passage>><</link>>
 		<br>
@@ -264,7 +274,15 @@ You snuggle under the covers.
 <</if>>
 <br><br>
 
-<<farm_sleep_options>>
+<<if $alex_bed isnot "player" and $corruption_slime gte (currentSkillValue('willpower') / 20) and random(0,100) lt 100 and !$slimeSleepEvent and $slimeEvent is undefined>>
+	<<set $slimeBedExit to "Farm Bed">>
+	<<set $slimeBedroomExit to "Farm Bedroom">>
+	<<slimeNoSleep>>
+	<<set _skip to true>>
+<</if>>
+<<if !_skip>>
+	<<farm_sleep_options>>
+<</if>>
 
 :: Farm Sleep
 <<set _autosavehere to true>>
@@ -315,8 +333,6 @@ You snuggle under the covers.
 		<<elseif !_wakingEffect>>
 			You sleep soundly.
 			<br><br>
-		<<else>>
-			<br><br>
 		<</if>>
 		<<if !_sleepinterrupt and (Time.hour gt 21 or Time.hour lt 6) and $bus is "farm_alex_room" or $alex_bed is "player">>
 			<<switch random(1, 6)>>
@@ -343,8 +359,6 @@ You snuggle under the covers.
 									"I'll show everyone")>>..."
 					Alex mumbles.
 			<</switch>>
-		<<else>>
-			<br><br>
 		<</if>>
 	<</if>>
 	<<sleepeffects>>
@@ -946,7 +960,14 @@ You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardro
 		<<link [[Sit at the desk|Farm Upgrades]]>><</link>>
 		<br><br>
 	<</if>>
-	<<if $alex_bed_spurned isnot 1>>
+	<<if !($slimeEvent is undefined or ["go commando"].includes($slimeEvent))>>
+		<<if $possessed>>
+			<span class="red">The slime in your head is silent.</span>
+		<<else>>
+			<span class="red">The slime wants you to <<print $slimeEvent>> before you can go to bed.</span>
+		<</if>>
+		<br>
+	<<elseif $alex_bed_spurned isnot 1>>
 		<<bedicon>><<link [[Strip and get in Alex's bed|Farm Alex Bed]]>><<undressSleep "farm alex bed">><</link>>
 		<br>
 		<<if $alwaysSleepNaked isnot true>>
@@ -978,13 +999,20 @@ You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardro
 	You snuggle beside Alex.
 <<else>>
 	You snuggle under the covers.
+	<<if $alex_bed isnot "player" and $corruption_slime gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and !$slimeSleepEvent and $slimeEvent is undefined>>
+		<<set $slimeBedExit to "Farm Alex Bed">>
+		<<set $slimeBedroomExit to "Farm Alex Bedroom">>
+		<<slimeNoSleep>>
+		<<set _skip to true>>
+	<</if>>
 <</if>>
 <<if $wraith.state and $wraithPrison and ($moonstate is "evening" or $moonstate is _nightstate)>>
 	You feel anxious, and your eyes dart over to the mirror.
 <</if>>
 <br><br>
-
-<<farm_sleep_options>>
+<<if !_skip>>
+	<<farm_sleep_options>>
+<</if>>
 
 
 :: Farm Breakfast Make
