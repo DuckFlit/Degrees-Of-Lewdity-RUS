@@ -325,7 +325,7 @@ var IronMan = (Save => {
 	}
 
 	function scheduledSaves() {
-		const date = new Date(Time.date);
+		const date = new Date(Time.month + " " + Time.monthDay + ", " + Time.year);
 
 		if (!V.ironmanautosaveschedule) V.ironmanautosaveschedule = date.getTime().toString(8);
 		if (parseInt(V.ironmanautosaveschedule, 8) < date.getTime()) {
