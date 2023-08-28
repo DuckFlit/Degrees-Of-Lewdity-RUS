@@ -546,6 +546,16 @@ const idb = (() => {
 				list.lastChild.innerText =
 					"Saves here will be lost if your browser cache is cleared. Exporting is recommended to prevent the loss of saves from occurring.";
 
+				const lostSaves = document.createElement("p");
+				lostSaves.innerHTML = '<i class="description"><u>Where are my saves?</u></i> ';
+				const lostSavesTooltip = document.createElement("mouse");
+				lostSavesTooltip.classList.add("tooltip", "linkBlue");
+				lostSavesTooltip.innerText = "(?)";
+				lostSavesTooltip.appendChild(document.createElement("span"));
+				lostSavesTooltip.lastChild.innerText = `If you can't find your saves, it's possible you saved them using a different storage method. Try toggling the "Enable IndexedDB" option below the list of saves.`;
+				lostSaves.appendChild(lostSavesTooltip);
+				list.appendChild(lostSaves);
+
 				// THE SAVES LIST
 				list.appendChild(showSavesList());
 
