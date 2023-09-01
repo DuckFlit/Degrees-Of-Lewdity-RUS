@@ -21,12 +21,12 @@ setup.hair = {
 		},
 		{
 			name: "single tail",
-			list: ["flat ponytail", "ponytail", "side tail left", "side tail right", "fluffy ponytail", "side thicktail"],
+			list: ["flat ponytail", "ponytail", "side tail left", "side tail right", "fluffy ponytail", "side thicktail", "thick ponytail"],
 			devolve: ["ponytail"],
 		},
 		{
 			name: "double tail",
-			list: ["pigtails", "twintails", "curly pigtails", "sailor buns", "loop braid", "thick twintails", "drill ringlets"],
+			list: ["pigtails", "twintails", "curly pigtails", "sailor buns", "loop braid", "thick twintails", "drill ringlets", "low tails"],
 			devolve: ["twintails"],
 		},
 		{

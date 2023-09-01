@@ -1568,6 +1568,7 @@ window.msToTime = msToTime;
 function getHalloweenCostume() {
 	const upper = V.worn.upper;
 	const lower = V.worn.lower;
+	const face = V.worn.face;
 
 	T.tf = checkTFparts();
 
@@ -1583,7 +1584,7 @@ function getHalloweenCostume() {
 		return "gothic";
 	} else if (upper.name === "nun's habit" && lower.name === "nun's habit skirt") {
 		return "nun";
-	} else if (upper.name === "maid dress" && lower.name === "maid skirt") {
+	} else if (upper.name.includes("maid") && lower.name.includes("maid")) {
 		return "maid";
 	} else if (upper.name.includes("christmas") && lower.name.includes("christmas")) {
 		return "christmas";
@@ -1613,9 +1614,16 @@ function getHalloweenCostume() {
 		return "skeleton";
 	} else if (upper.name === "futuristic bodysuit" && lower.name === "futuristic bodysuit pants") {
 		return "futuresuit";
-	// This is commented out because there are no nurse lines yet.
-	// } else if (upper.name.includes("nurse") && lower.name.includes("nurse")) {
-	// 	return "nurse"; 
+	} else if (upper.name.includes("nurse") && lower.name.includes("nurse")) {
+	 	return "nurse";
+	} else if (face.name === "eyepatch") {
+		return "eyepatch";
+	} else if (face.name === "medical eyepatch") {
+		return "medical eyepatch";
+	} else if (face.name === "gas mask") {
+		return "gasmask";
+	} else if (upper.name === "rag top" && lower.name === "rag skirt") {
+		return "rags";
 
 	/* Transformations */
 	} else if (T.tf.angelHalo && T.tf.angelWings) {
