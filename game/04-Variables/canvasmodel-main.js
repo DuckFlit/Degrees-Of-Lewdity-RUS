@@ -484,6 +484,7 @@ Renderer.CanvasModels["main"] = {
 			"genitals_chastity": false, // generated option
 			"upper_tucked": false,
 			"hood_down": false,
+			"acc_layer_under": false,
 			"acc_under_boob": false,
 			"head_mask_src": "", // generated option
 			"belly_mask_src": "", // generated option
@@ -742,7 +743,7 @@ Renderer.CanvasModels["main"] = {
 			options.head_mask_src = "img/clothes/head/" + options.worn_over_head_setup.variable + "/mask.png";
 		} else if (options.worn_head_setup.mask_img === 1 &&
 			!(options.hood_down && options.worn_head_setup.hood && options.worn_head_setup.outfitSecondary !== undefined)) {
-			if (options.worn_head_setup.mask_img_ponytail === 1 && ["curly pigtails", "fluffy ponytail", "side thicktail", "thick twintails"].includes(options.hair_sides_type)) {
+			if (options.worn_head_setup.mask_img_ponytail === 1 && ["curly pigtails", "fluffy ponytail", "side thicktail", "thick twintails", "thick ponytail"].includes(options.hair_sides_type)) {
 				options.head_mask_src = "img/clothes/head/" + options.worn_head_setup.variable + "/mask_ponytail.png";
 			} else {
 				options.head_mask_src = "img/clothes/head/" + options.worn_head_setup.variable + "/mask.png";
@@ -888,7 +889,7 @@ Renderer.CanvasModels["main"] = {
 			zfn(options) {
 				if (options.arm_left === "cover") return ZIndices.arms_cover_l;
 				return options.zarmsleft;
-				
+
 			},
 			animation: "idle"
 		},
@@ -1242,10 +1243,12 @@ Renderer.CanvasModels["main"] = {
 		},
 		"hair_extra": { // Extra layer for thighs+ long hair for certain styles
 			srcfn(options) {
-				if (options.hair_sides_length === "feet" && ["default", "loose", "straight", "curl", "defined curl", "neat", "dreads", "ruffled"].includes(options.hair_sides_type)) {
+				if (options.hair_sides_length === "feet" && ["default", "loose", "straight", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick ponytail"].includes(options.hair_sides_type)) {
 					return "img/hair/back/" + options.hair_sides_type + '/' + "feet.png"
-				} else if (options.hair_sides_length === "thighs" && ["default", "loose", "curl", "defined curl", "neat", "dreads"].includes(options.hair_sides_type)) {
+				} else if (options.hair_sides_length === "thighs" && ["default", "loose", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick_ponytail"].includes(options.hair_sides_type)) {
 					return "img/hair/back/" + options.hair_sides_type + '/' + "thighs.png"
+				} else if (["ruffled"].includes(options.hair_sides_type)) {
+					return "img/hair/back/" + options.hair_sides_type + '/' + options.hair_sides_length + ".png"
 				} else {
 					return ""
 				}
@@ -2654,9 +2657,22 @@ Renderer.CanvasModels["main"] = {
 			}
 		}),
 		"lower_acc": genlayer_clothing_accessory("lower", {
-			masksrcfn(options) {
-				return options.belly_mask_clip_src;
-			}
+			srcfn(options) {
+				let path = 'img/clothes/lower/' +
+					options.worn_lower_setup.variable + '/' +
+					(options.worn_lower_setup.accessory_damage ? 'acc_' + options.worn_lower_integrity : options.worn_upper_setup.name === "school blouse" && ["school pinafore", "plaid school pinafore"].includes(options.worn_lower_setup.name) ? 'acc_under' : 'acc') + '.png';
+					if (["school pinafore", "plaid school pinafore"].includes(options.worn_lower_setup.name)) {
+						return gray_suffix(path, options.filters['worn_lower_acc'])
+					}else {
+						return gray_suffix(path, options.filters['worn_lower_acc'])
+					}
+				},
+				zfn(options) {
+					return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_acc;
+				},
+				masksrcfn(options) {
+					return options.belly_mask_clip_src;
+			},
 		}),
 		"lower_penis": {
 			srcfn(options) {
@@ -2927,7 +2943,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_left !== "none"
 			},
 			zfn(options) {
-				return options.arm_left === "cover" ? ZIndices.hands : (options.zarmsright + 0.2);
+				return options.arm_left === "cover" ? ZIndices.hands : (options.zarmsleft + 0.2);
 			},
 			filters: ["worn_hands_acc"],
 			animation: "idle"
@@ -2966,7 +2982,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_right !== "none"
 			},
 			zfn(options) {
-				return options.arm_right === "cover" ? ZIndices.hands : (options.zarmsleft + 0.2);
+				return options.arm_right === "cover" ? ZIndices.hands : (options.zarmsright + 0.2);
 			},
 			filters: ["worn_hands_acc"],
 			animation: "idle"
@@ -2980,8 +2996,22 @@ Renderer.CanvasModels["main"] = {
 		 *
 		 *
 		 */
-		"head": genlayer_clothing_main('head'),
-		"head_acc": genlayer_clothing_accessory('head'),
+		"head": genlayer_clothing_main('head', {
+			srcfn(options) {
+				let path = 'img/clothes/head/' +
+					options.worn_head_setup.variable + '/' +
+					(options.worn_head_setup.name === "cat hoodie hood" && options.worn_upper_setup.name === "cat hoodie" ? options.worn_upper_integrity : options.worn_head_integrity) + '.png';
+				return gray_suffix(path, options.filters['worn_head']);
+			},
+		}),
+		"head_acc": genlayer_clothing_accessory('head', {
+			srcfn(options) {
+				let path = 'img/clothes/head/' +
+					options.worn_head_setup.variable + '/' +
+					(options.worn_head_setup.name === "cat hoodie hood" && options.worn_upper_setup.name === "cat hoodie" ? 'acc_' + options.worn_upper_integrity : 'acc') + '.png';
+				return gray_suffix(path, options.filters['worn_head']);
+			},
+		}),
 		"head_back": genlayer_clothing_back_img('head'),
 		/***
 		 *     ██████  ██    ██ ███████ ██████          ██   ██ ███████  █████  ██████
@@ -3004,9 +3034,34 @@ Renderer.CanvasModels["main"] = {
 		 *
 		 *
 		 */
-		"face": genlayer_clothing_main('face'),
-		"face_acc": genlayer_clothing_accessory('face'),
-		"face_back": genlayer_clothing_back_img('face'),
+
+		"face": genlayer_clothing_main('face', {
+			zfn(options) {
+				if (options.acc_layer_under) {
+					return ZIndices.face - 12.5;
+				}else {
+					return ZIndices.face;
+				}
+			},
+		}),
+		"face_acc": genlayer_clothing_accessory('face', {
+			zfn(options) {
+				if (options.acc_layer_under) {
+					return ZIndices.face - 12.5;
+				}else {
+					return ZIndices.face;
+				}
+			},
+		}),
+		"face_back": genlayer_clothing_accessory('face', {
+			zfn(options) {
+				if (options.acc_layer_under) {
+					return ZIndices.face - 12.5;
+				}else {
+				}
+			},
+		}),
+
 		/***
 		 *    ███    ██ ███████  ██████ ██   ██
 		 *    ████   ██ ██      ██      ██  ██

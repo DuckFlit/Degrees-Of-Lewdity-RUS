@@ -527,14 +527,10 @@ Requires prior <<selectmodel "main">>
 Set model options & filters for player clothes
 -->
 <<widget "modelprepare-player-clothes">>
-	<<if $worn.upper.type.includes("naked") and $worn.over_upper.type.includes("naked")>>
-		<<if !$worn.under_upper.type.includes("naked") or _coverBreastsWithArm>>
-			<<set _modeloptions.breasts to "cleavage">>
-		<<else>>
-			<<set _modeloptions.breasts to "default">>
-		<</if>>
+	<<if !$worn.under_upper.type.includes("naked") or _coverBreastsWithArm>>
+		<<set _modeloptions.breasts to "cleavage">>
 	<<else>>
-		<<set _modeloptions.breasts to "">>
+		<<set _modeloptions.breasts to "default">>
 	<</if>>
 
 	<<if $worn.under_upper.type.includes("chest_bind")>>
@@ -558,8 +554,6 @@ Set model options & filters for player clothes
 	<</if>>
 
 	<<set _modeloptions.upper_tucked to $upperTucked and !setup.clothes.upper[clothesIndex('upper', $worn.upper)].notuck and $worn.upper.outfitPrimary is undefined>>
-
-	<<set _modeloptions.acc_under_boob to setup.clothes.upper[clothesIndex('upper', $worn.upper)].accessory_under_boob>>
 
 	<<twinescript>>
 		let slots = [
@@ -597,6 +591,9 @@ Set model options & filters for player clothes
 			_modeloptions['worn_'+slot+'_acc_colour'] = worn.accessory_colour;
 			if (worn.accessory_colour === 'custom') {
 				_modeloptions.filters['worn_'+slot+'_acc_custom'] = worn.accessory_colourCanvasFilter || getCustomClothesColourCanvasFilter(worn.accessory_colourCustom);
+			}
+			if (worn.accessory_layer_under) {
+				_modeloptions.acc_layer_under = worn.accessory_layer_under;
 			}
 		}
 	<</twinescript>>

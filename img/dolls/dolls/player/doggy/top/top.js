@@ -1,6 +1,6 @@
 DoLHouse.add({ //IT IS VERY IMPORTANT THAT THE FIRST LINE IN YOUR FILE IS A COPY-PASTE OF THIS LINE
     top: {
-        inherit_filter: true,        
+        inherit_filter: true,
         translate: {x:0, y:0, depth:4},
         magnets: {ribs : {x: 130, y:115}},
         accessories: {
@@ -49,7 +49,7 @@ DoLHouse.add({ //IT IS VERY IMPORTANT THAT THE FIRST LINE IN YOUR FILE IS A COPY
                 inherit_filter: true,
                 variants: {
                     normal: {
-                        inherit_filter: true,                        
+                        inherit_filter: true,
                         spritesheet: "arms/doggyactivebaserightarm.png"
                     },
                     bound: {
@@ -62,7 +62,7 @@ DoLHouse.add({ //IT IS VERY IMPORTANT THAT THE FIRST LINE IN YOUR FILE IS A COPY
                 }
             },
             arm_left: {
-                translate: { x: 0, y: 0, depth: 13 },               
+                translate: { x: 0, y: 0, depth: 13 },
                 inherit_filter: true,
                 accessories: {
                     arm: {
@@ -84,11 +84,11 @@ DoLHouse.add({ //IT IS VERY IMPORTANT THAT THE FIRST LINE IN YOUR FILE IS A COPY
                                 spritesheet: "arms/doggyactivelefthandjob.png"
                             }
                         },
-                        //a lot of the clothes seem to depend on arm state, 
+                        //a lot of the clothes seem to depend on arm state,
                         //so we attach the clothes as an accessory to the arm
                         //so that they end up autoadopting variant information
                         //when the arm is commanded to.
-                        clothes: {                            
+                        clothes: {
                             import: {
                                 filepath: "breasts/clothes_top.js",
                                 variable: "clothes"
