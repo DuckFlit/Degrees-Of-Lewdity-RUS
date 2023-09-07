@@ -188,7 +188,7 @@ replace (?<!["'\w])_(?=\w) with T.
  * "blink_animation":string - "blink"|"blink-trauma"|null
  * "worn_XXXX_setup":object - whole setup.clothes.XXXX object
  * "ztan_XXXX":number - Z-index of tanline level to keep brighter skin above
- * "zarms":number - Z-index of arms //Remade into zarmsleft and zarmsright
+ * "zarms":number - Z-index of arms
  * "zupper":number - Z-index of "upper" clothing
  *
  * =============
@@ -239,8 +239,7 @@ Renderer.CanvasModels["main"] = {
 		return [
 			"blink_animation",
 			"genitals_chastity",
-			"zarmsleft",
-			"zarmsright",
+			"zarms",
 			...setup.clothes_all_slots.flatMap(key => [
 				"worn_" + key + "_setup"
 			])
@@ -494,11 +493,10 @@ Renderer.CanvasModels["main"] = {
 			"ztan_swimsuitBottom": ZIndices.base, // generated option
 			"ztan_bikiniTop": ZIndices.breasts, // generated option
 			"ztan_bikiniBottom": ZIndices.base, // generated option
-			"zarmsleft": ZIndices.armsidle_l, // generated options
-			"zarmsright": ZIndices.armsidle_r, // generated options
+			"zarms": ZIndices.armsidle, // generated options
 			"zupper": ZIndices.upper, // generated options
-			"zupperleft": ZIndices.upper_arms_l, // generated options
-			"zupperright": ZIndices.upper_arms_r, // generated options
+			"zupperleft": ZIndices.upper_arms, // generated options
+			"zupperright": ZIndices.upper_arms, // generated options
 			// filters
 			"filters": {}
 		}
@@ -684,58 +682,48 @@ Renderer.CanvasModels["main"] = {
 		// Show arm and hand just below outermost clothes layer to fully show its main/breasts layer and hide others
 		// -0.1 is to move arms behind sleeves; to display gloves above sleeves they get +0.2 in hand layer decls
 		if (options.worn_over_upper) {
-			options.zarmsright = ZIndices.over_upper_arms_r - 0.1;
-			options.zarmsleft = ZIndices.over_upper_arms_l - 0.1;
+			options.zarms = ZIndices.over_upper_arms - 0.1;
 		} else if (options.worn_upper) {
 			if (options.arm_left === "cover") {
 				if (options.upper_tucked) {
-					options.zarmsright = ZIndices.upper_arms_tucked_r - 0.1;
-					options.zarmsleft = ZIndices.upper_arms_tucked_l - 0.1;
+					options.zarms = ZIndices.upper_arms_tucked - 0.1;
 				} else {
-					options.zarmsright = ZIndices.upper_arms_r - 0.1;
-					options.zarmsleft = ZIndices.upper_arms_l - 0.1;
+					options.zarms = ZIndices.upper_arms - 0.1;
 				}
 			} else {
-				options.zarmsright = ZIndices.under_upper_arms_r - 0.1;
-				options.zarmsleft = ZIndices.under_upper_arms_l - 0.1;
+				options.zarms = ZIndices.under_upper_arms - 0.1;
 			}
 		} else if (options.worn_under_upper) {
-			options.zarmsright = ZIndices.under_upper_arms_r - 0.1;
-				options.zarmsleft = ZIndices.under_upper_arms_l - 0.1;
+			options.zarms = ZIndices.under_upper_arms - 0.1;
 		} else {
-			options.zarmsright = ZIndices.armsidle_r
-			options.zarmsleft = ZIndices.armsidle_l
+			options.zarms = ZIndices.armsidle
 		}
 		// Do not put skin above sleeves
 		if (options.worn_under_upper_setup.sleeve_img === 1) {
-			options.zarmsright = ZIndices.under_upper_arms_r - 0.1;
-				options.zarmsleft = ZIndices.under_upper_arms_l - 0.1;
+			options.zarms = ZIndices.under_upper_arms - 0.1;
 		} else if (options.worn_upper_setup.sleeve_img === 1) {
 			if (options.arm_left === "cover") {
 				if (options.upper_tucked) {
-					options.zarmsright = ZIndices.upper_arms_tucked_r - 0.1;
-					options.zarmsleft = ZIndices.upper_arms_tucked_l - 0.1;
+					options.zarms = ZIndices.upper_arms_tucked - 0.1;
 				} else {
-					options.zarmsright = ZIndices.upper_arms_r - 0.1;
-					options.zarmsleft = ZIndices.upper_arms_r - 0.1;
+					options.zarms = ZIndices.upper_arms - 0.1;
 				}
 			} else {
-				options.zarmsright = ZIndices.under_upper_arms_r - 0.1;
-				options.zarmsleft = ZIndices.under_upper_arms_l - 0.1;
+				options.zarms = ZIndices.under_upper_arms - 0.1;
 			}
 		}
 
 		if (options.upper_tucked) {
 			options.zupper = ZIndices.upper_tucked;
-			options.zupperleft = ZIndices.upper_arms_tucked_l;
-			options.zupperright = ZIndices.upper_arms_tucked_r;
+			options.zupperleft = ZIndices.upper_arms_tucked;
+			options.zupperright = ZIndices.upper_arms_tucked;
 		} else {
 			options.zupper = ZIndices.upper;
-			options.zupperleft = ZIndices.upper_arms_l;
-			options.zupperright = ZIndices.upper_arms_r;
+			options.zupperleft = ZIndices.upper_arms;
+			options.zupperright = ZIndices.upper_arms;
 		}
-		if (options.arm_right === "cover") options.zupperright = ZIndices.upper_arms_cover_r;
-		if (options.arm_left === "cover") options.zupperleft = ZIndices.upper_arms_cover_l;
+		if (options.arm_right === "cover") options.zupperright = ZIndices.upper_arms_cover;
+		if (options.arm_left === "cover") options.zupperleft = ZIndices.upper_arms_cover;
 
 		// Generate mask images
 		if (options.worn_over_head_setup.mask_img === 1 &&
@@ -887,9 +875,8 @@ Renderer.CanvasModels["main"] = {
 			},
 			filters: ["body"],
 			zfn(options) {
-				if (options.arm_left === "cover") return ZIndices.arms_cover_l;
-				return options.zarmsleft;
-
+				if (options.arm_left === "cover") return ZIndices.arms_cover;
+				return options.zarms;
 			},
 			animation: "idle"
 		},
@@ -908,8 +895,8 @@ Renderer.CanvasModels["main"] = {
 			},
 			filters: ["body"],
 			zfn(options) {
-				if (options.arm_right === "cover") return ZIndices.arms_cover_r;
-				return options.zarmsright;
+				if (options.arm_right === "cover") return ZIndices.arms_cover;
+				return options.zarms;
 			}
 		},
 
@@ -2248,9 +2235,9 @@ Renderer.CanvasModels["main"] = {
 			},
 			zfn(options) {
 				if (options.arm_right === "cover") {
-					return ZIndices.arms_cover_r + 0.1
+					return ZIndices.arms_cover + 0.1
 				} else {
-					return ZIndices.armsidle_r + 0.1
+					return ZIndices.armsidle + 0.1
 				}
 			},
 			animation: "idle"
@@ -2572,12 +2559,12 @@ Renderer.CanvasModels["main"] = {
 		"over_upper_acc": genlayer_clothing_accessory('over_upper'),
 		"over_upper_rightarm": genlayer_clothing_arm("right", "over_upper", {
 			zfn(options) {
-				return options.arm_right === "cover" ? ZIndices.over_upper_arms_cover_r : ZIndices.over_upper_arms_r;
+				return options.arm_right === "cover" ? ZIndices.over_upper_arms_cover : ZIndices.over_upper_arms;
 			}
 		}),
 		"over_upper_leftarm": genlayer_clothing_arm("left", "over_upper", {
 			zfn(options) {
-				return options.arm_left === "cover" ? ZIndices.over_upper_arms_cover_l : ZIndices.over_upper_arms_l;
+				return options.arm_left === "cover" ? ZIndices.over_upper_arms_cover : ZIndices.over_upper_arms;
 			}
 		}),
 		/***
@@ -2668,7 +2655,7 @@ Renderer.CanvasModels["main"] = {
 					}
 				},
 				zfn(options) {
-					return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_acc;
+					return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower;
 				},
 				masksrcfn(options) {
 					return options.belly_mask_clip_src;
@@ -2891,12 +2878,12 @@ Renderer.CanvasModels["main"] = {
 		"under_upper_back": genlayer_clothing_back_img('under_upper'),
 		"under_upper_rightarm": genlayer_clothing_arm("right", "under_upper", {
 			zfn(options) {
-				return options.arm_right === "cover" ? ZIndices.under_upper_arms_cover_r : ZIndices.under_upper_arms_r;
+				return options.arm_right === "cover" ? ZIndices.under_upper_arms_cover : ZIndices.under_upper_arms;
 			}
 		}),
 		"under_upper_leftarm": genlayer_clothing_arm("left", "under_upper", {
 			zfn(options) {
-				return options.arm_left === "cover" ? ZIndices.under_upper_arms_cover_l : ZIndices.under_upper_arms_l;
+				return options.arm_left === "cover" ? ZIndices.under_upper_arms_cover : ZIndices.under_upper_arms;
 			}
 		}),
 		/***
@@ -2923,7 +2910,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_left !== "none"
 			},
 			zfn(options) {
-				return options.arm_left === "cover" ? ZIndices.hands : (options.zarmsleft + 0.2);
+				return options.arm_left === "cover" ? ZIndices.hands : (options.zarms + 0.2);
 			},
 			filters: ["worn_hands"],
 			animation: "idle"
@@ -2943,7 +2930,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_left !== "none"
 			},
 			zfn(options) {
-				return options.arm_left === "cover" ? ZIndices.hands : (options.zarmsleft + 0.2);
+				return options.arm_left === "cover" ? ZIndices.hands : (options.zarms + 0.2);
 			},
 			filters: ["worn_hands_acc"],
 			animation: "idle"
@@ -2962,7 +2949,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_right !== "none"
 			},
 			zfn(options) {
-				return options.arm_right === "cover" ? ZIndices.hands : (options.zarmsright + 0.2);
+				return options.arm_right === "cover" ? ZIndices.hands : (options.zarms + 0.2);
 			},
 			filters: ["worn_hands"],
 			animation: "idle"
@@ -2982,7 +2969,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_right !== "none"
 			},
 			zfn(options) {
-				return options.arm_right === "cover" ? ZIndices.hands : (options.zarmsright + 0.2);
+				return options.arm_right === "cover" ? ZIndices.hands : (options.zarms + 0.2);
 			},
 			filters: ["worn_hands_acc"],
 			animation: "idle"
