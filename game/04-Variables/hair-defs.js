@@ -45,9 +45,14 @@ setup.hair = {
 			devolve: ["messy", "short spiky"],
 		},
 		{
+			name: "fro",
+			list: ["fro", "afro puffs", "afro pouf"],
+			devolve: ["fro"],
+		},
+		{
 			/* immune to being ruined (because devolve list is empty) */
 			name: "special",
-			list: ["dreads", "bubble tails", "fro", "afro puffs"],
+			list: ["dreads", "bubble tails"],
 			devolve: [],
 		},
 	],
@@ -84,6 +89,12 @@ setup.hair = {
 				"bowl"
 			],
 			devolve: ["messy", "trident", "thin flaps", "ruffled"],
+		},
+		{
+			/* immune to being ruined (because devolve list is empty) */
+			name: "special",
+			list: ["fro", "dreads", "dread bun"],
+			devolve: [],
 		},
 	],
 };
