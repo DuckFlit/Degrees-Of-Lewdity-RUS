@@ -1157,7 +1157,13 @@
 
 <<widget "genitalstate">><<silently>>
 	<<set _text_output to "">>
-	<<if $orgasmcount gte 23>>
+	<<if $args[0] is "penis" and $player.gender is "f" and $parasite.clit.name is "parasite">>
+		<<set _text_output to "parasitic ">>
+	<<elseif $args[0] is "penis" and $earSlime.focus is "impregnation" and $earSlime.growth gte 100>>
+		<<set _text_output to "dripping ">>
+	<<elseif $args[0] is "pussy" and $earSlime.focus is "pregnancy" and $earSlime.growth gte 100>>
+		<<set _text_output to "dripping ">>
+	<<elseif $orgasmcount gte 23>>
 		<<if $orgasmdown gte 1>>
 			<<set _text_output to "tortured ">>
 		<<else>>
@@ -1213,7 +1219,7 @@
 
 <!-- [0] - if truthy, genital sensitivity is omitted -->
 <<widget "pussy">><<silently>>
-	<<genitalstate>><<set _genital_state_text to _text_output>>
+	<<genitalstate "pussy">><<set _genital_state_text to _text_output>>
 	<<set _text_output to "">>
 	<<if !_args[0]>>
 		<<genitalsensitivity>>
@@ -1241,7 +1247,7 @@
 	<<if _penissize_text isnot "">>
 		<<set _penissize_text to _penissize_text + " ">>
 	<</if>>
-	<<genitalstate>><<set _genital_state_text to _text_output>>
+	<<genitalstate "penis">><<set _genital_state_text to _text_output>>
 	<<set _text_output to "">>
 	<<if !_args[0]>>
 		<<genitalsensitivity>>
@@ -1656,11 +1662,16 @@
 	<<else>>
 		<<genitalsensitivity>>
 		<<if $player.penisExist>>
-			<<if playerChastity("cage")>>
+			<<if $worn.genitals.name is "chastity parasite">>
+				<<set _text_output += "sealed ">>
+			<<elseif playerChastity("cage")>>
 				<<set _text_output += "caged ">>
 			<</if>>
 			<<if $player.virginity.penile is true and _args[0] isnot 2>>
 				<<set _text_output += "virgin ">>
+			<</if>>
+			<<if $player.gender is "f" and $parasite.clit.name is "parasite" and _args[0] isnot 2>>
+				<<set _text_output += "parasitic ">>
 			<</if>>
 			<<set _text_output += "penis">>
 		<</if>>

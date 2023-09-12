@@ -23,7 +23,11 @@ function canImpregnateParasite(genital = "anus") {
 window.canImpregnateParasite = canImpregnateParasite;
 
 function canBeMPregnant() {
-	return !V.player.vaginaExist && V.skin.pubic.pen === "magic" && V.skin.pubic.special === "pregnancy";
+	return (
+		!V.player.vaginaExist &&
+		((V.skin.pubic.pen === "magic" && V.skin.pubic.special === "pregnancy") ||
+			(V.earSlime.growth >= 100 && ["pregnancy", "mixed"].includes(V.earSlime.focus)))
+	);
 }
 window.canBeMPregnant = canBeMPregnant;
 

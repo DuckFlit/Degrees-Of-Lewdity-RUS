@@ -18,7 +18,7 @@ function masturbationActions() {
 	};
 	const genitalsExposed = () => V.worn.over_lower.vagina_exposed >= 1 && V.worn.lower.vagina_exposed >= 1 && V.worn.under_lower.vagina_exposed >= 1;
 	const breastsExposed = () => V.worn.over_upper.exposed >= 1 && V.worn.upper.exposed >= 1 && V.worn.under_upper.exposed >= 1;
-	const ballsExposed = () => genitalsExposed() && !playerChastity("hidden");
+	const ballsExposed = () => genitalsExposed() && !playerChastity("hidden") && V.worn.genitals.name !== "chastity parasite";
 
 	const otherVariables = { selectedToy, toyDisplay, genitalsExposed, breastsExposed, ballsExposed };
 
@@ -174,13 +174,20 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 				if (!playerChastity("penis")) {
 					result.options.push({
 						action: "mpenisentrance",
-						text: "Fondle your penis",
+						text: V.player.gender === "f" && V.parasite.clit.name === "parasite" ? "Fondle your parasitic penis" : "Fondle your penis",
+						colour: "sub",
+					});
+				} else if (V.worn.genitals.name === "chastity parasite") {
+					result.options.push({
+						action: "mchastityparasiteentrance",
+						text: "Fondle your chastity parasite",
 						colour: "sub",
 					});
 				} else {
 					result.options.push({
 						action: "mchastity",
-						text: "Try to fondle your penis",
+						text:
+							V.player.gender === "f" && V.parasite.clit.name === "parasite" ? "Try to fondle your parasitic penis" : "Try to fondle your penis",
 						colour: "sub",
 					});
 				}
@@ -255,6 +262,24 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 			}
 			result.options.push(stop("mpenisstop"));
 			break;
+		case "mchastityparasiteentrance":
+			result.text = `You hold your chastity parasite ${V.player.penissize >= 2 ? `in your ${arm} hand.` : `with your ${arm} thumb and fingers.`}`;
+			if (V.mouth !== "mpenis") {
+				result.options.push({
+					action: "mchastityparasiterub",
+					text: "Rub the parasite",
+					colour: "sub",
+				});
+			}
+			if (!(V.mouth === "mpenis")) {
+				result.options.push({
+					action: "mchastityparasitesqueeze",
+					text: "Squeeze the parasite",
+					colour: "sub",
+				});
+			}
+			result.options.push(stop("mchastityparasitestop"));
+			break;
 		case "mvaginaentrance":
 			result.text = `You rub your <<pussy>> with your ${arm} hand.`;
 			if (genitalsExposed()) {
@@ -272,11 +297,13 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 						colour: "sub",
 					});
 				}
-				result.options.push({
-					action: "mvaginaclit",
-					text: "Play with your clit",
-					colour: "sub",
-				});
+				if (!V.parasite.clit.name) {
+					result.options.push({
+						action: "mvaginaclit",
+						text: "Play with your clit",
+						colour: "sub",
+					});
+				}
 			}
 			result.options.push({
 				action: "mvaginarub",
@@ -363,11 +390,13 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 						colour: "sub",
 					});
 				}
-				result.options.push({
-					action: "mvaginaclitdildo",
-					text: "Play with your clit",
-					colour: "sub",
-				});
+				if (V.player.vaginaExist && !V.parasite.clit.name && !playerChastity("vagina")) {
+					result.options.push({
+						action: "mvaginaclitdildo",
+						text: "Play with your clit",
+						colour: "sub",
+					});
+				}
 				result.options.push(stop("mvaginastopdildo"));
 			}
 			break;
@@ -560,7 +589,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 								colour: "sub",
 							});
 						}
-						if (!V.player.penisExist && !playerChastity("vagina")) {
+						if (V.player.vaginaExist && !V.parasite.clit.name && !playerChastity("vagina")) {
 							result.options.push({
 								action: "mvaginaclitvibrate",
 								text: "Hold against your clit",
@@ -621,18 +650,37 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 					colour: "brat",
 				});
 			} else if (V.player.penisExist && (arm === "left" || !V.player.vaginaExist)) {
-				result.text =
-					actiondefault === "mpenisW" ? `You stroke your <<penis>> with your ${arm} hand, unbidden.` : `Your ${arm} hand hovers over your <<penis>>.`;
-				result.options.push({
-					action: "mpenisW",
-					text: "Rub the shaft",
-					colour: "wraith",
-				});
-				result.options.push({
-					action: "mpenisstopW",
-					text: "Hold your arm still",
-					colour: "brat",
-				});
+				if (V.worn.genitals.name === "chastity parasite") {
+					result.text =
+						actiondefault === "mpenisW"
+							? `You tease your chastity with your ${arm} hand, unbidden.`
+							: `Your ${arm} hand hovers over your chastity parasite.`;
+					result.options.push({
+						action: "mpenisW",
+						text: "Rub the parasite",
+						colour: "wraith",
+					});
+					result.options.push({
+						action: "mpenisstopW",
+						text: "Hold your arm still",
+						colour: "brat",
+					});
+				} else {
+					result.text =
+						actiondefault === "mpenisW"
+							? `You stroke your <<penis>> with your ${arm} hand, unbidden.`
+							: `Your ${arm} hand hovers over your <<penis>>.`;
+					result.options.push({
+						action: "mpenisW",
+						text: "Rub the shaft",
+						colour: "wraith",
+					});
+					result.options.push({
+						action: "mpenisstopW",
+						text: "Hold your arm still",
+						colour: "brat",
+					});
+				}
 			} else {
 				result.text =
 					actiondefault === "mvaginaW"
@@ -717,12 +765,21 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 				}
 				if (genitalsExposed()) {
 					if (V.canSelfSuckPenis && V.penisuse === 0) {
-						result.options.push({
-							action: "mpenisentrance",
-							text: "Lick your penis",
-							colour: "sub",
-							otherElements: "<<combataware 3>>",
-						});
+						if (V.worn.genitals.name === "chastity parasite") {
+							result.options.push({
+								action: "mchastityparasiteentrance",
+								text: "Lick your chastity parasite",
+								colour: "sub",
+								otherElements: "<<combataware 3>>",
+							});
+						} else {
+							result.options.push({
+								action: "mpenisentrance",
+								text: "Lick your penis",
+								colour: "sub",
+								otherElements: "<<combataware 3>>",
+							});
+						}
 					}
 					if (V.canSelfSuckVagina && V.vaginause === 0 && V.fingersInVagina === 0) {
 						result.options.push({
@@ -764,6 +821,21 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 			result.options.push(stop("mpenisstop"));
 			result.options.push(rest());
 			break;
+		case "mchastityparasiteentrance":
+			result.text = corruptionCheck
+				? '<span class="red">The slimes in your ear are forcing your mouth to be in front of your chastity parasite.</span>'
+				: "Your mouth is in front of your chastity parasite.";
+			if (awarenessCheck) {
+				result.options.push({
+					action: "mchastityparasitelick",
+					text: "Lick your chastity parasite",
+					colour: "sub",
+					otherElements: !corruptionCheck ? "<<combataware 3>>" : undefined,
+				});
+			}
+			result.options.push(stop("mchastityparasitestop"));
+			result.options.push(rest());
+			break;
 		case "mvaginaentrance":
 			result.text = corruptionCheck
 				? '<span class="red">The slimes in your ear are forcing you to lick your pussy.</span>'
@@ -775,12 +847,14 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 					colour: "sub",
 					otherElements: !corruptionCheck ? "<<combataware 3>>" : undefined,
 				});
-				result.options.push({
-					action: "mvaginaclit",
-					text: "Focus on your clit",
-					colour: "sub",
-					otherElements: !corruptionCheck ? "<<combataware 3>>" : undefined,
-				});
+				if (!V.parasite.clit.name && !playerChastity("vagina")) {
+					result.options.push({
+						action: "mvaginaclit",
+						text: "Focus on your clit",
+						colour: "sub",
+						otherElements: !corruptionCheck ? "<<combataware 3>>" : undefined,
+					});
+				}
 			}
 			result.options.push(stop("mvaginastop"));
 			break;

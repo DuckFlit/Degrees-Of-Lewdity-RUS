@@ -6,7 +6,21 @@
 		<<set $speechcum to 1>><<set $speechorgasmcount += 1>>
 	<</if>>
 	<<tinyPenisDryOrgasmChance>>
-	<<if $player.penisExist>>
+	<<if $earSlime.growth gte 100 and $earSlime.defyCooldown gte 20 and !$possessed and $ruinedorgasmdisable is "f">>
+		<span class="red">You are almost overcome by sensation, but it ends prematurely.</span><<pain 10>><<stress 10>><<gpain>><<gstress>>
+		<<set _deniedOrgasm to true>>
+		<<set $ruinedOrgasmStat++>>
+		<<if $masturbating>>
+			<<set $masturbationRuinedOrgasm++>>
+		<</if>>
+	<<elseif $player.penisExist>>
+		<<if $earSlime.focus is "pregnancy" and $earSlime.growth gte 100>>
+			<<set _cumDesc to "watery cum">>
+		<<elseif $earSlime.focus is "impregnation" and $earSlime.growth gte 100>>
+			<<set _cumDesc to "thick cum">>
+		<<else>>
+			<<set _cumDesc to "cum">>
+		<</if>>
 		<<if $femaleclimax is 1>>
 			<span class="pink">You are overcome by sensation and climax like a girl.</span>
 			<<semenvolume `$player.penissize is -2 ? -5 : -1`>>
@@ -15,34 +29,53 @@
 			<<set $femaleclimax to 1>>
 			<<semenvolume -1>>
 		<<else>>
+			<<set $parasitePenis to $player.gender is "f" and $parasite.clit.name is "parasite" ? " parasitic" : "">>
 			<<if !playerHasStrapon()>>
 				<<bodyliquid "penis" "semen">>
 			<</if>>
 			<<if wearingCondom("player")>>
 				<<set _condom to $player.condom.state>>
 			<</if>>
-			<<if _condom is "defective">>
+			<<if ($parasite.penis.name and $parasite.penis.name isnot "parasite") or $worn.genitals.name is "chastity parasite">>
+				/* No need for you to know it breaks */
+			<<elseif _condom is "defective">>
 				<span class="red">The condom broke.</span>
 			<<elseif _condom is "sabotaged">>
-				<span class="red">The tip of the condom bursts, exposing the head of your penis.</span>
+				<span class="red">The tip of the condom bursts, exposing the head of your<<print $parasitePenis>> penis.</span>
 			<</if>>
-			<<if playerHasStrapon()>>
-				<span class="pink">You are overcome by sensation and climax under your strap-on.</span>
-			<<elseif $parasite.penis.name>>
-				<span class="pink">You are overcome by sensation, and ejaculate into the parasite latched onto your penis.</span>
+			<<if $parasite.penis.name and $parasite.penis.name isnot "parasite">>
+				<span class="pink">You are overcome by sensation, and ejaculate into the parasite latched onto your<<print $parasitePenis>> penis.</span>
+			<<elseif $worn.genitals.name is "chastity parasite">>
+				<span class="pink">You are overcome by sensation and climax into your chastity parasite.</span>
 			<<elseif _condom is "normal" or _condom is "used">>
-				<span class="pink">You are overcome by sensation, and ejaculate into the condom that covers your penis.</span>
+				<span class="pink">You are overcome by sensation, and ejaculate into the condom that covers your<<print $parasitePenis>> penis.</span>
 				<<set $player.condom.state to "used">>
+			<<elseif playerHasStrapon()>>
+				<span class="pink">You are overcome by sensation and climax under your strap-on.</span>
 			<<elseif $penisuse is "othervagina">>
 				<<if $NPCList[$penistarget].vagina is "penis">>
 					<<personselect $penistarget>>
 					<<penileejacstat>>
-					<span class="pink">You are overcome by sensation and ejaculate deep into <<his>> womb.</span>
+					<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> deep into <<his>> womb.</span>
+					<<if $earSlime.event is "ejaculate into someones vagina">>
+						<<set $earSlime.event to "">>
+						<<set $_earslimeEjaculateTask to true>>
+					<</if>>
 					<<purity -1>><<internalejac>><<creampie "npc" "vagina">>
+					<<if $earSlime.focus is "pregnancy" and $earSlime.growth gte 75>>
+						<<set _orgasmSpermRng to 25>>
+					<<elseif $earSlime.focus is "impregnation" and $earSlime.growth gte 75>>
+						<<set _orgasmSpermRng to 200>>
+					<<else>>
+						<<set _orgasmSpermRng to 100>>
+					<</if>>
+					<<if $semen_amount lte ($semen_volume * (6 / 24))>>
+						<<set _orgasmSpermRng to Math.floor(_orgasmSpermRng / 2)>>
+					<</if>>
 					<<if $abomination is 1>>
 						/*ToDo: Pregnancy, figure out how the Wraith, plantpeople, etc will handle pregnancy.*/
 					<<elseif $npcrow.includes($penistarget)>>
-						<<recordSperm `{target: $NPCList[$penistarget].fullDescription, spermOwner: "pc", spermType: "human", rngModifier: 100}`>>
+						<<recordSperm `{target: $NPCList[$penistarget].fullDescription, spermOwner: "pc", spermType: "human", rngModifier: _orgasmSpermRng}`>>
 					<<elseif $NPCList[$penistarget].pregnancy is 0 and $consensual is 1 and ["realistic", "fetish"].includes($pregnancytype)>>
 						/* Pregnancy Count */
 						<<set $_count to Object.values($storedNPCs).reduce((prev, curr) => {
@@ -57,6 +90,7 @@
 						<<if V.sexStats.pills.pills["contraceptive"].doseTaken gt 0>>
 							<<set $_impregnatedChance to Math.ceil($_impregnatedChance * 0.1)>>
 						<</if>>
+						<<set $_impregnatedChance to Math.floor($_impregnatedChance * (_orgasmSpermRng / 100))>>
 						/*If random NPC is impregnated, compress NPC and fetus*/
 						<<if ($_impregnatedChance gte random(0,200) or _npcForceImpregnation) and $_count lte 10>>
 							<<switch $NPCList[$penistarget].type>>
@@ -78,18 +112,18 @@
 					<</if>>
 				<<elseif $NPCList[$penistarget].vagina is "penisimminent" or $NPCList[$penistarget].vagina is "penisentrance">>
 					<<personselect $penistarget>>
-					<span class="pink">You are overcome by sensation and ejaculate on <<his>> pussy.</span>
+					<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> on <<his>> pussy.</span>
 				<</if>>
 			<<elseif $penisuse is "otheranus">>
 				<<for $_i = 0; $_i lt $enemynomax; $_i++>>
 					<<if $NPCList[$_i].penis is "otheranus" or $NPCList[$_i].vagina is "otheranus">>
 						<<personselect $_i>>
 						<<penileejacstat>>
-						<span class="pink">You are overcome by sensation and ejaculate deep into <<his>> bowels.</span>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> deep into <<his>> bowels.</span>
 						<<purity -1>><<internalejac>><<creampie "npc" "anus">>
 					<<elseif $NPCList[$_i].penis is "otheranusimminent" or $NPCList[$_i].penis is "otheranusentrance" or $NPCList[$_i].vagina is "otheranusimminent" or $NPCList[$_i].vagina is "otheranusentrance">>
 						<<personselect $_i>>
-						<span class="pink">You are overcome by sensation and ejaculate on <<his>> ass.</span>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> on <<his>> ass.</span>
 					<</if>>
 				<</for>>
 			<<elseif $penisuse is "othermouth">>
@@ -97,11 +131,11 @@
 					<<if $NPCList[$_i].mouth is "penis">>
 						<<personselect $_i>>
 						<<penileejacstat>>
-						<span class="pink">You are overcome by sensation and ejaculate into <<his>> mouth.</span>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> into <<his>> mouth.</span>
 						<<purity -1>><<internalejac>><<creampie "npc" "mouth">>
 					<<elseif $NPCList[$_i].mouth is "penisimminent" or $NPCList[$_i].mouth is "penisentrance">>
 						<<personselect $_i>>
-						<span class="pink">You are overcome by sensation and ejaculate on <<his>> face.</span>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> on <<his>> face.</span>
 					<</if>>
 				<</for>>
 			<<elseif $penisuse is "otherpenis">>
@@ -109,12 +143,12 @@
 					<<if $NPCList[$_i].penis is "penis">>
 						<<personselect $_i>>
 						<<penileejacstat>>
-						<span class="pink">You are overcome by sensation and ejaculate over <<his>> penis.</span>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> over <<his>> penis.</span>
 						<<purity -1>><<internalejac>>
 						<!-- <<creampie "npc" "penis">> -->
 					<<elseif $NPCList[$_i].penis is "penisimminent" or $NPCList[$_i].penis is "penisentrance">>
 						<<personselect $_i>>
-						<span class="pink">You are overcome by sensation and ejaculate over <<his>> cock and stomach.</span>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> over <<his>> cock and stomach.</span>
 					<</if>>
 				<</for>>
 			<<elseif $penisuse is "tentacle">>
@@ -124,11 +158,11 @@
 					<<purity -1>><<internalejac>>
 					<!-- <<creampie "npc" "tentacle">> -->
 				<<else>>
-					<span class="pink">You are overcome by sensation and ejaculate on the $tentaclePenis.</span>
+					<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> on the $tentaclePenis.</span>
 				<</if>>
 			<<elseif $mouth is "mpenisentrance">>
 				<span class="pink">
-					You are overcome by sensation. A surge of cum erupts from your penis onto your
+					You are overcome by sensation. A surge of _cumDesc erupts from your<<print $parasitePenis>> penis onto your
 					face<<if $rng gte 10 and $semen_amount gt ($semen_volume / 24) * 18>> and hair.<<bodyliquid "hair" "semen">><<else>>.<</if>>
 				</span>
 				<<if $semen_amount gt ($semen_volume / 24) * 18>>
@@ -136,9 +170,9 @@
 				<</if>>
 			<<elseif $mouth is "mpenis">>
 				<<if $selfsuckDepth gte 2>>
-					<span class="pink">You are overcome by sensation. A surge of cum pumps up the length of your penis and flows straight down your throat.</span>
+					<span class="pink">You are overcome by sensation. A surge of _cumDesc pumps up the length of your<<print $parasitePenis>> penis and flows straight down your throat.</span>
 				<<else>>
-					<span class="pink">You are overcome by sensation and ejaculate in your mouth, forcing you to quickly drink it down.</span>
+					<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> in your mouth, forcing you to quickly drink it down.</span>
 				<</if>>
 				<<set $_released to calculateSemenReleased()>>
 				<<if $_released gt 0>>
@@ -146,7 +180,7 @@
 				<</if>>
 
 			<<elseif playerChastity()>>
-				<span class="pink">You are overcome by sensation. A surge of cum erupts from your penis into your $worn.genitals.name.</span>
+				<span class="pink">You are overcome by sensation. A surge of _cumDesc erupts from your<<print $parasitePenis>> penis into your $worn.genitals.name.</span>
 			<<elseif $leftarm is "mpenisentrance" or $rightarm is "mpenisentrance">>
 				<<if $leftarm is "mpenisentrance" and $semen_amount gte random(500,1500)>>
 					<<set $leftFingersSemen to 1>>
@@ -156,9 +190,9 @@
 					<<set $rightFingersSemen to 1>>
 					<<set $_hand to ($_hand is undefined ? "right hand" : "hands")>>
 				<</if>>
-				<span class="pink">You are overcome by sensation. A surge of cum erupts from your penis<<if $_hand>>, and some of it gets on your $_hand<</if>>.</span>
+				<span class="pink">You are overcome by sensation. A surge of _cumDesc erupts from your<<print $parasitePenis>> penis<<if $_hand>>, and some of it gets on your $_hand<</if>>.</span>
 			<<else>>
-				<span class="pink">You are overcome by sensation. A surge of cum erupts from your penis.</span>
+				<span class="pink">You are overcome by sensation. A surge of _cumDesc erupts from your<<print $parasitePenis>> penis.</span>
 			<</if>>
 			<<if $semen_amount lte ($semen_volume * (6 / 24))>>
 				<span class="pink">Exhausted, your body only manages to produce a few droplets of watery cum.</span>
@@ -167,13 +201,13 @@
 				<span class="pink">Tired from overuse, your cum is thin and watery.</span>
 				<<semenvolume -1>>
 			<<elseif $semen_amount lte ($semen_volume * (18 / 24))>>
-				<span class="pink">The repeated orgasms are taking their toll, reducing the amount of cum your body manages to produce.</span>
+				<span class="pink">The repeated orgasms are taking their toll, reducing the amount of _cumDesc your body manages to produce.</span>
 				<<semenvolume -1>>
 			<</if>>
 
 		<</if>>
 	<</if>>
-	<<if $player.vaginaExist>>
+	<<if $player.vaginaExist and !_deniedOrgasm>>
 		<<if !$player.penisExist>>
 			<span class="pink">You are overcome by sensation and climax.</span>
 		<</if>>
@@ -184,17 +218,17 @@
 		<</if>>
 	<</if>>
 
-	<<if $arousalmasochism/$arousal gte 0.70>>
+	<<if $arousalmasochism/$arousal gte 0.70 and !_deniedOrgasm>>
 		<!-- If over 70% arousal is from pain, PC has added reaction NG v2.7 -->
 		<span class="green"> Your body writhes and yearns for more pain.</span>
 		<<masochism 5>>
 	<</if>>
 
 	<<if $masturbation_bowl is 1>><<set _liquid_collection_text to []>><</if>>
-	<<if $player.penisExist>>
+	<<if $player.penisExist and !_deniedOrgasm>>
 		<<semenOrgasm>>/*Makes changes to semen values*/
 	<</if>>
-	<<if $player.vaginaExist>>
+	<<if $player.vaginaExist and !_deniedOrgasm>>
 		<<vaginaFluidOrgasm>>
 		<<if _lube_released gt 10>>
 			<span class="pink">Fluids gush from your <<pussy>>.</span>
@@ -203,7 +237,17 @@
 		<</if>>
 	<</if>>
 
-	<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
+	<<if _deniedOrgasm>>
+		<span class="blue">A forgiving warmth fills you.</span>
+		You can tell it's the slimes in your ears, rewarding you for having a ruined orgasm.
+		<<gcorruption>><<ltrauma>><<trauma -1>><<corruption 1>>
+		<br>
+	<<elseif $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime" and $_earslimeEjaculateTask>>
+		<span class="green">A pleased warmth fills you.</span>
+		You almost forget the strife of the world. You can tell it's the slimes in your ears, rewarding you for having an orgasm while completing it's request.
+		<<gcorruption>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption 2>>
+		<br>
+	<<elseif $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
 		<span class="blue">A soothing warmth fills you.</span>
 		You almost forget the strife of the world. You can tell it's the slimes in your ears, rewarding you for having an orgasm.
 		<<gcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption 2>>
@@ -221,43 +265,25 @@
 	<</if>>
 
 	<!-- This code is orphaned, the $swarmchestgrab variable is not referenced or set in any other file -->
-	<<if $swarmchestgrab gte 1>>
+	<<if $swarmchestgrab gte 1 and !_deniedOrgasm>>
 		<span class="pink">Your convulsions launch the _swarmcreature away from your chest.</span>
 		<<set $swarmchestgrab to 0>>
 	<</if>>
 
-	<<if $orgasmcount lte 1>>
+	<<if $orgasmcount lte 4>>
 		<<set $stress -= 200>>
+		<<set $_arousalDrop to -3000 - ($orgasmcount * 1000)>>
+		<<if _deniedOrgasm>><<set $_arousalDrop += 1000>><</if>>
 		<<if $drugged gte 1>>
-			<<arousal -4000>><<drugs -20>>
+			<<arousal $_arousalDrop>><<drugs -20>>
 		<<else>>
-			<<arousal -8000>>
+			<<arousal `$_arousalDrop * 2`>>
 		<</if>>
-		<span class="pink">You shudder from the sudden release.</span>
-	<<elseif $orgasmcount lte 2>>
-		<<set $stress -= 200>>
-		<<if $drugged gte 1>>
-			<<arousal -5000>><<drugs -20>>
+		<<if _deniedOrgasm>>
+			<span class="pink">You shudder despite the lack of release.</span>
 		<<else>>
-			<<arousal -9000>>
+			<span class="pink">You shudder from the sudden release.</span>
 		<</if>>
-		<span class="pink">You shudder from the sudden release.</span>
-	<<elseif $orgasmcount lte 3>>
-		<<set $stress -= 200>>
-		<<if $drugged gte 1>>
-			<<arousal -6000>><<drugs -20>>
-		<<else>>
-			<<arousal -10000>>
-		<</if>>
-		<span class="pink">You shudder from the sudden release.</span>
-	<<elseif $orgasmcount lte 4>>
-		<<set $stress -= 200>>
-		<<if $drugged gte 1>>
-			<<arousal -7000>><<drugs -20>>
-		<<else>>
-			<<arousal -10000>>
-		<</if>>
-		<span class="pink">You shudder from the sudden release.</span>
 	<<elseif $orgasmcount lte 5>>
 		<<set $stress -= 200>>
 		<<if $drugged gte 1>>
@@ -266,51 +292,27 @@
 			<<arousal -10000>>
 		<</if>>
 		<span class="pink">You feel spent.</span>
-	<<elseif $orgasmcount lte 6>>
-		<<set $stress -= 100>>
-		<<if $drugged gte 1>>
-			<<arousal -7000>><<drugs -20>>
-		<<else>>
-			<<arousal -10000>>
-		<</if>>
-		<span class="pink">Despite feeling like you've nothing left to give, the orgasm is intense.</span>
-	<<elseif $orgasmcount lte 7>>
-		<<set $stress -= 100>>
-		<<if $drugged gte 1>>
-			<<arousal -6000>><<drugs -20>>
-		<<else>>
-			<<arousal -10000>>
-		<</if>>
-		<span class="pink">Despite feeling like you've nothing left to give, the orgasm is intense.</span>
 	<<elseif $orgasmcount lte 8>>
 		<<set $stress -= 100>>
 		<<if $drugged gte 1>>
-			<<arousal -5000>><<drugs -20>>
+			<<set $_arousalDrop to -7000 + (($orgasmcount - 8) * 1000)>>
+			<<arousal $_arousalDrop>><<drugs -20>>
 		<<else>>
 			<<arousal -10000>>
 		<</if>>
-		<span class="pink">Despite feeling like you've nothing left to give, the orgasm is intense.</span>
-	<<elseif $orgasmcount lte 9>>
-		<<if $drugged gte 1>>
-			<<arousal -4000>><<drugs -20>>
+		<<if _deniedOrgasm>>
+			<span class="pink">Despite being denied the orgasm, your left feeling like you've nothing to give.</span>
 		<<else>>
-			<<arousal -10000>>
+			<span class="pink">Despite feeling like you've nothing left to give, the orgasm is intense.</span>
 		<</if>>
-		<span class="pink">Your body is tiring from the repeated climaxes.</span>
-	<<elseif $orgasmcount lte 10>>
-		<<if $drugged gte 1>>
-			<<arousal -3000>><<drugs -20>>
-		<<else>>
-			<<arousal -10000>>
-		<</if>>
-		<span class="pink">Your body is tiring from the repeated climaxes.</span>
 	<<elseif $orgasmcount lte 11>>
 		<<if $drugged gte 1>>
-			<<arousal -2000>><<drugs -20>>
+			<<set $_arousalDrop to -4000 + (($orgasmcount - 9) * 1000)>>
+			<<arousal $_arousalDrop>><<drugs -20>>
 		<<else>>
 			<<arousal -10000>>
 		<</if>>
-		<span class="pink">Your body is tiring from the repeated climaxes.</span>
+		<span class="pink">Your body is tiring from the repeated<<if _deniedOrgasm>> failed<</if>> climaxes.</span>
 	<<elseif $orgasmcount lte 18>>
 		<<if $drugged gte 1>>
 			<<arousal -2000>><<drugs -20>>
@@ -318,7 +320,7 @@
 			<<arousal -10000>>
 		<</if>>
 		<<set $stress += 100>>
-		<span class="pink">The repeated orgasms are causing you great strain. You don't want to cum any more.</span>
+		<span class="pink">The repeated<<if _deniedOrgasm>> failed<</if>> orgasms are causing you great strain. You don't want to cum any more.</span>
 	<<elseif $orgasmcount lte 23>>
 		<<if $drugged gte 1>>
 			<<arousal -2000>><<drugs -20>>
@@ -326,7 +328,7 @@
 			<<arousal -10000>>
 		<</if>>
 		<<set $stress += 100>><<combattrauma 10>>
-		<span class="pink">Your mind and body buckle under the continued orgasms.</span>
+		<span class="pink">Your mind and body buckle under the continued<<if _deniedOrgasm>> failed<</if>> orgasms.</span>
 	<<else>>
 		<<if $drugged gte 1>>
 			<<arousal -2000>><<drugs -20>>
@@ -334,18 +336,22 @@
 			<<arousal -10000>>
 		<</if>>
 		<<set $stress += 100>><<combattrauma 10>><<pain 1>>
-		<span class="red">You've had so many orgasms in such a short span of time that you no longer gain any pleasure from them. They're painful, both physically and psychologically.</span>
+		<<if _deniedOrgasm>>
+			<span class="red">You've had so many failed orgasms in such a short span of time that you are numb to them.</span>
+		<<else>>
+			<span class="red">You've had so many orgasms in such a short span of time that you no longer gain any pleasure from them. They're painful, both physically and psychologically.</span>
+		<</if>>
 	<</if>>
 
 	<!-- Chance to get "dick drunk" after 3rd orgasm, chance is 45% for consensual and 15% otherwise, +5% for each following orgasm, but aphrodisiacs make it 100% -->
-	<<if $orgasmcount gte 3 and $drunk lte 1000 and playerIsPenetrated() and $mouth isnot "mpenis">>
+	<<if $orgasmcount gte 3 and $drunk lte 1000 and playerIsPenetrated() and $mouth isnot "mpenis" and !_deniedOrgasm>>
 		<<if $drugged gt 0 or (random(1,100) + ($orgasmcount * 5) gte ($consensual ? 70 : 100))>>
 			<<alcohol 25>>
 			<span class="purple"><<print either("You feel dizzy.", "You feel lightheaded.", "You can't think straight.")>></span>
 		<</if>>
 	<</if>>
 	<!-- If came while being choked -->
-	<<if $neckuse is "hand" and $oxygen lt $oxygenmax>>
+	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and !_deniedOrgasm>>
 		<<set $chokeorgasm += 1>>
 		<<if $chokeorgasm gte 35 and $choketrait isnot 1>>
 			<<set $choketrait = 1>>
@@ -356,7 +362,7 @@
 		<span class="pink">Bustin' makes you feel good.</span>
 	<</if>>
 	<br><br>
-	<<if $orgasmtrait gte 1>>
+	<<if $orgasmtrait gte 1 and !_deniedOrgasm>>
 		<<set $stress -= 100>>
 	<</if>>
 
@@ -842,8 +848,11 @@
 		<<else>>
 			<<set $_semen_gain to Math.floor($semen_volume * (1/24))>>
 		<</if>>
-		<<if $cow gte 6>>
+		<<if $cow gte 6 or ($earSlime.growth gte 100 and $earSlime.focus is "impregnation")>>
 			<<set $_semen_gain *= 2>>
+		<</if>>
+		<<if $earSlime.growth gte 100 and $earSlime.focus is "pregnancy">>
+			<<set $_semen_gain /= 4>>
 		<</if>>
 		<<if $drugged gte 1>>
 			<<set $_semen_gain += Math.floor($semen_volume * (1/24))>>
@@ -862,7 +871,14 @@
 			<<set $semen_amount to $semen_volume>>
 		<</if>>
 	<</if>>
-	<<milk_amount `Math.floor(($milk_volume / 24))`>>
+	<<set $_milk_gain to $milk_volume / 24>>
+	<<if $earSlime.growth gte 75 and $earSlime.focus is "impregnation">>
+		<<set $_milk_gain /= 4>>
+	<</if>>
+	<<if $earSlime.growth gte 75 and $earSlime.focus is "pregnancy">>
+		<<set $_milk_gain *= 2>>
+	<</if>>
+	<<milk_amount `Math.floor($_milk_gain)`>>
 	<<if $milk_amount is $milk_volume and $lactating>>
 		<<set $milkFullPain to Math.clamp(($milkFullPain || 0) + Math.ceil($milk_volume / 1000),0,200 + Math.ceil($milk_volume / 60))>>
 	<<else>>

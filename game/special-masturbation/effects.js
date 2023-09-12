@@ -34,7 +34,19 @@ function masturbationeffects() {
 		return "";
 	};
 
-	const otherVariables = { br, span, otherElement, genitalsExposed, breastsExposed, selectedToy, toyDisplay, additionalEffect: {} };
+	const earSlimeDefy = () => V.earSlime.growth >= 100 && V.earSlime.defyCooldown && V.pain < V.earSlime.defyCooldown * 5;
+
+	const otherVariables = {
+		br,
+		span,
+		otherElement,
+		genitalsExposed,
+		breastsExposed,
+		selectedToy,
+		toyDisplay,
+		earSlimeDefy,
+		additionalEffect: { earSlimeDefy: [] },
+	};
 
 	if (V.player.vaginaExist) {
 		otherVariables.hymenIntact = V.player.virginity.vaginal === true && V.sexStats.vagina.pregnancy.totalBirthEvents === 0;
@@ -52,7 +64,10 @@ function masturbationeffects() {
 			V.leftaction = "mrest";
 			V.corruptionMasturbation = false;
 			delete V.corruptionMasturbationCount;
-		} else if (playerHeatMinArousal() + playerRutMinArousal() >= 3000) {
+		} else if (
+			playerHeatMinArousal() + playerRutMinArousal() >= 3000 ||
+			(playerHeatMinArousal() + playerRutMinArousal() >= 1000 && V.earSlime.growth >= 100 && V.earSlime.defyCooldown)
+		) {
 			fragment.append(
 				Wikifier.wikifyEval(
 					'The slimes in your ear feel that it\'s not worth trying to force you to masturbate in your current state, <span class="blue">and it lets you go.</span>'
@@ -92,6 +107,17 @@ function masturbationeffects() {
 							V.mouthaction = 0;
 							V.mouth = 0;
 							V.penisuse = 0;
+						} else if (V.mouth === "mchastityparasiteentrance") {
+							fragment.append(
+								Wikifier.wikifyEval(
+									'<span class="green">With the loss of the control from the slimes in your ear, you move away from your chastity parasite.</span>'
+								)
+							);
+							fragment.append(" ");
+							V.mouthactiondefault = "rest";
+							V.mouthaction = 0;
+							V.mouth = 0;
+							V.penisuse = 0;
 						} else if (V.mouth === "mvaginaentrance") {
 							fragment.append(
 								Wikifier.wikifyEval(
@@ -122,19 +148,19 @@ function masturbationeffects() {
 
 	fragment.append(masturbationeffectsMouth(otherVariables));
 
-	if (otherVariables.additionalEffect.hands === "ballplayeffects") {
-		if (V.arousal >= V.arousalmax * (4 / 5)) {
+	if (otherVariables.additionalEffect.hands === "ballplayeffects" && V.worn.genitals.name !== "chastity parasite") {
+		if (V.arousal >= V.arousalmax * (4 / 5) || (V.earSlime.focus === "impregnation" && V.earSlime.growth >= 100)) {
 			if (genitalsExposed()) {
-				fragment.append(Wikifier.wikifyEval('Your <<penis>> bucks eagerly, and <span class="pink">precum leaps from the tip</span>.'));
+				fragment.append(Wikifier.wikifyEval('Your <<penis>> bucks eagerly, and <span class="pink">precum leaps from the tip.</span>'));
 			} else {
-				fragment.append(Wikifier.wikifyEval('Your <<penis>> bucks eagerly, and <span class="pink">precum seeps through your <<exposedlower>></span>.'));
+				fragment.append(Wikifier.wikifyEval('Your <<penis>> bucks eagerly, and <span class="pink">precum seeps through your <<exposedlower>>.</span>'));
 			}
 		} else if (V.arousal >= V.arousalmax * (3 / 5)) {
 			if (genitalsExposed()) {
-				fragment.append(Wikifier.wikifyEval('Your <<penis>> bucks eagerly, and <span class="pink">precum beads at the tip</span>.'));
+				fragment.append(Wikifier.wikifyEval('Your <<penis>> bucks eagerly, and <span class="pink">precum beads at the tip.</span>'));
 			} else {
 				fragment.append(
-					Wikifier.wikifyEval('Your <<penis>> bucks eagerly, and <span class="pink">your precum creates a dark spot on your <<exposedlower>></span>.')
+					Wikifier.wikifyEval('Your <<penis>> bucks eagerly, and <span class="pink">your precum creates a dark spot on your <<exposedlower>>.</span>')
 				);
 			}
 		} else if (V.arousal >= V.arousalmax * (2 / 5)) {
@@ -145,27 +171,81 @@ function masturbationeffects() {
 		fragment.append(" ");
 	}
 
-	if (V.player.penisExist && otherVariables.additionalEffect.hands !== "ballplayeffects" && V.arousal >= V.arousalmax * (3 / 5) && V.mouth !== "mpenis") {
-		if (V.arousal >= V.arousalmax * (4 / 5)) {
+	if (
+		V.player.penisExist &&
+		otherVariables.additionalEffect.hands !== "ballplayeffects" &&
+		V.arousal >= V.arousalmax * (3 / 5) &&
+		V.mouth !== "mpenis" &&
+		V.worn.genitals.name !== "chastity parasite"
+	) {
+		if (V.arousal >= V.arousalmax * (4 / 5) || (V.earSlime.focus === "impregnation" && V.earSlime.growth >= 100)) {
 			if (genitalsExposed()) {
-				fragment.append(Wikifier.wikifyEval('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum leaps from the tip</span>.'));
+				fragment.append(Wikifier.wikifyEval('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum leaps from the tip.</span>'));
 			} else {
 				fragment.append(
-					Wikifier.wikifyEval('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum seeps through your <<exposedlower>></span>.')
+					Wikifier.wikifyEval('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum seeps through your <<exposedlower>>.</span>')
 				);
 			}
 		} else {
 			if (genitalsExposed()) {
-				fragment.append(Wikifier.wikifyEval('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum beads at the tip</span>.'));
+				fragment.append(Wikifier.wikifyEval('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum beads at the tip.</span>'));
 			} else {
 				fragment.append(
 					Wikifier.wikifyEval(
-						'Your <<penis "strap-on">> bucks eagerly, and <span class="pink">your precum creates a dark spot on your <<exposedlower>></span>.'
+						'Your <<penis "strap-on">> bucks eagerly, and <span class="pink">your precum creates a dark spot on your <<exposedlower>>.</span>'
 					)
 				);
 			}
 		}
 		fragment.append(" ");
+	}
+
+	if (otherVariables.additionalEffect.earSlimeDefy.length) {
+		fragment.append(
+			Wikifier.wikifyEval(
+				`All your attempts to feel pleasure lead to alternating feelings of <span class="lewd">pleasure</span> and <span class="red">pain</span> directly to your ${formatList(
+					otherVariables.additionalEffect.earSlimeDefy,
+					"and",
+					true
+				)}. <<gpain>>`
+			)
+		);
+		fragment.append(" ");
+	}
+
+	if (V.worn.genitals.name === "chastity parasite" && V.earSlime.vibration > 0) {
+		if (V.earSlime.vibration > 1) wikifier("arousal", Math.clamp(25 * V.earSlime.vibration, 0, 1000), "masturbationGenital");
+		if (V.earSlime.corruption < 100 && V.earSlime.vibration > 20) {
+			V.earSlime.vibration = 20;
+		} else if (V.earSlime.vibration > 60) {
+			V.earSlime.vibration = 60;
+		}
+
+		if (V.earSlime.vibration === 1) {
+			// Prevents a double message
+			V.earSlime.vibration++;
+		} else if (V.earSlime.vibration <= 10) {
+			fragment.append(Wikifier.wikifyEval('<span class="lewd">Your chastity parasite softly pulsates around your <<penis>>.</span>'));
+		} else if (V.earSlime.vibration <= 20) {
+			fragment.append(Wikifier.wikifyEval('<span class="lewd">Your chastity parasite pulsates around your <<penis>>.</span>'));
+		} else if (V.earSlime.vibration <= 30) {
+			fragment.append(
+				Wikifier.wikifyEval(
+					`<span class="lewd">Your chastity parasite vibrates on your <<penis>>${
+						V.mouth === "mchastityparasiteentrance" ? " and tongue" : ""
+					}.</span>`
+				)
+			);
+		} else {
+			fragment.append(
+				Wikifier.wikifyEval(
+					`<span class="lewd">Your chastity parasite strongly vibrates on your <<penis>>${
+						V.mouth === "mchastityparasiteentrance" ? " and tongue" : ""
+					}.</span>`
+				)
+			);
+		}
+		if (V.earSlime.vibration > 1) fragment.append(" ");
 	}
 
 	if (V.player.vaginaExist && V.vaginaArousalWetness >= 60) {
@@ -190,8 +270,8 @@ function masturbationeffects() {
 	}
 
 	if (
-		random(0, 100) >= Math.clamp(135 - V.corruption_slime / 2, 80, 98) &&
-		V.corruption_slime > currentSkillValue("willpower") / 10 &&
+		random(0, 100) >= Math.clamp(135 - V.earSlime.corruption / 2, 80, 98) &&
+		V.earSlime.corruption > currentSkillValue("willpower") / 10 &&
 		V.corruptionMasturbation === undefined
 	) {
 		V.corruptionMasturbation = true;
@@ -209,7 +289,7 @@ function masturbationeffects() {
 function masturbationeffectsArms(
 	arm,
 	doubleAction,
-	{ span, otherElement, additionalEffect, selectedToy, toyDisplay, genitalsExposed, breastsExposed, hymenIntact }
+	{ span, otherElement, additionalEffect, selectedToy, toyDisplay, genitalsExposed, breastsExposed, hymenIntact, earSlimeDefy }
 ) {
 	const fragment = document.createDocumentFragment();
 
@@ -230,7 +310,7 @@ function masturbationeffectsArms(
 	if (V[armAction] === 0) return fragment;
 
 	if (V[armAction] === "mrest") {
-		if (random(0, 100) >= 91 && V.corruption_slime > currentSkillValue("willpower") / 10 && V.corruptionMasturbation === undefined) {
+		if (random(0, 100) >= 91 && V.earSlime.corruption > currentSkillValue("willpower") / 10 && V.corruptionMasturbation === undefined) {
 			V.corruptionMasturbation = true;
 			V.corruptionMasturbationCount = random(2, 6);
 			fragment.append(span("The slime in your ear decides that it will continue for you.", "red"));
@@ -634,122 +714,295 @@ function masturbationeffectsArms(
 			V[arm + "arm"] = "mpenisentrance";
 			if (doubleAction) V[otherArm + "arm"] = "mpenisentrance";
 
-			wikifier("arousal", 100 * handsOn, "masturbationGenital");
-			// The text output currently does not care which hand is used or if both hands are used
-			if (!V.worn.over_lower.vagina_exposed) {
-				fragment.append(
-					Wikifier.wikifyEval(
-						`<span class="blue">You run your fingers over your <<penis>>${
-							calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
-						}.</span>`
-					)
-				);
-			} else if (!V.worn.lower.vagina_exposed) {
-				fragment.append(
-					Wikifier.wikifyEval(
-						`<span class="blue">You run your fingers over your <<penis>>${
-							calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
-						}.</span>`
-					)
-				);
-			} else if (!V.worn.under_lower.vagina_exposed) {
-				fragment.append(
-					Wikifier.wikifyEval(
-						`<span class="blue">You run your fingers over your <<penis>>${
-							calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
-						}.</span>`
-					)
-				);
+			if (earSlimeDefy()) {
+				// The text output currently does not care which hand is used or if both hands are used
+				if (!V.worn.over_lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You run your fingers over your <<penis>>${calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""}.`
+						)
+					);
+				} else if (!V.worn.lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You run your fingers over your <<penis>>${calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""}.`
+						)
+					);
+				} else if (!V.worn.under_lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You run your fingers over your <<penis>>${calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""}.`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(`You run your fingers over your <<penis>> and briefly freeze. <span class="red">You didn't feel anything.</span>`)
+					);
+				}
 			} else {
-				fragment.append(Wikifier.wikifyEval('<span class="blue">You run your fingers over your <<penis>> and shiver in anticipation.</span>'));
+				wikifier("arousal", 100 * handsOn, "masturbationGenital");
+				// The text output currently does not care which hand is used or if both hands are used
+				if (!V.worn.over_lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your <<penis>>${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else if (!V.worn.lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your <<penis>>${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else if (!V.worn.under_lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your <<penis>>${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else {
+					fragment.append(Wikifier.wikifyEval('<span class="blue">You run your fingers over your <<penis>> and shiver in anticipation.</span>'));
+				}
+			}
+			break;
+		case "mchastityparasiteentrance":
+			clearAction("mchastityparasiterub");
+			V[arm + "arm"] = "mchastityparasiteentrance";
+			if (doubleAction) V[otherArm + "arm"] = "mchastityparasiteentrance";
+			if (V.earSlime.defyCooldown) {
+				// The text output currently does not care which hand is used or if both hands are used
+				if (!V.worn.over_lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your chastity parasite${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else if (!V.worn.lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your chastity parasite${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else if (!V.worn.under_lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your chastity parasite${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You run your fingers over your chastity parasite and briefly freeze. <span class="red">You didn't feel anything.</span>`
+						)
+					);
+				}
+			} else {
+				wikifier("arousal", 200 * handsOn, "masturbationGenital");
+				// The text output currently does not care which hand is used or if both hands are used
+				if (!V.worn.over_lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your chastity parasite${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else if (!V.worn.lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your chastity parasite${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else if (!V.worn.under_lower.vagina_exposed) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your fingers over your chastity parasite${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval('<span class="blue">You run your fingers over your chastity parasite and shiver in anticipation.</span>')
+					);
+				}
+				if (!V.earSlime.vibration) {
+					V.earSlime.vibration = 1;
+					wikifier("arousal", 50, "masturbationGenital");
+					fragment.append(Wikifier.wikifyEval(' <span class="lewd">It starts to softly pulsate round your <<penis>>.</span>'));
+				}
 			}
 			break;
 		case "mpenisglans":
 			clearAction();
-			wikifier("arousal", 200 * handsOn, "masturbationPenis");
-			if (handsOn === 2) {
+			if (earSlimeDefy()) {
+				wikifier("arousal", 100 * handsOn, "masturbationPenis");
+				wikifier("pain", 1);
+				additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "virgin penis" : "penis");
+				fragment.append(Wikifier.wikifyEval(`Your forced to roughtly rub your foreskin to feel something.`));
+			} else if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") {
+				wikifier("arousal", 400 * handsOn, "masturbationPenis");
 				if (V.player.virginity.penile === true) {
 					if (V.arousal >= (V.arousalmax / 5) * 4) {
 						fragment.append(
-							span("You rub your virgin foreskin with increasing speed. Strange feelings emanate from the tip and through your body.")
+							span(
+								"You eagerly rub your precum covered virgin foreskin with increasing speed. Strange feelings emanate from the tip and through your body."
+							)
 						);
 					} else if (V.arousal >= (V.arousalmax / 5) * 3) {
 						fragment.append(
-							span("You rub your virgin foreskin with your thumb and play with the tip. It's sensitive even though you can't pull it back.")
+							span(
+								"You rub your precum covered virgin foreskin with your thumb and eagerly play with the tip. It's sensitive even though you can't pull it back."
+							)
 						);
 					} else {
-						fragment.append(span("You hold your tip of your virgin penis in your palm and gently rub the foreskin with your thumb."));
+						fragment.append(
+							span("You hold your tip of your virgin penis in your palm and eagerly rub the precum covered foreskin with your thumb.")
+						);
 					}
 				} else {
 					if (V.arousal >= (V.arousalmax / 5) * 4) {
-						fragment.append(span("You retract and relax your foreskin, rubbing it over your glans again and again."));
+						fragment.append(
+							span(
+								"You eagerly retract and relax your precum covered foreskin, rubbing it over your glans again and again. Pleasurable feelings emanate from the tip and through your body."
+							)
+						);
 					} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-						fragment.append(span("You rub your foreskin against your glans and tease your frenulum."));
+						fragment.append(span("You eagerly rub your precum covered foreskin against your glans and tease your frenulum."));
 					} else {
-						fragment.append(Wikifier.wikifyEval("You hold your <<penis>> in your palm and rub your foreskin against your glans."));
+						fragment.append(Wikifier.wikifyEval("You hold your precum covered <<penis>> in your palm and rub your foreskin against your glans."));
 					}
 				}
 			} else {
-				if (V.player.virginity.penile === true) {
-					if (V.arousal >= (V.arousalmax / 5) * 4) {
-						fragment.append(
-							span("You rub your virgin foreskin with increasing speed. Strange feelings emanate from the tip and through your body.")
-						);
-					} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-						fragment.append(
-							span("You rub your virgin foreskin with your thumb and play with the tip. It's sensitive even though you can't pull it back.")
-						);
+				wikifier("arousal", 200 * handsOn, "masturbationPenis");
+				if (handsOn === 2) {
+					if (V.player.virginity.penile === true) {
+						if (V.arousal >= (V.arousalmax / 5) * 4) {
+							fragment.append(
+								span("You rub your virgin foreskin with increasing speed. Strange feelings emanate from the tip and through your body.")
+							);
+						} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+							fragment.append(
+								span("You rub your virgin foreskin with your thumb and play with the tip. It's sensitive even though you can't pull it back.")
+							);
+						} else {
+							fragment.append(span("You hold your tip of your virgin penis in your palm and gently rub the foreskin with your thumb."));
+						}
 					} else {
-						fragment.append(span("You hold your tip of your virgin penis in your palm and gently rub the foreskin with your thumb."));
+						if (V.arousal >= (V.arousalmax / 5) * 4) {
+							fragment.append(span("You retract and relax your foreskin, rubbing it over your glans again and again."));
+						} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+							fragment.append(span("You rub your foreskin against your glans and tease your frenulum."));
+						} else {
+							fragment.append(Wikifier.wikifyEval("You hold your <<penis>> in your palm and rub your foreskin against your glans."));
+						}
 					}
 				} else {
-					if (V.arousal >= (V.arousalmax / 5) * 4) {
-						fragment.append(span("You retract and relax your foreskin, rubbing it over your glans again and again."));
-					} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-						fragment.append(span("You rub your foreskin against your glans and tease your frenulum."));
+					if (V.player.virginity.penile === true) {
+						if (V.arousal >= (V.arousalmax / 5) * 4) {
+							fragment.append(
+								span("You rub your virgin foreskin with increasing speed. Strange feelings emanate from the tip and through your body.")
+							);
+						} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+							fragment.append(
+								span("You rub your virgin foreskin with your thumb and play with the tip. It's sensitive even though you can't pull it back.")
+							);
+						} else {
+							fragment.append(span("You hold your tip of your virgin penis in your palm and gently rub the foreskin with your thumb."));
+						}
 					} else {
-						fragment.append(Wikifier.wikifyEval("You hold your <<penis>> in your palm and rub your foreskin against your glans."));
+						if (V.arousal >= (V.arousalmax / 5) * 4) {
+							fragment.append(span("You retract and relax your foreskin, rubbing it over your glans again and again."));
+						} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+							fragment.append(span("You rub your foreskin against your glans and tease your frenulum."));
+						} else {
+							fragment.append(Wikifier.wikifyEval("You hold your <<penis>> in your palm and rub your foreskin against your glans."));
+						}
 					}
 				}
 			}
 			break;
 		case "mpenisshaft":
 			clearAction();
-			wikifier("arousal", 200 * handsOn, "masturbationPenis");
-			if (handsOn === 2) {
+			if (earSlimeDefy()) {
+				wikifier("arousal", 100 * handsOn, "masturbationPenis");
+				wikifier("pain", 1);
+				additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "virgin penis" : "penis");
+				fragment.append(Wikifier.wikifyEval(`Your forced to roughtly run your fingers up and down to feel anything.`));
+			} else if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") {
+				wikifier("arousal", 400 * handsOn, "masturbationPenis");
 				if (V.player.virginity.penile === true) {
 					if (V.arousal >= (V.arousalmax / 5) * 4) {
-						fragment.append(span("You run your fingers up and down your virgin penis as roughly as your foreskin will allow."));
+						fragment.append(
+							span("You roughly run your fingers up and down your precum covered virgin penis, generating a lewd warmth throughout your body.")
+						);
 					} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-						fragment.append(span("You run your fingers up and down the length of your virgin penis."));
+						fragment.append(span("You eagerly run your fingers up and down the length of your precum covered virgin penis."));
 					} else {
-						fragment.append(Wikifier.wikifyEval("You run your fingers against the underside of your <<penis>>, enjoying the sensation."));
+						fragment.append(Wikifier.wikifyEval("You run your fingers against the underside of your <<penis>>, enjoying the lewd warmth."));
 					}
 				} else {
 					if (V.arousal >= (V.arousalmax / 5) * 4) {
-						fragment.append(Wikifier.wikifyEval("You pump up and down the length of your <<penis>>."));
+						fragment.append(Wikifier.wikifyEval("You roughly pump up and down the length of your <<penis>>, excess precum flies from the tip."));
 					} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-						fragment.append(span("You run your fingers up and down your shaft, tickling slightly and generating a lewd warmth."));
+						fragment.append(
+							span("You eagerly run your fingers up and down your precum covered shaft, generating a lewd warmth throughout your body.")
+						);
 					} else {
-						fragment.append(Wikifier.wikifyEval("You gently caress the length of your <<penis>>."));
+						fragment.append(Wikifier.wikifyEval("You caress the length of your <<penis>>, generating a lewd warmth."));
 					}
 				}
 			} else {
-				if (V.player.virginity.penile === true) {
-					if (V.arousal >= (V.arousalmax / 5) * 4) {
-						fragment.append(span("You run your fingers up and down your virgin penis as roughly as your foreskin will allow."));
-					} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-						fragment.append(span("You run your fingers up and down the length of your virgin penis."));
+				wikifier("arousal", 200 * handsOn, "masturbationPenis");
+				if (handsOn === 2) {
+					if (V.player.virginity.penile === true) {
+						if (V.arousal >= (V.arousalmax / 5) * 4) {
+							fragment.append(span("You run your fingers up and down your virgin penis as roughly as your foreskin will allow."));
+						} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+							fragment.append(span("You run your fingers up and down the length of your virgin penis."));
+						} else {
+							fragment.append(Wikifier.wikifyEval("You run your fingers against the underside of your <<penis>>, enjoying the sensation."));
+						}
 					} else {
-						fragment.append(Wikifier.wikifyEval("You run your fingers against the underside of your <<penis>>, enjoying the sensation."));
+						if (V.arousal >= (V.arousalmax / 5) * 4) {
+							fragment.append(Wikifier.wikifyEval("You pump up and down the length of your <<penis>>."));
+						} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+							fragment.append(span("You run your fingers up and down your shaft, tickling slightly and generating a lewd warmth."));
+						} else {
+							fragment.append(Wikifier.wikifyEval("You gently caress the length of your <<penis>>."));
+						}
 					}
 				} else {
-					if (V.arousal >= (V.arousalmax / 5) * 4) {
-						fragment.append(Wikifier.wikifyEval("You pump up and down the length of your <<penis>>."));
-					} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-						fragment.append(span("You run your fingers up and down your shaft, tickling slightly and generating a lewd warmth."));
+					if (V.player.virginity.penile === true) {
+						if (V.arousal >= (V.arousalmax / 5) * 4) {
+							fragment.append(span("You run your fingers up and down your virgin penis as roughly as your foreskin will allow."));
+						} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+							fragment.append(span("You run your fingers up and down the length of your virgin penis."));
+						} else {
+							fragment.append(Wikifier.wikifyEval("You run your fingers against the underside of your <<penis>>, enjoying the sensation."));
+						}
 					} else {
-						fragment.append(Wikifier.wikifyEval("You gently caress the length of your <<penis>>."));
+						if (V.arousal >= (V.arousalmax / 5) * 4) {
+							fragment.append(Wikifier.wikifyEval("You pump up and down the length of your <<penis>>."));
+						} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+							fragment.append(span("You run your fingers up and down your shaft, tickling slightly and generating a lewd warmth."));
+						} else {
+							fragment.append(Wikifier.wikifyEval("You gently caress the length of your <<penis>>."));
+						}
 					}
 				}
 			}
@@ -764,6 +1017,120 @@ function masturbationeffectsArms(
 				fragment.append(Wikifier.wikifyEval(`<span class="lblue">You move your ${arm} hand away from your <<penis>>.</span>`));
 			}
 			break;
+		case "mchastityparasiterub":
+			clearAction();
+			if (earSlimeDefy()) {
+				wikifier("arousal", 100 * handsOn, "masturbationPenis");
+				wikifier("pain", 1 * handsOn);
+				additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "virgin penis" : "penis");
+				fragment.append(Wikifier.wikifyEval(`You gently caress the parasite.`));
+			} else if (!V.canSelfSuckPenis && playerIsPregnant() && playerPregnancyProgress() >= 10 && V.earSlime.corruption >= 100) {
+				altText.eagerly = V.arousal >= V.arousalmax * (1 / 5) ? "eagerly" : "slowly";
+				wikifier("arousal", 500, "masturbationPenis");
+				V.earSlime.vibration += 4;
+				if (V.arousal >= (V.arousalmax / 5) * 3) {
+					wikifier("arousal", 500, "masturbationPenis");
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You struggle to tease the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your body</span>, they are almost too much for you.`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You ${altText.eagerly} caress the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your body.</span>`
+						)
+					);
+				}
+			} else {
+				wikifier("arousal", 200 * handsOn, "masturbationPenis");
+				if (V.arousal >= (V.arousalmax / 5) * 4) {
+					V.earSlime.vibration += handsOn * 2;
+					fragment.append(
+						span(
+							`You tease the parasite as roughly as it allows, enjoying the pleasurable sensations directly to your ${
+								V.player.virginity.penile === true ? "virgin penis" : "penis"
+							}.`
+						)
+					);
+				} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+					fragment.append(
+						span(
+							`You rub the parasite in various way, enjoying the altering sensations sent directly to your ${
+								V.player.virginity.penile === true ? "virgin penis" : "penis"
+							}.`
+						)
+					);
+				} else {
+					fragment.append(
+						span(
+							`You gently caress the parasite, it passing the pleasure directly to your ${
+								V.player.virginity.penile === true ? "virgin penis" : "penis"
+							}.`
+						)
+					);
+				}
+			}
+			break;
+		case "mchastityparasitesqueeze":
+			clearAction();
+			if (earSlimeDefy()) {
+				wikifier("arousal", 100 * handsOn, "masturbationPenis");
+				wikifier("pain", 1 * handsOn);
+				additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "virgin penis" : "penis");
+				fragment.append(Wikifier.wikifyEval(`You gently squeeze the parasite.`));
+			} else if (!V.canSelfSuckPenis && playerIsPregnant() && playerPregnancyProgress() >= 10 && V.earSlime.corruption >= 100) {
+				altText.eagerly = V.arousal >= V.arousalmax * (1 / 5) ? "eagerly" : "slowly";
+				wikifier("arousal", 500, "masturbationGenital");
+				V.earSlime.vibration += 4;
+				if (V.arousal >= (V.arousalmax / 5) * 3) {
+					wikifier("arousal", 500, "masturbationPenis");
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You struggle to squeeze the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your body</span>, they are almost too much for you.`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You ${altText.eagerly} squeeze the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your body.</span>`
+						)
+					);
+				}
+			} else {
+				wikifier("arousal", 200 * handsOn, "masturbationPenis");
+				if (V.arousal >= (V.arousalmax / 5) * 4) {
+					V.earSlime.vibration += handsOn * 2;
+					fragment.append(
+						span(
+							`You repeatly squeeze the parasite and your ${
+								V.player.virginity.penile === true ? "virgin penis" : "penis"
+							}, enjoying the limited attention you can give it.`
+						)
+					);
+				} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+					fragment.append(
+						span(`You squeeze the parasite, squeezing your ${V.player.virginity.penile === true ? "virgin penis" : "penis"} at the same time.`)
+					);
+				} else {
+					fragment.append(
+						span(
+							`You gently squeeze the parasite, feeling your ${V.player.virginity.penile === true ? "virgin penis" : "penis"} through it's walls.`
+						)
+					);
+				}
+			}
+			break;
+		case "mchastityparasitestop":
+			clearAction("mrest");
+			V[arm + "arm"] = 0;
+			if (doubleAction) {
+				V[otherArm + "arm"] = 0;
+				fragment.append(Wikifier.wikifyEval('<span class="lblue">You move your hands away from your chastity parasite.</span>'));
+			} else {
+				fragment.append(Wikifier.wikifyEval(`<span class="lblue">You move your ${arm} hand away from your chastity parasite.</span>`));
+			}
+			break;
 		case "mballsstop":
 			clearAction("mrest");
 			V[arm + "arm"] = 0;
@@ -776,76 +1143,90 @@ function masturbationeffectsArms(
 			break;
 		case "mballsfondle":
 			clearAction();
-			wikifier("arousal", 100 * handsOn, "masturbationPenis");
-			additionalEffect.hands = "ballplayeffects";
-			if (handsOn === 2) {
-				if (V.arousal >= V.arousalmax * (4 / 5)) {
-					fragment.append(
-						span(
-							`You grope your ${balls} with both of your hands and enjoy the feeling of tightness as they clench up against the base of your penis.`
-						)
-					);
-				} else if (V.arousal >= V.arousalmax * (3 / 5)) {
-					fragment.append(span(`You fondle your ${balls} with both of your hands and enjoy the tickling feeling.`));
-				} else if (V.arousal >= V.arousalmax * (2 / 5)) {
-					fragment.append(span(`You jiggle your ${balls} around in your hands and enjoy the feeling of gravity on them.`));
-				} else {
-					fragment.append(span(`You roll your ${balls} around in your hands.`));
-				}
+			if (earSlimeDefy()) {
+				wikifier("arousal", 50 * handsOn, "masturbationPenis");
+				wikifier("pain", 1);
+				additionalEffect.earSlimeDefy.pushUnique("balls");
+				fragment.append(Wikifier.wikifyEval(`Your forced to roughtly grope your ${balls} to feel anything.`));
 			} else {
-				altText.oneOfYour = V.ballssize <= 0 ? `both of your ${balls}` : additionalEffect.hands ? "the other" : `one of your ${balls}`;
-				if (V.arousal >= V.arousalmax * (4 / 5)) {
-					fragment.append(
-						Wikifier.wikifyEval(
-							`You grope ${altText.oneOfYour} with your ${arm} and enjoy the feeling of tightness as your balls clench up against the base of your <<penis>>.`
-						)
-					);
-				} else if (V.arousal >= V.arousalmax * (3 / 5)) {
-					fragment.append(span(`You fondle ${altText.oneOfYour} with your ${arm} and enjoy the tickling feeling.`));
-				} else if (V.arousal >= V.arousalmax * (2 / 5)) {
-					fragment.append(span(`You jiggle ${altText.oneOfYour} in your ${arm} and enjoy the feeling of gravity on it.`));
+				wikifier("arousal", 100 * handsOn, "masturbationPenis");
+				additionalEffect.hands = "ballplayeffects";
+				if (handsOn === 2) {
+					if (V.arousal >= V.arousalmax * (4 / 5)) {
+						fragment.append(
+							span(
+								`You grope your ${balls} with both of your hands and enjoy the feeling of tightness as they clench up against the base of your penis.`
+							)
+						);
+					} else if (V.arousal >= V.arousalmax * (3 / 5)) {
+						fragment.append(span(`You fondle your ${balls} with both of your hands and enjoy the tickling feeling.`));
+					} else if (V.arousal >= V.arousalmax * (2 / 5)) {
+						fragment.append(span(`You jiggle your ${balls} around in your hands and enjoy the feeling of gravity on them.`));
+					} else {
+						fragment.append(span(`You roll your ${balls} around in your hands.`));
+					}
 				} else {
-					fragment.append(span(`You stroke ${altText.oneOfYour} with your ${arm}.`));
+					altText.oneOfYour = V.ballssize <= 0 ? `both of your ${balls}` : additionalEffect.hands ? "the other" : `one of your ${balls}`;
+					if (V.arousal >= V.arousalmax * (4 / 5)) {
+						fragment.append(
+							Wikifier.wikifyEval(
+								`You grope ${altText.oneOfYour} with your ${arm} and enjoy the feeling of tightness as your balls clench up against the base of your <<penis>>.`
+							)
+						);
+					} else if (V.arousal >= V.arousalmax * (3 / 5)) {
+						fragment.append(span(`You fondle ${altText.oneOfYour} with your ${arm} and enjoy the tickling feeling.`));
+					} else if (V.arousal >= V.arousalmax * (2 / 5)) {
+						fragment.append(span(`You jiggle ${altText.oneOfYour} in your ${arm} and enjoy the feeling of gravity on it.`));
+					} else {
+						fragment.append(span(`You stroke ${altText.oneOfYour} with your ${arm}.`));
+					}
 				}
 			}
 			break;
 		case "mballssqueeze":
 			clearAction();
-			wikifier("arousal", 200 * handsOn, "masturbationPenis");
-			additionalEffect.hands = "ballplayeffects";
-			altText.gently = V.arousal >= V.arousalmax * (4 / 5) ? "urgently" : V.arousal >= V.arousalmax * (3 / 5) ? "" : "gently";
-			if (handsOn === 2) {
-				switch (V.ballssize) {
-					case 1:
-					case 2:
-						fragment.append(span(`You cup your ${balls} with your hands and ${altText.gently} squeeze them.`));
-						break;
-					case 3:
-						fragment.append(span(`You cup your ${balls} with your hands and ${altText.gently} squeeze them.`));
-						break;
-					case 4:
-						fragment.append(span(`You ${altText.gently} squeeze your ${balls} with your hands.`));
-						break;
-					default:
-						fragment.append(span("This text should be unreachable.", "red"));
-						break;
-				}
+			if (earSlimeDefy()) {
+				wikifier("arousal", 100 * handsOn, "masturbationPenis");
+				wikifier("pain", 1);
+				additionalEffect.earSlimeDefy.pushUnique("balls");
+				fragment.append(Wikifier.wikifyEval(`Your forced to roughtly squeeze your ${balls} to feel anything.`));
 			} else {
-				altText.oneOfYour = V.ballssize <= 0 ? `both of your ${balls}` : additionalEffect.hands ? "the other" : `one of your ${balls}`;
-				switch (V.ballssize) {
-					case 1:
-					case 2:
-						fragment.append(span(`You cup ${altText.oneOfYour} with your ${arm} and ${altText.gently} squeeze it.`));
-						break;
-					case 3:
-						fragment.append(span(`You cup ${altText.oneOfYour} with your ${arm} and ${altText.gently} squeeze it.`));
-						break;
-					case 4:
-						fragment.append(span(`You cup ${altText.oneOfYour} with your ${arm} and ${altText.gently} squeeze it.`));
-						break;
-					default:
-						fragment.append(span(`You cup your ${balls} with your ${arm} and ${altText.gently} squeeze them.`));
-						break;
+				wikifier("arousal", 200 * handsOn, "masturbationPenis");
+				additionalEffect.hands = "ballplayeffects";
+				altText.gently = V.arousal >= V.arousalmax * (4 / 5) ? "urgently" : V.arousal >= V.arousalmax * (3 / 5) ? "" : "gently";
+				if (handsOn === 2) {
+					switch (V.ballssize) {
+						case 1:
+						case 2:
+							fragment.append(span(`You cup your ${balls} with your hands and ${altText.gently} squeeze them.`));
+							break;
+						case 3:
+							fragment.append(span(`You cup your ${balls} with your hands and ${altText.gently} squeeze them.`));
+							break;
+						case 4:
+							fragment.append(span(`You ${altText.gently} squeeze your ${balls} with your hands.`));
+							break;
+						default:
+							fragment.append(span("This text should be unreachable.", "red"));
+							break;
+					}
+				} else {
+					altText.oneOfYour = V.ballssize <= 0 ? `both of your ${balls}` : additionalEffect.hands ? "the other" : `one of your ${balls}`;
+					switch (V.ballssize) {
+						case 1:
+						case 2:
+							fragment.append(span(`You cup ${altText.oneOfYour} with your ${arm} and ${altText.gently} squeeze it.`));
+							break;
+						case 3:
+							fragment.append(span(`You cup ${altText.oneOfYour} with your ${arm} and ${altText.gently} squeeze it.`));
+							break;
+						case 4:
+							fragment.append(span(`You cup ${altText.oneOfYour} with your ${arm} and ${altText.gently} squeeze it.`));
+							break;
+						default:
+							fragment.append(span(`You cup your ${balls} with your ${arm} and ${altText.gently} squeeze them.`));
+							break;
+					}
 				}
 			}
 			break;
@@ -853,40 +1234,79 @@ function masturbationeffectsArms(
 			clearAction("mballsfondle");
 			V[arm + "arm"] = "mballs";
 			if (doubleAction) V[otherArm + "arm"] = "mballs";
-			additionalEffect.hands = "ballplayeffects";
-			wikifier("arousal", 100 * handsOn, "masturbationPenis");
-			if (handsOn === 2) {
-				switch (V.ballssize) {
-					case 1:
-					case 2:
-						fragment.append(span(`You take one of your ${balls} in each hand.`, "blue"));
-						break;
-					case 3:
-						fragment.append(span(`You take one of your ${balls} in each hand. They fill your palms nicely.`, "blue"));
-						break;
-					case 4:
-						fragment.append(span(`You take one of your ${balls} in each hand. You can barely get your hands around them.`, "blue"));
-						break;
-					default:
-						fragment.append(span("This text should be unreachable.", "red"));
-						break;
+			if (V.earSlime.defyCooldown && V.earSlime.growth >= 100) {
+				if (handsOn === 2) {
+					switch (V.ballssize) {
+						case 1:
+						case 2:
+							fragment.append(span(`You take one of your ${balls} in each hand`));
+							break;
+						case 3:
+							fragment.append(span(`You take one of your ${balls} in each hand. They fill your palms nicely`));
+							break;
+						case 4:
+							fragment.append(span(`You take one of your ${balls} in each hand. You can barely get your hands around them`));
+							break;
+						default:
+							fragment.append(span("This text should be unreachable.", "red"));
+							break;
+					}
+				} else {
+					altText.oneOfYour = V.ballssize <= 0 ? `both of your ${balls}` : additionalEffect.hands ? "the other" : `one of your ${balls}`;
+					switch (V.ballssize) {
+						case 1:
+						case 2:
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}`));
+							break;
+						case 3:
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. It fills your palm nicely`));
+							break;
+						case 4:
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. You can barely get your hand around it`));
+							break;
+						default:
+							fragment.append(span(`You easily grab both of your ${balls} with your ${arm}`));
+							break;
+					}
 				}
+				fragment.append(span(`. You Briefly freeze. `));
+				fragment.append(span(`You didn't feel anything.`, "red"));
 			} else {
-				altText.oneOfYour = V.ballssize <= 0 ? `both of your ${balls}` : additionalEffect.hands ? "the other" : `one of your ${balls}`;
-				switch (V.ballssize) {
-					case 1:
-					case 2:
-						fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}.`, "blue"));
-						break;
-					case 3:
-						fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. It fills your palm nicely.`, "blue"));
-						break;
-					case 4:
-						fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. You can barely get your hand around it.`, "blue"));
-						break;
-					default:
-						fragment.append(span(`You easily grab both of your ${balls} with your ${arm}`, "blue"));
-						break;
+				additionalEffect.hands = "ballplayeffects";
+				wikifier("arousal", 100 * handsOn, "masturbationPenis");
+				if (handsOn === 2) {
+					switch (V.ballssize) {
+						case 1:
+						case 2:
+							fragment.append(span(`You take one of your ${balls} in each hand.`, "blue"));
+							break;
+						case 3:
+							fragment.append(span(`You take one of your ${balls} in each hand. They fill your palms nicely.`, "blue"));
+							break;
+						case 4:
+							fragment.append(span(`You take one of your ${balls} in each hand. You can barely get your hands around them.`, "blue"));
+							break;
+						default:
+							fragment.append(span("This text should be unreachable.", "red"));
+							break;
+					}
+				} else {
+					altText.oneOfYour = V.ballssize <= 0 ? `both of your ${balls}` : additionalEffect.hands ? "the other" : `one of your ${balls}`;
+					switch (V.ballssize) {
+						case 1:
+						case 2:
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}.`, "blue"));
+							break;
+						case 3:
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. It fills your palm nicely.`, "blue"));
+							break;
+						case 4:
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. You can barely get your hand around it.`, "blue"));
+							break;
+						default:
+							fragment.append(span(`You easily grab both of your ${balls} with your ${arm}`, "blue"));
+							break;
+					}
 				}
 			}
 			break;
@@ -898,12 +1318,40 @@ function masturbationeffectsArms(
 			} else {
 				altText.hands = arm + " hand";
 			}
-			if (V.arousal >= (V.arousalmax / 5) * 4) {
-				fragment.append(Wikifier.wikifyEval(`Your ${altText.hands} wildly pumps up and down the length of your <<penis>>.`));
-			} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-				fragment.append(span(`Your ${altText.hands} runs their fingers up and down your shaft, tickling slightly and generating a lewd warmth.`));
+			if (V.worn.genitals.name === "chastity parasite") {
+				if (V.arousal >= (V.arousalmax / 5) * 4) {
+					fragment.append(
+						span(
+							`You tease the parasite as roughly as it allows, enjoying the pleasurable sensations directly to your ${
+								V.player.virginity.penile === true ? "virgin penis" : "penis"
+							}.`
+						)
+					);
+				} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+					fragment.append(
+						span(
+							`You rub the parasite in various way, enjoying the altering sensations sent directly to your ${
+								V.player.virginity.penile === true ? "virgin penis" : "penis"
+							}.`
+						)
+					);
+				} else {
+					fragment.append(
+						span(
+							`You gently caress the parasite, it passing the pleasure directly to your ${
+								V.player.virginity.penile === true ? "virgin penis" : "penis"
+							}.`
+						)
+					);
+				}
 			} else {
-				fragment.append(Wikifier.wikifyEval(`Your ${altText.hands} caresses the length of your <<penis>> with jerky motions.`));
+				if (V.arousal >= (V.arousalmax / 5) * 4) {
+					fragment.append(Wikifier.wikifyEval(`Your ${altText.hands} wildly pumps up and down the length of your <<penis>>.`));
+				} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+					fragment.append(span(`Your ${altText.hands} runs their fingers up and down your shaft, tickling slightly and generating a lewd warmth.`));
+				} else {
+					fragment.append(Wikifier.wikifyEval(`Your ${altText.hands} caresses the length of your <<penis>> with jerky motions.`));
+				}
 			}
 			break;
 		case "mbreastW":
@@ -1029,10 +1477,15 @@ function masturbationeffectsArms(
 			break;
 		case "mpenisstopW":
 			clearAction();
-			if (doubleAction) {
-				fragment.append(Wikifier.wikifyEval(`You remove both of your hands from your <<penis>>. They shake.`));
+			if (V.worn.genitals.name === "chastity parasite") {
+				altText.penis = "chastity parasite";
 			} else {
-				fragment.append(Wikifier.wikifyEval(`You remove your ${arm} hand from your <<penis>>. It shakes.`));
+				altText.penis = "<<penis>>";
+			}
+			if (doubleAction) {
+				fragment.append(Wikifier.wikifyEval(`You remove both of your hands from your ${altText.penis}. They shake.`));
+			} else {
+				fragment.append(Wikifier.wikifyEval(`You remove your ${arm} hand from your ${altText.penis}. It shakes.`));
 			}
 			break;
 		case "mbreaststopW":
@@ -1087,49 +1540,93 @@ function masturbationeffectsArms(
 		case "mpenisentrancestroker":
 			if (V.penisuse === 0 || V.penisuse === "stroker") {
 				clearAction("mpenisstrokertease");
-				wikifier("arousal", 50 * handsOn, "masturbationPenis");
 				V.penisuse = "stroker";
 				V[arm + "arm"] = "mpenisentrancestroker";
 				altText.selectedToy = selectedToy(arm);
-				if (doubleAction) {
-					V[arm + "arm"] = "mpenisentrancestroker";
-					altText.selectedOtherToy = selectedToy(otherArm);
-					if (genitalsExposed()) {
-						fragment.append(
-							Wikifier.wikifyEval(
-								`<span class="blue">You run your ${toyDisplay(
-									altText.selectedToy,
-									altText.selectedOtherToy
-								)} over your exposed <<penis>> and shiver in anticipation.</span>`
-							)
-						);
+				if (V.earSlime.defyCooldown && V.earSlime.growth >= 100) {
+					if (doubleAction) {
+						V[arm + "arm"] = "mpenisentrancestroker";
+						altText.selectedOtherToy = selectedToy(otherArm);
+						if (genitalsExposed()) {
+							fragment.append(
+								Wikifier.wikifyEval(
+									`You run your ${toyDisplay(
+										altText.selectedToy,
+										altText.selectedOtherToy
+									)} over your exposed <<penis>>, but freeze. <span class="red">You didn't feel anything.</span>`
+								)
+							);
+						} else {
+							fragment.append(
+								Wikifier.wikifyEval(
+									`<span class="blue">You run your ${toyDisplay(
+										altText.selectedToy,
+										altText.selectedOtherToy
+									)} over your <<penis>>, feeling its shape beneath your <<exposedlower>>.</span>`
+								)
+							);
+						}
 					} else {
-						fragment.append(
-							Wikifier.wikifyEval(
-								`<span class="blue">You run your ${toyDisplay(
-									altText.selectedToy,
-									altText.selectedOtherToy
-								)} over your <<penis>>, feeling its shape beneath your <<exposedlower>>.</span>`
-							)
-						);
+						if (genitalsExposed()) {
+							fragment.append(
+								Wikifier.wikifyEval(
+									`You pick up your ${toyDisplay(
+										altText.selectedToy
+									)} and run it over your <<penis>>, but freeze. <span class="red">You didn't feel anything.</span>`
+								)
+							);
+						} else {
+							fragment.append(
+								Wikifier.wikifyEval(
+									`<span class="blue">You pick up your ${toyDisplay(
+										altText.selectedToy
+									)} and run it over your <<penis>>, feeling its shape beneath your <<exposedlower>>.</span>`
+								)
+							);
+						}
 					}
 				} else {
-					if (genitalsExposed()) {
-						fragment.append(
-							Wikifier.wikifyEval(
-								`<span class="blue">You pick up your ${toyDisplay(
-									altText.selectedToy
-								)} and run it over your <<penis>>, shivering in anticipation.</span>`
-							)
-						);
+					wikifier("arousal", 50 * handsOn, "masturbationPenis");
+					if (doubleAction) {
+						V[arm + "arm"] = "mpenisentrancestroker";
+						altText.selectedOtherToy = selectedToy(otherArm);
+						if (genitalsExposed()) {
+							fragment.append(
+								Wikifier.wikifyEval(
+									`<span class="blue">You run your ${toyDisplay(
+										altText.selectedToy,
+										altText.selectedOtherToy
+									)} over your exposed <<penis>> and shiver in anticipation.</span>`
+								)
+							);
+						} else {
+							fragment.append(
+								Wikifier.wikifyEval(
+									`<span class="blue">You run your ${toyDisplay(
+										altText.selectedToy,
+										altText.selectedOtherToy
+									)} over your <<penis>>, feeling its shape beneath your <<exposedlower>>.</span>`
+								)
+							);
+						}
 					} else {
-						fragment.append(
-							Wikifier.wikifyEval(
-								`<span class="blue">You pick up your ${toyDisplay(
-									altText.selectedToy
-								)} and run it over your <<penis>>, feeling its shape beneath your <<exposedlower>>.</span>`
-							)
-						);
+						if (genitalsExposed()) {
+							fragment.append(
+								Wikifier.wikifyEval(
+									`<span class="blue">You pick up your ${toyDisplay(
+										altText.selectedToy
+									)} and run it over your <<penis>>, shivering in anticipation.</span>`
+								)
+							);
+						} else {
+							fragment.append(
+								Wikifier.wikifyEval(
+									`<span class="blue">You pick up your ${toyDisplay(
+										altText.selectedToy
+									)} and run it over your <<penis>>, feeling its shape beneath your <<exposedlower>>.</span>`
+								)
+							);
+						}
 					}
 				}
 			} else {
@@ -1138,46 +1635,114 @@ function masturbationeffectsArms(
 			break;
 		case "mpenisstrokertease":
 			clearAction("mpenisentrancestroker");
-			wikifier("arousal", 100 * handsOn, "masturbationPenis");
 			V[arm + "arm"] = "mpenisentrancestroker";
 			altText.selectedToy = selectedToy(arm);
 			if (doubleAction) {
 				altText.selectedOtherToy = selectedToy(otherArm);
 			}
-			if (genitalsExposed()) {
-				fragment.append(
-					Wikifier.wikifyEval(
-						`You run your ${toyDisplay(altText.selectedToy, altText.selectedOtherToy)} over your <<penis>>, shivering in anticipation.`
-					)
-				);
+			if (V.earSlime.defyCooldown && V.earSlime.growth >= 100) {
+				if (genitalsExposed()) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You run your ${toyDisplay(
+								altText.selectedToy,
+								altText.selectedOtherToy
+							)} over your <<penis>>, but frown. <span class="red">You still didn't feel anything.</span>.`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You run your ${toyDisplay(
+								altText.selectedToy,
+								altText.selectedOtherToy
+							)} over your <<penis>>, feeling its shape beneath your <<exposedlower>>.`
+						)
+					);
+				}
 			} else {
-				fragment.append(
-					Wikifier.wikifyEval(
-						`You run your ${toyDisplay(
-							altText.selectedToy,
-							altText.selectedOtherToy
-						)} over your <<penis>>, feeling its shape beneath your <<exposedlower>>.`
-					)
-				);
+				wikifier("arousal", 100 * handsOn, "masturbationPenis");
+				if (genitalsExposed()) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You run your ${toyDisplay(altText.selectedToy, altText.selectedOtherToy)} over your <<penis>>, shivering in anticipation.`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You run your ${toyDisplay(
+								altText.selectedToy,
+								altText.selectedOtherToy
+							)} over your <<penis>>, feeling its shape beneath your <<exposedlower>>.`
+						)
+					);
+				}
 			}
 			break;
 		case "mpenisstroker":
 			clearAction();
-			wikifier("arousal", 400, "masturbationPenis");
 			V[arm + "arm"] = "mpenisstroker";
 			V.penisuse = "stroker";
 			altText.selectedToy = selectedToy(arm);
-			if (doubleAction) {
-				V[otherArm + "arm"] = "mpenisstroker";
-				wikifier("arousal", 50, "masturbationPenis");
-				altText.selectedOtherToy = selectedToy(otherArm);
-				fragment.append(
-					Wikifier.wikifyEval(
-						`<span class="purple">You fuck your <<penis>> with the ${toyDisplay(altText.selectedToy, altText.selectedOtherToy)}.</span>`
-					)
-				);
+			if (earSlimeDefy()) {
+				wikifier("arousal", 200 * handsOn, "masturbationPenis");
+				wikifier("pain", 1);
+				additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "virgin penis" : "penis");
+				if (doubleAction) {
+					V[otherArm + "arm"] = "mpenisstroker";
+					wikifier("arousal", 25, "masturbationPenis");
+					altText.selectedOtherToy = selectedToy(otherArm);
+					fragment.append(
+						Wikifier.wikifyEval(
+							`Your forced to roughtly fuck your <<penis>> with the ${toyDisplay(
+								altText.selectedToy,
+								altText.selectedOtherToy
+							)} to feel anything.`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(`Your forced to roughtly fuck your <<penis>> with the ${toyDisplay(altText.selectedToy)} to feel anything.`)
+					);
+				}
+			} else if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") {
+				wikifier("arousal", 600, "masturbationPenis");
+				if (doubleAction) {
+					V[otherArm + "arm"] = "mpenisstroker";
+					wikifier("arousal", 100, "masturbationPenis");
+					altText.selectedOtherToy = selectedToy(otherArm);
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="purple">You roughly fuck your precum covered <<penis>> with the ${toyDisplay(
+								altText.selectedToy,
+								altText.selectedOtherToy
+							)},</span> <span class="lewd">gexcess precum flies from the tip.</span>`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="purple">You roughly fuck your precum covered <<penis>> with the ${toyDisplay(
+								altText.selectedToy
+							)},</span>, <span class="lewd">generating a lewd warmth throughout your body.</span>`
+						)
+					);
+				}
 			} else {
-				fragment.append(Wikifier.wikifyEval(`<span class="purple">You fuck your <<penis>> with the ${toyDisplay(altText.selectedToy)}.</span>`));
+				wikifier("arousal", 400, "masturbationPenis");
+				if (doubleAction) {
+					V[otherArm + "arm"] = "mpenisstroker";
+					wikifier("arousal", 50, "masturbationPenis");
+					altText.selectedOtherToy = selectedToy(otherArm);
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="purple">You fuck your <<penis>> with the ${toyDisplay(altText.selectedToy, altText.selectedOtherToy)}.</span>`
+						)
+					);
+				} else {
+					fragment.append(Wikifier.wikifyEval(`<span class="purple">You fuck your <<penis>> with the ${toyDisplay(altText.selectedToy)}.</span>`));
+				}
 			}
 			break;
 		case "mpenisstopstroker":
@@ -1237,7 +1802,13 @@ function masturbationeffectsArms(
 				altText.toys = `You attempt to use your ${toyDisplay(altText.selectedToy)} on your <<breasts>>,`;
 			}
 			if (V.lactating === 1 && V.breastfeedingdisable === "f") {
-				if (V.milk_amount >= 1) {
+				if (V.milk_amount >= 1 && V.earSlime.focus === "pregnancy" && V.earSlime.growth >= 100 && !V.earSlime.defyCooldown) {
+					wikifier("arousal", 100 * handsOn, "masturbationNipples");
+					fragment.append(
+						Wikifier.wikifyEval(`${altText.toys} <span class="lewd">and milk surges from your buds, quickly filling the bottle.</span>`)
+					);
+					fragment.append(wikifier("breastfeed", Math.floor(handsOn * 4.5), "pump"));
+				} else if (V.milk_amount >= 1) {
 					fragment.append(Wikifier.wikifyEval(`${altText.toys} <span class="lewd">and milk flows from your buds into the bottle.</span>`));
 					fragment.append(wikifier("breastfeed", Math.floor(handsOn * 3.5), "pump"));
 				} else {
@@ -1322,6 +1893,21 @@ function masturbationeffectsArms(
 							`You press your ${altText.toys} against your nipples with ${altText.hands}. It feels good, even with your <<topaside>> in the way.`
 						)
 					);
+				}
+			}
+			fragment.append(" ");
+			if (V.lactating === 1 && V.breastfeedingdisable === "f" && handsOn > 0) {
+				if (V.milk_amount >= 1) {
+					if (V.worn.over_upper.exposed === 0 || V.worn.upper.exposed === 0 || V.worn.under_upper.exposed === 0) {
+						fragment.append(span("Milk leaks from your buds, flowing into your top.", "lewd"));
+						if (V.masturbation_bowl === 1) fragment.append(otherElement("i", " You should remove your top if you want to gather any."));
+					} else {
+						fragment.append(span("Milk leaks from your buds, coating the toy with milk.", "lewd"));
+					}
+					fragment.append(" ");
+					fragment.append(wikifier("breastfeed", Math.floor(handsOn * 1.5)));
+				} else {
+					fragment.append(span("No milk leaks from your buds. You must be dry."));
 				}
 			}
 			break;
@@ -2325,7 +2911,17 @@ function possessedMasturbation(span, br) {
 	return fragment;
 }
 
-function masturbationeffectsMouth({ span, otherElement, additionalEffect, selectedToy, toyDisplay, genitalsExposed, breastsExposed, hymenIntact }) {
+function masturbationeffectsMouth({
+	span,
+	otherElement,
+	additionalEffect,
+	selectedToy,
+	toyDisplay,
+	genitalsExposed,
+	breastsExposed,
+	hymenIntact,
+	earSlimeDefy,
+}) {
 	const fragment = document.createDocumentFragment();
 
 	const clearAction = defaultAction => {
@@ -2371,16 +2967,77 @@ function masturbationeffectsMouth({ span, otherElement, additionalEffect, select
 				clearAction("mrest");
 			}
 			break;
+		case "mchastityparasiteentrance":
+			if (V.penisuse === 0) {
+				clearAction("mchastityparasitelick");
+				V.penisuse = "mouth";
+				V.mouth = "mchastityparasiteentrance";
+				if (V.awareness < 200 && V.corruptionMasturbation) {
+					wikifier("awareness", 1);
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="red">The slime in your ear forces you to bend down. You're not sure if you're going to like what's coming.</span><<gawareness>>`
+						)
+					);
+					fragment.append(" ");
+				}
+				if (genitalsExposed()) {
+					wikifier("arousal", 100, "masturbationGenital");
+					fragment.append(
+						Wikifier.wikifyEval(`<span class="blue">You get close enough to your chasitity parasite to reach out and it with your tongue.</span>`)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`<span class="blue">You run your tongue over your chasitity parasite${
+								calculatePenisBulge() ? ", feeling the bulge beneath your <<exposedlower>>" : ""
+							}.</span>`
+						)
+					);
+				}
+				if (V.earSlime.defyCooldown) {
+					// Do Nothing
+				} else if (!V.earSlime.vibration) {
+					V.earSlime.vibration = 1;
+					wikifier("arousal", 50, "masturbationGenital");
+					fragment.append(Wikifier.wikifyEval(' <span class="lewd">It starts to softly pulsate round your <<penis>>.</span>'));
+				} else {
+					V.earSlime.vibration += 2;
+				}
+			} else {
+				clearAction("mrest");
+			}
+			break;
 		case "mpenislick":
 			clearAction("mpenislick");
 			if (genitalsExposed()) {
-				wikifier("arousal", 200, "masturbationGenital");
-				if (V.arousal >= V.arousalmax * (4 / 5)) {
-					fragment.append(Wikifier.wikifyEval("Your <<penis>> twitches every time you lick it, but you don't stop."));
-				} else if (V.arousal >= V.arousalmax * (3 / 5)) {
-					fragment.append(Wikifier.wikifyEval("You run your tongue over your <<penis>> head, mixing your saliva with your precum."));
+				if (earSlimeDefy()) {
+					wikifier("arousal", 100, "masturbationGenital");
+					wikifier("pain", 1);
+					additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "virgin penis" : "penis");
+					fragment.append(Wikifier.wikifyEval(`Your forced to roughtly lick your <<penis>> to feel something.`));
+				} else if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") {
+					wikifier("arousal", 400, "masturbationGenital");
+					if (V.arousal >= V.arousalmax * (4 / 5)) {
+						fragment.append(
+							Wikifier.wikifyEval("Your <<penis>> releases excessive precum every time you lick, you have to swallow it, but you don't stop.")
+						);
+					} else if (V.arousal >= V.arousalmax * (3 / 5)) {
+						fragment.append(Wikifier.wikifyEval("You run your tongue over your <<penis>> head, swallowing your precum as you do."));
+					} else {
+						fragment.append(
+							Wikifier.wikifyEval("You run your tongue over your <<penis>> head, spreading your precum all over your sensitive spots and mouth.")
+						);
+					}
 				} else {
-					fragment.append(Wikifier.wikifyEval("You run your tongue over your <<penis>> head, focusing on your sensitive spots."));
+					wikifier("arousal", 200, "masturbationGenital");
+					if (V.arousal >= V.arousalmax * (4 / 5)) {
+						fragment.append(Wikifier.wikifyEval("Your <<penis>> twitches every time you lick it, but you don't stop."));
+					} else if (V.arousal >= V.arousalmax * (3 / 5)) {
+						fragment.append(Wikifier.wikifyEval("You run your tongue over your <<penis>> head, mixing your saliva with your precum."));
+					} else {
+						fragment.append(Wikifier.wikifyEval("You run your tongue over your <<penis>> head, focusing on your sensitive spots."));
+					}
 				}
 			} else {
 				fragment.append(
@@ -2460,27 +3117,64 @@ function masturbationeffectsMouth({ span, otherElement, additionalEffect, select
 			break;
 		case "mpenissuck":
 			clearAction();
-			wikifier("arousal", 200 + 50 * V.selfsuckDepth, "masturbationGenital");
-			altText.eagerly = V.arousal >= V.arousalmax * (2 / 5) ? "eagerly" : "slowly";
-			if (V.arousal >= (V.arousalmax / 5) * 4) {
-				if (V.elfsuckDepth <= 1) {
-					fragment.append(
-						Wikifier.wikifyEval("You drink down precum as it flows into your mouth while you move your head back and forth on your <<penis>>.")
-					);
+			if (earSlimeDefy()) {
+				wikifier("arousal", 100, "masturbationGenital");
+				wikifier("pain", 1);
+				additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "virgin penis" : "penis");
+				fragment.append(Wikifier.wikifyEval(`Your forced to roughtly suck on your <<penis>> to feel something.`));
+			} else if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") {
+				wikifier("arousal", 400 + 50 * V.selfsuckDepth, "masturbationGenital");
+				altText.eagerly = V.arousal >= V.arousalmax * (2 / 5) ? "eagerly" : "slowly";
+				if (V.arousal >= (V.arousalmax / 5) * 4) {
+					if (V.selfsuckDepth <= 1) {
+						fragment.append(
+							Wikifier.wikifyEval(
+								"You constantly swallow precum as it streams into your mouth while you move your head back and forth on your <<penis>>. A satisfying warmth fills your stomach."
+							)
+						);
+					} else {
+						fragment.append(
+							Wikifier.wikifyEval(
+								"A waterfall of precum streams down your throat as you move your head back and forth on your <<penis>>. A satisfying warmth fills your stomach."
+							)
+						);
+					}
 				} else {
-					fragment.append(Wikifier.wikifyEval("Precum flows down your throat as you move your head back and forth on your <<penis>>."));
+					if (V.penisHeight === V.selfsuckDepth) {
+						if (V.selfsuckDepth >= 2) {
+							fragment.append(Wikifier.wikifyEval(`You lick the base of your <<penis>> while your throat massages the shaft.`));
+						} else {
+							fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking the base.`));
+						}
+					} else if (V.selfsuckDepth >= 1) {
+						fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking along the shaft.`));
+					} else {
+						fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking around the tip.`));
+					}
 				}
 			} else {
-				if (V.penisHeight === V.selfsuckDepth) {
-					if (V.selfsuckDepth >= 2) {
-						fragment.append(Wikifier.wikifyEval(`You lick the base of your <<penis>> while your throat massages the shaft.`));
+				wikifier("arousal", 200 + 50 * V.selfsuckDepth, "masturbationGenital");
+				altText.eagerly = V.arousal >= V.arousalmax * (2 / 5) ? "eagerly" : "slowly";
+				if (V.arousal >= (V.arousalmax / 5) * 4) {
+					if (V.selfsuckDepth <= 1) {
+						fragment.append(
+							Wikifier.wikifyEval("You drink down precum as it flows into your mouth while you move your head back and forth on your <<penis>>.")
+						);
 					} else {
-						fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking the base.`));
+						fragment.append(Wikifier.wikifyEval("Precum flows down your throat as you move your head back and forth on your <<penis>>."));
 					}
-				} else if (V.selfsuckDepth >= 1) {
-					fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking along the shaft.`));
 				} else {
-					fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking around the tip.`));
+					if (V.penisHeight === V.selfsuckDepth) {
+						if (V.selfsuckDepth >= 2) {
+							fragment.append(Wikifier.wikifyEval(`You lick the base of your <<penis>> while your throat massages the shaft.`));
+						} else {
+							fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking the base.`));
+						}
+					} else if (V.selfsuckDepth >= 1) {
+						fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking along the shaft.`));
+					} else {
+						fragment.append(Wikifier.wikifyEval(`You ${altText.eagerly} suck on your <<penis>> while licking around the tip.`));
+					}
 				}
 			}
 			break;
@@ -2489,6 +3183,59 @@ function masturbationeffectsMouth({ span, otherElement, additionalEffect, select
 			V.mouth = 0;
 			V.penisuse = 0;
 			fragment.append(Wikifier.wikifyEval(`<span class="lblue">You move your mouth away from your <<penis>>.</span>`));
+			break;
+		case "mchastityparasitelick":
+			clearAction();
+			if (V.earSlime.defyCooldown) {
+				wikifier("arousal", 100, "masturbationGenital");
+				wikifier("pain", 4);
+				fragment.append(
+					Wikifier.wikifyEval(
+						`You lick the parasite, for each one, the parasite sends alternating waves of <span class="lewd">pleasure</span> and <span class="red">pain</span>.<<gpain>>`
+					)
+				);
+			} else if (V.earSlime.corruption < 100) {
+				wikifier("arousal", 200, "masturbationGenital");
+				V.earSlime.vibration += 2;
+				altText.eagerly = V.arousal >= V.arousalmax * (2 / 5) ? "eagerly" : "slowly";
+				if (V.arousal >= (V.arousalmax / 5) * 4) {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You ${altText.eagerly} to lick the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your <<penis>>.</span>`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You ${altText.eagerly} to lick the parasite, for each one, <span class="lewd">the parasite sends a small wave of pleasure through your <<penis>>.</span>`
+						)
+					);
+				}
+			} else {
+				wikifier("arousal", 500, "masturbationGenital");
+				V.earSlime.vibration += 4;
+				altText.eagerly = V.arousal >= V.arousalmax * (1 / 5) ? "eagerly" : "slowly";
+				if (V.arousal >= (V.arousalmax / 5) * 3) {
+					wikifier("arousal", 500, "masturbationGenital");
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You struggle to lick the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your body</span>, they are almost too much for you.`
+						)
+					);
+				} else {
+					fragment.append(
+						Wikifier.wikifyEval(
+							`You ${altText.eagerly} lick the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your body.</span>`
+						)
+					);
+				}
+			}
+			break;
+		case "mchastityparasitestop":
+			clearAction("mrest");
+			V.mouth = 0;
+			V.penisuse = 0;
+			fragment.append(Wikifier.wikifyEval(`<span class="lblue">You move your mouth away from your chastity parasite.</span>`));
 			break;
 		case "mvaginaentrance":
 			if (V.vaginause === 0) {

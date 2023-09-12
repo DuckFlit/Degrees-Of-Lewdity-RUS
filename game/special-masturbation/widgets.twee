@@ -7,7 +7,22 @@
 			<<lstress>><<stress -6>>
 		<</if>>
 	<<else>>
-		<<if $masturbationorgasm is 0>>
+		<<set _masturbationorgasm to Math.clamp($masturbationorgasm - $masturbationRuinedOrgasm, 0, Infinity)>>
+		<<if _masturbationorgasm is 0 and $masturbationRuinedOrgasm gt 0>>
+			<<if (["masturbate and orgasm five times"].includes($earSlime.event) and $masturbationorgasm gte 5) or (["masturbate and orgasm ten times"].includes($earSlime.event) and $masturbationorgasm gte 10)>>
+				You didn't cum, every one of them was ruined, <span class="green">but a forgiven warmth fills you.</span> You can tell it's the slime in your right ear, rewarding you for having the <<number $masturbationRuinedOrgasm>> ruined orgasms.
+				<<pain `$masturbationRuinedOrgasm * -1`>><<trauma `$masturbationRuinedOrgasm * -1`>><<stress `$masturbationRuinedOrgasm * -2`>>
+				<<if $masturbationRuinedOrgasm gte 15>>
+					<<llpain>><<lltrauma>><<llstress>>
+				<<else>>
+					<<lpain>><<ltrauma>><<lstress>>
+				<</if>>
+				<<set $earSlime.event to "">>
+				<<set $earSlime.defyCooldown to 0>>
+			<<else>>
+				<span class="red">You didn't cum, every one of them was ruined by the slime in your ear.</span><<gstress>><<stress 10>>
+			<</if>>
+		<<elseif _masturbationorgasm is 0>>
 			<<if $purity gte 990 and playerChastity()>>
 				You didn't cum, but you feel guilty regardless.
 			<<elseif $purity gte 900>>
@@ -16,34 +31,38 @@
 				You didn't cum. You feel aggravated.
 				<<gstress>><<stress 6>>
 			<</if>>
-		<<elseif $masturbationorgasm is 1>>
+		<<elseif _masturbationorgasm is 1>>
 			You feel satisfied.
-		<<elseif $masturbationorgasm is 2>>
+		<<elseif _masturbationorgasm is 2>>
 			You came twice. You feel satisfied.
-		<<elseif $masturbationorgasm lte 4>>
-			You came <<number $masturbationorgasm>> times. You feel a warm glow.
-		<<elseif $masturbationorgasm lte 6>>
-			You came <<number $masturbationorgasm>> times. You pant.
-		<<elseif $masturbationorgasm lte 10>>
-			You came <<number $masturbationorgasm>> times. Your body is tired.
-		<<elseif $masturbationorgasm lte 15>>
-			You came <<number $masturbationorgasm>> times. You're quite the trooper.
-		<<elseif $masturbationorgasm lte 20>>
-			You came <<number $masturbationorgasm>> times. This is getting silly.
-		<<elseif $masturbationorgasm lte 30>>
-			You came <<number $masturbationorgasm>> times. Are you sure your body can handle it?
-		<<elseif $masturbationorgasm lte 50>>
-			You came <<number $masturbationorgasm>> times. There are other ways to cope with stress, you know.
-		<<elseif $masturbationorgasm lte 100>>
-			You came <<number $masturbationorgasm>> times. Tentacle monsters could learn a thing or two about endurance from you.
+		<<elseif _masturbationorgasm lte 4>>
+			You came <<number _masturbationorgasm>> times. You feel a warm glow.
+		<<elseif _masturbationorgasm lte 6>>
+			You came <<number _masturbationorgasm>> times. You pant.
+		<<elseif _masturbationorgasm lte 10>>
+			You came <<number _masturbationorgasm>> times. Your body is tired.
+		<<elseif _masturbationorgasm lte 15>>
+			You came <<number _masturbationorgasm>> times. You're quite the trooper.
+		<<elseif _masturbationorgasm lte 20>>
+			You came <<number _masturbationorgasm>> times. This is getting silly.
+		<<elseif _masturbationorgasm lte 30>>
+			You came <<number _masturbationorgasm>> times. Are you sure your body can handle it?
+		<<elseif _masturbationorgasm lte 50>>
+			You came <<number _masturbationorgasm>> times. There are other ways to cope with stress, you know.
+		<<elseif _masturbationorgasm lte 100>>
+			You came <<number _masturbationorgasm>> times. Tentacle monsters could learn a thing or two about endurance from you.
 		<<else>>
-			You came <<number $masturbationorgasm>> times. Are you insane or are you actually aiming to be a tentacle monster god?
+			You came <<number _masturbationorgasm>> times. Are you insane or are you actually aiming to be a tentacle monster god?
+		<</if>>
+		<<if _masturbationorgasm and $masturbationRuinedOrgasm>>
+			<br><br>
+			<span class="red"><<Number $masturbationRuinedOrgasm>> orgasms were ruined by the slime in your ear.</span>
 		<</if>>
 	<</if>>
-	<<if $masturbationorgasm gt 50>>
+	<<if _masturbationorgasm gt 50>>
 		<<earnFeat "Producer of Lewd Fluids">>
 	<</if>>
-	<<if $masturbationorgasm gt 100 or ($masturbation_bowl is 1 and Math.floor(($masturbation_fluid / 30)) gte 15)>>
+	<<if _masturbationorgasm gt 100 or ($masturbation_bowl is 1 and Math.floor(($masturbation_fluid / 30)) gte 15)>>
 		<<earnFeat "Literally Buckets">>
 	<</if>>
 	<<if $purity gte 990 and playerChastity()>>
@@ -88,6 +107,12 @@
 		<</if>>
 		<br>
 	<</if>>
+	<<if $reformChastityParasite and $worn.genitals.name is "naked" and $player.penisExist and $earSlime.focus is "pregnancy">>
+		<span class="purple">The chastity parasite re-forms around your penis.</span>
+		<<genitalswear 8>>
+		<br>
+	<</if>>
+	<<unset $reformChastityParasite>>
 	<<unset $masturbation_oralSkill>>
 	<<set $masturbating to 0>>
 	<<set $masturbation_bowl to 0>>
@@ -189,6 +214,7 @@
 	<<set $masturbation_semen to 0>>
 	<<set $masturbation_milk to 0>>
 	<<set $masturbation_vaginaFluid to 0>>
+	<<set $masturbationRuinedOrgasm to 0>>
 
 	<<set $fingersInVagina to 0>>
 	<<if $player.virginity.vaginal is true and $sexStats.vagina.pregnancy.totalBirthEvents is 0>>
@@ -212,6 +238,14 @@
 	<</silently>>
 
 	<<selfsuckchecks>>
+
+	<<if $earSlime.event.includes("get your own sperm into your") and $worn.genitals.name is "chastity parasite">>
+		<span class="lewd">Your <<penis>> is freed from your chastity parasite</span>.
+		<br><br>
+		<<set $worn.genitals.type.push("broken")>>
+		<<genitalsruined>>
+		<<set $reformChastityParasite to true>>
+	<</if>>
 
 	<<if $possessed>>
 		It fondles your body with your hands.
@@ -268,22 +302,30 @@
 
 /* these checks only determine if it could be possible. they do not check for current obstructions like clothing or hands. */
 <<widget "selfsuckchecks">>
-	<<set $_danceSkillLimit to Math.clamp(Math.ceil((800 - $danceskill)/200), 0, 4)>>
-	<<set $_catFlexLimit to Math.clamp((6 - $cat), 0, 4)>>
-	<<if $player.penisExist and !playerChastity("penis")>>
+	<<set $_danceSkillLimit to Math.clamp(Math.ceil((800 - $danceskill)/200) + Math.floor(playerBellySize() / 3), -1, 4)>>
+	<<set $_catFlexLimit to Math.clamp((6 - $cat) + Math.floor(playerBellySize() / 3), -2, 4)>>
+	<<set $_limit to Math.min($_danceSkillLimit, $_catFlexLimit)>>
+	<<if $player.penisExist>>
 		/* <<set setup.penisHeightLevels to ["base", "waist", "midriff", "chest"]>> */
 		/* the above comment is a reminder of how high the player's penis can reach. however, it's not useful in the code at the moment. */
-
-		/* lower number means harder to reach; the player has to get their head lower down to reach it. */
-		<<set $penisHeight to [0,0,0,1,1,2,3][$player.penissize + 2]>>
-		<<set $canSelfSuckPenis to ($penisHeight gte $_danceSkillLimit) or ($penisHeight gte $_catFlexLimit)>>
-		<<set $selfsuckLimit to $penisHeight - ($_danceSkillLimit lt $_catFlexLimit ? $_danceSkillLimit : $_catFlexLimit)>>
-		<<set $selfsuckDepth to 0>>
+		<<if $worn.genitals.name is "chastity parasite">>
+			<<set $penisHeight to [0,0,0,0,0,1,2][$player.penissize + 2]>>
+			<<set $canSelfSuckPenis to $penisHeight gte $_limit>>
+		<<elseif !playerChastity("penis")>>
+			/* lower number means harder to reach; the player has to get their head lower down to reach it. */
+			<<set $penisHeight to [0,0,0,1,1,2,3][$player.penissize + 2]>>
+			<<set $canSelfSuckPenis to $penisHeight gte $_limit>>
+			<<set $selfsuckLimit to $penisHeight - Math.clamp($_limit, 0, 4)>>
+			<<set $selfsuckDepth to 0>>
+		<<else>>
+			<<set $canSelfSuckPenis to false>>
+		<</if>>
 	<<else>>
 		<<set $canSelfSuckPenis to false>>
 	<</if>>
 	<<if $player.vaginaExist and !playerChastity("vagina")>>
-		<<set $canSelfSuckVagina to ((0 gte $_danceSkillLimit) or (0 gte $_catFlexLimit))>>
+		<<set $_pussyLimit to $worn.genitals.name is "chastity parasite" ? Math.clamp($player.penissize * -1, -3, 0) : 0>>
+		<<set $canSelfSuckVagina to $_pussyLimit gte $_limit>>
 	<<else>>
 		<<set $canSelfSuckVagina to false>>
 	<</if>>
@@ -324,7 +366,7 @@
 
 /* Used in situations with custom continue controls, but standard stop controls. Usage should be similar to <<masturbationControls>> above */
 <<widget "masturbationStopControls">>
-	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
+	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $earSlime.corruption gt (currentSkillValue('willpower') / 10)>>
 		<div id="stop"><<link [[Stop|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
 	<<elseif $corruptionMasturbation isnot true>>
 		<div id="stop"><<link [[Stop|$passage + " Finish"]]>><<set $finish to 1>><</link>></div>

@@ -185,7 +185,7 @@ It brings the slime down to your
 <br><br>
 You shake in the figure's grasp. You feel unnaturally aroused, especially with it straddling you like this. It's a small feeling at first. Then it grows, until <span class="lewd">an overwhelming desire for lewdity overtakes you.</span> It looks pleased. <<lobsession>>
 <br><br>
-<<if !$corruption_slime>>
+<<if !$earSlime.corruption>>
 	<i>A corruption bar has appeared in the Characteristics tab.</i>
 	<br><br>
 <</if>>
@@ -314,7 +314,7 @@ Its grip on you loosens<<if $wraith.state is "haunt">>, and you gasp for breath<
 			<br><br>
 			You shake in the figure's grasp. You feel unnaturally aroused, especially with it straddling you like this. It's a small feeling at first. Then it grows, until <span class="lewd">an overwhelming desire for lewdity overtakes you.</span>
 			<br><br>
-			<<if !$corruption_slime>>
+			<<if !$earSlime.corruption>>
 				<i>A corruption bar has appeared in the Characteristics tab.</i>
 				<br><br>
 			<</if>>
@@ -935,12 +935,20 @@ It sits down against the wall, and spreads your legs.
 <br><br>
 <<if $player.penisExist and ($lactating and $breastfeedingdisable is "f")>>
 	<<set $phase to "penisbreast">>
-
-	It prods your <<penis>> with a single finger<<if $player.gender is "h">>, completely ignoring your <<pussy>><</if>>. With its other hand, it circles your nipple.
+	<<if $worn.genitals.name is "chastity parasite">>
+		It rubs your chastity parasite
+	<<else>>
+		It prods your <<penis>>
+	<</if>>
+	with a single finger<<if $player.gender is "h">>, completely ignoring your <<pussy>><</if>>. With its other hand, it circles your nipple.
 <<elseif $player.penisExist>>
 	<<set $phase to "penis">>
 
-	It prods your <<penis>> with a single finger<<if $player.gender is "h">>, completely ignoring your <<pussy>><</if>>. It traces your length, giggling.
+	<<if $worn.genitals.name is "chastity parasite">>
+		It rubs your chastity parasite with a single finger<<if $player.gender is "h">>, completely ignoring your <<pussy>><</if>>. It gently squeezes it, giggling.
+	<<else>>
+		It prods your <<penis>> with a single finger<<if $player.gender is "h">>, completely ignoring your <<pussy>><</if>>. It traces your length, giggling.
+	<</if>>
 <<elseif $lactating and $breastfeedingdisable is "f">>
 	<<set $phase to "breast">>
 
@@ -1058,8 +1066,14 @@ Your body is unnaturally warm. <<arousal 600>><<garousal>>
 	"Fall," it whispers with your voice.
 	<<orgasm>>
 
-	<<if $phase.includes("penis")>>
-		Semen sprays out of your <<penis>> in a fountain, pulsing and throbbing but never slowing down.
+	<<if $phase.includes("penis") and !$femaleclimax>>
+		<<if $worn.genitals.name isnot "chastity parasite">>
+			Semen sprays out of your <<penis>> into your chastity parasite, briefly enlarging it beyond it's normal size.
+		<<else>>
+			Semen sprays out of your <<penis>> in a fountain, pulsing and throbbing but never slowing down.
+		<</if>>
+	<<else>>
+		Your <<penis>> spasms, despite it having nothing to give.
 	<</if>>
 	<<if $phase.includes("breast")>>
 		Milk pours from your <<breasts>> unnaturally, as your body spasms.
@@ -1089,12 +1103,12 @@ When it finally ends, you collapse to the ground like a puppet with cut strings,
 <<if $phase isnot "vagina">>
 	You feel completely and utterly empty, in more ways than one. The magnitude of that orgasm has
 	<span class="red">completely drained you of
-	<<if $player.penisExist and ($lactating and $breastfeedingdisable is "f")>>
+	<<if $player.penisExist and ($lactating and $breastfeedingdisable is "f") and !$femaleclimax>>
 		semen and milk,
 		<<set $fluid_forced_stat += $semen_amount + $milk_amount>>
 		<<set $breastsensitivity += 0.5>><<set $genitalsensitivity += 0.5>>
 		<<semenvolume _semenLoss>><<milkvolume _milkLoss>><<set $semen_amount to 0>><<set $milk_amount to 0>>
-	<<elseif $player.penisExist>>
+	<<elseif $player.penisExist and !$femaleclimax>>
 		semen,
 		<<set $fluid_forced_stat += $semen_amount>>
 		<<set $genitalsensitivity += 0.5>>
@@ -1104,6 +1118,10 @@ When it finally ends, you collapse to the ground like a puppet with cut strings,
 		<<set $fluid_forced_stat += $milk_amount>>
 		<<set $breastsensitivity += 0.5>>
 		<<milkvolume _milkLoss>><<set $milk_amount to 0>>
+	<</if>>
+	<<if $player.penisExist and $femaleclimax>>
+		/* Try to lower the semen volume anyway */
+		<<semenvolume _semenLoss>>
 	<</if>>
 	and has lowered your maximum capacity.</span>
 <<else>>

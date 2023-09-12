@@ -736,6 +736,15 @@ setup.feats = {
 		hint: "Hint: Three of a kind.",
 		pregnancyLockable: true,
 	},
+	"Life begins when you least expect": {
+		title: "Life begins when you least expect",
+		desc: "Gave birth to children as a male.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Pregnancy"],
+		hint: "Hint: The Magic that helps creates that what should not be.",
+		hidden: true,
+	},
 	"Diversity of Life": {
 		title: "Diversity of Life",
 		desc: "Gave birth to children of many different species.",
@@ -745,14 +754,6 @@ setup.feats = {
 		hint: "Hint: Many forms of existence.",
 		pregnancyLockable: true,
 	},
-	/* "Life begins when you least expect":{ ToDo: Pregnancy: uncomment once MPreg is possable in-game
-		title: "Life begins when you least expect",
-		desc: "Gave birth to children as a male.",
-		difficulty: 2,
-		series: "",
-		filter: ["All", "Pregnancy"],
-		hint: "Hint: The Magic that helps creates that what should not be.",
-	}, */
 	/* "Broken Dam":{ //Not in the code right now
 		title: "Broken Dam",
 		desc: "Get impregnated thanks to a broken condom.",
@@ -1572,6 +1573,15 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Special"],
 		hint: "Hint: Whispers in your ear.",
+	},
+	"Ear Slime Amalgam": {
+		title: "Ear Slime Amalgam",
+		desc: "You became one with your best friend.",
+		difficulty: 3,
+		series: "",
+		filter: ["All", "Special"],
+		hint: "Hint: Given time and love to bloom.",
+		hidden: true,
 	},
 	"The Path to Redemption": {
 		title: "The Path to Redemption",
