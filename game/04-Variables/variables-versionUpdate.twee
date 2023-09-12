@@ -4527,7 +4527,7 @@
 			<<set $options.confirmDialogUponTabClose to false>>
 		<</if>>
 	<</if>>
-
+	
 	<!-- Give leotards a default colour of black after making them recolourable-->
 	<<script>>
 		let underUpperChanger = item => {
@@ -4552,4 +4552,30 @@
 		V.wardrobe.under_lower.forEach(underLowerChanger);
 		underLowerChanger(V.worn.under_lower);
 	<</script>>
+
+	<!-- V0.4.2.0 Crime Overhaul -->
+	<<if !$objectVersion.crime>>
+		<<set _oldCrime to parseInt($crime) || 0>>
+		<<set _oldCrimeHistory to parseInt($crimehistory) || 0>>
+		<<unset $crime>><<unset $crimehistory>>
+		<<set $crime to {
+			assault: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			coercion: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			destruction: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			exposure: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			obstruction: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			prostitution: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			resisting: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			thievery: {current: _oldCrime, history: _oldCrimeHistory, daily: 0, count: 0, countHistory: 0},
+			petty: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			trespassing: {current: 0, history: 0, daily: 0, count: 0, countHistory: 0},
+			events: {},
+		}>>
+		<<if $crime.thievery.current gte 1>>
+			<<set $crime.thievery.count to 1>><<set $crime.thievery.countHistory to 1>>
+			<<set C.crime.logEvent(_oldCrime, "thievery", "legacy", 0)>>
+		<</if>>
+		<<set $objectVersion.crime to 1>>
+	<</if>>
+	
 <</widget>>

@@ -497,13 +497,26 @@
 	<</if>>
 <</widget>>
 
-<<widget "crimeup">><<silently>>
+<<widget "crimeUp">><<silently>>
 	<<if $statFreeze isnot true>>
-		<<if _args[0] and !isNaN(_args[0])>>
+		<<if _args[0] eq null>>
+			<<set _crimeError to `No input found for crimeUp widget!`>>
+		<<elseif isNaN(_args[0])>>
+			<<set _crimeError to `NaN input found for crimeUp widget: '${_args[0]}'`>>
+		<<elseif _args[0] lt 0>>
+			<<set _crimeError to `Negative input found for crimeUp widget: '${_args[0]}'`>>
+		<<elseif _args[0] gt 0>>
+			<<set _crimeType to _args[1] || "thievery">>
+			<<if !setup.crimeNames[_crimeType]>>
+				<<run Errors.report("Extra-Illegal crime committed of type; " + _crimeType + " defaulted to thievery")>>
+				<<set _crimeType to "thievery">>
+			<</if>>
 			<<set $_crimemod to Number(_args[0])>>
-			<<if _args[0] gt 0>>
-				<!-- Our crime value is positive, adjust by stealth factor -->
-				<<set $_crimefactor to 1>>
+			<<set $_crimeMult to 1>>
+
+			<<if !["coercion", "resisting"].includes(_crimeType)>>
+				<!-- ignore stealth (or concealed identity) for crimes where it is irrelevant; -->
+				<!-- resisting arrest where the player's identity is explicitly known, and coercion where the player's force of personality is needed -->
 				/* The following commented code contains experimental factors for calculating stealth */
 				/*
 					<<set $_crime1 to Math.clamp($crime, C.crime.min, C.crime.max / 10)>>
@@ -516,31 +529,246 @@
 					<<set $_stealthReduce1 to expCurve($_normcrime1, 3.0)>>
 					<!-- First 5k of crime at a curve to 5000 -->
 				*/
-				<<set $_stealthfactor to ( 0.15 * ( 1 - normalise($crime, C.crime.max / 5 ) ) )>>
+				<<set $_stealthfactor to ( 0.15 * ( 1 - normalise($crime[_crimeType].current, C.crime.max / 5 ) ) )>>
 				<!-- Stealth gives 15%, but reduced by existing crime stat down to 0 at C.crime.max / 5 -->
-				<!-- At 10k crime, stealth equipment is effectively useless - too much evidence -->
+				<!-- At 10k crime of the current type, stealthy equipment is effectively useless - too much evidence -->
 
-				<!-- Filter to all items with type "stealthy" and count them... -->
+				<!-- Filter to all items with type "stealthy" and count them -->
 				<<set $_stealthMult to Object.values($worn).filter(item => item.type.includes("stealthy")).length>>
-				<<set $_crimefactor -= $_stealthfactor * $_stealthMult>>
+				<<set $_crimeMult -= $_stealthfactor * $_stealthMult>>
 
-				<<set $_crimemod to Math.ceil($_crimemod * $_crimefactor)>>
-				<!-- Add to crime history and Avery crimetracker-->
-				<<set $crimehistory += $_crimemod>>
+				<!-- Filter to all items with type "unstealthy" and count them -->
+				<<set $_unstealthMult to Object.values($worn).filter(item => item.type.includes("unstealthy")).length>>
+				<<set $_crimeMult += 0.15 * $_unstealthMult>>
+
+				<<if ["thievery", "petty", "trespassing"].includes(_crimeType)>>
+					<!-- For stealthy crimes, player skulduggery skill gives further reduction up to another 15%. 1000 is max skulduggery clamp, replace as needed -->
+					<<set $_skillMult to ( 0.15 * normalise($skulduggery, 1000) )>>
+					<<set $_crimeMult -= $_skillMult>>
+				<</if>>
+
+				<<set $_crimemod to Math.ceil($_crimemod * $_crimeMult)>>
+				<<if ["petty"].includes(_crimeType) and $skulduggery gte 500>>
+					<!-- Petty thievery has extra flat reduction if skulduggery skill above 500 (C+), possibly negating the crime gain entirely -->
+					<<set $_crimemod -= Math.floor($skulduggery / 10)>>
+				<</if>>
+			<</if>>
+
+			<<set $_crimemod to Math.clamp($_crimemod, 0, C.crime.max)>>
+
+			<<if $_crimemod gt 0>>
+				<!-- If crime gain is still greater than 0, add to crime daily, history, count, and Avery crimetracker-->
+				<!-- crimemod lte 0 represents a crime the player completely got away with, so nothing is recorded-->
+				<<set C.crime[_crimeType] += $_crimemod>>
+				<<set C.crime[_crimeType + "History"] += $_crimemod>>
+				<<set C.crime[_crimeType + "Daily"] += $_crimemod>>
+				<<set C.crime[_crimeType + "Count"] += 1>>
+				<<set C.crime[_crimeType + "CountHistory"] += 1>>
 				<<if $averyCrimeTracker neq null>>
 					<<set $averyCrimeTracker += $_crimemod>>
 				<</if>>
+
+				<<if ["thievery", "petty"].includes(_crimeType) and
+				$foxbuild gte 1 and 
+				Math.max($wolfbuild, $catbuild, $cowbuild, $birdbuild, $foxbuild) is $foxbuild>>
+					<!-- If the player steals enough, and fox is their highest beast TF (and above 0), apply fox TF pressure -->
+					<<if !$foxCrimeProgress>>
+						<!-- Resets daily at 6AM, in dawnCheck, time.js -->
+						<<set $foxCrimeProgress to 0>>
+					<</if>>
+					<<set $foxCrimeProgress += $_crimemod>>
+					<<set $_foxCrimeRequired = Math.floor(50 * (1 + $foxbuild))>>
+					<<if $foxCrimeProgress gte $_foxCrimeRequired>>
+						<<transform fox 1>>
+						<<set $foxCrimeMessage to true>>
+						<<set $foxCrimeProgress to Math.clamp($foxCrimeProgress, 0, ($foxCrimeProgress - $_foxCrimeRequired))>>
+					<</if>>
+				<</if>>
+
+				<<if _args[2]>>
+					<!-- Optional argument to record more specific crimes with description. Does not work yet, unused.-->
+					<<set _description to _args[2]>>
+					<<if !setup.crimeDescs[_description]>>
+						<<run Errors.report("Extra-Illegal crime committed of description; " + _description + " crime event not logged")>>
+					<<else>>
+						<<run C.crime.logEvent($_crimemod, _crimeType, _description)>>
+					<</if>>
+				<</if>>
 			<</if>>
-			<<set $crime += $_crimemod>> <!-- This works for negative values as well! -->
-			<<set $crime to Math.clamp($crime, C.crime.min, C.crime.max)>> <!-- Auto-clamp crime -->
-		<<elseif isNaN(_args[0])>>
-			<<set _crimeError to `NaN input found: '${_args[0]}'`>>
-		<</if>>
-		<<if $slimeEvent is "steal something">>
-			<<unset $slimeEvent>>
+
+			<<if $slimeEvent is "steal something" and ["thievery", "petty"].includes(_crimeType)>>
+				<<unset $slimeEvent>>
+			<</if>>
 		<</if>>
 	<</if>>
 <</silently>><<if _crimeError>><<error {message:T.crimeError}>><</if>><</widget>>
+
+<<widget "crimeUpFlat">><<silently>>
+	<!-- stripped down widget with no extra effects, modifiers, or optional arguments, ideally used for cheats and debugging -->
+	<<if $statFreeze isnot true>>
+		<<if _args[0] eq null>>
+			<<set _crimeError to `No input found for crimeUpFlat widget!`>>
+		<<elseif isNaN(_args[0])>>
+			<<set _crimeError to `NaN input found for crimeUpFlat widget: '${_args[0]}'`>>
+		<<elseif _args[0] lt 0>>
+			<<set _crimeError to `Negative input found for crimeUpFlat widget: '${_args[0]}'`>>
+		<<elseif _args[0] gt 0>>
+			<<set _crimeType to _args[1] || "thievery">>
+			<<if !setup.crimeNames[_crimeType]>>
+				<<run Errors.report("Extra-Illegal crime (flat) committed of type; " + _crimeType + " defaulted to thievery")>>
+				<<set _crimeType to "thievery">>
+			<</if>>
+			<<set $_crimemod to Number(_args[0])>>
+			<<if _args[0] gt 0>>
+				<<set C.crime[_crimeType] += $_crimemod>>
+				<<set C.crime[_crimeType + "History"] += $_crimemod>>
+				<<set C.crime[_crimeType + "Daily"] += $_crimemod>>
+				<<set C.crime[_crimeType + "Count"] += 1>>
+				<<set C.crime[_crimeType + "CountHistory"] += 1>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</silently>><<if _crimeError>><<error {message:T.crimeError}>><</if>><</widget>>
+
+<<widget "crimeDown">><<silently>>
+	<<if $statFreeze isnot true>>
+		<<if _args[0] eq null>>
+			<<set _crimeError to `No input found for crimeDown widget!`>>
+		<<elseif isNaN(_args[0])>>
+			<<set _crimeError to `NaN input found for crimeDown widget: '${_args[0]}'`>>
+		<<elseif _args[0] lt 0>>
+			<<set _crimeError to `Negative input found for crimeDown widget: '${_args[0]}'`>>
+		<<elseif _args[0] gt 0>>
+			<<set _crimeDown to _args[0]>>
+			<<if _args[1] and _args[1] isnot "all">>
+				<<set _crimeType to _args[1]>>
+				<<if !setup.crimeNames[_crimeType]>>
+					<<run Errors.report("Extra-Illegal crime reduced of type; " + _crimeType + " defaulted to thievery")>>
+					<<set _crimeType to "thievery">>
+				<</if>>
+				<<if C.crime[_crimeType] gt 0>>
+					<<if _crimeDown lte 1>>
+						<!-- Reduce crime by percent -->
+						<<set C.crime[_crimeType] to Math.ceil(C.crime[_crimeType] * _crimeDown)>>
+						<<set C.crime[_crimeType + "Daily"] to Math.ceil(C.crime[_crimeType + "Daily"] * _crimeDown)>>
+						<<set C.crime[_crimeType + "Count"] to Math.ceil(C.crime[_crimeType + "Count"] * _crimeDown)>>
+					<<else>>
+						<!-- Reduce crime by value -->
+						<<set $_crimeDiv to normalise(C.crime[_crimeType] - _crimeDown, C.crime[_crimeType], C.crime.min)>>
+						<<set C.crime[_crimeType] -= _crimeDown>>
+						<<set C.crime[_crimeType + "Daily"] -= _crimeDown>>
+						<!-- Reduce crime type count by same percentile as total crime loss-->
+						<<set C.crime[_crimeType + "Count"] to Math.ceil(C.crime[_crimeType + "Count"] * $_crimeDiv)>>
+					<</if>>
+				<</if>>
+			<<else>>
+				<!-- If no crime type specified, apply to all -->
+				<<for _crimeType range Object.keys(setup.crimeNames)>>
+					<<if C.crime[_crimeType] gt 0>>
+						<<if _crimeDown lte 1>>
+							<!-- Reduce crime by percent -->
+							<<set C.crime[_crimeType] to Math.ceil(C.crime[_crimeType] * _crimeDown)>>
+							<<set C.crime[_crimeType + "Daily"] to Math.ceil(C.crime[_crimeType + "Daily"] * _crimeDown)>>
+							<<set C.crime[_crimeType + "Count"] to Math.ceil(C.crime[_crimeType + "Count"] * _crimeDown)>>
+						<<else>>
+							<<set $_crimeDiv to normalise(C.crime[_crimeType] - _crimeDown, C.crime[_crimeType], C.crime.min)>>
+							<<set C.crime[_crimeType] -= _crimeDown>>
+							<<set C.crime[_crimeType + "Daily"] -= _crimeDown>>
+							<<set C.crime[_crimeType + "Count"] to Math.ceil(C.crime[_crimeType + "Count"] * $_crimeDiv)>>
+							<<unset $_crimeDiv>>
+						<</if>>
+					<</if>>
+				<</for>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</silently>><<if _crimeError>><<error {message:T.crimeError}>><</if>><</widget>>
+
+<<widget "crimeClear">>
+	<<if $statFreeze isnot true>>
+		<<if _args[0] and _args[0] isnot "all">>
+			<<set _crimeClearType to _args[0]>>
+			<<if !setup.crimeNames[_crimeClearType]>>
+				<<run Errors.report("Extra-Illegal crime cleared of type; " + _crimeClearType)>>
+			<<else>>
+				<<set C.crime[_crimeClearType] = 0>>
+				<<set C.crime[_crimeClearType + "Count"] = 0>>
+				<<set C.crime[_crimeClearType + "Daily"] = 0>>
+				<<run C.crime.clearEvents(_crimeClearType)>>
+			<</if>>
+		<<else>>
+			<!-- If no crime type specified, zero all categories -->
+			<<for _crimeClearType range Object.keys(setup.crimeNames)>>
+				<<set C.crime[_crimeClearType] = 0>>
+				<<set C.crime[_crimeClearType + "Count"] = 0>>
+				<<set C.crime[_crimeClearType + "Daily"] = 0>>
+				<<run C.crime.clearEvents()>>
+			<</for>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "crimeClearEvent">>
+	<<if $statFreeze isnot true>>
+		<<if _args[0] and _args[0] isnot "all">>
+			<<set _crimeClearEvent to _args[0]>>
+			<<if !setup.crimeDescs[_crimeClearEvent]>>
+				<<run Errors.report("Extra-Illegal crime event cleared of description; " + _crimeClearEvent)>>
+			<<else>>
+				<<run C.crime.clearEvents(null, _crimeClearEvent)>>
+			<</if>>
+		<<else>>
+			<<run C.crime.clearEvents()>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "listCrimeCheats">>
+	<<if Object.keys(V.crime.events).length isnot 0>>
+		<<for $_ce range Object.keys(V.crime.events)>>
+			<<print $_ce + ": " + setup.crimeDescs[$_ce].toUpperFirst() + ", " + $crime.events[$_ce].length + " count(s)">>
+			<br>
+		<</for>>
+	<<else>>
+		<span class="red">No unique crime events</span>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "crimeParade">>
+	<<for $_crimeType range Object.keys(setup.crimeNames)>>
+		<<if C.crime[$_crimeType + "Count"] gte 1>>
+			<<set $_crimes_output to "">>
+			<<number `C.crime[$_crimeType + "Count"]` "silent">>
+			<<set $_crimes_output += "- " + _text_output.toLocaleUpperFirst() + " count">>
+			<<if C.crime[$_crimeType + "Count"] isnot 1>>
+				<<set $_crimes_output += "s">>
+			<</if>>
+			<<set $_crimes_output += " of " + toTitleCase(setup.crimeNames[$_crimeType])>>
+			<<unset _text_output>>
+			<<set $_crimes_event_list to []>>
+			<<for $_ce range Object.keys($crime.events)>>
+				<<set $_crDescLen to $crime.events[$_ce].filter(e => e.type is $_crimeType).length>>
+				<<if $_crDescLen gte 1>>
+					<<number $_crDescLen "silent">>
+					<<set $_crDescStr to _text_output + " count">>
+					<<if $_crDescLen gt 1>>
+						<<set $_crDescStr += "s">>
+					<</if>>
+					<<set $_crDescStr += " of " + setup.crimeDescs[$_ce]>>
+					<<unset _text_output>>
+					<<set $_crimes_event_list.push($_crDescStr)>>
+				<</if>>
+			<</for>>
+			<<if $_crimes_event_list.length isnot 0>>
+				<<set $_crimes_output += ", including ">>
+				<<set $_crimes_output += formatList($_crimes_event_list, "and", true)>>
+			<</if>>
+			<<set $_crimes_output += ".">><span class="red"><<print $_crimes_output>></span>
+			<br>
+		<</if>>
+	<</for>>
+<</widget>>
 
 <<widget "seductionskilluse">>
 	<<set $enemyarousal += ($seductionskill / 100)>><<seductionskill 5>>
@@ -3289,7 +3517,7 @@
 		<<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
 	<<elseif isPubfameTaskAccepted("hospital") and $pubfame.hospital.active is 1>>
 		<<pubfameComplete "hospital" "steal">>
-		<<crimeup 20>><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
+		<<crimeUp 20 "petty">><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
 	<<elseif $location is "prison">>
 		<<set _teeth to random(3,10)>>
 		You steal a handful of white, translucent gems.
@@ -3297,14 +3525,14 @@
 	<<elseif $rng gte 96 and $spray lt $spraymax>>
 		<<spray 1>>
 		<span class="green">You steal a charge for your pepper spray.</span>
-		<<crimeup 50>><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
+		<<crimeUp 50 "petty">><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
 	<<elseif $rng gte 90 and !$compoundcard>>
 		<<set $compoundcard to 1>>
 		You steal a strange card. There's an address on it, for a location on <span class="gold">Elk Street.</span>
 	<<else>>
 		<<rng 5 100>>
 		You steal <<moneyGain $rng>>.
-		<<crimeup $rng>><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
+		<<crimeUp $rng "petty">><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
 	<</if>>
 <</widget>>
 
@@ -5065,14 +5293,14 @@
 	<</if>>
 	<<set _money_gain to Math.floor((_base_amount + _variation) * _skulduggeryMulti)>>
 	<<if _args[2]>>
-		<<crimeup `_money_gain / 100`>>
+		<<crimeUp `_money_gain / 100` "thievery">>
 	<</if>>
 	<<set $money += _money_gain>>
 <</silently>><<printmoney _money_gain>><</widget>>
 
 /*
 	Used like above, but only shows the money amount, doesn't add money or crime.
-	Use <<crimeup `_money_gain / 100`>> and <<set $money += _money_gain>> where necessary in links, etc.
+	Use <<crimeUp `_money_gain / 100`>> and <<set $money += _money_gain>> where necessary in links, etc.
 */
 <<widget "moneyGainDisplay">><<silently>>
 	<<if _args[0]>>

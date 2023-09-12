@@ -667,7 +667,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Police Pillory Start`, `Police Pillory Start`],
-			widgets: [`<<set $crime to 5000>>`, `<<generate1>>`, `<<person1>>`],
+			widgets: [`<<crimeUpFlat 5000 "thievery">>`, `<<generate1>>`, `<<person1>>`],
 		},
 		{
 			link: [`Put Whitney in the Pillory`, stayOnPassageFn],
@@ -820,7 +820,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Prison`, `Police Prison Intro Bailey`],
-			widgets: [`<<npc Bailey>>`, `<<generate2>>`, `<<generate3>>`, `<<generate4>>`, `<<person2>>`, `<<neckwear 1>>`, `<<crimeup 5000>>`],
+			widgets: [`<<npc Bailey>>`, `<<generate2>>`, `<<generate3>>`, `<<generate4>>`, `<<person2>>`, `<<neckwear 1>>`, `<<crimeUpFlat 5000 "thievery">>`],
 		},
 		{
 			link: [`Remy's Farm`, `Livestock Intro`],
@@ -1176,11 +1176,11 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Crime Up`, stayOnPassageFn],
-			widgets: [`<<set $crime += 500>>`],
+			widgets: [`<<crimeUp 500 "thievery">>`],
 		},
 		{
 			link: [`Crime Down`, stayOnPassageFn],
-			widgets: [`<<set $crime -= 500>>`],
+			widgets: [`<<crimeDown 500>>`],
 		},
 		{
 			text_only: "\n\n",

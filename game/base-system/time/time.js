@@ -475,7 +475,7 @@ function dayPassed() {
 	if (V.lake_ice_broken < 1) delete V.lake_ice_broken;
 	if (V.community_service >= 1) {
 		if (V.community_service_done !== 1 && !["asylum", "prison"].includes(V.location)) {
-			fragment.append(wikifier("crimeup", 200));
+			fragment.append(wikifier("crimeUp", 200, "obstruction"));
 			V.effectsmessage = 1;
 			V.community_message = "missed";
 		}
@@ -828,6 +828,16 @@ function dawnCheck() {
 	delete V.alex_bed_spurned;
 	delete V.connudatus_stripped;
 	delete V.robin_kicked_out;
+
+	delete V.foxCrimeProgress;
+	for (const crimeKeys of Object.keys(setup.crimeNames)) {
+		if (V.crime[crimeKeys].daily >= C.crime.spree) {
+			// If the player commits too much of the same type of crime in one day, they leave behind more evidence.
+			V.crime[crimeKeys].current += Math.floor(V.crime[crimeKeys].daily * 0.1);
+		}
+		// Reset daily crime of all types to 0
+		V.crime[crimeKeys].daily = 0;
+	}
 
 	return fragment;
 }
@@ -1432,7 +1442,7 @@ function dailySchoolEffects() {
 				}
 			}
 		}
-		if (V.studyBooks.stolen !== "none" && Time.schoolTerm) fragment.append(wikifier("crimeup", 1));
+		if (V.studyBooks.stolen !== "none" && Time.schoolTerm) fragment.append(wikifier("crimeUp", 1, "thievery"));
 		if (V.recentReturnTimer) {
 			V.recentReturnTimer--;
 			if (V.recentReturnTimer <= 0) delete V.recentReturnTimer;
@@ -1443,7 +1453,7 @@ function dailySchoolEffects() {
 		if (V.bookStolenKnown === undefined) V.bookStolenKnown = 1;
 		if (V.libraryMoneyStolen === undefined) V.libraryMoneyStolen = 0;
 		V.libraryMoneyStolen += 20;
-		fragment.append(wikifier("crimeup", 20));
+		fragment.append(wikifier("crimeUp", 20, "thievery"));
 	}
 
 	return fragment;
