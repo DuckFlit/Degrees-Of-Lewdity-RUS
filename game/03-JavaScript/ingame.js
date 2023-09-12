@@ -116,7 +116,7 @@ const combatActionColours = {
 		],
 		sub: [
 			/* leftaction or rightaction */
-			"leftplay", "leftgrab", "leftstroke", "leftchest", "rightplay", "rightgrab", "rightstroke", "rightchest", "leftchest", "rightchest", "leftwork", "rightwork", "leftclit", "rightclit", "handedge", "keepchoke", "leftmasturbatepussy", "rightmasturbatepussy", "leftmasturbateanus", "rightmasturbateanus", "leftmasturbatepenis", "rightmasturbatepenis", "lefthandholdkeep", "righthandholdkeep", "lefthandholdnew", "righthandholdnew", "handguide", "lubeanus", "lubepussy", "lubepenis", "removebuttplug", "dildoOtherPussyTease", "dildoOtherPussyFuck", "dildoOtherAnusTease", "dildoOtherAnusFuck", "strokerOtherPenisTease", "strokerOtherPenisFuck", "dildoSelfPussyEntrance", "dildoSelfAnusEntrance", "dildoSelfPussy", "dildoSelfAnus", "strokerSelfPenisEntrance", "strokerSelfPenis",
+			"leftplay", "leftgrab", "leftstroke", "leftchest", "rightplay", "rightgrab", "rightstroke", "rightchest", "leftchest", "rightchest", "leftwork", "rightwork", "leftclit", "rightclit", "handedge", "keepchoke", "leftmasturbatepussy", "rightmasturbatepussy", "leftmasturbateanus", "rightmasturbateanus", "leftmasturbatepenis", "rightmasturbatepenis", "lefthandholdkeep", "righthandholdkeep", "lefthandholdnew", "righthandholdnew", "handguide", "lubeanus", "lubepussy", "lubepenis", "removebuttplug", "dildoOtherPussyTease", "dildoOtherPussyFuck", "dildoOtherAnusTease", "dildoOtherAnusFuck", "strokerOtherPenisTease", "strokerOtherPenisFuck", "dildoSelfPussyEntrance", "dildoSelfAnusEntrance", "dildoSelfPussy", "dildoSelfAnus", "strokerSelfPenisEntrance", "strokerSelfPenis", "leftcovervaginalewd", "rightcovervaginalewd", "leftcoverpenislewd", "rightcoverpenislewd", "leftcoveranuslewd", "rightcoveranuslewd",
 			/* feetaction */
 			"grab", "vaginagrab", "grabrub", "vaginagrabrub", "rub",
 			/* mouthaction */
@@ -1263,7 +1263,9 @@ function currentSkillValue(skill) {
 			if (V.worn.feet.type.includes("shackle")) result /= 10;
 			break;
 		case "willpower":
-			if (V.parasite.left_ear.name === V.parasite.right_ear.name && V.parasite.left_ear.name === "slime") {
+			if (V.earSlime.growth >= 75) {
+				result = Math.floor(result * (V.earSlime.growth > 75 ? 0.8 : 0.85));
+			} else if (V.parasite.left_ear.name === V.parasite.right_ear.name && V.parasite.left_ear.name === "slime") {
 				result = Math.floor(result * 0.9);
 			}
 			break;
@@ -1900,6 +1902,7 @@ function convertHairLengthToStage(hair, length){
 window.convertHairLengthToStage = convertHairLengthToStage;
 
 function calculateSemenReleased(){
+	if(T.deniedOrgasm) return 0;
 	let released = 30;
 
 	released += (V.semen_volume / 30);

@@ -4,6 +4,7 @@
 	<<set $parasite.bodyparts to [
 		"nipples",
 		"bottom",
+		"breasts",
 		"penis",
 		"balls",
 		"clit",
@@ -28,7 +29,8 @@
 	<<set $parasite.types to [
 		"urchin",
 		"slime",
-		"maggot"]>>
+		"maggot",
+		"parasite",]>>
 
 	<<for _part range $parasite.bodyparts>>
 		<<set $parasite[_part] to {}>>
@@ -49,7 +51,22 @@
 		<<set $parasite[_temp0].name to _temp1>>
 		<<set $parasitestat += 1>>
 
-		<<if _temp0 isnot "left_ear" and _temp0 isnot "right_ear">> /*Keeps ears from 'sucking and massaging' in the StoryCaption*/
+		<<if _temp0 is "clit" and _temp1 is "parasite" and $player.gender is "f" and ["mixed", "impregnation"].includes($earSlime.focus)>>
+			<<set $player.penisExist to true>>
+			<<set $player.ballsExist to true>>
+			<<if $earSlime.focus is "impregnation">>
+				<<set $player.size to Math.clamp(2, 0, $penissizemax)>>
+				<<set $semen_amount to 300>>
+				<<set $semen_volume to 300>>
+			<<else>>
+				<<set $player.size to 0>>
+				<<set $semen_amount to 90>>
+				<<set $semen_volume to 90>>
+			<</if>>
+		<</if>>
+
+		<<if _temp0 is "left_ear" or _temp0 is "right_ear" or _args[2] is "noSuck">> /*Keeps ears from 'sucking and massaging' in the StoryCaption*/
+		<<else>>
 			<<set _temp0 to _temp0.replace(/_/g, " ")>>/*Replaces underscores with spaces to make sidebar description more presentable.*/
 			<<set $parasite[_temp1].push(_temp0)>>
 		<</if>>
@@ -61,6 +78,18 @@
 	<<if _args[0]>>
 		<<set _temp0 to _args[0]>>
 
+		<<if _temp0 is "clit" and $parasite.clit.name is "parasite" and $player.gender is "f" and $player.penisExist>>
+			<<set $player.penisExist to false>>
+			<<if $worn.genitals.name is "chastity parasite">>
+				<<set $worn.genitals.type.push("broken")>>
+				<<genitalsruined>>
+			<<elseif playerChastity("penis") and !playerChastity("vagina") and !$player.penisExist and $args[0]>>
+				With nothing to hold it in place, you <<print $worn.genitals.name>> falls to the ground.
+				<<set $worn.genitals.type.push("broken")>>
+				<<genitalsruined>>
+			<</if>>
+		<</if>>
+
 		<<run delete $parasite[_temp0].name>>
 
 		<<set _temp0 to _temp0.replace(/_/g, " ")>>/*Removes underscores from argument to match with the change made in the <<parasite>> widget.*/
@@ -68,13 +97,35 @@
 			<<set $parasite[_type].delete(_temp0)>>
 		<</for>>
 		<<if $parasite.left_ear.name isnot "slime" and $parasite.right_ear.name isnot "slime">>
-			<<set $corruption_slime to 0>>
-			<<unset $slimeEvent>>
-			<<unset $slimeEventLength>>
-			<<unset $alwaysSleepNaked>>
-			<<if $daily and $daily.corruptionSlimeClothes>>
-				<<run delete $daily.corruptionSlimeClothes>>
-			<</if>>
+			<<resetEarSlime true>>
 		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "resetEarSlime">>
+	<<set $earSlime to {
+		corruption: 0, 
+		growth: 0,
+		focus: "none",
+		event: "",
+		eventTimer: 0,
+		defyCooldown: 0,
+		dreamRejected: 0,
+		vibration: 0,
+		lastVibration: 0,
+		alwaysSleepNaked: false,
+		noSleep: false,
+	}>>
+	<<if $daily and $daily.corruptionSlimeClothes>>
+		<<run delete $daily.corruptionSlimeClothes>>
+	<</if>>
+	<<if $parasite.breasts and $parasite.breasts.name is "parasite">>
+		<<removeparasite "breasts">>
+	<</if>>
+	<<if $parasite.penis.name is "parasite" or ($parasite.clit.name is "parasite" and $player.gender is "f")>>
+		<<removeparasite "penis">>
+	<</if>>
+	<<if $parasite.clit.name is "parasite">>
+		<<removeparasite "clit">>
 	<</if>>
 <</widget>>

@@ -193,8 +193,12 @@
 			<</switch>>
 
 			<<if $_heatArousal or $_rutArousal>>
-				<<if $wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2>>
+				<<if ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2) and $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal)) and !$earSlime.defyCooldown>>
+					Your ear slime and inner beast is sending you into <<print $_heatRutDisplay>>.
+				<<elseif $wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2>>
 					Your inner beast is sending you into <<print $_heatRutDisplay>>.
+				<<elseif $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal)) and !$earSlime.defyCooldown>>
+					Your ear slime is sending you into <<print $_heatRutDisplay>>.
 				<<else>>
 					Something is keeping you aroused.
 				<</if>>
@@ -205,8 +209,12 @@
 			<br><br>
 		<</if>>
 	<<elseif $_heatArousal or $_rutArousal>>
-		<<if ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2)>>
+		<<if ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2) and $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal)) and !$earSlime.defyCooldown>>
+			Your ear slime and inner beast is sending you into <<print $_heatRutDisplay>>.
+		<<elseif ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2)>>
 			Your inner beast is sending you into <<print $_heatRutDisplay>>.
+		<<elseif $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal)) and !$earSlime.defyCooldown>>
+			Your ear slime is sending you into <<print $_heatRutDisplay>>.
 		<<else>>
 			Something is keeping you aroused.
 		<</if>>
@@ -417,7 +425,10 @@
 						{ requiredValue:	($willpowermax / 7) * 6,	level: 6, color: 'green',	description: 'Your will is iron.'}
 					]
 				}>>
-				<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
+				<<if $earSlime.growth gte 75>>
+					<<set _willpowerConfig.modifier to Math.floor(_willpowerConfig.modifier * ($earSlime.growth gte 100 ? 0.8 : 0.85))>>
+					<<set _willpowerConfig.modTypes.bad.pushUnique("ear slimes")>>
+				<<elseif $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
 					<<set _willpowerConfig.modifier to Math.floor(_willpowerConfig.modifier * 0.9)>>
 					<<set _willpowerConfig.modTypes.bad.pushUnique("ear slimes")>>
 				<</if>>
@@ -525,7 +536,7 @@
 		<div id="base-skills" class="characteristic-box-list" @style="($parasite.left_ear.name == 'slime' || $parasite.right_ear.name == 'slime') ? '--min-width: 30%;' : ''">
 			<!--Additional skills configurations-->
 			<<silently>>
-				<<set _corruptionConfig =	{ name : "Corruption",	displayType : "none",	currentValue : $corruption_slime,	modifier: 100, modTypes: { good: [], bad: [] },		meterColor: 'red'}>>
+				<<set _corruptionConfig =	{ name : "Corruption",	displayType : "none",	currentValue : $earSlime.corruption,	modifier: 100, modTypes: { good: [], bad: [] },		meterColor: 'red'}>>
 				<<set _skulduggeryConfig =	{ name : "Skulduggery", displayType : "grade",	currentValue : $skulduggery,		modifier: 100, modTypes: { good: [], bad: [] },		states : _detailedSkillGrades}>>
 				<<set _dancingConfig =		{ name : "Dancing",		displayType : "grade",	currentValue : $danceskill,			modifier: 100, modTypes: { good: [], bad: [] },		states : _basicSkillGrades}>>
 				<<set _swimmingConfig =		{ name : "Swimming",	displayType : "grade",	currentValue : $swimmingskill,		modifier: 100, modTypes: { good: [], bad: [] },		states : _detailedSkillGrades}>>

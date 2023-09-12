@@ -102,7 +102,10 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 	}
 
 	if (pregnancy && pregnancy.type === null) {
-		const chance = 100 / (target === "pc" ? 100 - V.basePlayerPregnancyChance : 20 - V.baseNpcPregnancyChance);
+		let chance = 100 / (target === "pc" ? 100 - V.basePlayerPregnancyChance : 20 - V.baseNpcPregnancyChance);
+
+		if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") chance *= 2;
+		if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") chance /= 2;
 
 		if (!forcePregnancy && chance * quantity * (rngModifier / 100) * (1 + fertility + magicTattoo) * multi < random(1, 100)) return false;
 
@@ -144,7 +147,11 @@ function playerPregnancyAttempt(baseMulti = 1, genital = "vagina") {
 	if (V.skin.pubic.pen === "magic" && V.skin.pubic.special === "pregnancy") {
 		fertilityBoost -= 0.4;
 	}
-	const baseChance = Math.floor((100 - V.basePlayerPregnancyChance) * Math.clamp(fertilityBoost, 0.1, 1) * baseMulti);
+	let baseChance = Math.floor((100 - V.basePlayerPregnancyChance) * Math.clamp(fertilityBoost, 0.1, 1) * baseMulti);
+
+	if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") baseChance = Math.floor(baseChance * 2);
+	if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") baseChance = Math.floor(baseChance / 2);
+
 	const rng = random(0, spermArray.length - 1 > baseChance ? spermArray.length - 1 : baseChance);
 
 	if (spermArray[rng]) {
@@ -684,12 +691,23 @@ function recordSperm({
 	rngType,
 	quantity = 1,
 }) {
+	if (!target || !spermOwner || !setup.pregnancy.typesEnabled.includes(spermType)) return null;
 	if (V.activeNightmare) return false; // Should not work if the player is in a nightmare
+
+	// Deal with earslime tasks
+	if (V.earSlime.event.includes("get sperm into your") && !V.earSlime.event.includes("completed") && target === "pc") {
+		if (V.earSlime.event.includes("vagina") && genital === "vagina") V.earSlime.event += " completed";
+		if (V.earSlime.event.includes("anus") && genital === "anus") V.earSlime.event += " completed";
+	}
+	if (V.earSlime.event.includes("get your own sperm into your") && !V.earSlime.event.includes("completed") && target === "pc" && spermOwner === "pc") {
+		if (V.earSlime.event.includes("vagina") && genital === "vagina") V.earSlime.event += " completed";
+		if (V.earSlime.event.includes("anus") && genital === "anus") V.earSlime.event += " completed";
+	}
+
 	if (V.disableImpregnation) return false; // To be set at the start of sex scenes, unset with <<endcombat>>
 	if (V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false; // Human player pregnancy disabled
 	if (V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false; // Beast player pregnancy disabled
 	if (V.npcPregnancyDisable === "t" && target !== "pc") return false; // Npc pregnancy disabled
-	if (!target || !spermOwner || !setup.pregnancy.typesEnabled.includes(spermType)) return null;
 
 	if (["realistic", "fetish"].includes(V.pregnancytype) && !["anus", "vagina"].includes(genital)) return null;
 	if (V.pregnancytype === "silly") {

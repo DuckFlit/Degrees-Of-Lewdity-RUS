@@ -468,9 +468,9 @@ function dayPassed() {
 		}
 	}
 
+	earSlimeDaily();
+
 	if (V.bell_timer) V.bell_timer--;
-	if (V.slimeSleepEvent >= 1) V.slimeSleepEvent--;
-	if (V.slimeSleepEvent < 1) delete V.slimeEvent;
 	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
 	if (V.lake_ice_broken < 1) delete V.lake_ice_broken;
 	if (V.community_service >= 1) {
@@ -692,10 +692,10 @@ function hourPassed(hours) {
 			V.fringelength++;
 			fragment.append(wikifier("calchairlengthstage"));
 		}
-		if (V.slimeDefyCooldown) {
-			V.slimeDefyCooldown--;
-			if (V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime") V.slimeDefyCooldown--;
-			if (V.slimeDefyCooldown < 1) delete V.slimeDefyCooldown;
+		if (V.earSlime.defyCooldown) {
+			V.earSlime.defyCooldown--;
+			if (V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime" && V.earSlime.growth < 100) V.earSlime.defyCooldown--;
+			if (V.earSlime.defyCooldown <= 0) V.earSlime.defyCooldown = 0;
 		}
 		playerEndWaterProgress();
 	}
@@ -1205,8 +1205,13 @@ function dailyLiquidEffects() {
 		V.semen_amount = 0;
 	}
 
-	fragment.append(wikifier("milkvolume", -2));
-	fragment.append(wikifier("lactation_pressure", -1));
+	let pressureReduction = -1;
+	if (V.earSlime.growth >= 75 && V.earSlime.focus === "impregnation") pressureReduction -= 2;
+	if (V.earSlime.growth >= 75 && V.earSlime.focus === "pregnancy") pressureReduction += 2;
+	if (pressureReduction < 0) {
+		fragment.append(wikifier("milkvolume", pressureReduction * 2));
+		fragment.append(wikifier("lactation_pressure", pressureReduction));
+	}
 
 	if (V.purity + V.semen_volume < 980) fragment.append(wikifier("semenvolume", 3));
 	if (V.purity + V.milk_volume < 1000) V.milk_volume += 10;
@@ -1660,8 +1665,12 @@ function passArousalWetness(passMinutes) {
 			V.pantiesSoaked = V.underlowerwet >= 100;
 		}
 	}
-
-	V.vaginaArousalWetness = Math.clamp(V.vaginaArousalWetness, 0, 100);
+	if (V.earSlime.focus === "pregnancy" && V.earSlime.growth >= 75) {
+		// Prevent it from dropping below 30 or 60 when the ear slime has fully grown with a focus on pregnancy
+		V.vaginaArousalWetness = Math.clamp(V.vaginaArousalWetness, V.earSlime.growth >= 100 ? 60 : 30, 100);
+	} else {
+		V.vaginaArousalWetness = Math.clamp(V.vaginaArousalWetness, 0, 100);
+	}
 	fragment.append(wikifier("vaginaWetnessCalculate"));
 
 	return fragment;
@@ -1687,6 +1696,104 @@ function getArousal(passMinutes) {
 	if (playerHasButtPlug()) addedArousal += minuteMultiplier;
 	if (V.parasite.left_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
 	if (V.parasite.right_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
+	if (V.earSlime.growth > 100 && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
+
+	if (V.worn.genitals.name === "chastity parasite") {
+		if (!V.masturbating) {
+			if (V.earSlime.corruption >= 100 && !V.earSlime.defyCooldown && !V.earSlime.vibration) {
+				V.earSlime.lastVibration += passMinutes;
+				if (V.earSlime.lastVibration > random(180, 720)) {
+					V.earSlime.vibration = random(2, 60);
+					V.earSlime.lastVibration = 0;
+				}
+			}
+			if (V.earSlime.defyCooldown) {
+				if (V.pain < 25) V.pain += Math.clamp(passMinutes, 0, 20 - Math.floor(V.pain));
+				// Helps to reduce the penis size
+				V.penisgrowthtimer += Math.floor(passMinutes / 4);
+			} else if (V.earSlime.vibration > 0) {
+				addedArousal += Math.clamp(minuteMultiplier, 0, V.earSlime.vibration * 10) * V.genitalsensitivity;
+				V.earSlime.vibration -= Math.clamp(passMinutes, 0, V.earSlime.vibration);
+				V.earSlime.lastVibration = Math.clamp(passMinutes - V.earSlime.vibration, 0, Infinity);
+			}
+		}
+	} else {
+		V.earSlime.vibration = 0;
+		V.earSlime.lastVibration = 0;
+	}
 
 	return addedArousal;
+}
+
+function earSlimeDaily() {
+	if (V.earSlime.eventTimer >= 1) V.earSlime.eventTimer--;
+	if (V.earSlime.eventTimer < 1) V.earSlime.event = "";
+
+	if (V.earSlime.corruption >= 60 && V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime" && V.earSlimeTest) {
+		V.earSlime.growth++;
+		if (V.earSlime.corruption >= 100) V.earSlime.growth++;
+		V.earSlime.growth = Math.clamp(V.earSlime.growth, 0, V.earSlime.focus === "none" ? 50 : 100);
+	} else if (V.earSlime.corruption < 30 && V.earSlime.growth <= 50 && V.earSlimeTest) {
+		// Reduce the growth variable only if below or equal to 50
+		V.earSlime.growth--;
+	}
+
+	if (V.earSlime.growth >= 75 && V.parasite.breasts.name !== "parasite") {
+		wikifier("parasite", "breasts", "parasite", "noSuck");
+		V.effectsmessage = 1;
+		V.earSlimebreastsParasite = 1;
+	}
+
+	if (V.earSlime.growth >= 100) {
+		if (
+			(V.earSlime.growth >= 95 && V.player.gender !== "f" && V.parasite.penis.name !== "parasite") ||
+			(V.earSlime.growth >= 100 && V.player.gender === "f" && V.parasite.clit.name !== "parasite")
+		) {
+			if (V.player.gender !== "f") {
+				V.effectsmessage = 1;
+				V.earSlimePenisParasite = 1;
+				if (V.parasite.penis.name && V.parasite.penis.name !== "parasite") {
+					V.earSlimePenisParasite = V.parasite.penis.name;
+					wikifier("removeparasite", "penis");
+				}
+				wikifier("parasite", "penis", "parasite", "noSuck");
+			} else {
+				V.effectsmessage = 1;
+				V.earSlimeClitParasite = 1;
+				if (V.parasite.clit.name && V.parasite.clit.name !== "parasite") {
+					V.earSlimeClitParasite = V.parasite.clit.name;
+					wikifier("removeparasite", "clit");
+				}
+				wikifier("parasite", "clit", "parasite", "noSuck");
+				if (["mixed", "impregnation"].includes(V.earSlime.focus) && V.player.gender === "f") V.player.penisExist = true;
+			}
+		}
+
+		// Breaks chastity gear over time, attempts to equip a chastity parasite if it aplies
+		if (!["naked", "chastity parasite"].includes(V.worn.genitals.name) && playerChastity()) {
+			V.worn.genitals.integrity -= 500;
+			if (V.worn.genitals.integrity <= 0) {
+				V.effectsmessage = 1;
+				V.penisslimebrokenchastitymessage = V.worn.genitals.name;
+				V.worn.genitals.type.push("broken");
+				wikifier("genitalsruined");
+			}
+		}
+
+		if (V.earSlime.focus === "pregnancy" && V.player.penisExist) {
+			if (V.worn.genitals.name === "naked" && !V.masturbating) {
+				// Equips a chastity parasite
+				V.effectsmessage = 1;
+				V.penisslimecagemessage = 1;
+				wikifier("genitalswear", 8);
+			} else if (V.worn.genitals.name === "chastity parasite" && V.worn.genitals.integrity < clothingData("genitals", V.worn.genitals, "integrity_max")) {
+				// Repairs the chastity parasite
+				if (integrityKeyword(V.worn.genitals.integrity, "genitals") !== "full") {
+					V.effectsmessage = 1;
+					V.penisslimecagemessage = 2;
+				}
+				V.worn.genitals.integrity = clothingData("genitals", V.worn.genitals, "integrity_max");
+			}
+		}
+	}
 }

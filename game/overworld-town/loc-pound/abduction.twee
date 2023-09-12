@@ -587,16 +587,21 @@ Your forced to crawl to the <<beasttype>>, then drop to a submissive position. <
 :: Pound Food Event Slime Defy
 <<effects>>
 
-<<if $slimeDefyCooldown>>
-	The slime tries to assert control, however, <span class="teal">it's still worn out from overpowering you earlier.</span> You feel it try, <span class="green">but fail,</span> to force you to present yourself to the <<beasttype>>.
+<<if $earSlime.defyCooldown>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You turn away and move away from the <<beasttype>>. The slime tries to overpower your will, and feel a jolt of pain as the slime punishes you for defiance. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You turn away and move away from the <<beasttype>>. The slime tries to overpower your will, and feel a jolt of pain as the slime punishes you for defiance, however, <span class="teal">it's still worn out from overpowering you earlier.</span> You feel it try, <span class="green">but fail,</span> to force you to present yourself to the <<beasttype>>.
+	<</if>>
 	<br><br>
 	<<link [[Next|Pound Food End]]>><<endevent>><</link>>
 	<br>
-<<elseif $corruption_slime gte (currentSkillValue('willpower') / 10)>>
-	<<if $deviancy gte 55>>
-		<<set $slimeDefyCooldown to 4>>
+<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+	<<if $deviancy gte 55 and $earSlime.growth lt 100>>
+		<<set $earSlime.defyCooldown += 4>>
 	<<else>>
-		<<set $slimeDefyCooldown to 8>>
+		<<set $earSlime.defyCooldown += 8>>
 	<</if>>
 	The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to present yourself to the <<beasttype>>. <<bHe>> growls, and bares <<bhis>> fangs.
 	<<ggwillpower>><<willpower 3>><<llpound_status>>
@@ -1336,45 +1341,50 @@ You lie on the hard floor.
 
 :: Pound Sleep
 <<set _autosavehere to true>>
-<<sleep>><<effects>>
-
-<<wakingEffects $sleepHoursTotal>>
-<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
-	You slept soundly, but now feel a little rough.
-	<br><br>
-<<elseif $nightmares gte 1 and $controlled is 0>>
-	You <<if _wakingEffect>>dreamed of<<else>>dream you are<</if>> hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
+<<sleep>>
+<<if _dreaming>>
+	/* <<earSlimeFocusChoice>> or similar widgets are running */
 <<else>>
-	<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
-		Your sleep <<if _wakingEffect>>was<<else>>is<</if>> plagued by dirty dreams.
-		<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
-		<<arousal `100 * $sleepHoursTotal`>>
-		<<if $arousal gte $arousalmax>>
-			They push you over the edge.
-			<<orgasm>><<set _orgasm to true>>
+	<<effects>>
+
+	<<wakingEffects $sleepHoursTotal>>
+	<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
+		You slept soundly, but now feel a little rough.
+		<br><br>
+	<<elseif $nightmares gte 1 and $controlled is 0>>
+		You <<if _wakingEffect>>dreamed of<<else>>dream you are<</if>> hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
+	<<else>>
+		<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
+			Your sleep <<if _wakingEffect>>was<<else>>is<</if>> plagued by dirty dreams.
+			<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+			<<arousal `100 * $sleepHoursTotal`>>
+			<<if $arousal gte $arousalmax>>
+				They push you over the edge.
+				<<orgasm>><<set _orgasm to true>>
+			<<else>>
+				<br><br>
+			<</if>>
+		<<elseif !_wakingEffect>>
+			You sleep soundly.
+			<br><br>
 		<<else>>
 			<br><br>
 		<</if>>
-	<<elseif !_wakingEffect>>
-		You sleep soundly.
+	<</if>>
+
+	<<sleepeffects>>
+	<<if _sleepinterrupt>>
+		You're awoken by chorus of barking.
 		<br><br>
+
+		<<link [[Next|Pound Cage]]>><<endevent>><</link>>
+		<br>
 	<<else>>
 		<br><br>
+
+		<<link [[Rise|Pound Cage]]>><<endevent>><</link>>
+		<br><br>
 	<</if>>
-<</if>>
-
-<<sleepeffects>>
-<<if _sleepinterrupt>>
-	You're awoken by chorus of barking.
-	<br><br>
-
-	<<link [[Next|Pound Cage]]>><<endevent>><</link>>
-	<br>
-<<else>>
-	<br><br>
-
-	<<link [[Rise|Pound Cage]]>><<endevent>><</link>>
-	<br><br>
 <</if>>
 
 :: Pound Show Crawl
@@ -1874,7 +1884,11 @@ The <<person1>><<person>> holds you still as the guests continue to talk about y
 <<if (!$player.vaginaExist and playerChastity("cage")) or playerChastity("hidden")>>
 	and the <<person>> tugs on your <<print $worn.genitals.name>>.
 	<br><br>
-	"Lost the key," the <<person1>><<person>> says, sheepish. "Though it might be for the best. These mutts breed like rabbits."
+	<<if $worn.genitals.name is "chastity parasite">>
+		"Some sort of parasite," the <<person1>><<person>> says, sheepish. "Though it might be for the best. These mutts breed like rabbits."
+	<<else>>
+		"Lost the key," the <<person1>><<person>> says, sheepish. "Though it might be for the best. These mutts breed like rabbits."
+	<</if>>
 	<br><br>
 <<else>>
 	<<if $player.penisExist and $player.vaginaExist and playerChastity("cage")>>

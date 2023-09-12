@@ -109,6 +109,7 @@ A river runs through one corner. The cattle stay almost as far away from the chu
 <<else>>
 	<<if $livestock_grass is 1>>
 		<<unset $livestock_grass>>
+		<<set $daily.earSlimeGrassEating to true>>
 		You look around the field. There's a lot of open space for exercise, but there doesn't seem to be anything else to do.
 		<br><br>
 		<<generate1>><<person1>><<set $hunger to 1200>>
@@ -150,7 +151,28 @@ A river runs through one corner. The cattle stay almost as far away from the chu
 		<br>
 		<<link [[Ignore it|Eden Fence Ignore]]>><<set $daily.eden.farmRescue to 1>><</link>>
 		<br>
+	<<elseif !$daily.earSlimeGrassEating and random(0, 100) lte 15 - ($weekly.earSlimeGrassEating || 0) and ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and Time.hour lte 9>>
+		<<set $daily.earSlimeGrassEating to true>>
+		<<if $earSlime.growth gt 50 and $earSlime.growth gte (currentSkillValue('willpower') / 10)>>
+			<<set $weekly.earSlimeGrassEating to ($weekly.earSlimeGrassEating || 0) + 4>>
+			<span class="lewd">You feel the slime in your head command you to lose yourself eating the grass while crawling on all fours.</span> It doesn't promise anything now. It imposes its will, and expects to be obeyed.
+			<br><br>
+			
+			<<link [[Obey|Livestock Slime Field Grass Extreme Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>><<gobey>><<lhunger>>
+			<br>
+			<<link [[Defy|Livestock Slime Field Grass Extreme Defy]]>><<corruption -3>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<llcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+			<br>
+		<<else>>
+			<span class="lewd">You feel the slime in your head command you to eat the grass while crawling on all fours.</span> It promises rewards if you comply, and threatens consequences if you do not.
+			<br><br>
+			
+			<<link [[Obey|Livestock Slime Field Grass Obey]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>><<gobey>><<lhunger>>
+			<br>
+			<<link [[Defy|Livestock Slime Field Grass Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+			<br>
+		<</if>>
 	<<else>>
+		<<set $daily.earSlimeGrassEating to true>>
 		<<farmicon "grass">><<link [[Eat grass (1:00)|Livestock Field Grass]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>><<gobey>><<lhunger>>
 		<br>
 		<<exerciseicon>><<link [[Exercise (1:00)|Livestock Field Exercise]]>><<pass 60>><<tiredness 6>><<athletics 6>><</link>><<gtiredness>><<gathletics>>
@@ -276,36 +298,146 @@ You ignore the <<person>>, and walk away from <<his>> mocking laughter.
 	You pull up some grass, and nibble the blades. They taste awful. You're not even sure you can digest them.
 <</if>>
 <br><br>
-
-<<if $rng gte 81>>
-	<!-- Modified for Monster People -->
-	<<if ($monsterchance gte 1 and ($hallucinations gte 1 or $monsterhallucinations is "f"))>>
-		<<if maleChance() lt random(1, 100)>>
-			A cowgirl sniffs you, and moos. You pet its head.
-			<<lstress>><<stress -6>>
-		<<else>>
-			A bullboy sniffs you, and moos. You pet its head.
-			<<lstress>><<stress -6>>
-		<</if>>
-	<<else>>
-		A cow sniffs you, and moos. You pet its head.
-		<<lstress>><<stress -6>>
-	<</if>>
-	<br><br>
-<<elseif $rng gte 51>>
-	<<if $uncomfortable.nude is true>>
-		You look up, and see a <<generate1>><<person1>><<person>> leering at you. <<covered>><<gstress>><<stress 6>>
-	<<else>>
-		You look up for just a moment. You spot a <<generate1>><<person1>><<person>> leering at you,
-		but you pay <<him>> no mind as you continue your search for tasty tufts of grass.
-	<</if>>
-	<br><br>
-<<else>>
-	<<livestock_overhear>>
-<</if>>
+<<livestockFieldGrassEvents>>
 
 <<link [[Next|Livestock Field]]>><<endevent>><</link>>
 <br>
+
+:: Livestock Slime Field Grass Obey
+<<effects>>
+
+You follow the slime's urging and go down onto all fours. You crawl on your hands and knees just like the other cows on the field, pulling up tufts of grass with your teeth.
+<<if $cow gte 6>>
+	You find a particularly juicy one, and enjoy chewing it.
+	<<if $uncomfortable.nude is true or $uncomfortable.underwear is true>>
+		<br><br>
+		<span class="gold">Your exposure doesn't concern you as it once did. It feels natural.</span>
+		<<set $uncomfortable.underwear to false>>
+		<<set $uncomfortable.nude to false>>
+	<</if>>
+<<elseif $cow gte 5>>
+	You find a particularly tasty patch.
+<<elseif $cow gte 4>>
+	It tastes better this way.
+<<elseif $cow gte 3>>
+	It doesn't taste that bad.
+<<elseif $cow gte 2>>
+	It takes a long time to chew, but goes down easily enough.
+<<elseif $cow gte 1>>
+	It doesn't taste bad, but it's not great either.
+<<else>>
+	They taste awful. You're not even sure you can digest them.
+<</if>>
+<br><br>
+
+<<livestockFieldGrassEvents>>
+
+<<link [[Next|Livestock Field]]>><<endevent>><</link>>
+<br>
+
+:: Livestock Slime Field Grass Defy
+<<effects>>
+<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10) and !$earSlime.defyCooldown>>
+	<<set $earSlime.defyCooldown += 4>>
+	You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">you fail</span> to resist its influence.<<ggwillpower>><<willpower 3>>
+	<br><br>
+	Following the slime's command, you go down onto all fours. You crawl on your hands and knees just like the other cows on the field, pulling up tufts of grass with your teeth.
+	<<set _cowTransform to 2>>
+	<<if $cow gte 6>>
+		You find a particularly juicy one, and enjoy chewing it.
+		<<if $uncomfortable.nude is true or $uncomfortable.underwear is true>>
+			<br><br>
+			<span class="gold">Your exposure doesn't concern you as it once did. It feels natural.</span>
+			<<set $uncomfortable.underwear to false>>
+			<<set $uncomfortable.nude to false>>
+		<</if>>
+		<<set _cowTransform to 1>>
+	<<elseif $cow gte 5>>
+		You find a particularly tasty patch.
+	<<elseif $cow gte 4>>
+		It tastes better this way.
+	<<elseif $cow gte 3>>
+		It doesn't taste that bad.
+	<<elseif $cow gte 2>>
+		It takes a long time to chew, but goes down easily enough.
+	<<elseif $cow gte 1>>
+		It doesn't taste bad, but it's not great either.
+	<<else>>
+		They taste awful. You're not even sure you can digest them.
+	<</if>>
+	<br><br>
+
+	<<livestockFieldGrassEvents>>
+
+	<<link [[Next|Livestock Field]]>><<pass 60>><<livestock_obey _cowTransform>><<transform cow _cowTransform>><<hunger -400>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. You feel it try, <span class="green">but fail,</span> to force you to eat the grass the way it wants.<<gwillpower>><<willpower 1>>
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Livestock Field]]>><<endevent>><</link>>
+<</if>>
+
+:: Livestock Slime Field Grass Extreme Obey
+<<effects>>
+You follow the slime's urging and go down onto all fours. As you pull up your first tuft of grass, you feel youself slip into a trance. <span class="green">You don't remember ever feeling so tranquil.</span> You have all the tasty grass you could want to eat.
+<br><br>
+<<link [[Eat grass...|Livestock Slime Field Grass Extreme Eat]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>>
+:: Livestock Slime Field Grass Extreme Defy
+<<effects>>
+
+<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+	<<set $earSlime.defyCooldown += 8>>
+	You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">you fail</span> to resist its influence.<<ggwillpower>><<willpower 3>>
+	<br><br>
+	You go down onto all fours. As you pull up your first tuft of grass, you feel youself slip into a trance. <span class="green">You don't remember ever feeling so tranquil.</span> You have all the tasty grass you could want to eat.
+	<br><br>
+	<<link [[Eat grass...|Livestock Slime Field Grass Extreme Eat]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>>
+<<else>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. You feel it try, <span class="green">but fail,</span> to force you to eat the grass the way it wants.<<gwillpower>><<willpower 1>>
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Livestock Field]]>><<endevent>><</link>>
+<</if>>
+
+:: Livestock Slime Field Grass Extreme Eat
+<<effects>>
+<<if Time.hour lt 19>>
+	You crawl on your hands and knees, searching for and pulling up <<if $cow gte 3>>tasty <</if>>tufts of grass with your teeth.
+
+	<<switch Time.hour>>
+		<<case 12>><<if $random(0,100) gte 50>>You briefy think something is trying to get your attention, but the thought disappears the moment you start chewing on some grass.<</if>>
+		<<case 10 14 17>>You moo.
+		<<case 18>>You yawn<<if $random(0,100) gte 50>>, wondering when you should get some sleep, but the thought disappears the moment you start chewing on some grass<</if>>.
+	<</switch>>
+
+	<br><br>
+	<<link [[Eat grass...|Livestock Slime Field Grass Extreme Eat]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>>
+<<else>>
+	<<npc Remy>><<person1>>
+	You <span class="green">break out of the trance</span> as someone pulls hard on your leash, its Remy. "Finally!" <<He>> sighs, "had a job for you earlier <<girl>>, but I was unable to get your attention, you were completely focussed on eating."
+	<br><br>
+	<<if $cow gte 6>>
+		Still feeling out of it, you moo at <<him>>.
+	<<else>>
+		Still feeling out of it, you look at <<him>> with a confused expresson. You blush as you realise what you've been doing all day on your hands and knees.
+	<</if>>
+	<br><br>
+	"Well, no matter," <<he>> says, pulling you towards the barn, "It's getting late, let's go get you milked."
+	
+	<br><br>
+	<<link [[Next|Livestock Milking Obey]]>><</link>>
+<</if>>
 
 :: Livestock Field Exercise
 <<effects>>

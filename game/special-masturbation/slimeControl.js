@@ -20,16 +20,14 @@ function masturbationSlimeControl() {
 
 	if (
 		(V.leftaction === "mpenisstop" && !(V.mouth === "mpenis" && V.selfsuckDepth === V.penisHeight)) ||
-		V.leftaction === "mvaginastop" ||
-		V.leftaction === "manusstop"
+		["mvaginastop", "manusstop", "mchastityparasitestop"].includes(V.leftaction)
 	) {
 		fragment.append(redText("The slime prevents you from moving your left hand away."));
 		V.leftaction = "slime";
 	}
 	if (
 		(V.rightaction === "mpenisstop" && !(V.mouth === "mpenis" && V.selfsuckDepth === V.penisHeight)) ||
-		V.rightaction === "mvaginastop" ||
-		V.rightaction === "manusstop"
+		["mvaginastop", "manusstop", "mchastityparasitestop"].includes(V.rightaction)
 	) {
 		fragment.append(redText("The slime prevents you from moving your right hand away."));
 		V.rightaction = "slime";
@@ -37,6 +35,9 @@ function masturbationSlimeControl() {
 
 	if (V.mouthaction === "mpenisstop" || V.mouthaction === "mpenismouthoff") {
 		fragment.append(Wikifier.wikifyEval('<span class="red">The slime prevents you from moving your mouth away from your <<penis>>.</span>'));
+		V.mouthaction = "slime";
+	} else if (V.mouthaction === "mchastityparasitestop") {
+		fragment.append(Wikifier.wikifyEval('<span class="red">The slime prevents you from moving your mouth away from your chastity parasite.</span>'));
 		V.mouthaction = "slime";
 	} else if (V.mouthaction === "mpenispullback") {
 		fragment.append(
@@ -100,7 +101,10 @@ function masturbationSlimeControl() {
 			const actions = [];
 			switch (V[arm + "arm"]) {
 				case 0:
-					if (random(0, 100) >= 80 && toysId.length > 0 && (["home", "brothel", "cafe"].includes(V.location) || T.enableSexToys)) {
+					if (V.worn.genitals.name === "chastity parasite" && V.earSlime.defyCooldown) {
+						// Tries to punish the player
+						V[armAction] = V.worn.genitals.name === "chastity parasite";
+					} else if (random(0, 100) >= 80 && toysId.length > 0 && (["home", "brothel", "cafe"].includes(V.location) || T.enableSexToys)) {
 						V[armAction] = "mpickupdildo";
 						V["selectedToy" + armCap] = toysId[random(0, toysId.length - 1)];
 					} else if (
@@ -108,9 +112,9 @@ function masturbationSlimeControl() {
 						V.player.penisExist &&
 						(V[armAction] === "slime" || (V[armAction] === "mchest" && random(0, 100) >= 97)) &&
 						!(V.mouth === "mpenis" && V.selfsuckDepth === V.penisHeight) &&
-						!playerChastity("penis")
+						(!playerChastity("penis") || V.worn.genitals.name === "chastity parasite")
 					) {
-						V[armAction] = "mpenisentrance";
+						V[armAction] = V.worn.genitals.name === "chastity parasite" ? "mchastityparasiteentrance" : "mpenisentrance";
 					} else if (
 						arm === "right" &&
 						V.player.vaginaExist &&
@@ -129,6 +133,9 @@ function masturbationSlimeControl() {
 					break;
 				case "mpenisentrance":
 					V[armAction] = "mpenisshaft";
+					break;
+				case "mchastityparasiteentrance":
+					V[armAction] = random(0, 100) >= 50 ? "mchastityparasiterub" : "mchastityparasitesqueeze";
 					break;
 				case "mvaginaentrance":
 					if (V.vaginause === 0 && ["mvagina", "mvaginafingerstarttwo"].includes(V[armAction])) {
@@ -275,12 +282,15 @@ function masturbationSlimeControl() {
 	if (genitalsExposed) {
 		switch (V.mouth) {
 			case 0:
-				if (
+				if (V.canSelfSuckPenis && V.penisuse === 0 && V.worn.genitals.name === "chastity parasite" && V.earSlime.defyCooldown) {
+					// Tries to punish the player
+					V.mouthaction = "chastity parasite";
+				} else if (
 					V.canSelfSuckPenis &&
 					V.penisuse === 0 &&
 					(random(0, 100) >= 50 || !(V.canSelfSuckVagina && V.vaginause === 0 && V.fingersInVagina === 0))
 				) {
-					V.mouthaction = "mpenisentrance";
+					V.mouthaction = V.worn.genitals.name === "chastity parasite" ? "mchastityparasiteentrance" : "mpenisentrance";
 				} else if (V.canSelfSuckVagina && V.vaginause === 0 && V.fingersInVagina === 0) {
 					V.mouthaction = "mvaginaentrance";
 				}
@@ -298,6 +308,9 @@ function masturbationSlimeControl() {
 				} else if (V.mouthaction !== "mpenisdeepthroat") {
 					V.mouthaction = "mpenissuck";
 				}
+				break;
+			case "mchastityparasiteentrance":
+				V.mouthaction = "mchastityparasitelick";
 				break;
 			case "mvaginaentrance":
 				if (random(0, 100) >= 50) {
