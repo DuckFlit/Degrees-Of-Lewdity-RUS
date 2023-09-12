@@ -585,7 +585,10 @@ function bulkProduceValue(plant, quantity = 250) {
 window.bulkProduceValue = bulkProduceValue;
 
 function toTitleCase(str) {
-	return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+	const exclude = new Set(["a", "an", "and", "as", "at", "but", "by", "for", "if", "in", "of", "on", "or", "the", "to", "up", "yet"]);
+	return str.toLowerCase().replace(/\b\w[\w']*\b/g, (word, i) => {
+		return exclude.has(word) && i !== 0 ? word : word.toUpperFirst();
+	});
 }
 window.toTitleCase = toTitleCase;
 
@@ -1946,6 +1949,20 @@ function beastMaleChance(override){
 	return 50;	
 }
 window.beastMaleChance = beastMaleChance;
+
+const crimeSum = (prop, ...crimeTypes) => {
+	if (crimeTypes.length === 0) {
+		crimeTypes = Object.keys(setup.crimeNames);
+	}
+	
+	return crimeTypes.reduce((result, crimeType) => result + V.crime[crimeType][prop], 0);
+};
+
+window.crimeSumCurrent = (...args) => crimeSum("current", ...args);
+window.crimeSumHistory = (...args) => crimeSum("history", ...args);
+window.crimeSumDaily = (...args) => crimeSum("daily", ...args);
+window.crimeSumCount = (...args) => crimeSum("count", ...args);
+window.crimeSumCountHistory = (...args) => crimeSum("countHistory", ...args);
 
 /**
  * Event listener for the 'beforeunload' event. Will prompt a dialog box asking the player if he wants to leave.

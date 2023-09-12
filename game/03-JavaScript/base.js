@@ -639,7 +639,7 @@ Macro.add("foldout", {
 		const e = $("<div>").addClass("foldout").append(Wikifier.wikifyEval(content));
 		const header = e.children().first().addClass("foldoutHeader");
 		const toggle = $("<span>").addClass("foldoutToggle").appendTo(header);
-		const body = e.contents().not(header).wrapAll("<div>").parent().insertAfter(header);
+		const body = e.contents().not(header).wrapAll("<div>").parent().addClass("foldoutBody").insertAfter(header);
 
 		setFoldoutState(foldoutState);
 

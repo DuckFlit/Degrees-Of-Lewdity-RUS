@@ -1,8 +1,4 @@
 const constants = {
-	crime: {
-		max: 50000,
-		min: 0,
-	},
 	penisSize: {
 		max: 5,
 		min: -2,
