@@ -919,3 +919,26 @@
 		<<set $underlowerwet = Math.clamp($underlowerwet, 0, 200)>>
 	<</if>>
 <</widget>>
+
+<<widget "world_corruption">>
+	<<if _args[0] and _args[1] and $statFreeze isnot true>>
+		<<set $_cor to _args[1]>>
+		<<if _args[0] is "hard">>
+			<<set $world_corruption_hard += $_cor>>
+			<<set $world_corruption_hard = Math.clamp($world_corruption_hard, 0, 30)>>
+		<<elseif _args[0] is "soft">>
+			<<set $world_corruption_soft += $_cor>>
+			<<if $world_corruption_soft lt 0>>
+				<<set $_overflowC to $world_corruption_soft>>
+			<</if>>
+			<!-- Unclamp or adjust upper limit once world corruption effects are added -->
+			<<set $world_corruption_soft = Math.clamp($world_corruption_soft, 0, 100)>>
+			<<if $_cor lt 0>>
+				<<if $_overflowC>>
+					<<set $_cor -= $_overflowC>>
+				<</if>>
+				<<set $world_corruption_reduced -= $_cor>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
