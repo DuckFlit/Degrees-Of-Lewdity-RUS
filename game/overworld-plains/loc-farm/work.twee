@@ -121,7 +121,10 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<</if>>
 <</if>>
 
-<<if $fields_damaged gte 0>>
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pcFarmBirth>>
+
+<<elseif $fields_damaged gte 0>>
 	<<farm_damage_report>>
 
 	<<link [[Next|Farm Work]]>><</link>>
@@ -330,9 +333,16 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 		"Here's a little extra." <<He>> hands you <<moneyGain $farm.wage>>.
 	<</if>>
 	<br><br>
-	You walk down the road leading away from the farm.
-	<br><br>
-	<<link [[Next|Farmland]]>><<endevent>><</link>>
+
+	<<if getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+		<<pcPregnancyRevealToAlex>>
+
+	<<else>>
+		You walk down the road leading away from the farm.
+		<br><br>
+		<<link [[Next|Farmland]]>><<endevent>><</link>>
+
+	<</if>>
 <<elseif $farm.build_finished.includes("wall 1")>>
 	<<run $farm.build_finished.delete("wall 1")>>
 	You examine the perimeter wall. <span class="gold">The stonework is repaired,</span> and now envelopes the entire farm. Aside from the entrance, the river, and the great hedge. You feel more secure.<<lltrauma>><<llstress>><<trauma -12>><<stress -12>>
@@ -569,44 +579,220 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 		<br>
 	<</if>>
 <<else>>
-	<<if $farm_yield_alex gte 1 and not (Time.hour lte 5 or Time.hour gte 22 or (Time.hour is 21 and $farm_end is 1)) and $farm_work.alex isnot "shower">>
-			<<npc Alex>><<person1>>
-			<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
-			"Hey," shouts Alex, striding towards you. "We've had a better yield than expected lately," <<he>> says, grasping your hand in <<his>> own and pressing something into your palm.
-			<<if _alex.dom gte 30>>
-				<<if $farm_stage gte 7>>
-					<span class="pink">"You deserve a little for your help, partner."</span>
+	<<if npcIsPregnant("Alex") and !talkedAboutPregnancy("Alex","pc") and npcBellySize("Alex") gte 1 and !$farm_work.alex.includes("shower","admin","clearing") and between(Time.hour, 6, 21)>>
+		<<npc "Alex">>
+		Alex approaches you. You can see a nervous expression on <<his>> face.
+		<br><br>
+
+		<<if $speech_attitude is "meek">>
+			"I-is something wrong?" you ask.
+		<<elseif $speech_attitude is "bratty">>
+			"You okay? You don't seem like it," you ask.
+		<<else>>
+			"Is everything okay?" you ask.
+		<</if>>
+		<br><br>
+
+		"We need to talk. It's important," <<he>> says, leading you to the cottage.
+		<br><br>
+
+		<<link [[Next|Farm Alex Pregnancy Reveal]]>><</link>>
+
+	<<elseif playerBellyVisible() and !talkedAboutPregnancy("pc","Alex") and Time.hour isnot 7>>
+		<<npc "Alex">>
+		<<setTalkedAboutPregnancy "pc" "Alex">>
+		<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+			You notice Alex staring at your belly in horror. "You're...you're pregnant?! You didn't tell me anything..."
+
+			<<if getPregnancyObject().potentialFathers.length gte 2>>
+				<<He>> sounds disappointed.
+				<br><br>
+								
+				"W-well, you can take a break from the farm whenever you're not feeling well," <<he>> says.
+				<br><br>
+
+				<<link [[Next|Farm Work]]>><<endevent>><</link>>
+								
+			<<else>>
+				<br><br>
+				<<He>> looks at you, as if waiting for a response.
+
+				"Actually, let's go to the cottage, shall we?" Alex leads you inside.
+				<br><br>
+
+				<<link [[Next|Farm PC Pregnancy Reveal]]>><<set $phase to 3>><</link>>
+									
+			<</if>>
+
+		<<else>>
+			You notice Alex looking at your belly. "Oh, got yourself knocked up? You can take a break from the farm if you feel it's too much for you. I don't mind," <<he>> says.
+			<br><br>
+
+			<<link [[Next|Farm Work]]>><<endevent>><</link>>
+
+		<</if>>
+		
+	<<elseif isPlayerNonparasitePregnancyEnding()>>
+		<<pcFarmBirth>>
+
+	<<elseif npcPregnancyEnding("Alex")>>
+		<<npc "Alex">>
+		"F-fuck..." you hear Alex yell. You rush to <<him>>.
+		<br>
+
+		"What's wrong?" you ask. Approaching <<him>>, you see fluids running down <<his>> thighs.
+		<br>
+
+		"I think it's happening," <<he>> says.
+		<br><br>
+
+		You feel your heart pounding faster than usual. "Should I take you to the hospital?" you ask.<<gstress>><<stress 6>>
+		<br><br>
+
+		"No, it's okay. I don't really like those places. Let's just go inside," <<he>> says.
+		<br>
+
+		You help <<him>> to get into the cottage and onto the sofa. "Could you call the local doctor?" <<he>> says while pulling <<his>> phone from <<his>> pocket and giving it to you.
+		<br><br>
+
+		<<link [[Next|Farm Alex Birth]]>><</link>>
+
+	<<elseif C.npc.Alex.pregnancy.missedBirth is true>>
+		<<npc "Alex">><<run delete C.npc.Alex.pregnancy.missedBirth>>
+		
+		<<if C.npc.Alex.pregnancy.knowledge is undefined and Object.values($children).find(child => child.mother === "Alex" && child.location === "home")>>
+			<<set C.npc.Alex.pregnancy.knowledge to true>>
+
+			<<if C.npc.Alex.pregnancy.missedBirthCount is 1>>
+				Alex approaches you. You can see a nervous expression on <<his>> face.
+				<br><br>
+
+				<<if $speech_attitude is "meek">>
+					"I-is something wrong?" you ask.
+				<<elseif $speech_attitude is "bratty">>
+					"You okay? You don't seem like it," you ask.
 				<<else>>
-					<span class="pink">"Keep at it. You'll make a fine farmer someday."</span>
+					"Is everything okay?" you ask.
 				<</if>>
 				<br><br>
 
-				<<He>> marches away. <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 9`>>.</span>
+				"We need to talk. It's important," <<he>> says, leading you to the cottage.
 				<br><br>
-			<<elseif _alex.dom lte -30>>
+
+				<<link [[Next|Farm Alex Forgotten Birth]]>><</link>>
+
+			<<else>>
+				You see Alex staring at you with empty eyes, <<he>> shake <<his>> head and walks away.
+				<br><br>
+
+				<<link [[Next|Farm Work]]>><<endevent>><</link>>
+
+			<</if>>
+
+		<<else>>
+			"Hey," shouts Alex, a scowl etched into her face as she stomps toward you. "Where the hell were you?!"
+			<br><br>
+
+			You're confused until you look down at her midsection. Her baby belly's gone; <span class="red">you must've missed her going into labor.</span>
+			<br><br>
+
+			"I really thought you'd be there for me when it happened," <<he>> sighs. "Guess I was wrong."
+			<br><br>
+
+			<<link [[Apologize|Farm Alex Missed Birth]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Stay silent|Farm Alex Missed Birth]]>><<set $phase to 2>><</link>>
+
+		<</if>>
+
+	<<elseif C.npc.Alex.pregnancy.hospitalBirth is true>>
+		<<npc "Alex">>
+		<<run delete C.npc.Alex.pregnancy.hospitalBirth>>
+		Alex approaches you. You can see a nervous expression on <<his>> face. "Hey."
+		<br><br>
+
+		"I got a call from the hospital saying that you were in labour. <<if C.npc.Alex.pregnancy.knowledge is true>>Sorry I couldn't be there. I just couldn't leave the farm, not in this state...<<else>> I had no idea I knocked you up; you didn't tell me anything...<</if>>"
+		<br><br>
+
+		<<He>> looks at your belly with sad eyes. "Look, I can't stand the idea of our kids somewhere out there, livin' as orphans. There's room here at the cottage for them, I'd just need some help with the fields and then with a nursery. It's an option, if you'll consider it."
+		<br><br>
+
+		<<if Time.dayState isnot "night">>"I've got to get back to work<<else>>I've got to take some rest<</if>>," <<he>> says, the sadness in <<his>> eyes in no way diminished. <<He>> leans in and gives you a quick hug before walking off.
+		<br><br>
+
+		<span class="gold">Alex is willing to keep <<his>> kids at the farm, but first you should help <<him>> out.</span>
+		<br><br>
+
+		<<link [[Next|Farm Work]]>><</link>>
+
+	
+	<<elseif C.npc.Alex.pregnancy.fee is true>>
+		<<npc "Alex">>
+		<<run delete C.npc.Alex.pregnancy.fee>>
+		<<run delete C.npc.Alex.pregnancy.knowledge>>
+
+		You approach Alex. "I've paid Bailey already, we can go get our children anytime," you say.
+		<br><br>
+
+		<<He>> smiles and hugs you. "Finally," <<he>> says. "We can finally live like a real family, all of us."
+		<br>
+
+		You hug <<him>> back, and you both stay like that for a while before releasing each other.
+		<br><br>
+
+		"But you know we can't take <<if childrenCountBetweenParents("pc","Alex") gte 2>>them<<else>>it<</if>> here by horse, right?" you say.
+		<br><br>
+
+		Alex laughs. "I know, dummy. You didn't really think I would do that, do you?" <<he>> asks.
+		<br>
+
+		"Okay, maybe I thought about it, but hey, I think my parents can help. I'll call them," <<he>> says as <<he>> reaches for <<his>> phone.
+		<br><br>
+
+		<<He>> makes the call and explains the situation to <<his>> parents, occasionally looking at you and blushing.
+		<br><br>
+
+		<<link [[Next|Farm Alex Orphanage Trip]]>><</link>>
+		
+	<<elseif $farm_yield_alex gte 1 and not (Time.hour lte 5 or Time.hour gte 22 or (Time.hour is 21 and $farm_end is 1)) and $farm_work.alex isnot "shower">>
+		<<npc Alex>><<person1>>
+		<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+		"Hey," shouts Alex, striding towards you. "We've had a better yield than expected lately," <<he>> says, grasping your hand in <<his>> own and pressing something into your palm.
+		<<if _alex.dom gte 30>>
+			<<if $farm_stage gte 7>>
+				<span class="pink">"You deserve a little for your help, partner."</span>
+			<<else>>
+				<span class="pink">"Keep at it. You'll make a fine farmer someday."</span>
+			<</if>>  <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 9`>>.</span>
+			<br><br>
+
+		<<elseif _alex.dom lte -30>>
 			<<if $farm_stage gte 7>>
 				<span class="teal">"Hope you don't mind handling the profits, partner."</span>
 			<<else>>
 				<span class="teal">"Dunno what I'd do without you, so this is fair."</span>
 			<</if>>
 			<br><br>
-
-			<<He>> marches away. <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 24`>>.</span>
-			<br><br>
+			
 		<<else>>
 			<<if $farm_stage gte 7>>
 				<span class="blue">"Here's your share of the profits, partner."</span>
 			<<else>>
 				<span class="blue">"Your doing, so this is fair. You've a way with the animals."</span>
-			<</if>>
+			<</if>>  <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 9`>>.</span>
 			<br><br>
 
-			<<He>> marches away. <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 18`>>.</span>
-			<br><br>
 		<</if>>
 
-		<<link [[Next|Farm Work]]>><<endevent>><</link>>
-		<br>
+		<<alex_pregnancy_comment>>
+
+		<<if getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+			<<pcPregnancyRevealToAlex>>
+		<<else>>
+			<<link [[Next|Farm Work]]>><<endevent>><</link>>
+
+		<</if>>
+
 		<<unset $farm_yield_alex>>
 	<<elseif $farm_work.recent_shift gte $farm_work.event_time and $farm_event isnot 1 and Time.dayState isnot "night">>
 		<<set $farm_event to 1>>
@@ -2347,7 +2533,7 @@ You sneak up to the shed, and push the door open.
 
 <<rng>>
 <<set $danger to random(1, 10000)>>
-<<if $danger gte (9900 - $allure) and $farm_stage gte 4 and !playerBellyVisible()>>
+<<if $danger gte (9900 - $allure) and $farm_stage gte 4 and (!playerBellyVisible() or !knowsAboutPregnancy("pc","Alex") or !npcIsPregnant("Alex"))>>
 	<<if $farm_relax_drink is "accept">>
 		"Another drink?" <<he>> asks, producing another bottle from the hiding place.
 	<<elseif $farm_relax_drink is "refuse">>

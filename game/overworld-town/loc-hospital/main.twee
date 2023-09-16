@@ -100,6 +100,12 @@ You are inside the hospital foyer. <<if $psych is 1>>You see a sign directing to
 			<span class="pink">You feel $vaginalchastityparasite squirming inside your vagina.</span>
 			<br>
 		<</if>>
+
+		<<if C.npc.Alex.pregnancy.sample is true and playerIsPregnant() and !isPlayerNonparasitePregnancyEnding()>>
+			<<paternity_test>><<link [[Inquire about a paternity test (0:10)|Hospital Paternity Test]]>><<pass 10>><</link>>
+			<br><br>
+		<</if>>
+
 		<<if $penilechastityparasite is 0 and $vaginalchastityparasite is 0 and $analchastityparasite is 0 and $parasite.clit.name is undefined and $parasite.penis.name is undefined and $parasite.nipples.name is undefined and $parasite.bottom.name is undefined and $parasite.left_ear.name is undefined and $parasite.right_ear.name is undefined>>
 		<<else>>
 			<<ind>><<link [[Inquire about body parasite removal (0:10)|Hospital Parasite]]>><<pass 10>><</link>>
@@ -825,6 +831,111 @@ The nurse lets you stay in the waiting room until the sun rises.
 	<<link [[Next->Hospital front]]>><<pass 10>><<endevent>><</link>>
 	<br>
 <</if>>
+
+:: Hospital Paternity Test
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<generate1>><<person1>>
+The receptionist taps something into <<his>> computer and instructs you to take a seat in the waiting room.
+<br><br>
+<<endevent>>
+
+<<harper_intro>>
+
+"This is a very simple procedure. I'd just need a DNA sample from you and the possible father. It would take a while though," <<he>> says. 
+<br><br>
+
+"It costs <<printmoney 500000>>."
+<br><br>
+
+<<if $money gte 5000>>
+
+	<<paternity_test>>
+	
+	<<if C.npc.Alex.pregnancy.sample is true>>
+		<<link [[Test for Alex (1:00)|Hospital Paternity Test 2]]>><<set $money -= 500000>><<set $paternityTestNPC to "Alex">><</link>>
+		<br>
+
+	<</if>>
+
+<<else>>
+	<span class="blue">You can't afford it.</span>
+	<br>
+
+<</if>>
+
+<<getouticon>><<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Paternity Test 2
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<upperstrip>>
+<<lowerstrip>>
+<<underlowerstrip>>
+<<underupperstrip>>
+
+Harper accepts the payment and Alex strand hair. "Please undress," <<he>> says as <<he>> stands to leave the room.
+<br>
+
+You remove your clothing and stand waiting, feeling more than a little exposed.
+<<if playerChastity()>>You can't remove your $worn.genitals.name, you hope it won't be a problem.<</if>>
+<<He>> soon returns, carrying a medical gown.
+<br><br>
+
+"Wear this," <<he>> instructs. You put the gown on. "Right, if you'd like to come with me, it's just a short walk away."
+<br><br>
+
+<<He>> leads you to another room, containing a small bed. "Please lie down. I'll put you under then move you to the theatre."
+<br><br>
+
+You lie down. <<He>> presses a mask against your face, and you feel your consciousness start to slip. <<He>> pulls a camera from <<his>> pocket as you pass out.
+<br><br>
+
+<<fameexhibitionism 10 "pic">>
+
+<<link [[Next|Hospital Paternity Test Done]]>><</link>>
+
+:: Hospital Paternity Test Done
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<set _father to getPregnancyObject().fetus[0].father>>
+<<set _pregnancy to getPregnancyObject()>>
+
+You awaken in the same room you passed out in. You don't feel any different.
+<br><br>
+
+Harper enters the room. "The test was a success," <<he>> says as <<he>> hands you the results.
+<br><br>
+
+You look at the slip of paper. You are the mother, 
+
+<<if $paternityTestNPC is "Alex">>
+	<<run delete C.npc.Alex.pregnancy.sample>>
+
+	<<if _father is "Alex">>
+		<<set _pregnancy.potentialFathers to [{type: _pregnancy.type, source: _pregnancy.fetus[0].father}]>>
+		<<set C.npc.Alex.pregnancy.test to true>>
+		<span class="lewd">and Alex is the father.</span>
+	
+	<<else>>
+		<<set _pregnancy.potentialFathers to _pregnancy.potentialFathers.filter(father => father.source isnot $paternityTestNPC)>>
+		<span class="red">but Alex is not the father</span>.
+
+	<</if>>
+
+<</if>>
+
+The rest of the document is incomprehensible to you.
+<br><br>
+
+<<He>> checks <<his>> clipboard. "You can leave straight away. Be well." <<He>> leaves you to dress.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Hospital Foyer]]>><<clotheson>><<unset $paternityTestNPC>><</link>>
+<br>
+
 
 :: Hospital Breast Reduction
 <<set $outside to 0>><<set $location to "hospital">><<effects>>

@@ -395,6 +395,28 @@ function npcPregnancyCycle() {
 							birthLocation = "wolf_cave";
 							location = "wolf_cave";
 							break;
+
+						case "Alex":
+							if (!C.npc.Alex.pregnancy.missedBirth) {
+								C.npc.Alex.pregnancy.missedBirth = true;
+								C.npc.Alex.pregnancy.missedBirthCount = 1;
+
+							} else {
+								C.npc.Alex.pregnancy.missedBirth = true;
+								C.npc.Alex.pregnancy.missedBirthCount += 1;
+							}
+
+							if (C.npc.Alex.pregnancy.nursery === true) {
+								birthLocation = "alex_cottage";
+								location = "alex_cottage";
+
+							} else {
+								birthLocation = "alex_cottage";
+								location = "home";
+
+							}
+
+							break;
 					}
 					[birthLocation, location] = defaultBirthLocations(pregnancy.type, birthLocation, location);
 					endNpcPregnancy(npcName, birthLocation, location);

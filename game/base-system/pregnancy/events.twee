@@ -537,6 +537,17 @@ You feel yourself being lifted. You hear a voice, but the words don't make sense
 The midwife places a mask over your face. You feel your consciousness fade. Several other figures appear around you, their forms ablur.
 <br><br>
 
+<<set $litter_potention_fathers to getPregnancyObject().potentialFathers.length>>
+
+/*Alex variables*/
+<<if (getPregnancyObject().potentialFathers.length is 1 or getPregnancyObject().potentialFathers.length is undefined) and getPregnancyObject().fetus[0].father is "Alex">>
+	<<set $alex_pregnancy to {}>>
+	<<set $alex_pregnancy.knows to knowsAboutPregnancy("pc","Alex")>>
+	<<set $alex_pregnancy.talked to talkedAboutPregnancy("pc","Alex")>>
+	<<set $alex_pregnancy.source to getPregnancyObject().fetus[0].father>>
+
+<</if>>
+
 <<set _pregnancy to getPregnancyObject()>>
 <<if _pregnancy.totalBirthEvents gte 5>>
 	<<set _min to 15>>
@@ -576,9 +587,10 @@ The midwife places a mask over your face. You feel your consciousness fade. Seve
 :: Pregnancy Birth Hospital 3
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 <<endevent>>
-
 <<generate1>><<person1>>
+
 <<set $litter_size to getPregnancyObject().fetus.length>>
+
 You awaken in another room. A smiling midwife stands beside your bed, 
 <<if $litter_size is 1>>
 
@@ -719,10 +731,31 @@ You awaken in another room. A smiling midwife stands beside your bed,
 
 	"Y-you should be good to go," <<he>> says.
 <</if>>
-"Someone's waiting for you. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].pronoun is "f">>mum<<else>>dad<</if>> I think."
-<br><br>
+"Someone's waiting for you. 
 
-<<link [[Next|Pregnancy Birth Hospital 6]]>><<endevent>><</link>>
+<<if $litter_potention_fathers is 1 and $alex_pregnancy.source is "Alex">>
+
+	<<if C.npc.Alex.pregnancy.nursery is true>>
+		Your <<if $NPCName[$NPCNameList.indexOf("Alex")].pronoun is "f">>girlfriend<<else>>boyfriend<</if>> I think."
+		<br><br>
+
+		<<link [[Next|Pregnancy Birth Hospital Alex]]>><</link>>
+
+	<<else>>
+		<<set C.npc.Alex.pregnancy.hospitalBirth to true>>
+		Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].pronoun is "f">>mum<<else>>dad<</if>> I think."
+		<br><br>
+
+		<<link [[Next|Pregnancy Birth Hospital 6]]>><<endevent>><</link>>
+
+	<</if>>
+
+<<else>>
+	Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].pronoun is "f">>mum<<else>>dad<</if>> I think."
+	<br><br>
+
+	<<link [[Next|Pregnancy Birth Hospital 6]]>><<endevent>><</link>>
+<</if>>
 
 :: Pregnancy Birth Hospital 6
 <<set $location to "town">><<effects>>
@@ -1364,3 +1397,191 @@ You thank Doctor Harper for the scan as <<he>> hands you a warm towel. You wipe 
 <<clotheson>>
 
 <<link [[Return to foyer|Hospital Foyer]]>><<endevent>><</link>>
+
+:: Pregnancy Birth Hospital Alex
+<<effects>>
+<<npc "Alex">>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+
+Alex waits for you in the hospital foyer. <<He>> smiles when <<he>> sees you. "Hey, I got a call from the hospital saying that you were in labour. I got here as fast as I could."
+<br><br>
+
+<<He>> looks at <<if $litter_size is 1>><<childname>><<else>><<childrenNames $bornChildrenIds>><</if>> and smiles. "So <<print $litter_size > 1 ? "these are our little fellas" : "this is our litte fella">>."
+<br><br>
+
+<<if $litter_size is 1>>
+	<<link [[Let Alex hold it|Pregnancy Birth Hospital Alex 2]]>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Keep holding your baby|Pregnancy Birth Hospital Alex 2]]>><<set $phase to 2>><</link>>
+
+<<else>>
+	<<link [[Let Alex hold them|Pregnancy Birth Hospital Alex 2]]>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Keep holding your babies|Pregnancy Birth Hospital Alex 2]]>><<set $phase to 2>><</link>>
+<</if>>
+
+:: Pregnancy Birth Hospital Alex 2
+<<effects>>
+
+<<if $phase is 1>>
+    "Here, you should hold <<if $litter_size is 1>><<childhim>><<else>>them<</if>> too," you say, passing <<if $litter_size is 1>><<childname>><<else>><<childrenNames $bornChildrenIds>><</if>> to Alex.
+	<br><br>
+
+    <<He>> doesn't have a problem holding <<if $litter_size is 1>><<childhim>><<else>>them<</if>>. Actually, it looks like <<hes>> used to it. "So cute," <<he>> says with a giggle as <<he>> hands <<if $litter_size is 1>><<childname>><<else>>them<</if>> back to you.
+	<br><br>
+
+<<else>>
+    <<if $litter_size gte 2>>
+        You hold your babies to your chest. <<childname>> yawns.
+    <<else>>
+        You hold your baby to your chest. <<childHe>> yawns.
+    <</if>>
+	<br><br>
+
+<</if>>
+
+"Did you already give <<if $litter_size is 1>><<childhim>> a name<<else>>them names<</if>>?"
+<br>
+
+You nod and tell Alex <<if $litter_size is 1>><<childhis>> name<<else>>their names<</if>>.
+<br>
+
+"<<if $litter_size is 1>><<childname>><<else>><<childrenNames $bornChildrenIds>><</if>>, huh? Let's get you home, shall we?" <<he>> says.
+<br><br>
+
+A confused expression crosses your face. "You know that we can't take <<if $litter_size is 1>><<childhim>><<else>>them<</if>> to the farm by horse, right?"
+<br><br>
+
+Alex laughs. "I know, dummy. You didn't really think I would do that, do you?" <<he>> asks.
+<br>
+
+"Okay," <<he>> concedes, "maybe I thought about it, but hey, guess what? Someone agreed to give us a ride. Come on, I'll show you," <<he>> says, guiding you to where the vehicle is parked.
+<br><br>
+
+<<if pregnancyCountBetweenParents("pc","Alex") gte 2 or pregnancyCountBetweenParents("Alex","pc") gte 2>>
+	<<link [[Next|Pregnancy Birth Hospital Alex 5]]>><<endevent>><</link>>
+
+<<else>>
+	<<link [[Next|Pregnancy Birth Hospital Alex 3]]>><</link>>
+
+<</if>>
+
+:: Pregnancy Birth Hospital Alex 3
+/*This part may only happen if the player first birth was at the hospital*/
+<<effects>>
+<<set _alex to statusCheck("Alex")>>
+
+"Hold on just a sec," a voice says from behind. <span class="red">It's Bailey.</span>
+<br>
+"Just where do you think you're going with my property?" <<nnpc_he "Bailey">> says.
+<br><br>
+
+Alex frowns. "Your 'property'? Just what are you trying to say, pal?"
+<br><br>
+
+Bailey ignores Alex's question and glares at you. "We've a place prepared at the orphanage. Now make my job easier and hand me the <<print $litter_size > 1 ? "brats" : "brat">>.
+<br><br>
+
+"What makes you think that we'll just give our <<print $litter_size > 1 ? "children" : "child">> to you?" Alex protests.
+<br><br>
+
+Bailey turns <<nnpc_his "Bailey">> gaze to Alex. "Look, 'cow<<if _alex.pronoun is "f">>girl<<else>>boy<</if>>', you could've fucked any whore and I wouldn't care, but you hitched yourself to MY ward."
+<br>
+
+Alex clenches his fists. "And who exactly said <<pshe>> is yours? <<pShe>>'s MY <<if $player.gender_appearance is "f">>woman<<else>>man<</if>>."
+<br>
+
+Bailey fixes Alex with a piercing gaze. "And how exactly do you plan on taking care of a kid on that shithole you call a farm?"
+<br><br>
+
+<<link [[Next|Pregnancy Birth Hospital Alex 4]]>><</link>>
+
+:: Pregnancy Birth Hospital Alex 4
+<<effects>>
+
+"We have our own nursery at the cottage; we don't need your help," Alex responds.
+<br><br>
+
+A long and deafening silence fills the environment. Bailey keeps staring at you and Alex.
+<br><br>
+
+"Tch." Bailey is the first to break the silence. "Do whatever you want; it's one less problem for me to deal with anyway." Shooting you one last glare, <<nnpc_he "Bailey">> turns and leaves the hospital.
+<br><br>
+
+"I'm glad that's over," Alex says. "Let's just get to where the vehicle is parked."
+<br><br>
+
+<<link [[Next|Pregnancy Birth Hospital Alex 5]]>><<endevent>><</link>>
+
+:: Pregnancy Birth Hospital Alex 5
+<<effects>>
+<<set _alex to statusCheck("Alex")>>
+<<generate1>><<person1>>
+
+<<if $NPCList[0].gender is "f">>
+	<<set $alex_parent to "mother">>
+<<else>>
+	<<set $alex_parent to "father">>
+<</if>>
+
+<<set $ward_unlocked to true>>
+<<run Object.values(V.children).filter(child => {
+    if (child.location === "home" && (child.father === "Alex" || child.mother === "Alex")) child.location = "alex_cottage";
+})>>
+
+Alex's $alex_parent waves at you two.
+<br><br>
+
+Alex opens the door for you. <<He>> helps you in before settling into the seat next to you.
+<br><br>
+
+<<if pregnancyCountBetweenParents("pc", "Alex") gte 2>>
+    "Again?" <<nnpc_His "Alex">> $alex_parent laughs. "My <<if _alex.pronoun is "f">>daughter<<else>>son<</if>> is sure keeping you busy, ain't <<nnpc_he "Alex">>?"
+	<br><br>
+
+    Alex blushes and looks away.
+	<br><br>
+
+<<else>>
+    "My little <<if _alex.gender is "f">>girl<<else>>boy<</if>> is finally settling down," <<he>> says with a laugh.
+	<br>
+
+    Alex blushes and looks away.
+	<br><br>
+
+    "And with such a <<if $player.gender_appearance is "f">>beautiful woman<<else>>handsome man<</if>>!" <<he>> adds.
+	<br>
+
+    "<<if $alex_parent is "mother">>Mum<<else>>Pa<</if>>!" Alex protests.
+	<br>
+
+    "What? I'm telling the truth," <<he>> says. You don't think Alex's face can get any redder.
+	<br><br>
+
+<</if>>
+
+<<link [[Next|Pregnancy Birth Hospital Alex 6]]>><</link>>
+
+:: Pregnancy Birth Hospital Alex 6
+<<effects>>
+
+<<He>> drives to the farm, occasionally looking at <<his>> <<print $litter_size > 1 ? "grandchildren" : "grandchild">> and smiling.
+<br><br>
+
+It's not a long trip, and you soon arrive at the farm.
+<br><br>
+	
+Alex helps you leave the vehicle and take your <<print $litter_size > 1 ? "children" : "child">> to the cottage's nursery.
+<br><br>
+
+<<if pregnancyCountBetweenParents("pc", "Alex") gte 2>>
+    Alex's $alex_parent turns to Alex. "Look, I'm happy you're settling down, but try using some protection, would you? Unless you want your kids to have more siblings than you do." <<He>> laughs before driving away. 
+	<br><br>
+
+<<else>>
+    Alex's $alex_parent turns to Alex. "I need to get back to work now, but listen, I'm proud of you. You're finally making this place look like a home," <<he>> says before driving away.
+	<br><br>
+
+<</if>>
+
+<<link [[Next|Farm Work]]>><<endevent>><<unset $litter_size>><<unset $alex_pregnancy>><<unset $alex_parent>><</link>>
