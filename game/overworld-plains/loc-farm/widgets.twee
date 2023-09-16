@@ -1112,16 +1112,32 @@
 		<<He>> looks at <<his>> watch, then reclines and pulls the brim of <<his>> hat over <<his>> face.
 		<br><br>
 
+		<<if getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+			<<pcPregnancyRevealToAlex>>
+		
+		<<else>>
+			<<link [[Leave|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><</link>>
+			<br>
+			
+		<</if>>
+
 		<<link [[Relax (0:20)|Farm Rest]]>><<set $phase to 0>><<trauma -2>><<stress -2>><<npcincr Alex love 1>><<pass 20>><</link>><<glove>><<ltrauma>><<lstress>>
 		<br>
-		<<link [[Leave|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><</link>>
-		<br>
+
 	<<else>>
 		<<He>> looks at <<his>> watch, and sighs. "I'd better get back to work," <<he>> says, rising to <<his>> feet. "Thanks for the company."
 		<br><br>
 
-		<<link [[Next|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><<set $farm_work.alex to "still">><</link>>
-		<br>
+		<<if getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+			<<pcPregnancyRevealToAlex>>
+		
+		<<else>>
+			<<link [[Next|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><<set $farm_work.alex to "still">><</link>>
+			<br>
+
+		<</if>>
+
+
 	<</if>>
 <</widget>>
 
@@ -2286,6 +2302,12 @@
 		<br>
 	<</if>>
 	<br>
+
+	<<if C.npc.Alex.pregnancy.nursery is true>>
+		<<childicon "crib">><<link [[Nursery|Childrens Home]]>><<set $exitPassage to $passage>><</link>>
+		<br><br>
+	<</if>>
+
 	<<getouticon>><<link [[Go outside (0:01)|Farm Work]]>><<pass 1>><<endevent>><</link>>
 	<br>
 <</widget>>
@@ -2782,6 +2804,8 @@
 				The coop is being expanded.
 			<<case "irrigation">>
 				Irrigation is being installed in a field.
+			<<case "nursery">>
+				A nursery is being built in the cottage.
 		<</switch>>
 		<<if $farm.build_timer is 1>>
 			It'll be finished tomorrow.
@@ -2793,7 +2817,18 @@
 <</widget>>
 
 <<widget "farm_upgrades_status">>
-	<<set _upgrade_count to 0>>
+	<<set _upgrade_count to 0>> 
+	<<if $cottage_nursery_prep is 1 or C.npc.Alex.pregnancy.nursery is true>>
+		Cottage:
+		<span class ="green">A nice place for your livings.</span>
+		<br>
+
+	<<elseif talkedAboutPregnancy("Alex","pc") or talkedAboutPregnancy("pc","Alex") or C.npc.Alex.pregnancy.knowledge is true>>
+		Cottage:
+		<<link [[Nursery|Farm Upgrades Nursery]]>><</link>>
+		<br>
+	<</if>>
+
 	Wall:
 	<<if $farm.wall gte 4 or $farm.build is "wall 4">>
 		<span class="green">As sturdy as can be</span>
@@ -2888,4 +2923,265 @@
 		<</if>>
 		<br>
 	<</if>>
+<</widget>>
+
+<<widget "alex_pregnancy_comment">>
+	<<if playerBellyVisible()>>
+		<<if !talkedAboutPregnancy("pc","Alex")>>
+			<<setTalkedAboutPregnancy "pc" "Alex">>
+			<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+				Alex stares your belly in horror. "You're...you're pregnant?! You didn't tell me anything..."
+						
+				<<if getPregnancyObject().potentialFathers.length gte 2>>
+					<<He>> sounds disappointed.
+					<br><br>
+								
+					"W-well, you can take a break from the farm whenever you're not feeling well," <<he>> says.
+					<br><br>
+								
+				<<else>>
+					<br><br>
+					<<He>> looks at you, as if waiting for a response.
+
+					"Actually, let's go to the cottage, shall we?" Alex leads you inside.
+					<br><br>
+									
+				<</if>>
+
+			<<else>>
+				<<He>> looks to your belly. "Oh, got yourself knocked up? You can take a break from the farm if you feel it's much for you. I don't mind," <<he>> says.
+				<br><br>
+
+			<</if>>
+
+		<<else>>
+			<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+				"Please take a break whenever you're not feeling well," <<he>> says.
+
+			<<else>>
+				<<He>> looks to your belly. "Don't forget that you can take a break from the farm if you're not feeling well," <<he>> says.
+				<br><br>
+							
+			<</if>>
+
+		<</if>>
+
+	<</if>>
+
+<</widget>>
+
+<<widget "alex_cottage_pregnancy_reveal">>
+
+	<<npc "Alex">>
+
+	<<if Time.hour gte 5 and Time.hour lte 6>>
+		Alex seems nervous about something.
+
+	<<else>>
+		You hear more movement than usual at Alex's bedroom, curious, you enter <<his>> bedroom, only to find a nervous Alex wandering in the room.
+
+	<</if>>
+	<br><br>
+
+	You approach <<him>>.
+
+	<<if $speech_attitude is "meek">>
+		"I-is something wrong? I'm worried about you," you ask.
+	<<elseif $speech_attitude is "bratty">>
+		"What's wrong? Never seen you like this before," you ask.
+	<<else>>
+		"You okay? You don't look like yourself," you ask.
+	<</if>>
+	<br><br>
+
+	Alex turns to you and <<his>> nervousness is replaced with a big smile.
+
+	<<if pregnancyCountBetweenParents("Alex", "pc") lte 0 or pregnancyCountBetweenParents("pc", "Alex") lte 0>>
+    	"Sorry, I'm just not really sure how to deal with this kind of stuff. Would you take a seat?" You nod.
+
+	<<else>>
+		"Funny, I thought I would be more prepared next time. Would you take a seat?" You nod.
+
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Farm Alex Pregnancy Reveal]]>><</link>>
+
+<</widget>>
+
+<<widget "pcPregnancyRevealToAlex">>
+
+	<<if talkedAboutPregnancy("pc","Alex")>>
+		<<if C.npc.Alex.pregnancy.knowledge isnot true>>
+			<<if getPregnancyObject().fetus[0].father is "Alex" and getPregnancyObject().potentialFathers.length is 1>>
+				<span class="blue">Maybe this is a good opportunity to tell Alex that <<he>> is the father.</span>
+				<br>
+							
+				<<link [["Tell Alex that "+ $NPCName[25].pronouns.he +" is the father"|Farm PC Pregnancy Reveal]]>><</link>>
+				
+				<<if $passage is "Farm Rest" or $passage is "Farm Rest Refuse">>
+					<<if $farm_work.alex_relax lt 3>>
+						<br>
+					<<else>>
+						<br>
+
+						<<link [[Not now|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><<set $farm_work.alex to "still">><</link>>
+					
+					<</if>>
+
+				<<elseif $passage is "Farm Work">>
+					<br>
+
+					<<link [[Not now|Farm Work]]>><<endevent>><</link>>
+
+				<<else>>	
+					<br><br>
+				
+				<</if>>
+
+			<<else>>
+				<span class="blue">Maybe it's okay to assume that Alex is the father?</span>
+				<br>
+						
+				<<link [["Tell Alex that "+ $NPCName[25].pronouns.he +" may be the father"|Farm PC Pregnancy Reveal Unknown]]>><<set $phase to 1>><</link>>
+				
+				<<if $passage is "Farm Rest" or $passage is "Farm Rest Refuse">>
+					<<if $farm_work.alex_relax lt 3>>
+						<br>
+					<<else>>
+						<br>
+
+						<<link [[Not now|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><<set $farm_work.alex to "still">><</link>>
+						
+					<</if>>
+
+				<<elseif $passage is "Farm Work">>
+					<br>
+
+					<<link [[Not now|Farm Work]]>><<endevent>><</link>>
+
+				<<else>>	
+					<br><br>
+				
+				<</if>>
+
+			<</if>>
+
+		<<elseif C.npc.Alex.pregnancy.knowledge is true and C.npc.Alex.pregnancy.test is true>>
+			<span class="blue">Alex will believe in you now that you have a paternity test.</span>
+			<br>
+						
+			<<link [[Hand Alex the paternity test results|Farm PC Pregnancy Reveal]]>><</link>>
+			
+			<<if $passage is "Farm Rest" or $passage is "Farm Rest Refuse">>
+				<<if $farm_work.alex_relax lt 3>>
+					<br>
+				<<else>>
+					<br>
+
+					<<link [[Not now|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><<set $farm_work.alex to "still">><</link>>
+					
+				<</if>>
+
+			<<elseif $passage is "Farm Work">>
+				<br>
+
+				<<link [[Not now|Farm Work]]>><<endevent>><</link>>
+
+			<<else>>	
+				<br><br>
+			
+			<</if>>
+			
+		<</if>>
+
+	<<elseif playerIsPregnant() and playerAwareTheyArePregnant() and !talkedAboutPregnancy("pc","Alex")>>
+		<<if getPregnancyObject().fetus[0].father is "Alex" and getPregnancyObject().potentialFathers.length is 1>>
+			<span class="blue">Maybe this is a good opportunity to tell Alex about your pregnancy.</span>
+			<br>
+							
+			<<link [[Tell Alex that you're pregnant|Farm PC Pregnancy Reveal]]>><</link>>
+
+			<<if $passage is "Farm Rest" or $passage is "Farm Rest Refuse">>
+				<<if $farm_work.alex_relax lt 3>>
+					<br>
+				<<else>>
+					<br>
+
+					<<link [[Not now|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><<set $farm_work.alex to "still">><</link>>
+					
+				<</if>>
+
+			<<elseif $passage is "Farm Work">>
+				<br>
+
+				<<link [[Not now|Farm Work]]>><<endevent>><</link>>
+
+			<<else>>	
+				<br><br>
+			
+			<</if>>
+
+		<<else>>
+			<span class="blue">Maybe it's okay to assume that Alex is the father?</span>
+			<br>
+					
+			<<link [["Tell Alex about your pregnancy and that "+ $NPCName[25].pronouns.he +" may be the father"|Farm PC Pregnancy Reveal Unknown]]>><<set $phase to 1>><</link>>
+			
+			<<if $passage is "Farm Rest" or $passage is "Farm Rest Refuse">>
+				<<if $farm_work.alex_relax lt 3>>
+					<br>
+				<<else>>
+					<br>
+
+					<<link [[Not now|Farm Work]]>><<endevent>><<unset $farm_relax_drink>><<set $farm_work.alex to "still">><</link>>
+					
+				<</if>>
+
+			<<elseif $passage is "Farm Work">>
+				<br>
+
+				<<link [[Not now|Farm Work]]>><<endevent>><</link>>
+
+			<<else>>	
+				<br><br>
+			
+			<</if>>
+
+		<</if>>
+
+	<</if>>
+		
+
+<</widget>>
+
+<<widget "pcFarmBirth">>
+
+	<<npc "Alex">>
+	You call for Alex. "I'm coming!" <<he>> shouts.
+	<br>
+
+	"What's wrong?" <<he>> asks. Approaching you, <<he>> sees your soaked crotch. "Oh...it's time already?"
+	<br><br>
+
+	<<if $speech_attitude is "meek">>
+		"I...I think so," you say.
+	<<elseif $speech_attitude is "bratty">>
+		"No shit, Sherlock," you say.
+	<<else>>
+		"It seems so," you say.
+	<</if>>
+	<br><br>
+
+	Alex tenses up, but quickly composes <<himself>>. "Here, let's go inside," <<he>> says, guiding you into the cottage and onto the sofa.
+	<br>
+
+	It doesn't take long before you start feeling the contractions. It's a little difficult to breathe.
+	<br><br>
+
+	Alex gives you a preoccupied glance. "Don't worry," <<he>> reassures you. "I'll call the local doctor."
+	<br><br>
+
+	<<link [[Next|Farm PC Birth]]>><</link>>
+
 <</widget>>

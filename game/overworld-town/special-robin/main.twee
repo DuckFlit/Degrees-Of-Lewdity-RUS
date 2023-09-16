@@ -2036,6 +2036,18 @@ Bailey shoves Robin into the back seat, and drives away.
 
 :: Bailey's Office
 <<set $outside to 0>><<set $location to "home">><<effects>>
+
+<<if Object.values($children).find(child => child.mother === "Alex" && child.location === "home") or Object.values($children).find(child => child.father === "Alex" && child.location === "home")>>
+
+	<<if Object.values($children).find(child => child.mother === "Alex" && child.location === "home")>>
+		<<set _alexMother to Object.values($children).find(child => child.mother === "Alex" && child.location === "home")>>
+
+	<<elseif Object.values($children).find(child => child.father === "Alex" && child.location === "home")>>
+		<<set _alexFather to Object.values($children).find(child => child.father === "Alex" && child.location === "home")>>
+	<</if>>
+
+<</if>>
+
 <<npc Bailey>><<person1>>
 
 <<if Time.hour lte 6 or Time.hour gte 10>>
@@ -2093,6 +2105,11 @@ Bailey shoves Robin into the back seat, and drives away.
 	<<set $daily.baileyVisit++>>
 <</if>>
 <br><br>
+
+<<if C.npc.Alex.pregnancy.fee isnot true and C.npc.Alex.pregnancy.nursery is true and (_alexMother or _alexFather) and (Time.hour gte 7 and Time.hour lte 9)>>
+	<<link [[Take your children to the farm|Bailey Office Alex Children Fee]]>><</link>>
+	<br>
+<</if>>
 
 <<if _options is 1>>
 	<<if $pub_hack_job is 3 and !$hacker_tasks.includes("bailey")>>
@@ -2370,6 +2387,41 @@ You take the plushie back to your room and nestle it atop your wardrobe. It shou
 <<endevent>>
 <<link [[Next|Orphanage]]>><</link>>
 <br>
+
+:: Bailey Office Alex Children Fee
+<<effects>>
+
+<<set _babies_fee to childrenCountBetweenParents("pc", "Alex")*1000>>
+
+"<<printmoney 100000>>, each. and you're only taking the ones you had with that stupid farmer," <<he>> says before returning to what <<he>> was doing.
+<br><br>
+
+<<if $money gte _babies_fee>>
+    <<link [['Pay the fee (£' + _babies_fee  + ')'|Bailey Office Alex Children Fee 2]]>><<set $money -= _babies_fee>><</link>>
+
+<<else>>
+    <i>You cannot afford the fee.</i>
+<</if>>
+<br>
+
+<<link [[Leave|Orphanage]]>><<endevent>><</link>>
+
+:: Bailey Office Alex Children Fee 2
+<<effects>><<set C.npc.Alex.pregnancy.fee to true>>
+
+You place the money on <<his>> desk and <<he>> takes it.
+<br><br>
+
+"Good," <<he>> says counting the money. "You can come by and take them whenever you want to, I don't care."
+<br><br>
+
+"Now, leave!" <<he>> says.
+<br><br>
+
+<span class="gold">You can now take your children to the farm, you should speak with Alex.</span>
+<br><br>
+
+<<link [[Next|Orphanage]]>><<endevent>><</link>>
 
 :: Docks_Robin Swap 2
 "So," the <<person1>><<person>> slurs. "If we did use <<phim>> as bait, I bet we'd catch a whale."
