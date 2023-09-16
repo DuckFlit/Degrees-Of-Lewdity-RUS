@@ -368,6 +368,8 @@ function weekPassed() {
 		V.brothelVending.weeksRent++;
 	}
 
+	fragment.append(wikifier("world_corruption", "soft", V.world_corruption_hard));
+
 	delete V.weekly;
 	V.weekly = { theft: {}, sewers: {} };
 
