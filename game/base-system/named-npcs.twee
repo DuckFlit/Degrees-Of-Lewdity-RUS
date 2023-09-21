@@ -234,7 +234,23 @@ Zohar
 
 	<!-- Set Pronoun -->
 	<<if !$NPCName[_i].pronoun or $NPCName[_i].pronoun is "none" or _args[1] is "genders">>
-		<<if maleChance() lt random(1, 100)>>
+		<<if $passage is "Start">>
+			<<if $player.gender is "m">>
+				<<set _override to "m">>
+			<<elseif $player.gender is "h">>
+				<<if $player.gender_body is "m" or ($player.gender_body is "a" and $player.breastsize lte 3)>>
+					<<set _override to "m">>
+				<<else>> <!-- if $player.gender_body is "f" or ($player.gender_body is "a" and $player.breastsize gt 3)) -->
+					<<set _override to "f">>
+				<</if>>
+			<<else>> <!-- if $player.gender is "f" -->
+				<<set _override to "f">>
+			<</if>>
+			<<if $background is "crossdresser">>
+				<<set _override to (_override is "m" ? "f" : "m")>>
+			<</if>>
+		<</if>>
+		<<if ($NPCName[_i].type is "human" and maleChance(_override) lt random(1, 100)) or ($NPCName[_i].type isnot "human" and beastMaleChance(_override) lt random(1, 100))>>
 			<<set $NPCName[_i].pronoun to "f">>
 		<<else>>
 			<<set $NPCName[_i].pronoun to "m">>

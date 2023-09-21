@@ -1042,6 +1042,11 @@ window.wearingCondom = wearingCondom;
 function makeAwareOfDetails() {
 	const pregnancy = getPregnancyObject();
 	pregnancy.awareOfDetails = true;
-	pregnancy.potentialFathers = pregnancy.potentialFathers.filter(s => s.type === pregnancy.fetus[0].type);
+	pregnancy.potentialFathers = pregnancy.potentialFathers.filter(s => s.type.includes(pregnancy.fetus[0].type));
+	if (pregnancy.potentialFathers.length === 1) {
+		pregnancy.fetus.forEach(child => {
+			child.fatherKnown = true;
+		});
+	}
 }
 DefineMacro("makeAwareOfDetails", makeAwareOfDetails);

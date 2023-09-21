@@ -69,8 +69,10 @@ function masturbationActions() {
 		masturbationActionsAnus(otherVariables),
 	].forEach(action => {
 		if (action.options && action.options.length) {
-			fragment.append(Wikifier.wikifyEval(action.text));
-			fragment.append(document.createElement("br"));
+			if (!T.noMasturbationOutput) {
+				fragment.append(Wikifier.wikifyEval(action.text));
+				fragment.append(document.createElement("br"));
+			}
 
 			// Attempt to ensure an action is selected, set to "mrest" or the first available action if it doesnt exist
 			if (action.options.find(option => option.action === V[action.actionVariable + "default"])) {
@@ -82,26 +84,28 @@ function masturbationActions() {
 			} else {
 				V[action.actionVariable] = 0;
 			}
-			switch (V.options.masturbationControls) {
-				case "lists":
-					// Demo of alternate control styles
-					fragment.append(Wikifier.wikifyEval(generateListOption(action.actionVariable, action.options)));
-					break;
-				default:
-					action.options.forEach(option => {
-						fragment.append("| ");
-						fragment.append(Wikifier.wikifyEval(generateOption(action.actionVariable, option)));
-						fragment.append(" ");
-					});
-					break;
-			}
+			if (!T.noMasturbationOutput) {
+				switch (V.options.masturbationControls) {
+					case "lists":
+						// Demo of alternate control styles
+						fragment.append(Wikifier.wikifyEval(generateListOption(action.actionVariable, action.options)));
+						break;
+					default:
+						action.options.forEach(option => {
+							fragment.append("| ");
+							fragment.append(Wikifier.wikifyEval(generateOption(action.actionVariable, option)));
+							fragment.append(" ");
+						});
+						break;
+				}
 
-			fragment.append(document.createElement("br"));
-			fragment.append(document.createElement("br"));
+				fragment.append(document.createElement("br"));
+				fragment.append(document.createElement("br"));
+			}
 		}
 	});
 
-	if (V.arousal >= V.arousalmax && !V.possessed) {
+	if (V.arousal >= V.arousalmax && !V.possessed && !T.noMasturbationOutput) {
 		fragment.append(wikifier("orgasm"));
 		fragment.append(wikifier("promiscuity1"));
 		V.masturbationorgasmstat++;
@@ -115,7 +119,7 @@ function masturbationActions() {
 	V.secondsSpentMasturbating += 10;
 
 	// Updates the control caption at the top of the screen to include any control gained through the rest of the passage
-	if (V.possessed) {
+	if (V.possessed && !T.noMasturbationOutput) {
 		$(() => {
 			Dynamic.render("control-caption");
 		});
