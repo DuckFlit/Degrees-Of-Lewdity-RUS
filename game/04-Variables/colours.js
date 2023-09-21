@@ -1058,6 +1058,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#292934" },
 	},
 	{
+		variable: "navy blue",
+		name: "navy blue",
+		name_cap: "Navy blue",
+		csstext: "navy blue",
+		canvasfilter: { blend: "#16168d" },
+	},
+	{
 		variable: "olive",
 		name: "olive",
 		name_cap: "Olive",

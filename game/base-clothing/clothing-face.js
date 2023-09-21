@@ -1058,7 +1058,38 @@ function initFace() {
 			location: 0,
 			iconFile: "bamboomuzzle.png",
 			accIcon: 0,
-		},	];
+		},
+
+		{
+			index: 37,
+			name: "monocle",
+			name_cap: "Monocle",
+			variable: "monocle",
+			integrity: 20,
+			integrity_max: 20,
+			fabric_strength: 20,
+			reveal: 1,
+			word: "a",
+			plural: 0,
+			colour: 0,
+			colour_options: ["black", "grey", "steel", "blue steel", "bronze", "gold", "silver"],
+			colour_sidebar: 1,
+			colour_combat: 0,
+			type: ["glasses"],
+			gender: "n",
+			warmth: 0,
+			cost: 10000,
+			description: "Makes studying easier, but you might be picked on at school.",
+			shop: ["clothing"],
+			accessory: 1,
+			accessory_colour: 0,
+			accessory_colour_options: [],
+			cursed: 0,
+			location: 0,
+			iconFile: "monocle.png",
+			accIcon: "monocle_acc.png",
+		},
+	];
 
 	/*
 		Clothes that modders add go into this array, this should be empty in the base game at all times.

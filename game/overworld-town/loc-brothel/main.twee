@@ -138,8 +138,8 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 <br><br>
 
 <<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
-    <<link [[Undo your bindings (0:10)|Brothel Dressing Room]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
-    <br><br>
+	<<undobindingsicon>><<link [[Undo your bindings (0:10)|Brothel Dressing Room]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
+	<br><br>
 <</if>>
 
 <<if $brothelVending>>
@@ -2375,32 +2375,32 @@ You ask Briar if <<he>> has already checked your vending machine's stock and col
 	<<set $money += 100000>>
 	<<set $brothelVending.status to "sold">>
 	<<if $brothelVending.condomsSold + $brothelVending.lubeSold>>
-		Briar pauses. "You never collected on your last sales before it was emptied. There were still some sales,
+		Briar pauses. "You never collected on your last sales before it was emptied.
 	<</if>>
 <<else>>
-	"Yes, just 5 minutes ago. The sales are
+	"Yes, I did.
 <</if>>
 <<if $brothelVending.condomsSold + $brothelVending.lubeSold>>
-	<<if $brothelVending.condomsSold>>
-		$brothelVending.condomsSold condom<<if $brothelVending.condomsSold gt 1>>s<</if>>, <<formatmoney `$brothelVending.condomsSold * 6000`>>_printmoney to cover the initial cost of the product and <<formatmoney `$brothelVending.condomsSold * 2000`>>_printmoney beyond that<<if !$brothelVending.lubeSold>>.<</if>>
+	<<set _productsSold = []>>
+	<<set _productCost = ($brothelVending.condomsSold * 6000)+($brothelVending.lubeSold * 2000)>>
+	<<set _productProfit = ($brothelVending.condomsSold * 2000 + $brothelVending.lubeSold * 1000)>>
+	<<if $brothelVending.condomsSold >>
+		<<run _productsSold.push(`$brothelVending.condomsSold condom<<if $brothelVending.condomsSold gt 1>>s<</if>>`)>>
 	<</if>>
-	<<print $brothelVending.condomsSold && $brothelVending.lubeSold ? " and " : "">>
 	<<if $brothelVending.lubeSold>>
-		$brothelVending.lubeSold bottle<<if $brothelVending.lubeSold gt 1>>s<</if>> of lube, <<formatmoney `$brothelVending.lubeSold * 2000`>>_printmoney to cover the initial cost of the product and <<formatmoney `$brothelVending.lubeSold * 1000`>>_printmoney beyond that.
+		<<run _productsSold.push(`$brothelVending.lubeSold bottle<<if $brothelVending.lubeSold gt 1>>s<</if>> of lube`)>>
 	<</if>>
-	<<set _BVMBenefits to $brothelVending.condomsSold *2000 + $brothelVending.lubeSold * 1000>>
-	Of the profits, I took £50 <<if $brothelVending.weeksRent gt 1>>per week, <<formatmoney `$brothelVending.weeksRent * 5000`>>_printmoney,<<else>>for the weekly rent,<</if>>
-	<<set _BVMBenefits to Math.max(0, _BVMBenefits - $brothelVending.weeksRent * 5000)>>
-	<<if _BVMBenefits>>
-		resulting in a net profit of <<formatmoney _BVMBenefits>>_printmoney. Of this profit, 40% is yours,
-		<<set _BVMBenefits *= .4>>
-		for a total of <<printmoney _BVMBenefits>>."
+	You sold <<print _productsSold.join(" and ")>> over the past <<print $brothelVending.weeksRent is 1 ? "week" : $brothelVending.weeksRent + " weeks">>. I've already set aside the weekly rent deposit
+	<<set _productProfit to Math.max(0, _productProfit - $brothelVending.weeksRent * 5000)>>
+	<<if _productProfit>>
+		<<set _pcProfit to _productProfit * .4>>
+		and my 60% cut. Here's your profit of <span class="green"><<formatmoney _pcProfit>>_printmoney</span>, plus the <span class="blue"><<formatmoney _productCost>>_printmoney</span> you spent stocking the machine." <<He>> hands you your earnings. You make <<printmoney `_productCost + _pcProfit`>>. "Pleasure doing business with you."
 		<<famebusiness 2>>
-		<<set $money += _BVMBenefits>>
+		<<set $money += _pcProfit>>
 	<<else>>
-		so all for me, nothing for you."
+		but unfortunately, that eats up the rest of the profits. All you're getting back is the money you spent stocking the machine." <<He>> hands you your earnings. You make <<printmoney _productCost>>. "Try stocking more products next time, if you want to do more than break even."
 	<</if>>
-	<<set $money += $brothelVending.condomsSold * 6000 + $brothelVending.lubeSold * 2000>>
+	<<set $money += _productCost>>
 	<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
 	<<set $brothelVending.condomsSold to 0>>
 	<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>

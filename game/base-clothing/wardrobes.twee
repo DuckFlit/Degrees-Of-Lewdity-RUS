@@ -687,6 +687,74 @@
 	<</if>>
 <</widget>>
 
+<<widget "toggleAltLink">>
+	<div class="toggleAltLink">
+		<<switch _args[0]>>
+			<<case "upper">>
+				<<switch $worn.upper.variable>>
+					<<case "schoolcardigan">><<set $_link1 to "Tie cardigan around waist">><<set $_link2 to "Wear cardigan normally">>
+				<</switch>>
+				<<link `($worn.upper.altposition is "none" ? $_link1 : $_link2)`>>
+					<<toggleAltPosition "upper">>
+					<<updatesidebarimg>>
+					<<if _args[1] isnot "shop">>
+						<<updatewardrobe>>
+					<</if>>
+					<<run $(".toggleAltLink .link-internal").html($worn.upper.altposition is "none" ? $_link1 : $_link2)>>
+					<<run Links.generateLinkNumbers($(".passage"))>>
+				<</link>>
+			<<case "neck">>
+				<<switch $worn.neck.variable>>
+					<<case "suspenders">><<set $_link1 to "Lower suspenders">><<set $_link2 to "Wear suspenders normally">>
+				<</switch>>
+				<<link `($worn.neck.altposition is "none" ? $_link1 : $_link2)`>>
+					<<toggleAltPosition "neck">>
+					<<updatesidebarimg>>
+					<<if _args[1] isnot "shop">>
+						<<updatewardrobe>>
+					<</if>>
+					<<run $(".toggleAltLink .link-internal").html($worn.neck.altposition is "none" ? $_link1 : $_link2)>>
+					<<run Links.generateLinkNumbers($(".passage"))>>
+				<</link>>
+		<</switch>>
+	</div>
+<</widget>>
+
+<<widget "toggleAltPosition">>
+	<<switch _args[0]>>
+		<<case "upper">>
+			<<if $worn.upper.variable is "schoolcardigan">>
+				<<run [$worn.upper.colour, $worn.upper.accessory_colour] to [$worn.upper.accessory_colour, $worn.upper.colour]>>
+				<<if $worn.upper.colour is "custom" or $worn.upper.accessory_colour is "custom">>
+					<<run [$worn.upper.colourCustom, $worn.upper.accessory_colourCustom] to [$worn.upper.accessory_colourCustom, $worn.upper.colourCustom]>>
+				<</if>>
+				<<if $worn.upper.altposition is "none">>
+					<<set $worn.upper.name to "school blouse">><<set $worn.upper.name_cap to "School blouse">>
+					<<set $worn.upper.altposition to "alt">>
+				<<elseif $worn.upper.altposition is "alt">>
+					<<set $worn.upper.name to "school cardigan">><<set $worn.upper.name_cap to "School cardigan">>
+					<<set $worn.upper.altposition to "none">>
+				<<elseif $worn.upper.altposition is undefined and setup.clothes.upper[$worn.upper.index].altposition isnot undefined>>
+					<<set $worn.upper.name to "school cardigan">><<set $worn.upper.name_cap to "School cardigan">>
+					<<set $worn.upper.altposition to "none">>
+				<</if>>
+			<<else>>
+				<<if $worn.upper.altposition is undefined and setup.clothes.upper[$worn.upper.index].altposition isnot undefined>>
+					<<set $worn.upper.altposition to "none">>
+				<<else>>
+					<<set $worn.upper.altposition to ($worn.upper.altposition is "none" ? "alt" : "none")>>
+				<</if>>
+			<</if>>
+		<<case "neck">>
+				<<if $worn.neck.altposition is undefined and setup.clothes.neck[$worn.neck.index].altposition isnot undefined>>
+					<<set $worn.neck.altposition to "none">>
+				<<else>>
+					<<set $worn.neck.altposition to ($worn.neck.altposition is "none" ? "alt" : "none")>>
+				<</if>>
+		<<default>>
+	<</switch>>
+<</widget>>
+
 <<widget "wardrobeList">>
 	<<wardrobeClothingOptions>>
 	<<set _wardrobe_list to _args[0]>>
@@ -794,9 +862,12 @@
 			<</if>>
 			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItemData.notuck>>
 				<div class="no-numberify"><<toggleUpperTuck>></div>
-				<br>
+			<</if>>
+			<<if _wardrobe_list is "upper" and _wornItemData.notuck is "tie">>
+				<div class="no-numberify"><<toggleAltLink "upper">></div>
 			<</if>>
 			<<if _wardrobe_list is "neck">>
+				<div class="no-numberify"><<toggleAltLink "neck">></div>
 				<div id="wardrobeLeash" class="no-numberify"><<toggleLeash>></div>
 			<</if>>
 		<</if>>
