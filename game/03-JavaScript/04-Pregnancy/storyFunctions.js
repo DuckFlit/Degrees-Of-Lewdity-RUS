@@ -453,7 +453,7 @@ function playerHeatMinArousal() {
 	// Should always be the first to modify minArousal
 	if (risk <= 1 && pills.contraceptive.doseTaken === 0) {
 		if (V.earSlime.growth > 50 && V.earSlime.focus === "pregnancy" && !V.earSlime.defyCooldown) {
-			minArousal += minArousal += Math.clamp(V.earSlime.growth, 0, 100) * 10 * (2 - risk);
+			minArousal += Math.clamp(V.earSlime.growth, 0, 100) * 10 * (2 - risk);
 		}
 		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10 * (2 - risk);
 		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10 * (2 - risk);
@@ -478,7 +478,7 @@ function playerRutMinArousal() {
 
 	if (pills.contraceptive.doseTaken === 0 && V.player.beastRut !== undefined && V.player.beastRut <= 1) {
 		if (V.earSlime.growth > 50 && V.earSlime.focus === "impregnation" && !V.earSlime.defyCooldown) {
-			minArousal += minArousal += Math.clamp(V.earSlime.growth, 0, 100) * 10;
+			minArousal += Math.clamp(V.earSlime.growth, 0, 100) * 10;
 		}
 		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10;
 		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10;
