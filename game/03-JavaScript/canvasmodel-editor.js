@@ -811,6 +811,8 @@ Macro.add("canvasModelEditor", {
 						optionCategory("Misc"),
 						booleanOption("upper_tucked"),
 						booleanOption("hood_down"),
+						booleanOption("alt_position"),
+						booleanOption("alt_position_neck"),
 					]),
 					element("div", { class: "editormodelgroup" }, [
 						optionCategory("Transformations"),
