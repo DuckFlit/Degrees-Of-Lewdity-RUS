@@ -47,6 +47,7 @@ const hairStyleCap = {
 		pigtails: 300,
 		ponytail: 300,
 		short: 100,
+		"shaved": 100,
 	},
 	fringetype: {
 		default: 100,
@@ -68,6 +69,8 @@ const hairStyleCap = {
 		"ringlet curl": 300,
 		curtain: 200,
 		trident: 200,
+		"buzzcut": 100,
+		"mohawk": 100,
 	},
 };
 
@@ -265,6 +268,11 @@ function genderappearancecheck() {
 	/* Pregnant Belly */
 	if (V.sexStats === undefined || !playerBellyVisible()) {
 		// do glorious nothing
+	} else if (V.NudeGenderDC <= 1) {
+		addfemininityfromfactor(
+			Math.clamp((playerBellySize() - 7) * (V.NudeGenderDC === 1 ? 90 : 70), 0, Infinity),
+			playerAwareTheyArePregnant() ? "Pregnant Belly" : "Pregnant Looking Belly"
+		);
 	} else if (playerBellySize() >= 18) {
 		addfemininityfromfactor(Math.clamp(10000, 0, Infinity), playerAwareTheyArePregnant() ? "Pregnant Belly" : "Pregnant Looking Belly");
 	} else if (playerBellySize() >= 8) {

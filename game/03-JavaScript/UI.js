@@ -354,7 +354,7 @@ function settingsNudeGenderAppearance() {
 		switch (val) {
 			case -1:
 				text =
-					"NPCs <span class='blue inline-colour'>ignore</span> genitals when perceiving gender. <span class='purple inline-colour'>Overrides some player descriptions.</span> <span class='red inline-colour'>Disables crossdressing warnings.</span>";
+					"NPCs <span class='blue inline-colour'>ignore</span> genitals when perceiving gender. <span class='purple inline-colour'>Overrides some player descriptions and gender appearance modifiers.</span> <span class='red inline-colour'>Disables crossdressing warnings.</span>";
 				break;
 			case 0:
 				text = "NPCs will <span class='blue inline-colour'>ignore</span> your genitals when perceiving your gender.";
