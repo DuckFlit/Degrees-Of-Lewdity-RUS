@@ -354,6 +354,18 @@ function endPlayerPregnancy(birthLocation, location) {
 
 	delete V.templeVirginPregnancy;
 	delete V.caveHumanPregnancyDiscovered;
+
+	delete C.npc.Alex.pregnancy.knowledge;
+	delete C.npc.Alex.pregnancy.test;
+	delete C.npc.Alex.pregnancy.sample;
+
+	if (Object.values(V.children).find(child => child.mother === "Alex" && child.location === "home") || Object.values(V.children).find(child => child.father === "Alex" && child.location === "home"))
+	{
+	
+	} else {
+		delete C.npc.Alex.pregnancy.fee;
+	}
+
 	return true;
 }
 DefineMacro("endPlayerPregnancy", endPlayerPregnancy);
@@ -562,6 +574,20 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 		potentialFathers: [],
 		cycleDay,
 	};
+
+	if (npcName === "Alex") {
+		delete C.npc.Alex.pregnancy.knowledge;
+		delete C.npc.Alex.pregnancy.test;
+		delete C.npc.Alex.pregnancy.sample;
+
+		if (Object.values(V.children).find(child => child.mother === "Alex" && child.location === "home") || Object.values(V.children).find(child => child.father === "Alex" && child.location === "home"))
+		{
+		
+		} else {
+			delete C.npc.Alex.pregnancy.fee;
+		}
+
+	}
 
 	V.pregnancyStats.npcTotalBirthEvents++;
 	return true;
