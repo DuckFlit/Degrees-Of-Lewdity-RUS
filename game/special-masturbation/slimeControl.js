@@ -140,8 +140,10 @@ function masturbationSlimeControl() {
 				case "mvaginaentrance":
 					if (V.vaginause === 0 && ["mvagina", "mvaginafingerstarttwo"].includes(V[armAction])) {
 						// Do Nothing
-					} else if (random(0, 100) >= 50) {
+					} else if (random(0, 100) >= 50 && !V.parasite.clit.name) {
 						V[armAction] = "mvaginaclit";
+					} else if (random(0, 100) >= 50 && V.parasite.clit.name && V.parasite.clit.name !== "parasite") {
+						V[armAction] = "mvaginaclitparasite";
 					} else {
 						V[armAction] = "mvaginarub";
 					}
@@ -209,7 +211,13 @@ function masturbationSlimeControl() {
 							} else if (!["mvaginaentrancedildo", "manusentrancedildo"].includes(V.leftaction) && currentToy.name === "bullet vibe") {
 								actions.push("mchestvibrate");
 								if (V.player.penisExist && V.penisuse === 0 && !playerChastity("penis")) actions.push("mpenisvibrate");
-								if (!V.player.penisExist && !playerChastity("vagina")) actions.push("mvaginaclitvibrate");
+								if (!V.player.penisExist && !playerChastity("vagina")) {
+									if (!V.parasite.clit.name) {
+										actions.push("mvaginaclitvibrate");
+									} else if (V.parasite.clit.name !== "parasite") {
+										actions.push("mvaginaclitvibrateparasite");
+									}
+								}
 								V[armAction] = actions[random(0, actions.length - 1)];
 							} else {
 								// To ensure there is a default action, not a duplicate
@@ -262,7 +270,11 @@ function masturbationSlimeControl() {
 					if (V[arm + "arm"] !== "mvagina" && V[arm + "arm"] !== "mvaginadildo" && random(0, 100) >= 50) {
 						V[armAction] = "mvaginadildo";
 					} else if (V[armAction] !== "mvaginadildo") {
-						V[armAction] = "mvaginaclitdildo";
+						if (V.player.penisExist || V.parasite.clit.name) {
+							V[armAction] = "mvaginarubdildo";
+						} else {
+							V[armAction] = "mvaginaclitdildo";
+						}
 					}
 					break;
 				case "mvaginadildo":
@@ -313,8 +325,10 @@ function masturbationSlimeControl() {
 				V.mouthaction = "mchastityparasitelick";
 				break;
 			case "mvaginaentrance":
-				if (random(0, 100) >= 50) {
+				if (random(0, 100) >= 50 && !V.parasite.clit.name) {
 					V.mouthaction = "mvaginaclit";
+				} else if (random(0, 100) >= 50 && V.parasite.clit.name && V.parasite.clit.name !== "parasite") {
+					V.mouthaction = "mvaginaclitparasite";
 				} else {
 					V.mouthaction = "mvaginalick";
 				}
