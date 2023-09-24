@@ -400,7 +400,7 @@ function masturbationeffectsArms(
 	if (V.vaginaaction === "mpenisflowerpenetrate" || V.vaginause === "mpenisflowerpenetrate") {
 		// If the player vaginally penetrates the phallus flower
 		if (V[armAction] === "mvagina") {
-			if (V.player.penisExist) {
+			if (V.player.penisExist || V.parasite.clit.name) {
 				V[armAction] = "mvaginarub";
 				if (doubleAction) V[otherArmAction] = "mvaginarub";
 			} else {
@@ -1762,7 +1762,7 @@ function masturbationeffectsArms(
 			break;
 		case "mvaginaclitvibrate":
 			clearAction();
-			wikifier("arousal", 200 * handsOn, "masturbationVagina");
+			wikifier("arousal", 250 * handsOn, "masturbationVagina");
 			altText.selectedToy = selectedToy(arm);
 			if (doubleAction) {
 				altText.selectedOtherToy = selectedToy(otherArm);
@@ -1796,6 +1796,45 @@ function masturbationeffectsArms(
 				if (V.worn.lower.vagina_exposed && V.worn.over_lower.vagina_exposed) wikifier("addVaginalWetness", 1 * handsOn);
 				sWikifier(
 					`<span class="blue">You press your ${altText.toyDisplay} against your <<clit>> through your <<exposedlower>>, enjoying the way it feels even through the fabric.</span>`
+				);
+			}
+			break;
+		case "mvaginaclitvibrateparasite":
+			clearAction();
+			wikifier("arousal", 300 * handsOn, "masturbationVagina");
+			altText.selectedToy = selectedToy(arm);
+			if (doubleAction) {
+				altText.selectedOtherToy = selectedToy(otherArm);
+				altText.toyDisplay = toyDisplay(altText.selectedToy, altText.selectedOtherToy);
+			} else {
+				altText.toyDisplay = toyDisplay(altText.selectedToy);
+			}
+			if (genitalsExposed() && V.bugsinside === 1) {
+				wikifier("arousal", 200 * handsOn, "masturbationVagina");
+				wikifier("addVaginalWetness", 2 * handsOn);
+				sWikifier(
+					`<span class="blue">You gently press your ${altText.toyDisplay} against the ${V.parasite.clit.name} on your <<clit>>, the vibrations combined with the sucking and sensations of the insects crawling around within you making your toes curl.</span>`
+				);
+			} else if (genitalsExposed()) {
+				wikifier("arousal", 200 * handsOn, "masturbationVagina");
+				wikifier("addVaginalWetness", 2 * handsOn);
+				altText.start = `You gently press your ${altText.toyDisplay} against ${V.parasite.clit.name} on your <<clit>>,`;
+				if (V.mouth === "mdildomouth") {
+					if (V.worn.face.type.includes("gag")) {
+						altText.gag = V.worn.face.name;
+					} else if (V.leftarm === "mdildomouth") {
+						altText.gag = selectedToy("left").name;
+					} else {
+						altText.gag = selectedToy("right").name;
+					}
+					sWikifier(`${altText.start} the soft moans elicited by the sensation muffled by the ${altText.gag} obstructing your mouth.`);
+				} else {
+					sWikifier(`${altText.start} moaning softly at the sucking sensations.`);
+				}
+			} else {
+				if (V.worn.lower.vagina_exposed && V.worn.over_lower.vagina_exposed) wikifier("addVaginalWetness", 1 * handsOn);
+				sWikifier(
+					`<span class="blue">You press your ${altText.toyDisplay} against the ${V.parasite.clit.name} on your <<clit>> through your <<exposedlower>>, enjoying the way it reacts by sucking on you more.</span>`
 				);
 			}
 			break;
@@ -1856,7 +1895,7 @@ function masturbationeffectsArms(
 			);
 			break;
 		case "mvaginaentrance":
-			clearAction(V.player.penisExist ? "mvaginarub" : "mvaginaclit");
+			clearAction(V.player.penisExist || V.parasite.clit.name ? "mvaginarub" : "mvaginaclit");
 			wikifier("arousal", 200 * handsOn, "masturbationVagina");
 			V[arm + "arm"] = "mvaginaentrance";
 			if (doubleAction) {
@@ -2004,7 +2043,7 @@ function masturbationeffectsArms(
 			break;
 		case "mvaginaclit":
 			clearAction();
-			wikifier("arousal", 200 * handsOn, "masturbationVagina");
+			wikifier("arousal", 250 * handsOn, "masturbationVagina");
 			wikifier("addVaginalWetness", 2 * handsOn);
 			altText.fingers = handsOn === 2 ? "fingers" : "finger";
 			if (V.arousal >= (V.arousalmax / 5) * 4) {
@@ -2028,6 +2067,21 @@ function masturbationeffectsArms(
 			} else {
 				sWikifier(`You run your ${altText.fingers} over your <<pussy>>, feeling its shape beneath your <<exposedlower>>.`);
 				if (V.worn.lower.vagina_exposed && V.worn.over_lower.vagina_exposed) wikifier("addVaginalWetness", 1 * handsOn);
+			}
+			break;
+		case "mvaginaclitparasite":
+			clearAction();
+			wikifier("arousal", 300 * handsOn, "masturbationVagina");
+			wikifier("addVaginalWetness", 2 * handsOn);
+			altText.fingers = handsOn === 2 ? "fingers" : "finger";
+			if (V.arousal >= (V.arousalmax / 5) * 4) {
+				fragment.append(
+					span(`You squeeze the ${V.parasite.clit.name} on your clit, feeling your arousal build as it more aggressively pleasures you.`)
+				);
+			} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+				fragment.append(span(`You tease the ${V.parasite.clit.name} on your clit with your ${altText.fingers}.`));
+			} else {
+				fragment.append(span(`You rub the ${V.parasite.clit.name} with your ${altText.fingers}, developing a lewd feeling as it responds in kind.`));
 			}
 			break;
 		case "mvaginastop":
@@ -2073,7 +2127,7 @@ function masturbationeffectsArms(
 			}
 			break;
 		case "mvaginaentrancedildo":
-			clearAction("mvaginaclitdildo");
+			clearAction(V.player.penisExist || V.parasite.clit.name ? "mvaginarubdildo" : "mvaginaclitdildo");
 			V[arm + "arm"] = "mvaginaentrancedildo";
 			wikifier("arousal", 200 * handsOn, "masturbationVagina");
 			altText.selectedToy = selectedToy(arm);
@@ -2152,7 +2206,7 @@ function masturbationeffectsArms(
 			break;
 		case "mvaginaclitdildo":
 			clearAction();
-			wikifier("arousal", 200 * handsOn, "masturbationVagina");
+			wikifier("arousal", 250 * handsOn, "masturbationVagina");
 			altText.selectedToy = selectedToy(arm);
 			if (altText.selectedToy.type.includes("vibrator")) wikifier("arousal", 50, "masturbationVagina");
 			if (doubleAction) {
@@ -2182,6 +2236,20 @@ function masturbationeffectsArms(
 				} else {
 					fragment.append(span(`You rub your clit with your ${toyDisplay(altText.selectedToy)}, developing a lewd feeling.`));
 				}
+			}
+			break;
+		case "mvaginarubdildo":
+			clearAction();
+			wikifier("arousal", 200 * handsOn, "masturbationVagina");
+			altText.selectedToy = selectedToy(arm);
+			if (altText.selectedToy.type.includes("vibrator")) wikifier("arousal", 50, "masturbationVagina");
+			if (doubleAction) {
+				altText.selectedOtherToy = selectedToy(otherArm);
+				if (altText.selectedOtherToy.type.includes("vibrator")) wikifier("arousal", 50, "masturbationVagina");
+				altText.toyDisplay = toyDisplay(altText.selectedToy, altText.selectedOtherToy);
+				sWikifier(`You run your ${altText.toyDisplay} over your exposed <<pussy>> and shiver in anticipation, developing a lewd feeling.`);
+			} else {
+				sWikifier(`You rub your ${toyDisplay(altText.selectedToy)} over your exposed <<pussy>>, developing a lewd feeling.`);
 			}
 			break;
 		case "mvaginastopdildo":
@@ -2900,13 +2968,28 @@ function masturbationeffectsMouth({
 			break;
 		case "mvaginaclit":
 			clearAction();
-			wikifier("arousal", 200, "masturbationGenital");
+			wikifier("arousal", 250, "masturbationGenital");
 			if (V.arousal >= (V.arousalmax / 5) * 4) {
 				fragment.append(span("You shiver in anticipation as you suck and gently rub your clit against your teeth."));
 			} else if (V.arousal >= (V.arousalmax / 5) * 3) {
 				fragment.append(span("You lick and suck your clit."));
 			} else {
 				fragment.append(span("You lick your clit."));
+			}
+			break;
+		case "mvaginaclitparasite":
+			clearAction();
+			wikifier("arousal", 300, "masturbationGenital");
+			if (V.arousal >= (V.arousalmax / 5) * 4) {
+				fragment.append(
+					span(
+						`You shiver in anticipation as you suck and gently rub the ${V.parasite.clit.name} on your clit against your teeth, enjoying how it sucks on you in response.`
+					)
+				);
+			} else if (V.arousal >= (V.arousalmax / 5) * 3) {
+				fragment.append(span(`You lick and suck on the ${V.parasite.clit.name} on your clit, enjoying how it pleasures you in kind.`));
+			} else {
+				fragment.append(span(`You lick the ${V.parasite.clit.name} on your clit.`));
 			}
 			break;
 		case "mvaginastop":
