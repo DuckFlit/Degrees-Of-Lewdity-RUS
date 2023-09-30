@@ -1732,9 +1732,9 @@ function earSlimeDaily() {
 	if (V.earSlime.eventTimer < 1) V.earSlime.event = "";
 
 	if (V.earSlime.corruption >= 60 && V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime" && V.earSlimeTest) {
-		V.earSlime.growth++;
+		if (V.earSlime.growth < 100) V.earSlime.growth++;
 		if (V.earSlime.corruption >= 100) V.earSlime.growth++;
-		V.earSlime.growth = Math.clamp(V.earSlime.growth, 0, V.earSlime.focus === "none" ? 50 : 100);
+		V.earSlime.growth = Math.clamp(V.earSlime.growth, 0, V.earSlime.focus === "none" ? 50 : 200);
 	} else if (V.earSlime.corruption < 30 && V.earSlime.growth <= 50 && V.earSlimeTest) {
 		// Reduce the growth variable only if below or equal to 50
 		V.earSlime.growth--;
