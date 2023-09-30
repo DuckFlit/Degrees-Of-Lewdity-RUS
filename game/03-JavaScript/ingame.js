@@ -335,7 +335,7 @@ DefineMacroS("combatDefaults", combatDefaults);
  * @returns {boolean}
  */
 function combatSkillCheck(skillname, targetid = 0, basedifficulty = 1000, multiplier = 100) {
-	const skill = V[skillname + "skill"];
+	const skill = currentSkillValue(skillname + "skill");
 	const rng = V.rng * 10;
 	const arousalfactor = V.enemyarousalmax / (V.enemyarousal + 1);
 	const trust = V.enemytrust * 10;
@@ -1159,7 +1159,7 @@ function clothesIndex(slot, itemToIndex) {
 }
 window.clothesIndex = clothesIndex;
 
-function currentSkillValue(skill) {
+function currentSkillValue(skill, disableModifiers = 0) {
 	let result = V[skill];
 	if (!result && result !== 0) {
 		/* console.log(`currentSkillValue - skill '${skill}' unknown`); */
@@ -1169,6 +1169,8 @@ function currentSkillValue(skill) {
 		});
 		return 0;
 	}
+	// Prevents infinate loops, any call to `currentSkillValue` in this function should be written like 'currentSkillValue("skillName", disableModifiers + 1)'
+	if (disableModifiers >= 2) return result;
 	if (
 		[
 			"skulduggery", "physique", "danceskill", "swimmingskill", "athletics", "willpower", "tending", "science", "maths", "english", "history",
@@ -1214,7 +1216,7 @@ function currentSkillValue(skill) {
 					result = Math.floor(result * (1 - V.worn.feet.reveal / 5000));
 				}
 				if (V.worn.feet.type.includes("rugged")) {
-					result = Math.floor(result * (1 + V.feetskill / 10000));
+					result = Math.floor(result * (1 + currentSkillValue("feetskill", disableModifiers + 1) / 10000));
 				}
 			}
 			break;
@@ -1241,11 +1243,11 @@ function currentSkillValue(skill) {
 				result = Math.floor(result * 1.05);
 			}
 			if (V.worn.feet.type.includes("swim")) {
-				result = Math.floor(result * (1 + V.feetskill / 10000));
+				result = Math.floor(result * (1 + currentSkillValue("feetskill", disableModifiers + 1)) / 10000);
 			} else if (V.worn.feet.type.includes("heels")) {
-				result = Math.floor(result * (0.8 + V.feetskill / 10000));
+				result = Math.floor(result * (0.8 + currentSkillValue("feetskill", disableModifiers + 1)) / 10000);
 			} else if (!V.worn.feet.type.includes("naked")) {
-				result = Math.floor(result * (0.9 + V.feetskill / 10000));
+				result = Math.floor(result * (0.9 + currentSkillValue("feetskill", disableModifiers + 1)) / 10000);
 			}
 			if (V.worn.feet.type.includes("shackle")) {
 				result = Math.floor(result * 0.5);
@@ -1257,14 +1259,14 @@ function currentSkillValue(skill) {
 					result = Math.floor(result * (1 - V.worn.feet.reveal / 5000));
 				}
 				if (V.worn.feet.type.includes("rugged")) {
-					result = Math.floor(result * (1 + V.feetskill / 10000));
+					result = Math.floor(result * (1 + currentSkillValue("feetskill", disableModifiers + 1)) / 10000);
 				}
 			}
 			if (V.worn.feet.type.includes("shackle")) result /= 10;
 			break;
 		case "willpower":
-			if (V.earSlime.growth >= 75) {
-				result = Math.floor(result * (V.earSlime.growth > 75 ? 0.8 : 0.85));
+			if (V.earSlime.growth > 50) {
+				result = Math.floor(result * (0.9 - Math.clamp((V.earSlime.growth - 50) / 1000, 0, 0.1)));
 			} else if (V.parasite.left_ear.name === V.parasite.right_ear.name && V.parasite.left_ear.name === "slime") {
 				result = Math.floor(result * 0.9);
 			}
@@ -1272,6 +1274,43 @@ function currentSkillValue(skill) {
 		case "tending":
 			if (V.backgroundTraits.includes("plantlover")) {
 				result = Math.floor(result * (1 + V.trauma / (V.traumamax * 2)));
+			}
+			break;
+		case "vaginalskill":
+			if (V.earSlime.growth > 100) {
+				if (V.earSlime.focus === "pregnancy") {
+					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+				} else if (V.earSlime.focus === "impregnation") {
+					result = Math.floor(result * (1 - ((V.earSlime.growth - 100) / 400)));
+				}
+			}
+			if (playerHeatMinArousal()) {
+				result = Math.floor(result * (1 + (playerHeatMinArousal() / 10000)));
+			}
+			break;
+		case "penileskill":
+			if (V.earSlime.growth > 100) {
+				if (V.earSlime.focus === "impregnation") {
+					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+				} else if (V.earSlime.focus === "pregnancy") {
+					result = Math.floor(result * (1 - ((V.earSlime.growth - 100) / 400)));
+				}
+			}
+			if (playerRutMinArousal()) {
+				result = Math.floor(result * (1 + (playerRutMinArousal() / 10000)));
+			}
+			break;
+		case "analskill":
+			if (V.earSlime.growth > 100 && !V.player.vaginaExist && V.earSlime.focus === "pregnancy") {
+				result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+			}
+			if (playerHeatMinArousal() && canBeMPregnant()) {
+				result = Math.floor(result * (1 + (playerHeatMinArousal() / 10000)));
+			}
+			break;
+		case "seductionskill":
+			if (V.earSlime.growth > 50 && !V.earSlime.defyCooldown) {
+				result = Math.floor(result * (1 + ((V.earSlime.growth - 50) / 600)));
 			}
 			break;
 	}

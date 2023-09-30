@@ -288,7 +288,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 			result.text = `You rub your <<pussy>> with your ${arm} hand.`;
 			if (genitalsExposed()) {
 				if (V.vaginause === 0 && ([0, "mvaginaentrance"].includes(V[otherArm + "arm"]) || V[otherArm + "arm"].startsWith("mvagina"))) {
-					if (V.vaginaFingerLimit >= 3 && V.vaginalskill >= 300) {
+					if (V.vaginaFingerLimit >= 3 && currentSkillValue("vaginalskill") >= 300) {
 						result.options.push({
 							action: "mvaginafingerstarttwo",
 							text: "Push two fingers in",
@@ -326,7 +326,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 			result.text = `You have <<number $fingersInVagina>> ${V.fingersInVagina === 1 ? "finger" : "fingers"} in your <<pussy>>.${
 				V.fingersInVagina === V.vaginaFingerLimit ? " You cannot fit any more." : ""
 			}`;
-			if (V.fingersInVagina < V.vaginaFingerLimit - 1 && V.fingersInVagina < 4 && V.vaginalskill >= 300) {
+			if (V.fingersInVagina < V.vaginaFingerLimit - 1 && V.fingersInVagina < 4 && currentSkillValue("vaginalskill") >= 300) {
 				result.options.push({
 					action: "mvaginafingeraddtwo",
 					text: "Push another two fingers in",
@@ -374,7 +374,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 				text: "Take one finger out",
 				colour: "sub",
 			});
-			if (V.vaginalskill >= 700) {
+			if (currentSkillValue("vaginalskill") >= 700) {
 				result.options.push({
 					action: "mvaginafistremove",
 					text: "Pull your hand out",
@@ -571,7 +571,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 							colour: "sub",
 						});
 					}
-					if (genitalsExposed() && V.awareness >= 300 && V.vaginalskill >= 300 && !selectedToy(arm).name.includes("small")) {
+					if (genitalsExposed() && V.awareness >= 300 && currentSkillValue("vaginalskill") >= 300 && !selectedToy(arm).name.includes("small")) {
 						result.options.push({
 							action: "mvaginaentrancedildofloor",
 							text: "Place on the floor by your vagina",
@@ -588,7 +588,7 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 							colour: "sub",
 						});
 					}
-					if (genitalsExposed() && V.awareness >= 300 && V.analskill >= 300 && !selectedToy(arm).name.includes("small")) {
+					if (genitalsExposed() && V.awareness >= 300 && currentSkillValue("analskill") >= 300 && !selectedToy(arm).name.includes("small")) {
 						result.options.push({
 							action: "manusentrancedildofloor",
 							text: "Place on the floor by your anus",

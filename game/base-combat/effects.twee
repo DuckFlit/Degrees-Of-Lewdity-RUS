@@ -335,12 +335,12 @@
 
 		<<if $leftaction is "handedge">>
 			<<personselect $lefttarget>><<actionshandedge $lefttarget $leftarm>><<set $leftaction to 0>><<set $leftactiondefault to "handedge">>
-			<<submission 5>><<sexControl 5 $handskill $lefttarget>><<handskilluse>>
+			<<submission 5>><<sexControl 5 currentSkillValue("handskill") $lefttarget>><<handskilluse>>
 		<</if>>
 
 		<<if $rightaction is "handedge">>
 			<<personselect $righttarget>><<actionshandedge $righttarget $rightarm>><<set $rightaction to 0>><<set $rightactiondefault to "handedge">>
-			<<submission 5>><<sexControl 5 $handskill $righttarget>><<handskilluse>>
+			<<submission 5>><<sexControl 5 currentSkillValue("handskill") $righttarget>><<handskilluse>>
 		<</if>>
 
 		<<if $leftaction is "leftstoppenis" and $NPCList[$lefttarget].penis is "leftarm">>
@@ -1289,7 +1289,7 @@
 					<</switch>>
 				<<else>>
 					You try to <<npcUndressText $_npc $_clothesTarget>>, but <<he>> holds on to <<his>> clothes.
-					<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor(($handskill / 100) * 1.5)>>
+					<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor((currentSkillValue("handskill") / 100) * 1.5)>>
 				<</if>>
 			<</if>>
 			<<unset $undressLeftTarget>><<unset $undressRightTarget>>
@@ -1326,7 +1326,7 @@
 					<</switch>>
 				<<else>>
 					You try to <<npcUndressText $_npc $_clothesTarget>>, but <<he>> holds on to <<his>> clothes.
-					<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor($handskill / 100)>>
+					<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor(currentSkillValue("handskill") / 100)>>
 				<</if>>
 			<</if>>
 			<<unset $undressRightTarget>>
@@ -1363,7 +1363,7 @@
 					<</switch>>
 				<<else>>
 					You try to <<npcUndressText $_npc $_clothesTarget>>, but <<he>> holds on to <<his>> clothes.
-					<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor($handskill / 100)>>
+					<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor(currentSkillValue("handskill") / 100)>>
 				<</if>>
 			<</if>>
 			<<unset $undressLeftTarget>>
@@ -2310,7 +2310,7 @@
 		/*Stalked actions */
 		<<if !$stalk_end>>
 			<<if $leftaction is "clench" and $rightaction is "clench">>
-				<<if $earSlime.growth gt 50 and $earSlime.growth - random(20, 150) gte (currentSkillValue('willpower')/ 10) and $exhibitionism gte 15>>
+				<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, Math.clamp(300 - ($earSlime.defyCooldown * 20), 0, 300)) gte (currentSkillValue('willpower')/ 10) and $exhibitionism gte 15>>
 					<<if ($player.penisExist or playerHasStrapon()) and (!$player.vaginaExist or $worn.genitals.name is "chastity parasite" or random(0,100) gte 50)>>
 						<<set _slimeTarget to playerHasStrapon() ? "strap-on" : (playerChastity("penis") ? $worn.genitals.name : "penis")>>
 						<<set _slimeWidget to "penis">>
@@ -2332,7 +2332,7 @@
 					You clench your fists.
 				<</if>>
 			<<elseif $leftaction is "clench">>
-				<<if $earSlime.growth gt 50 and $earSlime.growth - random(20, 150) gte (currentSkillValue('willpower')/ 10) and $exhibitionism gte 15>>
+				<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, Math.clamp(300 - ($earSlime.defyCooldown * 20), 0, 300)) gte (currentSkillValue('willpower')/ 10) and $exhibitionism gte 15>>
 					<<if ($player.penisExist or playerHasStrapon()) and (!$player.vaginaExist or $worn.genitals.name is "chastity parasite" or random(0,100) gte 50)>>
 						<<set _slimeTarget to playerHasStrapon() ? "strap-on" : (playerChastity("penis") ? $worn.genitals.name : "penis")>>
 						<<set _slimeWidget to "penis">>
@@ -2354,7 +2354,7 @@
 					You clench your left fist.
 				<</if>>
 			<<elseif $rightaction is "clench">>
-				<<if $earSlime.growth gt 50 and $earSlime.growth - random(20, 150) gte (currentSkillValue('willpower')/ 10) and $exhibitionism gte 15>>
+				<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, Math.clamp(300 - ($earSlime.defyCooldown * 20), 0, 300)) gte (currentSkillValue('willpower')/ 10) and $exhibitionism gte 15>>
 					<<if ($player.penisExist or playerHasStrapon()) and (!$player.vaginaExist or $worn.genitals.name is "chastity parasite" or random(0,100) gte 50)>>
 						<<set _slimeTarget to playerHasStrapon() ? "strap-on" : (playerChastity("penis") ? $worn.genitals.name : "penis")>>
 						<<set _slimeWidget to "penis">>
@@ -2602,7 +2602,7 @@
 		/*Stalked actions */
 		<<if !$stalk_end>>
 			<<if $feetaction is "walk">>
-				<<if $earSlime.growth gt 50 and $earSlime.growth - random(1, 50) gte (currentSkillValue('willpower')/ 10) and $exhibitionism gte 15>>
+				<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, Math.clamp(75 - ($earSlime.defyCooldown * 5), 0, 75)) gte (currentSkillValue('willpower')/ 10) and $exhibitionism gte 15>>
 					Your walking, <span class="red">but you suddenly find yourself moving differently.</span> You feel the slime steal your control away.
 					<<set $feetaction to "strut">>
 				<<else>>
@@ -2647,9 +2647,10 @@
 				<<set $feetaction to 0>><<set $feetactiondefault to "run">>
 				<<if _stalkNoRunning is "chastity parasite">>
 					<<set $feetactiondefault to "walk">><<set $feetuse to "walk">>
+					<<if $earSlime.growth gte 150>><<set $earSlime.defyCooldown++>><</if>>
 					You attempt to run, <span class="lewd">but you find the pleasure your feeling too much to run.</span>
 					<<stalk_walk_events>>
-				<<elseif $earSlime.growth - random(1, 30) gte (currentSkillValue('willpower')/ 10)>>
+				<<elseif $earSlime.growth - random(0, Math.clamp(110 - ($earSlime.defyCooldown * 10), 0, 110)) gte (currentSkillValue('willpower')/ 10)>>
 					<<if $earSlime.growth gt 50 and $exhibitionism gte 15>>
 						<<set $feetactiondefault to "strut">><<set $feetuse to "strut">>
 						You attempt to run, <span class="red">but you suddenly find yourself strutting.</span> You feel the slime steal your control away.
@@ -2673,7 +2674,7 @@
 					<</if>>
 					<<run_text>>
 					<<if $worn.feet.type.includes("heels")>>
-						<<if $feetskill gte random(1, 1000)>>
+						<<if currentSkillValue("feetskill") gte random(1, 1000)>>
 							<<set _stalk_feet to true>>
 						<<else>>
 							<<set _stalk_feet to false>>
@@ -2701,7 +2702,7 @@
 							The footsteps behind you speed up. <span class="red">You are being chased.</span>
 							<<stalk_run>>
 							<<if $worn.feet.type.includes("heels")>>
-								<<if $feetskill gte random(1, 1000)>>
+								<<if currentSkillValue("feetskill") gte random(1, 1000)>>
 									<<set _stalk_feet to true>>
 								<</if>>
 							<<else>>
@@ -2726,7 +2727,7 @@
 						You keep running.
 						<<run_text>>
 						<<if $worn.feet.type.includes("heels")>>
-							<<if $feetskill gte random(1, 1000)>>
+							<<if currentSkillValue("feetskill") gte random(1, 1000)>>
 								<<set _stalk_feet to true>>
 							<</if>>
 						<<else>>
@@ -2796,7 +2797,8 @@
 				<<if currentSkillValue('skulduggery') gte random(1, _difficulty)>>
 					<<set _hide_success to true>>
 				<</if>>
-				<<if $earSlime.growth - random(1, 30) gte (currentSkillValue('willpower')/ 10)>>
+				<<if $earSlime.growth - random(0, Math.clamp(75 - ($earSlime.defyCooldown * 5), 0, 75)) gte (currentSkillValue('willpower')/ 10)>>
+					<<if $earSlime.growth gte 150>><<set $earSlime.defyCooldown++>><</if>>
 					<<if $earSlime.growth gt 50 and $exhibitionism gte 15>>
 						<<set $feetactiondefault to "strut">><<set $feetuse to "strut">>
 						You attempt to hide, <span class="red">but you suddenly find yourself strutting.</span> You feel the slime steal your control away.
@@ -3255,9 +3257,10 @@
 		<</if>>
 
 		<<if $mouthaction is "breastbite" and $NPCList[$mouthtarget].chest is "mouth">>
-			<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, 25) gte (currentSkillValue('willpower')/ 10)>>
+			<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, Math.clamp(50 - ($earSlime.defyCooldown * 5), 0, 50)) gte (currentSkillValue('willpower')/ 10)>>
 				You try to bite down on the nipple, <span class="red">but find your unable to.</span> You feel the slime steal your control away.
 				<<set $mouthaction to "breastsuck">>
+				<<if $earSlime.growth gte 100>><<set $earSlime.defyCooldown++>><</if>>
 			<<else>>
 				<<set $mouthaction to 0>><<set $mouthactiondefault to "breastbite">><<personselect $mouthtarget>>
 				You bite down on the nipple, <<he>> <<if $enemytype is "man">>yelps<<elseif $enemytype is "beast">>growls<<else>>shrieks<</if>> and recoils in agony.
@@ -3448,7 +3451,7 @@
 
 		<<if $mouthaction is "oraledge">>
 			<<personselect $mouthtarget>><<actionsoraledge $mouthtarget>><<set $mouthaction to 0>><<set $mouthactiondefault to "oraledge">>
-			<<submission 5>><<sexControl 5 $oralskill $mouthtarget>><<oralskilluse>>
+			<<submission 5>><<sexControl 5 currentSkillValue("oralskill") $mouthtarget>><<oralskilluse>>
 		<</if>>
 
 		<<if $mouthaction is "pullaway">>
@@ -3519,9 +3522,10 @@
 		<</if>>
 
 		<<if $mouthaction is "bite" and $NPCList[$mouthtarget].penis is "mouth">>
-			<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, 25) gte (currentSkillValue('willpower')/ 10)>>
+			<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, Math.clamp(50 - ($earSlime.defyCooldown * 5), 0, 50)) gte (currentSkillValue('willpower')/ 10)>>
 				You try to bite down on the <<npcPenisSimple $mouthtarget>>, <span class="red">but find your unable to.</span> You feel the slime steal your control away.
 				<<set $mouthaction to 0>><<set $mouthactiondefault to "suck">><<actionspenissuck $mouthtarget>><<submission 10>><<oralskilluse>>
+				<<if $earSlime.growth gte 100>><<set $earSlime.defyCooldown++>><</if>>
 			<<else>>
 				<<set $mouthaction to 0>><<set $mouthactiondefault to "bite">><<personselect $mouthtarget>>
 				You bite down on <<his>> <<npcPenisSimple $mouthtarget>>,
@@ -3540,9 +3544,10 @@
 		<</if>>
 
 		<<if $mouthaction is "bitepussy" and ($NPCList[$mouthtarget].vagina is "mouth" or $NPCList[$mouthtarget].vagina is "facesit")>>
-			<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, 25) gte (currentSkillValue('willpower')/ 10)>>
+			<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, Math.clamp(50 - ($earSlime.defyCooldown * 5), 0, 50)) gte (currentSkillValue('willpower')/ 10)>>
 				You try to bite down on <<hisselect $mouthtarget>> labia, <span class="red">but find your unable to.</span> You feel the slime steal your control away.
 				<<set $mouthaction to "vaginalick">>
+				<<if $earSlime.growth gte 100>><<set $earSlime.defyCooldown++>><</if>>
 			<<else>>
 				<<set $mouthaction to 0>><<set $mouthactiondefault to "bitepussy">><<personselect $mouthtarget>>
 				You bite down on <<hisselect $mouthtarget>> labia. <<He>> <<if $enemytype is "man">>yelps<<elseif $enemytype is "beast">>growls<<else>>shrieks<</if>> and recoils in agony.
@@ -3626,9 +3631,10 @@
 		<<rng>>
 
 		<<if $mouthaction is "handbite">>
-			<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, 25) gte (currentSkillValue('willpower')/ 10)>>
+			<<if $earSlime.growth gt 50 and $earSlime.growth - random(0, Math.clamp(50 - ($earSlime.defyCooldown * 5), 0, 50)) gte (currentSkillValue('willpower')/ 10)>>
 				You try to bite down on <<hisselect $mouthtarget>> labia, <span class="red">but find your unable to.</span> You feel the slime steal your control away.
 				<<set $mouthactiondefault to "rest">>
+				<<if $earSlime.growth gte 100>><<set $earSlime.defyCooldown++>><</if>>
 			<<else>>
 				<<set $mouthaction to 0>><<set $mouthactiondefault to "handbite">><<personselect $mouthtarget>>
 				<<actionshandbite $mouthtarget>>
@@ -4683,7 +4689,7 @@
 				<<brat 5>><<set $mouthactiondefault to "rest">>
 				You ask <<personselect $mouthtarget>><<combatperson>> to remove <<his>> strap-on.
 				<<if !$gloryhole and $gamemode isnot "soft">><<seductionskillusecombat>><</if>>
-				<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+				<<if (1000 - ($rng * 10) - ($enemytrust * 10) - currentSkillValue("seductionskill") + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
 					<<He>> nods and removes <<his>> $NPCList[$mouthtarget].penisdesc.
 
 					/* Remove their strap-on. If they have a penis, give them back their penis. */
@@ -4985,7 +4991,7 @@
 		<</if>>
 
 		<<if $vaginaaction is "penisDoubleEdging">>
-			<<set $vaginaaction to 0>><<set $vaginaactiondefault to "penisDoubleEdging">><<actionspenisdoubleedging>><<submission 5>><<sexControl 5 $vaginalskill>><<vaginalskilluse>>
+			<<set $vaginaaction to 0>><<set $vaginaactiondefault to "penisDoubleEdging">><<actionspenisdoubleedging>><<submission 5>><<sexControl 5 currentSkillValue("vaginalskill")>><<vaginalskilluse>>
 		<</if>>
 
 		<<if $vaginaaction is "doubletake">>
@@ -5001,7 +5007,7 @@
 		<</if>>
 
 		<<if $vaginaaction is "penisEdging">>
-			<<set $vaginaaction to 0>><<set $vaginaactiondefault to "penisEdging">><<actionspenisedging $vaginatarget>><<submission 5>><<sexControl 5 $vaginalskill $vaginatarget>><<vaginalskilluse>>
+			<<set $vaginaaction to 0>><<set $vaginaactiondefault to "penisEdging">><<actionspenisedging $vaginatarget>><<submission 5>><<sexControl 5 currentSkillValue("vaginalskill") $vaginatarget>><<vaginalskilluse>>
 		<</if>>
 
 		<<if $vaginaaction is "take">>
@@ -5022,7 +5028,7 @@
 
 		<<if $vaginaaction is "tribedge">>
 			<<personselect $vaginatarget>><<actionstribedge $vaginatarget>><<set $vaginaaction to 0>><<set $vaginaactiondefault to "tribedge">>
-			<<submission 5>><<sexControl 5 $vaginalskill $vaginatarget>><<vaginalskilluse>>
+			<<submission 5>><<sexControl 5 currentSkillValue("vaginalskill") $vaginatarget>><<vaginalskilluse>>
 		<</if>>
 
 		<<if $vaginaaction is "tribrest">>
@@ -5369,7 +5375,7 @@
 		<</if>>
 
 		<<if $anusaction is "penisEdging">>
-			<<set $anusaction to 0>><<set $anusactiondefault to "penisEdging">><<actionsanusedging $anustarget>><<submission 5>><<sexControl 5 $analskill $anustarget>><<analskilluse>>
+			<<set $anusaction to 0>><<set $anusactiondefault to "penisEdging">><<actionsanusedging $anustarget>><<submission 5>><<sexControl 5 currentSkillValue("analskill") $anustarget>><<analskilluse>>
 		<</if>>
 
 		<<if $anusaction is "take">>
@@ -5450,7 +5456,7 @@
 		<</if>>
 
 		<<if $anusaction is "penisDoubleEdging">>
-			<<set $anusaction to 0>><<set $anusactiondefault to "penisDoubleEdging">><<actionsanusdoubleedging $anustarget $anusdoubletarget>><<submission 5>><<sexControl 5 $analskill $anustarget $anusdoubletarget>><<analskilluse>>
+			<<set $anusaction to 0>><<set $anusactiondefault to "penisDoubleEdging">><<actionsanusdoubleedging $anustarget $anusdoubletarget>><<submission 5>><<sexControl 5 currentSkillValue("analskill") $anustarget $anusdoubletarget>><<analskilluse>>
 		<</if>>
 
 		<<if $anusaction is "doubletake">>
@@ -5762,7 +5768,7 @@
 		<</if>>
 
 		<<if $penisaction is "vaginaEdging">>
-			<<set $penisaction to 0>><<set $penisactiondefault to "vaginaEdging">><<actionspussyedging $penistarget>><<submission 5>><<sexControl 5 $penileskill $penistarget>><<penileskilluse>>
+			<<set $penisaction to 0>><<set $penisactiondefault to "vaginaEdging">><<actionspussyedging $penistarget>><<submission 5>><<sexControl 5 currentSkillValue("penileskill") $penistarget>><<penileskilluse>>
 		<</if>>
 
 		<<if $penisaction is "take">>
@@ -5946,7 +5952,7 @@
 		<</if>>
 
 		<<if $penisaction is "otheranusEdging">>
-			<<set $penisaction to 0>><<set $penisactiondefault to "otheranusEdging">><<actionsotheranusedging $penistarget>><<submission 5>><<sexControl 5 $penileskill $penistarget>><<penileskilluse>>
+			<<set $penisaction to 0>><<set $penisactiondefault to "otheranusEdging">><<actionsotheranusedging $penistarget>><<submission 5>><<sexControl 5 currentSkillValue("penileskill") $penistarget>><<penileskilluse>>
 		<</if>>
 
 		<<if $penisaction is "otheranustake">>
