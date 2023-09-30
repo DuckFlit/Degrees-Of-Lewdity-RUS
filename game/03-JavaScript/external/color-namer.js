@@ -25,6 +25,7 @@ var colors = {
   "mediumblue": ["#0000CD", "hue-rotate(207deg) brightness(80%) saturate(179%) contrast(300%)", "medium blue"],
   "mediumspringgreen": ["#00FA9A", "hue-rotate(117deg) brightness(170%) saturate(100%) contrast(140%)", "medium spring-green"],
   "navy": ["#000080", "hue-rotate(207deg) brightness(80%) saturate(79%) contrast(300%)", "navy"],
+  "navyblue": ["#16168d", "hue-rotate(206deg) brightness(100%) saturate(79%) contrast(300%)", "navy blue"],
   "springgreen": ["#00FF7F", "hue-rotate(117deg) brightness(175%) saturate(120%) contrast(110%)", "spring-green"],
   "teal": ["#008080", "hue-rotate(128deg) brightness(90%) saturate(249%) contrast(190%)", "teal"],
   "midnightblue": ["#191970", "hue-rotate(206deg) brightness(80%) saturate(79%) contrast(300%)", "midnight blue"],
