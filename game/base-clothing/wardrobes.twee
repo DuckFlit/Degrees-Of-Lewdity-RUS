@@ -143,6 +143,10 @@
 				<span class="red">You were unable to equip your _item.name as the slime in your ear did not permit it.</span>
 				<br>
 				<<continue>>
+			<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
+				<span class="red">You were unable to equip your _item.name as the slime in your ear is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
+				<br>
+				<<continue>>
 			<</if>>
 		<</if>>
 		/*Finds any outfit pieces and records the Ids*/
@@ -777,6 +781,7 @@
 		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'color');">Colour</a></div> |
 		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'lewd');">Lewd</a></div> |
 		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'integrity');">Integrity</a></div> |
+		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'warmth');">Warmth</a></div> |
 		<<if _outfitTypes.includes(_wardrobe_list)>>
 			<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'outfit');">Outfit Status</a></div> |
 		<</if>>
@@ -786,6 +791,7 @@
 		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'color', true);">Colour</a></div> |
 		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'lewd', true);">Lewd</a></div> |
 		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'integrity', true);">Integrity</a></div> |
+		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'warmth', true);">Warmth</a></div> |
 		<<if _outfitTypes.includes(_wardrobe_list)>>
 			<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'outfit', true);">Outfit Status</a></div> |
 		<</if>>
@@ -1167,6 +1173,24 @@
 			<<for _i to 0; _i lt _sortedItemIntegrity.length; _i++>>
 				<<for _j to 0; _j lt _wardrobeItems.length; _j++>>
 					<<if (_wardrobeItems[_j].integrity / clothingData(_slot,_wardrobeItems[_j],'integrity_max')) is _sortedItemIntegrity[_i]>>
+						<<run _newWardrobeItems.push(clone(_wardrobeItems[_j]))>>
+					<</if>>
+				<</for>>
+			<</for>>
+		<<case "warmth">>
+			<<set _itemWarmth to []>>
+			<<for _i to 0; _i lt _wardrobeItems.length; _i++>>
+				<<run _itemWarmth.pushUnique(_wardrobeItems[_i].warmth)>>
+			<</for>>
+			<<if _descending>>
+				<<set _sortedItemWarmth to _itemWarmth.sort()>>
+			<<else>>
+				<<set _sortedItemWarmth to _itemWarmth.sort(function(a, b){return b-a})>>
+			<</if>>
+
+			<<for _i to 0; _i lt _sortedItemWarmth.length; _i++>>
+				<<for _j to 0; _j lt _wardrobeItems.length; _j++>>
+					<<if _wardrobeItems[_j].warmth is _sortedItemWarmth[_i]>>
 						<<run _newWardrobeItems.push(clone(_wardrobeItems[_j]))>>
 					<</if>>
 				<</for>>

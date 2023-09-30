@@ -5174,7 +5174,9 @@
 				<<elseif $schoolrep.crossdress gte 1 and _args[1] gte 1>>
 					<<set $school_crossdress_message to $schoolrep.crossdress>>
 				<</if>>
-				<<set $schoolrep.crossdress = Math.clamp($schoolrep.crossdress, 0, 5)>>
+				<<set $schoolrep.crossdress to Math.clamp($schoolrep.crossdress, 0, 5)>>
+				<<if _args[1] gt 0>><<set $weekly.crossdressingFameReduction to true>><</if>>
+				<<set $schoolrep.herm to 0>> /* Reset for females that lose a "penis" */
 			<<elseif _args[0] is "herm" and ($daily.school.herm is undefined or _args[1] lt 0)>>
 				<<set $daily.school.herm to 1>>
 				<<set $schoolrep[_args[0]] += _args[1]>>
@@ -5192,7 +5194,8 @@
 				<<elseif $schoolrep.herm gte 1 and _args[1] gte 1>>
 					<<set $school_herm_message to $schoolrep.herm>>
 				<</if>>
-				<<set $schoolrep.herm = Math.clamp($schoolrep.herm, 0, 5)>>
+				<<set $schoolrep.herm to Math.clamp($schoolrep.herm, 0, 5)>>
+				<<set $schoolrep.crossdress to 0>> /* Reset for females that gain a "penis" */
 			<</if>>
 		<</if>>
 	<</if>>
@@ -5200,10 +5203,13 @@
 
 <<widget "schoolrep_naked">>
 	<<if !playerChastity("hidden")>>
-		<<if $player.gender is "h">>
+		<<if $player.penisExist and $player.vaginaExist>>
 			<<schoolrep herm 1>>
 		<<elseif $player.gender isnot $player.gender_appearance>>
 			<<schoolrep crossdress 1>>
+		<<elseif $player.gender is $player.gender_appearance and $schoolrep.crossdress gt 0 and !$daily.crossdressingFameReduction and !$weekly.crossdressingFameReduction and random(0,100) gte 100 - ($schoolrep.crossdress * 3)>>
+			<<schoolrep crossdress -1>>
+			<<set $daily.crossdressingFameReduction to true>>
 		<</if>>
 	<</if>>
 <</widget>>

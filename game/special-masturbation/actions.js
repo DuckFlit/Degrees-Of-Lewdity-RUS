@@ -167,12 +167,16 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 		case 0:
 			result.text = `Your ${arm} hand is free.`;
 			if (V.player.penisExist) {
-				if (V.awareness >= 400 && V.masturbationorgasmsemen >= 1 && V[arm + "FingersSemen"] !== 1) {
+				if (
+					(V.awareness >= 400 || V.earSlime.event.includes("get your own sperm into your")) &&
+					V.masturbationorgasmsemen >= 1 &&
+					V[arm + "FingersSemen"] !== 1
+				) {
 					result.options.push({
 						action: "msemencover",
 						text: "Cover your fingers in semen",
 						colour: "sub",
-						otherElements: "<<combataware 5>>",
+						otherElements: V.earSlime.event.includes("get your own sperm into your") ? undefined : "<<combataware 5>>",
 					});
 				}
 				if (!playerChastity("penis")) {

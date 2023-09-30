@@ -506,6 +506,7 @@ function initGenitals() {
 			altDamage: "parasite",
 			iconFile: 0,
 			accIcon: 0,
+			penisSize: true,
 		},
 	];
 
