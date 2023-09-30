@@ -742,7 +742,7 @@ function recordSperm({
 	if (!target || !spermOwner || !setup.pregnancy.typesEnabled.includes(spermType)) return null;
 	if (V.activeNightmare) return false; // Should not work if the player is in a nightmare
 
-	// Deal with earslime tasks
+	// Deal with earslime tasks, the player is not told about it being completed on purpose
 	if (V.earSlime.event.includes("get sperm into your") && !V.earSlime.event.includes("completed") && target === "pc") {
 		if (V.earSlime.event.includes("vagina") && genital === "vagina") V.earSlime.event += " completed";
 		if (V.earSlime.event.includes("anus") && genital === "anus") V.earSlime.event += " completed";

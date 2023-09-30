@@ -1788,6 +1788,7 @@ function earSlimeDaily() {
 				V.effectsmessage = 1;
 				V.penisslimecagemessage = 1;
 				wikifier("genitalswear", 8);
+				V.worn.genitals.origin = "ear slime";
 			} else if (V.worn.genitals.name === "chastity parasite" && V.worn.genitals.integrity < clothingData("genitals", V.worn.genitals, "integrity_max")) {
 				// Repairs the chastity parasite
 				if (integrityKeyword(V.worn.genitals.integrity, "genitals") !== "full") {
@@ -1796,6 +1797,10 @@ function earSlimeDaily() {
 				}
 				V.worn.genitals.integrity = clothingData("genitals", V.worn.genitals, "integrity_max");
 			}
+		}
+		if (V.earSlime.forcedDressing) {
+			V.earSlime.forcedDressing.days--;
+			if (V.earSlime.forcedDressing.days < 0) delete V.earSlime.forcedDressing;
 		}
 	}
 }

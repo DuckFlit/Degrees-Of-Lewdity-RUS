@@ -494,7 +494,7 @@ function playerRutMinArousal() {
 window.playerRutMinArousal = playerRutMinArousal;
 
 function playerAwareTheyCanBePregnant() {
-	return V.player.vaginaExist || (canBeMPregnant() && V.sexStats.anus.pregnancy.totalBirthEvents >= 1);
+	return V.player.vaginaExist || (canBeMPregnant() && V.sexStats.anus.pregnancy.totalBirthEvents >= 1) || playerAwareTheyArePregnant();
 }
 window.playerAwareTheyCanBePregnant = playerAwareTheyCanBePregnant;
 

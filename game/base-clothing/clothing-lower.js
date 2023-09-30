@@ -4839,7 +4839,7 @@ function initLower() {
 			integrity: 160,
 			integrity_max: 160,
 			fabric_strength: 20,
-			reveal: 400,
+			reveal: 500,
 			rearresize: 0,
 			word: "a",
 			one_piece: 0,

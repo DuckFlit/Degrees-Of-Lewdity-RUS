@@ -93,9 +93,10 @@
 				<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and Time.dayState is "night" and $earSlime.eventTimer is 0 and $kylarbed isnot 1>>
 					<<set $slimeWake to 1>>
 					<<break>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
-
-
 			<<case "asylum">>
 				<<asylumeffects>>
 				<<if Time.hour is 6 or ($asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1) or ($asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1) or ($asylumstate is "assessment" and $daily.asylumAssessment isnot 1)>>
@@ -105,6 +106,9 @@
 				<<elseif $suspicion gte 80 and random(1, 10) gte 10>>
 					<<set _sleepinterrupt to 1>>
 					<<set $rapewake to 1>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
 			<<case "prison">>
 				<<if Time.hour is 6>>
@@ -120,6 +124,9 @@
 				<<elseif $farm_attack_timer is 0 and Time.hour gte 21>>
 					<<set $remywake to 1>>
 					<<set _sleepinterrupt to 1>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
 			<<case "cabin">>
 				<<if wraithSleepEventCheck()>>
@@ -132,6 +139,9 @@
 				<<if $location is "forest" and $wolfpackferocity gte 10 and $wolfwake isnot 1>>
 					<<set _sleepinterrupt to 1>>
 					<<set $wolfwake to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
 			<<case "tower">>
 				<<if wraithSleepEventCheck() and $bird and $bird.mirror is 1>>
@@ -147,10 +157,16 @@
 				<<elseif $wolfpackferocity gte 10 and $wolfwake isnot 1 and random(1,10) is 10>>
 					<<set _sleepinterrupt to 1>>
 					<<set $wolfwake to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
 			<<case "pound">>
 				<<if Time.hour is 6 or Time.hour is 12 or Time.hour is 18>>
 					<<set _sleepinterrupt to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
 		<</switch>>
 
@@ -265,34 +281,57 @@
 		<</if>>
 		<<if $exhibitionism gt 35>>
 			<<set _eventsList.push("go running or swimming naked for an hour")>>
+			<<set _eventsList.push("go running or swimming naked for two hours")>>
+			<<set _eventsList.push("study at the school library while naked for an hour")>>
+			<<set _eventsList.push("study at the school library while naked for two hours")>>
 		<</if>>
 	<</if>>
 	<<if $earSlime.growth gt 50>>
+		<<if $earSlime.focus is "pregnancy" and $forcedcrossdressingdisable is "f" and !$earSlime.forcedDressing>>
+			<<set _eventsList.push("only wear feminine clothes for a while")>>
+			<<if playerIsPregnant() and playerBellySize(true) gte 5>>
+				<<set _eventsList.push("only wear feminine clothes for a while")>>
+				<<set _eventsList.push("only wear feminine clothes for a while")>>
+			<</if>>
+		<</if>>
+		<<if $earSlime.focus is "impregnation" and $forcedcrossdressingdisable is "f" and !$earSlime.forcedDressing>>
+			<<set _eventsList.push("only wear masculine clothes for a while")>>
+			<<if !playerIsPregnant()>>
+				<<set _eventsList.push("only wear masculine clothes for a while")>>
+				<<set _eventsList.push("only wear masculine clothes for a while")>>
+			<</if>>
+		<</if>>
 		<<if ["pregnancy", "mixed"].includes($earSlime.focus) and ($player.vaginaExist or $analdisable is "f") and !playerIsPregnant()>>
 			<<if maleChance() gt 0 or beastMaleChance() gt 0>>
 				<<set _task to `get sperm into your ${$player.vaginaExist ? "vagina" : "anus"}`>>
 				<<run _eventsList.push(_task)>>
 				<<run _eventsList.push(_task)>>
-				<<run _eventsList.push(_task)>>
-				<<run _eventsList.push(_task)>>
-				<<run _eventsList.push(_task)>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+				<</if>>
 			<</if>>
 			<<if $player.penisExist and $player.penissize gte 0 and $semen_volume gte 300 and !$earSlime.defyCooldown and $awareness gte 200>>
 				<<set _task to `get your own sperm into your ${$player.vaginaExist ? "vagina" : "anus"}`>>
 				<<run _eventsList.push(_task)>>
 				<<run _eventsList.push(_task)>>
-				<<run _eventsList.push(_task)>>
-				<<run _eventsList.push(_task)>>
-				<<run _eventsList.push(_task)>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+				<</if>>
 			<</if>>
 		<</if>>
 		<<if ["impregnation", "mixed"].includes($earSlime.focus)>>
 			<<if maleChance() lt 100 or beastMaleChance() lt 100>>
 				<<run _eventsList.push("ejaculate into someones vagina")>>
 				<<run _eventsList.push("ejaculate into someones vagina")>>
-				<<run _eventsList.push("ejaculate into someones vagina")>>
-				<<run _eventsList.push("ejaculate into someones vagina")>>
-				<<run _eventsList.push("ejaculate into someones vagina")>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+				<</if>>
 			<</if>>
 		<</if>>
 	<</if>>
@@ -304,8 +343,10 @@
 		<<set _maxEvents to _eventsList.length - 1>>
 		<<set $earSlime.event to _eventsList[random(0,_maxEvents)]>>
 	<</if>>
+	<<set _tempEventHide to true>>
+	<<set _noSleep to $earSlime.event.includes("go running or swimming") or $earSlime.event.includes("study at the school") or $earSlime.event.includes("masturbate")>>
 
-	<span class="lewd">You feel the slime in your head command you to <<print $earSlime.event>><<if $earSlime.noSleep>> before it allows you to sleep<</if>>.</span> It promises rewards if you comply, and threatens consequences if you do not.
+	<span class="lewd">You feel the slime in your head command you to <<print $earSlime.event>><<if _noSleep>> before it allows you to sleep<</if>>.</span> It promises rewards if you comply, and threatens consequences if you do not.
 
 	<br><br>
 	<<link [[Obey|SleepSlimeEventObey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
@@ -319,15 +360,28 @@
 		<<set $slimeBedExit to "Bed">>
 		<<set $slimeBedroomExit to "Bedroom">>
 	<</if>>
-	<<if $earSlime.event is "go running or swimming naked for an hour" or "go running or swimming for an hour">>
+	<<if $earSlime.event.includes("two hours")>>
+		<<set $earSlime.eventLength to 4>>
+	<<elseif $earSlime.event.includes("an hour")>>
 		<<set $earSlime.eventLength to 2>>
 	<</if>>
 	<<if $earSlime.event.includes("masturbate and orgasm at least")>>
 		/* Gets set to 0 on it being completed */
 		<<set $earSlime.defyCooldown += 82>>
 	<</if>>
-	<<if ["go running or swimming for an hour", "steal something", "go running or swimming naked for an hour","masturbate"].includes($earSlime.event)>>
+	<<if $earSlime.event.includes("go running or swimming") or $earSlime.event.includes("study at the school") or $earSlime.event.includes("masturbate")>>
 		<<set $earSlime.noSleep to true>>
+	<</if>>
+	<<if $earSlime.event is "only wear feminine clothes for a while">>
+		<<set $earSlime.event to "">>
+		<<if playerIsPregnant() and playerBellySize(true) gte 5>>
+			<<set $earSlime.forcedDressing to {type: "f", days: random(31, 62)}>>
+		<<else>>
+			<<set $earSlime.forcedDressing to {type: "f", days: random(3, 31)}>>
+		<</if>>
+	<<elseif $earSlime.event is "only wear masculine clothes for a while">>
+		<<set $earSlime.event to "">>
+		<<set $earSlime.forcedDressing to {type: "m", days: random(3, 31)}>>
 	<</if>>
 	<<if $earSlime.event is "only sleep naked from now on">>
 		<<strip>>
@@ -357,26 +411,16 @@
 <</widget>>
 
 <<widget "slimeEventEnd">>
-	<<switch $earSlime.event>>
-		<<case "go running or swimming naked for an hour">>
-			<<if $earSlime.eventLength is 1 and $exposed is 2>>
+	<<if _args[0]>>
+		<<if $earSlime.event.includes(_args[0]) and (!$earSlime.event.includes("naked") or $exposed is 2)>>
+			<<set $earSlime.eventLength -= 1>>
+			<<if $earSlime.eventLength lte 0>>
 				<<set $earSlime.event to "">>
 				<<set $earSlime.eventLength to 0>>
 				<<set $earSlime.noSleep to false>>
-			<<elseif $exposed is 2>>
-				<<set $earSlime.eventLength -= 1>>
 			<</if>>
-		<<case "go running or swimming for an hour">>
-			<<if $earSlime.eventLength is 1>>
-				<<set $earSlime.event to "">>
-				<<set $earSlime.eventLength to 0>>
-				<<set $earSlime.noSleep to false>>
-			<<else>>
-				<<set $earSlime.eventLength -= 1>>
-			<</if>>
-		<<default>>
-			<<set $earSlime.event to "">>
-	<</switch>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "wraithEvent">>
@@ -495,7 +539,7 @@
 	Their <<chest>> is exactly the same as yours<<if $breastfeedingdisable is "f">> and is completely clear of milk<</if>>. The voice tells you that you won't benefit or <span class="lewd">be pleasured</span> in the same way as the other two due to the lack of focus.
 
 	<br><br>
-	<<link [[Reach for the left one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "pregnancy">><<set $earSlime.growth++>><</link>>
+	<<link [[Reach for the left one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "pregnancy">><<set $earSlime.growth++>><</link>><<if $player.gender is "m" and $analdisable is "t" and _pregnancyEnabled>><<note "With anal being disabled, pregnancy cannot occur for you" "italic">><</if>>
 	<br>
 	<<link [[Reach for the middle one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "mixed">><<set $earSlime.growth++>><</link>>
 	<br>

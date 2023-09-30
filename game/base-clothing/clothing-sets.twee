@@ -351,6 +351,9 @@
 							<<elseif ((["prison", "asylum"].includes($location) and $_wardrobeItem.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or ($_wardrobeItem.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !($_wardrobeItem.type.includesAny("school")) and Time.schoolDay) and !$_wardrobeItem.type.includesAny("event")>>
 								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny"}>>
 								<<break>>
+							<<elseif $earSlime.forcedDressing and $_wardrobeItem.gender isnot $earSlime.forcedDressing.type and $_wardrobeItem.gender isnot "n" and !$_wardrobeItem.type.includesAny("event")>>
+								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny_forcedDressing"}>>
+								<<break>>
 							<</if>>
 						<</if>>
 
@@ -569,6 +572,18 @@
 							}
 						}
 						_resultStrings.corruption_slime_deny_commando.names.push(notEquippedItem.name);
+						break;
+					case "corruption_slime_deny_forcedDressing";
+						if (_resultStrings.corruption_slime_deny_forcedDressing === undefined) {
+							_resultStrings.corruption_slime_deny_forcedDressing = {
+								"start": "You were unable to equip your ",
+								"joiner": "and",
+								"end": ` as the slime in your ear is is only permitting more ${$earSlime.forcedDressing.type is "f" ? "feminine" : "masculine"} clothing.`,
+								"names": [],
+								"color": "red"
+							}
+						}
+						_resultStrings.corruption_slime_deny_forcedDressing.names.push(notEquippedItem.name);
 						break;
 					case "cursed slot":
 						if (_resultStrings.cursed === undefined) {

@@ -43,12 +43,13 @@ replace (?<!["'\w])_(?=\w) with T.
  * "crotch_exposed":boolean - render crotch layers above clothes (unzipped)
  * "penis":""|"default"|"virgin" - has penis
  * "penis_size":number - penis size tier -1..5
- * "penis_parasite":""|"urchin"|"slime" - from $parasite.penis.name
+ * "penis_parasite":""|"urchin"|"slime"|"parasite" - from $parasite.penis.name
  * "penis_condom": ""|"plain" - from $player.condom.type
  * "condom_colour": "" - from $player.condom.colour
  * "balls":boolean - has balls
  * "nipples_parasite":""|"urchin"|"slime" - from $parasite.nipples.name
- * "clit_parasite":""|"urchin"|"slime" - from $parasite.clit.name
+ * "chest_parasite":""|"parasite" - from $parasite.breasts.name
+ * "clit_parasite":""|"urchin"|"slime"|"parasite" - from $parasite.clit.name
  * "arm_left":"none"|"idle"|"cover" - left arm position ("cover" = covering breasts)
  * "arm_right":"none"|"idle"|"cover" - right arm position ("cover" = covering crotch)
  *
@@ -268,6 +269,7 @@ Renderer.CanvasModels["main"] = {
 			"condom_colour": "",
 			"balls": false,
 			"nipples_parasite": "",
+			"chest_parasite": "",
 			"clit_parasite": "",
 			"arm_left": "idle",
 			"arm_right": "idle",
@@ -645,6 +647,16 @@ Renderer.CanvasModels["main"] = {
 		}
 		if (options.condom_colour) options.filters.condom = lookupColour(setup.colours.condom_map, options.condom_colour, "condom", "condom_custom", "condom");
 
+		if (options.breasts_parasite === "parasite") {
+			options.filters.breasts_parasite = lookupColour(setup.colours.clothes_map, "red", "breasts_parasite");
+		}
+		if (options.clit_parasite === "parasite") {
+			options.filters.clit_parasite = lookupColour(setup.colours.clothes_map, "red", "breasts_parasite");
+		}
+		if (options.penis_parasite === "parasite") {
+			options.filters.penis_parasite = lookupColour(setup.colours.clothes_map, "red", "breasts_parasite");
+		}
+
 		// Clothing filters and options
 		for (let slot of setup.clothes_all_slots) {
 			let index = options["worn_" + slot];
@@ -859,6 +871,22 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return !!options.nipples_parasite;
 			},
+			z: ZIndices.breastsparasite + 0.1,
+			animation: "idle"
+		},
+		"breasts_parasite": {
+			srcfn(options) {
+				switch (options.breasts_parasite) {
+					case "parasite":
+						return 'img/body/breasts/breastsparasite' + options.breast_size + '.png'
+					default:
+						return "";
+				}
+			},
+			showfn(options) {
+				return !!options.breasts_parasite;
+			},
+			filters: ["breasts_parasite"],
 			z: ZIndices.breastsparasite,
 			animation: "idle"
 		},
@@ -1321,7 +1349,7 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 			showfn(options) {
-				return options.crotch_visible && !!options.penis
+				return options.crotch_visible && !!options.penis && options.worn_genitals_setup.variable !== "slimechastitycage";
 			},
 			filters: ["penis"],
 			zfn(options) {
@@ -1343,18 +1371,20 @@ Renderer.CanvasModels["main"] = {
 					if (!options.worn_genitals_setup.name.includes("cage")) return "";
 					switch (options.penis_parasite) {
 						case "urchin":
-							return 'img/clothes/genitals/' + options.worn_genitals_setup.variable + '/urchin.png'
+							return 'img/clothes/genitals/' + options.worn_genitals_setup.variable + '/urchin.png';
 						case "slime":
-							return 'img/clothes/genitals/' + options.worn_genitals_setup.variable + '/slime.png'
+							return 'img/clothes/genitals/' + options.worn_genitals_setup.variable + '/slime.png';
 						default:
-							return "";
+							break;
 					}
 				}
 				switch (options.penis_parasite) {
 					case "urchin":
-						return 'img/body/penis/penisparasite' + options.penis_size + '.png'
+						return 'img/body/penis/penisurchin' + options.penis_size + '.png';
 					case "slime":
-						return 'img/body/penis/penisslime' + options.penis_size + '.png'
+						return 'img/body/penis/penisslime' + options.penis_size + '.png';
+					case "parasite":
+						return 'img/body/penis/penisparasite' + options.penis_size + '.png';
 					default:
 						return "";
 				}
@@ -1375,29 +1405,38 @@ Renderer.CanvasModels["main"] = {
 					return ZIndices.underParasite;
 				}
 			},
+			filters: ["penis_parasite"],
 			animation: "idle"
 		},
 		"clit_parasite": {
 			srcfn(options) {
 				switch (options.clit_parasite) {
 					case "urchin":
-						return 'img/body/clitparasite.png'
+						return 'img/body/cliturchin.png';
 					case "slime":
-						return 'img/body/clitslime.png'
+						return 'img/body/clitslime.png';
+					case "parasite":
+						return 'img/body/baseparasite.png';
 					default:
 						return "";
 				}
 			},
 			showfn(options) {
+				if (options.clit_parasite === "parasite") {
+					return !options.belly_hides_under_lower;
+				}
 				return options.crotch_visible && !!options.clit_parasite && !options.chastity;
 			},
 			zfn(options) {
-				if (options.crotch_exposed) {
-					return ZIndices.parasite
+				if (options.crotch_visible && !!options.penis && options.clit_parasite === "parasite") {
+					return ZIndices.penis - 0.1;
+				} else if (options.crotch_exposed) {
+					return ZIndices.parasite;
 				} else {
-					return ZIndices.underParasite
+					return ZIndices.underParasite;
 				}
 			},
+			filters: ["clit_parasite"],
 			animation: "idle"
 		},
 		"penis_condom": {
@@ -2585,12 +2624,13 @@ Renderer.CanvasModels["main"] = {
 
 		"genitals": genlayer_clothing_main('genitals', {
 			srcfn(options) {
-				return 'img/clothes/genitals/' + options.worn_genitals_setup.variable + '/' + options.worn_genitals_integrity + '.png';
+				return 'img/clothes/genitals/' + options.worn_genitals_setup.variable + '/' + options.worn_genitals_integrity + (options.worn_genitals_setup.penisSize ? options.penis_size / 2 : '') + '.png';
 			},
 			showfn(options) {
 				return options.worn_genitals > 0 &&
 					options.worn_genitals_setup.mainImage !== 0 &&
-					!options.worn_genitals_setup.hideUnderLower.includes(options.worn_under_lower_setup.name)
+					!options.worn_genitals_setup.hideUnderLower.includes(options.worn_under_lower_setup.name) &&
+					!options.belly_hides_under_lower;
 			},
 			zfn(options) {
 				if (options.crotch_exposed) {
