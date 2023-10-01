@@ -2315,7 +2315,7 @@ function masturbationeffectsArms(
 			altText.fingers = handsOn === 2 ? "fingers" : "finger";
 			switch (random(0, 2)) {
 				case 0:
-					fsWikifier(`You keep your ${altText.fingers} pressed between your <<bottom>> cheeks and gently prod your anus.`);
+					sWikifier(`You keep your ${altText.fingers} pressed between your <<bottom>> cheeks and gently prod your anus.`);
 					break;
 				case 1:
 					fragment.append(span(`You rub your anus in a circular motion.`));
@@ -2434,7 +2434,7 @@ function masturbationeffectsArms(
 						sWikifier(`You rub your anus in a circular motion with your ${altText.toyDisplay}.`);
 						break;
 					case 2:
-						fsWikifier(`You push your ${altText.toyDisplay} against your anus. You feel it open a little bit.`);
+						sWikifier(`You push your ${altText.toyDisplay} against your anus. You feel it open a little bit.`);
 						break;
 				}
 			} else {
