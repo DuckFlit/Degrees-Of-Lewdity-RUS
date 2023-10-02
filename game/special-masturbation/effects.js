@@ -2584,6 +2584,11 @@ function fingersEffect(span, hymenIntact) {
 function possessedMasturbation(span, br) {
 	const fragment = document.createDocumentFragment();
 
+	const sWikifier = text => {
+		if (T.noMasturbationOutput) return;
+		fragment.append(Wikifier.wikifyEval(text));
+	};
+
 	if (!V.combatBegun) {
 		V.combatBegun = 1;
 		return fragment;
