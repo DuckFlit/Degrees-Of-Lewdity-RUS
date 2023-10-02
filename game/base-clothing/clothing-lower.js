@@ -5280,7 +5280,7 @@ function initLower() {
 			anus_exposed: 0,
 			anus_exposed_base: 0,
 			type: ["normal"],
-			set: "halter sundress",
+			set: "haltersundress",
 			gender: "f",
 			femininity: 200,
 			warmth: 20,
