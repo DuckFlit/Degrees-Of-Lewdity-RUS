@@ -5437,7 +5437,7 @@ function initLower() {
 			cursed: 0,
 			location: 0,
 			iconFile: "dolphin_shorts.png",
-			accIcon: 0,
+			accIcon: "dolphin_shorts_acc.png",
 		}
 	];
 
