@@ -1225,6 +1225,7 @@ function settingsObjects(type) {
 					passageFontSize: { strings: [0, 10, 12, 14, 16, 18, 20], displayName: "Passage font size:" },
 					overlayFontSize: { strings: [0, 10, 12, 14, 16, 18, 20], displayName: "Overlay font size:" },
 					sidebarFontSize: { strings: [0, 12, 14, 16, 18, 20], displayName: "Sidebar font size:" },
+					genderBody: { strings: ["default", "m", "a", "f"], displayName: "Body type displayed:" },
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },

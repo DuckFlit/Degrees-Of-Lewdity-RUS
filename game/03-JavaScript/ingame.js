@@ -1243,11 +1243,11 @@ function currentSkillValue(skill, disableModifiers = 0) {
 				result = Math.floor(result * 1.05);
 			}
 			if (V.worn.feet.type.includes("swim")) {
-				result = Math.floor(result * (1 + currentSkillValue("feetskill", disableModifiers + 1)) / 10000);
+				result = Math.floor(result * (1 + currentSkillValue("feetskill", disableModifiers + 1) / 10000));
 			} else if (V.worn.feet.type.includes("heels")) {
-				result = Math.floor(result * (0.8 + currentSkillValue("feetskill", disableModifiers + 1)) / 10000);
+				result = Math.floor(result * (0.8 + currentSkillValue("feetskill", disableModifiers + 1) / 10000));
 			} else if (!V.worn.feet.type.includes("naked")) {
-				result = Math.floor(result * (0.9 + currentSkillValue("feetskill", disableModifiers + 1)) / 10000);
+				result = Math.floor(result * (0.9 + currentSkillValue("feetskill", disableModifiers + 1) / 10000));
 			}
 			if (V.worn.feet.type.includes("shackle")) {
 				result = Math.floor(result * 0.5);
