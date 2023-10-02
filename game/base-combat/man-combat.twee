@@ -1706,13 +1706,13 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 
 	<<elseif $rng lte 7 and ($consensual isnot 1 or ["Whitney", "Kylar", "Sydney"].includes($npc[$npcrow.indexOf(_n)])) and $bodywritingLvl gte 2 and $enemytype isnot "beast" and !$noBodyWriting>>
 		<<set _rng to random(1, 5)>>
-		<<if (_rng is 5 and $NPCList[_n].type isnot "plant") or $npc.includes("Sydney")>>
+		<<if (_rng is 5 and $NPCList[_n].type isnot "plant" and $role isnot "islander") or $npc.includes("Sydney")>>
 			<span class="purple"><<He>> pulls a <span class="pink">permanent</span> marker pen from <<his>> pocket, flicking off the lid.</span>
 			<<set $tooltarget to "marker">>
-		<<elseif _rng is 4 and $NPCList[_n].type isnot "plant" and $NPCList[_n].pronoun is "f">>
+		<<elseif _rng is 4 and $NPCList[_n].type isnot "plant" and $NPCList[_n].pronoun is "f" and $role isnot "islander">>
 			<span class="purple"><<He>> pulls lipstick from <<his>> pocket, and pushes out the tip.</span>
 			<<set $tooltarget to "lipstick">>
-		<<elseif (_rng is 3 and $outside is 1 and ["forest","moor","farmlands","farm"].includes($location)) or $NPCList[_n].type is "plant">>
+		<<elseif (_rng is 3 and $outside is 1 and ["forest","moor","farmlands","farm"].includes($location)) or $NPCList[_n].type is "plant" or $role is "islander">>
 			<span class="purple"><<He>> lifts a handful of mud from the ground.</span>
 			<<set $tooltarget to "mud">>
 		<<else>>
@@ -1728,17 +1728,18 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 		<<neutral 1 _n>>
 	<<elseif $enemyanger + $rng lte 15 and $NPCList[_n].traits.includes("hypnotist") and $hypnosisdisable is "f">>
+		<<set _tool to $role is "islander" ? "bundle of herbs" : "pendant">>
 		<<He>> produces a
 		<<if _args[0] is "left">>
 			<<set $NPCList[_n].lefthand to "hypnosis">>
-			<<set $NPCList[_n].lefttool to "pendant">>
+			<<set $NPCList[_n].lefttool to _tool>>
 			<<print $NPCList[_n].lefttool>>,
 		<<else>>
 			<<set $NPCList[_n].righthand to "hypnosis">>
-			<<set $NPCList[_n].righttool to "pendant">>
+			<<set $NPCList[_n].righttool to _tool>>
 			<<print $NPCList[_n].righttool>>,
 		<</if>>
-		<span class="purple">and swings it in front of your face.</span>
+		<span class="purple">and <<print $role is "islander" ? "waves" : "swings">> it in front of your face.</span>
 	<<elseif $enemyanger + $rng lte 20>>
 		<<if $walltype is "front">>
 			<<He>> strokes your cheek.
@@ -2017,7 +2018,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<</if>>
 			<<bodypart_admire_chance random_bottom>>
 		<</if>>
-	<<elseif $enemyanger + $rng lte 90 and $enemytype isnot "beast" and $NPCList[_n].type isnot "plant" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination>>
+	<<elseif $enemyanger + $rng lte 90 and $enemytype isnot "beast" and $NPCList[_n].type isnot "plant" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination and $role isnot "islander">>
 		<<combat-set-hand-target _args[0] "lube">>
 		<<if $NPCList[_n].penis is "vaginaentrance" and $player.bodyliquid.vaginaoutside.goo lt 5 and !playerChastity("vagina")>>
 			<span class="purple"><<He>> holds a bottle of lubricant near your <<pussy>>.</span>
@@ -2346,7 +2347,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<span class="purple"><<He>> grasps your $worn.feet.name.</span>
 				<<combat-set-hand-target _args[0] "shoes">>
 				<<neutral 3 _n>>
-			<<elseif $enemytype is "man" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination and !$possessed and !$robinmist>>
+			<<elseif $enemytype is "man" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination and !$possessed and !$robinmist and $role isnot "islander">>
 				<span class="pink"><<He>> produces a pair of menacing metal shackles.</span>
 				<<combat-set-hand-target _args[0] "shackle_entrance">>
 				<<neutral 4 _n>>
@@ -3947,7 +3948,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<span class="purple">Your precum mingles.</span><<purity -1>><<set $worn.genitals.integrity -= 10>>
 					<</if>>
 					<<set $worn.genitals.integrity -= 5>>
-					<<if $worn.genitals.name is "chastity parasite">><<arousal 100 "genitals">><</if>>					
+					<<if $worn.genitals.name is "chastity parasite">><<arousal 100 "genitals">><</if>>
 					<<set $speechchastity to 1>>
 				<<elseif $enemyarousal gte $enemyarousalmax * 0.8>>
 					<<He>> thrusts <<his>> hips, <<if $npcSub>>instinctively<</if>> pounding your <<penis>> against <<his>> cock with a violent intensity.
@@ -5322,7 +5323,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<rng>>
 		<<namedNpcComments $NPCList[_n].fullDescription>>
 		<<if ($NPCList[_n].mouth is 0 or $NPCList[_n].mouth is "speech_only" or ($NPCList[_n].type is "plant" and $speechkissvirgin is 1)) and $speechdisable isnot 1 and _noNameComment>>
-			<<if $NPCList[_n].type is "plant">>
+			<<if $role is "islander" and (!$islander_language or $islander_language lt 100)>>
+				<<He>> speaks and gesticulates in <<his>> incomprehensible language.
+			<<elseif $NPCList[_n].type is "plant">>
 				<<plantspeech>>
 			<<elseif $combatgoal is "strip">>
 				<<rng>>
