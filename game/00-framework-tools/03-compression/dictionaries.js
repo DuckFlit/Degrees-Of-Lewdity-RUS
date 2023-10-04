@@ -139,10 +139,6 @@ const DoLCompressorDictionaries = (() => {
 		"antiquetrashcup",
 		"antiquewatch",
 		"antiquewhitecrystal",
-		"antiqueobsidiandisc",
-		"antiquewoodenmask",
-		"antiquetrilobitefossil",
-		"antiqueislandarrow",
 		"anus",
 		"anusWetness",
 		"anus_climax",
@@ -1967,6 +1963,7 @@ const DoLCompressorDictionaries = (() => {
 	];
 
 	const dict_v0 = [...v0_mostCommonvalues, ...v0_variableNames];
+	const dict_v1 = [...dict_v0].splice(132, 0, "antiqueobsidiandisc", "antiquewoodenmask", "antiquetrilobitefossil", "antiqueislandarrow");
 
 	// template for next versions
 	// const dict_v1 = [
@@ -1976,7 +1973,7 @@ const DoLCompressorDictionaries = (() => {
 
 	return {
 		v0: dict_v0,
-		// v1: dict_v1
+		v1: dict_v1,
 	};
 })();
 for (const k in DoLCompressorDictionaries) {
