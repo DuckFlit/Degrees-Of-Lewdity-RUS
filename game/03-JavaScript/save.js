@@ -15,7 +15,7 @@ const DoLSave = ((Story, Save) => {
 	// see game/00-framework-tools/03-compression/dictionaries.js
 	const COMPRESSOR_DICTIONARIES = DoLCompressorDictionaries;
 	// id of the dictionary to use for saving
-	const COMPRESSOR_CURRENT_DICTIONARY_ID = "v0";
+	const COMPRESSOR_CURRENT_DICTIONARY_ID = "v1";
 	/**
 	 * When saving, decompress and compare with the original.
 	 * If results differ, report an error and save the uncompressed version instead.
@@ -427,7 +427,26 @@ const DoLSave = ((Story, Save) => {
 	function decompressIfNeeded(saveObj) {
 		const isCompressed = (saveObj.metadata && saveObj.metadata.jsoncompressed === 1) || looksLikeCompressedSave(saveObj.state.history[0]);
 		if (!isCompressed) return;
-		saveObj.state.history = saveObj.state.history.map(state => (JsonDecompressor.isCompressed(state) ? decompressState(state) : state));
+		let dictOverride = saveObj.state.history[0].dictionary;
+		saveObj.state.history = saveObj.state.history.map(state => {
+			state.dictionary = dictOverride;
+			if (JsonDecompressor.isCompressed(state)) {
+				let decompressed = decompressState(state);
+				if (!decompressed.variables || !decompressed.prng || !decompressed.variables.saveVersion) {
+					// Before giving up, check if dictionary is mislabeled
+					const otherDicts = Object.keys(COMPRESSOR_DICTIONARIES).filter(d => d !== dictOverride);
+					for (let k = 0; k < otherDicts.length; k++) {
+						state.dictionary = otherDicts[k];
+						decompressed = decompressState(state);
+						if (decompressed.variables && decompressed.prng && decompressed.variables.saveVersion) {
+							dictOverride = otherDicts[k];
+							break;
+						}
+					}
+				}
+				return decompressed;
+			} else return state;
+		});
 	}
 
 	return Object.freeze({
