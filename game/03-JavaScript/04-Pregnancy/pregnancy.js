@@ -358,6 +358,9 @@ function endPlayerPregnancy(birthLocation, location) {
 	delete C.npc.Alex.pregnancy.knowledge;
 	delete C.npc.Alex.pregnancy.test;
 	delete C.npc.Alex.pregnancy.sample;
+	delete C.npc.Alex.pregnancy.noBirthControl;
+	C.npc.Alex.pregnancy.pills = "contraceptive";
+ 	C.npc.Alex.pregnancyAvoidance = 50;
 
 	if (Object.values(V.children).find(child => child.mother === "Alex" && child.location === "home") || Object.values(V.children).find(child => child.father === "Alex" && child.location === "home"))
 	{
@@ -579,6 +582,10 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 		delete C.npc.Alex.pregnancy.knowledge;
 		delete C.npc.Alex.pregnancy.test;
 		delete C.npc.Alex.pregnancy.sample;
+		delete C.npc.Alex.pregnancy.noBirthControl;
+
+		C.npc.Alex.pregnancy.pills = "contraceptive";
+ 		C.npc.Alex.pregnancyAvoidance = 50;
 
 		if (Object.values(V.children).find(child => child.mother === "Alex" && child.location === "home") || Object.values(V.children).find(child => child.father === "Alex" && child.location === "home"))
 		{

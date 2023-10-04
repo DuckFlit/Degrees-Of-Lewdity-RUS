@@ -2025,6 +2025,11 @@ You get comfy beside Alex.
 		<</if>>
 		Feeling at peace, you gaze into each other's eyes.
 	<<case 7>>
+
+		<<if C.npc.Alex.pregnancy.noBirthControl isnot true and ($playerPregnancyHumanDisable is "f" or $npcPregnancyDisable is "f") and (!npcIsPregnant("Alex") or !playerIsPregnant()) and C.npc.Alex.gender isnot $player.gender>>
+			<<set C.npc.Alex.pregnancy.noBirthControl to true>>
+		<</if>>
+
 		<<if (npcIsPregnant("Alex") or playerIsPregnant()) and C.npc.Alex.pregnancy.knowledge is true>>
 			"What do you think about <<if childrenCountBetweenParents("Alex","pc") gte 1 or childrenCountBetweenParents("pc","Alex") gte 1>>our family growing<<else>>us having a family<</if>> soon?" you ask, resting your head on <<his>> shoulder.
 			<br><br>
@@ -2137,6 +2142,14 @@ You get comfy beside Alex.
 	<<link [[Next|Farm Cottage]]>><<endevent>><</link>>
 	<br>
 <<else>>
+	<<if C.npc.Alex.pregnancy.noBirthControl is true and C.npc.Alex.pregnancy.pills isnot "fertility">>
+		<<link [[Ask to have a baby|Farm Cottage Baby Request]]>><</link>>
+
+		<i><span class="blue"> This will make Alex more fertile till <<nnpc_his "Alex">> next pregnancy</span></i>
+		<br><br>
+	
+	<</if>>
+
 	<<link [[Keep cuddling (0:20)|Farm Breakfast Cuddle]]>><<npcincr Alex love 1>><<pass 20>><</link>><<glove>>
 	<br>
 	<<link [[Watch TV (0:20)|Farm Breakfast TV]]>><<pass 20>><<stress -6>><</link>><<lstress>>
@@ -4282,3 +4295,82 @@ Alex's mother turns to Alex. "I need to get back to work now, but listen, I'm pr
 <br><br>
 
 <<link [[Next|Farm Cottage]]>><</link>>
+
+:: Farm Cottage Baby Request
+<<effects>>
+<<npc "Alex">>
+
+<<set C.npc.Alex.pregnancy.pills to "fertility">>
+<<set C.npc.Alex.pregnancyAvoidance to 0>>
+
+"Hey," you say, leaning closer to <<him>>. "Let's have <<if childrenCountBetweenParents("pc","Alex") lte 0 or childrenCountBetweenParents("Alex","pc") lte 0>>a<<else>>another<</if>> baby."
+<br><br>
+
+<<He>> freezes in place. "H-Hold on, partner. What's this all about?"
+<br><br>
+
+"You said you wouldn't mind, so I thought it would be good for us."
+<br><br>
+
+<<He>> thinks for a while. "Okay," <<he>> says. "I guess we can try."
+<br><br>
+
+You try to pull <<him>> closer but
+
+<<if $NPCName[25].gender is "f">>
+	<<he>> shifts <<his>> position, straddling your lap.
+
+<<else>>
+	<<he>> pulls you into <<his>> lap.
+
+<</if>>
+<br><br>
+
+"Why the long face?" <<he>> says with a grin. "You owe me a good ride now. Didn't you want <<if $NPCName[25].gender is "f">> to knock me up<<else>> me to breed you<</if>>?" Alex says, leaning closer and closing <<his>> eyes.
+<br><br>
+
+<<link [[Next|Farm Cottage Babay Request Sex]]>><<set $sexstart to 1>><</link>>
+
+:: Farm Cottage Babay Request Sex
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Farm Cottage Babay Request Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Farm Cottage Babay Request Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Farm Cottage Babay Request Sex Finish
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"I'll stop using contraceptives, so you better be sure of this, mate."
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+<<elseif $finish is 1>>
+	"What?" <<he>> says, confused. "But you...whatever. I'll stop using contraceptives, so you better be sure of this, mate."
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+
+<<link [[Next|Farm Cottage]]>><<endevent>><<pass 20>><</link>>
