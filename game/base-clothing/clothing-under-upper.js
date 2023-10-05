@@ -1250,7 +1250,7 @@ function initUnderUpper() {
 			shop: ["clothing"],
 			accessory: 1,
 			accessory_integrity_img: 1,
-			accessory_colour: 1,
+			accessory_colour: 0,
 			accessory_colour_options: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "custom"],
 			accessory_colour_sidebar: 1,
 			sleeve_img: 1,
