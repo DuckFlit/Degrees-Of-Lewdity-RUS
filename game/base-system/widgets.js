@@ -350,7 +350,8 @@ function apparentbreastsizecheck() {
 	if (clothingData("over_upper", V.worn.over_upper, "bustresize") != null) {
 		T.tempbreast += clothingData("over_upper", V.worn.over_upper, "bustresize");
 	}
-	V.player.perceived_breastsize = Math.clamp(T.tempbreast, V.breastsizemin, V.breastsizemax);
+	// using the default values of $breastsizemin and $breastsizemax, to avoid issues with the values changing during the game
+	V.player.perceived_breastsize = Math.clamp(T.tempbreast, 0, setup.breastsizes.length - 1);
 }
 window.apparentbreastsizecheck = apparentbreastsizecheck;
 
@@ -365,7 +366,8 @@ function apparentbottomsizecheck() {
 	if (V.worn.lower.rearresize != null) {
 		T.tempbutt += V.worn.over_lower.rearresize;
 	}
-	V.player.perceived_bottomsize = Math.clamp(T.tempbutt, V.bottomsizemin, V.bottomsizemax);
+	// using the default values of $bottomsizemin and $bottomsizemax, to avoid issues with the values changing during the game
+	V.player.perceived_bottomsize = Math.clamp(T.tempbutt, 0, 8);
 }
 
 function exposedcheck(alwaysRun) {
