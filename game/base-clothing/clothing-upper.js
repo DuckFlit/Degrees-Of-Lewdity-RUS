@@ -5670,7 +5670,7 @@ function initUpper() {
 			exposed: 0,
 			exposed_base: 0,
 			type: ["normal"],
-			set: "upper",
+			set: "virginkillerdress",
 			gender: "f",
 			femininity: 300,
 			warmth: 30,
