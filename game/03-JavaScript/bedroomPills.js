@@ -754,6 +754,7 @@ function onTakeClick(itemName) {
 					case "parasite":
 						break;
 					case "pregnancy":
+						V.overdosePillsTaken = item.name;
 						Engine.play("PillCollectionSecondDosePregnancy");
 						return;
 					default:
