@@ -266,7 +266,7 @@ const idb = (() => {
 	function saveState(slot) {
 		if (lock) return;
 		const saveObj = State.marshalForSave();
-		window.onSave({ state: saveObj }); // run onSave handlers
+		window.onSave({ state: saveObj, date: Date.now() }, { type: slot <= 0 ? "autosave" : "slot" }); // run onSave handlers
 		if (saveObj != null) return setItem(slot, saveObj);
 		return false;
 	}

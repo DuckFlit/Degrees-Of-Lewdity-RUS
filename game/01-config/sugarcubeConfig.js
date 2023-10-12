@@ -11,6 +11,7 @@ window.onLoadUpdateCheck = false;
 let pageLoading = false;
 
 function onLoad(save) {
+	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
 	pageLoading = true;
 	window.onLoadUpdateCheck = true;
 
@@ -21,27 +22,75 @@ function onLoad(save) {
 	// decompression should be the FIRST save modification
 	DoLSave.decompressIfNeeded(save);
 
+	// cache current date before assigning it to every frame in history
+	const date = new Date();
 	save.state.history.forEach(h => {
 		if (h.prng && Array.isArray(h.prng.S)) {
 			h.prng.S.forEach((i, index, array) => {
 				if (i < 0 || i > 255) array[index] %= 256;
 			});
 		}
-		h.variables.saveDetails = defaultSaveDetails(h.variables.saveDetails);
-		h.variables.saveDetails.loadTime = new Date();
+		const details = h.variables.saveDetails;
+		if (details) {
+			if (!details.playTime) details.playTime = 0;
+			if (!details.loadCount) details.loadCount = 0;
+			details.loadTime = date;
+			details.loadCount++;
+		}
 	});
 }
 window.onLoad = onLoad;
 Save.onLoad.add(onLoad);
 
-function onSave(save) {
+/**
+ * increment saves counter and update relevant statistics
+ *
+ * @param {object} storyVars State.variables or similar object to modify
+ * @param {"slot"|"autosave"|"disk"|"serialize"} type save type
+ * @param {Date} date cached date object so we don't have to run `new Date()` hundreds of times
+ */
+function incSavesCount(storyVars = V, type, date) {
+	const details = storyVars.saveDetails;
+	if (!details) return; // really ancient save that somehow didn't get updated
+	switch (type) {
+		case "slot":
+			details.slot.count++;
+			break;
+		case "autosave":
+			details.auto.count++;
+			break;
+		case "disk":
+			details.exported.days = Time.days;
+			details.exported.count++;
+			break;
+		case "serialize":
+			details.exported.count++;
+			break;
+	}
+	if (date) details.playTime += date - details.loadTime;
+}
+
+function onSave(save, details) {
+	// * update feats * //
 	Wikifier.wikifyEval("<<updateFeats>>");
-	save.state.history.forEach(h => {
-		h.variables.saveDetails = defaultSaveDetails(h.variables.saveDetails);
-		h.variables.saveDetails.playTime += h.variables.saveDetails.loadTime ? new Date() - h.variables.saveDetails.loadTime : 0;
-		h.variables.saveDetails.loadCount++;
-	});
-	// don't run legacy code when idb is active
+
+	// * update $saveDetails wherever possible * //
+	const type = details.type;
+	const date = save.date;
+	// start with active vars, so we can view statistics
+	incSavesCount(V, type, date);
+	// then saved history, so moving back and forth doesn't reset it
+	State.history.forEach(h => incSavesCount(h.variables, type, date));
+	// then actual save vars
+	save.state.history.forEach(sh => incSavesCount(sh.variables, type, date));
+	// and finally, session data, so it persists even after f5
+	const session = getSessionState();
+	if (session != null) {
+		session.history.forEach(s => incSavesCount(s.variables, type, date));
+		setSessionState(session);
+	}
+
+	// * legacy code for old saves system * //
 	if (!(window.idb && window.idb.active)) {
 		// eslint-disable-next-line no-undef
 		prepareSaveDetails(); // defined in save.js
@@ -79,16 +128,6 @@ Config.saves.isAllowed = function () {
 	return true;
 };
 
-$(document).on(":passagestart", function (ev) {
-	if (ev.passage.title === "Start2") {
-		$.event.trigger({
-			type: ":start2",
-			content: ev.content,
-			passage: ev.passage,
-		});
-	}
-});
-
 importStyles("style.css")
 	.then(function () {
 		console.log("External Style Sheet Active");
@@ -118,41 +157,6 @@ importScripts([
 .catch(function (err) {
 	console.log(err);
 }); */
-
-function defaultSaveDetails(input) {
-	let saveDetails = input;
-	if (!saveDetails) {
-		// In the rare case the variable doesnt exist
-		saveDetails = {
-			exported: {
-				days: clone(variables.days),
-				frequency: 15,
-				count: 0,
-				dayCount: 0,
-			},
-			auto: {
-				count: 0,
-			},
-			slot: {
-				count: 0,
-				dayCount: 0,
-			},
-		};
-	}
-	if (!saveDetails.playTime) {
-		saveDetails.playTime = 0;
-		saveDetails.loadCount = 0;
-	}
-	if (!saveDetails.f || saveDetails.f < 1) {
-		saveDetails.f = 1;
-		saveDetails.playTime = 0;
-	}
-	if (saveDetails.f < 3) {
-		saveDetails.playTime = 0;
-		saveDetails.f = 3;
-	}
-	return saveDetails;
-}
 
 // Runs before a passage load, returning a string redirects to the new passage name.
 Config.navigation.override = function (dest) {

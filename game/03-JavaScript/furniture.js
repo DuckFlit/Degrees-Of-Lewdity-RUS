@@ -667,10 +667,6 @@ const Furniture = (() => {
 		if (!V.furnitureLog.includes(id)) V.furnitureLog.push(id);
 	}
 
-	$(document).on(":start2", function () {
-		furnitureUpdate();
-	});
-
 	/* Call the initiator function immediately. This happens when the game starts up and is loading. (Spinny wheel) */
 	furnitureInit();
 
