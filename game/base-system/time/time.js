@@ -1,9 +1,9 @@
 /* Time namespace
 	Use Time prefix when accessing any getters or functions (e.g. Time.second, Time.schoolDay, or Time.getLastDayOfMonth(), etc.)
 	Getters: (Most of these are being used in one way or another)
-	
+
 	Time.date - Returns Date object of current date.
-	
+
 	Time.holidayMonths - Returns array of all months that are considered holidays.
 
 	Time.second - Returns current number of seconds since last whole minute.
@@ -647,7 +647,20 @@ function dayPassed() {
 	if (V.pillory_tenant.exists && V.pillory_tenant.endday < Time.days) fragment.append(wikifier("clear_pillory"));
 
 	delete V.daily;
-	V.daily = { school: { attended: {} }, whitney: {}, robin: {}, kylar: {}, morgan: {}, eden: {}, alex: {}, sydney: {}, ex: {}, pharm: {}, prison: {} };
+	V.daily = {
+		school: { attended: {} },
+		whitney: {},
+		robin: {},
+		kylar: {},
+		morgan: {},
+		eden: {},
+		alex: {},
+		sydney: {},
+		ex: {},
+		pharm: {},
+		prison: {},
+		livestock: {},
+	};
 
 	if (Number.isInteger(V.challengetimer)) {
 		V.challengetimer--;
