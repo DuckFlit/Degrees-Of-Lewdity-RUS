@@ -133,7 +133,6 @@ const DoLSave = ((Story, Save) => {
 			Wikifier.wikifyEval(`<<saveConfirm ${saveSlot}>>`);
 		} else {
 			if (saveSlot != null) {
-				updateSavesCount();
 				const success = Save.slots.save(saveSlot, null, {
 					saveId,
 					saveName,
@@ -305,7 +304,6 @@ const DoLSave = ((Story, Save) => {
 
 	function ironmanAutoSave() {
 		const saveSlot = 8;
-		updateSavesCount();
 		const success = Save.slots.save(saveSlot, null, {
 			saveId: V.saveId,
 			saveName: V.saveName,
@@ -432,7 +430,7 @@ const DoLSave = ((Story, Save) => {
 			state.dictionary = dictOverride;
 			if (JsonDecompressor.isCompressed(state)) {
 				let decompressed = decompressState(state);
-				if (!decompressed.variables || !decompressed.prng || !decompressed.variables.saveVersion) {
+				if (!decompressed.variables || !decompressed.prng || !decompressed.variables.saveVersions) {
 					// Before giving up, check if dictionary is mislabeled
 					const otherDicts = Object.keys(COMPRESSOR_DICTIONARIES).filter(d => d !== dictOverride);
 					for (let k = 0; k < otherDicts.length; k++) {
@@ -502,7 +500,6 @@ window.getSaveData = function () {
 	const compressionWasEnabled = DoLSave.isCompressionEnabled();
 	DoLSave.disableCompression();
 	const input = document.getElementById("saveDataInput");
-	updateExportDay();
 	input.value = Save.serialize();
 	if (compressionWasEnabled) DoLSave.enableCompression();
 };
@@ -540,43 +537,6 @@ window.copySavedata = function (id) {
 		const copyTextArea = document.getElementById("CopyTextArea");
 		copyTextArea.value = "Copying Error";
 		console.log("Unable to copy: ", err);
-	}
-};
-
-window.updateExportDay = function () {
-	const idx = State.activeIndex;
-	if (V.saveDetails != null && State.history[idx].variables.saveDetails != null) {
-		V.saveDetails.exported.days = clone(Time.days);
-		State.history[idx].variables.saveDetails.exported.days = clone(Time.days);
-		V.saveDetails.exported.count++;
-		State.history[idx].variables.saveDetails.exported.count++;
-		V.saveDetails.exported.dayCount++;
-		State.history[idx].variables.saveDetails.exported.dayCount++;
-		const sessionState = getSessionState();
-		if (sessionState != null) {
-			const sidx = sessionState.index;
-			sessionState.history[sidx].variables.saveDetails.exported.days = clone(Time.days);
-			sessionState.history[sidx].variables.saveDetails.exported.dayCount++;
-			sessionState.history[sidx].variables.saveDetails.exported.count++;
-			setSessionState(sessionState);
-		}
-	}
-};
-
-window.updateSavesCount = function () {
-	const idx = State.activeIndex;
-	if (V.saveDetails != null && State.history[idx].variables.saveDetails != null) {
-		V.saveDetails.slot.count++;
-		State.history[idx].variables.saveDetails.slot.count++;
-		V.saveDetails.slot.dayCount++;
-		State.history[idx].variables.saveDetails.slot.dayCount++;
-		const sessionState = getSessionState();
-		if (sessionState != null) {
-			const sidx = sessionState.index;
-			sessionState.history[sidx].variables.saveDetails.slot.dayCount++;
-			sessionState.history[sidx].variables.saveDetails.slot.count++;
-			setSessionState(sessionState);
-		}
 	}
 };
 

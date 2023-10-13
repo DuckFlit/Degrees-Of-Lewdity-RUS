@@ -115,7 +115,6 @@ throwError = function (place, message, source, isExportable = true, isLogged = t
 					label: "Export",
 				},
 				() => {
-					updateExportDay();
 					Save.export("degrees-of-lewdity");
 				}
 			)
