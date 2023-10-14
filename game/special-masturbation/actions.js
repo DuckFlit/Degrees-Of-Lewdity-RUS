@@ -20,7 +20,7 @@ function masturbationActions() {
 	const breastsExposed = () => V.worn.over_upper.exposed >= 1 && V.worn.upper.exposed >= 1 && V.worn.under_upper.exposed >= 1;
 	const ballsExposed = () => genitalsExposed() && !playerChastity("hidden") && V.worn.genitals.name !== "chastity parasite";
 
-	const otherVariables = { selectedToy, toyDisplay, genitalsExposed, breastsExposed, ballsExposed };
+	const otherVariables = { playerToys, selectedToy, toyDisplay, genitalsExposed, breastsExposed, ballsExposed };
 
 	const generateOption = (actionVariable, option) => {
 		let result = "";
@@ -128,16 +128,17 @@ function masturbationActions() {
 	return fragment;
 }
 
-function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExposed, breastsExposed, ballsExposed }) {
+function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, genitalsExposed, breastsExposed, ballsExposed }) {
 	const result = {
 		text: "",
 		options: [],
 		actionVariable: arm + "action",
 	};
-	const toyDropDown = () => {
-		const toys = listUniqueCarriedSextoys().filter(
-			toy => (V.player.penisExist && !playerChastity("penis") && toy.type.includesAny("stroker")) || toy.type.includesAny("dildo", "breastpump")
-		);
+	const toyDropDown = limit => {
+		const toys = listUniqueCarriedSextoys().filter(toy => {
+			if (limit === "breastpump") return toy.type.includes("breastpump");
+			return (V.player.penisExist && !playerChastity("penis") && toy.type.includesAny("stroker")) || toy.type.includesAny("dildo", "breastpump");
+		});
 		let count = 0;
 
 		let result = `<label><<listbox "$selectedToy${arm.toLocaleUpperFirst()}" autoselect>>`;
@@ -250,6 +251,17 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 						});
 					}
 				}
+			} else if (playerToys.find(toy => toy.type.includes("breastpump")) && playerNormalPregnancyTotal() && ["home", "alex_farm"].includes(V.location)) {
+				// To specifically enable filling bottles for babies, location should be expanded on when required
+				altText.toyDropDown = toyDropDown("breastpump");
+				if (altText.toyDropDown) {
+					result.options.push({
+						action: "mpickupdildo",
+						text: "Use Breast Pump:",
+						colour: "green",
+						otherElements: `${altText.toyDropDown}`,
+					});
+				}
 			}
 			break;
 		case "mpenisentrance":
@@ -291,7 +303,8 @@ function masturbationActionsHands(arm, { selectedToy, toyDisplay, genitalsExpose
 		case "mvaginaentrance":
 			result.text = `You rub your <<pussy>> with your ${arm} hand.`;
 			if (genitalsExposed()) {
-				if (V.vaginause === 0 && ([0, "mvaginaentrance"].includes(V[otherArm + "arm"]) || V[otherArm + "arm"].startsWith("mvagina"))) {
+				/* Can't recall the intention for this commented out piece, leaving it in for now in case I recall later */
+				if (V.vaginause === 0 /* && ([0, "mvaginaentrance"].includes(V[otherArm + "arm"]) || V[otherArm + "arm"].startsWith("mvagina")) */) {
 					if (V.vaginaFingerLimit >= 3 && currentSkillValue("vaginalskill") >= 300) {
 						result.options.push({
 							action: "mvaginafingerstarttwo",
