@@ -1259,7 +1259,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 					result = Math.floor(result * (1 - V.worn.feet.reveal / 5000));
 				}
 				if (V.worn.feet.type.includes("rugged")) {
-					result = Math.floor(result * (1 + currentSkillValue("feetskill", disableModifiers + 1)) / 10000);
+					result = Math.floor(result * (1 + currentSkillValue("feetskill", disableModifiers + 1) / 10000));
 				}
 			}
 			if (V.worn.feet.type.includes("shackle")) result /= 10;
