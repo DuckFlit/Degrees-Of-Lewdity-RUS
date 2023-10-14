@@ -272,7 +272,16 @@
 
 <<widget "generateshoppage">>
 	<<set _page = _args[0]>>
-	<<set _itemsOnPage = _items.slice(_page * $shopItemsPerPage, (_page + 1) * $shopItemsPerPage)>>
+	<<set _itemGroups to []>>
+	<<set _itemsOnPage = _items.filter(item => {
+		if (!item.shopGroup) return true;
+		if (!T.itemGroups[item.shopGroup]) {
+			T.itemGroups[item.shopGroup] = [item.index];
+			return true;
+		} else {
+			T.itemGroups[item.shopGroup].push(item.index);
+		}
+	}).slice(_page * $shopItemsPerPage, (_page + 1) * $shopItemsPerPage)>>
 	<<set _hidden = _page == $shopPage ? "" : " hidden">>
 	<<set _compact = $shopDefaults.compactMode ? "compact" : "">>
 
@@ -289,6 +298,11 @@
 			<div class="clothing-item div-link">
 				<!-- Clothing icon -->
 				<div @class="'clothing-icon ' + _compact">
+					<<if $options.images is 1 and _itemData.shopGroup and _items.reduce((prev, curr) => {
+						if (!curr.shopGroup) return prev;
+						if (curr.shopGroup === _itemData.shopGroup) return prev + 1;
+						return prev;
+					},0) gt 1 and $options.images is 1>><div class='fa-icon fa-plus clothing-icon-plus'></div><</if>>
 					<<if _locked and $options.images is 1>>
 						<img src="img/misc/icon/lock.png" class="clothing-locked">
 					<<else>>
@@ -587,6 +601,20 @@
 				</div>
 			<<else>>
 				<<set $wardrobes.shopReturn to "wardrobe">>
+			<</if>>
+			<<if _temp_choice.shopGroup>>
+				<<link "Previous Style">>
+					<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+					<<set _groupIndexMax to _itemGroups[_temp_choice.shopGroup].length - 1>>
+					<<set $clothes_choice to _groupIndex gt 0 ? _itemGroups[_temp_choice.shopGroup][_groupIndex - 1] : _itemGroups[_temp_choice.shopGroup][_groupIndexMax]>>
+					<<updateclotheslist>>
+				<</link>> |
+				<<link "Next Style">>
+					<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+					<<set $clothes_choice to _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] ? _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] : _itemGroups[_temp_choice.shopGroup][0]>>
+					<<updateclotheslist>>
+				<</link>>
+				<br>
 			<</if>>
 			<<shopBuyItemStatus _wardrobeSlots>>
 			<<if _spaceLeft < 1>>
@@ -1182,6 +1210,27 @@
 						<<link "">><<toggleMannequinGender>><</link>>
 					</div>
 				</div>
+				<<if _temp_choice.shopGroup and _items.reduce((prev, curr) => {
+						if (!curr.shopGroup) return prev;
+						if (curr.shopGroup === _itemData.shopGroup) return prev + 1;
+						return prev;
+					},0) gt 1>>
+					<div class="mannequin-buttons-right no-numberify">
+						<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+						<<link "<span class='fa-icon fa-left-arrow'></span>">>
+							<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+							<<set _groupIndexMax to _itemGroups[_temp_choice.shopGroup].length - 1>>
+							<<set $clothes_choice to _groupIndex gt 0 ? _itemGroups[_temp_choice.shopGroup][_groupIndex - 1] : _itemGroups[_temp_choice.shopGroup][_groupIndexMax]>>
+							<<updateclotheslist>>
+						<</link>>
+						_groupIndex
+						<<link "<span class='fa-icon fa-right-arrow'></span>">>
+							<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+							<<set $clothes_choice to _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] ? _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] : _itemGroups[_temp_choice.shopGroup][0]>>
+							<<updateclotheslist>>
+						<</link>>
+					</div>
+				<</if>>
 
 				<<if $options.sidebarRenderer isnot "canvas">>
 				<div class="mannequin-clothes">
