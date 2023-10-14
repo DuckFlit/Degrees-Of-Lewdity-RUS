@@ -193,32 +193,15 @@
 			<</switch>>
 
 			<<if $_heatArousal or $_rutArousal>>
-				<<if ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2) and $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal)) and !$earSlime.defyCooldown>>
-					Your ear slime and inner beast is sending you into <<print $_heatRutDisplay>>.
-				<<elseif $wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2>>
-					Your inner beast is sending you into <<print $_heatRutDisplay>>.
-				<<elseif $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal)) and !$earSlime.defyCooldown>>
-					Your ear slime is sending you into <<print $_heatRutDisplay>>.
-				<<else>>
-					Something is keeping you aroused.
-				<</if>>
+				<<heatRutDisplay>>
 				Intercourse will be <span @class="$_pregnancyRiskColour">$_pregnancyRisk</span>.
 			<<else>>
 				You feel that it's <span @class="$_pregnancyRiskColour">$_pregnancyRisk</span> to have intercourse.
 			<</if>>
 			<br><br>
 		<</if>>
-	<<elseif $_heatArousal or $_rutArousal>>
-		<<if ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2) and $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal)) and !$earSlime.defyCooldown>>
-			Your ear slime and inner beast is sending you into <<print $_heatRutDisplay>>.
-		<<elseif ($wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2)>>
-			Your inner beast is sending you into <<print $_heatRutDisplay>>.
-		<<elseif $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal)) and !$earSlime.defyCooldown>>
-			Your ear slime is sending you into <<print $_heatRutDisplay>>.
-		<<else>>
-			Something is keeping you aroused.
-		<</if>>
-		<br><br>
+	<<else>>
+		<<heatRutDisplay true>>
 	<</if>>
 
 	<!--Semen Details-->
@@ -1038,4 +1021,39 @@
 	<</if>>
 
 	<br>
+<</widget>>
+
+<<widget "heatRutDisplay">><<silently>>
+	<<set $_knowsTheyCanBecomePregnant to ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f") and playerAwareTheyCanBePregnant()>>
+	<<set $_heatArousal to playerHeatMinArousal()>>
+	<<set $_rutArousal to playerRutMinArousal()>>
+	<<if $_heatArousal or $_rutArousal>>
+		<<set $_source to []>>
+		<<set $_sourceText to "Something">>
+		<<set $_arousal to []>>
+		<<set $_arousedText to "keeping you aroused">>
+
+		/* SourceText */
+		<<if $wolfgirl gte 2 or $cat gte 2 or $cow gte 2 or $fox gte 2>>
+			<<run $_source.push("inner beast")>>
+		<</if>>
+		<<if $earSlime.growth gt 50 and (($earSlime.focus is "pregnancy" and $_heatArousal) or ($earSlime.focus is "impregnation" and $_rutArousal))>>
+			<<run $_source.push("ear slime")>>
+		<</if>>
+		<<if $_source.length>>
+			<<set $_sourceText to "Your " + formatList($_source, "and")>>
+		<</if>>
+
+		/* arousedText */
+		<<if $_source.length and $_heatArousal and $_knowsTheyCanBecomePregnant>>
+			<<run $_arousal.push("heat")>>
+		<</if>>
+		<<if $_source.length and $_rutArousal>>
+			<<run $_arousal.push("rut")>>
+		<</if>>
+		<<if $_arousal.length>>
+			<<set $_arousedText to "is sending you into " + formatList($_arousal, "and") + ".">>
+		<</if>>
+	<</if>>
+	<</silently>><<if $_sourceText>><<print $_sourceText>> is <<print $_arousedText>>.<<if _args[0]>><br><br><</if>><</if>>
 <</widget>>
