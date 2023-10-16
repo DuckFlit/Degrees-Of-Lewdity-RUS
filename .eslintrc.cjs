@@ -165,20 +165,20 @@ module.exports = {
 	],
 
 	parserOptions: {
-		// Support back to ES2019 to cover old mobile devices with outdated WebView versions that fail on 2020 and up functions
-		// ecmaVersion: "2019", (taken care of by env es2019)
+		// Support back to ES2020 to cover old mobile devices with outdated WebView versions that fail on 2020 and up functions
+		// ecmaVersion: "2020", (taken care of by env es2020)
 		sourceType: "module",
 	},
 
 	env: {
 		browser: true,
-		es2019: true,
+		es2020: true,
 		jquery: true,
 	},
 
 	plugins: ["es"],
 
-	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file", "plugin:es/restrict-to-es2019"],
+	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file", "plugin:es/restrict-to-es2020"],
 
 	settings: {
 		jsdoc: {
