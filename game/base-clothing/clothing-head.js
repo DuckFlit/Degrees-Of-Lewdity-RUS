@@ -1694,7 +1694,6 @@ function initHead() {
 			accessory: 0,
 			accessory_colour: 0,
 			accessory_colour_options: [],
-			accessory_colour_sidebar: 1,
 			back_img: 1,
 			cursed: 0,
 			location: 0,
@@ -1866,7 +1865,7 @@ function initHead() {
 			location: 0,
 			iconFile: "star_hairpin.png",
 			accIcon: "star_hairpin_acc.png",
-		}
+		},
 	];
 
 	/*
