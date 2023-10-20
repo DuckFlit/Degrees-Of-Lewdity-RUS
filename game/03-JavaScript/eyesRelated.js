@@ -10,7 +10,7 @@ function buildEyeDetails() {
 			sentence += setup.colours.eyes_map[lenses.left].name;
 			concatFlag = true;
 		}
-		if (typeof lenses.right === "string") {
+		if (typeof lenses.right === "string" && lenses.left !== lenses.right) {
 			if (concatFlag) sentence += " and ";
 			sentence += setup.colours.eyes_map[lenses.right].name;
 			concatFlag = true;
