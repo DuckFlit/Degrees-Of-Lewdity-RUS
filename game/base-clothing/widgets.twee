@@ -1054,16 +1054,16 @@
 			<<if _undressSlot is undefined>>
 				<<set _undressSlot to _args[1]>>
 			<</if>>
-			<<unset _cursedPrevent>>
+			<<unset $_cursedPrevent>>
 			<<set _outfitPrimaryUndress to $worn[_undressSlot].outfitPrimary>>
 			<<if _outfitPrimaryUndress isnot undefined>>
 				<<for _labelUndress, _valueUndress range _outfitPrimaryUndress>>
 					<<if $worn[_labelUndress].cursed is 1 and $worn[_labelUndress].name is _valueUndress>>
-						<<set _cursedPrevent to true>>
+						<<set $_cursedPrevent to true>>
 					<</if>>
 				<</for>>
 			<</if>>
-			<<if _cursedPrevent isnot true and _strip_restrict isnot 1 and $worn[_undressSlot].cursed isnot 1>>
+			<<if $_cursedPrevent isnot true and _strip_restrict isnot 1 and $worn[_undressSlot].cursed isnot 1>>
 				<<set _slots to []>>
 				<<if _args[0] is "wardrobe" or Object.keys($wardrobes).includes(_args[0])>>
 					<<set $_selectedWardrobe to selectWardrobe()>>
@@ -1262,6 +1262,37 @@
 				<<run delete V.outfitTmp[_args[0]]>>
 			<</if>>
 		<<else>>
+			/* Check if any worn items are cursed */
+			<<set _cursedSlots to Object.keys($worn).filter(slot => $worn[slot].cursed)>>
+			/* Check if any of the outfit items cant be worn, run multiple times to check for nested outfits, or when the curses status is found later */
+			<<set _runtime to 2>>
+			<<for _i to 0; _i lte _runtime; _i++>>
+				<<run Object.entries($outfitTmp[_args[0]]).forEach(([slot, item]) => {
+					let cursedLength = T.cursedSlots.length;
+					let cursed = T.cursedSlots.includes(slot);
+					if (item.outfitSecondary && !["broken", "split"].includes(item.outfitSecondary[1])) {
+						if (T.cursedSlots.includes(item.outfitSecondary[0])) {
+							T.cursedSlots.pushUnique(slot);
+							cursed = true;
+						}
+						if (cursed) T.cursedSlots.pushUnique(item.outfitSecondary[0]);
+					}
+					if (item.outfitPrimary) {
+						Object.entries(item.outfitPrimary).forEach(([slot2, itemName]) => {
+							if (!["broken", "split"].includes(itemName)) {
+								if (T.cursedSlots.includes(slot2)) {
+									T.cursedSlots.pushUnique(slot);
+									cursed = true;
+								}
+								if (cursed) T.cursedSlots.pushUnique(slot2);
+							}
+						});
+					}
+					/* Found a new item effected by a cursed slot, run again */
+					if (cursedLength < T.cursedSlots.length) T.runtime++;
+				})>>
+			<</for>>
+
 			<<for $_slot range setup.clothingLayer.all>>
 				<<set $_item to $outfitTmp[_args[0]][$_slot]>>
 				<<if $_item is undefined or $worn[$_slot].name isnot $_item.name>>
@@ -1269,11 +1300,27 @@
 					<<returnCarried>>
 				<</if>>
 				<<if $_item isnot undefined>>
-					<<set $_stored to $store[$_slot].find(item => item.name is $_item.name)>>
-					<<if $_stored>>
-						<<set $worn[$_slot] to clone($_item)>>
-						<<set $worn[$_slot].location to 0>>
-						<<set $store[$_slot].deleteAt($store[$_slot].indexOf($_stored))>>
+					<<set $_storedIndex to $store[$_slot].findIndex(item => item.name is $_item.name and item.location is _args[0])>>
+					<<if $_storedIndex isnot -1>>
+						<<if $worn[$_slot].name is "naked" and !_cursedSlots.includes($_slot)>>
+							<<set $worn[$_slot] to clone($store[$_slot][$_storedIndex])>>
+							<<set $worn[$_slot].location to 0>>
+							<<set $store[$_slot].deleteAt($_storedIndex)>>
+						<<else>>
+							/* Send the item to the wardrobe, as the item was not unequipped by generalStrip */
+							<<if ["asylum", "prison"].includes($location)>>
+								<<set $_selectedWardrobe to $wardrobes[$location]>>
+							<<elseif $multipleWardrobes is "all" and $worn[$_slot].lastTaken isnot undefined>>
+								<<set $_selectedWardrobe to $wardrobes[$worn[$_slot].lastTaken]>>
+							<</if>>
+							<<if $_selectedWardrobe isnot "wardrobe" and $wardrobes[$_selectedWardrobe]>>
+								<<set $_selectedWardrobe to $wardrobes[$_selectedWardrobe]>>
+							<<else>>
+								<<set $_wardrobe to $wardrobe>>
+							<</if>>
+							<<run $_wardrobe[$_slot].push(clone($store[$_slot][$_storedIndex]))>>
+							<<run $store[$_slot].deleteAt($_storedIndex)>>
+						<</if>>
 					<</if>>
 				<</if>>
 			<</for>>
