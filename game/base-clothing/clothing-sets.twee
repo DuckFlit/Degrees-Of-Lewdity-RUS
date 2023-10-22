@@ -229,7 +229,9 @@
 			<<if $worn[$_slot].cursed is 1>>
 				<<set _preventItemEquip to true>>
 			<<elseif $worn[$_slot].outfitPrimary isnot undefined>>
-				<<set _preventItemEquip to Object.values($worn[$_slot].outfitPrimary).some(item => item.cursed is 1)>>
+				<<set _preventItemEquip to Object.entries($worn[$_slot].outfitPrimary).some(([slot, name]) => {
+					if (!["broken", "split"].includes(name) and $worn[slot].cursed is 1) _preventItemEquip = true;
+				})>>
 			<</if>>
 
 			<<set $_storeLocation to ($storeLocation ? $storeLocation : $wardrobe_location)>>
@@ -406,6 +408,10 @@
 							<<set $_primaryAccColourIsCustom to ($_foundPrimary.accessory_colour is "custom")>>
 
 							<<for $_outfitSlot, $_outfitPieceName range $_foundPrimary.outfitPrimary>>
+								<<if $worn[$_outfitSlot].cursed is 1>>
+									<<set _preventItemEquip to true>>
+									<<break>>
+								<</if>>
 								<<if $_outfitPieceName is "broken" or $_outfitPieceName is "split">>
 									<<continue>>
 								<</if>>
@@ -444,20 +450,23 @@
 							<</for>>
 						<</if>>
 						/*Equip all the clothing items*/
+						<<if !_preventItemEquip>>
+							<<for $_outfitslot, _index range _foundEquip>>
+								<<set $worn[$_outfitslot] to clone(_selectedWardrobe[$_outfitslot][_index])>>
+								<<set $worn[$_outfitslot].lastTaken to $wardrobe_location>>
+								<<set _selectedWardrobe[$_outfitslot].deleteAt(_index)>>
+								<<run resetClothingState($_outfitslot)>>
+							<</for>>
 
-						<<for $_outfitslot, _index range _foundEquip>>
-							<<set $worn[$_outfitslot] to clone(_selectedWardrobe[$_outfitslot][_index])>>
-							<<set $worn[$_outfitslot].lastTaken to $wardrobe_location>>
-							<<set _selectedWardrobe[$_outfitslot].deleteAt(_index)>>
-							<<run resetClothingState($_outfitslot)>>
-						<</for>>
-
-						/*If the worn item was a hoodie, make sure the hood is in the correct position*/
-						<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.outfitPrimary.head isnot "broken" and $worn.upper.outfitPrimary.head isnot "split">>
-							<<if $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
-								<<toggleHood>>
-								<<set _equipSkip["head"] to ($worn.upper.hoodposition is "up" ? true : false)>>
+							/*If the worn item was a hoodie, make sure the hood is in the correct position*/
+							<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.outfitPrimary.head isnot "broken" and $worn.upper.outfitPrimary.head isnot "split">>
+								<<if $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
+									<<toggleHood>>
+									<<set _equipSkip["head"] to ($worn.upper.hoodposition is "up" ? true : false)>>
+								<</if>>
 							<</if>>
+						<<else>>
+							<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "cursed slot"}>>
 						<</if>>
 					<<else>>
 						<<if $worn[$_slot].name is $_incomingItemName>>
