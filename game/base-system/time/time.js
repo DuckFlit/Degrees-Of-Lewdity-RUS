@@ -146,9 +146,9 @@ const Time = (() => {
 
 	function isSchoolTerm(date) {
 		const firstMonday = date.getFirstWeekdayOfMonth(2);
-		const startOfHoliday = firstMonday.addDays(-2);
+		const startOfHoliday = new DateTime(date.year, (date.month + 1) % 12).getFirstWeekdayOfMonth(2).addDays(-2);
 		return !holidayMonths.some(
-			month => (month === date.month && date.day >= startOfHoliday.day) || (month % 12 === date.month && date.day < startOfHoliday.day)
+			month => (month === (date.month + 1) % 12 && date.day >= startOfHoliday.day) || (month === date.month) || ((month + 1) % 12 === date.month && date.day < firstMonday.day)
 		);
 	}
 
