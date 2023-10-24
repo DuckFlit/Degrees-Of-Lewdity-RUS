@@ -93,9 +93,8 @@ function humanChildActivity(childId) {
 				"grumpyChild",
 				"bathe",
 			]);
-
+			
 			if (T.childTotalDays >= 50) activity.push("happy");
-
 			if (toySets.includes("baby rattles")) activity.push("babyRattle");
 			if (toySets.includes("teddy bears")) activity.push("teddyBear");
 			if (toySets.includes("toy cars")) activity.push("toyCar");
@@ -106,6 +105,7 @@ function humanChildActivity(childId) {
 			}
 			if (toySets.includes("clown")) activity.push("clown");
 			if (T.robin_location === "orphanage") activity.push("Robin");
+
 		}
 	} else if (between(T.childTotalDays, 100, 200)) {
 		if (Time.dayState === "night") {
