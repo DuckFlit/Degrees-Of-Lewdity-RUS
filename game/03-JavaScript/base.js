@@ -216,7 +216,27 @@ function integrityWord(worn, slot) {
 				T.text_output = "";
 		}
 	}
-	return T.text_output;
+    let colorClass;
+    switch (kw) {
+        case "full":
+            colorClass = "green";
+            break;
+        case "tattered":
+            colorClass = "red";
+            break;
+        case "torn":
+            colorClass = "purple";
+            break;
+        case "frayed":
+            colorClass = "teal";
+            break;
+        default:
+            colorClass = ""; // default without color
+    }
+    if (T.text_output) {
+        T.text_output = `<span class="${colorClass}">${T.text_output.trim()}</span> `;
+    }
+    return T.text_output;
 }
 window.integrityWord = integrityWord;
 DefineMacroS("integrityWord", integrityWord);
