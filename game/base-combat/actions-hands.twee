@@ -139,7 +139,8 @@
 			<<set $skulduggerydifficulty to (1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger) * $stealdifficulty>>
 			<<if $easySteal is 1>><<set $skulduggerydifficulty to 0>><</if>>
 			/*Missing <<skulduggerydifficulty>><<combatcrime>>*/
-			<<if $stealstateleft is undefined>>
+			<<if !isNaN($lefttarget) and $NPCList[$lefttarget] and $NPCList[$lefttarget].clothes and $NPCList[$lefttarget].clothes.set is "naked">>
+			<<elseif $stealstateleft is undefined>>
 				<<set _leftaction["Steal"] to "steal">>
 			<<elseif $stealstateleft is 2>>
 				<<set _leftaction["Take " + $NPCList[$lefttarget].pronouns.his + " belongings"] to "steal">>
@@ -526,7 +527,8 @@
 			<<set $skulduggerydifficulty to (1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger) * $stealdifficulty>>
 			<<if $easySteal is 1>><<set $skulduggerydifficulty to 0>><</if>>
 			/*Missing <<skulduggerydifficulty>><<combatcrime>>*/
-			<<if $stealstateright is undefined>>
+			<<if !isNaN($righttarget) $NPCList[$righttarget] and $NPCList[$righttarget].clothes and $NPCList[$righttarget].clothes.set is "naked">>
+			<<elseif $stealstateright is undefined>>
 				<<set _rightaction["Steal"] to "steal">>
 			<<elseif $stealstateright is 2>>
 				<<set _rightaction["Take " + $NPCList[$righttarget].pronouns.his + " belongings"] to "steal">>
@@ -1413,11 +1415,11 @@
 		<<personselect $lefttarget>>
 		<<if $skulduggerysuccess is 1>>
 			<<set $stealtarget += $lefttarget>><<set $stealdifficulty += 0.2>>
-			You rummage through the <<persons>> <<wallet>>. <<encountersteal>>
+			You rummage through the <<persons>> <<wallet $lefttarget>>. <<encountersteal>>
 			<<set $leftactiondefault to "rest">><<set $rightactiondefault to "rest">>
 		<<else>>
 			<<brat 30 $lefttarget>><<set $speechsteal to 1>>
-			You rummage inside the <<persons>> <<wallet>>. <<He>> notices and shifts <<his>> valuables away from your hands.
+			You rummage inside the <<persons>> <<wallet $lefttarget>>. <<He>> notices and shifts <<his>> valuables away from your hands.
 		<</if>>
 	<</if>>
 
@@ -1427,27 +1429,27 @@
 		<<if $skulduggerysuccess is 1>>
 			<<if $stealstateleft is undefined>>
 				<<set $stealstateleft to 0>>
-				You run your hand over the <<persons>> skin, until it rests on <<his>> <<wallet>>.
+				You run your hand over the <<persons>> skin, until it rests on <<his>> <<wallet $lefttarget>>.
 			<<elseif $stealstateleft is 0>>
 				<<set $stealstateleft to 1>>
-				You open the <<persons>> <<wallet>>.
+				You open the <<persons>> <<wallet $lefttarget>>.
 			<<elseif $stealstateleft is 1>>
 				<<set $stealstateleft to 2>>
-				You rummage through the <<persons>> <<wallet>>.
+				You rummage through the <<persons>> <<wallet $lefttarget>>.
 			<<else>>
 				<<unset $stealstateleft>><<set $stealtarget += $lefttarget>><<set $stealdifficulty += 0.2>>
-				You sneak your hand into the <<persons>> <<wallet>>. <<encountersteal>><<set $leftactiondefault to "rest">>
+				You sneak your hand into the <<persons>> <<wallet $lefttarget>>. <<encountersteal>><<set $leftactiondefault to "rest">>
 			<</if>>
 		<<else>>
 			<<brat 30 $lefttarget>><<set $speechsteal to 1>>
 			<<if $stealstateleft is undefined>>
-				You run your hand over the <<persons>> skin, until it rests on <<his>> <<wallet>>. <<He>> isn't fooled. <<He>> shifts <<his>> valuables away from you.
+				You run your hand over the <<persons>> skin, until it rests on <<his>> <<wallet $lefttarget>>. <<He>> isn't fooled. <<He>> shifts <<his>> valuables away from you.
 			<<elseif $stealstateleft is 0>>
-				You try to open the <<persons>> <<wallet>>. <<He>> notices and shifts <<his>> valuables away.
+				You try to open the <<persons>> <<wallet $lefttarget>>. <<He>> notices and shifts <<his>> valuables away.
 			<<elseif $stealstateleft is 1>>
-				You rummage through the <<persons>> <<wallet>>. <<He>> notices and shifts <<his>> valuables away.
+				You rummage through the <<persons>> <<wallet $lefttarget>>. <<He>> notices and shifts <<his>> valuables away.
 			<<else>>
-				You sneak your hand into the <<persons>> <<wallet>>. <<He>> notices and shifts <<his>> valuables away.
+				You sneak your hand into the <<persons>> <<wallet $lefttarget>>. <<He>> notices and shifts <<his>> valuables away.
 			<</if>>
 			<<unset $stealstateleft>>
 		<</if>>
@@ -1459,27 +1461,27 @@
 		<<if $skulduggerysuccess is 1>>
 			<<if $stealstateright is undefined>>
 				<<set $stealstateright to 0>>
-				You run your hand over the <<persons>> skin, until it rests on <<his>> <<wallet>>.
+				You run your hand over the <<persons>> skin, until it rests on <<his>> <<wallet $righttarget>>.
 			<<elseif $stealstateright is 0>>
 				<<set $stealstateright to 1>>
-				You open the <<persons>> <<wallet>>.
+				You open the <<persons>> <<wallet $righttarget>>.
 			<<elseif $stealstateright is 1>>
 				<<set $stealstateright to 2>>
-				You rummage through the <<persons>> <<wallet>>.
+				You rummage through the <<persons>> <<wallet $righttarget>>.
 			<<else>>
 				<<unset $stealstateright>><<set $stealtarget += $righttarget>><<set $stealdifficulty += 0.2>>
-				You sneak your hand into the <<persons>> <<wallet>>. <<encountersteal>><<set $rightactiondefault to "rest">>
+				You sneak your hand into the <<persons>> <<wallet $righttarget>>. <<encountersteal>><<set $rightactiondefault to "rest">>
 			<</if>>
 		<<else>>
 			<<brat 30 $righttarget>><<set $speechsteal to 1>>
 			<<if $stealstateright is undefined>>
-				You run your hand over the <<persons>> skin, until it rests on <<his>> <<wallet>>. <<He>> isn't fooled. <<He>> shifts <<his>> valuables away from you.
+				You run your hand over the <<persons>> skin, until it rests on <<his>> <<wallet $righttarget>>. <<He>> isn't fooled. <<He>> shifts <<his>> valuables away from you.
 			<<elseif $stealstateright is 0>>
-				You try to open the <<persons>> <<wallet>>. <<He>> notices and shifts <<his>> valuables away.
+				You try to open the <<persons>> <<wallet $righttarget>>. <<He>> notices and shifts <<his>> valuables away.
 			<<elseif $stealstateright is 1>>
-				You rummage through the <<persons>> <<wallet>>. <<He>> notices and shifts <<his>> valuables away.
+				You rummage through the <<persons>> <<wallet $righttarget>>. <<He>> notices and shifts <<his>> valuables away.
 			<<else>>
-				You sneak your hand into the <<persons>> <<wallet>>. <<He>> notices and shifts <<his>> valuables away.
+				You sneak your hand into the <<persons>> <<wallet $righttarget>>. <<He>> notices and shifts <<his>> valuables away.
 			<</if>>
 			<<unset $stealstateright>>
 		<</if>>

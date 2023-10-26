@@ -1102,7 +1102,11 @@
 
 <<widget "bottomejacstat">><<if $statFreeze isnot true>><<set $bottomejacstat += 1>><</if>><</widget>>
 
-<<widget "penilestat">><<if $statFreeze isnot true>><<set $penilestat += 1>><</if>><</widget>>
+<<widget "penilestat">><<silently>>
+<<if $statFreeze isnot true>>
+	<<if $player.penisExist and !playerHasStrapon()>><<set $penilestat += 1>>
+	<<elseif playerHasStrapon()>><<set $straponstat += 1>><</if>>
+<</if>><</silently>><</widget>>
 
 <<widget "penileejacstat">><<if $statFreeze isnot true>><<set $penileejacstat += 1>><</if>><</widget>>
 
@@ -3044,6 +3048,17 @@
 		<<set _teeth to random(3,10)>>
 		You steal a handful of white, translucent gems.
 		<<prison_teeth _teeth>> <<prison_teeth_text _teeth>>
+	<<elseif $location is "island">>
+		/* Steal a specific antique like a wooden carving? */
+		<<if currentSkillValue("skulduggery") gte 800 and $rng gte 95>>
+			<span class="green">You find a stick.</span><<set $island.wood += 1>>
+		<<elseif (currentSkillValue("skulduggery") gte 800 and $rng gte 85) or $rng gte 90>>
+			<span class="green">You find a handful of walnuts.</span><<set $island.walnut += 1>>
+		<<else>>
+			<span class="red">You find nothing to steal.</span>
+		<</if>>
+	<<elseif ["naked", "schoolSwim"].includes(_stealType)>>
+		<span class="red">You find nothing to steal.</span>
 	<<elseif $rng gte 96 and $spray lt $spraymax>>
 		<<spray 1>>
 		<span class="green">You steal a charge for your pepper spray.</span>
