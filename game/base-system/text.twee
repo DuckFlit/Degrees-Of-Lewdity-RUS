@@ -5981,7 +5981,20 @@
 <</widget>>
 
 <<widget "wallet">><<silently>>
-	<<set _text_output to ($pronoun is "m" ? "wallet" : "purse")>>
+	<<if !isNaN(_args[0]) and $NPCList[_args[0]] and $NPCList[_args[0]].clothes and $NPCList[_args[0]].clothes.set>>
+		<<set $_clothesSet to $NPCList[_args[0]].clothes.set>>
+	<</if>>
+	<<if $location is "island">>
+		<<set _text_output to "clothes">>
+	<<elseif ["maleSchoolSwim", "maleSchoolSwimShirt", "femaleSchoolSwim", "maleSwim1", "maleSwim2", "femaleSwim1", "femaleSwim2", "neutralSwim", "divingSuit"].includes($_clothesSet)>>
+		<<set _text_output to "swimsuit">>
+		<<set $_clothesType to setup.npcClothesSets.find(set => set.name is $_clothesSet)>>
+		<<if $_clothesType>>
+			<<set _stealType to $_clothesType.type>>
+		<</if>>
+	<<else>>
+		<<set _text_output to ($pronoun is "m" ? "wallet" : "purse")>>
+	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "pullupall">>

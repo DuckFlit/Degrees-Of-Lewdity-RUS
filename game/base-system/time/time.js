@@ -145,10 +145,14 @@ const Time = (() => {
 	}
 
 	function isSchoolTerm(date) {
+		const termEndDate = nextSchoolTermEndDate(date);
 		const firstMonday = date.getFirstWeekdayOfMonth(2);
-		const startOfHoliday = new DateTime(date.year, (date.month + 1) % 12).getFirstWeekdayOfMonth(2).addDays(-2);
-		return !holidayMonths.some(
-			month => (month === (date.month + 1) % 12 && date.day >= startOfHoliday.day) || (month === date.month) || ((month + 1) % 12 === date.month && date.day < firstMonday.day)
+		const prevMonth = ((date.month - 2 + 12) % 12) + 1;
+	
+		return !(
+			date.timeStamp >= termEndDate.timeStamp ||
+			(holidayMonths.includes(date.month) && date.day >= firstMonday.day) ||
+			(holidayMonths.includes(prevMonth) && date.day < firstMonday.day)
 		);
 	}
 
