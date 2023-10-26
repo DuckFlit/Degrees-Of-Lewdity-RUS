@@ -176,9 +176,9 @@ module.exports = {
 		jquery: true,
 	},
 
-	plugins: ["es"],
+	plugins: ["es-x"],
 
-	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file", "plugin:es/restrict-to-es2020"],
+	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file", "plugin:es-x/restrict-to-es2020"],
 
 	settings: {
 		jsdoc: {
@@ -208,8 +208,5 @@ module.exports = {
 		/* eslint-plugin-prettier */
 
 		"prettier/prettier": "warn",
-
-		// Rule to fix Safari/Webkit not supporting a 4+ year old function you idiots
-		"es/no-regexp-lookbehind-assertions": "error",
 	},
 };
