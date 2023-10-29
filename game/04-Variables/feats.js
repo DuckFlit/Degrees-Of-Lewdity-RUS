@@ -1596,6 +1596,15 @@ setup.feats = {
 		hint: "Hint: Climb the temple hierarchy.",
 		softLockable: true,
 	},
+	"Withering Truth": {
+		title: "Withering Truth",
+		desc: "Met the bishop.",
+		difficulty: 3,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Through confession, revelation.",
+		softLockable: true,
+	},
 	"Max Those Shots": {
 		title: "Max Those Shots",
 		desc: "Holding a lot of pepper spray.",

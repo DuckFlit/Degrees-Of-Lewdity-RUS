@@ -9,11 +9,11 @@
 		<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">>
 			<<set $sydneySeen.pushUnique("initiate")>>
 			<<if $temple_rank is "initiate">>
-				"G-good morning. Haven't seen you here before, but I think I've seen you around at school. You're an initiate, right? I was an initiate not too long ago, too!"
+				"G-good morning. Haven't seen you here before, but I think I've seen you around at school. You're an initiate, right? I am, too!"
 			<<elseif $temple_rank is "priest">>
 				"G-good morning. Please forgive my tardiness, honored one."
 			<<else>>
-				"G-good morning. Haven't seen you here before, but I think I've seen you around at school. You're a <<temple_rank>>, right?"
+				"G-good morning. Haven't seen you here before, but I think I've seen you around at school. You're a <<temple_title>>, right?"
 			<</if>>
 		<<else>>
 			"G-good morning. Haven't seen you here before, but I think I've seen you around at school. I'd ask if this was your first time attending mass, but here I am, being the late one."
@@ -56,9 +56,9 @@
 			<<set $sydneySeen.pushUnique("initiate")>>
 			"Oh, hi!<<if $sydneyFirstSeen.includes("Rescue") and $sydneyRescueMessage isnot 1>><<set $sydneyRescueMessage to 1>> I hope you're doing alright after what happened.<</if>>
 			<<if $temple_rank is "initiate">>
-				It didn't occur to me until now, but you're an initiate here, aren't you? I was still an initiate myself, not too long ago."
+				It didn't occur to me until now, but you're an initiate here too, aren't you?"
 			<<else>>
-				It didn't occur to me until now, but you're a <<temple_rank>> here, aren't you?"
+				It didn't occur to me until now, but you're a <<temple_title>> here, aren't you?"
 			<</if>>
 		<<else>>
 			"Oh, hi!<<if $sydneyFirstSeen.includes("Rescue") and $sydneyRescueMessage isnot 1>><<set $sydneyRescueMessage to 1>> I hope you're doing alright after what happened.<</if>> I'm really happy to see you here. I'd ask if this was your first time attending mass, but here I am, being the late one."
@@ -414,6 +414,9 @@
 						<br><br>
 						<<link [[Leave|Temple]]>><<endevent>><<set $eventskip to 1>><</link>>
 						<br>
+					<<case "anguish">>
+						Sydney stretches. "I need to get ready for tonight's vigil. Wish me luck!" <<if $sydneyromance is 1>><<He>> kisses you on the cheek before leaving.<</if>>
+						<br><br>						
 					<<default>>
 						Sydney stretches. "Time to get back to work. I'll be around." <<if $sydneyromance is 1>><<He>> kisses you on the cheek before leaving.<</if>>
 						<br><br>
@@ -775,11 +778,7 @@
 	<<elseif $englishPlay is "ongoing" and $englishPlayDays is 0 and Time.hour gte 17 and Time.hour lt 21>>
 		<<set _sydney_location to "englishPlay">>
 	<<elseif Time.weekDay is 1>>
-		<<if Time.hour lte 22>>
-			<<set _sydney_location to "temple">>
-		<<else>>
-			<<set _sydney_location to "home">>
-		<</if>>
+		<<set _sydney_location to "temple">>
 	<<elseif Time.weekDay is 7>>
 		<<if $adultshopopeningsydney is true and Time.hour lt 21>>
 			<<set _sydney_location to "shop">>
@@ -804,10 +803,10 @@
 		<<elseif $_corruption gt 20 and Time.weekDay is 5>>
 			<<set _sydney_location to "shop">>
 			<<set _sydney_location_message to "shop">>
-		<<elseif $_corruption gt 30 and Time.weekDay is 3>>
+		<<elseif $_corruption gt 30 and Time.weekDay is 3 and $sydney.rank is "initiate">>
 			<<set _sydney_location to "shop">>
 			<<set _sydney_location_message to "shop">>
-		<<elseif $_corruption gt 40 and Time.weekDay is 2>>
+		<<elseif $_corruption gt 40 and Time.weekDay is 2 and $sydney.rank is "initiate">>
 			<<set _sydney_location to "shop">>
 			<<set _sydney_location_message to "shop">>
 		<<else>>
@@ -866,9 +865,9 @@
 			<<case 13 14 15 16>>
 				<<set $sydney_templeWork to "pray">>
 			<<case 17 18 19 20>>
-				<<set $sydney_templeWork to "quarters">>
+				<<set $sydney_templeWork to (Time.weekDay is 1 && V.sydney && V.sydney.rank === "initiate" ? "anguish" : "quarters")>>
 			<<case 21 22>>
-				<<set $sydney_templeWork to "pray">>
+				<<set $sydney_templeWork to (Time.weekDay is 1 && V.sydney && V.sydney.rank === "initiate" ? "anguish" : "pray")>>
 			<<case 23 0>>
 				<<set $sydney_templeWork to (Time.weekDay is 7? "sleep" : "pray")>>
 			<<default>>
@@ -1101,6 +1100,14 @@
 		<<set _text_output to "mother">>
 	<<else>>
 		<<set _text_output to "father">>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "sydneyOtherParentGender">><<silently>>
+	<<if $NPCName[$NPCNameList.indexOf("Sirris")].pronoun is "m">>
+		<<set _text_output to "woman">>
+	<<else>>
+		<<set _text_output to "man">>
 	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
@@ -1395,7 +1402,7 @@
 	<<elseif $punishmentTimer lte 0>>
 		<<person2>>The <<priest>> holds up <<his>> hand. "Enough." The <<monks>> stop, and snuff the incense burners. <<He>> slowly approaches you, and raises <<his>> hand, causing both you and Sydney to flinch in fear.
 		<br><br>
-		The strike never comes. Instead, you hear metal clattering to the ground. "Congratulations, my children," <<he>> drawls. "You have endured lust and wrath, showing your bond to be stronger than both. <span class="green">You are pure once more.</span>" Your bindings are all released. A <<monk>> steps behind you and unties your gags. <<He>> also removes your collars. <<tearful>> you and Sydney remain clinging to each other, supporting each other to a standing position. Your knees tremble.
+		The strike never comes. Instead, you hear metal clattering to the ground. "Congratulations, my children," <<he>> says. "You have endured lust and wrath, showing your bond to be stronger than both. <span class="green">You are pure once more.</span>" Your bindings are all released. A <<monk>> steps behind you and unties your gags. <<He>> also removes your collars. <<tearful>> you and Sydney remain clinging to each other, supporting each other to a standing position. Your knees tremble.
 		<br><br>
 		"A warning," the <<priest>> continues. "Breathe not a word of this to anyone. Not your friends. Not Jordan. Not your parents, should you be so blessed. I'd hate to consider you impure again."
 		<br><br>
@@ -1575,6 +1582,12 @@
 	<br><br>
 	You can feel Sydney's breath on your skin. Something about knowing <<nnpc_hes "Sydney">> still there calms you. <<nnpc_He "Sydney">> holds you tighter. You squeeze back. <<stress -1>><<lstress>>
 	<br><br>
+
+	<<if playerBellySize() gte 15>>
+		You feel a third, faint heartbeat between you.
+		<br><br>
+	<</if>>
+
 	<<link [[Rest (1:00)|Sydney Temple Punish Repeat]]>><<pass 1 hour>><<set $sydneyPain -= 4>><<set $sydneyArousal -= 4>><<pain -30>><</link>><<lllpain>>
 	<br>
 <</widget>>
