@@ -1488,6 +1488,16 @@ function dailySchoolEffects() {
 		}
 	}
 
+	if (V.temple_initiate_days !== undefined) {
+		V.temple_initiate_days += 1;
+	}
+	if (V.temple_monk_days !== undefined) {
+		V.temple_monk_days += 1;
+	}
+	if (V.temple_spar !== undefined) {
+		delete V.temple_spar;
+	}
+	
 	return fragment;
 }
 

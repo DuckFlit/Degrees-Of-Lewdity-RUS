@@ -1587,6 +1587,15 @@ setup.feats = {
 		hint: "Hint: At the root of an island, waiting.",
 		softLockable: true,
 	},
+	"Defy the Night": {
+		title: "Defy the Night",
+		desc: "Endured the Trial of Anguish to completion.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Climb the temple hierarchy.",
+		softLockable: true,
+	},
 	"Max Those Shots": {
 		title: "Max Those Shots",
 		desc: "Holding a lot of pepper spray.",

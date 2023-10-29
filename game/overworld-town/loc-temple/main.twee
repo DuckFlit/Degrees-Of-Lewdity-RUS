@@ -107,7 +107,7 @@ You are in the main hall of the temple. Stone walls and pillars tower into darkn
 		<</if>>
 		<br><br>
 
-		<<link [["Encourage " + $NPCList[0].pronouns.him + " to flaunt it"|Temple Sydney Rosary]]>><<set $phase to 2>><<grace -3 monk>><<npcincr Sydney purity -5>><</link>><<llgrace monk>><<llspurity>><<sydneyWarning>>
+		<<link [["Encourage " + $NPCList[0].pronouns.him + " to flaunt it"|Temple Sydney Rosary]]>><<set $phase to 2>><<grace -3>><<npcincr Sydney purity -5>><</link>><<llgrace>><<llspurity>><<sydneyWarning>>
 		<br>
 		<<link [["Commend " + $NPCList[0].pronouns.him|Temple Sydney Rosary]]>><<set $phase to 1>><<npcincr Sydney love 1>><<npcincr Sydney purity -1>><</link>><<glove>><<lspurity>>
 		<br>
@@ -144,6 +144,50 @@ You are in the main hall of the temple. Stone walls and pillars tower into darkn
 	<br>
 	<<link [[Refuse|Temple]]>><<endevent>><</link>>
 	<br>
+<<elseif ($temple_rank is "monk" or $temple_rank is "priest") and $renttime lte -2 or ($renttime lte 0 and Time.hour gte 4 and Time.hour lte 21)>>
+	<<if $temple_bailey is undefined>>
+		<<npc "Bailey">>
+		<<npc "Jordan">>
+		<<if $per_npc.bishop_right_hand>>
+			<<loadNPC 2 "bishop_right_hand">><<loadNPC 3 "bishop_left_hand">>
+		<<else>>
+			<<generateConfessor 3>><<set _generate_partner to 1>><<generateConfessor 4>>
+			<<saveNPC 2 "bishop_right_hand">><<saveNPC 3 "bishop_left_hand">>
+		<</if>>
+		<<person2>>Jordan stands in front of the altar, flanked by a <<person3>><<person>> and <<person4>><<person>> in dark robes. They address a familiar figure. <span class="red">Bailey.</span>
+		<br><br>
+		"Thank you for your understanding," Jordan says to Bailey as you approach. "You've every right be concerned for your ward." <<He>> notices you. "Ah, there they are."
+		<br><br>
+		Bailey turns to you, an uncharacteristic, warm smile spreading across <<person1>><<his>> face. "It's good to see you," <<he>> says. "You do make me worry." <<He>> leans closer, and whispers so that only you can hear. <span class="gold">"You're off the hook this week,</span> but I'll be visiting now and then. To take what's mine."
+		<br><br>
+
+		<<link [[Nod|Temple Bailey Intro Nod]]>><<set $temple_bailey to 1>><<stress 6>><<grace 1>><</link>><<gstress>><<ggrace>>
+		<br>
+		<<link [[Refuse|Temple Bailey Intro Refuse]]>><<set $temple_bailey to 1>><<trauma -6>><<grace -3>><</link>><<llgrace>><<ltrauma>>
+		<br>
+		<<link [[Remain silent|Temple Bailey Intro Silent]]>><<set $temple_bailey to 1>><</link>>
+		<br>
+		<<set $renttime to 7>><<set $rentday to Time.weekDay>>
+	<<else>>
+		<<npc "Bailey">><<person1>>
+		<<if $per_npc.bishop_right_hand>>
+			<<loadNPC 1 "bishop_right_hand">><<loadNPC 2 "bishop_left_hand">>
+		<<else>>
+			<<generateConfessor 2>><<set _generate_partner to 1>><<generateConfessor 3>>
+			<<saveNPC 1 "bishop_right_hand">><<saveNPC 2 "bishop_left_hand">>
+		<</if>>
+		A hand rests on your shoulder. <span class="red">It's Bailey.</span> <<Hes>> flanked by the <<person2>><<person>> and <<person3>><<person>>. "I've come to check up on you," <<he>> says, a practised, enthralling smile on <<his>> face. <<His>> grips tightens and <<he>> leans closer, so that only you can hear. "Time to pay up."
+		<br>
+		"The temple must support the community."
+		<br>
+		"Time to pay up."
+		<br><br>
+
+		Bailey winces at the latter's words.
+		<br><br>
+
+		<<temple_bailey_options>>
+	<</if>>
 <<else>>
 	<<if $arousal gte $arousalmax>>
 		<<orgasmLocation "temple">>
@@ -2679,7 +2723,7 @@ Then <<he>> sighs with relief, and pulls away.
 	<br><br>
 	"Even if you qualify, there is another trial," Jordan continues. "You must spend a night in vigil, unclad, within a restricted cloister. It is an old and harsh tradition, but we cannot allow the gentle to join our number. It would be a cruelty."
 	<br><br>
-	"If you are serious, return when you have proven yourself. The trial always begins at <<ampm 20>>." <<He>> turns away.
+	"If you are serious, return when you have proven yourself. The trial always begins at <<ampm 20>>. Make sure you're well-rested before the attempt." <<He>> turns away.
 	<br><br>
 
 	<<link [[Next|Temple]]>><<endevent>><<set $temple_vigil_asked to 1>><</link>>
@@ -2687,24 +2731,23 @@ Then <<he>> sighs with relief, and pulls away.
 <<elseif $weekly.templeVigil>>
 	"You can only attempt the trial once a week," Jordan says. "Time enough to warm your bones."
 	<br><br>
-
-	<<link [[Next|Temple]]>><<endevent>><<set $temple_vigil_asked to 1>><</link>>
+	<<link [[Next|Temple]]>><<endevent>><</link>>
 	<br>
 <<elseif $grace lt 100>>
 	"You have yet to convince our order of your <span class="gold">grace,"</span> Jordan says. "Focus on your duties as an initiate, and return when you are ready."
 	<br><br>
-	<<link [[Next|Temple]]>><<endevent>><<set $temple_vigil_asked to 1>><</link>>
+	<<link [[Next|Temple]]>><<endevent>><</link>>
 	<br>
 <<elseif Time.hour isnot 20>>
-	"It is not the right hour child," Jordan says. "Return at <span class="gold"><<ampm 20>>.</span> The vigil will last all night."
+	"It is not the right hour child," Jordan says. "Return at <span class="gold"><<ampm 20>>.</span> The vigil will last all night. Make sure you are well-rested before hand."
 	<br><br>
-	<<link [[Next|Temple]]>><<endevent>><<set $temple_vigil_asked to 1>><</link>>
+	<<link [[Next|Temple]]>><<endevent>><</link>>
 	<br>
 <<else>>
-	"It is the hour," Jordan says, a finality in <<his>> tone. "I can lead you to the vigil if you wish. Should you endure the night, you may be inducted into the <<if $player.gender_appearance is "f">>sisterhood<<else>>brotherhood<</if>>."
+	"It is the hour." There's a finality in <<his>> tone. "I hope you're well-rested. I can lead you to the vigil if you wish. Should you endure the night, you may be inducted into the <<if $player.gender_appearance is "f">>sisterhood<<else>>brotherhood<</if>>."
 	<br><br>
 
-	<<link [[Begin trial (9:00)|Temple Vigil]]>><<set $weekly.templeVigil to 1>><</link>>
+	<<link [[Begin trial (9:00)|Temple Vigil]]>><</link>>
 	<br>
 	<<link [[Leave|Temple]]>><<endevent>><</link>>
 	<br>
@@ -2729,7 +2772,7 @@ You are led to another set of stairs, these leading up. There is no door this ti
 You emerge in a cloister, a place you've never seen before. Ghoulish gargoyles stand on each others backs, forming columns that surround the interior courtyard. Jordan notices your gaze. "Don't be afraid of the statues," <<he>> reassures you, an odd mirth touching <<his>> tone. "They have a sense of humour, if you look close."
 <br><br>
 
-The priest still doesn't slow <<his>> steps as <<he>> speaks, giving you no chance to investigate. You follow <<him>> into the courtyard proper, and find other initiates stood in the centre, waiting.
+The priest still doesn't slow <<his>> steps as <<he>> speaks, giving you no chance to investigate. You follow <<him>> into the courtyard proper, and find other initiates stood in the centre, waiting beneath the resolute gaze of six-armed, six-winged statue. It's lower arms hold something to the ground, but it's been covered by a sheet.
 <br><br>
 
 <<templeicon "trialcontinue">><<link [[Next|Temple Vigil 3]]>><</link>>
@@ -3122,6 +3165,8 @@ The bell rings, thrice in quick succession. Jordan drops it in <<his>> haste to 
 
 <<set $grace to 0>>
 <<set $temple_rank to "monk">>
+<<set $temple_monk_days to 0>>
+<<earnFeat "Defy the Night">>
 
 <<link [[Next|Temple Vigil 15]]>><<clotheson>><<endevent>><</link>>
 <br>
