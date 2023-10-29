@@ -597,6 +597,11 @@
 	<<generateNPC _args[0] t>>
 <</widget>>
 
+<<widget "generateConfessor">>
+	<<set _npcClothesPreset to "templeBlack">>
+	<<generateNPC _args[0]>>
+<</widget>>
+
 <<widget "generateCultist">>
 	<<set _npcClothesPreset to "templeBlack">>
 	<<generateNPC _args[0]>>
@@ -698,8 +703,7 @@
 	<<set $NPCList[_n].chastity to {penis:"", vagina:"", anus:""}>>
 	<<if _npcChastity is 1>>
 		<<unset _npcChastity>>
-		<<set _graceCheck to ($grace ? $grace : 25)>>
-		<<if random(-100, 120) lte _graceCheck>>
+		<<if random(-100, 120) gte $world_corruption_soft>>
 			<<if $NPCList[_n].penis isnot "none">>
 				<<set $NPCList[_n].chastity.penis to (random(1, 3) is 1 ? "chastity belt" : "chastity cage")>>
 			<</if>>
@@ -708,7 +712,7 @@
 				<<set $NPCList[_n].chastity.vagina to ($NPCList[_n].chastity.penis isnot "" ? $NPCList[_n].chastity.penis : "chastity belt")>>
 			<</if>>
 			<<set $_beltPresent to ($NPCList[_n].chastity.penis is "chastity belt" or $NPCList[_n].chastity.vagina is "chastity belt")>>
-			<<if $analdisable is "f" and random(-100, 150) lte _graceCheck and $_beltPresent>>
+			<<if $analdisable is "f" and random(-100, 150) gte $world_corruption_soft and $_beltPresent>>
 				<<set $NPCList[_n].chastity.anus to "anal shield">>
 			<</if>>
 		<</if>>
@@ -1119,7 +1123,9 @@
 			<<set $NPCList[_n].traits.push("lecher")>>
 	<</switch>>
 	<<if $hallucinations gte 1 and $controlled is 0>>
-		<<if random(1, 100) gte 91>>
+		<!-- Update divisor when world corruption clamp changes-->
+		<<set $_hypnoChance = Math.floor($world_corruption_soft / 10)>>
+		<<if random(1, 100) lte $_hypnoChance>>
 			<<set $NPCList[_n].traits.push("hypnotist")>>
 		<</if>>
 	<<else>>

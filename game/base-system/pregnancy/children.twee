@@ -12,21 +12,20 @@
 	<</for>>
 <</widget>>
 
-/*args[0] - location, args[1] - "both" to include unrelated children or "only" to exclude the player children*/
+/*args[0] - filter in the form of an object, args[1] - "both" to include unrelated children or "only" to exclude the player children*/
 <<widget "getChildrenIds">>
 	<<set _childrenIds to []>>
-	<<for $_label, $_value range $children>>
-		<<if $_value.mother isnot "pc" and $_value.father isnot "pc">>
-			<<if _args[1] isnot "both" and _args[1] isnot "only">>
-				<<continue>>
-			<</if>>
-		<<elseif _args[1] is "only">>
-			<<continue>>
-		<</if>>
-		<<if _args[0] is undefined or $_value.location is _args[0]>>
-			<<run _childrenIds.push($_label)>>
-		<</if>>
-	<</for>>
+	<<run Object.values($children).forEach(child => {
+		if ((child.mother === "pc" || child.father === "pc") && _args[1] === "only") {
+			return;
+		} else if ((child.mother !== "pc" && child.father !== "pc") and !_args[1]) {
+			return;
+		}
+		if (T.args[0] && !Object.entries(T.args[0]).every(([key, value]) => child[key] === value)) {
+			return;
+		}
+		if (child.childId) T.childrenIds.push(child.childId);
+	})>>
 <</widget>>
 
 /*args[0] - location, args[1] - min length requirement, args[2] - max length requirement,

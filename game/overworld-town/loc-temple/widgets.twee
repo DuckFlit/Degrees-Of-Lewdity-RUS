@@ -493,7 +493,12 @@
 		<</if>>
 	<<elseif $rng gte 51>>
 		<<if $awareness gte 800>>
-			Battle-hardened clergy attend parishioners, creating a veneer of civility. You wonder how deep the corruption spreads.
+			Battle-hardened clergy attend parishioners, creating a veneer of civility.
+			<<if $temple_confessor_intro>>
+				The seal of confession remains unbroken, for now.
+			<<else>>
+				You wonder how deep the corruption spreads.
+			<</if>>
 			<<gstress>><<stress 6>>
 			<br><br>
 
@@ -688,10 +693,22 @@
 <</widget>>
 
 <<widget "temple_title">><<silently>>
-	<<if _args[0] is "dark">>
+	<<if _args[0] is "Sydney">>
+		<<switch $sydney.rank>>
+			<<case "initiate">><<set _text_output to "initiate">>
+			<<case "monk">><<set _text_output to (C.npc.Sydney.pronoun is "m" ? "monk" : "nun")>>
+			<<case "priest">><<set _text_output to "priest">>
+			<<default>><<set _text_output to "initiate">>
+		<</switch>>
+	<<elseif _args[0] is "dark">>
 		<<switch $temple_rank>>
 			<<case "initiate">><<set _text_output to "neonate">>
-			<<case "monk">><<set _text_output to "vessel">>
+			<<case "monk">>
+				<<if $temple_confessor_intro>>
+					<<set _text_output to "vessel">>
+				<<else>>
+					<<set _text_output to "apostle">>
+				<</if>>
 			<<case "priest">><<set _text_output to "dark priest">>
 			<<default>><<set _text_output to "neonate">>
 		<</switch>>
@@ -706,8 +723,21 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "temple_Title">><<silently>>
-	<<temple_title>><<capitalise>>
+	<<if _args[0] is "Sydney">>
+		<<temple_title "Sydney">><<capitalise>>
+	<<elseif _args[0] is "dark">>
+		<<temple_title "dark">><<capitalise>>
+	<<else>>
+		<<temple_title>><<capitalise>>
+	<</if>>
 <</silently>><<print _text_output>><</widget>>
+
+<<widget "endconfession">>
+	<<set $daily.confessed to $confession>>
+	<<unset $attendant>>
+	<<unset $confession>>
+	<<endevent>>
+<</widget>>
 
 <<widget "temple_bailey_options">>
 	<<babyRent>>
@@ -739,3 +769,4 @@
 	<</if>>
 	<<set $renttime to 7>><<set $rentday to Time.weekDay>>
 <</widget>>
+

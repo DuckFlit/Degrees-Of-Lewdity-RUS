@@ -971,6 +971,7 @@ function dailyNPCEffects() {
 		else C.npc.Sydney.title = "faithful";
 		if (V.sydneyScience !== 1 || V.sydneySeen.includes("science")) delete V.sydneyLate;
 		if (Time.schoolDay && random(1, 4) === 1) V.sydneyLate = 1;
+		if (Time.weekDay === 2 && V.sydney && V.sydney.rank === "initiate") V.sydneyLate = 1;
 		if (
 			V.sydneySeen.includes("library") &&
 			C.npc.Sydney.love >= 60 &&
@@ -1020,7 +1021,7 @@ function dailyNPCEffects() {
 				V.wraithCompoundChance = 0;
 				if (V.wraith.offspring === "sold") V.wraithCompoundChance += 10;
 			}
-			V.wraithCompoundChance++;
+			if (V.world_corruption_soft >= 30) V.wraithCompoundChance++;
 			if (V.wraithCompoundChance >= random(5, 60 - C.npc["Ivory Wraith"].lust)) {
 				V.wraithCompoundEvent = true;
 				delete V.wraithCompoundChance;
