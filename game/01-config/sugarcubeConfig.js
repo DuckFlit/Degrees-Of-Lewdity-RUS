@@ -84,10 +84,10 @@ function onSave(save, details) {
 	// then actual save vars
 	save.state.history.forEach(sh => incSavesCount(sh.variables, type, date));
 	// and finally, session data, so it persists even after f5
-	const session = getSessionState();
+	const session = State.getSessionState();
 	if (session != null) {
 		session.history.forEach(s => incSavesCount(s.variables, type, date));
-		setSessionState(session);
+		State.setSessionState(session);
 	}
 
 	// * legacy code for old saves system * //
