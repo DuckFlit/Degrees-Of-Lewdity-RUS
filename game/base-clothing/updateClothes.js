@@ -312,5 +312,10 @@ function wardrobesUpdate() {
 			if (w !== "wardrobe" && V.wardrobes[w].unlocked !== undefined && V.wardrobes[w].genitals === undefined) V.wardrobes[w].genitals = [];
 		}
 	}
+	if(!V.wardrobes["temple"]) {
+		V.wardrobes.temple = clone(defWardrobe);
+		V.wardrobes.temple.unlocked = V.temple_rank === "monk";
+		V.wardrobes.temple.space = 20;
+	}
 }
 DefineMacro("wardrobesUpdate", wardrobesUpdate);
