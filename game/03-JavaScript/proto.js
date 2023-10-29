@@ -10,7 +10,7 @@
  *
  * User beware. Here be dragons.
  */
-
+/*
 JSON.debug = {};
 
 // Keep the old versions around
@@ -121,3 +121,4 @@ JSON.revive = function (reviverClass, data) {
 	}
 	return nextVal;
 };
+*/

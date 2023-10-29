@@ -28,7 +28,7 @@ const Tab = class {
 
 	reset() {
 		this.activeTab = -1;
-		this.tabs.removeClass(this.selectedClass);
+		this.tabs?.removeClass(this.selectedClass);
 	}
 };
 window.Tab = Tab;

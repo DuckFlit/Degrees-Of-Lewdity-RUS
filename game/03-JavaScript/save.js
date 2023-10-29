@@ -1393,7 +1393,7 @@ window.updateMoment = function () {
 	// delete Object.assign(moment, { delta: State.deltaEncode(moment.history) }).history;
 
 	// replace saved moment in session with the new one
-	setSessionState(moment);
+	State.setSessionState(moment);
 
 	// Voilà! F5 will reload the current state now without going to another passage!
 };

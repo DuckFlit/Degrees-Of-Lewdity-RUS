@@ -98,31 +98,9 @@ function handleTouchMove(evt) {
 	yDown = null;
 }
 
-const disableNumberifyInVisibleElements = ["#passage-testing-room"];
-
-// Number-ify links
-window.Links = window.Links || {};
-Links.currentLinks = [];
-
-function getPrettyKeyNumber(counter) {
-	let str = "";
-
-	if (counter > 30) str = "Ctrl + ";
-	else if (counter > 20) str = "Alt + ";
-	else if (counter > 10) str = "Shift + ";
-
-	if (counter % 10 === 0) str += "0";
-	else if (counter < 10) str += counter;
-	else {
-		const c = Math.floor(counter / 10);
-		str += (counter - 10 * c).toString();
-	}
-
-	return str;
-}
+//Links.disableNumberifyInVisibleElements.push("#passage-testing-room");
 
 $(document).on(":passagerender", function (ev) {
-	Links.currentLinks = [];
 
 	if (passage() === "GiveBirth") {
 		$(ev.content)
@@ -131,48 +109,6 @@ $(document).on(":passagerender", function (ev) {
 				Wikifier.wikifyEval("<<resetPregButtons>>");
 				Links.generateLinkNumbers(ev.content);
 			});
-	}
-
-	Links.generateLinkNumbers(ev.content);
-});
-
-Links.keyNumberMatcher = /^\([^)]+\)/;
-
-Links.generateLinkNumbers = content => {
-	if (!V.options.numberify_enabled || !StartConfig.enableLinkNumberify) return;
-
-	for (let i = 0; i < disableNumberifyInVisibleElements.length; i++) {
-		if ($(content).find(disableNumberifyInVisibleElements[i]).length || $(content).is(disableNumberifyInVisibleElements[i])) return; // simply skip this render
-	}
-
-	// wanted to use .macro-link, but wardrobe and something else doesn't get selected, lmao
-	Links.currentLinks = $(content).find(".link-internal").not(".no-numberify *, .no-numberify");
-
-	$(Links.currentLinks).each(function (i, el) {
-		if (Links.keyNumberMatcher.test(el.innerHTML)) {
-			el.innerHTML = el.innerHTML.replace(Links.keyNumberMatcher, `(${getPrettyKeyNumber(i + 1)})`);
-		} else {
-			$(el).html("(" + getPrettyKeyNumber(i + 1) + ") " + $(el).html());
-		}
-	});
-};
-Links.generate = () => Links.generateLinkNumbers(document.getElementsByClassName("passage")[0] || document);
-
-$(document).on("keyup", function (ev) {
-	if (!V.options.numberify_enabled || !StartConfig.enableLinkNumberify || V.tempDisable) return;
-
-	if (document.activeElement.tagName === "INPUT" && document.activeElement.type !== "radio" && document.activeElement.type !== "checkbox") return;
-
-	if ((ev.keyCode >= 48 && ev.keyCode <= 57) || (ev.keyCode >= 96 && ev.keyCode <= 105)) {
-		const fixedKeyIndex = ev.keyCode < 60 ? ev.keyCode - 48 : ev.keyCode - 96;
-
-		let requestedLinkIndex = [9, 0, 1, 2, 3, 4, 5, 6, 7, 8][fixedKeyIndex];
-
-		if (ev.ctrlKey) requestedLinkIndex += 30;
-		else if (ev.altKey) requestedLinkIndex += 20;
-		else if (ev.shiftKey) requestedLinkIndex += 10;
-
-		if ($(Links.currentLinks).length >= requestedLinkIndex + 1) $(Links.currentLinks[requestedLinkIndex]).click();
 	}
 });
 
@@ -741,7 +677,6 @@ function updatehistorycontrols() {
 	else Config.history.maxStates = V.options.maxStates; // update engine config
 
 	// option to only save active state into sessionStorage, for better performance
-	if (V.options.sessionHistory === undefined) V.options.sessionHistory = true; // todo: delete this line in 0.4.2.x
 	if (V.options.sessionHistory) Config.history.maxSessionStates = V.options.maxStates;
 	else Config.history.maxSessionStates = 1;
 
