@@ -609,8 +609,12 @@ function getRobinLocation() {
 		T.robin_location = "sleep";
 	} else if (Time.schoolDay && between(Time.hour, 8, 15)) {
 		T.robin_location = "school";
-	} else if (Time.hour === 16 && between(Time.minute, 31, 59) && !V.daily.robin.bath) {
-		T.robin_location = "bath";
+	} else if (Time.hour === 16 && between(Time.minute, 31, 59)) {
+		if (!V.daily.robin.bath) {
+			T.robin_location = "bath";
+		} else {
+			T.robin_location = "orphanage";
+		}
 	} else if (V.halloween === 1 && between(Time.hour, 16, 18) && Time.monthDay === 31) {
 		T.robin_location = "halloween";
 	} else if ((Time.isWeekEnd()) && between(Time.hour, 9, 16) && C.npc.Robin.trauma < 80) {
