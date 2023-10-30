@@ -1,5 +1,5 @@
 :: Temple Cloister
-<<set $location to "temple">><<set $outside to 1>><<effects>>
+<<set $location to "temple">><<set $outside to 0>><<effects>>
 
 You are in the temple cloister, an area not accessible by the public. <<if $malechance is 100>>Monks<<elseif $malechance is 0>>Nuns<<else>>Monks and nuns<</if>> prowl around the outskirts, emerging from and disappearing into the many passages leading away.
 <br><br>
@@ -20,14 +20,26 @@ A six-armed, six-winged angel statue stands resolute in the centre. Its bottom t
     <</if>>
     <<link [[Public hall (0:01)|Temple]]>><<pass 1>><</link>>
     <br>
-<<elseif $temple_monk_days gte 7 and $loris_met is undefined>>
+<<elseif $temple_monk_days gte 7 and $temple_cloister_week_event is undefined>>
     <<generateTemple 1>><<person1>>
     You notice a <<monk desc>> knelt in prayer before the statue, so still <<he>> could be a statue <<himself>>. <<His>> lips move, then <<he>> rises and opens <<his>> eyes.
     <br><br>
     "Ah," <<he>> says with a smile. "I haven't seen you before." <<He>> bows. "Welcome to our order."
     <br><br>
-    <<link [[Next|Temple Loris]]>><<saveNPC 0 "loris_younger">><<set $loris_met to 1>><</link>>
+    <<link [[Next|Temple Loris]]>><<saveNPC 0 "loris_younger">><<set $temple_cloister_week_event to 1>><</link>>
     <br>
+<<elseif $temple_monk_days gte 14 and $temple_cloister_week_event is 1>>
+    <<generateTemple 1>><<person1>>
+    You hear panting. A <<monk desc>> flails in the middle of the grass, twirling a whip around <<himself>> in erratic fashion. <<He>> looks bewildered.
+    <br><br>
+    <<His>> eyes meet yours, and <<he>> cries out in surprise, losing control of <<his>> whip. It winds around <<his>> body, snapping <<his>> arms and legs together. <<He>> tumbles to the ground.
+    <br><br>
+
+    <<link [[Help|Temple Lemur Help]]>><<saveNPC 0 "lemur_plum">><<set $temple_cloister_week_event to 2>><<stress 6>><<trauma -6>><</link>><<gstress>><<ltrauma>>
+    <br>
+    <<link [[Watch (0:02)|Temple Lemur Watch]]>><<pass 2>><<saveNPC 0 "lemur_plum">><<set $temple_cloister_week_event to 2>><</link>>
+    <br>
+
 <<else>>
     <<if $temple_cloister_progress is undefined>>
         <<link [[Explore (1:00)|Temple Cloister Explore]]>><<set $temple_cloister_progress to 1>><<pass 60>><</link>>
@@ -57,7 +69,7 @@ A six-armed, six-winged angel statue stands resolute in the centre. Its bottom t
 <</if>>
 
 :: Temple Cloister Explore
-<<effects>><<set $outside to 0>>
+<<set $outside to 0>><<effects>>
 
 <<npc "Jordan">><<person1>>
 <<generateTemple 2>>
@@ -477,96 +489,201 @@ The <<person1>><<monk desc>> bows to you, then assumes a guarded posture.
 <br><br>
 
 <<if $prof.baton gte 1000>>
-    You wait, watching your opponent's movements, each twitch of a muscle a feint. When <<he>> moves, you meet <<him>>, pirouette, and attack again.
-    <br><br>
-    <<His>> recovery is too slow, your blow too forceful. <<His>> back is still turned, while you're prepared for another lunge. <<Hes>> aware of it, and evades instead of attempting to parry. You sail by <<him>>, land, spring at <<him>> once more. Every part of <<his>> considerable will is bent on simply evading your assault.
-    <br><br>
-    <span class="green">It's inevitable.</span> <<He>> tires, and you land a blow on <<his>> hip. You bow, and <<he>> tries again, and again. Each time <<he>> evades until you manage to land a blow, or <<he>> tries to parry, and the force of your blow knocks <<him>> to the sand.
-    <br><br>
-    After a while <<he>> starts to get the hang of it, a little, managing to redirect the energy of your attack and forcing you into a quick recovery. You deflect <<his>> counter attack, and smack <<him>> with your own.
-    <br><br>
-    Exhausted, you bow to each other. The <<person2>><<monk desc>> applauds.
-    <br><br>
-<<elseif $prof.baton gte 800>>
-    You strike first, forcing your opponent to react. Your batons meet, you land, pirouette, and lunge again. <<He>> matches you each time. You move so fast that you have to close your eyes to avoid the flying sand.
-    <br><br>
-    You press each other like this for a while, <span class="teal">but it's clear the <<monk desc>> is tiring faster.</span> <<He>> knows it as well. <<He>> makes a desperate, wild assault, putting all that remains of <<his>> strength into a single blow.
-    <br><br>
-    <<if random(1, 2) is 2>>
-        Your batons meet. The slightest mistake on your part would cause your defeat. Instead, you parry it like any other. Your opponent lands on the sand, and throws it into the air as they skid to a halt.
-        <br><br>
-        The <<person2>><<monk desc>> claps twice. "I love a bout between experts."
-        <br><br>
+    <<if $temple_spar_baton is 5>>
+        <<link [[Next|Temple Cloister Spar Baton 6]]>><<set $temple_spar_baton to 6>><</link>>
+        <br>
     <<else>>
-        <<His>> baton meets yours, and the force disrupts your momentum. You spin in the air, and land together on the sand.
+        You leap at each other. <<He>> parries the first blow, but it takes everything <<he>> has. It's clear <<he>> can't keep up with your skill, but you can help <<him>> improve.
         <br><br>
-        "A draw," the <<person2>><<monk desc>> says. "And an entertaining one at that.
-        <br><br>"
+        You leave the arena, aching all over.
+        <br><br>
+
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
+    <</if>>
+<<elseif $prof.baton gte 800>>
+    <<if $temple_spar_baton is 4>>
+        <<link [[Next|Temple Cloister Spar Baton 5]]>><<set $temple_spar_baton to 5>><</link>>
+        <br>
+    <<else>>
+        You exchange blows. You win most bouts, but your opponent is no slouch. The slightest lapse in concentration on your part is exploited, and the <<monk desc>> is occasionally able to force a draw.
+        <br><br>
+        You leave the arena, aching all over.
+        <br><br>
+
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
     <</if>>
 <<elseif $prof.baton gte 600>>
-    You watch each other, conscious of each small movement, each twist of a muscle that could signal an attack.
-    <br><br>
-    <span class="lblue">You trade blows,</span> then pirouette with a kick of sand, and fly at each other once more. The slightest mistake from either party would end the fight. Instead, the intensity increases, the speed increases,
+    <<if $temple_spar_baton is 3>>
+        <<link [[Next|Temple Cloister Spar Baton 4]]>><<set $temple_spar_baton to 4>><</link>>
+        <br>
+    <<else>>
+        You leap to meet <<him>>, again and again. The bouts increase in intensity, until one of you falters. You give as good as you get, and win as often as not.
+        <br><br>
+        You leave the arena, aching all over.
+        <br><br>
 
-    <<if random(1, 2) is 2>>
-        until at last the <<monk desc>>'s concentration falters. <<He>> succeeds in parrying your blow, but fails the landing, and falls on <<his>> rear.
-        <br><br>
-    <<else>>
-        until at last your concentration falters. You parry the final blow, but lose your footing, and fall on your <<bottom>>.
-        <br><br>
-        The <<monk desc>> helps you to your feet, and bows.
-        <br><br>
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
     <</if>>
-    The <<person2>><<monk desc>> applauds. You help the <<person1>><<monk desc>> to <<his>> feet, and bow.
-    <br><br>
 <<elseif $prof.baton gte 400>>
-    <<He>> observes you, watching for any twitch of a muscle that might betray your intent. You're not sure if you gave anything away, but you leap at each other at the same time, your batons colliding with a clang.
-    <br><br>
-    You're sometimes able to leap back into the fray quick enough to meet <<him>>, <span class="blue">but it's inconsistent.</span> Whenever you fail, you take a hit. After a while you're able to get into a good rhythm. Ten, eleven, twelve parries without failing.
-    <br><br>
-    Your concentration falters a little, and your recovery is too slow.
-    <<if random(1, 2) is 2>>
-        You realise you won't respond quick enough. In that instant, you decide to remain rooted to the spot, and try to catch out your opponent with an unusual parry.
-        <br><br>
-        You manage to deflect <<his>> lunge, but the force is too great. You both end up on the sand.
-        <br><br>
-        "An unusual draw," the <<person2>><<monk desc>> says.
-        <br><br>
+    <<if $temple_spar_baton is 2>>
+        <<link [[Next|Temple Cloister Spar Baton 3]]>><<set $temple_spar_baton to 3>><</link>>
+        <br>
     <<else>>
-        You try to make up the lost time, but your opponent meets you on the descent. You block <<his>> blow rather than parry, and the force knocks you on your back.
+        You leap at each other, the batons clanging. These bouts last several exchanges. The <<monk desc>> usually gets the upper hand, but you sometimes force a draw.
         <br><br>
-        "You're getting the hang of this," the <<person2>><<monk desc>> says as the <<person1>><<monk desc>> helps you to your feet.
+        You leave the arena, aching all over.
         <br><br>
+
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
     <</if>>
 <<elseif $prof.baton gte 200>>
-    <<He>> leaps at you. You evade <<his>> blow while moving your baton to meet <<his>> weapon, but <<he>> recovers from one attack and flows into the next <span class="purple">before you can recover,</span> smacking you on the thigh.
-    <br><br>
-    <<He>> bows, and then assumes a guarded posture once more. You do likewise. The next time <<he>> leaps, you keep your feet firm on the spot, and your batons meet. The force pushes you onto your <<bottom>>.
-    <br><br>
-    <<He>> helps you to your feet, bows, then attacks again, and again. Each time <<he>> either recovers too fast for you to defend a second time, or the force shoves you to the sand.
-    <br><br>
-    You decide to be more aggressive. You step into <<his>> blow, parry it, and let <<his>> own force almost trip <<him>>. You bring your baton round for a counterattack. <<He>> frowns in concentration, and manages to bring <<his>> weapon up to intercept yours just in time, then backs away.
-    <br><br>
-    The <<person2>><<monk desc>> claps. "You're a natural. Keep at it."
-    <br><br>
+    <<if $temple_spar_baton is 1>>
+        <<link [[Next|Temple Cloister Spar Baton 2]]>><<set $temple_spar_baton to 2>><</link>>
+        <br>
+    <<else>>
+        You defend yourself as best you can. You parry the <<monk desc>>'s attacks now and then, but it's a struggle to keep up.
+        <br><br>
+        You leave the arena, aching all over.
+        <br><br>
+
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
+    <</if>>
 <<else>>
-    Without warning, <<he>> springs at you. You try to shield yourself with your baton, <span class="pink">but <<hes>> too quick.</span> <<He>> delivers a light tap on your hip, spins, and assumes a guarded posture.
-    <br><br>
+    <<if $temple_spar_baton is undefined>>
+        <<link [[Next|Temple Cloister Spar Baton 1]]>><<set $temple_spar_baton to 1>><</link>>
+        <br>
+    <<else>>
+        You defend yourself as best you can, but its a struggle to keep up. You manage to launch the occasional counterattack at the <<monk desc>>, but <<he>> parries each one.
+        <br><br>
+        You leave the arena, aching all over.
+        <br><br>
 
-    Before you can get your bearings, <<he>> attacks again, and again. Each time the blow strikes from a different angle, and never where you hold your baton ready to parry.
-    <br><br>
-    
-    You go decide to go on the offensive. <<He>> looks shocked for a moment, but manages to parry your blow to the side. You stumble, and <<he>> taps you on the shin as you pass.
-    <br><br>
-
-    "You might not feel it," the <<person2>><<monk desc>> says, still watching from the sidelines. "But you're making progress."
-    <br><br>
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
+    <</if>>
 <</if>>
-    You leave the arena, aching all over.
-    <br><br>
+
+:: Temple Cloister Spar Baton 1
+<<effects>>
+
+Without warning, <<he>> springs at you. You try to shield yourself with your baton, <span class="pink">but <<hes>> too quick.</span> <<He>> delivers a light tap on your hip, spins into a defensive stance.
+<br><br>
+
+Before you can get your bearings, <<he>> attacks again, and again. Each time the blow strikes from a different angle, and never where you hold your baton ready to parry.
+<br><br>
+
+You go decide to go on the offensive. <<He>> looks shocked for a moment, but manages to parry your blow to the side. You stumble, and <<he>> taps you on the shin as you pass.
+<br><br>
+
+"You might not feel it," the <<person2>><<monk desc>> says, still watching from the sidelines. "But you're making progress."
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
 
 <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
 <br>
+
+
+:: Temple Cloister Spar Baton 2
+<<effects>>
+
+<<He>> leaps at you. You evade <<his>> blow while moving your baton to meet <<his>> weapon, but <<he>> recovers from one attack and flows into the next <span class="purple">before you can recover,</span> smacking you on the thigh.
+<br><br>
+<<He>> bows, and then assumes a guarded posture once more. You do likewise. The next time <<he>> leaps, you keep your feet firm on the spot, and your batons meet. The force pushes you onto your <<bottom>>.
+<br><br>
+<<He>> helps you to your feet, bows, then attacks again, and again. Each time <<he>> either recovers too fast for you to defend a second time, or the force shoves you to the sand.
+<br><br>
+You decide to be more aggressive. You step into <<his>> blow, parry it, and let <<his>> own force almost trip <<him>>. You bring your baton round for a counterattack. <<He>> frowns in concentration, and manages to bring <<his>> weapon up to intercept yours just in time, then backs away.
+<br><br>
+The <<person2>><<monk desc>> claps. "You're a natural. Keep at it."
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Cloister Spar Baton 3
+<<effects>>
+
+<<He>> observes you, watching for any twitch of a muscle that might betray your intent. You're not sure if you gave anything away, but you leap at each other at the same time, your batons colliding with a clang.
+<br><br>
+You're sometimes able to leap back into the fray quick enough to meet <<him>>, <span class="blue">but it's inconsistent.</span> Whenever you fail, you take a hit. After a while you're able to get into a good rhythm. Ten, eleven, twelve parries without failing.
+<br><br>
+Your concentration falters a little, and your recovery is too slow. You realise you won't respond quick enough. In that instant, you decide to remain rooted to the spot, and try to catch out your opponent with an unusual parry.
+<br><br>
+You manage to deflect <<his>> lunge, but the force is too great. You both end up on the sand.
+<br><br>
+"An unusual draw," the <<person2>><<monk desc>> says.
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Cloister Spar Baton 4
+<<effects>>
+
+You watch each other, conscious of each small movement, each twist of a muscle that could signal an attack.
+<br><br>
+<span class="lblue">You trade blows,</span> then pirouette with a kick of sand, and fly at each other once more. The slightest mistake from either party would end the fight. Instead, the intensity increases, the speed increases, until at last the <<monk desc>>'s concentration falters. <<He>> succeeds in parrying your blow, but fails the landing, and falls on <<his>> rear.
+<br><br>
+The <<person2>><<monk desc>> applauds. You help the <<person1>><<monk desc>> to <<his>> feet, and bow.
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Cloister Spar Baton 5
+<<effects>>
+
+You strike first, forcing your opponent to react. Your batons meet, you land, pirouette, and lunge again. <<He>> matches you each time. You move so fast that you have to close your eyes to avoid the flying sand.
+<br><br>
+You press each other like this for a while, <span class="teal">but it's clear the <<monk desc>> is tiring faster.</span> <<He>> knows it as well. <<He>> makes a desperate, wild assault, putting all that remains of <<his>> strength into a single blow.
+<br><br>
+Your batons meet. The slightest mistake on your part would cause your defeat. Instead, you parry it like any other. Your opponent skids on the sand, throwing it into the air as they tumble to a halt.
+<br><br>
+The <<person2>><<monk desc>> claps twice. "I love a bout between experts."
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+
+:: Temple Cloister Spar Baton 6
+<<effects>>
+You wait, watching your opponent's movements, each twitch of a muscle a feint. When <<he>> moves, you meet <<him>>, pirouette, and attack again.
+<br><br>
+<<His>> recovery is too slow, your blow too forceful. <<His>> back is still turned, while you're prepared for another lunge. <<Hes>> aware of it, and evades instead of attempting to parry. You sail by <<him>>, land, spring at <<him>> once more. Every part of <<his>> considerable will is bent on simply evading your assault.
+<br><br>
+<span class="green">It's inevitable.</span> <<He>> tires, and you land a blow on <<his>> hip. You bow, and <<he>> tries again, and again. Each time <<he>> evades until you manage to land a blow, or <<he>> tries to parry, and your force knocks <<him>> to the sand.
+<br><br>
+After a while <<he>> starts to get the hang of it, a little, managing to redirect the energy of your attack and forcing you into a quick recovery. You deflect <<his>> counter attack, and smack <<him>> with your own.
+<br><br>
+Exhausted, you bow to each other. The <<person2>><<monk desc>> applauds.
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
 
 :: Temple Cloister Spar Whip
 <<effects>>
@@ -578,88 +695,194 @@ The <<person1>><<monk desc>> bows to you, then flies into a dance.
 <br><br>
 
 <<if $prof.whip gte 1000>>
-    You dance to meet <<him>>, putting <<him>> on the defensive at once. Such is your speed that you and the whip seem to dance independently from one another. <span class="green">A graceful dancer surrounded by whirling violence.</span>
-    <br><br>
-    You back <<him>> into the corner, forcing <<him>> to make a desperate gambit to stay on <<his>> feet. <<He>> succeeds, darting through your attack with every ounce of will, and escaping to open space. You press the assault, keeping <<him>> on <<his>> toes.
-    <br><br>
-    This continues for a time, until <<he>> no longer has the strength for such a gambit. You trip <<him>> with the tip of your whip, and leave <<him>> sprawled on the sand.
-    <br><br>
-    You help your opponent to <<his>> feet, and bow. The <<person2>><<monk desc>> applauds.
-    <br><br>
-<<elseif $prof.whip gte 800>>
-    You dance to meet <<him>>. <<His>> brow furrows in concentration as you <span class="teal">put <<him>> on the defensive at once.</span> Each time <<he>> manages make an attack of <<his>> own, you evade with grace and continue your assault without missing a beat.
-    <br><br>
-    
-    <<if random(1, 2) is 2>>
-        <<He>> tires until <<he>> can no longer keep up with your pace. <<His>> concentration slips for just a moment, and your whip finds purchase around <<his>> ankles. You spin and yank the thong, pulling <<him>> to the sand.
-        <br><br>
-        The <<person2>><<monk desc>> nods approvingly.
-        <br><br>
+    <<if $temple_spar_whip is 5>>
+        <<link [[Next|Temple Cloister Spar Whip 6]]>><<set $temple_spar_whip to 6>><</link>>
+        <br>
     <<else>>
-        <<He>> tires more and more, until <<he>> at last makes a final, desperate attack, throwing all caution the wind. <<He>> succeeds in snaring your ankles, but leaves <<himself>> wide open to your counterattack. You both end up on the sand.
+        You dance. <<His>> eyes dart around you, trying to discern the pattern in your whip, and almost trips over the edge of the arena as <<he>> backs away. It's clear <<he>> can't match your skill, but you can help <<him>> improve.
         <br><br>
-        The <<person2>><<monk desc>> applauds.
+        You leave the arena, aching all over.
         <br><br>
+
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
+    <</if>>
+<<elseif $prof.whip gte 800>>
+   <<if $temple_spar_whip is 4>>
+        <<link [[Next|Temple Cloister Spar Whip 5]]>><<set $temple_spar_whip to 5>><</link>>
+        <br>
+    <<else>>
+        You dance to meet <<him>>, putting <<him>> on the defensive. It usually ends with your whip around <<his>> legs, and <<his>> back on the sand, though <<he>> occasionally returns the favour.
+        <br><br>
+        You leave the arena, aching all over.
+        <br><br>
+
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
     <</if>>
 <<elseif $prof.whip gte 600>>
-    You dance to meet <<him>>, ducking beneath one blow, leaping over the next. <<He>> evades your blows in turn. You spin, jump, duck, pirouette, right next to each other, in the eye of the storm. No one would guess you were fighting, your aggression channeled into the cords flying around you.
-    <br><br>
-    This continues for a time, your heart racing, <span class="lblue">your mind focused.</span> The <<person2>><<monk desc>> watches, silent, in suspense.
-    <<if random(1, 2) is 2>>
-        Until at last, you get the upper hand. Your opponent, worn down by the bout, fails to jump over your final blow. It catches the tip of <<person1>><<his>> shoes, making <<him>> stumble. <<His>> own whip twirls around <<him>>, binding <<his>> legs. <<He>> falls to the sand.
-        <br><br>
-        The <<person2>><<monk desc>> claps <<his>> hands twice.
-        <br><br>
+    <<if $temple_spar_whip is 3>>
+        <<link [[Next|Temple Cloister Spar Whip 4]]>><<set $temple_spar_whip to 4>><</link>>
+        <br>
     <<else>>
-        At last however, the <<person1>><<monk desc>> manages to catch you out with a feint. <<His>> whip binds your legs tight together, and you fall to the ground.
+        You dance to meet one another, twirling side by side, until one of you falters, and lies bound on the sand.
         <br><br>
-        <<He>> helps you to your feet, barely able to stand on <<his>> own.
+        You leave the arena, aching all over.
         <br><br>
+
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
     <</if>>
 <<elseif $prof.whip gte 400>>
-    <<His>> attacks are aggressive, testing what you can do. You're able to keep up with <<his>> movements, but your body lags behind your mind. Each time <<he>> moves in for a disabling strike, you anticipate it, <span class="blue">but can't respond fast enough.</span>
-    <br><br>
-    <<He>> knocks you on your back, again and again, but you're no longer afraid of defeat. With each fall, you learn a little more. You brush off the sand and prepare for another bout.
-    <br><br>
-    You occasionally make attacks of your own.
-    <<if random(1, 2) is 2>>
-        None come to much however, but your opponent is left panting by the end.
-        <br><br>
+    <<if $temple_spar_whip is 2>>
+        <<link [[Next|Temple Cloister Spar Whip 3]]>><<set $temple_spar_whip to 3>><</link>>
+        <br>
     <<else>>
-        Your opponent evades them with seeming ease, until the last. <<His>> delicate footwork fails, and <<he>> almost stumbles. You seize the chance, snap your whip around <<his>> thighs, and pull with all your might.
+        <<He>> springs into life. You're able to discern the movements of <<his>> whip, but your body can't keep up. <<He>> trips you a lot, though you're occasionally able to return the favour.
+        <br><br>
+        You leave the arena, aching all over.
         <br><br>
 
-        It's only then that you notice <<his>> whip coiling around your own thighs. You pull each other to the sand.
-        <br><br>
-
-        The <<person2>><<monk desc>> applauds. "A draw."
-        <br><br>
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
     <</if>>
 <<elseif $prof.whip gte 200>>
-    The blur coalesces into a discernable pattern. You extend your whip to meet <<his>>, but <<he>> changes the tempo of <<his>> movements, <span class="purple">evading your blows and continuing the assault.</span> You can only slow <<his>> march across the arena, until you're backed into a corner.
-    <br><br>
+    <<if $temple_spar_whip is 1>>
+        <<link [[Next|Temple Cloister Spar Whip 2]]>><<set $temple_spar_whip to 2>><</link>>
+        <br>
+    <<else>>
+        <<His>> whip whirls into life. You're able to discern the movements now and then, well enough to evade, or even launch a counterattack, though the <<monk desc>> evades them without breaking <<his>> dance.
+        <br><br>
+        You leave the arena, aching all over.
+        <br><br>
 
-    With nowhere to turn, you lash your whip directly at the <<monk desc>>'s legs. <<He>> hops over it, but there's a respite in <<his>> assault. You seize the moment, and dash through the opening, escaping the trap. The <<person2>><<monk desc>> smiles, but you've no time to appreciate this small victory.
-    <br><br>
-
-    <<person1>><<He>> corners you again, and again. Each time, backed against the wall, you find a sudden desperate will, and manage to escape. But the attacks don't relent, until at last, exhausted, you haven't the speed for such a gambit. <<He>> brings <<his>> whip around your knees, and drags you to the sand.
-    <br><br>
-
-    As <<he>> helps you to <<his>> feet, you notice <<his>> chest rising and falling, and a single bead of sweat run down <<his>> cheek.
-    <br><br>
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
+    <</if>>
 <<else>>
-    The whip whirls around <<him>>, <span class="pink">faster than your eyes can keep up with,</span> a blur that moves closer with each step. <<He>> forces you back so far you trip over the edge of the arena, landing on your <<bottom>>.
-    <br><br>
-    <<He>> bows as you rise to your feet, then returns to the starting position. You try again, and again, but each time the violent whirling of the <<monk desc>>'s whip proves too much for you to overcome. Your opponent begins each bout with the same solemnity as the first.
-    <br><br>
-    Then, for a moment, you glimpse a pattern in the chaos. Rather than step backwards, you step forwards and bring your whip against <<his>>, forcing <<him>> to react. <<He>> evades your attack, and twirls into a counterattack, snapping the length of <<his>> weapon around your legs. You topple to the ground. The <<person2>><<monk desc>> applauds your progress.
-    <br><br>
+    <<if $temple_spar_whip is undefined>>
+        <<link [[Next|Temple Cloister Spar Whip 1]]>><<set $temple_spar_whip to 1>><</link>>
+        <br>
+    <<else>>
+        <<His>> whip whirls and lashes at your feet, forcing you against the edge of the arena. You're sometimes able to escape the trap, but more often end up on your <<bottom>>.
+        <br><br>
+        You leave the arena, aching all over.
+        <br><br>
+
+        <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+        <br>
+    <</if>>
 <</if>>
+
+:: Temple Cloister Spar Whip 1
+<<effects>>
+
+The whip whirls around <<him>>, <span class="pink">faster than your eyes can keep up with,</span> a blur that moves closer with each step. <<He>> forces you back so far you trip over the edge of the arena, landing on your <<bottom>>.
+<br><br>
+<<He>> bows as you rise to your feet, then returns to the starting position. You try again, and again, but each time the violent whirling of the <<monk desc>>'s whip proves too much for you to overcome. Your opponent begins each bout with the same solemnity as the first.
+<br><br>
+Then, for a moment, you glimpse a pattern in the chaos. Rather than step backwards, you step forwards and bring your whip against <<his>>, forcing <<him>> to react. <<He>> evades your attack, and twirls into a counterattack, snapping the length of <<his>> weapon around your legs. You topple to the ground. The <<person2>><<monk desc>> applauds your progress.
+<br><br>
+
 You leave the arena, aching all over.
 <br><br>
-<<link [[Next|Temple Cloister]]>><</link>>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
 <br>
 
+:: Temple Cloister Spar Whip 2
+<<effects>>
+
+The blur coalesces into a discernable pattern. You extend your whip to meet <<his>>, but <<he>> changes the tempo of <<his>> movements, <span class="purple">evading your blows and continuing the assault.</span> You can only slow <<his>> march across the arena, until you're backed into a corner.
+<br><br>
+
+With nowhere to turn, you lash your whip directly at the <<monk desc>>'s legs. <<He>> hops over it, but there's a respite in <<his>> assault. You seize the moment, and dash through the opening, escaping the trap. The <<person2>><<monk desc>> smiles, but you've no time to appreciate this small victory.
+<br><br>
+
+<<person1>><<He>> corners you again, and again. Each time, backed against the wall, you find a sudden desperate will, and manage to escape. But the attacks don't relent, until at last, exhausted, you haven't the speed for such a gambit. <<He>> brings <<his>> whip around your knees, and drags you to the sand.
+<br><br>
+
+As <<he>> helps you to <<his>> feet, you notice <<his>> chest rising and falling, and a single bead of sweat run down <<his>> cheek.
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Cloister Spar Whip 3
+<<effects>>
+
+<<His>> attacks are aggressive, testing what you can do. You're able to keep up with <<his>> movements, but your body lags behind your mind. Each time <<he>> moves in for a disabling strike, you anticipate it, <span class="blue">but can't respond fast enough.</span>
+<br><br>
+<<He>> knocks you on your back, again and again, but you're no longer afraid of defeat. With each fall, you learn a little more. You brush off the sand and prepare for another bout.
+<br><br>
+You occasionally make attacks of your own. Your opponent evades them with seeming ease, until the last. <<His>> delicate footwork fails, and <<he>> almost stumbles. You seize the chance, snap your whip around <<his>> thighs, and pull with all your might.
+<br><br>
+
+It's only then that you notice <<his>> whip coiling around your own thighs. You pull each other to the sand.
+<br><br>
+
+The <<person2>><<monk desc>> applauds. "A draw."
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Cloister Spar Whip 4
+<<effects>>
+
+You dance to meet <<him>>, ducking beneath one blow, leaping over the next. <<He>> evades your blows in turn. You spin, jump, duck, pirouette, right next to each other, in the eye of the storm. No one would guess you were fighting, your aggression channeled into the cords flying around you.
+<br><br>
+This continues for a time, your heart racing, <span class="lblue">your mind focused.</span> The <<person2>><<monk desc>> watches, silent, in suspense. Until at last, you get the upper hand. Your opponent, worn down by the bout, fails to jump over your final blow. It catches the tip of <<person1>><<his>> shoes, making <<him>> stumble. <<His>> own whip twirls around <<him>>, binding <<his>> legs. <<He>> falls to the sand.
+<br><br>
+The <<person2>><<monk desc>> claps <<his>> hands twice.
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Cloister Spar Whip 5
+<<effects>>
+
+You dance to meet <<him>>. <<His>> brow furrows in concentration as you <span class="teal">put <<him>> on the defensive at once.</span> Each time <<he>> manages make an attack of <<his>> own, you evade with grace and continue your assault without missing a beat.
+<br><br>
+
+<<He>> tires until <<he>> can no longer keep up with your pace. <<His>> concentration slips for just a moment, and your whip finds purchase around <<his>> ankles. You spin and yank the thong, pulling <<him>> to the sand.
+<br><br>
+The <<person2>><<monk desc>> nods approvingly.
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Cloister Spar Whip 6
+<<effects>>
+
+You dance to meet <<him>>, putting <<him>> on the defensive at once. Such is your speed that you and the whip seem to dance independently from one another. <span class="green">A graceful dancer surrounded by whirling violence.</span>
+<br><br>
+You back <<him>> into the corner, forcing <<him>> to make a desperate gambit to stay on <<his>> feet. <<He>> succeeds, darting through your attack with every ounce of will, and escaping to open space. You press the assault, keeping <<him>> on <<his>> toes.
+<br><br>
+This continues for a time, until <<he>> no longer has the strength for such a gambit. You trip <<him>> with the tip of your whip, and leave <<him>> sprawled on the sand.
+<br><br>
+You help your opponent to <<his>> feet, and bow. The <<person2>><<monk desc>> applauds.
+<br><br>
+
+You leave the arena, aching all over.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
 
 
 :: Temple Cloister Showers
@@ -677,7 +900,7 @@ You are in the showers within the temple cloister. Each has a separate cubicle, 
 <<effects>>
 
 <<wash>>
-You enclose yourself with a cubicle, undress, and step into the shower proper. The warm water cleanses you of filth.
+You enclose yourself within a cubicle, undress, and step into the shower proper. The warm water cleanses you of filth.
 <br><br>
 
 You dry yourself, dress, and return to the cloister.
@@ -701,7 +924,7 @@ It appears to be made of marble. Its wings are spread out wide, and its middle a
 
     You reach up to touch one of the lower hands. 
     <<if $world_corruption_hard gte 3>>
-        <span class="blue">You feel reassured, yet worried. Like a child being cradled by <<pher>> mother as a storm rolls in. This is merely the calm before the tempest.</span>
+        <span class="blue">You feel reassured, yet worried. Like a child being cradled by <<pher>> parent as a storm rolls in. This is merely the calm before the tempest.</span>
     <<elseif $world_corruption_hard gt 0>>
         <span class="teal">You feel reassured, as if you're being praised while also told to remain vigilant. The taint will spread.</span>
     <<else>>
@@ -772,6 +995,33 @@ The mirror it holds is almost wide enough to see the whole room.
 <br><br>
 
 <<He>> disappears among the gargoyles.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Lemur Help
+<<effects>>
+
+You help the <<monk desc>> liberate <<himself>> from <<his>> whip. "Thank you," <<he>> says, avoiding eye contact. "I'm Lemur Plum. I want to get better at fighting, but the arena scares me. I thought practising alone would help my confidence. I didn't know someone was watching."
+<br><br>
+
+<<He>> looks at the whip in <<his>> hand, then at you. "I see now this isn't going to work. I'll ask Jordan for advice. Thank you." <<He>> bows, and disappears between the gargoyles.
+<br><br>
+
+<<link [[Next|Temple Cloister]]>><<endevent>><</link>>
+<br>
+
+:: Temple Lemur Watch
+<<effects>>
+
+You watch the <<monk desc>> try to squirm free, but <<he>> only tightens the coils. Then <<he>> pauses for a moment. It almost looks like <<hes>> given up, but then <<he>> adopts a more methodical approach, and manages to liberate <<himself>>.
+<br><br>
+
+"I hope I didn't startle you," <<he>> says as <<he>> stands, avoiding eye contact. "I'm Lemur Plum. I want to get better at fighting, but the arena scares me. I thought practising alone would help my confidence. I didn't know someone was watching."
+<br><br>
+
+<<He>> looks at the whip in <<his>> hand, then at you. "I see now this isn't going to work. I'll ask Jordan for advice. Thank you." <<He>> bows, and disappears between the gargoyles.
 <br><br>
 
 <<link [[Next|Temple Cloister]]>><<endevent>><</link>>
