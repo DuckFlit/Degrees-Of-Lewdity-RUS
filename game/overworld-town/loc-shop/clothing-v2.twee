@@ -101,19 +101,7 @@
 	)>>
 	<<set _items = applyClothingShopFilters(_items)>>
 
-	<!-- Remove items that are not the first item within item groups -->
-	<<set _itemGroups to []>>
-	<<set _items = _items.filter(item => {
-		if (!item.shopGroup) return true;
-		if (!T.itemGroups[item.shopGroup]) {
-			T.itemGroups[item.shopGroup] = [item.index];
-			return true;
-		} else {
-			T.itemGroups[item.shopGroup].push(item.index);
-		}
-	})>>
-
-	<<set _maxPage = Math.ceil(_items.length / $shopItemsPerPage)>>
+	<<set _maxPage = Math.ceil(filterShopGroup(_items).length / $shopItemsPerPage)>>
 	<!-- Makes sure $shopPage is never showing a blank page -->
 	<<if $shopPage gte _maxPage>>
 		<<set $shopPage to 0>>
@@ -286,7 +274,8 @@
 <<widget "generateshoppage">>
 	<<set _page = _args[0]>>
 	<<set _itemGroups to []>>
-	<<set _itemsOnPage = _items.slice(_page * $shopItemsPerPage, (_page + 1) * $shopItemsPerPage)>>
+	<<set _itemsOnPage = filterShopGroup(_items)>>
+	<<set _itemsOnPage = _itemsOnPage.slice(_page * $shopItemsPerPage, (_page + 1) * $shopItemsPerPage)>>
 	<<set _hidden = _page == $shopPage ? "" : " hidden">>
 	<<set _compact = $shopDefaults.compactMode ? "compact" : "">>
 
