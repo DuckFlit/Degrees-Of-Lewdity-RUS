@@ -783,3 +783,88 @@
 	<</if>>
 	<<if _plant_temp is 1>>You can sell them by renting a stand on Connudatus Street at dawn.<br><</if>>
 <</widget>>
+
+<<widget "journalNotes">>
+	<<if $journalNotes is undefined>>
+		<<set $journalNotes to {"default":""}>>
+		<<set $options.notesAutoSave to true>>
+		<<set _currentPage to "default">>
+	<</if>>
+	<<if !_currentPage>><<set _currentPage to "default">><</if>>
+	<<set _listPageName to _currentPage>>
+	<details>
+		<summary style="display:list-item;">Extra</summary>
+		<br>
+		Page:
+		<<listbox "_listPageName" autoselect>>
+			<<optionsfrom Object.keys($journalNotes)>>
+		<</listbox>>
+		<<link "Load">>
+			<<journalNotesTextareaSave>>
+			<<set _currentPage to _listPageName>>
+			<<replace "#journalNotesTextarea">><<journalNotesTextarea>><</replace>>
+		<</link>> |
+		<<link "Delete">>
+			<<if _listPageName is "default">>
+				<<set $journalNotes.default to "">>
+			<<else>>
+				<<run delete $journalNotes[_listPageName]>>
+			<</if>>
+			<<if !$journalNotes[_currentPage]>><<set _currentPage to "default">><</if>>
+			<<replace "#customOverlayContent">><<journalNotes>><</replace>>
+		<</link>> |
+
+		<br><br>
+
+		New page name: <<textbox "_pageName" "">>
+		<<link "New Page">>
+			<<journalNotesTextareaSave>>
+			<<set _newName to journalNotesReplacer(_pageName).slice(0,20)>>
+			<<if $journalNotes[_newName] is undefined>>
+				<<set $journalNotes[_newName] to "">>
+				<<set _currentPage to _newName>>
+				<<replace "#customOverlayContent">><<journalNotes>><</replace>>
+			<<else>>
+				<<replace "#journalNotesMessage">><span class="red">Unique name required.</span><</replace>>
+			<</if>>
+		<</link>>
+		<mouse class="tooltip linkBlue">(?)<span>
+			Page names can only contain A-Z, numbers, underscore, dashes and spaces.
+		</span></mouse>
+		<div id="journalNotesMessage"></div>
+	</details>
+	<br>
+	<div id="journalNotesTextarea"><<journalNotesTextarea>></div>
+<</widget>>
+
+<<widget "journalNotesTextarea">>
+	<<button `"Save (" + _currentPage + ")"`>>
+		<<journalNotesTextareaSave>>
+	<</button>>
+	<label><<checkbox "$options.notesAutoSave" false true autocheck>> Auto Save</label>
+	<mouse class="tooltip linkBlue">(?)<span>
+		<div>Closing the overlay or changing tabs will save your note. Character limit of 3000 per page.</div>
+		<div class="red">Reloading your older save files will not have your recent changes. Excessive use will bloat save file size.</div>
+	</span></mouse>
+	<<textarea "_displayedTextArea" `LZString.decompress($journalNotes[_currentPage])`>>
+	
+	<<run $(() => {
+		var notesTimer = null;
+		$('#textarea--displayedtextarea').on('input change', e => {
+			if (notesTimer) clearTimeout(notesTimer);
+			if (V.options.notesAutoSave) notesTimer = setTimeout(saveText, 1000);
+		});
+		$('#textarea--displayedtextarea').attr('maxlength','3000');
+		var saveText = () => {
+			new Wikifier (null, "<<journalNotesTextareaSave>>");
+		}
+	})>>
+<</widget>>
+
+<<widget "journalNotesTextareaSave">>
+	<<set _noteElement to jQuery('#textarea--displayedtextarea')[0]>>
+	<<if _noteElement and _noteElement.value>>
+		<<set $journalNotes[_currentPage] to LZString.compress(_noteElement.value)>>
+		<<run updateMoment()>>
+	<</if>>
+<</widget>>

@@ -1205,6 +1205,7 @@ function settingsObjects(type) {
 					overlayFontSize: { strings: [0, 10, 12, 14, 16, 18, 20], displayName: "Overlay font size:" },
 					sidebarFontSize: { strings: [0, 12, 14, 16, 18, 20], displayName: "Sidebar font size:" },
 					genderBody: { strings: ["default", "m", "a", "f"], displayName: "Body type displayed:" },
+					notesAutoSave: { bool: true, displayName: "Notes auto saving:" }
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },
