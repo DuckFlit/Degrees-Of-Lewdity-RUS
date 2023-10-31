@@ -148,7 +148,7 @@ const Time = (() => {
 		const termEndDate = nextSchoolTermEndDate(date);
 		const firstMonday = date.getFirstWeekdayOfMonth(2);
 		const prevMonth = ((date.month - 2 + 12) % 12) + 1;
-	
+
 		return !(
 			date.timeStamp >= termEndDate.timeStamp ||
 			(holidayMonths.includes(date.month) && date.day >= firstMonday.day) ||
@@ -770,7 +770,7 @@ function minutePassed(minutes) {
 	parasiteProgressTime(minutes);
 	parasiteProgressTime(minutes, "vagina");
 	if (isPlayerNonparasitePregnancyEnding()) {
-		// To prevent new events from occuring, allowing players to more easily go to the hospital or similar locations
+		// To prevent new events from occurring, allowing players to more easily go to the hospital or similar locations
 		V.eventskip = 1;
 		V.stress += Math.floor(minutes * 40);
 	}
@@ -1498,7 +1498,7 @@ function dailySchoolEffects() {
 	if (V.temple_spar !== undefined) {
 		delete V.temple_spar;
 	}
-	
+
 	return fragment;
 }
 
