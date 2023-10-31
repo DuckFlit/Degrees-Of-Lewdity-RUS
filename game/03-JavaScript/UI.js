@@ -664,12 +664,19 @@ function onInputChanged(func) {
 window.onInputChanged = onInputChanged;
 
 function closeOverlay() {
+	wikifier("journalNotesTextareaSave");
 	updateOptions();
 	delete T.currentOverlay;
+	delete V.tempDisable;
 	T.buttons.reset();
 	$("#customOverlay").addClass("hidden").parent().addClass("hidden");
 }
 window.closeOverlay = closeOverlay;
+
+function journalNotesReplacer(name) {
+	return name.replace(/[^a-zA-Z0-9' _-]+/g, "");
+}
+window.journalNotesReplacer = journalNotesReplacer;
 
 function updatehistorycontrols() {
 	// if undefined, initiate new variable based on engine config
