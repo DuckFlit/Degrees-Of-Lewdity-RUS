@@ -605,3 +605,18 @@ Macro.add("shopclothingcustomcolourwheel", {
 });
 
 window.colourPickerShopCustom = colourPickerShopCustom;
+
+function filterShopGroup(clothingItems) {
+	if (!Array.isArray(clothingItems)) return [];
+	T.itemGroups = {};
+	return clothingItems.filter(item => {
+		if (!item.shopGroup) return true;
+		if (!T.itemGroups[item.shopGroup]) {
+			T.itemGroups[item.shopGroup] = [item.index];
+			return true;
+		} else {
+			T.itemGroups[item.shopGroup].push(item.index);
+		};
+	});
+}
+window.filterShopGroup = filterShopGroup;

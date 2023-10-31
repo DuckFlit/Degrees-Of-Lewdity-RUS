@@ -23,6 +23,7 @@ function masturbationSlimeControl() {
 		["mvaginastop", "manusstop", "mchastityparasitestop"].includes(V.leftaction)
 	) {
 		fragment.append(redText("The slime prevents you from moving your left hand away."));
+		fragment.append(" ");
 		V.leftaction = "slime";
 	}
 	if (
@@ -30,22 +31,27 @@ function masturbationSlimeControl() {
 		["mvaginastop", "manusstop", "mchastityparasitestop"].includes(V.rightaction)
 	) {
 		fragment.append(redText("The slime prevents you from moving your right hand away."));
+		fragment.append(" ");
 		V.rightaction = "slime";
 	}
 
 	if (V.mouthaction === "mpenisstop" || V.mouthaction === "mpenismouthoff") {
 		fragment.append(Wikifier.wikifyEval('<span class="red">The slime prevents you from moving your mouth away from your <<penis>>.</span>'));
+		fragment.append(" ");
 		V.mouthaction = "slime";
 	} else if (V.mouthaction === "mchastityparasitestop") {
 		fragment.append(Wikifier.wikifyEval('<span class="red">The slime prevents you from moving your mouth away from your chastity parasite.</span>'));
+		fragment.append(" ");
 		V.mouthaction = "slime";
 	} else if (V.mouthaction === "mpenispullback") {
 		fragment.append(
 			Wikifier.wikifyEval('<span class="red">The slime prevents you from pulling back from sucking your <<penis>> as deep as you currently are.</span>')
 		);
+		fragment.append(" ");
 		V.mouthaction = "slime";
 	} else if (V.mouthaction === "mvaginastop") {
 		fragment.append(redText("The slime prevents you from moving your mouth away from your vagina."));
+		fragment.append(" ");
 		V.mouthaction = "slime";
 	}
 
@@ -54,6 +60,7 @@ function masturbationSlimeControl() {
 		!(V.mouth !== 0 && playerToys[V.currentToyLeft].type.includes("stroker"))
 	) {
 		fragment.append(redText("The slime prevents you from putting the sex toy in your left hand down."));
+		fragment.append(" ");
 		V.leftaction = "slime";
 	}
 	if (
@@ -61,11 +68,13 @@ function masturbationSlimeControl() {
 		!(V.mouth !== 0 && playerToys[V.currentToyRight].type.includes("stroker"))
 	) {
 		fragment.append(redText("The slime prevents you from putting the sex toy in your right hand down."));
+		fragment.append(" ");
 		V.rightaction = "slime";
 	}
 
 	if (V.corruptionMasturbation) {
 		fragment.append(Wikifier.wikifyEval("<span class='red'>It continues to force you to play with yourself.</span>"));
+		fragment.append(" ");
 	}
 	wikifier("arousal", 100);
 
