@@ -134,7 +134,11 @@ const Time = (() => {
 
 	function nextSchoolTermStartDate(date) {
 		const newDate = new DateTime(date);
-		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
+		if (!holidayMonths.includes(newDate.month) && date.day < newDate.getFirstWeekdayOfMonth(2).day) {
+			return newDate.getFirstWeekdayOfMonth(2);
+		}
+
+		newDate.addMonths(holidayMonths.find(e => e > newDate.month) - newDate.month + 1);
 		return newDate.getFirstWeekdayOfMonth(2);
 	}
 
@@ -145,7 +149,8 @@ const Time = (() => {
 	}
 
 	function isSchoolTerm(date) {
-		const termEndDate = nextSchoolTermEndDate(date);
+		let termEndDate = nextSchoolTermEndDate(date);
+		termEndDate = new DateTime(termEndDate.year, termEndDate.month, termEndDate.day + 1);
 		const firstMonday = date.getFirstWeekdayOfMonth(2);
 		const prevMonth = ((date.month - 2 + 12) % 12) + 1;
 
