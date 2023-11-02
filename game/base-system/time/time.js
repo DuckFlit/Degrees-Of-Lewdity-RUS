@@ -149,8 +149,7 @@ const Time = (() => {
 	}
 
 	function isSchoolTerm(date) {
-		let termEndDate = nextSchoolTermEndDate(date);
-		termEndDate = new DateTime(termEndDate.year, termEndDate.month, termEndDate.day + 1);
+		const termEndDate = nextSchoolTermEndDate(date).addDays(1);
 		const firstMonday = date.getFirstWeekdayOfMonth(2);
 		const prevMonth = ((date.month - 2 + 12) % 12) + 1;
 
