@@ -264,7 +264,9 @@ function dailyPregnancyEvent() {
 	const pregnancyStage = pregnancy.timerEnd ? Math.clamp(pregnancy.timer / pregnancy.timerEnd, 0, 1) : false;
 	let dailyEffects;
 
-	if ((between(pregnancyStage, 0.9, 0.95) && rng > 80) || (between(pregnancyStage, 0.95, 1) && rng >= 75)) {
+	if (pregnancy.gaveBirth) {
+		/* Show no events right after giving birth */
+	} else if ((between(pregnancyStage, 0.9, 0.95) && rng > 80) || (between(pregnancyStage, 0.95, 1) && rng >= 75)) {
 		dailyEffects = "nearBirthEvent";
 	} else if ((between(pregnancyStage, 0.7, 0.8) && rng > 85) || (between(pregnancyStage, 0.8, 0.9) && rng >= 80)) {
 		dailyEffects = "nearBirth";

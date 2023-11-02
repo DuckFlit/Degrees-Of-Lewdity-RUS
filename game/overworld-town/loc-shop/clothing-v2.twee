@@ -265,7 +265,7 @@
 	<<run $('#shop-pagination > .btn-pagination.next').toggleClass('disabled', $shopPage >= _maxPage - 1)>>
 
 	<!-- Re-generate keyboard shortcuts -->
-	<<run Links.generateLinkNumbers($('#clothingShop-div'))>>
+	/*<<run Links.generateLinkNumbers($('#clothingShop-div'))>>*/
 
 	<!-- Change page number text on small screens -->
 	<<replace '#shop-pagination > .shop-pages-number'>><<print ($shopPage + 1) + " out of " + _maxPage>><</replace>>
@@ -588,6 +588,24 @@
 				<<warmth_description>>
 			</div>
 			<br>
+
+			<<if !$options.images and _temp_choice.shopGroup>>
+				<<link "Previous Style">>
+					<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+					<<set _groupIndexMax to _itemGroups[_temp_choice.shopGroup].length - 1>>
+					<<set $clothes_choice to _groupIndex gt 0 ? _itemGroups[_temp_choice.shopGroup][_groupIndex - 1] : _itemGroups[_temp_choice.shopGroup][_groupIndexMax]>>
+					<<replace ".clothing-details">><<shopDetailsv2>><</replace>>
+					<<run linkifyDivs('.clothing-details')>>
+				<</link>> |
+				<<link "Next Style">>
+					<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+					<<set $clothes_choice to _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] ? _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] : _itemGroups[_temp_choice.shopGroup][0]>>
+					<<replace ".clothing-details">><<shopDetailsv2>><</replace>>
+					<<run linkifyDivs('.clothing-details')>>
+				<</link>>
+				<br>
+			<</if>>
+
 			<<if $multipleWardrobes is "all">>
 				<span>Send items to:</span>
 				<div id="sendItemsTo">
@@ -1201,13 +1219,19 @@
 							<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
 							<<set _groupIndexMax to _itemGroups[_temp_choice.shopGroup].length - 1>>
 							<<set $clothes_choice to _groupIndex gt 0 ? _itemGroups[_temp_choice.shopGroup][_groupIndex - 1] : _itemGroups[_temp_choice.shopGroup][_groupIndexMax]>>
-							<<updateclotheslist>>
+							<<replace ".clothing-details">><<shopDetailsv2>><</replace>>
+							<<run linkifyDivs('.clothing-details')>>
+							/* The below widget ends up breaking the shop list when clicking fast enough */
+							/*<<updateclotheslist>>*/
 						<</link>>
 						_groupIndex
 						<<link "<span class='fa-icon fa-right-arrow'></span>">>
 							<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
 							<<set $clothes_choice to _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] ? _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] : _itemGroups[_temp_choice.shopGroup][0]>>
-							<<updateclotheslist>>
+							<<replace ".clothing-details">><<shopDetailsv2>><</replace>>
+							<<run linkifyDivs('.clothing-details')>>
+							/* The below widget ends up breaking the shop list when clicking fast enough */
+							/*<<updateclotheslist>>*/
 						<</link>>
 					</div>
 				<</if>>
