@@ -73,12 +73,10 @@ There's a path leading down to the beach.
 <<else>>
 	<<if ndef $pillory_tenant>><<setup_pillory>><</if>>
 	<<if $pillory_tenant.exists is 1>> /* If someone is in pillory... */
-		<<if Time.days gt $pillory_tenant.endday>>/* If sentence finished before today. */
+		<<if $timeStamp gte $pillory_tenant.endDate>>/* If sentence finished before today. */
 			<<clear_pillory>>
-		<<elseif (Time.days is $pillory_tenant.endday)>>
-			<<if Time.hour gt $pillory_tenant.endhour>> /* If ended earlier today */
-				<<clear_pillory>>
-			<<elseif Time.hour is $pillory_tenant.endhour>> /* If ending now? */
+		<<elseif ($pillory_tenant.endDate - $timeStamp) lte Time.secondsPerDay>>
+			<<if Time.hour is $pillory_tenant.endhour>> /* If ending now? */
 				<<end_npc_pillory>>
 			<<else>> /* Sentence ongoing. */
 				<<npc_pillory>>
@@ -966,11 +964,8 @@ or whatever and let you off with community service. But it's your call. What'll 
 
 :: Cliff Street Prisoner Escape Fail 5
 <<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "cliff">><<earnFeat "You're the Laughingstock">>
-<<set _sentence_days_left to ($pillory_tenant.endday - Time.days)>>								/* Calc hours remaining */
-<<if _sentence_days_left is 0>><<set _hours to ($pillory_tenant.endhour - Time.hour)>>			/* hours to end hour */
-<<elseif _sentence_days_left is 1>><<set _hours to (24 - Time.hour) + $pillory_tenant.endhour>> /* now to midnight + midnight to end hour */
-<<elseif _sentence_days_left is 2>><<set _hours to (48 - Time.hour) + $pillory_tenant.endhour>> /* now to midnight + day + midnight to end */
-<</if>>
+<<set _sentence_days_left to Math.floor(($pillory_tenant.endDate - $timeStamp) / Time.secondsPerDay)>>/* Calc hours remaining */
+<<set _hours to Math.floor(($pillory_tenant.endDate - $timeStamp) / Time.secondsPerHour)>>/* hours to end hour */
 <<if _hours gte 27>><<set _hours to 27>><</if>>
 <<if _hours lt 2>><<set _hours to 2>><</if>> /* cap hours: high and low */
 
