@@ -652,7 +652,7 @@ function dayPassed() {
 	fragment.append(wikifier("tending_day"));
 	fragment.append(wikifier("creatureContainersProgressDay"));
 
-	if (V.pillory_tenant.exists && V.pillory_tenant.endday < Time.days) fragment.append(wikifier("clear_pillory"));
+	if (V.pillory_tenant.exists && V.pillory_tenant.endDate < V.timeStamp) fragment.append(wikifier("clear_pillory"));
 
 	delete V.daily;
 	V.daily = {
@@ -740,7 +740,7 @@ function hourPassed(hours) {
 	if (V.wolfpatrolsent >= 24) delete V.wolfpatrolsent;
 	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
 	if (V.robinPillory && V.robinPillory.danger !== undefined) fragment.append(wikifier("robinPilloryHour"));
-	if (V.pillory_tenant.exists && V.pillory_tenant.endday === Time.days && V.pillory_tenant.endhour < Time.hour) fragment.append(wikifier("clear_pillory"));
+	if (V.pillory_tenant.exists && V.pillory_tenant.endDate < V.timeStamp) fragment.append(wikifier("clear_pillory"));
 	if (C.npc.Sydney.init === 1) {
 		fragment.append(wikifier("sydneySchedule"));
 		if (T.sydney_location === "temple" && V.temple_rank !== undefined && V.temple_rank !== "prospective") {
