@@ -3103,7 +3103,7 @@ Renderer.CanvasModels["main"] = {
 				options.worn_neck_setup.altposition !== undefined;
 				let path = 'img/clothes/neck/' +
 					options.worn_neck_setup.variable + '/' +
-					options.worn_neck_integrity + (options.worn_neck_setup.name === "necktie" && options.worn_upper_setup.has_collar === 1 ? '_nocollar' : options.worn_neck_setup.name === "sailor ribbon" && options.worn_upper_setup.name === "serafuku" ? '_serafuku' :'') +  (isAltPosition ? '_alt' : '') + '.png';
+					options.worn_neck_integrity + (options.worn_neck_setup.has_collar === 1 && options.worn_upper_setup.has_collar === 1 ? '_nocollar' : options.worn_neck_setup.name === "sailor ribbon" && options.worn_upper_setup.name === "serafuku" ? '_serafuku' :'') +  (isAltPosition ? '_alt' : '') + '.png';
 				return gray_suffix(path, options.filters['worn_neck']);
 			},
 			zfn(options) {

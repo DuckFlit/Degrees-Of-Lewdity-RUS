@@ -309,7 +309,7 @@ function outfitChecks() {
 	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
 	T.middleNaked = V.worn.lower.name === "naked" && V.worn.upper.name === "naked";
 	T.overNaked = V.worn.over_lower.name === "naked" && V.worn.over_upper.name === "naked";
-	T.topless = V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && (V.worn.lower.name !== "plaid school pinafore" && V.worn.lower.name !== "school pinafore");
+	T.topless = V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && (V.worn.lower.name !== "plaid school pinafore" && V.worn.lower.name !== "school pinafore" && V.worn.lower.name !== "shortalls");
 	T.bottomless = V.worn.over_lower.name === "naked" && V.worn.lower.name === "naked" && V.worn.under_lower.name === "naked";
 	T.fullyNaked = T.topless && T.bottomless;
 }

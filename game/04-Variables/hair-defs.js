@@ -29,7 +29,7 @@ setup.hair = {
 		},
 		{
 			name: "double tail",
-			list: ["pigtails", "twintails", "curly pigtails", "sailor buns", "loop braid", "thick twintails", "drill ringlets", "low tails", "thick pigtails"],
+			list: ["pigtails", "twintails", "curly pigtails", "sailor buns", "loop braid", "thick twintails", "drill ringlets", "low tails", "thick pigtails", "scorpion tails"],
 			devolve: ["twintails"],
 		},
 		{
