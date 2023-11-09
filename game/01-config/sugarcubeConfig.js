@@ -3,6 +3,19 @@ Config.history.controls = false;
 Config.saves.slots = 9;
 Config.history.maxStates = 1;
 
+/* LinkNumberify and images will enable or disable the feature completely */
+/* debug will enable or disable the feature only for new games */
+/* sneaky will enable the Sneaky notice banner on the opening screen and save display */
+/* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
+window.StartConfig = {
+	debug: false,
+	enableImages: true,
+	enableLinkNumberify: true,
+	version: "0.4.3.3",
+	versionName: "",
+	sneaky: false,
+};
+
 State.prng.init();
 
 window.versionUpdateCheck = true;
@@ -101,19 +114,6 @@ function onSave(save, details) {
 }
 window.onSave = onSave;
 Save.onSave.add(onSave);
-
-/* LinkNumberify and images will enable or disable the feature completely */
-/* debug will enable or disable the feature only for new games */
-/* sneaky will enable the Sneaky notice banner on the opening screen and save display */
-/* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
-window.StartConfig = {
-	debug: false,
-	enableImages: true,
-	enableLinkNumberify: true,
-	version: "0.4.3.3",
-	versionName: "",
-	sneaky: false,
-};
 
 /* convert version string to numeric value */
 const tmpver = StartConfig.version.replace(/[^0-9.]+/g, "").split(".");

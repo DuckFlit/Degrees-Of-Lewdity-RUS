@@ -160,7 +160,7 @@
 					<<if $_wardrobeItem.name isnot $_outfitPieceName>>
 						<<continue>>
 					<</if>>
-					<<if _item.colour isnot $_wardrobeItem.colour or _item.accessory_colour isnot $_wardrobeItem.accessory_colour>>
+					<<if _item.colour isnot $_wardrobeItem.colour or ($_wardrobeItem.accessory isnot 0 and _item.accessory_colour isnot $_wardrobeItem.accessory_colour)>>
 						<<continue>>
 					<</if>>
 					<<if $_wardrobeItem.outfitSecondary[1] isnot _item.name>>
@@ -170,7 +170,7 @@
 					<<if $_wardrobeItem.colour isnot "custom" or (_item.colourCustom isnot undefined and _item.colourCustom is $_wardrobeItem.colourCustom)>>
 						<<set _matched++>>
 					<</if>>
-					<<if $_wardrobeItem.accessory_colour isnot "custom" or (_item.accessory_colourCustom isnot undefined and _item.accessory_colourCustom is $_wardrobeItem.accessory_colourCustom)>>
+					<<if $_wardrobeItem.accessory is 0 or $_wardrobeItem.accessory_colour isnot "custom" or (_item.accessory_colourCustom isnot undefined and _item.accessory_colourCustom is $_wardrobeItem.accessory_colourCustom)>>
 						<<set _matched++>>
 					<</if>>
 					<<if _matched is 2>>
@@ -693,37 +693,34 @@
 	<</if>>
 <</widget>>
 
-<<widget "toggleAltLink">>
-	<div class="toggleAltLink">
-		<<switch _args[0]>>
-			<<case "upper">>
-				<<switch $worn.upper.variable>>
-					<<case "schoolcardigan">><<set $_link1 to "Tie cardigan around waist">><<set $_link2 to "Wear cardigan normally">>
-				<</switch>>
-				<<link `($worn.upper.altposition is "none" ? $_link1 : $_link2)`>>
-					<<toggleAltPosition "upper">>
-					<<updatesidebarimg>>
-					<<if _args[1] isnot "shop">>
-						<<updatewardrobe>>
-					<</if>>
-					<<run $(".toggleAltLink .link-internal").html($worn.upper.altposition is "none" ? $_link1 : $_link2)>>
-					<<run Links.generateLinkNumbers($(".passage"))>>
-				<</link>>
-			<<case "neck">>
-				<<switch $worn.neck.variable>>
-					<<case "suspenders">><<set $_link1 to "Lower suspenders">><<set $_link2 to "Wear suspenders normally">>
-				<</switch>>
-				<<link `($worn.neck.altposition is "none" ? $_link1 : $_link2)`>>
-					<<toggleAltPosition "neck">>
-					<<updatesidebarimg>>
-					<<if _args[1] isnot "shop">>
-						<<updatewardrobe>>
-					<</if>>
-					<<run $(".toggleAltLink .link-internal").html($worn.neck.altposition is "none" ? $_link1 : $_link2)>>
-					<<run Links.generateLinkNumbers($(".passage"))>>
-				<</link>>
-		<</switch>>
-	</div>
+<<widget "toggleAltLink">><<silently>>
+	<<switch _args[0]>>
+		<<case "upper">>
+			<<switch $worn.upper.variable>>
+				<<case "schoolcardigan">><<set _altLink to ["Tie cardigan around waist", "Wear cardigan normally"]>>
+				<<default>><<exit>>
+			<</switch>>
+		<<case "neck">>
+			<<switch $worn.neck.variable>>
+				<<case "suspenders">><<set _altLink to ["Lower suspenders", "Wear suspenders normally"]>>
+				<<default>><<exit>>
+			<</switch>>
+		<<default>><<exit>>
+	<</switch>>
+	<</silently>>
+	<span @class="_args[0]">
+		<<capture _args[0] _altLink>>
+			<<link `($worn[_args[0]].altposition is "none" ? _altLink[0] : _altLink[1])`>>
+				<<toggleAltPosition _args[0]>>
+				<<updatesidebarimg>>
+				<<if _args[1] is "wardrobe">>
+					<<updatewardrobe>>
+				<</if>>
+				<<run $(".toggleAltLink ." + _args[0] + " .link-internal").html($worn[_args[0]].altposition is "none" ? _altLink[0] : _altLink[1])>>
+				<<run Links.generateLinkNumbers($(".passage"))>>
+			<</link>>
+		<</capture>>
+	</span>
 <</widget>>
 
 <<widget "toggleAltPosition">>
@@ -871,11 +868,8 @@
 			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItemData.notuck>>
 				<div class="no-numberify"><<toggleUpperTuck>></div>
 			<</if>>
-			<<if _wardrobe_list is "upper" and _wornItemData.notuck is "tie">>
-				<div class="no-numberify"><<toggleAltLink "upper">></div>
-			<</if>>
-			<<if _wardrobe_list is "neck" and (_wornItemData.altposition is "none" || _wornItemData.altposition is "alt")>>
-				<div class="no-numberify"><<toggleAltLink "neck">></div>
+			<div class="no-numberify toggleAltLink"><<toggleAltLink _wardrobe_list "wardrobe">></div>
+			<<if _wardrobe_list is "neck">>
 				<div id="wardrobeLeash" class="no-numberify"><<toggleLeash>></div>
 			<</if>>
 		<</if>>
@@ -1269,12 +1263,12 @@
 					<<continue>>
 				<</if>>
 
-				<<if _selectedWardrobe[$_outfitSecondary[0]][$_j].colour is $_item.colour and _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory_colour is $_item.accessory_colour>>
-					<<if $_item.colour isnot "custom" and $_item.accessory_colour isnot "custom">>
+				<<if _selectedWardrobe[$_outfitSecondary[0]][$_j].colour is $_item.colour and ($_item.accessory is 0 or _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory is 0 or _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory_colour is $_item.accessory_colour)>>
+					<<if $_item.colour isnot "custom" and ($_item.accessory is 0 or _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory is 0 or $_item.accessory_colour isnot "custom")>>
 						<<set $_markBroken to false>>
 						<<run $_itemIndex[$_outfitSecondary[0]].push(clone($_j))>>
 						<<break>>
-					<<elseif $_item.colourCustom is _selectedWardrobe[$_outfitSecondary[0]][$_j].colourCustom and $_item.accessory_colourCustom is _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory_colourCustom>>
+					<<elseif $_item.colourCustom is _selectedWardrobe[$_outfitSecondary[0]][$_j].colourCustom and ($_item.accessory is 0 or _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory is 0 or $_item.accessory_colourCustom is _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory_colourCustom)>>
 						<<set $_markBroken to false>>
 						<<run $_itemIndex[$_outfitSecondary[0]].push(clone($_j))>>
 						<<break>>
