@@ -208,9 +208,32 @@ IMPORTANT:
 
 <<widget "optionstheme">>
 	<<setupOptions>>
-	<span class="gold">Theme</span>
-	<br>
 
+	<<set _globalThemeDefaults to JSON.parse(localStorage.getItem("dolDefaultThemeSettings"))>>
+	<<if !_globalThemeDefaults>>
+		<<set _globalThemeDefaults to {}>>
+	<</if>>
+
+	<<button "Save Current As Default">>
+		<<set _toSaveDefaults to {}>>
+		<<if $options.theme>><<set _toSaveDefaults.theme to $options.theme>><</if>>
+		<<if $options.passageMaxWidth>><<set _toSaveDefaults.passageMaxWidth to $options.passageMaxWidth>><</if>>
+		<<if $options.passageLineHeight>><<set _toSaveDefaults.passageLineHeight to $options.passageLineHeight>><</if>>
+		<<if $options.overlayLineHeight>><<set _toSaveDefaults.overlayLineHeight to $options.overlayLineHeight>><</if>>
+		<<if $options.sidebarLineHeight>><<set _toSaveDefaults.sidebarLineHeight to $options.sidebarLineHeight>><</if>>
+		<<if $options.passageFontSize>><<set _toSaveDefaults.passageFontSize to $options.passageFontSize>><</if>>
+		<<if $options.overlayFontSize>><<set _toSaveDefaults.overlayFontSize to $options.overlayFontSize>><</if>>
+		<<if $options.sidebarFontSize>><<set _toSaveDefaults.sidebarFontSize to $options.sidebarFontSize>><</if>>
+		<<if $options.font>><<set _toSaveDefaults.font to $options.font>><</if>>
+		<<run localStorage.setItem("dolDefaultThemeSettings",JSON.stringify(_toSaveDefaults))>>
+		<<replace #customOverlayContent>><<optionstheme>><</replace>>
+	<</button>>
+	<<button "Reset Defaults">>
+		<<run localStorage.removeItem("dolDefaultThemeSettings")>>
+	<</button>>
+	<br><br>
+	<span class="gold">Theme</span><<optionsThemeDefault "theme">><span class="gold">Passage Max Width</span> <mouse class="tooltip linkBlue">(!)<span>Currently unable to save as default.</span></mouse>
+	<br>
 	Theme:
 	<label><input type="radio" name="theme" value="system-default" /> Default</label> |
 	<label><input type="radio" name="theme" value="dark" /> Dark</label> |
@@ -219,6 +242,27 @@ IMPORTANT:
 	<label><input type="radio" name="theme" value="monokai" /> Monokai</label> |
 	<label><input type="radio" name="theme" value="storm" /> Storm</label> |
 	<br><br>
+
+	<<if $debug is 1>>
+		<!-- Known issues in the start menu, might cause other issues elsewhere -->
+		<span class="gold">Passage Max Width</span> <mouse class="tooltip linkBlue">(!)<span>May have issues with certain UI element.</span></mouse>
+		<div>
+			<div class="settingsToggle">
+				<<listbox "$options.passageMaxWidth" autoselect>>
+					<<option "Default" undefined>>
+					<<option "50em" 50>>
+					<<option "60em" 60>>
+					<<option "65em" 65>>
+					<<option "70em" 70>>
+					<<option "75em" 75>>
+					<<option "80em" 80>>
+				<</listbox>>
+				<<optionsThemeDefault "passageMaxWidth">>
+			</div>
+			<div style="clear:both;">/*Keep at end of toggles*/</div>
+		</div>
+		<br>
+	<</if>>
 
 	<span class="gold">Line Height</span>
 	<div>
@@ -232,6 +276,7 @@ IMPORTANT:
 				<<option "1.75" 1.75>>
 				<<option "2" 2>>
 			<</listbox>>
+			<<optionsThemeDefault "passageLineHeight">>
 		</div>
 		<div class="settingsToggle">
 			Overlay:
@@ -243,6 +288,7 @@ IMPORTANT:
 				<<option "1.75" 1.75>>
 				<<option "2" 2>>
 			<</listbox>>
+			<<optionsThemeDefault "overlayLineHeight">>
 		</div>
 		<div class="settingsToggle">
 			Sidebar:
@@ -254,6 +300,7 @@ IMPORTANT:
 				<<option "1.75" 1.75>>
 				<<option "2" 2>>
 			<</listbox>>
+			<<optionsThemeDefault "sidebarLineHeight">>
 		</div>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
@@ -271,6 +318,7 @@ IMPORTANT:
 				<<option "18px" 18>>
 				<<option "20px" 20>>
 			<</listbox>>
+			<<optionsThemeDefault "passageFontSize">>
 		</div>
 		<div class="settingsToggle">
 			Overlay <mouse class="tooltip linkBlue">(?)<span>Default is equal to passage font size.</span></mouse>:
@@ -283,6 +331,7 @@ IMPORTANT:
 				<<option "18px" 18>>
 				<<option "20px" 20>>
 			<</listbox>>
+			<<optionsThemeDefault "overlayFontSize">>
 		</div>
 		<div class="settingsToggle">
 			Sidebar:
@@ -294,12 +343,13 @@ IMPORTANT:
 				<<option "18px" 18>>
 				<<option "20px" 20>>
 			<</listbox>>
+			<<optionsThemeDefault "sidebarFontSize">>
 		</div>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
 	<br>
 
-	<span class="gold">Font Style</span>
+	<span class="gold">Font Style</span> <<optionsThemeDefault "font">>
 	<br>
 	<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> Use system default</label>
 	<br>
@@ -323,6 +373,14 @@ IMPORTANT:
 
 
 	<br><br>
+<</widget>>
+
+<<widget "optionsThemeDefault">>
+	<<if _args[0]>>
+		<span @id="'optionsThemeDefault-' + _args[0]">
+			<<if _globalThemeDefaults[_args[0]]>> Default: (<<print _globalThemeDefaults[_args[0]]>>)<</if>>
+		</span>
+	<</if>>
 <</widget>>
 
 <<widget "optionsperformance">>
@@ -510,6 +568,18 @@ IMPORTANT:
 <</widget>>
 
 <<widget "setFont">>
+	<<set _globalThemeDefaults to JSON.parse(localStorage.getItem("dolDefaultThemeSettings"))>>
+	<<if !_globalThemeDefaults>>
+		<<set _globalThemeDefaults to {}>>
+	<</if>>
+	<<removeclass "#passages" "passageMaxWidth50">>
+	<<removeclass "#passages" "passageMaxWidth55">>
+	<<removeclass "#passages" "passageMaxWidth60">>
+	<<removeclass "#passages" "passageMaxWidth65">>
+	<<removeclass "#passages" "passageMaxWidth70">>
+	<<removeclass "#passages" "passageMaxWidth75">>
+	<<if $options.passageMaxWidth>><<addclass "#passages" `"passageMaxWidth" + $options.passageMaxWidth`>><</if>>
+
 	<<removeclass "#passages" "fontSize10">>
 	<<removeclass "#passages" "fontSize12">>
 	<<removeclass "#passages" "fontSize14">>
