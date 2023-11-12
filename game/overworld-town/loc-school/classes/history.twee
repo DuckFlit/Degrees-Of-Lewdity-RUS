@@ -7,7 +7,10 @@
 	<<set $robinhistory to "missing">>
 <</if>>
 <<if $schoolstate is "fourth">>
-	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
+	<<classRoomEarSlime "history">>
+	<<if _earSlimeClassRoomBlock>>
+		/* Show nothing */
+	<<elseif $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
 		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
@@ -129,35 +132,40 @@
 		<br><br>
 	<</if>>
 <<elseif $schoolstate is "lunch">>
-	You enter the history classroom.
-	<<if _robin_location is "school" and $daily.school.lunchEaten is 1>>
-		Robin is already here.
-		<<if _robin.trauma gte 20>>
-			<<nnpc_He Robin>> stares out the window.
-		<<elseif $robinromance is 1>>
-			<<nnpc_He Robin>> smiles and waves you over.
+	<<classRoomEarSlime "history">>
+	<<if _earSlimeClassRoomBlock>>
+		/* Show nothing */
+	<<else>>
+		You enter the history classroom.
+		<<if _robin_location is "school" and $daily.school.lunchEaten is 1>>
+			Robin is already here.
+			<<if _robin.trauma gte 20>>
+				<<nnpc_He Robin>> stares out the window.
+			<<elseif $robinromance is 1>>
+				<<nnpc_He Robin>> smiles and waves you over.
+			<<else>>
+				<<nnpc_He Robin>> smiles and waves.
+			<</if>>
+			<<set $robinhistory to "seat">>
 		<<else>>
-			<<nnpc_He Robin>> smiles and waves.
+			No one else has arrived yet.
 		<</if>>
-		<<set $robinhistory to "seat">>
-	<<else>>
-		No one else has arrived yet.
-	<</if>>
-	You could use the extra time to study.
-	<br><br>
-	<<classgrades>>
+		You could use the extra time to study.
+		<br><br>
+		<<classgrades>>
 
-	<<schoolperiodtext>>
-	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
-		<!-- Should be changed once naked classes are a thing -->
-		You don't think you should study while not being properly dressed.
+		<<schoolperiodtext>>
+		<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
+			<!-- Should be changed once naked classes are a thing -->
+			You don't think you should study while not being properly dressed.
+			<br>
+		<<else>>
+			<<link [[Study history|History Classroom Study]]>><</link>><<gstress>><<ghistory>>
+		<</if>>
 		<br>
-	<<else>>
-		<<link [[Study history|History Classroom Study]]>><</link>><<gstress>><<ghistory>>
+		<<link [[Leave|Hallways]]>><</link>>
+		<br>
 	<</if>>
-	<br>
-	<<link [[Leave|Hallways]]>><</link>>
-	<br>
 <<elseif $schoollesson is 1>>
 	<<if $daily.school.historyInterrupted is 1>>
 		<<npc Winter>><<person1>>You enter the history classroom. Winter stops speaking abruptly and looks your way. "Every time you interrupt me you damage your fellow student's chances. I'll mark you down for detention." <<He>> guides you to the door.
@@ -217,11 +225,25 @@
 
 	<<endevent>>
 	<<exam_cheat history>>
-	<<link [[Focus|History Exam]]>><<stress 6>><<set $phase to 0>><<set $exam_chance += 5>><</link>><<gstress>><<passPercent 5>>
-	<br>
-	<<link [[Try to relax|History Exam]]>><<set $phase to 1>><</link>>
-	<br>
-	<<link [[Cheat|History Exam]]>><<set $phase to 2>><</link>><<skulduggerydifficulty>>
+	<<if !$daily.earSlimeCheatExam and numberOfEarSlime() and earSlimeMakingMundaneRequests() and random(0,200) gte 150 - $earSlime.corruption>>
+		<<set $daily.earSlimeCheatExam to true>>
+		<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to cheat in the exam.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+		<br><br>
+		<<link [[Obey|History Exam]]>><<set $phase to 3>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<if $earSlime.startedThreats>>
+			<<link [[Defy|History Exam]]>><<set $phase to 5>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<<else>>
+			<<link [[Ignore|History Exam]]>><<set $phase to 4>><</link>>
+		<</if>>
+		<br>
+	<<else>>
+		<<link [[Focus|History Exam]]>><<stress 6>><<set $phase to 0>><<set $exam_chance += 5>><</link>><<gstress>><<passPercent 5>>
+		<br>
+		<<link [[Try to relax|History Exam]]>><<set $phase to 1>><</link>>
+		<br>
+		<<link [[Cheat|History Exam]]>><<set $phase to 2>><</link>><<skulduggerydifficulty>>
+	<</if>>
 	<br>
 <<else>>
 	<<if Time.minute lte 5>>

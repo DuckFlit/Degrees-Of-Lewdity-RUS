@@ -650,11 +650,11 @@ Renderer.CanvasModels["main"] = {
 		if (options.breasts_parasite === "parasite") {
 			options.filters.breasts_parasite = lookupColour(setup.colours.clothes_map, "red", "breasts_parasite");
 		}
-		if (options.clit_parasite === "parasite") {
-			options.filters.clit_parasite = lookupColour(setup.colours.clothes_map, "red", "breasts_parasite");
+		if (["parasite", "parasitem"].includes(options.clit_parasite)) {
+			options.filters.clit_parasite = lookupColour(setup.colours.clothes_map, "red", "clit_parasite");
 		}
 		if (options.penis_parasite === "parasite") {
-			options.filters.penis_parasite = lookupColour(setup.colours.clothes_map, "red", "breasts_parasite");
+			options.filters.penis_parasite = lookupColour(setup.colours.clothes_map, "red", "penis_parasite");
 		}
 
 		// Clothing filters and options
@@ -1334,10 +1334,8 @@ Renderer.CanvasModels["main"] = {
 		},
 		"penis": {
 			srcfn(options) {
-				if (options.mannequin) {
-					return "img/body/mannequin/penis.png"
-				} else if (options.genitals_chastity) {
-					if (options.worn_genitals_setup.name === "flat chastity cage") return;
+				if (options.genitals_chastity) {
+					if (["flat chastity cage", "chastity parasite"].includes(options.worn_genitals_setup.name)) return;
 					if (options.worn_genitals_setup.name === "small chastity cage") return "img/body/penis/penis_chastitysmall.png";
 					return "img/body/penis/penis_chastity.png"
 				} else if (!playerHasStrapon()) {
@@ -1384,7 +1382,7 @@ Renderer.CanvasModels["main"] = {
 					case "slime":
 						return 'img/body/penis/penisslime' + options.penis_size + '.png';
 					case "parasite":
-						return 'img/body/penis/penisparasite' + options.penis_size + '.png';
+						return 'img/body/penis/penisparasite' + (options.balls ? 'balls' : '') + options.penis_size + '.png';
 					default:
 						return "";
 				}
@@ -1416,7 +1414,9 @@ Renderer.CanvasModels["main"] = {
 					case "slime":
 						return 'img/body/clitslime.png';
 					case "parasite":
-						return 'img/body/baseparasite.png';
+						return 'img/body/parasitepanty.png';
+					case "parasitem":
+						return 'img/body/parasiteshorts.png';
 					default:
 						return "";
 				}
@@ -2624,7 +2624,24 @@ Renderer.CanvasModels["main"] = {
 
 		"genitals": genlayer_clothing_main('genitals', {
 			srcfn(options) {
-				return 'img/clothes/genitals/' + options.worn_genitals_setup.variable + '/' + options.worn_genitals_integrity + (options.worn_genitals_setup.penisSize ? options.penis_size / 2 : '') + '.png';
+				let size = "";
+				if (options.worn_genitals_setup.penisSize) {
+					switch(options.penis_size) {
+						case -2: case -1:
+							size = -1;
+							break;
+						case 0:
+							size = 0;
+							break;
+						case 1: case 2:
+							size = 1;
+							break;
+						case 3: case 4:
+							size = 2;
+							break;
+					}
+				}
+				return 'img/clothes/genitals/' + options.worn_genitals_setup.variable + '/' + options.worn_genitals_integrity + size + '.png';
 			},
 			showfn(options) {
 				return options.worn_genitals > 0 &&

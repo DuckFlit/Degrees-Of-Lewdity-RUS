@@ -15,6 +15,12 @@ function masturbationSlimeControl() {
 	);
 	const toysId = Array.from(Array(playerToys.length).keys()).filter(i => !playerToys[i].type.includes("stroker"));
 
+	let alternateForcedActions = "";
+	let disableArmActions;
+	if (V.earSlime.event.includes("get your own sperm into your")) {
+		alternateForcedActions = V.earSlime.event.includes("vagina") ? "selfImpregVagina" : "selfImpregAnus";
+	}
+
 	if (V.leftaction === 0 || V.leftaction === "mrest") V.leftaction = "slime";
 	if (V.rightaction === 0 || V.rightaction === "mrest") V.rightaction = "slime";
 
@@ -22,20 +28,30 @@ function masturbationSlimeControl() {
 		(V.leftaction === "mpenisstop" && !(V.mouth === "mpenis" && V.selfsuckDepth === V.penisHeight)) ||
 		["mvaginastop", "manusstop", "mchastityparasitestop"].includes(V.leftaction)
 	) {
-		fragment.append(redText("The slime prevents you from moving your left hand away."));
-		fragment.append(" ");
-		V.leftaction = "slime";
+		if (alternateForcedActions.includes("selfImpreg")) {
+			disableArmActions = true;
+		} else {
+			fragment.append(redText("The slime prevents you from moving your left hand away."));
+			fragment.append(" ");
+			V.leftaction = "slime";
+		}
 	}
 	if (
 		(V.rightaction === "mpenisstop" && !(V.mouth === "mpenis" && V.selfsuckDepth === V.penisHeight)) ||
 		["mvaginastop", "manusstop", "mchastityparasitestop"].includes(V.rightaction)
 	) {
-		fragment.append(redText("The slime prevents you from moving your right hand away."));
-		fragment.append(" ");
-		V.rightaction = "slime";
+		if (alternateForcedActions.includes("selfImpreg")) {
+			disableArmActions = true;
+		} else {
+			fragment.append(redText("The slime prevents you from moving your right hand away."));
+			fragment.append(" ");
+			V.rightaction = "slime";
+		}
 	}
 
-	if (V.mouthaction === "mpenisstop" || V.mouthaction === "mpenismouthoff") {
+	if (alternateForcedActions.includes("selfImpreg")) {
+		// Do nothing
+	} else if (V.mouthaction === "mpenisstop" || V.mouthaction === "mpenismouthoff") {
 		fragment.append(Wikifier.wikifyEval('<span class="red">The slime prevents you from moving your mouth away from your <<penis>>.</span>'));
 		fragment.append(" ");
 		V.mouthaction = "slime";
@@ -47,7 +63,6 @@ function masturbationSlimeControl() {
 		fragment.append(
 			Wikifier.wikifyEval('<span class="red">The slime prevents you from pulling back from sucking your <<penis>> as deep as you currently are.</span>')
 		);
-		fragment.append(" ");
 		V.mouthaction = "slime";
 	} else if (V.mouthaction === "mvaginastop") {
 		fragment.append(redText("The slime prevents you from moving your mouth away from your vagina."));
@@ -55,7 +70,9 @@ function masturbationSlimeControl() {
 		V.mouthaction = "slime";
 	}
 
-	if (
+	if (alternateForcedActions.includes("selfImpreg")) {
+		// Do nothing
+	} else if (
 		["mdildostop", "mvaginastopdildo", "manusstopdildo", "mpenisstopstroker", "mmouthstopdildo", "mstopbreastpump"].includes(V.leftaction) &&
 		!(V.mouth !== 0 && playerToys[V.currentToyLeft].type.includes("stroker"))
 	) {
@@ -63,7 +80,9 @@ function masturbationSlimeControl() {
 		fragment.append(" ");
 		V.leftaction = "slime";
 	}
-	if (
+	if (alternateForcedActions.includes("selfImpreg")) {
+		// Do nothing
+	} else if (
 		["mdildostop", "mvaginastopdildo", "manusstopdildo", "mpenisstopstroker", "mmouthstopdildo", "mstopbreastpump"].includes(V.rightaction) &&
 		!(V.mouth !== 0 && playerToys[V.currentToyRight].type.includes("stroker"))
 	) {
@@ -73,8 +92,15 @@ function masturbationSlimeControl() {
 	}
 
 	if (V.corruptionMasturbation) {
-		fragment.append(Wikifier.wikifyEval("<span class='red'>It continues to force you to play with yourself.</span>"));
-		fragment.append(" ");
+		if (V.earSlime.event.includes("get your own sperm into your")) {
+			fragment.append(
+				Wikifier.wikifyEval("<span class='red'>It continues to force you to play with yourself, but limits it's control so you can do you task.</span>")
+			);
+			fragment.append(" ");
+		} else {
+			fragment.append(Wikifier.wikifyEval("<span class='red'>It continues to force you to play with yourself.</span>"));
+			fragment.append(" ");
+		}
 	}
 	wikifier("arousal", 100);
 
@@ -101,7 +127,8 @@ function masturbationSlimeControl() {
 		const armAction = arm + "action";
 		if (
 			(arm === "left" && ["moverlower", "mlower", "munder"].includes(V.leftaction)) ||
-			(arm === "right" && ["moverupper", "mupper", "munder_upper"].includes(V.rightaction))
+			(arm === "right" && ["moverupper", "mupper", "munder_upper"].includes(V.rightaction)) ||
+			disableArmActions
 		) {
 			// Do nothing
 		} else {
@@ -118,12 +145,22 @@ function masturbationSlimeControl() {
 						V["selectedToy" + armCap] = toysId[random(0, toysId.length - 1)];
 					} else if (
 						arm === "left" &&
+						V.earSlime.focus === "pregnancy" &&
+						V.player.breastsize < V.breastsizemax &&
+						V.canSelfSuckPenis &&
+						V.worn.genitals.name === "chastity parasite"
+					) {
+						V[armAction] = "mchest";
+					} else if (
+						(arm === "left" || (arm === "right" && V.earSlime.focus === "impregnation")) &&
 						V.player.penisExist &&
-						(V[armAction] === "slime" || (V[armAction] === "mchest" && random(0, 100) >= 97)) &&
+						(V[armAction] === "slime" || (V[armAction] === "mchest" && (random(0, 100) >= 97 || V.earSlime.focus === "impregnation"))) &&
 						!(V.mouth === "mpenis" && V.selfsuckDepth === V.penisHeight) &&
 						(!playerChastity("penis") || V.worn.genitals.name === "chastity parasite")
 					) {
 						V[armAction] = V.worn.genitals.name === "chastity parasite" ? "mchastityparasiteentrance" : "mpenisentrance";
+					} else if (arm === "right" && V.earSlime.focus === "pregnancy" && V.player.breastsize < V.breastsizemax) {
+						V[armAction] = "mchest";
 					} else if (
 						arm === "right" &&
 						V.player.vaginaExist &&
@@ -174,7 +211,7 @@ function masturbationSlimeControl() {
 					V[armAction] = "mvaginafist";
 					break;
 				case "manusentrance":
-					if ([0, "manus"].includes(V.anususe) && random(0, 100) > 50) {
+					if (([0, "manus"].includes(V.anususe) && random(0, 100) > 50) || V[armAction] === "manus") {
 						V[armAction] = "manus";
 					} else {
 						V[armAction] = "manusrub";
@@ -300,7 +337,7 @@ function masturbationSlimeControl() {
 	});
 
 	// Mouth
-	if (genitalsExposed) {
+	if (genitalsExposed && !alternateForcedActions.includes("selfImpreg")) {
 		switch (V.mouth) {
 			case 0:
 				if (V.canSelfSuckPenis && V.penisuse === 0 && V.worn.genitals.name === "chastity parasite" && V.earSlime.defyCooldown) {

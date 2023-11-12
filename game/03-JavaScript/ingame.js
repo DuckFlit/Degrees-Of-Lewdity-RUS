@@ -1269,9 +1269,9 @@ function currentSkillValue(skill, disableModifiers = 0) {
 			if (V.worn.feet.type.includes("shackle")) result /= 10;
 			break;
 		case "willpower":
-			if (V.earSlime.growth > 50) {
+			if (numberOfEarSlime() >= 2 && V.earSlime.growth > 50) {
 				result = Math.floor(result * (0.9 - Math.clamp((V.earSlime.growth - 50) / 1000, 0, 0.1)));
-			} else if (V.parasite.left_ear.name === V.parasite.right_ear.name && V.parasite.left_ear.name === "slime") {
+			} else if (numberOfEarSlime() >= 2) {
 				result = Math.floor(result * 0.9);
 			}
 			break;
@@ -1283,7 +1283,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 		case "vaginalskill":
 			if (V.earSlime.growth > 100) {
 				if (V.earSlime.focus === "pregnancy") {
-					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
 				} else if (V.earSlime.focus === "impregnation") {
 					result = Math.floor(result * (1 - ((V.earSlime.growth - 100) / 400)));
 				}
@@ -1295,7 +1295,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 		case "penileskill":
 			if (V.earSlime.growth > 100) {
 				if (V.earSlime.focus === "impregnation") {
-					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
 				} else if (V.earSlime.focus === "pregnancy") {
 					result = Math.floor(result * (1 - ((V.earSlime.growth - 100) / 400)));
 				}
@@ -1306,7 +1306,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 			break;
 		case "analskill":
 			if (V.earSlime.growth > 100 && !V.player.vaginaExist && V.earSlime.focus === "pregnancy") {
-				result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+				result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
 			}
 			if (playerHeatMinArousal() && canBeMPregnant()) {
 				result = Math.floor(result * (1 + (playerHeatMinArousal() / 10000)));
@@ -2036,3 +2036,19 @@ function toggleConfirmDialogUponTabClose(){
 }
 
 window.toggleConfirmDialogUponTabClose = toggleConfirmDialogUponTabClose;
+
+function numberOfEarSlime(){
+	let result = 0;
+	if (V.parasite.left_ear.name === "slime") result++;
+	if (V.parasite.right_ear.name === "slime") result++;
+	return result;
+}
+window.numberOfEarSlime = numberOfEarSlime;
+
+function earSlimeMakingMundaneRequests(){
+	if (!numberOfEarSlime()) return false;
+	// First rape requests
+	if (V.earSlime.growth + (V.earSlime.promiscuity * 10) >= 80) return false;
+	return true;
+}
+window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
