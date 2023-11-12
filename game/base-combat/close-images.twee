@@ -19,7 +19,12 @@
         <<else>>
             <<set _beltName to "">>
         <</if>>
+	<<elseif $worn.genitals.name is "chastity parasite">>
+        <<set _beltName to "parasite" + $player.penissize>>
     <</if>>
+
+	<<set $_parasitePenis to $player.gender is "f" and $player.penisExist and !["none", "pregnancy"].includes($earSlime.focus)>>
+	<<set $_parasiteGenitals to $parasite.penis.name is "parasite" or $parasite.clit.name is "parasite">>
 
     <<set _pbColour = ($makeup.pbcolour != 0 ? $makeup.pbcolour : $naturalhaircolour).replace(/ /g, '-')>>
 
@@ -52,6 +57,13 @@
                     <img @class="'pbhair-' + _pbColour + ' ' +_aniFrame" @src="'img/sex/close/'+_position+'/phair/vaginapb'+$pblevel+'.png'">
                 <</if>>
             <</if>>
+			<<if $_parasiteGenitals>>
+				<<if $earSlime.focus is "impregnation">>
+					<img @class="_aniFrame" @src="'img/sex/close/' + _position + '/vaginaparasiteshorts.png'">
+				<<else>>
+					<img @class="_aniFrame" @src="'img/sex/close/' + _position + '/vaginaparasitepanty.png'">
+				<</if>>
+			<</if>>
             <img @class="_aniFrame" @src="'img/sex/close/'+_position+'/chastityBelt/vagina'+_beltName+'.png'">
             <<if $worn.under_lower.state is "totheside">>
                 <img @class="'colour-under_lower ' + _aniFrame" @src="'img/sex/close/' + _position + '/vaginatotheside.png'" @style="($worn.under_lower.colour is 'custom'? $worn.under_lower.colourCustom + _underLowerOpacity : '')">
@@ -216,6 +228,13 @@
             <<if _aroused and _penetrate is "">>
                 <img @class="_frames" @src="_img.vaginaaroused" @style="'filter: ' + _filters.body">
             <</if>>
+			<<if $_parasiteGenitals>>
+				<<if $earSlime.focus is "impregnation">>
+					<img @class="_frames" @src="'img/sex/close/' + _position + '/vaginaparasiteshorts.png'">
+				<<else>>
+					<img @class="_frames" @src="'img/sex/close/' + _position + '/vaginaparasitepanty.png'">
+				<</if>>
+			<</if>>
             <!-- Pubic hair -->
             <<if $pbdisable is "f">>
                 <<if $pbstrip gte 1>>
@@ -235,11 +254,17 @@
             <</if>>
             <!-- Hermaphrodite penis -->
             <<if $player.penisExist>>
-                <<if $player.ballsExist is false>>
+                <<if $worn.genitals.name is "chastity parasite">>
+					<img @class="_frames" @src="'img/sex/close/' + _position + '/chastityBelt/vagina'+_beltName+'.png'">
+                <<elseif $player.ballsExist is false>>
                     <img @class="_penis_frames" @src="_img.futavaginanoballs" @style="'filter: ' + _filters.body">
                 /* add clause for strap-ons? */
                 <<else>>
-                    <img @class="_penis_frames" @src="_img.futavagina" @style="'filter: ' + _filters.body">
+					<<if $_parasitePenis>>
+                		<img @class="_penis_frames" @src="_img.futavaginaparasite" @style="'filter: ' + _filters.body">
+					<<else>>
+                		<img @class="_penis_frames" @src="_img.futavagina" @style="'filter: ' + _filters.body">
+					<</if>>
                 <</if>>
             <</if>>
             <!-- Dripping cum -->
@@ -459,10 +484,25 @@
         <<else>>
             <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisbase" @style="'filter: '+_filters.body">
         <</if>>
+		<<if $_parasiteGenitals>>
+			<<if $player.vaginaExist>>
+				<<if $earSlime.focus is "impregnation">>
+					<img @class="'anim-close-1f-'+_animspeed" @src="'img/sex/close/' + _position + '/futaparasiteshorts.png'">
+				<<else>>
+					<img @class="'anim-close-1f-'+_animspeed" @src="'img/sex/close/' + _position + '/futaparasitepanty.png'">
+				<</if>>
+			<<else>>
+				<<if $earSlime.focus is "impregnation">>
+					<img @class="'anim-close-1f-'+_animspeed" @src="'img/sex/close/' + _position + '/parasiteshorts.png'">
+				<<else>>
+					<img @class="'anim-close-1f-'+_animspeed" @src="'img/sex/close/' + _position + '/parasitepanty.png'">
+				<</if>>
+			<</if>>
+		<</if>>
         <<if $worn.under_lower.state is "totheside">>
             <img @class="'colour-under_lower anim-close-6f-'+_animspeed" @src="'img/sex/close/' + _position + '/penistotheside.png'" @style="($worn.under_lower.colour is 'custom'? $worn.under_lower.colourCustom + _underLowerOpacity : '')">
         <</if>>
-        <<if playerChastity("hidden") and !playerHasStrapon()>>
+        <<if (playerChastity("hidden") or $worn.genitals.name is "chastity parasite") and !playerHasStrapon()>>
             <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/' + _position + '/chastityBelt/penis'+_beltName+'.png'">
             <<switch $penisstate>>
                 <<case "tentacleentrance" "tentacleimminent">>
@@ -507,35 +547,70 @@
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <img @class="'anim-close-6f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/'+_position+'/penistentaclepenetrated.png'">
         <<elseif $penisstate is "tentacledeep">>
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <img @class="'anim-close-6f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/'+_position+'/penistentaclepenetrated.png'">
         <<elseif $penisstate is "tentacleentrance">>
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-3f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img @class="'anim-close-3f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-3f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <img @class="'anim-close-3f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/'+_position+'/penistentacleentrance.png'">
         <<elseif $penisstate is "tentacleimminent">>
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-3f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img @class="'anim-close-3f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-3f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <img @class="'anim-close-3f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/'+_position+'/penistentacleentrance.png'">
         <<elseif $penisstate is "penetrated">>
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penispenetrated.png'">
@@ -549,7 +624,14 @@
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+            		<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+            		<img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penispenetrated.png'">
@@ -563,7 +645,14 @@
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+               		<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrancevagina.png'">
@@ -574,7 +663,14 @@
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+               		<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrancevagina.png'">
@@ -585,7 +681,14 @@
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-3f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+               		<img @class="'anim-close-3f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-3f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrancevagina.png'">
@@ -596,7 +699,14 @@
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-3f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+               		<img @class="'anim-close-3f-'+_animspeed" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+               		<img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-3f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrancevagina.png'">
@@ -607,28 +717,56 @@
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisentrancenoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisentrance1" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasiteentrance1" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisentrance1" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrance.png'">
         <<elseif $enemytype is "beast" and $penisstate is "othermouthimminent" and $monster isnot 1>>
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisimminentnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisimminent1" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasiteimminent1" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisimminent1" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisimminent.png'">
         <<elseif $enemytype is "beast" and $penisstate is "othermouth" and $monster isnot 1>>
             <<if $player.ballsExist is false>>
                 <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis1" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisparasite1" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img @class="'anim-close-6f-'+_animspeed" @src="_img.penis1" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
             <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penis.png'">
         <<else>>
             <<if $player.ballsExist is false>>
                 <img class="anim-idle-1f-slow" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
             <<else>>
-                <img class="anim-idle-1f-slow" @src="_img.penis" @style="'filter: '+_filters.body">
+				<<if $_parasitePenis>>
+                	<img class="anim-idle-1f-slow" @src="_img.penisparasite" @style="'filter: '+_filters.body">
+				<<else>>
+                	<img class="anim-idle-1f-slow" @src="_img.penis" @style="'filter: '+_filters.body">
+					<<if $_parasiteGenitals and ["mixed", "impregnation"].includes($earSlime.focus)>>
+						<img class="anim-idle-1f-slow" @src="'img/sex/close/'+_position+'/parasiteballs.png'">
+					<</if>>
+				<</if>>
             <</if>>
         <</if>>
         <<if wearingCondom("player")>>

@@ -133,20 +133,30 @@
 		/*Prevent equip when the ear slime doesn't allow it*/
 		<<if _slimePrevent.includes(_slot) and $wardrobeOption is "wear" and $earSlime.corruption gte 10>>
 			<<if $daily.corruptionSlimeClothes is undefined>>
-				<<set $daily.corruptionSlimeClothes to random($earSlime.corruption * 5, $earSlime.corruption * 15) - currentSkillValue('willpower')>>
+				<<set _baseCorruption to (($earSlime.corruption / 2) + ($earSlime.growth / 2))>>
+				<<set $daily.corruptionSlimeClothes to random(_baseCorruption * 5, _baseCorruption * 25) - currentSkillValue('willpower')>>
 			<</if>>
-			<<if $earSlime.event is "go commando" and _slot is "under_lower">>
-				<span class="red">You were unable to equip your _item.name as the slime in your ear is forcing you to go commando.</span>
-				<br>
-				<<continue>>
+			<<if $earSlime.forcedCommando isnot undefined and (_slot is "under_lower" or (_item.outfitPrimary and _item.outfitPrimary.under_lower and !["broken","split"].includes(_item.outfitPrimary.under_lower)))>>
+				<<if (_earSlimeEnableSwimwear and _item.type.includes("swim")) or (_earSlimeEnableDancewear and _item.type.includes("dance"))>>
+				<<elseif $earSlime.forcedCommando gt 0>>
+					<span class="red">You were unable to equip your _item.name as the slime in your ear is forcing you to go commando.</span>
+					<br>
+					<<continue>>
+				<<else>>
+					<<run delete $earSlime.forcedCommando>>
+				<</if>>
 			<<elseif ((["prison", "asylum"].includes($location) and _item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or (_item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !(_item.type.includesAny("school") and Time.schoolDay)) and !_item.type.includesAny("event")>>
 				<span class="red">You were unable to equip your _item.name as the slime in your ear did not permit it.</span>
 				<br>
 				<<continue>>
 			<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
-				<span class="red">You were unable to equip your _item.name as the slime in your ear is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
-				<br>
-				<<continue>>
+				<<if $earSlime.forcedDressing.days gt 0>>
+					<span class="red">You were unable to equip your _item.name as the slime in your ear is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
+					<br>
+					<<continue>>
+				<<else>>
+					<<run delete $earSlime.forcedDressing>>
+				<</if>>
 			<</if>>
 		<</if>>
 		/*Finds any outfit pieces and records the Ids*/
@@ -1435,13 +1445,17 @@
 				You can't go out like this!
 			<</if>>
 		<<case "Sydney Beach Changing Room">>
+			<<set _earSlimeEnableSwimwear to true>>
 			<<if $exposed lte 1>>
 				<<link [[Leave|Sydney Beach Swimsuit]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				You can't go out like this!
 			<</if>>
 		<<case "Sydney Beach Changing Room Leave">>
-			<<if $exposed lte 1>>
+			<<set _earSlimeEnableSwimwear to true>>
+			<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+				<span class="red">The slimes in your ear refuses to allow you to leave with swimwear on.</span>
+			<<elseif $exposed lte 1>>
 				<<link [[Leave|Sydney Beach Leave]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				You can't go out like this!
@@ -1516,6 +1530,7 @@ You look in your wardrobe.
 :: Changing Room [exitCheckBypass]
 <<effects>><<location "changingroom">>
 <<set $wardrobe_location to "changingRoom">>
+<<set _earSlimeEnableSwimwear to true>>
 <<wardrobeSelection>>
 You are in a small wooden changing room.
 <br><br>
@@ -1578,6 +1593,7 @@ You look through the rustic wardrobe.
 
 <<effects>>
 <<wardrobeSelection>>
+<<set _earSlimeEnableSwimwear to true>>
 You stand in front of your open locker.
 <br><br>
 <div id="wardrobewear"><<wardrobewear>></div>

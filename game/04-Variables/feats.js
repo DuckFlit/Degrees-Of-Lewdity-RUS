@@ -743,7 +743,6 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Pregnancy"],
 		hint: "Hint: The Magic that helps creates that what should not be.",
-		hidden: true,
 	},
 	"Diversity of Life": {
 		title: "Diversity of Life",
@@ -1569,7 +1568,7 @@ setup.feats = {
 		hint: "Hint: Practise vain wilderness woodwork.",
 		softLockable: true,
 	},
-	"Naturalised": {
+	Naturalised: {
 		title: "Naturalised",
 		desc: "Infiltrated the islander castle, without being captured.",
 		difficulty: 3,
@@ -1653,7 +1652,6 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Special"],
 		hint: "Hint: Given time and love to bloom.",
-		hidden: true,
 	},
 	"The Path to Redemption": {
 		title: "The Path to Redemption",
@@ -1672,7 +1670,7 @@ setup.feats = {
 		filter: ["All", "Special"],
 		hint: "Hint: Starting off fast.",
 	},
-	"Negotiator": {
+	Negotiator: {
 		title: "Negotiator",
 		desc: "Made over £500 from a single tip.",
 		difficulty: 3,

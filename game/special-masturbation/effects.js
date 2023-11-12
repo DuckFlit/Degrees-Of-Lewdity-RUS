@@ -936,7 +936,7 @@ function masturbationeffectsArms(
 			} else if (!V.canSelfSuckPenis && playerIsPregnant() && playerPregnancyProgress() >= 10 && V.earSlime.corruption >= 100) {
 				altText.eagerly = V.arousal >= V.arousalmax * (1 / 5) ? "eagerly" : "slowly";
 				wikifier("arousal", 500, "masturbationPenis");
-				V.earSlime.vibration += 4;
+				V.earSlime.vibration += handsOn * 4;
 				if (V.arousal >= (V.arousalmax / 5) * 3) {
 					wikifier("arousal", 500, "masturbationPenis");
 					sWikifier(
@@ -984,9 +984,9 @@ function masturbationeffectsArms(
 				wikifier("pain", 1 * handsOn);
 				additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "virgin penis" : "penis");
 				sWikifier(`You gently squeeze the parasite.`);
-			} else if (!V.canSelfSuckPenis && playerIsPregnant() && playerPregnancyProgress() >= 10 && V.earSlime.corruption >= 100) {
+			} else if (!V.canSelfSuckPenis && playerIsPregnant() && playerPregnancyProgress() >= 0.1 && V.earSlime.corruption >= 100) {
 				altText.eagerly = V.arousal >= V.arousalmax * (1 / 5) ? "eagerly" : "slowly";
-				wikifier("arousal", 500, "masturbationGenital");
+				wikifier("arousal", 500 * handsOn, "masturbationGenital");
 				V.earSlime.vibration += 4;
 				if (V.arousal >= (V.arousalmax / 5) * 3) {
 					wikifier("arousal", 500, "masturbationPenis");
@@ -1020,6 +1020,17 @@ function masturbationeffectsArms(
 						)
 					);
 				}
+			}
+			// Help shrink the penis only when both pregnant and with a penis size of mini, had trouble reaching micro without additional help
+			if (
+				playerIsPregnant() &&
+				playerPregnancyProgress() >= 0.1 &&
+				V.player.penissize === -1 &&
+				random(0, 100) >= 75 &&
+				(!V.daily.chastityParasizeSizeReduction || V.daily.chastityParasizeSizeReduction < 400)
+			) {
+				V.penisgrowthtimer++;
+				V.daily.chastityParasizeSizeReduction = (V.daily.chastityParasizeSizeReduction || 0) + 1;
 			}
 			break;
 		case "mchastityparasitestop":

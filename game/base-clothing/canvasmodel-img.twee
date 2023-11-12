@@ -466,11 +466,21 @@ Requires prior <<selectmodel "main">>
 	<</if>>
 	<<if _modeloptions.penis_parasite is "parasite" or _modeloptions.clit_parasite is "parasite">>
 		/* Always uses the clit image as a base */
-		<<set _modeloptions.clit_parasite to "parasite">>
+		<<if $earSlime.focus is "impregnation">>
+			<<set _modeloptions.clit_parasite to "parasitem">>
+		<<else>>
+			<<set _modeloptions.clit_parasite to "parasite">>
+		<</if>>
 		<<if $player.penisExist and $player.ballsExist and $player.penissize gte -1>>
 			<<set _modeloptions.penis_parasite to "parasite">>
 		<<else>>
 			<<set _modeloptions.penis_parasite to "">>
+		<</if>>
+		/* Ensure its always displayed */
+		<<if $worn.genitals.name is "chastity parasite">>
+			<<set _modeloptions['worn_genitals'] = clothesIndex("genitals", $worn.genitals)>>
+			<<set _modeloptions['worn_genitals_integrity'] = integrityKeyword($worn.genitals, "genitals")>>
+			<<set _modeloptions['worn_genitals_colour'] = $worn.genitals.colour>>
 		<</if>>
 	<</if>>
 
@@ -620,6 +630,7 @@ Set model options & filters for player clothes
 
 <<widget "canvas-player-base-body">>
 	<<selectmodel "main">>
+	<<set _chestVisible to !$options.neverNudeMenus>>
 	<<modelprepare-player-body>>
 
 	<!-- Reset covering -->

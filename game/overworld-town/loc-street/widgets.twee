@@ -124,15 +124,31 @@
 
 <<widget "streetfootbridge">>
 	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.under_lower.type.includes("naked")>>
-
 		You come to a footbridge that crosses a busy road. You climb the steps, but stop at the top. The floor is made from a metal mesh. You can see the traffic beneath. Anyone beneath would be able to see right up your skirt, <span class="lewd">and you're not wearing underwear.</span>
 		<br><br>
-
-		<<link [[Find another way around (0:10)|Street Footbridge Detour]]>><<pass 10>><</link>>
+		<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 2 and $exhibitionism gte 15>>
+			<span class="red">You know the ear slimes wouldn't let you do anything but expose yourself.</span>
+			<br>
+			<<link [[Cross Slowly|Street Footbridge Cross]]>><<set $phase to 2>><</link>>
+		<<elseif numberOfEarSlime() and $earSlime.growth gte 30 - ($earSlime.exhibitionism * 10) and $earSlime.corruption gte random(0, 80)>>
+			<span class="lewd">You feel the slime in your head command you to cross the bridge slowly, never looking down at any point.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+			<br><br>
+			<<link [[Obey|Street Footbridge Cross]]>><<set $phase to 1>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+			<br>
+			<<if $earSlime.startedThreats>>
+				<<link [[Defy|Street Footbridge Defy]]>>
+					<<set $phase to 1>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>>
+					<<if $earSlime.defyCooldown or $earSlime.corruption lt (currentSkillValue('willpower') / 10)>><<pass 10>><</if>>
+				<</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+			<<else>>
+				<<link [[Ignore and find another way around (0:10)|Street Footbridge Detour]]>><<pass 10>><</link>><<gtrauma>><<gstress>>
+			<</if>>
+		<<else>>
+			<<link [[Find another way around (0:10)|Street Footbridge Detour]]>><<pass 10>><</link>>
+			<br>
+			<<link [[Cross anyway|Street Footbridge Cross]]>><</link>>
+		<</if>>
 		<br>
-		<<link [[Cross anyway|Street Footbridge Cross]]>><</link>>
-		<br>
-
 	<<else>>
 		You use a footbridge to cross a busy road.
 		<br><br>
@@ -174,7 +190,11 @@
 		<</if>>
 		<<link [[Endure (0:02)|Street Bottom Endure]]>><<pass 2>><<sub 1>><<trauma 6>><<stress 6>><<arousal 600 "bottom">><</link>><<gtrauma>><<gstress>><<garousal>>
 		<br>
-		<<link [[Shove|Street Bottom Shove]]>><<def 1>><<pain 4>><<stress -6>><</link>><<lstress>><<gpain>>
+		<<if $earSlime.growth gte 200 and $earSlime.promiscuity gte 2 and $promiscuity gte 15>>
+			<span class="red">You know the ear slimes wouldn't let you shove <<him>>.</span>
+		<<else>>
+			<<link [[Shove|Street Bottom Shove]]>><<def 1>><<pain 4>><<stress -6>><</link>><<lstress>><<gpain>>
+		<</if>>
 		<br>
 	<</if>>
 <</widget>>
@@ -551,8 +571,8 @@
 	<<outfitChecks>>
 	<<generate1>>You hear a <<person1>><<person>> behind you. <<catcall>>
 	<br><br>
-	<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
-		<<if $earSlime.corruption gte 80>>
+	<<if numberOfEarSlime() and $earSlime.growth gte 80 - ($earSlime.promiscuity * 10)>>
+		<<if $earSlime.corruption gte 80 and $earSlime.growth gte 100 - ($earSlime.promiscuity * 10) and random(0, 100) lte $earSlime.corruption>>
 			<span class="lewd">You feel the slime in your head command you to give yourself to, not just the <<person>>,</span> <span class="red">but everyone on the street. Everyone in the town.</span> It doesn't promise anything now. It imposes its will, and expects to be obeyed.
 			<br><br>
 
@@ -703,7 +723,11 @@
 			<</if>>
 			<br>
 		<</if>>
-		<<link [[Refuse|Street Panties]]>><<set $phase to 3>><</link>><<gstress>>
+		<<if $earSlime.growth gte 200 and $worn.under_lower.name is "naked" and $earSlime.exhibitionism gte 2>>
+			<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
+		<<else>>
+			<<link [[Refuse|Street Panties]]>><<set $phase to 3>><</link>><<gstress>>
+		<</if>>
 		<br>
 	<</if>>
 <</widget>>
@@ -713,11 +737,14 @@
 	<<generate1>><<person1>>A car pulls up alongside you. The driver, a <<person>>, waves a wad of cash at you. "Show me a good time and I'll make it worth your while. Get in."
 	<br><br>
 
-	<<if $earSlime.growth gt 50 and $earSlime.defyCooldown lt 8>>
+	<<if $earSlime.growth gt 50 and ($earSlime.growth gte 80 - ($earSlime.promiscuity * 10))>>
 		<span class="lewd">You feel the slime in your head command you to get in the car and give yourself to <<him>>.</span> It promises rewards if you comply, and threatens consequences if you do not.
 		<br><br>
 
-		<<link [[Obey|Street Car Slime Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<<link [[Obey|Street Car Slime Obey]]>>
+			<<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>>
+			<<if $promiscuity lte 14>><<set $desperateaction to "the ear slime commanded you to do it">><</if>>
+		<</link>><<promiscuous2>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
 		<br>
 		<<link [[Defy|Street Car Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 		<br>
@@ -809,10 +836,21 @@
 	<<generate1>><<person1>>You catch a <<person>> staring at you, but <<he>> looks away when you make eye contact.
 	<br><br>
 
-	<<link [[Flirt|Street Flirt]]>><<set $phase to 1>><</link>><<promiscuous1>>
-	<br>
+	<<if ($leftarm isnot "bound" or $rightarm isnot "bound") and numberOfEarSlime() and (($earSlime.growth gte 90 - ($earSlime.exhibitionism * 10))) and !$weekly.earSlimeStreetBondage and random(0,100) gte 90>>
+		<<set $weekly.earSlimeStreetBondage to true>>
+		You spot a rope on the floor near <<his>> feet. <span class="lewd">You feel the slime in your head command you to ask <<him>> to bind your hands together.</span> It promises rewards if you comply, and threatens consequences if you do not.
+		<br><br>
 
-	<<link [[Ignore|Street Flirt]]>><<set $phase to 2>><</link>>
+		<<link [[Obey|Street Bind Slime Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<link [[Defy|Street Bind Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<br>
+	<<else>>
+		<<link [[Flirt|Street Flirt]]>><<set $phase to 1>><</link>><<promiscuous1>>
+		<br>
+
+		<<link [[Ignore|Street Flirt]]>><<set $phase to 2>><</link>>
+	<</if>>
 	<br>
 <</widget>>
 
@@ -830,8 +868,12 @@
 <<widget "street9">>
 	You notice a <<generate1>><<person1>><<person>> stealing glances at your chest as <<he>> walks by.
 	<br><br>
-
-	<<link [[Ignore|Street Breast]]>><<set $phase to 1>><</link>>
+	
+	<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 2 and $exhibitionism gte 15>>
+		<span class="red">You know the ear slimes wouldn't let you leave without flaunting your chest.</span>
+	<<else>>
+		<<link [[Ignore|Street Breast]]>><<set $phase to 1>><</link>>
+	<</if>>
 	<br>
 
 	<<if $exhibitionism gte 15>>
@@ -1770,44 +1812,146 @@
 		<<set $phase to 5>>
 	<</if>>
 	<br><br>
-	<<link [[Ignore|Street Exhibitionism Fame Shamed]]>><</link>><<gtrauma>><<gstress>>
-	<br>
+	<<set _avaliableActions to []>>
 	<<if $exhibitionism gte 55 and ($uncomfortable.underwear is false or $uncomfortable.nude is false)>>
-		<<link [[Flaunt|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'words'>><<set $flaunt_part to 'none'>><</link>><<lstress>>
-		<br>
+		<<run _avaliableActions.push("flaunt")>>
 	<</if>>
 	<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
 		<<if $exhibitionism gte 75 and $worn.under_lower.type.includes("naked") and $uncomfortable.nude is false>>
-			<<link [[Flash your skirt|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'skirt'>> <<set $flaunt_part to 'genitals'>><</link>><<exhibitionist5>><<lstress>><<garousal>>
-			<br>
+			<<run _avaliableActions.push("flashSkirt1")>>
 		<<elseif $exhibitionism gte 35 and playerChastity() and $uncomfortable.nude is false>>
-			<<link [[Flash your skirt|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'skirt'>> <<set $flaunt_part to 'chastity'>><</link>><<exhibitionist3>><<lstress>><<garousal>>
-			<br>
+			<<run _avaliableActions.push("flashSkirt2")>>
 		<<elseif $exhibitionism gte 15 and !$worn.under_lower.type.includes("naked") and !playerChastity() and $uncomfortable.underwear is false>>
-			<<link [[Flash your skirt|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'skirt'>> <<set $flaunt_part to 'lowerunderwear'>><</link>><<exhibitionist2>><<lstress>><<garousal>>
-			<br>
+			<<run _avaliableActions.push("flashSkirt3")>>
 		<</if>>
 	<<elseif _middleOutfit or _overOutfit>>
 		<<if $exhibitionism gte 35 and $worn.under_lower.type.includes("naked") and $uncomfortable.nude is false>>
-			<<link [[Flash your bottom|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'moon'>> <<set $flaunt_part to 'bottom'>><</link>><<exhibitionist3>><<lstress>><<garousal>>
-			<br>
+			<<run _avaliableActions.push("flashBottom1")>>
 		<<elseif $exhibitionism gte 35 and playerChastity() and $uncomfortable.nude is false>>
-			<<link [[Flash your bottom|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'moon'>> <<set $flaunt_part to 'chastity'>><</link>><<exhibitionist3>><<lstress>><<garousal>>
-			<br>
+			<<run _avaliableActions.push("flashBottom2")>>
 		<<elseif $exhibitionism gte 15 and !$worn.under_lower.type.includes("naked") and !playerChastity() and $uncomfortable.underwear is false>>
-			<<link [[Flash your bottom|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'moon'>> <<set $flaunt_part to 'lowerunderwear'>><</link>><<exhibitionist2>><<lstress>><<garousal>>
-			<br>
+			<<run _avaliableActions.push("flashBottom3")>>
 		<</if>>
 	<</if>>
 	<<if $player.gender_appearance is "f" or $player.breastsize gt 2>>
 		<<if $exhibitionism gte 55 and $worn.under_upper.type.includes("naked") and $uncomfortable.nude is false>>
+			<<run _avaliableActions.push("flashBreasts1")>>
+		<<elseif $exhibitionism gte 15 and !$worn.under_upper.type.includes("naked") and $uncomfortable.underwear is false>>
+			<<run _avaliableActions.push("flashBreasts2")>>
+		<</if>>
+	<</if>>
+
+	<<if $earSlime.growth gte 200 and _avaliableActions.length>>
+		<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
+	<<elseif numberOfEarSlime() and $earSlime.growth gt 30 - ($earSlime.exhibitionism * 10) and _avaliableActions.length>>
+		<<set $earSlimeForcedExposure to _avaliableActions.random()>>
+		<span class="lewd">You feel the slime in your head command you to
+			<<switch $earSlimeForcedExposure>>
+				<<case "flaunt">>agree with them to them.
+				<<case "flashSkirt1" "flashSkirt2" "flashSkirt3">>flash your skirt to them.
+				<<case "flashBottom1" "flashBottom2" "flashBottom3">>flash your bottom to them.
+				<<case "flashBreasts1" "flashBreasts2">>flash your breasts to them.
+			<</switch>>
+		</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+		<br><br>
+
+		<<link [[Obey|Street Exhibitionism Fame Flaunt]]>>
+			<<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>>
+			<<switch $earSlimeForcedExposure>>
+				<<case "flaunt">><<set $flaunt_type to 'words'>><<set $flaunt_part to 'none'>>
+				<<case "flashSkirt1" "flashSkirt2" "flashSkirt3">>
+					<<set $flaunt_type to 'skirt'>>
+					<<if $earSlimeForcedExposure.includes("1")>>
+						<<set $flaunt_part to 'genitals'>>
+					<<elseif $earSlimeForcedExposure.includes("2")>>
+						<<set $flaunt_part to 'chastity'>>
+					<<else>>
+						<<set $flaunt_part to 'lowerunderwear'>>
+					<</if>>
+				<<case "flashBottom1" "flashBottom2" "flashBottom3">>
+					<<set $flaunt_type to 'moon'>>
+					<<if $earSlimeForcedExposure.includes("1")>>
+						<<set $flaunt_part to 'bottom'>>
+					<<elseif $earSlimeForcedExposure.includes("2")>>
+						<<set $flaunt_part to 'chastity'>>
+					<<else>>
+						<<set $flaunt_part to 'lowerunderwear'>>
+					<</if>>
+				<<case "flashBreasts1" "flashBreasts2">>
+					<<set $flaunt_type to 'top'>>
+					<<if $earSlimeForcedExposure.includes("1")>>
+						<<set $flaunt_part to 'breasts'>>
+					<<else>>
+						<<set $flaunt_part to 'upperunderwear'>>
+					<</if>>
+			<</switch>>
+		<</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<if $earSlime.startedThreats>>
+			<<link [[Defy|Street Exhibitionism Fame Flaunt Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<<else>>
+			<<link [[Ignore|Street Exhibitionism Fame Shamed]]>><<unset $earSlimeForcedExposure>><</link>><<gtrauma>><<gstress>>
+		<</if>>
+	<<else>>
+		<<link [[Ignore|Street Exhibitionism Fame Shamed]]>><</link>><<gtrauma>><<gstress>>
+	<</if>>
+	<br>
+	<<if !$earSlimeForcedExposure>>
+		<<if _avaliableActions.includes("flaunt")>>
+			<<link [[Flaunt|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'words'>><<set $flaunt_part to 'none'>><</link>><<lstress>>
+			<br>
+		<</if>>
+		<<if _avaliableActions.includes("flashSkirt1")>>
+			<<link [[Flash your skirt|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'skirt'>> <<set $flaunt_part to 'genitals'>><</link>><<exhibitionist5>><<lstress>><<garousal>>
+			<br>
+		<<elseif _avaliableActions.includes("flashSkirt2")>>
+			<<link [[Flash your skirt|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'skirt'>> <<set $flaunt_part to 'chastity'>><</link>><<exhibitionist3>><<lstress>><<garousal>>
+			<br>
+		<<elseif _avaliableActions.includes("flashSkirt3")>>
+			<<link [[Flash your skirt|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'skirt'>> <<set $flaunt_part to 'lowerunderwear'>><</link>><<exhibitionist2>><<lstress>><<garousal>>
+			<br>
+		<<elseif _avaliableActions.includes("flashBottom1")>>
+			<<link [[Flash your bottom|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'moon'>> <<set $flaunt_part to 'bottom'>><</link>><<exhibitionist3>><<lstress>><<garousal>>
+			<br>
+		<<elseif _avaliableActions.includes("flashBottom2")>>
+			<<link [[Flash your bottom|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'moon'>> <<set $flaunt_part to 'chastity'>><</link>><<exhibitionist3>><<lstress>><<garousal>>
+			<br>
+		<<elseif _avaliableActions.includes("flashBottom3")>>
+			<<link [[Flash your bottom|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'moon'>> <<set $flaunt_part to 'lowerunderwear'>><</link>><<exhibitionist2>><<lstress>><<garousal>>
+			<br>
+		<</if>>
+		<<if _avaliableActions.includes("flashBreasts1")>>
 			<<link [[Flash your breasts|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'top'>> <<set $flaunt_part to 'breasts'>><</link>><<exhibitionist4>><<lstress>><<garousal>>
 			<br>
-		<<elseif $exhibitionism gte 15 and !$worn.under_upper.type.includes("naked") and $uncomfortable.underwear is false>>
+		<<elseif _avaliableActions.includes("flashBreasts2")>>
 			<<link [["Flash your "+$worn.under_upper.name|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'top'>> <<set $flaunt_part to 'upperunderwear'>><</link>><<exhibitionist2>><<lstress>><<garousal>>
 			<br>
 		<</if>>
 	<</if>>
+<</widget>>
+
+<<widget "streetExhibitionismFameShamed">>
+	<<if $phase is 1>>
+		The <<person2>><<person>> looks at you and laughs.
+	<<elseif $phase is 3>>
+		You blush and walk faster as <<he>> leers at your <<bottom>>.
+	<</if>>
+
+	<<if $phase isnot 3>>
+		<<rng>>
+		<<if $rng gte 81>>
+			You blush and try to avoid eye contact.
+		<<elseif $rng gte 61>>
+			You blush and hurry along.
+		<<elseif $rng gte 41>>
+			Your face turns red as you quicken your pace.
+		<<elseif $rng gte 21>>
+			Despite your clothes, you feel naked as you scurry away.
+		<<else>>
+			You blush.
+		<</if>>
+	<</if>>
+	<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
 <</widget>>
 
 <<widget "streetcollared">>
@@ -2117,7 +2261,11 @@
 		<br>
 		<<link [[Demand money (0:05)|Street Private Photoshoot Alley]]>><<pass 5>><<set $phase to 1>><</link>>
 		<br>
-		<<link [[Refuse|Street Private Photoshoot Refuse]]>><</link>>
+		<<if $earSlime.growth gte 200>>
+			<span class="red">You know the ear slimes wouldn't let you do anything but expose yourself.</span>
+		<<else>>
+			<<link [[Refuse|Street Private Photoshoot Refuse]]>><</link>>
+		<</if>>
 		<br>
 	<<else>>
 		You notice a <<person>> coming towards you. As <<he>> approaches, <<he>> suddenly breaks into a grin and steps in front of you, grasping your arm.
@@ -2150,17 +2298,29 @@
 		<br><br>
 		<<link [["Flash " + $NPCList[0].pronouns.him + " back"|Street Flash]]>><<set $phase to 5>><</link>><<exhibitionist5>>
 		<br>
-		<<link [[Ignore|Street Flash]]>><<set $phase to 0>><<stress 3>><</link>><<gstress>>
+		<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 5>>
+			<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
+		<<else>>
+			<<link [[Ignore|Street Flash]]>><<set $phase to 0>><<stress 3>><</link>><<gstress>>
+		<</if>>
 	<<elseif $exhibitionism gte 55 and $player.gender_appearance is "f" and $worn.under_upper.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>
 		<br><br>
 		<<link [["Flash " + $NPCList[0].pronouns.him + " back"|Street Flash]]>><<set $phase to 4>><</link>><<exhibitionist4>>
 		<br>
-		<<link [[Ignore|Street Flash]]>><<set $phase to 0>><<stress 3>><</link>><<gstress>>
+		<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 4>>
+			<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
+		<<else>>
+			<<link [[Ignore|Street Flash]]>><<set $phase to 0>><<stress 3>><</link>><<gstress>>
+		<</if>>
 	<<elseif $exhibitionism gte 15 and !$worn.under_lower.type.includes("naked") and ($player.gender_appearance is "m" or !$worn.under_upper.type.includes("naked"))>>
 		<br><br>
 		<<link [["Flash " + $NPCList[0].pronouns.him + " back"|Street Flash]]>><<set $phase to 2>><</link>><<exhibitionist2>>
 		<br>
-		<<link [[Ignore|Street Flash]]>><<set $phase to 0>><<stress 3>><</link>><<gstress>>
+		<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 2>>
+			<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
+		<<else>>
+			<<link [[Ignore|Street Flash]]>><<set $phase to 0>><<stress 3>><</link>><<gstress>>
+		<</if>>
 	<<else>>
 		<<stress 6>><<trauma 3>><<arousal 600>><<gstress>><<gtrauma>><<garousal>>
 		<br><br>
@@ -3429,6 +3589,7 @@
 <<widget "eventsstreetnight">>
 	<<set $dangerevent to random(1, 158)>>
 	<<rng>>
+	<<set $dangerevent to 40>>
 	<<if $location is "alley" and !Time.schoolDay and $bullytimer gte $rng and C.npc.Whitney.init is 1 and !["dungeon", "pillory"].includes(C.npc.Whitney.state) and $daily.whitney.park is undefined>>
 		<<set $bullytimer to 0>>
 		<<eventsWhitneyStreet>>

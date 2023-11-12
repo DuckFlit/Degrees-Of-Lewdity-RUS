@@ -1032,7 +1032,7 @@ function settingsObjects(type) {
 					},
 				},
 				parasitedisable: { boolLetter: true, bool: true, displayName: "Parasites:" },
-				// ruinedorgasmdisable: { boolLetter: true, bool: true, displayName: "Ruined orgasms:" }, uncomment when `$earSlimeTest` and `V.earSlimeTest` is removed from the code
+				ruinedorgasmdisable: { boolLetter: true, bool: true, displayName: "Ruined orgasms:" },
 				slugdisable: { boolLetter: true, bool: true, displayName: "Slugs:" },
 				waspdisable: { boolLetter: true, bool: true, displayName: "Wasps:" },
 				beedisable: { boolLetter: true, bool: true, displayName: "Bees:" },
