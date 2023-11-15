@@ -1177,8 +1177,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 	if (disableModifiers >= 2) return result;
 	if (
 		[
-			"skulduggery", "physique", "danceskill", "swimmingskill", "athletics", "willpower", "tending", "science", "maths", "english", "history",
-		].includes(skill) &&
+			"skulduggery", "physique", "danceskill", "swimmingskill", "athletics", "willpower", "tending", "science", "maths", "english", "history", "housekeeping"].includes(skill) &&
 		V.moorLuck > 0
 	) {
 		result = Math.floor(result * (1 + V.moorLuck / 100));
@@ -1278,6 +1277,17 @@ function currentSkillValue(skill, disableModifiers = 0) {
 		case "tending":
 			if (V.backgroundTraits.includes("plantlover")) {
 				result = Math.floor(result * (1 + V.trauma / (V.traumamax * 2)));
+			}
+			break;
+		case "housekeeping":
+			if (V.worn.upper.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
+			if (V.worn.lower.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
+			if (V.worn.head.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
 			}
 			break;
 		case "vaginalskill":
