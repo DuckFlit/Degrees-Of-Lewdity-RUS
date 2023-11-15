@@ -1517,7 +1517,7 @@ function dailyMasochismSadismEffects() {
 				break;
 			case 1:
 				if (stat >= 300) return { level: 2, message: "up 2" };
-				else if (stat <= 50) return { level: 0, message: "down 1" };
+				else if (stat <= 50) return { level: 0, message: "down 0" };
 				break;
 			case 2:
 				if (stat >= 500) return { level: 3, message: "up 3" };
