@@ -28,7 +28,7 @@ stringFrom = function (value) {
 				const result = Array.from(value).map(([key, val]) => `${stringFrom(key)} \u2192 ${stringFrom(val)}`);
 				return `{\u202F${result.join(", ")}\u202F}`;
 			} else if (value instanceof Date) {
-				return value.toLocaleString();
+				return value.toLocaleString(returnTimeFormat());
 			} else if (value instanceof Element) {
 				if (value === document.documentElement || value === document.head || value === document.body) {
 					throw new Error("illegal operation; attempting to convert the <html>, <head>, or <body> tags to string is not allowed");

@@ -762,3 +762,9 @@ window.loadCharacterViewerDate = () => {
 		textArea.value = "Invalid Import";
 	}
 };
+
+function returnTimeFormat() {
+	if (!V || !V.options) return "en-GB";
+	return V.options.dateFormat;
+}
+window.returnTimeFormat = returnTimeFormat;
