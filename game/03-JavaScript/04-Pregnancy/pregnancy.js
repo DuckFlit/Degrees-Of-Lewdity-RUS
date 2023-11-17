@@ -188,6 +188,12 @@ const playerPregnancy = (npc, npcType, fatherKnown = false, genital = "vagina", 
 			newPregnancy = pregnancyGenerator.wolf("pc", npc, fatherKnown, genital, true);
 			backupSpermType = "wolf";
 			break;
+		case "hawk":
+			if (V.pregnancyTest) {
+				newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, true);
+				backupSpermType = "hawk";
+			}
+			break;
 	}
 	if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String) && newPregnancy.fetus.length) {
 		V.sexStats[genital].pregnancy = {
@@ -225,6 +231,9 @@ function pregnancyProgress(genital = "vagina") {
 				break;
 			case "wolf":
 				multiplier = 12 / V.wolfPregnancyWeeks;
+				break;
+			case "hawk":
+				multiplier = 1;
 				break;
 		}
 		// The `0.5 * ` is because it runs at both midnight and noon
@@ -277,6 +286,9 @@ function playerEndWaterProgress() {
 		return null;
 	}
 
+	// Intended to end a hawk pregnancy in a different way
+	if (pregnancy.type === "hawk") return false;
+
 	if (
 		!isNaN(pregnancy.waterBreakingTimer) &&
 		pregnancy.waterBreakingTimer > 0 &&
@@ -313,7 +325,29 @@ function endPlayerPregnancy(birthLocation, location) {
 
 	if (!pregnancy || !pregnancy.fetus.length) return false;
 
-	giveBirthToChildren("pc", birthLocation, location);
+	if (pregnancy.fetus[0].father === "Alex") {
+		delete C.npc.Alex.pregnancy.pcKnowledge;
+		delete C.npc.Alex.pregnancy.test;
+		delete C.npc.Alex.pregnancy.ultraSound;
+		delete C.npc.Alex.pregnancy.sample;
+		delete C.npc.Alex.pregnancy.noBirthControl;
+		C.npc.Alex.pregnancy.pills = "contraceptive";
+		C.npc.Alex.pregnancyAvoidance = 50;
+
+		if (Object.values(V.children).find(child => (child.mother === "Alex" || child.father === "Alex") && child.location === "home")) {
+			// Do Nothing
+		} else {
+			delete C.npc.Alex.pregnancy.fee;
+		}
+	}
+
+	let validBirth;
+	if (pregnancy.fetus[0].childId) {
+		giveBirthToChildren("pc", birthLocation, location);
+		validBirth = true;
+	} else if (pregnancy.type === "hawk") {
+		// ToDo: Perfect place to give the player unfertilized eggs?
+	}
 
 	switch (pregnancy.type) {
 		case "human":
@@ -322,15 +356,18 @@ function endPlayerPregnancy(birthLocation, location) {
 		case "wolf":
 			menstruation.recoveryTime = random(1, 2) * V.wolfPregnancyWeeks;
 			break;
+		case "hawk":
+			menstruation.recoveryTime = 0.5;
+			break;
 	}
 
-	if ((genital === "vagina" && V.player.virginity.vaginal === true) || (genital === "anus" && V.player.virginity.anal === true)) {
+	if (validBirth && ((genital === "vagina" && V.player.virginity.vaginal === true) || (genital === "anus" && V.player.virginity.anal === true))) {
 		V.pregnancyStats.playerVirginBirths.pushUnique(pregnancy.fetus[0].birthId);
 	}
 
 	V.sexStats[genital].pregnancy = {
 		...pregnancy,
-		totalBirthEvents: (pregnancy.totalBirthEvents || 0) + 1,
+		totalBirthEvents: validBirth ? (pregnancy.totalBirthEvents || 0) + 1 : pregnancy.totalBirthEvents || 0,
 		fetus: [],
 		waterBreaking: false,
 		waterBreakingTimer: null,
@@ -352,24 +389,12 @@ function endPlayerPregnancy(birthLocation, location) {
 		awareOfPeriodDelay: false,
 	};
 
+	delete V.sexStats[genital].pregnancy.ultrasoundDone;
+
 	delete V.templeVirginPregnancy;
 	delete V.caveHumanPregnancyDiscovered;
 
-	delete C.npc.Alex.pregnancy.knowledge;
-	delete C.npc.Alex.pregnancy.test;
-	delete C.npc.Alex.pregnancy.sample;
-	delete C.npc.Alex.pregnancy.noBirthControl;
-	C.npc.Alex.pregnancy.pills = "contraceptive";
- 	C.npc.Alex.pregnancyAvoidance = 50;
-
-	if (Object.values(V.children).find(child => child.mother === "Alex" && child.location === "home") || Object.values(V.children).find(child => child.father === "Alex" && child.location === "home"))
-	{
-	
-	} else {
-		delete C.npc.Alex.pregnancy.fee;
-	}
-
-	return true;
+	return validBirth;
 }
 DefineMacro("endPlayerPregnancy", endPlayerPregnancy);
 window.endPlayerPregnancyTest = (birthLocation, location) => {
@@ -395,6 +420,9 @@ function npcPregnancyCycle() {
 				case "wolf":
 					multiplier = 12 / V.wolfPregnancyWeeks;
 					break;
+				case "hawk":
+					multiplier = 1;
+					break;
 			}
 			pregnancy.timer += parseFloat(multiplier.toFixed(3));
 			if (pregnancy.timer > pregnancy.timerEnd * 0.2 && !pregnancy.npcAwareOf) {
@@ -410,27 +438,25 @@ function npcPregnancyCycle() {
 							birthLocation = "wolf_cave";
 							location = "wolf_cave";
 							break;
-
+						case "Great Hawk":
+							birthLocation = "tower";
+							location = "tower";
+							break;
 						case "Alex":
 							if (!C.npc.Alex.pregnancy.missedBirth) {
 								C.npc.Alex.pregnancy.missedBirth = true;
 								C.npc.Alex.pregnancy.missedBirthCount = 1;
-
 							} else {
 								C.npc.Alex.pregnancy.missedBirth = true;
 								C.npc.Alex.pregnancy.missedBirthCount += 1;
 							}
-
 							if (C.npc.Alex.pregnancy.nursery === true) {
 								birthLocation = "alex_cottage";
 								location = "alex_cottage";
-
 							} else {
 								birthLocation = "alex_cottage";
 								location = "home";
-
 							}
-
 							break;
 					}
 					[birthLocation, location] = defaultBirthLocations(pregnancy.type, birthLocation, location);
@@ -456,11 +482,9 @@ function npcPregnancyCycle() {
 		updateRecordedSperm("vagina", npcName, 1);
 	}
 }
-
 /* V.pregnancytype === "realistic" uses this function */
 function namedNpcPregnancyAttempt(npcName) {
 	if (!C.npc[npcName] || C.npc[npcName].vagina === "none" || V.pregnancytype !== "realistic") return false;
-
 	const namedNpc = C.npc[npcName];
 	const pregnancy = namedNpc.pregnancy;
 	if (!pregnancy || !pregnancy.enabled || pregnancy.fetus.length) {
@@ -468,7 +492,6 @@ function namedNpcPregnancyAttempt(npcName) {
 		return false;
 	}
 	const [trackedNPCs, spermArray] = spermObjectToArray(pregnancy.sperm, false);
-
 	const fertility = pregnancy.pills === "fertility" ? 0.8 : 1;
 	const contraceptive = pregnancy.pills === "contraceptive";
 
@@ -527,6 +550,14 @@ function namedNpcPregnancy(mother, father, fatherSpecies, fatherKnown = false, t
 			newPregnancy = pregnancyGenerator.wolf(mother, father, fatherKnown, "vagina", true);
 			backupSpermType = "wolf";
 			break;
+		case "humanhawk":
+		case "hawkhuman":
+		case "hawkhawk":
+			if (V.pregnancyTest) {
+				newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", true);
+				backupSpermType = "hawk";
+			}
+			break;
 	}
 	if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String) && newPregnancy.fetus.length) {
 		namedNpc.pregnancy = {
@@ -554,18 +585,21 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 	if (!pregnancy || pregnancy.enabled === undefined || !pregnancy.fetus.length) return false;
 
 	// Handled by Baileys Orphanage event and when naming them, this is backup for other situations
-	if (location !== "home" && pregnancy.fetus[0].mother !== "pc" && pregnancy.fetus[0].father === "pc") {
+	if (pregnancy.fetus[0].childId && location !== "home" && pregnancy.fetus[0].mother !== "pc" && pregnancy.fetus[0].father === "pc") {
 		document.getElementById("passages").children[0].append(Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>'));
 	}
+	let validBirth;
+	if (pregnancy.fetus[0].childId) {
+		giveBirthToChildren(npcName, birthLocation, location);
+		validBirth = true;
+	}
 
-	giveBirthToChildren(npcName, birthLocation, location);
-
-	const birthEvents = clone(pregnancy.totalBirthEvents) + 1;
+	const birthEvents = clone(pregnancy.totalBirthEvents) + (validBirth ? 1 : 0);
 	const cycleDay = clone(pregnancy.cycleDaysTotal) - 3;
 
 	V.NPCName[V.NPCNameList.indexOf(npcName)].pregnancy = {
 		...pregnancy,
-		totalBirthEvents: (pregnancy.totalBirthEvents || 0) + 1,
+		totalBirthEvents: validBirth ? (pregnancy.totalBirthEvents || 0) + 1 : pregnancy.totalBirthEvents || 0,
 		fetus: [],
 		birthEvents,
 		timer: null,
@@ -579,25 +613,21 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 	};
 
 	if (npcName === "Alex") {
-		delete C.npc.Alex.pregnancy.knowledge;
-		delete C.npc.Alex.pregnancy.test;
-		delete C.npc.Alex.pregnancy.sample;
+		delete C.npc.Alex.pregnancy.selfKnowledge;
 		delete C.npc.Alex.pregnancy.noBirthControl;
 
 		C.npc.Alex.pregnancy.pills = "contraceptive";
- 		C.npc.Alex.pregnancyAvoidance = 50;
+		C.npc.Alex.pregnancyAvoidance = 50;
 
-		if (Object.values(V.children).find(child => child.mother === "Alex" && child.location === "home") || Object.values(V.children).find(child => child.father === "Alex" && child.location === "home"))
-		{
-		
+		if (Object.values(V.children).find(child => (child.mother === "Alex" || child.father === "Alex") && child.location === "home")) {
+			// Do Nothing
 		} else {
 			delete C.npc.Alex.pregnancy.fee;
 		}
-
 	}
 
-	V.pregnancyStats.npcTotalBirthEvents++;
-	return true;
+	if (validBirth) V.pregnancyStats.npcTotalBirthEvents++;
+	return validBirth;
 }
 DefineMacro("endNpcPregnancy", endNpcPregnancy);
 window.endNpcPregnancyTest = (npcName, birthLocation, location) => {
@@ -619,6 +649,9 @@ function randomPregnancyProgress() {
 					break;
 				case "wolf":
 					multiplier = 12 / V.wolfPregnancyWeeks;
+					break;
+				case "hawk":
+					multiplier = 1;
 					break;
 			}
 			npc.pregnancy.timer += parseFloat(multiplier.toFixed(3));
@@ -659,6 +692,10 @@ function defaultBirthLocations(type, birthLocation, location) {
 			if (!birthLocation) birthLocation = "wolf_cave";
 			if (!location) location = "wolf_cave";
 			break;
+		case "hawk":
+			if (!birthLocation) birthLocation = "tower";
+			if (!location) location = "tower";
+			break;
 		default: /* Considered an invalid location when the above is not updated */
 			if (!birthLocation) birthLocation = "unknown";
 			if (!location) location = "unknown";
@@ -695,6 +732,9 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 		case "wolf_cave":
 			setKnowsAboutPregnancy(mother, "Black Wolf", birthId);
 			break;
+		case "tower":
+			setKnowsAboutPregnancy(mother, "Great Hawk", birthId);
+			break;
 		default:
 			break;
 	}
@@ -705,6 +745,9 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 			break;
 		case "wolf":
 			V.pregnancyStats.wolfToysUnlocked = true;
+			break;
+		case "hawk":
+			V.pregnancyStats.hawkToysUnlocked = true;
 			break;
 	}
 
@@ -730,6 +773,9 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 				break;
 			case "wolf":
 				V.pregnancyStats.wolfChildren++;
+				break;
+			case "hawk":
+				V.pregnancyStats.hawkChildren++;
 				break;
 		}
 	});
