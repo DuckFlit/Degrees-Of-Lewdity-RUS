@@ -1112,7 +1112,7 @@
 		<<He>> looks at <<his>> watch, then reclines and pulls the brim of <<his>> hat over <<his>> face.
 		<br><br>
 
-		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.pcKnowledge isnot true or C.npc.Alex.pregnancy.test is true) and C.npc.Alex.pregnancy.ultraSound isnot "requested">>
 			<<pcPregnancyRevealToAlex>>
 
 		<<else>>
@@ -1128,7 +1128,7 @@
 		<<He>> looks at <<his>> watch, and sighs. "I'd better get back to work," <<he>> says, rising to <<his>> feet. "Thanks for the company."
 		<br><br>
 
-		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.pcKnowledge isnot true or C.npc.Alex.pregnancy.test is true) and C.npc.Alex.pregnancy.ultraSound isnot "requested">>
 			<<pcPregnancyRevealToAlex>>
 
 		<<else>>
@@ -2805,7 +2805,7 @@
 		<span class ="green">A nice place for your livings.</span>
 		<br>
 
-	<<elseif talkedAboutPregnancy("Alex","pc") or talkedAboutPregnancy("pc","Alex") or C.npc.Alex.pregnancy.knowledge is true>>
+	<<elseif talkedAboutPregnancy("Alex","pc") or talkedAboutPregnancy("pc","Alex") or C.npc.Alex.pregnancy.selfKnowledge or C.npc.Alex.pregnancy.pcKnowledge>>
 		Cottage:
 		<<link [[Nursery|Farm Upgrades Nursery]]>><</link>>
 		<br>
@@ -2994,7 +2994,7 @@
 <<widget "pcPregnancyRevealToAlex">>
 
 	<<if talkedAboutPregnancy("pc","Alex")>>
-		<<if C.npc.Alex.pregnancy.knowledge isnot true>>
+		<<if C.npc.Alex.pregnancy.pcKnowledge isnot true>>
 			<<if getPregnancyObject().fetus[0].father is "Alex" and getPregnancyObject().potentialFathers.length is 1>>
 				<span class="blue">Maybe this is a good opportunity to tell Alex that <<he>> is the father.</span>
 				<br>
@@ -3049,7 +3049,7 @@
 
 			<</if>>
 
-		<<elseif C.npc.Alex.pregnancy.knowledge is true and C.npc.Alex.pregnancy.test is true>>
+		<<elseif C.npc.Alex.pregnancy.pcKnowledge and C.npc.Alex.pregnancy.test is true>>
 			<span class="blue">Alex will believe in you now that you have a paternity test.</span>
 			<br>
 
@@ -3079,10 +3079,21 @@
 
 	<<elseif playerIsPregnant() and playerAwareTheyArePregnant() and !talkedAboutPregnancy("pc","Alex")>>
 		<<if getPregnancyObject().fetus[0].father is "Alex" and getPregnancyObject().potentialFathers.length is 1>>
-			<span class="blue">Maybe this is a good opportunity to tell Alex about your pregnancy.</span>
-			<br>
-
-			<<link [[Tell Alex that you're pregnant|Farm PC Pregnancy Reveal]]>><</link>>
+			<<if $genderknown.includes("Alex") and !$player.vaginaExist and !knowsAboutAnyPregnancy("pc","Alex")>>
+				<<if C.npc.Alex.pregnancy.ultraSound and C.npc.Alex.pregnancy.ultraSound.includes("collected")>>
+					<span class="blue">Maybe this is a good opportunity to talk to Alex about your pregnancy again.</span>
+					<br>
+					<<link [[Prove to Alex that you're pregnant|Farm PC Pregnancy Reveal]]>><</link>>
+				<<else>>
+					<span class="blue">Maybe this is a good opportunity to tell Alex about your pregnancy.</span>
+					<br>
+					<<link [[Tell Alex that you're pregnant|Farm PC Pregnancy Reveal Mpreg Alt]]>><</link>>
+				<</if>>
+			<<else>>
+				<span class="blue">Maybe this is a good opportunity to tell Alex about your pregnancy.</span>
+				<br>
+				<<link [[Tell Alex that you're pregnant|Farm PC Pregnancy Reveal]]>><</link>>
+			<</if>>
 
 			<<if $passage is "Farm Rest" or $passage is "Farm Rest Refuse">>
 				<<if $farm_work.alex_relax lt 3>>
@@ -3105,10 +3116,22 @@
 			<</if>>
 
 		<<else>>
-			<span class="blue">Maybe it's okay to assume that Alex is the father?</span>
-			<br>
-
-			<<link [["Tell Alex about your pregnancy and that "+ $NPCName[25].pronouns.he +" may be the father"|Farm PC Pregnancy Reveal Unknown]]>><<set $phase to 1>><</link>>
+			<<if $genderknown.includes("Alex") and !$player.vaginaExist and !knowsAboutAnyPregnancy("pc","Alex")>>
+				
+				<<if C.npc.Alex.pregnancy.ultraSound and C.npc.Alex.pregnancy.ultraSound.includes("collected")>>
+					<span class="blue">Maybe this is a good opportunity to talk to Alex about your pregnancy again.</span>
+					<br>
+					<<link [["Prove to about your pregnancy and that "+ $NPCName[25].pronouns.he +" may be the father"|Farm PC Pregnancy Reveal Unknown]]>><<set $phase to 1>><</link>>
+				<<else>>
+					<span class="blue">Maybe it's okay to assume that Alex is the father?</span>
+					<br>
+					<<link [["Tell Alex about your pregnancy and that "+ $NPCName[25].pronouns.he +" may be the father"|Farm PC Pregnancy Reveal Mpreg Alt]]>><</link>>
+				<</if>>
+			<<else>>
+				<span class="blue">Maybe it's okay to assume that Alex is the father?</span>
+				<br>
+				<<link [["Tell Alex about your pregnancy and that "+ $NPCName[25].pronouns.he +" may be the father"|Farm PC Pregnancy Reveal Unknown]]>><<set $phase to 1>><</link>>
+			<</if>>
 
 			<<if $passage is "Farm Rest" or $passage is "Farm Rest Refuse">>
 				<<if $farm_work.alex_relax lt 3>>
@@ -3158,7 +3181,7 @@
 	Alex tenses up, but quickly composes <<himself>>. "Here, let's go inside," <<he>> says, guiding you into the cottage and onto the sofa.
 	<br>
 
-	It doesn't take long before you start feeling the contractions. It's a little difficult to breathe.
+	It doesn't take long before you start feeling contractions, this time stronger than usual. It's a little difficult to breathe.
 	<br><br>
 
 	Alex gives you a preoccupied glance. "Don't worry," <<he>> reassures you. "I'll call the local doctor."

@@ -1025,7 +1025,7 @@ You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardro
 		<</if>>
 		<<endevent>>
 
-		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.pcKnowledge isnot true or C.npc.Alex.pregnancy.test is true or C.npc.Alex.pregnancy.test is true) and C.npc.Alex.pregnancy.ultraSound isnot "requested">>
 			<<pcPregnancyRevealToAlex>>
 		<</if>>
 
@@ -2035,7 +2035,7 @@ You get comfy beside Alex.
 			<<set C.npc.Alex.pregnancy.noBirthControl to true>>
 		<</if>>
 
-		<<if (npcIsPregnant("Alex") or playerIsPregnant()) and C.npc.Alex.pregnancy.knowledge is true>>
+		<<if (npcIsPregnant("Alex") or playerIsPregnant()) and (C.npc.Alex.pregnancy.selfKnowledge or C.npc.Alex.pregnancy.pcKnowledge)>>
 			"What do you think about <<if childrenCountBetweenParents("Alex","pc") gte 1 or childrenCountBetweenParents("pc","Alex") gte 1>>our family growing<<else>>us having a family<</if>> soon?" you ask, resting your head on <<his>> shoulder.
 			<br><br>
 
@@ -2066,10 +2066,10 @@ You get comfy beside Alex.
 			<br><br>
 
 			<<He>> wraps an arm around you, and pauses for a moment.
-			<<if ($genderknown.includes("Alex") and $player.gender is _alex.pronoun) or (!$genderknown.includes("Alex") and $player.gender_appearance is _alex.pronoun)>>
-				"We could adopt. But I heard it's expensive. And we've got our hands full as is. Dunno how I'll manage without booze." <<He>> suddenly grins. "If it makes you happy though, I'd be tenfold."
-			<<else>>
+			<<if (knowsAboutAnyPregnancy("pc", "Alex") and $NPCName[$NPCNameList.indexOf("Alex")].gender is "m") or ($genderknown.includes("Alex") and $player.penisExist and $NPCName[$NPCNameList.indexOf("Alex")].gender is "f") or ($genderknown.includes("Alex") and $player.gender isnot _alex.gender) or (!$genderknown.includes("Alex") and $player.gender_appearance isnot _alex.gender)>>
 				"Being honest, I didn't consider it. Dunno how I'll manage without booze. But I wouldn't mind. If it makes you happy, I'd be tenfold," <<he>> says, beaming at you.
+			<<else>>
+				"We could adopt. But I heard it's expensive. And we've got our hands full as is. Dunno how I'll manage without booze." <<He>> suddenly grins. "If it makes you happy though, I'd be tenfold."
 			<</if>>
 			<br><br>
 
@@ -2147,12 +2147,14 @@ You get comfy beside Alex.
 	<<link [[Next|Farm Cottage]]>><<endevent>><</link>>
 	<br>
 <<else>>
-	<<if C.npc.Alex.pregnancy.noBirthControl is true and C.npc.Alex.pregnancy.pills isnot "fertility">>
+	<<if (playerPregnancyPossibleWith("Alex") or NPCPregnancyPossibleWithPlayer("Alex")) and C.npc.Alex.pregnancy.noBirthControl is true and C.npc.Alex.pregnancy.pills isnot "fertility">>
 		<<link [[Ask to have a baby|Farm Cottage Baby Request]]>><</link>>
-
-		<i><span class="blue"> This will make Alex more fertile till <<nnpc_his "Alex">> next pregnancy</span></i>
+		<<if C.npc.Alex.gender is "f">>
+			<i><span class="blue">This will make Alex more fertile till <<nnpc_his "Alex">> next pregnancy.</span></i>
+		<<else>>
+			<i><span class="blue">This will make Alex more virile till your next pregnancy.</span></i>
+		<</if>>
 		<br><br>
-
 	<</if>>
 
 	<<link [[Keep cuddling (0:20)|Farm Breakfast Cuddle]]>><<npcincr Alex love 1>><<pass 20>><</link>><<glove>>
@@ -2750,7 +2752,7 @@ Alex slams the door.
 
 :: Farm Alex Pregnancy Reveal
 <<effects>><<npc "Alex">><<setKnowsAboutPregnancy "Alex" "pc">><<setTalkedAboutPregnancy "Alex" "pc">>
-<<set C.npc.Alex.pregnancy.knowledge to true>>
+<<set C.npc.Alex.pregnancy.selfKnowledge to true>>
 
 <<if $farm_stage gte 7 and $alex_countdown is undefined>>
 	You sit next to Alex on the sofa. "So, what is it?" you ask.
@@ -2909,7 +2911,7 @@ Alex slams the door.
 :: Farm PC Pregnancy Reveal
 <<effects>><<npc "Alex">>
 
- <<if $phase isnot 3>>
+ <<if ![3,4].includes($phase)>>
     <<if $location is "alex_cottage">>
         You take a seat next to Alex.
 
@@ -2918,7 +2920,21 @@ Alex slams the door.
 
     <</if>>
 
-	<<if C.npc.Alex.pregnancy.test is true>>
+	<<if C.npc.Alex.pregnancy.ultraSound is "collected">>
+		<<set C.npc.Alex.pregnancy.ultraSound to "done">>
+		You hand the ultrasound pictures to Alex. <<He>> freezes in place and looks to you. "So you really are pregnant?"
+		<br><br>
+		You nod and flash <<him>> a nervous smile. A pregnant pause fills the air as <<he>> processes this information.
+		<br><br>
+		<<if $phase isnot 3>><<set $phase to 4>><</if>>
+	<<elseif C.npc.Alex.pregnancy.ultraSound is "collected2">>
+		<<set C.npc.Alex.pregnancy.ultraSound to "done">>
+		You hand the note from Dr Harper to Alex. <<He>> freezes in place and looks to you. "So you really are pregnant?"
+		<br><br>
+		You nod and flash <<him>> a nervous smile. A pregnant pause fills the air as <<he>> processes this information.
+		<br><br>
+		<<if $phase isnot 3>><<set $phase to 4>><</if>>
+	<<elseif C.npc.Alex.pregnancy.test is true>>
 		You hand the paternity test results to Alex. <<He>> freezes in place<<if $farm_stage gte 7 and $alex_countdown is undefined>>, but you can see a smile forming on <<his>> face.<<else>>.<</if>>
         <br><br>
 
@@ -2934,10 +2950,13 @@ Alex slams the door.
 <</if>>
 
 <<if C.npc.Alex.pregnancy.test isnot true and $farm_stage gte 7 and $alex_countdown is undefined>>
-	<<setKnowsAboutPregnancy "pc" "Alex">><<setTalkedAboutPregnancy "pc" "Alex">><<set C.npc.Alex.pregnancy.knowledge to true>>
+	<<setKnowsAboutPregnancy "pc" "Alex">><<setTalkedAboutPregnancy "pc" "Alex">><<set C.npc.Alex.pregnancy.pcKnowledge to true>>
 
     <<if playerBellySize() gte 7>>
-        <<if $phase is 3>>
+        <<if $phase is 4>>
+			"It's yours, okay?" you say.
+            <br><br>
+        <<elseif $phase is 3>>
             You both take a seat on the sofa. With a sigh, <<if !$worn.upper.type.includes("naked")>>you lift up the hem of your shirt and<<else>>you<</if>> frame your belly with your hands, drawing <<his>> eyes to your stomach.
             <br><br>
 
@@ -2960,15 +2979,24 @@ Alex slams the door.
         <br><br>
 
     <<else>>
-        You hand <<him>> your pregnancy test. <<He>> freezes in place, but you can see a smile forming on <<his>> face.
-        <br>
+		<<if $phase isnot 4>>
+			<<switch getPregnancyObject().awareOf>>
+				<<case "temple">>
+					You tell <<him>> what Jordan from the temple told you. <<He>> freezes in place, but you can see a smile forming on <<his>> face.
+				<<case "pharmacy">>
+					You tell <<him>> what the nurse from the pharmacy told you. <<He>> briefly frowns, but then you see a smile forming on <<his>> face.
+				<<default>>
+					You hand <<him>> your pregnancy test. <<He>> freezes in place, but you can see a smile forming on <<his>> face.
+			<</switch>>
+    		<br>
+		<</if>>
 
         "Wow," <<he>> says, breaking the silence. "I sure wasn't expecting that."
 		<br>
 
 		<<He>> pulls you into a hug.
 
-        <<if pregnancyCountBetweenParents("Alex", "pc") lte 0 or pregnancyCountBetweenParents("pc", "Alex") lte 0>>
+        <<if pregnancyCountBetweenParents("pc", "Alex") lte 0>>
             "Our own little family. Mum would be proud."
 
         <<else>>
@@ -2976,25 +3004,47 @@ Alex slams the door.
 
         <</if>>
         <br><br>
-
-        As <<he>> pulls away from you, <<he>> holds up the used pregnancy test. "But did you really break the news by handing me the thing you peed on?" <<he>> teases.
-        <br><br>
-
-        "Yeah, sorry," you say with a sheepish laugh.
-        <br>
-
-        <<He>> laughs with you. "It's fine, I'm not bothered by it. Can't be squeamish when you're a farmer!"
-        <br><br>
+		<<if $phase is 4>>
+			As <<he>> pulls away from you, <<he>> looks to you. "Sorry for not believing you."
+			<br>
+			"Yeah, I was quite surprised," you say with a sheepish laugh.
+			<br>
+			<<He>> laughs with you. "It's fine, I'm looking forward to the unexpected family."
+		<<else>>
+			<<switch getPregnancyObject().awareOf>>
+				<<case "temple">>
+					As <<he>> pulls away from you, <<he>> looks to you. "No idea who this Jordan is, but I wonder how <<nnpc_he "Jordan">> figured out you were pregnant?"
+					<br>
+					"Yeah, I was quite surprised," you say with a sheepish laugh.
+					<br>
+					<<He>> laughs with you. "It's fine, I'm not bothered by it."
+				<<case "pharmacy">>
+					As <<he>> pulls away from you, <<he>> looks to you. "There are better ways to keep yourself from becoming pregnant."
+					<br><br>
+					"Yeah, sorry," you say with a sheepish laugh.
+					<br>
+					<<He>> laughs with you. "It's fine, I'm not bothered by it."
+				<<default>>
+					As <<he>> pulls away from you, <<he>> holds up the used pregnancy test. "But did you really break the news by handing me the thing you peed on?" <<he>> teases.
+					<br><br>
+					"Yeah, sorry," you say with a sheepish laugh.
+					<br>
+					<<He>> laughs with you. "It's fine, I'm not bothered by it. Can't be squeamish when you're a farmer!"
+			<</switch>>
+		<</if>>
+		<br><br>
 
     <</if>>
 
 <<else>>
 
-    <<if C.npc.Alex.pregnancy.knowledge isnot true>>
-		<<setKnowsAboutPregnancy "pc" "Alex">><<setTalkedAboutPregnancy "pc" "Alex">><<set C.npc.Alex.pregnancy.knowledge to true>>
+    <<if C.npc.Alex.pregnancy.pcKnowledge isnot true>>
+		<<setKnowsAboutPregnancy "pc" "Alex">><<setTalkedAboutPregnancy "pc" "Alex">><<set C.npc.Alex.pregnancy.pcKnowledge to true>>
 
         <<if playerBellySize() gte 7>>
-            <<if $phase is 3>>
+            <<if $phase is 4>>
+                "It's yours, okay?" you say.
+            <<elseif $phase is 3>>
                 With a sigh, <<if !$worn.upper.type.includes("naked")>>you lift up the hem of your shirt and<<else>>you<</if>> frame your belly with your hands, drawing <<his>> eyes to your stomach.
 
                 "It's yours, okay?" you say.
@@ -3005,9 +3055,16 @@ Alex slams the door.
 
             <</if>>
 
+        <<elseif $phase is 4>>
         <<else>>
-            With trembling fingers, you hand <<him>> your pregnancy test.
-
+			<<switch getPregnancyObject().awareOf>>
+				<<case "temple">>
+					You tremble as you tell <<him>> what Jordan from the temple told you.
+				<<case "pharmacy">>
+					You tremble as you tell <<him>> what the nurse from the pharmacy told you.
+				<<default>>
+					With trembling fingers, you hand <<him>> your pregnancy test.
+			<</switch>>
         <</if>>
         <br><br>
 
@@ -3078,6 +3135,66 @@ Alex slams the door.
 <<if ($farm_stage gte 7 and $alex_countdown is undefined) or C.npc.Alex.pregnancy.test is true>>
 	<<link [[Next|Farm PC Pregnancy Reveal 2]]>><<run delete C.npc.Alex.pregnancy.test>><</link>>
 
+<</if>>
+
+:: Farm PC Pregnancy Reveal Mpreg Alt
+<<effects>>
+
+<<if $location is "alex_cottage">>
+    You take a seat next to Alex.
+<<else>>
+    You reach for Alex and grab <<his>> arm.
+<</if>>
+
+<<switch getPregnancyObject().awareOf>>
+    <<case "wakingUp">>
+        You tremble as you tell <<him>> what you thought when you looked at yourself after waking up. You show <<him>> your belly.
+    <<case "mirror">>
+        You tremble as you tell <<him>> what you thought when you looked at yourself in the mirror. You show <<him>> your belly.
+    <<case "temple">>
+        You tremble as you tell <<him>> what Jordan told you.
+    <<case "pharmacy">>
+        You tremble as you tell <<him>> what the nurse from the pharmacy told you.
+    <<default>>
+        With trembling fingers, you hand <<him>> your pregnancy test.
+<</switch>>
+
+<br><br>
+<<He>> looks at you with a baffled expression. "But... how?" <<he>> asks. "You don't have a vagina. Your condition could easily be something else; you should get checked at the hospital."
+
+<<if getPregnancyObject().ultrasoundDone>>
+	<br><br>
+    "I already have." You hand Alex a printout of your ultrasound. 
+    <br><br>
+    It takes <<him>> a moment to put two and two together, then <<he>> laughs. "Is this your way of explaining that beer belly you have?" <<he>> teases. "Nice sense of humour." <<He>> ruffles your hair playfully.
+    <br><br>
+	"I'm not joking," you insist. "I'm pregnant."
+    <br><br>
+	<<if playerBellySize() gte 7>>
+		<<He>> doesn't seem convinced, so you grab <<his>> hand and put it on your belly. <span class="green">Your baby shifts around inside you</span>. "What- but- how?" Alex's eyes widen and <<he>> stares at your belly bump. "How... how is this possible?"
+	<<else>>
+		<<He>> doesn't seem convinced, but there is nothing more you can do. "But how can you be pregnant?"
+	<</if>>
+
+	<br><br>
+	<<if $submissive gte 1150>>
+		You shake your head. "I don't know. I can't explain it either..."
+	<<elseif $submissive lte 850>>
+		You shrug. "Fuck if I know. Life finds a way."
+	<<else>>
+		You shrug. "Don't ask questions."
+	<</if>>
+	<br><br>
+	It takes <<him>> a moment to pull <<him>>self together. "Well," <<he>> finally says, "I've seen some pretty strange things here on the farm before, but this takes the cake. I guess nature can be pretty wild, huh?" 
+	<br><br>
+
+    <<link [[Next|Farm PC Pregnancy Reveal]]>><<set $phase to 4>><</link>>
+<<else>>
+    <<set C.npc.Alex.pregnancy.ultraSound to "requested">>
+    <br><br>
+    <span class="blue">You'll need a ultrasound to convince Alex that you're pregnant.</span>
+    <br><br>
+    <<link [[Next|Farm Work]]>><<endevent>><</link>>
 <</if>>
 
 :: Farm PC Pregnancy Reveal 2
@@ -3201,7 +3318,7 @@ Alex is willing to build a Nursery at the cottage, but first <span class="gold">
 
 :: Farm PC Pregnancy Reveal Unknown
 <<effects>><<npc "Alex">>
-<<set C.npc.Alex.pregnancy.knowledge to true>><<set C.npc.Alex.pregnancy.sample to true>>
+<<set C.npc.Alex.pregnancy.pcKnowledge to true>><<set C.npc.Alex.pregnancy.sample to true>>
 
 <<if $phase is 1>>
 
@@ -3689,7 +3806,7 @@ Alex notices your anxiety. "Fancy a fancy cup of tea?" <<he>> asks with a smile 
 You take a sip. The taste is sweet, and it makes you feel warm.<<llstress>>
 <br>
 
-The contractions grow stronger, but you're able to breathe through it. <<gpain>>
+The contractions continue to grow stronger and far more frequent, but you're able to breathe through it. <<gpain>>
 <br><br>
 
 Alex holds your hand, and you wait for the Doctor's arrival.

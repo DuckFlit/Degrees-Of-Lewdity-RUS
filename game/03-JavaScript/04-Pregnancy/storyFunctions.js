@@ -727,7 +727,13 @@ function knowsAboutChildrenTotal(motherOrFather, whoToCheck, location) {
 }
 window.knowsAboutChildrenTotal = knowsAboutChildrenTotal;
 
-function childrenCountBetweenParents(parent1, parent2) {
+function childrenCountBetweenParents(parent1, parent2, motherAndFather = false) {
+	if (motherAndFather) {
+		return Object.values(V.children).reduce((prev, curr) => {
+			if (curr.father !== curr.mother && [parent1].includes(curr.mother) && [parent2].includes(curr.father)) return prev + 1;
+			return prev;
+		}, 0);
+	}
 	return Object.values(V.children).reduce((prev, curr) => {
 		if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1, parent2].includes(curr.father)) return prev + 1;
 		return prev;
@@ -735,7 +741,13 @@ function childrenCountBetweenParents(parent1, parent2) {
 }
 window.childrenCountBetweenParents = childrenCountBetweenParents;
 
-function pregnancyCountBetweenParents(parent1, parent2) {
+function pregnancyCountBetweenParents(parent1, parent2, motherAndFather = false) {
+	if (motherAndFather) {
+		return Object.values(V.children).reduce((prev, curr) => {
+			if (curr.father !== curr.mother && [parent1].includes(curr.mother) && [parent2].includes(curr.father)) prev.pushUnique(curr.mother + curr.birthId);
+			return prev;
+		}, []).length;
+	}
 	return Object.values(V.children).reduce((prev, curr) => {
 		if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1, parent2].includes(curr.father))
 			prev.pushUnique(curr.mother + curr.birthId);
