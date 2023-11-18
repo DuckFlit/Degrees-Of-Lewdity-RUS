@@ -1135,13 +1135,42 @@ The stimulation continues for quite some time, and you feel your knees start to 
 
 <<arousal 10000 "genitals">>
 <<orgasm>>
-<<if $femaleclimax and !$player.vaginaExist>>
+<<if ($femaleclimax or _deniedOrgasm or $worn.genitals.name is "chastity parasite") and !$player.vaginaExist>>
 	"Nothing? Unusual. Still, I feel the corruption has abated."
 <<else>>
-	You feel the residual fluids being collected from your <<genitals>>. "A fine expulsion."
+	You feel the residual fluids being collected from your
+	<<if ($femaleclimax or _deniedOrgasm or $worn.genitals.name is "chastity parasite")>>
+		<<pussy>>.
+	<<else>>
+		<<genitals>>.
+	<</if>>
+	"A fine expulsion."
 <</if>>
 <<if $earSlime.corruption>>
-	<<corruption -5>><<llcorruption>>
+	<<if $earSlime.growth gte 50>>
+		<<set $earSlime.growth to Math.clamp(Math.ceil($earSlime.growth * 0.9), 51, Infinity)>>
+		<<if $earSlime.growth gte 100>>
+			<<set $earSlime.defyCooldown += 6>>
+		<<else>>
+			<<set _parasitesRemoved to "">>
+			<<if $earSlime.growth lte 100 and $parasite.penis.name and $parasite.penis.name is "parasite">>
+				<<removeparasite "penis">>
+				<<set _parasitesRemoved to "genitals">>
+			<</if>>
+			<<if $earSlime.growth lte 100 and $parasite.clit.name and $parasite.clit.name is "parasite">>
+				<<removeparasite "clit">>
+				<<set _parasitesRemoved to "genitals">>
+			<</if>>
+			<<if $earSlime.growth lte 75 and $parasite.breasts.name and $parasite.breasts.name is "parasite">>
+				<<removeparasite "breasts">>
+				<<set _parasitesRemoved to "breasts">>
+			<</if>>
+			<<if _parasitesRemoved>>You watch as the parasites on your _parasitesRemoved start losing their colour before seemly disintegrating.<</if>>
+		<</if>>
+	<<else>>
+		<<set $earSlime.growth to Math.clamp(Math.ceil($earSlime.growth * 0.9), 0, Infinity)>>
+	<</if>>
+	<<llcorruption true>><<corruption -10>>
 	<br><br>
 <</if>>
 You hear <<him>> stand, and see <<his>> silhouette draw the shape of a cross against the wooden slats. "I name you purified, and may you remain on the path of the light hereafter," <<he>> says in a grim tone.

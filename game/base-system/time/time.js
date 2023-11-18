@@ -1809,7 +1809,7 @@ function earSlimeDaily(passageEffects = false) {
 
 	if (V.earSlime.growth >= 100) {
 		if (
-			(V.earSlime.growth >= 95 && V.player.gender !== "f" && V.parasite.penis.name !== "parasite") ||
+			(V.earSlime.growth >= 100 && V.player.gender !== "f" && V.parasite.penis.name !== "parasite") ||
 			(V.earSlime.growth >= 100 && V.player.gender === "f" && V.parasite.clit.name !== "parasite")
 		) {
 			if (V.player.gender !== "f") {
