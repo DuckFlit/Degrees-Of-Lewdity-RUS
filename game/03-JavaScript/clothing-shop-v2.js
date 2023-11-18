@@ -454,7 +454,7 @@ function allClothesSetup() {
 window.allClothesSetup = allClothesSetup;
 
 function shopSearchReplacer(name) {
-	return name.replace(/[^a-zA-Z0-9' -]+/g, "");
+	return name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5' -]+/g, "");
 }
 window.shopSearchReplacer = shopSearchReplacer;
 
