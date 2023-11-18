@@ -1205,13 +1205,11 @@ function currentSkillValue(skill, disableModifiers = 0) {
 		}
 		result = Math.floor(result * (1 - playerBellySize() / T.pregnancyModifier));
 	}
-	let modifier = 1;
 	switch (skill) {
 		case "skulduggery":
-			if (V.worn.hands.type.includes("sticky_fingers")) modifier += 0.05;
-			if (V.transformationParts.traits.sharpEyes !== "disabled") modifier += 0.05;
-			if (V.fox >= 6) modifier += 0.10;
-			result = Math.floor(result * modifier);
+			if (V.worn.hands.type.includes("sticky_fingers")) result = Math.floor(result * 1.05);
+			if (V.transformationParts.traits.sharpEyes !== "disabled") result = Math.floor(result * 1.05);
+			if (V.fox >= 6) result = Math.floor(result * 1.1);
 			break;
 		case "physique":
 			if (["forest", "moor", "farm"].includes(V.location)) {
