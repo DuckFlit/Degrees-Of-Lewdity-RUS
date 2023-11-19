@@ -12,7 +12,7 @@ function generateBabyName(name, gender, childId) {
 		});
 	}
 	if (!!name && name !== "Unnamed") {
-		return name.replace(/[^a-zA-ZÀ-ÿ ]+/g, "").substring(0, 30);
+		return name.replace(/[^a-zA-ZÀ-ÿ\u4e00-\u9fa5 ]+/g, "").substring(0, 30);
 	}
 	let names = [];
 	switch (gender) {
