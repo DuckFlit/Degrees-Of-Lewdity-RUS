@@ -23,6 +23,27 @@ window.onLoadUpdateCheck = false;
 
 let pageLoading = false;
 
+Config.saves.isAllowed = () => {
+	if (tags().includes("nosave") || V.replayScene) return false;
+	return true;
+}
+
+idb.footerHTML = `
+	<div class="savesListRow">
+		<div class="saveGroup">
+			<span style="margin: 0;">
+				Special thanks to all those who <a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Support Degrees of Lewdity</a>
+			</span>
+			<div class="saveId"></div>
+			<div class="saveButton"></div>
+			<div class="saveName"></div>
+			<div class="saveDetails"></div>
+		</div>
+		<div class="saveButton">
+			<input type="button" class="saveMenuButton right" value="Delete All" onclick="idb.saveList('confirm clear')">
+		</div>
+	</div>`
+
 function onLoad(save) {
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
 	pageLoading = true;
