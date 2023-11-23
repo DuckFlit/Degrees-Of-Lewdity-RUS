@@ -49,7 +49,7 @@ stringFrom = function (value) {
 		}
 
 		case "undefined":
-			if (V && (V.options.debugdisable === "f" || V.debug === 1)) {
+			if (V && ((V.options && V.options.debugdisable === "f") || V.debug === 1)) {
 				Errors.report("Print macro attempted to return an undefined variable in " + Utils.GetStack());
 			}
 			return V && V.debug ? "[undefined]" : "";
