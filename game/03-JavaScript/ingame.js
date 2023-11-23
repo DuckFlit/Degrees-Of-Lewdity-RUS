@@ -1297,7 +1297,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 				}
 			}
 			if (playerHeatMinArousal()) {
-				result = Math.floor(result * (1 + (playerHeatMinArousal() / 10000)));
+				result = Math.floor(result * (1 + (Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000)));
 			}
 			break;
 		case "penileskill":
@@ -1309,7 +1309,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 				}
 			}
 			if (playerRutMinArousal()) {
-				result = Math.floor(result * (1 + (playerRutMinArousal() / 10000)));
+				result = Math.floor(result * (1 + (Math.clamp(playerRutMinArousal(), 0, 4000) / 20000)));
 			}
 			break;
 		case "analskill":
@@ -1317,7 +1317,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 				result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
 			}
 			if (playerHeatMinArousal() && canBeMPregnant()) {
-				result = Math.floor(result * (1 + (playerHeatMinArousal() / 10000)));
+				result = Math.floor(result * (1 + (Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000)));
 			}
 			break;
 		case "seductionskill":

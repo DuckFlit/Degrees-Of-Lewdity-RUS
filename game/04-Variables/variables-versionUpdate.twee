@@ -3707,6 +3707,32 @@
 		<<variablesVersionUpdate2>>
 	<</if>>
 
+	<!-- Fix for hair style renames -->
+	<<if !$objectVersion.hairFix lt 1 or $objectVersion.hairFix is undefined>>
+		<<set _hairUpdate to {
+			"left fishtail braid": "left fishtail",
+			"right fishtail braid": "right fishtail",
+			"side thicktail": "thick pigtails",
+			"side tail left": "sidetail left",
+			"side tail right": "sidetail right",
+			"side thicktail": "thick sidetail",
+		}>>
+		<<set _fringeUpdate to {
+			"blunt sidelocks": "blunt locks",
+			"french bob": "tied back",
+		}>>
+		<<if _hairUpdate[$hairtype]>><<set $hairtype to _hairUpdate[$hairtype]>><</if>>
+		<<if _fringeUpdate[$fringetype]>><<set $fringetype to _fringeUpdate[$fringetype]>><</if>>
+
+		<<if $savedHairStyles>>
+			<<run Object.values($savedHairStyles).forEach(style => {
+				if (T.hairUpdate[style.hairtype]) style.hairtype = T.hairUpdate[style.hairtype];
+				if (T.fringeUpdate[style.fringetype]) style.fringetype = T.fringeUpdate[style.fringetype];
+			})>>
+		<</if>>
+		<<set $objectVersion.hairFix to 1>>
+	<</if>>
+
 	/* End of Code that should not be moved */
 
 	<!-- v0.3.6.2: cow update - ToDo: Move to variables-static -->
@@ -4685,21 +4711,13 @@
 		<<run delete $pillory_tenant.endday>>
 	<</if>>
 
-	<<if $fringetype is "french bob">>
-		<<set $fringetype to "tied back">>
-	<</if>>
-	<<if $hairtype is "side thicktail">>
-		<<set $hairtype to "thick sidetail">>
-	<</if>>
-	<<if $hairtype is "side tail left">>
-		<<set $hairtype to "sidetail left">>
-	<</if>>
-	<<if $hairtype is "side tail right">>
-		<<set $hairtype to "sidetail right">>
-	<</if>>
-
 	<<if !$options.dateFormat>>
 		<<set $options.dateFormat to "en-GB">>
+	<</if>>
+
+	<!-- Fix for the players being able to access the Nursery while refusing to pay Bailey outside the orphanage -->
+	<<if $baileyRefusedToPay is undefined>>
+		<<set $baileyRefusedToPay to 0>>
 	<</if>>
 
 	<!-- Fix for alex pregnancy to allow for both the pc and Alex to be pregnant at the same time -->

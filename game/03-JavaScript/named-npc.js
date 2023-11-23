@@ -5,7 +5,7 @@ function statusCheck(name) {
 		const nnpc = V.NPCName[V.NPCNameList.indexOf(name)];
 
 		/* To remove later */
-		if (V.options.debugdisable === "t" && V.debug === 0) {
+		if (V.options && V.options.debugdisable === "t" && V.debug === 0) {
 			T[name.toLowerCase()] = nnpc;
 		}
 		/* To remove later */
