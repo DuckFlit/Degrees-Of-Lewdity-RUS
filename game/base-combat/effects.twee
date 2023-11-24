@@ -3131,12 +3131,25 @@
 			<</if>>
 		<</if>>
 
-		<<if $mouthaction is "mock">>
+		<<if $mouthaction is "mock" or $mouthaction is "disparage">>
+			<<if $mouthaction is "disparage">>
+				<<set _disparage to true>>
+			<<else>>
+				<<set _disparage to false>>
+			<</if>>
 			<<set $mouthaction to 0>><<set _sound to 1>>
 			<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
 				<<wheeze "mock <<him>>">>
 			<<else>>
-				<<set $mouthactiondefault to "mock">>
+				<<if _disparage is false>>
+					<<set $mouthactiondefault to "mock">>
+				<<else>> /*Fallen Angel disparage */
+					<<set $enemyanger += 50>>
+					<<set $mockaction to $NPCList[$mouthtarget].insecurity>>
+					<<set $angelforgive to 1>>
+					<<set $mouthactiondefault to "rest">>
+					<<set _disparage to false>>
+				<</if>>
 				<<actionsmock>><<set $speechdemand to 1>>
 				<<brat `1 + $englishtrait` $mouthtarget>>
 				<<if $role is "islander" and (!$islander_language or $islander_language lt 100)>>
