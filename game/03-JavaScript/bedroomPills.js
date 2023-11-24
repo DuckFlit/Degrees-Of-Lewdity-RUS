@@ -341,11 +341,11 @@ setup.pills = [
 			return V.player.penisExist && this.owned() > 0 ? 1 : 0;
 		},
 		take_condition() {
-			return (
-				this.doseTaken() === 0 &&
+			return this.doseTaken() === 0 &&
 				V.sexStats.pills["pills"]["penis growth"].doseTaken === 0 &&
 				V.sexStats.pills["pills"]["penis reduction"].doseTaken === 0
-			);
+				? 1
+				: 0;
 		},
 		effects: [],
 	},
