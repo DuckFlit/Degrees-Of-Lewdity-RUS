@@ -138,7 +138,7 @@ const Time = (() => {
 			return newDate.getFirstWeekdayOfMonth(2);
 		}
 
-		newDate.addMonths(holidayMonths.find(e => e > newDate.month) - newDate.month + 1);
+		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
 		return newDate.getFirstWeekdayOfMonth(2);
 	}
 
