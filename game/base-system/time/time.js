@@ -693,6 +693,12 @@ function dayPassed() {
 		}
 	}
 
+	if (V.pirate_journey > 1) {
+		V.pirate_journey--;	
+	} else {
+		delete V.pirate_journey;
+	}
+
 	return fragment;
 }
 
