@@ -380,6 +380,7 @@ function endPlayerPregnancy(birthLocation, location) {
 		delete C.npc.Alex.pregnancy.ultraSound;
 		delete C.npc.Alex.pregnancy.sample;
 		delete C.npc.Alex.pregnancy.noBirthControl;
+		delete C.npc.Alex.pregnancy.ultraSoundPics;
 		C.npc.Alex.pregnancy.pills = "contraceptive";
 		C.npc.Alex.pregnancyAvoidance = 50;
 
