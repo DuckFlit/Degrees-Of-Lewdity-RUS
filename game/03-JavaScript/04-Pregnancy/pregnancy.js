@@ -52,6 +52,10 @@ function spermObjectToArray(spermObject = [], player, disableRng) {
 			case "wolfgirl":
 				if (V.playerPregnancyBeastDisable === "t" && player) continue;
 				break;
+			case "hawk":
+			case "harpy":
+				if ((V.playerPregnancyBeastDisable === "t" || V.playerPregnancyEggLayingDisable === "t") && player) continue;
+				break;
 			default:
 				continue;
 		}
@@ -88,8 +92,12 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 			const diff = Math.abs(menstruation.stages[2] - menstruation.currentDay);
 			multi = Math.clamp(diff > 1 ? 1 - diff * 0.15 : 1, 0, 1);
 		} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled) {
-			const diff = Math.abs(pregnancy.cycleDangerousDay - pregnancy.cycleDay);
-			multi = Math.clamp(diff > 1 ? 1 - diff * 0.15 : 1, 0, 1);
+			if (target === "Great Hawk") {
+				multi = pregnancy.cycleDay >= pregnancy.cycleDangerousDay ? 1 : 0;
+			} else {
+				const diff = Math.abs(pregnancy.cycleDangerousDay - pregnancy.cycleDay);
+				multi = Math.clamp(diff > 1 ? 1 - diff * 0.15 : 1, 0, 1);
+			}
 		}
 	} else {
 		// Other non-cycle modifiers
@@ -99,6 +107,11 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 		} else if (C.npc[target] && C.npc[target].pregnancy && C.npc[target].pregnancy.enabled) {
 			multi = 1 / Math.pow(4, C.npc[target].pregnancy.nonCycleRng[0]);
 		}
+	}
+	if (["hawk", "harpy"].includes(spermType) || target === "Great Hawk") {
+		if (!["pc", "Great Hawk"].includes(target)) return false;
+		if ((target === "pc" && !V.harpyEggs) || (target === "Great Hawk" && multi === 1)) return false;
+		forcePregnancy = true;
 	}
 
 	if (pregnancy && pregnancy.type === null) {
@@ -167,9 +180,36 @@ window.playerPregnancyAttemptTest = (baseMulti, genital) => {
 	if (V.pregnancyTesting) return playerPregnancyAttempt(baseMulti, genital);
 }; // V.pregnancyTesting Check should not be removed, debugging purposes only
 
+function playerPregnancyHawkAttempt(genital = "vagina") {
+	const pregnancy = V.sexStats[genital].pregnancy;
+	if (pregnancy.fetus.length || !V.harpyEggs) return false;
+
+	const [trackedNPCs, spermArray] = spermObjectToArray(V.sexStats[genital].sperm, true);
+
+	const pills = V.sexStats.pills;
+	const contraceptive = Math.clamp(pills.pills.contraceptive.doseTaken || 0, 0, Infinity);
+
+	if (spermArray.length === 0 || (contraceptive && (random(0, 100) >= 10 || contraceptive > 1))) return false;
+
+	const harpySperm = spermArray.filter(source => ["hawk", "harpy"].includes(source.type)).random();
+	if (harpySperm) {
+		const fatherKnown = Object.keys(trackedNPCs).length === 1;
+
+		// Player becomes pregnant
+		return playerPregnancy(harpySperm.source, harpySperm.type, fatherKnown, genital, trackedNPCs);
+	}
+
+	return false;
+}
+DefineMacro("playerPregnancyHawkAttempt", playerPregnancyHawkAttempt);
+window.playerPregnancyHawkAttempt = genital => {
+	if (V.pregnancyTesting) return playerPregnancyHawkAttempt(genital);
+}; // V.pregnancyTesting Check should not be removed, debugging purposes only
+
 const playerPregnancy = (npc, npcType, fatherKnown = false, genital = "vagina", trackedNPCs, awareOf = false) => {
 	if (V.playerPregnancyHumanDisable === "t" && npcType === "human") return false; // Human player pregnancy disabled
 	if (V.playerPregnancyBeastDisable === "t" && npcType !== "human") return false; // Beast player pregnancy disabled
+	if (V.playerPregnancyEggLayingDisable === "t" && ["hawk", "harpy"].includes(npcType)) return false; // Egg laying player pregnancy disabled
 	const pregnancy = clone(V.sexStats[genital].pregnancy);
 	let newPregnancy;
 	let backupSpermType;
@@ -189,7 +229,15 @@ const playerPregnancy = (npc, npcType, fatherKnown = false, genital = "vagina", 
 			backupSpermType = "wolf";
 			break;
 		case "hawk":
-			if (V.pregnancyTest) {
+			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
+			if (V.pregnancyTesting) {
+				newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, false);
+				backupSpermType = "hawk";
+			}
+			break;
+		case "harpy":
+			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
+			if (V.pregnancyTesting) {
 				newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, true);
 				backupSpermType = "hawk";
 			}
@@ -205,6 +253,7 @@ const playerPregnancy = (npc, npcType, fatherKnown = false, genital = "vagina", 
 			awareOf,
 		};
 		V.sexStats.vagina.menstruation.currentState = "pregnant";
+		if (V.harpyEggs) delete V.harpyEggs;
 		return true;
 	}
 	return false;
@@ -471,7 +520,9 @@ function npcPregnancyCycle() {
 				pregnancy.cycleDay++;
 				if (pregnancy.cycleDay >= pregnancy.cycleDaysTotal) {
 					pregnancy.cycleDay = 1;
-				} else if (between(pregnancy.cycleDay, pregnancy.cycleDangerousDay - 1, pregnancy.cycleDangerousDay + 1)) {
+				} else if (npcName === "Great Hawk" && pregnancy.cycleDay >= pregnancy.cycleDangerousDay) {
+					namedNpcPregnancyAttempt(npcName, true);
+				} else if (npcName !== "Great Hawk" && between(pregnancy.cycleDay, pregnancy.cycleDangerousDay - 1, pregnancy.cycleDangerousDay + 1)) {
 					namedNpcPregnancyAttempt(npcName);
 				}
 			} else {
@@ -483,7 +534,7 @@ function npcPregnancyCycle() {
 	}
 }
 /* V.pregnancytype === "realistic" uses this function */
-function namedNpcPregnancyAttempt(npcName) {
+function namedNpcPregnancyAttempt(npcName, forcePregnancy = false) {
 	if (!C.npc[npcName] || C.npc[npcName].vagina === "none" || V.pregnancytype !== "realistic") return false;
 	const namedNpc = C.npc[npcName];
 	const pregnancy = namedNpc.pregnancy;
@@ -496,7 +547,9 @@ function namedNpcPregnancyAttempt(npcName) {
 	const contraceptive = pregnancy.pills === "contraceptive";
 
 	const baseChance = Math.floor((20 - V.baseNpcPregnancyChance) * fertility);
-	const rng = random(0, spermArray.length > baseChance ? spermArray.length : baseChance);
+	let rng = random(0, spermArray.length > baseChance ? spermArray.length : baseChance);
+	if (forcePregnancy && !spermArray[rng]) rng = 0;
+
 	if (contraceptive && random(0, 100) >= 10) {
 		/* NPC doesn't get pregnant due to contraceptive */
 	} else if (spermArray[rng]) {
@@ -553,7 +606,19 @@ function namedNpcPregnancy(mother, father, fatherSpecies, fatherKnown = false, t
 		case "humanhawk":
 		case "hawkhuman":
 		case "hawkhawk":
-			if (V.pregnancyTest) {
+			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
+			if (V.pregnancyTesting) {
+				newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", false);
+				backupSpermType = "hawk";
+			}
+			break;
+		case "humanharpy":
+		case "harpyhuman":
+		case "harpyhawk":
+		case "hawkharpy":
+		case "harpyharpy":
+			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
+			if (V.pregnancyTesting) {
 				newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", true);
 				backupSpermType = "hawk";
 			}
@@ -808,6 +873,7 @@ function recordSperm({
 	if (V.disableImpregnation) return false; // To be set at the start of sex scenes, unset with <<endcombat>>
 	if (V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false; // Human player pregnancy disabled
 	if (V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false; // Beast player pregnancy disabled
+	if (V.playerPregnancyEggLayingDisable === "t" && ["hawk", "harpy"].includes(npcType)) return false; // Egg laying player pregnancy disabled
 	if (V.npcPregnancyDisable === "t" && target !== "pc") return false; // Npc pregnancy disabled
 
 	if (["realistic", "fetish"].includes(V.pregnancytype) && !["anus", "vagina"].includes(genital)) return null;
@@ -1036,8 +1102,9 @@ function playerPregnancyPossibleWith(NPC) {
 		case "wolf":
 		case "wolfboy":
 		case "wolfgirl":
-			// case "bird":
-			if (V.playerPregnancyBeastDisable === "t") {
+		case "hawk":
+		case "harpy":
+			if (V.playerPregnancyBeastDisable === "t" || (V.playerPregnancyEggLayingDisable === "t" && ["hawk", "harpy"].includes(NPCObject.type))) {
 				T.pregFalseReason = "pregnantDisabled";
 				return false;
 			} else break;
