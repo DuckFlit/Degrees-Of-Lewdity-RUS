@@ -127,6 +127,10 @@
 		<<set _pills to $sexStats.pills>>
 		<<switch _menstruation.currentState>>
 			<<case "normal">>
+				<<if $harpy gte 6 and $harpyEggs and $sexStats[$_pregLocation].sperm.find(source => sorce.type is "hawk")>>
+					<<playerPregnancyHawkAttempt $_pregLocation>>
+					<<if $_pregnancy.type is "hawk">><<exit>><</if>>
+				<</if>>
 				<<if $cycledisable is "t">>
 					<<playerPregnancyAttempt `Math.pow(4,_menstruation.nonCycleRng[0])` $_pregLocation>>
 				<<elseif _menstruation.currentDay lt _menstruation.currentDaysMax>>
@@ -1391,6 +1395,12 @@
 			<<switch $_name>>
 				<<case "Kylar">><<set $_pregnancy.pills to "fertility">>
 				<<case "Alex" "Wren">><<set $_pregnancy.pills to "contraceptive">>
+				<<case "Great Hawk">>
+					/* Has a much shorter cycle, when cycleDay is 1, assume the hawk should lay eggs that have not been fertilised*/
+					<<set $_pregnancy.cycleDaysTotal to random(12,16)>>
+					<<set $_pregnancy.cycleDay to random(1,$_pregnancy.cycleDaysTotal)>>
+					<<set $_pregnancy.cycleDangerousDay to $_pregnancy.cycleDaysTotal - 4>>
+					<<set $_pregnancy.pills to null>>
 				<<default>><<set $_pregnancy.pills to null>>
 			<</switch>>
 		<<elseif setup.pregnancy.infertile.includes($_name) or (!setup.pregnancy.canBePregnant.includes($_name) and $incompletePregnancyDisable isnot "f")>>

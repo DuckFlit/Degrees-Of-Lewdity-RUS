@@ -562,7 +562,7 @@ window.pregnancyGenerator = {
 		T.impregnatedParasite = null;
 		return false;
 	},
-	hawk: ({ mother, father, fatherKnown = false, genital = "vagina", monster = false }) => {
+	hawk: (mother, father, fatherKnown = false, genital = "vagina", monster = false) => {
 		// Hard coded limit
 		const limit = Object.values(V.children).length;
 
@@ -570,36 +570,26 @@ window.pregnancyGenerator = {
 		let fatherObject;
 		if (father) fatherObject = npcPregObject(father);
 
-		const [pregnancy, fertility /* magicTattoo */] = pregPrep({ motherObject, genital, override: "hawk" });
+		const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital, override: "hawk" });
 		if (typeof pregnancy === "string" || pregnancy instanceof String) return pregnancy;
 
-		// Generate Egg if required
-		let result = false;
-		if (pregnancy.fetus.length) {
-			result = {
-				fetus: pregnancy.fetus,
-				type: "hawk",
-				timer: pregnancy.timer,
-				timerEnd: pregnancy.timerEnd,
-			};
-		} else {
-			result = { fetus: [], type: "hawk", timer: 0 };
-			const count = random(0, 100) >= 50 - 10 * fertility ? 3 : 2;
-			for (let i = 0; i < count; i++) {
-				result.fetus.push({
-					type: "hawk",
-				});
+		if (pregnancy) {
+			const result = { fetus: [], type: "hawk", timer: 0, timerEnd: random(3, 6) };
+
+			let count;
+			if (mother === "pc") {
+				count = Math.clamp(V.harpyEggs, 0, 3);
+			} else {
+				count = random(1, 3);
 			}
-			// Days
-			result.timerEnd = random(3, 6);
-		}
-		// Fertilise the eggs
-		if (fatherObject && result && result.fetus && result.fetus.length && !result.fetus[0].eggTimer) {
-			// Hard coded limit
-			if (limit + result.fetus.length >= 1000) return;
+			if (!count) return false;
+			if (fertility || magicTattoo) count++;
 
 			const featherColour = ["white", "brown"];
-			for (let i = 0; i < result.fetus.length; i++) {
+
+			for (let i = 0; i < count; i++) {
+				// Hard coded limit
+				if (limit + result.fetus.length >= 1000) return;
 				const childId =
 					"m" + motherObject.parentId.id + "b" + motherObject.parentId.kids + "d" + fatherObject.parentId.id + "f" + fatherObject.parentId.kids;
 				const birthId = motherObject.parentId.births;
@@ -621,10 +611,11 @@ window.pregnancyGenerator = {
 				});
 				// Hours
 				baby.eggTimer = random(24 * 26, 24 * 32);
-				result.fetus[i] = baby;
+				result.fetus.push(baby);
 				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
 			}
+			return result;
 		}
-		return result;
+		return false;
 	},
 };
