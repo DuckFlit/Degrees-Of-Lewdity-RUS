@@ -1334,7 +1334,9 @@ Renderer.CanvasModels["main"] = {
 		},
 		"penis": {
 			srcfn(options) {
-				if (options.genitals_chastity) {
+				if (options.mannequin) {
+					return "img/body/mannequin/penis.png";
+				} else if (options.genitals_chastity) {
 					if (["flat chastity cage", "chastity parasite"].includes(options.worn_genitals_setup.name)) return;
 					if (options.worn_genitals_setup.name === "small chastity cage") return "img/body/penis/penis_chastitysmall.png";
 					return "img/body/penis/penis_chastity.png"

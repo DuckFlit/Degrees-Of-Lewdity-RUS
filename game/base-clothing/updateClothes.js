@@ -314,10 +314,15 @@ function wardrobesUpdate() {
 			if (w !== "wardrobe" && V.wardrobes[w].unlocked !== undefined && V.wardrobes[w].genitals === undefined) V.wardrobes[w].genitals = [];
 		}
 	}
-	if(!V.wardrobes["temple"]) {
+	if (!V.wardrobes.temple) {
 		V.wardrobes.temple = clone(defWardrobe);
 		V.wardrobes.temple.unlocked = V.temple_rank === "monk";
 		V.wardrobes.temple.space = 20;
+	}
+	if (!V.wardrobes.pirate) {
+		V.wardrobes.pirate = clone(defWardrobe);
+		V.wardrobes.pirate.unlocked = V.pirate_rank >= 0;
+		V.wardrobes.pirate.space = 5;
 	}
 }
 DefineMacro("wardrobesUpdate", wardrobesUpdate);

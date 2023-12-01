@@ -61,7 +61,7 @@ function masturbationeffects() {
 	if (V.corruptionMasturbation) {
 		if (V.leftarm === "bound" && V.rightarm === "bound") {
 			sWikifier(
-				'The slimes in your ear make you fight against the binds around your arms. You make no progress, <span class="blue">and it gives up.</span><<arousal 600 "masturbation">><<stress 6>><<gstress>><<garousal>>'
+				'The slime in your ear makes you fight against the binds around your arms. You make no progress, <span class="blue">and it gives up.</span><<arousal 600 "masturbation">><<stress 6>><<gstress>><<garousal>>'
 			);
 			fragment.append(" ");
 			V.rightaction = "mrest";
@@ -73,7 +73,7 @@ function masturbationeffects() {
 			(playerHeatMinArousal() + playerRutMinArousal() >= 1000 && V.earSlime.growth >= 100 && V.earSlime.defyCooldown)
 		) {
 			sWikifier(
-				'The slimes in your ear feel that it\'s not worth trying to force you to masturbate in your current state, <span class="blue">and it lets you go.</span>'
+				'The slime in your ear feel it\'s not worth trying to force you to masturbate in your current state, <span class="blue">and it lets you go.</span>'
 			);
 			fragment.append(" ");
 			V.corruptionMasturbation = false;
@@ -89,7 +89,7 @@ function masturbationeffects() {
 						// Prevents the PC from continuing actions that they normally are unable to do yet
 						if (V.mouth === "mpenis") {
 							sWikifier(
-								'<span class="green">With the loss of the control from the slimes in your ear, you remove your <<penis>> from your mouth and move away.</span>'
+								'<span class="green">With the loss of the control from the slime in your ear, you remove your <<penis>> from your mouth and move away.</span>'
 							);
 							fragment.append(" ");
 							V.mouthactiondefault = "rest";
@@ -97,9 +97,7 @@ function masturbationeffects() {
 							V.mouth = 0;
 							V.penisuse = 0;
 						} else if (V.mouth === "mpenisentrance") {
-							sWikifier(
-								'<span class="green">With the loss of the control from the slimes in your ear, you move away from your <<penis>>.</span>'
-							);
+							sWikifier('<span class="green">With the loss of the control from the slime in your ear, you move away from your <<penis>>.</span>');
 							fragment.append(" ");
 							V.mouthactiondefault = "rest";
 							V.mouthaction = 0;
@@ -107,7 +105,7 @@ function masturbationeffects() {
 							V.penisuse = 0;
 						} else if (V.mouth === "mchastityparasiteentrance") {
 							sWikifier(
-								'<span class="green">With the loss of the control from the slimes in your ear, you move away from your chastity parasite.</span>'
+								'<span class="green">With the loss of the control from the slime in your ear, you move away from your chastity parasite.</span>'
 							);
 							fragment.append(" ");
 							V.mouthactiondefault = "rest";
@@ -115,9 +113,7 @@ function masturbationeffects() {
 							V.mouth = 0;
 							V.penisuse = 0;
 						} else if (V.mouth === "mvaginaentrance") {
-							sWikifier(
-								'<span class="green">With the loss of the control from the slimes in your ear, you move away from your <<pussy>>.</span>'
-							);
+							sWikifier('<span class="green">With the loss of the control from the slime in your ear, you move away from your <<pussy>>.</span>');
 							fragment.append(" ");
 							V.mouthactiondefault = "rest";
 							V.mouthaction = 0;
