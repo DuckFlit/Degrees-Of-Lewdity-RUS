@@ -106,6 +106,8 @@ function updateClothesItem(slot, item, debug) {
 	// transfer new properties from itemRef to the item
 	const itemRef = setup.clothes[slot][clothesIndex(slot, item)];
 	for (const key in itemRef) {
+		// one_piece fix for items that shouldn't have it set
+		if (["school pinafore", "plaid school pinafore"].includes(item.name) && item.one_piece === 1) item.one_piece = 0;
 		if (skip.includes(key)) continue;
 		if (key === "hoodposition" && V.objectVersion.updateClothes >= 31) continue;
 		if (key === "outfitPrimary") {

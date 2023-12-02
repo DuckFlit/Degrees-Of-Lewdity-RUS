@@ -558,7 +558,7 @@ function dayPassed() {
 	if (V.temple_quarters >= 1) V.temple_quarters = Math.clamp(V.temple_quarters - 10, 0, 100);
 	if (V.temple_chastity_timer > 0) V.temple_chastity_timer--;
 	if (V.temple_rank !== "prospective" && V.temple_rank !== "initiate") {
-		if (V.grace >= 1) fragment.append(wikifier("grace", -1));
+		if (V.grace >= 1 && !V.daily.graceUp) fragment.append(wikifier("grace", -2));
 	}
 	if (V.temple_evaluation) {
 		V.temple_evaluation--;
