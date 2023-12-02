@@ -1757,6 +1757,7 @@
 <</widget>>
 
 <<widget "weatherdisplay">>
+	<<set _season to (Time.season == "winter" ? "_winter" : "")>>
 	<<set _weather_display to (Time.season == "winter" ? "winter" : "normal")>>
 	<<if $options.images is 1>>
 		<<if Time.dayState is "night" and (isBloodmoon() or $forcedBloodmoon)>>
@@ -1767,54 +1768,53 @@
 		<<set _dayState to "_"+Time.dayState>>
 
 		<<set _imgLoc to 'img/misc/'>>
-		<<set _imgSky to 'img/misc/'>>
-		<<set _imgWeather to 'img/misc/'>>
+		<<set _imgSky to 'img/misc/sky/'>>
 
 		/* sky (upmost part) */
-		<<if $location is "tentworld">>
-			<img id="daystate" @src="_imgSky+'tentsky'+_dayState+'.png'">
+		/* <<if $skyHidden is true>>
+			<<set _skybox to "skybox_blank">>
+		<<elseif $location is "tentworld">>
+			<<set _skybox to "skybox" + _dayState + "_tentacle">>
 		<<else>>
-			<img id="daystate" @src="_imgSky+'sky'+_dayStateWithBloodMoon+'.png'">
-		<</if>>
+			<<set _skybox to "skybox" + _dayStateWithBloodMoon>>
+			<<if $location is "bog">><<set _skybox += "_haze">><</if>>
+			<img id="daystate" @src="_imgSky + 'sun' + _dayState + '.png'">
+			<img id="daystate" @src="_imgSky + 'moon' + _dayStateWithBloodMoon + '.png'">
+		<</if>> */
+
+		<<skybox>>
 
 		/* weather (middle part) */
-		<<if $location is "tentworld">>
-			<img id="weather" @src="_imgWeather+'tentsky'+_dayState+'.png'">
+		/* <<if $location is "tentworld" or $skyHidden is true>>
 		<<else>>
 			<<switch $weather>>
-				<<case "clear">>	<img id="weather" @src="_imgWeather+'clear'+_dayState+'.png'">
-				<<case "overcast">> <img id="weather" @src="_imgWeather+_weather_display + '/overcast'+_dayState+'.png'">
-				<<case "rain">>		<img id="weather" @src="_imgWeather+'rain'+_dayState+'.gif'">
-				<<case "snow">>		<img id="weather" @src="_imgWeather+'winter/snow'+_dayState+'.gif'">
+				<<case "clear">>
+				<<case "overcast">> <img id="weather" @src="_imgSky + 'overcast' + _dayState + _season + '.png'">
+				<<case "rain">>		<img id="weather" @src="_imgSky + 'rain' + _dayState + '.gif'">
+				<<case "snow">>		<img id="weather" @src="_imgSky + 'snow' + _dayState + '.gif'">
 			<</switch>>
-		<</if>>
+		<</if>> */
 
 		/* location (bottom part) */
-		<<switch $location>>
+		/* <<switch $location>>
 			<<case "adult_shop">>
 				<<getadultshopstate>>
-				<<if $adultshopstate is "closed">>
-					<<if Time.dayState is "night" or Time.dayState is "dusk">>
-						<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'.gif'">
-					<<else>>
-						<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'.png'">
-					<</if>>
-				<<else>>
+				<<if Time.dayState is "day" and $adultshopstate isnot "closed">>
 					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'_open.gif'">
+				<<elseif Time.dayState is "night" or Time.dayState is "dusk">>
+					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'.gif'">
+				<<else>>
+					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'.png'">
 				<</if>>
 			<<case "alex_cottage">>
 				<img id="location" @src="_imgLoc + _weather_display + '/alex_cottage'+_dayState+'.png'">
 			<<case "alex_farm">>
 				<<if $bus is "woodland">>
-					<<if Time.dayState is "night" or Time.dayState is "dawn">>
-						<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayState+'.png'">
-					<<else>>
-						<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
-					<</if>>
+					<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 				<<else>>
 					<img id="location" @src="_imgLoc + _weather_display + '/alex_farm'+_dayState+'.png'">
 				<</if>>
-			<<case "alley">>
+	--		<<case "alley">>
 				<<if $bus is "industrial">>
 					<img id="location" @src="_imgLoc + _weather_display + '/indust_alley'+_dayStateWithBloodMoon+'.gif'">
 				<<elseif $bus is "residential">>
@@ -1830,17 +1830,13 @@
 				<<else>>
 					<img id="location" @src="_imgLoc + _weather_display + '/asylum'+_dayState+'slow.gif'">
 				<</if>>
-			<<case "beach" "chalets">>
+	--		<<case "beach" "chalets">>
 				<img id="location" @src="_imgLoc + _weather_display + '/beach'+_dayState+'.gif'">
 			<<case "brothel">>
 				<img id="location" @src="_imgLoc + _weather_display + '/brothel'+_dayState+'.png'">
 			<<case "cabin">>
-				<<if Time.season is "winter">>
-					<img id="location" @src="_imgLoc + _weather_display + '/cabin'+_dayState+'.png'">
-				<<else>>
-					<img id="location" @src="_imgLoc + _weather_display + '/cabin'+_dayState+'.gif'">
-				<</if>>
-			<<case "cafe">>
+				<img id="location" @src="_imgLoc + _weather_display + '/cabin'+_dayState+'.png'">
+	-	-	<<case "cafe">>
 				<<if $chef_state gte 9>>
 					<img id="location" @src="_imgLoc + _weather_display + '/cafe_renovated'+_dayState+'.png'">
 				<<elseif $chef_state gte 7>>
@@ -1862,7 +1858,7 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/docks'+_dayState+'.png'">
 			<<case "drain">>
 				<img id="location" @src="_imgLoc + _weather_display + '/drain.gif'">
-			<<case "estate">>
+	--		<<case "estate">>
 				<img id="location" @src="_imgLoc + _weather_display + '/remy_farm'+_dayState+'.png'">
 			<<case "factory">>
 				<<if Time.dayState is "night">>
@@ -1875,11 +1871,7 @@
 			<<case "flats">>
 				<img id="location" @src="_imgLoc + _weather_display + '/flats'+_dayState+'.png'">
 			<<case "forest">>
-				<<if Time.dayState is "night" or Time.dayState is "dawn">>
-					<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayState+'.png'">
-				<<else>>
-					<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
-				<</if>>
+				<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 			<<case "forest_shop">>
 				<img id="location" @src="_imgLoc + _weather_display + '/forest_shop'+_dayState+'.png'">
 			<<case "home">>
@@ -1892,13 +1884,13 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/kylar_manor'+_dayState+'.png'">
 			<<case "lake">>
 				<img id="location" @src="_imgLoc + _weather_display + '/lake'+_dayStateWithBloodMoon+'.gif'">
-			<<case "lake_ruin">>
+		-	<<case "lake_ruin">>
 				<img id="location" @src="_imgLoc + _weather_display + '/ruins'+_dayStateWithBloodMoon+'.gif'">
 			<<case "landfill">>
 				<img id="location" @src="_imgLoc + _weather_display + '/landfill'+_dayState+'.png'">
 			<<case "meadow">>
 				<img id="location" @src="_imgLoc + _weather_display + '/meadow'+_dayState+'.gif'">
-			<<case "mines">>
+	--		<<case "mines">>
 				<img id="location" @src="_imgLoc + _weather_display + '/underground'+_dayState+'.png'">
 			<<case "moor">>
 				<img id="location" @src="_imgLoc + _weather_display + '/moor'+_dayState+'.gif'">
@@ -1917,11 +1909,7 @@
 			<<case "police_station">>
 				<img id="location" @src="_imgLoc + _weather_display + '/police_station'+_dayState+'.png'">
 			<<case "pound">>
-				<<if Time.dayState is "night">>
-					<img id="location" @src="_imgLoc + _weather_display + '/dog_pound'+_dayState+'.png'">
-				<<else>>
-					<img id="location" @src="_imgLoc + _weather_display + '/dog_pound'+_dayState+'.gif'">
-				<</if>>
+				<img id="location" @src="_imgLoc + _weather_display + '/dog_pound'+_dayState+'.gif'">
 			<<case "pool">>
 				<img id="location" @src="_imgLoc + _weather_display + '/pool'+_dayState+'.gif'">
 			<<case "prison">>
@@ -1959,17 +1947,13 @@
 			<<case "tower" "castle">>
 				<img id="location" @src="_imgLoc + _weather_display + '/tower'+_dayStateWithBloodMoon+'.gif'">
 			<<case "town">>
-				<<if Time.dayState is "dusk">>
-					<img id="location" @src="_imgLoc + _weather_display + '/town'+_dayState+'.png'">
-				<<else>>
-					<img id="location" @src="_imgLoc + _weather_display + '/town'+_dayState+'.gif'">
-				<</if>>
+				<img id="location" @src="_imgLoc + _weather_display + '/town'+_dayState+'.gif'">
 			<<case "underground">>
 				<img id="location" @src="_imgLoc + _weather_display + '/underground'+_dayState+'.png'">
 			<<case "wolf_cave">>
 				<img id="location" @src="_imgLoc + _weather_display + '/wolf_cave'+_dayState+'.png'">
-
-		<</switch>>
+		<</switch>> */
+		<div id="locationOverlay"></div>
 	<<else>>
 		<<switch Time.dayState>>
 			<<case "day">>

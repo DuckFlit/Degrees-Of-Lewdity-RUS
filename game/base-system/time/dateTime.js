@@ -7,6 +7,7 @@ class DateTime {
 	static leapYearMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 	static monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 	static daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	static synodicMonth = 29.53058867;
 	*/
 
 	constructor(year = 2020, month = 1, day = 1, hour = 0, minute = 0, second = 0) {
@@ -28,7 +29,6 @@ class DateTime {
 			this.fromTimestamp(arguments[0]);
 			return;
 		}
-
 		this.toTimestamp(year, month, day, hour, minute, second);
 	}
 
@@ -105,6 +105,31 @@ class DateTime {
 		this.second = second % 60;
 	}
 
+	// Compares this DateTime object with another DateTime object and returns the difference.
+	compareWith(otherDateTime, getSeconds = false) {
+		let diffSeconds = Math.abs(this.timeStamp - otherDateTime.timeStamp);
+		if (getSeconds) return diffSeconds;
+
+		const years = Math.floor(diffSeconds / (Time.secondsPerDay * 365.25));
+		diffSeconds -= years * Time.secondsPerDay * 365;
+
+		const months = Math.floor(diffSeconds / (Time.secondsPerDay * 30));
+		diffSeconds -= months * Time.secondsPerDay * 30;
+
+		const days = Math.floor(diffSeconds / Time.secondsPerDay);
+		diffSeconds -= days * Time.secondsPerDay;
+
+		const hours = Math.floor(diffSeconds / Time.secondsPerHour);
+		diffSeconds -= hours * Time.secondsPerHour;
+
+		const minutes = Math.floor(diffSeconds / Time.secondsPerMinute);
+		diffSeconds -= minutes * Time.secondsPerMinute;
+
+		const seconds = diffSeconds;
+
+		return { years, months, days, hours, minutes, seconds };
+	}
+
 	// Returns the first occurrence of a given weekday (1-7 for Sun-Sat) in the current month.
 	getFirstWeekdayOfMonth(weekDay) {
 		if (weekDay < 1 || weekDay > 7) throw new Error("Invalid weekDay: Must be between 1-7");
@@ -133,7 +158,7 @@ class DateTime {
 	// Adds the specified number of years to the current date
 	// Adding a negative value (e.g. -1) subtracts the years instead
 	addYears(years) {
-		if (years === 0) return this;
+		if (!years) return this;
 		const newYear = this.year + years;
 		const daysInMonth = DateTime.getDaysOfMonthFromYear(newYear);
 		const newDay = Math.min(this.day, daysInMonth[this.month - 1]);
@@ -145,7 +170,7 @@ class DateTime {
 	// Adds the specified number of months to the current date
 	// Adding a negative value (e.g. -1) subtracts the months instead
 	addMonths(months) {
-		if (months === 0) return this;
+		if (!months) return this;
 		const addedMonths = this.month + months;
 		const newYear = this.year + Math.floor((addedMonths - 1) / 12);
 		const newMonth = ((addedMonths - 1) % 12) + 1;
@@ -158,7 +183,7 @@ class DateTime {
 	// Adds the specified number of days to the current date
 	// Adding a negative value (e.g. -1) subtracts the days instead
 	addDays(days) {
-		if (days === 0) return this;
+		if (!days) return this;
 		this.fromTimestamp(this.timeStamp + days * Time.secondsPerDay);
 		return this;
 	}
@@ -166,7 +191,7 @@ class DateTime {
 	// Adds the specified number of hours to the current date and time
 	// Adding a negative value (e.g. -1) subtracts the hours instead
 	addHours(hours) {
-		if (hours === 0) return this;
+		if (!hours) return this;
 		this.timeStamp += hours * Time.secondsPerHour;
 		this.fromTimestamp(this.timeStamp);
 		return this;
@@ -175,7 +200,7 @@ class DateTime {
 	// Adds the specified number of minutes to the current date and time
 	// Adding a negative value (e.g. -1) subtracts the minutes instead
 	addMinutes(minutes) {
-		if (minutes === 0) return this;
+		if (!minutes) return this;
 		this.timeStamp += minutes * Time.secondsPerMinute;
 		this.fromTimestamp(this.timeStamp);
 		return this;
@@ -184,7 +209,7 @@ class DateTime {
 	// Adds the specified number of seconds to the current date and time
 	// Adding a negative value (e.g. -1) subtracts the seconds instead
 	addSeconds(seconds) {
-		if (seconds === 0) return this;
+		if (!seconds) return this;
 		this.timeStamp += seconds;
 		this.fromTimestamp(this.timeStamp);
 		return this;
@@ -228,6 +253,29 @@ class DateTime {
 	get yearDay() {
 		const daysPerMonth = DateTime.getDaysOfMonthFromYear(this.year);
 		return daysPerMonth.slice(0, this.month - 1).reduce((a, b) => a + b, 0) + this.day;
+	}
+
+	// Returns the current moon phase as a fraction (0-1), where 0 is new moon and 0.5 is full moon
+	get moonPhaseFraction() {
+		// Real new moon (in london) as a reference point
+		const referenceNewMoon = new DateTime(2022, 1, 2, 18, 33);
+		let phaseFraction = ((this.timeStamp - referenceNewMoon.timeStamp) / (Time.synodicMonth * Time.secondsPerDay)) % 1;
+
+		// Special rounding cases - to round to a complete new-moon or full-moon more often
+		phaseFraction =
+			phaseFraction >= 0.48 && phaseFraction <= 0.52 ? 0.5 : phaseFraction < 0.02 || phaseFraction > 0.98 ? 0 : Math.round(phaseFraction * 100) / 100;
+
+		return phaseFraction;
+	}
+
+	// Returns a fraction of a day. (0 at 0:00 and 1 at 24:00)
+	get fractionOfDay() {
+		return (this.hour * 60 + this.minute) / (24 * 60);
+	}
+
+	// Returns a fraction of a day, but starting at noon. (0 at 12:00 and 0.99 at 11:59)
+	get fractionOfDayFromNoon() {
+		return (((this.hour + 12) % 24) * 60 + this.minute) / (24 * 60);
 	}
 }
 window.DateTime = DateTime;

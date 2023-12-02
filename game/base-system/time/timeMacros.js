@@ -33,9 +33,10 @@ Macro.add("advancetohour", {
 });
 
 function passTimeUntil(hour, minute) {
-	const diffHour = (24 - Time.hour + hour) % 24;
-	const diffMinute = (60 + Time.minute - (minute || 0)) % 60;
-	return passTime(diffHour * 60 + diffMinute);
+	const currentSeconds = Time.hour * Time.secondsPerHour + Time.minute * Time.secondsPerMinute;
+	const targetSeconds = hour * Time.secondsPerHour + minute * Time.secondsPerMinute;
+	const secondsToPass = (targetSeconds - currentSeconds + Time.secondsPerDay) % Time.secondsPerDay;
+	return passTime(secondsToPass, "sec");
 }
 Macro.add("passTimeUntil", {
 	handler() {
@@ -118,6 +119,9 @@ function schoolTerm() {
 		}
 	}
 	const date = Time.nextSchoolTermStartDate;
+	if (Time.date.compareWith(date).days === 1) {
+		return "School term starts tomorrow.";
+	}
 	return "School term starts on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
 }
 

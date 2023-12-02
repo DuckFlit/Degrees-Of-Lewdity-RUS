@@ -78,6 +78,7 @@ module.exports = {
 		ZIndices: "readonly",
 		Time: "readonly",
 		EventSystem: "readonly",
+		Weather: "readonly",
 		// DoL functions
 		assignDefaults: "readonly",
 		between: "readonly",

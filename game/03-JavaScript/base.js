@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable jsdoc/require-description-complete-sentence */
 // adjust mousetrap behavior, see mousetrap.js
 Mousetrap.prototype.stopCallback = function (e, element, combo) {
@@ -216,27 +217,27 @@ function integrityWord(worn, slot) {
 				T.text_output = "";
 		}
 	}
-    let colorClass;
-    switch (kw) {
-        case "full":
-            colorClass = "green";
-            break;
-        case "tattered":
-            colorClass = "red";
-            break;
-        case "torn":
-            colorClass = "purple";
-            break;
-        case "frayed":
-            colorClass = "teal";
-            break;
-        default:
-            colorClass = ""; // default without color
-    }
-    if (T.text_output) {
-        T.text_output = `<span class="${colorClass}">${T.text_output.trim()}</span> `;
-    }
-    return T.text_output;
+	let colorClass;
+	switch (kw) {
+		case "full":
+			colorClass = "green";
+			break;
+		case "tattered":
+			colorClass = "red";
+			break;
+		case "torn":
+			colorClass = "purple";
+			break;
+		case "frayed":
+			colorClass = "teal";
+			break;
+		default:
+			colorClass = ""; // default without color
+	}
+	if (T.text_output) {
+		T.text_output = `<span class="${colorClass}">${T.text_output.trim()}</span> `;
+	}
+	return T.text_output;
 }
 window.integrityWord = integrityWord;
 DefineMacroS("integrityWord", integrityWord);
@@ -309,7 +310,12 @@ function outfitChecks() {
 	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
 	T.middleNaked = V.worn.lower.name === "naked" && V.worn.upper.name === "naked";
 	T.overNaked = V.worn.over_lower.name === "naked" && V.worn.over_upper.name === "naked";
-	T.topless = V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && (V.worn.lower.name !== "plaid school pinafore" && V.worn.lower.name !== "school pinafore");
+	T.topless =
+		V.worn.over_upper.name === "naked" &&
+		V.worn.upper.name === "naked" &&
+		V.worn.under_upper.name === "naked" &&
+		V.worn.lower.name !== "plaid school pinafore" &&
+		V.worn.lower.name !== "school pinafore";
 	T.bottomless = V.worn.over_lower.name === "naked" && V.worn.lower.name === "naked" && V.worn.under_lower.name === "naked";
 	T.fullyNaked = T.topless && T.bottomless;
 }
@@ -502,6 +508,43 @@ function normalise(value, max, min = 0) {
 	return Math.clamp((value - min) / denominator, 0, 1);
 }
 window.normalise = normalise;
+
+/**
+ * Selects a random item from an array of weighted options. Each option is an array with
+ * two elements: the item, and its weight.
+ * Works similar to eventpool, but more generic and lightweight, and works with any data types.
+ *
+ * Options with a higher weight have a higher chance of being chosen.
+ *
+ * @param {Array} options Each option is an array where the first item is a value, and the second item is its weight.
+ * Example: ["apple", 1], ["banana", 2], ["cherry", 3]
+ * @returns {*} The selected item
+ * @example
+ *     console.log(weightedRandom(["apple", 1], ["banana", 2], ["cherry", 3]));  // Relative probability for these will be: apple: 16.67%, banana: 33.33%, cherry: 50%
+ */
+function weightedRandom(...options) {
+	if (!Array.isArray(options) || options.length === 0) {
+		throw new Error("Options must be a non-empty array.");
+	}
+	let totalWeight = 0;
+	const processedOptions = options.map(([value, weight]) => {
+		if (typeof weight !== "number") {
+			throw new Error("Weight must be a number.");
+		}
+		totalWeight += weight;
+		return [value, totalWeight];
+	});
+
+	const random = Math.random() * totalWeight;
+	for (const [value, cumulativeWeight] of processedOptions) {
+		if (cumulativeWeight >= random) {
+			return value;
+		}
+	}
+	console.error("weightedRandom: Unreachable code reached. Returning " + options[0][0]);
+	return options[0][0];
+}
+window.weightedRandom = weightedRandom;
 
 /**
  * This macro sets $rng. If the variable $rngOverride is set, $rng will always be set to that.
