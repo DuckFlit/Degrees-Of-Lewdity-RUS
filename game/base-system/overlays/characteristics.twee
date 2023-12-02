@@ -408,10 +408,10 @@
 						{ requiredValue:	($willpowermax / 7) * 6,	level: 6, color: 'green',	description: 'Your will is iron.'}
 					]
 				}>>
-				<<if $earSlime.growth gt 50>>
+				<<if numberOfEarSlime() gte 2 and $earSlime.growth gt 50>>
 					<<set _willpowerConfig.modifier to Math.floor(_willpowerConfig.modifier * (0.9 - Math.clamp(($earSlime.growth - 50) / 1000, 0, 0.1)))>>
 					<<set _willpowerConfig.modTypes.bad.pushUnique("ear slimes")>>
-				<<elseif $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
+				<<elseif numberOfEarSlime() gte 2>>
 					<<set _willpowerConfig.modifier to Math.floor(_willpowerConfig.modifier * 0.9)>>
 					<<set _willpowerConfig.modTypes.bad.pushUnique("ear slimes")>>
 				<</if>>
@@ -519,9 +519,9 @@
 		<div id="base-skills" class="characteristic-box-list" @style="($parasite.left_ear.name == 'slime' || $parasite.right_ear.name == 'slime') ? '--min-width: 30%;' : ''">
 			<!--Additional skills configurations-->
 			<<silently>>
-				<<set _corruptionConfig =	{ name : "Corruption",	displayType : "none",	currentValue : $earSlime.corruption,	modifier: 100, modTypes: { good: [], bad: [] },		meterColor: 'red'}>>
+				<<set _corruptionConfig =	{ name : "Corruption",	displayType : "none",	currentValue : $earSlime.corruption,	modifier: 100, modTypes: { good: [], bad: [] },		meterColor: $earSlime.startedThreats ? "purple" : "blue", secondValue: $earSlime.growth / 2, secondMeterColor: "red"}>>
 				<<set _skulduggeryConfig =	{ name : "Skulduggery", displayType : "grade",	currentValue : $skulduggery,		modifier: 100, modTypes: { good: [], bad: [] },		states : _detailedSkillGrades}>>
-				<<set _dancingConfig =		{ name : "Dancing",		displayType : "grade",	currentValue : $danceskill,			modifier: 100, modTypes: { good: [], bad: [] },		states : _basicSkillGrades}>>
+				<<set _dancingConfig =		{ name : "Dancing",		displayType : "grade",	currentValue : $danceskill,			modifier: 100, modTypes: { good: [], bad: [] },		states : _detailedSkillGrades}>>
 				<<set _swimmingConfig =		{ name : "Swimming",	displayType : "grade",	currentValue : $swimmingskill,		modifier: 100, modTypes: { good: [], bad: [] },		states : _detailedSkillGrades}>>
 				<<set _athleticsConfig =	{ name : "Athletics",	displayType : "grade",	currentValue : $athletics,			modifier: 100, modTypes: { good: [], bad: [] },		states : _detailedSkillGrades}>>
 				<<set _tendingConfig =		{ name : "Tending",		displayType : "grade",	currentValue : $tending,			modifier: 100, modTypes: { good: [], bad: [] },		states : _detailedSkillGrades}>>
@@ -642,16 +642,15 @@
 					<<set _housekeepingConfig.modTypes.good.pushUnique("<i>????</i>")>>
 				<</if>>
 			<</silently>>
-
-			<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
-				<<characteristic-box _corruptionConfig>>
-			<</if>>
 			<<characteristic-box _skulduggeryConfig>>
 			<<characteristic-box _dancingConfig>>
 			<<characteristic-box _swimmingConfig>>
 			<<characteristic-box _athleticsConfig>>
 			<<characteristic-box _tendingConfig>>
 			<<characteristic-box _housekeepingConfig>>
+			<<if numberOfEarSlime()>>
+				<<characteristic-box _corruptionConfig>>
+			<</if>>
 		</div>
 
 		<br>
@@ -706,16 +705,16 @@
 			<<if playerHeatMinArousal()>>
 				<<if _vaginalConfig>>
 					<<set _vaginalConfig.modTypes.good.pushUnique("in heat")>>
-					<<set _vaginalConfig.modifier to Math.floor(_vaginalConfig.modifier * (1 + (playerHeatMinArousal() / 10000)))>>
+					<<set _vaginalConfig.modifier to Math.floor(_vaginalConfig.modifier * (1 + (Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000)))>>
 				<</if>>
 				<<if !$player.vaginaExist>>
 					<<set _analConfig.modTypes.good.pushUnique(playerAwareTheyCanBePregnant() ? "in heat" : "<i>????</i>")>>
-					<<set _analConfig.modifier to Math.floor(_analConfig.modifier * (1 + (playerHeatMinArousal() / 10000)))>>
+					<<set _analConfig.modifier to Math.floor(_analConfig.modifier * (1 + (Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000)))>>
 				<</if>>
 			<</if>>
 			<<if playerRutMinArousal()>>
 				<<set _penileConfig.modTypes.good.pushUnique("in rut")>>
-				<<set _penileConfig.modifier to Math.floor(_penileConfig.modifier * (1 + (playerRutMinArousal() / 10000)))>>
+				<<set _penileConfig.modifier to Math.floor(_penileConfig.modifier * (1 + (Math.clamp(playerRutMinArousal(), 0, 4000) / 20000)))>>
 			<</if>>
 		<</silently>>
 		<<if $options.images is 1>>

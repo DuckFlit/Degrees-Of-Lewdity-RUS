@@ -1,5 +1,6 @@
 :: Lake Shore
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
+<<set _earSlimeEnableSwimwear to true>>
 <<set $forest to 30>><<set $bus to "lakeshore">><<wearoutfit>>
 
 <<if Time.season is "winter">>
@@ -108,6 +109,31 @@
 	<<earnFeat "Field Work">>
 	<<link [[Next|Lake Shore Diving]]>><</link>>
 	<br>
+<<elseif Time.season isnot "winter" and !isBloodmoon() and numberOfEarSlime() and !$daily.earSlimeStroll and random(0,100) gte 92 and (($exposed lte 1 and earSlimeMakingMundaneRequests()) or ($laketeenspresent isnot 1 and $exposed gte 2 and $earSlime.growth gte 20 - $earSlime.exhibitionism) or ($laketeenspresent is 1 and $exposed gte 2 and $earSlime.growth gte 50 - $earSlime.exhibitionism))>>
+	<<set $daily.earSlimeStroll to true>>
+	<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to go for a stroll by the lake.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+	<br><br>
+	/* Link decreases stress by both the ear slime and taking a stroll */
+	<<link [[Obey|Lake Stroll]]>>
+		<<pass 60>><<set $earSlimeLakeStroll to true>>
+		<<if $exposed gte 2>>
+			<<arousal 1000>><<rng>>
+			<<if $laketeenspresent is 1>>
+				<<set $phase to 2>>
+			<<else>>
+				<<set $phase to 3>>
+			<</if>>
+		<<else>>
+			<<set $phase to 1>>
+		<</if>>
+		<<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>>
+	<</link>><<gcorruption>><<lpain>><<lltrauma>><<llstress>><<if $exposed gte 2>><<garousal>><</if>>
+	<br>
+	<<if $earSlime.startedThreats>>
+		<<link [[Defy|Lake Stroll Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+	<<else>>
+		<<link [[Ignore|Lake Shore]]>><</link>>
+	<</if>>
 <<else>>
 	<<eventlakesafe>>
 	<<lakereturnjourney>>
@@ -179,7 +205,8 @@
 			<<ind>><<link [[North to firepit (0:10)|Lake Firepit]]>><<pass 10>><</link>>
 			<br>
 		<</if>>
-		<<if $town_projects.road gte 4>>
+		<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<<elseif $town_projects.road gte 4>>
 			<<busicon>><<link [[North to bus stop|Lake Bus]]>><</link>>
 			<br>
 		<</if>>
@@ -189,8 +216,11 @@
 		<<lakeicon "waterfall">><<link [[South to waterfall (0:10)|Lake Waterfall]]>><<pass 10>><</link>>
 	<</if>>
 	<br><br>
-
-	<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+	<<else>>
+		<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<</if>>
 	<br>
 	<<set $eventskip to 0>>
 <</if>>
@@ -233,7 +263,206 @@ You are in the archeological office at the lake. Green tent walls surround a spa
 <</if>>
 <br><br>
 
+<<if (Time.schoolDay and Time.hour gte 16 and Time.hour lte 20 or !Time.schoolDay and Time.hour gte 6 and Time.hour lte 20)>>
+	<<if !$weekly.winterLakeTalk>>
+		<<link [[Ask about Winter's research|Lake Office Ask]]>><</link>>
+		<br>
+	<</if>>
+	<<if $winterLakeTalk is 1 and $bogProgress is 1>>
+		<<link [[Tell Winter about the bog|Lake Office Ask Bog]]>><<npcincr Winter love 2>><</link>><<glove>>
+		<br>
+	<</if>>
+<</if>>
 <<link [[Leave|Lake Shore]]>><<endevent>><</link>>
+<br>
+
+:: Lake Office Ask
+<<set $outside to 0>><<effects>>
+<<set $winterLakeTalk = ($winterLakeTalk || 0)>>
+<<if $winterLakeTalk is 0>>
+	<<if $speech_attitude is "meek">>
+		"Was... was this worth it? Have you learned anything?"
+	<<elseif $speech_attitude is "bratty">>
+		"So, was this whole project worth the money? Did you learn anything?"
+	<<else>>
+		"Has the office been helpul? Did you learn anything?"
+	<</if>>
+<<else>>
+	<<if $speech_attitude is "meek">>
+		"H-have you learned anything new?"
+	<<elseif $speech_attitude is "bratty">>
+		"Anything new?"
+	<<else>>
+		"What's new?"
+	<</if>>
+<</if>>
+You ask.
+<br><br>
+
+<<switch $winterLakeTalk>>
+	<<case 0>>
+		<<set $winterLakeTalk to 1>><<set $weekly.winterLakeTalk to true>>
+		<<His>> head tilts slightly. "Normally I wouldn't be so inclined to share new and potentially flawed information, but you're to thank for all of this. I can make an exception." <<npcincr Winter love 1>><<glove>>
+		<br><br>
+
+		"Manmade interference is obvious, even beyond the submerged ruins. Erosion patterns show that the channel leading north towards the town is at least partially artificial. The former natural waterway that leads east became a small brook due to the redirection."
+		<br><br>
+
+		<<He>> pauses for a moment. "We can't place a definitive date, and nothing about the northern waterway exists in the town's records. However, the stagnation caused by the reduced flow may have led to the formation of the bog to the east. <span class="green">One could possibly traverse the dry section of the riverbed to bypass the dense foliage between here and there</span>. I may have more information for you soon, depending on whether or not I can find someone to <span class="blue">scout the brook for me.</span>"
+		<br><br>
+
+		<<if !$brookIntro>>
+			<<set $brookIntro to 1>>
+			<span class="gold">You've discovered the offshoot brook near the waterfall.</span>
+			<br><br>
+		<</if>>
+
+		<<link [[Next|Lake Office]]>><</link>>
+		<br>
+	<<case 1>>
+		<<if $bogProgress gte 2>>
+			<<set $winterLakeTalk to 2>><<set $weekly.winterLakeTalk to true>>
+			<<He>> turns to you. "The lake is fed by a tributary river that forms in the mountain to the west. However, the lake wasn't always here. That much is made obvious by the old ruins. The questions are when, and why? Where did the river lead to before then?"
+			<br><br>
+
+			<<He>> pauses. "I'll be sending a group to take notes on the bog. <span class="green">We finally have some volunteers thanks to your scouting.</span> Come see me in a week, and I may have more for you."
+		<<else>>
+			<<set $weekly.winterLakeTalk to true>>
+			<<He>> frowns. "Afraid not. <span class="blue">I need someone to investigate the brook's path.</span> Until then, we're stuck."
+		<</if>>
+		<br><br>
+
+		<<link [[Next|Lake Office]]>><</link>>
+		<br>
+	<<case 2>>
+		<<set $winterLakeTalk to 3>>
+		<<set $bogTeam to {
+			state: "active",
+			robinKnown: false,
+			robinPresent: false,
+			timer: 0
+		}>>
+		<<He>> nods. "My team has collected samples-"
+		<br><br>
+
+		As if on queue, someone enters the tent. It's Sirris. <<npc Sirris 2>><<person2>> <<He>> drops a large backpack onto the desk beside Winter, smiling. "Branch trimmings, a sketch of the heartwood rings, and a small jar of sap," <<he>> says proudly before smiling at you.
+		<br><br>
+
+		<<npc Niki 3>><<npc Wren 4>>
+		<<run getRobinLocation()>>
+		<<if _robin_location isnot $robinmissing>>
+			<<npc Robin 5>><<set $bogTeam.robinKnown to true>><<set $bogTeam.robinPresent to true>>
+			Two more enter. You first notice Robin shuffling awkwardly and looking downtrodden. <<person5>><<He>> lightens up upon seeing you. "Hey. Winter said <<person1>><<he>> needed help, so I volunteered!"
+			Behind <<him>> is a <<person4>><<personsimple>> with <<if $pronoun is "m">>short<<else>>shoulder-length<</if>> hair. There's a pistol holstered on <<his>> belt.
+			<<if $wren_seen is "cards" or $wren_seen is "letter" or $wren_seen is "catsuit" or $wren_seen is "prison">>
+				<span class="gold">It's Wren.</span>
+				<br><br>
+
+				"Well, if it isn't my favourite troublemaker," <<he>> says with a grin. <<He>> places a hand on Robin's head, ruffling <<person5>><<his>> hair.
+				<<if $robinromance is 1>>
+					"Never guessed this would be your <<girlfriend>>, Ro." Robin pushes Wren's hand away. The emotion on <<his>> face is hard to read, but you think you catch a mixture of disgust and 'help me'.
+				<<else>>
+					"Never guessed this would be the friend you were telling me all about, Ro." Robin pushes Wren's hand away and takes a step out of reach. The emotion on <<his>> face is hard to read.
+				<</if>>
+			<<else>>
+				<br><br>
+
+				<<if $robinromance is 1>>
+					"Oh, is this your <<girlfriend>>, Ro? <span class="gold">The name's Wren,</span>" <<he>> says, ruffling Robin's hair as <<he>> looks at you. Robin pushes Wren's hand away. The emotion on <<person5>><<his>> face is hard to read, but you think you catch a mixture of disgust and 'help me'.
+				<<else>>
+					"Oh, is this the friend you were telling me about, Ro? <span class="gold">The name's Wren,</span>" <<he>> says, ruffling Robin's hair as <<he>> looks at you. Robin pushes Wren's hand away and takes a step out of reach. The emotion on <<person5>><<his>> face is hard to read.
+				<</if>>
+			<</if>>
+			Wren frowns, but is cut off by
+		<<else>>
+			Two more enter the tent. You first notice a <<person4>><<personsimple>> with <<if $pronoun is "m">>short<<else>>shoulder-length<</if>> hair. There's a pistol holstered on <<his>> belt.
+			<<if $wren_seen is "cards" or $wren_seen is "letter" or $wren_seen is "catsuit" or $wren_seen is "prison">>
+				<span class="gold">It's Wren.</span>
+				<br><br>
+
+				"Well, if it isn't my favourite troublemaker," <<he>> says with a grin.
+			<<else>>
+				"Damn, how much more help are you planning on pulling in, Winter?" <<He>> regards you with a grin. <span class="gold">"The name's Wren."</span>
+			<</if>>
+			<<Hes>> cut off by
+		<</if>>
+		a young <<person3>><<personsimple>> with a stick in <<his>> mouth pushing in, looking down at a camera.
+		<br><br>
+
+		<<if $niki_seen is undefined>>
+			"That's Niki," Sirris says. "A photographer who works in town. When Winter came calling, I thought <<he>> would be interested." Niki acknowledges you with a nod.
+		<<elseif $niki_seen is "adult_shop_opening">>
+			It's Niki, the photographer. "You remember Niki, right?" Sirris asks. "From the opening of the shop." Niki acknowledges you with a nod.
+		<<elseif $niki_seen is "farm">>
+			<span class="red">It's Niki,</span> the photographer from Remy's farm. <<He>> looks alarmed to see you. "That's Niki," Sirris says. "A photographer who works in town. When Winter came calling, I thought <<he>> would be interested." <<gtrauma>><<trauma 6>>
+		<<else>>
+			It's Niki, the photographer. <<He>> acknowledges you with a nod. "That's Niki, a photographer who works in town. When Winter came calling, I thought <<he>> would be interested."
+		<</if>>
+		<br><br>
+
+		<<set $wren_seen to "winter">>
+		<<set $niki_seen to "winter">>
+
+		<<link [[Next|Lake Office Volunteers]]>><</link>>
+		<br>		
+	<<case 3>>
+		"Nothing new, yet. It may be some time before we make any meaningful progress."
+		<br><br>
+
+		<<link [[Next|Lake Office]]>><</link>>
+		<br>		
+	<<default>>
+		"Nothing yet," <<he>> says with a hint of regret. "We've hit something of a standstill."
+		<br><br>
+
+		<<link [[Next|Lake Office]]>><</link>>
+		<br>
+<</switch>>
+
+:: Lake Office Ask Bog
+<<set $outside to 0>><<effects>>
+<<set $bogProgress to 2>><<set $weekly.winterLakeTalk to false>>
+<<if $speech_attitude is "meek">>
+	"You were right about that brook, it leads into a scary bog," you say. "It looks dangerous."
+<<elseif $speech_attitude is "bratty">>
+	"You're right on the money about the brook, it leads into a bog," you say. "I went and looked for you. Aren't I sweet?"
+<<else>>
+	"You were right about the brook. It leads into a bog," you say.
+<</if>>
+You also tell <<him>> how it can be safely traversed, and about the one-way drop into the bog.
+<br><br>
+
+You see a smile cross <<his>> face, but only for a moment. "You didn't have to do that. It could have been dangerous. But this is valuable information. Thank you." <<glove>>
+<br><br>
+
+<<He>> pauses. "I'm sure I'll be able to find volunteers now that they won't have to go in completely blind, or go all the way around through the moor."
+<br><br>
+
+<<link [[Next|Lake Office]]>><</link>>
+<br>
+
+:: Lake Office Volunteers
+<<set $outside to 0>><<effects>>
+
+<<person1>>Winter clears <<his>> throat. "Thank you, you <<if $bogTeam.robinKnown>>four<<else>>three<</if>>. You look like you've worked hard today. I appreciate excellence, but remember not to overdo it."
+<<if !$bogTeam.robinKnown>>
+	Winter turns to you. "I had hoped to ask your classmate Robin for aid as well, but I haven't seen <<nnpc_him "Robin">>."
+<</if>>
+<br><br>
+
+The group leaves the tent, saying their goodbyes. "I may ask you to join them on one of their trips in the future. However, to answer your initial question..." <<he>> begins to dig through Sirris' backpack.
+"This lake should not exist. More water drains than is fed into it. The only explanation currently feasible is that the lake is connected to an underground aquifer or aqueduct that feeds it. But the divers have found no such passage."
+<br><br>
+
+<<He>> examines a jar of tree sap. "Patterns of old growth trees show that the area around the lake was logged heavily. Sirris' current theory is that the lack of sturdy vegitation, combined with an unseasonably warm spring and rapid snowmelt, led to the river bursting its banks and forming a large sinkhole some centuries ago."
+<br><br>
+
+<<He>> continues. "The persistence of such dense vegitation around the brook still eludes me. Perhaps its an invasive species that requires less water. This is all we've learned as of now."
+
+<<endevent>><<npc Winter>><<person1>>
+<br><br>
+
+<<link [[Next|Lake Office]]>><</link>>
 <br>
 
 :: Lake Shore Mirror
@@ -304,6 +533,19 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 	<<foresthunt>>
 <<elseif $danger gte (9900 - $allure) and $eventskip is 0 and $laketeenspresent isnot 1>>
 	<<eventlake>>
+<<elseif !$brookIntro and $historytrait gte 4 and $sciencetrait gte 2 and $tending gte 200 and !$possessed>>
+	<<set $brookIntro to 1>>
+	You let yourself listen to the trickle of water for a moment. Curiosity gets the better of you. You look at the waterfall, and follow the stream that runs off. It slowly but gradually gets weaker as it disappears into a nearly impassible wall of foliage. <span class="green">Nearly.</span>
+	<br><br>
+
+	You remember your science and history lessons. This is an offshoot distributary of the lake. It flows east towards the moor, instead of north towards the ocean. All rivers end somewhere, and this one must flow sharply downwards into the bog between the forest and moor.
+	<br><br>
+
+	<span class="gold">With some care, you could traverse the brook's channel deeper into the forest, and eventually into the bog and moor.</span> <span class="red">But it would be a one-way trip.</span>
+	<br><br>
+
+	<<link [[Next|Lake Waterfall]]>><<set $eventskip to 1>><</link>>
+	<br>
 <<else>>
 	<<eventlakesafe>>
 	<<lakereturnjourney>>
@@ -321,9 +563,21 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 	<</if>>
 	<br>
 	<<lakeicon "fishing">><<link [[South to fishing rock (0:10)|Lake Fishing Rock]]>><<pass 10>><</link>>
-	<br><br>
-
-	<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<br>
+	<<if $brookIntro gte 1>>
+		<<if $worn.feet.type.includes("heels")>>
+			<span class="red">Traversing the brook in heels would be impossible.</span>
+		<<else>>
+			<<foresticon "river">><<link [[East to brook (0:30)|Forest Brook]]>><<pass 30>><<tiredness 4>><</link>><<gtiredness>>
+		<</if>>
+		<br>
+	<</if>>
+	<br>
+	<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+	<<else>>
+		<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<</if>>
 	<br>
 	<<set $eventskip to 0>>
 <</if>>
@@ -395,7 +649,11 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 	<<lakeicon "campfire">><<link [[South to campsite (0:20)|Lake Campsite]]>><<pass 20>><</link>>
 	<br><br>
 
-	<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+	<<else>>
+		<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<</if>>
 	<br>
 	<<set $eventskip to 0>>
 <</if>>
@@ -470,7 +728,11 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 	<<link [[South to shore (0:10)|Lake Shore]]>><<pass 10>><</link>>
 	<br><br>
 
-	<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+	<<else>>
+		<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<</if>>
 	<br>
 	<<set $eventskip to 0>>
 <</if>>
@@ -542,8 +804,12 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 		<<lakeicon "fishing">><<link [[North to fishing rock (0:10)|Lake Fishing Rock]]>><<pass 10>><</link>>
 	<</if>>
 	<br><br>
-
-	<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	
+	<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+	<<else>>
+		<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><</link>>
+	<</if>>
 	<br>
 	<<set $eventskip to 0>>
 <</if>>
@@ -1282,11 +1548,22 @@ The others try to entertain themselves with ghost stories.
 <<elseif Time.monthDay isnot 31>>
 	It's getting late, and the shadows of the forest are lengthening. People are preparing to return to town. No one wants to be left to travel alone.
 	<br><br>
+	<<set _storedClothes to clothingInStorage("lakeshore")>>
 
-	<<if $exposed lte 0>>
+	<<if $earSlime.forcedCommando isnot undefined and _storedClothes.find(item => item.slot is "under_lower")>>
+		<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+		<<set _earSlimeText to true>>
+	<<elseif _storedClothes.length>>
+		<<link [[Get changed, then go with them (0:40)|Lake Return Journey]]>><<storeload "lakeshore">><<set $foresthunt to 0>><<pass 30>><</link>>
+		<br>
+	<</if>>
+	<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<<if _earSlimeText>><span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span><</if>>
+	<<elseif $exposed lte 0>>
 		<<link [[Go with them (0:30)|Lake Return Journey]]>><<set $foresthunt to 0>><<pass 30>><</link>>
 		<br>
 	<</if>>
+
 	<<link [[Stay|Lake Shore]]>><</link>>
 	<br>
 <<else>>

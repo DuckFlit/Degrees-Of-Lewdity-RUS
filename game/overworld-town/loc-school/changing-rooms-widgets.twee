@@ -1,9 +1,15 @@
 :: Widgets Changing Room [widget]
 
 <<widget "changingRoom">>
+	<<unset $lastChangingRoom>>
 	<<set _studentsKnow to ($schoolrep.crossdress gte 4 and $changingroomstate is "own") or ($schoolrep.crossdress gte 5 and $changingroomstate isnot "empty")>>
-	<<set _seenGender to (_studentsKnow ? $player.gender : $player.gender_appearance)>> <!-- If they know you crossdress, then they won't judge you by appearance -->
 	<<set _changingRoomGenderType to ($changingRoomGender is "girls" ? "f" : "m")>>
+	<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to random(100,1000)>><</if>>
+	<<if _changingRoomGenderType is "f" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible())>>
+		<<set _seenGender to "f">>
+	<<else>>
+		<<set _seenGender to (_studentsKnow ? $player.gender : $player.gender_appearance)>> <!-- If they know you crossdress, then they won't judge you by appearance -->
+	<</if>>
 	<<set _playerGenderAppearance to (_seenGender is _changingRoomGenderType ? "same" : "other")>>
 	<<set _uncomfortable to ($backgroundTraits.includes("crossdresser") and $player.gender is _changingRoomGenderType)>>
 	<<set _justChangedClothes to ["School Pool Wardrobe", "School Boy Changing Room", "School Girl Changing Room"].includes($passagePrev)>>
@@ -157,14 +163,16 @@
 
 <<widget "schoolChangingRoomLinks">>
 	<<if $exposed gte 2 and $exhibitionism gte 75 and $poolroomstate isnot "empty">>
-		<<swimmingicon>><<link [[Enter the pool room|School Pool]]>><</link>><<if $swimall isnot 1>><<gdelinquency>><</if>>
+		<<swimmingicon>><<link [[Enter the pool room|School Pool]]>><<set $lastChangingRoom to $passage>><<set $justEntered to true>><</link>><<if $swimall isnot 1>><<gdelinquency>><</if>>
 	<<elseif $exposed gte 2 and $swimall isnot 1 and $poolroomstate isnot "empty">>
 		<span class="pink">You can't enter the pool while so exposed!</span>
 	<<else>>
-		<<swimmingicon>><<link [[Enter the pool room|School Pool]]>><</link>>
+		<<swimmingicon>><<link [[Enter the pool room|School Pool]]>><<set $lastChangingRoom to $passage>><<set $justEntered to true>><</link>>
 	<</if>>
 	<br>
-	<<if $exhibitionism lte 75 and $exposed gte 1>>
+	<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+	<<elseif $exhibitionism lte 75 and $exposed gte 1>>
 		<span class="pink">You can't go out while so exposed!</span>
 	<<elseif $exposed gte 1>>
 		<<getouticon>><<link [[Leave|School Pool Entrance Exhibitionism]]>><</link>>

@@ -61,9 +61,10 @@
 		<</button>>
 	</span>
 	<<if $daily.corruptionSlimeClothes is undefined and $earSlime.corruption gte 10>>
-		<<set $daily.corruptionSlimeClothes to random($earSlime.corruption * 5, $earSlime.corruption * 15) - currentSkillValue('willpower')>>
+		<<set _baseCorruption to (($earSlime.corruption / 2) + ($earSlime.growth / 2))>>
+		<<set $daily.corruptionSlimeClothes to random(_baseCorruption * 5, _baseCorruption * 25) - currentSkillValue('willpower')>>
 	<</if>>
-	<<set _unavailableItems to !!$daily.corruptionSlimeClothes or !!$earSlime.event is "go commando" or !!$earSlime.forcedDressing or playerBellySize() gte 12>>
+	<<set _unavailableItems to !!$daily.corruptionSlimeClothes or ($earSlime.forcedCommando and $earSlime.forcedCommando gt 0) or ($earSlime.forcedDressing and $earSlime.forcedDressing.days) or playerBellySize() gte 12>>
 	<<if _unavailableItems>>
 		<label><<checkbox "$shopClothingFilter.availableOnly" false true autocheck>> Hide unavailable items</label>
 	<<else>>
@@ -95,7 +96,7 @@
 		and (_shopNameFilter is '' or x.name.includes(_shopNameFilter.toLowerCase()))
 		and (!V.shopClothingFilter.availableOnly or !(
 			(setup.clothingLayer.torso.includes(V.clothingShopSlot) and x.reveal < Math.clamp(V.daily.corruptionSlimeClothes, 0, 500) and !x.type.includesAny("school", "event")) or
-			(V.earSlime.forcedDressing and x.gender isnot V.earSlime.forcedDressing.type and x.gender isnot "n" and !x.type.includesAny("event")) or
+			(V.earSlime.forcedDressing and V.earSlime.forcedDressing.days gt 0 and x.gender isnot V.earSlime.forcedDressing.type and x.gender isnot "n" and !x.type.includesAny("event")) or
 			(playerBellySize() >= 12 and x.type.includes("constricting"))
 		))
 	)>>
@@ -366,6 +367,7 @@
 									<<set $clothes_choice = clothesIndex(_csslot,_item)>>
 									<<set $clothes_choice_reveal = _item.reveal>>
 									<<set $clothes_choice_integrity = _itemData.integrity_max>>
+									<<if ["over_upper", "upper", "under_upper"].includes(_csslot) and _itemData.outfitPrimary>><<set _outfits to true>><</if>>
 									<<unset $colouraction>>
 									<<unset $accessorycolouraction>>
 									<<run window.scrollTo(0, 0)>>
@@ -515,16 +517,20 @@
 		<br><br>
 		<<shoptraits>>
 		<<set _slimeSlots to setup.clothingLayer.torso>>
-		<<if $earSlime.event is "go commando" and $clothingShopSlot is "under_lower">>
+		<<if $earSlime.forcedCommando and $earSlime.forcedCommando gt 0 and ($clothingShopSlot is "under_lower" or (_temp_choice.outfitPrimary and _temp_choice.outfitPrimary.under_lower)) and !_temp_choice.type.includesAny("swim", "dance", "naked")>>
 			<span class="red">The slime in your ear refuses to allow you to try on or buy the  _temp_choice.name as it is forcing you to go commando.</span>
 			<br>
 		<<elseif _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and !_temp_choice.type.includesAny("school","event")>>
 			<span class="red">The slime in your ear refuses to allow you to try on or buy the _temp_choice.name.</span>
 			<br>
-		<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
-			<span class="red">The slime in your ear refuses to allow you to try on or buy the _temp_choice.name as is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
+		<<elseif $earSlime.forcedDressing and $earSlime.forcedDressing.days and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
+			<span class="red">The slime in your ear refuses to allow you to try on or buy the _temp_choice.name as it is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
 		<<else>>
-			<<if _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and (_temp_choice.type.includesAny("school") and !Time.schoolDay) and !_temp_choice.type.includesAny("event")>>
+			<<if $earSlime.forcedCommando and $earSlime.forcedCommando gt 0 and !_temp_choice.type.includesAny("naked") and ($clothingShopSlot is "under_lower" or (_temp_choice.outfitPrimary and _temp_choice.outfitPrimary.under_lower))>>
+				<span class="red">The slime in your ear refuses to allow you to try on or wear the _temp_choice.name while not at an appropriate location.</span>
+				<br>
+				<<set _wearingBlocked to true>>
+			<<elseif _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and (_temp_choice.type.includesAny("school") and !Time.schoolDay) and !_temp_choice.type.includesAny("event")>>
 				<span class="red">The slime in your ear refuses to allow you to try on or wear the _temp_choice.name when you don't have school today.</span>
 				<br>
 				<<set _wearingBlocked to true>>
@@ -746,12 +752,8 @@
 						<div class="try-button div-link"><<toggleHoodLink "shop">></div>
 						<br>
 					<</if>>
-					<<if ["upper"].includes($clothingShopSlot) and setup.clothes.upper[clothesIndex("upper",$worn.upper)].altposition>>
-						<div class="try-button div-link"><<toggleAltLink "upper" "shop">></div>
-						<br>
-					<</if>>
-					<<if ["neck"].includes($clothingShopSlot) and setup.clothes.neck[clothesIndex("neck",$worn.neck)].altposition>>
-						<div class="try-button div-link"><<toggleAltLink "neck" "shop">></div>
+					<<if _temp_choice.variable is $worn[$clothingShopSlot].variable and _temp_choice.altposition>>
+						<div class="try-button div-link toggleAltLink"><<toggleAltLink $clothingShopSlot "shop">></div>
 						<br>
 					<</if>>
 					<<if ["upper","lower"].includes($clothingShopSlot) and $worn.lower.name isnot "naked" and $worn.upper.outfitPrimary is undefined and !setup.clothes.upper[clothesIndex("upper",$worn.upper)].notuck>>
@@ -1210,7 +1212,7 @@
 				</div>
 				<<if _temp_choice.shopGroup and Array.isArray(_items) and _items.reduce((prev, curr) => {
 						if (!curr.shopGroup) return prev;
-						if (curr.shopGroup === _itemData.shopGroup) return prev + 1;
+						if (curr.shopGroup === _temp_choice.shopGroup) return prev + 1;
 						return prev;
 					},0) gt 1>>
 					<div class="mannequin-buttons-right no-numberify">

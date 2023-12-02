@@ -27,7 +27,7 @@
 			<<if $player.virginity[_type] is true>>
 				<<set $player.virginity[_type] to (_virginity[_type] is true ? false : _virginity[_type])>><<set $player.virginity.temple to false>>
 			<<else>>
-				<<set $player.virginity[_type] to true>>
+				<<set $player.virginity[_type] to true>><<set $player.virginity.temple to true>>
 			<</if>>
 			<<run $(`#${_id}link .link-internal`).html($player.virginity[_type] is true ? "Take" : "Restore")>>
 			<<run $(`#${_id}`).html($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>>
@@ -125,9 +125,10 @@
 
 	<span class="gold">Player Body</span>
 	<br>
-	<<if ["Wardrobe","Changing Room","Eden Wardrobe","Asylum Wardrobe","Strip Club Dressing Room","Brothel Dressing Room","School Boy Wardrobe","School Girl Wardrobe"].includes($passage)>>
+	<<if _inWardrobe>>
 		/*passage change is intentional to allow the players to quickly see the visual differences*/
 		Current Gender: <<gender>>
+		<mouse class="tooltip linkBlue">(?)<span>This has other effects such as washing the player to prevent issues from occuring.</span></mouse>
 		<br>
 		<<if $earSlime.growth gt 50>>
 			Ear Slime current growth currently preventing gender changing. Remove the ear slime to enable these cheats again.
@@ -135,6 +136,7 @@
 			Change to:
 			<<if $player.gender isnot "m">>
 				<<link [[Become boy|$passage]]>>
+					<<wash>>
 					<<set $vaginause to "none">>
 					<<set $vaginastate to "none">>
 					<<set $penisuse to 0>>
@@ -149,6 +151,7 @@
 			<</if>>
 			<<if $player.gender isnot "f">>
 				<<link [[Become girl|$passage]]>>
+					<<wash>>
 					<<set $vaginause to 0>>
 					<<set $vaginastate to 0>>
 					<<set $penisuse to "none">>
@@ -163,6 +166,7 @@
 			<</if>>
 			<<if $player.gender isnot "h">>
 				<<link [[Become hermaphrodite|$passage]]>>
+					<<wash>>
 					<<set $vaginause to 0>>
 					<<set $vaginastate to 0>>
 					<<set $penisuse to 0>>
@@ -441,7 +445,7 @@
 	| <<link ">>>">><<set $deviancy += 100>><<clamp>><<replace "#statsdeviancy">><<print Math.trunc($deviancy)>><</replace>> <<updatesidebarimg>><</link>>
 	<br>
 
-	<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+	<<if numberOfEarSlime()>>
 
 	<<link "<<<">><<set $earSlime.corruption -= 100>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($earSlime.corruption)>><</replace>> <<updatesidebarimg>><</link>> |
 	<<link "<<">><<set $earSlime.corruption -= 10>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($earSlime.corruption)>><</replace>> <<updatesidebarimg>><</link>> |
@@ -672,7 +676,10 @@
 		<br>
 	<</if>>
 
-	<<set _cl_slots to ["over_upper", "over_lower", "upper", "lower", "under_upper", "under_lower", "face", "genitals"]>>
+	<<set _cl_slots to ["upper", "lower", "under_upper", "under_lower", "over_upper", "over_lower", "genitals"]>>
+	<<if $worn.face.type.includesAny("covered", "gag", "mask")>>
+		<<run _cl_slots.push("face")>>
+	<</if>>
 	<<link "Fix all">>
 		<<for _cl range _cl_slots>>
 			<<if $worn[_cl].name isnot 'naked'>>
@@ -700,7 +707,7 @@
 	<</link>> |
 	<<link "Dry all">>
 		<<dry_full>>
-		<<for _cl range _cl_slots.slice(2, -2)>>
+		<<for _cl range _cl_slots.slice(0, 4)>>
 			<<if $worn[_cl].name isnot 'naked'>>
 				<<set _cl_wet to _cl.replace('_','') + "wet">>
 				<<replace `'#stats' + _cl_wet`>><<print Math.trunc(V[_cl_wet])>><</replace>>
@@ -711,7 +718,7 @@
 		<<updatesidebarimg>>
 	<</link>> |
 	<<link "Drench all">>
-		<<for _cl range _cl_slots.slice(2, -2)>>
+		<<for _cl range _cl_slots.slice(0, 4)>>
 			<<if $worn[_cl].name isnot 'naked'>>
 				<<set _cl_wet to _cl.replace('_','') + "wet">>
 				<<set V[_cl_wet] to 200>>
@@ -2419,10 +2426,11 @@
 				<<set _menstruation.recoveryTime to null>>
 				<<set _menstruation.recoveryTimeStart to null>>
 				<<set _menstruation.recoveryStage to null>>
-				<<run delete C.npc.Alex.pregnancy.knowledge>>
+				<<run delete C.npc.Alex.pregnancy.pcKnowledge>>
 				<<run delete C.npc.Alex.pregnancy.test>>
+				<<run delete C.npc.Alex.pregnancy.ultraSound>>
 				<<run delete C.npc.Alex.pregnancy.sample>>
-				<<run delete C.npc.Alex.pregnancy.fee>>
+				<<run delete C.npc.Alex.pregnancy.ultraSoundPics>>
 			<</link>>
 			<span class="description">This is a cheat, not an abortion.</span>
 			<br><br>
@@ -2657,10 +2665,7 @@
 			<<set _pregnancyNPC.potentialFathers to []>>
 			<<set _pregnancyNPC.sperm to []>>
 			<<set _pregnancyNPC.cicleDay to 1>>
-			<<run delete C.npc.Alex.pregnancy.knowledge>>
-			<<run delete C.npc.Alex.pregnancy.test>>
-			<<run delete C.npc.Alex.pregnancy.sample>>
-			<<run delete C.npc.Alex.pregnancy.fee>>
+			<<run delete C.npc.Alex.pregnancy.selfKnowledge>>
 		<</link>>
 
 	<<else>>

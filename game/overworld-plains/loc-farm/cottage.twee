@@ -343,231 +343,223 @@ You snuggle under the covers.
 <</if>>
 <br><br>
 
-<<if $alex_bed isnot "player" and $earSlime.corruption gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 + Math.floor($earSlime.growth / 100) + $earSlime.defyCooldown and !$earSlime.eventTimer and !$earSlime.event>>
+<<if numberOfEarSlime() and $alex_bed isnot "player" and random(0,100) lt 3 + Math.floor($earSlime.growth / 100) - $earSlime.eventTimer and !$earSlime.event>>
 	<<set $slimeBedExit to "Farm Bed">>
 	<<set $slimeBedroomExit to "Farm Bedroom">>
-	<<slimeNoSleep>>
-	<<set _skip to true>>
+	<<setSlimeSleepEvents>>
+	<<if $earSlimeEvent>>
+		<<slimeSleepEvents>>
+	<</if>>
 <</if>>
-<<if !_skip>>
-	<<farm_sleep_options>>
-<</if>>
+<<farm_sleep_options>>
 
 :: Farm Sleep
 <<set _autosavehere to true>>
 <<sleep>>
-<<if _dreaming>>
-	/* <<earSlimeFocusChoice>> or similar widgets are running */
-<<else>>
-	<<effects>>
-	<<if $bus is "farm_alex_room">>
-		<<if $exposed gte 2>>
-			<<npcincr Alex lust 3>>
-		<<else>>
-			<<npcincr Alex lust 1>>
-		<</if>>
-	<</if>>
-	<<if $bus is "farm_alex_room" or $alex_bed is "player">>
-		<<set $bedGuest to "Alex">>
-	<</if>>
-	<<if $wraith.nightmare is 2 and isBloodmoon()>>
-		<<sleepeffects>>
-		You dream of a beautiful figure, cloaked in white, standing under the red moon. It has its arms spread out to you in a welcoming gesture. You can feel its gaze boring into your mind as you step closer.
-		<br><br>
-
-		It's surrounded by trees, all bending inwards, and floating above a lake. Everything moves around you, and you find yourself hanging above a large ruin. You can't breathe.
-		<br><br>
-
-		You slowly open your eyes, and sluggishly stand from the bed.<<if $bus is "farm_alex_room" or $bus is "farm_bedroom" and $alex_bed is "player">> You make sure not to wake Alex.<</if>> Your ears are ringing.
-		<br><br>
-
-		<<wraithPossess "alex_cottage">>
-		<<if $bus is "farm_alex_room">>
-			<<storeon "farm alex bed" "wardrobe">>
-			<span class="nextLink"><<link [[Walk.|Farm Alex Bedroom]]>><<rainWraith>><</link>></span>
-		<<else>>
-			<<storeon "Farm Bed" "wardrobe">>
-			<span class="nextLink"><<link [[Walk.|Farm Bedroom]]>><<rainWraith>><</link>></span>
-		<</if>>
-		<br>
-	<<elseif _slimeWakeMasturbation is 1>>
-		<<set _masturbationExit to "Farm Sleep">>
-		<<slimeWakeMasturbation>>
+<<effects>>
+<<if $bus is "farm_alex_room">>
+	<<if $exposed gte 2>>
+		<<npcincr Alex lust 3>>
 	<<else>>
-		<<wakingEffects $sleepHoursTotal>>
-		<<if $nightmares gte 1 and $controlled is 0>>
-			You dream you are being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
-		<<else>>
-			<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
-				Your sleep is plagued by dirty dreams.
-				<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
-				<<arousal `100 * $sleepHoursTotal`>>
-				<<if $arousal gte $arousalmax>>
-					They push you over the edge.
-					<<orgasm>><<set $daily.alex.bedOrgasm to true>>
-				<</if>>
-			<<elseif !_wakingEffect>>
-				You sleep soundly.
-				<br><br>
+		<<npcincr Alex lust 1>>
+	<</if>>
+<</if>>
+<<if $bus is "farm_alex_room" or $alex_bed is "player">>
+	<<set $bedGuest to "Alex">>
+<</if>>
+<<if $wraith.nightmare is 2 and isBloodmoon()>>
+	<<sleepeffects>>
+	You dream of a beautiful figure, cloaked in white, standing under the red moon. It has its arms spread out to you in a welcoming gesture. You can feel its gaze boring into your mind as you step closer.
+	<br><br>
+
+	It's surrounded by trees, all bending inwards, and floating above a lake. Everything moves around you, and you find yourself hanging above a large ruin. You can't breathe.
+	<br><br>
+
+	You slowly open your eyes, and sluggishly stand from the bed.<<if $bus is "farm_alex_room" or $bus is "farm_bedroom" and $alex_bed is "player">> You make sure not to wake Alex.<</if>> Your ears are ringing.
+	<br><br>
+
+	<<wraithPossess "alex_cottage">>
+	<<if $bus is "farm_alex_room">>
+		<<storeon "farm alex bed" "wardrobe">>
+		<span class="nextLink"><<link [[Walk.|Farm Alex Bedroom]]>><<rainWraith>><</link>></span>
+	<<else>>
+		<<storeon "Farm Bed" "wardrobe">>
+		<span class="nextLink"><<link [[Walk.|Farm Bedroom]]>><<rainWraith>><</link>></span>
+	<</if>>
+	<br>
+<<else>>
+	<<wakingEffects $sleepHoursTotal>>
+	<<if $nightmares gte 1 and $controlled is 0>>
+		You dream you are being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
+	<<else>>
+		<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+			Your sleep is plagued by dirty dreams.
+			<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+			<<arousal `100 * $sleepHoursTotal`>>
+			<<if $arousal gte $arousalmax>>
+				They push you over the edge.
+				<<orgasm>><<set $daily.alex.bedOrgasm to true>>
 			<</if>>
-			<<if !_sleepinterrupt and (Time.hour gt 21 or Time.hour lt 6) and $bus is "farm_alex_room" or $alex_bed is "player">>
-				<<switch random(1, 6)>>
-					<<case 1>>
-						<<if Time.hour is 5>>
-							You try to wake Alex. <<nnpc_He "Alex">> groans and stirs.
-						<<else>>
-							You thought Alex awoke, but <<nnpc_hes "Alex">> just dreaming.
-						<</if>>
-					<<case 2>>
-						Alex sprawls. You gently move <<nnpc_his "Alex">> arm out of your face.
-					<<case 3>>
-						Alex beams when you gaze at <<nnpc_him "Alex">>, still asleep.
-					<<case 4>>
-						Alex <<print either("hogs the covers", "snores in your ear", "drools. You wipe it off")>>.
-					<<case 5>>
-						Alex hangs off the bed. You fix <<nnpc_him "Alex">>.
-					<<case 6>>
-						"<<print either("Bad... no supper for you tonight",
-										"D-don't look",
-										"I think I have a hangover",
-										"Dumb bird",
-										"Get off... property",
-										"I'll show everyone")>>..."
-						Alex mumbles.
-				<</switch>>
-			<</if>>
+		<<elseif !_wakingEffect>>
+			You sleep soundly.
+			<br><br>
 		<</if>>
-		<<sleepeffects>>
-		<<if $remywake is 1>>
-			<<npc Alex>><<person1>>
-			"Wake up!" Someone shakes your shoulders. It's Alex. <span class="red">"<<nnpc_Hes Remy>> here,"</span> <<he>> says. "Remy. We can do this. Get ready, I'll
-			<<if $farm.tower_guard>>
-				check on $farm.tower_guard."
-			<<else>>
-				see if I can spot them."
-			<</if>>
-			<br><br>
-
-			<<farm_assault_intro>>
-			<br><br>
-
-			<<set _bedroom to ($bus is "farm_alex_room" ? "farm alex bed" : "Farm Bed")>>
-			<<set $wardrobe_location to "alexFarm">>
-			<<wardrobeSelection true>>
-			<<storeon _bedroom "check">>
-			<<if _store_check is 1>>
-				<<storeon _bedroom>>
-			<</if>>
-			<<link [[Prepare|Farm Assault Wardrobe]]>><<endevent>><<set $phase to 1>><<unset $remywake>><</link>>
-			<br>
-		<<elseif _sleepinterrupt>>
-			<<npc Alex>><<person1>>
-
-			<<if _alexWake is 1>>
-				You awake to the sound of the staircase to the loft creaking.
-
-				<<if $bus is "farm_alex_room">>
-					The sheets have been tossed aside and Alex is missing.
-				<</if>>
-				<br><br>
-
-				<<link [[Investigate (0:01)|Farm Cottage Nighttime Nursery]]>><<set $phase to 1>><<pass 1>><</link>>
-				<br>
-				<<link [[Ignore|Farm Cottage Nighttime Nursery]]>><<set $phase to 2>><</link>>
-
-			<<elseif $bus is "farm_alex_room">>
-					You awake to feel a hand groping at your <<genitals>>,
-					<<if $NPCList[0].penis isnot "none">>
-						and a firm length pressed against your <<bottom>>.
+		<<if !_sleepinterrupt and (Time.hour gt 21 or Time.hour lt 6) and $bus is "farm_alex_room" or $alex_bed is "player" and !_alexWake>>
+			<<switch random(1, 6)>>
+				<<case 1>>
+					<<if Time.hour is 5>>
+						You try to wake Alex. <<nnpc_He "Alex">> groans and stirs.
 					<<else>>
-						and someone's
-						<<if $NPCList[0].breastsize is 0>>
-							chest
-						<<else>>
-							<<print $NPCList[0].breastsdesc>>
-						<</if>>
-						pressed against your back.
+						You thought Alex awoke, but <<nnpc_hes "Alex">> just dreaming.
 					<</if>>
-					Another hand rests against your thigh.
-					<br><br>
-
-					<<if $daily.alex.tvTease>>
-						"Making up for this morning?" Alex says, <<his>> breath on your neck. "I can forgive you."
-					<<else>>
-						"It's very forward of you," Alex says, <<his>> breath on your neck. "Sleeping in a <<nnpc_gendery "Alex">>'s bed."
-					<</if>>
-					<br><br>
-
-					<<link [[Push away|Farm Alex Climb]]>><<def 1>><<npcincr Alex dom -1>><</link>><<ldom>>
-					<br>
-					<<link [[Go along with it|Farm Alex Allow]]>><<sub 1>><<npcincr Alex dom 1>><</link>><<promiscuous1>><<gdom>>
-					<br>
-			<<else>>
-				<<if $exposed gte 2 and random(1, 2) is 2>>
-					You feel a little cold. The sheets are missing. You hear footsteps leave your room. <<covered>>
-					<br><br>
-
-					Your sheets lie on the ground at the foot of your bed. You suspect Alex is to blame. <<He>> was leering at your <<lewdness>> as you slept.
-					<br><br>
-
-					<<link [[Go back to sleep|Farm Bed]]>><<endevent>><</link>>
-					<br>
-					<<link [[Get up|Farm Bedroom]]>><<endevent>><</link>>
-					<br>
-					<<link [[Get angry (0:05)|Farm Bedroom Confront]]>><<pass 5>><<npcincr Alex love -1>><<npcincr Alex dom -1>><</link>><<llove>><<ldom>>
-					<br>
-					<<if $promiscuity gte 35>>
-						<<link [[Get revenge (0:20)|Farm Bedroom Revenge]]>><<pass 20>><<npcincr Alex dom -1>><<npcincr Alex lust 5>><</link>><<promiscuous3>><<ldom>><<gglust>>
-						<br>
-					<</if>>
-				<<else>>
-					You awake to feel a hand groping at your <<genitals>>,
-					<<if $NPCList[0].penis isnot "none">>
-						and a firm length pressed against your <<bottom>>.
-					<<else>>
-						and someone's
-						<<if $NPCList[0].breastsize is 0>>
-							chest
-						<<else>>
-							<<print $NPCList[0].breastsdesc>>
-						<</if>>
-						pressed against your back.
-					<</if>>
-					<br><br>
-
-					"I thought you might be lonely," Alex says, <<his>> breath on your neck.
-					<br><br>
-
-					<<link [[Push away|Farm Alex Push]]>><<def 1>><<npcincr Alex dom -1>><</link>><<ldom>>
-					<br>
-					<<link [[Go along with it|Farm Alex Go]]>><<sub 1>><<npcincr Alex dom 1>><</link>><<promiscuous1>><<gdom>>
-					<br>
-				<</if>>
-			<</if>>
+				<<case 2>>
+					Alex sprawls. You gently move <<nnpc_his "Alex">> arm out of your face.
+				<<case 3>>
+					Alex beams when you gaze at <<nnpc_him "Alex">>, still asleep.
+				<<case 4>>
+					Alex <<print either("hogs the covers", "snores in your ear", "drools. You wipe it off")>>.
+				<<case 5>>
+					Alex hangs off the bed. You fix <<nnpc_him "Alex">>.
+				<<case 6>>
+					"<<print either("Bad... no supper for you tonight",
+									"D-don't look",
+									"I think I have a hangover",
+									"Dumb bird",
+									"Get off... property",
+									"I'll show everyone")>>..."
+					Alex mumbles.
+			<</switch>>
+		<</if>>
+	<</if>>
+	<<sleepeffects>>
+	<<if $remywake is 1>>
+		<<npc Alex>><<person1>>
+		"Wake up!" Someone shakes your shoulders. It's Alex. <span class="red">"<<nnpc_Hes Remy>> here,"</span> <<he>> says. "Remy. We can do this. Get ready, I'll
+		<<if $farm.tower_guard>>
+			check on $farm.tower_guard."
 		<<else>>
-			<br><br>
+			see if I can spot them."
+		<</if>>
+		<br><br>
+
+		<<farm_assault_intro>>
+		<br><br>
+
+		<<set _bedroom to ($bus is "farm_alex_room" ? "farm alex bed" : "Farm Bed")>>
+		<<set $wardrobe_location to "alexFarm">>
+		<<wardrobeSelection true>>
+		<<storeon _bedroom "check">>
+		<<if _store_check is 1>>
+			<<storeon _bedroom>>
+		<</if>>
+		<<link [[Prepare|Farm Assault Wardrobe]]>><<endevent>><<set $phase to 1>><<unset $remywake>><</link>>
+		<br>
+	<<elseif _sleepinterrupt>>
+		<<npc Alex>><<person1>>
+		<<if _alexWake is 1>>
+			You awake to the sound of the staircase to the loft creaking.
 
 			<<if $bus is "farm_alex_room">>
-				<<link [[Get up|Farm Alex Bedroom]]>>
-					<<set $wardrobe_location to "alexFarm">>
-					<<wardrobeSelection true>>
-					<<storeon "farm alex bed" "check">>
-					<<if _store_check is 1>>
-						<<storeon "farm alex bed">>
-					<</if>>
-				<</link>>
-				<br>
+				The sheets have been tossed aside and Alex is missing.
+			<</if>>
+			<br><br>
+
+			<<link [[Investigate (0:01)|Farm Cottage Nighttime Nursery]]>><<set $phase to 1>><<pass 1>><</link>>
+			<br>
+			<<link [[Ignore|Farm Cottage Nighttime Nursery]]>><<set $phase to 2>><</link>>
+
+		<<elseif $bus is "farm_alex_room">>
+			You awake to feel a hand groping at your <<genitals>>,
+			<<if $NPCList[0].penis isnot "none">>
+				and a firm length pressed against your <<bottom>>.
 			<<else>>
-				<<radiooutfits>>
+				and someone's
+				<<if $NPCList[0].breastsize is 0>>
+					chest
+				<<else>>
+					<<print $NPCList[0].breastsdesc>>
+				<</if>>
+				pressed against your back.
+			<</if>>
+			Another hand rests against your thigh.
+			<br><br>
+
+			<<if $daily.alex.tvTease>>
+				"Making up for this morning?" Alex says, <<his>> breath on your neck. "I can forgive you."
+			<<else>>
+				"It's very forward of you," Alex says, <<his>> breath on your neck. "Sleeping in a <<nnpc_gendery "Alex">>'s bed."
+			<</if>>
+			<br><br>
+
+			<<link [[Push away|Farm Alex Climb]]>><<def 1>><<npcincr Alex dom -1>><</link>><<ldom>>
+			<br>
+			<<link [[Go along with it|Farm Alex Allow]]>><<sub 1>><<npcincr Alex dom 1>><</link>><<promiscuous1>><<gdom>>
+			<br>
+		<<else>>
+			<<if $exposed gte 2 and random(1, 2) is 2>>
+				You feel a little cold. The sheets are missing. You hear footsteps leave your room. <<covered>>
 				<br><br>
 
-				<<link [[Get up|Farm Bedroom]]>><<bedclotheson "Farm Bed">><</link>>
+				Your sheets lie on the ground at the foot of your bed. You suspect Alex is to blame. <<He>> was leering at your <<lewdness>> as you slept.
+				<br><br>
+
+				<<link [[Go back to sleep|Farm Bed]]>><<endevent>><</link>>
+				<br>
+				<<link [[Get up|Farm Bedroom]]>><<endevent>><</link>>
+				<br>
+				<<link [[Get angry (0:05)|Farm Bedroom Confront]]>><<pass 5>><<npcincr Alex love -1>><<npcincr Alex dom -1>><</link>><<llove>><<ldom>>
+				<br>
+				<<if $promiscuity gte 35>>
+					<<link [[Get revenge (0:20)|Farm Bedroom Revenge]]>><<pass 20>><<npcincr Alex dom -1>><<npcincr Alex lust 5>><</link>><<promiscuous3>><<ldom>><<gglust>>
+					<br>
+				<</if>>
+			<<else>>
+				You awake to feel a hand groping at your <<genitals>>,
+				<<if $NPCList[0].penis isnot "none">>
+					and a firm length pressed against your <<bottom>>.
+				<<else>>
+					and someone's
+					<<if $NPCList[0].breastsize is 0>>
+						chest
+					<<else>>
+						<<print $NPCList[0].breastsdesc>>
+					<</if>>
+					pressed against your back.
+				<</if>>
+				<br><br>
+
+				"I thought you might be lonely," Alex says, <<his>> breath on your neck.
+				<br><br>
+
+				<<link [[Push away|Farm Alex Push]]>><<def 1>><<npcincr Alex dom -1>><</link>><<ldom>>
+				<br>
+				<<link [[Go along with it|Farm Alex Go]]>><<sub 1>><<npcincr Alex dom 1>><</link>><<promiscuous1>><<gdom>>
+				<br>
 			<</if>>
-			<br>
 		<</if>>
+	<<else>>
+		<br><br>
+
+		<<if $bus is "farm_alex_room">>
+			<<link [[Get up|Farm Alex Bedroom]]>>
+				<<set $wardrobe_location to "alexFarm">>
+				<<wardrobeSelection true>>
+				<<storeon "farm alex bed" "check">>
+				<<if _store_check is 1>>
+					<<storeon "farm alex bed">>
+				<</if>>
+			<</link>>
+			<br>
+		<<else>>
+			<<radiooutfits>>
+			<br><br>
+
+			<<link [[Get up|Farm Bedroom]]>><<bedclotheson "Farm Bed">><</link>>
+		<</if>>
+		<br>
 	<</if>>
-	<<set $phase to 0>>
 <</if>>
+<<set $phase to 0>>
 
 :: Farm Alex Climb
 <<effects>>
@@ -971,7 +963,7 @@ You return to your bed.
 <<effects>><<getTarget true>>
 <<wearoutfit>>
 <<farm_work_update>>
-You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardrobe, and the desk is cluttered. The window overlooks the road in, and the moor beyond.
+You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardrobe, and the desk is cluttered. The window overlooks the road in, and the moor beyond. <<if C.npc.Alex.pregnancy.ultraSoundWallPic is true>>A picture of your most recent ultrasound hangs on the wall.<</if>>
 <br><br>
 
 <<if $stress gte $stressmax and !$possessed>>
@@ -1033,8 +1025,13 @@ You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardro
 		<</if>>
 		<<endevent>>
 
-		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.pcKnowledge isnot true or C.npc.Alex.pregnancy.test is true or C.npc.Alex.pregnancy.test is true) and C.npc.Alex.pregnancy.ultraSound isnot "requested">>
 			<<pcPregnancyRevealToAlex>>
+		<</if>>
+
+		<<if C.npc.Alex.pregnancy.pcKnowledge is true and C.npc.Alex.pregnancy.ultraSoundPics is true and C.npc.Alex.pregnancy.sample isnot true and getPregnancyObject().potentialFathers.length is 1>>
+			<<link [[Show Alex your ultrasound pictures (0:05)|Farm PC Ultrasound Pics Show]]>><</link>>
+			<br><br>
 		<</if>>
 
 		<<officeicon>><<link [[Offer help (1:00)|Farm Alex Admin]]>><<pass 60>><<npc Alex>><<person1>><<npcincr Alex love 1>><<stress 6>><</link>><<skill_difficulty `currentSkillValue("maths")` "Maths" 1 1000>><<glove>><<gstress>>
@@ -1098,20 +1095,20 @@ You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardro
 	You snuggle beside Alex.
 <<else>>
 	You snuggle under the covers.
-	<<if $alex_bed isnot "player" and $earSlime.corruption gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 + Math.floor($earSlime.growth / 100) + $earSlime.defyCooldown and !$earSlime.eventTimer and !$earSlime.event>>
+	<<if numberOfEarSlime() and $alex_bed isnot "player" and random(0,100) lt 3 + Math.floor($earSlime.growth / 100) - $earSlime.eventTimer and !$earSlime.event>>
 		<<set $slimeBedExit to "Farm Alex Bed">>
 		<<set $slimeBedroomExit to "Farm Alex Bedroom">>
-		<<slimeNoSleep>>
-		<<set _skip to true>>
+		<<setSlimeSleepEvents>>
+		<<if $earSlimeEvent>>
+			<<slimeSleepEvents>>
+		<</if>>
 	<</if>>
 <</if>>
 <<if $wraith.state and $wraithPrison and ($moonstate is "evening" or $moonstate is _nightstate)>>
 	You feel anxious, and your eyes dart over to the mirror.
 <</if>>
 <br><br>
-<<if !_skip>>
-	<<farm_sleep_options>>
-<</if>>
+<<farm_sleep_options>>
 
 
 :: Farm Breakfast Make
@@ -2043,7 +2040,7 @@ You get comfy beside Alex.
 			<<set C.npc.Alex.pregnancy.noBirthControl to true>>
 		<</if>>
 
-		<<if (npcIsPregnant("Alex") or playerIsPregnant()) and C.npc.Alex.pregnancy.knowledge is true>>
+		<<if (npcIsPregnant("Alex") or playerIsPregnant()) and (C.npc.Alex.pregnancy.selfKnowledge or C.npc.Alex.pregnancy.pcKnowledge)>>
 			"What do you think about <<if childrenCountBetweenParents("Alex","pc") gte 1 or childrenCountBetweenParents("pc","Alex") gte 1>>our family growing<<else>>us having a family<</if>> soon?" you ask, resting your head on <<his>> shoulder.
 			<br><br>
 
@@ -2074,10 +2071,10 @@ You get comfy beside Alex.
 			<br><br>
 
 			<<He>> wraps an arm around you, and pauses for a moment.
-			<<if ($genderknown.includes("Alex") and $player.gender is _alex.pronoun) or (!$genderknown.includes("Alex") and $player.gender_appearance is _alex.pronoun)>>
-				"We could adopt. But I heard it's expensive. And we've got our hands full as is. Dunno how I'll manage without booze." <<He>> suddenly grins. "If it makes you happy though, I'd be tenfold."
-			<<else>>
+			<<if (knowsAboutAnyPregnancy("pc", "Alex") and $NPCName[$NPCNameList.indexOf("Alex")].gender is "m") or ($genderknown.includes("Alex") and $player.penisExist and $NPCName[$NPCNameList.indexOf("Alex")].gender is "f") or ($genderknown.includes("Alex") and $player.gender isnot _alex.gender) or (!$genderknown.includes("Alex") and $player.gender_appearance isnot _alex.gender)>>
 				"Being honest, I didn't consider it. Dunno how I'll manage without booze. But I wouldn't mind. If it makes you happy, I'd be tenfold," <<he>> says, beaming at you.
+			<<else>>
+				"We could adopt. But I heard it's expensive. And we've got our hands full as is. Dunno how I'll manage without booze." <<He>> suddenly grins. "If it makes you happy though, I'd be tenfold."
 			<</if>>
 			<br><br>
 
@@ -2155,12 +2152,14 @@ You get comfy beside Alex.
 	<<link [[Next|Farm Cottage]]>><<endevent>><</link>>
 	<br>
 <<else>>
-	<<if C.npc.Alex.pregnancy.noBirthControl is true and C.npc.Alex.pregnancy.pills isnot "fertility">>
+	<<if (playerPregnancyPossibleWith("Alex") or NPCPregnancyPossibleWithPlayer("Alex")) and C.npc.Alex.pregnancy.noBirthControl is true and C.npc.Alex.pregnancy.pills isnot "fertility">>
 		<<link [[Ask to have a baby|Farm Cottage Baby Request]]>><</link>>
-
-		<i><span class="blue"> This will make Alex more fertile till <<nnpc_his "Alex">> next pregnancy</span></i>
+		<<if C.npc.Alex.gender is "f">>
+			<i><span class="blue">This will make Alex more fertile till <<nnpc_his "Alex">> next pregnancy.</span></i>
+		<<else>>
+			<i><span class="blue">This will make Alex more virile till your next pregnancy.</span></i>
+		<</if>>
 		<br><br>
-
 	<</if>>
 
 	<<link [[Keep cuddling (0:20)|Farm Breakfast Cuddle]]>><<npcincr Alex love 1>><<pass 20>><</link>><<glove>>
@@ -2741,6 +2740,7 @@ property."
 :: Farm Cottage Bailey Refuse 2
 <<effects>>
 <<set $baileypaychain to 0>>
+<<set $baileyRefusedToPay += 1>>
 
 Alex slams the door.
 <<if $bailey_encroach is undefined>>
@@ -2758,7 +2758,7 @@ Alex slams the door.
 
 :: Farm Alex Pregnancy Reveal
 <<effects>><<npc "Alex">><<setKnowsAboutPregnancy "Alex" "pc">><<setTalkedAboutPregnancy "Alex" "pc">>
-<<set C.npc.Alex.pregnancy.knowledge to true>>
+<<set C.npc.Alex.pregnancy.selfKnowledge to true>>
 
 <<if $farm_stage gte 7 and $alex_countdown is undefined>>
 	You sit next to Alex on the sofa. "So, what is it?" you ask.
@@ -2917,7 +2917,7 @@ Alex slams the door.
 :: Farm PC Pregnancy Reveal
 <<effects>><<npc "Alex">>
 
- <<if $phase isnot 3>>
+ <<if ![3,4].includes($phase)>>
     <<if $location is "alex_cottage">>
         You take a seat next to Alex.
 
@@ -2926,7 +2926,21 @@ Alex slams the door.
 
     <</if>>
 
-	<<if C.npc.Alex.pregnancy.test is true>>
+	<<if C.npc.Alex.pregnancy.ultraSound is "collected">>
+		<<set C.npc.Alex.pregnancy.ultraSound to "done">>
+		You hand the ultrasound pictures to Alex. <<He>> freezes in place and looks to you. "So you really are pregnant?"
+		<br><br>
+		You nod and flash <<him>> a nervous smile. A pregnant pause fills the air as <<he>> processes this information.
+		<br><br>
+		<<if $phase isnot 3>><<set $phase to 4>><</if>>
+	<<elseif C.npc.Alex.pregnancy.ultraSound is "collected2">>
+		<<set C.npc.Alex.pregnancy.ultraSound to "done">>
+		You hand the note from Dr Harper to Alex. <<He>> freezes in place and looks to you. "So you really are pregnant?"
+		<br><br>
+		You nod and flash <<him>> a nervous smile. A pregnant pause fills the air as <<he>> processes this information.
+		<br><br>
+		<<if $phase isnot 3>><<set $phase to 4>><</if>>
+	<<elseif C.npc.Alex.pregnancy.test is true>>
 		You hand the paternity test results to Alex. <<He>> freezes in place<<if $farm_stage gte 7 and $alex_countdown is undefined>>, but you can see a smile forming on <<his>> face.<<else>>.<</if>>
         <br><br>
 
@@ -2942,10 +2956,13 @@ Alex slams the door.
 <</if>>
 
 <<if C.npc.Alex.pregnancy.test isnot true and $farm_stage gte 7 and $alex_countdown is undefined>>
-	<<setKnowsAboutPregnancy "pc" "Alex">><<setTalkedAboutPregnancy "pc" "Alex">><<set C.npc.Alex.pregnancy.knowledge to true>>
+	<<setKnowsAboutPregnancy "pc" "Alex">><<setTalkedAboutPregnancy "pc" "Alex">><<set C.npc.Alex.pregnancy.pcKnowledge to true>>
 
     <<if playerBellySize() gte 7>>
-        <<if $phase is 3>>
+        <<if $phase is 4>>
+			"It's yours, okay?" you say.
+            <br><br>
+        <<elseif $phase is 3>>
             You both take a seat on the sofa. With a sigh, <<if !$worn.upper.type.includes("naked")>>you lift up the hem of your shirt and<<else>>you<</if>> frame your belly with your hands, drawing <<his>> eyes to your stomach.
             <br><br>
 
@@ -2968,15 +2985,24 @@ Alex slams the door.
         <br><br>
 
     <<else>>
-        You hand <<him>> your pregnancy test. <<He>> freezes in place, but you can see a smile forming on <<his>> face.
-        <br>
+		<<if $phase isnot 4>>
+			<<switch getPregnancyObject().awareOf>>
+				<<case "temple">>
+					You tell <<him>> what Jordan from the temple told you. <<He>> freezes in place, but you can see a smile forming on <<his>> face.
+				<<case "pharmacy">>
+					You tell <<him>> what the nurse from the pharmacy told you. <<He>> briefly frowns, but then you see a smile forming on <<his>> face.
+				<<default>>
+					You hand <<him>> your pregnancy test. <<He>> freezes in place, but you can see a smile forming on <<his>> face.
+			<</switch>>
+    		<br>
+		<</if>>
 
         "Wow," <<he>> says, breaking the silence. "I sure wasn't expecting that."
 		<br>
 
 		<<He>> pulls you into a hug.
 
-        <<if pregnancyCountBetweenParents("Alex", "pc") lte 0 or pregnancyCountBetweenParents("pc", "Alex") lte 0>>
+        <<if pregnancyCountBetweenParents("pc", "Alex") lte 0>>
             "Our own little family. Mum would be proud."
 
         <<else>>
@@ -2984,25 +3010,47 @@ Alex slams the door.
 
         <</if>>
         <br><br>
-
-        As <<he>> pulls away from you, <<he>> holds up the used pregnancy test. "But did you really break the news by handing me the thing you peed on?" <<he>> teases.
-        <br><br>
-
-        "Yeah, sorry," you say with a sheepish laugh.
-        <br>
-
-        <<He>> laughs with you. "It's fine, I'm not bothered by it. Can't be squeamish when you're a farmer!"
-        <br><br>
+		<<if $phase is 4>>
+			As <<he>> pulls away from you, <<he>> looks to you. "Sorry for not believing you."
+			<br>
+			"Yeah, I was quite surprised," you say with a sheepish laugh.
+			<br>
+			<<He>> laughs with you. "It's fine, I'm looking forward to the unexpected family."
+		<<else>>
+			<<switch getPregnancyObject().awareOf>>
+				<<case "temple">>
+					As <<he>> pulls away from you, <<he>> looks to you. "No idea who this Jordan is, but I wonder how <<nnpc_he "Jordan">> figured out you were pregnant?"
+					<br>
+					"Yeah, I was quite surprised," you say with a sheepish laugh.
+					<br>
+					<<He>> laughs with you. "It's fine, I'm not bothered by it."
+				<<case "pharmacy">>
+					As <<he>> pulls away from you, <<he>> looks to you. "There are better ways to keep yourself from becoming pregnant."
+					<br><br>
+					"Yeah, sorry," you say with a sheepish laugh.
+					<br>
+					<<He>> laughs with you. "It's fine, I'm not bothered by it."
+				<<default>>
+					As <<he>> pulls away from you, <<he>> holds up the used pregnancy test. "But did you really break the news by handing me the thing you peed on?" <<he>> teases.
+					<br><br>
+					"Yeah, sorry," you say with a sheepish laugh.
+					<br>
+					<<He>> laughs with you. "It's fine, I'm not bothered by it. Can't be squeamish when you're a farmer!"
+			<</switch>>
+		<</if>>
+		<br><br>
 
     <</if>>
 
 <<else>>
 
-    <<if C.npc.Alex.pregnancy.knowledge isnot true>>
-		<<setKnowsAboutPregnancy "pc" "Alex">><<setTalkedAboutPregnancy "pc" "Alex">><<set C.npc.Alex.pregnancy.knowledge to true>>
+    <<if C.npc.Alex.pregnancy.pcKnowledge isnot true>>
+		<<setKnowsAboutPregnancy "pc" "Alex">><<setTalkedAboutPregnancy "pc" "Alex">><<set C.npc.Alex.pregnancy.pcKnowledge to true>>
 
         <<if playerBellySize() gte 7>>
-            <<if $phase is 3>>
+            <<if $phase is 4>>
+                "It's yours, okay?" you say.
+            <<elseif $phase is 3>>
                 With a sigh, <<if !$worn.upper.type.includes("naked")>>you lift up the hem of your shirt and<<else>>you<</if>> frame your belly with your hands, drawing <<his>> eyes to your stomach.
 
                 "It's yours, okay?" you say.
@@ -3013,9 +3061,16 @@ Alex slams the door.
 
             <</if>>
 
+        <<elseif $phase is 4>>
         <<else>>
-            With trembling fingers, you hand <<him>> your pregnancy test.
-
+			<<switch getPregnancyObject().awareOf>>
+				<<case "temple">>
+					You tremble as you tell <<him>> what Jordan from the temple told you.
+				<<case "pharmacy">>
+					You tremble as you tell <<him>> what the nurse from the pharmacy told you.
+				<<default>>
+					With trembling fingers, you hand <<him>> your pregnancy test.
+			<</switch>>
         <</if>>
         <br><br>
 
@@ -3086,6 +3141,66 @@ Alex slams the door.
 <<if ($farm_stage gte 7 and $alex_countdown is undefined) or C.npc.Alex.pregnancy.test is true>>
 	<<link [[Next|Farm PC Pregnancy Reveal 2]]>><<run delete C.npc.Alex.pregnancy.test>><</link>>
 
+<</if>>
+
+:: Farm PC Pregnancy Reveal Mpreg Alt
+<<effects>>
+
+<<if $location is "alex_cottage">>
+    You take a seat next to Alex.
+<<else>>
+    You reach for Alex and grab <<his>> arm.
+<</if>>
+
+<<switch getPregnancyObject().awareOf>>
+    <<case "wakingUp">>
+        You tremble as you tell <<him>> what you thought when you looked at yourself after waking up. You show <<him>> your belly.
+    <<case "mirror">>
+        You tremble as you tell <<him>> what you thought when you looked at yourself in the mirror. You show <<him>> your belly.
+    <<case "temple">>
+        You tremble as you tell <<him>> what Jordan told you.
+    <<case "pharmacy">>
+        You tremble as you tell <<him>> what the nurse from the pharmacy told you.
+    <<default>>
+        With trembling fingers, you hand <<him>> your pregnancy test.
+<</switch>>
+
+<br><br>
+<<He>> looks at you with a baffled expression. "But... how?" <<he>> asks. "You don't have a vagina. Your condition could easily be something else; you should get checked at the hospital."
+
+<<if getPregnancyObject().ultrasoundDone>>
+	<br><br>
+    "I already have." You hand Alex a printout of your ultrasound. 
+    <br><br>
+    It takes <<him>> a moment to put two and two together, then <<he>> laughs. "Is this your way of explaining that beer belly you have?" <<he>> teases. "Nice sense of humour." <<He>> ruffles your hair playfully.
+    <br><br>
+	"I'm not joking," you insist. "I'm pregnant."
+    <br><br>
+	<<if playerBellySize() gte 7>>
+		<<He>> doesn't seem convinced, so you grab <<his>> hand and put it on your belly. <span class="green">Your baby shifts around inside you</span>. "What- but- how?" Alex's eyes widen and <<he>> stares at your belly bump. "How... how is this possible?"
+	<<else>>
+		<<He>> doesn't seem convinced, but there is nothing more you can do. "But how can you be pregnant?"
+	<</if>>
+
+	<br><br>
+	<<if $submissive gte 1150>>
+		You shake your head. "I don't know. I can't explain it either..."
+	<<elseif $submissive lte 850>>
+		You shrug. "Fuck if I know. Life finds a way."
+	<<else>>
+		You shrug. "Don't ask questions."
+	<</if>>
+	<br><br>
+	It takes <<him>> a moment to pull <<him>>self together. "Well," <<he>> finally says, "I've seen some pretty strange things here on the farm before, but this takes the cake. I guess nature can be pretty wild, huh?" 
+	<br><br>
+
+    <<link [[Next|Farm PC Pregnancy Reveal]]>><<set $phase to 4>><</link>>
+<<else>>
+    <<set C.npc.Alex.pregnancy.ultraSound to "requested">>
+    <br><br>
+    <span class="blue">You'll need a ultrasound to convince Alex that you're pregnant.</span>
+    <br><br>
+    <<link [[Next|Farm Work]]>><<endevent>><</link>>
 <</if>>
 
 :: Farm PC Pregnancy Reveal 2
@@ -3209,7 +3324,7 @@ Alex is willing to build a Nursery at the cottage, but first <span class="gold">
 
 :: Farm PC Pregnancy Reveal Unknown
 <<effects>><<npc "Alex">>
-<<set C.npc.Alex.pregnancy.knowledge to true>><<set C.npc.Alex.pregnancy.sample to true>>
+<<set C.npc.Alex.pregnancy.pcKnowledge to true>><<set C.npc.Alex.pregnancy.sample to true>>
 
 <<if $phase is 1>>
 
@@ -3545,7 +3660,7 @@ Harper smiles and leaves, pulling <<nnpc_his "Harper">> phone out of <<nnpc_his 
     <<nnpc_He "Bailey">> frowns. "Listen, you little-"
 	<br><br>
 
-    "Oi!" Alex interrupts. <<nnpc_He "Alex">> seems to have trouble walking <<if C.npc.Alex.pregnancy.nursery isnot true>>, <<his>> <<print $alexBabiesCount > 1 ? "children" : "child">> on <<his>> arms <</if>>. "What makes you think that we should just give our <<print $alexBabiesCount > 1 ? "children" : "child">> to you?"
+    "Oi!" Alex interrupts. <<nnpc_He "Alex">> seems to have trouble walking<<if C.npc.Alex.pregnancy.nursery isnot true>>, <<his>> <<print $alexBabiesCount > 1 ? "children" : "child">> on <<his>> arms <</if>>. "What makes you think that we should just give our <<print $alexBabiesCount > 1 ? "children" : "child">> to you?"
 	<br><br>
 
     Bailey turns <<nnpc_his "Bailey">> gaze to Alex. "Look, 'cow<<if _alex.pronoun is "f">>girl<<else>>boy<</if>>', you could've been fucked by any dumbass and I wouldn't care, but you hitched yourself to MY ward."
@@ -3619,7 +3734,7 @@ Harper smiles and leaves, pulling <<nnpc_his "Harper">> phone out of <<nnpc_his 
     if (child.location === "alex_cottage" && (child.father === "Alex" || child.mother === "Alex")) child.location = "home";
 })>>
 
-Alex turns to you. "I hate to say this, but this...offer might be a good thing, for the <<print $alexBabiesCount > 1 ? "kids" : "kid">> at least. I don't like the price, or losing <<print $alexBabiesCount > 1 ? "them" : "it">>them, but it will give us more time to prepare a room. "It's only temporary, right?" You nod.
+Alex turns to you. "I hate to say this, but this...offer might be a good thing, for the <<print $alexBabiesCount > 1 ? "kids" : "kid">> at least. I don't like the price, or losing <<print $alexBabiesCount > 1 ? "them" : "it">>, but it will give us more time to prepare a room. It's only temporary, right?" You nod.
 <br><br>
 
 "Okay," Alex says, returning <<his>> attention to Bailey again.
@@ -3697,7 +3812,7 @@ Alex notices your anxiety. "Fancy a fancy cup of tea?" <<he>> asks with a smile 
 You take a sip. The taste is sweet, and it makes you feel warm.<<llstress>>
 <br>
 
-The contractions grow stronger, but you're able to breathe through it. <<gpain>>
+The contractions continue to grow stronger and far more frequent, but you're able to breathe through it. <<gpain>>
 <br><br>
 
 Alex holds your hand, and you wait for the Doctor's arrival.
@@ -4002,7 +4117,7 @@ As you descend the stairs, you can hear talking. Alex sounds angry.
     if (child.location === "alex_cottage" && (child.father === "Alex" || child.mother === "Alex")) child.location = "home";
 })>>
 
-Alex turns to you. "I hate to say this, but this...offer might be a good thing, for the <<print $pcBabyCount > 1 ? "kids" : "kid">> at least. I don't like the price, or losing <<print $pcBabyCount > 1 ? "them" : "it">>, but it will give us more time to prepare a room. "It's only temporary, right?" You reluctantly nod.
+Alex turns to you. "I hate to say this, but this...offer might be a good thing, for the <<print $pcBabyCount > 1 ? "kids" : "kid">> at least. I don't like the price, or losing <<print $pcBabyCount > 1 ? "them" : "it">>, but it will give us more time to prepare a room. It's only temporary, right?" You reluctantly nod.
 <br><br>
 
 "Okay," Alex says, returning <<his>> attention to Bailey again.
@@ -4387,3 +4502,54 @@ You try to pull <<him>> closer but
 <</if>>
 
 <<link [[Next|Farm Cottage]]>><<endevent>><<pass 20>><</link>>
+
+:: Farm PC Ultrasound Pics Show
+<<effects>><<npc "Alex">><<person1>>
+
+<<if !C.npc.Alex.pregnancy.ultraSoundWallPic>>
+	<<set C.npc.Alex.pregnancy.ultraSoundWallPic to true>>
+<</if>>
+
+<<run delete C.npc.Alex.pregnancy.ultraSoundPics>>
+
+"Hey," you say, leaning closer to Alex. "I have something to show you."
+<br><br>
+
+Alex gives you a curious glance. "Sure, what is it?"
+<br><br>
+
+You grab the ultrasound pictures Harper gave you and hand them to <<him>>. <<He>> seems to be having a hard time understanding what <<hes>> looking at.
+<br><br>
+
+<<if $speech_attitude is "bratty">>
+    "Seriously?" you sigh. "It's our <<if getPregnancyObject().fetus.length is 1>>child<<else>>children<</if>>, dummy,"
+
+<<elseif $speech_attitude is "meek">>
+    "S-Sorry, I should've explained, it's our <<if getPregnancyObject().fetus.length is 1>>child<<else>>children<</if>>,"
+
+<<else>>
+    "You don't get it? It's our <<if getPregnancyObject().fetus.length is 1>>child<<else>>children<</if>>,"
+<</if>>
+
+you say.
+<br><br>
+
+"Oh," <<he>> says, taking another look at the pictures. "I thought it was some kind of alien," <<he>> jokes.
+<br><br>
+
+You give <<him>> a light punch on the shoulder. "I'm just joking," <<he>> says, embracing you. "Thanks for showing me this. It's nice to know our <<if getPregnancyObject().fetus.length is 1>>child is<<else>>children are<</if>> growing nice and healthy."
+<br><br>
+
+Alex holds you for a while, and you both enjoy the moment together. <<He>> gives you a kiss before releasing you. "Think we should hang this somewhere?"
+<br><br>
+
+<<if $location is "alex_cottage">>
+	<<if Time.hour gte 5 and Time.hour lte 6>>
+		<<link [[Next|Farm Cottage]]>><<pass 5>><<endevent>><</link>>
+	<<else>>
+		<<link [[Next|Farm Alex Bedroom]]>><<pass 5>><<endevent>><</link>>
+	<</if>>
+
+<<else>>
+	<<link [[Next|Farm Work]]>><<pass 5>><<endevent>><</link>>
+<</if>>

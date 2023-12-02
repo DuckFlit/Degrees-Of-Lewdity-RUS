@@ -382,26 +382,30 @@ Overwhelmed with unending orgasms, you eventually crash into unconsciousness.
 
 <<location "tentworld">><<effects>>
 <<if $tentacleorgasmignore is undefined>><<set $tentacleorgasmignore to 0>><</if>>
-You are on the tentacle plains. Tendrils growing from the ground strain to reach your <<genitals>>, caressing your thighs and
-whatever else they can reach. The air is sweet.
-<<drugs 10>><<ggarousal>><<arousal 1200>>
+You are on the tentacle plains.
+<<if $phase is 5>>
+	You feel the slime in your head make a strange noise as you head in the direction it wants you to go. Tendrils growing from the ground seem to avoid you while the air seems clearer than before.
+	<<if $tentacleorgasmignore is 0>><<set $tentacleorgasmignore to 1>><</if>>
+<<else>>
+	Tendrils growing from the ground strain to reach your <<genitals>>, caressing your thighs and
+	whatever else they can reach. The air is sweet.
+	<<drugs 10>><<ggarousal>><<arousal 1200>>
+<</if>>
 <br><br>
-<<if $phase is 1>>
-	You walk north.
-	<br><br>
-<</if>>
-<<if $phase is 2>>
-	You walk south.
-	<br><br>
-<</if>>
-<<if $phase is 3>>
-	You walk east.
-	<br><br>
-<</if>>
-<<if $phase is 4>>
-	You walk west.
-	<br><br>
-<</if>>
+<<switch $phase>>
+	<<case 1>>
+		You walk north.
+		<br><br>
+	<<case 2>>
+		You walk south.
+		<br><br>
+	<<case 3>>
+		You walk east.
+		<br><br>
+	<<case 4>>
+		You walk west.
+		<br><br>
+<</switch>>
 <<tentaclewolf>>
 <<set $phase to 0>>
 <<if $stress gte $stressmax>>
@@ -452,6 +456,29 @@ whatever else they can reach. The air is sweet.
 		<br>
 		<<peppersprayicon>><<link [[Touch|Tentacle Plains Spray]]>><<set $spraymax += 1>><<set $tentspray to 1>><<spray 5>><</link>><<gspraymax>>
 		<br><br>
+	<</if>>
+	<<if numberOfEarSlime() gte 2 and $earSlime.growth gt 50 and $earSlime.focus isnot "none" and !$weekly.earSlimeTentaclePlains and $tentnorth lte 0 and $tenteast lte 1>>
+		<span class="red">You feel the slime in your head urge you to face a specific way, as if it wants you to head towards something.</span>
+		<br>
+		<<if $tentnorth is -5 and $tenteast is -4>>
+			<<ind>><<link [[Follow the slimes directions (0:10)|Tentacle Plains Ear Slime]]>><<pass 10>><</link>>
+		<<else>>
+			<<ind>><<link [[Follow the slimes directions (0:10)|Tentacle Plains]]>>
+				<<pass 10>><<set $phase to 5>>
+				<<if $tenteast gte -3 and random(0,100) gte 50>>
+					<<set $tenteast -= 1>>
+				<<elseif $tenteast is -5 and random(0,100) gte 50>>
+					<<set $tenteast += 1>>
+				<<elseif $tentnorth gt -5>>
+					<<set $tentnorth -= 1>>
+				<<elseif $tenteast gte -3>>
+					<<set $tenteast -= 1>>
+				<<elseif $tenteast is -5>>
+					<<set $tenteast += 1>>
+				<</if>>
+			<</link>>
+		<</if>>
+		<br>
 	<</if>>
 	<<if $tentnorth lt 5>>
 		<<tentacleicon "north">><<link [[North (0:10)|Tentacle Plains]]>><<pass 10>><<set $tentnorth += 1>><<set $phase to 1>><</link>>
@@ -1053,3 +1080,116 @@ You take to the air, leaving the writhing tentacles far below. Your wings soon t
 
 <<link [[Next|Tentacle Plains]]>><<set $eventskip to 1>><</link>>
 <br>
+
+:: Tentacle Plains Ear Slime
+<<effects>>
+<<set $weekly.earSlimeTentaclePlains to true>>
+You continue following the slime's direction, walking well beyond where you would normally dare to go on this endless plain of tentacles.
+
+<<if !$earSlime.pod>>
+	Just as you pass one of the largest tentacles you've been near so far, you spot what looks like a pod opening up. A feeling of dread fills you.
+<<else>>
+	As you pass the large tentacle again, you spot the pod opening up once more. You shiver knowing what it will do if you lie in it.
+<</if>>
+<br><br>
+<span class="lewd">You feel the slime in your head command you to lie down inside the pod.</span> <span class="red">It expects to be obeyed.</span>
+<br><br>
+<<link [[Obey|Tentacle Plains Ear Slime Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+<br>
+<<link [[Defy|Tentacle Plains Ear Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+<br>
+
+:: Tentacle Plains Ear Slime Obey
+<<effects>>
+
+Following the slime's instructions, you walk to the pod<<if !$earSlime.pod>> while doing your best to ignore the growing feeling of dread<<else>>, unable to stop shaking<</if>>. Hesitating a moment, you gulp and then climb into it.
+<br><br>
+<<link [[Next|Tentacle Plains Ear Slime 2]]>><</link>>
+
+:: Tentacle Plains Ear Slime Defy
+<<effects>>
+
+<<if $earSlime.corruption + $earSlime.growth gte (currentSkillValue('willpower') / 5)>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 12>>
+	<</if>>
+	The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to walk towards the pod. <<if !$earSlime.pod>> The feeling of dread quickly escalates<<else>> You can't stop trembling.<</if>>. You're unable to stop yourself from climbing into it.
+	<<ggwillpower>><<willpower 3>>
+	<br><br>
+	<<link [[Next|Tentacle Plains Ear Slime 2]]>><</link>>
+<<else>>
+	<<set $earSlime.defyCooldown += 6>>
+	The slime tries to assert control, <span class="green">but you fight it</span> and manage to walk back towards where you entered the tentacle plains.
+	<<gwillpower>><<willpower 1>>
+	
+	<br><br>
+	<<link [[Next|Tentacle Plains]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Tentacle Plains Ear Slime 2
+<<effects>>
+
+<<set $earSlime.pod to ($earSlime.pod or 0) + 1>>
+<<set $earSlimeGrown to $earSlime.growth lt 200>>
+<<set $earSlime.growth += 25>>
+
+The moment you lie down, the pod's entrance closes up, and your vision is quickly clouded by a dense fog that you helplessly start breathing in. Pleasure quickly builds in your <<genitals>><<if $earSlime.focus isnot "impregnation">> and <<breasts>><</if>>.<<drugs 500>><<gggdrugged>><<gggarousal>>
+<br><br>
+<<if playerChastity("hidden")>>
+	With your $worn.genitals.name in the way, you're unable to do anything but
+	<<if $earSlime.focus isnot "impregnation">>
+		play with your <<breasts>>, as much as it only seems to make the situation worse for you.
+	<<else>>
+		squirm in the small space.
+	<</if>>
+<<elseif $worn.genitals.name is "chastity parasite">>
+	You can't help but desperately squeeze your $worn.genitals.name, as much as it only seems to make the situation worse for you.
+<<elseif playerChastity("cage") and !$player.vaginaExist>>
+	You can't help but desperately try to get to your <<penis>> despite it being inside of the $worn.genitals.name.
+<<elseif $player.penisExist and !playerChastity("penis")>>
+	You can't help but desperately stroke your <<penis>><<if $player.vaginaExist>> while fingering your vagina<</if>>, as much as it only seems to make the situation worse for you.
+<<else>>
+	You can't help but desperately finger your vagina, as much as it only seems to make the situation worse for you.
+<</if>>
+
+It's not long before you pushed over the edge.
+<br><br>
+<<orgasm>>
+<<if _deniedOrgasm>>
+	Despite your ruined orgasm, you soon climax a second... third... then fourth time, each one more intense than the last.
+	<br><br>
+	<<orgasm>>
+	<<orgasm>>
+	<<orgasm>>
+	You feel your consciousness fade even as you close in on the next ruined orgasm.
+<<else>>
+	You soon climax a second... third... then fourth time, each one more intense than the last.
+	<br><br>
+	<<orgasm>>
+	<<orgasm>>
+	<<orgasm>>
+	You feel your consciousness fade even as you close in on the next orgasm.
+<</if>>
+<<set $arousal to $arousalmax>>
+
+<br><br>
+/* May run physicalAdjustments or earSlimeDaily twice, its intended */
+<<link [[Next|Tentacle Plains Ear Slime 3]]>><<pass 120>><<physicalAdjustments>><<earSlimeDaily true>><<set $arousal to 0>><</link>>
+
+:: Tentacle Plains Ear Slime 3
+<<effects>>
+<<if $genitalsensitivity lt 3>>
+	<<set $genitalsensitivity += 1>>
+<</if>>
+<<if $earSlime.focus isnot "impregnation" and $breastsensitivity lt 3>>
+	<<set $breastsensitivity += 1>>
+<</if>>
+You wake with your <<genitals>><<if $earSlime.focus isnot "impregnation">> and chest<</if>> <span class="pink">feeling more sensitive</span> than before. <<if $earSlimeGrown>>You suspect that it's not the only thing that's changed.<</if>> Noticing that the pod is open, you carefully exit and leave the pod prison behind.
+
+<br><br>
+<<if $tentacleorgasmignore lt 2>>
+	<<set $tentacleorgasmignore to 2>><span class="green">The tentacles still seem to be avoiding you. Your next orgasm might not be so dangerous.</span>
+	<br><br>
+<</if>>
+<<link [[Next|Tentacle Plains]]>><<unset $earSlimeGrown>><<endevent>><</link>>

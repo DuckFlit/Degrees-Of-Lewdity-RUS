@@ -48,6 +48,14 @@ function compile() {
 					TWEEGO_EXE="./devTools/tweego/tweego_linux86"
 				fi
 				;;
+			arm64)
+				echoMessage "arm64 arch"
+				if [ "$(uname -s)" = "Darwin" ]; then
+					TWEEGO_EXE="./devTools/tweego/tweego_m1"  #for mac m1 and m2
+				#else
+				#not linux arm
+				fi
+				;;
 			*)
 				echoError "No system tweego binary found, and no precompiled binary for your platform available."
 				echoError "Please compile tweego and put the executable in PATH."

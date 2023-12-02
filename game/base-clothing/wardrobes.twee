@@ -133,20 +133,30 @@
 		/*Prevent equip when the ear slime doesn't allow it*/
 		<<if _slimePrevent.includes(_slot) and $wardrobeOption is "wear" and $earSlime.corruption gte 10>>
 			<<if $daily.corruptionSlimeClothes is undefined>>
-				<<set $daily.corruptionSlimeClothes to random($earSlime.corruption * 5, $earSlime.corruption * 15) - currentSkillValue('willpower')>>
+				<<set _baseCorruption to (($earSlime.corruption / 2) + ($earSlime.growth / 2))>>
+				<<set $daily.corruptionSlimeClothes to random(_baseCorruption * 5, _baseCorruption * 25) - currentSkillValue('willpower')>>
 			<</if>>
-			<<if $earSlime.event is "go commando" and _slot is "under_lower">>
-				<span class="red">You were unable to equip your _item.name as the slime in your ear is forcing you to go commando.</span>
-				<br>
-				<<continue>>
-			<<elseif ((["prison", "asylum"].includes($location) and _item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or (_item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !(_item.type.includesAny("school")) and Time.schoolDay) and !_item.type.includesAny("event")>>
+			<<if $earSlime.forcedCommando isnot undefined and (_slot is "under_lower" or (_item.outfitPrimary and _item.outfitPrimary.under_lower and !["broken","split"].includes(_item.outfitPrimary.under_lower)))>>
+				<<if _item.type.includes("naked") or (_earSlimeEnableSwimwear and _item.type.includes("swim")) or (_earSlimeEnableDancewear and _item.type.includes("dance"))>>
+				<<elseif $earSlime.forcedCommando gt 0>>
+					<span class="red">You were unable to equip your _item.name as the slime in your ear is forcing you to go commando.</span>
+					<br>
+					<<continue>>
+				<<else>>
+					<<run delete $earSlime.forcedCommando>>
+				<</if>>
+			<<elseif ((["prison", "asylum"].includes($location) and _item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or (_item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !(_item.type.includesAny("school") and Time.schoolDay)) and !_item.type.includesAny("event")>>
 				<span class="red">You were unable to equip your _item.name as the slime in your ear did not permit it.</span>
 				<br>
 				<<continue>>
 			<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
-				<span class="red">You were unable to equip your _item.name as the slime in your ear is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
-				<br>
-				<<continue>>
+				<<if $earSlime.forcedDressing.days gt 0>>
+					<span class="red">You were unable to equip your _item.name as the slime in your ear is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
+					<br>
+					<<continue>>
+				<<else>>
+					<<run delete $earSlime.forcedDressing>>
+				<</if>>
 			<</if>>
 		<</if>>
 		/*Finds any outfit pieces and records the Ids*/
@@ -160,7 +170,7 @@
 					<<if $_wardrobeItem.name isnot $_outfitPieceName>>
 						<<continue>>
 					<</if>>
-					<<if _item.colour isnot $_wardrobeItem.colour or _item.accessory_colour isnot $_wardrobeItem.accessory_colour>>
+					<<if _item.colour isnot $_wardrobeItem.colour or ($_wardrobeItem.accessory isnot 0 and _item.accessory_colour isnot $_wardrobeItem.accessory_colour)>>
 						<<continue>>
 					<</if>>
 					<<if $_wardrobeItem.outfitSecondary[1] isnot _item.name>>
@@ -170,7 +180,7 @@
 					<<if $_wardrobeItem.colour isnot "custom" or (_item.colourCustom isnot undefined and _item.colourCustom is $_wardrobeItem.colourCustom)>>
 						<<set _matched++>>
 					<</if>>
-					<<if $_wardrobeItem.accessory_colour isnot "custom" or (_item.accessory_colourCustom isnot undefined and _item.accessory_colourCustom is $_wardrobeItem.accessory_colourCustom)>>
+					<<if $_wardrobeItem.accessory is 0 or $_wardrobeItem.accessory_colour isnot "custom" or (_item.accessory_colourCustom isnot undefined and _item.accessory_colourCustom is $_wardrobeItem.accessory_colourCustom)>>
 						<<set _matched++>>
 					<</if>>
 					<<if _matched is 2>>
@@ -280,6 +290,7 @@
 <</widget>>
 
 <<widget "wardrobe">>
+	<<set _inWardrobe to true>>
 	<div id="action-popup">Don't look here.</div>
 	<<unset $tempDisable>>
 
@@ -522,7 +533,7 @@
 	<br>
 	<div class="wardrobe-action">
 		<<link "Add current clothes as new set">>
-			<<set $outfit_name to document.getElementById("outfitName").value.replace(/[^a-zA-Z 0-9.!()]+/g,"")>>
+			<<set $outfit_name to document.getElementById("outfitName").value.replace(/[^a-zA-Z\u4e00-\u9fa5 0-9.!()]+/g,"")>>
 			<<set _newOutfit to {
 				index: $outfit.length,
 				name: $outfit_name,
@@ -581,11 +592,11 @@
 	<<if $_item.integrity gt ($_integrityMax * 9 / 10)>>
 		<<set $_output to "">>
 	<<elseif $_item.integrity gt ($_integrityMax * 5 / 10)>>
-		<<set $_output to "(frayed)">>
+		<<set $_output to "<span>(frayed)</span>">>
 	<<elseif $_item.integrity gt ($_integrityMax * 2 / 10)>>
-		<<set $_output to "(torn)">>
+		<<set $_output to "<span>(torn)</span>">>
 	<<else>>
-		<<set $_output to "(tattered)">>
+		<<set $_output to "<span>(tattered)</span>">>
 	<</if>>
 <</silently>><<print $_output>><</widget>>
 
@@ -693,37 +704,34 @@
 	<</if>>
 <</widget>>
 
-<<widget "toggleAltLink">>
-	<div class="toggleAltLink">
-		<<switch _args[0]>>
-			<<case "upper">>
-				<<switch $worn.upper.variable>>
-					<<case "schoolcardigan">><<set $_link1 to "Tie cardigan around waist">><<set $_link2 to "Wear cardigan normally">>
-				<</switch>>
-				<<link `($worn.upper.altposition is "none" ? $_link1 : $_link2)`>>
-					<<toggleAltPosition "upper">>
-					<<updatesidebarimg>>
-					<<if _args[1] isnot "shop">>
-						<<updatewardrobe>>
-					<</if>>
-					<<run $(".toggleAltLink .link-internal").html($worn.upper.altposition is "none" ? $_link1 : $_link2)>>
-					<<run Links.generateLinkNumbers($(".passage"))>>
-				<</link>>
-			<<case "neck">>
-				<<switch $worn.neck.variable>>
-					<<case "suspenders">><<set $_link1 to "Lower suspenders">><<set $_link2 to "Wear suspenders normally">>
-				<</switch>>
-				<<link `($worn.neck.altposition is "none" ? $_link1 : $_link2)`>>
-					<<toggleAltPosition "neck">>
-					<<updatesidebarimg>>
-					<<if _args[1] isnot "shop">>
-						<<updatewardrobe>>
-					<</if>>
-					<<run $(".toggleAltLink .link-internal").html($worn.neck.altposition is "none" ? $_link1 : $_link2)>>
-					<<run Links.generateLinkNumbers($(".passage"))>>
-				<</link>>
-		<</switch>>
-	</div>
+<<widget "toggleAltLink">><<silently>>
+	<<switch _args[0]>>
+		<<case "upper">>
+			<<switch $worn.upper.variable>>
+				<<case "schoolcardigan">><<set _altLink to ["Tie cardigan around waist", "Wear cardigan normally"]>>
+				<<default>><<exit>>
+			<</switch>>
+		<<case "neck">>
+			<<switch $worn.neck.variable>>
+				<<case "suspenders">><<set _altLink to ["Lower suspenders", "Wear suspenders normally"]>>
+				<<default>><<exit>>
+			<</switch>>
+		<<default>><<exit>>
+	<</switch>>
+	<</silently>>
+	<span @class="_args[0]">
+		<<capture _args[0] _altLink>>
+			<<link `($worn[_args[0]].altposition is "none" ? _altLink[0] : _altLink[1])`>>
+				<<toggleAltPosition _args[0]>>
+				<<updatesidebarimg>>
+				<<if _args[1] is "wardrobe">>
+					<<updatewardrobe>>
+				<</if>>
+				<<run $(".toggleAltLink ." + _args[0] + " .link-internal").html($worn[_args[0]].altposition is "none" ? _altLink[0] : _altLink[1])>>
+				<<run Links.generateLinkNumbers($(".passage"))>>
+			<</link>>
+		<</capture>>
+	</span>
 <</widget>>
 
 <<widget "toggleAltPosition">>
@@ -826,7 +834,7 @@
 						<span class="red">(Broken)</span>
 				<</if>>
 				<<if _wornItem.one_piece is "split">>
-					(Separated)
+						<span class="separated-indicator">(Separated)</span>
 				<</if>>
 			<</if>>
 			<<if _wornItem.outfitSecondary isnot undefined>>
@@ -835,7 +843,7 @@
 				<<else>>
 					<span class="gold">(Outfit)</span>
 					<<if _wornItem.one_piece is "split">>
-						(Separated)
+						<span class="separated-indicator">(Separated)</span>
 					<</if>>
 				<</if>>
 			<</if>>
@@ -871,11 +879,8 @@
 			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItemData.notuck>>
 				<div class="no-numberify"><<toggleUpperTuck>></div>
 			<</if>>
-			<<if _wardrobe_list is "upper" and _wornItemData.notuck is "tie">>
-				<div class="no-numberify"><<toggleAltLink "upper">></div>
-			<</if>>
-			<<if _wardrobe_list is "neck" and (_wornItemData.altposition is "none" || _wornItemData.altposition is "alt")>>
-				<div class="no-numberify"><<toggleAltLink "neck">></div>
+			<div class="no-numberify toggleAltLink"><<toggleAltLink _wardrobe_list "wardrobe">></div>
+			<<if _wardrobe_list is "neck">>
 				<div id="wardrobeLeash" class="no-numberify"><<toggleLeash>></div>
 			<</if>>
 		<</if>>
@@ -899,13 +904,14 @@
 				<</if>>
 			<</if>>
 			<div class="wardrobeItem wardrobe-action no-numberify">
-			<<clothingicon _item _wardrobe_list>><<wearlink_norefresh _itemData.name_cap _i>>
+			<<clothingicon _item _wardrobe_list>>
+			<<wearlink_norefresh _itemData.name_cap _i>> 
 			<<if _item.gender is "m">>
-				| <span class="blue">♂</span> |
+				<span class="blue">♂</span>
 			<<elseif _item.gender is "f">>
-				| <span class="pink">♀</span> |
+				<span class="pink">♀</span>
 			<<else>>
-				|
+				
 			<</if>>
 			<<if _item.colour isnot 0>>
 				<span @class="_selectedWardrobe[_wardrobe_list][_i].colour">(_item.colour)</span>
@@ -926,22 +932,22 @@
 					<span class="red">(Broken)</span>
 				<</if>>
 				<<if _item.one_piece is "split">>
-					(Separated)
+					<span class="separated-indicator">(Separated)</span>
 				<</if>>
 			<</if>>
 			<<if _item.outfitSecondary isnot undefined>>
 				<<if _item.one_piece is "split">>
-					(Separated)
+					<span class="separated-indicator">(Separated)</span>
 				<<else>>
 					<span class="red">(Broken)</span>
 				<</if>>
 			<</if>>
-			<<wardrobeintegrity _item _wardrobe_list>> |
-			<<reveal _item.reveal>>
-			</div>
-		<</for>>
-		<div style="clear:both;"></div>
-	<</if>>
+			<<wardrobeintegrity _item _wardrobe_list>>
+				<<reveal _item.reveal>>
+				</div>
+			<</for>>
+			<div style="clear:both;"></div>
+		<</if>>
 
 	<<temperature>>
 <</widget>>
@@ -1269,12 +1275,12 @@
 					<<continue>>
 				<</if>>
 
-				<<if _selectedWardrobe[$_outfitSecondary[0]][$_j].colour is $_item.colour and _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory_colour is $_item.accessory_colour>>
-					<<if $_item.colour isnot "custom" and $_item.accessory_colour isnot "custom">>
+				<<if _selectedWardrobe[$_outfitSecondary[0]][$_j].colour is $_item.colour and ($_item.accessory is 0 or _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory is 0 or _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory_colour is $_item.accessory_colour)>>
+					<<if $_item.colour isnot "custom" and ($_item.accessory is 0 or _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory is 0 or $_item.accessory_colour isnot "custom")>>
 						<<set $_markBroken to false>>
 						<<run $_itemIndex[$_outfitSecondary[0]].push(clone($_j))>>
 						<<break>>
-					<<elseif $_item.colourCustom is _selectedWardrobe[$_outfitSecondary[0]][$_j].colourCustom and $_item.accessory_colourCustom is _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory_colourCustom>>
+					<<elseif $_item.colourCustom is _selectedWardrobe[$_outfitSecondary[0]][$_j].colourCustom and ($_item.accessory is 0 or _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory is 0 or $_item.accessory_colourCustom is _selectedWardrobe[$_outfitSecondary[0]][$_j].accessory_colourCustom)>>
 						<<set $_markBroken to false>>
 						<<run $_itemIndex[$_outfitSecondary[0]].push(clone($_j))>>
 						<<break>>
@@ -1434,21 +1440,25 @@
 			<<link [[Close wardrobe|Bedroom]]>><<cleanupOnWardrobeExit>><</link>>
 		<<case "Changing Room">>
 			<<if $exposed lte 1>>
-				<<link [[Leave|Beach]]>><<cleanupOnWardrobeExit>><</link>>
+				<<getouticon>><<link [[Leave|Beach]]>><<cleanupOnWardrobeExit>><</link>>
 			<<elseif $exhibitionism gte 75>>
-				<<link [[Sneak outside|Beach Changing Room Sneak]]>><</link>><<exhibitionist5>>
+				<<sneakicon>><<link [[Sneak outside|Beach Changing Room Sneak]]>><</link>><<exhibitionist5>>
 			<<else>>
 				You can't go out like this!
 			<</if>>
 		<<case "Sydney Beach Changing Room">>
+			<<set _earSlimeEnableSwimwear to true>>
 			<<if $exposed lte 1>>
-				<<link [[Leave|Sydney Beach Swimsuit]]>><<cleanupOnWardrobeExit>><</link>>
+				<<getouticon>><<link [[Leave|Sydney Beach Swimsuit]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				You can't go out like this!
 			<</if>>
 		<<case "Sydney Beach Changing Room Leave">>
-			<<if $exposed lte 1>>
-				<<link [[Leave|Sydney Beach Leave]]>><<cleanupOnWardrobeExit>><</link>>
+			<<set _earSlimeEnableSwimwear to true>>
+			<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+				<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+			<<elseif $exposed lte 1>>
+				<<getouticon>><<link [[Leave|Sydney Beach Leave]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				You can't go out like this!
 			<</if>>
@@ -1490,9 +1500,9 @@
 			<</if>>
 		<<case "School Pool Wardrobe">>
 			<<if $changingRoomGender is "boys">>
-				<<link [[Leave|School Boy Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
+				<<getouticon>><<link [[Leave|School Boy Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				<<link [[Leave|School Girl Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
+				<<getouticon>><<link [[Leave|School Girl Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<</if>>
 		<<case "Farm Assault Wardrobe">>
 			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
@@ -1504,6 +1514,8 @@
 			<<link [[Close|Prison Cell]]>><<cleanupOnWardrobeExit>><</link>>
 		<<case "Temple Wardrobe">>
 			<<link [[Close|Temple Bunk]]>><<cleanupOnWardrobeExit>><</link>>
+		<<case "Pirate Wardrobe">>
+			<<link [[Close|Pirate Bed]]>><<cleanupOnWardrobeExit>><</link>>
 	<</switch>>
 	<br><br>
 <</widget>>
@@ -1522,6 +1534,7 @@ You look in your wardrobe.
 :: Changing Room [exitCheckBypass]
 <<effects>><<location "changingroom">>
 <<set $wardrobe_location to "changingRoom">>
+<<set _earSlimeEnableSwimwear to true>>
 <<wardrobeSelection>>
 You are in a small wooden changing room.
 <br><br>
@@ -1584,6 +1597,7 @@ You look through the rustic wardrobe.
 
 <<effects>>
 <<wardrobeSelection>>
+<<set _earSlimeEnableSwimwear to true>>
 You stand in front of your open locker.
 <br><br>
 <div id="wardrobewear"><<wardrobewear>></div>
@@ -1597,6 +1611,18 @@ You stand in front of your open locker.
 You look through the cupboard containing your clothes.
 <br><br>
 <<set $wardrobe_location to "temple">>
+<<wardrobeSelection>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
+<<wardrobe>>
+
+:: Pirate Wardrobe [exitCheckBypass]
+
+<<effects>>
+You look through the cupboard containing your clothes.
+<br><br>
+<<set $wardrobe_location to "pirate">>
 <<wardrobeSelection>>
 <div id="wardrobewear"><<wardrobewear>></div>
 <div id="wardrobeExits"><<wardrobeExits>></div>

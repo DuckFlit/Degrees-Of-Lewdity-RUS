@@ -235,7 +235,10 @@
 	<</switch>>
 	/*Container for different tabs*/
 	<div id="settingsDiv">
-		<<startDescriptions _selectedStart>>
+		<<switch $currentSettings>>
+			<<case "featSettings" "feat">><<featSettings>>
+			<<default>><<startDescriptions _selectedStart>>
+		<</switch>>
 	</div>
 <</widget>>
 
@@ -674,7 +677,7 @@
 	<<set _settingsExitPassage to clone($settingsExitPassage)>>
 	<<unset $settingsExitPassage>>
 	<<run State.display(_settingsExitPassage)>>
-	<<set $saveName to $saveName.replace(/[^a-zA-Z 0-9]+/g,"")>>
+	<<set $saveName to $saveName.replace(/[^a-zA-Z\u4e00-\u9fa5 0-9]+/g,"")>>
 	<<unset $importString>>
 <</widget>>
 
@@ -1170,7 +1173,7 @@
 		<<replace #featExplanation>><</replace>>
 		<<toggleclass '#explain' 'hidden'>>
 	<</link>><br>
-	 Only the feats marked as unlocked in your <span class="gold">most recently loaded save</span> will carry over to your next playthrough. This means that if you have multiple saves with different feats earned, you'll only be able to carry over one set of feats to your next run. Keep this in mind if you are aiming to obtain for 100% completion!
+	If you choose not to import all feats earned across multiple save files, only the feats marked as unlocked in your <span class="gold">most recently loaded save</span> will carry over to your next playthrough. Keep this in mind if you are aiming for 100% completion!
 	<br><br>
 	<span class="green">Spending coins on feat boosters does not permanently use up your coins, and coins earned from a feat cannot be earned a second time.</span> Any spent coins will remain in your personal bank of coins and will be available the next time you start a new game.
 	<br><br>
@@ -1182,9 +1185,9 @@
 <<widget "featSettings">>
 	<div class="solidBorderContainer settings-container">
 		<div class="settingsToggleIndent">
-				As you play through Degrees of Lewdity, you will obtain <span class="gold">feats</span> by completing different tasks. The more feats you earn, the more <span class="gold">VrelCoins</span> you will earn. When you start a new game, the coins  associated with your most recently loaded save can be used to purchase <span class="gold">feat boosters</span>. These boosters grant you bonuses in your next game.
+				As you play through Degrees of Lewdity, you will obtain <span class="gold">feats</span> by completing different tasks. The more feats you earn, the more <span class="gold">VrelCoins</span> you will earn. When you start a new game, the coins associated with your most recently loaded save can be used to purchase <span class="gold">feat boosters</span>. These boosters grant you bonuses in your next game.
 				<br><br>
-				Feats are earned linearly over the course of a single playthrough. If you load an earlier save or switch to a different playthrough, <span class="red">you will lose the feat and its VrelCoins.</span> Multiple, successive (non-concurrent) runs are necessary in order to achieve all feats.
+				Feats are earned linearly over the course of a single playthrough. If you load an earlier save or switch to a different playthrough, <span class="red">you will lose the feat and its VrelCoins, unless you import all of your feats using the link below.</span> This will reset all feat boosters.
 				<span id="explain">
 					<<link "Read more...">>
 						<<replace #featExplanation>><<featExplanation>><</replace>>
@@ -1193,6 +1196,14 @@
 				</span>
 				<span id="featExplanation"></span>
 		</div>
+			<div class="settingsToggleIndent">
+				<<link "Import all feats:">>
+					<<replace #settingsStart>>
+						<<loadAllFeats>>
+					<</replace>>
+				<</link>>
+				<span class="green"> Checks for all feats earned across your local save files, combining your earned Vrelcoins and unlocked feat boosters.</span>
+			</div>
 			<<if $feats.allSaves.points isnot undefined or $feats.allSaves.points isnot 0>>
 				<div class="settingsToggleIndent">
 				<<link "Reset All Feats:">>
@@ -1262,7 +1273,7 @@
 		</label>
 	<</if>>
 	<br>
-	<<if $ironmanmode>>
+	<<if $ironmanmode and $passage isnot "Start">>
 		<span class="red">Cheats cannot be enabled during Ironman mode.</span>
 	<<else>>
 		<<if $passage is "Start">>
@@ -1582,11 +1593,9 @@
 				<label>
 					<<checkbox "$parasitedisable" "t" "f" autocheck>> Enable parasites
 				</label>
-				<<if $earSlimeTest>>
-					<label>
-						<<checkbox "$ruinedorgasmdisable" "t" "f" autocheck>> Enable ruined orgasms
-					</label>
-				<</if>>
+				<label>
+					<<checkbox "$ruinedorgasmdisable" "t" "f" autocheck>> Enable ruined orgasms
+				</label>
 			</div>
 			<div class="settingsToggleItem">
 				<label>
@@ -1960,7 +1969,7 @@
 				</div>
 				<<run $(() => { $('.humanPregnancyMonths-container input, .wolfPregnancyWeeks-container input').on('input change', e => {
 					if(V.feats.pregnancyLocked){
-						$('#pregnancyFeatsDisabled').text("Some Pregnancy Feats are be disabled.");
+						$('#pregnancyFeatsDisabled').text("Some Pregnancy Feats are disabled.");
 						$('#pregnancyFeatsDisabled').css('display', 'block');
 					} else if(V.humanPregnancyMonths < 3 || V.wolfPregnancyWeeks < 4){
 						$('#pregnancyFeatsDisabled').text("Some Pregnancy Feats will be disabled.");
@@ -2680,6 +2689,43 @@
 	<br>
 <</widget>>
 
+<<widget "loadAllFeats">>
+	<div id="featsBeginLoadingText">
+		Running some basic checks...
+		<br>
+	</div>
+	<div id="featsBeginButton" class="hidden">
+		<span id="featsBeginText"></span> Once you click "begin", please avoid refreshing the game, you will have to run the process again.
+		<br><br>
+		Exported saves are excluded from this process, unless you first import and make a local save of them.
+		<br>
+		<<link "Begin">>
+			<<replace "#overlayButtons">><</replace>>
+			<<replace "#settingsStart">><<loadingAllFeats>><</replace>>
+		<</link>>
+	</div>
+	<<run $(() => {wikifier("featsMergePre")})>>
+	<br><br>
+	<<link "Cancel">>
+		<<replace "#settingsStart">><<settingsStart>><</replace>>
+	<</link>>
+<</widget>>
+
+<<widget "loadingAllFeats">>
+	<div id="featsLoadingMeter" class="meter">
+		<div class="greenbar" style="width:0%"></div>
+		<span id="featsLoadingText">0 out of _saveDataImportCount saves checked.</span>
+	</div>
+	<br><br>
+	<div id="featsFinishButton" class="hidden">
+		<<link "Next">>
+			<<setupFeats true>>
+			<<replace "#overlayButtons">><<startCaption>><</replace>>
+			<<replace "#settingsStart">><<settingsStart>><</replace>>
+		<</link>>
+	</div>
+	<<run $(() => {wikifier("featsMerge")})>>
+<</widget>>
 
 :: Settings [exitCheckBypass]
 <<settings>>

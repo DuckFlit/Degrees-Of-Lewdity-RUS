@@ -1931,7 +1931,7 @@
 		<<set $fertiliser to {current:0,used:0}>>
 	<</if>>
 	<<if $saveName.includes("<")>>
-		<<set $saveName to $saveName.replace(/[^a-zA-Z 0-9]+/g,"")>>
+		<<set $saveName to $saveName.replace(/[^a-zA-Z\u4e00-\u9fa5 0-9]+/g,"")>>
 	<</if>>
 
 	<<if $imgLighten is false>>
@@ -3571,7 +3571,7 @@
 	/* Code that should not be moved into a check like above */
 	<<set $runWardrobeSanityChecker to true>>
 
-	<<if $objectVersion.updateClothes lt 42 or $objectVersion.updateClothes is undefined>>
+	<<if $objectVersion.updateClothes lt 43 or $objectVersion.updateClothes is undefined>>
 		<<updateClothes>>
 		<<if $objectVersion.updateClothes lt 38>>
 			<!-- V0.4.0.7 return items stuck in $store without proper .location -->
@@ -3582,7 +3582,7 @@
 			<!--Should'nt need to re-run that often-->
 			<<run clothesDataTrimmerLoop()>>
 		<</if>>
-		<<set $objectVersion.updateClothes to 42>>
+		<<set $objectVersion.updateClothes to 43>>
 		<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 		Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
 	<</if>>
@@ -3593,9 +3593,9 @@
 		<<set $objectVersion.specialClothes to 14>>
 	<</if>>
 
-	<<if $objectVersion.wardrobes lt 5 or $objectVersion.wardrobes is undefined>>
+	<<if $objectVersion.wardrobes lt 6 or $objectVersion.wardrobes is undefined>>
 		<<wardrobesUpdate>>
-		<<set $objectVersion.wardrobes to 5>>
+		<<set $objectVersion.wardrobes to 6>>
 	<</if>>
 
 	<<if $objectVersion.museumAntiques lte 14 and $museumAntiques.antiques.antiquewhitescrystal isnot undefined>>
@@ -3705,6 +3705,32 @@
 		/* 0.4.0.0 is the last version that should need the old vvu */
 		/* for versions <= 0.4.0.0, run old version handler */
 		<<variablesVersionUpdate2>>
+	<</if>>
+
+	<!-- Fix for hair style renames -->
+	<<if !$objectVersion.hairFix lt 1 or $objectVersion.hairFix is undefined>>
+		<<set _hairUpdate to {
+			"left fishtail braid": "left fishtail",
+			"right fishtail braid": "right fishtail",
+			"side thicktail": "thick pigtails",
+			"side tail left": "sidetail left",
+			"side tail right": "sidetail right",
+			"side thicktail": "thick sidetail",
+		}>>
+		<<set _fringeUpdate to {
+			"blunt sidelocks": "blunt locks",
+			"french bob": "tied back",
+		}>>
+		<<if _hairUpdate[$hairtype]>><<set $hairtype to _hairUpdate[$hairtype]>><</if>>
+		<<if _fringeUpdate[$fringetype]>><<set $fringetype to _fringeUpdate[$fringetype]>><</if>>
+
+		<<if $savedHairStyles>>
+			<<run Object.values($savedHairStyles).forEach(style => {
+				if (T.hairUpdate[style.hairtype]) style.hairtype = T.hairUpdate[style.hairtype];
+				if (T.fringeUpdate[style.fringetype]) style.fringetype = T.fringeUpdate[style.fringetype];
+			})>>
+		<</if>>
+		<<set $objectVersion.hairFix to 1>>
 	<</if>>
 
 	/* End of Code that should not be moved */
@@ -4513,7 +4539,7 @@
 		<</if>>
 	<</if>>
 
-	<!-- V0.4.x.x Ear Slime Extension -->
+	<!-- V0.4.2.0 Ear Slime Extension -->
 	<<if $earSlime is undefined>>
 		<<resetEarSlime>>
 		<<set $earSlime.corruption to $corruption_slime or 0>>
@@ -4533,6 +4559,29 @@
 		<<unset $slimeSleepEvent>>
 		<<unset $slimeDefyCooldown>>
 		<<set $ruinedorgasmdisable to "f">>
+	<</if>>
+	<<if $earSlime.promiscuity is undefined>>
+		<<set $earSlime.promiscuity to 0>>
+		<<set $earSlime.deviancy to 0>>
+		<<set $earSlime.exhibitionism to 0>>
+		/* One off changes */
+		<<if $earSlime.event is "go commando" and !$slimeBedroomExit>>
+			<<if $earSlime.corruption lt 50 and $earSlime.growth is 0>>
+				<<set $earSlime.forcedCommando to random(2, 4)>>
+			<<elseif $earSlime.growth is 0>>
+				<<set $earSlime.forcedCommando to random(7, 21)>>
+			<<else>>
+				<<set $earSlime.forcedCommando to random(14, 31)>>
+			<</if>>
+			<<set $earSlime.event to "">>
+		<</if>>
+		<<if $earSlimeDaysStat is undefined>>
+			<<set $earSlimeDaysStat to 0>>
+			<<set $earSlimePassiveDaysStat to 0>>
+			<<set $earSlime.days to 0>>
+			/* All old ear slimes were aggressive */
+			<<set $earSlime.startedThreats to true>>
+		<</if>>
 	<</if>>
 	<<if !$parasite.types.includes("parasite")>>
 		<<run $parasite.types.push("parasite")>>
@@ -4644,7 +4693,7 @@
 	<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest" and $temple_initiate_days is undefined>>
 		<<set $temple_initiate_days to 0>>
 	<</if>>
-	<<if $temple_rank is "monk" or $temple_rank is "priest" and $temple_monk_days is undefined>>
+	<<if ($temple_rank is "monk" or $temple_rank is "priest") and $temple_monk_days is undefined>>
 		<<set $temple_monk_days to 0>>
 	<</if>>
 
@@ -4656,4 +4705,39 @@
 		<<set C.npc.Jordan.title to "priestess">>
 	<</if>>
 
+	<!-- V.pillory_tenant.endDate update -->
+	<<if !$pillory_tenant.endDate and $pillory_tenant.endday>>
+		<<set $pillory_tenant.endDate to ($pillory_tenant.endday * Time.secondsPerDay + ($pillory_tenant.endhour - 7) * Time.secondsPerHour)>>
+		<<run delete $pillory_tenant.endday>>
+	<</if>>
+
+	<<if !$options.dateFormat>>
+		<<set $options.dateFormat to "en-GB">>
+	<</if>>
+
+	<!-- Fix for the players being able to access the Nursery while refusing to pay Bailey outside the orphanage -->
+	<<if $baileyRefusedToPay is undefined>>
+		<<set $baileyRefusedToPay to 0>>
+	<</if>>
+
+	<!-- Fix for alex pregnancy to allow for both the pc and Alex to be pregnant at the same time -->
+	<<if C.npc.Alex.pregnancy and C.npc.Alex.pregnancy.knowledge>>
+		<<set _pregnancyUpdate to getPregnancyObject()>>
+		<<if _pregnancyUpdate.type is "human" and _pregnancyUpdate.fetus.length and _pregnancyUpdate.fetus[0].father is "Alex">>
+			<<set C.npc.Alex.pregnancy.pcKnowledge to true>>
+		<</if>>
+		<<set _pregnancyUpdate to getPregnancyObject("Alex")>>
+		<<if _pregnancyUpdate.type is "human" and _pregnancyUpdate.fetus.length>>
+			<<set C.npc.Alex.pregnancy.selfKnowledge to true>>
+		<</if>>
+		<<run delete C.npc.Alex.pregnancy.knowledge>>
+	<</if>>
+
+	<!-- V0.4.4.0 fix blackjack related sets -->
+	<<if typeof $estatePersistent.markedCards is "string">>
+		<<set $estatePersistent.markedCards to JSON.parse($estatePersistent.markedCards)>>
+	<</if>>
+	<<if $blackjack && typeof $blackjack.seenMarkedCardsSoFar is "string">>
+		<<set $blackjack.seenMarkedCardsSoFar to JSON.parse($blackjack.seenMarkedCardsSoFar)>>
+	<</if>>
 <</widget>>

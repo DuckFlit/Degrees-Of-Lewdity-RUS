@@ -84,7 +84,7 @@ const combatActionColours = {
 			/* feetaction */
 			"run", "hide", "confront", "feetresistW", "legLock", "legLocked", "feetHold",
 			/* mouthaction */
-			"pullaway", "ejacspit", "pullawayvagina", "finish", "novaginal", "nopenile", "noanal", "scream", "mock", "breastclosed", "breastpull", "pullawaykiss", "noupper", "analpull", "up", "stifleorgasm", "stifle", "mouthresistW", "handcloseW", "growl", "askPullOut",
+			"pullaway", "ejacspit", "pullawayvagina", "finish", "novaginal", "nopenile", "noanal", "scream", "mock", "breastclosed", "breastpull", "pullawaykiss", "noupper", "analpull", "up", "stifleorgasm", "stifle", "mouthresistW", "handcloseW", "growl", "askPullOut","disparage",
 			/* penisaction */
 			"othermouthescape", "escape", "otheranusescape", "fencingescape", "pullOut",
 			/* vaginaaction */
@@ -1177,8 +1177,7 @@ function currentSkillValue(skill, disableModifiers = 0) {
 	if (disableModifiers >= 2) return result;
 	if (
 		[
-			"skulduggery", "physique", "danceskill", "swimmingskill", "athletics", "willpower", "tending", "science", "maths", "english", "history",
-		].includes(skill) &&
+			"skulduggery", "physique", "danceskill", "swimmingskill", "athletics", "willpower", "tending", "science", "maths", "english", "history", "housekeeping"].includes(skill) &&
 		V.moorLuck > 0
 	) {
 		result = Math.floor(result * (1 + V.moorLuck / 100));
@@ -1206,13 +1205,11 @@ function currentSkillValue(skill, disableModifiers = 0) {
 		}
 		result = Math.floor(result * (1 - playerBellySize() / T.pregnancyModifier));
 	}
-	let modifier = 1;
 	switch (skill) {
 		case "skulduggery":
-			if (V.worn.hands.type.includes("sticky_fingers")) modifier += 0.05;
-			if (V.transformationParts.traits.sharpEyes !== "disabled") modifier += 0.05;
-			if (V.fox >= 6) modifier += 0.10;
-			result = Math.floor(result * modifier);
+			if (V.worn.hands.type.includes("sticky_fingers")) result = Math.floor(result * 1.05);
+			if (V.transformationParts.traits.sharpEyes !== "disabled") result = Math.floor(result * 1.05);
+			if (V.fox >= 6) result = Math.floor(result * 1.1);
 			break;
 		case "physique":
 			if (["forest", "moor", "farm"].includes(V.location)) {
@@ -1269,9 +1266,9 @@ function currentSkillValue(skill, disableModifiers = 0) {
 			if (V.worn.feet.type.includes("shackle")) result /= 10;
 			break;
 		case "willpower":
-			if (V.earSlime.growth > 50) {
+			if (numberOfEarSlime() >= 2 && V.earSlime.growth > 50) {
 				result = Math.floor(result * (0.9 - Math.clamp((V.earSlime.growth - 50) / 1000, 0, 0.1)));
-			} else if (V.parasite.left_ear.name === V.parasite.right_ear.name && V.parasite.left_ear.name === "slime") {
+			} else if (numberOfEarSlime() >= 2) {
 				result = Math.floor(result * 0.9);
 			}
 			break;
@@ -1280,36 +1277,47 @@ function currentSkillValue(skill, disableModifiers = 0) {
 				result = Math.floor(result * (1 + V.trauma / (V.traumamax * 2)));
 			}
 			break;
+		case "housekeeping":
+			if (V.worn.upper.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
+			if (V.worn.lower.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
+			if (V.worn.head.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
+			break;
 		case "vaginalskill":
 			if (V.earSlime.growth > 100) {
 				if (V.earSlime.focus === "pregnancy") {
-					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
 				} else if (V.earSlime.focus === "impregnation") {
 					result = Math.floor(result * (1 - ((V.earSlime.growth - 100) / 400)));
 				}
 			}
 			if (playerHeatMinArousal()) {
-				result = Math.floor(result * (1 + (playerHeatMinArousal() / 10000)));
+				result = Math.floor(result * (1 + (Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000)));
 			}
 			break;
 		case "penileskill":
 			if (V.earSlime.growth > 100) {
 				if (V.earSlime.focus === "impregnation") {
-					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
 				} else if (V.earSlime.focus === "pregnancy") {
 					result = Math.floor(result * (1 - ((V.earSlime.growth - 100) / 400)));
 				}
 			}
 			if (playerRutMinArousal()) {
-				result = Math.floor(result * (1 + (playerRutMinArousal() / 10000)));
+				result = Math.floor(result * (1 + (Math.clamp(playerRutMinArousal(), 0, 4000) / 20000)));
 			}
 			break;
 		case "analskill":
 			if (V.earSlime.growth > 100 && !V.player.vaginaExist && V.earSlime.focus === "pregnancy") {
-				result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 600)));
+				result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
 			}
 			if (playerHeatMinArousal() && canBeMPregnant()) {
-				result = Math.floor(result * (1 + (playerHeatMinArousal() / 10000)));
+				result = Math.floor(result * (1 + (Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000)));
 			}
 			break;
 		case "seductionskill":
@@ -2036,3 +2044,19 @@ function toggleConfirmDialogUponTabClose(){
 }
 
 window.toggleConfirmDialogUponTabClose = toggleConfirmDialogUponTabClose;
+
+function numberOfEarSlime(){
+	let result = 0;
+	if (V.parasite.left_ear.name === "slime") result++;
+	if (V.parasite.right_ear.name === "slime") result++;
+	return result;
+}
+window.numberOfEarSlime = numberOfEarSlime;
+
+function earSlimeMakingMundaneRequests(){
+	if (!numberOfEarSlime()) return false;
+	// First rape requests
+	if (V.earSlime.growth + (V.earSlime.promiscuity * 10) >= 80) return false;
+	return true;
+}
+window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;

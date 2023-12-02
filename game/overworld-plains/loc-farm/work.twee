@@ -146,7 +146,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 
 	<<link [[Prepare|Farm Assault Wardrobe]]>><<endevent>><<set $phase to 2>><</link>>
 	<br>
-<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is undefined and $rng lte ($earSlime.corruption / 2) and $slimeFarmNakedStored is undefined and $exposed lt 2>>
+<<elseif numberOfEarSlime() and $daily.slimeFarmNaked is undefined and $rng lte ($earSlime.corruption / 2) and $slimeFarmNakedStored is undefined and $exposed lt 2 and ($earSlime.growth gte 80 - ($earSlime.exhibitionism * 10))>>
 	<span class="lewd">You feel the slime in your head command you to expose yourself and hide your clothes while you work today.</span> It promises rewards if you comply, and threatens consequences if you do not.
 	<br><br>
 
@@ -154,12 +154,12 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<br>
 	<<link [[Defy|Farm Slime Strip Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 	<br>
-<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is true and $slimeFarmNakedStored is undefined>>
+<<elseif numberOfEarSlime() and $daily.slimeFarmNaked is true and $slimeFarmNakedStored is undefined>>
 	Following the slime's command, you find a spot where you think your clothes will be safe and strip before heading to work.
 	<<undressclothes "farmHidingSpot">><<set $slimeFarmNakedStored to true>><<set $daily.slimeFarmNaked to true>>
 	<br><br>
 	<<link [[Next|Farm Work]]>><</link>>
-<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is true and ($worn.lower.name.includes("towel") or $worn.upper.name.includes("towel")) and $farm_naked is 1>>
+<<elseif numberOfEarSlime() and $daily.slimeFarmNaked is true and ($worn.lower.name.includes("towel") or $worn.upper.name.includes("towel")) and $farm_naked is 1>>
 	<<generalRuined "upper">><<generalRuined "lower">>
 	Following the slime's command, you leave the towel for Alex to find.
 	<br><br>
@@ -334,7 +334,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<</if>>
 	<br><br>
 
-	<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+	<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.pcKnowledge isnot true or C.npc.Alex.pregnancy.test is true) and C.npc.Alex.pregnancy.ultraSound isnot "requested">>
 		<<pcPregnancyRevealToAlex>>
 
 	<<else>>
@@ -660,8 +660,8 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<<elseif C.npc.Alex.pregnancy.missedBirth is true>>
 		<<npc "Alex">><<run delete C.npc.Alex.pregnancy.missedBirth>>
 
-		<<if C.npc.Alex.pregnancy.knowledge is undefined and Object.values($children).find(child => child.mother === "Alex" && child.location === "home")>>
-			<<set C.npc.Alex.pregnancy.knowledge to true>>
+		<<if C.npc.Alex.pregnancy.selfKnowledge is undefined and Object.values($children).find(child => child.mother === "Alex" && child.location === "home")>>
+			<<set C.npc.Alex.pregnancy.selfKnowledge to true>>
 
 			<<if C.npc.Alex.pregnancy.missedBirthCount is 1>>
 				Alex approaches you. You can see a nervous expression on <<his>> face.
@@ -711,7 +711,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 		Alex approaches you. You can see a nervous expression on <<his>> face. "Hey."
 		<br><br>
 
-		"I got a call from the hospital saying that you were in labour. <<if C.npc.Alex.pregnancy.knowledge is true>>Sorry I couldn't be there. I just couldn't leave the farm, not in this state...<<else>> I had no idea I knocked you up; you didn't tell me anything...<</if>>"
+		"I got a call from the hospital saying that you were in labour. <<if C.npc.Alex.pregnancy.pcKnowledge>>Sorry I couldn't be there. I just couldn't leave the farm, not in this state...<<else>> I had no idea I knocked you up; you didn't tell me anything...<</if>>"
 		<br><br>
 
 		<<He>> looks at your belly with sad eyes. "Look, I can't stand the idea of our kids somewhere out there, livin' as orphans. There's room here at the cottage for them, I'd just need some help with the fields and then with a nursery. It's an option, if you'll consider it."
@@ -729,7 +729,6 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<<elseif C.npc.Alex.pregnancy.fee is true>>
 		<<npc "Alex">>
 		<<run delete C.npc.Alex.pregnancy.fee>>
-		<<run delete C.npc.Alex.pregnancy.knowledge>>
 
 		You approach Alex. "I've paid Bailey already, we can go get our children anytime," you say.
 		<br><br>
@@ -789,7 +788,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 
 		<<alex_pregnancy_comment>>
 
-		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.pcKnowledge isnot true or C.npc.Alex.pregnancy.test is true) and C.npc.Alex.pregnancy.ultraSound isnot "requested">>
 			<<pcPregnancyRevealToAlex>>
 		<<else>>
 			<<link [[Next|Farm Work]]>><<endevent>><</link>>
@@ -857,7 +856,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 		<</if>>
 		<<getouticon>><<link [[Leave|Farmland]]>><</link>>
 		<br>
-		<<if ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is undefined>>
+		<<if numberOfEarSlime() and $daily.slimeFarmNaked is undefined>>
 			<<set $daily.slimeFarmNaked to false>>
 		<</if>>
 	<</if>>
@@ -2209,19 +2208,45 @@ You sneak up to the shed, and push the door open.
 		<<if $NPCList[0].penis isnot "none">>
 			Rivulets of water run down <<his>> toned body, flowing over <<his>> <<print $NPCList[0].breastsdesc>> and <<print $NPCList[0].penisdesc>>
 		<<else>>
-			Rivulets of water run down <<his>> <<print $NPCList[0].breastsdesc>>, and flow over the rest of <<his>> toned body.
+			Rivulets of water run down <<his>> <<print $NPCList[0].breastsdesc>>, and flow over the rest of <<his>> toned body<<if npcBellyVisible("Alex")>>and <<his>> baby bump<</if>>.
 		<</if>>
 	<<else>>
 		<<if $NPCList[0].penis isnot "none">>
 			Rivulets of water run down <<his>> toned body, flowing over <<his>> <<print $NPCList[0].penisdesc>>.
 		<<else>>
-			Rivulets of water run down <<his>> toned body.
+			Rivulets of water run down <<his>> toned body<<if npcBellyVisible("Alex")>>and <<his>> baby bump<</if>>.
 		<</if>>
 	<</if>>
 
 	<<His>> face, arms and legs are much darker than parts protected from <<his>> days in the sun.<<garousal>><<arousal 600>>
-
 	<br><br>
+
+	<<if (npcIsPregnant("Alex") and C.npc.Alex.pregnancy.selfKnowledge is true) or npcBellyVisible("Alex")>>
+		With <<his>> eyes still closed, Alex places <<his>> hands over <<his>> belly and gently starts to massage it.
+
+		<<if pregnancyCountBetweenParents("Alex", "PC", true) is 0>>
+			<<if npcBellyVisible("Alex")>>
+				"You sure take up a lot of space for something so small,"
+
+			<<else>>
+				"Me? A mother? This still feels so surreal,"
+
+			<</if>>
+
+		<<else>>
+			<<if pregnancyCountBetweenParents("Alex","pc",true) gte 1>>
+				"Strangely, I've missed this feeling. This feeling of fullness,"
+
+			<<else>>
+				"Hope you get along with your <<if childrenCountBetweenParents("Alex","pc") is 1>>sibling<<else>>siblings<</if>>,"
+
+			<</if>>
+
+		<</if>>
+
+		<<he>> says, as if talking with <<his>> unborn child.
+		<br><br>
+	<</if>>
 
 	A draft blows through the gap in the door. Alex opens <<his>> eyes, but you're already gone. <<He>> shuts the door, none the wiser.
 	<br><br>
@@ -2865,6 +2890,11 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 	<br><br>
 <</if>>
 
+<<if $milk_amount lte 200 and $earSlime.event is "use the farm equipment to empty your breasts of milk">>
+	<<set $earSlime.event to "">>
+	<<set $earSlime.noSleep to false>>
+<</if>>
+
 <<if $farm.milking.dayMilking is true and Time.hour gte 7 and Time.hour lte 21 and $farm_end is undefined>>
 	You remove the suction tube with a shaking hand, and rise to your feet.
 	<<deviancy2>>
@@ -2934,57 +2964,92 @@ You take one of the suction tubes, and attach it to your <<penis>>.
 The machine continues its devilish work, sucking with more intensity. You feel a warmth build.<<gggarousal>><<arousal 10000>>
 <<orgasm>>
 <br>
-Your semen is sucked up the tube, where it drips into a glass tank. The machine doesn't give you a chance to recover.<<gggarousal>><<arousal 10000>>
-<<orgasm>>
-<<arousal 10000>>
-<<orgasm>>
-<br>
+<<if _deniedOrgasm>>
+	Despite the attempts to milk your <<penis>>, your orgasm is still ruined by the slime in your ear. The machine doesn't give you a chance to recover.<<gggarousal>><<arousal 10000>>
+	<<orgasm>>
+	<<arousal 10000>>
+	<<orgasm>>
+	<br>
 
-You remain on your hands and knees as the machine milks you again and again, sucking everything it can take. Just when you fear you're about to pass out, the machine comes to a halt.
-<br><br>
-
-/* Either use the amount of semen produced by those three orgasms, or the original amount calculated for $farm_penis_milk, whichever is larger */
-<<set _orgasm_semen to _original_amount - $semen_amount>>
-<<if _orgasm_semen gt $farm_penis_milk>>
-	<<set $farm_penis_milk to _orgasm_semen>>
+	You remain on your hands and knees as the machine attempts to milks you again and again, only causing you more pain as it continues. Just when you fear you're about to pass out, the machine comes to a halt.
+	<br><br>
 <<else>>
-	<<semen_amount `-($farm_penis_milk - _orgasm_semen)`>>
-	<<set $semen_produced_stat += ($farm_penis_milk - _orgasm_semen)>>
-<</if>>
-
-<<if $farm_penis_milk gte 3000>>
-	<span class="green">The tank almost overflows with semen.</span><<farmCatchChance 0.4>>
-<<elseif $farm_penis_milk gte 2000>>
-	<span class="teal">The tanks are over half full with your semen.</span><<farmCatchChance 0.2>>
-<<elseif $farm_penis_milk gte 1000>>
-	<span class="lblue">There's a large volume of semen in the tank.</span><<farmCatchChance 0.1>>
-<<elseif $farm_penis_milk gte 300>>
-	<span class="blue">There's a decent volume of semen in the tank.</span><<farmCatchChance 0.05>>
-<<else>>
-	<span class="purple">There's only a dribble of semen in the tank.</span><<farmCatchChance 0.01>>
-<</if>>
-<br><br>
-
-<<if $farm_penis_milk gte 2000>>
-	<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 1000)>>
-	<span class="gold">You've filled $farm_penis_milk bottles of semen.</span>
-	<<tending_give bottle_of_semen $farm_penis_milk>>
-<<elseif $farm_penis_milk gte 1000>>
-	<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 1000)>>
-	<span class="gold">You've filled a bottle with semen.</span>
-	<<tending_give bottle_of_semen $farm_penis_milk>>
-<<else>>
-	<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 300)>>
-	<<if $farm_penis_milk lte 0>>
-		<<set $farm_penis_milk to 1>>
+	<<set _femaleclimaxAmount to 0>>
+	<<if $femaleclimax>>
+		<<set _femaleclimaxAmount++>>
+		Despite the attempts to milk your <<penis>>, no semen is sucked up the tube. 
+	<<else>>
+		Your semen is sucked up the tube, where it drips into a glass tank. 
 	<</if>>
-	You don't have enough to fill a bottle. You mix it with the cattle milk.<<gfarm>>
-	<<farm_yield $farm_penis_milk>>
-<</if>>
-<br><br>
+	The machine doesn't give you a chance to recover.<<gggarousal>><<arousal 10000>>
+	<<orgasm>><<if $femaleclimax>><<set _femaleclimaxAmount++>><</if>>
+	<<arousal 10000>>
+	<<orgasm>><<if $femaleclimax>><<set _femaleclimaxAmount++>><</if>>
+	<br>
+	<<if _femaleclimaxAmount lt 3>>
+		You remain on your hands and knees as the machine milks you again and again, sucking everything it can take.
+	<<else>>
+		You remain on your hands and knees as the machine milks you again and again, however, you release no semen for it to collect.
+	<</if>>
+	
+	Just when you fear you're about to pass out, the machine comes to a halt.
+	<br><br>
 
+	/* Either use the amount of semen produced by those three orgasms, or the original amount calculated for $farm_penis_milk, whichever is larger */
+	<<set _orgasm_semen to _original_amount - $semen_amount>>
+	<<if _femaleclimaxAmount>><<set $farm_penis_milk *= (3 - _femaleclimaxAmount) / 3>><</if>>
+	<<if _femaleclimaxAmount gte 3>>
+		<<set $farm_penis_milk to 0>>
+	<<elseif _orgasm_semen gt $farm_penis_milk>>
+		<<set $farm_penis_milk to _orgasm_semen>>
+	<<else>>
+		<<semen_amount `-($farm_penis_milk - _orgasm_semen)`>>
+		<<set $semen_produced_stat += ($farm_penis_milk - _orgasm_semen)>>
+	<</if>>
+
+	<<if $farm_penis_milk gte 3000>>
+		<span class="green">The tank almost overflows with semen.</span><<farmCatchChance 0.4>>
+	<<elseif $farm_penis_milk gte 2000>>
+		<span class="teal">The tanks are over half full with your semen.</span><<farmCatchChance 0.2>>
+	<<elseif $farm_penis_milk gte 1000>>
+		<span class="lblue">There's a large volume of semen in the tank.</span><<farmCatchChance 0.1>>
+	<<elseif $farm_penis_milk gte 300>>
+		<span class="blue">There's a decent volume of semen in the tank.</span><<farmCatchChance 0.05>>
+	<<elseif $farm_penis_milk gte 1>>
+		<span class="purple">There's only a dribble of semen in the tank.</span><<farmCatchChance 0.01>>
+	<<else>>
+		<span class="red">There's no semen in the tank.</span>
+	<</if>>
+	<br><br>
+
+	<<if $farm_penis_milk gte 2000>>
+		<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 1000)>>
+		<span class="gold">You've filled $farm_penis_milk bottles of semen.</span>
+		<<tending_give bottle_of_semen $farm_penis_milk>>
+		<br><br>
+	<<elseif $farm_penis_milk gte 1000>>
+		<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 1000)>>
+		<span class="gold">You've filled a bottle with semen.</span>
+		<<tending_give bottle_of_semen $farm_penis_milk>>
+		<br><br>
+	<<elseif $farm_penis_milk gte 1>>
+		<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 300)>>
+		<<if $farm_penis_milk lte 0>>
+			<<set $farm_penis_milk to 1>>
+		<</if>>
+		You don't have enough to fill a bottle. You mix it with the cattle milk.<<gfarm>>
+		<<farm_yield $farm_penis_milk>>
+		<br><br>
+	<</if>>
+
+	<<if $semen_amount lte 200 and $earSlime.event is "use the farm equipment to empty your penis of semen">>
+		<<set $earSlime.event to "">>
+		<<set $earSlime.noSleep to false>>
+	<</if>>
+<</if>>
 <<unset $farm_penis_milk>>
 <<barn_img penis>>
+
 
 <<if $farm.milking.dayMilking is true and Time.hour gte 7 and Time.hour lte 21 and $farm_end is undefined>>
 	You remove the suction tube with a shaking hand, and rise to your feet.

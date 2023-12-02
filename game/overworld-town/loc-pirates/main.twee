@@ -5,7 +5,7 @@
 <<generateRole 1 0 "pirate">><<generateRole 2 0 "pirate">>
 
 <<if $pirateintro is 1>>
-	Hands grasp your shoulders, and haul you from the water. You thud onto a familiar deck, and cough up water.
+	Hands grasp your shoulders, and haul you from the sea. You thud onto a familiar deck, and cough up water.
 	<br><br>
 	<<if $pirate_rank gte 1>>
 		"What are you doing swimming alone out here?" asks Captain Zephyr. "You'll be mer bait if you carry on like that." <<He>> helps you to your feet. "Nothing to see here. Get back to work!"
@@ -28,13 +28,31 @@
 	<<else>>
 		Green eyes peer down at you, framed by long braided hair.
 	<</if>>
-	<br><br>
+	<<if $smuggler_pub_zephyr is 1>>
+		It's Zephyr.
+		<br><br>
+		<<if $pirate_rank gte 1>>
+			"What are you doing swimming alone out here?" asks Captain Zephyr. "You'll be mer bait if you carry on like that." <<He>> helps you to your feet. "Nothing to see here. Get back to work!"
+			<br><br>
 
-	"We caught ourselves a live one!" announces the green-eyed figure, hands on hips. A cheer erupts as <<he>> leans close to you. "I'm Captain Zephyr, and ye, <<lass>>, have the dubious honour of being a guest aboard me vessel."
-	<br><br>
-	
-	<<link [[Next|Pirate Intro 2]]>><<set $pirate_rank to 0>><<set $pirate_intro to 1>><</link>>
-	<br>
+			<<link [[Next|Pirate Deck]]>><</link>>
+			<br>
+		<<else>>
+			"We caught ourselves a live one!" <<he>> announces, hands on hips. A cheer erupts as <<he>> leans close to you. "So ye found your way aboard as a vagrant."
+			<br><br>
+			<<link [[Next|Pirate Intro 2]]>><<set $pirate_rank to 0>><<set $pirate_intro to 1>><</link>>
+			<br>
+		<</if>>
+		
+	<<else>>
+		<br><br>
+
+		"We caught ourselves a live one!" announces the green-eyed figure, hands on hips. A cheer erupts as <<he>> leans close to you. "I'm Captain Zephyr, and ye, <<lass>>, have the dubious honour of being a guest aboard me vessel."
+		<br><br>
+		
+		<<link [[Next|Pirate Intro 2]]>><<set $pirate_rank to 0>><<set $pirate_intro to 1>><</link>>
+		<br>
+	<</if>>
 <</if>>
 
 :: Pirate Intro 2 Repeat
@@ -311,7 +329,7 @@ The crew gasp in horror. "Oh knock it off ye bilge rats," the captain says. "It 
 <span class="gold">You are now <i>mate</i> aboard the pirate ship.</span>
 <br><br>
 
-<<link [[Next|Pirates Deck]]>><<set $pirate_rank to 1>><</link>>
+<<link [[Next|Pirate Deck]]>><<set $pirate_rank to 1>><</link>>
 <br>
 
 :: Pirate Intro Dodge Leap
@@ -518,14 +536,36 @@ You are on the deck aboard the pirate ship.
 	<</if>>
 <</if>>
 <br><br>
-/*
+
 <<if $stress gte $stressmax and !$possessed>>
 	<<passoutpirates>>
+<<elseif (Time.dayState is "dawn" or Time.dayState is "day") and $pirate_journey lte 1>>
+	<<npc "Zephyr">><<person1>>
+	"Land ho!" shouts a voice from the crow's nest. Zephyr strikes to one side of the deck, and raises <<his>> telescope. You don't need a telescope to see the shoreline, the beach sloping towards a treeline. It's close. You wonder why no one saw it until now.
+	<br><br>
+	At Zephyr's word, the crew hustle into frantic activity. "There," Zephyr shouts, striding up to the helmsman. "Take us around that way. They've a dock of sorts, wouldn't ye know."
+	<br><br>
+	<<link [[Next|Pirate End]]>><<unset $pirate_journey>><</link>>
+	<br>
 <<else>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
-		<<events_pirates_deck>>
+	<<if $pirate_rank gte 1>>
+		<<set _allure to ($allure / 2)>>
 	<<else>>
+		<<set _allure to $allure>>
+	<</if>>
+	<<if ($danger gte (9900 - _allure) or $eventforced) and $eventskip is 0>>
+		<<events_pirate_deck>>
+	<<else>>
+
+		<<if Time.dayState is "night">>
+			<span class="blue">It's too dark to swab the deck.</span>
+			<br>
+		<<else>>
+			<<link [[Swab the deck (2:00)|Pirate Swab]]>><<pirate_status 1 "mate">><<pass 120>><</link>><<grespect "mate">>
+			<br>
+		<</if>>
+		<br>
 
 		<<if Time.dayState isnot "night">>
 			Captain Zephyr peers through a telescope.
@@ -539,10 +579,21 @@ You are on the deck aboard the pirate ship.
 		<br>
 	<</if>>
 <</if>>
-*/
-A girl in a white sundress swabs the deck with a skip, her long brown hair jumping with each movement. "Oops," she says when she sees you. "You're not supposed to be here yet. Let me help. Whoosh!" She bonks your head with the broom. The world spins.
+
+/*A girl in a white sundress swabs the deck with a skip, her long brown hair jumping with each movement. "Oops," she says when she sees you. "You're not supposed to be here yet. Let me help. Whoosh!" She bonks your head with the broom. The world spins.
 <br><br>
 <<link [[Next|Beach]]>><<set $eventskip to 1>><<endevent>><</link>>
+<br>*/
+
+<<set $eventskip to 0>>
+
+:: Pirate Swab
+<<effects>>
+
+You swab the deck, ye scurvy dog!
+<br><br>
+
+<<link [[Next|Pirate Deck]]>><</link>>
 <br>
 
 :: Pirate Cabin
@@ -559,18 +610,41 @@ You are in the cabin aboard the pirate ship.
 	<<passoutpirates>>
 <<else>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
-		<<events_pirates_cabin>>
+	<<if $pirate_rank gte 1>>
+		<<set _allure to ($allure / 2)>>
+	<<else>>
+		<<set _allure to $allure>>
+	<</if>>
+	<<if ($danger gte (9900 - _allure) or $eventforced) and $eventskip is 0>>
+		<<events_pirate_cabin>>
 	<<else>>
 
+		<<if Time.dayState is "night">>
+			<span class="blue">Cleaning the cabin now would disturb the snoring pirates.</span><br>
+		<<else>>
+			<<link [[Clean the cabin (2:00)|Pirate Cabin Clean]]>><<pass 120>><</link>>
+			<br>
+		<</if>>
 
-	<<link [[Deck (0:01)|Pirate Deck]]>><</link>>
-	<br>
-	<<link [[Bilge (0:01)|Pirate Bilge]]>><<pass 1>><</link>>
-	<br>
+		<<link [[Deck (0:01)|Pirate Deck]]>><</link>>
+		<br>
+		<<link [[Bilge (0:01)|Pirate Bilge]]>><<pass 1>><</link>>
+		<br>
 
 	<</if>>
 <</if>>
+
+<<set $eventskip to 0>>
+
+
+:: Pirate Cabin Clean
+<<effects>>
+
+You clean the cabin.
+<br><br>
+
+<<link [[Next|Pirate Cabin]]>><</link>>
+<br>
 
 :: Pirate Bilge
 <<location "seapirates">><<set $outside to 0>><<effects>>
@@ -582,42 +656,87 @@ You are in the bilge, deep within the pirate ship. The walls creak and groan.
 	<<passoutpirates>>
 <<else>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
-		<<events_pirates_bilge>>
+	<<if $pirate_rank gte 1>>
+		<<set _allure to ($allure / 2)>>
 	<<else>>
+		<<set _allure to $allure>>
+	<</if>>
+	<<if ($danger gte (9900 - _allure) or $eventforced) and $eventskip is 0>>
+		<<events_pirate_bilge>>
+	<<else>>
+	
+	<<if Time.dayState is "night">>
+		<span class="blue">You're not able to work in the bilge at night.</span>
+		<br>
+	<<else>>
+		<<link [[Plug leaks (2:00)|Pirate Bilge Plug]]>><<pass 120>><</link>>
+		<br>
+	<</if>>
 
-
-	<<link [[Cabin (0:01|Pirate Bilge]]>><<pass 1>><</link>>
+	<<link [[Bed|Pirate Bed]]>><</link>>
+	<br><br>
+	<<link [[Cabin (0:01|Pirate Cabin]]>><<pass 1>><</link>>
 	<br>
 
 	<</if>>
 <</if>>
 
-:: Pirate Zephyr
+<<set $eventskip to 0>>
+
+:: Pirate Bilge Plug
 <<effects>>
 
+You plug the leaks in the bilge.
+<br><br>
+
+<<link [[Next|Pirate Bilge]]>><</link>>
+<br>
+
+:: Pirate Zephyr
+<<effects>>
+<<npc "Zephyr">><<person1>>
 You approach the captain.
 <<if $pirate_rank is 1>>
 	"What is it, mate?" <<he>> asks.
+	<br><br>
 	<<link [[Ask what you should be doing|Pirate Zephyr Mate Ask]]>><</link>>
 	<br>
 <<else>>
 	"What is it, scum?" <<he>> asks.
+	<br><br>
 	<<link [[Ask what you should be doing|Pirate Zephyr Scum Ask]]>><</link>>
 	<br>
 <</if>>
+<<if $temple_spear_mission gte 1 and $pirate_journey is undefined>>
+	<<link [[Ask to go to the island|Pirate Zephyr Island Ask]]>><</link>>
+	<br>
+<</if>>
+<br><br>
+<<link [[Ask to return the mainland|Pirate Zephyr Return Ask]]>><</link>>
+<br>
 
-<<link [[Leave|Pirate Deck]]>><</link>>
+<<link [[Leave|Pirate Deck]]>><<endevent>><</link>>
+<br>
+
+:: Pirate Zephyr Return Ask
+<<effects>>
+
+A girl with long brown hair appears. "Zephyr's busy right now! Would you like me to return you to the mainland?"
+<br><br>
+
+<<link [[Return to mainland|Mer Street]]>><<endevent>><</link>>
+<br>
+<<link [[Not yet|Pirate Deck]]>><<endevent>><</link>>
 <br>
 
 :: Pirate Zephyr Mate Ask
 <<effects>>
 
-"During downtime," the captain says. "Scrub the deck. Clean the cabin. Plug leaks in the bilge. The cry will go up when you're needed for something important."
+"During downtime," the captain says. "Swab the deck. Clean the cabin. Plug leaks in the bilge. The cry will go up when you're needed for something important."
 <br><br>
 
-<i>You can improve your rank by gaining respect. Gain respect by doing a good job keeping the ship in order.</i>
-<br><br>
+/*<i>You can improve your rank by gaining respect. Gain respect by doing a good job keeping the ship in order.</i>
+<br><br>*/
 
 <<link [[Next|Pirate Deck]]>><</link>>
 <br>
@@ -632,6 +751,17 @@ You approach the captain.
 <br><br>
 
 <<link [[Next|Pirate Deck]]>><</link>>
+<br>
+
+:: Pirate Zephyr Island Ask
+<<effects>>
+
+"As ye like," Zephyr says. "I've been meaning to sail there. The locals have some interesting, eh, trinkets." <<He>> pauses, and when <<he>> next speaks it's in an odd hurry. "Journey should take a week."
+<br><br>
+
+<<set $pirate_journey to 7>>
+
+<<link [[Next|Pirate Deck]]>><<endevent>><</link>>
 <br>
 
 :: Pirate Passout
@@ -693,7 +823,7 @@ You sink for a moment, before buoyancy lifts you up into the open air. The pirat
 One throws an empty bottle at you. It splashes some distance away, but the other pirates follow suit. A barrage of bottles head your way.
 <br><br>
 
-<<link [[Struggle against your bindings|Pirates Passout Struggle]]>><<pain 8>><<trauma 6>><<stress 6>><</link>><<ggpain>><<gtrauma>><<gstress>>
+<<link [[Struggle against your bindings|Pirate Passout Struggle]]>><<pain 8>><<trauma 6>><<stress 6>><</link>><<ggpain>><<gtrauma>><<gstress>>
 <br>
 <<link [[Hide underwater|Pirate Passout Hide]]>><</link>>
 <br>
@@ -701,7 +831,7 @@ One throws an empty bottle at you. It splashes some distance away, but the other
 :: Pirate Passout Struggle
 <<effects>>
 
-<<unbind>><<leg_unbined>>
+<<unbind>><<leg_unbind>>
 You struggle against your bindings. They're not so tight now that they're unbound from the ship. You manage to squirm your limbs free right as a bottle thumps into your shoulder.
 <br><br>
 
@@ -744,3 +874,316 @@ You rise to your feet.
 
 <<link [[Next|Island Beach]]>><</link>>
 <br>
+
+:: Pirate Smuggler Entrance
+<<effects>>
+
+Zephyr leads you from the pub, through a winding tunnel an into a cavernous expanse. "Watch ye step," Zephyr says a as a subterranean wind whips through your hair. "There be a drop that way. Stay close."
+<br><br>
+
+You enter another tunnel, this one sloping up, and come to a metal door. Zephyr strides through. The room is wide, and the ceiling very far above. It's like a warehouse. Except for the water, and the anchored ship.
+<br><br>
+
+"There's me beauty," Zephyr says. <<He>> bangs on the side of the vessel, and a rope ladder drops down. "After ye <<lass>>."
+<br><br>
+
+<<link [[Next|Pirate Smuggler Entrance 2]]>><</link>>
+<br>
+
+
+:: Pirate Smuggler Entrance 2
+<<effects>>
+
+You are greeted by sweaty <<people>> at the top of the ladder, traipsing the deck. 
+
+<<if $pirate_rank gte 1>>
+	They nod at you in recognition.
+<<elseif $pirate_rank is 0>>
+	They openly leer as they pass.
+<<else>>
+	Some throw curious glances your way, but most look concerned with other matters.
+<</if>>
+A tall mast stands, erect, in front of you, almost reaching the high ceiling. It looks like an old fashioned sailing ship, but you hear the rumble of an engine somewhere.
+<br><br>
+
+"We set sail in five minutes!" shouts Zephyr, emerging behind you. <<He>> strides by, barking orders.
+<br><br>
+
+<<link [[Next|Pirate Smuggler Entrance 3]]>><</link>>
+<br>
+
+:: Pirate Smuggler Entrance 3
+<<location "seapirates">><<set $outside to 0>><<effects>>
+
+The ship shakes with a rumble, and two huge doors open outward, revealing a canal sandwiched between buildings on one side, and a cliff face on the other.
+<br><br>
+
+Zephyr barks more orders, and the ship moves. The canal is barely wide enough. Some of the crew watch over the edge, nervous, but the captain doesn't seem concerned. <<He>> sits on a stool in the middle of the deck, eyes downcast, polishing the lens of a telescope.
+<br><br>
+
+The open sea comes into view ahead. There's an audible sigh of relief as the boat clears the canal.
+<br><br>
+
+<<link [[Next|Pirate Smuggler Entrance 4]]>><<pass 30>><</link>>
+<br>
+
+:: Pirate Smuggler Entrance 4
+<<effects>>
+
+"Now then," Zephyr announces once the shore is a great distance away, turning to you.
+
+<<if $temple_spear_mission is 1>>
+	<<set $pirate_journey to 7>>
+	"The journey should take a week." <<He>> peers through <<his>> telescope, and swings it over the horizon. "Yes, I'd say a week. In the meantime, 
+	<<if $pirate_rank gte 1>>
+		you're a <span class="blue">mate</span> aboard this vessel, and have some duties.
+	<<else>>
+		you're <span class="pink">scum</span> so long as ye are on this vessel.
+	<</if>>
+<<else>>
+	<<if $pirate_rank gte 1>>
+		"So long as ye are on this vessel, ye are <span class="blue">mate,</span> and have some duties.
+	<<else>>
+		"So long as ye are on this vessel, ye are <span class="pink">scum.</span>
+	<</if>>
+<</if>>
+
+
+<<if $pirate_rank gte 1>>
+	 Scrub the deck. Clean the cabin. Plug leaks in the bilge. There might be more of import for ye to do if the cry goes up."
+	<br><br>
+	<<if $phase is 1>>
+		<span class="gold">You are now <i>mate</i> aboard the pirate ship.</span>
+	<</if>>
+<<else>>
+	 That means ye do you're told. Whatever you're told." A crewmember licks <<his>> lips in anticipation.
+	<br><br>
+	<<if $phase is 1>>
+		<span class="gold">You are now <i>scum</i> aboard the pirate ship.</span>
+	<</if>>
+	<br><br>
+<</if>>
+
+<<link [[Next|Pirate Deck]]>><<endevent>><</link>>
+<br>
+
+:: Pirate End
+<<effects>>
+
+You sail around the strange island, until a rock comes into view, jutting from the land and overhanging the waves below. "That's it," Zephyr says. "We'll anchor there." The crew look disconcerted. More so when figures emerge from the forest, wearing strange antlered masks.
+<br><br>
+
+The ship halts several feet away. The crew throw ropes to the masked islanders, who pull the ship closer and fasten the lengths around stout pillars. They look carved from the rock they protrude from.
+<br><br>
+
+<<link [[Next|Pirate End 2]]>><</link>>
+<br>
+
+:: Pirate End 2
+<<location "island">><<set $outside to 1>><<effects>>
+<<island_init>><<set $island.home to "rocky_hillock">><<earnFeat "Lost World">>
+The sailors watch the islanders warily. You can't tell how the islanders feel, beneath their masks. Some busy themselves with the rope, but others just stand, motionless. Bows are slung over their backs.
+<br><br>
+
+Zephyr rests one foot on the rail, and leans forward. "I've brought the silver, and something else besides." Two hands grasp your shoulders, and push you towards the edge of the ship. Zephyr steadies you. "I think this creature's worth an extra barrel, aye?"
+<br><br>
+
+Two of the islanders turn to each other.
+
+<<if $islander_language gte 100>>
+	<br>
+	"This is the one."
+	<br>
+	"Give the fool an extra barrel."
+<<elseif $islander_language gte 50>>
+	You can't understand them, but can tell they're talking about you.
+<<else>>
+	They speak in a familiar but incomprehensible language.
+<</if>>
+<br><br>
+
+<<link [[Next|Pirate End 3]]>><</link>>
+<br>
+
+:: Pirate End 3
+<<effects>>
+<<generateRole 1 0 "islander">>
+More islanders emerge from the trees, some carrying wooden barrels between them. You smell a strange sweetness as they pass.
+<br><br>
+Zephyr presses a foot against your <<bottom>>, and kicks you off the boat, into a <<person2>><<person>>'s waiting arms. At once <<he>> begins exploring your body, pressing and probing you all over with <<his>> fingers.
+<br><br>
+
+<<link [[Endure|Pirate End 3 Endure]]>><<trauma 6>><<arousal 600>><</link>><<gtrauma>><<garousal>>
+<br>
+<<link [[Shove|Pirate End 3 Shove]]>><<stress 6>><</link>><<gstress>>
+<br>
+
+
+:: Pirate End 3 Endure
+<<effects>>
+
+You endure the islanders fondling. Others join in, some kneeling for a closer look.
+<br><br>
+"You're a mite handsy there already," Zephyr says. "The trade ain't done until I've checked the barrels." The islanders don't seem to pay attention.
+<br><br>
+
+<<link [[Next|Pirate End 4]]>><</link>>
+<br>
+
+:: Pirate End 3 Shove
+<<effects>>
+
+You shove the <<person2>><<person>> away from you. It's impossible to tell how <<he>> feels about it, but the other islanders laugh.
+<br><br>
+
+"Serves ye right," Zephyr says. "The trade ain't done until I've checked the barrels." The islanders don't seem to pay attention.
+<br><br>
+
+<<link [[Next|Pirate End 4]]>><</link>>
+<br>
+
+
+:: Pirate End 4
+<<effects>>
+
+Zephyr cracks open one of the barrels, sticks a finger in, and licks it. "This is watered down!" <<he>> roars. <<His>> crew rest hands on weapons. The islanders unsling their bows. The two groups face each other, staring.
+<br><br>
+
+It's a tense situation. No one's paying you any attention.
+<br><br>
+
+<<link [[Run for it|Pirate End Run]]>><</link>>
+<br>
+<<link [[Wait|Pirate End Wait]]>><</link>>
+<br>
+
+
+:: Pirate End Run
+<<effects>>
+
+You run from the ship and Zephyr, the crew and islanders. You almost make it to the treeline, then you hear a cry behind you. Arrows thud into nearby wood as you tears through the foliage.
+<br><br>
+
+You run until you almost collapse from exhaustion, and take cover behind a particularly thick tree. You listen through the beating of your heart, but hear no pursuit.
+<br><br>
+
+<<link [[Next|Island Treeline Search]]>><</link>>
+<br>
+
+
+:: Pirate End Wait
+<<effects>>
+
+You wait. Zephyr breaks the suspense with a sharp laugh. "Only joking!" <<he>> shouts. <<His>> crew laugh with <<him>>, but look don't look any less nervous. The islanders just stare.
+<br><br>
+
+Zephyr and <<his>> crew load the barrels onto their ship, and raise the anchor, leaving you to the mercy of the islanders. Though some do wave at you.
+<br><br>
+
+<<link [[Next|Pirate End Islanders]]>><</link>>
+<br>
+
+:: Pirate End Islanders
+<<effects>>
+<<endevent>><<generateRole 0 0 "islander">><<generateRole 1 0 "islander">><<person1>>
+The islanders crowd around you. Their hands reach out, and force you to your knees. All but two of them step back, a <<person>> and <<person2>><<person>>. They regard you as if weighing unspoken options.
+<br><br>
+
+
+<<link [[Next|Island Defeat]]>><</link>>
+<br>
+
+
+:: Pirate Bed
+<<bedclotheson "Pirate Bed Lie">>
+<<effects>>
+
+<<set $wardrobes.pirate.unlocked to true>>
+
+You are beside your bed, if it could be called that, in the bilge of the pirate ship. There's a box for your clothes, but nothing but the dim light for privacy.
+<br><br>
+
+
+<<bedicon>><<link [[Strip and get in bed|Pirate Bed Lie]]>><<undressSleep "Pirate Bed Lie">><</link>>
+<br>
+<<listsleepoutfits "Pirate Bed Lie">>
+<<roomoptions>>
+<br>
+<<wardrobeicon>><<link [[Wardrobe|Pirate Wardrobe]]>><</link>>
+<br>
+<<mirroricon>><<link [[Mirror|Pirate Mirror]]>><<preMirror>><<endevent>><</link>>
+<br><br>
+<<ind>><<link [[Leave|Pirate Bilge]]>><<set $eventskip to 1>><</link>>
+
+<br><br>
+<<if $attitudesControl.showGoldLink is true>>
+	<span class="goldLink"><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>> </span><span class="red">!!</span>
+<<else>>
+	<<ind>><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+<</if>>
+<br>
+<<ind>><<link [[Settings|Temple Settings]]>><</link>>
+<br>
+
+
+:: Pirate Settings [exitCheckBypass]
+<<effects>>
+
+<<set $settingsExitPassage to "Pirate Bed">>
+<<settings>>
+
+:: Pirate Mirror
+<<effects>>
+<<link [[Step away|Pirate Bed]]>><<unset $mirrorMenu>><<unset $bodywritingSet>><</link>>
+<br>
+<<mirror "reflection">>
+<br><br>
+
+:: Pirate Bed Lie
+<<effects>>
+<<wearoutfit>>
+
+<<nightmareCheck "Pirate Sleep">>
+<<if $fatigue gte 4000 or Time.dayState is "night">>
+	<<generateSleepLinks "Pirate Sleep">>
+<<else>>
+	The groaning of the ship is one thing, but the noisy pirates make falling asleep here difficult. <span class="blue">You won't be able to sleep here until night, or at least until you're more fatigued.</span>
+	<br>
+<</if>>
+<<link [[Climb out of bed|Pirate Bed]]>><<storeon "Pirate Bed Lie">><<set $wardrobe_location to "pirate">><<loadTempHairStyle>><<endevent>><</link>>
+
+:: Pirate Sleep
+<<set _autosavehere to true>>
+<<sleep>>
+<<if _dreaming>>
+	/* <<earSlimeFocusChoice>> or similar widgets are running */
+<<else>>
+	<<effects>>
+    <<wakingEffects $sleepHoursTotal>>
+    <<if $nightmares gte 1 and $controlled is 0>>
+        You dream you are being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
+    <<else>>
+        <<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+            Your sleep is plagued by dirty dreams.
+            <<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+            <<arousal `100 * $sleepHoursTotal`>>
+            <<if $arousal gte $arousalmax>>
+                They push you over the edge.
+                <<orgasm>>
+            <</if>>
+        <<elseif !_wakingEffect>>
+            You sleep soundly.
+            <br><br>
+        <</if>>
+    <</if>>
+    <<sleepeffects>>
+
+    <<set $wardrobe_location to "pirate">>
+    <<wardrobeSelection true>>
+    <<radiooutfits>>
+
+    <br><br>
+    <<link [[Get up|Pirate Bed]]>><</link>>
+    <br>
+   <<set $phase to 0>>
+<</if>>

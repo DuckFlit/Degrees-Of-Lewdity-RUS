@@ -3,12 +3,46 @@ Config.history.controls = false;
 Config.saves.slots = 9;
 Config.history.maxStates = 1;
 
+/* LinkNumberify and images will enable or disable the feature completely */
+/* debug will enable or disable the feature only for new games */
+/* sneaky will enable the Sneaky notice banner on the opening screen and save display */
+/* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
+window.StartConfig = {
+	debug: false,
+	enableImages: true,
+	enableLinkNumberify: true,
+	version: "0.4.4.0",
+	versionName: "",
+	sneaky: true,
+};
+
 State.prng.init();
 
 window.versionUpdateCheck = true;
 window.onLoadUpdateCheck = false;
 
 let pageLoading = false;
+
+Config.saves.isAllowed = () => {
+	if (tags().includes("nosave") || V.replayScene) return false;
+	return true;
+}
+
+idb.footerHTML = `
+	<div class="savesListRow">
+		<div class="saveGroup">
+			<span style="margin: 0;">
+				Special thanks to all those who <a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Support Degrees of Lewdity</a>
+			</span>
+			<div class="saveId"></div>
+			<div class="saveButton"></div>
+			<div class="saveName"></div>
+			<div class="saveDetails"></div>
+		</div>
+		<div class="saveButton">
+			<input type="button" class="saveMenuButton right" value="Delete All" onclick="idb.saveList('confirm clear')">
+		</div>
+	</div>`
 
 function onLoad(save) {
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
@@ -101,19 +135,6 @@ function onSave(save, details) {
 }
 window.onSave = onSave;
 Save.onSave.add(onSave);
-
-/* LinkNumberify and images will enable or disable the feature completely */
-/* debug will enable or disable the feature only for new games */
-/* sneaky will enable the Sneaky notice banner on the opening screen and save display */
-/* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
-window.StartConfig = {
-	debug: false,
-	enableImages: true,
-	enableLinkNumberify: true,
-	version: "0.4.3.3",
-	versionName: "",
-	sneaky: false,
-};
 
 /* convert version string to numeric value */
 const tmpver = StartConfig.version.replace(/[^0-9.]+/g, "").split(".");

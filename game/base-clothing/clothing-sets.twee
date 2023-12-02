@@ -75,6 +75,10 @@
 			<<set _passage to "Temple Bunk Bed">>
 			<<set $wardrobe_location to "temple">>
 			<<set $storeLocation to "Temple Bunk Bed">>
+		<<case "Pirate Bed Lie">>
+			<<set _passage to "Pirate Bed Lie">>
+			<<set $wardrobe_location to "pirate">>
+			<<set $storeLocation to "Pirate Bed Lie">>
 		<<default>>
 			<<set _passage to "Bed">>
 			<<set $wardrobe_location to "wardrobe">>
@@ -349,17 +353,27 @@
 						/*Check for slime corruption*/
 						<<if _corruptionEquipSkip.includes($_slot) and $earSlime.corruption gte 10>>
 							<<if $daily.corruptionSlimeClothes is undefined>>
-								<<set $daily.corruptionSlimeClothes to random($earSlime.corruption * 5, $earSlime.corruption * 15) - currentSkillValue('willpower')>>
+								<<set _baseCorruption to (($earSlime.corruption / 2) + ($earSlime.growth / 2))>>
+								<<set $daily.corruptionSlimeClothes to random(_baseCorruption * 5, _baseCorruption * 25) - currentSkillValue('willpower')>>
 							<</if>>
-							<<if $earSlime.event is "go commando" and $_slot is "under_lower">>
-								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny_commando"}>>
-								<<break>>
-							<<elseif ((["prison", "asylum"].includes($location) and $_wardrobeItem.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or ($_wardrobeItem.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !($_wardrobeItem.type.includesAny("school")) and Time.schoolDay) and !$_wardrobeItem.type.includesAny("event")>>
+							<<if $earSlime.forcedCommando isnot undefined and ($_slot is "under_lower" or ($_wardrobeItem.outfitPrimary and $_wardrobeItem.outfitPrimary.under_lower and !["broken","split"].includes($_wardrobeItem.outfitPrimary.under_lower)))>>
+								<<if $_wardrobeItem.type.includes("naked") or (_earSlimeEnableSwimwear and $_wardrobeItem.type.includes("swim")) or (_earSlimeEnableDancewear and $_wardrobeItem.type.includes("dance"))>>
+								<<elseif $earSlime.forcedCommando gt 0>>
+									<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny_commando"}>>
+									<<break>>
+								<<else>>
+									<<run delete $earSlime.forcedCommando>>
+								<</if>>
+							<<elseif ((["prison", "asylum"].includes($location) and $_wardrobeItem.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or ($_wardrobeItem.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !($_wardrobeItem.type.includesAny("school") and Time.schoolDay)) and !$_wardrobeItem.type.includesAny("event")>>
 								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny"}>>
 								<<break>>
 							<<elseif $earSlime.forcedDressing and $_wardrobeItem.gender isnot $earSlime.forcedDressing.type and $_wardrobeItem.gender isnot "n" and !$_wardrobeItem.type.includesAny("event")>>
-								<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny_forcedDressing"}>>
-								<<break>>
+								<<if $earSlime.forcedDressing.days gt 0>>
+									<<set _notEquipped[$_slot] to {"name": $_incomingItemName, "reason": "corruption_slime_deny_forcedDressing"}>>
+									<<break>>
+								<<else>>
+									<<run delete $earSlime.forcedDressing>>
+								<</if>>
 							<</if>>
 						<</if>>
 
@@ -432,14 +446,14 @@
 										<<continue>>
 									<</if>>
 									/*Skip items that don't have matching colours*/
-									<<if $_foundPrimary.colour isnot $_possiblePiece.colour or $_foundPrimary.accessory_colour isnot $_possiblePiece.accessory_colour>>
+									<<if $_foundPrimary.colour isnot $_possiblePiece.colour or ($_possiblePiece.accessory isnot 0 and $_foundPrimary.accessory_colour isnot $_possiblePiece.accessory_colour)>>
 										<<continue>>
 									<</if>>
 									/*Skip items that don't have matching custom colours*/
 									<<if $_primaryColourIsCustom and ($_foundPrimary.colourCustom is undefined or $_foundPrimary.colourCustom isnot $_possiblePiece.colourCustom)>>
 										<<continue>>
 									<</if>>
-									<<if $_primaryAccColourIsCustom and ($_foundPrimary.accessory_colourCustom is undefined or $_foundPrimary.accessory_colourCustom isnot $_possiblePiece.accessory_colourCustom)>>
+									<<if $_primaryAccColourIsCustom and ($_foundPrimary.accessory isnot 0 and $_foundPrimary.accessory_colourCustom is undefined or $_foundPrimary.accessory_colourCustom isnot $_possiblePiece.accessory_colourCustom)>>
 										<<continue>>
 									<</if>>
 									/*Found the correct item*/
@@ -835,7 +849,7 @@
 			<!--Runs too many times for some reason, needs to be improved-->
 			<<run $(() => { $('.outfitEditorItem .name .macro-textbox').on('input change', e => {
 				let index = e.target.name.replace(/\D/g,'');
-				V.outfit[index].name = V.outfit[index].name.replace(/[^a-zA-Z 0-9.!()]+/g,"").substr(0,30);
+				V.outfit[index].name = V.outfit[index].name.replace(/[^a-zA-Z\u4e00-\u9fa5 0-9.!()]+/g,"").substr(0,30);
 			}).trigger('input change') })>>
 		</div>
 		<div>

@@ -177,6 +177,7 @@
 				5:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
 			},
 			sexToys:[{},{},{},{},{},{}],
+			earSlimeType: "immaturePassive",
 		}>>
 	<</if>>
 <</widget>>
@@ -253,6 +254,24 @@
 	<</if>>
 	<<if _upgrades.aNewBestFriend gt 0>>
 		<<parasite left_ear slime>>
+		<<switch $featsBoosts.earSlimeType>>
+			<<case "immatureAggressive">>
+				<<set $earSlime.corruption to 20>>
+				<<set $earSlime.growth to 0>>
+				<<set $earSlime.startedThreats to true>>
+				<<set $earSlime.exhibitionism to 2>>
+				<<set $earSlime.deviancy to 2>>
+				<<set $earSlime.promiscuity to 2>>
+			<<case "grownAggressive">>
+				<<set $earSlime.corruption to 100>>
+				<<set $earSlime.growth to 25>>
+				<<set $earSlime.startedThreats to true>>
+				<<set $earSlime.exhibitionism to 2>>
+				<<set $earSlime.promiscuity to 2>>
+				<<set $earSlime.deviancy to 2>>
+			<<default>>
+				<<set $earSlime.corruption to 0>>
+		<</switch>>
 	<</if>>
 	<<if _upgrades.aNewBestFriend gt 10>>
 		<<parasite right_ear slime>>
@@ -604,9 +623,9 @@
 			<</if>>
 
 			<<if Object.values($children).reduce((prev,curr) => {
-				prev.pushUnique(curr.type);
+				if (curr.mother === "pc") prev.pushUnique(curr.type);
 				return prev;
-			}, []).length gte Object.keys(pregnancyGenerator).filter(type => type !== "parasite").length>>
+			}, []).length gte Object.keys(pregnancyGenerator).filter(type => setup.pregnancy.typesEnabled.includes(type)).length>>
 				<<earnFeat "Diversity of Life">>
 			<</if>>
 
@@ -667,9 +686,6 @@
 		<</if>>
 		<<if $earSlime.corruption gte 100 and $earSlime.growth gte 200>>
 			<<earnFeat "Ear Slime Amalgam">>
-		<</if>>
-		<<if $feats.allSaves.points gte 300>>
-			<<earnFeat "My Timeless Collection of Feats">>
 		<</if>>
 		<<specialClothesUpdate>>
 	<</if>>

@@ -474,6 +474,7 @@ You feel yourself being lifted. You hear a voice, but the words don't make sense
 
 <<switch $location>>
 	<<case "moor" "forest">><<set _time to 60>>
+	<<case "bog">><<set _time to 90>>
 	<<case "town">><<set _time to 15>>
 	<<default>><<set _time to 30>>
 <</switch>>
@@ -1004,7 +1005,7 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 		<<else>>
 			<span class="red">You wonder who the father is.</span>
 		<</if>>
-		<<set _pregnancyTest.awareOf to true>>
+		<<set _pregnancyTest.awareOf to "pregnancyTest">>
 	<<else>>
 		<span class="lewd">It's positive.</span> You briefly wonder if you're seeing things or have gone crazy. Many thoughts rush through your head, and you sit to collect yourself. <<ggstress>><<stress 10>><<ggarousal>><<arousal 200>>
 		<br><br>
@@ -1014,7 +1015,7 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 		<<else>>
 			<span class="red">You wonder who the father is.</span>
 		<</if>>
-		<<set _pregnancyTest.awareOf to true>>
+		<<set _pregnancyTest.awareOf to "pregnancyTest">>
 	<</if>>
 <<else>>
 	<<set _pregnancyTest to $sexStats.vagina.pregnancy>>
@@ -1029,7 +1030,7 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 		<<else>>
 			<span class="red">You wonder who the father is.</span>
 		<</if>>
-		<<set _pregnancyTest.awareOf to true>>
+		<<set _pregnancyTest.awareOf to "pregnancyTest">>
 	<</if>>
 <</if>>
 
@@ -1040,10 +1041,10 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <<widget "pregnancyTest">>
 	<<if _args[0]>>
 		<<if $pregnancyTest gt 0>>
-			<<if getPregnancyObject().awareOf isnot true>>
+			<<if !getPregnancyObject().awareOf>>
 				<<pregnancytesticon>><<link [[Take a pregnancy test (0:05)|pregnancyTest]]>><<pass 5>><<set $lastPassage to _args[0]>><</link>>
 				<br>
-			<<elseif getPregnancyObject().awareOf is true>>
+			<<elseif getPregnancyObject().awareOf>>
 				<<pregnancytesticon>><span class="lewd"> You have a pregnancy test, but you already know you're pregnant.</span>
 				<br>
 			<</if>>
@@ -1081,6 +1082,11 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 :: Pregnancy ultrasound 2
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 
+/*Alex variables*/
+<<if getPregnancyObject().fetus[0].father is "Alex">>
+	<<set C.npc.Alex.pregnancy.ultraSoundPics to true>>
+<</if>>
+
 You strip and lie down.
 <<set _pregnancy to getPregnancyObject()>>
 <<if _pregnancy.timer lte _pregnancy.timerEnd * 0.3>>
@@ -1096,7 +1102,15 @@ You strip and lie down.
 		<<He>> moves the wand a little more, and fails to conceal surprise. "There's another one." You hear a second pulsing, slightly different in tempo.<<gstress>><<stress 6>>
 		<br><br>
 	<</if>>
+	<<if C.npc.Alex.pregnancy.ultraSound is "requested">>
+		<<set C.npc.Alex.pregnancy.ultraSound to "collected2">>
+		You ask <<him>> for a doctor's note affirming that you're pregnant. <<He>> taps away at <<his>> computer for a moment before printing out an official-looking letter. <<He>> signs it with a flourish and hands it to you.
+		<br><br>
+	<</if>>
 <<else>>
+	<<if C.npc.Alex.pregnancy.ultraSound is "requested">><<set C.npc.Alex.pregnancy.ultraSound to "collected">><</if>>
+	/* Player has pictures of the babies */
+	<<set _pregnancy.ultrasoundDone to true>>
 	<<bodyliquid "vaginaoutside" "goo" 2>>
 	Doctor Harper prepares the gel and wand for the procedure. You find the gel to be comfortably warm as <<he>> slathers it on your abdomen.
 	<br><br>
@@ -1481,7 +1495,7 @@ Alex laughs. "I know, dummy. You didn't really think I would do that, do you?" <
 Alex frowns. "Your 'property'? Just what are you trying to say, pal?"
 <br><br>
 
-Bailey ignores Alex's question and glares at you. "We've a place prepared at the orphanage. Now make my job easier and hand me the <<print $litter_size > 1 ? "brats" : "brat">>.
+Bailey ignores Alex's question and glares at you. "We've a place prepared at the orphanage. Now make my job easier and hand me the <<print $litter_size > 1 ? "brats" : "brat">>."
 <br><br>
 
 "What makes you think that we'll just give our <<print $litter_size > 1 ? "children" : "child">> to you?" Alex protests.
@@ -1526,7 +1540,6 @@ A long and deafening silence fills the environment. Bailey keeps staring at you 
 	<<set $alex_parent to "father">>
 <</if>>
 
-<<set $ward_unlocked to true>>
 <<run Object.values(V.children).filter(child => {
     if (child.location === "home" && (child.father === "Alex" || child.mother === "Alex")) child.location = "alex_cottage";
 })>>

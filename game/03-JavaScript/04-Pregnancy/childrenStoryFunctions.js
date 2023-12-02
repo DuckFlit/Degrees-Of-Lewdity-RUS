@@ -93,7 +93,7 @@ function humanChildActivity(childId) {
 				"grumpyChild",
 				"bathe",
 			]);
-			
+
 			if (T.childTotalDays >= 50) activity.push("happy");
 			if (toySets.includes("baby rattles")) activity.push("babyRattle");
 			if (toySets.includes("teddy bears")) activity.push("teddyBear");
@@ -105,7 +105,10 @@ function humanChildActivity(childId) {
 			}
 			if (toySets.includes("clown")) activity.push("clown");
 			if (T.robin_location === "orphanage") activity.push("Robin");
-
+			if (child.father === "Ivory Wraith") {
+				wikifier("rngWraith", 1);
+				if (T.wraithEvent) activity.push("Wraith");
+			}
 		}
 	} else if (between(T.childTotalDays, 100, 200)) {
 		if (Time.dayState === "night") {
@@ -138,6 +141,10 @@ function humanChildActivity(childId) {
 			if (toySets.includes("clown")) activity.push("clown");
 			if (child.localVariables.talking >= 10 && T.childTotalDays >= 150) activity.push("talking2");
 			if (T.robin_location === "orphanage") activity.push("Robin");
+			if (child.father === "Ivory Wraith") {
+				wikifier("rngWraith", 1);
+				if (T.wraithEvent) activity.push("Wraith");
+			}
 		}
 	}
 

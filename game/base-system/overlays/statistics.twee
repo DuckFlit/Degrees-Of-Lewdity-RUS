@@ -153,11 +153,11 @@
 		<br>
 		Ejaculated in orally: $oralejacstat
 		<br>
-		Semen swallowed: $semenswallowedstat mL
+		Semen swallowed: <<print Math.floor($semenswallowedstat)>> mL
 		<<if $bestialitydisable is "f">>
 			<br>
-			Animal semen swallowed: $animalsemenswallowedstat mL
-			<</if>>
+			Animal semen swallowed: <<print Math.floor($animalsemenswallowedstat)>> mL
+		<</if>>
 		<br>
 		Handjobs given: $handstat
 		<br>
@@ -204,13 +204,13 @@
 		Minutes spent masturbating: <<print Math.trunc($secondsSpentMasturbating / 60)>>
 		<br>
 		<<if $breastfeedingdisable is "f">>
-			Breast milk drank: $milk_drank_stat mL
+			Breast milk drank: <<print Math.floor($milk_drank_stat)>> mL
 			<br>
-			Breast milk produced: $milk_produced_stat mL
+			Breast milk produced: <<print Math.floor($milk_produced_stat)>> mL
 			<br>
 		<</if>>
 		<<if $plantdisable is "f">>
-			Nectar drank: $nectar_drank_stat mL
+			Nectar drank: <<print Math.floor($nectar_drank_stat)>> mL
 			<br>
 		<</if>>
 		<<if $player.penisExist>>
@@ -222,7 +222,7 @@
 			<br>
 		<</if>>
 		<<if $player.penisExist or $breastfeedingdisable is "f">>
-			Fluid forcibly milked: $fluid_forced_stat mL
+			Fluid forcibly milked: <<print Math.floor($fluid_forced_stat)>> mL
 			<br>
 		<</if>>
 		<<if $knot_stat isnot undefined>>
@@ -456,7 +456,20 @@
 		History lessons missed: $schoolLessonsMissed.history
 		<br>
 		Swimming lessons missed: $schoolLessonsMissed.swimming
-		<br><br>
+		<br>
+		<<if $earSlimeDaysStat>>
+			Days with an ear slime: $earSlimeDaysStat
+			<br>
+		<</if>>
+		<<if $earSlime.days>>
+			Days with the current ear slime: $earSlime.days
+			<br>
+		<</if>>
+		<<if $earSlimePassiveDaysStat>>
+			Most days with a passive ear slime: $earSlimePassiveDaysStat
+			<br>
+		<</if>>
+		<br>
 	<</foldout>>
 
 
@@ -641,15 +654,15 @@
 				<mouse class="tooltip linkBlue">(?)<span>Reach 100% or above to grow, 0% or below to shrink.</span></mouse>
 				<br>
 				<<if $sexStats && $sexStats.pills>>
-					Penis can grow: <<print $player.penissize lt $penissizemax and ($player.penissize gte -1 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose gte 20)>>
-					<<if $player.penissize is -2 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose lt 20>>
+					Penis can grow: <<print $player.penissize lt $penissizemax and ($player.penissize gte -1 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) gte 20)>>
+					<<if $player.penissize is -2 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) lt 20>>
 						<mouse class="tooltip linkBlue">(?)<span>Need to overdose on growing pills or use a urchin penis parasite.</span></mouse>
 					<<elseif $player.penissize is $penissizemax>>
 						<mouse class="tooltip linkBlue">(?)<span>At max size.</span></mouse>
 					<</if>>
 					<br>
-					Penis can shrink: <<print $player.penissize gt $penissizemin and ($player.penissize gte 0 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose lte -20)>>
-					<<if $player.penissize is -1 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose gt -20>>
+					Penis can shrink: <<print $player.penissize gt $penissizemin and ($player.penissize gte 0 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) lte -20)>>
+					<<if $player.penissize is -1 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) gt -20>>
 						<mouse class="tooltip linkBlue">(?)<span>Need to overdose on shrinking pills or use a slime penis parasite.</span></mouse>
 					<<elseif $player.penissize is $penissizemin>>
 						<mouse class="tooltip linkBlue">(?)<span>At min size.</span></mouse>
@@ -756,8 +769,10 @@
 			<br>
 			Model fame: <<print Math.trunc($fame.model)>>
 			<br>
-			Islander language: <<print Math.trunc($islander_language)>>
-			<br><br>
+			<<if $islander_language>>
+				Islander language: <<print Math.trunc($islander_language)>>
+				<br>
+			<</if>>
 		<</foldout>>
 
 		<<foldout false "_crimeFoldout">>

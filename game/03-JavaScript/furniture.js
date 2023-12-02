@@ -530,7 +530,7 @@ const Furniture = (() => {
 		}
 		switch (versions.furniture) {
 			case 0:
-				V.furniturePriceFactor = 1;
+				if (!V.furniturePriceFactor) V.furniturePriceFactor = 1;
 				V.furniture = {
 					bedroom: {
 						bed: {

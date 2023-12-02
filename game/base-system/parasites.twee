@@ -53,6 +53,10 @@
 
 		<<if _temp0 is "clit" and _temp1 is "parasite" and $player.gender is "f" and ["mixed", "impregnation"].includes($earSlime.focus)>>
 			<<set $player.penisExist to true>>
+			<<if $penisuse is "none">>
+				<<set $penisuse to 0>>
+				<<set $penisstate to 0>>
+			<</if>>
 			<<set $player.ballsExist to true>>
 			<<if $earSlime.focus is "impregnation">>
 				<<set $player.size to Math.clamp(2, 0, $penissizemax)>>
@@ -80,6 +84,8 @@
 
 		<<if _temp0 is "clit" and $parasite.clit.name is "parasite" and $player.gender is "f" and $player.penisExist>>
 			<<set $player.penisExist to false>>
+			<<set $penisuse to "none">>
+			<<set $penisstate to "none">>
 			<<if $worn.genitals.name is "chastity parasite">>
 				<<set $worn.genitals.type.push("broken")>>
 				<<genitalsruined>>
@@ -88,6 +94,10 @@
 				<<set $worn.genitals.type.push("broken")>>
 				<<genitalsruined>>
 			<</if>>
+		<</if>>
+		<<if _temp0 is "penis" and $parasite.penis.name is "parasite" and $worn.genitals.name is "chastity parasite">>
+			<<set $worn.genitals.type.push("broken")>>
+			<<genitalsruined>>
 		<</if>>
 
 		<<run delete $parasite[_temp0].name>>
@@ -104,6 +114,7 @@
 
 <<widget "resetEarSlime">>
 	<<set $earSlime to {
+		days: 0,
 		corruption: 0, 
 		growth: 0,
 		focus: "none",
@@ -116,8 +127,10 @@
 		lastVibration: 0,
 		alwaysSleepNaked: false,
 		noSleep: false,
+		promiscuity: 0,
+		deviancy: 0,
+		exhibitionism: 0,
 	}>>
-	<<run delete $earSlime.forcedDressing>>
 	<<if $daily and $daily.corruptionSlimeClothes>>
 		<<run delete $daily.corruptionSlimeClothes>>
 	<</if>>
@@ -129,5 +142,19 @@
 	<</if>>
 	<<if $parasite.clit.name is "parasite">>
 		<<removeparasite "clit">>
+	<</if>>
+	<<if $earSlimeDaysStat is undefined>>
+		<<set $earSlimeDaysStat to 0>>
+		<<set $earSlimePassiveDaysStat to 0>>
+	<</if>>
+<</widget>>
+
+<<widget "earSlimeSeenActions">>
+	<<if numberOfEarSlime() and ["promiscuity", "deviancy", "exhibitionism"].includes(_args[0]) and !$desperateaction>>
+		<<if _args[1] gt $earSlime[_args[0]] and $earSlime.corruption gte random(0, 50 * _args[1] * (_args[2] or 1)) and V[_args[0]] gte [0,0,15,35,55,75,95][_args[1]]>>
+			<<set $earSlime[_args[0]] to _args[1]>>
+			<br>
+			<span class="red">The slime in your ear takes notice of your lewd action.</span>
+		<</if>>
 	<</if>>
 <</widget>>

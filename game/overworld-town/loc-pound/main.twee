@@ -15,7 +15,7 @@ You are in the dog pound on Starfish Street. Stray <<pound_text>> fill the cages
 		Panic swells within you as you realise how exposed you'll be should you be found in this state of dress.
 	<</if>>
 	<br><br>
-	<<link [[Leave|Starfish Street]]>><<endevent>><</link>>
+	<<starfishicon>><<link [[Leave|Starfish Street]]>><<endevent>><</link>>
 	<br>
 	<<link [[Hide (1:00)|Pound]]>><<pass 60>><</link>>
 	<br>
@@ -85,7 +85,7 @@ You are in the dog pound on Starfish Street. Stray <<pound_text>> fill the cages
 		<</if>>
 	<</if>>
 
-	<<link [[Leave|Starfish Street]]>><<endevent>><</link>>
+	<<starfishicon>><<link [[Leave|Starfish Street]]>><<endevent>><</link>>
 	<br><br>
 <</if>>
 
@@ -564,40 +564,92 @@ A <<person>> takes your leash and leans in. "They used to respect you," <<he>> s
 	<<link [[Ignore|Pound Work Intervene Ignore]]>><</link>>
 	<br>
 <<else>>
-	<<generate1>><<person1>>
-	Other staff go about their business. A <<person>> enters a metal door on the other side of the building, locking it behind <<him>>.
-	<br><br>
-	<<endevent>>
-	<<stray_happiness_text>>
-	<br><br>
-	<<link [[Sweep (£5)|Pound Work Sweep]]>><<if !$pound.tasks.includes("sweep")>><<stray_happiness 1>><<set $pound.tasks.push("sweep")>><</if>><<set $pound.money to 5>><</link>><<if !$pound.tasks.includes("sweep")>><<gstray_happiness>><</if>>
-	<br>
-	<<if $pound.status gte 10>>
-		<<link [[Feed (£8)|Pound Work Feed]]>><<set $pound.tasks.push("feed")>><<set $pound.money to 8>><</link>><<if !$pound.tasks.includes("feed")>><<gstray_happiness>><</if>>
+	<<if $slimePoundIgnored>>
+		You ignore the ear slimes command and choose how you want to work.
+		<<unset $slimePoundIgnored>>
+		<br><br>
+		<<stray_happiness_text>>
+	<<elseif $slimePoundDefy>>
+		<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+			<<set $earSlime.defyCooldown += 2>>
+			The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to do what it wants.
+			<<ggwillpower>><<willpower 1>>
+			<br><br>
+			<<earSlimePoundLinks>>
+		<<else>>
+			You try to ignore the command from the slime and continue on. You feel it try, <span class="green">but fail,</span> to force you work in a specific way.
+			<br><br>
+			<<stray_happiness_text>>
+			<<unset $slimePoundDefy>>
+			<<unset $slimePoundTask>>
+		<</if>>
 	<<else>>
-		<span class="blue">The <<pound_text>> don't respect you enough to let you near them, even with food.</span>
+		<<generate1>><<person1>>
+		Other staff go about their business. A <<person>> enters a metal door on the other side of the building, locking it behind <<him>>.
+		<<endevent>>
+		<br><br>
+		<<stray_happiness_text>>
 	<</if>>
-	<br>
-	<<if $pound.status gte 20>>
-		<<link [[Brush (£10)|Pound Work Brush]]>><<if !$pound.tasks.includes("brush")>><<stray_happiness 1>><<set $pound.tasks.push("brush")>><</if>><<set $pound.money to 10>><</link>><<if !$pound.tasks.includes("brush")>><<gstray_happiness>><</if>>
+	<<if $slimePoundDefy>>
+		<<unset $slimePoundDefy>>
+	<<elseif !$daily.earSlimePoundTask and numberOfEarSlime() and earSlimeMakingMundaneRequests() and random(0,100) gte 75>>
+		<br><br>
+		<<set $daily.earSlimePoundTask to true>>
+		<<set _slimePoundTask to ["Sweep"]>>
+		<<if $pound.status gte 10>><<run _slimePoundTask.push("Feed")>><</if>>
+		<<if $pound.status gte 20>><<run _slimePoundTask.push("Brush")>><</if>>
+		<<if $pound.status gte 40>><<run _slimePoundTask.push("Wash")>><</if>>
+		<<if $pound.status gte 60>><<run _slimePoundTask.push("Walk")>><</if>>
+		<<set $slimePoundTask to _slimePoundTask.random()>>
+		<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to <<print $slimePoundTask.toLowerCase()>>
+		<<if $slimePoundTask is "Sweep">>
+			the floor.
+		<<else>>
+			the dogs.
+		<</if>>
+		</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+		<br><br>
+		<<earSlimePoundLinks "Obey">>
+		<br>
+		<<if $earSlime.startedThreats>>
+			<<link [[Defy|Pound Work]]>><<set $slimePoundDefy to true>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<<else>>
+			<<link [[Ignore|Pound Work]]>><<unset $slimePoundTask>><<set $slimePoundIgnored to true>><</link>>
+		<</if>>
 	<<else>>
-		<span class="blue">The <<pound_text>> don't respect you enough to let you near them with a brush.</span>
-	<</if>>
-	<br>
-	<<if $pound.status gte 40>>
-		<<link [[Wash (£12)|Pound Work Wash]]>><<if !$pound.tasks.includes("wash")>><<stray_happiness 1>><<set $pound.tasks.push("wash")>><</if>><<set $pound.money to 12>><</link>><<if !$pound.tasks.includes("wash")>><<gstray_happiness>><</if>>
-	<<else>>
-		<span class="blue">The <<pound_text>> don't respect you enough to let you near them with a bucket of water.</span>
-	<</if>>
-	<br>
-	<<if $pound.status gte 60>>
-		<<link [[Walk (£15)|Pound Work Walk]]>><<if !$pound.tasks.includes("walk")>><<stray_happiness 1>><<set $pound.tasks.push("walk")>><</if>><<set $pound.money to 15>><</link>><<if !$pound.tasks.includes("walk")>><<gstray_happiness>><</if>>
-	<<else>>
-		<span class="blue">The <<pound_text>> don't respect you enough to let you near them with a leash.</span>
+		<br><br>
+		<<link [[Sweep (£5)|Pound Work Sweep]]>><<if !$pound.tasks.includes("sweep")>><<stray_happiness 1>><<set $pound.tasks.push("sweep")>><</if>><<set $pound.money to 5>><</link>><<if !$pound.tasks.includes("sweep")>><<gstray_happiness>><</if>>
+		<br>
+		<<if $pound.status gte 10>>
+			<<link [[Feed (£8)|Pound Work Feed]]>><<set $pound.tasks.push("feed")>><<set $pound.money to 8>><</link>><<if !$pound.tasks.includes("feed")>><<gstray_happiness>><</if>>
+		<<else>>
+			<span class="blue">The <<pound_text>> don't respect you enough to let you near them, even with food.</span>
+		<</if>>
+		<br>
+		<<if $pound.status gte 20>>
+			<<link [[Brush (£10)|Pound Work Brush]]>><<if !$pound.tasks.includes("brush")>><<stray_happiness 1>><<set $pound.tasks.push("brush")>><</if>><<set $pound.money to 10>><</link>><<if !$pound.tasks.includes("brush")>><<gstray_happiness>><</if>>
+		<<else>>
+			<span class="blue">The <<pound_text>> don't respect you enough to let you near them with a brush.</span>
+		<</if>>
+		<br>
+		<<if $pound.status gte 40>>
+			<<link [[Wash (£12)|Pound Work Wash]]>><<if !$pound.tasks.includes("wash")>><<stray_happiness 1>><<set $pound.tasks.push("wash")>><</if>><<set $pound.money to 12>><</link>><<if !$pound.tasks.includes("wash")>><<gstray_happiness>><</if>>
+		<<else>>
+			<span class="blue">The <<pound_text>> don't respect you enough to let you near them with a bucket of water.</span>
+		<</if>>
+		<br>
+		<<if $pound.status gte 60>>
+			<<link [[Walk (£15)|Pound Work Walk]]>><<if !$pound.tasks.includes("walk")>><<stray_happiness 1>><<set $pound.tasks.push("walk")>><</if>><<set $pound.money to 15>><</link>><<if !$pound.tasks.includes("walk")>><<gstray_happiness>><</if>>
+		<<else>>
+			<span class="blue">The <<pound_text>> don't respect you enough to let you near them with a leash.</span>
+		<</if>>
 	<</if>>
 	<br>
 
+	<<getouticon>><<link [[Leave|Pound ]]>><</link>>
+	<br>
 <</if>>
+
 :: Pound Work Intervene
 <<effects>>
 
@@ -615,8 +667,15 @@ You rattle the cage door.
 The <<person>> looks at you before giving the <<beasttype 0>> a final whack. "Alright," <<he>> says, panting from the exertion. <<He>> leaves the cage, but stops beside you. <span class="pink">"Best watch out <<lass>>.</span> Don't think we won't make a <<bitch>> of you if you give us a reason."
 <br><br>
 
-<<link [[Next|Pound Work]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+
 
 :: Pound Work Intervene Ignore
 <<effects>>
@@ -624,12 +683,19 @@ The <<person>> looks at you before giving the <<beasttype 0>> a final whack. "Al
 You keep walking, and try your best to ignore the whimpering.
 <br><br>
 
-<<link [[Next|Pound Work]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+
 
 :: Pound Work Sweep
 <<effects>>
-
+<<if $slimePoundTask>>You follow the slimes command to do a specific task.<<unset $slimePoundTask>><</if>>
 You take a broom and sweep fur from the cages. Once in a neat pile, you sweep it into a dustpan.
 <br><br>
 <<beastNEWinit 1 dog>>
@@ -688,9 +754,14 @@ The <<person>> presses <<his>> body awfully close as <<he>> holds your arms and 
 
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
 
 
 :: Pound Work Sweep Shove
@@ -705,8 +776,14 @@ The <<pound_text>> watch with blank expressions.
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 
 :: Pound Work Sweep Scold
 <<effects>>
@@ -722,8 +799,14 @@ You make <<moneyGain $pound.money>>.<<pass 60>>
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 
 
 :: Pound Work Sweep Wrestle
@@ -740,12 +823,18 @@ You make <<moneyGain $pound.money>>.<<pass 60>>
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 
 :: Pound Work Feed
 <<effects>>
-
+<<if $slimePoundTask>>You follow the slimes command to do a specific task.<<unset $slimePoundTask>><</if>>
 You refill the bowls in the rear courtyard, before a horde of eager <<pound_text>> are released from their cages.
 <br><br>
 
@@ -768,8 +857,13 @@ You refill the bowls in the rear courtyard, before a horde of eager <<pound_text
 	You make <<moneyGain $pound.money>>.<<pass 60>>
 	<br><br>
 
-	<<link [[Next|Pound]]>><<endevent>><</link>>
-	<br>
+	<<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
 <</if>>
 
 
@@ -795,8 +889,13 @@ You refill the bowls in the rear courtyard, before a horde of eager <<pound_text
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
 
 
 :: Pound Work Feed Comfort
@@ -808,9 +907,13 @@ You crouch beside the <<beasttype 0>>, and stroke <<bhis 0>> fur. <<bHe 0>> exha
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
-
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
 
 :: Pound Work Feed Nothing
 <<effects>>
@@ -821,14 +924,21 @@ You watch the feeding frenzy with the other staff. The <<beasttype 0>> licks the
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 
 
 :: Pound Work Brush
 <<effects>>
 
 <<beastNEWinit 1 dog>>
+<<if $slimePoundTask>>You follow the slimes command to do a specific task.<<unset $slimePoundTask>><</if>>
 Brush in hand, you enter one of the cages.
 
 <<if random(1, 2) is 2 and ($bestialitydisable is "f" or $monster is 1)>>
@@ -880,8 +990,14 @@ Brush in hand, you enter one of the cages.
 	You make <<moneyGain $pound.money>>.<<pass 60>>
 	<br><br>
 
-	<<link [[Next|Pound]]>><<endevent>><</link>>
-	<br>
+	<<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+
 <<else>>
 	"St-stop," you manage. It's hard to maintain your composure, <span class="red">and the <<beasttype>> ignores you.</span>
 	<br><br>
@@ -906,8 +1022,13 @@ Brush in hand, you enter one of the cages.
 		You make <<moneyGain $pound.money>>.<<pass 60>>
 		<br><br>
 
-		<<link [[Next|Pound]]>><<endevent>><</link>>
-		<br>
+		<<if Time.hour gte $closinghour>>
+			<<link [[Next|Pound]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[Next|Pound Work]]>><<endevent>><</link>>
+			<br>
+		<</if>>
 	<</if>>
 <</if>>
 
@@ -937,8 +1058,13 @@ You endure the <<beasttype>>'s humping, until <<bhe>> reaches orgasm.
 	You make <<moneyGain $pound.money>>.<<pass 60>>
 	<br><br>
 
-	<<link [[Next|Pound]]>><<endevent>><</link>>
-	<br>
+	<<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
 <</if>>
 
 
@@ -957,8 +1083,14 @@ You endure the <<beasttype>>'s humping, until <<bhe>> reaches orgasm.
 
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 
 :: Pound Work Brush Find
 <<effects>>
@@ -971,7 +1103,7 @@ You find a gentler creature to brush instead. Mostly because <<bhe>>'s asleep.
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
+<<link [[Next|Pound Work]]>><<endevent>><</link>>
 <br>
 
 
@@ -996,8 +1128,13 @@ You glance around to ensure you're not being watched, then drop to all fours. "R
 	You make <<moneyGain $pound.money>>.<<pass 60>>
 	<br><br>
 
-	<<link [[Next|Pound]]>><<endevent>><</link>>
-	<br>
+	<<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
 <</if>>
 
 :: Pound Work Brush Rape
@@ -1067,8 +1204,13 @@ You glance around to ensure you're not being watched, then drop to all fours. "R
 		<<else>>
 			You make <<moneyGain $pound.money>>.<<pass 60>>
 			<br><br>
-			<<link [[Next|Pound]]>><</link>>
-			<br>
+			<<if Time.hour gte $closinghour>>
+				<<link [[Next|Pound]]>><<endevent>><</link>>
+				<br>
+			<<else>>	
+				<<link [[Next|Pound Work]]>><<endevent>><</link>>
+				<br>
+			<</if>>
 		<</if>>
 	<</if>>
 
@@ -1094,8 +1236,14 @@ You glance around to ensure you're not being watched, then drop to all fours. "R
 	<<else>>
 		You make <<moneyGain $pound.money>>.<<pass 60>>
 		<br><br>
-		<<link [[Next|Pound]]>><</link>>
-		<br>
+
+		<<if Time.hour gte $closinghour>>
+			<<link [[Next|Pound]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[Next|Pound Work]]>><<endevent>><</link>>
+			<br>
+		<</if>>
 	<</if>>
 
 <<else>><<set $rescued += 1>>
@@ -1381,6 +1529,7 @@ You turn to find somewhere to hide, only to run into a <<person>>'s arms. "What 
 <<effects>>
 
 <<beastNEWinit 1 dog>>
+<<if $slimePoundTask>>You follow the slimes command to do a specific task.<<unset $slimePoundTask>><</if>>
 <<if random(1, 2) is 2 and ($bestialitydisable is "f" or $monster is 1)>>
 	You enter one of the cages, bucket in hand. The <<beasttype>> within lets you approach. You wash <<bhim>> with soapy water.
 	<br><br>
@@ -1418,7 +1567,14 @@ You turn to find somewhere to hide, only to run into a <<person>>'s arms. "What 
 	You make <<moneyGain $pound.money>>.<<pass 60>>
 	<br><br>
 
-	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+
 <<else>>
 	You continue washing the <<beasttype>>. <span class="red">Without warning</span>, <<bhe>> shakes <<bhis>> fur, <span class="red">drenching you in water.</span><<gstress>><<stress 6>>
 	<br><br>
@@ -1435,7 +1591,7 @@ You turn to find somewhere to hide, only to run into a <<person>>'s arms. "What 
 		You make <<moneyGain $pound.money>>.<<pass 60>>
 		<br><br>
 
-		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -1450,8 +1606,14 @@ You turn to find somewhere to hide, only to run into a <<person>>'s arms. "What 
 	You make <<moneyGain $pound.money>>.<<pass 60>>
 	<br><br>
 
-	<<link [[Next|Pound]]>><<endevent>><</link>>
-	<br>
+	<<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+
 <<else>>
 	You hold the <<beasttype>>'s collar, and adopt a firm tone. You think it's working, until <<bhe>> shakes <<bhis>> fur with violent force, <span class="red">drenching you in water.</span>
 	<<wet_all>>
@@ -1467,8 +1629,13 @@ You turn to find somewhere to hide, only to run into a <<person>>'s arms. "What 
 		You make <<moneyGain $pound.money>>.<<pass 60>>
 		<br><br>
 
-		<<link [[Next|Pound]]>><<endevent>><</link>>
-		<br>
+		<<if Time.hour gte $closinghour>>
+			<<link [[Next|Pound]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[Next|Pound Work]]>><<endevent>><</link>>
+			<br>
+		<</if>>
 	<</if>>
 <</if>>
 
@@ -1493,8 +1660,14 @@ You turn to find somewhere to hide, only to run into a <<person>>'s arms. "What 
 	You make <<moneyGain $pound.money>>.<<pass 60>>
 	<br><br>
 
-	<<link [[Next|Pound]]>><<endevent>><</link>>
-	<br>
+	<<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+
 <<else>>
 	"Don't be scared," you say. You hold the sponge out to show <<bhim>> there's nothing to be afraid of, <span class="red">but <<bhe>> only recoils further.</span><<gtending>><<tending 1>>
 	<br><br>
@@ -1513,8 +1686,13 @@ You turn to find somewhere to hide, only to run into a <<person>>'s arms. "What 
 		You make <<moneyGain $pound.money>>.<<pass 60>>
 		<br><br>
 
-		<<link [[Next|Pound]]>><<endevent>><</link>>
-		<br>
+		<<if Time.hour gte $closinghour>>
+			<<link [[Next|Pound]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[Next|Pound Work]]>><<endevent>><</link>>
+			<br>
+		<</if>>
 	<</if>>
 <</if>>
 
@@ -1543,14 +1721,20 @@ You put the bucket aside, and crouch beside the <<beasttype>>. "If you promise t
 You make <<moneyGain $pound.money>>.<<pass 60>>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 
 :: Pound Work Walk
 <<effects>>
 
 <<beastNEWinit 5 dog>>
-
+<<if $slimePoundTask>>You follow the slimes command to do a specific task.<<unset $slimePoundTask>><</if>>
 You attach leashes to five <<beastsplural>>. They're eager for the exercise, and don't resist. Tails wagging, they pull you through the front yard and onto the street beyond.
 <br><br>
 <<link [[Wrestle control|Pound Work Walk Wrestle]]>><</link>><<physiquedifficulty 1 19000>>
@@ -1759,8 +1943,14 @@ You arrive at the forest. You keep the <<beastsplural>> on their leashes, as get
 	 <br><br>
 
 	 You make <<moneyGain $pound.money>>.<<pass 60>>
-	 <<link [[Next|Pound]]>><<endevent>><</link>>
-	 <br>
+	 <br><br>
+	 <<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
 <</if>>
 
 :: Pound Work Walk Forest Call
@@ -1950,8 +2140,13 @@ The <<person>> stops and peers at you. The trees conceal you well enough,
 	You make <<moneyGain $pound.money>>.
 	<br><br>
 	<<endcombat>>
-	<<link [[Next|Pound]]>><</link>>
-	<br>
+	<<if Time.hour gte $closinghour>>
+		<<link [[Next|Pound]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pound Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
 <</if>>
 
 
@@ -2523,8 +2718,14 @@ You turn as you leave the cage, and make contact with the <<beasttype 0>>'s sad 
 <span class="gold">If you wanted to help, you'd have to break in at night.</span>
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 
 :: Pound Ask
 <<effects>>
@@ -2545,8 +2746,14 @@ The <<person>> spits, and nods. "You done anything like this before?" <<he>> ask
 "We'll pay you <span class="gold">£5</span> an hour. Not much, but you'll get more if you do a good job. Start whenever."
 <br><br>
 
-<<link [[Next|Pound]]>><<endevent>><</link>>
-<br>
+<<if Time.hour gte $closinghour>>
+	<<link [[Next|Pound]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Pound Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 
 :: Pound Tease
 <<effects>>
@@ -2956,4 +3163,4 @@ You fiddle with the primitive lock, and manage to open the cage. The <<beasttype
 	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
 	<br><br>
 <</if>>
-<<getouticon>><<link [[Leave|Starfish Street]]>><</link>>
+<<starfishicon>><<link [[Leave|Starfish Street]]>><</link>>

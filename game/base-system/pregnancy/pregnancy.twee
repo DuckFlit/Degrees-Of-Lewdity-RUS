@@ -108,7 +108,7 @@
 <</widget>>
 
 <<widget "menstruationCycleState">>
-	<<set $sexStats.vagina.menstruation.running to $player.vaginaExist or (!$player.vaginaExist and $skin and $skin.pubic.pen is "magic" and $skin.pubic.special is "pregnancy")>>
+	<<set $sexStats.vagina.menstruation.running to $player.vaginaExist or (!$player.vaginaExist and $skin and $skin.pubic.pen is "magic" and $skin.pubic.special is "pregnancy") or ($earSlime and $earSlime.growth gte 100 and ["pregnancy", "mixed"].includes($earSlime.focus))>>
 <</widget>>
 
 <<widget "menstruationCycle">>
@@ -127,6 +127,10 @@
 		<<set _pills to $sexStats.pills>>
 		<<switch _menstruation.currentState>>
 			<<case "normal">>
+				<<if $harpy gte 6 and $harpyEggs and $sexStats[$_pregLocation].sperm.find(source => sorce.type is "hawk")>>
+					<<playerPregnancyHawkAttempt $_pregLocation>>
+					<<if $_pregnancy.type is "hawk">><<exit>><</if>>
+				<</if>>
 				<<if $cycledisable is "t">>
 					<<playerPregnancyAttempt `Math.pow(4,_menstruation.nonCycleRng[0])` $_pregLocation>>
 				<<elseif _menstruation.currentDay lt _menstruation.currentDaysMax>>
@@ -498,7 +502,7 @@
 				<<else>>
 					<<set $_text_output += " <span class='red'>You wonder who the father is.</span>">>
 				<</if>>
-				<<set $_pregnancy.awareOf to true>>
+				<<set $_pregnancy.awareOf to "wakingUp">>
 			<<case "missedPeriod">>
 				<<set $_text_output to "You wake and come to a realisation. Your current cycle is late.">>
 				<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1 and !$_pregnancy.awareOf>>
@@ -701,6 +705,25 @@
 				<br><br>
 
 				You involuntarily whimper. Even the effort of staying standing is causing a burning pain. A branch cracks to your left.
+			<<case "bog">>
+				<<pass 1 hour>>
+				<<if $bogwater is 1>>
+					You stumble, barely managing to make it back to the path. A horrible pressure shoots through you. You're going into labour.
+					<br><br>
+
+					You involuntarily whimper. You don't have the strength to pull yourself out of the water. Just staying above the surface takes everything you have.					
+				<<else>>
+					You stumble, barely managing to stabilise yourself against a large tree trunk. You look down to see a clear liquid dripping down your leg. You're going into labour.
+					<br><br>
+
+					You involuntarily whimper. Even the effort of staying standing is causing a burning pain. You collapse onto the wooden walkway.
+				<</if>>
+				<br><br>
+
+				Time passes. You start to scream in pain. Adrenaline and fear shoot through you. You're so far away from anyone that can help. The thought of no one hearing you redoubles your fear. You've never felt so alone.
+				<br><br>
+
+				Shapes start to move amidst the trees. The sound of footsteps on wood. You can't look, but they're getting closer. You come face to face with a featureless white mask. A black hood sprouts antlers. The image sears itself into your mind as you black out.
 			<<case "tentacleworld" "tentacleforest">>
 				You hunch over in pain. All of the tentacles retreat away from you. You fall to your knees, gripping the ground as hard as you can.
 				<br><br>
@@ -924,7 +947,7 @@
 					<<relaxed_guard 1 cap>> comes up behind you, and the prisoner scowls but leaves to do <<person1>><<his>> work. <<person2>><<He>> looks down at your legs but doesn't get to ask anything. Pain shoots through your stomach again, and you hunch over. 
 					<br><br>
 
-					"H-Help... My baby...” you whimper out.
+					"H-Help... My baby..." you whimper out.
 					<br><br>
 
 					<<relaxed_guard 1 cap>> takes your elbow, propping you up.
@@ -1152,6 +1175,8 @@
 				<<else>>
 					<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 				<</if>>
+			<<case "bog">>
+				<<link [[Next|Pregnancy Birth Hospital Rescue]]>><<set $stress -= 5000>><<endevent>><</link>>
 			<<case "dungeon" "pound" "temple">>
 				<<link [[Next|Pregnancy Birth Hospital Rescue]]>><<set $stress -= 5000>><<endevent>><</link>>
 			<<case "hospital">>
@@ -1370,6 +1395,12 @@
 			<<switch $_name>>
 				<<case "Kylar">><<set $_pregnancy.pills to "fertility">>
 				<<case "Alex" "Wren">><<set $_pregnancy.pills to "contraceptive">>
+				<<case "Great Hawk">>
+					/* Has a much shorter cycle, when cycleDay is 1, assume the hawk should lay eggs that have not been fertilised*/
+					<<set $_pregnancy.cycleDaysTotal to random(12,16)>>
+					<<set $_pregnancy.cycleDay to random(1,$_pregnancy.cycleDaysTotal)>>
+					<<set $_pregnancy.cycleDangerousDay to $_pregnancy.cycleDaysTotal - 4>>
+					<<set $_pregnancy.pills to null>>
 				<<default>><<set $_pregnancy.pills to null>>
 			<</switch>>
 		<<elseif setup.pregnancy.infertile.includes($_name) or (!setup.pregnancy.canBePregnant.includes($_name) and $incompletePregnancyDisable isnot "f")>>
@@ -1400,15 +1431,15 @@
 			<<default>><<set $_type to _args[1] ? 'babies' : 'baby'>>
 		<</switch>>
 		<<set $_babiesText to _args[1] ? `to some beautiful ${$_type}` : `to a beautiful ${$_type}`>>
-		<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
+		<<if numberOfEarSlime() gte 2>>
 			<span class="green">A fulfilled warmth fills you.</span>
 			You almost forget the strife of the world. You can tell it's the slimes in your ears, rewarding you for giving birth <<print $_babiesText>>.
-			<<lllcorruption>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption `Math.floor($earSlime.corruption * -0.4)`>>
+			<<lllcorruption true>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption `Math.floor($earSlime.corruption * -0.4)`>>
 			<br><br>
-		<<elseif $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+		<<elseif numberOfEarSlime()>>
 			<span class="green">A fulfilled warmth fills you.</span>
 			You almost forget the strife of the world. You can tell it's the slime in your ear, rewarding you for giving birth <<print $_babiesText>>.
-			<<llcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption `Math.floor($earSlime.corruption * -0.2)`>>
+			<<llcorruption true>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption `Math.floor($earSlime.corruption * -0.2)`>>
 			<br><br>
 		<</if>>
 	<</if>>

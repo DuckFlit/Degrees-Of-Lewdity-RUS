@@ -844,7 +844,7 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 			break;
 		case "mpenisentrance":
 			result.text = corruptionCheck
-				? '<span class="red">The slimes in your ear are forcing your mouth to be in front of your penis.</span>'
+				? '<span class="red">The slime in your ear is forcing your mouth to be in front of your penis.</span>'
 				: "Your mouth is in front of your penis.";
 			if (awarenessCheck) {
 				result.options.push({
@@ -865,7 +865,7 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 			break;
 		case "mchastityparasiteentrance":
 			result.text = corruptionCheck
-				? '<span class="red">The slimes in your ear are forcing your mouth to be in front of your chastity parasite.</span>'
+				? '<span class="red">The slime in your ear is forcing your mouth to be in front of your chastity parasite.</span>'
 				: "Your mouth is in front of your chastity parasite.";
 			if (awarenessCheck) {
 				result.options.push({
@@ -880,7 +880,7 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 			break;
 		case "mvaginaentrance":
 			result.text = corruptionCheck
-				? '<span class="red">The slimes in your ear are forcing you to lick your pussy.</span>'
+				? '<span class="red">The slime in your ear is forcing you to lick your pussy.</span>'
 				: "Your mouth is in front of your pussy.";
 			if (awarenessCheck) {
 				result.options.push({
@@ -911,7 +911,7 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 			break;
 		case "mpenis":
 			result.text = corruptionCheck
-				? '<span class="red">The slimes in your ear are forcing you to suck on your penis.</span>'
+				? '<span class="red">The slime in your ear is forcing you to suck on your penis.</span>'
 				: "You're sucking on your penis.";
 			if (V.selfsuckDepth === V.selfsuckLimit) {
 				result.text += `You have the whole thing in your mouth${V.selfsuckDepth >= 2 ? " and throat" : ""}.`;

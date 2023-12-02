@@ -1792,6 +1792,10 @@
 				<<case "overcast">> <img id="weather" @src="_imgSky + 'overcast' + _dayState + _season + '.png'">
 				<<case "rain">>		<img id="weather" @src="_imgSky + 'rain' + _dayState + '.gif'">
 				<<case "snow">>		<img id="weather" @src="_imgSky + 'snow' + _dayState + '.gif'">
+				<<case "clear">>
+				<<case "overcast">> <img id="weather" @src="_imgSky + 'overcast' + _dayState + _season + '.png'">
+				<<case "rain">>		<img id="weather" @src="_imgSky + 'rain' + _dayState + '.gif'">
+				<<case "snow">>		<img id="weather" @src="_imgSky + 'snow' + _dayState + '.gif'">
 			<</switch>>
 		<</if>> */
 
@@ -1810,6 +1814,7 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/alex_cottage'+_dayState+'.png'">
 			<<case "alex_farm">>
 				<<if $bus is "woodland">>
+					<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 					<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 				<<else>>
 					<img id="location" @src="_imgLoc + _weather_display + '/alex_farm'+_dayState+'.png'">
@@ -1832,6 +1837,8 @@
 				<</if>>
 	--		<<case "beach" "chalets">>
 				<img id="location" @src="_imgLoc + _weather_display + '/beach'+_dayState+'.gif'">
+			<<case "bog">>
+				<img id="location" @src="_imgLoc + _weather_display + '/bog'+_dayStateWithBloodMoon+'.gif'">
 			<<case "brothel">>
 				<img id="location" @src="_imgLoc + _weather_display + '/brothel'+_dayState+'.png'">
 			<<case "cabin">>
@@ -1872,6 +1879,7 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/flats'+_dayState+'.png'">
 			<<case "forest">>
 				<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
+				<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 			<<case "forest_shop">>
 				<img id="location" @src="_imgLoc + _weather_display + '/forest_shop'+_dayState+'.png'">
 			<<case "home">>
@@ -1910,6 +1918,7 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/police_station'+_dayState+'.png'">
 			<<case "pound">>
 				<img id="location" @src="_imgLoc + _weather_display + '/dog_pound'+_dayState+'.gif'">
+				<img id="location" @src="_imgLoc + _weather_display + '/dog_pound'+_dayState+'.gif'">
 			<<case "pool">>
 				<img id="location" @src="_imgLoc + _weather_display + '/pool'+_dayState+'.gif'">
 			<<case "prison">>
@@ -1947,6 +1956,7 @@
 			<<case "tower" "castle">>
 				<img id="location" @src="_imgLoc + _weather_display + '/tower'+_dayStateWithBloodMoon+'.gif'">
 			<<case "town">>
+				<img id="location" @src="_imgLoc + _weather_display + '/town'+_dayState+'.gif'">
 				<img id="location" @src="_imgLoc + _weather_display + '/town'+_dayState+'.gif'">
 			<<case "underground">>
 				<img id="location" @src="_imgLoc + _weather_display + '/underground'+_dayState+'.png'">
@@ -2145,14 +2155,14 @@
 	<<set $exposed to 0>>
 	<<if $worn.upper.exposed gte 1 and $worn.over_upper.exposed gte 1>>
 		<<if $player.gender_appearance is "m">>
-		<<elseif $libertine gte 1 or $possessed or ["plaid school pinafore","school pinafore"].includes($worn.lower.name)>>
+		<<elseif $libertine gte 1 or $possessed or ["plaid school pinafore","school pinafore","shortalls"].includes($worn.lower.name)>>
 		<<else>>
 			<<set $exposed to 1>>
 		<</if>>
 	<</if>>
 	<<if $worn.upper.exposed gte 2 and $worn.over_upper.exposed gte 2 and $player.gender_appearance isnot "m">>
 		<<if $possessed>>
-		<<elseif ["plaid school pinafore","school pinafore"].includes($worn.lower.name)>>
+		<<elseif ["plaid school pinafore","school pinafore","shortalls"].includes($worn.lower.name)>>
 		<<elseif $libertine is 1>>
 			<<set $topless to 1>>
 		<<else>>
@@ -3218,6 +3228,11 @@
 
 	<<set _config.barWidth = Math.clamp(_config.percent, 0, 100)>>
 
+	<<if _config.secondValue>>
+		<<set _config.secondPercent= Math.floor(_config.secondValue)>>
+		<<set _config.secondBarWidth= Math.clamp(_config.secondPercent, 0, 100)>>
+	<</if>>
+
 	<div class="characteristic-box">
 		<div class="characteristic-top-line">
 			<<if $options.images is 1 and _config.icon>>
@@ -3249,6 +3264,9 @@
 		<</if>>
 		<div class="meter">
 			<div @class="(_config.meterColor ? _config.meterColor + 'bar' : 'goldbar')" @style="'width:' + _config.barWidth + '%'"></div>
+			<<if _config.secondBarWidth>>
+				<div @class="(_config.secondMeterColor ? _config.secondMeterColor + 'bar' : 'goldbar')" @style="'width:' + _config.secondBarWidth + '%'"></div>
+			<</if>>
 		</div>
 	</div>
 <</widget>>
@@ -3872,7 +3890,7 @@
 <</widget>>
 
 <<widget "setup_pillory">>
-	<<set $pillory_tenant to {person : clone($baseNPC), exists : 0, duration : 0, served : 0, startday: 0, starthour : 0, endday : 0, endhour : 0,
+	<<set $pillory_tenant to {person : clone($baseNPC), exists : 0, duration : 0, served : 0, startday: 0, starthour : 0, endDate : 0, endhour : 0,
 								crowd : 0, wet : 0, upperexposed : 0 , lowerexposed : 0, fruit : 0, fruitstock: 0, face : 0, ass : 0, genital : 0, broken : 0,
 								lastviewed : { day : 0, hour: 0}, special : {name : "", desc : ""}}>>
 <</widget>>
@@ -3889,13 +3907,9 @@
 	<<set $pillory_tenant.duration to random(4,27)>>
 	<<set $pillory_tenant.startday to Time.days>>
 	<<set $pillory_tenant.starthour to (Time.hour - _already_served)>>
-	<<set _endhour to ($pillory_tenant.starthour + $pillory_tenant.duration)>>
-	<<set $pillory_tenant.endday to Time.days>>
-	<<if _endhour gte 24>><<set $pillory_tenant.endday += 1>><<set _endhour -= 24>><</if>>
-	/*Repeat incase $duration is gte 24hrs and starting time gte 21. E.g. worst case: Time.hour = 23 and duration=27hrs, end time should be 0200 @ +2days.
-	So 23 + 27 = 50; add 1 to end-day and minus 24hrs gives 26; add 1 to end-day and minus 24 gives hr 2.*/
-	<<if _endhour gte 24>><<set $pillory_tenant.endday += 1>><<set _endhour -= 24>><</if>>
-	<<set $pillory_tenant.endhour to _endhour>>
+	/*set $endDate to timestamp and compare to $timeStamp*/
+	<<set $pillory_tenant.endDate to ($pillory_tenant.startday * Time.secondsPerDay + ($pillory_tenant.starthour + $pillory_tenant.duration - 7) * Time.secondsPerHour)>>
+	<<set $pillory_tenant.endhour to (($pillory_tenant.endDate % Time.secondsPerDay) / Time.secondsPerHour)>>
 	<<set $pillory_tenant.crowd to 1>>
 	<<set $pillory_tenant.wet to 0>>
 	<<set $pillory_tenant.upperexposed to 0>>
@@ -4442,14 +4456,14 @@
 <<widget "npc_pillory_release_schedule">>
 	<<get_pillory_npc>>
 	<br>
-	<<if Time.days is $pillory_tenant.endday>>
-	<<set _a_few to ($pillory_tenant.endhour - Time.hour)>>
+	<<if ($pillory_tenant.endDate - $timeStamp) lte Time.secondsPerDay>>
+	<<set _a_few to Math.floor(($pillory_tenant.endDate - $timeStamp) / Time.secondsPerHour)>>
 		<<He>> will be released
 		<<if _a_few gt 0>>in _a_few hours.
 		<<else>>imminently.
 		<</if>>
 	<<else>>
-		<<set _days_left to ($pillory_tenant.endday - Time.days)>>
+		<<set _days_left to Math.floor(($pillory_tenant.endDate - $timeStamp) / Time.secondsPerDay)>>
 		<<He>> is scheduled for release <<if _days_left is 1>>tomorrow<<else>>in two days<</if>> at
 		<<switch $pillory_tenant.endhour>>
 			<<case 0>>midnight.

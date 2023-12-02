@@ -2,6 +2,7 @@
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 <<if $schoolstate is "first">>
+	<<classRoomEarSlime "science">>
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
@@ -105,6 +106,7 @@
 		<br><br>
 	<</if>>
 <<elseif $schoolstate is "morning">>
+	<<classRoomEarSlime "science">>
 	You enter the science classroom. No one else has arrived yet. You could use the extra time to study.
 	<br><br>
 
@@ -120,7 +122,6 @@
 	<br>
 	<<getouticon>><<link [[Leave|Hallways]]>><</link>>
 	<br>
-
 <<elseif $schoollesson is 1>>
 	<<if $daily.school.scienceInterrupted is 1>>
 
@@ -262,11 +263,26 @@ Sirris looks exasperated. "Right. I'll have to inform the head of your behaviour
 	<br><br>
 	<<endevent>>
 	<<exam_cheat science>>
-	<<link [[Focus|Science Exam]]>><<stress 6>><<set $phase to 0>><<set $exam_chance += 5>><</link>><<gstress>><<passPercent 5>>
-	<br>
-	<<link [[Try to relax|Science Exam]]>><<set $phase to 1>><</link>>
-	<br>
-	<<link [[Cheat|Science Exam]]>><<set $phase to 2>><</link>><<skulduggerydifficulty>>
+	
+	<<if !$daily.earSlimeCheatExam and numberOfEarSlime() and earSlimeMakingMundaneRequests() and random(0,200) gte 150 - $earSlime.corruption>>
+		<<set $daily.earSlimeCheatExam to true>>
+		<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to cheat in the exam.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+		<br><br>
+		<<link [[Obey|Science Exam]]>><<set $phase to 3>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<if $earSlime.startedThreats>>
+			<<link [[Defy|Science Exam]]>><<set $phase to 5>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<<else>>
+			<<link [[Ignore|Science Exam]]>><<set $phase to 4>><</link>>
+		<</if>>
+		<br>
+	<<else>>
+		<<link [[Focus|Science Exam]]>><<stress 6>><<set $phase to 0>><<set $exam_chance += 5>><</link>><<gstress>><<passPercent 5>>
+		<br>
+		<<link [[Try to relax|Science Exam]]>><<set $phase to 1>><</link>>
+		<br>
+		<<link [[Cheat|Science Exam]]>><<set $phase to 2>><</link>><<skulduggerydifficulty>>
+	<</if>>
 	<br>
 <<elseif $schoolevent is 0 and $schooleventtimer lte 0 and Time.weekDay isnot 6>><<set $schoolevent += 1>><<set $schooleventtimer to 14>>
 	<<npc Sirris>><<person1>>"The headteacher has asked to be involved with the lesson today," Sirris says. "I know you'll all be on your best behaviour." The door opens as <<he>> finishes, and Leighton steps in.

@@ -73,7 +73,7 @@ A <<personsimple>>'s voice greets you.
 	<br>
 <</if>>
 <<if $purity lte 700 or $demon gte 6>>
-	<<link [[Confess your impurity|Temple Confess Self Purity]]>><<set $confession to "purity">><</link>><<gpurity>>
+	<<link [[Confess your impurity|Temple Confess Self Purity]]>><<set $confession to "purity">><<purity 5>><</link>><<gpurity>>
 	<br>
 <</if>>
 <<if $loveInterest.primary isnot "None" and $loveInterest.secondary isnot "None">>
@@ -753,7 +753,7 @@ You recount your acts of deviancy and debauchery.
 			<<link [[Refuse|Temple Confess Self Refuse]]>><</link>>
 			<br>
 		<<default>>
-			<<set $exhibitionism -= 3>><<trauma 80>>
+			<<set $deviancy -= 3>><<trauma 80>>
 			"A... ah. I see. I..." You hear <<him>> stand, and see <<his>> silhouette draw the shape of a cross against the wooden slats. "I name you forgiven by word. You must still forgive yourself by act," <<he>> says in a rehearsed tone.
 			<br><br>
 
@@ -764,14 +764,14 @@ You recount your acts of deviancy and debauchery.
 			<br>
 	<</switch>>
 <<else>>
-	<<if $exhibitionism gte 55>>
-		<<set $exhibitionism -= 2>><<trauma 50>>
+	<<if $deviancy gte 55>>
+		<<set $deviancy -= 2>><<trauma 50>>
 		There's a lot to cover, so you waste no time. You hesitate at some of the more embarrassing instances of lewd gratification with animals, but eventually tell it all.
-	<<elseif $exhibitionism gte 35>>
-		<<set $exhibitionism -= 2>><<trauma 40>>
+	<<elseif $deviancy gte 35>>
+		<<set $deviancy -= 2>><<trauma 40>>
 		You feel a little ashamed as you recall some of the more adventurous times, but eventually tell it all.
 	<<else>>
-		<<set $exhibitionism -= 1>><<trauma 30>>
+		<<set $deviancy -= 1>><<trauma 30>>
 		There isn't too much to tell, and by the time you're done talking you already feel a little better.
 	<</if>>
 	<br><br>
@@ -1135,13 +1135,42 @@ The stimulation continues for quite some time, and you feel your knees start to 
 
 <<arousal 10000 "genitals">>
 <<orgasm>>
-<<if $femaleclimax and !$player.vaginaExist>>
+<<if ($femaleclimax or _deniedOrgasm or $worn.genitals.name is "chastity parasite") and !$player.vaginaExist>>
 	"Nothing? Unusual. Still, I feel the corruption has abated."
 <<else>>
-	You feel the residual fluids being collected from your <<genitals>>. "A fine expulsion."
+	You feel the residual fluids being collected from your
+	<<if ($femaleclimax or _deniedOrgasm or $worn.genitals.name is "chastity parasite")>>
+		<<pussy>>.
+	<<else>>
+		<<genitals>>.
+	<</if>>
+	"A fine expulsion."
 <</if>>
 <<if $earSlime.corruption>>
-	<<corruption -5>><<llcorruption>>
+	<<if $earSlime.growth gte 50>>
+		<<set $earSlime.growth to Math.clamp(Math.ceil($earSlime.growth * 0.9), 51, Infinity)>>
+		<<if $earSlime.growth gte 100>>
+			<<set $earSlime.defyCooldown += 6>>
+		<<else>>
+			<<set _parasitesRemoved to "">>
+			<<if $earSlime.growth lte 100 and $parasite.penis.name and $parasite.penis.name is "parasite">>
+				<<removeparasite "penis">>
+				<<set _parasitesRemoved to "genitals">>
+			<</if>>
+			<<if $earSlime.growth lte 100 and $parasite.clit.name and $parasite.clit.name is "parasite">>
+				<<removeparasite "clit">>
+				<<set _parasitesRemoved to "genitals">>
+			<</if>>
+			<<if $earSlime.growth lte 75 and $parasite.breasts.name and $parasite.breasts.name is "parasite">>
+				<<removeparasite "breasts">>
+				<<set _parasitesRemoved to "breasts">>
+			<</if>>
+			<<if _parasitesRemoved>>You watch as the parasites on your _parasitesRemoved start losing their colour before seemly disintegrating.<</if>>
+		<</if>>
+	<<else>>
+		<<set $earSlime.growth to Math.clamp(Math.ceil($earSlime.growth * 0.9), 0, Infinity)>>
+	<</if>>
+	<<llcorruption true>><<corruption -10>>
 	<br><br>
 <</if>>
 You hear <<him>> stand, and see <<his>> silhouette draw the shape of a cross against the wooden slats. "I name you purified, and may you remain on the path of the light hereafter," <<he>> says in a grim tone.
@@ -1175,7 +1204,7 @@ The scraping of metal irritates your ears, but you can't see what's happening. <
 		<<set $deviancy -= 2>><<trauma 40>>
 	<</if>>
 <<elseif $confession is "purity">>
-	<<purity 10>>
+	<<purity 20>>
 <</if>>
 <<link [[Next|Temple Confess Self End Alone]]>><<clotheson>><</link>>
 <br>
@@ -1409,14 +1438,14 @@ You hear the other door open and greet your attendant.
 		"I've started seeing... visions. Hearing voices. They tell me to do terrible things, until I am a terrible thing myself. I know they aren't real, no matter how real they feel. I... I don't know what I've done wrong, or what I should do to make it stop."
 	<</addinlineevent>>
 	<<addinlineevent "confession_corrupt_4" 0.7>>
-		<<generatey1>><<person1>><<set $attendant to "corrupt_4">>
+		<<generateRole 0 0 "initiate" t>><<person1>><<set $attendant to "corrupt_4">>
 		They sit. A <<personsimple>>'s voice greets you. "Hello, <<sister>>. I've been having some... horrible thoughts lately. Things I would never think of on purpose. I... can I share? Some of them are really bad."
 		<br><br>
 
 		You give <<him>> permission to continue.
 		<br><br>
 
-		"I've had thoughts about other initiates. Thoughts about making them break their vows just to see them get punished. Thoughts about other members of our order, and how I'd like them to... defile... me. Thoughts about <<nnpc_brother "Jordan">> Jordan..."
+		"I've had thoughts about other initiates. Thoughts about making them break their vows just to see them get punished. Thoughts about other members of our order, and how I'd like them to... defile... me. Thoughts about <<nnpc_brother "Jordan">> Jordan... I even had my <<if $pronoun is "m">>cage<<else>>belt<</if>> removed just to have <<nnpc_him "Jordan">> close to me."
 		<br><br>
 
 		<<He>> begins to sob. "And... and I'm starting to like these thoughts! I hate that I like them! They aren't mine! This isn't who I am!"
@@ -2297,15 +2326,15 @@ You hear the other door open and greet your attendant.
 
 		"Of course. Apologies, <<sister>>." <<He>> exits the confessional. <<grace 1>><<ggrace>>
 	<<case "temple_4" "temple_5">>
-		"Your punishment will come when you're inspected. Until then, work to rectfy your betrayal."
+		"Your punishment will come when you're inspected. Until then, work to rectify your betrayal."
 		<br><br>
 
 		"Of course, <<sister>>. I will atone, one way or another." <<He>> exits the confessional.
 	<<case "temple_6">>
-		"Your punishment will come when you're inspected. Until then, work to rectfy your betrayal."
+		"Your punishment will come when you're inspected. Until then, work to rectify your betrayal."
 		<br><br>
 
-		R...right. Apologies." <<His>> voice is full of dread. <<He>> exits the confessional sheepishly.
+		"R...right. Apologies." <<His>> voice is full of dread. <<He>> exits the confessional sheepishly.
 	<<case "sydney_promised">>
 		"Do not abuse the Rite of Promise. You risk corrupting you and your beloved."
 		<br><br>
@@ -2478,7 +2507,7 @@ You grab one of the pieces of paper and a pen from the stack and slip them throu
 	<<case "temple_4" "temple_5">>
 		"Of course, <<sister>>. I will be pure again, one way or another." <<He>> writes <<his>> name and exits the confessional. <<grace -2>><<lgrace>>
 	<<case "temple_6">>
-		R...right. Purification." <<His>> voice is full of dread. <<He>> writes <<his>> name and exits the confessional sheepishly.	<<grace -2>><<lgrace>>
+		"R...right. Purification." <<His>> voice is full of dread. <<He>> writes <<his>> name and exits the confessional sheepishly.	<<grace -2>><<lgrace>>
 	<<case "sydney_promised" "sydney_romance" "sydney_love">>
 		"What? I haven't broken my vow. Are you trying to...? No, nevermind. Good day, <<sister>>." <<He>> exits the confessional. <<grace -2>><<lgrace>>
 	<<case "winter">>
@@ -3438,7 +3467,7 @@ You grab one of the pieces of paper and a pen from the stack and slip them throu
 		<<loadNPC 0 "penitent_drain">><<person1>>
 
 		The silver bowl has filled with some of the lewd fluid.
-		<span class="red">A baleful pink glow emenates from it.</span>
+		<span class="red">A baleful pink glow emanates from it.</span>
 		<br><br>
 
 		<<link [[Inspect it|Temple Confess Inspect]]>><</link>>
@@ -3917,7 +3946,7 @@ The <<person1>>center <<priest>> sits, coming down to your eye level. <<His>> fa
 		"The Violet Void."<br>
 		"The Blazing Chariot."<br>
 		"Another."<br>
-		"Never.<br><br>
+		"Never."<br><br>
 
 		"The cult known as the Children of Auriga gnaw at the locks that keep Auriga from entering our world. They gnaw like rabid animals in heat, and worship a profane concept of passion and lust far beyond sanity. We oppose them in every way we can. We fill the holes. We free their victims. We punish," <<he>> licks <<his>> lips, "their followers."
 		<br><br>
@@ -3957,7 +3986,7 @@ The <<person1>>center <<priest>> sits, coming down to your eye level. <<His>> fa
 			<<elseif $fallenangel gte 2>>
 				"You're no stranger to loss, are you? There's an emptiness in you, one from which the taint can't escape." The <<bishop>> smiles. "Beyond that, we believe
 			<<elseif $demon gte 6>>
-				"One so profane is still useful. The taint can't take anything more from you." The <<bishop>> smiles. "Beyond thet, we believe
+				"One so profane is still useful. The taint can't take anything more from you." The <<bishop>> smiles. "Beyond that, we believe
 			<<else>>
 				The <<bishop>> smiles. "We believe
 			<</if>>

@@ -963,7 +963,8 @@ function settingsObjects(type) {
 				clothesPrice: { min: 1, max: 10, decimals: 1, displayName: "Cost of clothing:", randomize: "gameplay" },
 				clothesPriceUnderwear: { min: 1, max: 2, decimals: 1, displayName: "Cost of underwear:", randomize: "gameplay" },
 				clothesPriceSchool: { min: 1, max: 2, decimals: 1, displayName: "Cost of school clothes:", randomize: "gameplay" },
-				clothesPriceLewd: { min: 0.1, max: 2, decimals: 1, displayName: "Cost of lewd clothes:", randomize: "gameplay" },
+				clothesPriceLewd: { min: 0.1, max: 5, decimals: 1, displayName: "Cost of lewd clothes:", randomize: "gameplay" },
+				furniturePriceFactor: { min: 0.6, max: 2, decimals: 1, displayName: "Cost of furniture:", randomize: "gameplay" },
 				tending_yield_factor: { min: 1, max: 10, decimals: 1, displayName: "Crop yield:", randomize: "gameplay" },
 				rentmod: { min: 0.1, max: 3, decimals: 1, displayName: "Bailey's rent:", randomize: "gameplay" },
 				beastmalechance: { min: 0, max: 100, decimals: 0, displayName: "Percentage of beasts attracted to you that are male:", randomize: "encounter" },
@@ -1031,7 +1032,7 @@ function settingsObjects(type) {
 					},
 				},
 				parasitedisable: { boolLetter: true, bool: true, displayName: "Parasites:" },
-				// ruinedorgasmdisable: { boolLetter: true, bool: true, displayName: "Ruined orgasms:" }, uncomment when `$earSlimeTest` and `V.earSlimeTest` is removed from the code
+				ruinedorgasmdisable: { boolLetter: true, bool: true, displayName: "Ruined orgasms:" },
 				slugdisable: { boolLetter: true, bool: true, displayName: "Slugs:" },
 				waspdisable: { boolLetter: true, bool: true, displayName: "Wasps:" },
 				beedisable: { boolLetter: true, bool: true, displayName: "Bees:" },
@@ -1205,7 +1206,8 @@ function settingsObjects(type) {
 					overlayFontSize: { strings: [0, 10, 12, 14, 16, 18, 20], displayName: "Overlay font size:" },
 					sidebarFontSize: { strings: [0, 12, 14, 16, 18, 20], displayName: "Sidebar font size:" },
 					genderBody: { strings: ["default", "m", "a", "f"], displayName: "Body type displayed:" },
-					notesAutoSave: { bool: true, displayName: "Notes auto saving:" }
+					notesAutoSave: { bool: true, displayName: "Notes auto saving:" },
+					dateFormat: { strings: ["en-GB", "en-US", "zh-CN"], displayName: "Date format:" },
 				},
 				shopDefaults: {
 					alwaysBackToShopButton: { bool: true },

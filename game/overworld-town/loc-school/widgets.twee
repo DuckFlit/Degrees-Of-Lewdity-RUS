@@ -88,24 +88,24 @@
 <<widget "schoolperiod">>
 	<<if $exposed lte 0>>
 		<<if $schoolstate is "morning" or ($schoolstate is "first" and Time.minute lte 58)>>
-			<<scienceicon>><<link [[Go to your science lesson (0:01)|Science Classroom]]>><<pass 1>><</link>>
+			<<scienceicon>><<link [[Go to your science lesson (0:01)|Science Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
 			<br><br>
 		<<elseif $schoolstate is "first" or ($schoolstate is "second" and Time.minute lte 58)>>
-			<<mathicon>><<link [[Go to your maths lesson (0:01)|Maths Classroom]]>><<pass 1>><</link>>
+			<<mathicon>><<link [[Go to your maths lesson (0:01)|Maths Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
 			<br><br>
 		<<elseif $schoolstate is "second" or ($schoolstate is "third" and Time.minute lte 58)>>
-			<<englishicon>><<link [[Go to your English lesson (0:01)|English Classroom]]>><<pass 1>><</link>>
+			<<englishicon>><<link [[Go to your English lesson (0:01)|English Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
 			<br><br>
 		<<elseif $schoolstate is "third" or ($schoolstate is "lunch" and Time.minute lte 58)>>
 			<<foodicon "eat">><<link [[Join the masses in the canteen (0:01)|Canteen]]>><<pass 1>><</link>>
 			<br>
-			<<historyicon>><<link [[Wait in the history classroom (0:01)|History Classroom]]>><<pass 1>><</link>>
+			<<historyicon>><<link [[Wait in the history classroom (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
 			<br><br>
 		<<elseif $schoolstate is "lunch" or ($schoolstate is "fourth" and Time.minute lte 58)>>
-			<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<pass 1>><</link>>
+			<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
 			<br><br>
 		<<elseif $schoolstate is "fourth" or ($schoolstate is "fifth" and Time.minute lte 58)>>
-			<<swimmingicon>><<link [[Go to your swimming lesson (0:01)|School Pool Entrance]]>><<pass 1>><</link>>
+			<<swimmingicon>><<link [[Go to your swimming lesson (0:01)|School Pool Entrance]]>><<set $justEntered to true>><<pass 1>><</link>>
 			<br><br>
 		<</if>>
 	<</if>>
@@ -2649,11 +2649,11 @@
 	<<if $phase is 1>>
 		<<set $phase to 0>>
 		<<if $exposed gte 1 and $swimall isnot 1>>
-			The bell rings, signifying the end of the lesson. You wait as the other students leave. Some students linger, doubtlessly hoping to get a nice view when you climb out, but Mason herds them away, giving you some privacy.
+			The bell rings, signifying the end of the lesson. You wait as the other students leave. Some students linger, doubtlessly hoping to get a nice view when you climb out, but Mason herds them away, giving you some privacy. You climb out of the pool<<if playerBellyVisible()>> once Mason gives the go ahead, and <<nnpc_he "Mason">> sticks close by to assist you<</if>>.
 			<br><br>
 
 		<<elseif $exposed lte 0>>
-			The bell rings, signifying the end of the lesson. You climb out of the pool.
+			The bell rings, signifying the end of the lesson. You climb out of the pool<<if playerBellyVisible()>> once Mason gives the go ahead, and <<nnpc_he "Mason">> sticks close by to assist you<</if>>.
 			<br><br>
 
 		<</if>>
@@ -3024,3 +3024,67 @@
 	<</if>>
 	<br>
 <</widget>>
+
+<<widget "classRoomEarSlime">>
+	<<if $args[0] is $daily.earSlimeSkipLesson and $justEntered>>
+		You try to ignore the slime's command, but find yourself unable to enter the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
+		<br><br>
+		<<if $daily.earSlimeSkipLesson is "swimming">>
+			<<link [[Next|$lastChangingRoom]]>><<endevent>><</link>>
+		<<else>>
+			<<link [[Next|Hallways]]>><<endevent>><</link>>
+		<</if>>
+		<<unset $justEntered>>
+		<<exitAll>>
+	<<elseif $args[0] and !$daily.earSlimeSkipLesson and $args[0] isnot $weekly.earSlimeSkipLesson and numberOfEarSlime() and earSlimeMakingMundaneRequests() and $justEntered and random(0,200) gte 175 - $earSlime.corruption>>
+		<<set $daily.earSlimeSkipLesson to $args[0]>>
+		<<set $weekly.earSlimeSkipLesson to $args[0]>>
+		<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to skip the $args[0] lesson.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+		<br><br>
+		<<link [[Obey|School Lesson Slime]]>><<set $phase to 0>><<set $lessonPassage to $passage>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<if $earSlime.startedThreats>>
+			<<link [[Defy|School Lesson Slime]]>><<set $phase to 2>><<set $lessonPassage to $passage>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<<else>>
+			<<link [[Ignore|School Lesson Slime]]>><<set $phase to 1>><<set $lessonPassage to $passage>><</link>>
+		<</if>>
+		<br>
+		<<unset $justEntered>>
+		<<exitAll>>
+	<</if>>
+<</widget>>
+
+:: School Lesson Slime
+<<effects>>
+
+<<if $phase is 2>>
+	<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+		<<set $earSlime.defyCooldown += 2>>
+		The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to turn around and leave the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
+		<<ggwillpower>><<willpower 1>>
+		<br><br>
+		<<if $daily.earSlimeSkipLesson is "swimming">>
+			<<link [[Next|$lastChangingRoom]]>><<endevent>><</link>>
+		<<else>>
+			<<link [[Next|Hallways]]>><<endevent>><</link>>
+		<</if>>
+	<<else>>
+		You try to ignore the command from the slime and continue on. It tries <span class="green">but fails</span> to force you out of the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
+		<br><br>
+		<<link [[Next|$lessonPassage]]>><<unset $lessonPassage>><<endevent>><</link>>
+		<<set $daily.earSlimeSkipLesson to "failed">>
+	<</if>>
+<<elseif $phase is 1>>
+	You ignore the command from the slime and continue on.
+	<br><br>
+	<<link [[Next|$lessonPassage]]>><<unset $lessonPassage>><<endevent>><</link>>
+	<<set $daily.earSlimeSkipLesson to "ignored">>	
+<<else>>
+	You follow the ear slime's command and leave the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
+	<br><br>
+	<<if $daily.earSlimeSkipLesson is "swimming">>
+		<<link [[Next|$lastChangingRoom]]>><<endevent>><</link>>
+	<<else>>
+		<<link [[Next|Hallways]]>><<endevent>><</link>>
+	<</if>>
+<</if>>

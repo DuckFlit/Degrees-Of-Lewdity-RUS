@@ -38,7 +38,7 @@ function npcPregObject(person, mother) {
 	if (typeof person === "string" || person instanceof String) {
 		let parentId = parentFunction.findParent(person, parentType, true);
 		if (parentId === -1) {
-			parentId = addToParentList(person, undefined, parentType);
+			parentId = parentFunction.addToParentList(person, undefined, parentType);
 		}
 		if (person === "pc") {
 			// pregnancy isnt required for the player
@@ -84,7 +84,7 @@ function npcPregObject(person, mother) {
 		if (person.fullDescription) {
 			let parentId = parentFunction.findParent(person.fullDescription, parentType, true);
 			if (parentId === -1) {
-				parentId = addToParentList(person.fullDescription, C.npc[person.fullDescription] ? undefined : person, parentType);
+				parentId = parentFunction.addToParentList(person.fullDescription, C.npc[person.fullDescription] ? undefined : person, parentType);
 			}
 			result = {
 				name: person.fullDescription,
@@ -115,7 +115,7 @@ function npcPregObject(person, mother) {
 }
 
 // When adding new types, be sure to adjust related checks in other pregnancy code that check for "human","wolf","wolfboy","wolfgirl" etc
-function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = null }) {
+function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = null, override = null }) {
 	let pregnancy;
 	let fertility = 0;
 	let magicTattoo = 0;
@@ -135,8 +135,10 @@ function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = n
 
 		pregnancy = V.sexStats[genital].pregnancy;
 
-		// Prevent any pregnancy if a Non-parasitic pregnancy already exists
-		if (pregnancy.type !== "parasite" && pregnancy.fetus.length) return ["Player currently pregnant and cannot support other types"];
+		// Prevent any pregnancy if a Non-parasitic pregnancy already exists unless a specific override is provided
+		if (override === "hawk" && pregnancy.type === "hawk") {
+			if (pregnancy.fetus.length && pregnancy.fetus[0] && pregnancy.fetus[0].eggTimer) return ["Hawk eggs already fertilised"];
+		} else if (pregnancy.type !== "parasite" && pregnancy.fetus.length) return ["Player currently pregnant and cannot support other types"];
 
 		// Prevent any non-parasitic pregnancy a parasitic pregnancy already exists
 		if (pregnancy.type === "parasite" && !parasiteType) return ["Player currently pregnant with parasite and cannot support other types"];
@@ -157,6 +159,12 @@ function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = n
 			if (!pregnancy || !pregnancy.enabled) {
 				return ["Pregnancy not supported or disabled by the player"];
 			}
+
+			// Prevent any pregnancy if a Non-parasitic pregnancy already exists unless a specific override is provided
+			if (override === "hawk" && pregnancy.type === "hawk") {
+				if (pregnancy.fetus.length && pregnancy.fetus[0] && pregnancy.fetus[0].eggTimer) return ["Hawk eggs already fertilised"];
+			} else if (pregnancy.type !== "parasite" && pregnancy.fetus.length) return ["NPC currently pregnant and cannot support other types"];
+
 			if (pregnancy.pills === "fertility") {
 				fertility += 1;
 			}
@@ -552,6 +560,62 @@ window.pregnancyGenerator = {
 			return result;
 		}
 		T.impregnatedParasite = null;
+		return false;
+	},
+	hawk: (mother, father, fatherKnown = false, genital = "vagina", monster = false) => {
+		// Hard coded limit
+		const limit = Object.values(V.children).length;
+
+		const motherObject = npcPregObject(mother, true);
+		let fatherObject;
+		if (father) fatherObject = npcPregObject(father);
+
+		const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital, override: "hawk" });
+		if (typeof pregnancy === "string" || pregnancy instanceof String) return pregnancy;
+
+		if (pregnancy) {
+			const result = { fetus: [], type: "hawk", timer: 0, timerEnd: random(3, 6) };
+
+			let count;
+			if (mother === "pc") {
+				count = Math.clamp(V.harpyEggs, 0, 3);
+			} else {
+				count = random(1, 3);
+			}
+			if (!count) return false;
+			if (fertility || magicTattoo) count++;
+
+			const featherColour = ["white", "brown"];
+
+			for (let i = 0; i < count; i++) {
+				// Hard coded limit
+				if (limit + result.fetus.length >= 1000) return;
+				const childId =
+					"m" + motherObject.parentId.id + "b" + motherObject.parentId.kids + "d" + fatherObject.parentId.id + "f" + fatherObject.parentId.kids;
+				const birthId = motherObject.parentId.births;
+				let gender = random(0, 100) > 50 ? "f" : "m";
+				if ((motherObject.gender === "h" || fatherObject.gender === "h") && (motherObject.name === fatherObject.name || random(0, 100) >= 75))
+					gender = "h";
+				const baby = babyBase({
+					childId,
+					birthId,
+					mother: motherObject.name,
+					father: fatherObject.name,
+					fatherKnown,
+					type: "hawk",
+					monster: monster ? "monster" : 0,
+					gender,
+					size: bodySizeCalc(V.bodysize),
+					eyeColour: [eyeColourCalc(motherObject.name), eyeColourCalc(fatherObject.name)][random(0, 1)],
+					hairColour: featherColour[random(0, featherColour.length - 1)],
+				});
+				// Hours
+				baby.eggTimer = random(24 * 26, 24 * 32);
+				result.fetus.push(baby);
+				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
+			}
+			return result;
+		}
 		return false;
 	},
 };

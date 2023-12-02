@@ -47,6 +47,9 @@ function playerBellySize(pregnancyOnly = false) {
 			case "wolf":
 				if (!vpregnancy.gaveBirth) maxSize += 20 + Math.clamp(vpregnancy.fetus.length / 2, 1, 4);
 				break;
+			case "hawk":
+				if (!vpregnancy.gaveBirth) maxSize += 7 + Math.clamp(vpregnancy.fetus.length, 1, 3);
+				break;
 		}
 		switch (apregnancy.type) {
 			case "parasite":
@@ -57,6 +60,9 @@ function playerBellySize(pregnancyOnly = false) {
 				break;
 			case "wolf":
 				if (!apregnancy.gaveBirth) maxSize += 20 + Math.clamp(apregnancy.fetus.length / 2, 1, 4);
+				break;
+			case "hawk":
+				if (!apregnancy.gaveBirth) maxSize += 7 + Math.clamp(apregnancy.fetus.length, 1, 3);
 				break;
 		}
 		// The '+ 5' inflates the pregnancy belly size, meaning that the early stages of pregnancy will have no belly size increase due to it being reduced by the '- 5'
@@ -91,6 +97,9 @@ function npcBellySize(npc) {
 				break;
 			case "wolf":
 				maxSize += 20 + Math.clamp(pregnancy.fetus.length / 2, 1, 4);
+				break;
+			case "hawk":
+				maxSize += 8 + Math.clamp(pregnancy.fetus.length, 1, 3);
 				break;
 		}
 		// The '+ 5' inflates the pregnancy belly size, meaning that the early stages of pregnancy will have no belly size increase due to it being reduced by the '- 5'
@@ -528,6 +537,8 @@ function pregnancyDaysEta(pregnancyObject) {
 			return Math.floor(timerLeft / (9 / V.humanPregnancyMonths));
 		case "wolf":
 			return Math.floor(timerLeft / (12 / V.wolfPregnancyWeeks));
+		case "hawk":
+			return Math.floor(timerLeft);
 		default:
 			return null;
 	}
@@ -727,7 +738,13 @@ function knowsAboutChildrenTotal(motherOrFather, whoToCheck, location) {
 }
 window.knowsAboutChildrenTotal = knowsAboutChildrenTotal;
 
-function childrenCountBetweenParents(parent1, parent2) {
+function childrenCountBetweenParents(parent1, parent2, motherAndFather = false) {
+	if (motherAndFather) {
+		return Object.values(V.children).reduce((prev, curr) => {
+			if (curr.father !== curr.mother && [parent1].includes(curr.mother) && [parent2].includes(curr.father)) return prev + 1;
+			return prev;
+		}, 0);
+	}
 	return Object.values(V.children).reduce((prev, curr) => {
 		if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1, parent2].includes(curr.father)) return prev + 1;
 		return prev;
@@ -735,7 +752,13 @@ function childrenCountBetweenParents(parent1, parent2) {
 }
 window.childrenCountBetweenParents = childrenCountBetweenParents;
 
-function pregnancyCountBetweenParents(parent1, parent2) {
+function pregnancyCountBetweenParents(parent1, parent2, motherAndFather = false) {
+	if (motherAndFather) {
+		return Object.values(V.children).reduce((prev, curr) => {
+			if (curr.father !== curr.mother && [parent1].includes(curr.mother) && [parent2].includes(curr.father)) prev.pushUnique(curr.mother + curr.birthId);
+			return prev;
+		}, []).length;
+	}
 	return Object.values(V.children).reduce((prev, curr) => {
 		if (curr.father !== curr.mother && [parent1, parent2].includes(curr.mother) && [parent1, parent2].includes(curr.father))
 			prev.pushUnique(curr.mother + curr.birthId);

@@ -191,11 +191,6 @@ Your bed takes up most of the room.
 	<<furnitureicon _bed.iconFile>><<link [[Strip and get in bed|Bed]]>><<undressSleep "bed">><</link>>
 	<br>
 	<<listsleepoutfits>>
-
-	<<if _bed.type.includes("comfy")>>
-		<<furnitureicon _bed.iconFile>><<link [[Masturbate in bed|Home Masturbation]]>><<set $masturbationstart to 1>><</link>>
-		<br>
-	<</if>>
 <<else>>
 	<br>
 	<<if $possessed>>
@@ -203,6 +198,11 @@ Your bed takes up most of the room.
 	<<else>>
 		<span class="red">The slime wants you to <<print $earSlime.event>> before you can go to bed.</span>
 	<</if>>
+	<br>
+<</if>>
+
+<<if _bed.type.includes("comfy")>>
+	<<furnitureicon _bed.iconFile>><<link [[Masturbate in bed|Home Masturbation]]>><<set $masturbationstart to 1>><</link>>
 	<br>
 <</if>>
 
@@ -784,10 +784,6 @@ You are in the bathroom.
 <<set _robin to statusCheck("Robin")>>
 
 <<sleep>>
-<<if _dreaming>>
-	<<exit>>
-	/* <<earSlimeFocusChoice>> or similar widgets are running */
-<</if>>
 
 <<effects>>
 <<sleepeffects>><<rngWraith 2 "noBlood">>
@@ -951,12 +947,6 @@ You are in the bathroom.
 	<br>
 	<<link [[Get angry|Bedroom Kylar Creep]]>><<set $phase to 3>><<npcincr Kylar rage 2>><<npcincr Kylar love -1>><<stress -6>><</link>><<lstress>><<llove>><<gksuspicion>>
 
-<<elseif $location is "home" and $slimeWake is 1>>
-	<<slime_wake_home>>
-<<elseif _slimeWakeMasturbation is 1>>
-	<<set _masturbationExit to "Sleep">>
-	<<slimeWakeMasturbation>>
-	
 <<else>>
 	<<if $nightmares is 1 and $controlled is 0>>
 		<<if _sleepinterrupt>>
@@ -1139,10 +1129,6 @@ You are in the bathroom.
 <<set _autosavehere to true>>
 <<run statusCheck("Robin")>>
 <<sleep>>
-<<if _dreaming>>
-	<<exit>>
-	/* <<earSlimeFocusChoice>> or similar widgets are running */
-<</if>>
 
 <<effects>>
 <<sleepeffects>>
@@ -1186,8 +1172,6 @@ You are in the bathroom.
 	<br>
 	<<link [[Toss and go back to sleep|Robin Sleep]]>><<endevent>><</link>>
 	<br>
-<<elseif $location is "home" and $slimeWake is 1>>
-	<<slime_wake_home>>
 <<else>>
 	<<if $nightmares is 1 and $controlled is 0>>
 		<<if _sleepinterrupt is 1>>
@@ -1904,11 +1888,13 @@ You've pushed yourself too much.
 <<if $robinbed is "yours">>
 	You snuggle under the covers with Robin.
 <<else>>
-	<<if $location is "home" and $earSlime.corruption gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 + Math.floor($earSlime.growth / 100) + $earSlime.defyCooldown and !$earSlime.eventTimer and !$earSlime.event>>
+	<<if numberOfEarSlime() and $location is "home" and random(0,100) lt 3 + Math.floor($earSlime.growth / 100) - $earSlime.eventTimer and !$earSlime.event>>
 		<<set $slimeBedExit to "Bed">>
 		<<set $slimeBedroomExit to "Bedroom">>
-		<<slimeNoSleep>>
-		<<set _skip to true>>
+		<<setSlimeSleepEvents>>
+		<<if $earSlimeEvent>>
+			<<slimeSleepEvents>>
+		<</if>>
 	<<else>>
 		You snuggle under the covers.
 	<</if>>
@@ -1918,11 +1904,6 @@ You've pushed yourself too much.
 	You feel anxious, and your eyes dart over to the mirror.
 <</if>>
 <br><br>
-
-<<if _skip>>
-	<<unset _skip>>
-	<<exit>>
-<</if>>
 
 <<nightmareCheck "Sleep">>
 <<generateSleepLinks "Sleep">>
@@ -2414,6 +2395,10 @@ and !$fromRobinRoom and _robin.cdquest is 2 and _robin.trauma lte 20 and !$daily
 	<<elseif $pubfame and $pubfame.intro lte 2 and $pub_hack_job lte 3>>
 		<<ind>><<link [[Find hacker (0:10)|Orphanage Hacker]]>><<pass 10>><</link>>
 		<br><br>
+	<</if>>
+	<<if $temple_spear_mission is undefined>>
+		<<ind>><<link [[Test spear quest and pirate ship|Sneaky Temple Spear Pirate Test]]>><</link>> <span class="gold"><i>Sneaky</i></span>
+		<br>
 	<</if>>
 	<<if $kylar_camera is 5>>
 		<<ind>><<link [[Decide what to do with Kylar's camera (0:05)|Orphanage Kylar Camera]]>><<pass 5>><</link>>

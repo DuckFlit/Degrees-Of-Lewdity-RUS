@@ -586,7 +586,12 @@ function dayPassed() {
 		}
 	}
 
-	earSlimeDaily();
+	if (numberOfEarSlime()) {
+		// Daily Corruption
+		if (V.earSlime.growth < 50) fragment.append(wikifier("corruption", -1));
+		fragment.append(wikifier("corruption", numberOfEarSlime(), true));
+		earSlimeDaily();
+	}
 
 	if (V.bell_timer) V.bell_timer--;
 	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
@@ -760,7 +765,7 @@ function dayPassed() {
 	fragment.append(wikifier("tending_day"));
 	fragment.append(wikifier("creatureContainersProgressDay"));
 
-	if (V.pillory_tenant.exists && V.pillory_tenant.endday < Time.days) fragment.append(wikifier("clear_pillory"));
+	if (V.pillory_tenant.exists && V.pillory_tenant.endDate < V.timeStamp) fragment.append(wikifier("clear_pillory"));
 
 	delete V.daily;
 	V.daily = {
@@ -796,6 +801,12 @@ function dayPassed() {
 		}
 	}
 
+	if (V.pirate_journey > 1) {
+		V.pirate_journey--;	
+	} else {
+		delete V.pirate_journey;
+	}
+
 	return fragment;
 }
 
@@ -825,7 +836,7 @@ function hourPassed(hours) {
 		}
 		if (V.earSlime.defyCooldown) {
 			V.earSlime.defyCooldown--;
-			if (V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime" && V.earSlime.growth < 100) V.earSlime.defyCooldown--;
+			if (numberOfEarSlime() > 1 && V.earSlime.growth < 100) V.earSlime.defyCooldown--;
 			if (V.earSlime.defyCooldown <= 0) V.earSlime.defyCooldown = 0;
 		}
 		playerEndWaterProgress();
@@ -848,7 +859,7 @@ function hourPassed(hours) {
 	if (V.wolfpatrolsent >= 24) delete V.wolfpatrolsent;
 	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
 	if (V.robinPillory && V.robinPillory.danger !== undefined) fragment.append(wikifier("robinPilloryHour"));
-	if (V.pillory_tenant.exists && V.pillory_tenant.endday === Time.days && V.pillory_tenant.endhour < Time.hour) fragment.append(wikifier("clear_pillory"));
+	if (V.pillory_tenant.exists && V.pillory_tenant.endDate < V.timeStamp) fragment.append(wikifier("clear_pillory"));
 	if (C.npc.Sydney.init === 1) {
 		fragment.append(wikifier("sydneySchedule"));
 		if (T.sydney_location === "temple" && V.temple_rank !== undefined && V.temple_rank !== "prospective") {
@@ -1154,10 +1165,6 @@ function dailyPlayerEffects() {
 	const fragment = document.createDocumentFragment();
 
 	V.willpower *= 0.99;
-
-	fragment.append(wikifier("corruption", -1));
-	if (V.parasite.left_ear.name === "slime") fragment.append(wikifier("corruption", 1));
-	if (V.parasite.right_ear.name === "slime") fragment.append(wikifier("corruption", 1));
 
 	if (V.awareness <= -200 && V.innocencestate !== 1) {
 		V.innocencestate = 1;
@@ -1625,7 +1632,7 @@ function dailyMasochismSadismEffects() {
 				break;
 			case 1:
 				if (stat >= 300) return { level: 2, message: "up 2" };
-				else if (stat <= 50) return { level: 0, message: "down 1" };
+				else if (stat <= 50) return { level: 0, message: "down 0" };
 				break;
 			case 2:
 				if (stat >= 500) return { level: 3, message: "up 3" };
@@ -1834,8 +1841,8 @@ function getArousal(passMinutes) {
 	if (V.penilechastityparasite) addedArousal += minuteMultiplier * V.genitalsensitivity;
 	if (V.vaginalchastityparasite) addedArousal += minuteMultiplier * V.genitalsensitivity;
 	if (V.parasite.nipples.name) addedArousal += minuteMultiplier * V.breastsensitivity;
-	if (V.parasite.penis.name) addedArousal += minuteMultiplier * V.genitalsensitivity;
-	if (V.parasite.clit.name) addedArousal += minuteMultiplier * V.genitalsensitivity;
+	if (V.parasite.penis.name && V.parasite.penis.name !== "parasite") addedArousal += minuteMultiplier * V.genitalsensitivity;
+	if (V.parasite.clit.name && V.parasite.clit.name !== "parasite") addedArousal += minuteMultiplier * V.genitalsensitivity;
 	if (V.parasite.bottom.name) addedArousal += minuteMultiplier * V.bottomsensitivity;
 	if (V.analchastityparasite) addedArousal += minuteMultiplier;
 	if (V.parasite.tummy.name) addedArousal += minuteMultiplier;
@@ -1849,21 +1856,27 @@ function getArousal(passMinutes) {
 	if (V.parasite.right_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
 	if (V.earSlime.growth > 100 && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
 
-	if (V.worn.genitals.name === "chastity parasite") {
+	if (
+		V.worn.genitals.name === "chastity parasite" ||
+		(V.parasite.penis.name && V.parasite.penis.name === "parasite") ||
+		(V.parasite.clit.name && V.parasite.clit.name === "parasite")
+	) {
 		if (!V.masturbating) {
-			if (V.earSlime.corruption >= 100 && !V.earSlime.defyCooldown && !V.earSlime.vibration) {
+			if (V.earSlime.corruption >= 100 && !V.earSlime.defyCooldown && !V.earSlime.vibration && !V.earSlime.event) {
 				V.earSlime.lastVibration += passMinutes;
-				if (V.earSlime.lastVibration > random(180, 720)) {
-					V.earSlime.vibration = random(2, 60);
+				if (V.earSlime.lastVibration > random(240, 720)) {
+					V.earSlime.vibration = random(60, 120);
 					V.earSlime.lastVibration = 0;
 				}
 			}
 			if (V.earSlime.defyCooldown) {
 				if (V.pain < 25) V.pain += Math.clamp(passMinutes, 0, 20 - Math.floor(V.pain));
-				// Helps to reduce the penis size
-				V.penisgrowthtimer += Math.floor(passMinutes / 4);
+				if (V.worn.genitals.name === "chastity parasite") {
+					// Helps to reduce the penis size
+					V.penisgrowthtimer += Math.floor(Math.clamp(passMinutes / 8, 0, (passMinutes * 60) / V.earSlime.defyCooldown));
+				}
 			} else if (V.earSlime.vibration > 0) {
-				addedArousal += Math.clamp(minuteMultiplier, 0, V.earSlime.vibration * 10) * V.genitalsensitivity;
+				addedArousal += Math.clamp(minuteMultiplier * 4, 0, V.earSlime.vibration * 40) * V.genitalsensitivity;
 				V.earSlime.vibration -= Math.clamp(passMinutes, 0, V.earSlime.vibration);
 				V.earSlime.lastVibration = Math.clamp(passMinutes - V.earSlime.vibration, 0, Infinity);
 			}
@@ -1876,19 +1889,33 @@ function getArousal(passMinutes) {
 	return addedArousal;
 }
 
-function earSlimeDaily() {
-	if (V.earSlime.eventTimer >= 1) V.earSlime.eventTimer--;
-	if (V.earSlime.eventTimer < 1) V.earSlime.event = "";
+function earSlimeDaily(passageEffects = false) {
+	if (!passageEffects) {
+		// Stats
+		V.earSlimeDaysStat++;
+		V.earSlime.days++;
+		if (V.earSlime.days > V.earSlimePassiveDaysStat && !V.earSlime.startedThreats) V.earSlimePassiveDaysStat = V.earSlime.days;
 
-	if (V.earSlime.corruption >= 60 && V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime" && V.earSlimeTest) {
-		if (V.earSlime.growth < 100) V.earSlime.growth++;
-		if (V.earSlime.corruption >= 100) V.earSlime.growth++;
-		V.earSlime.growth = Math.clamp(V.earSlime.growth, 0, V.earSlime.focus === "none" ? 50 : 200);
-	} else if (V.earSlime.corruption < 30 && V.earSlime.growth <= 50 && V.earSlimeTest) {
-		// Reduce the growth variable only if below or equal to 50
-		V.earSlime.growth--;
+		// Daily Events
+		if (V.earSlime.eventTimer > -10) V.earSlime.eventTimer--;
+		if (V.earSlime.event === "") V.earSlime.eventTimer -= Math.ceil(V.earSlime.corruption / 40);
+		if (V.earSlime.eventTimer < 1) V.earSlime.event = "";
+		V.earSlime.eventTimer = Math.clamp(V.earSlime.eventTimer, V.earSlime.corruption / -5 - 5, 10);
+
+		// Daily Growth
+		if (V.earSlime.corruption >= 60 && numberOfEarSlime() > 1) {
+			if (V.earSlime.growth < 100) V.earSlime.growth++;
+			if (V.earSlime.corruption >= 100) V.earSlime.growth++;
+		} else if (V.earSlime.corruption >= 60) {
+			if (V.earSlime.growth < 50) V.earSlime.growth++;
+		} else if (V.earSlime.corruption < 30 && V.earSlime.growth <= 50) {
+			// Reduce the growth variable only if below or equal to 50
+			V.earSlime.growth--;
+		}
 	}
+	V.earSlime.growth = Math.clamp(V.earSlime.growth, 0, V.earSlime.focus === "none" ? 50 : 200);
 
+	// Growth Changes
 	if (V.earSlime.growth >= 75 && V.parasite.breasts.name !== "parasite") {
 		wikifier("parasite", "breasts", "parasite", "noSuck");
 		V.effectsmessage = 1;
@@ -1897,7 +1924,7 @@ function earSlimeDaily() {
 
 	if (V.earSlime.growth >= 100) {
 		if (
-			(V.earSlime.growth >= 95 && V.player.gender !== "f" && V.parasite.penis.name !== "parasite") ||
+			(V.earSlime.growth >= 100 && V.player.gender !== "f" && V.parasite.penis.name !== "parasite") ||
 			(V.earSlime.growth >= 100 && V.player.gender === "f" && V.parasite.clit.name !== "parasite")
 		) {
 			if (V.player.gender !== "f") {
@@ -1940,16 +1967,19 @@ function earSlimeDaily() {
 				V.worn.genitals.origin = "ear slime";
 			} else if (V.worn.genitals.name === "chastity parasite" && V.worn.genitals.integrity < clothingData("genitals", V.worn.genitals, "integrity_max")) {
 				// Repairs the chastity parasite
-				if (integrityKeyword(V.worn.genitals.integrity, "genitals") !== "full") {
+				if (integrityKeyword(V.worn.genitals, "genitals") !== "full") {
 					V.effectsmessage = 1;
 					V.penisslimecagemessage = 2;
 				}
 				V.worn.genitals.integrity = clothingData("genitals", V.worn.genitals, "integrity_max");
 			}
 		}
-		if (V.earSlime.forcedDressing) {
+		if (V.earSlime.forcedCommando && V.earSlime.forcedCommando > 0) {
+			V.earSlime.forcedCommando--;
+		}
+		if (V.earSlime.forcedDressing && V.earSlime.forcedDressing.days > 0) {
 			V.earSlime.forcedDressing.days--;
-			if (V.earSlime.forcedDressing.days < 0) delete V.earSlime.forcedDressing;
 		}
 	}
 }
+DefineMacro("earSlimeDaily", earSlimeDaily);

@@ -331,59 +331,55 @@ You lie on your mattress. It's hard to get comfortable<<if ($worn.neck.name is "
 :: Prison Sleep
 <<set _autosavehere to true>>
 <<sleep>>
-<<if _dreaming>>
-	/* <<earSlimeFocusChoice>> or similar widgets are running */
+<<effects>>
+
+<<wakingEffects $sleepHoursTotal>>
+<<if $nightmares gte 1 and $controlled is 0>>
+	<<if _wakingEffect isnot undefined>>
+		You dreamt of
+	<<else>>
+		You dream you are
+	<</if>>
+	being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
 <<else>>
-	<<effects>>
-
-	<<wakingEffects $sleepHoursTotal>>
-	<<if $nightmares gte 1 and $controlled is 0>>
-		<<if _wakingEffect isnot undefined>>
-			You dreamt of
-		<<else>>
-			You dream you are
-		<</if>>
-		being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
-	<<else>>
-		<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
-			You slept soundly, but now feel a little rough.
-			<br><br>
-		<<elseif $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
-			Your sleep is plagued by dirty dreams.
-			<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
-			<<arousal `100 * $sleepHoursTotal`>>
-			<<if $arousal gte $arousalmax>>
-				They push you over the edge.
-				<<orgasm>>
-			<<else>>
-				<br><br>
-			<</if>>
-		<<elseif !_wakingEffect>>
-			You sleep soundly.
-			<br><br>
+	<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
+		You slept soundly, but now feel a little rough.
+		<br><br>
+	<<elseif $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+		Your sleep is plagued by dirty dreams.
+		<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+		<<arousal `100 * $sleepHoursTotal`>>
+		<<if $arousal gte $arousalmax>>
+			They push you over the edge.
+			<<orgasm>>
 		<<else>>
 			<br><br>
 		<</if>>
-	<</if>>
-	<<sleepeffects>>
-	<<if $daily.prison.wake>>
-		A bell rings, waking you from your slumber.
+	<<elseif !_wakingEffect>>
+		You sleep soundly.
 		<br><br>
-		<<set $wardrobe_location to "prison">>
-		<<wardrobeSelection true>>
-		<<radiooutfits>>
-		<br><br>
-		<<link [[Next|Prison Cell]]>><<bedclotheson "prison bed">><<endevent>><</link>>
-		<br>
-
 	<<else>>
 		<br><br>
-		<<set $wardrobe_location to "prison">>
-		<<wardrobeSelection true>>
-		<<radiooutfits>>
-		<br><br>
-		<<link [[Get up|Prison Cell]]>><<bedclotheson "prison bed">><</link>>
 	<</if>>
+<</if>>
+<<sleepeffects>>
+<<if $daily.prison.wake>>
+	A bell rings, waking you from your slumber.
+	<br><br>
+	<<set $wardrobe_location to "prison">>
+	<<wardrobeSelection true>>
+	<<radiooutfits>>
+	<br><br>
+	<<link [[Next|Prison Cell]]>><<bedclotheson "prison bed">><<endevent>><</link>>
+	<br>
+
+<<else>>
+	<br><br>
+	<<set $wardrobe_location to "prison">>
+	<<wardrobeSelection true>>
+	<<radiooutfits>>
+	<br><br>
+	<<link [[Get up|Prison Cell]]>><<bedclotheson "prison bed">><</link>>
 <</if>>
 
 :: Prison Wardrobe [exitCheckBypass]
@@ -672,7 +668,7 @@ You stand outside your cell, and wait as <<methodical_guard 0>> reads out each n
 				<<if $prison.active_punishments.includes("underwear")>>
 					"You can wear underwear again, <span class="pink">but must remain topless."</span>
 				<<else>>
-					"You can wear trousers again," <span class="pink">but must remain topless."</span>
+					"You can wear trousers again, <span class="pink">but must remain topless."</span>
 				<</if>>
 				<br><br>
 			<<else>>
@@ -1362,6 +1358,16 @@ You are in the prison yard. It's spacious, but the surrounding walls are unreaso
 
 		<<link [[Next|Prison Wren Intro Met]]>><<unset $prison_wren_intro>><<set $wren_seen to "prison">><</link>>
 		<br>
+	<<elseif $wren_seen is "winter">>
+		<<npc "Wren">><<person1>>
+		"I've mixed feelings about meeting you here," says a young <<if $pronoun is "m">>man with short<<else>>woman with shoulder-length<</if>> hair. <span class="gold">It's Wren.</span>
+		<br><br>
+
+		"Did old Winter's requests fall outside the law? Maybe we can be useful to each other."
+		<br><br>
+
+		<<link [[Next|Prison Wren Intro Met]]>><<unset $prison_wren_intro>><<set $wren_seen to "prison">><</link>>
+		<br>		
 	<<else>>
 		<<npc "Wren">><<person1>>
 		"Newcomer?" asks a young <<if $pronoun is "m">>man with short<<else>>woman with shoulder-length<</if>> hair. "Just my type." <<He>> wears a prison uniform, but seems apart from the other inmates, freer.

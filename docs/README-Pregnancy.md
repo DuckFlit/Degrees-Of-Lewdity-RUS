@@ -222,19 +222,21 @@ Will return the number of days left before the player/npc will give birth, needs
 -   `<<if pregnancyDaysEta(getPregnancyObject()) lt 5>>`
 -   `<<set _pregnancyObject to getPregnancyObject()>><<print pregnancyDaysEta(_pregnancyObject)>> days remaining.`
 
-#### childrenCountBetweenParents(parent1, parent2)
+#### childrenCountBetweenParents(parent1, parent2, motherAndFather = false)
 
-Returns the number of children between two parents, expects to be provided strings of their name.
+Returns the number of children between two parents, expects to be provided strings of their name. When `motherAndFather` is set to true, `parent1` should be considered the `mother` while `parent2` should be considered the `father`.
 
 -   `<<set _childCount to childrenCountBetweenParents("pc", "Robin")`
 -   `<<if childrenCountBetweenParents("pc", "Robin") gt 1>>`
+-   `<<if childrenCountBetweenParents("pc", "Robin", true) gt 1>>` To check for children who the pc gave birth to.
 
-#### pregnancyCountBetweenParents(parent1, parent2)
+#### pregnancyCountBetweenParents(parent1, parent2, motherAndFather = false)
 
-Returns the number of pregnancies between two parents, expects to be provided strings of their name.
+Returns the number of pregnancies between two parents, expects to be provided strings of their name. When `motherAndFather` is set to true, `parent1` should be considered the `mother` while `parent2` should be considered the `father`.
 
 -   `<<set _childCount to pregnancyCountBetweenParents("pc", "Robin")`
 -   `<<if pregnancyCountBetweenParents("pc", "Robin") gt 0>>`
+-   `<<if pregnancyCountBetweenParents("pc", "Robin", true) gt 0>>` To check for children who the pc gave birth to.
 
 #### setBabyIntro(mother, introFor, birthId)
 

@@ -674,7 +674,7 @@ function closeOverlay() {
 window.closeOverlay = closeOverlay;
 
 function journalNotesReplacer(name) {
-	return name.replace(/[^a-zA-Z0-9' _-]+/g, "");
+	return name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5' _-]+/g, "");
 }
 window.journalNotesReplacer = journalNotesReplacer;
 
@@ -762,3 +762,9 @@ window.loadCharacterViewerDate = () => {
 		textArea.value = "Invalid Import";
 	}
 };
+
+function returnTimeFormat() {
+	if (!V || !V.options) return "en-GB";
+	return V.options.dateFormat;
+}
+window.returnTimeFormat = returnTimeFormat;
