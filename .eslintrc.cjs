@@ -196,12 +196,6 @@ module.exports = {
 		// SugarCube extends native objects and we follow it
 		"no-extend-native": "off",
 
-		/* hasOwn */
-		// No need for this, since we're overriding hasOwn for older browers (01-compatibility.js)
-		// Warn for the hasOwnProperty instead
-		"es-x/no-object-hasown": "off",
-		"prefer-object-has-own": "warn",
-
 		/* eslint-plugin-jsdoc */
 
 		// Descriptions should be sentence-like not comment-like

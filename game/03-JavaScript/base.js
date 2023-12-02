@@ -310,7 +310,12 @@ function outfitChecks() {
 	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
 	T.middleNaked = V.worn.lower.name === "naked" && V.worn.upper.name === "naked";
 	T.overNaked = V.worn.over_lower.name === "naked" && V.worn.over_upper.name === "naked";
-	T.topless = V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && (V.worn.lower.name !== "plaid school pinafore" && V.worn.lower.name !== "school pinafore" && V.worn.lower.name !== "shortalls");
+	T.topless =
+		V.worn.over_upper.name === "naked" &&
+		V.worn.upper.name === "naked" &&
+		V.worn.under_upper.name === "naked" &&
+		V.worn.lower.name !== "plaid school pinafore" &&
+		V.worn.lower.name !== "school pinafore";
 	T.bottomless = V.worn.over_lower.name === "naked" && V.worn.lower.name === "naked" && V.worn.under_lower.name === "naked";
 	T.fullyNaked = T.topless && T.bottomless;
 }
@@ -505,19 +510,6 @@ function normalise(value, max, min = 0) {
 window.normalise = normalise;
 
 /**
- * Returns a rounded number, with number of decimals based on the second parameter
- *
- * @param {number} number
- * @param {number} decimals
- * @returns new number
- */
-function round(number, decimals) {
-	const multiplier = 10 ** decimals;
-	return Math.round(number * multiplier) / multiplier;
-}
-window.round = round;
-
-/**
  * Selects a random item from an array of weighted options. Each option is an array with
  * two elements: the item, and its weight.
  * Works similar to eventpool, but more generic and lightweight, and works with any data types.
@@ -525,6 +517,7 @@ window.round = round;
  * Options with a higher weight have a higher chance of being chosen.
  *
  * @param {Array} options Each option is an array where the first item is a value, and the second item is its weight.
+ * Example: ["apple", 1], ["banana", 2], ["cherry", 3]
  * @returns {*} The selected item
  * @example
  *     console.log(weightedRandom(["apple", 1], ["banana", 2], ["cherry", 3]));  // Relative probability for these will be: apple: 16.67%, banana: 33.33%, cherry: 50%

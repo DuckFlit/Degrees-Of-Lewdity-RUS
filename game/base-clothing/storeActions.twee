@@ -213,6 +213,15 @@
 		<<faceundress _temp_strip>>
 	<</if>>
 
+	<<if $action_unclad_handheld is 1>>
+		<<unset $action_unclad_handheld>>
+		<<if _temp_strip isnot "lockers" and _temp_strip isnot "lockers2">>
+			You put down your $worn.handheld.name.
+			<br>
+		<</if>>
+		<<handheldundress _temp_strip>>
+	<</if>>
+
 	<<if $action_unclad_hands is 1>>
 		<<unset $action_unclad_hands>>
 		<<if _temp_strip is "wolfcave">>
@@ -233,7 +242,7 @@
 		<</for>>
 	<</for>>
 
-	<<if _temp_clothes_present is 1 and _temp_strip isnot "lakeshore">>
+	<<if _temp_clothes_present is 1 and _temp_strip isnot "lakeshore" and _temp_strip isnot "lockers" and _temp_strip isnot "lockers2">>
 		<br>
 		<<link [[Get dressed|$passage]]>><<storeon _temp_strip "noreplace">><<set $eventskip to 1>><</link>>
 		<br>
@@ -254,121 +263,137 @@
 		_under_lower_protected to !$worn.under_lower.exposed;
 	>>
 
-	<<if !$worn.over_upper.cursed and !$worn.over_lower.cursed and _overOutfit>>
-	<!-- over outfit can be stripped -->
-		<<if $exhibitionism gte 15 or ((_lower_protected or _under_lower_protected) and (_upper_protected or _under_upper_protected))>>
-		<!-- pc will still be protected after stripping (or won't care) -->
-			<<set _stripOptions[$worn.over_upper.name] to "stripOverOutfit">>
+	<<if _temp_strip isnot "lockers" and _temp_strip isnot "lockers2">>
+		<<if !$worn.over_upper.cursed and !$worn.over_lower.cursed and _overOutfit>>
+		<!-- over outfit can be stripped -->
+			<<if $exhibitionism gte 15 or ((_lower_protected or _under_lower_protected) and (_upper_protected or _under_upper_protected))>>
+			<!-- pc will still be protected after stripping (or won't care) -->
+				<<set _stripOptions[$worn.over_upper.name] to "stripOverOutfit">>
+			<</if>>
+		<</if>>
+
+		<<if !$worn.over_upper.cursed and $worn.over_upper.name isnot "naked" and !_overOutfit>>
+			<!-- over_upper can be stripped -->
+			<<if $exhibitionism gte 15 or _upper_protected or _under_upper_protected>>
+				<<set _stripOptions[$worn.upper.name] to "stripOverUpper">>
+			<</if>>
+		<</if>>
+
+		<<if !$worn.over_lower.cursed and $worn.over_lower.name isnot "naked" and !_overOutfit>>
+			<!-- over_lower can be stripped -->
+			<<if $exhibitionism gte 35 or _lower_protected or _under_lower_protected>>
+				<<set _stripOptions[$worn.over_lower.name] to "stripOverLower">>
+			<</if>>
+		<</if>>
+
+		<<if !$worn.upper.cursed and !$worn.lower.cursed and _middleOutfit>>
+			<<if $exhibitionism gte 15 or ((_over_lower_protected or _under_lower_protected) and (_over_upper_protected or _under_upper_protected))>>
+				<<set _stripOptions[$worn.upper.name] to "stripOutfit">>
+			<</if>>
+		<</if>>
+
+		<<if $worn.upper.cursed isnot 1 and $worn.upper.name isnot "naked" and !_middleOutfit>>
+			<<if $exhibitionism gte 15 or _over_upper_protected or _under_upper_protected>>
+				<<set _stripOptions[$worn.upper.name] to "stripUpper">>
+			<</if>>
+		<</if>>
+
+		<<if !$worn.lower.cursed and $worn.lower.name isnot "naked" and !_middleOutfit>>
+			<<if $exhibitionism gte 35 or _over_lower_protected or _under_lower_protected>>
+				<<set _stripOptions[$worn.lower.name] to "stripLower">>
+			<</if>>
+		<</if>>
+
+		<<if !$worn.under_upper.cursed and !$worn.under_lower.cursed and _underOutfit>>
+			<<if $exhibitionism gte 15 or ((_over_lower_protected or _lower_protected) and (_over_upper_protected or _upper_protected))>>
+				<<set _stripOptions[$worn.under_upper.name] to "stripUnderOutfit">>
+			<</if>>
+		<</if>>
+
+		<<if !$worn.under_upper.cursed and $worn.under_upper.name isnot "naked" and !_underOutfit>>
+			<<if $exhibitionism gte 15 or _over_upper_protected or _upper_protected>>
+				<<set _stripOptions[$worn.under_upper.name] to "stripUnderUpper">>
+			<</if>>
+		<</if>>
+
+		<<if !$worn.under_lower.cursed and $worn.under_lower.name isnot "naked" and !_underOutfit>>
+			<<if $exhibitionism gte 35 or _over_lower_protected or _lower_protected>>
+				<<set _stripOptions[$worn.under_lower.name] to "stripUnderLower">>
+			<</if>>
+		<</if>>
+
+		<<if !$worn.legs.cursed and !_otherOutfits.legs and $worn.legs.name isnot "naked">>
+			<<set _stripOptions[$worn.legs.name] to "stripLegs">>
+		<</if>>
+
+		<<if !$worn.feet.cursed and !_otherOutfits.feet and $worn.feet.name isnot "naked">>
+			<<set _stripOptions[$worn.feet.name] to "stripFeet">>
+		<</if>>
+
+		<<if !$worn.neck.cursed and !_otherOutfits.neck and $worn.neck.name isnot "naked">>
+			<<set _stripOptions[$worn.neck.name] to "stripNeck">>
+		<</if>>
+
+		<<if !$worn.over_head.cursed and !_otherOutfits.over_head and $worn.over_head.name isnot "naked">>
+			<<set _stripOptions[$worn.over_head.name] to "stripOverHead">>
+		<</if>>
+
+		<<if !$worn.head.cursed and !_otherOutfits.head and $worn.head.name isnot "naked">>
+			<<set _stripOptions[$worn.head.name] to "stripHead">>
+		<</if>>
+
+		<<if !$worn.face.cursed and !_otherOutfits.face and $worn.face.name isnot "naked">>
+			<<set _stripOptions[$worn.face.name] to "stripFace">>
+		<</if>>
+
+		<<if !$worn.hands.cursed and !_otherOutfits.hands and $worn.hands.name isnot "naked">>
+			<<set _stripOptions[$worn.hands.name] to "stripHands">>
 		<</if>>
 	<</if>>
 
-	<<if !$worn.over_upper.cursed and $worn.over_upper.name isnot "naked" and !_overOutfit>>
-		<!-- over_upper can be stripped -->
-		<<if $exhibitionism gte 15 or _upper_protected or _under_upper_protected>>
-			<<set _stripOptions[$worn.upper.name] to "stripOverUpper">>
-		<</if>>
-	<</if>>
-
-	<<if !$worn.over_lower.cursed and $worn.over_lower.name isnot "naked" and !_overOutfit>>
-		<!-- over_lower can be stripped -->
-		<<if $exhibitionism gte 35 or _lower_protected or _under_lower_protected>>
-			<<set _stripOptions[$worn.over_lower.name] to "stripOverLower">>
-		<</if>>
-	<</if>>
-
-	<<if !$worn.upper.cursed and !$worn.lower.cursed and _middleOutfit>>
-		<<if $exhibitionism gte 15 or ((_over_lower_protected or _under_lower_protected) and (_over_upper_protected or _under_upper_protected))>>
-			<<set _stripOptions[$worn.upper.name] to "stripOutfit">>
-		<</if>>
-	<</if>>
-
-	<<if $worn.upper.cursed isnot 1 and $worn.upper.name isnot "naked" and !_middleOutfit>>
-		<<if $exhibitionism gte 15 or _over_upper_protected or _under_upper_protected>>
-			<<set _stripOptions[$worn.upper.name] to "stripUpper">>
-		<</if>>
-	<</if>>
-
-	<<if !$worn.lower.cursed and $worn.lower.name isnot "naked" and !_middleOutfit>>
-		<<if $exhibitionism gte 35 or _over_lower_protected or _under_lower_protected>>
-			<<set _stripOptions[$worn.lower.name] to "stripLower">>
-		<</if>>
-	<</if>>
-
-	<<if !$worn.under_upper.cursed and !$worn.under_lower.cursed and _underOutfit>>
-		<<if $exhibitionism gte 15 or ((_over_lower_protected or _lower_protected) and (_over_upper_protected or _upper_protected))>>
-			<<set _stripOptions[$worn.under_upper.name] to "stripUnderOutfit">>
-		<</if>>
-	<</if>>
-
-	<<if !$worn.under_upper.cursed and $worn.under_upper.name isnot "naked" and !_underOutfit>>
-		<<if $exhibitionism gte 15 or _over_upper_protected or _upper_protected>>
-			<<set _stripOptions[$worn.under_upper.name] to "stripUnderUpper">>
-		<</if>>
-	<</if>>
-
-	<<if !$worn.under_lower.cursed and $worn.under_lower.name isnot "naked" and !_underOutfit>>
-		<<if $exhibitionism gte 35 or _over_lower_protected or _lower_protected>>
-			<<set _stripOptions[$worn.under_lower.name] to "stripUnderLower">>
-		<</if>>
-	<</if>>
-
-	<<if !$worn.legs.cursed and !_otherOutfits.legs and $worn.legs.name isnot "naked">>
-		<<set _stripOptions[$worn.legs.name] to "stripLegs">>
-	<</if>>
-
-	<<if !$worn.feet.cursed and !_otherOutfits.feet and $worn.feet.name isnot "naked">>
-		<<set _stripOptions[$worn.feet.name] to "stripFeet">>
-	<</if>>
-
-	<<if !$worn.neck.cursed and !_otherOutfits.neck and $worn.neck.name isnot "naked">>
-		<<set _stripOptions[$worn.neck.name] to "stripNeck">>
-	<</if>>
-
-	<<if !$worn.over_head.cursed and !_otherOutfits.over_head and $worn.over_head.name isnot "naked">>
-		<<set _stripOptions[$worn.over_head.name] to "stripOverHead">>
-	<</if>>
-
-	<<if !$worn.head.cursed and !_otherOutfits.head and $worn.head.name isnot "naked">>
-		<<set _stripOptions[$worn.head.name] to "stripHead">>
-	<</if>>
-
-	<<if !$worn.face.cursed and !_otherOutfits.face and $worn.face.name isnot "naked">>
-		<<set _stripOptions[$worn.face.name] to "stripFace">>
-	<</if>>
-
-	<<if !$worn.hands.cursed and !_otherOutfits.hands and $worn.hands.name isnot "naked">>
-		<<set _stripOptions[$worn.hands.name] to "stripHands">>
+	<<if !$worn.handheld.cursed and !_otherOutfits.handheld and $worn.handheld.name isnot "naked">>
+		<<set _stripOptions[$worn.handheld.name] to "stripHandheld">>
 	<</if>>
 
 	<<if Object.keys(_stripOptions).length gt 0>>
-		Remove<<if _temp_strip isnot "birdtower">> and hide<</if>> your...
-
-		<<listbox "$storeActions">>
-			<<optionsfrom _stripOptions>>
-		<</listbox>>
-		<<link [[Confirm|$passage]]>>
-			<<set $eventskip to 1>>
-			<<switch $storeActions>>
-				<<case "stripOverOutfit">><<set $action_unclad_over_outfit to 1>>
-				<<case "stripOverUpper">><<set $action_unclad_over_upper to 1>>
-				<<case "stripOverLower">><<set $action_unclad_over_lower to 1>>
-				<<case "stripOutfit">><<set $action_unclad_outfit to 1>>
-				<<case "stripUpper">><<set $action_unclad_upper to 1>>
-				<<case "stripLower">><<set $action_unclad_lower to 1>>
-				<<case "stripUnderOutfit">><<set $action_unclad_under_outfit to 1>>
-				<<case "stripUnderUpper">><<set $action_unclad_under_upper to 1>>
-				<<case "stripUnderLower">><<set $action_unclad_under_lower to 1>>
-				<<case "stripLegs">><<set $action_unclad_legs to 1>>
-				<<case "stripFeet">><<set $action_unclad_feet to 1>>
-				<<case "stripNeck">><<set $action_unclad_neck to 1>>
-				<<case "stripOverHead">><<set $action_unclad_over_head to 1>>
-				<<case "stripHead">><<set $action_unclad_head to 1>>
-				<<case "stripFace">><<set $action_unclad_face to 1>>
-				<<case "stripHands">><<set $action_unclad_hands to 1>>
-				<<default>>
-			<</switch>>
-		<</link>>
-	<br><br>
+		<<if _temp_strip isnot "lockers" and _temp_strip isnot "lockers2">>
+			Remove<<if _temp_strip isnot "birdtower">> and hide<</if>> your...
+			<<listbox "$storeActions">>
+				<<optionsfrom _stripOptions>>
+			<</listbox>>
+			<<link [[Confirm|$passage]]>>
+				<<set $eventskip to 1>>
+				<<switch $storeActions>>
+					<<case "stripOverOutfit">><<set $action_unclad_over_outfit to 1>>
+					<<case "stripOverUpper">><<set $action_unclad_over_upper to 1>>
+					<<case "stripOverLower">><<set $action_unclad_over_lower to 1>>
+					<<case "stripOutfit">><<set $action_unclad_outfit to 1>>
+					<<case "stripUpper">><<set $action_unclad_upper to 1>>
+					<<case "stripLower">><<set $action_unclad_lower to 1>>
+					<<case "stripUnderOutfit">><<set $action_unclad_under_outfit to 1>>
+					<<case "stripUnderUpper">><<set $action_unclad_under_upper to 1>>
+					<<case "stripUnderLower">><<set $action_unclad_under_lower to 1>>
+					<<case "stripLegs">><<set $action_unclad_legs to 1>>
+					<<case "stripFeet">><<set $action_unclad_feet to 1>>
+					<<case "stripNeck">><<set $action_unclad_neck to 1>>
+					<<case "stripOverHead">><<set $action_unclad_over_head to 1>>
+					<<case "stripHead">><<set $action_unclad_head to 1>>
+					<<case "stripFace">><<set $action_unclad_face to 1>>
+					<<case "stripHands">><<set $action_unclad_hands to 1>>
+					<<case "stripHandheld">><<set $action_unclad_handheld to 1>>
+					<<default>>
+				<</switch>>
+			<</link>>
+			<br><br>
+		<<elseif (_temp_strip is "lockers" and clothingInStorage("lockers").length is 0 and clothingInStorage("lockers2").length is 0)>>
+			<br>
+			<<lockericon>>
+			<<link [[`Put your ${$worn.handheld.name} in your locker`|$passage]]>>
+				<<set $eventskip to 1>>
+				<<set $action_unclad_handheld to 1>>
+			<</link>>
+			<br><br>
+		<</if>>
 	<</if>>
 
 	<<exposure>>

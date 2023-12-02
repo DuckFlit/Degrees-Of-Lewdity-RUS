@@ -35,8 +35,8 @@
 	<<if $bedGuest and $transformationParts.traits.mateForLife isnot "disabled" and isLoveInterest($bedGuest) and !$sleepWraith>>
 		<<set $_bonusFatigueLoss += 3>><<set $stress -= 10>><<set $trauma -= 1>><<set $arousal += 10>>
 	<</if>>
-	<!-- wearing any non-sleep clothing disables the sleep bonus (except under_upper and under_upper and anything else not listed here) -->
-	<<if !["over_upper", "over_lower", "upper", "lower", "over_head", "head", "face", "neck", "hands", "legs", "feet"].every(slot => $worn[slot].type.includes("naked") || $worn[slot].type.includes("sleep") || $worn[slot].type.includes("eerie"))>>
+	<!-- wearing any non-sleep clothing disables the sleep bonus (except under_upper and under_lower and anything else not listed here) -->
+	<<if !["over_upper", "over_lower", "upper", "lower", "over_head", "head", "face", "neck", "hands", "handheld", "legs", "feet"].every(slot => $worn[slot].type.includes("naked") || $worn[slot].type.includes("sleep") || $worn[slot].type.includes("eerie"))>>
 		<<set $_bonusFatigueLoss to 0>>
 	<</if>>
 	<!-- sleeping in a poor/regular/comfy bed at home provides a -10/0/+10 bonus regardless of clothing -->
@@ -72,7 +72,7 @@
 					<<set _sleepinterrupt to 1>>
 					<<set _kylarWake to 2>>
 
-				<<elseif (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0 /*and !$robin_kicked_out*/>>
+				<<elseif (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0 and $robin.timer.hurt is 0 /*and !$robin_kicked_out*/>>
 					<!-- Robin climbs into bed with you -->
 					<<if Time.hour gte 18 or Time.hour lte 6>>
 						<<set _sleepinterrupt to 1>>
@@ -281,8 +281,6 @@
 		<</if>>
 		<<set $tiredness -= $_bonusFatigueLoss>>
 
-		<<set Weather.BodyTemperature.addActivity("sleep")>>
-		
 		<<if $location is "tower">>
 			<<bird_pass 60>>
 		<<else>>

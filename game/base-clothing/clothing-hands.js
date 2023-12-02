@@ -199,8 +199,8 @@ function initHands() {
 
 		{
 			index: 6,
-			name: "pom poms",
-			name_cap: "Pom poms",
+			name: "cheerleader gloves",
+			name_cap: "Cheerleader gloves",
 			variable: "pompoms",
 			integrity: 200,
 			integrity_max: 200,
@@ -224,8 +224,8 @@ function initHands() {
 			back_img: 0,
 			cursed: 0,
 			location: 0,
-			iconFile: "pom_poms.png",
-			accIcon: 0,
+			iconFile: "fingerless_gloves.png",
+			accIcon: "fingerless_gloves_acc.png",
 			mainImage: 0,
 			leftImage: 1,
 			rightImage: 1,

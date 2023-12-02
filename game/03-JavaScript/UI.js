@@ -683,13 +683,21 @@ function updatehistorycontrols() {
 	if (V.options.maxStates === undefined) V.options.maxStates = Config.history.maxStates;
 	else Config.history.maxStates = V.options.maxStates; // update engine config
 
-	// option to only save active state into sessionStorage, for better performance
-	if (V.options.sessionHistory) Config.history.maxSessionStates = V.options.maxStates;
-	else Config.history.maxSessionStates = 1;
+	// enable fast rng re-roll on "keypad *" for debug and testing
+	if (V.debug || V.cheatdisable === "f" || V.testing) Links.disableRNGReload = false;
+	else Links.disableRNGReload = true;
 
-	if (V.options.maxStates === 1) jQuery("#ui-bar-history").hide(); // hide nav panel when it's useless
-	else {
-		// or unhide it otherwise
+	// option to reduce the number of states going into sessionStorage, for better performance
+	if (V.options.maxSessionStates === undefined) V.options.maxSessionStates = Config.history.maxSessionStates;
+	else Config.history.maxSessionStates = V.options.maxSessionStates;
+
+	// option to still record history without showing the controls, for better debugging
+	if (V.options.maxStates === 1 || !V.options.historyControls) {
+		// hide nav panel when it's useless or set to not be displayed
+		Config.history.controls = false;
+		jQuery("#ui-bar-history").hide();
+	} else if (Config.history.maxStates > 1) {
+		// or unhide it otherwise, if config allows
 		Config.history.controls = true;
 		jQuery("#ui-bar-history").show();
 	}
@@ -707,6 +715,14 @@ function updateOptions() {
 		const optionsData = clone(V.options);
 		const tmpButtons = T.buttons;
 		const tmpKey = T.key;
+
+		if (Config.history.maxSessionStates < State.history.length) {
+			// update session data to prevent history loss
+			const tmpMaxSessionStates = Config.history.maxSessionStates;
+			Config.history.maxSessionStates = State.history.length;
+			State.setSessionState(State.marshalForSave());
+			Config.history.maxSessionStates = tmpMaxSessionStates;
+		}
 
 		if (!State.restore()) return; // don't do anything if state couldn't be restored
 		V.options = optionsData;

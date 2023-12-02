@@ -451,6 +451,18 @@ function masturbationeffectsArms(
 		V.rightarm = 0;
 		doubleAction = false;
 	}
+	if (V[armAction] === "mpickupdildo") {
+		const currentlySelectedToy = V["selectedToy" + (arm === "left" ? "Left" : "Right")];
+		if (
+			currentlySelectedToy === V["currentToy" + (arm === "left" ? "Right" : "Left")] ||
+			currentlySelectedToy === V.currentToyVagina ||
+			currentlySelectedToy === V.currentToyAnus
+		) {
+			// The player can only a toy in one type of action
+			V[armAction] = 0;
+			doubleAction = false;
+		}
+	}
 	if (V[armAction] === "mpickupdildo" && V[otherArmAction] === "mpickupdildo" && V.selectedToyLeft === V.selectedToyRight) {
 		// The player can only pick up a toy with one hand
 		V.rightaction = 0;

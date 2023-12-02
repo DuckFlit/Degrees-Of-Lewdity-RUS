@@ -747,7 +747,7 @@ function initLegs() {
 
 		{
 			index: 23,
-			name: "Rib-knit ankle socks",
+			name: "rib-knit ankle socks",
 			name_cap: "Rib-knit ankle socks",
 			variable: "striped socks short",
 			integrity: 100,
@@ -780,7 +780,7 @@ function initLegs() {
 
 		{
 			index: 24,
-			name: "Striped kneehighs",
+			name: "striped kneehighs",
 			name_cap: "Striped kneehighs",
 			variable: "striped kneehighs",
 			integrity: 100,

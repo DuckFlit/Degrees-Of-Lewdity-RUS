@@ -939,19 +939,17 @@
 <</widget>>
 
 <<widget "athletics">>
-	<<if !_args[0] or $statFreeze is true>>
-		<<exit>>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set _temp to _args[0]>>
+		<<if $exposed gte 2>>
+			<<set $athletics += 2>>
+		<<elseif $exposed is 1>>
+			<<set $athletics += 1>>
+		<</if>>
+		<<set $athletics += Math.trunc(_temp * 1.4)>>
+		<<set $athletics to Math.clamp($athletics, 0, 1000)>>
+		<<set $tending to Math.clamp($tending, 0, 1000)>>
 	<</if>>
-
-	<<set _temp to _args[0]>>
-	<<if $exposed gte 2>>
-		<<set $athletics += 2>>
-	<<elseif $exposed is 1>>
-		<<set $athletics += 1>>
-	<</if>>
-	<<set $athletics += Math.trunc(_temp * 1.4)>>
-	<<set $athletics to Math.clamp($athletics, 0, 1000)>>
-	<<set Weather.BodyTemperature.addActivity("athletics")>>
 <</widget>>
 
 <<widget "tending">>
@@ -976,32 +974,29 @@
 <</widget>>
 
 <<widget "physique">>
-	<<if $statFreeze is true>>
-		<<exit>>
-	<</if>>
-
-	<<if _args[0]>><<set _temp to _args[0]>><<set $workouts += _args[0]>><<else>><<set _temp to 1>><<set $workouts += 1>><</if>>
-	<<if $exposed gte 2>>
-		<<set _temp *= 1.2>>
-	<<elseif $exposed is 1>>
-		<<set _temp *= 1.1>>
-	<</if>>
-	<<set $physique += 10 * _temp>><<set $physiqueuse += _temp>>
-	<<if _args[1]>>
-		<<if _args[1] isnot "noMessage">>
-			<<if ($combat is 1 and _args[1] isnot "workout") or _args[1] is "invig">>
-				<span class="gold"> It invigorates you.</span>
-			<<else>>
-				<span class="gold"> You get a good workout.</span>
-			<</if>>
+	<<if $statFreeze isnot true>>
+		<<if _args[0]>><<set _temp to _args[0]>><<set $workouts += _args[0]>><<else>><<set _temp to 1>><<set $workouts += 1>><</if>>
+		<<if $exposed gte 2>>
+			<<set _temp *= 1.2>>
+		<<elseif $exposed is 1>>
+			<<set _temp *= 1.1>>
 		<</if>>
-	<<elseif $combat is 1>>
-		<span class="gold"> It invigorates you.</span>
-	<<else>>
-		<span class="gold"> You get a good workout.</span>
+		<<set $physique += 10 * _temp>><<set $physiqueuse += _temp>>
+		<<if _args[1]>>
+			<<if _args[1] isnot "noMessage">>
+				<<if ($combat is 1 and _args[1] isnot "workout") or _args[1] is "invig">>
+					<span class="gold"> It invigorates you.</span>
+				<<else>>
+					<span class="gold"> You get a good workout.</span>
+				<</if>>
+			<</if>>
+		<<elseif $combat is 1>>
+			<span class="gold"> It invigorates you.</span>
+		<<else>>
+			<span class="gold"> You get a good workout.</span>
+		<</if>>
+		<<set $physique = Math.clamp($physique, 0, $physiquesize)>>
 	<</if>>
-	<<set $physique = Math.clamp($physique, 0, $physiquesize)>>
-	<<set Weather.BodyTemperature.addActivity("physique")>>
 <</widget>>
 
 <<widget "physique_loss">>
@@ -1579,7 +1574,7 @@
 		<div id="hallucinogencaption">
 			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 				<<if $options.showCaptionText is true>>
-					<span class="purple">Your perception is altered</span>
+					<span class="purple">Your perception is altered.</span>
 				<<else>>
 					Hallucinogen:
 				<</if>>
@@ -1717,6 +1712,9 @@
 		<</if>>
 	<</if>>
 	<<set $trueconsensual to 1>>
+	<<if _args[0]>>
+		<<set $consensualGuaranteed to 1>>
+	<</if>>
 	<<if $npc.length is 1 and ($npc[0] is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].dom lte 10 and $debug is 1) or ($npc[0] is "Sydney" and $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 50)>>
 		<<npc_submissive>>
 	<</if>>
@@ -1763,6 +1761,7 @@
 
 <<widget "weatherdisplay">>
 	<<set _season to (Time.season == "winter" ? "_winter" : "")>>
+	<<set _season to (Time.season == "winter" ? "_winter" : "")>>
 	<<set _weather_display to (Time.season == "winter" ? "winter" : "normal")>>
 	<<if $options.images is 1>>
 		<<if Time.dayState is "night" and (isBloodmoon() or $forcedBloodmoon)>>
@@ -1776,7 +1775,7 @@
 		<<set _imgSky to 'img/misc/sky/'>>
 
 		/* sky (upmost part) */
-		/* <<if $skyHidden is true>>
+		<<if $skyHidden is true>>
 			<<set _skybox to "skybox_blank">>
 		<<elseif $location is "tentworld">>
 			<<set _skybox to "skybox" + _dayState + "_tentacle">>
@@ -1785,19 +1784,15 @@
 			<<if $location is "bog">><<set _skybox += "_haze">><</if>>
 			<img id="daystate" @src="_imgSky + 'sun' + _dayState + '.png'">
 			<img id="daystate" @src="_imgSky + 'moon' + _dayStateWithBloodMoon + '.png'">
-		<</if>> */
+		<</if>>
 
-		<<skybox>>
-		<div id="debugWeatherType"><<print Weather.name>></div>
+		<div @class="_skybox">
+		</div>
 
 		/* weather (middle part) */
-		/* <<if $location is "tentworld" or $skyHidden is true>>
+		<<if $location is "tentworld" or $skyHidden is true>>
 		<<else>>
 			<<switch $weather>>
-				<<case "clear">>
-				<<case "overcast">> <img id="weather" @src="_imgSky + 'overcast' + _dayState + _season + '.png'">
-				<<case "rain">>		<img id="weather" @src="_imgSky + 'rain' + _dayState + '.gif'">
-				<<case "snow">>		<img id="weather" @src="_imgSky + 'snow' + _dayState + '.gif'">
 				<<case "clear">>
 				<<case "overcast">> <img id="weather" @src="_imgSky + 'overcast' + _dayState + _season + '.png'">
 				<<case "rain">>		<img id="weather" @src="_imgSky + 'rain' + _dayState + '.gif'">
@@ -1820,7 +1815,6 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/alex_cottage'+_dayState+'.png'">
 			<<case "alex_farm">>
 				<<if $bus is "woodland">>
-					<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 					<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 				<<else>>
 					<img id="location" @src="_imgLoc + _weather_display + '/alex_farm'+_dayState+'.png'">
@@ -1849,7 +1843,7 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/brothel'+_dayState+'.png'">
 			<<case "cabin">>
 				<img id="location" @src="_imgLoc + _weather_display + '/cabin'+_dayState+'.png'">
-	-	-	<<case "cafe">>
+			<<case "cafe">>
 				<<if $chef_state gte 9>>
 					<img id="location" @src="_imgLoc + _weather_display + '/cafe_renovated'+_dayState+'.png'">
 				<<elseif $chef_state gte 7>>
@@ -1884,7 +1878,6 @@
 			<<case "flats">>
 				<img id="location" @src="_imgLoc + _weather_display + '/flats'+_dayState+'.png'">
 			<<case "forest">>
-				<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 				<img id="location" @src="_imgLoc + _weather_display + '/forest'+_dayStateWithBloodMoon+'.gif'">
 			<<case "forest_shop">>
 				<img id="location" @src="_imgLoc + _weather_display + '/forest_shop'+_dayState+'.png'">
@@ -1924,7 +1917,6 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/police_station'+_dayState+'.png'">
 			<<case "pound">>
 				<img id="location" @src="_imgLoc + _weather_display + '/dog_pound'+_dayState+'.gif'">
-				<img id="location" @src="_imgLoc + _weather_display + '/dog_pound'+_dayState+'.gif'">
 			<<case "pool">>
 				<img id="location" @src="_imgLoc + _weather_display + '/pool'+_dayState+'.gif'">
 			<<case "prison">>
@@ -1962,7 +1954,6 @@
 			<<case "tower" "castle">>
 				<img id="location" @src="_imgLoc + _weather_display + '/tower'+_dayStateWithBloodMoon+'.gif'">
 			<<case "town">>
-				<img id="location" @src="_imgLoc + _weather_display + '/town'+_dayState+'.gif'">
 				<img id="location" @src="_imgLoc + _weather_display + '/town'+_dayState+'.gif'">
 			<<case "underground">>
 				<img id="location" @src="_imgLoc + _weather_display + '/underground'+_dayState+'.png'">
@@ -2313,6 +2304,10 @@
 <</widget>>
 
 <<widget "unbind">>
+	/*<<unbind>> is only used for the player unbinding their arms after they've been tied with rope. it will destroy handheld items. do not use it for unbinding arms after they've been temporarily restrained; use <<unbindtemp>> instead*/
+	<<if $worn.handheld.name isnot "naked">>
+		<<handheldruined>>
+	<</if>>
 	<<set $rightboundcarry to 0>>
 	<<set $leftboundcarry to 0>>
 	<<set $leftarm to 0>>
@@ -2333,7 +2328,35 @@
 	<</if>>
 <</widget>>
 
+<<widget "unbindtemp">>
+	<<set $rightboundcarry to 0>>
+	<<set $leftboundcarry to 0>>
+	<<set $leftarm to 0>>
+	<<set $rightarm to 0>>
+	<<remove_shackle>>
+	<<leg_unbind>>
+	<<if $head is "bound">>
+		<<set $head to 0>>
+	<</if>>
+<</widget>>
+
 <<widget "bind">>
+	/*<<bind>> and <<unbind>> are only used for binding the player's arms with rope. they are only meant to be used for scenes where the player is left helpless and must undo their bindings elsewhere, forcing them to leave behind their handheld items. Use <<bindtemp>> and <<unbindtemp>> for temporarily binding arms.*/
+	<<if _args[0]>>
+		<<set _args[0] to "bound">>
+		<<if $rightarm is "bound" and $worn.handheld.name isnot "naked">>
+			<<handheldruined>>
+		<</if>>
+	<<else>>
+		<<set $leftarm to "bound">>
+		<<set $rightarm to "bound">>
+		<<if $worn.handheld.name isnot "naked">>
+			<<handheldruined>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "bindtemp">>
 	<<set $leftarm to "bound">>
 	<<set $rightarm to "bound">>
 <</widget>>
@@ -4666,6 +4689,24 @@
 	<</if>>
 <</widget>>
 
+<<widget "pantsable">>
+	<!-- check if lowerwear allows for player to be pantsed or upskirted
+	_pantsable: lowerwear can be pulled down; _upskirt: skirt can be flipped up -->
+	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and ($worn.lower.set is $worn.upper.set)>>
+		<<set _upskirt to 1>>
+		<<set _pantsable to 0>>
+	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+		<<set _upskirt to 1>>
+		<<set _pantsable to 1>>
+	<<elseif ["shortalls"].includes($worn.lower.name) or ($worn.lower.set is $worn.upper.set)>>
+		<<set _upskirt to 0>>
+		<<set _pantsable to 0>>
+	<<else>>
+		<<set _upskirt to 0>>
+		<<set _pantsable to 1>>
+	<</if>>
+<</widget>>
+
 <<widget "skulduggeryuse">>
 	<<if _args[0] is true>>
 		<!-- This argument lets us use skulduggery without adding extra linebreaks that make formatting things a nightmare. -->
@@ -4763,7 +4804,8 @@
 	<<if !playerChastity("hidden")>>
 		<<if $player.penisExist and $player.vaginaExist>>
 			<<schoolrep herm 1>>
-		<<elseif $player.gender isnot $player.gender_appearance>>
+		<<elseif $player.gender isnot $player.gender_appearance and $NudeGenderDC gt 0>>
+			/*increases crossdressing fame if NPCs judge gender based on genitals*/
 			<<schoolrep crossdress 1>>
 		<<elseif $player.gender is $player.gender_appearance and $schoolrep.crossdress gt 0 and !$daily.crossdressingFameReduction and !$weekly.crossdressingFameReduction and random(0,100) gte 100 - ($schoolrep.crossdress * 3)>>
 			<<schoolrep crossdress -1>>

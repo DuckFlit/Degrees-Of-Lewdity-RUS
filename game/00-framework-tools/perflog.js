@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 // Time in milliseconds, float with microsecond precision if available.
 const millitime =
 	typeof performance === "object" && typeof performance.now === "function"
@@ -118,9 +117,9 @@ function niceround(x) {
 	if (Math.floor(x) === x) return x; // Integers
 	if (x > -1 && x < 1) {
 		// Small number, round to 0.001 instead
-		return round(x, 3);
+		return Math.round(x * 1000) / 1000;
 	}
-	return round(x, 1);
+	return Math.round(x * 10) / 10;
 }
 /**
  * Return performance report. Can be viewed by DevTools table() function.

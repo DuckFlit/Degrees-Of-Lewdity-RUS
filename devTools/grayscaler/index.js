@@ -212,7 +212,7 @@ function processSlot(setupfile,imgdir,varname,hasIntegrity) {
 }
 
 function convertAllClothes() {
-	let slots = ["hands", "face", "feet", "genitals", "hands", "head", "legs", "lower", "neck", "over_head", "over_lower", "over_upper", "upper"];
+	let slots = ["hands", "face", "feet", "genitals", "hands", "head", "legs", "lower", "neck", "over_head", "over_lower", "over_upper", "upper", "handheld"];
 	for (let slot of slots) {
 		processSlot(`game/base-clothing/clothing-${slot}.twee`, `img/clothes/${slot}/`, `setup.clothes.${slot}`, true);
 	}

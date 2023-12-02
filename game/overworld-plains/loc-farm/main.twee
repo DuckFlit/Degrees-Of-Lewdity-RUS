@@ -2,8 +2,10 @@
 <<set $outside to 1>><<set $location to "farm">><<set $bus to "farm">>
 <<if $slimeFarmNakedStored is true>>
 	<<storeon "farmHidingSpot">>
+	<<exposure>>
 	<<unset $slimeFarmNakedStored>>
 <</if>>
+<<if $farm_stage gte 7>><<unset $farm_naked>><</if>>
 <<effects>>
 You are in the farmlands.
 <<if Time.dayState is "night">>
@@ -74,7 +76,12 @@ You are in the farmlands.
 		<</if>>
 	<</if>>
 	<<if $farm_stage gte 2>>
-		<<farmicon "barn">><<link [[Farm (0:05)|Farm Work]]>><<pass 5>><</link>>
+		<<farmicon "barn">><<link [[Farm (0:05)|Farm Work]]>>
+			<<pass 5>>
+			<<if $farm_stage gte 7 and (($exhibitionism gte 75 and $exposed gte 2) or ($exhibitionism gte 55 and $exposed gte 1))>>
+				<<set $farm_naked to 1>>
+			<</if>>
+		<</link>>
 		<br>
 	<</if>>
 	<<if $exposed lte 0>>
@@ -93,7 +100,7 @@ You are in the farmlands.
 	<br><br>
 	<<mooricon>><<link [[Enter the moor (0:05)|Moor]]>><<set $moor to 0>><<unset $moor_hunt>><<pass 5>><<set $eventskip to 1>><</link>>
 	<br>
-	<<roadicon>><<link [[Walk towards town (0:05)|Farm Road 6]]>><<set $phase to 0>><</link>>
+	<<roadicon>><<link [[Walk towards town (0:05)|Farm Road 6]]>><<set $phase to 0>><<pass 5>><</link>>
 	<br>
 <</if>>
 
@@ -464,7 +471,7 @@ Alex beams. "Great! You can start whenever you like, and don't be afraid to ask 
 		<br><br>
 
 		<<link [[Next|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
-		
+
 	<<else>>
 		<<if playerBellyVisible()>>
 			<<He>> pulls another from <<his>> pocket, before quickly looking at your <<bellyDescription "pc">> and frowning.
@@ -878,19 +885,18 @@ Alex is already walking towards the farmhouse. <<He>> stops at the door. "Tea or
 :: Farm Stage 6 5
 <<set $location to "alex_cottage">><<effects>>
 
-You sit at the kitchen table with Alex's <<if $pronoun is "m">>father<<else>>mother<</if>>. 
+You sit at the kitchen table with Alex's <<if $pronoun is "m">>father<<else>>mother<</if>>.
 
 <<if C.npc.Alex.pregnancy.selfKnowledge is true or (C.npc.Alex.pregnancy.pcKnowledge is true and C.npc.Alex.pregnancy.sample isnot true and getPregnancyObject().fetus[1].father is "Alex" and getPregnancyObject().fetus.length is 1)>>
-    "So, you're the townie
-    <<if talkedAboutPregnancy("Alex","pc")>>
-        who knocked up my little <<if C.npc.Alex.gender is "f">>girl<<else>>boy<</if>>?"
-
-    <<else>>
-        my little <<if C.npc.Alex.gender is "f">>girl<<else>>boy<</if>> knocked up?"
-    <</if>>
+	"So, you're the townie
+	<<if talkedAboutPregnancy("Alex","pc")>>
+		who knocked up my little <<print $pronoun is "m" ? "boy" : "girl">>?"
+	<<else>>
+		my little <<print $pronoun is "m" ? "boy" : "girl">> knocked up?"
+	<</if>>
 
 <<else>>
-    "Surprised a townie can be so helpful-"
+	"Surprised a townie can be so helpful-"
 
 <</if>>
 <br>
@@ -2035,7 +2041,7 @@ Alex tries to respond, but can't form the words. <<He>> closes the shed door beh
 
 	<<if $arousal gte $arousalmax>>
 		Your body shakes. <<orgasm>>
-		Rather than surprised, Alex is emboldened by your orgasm. "You're such a pervert," <<he>> says, pulling your body into <<hers>>.
+		Rather than surprised, Alex is emboldened by your orgasm. "You're such a pervert," <<he>> says, pulling your body against <<his>>.
 		<br><br>
 
 		<<if $promiscuity gte 15>>

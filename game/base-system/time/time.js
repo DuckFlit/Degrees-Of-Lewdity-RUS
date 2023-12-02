@@ -110,10 +110,7 @@ const Time = (() => {
 	let currentDate = {};
 
 	function set(timeStamp = V.timeStamp) {
-		console.log("ASET ATIME");
-		console.log(V.timeStamp);
-		console.log(V.startDate);
-		currentDate = new DateTime((V.startDate || 0) + (timeStamp || 0));
+		currentDate = new DateTime((V.startDate || 0) + timeStamp);
 		V.timeStamp = timeStamp;
 	}
 	/*
@@ -186,6 +183,7 @@ const Time = (() => {
 		}
 
 		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
+		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
 		return newDate.getFirstWeekdayOfMonth(2);
 	}
 
@@ -237,7 +235,7 @@ const Time = (() => {
 			}
 		}
 	}
-	// Date of previous occurrence of a specific moon phase
+	// Previous occurrence of a specific moon phase
 	function previousMoonPhase(targetPhase) {
 		const date = new DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
 		date.setTime(0, 0);
@@ -250,7 +248,7 @@ const Time = (() => {
 		} while (true);
 	}
 
-	// Date of next occurrence of a specific moon phase
+	// Next occurrence of a specific moon phase
 	function nextMoonPhase(targetPhase) {
 		const date = new DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
 		do {
@@ -455,7 +453,7 @@ function weekPassed() {
 		fragment.append(wikifier("robinPunishment", "docks"));
 		V.robineventnote = 1;
 	}
-	V.robinmoney += 300;
+	V.robinmoney += 300 + V.robin.moneyModifier;
 	V.compoundcentre = 0;
 	if (V.edenfreedom >= 1 && V.edenshopping === 2) V.edenshopping = 0;
 	if (V.loft_kylar) V.loft_spray = 0;
@@ -480,9 +478,10 @@ function weekPassed() {
 		V.nightmareTimer--;
 		if (V.nightmareTimer <= 0) delete V.nightmareTimer;
 	}
-	if (V.brothelVending) {
+	if (V.brothelVending && V.brothelVending.products >= 1) {
 		if (V.brothelVending.condoms === 0 && V.brothelVending.lube === 0) V.brothelVending.weeksEmpty += 1;
 		V.brothelVending.weeksRent++;
+		if (V.brothelVending.weeksEmpty >= 4) V.brothelVending.status = "sold";
 	}
 
 	fragment.append(wikifier("world_corruption", "soft", V.world_corruption_hard));
@@ -588,6 +587,10 @@ function dayPassed() {
 			V.estatePersistent.newDeckTimer--;
 		}
 	}
+	if (V.balloonStand.robin.status === "closed") V.balloonStand.robin.status = "sabotaged";
+	if (V.robin.timer.customer >= 1) V.robin.timer.customer--;
+	if (V.robin.timer.hurt >= 1) V.robin.timer.hurt--;
+	if (V.robin.timer.hurt === 0) V.robin.hurtReason = "nothing";
 
 	if (numberOfEarSlime()) {
 		// Daily Corruption
@@ -735,6 +738,7 @@ function dayPassed() {
 		const rng = random(Math.min(1, V.brothelVending.condoms), Math.min(10, V.brothelVending.condoms));
 		V.brothelVending.condoms -= rng;
 		V.brothelVending.condomsSold += rng;
+		V.brothelVending.condomsToRefill = 200 - (V.brothelVending.condoms);
 		V.brothelVending.total = (V.brothelVending.total || 0) + rng;
 	}
 
@@ -742,6 +746,7 @@ function dayPassed() {
 		const rng = random(Math.min(1, V.brothelVending.lube), Math.min(10, V.brothelVending.lube));
 		V.brothelVending.lube -= rng;
 		V.brothelVending.lubeSold += rng;
+		V.brothelVending.lubeToRefill = 200 - (V.brothelVending.lube);
 		V.brothelVending.total = (V.brothelVending.total || 0) + rng;
 	}
 
@@ -835,9 +840,11 @@ function hourPassed(hours) {
 		if (V.ejactrait >= 1) V.stress -= (V.goocount + V.semencount) * 10;
 		if (V.kylarwatched) V.kylarwatchedtimer--;
 		if (V.parasite.nipples.name) fragment.append(wikifier("milkvolume", 1));
-		if ((V.worn.head.name === "hairpin" && random(0, 100) >= 75) || V.sexStats.pills.pills["Hair Growth Formula"].doseTaken) {
-			V.hairlength++;
-			V.fringelength++;
+		if (V.worn.head.name === "hairpin" || V.sexStats.pills.pills["Hair Growth Formula"].doseTaken) {
+			let count = 0 + (V.worn.head.name === "hairpin" && random(0, 100) >= 75 ? 1 : 0);
+			count += V.sexStats.pills.pills["Hair Growth Formula"].doseTaken ? 1 : 0;
+			V.hairlength += count;
+			V.fringelength += count;
 			fragment.append(wikifier("calchairlengthstage"));
 		}
 		if (V.earSlime.defyCooldown) {
@@ -905,17 +912,6 @@ function minutePassed(minutes) {
 		V.stress += Math.floor(minutes * 40);
 	}
 
-	// Tanning
-	if (V.outside) {
-		tanned(Weather.getTanningFactor());
-	}
-
-	// Body temperature
-	// New system - does not affect anything yet - only visual
-	const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
-	Weather.BodyTemperature.update(temperature, minutes);
-
-	// Old system - keep until new system is implemented
 	if (V.body_temperature === "cold") V.stress += minutes * 2;
 	else if (V.body_temperature === "chilly") V.stress += minutes;
 
@@ -933,6 +929,11 @@ function minutePassed(minutes) {
 	fragment.append(wikifier("arousal", minutes * arousalMultiplier + getArousal(minutes)));
 	V.timeSinceArousal = V.arousal < V.arousalmax / 4 ? V.timeSinceArousal + minutes : 1;
 	if (V.player.vaginaExist) fragment.append(passArousalWetness(minutes));
+
+	// Tanning
+	if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade")) {
+		fragment.append(wikifier("tanned", minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2)));
+	}
 
 	const waterFragment = passWater(minutes);
 	fragment.append(waterFragment);
@@ -1195,7 +1196,7 @@ function dailyPlayerEffects() {
 	}
 
 	/* PC loses 60 minutes of tanning every day */
-	tanned(-60, true);
+	fragment.append(wikifier("tanned", -60, true));
 	V.skinColor.sunBlock = false;
 
 	V.hairlength += 3;
@@ -1747,7 +1748,7 @@ function dailyFarmEvents() {
 
 	delete V.farm_work;
 	delete V.farm_count;
-	delete V.farm_naked;
+	if (V.farm_stage < 7) delete V.farm_naked;
 	delete V.farm_event;
 	delete V.farm_end;
 	delete V.alex_breakfast;
@@ -1774,7 +1775,7 @@ function passWater(passMinutes) {
 		if (V.lowerwet) fragment.append(wikifier("lowerwet", -passMinutes * 2));
 		if (V.underlowerwet) fragment.append(wikifier("underlowerwet", -passMinutes * (V.worn.lower.type.includes("naked") ? 2 : 1)));
 		if (V.underupperwet) fragment.append(wikifier("underupperwet", -passMinutes * (V.worn.upper.type.includes("naked") ? 2 : 1)));
-	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof")) {
+	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
 		if (!V.worn.upper.type.includes("naked") && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
 			fragment.append(wikifier("upperwet", passMinutes));
 		}
@@ -1986,12 +1987,13 @@ function earSlimeDaily(passageEffects = false) {
 				V.worn.genitals.integrity = clothingData("genitals", V.worn.genitals, "integrity_max");
 			}
 		}
-		if (V.earSlime.forcedCommando && V.earSlime.forcedCommando > 0) {
-			V.earSlime.forcedCommando--;
-		}
 		if (V.earSlime.forcedDressing && V.earSlime.forcedDressing.days > 0) {
 			V.earSlime.forcedDressing.days--;
 		}
+	}
+
+	if (V.earSlime.forcedCommando && V.earSlime.forcedCommando > 0) {
+		V.earSlime.forcedCommando--;
 	}
 }
 DefineMacro("earSlimeDaily", earSlimeDaily);

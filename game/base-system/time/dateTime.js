@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 class DateTime {
 	/* plain static variables are still too new of a feature for a considerable number of old mobiles, they are re-declared in Time object instead
 	static secondsPerDay = 86400;
@@ -11,7 +10,7 @@ class DateTime {
 	static synodicMonth = 29.53058867;
 	*/
 
-	constructor(year = 2020, month = 1, day = 1, hour = 0, minute = 0, second = 1) {
+	constructor(year = 2020, month = 1, day = 1, hour = 0, minute = 0, second = 0) {
 		if (arguments.length === 1) {
 			// If the argument is a DateTime object, copy its properties
 			if (year instanceof DateTime) {
@@ -107,13 +106,9 @@ class DateTime {
 	}
 
 	// Compares this DateTime object with another DateTime object and returns the difference.
-	// Gives an approximate comparison only when working with higher numbers (several years), since it doesn't take leap years into account for simplicity
 	compareWith(otherDateTime, getSeconds = false) {
-		let diffSeconds = otherDateTime.timeStamp - this.timeStamp;
+		let diffSeconds = Math.abs(this.timeStamp - otherDateTime.timeStamp);
 		if (getSeconds) return diffSeconds;
-
-		const sign = Math.sign(diffSeconds);
-		diffSeconds = Math.abs(diffSeconds);
 
 		const years = Math.floor(diffSeconds / (Time.secondsPerDay * 365.25));
 		diffSeconds -= years * Time.secondsPerDay * 365;
@@ -132,14 +127,7 @@ class DateTime {
 
 		const seconds = diffSeconds;
 
-		return {
-			years: years * sign,
-			months: months * sign,
-			days: days * sign,
-			hours: hours * sign,
-			minutes: minutes * sign,
-			seconds: seconds * sign,
-		};
+		return { years, months, days, hours, minutes, seconds };
 	}
 
 	// Returns the first occurrence of a given weekday (1-7 for Sun-Sat) in the current month.
@@ -267,17 +255,17 @@ class DateTime {
 		return daysPerMonth.slice(0, this.month - 1).reduce((a, b) => a + b, 0) + this.day;
 	}
 
-	// Returns the current moon phase as a fraction (0-1), where 0 and 1 is new moon and 0.5 is full moon
+	// Returns the current moon phase as a fraction (0-1), where 0 is new moon and 0.5 is full moon
 	get moonPhaseFraction() {
 		// Real new moon (in london) as a reference point
 		const referenceNewMoon = new DateTime(2022, 1, 2, 18, 33);
 		let phaseFraction = ((this.timeStamp - referenceNewMoon.timeStamp) / (Time.synodicMonth * Time.secondsPerDay)) % 1;
 
-		// Adjust in case of negative date (date before the reference date)
-		phaseFraction = (phaseFraction + 1) % 1;
-
 		// Special rounding cases - to round to a complete new-moon or full-moon more often
-		return phaseFraction >= 0.48 && phaseFraction <= 0.52 ? 0.5 : phaseFraction < 0.02 || phaseFraction > 0.98 ? 0 : round(phaseFraction, 2);
+		phaseFraction =
+			phaseFraction >= 0.48 && phaseFraction <= 0.52 ? 0.5 : phaseFraction < 0.02 || phaseFraction > 0.98 ? 0 : Math.round(phaseFraction * 100) / 100;
+
+		return phaseFraction;
 	}
 
 	// Returns a fraction of a day. (0 at 0:00 and 1 at 24:00)
@@ -288,11 +276,6 @@ class DateTime {
 	// Returns a fraction of a day, but starting at noon. (0 at 12:00 and 0.99 at 11:59)
 	get fractionOfDayFromNoon() {
 		return (((this.hour + 12) % 24) * 60 + this.minute) / (24 * 60);
-	}
-
-	// Returns a fraction of the year (0 at the start of the year and 1 at the end)
-	get fractionOfYear() {
-		return this.yearDay / DateTime.getDaysOfYear(this.year);
 	}
 }
 window.DateTime = DateTime;

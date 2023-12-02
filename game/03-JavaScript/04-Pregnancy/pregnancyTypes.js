@@ -119,6 +119,7 @@ function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = n
 	let pregnancy;
 	let fertility = 0;
 	let magicTattoo = 0;
+	let contraceptive = 0;
 	if (!motherObject) {
 		return [`mother object not provided`];
 	} else if (!["anus", "vagina"].includes(genital)) {
@@ -147,6 +148,7 @@ function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = n
 		if (parasiteType && pregnancy.fetus.length >= maxParasites(genital)) return ["Player does not have room for more parasites"];
 
 		fertility += Math.clamp(V.sexStats.pills.pills["fertility booster"].doseTaken || 0, 0, Infinity);
+		contraceptive += Math.clamp(V.sexStats.pills.pills.contraceptive.doseTaken || 0, 0, 2);
 	} else if (!parasiteType) {
 		if (V.npcPregnancyDisable === "t") return ["NPC pregnancy disabled"];
 
@@ -165,9 +167,8 @@ function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = n
 				if (pregnancy.fetus.length && pregnancy.fetus[0] && pregnancy.fetus[0].eggTimer) return ["Hawk eggs already fertilised"];
 			} else if (pregnancy.type !== "parasite" && pregnancy.fetus.length) return ["NPC currently pregnant and cannot support other types"];
 
-			if (pregnancy.pills === "fertility") {
-				fertility += 1;
-			}
+			if (pregnancy.pills === "fertility") fertility += 1;
+			if (pregnancy.pills === "contraceptive") contraceptive += 1;
 		} else {
 			// ToDo: Random npc pregnancy
 			pregnancy = {
@@ -189,7 +190,7 @@ function pregPrep({ motherObject, fatherObject, parasiteType = null, genital = n
 		}
 	}
 
-	return [pregnancy, fertility, magicTattoo];
+	return [pregnancy, fertility, magicTattoo, contraceptive];
 }
 
 function bodySizeCalc(bodysize) {
@@ -610,7 +611,7 @@ window.pregnancyGenerator = {
 					hairColour: featherColour[random(0, featherColour.length - 1)],
 				});
 				// Hours
-				baby.eggTimer = random(24 * 26, 24 * 32);
+				baby.eggTimer = new DateTime(Time.date).addHours(random(24 * 26, 24 * 32)).timeStamp;
 				result.fetus.push(baby);
 				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
 			}

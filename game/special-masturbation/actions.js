@@ -110,7 +110,7 @@ function masturbationActions() {
 		fragment.append(wikifier("promiscuity1"));
 		V.masturbationorgasmstat++;
 		V.masturbationorgasm++;
-		if (V.femaleclimax !== 1 && V.mouth !== "mpenis") {
+		if (V.femaleclimax !== 1 && !T.deniedOrgasm && V.worn.genitals.name !== "chastity parasite" && V.mouth !== "mpenis") {
 			V.masturbationorgasmsemen++;
 		}
 		fragment.append(wikifier("purity", -1));
@@ -978,9 +978,7 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 			result.options.push(rest());
 			break;
 		case "mdildomouth":
-			result.text = `Your ${
-				V.leftarm === "mdildomouthentrance" ? toyDisplay(selectedToy("left")) : toyDisplay(selectedToy("right"))
-			} is inside of your mouth.`;
+			result.text = `Your ${V.leftarm === "mdildomouth" ? toyDisplay(selectedToy("left")) : toyDisplay(selectedToy("right"))} is inside of your mouth.`;
 			result.options.push({
 				action: "mdildolick",
 				text: "Lick",

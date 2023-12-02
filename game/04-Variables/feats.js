@@ -1821,12 +1821,8 @@ function featsMerge() {
 				if (slot) {
 					slot.state.history = State.deltaDecode(slot.state.delta);
 					DoLSave.decompressIfNeeded(slot);
-					if (
-						localStorageSaves.autosave.state.history &&
-						localStorageSaves.autosave.state.history[0] &&
-						localStorageSaves.autosave.state.history[0].variables
-					) {
-						const variables = localStorageSaves.autosave.state.history[0].variables;
+					if (slot.state.history && slot.state.history[0] && slot.state.history[0].variables) {
+						const variables = slot.state.history[0].variables;
 						if (variables.feats) {
 							loadFeats(variables.feats.allSaves);
 							loadFeats(variables.feats.currentSave);

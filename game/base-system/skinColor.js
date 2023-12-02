@@ -159,16 +159,18 @@ function tannedCoverage() {
 }
 
 function tanned(amount, flag) {
-	if (amount === 0) return;
-	if (V.options.tanningEnabled) {
+	if (V.options.tanningEnabled === true) {
 		T.coverage = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		if (flag === "ignoreCoverage") {
 			T.coverage = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		} else if (flag === "tanLines") {
 			tannedCoverage();
 		}
-
-		T.tanChange = amount / 24;
+		if (V.skinColor.sunBlock === true && amount > 0) {
+			T.tanChange = 0;
+		} else {
+			T.tanChange = amount / 24;
+		}
 
 		for (let i = 0; i < setup.skinColor.tanLoc.length; i++) {
 			if (T.coverage[i] === 0) {

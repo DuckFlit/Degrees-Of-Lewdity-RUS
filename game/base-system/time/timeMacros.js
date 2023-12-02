@@ -32,7 +32,7 @@ Macro.add("advancetohour", {
 	},
 });
 
-function passTimeUntil(hour, minute = 0) {
+function passTimeUntil(hour, minute) {
 	const currentSeconds = Time.hour * Time.secondsPerHour + Time.minute * Time.secondsPerMinute;
 	const targetSeconds = hour * Time.secondsPerHour + minute * Time.secondsPerMinute;
 	const secondsToPass = (targetSeconds - currentSeconds + Time.secondsPerDay) % Time.secondsPerDay;

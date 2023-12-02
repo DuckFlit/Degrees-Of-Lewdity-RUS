@@ -161,10 +161,18 @@ Requires prior <<selectmodel "main">>
 
 	<<set _coverBreastsWithArm to false>>
 	<<if $leftarm isnot "bound" and $leftarm isnot "grappled">>
-		<<if $dontHide is false and $worn.over_upper.exposed gte 1 and ($worn.upper.exposed gte 1 or $upperwetstage gte 3)
-		and (($uncomfortable.underwear is true and !$worn.under_upper.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_upper.exposed gte 1 or $underupperwetstage gte 3)))>>
-			<<set _coverBreasts to true>>
-			<<set _modeloptions.arm_left to "cover">> <!-- might be changed back to "idle" if covering with wings -->
+
+		<<if $dontHide is false and $worn.over_upper.exposed gte 1 and ($worn.upper.exposed gte 1 or $upperwetstage gte 3) and ($worn.lower.covers_top isnot 1) and (($uncomfortable.underwear is true and !$worn.under_upper.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_upper.exposed gte 1 or $underupperwetstage gte 3)))>>
+			
+			<<if ($player.gender_appearance is "m" and $player.perceived_breastsize lte 2) 
+			or (["pool", "lake", "beach"].includes($location) and ($worn.under_upper.exposed lt 1 and $underupperwetstage lt 3))>>
+				<<set _coverBreasts to false>>
+				<<set _modeloptions.arm_left to "idle">>
+			<<else>>
+				<<set _coverBreasts to true>>
+				<<set _modeloptions.arm_left to "cover">> <!-- might be changed back to "idle" if covering with wings -->
+			<</if>>
+		
 		<<else>>
 			<<set _coverBreasts to false>>
 			<<set _modeloptions.arm_left to "idle">>
@@ -176,11 +184,18 @@ Requires prior <<selectmodel "main">>
 	<<if $rightarm isnot "bound" and $rightarm isnot "grappled">>
 		<<if $dontHide is false and $worn.over_lower.exposed gte 1 and ($worn.lower.exposed gte 1 or $lowerwetstage gte 3)
 		and (($uncomfortable.underwear is true and !$worn.under_lower.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_lower.exposed gte 1 or $underlowerwetstage gte 3)))>>
-			<<set _coverCrotch to true>>
-			<<set _modeloptions.arm_right to "cover">> <!-- might be changed back to "idle" if covering with wings/tail -->
+			
+			<<if (["pool", "lake", "beach"].includes($location) and ($worn.under_lower.exposed lt 1 and $underlowerwetstage lt 3))>>
+				<<set _coverCrotch to false>>
+				<<set _modeloptions.arm_right to $worn.handheld.name isnot "naked" ? "hold" : "idle">>
+			<<else>>
+				<<set _coverCrotch to true>>
+				<<set _modeloptions.arm_right to "cover">> <!-- might be changed back to "idle" if covering with wings/tail -->
+			<</if>>
+
 		<<else>>
 			<<set _coverCrotch to false>>
-			<<set _modeloptions.arm_right to "idle">>
+			<<set _modeloptions.arm_right to $worn.handheld.name isnot "naked" ? "hold" : "idle">>
 		<</if>>
 	<<else>>
 		<<set _modeloptions.arm_right to "none">>
@@ -234,16 +249,16 @@ Requires prior <<selectmodel "main">>
 			<<if !_disabled.includes($transformationParts.demon.tail)>>
 				<<set _modeloptions.demon_tail_state to ($transformationParts.traits.flaunting is "default" ? "flaunt" : "cover")>>
 				<<set _modeloptions.cat_tail_state to "cover">>
-				<<set _modeloptions.arm_right to "idle">>
+				<<set _modeloptions.arm_right to $worn.handheld.name isnot "naked" ? "hold" : "idle">>
 			<<elseif !_disabled.includes($transformationParts.angel.wings)>>
 				<<set _modeloptions.angel_wing_left to "cover">>
-				<<set _modeloptions.arm_right to "idle">>
+				<<set _modeloptions.arm_right to $worn.handheld.name isnot "naked" ? "hold" : "idle">>
 			<<elseif !_disabled.includes($transformationParts.fallenAngel.wings)>>
 				<<set _modeloptions.fallen_wing_left to "cover">>
-				<<set _modeloptions.arm_right to "idle">>
+				<<set _modeloptions.arm_right to $worn.handheld.name isnot "naked" ? "hold" : "idle">>
 			<<elseif !_disabled.includes($transformationParts.bird.wings)>>
 				<<set _modeloptions.bird_wing_left to "cover">>
-				<<set _modeloptions.arm_right to "idle">>
+				<<set _modeloptions.arm_right to $worn.handheld.name isnot "naked" ? "hold" : "idle">>
 			<</if>>
 		<</if>>
 	<</if>>
@@ -575,6 +590,9 @@ Set model options & filters for player clothes
 
 	<<set _modeloptions.alt_position to $worn.upper.altposition is "alt">>
 	<<set _modeloptions.alt_position_neck to $worn.neck.altposition is "alt">>
+	<<set _modeloptions.alt_sleeve to $worn.upper.altsleeve is "alt">>
+
+	<<set _modeloptions.facewear_layer to $facelayer>>
 
 	<<set _modeloptions.upper_tucked to $upperTucked and !setup.clothes.upper[clothesIndex('upper', $worn.upper)].notuck and $worn.upper.outfitPrimary is undefined>>
 
@@ -588,6 +606,7 @@ Set model options & filters for player clothes
 			["under_lower", $underlowerwetstage],
 			["under_upper", $underupperwetstage],
 			["hands"],
+			["handheld"],
 			["head"],
 			["over_head"],
 			["face"],
