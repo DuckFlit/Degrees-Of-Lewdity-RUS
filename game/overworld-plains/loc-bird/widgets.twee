@@ -342,6 +342,46 @@
 	<</if>>
 <</widget>>
 
+<<widget "bird_greeting">>
+	<<if $daily.birdGreeting isnot 1>>
+		<<set $daily.birdGreeting to 1>>
+		<<if $monster is 1>>
+			<<if Time.hour lte 3 or Time.hour gte 18>>
+				"Good evening,
+			<<elseif Time.hour lte 12>>
+				"Good morning,
+			<<else>>
+				"Good afternoon,
+			<</if>>
+			<<wife>>."
+		<<else>>
+			<<bHe>> greets you with a few low chirps.
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "hawkRescueSetup">>
+	<<if $moor_hunt gte 1>>
+		<<enable_rescue>>
+	<<else>>
+		<<set $_rescueChance to 5>>
+		<<if $harpy gte 6>><<set $_rescueChance += 5>><</if>>
+		<<if $syndromebird gte 1>><<set $_rescueChance += 10>><</if>>
+		<<if $enemynomax gte 3>><<set $_rescueChance += 10>><</if>>
+		<<if $enemytype is "man">><<set $_rescueChance += 5>><</if>>
+		<<set $_rescueChance += Math.floor($moor / 5)>>
+		<<if $_rescueChance gte random(1, 100)>><<enable_rescue>><</if>>
+	<</if>>
+<</widget>>
+
+<<widget "hawkScreechDesc">>
+	<<if $syndromebird>>welcome<<elseif C.npc["Great Hawk"].init is 1>>familiar, terrifying<<else>>terrifying<</if>> screech
+<</widget>>
+
+<<widget "hawkRescueApproachSentence">>
+	<<if $syndromebird is 1>>Salvation<<else>>Terror<</if>> <<print ["circles above", "approaches", "descends", "shadows you"][random($weather is "clear" ? 3 : 2)]>>.
+<</widget>>
+
 <<widget "bird_perch_options">>
 	<<if $bird.state is "hunting" and $bird.timer lte 0>>
 		<<endevent>>
@@ -467,24 +507,6 @@
 	<</if>>
 <</widget>>
 
-<<widget "bird_greeting">>
-	<<if $daily.birdGreeting isnot 1>>
-		<<set $daily.birdGreeting to 1>>
-		<<if $monster is 1>>
-			<<if Time.hour lte 3 or Time.hour gte 18>>
-				"Good evening,
-			<<elseif Time.hour lte 12>>
-				"Good morning,
-			<<else>>
-				"Good afternoon,
-			<</if>>
-			<<wife>>."
-		<<else>>
-			<<bHe>> greets you with a few low chirps.
-		<</if>>
-	<</if>>
-<</widget>>
-
 <<widget "flight_time_check">>
 	<<if _args[0]>>
 		<<set _flightTimeBase to _args[0]>>
@@ -511,25 +533,37 @@
 							<<set _flightTime += Math.floor(_flightTimeBase / 18)>>
 						<<default>>
 					<</switch>>
+					<<set _slowText to true>>
 				<</if>>
 			<</for>>
-			<<if _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.5))>>
-				<<set _fatigueText to "<<gggtiredness>>">>
-				<<set _fatigueMod to 3>>
-				<span class="red">Flying in the rain will soak your clothes, heavily slowing you down and exposing you.</span>
-			<<elseif _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.25))>>
-				<<set _fatigueText to "<<gggtiredness>>">>
-				<<set _fatigueMod to 3>>
-				<span class="pink">Flying in the rain will soak your clothes, slowing you down and exposing you.</span>
-			<<elseif _flightTime gt _flightTimeBase>>
-				<<set _fatigueText to "<<ggtiredness>>">>
-				<<set _fatigueMod to 2>>
-				<span class="blue">Flying in the rain will soak your clothes, slightly slowing you down and exposing you.</span>
+			<<if _slowText>>
+				<<if _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.5))>>
+					<<set _fatigueText to "<<gggtiredness>>">>
+					<<set _fatigueMod to 3>>
+					<span class="red">Flying in the rain will soak your clothes, heavily slowing you down and exposing you.</span>
+				<<elseif _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.25))>>
+					<<set _fatigueText to "<<gggtiredness>>">>
+					<<set _fatigueMod to 3>>
+					<span class="pink">Flying in the rain will soak your clothes, slowing you down and exposing you.</span>
+				<<elseif _flightTime gt _flightTimeBase>>
+					<<set _fatigueText to "<<ggtiredness>>">>
+					<<set _fatigueMod to 2>>
+					<span class="blue">Flying in the rain will soak your clothes, slightly slowing you down and exposing you.</span>
+				<<else>>
+					<<set _fatigueText to "<<gtiredness>>">>
+					<<set _fatigueMod to 2>>
+					<span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span>
+				<</if>>
 			<<else>>
-				<<set _fatigueText to "<<ggtiredness>>">>
+				<<set _fatigueText to "<<gtiredness>>">>
 				<<set _fatigueMod to 2>>
-				<span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span>
+				<span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span>				
 			<</if>>
+		<<case "snow">>
+			<<set _flightTime += Math.floor(_flightTimeBase / 6)>>
+			<<set _fatigueText to "<<ggtiredness>>">>
+			<<set _fatigueMod to 2>>
+			<span class="blue">Flying in the snow will obscure your vision and slow you down.</span>
 		<<default>>
 			<<set _fatigueText to "<<gtiredness>>">>
 			<<set _fatigueMod to 1>>
