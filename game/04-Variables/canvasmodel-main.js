@@ -1337,7 +1337,7 @@ Renderer.CanvasModels["main"] = {
 				if (options.mannequin) {
 					return "img/body/mannequin/penis.png";
 				} else if (options.genitals_chastity) {
-					if (["flat chastity cage", "chastity parasite"].includes(options.worn_genitals_setup.name)) return;
+					if (["chastity belt", "flat chastity cage", "chastity parasite"].includes(options.worn_genitals_setup.name)) return;
 					if (options.worn_genitals_setup.name === "small chastity cage") return "img/body/penis/penis_chastitysmall.png";
 					return "img/body/penis/penis_chastity.png"
 				} else if (!playerHasStrapon()) {
@@ -1349,7 +1349,7 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 			showfn(options) {
-				return options.crotch_visible && !!options.penis && options.worn_genitals_setup.variable !== "slimechastitycage";
+				return options.crotch_visible && !!options.penis;
 			},
 			filters: ["penis"],
 			zfn(options) {
@@ -1430,8 +1430,12 @@ Renderer.CanvasModels["main"] = {
 				return options.crotch_visible && !!options.clit_parasite && !options.chastity;
 			},
 			zfn(options) {
-				if (options.crotch_visible && !!options.penis && options.clit_parasite === "parasite") {
-					return ZIndices.penis - 0.1;
+				if (["parasite", "parasitem"].includes(options.clit_parasite)) {
+					if (options.crotch_exposed) {
+						return ZIndices.penis_chastity - 0.1;
+					}else {
+						return ZIndices.penisunderclothes - 0.1;
+					}
 				} else if (options.crotch_exposed) {
 					return ZIndices.parasite;
 				} else {
