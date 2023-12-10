@@ -1605,7 +1605,7 @@ setup.feats = {
 		softLockable: true,
 	},
 	"Lost Heirloom": {
-		title: "Withering Truth",
+		title: "Lost Heirloom",
 		desc: "Retrieved the gold compass.",
 		difficulty: 2,
 		series: "",
