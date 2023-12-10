@@ -22,6 +22,89 @@
 	<</if>>
 <</widget>>
 
+<<widget "pirate_clothes_up">>
+	<<if $pirate_rank gte 1>>
+		<<lowerwear 22>>
+		<<upperwear 40>>
+	<<else>>
+		<<if $player.gender is "f" or $player.gender is "m" and $forcedcrossdressingdisable is "f">>
+			<<lowerwear 114>>
+		<<else>>
+			<<lowerwear 31>>
+		<</if>>
+		<<upperwear 8>>
+	<</if>>
+<</widget>>
+
+<<widget "pirate_rescue">>
+	<<if $pirate_rank gte 1>>
+		<<enable_rescue>>
+	<</if>>
+<</widget>>
+
+<<widget "pirate_attention">>
+	<<if _args[0]>>
+		<<set $pirate_attention += _args[0]>>
+	<</if>>
+<</widget>>
+
+<<widget "pirate_attack_init">>
+	<<set $pirate_attention to 0>>
+	<<set $pirate_time to 0>>
+<</widget>>
+
+<<widget "pirate_attack_end">>
+	<<unset $pirate_attention>>
+	<<unset $pirate_time>>
+<</widget>>
+
+<<widget "pirate_mate_work">>
+	<<if _args[0] is "deck">>
+		<<set $phase to 0>>
+		<<generateRole 0 0 "pirate">><<person1>>
+		A <<person>> shoves a mop in your hand. "Don't just stand there. Get swabbing."
+		<br><br>
+		
+		<<link [[Swab the deck (2:00)|Pirate Swab]]>><<endevent>><<pirate_status 1 "mate">><<pass 120>><<tiredness 6>><</link>><<gtiredness>><<grespect "mate">>
+		<br>
+		<<link [[Refuse|Pirate Work Refuse]]>><</link>>
+		<br>
+	<<elseif _args[0] is "cabin">>
+		<<set $phase to 1>>
+		<<generateRole 0 0 "pirate">><<person1>>
+		"Look at the state of this dump," a <<person>> says. <<He>> only now seems to notice you. "You. Get cleaning, or I'll have your arse bent over the prow."
+		<br><br>
+
+		<<link [[Clean the cabin (2:00)|Pirate Cabin Clean]]>><<pirate_status 1 "mate">><<pass 120>><<tiredness 6>><</link>><<gtiredness>><<grespect "mate">>
+		<br>
+		<<link [[Refuse|Pirate Work Refuse]]>><</link>>
+		<br>
+	<<elseif _args[0] is "bilge">>
+		<<set $phase to 2>>
+		<<generateRole 0 0 "pirate">><<person1>>
+		"We need to plug some of these leaks," a <<person>> says, stepping over a puddle. "You. Get to it."
+		<br><br>
+		
+		<<link [[Plug leaks (2:00)|Pirate Bilge Plug]]>><<pirate_status 1 "mate">><<pass 120>><<tiredness 6>><</link>><<gtiredness>><<grespect "mate">>
+		<br>
+		<<link [[Refuse|Pirate Work Refuse]]>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "pirate_mate_work_end_links">>
+	<<if $phase is 0>>
+		<<link [[Next|Pirate Deck]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
+	<<elseif $phase is 1>>
+		<<link [[Next|Pirate Cabin]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Pirate Bilge]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
 <<widget "events_pirate_deck">>
 	<<cleareventpool>>
 	<<addinlineevent "pirate_scum_deck_1" 1>>
@@ -151,7 +234,7 @@
 		A <<person2>><<person>> staggers from behind, equally drunk.
 		<br><br>
 		<<if $drunk gte 120>>
-			In you're inebriated state, you're too clumsy to get away.
+			In your inebriated state, you're too clumsy to get away.
 			<br><br>
 
 			<<link [[Next|Pirate Scum Bilge Pair Rape]]>><<set $molestationstart to 1>><</link>>

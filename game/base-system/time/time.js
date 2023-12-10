@@ -698,6 +698,9 @@ function dayPassed() {
 	} else {
 		delete V.pirate_journey;
 	}
+	if (V.pirate_attack) {
+		delete V.pirate_attack;
+	}
 
 	return fragment;
 }
