@@ -602,7 +602,7 @@ function getRobinLocation() {
 		return;
 	} else if (V.robinlocationoverride && V.robinlocationoverride.during.includes(Time.hour)) {
 		T.robin_location = V.robinlocationoverride.location;
-	} else if (["docks", "landfill", "dinner", "pillory"].includes(V.robinmissing)) {
+	} else if (["docks", "landfill", "dinner", "pillory", "mansion"].includes(V.robinmissing)) {
 		T.robin_location = V.robinmissing;
 	} else if (!between(Time.hour, 7, 20)) {
 		// if hour is 6 or lower, or 21 or higher.
