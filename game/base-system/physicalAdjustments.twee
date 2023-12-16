@@ -43,6 +43,9 @@
 	<<if $sexStats.pills.pills && $sexStats.pills.pills["Anti-Parasite Cream"] is undefined>>
 		<<set $sexStats.pills.pills["Anti-Parasite Cream"] to { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 }>>
 	<</if>>
+	<<if $sexStats.pills.pills && $sexStats.pills.pills["Hair Growth Formula"] is undefined>>
+		<<set $sexStats.pills.pills["Hair Growth Formula"] to { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 }>>
+	<</if>>
 
 	<<if $sexStats.anus is undefined>>
 		<<set $sexStats.anus to {
@@ -546,18 +549,27 @@
 				<<if _autoTakeDetermined != null and _pills.pills[_autoTakeDetermined].owned > 0>>
 					/*Prevent pills from being taken if the player has already taken a dose, aloowing them to either take more than intended, or to bypass the overdose effects*/
 					<<if !_pills.pills[_autoTakeDetermined].doseTaken>>
-						<<set $pillsconsumed++>> /* to keep track of overall pill consumption (stats) */
 						<<set _pills.pills[_autoTakeDetermined].owned-->>
-						<<set _pills.pills[_autoTakeDetermined].doseTaken += 1>>
-						<<run redetermineMostTaken(0, 0, _autoTakeDetermined)>>
-						<<run setLastTaken(null, null, _autoTakeDetermined)>>
-						<<set $pillsTaken to true>>
-						<<set $pillsTakenOn to (Time.monthDay.toString() + Time.month + Time.year.toString())>>
-						<<set $effectsmessage to 1>>
-						<<if _pills.pills[_autoTakeDetermined].owned == 0>>
-							<<set _pills.pills[_autoTakeDetermined].autoTake to false>>
-							<<set $pillsTakenLast to true>>
+						<<if _autoTakeDetermined is "Hair Growth Formula">>
+							<<set _pills.pills[_autoTakeDetermined].doseTaken += 3>>
+							<<set $hairGrowthApplied to true>>
+							<<if _pills.pills[_autoTakeDetermined].owned == 0>>
+								<<set _pills.pills[_autoTakeDetermined].autoTake to false>>
+								<<set $hairGrowthAppliedLast to true>>
+							<</if>>
+						<<else>>
+							<<set $pillsconsumed++>> /* to keep track of overall pill consumption (stats) */
+							<<set _pills.pills[_autoTakeDetermined].doseTaken += 1>>
+							<<run redetermineMostTaken(0, 0, _autoTakeDetermined)>>
+							<<run setLastTaken(null, null, _autoTakeDetermined)>>
+							<<set $pillsTaken to true>>
+							<<set $pillsTakenOn to (Time.monthDay.toString() + Time.month + Time.year.toString())>>
+							<<if _pills.pills[_autoTakeDetermined].owned == 0>>
+								<<set _pills.pills[_autoTakeDetermined].autoTake to false>>
+								<<set $pillsTakenLast to true>>
+							<</if>>
 						<</if>>
+						<<set $effectsmessage to 1>>
 					<</if>>
 				<<elseif _autoTakeDetermined != null>>
 					<<set _pills.pills[_autoTakeDetermined].autoTake to false>>
