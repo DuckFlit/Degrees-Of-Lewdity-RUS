@@ -48,6 +48,8 @@ You are in the hairdressers. Various hair products are available for sale. You c
 		<<if Time.dayState is "night" and Time.hour isnot $closinghour>>
 			<<hairdressericon "gel">><<link [[Steal a bottle of hair gel|$passage]]>><<crimeUp `8 / 100` "petty">><<set $hairgelBottles += 1>><</link>><<crime "petty">>
 			<br>
+			<<hairdressericon "hairspray">><<link [[Steal a bottle of hair growth formula|$passage]]>><<crimeUp `50 / 100` "petty">><<set $sexStats.pills.pills["Hair Growth Formula"].owned++>><</link>><<crime "petty">>
+			<br>
 			<<if !$weekly.theft.hairDressers>>
 				<<shopicon "register">><<link [[Examine the cash register|Hairdressers Register]]>><</link>>
 				<br><br>
@@ -61,6 +63,13 @@ You are in the hairdressers. Various hair products are available for sale. You c
 				<<hairdressericon "gel">> <span class="blue">You can't afford any hair gel.</span>
 				<br>
 			<</if>>
+			<<if $money gte 5000>>
+				<<hairdressericon "hairspray">> <<link [[Purchase hair growth formula (£50)|Hairdressers Gel]]>><<set $money -= 5000>><<set $sexStats.pills.pills["Hair Growth Formula"].owned += 3>><<set $phase to 1>><</link>>
+				<br>
+			<<else>>
+				<<hairdressericon "hairspray">> <span class="blue">You can't afford any hair gel.</span>
+				<br>
+			<</if>>
 			<<hairdressericon "chair">><<link [[Take a seat|Hairdressers Seat]]>><</link>>
 			<br><br>
 		<</if>>
@@ -70,16 +79,27 @@ You are in the hairdressers. Various hair products are available for sale. You c
 <</if>>
 
 :: Hairdressers Gel
-<<generate1>><<person1>>You browse the hair products for sale. You decide on a tiny bottle labelled "No muss, no fuss!"
+
+<<generate1>><<person1>>You browse the hair products for sale. You decide on a tiny <<if $phase is 1>>canister<<else>>bottle<</if>> labelled "No muss, no fuss!"
 <br><br>
-The hairdresser makes small talk as <<he>> rings up your purchase. "That stuff's great," <<he>> says. "The bottle's small, so you'll only get <span class="teal">one use</span> out of it, but it's got a rock-solid hold. You won't have to worry about your hair getting mussed up. Not until you decide to change up your 'do, at least."
+The hairdresser makes small talk as <<he>> rings up your purchase. "That stuff's great," <<he>> says.
+
+<<if $phase is 1>>
+	"The canister's small, so you'll only get <span class="teal">a small number of uses</span> out it, but you won't need to use it every day. You won't have to worry about your hair staying short. Not until you decide to get it cut again."
+<<else>>
+	"The bottle's small, so you'll only get <span class="teal">one use</span> out it, of but it's got a rock-solid hold. You won't have to worry about your hair getting mussed up. Not until you decide to change up your 'do, at least."
+<</if>>
 <br><br>
 <<He>> hands you your bag with a smile. "<<print either("Thanks for shopping with us!","Have a great day.","Take care.","Pleasure doing business with ya.","Come back soon!")>>"
 <br><br>
-You have <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "bottle" : "bottles">> of hair gel.
+<<if $phase is 1>>
+	You have <span class="gold"><<print $sexStats.pills.pills["Hair Growth Formula"].owned>></span> applications of hair growth formula left.
+<<else>>
+	You have <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "bottle" : "bottles">> of hair gel.
+<</if>>
 <br><br>
 
-<<link [[Next|Hairdressers]]>><</link>>
+<<link [[Next|Hairdressers]]>><<endevent>><</link>>
 
 :: Hairdressers Seat
 

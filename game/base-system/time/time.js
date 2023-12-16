@@ -694,7 +694,7 @@ function dayPassed() {
 	}
 
 	if (V.pirate_journey > 1) {
-		V.pirate_journey--;	
+		V.pirate_journey--;
 	} else {
 		delete V.pirate_journey;
 	}
@@ -724,7 +724,7 @@ function hourPassed(hours) {
 		if (V.ejactrait >= 1) V.stress -= (V.goocount + V.semencount) * 10;
 		if (V.kylarwatched) V.kylarwatchedtimer--;
 		if (V.parasite.nipples.name) fragment.append(wikifier("milkvolume", 1));
-		if (V.worn.head.name === "hairpin") {
+		if ((V.worn.head.name === "hairpin" && random(0, 100) >= 75) || V.sexStats.pills.pills["Hair Growth Formula"].doseTaken) {
 			V.hairlength++;
 			V.fringelength++;
 			fragment.append(wikifier("calchairlengthstage"));
