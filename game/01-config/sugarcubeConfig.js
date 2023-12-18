@@ -476,6 +476,17 @@ Config.navigation.override = function (dest) {
 				return "Chalets Work One Sex";
 			case "Chalets Work One Rape Finish":
 				return "Chalets Work One Sex Finish";
+			
+			case "Whitney Bully Parasite Event Submit":
+			case "Whitney Bully Parasite Event Escape Attempt":
+				return "Bully Parasite";
+			
+			case "Whitney Bully Parasite Event Combat":
+				return "Bully Parasite Fight";
+
+			case "Whitney Bully Parasite Event Combat Loss":
+			case "Whitney Bully Parasite Event Combat Victory":
+				return "Bully Parasite Fight Finish";
 			default:
 				return false;
 		}
