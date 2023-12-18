@@ -3885,7 +3885,7 @@ Alex puffs <<his>> chest out with pride. After an enjoyable time in the meadow, 
     "I'll get you some clothes when we return to the farm," <<he>> mutters with a blush, trying not to look at your body as much as possible.
     <br><br>
 
-    "Well then...Let's try again later, not today." Alex gives you a worried expression as he holds the reins in <<his>> hand.
+    "Well then...Let's try again later, not today." Alex gives you a worried expression as <<he>> holds the reins in <<his>> hand.
     <br><br>
 
     <<He>> gives you some riding tips as the two of you walk back to the farm. You catch <<him>> peeking at your body when <<he>> thinks you're not looking.<<glust>><<gthighskill>><<npcincr Alex lust 1>><<set $thighskill += 10>>
@@ -4075,6 +4075,13 @@ Alex quickly enters the cottage and takes out some clothes. "Here."
 
 You follow Alex's instructions, and walk down the road.
 
+<<if !npcIsPregnant("Alex") and $rng gte 72>>
+	<<set $alexBooze to true>>
+	
+	You glance over the list, taking note of the alcohol mentioned.
+	
+<</if>>
+
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure)>>
 	A car honks at you as it passes.<<gstress>><<stress 6>>
@@ -4086,18 +4093,49 @@ You crest a hill, and arrive at a small shop beside an old train station. You en
 <<endevent>>
 <<generate1>><<person1>>
 "Is that a shopping list I see?" <<he>> asks. "Give it here, I'll sort it out."
-
-<<set $farm_work.shopping_money to random(2000, 6000)>>
-<<He>> takes the list, then whips around the room, gathering food and sundries into a basket on your behalf.
 <br><br>
 
-<<link [[Next|Farm Shopping 2]]>><</link>>
-<br>
+<<set $farm_work.shopping_money to random(2000, 6000)>>
+
+<<if $alexBooze>>
+	<<link [[Say nothing|Farm Shopping 2]]>><</link>>
+	<br>
+	<<link [[Ask the grocer to leave out the alcohol|Farm Shopping 2]]>><<set $alexBooze to "noBooze">><</link>>
+
+<<else>>
+	<<He>> takes the list, then whips around the room, gathering food and sundries into a basket on your behalf.
+	<br><br>
+
+	<<link [[Next|Farm Shopping 2]]>><</link>>
+	<br>
+
+<</if>>
 
 :: Farm Shopping 2
 <<effects>>
 
-<<He>> runs everything through the register. "That'll be <<printmoney $farm_work.shopping_money>>," <<he>> says.
+<<if $alexBooze is "noBooze">>
+	"Could you leave the alcohol out please?" you ask.
+	<br><br>
+
+<<elseif $alexBooze>>
+	"Can I see your ID?" <<he>> says, sounding tired.
+	<br><br>
+
+	<<if $id gte 1>>
+		You hand the grocer your ID. <<He>> gives it a quick look over before handing it back to you and bagging your groceries.
+
+	<<else>>
+		<<set $alexBooze to "noID">>
+		You fidget slightly while pretending to look for it. The grocer gives an annoyed glare before setting the alcohol aside.
+
+	<</if>>
+	<br><br>
+
+<</if>>
+
+<<He>> runs everything through the register <<if $alexBooze is "noBooze" or $alexBooze is "noID">>minus the alcohol<</if>>. "That'll be <<printmoney $farm_work.shopping_money>>," <<he>> says.
+<br><br>
 
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure)>>
@@ -4118,8 +4156,6 @@ You crest a hill, and arrive at a small shop beside an old train station. You en
 		<br>
 	<</if>>
 <<else>>
-	<br><br>
-
 	<<link [[Pay|Farm Shopping Pay]]>><</link>>
 	<br>
 	<<link [[Snatch and run|Farm Shopping Steal]]>><<crimeUp 50 "thievery">><</link>><<crime "thievery">><<athleticsdifficulty 1 600>>
@@ -4284,13 +4320,22 @@ You hand over the money Alex gave you, and pick up the basket.
 <br><br>
 <<endevent>>
 <<npc Alex>><<person1>>
-<br>
 
-You return to the farm. Alex meets you in the yard. "Nice," <<he>> says. "Leave it in the kitchen."
-<br><br>
+You return to the farm. Alex meets you in the yard.
 
-<<link [[Next|Farm Work]]>><<endevent>><</link>>
-<br>
+<<if $alexBooze>>
+	"Thanks," <<he>> says, taking the basket. As <<he>> turns toward the farmhouse, <<he>> glances down into the bag.
+	<br><br>
+
+	<<alexBoozeShopping>>
+
+<<else>>
+	"Nice," <<he>> says. "Leave it in the kitchen."
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+
+<</if>>
 
 :: Farm Shopping Steal
 <<effects>>
@@ -4379,7 +4424,6 @@ You return to the farm. Alex meets you in the yard. "Nice," <<he>> says. "Leave 
 You arrive at the farm. Alex meets you in the yard.
 <br><br>
 
-
 <<if $exposed gte 1>>
 	<<He>> blushes and looks away. "Wh-what happened to your-" <<he>> gulps. "Never mind." <<He>> takes the basket.<<towelup>>
 	<br><br>
@@ -4404,10 +4448,16 @@ You arrive at the farm. Alex meets you in the yard.
 	"Thanks," <<he>> says, taking the basket. <<He>> turns towards the farmhouse.
 	<br><br>
 
-	<<link [[Give Alex the money|Farm Shopping Give]]>><<trauma -6>><<npcincr Alex dom -1>><<npcincr Alex love 1>><</link>><<ldom>><<glove>><<ltrauma>>
-	<br>
-	<<link [[Keep the money|Farm Shopping Keep]]>><<set $money += $farm_work.shopping_money>><</link>>
-	<br>
+	<<if $alexBooze>>
+		<<alexBoozeShopping>>
+
+	<<else>>
+		<<link [[Give Alex the money|Farm Shopping Give]]>><<trauma -6>><<npcincr Alex dom -1>><<npcincr Alex love 1>><</link>><<ldom>><<glove>><<ltrauma>>
+		<br>
+		<<link [[Keep the money|Farm Shopping Keep]]>><<set $money += $farm_work.shopping_money>><</link>>
+		<br>
+
+	<</if>>
 <</if>>
 <br><br>
 
@@ -4510,6 +4560,36 @@ You pocket the money as Alex enters the farmhouse.
 <<link [[Next|Farm Work]]>><<endevent>><</link>>
 <br>
 
+:: Farm Shopping Booze
+<<effects>>
+
+<<if $alexBooze is "noBooze">>
+	<<if C.npc.Alex.dom gte 20>>
+		You grip Alex by <<his>> shoulder. <<He>> attempts to shake you off, but you keep your grip. Annoyed, you toss the remaining notes at <<him>>.
+		<br><br>
+
+		"Stop acting like such a brat. I'm only looking out for you."
+		<br><br>
+
+		As you turn away, <<he>> mumbles something to <<himself>>. <<He>> sounds chastened.<<lstress>><<ldom>><<stress -6>><<npcincr "Alex" dom -1>>
+
+	<<elseif ($alexBooze is "noBooze" and C.npc.Alex.dom lte 20) or $alexBooze is "noID">>
+		You place your hand on Alex's shoulder. <<He>> glances at you, then at your open hand with the leftover banknotes. "The money for the alcohol," you say.
+		<br><br>
+
+		<<He>> nods. "Thanks." <<He>> turns away, and you think you hear <<him>> mumble an apology.<<lstress>><<stress -6>>
+	<</if>>
+
+<<else>>
+	You grab Alex by <<his>> shoulder. <<He>> look back at you. You grab <<his>> hand and place the bank notes into it. "Here's what was left." 
+	<br><br>
+
+	Alex's face softens a bit before <<he>> kisses your cheek.<<glove>><<npcincr "Alex" love 1>>
+
+<</if>>
+<br><br>
+
+<<link [[Next|Farm Work]]>><<unset $alexBooze>><<endevent>><</link>>
 
 :: Farm Race
 <<effects>>
