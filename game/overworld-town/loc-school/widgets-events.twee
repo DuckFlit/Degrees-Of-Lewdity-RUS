@@ -1742,13 +1742,13 @@
 			<<generatey2>><<person1>>
 			A pair of hands grab you from behind. Alarmed, you turn to face Whitney and <<his>> friends. "Hey, slut," <<he>> says. <<Hes>> hiding something behind <<his>> back. "I brought you a little present. I think you'll like it." <<He>> reveals a small bag. You watch in confusion as <<he>> gropes inside the bag for this thing with a weird mixture of amusement and revulsion on <<his>> face, adding to your apprehension. Eventually <<he>> manages to get a grip on whatever it is <<hes>> fishing around in there for and removes it from the bag. It's a parasite.
 			<br><br>
-			Your skin crawls at the sight, and a <<eventwhitneyparasiteadjective>> thought comes to mind. <<Hes>> not going to do what you think <<he>> is with that, is <<he>>?
+			Your skin crawls at the sight, and a <<print $deviancy gte 75 ? (["lewd", "delightfully <<EZdisgusting>>"].pluck()) : "<<EZdisgusting>>">> thought comes to mind. <<Hes>> not going to do what you think <<he>> is with that, is <<he>>?
 			<<if $deviancy gte 75>><<arousal 20>><<garousal>><<else>><<stress 20>><<gstress>><</if>>
 			<br><br>
 
-			<<link [[Let it happen|Whitney Bully Parasite Event Submit]]>><<npcincr Whitney dom 1>><<sub 1>><</link>><<gdom>>
+			<<link [[Let it happen|Bully Parasite]]>><<set $phase to 0>><<npcincr Whitney dom 1>><<sub 1>><</link>><<gdom>>
 			<br>
-			<<link [[Try to escape|Whitney Bully Parasite Event Escape Attempt]]>><<npcincr Whitney dom -1>><</link>><<physiquedifficulty 1 $physiquemax>><<ldom>>
+			<<link [[Try to escape|Bully Parasite]]>><<set $phase to 1>><<npcincr Whitney dom -1>><</link>><<physiquedifficulty 1 $physiquemax>><<ldom>>
 		<<else>>
 			You see Whitney and <<his>> friends walking in your direction, talking amongst themselves. Whitney appears absorbed in the conversation and doesn't even seem to notice you.
 			<br><br>
@@ -2013,185 +2013,137 @@
 	<</if>>
 <</widget>>
 
-<<widget "eventwhitneyparasitecontinue">>
+<<widget "WhitneyParasite">>
 	/* roll of the die where they place what parasite */
-	/* 6 possibilities, 2 kinds of parasite, 3 target locations */
-	/* rng is set to _roll so we can have random events in this */
+	/* 2 kinds of parasite, 3 target locations */
+	<<set _parasite_type to ["urchin","slime"].random()>>
 	<<if playerChastity()>>
-		<<rng 2 5>>
+		<<set _parasite_loc to ["bottom","nipples"].random()>>
 	<<else>>
-		<<rng 0 5>>
+		<<set _parasite_loc to ["bottom","nipples","genitals"].random()>>
 	<</if>>
-	<<set _eventnum to $rng>>
 
 	/* lets handle common events in one place */
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked") or $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and playerChastity()>>
-		<<eventwhitneyparasitepeniscomment>>
+		<<WhitneyParasitePenisComment>>
 	<<else>>
-		<<if _eventnum is 0 or _eventnum is 1>>
-			<<eventwhitneyparasiteexposelower>>
+		"Get <<phim>> ready <<nnpc_gendery "Whitney">>s," Whitney commands to <<his>> friends. As <<he>> steps forward with the <<print $deviancy gte 75 ? (["lewd", "delightfully <<EZdisgusting>>"].pluck()) : "<<EZdisgusting>>">> thing, your mind races, wondering what they're going to do with you. With your arms restrained and your body utterly helpless you can do nothing to stop them as they 
+		
+		<<switch _parasite_loc>>
+		<<case "bottom">>
+			twist you around and bend you over, grab and 
+			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+				pull the hem of your skirt up and over your back, 
+			<<else>>
+				yank your waistband down to your knees, 
+			<</if>>
+			completely exposing your vulnerable hole to Whitney, the cool air, and everyone passing by.
+		<<case "nipples">>
+			<<if random(1, 4) is 4>>
+				grab and tear at your clothing with their hands, until what once kept your torso comfortably covered is torn to shreds. Your entire upper body is now exposed to Whitney, the cool air of the school hall, and every passer by.
+				<<upperruined>>
+			<<else>>
+				tug and fumble at your clothing until they have both of your <<nipples>> clearly exposed, much to the entertainment of the onlookers.
+			<</if>>
+		<<case "genitals">>
+			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+				raise your skirt high above your waist
+				<<if not $worn.under_lower.exposed>>
+					<<if random(1, 4) is 4>>
+						and tear your $worn.under_lower.name off your hips entirely, <<underlowerruined>>
+					<<else>>
+						and remove your $worn.under_lower.name, <<underlowerstrip>>
+					<</if>>
+				<</if>>
+			<<else>>
+				yank your clothing down roughly, 
+			<</if>>
+			exposing your <<genitals>> to Whitney, the cool air of the school hall, and everyone passing by.
+			
+			<<set $genderknown.pushUnique("Whitney")>>
+
+			<<schoolrep_naked>>
 
 			/* lets comment on penis size if we have one */
 			<<set _iscrowd to 0>>
-			<<eventwhitneyparasitepeniscomment>>
-
-		<<elseif _eventnum is 2 or _eventnum is 3>>
-			<<eventwhitneyparasiteexposebutt>>
-
-		<<elseif _eventnum is 4 or _eventnum is 5>>
-			<<eventwhitneyparasiteexposeupper>>
-		<</if>>
+			<<WhitneyParasitePenisComment>>
+		<</switch>>
 	<</if>>
 
 	<br><br>
-
-	<<switch _eventnum>>
-	<<case 0>>
-		<<if !$player.vaginaExist and !$player.penisExist>>
-			<<eventwhitneyparasitenogenitalspresent>>
-		<<else>>
-			<<if $parasite.penis.name is "parasite" or $parasite.clit.name is "parasite">>
-				With your <<genitals>> exposed and helpless you can do nothing to stop a smirking Whitney as they bring the urchin directly in front of your vulnerable place, where it immediately falls to the floor.
-				"Oh, I see it doesn't want to share with what you already have."
-			<<elseif $player.penisExist and !$parasite.penis.name>>
-				With your <<genitals>> exposed and helpless you can do nothing to stop a smirking Whitney as they bring the urchin directly in front of your vulnerable place, where it immediately latches onto you. The squelching sounds it makes are as lewd as they are disgusting.
-				<<parasite penis urchin>>
-				<br><br>
-				<<eventwhitneyparasitesucessful>>
-			<<elseif $player.vaginaExist and !$parasite.clit.name and !$player.penisExist>>
-				With your <<genitals>> exposed and helpless you can do nothing to stop a smirking Whitney as they bring the urchin directly in front of your vulnerable place, where it immediately latches onto you. The squelching sounds it makes are as lewd as they are disgusting.
-				<<parasite clit urchin>>
-				<br><br>
-				<<eventwhitneyparasitesucessful>>
-			<<else>>
-				<<eventwhitneyparasitehasparasiteson>>
-			<</if>>
-		<</if>>
-	<<case 1>>
-		<<if !$player.vaginaExist and !$player.penisExist>>
-			<<eventwhitneyparasitenogenitalspresent>>
-		<<else>>
-			<<if $parasite.penis.name is "parasite" or $parasite.clit.name is "parasite">>
-				With your <<genitals>> exposed and helpless you can do nothing to stop a smirking Whitney as they bring the slime directly in front of your vulnerable place, where it immediately falls to the floor.
-				"Oh, I see it doesn't want to share with what you already have."
-			<<elseif $player.penisExist and !$parasite.penis.name>>
-				With your <<genitals>> exposed and helpless you can do nothing to stop a smirking Whitney as they bring the slime directly in front of your vulnerable place, where it immediately latches onto you. The squelching sounds it makes are as lewd as they are disgusting.
-				<<parasite penis slime>><<arousal 5 "genitals">><<garousal>>
-				<br><br>
-				<<eventwhitneyparasitesucessful>>
-			<<elseif $player.vaginaExist and !$parasite.clit.name and !$player.penisExist>>
-				With your <<genitals>> exposed and helpless you can do nothing to stop a smirking Whitney as they bring the slime directly in front of your vulnerable place, where it immediately latches onto you. The squelching sounds it makes are as lewd as they are disgusting.
-				<<parasite clit slime>><<arousal 5 "genitals">><<garousal>>
-				<br><br>
-				<<eventwhitneyparasitesucessful>>
-			<<else>>
-				<<eventwhitneyparasitehasparasiteson>>
-			<</if>>
-		<</if>>
-	<<case 2>>
+	<<set _parasitestate to 0>>
+	<<switch _parasite_loc>>
+	<<case "bottom">>
 		<<if !$parasite.bottom.name>>
-			With your <<bottom>> exposed you can do nothing to stop a smirking Whitney as they bring the urchin directly in front of your vulnerable hole, where it immediately wriggles its way onto you. The squelching sounds it makes are as lewd as they are disgusting.
-			<<parasite bottom urchin>><<arousal 5 "bottom">><<garousal>>
+			With your <<bottom>> exposed you can do nothing to stop a smirking Whitney as they bring the <<print _parasite_type>> directly in front of your vulnerable hole, where it immediately wriggles its way onto you. The squelching sounds it makes are as lewd as they are disgusting.
+			<<parasite bottom _parasite_type>>
+			<<arousal 5 "bottom">><<garousal>>
+			<<set _parasitestate to "placed">>
 			<br><br>
-			<<eventwhitneyparasitesucessful>>
-		<<else>>
-			<<eventwhitneyparasitehasparasiteson>>
 		<</if>>
-	<<case 3>>
-		<<if !$parasite.bottom.name>>
-			With your <<bottom>> exposed you can do nothing to stop a smirking Whitney as they bring the slime directly in front of your vulnerable hole, where it immediately wriggles its way onto you. The squelching sounds it makes are as lewd as they are disgusting.
-			<<parasite bottom slime>><<arousal 5 "bottom">><<garousal>>
-			<br><br>
-			<<eventwhitneyparasitesucessful>>
-		<<else>>
-			<<eventwhitneyparasitehasparasiteson>>
-		<</if>>
-	<<case 4>>
+	<<case "nipples">>
 		<<if !$parasite.nipples.name>>
-			With your <<breasts>> exposed you can do nothing to stop a smirking Whitney as they bring the urchin directly in front of your quivering chest, where it immediately latches onto you. The squelching sounds it makes are as lewd as they are disgusting.
-			<<parasite nipples urchin>><<arousal 5 "breasts">><<garousal>>
+			With your <<breasts>> exposed you can do nothing to stop a smirking Whitney as they bring the <<print _parasite_type>> directly in front of your quivering chest, where it immediately latches onto you. The squelching sounds it makes are as lewd as they are disgusting.
+			<<parasite nipples _parasite_type>>
+			<<arousal 5 "breasts">><<garousal>>
+			<<set _parasitestate to "placed">>
 			<br><br>
-			<<eventwhitneyparasitesucessful>>
-		<<else>>
-			<<eventwhitneyparasitehasparasiteson>>
 		<</if>>
-	<<case 5>>
-		<<if !$parasite.nipples.name>>
-			With your <<breasts>> exposed you can do nothing to stop a smirking Whitney as they bring the slime directly in front of your quivering chest, where it immediately latches onto you. The squelching sounds it makes are as lewd as they are disgusting.
-			<<parasite nipples slime>><<arousal 5 "breasts">><<garousal>>
-			<br><br>
-			<<eventwhitneyparasitesucessful>>
+	<<case "genitals">>
+		<<if !$player.vaginaExist and !$player.penisExist>>
+			/* i have no idea under what circumstances this would occur but cover your bases i guess */
+			"What the hell, where is your junk?" <<he>> says with confusion as <<he>> steps back from your strange sexless body.
+			"No no no, this is way too weird for me, I'm out of here" Whitney says as they toss away the parasite and back off, clearly weirded out by your lack of genitals.
+			Regardless, the act of being forcibly exposed was kinda hot.
+			<<set _parasitestate to "sexless">>
 		<<else>>
-			<<eventwhitneyparasitehasparasiteson>>
+			With your <<genitals>> exposed and helpless you can do nothing to stop a smirking Whitney as they bring the <<print _parasite_type>> directly in front of your vulnerable place, 
+			<<if $parasite.penis.name is "parasite" or $parasite.clit.name is "parasite">>
+				where it immediately falls to the floor.
+				"Oh, I see it doesn't want to share with what you already have."
+				<<set _parasitestate to "genitalsparasitealready">>
+			<<elseif ($player.penisExist and !$parasite.penis.name) or ($player.vaginaExist and !$parasite.clit.name and !$player.penisExist)>>
+				where it immediately latches onto you. The squelching sounds it makes are as lewd as they are disgusting.
+				<<if $player.penisExist>>
+					<<parasite penis _parasite_type>>
+				<<else>>
+					<<parasite clit _parasite_type>>
+				<</if>>
+				<<arousal 5 "genitals">><<garousal>>
+				<<set _parasitestate to "placed">>
+				<br><br>
+			<</if>>
 		<</if>>
 	<</switch>>
+
+	<<if _parasitestate isnot "sexless" and _parasitestate isnot "genitalsparasitealready">>
+		<<if _parasitestate is "placed">>
+			"Try not to enjoy yourself too much, slut," Whitney <<print ["taunts", "mocks"].pluck()>> as <<he>> saunters away, motioning for <<his>> friends to let go of you.
+			Free from their grip, you do your best to recover what little <<print ["shreds of dignity", "dignity",].pluck()>> you have left after being <<print ["violated", "humiliated",].pluck()>> in front of your fellow pupils.
+		<<else>>
+			"Oh, I see you're already covered with these things there. Guess I don't really have a use for this thing today then."
+			Mildly annoyed, <<he>> pelts a passing dorky student with the thing who promptly freaks out, before leaving you alone to sort yourself out after being forcibly exposed in front of your fellow students.
+		<</if>>
+	<</if>>
 
 	<<if _iscrowd is 1>>
 		Satisfied with having watched you be violated in such a humiliating way the crowd disperses, laughing and joking at your expense along the way. <<status -30>><<llcool>>
 	<</if>>
+	<br><br>
 
 	<<endevent>>
 	<<clotheson>>
 	<br><br>
-	<<link [[Next|Hallways]]>><<set $eventskip to 1>><</link>>
+	<<link [[Next|Hallways]]>><<unset _parasite_type>><<unset _parasite_loc>><<set $eventskip to 1>><</link>>
 <</widget>>
 
-<<widget "eventwhitneyparasiteadjective">>
-	<<if $deviancy gte 75>>
-		<<print ["lewd", "delightfully <<EZdisgusting>>"].pluck()>>
-	<<else>>
-		<<EZdisgusting>>
-	<</if>>
-<</widget>>
-
-<<widget "eventwhitneyparasiteexposelower">>
-	"Get <<phim>> ready guys," Whitney commands. <<He>> steps forward with the <<eventwhitneyparasiteadjective>> thing, your mind races, wondering what they're going to do with you. With your arms restrained and your body utterly helpless you can do nothing to stop them as they
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		raise your skirt high above your waist
-		<<if not $worn.under_lower.exposed>>
-			<<rng 4>>
-			<<if $rng is 4>>
-				and tear your $worn.under_lower.name off your hips entirely,<<underlowerruined>>
-			<<else>>
-				and remove your $worn.under_lower.name,<<underlowerstrip>>
-			<</if>>
-		<</if>> exposing your <<genitals>> to Whitney, the cool air of the school hall, and everyone passing by.
-	<<else>>
-		yank your clothing down roughly, exposing your <<genitals>> to Whitney, the cool air of the school hall, and everyone passing by.
-	<</if>>
-	<<if !playerChastity("hidden")>>
-		<<run $genderknown.pushUnique("Whitney")>>
-	<</if>>
-
-	<<schoolrep_naked>>
-<</widget>>
-<<widget "eventwhitneyparasiteexposeupper">>
-	"Get <<phim>> ready <<nnpc_gendery "Whitney">>s," Whitney commands to <<his>> friends. As <<he>> steps forward with the <<eventwhitneyparasiteadjective>> thing, your mind races, wondering what they're going to do with you. With your arms restrained and your body utterly helpless you can do nothing to stop them as they
-	<<rng 4>>
-	<<if $rng is 4>>
-		grab and tear at your clothing with their hands, until what once kept your torso comfortably covered is torn to shreds. Your entire upper body is now exposed to Whitney, the cool air of the school hall, and every passer by.
-		<<upperruined>>
-	<<else>>
-		tug and fumble at your clothing until they have both of your <<nipples>> clearly exposed, much to the entertainment of the onlookers.
-	<</if>>
-<</widget>>
-<<widget "eventwhitneyparasiteexposebutt">>
-	"Get <<phim>> ready <<nnpc_gendery "Whitney">>s," Whitney commands to <<his>> friends. As <<he>> steps forward with the <<eventwhitneyparasiteadjective>> thing, your mind races, wondering what they're going to do with you. With your arms restrained and your body utterly helpless you can do nothing to stop them as they
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		twist you around and bend you over, grab and pull the hem of your skirt up and over your back, completely exposing your vulnerable hole to Whitney, the cool air, and everyone passing by.
-	<<else>>
-		twist you around and bend you over, grab and yank your waistband down to your knees, completely exposing your vulnerable hole to Whitney, the cool air, and everyone passing by.
-	<</if>>
-<</widget>>
-
-<<widget "eventwhitneyparasitepeniscomment">>
+<<widget "WhitneyParasitePenisComment">>
 	<<if $player.penisExist>>
 		<<if $player.penissize is 4 or $player.penissize lte 1>>
 			A passing student stops and gawks at your exposed genitals before bursting into laughter.
 			<<Penisremarkstopquote>>
 			<<incgpenisinsecurity>>
-			<<rng 5>>
-			<<if $rng isnot 5>>
+			<<if random(1, 5) isnot 5>>
 				<br><br>
 				The commotion attracts a small crowd of students, eager to enjoy your public humiliation.
 				<<arousal 20>><<stress 20>><<trauma 20>><<garousal>><<gstress>><<gtrauma>>
@@ -2199,31 +2151,6 @@
 			<</if>>
 		<</if>>
 	<</if>>
-<</widget>>
-
-<<widget "eventwhitneyparasitenogenitalspresent">>
-	/* i have no idea under what circumstances this would occur but cover your bases i guess */
-	"What the hell, where is your junk?" <<he>> says with confusion as <<he>> steps back from your strange sexless body.
-	"No no no, this is way too weird for me, I'm out of here" Whitney says as they toss away the parasite and back off, clearly weirded out by your lack of genitals.
-	Regardless, the act of being forcibly exposed was kinda hot.
-<</widget>>
-
-<<widget "eventwhitneyparasitehasparasiteson">>
-	"Oh, I see you're already covered with these things there. Guess I don't really have a use for this thing today then."
-	Mildly annoyed, <<he>> pelts a passing dorky student with the thing who promptly freaks out, before leaving you alone to sort yourself out after being forcibly exposed in front of your fellow students.
-<</widget>>
-
-<<widget "eventwhitneyparasitesucessful">>
-	"Try not to enjoy yourself too much, slut," Whitney <<print ["taunts", "mocks"].pluck()>> as <<he>> saunters away, motioning for <<his>> friends to let go of you.
-	<<print [
-		"Free from their grip you do your best to recover what little shreds of dignity you have left after being ",
-		"Free from their grip you do your best to recover what little dignity you have left after being ",
-	].pluck()>>
-	<<print [
-		"violated ",
-		"humiliated ",
-	].pluck()>>
-	in front of your fellow pupils.
 <</widget>>
 
 <<widget "schoolbullyoutside">>
