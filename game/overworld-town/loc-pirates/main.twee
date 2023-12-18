@@ -43,13 +43,13 @@
 			<<link [[Next|Pirate Intro 2]]>><<set $pirate_rank to 0>><<set $pirate_intro to 1>><</link>>
 			<br>
 		<</if>>
-		
+
 	<<else>>
 		<br><br>
 
 		"We caught ourselves a live one!" announces the green-eyed figure, hands on hips. A cheer erupts as <<he>> leans close to you. "I'm Captain Zephyr, and ye, <<lass>>, have the dubious honour of being a guest aboard me vessel."
 		<br><br>
-		
+
 		<<link [[Next|Pirate Intro 2]]>><<set $pirate_rank to 0>><<set $pirate_intro to 1>><</link>>
 		<br>
 	<</if>>
@@ -500,10 +500,13 @@ You jump out of the way, <span class="red">but it's no good.</span> The <<person
 <</if>>
 
 :: Pirate Deck
-<<location "seapirates">><<set $outside to 1>><<effects>>
+<<location "seapirates">><<set $outside to 1>><<effects>><<getTarget true>>
 
 You are on the deck aboard the pirate ship.
 <<if Time.dayState is "night">>
+	<<if isBloodmoon()>>
+		Red moonlight reflects off the waves, giving the sea a wine-dark hue.
+	<</if>>
 	<<if $weather is "rain" or $weather is "snow">>
 		Chill sleet assails your face.
 	<<elseif $weather is "clear">>
@@ -585,11 +588,13 @@ You are on the deck aboard the pirate ship.
 		<<pirate_mate_work deck>>
 	<<else>>
 
-		<<if $pirate_rank lte 0>>
+		<<if $nextPassageCheck is "Wraith Snatched Pirate Railing">>
+			<span class="nextLink"><<link [[The railing.|Wraith Snatched Pirate Railing]]>><</link>></span>
+		<<elseif $pirate_rank lte 0>>
 			<<link [[Lean on railing|Pirate Railing]]>><</link>>
 			<br>
 		<</if>>
-		
+
 		<<if Time.dayState is "dawn">>
 			<<link [[Watch the sun rise (1:00)|Pirate Dawn]]>><<pass 60>><<stress -6>><</link>><<lstress>>
 			<br><br>
@@ -598,7 +603,8 @@ You are on the deck aboard the pirate ship.
 			<br><br>
 		<</if>>
 
-		<<if Time.dayState isnot "night">>
+		<<if $possessed>>
+		<<elseif Time.dayState isnot "night">>
 			Captain Zephyr peers through a telescope.
 			<br>
 			<<if $exposed gte 1>>
@@ -789,7 +795,7 @@ The <<person1>><<person>> and <<person2>><<person>> don't need to be told twice.
 <br>
 
 :: Pirate Cabin
-<<location "seapirates">><<set $outside to 0>><<effects>>
+<<location "seapirates">><<set $outside to 0>><<effects>><<getTarget true>>
 
 You are in the cabin aboard the pirate ship.
 <<if Time.dayState is "night">>
@@ -828,7 +834,11 @@ You are in the cabin aboard the pirate ship.
 			<br><br>
 		<</if>>
 
-		<<link [[Deck (0:01)|Pirate Deck]]>><</link>>
+		<<if $nextPassageCheck is "Pirate Deck">>
+			<span class="nextLink"><<link [[Deck (0:01)|Pirate Deck]]>><</link>></span>
+		<<else>>
+			<<link [[Deck (0:01)|Pirate Deck]]>><</link>>
+		<</if>>
 		<br>
 		<<link [[Bilge (0:01)|Pirate Bilge]]>><<pass 1>><</link>>
 		<br>
@@ -864,7 +874,7 @@ You are in the cabin aboard the pirate ship.
 <<else>>
 	You start picking up rubbish left behind by the pirates. When they notice, they deliberately create more, and dump it right in front of you. This amuses them for a while, until they run out of snacks to waste.
 	<br><br>
-	
+
 	The cabin does look a bit tidier by the time you're done, regardless.<<ghousekeeping>><<housekeeping 2>>
 	<br><br>
 <</if>>
@@ -874,7 +884,7 @@ You are in the cabin aboard the pirate ship.
 <br>
 
 :: Pirate Bilge
-<<location "seapirates">><<set $outside to 0>><<effects>>
+<<location "seapirates">><<set $outside to 0>><<effects>><<getTarget true>>
 
 You are in the bilge, deep within the pirate ship. The walls creak and groan.
 <<if $exposed gte 1>>
@@ -908,11 +918,15 @@ You are in the bilge, deep within the pirate ship. The walls creak and groan.
 			<br>
 			<br><br>
 		<</if>>
-	
+
 
 		<<link [[Bed|Pirate Bed]]>><</link>>
 		<br><br>
-		<<link [[Cabin (0:01)|Pirate Cabin]]>><<pass 1>><</link>>
+		<<if $nextPassageCheck is "Pirate Cabin">>
+			<span class="nextLink"><<link [[Cabin (0:01)|Pirate Cabin]]>><<pass 1>><</link>></span>
+		<<else>>
+			<<link [[Cabin (0:01)|Pirate Cabin]]>><<pass 1>><</link>>
+		<</if>>
 		<br>
 
 	<</if>>
@@ -979,7 +993,7 @@ You approach the captain.
 	<br><br>
 	<<link [[Return to mainland (3:00)|Pirate Return]]>><<pass 180>><</link>>
 	<br>
-	
+
 <<else>>
 	"Now why would scum like ye want to go back there?" Zephyr asks, returning <<his>> attention to the horizon. "Don't waste my time."
 	<br><br>
@@ -1264,7 +1278,7 @@ You enter another tunnel, this one sloping up, and come to a metal door. Zephyr 
 :: Pirate Smuggler Entrance 2
 <<effects>>
 
-You are greeted by sweaty <<people>> at the top of the ladder, traipsing the deck. 
+You are greeted by sweaty <<people>> at the top of the ladder, traipsing the deck.
 
 <<if $pirate_rank gte 1>>
 	They nod at you in recognition.
@@ -1304,7 +1318,7 @@ The open sea comes into view ahead. There's an audible sigh of relief as the boa
 
 <<if $temple_spear_mission is 1>>
 	<<set $pirate_journey to 7>>
-	"The journey should take a week." <<He>> peers through <<his>> telescope, and swings it over the horizon. "Yes, I'd say a week. In the meantime, 
+	"The journey should take a week." <<He>> peers through <<his>> telescope, and swings it over the horizon. "Yes, I'd say a week. In the meantime,
 	<<if $pirate_rank gte 1>>
 		you're a <span class="blue">mate</span> aboard this vessel, and have some duties.
 	<<else>>
@@ -1525,7 +1539,21 @@ You are beside your bed, if it could be called that, in the bilge of the pirate 
 :: Pirate Sleep
 <<set _autosavehere to true>>
 <<sleep>>
-<<if _dreaming>>
+<<if $wraith.nightmare is 2 and isBloodmoon()>>
+	<<sleepeffects>>
+	You dream of a beautiful figure, cloaked in white, standing under the red moon. It has its arms spread out to you in a welcoming gesture. You can feel its gaze boring into your mind as you step closer.
+	<br><br>
+
+	It's surrounded by trees, all bending inwards, and floating above a lake. Everything moves around you, and you find yourself hanging above a large ruin. You can't breathe.
+	<br><br>
+
+	You slowly open your eyes, and sluggishly stand from the bed, swaying from the rocking of the ship. Your ears are ringing.
+	<br><br>
+
+	<<wraithPossess "pirates">>
+	<span class="nextLink"><<link [[Walk.|Wraith Snatched Pirate Mirror]]>><<rainWraith>><</link>></span>
+	<br>
+<<elseif _dreaming>>
 	/* <<earSlimeFocusChoice>> or similar widgets are running */
 <<else>>
 	<<effects>>
@@ -1583,7 +1611,7 @@ You are beside your bed, if it could be called that, in the bilge of the pirate 
 <<else>>
 	"Walking around the deck dressed like that?" Zephyr muses. <span class="red">"I think ye be wanting a lesson.</span>" <<He>> grasps your arm. "Let's go for a walk."
 	<br><br>
-	
+
 	<<link [[Refuse|Pirate Clothes Refuse]]>><<def 1>><<pirate_status 1>><</link>><<grespect>>
 	<br>
 	<<link [[Do as bid|Pirate Clothes 2]]>><<sub 1>><</link>>
