@@ -1,4 +1,9 @@
 /* eslint-disable no-undef */
+/*
+All colors use a hex-value with an added alpha
+The alpha use the 2 last characters of a 8-character hex-value and range from 0-255 (00-ff)
+
+*/
 Weather.Sky = (() => {
 	const settings = {
 		sky: {
@@ -30,11 +35,12 @@ Weather.Sky = (() => {
 				outerSize: 10,
 				innerSize: 3,
 				dayColor: "#f4ffd3cc",
-				dawnDuskColor: "#f7ff4acc",
+				nightColor: "#fee000cc",
+				updateColor: true,
 			},
 			orbit: {
-				riseTime: 6,
-				setTime: 18,
+				riseTime: 7,
+				setTime: 19,
 				path: {
 					startX: 0,
 					endX: 64,
@@ -93,6 +99,7 @@ Weather.Sky = (() => {
 					["star_1.png", 0.3],
 					["star_2.png", 0.15],
 					["star_3.png", 0.02],
+					["star_4.png", 0.02],
 				],
 				opacity: {
 					night: 0.75,
@@ -112,37 +119,60 @@ Weather.Sky = (() => {
 						small: () => random(0, 2),
 						large: () => 0,
 					},
+					overlaySkyColor: "white",
 				},
 				lightClouds: {
 					count: {
-						small: () => random(2, 3),
+						small: () => random(1, 2),
 						large: () => random(0, 1),
 					},
+					overlaySkyColor: "white",
 				},
 				heavyClouds: {
 					count: {
 						small: () => 0,
-						large: () => random(3, 3),
+						large: () => random(0, 4),
 					},
+					overlaySkyColor: "white",
+					overCast: true,
+					darken: false,
 				},
 				lightPrecipitation: {
 					count: {
 						small: () => 0,
-						large: () => random(3, 3),
+						large: () => random(1, 4),
 					},
+					overlaySkyColor: "white",
+					overCast: true,
+					precipitationIntensity: 1,
 				},
 				heavyPrecipitation: {
 					count: {
 						small: () => 0,
-						large: () => random(3, 3),
+						large: () => random(2, 4),
 					},
+					overlaySkyColor: "white",
+					overCast: true,
+					darken: true,
+					precipitationIntensity: 2,
+				},
+				thunderstorm: {
+					count: {
+						small: () => 0,
+						large: () => random(3, 4),
+					},
+					overlaySkyColor: "white",
+					overCast: true,
+					darken: true,
+					precipitationIntensity: 2,
 				},
 			},
 			clouds: {
-				maxHeight: 15,
-				minHeight: 128,
+				maxHeight: 64,
+				minHeight: 112,
+				spriteOverlap: 0.2,
 				movement: {
-					speedMin: 0.3, // Pixels per minute of game time
+					speedMin: 0.1, // Pixels per minute of game time
 					speedMax: 0.5,
 					direction: 1,
 				},
@@ -154,7 +184,24 @@ Weather.Sky = (() => {
 					["3.png", "large"],
 					["4.png", "large"],
 					["5.png", "large"],
+					["cirrus/0.png", "cirrus"],
+					["cirrus/1.png", "cirrus"],
+					["overcast/4.png", "overcast"],
+					["precipitation/rain.png", "rain"],
+					["precipitation/snow.png", "snow"],
 				]),
+				minDarkness: 0.15,
+				dayColor: "#ffe9d300",
+				dawnDuskColor: "#ff8000cc",
+				nightColor: "#000412cc",
+				farColor: "#aab7e6aa",
+				farOpacity: 0.8,
+				overCastAlphaDay: 1,
+				overCastAlphaNight: 0.9,
+				overCastDayColor: "#97a9e8aa",
+				overCastDawnDuskColor: "#97a9e8aa",
+				overCastNightColor: "#0004128aa",
+				fadeDuration: 60,
 			},
 		},
 		location: {
@@ -166,14 +213,25 @@ Weather.Sky = (() => {
 	};
 	let dayFactor = 0;
 	let imagesLoaded = false;
-	const elements = {};
 
 	const canvasElements = {
-		sun: new SkyCanvasSun("sun", settings.sun),
-		moon: new SkyCanvasMoon("moon", settings.moon),
-		stars: new SkyCanvasStars("starField", settings.starfield),
-		clouds: new SkyCanvasWeather("clouds", settings.weather),
+		sun: new SkyCanvasSun("sun"),
+		moon: new SkyCanvasMoon("moon"),
+		stars: new SkyCanvasStars("starfield"),
+		clouds: new SkyCanvasWeather("clouds"),
 	};
+
+	const elements = {};
+	elements.skybox = $("<div />", { id: "skybox" });
+	elements.skyboxGlow = $("<div />", { id: "skybox-sunGlow" }).appendTo(elements.skybox);
+	elements.locationLayer = $("<div />", { id: "skybox-location" }).appendTo(elements.skybox);
+
+	Promise.all(Object.values(canvasElements).map(element => element.loaded()))
+		.then(() => {
+			imagesLoaded = true;
+			display(Time.date);
+		})
+		.catch(error => console.error("Error loading one or more images. Message: ", error));
 
 	function getDayFactor() {
 		const sunPositionYPercent =
@@ -190,8 +248,14 @@ Weather.Sky = (() => {
 
 	function updateSkyLighting() {
 		const canvasSize = settings.sky.canvasSize;
-		const positionX = (canvasElements.sun.position.adjustedX / canvasSize.x) * 100;
-		const positionY = (canvasElements.sun.position.adjustedY / canvasSize.y) * 100;
+		const sunPosition = {
+			x: (canvasElements.sun.position.adjustedX / canvasSize.x) * 100,
+			y: (canvasElements.sun.position.adjustedY / canvasSize.y) * 100,
+		};
+		const moonPosition = {
+			x: (canvasElements.moon.position.adjustedX / canvasSize.x) * 100,
+			y: (canvasElements.moon.position.adjustedY / canvasSize.y) * 100,
+		}
 		let background = "";
 		let glow = "";
 
@@ -206,8 +270,8 @@ Weather.Sky = (() => {
 			const glowColor1 = ColourUtils.interpolateColor(colors.dawnDusk.sunGlow, colors.day.sunGlow, dayFactor);
 			const glowColor2 = "#ffffff00";
 
-			glow = `radial-gradient(circle at ${positionX}% ${positionY}%, ${glowColor1} 5%, ${glowColor2} 40%)`;
-			background = `radial-gradient(circle at ${positionX}% ${positionY}%, ${color1}, ${color2})`;
+			glow = `radial-gradient(circle at ${sunPosition.x}% ${sunPosition.y}%, ${glowColor1} 5%, ${glowColor2} 40%)`;
+			background = `radial-gradient(circle at ${sunPosition.x}% ${sunPosition.y}%, ${color1}, ${color2})`;
 		} else {
 			const nightFactor = 1 - Math.abs(dayFactor);
 			const colors = settings.sky.colors;
@@ -216,40 +280,42 @@ Weather.Sky = (() => {
 			const color2 = ColourUtils.interpolateColor(colors.night.sky2, colors.dawnDusk.sky2, nightFactor);
 			const color3 = ColourUtils.interpolateColor(transparent, colors.night.sky1, Math.abs(nightFactor - 1));
 			const color4 = ColourUtils.interpolateColor(transparent, colors.night.sky2, Math.abs(nightFactor - 1));
-			const gradient = `radial-gradient(circle at ${positionX}% ${positionY}%, ${color4}, ${color3})`;
+			const gradient = `radial-gradient(circle at ${sunPosition.x}% ${sunPosition.y}%, ${color4}, ${color3})`;
 
 			const glowColor1 = ColourUtils.interpolateColor(colors.night.sunGlow, colors.dawnDusk.sunGlow, nightFactor);
 			const glowColor2 = "#ffffff00";
 
-			glow = `radial-gradient(circle at ${positionX}% ${positionY}%, ${glowColor1} 5%, ${glowColor2} 40%)`;
-			background = `${gradient}, radial-gradient(circle at ${positionX}% ${positionY}%, ${color1}, ${color2})`;
+			glow = `radial-gradient(circle at ${sunPosition.x}% ${sunPosition.y}%, ${glowColor1} 5%, ${glowColor2} 40%)`;
+			background = `${gradient}, radial-gradient(circle at ${sunPosition.x}% ${sunPosition.y}%, ${color1}, ${color2})`;
 		}
 		elements.skybox.css("background", background);
 		elements.skyboxGlow.css("background", glow);
 	}
 
+	// Placeholder function - will be changed in a future update
 	function updateLocationImage() {
 		// todo --- Change to  if snow
 		const seasonPath = Time.season === "winter" ? settings.location.imgPath.winter : settings.location.imgPath.normal;
 		const dayState = Time.dayState;
 		let imagePath = "";
 
-		switch (V.location) {
+		const location = !V.location ? "home" : V.location;
+		switch (location) {
 			case "adult_shop":
 				getAdultShopState(); // Assuming getAdultShopState() updates the $adultshopstate
-				if (Time.dayState === "day" && $adultshopstate !== "closed") {
+				if (Time.dayState === "day" && V.adultshopstate !== "closed") {
 					imagePath = `${seasonPath}sex_shop_${dayState}_open.apng`;
 				} else {
 					imagePath = `${seasonPath}sex_shop_${dayState}.apng`;
 				}
 				break;
 			case "alex_farm":
-				imagePath = $bus === "woodland" ? `${seasonPath}forest_${dayState}.apng` : `${seasonPath}/alex_farm_${dayState}.apng`;
+				imagePath = V.bus === "woodland" ? `${seasonPath}forest_${dayState}.apng` : `${seasonPath}/alex_farm_${dayState}.apng`;
 				break;
 
 			default:
 				// Default case if $location doesn't match any of the cases
-				imagePath = `${seasonPath}${V.location}_${dayState}.apng`;
+				imagePath = `${seasonPath}${location}_${dayState}.apng`;
 		}
 		elements.skybox.append($("<img>", { id: "location", src: imagePath }));
 	}
@@ -257,7 +323,7 @@ Weather.Sky = (() => {
 	function updateSun(date) {
 		canvasElements.sun.setOrbit(Time.getSecondsSinceMidnight(date));
 		getDayFactor();
-		canvasElements.sun.draw();
+		canvasElements.sun.draw(dayFactor);
 	}
 
 	function updateMoon(date) {
@@ -271,17 +337,17 @@ Weather.Sky = (() => {
 		canvasElements.stars.draw(canvasElements.moon, dayFactor);
 	}
 
-	function updateWeather(date) {
-		canvasElements.clouds.updateWeather(Weather.currentWeatherType);
-		canvasElements.clouds.draw(date);
+	function updateWeather(date, instant) {
+		canvasElements.clouds.updateWeather(date, instant);
+		canvasElements.clouds.draw(canvasElements.moon, dayFactor);
 	}
 
-	function redraw(date) {
+	function redraw(date, instant = false) {
 		updateSun(date);
 		updateSkyLighting();
 		updateMoon(date);
 		updateStarField(date);
-		updateWeather(date);
+		updateWeather(date, instant);
 	}
 
 	function display(date) {
@@ -291,9 +357,7 @@ Weather.Sky = (() => {
 		elements.skybox.append(canvasElements.clouds.canvas);
 
 		setMoonPhase(date);
-		canvasElements.clouds.updateWeather(Weather.currentWeatherType, true);
-		redraw(date);
-
+		redraw(date, true);
 		updateLocationImage();
 
 		// City glow
@@ -309,7 +373,7 @@ Weather.Sky = (() => {
 	}
 
 	function setWeather() {
-		canvasElements.clouds.updateWeather(Weather.currentWeatherType);
+		canvasElements.clouds.updateWeather(Weather.current);
 	}
 
 	return {
@@ -322,6 +386,12 @@ Weather.Sky = (() => {
 		},
 		set imagesLoaded(value) {
 			imagesLoaded = value;
+		},
+		get enabled() {
+			return enabled;
+		},
+		set enabled(value) {
+			enabled = value;
 		},
 		updateSkyLighting,
 		updateLocationImage,
@@ -336,13 +406,8 @@ Weather.Sky = (() => {
 
 Macro.add("skybox", {
 	handler() {
-		if (!Weather.Sky.imagesLoaded) {
-			Weather.Sky.elements.skybox = $("<div />", { id: "skybox" }).appendTo(this.output);
-			Weather.Sky.elements.skyboxGlow = $("<div />", { id: "skybox-sunGlow" }).appendTo(Weather.Sky.elements.skybox);
-			Weather.Sky.elements.locationLayer = $("<div />", { id: "skybox-location" }).appendTo(Weather.Sky.elements.skybox);
-		}
 		Weather.Sky.elements.skybox.appendTo(this.output);
-		const date = Time.date;
+
 		// const $locationOverlay = $("#locationOverlay");
 		// const $canvas = $("<canvas/>", {
 		// 	id: "skybox",
@@ -351,16 +416,7 @@ Macro.add("skybox", {
 		// 	height: 192,
 		// });
 		if (Weather.Sky.imagesLoaded) {
-			Weather.Sky.redraw(date);
-			return;
+			Weather.Sky.redraw(Time.date);
 		}
-
-		Promise.all(Object.values(Weather.Sky.canvasElements).map(element => element.loaded()))
-			.then(() => {
-				console.log("LOADED");
-				Weather.Sky.imagesLoaded = true;
-				Weather.Sky.display(date);
-			})
-			.catch(error => console.error("Error loading one or more images. Message: ", error));
 	},
 });

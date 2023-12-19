@@ -10,7 +10,7 @@ class DateTime {
 	static synodicMonth = 29.53058867;
 	*/
 
-	constructor(year = 2020, month = 1, day = 1, hour = 0, minute = 0, second = 0) {
+	constructor(year = 2020, month = 1, day = 1, hour = 0, minute = 0, second = 1) {
 		if (arguments.length === 1) {
 			// If the argument is a DateTime object, copy its properties
 			if (year instanceof DateTime) {
@@ -106,9 +106,13 @@ class DateTime {
 	}
 
 	// Compares this DateTime object with another DateTime object and returns the difference.
+	// Gives an approximate comparison only when working with higher numbers (several years), since it doesn't take leap years into account for simplicity
 	compareWith(otherDateTime, getSeconds = false) {
-		let diffSeconds = Math.abs(this.timeStamp - otherDateTime.timeStamp);
+		let diffSeconds = otherDateTime.timeStamp - this.timeStamp;
 		if (getSeconds) return diffSeconds;
+
+		const sign = Math.sign(diffSeconds);
+		diffSeconds = Math.abs(diffSeconds);
 
 		const years = Math.floor(diffSeconds / (Time.secondsPerDay * 365.25));
 		diffSeconds -= years * Time.secondsPerDay * 365;
@@ -127,7 +131,14 @@ class DateTime {
 
 		const seconds = diffSeconds;
 
-		return { years, months, days, hours, minutes, seconds };
+		return {
+			years: years * sign,
+			months: months * sign,
+			days: days * sign,
+			hours: hours * sign,
+			minutes: minutes * sign,
+			seconds: seconds * sign,
+		};
 	}
 
 	// Returns the first occurrence of a given weekday (1-7 for Sun-Sat) in the current month.
@@ -276,6 +287,11 @@ class DateTime {
 	// Returns a fraction of a day, but starting at noon. (0 at 12:00 and 0.99 at 11:59)
 	get fractionOfDayFromNoon() {
 		return (((this.hour + 12) % 24) * 60 + this.minute) / (24 * 60);
+	}
+
+	// Returns a fraction of the year (0 at the start of the year and 1 at the end)
+	get fractionOfYear() {
+		return this.yearDay / DateTime.getDaysOfYear(this.year);
 	}
 }
 window.DateTime = DateTime;

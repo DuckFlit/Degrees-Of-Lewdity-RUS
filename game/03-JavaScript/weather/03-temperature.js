@@ -13,34 +13,19 @@
 */
 
 Weather.Temperature = (() => {
-	const monthlyTemperatureRanges = [
-		[-8, 7], // Jan
-		[-5, 9], // Feb
-		[4, 12], // Mar
-		[6, 16], // Apr
-		[9, 18], // May
-		[12, 21], // Jun
-		[14, 24], // Jul
-		[14, 22], // Aug
-		[11, 20], // Sep
-		[9, 16], // Oct
-		[-1, 10], // Nov
-		[-4, 7], // Dec
-	];
-
 	// Sets current temperate (at start of day) to this temperature
 	// However, the actual temperature might vary, since it interpolates to the next day's temperature during the day
 	// After this is set it will still interpolate to the next temperature, which shifts midnight
 	// To keep a certain temperature for a longer duration without too much interpolation - set the temperature for the day after too by using the optional date parameter.
 	function set(temperature, date) {
-		if (V.monthlyTemperatures.length < 1) return;
+		if (V.weatherObj.monthlyTemperatures.length < 1) return;
 		if (date === undefined) date = Time.date;
 		const modifiers = calculateModifiers(date.date);
-		V.monthlyTemperatures[0].temperatures[date.monthDay] = temperature - modifiers;
+		V.weatherObj.monthlyTemperatures[0].t[date.monthDay] = temperature - modifiers;
 	}
 
 	function add(temperature, date) {
-		if (V.monthlyTemperatures.length < 1) return;
+		if (V.weatherObj.monthlyTemperatures.length < 1) return;
 		if (date === undefined) date = Time.date;
 		set(V.monthlyTemperature[0].temperatures[date.monthDay] + temperature, date);
 	}
@@ -50,21 +35,23 @@ Weather.Temperature = (() => {
 	}
 
 	function getCelcius(date) {
-		date = new DateTime(date ?? Time.date);
-
-		// Will only generate if the array doesn't already exist, or if the month doesn't match
-		generateMonthlyTemperatures(date);
-		const baselineTemperature = interpolateDailyTemperature(date);
-		const modifiers = calculateModifiers(date);
-		return Math.round((baselineTemperature + modifiers) * 100) / 100;
+		if (T.currentTemperature === undefined) {
+			date = new DateTime(date ?? Time.date);
+			// Will only generate if the array doesn't already exist, or if the month doesn't match
+			generateMonthlyTemperatures(date);
+			const baselineTemperature = interpolateDailyTemperature(date);
+			const modifiers = calculateModifiers(date);
+			T.currentTemperature = Math.round((baselineTemperature + modifiers) * 100) / 100;
+		}
+		return T.currentTemperature;
 	}
 
 	function interpolateDailyTemperature(date) {
 		const tomorrowDate = new DateTime(date).addDays(1);
 		const tomorrowKey = date.month !== tomorrowDate.month ? 1 : 0;
 
-		const todayTemp = V.monthlyTemperatures[0].temperatures[date.day];
-		const tomorrowTemp = V.monthlyTemperatures[tomorrowKey].temperatures[tomorrowDate.day] || todayTemp;
+		const todayTemp = V.weatherObj.monthlyTemperatures[0].t[date.day];
+		const tomorrowTemp = V.weatherObj.monthlyTemperatures[tomorrowKey].t[tomorrowDate.day] || todayTemp;
 
 		const deltaTemp = tomorrowTemp - todayTemp;
 
@@ -90,20 +77,11 @@ Weather.Temperature = (() => {
 	}
 
 	function getWeatherModifier(weatherCondition) {
-		// to Weather (temperatureModifier)
-		const weatherMultipliers = {
-			clear: 2,
-			lightClouds: 1.5,
-			clouds: 1.2,
-			overcast: 1,
-			lightPrecipitation: 1,
-			heavyPrecipitation: 1,
-		};
-		return weatherMultipliers[weatherCondition] || 1.0;
+		return Weather.Settings.weatherTypes.find(type => type.name === weatherCondition)?.temperatureModifier ?? 1.0;
 	}
 
 	function getLocationModifier() {
-		// Location modifiers here
+		// Location modifiers placeholder
 		switch (V.location) {
 			case "town":
 				return 3;
@@ -113,20 +91,20 @@ Weather.Temperature = (() => {
 	}
 
 	function generateMonthlyTemperatures(date) {
-		if (V.monthlyTemperatures.length === 2 && V.monthlyTemperatures[0].month === date.month) return;
+		if (V.weatherObj.monthlyTemperatures.length === 2 && V.weatherObj.monthlyTemperatures[0].m === date.month) return;
 
 		// Remove past months and adjust array for the current time
-		while (V.monthlyTemperatures.length > 0 && V.monthlyTemperatures[0].month !== date.month) {
-			V.monthlyTemperatures.shift();
+		while (V.weatherObj.monthlyTemperatures.length > 0 && V.weatherObj.monthlyTemperatures[0].m !== date.month) {
+			V.weatherObj.monthlyTemperatures.shift();
 		}
 
 		// Ensure current and next month data are present
-		while (V.monthlyTemperatures.length < 2) {
+		while (V.weatherObj.monthlyTemperatures.length < 2) {
 			let monthDate = new DateTime(date);
-			if (V.monthlyTemperatures.length > 0) {
+			if (V.weatherObj.monthlyTemperatures.length > 0) {
 				monthDate = monthDate.addMonths(1);
 			}
-			V.monthlyTemperatures.push(generateDailyTemperatures(monthDate));
+			V.weatherObj.monthlyTemperatures.push(generateDailyTemperatures(monthDate));
 		}
 	}
 
@@ -134,9 +112,9 @@ Weather.Temperature = (() => {
 		const keyPointsMap = generateTemperatureKeyPoints(date);
 
 		let lastTemp;
-		if (V.monthlyTemperatures.length > 0) {
-			const prevMonthData = V.monthlyTemperatures[V.monthlyTemperatures.length - 1];
-			lastTemp = prevMonthData.temperatures[prevMonthData.temperatures.length - 1];
+		if (V.weatherObj.monthlyTemperatures.length > 0) {
+			const prevMonthData = V.weatherObj.monthlyTemperatures[V.weatherObj.monthlyTemperatures.length - 1];
+			lastTemp = prevMonthData.t[prevMonthData.t.length - 1];
 		} else {
 			lastTemp = Array.from(keyPointsMap.values()).pop();
 		}
@@ -145,13 +123,13 @@ Weather.Temperature = (() => {
 		for (const [day, temp] of keyPointsMap) {
 			const interpolatedTemps = interpolateBetweenTemperatureKeys(lastDay, day, lastTemp, temp);
 			for (let d = lastDay; d < day; d++) {
-				monthlyTemperatures[d] = interpolatedTemps[d];
+				monthlyTemperatures[d] = Math.round(interpolatedTemps[d] * 100) / 100;
 			}
 			lastDay = day;
 			lastTemp = temp;
 		}
-
-		return { month: date.month, temperatures: monthlyTemperatures };
+		console.log("{ month: date.month, temperatures: monthlyTemperatures }", { t: date.month, m: monthlyTemperatures });
+		return { m: date.month, t: monthlyTemperatures };
 	}
 
 	function generateTemperatureKeyPoints(date) {
@@ -162,16 +140,17 @@ Weather.Temperature = (() => {
 		const numberOfKeyPoints = random(minDays - 1, maxDays - 1);
 		const keyPoints = new Map();
 
+		const temperatureRange = Weather.Settings.months[date.month - 1].temperatureRange;
 		while (keyPoints.size < numberOfKeyPoints) {
 			const randomDay = random(timeApart + 1, daysInMonth - timeApart);
 
 			const isFarEnough = Array.from(keyPoints.keys()).every(kp => Math.abs(kp - randomDay) >= timeApart);
 			if (isFarEnough) {
-				keyPoints.set(randomDay, getRandomTemperature(monthlyTemperatureRanges[date.month - 1]));
+				keyPoints.set(randomDay, getRandomTemperature(temperatureRange));
 			}
 		}
 		// Add the last key point
-		keyPoints.set(daysInMonth + 1, getRandomTemperature(monthlyTemperatureRanges[date.month - 1]));
+		keyPoints.set(daysInMonth + 1, getRandomTemperature(temperatureRange));
 		return new Map([...keyPoints.entries()].sort((a, b) => a[0] - b[0]));
 	}
 
@@ -194,11 +173,9 @@ Weather.Temperature = (() => {
 	}
 
 	return Object.create({
-		monthlyTemperatureRanges,
 		getCelcius,
 		getFahrenheit,
 		set,
 		add,
 	});
 })();
-// window.Weather.Temperature = Weather.Temperature;

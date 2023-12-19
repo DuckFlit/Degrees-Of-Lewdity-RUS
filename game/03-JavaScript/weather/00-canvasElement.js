@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
 class SkyCanvasElement {
-	constructor(name, settings) {
+	constructor(name) {
 		if (!arguments[0]) return;
 
 		this.name = name;
-		this.settings = settings;
+		this.settings = Weather.Settings.visuals[this.name];
 
 		this.position = {};
 		this.expandFactor = 0.1;
-		this.createCanvasImage(settings);
+		this.createCanvasImage();
 	}
 
 	createCanvasImage() {
@@ -33,6 +33,21 @@ class SkyCanvasElement {
 
 	normalize(value) {
 		return (value + 1) / 2;
+	}
+
+	// Modifier determines how much of the sprite overlaps. Modifier of 1 means 100% of the sprite has to overlap with the other sprite.
+	isSpriteOverlap(spriteA, spriteB, modifier = 1) {
+		const xOverlap = Math.max(0, Math.min(spriteA.x + spriteA.sprite.width, spriteB.x + spriteB.sprite.width) - Math.max(spriteA.x, spriteB.x));
+		const yOverlap = Math.max(0, Math.min(spriteA.y + spriteA.sprite.height, spriteB.y + spriteB.sprite.height) - Math.max(spriteA.y, spriteB.y));
+
+		// Calculate the area of intersection
+		const intersectionArea = xOverlap * yOverlap;
+
+		// Determine the minimum overlap required (based on spriteA's area and the modifier)
+		const minOverlapArea = spriteA.sprite.width * spriteA.sprite.height * modifier;
+
+		// Check if the intersecting area meets the minimum overlap requirement
+		return intersectionArea >= minOverlapArea;
 	}
 
 	setOrbit(currentTime) {
