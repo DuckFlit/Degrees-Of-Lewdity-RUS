@@ -1604,6 +1604,15 @@ setup.feats = {
 		hint: "Hint: Through confession, revelation.",
 		softLockable: true,
 	},
+	"Lost Heirloom": {
+		title: "Lost Heirloom",
+		desc: "Retrieved the gold compass.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Stolen abroad.",
+		softLockable: true,
+	},
 	"Max Those Shots": {
 		title: "Max Those Shots",
 		desc: "Holding a lot of pepper spray.",

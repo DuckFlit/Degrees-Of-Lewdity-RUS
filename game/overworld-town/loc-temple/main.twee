@@ -966,11 +966,11 @@ You look away from the <<monk>>, and <<he>> continues down the aisle.
 		<<danubeicon>><<link [[Inform Jordan of what you found beneath the Danube manor|Temple Ritual Inform]]>><<set $jordan_ritual_dance to 3>><</link>>
 		<br>
 	<</if>>
-	<<if $spear_vessel is "sea">>
+	<<if $spear_vessel is "sea" and !($temple_spear_mission gte 2)>>
 		<<ind>><<link [[Inform Jordan that the spear was lost at sea|Temple Spear Sea]]>><</link>>
 		<br>
 	<</if>>
-	<<if $spear_vessel is "Zephyr">>
+	<<if $spear_vessel is "Zephyr" and !($temple_spear_mission gte 2)>>
 		<<ind>><<link [[Inform Jordan that the spear was taken by pirates|Temple Spear Zephyr]]>><</link>>
 		<br>
 	<</if>>
@@ -1006,7 +1006,7 @@ Jordan listens with an unreadable expression as you tell <<him>> of how you retr
 You hear a door open, and <<monk>> emerges from a staircase, leading up from some underground area. Jordan whispers something into <<his>> ear, and the <<monk>> leaves with an anxious haste.
 <br><br>
 <<person1>>
-"Forgive me child," Jordan says once alone again. "Despite the setback, you managed to retrieve the spear, and at great danger to your person. Please, allow me to extend you the temple's gratitude." <<He>> bows, then turns away.<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<grace>><<grace 3>><</if>>
+"Forgive me child," Jordan says once alone again. "Despite the setback, you managed to retrieve the spear, and at great danger to your person. Please, allow me to extend you the temple's gratitude." <<He>> bows, then turns away.<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<gggrace>><<grace 3>><</if>>
 <br><br>
 
 <<link [[Next|Temple]]>><<set $temple_spear_mission to 2>><<temple_spear_mission_end>><<endevent>><</link>>
@@ -1023,7 +1023,7 @@ Jordan listens with an unreadable expression as you tell <<him>> of how you retr
 You hear a door open, and <<monk>> emerges from a staircase, leading up from some underground area. Jordan whispers something into <<his>> ear, and the <<monk>> leaves with an anxious haste.
 <br><br>
 <<person1>>
-"Forgive me child," Jordan says once alone again. "Despite the setback, you managed to retrieve the spear, and at great danger to your person. Please, allow me to extend you the temple's gratitude." <<He>> bows, then turns away.<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<grace>><<grace 3>><</if>>
+"Forgive me child," Jordan says once alone again. "Despite the setback, you managed to retrieve the spear, and at great danger to your person. Please, allow me to extend you the temple's gratitude." <<He>> bows, then turns away.<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<gggrace>><<grace 3>><</if>>
 <br><br>
 
 <<link [[Next|Temple]]>><<set $temple_spear_mission to 2>><<temple_spear_mission_end>><<endevent>><</link>>
@@ -1151,11 +1151,19 @@ You tell Jordan you were attacked. <<He>> listens without a word, only speaking 
 <<else>>
 	<<if playerBellyVisible()>>
 		<<setKnowsAboutPregnancy("pc", "Jordan")>>
-		"We should remove yours immediately. It's unsafe to wear one whilst pregnant."
+		<<if playerChastity("vagina") and $worn.genitals.name is "chastity belt">>
+			"We should remove yours immediately. It's unsafe to wear one whilst pregnant."
+		<<elseif playerChastity("vagina")>>
+			"You should get yours removed immediately. However, we can only remove temple-provided devices. You'll need to speak to the keyholder or find another method of removal."
+		<<else>>
+			"You should be safe to keep yours on, it won't hinder the pregnancy."
+		<</if>>
 	<<elseif $player.virginity.penile is true and $player.virginity.vaginal is true>>
 		"It is written that we should never remove the chastity belt from a virgin. However, if you really want it removed, we will overlook that rule in return for an £80 donation."
+	<<elseif ["chastity belt", "chastity cage"].includes($worn.genitals.name)>>
+		"We can remove your device if you like. Once it's off however, you'll need to pay again to have another put on."
 	<<else>>
-		"We can remove your belt if you like. Once it's off however, you'll need to pay again to have another put on."
+		"We can only remove temple-provided devices. You'll need to speak to the keyholder or find another method of removal."
 	<</if>>
 	<br><br>
 
@@ -1231,29 +1239,38 @@ You remove your clothing, wishing it wasn't quite so cold in here. Jordan rubs w
 	<</if>>
 <</if>>
 <<if $player.penisExist>>
-	<<He>> holds your penis between both forefingers, and stares at it intently, gently manipulating the length. You try to distract yourself, but you soon feel it hardening under <<his>> scrutiny.
+	<<if playerChastity("penis") and $worn.genitals.origin isnot "temple">>
+		<<He>> holds your $worn.genitals.name between both forefingers, gently manipulating it while <<he>> inspects it. You try to distract yourself, but soon feel your <<penis>> attempt to harden under <<his>> scrutiny.
+	<<else>>
+		<<He>> holds your penis between both forefingers, and stares at it intently, gently manipulating the length. You try to distract yourself, but you soon feel it hardening under <<his>> scrutiny.
+	<</if>>
 <</if>>
 <<if $player.vaginaExist>>
-	<<He>> places <<his>> thumbs against your pussy and gently opens your
-	<<if setup.bodyliquid.combined("vagina") gte 2>>
-		<<if setup.bodyliquid.combined("vagina") gte 6>>
-			lips. Cum bursts out, spraying across Jordan's face and running in streams down both <<his>> arms.
-			<<He>> falls back in shock, hurriedly wiping cum from <<his>> eyes and mouth.
-			<br>
-			<<He>> looks at you.
-		<<elseif setup.bodyliquid.combined("vagina") gte 4>>
-			lips. A thick stream of lewd fluids gushes out. Some runs down Jordan's arm and quickly disappears up <<his>> sleeve.
-			<<He>> jumps back with a yelp, shaking <<his>> arms in alarm.
-			<br>
+	<<if playerChastity("vagina") and $worn.genitals.origin isnot "temple">>
+		<<He>> places <<his>> thumbs against the side of your $worn.genitals.name and attempts to inspect your pussy.
+		<br>
+	<<else>>
+		<<He>> places <<his>> thumbs against your pussy and gently opens your
+		<<if setup.bodyliquid.combined("vagina") gte 2>>
+			<<if setup.bodyliquid.combined("vagina") gte 6>>
+				lips. Cum bursts out, spraying across Jordan's face and running in streams down both <<his>> arms.
+				<<He>> falls back in shock, hurriedly wiping cum from <<his>> eyes and mouth.
+				<br>
+				<<He>> looks at you.
+			<<elseif setup.bodyliquid.combined("vagina") gte 4>>
+				lips. A thick stream of lewd fluids gushes out. Some runs down Jordan's arm and quickly disappears up <<his>> sleeve.
+				<<He>> jumps back with a yelp, shaking <<his>> arms in alarm.
+				<br>
+			<<else>>
+				lips. Cum runs out in a thin stream down your legs. Jordan withdraws <<his>> hands in surprise.
+				<br>
+			<</if>>
+			"That's a bad sign," <<he>> mutters.
+			<br><br>
 		<<else>>
-			lips. Cum runs out in a thin stream down your legs. Jordan withdraws <<his>> hands in surprise.
+			lips, giving <<him>> a clear view inside.
 			<br>
 		<</if>>
-		"That's a bad sign," <<he>> mutters.
-		<br><br>
-	<<else>>
-		lips, giving <<him>> a clear view inside.
-		<br>
 	<</if>>
 	You don't want to admit it, but your body responds lewdly to being examined like this.
 <</if>>

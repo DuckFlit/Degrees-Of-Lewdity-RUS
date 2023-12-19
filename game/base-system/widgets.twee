@@ -341,7 +341,7 @@
 				<<set _possessMod to 1>>
 			<</if>>
 			<<set $stress += (_violence * _drunkMod * _stressMod) * (1 - ($masochism / 1200))>>
-			<<combattrauma _violence * _traumaMod>>
+			<<combattrauma `_violence * _traumaMod`>>
 			<<set $pain += (_violence * _painMod * (1 - ($masochism / 1200)) * (1 - ($sciencetrait / 10)) / _possessMod)>>
 			<<set _arousal to (_violence * (0 + ($masochism / 18)))>>
 			<<arousal _arousal/_possessMod "maso">>
@@ -385,7 +385,7 @@
 				<<set _drunkMod to 10>>
 			<</if>>
 			<<set $stress += (_violence * _drunkMod * _stressMod) * (1 - ($masochism / 1200))>>
-			<<trauma _violence * _traumaMod>>
+			<<trauma `_violence * _traumaMod`>>
 			<<set $pain += (_violence * _painMod * (1 - ($masochism / 1200)) * (1 - ($sciencetrait / 10)))>>
 			<<set _arousal to (_violence * _arousalMod * (0 + ($masochism / 18)))>>
 			<<arousal _arousal "maso">>
@@ -3008,7 +3008,7 @@
 
 <<widget "roomoptions">>
 	<<if $sexStats.pills.boughtOnce is true or $sexStats.pills["pills"]["Dr Harper\'s prescription"].owned gte 1 or $sexStats.pills["pills"]["asylum\'s prescription"].owned gte 1>>
-		<<pillicon>><<link [[Check your pills|PillCollection]]>><<set $pillsExitPassage to $passage>><<endevent>><</link>>
+		<<pillicon>><<link [[Check your Medicine Drawer|PillCollection]]>><<set $pillsExitPassage to $passage>><<endevent>><</link>>
 		<br>
 	<</if>>
 <</widget>>
@@ -3062,7 +3062,7 @@
 		/* Steal a specific antique like a wooden carving? */
 		<<if currentSkillValue("skulduggery") gte 800 and $rng gte 95>>
 			<span class="green">You find a stick.</span><<set $island.wood += 1>>
-		<<elseif (currentSkillValue("skulduggery") gte 800 and $rng gte 85) or $rng gte 90>>
+		<<elseif (currentSkillValue("skulduggery") gte 800 and $rng gte 80) or $rng gte 90>>
 			<span class="green">You find a handful of walnuts.</span><<set $island.walnut += 1>>
 		<<else>>
 			<span class="red">You find nothing to steal.</span>
@@ -3834,18 +3834,18 @@
 <<widget "nounderwearcheck">>
 	/*Checks if the PC is pantiless, but otherwise decent. Results in low level exhibitionism increases.*/
 	/*
-		Feature was disabled previous but left the text as is, just disabling the text rather than removing it
+		Feature was disabled previously, has been re-enabled after meeting the below requirement
 		Vrelnir: Exhibitionism should only rise when the player directly choses certain actions. The PC could have their underwear stolen, which would result in exhibitionism rising without a direct decision to do so.
-		Left in incase a valid use of the feature can be correctly implemented that meets the above requirement
 	*/
-	/*<<if !$worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked") and $exposed lte 0 and $exhibitionism lt 19>>
+	<<if (!$worn.over_lower.type.includes("naked") or !$worn.lower.type.includes("naked")) and $worn.under_lower.type.includes("naked") and ["notWorn", "notBought", "sold", "given"].includes($worn.under_lower.exposedType) and $exposed lte 0 and $exhibitionism lt 19 and !$daily.no_underwear>>
 		<<set $no_underwear += 1>>
 	<</if>>
-	<<if $no_underwear gte 8>>
+	<<if $no_underwear gte 20>>
+		<<set $daily.no_underwear to true>>
 		<<set $no_underwear to 0>>
 		<<set $effectsmessage to 1>>
 		<<set $exhibitionism_message to 1>>
-	<</if>>*/
+	<</if>>
 <</widget>>
 
 <<widget "breastfed">>
@@ -4970,7 +4970,7 @@
 			<</if>>
 		<!--/case -->
 	<</switch>>
-	<<if !$_fail>>
+	<<if !$_fail and (!$_clear or _args.last() lte -5)>>
 		<<if !V.player.penisExist>>
 			<<run $_bodypart.delete("penis")>>
 		<</if>>

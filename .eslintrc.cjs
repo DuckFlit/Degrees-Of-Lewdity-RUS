@@ -191,6 +191,8 @@ module.exports = {
 	rules: {
 		"object-shorthand": ["error", "always"],
 
+		"es-x/no-object-hasown": "off",
+
 		// SugarCube extends native objects and we follow it
 		"no-extend-native": "off",
 

@@ -160,13 +160,19 @@ function playerPregnancyAttempt(baseMulti = 1, genital = "vagina") {
 	if (V.skin.pubic.pen === "magic" && V.skin.pubic.special === "pregnancy") {
 		fertilityBoost -= 0.4;
 	}
-	let baseChance = Math.floor((100 - V.basePlayerPregnancyChance) * Math.clamp(fertilityBoost, 0.1, 1) * baseMulti);
+	/* The lower basePenalty is, the easier it is for the player to get pregnant */
+	let basePenalty = Math.floor((100 - V.basePlayerPregnancyChance) * Math.clamp(fertilityBoost, 0.1, 1) * baseMulti);
 
-	if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") baseChance = Math.floor(baseChance * 2);
-	if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") baseChance = Math.floor(baseChance / 2);
+	if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") basePenalty = Math.floor(basePenalty * 2);
+	if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") basePenalty = Math.floor(basePenalty / 2);
 
-	const rng = random(0, spermArray.length - 1 > baseChance ? spermArray.length - 1 : baseChance);
+	/*
+		When spermArray.length - 1 is lower than basePenalty, it uses basePenalty to determin if the pregnancy should occur or not
+		When spermArray.length - 1 is higher than basePenalty, the player will always get pregnant, so it uses spermArray.length - 1 to give all sperm a chance to impregnate the player
+	*/
+	const rng = random(0, spermArray.length - 1 > basePenalty ? spermArray.length - 1 : basePenalty);
 
+	/* When spermArray[rng] is undefined, the player failed to get pregnant */
 	if (spermArray[rng]) {
 		const fatherKnown = Object.keys(trackedNPCs).length === 1;
 
@@ -547,8 +553,9 @@ function namedNpcPregnancyAttempt(npcName, forcePregnancy = false) {
 	const fertility = pregnancy.pills === "fertility" ? 0.8 : 1;
 	const contraceptive = pregnancy.pills === "contraceptive";
 
-	const baseChance = Math.floor((20 - V.baseNpcPregnancyChance) * fertility);
-	let rng = random(0, spermArray.length > baseChance ? spermArray.length : baseChance);
+	/* Works in a similar way to playerPregnancyAttempt */
+	const basePenalty = Math.floor((20 - V.baseNpcPregnancyChance) * fertility);
+	let rng = random(0, spermArray.length > basePenalty ? spermArray.length : basePenalty);
 	if (forcePregnancy && !spermArray[rng]) rng = 0;
 
 	if (contraceptive && random(0, 100) >= 10) {

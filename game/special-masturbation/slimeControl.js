@@ -139,7 +139,7 @@ function masturbationSlimeControl() {
 				case 0:
 					if (V.worn.genitals.name === "chastity parasite" && V.earSlime.defyCooldown) {
 						// Tries to punish the player
-						V[armAction] = V.worn.genitals.name === "chastity parasite";
+						V[armAction] = "mchastityparasiteentrance";
 					} else if (random(0, 100) >= 80 && toysId.length > 0 && (["home", "brothel", "cafe"].includes(V.location) || T.enableSexToys)) {
 						V[armAction] = "mpickupdildo";
 						V["selectedToy" + armCap] = toysId[random(0, toysId.length - 1)];
