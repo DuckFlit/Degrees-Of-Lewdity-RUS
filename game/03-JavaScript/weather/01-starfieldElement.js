@@ -20,6 +20,7 @@ class SkyCanvasStars extends SkyCanvasElement {
 
 		const offsetX = this.settings.pivot.x - this.canvasElement.width / 2;
 		const offsetY = this.settings.pivot.y - this.canvasElement.height / 2;
+		console.warn("OFFSET XY", offsetX, offsetY);
 
 		this.canvas.css({
 			left: `${offsetX}px`,
@@ -38,18 +39,24 @@ class SkyCanvasStars extends SkyCanvasElement {
 	}
 
 	loaded() {
-		const loadSprites = this.starSprites.map(sprite => {
-			return new Promise((resolve, reject) => {
+		const loadSprites = this.starSprites.map((sprite, index) => {
+			return new Promise(resolve => {
 				sprite.onload = resolve;
-				sprite.onerror = e => reject(new Error("Error loading star image: " + e.message));
+				sprite.onerror = e => {
+					console.error("Error loading star sprite (undefined):", sprite.src);
+					this.starSprites.splice(index, 1);
+					resolve();
+				};
 			});
 		});
-		return Promise.all(loadSprites);
+		return Promise.all(loadSprites).then(() => {
+			this.offscreenCanvas = $("<canvas/>")[0];
+		});
 	}
 
 	generateStars() {
 		this.stars = [];
-		const minDistance = 12;
+		const minDistance = this.settings.stars.minDistance;
 
 		for (let i = 0; i < this.settings.stars.count; i++) {
 			let tooClose;
@@ -109,9 +116,14 @@ class SkyCanvasStars extends SkyCanvasElement {
 	}
 
 	draw(cullingElement, dayFactor) {
+		console.log("CULLING ELEMENT MOON", cullingElement);
 		const moonRadius = cullingElement.position.diameter / 2;
 		const moonX = cullingElement.position.x - (this.settings.pivot.x - this.canvasElement.width / 2) + cullingElement.position.diameter - moonRadius / 2;
 		const moonY = cullingElement.position.y - (this.settings.pivot.y - this.canvasElement.height / 2) + cullingElement.position.diameter - moonRadius / 2;
+		console.log("moonRadius", moonRadius);
+		console.log("moonX", moonX);
+		console.log("moonY", moonY);
+		console.log("this", this);
 
 		const directionMultiplier = this.settings.rotation.clockwise ? 1 : -1;
 		const radians = directionMultiplier * this.angle * (Math.PI / 180);
@@ -131,41 +143,68 @@ class SkyCanvasStars extends SkyCanvasElement {
 			const rotatedX = cos * relativeX - sin * relativeY + this.canvasElement.width / 2;
 			const rotatedY = sin * relativeX + cos * relativeY + this.canvasElement.height / 2;
 
-			// Cull stars if behind a culling object - like the moon
+			// Cull stars if behind a culling object - like the moo
+			console.log("RELATIVE XY", relativeX, relativeY);
+			console.log("ROTATED XY", rotatedX, rotatedY);
+			console.log("MOON XY", moonX, moonY);
 			const dx = rotatedX - moonX;
 			const dy = rotatedY - moonY;
 			const distanceFromMoonCenter = Math.sqrt(dx * dx + dy * dy);
+			console.log("distanceFromMoonCenter", distanceFromMoonCenter);
 			if (distanceFromMoonCenter < moonRadius + 2) {
+				this.ctx.fillStyle = "white";
+				this.ctx.arc(moonX, moonY, moonRadius, 0, 2 * Math.PI);
+				console.warn("CULL 1");
 				return;
 			}
 
 			if (star.sprite) {
 				// const offscreenCanvas = document.createElement("canvas");
-				const offscreenCanvas = $("<canvas/>")[0];
-				offscreenCanvas.width = star.sprite.width;
-				offscreenCanvas.height = star.sprite.height;
-				const offscreenCtx = offscreenCanvas.getContext("2d");
+				this.offscreenCanvas.width = star.sprite.width;
+				this.offscreenCanvas.height = star.sprite.height;
+				const offscreenCtx = this.offscreenCanvas.getContext("2d");
 
-				offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+				offscreenCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
 				offscreenCtx.drawImage(star.sprite, 0, 0);
 
 				offscreenCtx.globalCompositeOperation = "source-atop";
 				offscreenCtx.fillStyle = star.color;
 
-				this.ctx.shadowBlur = 15;
-				this.ctx.shadowColor = this.settings.stars.glowColor;
+				if (Weather.overcast) {
+					this.ctx.filter = "blur(2px)";
+					this.ctx.shadowBlur = 25;
+					this.ctx.shadowColor = "white";
+				} else {
+					this.ctx.shadowBlur = 15;
+					this.ctx.shadowColor = this.settings.stars.glowColor;
+				}
 
-				offscreenCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+				offscreenCtx.fillRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
 				offscreenCtx.globalCompositeOperation = "source-over";
 
-				this.ctx.drawImage(offscreenCanvas, rotatedX, rotatedY);
+				this.ctx.drawImage(this.offscreenCanvas, rotatedX, rotatedY);
 
+				this.ctx.filter = "none";
 				this.ctx.shadowBlur = 0;
 				this.ctx.shadowColor = "transparent";
 			} else {
+				if (Weather.overcast) {
+					this.ctx.filter = "blur(1px)";
+				}
 				this.ctx.fillStyle = star.color;
 				this.ctx.fillRect(rotatedX, rotatedY, 2, 2); // Drawing a 2x2 pixel star
+				this.ctx.filter = "none";
 			}
+			// if (distanceFromMoonCenter < moonRadius + 2) {
+			// 	this.ctx.fillStyle = "white";
+			// 	this.ctx.arc(moonX, moonY, moonRadius + 12, 0, 2 * Math.PI);
+			// 	this.ctx.fillStyle = "red";
+			// 	this.ctx.arc(cullingElement.position.x, cullingElement.position.y, moonRadius + 12, 0, 2 * Math.PI);
+			// 	this.ctx.fill();
+			// 	//console.warn("CULL 1");
+			// 	//return;
+			// }
+
 		});
 	}
 

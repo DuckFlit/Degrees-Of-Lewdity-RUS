@@ -10,15 +10,18 @@ class SkyCanvasSun extends SkyCanvasElement {
 				this.spriteDiameter = this.position.diameter + 1;
 				this.radius = this.spriteDiameter / 2;
 				this.centerPos = (this.canvasElement.width - this.spriteDiameter) / 2 + this.radius;
-				this.addGlowEffect();
+
+				this.offscreenCanvas = $("<canvas/>")[0];
+				this.addGlowEffect(1);
+
 				resolve();
 			};
 			this.img.onerror = reject;
 		});
 	}
 
-	addGlowEffect() {
-		this.offscreenCanvas = $("<canvas/>")[0];
+	addGlowEffect(dayFactor) {
+		// todo dayFactor?
 		this.offscreenCanvas.width = this.canvasElement.width;
 		this.offscreenCanvas.height = this.canvasElement.height;
 		const offscreenCtx = this.offscreenCanvas.getContext("2d");
@@ -27,9 +30,14 @@ class SkyCanvasSun extends SkyCanvasElement {
 
 		const glowRadius = this.radius / 2 + this.settings.glow.outerSize;
 		const gradient = offscreenCtx.createRadialGradient(this.centerPos, this.centerPos, 0, this.centerPos, this.centerPos, this.radius + glowRadius);
-		gradient.addColorStop(0, this.settings.glow.dayColor);
-		gradient.addColorStop(0.3, this.settings.glow.dayColor);
+		const color = this.settings.glow.dayColor;
+
+		gradient.addColorStop(0, color);
+		gradient.addColorStop(0.3, color);
 		gradient.addColorStop(1, "transparent");
+
+		// ColourUtils.interpolateColor(this.settings.glow.nightColor, this.settings.glow.dayColor, dayFactor)
+		// Overlay?
 
 		offscreenCtx.fillStyle = gradient;
 		offscreenCtx.fillRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
@@ -42,13 +50,14 @@ class SkyCanvasSun extends SkyCanvasElement {
 		offscreenCtx.fill();
 	}
 
-	draw() {
+	draw(dayFactor) {
 		this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
+		if (this.settings.glow.updateColor) this.addGlowEffect(dayFactor);
 		this.ctx.drawImage(this.offscreenCanvas, 0, 0);
 
 		this.ctx.globalCompositeOperation = "destination-over";
-		this.ctx.drawImage(this.img, this.centerPos - this.radius, this.centerPos - this.radius, this.img.width, this.img.height);
+		this.ctx.drawImage(this.img, Math.round(this.centerPos - this.radius), Math.round(this.centerPos - this.radius), this.img.width, this.img.height);
 
 		const x = this.position.adjustedX - this.canvasElement.width / 2;
 		const y = this.position.adjustedY - this.canvasElement.height / 2;

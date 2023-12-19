@@ -2,7 +2,9 @@
 class SkyCanvasMoon extends SkyCanvasElement {
 	loaded() {
 		return new Promise((resolve, reject) => {
+			console.log(1);
 			this.img.onload = () => {
+				console.log(2);
 				this.canvasElement.width = this.img.width + this.settings.glow.size * 2;
 				this.canvasElement.height = this.img.height + this.settings.glow.size * 2;
 				this.position.diameter = this.img.width;
@@ -108,14 +110,19 @@ class SkyCanvasMoon extends SkyCanvasElement {
 	draw(lightFactor) {
 		this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
+		if (Weather.overcast) {
+			this.ctx.filter = "blur(2px)";
+		}
 		// Set transparency for the whole moon - from settings
 		const interpolatedTransparency = this.interpolate(this.settings.visibility.night, this.settings.visibility.day, this.normalize(lightFactor));
-		this.ctx.globalAlpha = interpolatedTransparency;
+		this.ctx.globalAlpha = 0.2;//interpolatedTransparency;
 
 		// Glow effect only on non-shadow parts
 		this.ctx.shadowBlur = this.settings.glow.size;
 		this.ctx.shadowColor = this.settings.glow.color;
+
 		this.ctx.drawImage(this.offscreenCanvas, 0, 0);
+		this.ctx.globalAlpha = interpolatedTransparency;
 
 		// Apply a transparent texture on top of the shadow-area based on settings
 		this.ctx.shadowBlur = 0;
@@ -126,12 +133,13 @@ class SkyCanvasMoon extends SkyCanvasElement {
 			this.settings.shadow.opacity.day / interpolatedTransparency,
 			this.normalize(lightFactor)
 		);
-
-		this.ctx.drawImage(this.img, this.centerPos - this.radius, this.centerPos - this.radius, this.img.width, this.img.height);
+		this.ctx.drawImage(this.img, Math.round(this.centerPos - this.radius), Math.round(this.centerPos - this.radius), this.img.width, this.img.height);
+		//}
 
 		// Reset global settings
 		this.ctx.globalCompositeOperation = "source-over";
 		this.ctx.globalAlpha = 1;
+		this.ctx.filter = "none";
 
 		// Position the canvas
 		this.position.x = this.position.adjustedX - this.canvasElement.width / 2;

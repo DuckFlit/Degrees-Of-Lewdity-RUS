@@ -3,58 +3,131 @@ class SkyCanvasWeather extends SkyCanvasElement {
 	constructor(name, settings) {
 		super(name, settings);
 		this.currentWeather = "clear";
+		this.elapsedTime = 0;
+		this.movementSpeed = 0;
 
-		this.Cloud = class Cloud {
-			constructor(type, sprite, x, y, movementSpeed) {
-				this.type = type;
+		this.CloudElement = class CloudElement {
+			constructor(obj, sprite, x, y, movementSpeed) {
+				this.obj = obj;
 				this.sprite = sprite;
 				this.x = x;
 				this.y = y;
 				this.movementSpeed = movementSpeed;
-				this.destroy = false;
-
-				this._opacity = 0;
-				this.fadeDuration = 20; // Duration for fade in/out in minutes
+				this.canvasElement = $("<canvas/>")[0];
+				this.canvasElement.width = this.sprite.width;
+				this.canvasElement.height = this.sprite.height;
+				this.cloudCtx = this.canvasElement.getContext("2d");
 			}
 
-			get opacity() {
-				return this._opacity;
-			}
-
-			set opacity(value) {
-				this._opacity = Math.max(0, Math.min(1, value));
-				if (this._opacity === 1) this.fadeIn = false;
-				else if (this._opacity === 0) this.fadeOut = false;
+			draw() {
+				this.cloudCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+				this.cloudCtx.drawImage(this.sprite, 0, 0);
 			}
 
 			move(elapsedTime) {
+				if (elapsedTime === 0) return;
 				this.x += this.movementSpeed * elapsedTime;
 			}
 
-			updateOpacity(elapsedTime) {
-				this.opacity += ((this.fadeIn ? 1 : -1) * elapsedTime) / this.fadeDuration;
+			update(ctx, elapsedTime) {
+				this.move(elapsedTime);
+				const x = Math.round(this.x);
+				const y = Math.round(this.y);
+				ctx.drawImage(this.canvasElement, x, y);
+			}
+		};
+
+		this.Cloud = class Cloud extends this.CloudElement {
+			constructor(obj, type, sprite, x, y, movementSpeed) {
+				super(obj, sprite, x, y, movementSpeed);
+				this.type = type;
+				this.z = 0;
+				this.destroy = false;
 			}
 
-			create(fadeIn = false) {
-				if (fadeIn) {
-					this._opacity = 0;
-					this.fadeIn = true;
-				} else {
-					this._opacity = 1;
+			move(elapsedTime) {
+				if (elapsedTime === 0) return;
+				const speedFactor = 1 / this.z;
+				const adjustedSpeed =
+					this.movementSpeed * speedFactor +
+					(this.destroy ? Weather.Settings.visuals.clouds.movement.speedMin + Weather.Settings.visuals.clouds.movement.speedMax : 0);
+				this.x += adjustedSpeed * elapsedTime;
+			}
+
+			draw() {
+				// Darken the cloud if z-value is more than 1
+				super.draw();
+				this.cloudCtx.globalCompositeOperation = "source-atop";
+
+				if (Weather.overcast) {
+					this.cloudCtx.globalAlpha = 0.5;
+					this.cloudCtx.fillStyle = Weather.Settings.visuals.clouds.farColor;
+					this.cloudCtx.fillRect(0, 0, this.sprite.width, this.sprite.height);
+				}
+
+				if (this.z > 1) {
+					this.cloudCtx.globalAlpha = 1 - Math.clamp((this.z - 1) * (1 - Weather.Settings.visuals.clouds.farOpacity), 0, 1);
+					this.cloudCtx.fillStyle = Weather.Settings.visuals.clouds.farColor;
+					this.cloudCtx.fillRect(0, 0, this.sprite.width, this.sprite.height);
+				}
+			}
+		};
+		this.OverCast = class OverCast extends this.CloudElement {
+			constructor(obj, sprite, x, y, movementSpeed) {
+				super(obj, sprite, x, y, movementSpeed);
+				this.fadeFactor = 0; // Current fade factor (opacity)
+				this.fadeTarget = 0; // Target fade factor
+				this.fadeSpeed = obj.settings.fadeDuration;
+			}
+
+			move(elapsedTime) {
+				if (elapsedTime === 0) return;
+				this.x += this.movementSpeed * elapsedTime;
+				if (this.x > this.sprite.width) {
+					this.x -= this.sprite.width;
+				} else if (this.x < -this.sprite.width) {
+					this.x += this.sprite.width;
 				}
 			}
 
-			update(elapsedTime) {
-				if (elapsedTime < 1) return;
-				this.move(elapsedTime);
-				if (this.fadeIn || this.fadeOut) this.updateOpacity(elapsedTime);
+			updateFade(elapsedTime) {
+				const fadeChange = (1 / this.fadeSpeed) * Math.abs(elapsedTime);
+				const fadeDirection = Math.sign(this.fadeTarget - this.fadeFactor);
+
+				if (fadeDirection !== 0) {
+					this.fadeFactor += fadeChange * fadeDirection;
+					this.fadeFactor = Math.clamp(this.fadeFactor, 0, 1);
+				}
 			}
 
-			draw(ctx) {
-				ctx.globalAlpha = this.opacity;
-				console.log("GLOBAL ALPHA", ctx.globalAlpha);
-				ctx.drawImage(this.sprite, this.x, this.y);
-				ctx.globalAlpha = 1; // Reset alpha
+			update(ctx, elapsedTime, dayFactor) {
+				this.move(elapsedTime);
+
+				this.cloudCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+
+				this.updateFade(elapsedTime);
+
+				const dayNightOpacity = this.obj.interpolate(
+					Weather.Settings.visuals.clouds.overCastAlphaNight,
+					Weather.Settings.visuals.clouds.overCastAlphaDay,
+					this.obj.normalize(dayFactor)
+				);
+
+				this.cloudCtx.globalAlpha = this.fadeFactor * dayNightOpacity;
+
+				// Repeating texture - draw the same texture to the left or right
+				this.cloudCtx.drawImage(this.sprite, this.x, 0);
+				if (this.x > 0) {
+					this.cloudCtx.drawImage(this.sprite, this.x - this.sprite.width, 0);
+				} else if (this.x < 0) {
+					this.cloudCtx.drawImage(this.sprite, this.x + this.sprite.width, 0);
+				}
+
+				this.cloudCtx.fillStyle = Weather.Settings.visuals.clouds.overCastDayColor;
+				this.cloudCtx.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+
+				ctx.drawImage(this.canvasElement, 0, 0);
+				this.cloudCtx.globalAlpha = 1;
 			}
 		};
 	}
@@ -70,8 +143,8 @@ class SkyCanvasWeather extends SkyCanvasElement {
 		this.canvasElement = this.canvas[0];
 		this.ctx = this.canvasElement.getContext("2d");
 
-		this.canvasElement.width = this.settings.dimensions.width;
-		this.canvasElement.height = this.settings.dimensions.height;
+		this.canvasElement.width = Weather.Settings.visuals.canvasDimensions.width;
+		this.canvasElement.height = Weather.Settings.visuals.canvasDimensions.height;
 
 		const x = 0;
 		const y = 0;
@@ -82,107 +155,206 @@ class SkyCanvasWeather extends SkyCanvasElement {
 	}
 
 	loadCloudSprites() {
-		this.settings.clouds.images.forEach((value, key) => {
+		this.settings.images.forEach((value, key) => {
 			const img = new Image();
-			img.src = this.settings.clouds.imgPath + key;
+			img.src = this.settings.imgPath + key;
 			this.cloudSprites.push({ img, size: value });
 		});
-		console.log("cloudSprites", this.cloudSprites);
 	}
 
 	loaded() {
-		const loadSprites = this.cloudSprites.map(sprite => {
-			return new Promise((resolve, reject) => {
+		const loadSprites = this.cloudSprites.map((sprite, index) => {
+			return new Promise(resolve => {
 				sprite.img.onload = resolve;
-				sprite.img.onerror = e => reject(new Error("Error loading cloud image: " + e.message));
-				this.currentDate = 0;
+				sprite.img.onerror = e => {
+					console.error("Error loading cloud sprite (undefined):", sprite.img.src);
+					this.cloudSprites.splice(index, 1);
+					resolve();
+				};
 			});
 		});
-		return Promise.all(loadSprites);
+		return Promise.all(loadSprites).then(() => {
+			this.currentDate = 0;
+			this.cloudsCanvas = $("<canvas/>")[0];
+			if (this.cloudSprites.length > 0) {
+				const typeSprites = this.cloudSprites.filter(sprite => sprite.size === "overcast");
+				if (typeSprites.length > 0) {
+					const type = typeSprites[random(0, typeSprites.length - 1)];
+					const movementSpeed = 0.1;
+					const xPos = random(0, type.img.width);
+					this.overCastObj = new this.OverCast(this, type.img, xPos, 0, movementSpeed);
+				}
+			}
+		});
 	}
 
-	updateWeather(weatherType, instant = false) {
-		if (!instant && this.currentWeather === weatherType) return;
+	updateWeather(date, instant = false) {
+		this.elapsedTime = this.currentDate === 0 ? 0 : this.currentDate.compareWith(date, true) / Time.secondsPerMinute;
 
-		this.clouds.forEach(cloud => {
-			cloud.movementSpeed *= 2;
-			cloud.destroy = true;
-		});
+		this.currentDate = new DateTime(date);
+		if (this.elapsedTime > 3 * 60) {
+			instant = true;
+			this.elapsedTime = 0;
+		}
 
-		let behavior = this.settings.behaviors[weatherType];
-		if (!behavior) behavior = this.settings.behaviors.clear;
+		if (!instant && this.currentWeather === Weather.name) return;
 
-		this.currentWeather = weatherType;
+		if (instant) {
+			this.clouds = [];
+		} else {
+			this.clouds.forEach(cloud => {
+				if (!cloud.destroy) {
+					cloud.destroy = true;
+				}
+			});
+		}
 
-		console.log("behavior.count", behavior.count);
+		this.currentWeather = Weather.current.name;
+		this.currentBehavior = Weather.type;
 
-		for (const key in behavior.count) {
-			console.log("Object.prototype.hasOwnProperty.call(behavior.count, key)", Object.prototype.hasOwnProperty.call(behavior.count, key));
-			console.log("key", key);
-			if (Object.prototype.hasOwnProperty.call(behavior.count, key)) {
-				const count = behavior.count[key]();
-				console.log("count", count);
+		this.movementSpeed = randomFloat(this.settings.movement.speedMin, this.settings.movement.speedMax);
+
+		this.createBackground(instant);
+
+		for (const key in this.currentBehavior.cloudCount) {
+			if (Object.hasOwn(Weather.type.cloudCount, key)) {
+				const count = Weather.type.cloudCount[key]();
 				for (let i = 0; i < count; i++) {
-					this.clouds.push(this.createCloud(key));
+					this.clouds.push(this.createCloud(key, instant));
 				}
 			}
 		}
-		console.log("CLOUDS1", this.clouds);
+		console.warn("this.clouds", this.clouds);
 	}
 
-	createCloud(cloudType, fadeIn = true, offScreen = false) {
-		console.log("CreateCloud");
+	createBackground(instant) {
+		if (Weather.overcast) {
+			if (this.overCastObj.fadeTarget === 1) return;
+			this.overCastObj.fadeTarget = 1;
+			if (instant) this.overCastObj.fadeFactor = 1;
+			return;
+		}
+		if (this.overCastObj && this.overCastObj.fadeTarget !== 0) {
+			this.overCastObj.fadeTarget = 0;
+			if (instant) this.overCastObj.fadeFactor = 0;
+		}
+	}
 
-		const spritesOfSameType = this.cloudSprites.filter(sprite => sprite.size === cloudType);
-		const cloudSprite = spritesOfSameType.filter(sprite => !this.clouds.some(cloud => cloud.sprite === sprite.img)).concat(spritesOfSameType)[
-			random(0, spritesOfSameType.length - 1)
-		];
+	createCloud(cloudType, randomPosition = false, startX = 0) {
+		// Filter out sprites of the same type - to reduce duplicates (2 of the same type of sprite in a row)
+		const cloudSprite = this.reduceDuplicateClouds(cloudType);
 
-		let xPosition, yPosition, isPositionValid;
-		const maxAttempts = 5;
+		let xPosition, yPosition;
+		let nextCloud = null;
+
 		let attempts = 0;
-		do {
-			xPosition = offScreen ? -cloudSprite.img.width - random(0, cloudSprite.img.width) : random(-cloudSprite.img.width, this.settings.dimensions.width);
-			yPosition = random(this.settings.clouds.maxHeight - cloudSprite.img.height / 2, this.settings.clouds.minHeight - cloudSprite.img.height / 2);
 
-			isPositionValid = !this.clouds.some(cloud => {
-				const xOverlap = Math.abs(cloud.x - xPosition) < (cloud.sprite.width + cloudSprite.img.width) / 2;
-				const yOverlap = Math.abs(cloud.y - yPosition) < (cloud.sprite.height + cloudSprite.img.height) / 2;
-				return xOverlap && yOverlap;
+		do {
+			xPosition = randomPosition
+				? random(-cloudSprite.img.width / 2, Weather.Settings.visuals.canvasDimensions.width - cloudSprite.img.width / 2)
+				: startX !== 0
+				? startX
+				: random(-cloudSprite.img.width * 1.5, -cloudSprite.img.width);
+			yPosition = random(this.settings.maxHeight - cloudSprite.img.height / 2, this.settings.minHeight - cloudSprite.img.height / 2);
+
+			const movementSpeed = this.movementSpeed;
+
+			nextCloud = new this.Cloud(this, cloudType, cloudSprite.img, xPosition, yPosition, movementSpeed);
+			nextCloud.z = 1;
+
+			let maxZ = 0;
+			this.clouds.forEach(prevCloud => {
+				this.isSpriteOverlap(prevCloud, nextCloud, 1);
+				if (this.isSpriteOverlap(prevCloud, nextCloud, this.settings.spriteOverlap)) {
+					maxZ = Math.max(maxZ, prevCloud.z);
+				}
 			});
+			nextCloud.z = maxZ + 1;
+			nextCloud.draw();
 
 			attempts++;
-		} while (!isPositionValid && attempts < maxAttempts);
+		} while (attempts < 5 && !this.isPositionValid(nextCloud, xPosition, yPosition));
 
-		const movementSpeed = randomFloat(this.settings.clouds.movement.speedMin, this.settings.clouds.movement.speedMax);
-
-		const newCloud = new this.Cloud(cloudType, cloudSprite.img, xPosition, yPosition, movementSpeed);
-		newCloud.create(fadeIn);
-		console.log("CREATED CLOUD:", newCloud);
-		return newCloud;
+		return nextCloud;
 	}
 
-	draw(date) {
-		console.log("NEW DATE", date);
-		console.log("OLD DATE", this.currentDate);
+	isPositionValid(newCloud) {
+		for (const cloud of this.clouds) {
+			if (this.isSpriteOverlap(cloud, newCloud, this.settings.spriteOverlap) && cloud.z === newCloud.z) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	reduceDuplicateClouds(cloudType) {
+		const typeSprites = this.cloudSprites.filter(sprite => sprite.size === cloudType);
+		const spriteUsage = typeSprites.map(sprite => ({
+			sprite,
+			usageCount: this.clouds.filter(cloud => cloud.sprite === sprite.img).length,
+		}));
+
+		const unusedSprites = spriteUsage.filter(item => item.usageCount === 0).map(item => item.sprite);
+		const leastUsedSprite = spriteUsage.reduce((min, item) => (item.usageCount < min.usageCount ? item : min), spriteUsage[0]).sprite;
+
+		return unusedSprites.length > 0 ? unusedSprites[random(0, unusedSprites.length - 1)] : leastUsedSprite;
+	}
+
+	darken(ctx, dayFactor) {
+		ctx.globalCompositeOperation = "source-atop";
+
+		// if (Weather.type.darken) {
+			// Darken based on interpolated value fade
+		// }
+
+		const color = ColourUtils.interpolateColor(this.settings.dawnDuskColor, this.settings.dayColor, this.normalize(dayFactor));
+		const mask = ColourUtils.interpolateColor(this.settings.nightColor, color, this.normalize(dayFactor));
+
+		ctx.fillStyle = mask;
+		ctx.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+		ctx.globalCompositeOperation = "source-over";
+	}
+
+	draw(moonCanvas, dayFactor) {
 		this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
-		const elapsedTime = this.currentDate === 0 ? 0 : this.currentDate.compareWith(date, true) / Time.secondsPerMinute;
-		this.currentDate = new DateTime(date);
-		console.log("elapsedTime", elapsedTime);
-		console.log("CLOUDS2", this.clouds);
-		// Drawing each cloud
-		this.clouds.forEach(cloud => {
-			cloud.update(elapsedTime);
-			if (cloud.x >= this.canvasElement.width) cloud.opacity = 0;
-			cloud.draw(this.ctx);
-		});
+		this.ctx.globalAlpha = 1;
+
+		this.cloudCtx = this.cloudsCanvas.getContext("2d");
+		this.cloudCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+
+		// Update overcast background
+		this.overCastObj.update(this.overCastObj.cloudCtx, this.elapsedTime, dayFactor);
+		if (this.overCastObj.fadeFactor > 0) {
+			this.darken(this.overCastObj.cloudCtx, dayFactor);
+			this.ctx.drawImage(this.overCastObj.canvasElement, 0, 0);
+		}
+
+		// Update cloud sprites
+		this.clouds
+			.sort((a, b) => b.z - a.z)
+			.forEach(cloud => {
+				cloud.update(this.cloudCtx, this.elapsedTime);
+			});
+		this.darken(this.cloudCtx, dayFactor);
+
+		this.ctx.drawImage(this.cloudsCanvas, 0, 0);
+
+		if (this.elapsedTime > 3 * 60) return;
 
 		// Clean the array by removing faded out or hidden clouds
 		for (let i = this.clouds.length - 1; i >= 0; i--) {
 			const cloud = this.clouds[i];
-			if (!cloud.fadeIn && cloud.opacity === 0) {
+			if (cloud.x >= this.canvasElement.width) {
 				if (!cloud.destroy) {
-					this.clouds.splice(i, 1, this.createCloud(cloud.type, false, true));
+					const extraX = this.canvasElement.width - cloud.x;
+					let newCloudStartX = 0;
+					if (extraX > cloud.sprite.width / 2) {
+						newCloudStartX =
+							extraX > this.canvasElement.width + cloud.sprite.width / 2
+								? random(-cloudSprite.img.width, Weather.Settings.visuals.canvasDimensions.width)
+								: extraX;
+					}
+					this.clouds.splice(i, 1, this.createCloud(cloud.type, false, newCloudStartX));
 				} else {
 					this.clouds.splice(i, 1);
 				}

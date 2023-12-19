@@ -110,7 +110,10 @@ const Time = (() => {
 	let currentDate = {};
 
 	function set(timeStamp = V.timeStamp) {
-		currentDate = new DateTime((V.startDate || 0) + timeStamp);
+		console.log("ASET ATIME");
+		console.log(V.timeStamp);
+		console.log(V.startDate);
+		currentDate = new DateTime((V.startDate || 0) + (timeStamp || 0));
 		V.timeStamp = timeStamp;
 	}
 	/*
@@ -918,9 +921,14 @@ function minutePassed(minutes) {
 	if (V.player.vaginaExist) fragment.append(passArousalWetness(minutes));
 
 	// Tanning
-	if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade")) {
-		fragment.append(wikifier("tanned", minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2)));
-	}
+	// Old system:
+	// if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade")) {
+	// 	fragment.append(tanned(minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2)));
+	// }
+	// New system:
+	// if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade")) {
+	// 	tanned(minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2));
+	// }
 
 	const waterFragment = passWater(minutes);
 	fragment.append(waterFragment);
