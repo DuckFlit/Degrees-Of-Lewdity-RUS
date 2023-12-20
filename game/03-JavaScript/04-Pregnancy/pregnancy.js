@@ -828,7 +828,7 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 		pregnancy.givenBirth++;
 		V.children[childObject.childId] = {
 			...childObject,
-			name: generateBabyName(childObject.name, childObject.gender, childObject.childId),
+			name: !childObject.eggTimer ? generateBabyName(childObject.name, childObject.gender, childObject.childId) : "",
 			born: { day: clone(Time.monthDay), month: clone(Time.monthName), year: clone(Time.year) },
 			location,
 			birthLocation,

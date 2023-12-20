@@ -13,7 +13,7 @@ function masturbationSlimeControl() {
 	const playerToys = listUniqueCarriedSextoys().filter(
 		toy => (V.player.penisExist && !playerChastity("penis") && toy.type.includesAny("stroker")) || toy.type.includesAny("dildo", "breastpump")
 	);
-	const toysId = Array.from(Array(playerToys.length).keys()).filter(i => !playerToys[i].type.includes("stroker"));
+	const toysId = clone(Array.from(Array(playerToys.length).keys()).filter(i => !playerToys[i].type.includes("stroker")));
 
 	let alternateForcedActions = "";
 	let disableArmActions;
@@ -125,6 +125,9 @@ function masturbationSlimeControl() {
 	["left", "right"].forEach(arm => {
 		const armCap = arm.toUpperFirst();
 		const armAction = arm + "action";
+		const otherArm = arm === "left" ? "right" : "left";
+		const otherArmCap = otherArm.toUpperFirst();
+		const otherArmAction = otherArm + "action";
 		if (
 			(arm === "left" && ["moverlower", "mlower", "munder"].includes(V.leftaction)) ||
 			(arm === "right" && ["moverupper", "mupper", "munder_upper"].includes(V.rightaction)) ||
@@ -133,6 +136,12 @@ function masturbationSlimeControl() {
 			// Do nothing
 		} else {
 			const currentToy = playerToys[V["currentToy" + armCap]];
+			if (!isNaN(V["currentToy" + otherArmCap])) toysId.delete(V["currentToy" + otherArmCap]);
+			if (!isNaN(V.currentToyVagina)) toysId.delete(V.currentToyVagina);
+			if (!isNaN(V.currentToyAnus)) toysId.delete(V.currentToyAnus);
+			if (arm === "right" && V[otherArmAction] === "mpickupdildo" && !isNaN(V["selectedToy" + otherArmCap])) {
+				toysId.delete(V["selectedToy" + otherArmCap]);
+			}
 			const currentToyType = currentToy ? currentToy.type : null;
 			const actions = [];
 			switch (V[arm + "arm"]) {
