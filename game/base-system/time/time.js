@@ -374,6 +374,7 @@ function weekPassed() {
 	if (V.brothelVending) {
 		if (V.brothelVending.condoms === 0 && V.brothelVending.lube === 0) V.brothelVending.weeksEmpty += 1;
 		V.brothelVending.weeksRent++;
+		if (V.brothelVending.weeksEmpty >= 4); V.brothelVending.status = "sold";
 	}
 
 	fragment.append(wikifier("world_corruption", "soft", V.world_corruption_hard));
