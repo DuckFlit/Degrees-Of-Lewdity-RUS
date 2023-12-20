@@ -327,29 +327,29 @@ function applyClothingShopFilters(items) {
 		and we only really need the slot so that we can give it to the function that gets the properties of the item,
 		  but the function uses findIndex with an arrow function for the lookup, so we might as well go through the "all" slot to find the item rather than
 		  find the specific array (which does narrow down the search but when you could implement this in O(1) but you're using findIndex - the milliseconds are evidently not a priority)
-		
+
 		so really we don't even need the "slot" property at all, this all needs a refactor
-	
-		
+
+
 		Here's how I would refactor it:
 		1) we need to have a map, mapping the item's ID (or ID + modder name, I think both are only unique together?) to the item's setup object
 		2) have an array of item IDs (just the strings) for each slot (or a set - doesn't matter, lookup is unnecessary if we implement point 3)
 		   If we need to find all items in a specific slot - we simply iterate the Set/array. Lookup of the setup object is O(1), so it's just as fast as it is now.
 		3) item instance objects would contain the ID of the item and all the dynamic information (so just like it is currently)
-		4) (optional) I'd personally remove any and all dynamic properties from the setup object (stuff like integrity), 
+		4) (optional) I'd personally remove any and all dynamic properties from the setup object (stuff like integrity),
 			and get rid of all static/const properties from the item instance objects (stuff like integrity_max)
 			additionally, instead of using a function to "trim" the setup object (cloning it and removing the const properties and adding the dynamic ones),
 			  I'd just create an object, since ideally none of the values should be repeated/overlapped between the setup and instance (worn/bought) objects
-					
+
 		As a result, we'd have one setup.clothes map that contains all the actual setup objects, and a set for each slot that only contains IDs.
-		No more clones of the same clothing, no more "all" slot. If you need all clothing - you simply iterate the map's values. 
+		No more clones of the same clothing, no more "all" slot. If you need all clothing - you simply iterate the map's values.
 		If you need specific slots - you iterate the IDs from the set and get the setup object from the map with O(1) lookup.
 
 		If that sounds like a pain (even though that's less work than what we currently do to just get the price of an item), we can even have a generator function that
 		  will yield the actual setup objects in a slot without you having to do clothing.items.get(id) every time (and since it's a generator - we wouldn't be looping twice).
-		
+
 		This way, we don't need to loop through items in order to find an item, and we don't need to do all this weird ritual dancing with V.clothingShopSlot and _realSlot
-		
+
 		This would necessitate a few changes and fixes (I'm only listing stuff I've seen, there's probably plenty more)
 		1) currently the outfits store item names, instead of the IDs. The outfits should contain the IDs instead.
 		2) I forgor.

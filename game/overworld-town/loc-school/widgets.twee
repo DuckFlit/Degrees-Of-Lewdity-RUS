@@ -435,7 +435,17 @@
 		<</if>>
 
 	<<elseif $rng gte 81>>
-		Sirris asks the class to turn to page $rng of their textbook. The classroom has a laid-back atmosphere; most of the students spend more time chatting than reading.
+		Sirris asks the class to turn to page $rng of their textbook.
+		<<if $worn.handheld.name isnot "naked" and !$worn.handheld.type.includes("bookbag")>>
+			You realise too late that you forgot your bookbag.
+			<<if $NPCName[$NPCNameList.indexOf("Sirris")].love gte 10>>
+			Sirris gently chides you, but passes you a spare copy of the textbook. "I'll excuse it this time, but please be more prepared in the future."
+			<<else>>
+				Sirris shakes <<his>> head. "I'm sorry, but I need you to be more prepared next time," <<he>> admonishes as <<he>> hands you a spare copy of the textbook. <<detention 1>><<gdelinquency>>
+			<</if>>
+		<<else>>
+			The classroom has a laid-back atmosphere; most of the students spend more time chatting than reading.
+		<</if>>
 	<<elseif $rng gte 71>>
 		Sirris puts on a short video about <<print either("nature","space","magnetic fields","electrons","chemical bonds","Einstein","the pioneers of the scientific method","Isaac Newton","nuclear fusion","the role of enzymes","DNA")>>. The classroom has a laid-back atmosphere. Most students watch, but many carry on chatting.
 	<<elseif $rng gte 61>>
@@ -1355,25 +1365,51 @@
 		A student near you finishes reading a passage. Now Doren points to you.
 		<br><br>
 
-		<<if $trauma gte (($traumamax / 5) * 3)>>
-			But due to the stress you've been under, you forgot your book! <<gstress>><<stress 4>>
-		<<elseif $delinquency gte 666>>
-			Does <<he>> seriously expect you to read like these nerds? You haven't even brought your book.
-		<<elseif $tiredness gte (C.tiredness.max / 5) * 3>>
-			But you're so tired, you left your book in your locker.
+		<<if $worn.handheld.name isnot "naked" and !$worn.handheld.type.includes("bookbag")>>
+			<<if $trauma gte (($traumamax / 5) * 3)>>
+				But due to the stress you've been under, you forgot your bookbag! <<gstress>><<stress 4>>
+			<<elseif $delinquency gte 666>>
+				Does <<he>> seriously expect you to read like these nerds? You haven't even brought your book.
+			<<elseif $tiredness gte (C.tiredness.max / 5) * 3>>
+				But you're so tired, you left your book in your locker.
+			<<else>>
+				But you forgot your bookbag today.
+			<</if>>
+			<br><br>
+
+			<<link [[Tell Doren you don't have your book|English Read Passage]]>><<set $phase to 0>><</link>>
+			<br>
+			<<link [[Look to classmates for help|English Read Passage]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Try to make something up|English Read Passage]]>><<set $phase to 2>><</link>>
+			<br>
+			<<if $speech_attitude is "bratty" or $delinquency gte 400>><<link [[Refuse to read|English Read Passage]]>><<set $phase to 3>><</link>><br><</if>>
 		<<else>>
-			But you forgot your book today.
+			You turn the page and begin reciting the passage aloud.
+
+			<<if $englishtrait gte 4>>
+				You add a dramatic flair to your reading, and the class hangs on every word. Doren compliments your diction. "You have a mighty fine gift there, <<lass>>.
+				<<if $englishPlay is "ongoing" and $englishPlayRoles.Player isnot "none">>
+					I'm looking forward to seeing you shine onstage.
+				<<elseif $englishPlay is "ongoing">>
+					It's a shame you didn't sign up for the play.
+					<<if $englishPlayLate>>There's still time, you know!<</if>>
+				<<else>>
+					Have you ever considered a career in theatre?
+				<</if>>" <<npcincr Doren love 1>>
+			<<elseif $englishtrait is 3>>
+				Your voice is strong and clear as you breeze through the text. Doren gives you a nod of approval and moves on to the next student.
+			<<elseif $englishtrait is 2>>
+				You stutter when you reach some foreign phrases, but you manage to get through the reading decently enough.
+			<<elseif $englishtrait is 1>>
+				The text is too erudite for you, and you falter as you read. Doren corrects your mispronunciation of an unfamiliar word, and someone in the back of the room titters. <<lcool>><<status -1>>
+			<<else>>
+				You try to make it through the passage, but it's beyond your comprehension. Your classmates openly snicker as you fumble over the words. Doren reprimands the class but takes pity on you by moving on to the next person. You sink into your seat and console yourself with the knowledge that you at least remembered to bring your book to class. <<lcool>><<status -3>>
+			<</if>>
 		<</if>>
 		<br><br>
-
-		<<link [[Tell Doren you don't have your book|English Read Passage]]>><<set $phase to 0>><</link>>
-		<br>
-		<<link [[Look to classmates for help|English Read Passage]]>><<set $phase to 1>><</link>>
-		<br>
-		<<link [[Try to make something up|English Read Passage]]>><<set $phase to 2>><</link>>
-		<br>
-		<<if $speech_attitude is "bratty" or $delinquency gte 400>><<link [[Refuse to read|English Read Passage]]>><<set $phase to 3>><</link>><br><</if>>
-
+		<<endevent>>
+		<<link [[Next|English Lesson]]>><</link>>
 	<<elseif $rng gte 41>>
 		<<if $delinquency gte 400>>
 			<<npc Doren>><<person1>>In a bid to keep the classroom ruckus down, Doren has the less controllable students separated, which includes you <<if $kylarenglishstate is "active">>and Kylar<</if>>. <<He>><<endevent>> seats you next to a quiet <<generates1>><<person1>><<person>> who never causes any trouble.

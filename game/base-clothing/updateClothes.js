@@ -201,6 +201,7 @@ function wardrobesUpdate() {
 		face: [],
 		feet: [],
 		hands: [],
+		handheld: [],
 		head: [],
 		legs: [],
 		lower: [],

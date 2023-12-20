@@ -18,6 +18,7 @@
 			"over_head":clone($worn.over_head),
 			"head":clone($worn.head),
 			"hands":clone($worn.hands),
+			"handheld":clone($worn.handheld),
 			"legs":clone($worn.legs),
 			"lower":clone($worn.lower),
 			"over_lower":clone($worn.over_lower),
@@ -33,6 +34,7 @@
 			"head":null,
 			"over_head":null,
 			"hands":null,
+			"handheld":null,
 			"legs":null,
 			"lower":null,
 			"over_lower":null,
@@ -51,7 +53,7 @@
 <<widget "tryOnStats">>
 	<<if $debug is 1>>
 		<<if $tryOn.showEquip.over_head is null and $tryOn.showEquip.over_upper is null and $tryOn.showEquip.over_lower is null
-		and $worn.over_head.name isnot "naked" and $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked">>
+		and $worn.over_head.name isnot "naked" and $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $shopName isnot "stall">>
 			<<link "Show Normal Clothes">><<ShowUnderEquip "over" "hide">><<updatesidebarimg>><<updatetryonstats>><<numberify "#passages > .passage">><</link>>
 			<br>
 		<<elseif $tryOn.showEquip.over_head isnot null or $tryOn.showEquip.over_upper isnot null or $tryOn.showEquip.over_lower isnot null>>
@@ -59,7 +61,7 @@
 			<br>
 		<</if>>
 	<</if>>
-	<<if $tryOn.showUnderEquip.upper is null and $tryOn.showUnderEquip.lower is null>>
+	<<if $tryOn.showUnderEquip.upper is null and $tryOn.showUnderEquip.lower is null and $shopName isnot "stall">>
 		<<link "Show Under Clothes">><<ShowUnderEquip "normal" "hide">><<if $shopName is "school">><<set $schoolShopAction.push("under")>><</if>><<updatesidebarimg>><<updatetryonstats>><<numberify "#passages > .passage">><</link>>
 		<br><br>
 	<<elseif $tryOn.showUnderEquip.upper isnot null and $tryOn.showUnderEquip.lower isnot null>>
@@ -70,7 +72,7 @@
 	<<if _slots.map(x => $tryOn.tryingOn[x]).some(x => x != null)>>
 		Clothes you are trying on total to <<printmoney $tryOn.value>>. This includes:
 		<br>
-		<<if $passage is "Clothing Shop" or $passage is "School Library Shop" or $passage is "Forest Shop" or $passage is "Adult Shop Store">>
+		<<if ["Clothing Shop","School Library Shop","Forest Shop","Adult Shop Store","Balloon Stand"].includes($passage)>>
 			<<set _slots to setup.clothingLayer.all>>
 			<ul>
 			<<for _tryon range _slots.map(x => [x, $tryOn.tryingOn[x]]).filter(x => x[1] != null && x[1].outfitSecondary is undefined)>>
