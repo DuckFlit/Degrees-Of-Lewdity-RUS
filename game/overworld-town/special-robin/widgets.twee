@@ -84,13 +84,13 @@
 		You knock on the door. Robin opens it and smiles. <<His>> eyes are red. "Hey," <<he>> says. "Come in." You enter and sit on the bed. <<He>> sits beside you.
 		<br><br>
 
-	<<elseif $robinpaid is 1 and $robinPayout is 0 and $robinmoney gte 20 and _robin.love gte 80 and _robin.trauma lte 20>>
+	<<elseif $robinpaid is 1 and $robinPayout is 0 and $robinmoney gte 20 and _robin.love gte 80 and _robin.trauma lte 20 and $robin.timer.hurt is 0>>
 		<<robinPayout>>
 		<br><br>
 
 	<<elseif $halloween is 1 and !$halloween_robin>>
 		<<set $halloween_robin to 1>><<set $halloween_robin_costume to "ghost">>
-		You knock on the door. Robin throws it open and hugs you. "It's almost time," <<he>> says. "Halloween! Here's my costume." <<He>> leans over <<his>> bed and grabs the blanket, before hurling it over <<his>> head. "I'm a ghost."
+		You knock on the door. <<robinOpen>> "It's almost time," <<he>> says. "Halloween! Here's my costume." <<He>> leans over <<his>> bed and grabs the blanket, before hurling it over <<his>> head. "I'm a ghost."
 		<br><br>
 
 		<<He>> sits down. There's an open magazine beside <<him>>, advertising more impressive, but pricey, costumes. Some are circled in pen, but <<he>> moves it away to clear space before you get a good look.
@@ -103,7 +103,7 @@
 	<<elseif _robin.comforted is 0>>
 		<<set _robin.comforted to 1>>
 
-		You knock on the door. Robin throws it open and hugs you, though <<he>> looks upset.
+		You knock on the door. Robin throws it open and <<print $robin.timer.hurt gte 1 ? "stares blankly at you" : "hugs you, though <<he>> looks upset">>.
 		<<switch $robinLastPunishment>>
 			<<case "dinner">>
 				"I'm having trouble eating lately," <<he>> gives a pained laugh.
@@ -128,13 +128,14 @@
 		<br><br>
 
 	<<elseif _robin.trauma gte 10>>
-		You knock on the door. Robin throws it open and hugs you. "Come in," <<he>> says. You enter and sit on the bed. <<He>> sits beside you.
+		You knock on the door. <<robinOpen>> You enter and sit on the bed. <<He>> sits beside you.
 		<br><br>
 		<<if $robinthank isnot 1>>
 			<<set $robinthank to 1>>
 			You open your mouth to speak, but Robin interrupts you. "Thank you," <<he>> says. "For everything." <<He>> rests <<his>> head on your shoulder.
 			<br><br>
 		<</if>>
+
 	<<else>>
 		<<if $robinconsoleintro isnot 1>>
 			<<set $robinconsoleintro to 1>><<set $robinconsole to 1>>
@@ -145,7 +146,7 @@
 			<br><br>
 		<<elseif $robinconsole is 1 and $robinpaid isnot 1 and $robindebt gte ($robindebtlimit - 1) and $robinconsolelost isnot 1>>
 			<<set $robinconsolelost to 1>><<set $robinconsole to 0>>
-			You knock on the door. Robin opens it and hugs you. "Come in," <<he>> says, pulling you inside. <<He>> sits on the bed. Something is different. There's no console.
+			You knock on the door. <<robinOpen>> <<He>> sits on the bed. Something is different. There's no console.
 			<br><br>
 			"You've noticed," <<he>> says. "I was bored of it, so I sold it." <<He>> smiles, but it doesn't touch <<his>> eyes.
 			<br><br>
@@ -186,8 +187,18 @@
 			<<getouticon>><<link [[Leave|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
 			<br>
 		<!-- Normal Robin events -->
+		<<elseif $robin.timer.hurt gte 1>>
+			You knock on the door. <<robinOpen>> <<He>> sits on the bed beside the television and picks up the controller.
+			<<if _robin.crossdressing gte 2>>
+				<<if _robin.pronoun is "f">>
+					It looks like <<hes>> wearing <<his>> chest binder today.
+				<<else>>
+					You take note of <<his>> <<npcClothesText _robin "upper">>.
+				<</if>>
+			<</if>>
+
 		<<elseif $robinconsole is 0>>
-			You knock on the door. Robin throws it open and hugs you. "Come in," <<he>> says, pulling you inside. <<He>> sits on the bed and stares at the spot <<his>> console used to fill.
+			You knock on the door. <<robinOpen>> <<He>> sits on the bed and stares at the spot <<his>> console used to fill.
 			<<if _robin.crossdressing gte 2>>
 				<<if _robin.pronoun is "f">>
 					It looks like <<hes>> wearing <<his>> chest binder today.
@@ -275,7 +286,7 @@
 			<</if>>
 
 		<<else>>
-			You knock on the door. Robin throws it open and hugs you. "Come in," <<he>> says, pulling you inside.
+			You knock on the door. <<robinOpen>>
 			<<He>> sits on the bed beside the television and picks up the controller.
 			<<if _robin.crossdressing gte 2>>
 				<<if _robin.pronoun is "f">>
@@ -339,7 +350,9 @@
 		<</if>>
 	<<elseif Time.hour gte 21 or Time.hour lte 5>>
 		Robin looks at the clock on the wall.
-		<<if _robin.trauma lte 30>>
+		<<if $balloonStand.robin.time gte 1>>
+			"<<print _robin.trauma lte 30 ? "It's past my bed time," : "I-I should probably go to sleep,">>" <<he>> says. "<<print $robinromance ? "I'd rather sleep alone tonight, if you don't mind" : "You should get some sleep too">>."
+		<<elseif _robin.trauma lte 30>>
 			"It's past my bed time," <<he>> says. <<He>> hugs you. "Goodnight."
 		<<elseif _robin.trauma lte 60>>
 			"I-I should probably go to sleep," <<he>> says. <<He>> hugs you before reluctantly letting go. "Goodnight."
@@ -517,7 +530,7 @@
 		<<link [[Say you were raped|Robin Pregnancy Raped]]>><</link>>
 		<br>
 	<<else>>
-		<<if _robin.trauma lt 80>>
+		<<if _robin.trauma lt 80 and $robin.timer.hurt is 0>>
 			<<if _robin.love gte 5 and _robin.lovestage is undefined>>
 				<<set _robin.lovestage to 0>>
 				"Thanks for spending time with me," <<he>> says. "It's less fun alone."
@@ -654,25 +667,29 @@
 <</widget>>
 
 <<widget "robinhug">>
-	<<if $daily.robin.hugCry isnot 1 and $robinpaid isnot 1 and $trauma gte ($traumamax / 7) * 2>>
-		<<link [[Cry (0:05)|Robin Hug Cry]]>><<pass 5>><<set $daily.robin.hugCry to 1>><<stress -12>><<trauma -6>><<tearup>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<lstress>><<ltrauma>><<glove>><<gdom>>
-		<br>
-	<</if>>
-	<<if $daily.robin.hugCry isnot 1 and $trauma gte ($traumamax / 7) * 3>>
-		<<link [[Break down (0:30)|Robin Hug Break]]>><<set $daily.robin.hugCry to 1>><<stress -12>><<stress -12>><<trauma -6>><<trauma -6>><<pass 30>><<tearup>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<llstress>><<lltrauma>><<glove>><<gdom>>
-		<br>
-	<</if>>
-	<<if $daily.robin.hugComplain isnot 1>>
-		<<link [[Complain (0:10)|Robin Hug Complain]]>><<set $daily.robin.hugComplain to 1>><<stress -12>><<trauma -6>><<pass 10>><</link>><<lstress>><<ltrauma>>
-		<br>
-	<</if>>
-	<<if $NPCName[$NPCNameList.indexOf("Robin")].love gte 50>>
-		<<link [[Cuddle (0:10)|Robin Hug Cuddle]]>><<set $robinhugging to 1>><<pass 10>><<npcincr Robin love 1>><<trauma -1>><<stress -1>><</link>><<lstress>><<ltrauma>><<glove>>
-		<br>
-	<</if>>
-	<<if $robinstunned isnot 1 and $robinconsole is 1>>
-		<<link [[Watch Robin play (0:30)|Robin Watch]]>><<set $robinhugging to 1>><<stress -6>><<trauma -3>><<pass 30>><<npcincr Robin love 1>><</link>><<lstress>><<ltrauma>><<glove>>
-		<br>
+	<<if $robin.timer.hurt gte 1>>
+		Robin lets you hug <<him>> for a moment before gently untangling <<himself>> from you. "I'm sorry," <<he>> says. "I'm still a little upset with you. I need some space."
+	<<else>>
+		<<if $daily.robin.hugCry isnot 1 and $robinpaid isnot 1 and $trauma gte ($traumamax / 7) * 2>>
+			<<link [[Cry (0:05)|Robin Hug Cry]]>><<pass 5>><<set $daily.robin.hugCry to 1>><<stress -12>><<trauma -6>><<tearup>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<lstress>><<ltrauma>><<glove>><<gdom>>
+			<br>
+		<</if>>
+		<<if $daily.robin.hugCry isnot 1 and $trauma gte ($traumamax / 7) * 3>>
+			<<link [[Break down (0:30)|Robin Hug Break]]>><<set $daily.robin.hugCry to 1>><<stress -12>><<stress -12>><<trauma -6>><<trauma -6>><<pass 30>><<tearup>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<llstress>><<lltrauma>><<glove>><<gdom>>
+			<br>
+		<</if>>
+		<<if $daily.robin.hugComplain isnot 1>>
+			<<link [[Complain (0:10)|Robin Hug Complain]]>><<set $daily.robin.hugComplain to 1>><<stress -12>><<trauma -6>><<pass 10>><</link>><<lstress>><<ltrauma>>
+			<br>
+		<</if>>
+		<<if $NPCName[$NPCNameList.indexOf("Robin")].love gte 50>>
+			<<link [[Cuddle (0:10)|Robin Hug Cuddle]]>><<set $robinhugging to 1>><<pass 10>><<npcincr Robin love 1>><<trauma -1>><<stress -1>><</link>><<lstress>><<ltrauma>><<glove>>
+			<br>
+		<</if>>
+		<<if $robinstunned isnot 1 and $robinconsole is 1>>
+			<<link [[Watch Robin play (0:30)|Robin Watch]]>><<set $robinhugging to 1>><<stress -6>><<trauma -3>><<pass 30>><<npcincr Robin love 1>><</link>><<lstress>><<ltrauma>><<glove>>
+			<br>
+		<</if>>
 	<</if>>
 	<<link [[Stop hugging|Robin Hug Stop]]>><</link>>
 	<br>
@@ -697,6 +714,14 @@
 		<br>
 	<</if>>
 	<br>
+<</widget>>
+
+<<widget "robinOpen">>
+	<<if $robin.timer.hurt gte 1>>
+		 Robin throws it open, pausing when <<he>> sees you. "Come in," <<he>> says, standing aside from so you can enter <<his>> room. It's clear <<hes>> still <<npcHurt "robin">>, but <<hes>> willing to spend time with you, at least.
+	<<else>>
+		Robin throws it open and hugs you. "Come in," <<he>> says, pulling you inside.
+	<</if>>
 <</widget>>
 
 <<widget "robinPayout">>
@@ -819,15 +844,19 @@
 <</widget>>
 
 <<widget "lemonade_stand_options">>
-
-	<<if $money gte 100>>
-		<<foodicon "lemonade">><<link [[Buy lemonade (0:15)|Robin's Lemonade Purchase]]>><<stress -6>><<trauma -1>><<pass 15>><</link>><<lstress>><<ltrauma>>
+	<<if ["helped", "sabotaged"].includes($balloonStand.robin.status) and $balloonStand.robin.talked is false and $robin.timer.customer is 0>>
+		<<link [[Tell Robin the truth|Balloon Robin Check-In]]>><<set $phase to ("confess_"+$balloonStand.robin.status)>><</link>>
 		<br>
+		<<link [[Stay silent|Balloon Robin Check-In]]>><<set $phase to ("quiet_"+$balloonStand.robin.status)>><</link>>
+	<<else>>
+		<<if $money gte 100>>
+			<<foodicon "lemonade">><<link [[Buy lemonade (0:15)|Robin's Lemonade Purchase]]>><<stress -6>><<trauma -1>><<pass 15>><</link>><<lstress>><<ltrauma>>
+			<br>
+		<</if>>
+		<<robinicon "lemonade">><<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
+		<br>
+		<<getouticon>><<link [[Leave|Beach]]>><<endevent>><</link>>
 	<</if>>
-	<<robinicon "lemonade">><<link [[Offer help (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-	<br>
-	<<getouticon>><<link [[Leave|Beach]]>><<endevent>><</link>>
-
 <</widget>>
 
 <<widget "robinroom_link">>
@@ -849,4 +878,25 @@
 		<</if>>
 	<</if>>
 
+<</widget>>
+
+<<widget "popcornEat">>
+	<<silently>><<clotheson>><<set $popcorn -=1>><</silently>>
+<</widget>>
+
+<<widget "popcornSpill">>
+	<<if $popcorn gte 1>>
+		<<popcornEat>>
+		"I'm sorry I spilled the popcorn." Robin shoots you an apologetic look. "I was looking forward to it, and I know you were too."
+		<br><br>
+		<<if $speech_attitude is "meek">>
+			"It's okay," you say soothingly. "I promise I don't mind. We can always get popcorn some other time!"
+		<<elseif $speech_attitude is "bratty">>
+			"Please," you say, nudging <<him>> with your elbow. "I don't care about that. No use crying over spilled popcorn, right?"
+		<<else>>
+			"Hey, it's fine," you say, smiling at <<him>> encouragingly. "It's just popcorn."
+		<</if>>
+		<br><br>
+		<<He>> gives you a smile and a quick hug. "Thanks," <<he>> says. "You're the best."
+	<</if>>
 <</widget>>

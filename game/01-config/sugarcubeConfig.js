@@ -212,6 +212,13 @@ Config.navigation.override = function (dest) {
 			case "Forest Shop Feet":
 				return "Forest Shop";
 
+			case "Cafe Fruit Salad":
+			case "Cafe Autumn Ale":
+			case "Cafe Summer Ale":
+			case "Cafe Spring Ale":
+			case "Cafe Winter Ale":
+				return "Cafe Eat";
+
 			case "Over Outfit Shop":
 			case "Outfit Shop":
 			case "Top Shop":

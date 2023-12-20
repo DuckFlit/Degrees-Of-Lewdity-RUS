@@ -1,15 +1,20 @@
 :: Robin Chocolate Widgets [widget]
 
 <<widget "robinChocolateOfferHelp">>
-	<!-- Note: Don't try to move the <<endevent>> outside these links, that would make this widget less portable. -->
-	<<if $money gte 200>>
-		<<foodicon "cocoa">><<link [[Buy hot chocolate (0:15)|Robin Chocolate Purchase]]>><<stress -6>><<trauma -1>><<pass 15>><</link>><<lstress>><<ltrauma>>
+	<<if ["helped", "sabotaged"].includes($balloonStand.robin.status) and $balloonStand.robin.talked is false and $robin.timer.customer is 0>>
+		<<link [[Tell Robin the truth|Balloon Robin Check-In]]>><<set $phase to ("confess_"+$balloonStand.robin.status)>><</link>>
 		<br>
+		<<link [[Stay silent|Balloon Robin Check-In]]>><<set $phase to ("quiet_"+$balloonStand.robin.status)>><</link>>
+	<<else>>
+		<!-- Note: Don't try to move the <<endevent>> outside these links, that would make this widget less portable. -->
+		<<if $money gte 200>>
+			<<foodicon "cocoa">><<link [[Buy hot chocolate (0:15)|Robin Chocolate Purchase]]>><<stress -6>><<trauma -1>><<pass 15>><<clotheson>><</link>><<lstress>><<ltrauma>>
+			<br>
+		<</if>>
+		<<robinicon "cocoa">><<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><<clotheson>><</link>><<glove>><<lrtrauma>>
+		<br>
+		<<getouticon>><<link [[Leave|Park]]>><<endevent>><<clotheson>><</link>>
 	<</if>>
-	<<robinicon "cocoa">><<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
-	<br>
-	<<getouticon>><<link [[Leave|Park]]>><<endevent>><</link>>
-	<br>
 <</widget>>
 
 :: Robin Chocolate
@@ -21,24 +26,29 @@
 
 	Robin waves when <<he>> sees you. <<He>> stirs a steaming pot with <<his>> other hand. "Hey," <<he>> says. "People don't buy much lemonade when it's so cold. I'm selling hot chocolate instead. Here." <<He>> mixes warm milk from the pot with cocoa powder and sugar, then hands you the mug. It's very sweet.<<lstress>><<stress -6>>
 <<else>>
-	You see Robin stood behind <<his>> hot chocolate stand, wrapped up warm against the cold. <<He>> waves when <<he>> sees you.
+	You see Robin stood behind <<his>> hot chocolate stand, wrapped up warm against the cold. <<print $robin.timer.hurt gte 1 ? "<<He>> glances away when <<he>> sees you." : _robin.trauma gte 40 ? "<<He>> flinches whenever somebody passes <<him>>. When <<he>> sees you, <<he>> gives a timid wave." : "<<He>> waves when <<he>> sees you.">>
 <</if>>
 <br><br>
-
+<<balloonRobinTalk>>
 <<robinChocolateOfferHelp>>
 
 :: Robin Chocolate Purchase
 
 <<effects>><<npc Robin>><<person1>>
 <<set $money -= 200>>
+<<wearprop "cocoa">>
 
-"Sure! One hot chocolate, coming right up!" Robin says, turning to warm up the milk.
+"<<print $robin.timer.hurt gte 1 ? "I guess." : "Sure!">> One hot chocolate, coming right up!" Robin says, turning to warm up the milk.
 <br><br>
 
 You slip £2 across the counter to <<him>>, and accept the offered mug once it's ready.
 <br><br>
 
-<<if $robinpaid is 1 and $daily.robin.freeDrink isnot 1>>
+<<if $robin.timer.hurt gte 1>>
+	<<set $robinmoney += 2>>
+	<<balloonRobinAngryPurchase>>
+
+<<elseif $robinpaid is 1 and $daily.robin.freeDrink isnot 1>>
 	<<set $daily.robin.freeDrink to 1>>
 	"I-I can't take this from you..." <<He>> says, sliding the money back across the counter to you. "You're already paying Bailey for me. Besides, I'd just end up giving it back to you."
 	<<set $money += 200>>
@@ -67,9 +77,9 @@ You take your time with the mug, letting it warm your hands as you sip away at t
 	"It's getting nippy out," Robin says. "Could you help me carry my stuff home?"
 	<<endevent>>
 	<br><br>
-	<<link [[Accept (0:30)|Orphanage]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[Accept (0:30)|Orphanage]]>><<npcincr Robin love 1>><<pass 30>><</link>><<clotheson>><<glove>>
 	<br>
-	<<link [[Refuse|Park]]>><</link>>
+	<<link [[Refuse|Park]]>><<clotheson>><</link>>
 	<br>
 
 <<else>>
@@ -106,6 +116,9 @@ You take your time with the mug, letting it warm your hands as you sip away at t
 	<<endevent>>
 	<<link [[Next|Orphanage]]>><</link>>
 	<br>
+<<elseif $robin.timer.hurt gte 1>>
+	<<balloonRobinAngryHelp>>
+	<<robinChocolateOfferHelp>>
 <<else>>
 	<<He>> smiles.
 	<<if $rng gte 81 and $cow gte 6 and $livestock_intro isnot undefined>>
@@ -276,6 +289,7 @@ You help Robin carry <<his>> equipment to the park. "Thank you for the help," <<
 	"It's hard carrying it all on my own."
 <</if>>
 <<He>> lights <<his>> portable stove.
+<<balloonRobinTalk>>
 <br><br>
 <<robinChocolateOfferHelp>>
 
@@ -370,7 +384,6 @@ Robin smiles when you return to <<him>>.
 :: Robin Chocolate Confess
 <<effects>>
 <<set _robin to statusCheck("Robin")>>
-
 
 <<if $speech_attitude is "meek">>
 	"I-I'm sorry," you say. "I spilled some of the hot chocolate."

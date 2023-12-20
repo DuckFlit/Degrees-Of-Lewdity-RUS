@@ -2,24 +2,19 @@
 
 <<location "beach">><<effects>>
 <<set _robin to statusCheck("Robin")>>
+<<npc Robin>><<person1>>
+<<set _scandalous to ($robinromance is 1 and $worn.under_upper.type.includesAny("swim", "naked") and $worn.under_lower.type.includesAny("swim", "naked") and $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_upper.reveal gte 800 and $worn.under_lower.reveal gte 800)>>
 
-<<if $robinlemonadeintro isnot 1>><<set $robinlemonadeintro to 1>><<set $daily.robin.freeDrink to 1>>
-	<<npc Robin>><<person1>>You see Robin stood behind <<his>> lemonade stand. <<He>> waves when <<he>> sees you.
+You see Robin stood behind <<his>> lemonade stand.
+<<print $robin.timer.hurt gte 1 ? "<<He>> glances away when <<he>> sees you." : _robin.trauma gte 40 ? "<<He>> flinches whenever somebody passes <<him>>. When <<he>> sees you, <<he>> gives a timid wave." : _scandalous ? "<<He>> stares at you with <<his>> mouth agape, scandalised by your swimwear. <<He>> raises <<his>> hand in a tentative wave." : "<<He>> waves when <<he>> sees you.">>
+
+<<if $robin.timer.hurt gte 1>>
 	<br><br>
-
+	"Hey," <<he>> says as you draw close. <<He>> sounds distant, and doesn't greet you further. The silence is made more awkward by the lack of customers.
+<<elseif $robinlemonadeintro isnot 1>><<set $robinlemonadeintro to 1>><<set $daily.robin.freeDrink to 1>>
+	<br><br>
 	"Hey," <<he>> says as you draw close. <<He>> beams. "It's nice to see you. I want you to try my lemonade." <<He>> mixes together water, lemon juice, and sugar and hands you the glass. "On the house." It's very sweet.
-	<br><br>
-
-	<<else>>
-	<<npc Robin>><<person1>>
-	<<if _robin.trauma gte 40>>
-		You see Robin stood behind <<his>> lemonade stand. <<He>> flinches whenever somebody passes <<him>>.
-		When <<he>> sees you, <<he>> gives a timid wave.
-	<<elseif $robinromance is 1 and $worn.under_upper.type.includesAny("swim", "naked") and $worn.under_lower.type.includesAny("swim", "naked")	and $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_upper.reveal gte 800 and $worn.under_lower.reveal gte 800>>
-		Robin stares at you with <<his>> mouth wide agape as you approach <<his>> lemonade stand. <<He>> is scandalised by your swimwear.
-	<<else>>
-		You see Robin stood behind <<his>> lemonade stand. <<He>> waves when <<he>> sees you.
-	<</if>>
+<<else>>
 	<<if _robin.crossdressing is 2>>
 		<<if _robin.pronoun is "f">>
 			<<if _robin.breastsize gte 9>> /* massive, huge, gigantic, enormous */
@@ -38,11 +33,10 @@
 			<<His>> <<npcClothesText _robin "upper">> and big smile makes <<him>> look like a happy girl.
 		<</if>>
 	<</if>>
-	<br><br>
-
 <</if>>
+<<balloonRobinTalk>>
 <<endevent>>
-
+<br><br>
 <<lemonade_stand_options>>
 
 :: Robin's Lemonade Purchase
@@ -51,13 +45,17 @@
 <<npc Robin>><<person1>>
 <<set $money -= 100>>
 
-"Sure! Just give me a minute..." Robin says, pouring the lemonade into a glass.
+"<<print $robin.timer.hurt gte 1 ? "I guess." : "Sure!">> Just give me a minute..." Robin says, pouring the lemonade into a glass.
 <br><br>
 
-<<He>> hands you the glass with a smile, and you slide £1 across the counter.
+<<He>> hands you the glass with a <<print $robin.timer.hurt gte 1 ? "blank expression" : "smile">>, and you slide £1 across the counter.
 <br><br>
 
-<<if $robinpaid is 1 and $daily.robin.freeDrink isnot 1>>
+<<if $robin.timer.hurt gte 1>>
+	<<set $robinmoney += 1>>
+	<<balloonRobinAngryPurchase>>
+
+<<elseif $robinpaid is 1 and $daily.robin.freeDrink isnot 1>>
 	<<set $daily.robin.freeDrink to 1>>
 	"I-I can't take this from you..." <<He>> says, pushing the money back across to you. "You're already paying Bailey for me. Besides, I'd just end up giving it back to you."
 	<<set $money += 100>>
@@ -128,6 +126,9 @@ You down the glass almost in one go, listening to the waves as you watch the tid
 	<<endevent>>
 	<<link [[Next|Orphanage]]>><</link>>
 	<br>
+<<elseif $robin.timer.hurt gte 1>>
+	<<balloonRobinAngryHelp>>
+	<<lemonade_stand_options>>
 <<else>>
 	<<He>> smiles<<if _robin.trauma gte 40>> weakly<</if>>.
 	<<if $rng gte 81 and $cow gte 6 and $livestock_intro isnot undefined>>
@@ -749,7 +750,7 @@ You help Robin carry <<his>> equipment to the beach.
 <<else>>
 	"Thank you for the help," <<he>> says. "It's hard carrying it all on my own." <<He>> starts juicing lemons.
 <</if>>
-
+<<balloonRobinTalk>>
 <br><br>
 <<endevent>>
 <<lemonade_stand_options>>

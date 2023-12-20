@@ -136,6 +136,10 @@
 	<<generalWear "hands" _args[0] _args[1] _args[2]>>
 <</widget>>
 
+<<widget "handheldwear">>
+	<<generalWear "handheld" _args[0] _args[1] _args[2]>>
+<</widget>>
+
 <<widget "legswear">>
 	<<generalWear "legs" _args[0] _args[1] _args[2]>>
 <</widget>>
@@ -292,6 +296,10 @@
 	<<generalSend _args[1] "hands" _args[0] _args[2] _args[3]>>
 <</widget>>
 
+<<widget "handheldsend">>
+	<<generalSend _args[1] "handheld" _args[0] _args[2] _args[3]>>
+<</widget>>
+
 <<widget "legssend">>
 	<<generalSend _args[1] "legs" _args[0] _args[2] _args[3]>>
 <</widget>>
@@ -317,6 +325,7 @@
 	<<facestrip>>
 	<<neckstrip>>
 	<<handsstrip>>
+	<<handheldstrip>>
 	<<legsstrip>>
 	<<feetstrip>>
 	<<setKnowsAboutPregnancyCurrentLoaded>>
@@ -433,12 +442,33 @@
 	<<generalStrip "hands">>
 <</widget>>
 
+<<widget "handheldstrip">>
+	<<generalStrip "handheld">>
+<</widget>>
+
 <<widget "legsstrip">>
 	<<generalStrip "legs">>
 <</widget>>
 
 <<widget "feetstrip">>
 	<<generalStrip "feet">>
+<</widget>>
+
+/*temporarily equips a handheld "prop" for visual effect in scenes. props can be cleared earlier in a scene via <<handheldon>> or <<clotheson>>, and are cleared in <<endevent>>*/
+<<widget "wearProp">>
+	<<switch _args[0]>>
+		<<case "milkshake">><<set _propIndex to 10>>
+		<<case "cigarette">><<set _propIndex to 11>>
+		<<case "popcorn">><<set _propIndex to 16>>
+		<<case "gingerbread">><<set _propIndex to 17>>
+		<<case "lemonade">><<set _propIndex to 18>>
+		<<case "mug">><<set _propIndex to 19>>
+		<<default>><span class="red">ERROR: _args[0] is not a valid prop. Please report this bug.</span>
+	<</switch>>
+
+	<<set $propEquipped to 1>>
+	<<handheldstrip>>
+	<<handheldwear _propIndex>>
 <</widget>>
 
 /*Returns all carried clothes back to the wardrobe*/
@@ -487,6 +517,7 @@
 	<<handsruined>>
 	<<legsruined>>
 	<<feetruined>>
+	<<handheldruined>>
 	<<setKnowsAboutPregnancyCurrentLoaded>>
 <</widget>>
 
@@ -652,7 +683,7 @@
 			<<if $_item.colourCustom isnot undefined>><<set _colourCustom to $_item.colourCustom>><</if>>
 			<<if $_item.accessory_colourCustom isnot undefined>><<set _accessory_colourCustom to $_item.accessory_colourCustom>><</if>>
 
-			<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] is "broken">> /* NO SPLIT ADDED */ 
+			<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] is "broken">> /* NO SPLIT ADDED */
 			<<elseif $money gte $_cost>>
 				<<generalSend $_return $_slot $_setupItem.index $_item.colour $_item.accessory_colour>>
 				<<if $_item.one_piece is "split">>
@@ -754,6 +785,11 @@
 	<<generalRuined "hands">>
 <</widget>>
 
+<<widget "handheldruined">>
+	<<set _noRebuy to _args[0]>>
+	<<generalRuined "handheld">>
+<</widget>>
+
 <<widget "legsruined">>
 	<<set _noRebuy to _args[0]>>
 	<<generalRuined "legs">>
@@ -778,8 +814,12 @@
 	<</for>>
 	<<buttplugon>>
 	<<if !($worn.upper.name is "naked" and $worn.lower.name is "naked" and $worn.under_lower.name is "naked" and $worn.under_upper.name is "naked")>>
-		You fix your clothing.
+		You fix your clothing<<if $rightarm is "bound">><<silently>><<handheldruined>><</silently>><<elseif !($worn.handheld.name is "naked")>> and pick up your $worn.handheld.name<</if>>.
 		<br><br>
+	<<elseif $rightarm is "bound">>
+		<<silently>><<handheldruined>><</silently>>
+	<<elseif !($worn.handheld.name is "naked")>>
+		You pick up your $worn.handheld.name.
 	<</if>>
 
 	<<exposure>>
@@ -803,7 +843,7 @@
 			<<set $_slot to _args[0]>>
 		<</if>>
 		<<set _slots to []>>
-		<<if $carried[$_slot].name isnot "naked">>
+		<<if $carried[$_slot].name isnot "naked" or ($_slot is "handheld" and $propEquipped is 1 and $carried[$_slot].name is "naked")>>
 			<<if $worn[$_slot].cursed is 1>>
 				<<carriedSend "wardrobe" $_slot>>
 			<<else>>
@@ -820,6 +860,7 @@
 					<</if>>
 				<</for>>
 				<<unset _outfitPrimaryOn>>
+				<
 			<</if>>
 		<</if>>
 
@@ -875,6 +916,10 @@
 
 <<widget "handson">>
 	<<generalOn "hands">>
+<</widget>>
+
+<<widget "handheldon">>
+	<<generalOn "handheld">>
 <</widget>>
 
 <<widget "legson">>
@@ -1009,6 +1054,10 @@
 	<<generalSteal "hands" _args[0]>>
 <</widget>>
 
+<<widget "handheldsteal">>
+	<<generalSteal "handheld" _args[0]>>
+<</widget>>
+
 <<widget "legssteal">>
 	<<generalSteal "legs" _args[0]>>
 <</widget>>
@@ -1077,7 +1126,7 @@
 			<<run window.wardrobeStripStraponException($worn.under_lower.name)>>
 		<<else>>
 			<<if _storeItemSkip is undefined>>
-				<<set _storeItemSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false, "butt_plug":true}>>
+				<<set _storeItemSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "handheld":false, "legs":false, "feet":false, "butt_plug":true}>>
 			<</if>>
 			<<unset _undressSlot>>
 			/*Checks if the current slot is part of an outfit and switches to the main piece if that is the case*/
@@ -1239,6 +1288,10 @@
 	<<generalUndress _args[0] "hands">>
 <</widget>>
 
+<<widget "handheldundress">>
+	<<generalUndress _args[0] "handheld">>
+<</widget>>
+
 <<widget "legsundress">>
 	<<generalUndress _args[0] "legs">>
 <</widget>>
@@ -1386,7 +1439,7 @@
 /* Inputting "return" will return the item to the wardrobe */
 
 <<widget "storeon">>
-	<<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false}>>
+	<<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "handheld":false, "legs":false, "feet":false}>>
 	<<set _store_temp to _args[0]>>
 	<<set _store_option to _args[1] or 0>>
 	<<for $_slot range setup.clothingLayer.all>>
@@ -1495,6 +1548,10 @@
 
 <<widget "storeonhands">>
 	<<generalStoreon _args[0] "hands" _args[1]>>
+<</widget>>
+
+<<widget "storeonhandheld">>
+	<<generalStoreon _args[0] "handheld" _args[1]>>
 <</widget>>
 
 <<widget "storeonlegs">>
@@ -1694,6 +1751,7 @@
 		neck:false,
 		face:false,
 		hands:false,
+		handheld:false,
 		legs:false,
 		feet:false,
 		genitals:false,
