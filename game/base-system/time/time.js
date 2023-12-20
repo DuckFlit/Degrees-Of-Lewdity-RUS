@@ -346,7 +346,7 @@ function weekPassed() {
 		fragment.append(wikifier("robinPunishment", "docks"));
 		V.robineventnote = 1;
 	}
-    V.robinmoney += (300 + V.robin.moneyModifier);
+	V.robinmoney += 300 + V.robin.moneyModifier;
 	V.compoundcentre = 0;
 	if (V.edenfreedom >= 1 && V.edenshopping === 2) V.edenshopping = 0;
 	if (V.loft_kylar) V.loft_spray = 0;
@@ -1872,12 +1872,13 @@ function earSlimeDaily(passageEffects = false) {
 				V.worn.genitals.integrity = clothingData("genitals", V.worn.genitals, "integrity_max");
 			}
 		}
-		if (V.earSlime.forcedCommando && V.earSlime.forcedCommando > 0) {
-			V.earSlime.forcedCommando--;
-		}
 		if (V.earSlime.forcedDressing && V.earSlime.forcedDressing.days > 0) {
 			V.earSlime.forcedDressing.days--;
 		}
+	}
+
+	if (V.earSlime.forcedCommando && V.earSlime.forcedCommando > 0) {
+		V.earSlime.forcedCommando--;
 	}
 }
 DefineMacro("earSlimeDaily", earSlimeDaily);
