@@ -110,7 +110,7 @@ function masturbationActions() {
 		fragment.append(wikifier("promiscuity1"));
 		V.masturbationorgasmstat++;
 		V.masturbationorgasm++;
-		if (V.femaleclimax !== 1 && V.mouth !== "mpenis") {
+		if (V.femaleclimax !== 1 && !T.deniedOrgasm && V.worn.genitals.name !== "chastity parasite" && V.mouth !== "mpenis") {
 			V.masturbationorgasmsemen++;
 		}
 		fragment.append(wikifier("purity", -1));
