@@ -879,7 +879,6 @@ function dawnCheck() {
 function dailyNPCEffects() {
 	const fragment = document.createDocumentFragment();
 
-	delete V.bird.satisfied;
 	delete V.robinlocationoverride;
 
 	// Winter
@@ -1019,6 +1018,12 @@ function dailyNPCEffects() {
 			C.npc.Sydney.chastity.anus = "";
 			V.sydneyAnalShieldComment = true;
 		}
+	}
+
+	// Great Hawk
+	if (C.npc["Great Hawk"].init === 1) {
+		delete V.bird.satisfied;
+		if (V.bird.hunts.injured > 1) V.bird.hunts.injured--;
 	}
 
 	// Wraith

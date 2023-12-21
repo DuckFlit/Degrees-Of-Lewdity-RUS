@@ -658,7 +658,7 @@ The <<beasttype>> looks at you from across the tower with a hurt<<if $monster is
 	The two of you spend the next ten minutes staring at each other from across the room. The <<beasttype>> spends the time alternating between keeping <<bhis>> wing still and slowly opening and closing it. Once the wing has recovered to <<bhis>> satisfaction, the <<beasttype>> gets up and flies from the tower.
 <<elseif currentSkillValue('physique') gte 4000>>
 	<<pass 5>><<set $bird.timer to 90>>
-	The two of you sit there for a little bit, eyeing each other distrustfully. Once the <<beasttype>>'s wing seems to have recovered, <<bhe>> gets up and launches <<bhimself>> from the tower.
+	The two of you sit there for a moment, eyeing each other distrustfully. Once the <<beasttype>>'s wing seems to have recovered, <<bhe>> gets up and launches <<bhimself>> from the tower.
 <<else>>
 	<<pass 1>><<set $bird.timer to 60>>
 	After a short rest, the <<beasttype>> gets up and, with one final look in your direction, launches <<bhimself>> from the tower.
@@ -794,7 +794,37 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<bird_hunt_return>>
 <<elseif $bird.state is "home" and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
 	<<npc "Great Hawk">>
-	<<if $monster is 1>>
+	<<if $bird.hunts.injured gt 1>>
+		The <<beasttype>> slowly rises from
+		<<if $bird.activity is "build" or $bird.activity is "sleep">>
+			<<bhis>> nest.
+		<<elseif $bird.activity is "bathe">>
+			the rainwater pool, and shakes <<bhis>> uninjured wing dry.
+		<<else>>
+			<<bhis>> spot on the perch.
+		<</if>>
+		<<if $monster is 1>>
+			"<<print either(
+				"I crave a hunt. My wing remains limp.",
+				"The wild beckons me, and I can only sing in response.",
+				"My talons itch for prey, yet they feel dull.",
+				"The winds call me, and I cannot answer.",
+				"I must stretch my wings, but... painful."
+			)>>" <<bHe>> gazes wistfully out to the moor, then down to <<bhis>> injured wing.
+		<<else>>
+			<<bHe>> looks out over the moor with a wistful gaze. <<bHe>> seems to be looking to hunt, but <<bhis>> injury won't allow it.
+		<</if>>
+		<<set $bird.timer to 600>>
+		<br><br>
+		<<if $harpy gte 6 and $syndromebird is 1 and $bird.hunts.lurkers is true>>
+			<<flight_time_check 30 "silent">>
+			<<print '<<link [[Hunt for your spouse ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -3>><</link>>'>><<glove>><<lldom>><<print _fatigueText>>
+			<br>		
+		<</if>>
+		<<link [[Do nothing|Bird Tower]]>><<endevent>><</link>>
+		<br>
+	<<elseif $bird.hunts.injured is 1>>
+		<<set $bird.hunts.injured to 0>>
 		The <<beasttype>> rises from
 		<<if $bird.activity is "build" or $bird.activity is "sleep">>
 			<<bhis>> nest.
@@ -803,29 +833,79 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<<else>>
 			<<bhis>> spot on the perch.
 		<</if>>
-		"<<print either(
-			"I crave a hunt.",
-			"The wild beckons me.",
-			"My talons itch for prey.",
-			"The winds call me.",
-			"I must stretch my wings."
-		)>> I will return with a gift." <<bHe>> spreads <<bhis>> wings, and launches from the tower.
+		<<bHe>> stretches out <<bhis>> injured wing, <span class="green">showing no signs of strain. It's healed.</span>
+		<<if $monster is 1>>
+			"Finally. I return to the skies."
+		<<else>>
+			<<bHe>> looks out over the moor with a harsh gaze. <<bHe>> seems to be eager to hunt again.
+		<</if>>
+		<br><br>
+
+		<<if $harpy gte 6 and $syndromebird is 1>>
+			<<if $bird.hunts.unlocked is true>>
+				<<flight_time_check 30 "silent">>
+				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<br>
+				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<<else>>
+				<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<br>
+				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<bHe>> spreads <<bhis>> wings and launches from the tower.
+			<br><br>
+			<<set $bird.timer to random(30, 60)>>
+			<<set $bird.state to "hunting">>
+			<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+			<br>
+		<</if>>		
 	<<else>>
 		The <<beasttype>> rises from
 		<<if $bird.activity is "build" or $bird.activity is "sleep">>
-			<<bhis>> nest,
+			<<bhis>> nest.
 		<<elseif $bird.activity is "bathe">>
-			the rainwater pool,
+			the rainwater pool, and shakes <<bhis>> wings dry.
 		<<else>>
-			<<bhis>> spot on the perch,
+			<<bhis>> spot on the perch.
 		<</if>>
-		spreads <<bhis>> wings, and launches from the tower.
+		<<if $monster is 1>>
+			"<<print either(
+				"I crave a hunt.",
+				"The wild beckons me.",
+				"My talons itch for prey.",
+				"The winds call me.",
+				"I must stretch my wings."
+			)>> I will return with a gift."
+		<<else>>
+			<<bHe>> looks out over the moor with a harsh gaze. <<bHe>> seems to be looking to hunt.
+		<</if>>
+		<br><br>
+
+		<<if $harpy gte 6 and $syndromebird is 1>>
+			<<if $bird.hunts.unlocked is true>>
+				<<flight_time_check 30 "silent">>
+				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<br>
+				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<<else>>
+				<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<br>
+				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<bHe>> spreads <<bhis>> wings and launches from the tower.
+			<br><br>
+			<<set $bird.timer to random(30, 60)>>
+			<<set $bird.state to "hunting">>
+			<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+			<br>
+		<</if>>
 	<</if>>
-	<br><br>
-	<<set $bird.timer to random(30, 60)>>
-	<<set $bird.state to "hunting">>
-	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
-	<br>
 <<elseif $bird.state is "home" and $bird.lock is 1 and $syndromebird is 1 and !$possessed>>
 	<<npc "Great Hawk">>
 	The <<beasttype>> <<if $monster is 1>>walks<<else>>hops<</if>> deeper into the room. <<bHe>> pauses beside the trap door, and holds the rusted lock between <<bhis>> talons. <<bHe>> crushes it in one swift movement, grasps the remaining metal, and throws open the door. <<bHe>> jumps away from the cloud of dust.
@@ -883,6 +963,15 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<set $syndromebird to 1>>
 	<<unset $birdescaped>>
 	<<set $bird.syndrome to undefined>>
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<elseif $harpy gte 6 and $bird.hunts.unlocked is true and $bird.hunts.valuables is false and $skulduggery gte 300>>
+	<<set $bird.hunts.valuables to true>>
+	<span class="blue">As you're looking around the tower, your eyes catch on a vacant corner. You become keenly aware of how empty and plain everything is, and you're filled with an inexplicable urge. Some pretty, shiny valuables would improve the atmosphere of your home.</span>
+	<br>
+	<span class="gold">You can now hunt for valuables.</span>
+	<br><br>
+
 	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
 	<br>
 <<else>>
@@ -1387,7 +1476,6 @@ You kneel beside the trap door. The wood is ancient, but dry and preserved. You 
 <br>
 
 
-
 :: Bird Tower Lurker
 <<effects>>
 
@@ -1402,6 +1490,10 @@ It fills you with a strange warmth.<<drugs 60>>
 <i><<bHe>> will be more likely to bring you lurkers in the future, rather than other items.</i>
 <br><br>
 
+<<if $harpy gte 6 and $bird.hunts.unlocked is true and $bird.hunts.lurkers is false>>
+	<span class="blue">Feasting on the lurker felt good. You have the urge to catch one yourself.</span> <span class="gold">You can now hunt for lurkers on your own.</span>
+	<br><br>
+<</if>>
 
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
@@ -1869,13 +1961,18 @@ You don't move.
 <<effects>>
 
 <<if $syndromebird is 1 or $harpy gte 6>>
-	You lie in the nest<<if $bird.activity is "sleep" and $bird.state is "home">><<npc "Great Hawk">><<set $bedGuest to "Great Hawk">> with the <<beasttype>><</if>>.
+	You lie in the nest<<if $bird.activity is "sleep" and $bird.state is "home">><<npc "Great Hawk">><<set $bedGuest to "Great Hawk">> with <<if $syndromebird is 1>>your<<else>>the<</if>> <<beasttype>><</if>>.
 <<else>>
 	You lie on the nest. It's hard to get comfortable.
 <</if>>
 <<endevent>>
 <<if $wraith.state and $wraithPrison and $bird.mirror is 1 and ($moonstate is "evening" or $moonstate is _nightstate)>>
 	You feel anxious, and your eyes dart over to the mirror.
+<<elseif $harpy gte 6 and $bird.hunts.unlocked is true and $bird.hunts.materials is false>>
+	<<set $bird.hunts.materials to true>>
+	<span class="blue">With your first hunt over, you take a moment to look upon the state of your nest. Your eyes wander around the tower as well, spotting imperfections that nag at your mind. You can make things better. Maybe you should try to look for materials next time you hunt.</span>
+	<br>
+	<span class="gold">You can now hunt for materials.</span>
 <</if>>
 <br><br>
 
@@ -2367,7 +2464,7 @@ You're soon squeaky clean.
 
 :: Bird Tower Groom
 <<effects>>
-
+!!!!!!!!!!!!!
 <<npc "Great Hawk">>
 
 <<if $speech_attitude is "meek">>
@@ -2392,8 +2489,11 @@ The <<beasttype>> shakes <<bhis>> feathers, and lets you stroke <<bhis>> wings.
 		The <<beasttype>> shakes <<bhis>> wings. <<bHe>> backs up from the perch, and walks towards the bathing pool.
 	<</if>>
 	<br><br>
-	<<link [[Follow (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><<endevent>><<set $phase to 1>><</link>><<if $monster is 1>><<handholdingvirginitywarning>><<NPCvirginitywarning "Great Hawk" "handholding">><</if>><br>
-	<<link [[Stay|Bird Tower Perch]]>><<endevent>><</link>><br>
+
+	<<link [[Follow (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><<endevent>><<set $phase to 1>><</link>><<if $monster is 1>><<handholdingvirginitywarning>><<NPCvirginitywarning "Great Hawk" "handholding">><</if>>
+	<br>
+	<<link [[Stay|Bird Tower Perch]]>><<endevent>><</link>>
+	<br>
 <<elseif ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
 	<<if $birdPerch is undefined>>
 		<<set $birdPerch to 1>>
@@ -2609,11 +2709,11 @@ The <<beasttype>> shakes <<bhis>> feathers, and lets you stroke <<bhis>> wings.
 					The thought of <<nnpc_his "Sydney">> smile makes you feel warm.
 				<</if>>
 			<<case "Eden">>
-				Eden. <<nnpc_he "Eden">> would probably hunt the Great Hawk for sport, especially if <<nnpc_he "Eden">> found out about what you've been doing.
+				Eden. <<nnpc_He "Eden">> would probably hunt the Great Hawk for sport, especially if <<nnpc_he "Eden">> found out about what you've been doing.
 			<<case "Avery">>
 				Avery.
 				<<if Time.weekDay is 7 and $averyseen isnot 1>>
-					<<nnpc_he "Avery">>'s probably looking for you at this very moment, to ask you on another date.
+					<<nnpc_He "Avery">>'s probably looking for you at this very moment, to ask you on another date.
 				<<elseif $averydate is 1>>
 					You have a date later, after all.
 				<<elseif $NPCName[$NPCNameList.indexOf("Avery")].rage gte 20 and $averyragerevealed is 1>>
@@ -3201,7 +3301,7 @@ You wonder if anything you just experienced was real for a moment. The vertigo a
 <<else>>
 	"I brought you a gift," you say. "I hope you like it."
 <</if>>
-You take your netted lurker and give it to your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>>. <<glove>>
+You take your netted lurker and give it to your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>>. <<npcincr "Great Hawk" love 1>><<glove>>
 <br><br>
 <<if $monster is 1>>
 	The <<beasttype>> perks up at your offer.
@@ -3218,11 +3318,9 @@ You take your netted lurker and give it to your <<if $monster is 1>><<nnpc_wife 
 <</if>>
 <br><br>
 <<set $lurkers_held to 0>>
-<<link "Accept <<bhis>> offer" "Bird Tower Give Captured Lurker Accept">><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<stress -16>><</link>> <<llstress>><<glove>><<gdom>>
+<<link "Accept <<bhis>> offer" "Bird Tower Give Captured Lurker Accept">><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<stress -16>><</link>><<llstress>><<glove>><<gdom>>
 <br>
-<<link [[Decline|Bird Tower Give Captured Lurker Refuse]]>>
-<<npcincr "Great Hawk" dom -1>>
-<</link>> <<ldom>>
+<<link [[Decline|Bird Tower Give Captured Lurker Refuse]]>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>>
 <br>
 
 :: Bird Tower Give Captured Lurker Accept

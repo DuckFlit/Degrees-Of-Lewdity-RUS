@@ -13,6 +13,20 @@
 	<<set $bird.state to "hunting">>
 	<<set $bird.timer to 20>>
 	<<set $bird.syndrome to 0>>
+	<<set $bird.hunts to {
+		unlocked: false,
+		lurkers: false,
+		materials: false,
+		valuables: false,
+		injured: 0
+	}>>
+	<<set $bird.materials to {
+		wood: 0,
+		cloth: 0,
+		sticks: 0,
+		leaves: 0,
+		tools: false
+	}>>
 <</widget>>
 
 <<widget "bird_loot">>
@@ -108,7 +122,7 @@
 		<<if $monster is 1>>
 			<<bHe>> hungrily rips into the meat with <<bhis>> teeth.
 			"<<print either(
-			"Common prey here. Their meat is sweet.",
+			"Common prey here. Their meat is soft.",
 			"It won't bite. Promise.",
 			"You can eat by yourself, yes? I don't need to feed you like baby bird?",
 			"Nasty creatures, but nourishing.",
@@ -372,6 +386,9 @@
 		<<set $_rescueChance += Math.floor($moor / 5)>>
 		<<if $_rescueChance gte random(1, 100)>><<enable_rescue>><</if>>
 	<</if>>
+	<<if $bird.hunts and $bird.hunts.injured gt 1>>
+		<<set $_rescueChance to 0>>
+	<</if>>
 <</widget>>
 
 <<widget "hawkScreechDesc">>
@@ -390,7 +407,7 @@
 
 		<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 		<<bird_hunt_return>>
-	<<elseif $bird.state is "home" and $bird.activity isnot "sleep" and $bird.activity isnot "sing" and $bird.activity isnot "groom" and $bird.timer lte 0>>
+	<<elseif $bird.state is "home" and $bird.activity isnot "sleep" and $bird.activity isnot "sing" and $bird.activity isnot "groom" and $bird.timer lte 0 and $bird.hunts.injured is 0>>
 		<<endevent>>
 		<<npc "Great Hawk">>
 		<<if $monster is 1>>
@@ -401,19 +418,35 @@
 				"My talons itch for prey.",
 				"The winds call me.",
 				"I must stretch my wings."
-			)>> I will return with a gift." <<bHe>> spreads <<bhis>> wings, and launches from the tower.
+			)>> I will return with a gift."
 		<<else>>
-			The <<beasttype>> rises from <<bhis>> nest, spreads <<bhis>> wings, and launches from the tower.
+			The <<beasttype>> rises from <<bhis>> nest, looking out over the moor. <<bHis>> gaze is harsh. <<bHe>> seems to be looking to hunt.
 		<</if>>
+		<<unset $birdBask>>
 		<br><br>
-		<<set $bird.timer to random(30, 60)>>
-		<<set $bird.state to "hunting">>
-		<<unset $birdPerch>><<unset $birdBask>>
-		<<if $birdSingIntro is 1>>
-			<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<set $birdSingAbsent to 1>><<bird_pass 30>><<endevent>><</link>><br>
+
+		<<if $harpy gte 6 and $syndromebird is 1>>
+			<<if $bird.hunts.unlocked is true>>
+				<<flight_time_check 30 "silent">>
+				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<br>
+				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<<else>>
+				<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<br>
+				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<bHe>> spreads <<bhis>> wings and launches from the tower.
+			<br><br>
+			<<set $bird.timer to random(30, 60)>>
+			<<set $bird.state to "hunting">>
+			<<unset $birdPerch>>
+			<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
+			<br>
 		<</if>>
-		<<getouticon>><<link [[Go back inside|Bird Tower]]>><<unset $birdPerch>><<endevent>><</link>><br>
-		<br>
 	<<elseif $bird.activity is "sleep" and $birdSleep is undefined and $bird.state is "home">>
 		<<set $birdSleep to 1>><<unset $birdPerch>><<unset $birdBask>>
 		<<endevent>>
@@ -471,6 +504,10 @@
 		<<elseif $birdFly is 1>>
 			<br>
 			<<flight_time_check 60>>
+			<<if $bird.hunts.unlocked is true and ($bird.hunts.lurkers is true or $bird.hunts.materials is true or $bird.hunts.valuables is true)>>
+				<<ind>><<link [[Prepare for a hunt|Bird Hunt Start]]>><</link>><<flight_text>><br>
+				<br>
+			<</if>>
 			<<if $exposed gte 2 and $exhibitionism lt 55>>
 				<span class="red">You aren't lewd enough to fly exposed towards the town or farmlands.</span>
 				<br>
@@ -513,13 +550,16 @@
 	<<else>>
 		<<set _flightTimeBase to 60>>
 	<</if>>
+	<<if $bird.hunts and $bird.hunts.weight>>
+		<<set _flightTimeBase += $bird.hunts.weight>>
+	<</if>>
 	<<set _flightTime to _flightTimeBase>>
 	<<switch $weather>>
 		<<case "overcast">>
 			<<set _flightTime -= Math.floor(_flightTimeBase / 3)>>
 			<<set _fatigueText to "<<gtiredness>>">>
 			<<set _fatigueMod to 0.5>>
-			<span class="gold">The strong winds will make flight easy and fast.</span>
+			<<if _args[1] isnot "silent">><span class="gold">The strong winds will make flight easy and fast.</span><</if>>
 		<<case "rain">>
 			<<set _flightTime += 1>>
 			<<for _active_clothes range Object.keys($worn)>>
@@ -540,36 +580,36 @@
 				<<if _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.5))>>
 					<<set _fatigueText to "<<gggtiredness>>">>
 					<<set _fatigueMod to 3>>
-					<span class="red">Flying in the rain will soak your clothes, heavily slowing you down and exposing you.</span>
+					<<if _args[1] isnot "silent">><span class="red">Flying in the rain will soak your clothes, heavily slowing you down and exposing you.</span><</if>>
 				<<elseif _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.25))>>
 					<<set _fatigueText to "<<gggtiredness>>">>
 					<<set _fatigueMod to 3>>
-					<span class="pink">Flying in the rain will soak your clothes, slowing you down and exposing you.</span>
+					<<if _args[1] isnot "silent">><span class="pink">Flying in the rain will soak your clothes, slowing you down and exposing you.</span><</if>>
 				<<elseif _flightTime gt _flightTimeBase>>
 					<<set _fatigueText to "<<ggtiredness>>">>
 					<<set _fatigueMod to 2>>
-					<span class="blue">Flying in the rain will soak your clothes, slightly slowing you down and exposing you.</span>
+					<<if _args[1] isnot "silent">><span class="blue">Flying in the rain will soak your clothes, slightly slowing you down and exposing you.</span><</if>>
 				<<else>>
 					<<set _fatigueText to "<<gtiredness>>">>
 					<<set _fatigueMod to 2>>
-					<span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span>
+					<<if _args[1] isnot "silent">><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
 				<</if>>
 			<<else>>
 				<<set _fatigueText to "<<gtiredness>>">>
 				<<set _fatigueMod to 2>>
-				<span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span>				
+				<<if _args[1] isnot "silent">><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
 			<</if>>
 		<<case "snow">>
 			<<set _flightTime += Math.floor(_flightTimeBase / 6)>>
 			<<set _fatigueText to "<<ggtiredness>>">>
 			<<set _fatigueMod to 2>>
-			<span class="blue">Flying in the snow will obscure your vision and slow you down.</span>
+			<<if _args[1] isnot "silent">><span class="blue">Flying in the snow will obscure your vision and slow you down.</span><</if>>
 		<<default>>
 			<<set _fatigueText to "<<gtiredness>>">>
 			<<set _fatigueMod to 1>>
-			<span class="green">The weather shouldn't affect your flight.</span>
+			<<if _args[1] isnot "silent">><span class="green">The weather shouldn't affect your flight.</span><</if>>
 	<</switch>>
-	<br>
+	<<if _args[1] isnot "silent">><br><</if>>
 	<<if currentSkillValue('athletics') gt 0>>
 		<<set _flightTime -= Math.floor((_flightTime / 20) * (currentSkillValue('athletics') / 100))>>
 	<</if>>
@@ -607,4 +647,157 @@
 	<<tiredness _tempTired>>
 	<<unset $flightTime>>
 	<<unset $fatigueMod>>
+<</widget>>
+
+<<widget "flight_distance_check">>
+	<<set _totalDistance to (Math.abs($Bird.hunts.distanceNorth) + Math.abs($Bird.hunts.distanceEast))>>
+	<<set _returnTime to (5 * _totalDistance)>>
+<</widget>>
+
+<<widget "flight_hunt_options">>
+	<<flight_time_check 20 "silent">>
+	<<if $bird.hunts.goal is "hawk">>
+		<<set _directionPool to []>>
+		<<if $bird.hunts.distanceNorth lt 5 and $bird.hunts.distanceNorth isnot -1>>
+			<<run _directionPool.pushUnique("north")>>
+		<</if>>
+		<<if $bird.hunts.distanceEast lt 5 and $bird.hunts.distanceEast isnot -1>>
+			<<run _directionPool.pushUnique("east")>>
+		<</if>>
+		<<if $bird.hunts.distanceNorth gt -5 and $bird.hunts.distanceNorth isnot 1>>
+			<<run _directionPool.pushUnique("south")>>
+		<</if>>
+		<<if $bird.hunts.distanceEast gt -5 and $bird.hunts.distanceEast isnot 1>>
+			<<run _directionPool.pushUnique("west")>>
+		<</if>>
+		<<set $bird.hunts.direction to _directionPool.pluck()>>
+		<<switch $bird.hunts.direction>>
+			<<case "north">><<set _distanceNorth to 1>><<set _distanceEast to 0>>
+			<<case "east">><<set _distanceNorth to 0>><<set _distanceEast to 1>>
+			<<case "south">><<set _distanceNorth to -1>><<set _distanceEast to 0>>
+			<<case "west">><<set _distanceNorth to 0>><<set _distanceEast to -1>>
+		<</switch>>
+		<<capture _distanceNorth _distanceEast _hoursPassed _minutesPassed _fatigueMod _flightTime _fatigueText>>
+			<<print `<<link [[Continue hunting ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.distanceNorth += _distanceNorth>><<set $bird.hunts.distanceEast += _distanceEast>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>`>><<print _fatigueText>>
+			<br>
+		<</capture>>
+		<br>
+		<<link [[Ask to hunt for something else|Bird Hunt Goal]]>><<endevent>><<set $phase to 1>><</link>>
+		<br>
+		<<flight_time_check _returnTime "silent">>
+		<<print '<<link [[Ask to return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return Ask]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+		<br>		
+	<<else>>
+		<<capture _hoursPassed _minutesPassed _fatigueMod _flightTime _fatigueText>>
+			<<if $bird.hunts.distanceNorth lt 5>>
+				<<print '<<link [[North ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "north">><<set $bird.hunts.distanceNorth++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+				<br>
+			<</if>>
+			<<if $bird.hunts.distanceEast lt 5>>
+				<<print '<<link [[East ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "east">><<set $bird.hunts.distanceEast++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+				<br>
+			<</if>>
+			<<if $bird.hunts.distanceNorth gt -5>>
+				<<print '<<link [[South ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "south">><<set $bird.hunts.distanceNorth-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+				<br>
+			<</if>>
+			<<if $bird.hunts.distanceEast gt -5>>
+				<<print '<<link [[West ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "west">><<set $bird.hunts.distanceEast-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+				<br>
+			<</if>>
+		<</capture>>
+		<br>
+	
+		<<link [[Hunt for something else|Bird Hunt Goal]]>><<endevent>><<set $phase to 1>><</link>>
+		<br>
+		<<flight_time_check _returnTime "silent">>
+		<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><<set $phase to 1>><</link>>'>><<print _fatigueText>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "flight_hunt_return">>
+	<<if ($bird.hunts.weight gte 3 and $bird.hunts.duo is false) or $bird.hunts.weight gte 5>>
+		You won't be able to carry any more. You begin to fly back to the tower.
+		<br><br>
+
+		<<flight_distance_check>>
+		<<flight_time_check _returnTime "silent">>
+		<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<br>
+	<<else>>
+		You return to the higher skies.
+		<br><br>
+
+		<<endevent>>
+		<<if _huntFail is 1>><<set $phase to 2>><</if>>
+		<<flight_hunt_options>>
+	<</if>>
+<</widget>>
+
+<<widget "flight_hunt_chance">>
+	<<if $bird.hunts.goal is "hawk">>
+		<<bird_loot_select>>
+		<<switch _bird_loot_select>>
+			<<case "food" "lurker">><<set $_goal to "lurkers">>
+			<<case "trash" "clothes">><<set $_goal to "materials">>
+			<<case "valuables">><<set $_goal to "valuables">>
+		<</switch>>
+	<<else>>
+		<<set $_goal to $bird.hunts.goal>>
+	<</if>>
+	<<set _flight_hunt_chance to {
+		nothing: 1,
+		lurkers: random(0.5, 1.5),
+		materials: random(0.5, 1),
+		valuables: random(0, 1),
+		other: 0.5
+	}>>
+	<<set _flight_hunt_chance[$_goal] += ($bird.hunts.goal is "hawk" ? 3 : 1 + (currentSkillValue("skulduggery") / 500).toFixed(2))>>
+	<<if $weather is "rain" or $weather is "snow">>
+		<<set _flight_hunt_chance.nothing++>>
+	<</if>>
+	<<if $bird.hunts.goal is "hawk">>
+		<<set _flight_hunt_chance.nothing to 0>>
+	<</if>>
+<</widget>>
+
+<<widget "flight_hunt_get">>
+	<<if !_args[0]>>
+		<<run Errors.report("No argument specified for widget flight_hunt_get")>>
+	<<elseif typeof _args[0] isnot "string">>
+		<<run Errors.report("Non-string provided as first argument for widget flight_hunt_get")>>
+	<<elseif !_args[1] or typeof !_args[1] isnot "number">>
+		<<run Errors.report("No number argument specified for widget flight_hunt_get")>>
+	<<else>>
+		<<set $_looted to _args[0]>><<set $_amount to _args[1]>>
+		<<if $bird.materials[$_looted] is undefined>>
+			<<run Errors.report("Invalid loot of type; " + $_looted)>>
+		<<else>>
+			<<if $bird.hunts.loot[$_looted] is undefined>>
+				<<run $bird.hunts.loot.pushUnique($_looted : 0)>>	
+			<</if>>
+			<<set $bird.hunts.loot[$_looted] += $_amount>>
+			<<set $bird.hunts.lootAmount += $_amount>>
+		<</if>>
+		<<switch $_looted>>
+			<<case "toolbox">><<set $bird.hunts.weight += 2>>
+			<<case "wood">><<set $bird.hunts.weight += (3 * $_amount)>>
+			<<default>><<set $bird.hunts.weight += $_amount>>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "flight_hunt_loot">>
+	You looted
+	
+	
+	<<number $bird.hunts.lootAmount>>
+	<<switch $bird.hunts.loot>>
+		<<case "wood">>piece<<if $bird.hunts.lootAmount gt 1>>s<</if>> of wood.
+		<<case "cloth">>piece<<if $bird.hunts.lootAmount gt 1>>s<</if>> of cloth.
+	<</switch>>
+	You add <<if $bird.hunts.lootAmount gt 1>>them<<else>>it<</if>> to the pile.
+	<<run delete $bird.hunts.loot>>
+	<<run delete $bird.hunts.lootAmount>>
 <</widget>>
