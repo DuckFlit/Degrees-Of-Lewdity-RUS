@@ -67,6 +67,7 @@ const ZIndices = {
 	collar: 103,
 	neck: 103,
 
+	handheld: 104,
 	arms_cover: 105,
 	under_upper_arms_cover: 109,
 	hands: 110,

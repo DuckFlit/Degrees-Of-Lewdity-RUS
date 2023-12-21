@@ -151,10 +151,25 @@ You could go for a swim, but make sure to dress appropriately.
 		<<endevent>>
 		<<link [[Next|Beach]]>><<set $eventskip to 1>><</link>>
 		<br>
+	<<elseif Time.season is "summer" and Time.hour gt 9 and Time.hour lt 17 and $weather isnot "rain" and $balloonStand.open is false>>
+		<<generate1>><<saveNPC 0 stall_owner>><<npc Robin 2>>
+		Someone is setting up a new stall on the beach<<if _robin_location is "beach">>, directly across from Robin's lemonade stand. Robin looks somewhat worried<</if>>. The <<person1>><<person>> ties a bunch of colourful balloons to the stall, where they bob invitingly in the air.
+		<br><br>
+		The <<personsimple>> notices you staring and beckons you over. "Hey there!" <<he>> says. "Just getting my wares set up."
+		<br><br>
+		"What are you selling?" you ask.
+		<br><br>
+		"Just some little treats to brighten things up around here. Here, have a balloon. It's Free Balloon Day." <<He>> gives you a wink and hands you a balloon. "I have more if you'd like them, though you'll have to pay. I also have popcorn, and I'm hoping to expand. Care to be my first customer?"
+		<br><br>
+		<<set $balloonStand.open to true>>
+		<<link [[Buy something|Balloon Stand]]>><<set $phase to "firstcustomer">><<handheldwear 14>><</link>><br>
+		<<link [[Decline|Balloon Decline]]>><<handheldwear 14>><</link>>
+	<<elseif _robin_location is "beach" and $exposed lte 0 and $balloonStand.open is true and $balloonStand.robin.status is "unaffected">>
+		<<balloonRobinIntro>>
 	<<else>>
 		<<if $exposed lte 0>>
 			<<if $scienceproject is "ongoing" and $sciencephallusknown is 1 and $sciencephallus lt 10 and Time.dayState isnot "night" and $weather isnot "rain" and $weather isnot "snow" and $exposed lte 0>>
-				<<ind>><<link [[Find participant for phallus project (0:15)|Beach Phallus]]>><<pass 15>><</link>>
+				<<investigateicon>><<link [[Find participant for phallus project (0:15)|Beach Phallus]]>><<pass 15>><</link>>
 				<br>
 			<</if>>
 			<<swimicon>><<link [[Go for a swim (0:02)|Sea Beach]]>><<pass 2>><</link>>
@@ -168,41 +183,57 @@ You could go for a swim, but make sure to dress appropriately.
 				<<baskicon>><<link [[Tan on the beach (1:00)|Tanning]]>><<pass 60>><</link>><<lstress>>
 				<br>
 			<</if>>
+		<</if>>
+		<<if Time.dayState is "day" and ($weather isnot "rain" and $weather isnot "snow") or $worn.handheld.type.includes("rainproof")>>
 			<<if $milkshake gte 1 and $exposed lte 0>>
 				<<foodicon "milkshake">><<link [[Drink your milkshake (0:10)|Beach Milkshake]]>><<pass 10>><<set $milkshake -= 1>><<stress -5>><</link>><<lstress>>
 				<br>
 			<</if>>
-		<</if>>
-		<<changingroomicon>><<link [[Changing room|Changing Room]]>><</link>>
-		<br>
-		<<if $exposed lte 0>>
-			<<if _robin_location is "beach">>
-				<<robinicon "lemonade">><<link [[Robin's lemonade stand|Robin's Lemonade]]>><</link>>
+			<<if $popcorn gte 1 and $exposed lte 0>>
+				<<foodicon "popcorn">><<link [[Eat your popcorn (0:10)|Balloon Consume]]>><<pass 10>><<set $popcorn -= 1>><<wearProp "popcorn">><<trauma -3>><<set $phase to "popcorn">><</link>><<ltrauma>>
 				<br>
 			<</if>>
+		<</if>>
+		<<changingroomicon>><<link [[Changing room|Changing Room]]>><</link>>
+		<<if $exposed lte 0>>
+			<<if $openinghours is 1 and $balloonStand.open is true>>
+				<br>
+				<<stallicon "balloon">><<link [[Balloon stand|Balloon Stand]]>><</link>>
+			<</if>>
+			<<if _robin_location is "beach">>
+				<br>
+				<<robinicon "lemonade">>
+				<<if $balloonStand.robin.status is "closed">>
+					<span class="red">Robin asked you to leave <<nnpc_him "Robin">> alone.</span>
+				<<else>>
+					<<link [[Robin's lemonade stand|Robin's Lemonade]]>><</link>>
+				<</if>>
+			<</if>>
 			<<if $leftleg is "bound" or $rightleg is "bound">>
+				<br>
 				<<set $_boundType to ($leftleg is "bound" ? ($rightleg is "bound" ? "both legs" : "your left leg") : "your right leg")>>
 				You cannot go for a run with $_boundType bound.
 			<<elseif $worn.feet.type.includes("heels")>>
+				<br>
 				<<walkicon>><<link [[Take a walk in heels (0:30)|Beach Heel Walk]]>><</link>><<gtiredness>><<lstress>>
-			<<else>>
+		<<else>>
+				<br>
 				<<runicon>><<link [[Go for a run (0:30)|Beach Run]]>><<athletics 3>><</link>><<gtiredness>><<gathletics>><<lstress>>
 			<</if>>
-			<br>
 		<</if>>
 		<<if $weather is "clear" and Time.dayState is "night" and $exposed lte 0>>
-			<<socialiseicon "party">><<link [[Party|Beach Party]]>><</link>>
 			<br>
+			<<socialiseicon "party">><<link [[Party|Beach Party]]>><</link>>
 		<</if>>
 		<<if $weather is "clear" and Time.dayState isnot "night" and $exposed lte 0>>
-			<<socialiseicon "volleyball">><<link [[Volleyball|Beach Volleyball]]>><</link>>
 			<br>
+			<<socialiseicon "volleyball">><<link [[Volleyball|Beach Volleyball]]>><</link>>
 			<<if $exhibitionism gte 75 and $daily.beachStrip isnot 1>>
-				<<stripicon>><<link [[Strip (0:20)|Beach Strip]]>><<pass 20>><</link>><<exhibitionist5>>
 				<br>
+				<<stripicon>><<link [[Strip (0:20)|Beach Strip]]>><<pass 20>><</link>><<exhibitionist5>>
 			<</if>>
 		<</if>>
-		<<if $earSlime.forcedCommando isnot undefined and $worn.under_lower.name isnot "naked">>
+		<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
 			<br>
 			<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
 		<<elseif $exposed gte 1 and Time.dayState isnot "night">>
@@ -224,11 +255,11 @@ You could go for a swim, but make sure to dress appropriately.
 <<location "beach">><<effects>>
 You approach the students. Several are dancing near a fire on a makeshift stage while others are drinking and chattering.
 <br><br>
-<<link [[Socialise (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<status 1>><<set $phase to 0>><</link>><<gcool>><<lstress>>
+<<socialiseicon "party">><<link [[Socialise (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<status 1>><<set $phase to 0>><</link>><<gcool>><<lstress>>
 <br>
-<<link [[Dance (0:05)|Beach Party Dance]]>><<danceinit>><<set $dancing to 1>><<set $venuemod to 1>><<stress -4>><<tiredness 4>><</link>><<lstress>><<gtiredness>>
+<<ind>><<link [[Dance (0:05)|Beach Party Dance]]>><<danceinit>><<set $dancing to 1>><<set $venuemod to 1>><<stress -4>><<tiredness 4>><</link>><<lstress>><<gtiredness>>
 <br><br>
-<<link [[Leave|Beach]]>><</link>>
+<<getouticon>><<link [[Leave|Beach]]>><</link>>
 
 :: Beach Volleyball
 
@@ -236,9 +267,9 @@ You approach the students. Several are dancing near a fire on a makeshift stage 
 <<generatey1>><<generatey2>><<generatey3>><<generatey4>><<generatey5>>
 You approach a group playing volleyball. A <<person1>><<person>> sits on the sand and watches four of <<his>> friends play.
 <br><br>
-<<link [[Join in (0:30)|Beach Volleyball Play]]>><<pass 30>><<stress -6>><<tiredness 6>><<status 1>><<athletics 3>><</link>><<gcool>><<gathletics>><<lstress>><<gtiredness>>
+<<socialiseicon "volleyball">><<link [[Join in (0:30)|Beach Volleyball Play]]>><<pass 30>><<stress -6>><<tiredness 6>><<status 1>><<athletics 3>><</link>><<gcool>><<gathletics>><<lstress>><<gtiredness>>
 <br>
-<<link [[Leave|Beach]]>><<endevent>><</link>>
+<<getouticon>><<link [[Leave|Beach]]>><<endevent>><</link>>
 
 :: Beach Volleyball Play
 
@@ -812,34 +843,7 @@ Each breeze caressing your bare flesh is a reminder of your exposure. You feel s
 
 <<endevent>>
 
-<br><br>
-<<if $rng % 3 == 0>>
-	<<link [[Next|Beach Strip End]]>><</link>>
-<<else>>
-	<<if $rng % 2 == 0>>
-		<<link [[Next|Beach Strip Lifeguard]]>><</link>>
-	<<else>>
-		<<link [[Next|Beach Strip Camera]]>><</link>>
-	<</if>>
-<</if>>
-
-:: Beach Strip Lifeguard
-
-A whistle pierces the air. You turn and see a lifeguard running towards you.
-
-<<generate1>><<person1>>
-
-<<He>> stops in front of you, but looks away. "I'm sorry, but I need to ask you to cover up. This isn't a nudist beach."
-<br><br>
-
-<<link [[Comply|Beach Strip Comply]]>><</link>>
-<br>
-<<link [[Refuse (1:00)|Beach Strip Refuse]]>><<stress -12>><<trauma -6>><<crimeUp 50 "exposure">><<pass 1 hour>><</link>><<crime "exposure">><<ltrauma>><<lstress>>
-<br>
-<<if $promiscuity gte 15>>
-<<link [[Seduce|Beach Strip Seduce]]>><</link>><<promiscuous2>>
-<br>
-<</if>>
+<<beach_strip_events>>
 
 :: Beach Strip Comply
 <<location "beach">><<effects>>
@@ -880,10 +884,13 @@ You spend an hour running across the sand and splashing through waves. The sun f
 
 You run across the sand and splash through waves. The sun feels warm and gentle against your bare skin. After a while though, the wind starts to pick up and the cold makes you shiver. You decide to get dressed for now. There's always another day.
 <br><br>
-<<endevent>>
-
-<<link [[Next|Beach]]>><<clotheson>><</link>>
-<br>
+	<<endevent>>
+	<<if $rng % 2 == 0>>
+    	<<link [[Next|Beach]]>><<clotheson>><</link>>
+	<<else>>
+		<<link [[Next|Beach Clothes Stolen 1]]>><</link>>
+	<</if>>
+	<br>
 
 :: Beach Strip Seduce
 <<effects>>
@@ -915,29 +922,6 @@ You walk closer to the <<person>>. "I could get dressed," you say, leaning again
 <<link [[Refuse (1:00)|Beach Strip Refuse]]>><<stress -12>><<trauma -6>><<crimeUp 50 "exposure">><<pass 1 hour>><</link>><<crime "exposure">><<ltrauma>><<lstress>>
 <br>
 
-<</if>>
-
-:: Beach Strip Camera
-
-You stroll across the sand and splash through waves. The sun feels warm and gentle against your bare skin.
-<br><br>
-<<generate1>><<person1>>
-On a slightly calmer part of the beach, your path takes you near a <<person>> scurrying to get <<his>> expensive-looking camera ready.
-
-<br><br>
-<<if $uncomfortable.nude is true>>
-	<<link [[Take a detour|Beach Strip End]]>><</link>>
-	<br>
-<</if>>
-<<link [[Walk past|Beach Strip Camera Snap]]>><<set $phase to 0>><</link>>
-<br>
-<<if $uncomfortable.nude is false>>
-	<<link [[Stop and pose|Beach Strip Camera Snap]]>><<set $phase to 1>><</link>><<exhibitionist5>>
-	<br>
-	<<if $arousal gte $arousalmax / 2>>
-		<<link [[Stop and pose lewdly|Beach Strip Camera Snap]]>><<set $phase to 2>><</link>><<exhibitionist5>><<promiscuous1>>
-		<br>
-	<</if>>
 <</if>>
 
 :: Beach Strip Camera Snap
@@ -1105,6 +1089,95 @@ It is getting cold though, so you decide to get dressed for now.
 <br><br>
 <<link [[Next|Beach]]>><</link>>
 
+:: Beach Strip Group 2
+
+A <<generatey1>><<person1>><<person>> walks up to you.
+<br><br>
+
+"You're so brave," <<he>> says. "Thanks for making the beach so much more fun today."<<gcool>><<status 5>>
+<br><br>
+
+<<Hes>> staring directly at your naked body, and you can clearly see <<him>> getting aroused. You blush and return to your splashing.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Beach Strip Group 3]]>><</link>>
+
+:: Beach Strip Group 3
+
+For the next hour, the beach has effectively been turned into a nude beach.
+<br><br><<pass 1 hour>>
+
+You and the others chat and play in the water completely naked. Any embarrassment is quickly forgotten, and it turns from a thrill into something far more casual.
+<br><br>
+
+Eventually you get tired and say your goodbyes. You walk back onto the beach and get dressed. You see the lifeguard staring angrily at you as you fix your clothing.
+<br><br>
+
+<<link [[Next|Beach]]>><<clotheson>><<endevent>><</link>>
+<br>
+
+:: Beach Strip Party Decline
+
+"No thanks, I'm having fun by myself," you say.
+<br><br>
+
+The <<person1>><<person>> shrugs and returns to <<his>> party. You continue enjoying your naked romp until you decide it's time to get dressed.
+<br><br>
+
+<<link [[Next|Beach]]>><<clotheson>><<endevent>><</link>>
+<br>
+
+:: Beach Strip Party Agree 1
+
+"Sure!" you say. The <<person>> smiles, and you follow him back to the party.
+<br><br>
+
+You feel everyone's eyes on your body as you walk onto the dry sand and into the campsite. You are soon surrounded by two dozen people your own age. You quickly become the center of attention.
+<br><br>
+
+<<if playerBellyVisible()>>
+		A <<generatey2>><<person2>><<person>> almost passes you a cold beer, but stops when <<he>> sees your baby bump.
+<<else>>
+	You're handed a cold beer by a <<generatey2>><<person2>><<person>>.
+	 <<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+		You're not comfortable drinking while you know you're pregnant.
+		<br><br>
+		You hold the bottle while making conversation. If anyone notices your abstinence, they don't address it.
+		<br><br>
+	 <<else>>
+		You politely sip the beer while making conversation. <<alcohol 60>>
+		<br><br>
+	<</if>>
+<</if>>
+
+Your nudity is the hottest topic of conversation. "We go to school together, you know," a <<generatey3>><<person3>><<person>> says. "Can't say I'm surprised to see you here like this."
+<br><br>
+
+"I wish I was as bold as you," a <<generatey4>><<person4>><<person>> adds with a blush. "I would if my butt looked as nice as yours."
+<br><br>
+
+"Yeah, I can't stop looking at it." The <<person3>><<person>> leers at you, but before <<he>> can try anything, <<his>> friend pulls <<him>> aside for a game of beer pong.
+<br><br>
+
+<<link [[Next|Beach Strip Party Agree 2]]>><</link>>
+
+:: Beach Strip Party Agree 2
+
+Despite the occasional lewd remark, no one tries to grope or molest you.
+<br><br>
+
+You spend the next hour hanging out and enjoying the attention. Several people have their phones out and openly take footage of you. You agree to take several staged photos with the others and a big group photo with the whole party. <br> <<gcool>><<status 10>><<fameexhibitionism 30 "pic">>
+<br><br>
+
+As the party begins to die down, you say your goodbyes and leave, returning to your clothes. You get dressed and end your naked day at the beach.
+<br><br>
+
+<<link [[Next|Beach]]>><<clotheson>><<endevent>><</link>>
+<br>
+
+
 :: Beach Exposed
 <<location "beach">><<effects>>
 <<fameexhibitionism 20 "pic">>
@@ -1146,8 +1219,100 @@ It is getting cold though, so you decide to get dressed for now.
 <br>
 
 :: Beach Milkshake
-
+<<wearProp "milkshake">>
 <<effects>>
 You drink the milkshake you bought from the cafe. It's deliciously creamy, and each sip helps melt away the stress.
 <br><br>
-<<link [[Next|Beach]]>><</link>>
+<<link [[Next|Beach]]>><<handheldon>><</link>>
+
+:: Beach Clothes Stolen 1
+
+After spending some time naked on the beach, you return to your clothes, only to catch a <<generate1>><<person1>><<person>> stealing them!
+<br><br>
+
+<<link [[Chase after them|Beach Clothes Stolen 2]]>><</link>>
+<br>
+<<link [[Run to the Changing Room|Beach Clothes Stolen Changing Room 1]]>><</link>>
+<br>
+
+:: Beach Clothes Stolen Changing Room 1
+
+You watch helplessly as <<he>> grabs your clothes, leaving you naked on the beach. You cover yourself as best you can and run into the changing booth.
+<br><br>
+
+<<link [[Next|Changing Room]]>><<endevent>><<ruined>><</link>>
+<br>
+
+:: Beach Clothes Stolen 2
+"Hey!" you shout.
+<br><br>
+
+The <<person>> quickly grabs the last of your clothes and runs off. You take off after <<him>>, running as fast as you can over the sand. You try to cover yourself with your arms, but it slows you down too much. Soon you drop your arms, leaving your whole body exposed to the beach.
+<br><br>
+
+You try to cover yourself with your arms, but it slows you down too much. Soon you drop your arms, leaving your whole body exposed to the beach. The <<person>> runs down the beach, passing many other people. It's obvious <<hes>> a thief, but no one tries to stop <<him>>. Instead, the onlookers shout and taunt you. You're able to spot a few of them holding their phones, filming the whole thing.
+<br><br>
+
+<<link [[Next|Beach Clothes Stolen 3]]>><</link>><<athleticsdifficulty 1 1000>>
+
+:: Beach Clothes Stolen 3
+<<if $athleticsSuccess>>
+	You <span class="green">successfully</span>  catch up to <<him>> and tackle <<him>> to the ground. While the <<person>> is recovering, you grab your clothes as quickly as you can.
+	<br><br>
+
+	"It was just a joke, lighten up," <<he>> says meekly.
+	<br><br>
+
+	You ignore him as you put your clothes on, finally covering yourself again.<<clotheson>>
+	<br>
+
+	<<link [[Next|Beach]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<Hes>> heading towards the street. You're almost able to grab <<him>>, but <<he>> makes it onto the sidewalk. The firmer ground helps <<him>> speed up, and <<he>> heads down the street, into a far more public and crowded area than the beach.
+	<br>
+
+	<<link [[Chase after them|Beach Clothes Stolen 4]]>><</link>>
+	<br>
+	<<link [[Run to the Changing Room|Beach Clothes Stolen Changing Room 2]]>><</link>>
+	<br>
+<</if>>
+
+
+:: Beach Clothes Stolen Changing Room 2
+
+You are already attracting attention and stares. You decide to turn around and run back to the beach. You quickly streak back to the safety of the changing booth. <<gstress>><<gtrauma>><<stress 3>><<trauma 3>>
+<br><br>
+
+<<link [[Next|Changing Room]]>><<endevent>><<ruined>><</link>>
+<br>
+
+:: Beach Clothes Stolen 4
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "starfish">><<getTarget true>>
+<<if $athleticsSuccess>>
+	You <span class="green">successfully</span>  catch up to <<him>> and tackle <<him>> to the ground. While the <<person>> is recovering, you grab your clothes as quickly as you can.
+	<br><br>
+
+	"It was just a joke, lighten up," <<he>> says meekly. You are still completely naked in public, and a crowd has formed around you. They all stare as you dress yourself as quickly as possible, finally covering yourself.
+	<br><br>
+
+	You walk off, trying to stifle your embarrassment. <<clotheson>>
+	<br>
+
+	<<link [[Next|Starfish Street]]>><<endevent>><</link>>
+	<br>
+<<else>>
+
+	You think you are about to catch <<him>>, but outside the arcade, he slips into a crowd of people and disappears. You run past the crowd, trying to find <<him>>, but you see no sign of him or your clothes.
+	<br><br>
+
+	You spend a minute trying desperately to find out which direction the thief went, but you can no longer make <<him>> out amongst the many people milling about. Meanwhile, everyone can see your fully exposed <<genitals>>, <<if $player.breastssize gte 3>><<breasts>>,<</if>> and <<bottom>>. Hundreds of pictures must have been taken of you, and even more people are showing up and pulling out their phones. You try to find a way to escape.
+	<br><br>
+
+	Finally, you spot a gap in the crowd and run through. You run down the street, hearing laughter and shouts behind you. You sprint into the nearest alleyway and escape.
+	<<garousal>><<gstress>><<gtrauma>><<stress 6>><<trauma 6>><<arousal 600>><<fameexhibitionism 30 "pic">>
+	<br>
+
+	<<link [[Next|Industrial alleyways]]>><<endevent>><<ruined>><</link>>
+	<br>
+<</if>>

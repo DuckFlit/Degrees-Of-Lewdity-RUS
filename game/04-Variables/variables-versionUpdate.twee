@@ -3593,18 +3593,18 @@
 		<<set $objectVersion.specialClothes to 14>>
 	<</if>>
 
-	<<if $objectVersion.wardrobes lt 6 or $objectVersion.wardrobes is undefined>>
+	<<if $objectVersion.wardrobes lt 7 or $objectVersion.wardrobes is undefined>>
 		<<wardrobesUpdate>>
-		<<set $objectVersion.wardrobes to 6>>
+		<<set $objectVersion.wardrobes to 7>>
 	<</if>>
 
 	<<if $objectVersion.museumAntiques lte 14 and $museumAntiques.antiques.antiquewhitescrystal isnot undefined>>
 		<<run delete $museumAntiques.antiques.antiquewhitescrystal>>
 	<</if>>
-	<<if $objectVersion.museumAntiques lt 16 or $objectVersion.museumAntiques is undefined>>
+	<<if $objectVersion.museumAntiques lt 17 or $objectVersion.museumAntiques is undefined>>
 		/*Moved undefined checks for new antiques to the widget below*/
 		<<updateMuseumAntiques>>
-		<<set $objectVersion.museumAntiques to 15>>
+		<<set $objectVersion.museumAntiques to 16>>
 	<</if>>
 
 	<<pregnancyVar>>
@@ -4741,7 +4741,71 @@
 		<<set $blackjack.seenMarkedCardsSoFar to JSON.parse($blackjack.seenMarkedCardsSoFar)>>
 	<</if>>
 
-	<!--V0.4.6.0 Hawk update -->
+	<!-- V0.4.4.4 clothesPriceLewd being higher than 2 -->
+	<<if $clothesPriceLewd gt 2>><<set $clothesPriceLewd to 2>><</if>>
+
+	<!-- V0.4.4.4 ear slime typo fix -->
+	<<if !$objectVersion.earSlimeFix and $parasite.left_ear.name isnot "slime" and $parasite.right_ear.name isnot "slime" and $earSlime and ($earSlime.days or $earSlime.corruption or $earSlime.growth)>>
+		<<resetEarSlime>>
+		<<set $objectVersion.earSlimeFix to 1>>
+	<</if>>
+
+
+	<!-- Added the new hair growth pills data -->
+	<<if $sexStats.pills.pills && $sexStats.pills.pills["Hair Growth Formula"] is undefined>>
+		<<physicalAdjustmentsInit>>
+	<</if>>
+
+	<!-- V0.4.5.0 Handheld Items -->
+	<<if $worn.handheld is undefined>>
+		<<set $worn.handheld to clone(setup.clothes.handheld[0])>>
+		<<set $carried.handheld to clone(setup.clothes.handheld[0])>>
+		<<set $wardrobe.handheld to []>>
+		<<set $store.handheld to []>>
+		<<set $wear_handheld to "none">>
+		<<if ($player.gender is "f" and $background isnot "crossdresser") or
+		($player.gender is "m" and $background is "crossdresser") or
+		($player.gender is "h" and
+			(
+				(($player.gender_body is "m" or ($player.gender_body is "a" and $player.breastsize lte 3)) and $background is "crossdresser") or
+				(($player.gender_body is "f" or ($player.gender_body is "a" and $player.breastsize gt 3)) and $background isnot "crossdresser")
+			)
+		)>>
+			<<set $wardrobe.handheld.push(clone(setup.clothes.handheld[8]))>>
+			<<set $wardrobe.handheld.last().colour to "purple">>
+		<<else>>
+			<<set $wardrobe.handheld.push(clone(setup.clothes.handheld[8]))>>
+			<<set $wardrobe.handheld.last().colour to "blue">>
+		<</if>>
+	<</if>>
+	<<if $propEquipped is undefined>>
+		<<set $propEquipped to 0>>
+	<</if>>
+	<<if $balloonStand is undefined>>
+		<<set $balloonStand to {
+			open: false,
+			owner: "friendly",
+			freeDrink: false,
+			robin: {status: "unaffected", talked: false, knows: false}
+		}>>
+	<</if>>
+	<<if $robin is undefined>>
+		<<set $robin to {
+			timer: {hurt:0, customer:0},
+			hurtReason: "nothing",
+			moneyModifier: 0
+		}>>
+	<</if>>
+	<<if $outfit_update is undefined or $outfit_update lt 4>>
+		<<set $outfit_update to 4>>
+		<<for $_i to 0; $_i lt $outfit.length; $_i++>>
+			<<if $outfit[$_i].handheld is undefined>>
+				<<set $outfit[$_i].handheld to "naked">>
+			<</if>>
+		<</for>>
+	<</if>>
+
+	<!--V0.4.6.0 Great Hawk expansion -->
 	<<if $playerPregnancyEggLayingDisable is undefined>>
 		<<set $playerPregnancyEggLayingDisable to $playerPregnancyBeastDisable>>
 	<</if>>
@@ -4761,5 +4825,4 @@
 			tools: false
 		}>>
 	<</if>>
-
 <</widget>>

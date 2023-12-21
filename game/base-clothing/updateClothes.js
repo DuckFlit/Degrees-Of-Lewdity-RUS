@@ -201,6 +201,7 @@ function wardrobesUpdate() {
 		face: [],
 		feet: [],
 		hands: [],
+		handheld: [],
 		head: [],
 		legs: [],
 		lower: [],
@@ -323,6 +324,11 @@ function wardrobesUpdate() {
 		V.wardrobes.pirate = clone(defWardrobe);
 		V.wardrobes.pirate.unlocked = V.pirate_rank >= 0;
 		V.wardrobes.pirate.space = 5;
+	}
+	if (V.objectVersion.wardrobes < 7) {
+		Object.values(V.wardrobes).forEach(wardrobe => {
+			if (wardrobe && Array.isArray(wardrobe.upper) && !wardrobe.handheld) wardrobe.handheld = [];
+		});
 	}
 }
 DefineMacro("wardrobesUpdate", wardrobesUpdate);

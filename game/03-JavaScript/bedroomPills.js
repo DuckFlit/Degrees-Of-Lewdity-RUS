@@ -541,7 +541,54 @@ setup.pills = [
 		},
 		effects: [`<<awareness -1>>`, `<<control 10>>`, `<<set $medicated += 1>>`],
 	},
+	{
+		name: "Hair Growth Formula",
+		description:
+			"A spray containing Minoxidil and other ingredients to promote faster growth and healthier hair when applied directly to hair. Effective for 3 days on application.",
+		onTakeMessage: "You apply the spray. You hope it helps grow your hair quickly.",
+		warning_label:
+			"Warning: Please consult your doctor if you have an allergic reaction shortly after application. Contact your doctor immediately if you get the spray in your mouth or eyes.",
+		autoTake() {
+			return V.sexStats.pills["pills"][this.name].autoTake;
+		},
+		doseTaken() {
+			return V.sexStats.pills["pills"][this.name].doseTaken;
+		},
+		owned() {
+			return V.sexStats.pills["pills"][this.name].owned;
+		},
+		hpi_take_pills() {
+			return "Apply to hair";
+		},
+		hpi_doseTaken() {
+			if (V.sexStats.pills["pills"][this.name].doseTaken) {
+				return (
+					"Effective for " + V.sexStats.pills["pills"][this.name].doseTaken + " day" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "s" : "")
+				);
+			} else {
+				return "Not Applied";
+			}
+		},
+		hpi_take_every_morning() {
+			return this.autoTake() ? "Stop Applying it" : "Apply when required";
+		},
+		type: "hair",
+		subtype: "Hair Growth Formula",
+		shape: "spray",
+		overdose() {
+			return V.sexStats.pills["pills"][this.name].overdose;
+		},
+		icon: "img/misc/icon/hairspray.png",
+		display_condition() {
+			return this.owned() > 0 ? 1 : 0;
+		},
+		take_condition() {
+			return this.doseTaken() === 0 ? 1 : 0;
+		},
+		effects: [],
+	},
 ];
+// ToDo: figure out a means to allow applying the Hair Growth Formula to pubic hair as well
 
 function generateHomePillsInventory() {
 	$(function () {
@@ -737,12 +784,16 @@ function onTakeClick(itemName) {
 		case "Anti-Parasite Cream":
 			V.sexStats.pills["pills"][itemName].doseTaken += 14;
 			break;
+		case "Hair Growth Formula":
+			V.sexStats.pills["pills"][itemName].doseTaken += 3;
+			break;
 		default:
+			// Stat for total pills consumption
+			V.pillsConsumed = (V.pillsConsumed || 0) + 1;
 			V.sexStats.pills["pills"][itemName].doseTaken += 1;
 			break; // Stat for specific pill consumptionbreak;
 	}
 
-	V.pillsConsumed = typeof V.pillsConsumed === "undefined" || V.pillsConsumed == null ? 1 : V.pillsConsumed + 1; // Stat for total pills consumption
 	for (const item of setup.pills) {
 		if (item.name === itemName) {
 			for (const widget of item.effects) // run the widgets associated with a pill
@@ -752,6 +803,7 @@ function onTakeClick(itemName) {
 			if (item.doseTaken() > 1 && item.name.contains("blocker") === false) {
 				switch (item.type) {
 					case "parasite":
+					case "hair":
 						break;
 					case "pregnancy":
 						V.overdosePillsTaken = item.name;
@@ -938,6 +990,7 @@ function resetAllDoseTaken() {
 			case "Anti-Parasite Cream":
 			case "fertility booster":
 			case "contraceptive":
+			case "Hair Growth Formula":
 				if (V.sexStats.pills["pills"][pill].doseTaken > 0) {
 					V.sexStats.pills["pills"][pill].doseTaken--;
 				}

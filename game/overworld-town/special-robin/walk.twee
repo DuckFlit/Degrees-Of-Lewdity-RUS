@@ -91,32 +91,97 @@
 		You walk together to the High Street. The cinema stands beside the shopping centre. Three films are showing.
 		<br><br>
 	<</if>>
-	<<link [[Superhero (1:30)|Robin Cinema Superhero]]>><<pass 90>><<stress -12>><</link>><<lstress>>
+	<<link [[Superhero (1:30)|Robin Cinema Popcorn]]>><<set $phase to 0>><<pass 90>><<stress -12>><</link>><<lstress>>
 	<br>
-	<<link [[Romance (1:30)|Robin Cinema Romance]]>><<pass 90>><<stress -12>><</link>><<lstress>>
+	<<link [[Romance (1:30)|Robin Cinema Popcorn]]>><<set $phase to 1>><<pass 90>><<stress -12>><</link>><<lstress>>
 	<br>
-	<<link [[Horror (1:30)|Robin Cinema Horror]]>><<pass 90>><<stress 6>><</link>><<gstress>>
+	<<link [[Horror (1:30)|Robin Cinema Popcorn]]>><<set $phase to 2>><<pass 90>><<stress 6>><</link>><<gstress>>
 	<br>
 <</if>>
+
+:: Robin Cinema Popcorn
+<<set $outside to 0>><<set $location to "town">><<effects>>
+<<switch $phase>>
+	<<case 1>>
+		<<set _popcornIntro to "\"Can we get popcorn?\" Robin asks as you buy the tickets. \"It's not proper without popcorn.\"">>
+		<<set _theatreLink to "Romance">>
+	<<case 2>>
+		<<set _popcornIntro to "Robin's face turns white. \"A scary film?\" <<he>> asks. \"I'm not good with scary. Can we at least get some popcorn? It might make it less scary.\"">>
+		<<set _theatreLink to "Horror">>
+	<<default>>
+		<<set _popcornIntro to "\"I wanted to see this,\" Robin says as you buy the tickets. <<He>> bobs on <<his>> heels. \"Can we get popcorn?\"">>
+		<<set _theatreLink to "Superhero">>
+<</switch>>
+_popcornIntro
+<br><br>
+<<if $popcorn is 1>>
+	<<if $speech_attitude is "meek">>
+		"Oh, yes!" You clap your hands and pull out the popcorn you purchased from the balloon stand. "I bought some popcorn earlier and was saving it for a special occasion. I'm certain it's cheaper than here."
+	<<elseif $speech_attitude is "bratty">>
+		"Hell yeah, we can!" You grin and pull out the popcorn you purchased from the balloon stand. "Check out what I smuggled in. Fuck concession stand prices, am I right?"
+	<<else>>
+		"Absolutely." You nod and pull out the popcorn you purchased from the balloon stand. "I bought some popcorn earlier to save a few quid."
+	<</if>>
+	<br><br>
+	"Did you get that from that balloon stand <<print Time.season is "winter" ? " in the park" : "on the beach">>?
+	<<if $balloonStand.robin.status is "helped">>
+		The person who runs it seems nice. I'm happy to support another entrepreneur." Robin smiles.
+	<<elseif $balloonStand.robin.status is "sabotaged">>
+		<<if $balloonStand.robin.knows is false>>
+			Why would you give them your custom?" Robin asks, sounding wounded. "I'm struggling as is, and I don't need my <<print  $robinromance is 1 ? "<<girlfriend>>" : "best friend">> shopping at the competitor."
+		<<else>>
+			You're shopping there too?" Robin asks, sounding aghast. "Giving them business ideas wasn't enough?"
+		<</if>>
+		<br><br>
+		It takes several minutes to calm Robin down, but <<he>> begrudgingly acknowledges that you meant no harm. <<npcincr Robin love -5>><<npcincr Robin dom -3>>
+	<<else>>
+		I'm still a little wary about sharing the beach with them, but their popcorn does smell delicious..." Robin gives you a tentative smile.
+	<</if>>
+	<br><br>
+	<<socialiseicon "cinema">><<link [[Enter theatre|"Robin Cinema " + _theatreLink]]>><<set $phase2 to "popcorn">><</link>>
+
+<<else>>
+	<<if $money gte 1000>>
+		<<foodicon "popcorn">><<link [[Buy popcorn (£10)|"Robin Cinema " + _theatreLink]]>><<set $money -= 1000>><<set $popcorn += 1>><<set $phase to "purchase">><<set $phase2 to "popcorn">><</link>><br>
+		<<socialiseicon "cinema">><<link [[Enter theatre|"Robin Cinema " + _theatreLink]]>><</link>>
+	<<else>>
+		<<if $speech_attitude is "meek">>
+			"I-I'm so sorry, but I can't afford it..." You bite your lip and glance away from Robin.
+		<<elseif $speech_attitude is "bratty">>
+			You make a show of patting yourself down. "Yeah, I got nothing on me. Buy the popcorn yourself if you want it that bad."
+		<<else>>
+			"I'm sorry," you say. "I can't afford it."
+		<</if>>
+		<br><br>
+		<<if $robinmoney gte 10>>
+			"That's okay," Robin assures you. "My treat!" <<He>> purchases a bag of popcorn for the two of you to share. <<set $robinmoney -= 10>><<set $popcorn += 1>>
+			<br><br>
+			<<socialiseicon "cinema">><<link [[Enter theatre|"Robin Cinema " + _theatreLink]]>><<set $phase2 to "popcorn">><</link>>
+		<<else>>
+			"Oh." Robin looks crestfallen for a moment, but <<he>> quickly shakes it off. "It's okay! I guess I shouldn't've brought it up, because I can't afford it either." <<He>> gives a sheepish little laugh.
+			<br><br>
+			<<socialiseicon "cinema">><<link [[Enter theatre|"Robin Cinema " + _theatreLink]]>><</link>>
+		<</if>>
+	<</if>>
+<</if>>
+
 
 :: Robin Cinema Superhero
 
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $phase is "purchase">>You purchase a bag of overpriced, if tasty, popcorn.<</if>>
+<<if $phase2 is "popcorn">><<wearProp "popcorn">><</if>>
 
-"I wanted to see this," Robin says as you buy the tickets. <<He>> bobs on <<his>> heels. "Can we get popcorn?"
-<br><br>
-
-<<He>> runs ahead of you into the theatre. You find <<him>> waiting by the attendant looking sheepish. You had the tickets. Once through, <<he>> runs ahead again, finding two free seats near the middle of the room. <<He>> waves at you.
-<br><br>
+Robin runs ahead of you into the theatre. You find <<him>> waiting by the attendant looking sheepish. You had the tickets. Once through, <<he>> runs ahead again, finding two free seats near the middle of the room. <<He>> waves at you.
 
 The film soon starts. It's pretty good. Robin enjoys it, and laughs along with the rest of the audience.
 <br><br>
 
 <<if $robinromance is 1>>
-	<<link [[Fondle|Robin Cinema Fondle]]>><<npcincr Robin lust 1>><</link>><<promiscuous1>><<glust>>
+	<<link [[Fondle|Robin Cinema Fondle]]>><<npcincr Robin lust 1>><</link>><<promiscuous1>><<handheldon>><<glust>>
 	<br>
 <</if>>
-<<link [[Keep watching (0:15)|Robin Cinema Watch]]>><<pass 15>><</link>>
+<<link [[Keep watching (0:15)|Robin Cinema Watch]]>><<pass 15>><<handheldon>><</link>>
 <br>
 
 :: Robin Cinema Fondle
@@ -168,6 +233,7 @@ You watch the film to its satisfying conclusion. Robin doesn't say much on the w
 
 :: Robin Cinema Watch
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $phase2 is "popcorn">><<popcornEat>><</if>>
 
 <<if $phase is 1>>
 	You watch the film to its satisfying conclusion. Robin talks about it the entire way home. <<He>> doesn't mention your probing hand, though <<he>> looks flushed.
@@ -182,9 +248,8 @@ You watch the film to its satisfying conclusion. Robin doesn't say much on the w
 
 :: Robin Cinema Romance
 <<set $outside to 0>><<set $location to "town">><<effects>>
-
-"Can we get popcorn?" Robin asks as you buy the tickets. "It's not proper without popcorn."
-<br><br>
+<<if $phase is "purchase">>You purchase a bag of overpriced, if tasty, popcorn.<</if>>
+<<if $phase2 is "popcorn">><<wearProp "popcorn">><</if>>
 
 <<if $robinromance is 1>>
 	<<set $dateCount.Total++>><<set $dateCount.Robin++>>
@@ -268,6 +333,7 @@ No one in the room seems to notice what you're up to.
 
 :: Robin Cinema Frisky Leave
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $phase2 is "popcorn">><<popcornEat>><</if>>
 
 Robin gasps as you pull yourself away. You spend the short remainder of the film in each other's arms. <<Hes>> paying more attention to you than <<he>> is to the screen.
 <br><br>
@@ -276,6 +342,7 @@ Robin gasps as you pull yourself away. You spend the short remainder of the film
 
 :: Robin Cinema Floor
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $phase2 is "popcorn">><<popcornEat>><</if>>
 
 You pull away from Robin and steal a quick glance to make sure nobody is watching. Everyone is completely oblivious to the lewd act that's about to happen in the back of the theatre. Robin eyes you with longing, already breathless with arousal.
 <br><br>
@@ -358,6 +425,7 @@ Hidden by the unoccupied row of seats in front of you, the two of you have free 
 
 :: Robin Cinema Bush
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $phase2 is "popcorn">><<popcornEat>><</if>>
 
 Applause rings through the showroom as the credits roll. Robin can't look away from you. The two of you leave the showroom, hand-in-hand.
 <br><br>
@@ -609,6 +677,7 @@ You leave the theatre, hand-in-hand. <<He>> looks frustrated, and clings to you 
 
 :: Robin Cinema Wet
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $phase2 is "popcorn">><<popcornEat>><</if>>
 The two of you leave the theatre, hand-in-sticky-hand. Robin clings to you tight on the walk home. You can still smell the sugary substance, and you feel an urge to clean <<him>>. Your cat ears twitch.
 <br><br>
 Robin breaks the silence as you pass through the park. "Can we rest for a moment?" You nod, following the path until you come across a bench.
@@ -665,12 +734,14 @@ You purr as you pull your head away, only to quickly re-engage and lap up Robin'
 <br><br>
 The two of you fix your clothing. <<He>> clings to you tight, only letting out the occasional sound of sweet, blissful relief. The walk home is silent.
 <br><br>
+<<if $phase2 is "popcorn">><<popcornEat>><</if>>
 
 <<link [[Next|Robin Options]]>><</link>>
 <br>
 
 :: Robin Cinema Romance Watch
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $phase2 is "popcorn">><<popcornEat>><</if>>
 
 Robin applauds when the credits roll, and talks about the film on the way home.
 <br><br>
@@ -682,6 +753,7 @@ Robin applauds when the credits roll, and talks about the film on the way home.
 
 :: Robin Cinema Flirt
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<silently>><<handheldon>><</silently>>
 
 You quote one of the film's leads, from the part right before the two protagonists first kiss. Robin smiles and takes the other role. You think you get the lines right. <<He>> says the final line.
 <br><br>
@@ -703,6 +775,7 @@ You quote one of the film's leads, from the part right before the two protagonis
 
 :: Robin Cinema Listen
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<silently>><<handheldon>><</silently>>
 
 You listen to Robin talk about the film. <<He>> enjoyed it more than you, and <<his>> delight is infectious. Maybe it wasn't so bad.
 <br><br>
@@ -712,11 +785,10 @@ You listen to Robin talk about the film. <<He>> enjoyed it more than you, and <<
 
 :: Robin Cinema Horror
 <<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $phase is "purchase">>You purchase a bag of overpriced, if tasty, popcorn.<</if>>
+<<if $phase2 is "popcorn">><<wearProp "popcorn">><</if>>
 
-Robin's face turns white. "A scary film?" <<he>> asks. "I'm not good with scary."
-<br><br>
-
-You buy the tickets and enter the theatre. Robin is hesitant to follow. <<He>> sits beside you, but when the person sat behind <<him>> nudges <<his>> seat <<he>> leaps up with a sharp scream.
+You buy the tickets and enter the theatre. Robin is hesitant to follow. <<He>> sits beside you, but when the person sat behind <<him>> nudges <<his>> seat <<he>> leaps up with a sharp scream. <<if $phase2 is "popcorn">>Popcorn spills everywhere.<</if>>
 <br><br>
 
 <<link [[Comfort (0:45)|Robin Cinema Comfort]]>><<pass 45>><<npcincr Robin love 1>><<stress 6>><</link>><<gstress>><<glove>>
@@ -731,6 +803,7 @@ You put your arms around Robin and ease <<him>> back into <<his>> seat. "It's on
 <br><br>
 
 "I know," <<he>> says. <<He>> doesn't sound convinced.
+<<popcornSpill>>
 <br><br>
 
 The film starts. Robin screams and wraps <<his>> arms around you whenever something scary happens. By the climax <<he>> is glued to your side, <<his>> head buried in your shoulder. <<He>> doesn't seem relieved even when the film is over.
@@ -747,6 +820,7 @@ The film starts. Robin screams and wraps <<his>> arms around you whenever someth
 
 "Come on," you say. "Bailey's scarier than any movie." Robin laughs and sits down.
 <br><br>
+<<popcornSpill>>
 
 The film starts. It's quite frightening. You think you're getting used to it when it catches you off guard. Instinct takes over, and you grope for Robin's hand. <<takeHandholdingVirginity "Robin" "romantic">>
 <br><br>

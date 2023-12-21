@@ -346,7 +346,7 @@ function weekPassed() {
 		fragment.append(wikifier("robinPunishment", "docks"));
 		V.robineventnote = 1;
 	}
-	V.robinmoney += 300;
+	V.robinmoney += 300 + V.robin.moneyModifier;
 	V.compoundcentre = 0;
 	if (V.edenfreedom >= 1 && V.edenshopping === 2) V.edenshopping = 0;
 	if (V.loft_kylar) V.loft_spray = 0;
@@ -374,6 +374,7 @@ function weekPassed() {
 	if (V.brothelVending) {
 		if (V.brothelVending.condoms === 0 && V.brothelVending.lube === 0) V.brothelVending.weeksEmpty += 1;
 		V.brothelVending.weeksRent++;
+		if (V.brothelVending.weeksEmpty >= 4); V.brothelVending.status = "sold";
 	}
 
 	fragment.append(wikifier("world_corruption", "soft", V.world_corruption_hard));
@@ -477,6 +478,10 @@ function dayPassed() {
 			V.estatePersistent.newDeckTimer--;
 		}
 	}
+	if (V.balloonStand.robin.status === "closed") V.balloonStand.robin.status = "sabotaged";
+	if (V.robin.timer.customer >= 1) V.robin.timer.customer--;
+	if (V.robin.timer.hurt >= 1) V.robin.timer.hurt--;
+	if (V.robin.timer.hurt === 0) V.robin.hurtReason = "nothing";
 
 	if (numberOfEarSlime()) {
 		// Daily Corruption
@@ -694,9 +699,12 @@ function dayPassed() {
 	}
 
 	if (V.pirate_journey > 1) {
-		V.pirate_journey--;	
+		V.pirate_journey--;
 	} else {
 		delete V.pirate_journey;
+	}
+	if (V.pirate_attack) {
+		delete V.pirate_attack;
 	}
 
 	return fragment;
@@ -721,7 +729,7 @@ function hourPassed(hours) {
 		if (V.ejactrait >= 1) V.stress -= (V.goocount + V.semencount) * 10;
 		if (V.kylarwatched) V.kylarwatchedtimer--;
 		if (V.parasite.nipples.name) fragment.append(wikifier("milkvolume", 1));
-		if (V.worn.head.name === "hairpin") {
+		if ((V.worn.head.name === "hairpin" && random(0, 100) >= 75) || V.sexStats.pills.pills["Hair Growth Formula"].doseTaken) {
 			V.hairlength++;
 			V.fringelength++;
 			fragment.append(wikifier("calchairlengthstage"));
@@ -1658,7 +1666,7 @@ function passWater(passMinutes) {
 		if (V.lowerwet) fragment.append(wikifier("lowerwet", -passMinutes * 2));
 		if (V.underlowerwet) fragment.append(wikifier("underlowerwet", -passMinutes * (V.worn.lower.type.includes("naked") ? 2 : 1)));
 		if (V.underupperwet) fragment.append(wikifier("underupperwet", -passMinutes * (V.worn.upper.type.includes("naked") ? 2 : 1)));
-	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof")) {
+	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
 		if (!V.worn.upper.type.includes("naked") && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
 			fragment.append(wikifier("upperwet", passMinutes));
 		}
@@ -1870,12 +1878,13 @@ function earSlimeDaily(passageEffects = false) {
 				V.worn.genitals.integrity = clothingData("genitals", V.worn.genitals, "integrity_max");
 			}
 		}
-		if (V.earSlime.forcedCommando && V.earSlime.forcedCommando > 0) {
-			V.earSlime.forcedCommando--;
-		}
 		if (V.earSlime.forcedDressing && V.earSlime.forcedDressing.days > 0) {
 			V.earSlime.forcedDressing.days--;
 		}
+	}
+
+	if (V.earSlime.forcedCommando && V.earSlime.forcedCommando > 0) {
+		V.earSlime.forcedCommando--;
 	}
 }
 DefineMacro("earSlimeDaily", earSlimeDaily);

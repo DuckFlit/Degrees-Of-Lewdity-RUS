@@ -136,6 +136,8 @@ Tulips grow in great patches near the riverbank.
 		<<endevent>>
 		<<link [[Next|Park]]>><<set $eventskip to 1>><</link>>
 		<br>
+	<<elseif _robin_location is "park" and $exposed lte 0 and $balloonStand.open is true and $balloonStand.robin.status is "unaffected">>
+		<<balloonRobinIntro>>
 	<<else>>
 		<<if $options.mapTop is true>>
 			<<map "park">>
@@ -215,6 +217,16 @@ Tulips grow in great patches near the riverbank.
 				<<runicon>><<link [[Go for a run (0:30)|Park Run]]>><<pass 30>><<tiredness 3>><<stress -3>><<athletics 3>><<slimeEventEnd "running">><</link>><<gtiredness>><<gathletics>><<lstress>>
 			<</if>>
 		<</if>>
+		<<if Time.dayState is "day" and (($weather isnot "rain" and $weather isnot "snow") or $worn.handheld.type.includes("rainproof"))>>
+			<<if $milkshake gte 1 and $exposed lte 0>>
+				<<foodicon "milkshake">><<link [[Drink your milkshake (0:10)|Beach Milkshake]]>><<pass 10>><<set $milkshake -= 1>><<stress -5>><</link>><<lstress>>
+				<br>
+			<</if>>
+			<<if $popcorn gte 1 and $exposed lte 0>>
+				<<foodicon "popcorn">><<link [[Eat your popcorn (0:10)|Balloon Consume]]>><<pass 10>><<set $popcorn -= 1>><<wearProp "popcorn">><<trauma -3>><<set $phase to "park">><</link>><<ltrauma>>
+				<br>
+			<</if>>
+		<</if>>
 		<<if Time.dayState is "night" and $exhibitionism gte 55 and $daily.ex.fountain is undefined>>
 			<br>
 			<<parkicon "fountain">><<link [[Bathe in the fountain (0:10)|Park Fountain]]>><<set $daily.ex.fountain to 1>><</link>><<exhibitionist4>>
@@ -229,7 +241,7 @@ Tulips grow in great patches near the riverbank.
 				<<link [[Cross flyover to the industrial district (0:05)|Flyover Ex Undies]]>><</link>><<if $daily.ex.flyover is undefined>><<exhibitionist3>><</if>>
 			<</if>>
 		<<else>>
-			<br>
+			<br><br>
 			<<add_link "Travel<br>">><<hideDisplay>>
 			<<high>>
 			<<starfish>>

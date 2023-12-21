@@ -290,7 +290,7 @@ You are in the main hall of the temple. Stone walls and pillars tower into darkn
 					<<else>>
 						<span class="teal">Sydney is staying overnight.</span>
 					<</if>>
-			<</switch>>		
+			<</switch>>
 		<<elseif !$daily.sydney.offSchedule and (_sydney_location_message is "shop" or _sydney_location_message is "home" or _sydney_location_message is "rehearsal")>>
 			<span class="blue">You don't see Sydney around.</span>
 			<br>
@@ -966,11 +966,11 @@ You look away from the <<monk>>, and <<he>> continues down the aisle.
 		<<danubeicon>><<link [[Inform Jordan of what you found beneath the Danube manor|Temple Ritual Inform]]>><<set $jordan_ritual_dance to 3>><</link>>
 		<br>
 	<</if>>
-	<<if $spear_vessel is "sea">>
+	<<if $spear_vessel is "sea" and !($temple_spear_mission gte 2)>>
 		<<ind>><<link [[Inform Jordan that the spear was lost at sea|Temple Spear Sea]]>><</link>>
 		<br>
 	<</if>>
-	<<if $spear_vessel is "Zephyr">>
+	<<if $spear_vessel is "Zephyr" and !($temple_spear_mission gte 2)>>
 		<<ind>><<link [[Inform Jordan that the spear was taken by pirates|Temple Spear Zephyr]]>><</link>>
 		<br>
 	<</if>>
@@ -984,7 +984,7 @@ You look away from the <<monk>>, and <<he>> continues down the aisle.
 Jordan kneels once more, but this time <<he>> feels along the ground beside it. <<He>> pries loose a stone brick, and reaches into a revealed chamber. A bell is lifted out without a sound. The priest holds it carefully as <<he>> produces a baton from <<his>> robe.
 <br><br>
 
-The baton strikes the bell. It only makes a gentle jingle, but most of the resonance doesn't pass through the air. Jordan's arm quivers, and you feel it enter your feet, rooting you to the spot and traveling up your spine as a shiver of ecstasy.
+The baton strikes the bell. It only makes a gentle jingle, but most of the resonance doesn't pass through the air. Jordan's arm quivers, and you feel it enter your feet, rooting you to the spot and travelling up your spine as a shiver of ecstasy.
 <br><br>
 
 You hear a heavy door open. Three <<monks_and_nuns>> ascend a staircase, and gaze at the spear with naked awe. Until Jordan coughs. One of them, a <<person2>><<monk>>, takes the spear with careful hands.
@@ -1006,7 +1006,7 @@ Jordan listens with an unreadable expression as you tell <<him>> of how you retr
 You hear a door open, and <<monk>> emerges from a staircase, leading up from some underground area. Jordan whispers something into <<his>> ear, and the <<monk>> leaves with an anxious haste.
 <br><br>
 <<person1>>
-"Forgive me child," Jordan says once alone again. "Despite the setback, you managed to retrieve the spear, and at great danger to your person. Please, allow me to extend you the temple's gratitude." <<He>> bows, then turns away.<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<grace>><<grace 3>><</if>>
+"Forgive me child," Jordan says once alone again. "Despite the setback, you managed to retrieve the spear, and at great danger to your person. Please, allow me to extend you the temple's gratitude." <<He>> bows, then turns away.<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<gggrace>><<grace 3>><</if>>
 <br><br>
 
 <<link [[Next|Temple]]>><<set $temple_spear_mission to 2>><<temple_spear_mission_end>><<endevent>><</link>>
@@ -1023,7 +1023,7 @@ Jordan listens with an unreadable expression as you tell <<him>> of how you retr
 You hear a door open, and <<monk>> emerges from a staircase, leading up from some underground area. Jordan whispers something into <<his>> ear, and the <<monk>> leaves with an anxious haste.
 <br><br>
 <<person1>>
-"Forgive me child," Jordan says once alone again. "Despite the setback, you managed to retrieve the spear, and at great danger to your person. Please, allow me to extend you the temple's gratitude." <<He>> bows, then turns away.<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<grace>><<grace 3>><</if>>
+"Forgive me child," Jordan says once alone again. "Despite the setback, you managed to retrieve the spear, and at great danger to your person. Please, allow me to extend you the temple's gratitude." <<He>> bows, then turns away.<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">><<gggrace>><<grace 3>><</if>>
 <br><br>
 
 <<link [[Next|Temple]]>><<set $temple_spear_mission to 2>><<temple_spear_mission_end>><<endevent>><</link>>
@@ -1151,11 +1151,19 @@ You tell Jordan you were attacked. <<He>> listens without a word, only speaking 
 <<else>>
 	<<if playerBellyVisible()>>
 		<<setKnowsAboutPregnancy("pc", "Jordan")>>
-		"We should remove yours immediately. It's unsafe to wear one whilst pregnant."
+		<<if playerChastity("vagina") and $worn.genitals.name is "chastity belt">>
+			"We should remove yours immediately. It's unsafe to wear one whilst pregnant."
+		<<elseif playerChastity("vagina")>>
+			"You should get yours removed immediately. However, we can only remove temple-provided devices. You'll need to speak to the keyholder or find another method of removal."
+		<<else>>
+			"You should be safe to keep yours on, it won't hinder the pregnancy."
+		<</if>>
 	<<elseif $player.virginity.penile is true and $player.virginity.vaginal is true>>
 		"It is written that we should never remove the chastity belt from a virgin. However, if you really want it removed, we will overlook that rule in return for an £80 donation."
+	<<elseif ["chastity belt", "chastity cage"].includes($worn.genitals.name)>>
+		"We can remove your device if you like. Once it's off however, you'll need to pay again to have another put on."
 	<<else>>
-		"We can remove your belt if you like. Once it's off however, you'll need to pay again to have another put on."
+		"We can only remove temple-provided devices. You'll need to speak to the keyholder or find another method of removal."
 	<</if>>
 	<br><br>
 
@@ -1231,29 +1239,38 @@ You remove your clothing, wishing it wasn't quite so cold in here. Jordan rubs w
 	<</if>>
 <</if>>
 <<if $player.penisExist>>
-	<<He>> holds your penis between both forefingers, and stares at it intently, gently manipulating the length. You try to distract yourself, but you soon feel it hardening under <<his>> scrutiny.
+	<<if playerChastity("penis") and $worn.genitals.origin isnot "temple">>
+		<<He>> holds your $worn.genitals.name between both forefingers, gently manipulating it while <<he>> inspects it. You try to distract yourself, but soon feel your <<penis>> attempt to harden under <<his>> scrutiny.
+	<<else>>
+		<<He>> holds your penis between both forefingers, and stares at it intently, gently manipulating the length. You try to distract yourself, but you soon feel it hardening under <<his>> scrutiny.
+	<</if>>
 <</if>>
 <<if $player.vaginaExist>>
-	<<He>> places <<his>> thumbs against your pussy and gently opens your
-	<<if setup.bodyliquid.combined("vagina") gte 2>>
-		<<if setup.bodyliquid.combined("vagina") gte 6>>
-			lips. Cum bursts out, spraying across Jordan's face and running in streams down both <<his>> arms.
-			<<He>> falls back in shock, hurriedly wiping cum from <<his>> eyes and mouth.
-			<br>
-			<<He>> looks at you.
-		<<elseif setup.bodyliquid.combined("vagina") gte 4>>
-			lips. A thick stream of lewd fluids gushes out. Some runs down Jordan's arm and quickly disappears up <<his>> sleeve.
-			<<He>> jumps back with a yelp, shaking <<his>> arms in alarm.
-			<br>
+	<<if playerChastity("vagina") and $worn.genitals.origin isnot "temple">>
+		<<He>> places <<his>> thumbs against the side of your $worn.genitals.name and attempts to inspect your pussy.
+		<br>
+	<<else>>
+		<<He>> places <<his>> thumbs against your pussy and gently opens your
+		<<if setup.bodyliquid.combined("vagina") gte 2>>
+			<<if setup.bodyliquid.combined("vagina") gte 6>>
+				lips. Cum bursts out, spraying across Jordan's face and running in streams down both <<his>> arms.
+				<<He>> falls back in shock, hurriedly wiping cum from <<his>> eyes and mouth.
+				<br>
+				<<He>> looks at you.
+			<<elseif setup.bodyliquid.combined("vagina") gte 4>>
+				lips. A thick stream of lewd fluids gushes out. Some runs down Jordan's arm and quickly disappears up <<his>> sleeve.
+				<<He>> jumps back with a yelp, shaking <<his>> arms in alarm.
+				<br>
+			<<else>>
+				lips. Cum runs out in a thin stream down your legs. Jordan withdraws <<his>> hands in surprise.
+				<br>
+			<</if>>
+			"That's a bad sign," <<he>> mutters.
+			<br><br>
 		<<else>>
-			lips. Cum runs out in a thin stream down your legs. Jordan withdraws <<his>> hands in surprise.
+			lips, giving <<him>> a clear view inside.
 			<br>
 		<</if>>
-		"That's a bad sign," <<he>> mutters.
-		<br><br>
-	<<else>>
-		lips, giving <<him>> a clear view inside.
-		<br>
 	<</if>>
 	You don't want to admit it, but your body responds lewdly to being examined like this.
 <</if>>
@@ -2634,7 +2651,7 @@ You hear a set of doors open behind you, followed by footsteps and laughter.
 	<<saveNPC 0 "bishop">>
 <</if>>
 <<person1>>
-Stern-faced <<monks>> cluster you and the other victims together. 
+Stern-faced <<monks>> cluster you and the other victims together.
 <<if $temple_confessor_intro>>
 	<<loadNPC 1 "bishop_right_hand">><<loadNPC 2 "bishop_left_hand">>
 	The bishop stands in the middle of the room, flanked by <<his>> two usual companions.
@@ -2819,7 +2836,7 @@ Then <<he>> sighs with relief, and pulls away.
 	"It is not the right day child," Jordan says. "Return on <span class="gold">Sunday at <<ampm 20>>.</span> The vigil will last all night."
 	<br><br>
 	<<link [[Next|Temple]]>><<endevent>><<set $temple_vigil_asked to 1>><</link>>
-	<br>	
+	<br>
 <<elseif Time.hour isnot 20>>
 	"It is not the right hour child," Jordan says. "Return at <span class="gold"><<ampm 20>>.</span> The vigil will last all night. Make sure you are well-rested before hand."
 	<br><br>
@@ -3273,7 +3290,7 @@ Your skin stings. Overpowering heat surrounds you. You feel your skin blister, m
 		<span class="green">But these bodies are mere shells.</span> The fire frees you. You suffer no fear because you have no fear.
 		<<gwillpower>><<willpower 1>><<wash>>
 		<br><br>
-		
+
 		<<link [[Next|Temple Vigil 12]]>><</link>>
 		<br>
 	<<else>>
@@ -3289,7 +3306,7 @@ Your skin stings. Overpowering heat surrounds you. You feel your skin blister, m
 		<span class="green">But this body is but a shell.</span> The fire frees you. You suffer no fear because you have no fear.
 		<<gwillpower>><<willpower 1>><<wash>>
 		<br><br>
-		
+
 		<<link [[Next|Temple Vigil 12]]>><</link>>
 		<br>
 	<<else>>

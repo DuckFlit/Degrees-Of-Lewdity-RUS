@@ -49,7 +49,6 @@
 						if (dailyPurity + V.featsPurityBoost === 0) return "You are not gaining purity daily.";
 						return "You are losing purity daily.";
 					},
-					text: "You are gaining purity daily.",
 				},
 				{
 					name: "Impurity boost",
@@ -107,14 +106,29 @@
 					colour: "lewd",
 					has: $earSlime.focus and $earSlime.focus isnot "none",
 					text: () => {
+						let result;
 						switch ($earSlime.focus) {
 							case "pregnancy":
-								return "You chose the path of pregnancy, causing the ear slime to amplify traits related to becoming pregnant, while weakening other traits.";
+								result = "You chose the path of pregnancy, causing the ear slime to amplify traits related to becoming pregnant, while weakening other traits.";
+								break;
 							case "mixed":
-								return "You chose to walk the path between pregnancy and impregnation, causing the ear slime to amplify traits related to both, to a lesser degree.";
+								result = "You chose to walk the path between pregnancy and impregnation, causing the ear slime to amplify traits related to both, to a lesser degree.";
+								break;
 							case "impregnation":
-								return "You chose the path of impregnation, causing the ear slime to amplify traits related to impregnating others, while weakening other traits.";
+								result = "You chose the path of impregnation, causing the ear slime to amplify traits related to impregnating others, while weakening other traits.";
+								break;
 						}
+						let parasites = [];
+						if ($parasite.breasts and $parasite.breasts.name is "parasite") {
+							if ($player.breastsize gte 1) {
+								parasites.push("breasts");
+							} else {
+								parasites.push("chest");
+							}
+						}
+						if (($parasite.clit and $parasite.clit.name is "parasite") or ($parasite.penis and $parasite.penis.name is "parasite")) parasites.push("genitals");
+						if (parasites.length) result += ` Its parasites cover your ${formatList(parasites, "and", true)} like clothing.`;
+						return result;
 					}
 				},
                 {
@@ -443,6 +457,14 @@
 		{
 			title: "Medicinal Traits",
 			traits: [
+				{
+					name: "Hair Growth Formula",
+					colour: "green",
+					has: _pills and _pills["Hair Growth Formula"] and _pills["Hair Growth Formula"].doseTaken,
+					text: () => {
+						return `A hair growth formula has been applied, to encourage faster hair growth. ${_pills["Hair Growth Formula"].doseTaken} day${_pills["Hair Growth Formula"].doseTaken is 1 ? "" : "s"} remaining.`;
+					}
+				},
 				{
 					name: "Anti-Parasite Cream",
 					colour: "green",
