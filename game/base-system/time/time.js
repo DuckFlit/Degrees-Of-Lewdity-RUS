@@ -1634,7 +1634,7 @@ function dailyFarmEvents() {
 
 	delete V.farm_work;
 	delete V.farm_count;
-	delete V.farm_naked;
+	if (V.farm_stage < 7) delete V.farm_naked;
 	delete V.farm_event;
 	delete V.farm_end;
 	delete V.alex_breakfast;
