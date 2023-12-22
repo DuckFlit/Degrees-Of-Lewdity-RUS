@@ -143,60 +143,67 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 <</if>>
 
 <<if $brothelVending>>
-	<<if $brothelVending.status is "asked" or $brothelVending.status is "sold">>
+	<<if $brothelVending.status is "asked" or ($brothelVending.status is "sold" and $brothelVending.weeksEmpty lt 4)>>
 		<<condomicon "machine">><span class="gold">You can buy a vending machine at the shopping center to set up here.</span>
+		<br><br>
+	<<elseif $brothelVending.status is "sold" and $brothelVending.weeksEmpty gte 4>>
+		<<condomicon "machine">><span class="gold">Your vending machine has been sold. You should talk to Briar.</span>
 		<br><br>
 	<<elseif $brothelVending.status is "bought">>
 		<<condomicon "machine">> <<link [[Install the vending machine (0:30)|Brothel Dressing Room]]>><<set $brothelVending.status to "set">><<set $weekly.brothelVMCollect to true>><<pass 30>><</link>>
 		<br><br>
 	<<elseif $brothelVending.status is "set">>
-		<<if !($brothelVending.products % 2) and $condomLvl gte 1>>
-			<<condomicon>>You can talk with the <span class="gold">pharmacy nurse</span> about reselling condoms.
-			<br><br>
-		<</if>>
-		<<if $brothelVending.products lt 2 and $adultshopunlocked>>
-			<<sextoysicon "lube">>You can talk with <span class="gold">Sirris</span> about reselling lube.
-			<br><br>
-		<</if>>
 		<<if $brothelVending.products>>
-			You check the vending machine's stock.<br>
-			<<if $brothelVending.products % 2>>
-				<<if $brothelVending.condoms lte 1>>
-					<<condomicon>> The condom dispenser is <span class="red">empty.</span> You can get them at the pharmacy.
-					<br>
-				<<else>>
-					<<if $brothelVending.condoms gte 200>>
-						<<condomicon>> The condom dispenser is <span class="green">full.</span>
-					<<else>>
-						<<condomicon>> <<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
-						You count <<number $brothelVending.condoms>> <<print $brothelVending.condoms is 1 ? "pack" : "packs">> of condoms. There is room for <<number $brothelVending.condomsToRefill>> <<print $brothelVending.condomsToRefill is 1 ? "3-pack" : "3-packs">>. You can purchase condoms at the pharmacy.
-					<</if>>
-					<br>
-					You have set the price of the 3-condom packs to £80, while in the pharmacy, they cost £60.
-					<br>
-					<<condomicon>><<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>>
-					<br>
-				<</if>>
+			<<set _outOfStock to []>>
+			<<set _full to []>>
+			<<set _buyMore to []>>
+			<<set _productsAvailable to []>>
+			<<set _productsToPurchase to []>>
+			<<if $brothelVending.condoms lt 200>><<run _buyMore.push(`condoms at the <span class="gold">pharmacy</span>`)>><</if>>
+			<<if $brothelVending.lube lt 200>><<run _buyMore.push(`lube at the <span class="gold">adult shop</span>`)>><</if>>
+
+			<<if $brothelVending.condoms is 0>>
+				<<run _outOfStock.push(`condom dispenser`)>>
+			<<elseif $brothelVending.condoms gte 200>>
+				<<run _full.push(`condom dispenser`)>>
+			<<else>>
+				<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
+				<<run _productsAvailable.push(`<span class="gold">$brothelVending.condoms</span> pack<<if $brothelVending.condoms gt 1>>s<</if>> of condoms`)>>
+				<<run _productsToPurchase.push(`<span class="blue">$brothelVending.condomsToRefill</span> pack<<if $brothelVending.condomsToRefill gt 1>>s<</if>> of condoms`)>>
 			<</if>>
-			<<if $brothelVending.products gte 2>>
-				<<if $brothelVending.lube lte 1>>
-					<<sextoysicon "lube">> The lube bottles dispenser is <span class="red">empty.</span> You can get them at the adult shop.
-					<br>
-				<<else>>
-					<<if $brothelVending.lube gte 200>>
-						<<sextoysicon "lube">> The lube bottles dispenser is <span class="green">full.</span>
-					<<else>>
-						<<sextoysicon "lube">> <<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
-						You count <<number $brothelVending.lube>> <<print $brothelVending.lube is 1 ? "bottle" : "bottles">> of lube. There is room for <<number $brothelVending.lubeToRefill>> <<print $brothelVending.lubeToRefill is 1 ? "bottle" : "bottles">>. You can purchase lube at the adult shop.
-					<</if>>
-					<br>
-					<<sextoysicon "lube">> You have set the price of the lube to £30, while in the adult shop, it costs £20.
-					<br>
-					<<sextoysicon "lube">><<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>>
-					<br>
-				<</if>>
+			<<if $brothelVending.lube is 0>>
+				<<run _outOfStock.push(`lube dispenser`)>>
+			<<elseif $brothelVending.lube gte 200>>
+				<<run _full.push(`lube dispenser`)>>
+			<<else>>
+				<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
+				<<run _productsAvailable.push(`<span class="gold">$brothelVending.lube</span> bottle<<if $brothelVending.lube gt 1>>s<</if>> of lube`)>>
+				<<run _productsToPurchase.push(`<span class="blue">$brothelVending.lubeToRefill</span> bottle<<if $brothelVending.lubeToRefill gt 1>>s<</if>> of lube`)>>
+			<</if>>
+
+			<<condomicon "machine">> You check the stock of your vending machine.
+			<<if _full.length gte 1>>
+				The <<print _full.join(" and ")>> <<print _full.length gte 2 ? " are " : " is ">><span class="green">full.</span>.
+			<</if>>
+			<<if _outOfStock.length gte 1>>
+				The <<print _outOfStock.join(" and ")>><<print _outOfStock.length gte 2 ? " are " : " is ">><span class="red">empty.</span>.
+			<</if>>
+			<<if _productsAvailable.length gte 1>>
+				There <<print $brothelVending.condoms is 1 or ($brothelVending.condoms is 0 and $brothelVending.lube is 1) or ($brothelVending.condoms is 200 and $brothelVending.lube is 1) ? "is" : "are">> <<print _productsAvailable.join(" and ")>> inside the machine. There is room for <<print _productsToPurchase.join(" and ")>>.
+			<</if>>
+			<<if _buyMore.length gte 1>>
+				You can purchase <<print _buyMore.join(" and ")>>.
+			<</if>>
+			<br>
+			<<if $brothelVending.products % 2 and $brothelVending.condoms gte 1>>
+				<<condomicon>><<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the 3-condom packs to £80, while in the pharmacy, they cost £60.</span></mouse>
 				<br>
 			<</if>>
+			<<if $brothelVending.products gte 2 and $brothelVending.lube gte 1>>
+				<<sextoysicon "lube">><<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the lube to £30, while in the adult shop, it costs £20.</span></mouse>
+				<br>
+			<</if>>
+			<br>
 		<</if>>
 	<</if>>
 <</if>>
@@ -553,7 +560,7 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 		<<if $brothelVending.status is "idea">>
 			<<condomicon "machine">><<link [[Ask Briar to set up a vending machine (0:20)|Brothel VM ask]]>><<pass 20>><</link>>
 			<br>
-		<<elseif $brothelVending.products and $brothelVending.status is "set" and !$weekly.brothelVMCollect>>
+		<<elseif $brothelVending.products and ($brothelVending.status is "set" or ($brothelVending.status is "sold" and $brothelVending.weeksEmpty gte 4)) and !$weekly.brothelVMCollect>>
 			<<highicon>><<link [[Collect money from the vending machine (0:10)|Brothel VM income]]>><<pass 10>><</link>>
 			<br>
 		<</if>>
@@ -2367,11 +2374,11 @@ The car comes to a stop, and Briar pulls you out. "I like avoiding this place. I
 You ask Briar if <<he>> has already checked your vending machine's stock and collected the money this week.
 <br><br>
 <<if $brothelVending.status is "sold">>
-	Briar snorts. "Your vending machine was cleared out for $brothelVending.weeksEmpty. I told you if it was empty for three weeks in a row, I was going to throw it away. You have no vending machine anymore."
+	Briar snorts. "Your vending machine was cleared out for $brothelVending.weeksEmpty weeks. I told you if it was empty for three weeks in a row, I was going to throw it away. You have no vending machine anymore."
 	<br><br>
 	You try to explain why you haven't been able to refill the machine for so long, but Briar cuts you off.
 	<br><br>
-	"I don't give a shit about your life, your time, or your money. To do business, you need time, money, both things, or luck. If you don't have time to buy products every week, you need money to refill the machine with a lot of them. If you don't have enough money to fully restock the machine, you need the time to top it off a little bit every week." Briar takes some bills out of a drawer. "But you were lucky. A friend of mine needed a vending machine for the school toilets because someone broke one there. I sold yours to <<nnpc_him Leighton>> instead of throwing it away. Here, £1,000 for you. Now, if you want, <span class="gold"> you can buy a new vending machine and set it up in the dressing rooms</span>, but be sure to keep it filled this time. Same rules as before."
+	"I don't give a shit about your life, your time, or your money. To do business, you need time, money, both things, or luck. If you don't have time to buy products every week, you need money to refill the machine with a lot of them. If you don't have enough money to fully restock the machine, you need the time to top it off a little bit every week." Briar takes some bills out of a drawer. "But you were lucky. A friend of mine needed a vending machine for the school toilets because someone broke one there. I sold yours to <<nnpc_him Leighton>> instead of throwing it away. Here, £1,000 for you. Now, if you want, <span class="gold">you can buy a new vending machine and set it up in the dressing rooms</span>, but be sure to keep it filled this time. Same rules as before."
 	<br><br>
 	<<set $money += 100000>>
 	<<set $brothelVending.weeksEmpty to 0>>

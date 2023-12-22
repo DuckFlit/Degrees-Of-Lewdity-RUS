@@ -741,6 +741,7 @@
 <</widget>>
 
 <<widget "toggleAltPosition">>
+	/*Changes sprite to an alternate image*/
 	<<switch _args[0]>>
 		<<case "upper">>
 			<<if $worn.upper.variable is "schoolcardigan">>
@@ -773,6 +774,51 @@
 				<</if>>
 		<<default>>
 	<</switch>>
+<</widget>>
+
+<<widget "toggleFaceLayer">>
+	/*changes z-index */
+	<<if _args[0] is "shop">>
+		<<switch $facelayer>>
+			<<case "front">>
+				<<link "Move hair in front">>
+					<<run State.setVar("$facelayer", "back")>>
+					<<run Engine.show()>>
+				<</link>>
+			<<case "back">>
+				<<link "Tuck hair behind">>
+					<<run State.setVar("$facelayer", "front")>>
+					<<run Engine.show()>>
+				<</link>>
+			<<default>>
+					<<link "Move hair in front">>
+					<<run State.setVar("$facelayer", "front")>>
+					<<run Engine.show()>>
+				<</link>>
+		<</switch>>
+	<<else>>
+		<<switch $facelayer>>
+			<<case "front">>
+				<<link "Move hair in front">>
+					<<run State.setVar("$facelayer", "back")>>
+					<<updatesidebarimg>>
+					<<replace "#wardrobeFace">><<toggleFaceLayer>><</replace>>
+				<</link>>
+			<<case "back">>
+				<<link "Tuck hair behind">>
+					<<run State.setVar("$facelayer", "front")>>
+					<<updatesidebarimg>>
+					<<replace "#wardrobeFace">><<toggleFaceLayer>><</replace>>
+				<</link>>
+			<<default>>
+					<<link "Move hair in front">>
+					<<run State.setVar("$facelayer", "front")>>
+					<<updatesidebarimg>>
+					<<replace "#wardrobeFace">><<toggleFaceLayer>><</replace>>
+				<</link>>
+		<</switch>>
+	<</if>>
+	<br>
 <</widget>>
 
 <<widget "wardrobeList">>
@@ -889,6 +935,9 @@
 			<<if _wardrobe_list is "neck">>
 				<div id="wardrobeLeash" class="no-numberify"><<toggleLeash>></div>
 			<</if>>
+			<<if _wardrobe_list is "face">>
+				<div id="wardrobeFace" class="no-numberify"><<toggleFaceLayer>></div>
+			<</if>>
 		<</if>>
 		<br>
 		<<if $worn[_wardrobe_list].name isnot "naked">>
@@ -911,13 +960,13 @@
 			<</if>>
 			<div class="wardrobeItem wardrobe-action no-numberify">
 			<<clothingicon _item _wardrobe_list>>
-			<<wearlink_norefresh _itemData.name_cap _i>> 
+			<<wearlink_norefresh _itemData.name_cap _i>>
 			<<if _item.gender is "m">>
 				<span class="blue">♂</span>
 			<<elseif _item.gender is "f">>
 				<span class="pink">♀</span>
 			<<else>>
-				
+
 			<</if>>
 			<<if _item.colour isnot 0>>
 				<span @class="_selectedWardrobe[_wardrobe_list][_i].colour">(_item.colour)</span>

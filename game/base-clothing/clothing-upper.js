@@ -6147,7 +6147,7 @@ function initUpper() {
 			breast_img: 1,
 			cursed: 0,
 			location: 0,
-			iconFile: "jinglebell_dress.png",
+			iconFile: "jinglebell_dress_sleeveless.png",
 			outfitPrimary: { lower: "sleeveless jingle-bell skirt" },
 			notuck: 0,
 			pregType: 0,
