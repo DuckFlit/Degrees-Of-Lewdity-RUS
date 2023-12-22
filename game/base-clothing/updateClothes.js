@@ -150,6 +150,9 @@ function updateClothesItem(slot, item, debug) {
 			if (slot === "lower") item.name = "overall bottoms";
 			else if (item.outfitPrimary.lower === "overalls") item.outfitPrimary.lower = "overall bottoms";
 			break;
+		case "sleeveless jingle-bell dress":
+			if (item.outfitPrimary.lower === "jingle-bell skirt") item.outfitPrimary.lower = "sleeveless jingle-bell skirt";
+			break;
 	}
 	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));
 }
@@ -189,7 +192,10 @@ function updateClothes() {
 				case "overalls":
 					if (slot === "lower") outfit[slot] = "overall bottoms";
 					break;
-			}
+				case "sleeveless jingle-bell dress":
+					if (slot === "lower") outfit[slot] = "sleeveless jingle-bell skirt";
+					break;
+				}
 		}
 	}
 }

@@ -183,6 +183,7 @@ replace (?<!["'\w])_(?=\w) with T.
  * "upper_tucked":boolean - $worn.upper tucked in $worn.lower
  * "hood_down":boolean - hood is pulled down
  * "alt_position":boolean - sprite has alternate position (e.g. cardigan tied around waist)
+ * "facewear_layer": "front"|"back"
  *
  * GENERATED OPTIONS (temp variables configured by the model itself in preprocess())
  * ------------------
@@ -337,6 +338,7 @@ Renderer.CanvasModels["main"] = {
 			"angel_wing_left": "idle",
 			"angel_wings_layer": "front",
 			"angel_halo_type": "disabled",
+			"angel_halo_lower": false,
 			"fallen_wings_type": "disabled",
 			"fallen_wing_right": "idle",
 			"fallen_wing_left": "idle",
@@ -801,10 +803,15 @@ Renderer.CanvasModels["main"] = {
 			}
 		}
 
-		if (options.worn_handheld_setup.type.includes("rainproof") || ["balloon", "heart balloon"].includes(options.worn_handheld_setup.name)) {
+		if (options.worn_handheld_setup.type.includes("rainproof")) {
 			options.handheld_overhead = true;
+			if (options.angel_halo_type === "default") { options.angel_halo_lower = true; }
+		} else if (["balloon", "heart balloon"].includes(options.worn_handheld_setup.name)) {
+			options.handheld_overhead = true;
+			options.angel_halo_lower = false;
 		} else {
 			options.handheld_overhead = null;
+			options.angel_halo_lower = false;
 		}
 
 		if (options.worn_handheld_setup.name != "pom poms" && options.worn_handheld_setup.name != "naked" && options.arm_right === "hold") {
@@ -1574,7 +1581,12 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.angel_halo_type);
 			},
-			z: ZIndices.over_head_back,
+			dyfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? 20 : 0;
+			},
+			zfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? ZIndices.back_lower : ZIndices.over_head_back;
+			},
 			animation: "idle"
 		},
 		"angel_halo_front": {
@@ -1584,7 +1596,12 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.angel_halo_type);
 			},
-			z: ZIndices.over_upper,
+			dyfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? 20 : 0;
+			},
+			zfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? ZIndices.over_head : ZIndices.over_upper;
+			},
 			animation: "idle"
 		},
 
@@ -2589,7 +2606,11 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"upper_acc": genlayer_clothing_accessory("upper", {
 			zfn(options) {
-				return options.zupper
+				if (options.arm_right === "hold" && (options.worn_upper_setup.name === "winter jacket" || options.worn_over_upper_setup.name === "winter jacket" || options.worn_upper_setup.name === "skimpy lolita dress")) {
+					return ZIndices.lower_high;
+				} else {
+					return options.zupper;
+				}
 			}
 		}),
 		"upper_breasts_acc": genlayer_clothing_breasts_acc("upper", {
@@ -2702,7 +2723,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"lower": genlayer_clothing_main('lower', {
 			zfn(options) {
-				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower;
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
 			},
 			masksrcfn(options) {
 				return options.belly_mask_clip_src;
@@ -2752,7 +2773,7 @@ Renderer.CanvasModels["main"] = {
 					}
 				},
 				zfn(options) {
-					return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower;
+					return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
 				},
 				masksrcfn(options) {
 					return options.belly_mask_clip_src;
@@ -3093,7 +3114,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_right !== "none"
 			},
 			zfn(options) {
-				return options.handheld_overhead ? ZIndices.over_head : ZIndices.handheld;
+				return options.handheld_overhead ? ZIndices.over_upper : ZIndices.handheld;
 			},
 		}),
 		"handheld_acc": genlayer_clothing_accessory('handheld', {
@@ -3110,7 +3131,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_right !== "none"
 			},
 			zfn(options) {
-				return options.handheld_overhead ? ZIndices.over_head : ZIndices.handheld;
+				return options.handheld_overhead ? ZIndices.over_upper : ZIndices.handheld;
 			},
 		}),
 		"handheld_left": {
@@ -3208,7 +3229,7 @@ Renderer.CanvasModels["main"] = {
 
 		"face": genlayer_clothing_main('face', {
 			zfn(options) {
-				if (options.acc_layer_under) {
+				if (options.facewear_layer === "front") {
 					return ZIndices.face - 12.5;
 				}else {
 					return ZIndices.face;
@@ -3217,7 +3238,7 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"face_acc": genlayer_clothing_accessory('face', {
 			zfn(options) {
-				if (options.acc_layer_under) {
+				if (options.facewear_layer === "front") {
 					return ZIndices.face - 12.5;
 				}else {
 					return ZIndices.face;

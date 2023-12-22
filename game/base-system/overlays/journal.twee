@@ -49,15 +49,11 @@
 			<</if>>
 
 			<<if $psych is 1>>
-				<li>You have an appointment with Doctor Harper on Friday.</li>
+				<li>You have an appointment with Doctor Harper on <<print Time.weekDay is 6 ? "<span class='pink'>today</span>" : "on <span class='yellow'>Friday</span>">>.</li>
 			<</if>>
 
 			<<if $brothelshowdata.type isnot "none" and $brothelshowdata.intro>>
-				<<if Time.weekDay is 6 and not $brothelshowdata.done>>
-					<li>You're expected to perform at the brothel today.</li>
-				<<else>>
-					<li>You're expected to perform at the brothel on Friday.</li>
-				<</if>>
+				<li>You're expected to perform at the brothel <<print Time.weekDay is 6 and not $brothelshowdata.done ? "<span class='pink'>today</span>" : "on <span class='yellow'>Friday</span>">>.</li>
 			<</if>>
 
 			<<if $brothel_escortjob isnot undefined>>
@@ -128,16 +124,11 @@
 			<</if>>
 
 			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-				<li>You are
-					<<if $temple_rank is "initiate">>
-						an initiate at the temple.
-					<<else>>
-						a <<temple_title>> of the temple.
-					<</if>>
+				<li>You are <<print $temple_rank is "initiate" ? "an initiate at" : "a <<temple_title>> of">> the temple.
 					<<if $temple_chastity_timer lte 0>>
 						<span class="pink">You have a chastity exam due.</span>
 					<<elseif $temple_chastity_timer is 1>>
-						You have a chastity exam due tomorrow.
+						You have a chastity exam due <span class="purple">tomorrow.</span>
 					<<else>>
 						You have a chastity exam due in <span class="gold">$temple_chastity_timer</span> days.
 					<</if>>
@@ -147,7 +138,7 @@
 		</ul>
 	<</if>>
 
-	<<if ($location is "asylum" and ($eden_asylum_window is 1 or ($daily.eden.distract gte 1 and Time.hour lt 21))) || $temple_spear_mission gte 1 || $dockwork gte 2 || ($brothelshowdata.intro and $brothelshowdata.type is "none") || $robindebtevent gte 1 and $robinmissing isnot 0 || $pubtask2 is 1 || $pubtask || $police_hack is 1 || $pub_hack_job gte 1 || $pubfame || $earSlime.event and !_tempEventHide || $earSlime.forcedCommando isnot undefined || $earSlime.forcedDressing isnot undefined || $temple_rank || $chef_state gte 4 || $mason_pond gte 1 || ($brothel_machine_repair gte 1 and $brothel_machine_repair lte 3) || ($harpy gte 6 and $birdFly isnot 1) || $studyBooks isnot undefined and $studyBooks.rented isnot "none" || $adultshopgrandopening || ($adultshopintro is 1 and $adultshopunlocked is undefined)>>
+	<<if ($location is "asylum" and ($eden_asylum_window is 1 or ($daily.eden.distract gte 1 and Time.hour lt 21))) || $temple_spear_mission gte 1 || $dockwork gte 2 || ($brothelshowdata.intro and $brothelshowdata.type is "none") || $robindebtevent gte 1 and $robinmissing isnot 0 || $pubtask2 is 1 || $pubtask || $police_hack is 1 || $pub_hack_job gte 1 || $pubfame ||( $earSlime.event and !_tempEventHide) || $earSlime.forcedCommando isnot undefined || $earSlime.forcedDressing isnot undefined || $temple_rank is "prospective" || $chef_state gte 4 || $mason_pond gte 1 || ($brothel_machine_repair gte 1 and $brothel_machine_repair lte 3) || ($harpy gte 6 and $birdFly isnot 1) || ($studyBooks isnot undefined and $studyBooks.rented isnot "none") || $adultshopgrandopening || ($adultshopintro is 1 and $adultshopunlocked is undefined)>>
 		/*TODO: streamline during eventual Journal UI Overhaul bc lol. lmao, even. */
 		<hr>
 		<span class="gold bold">Reminders</span>
@@ -745,7 +736,7 @@
 		</ul>
 	<</if>>
 
-	<<if $antiquemoney gt 0 || $blackmoney gt 0 || $phials_held gte 1 || $lurkers_held gte 1 || $popcorn gte 1 || $milkshake gte 1>>
+	<<if $antiquemoney gt 0 || $blackmoney gt 0 || $phials_held gte 1 || $lurkers_held gte 1 || $popcorn gte 1 || $milkshake gte 1 || $panties_held gte 1>>
 		<hr>
 		<span class="gold bold">Inventory</span>
 		<br>
@@ -780,6 +771,9 @@
 	<</if>>
 	<<if $popcorn gte 1>>
 		<li>You are carrying <span class="green">$popcorn</span> <<print $popcorn is 1 ? "bag" : "bags">> of popcorn.</li>
+	<</if>>
+	<<if $panties_held gte 1>>
+		<li>You are carrying <<print $panties_held is 1 ? "a pair" : "<span class='green'>$panties_held</span> pairs">> of stolen underwear. You can sell <<print $panties_held is 1 ? "it" : "them">> during lunchtime in the school rear courtyard.</li>
 	<</if>>
 	</ul>
 
@@ -816,9 +810,9 @@
 				<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[_plant_keys[_t]].icon">
 			<</if>>
 			<<if setup.plants[$plants[_plant_keys[_t]].name].singular and $plants[_plant_keys[_t]].amount === 1>>
-				<<print setup.plants[$plants[_plant_keys[_t]].name].singular>> |
+				<<print setup.plants[$plants[_plant_keys[_t]].name].singular>> <<print _t lt (_plant_keys.length-1) ? "|" : "">>
 			<<else>>
-				<<print $plants[_plant_keys[_t]].plural>> |
+				<<print $plants[_plant_keys[_t]].plural>> <<print _t lt (_plant_keys.length-1) ? "|" : "">>
 			<</if>>
 		<</if>>
 	<</for>>
