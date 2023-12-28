@@ -195,7 +195,7 @@ function updateClothes() {
 				case "sleeveless jingle-bell dress":
 					if (slot === "lower") outfit[slot] = "sleeveless jingle-bell skirt";
 					break;
-				}
+			}
 		}
 	}
 }
@@ -326,10 +326,16 @@ function wardrobesUpdate() {
 		V.wardrobes.temple.unlocked = V.temple_rank === "monk";
 		V.wardrobes.temple.space = 20;
 	}
+	if (!V.wardrobes.temple.name) {
+		V.wardrobes.temple.name = "Temple";
+	}
 	if (!V.wardrobes.pirate) {
 		V.wardrobes.pirate = clone(defWardrobe);
 		V.wardrobes.pirate.unlocked = V.pirate_rank >= 0;
 		V.wardrobes.pirate.space = 5;
+	}
+	if (!V.wardrobes.pirate.name) {
+		V.wardrobes.pirate.name = "Pirate Ship";
 	}
 	if (V.objectVersion.wardrobes < 7) {
 		Object.values(V.wardrobes).forEach(wardrobe => {
