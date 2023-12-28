@@ -500,6 +500,7 @@ Renderer.CanvasModels["main"] = {
 			"upper_tucked": false,
 			"hood_down": false,
 			"alt_position": false,
+			"alt_sleeve": false,
 			"alt_position_neck":false,
 			"acc_layer_under": false,
 			"head_mask_src": "", // generated option
@@ -1295,9 +1296,9 @@ Renderer.CanvasModels["main"] = {
 		},
 		"hair_extra": { // Extra layer for thighs+ long hair for certain styles
 			srcfn(options) {
-				if (options.hair_sides_length === "feet" && ["default", "loose", "straight", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick ponytail"].includes(options.hair_sides_type)) {
+				if (options.hair_sides_length === "feet" && ["default", "loose", "straight", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick ponytail", "all down", "half-up"].includes(options.hair_sides_type)) {
 					return "img/hair/back/" + options.hair_sides_type + '/' + "feet.png"
-				} else if (options.hair_sides_length === "thighs" && ["default", "loose", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick_ponytail"].includes(options.hair_sides_type)) {
+				} else if (options.hair_sides_length === "thighs" && ["default", "loose", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick_ponytail", "all down", "half-up"].includes(options.hair_sides_type)) {
 					return "img/hair/back/" + options.hair_sides_type + '/' + "thighs.png"
 				} else if (["ruffled"].includes(options.hair_sides_type)) {
 					return "img/hair/back/" + options.hair_sides_type + '/' + options.hair_sides_length + ".png"
@@ -3175,8 +3176,12 @@ Renderer.CanvasModels["main"] = {
 				return ["worn_handheld_acc"]
 			},
 		},
-		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld'),
-		"handheld_back": genlayer_clothing_back_img('handheld'),
+		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld', {
+			z: ZIndices.back
+		}),
+		"handheld_back": genlayer_clothing_back_img('handheld',{
+			z: ZIndices.back
+		}),
 		/***
 		 *    ██   ██ ███████  █████  ██████
 		 *    ██   ██ ██      ██   ██ ██   ██
@@ -3829,10 +3834,16 @@ function genlayer_clothing_back_img_acc(slot, overrideOptions) {
 function genlayer_clothing_arm(arm, slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
+			let isAltPosition = (options.alt_position &&
+			options["worn_" + slot + "_setup"].altposition !== undefined);
+			let isAltSleeve = options.alt_sleeve &&
+			options["worn_" + slot + "_setup"].altsleeve !== undefined;
 			let path = 'img/clothes/' +
 				slot + '/' +
 				options["worn_" + slot + "_setup"].variable + '/' +
-				(options["arm_" + arm] === "cover" ? (arm + '_cover.png') : options.handheld_position && arm === "right" ? "hold.png" : (arm + ".png"));
+				(options["arm_" + arm] === "cover" ? (arm + '_cover') : options.handheld_position && arm === "right" ? "hold" : (arm)) +
+				(isAltPosition ? "_alt" : "") +
+				(isAltSleeve ? "_rolled.png" : ".png");
 			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 		showfn(options) {

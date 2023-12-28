@@ -778,46 +778,19 @@
 
 <<widget "toggleFaceLayer">>
 	/*changes z-index */
-	<<if _args[0] is "shop">>
-		<<switch $facelayer>>
-			<<case "front">>
-				<<link "Move hair in front">>
-					<<run State.setVar("$facelayer", "back")>>
-					<<run Engine.show()>>
-				<</link>>
-			<<case "back">>
-				<<link "Tuck hair behind">>
-					<<run State.setVar("$facelayer", "front")>>
-					<<run Engine.show()>>
-				<</link>>
-			<<default>>
-					<<link "Move hair in front">>
-					<<run State.setVar("$facelayer", "front")>>
-					<<run Engine.show()>>
-				<</link>>
-		<</switch>>
-	<<else>>
-		<<switch $facelayer>>
-			<<case "front">>
-				<<link "Move hair in front">>
-					<<run State.setVar("$facelayer", "back")>>
-					<<updatesidebarimg>>
-					<<replace "#wardrobeFace">><<toggleFaceLayer>><</replace>>
-				<</link>>
-			<<case "back">>
-				<<link "Tuck hair behind">>
-					<<run State.setVar("$facelayer", "front")>>
-					<<updatesidebarimg>>
-					<<replace "#wardrobeFace">><<toggleFaceLayer>><</replace>>
-				<</link>>
-			<<default>>
-					<<link "Move hair in front">>
-					<<run State.setVar("$facelayer", "front")>>
-					<<updatesidebarimg>>
-					<<replace "#wardrobeFace">><<toggleFaceLayer>><</replace>>
-				<</link>>
-		<</switch>>
-	<</if>>
+	<<set _linkOption1 to "Move hair in front">>
+	<<set _linkOption2 to "Tuck hair behind">>
+	<div class="toggleFaceLayer">
+		<<link `($facelayer is "front" ? _linkOption1 : _linkOption2)`>>
+			<<set $facelayer to ($facelayer is "front" ? "back" : "front")>>
+			<<updatesidebarimg>>
+			<<if _args[1] is "wardrobe">>
+					<<updatewardrobe>>
+			<</if>>
+			<<run $(".toggleFaceLayer .link-internal").html($facelayer is "front" ? _linkOption1 : _linkOption2)>>
+			<<run Links.generateLinkNumbers($(".passage"))>>
+		<</link>>
+	</div>
 	<br>
 <</widget>>
 
@@ -936,7 +909,7 @@
 				<div id="wardrobeLeash" class="no-numberify"><<toggleLeash>></div>
 			<</if>>
 			<<if _wardrobe_list is "face">>
-				<div id="wardrobeFace" class="no-numberify"><<toggleFaceLayer>></div>
+				<div class="no-numberify toggleAltLink"><<toggleFaceLayer _wardrobe_list "wardrobe">></div>
 			<</if>>
 		<</if>>
 		<br>

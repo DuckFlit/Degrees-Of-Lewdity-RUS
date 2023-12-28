@@ -371,7 +371,7 @@ function weekPassed() {
 		V.nightmareTimer--;
 		if (V.nightmareTimer <= 0) delete V.nightmareTimer;
 	}
-	if (V.brothelVending) {
+	if (V.brothelVending && V.brothelVending.products >= 1) {
 		if (V.brothelVending.condoms === 0 && V.brothelVending.lube === 0) V.brothelVending.weeksEmpty += 1;
 		V.brothelVending.weeksRent++;
 		if (V.brothelVending.weeksEmpty >= 4) V.brothelVending.status = "sold";
@@ -629,6 +629,7 @@ function dayPassed() {
 		const rng = random(Math.min(1, V.brothelVending.condoms), Math.min(10, V.brothelVending.condoms));
 		V.brothelVending.condoms -= rng;
 		V.brothelVending.condomsSold += rng;
+		V.brothelVending.condomsToRefill = 200 - (V.brothelVending.condoms);
 		V.brothelVending.total = (V.brothelVending.total || 0) + rng;
 	}
 
@@ -636,6 +637,7 @@ function dayPassed() {
 		const rng = random(Math.min(1, V.brothelVending.lube), Math.min(10, V.brothelVending.lube));
 		V.brothelVending.lube -= rng;
 		V.brothelVending.lubeSold += rng;
+		V.brothelVending.lubeToRefill = 200 - (V.brothelVending.lube);
 		V.brothelVending.total = (V.brothelVending.total || 0) + rng;
 	}
 
