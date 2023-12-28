@@ -167,18 +167,16 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 			<<elseif $brothelVending.condoms gte 200>>
 				<<run _full.push(`condom dispenser`)>>
 			<<else>>
-				<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
 				<<run _productsAvailable.push(`<span class="gold">$brothelVending.condoms</span> pack<<if $brothelVending.condoms gt 1>>s<</if>> of condoms`)>>
-				<<run _productsToPurchase.push(`<span class="blue">$brothelVending.condomsToRefill</span> pack<<if $brothelVending.condomsToRefill gt 1>>s<</if>> of condoms`)>>
+				<<run _productsToPurchase.push(`<span class="blue">$brothelVending.condomsToRefill</span> pack<<if $brothelVending.condomsToRefill isnot 1>>s<</if>> of condoms`)>>
 			<</if>>
 			<<if $brothelVending.lube is 0>>
 				<<run _outOfStock.push(`lube dispenser`)>>
 			<<elseif $brothelVending.lube gte 200>>
 				<<run _full.push(`lube dispenser`)>>
 			<<else>>
-				<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
 				<<run _productsAvailable.push(`<span class="gold">$brothelVending.lube</span> bottle<<if $brothelVending.lube gt 1>>s<</if>> of lube`)>>
-				<<run _productsToPurchase.push(`<span class="blue">$brothelVending.lubeToRefill</span> bottle<<if $brothelVending.lubeToRefill gt 1>>s<</if>> of lube`)>>
+				<<run _productsToPurchase.push(`<span class="blue">$brothelVending.lubeToRefill</span> bottle<<if $brothelVending.lubeToRefill isnot 1>>s<</if>> of lube`)>>
 			<</if>>
 
 			<<condomicon "machine">> You check the stock of your vending machine.
@@ -194,13 +192,14 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 			<<if _buyMore.length gte 1>>
 				You can purchase <<print _buyMore.join(" and ")>>.
 			<</if>>
+			You have <<print $weekly.brothelVMCollect ? "already" : "not">> collected this week's earnings.
 			<br>
 			<<if $brothelVending.products % 2 and $brothelVending.condoms gte 1>>
-				<<condomicon>><<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the 3-condom packs to £80, while in the pharmacy, they cost £60.</span></mouse>
+				<<condomicon>><<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the 3-condom packs to £80, while in the pharmacy, they cost £60. <i class="green">It'd be more cost-efficient for you buy them at the pharmacy.</i></span></mouse>
 				<br>
 			<</if>>
 			<<if $brothelVending.products gte 2 and $brothelVending.lube gte 1>>
-				<<sextoysicon "lube">><<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the lube to £30, while in the adult shop, it costs £20.</span></mouse>
+				<<sextoysicon "lube">><<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the lube to £30, while in the adult shop, it costs £20. <i class="green">It'd be more cost-efficient for you buy them at the adult shop.</i></span></mouse>
 				<br>
 			<</if>>
 			<br>
@@ -1113,7 +1112,7 @@ You are led down a dim corridor. You can hear music playing somewhere above. The
 "There," says Briar. "Now you're ready to service our customers. Because I'm kind, you'll only need to help <<number $punishmenthole>> of them." <<person1>><<He>> ties your neck to a peg beneath the hole, leaving your mouth pressed against it. "Have fun!" <<he>> says as <<he>> shuts the door, leaving you in darkness.
 <br><br>
 <<set $leftarm to "bound">>
-<<set $rightarm to "bound">><<handheldruined>>
+<<set $rightarm to "bound">>
 <<set $head to "bound">>
 <<set $feetuse to "bound">>
 <<set $punishmentposition to "gloryhole">>
@@ -1507,14 +1506,14 @@ You examine the sex machine. A large phallus protrudes from the main body, besid
 <<He>> gives you a last pinch, then leaves you alone.
 <br><br>
 
-<<endcombat>><<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
+<<endcombat>><<set $leftarm to "bound">><<set $rightarm to "bound">>
 
 <<else>>
 
 You kick the <<person>> away from you. You hear <<him>> grumble, but <<he>> leaves you alone.
 <br><br>
 
-<<endcombat>><<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
+<<endcombat>><<set $leftarm to "bound">><<set $rightarm to "bound">>
 
 <</if>>
 
@@ -1930,7 +1929,7 @@ Due to the high police presence, you have a to wait for things to calm down befo
 	<<person1>>"Okay," the <<person>> says.
 	<br><br>
 	<<if crimeSumCurrent() gte 4500>>
-		<<person2>>"This one's slippery," says the <<person>>. "Cuff <<phim>> first so <<pshe>> doesn't try anything."
+		<<person2>>"This one's slippery," says the <<person>>. "<<print $worn.handheld.name isnot "naked" ? "Take <<pher>> $worn.handheld.name and cuff <<phim>>" : "Cuff <<phim>> first">> so <<pshe>> doesn't try anything."
 		<br><br>
 		"Okay."
 		<<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
@@ -2409,9 +2408,7 @@ You ask Briar if <<he>> has already checked your vending machine's stock and col
 		but unfortunately, that eats up the rest of the profits. All you're getting back is the money you spent stocking the machine." <<He>> hands you your earnings. You make <<printmoney _productCost>>. "Try stocking more products next time, if you want to do more than break even."
 	<</if>>
 	<<set $money += _productCost>>
-	<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
 	<<set $brothelVending.condomsSold to 0>>
-	<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
 	<<set $brothelVending.lubeSold to 0>>
 	<<set $brothelVending.weeksRent to 0>>
 	<<set $weekly.brothelVMCollect to true>>
@@ -2587,7 +2584,7 @@ You notice ropes and chains lying on the floor, giving you an anxious feeling.
 :: Brothel Escort Job Undress
 <<effects>><<undress "escort_job">>
 
-<<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>><<shackle_feet>>
+<<set $leftarm to "bound">><<set $rightarm to "bound">><<shackle_feet>>
 
 <<if $phase is 1>>
 	The <<person1>><<person>> and the <<person2>><<person>> give you lustful looks as you take off your clothing. They shove you to the middle of the room.
