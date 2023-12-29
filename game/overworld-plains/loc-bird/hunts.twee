@@ -359,7 +359,7 @@ You spread your wings and leap from the tower.
 <<if !$bird.hunts.loot>>
 	<<set $bird.hunts.loot to {}>>
 	<<set $bird.hunts.lootAmount to 0>>
-	<<set $bird.hunts.weight to 0>>
+	<<set $bird.hunts.weight to ($weather is "rain" ? 1 : 0)>>
 	<<set $bird.hunts.goal to "">>
 	<<set $bird.hunts.direction to "">>
 	<<set $bird.hunts.distanceNorth to 0>>
@@ -492,12 +492,19 @@ What will you hunt for?
 <br><br>
 
 <<cleareventpool>>
-<<if _totalDistance is 0>>
+<<if _distanceTotal is 0>>
 	You're right above the castle. <span class="blue">You won't find anything until you fly further out.</span>
 	<br><br>
 
 	<<endevent>>
 	<<flight_hunt_options>>
+<<elseif $daily.huntRemyCampNorth is $bird.hunts.distanceNorth and $daily.huntRemyCampEast is $bird.hunts.distanceEast>>
+	You're close to the camp you <<if $daily.huntRemyFail>>tried to steal<<else>>stole<</if>> from. <span class="red">The occupants are alert, keeping their eyes on the sky.</span> You won't be able to find anything here.
+	<br><br>
+
+	<<endevent>>
+	<<set $phase to 2>>
+	<<flight_hunt_options>>	
 <<else>>
 
 	<<addinlineevent "bird_hunt_nothing" _flight_hunt_chance.nothing>>
@@ -520,6 +527,68 @@ What will you hunt for?
 			<br>
 		<</if>>
 	<</addinlineevent>>
+
+	<<addinlineevent "bird_hunt_sticks" _flight_hunt_chance.materials>>
+		You spot a pile of hefty branches.
+		<<if $bird.hunts.materials is false>>
+			You might be able to use them to improve your nest.
+		<</if>>
+		<br><br>
+
+		<<link [[Land (0:05)|Bird Hunt Sticks]]>><<bird_pass 5>><</link>>
+		<br>
+		<<if $bird.hunts.ignored lte 2>>
+			<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<if !$daily.huntRemyAlerted and $bird.hunts.distanceNorth gte 2>>
+		<<addinlineevent "bird_hunt_remy_camp" (_flight_hunt_chance.valuables + _flight_hunt_chance.materials)>>
+			<<set $daily.huntRemyCampNorth to $bird.hunts.distanceNorth>>
+			<<set $daily.huntRemyCampEast to $bird.hunts.distanceEast>>
+			You spot a few tents. Someone seems to have set up camp. You can see the owners sitting outside.
+			<<if $remy_seen is "farm" or $remy_seen is "livestock">>
+				You recognise them from their uniforms. <span class="red">Remy's goons.</span>
+			<<else>>
+				A few of them carry pronged metal poles, and others carry nets. They look dangerous.
+			<</if>>
+			<br><br>
+
+			<<if $bird.hunts.duo is true>>
+				<<npc "Great Hawk">><<person1>>
+				<<if $monster is 1>>
+					"Landbound without their leader. Bad, but not a threat," your <<beasttype>> says confidently.
+				<<else>>
+					Your <<beasttype>> looks them over intently. <<bHe>> doesn't seem to consider them a threat.
+				<</if>>
+				<<if $remy_seen is "farm" or $remy_seen is "livestock">>
+					You know from experience that they can be dangerous, but now you're not alone.
+				<</if>>
+				<br><br>
+
+				With help from the Great Hawk, you could try to steal from them. The two of you could also scare them away.
+				<br><br>
+
+				<<link [[Steal from them (0:05)|Bird Hunt Tent Steal]]>><<bird_pass 5>><</link>><<crime "thievery">>
+				<br>
+				<<link [[Scare and harass (0:05)|Bird Hunt Tent Scare]]>><<bird_pass 5>><</link>>
+				<br>
+			<<else>>
+				However, they're unlikely to see you as much of a threat since you're alone. If you're careful, you could try to steal from them.
+				<br><br>
+
+				<<set $skulduggerydifficulty to 500>>
+				<<link [[Sneak in and steal from them (0:05)|Bird Hunt Tent Steal Alone]]>><<bird_pass 5>><</link>><<skulduggerydifficulty>><<crime "thievery">>
+				<br>
+			<</if>>
+			<<if $bird.hunts.ignored lte 2>>
+				<<link [[Avoid them|Bird Hunt Ignore]]>><<endevent>><</link>>
+				<br>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
 
 	<<runeventpool>>
 
@@ -547,13 +616,12 @@ What will you hunt for?
 	You notice some firewood was left behind. Most of it has been ruined by the damp atmosphere, but you notice two of the small logs are in good condition.
 	<br><br>
 
-	<<set _athlDiffMin to ($bird.hunts.weight * 100)>>
-	<<set _athlDiffMax to (_athlDiffMin + 500)>>
-
 	<<if $bird.hunts.duo is true>>
 		<<link [[Take the wood|Bird Hunt Camp 2]]>><<set $phase to 2>><</link>>
 		<br>
 	<<else>>
+		<<set _athlDiffMin to ($bird.hunts.weight * 100)>>
+		<<set _athlDiffMax to (_athlDiffMin + 500)>>
 		<<link [[Take one piece of wood|Bird Hunt Camp 2]]>><<set $phase to 2>><</link>>
 		<br>
 		<<link [[Try to take two|Bird Hunt Camp 2]]>><<set $phase to 3>><</link>><<athleticsdifficulty _athlDiffMin _athlDiffMax true>>
@@ -637,6 +705,537 @@ What will you hunt for?
 
 		<<flight_hunt_return>>
 <</switch>>
+
+:: Bird Hunt Sticks
+<<effects>>
+<<if $bird.hunts.duo is true>>
+	<<npc "Great Hawk">>
+	You and your <<beasttype>> land near the branches. Only two of them look suitable for use. The two of you should be able to carry them without any trouble.
+	<br><br>
+
+	<<link [[Take them|Bird Hunt Sticks 2]]>><<set $phase to 1>><</link>>
+	<br>
+<<else>>
+	You land near the branches and walk over to them.
+	<<if $rng gte 71>>
+		You hear the grass rustle behind you. You turn around in time to see something leaping at you!
+		<br><br>
+
+		<<if $deviancy gte 55>>
+			<<link [[Stand still|Bird Hunt Lurker Stand Still]]>><</link>><<deviant4>>
+			<br>
+		<</if>>
+		<<link [[Dodge|Bird Hunt Lurker Dodge]]>><</link>><<dancedifficulty 1 1200>>
+		<br>
+		<<if $farm_stage gte 10>>
+			<<link [[Hurl net|Bird Hunt Lurker Hurl Net]]>><</link>><<dancedifficulty 1 1200>><<athleticsdifficulty 0 1200>>
+			<br>
+		<</if>>
+	<<else>>
+		<<set _athlDiffMin to ($bird.hunts.weight * 50)>>
+		<<set _athlDiffMax to (_athlDiffMin + 300)>>
+		Only two of them look suitable for use.
+		<br><br>
+
+		<<link [[Take one branch|Bird Hunt Sticks 2]]>><<set $phase to 2>><</link>>
+		<br>
+		<<link [[Try to take two|Bird Hunt Sticks 2]]>><<set $phase to 3>><</link>><<athleticsdifficulty _athlDiffMin _athlDiffMax true>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Bird Hunt Sticks 2
+<<effects>>
+<<switch $phase>>
+	<<case 1>>
+		You take a branch and instruct the <<beasttype>> to take the other one.
+		<<if $monster is 1>>
+			<<bHe>> looks it over. "<<Wife>> found good sticks for nest." <<bhe>> states, grabbing the other one.
+		<<else>>
+			<<bHe>> pokes the branch with <<bhis>> beak. Seeming satisfied with its quality, <<bhe>> grabs it.
+		<</if>>
+		<br><br>
+
+		<<flight_hunt_get "sticks" 2>>
+		<<flight_hunt_return>>
+	<<case 2>>
+		You grab a branch. Its uneven shape makes it more difficult to carry, but you manage without issue.
+		<br><br>
+
+		<<flight_hunt_get "sticks" 1>>
+		<<flight_hunt_return>>		
+	<<case 3>>
+		You take both branches. Their uneven shape makes them hard to carry.
+
+		<<if $athleticsSuccess>>
+			<span class="green">You're able to keep them fairly still as you take off.</span>
+			<br><br>
+
+			<<flight_hunt_get "wood" 2>>
+			<<flight_hunt_return>>
+		<<else>>
+			<<set _huntFail to 1>>
+			Flying proves even more difficult. Soon after you take off, the movement makes <span class="red">one of the branches hit you near the eye.</span><<pain 3>><<stress 6>><<gpain>><<gstress>>
+			<br><br>
+
+			The unexpected hit makes you drop the branches, sending them back to the ground. You hear a loud snap. You won't be able to use them.
+			<br><br>
+
+			<<flight_hunt_return>>
+		<</if>>
+<</switch>>
+
+:: Bird Hunt Lurker Dodge
+<<effects>>
+
+<<if $danceSuccess>>
+	You quickly duck down, <span class="green">and the lurker flies over you.</span> It lands and darts back into the heather.
+	<br><br>
+
+	<<set _athlDiffMin to ($bird.hunts.weight * 50)>>
+	<<set _athlDiffMax to (_athlDiffMin + 300)>>
+	You return your attention to the branches. Only two of them look suitable for use.
+	<br><br>
+
+	<<link [[Take one branch|Bird Hunt Sticks 2]]>><<set $phase to 2>><</link>>
+	<br>
+	<<link [[Try to take two|Bird Hunt Sticks 2]]>><<set $phase to 3>><</link>><<athleticsdifficulty _athlDiffMin _athlDiffMax true>>
+	<br>
+<<else>>
+	You try to jump aside, <span class="red">but you fail to move in time, and the lurker lands on your face.</span>
+	<br><br>
+
+	<<link [[Next|Bird Hunt Struggle]]>><<set $struggle_start to 1>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Lurker Hurl Net
+<<effects>>
+<<if $danceSuccess and $athleticsSuccess>>
+	<span class="green">The net lands true.</span> You pull the lurker into your possession.
+	<br><br>
+
+	<<flight_hunt_get "lurker" 1>>
+	<<set _athlDiffMin to ($bird.hunts.weight * 50)>>
+	<<set _athlDiffMax to (_athlDiffMin + 300)>>
+	You return your attention to the branches. Only two of them look suitable for use.
+	<br><br>
+
+	<<link [[Take one branch|Bird Hunt Sticks 2]]>><<set $phase to 2>><</link>>
+	<br>
+	<<link [[Try to take two|Bird Hunt Sticks 2]]>><<set $phase to 3>><</link>><<athleticsdifficulty _athlDiffMin _athlDiffMax true>>
+	<br>
+<<else>>
+	You try to hurl the net, <span class="red">but it's on you too fast,</span> latching onto your face. You can't see. You try to pull the creature off, but you struggle to get a grip on its slimy skin. You keep your lips sealed as something presses against your mouth.<<gnet>>
+	<<prof net 1>>
+	<br><br>
+
+	<<link [[Next|Bird Hunt Struggle]]>><<set $struggle_start to 1>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Lurker Stand Still
+<<effects>>
+You stand still, and allow the lurker to latch onto your face. <<deviancy4>>
+
+<<link [[Next|Bird Hunt Struggle]]>><<set $struggle_start to 2>><</link>>
+<br>
+
+:: Bird Hunt Struggle
+<<effects>>
+
+<<if $struggle_start is 1>>
+	<<struggle_init>>
+	<<set $struggle.creature to "lurker">>
+	<<struggle_creatures 1 1>>
+	<<set $combat to 1>>
+	<<controlloss>>
+	<<violence 1>>
+	<<molested>>
+	<<set $struggle.mouth.creature to "lurker">>
+	<<set $mouthuse to "struggle">><<set $mouthstate to "struggle">><<set $struggle.enemy[0].location to "mouth">>
+	<<unset $struggle_start>>
+<<elseif $struggle_start is 2>>
+	<<struggle_init>>
+	<<set $struggle.creature to "lurker">>
+	<<struggle_creatures 1 1>>
+	<<set $combat to 1>>
+	<<neutral 1>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<set $struggle.mouth.creature to "lurker">>
+	<<set $mouthuse to "struggle">><<set $mouthstate to "struggle">><<set $struggle.enemy[0].location to "mouth">>
+	<<unset $struggle_start>>
+<</if>>
+
+<<struggle>>
+
+<<if $struggle.done gte $struggle.number>>
+	<span id="next"><<link [[Next|Bird Hunt Struggle Finish]]>><</link>></span>
+	<br>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Struggle]]>><</link>></span>
+	<br>
+<</if>>
+
+:: Bird Hunt Struggle Finish
+<<effects>>
+
+The Lurker darts back into the heather.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<set _athlDiffMin to ($bird.hunts.weight * 50)>>
+<<set _athlDiffMax to (_athlDiffMin + 300)>>
+You return your attention to the branches. Only two of them look suitable for use.
+<br><br>
+
+<<link [[Take one branch|Bird Hunt Sticks 2]]>><<set $phase to 2>><</link>>
+<br>
+<<link [[Try to take two|Bird Hunt Sticks 2]]>><<set $phase to 3>><</link>><<athleticsdifficulty _athlDiffMin _athlDiffMax true>>
+<br>
+
+:: Bird Hunt Tent Steal Alone
+<<effects>>
+You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pounds, thinking of your current exposure.<</if>> As you near their tents, a <<generate1>><<person1>><<person>> exits one and starts walking in your direction.
+<br><br>
+
+<<if $skulduggerysuccess is 1>>
+	<span class="green">Thinking quickly, you pick up a rock and throw it behind them.</span> The sound is enough to pull their attention. With the <<person>> distracted, you sneak into the tent they came out of.
+	<<if $skulduggery lte ($skulduggerydifficulty + 100)>>
+		<<skulduggeryskilluse>>
+	<<else>>
+		<span class="blue">That was too easy. You didn't learn anything.</span>
+	<</if>>
+	<br><br>
+	
+	It's mercifully empty of other occupants. There's a lot of ground to cover, but you don't know how much time you have.
+	<br><br>
+
+	<<link [[Steal clothes|Bird Hunt Steal Alone 2]]>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Steal valuables|Bird Hunt Steal Alone 2]]>><<set $phase to 2>><</link>>
+	<br>
+<<else>>
+	<<if $exposed gte 2>>
+		You try to keep out of <<his>> sight, <span class="red">but <<he>> spots you</span>. "Well now, what's a <<girl>> like you doing out here naked? Did you lose your clothes somewhere? Don't worry, I'll give you something to wear."
+	<<else>>
+		You scramble to your feet, trying to seem inconspicuous. <span class="red">It doesn't work.</span> "Oh? What's a <<girl>> like you doing out here?" the <<person>> asks.
+	<</if>>
+	Something about <<him>> makes you uneasy.
+	<br><br>
+
+	<<link [[Run|Bird Hunt Steal Alone Caught]]>><<set $phase to 1>><<set $phase2 to 1>><</link>><<athleticsdifficulty 100 700 true>>
+	<br>
+	<<link [[Comply|Bird Hunt Steal Alone Caught]]>><<set $phase to 2>><<set $phase2 to 1>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Steal Alone Caught
+<<effects>>
+<<set $daily.huntRemyAlerted to true>>
+<<if $phase is 1>>
+	Before <<he>> can say anything else, you make a run for it. "Hey! Get back here! It's dangerous alone in the moor! I'll take good care of ya, I promise!"
+	<br><br>
+
+	<<if $athleticsSuccess>>
+		You pick up your pace and <span class="green">leave <<him>> behind in the rocky terrain</span>. You take flight once you're out of sight. With the group alerted, you won't be able to steal from them again today.
+		<<if $phase2 is 1>><<set $daily.huntRemyFail to true>><<set _huntFail to 1>><</if>>
+		<br><br>
+
+		<<flight_hunt_return>>
+	<<else>>
+		You get some good speed, <span class="red">but you trip on a rock</span>. <<gpain>><<pain 3>>
+		<br><br>
+
+		The <<person>> towers over you. "Since you didn't want to make things easy, we'll do this the hard way."
+		<br><br>
+
+		<<link [[Next|Bird Hunt Steal Alone Rape]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	You let the <<person>> approach you. <<He>> quickly drops <<his>> act. "Be good for me now, I'd rather not share you with the others."
+<</if>>
+
+:: Bird Hunt Steal Alone Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $pain gte 100 and $willpowerpain is 0 or _combatend>>
+	<span id="next"><<link [[Next|Bird Hunt Steal Alone Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Steal Alone Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Steal Alone Rape Finish
+<<effects>>
+<<if $pain gte 100 and $willpowerpain is 0>>
+	It's too much. <<tearful>> you collapse to the ground.
+	<br><br>
+
+	The <<person>> chuckles. "I think the others will like you." <<He>> looks you over for a moment. "Hmm... come to thinkin', the boss would like you even more. Hold still." You can't do anything as <<he>> starts to bind your arms, and your consciousness fades.
+	<br><br>
+
+	<<run delete $bird.hunts.duo>>
+	<<run delete $bird.hunts.goal>>
+	<<run delete $bird.hunts.weight>>
+	<<run delete $bird.hunts.direction>>
+	<<run delete $bird.hunts.distanceNorth>>
+	<<run delete $bird.hunts.distanceEast>>
+	<<run delete $bird.hunts.ignored>>
+	<<run delete $bird.hunts.loot>>
+	<<endcombat>>
+
+	<<link [[Next|Moor Abduction Wake]]>><<pass 60>><<set $stress -= 2000>><<set $moor to 50>><<clotheson>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	You take the opportunity to flee. Luckily, <<he>> makes no attempt to pursue you.
+	<br><br>
+	<<if $phase2 is 1>><<set $daily.huntRemyFail to true>><<set _huntFail to 1>><</if>>
+	<<tearful>> you make sure you weren't followed before taking flight. With the group alerted, you won't be able to steal from them again today.
+	<<clotheson>>
+	<<endcombat>>
+	<<flight_hunt_return>>
+<<else>>
+	You screech and push the <<person>> to the ground before quickly jumping to your feet. You give <<him>> a kick in the side for good measure before running.
+	You hear <<him>> yell out a few curses, but <<he>> makes no effort to get up.
+	<br><br>
+	<<if $phase2 is 1>><<set $daily.huntRemyFail to true>><<set _huntFail to 1>><</if>>
+	<<tearful>> you make sure you weren't followed before taking flight. With the group alerted, you won't be able to steal from them again today.
+	<<clotheson>>
+	<<endcombat>>
+	<<flight_hunt_return>>
+<</if>>
+
+:: Bird Hunt Steal Alone 2
+<<effects>>
+<<if $phase is 1>>
+	You look around for any spare clothing. You find
+	<<select_random_clothes_limited "upper" "lower" "under_upper" "under_lower" "legs" "hands">>
+	<<if setup.clothes[_random_slot][_random_index].plural isnot 1>>
+		<<if setup.clothes[_random_slot][_random_index].word is "an">>
+			an
+		<<else>>
+			a
+		<</if>>
+		_random_clothes.
+	<<else>>
+		a large pile of ruined uniforms and some tarp.
+	<</if>>
+	<<if _random_clothes isnot "piece of fabric">>
+		<<if $bird.wardrobe is 1>>
+			You could tear it up for scrap cloth, or bring it back to the tower.
+		<<else>>
+			You have nowhere to store it at the tower. A few hours in the open would reduce it to scrap cloth.
+		<</if>>
+		<br><br>
+
+		<<if $worn[_random_slot].name isnot "naked">>
+			<<if $bird.wardrobe is 1>>
+				<<link [[Wear|Bird Hunt Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1  _random_index>><<generalWear _random_slot _random_index>><</link>>
+				<span class="blue">Your $worn[_random_slot].name will be replaced.</span>
+			<<else>>
+				<<link [[Wear|Bird Hunt Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_index>><<flight_hunt_get "cloth" 1>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><</link>>
+				<span class="blue">Your $worn[_random_slot].name will be scrapped.</span>
+			<</if>>
+		<<else>>
+			<<link [[Wear|Bird Hunt Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_index>><<generalWear _random_slot _random_index>><</link>>
+		<</if>>
+		<br>
+		<<link [[Scrap for cloth|Bird Hunt Steal Clothes]]>><<set $phase to 2>><<flight_hunt_get "cloth" 1>><</link>>
+		<br>
+		<<if $bird.wardrobe is 1>>
+			<<link [[Steal it|Bird Hunt Steal Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_index>><<generalSend "wardrobe" _random_slot _random_index>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<br><br>
+
+		<<link [[Steal|Bird Hunt Steal Clothes]]>><<set $phase to 2>><<flight_hunt_get "cloth" 3>><</link>>
+		<br>		
+	<</if>>
+<<else>>
+	You search the tent for any valuables. You turn over a sleeping bag and find a nice-looking (List: Watch, Ring, Necklace, Bracelet). You take it with you.
+<</if>>
+
+You could look for more, though you don’t know when the <<person>> will return.
+
+Look for more (Skullduggery)|Hunt Event: Tent 4
+Leave with your loot|Hunt Event: Tent 4
+Hunt Event: Tent 4
+You hastily throw around things, checking anywhere you can. Then you spot it near the entrance. A (List: Watch, Ring, Necklace, Bracelet)/(List: t-shirt, shirt, pair of trousers). You quickly snatch it. (Success) Making sure no one is watching, you step out of the tent. You carefully retrace your steps and leave unnoticed.
+
+With your prize in hand, you take to the skies again. You begin your flight back to the tower.
+
+Next(0:10)|Hunt Return:
+
+(Fail) You leave the tent, hoping to escape the scene before being discovered. You make it out of the campsite. But being in such a rush, you fail to notice the <<person1>> in time. “Oh? What’s a <<girl>> like you doing out here”? the <<person1>> says. He notices what you have in your hands. “Hold on, how did you get that (Item)?!” Now would be a good time to leave.
+(If exposed) You try to keep out of <<his>> sight, but <<he>> spots you. “Well now, what’s a <<girl>> you doing out here looking like that? Did you lose your clothes somewhere? Don’t worry, I’ll give you something to wear.” 
+<<He>> notices what you have in your hands. “Hold on, how did you get that (Item)?!” It’s clear <<he>> recognises the item, likely because it’s <<his>>.
+
+Now would be a good time to leave. Fast.
+
+Run (Athletics)|Hunt Event: Tent 4.1
+Hunt Event: Tent 4.1
+(Run) Before <<he>> can say anything else, you begin to run away. “Hey! Get back here you damn brat!”
+(Success) You pick up your pace and leave <<him>> behind in the rocky terrain. You can hear <<him>> cursing in the distance. You take flight and start heading back to the tower.
+
+Return home (0:10)|Hunt: Return
+
+(Fail) You get some good speed, but <<he>> is clearly catching up. Not wanting to be caught, you throw your stolen items. <<He>> stops chasing you to make sure <<his>> belongings are alright. You run a bit further, then take flight again. With the goons now alert, trying to get anything else from them won't work.
+
+Keep hunting|Hunt: Continue
+Return home (0:10)|Hunt: Fail
+
+:: Bird Hunt Steal Clothes
+<<effects>>
+
+
+:: Bird Hunt Tent Steal
+<<effects>>
+
+:: Bird Hunt Tent Scare
+<<effects>>
+
+Hunt Event: Tent GH 2
+(Steal) Deciding to steal from them, you come up with a plan to have the Great Hawk distract them while you go in and take their valuables. You tell the Great Hawk about your plan.
+<<if $monster is 1>>
+“<<Wife>> wants to harass bad humans? Would be happy to help <<wife>> with plan.”
+<<else>>
+He thinks for a moment, then gives you a squawk in confirmation.
+
+You set the plan in motion, landing away from the campsite. You give <<bhim>> the signal. <<bHe>> lets out a loud screech that pierces the air, making Remy’s goons panic. They scramble to quickly hide in their tents. You move in, starting to look for anything left outside in their panic. 
+(Passive Skullduggery challenge)(Success)You manage to find two (List: Watches, Rings, Necklaces, Braceletes). You grab them and begin to leave. (Fail) You only find a  (List: Watch, Ring, Necklace, Bracelet). You grab it and begin to leave.
+Knowing they won't stay in their tents forever, you run out of the camp.
+
+Regrouping with the Great Hawk in the sky, you show him what you found.
+<<if $monster is 1>>
+“<<Wife>> is smart. Good plan.” <<bhe>> praises you.
+<<else>>
+<<bHe>> lets out another screech, this one positive.
+With your stolen goods in hand, you fly back to the castle.
+
+Return home (0:10)|Hunt: Return
+
+
+(Harass) Deciding to cause them trouble, you think up ways to sabotage them. Looking at their camp from a bird’s eye view, you come up with a good plan to disrupt them. First, you’ll throw some of their supplies on the fire, then take pieces of wood and use them to light fire to their tents. (If raining) However, due to the rain this method of attack is unlikely to work. Perhaps you could simply scare them? 
+
+<<if $monster is 1>>
+You tell the harpy your plan. “Wife wants to hurt bad humans? Will be dangerous, but will protect wife.”
+<<else>>
+You tell Great Hawk what you plan. He looks at you with uncertainty, but gives an affirmative screech.
+
+He’s willing to help you, but is reluctant to do so. You still have time to reconsider. Do you want to go through with this plan?
+
+Do it (Athletics)|Hunt Event: Tent GH 3
+Don’t|Hunt Event: Tent GH 3.1
+Scare them (0:05)|Hunt Event: Tent GH 3.3
+
+
+
+Hunt Event: Tent GH 3
+You confirm your intentions with him. 
+<<if $monster is 1>>
+He sighs. “Wife should be fast, humans will not stay away long.”
+<<else>>
+He lets out a quiet squawk. Regardless of his reaction, he seems determined.
+
+You set the plan in motion, landing away from the campsite. You give <<bhim>> the signal. <<bHe>> lets out a loud screech that pierces the air, making Remy’s goons panic. They scramble to quickly hide in their tents. (Success) You rush in, grabbing food and other supplies. You quickly throw them in the fire. You manage to get most of the things nearby. - - encroachment.
+(Fail) You run in while grabbing food and other supplies. You do your best to get as much in the fire as you can, but it takes you longer than you wished. - encroachment
+
+You see a <<person1>> peek their head out of a tent. They must have heard you running around. 
+
+Will you still try to light their tents on fire?
+
+Go for it (Athletics and Dancing)|
+That’s enough|
+
+
+
+Hunt Event: Tent GH 3.1
+<<if $monster is 1>>
+You tell the harpy you’ve reconsidered the plan and wont do it. He seems relieved.
+<<else>>
+You tell the Great Hawk you’ve reconsidered the plan and wont do it. He seems relieved.
+
+But you could still steal from them.
+
+Steal from them|Hunt Event: Tent GH 2
+Ignore them|Hunt: Ignore
+
+
+Hunt Event: Tent GH 3.2
+Having been seen by the <<person1>>, you figure its best to just leave. The <<person1>> considers chasing after you, but one glance at the harpy/hawk is enough to make them reconsider.
+
+You’re able to get away without further problems.
+
+You regroup with him in the air.
+<<if $monster is 1>>
+“Wife didn’t do all, but wife is safe.” he says, happy that nothing happened to you.
+<<else>>
+He looks you over to make sure you’re okay, then screeches. He’s glad you’re safe.
+
+You feel tired after such an emotional encounter, so you decide to return to the castle. 
+
+Return home (0:10)|Hunt: Return
+
+Hunt Event: Tent GH 3.3
+You tell the Harpy/Great Hawk you want to sing loudly with him to scare the campers. He nods. Now it’s time to begin your concert.
+
+You let out the loudest bird scream you can manage. That alone is enough to make the campers jump. Then the harpy/Great Hawk joins in. You circle over them, keeping up your great cacophony of noise.
+
+They clearly aren’t enjoying the show, as they begin throwing rocks in the air. Not that any of them could reach you. After a couple of minutes, you feel satisfied with the effect you’ve had. They shouldn’t bother you for a while. 
+
+You’re not used to flying and singing, so you decide it would be best to return to the castle.
+
+Return home (0:10)|Hunt: Return
+Hunt Event: Tent GH 4
+Ignoring the <<person1>>, you grab a long piece of wood and wrap some cloth around it. You dip it into the fire until it begins burning. The <<person1>> doesn’t seem to understand what you’re doing, until you begin to walk towards their tents. They jump out of their tent and begin yelling. “Oi! There’s a <<girl>> trying to burn our tents!” More of them emerge from their tents. 
+(Success) You run like the wind, setting fire to as many tents as you can. Some of them try to throw water at you, but you dodge all their attempts to quench the flame. Arriving near the last tent, you throw your torch at it. - - encroachment. (Safer to travel)
+
+The people consider chasing after you, but they know they have to first stop the fire. You run out of their sight and take flight.
+<<if $monster is 1>>
+The harpy flies over to you. “Wife isn’t hurt?” You confirm you’re fine. “Bold plan from wife. Hard not to worry” He’s relieved to see you’re okay.
+<<else>>
+The Great Hawk flies over to you. He begins inspection all around you, making sure you’re not injured. Once done, he squawks.
+
+After all of this running, you feel too tired to keep hunting. You decide it would be best to return to the castle.
+
+Return home (0:10)|Hunt: Return
+
+(Fail) You run as fast as you can, but the thugs are too fast and intercept your path.
+You soon find yourself surrounded, only protected by the torch. Someone throws water at it, quenching the flame. Left defenceless amid the camp, you try to find a way out. But you see nothing… + stress + trauma  Or do you? Seeing the peril you’re in, your mate swoops in to your rescue. The sight of him landing is enough to scare away half of the group around you, but the braver ones still approach. 
+
+Trying his best to help you, the harpy/Great Hawk lunges in a direction with the least amount of people. You follow after him, running as fast your legs let you. You’re not sure how it happens, but someone manages to hit the harpy/Great Hawk with a polearm. He quickly takes off into the air. He seems injured, but at least he’s still able to fly. You jump off a small rock, giving you just enough wind to quickly ascend as well. You were able to escape them.
+
+<<if $monster is 1>>
+As you two are flying, his injury becomes more obvious. You try to apologise for acting so recklessly, but he simply keeps flying without saying anything. - - love
+<<else>>
+As you two are flying, his injury becomes more obvious. You try to apologise for acting so recklessly, but he simply ignores your words. - - love
+
+It’s clear he’s not well enough to keep hunting, so you fly back to the castle.
+
+
+Return home (0:10)|Hunt: Return Injury
+
 
 
 
@@ -745,6 +1344,8 @@ You tell your <<beasttype>> that you want to return to the castle.
 	<<else>>
 		You begin your return trip.
 	<</if>>
+<<elseif $phase is 2>>
+	You decide to cut your losses and return home.
 <</if>>
 Soon, you see the castle again.
 <<if $bird.hunts.duo is true>>
