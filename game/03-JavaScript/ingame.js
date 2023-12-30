@@ -330,11 +330,12 @@ DefineMacroS("combatDefaults", combatDefaults);
  *
  * @param {string} skillname Simple skill name, "anus" "hand" "feet" etc.
  * @param {number} targetid The targetted NPC's id.
+ * @param {number} npc The chosen NPC's fullDescription, used solely for check that determine if encounters remain consensual
  * @param {number} basedifficulty Difficulty of the check, default 1000.
  * @param {number} multiplier Multiplier on enemy arousal, default 100.
  * @returns {boolean}
  */
-function combatSkillCheck(skillname, targetid = 0, basedifficulty = 1000, multiplier = 100) {
+function combatSkillCheck(skillname, targetid = 0, npc = "", basedifficulty = 1000, multiplier = 100) {
 	const skill = currentSkillValue(skillname + "skill");
 	const rng = V.rng * 10;
 	const arousalfactor = V.enemyarousalmax / (V.enemyarousal + 1);
@@ -342,6 +343,8 @@ function combatSkillCheck(skillname, targetid = 0, basedifficulty = 1000, multip
 	const anger = V.enemyanger;
 
 	if (arousalfactor * multiplier + skill + trust + rng >= basedifficulty + anger) {
+		return true;
+	} else if (["Alex","Robin"].includes(npc) || npc === "Sydney" && !V.loveDrunk || npc === "Great Hawk" && V.syndromebird || V.consensualGuaranteed) {
 		return true;
 	} else {
 		return false;
@@ -672,7 +675,7 @@ function getRobinCrossdressingStatus(crossdressLevel) {
 }
 window.getRobinCrossdressingStatus = getRobinCrossdressingStatus;
 
-/* 
+/*
 	TEMPORARY - remove once obsolete
 	Temporary function until location framework is in place - to detect if a NPC is in the park
 	Uses same checks as other Park NPC checks
@@ -680,8 +683,8 @@ window.getRobinCrossdressingStatus = getRobinCrossdressingStatus;
 function isInPark(name) {
 	switch(name.toLowerCase()) {
 		case "kylar":
-			return V.NPCName[V.NPCNameList.indexOf("Kylar")].state === "active" 
-				&& !["rain", "snow"].includes(V.weather) 
+			return V.NPCName[V.NPCNameList.indexOf("Kylar")].state === "active"
+				&& !["rain", "snow"].includes(V.weather)
 				&& Time.dayState === "day" && V.kylarwatched !== 1;
 		case "robin":
 			return getRobinLocation() === "park";
@@ -1984,7 +1987,7 @@ function maleChance(override){
 	const appearence = override || V.player.gender_appearance;
 	if (appearence === "m") return V.maleChanceMale;
 	if (appearence === "f") return V.maleChanceFemale;
-	return 50;	
+	return 50;
 }
 window.maleChance = maleChance;
 
@@ -2000,7 +2003,7 @@ function beastMaleChance(override){
 	const appearence = override || V.player.gender_appearance;
 	if (appearence === "m") return V.beastMaleChanceMale;
 	if (appearence === "f") return V.beastMaleChanceFemale;
-	return 50;	
+	return 50;
 }
 window.beastMaleChance = beastMaleChance;
 
@@ -2008,7 +2011,7 @@ const crimeSum = (prop, ...crimeTypes) => {
 	if (crimeTypes.length === 0) {
 		crimeTypes = Object.keys(setup.crimeNames);
 	}
-	
+
 	return crimeTypes.reduce((result, crimeType) => result + V.crime[crimeType][prop], 0);
 };
 
