@@ -1164,6 +1164,9 @@ Renderer.CanvasModels["main"] = {
 			srcfn(options) {
 				return 'img/face/' + options.facestyle + '/makeup/mascara' + (options.eyes_half ? "_halfclosed" : "") + '.png'
 			},
+			animationfn(options) {
+				return options.blink_animation
+			},
 			showfn(options) {
 				return options.show_face && !!options.mascara_colour
 			},
