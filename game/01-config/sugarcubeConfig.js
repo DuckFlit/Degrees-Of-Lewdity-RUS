@@ -1,7 +1,8 @@
 /* eslint-disable prefer-const */
 Config.history.controls = false;
 Config.saves.slots = 9;
-Config.history.maxStates = 1;
+Config.history.maxStates = 5;
+Config.history.maxSessionStates = 1;
 
 /* LinkNumberify and images will enable or disable the feature completely */
 /* debug will enable or disable the feature only for new games */
@@ -483,11 +484,11 @@ Config.navigation.override = function (dest) {
 				return "Chalets Work One Sex";
 			case "Chalets Work One Rape Finish":
 				return "Chalets Work One Sex Finish";
-			
+
 			case "Whitney Bully Parasite Event Submit":
 			case "Whitney Bully Parasite Event Escape Attempt":
 				return "Bully Parasite";
-			
+
 			case "Whitney Bully Parasite Event Combat":
 				return "Bully Parasite Fight";
 
