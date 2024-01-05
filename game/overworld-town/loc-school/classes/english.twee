@@ -6,12 +6,10 @@
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
-		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're naked underneath.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim"))>>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're only wearing swimwear underneath.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're only wearing underwear underneath.
+		<<if $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
+			<<set _naked to ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim")) ? "only wearing swimwear" : "only wearing underwear">>
+		<<else>>
+			<<set _naked to "not wearing anything">>
 		<</if>>
 		<br><br>
 		<<npc Doren>><<person1>>
@@ -208,7 +206,7 @@
 		The English lesson begins, how do you want to conduct yourself?
 		<br><br>
 	<<else>>
-		The English lesson continues, how do you want to conduct yourself?
+		The English lesson continues. How do you want to conduct yourself?
 		<br><br>
 	<</if>>
 	<<if $arousal gte $arousalmax>>
@@ -222,6 +220,10 @@
 	<br>
 	<<daydreamicon>><<link [[Daydream|English Lesson Daydream]]>><</link>><<lstress>> <<lharass>>
 	<br>
+	<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+		<<bedicon "zzz">><<link [[Sleep at your desk|English Lesson Sleep]]>><</link>><<ltiredness>>
+		<br>
+	<</if>>
 	<<if $exhibitionism gte 75>>
 		<<ind>><<link [[Masturbate|English Lesson Masturbate]]>><<set $masturbationstart to 1>><<npcincr Kylar lust 5>><</link>><<exhibitionist5>><<glust>>
 		<br>
@@ -233,7 +235,7 @@
 		<br><br>
 		<<classgrades>>
 	<<else>>
-		The English lesson continues, how do you want to conduct yourself?
+		The English lesson continues. How do you want to conduct yourself?
 		<br><br>
 	<</if>>
 	<<if $arousal gte $arousalmax>>
@@ -247,6 +249,10 @@
 	<br>
 	<<daydreamicon>><<link [[Daydream|English Lesson Daydream]]>><</link>><<lstress>> <<lharass>>
 	<br>
+	<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+		<<bedicon "zzz">><<link [[Sleep at your desk|English Lesson Sleep]]>><</link>><<ltiredness>>
+		<br>
+	<</if>>
 	<<if $exhibitionism gte 55>>
 		<<ind>><<link [[Masturbate|English Lesson Masturbate]]>><<set $masturbationstart to 1>><</link>><<exhibitionist4>>
 		<br>
@@ -291,24 +297,9 @@ Doren also laughs. "Go to your class, or I just might!" <<He>> holds the door op
 <<stress _lesson_progress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "englishClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "englishClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><</link>>
+	<<lessonEnd "englishClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - $allure)>>
-		<<eventsenglish>>
-	<<else>>
-		<<eventsenglishsafe>>
-	<</if>>
+	<<lessonEvents "english">>
 <</if>>
 
 :: English Lesson Socialise
@@ -339,24 +330,9 @@ Doren also laughs. "Go to your class, or I just might!" <<He>> holds the door op
 <<trauma _trauma>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "englishClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "englishClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><</link>>
+	<<lessonEnd "englishClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure * 2))>>
-		<<eventsenglish>>
-	<<else>>
-		<<eventsenglishsafe>>
-	<</if>>
+	<<lessonEvents "english">>
 <</if>>
 
 :: English Lesson Daydream
@@ -380,24 +356,24 @@ Doren also laughs. "Go to your class, or I just might!" <<He>> holds the door op
 <<stress _stress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "englishClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "englishClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><</link>>
+	<<lessonEnd "englishClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure / 2))>>
-		<<eventsenglish>>
-	<<else>>
-		<<eventsenglishsafe>>
-	<</if>>
+	<<lessonEvents "english">>
+<</if>>
+
+:: English Lesson Sleep
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+You rest your head on the desk while Doren <<print either("discusses the proper use of adverbs", "animatedly reads aloud from a book", "talks about the symbolism of yellow curtains", "shares examples of different types of poems", "leads two students in a reenactment of a play")>>. Your eyes soon close, just for a moment, before you open them again. You struggle to stay awake, but the desk is just too comfy.
+<br><br>
+<<towelup>>
+<<tiredness -12>>
+<<advancelesson>>
+
+<<if $phase is 1>>
+	<<lessonEnd "englishClassroom" "sleep">>
+<<else>>
+	<<eventsenglishsleep>>
 <</if>>
 
 :: English Kylar Move

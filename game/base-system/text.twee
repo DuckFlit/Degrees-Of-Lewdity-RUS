@@ -379,7 +379,6 @@
 	<</if>>
 <</silently>>_text_output<</widget>>
 
-
 <<widget "someones">>
 	<<if _args[0] is "two">>
 		their
@@ -1567,8 +1566,26 @@
 	<<set _text_output to ($player.gender_appearance is "m"? "boy" : "girl")>>
 <</silently>><<print _text_output>><</widget>>
 
+<<widget "lady">><<silently>>
+	<<set _text_output to ($player.gender_appearance is "m"? "man" : "lady")>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "gentleman">><<silently>>
+	<<set _text_output to ($player.gender_appearance is "m"? "man" : "lady")>>
+<</silently>><<print _text_output>><</widget>>
+
 <<widget "girlfriend">><<silently>>
 	<<girl>><<set _text_output to _text_output + "friend">>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "friend">><<silently>>
+	<<if $robinromance is 1>>
+		<<girl>><<set _text_output to _text_output + "friend">>
+	<<elseif _args[0] is "bff">>
+		<<set _text_output to "best friend">>
+	<<else>>
+		<<set _text_output to "friend">>
+	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "girls">><<silently>>
@@ -1672,9 +1689,9 @@
 
 <!--
 	Optional parameter [0] possible values:
-	0 or omitted or null - display chastity and virginity
-	1 - omit chastity, display virginity
-	2 - omit chastity, omit virginity
+	0 or omitted or null - display chastity, virginity, arousal, and pubes
+	1 - omit chastity, display virginity, arousal, and pubes
+	2 - omit chastity, virginity, arousal, and pubes
  -->
 <<widget "genitals">><<silently>>
 	<<if playerChastity("hidden") and !_args[0] and _chastityBreak isnot 1>>
@@ -1699,15 +1716,17 @@
 			<<if $player.penisExist>>
 				<<set _text_output += " and ">>
 			<</if>>
-			<<if $player.virginity.vaginal is true and _args[0] isnot 2>>
-				<<set _text_output += "virgin ">>
-			<</if>>
-			<<if $vaginaWetness gte 75 and $pbdisable is "f" and $pblevel gte 8>>
-				<<set _text_output += "visibly aroused and bushy ">>
-			<<elseif $vaginaWetness gte 75>>
-				<<set _text_output += "visibly aroused ">>
-			<<elseif $pbdisable is "f" and $pblevel gte 8>>
-				<<set _text_output += "bushy ">>
+			<<if _args[0] isnot 2>>
+				<<if $player.virginity.vaginal is true>>
+					<<set _text_output += "virgin ">>
+				<</if>>
+				<<if $vaginaWetness gte 75 and $pbdisable is "f" and $pblevel gte 8>>
+					<<set _text_output += "visibly aroused and bushy ">>
+				<<elseif $vaginaWetness gte 75>>
+					<<set _text_output += "visibly aroused ">>
+				<<elseif $pbdisable is "f" and $pblevel gte 8>>
+					<<set _text_output += "bushy ">>
+				<</if>>
 			<</if>>
 			/* _args[0] is a flag to prevent .pluck() from altering state random when calling from overlays */
 			<<set _text_output += ["pussy", "pussy", "pussy", "quim"].pluck(_args[0])>>
@@ -4553,13 +4572,23 @@
 	<</if>>
 <</silently>>_text_output<</widget>>
 
+<!--
+	Optional parameter [0] possible values:
+	0 or omitted or null - display full name of undies or full genital description
+	1 - display simple name of undies or full genital description
+	2 - display simple name of undies or simple genital description
+ -->
 <<widget "undies">><<silently>>
 	<<if !$worn.under_lower.type.includes("naked")>>
-		<<set _text_output to $worn.under_lower.name>>
+		<<if _args[0] and _args[0] gte 1>>
+			<<set _text_output to $worn.under_lower.name_simple>>
+		<<else>>
+			<<set _text_output to $worn.under_lower.name>>
+		<</if>>
 	<<elseif !$worn.genitals.type.includes("naked")>>
 		<<set _text_output to $worn.genitals.name>>
 	<<else>>
-		<<genitals>>
+		<<genitals _args[0]>>
 	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
@@ -5006,6 +5035,14 @@
 		<<set _text_output to "sir">>
 	<<else>>
 		<<set _text_output to "miss">>
+	<</if>>
+<</silently>>_text_output<</widget>>
+
+<<widget "Sir">><<silently>>
+	<<if $pronoun is "m">>
+		<<set _text_output to "Sir">>
+	<<else>>
+		<<set _text_output to "Miss">>
 	<</if>>
 <</silently>>_text_output<</widget>>
 
@@ -7702,7 +7739,7 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 
 <<widget "npcHurt">>
 	<<switch _args[0]>>
-		<<case "robin">>
+		<<case "Robin">>
 			<<set _text_output to "upset about "+$robin.hurtReason>>
 		<<default>>
 			<<set _text_output to either("hurt","upset")>>

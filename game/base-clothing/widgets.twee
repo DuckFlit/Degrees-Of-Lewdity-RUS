@@ -916,8 +916,16 @@
 	<<generalOn "hands">>
 <</widget>>
 
+<!-- [0] - if truthy, only run if player has a prop -->
 <<widget "handheldon">>
-	<<generalOn "handheld">>
+	<<if _args[0]>>
+		<<if $propEquipped is 1 and $worn.handheld.type.includes("prop")>>
+			<<generalOn "handheld">>
+			<<set $propEquipped to 0>>
+		<</if>>
+	<<else>>
+		<<generalOn "handheld">>
+	<</if>>
 <</widget>>
 
 <<widget "legson">>
@@ -1388,7 +1396,7 @@
 				<<if $_item isnot undefined>>
 					<<set $_storedIndex to $store[$_slot].findIndex(item => item.name is $_item.name and item.location is _args[0])>>
 					<<if $_storedIndex isnot -1>>
-						<<if $worn[$_slot].name is "naked" and !_cursedSlots.includes($_slot)>>
+						<<if ($worn[$_slot].name is "naked" and !_cursedSlots.includes($_slot)) or (!_cursedSlots.includes($_slot) and _args[0] is "lockers")>>
 							<<set $worn[$_slot] to clone($store[$_slot][$_storedIndex])>>
 							<<set $worn[$_slot].location to 0>>
 							<<set $store[$_slot].deleteAt($_storedIndex)>>

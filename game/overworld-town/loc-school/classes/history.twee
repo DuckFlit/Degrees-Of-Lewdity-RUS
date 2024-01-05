@@ -11,12 +11,13 @@
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
-		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're naked underneath.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim"))>>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're only wearing swimwear underneath.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're only wearing underwear underneath.
+		<<if $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
+			<<set _naked to ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim")) ? "only wearing swimwear" : "only wearing underwear">>
+		<<else>>
+			<<set _naked to "not wearing anything">>
+		<</if>>
+		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked">>
+			As you go to hang your <<print _middleOutfit ? "$worn.over_upper.name" : "$worn.over_upper.name and $worn.over_lower.name">>, you remember that you're _naked underneath.
 		<</if>>
 		<br><br>
 		<<npc Winter>><<person1>>
@@ -46,15 +47,20 @@
 				You hang your coat at the back of the class.
 			<</if>>
 			<<if _robin_location is "school">>
-				Robin waves you over, and points at an empty seat beside <<nnpc_him Robin>>.
+				<<if $withRobin>>
+					<<unset $withRobin>>
+					Robin hurries to sit down, pointing at the empty seat beside <<nnpc_him Robin>>.
+				<<else>>
+					Robin waves you over, and points at an empty seat beside <<nnpc_him Robin>>.
+				<</if>>
 				<br><br>
 				<<if random(1, 2) is 2>>
 					<<endevent>>
 					<<npc Robin>><<generatey2>><<person2>>
 					You approach, but a <<person>> sits there before you arrive.
 					<br><br>
-					<<if _robin.dom gte 20>>
-						"Excuse me," Robin says. "My <<if $robinromance is 1>><<girlfriend>><<else>>friend<</if>> was going to sit there."
+					<<if C.npc.Robin.dom gte 20>>
+						"Excuse me," Robin says. "My <<friend>> was going to sit there."
 						<br><br>
 						<<if random(1, 2) is 2>>
 							"I got here first," the <<person2>><<person>> replies, refusing to budge.
@@ -91,7 +97,7 @@
 				<br>
 			<</if>>
 		<<else>>
-			You enter the history classroom.
+			<<print $withRobin ? "You and Robin" : "You">> enter the history classroom.
 			<<npc Winter>><<person1>>
 			Winter cuts off mid-sentence and looks at you.
 			<<if $daily.school.historyExcused>>
@@ -102,6 +108,7 @@
 				<<gdelinquency>>
 				<<detention 1>>
 			<</if>>
+			<<if $withRobin>><<unset $withRobin>>Robin looks mortified and quickly sits down.<</if>>
 			<br><br>
 			You
 			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
@@ -116,14 +123,20 @@
 		<</if>>
 
 	<<elseif $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
-		Winter looks at your bindings. "Whatever that's about you need to sort it out before you enter my class. Go see the head."
-		<br><br>
-
-		<<link [[Next|Hallways]]>><<endevent>><</link>>
+		Winter looks at your bindings. "Whatever that's about you need to sort it out before you enter my class. <<print $withRobin ? "You, help your friend out." : "Go see the head">>."
+		<<if $withRobin>>
+			Robin hastens to undo your bindings for you.<<unbind>><<unset $withRobin>>
+			<br><br>
+			<<link [[Next|History Lesson]]>><<endevent>><</link>>
+		<<else>>
+			<br><br>
+			<<link [[Next|Hallways]]>><<endevent>><</link>>
+		<</if>>
 		<br><br>
 	<<else>>
 		<<npc Winter>><<person1>>
 		Winter looks at your clothing. "You can't have believed I wouldn't notice. Go see the head."
+		<<if $withRobin>><<unset $withRobin>>Robin gives you a mournful look as you leave.<</if>>
 		<br><br>
 
 		<<link [[Next|Hallways]]>><<endevent>><</link>>
@@ -131,10 +144,29 @@
 	<</if>>
 <<elseif $schoolstate is "lunch">>
 	<<classRoomEarSlime "history">>
-	You enter the history classroom.
-	<<if _robin_location is "school" and $daily.school.lunchEaten is 1>>
+	<<print $withRobin ? "You and Robin" : "You">> enter the history classroom.
+	<<if $withRobin is "hurt">>
+		<<npc Robin>><<person1>>
+		You find Robin sitting at <<his>> desk, <<his>> head buried in <<his>> hands. <<He>> raises <<his>> head to look at you. It looks like <<hes>> been crying. "I don't wanna talk about it," <<he>> whispers. "You can kiss who you like. I just- I thought we-" <<He>> shakes <<his>> head. "Never mind. I'm just going to study. You should too."
+		<br><br>
+		<<He>> opens <<his>> history textbook, refusing to engage further. You give up trying to talk to <<him>>.
+		<br><br>
+		<<unset $withRobin>><<endevent>>
+	<<elseif $withRobin is "yes">>
+		<<npc Robin>><<person1>>
+		<<if !$worn.upper.type.includes("school") and !$worn.lower.type.includes("school")>>
+			Robin glances at your clothes. "I don't think Winter will let you attend class like that... do you have a spare uniform in your pool locker? If not, the <<nnpc_title "Leighton">> might have one!" Robin sits down at <<his>> desk and pulls <<his>> textbook out of <<his>> bookbag.
+		<<elseif !$worn.handheld.type.includes("bookbag")>>
+			Robin sits down at <<his>> desk and pulls <<his>> textbook out of <<his>> bookbag. <<He>> glances over at you. "Oh, did you forget your bookbag in your locker? You should go grab it! I think the school library sells backpacks too, if you don't have anything to carry your books in."
+		<<else>>
+			"I wonder what we'll learn in class today?" Robin muses. <<He>> sits down at <<his>> desk and pulls <<his>> textbook out of <<his>> bookbag. "I'm going to get a head start on the material now."
+		<</if>>
+		<<unset $withRobin>><<endevent>>
+	<<elseif _robin_location is "school" and $daily.school.lunchEaten is 1>>
 		Robin is already here.
-		<<if _robin.trauma gte 20>>
+		<<if $robin.timer.hurt gte 1>>
+			<<nnpc_He Robin>> avoids looking at you.
+		<<elseif C.npc.Robin.trauma gte 20>>
 			<<nnpc_He Robin>> stares out the window.
 		<<elseif $robinromance is 1>>
 			<<nnpc_He Robin>> smiles and waves you over.
@@ -145,8 +177,8 @@
 	<<else>>
 		No one else has arrived yet.
 	<</if>>
-	You could use the extra time to study.
 	<br><br>
+	You could use the extra time to study.
 	<<classgrades>>
 
 	<<schoolperiodtext>>
@@ -248,7 +280,7 @@
 		<br><br>
 		<<classgrades>>
 	<<else>>
-		The history lesson continues, how do you want to conduct yourself?
+		The history lesson continues. How do you want to conduct yourself?
 		<br><br>
 	<</if>>
 	<<if $arousal gte $arousalmax>>
@@ -262,6 +294,10 @@
 	<br>
 	<<daydreamicon>><<link [[Daydream|History Lesson Daydream]]>><</link>><<lstress>> <<lharass>>
 	<br>
+	<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+		<<bedicon "zzz">><<link [[Sleep at your desk|History Lesson Sleep]]>><</link>><<ltiredness>>
+		<br>
+	<</if>>
 	<<if $exhibitionism gte 75>>
 		<<if $robinhistory is "seat">>
 			<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 60>>
@@ -315,28 +351,9 @@ It's hard going, but you think you're making progress.
 <<stress _lesson_progress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "historyClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "historyClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<if $robinhistory isnot "missing" and $robinReunionScene isnot undefined>>
-		<<link [[Next|Robin After Class]]>><</link>>
-	<<else>>
-		<<link [[Next|Hallways]]>><</link>>
-	<</if>>
+	<<lessonEnd "historyClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - $allure)>>
-		<<eventshistory>>
-	<<else>>
-		<<eventshistorysafe>>
-	<</if>>
+	<<lessonEvents "history">>
 <</if>>
 
 :: History Lesson Socialise
@@ -377,28 +394,9 @@ It's hard going, but you think you're making progress.
 <<trauma _trauma>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "historyClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "historyClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<if $robinhistory isnot "missing" and $robinReunionScene isnot undefined>>
-		<<link [[Next|Robin After Class]]>><</link>>
-	<<else>>
-		<<link [[Next|Hallways]]>><</link>>
-	<</if>>
+	<<lessonEnd "historyClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure * 2))>>
-		<<eventshistory>>
-	<<else>>
-		<<eventshistorysafe>>
-	<</if>>
+	<<lessonEvents "history">>
 <</if>>
 
 :: History Lesson Daydream
@@ -420,28 +418,24 @@ It's hard going, but you think you're making progress.
 <<stress _stress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "historyClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "historyClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<if $robinhistory isnot "missing" and $robinReunionScene isnot undefined>>
-		<<link [[Next|Robin After Class]]>><</link>>
-	<<else>>
-		<<link [[Next|Hallways]]>><</link>>
-	<</if>>
+	<<lessonEnd "historyClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure / 2))>>
-		<<eventshistory>>
-	<<else>>
-		<<eventshistorysafe>>
-	<</if>>
+	<<lessonEvents "history">>
+<</if>>
+
+:: History Lesson Sleep
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+You rest your head on the desk while Winter <<print either("elaborates on the significance of 1912", "drones on about something", "talks about the history of the town", "goes into detail on periodic garb", "lectures at the front of the room")>>. Your eyes soon close, just for a moment, before you open them again. You struggle to stay awake, but the desk is just too comfy.
+<br><br>
+<<towelup>>
+<<tiredness -12>>
+<<advancelesson>>
+
+<<if $phase is 1>>
+	<<lessonEnd "historyClassroom" "sleep">>
+<<else>>
+	<<eventshistorysleep>>
 <</if>>
 
 :: History Classroom Study
@@ -488,8 +482,6 @@ It's hard going, but you think you're making progress.
 <!-- gain history skill with same efficiency as studying in the library -->
 <<set _history to _time_to_pass / 20>>
 <<historyskill _history>>
-
-
 
 :: History Robin Move
 <<effects>>

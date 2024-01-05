@@ -379,13 +379,13 @@ You hear someone enter the room. "You again," says Leighton. "What was it this t
 
 <<if _start>>
 	<<set $enemyanger to ($phase is 2 ? 50 : 70)>>
-	<<if $phase is 0>>
+	<<if $phase is 0>> /*grudgingly */
 		<<if $NPCList[0].penis isnot "none">>
 			You try to get away with just licking the tip, but <<he>> shoves your lips against it.
 		<<else>>
 			You try to get away with some light licking, but <<he>> shoves your lips against <<his>> entrance.
 		<</if>>
-	<<elseif $phase is 1>>
+	<<elseif $phase is 1>>/*enthusiastic */
 		<<if $NPCList[0].penis isnot "none" and $NPCList[0].vagina isnot "none">>
 			You tease <<his>> clit with the tip of your tongue, then drag your tongue up along <<his>> shaft until you reach <<his>> glans.
 		<<elseif $NPCList[0].penis isnot "none">>
@@ -394,7 +394,7 @@ You hear someone enter the room. "You again," says Leighton. "What was it this t
 			You tease <<his>> clit with the tip of your tongue.
 		<</if>>
 		<<promiscuity4>>
-	<<elseif $phase is 2>>
+	<<elseif $phase is 2>>/*lovingly */
 		<<if $NPCList[0].penis isnot "none" and $NPCList[0].vagina isnot "none">>
 			You plant quick kisses on <<his>> labia, then work your way up the shaft. <<He>> eases <<his>> rough handling of your hair as you kiss <<his>> glans.
 		<<elseif $NPCList[0].penis isnot "none">>
@@ -419,8 +419,6 @@ Leighton lectures Whitney, unaware of your presence or what you're up to beneath
 <<stateman>>
 <br><br>
 
-<!-- unclear if this is a misplaced line or if enemyanger is meant to be the exact same value on every turn -->
-<<set $enemyanger to ($phase is 2 ? 50 : 70)>>
 <<set $enemyarousal += 20>>
 <<actionsman>>
 
@@ -4106,7 +4104,12 @@ You approach Whitney, and take shelter from the $weather under the tree.
 	<br><br>
 	<<whitneyexit>>
 <<elseif $whitney_smoke is undefined and $whitneyromance gte 1 and C.npc.Whitney.love gte 20 and !playerIsPregnant()>>
+	<<set $daily.whitney.textTrigger to false>>
 	"How's my <<girlfriend>> doing today, huh?" Whitney wraps an arm around your shoulder and pulls you <<print $worn.handheld.type.includes("rainproof") ? "closer" : "underneath <<his>> umbrella">>. <<He>> takes a drag of <<his>> cigarette before handing it to you. "Want some?"
+	<<if $rightarm is "bound" and $leftarm is "bound">>
+		<br><br>
+		<<He>> pauses when <<he>> sees your bound arms. "Huh. As hot as it is to see you tied up... can't really smoke like that, can you?" <<He>> sticks the cigarette back into <<his>> mouth, flips open a pocket knife, and slashes through your bindings. "Better," <<he>> says with a nod of approval. <<unbind>>
+	<</if>>
 	<br><br>
 	<<link [[Accept the cigarette|Whitney Park Cigarette Smoke]]>><<set $phase to 0>><</link>><br>
 	<<link [[Refuse|Whitney Park Cigarette Smoke]]>><<set $phase to 1>><</link>>
@@ -4123,7 +4126,6 @@ You approach Whitney, and take shelter from the $weather under the tree.
 
 :: Whitney Park Cigarette Smoke
 
-<<set $hasUmbrella to ($worn.handheld.type.includes("rainproof") ? 1 : 0)>>
 <<if $phase is 1>>
 	/*Refuse*/
 	You shake your head. Whitney shrugs and slips the cigarette between <<his>> lips again. "Suit yourself," <<he>> says, sounding faintly disgruntled. "More for me."
@@ -4149,6 +4151,8 @@ You approach Whitney, and take shelter from the $weather under the tree.
 	<<else>>
 		<br><br>
 		You get the feeling <<he>> was looking forward to sharing a smoke with you.
+		<br><br>
+		<<whitneyoptions>>
 	<</if>>
 	<<set $whitney_smoke to 0>>
 	<<set $daily.whitney.smoke to true>>
@@ -4243,8 +4247,8 @@ You approach Whitney, and take shelter from the $weather under the tree.
 	<</if>>
 	<<set $daily.whitney.smoke to true>>
 <</if>>
-<br><br>
 <<if $whitney_smoke gte 3>>
+	<br><br>
 	<<if $whitney_smoke gte 7>>
 		<<if $whitney_shotgun gte 0>>
 			<<link [[Shotgun kiss Whitney|Whitney Park Cigarette Smoke Kiss]]>><<npcincr Whitney love 1>><<npcincr Whitney dom -1>><<npcincr Whitney lust 1>><<oralskill 1>><</link>><<gcontrol>><<glove>><<ldom>><<glust>><<goralskill>><<promiscuous1>><<kissvirginitywarning>>
@@ -4265,7 +4269,7 @@ You approach Whitney, and take shelter from the $weather under the tree.
 	<</if>>
 	<<link [[Hand the cigarette back|Whitney Park Cigarette Smoke 2]]>><<clotheson>><</link>>
 <<else>>
-	<<link [[Next|Park]]>><<clotheson>><<unset $hasUmbrella>><<endevent>><<set $eventskip to 1>><</link>>
+	<<whitneyoptions>>
 <</if>>
 
 :: Whitney Park Cigarette Smoke Kiss
@@ -4282,7 +4286,7 @@ You approach Whitney, and take shelter from the $weather under the tree.
 	<br><br>
 	"Look at you, full of surprises," <<he>> says. <<He>> looks impressed, but pleased, at your audacity.
 	<br><br>
-	<<link [[Next|Park]]>><<clotheson>><<unset $hasUmbrella>><<endevent>><<set $eventskip to 1>><</link>>
+	<<whitneyoptions>>
 
 <<elseif $whitney_shotgun gte 1>>
 	/*PC's shotgunned before */
@@ -4293,8 +4297,7 @@ You approach Whitney, and take shelter from the $weather under the tree.
 	Whitney's mouth follows yours when you start to pull away, chasing a familiar high. <<He>> grabs your waist, <<print C.npc.Whitney.dom lte 10 ? "pulling you flush against <<his>> body. <<He>> backs up so <<his>> back is flat against the tree, hands firmly planted on your <<bottom>>" : "manhandling you until your back is pressed against the tree">>. You make out for a few minutes, until Whitney shoves <<print C.npc.Whitney.dom lte 10 ? "you away" : "off of the tree">>.
 	<br>
 	"Damn, slut," <<he>> says with a gasp. "You're good with that mouth." <<He>> straightens out <<his>> <<npcClothesText $NPCName[$NPCNameList.indexOf("Whitney")] "upper">> before holding <<his>> hand out for the cigarette. You pass it back to <<him>>.
-	<br><br>
-	<<link [[Next|Park]]>><<clotheson>><<unset $hasUmbrella>><<endevent>><<set $eventskip to 1>><</link>>
+	<<whitneyoptions>>
 
 <<else>>
 	/*PC doesn't know how to shotgun */
@@ -4307,8 +4310,7 @@ You approach Whitney, and take shelter from the $weather under the tree.
 		You weren't expecting it, but you're no stranger to smoking now. You inhale on reflex, allowing the smoke to pass from <<his>> mouth to yours. <<His>> lips brush against yours as the heady rush of nicotine courses through you.
 		<br><br>
 		<<He>> pulls away from you with a smirk. You're not sure what's more addictive, the cigarette or <<his>> lips. Judging by <<his>> flushed face, you guess <<he>> feels the same way. <<garousal>><<arousal 600>><<glust "Whitney">> "Good to see my <<girl>> already knows how to shotgun," <<he>> comments. "You're not totally useless." <<He>> wraps an arm around you and finishes off the rest of the cigarette.
-		<br><br>
-		<<link [[Next|Park]]>><<clotheson>><<unset $hasUmbrella>><<endevent>><<set $eventskip to 1>><</link>>
+		<<whitneyoptions>>
 	<<else>>
 		<<silently>><<clotheson>><</silently>>
  		You try to refrain, but you can't help but cough in <<his>> face.
@@ -4348,12 +4350,11 @@ You don't miss a beat as you continue, "So what do you want, then? Are you think
 <</if>>
 <br><br>
 Whitney gives a bark of laughter and pulls you in for a kiss. "You would be into that, slut. Now gimme my fag back." <<He>> snatches it back from you, looking away as <<he>> sucks in another lungful of smoke.
-<br><br>
-<<link [[Next|Park]]>><<clotheson>><<unset $hasUmbrella>><<endevent>><<set $eventskip to 1>><</link>>
+<<whitneyoptions>>
 
 :: Whitney Park Cigarette Smoke Oral
 <<set $outside to 0>><<effects>>
-Dropping the cigarette, you sink to your knees in front of Whitney, heedless of the wet grass. <<if $hasUmbrella is 1>>You put down your umbrella and<<else>>You<</if>> reach for the waistband of Whitney's <<npcClothesText $NPCName[$NPCNameList.indexOf("Whitney")] "lower">>.
+Dropping the cigarette, you sink to your knees in front of Whitney, heedless of the wet grass. <<if $carried.handheld.type.includes("rainproof") or $worn.handheld.type.includes("rainproof")>>You put down your umbrella and<<else>>You<</if>> reach for the waistband of Whitney's <<npcClothesText $NPCName[$NPCNameList.indexOf("Whitney")] "lower">>.
 <<if C.npc.Whitney.lust gte 10>>
 	Whitney gives a low chuckle. "Good to see you can take a hint," <<he>> says. <<He>> holds <<his>> umbrella over your head, keeping you dry as you <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower">>. "Can't have you getting sick on me now," <<he>> says. If the rain bothers <<him>>, <<he>> doesn't show it; <<he>> simply spreads <<his>> legs to give you better access.
 	<<if $NPCList[0].penis is "none">>
@@ -4422,15 +4423,13 @@ Dropping the cigarette, you sink to your knees in front of Whitney, heedless of 
 	<<whitneyexit>>
 <<else>>
 	Whitney makes a noise of annoyance. "C'mon, slut, I said some other time," <<he>> says. <<He>> reaches for your hand and pulls you to your feet. "Not in the mood right now." <<He>> shakes <<his>> head. "God, you're insatiable."
-	<br><br>
-	<<link [[Next|Park]]>><<clotheson>><<unset $hasUmbrella>><<endevent>><<set $eventskip to 1>><</link>>
+	<<whitneyoptions>>
 <</if>>
 
 :: Whitney Park Cigarette Smoke 2
 <<set $outside to 0>><<effects>>
 You pass the cigarette back to Whitney. As if on autopilot, <<he>> immediately takes another drag. You try to banter, but <<his>> answers are short, and the conversation peters out.
-<br><br>
-<<link [[Next|Park]]>><<unset $hasUmbrella>><<endevent>><<set $eventskip to 1>><</link>>
+<<whitneyoptions>>
 
 :: Whitney Chat
 <<set $outside to 0>><<effects>>

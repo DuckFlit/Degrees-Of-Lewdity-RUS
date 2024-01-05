@@ -24,6 +24,7 @@ module.exports = {
 		Template: "readonly",
 		UI: "readonly",
 		UIBar: "readonly",
+		idb: "readonly",
 		// SugarCube functions
 		clone: "readonly",
 		either: "readonly",
