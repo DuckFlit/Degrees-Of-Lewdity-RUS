@@ -25,6 +25,7 @@ module.exports = {
 		UI: "readonly",
 		UIBar: "readonly",
 		idb: "readonly",
+		wikifier: "readonly",
 		// SugarCube functions
 		clone: "readonly",
 		either: "readonly",
@@ -116,6 +117,7 @@ module.exports = {
 		playerHasStrapon: "readonly",
 		registerGeneratedPattern: "readonly",
 		registerImagePattern: "readonly",
+		returnTimeFormat: "readonly",
 		rgbToHsv: "readonly",
 		selfOr: "readonly",
 		settingsConvert: "readonly",

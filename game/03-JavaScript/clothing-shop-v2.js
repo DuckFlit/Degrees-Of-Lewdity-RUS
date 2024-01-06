@@ -616,7 +616,8 @@ function filterShopGroup(clothingItems) {
 			return true;
 		} else {
 			T.itemGroups[item.shopGroup].push(item.index);
-		};
+			return false;
+		}
 	});
 }
 window.filterShopGroup = filterShopGroup;

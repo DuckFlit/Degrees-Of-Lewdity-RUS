@@ -1,4 +1,4 @@
-/*Add new hairstyles here to indicate how styles will be ruffled*/
+/* Add new hairstyles here to indicate how styles will be ruffled */
 setup.hair = {
 	hairtype: [
 		{
@@ -18,7 +18,7 @@ setup.hair = {
 				"space buns",
 				"messy bun",
 				"all down",
-				"half-up"
+				"half-up",
 			],
 			devolve: ["ruffled"],
 		},
@@ -29,6 +29,7 @@ setup.hair = {
 		},
 		{
 			name: "double tail",
+			// eslint-disable-next-line prettier/prettier
 			list: ["pigtails", "twintails", "curly pigtails", "sailor buns", "loop braid", "thick twintails", "drill ringlets", "low tails", "thick pigtails", "scorpion tails"],
 			devolve: ["twintails"],
 		},
