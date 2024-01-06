@@ -4825,11 +4825,84 @@
 		<<set $cycledisable to "f">>
 	<</if>>
 
-	<!-- 0.4.5 weather update -->
+	<!-- V0.4.5.0 Handheld Items -->
+	<<if $worn.handheld is undefined>>
+		<<set $worn.handheld to clone(setup.clothes.handheld[0])>>
+		<<set $carried.handheld to clone(setup.clothes.handheld[0])>>
+		<<set $wardrobe.handheld to []>>
+		<<set $store.handheld to []>>
+		<<set $wear_handheld to "none">>
+		<<if ($player.gender is "f" and $background isnot "crossdresser") or
+		($player.gender is "m" and $background is "crossdresser") or
+		($player.gender is "h" and
+			(
+				(($player.gender_body is "m" or ($player.gender_body is "a" and $player.breastsize lte 3)) and $background is "crossdresser") or
+				(($player.gender_body is "f" or ($player.gender_body is "a" and $player.breastsize gt 3)) and $background isnot "crossdresser")
+			)
+		)>>
+			<<set $wardrobe.handheld.push(clone(setup.clothes.handheld[8]))>>
+			<<set $wardrobe.handheld.last().colour to "purple">>
+		<<else>>
+			<<set $wardrobe.handheld.push(clone(setup.clothes.handheld[8]))>>
+			<<set $wardrobe.handheld.last().colour to "blue">>
+		<</if>>
+	<</if>>
+	<<if $propEquipped is undefined>>
+		<<set $propEquipped to 0>>
+	<</if>>
+	<<if $balloonStand is undefined>>
+		<<set $balloonStand to {
+			open: false,
+			owner: "friendly",
+			freeDrink: false,
+			robin: {status: "unaffected", talked: false, knows: false}
+		}>>
+	<</if>>
+	<<if $robin is undefined>>
+		<<set $robin to {
+			timer: {hurt:0, customer:0},
+			hurtReason: "nothing",
+			moneyModifier: 0
+		}>>
+	<</if>>
+	<<if $outfit_update is undefined or $outfit_update lt 5>>
+		<<set $outfit_update to 5>>
+		<<for $_i to 0; $_i lt $outfit.length; $_i++>>
+			<<if $outfit[$_i].handheld is undefined>>
+				<<set $outfit[$_i].handheld to "naked">>
+			<</if>>
+			<<if $outfit[$_i].colors and !$outfit[$_i].colors.handheld>>
+				<<set $outfit[$_i].colors.handheld to [0, 0]>>
+			<</if>>
+		<</for>>
+	<</if>>
+
+	<<if $brothelVending and $brothelVending.status is "sold" and $brothelVending.weeksEmpty lt 4>>
+		<<set $brothelVending.status to "set">>/*return vending machine to players whose machines were incorrectly eaten*/
+	<</if>>
+	<<if $brothelVending and $brothelVending.products is 0 and $brothelVending.weeksEmpty gt 0>>
+		<<set $brothelVending.weeksEmpty to 0>>
+		<<set $brothelVending.weeksRent to 0>>
+		<<if $brothelVending.status is "sold">><<set $brothelVending.status to "idea">><</if>>
+		/*fix weeksEmpty increasing even when the player hasn't started the vending machine questline. reset vending machine questline if vending machines were sold despite never having started the questline*/
+	<</if>>
+
+	/* To fix cases where the value could be delete after starting the game */
+	<<if $cycledisable is undefined>>
+		<<set $cycledisable to "f">>
+	<</if>>
+
+	<!-- 0.4.6 weather update -->
 	<<if $weatherObj is undefined>>
 		<<set $weatherObj to {
+			cur: 0,
 			monthlyTemperatures: [],
 			keypointsArr: []
 		}>>
+	<</if>>
+
+	<!-- 0.4.6 weather update -->
+	<<if $player.bodyTemperature is undefined>>
+		<<set $player.bodyTemperature to 37>>
 	<</if>>
 <</widget>>

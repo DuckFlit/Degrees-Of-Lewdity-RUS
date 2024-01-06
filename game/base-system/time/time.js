@@ -238,7 +238,7 @@ const Time = (() => {
 			}
 		}
 	}
-	// Previous occurrence of a specific moon phase
+	// Date of previous occurrence of a specific moon phase
 	function previousMoonPhase(targetPhase) {
 		const date = new DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
 		date.setTime(0, 0);
@@ -251,7 +251,7 @@ const Time = (() => {
 		} while (true);
 	}
 
-	// Next occurrence of a specific moon phase
+	// Date of next occurrence of a specific moon phase
 	function nextMoonPhase(targetPhase) {
 		const date = new DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
 		do {
@@ -915,6 +915,17 @@ function minutePassed(minutes) {
 		V.stress += Math.floor(minutes * 40);
 	}
 
+	// Tanning
+	if (V.outside) {
+		tanned(Weather.getTanningFactor());
+	}
+
+	// Body temperature
+	// New system - does not affect anything yet - only visual
+	const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
+	Weather.BodyTemperature.update(temperature, minutes);
+
+	// Old system - keep until new system is implemented
 	if (V.body_temperature === "cold") V.stress += minutes * 2;
 	else if (V.body_temperature === "chilly") V.stress += minutes;
 
@@ -932,16 +943,6 @@ function minutePassed(minutes) {
 	fragment.append(wikifier("arousal", minutes * arousalMultiplier + getArousal(minutes)));
 	V.timeSinceArousal = V.arousal < V.arousalmax / 4 ? V.timeSinceArousal + minutes : 1;
 	if (V.player.vaginaExist) fragment.append(passArousalWetness(minutes));
-
-	// Tanning
-	// Old system:
-	// if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade")) {
-	// 	fragment.append(tanned(minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2)));
-	// }
-	// New system:
-	// if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade")) {
-	// 	tanned(minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2));
-	// }
 
 	const waterFragment = passWater(minutes);
 	fragment.append(waterFragment);
@@ -1204,7 +1205,7 @@ function dailyPlayerEffects() {
 	}
 
 	/* PC loses 60 minutes of tanning every day */
-	fragment.append(wikifier("tanned", -60, true));
+	tanned(-60, true);
 	V.skinColor.sunBlock = false;
 
 	V.hairlength += 3;
