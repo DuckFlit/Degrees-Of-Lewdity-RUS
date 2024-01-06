@@ -21,17 +21,22 @@ Weather.WeatherConditions = (() => {
 			date = new DateTime(date ?? Time.date);
 			generateWeather(date);
 			T.currentWeather = interpolateWeather(date);
-			console.log("T.currentWeather", T.currentWeather);
 		}
 		return T.currentWeather;
 	}
 
+	function precipitation() {
+		if (getWeather().precipitationIntensity === 0) return "none";
+		return Weather.isFreezing ? "snow" : "rain";
+	}
+
 	function setWeather(weatherType, instant = false) {
-		delete T.currentWeather;
 		const weatherTypeIndex = Weather.Settings.weatherTypes.findIndex(wt => wt.name === weatherType.toLowerFirst());
 		if (weatherTypeIndex === -1 || V.weatherObj.keypointsArr.length < 1) {
+			console.warn(`Could not set weather. ${weatherType} doesn't exist.`);
 			return;
 		}
+		delete T.currentWeather;
 		V.weatherObj.keypointsArr[0] = {
 			timestamp: Time.date.timeStamp,
 			value: weatherTypeIndex,
@@ -56,12 +61,13 @@ Weather.WeatherConditions = (() => {
 			}
 		}
 
-		currentKeyPoint = currentKeyPoint ?? { timestamp: currentTimeStamp, value: nextKeyPoint.value };
-
 		// Failsafe if no next key point is found for the day, assume weather stays the same
 		if (!nextKeyPoint) {
 			return currentKeyPoint ? currentKeyPoint.value : "clear";
 		}
+
+		currentKeyPoint = currentKeyPoint ?? { timestamp: currentTimeStamp, value: nextKeyPoint.value };
+
 		const currentValueNumeric = Weather.Settings.weatherTypes[currentKeyPoint.value].value;
 		const nextValueNumeric = Weather.Settings.weatherTypes[nextKeyPoint.value].value;
 
@@ -203,6 +209,6 @@ Weather.WeatherConditions = (() => {
 		getWeather,
 		setWeather,
 		isWeather,
-		generateWeatherKeypoints,
+		precipitation,
 	});
 })();

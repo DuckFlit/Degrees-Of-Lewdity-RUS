@@ -1149,10 +1149,6 @@ setup.debugMenu.eventList = {
 			text_only: "\n\n",
 		},
 		{
-			link: [`Sunlight`, stayOnPassageFn],
-			widgets: [`<<set $weather to "clear">>`],
-		},
-		{
 			link: [`Wash`, stayOnPassageFn],
 			widgets: [`<<wash>>`],
 		},

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 class DateTime {
 	/* plain static variables are still too new of a feature for a considerable number of old mobiles, they are re-declared in Time object instead
 	static secondsPerDay = 86400;
@@ -266,17 +267,17 @@ class DateTime {
 		return daysPerMonth.slice(0, this.month - 1).reduce((a, b) => a + b, 0) + this.day;
 	}
 
-	// Returns the current moon phase as a fraction (0-1), where 0 is new moon and 0.5 is full moon
+	// Returns the current moon phase as a fraction (0-1), where 0 and 1 is new moon and 0.5 is full moon
 	get moonPhaseFraction() {
 		// Real new moon (in london) as a reference point
 		const referenceNewMoon = new DateTime(2022, 1, 2, 18, 33);
 		let phaseFraction = ((this.timeStamp - referenceNewMoon.timeStamp) / (Time.synodicMonth * Time.secondsPerDay)) % 1;
 
-		// Special rounding cases - to round to a complete new-moon or full-moon more often
-		phaseFraction =
-			phaseFraction >= 0.48 && phaseFraction <= 0.52 ? 0.5 : phaseFraction < 0.02 || phaseFraction > 0.98 ? 0 : Math.round(phaseFraction * 100) / 100;
+		// Adjust in case of negative date (date before the reference date)
+		phaseFraction = (phaseFraction + 1) % 1;
 
-		return phaseFraction;
+		// Special rounding cases - to round to a complete new-moon or full-moon more often
+		return phaseFraction >= 0.48 && phaseFraction <= 0.52 ? 0.5 : phaseFraction < 0.02 || phaseFraction > 0.98 ? 0 : round(phaseFraction, 2);
 	}
 
 	// Returns a fraction of a day. (0 at 0:00 and 1 at 24:00)

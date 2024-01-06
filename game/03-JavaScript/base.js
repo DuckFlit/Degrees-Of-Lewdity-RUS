@@ -505,6 +505,19 @@ function normalise(value, max, min = 0) {
 window.normalise = normalise;
 
 /**
+ * Returns a rounded number, with number of decimals based on the second parameter
+ *
+ * @param {number} number
+ * @param {number} decimals
+ * @returns new number
+ */
+function round(number, decimals) {
+	const multiplier = 10 ** decimals;
+	return Math.round(number * multiplier) / multiplier;
+}
+window.round = round;
+
+/**
  * Selects a random item from an array of weighted options. Each option is an array with
  * two elements: the item, and its weight.
  * Works similar to eventpool, but more generic and lightweight, and works with any data types.
