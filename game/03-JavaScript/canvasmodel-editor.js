@@ -789,7 +789,7 @@ Macro.add("canvasModelEditor", {
 							"short air vents",
 							"side-pinned",
 							"ruffled",
-							"bowl"
+							"bowl",
 						]),
 						selectOption("hair_fringe_length", ["short", "shoulder", "chest", "navel", "thighs", "feet"]),
 						selectOption("brows_colour", xhairColourOptions),

@@ -27,7 +27,7 @@ let pageLoading = false;
 Config.saves.isAllowed = () => {
 	if (tags().includes("nosave") || V.replayScene) return false;
 	return true;
-}
+};
 
 idb.footerHTML = `
 	<div class="savesListRow">
@@ -43,7 +43,7 @@ idb.footerHTML = `
 		<div class="saveButton">
 			<input type="button" class="saveMenuButton right" value="Delete All" onclick="idb.saveList('confirm clear')">
 		</div>
-	</div>`
+	</div>`;
 
 function onLoad(save) {
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
@@ -56,6 +56,9 @@ function onLoad(save) {
 
 	// decompression should be the FIRST save modification
 	DoLSave.decompressIfNeeded(save);
+
+	// ironman is not currently supported with idb
+	if (save.state.history[save.state.index].variables.ironmanmode) idb.active = false;
 
 	// cache current date before assigning it to every frame in history
 	const date = new Date();

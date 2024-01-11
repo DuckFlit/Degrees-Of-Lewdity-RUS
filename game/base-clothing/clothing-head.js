@@ -1716,6 +1716,7 @@ function initHead() {
 			hood: 1,
 			mask_img: 1,
 			colour: 0,
+			// eslint-disable-next-line prettier/prettier
 			colour_options: ["black", "blue steel", "grey", "white", "light pink", "light blue", "light green", "sand", "red", "pink", "purple", "tangerine", "teal", "custom"],
 			colour_sidebar: "primary",
 			type: ["normal"],
