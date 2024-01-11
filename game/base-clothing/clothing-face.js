@@ -939,7 +939,7 @@ function initFace() {
 			cursed: 0,
 			location: 0,
 			iconFile: "gas_mask.png",
-			accIcon:"gas_mask_acc.png",
+			accIcon: "gas_mask_acc.png",
 		},
 		{
 			index: 33,
