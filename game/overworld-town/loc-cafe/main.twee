@@ -3,14 +3,14 @@
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 You are in the Ocean Breeze Cafe.
 <<if $openinghours is 1>>
-	<<if $weather is "clear">>
-		Most of the tables are full.
-	<<elseif $weather is "overcast">>
-		The cafe is busy, and despite the strong winds some people are sitting outside.
-	<<elseif $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		No one is sitting outside due to the rain, but the cafe proper is crowded.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isSnow>>
 		No one is sitting outside due to the cold, but the cafe proper is crowded.
+	<<elseif !Weather.overcast>>
+		Most of the tables are full.
+	<<else>>
+		The cafe is busy, and despite the strong winds some people are sitting outside.
 	<</if>>
 <</if>>
 <br><br>
@@ -333,7 +333,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 	<<link [[Make multiple trips|Ocean Breeze Plates]]>><<set $phase to 0>><</link>>
 	<br>
 	<<link [[Take them all out at once|Ocean Breeze Plates]]>><<set $phase to 1>><</link>><<dancedifficulty 200 800>>
-<<elseif $rng gte 81 and $weather isnot "rain" and $weather isnot "snow">>
+<<elseif $rng gte 81 and Weather.precipitation is "none">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 	<<if $danger gte (9900 - $allure)>>
 		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
@@ -433,14 +433,14 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 		<</if>>
 		<<garousal>><<arousal 200>>
 	<<elseif $awareness gte 200>>
-		<<if $weather is "clear">>
+		<<if !Weather.overcast>>
 			<<He>> seems to take almost sexual pleasure from sunbathing.
 		<<else>>
 			If not for the rhythmic squirming, you'd think <<he>> was asleep.
 		<</if>>
 		At one point <<he>> shudders in a way that seems almost orgasmic.
 	<<else>>
-		<<if $weather is "clear">>
+		<<if !Weather.overcast>>
 			It's a beautiful day - <<hes>>
 		<<else>>
 			<<Hes>>
@@ -1787,11 +1787,11 @@ You feel a little more refreshed with the caffeine in your system.
 <<else>>
 	You
 <</if>>
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	take a seat and order pancakes. They arrive soon after, along with a cup of coffee.
 	It's tastier than anything you've had at the orphanage. You stare out the window at the rain-filled street, and feel comfy.
 	<br><br>
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	take a seat and order pancakes. They arrive soon after, along with a cup of coffee.
 	It's tastier than anything you've had at the orphanage. You stare out the window at the snowy street, and feel comfy.
 	<br><br>
@@ -2131,7 +2131,7 @@ You ignore the <<person>> and finish licking the plate clean. You lean back, sat
 <</switch>>
 
 <<print $daily.earSlimeOceanBreezeCafeEat ? "You decide that the ear slime is right and" : "You">> take a seat and order _food.
-You stare out the window <<print $weather is "rain" ? "at the rain-filled street, feeling comfy" : $weather is "snow" ? "at the snowy street, feeling comfy" : "and gaze at the sea, enjoying the breeze">>.
+You stare out the window <<print Weather.precipitation is "rain" ? "at the rain-filled street, feeling comfy" : Weather.isSnow ? "at the snowy street, feeling comfy" : "and gaze at the sea, enjoying the breeze">>.
 <br><br>
 <<link [[Next|Ocean Breeze]]>><<endevent>><</link>>
 

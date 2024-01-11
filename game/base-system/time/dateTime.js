@@ -33,26 +33,56 @@ class DateTime {
 		this.toTimestamp(year, month, day, hour, minute, second);
 	}
 
-	/*
+	/**
 	 * Total days since start of timeStamp calculation (year 1)
+	 *
+	 * @param {number} year The year to calculate total days from.
+	 * @returns {number} Total number of days since year 1.
 	 */
 	static getTotalDaysSinceStart(year) {
 		return (year - 1) * 365 + Math.floor((year - 1) / 4) - Math.floor((year - 1) / 100) + Math.floor((year - 1) / 400);
 	}
 
+	/**
+	 * Check if a given year is a leap year.
+	 *
+	 * @param {number} year The year to check.
+	 * @returns {boolean} True if the year is a leap year, false otherwise
+	 */
 	static isLeapYear(year) {
 		return year !== 0 && year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 	}
 
+	/**
+	 * Get the number of days in each month for a given year, considering leap years.
+	 *
+	 * @param {number} year Year to check
+	 * @returns {Array<number>} Array with number of days in each month for the given year
+	 */
 	static getDaysOfMonthFromYear(year) {
 		return DateTime.isLeapYear(year) ? Time.leapYearMonths : Time.standardYearMonths;
 	}
 
+	/**
+	 * Get number of days in a given year, considering leap years.
+	 *
+	 * @param {number} year The year
+	 * @returns {number} Total number of days
+	 */
 	static getDaysOfYear(year) {
 		return DateTime.isLeapYear(year) ? 366 : 365;
 	}
 
-	// Convert year, month, day, hour, minute, and second to a timestamp
+	/**
+	 * Converts the given date components into a timestamp.
+	 *
+	 * @param {number} year
+	 * @param {number} month
+	 * @param {number} day
+	 * @param {number} hour
+	 * @param {number} minute
+	 * @param {number} second
+	 */
 	toTimestamp(year, month, day, hour, minute, second) {
 		if (year < 1 || year > 9999) throw new Error("Invalid year: Year must be between 1-9999.");
 		if (month < 1 || month > 12) throw new Error("Invalid month: Month must be between 1-12.");
@@ -71,7 +101,11 @@ class DateTime {
 		this.second = second;
 	}
 
-	// Convert a timestamp to year, month, day, hour, minute, and second
+	/**
+	 * Converts a timestamp into year, month, day, hour, minute, and second
+	 *
+	 * @param {number} timestamp The timestamp to convert.
+	 */
 	fromTimestamp(timestamp) {
 		// Initialize the year to 1
 		let year = 1;
@@ -106,8 +140,14 @@ class DateTime {
 		this.second = second % 60;
 	}
 
-	// Compares this DateTime object with another DateTime object and returns the difference.
-	// Gives an approximate comparison only when working with higher numbers (several years), since it doesn't take leap years into account for simplicity
+	/**
+	 * Compares this DateTime object with another DateTime object and returns the difference.
+	 * Gives an approximate comparison only when working with higher numbers (several years), since it doesn't take leap years into account for simplicity
+	 *
+	 * @param {DateTime} otherDateTime The DateTime object to compare with.
+	 * @param {boolean} getSeconds If true, returns the difference in seconds, rather than an object
+	 * @returns {object} An object with the difference
+	 */
 	compareWith(otherDateTime, getSeconds = false) {
 		let diffSeconds = otherDateTime.timeStamp - this.timeStamp;
 		if (getSeconds) return diffSeconds;
@@ -142,7 +182,12 @@ class DateTime {
 		};
 	}
 
-	// Returns the first occurrence of a given weekday (1-7 for Sun-Sat) in the current month.
+	/**
+	 * Returns the first occurrence of a specified weekday in the current month
+	 *
+	 * @param {number} weekDay The day of the week (1-7 for Sun-Sat)
+	 * @returns {DateTime} The DateTime for the first occurrence of the specified weekday
+	 */
 	getFirstWeekdayOfMonth(weekDay) {
 		if (weekDay < 1 || weekDay > 7) throw new Error("Invalid weekDay: Must be between 1-7");
 
@@ -150,7 +195,12 @@ class DateTime {
 		return date.addDays((weekDay - date.weekDay + 7) % 7);
 	}
 
-	// Returns the next occurrence of a given weekday (1-7 for Sun-Sat) after the current date.
+	/**
+	 * Returns the next occurrence of a specified weekday after the current date.
+	 *
+	 * @param {number} weekDay The day of the week (1-7 for Sun-Sat).
+	 * @returns {DateTime} The DateTime for the next occurrence of the specified weekday
+	 */
 	getNextWeekdayDate(weekDay) {
 		if (weekDay < 1 || weekDay > 7) throw new Error("Invalid weekDay: Must be between 1-7");
 
@@ -159,7 +209,12 @@ class DateTime {
 		return date.addDays(days);
 	}
 
-	// Returns the previous occurrence of a given weekday (1-7 for Sun-Sat) before the current date.
+	/**
+	 * Returns the previous occurrence of a specified weekday before the current date.
+	 *
+	 * @param {number} weekDay The day of the week (1-7 for Sun-Sat).
+	 * @returns {DateTime} The DateTime for the previous occurrence of the specified weekday
+	 */
 	getPreviousWeekdayDate(weekDay) {
 		if (weekDay < 1 || weekDay > 7) throw new Error("Invalid weekDay: Must be between 1-7");
 		const days = ((7 + weekDay - this.weekDay) % 7) - 7;
@@ -167,8 +222,13 @@ class DateTime {
 		return date.addDays(days);
 	}
 
-	// Adds the specified number of years to the current date
-	// Adding a negative value (e.g. -1) subtracts the years instead
+	/**
+	 * Adds a specified number of years to the current date
+	 * Adding a negative value (e.g. -1) subtracts the years instead
+	 *
+	 * @param {number} years The number of years to add.
+	 * @returns {DateTime}
+	 */
 	addYears(years) {
 		if (!years) return this;
 		const newYear = this.year + years;
@@ -179,8 +239,13 @@ class DateTime {
 		return this;
 	}
 
-	// Adds the specified number of months to the current date
-	// Adding a negative value (e.g. -1) subtracts the months instead
+	/**
+	 * Adds a specified number of months to the current date
+	 * Adding a negative value (e.g. -1) subtracts the months instead
+	 *
+	 * @param {number} months The number of months to add.
+	 * @returns {DateTime}
+	 */
 	addMonths(months) {
 		if (!months) return this;
 		const addedMonths = this.month + months;
@@ -192,16 +257,26 @@ class DateTime {
 		return this;
 	}
 
-	// Adds the specified number of days to the current date
-	// Adding a negative value (e.g. -1) subtracts the days instead
+	/**
+	 * Adds a specified number of days to the current date
+	 * Adding a negative value (e.g. -1) subtracts the days instead
+	 *
+	 * @param {number} days The number of days to add.
+	 * @returns {DateTime}
+	 */
 	addDays(days) {
 		if (!days) return this;
 		this.fromTimestamp(this.timeStamp + days * Time.secondsPerDay);
 		return this;
 	}
 
-	// Adds the specified number of hours to the current date and time
-	// Adding a negative value (e.g. -1) subtracts the hours instead
+	/**
+	 * Adds a specified number of hours to the current date
+	 * Adding a negative value (e.g. -1) subtracts the hours instead
+	 *
+	 * @param {number} hours The number of hours to add.
+	 * @returns {DateTime}
+	 */
 	addHours(hours) {
 		if (!hours) return this;
 		this.timeStamp += hours * Time.secondsPerHour;
@@ -209,8 +284,13 @@ class DateTime {
 		return this;
 	}
 
-	// Adds the specified number of minutes to the current date and time
-	// Adding a negative value (e.g. -1) subtracts the minutes instead
+	/**
+	 * Adds a specified number of minutes to the current date
+	 * Adding a negative value (e.g. -1) subtracts the minutes instead
+	 *
+	 * @param {number} minutes The number of minutes to add.
+	 * @returns {DateTime}
+	 */
 	addMinutes(minutes) {
 		if (!minutes) return this;
 		this.timeStamp += minutes * Time.secondsPerMinute;
@@ -218,8 +298,13 @@ class DateTime {
 		return this;
 	}
 
-	// Adds the specified number of seconds to the current date and time
-	// Adding a negative value (e.g. -1) subtracts the seconds instead
+	/**
+	 * Adds a specified number of seconds to the current date
+	 * Adding a negative value (e.g. -1) subtracts the seconds instead
+	 *
+	 * @param {number} seconds The number of seconds to add.
+	 * @returns {DateTime}
+	 */
 	addSeconds(seconds) {
 		if (!seconds) return this;
 		this.timeStamp += seconds;
@@ -227,7 +312,45 @@ class DateTime {
 		return this;
 	}
 
-	// Returns the weekday (1-7 for Sun-Sat) of the current object's date.
+	/**
+	 * Checks if the current date is the last day of the month
+	 *
+	 * @returns {boolean} True if it's the last day of the month, false otherwise
+	 */
+	isLastDayOfMonth() {
+		const daysInMonth = DateTime.getDaysOfMonthFromYear(this.year)[this.month - 1];
+		return this.day === daysInMonth;
+	}
+
+	/**
+	 * Checks if the current date is the first day of the month
+	 *
+	 * @returns {boolean} True if it's the first day of the month, false otherwise
+	 */
+	isFirstDayOfMonth() {
+		return this.day === 1;
+	}
+
+	/**
+	 * Checks if the current date is between two specified dates
+	 *
+	 * @param {DateTime} startDate The start date
+	 * @param {DateTime} endDate The end date
+	 * @returns {boolean} True if the current date is between the specified dates, false otherwise
+	 */
+	between(startDate, endDate) {
+		if (!(startDate instanceof DateTime && endDate instanceof DateTime)) {
+			throw new Error("Parameters must be instances of DateTime.");
+		}
+
+		return this.timeStamp >= startDate.timeStamp && this.timeStamp <= endDate.timeStamp;
+	}
+
+	/**
+	 * Returns the weekday (1-7 for Sun-Sat) of the current object's date
+	 *
+	 * @returns {number} The weekday number of the current date
+	 */
 	get weekDay() {
 		const daysSinceStart = DateTime.getTotalDaysSinceStart(this.year + 1);
 		const daysInMonth = Time.standardYearMonths.slice(0, this.month - 1).reduce((a, b) => a + b, 0);
@@ -240,34 +363,58 @@ class DateTime {
 		return weekDay;
 	}
 
-	// Returns the name of the weekday (e.g. "Sunday") of the current object's date.
+	/**
+	 * Returns the name of the weekday of the current object's date
+	 *
+	 * @returns {string} The name of the weekday
+	 */
 	get weekDayName() {
 		return Time.daysOfWeek[this.weekDay - 1];
 	}
 
-	// Returns the name of the month (e.g. "January") of the current object's date.
+	/**
+	 * Returns the name of the month (e.g. "January") of the current object's date
+	 *
+	 * @returns {string} Name of month
+	 */
 	get monthName() {
 		return Time.monthNames[this.month - 1];
 	}
 
-	// Returns a boolean indicating whether the current object's date falls on a weekend (Saturday or Sunday).
+	/**
+	 * Returns whether the current object's date falls on a weekend (Saturday or Sunday)
+	 *
+	 * @returns {boolean} True if the current date is a weekend, false otherwise
+	 */
 	get weekEnd() {
 		return this.weekDay === 7 || this.weekDay === 1;
 	}
 
-	// Returns the last date of the current month.
+	/**
+	 * Returns the last date of the current month
+	 *
+	 * @returns {number} 1-31
+	 */
 	get lastDayOfMonth() {
 		const daysPerMonth = DateTime.getDaysOfMonthFromYear(this.year);
 		return daysPerMonth[this.month - 1];
 	}
 
-	// Returns the day of the year (1-365 or 1-366 for leap years) for the current object's date.
+	/**
+	 * Returns the day of the year for the current object's date
+	 *
+	 * @returns {number} The day of the year
+	 */
 	get yearDay() {
 		const daysPerMonth = DateTime.getDaysOfMonthFromYear(this.year);
 		return daysPerMonth.slice(0, this.month - 1).reduce((a, b) => a + b, 0) + this.day;
 	}
 
-	// Returns the current moon phase as a fraction (0-1), where 0 and 1 is new moon and 0.5 is full moon
+	/**
+	 * Returns the current moon phase as a fraction, where 0 and 1 are new moon and 0.5 is full moon
+	 *
+	 * @returns {number} The current moon phase as a fraction
+	 */
 	get moonPhaseFraction() {
 		// Real new moon (in london) as a reference point
 		const referenceNewMoon = new DateTime(2022, 1, 2, 18, 33);
@@ -280,19 +427,64 @@ class DateTime {
 		return phaseFraction >= 0.48 && phaseFraction <= 0.52 ? 0.5 : phaseFraction < 0.02 || phaseFraction > 0.98 ? 0 : round(phaseFraction, 2);
 	}
 
-	// Returns a fraction of a day. (0 at 0:00 and 1 at 24:00)
+	/**
+	 * Returns a fraction of a day (0 at 0:00 and 1 at 24:00) for the current date and time
+	 *
+	 * @returns {number} Fraction between 0 and 1
+	 */
 	get fractionOfDay() {
 		return (this.hour * 60 + this.minute) / (24 * 60);
 	}
 
-	// Returns a fraction of a day, but starting at noon. (0 at 12:00 and 0.99 at 11:59)
+	/**
+	 * Returns a fraction of a day starting at noon (0 at 12:00 and 0.99 at 11:59)
+	 *
+	 * @returns {number} Fraction between 0 and 1
+	 */
 	get fractionOfDayFromNoon() {
 		return (((this.hour + 12) % 24) * 60 + this.minute) / (24 * 60);
 	}
 
-	// Returns a fraction of the year (0 at the start of the year and 1 at the end)
+	/**
+	 * Returns a fraction of the year (0 at the start of the year and 1 at the end) for the current date
+	 *
+	 * @returns {number} The fraction of the year.
+	 */
 	get fractionOfYear() {
 		return this.yearDay / DateTime.getDaysOfYear(this.year);
+	}
+
+	/**
+	 * Calculates the seasonal factor for the current date
+	 * Returns 1 in winter (December 21) and 0 in summer (June 21), interpolating between them.
+	 *
+	 * @returns {number} Factor between 0 and 1
+	 */
+	get seasonFactor() {
+		const summerSolstice = new DateTime(this.year, 6, 21);
+		const winterSolstice = new DateTime(this.year, 12, 21);
+
+		const previousSolstice =
+			this.timeStamp < summerSolstice.timeStamp
+				? new DateTime(this.year - 1, 12, 21)
+				: this.timeStamp < winterSolstice.timeStamp
+				? summerSolstice
+				: winterSolstice;
+
+		const nextSolstice =
+			this.timeStamp < summerSolstice.timeStamp
+				? summerSolstice
+				: this.timeStamp < winterSolstice.timeStamp
+				? winterSolstice
+				: new DateTime(this.year + 1, 6, 21);
+
+		const nextSolsticeFactor = nextSolstice === winterSolstice ? 1 : 0;
+
+		const totalSecondsBetweenSolstices = nextSolstice.timeStamp - previousSolstice.timeStamp;
+		const secondsSinceLastSolstice = this.timeStamp - previousSolstice.timeStamp;
+		const factor = secondsSinceLastSolstice / totalSecondsBetweenSolstices;
+
+		return nextSolsticeFactor === 1 ? factor : 1 - factor;
 	}
 }
 window.DateTime = DateTime;

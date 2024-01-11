@@ -1766,10 +1766,9 @@
 
 <<widget "weatherdisplay">>
 	<<set _season to (Time.season == "winter" ? "_winter" : "")>>
-	<<set _season to (Time.season == "winter" ? "_winter" : "")>>
 	<<set _weather_display to (Time.season == "winter" ? "winter" : "normal")>>
 	<<if $options.images is 1>>
-		<<if Time.dayState is "night" and (isBloodmoon() or $forcedBloodmoon)>>
+		<<if Time.dayState is "night" and (Time.isBloodMoon() or $forcedBloodmoon)>>
 			<<set _dayStateWithBloodMoon to "_bloodmoon">>
 		<<else>>
 			<<set _dayStateWithBloodMoon to "_"+Time.dayState>>
@@ -1791,22 +1790,22 @@
 			<img id="daystate" @src="_imgSky + 'moon' + _dayStateWithBloodMoon + '.png'">
 		<</if>>
 
-		<<skybox>>
-		<div id="debugWeatherType"><<print Weather.name>></div>
+		<div @class="_skybox">
+		</div>
 
 		/* weather (middle part) */
-		<<if $location is "tentworld" or $skyHidden is true>>
-		<<else>>
-			<<switch $weather>>
-				<<case "clear">>
-				<<case "overcast">> <img id="weather" @src="_imgSky + 'overcast' + _dayState + _season + '.png'">
-				<<case "rain">>		<img id="weather" @src="_imgSky + 'rain' + _dayState + '.gif'">
-				<<case "snow">>		<img id="weather" @src="_imgSky + 'snow' + _dayState + '.gif'">
-			<</switch>>
-		<</if>> */
+		<<if $location isnot "tentworld" and $skyHidden is false>>
+			<<if Weather.overcast>>
+				<img id="weather" @src="_imgSky + 'overcast' + _dayState + _season + '.png'">
+			<<elseif Weather.precipitation is "rain">>
+				<img id="weather" @src="_imgSky + 'rain' + _dayState + '.gif'">
+			<<elseif Weather.precipitation is "snow">>
+				<img id="weather" @src="_imgSky + 'snow' + _dayState + '.gif'">
+			<</if>>
+		<</if>>
 
 		/* location (bottom part) */
-		/* <<switch $location>>
+		<<switch $location>>
 			<<case "adult_shop">>
 				<<getadultshopstate>>
 				<<if Time.dayState is "day" and $adultshopstate isnot "closed">>
@@ -1824,7 +1823,7 @@
 				<<else>>
 					<img id="location" @src="_imgLoc + _weather_display + '/alex_farm'+_dayState+'.png'">
 				<</if>>
-	--		<<case "alley">>
+			<<case "alley">>
 				<<if $bus is "industrial">>
 					<img id="location" @src="_imgLoc + _weather_display + '/indust_alley'+_dayStateWithBloodMoon+'.gif'">
 				<<elseif $bus is "residential">>
@@ -1840,7 +1839,7 @@
 				<<else>>
 					<img id="location" @src="_imgLoc + _weather_display + '/asylum'+_dayState+'slow.gif'">
 				<</if>>
-	--		<<case "beach" "chalets">>
+			<<case "beach" "chalets">>
 				<img id="location" @src="_imgLoc + _weather_display + '/beach'+_dayState+'.gif'">
 			<<case "bog">>
 				<img id="location" @src="_imgLoc + _weather_display + '/bog'+_dayStateWithBloodMoon+'.gif'">
@@ -1870,7 +1869,7 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/docks'+_dayState+'.png'">
 			<<case "drain">>
 				<img id="location" @src="_imgLoc + _weather_display + '/drain.gif'">
-	--		<<case "estate">>
+			<<case "estate">>
 				<img id="location" @src="_imgLoc + _weather_display + '/remy_farm'+_dayState+'.png'">
 			<<case "factory">>
 				<<if Time.dayState is "night">>
@@ -1896,13 +1895,13 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/kylar_manor'+_dayState+'.png'">
 			<<case "lake">>
 				<img id="location" @src="_imgLoc + _weather_display + '/lake'+_dayStateWithBloodMoon+'.gif'">
-		-	<<case "lake_ruin">>
+			<<case "lake_ruin">>
 				<img id="location" @src="_imgLoc + _weather_display + '/ruins'+_dayStateWithBloodMoon+'.gif'">
 			<<case "landfill">>
 				<img id="location" @src="_imgLoc + _weather_display + '/landfill'+_dayState+'.png'">
 			<<case "meadow">>
 				<img id="location" @src="_imgLoc + _weather_display + '/meadow'+_dayState+'.gif'">
-	--		<<case "mines">>
+			<<case "mines">>
 				<img id="location" @src="_imgLoc + _weather_display + '/underground'+_dayState+'.png'">
 			<<case "moor">>
 				<img id="location" @src="_imgLoc + _weather_display + '/moor'+_dayState+'.gif'">
@@ -1964,42 +1963,59 @@
 				<img id="location" @src="_imgLoc + _weather_display + '/underground'+_dayState+'.png'">
 			<<case "wolf_cave">>
 				<img id="location" @src="_imgLoc + _weather_display + '/wolf_cave'+_dayState+'.png'">
-		<</switch>> */
-		<div id="locationOverlay"></div>
+
+		<</switch>>
 	<<else>>
 		<<switch Time.dayState>>
 			<<case "day">>
-				<<switch $weather>>
-					<<case "clear">>It's a bright and sunny day.
-					<<case "rain">>It's a rainy day.
-					<<case "overcast">>Clouds are hiding the sun.
-					<<case "snow">>It's a snowy day.
+				<<switch Weather.name>>
+					<<case "clear" "lightClouds">>It's a bright and sunny day.
+					<<case "lightPrecipitation" "heavyPrecipitation" "thunderstorm">>
+						<<if Weather.precipitation is "rain">>
+							It's a rainy day.
+						<<else>>
+							It's a snowy day.
+						<</if>>
+					<<case "heavyClouds">>Clouds are hiding the sun.
 				<</switch>>
 			<<case "night">>
-				<<switch $weather>>
-					<<case "clear">>The stars are shining.
-					<<case "rain">>It's a rainy night.
-					<<case "overcast">>All starlight is blocked by the clouds.
-					<<case "snow">>It's a snowy night.
+				<<switch Weather.name>>
+					<<case "clear" "lightClouds">>The stars are shining.
+					<<case "lightPrecipitation" "heavyPrecipitation" "thunderstorm">>
+						<<if Weather.precipitation is "rain">>
+							It's a rainy night.
+						<<else>>
+							It's a snowy night.
+						<</if>>
+					<<case "heavyClouds">>All starlight is blocked by the clouds.
 				<</switch>>
 			<<case "dawn">>
-				<<switch $weather>>
-					<<case "clear">>The sun is rising.
-					<<case "rain">>It's a rainy morning.
-					<<case "overcast">>It's a cloudy morning.
-					<<case "snow">>It's a snowy morning.
+				<<switch Weather.name>>
+					<<case "clear" "lightClouds">>The sun is rising.
+					<<case "lightPrecipitation" "heavyPrecipitation" "thunderstorm">>
+					<<if Weather.precipitation is "rain">>
+						It's a rainy morning.
+					<<else>>
+						It's a snowy morning.
+					<</if>>
+					<<case "heavyClouds">>It's a cloudy morning.
 				<</switch>>
 			<<case "dusk">>
-				<<switch $weather>>
-					<<case "clear">>The sun is setting.
-					<<case "rain">>It's a rainy evening.
-					<<case "overcast">>It's cloudy evening.
-					<<case "snow">>It's a snowy evening.
+				<<switch Weather.name>>
+					<<case "clear" "lightClouds">>The sun is setting.
+					<<case "lightPrecipitation" "heavyPrecipitation" "thunderstorm">>
+					<<if Weather.precipitation is "rain">>
+						It's a rainy evening.
+					<<else>>
+						It's a snowy evening.
+					<</if>>
+					<<case "heavyClouds">>It's cloudy evening.
 				<</switch>>
 		<</switch>>
 		<br>
 	<</if>>
 <</widget>>
+
 
 <<widget "wearandtear">>
 	<<if _args[0] is "dance">>
@@ -4164,7 +4180,7 @@
 		<<set $pillory_tenant.lastviewed.hour to Time.hour>>
 
 		/*Weather effects*/
-		<<if $weather is "rain">><<set $pillory_tenant.wet to 2>>
+		<<if Weather.precipitation is "rain">><<set $pillory_tenant.wet to 2>>
 		<<elseif $pillory_tenant.wet is 2>><<set $pillory_tenant.wet to 1>>
 		<<else>><<set $pillory_tenant.wet to 0>>
 		<</if>>
@@ -4512,15 +4528,15 @@
 	<<get_pillory_npc>>
 	<<if Time.minute lte 15>>
 		A police officer <<print either("is releasing","has just released","is struggling to release","is about to release")>>
-		<<the_pillory_person>> from the pillory. <<if $weather is "rain">><<His>> clothes are see-through from the rain.<<elseif $weather is "snow">><<He>> shivers in the cold.<</if>>
+		<<the_pillory_person>> from the pillory. <<if Weather.precipitation is "rain">><<His>> clothes are see-through from the rain.<<elseif Weather.isFreezing>><<He>> shivers in the cold.<</if>>
 	<<elseif Time.minute lte 30>>
 		<<The_pillory_person>> staggers away from the pillory with <<print either("tears","defiance","signs of trauma","fury")>> in <<his>> eyes.
-		<<if $weather is "rain">><<His>> clothes are see-through from the rain.<</if>>
+		<<if Weather.precipitation is "rain">><<His>> clothes are see-through from the rain.<</if>>
 	<<else>>
 		<<The_pillory_person>> was released and has left. A couple of civil servants clean the pillory.
 	<</if>>
 	<<set $rng += $pillory_tenant.duration>>
-	<<if $rng gte 67 or $rng gte 33 and $weather is "rain">>A large crowd jeers and shouts.<</if>>
+	<<if $rng gte 67 or $rng gte 33 and Weather.precipitation is "rain">>A large crowd jeers and shouts.<</if>>
 	<br><br>
 	<<clear_pillory>>
 	<<endevent>>

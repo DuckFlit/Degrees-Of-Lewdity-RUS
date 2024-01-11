@@ -403,19 +403,6 @@ function cheatPregnancyNPCReset() {
 }
 DefineMacro("cheatPregnancyNPCReset", cheatPregnancyNPCReset);
 
-/**
- * Checks if x is equal or higher than min and lower or equal to max
- *
- * @param {number} x
- * @param {any} min
- * @param {any} max
- * @returns {boolean}
- */
-function between(x, min, max) {
-	return typeof x === "number" && x >= min && x <= max;
-}
-window.between = between;
-
 function featsPointsMenuReset() {
 	jQuery(document).on("change", "#listbox--upgradenameid", () => {
 		Wikifier.wikifyEval("<<updateFeatsPointsMenu>>");
@@ -462,38 +449,6 @@ function ordinalSuffixOf(i) {
 	return i + "th";
 }
 window.ordinalSuffixOf = ordinalSuffixOf;
-
-function lerp(percent, start, end) {
-	return Math.clamp(start + (end - start) * percent, start, end);
-}
-window.lerp = lerp;
-
-function inverseLerp(value, start, end) {
-	return Math.clamp((value - start) / (end - start), 0, 1);
-}
-window.inverseLerp = inverseLerp;
-
-function formatDecimals(value, decimalPlaces) {
-	return Number(Math.round(parseFloat(value + "e" + decimalPlaces)) + "e-" + decimalPlaces);
-}
-window.formatDecimals = formatDecimals;
-
-function nCr(n, r) {
-	// https://stackoverflow.com/questions/11809502/which-is-better-way-to-calculate-ncr
-	if (r > n - r) {
-		// because C(n, r) == C(n, n - r)
-		r = n - r;
-	}
-
-	let ans = 1;
-	for (let i = 1; i <= r; ++i) {
-		ans *= n - r + i;
-		ans /= i;
-	}
-
-	return ans;
-}
-window.nCr = nCr;
 
 /**
  * Given there are {deckCount} cards in the deck and {markedCount} of them have been marked by the player,
@@ -684,13 +639,13 @@ function isInPark(name) {
 	switch(name.toLowerCase()) {
 		case "kylar":
 			return V.NPCName[V.NPCNameList.indexOf("Kylar")].state === "active"
-				&& !["rain", "snow"].includes(V.weather)
+				&& Weather.precipitation === "none"
 				&& Time.dayState === "day" && V.kylarwatched !== 1;
 		case "robin":
 			return getRobinLocation() === "park";
 		case "whitney":
 			return ["active", "rescued"].includes(V.NPCName[V.NPCNameList.indexOf("Whitney")].state)
-				&& V.NPCName[V.NPCNameList.indexOf("Whitney")].init === 1 && ["snow", "rain"].includes(V.weather)
+				&& V.NPCName[V.NPCNameList.indexOf("Whitney")].init === 1 && Weather.precipitation !== "none"
 				&& Time.dayState === "day" && !Time.schoolTime
 				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
 		default:
@@ -1444,38 +1399,8 @@ function isLoveInterest(name) {
 }
 window.isLoveInterest = isLoveInterest;
 
-/** This function will determine if the date is right for a blood moon, and which part of the night it will happen in. */
-function getTodaysMoonState() {
-	const todaysMoonState = 0;
-	if (Time.monthDay === Time.lastDayOfMonth) {
-		// blood moon happens on the last night of the month
-		T.todaysMoonState = "evening";
-	} else if (Time.monthDay === 1) {
-		// blood moon happens on the first morning of the month
-		T.todaysMoonState = "morning";
-	}
-	return todaysMoonState;
-}
-
-function getMoonState() {
-	let moonstate = 0;
-	T.todaysMoonState = getTodaysMoonState();
-
-	if (Time.nightState === T.todaysMoonState) { // if the current time of night matches the time a blood moon will happen, set moonstate
-		moonstate = T.todaysMoonState;
-	}
-	// V.moonstate = moonstate; //commenting this out to make sure this function doesn't modify save variables
-	return moonstate;
-}
-window.getMoonState = getMoonState;
-
-function isBloodmoon() {
-	return Time.dayState === "night" && V.moonstate === Time.nightState; // it's only a blood moon if it's night, and the current moon state matches the current night state
-}
-window.isBloodmoon = isBloodmoon;
-
 function wraithCanHunt() {
-	return isBloodmoon() && Time.hour !== 5; // wraith events can't start at 5 AM.
+	return Time.isBloodMoon() && Time.hour !== 5; // wraith events can't start at 5 AM.
 }
 window.wraithCanHunt = wraithCanHunt;
 

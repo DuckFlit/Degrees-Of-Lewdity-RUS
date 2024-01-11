@@ -110,9 +110,6 @@ const Time = (() => {
 	let currentDate = {};
 
 	function set(timeStamp = V.timeStamp) {
-		console.log("ASET ATIME");
-		console.log(V.timeStamp);
-		console.log(V.startDate);
 		currentDate = new DateTime((V.startDate || 0) + (timeStamp || 0));
 		V.timeStamp = timeStamp;
 	}
@@ -263,6 +260,11 @@ const Time = (() => {
 		} while (true);
 	}
 
+	function isBloodMoon(date) {
+		date = date ?? currentDate;
+		return (date.day === date.lastDayOfMonth && date.hour >= 21) || (date.day === 1 && date.hour < 6);
+	}
+
 	return Object.create({
 		get date() {
 			return currentDate;
@@ -364,6 +366,7 @@ const Time = (() => {
 		getSecondsSinceMidnight,
 		nextMoonPhase,
 		previousMoonPhase,
+		isBloodMoon,
 
 		secondsPerDay,
 		secondsPerHour,
@@ -505,9 +508,6 @@ function dayPassed() {
 	fragment.append(wikifier("earnAllFeats", true));
 	fragment.append(wikifier("prison_day"));
 	fragment.append(wikifier("clearNPC", "pharmNurse"));
-	fragment.append(wikifier("weather_select"));
-
-	Weather.Sky.setMoonPhase(Time.date);
 
 	V.physiquechange = 1;
 	V.home_event_timer--;
@@ -741,7 +741,7 @@ function dayPassed() {
 		const rng = random(Math.min(1, V.brothelVending.condoms), Math.min(10, V.brothelVending.condoms));
 		V.brothelVending.condoms -= rng;
 		V.brothelVending.condomsSold += rng;
-		V.brothelVending.condomsToRefill = 200 - (V.brothelVending.condoms);
+		V.brothelVending.condomsToRefill = 200 - V.brothelVending.condoms;
 		V.brothelVending.total = (V.brothelVending.total || 0) + rng;
 	}
 
@@ -749,7 +749,7 @@ function dayPassed() {
 		const rng = random(Math.min(1, V.brothelVending.lube), Math.min(10, V.brothelVending.lube));
 		V.brothelVending.lube -= rng;
 		V.brothelVending.lubeSold += rng;
-		V.brothelVending.lubeToRefill = 200 - (V.brothelVending.lube);
+		V.brothelVending.lubeToRefill = 200 - V.brothelVending.lube;
 		V.brothelVending.total = (V.brothelVending.total || 0) + rng;
 	}
 
@@ -769,7 +769,8 @@ function dayPassed() {
 	fragment.append(dailyTransformationEffects());
 	fragment.append(dailyNPCEffects());
 	fragment.append(yearlyEventChecks());
-	fragment.append(moonState());
+
+	moonState();
 
 	parasiteProgressDay();
 	parasiteProgressDay("vagina");
@@ -820,6 +821,23 @@ function dayPassed() {
 	if (V.pirate_attack) {
 		delete V.pirate_attack;
 	}
+
+	/* Old body temperature system - until new one is implemented */
+	/* Will be deprecated soon */
+	let chillDay = 0;
+	switch (Time.season) {
+		case "spring":
+			chillDay += 50;
+			break;
+		case "autumn":
+			chillDay += 60;
+			break;
+		case "winter":
+			chillDay += 150;
+			break;
+	}
+	if (Weather.precipitation === "snow") chillDay += 50;
+	V.chill = chillDay;
 
 	return fragment;
 }
@@ -917,7 +935,7 @@ function minutePassed(minutes) {
 
 	// Tanning
 	if (V.outside) {
-		tanned(Weather.getTanningFactor());
+		tanned(Weather.getTanningFactor().result, "tanLines");
 	}
 
 	// Body temperature
@@ -930,6 +948,9 @@ function minutePassed(minutes) {
 	else if (V.body_temperature === "chilly") V.stress += minutes;
 
 	V.stress = Math.min(V.stress, V.stressmax);
+
+	// Snow
+	Weather.setAccumulatedSnow(minutes);
 
 	// Effects
 	if (V.drunk > 0) fragment.append(wikifier("alcohol", -minutes));
@@ -957,6 +978,8 @@ function minutePassed(minutes) {
 
 function noonCheck() {
 	const fragment = document.createDocumentFragment();
+
+	Weather.Sky.setMoonPhase(Time.date);
 
 	delete V.bartend_info;
 	delete V.bartend_info_other;
@@ -1052,7 +1075,7 @@ function dailyNPCEffects() {
 
 	// Mason
 	if (V.mason_pond === 3) {
-		if (V.weather !== "rain" && V.weather !== "snow") V.mason_pond_timer--;
+		if (Weather.precipitation === "none") V.mason_pond_timer--;
 		if (V.mason_pond_timer < 1) {
 			delete V.mason_pond_timer;
 			V.mason_pond = 4;
@@ -1204,8 +1227,8 @@ function dailyPlayerEffects() {
 		else V.physique = V.physique - V.physique / 2500;
 	}
 
-	/* PC loses 60 minutes of tanning every day */
-	tanned(-60, true);
+	/* PC loses 40 minutes of tanning every day */
+	tanned(-40, true);
 	V.skinColor.sunBlock = false;
 
 	V.hairlength += 3;
@@ -1482,24 +1505,21 @@ function yearlyEventChecks() {
 }
 
 function moonState() {
-	const fragment = document.createDocumentFragment();
-
 	if (Time.monthDay === Time.lastDayOfMonth) {
 		V.moonstate = "evening";
 		V.moonEvent = true;
-		fragment.append(wikifier("checkWraith", true));
+		wikifier("checkWraith", true);
 	} else if (Time.monthDay === 1) {
 		V.moonstate = "morning";
-		fragment.append(wikifier("checkWraith", true));
+		wikifier("checkWraith", true);
 	} else if (V.moonstate !== 0) {
 		V.moonstate = 0;
 		delete V.moonEvent;
-		fragment.append(wikifier("clearWraith"));
+		wikifier("clearWraith");
 		delete V.noEarSlime;
 	}
-
-	return fragment;
 }
+window.moonState = moonState;
 
 function dailySchoolEffects() {
 	const fragment = document.createDocumentFragment();
@@ -1693,7 +1713,7 @@ function dailyFarmEvents() {
 	const fragment = document.createDocumentFragment();
 
 	if (V.alex_greenhouse === 1) {
-		if (V.weather !== "rain" && V.weather !== "snow") V.alex_greenhouse_timer--;
+		if (Weather.precipitation === "none") V.alex_greenhouse_timer--;
 		if (V.alex_greenhouse_timer < 1) {
 			delete V.alex_greenhouse_timer;
 			V.alex_greenhouse = 2;
@@ -1767,24 +1787,25 @@ function dailyFarmEvents() {
 	return fragment;
 }
 
+// To be deprecated next update
 function temperatureHour() {
 	V.chill = V.chill_day;
-	if (Time.dayState === "night") V.chill += V.weather === "clear" ? 50 : 30;
-	else if (Time.dayState === "dusk") V.chill = V.weather === "clear" ? V.chill - 5 : V.chill + 15;
-	else if (Time.dayState === "day") V.chill = V.weather === "clear" ? V.chill - 10 : V.chill + 10;
-	else V.chill += V.weather === "clear" ? 20 : 0;
+	if (Time.dayState === "night") V.chill += !Weather.overcast ? 50 : 30;
+	else if (Time.dayState === "dusk") V.chill = !Weather.overcast ? V.chill - 5 : V.chill + 15;
+	else if (Time.dayState === "day") V.chill = !Weather.overcast ? V.chill - 10 : V.chill + 10;
+	else V.chill += !Weather.overcast ? 20 : 0;
 }
 
 // (Directly converted from passWater widget)
 function passWater(passMinutes) {
 	const fragment = document.createDocumentFragment();
 
-	if (V.outside && V.weather === "clear") {
+	if (V.outside && !Weather.overcast) {
 		if (V.upperwet) fragment.append(wikifier("upperwet", -passMinutes * 2));
 		if (V.lowerwet) fragment.append(wikifier("lowerwet", -passMinutes * 2));
 		if (V.underlowerwet) fragment.append(wikifier("underlowerwet", -passMinutes * (V.worn.lower.type.includes("naked") ? 2 : 1)));
 		if (V.underupperwet) fragment.append(wikifier("underupperwet", -passMinutes * (V.worn.upper.type.includes("naked") ? 2 : 1)));
-	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
+	} else if (V.outside && Weather.precipitation === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
 		if (!V.worn.upper.type.includes("naked") && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
 			fragment.append(wikifier("upperwet", passMinutes));
 		}

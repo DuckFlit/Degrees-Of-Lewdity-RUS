@@ -25,7 +25,7 @@
 		const chromeTest = segments.findIndex(s => s.startsWith("Chrome"));
 		const firefoxTest = segments.findIndex(s => s.startsWith("Firefox"));
 		if (androidTest >= 0) {
-			resp += "\nUpdate your Android WebView System app.\nVersion: " + segments[androidTest].slice(8);
+			resp += "\nUpdate your Android WebView System app. Requires at least version 80. \nCurrent version: " + segments[androidTest].slice(8);
 		} else if (chromeTest >= 0) {
 			resp += "\nUpdate your Chrome browser.\nVersion: " + segments[chromeTest].slice(7);
 		} else if (firefoxTest >= 0) {

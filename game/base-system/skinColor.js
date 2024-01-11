@@ -204,3 +204,40 @@ function tanned(amount, flag) {
 }
 DefineMacro("tanned", tanned);
 window.tanned = tanned;
+
+function tanningGainOutput(modifier, minutes) {
+	console.log("88888888888888888888888888888888888888888888888888888888888888", modifier);
+	console.log("2", V.statdisable);
+	if (V.statdisable !== "f") return "";
+	const factor = modifier * minutes;
+	console.log("555555555555555555555555555555555555555555555555555555555", factor);
+	let pluses = "";
+	if (factor >= 50) {
+		pluses = "+ + +";
+	} else if (factor >= 20) {
+		pluses = "+ +";
+	} else if (factor >= 0) {
+		pluses = "+";
+	} else {
+		return "";
+	}
+	
+	console.log("88888888888888888888888888888888888888888888888888888888888888", modifier);
+	return `<span class="green">${pluses} Tan</span>`;
+}
+DefineMacroS("tanningGainOutput", tanningGainOutput);
+
+function tanningPenaltiesOutput(modifiers) {
+	const reasons = [];
+
+	if (modifiers.sun <= 0.3) reasons.push(`Low sun intensity (${Time.monthName})`);
+	else if (modifiers.sun <= 0.7) reasons.push(`Reduced sun intensity (${Time.monthName})`);
+
+	if (modifiers.weather < 1) reasons.push("Light clouds");
+	if (modifiers.clothing < 1) reasons.push("Shaded by clothing");
+	if (modifiers.sunBlock < 1) reasons.push("Use of sunblock");
+
+	if (reasons.length === 0) return;
+	return `<span class="red">Your tanning gain was reduced due to:<br>${reasons.join("<br>")}</span><br>`;
+}
+DefineMacroS("tanningPenaltiesOutput", tanningPenaltiesOutput);
