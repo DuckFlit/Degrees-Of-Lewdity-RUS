@@ -183,6 +183,7 @@ replace (?<!["'\w])_(?=\w) with T.
  * "upper_tucked":boolean - $worn.upper tucked in $worn.lower
  * "hood_down":boolean - hood is pulled down
  * "alt_position":boolean - sprite has alternate position (e.g. cardigan tied around waist)
+ * "facewear_layer": "front"|"back"
  *
  * GENERATED OPTIONS (temp variables configured by the model itself in preprocess())
  * ------------------
@@ -337,6 +338,7 @@ Renderer.CanvasModels["main"] = {
 			"angel_wing_left": "idle",
 			"angel_wings_layer": "front",
 			"angel_halo_type": "disabled",
+			"angel_halo_lower": false,
 			"fallen_wings_type": "disabled",
 			"fallen_wing_right": "idle",
 			"fallen_wing_left": "idle",
@@ -498,6 +500,7 @@ Renderer.CanvasModels["main"] = {
 			"upper_tucked": false,
 			"hood_down": false,
 			"alt_position": false,
+			"alt_sleeve": false,
 			"alt_position_neck":false,
 			"acc_layer_under": false,
 			"head_mask_src": "", // generated option
@@ -756,7 +759,7 @@ Renderer.CanvasModels["main"] = {
 			options.head_mask_src = "img/clothes/head/" + options.worn_over_head_setup.variable + "/mask.png";
 		} else if (options.worn_head_setup.mask_img === 1 &&
 			!(options.hood_down && options.worn_head_setup.hood && options.worn_head_setup.outfitSecondary !== undefined)) {
-			if (options.worn_head_setup.mask_img_ponytail === 1 && ["curly pigtails", "fluffy ponytail", "side thicktail", "thick twintails", "thick ponytail"].includes(options.hair_sides_type)) {
+			if (options.worn_head_setup.mask_img_ponytail === 1 && ["curly pigtails", "fluffy ponytail", "thick sidetail", "thick twintails", "ribbon tail", "thick sidetail", "thick ponytail", "half-up"].includes(options.hair_sides_type)) {
 				options.head_mask_src = "img/clothes/head/" + options.worn_head_setup.variable + "/mask_ponytail.png";
 			} else {
 				options.head_mask_src = "img/clothes/head/" + options.worn_head_setup.variable + "/mask.png";
@@ -765,7 +768,7 @@ Renderer.CanvasModels["main"] = {
 			options.head_mask_src = null;
 		}
 
-		if ((options.worn_upper_setup.type.includes("bellyHide")) || !(V.worn.over_upper.type.includes("naked"))) {
+		if ((options.worn_upper_setup.type.includes("bellyHide")) || (options.worn_lower_setup.type.includes("bellyHide")) || !(V.worn.over_upper.type.includes("naked"))) {
 			options.belly -= 3;
 		}
 		if (between(options.belly, 8, 24)) {
@@ -801,10 +804,15 @@ Renderer.CanvasModels["main"] = {
 			}
 		}
 
-		if (options.worn_handheld_setup.type.includes("rainproof") || ["balloon", "heart balloon"].includes(options.worn_handheld_setup.name)) {
+		if (options.worn_handheld_setup.type.includes("rainproof")) {
 			options.handheld_overhead = true;
+			if (options.angel_halo_type === "default") { options.angel_halo_lower = true; }
+		} else if (["balloon", "heart balloon"].includes(options.worn_handheld_setup.name)) {
+			options.handheld_overhead = true;
+			options.angel_halo_lower = false;
 		} else {
 			options.handheld_overhead = null;
+			options.angel_halo_lower = false;
 		}
 
 		if (options.worn_handheld_setup.name != "pom poms" && options.worn_handheld_setup.name != "naked" && options.arm_right === "hold") {
@@ -1156,6 +1164,9 @@ Renderer.CanvasModels["main"] = {
 			srcfn(options) {
 				return 'img/face/' + options.facestyle + '/makeup/mascara' + (options.eyes_half ? "_halfclosed" : "") + '.png'
 			},
+			animationfn(options) {
+				return options.blink_animation
+			},
 			showfn(options) {
 				return options.show_face && !!options.mascara_colour
 			},
@@ -1288,9 +1299,9 @@ Renderer.CanvasModels["main"] = {
 		},
 		"hair_extra": { // Extra layer for thighs+ long hair for certain styles
 			srcfn(options) {
-				if (options.hair_sides_length === "feet" && ["default", "loose", "straight", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick ponytail"].includes(options.hair_sides_type)) {
+				if (options.hair_sides_length === "feet" && ["default", "loose", "straight", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick ponytail", "all down", "half-up"].includes(options.hair_sides_type)) {
 					return "img/hair/back/" + options.hair_sides_type + '/' + "feet.png"
-				} else if (options.hair_sides_length === "thighs" && ["default", "loose", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick_ponytail"].includes(options.hair_sides_type)) {
+				} else if (options.hair_sides_length === "thighs" && ["default", "loose", "curl", "defined curl", "neat", "dreads", "afro pouf", "thick_ponytail", "all down", "half-up"].includes(options.hair_sides_type)) {
 					return "img/hair/back/" + options.hair_sides_type + '/' + "thighs.png"
 				} else if (["ruffled"].includes(options.hair_sides_type)) {
 					return "img/hair/back/" + options.hair_sides_type + '/' + options.hair_sides_length + ".png"
@@ -1574,7 +1585,12 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.angel_halo_type);
 			},
-			z: ZIndices.over_head_back,
+			dyfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? 20 : 0;
+			},
+			zfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? ZIndices.back_lower : ZIndices.over_head_back;
+			},
 			animation: "idle"
 		},
 		"angel_halo_front": {
@@ -1584,7 +1600,12 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.angel_halo_type);
 			},
-			z: ZIndices.over_upper,
+			dyfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? 20 : 0;
+			},
+			zfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? ZIndices.over_head : ZIndices.over_upper;
+			},
 			animation: "idle"
 		},
 
@@ -2589,7 +2610,11 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"upper_acc": genlayer_clothing_accessory("upper", {
 			zfn(options) {
-				return options.zupper
+				if (options.arm_right === "hold" && (options.worn_upper_setup.name === "winter jacket" || options.worn_over_upper_setup.name === "winter jacket" || options.worn_upper_setup.name === "skimpy lolita dress")) {
+					return ZIndices.lower_high;
+				} else {
+					return options.zupper;
+				}
 			}
 		}),
 		"upper_breasts_acc": genlayer_clothing_breasts_acc("upper", {
@@ -2702,7 +2727,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"lower": genlayer_clothing_main('lower', {
 			zfn(options) {
-				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower;
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
 			},
 			masksrcfn(options) {
 				return options.belly_mask_clip_src;
@@ -2752,7 +2777,7 @@ Renderer.CanvasModels["main"] = {
 					}
 				},
 				zfn(options) {
-					return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower;
+					return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
 				},
 				masksrcfn(options) {
 					return options.belly_mask_clip_src;
@@ -3093,7 +3118,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_right !== "none"
 			},
 			zfn(options) {
-				return options.handheld_overhead ? ZIndices.over_head : ZIndices.handheld;
+				return options.handheld_overhead ? ZIndices.over_upper : ZIndices.handheld;
 			},
 		}),
 		"handheld_acc": genlayer_clothing_accessory('handheld', {
@@ -3110,7 +3135,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_right !== "none"
 			},
 			zfn(options) {
-				return options.handheld_overhead ? ZIndices.over_head : ZIndices.handheld;
+				return options.handheld_overhead ? ZIndices.over_upper : ZIndices.handheld;
 			},
 		}),
 		"handheld_left": {
@@ -3154,8 +3179,12 @@ Renderer.CanvasModels["main"] = {
 				return ["worn_handheld_acc"]
 			},
 		},
-		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld'),
-		"handheld_back": genlayer_clothing_back_img('handheld'),
+		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld', {
+			z: ZIndices.head_back
+		}),
+		"handheld_back": genlayer_clothing_back_img('handheld',{
+			z: ZIndices.over_head_back
+		}),
 		/***
 		 *    ██   ██ ███████  █████  ██████
 		 *    ██   ██ ██      ██   ██ ██   ██
@@ -3208,7 +3237,7 @@ Renderer.CanvasModels["main"] = {
 
 		"face": genlayer_clothing_main('face', {
 			zfn(options) {
-				if (options.acc_layer_under) {
+				if (options.facewear_layer === "front") {
 					return ZIndices.face - 12.5;
 				}else {
 					return ZIndices.face;
@@ -3217,7 +3246,7 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"face_acc": genlayer_clothing_accessory('face', {
 			zfn(options) {
-				if (options.acc_layer_under) {
+				if (options.facewear_layer === "front") {
 					return ZIndices.face - 12.5;
 				}else {
 					return ZIndices.face;
@@ -3808,10 +3837,16 @@ function genlayer_clothing_back_img_acc(slot, overrideOptions) {
 function genlayer_clothing_arm(arm, slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
+			let isAltPosition = (options.alt_position &&
+			options["worn_" + slot + "_setup"].altposition !== undefined);
+			let isAltSleeve = options.alt_sleeve &&
+			options["worn_" + slot + "_setup"].altsleeve !== undefined;
 			let path = 'img/clothes/' +
 				slot + '/' +
 				options["worn_" + slot + "_setup"].variable + '/' +
-				(options["arm_" + arm] === "cover" ? (arm + '_cover.png') : options.handheld_position && arm === "right" ? "hold.png" : (arm + ".png"));
+				(options["arm_" + arm] === "cover" ? (arm + '_cover') : options.handheld_position && arm === "right" ? "hold" : (arm)) +
+				(isAltPosition ? "_alt" : "") +
+				(isAltSleeve ? "_rolled.png" : ".png");
 			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 		showfn(options) {

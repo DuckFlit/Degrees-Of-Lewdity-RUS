@@ -3300,7 +3300,9 @@
 			lightFlat: $lightFlat !== undefined ? $lightFlat : 0,
 			lightCombat: $lightCombat !== undefined ? $lightCombat : 0.2,
 			lightTFColor: $lightTFColor !== undefined ? $lightTFColor : 0.2,
-			maxStates: $maxStates !== undefined ? $maxStates : 1,
+			maxStates: $maxStates !== undefined ? $maxStates : 5,
+			maxSessionStates: 1,
+			historyControls: false,
 			numpad: $numpad !== undefined ? $numpad : false,
 			newWardrobeStyle: $newWardrobeStyle !== undefined ? $newWardrobeStyle : true,
 			useNarrowMarket: $useNarrowMarket !== undefined ? $useNarrowMarket : false,
@@ -3571,7 +3573,7 @@
 	/* Code that should not be moved into a check like above */
 	<<set $runWardrobeSanityChecker to true>>
 
-	<<if $objectVersion.updateClothes lt 43 or $objectVersion.updateClothes is undefined>>
+	<<if $objectVersion.updateClothes lt 44 or $objectVersion.updateClothes is undefined>>
 		<<updateClothes>>
 		<<if $objectVersion.updateClothes lt 38>>
 			<!-- V0.4.0.7 return items stuck in $store without proper .location -->
@@ -3582,7 +3584,7 @@
 			<!--Should'nt need to re-run that often-->
 			<<run clothesDataTrimmerLoop()>>
 		<</if>>
-		<<set $objectVersion.updateClothes to 43>>
+		<<set $objectVersion.updateClothes to 44>>
 		<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 		Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
 	<</if>>
@@ -3593,9 +3595,9 @@
 		<<set $objectVersion.specialClothes to 14>>
 	<</if>>
 
-	<<if $objectVersion.wardrobes lt 7 or $objectVersion.wardrobes is undefined>>
+	<<if $objectVersion.wardrobes lt 8 or $objectVersion.wardrobes is undefined>>
 		<<wardrobesUpdate>>
-		<<set $objectVersion.wardrobes to 7>>
+		<<set $objectVersion.wardrobes to 8>>
 	<</if>>
 
 	<<if $objectVersion.museumAntiques lte 14 and $museumAntiques.antiques.antiquewhitescrystal isnot undefined>>
@@ -4796,13 +4798,31 @@
 			moneyModifier: 0
 		}>>
 	<</if>>
-	<<if $outfit_update is undefined or $outfit_update lt 4>>
-		<<set $outfit_update to 4>>
+	<<if $outfit_update is undefined or $outfit_update lt 5>>
+		<<set $outfit_update to 5>>
 		<<for $_i to 0; $_i lt $outfit.length; $_i++>>
 			<<if $outfit[$_i].handheld is undefined>>
 				<<set $outfit[$_i].handheld to "naked">>
 			<</if>>
+			<<if $outfit[$_i].colors and !$outfit[$_i].colors.handheld>>
+				<<set $outfit[$_i].colors.handheld to [0, 0]>>
+			<</if>>
 		<</for>>
+	<</if>>
+
+	<<if $brothelVending and $brothelVending.status is "sold" and $brothelVending.weeksEmpty lt 4>>
+		<<set $brothelVending.status to "set">>/*return vending machine to players whose machines were incorrectly eaten*/
+	<</if>>
+	<<if $brothelVending and $brothelVending.products is 0 and $brothelVending.weeksEmpty gt 0>>
+		<<set $brothelVending.weeksEmpty to 0>>
+		<<set $brothelVending.weeksRent to 0>>
+		<<if $brothelVending.status is "sold">><<set $brothelVending.status to "idea">><</if>>
+		/*fix weeksEmpty increasing even when the player hasn't started the vending machine questline. reset vending machine questline if vending machines were sold despite never having started the questline*/
+	<</if>>
+
+	/* To fix cases where the value could be delete after starting the game */
+	<<if $cycledisable is undefined>>
+		<<set $cycledisable to "f">>
 	<</if>>
 
 	<!--V0.4.6.0 Great Hawk expansion -->

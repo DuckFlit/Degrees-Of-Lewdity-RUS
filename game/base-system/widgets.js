@@ -47,7 +47,7 @@ const hairStyleCap = {
 		pigtails: 300,
 		ponytail: 300,
 		short: 100,
-		"shaved": 100,
+		shaved: 100,
 	},
 	fringetype: {
 		default: 100,
@@ -69,8 +69,8 @@ const hairStyleCap = {
 		"ringlet curl": 300,
 		curtain: 200,
 		trident: 200,
-		"buzzcut": 100,
-		"mohawk": 100,
+		buzzcut: 100,
+		mohawk: 100,
 	},
 };
 
@@ -255,7 +255,7 @@ function genderappearancecheck() {
 		if (V.worn.under_upper.exposed >= 1) {
 			/* Exposed breasts */
 			T.breast_indicator = 1;
-			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, (V.player.perceived_breastsize > 0 ? "Exposed breasts" : "Exposed flat chest"));
+			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, V.player.perceived_breastsize > 0 ? "Exposed breasts" : "Exposed flat chest");
 		} else {
 			/* Breasts covered by only underwear */
 			addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 2) * 100, 0, Infinity), "Breast size visible through underwear");

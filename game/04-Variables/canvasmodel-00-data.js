@@ -63,6 +63,7 @@ const ZIndices = {
 	upper_top: 97,
 	bellyClothes: 98,
 	bellyClothesShadow: 99,
+	lower_cover: 100,
 
 	collar: 103,
 	neck: 103,

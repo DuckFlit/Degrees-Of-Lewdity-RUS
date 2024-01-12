@@ -98,10 +98,9 @@ function handleTouchMove(evt) {
 	yDown = null;
 }
 
-//Links.disableNumberifyInVisibleElements.push("#passage-testing-room");
+// Links.disableNumberifyInVisibleElements.push("#passage-testing-room");
 
 $(document).on(":passagerender", function (ev) {
-
 	if (passage() === "GiveBirth") {
 		$(ev.content)
 			.find("[type=checkbox]")
@@ -432,9 +431,17 @@ function settingsGenericGenders(id) {
 
 		if (id === "mlm" || id === "wlw" || id === "blw" || id === "blm") {
 			switch (val) {
-				case 100: text = `<span class='gold inline-colour'>No</span> <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>all</span> <span class='blue inline-colour'>${men}</span> will be ${attraction}.`; break;
-				case 0: text = `<span class='gold inline-colour'>All</span> <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>no</span> <span class='blue inline-colour'>${men}</span> will be  ${attraction}.`; break;
-				default: text = `<span class='gold inline-colour'>${(100 - val)}%</span> of <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>${val}%</span> of <span class='blue inline-colour'>${men}</span> will be ${attraction}.`; break;
+				case 100:
+					text = `<span class='gold inline-colour'>No</span> <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>all</span> <span class='blue inline-colour'>${men}</span> will be ${attraction}.`;
+					break;
+				case 0:
+					text = `<span class='gold inline-colour'>All</span> <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>no</span> <span class='blue inline-colour'>${men}</span> will be  ${attraction}.`;
+					break;
+				default:
+					text = `<span class='gold inline-colour'>${
+						100 - val
+					}%</span> of <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>${val}%</span> of <span class='blue inline-colour'>${men}</span> will be ${attraction}.`;
+					break;
 			}
 		} else {
 			if (val === 100) {
@@ -442,18 +449,24 @@ function settingsGenericGenders(id) {
 			} else if (val === 0) {
 				text = `<span class='gold inline-colour'>All</span> ${id} will be <span class='pink inline-colour'>female</span>.`;
 			} else if (val === 50) {
-				text = id.charAt(0).toUpperCase() + id.slice(1) + " will be <span class='gold inline-colour'>evenly</span> split between <span class='blue inline-colour'>male</span> and <span class='pink inline-colour'>female</span> genders.";
+				text =
+					id.charAt(0).toUpperCase() +
+					id.slice(1) +
+					" will be <span class='gold inline-colour'>evenly</span> split between <span class='blue inline-colour'>male</span> and <span class='pink inline-colour'>female</span> genders.";
 			} else if (val > 50) {
 				text = `<span class='gold inline-colour'>${val}%</span> of ${id} will be <span class='blue inline-colour'>male</span>.`;
 			} else {
-				text = `<span class='gold inline-colour'>${(100 - val)}%</span> of ${id} will be <span class='pink inline-colour'>female</span>.`;
+				text = `<span class='gold inline-colour'>${100 - val}%</span> of ${id} will be <span class='pink inline-colour'>female</span>.`;
 			}
 		}
 
-		jQuery("#numberslider-value-" + slider).text("").append(text).addClass("small-description");
-		};
+		jQuery("#numberslider-value-" + slider)
+			.text("")
+			.append(text)
+			.addClass("small-description");
+	};
 
-		$(() => {
+	$(() => {
 		updateText();
 		$("#numberslider-input-" + slider).on("input change", function (e) {
 			updateText();
@@ -469,16 +482,24 @@ function settingsMonsterChance() {
 		let text = null;
 
 		switch (val) {
-			case 100: text = "Beasts will <span class='gold inline-colour'>always</span> be monster girls and boys."; break;
-			case 0: text = "Beasts will <span class='gold inline-colour'>never</span> appear as monster girls and boys, unless allowed while hallucinating."; break;
-			case 50: text = "<span class='gold inline-colour'>Half</span> of all beasts will be replaced by monster girls and boys."; break;
-			default: text = `<span class='gold inline-colour'>${val}%</span> of beasts will be replaced by monster girls and boys.`; break;
+			case 100:
+				text = "Beasts will <span class='gold inline-colour'>always</span> be monster girls and boys.";
+				break;
+			case 0:
+				text = "Beasts will <span class='gold inline-colour'>never</span> appear as monster girls and boys, unless allowed while hallucinating.";
+				break;
+			case 50:
+				text = "<span class='gold inline-colour'>Half</span> of all beasts will be replaced by monster girls and boys.";
+				break;
+			default:
+				text = `<span class='gold inline-colour'>${val}%</span> of beasts will be replaced by monster girls and boys.`;
+				break;
 		}
 
 		jQuery("#numberslider-value-monsterchance").text("").append(text).addClass("small-description");
-		};
+	};
 
-		$(() => {
+	$(() => {
 		updateText();
 		$("#numberslider-input-monsterchance").on("input change", function (e) {
 			updateText();
@@ -683,13 +704,21 @@ function updatehistorycontrols() {
 	if (V.options.maxStates === undefined) V.options.maxStates = Config.history.maxStates;
 	else Config.history.maxStates = V.options.maxStates; // update engine config
 
-	// option to only save active state into sessionStorage, for better performance
-	if (V.options.sessionHistory) Config.history.maxSessionStates = V.options.maxStates;
-	else Config.history.maxSessionStates = 1;
+	// enable fast rng re-roll on "keypad *" for debug and testing
+	if (V.debug || V.cheatdisable === "f" || V.testing) Links.disableRNGReload = false;
+	else Links.disableRNGReload = true;
 
-	if (V.options.maxStates === 1) jQuery("#ui-bar-history").hide(); // hide nav panel when it's useless
-	else {
-		// or unhide it otherwise
+	// option to reduce the number of states going into sessionStorage, for better performance
+	if (V.options.maxSessionStates === undefined) V.options.maxSessionStates = Config.history.maxSessionStates;
+	else Config.history.maxSessionStates = V.options.maxSessionStates;
+
+	// option to still record history without showing the controls, for better debugging
+	if (V.options.maxStates === 1 || !V.options.historyControls) {
+		// hide nav panel when it's useless or set to not be displayed
+		Config.history.controls = false;
+		jQuery("#ui-bar-history").hide();
+	} else if (Config.history.maxStates > 1) {
+		// or unhide it otherwise, if config allows
 		Config.history.controls = true;
 		jQuery("#ui-bar-history").show();
 	}
@@ -707,6 +736,14 @@ function updateOptions() {
 		const optionsData = clone(V.options);
 		const tmpButtons = T.buttons;
 		const tmpKey = T.key;
+
+		if (Config.history.maxSessionStates < State.history.length) {
+			// update session data to prevent history loss
+			const tmpMaxSessionStates = Config.history.maxSessionStates;
+			Config.history.maxSessionStates = State.history.length;
+			State.setSessionState(State.marshalForSave());
+			Config.history.maxSessionStates = tmpMaxSessionStates;
+		}
 
 		if (!State.restore()) return; // don't do anything if state couldn't be restored
 		V.options = optionsData;

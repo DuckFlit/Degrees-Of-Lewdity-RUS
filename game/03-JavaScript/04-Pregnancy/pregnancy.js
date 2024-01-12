@@ -81,7 +81,7 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 	if (["hand", "kiss"].includes(genital)) genital = target === "pc" && !V.player.vaginaExist ? "anus" : "vagina";
 
 	const motherObject = npcPregObject(target, true);
-	const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital });
+	const [pregnancy, fertility, magicTattoo, contraceptive] = pregPrep({ motherObject, genital });
 
 	// Check the cycle settings
 	let multi = 1;
@@ -108,6 +108,9 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 			multi = 1 / Math.pow(4, C.npc[target].pregnancy.nonCycleRng[0]);
 		}
 	}
+
+	if (!forcePregnancy && contraceptive && (random(0, 100) >= 10 || contraceptive > 1)) return "contraceptive fail";
+
 	if (["hawk", "harpy"].includes(spermType) || target === "Great Hawk") {
 		if (!["pc", "Great Hawk"].includes(target)) return false;
 		if ((target === "pc" && !V.harpyEggs) || (target === "Great Hawk" && multi === 1)) return false;
@@ -138,7 +141,6 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 	}
 	return false;
 }
-window.fetishPregnancy = fetishPregnancy;
 
 /* Player pregnancy starts here */
 /* V.pregnancytype === "realistic" uses this function */
@@ -163,8 +165,8 @@ function playerPregnancyAttempt(baseMulti = 1, genital = "vagina") {
 	/* The lower basePenalty is, the easier it is for the player to get pregnant */
 	let basePenalty = Math.floor((100 - V.basePlayerPregnancyChance) * Math.clamp(fertilityBoost, 0.1, 1) * baseMulti);
 
-	if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") basePenalty = Math.floor(basePenalty * 2);
-	if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") basePenalty = Math.floor(basePenalty / 2);
+	if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") basePenalty = Math.floor(basePenalty / 2);
+	if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") basePenalty = Math.floor(basePenalty * 2);
 
 	/*
 		When spermArray.length - 1 is lower than basePenalty, it uses basePenalty to determin if the pregnancy should occur or not

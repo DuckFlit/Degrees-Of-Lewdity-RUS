@@ -1712,6 +1712,9 @@
 		<</if>>
 	<</if>>
 	<<set $trueconsensual to 1>>
+	<<if _args[0]>>
+		<<set $consensualGuaranteed to 1>>
+	<</if>>
 	<<if $npc.length is 1 and ($npc[0] is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].dom lte 10 and $debug is 1) or ($npc[0] is "Sydney" and $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 50)>>
 		<<npc_submissive>>
 	<</if>>
@@ -2300,6 +2303,10 @@
 <</widget>>
 
 <<widget "unbind">>
+	/*<<unbind>> is only used for the player unbinding their arms after they've been tied with rope. it will destroy handheld items. do not use it for unbinding arms after they've been temporarily restrained; use <<unbindtemp>> instead*/
+	<<if $worn.handheld.name isnot "naked">>
+		<<handheldruined>>
+	<</if>>
 	<<set $rightboundcarry to 0>>
 	<<set $leftboundcarry to 0>>
 	<<set $leftarm to 0>>
@@ -2320,7 +2327,20 @@
 	<</if>>
 <</widget>>
 
+<<widget "unbindtemp">>
+	<<set $rightboundcarry to 0>>
+	<<set $leftboundcarry to 0>>
+	<<set $leftarm to 0>>
+	<<set $rightarm to 0>>
+	<<remove_shackle>>
+	<<leg_unbind>>
+	<<if $head is "bound">>
+		<<set $head to 0>>
+	<</if>>
+<</widget>>
+
 <<widget "bind">>
+	/*<<bind>> and <<unbind>> are only used for binding the player's arms with rope. they are only meant to be used for scenes where the player is left helpless and must undo their bindings elsewhere, forcing them to leave behind their handheld items. Use <<bindtemp>> and <<unbindtemp>> for temporarily binding arms.*/
 	<<if _args[0]>>
 		<<set _args[0] to "bound">>
 		<<if $rightarm is "bound" and $worn.handheld.name isnot "naked">>
@@ -2333,6 +2353,11 @@
 			<<handheldruined>>
 		<</if>>
 	<</if>>
+<</widget>>
+
+<<widget "bindtemp">>
+	<<set $leftarm to "bound">>
+	<<set $rightarm to "bound">>
 <</widget>>
 
 <<widget "legbind">>
@@ -2368,7 +2393,7 @@
 	<<if $leftarm is "bound" and $position isnot "wall">><<set $leftboundcarry to 1>><</if>>
 	<<if $rightarm is "bound" and $position isnot "wall">><<set $rightboundcarry to 1>><</if>>
 	<<if $rightboundcarry is 1 and $rightarm isnot "bound">>
-		<<set $rightarm to "bound">><<handheldruined>>
+		<<set $rightarm to "bound">>
 	<</if>>
 	<<if $leftboundcarry is 1 and $leftarm isnot "bound">>
 		<<set $leftarm to "bound">>
@@ -4663,6 +4688,24 @@
 	<</if>>
 <</widget>>
 
+<<widget "pantsable">>
+	<!-- check if lowerwear allows for player to be pantsed or upskirted
+	_pantsable: lowerwear can be pulled down; _upskirt: skirt can be flipped up -->
+	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and ($worn.lower.set is $worn.upper.set)>>
+		<<set _upskirt to 1>>
+		<<set _pantsable to 0>>
+	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+		<<set _upskirt to 1>>
+		<<set _pantsable to 1>>
+	<<elseif ["shortalls"].includes($worn.lower.name) or ($worn.lower.set is $worn.upper.set)>>
+		<<set _upskirt to 0>>
+		<<set _pantsable to 0>>
+	<<else>>
+		<<set _upskirt to 0>>
+		<<set _pantsable to 1>>
+	<</if>>
+<</widget>>
+
 <<widget "skulduggeryuse">>
 	<<if _args[0] is true>>
 		<!-- This argument lets us use skulduggery without adding extra linebreaks that make formatting things a nightmare. -->
@@ -4760,7 +4803,8 @@
 	<<if !playerChastity("hidden")>>
 		<<if $player.penisExist and $player.vaginaExist>>
 			<<schoolrep herm 1>>
-		<<elseif $player.gender isnot $player.gender_appearance>>
+		<<elseif $player.gender isnot $player.gender_appearance and $NudeGenderDC gt 0>>
+			/*increases crossdressing fame if NPCs judge gender based on genitals*/
 			<<schoolrep crossdress 1>>
 		<<elseif $player.gender is $player.gender_appearance and $schoolrep.crossdress gt 0 and !$daily.crossdressingFameReduction and !$weekly.crossdressingFameReduction and random(0,100) gte 100 - ($schoolrep.crossdress * 3)>>
 			<<schoolrep crossdress -1>>

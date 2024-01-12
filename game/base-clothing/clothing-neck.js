@@ -813,7 +813,7 @@ function initNeck() {
 			colour: 0,
 			colour_options: [],
 			colour_combat: "black",
-			type: ["fetish", "costume", "eerie"],
+			type: ["fetish", "costume", "eerie", "leash"],
 			gender: "n",
 			femininity: 0,
 			warmth: 0,

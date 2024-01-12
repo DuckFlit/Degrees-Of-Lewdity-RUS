@@ -1,27 +1,29 @@
 :: School Lockers
 <<set $outside to 0>><<schooleffects>><<effects>><<set $lock to 0>>
 
-The school lockers are notoriously easy to break into.
+The school lockers are notoriously easy to break into, though thankfully, you've yet to have anything stolen from yours.
+<<if ["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate)>>
+	During school there may be valuables left inside the other students' lockers.
+<<elseif currentSkillValue('skulduggery') lte $lock>>
+	<span class="red">The locks look beyond your ability to pick.</span><<skulduggeryrequired>>
+<<elseif currentSkillValue('skulduggery') gt $lock>>
+	<span class="green">The locks look easy to pick.</span>
+<</if>>
 <br><br>
 
-<<if !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate)>>
-
-	<<if currentSkillValue('skulduggery') gte $lock>>
-		<span class="green">The lock looks easy to pick.</span>
-		<br><br>
-
-		<<lockpickicon>><<link [[Break into them (0:30)|School Lockers Sneak]]>><<pass 30>><<crimeUp 30 "petty">><</link>><<crime "petty">>
-		<br>
-	<<else>>
-		<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
-		<br><br>
-	<</if>>
-
-<<else>>
-	During school there may be valuables left inside them.
-	<br><br>
+<<if clothingInStorage("locker").length lt 1>>
+	<span class="blue">You can keep your bookbag or another handheld item inside your locker.</span>
+	<<lockerclothes>>
+	<<lockerclothes2>>
+	/*kind of a hacky solution to allow players to swap out their current handheld item for the stored handheld item instead of sending it back to the wardrobe but hey, it's effective and doesn't fuck w how the other storage locations work.*/
 <</if>>
 
+<<if !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate)>>
+	<<if currentSkillValue('skulduggery') gt $lock>>
+		<<lockpickicon>><<link [[Break into a locker (0:30)|School Lockers Sneak]]>><<pass 30>><<crimeUp 30 "petty">><</link>><<crime "petty">>
+		<br>
+	<</if>>
+<</if>>
 <<getouticon>><<link [[Leave (0:01)|Hallways]]>><<pass 1>><</link>>
 <br>
 
@@ -249,3 +251,57 @@ You find a small pin in the locker, and use the tip to poke a tiny hole in the c
 
 <<link [[Next|School Lockers]]>><</link>>
 <br>
+
+:: Widgets Locker [widget]
+
+<<widget "lockerclothes">>
+	<<if !$possessed>>
+		<<storeactions "lockers">>
+		<<wardrobeSelection true>>
+		<<set _store_location to "lockers">>
+		<<storeon _store_location "check">>
+		<<if _store_check is 1>>
+			<<set _clothes to clothingInStorage(_store_location)>>
+			<<if _clothes.length gt 0>>
+				<br>
+				Your _clothes[0].name is safely tucked inside your locker.
+				<br><br>
+				<<if $worn.handheld.name is "naked">>
+					<<lockericon>>
+					<<link [[`Take out your ${_clothes[0].name}`|$passage]]>><<set $eventskip to 1>><<storeload "lockers">><</link>>
+				<<else>>
+					<<lockericon>>
+					<<link [[`Swap out your ${$worn.handheld.name}`|$passage]]>><<set $eventskip to 1>><<handheldundress "lockers2">><<storeload "lockers">><</link>>
+				<</if>>
+				<br>
+			<</if>>
+		<</if>>
+		<<unset $wearoutfittext>>
+	<</if>>
+<</widget>>
+
+<<widget "lockerclothes2">>
+	<<if !$possessed>>
+		<<storeactions "lockers2">>
+		<<wardrobeSelection true>>
+		<<set _store_location to "lockers2">>
+		<<storeon _store_location "check">>
+		<<if _store_check is 1>>
+			<<set _clothes to clothingInStorage(_store_location)>>
+			<<if _clothes.length gt 0>>
+				<br>
+				Your _clothes[0].name is safely tucked inside your locker.
+				<br><br>
+				<<if $worn.handheld.name is "naked">>
+					<<lockericon>>
+					<<link [[`Take out your ${_clothes[0].name}`|$passage]]>><<set $eventskip to 1>><<storeload "lockers2">><</link>>
+				<<else>>
+					<<lockericon>>
+					<<link [[`Swap out your ${$worn.handheld.name}`|$passage]]>><<set $eventskip to 1>><<handheldundress "lockers">><<storeload "lockers2">><</link>>
+				<</if>>
+				<br>
+			<</if>>
+		<</if>>
+		<<unset $wearoutfittext>>
+	<</if>>
+<</widget>>

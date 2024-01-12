@@ -216,27 +216,27 @@ function integrityWord(worn, slot) {
 				T.text_output = "";
 		}
 	}
-    let colorClass;
-    switch (kw) {
-        case "full":
-            colorClass = "green";
-            break;
-        case "tattered":
-            colorClass = "red";
-            break;
-        case "torn":
-            colorClass = "purple";
-            break;
-        case "frayed":
-            colorClass = "teal";
-            break;
-        default:
-            colorClass = ""; // default without color
-    }
-    if (T.text_output) {
-        T.text_output = `<span class="${colorClass}">${T.text_output.trim()}</span> `;
-    }
-    return T.text_output;
+	let colorClass;
+	switch (kw) {
+		case "full":
+			colorClass = "green";
+			break;
+		case "tattered":
+			colorClass = "red";
+			break;
+		case "torn":
+			colorClass = "purple";
+			break;
+		case "frayed":
+			colorClass = "teal";
+			break;
+		default:
+			colorClass = ""; // default without color
+	}
+	if (T.text_output) {
+		T.text_output = `<span class="${colorClass}">${T.text_output.trim()}</span> `;
+	}
+	return T.text_output;
 }
 window.integrityWord = integrityWord;
 DefineMacroS("integrityWord", integrityWord);
@@ -309,7 +309,7 @@ function outfitChecks() {
 	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
 	T.middleNaked = V.worn.lower.name === "naked" && V.worn.upper.name === "naked";
 	T.overNaked = V.worn.over_lower.name === "naked" && V.worn.over_upper.name === "naked";
-	T.topless = V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && (V.worn.lower.name !== "plaid school pinafore" && V.worn.lower.name !== "school pinafore" && V.worn.lower.name !== "shortalls");
+	T.topless = V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && V.worn.lower.covers_top !== 1;
 	T.bottomless = V.worn.over_lower.name === "naked" && V.worn.lower.name === "naked" && V.worn.under_lower.name === "naked";
 	T.fullyNaked = T.topless && T.bottomless;
 }

@@ -150,6 +150,9 @@ function updateClothesItem(slot, item, debug) {
 			if (slot === "lower") item.name = "overall bottoms";
 			else if (item.outfitPrimary.lower === "overalls") item.outfitPrimary.lower = "overall bottoms";
 			break;
+		case "sleeveless jingle-bell dress":
+			if (item.outfitPrimary.lower === "jingle-bell skirt") item.outfitPrimary.lower = "sleeveless jingle-bell skirt";
+			break;
 	}
 	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));
 }
@@ -188,6 +191,9 @@ function updateClothes() {
 					break;
 				case "overalls":
 					if (slot === "lower") outfit[slot] = "overall bottoms";
+					break;
+				case "sleeveless jingle-bell dress":
+					if (slot === "lower") outfit[slot] = "sleeveless jingle-bell skirt";
 					break;
 			}
 		}
@@ -320,10 +326,16 @@ function wardrobesUpdate() {
 		V.wardrobes.temple.unlocked = V.temple_rank === "monk";
 		V.wardrobes.temple.space = 20;
 	}
+	if (!V.wardrobes.temple.name) {
+		V.wardrobes.temple.name = "Temple";
+	}
 	if (!V.wardrobes.pirate) {
 		V.wardrobes.pirate = clone(defWardrobe);
 		V.wardrobes.pirate.unlocked = V.pirate_rank >= 0;
 		V.wardrobes.pirate.space = 5;
+	}
+	if (!V.wardrobes.pirate.name) {
+		V.wardrobes.pirate.name = "Pirate Ship";
 	}
 	if (V.objectVersion.wardrobes < 7) {
 		Object.values(V.wardrobes).forEach(wardrobe => {

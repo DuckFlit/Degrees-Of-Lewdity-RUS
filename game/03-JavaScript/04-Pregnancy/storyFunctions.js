@@ -78,7 +78,8 @@ function playerBellyVisible(pregnancyOnly = false) {
 	const size = playerBellySize(pregnancyOnly);
 	if (size <= 7) return false;
 	if (size <= 12 && ((V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) || !V.worn.over_upper.type.includes("naked"))) return false;
-	if (size <= 17 && (V.worn.upper.type.includes("bellyHide") || !V.worn.over_upper.type.includes("naked"))) return false;
+	if (size <= 17 && (V.worn.upper.type.includes("bellyHide") || V.worn.lower.type.includes("bellyHide") || !V.worn.over_upper.type.includes("naked")))
+		return false;
 
 	return true;
 }
@@ -650,7 +651,7 @@ function setKnowsAboutPregnancyCurrentLoaded() {
 }
 DefineMacro("setKnowsAboutPregnancyCurrentLoaded", setKnowsAboutPregnancyCurrentLoaded);
 
-/* 
+/*
 	<<setKnowsAboutPregnancy "pc" "Bailey" "home">> - When Bailey is now aware of all the pc's current children at the orphanage, this excludes those they already know of
 	This will set T.nowAwareOfChildren[whoNowKnows] to an array with all with birth id's so that u can use the filter below to get an array of all the children they are just now aware of
 	Object.values(V.children).filter(child => V.babyIntros[whoNowKnows].includes(child.birthId))

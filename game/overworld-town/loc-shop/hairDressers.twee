@@ -48,7 +48,7 @@ You are in the hairdressers. Various hair products are available for sale. You c
 		<<if Time.dayState is "night" and Time.hour isnot $closinghour>>
 			<<hairdressericon "gel">><<link [[Steal a bottle of hair gel|$passage]]>><<crimeUp `8 / 100` "petty">><<set $hairgelBottles += 1>><</link>><<crime "petty">>
 			<br>
-			<<hairdressericon "hairspray">><<link [[Steal a bottle of hair growth formula|$passage]]>><<crimeUp `50 / 100` "petty">><<set $sexStats.pills.pills["Hair Growth Formula"].owned++>><</link>><<crime "petty">>
+			<<hairdressericon "hairspray">><<link [[Steal a bottle of hair growth formula|$passage]]>><<crimeUp `50 / 100` "petty">><<set $sexStats.pills.pills["Hair Growth Formula"].owned++>><<set $sexStats.pills.boughtOnce to true>><</link>><<crime "petty">>
 			<br>
 			<<if !$weekly.theft.hairDressers>>
 				<<shopicon "register">><<link [[Examine the cash register|Hairdressers Register]]>><</link>>
@@ -60,14 +60,14 @@ You are in the hairdressers. Various hair products are available for sale. You c
 				<<hairdressericon "gel">> <<link [[Purchase hair gel (£8)|Hairdressers Gel]]>><<set $money -= 800>><<set $hairgelBottles += 1>><</link>>
 				<br>
 			<<else>>
-				<<hairdressericon "gel">> <span class="blue">You can't afford any hair gel.</span>
+				<<hairdressericon "gel">> <span class="blue">You can't afford any hair gel or growth formula.</span>
 				<br>
 			<</if>>
 			<<if $money gte 5000>>
-				<<hairdressericon "hairspray">> <<link [[Purchase hair growth formula (£50)|Hairdressers Gel]]>><<set $money -= 5000>><<set $sexStats.pills.pills["Hair Growth Formula"].owned += 3>><<set $phase to 1>><</link>>
+				<<hairdressericon "hairspray">> <<link [[Purchase hair growth formula (£50)|Hairdressers Gel]]>><<set $money -= 5000>><<set $sexStats.pills.pills["Hair Growth Formula"].owned += 3>><<set $sexStats.pills.boughtOnce to true>><<set $phase to 1>><</link>>
 				<br>
-			<<else>>
-				<<hairdressericon "hairspray">> <span class="blue">You can't afford any hair gel.</span>
+			<<elseif $money gte 800>>
+				<<hairdressericon "hairspray">> <span class="blue">You can't afford any hair growth formula.</span>
 				<br>
 			<</if>>
 			<<hairdressericon "chair">><<link [[Take a seat|Hairdressers Seat]]>><</link>>
@@ -222,7 +222,7 @@ The hairdresser makes small talk as <<he>> rings up your purchase. "That stuff's
 			<<set _dyeNames to ["Red","Jet black", "Black", "Blond", "Soft Blond", "Platinum blond", "Golden", "Ashy blond", "Strawberry blond", "Dark Brown", "Brown", "Soft brown", "Light brown", "Burnt Orange", "Ginger", "Blood Orange", "Blue", "Deep Blue", "Neon Blue", "Green", "Dark Lime", "Toxic Green", "Teal", "Pink", "Bright Pink", "Hot pink", "Soft pink", "Crimson", "Purple", "Medium Purple", "Bright Purple", "White", "Snow white"]>>
 			<<set $hairdressersHairColour to ["red","jetblack", "black", "blond", "softblond", "platinumblond", "golden", "ashyblond", "strawberryblond", "darkbrown", "brown", "softbrown", "lightbrown", "burntorange", "ginger", "bloodorange", "blue", "deepblue", "neonblue", "green", "darklime", "toxicgreen", "teal", "pink", "brightpink", "hotpink", "softpink", "crimson", "purple", "mediumpurple", "brightpurple", "white", "snowwhite"]>>
 
-			<<if $money gte _currentCost + 3000 or $dyeOption isnot "noChange">>
+			<<if $money gte _currentCost + 3000 or $dyeOption isnot "noChange" or $twoToneHairDye>>
 				<<if $dyeOption is "removeDye">>
 					<<set _currentCost += 3000>>
 				<<elseif not $twoToneHairDye and $dyeOption isnot "noChange">>
@@ -352,9 +352,9 @@ The hairdresser makes small talk as <<he>> rings up your purchase. "That stuff's
 
 		<<if $money lt _currentCost>>
 			You don't have enough money to pay the hairdresser.
-		<<elseif  $twoToneHairDye and ($twoToneDyeOption1 eq $twoToneDyeOption2)>>
+		<<elseif $twoToneHairDye and ($twoToneDyeOption1 eq $twoToneDyeOption2)>>
 			You need to select two diffent colours for two-tone hair colouring.
-		<<elseif _currentCost gt 0 >>
+		<<elseif _currentCost gt 0>>
 			<<link [[Pay hairdresser|Hairdressers Session]]>>
 				<<set $money -= _currentCost>>
 			<</link>>

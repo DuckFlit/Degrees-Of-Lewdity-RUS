@@ -467,8 +467,10 @@
 	<</switch>>
 
 	<<set $propEquipped to 1>>
-	<<handheldstrip>>
-	<<handheldwear _propIndex>>
+	<<if !$worn.handheld.type.includes("prop")>>
+		<<handheldstrip>>
+		<<handheldwear _propIndex>>
+	<</if>>
 <</widget>>
 
 /*Returns all carried clothes back to the wardrobe*/
@@ -814,10 +816,8 @@
 	<</for>>
 	<<buttplugon>>
 	<<if !($worn.upper.name is "naked" and $worn.lower.name is "naked" and $worn.under_lower.name is "naked" and $worn.under_upper.name is "naked")>>
-		You fix your clothing<<if $rightarm is "bound">><<silently>><<handheldruined>><</silently>><<elseif !($worn.handheld.name is "naked")>> and pick up your $worn.handheld.name<</if>>.<br><br>
-	<<elseif $rightarm is "bound">>
-		<<silently>><<handheldruined>><</silently>>
-	<<elseif !($worn.handheld.name is "naked")>>
+		You fix your clothing<<if $rightarm isnot "bound" and $worn.handheld.name isnot "naked">> and pick up your $worn.handheld.name<</if>>.<br><br>
+	<<elseif $rightarm isnot "bound" and $worn.handheld.name isnot "naked">>
 		You pick up your $worn.handheld.name.
 	<</if>>
 
@@ -916,8 +916,16 @@
 	<<generalOn "hands">>
 <</widget>>
 
+<!-- [0] - if truthy, only run if player has a prop -->
 <<widget "handheldon">>
-	<<generalOn "handheld">>
+	<<if _args[0]>>
+		<<if $propEquipped is 1 and $worn.handheld.type.includes("prop")>>
+			<<generalOn "handheld">>
+			<<set $propEquipped to 0>>
+		<</if>>
+	<<else>>
+		<<generalOn "handheld">>
+	<</if>>
 <</widget>>
 
 <<widget "legson">>
@@ -1388,7 +1396,7 @@
 				<<if $_item isnot undefined>>
 					<<set $_storedIndex to $store[$_slot].findIndex(item => item.name is $_item.name and item.location is _args[0])>>
 					<<if $_storedIndex isnot -1>>
-						<<if $worn[$_slot].name is "naked" and !_cursedSlots.includes($_slot)>>
+						<<if ($worn[$_slot].name is "naked" and !_cursedSlots.includes($_slot)) or (!_cursedSlots.includes($_slot) and _args[0] is "lockers")>>
 							<<set $worn[$_slot] to clone($store[$_slot][$_storedIndex])>>
 							<<set $worn[$_slot].location to 0>>
 							<<set $store[$_slot].deleteAt($_storedIndex)>>
@@ -1449,6 +1457,7 @@
 	<<if _args[0] and _args[1]>>
 		<<set $_location to _args[0]>>
 		<<set $_slot to _args[1]>>
+		<<if $store[$_slot] is undefined>>/* Slot not found */<<exit>><</if>>
 		<<set $_item to $store[$_slot].find(item => item.location is $_location)>>
 		<<if $_item isnot undefined>>
 			<<set $_index to $store[$_slot].indexOf($_item)>>

@@ -1335,7 +1335,7 @@ function initUnderLower() {
 			index: 29,
 			name: "boxers",
 			name_cap: "Boxers",
-			name_simple: "undies",
+			name_simple: "boxers",
 			variable: "boxers",
 			integrity: 100,
 			integrity_max: 100,

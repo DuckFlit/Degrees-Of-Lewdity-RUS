@@ -1,7 +1,8 @@
 /* eslint-disable prefer-const */
 Config.history.controls = false;
 Config.saves.slots = 9;
-Config.history.maxStates = 1;
+Config.history.maxStates = 5;
+Config.history.maxSessionStates = 1;
 
 /* LinkNumberify and images will enable or disable the feature completely */
 /* debug will enable or disable the feature only for new games */
@@ -11,7 +12,7 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.5.1",
+	version: "0.4.5.3",
 	versionName: "",
 	sneaky: false,
 };
@@ -26,7 +27,7 @@ let pageLoading = false;
 Config.saves.isAllowed = () => {
 	if (tags().includes("nosave") || V.replayScene) return false;
 	return true;
-}
+};
 
 idb.footerHTML = `
 	<div class="savesListRow">
@@ -42,7 +43,7 @@ idb.footerHTML = `
 		<div class="saveButton">
 			<input type="button" class="saveMenuButton right" value="Delete All" onclick="idb.saveList('confirm clear')">
 		</div>
-	</div>`
+	</div>`;
 
 function onLoad(save) {
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
@@ -55,6 +56,9 @@ function onLoad(save) {
 
 	// decompression should be the FIRST save modification
 	DoLSave.decompressIfNeeded(save);
+
+	// ironman is not currently supported with idb
+	if (save.state.history[save.state.index].variables.ironmanmode) idb.active = false;
 
 	// cache current date before assigning it to every frame in history
 	const date = new Date();
@@ -483,11 +487,11 @@ Config.navigation.override = function (dest) {
 				return "Chalets Work One Sex";
 			case "Chalets Work One Rape Finish":
 				return "Chalets Work One Sex Finish";
-			
+
 			case "Whitney Bully Parasite Event Submit":
 			case "Whitney Bully Parasite Event Escape Attempt":
 				return "Bully Parasite";
-			
+
 			case "Whitney Bully Parasite Event Combat":
 				return "Bully Parasite Fight";
 

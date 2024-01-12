@@ -878,7 +878,6 @@ function settingsObjects(type) {
 						"beautiful",
 						"crossdresser",
 						"lustful",
-						"greenthumb",
 						"plantlover",
 					],
 					displayName: "Background:",

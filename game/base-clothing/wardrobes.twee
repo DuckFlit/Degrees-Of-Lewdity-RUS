@@ -741,6 +741,7 @@
 <</widget>>
 
 <<widget "toggleAltPosition">>
+	/*Changes sprite to an alternate image*/
 	<<switch _args[0]>>
 		<<case "upper">>
 			<<if $worn.upper.variable is "schoolcardigan">>
@@ -773,6 +774,24 @@
 				<</if>>
 		<<default>>
 	<</switch>>
+<</widget>>
+
+<<widget "toggleFaceLayer">>
+	/*changes z-index */
+	<<set _linkOption1 to "Move hair in front">>
+	<<set _linkOption2 to "Tuck hair behind">>
+	<div class="toggleFaceLayer">
+		<<link `($facelayer is "front" ? _linkOption1 : _linkOption2)`>>
+			<<set $facelayer to ($facelayer is "front" ? "back" : "front")>>
+			<<updatesidebarimg>>
+			<<if _args[0] is "wardrobe">>
+					<<updatewardrobe>>
+			<</if>>
+			<<run $(".toggleFaceLayer .link-internal").html($facelayer is "front" ? _linkOption1 : _linkOption2)>>
+			<<run Links.generateLinkNumbers($(".passage"))>>
+		<</link>>
+	</div>
+	<br>
 <</widget>>
 
 <<widget "wardrobeList">>
@@ -889,6 +908,9 @@
 			<<if _wardrobe_list is "neck">>
 				<div id="wardrobeLeash" class="no-numberify"><<toggleLeash>></div>
 			<</if>>
+			<<if _wardrobe_list is "face">>
+				<div class="no-numberify toggleAltLink"><<toggleFaceLayer "wardrobe">></div>
+			<</if>>
 		<</if>>
 		<br>
 		<<if $worn[_wardrobe_list].name isnot "naked">>
@@ -911,13 +933,13 @@
 			<</if>>
 			<div class="wardrobeItem wardrobe-action no-numberify">
 			<<clothingicon _item _wardrobe_list>>
-			<<wearlink_norefresh _itemData.name_cap _i>> 
+			<<wearlink_norefresh _itemData.name_cap _i>>
 			<<if _item.gender is "m">>
 				<span class="blue">♂</span>
 			<<elseif _item.gender is "f">>
 				<span class="pink">♀</span>
 			<<else>>
-				
+
 			<</if>>
 			<<if _item.colour isnot 0>>
 				<span @class="_selectedWardrobe[_wardrobe_list][_i].colour">(_item.colour)</span>

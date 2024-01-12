@@ -224,7 +224,8 @@ window.defineCustomEyeColourStyle = function () {
 			const colourArray = normalEyes[side].includes("cat_tf_stage") ? V.custom_eyecolours : setup.colours.eyes;
 			for (const colour of colourArray) {
 				/* this does this for left and right */
-				if (colour.variable === normalEyes[side]) T[varSideStyle] = "filter: " + window.colorNameTranslate(window.colorNamer(colour.canvasfilter.blend), "hue");
+				if (colour.variable === normalEyes[side])
+					T[varSideStyle] = "filter: " + window.colorNameTranslate(window.colorNamer(colour.canvasfilter.blend), "hue");
 			}
 		}
 	}
