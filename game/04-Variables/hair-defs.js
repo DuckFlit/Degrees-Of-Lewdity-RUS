@@ -38,7 +38,7 @@ setup.hair = {
 				"thick ponytail", 
 				"thick sidetail",
 			],
-			devolve: ["messy ponytail"],
+			devolve: ["draggletail"],
 		},
 		{
 			name: "double tail",

@@ -505,7 +505,6 @@ Renderer.CanvasModels["main"] = {
 			"acc_layer_under": false,
 			"head_mask_src": "", // generated option
 			"belly_mask_src": "", // generated option
-			"waist_mask_src": "", // generated option
 			"blink_animation": "", // generated option
 			"ztan_swimshorts": ZIndices.base, // generated option
 			"ztan_swimsuitTop": ZIndices.base, // generated option
@@ -812,7 +811,11 @@ Renderer.CanvasModels["main"] = {
 				options.belly_mask_under_clip_src = null;
 			}
 		}
-		options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}.png`;		
+		if (["f", "a"].includes(options.body_type) && [3, 4].includes(options.breast_size)) {
+			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}-mid.png`;		
+		} else {
+			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}.png`;		
+		}
 		options.genitals_chastity = options.worn_genitals_setup.type.includes("chastity");
 
 		if (options.worn_handheld_setup.type.includes("rainproof")) {
@@ -910,7 +913,6 @@ Renderer.CanvasModels["main"] = {
 				} else {
 					if (options.breast_size <= 0) return "";
 					let fn = "breasts" + options.breast_size + (options.breasts === "cleavage" && options.breast_size >= 3 ? "_clothed" : "") + ".png";
-					if (fn === "breasts5_clothed.png") fn = "breasts6_clothed.png";
 					return "img/body/breasts/" + fn;
 				}
 			},
