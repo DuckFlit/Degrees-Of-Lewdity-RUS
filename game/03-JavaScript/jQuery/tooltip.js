@@ -1,16 +1,17 @@
-/* Html tooltips with default settings */
-$(() => {
-	$("[tooltip]").each(function () {
-		const $this = $(this);
-		const message = $this.attr("tooltip");
+/* eslint-disable no-new */
 
+/* Html tooltips with default settings */
+$(document).on(":passageend", () => {
+	$("[tooltip]").each(function () {
+		const message = $("<div>");
+		new Wikifier(message, $(this).attr("tooltip"));
 		// Default settings
-		$this.tooltip({
+		$(this).tooltip({
 			message,
 			position: "cursor",
+			cursor: "help",
 			delay: 150,
 		});
-		$this.tooltip("enable");
 	});
 });
 

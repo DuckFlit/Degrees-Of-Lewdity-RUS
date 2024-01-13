@@ -1,14 +1,17 @@
-/*
-All colors use a hex-value with an added alpha
-The alpha use the 2 last characters of a 8-character hex-value and range from 0-255 (00-ff)
+/* These settings are for the visual side-bar. They determine the look of all aspects of it.
+NOTE: 	All colors use a hex-value with an added alpha
+		The alpha use the 2 last characters of a 8-character hex-value and range from 0-255 (00-ff)
+		Example: #f7ff4acc (cc determines the alpha (80%))
 
 */
 setup.SkySettings = {
 	canvasDimensions: {
-		width: 64, // Size of the canvas
+		// Size of the canvas
+		width: 64,
 		height: 192,
 	},
 	skyBackground: {
+		// Determines the range of the color radiant that originates around the sun (or the moon at night)
 		glowRadius: {
 			day: 128,
 			night: 82,
@@ -30,29 +33,31 @@ setup.SkySettings = {
 				sunGlow: "#fd634d00", // Sun glow at the horizon, when its still night (during dawn and dusk)
 			},
 			bloodMoon: {
-				sky1: "#4d0000",
-				sky2: "#210707",
+				sky1: "#4d0000", // Sky color around the moon
+				sky2: "#210707", // Base sky color
 			},
-			cityLights: "#b9a17925",
+			cityLights: "#b9a17925", // todo
 		},
 	},
 	sun: {
-		images: "img/misc/sky/sun2.png",
+		images: "img/misc/sky/sun.png",
 		glow: {
-			outerSize: 10,
-			innerSize: 3,
-			dayColor: "#f4ffd3cc",
-			nightColor: "#fee000cc",
-			updateColor: true,
+			// Changes the glow parameters. This is different from the sky-glow effect, as it changes the sun-tint too.
+			radius: 20, // The radius of the glow
+			innerSize: 3, // How inset the glow is
+			dayColor: "#f2fad7aa",
+			nightColor: "#f07218ee",
 		},
 		orbitSummer: {
-			riseTime: 7,
-			setTime: 19,
+			// Sunrise, sunset, and height of the orbit can be changed, based on the season
+			// Between summer and winter the actual values are interpolated between.
+			riseTime: 7, // At what time the sun reaches the horizon before rising
+			setTime: 19, // At what time the sun reaches the horizon before setting
 			path: {
 				startX: 0,
 				endX: 64,
-				peakY: 140,
-				horizon: 162,
+				peakY: 40, // The y value of the top of the orbit arc
+				horizon: 162, // The y value of the horizon
 			},
 		},
 		orbitWinter: {
@@ -61,12 +66,14 @@ setup.SkySettings = {
 			path: {
 				startX: 0,
 				endX: 64,
-				peakY: 92,
+				peakY: 90,
 				horizon: 162,
 			},
 		},
 	},
 	sunGlow: {
+		// This is an overlay, which goes on top of the location-images
+		// Is mainly visible during sunset and sunrise
 		glowRadius: 128,
 		colors: {
 			day: "#fbffdb50",
@@ -81,34 +88,33 @@ setup.SkySettings = {
 			["blood-moon.png", "bloodMoon"],
 		]),
 		glow: {
+			// This is a subtle glow effect just around the moon
 			night: {
-				color: "#ffffffaa",
-				opacity: 1,
-				size: 6,
+				color: "#ffffffbb",
+				size: 9,
 			},
 			bloodMoon: {
-				color: "#ad3a21",
-				opacity: 0.8,
+				color: "#ad3a21cc",
 				size: 12,
 			},
 		},
-		overlay: {
-			night: "#ffffff00",
-			bloodMoon: "#eb6565aa",
-		},
 		shadow: {
-			color: "#0d001522",
+			// Determines the style when the moon is dark (not lit by the sun)
+			color: "#0d001522", // Shadow color
 			opacity: {
+				// Defines if the opacity of the shadow - if opacity is 0, the moon is completely invisible when not lit
 				night: 0.02,
 				day: 0.08,
 			},
 			angle: 10, // In degrees - The angle the shadow eclipse travels (from right to left)
 		},
 		visibility: {
+			// The visibility of the whole moon - lower during the day for a faded look
 			night: 1,
 			day: 0.4,
 		},
 		orbit: {
+			// Works same as the sun
 			riseTime: 19,
 			setTime: 6,
 			path: {
@@ -119,6 +125,7 @@ setup.SkySettings = {
 			},
 		},
 		bloodMoonOrbit: {
+			// Tweaked blood moon 
 			riseTime: 20,
 			setTime: 7,
 			path: {
@@ -157,9 +164,9 @@ setup.SkySettings = {
 			spriteChance: [
 				//Change to Map()
 				[0, 10], // Chance of square non-sprite 2x2 stars
-				["star_0.png", 0.8],
-				["star_1.png", 0.3],
-				["star_2.png", 0.15],
+				["star_0.png", 0.7],
+				["star_1.png", 0.2],
+				["star_2.png", 0.1],
 				["star_3.png", 0.02],
 				["star_4.png", 0.02],
 			],
@@ -302,7 +309,7 @@ setup.SkySettings = {
 			},
 		},
 		rain: {
-			dayOpacity: 1,
+			dayOpacity: 0.25,
 			nightOpacity: 0.05,
 			spriteOverlap: -16,
 			startOffsetX: 0,
@@ -343,8 +350,8 @@ setup.SkySettings = {
 			startOffsetX: 0,
 			verticalOffset: 0,
 			fadePosition: 0.5,
-			darken: 0.1,
-			darkenColor: "#000412cc",
+			darkenColorDay: "#00041266", // Darkens the rain during the day - to be more visible
+			darkenColorNight: "#00041200", // No darkening effect during night (00 alpha)
 			fps: 6,
 			scale: 0.7,
 			maskAlpha: 1,

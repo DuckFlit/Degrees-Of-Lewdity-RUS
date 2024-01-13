@@ -72,7 +72,7 @@ Weather.Temperature = (() => {
 	function getWaterTemperature() {
 		const date = new DateTime(Time.date);
 		const baseTemperature = getBaseTemperature(date);
-		return baseTemperature;
+		return round(baseTemperature, 2);
 	}
 
 	/*
@@ -89,7 +89,7 @@ Weather.Temperature = (() => {
 		const deviation = Math.abs(baseTemperature - targetTemperature);
 		const modifier = Math.pow(Math.log1p(deviation), 2) * Math.sign(baseTemperature - targetTemperature) * modifierFactor;
 
-		return targetTemperature + modifier;
+		return round(targetTemperature + modifier, 2);
 	}
 
 	function interpolateDailyTemperature(date) {
@@ -185,9 +185,10 @@ Weather.Temperature = (() => {
 	}
 
 	function generateTemperatureKeyPoints(date) {
-		const minDays = 4; // Minimum key points
-		const maxDays = 6; // Max key points - don't set too high if timeApart is a high value
-		const timeApart = 3; // Minimum days between each keypoint
+		const timeApart = Math.clamp(Weather.Settings.forecast.temperature.minTimeApartKeyPoints, 0, 27);
+		const maxDays = Math.clamp(Weather.Settings.forecast.temperature.maxKeyPointsPerMonth, 1, Math.floor(28 / timeApart));
+		const minDays = Math.clamp(Weather.Settings.forecast.temperature.minKeyPointsPerMonth, 1, maxDays);
+
 		const daysInMonth = DateTime.getDaysOfMonthFromYear(date.year)[date.month - 1];
 		const numberOfKeyPoints = random(minDays - 1, maxDays - 1);
 		const keyPoints = new Map();

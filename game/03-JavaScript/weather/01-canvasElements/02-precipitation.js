@@ -10,7 +10,6 @@ class SkyCanvasPrecipitation extends SkyCanvasAnimationEffects {
 		if (Weather.current.precipitationIntensity > 0) {
 			this.addPrecipitation(cloudPositions);
 		}
-		console.log("this.effects", this.effects);
 	}
 
 	addPrecipitation(clouds) {

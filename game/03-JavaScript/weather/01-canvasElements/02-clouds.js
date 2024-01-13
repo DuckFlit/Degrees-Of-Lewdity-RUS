@@ -47,8 +47,8 @@ class SkyCanvasCloudy extends SkyCanvasClouds {
 		this.cloudsCanvas = $("<canvas/>")[0];
 	}
 
-	updateWeather(date, instant = false) {
-		instant = super.updateWeather(date, instant);
+	updateWeather(instant = false) {
+		instant = super.updateWeather(instant);
 		if (!instant && this.currentWeather === Weather.name) return;
 
 		if (instant) {

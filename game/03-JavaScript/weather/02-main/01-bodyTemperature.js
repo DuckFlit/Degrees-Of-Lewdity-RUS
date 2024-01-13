@@ -113,7 +113,7 @@ Weather.BodyTemperature = (() => {
 		}
 
 		const dissipation = calculateHeatDissipation(airTemperature);
-		V.player.bodyTemperature += round((calculateHeatGeneration() - dissipation) * scaledMinutes, 2);
+		V.player.bodyTemperature = round(V.player.bodyTemperature + (calculateHeatGeneration() - dissipation) * scaledMinutes, 2);
 		resetActivity();
 	}
 

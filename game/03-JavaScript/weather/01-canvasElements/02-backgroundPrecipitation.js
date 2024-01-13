@@ -44,7 +44,7 @@ class SkyCanvasBackgroundPrecipitation extends SkyCanvasAnimationEffects {
 	redrawEffects() {
 		this.ctx.save();
 		const settings = this.settings[this.currentType];
-		const factor = normalise(this.lightFactor, 1, -1);
+		const factor = normalise(this.dayFactor, 1, -1);
 		const alpha = interpolate(settings.nightOpacity, settings.dayOpacity, factor);
 
 		this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
@@ -58,17 +58,16 @@ class SkyCanvasBackgroundPrecipitation extends SkyCanvasAnimationEffects {
 			this.ctx.restore();
 		});
 
+		this.ctx.globalAlpha = 1;
+		this.ctx.globalCompositeOperation = "source-atop";
+		this.ctx.fillStyle = ColourUtils.interpolateColor(settings.darkenColorDay, settings.darkenColorNight, 1 - this.dayFactor);
+		this.ctx.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+
 		this.ctx.globalCompositeOperation = "destination-out";
 		this.ctx.globalAlpha = settings.maskAlpha;
 
 		this.ctx.drawImage(this.mask.img, 0, 0, this.canvasElement.width, this.canvasElement.height);
 
-		this.ctx.globalCompositeOperation = "source-atop"; // Reset the composite operation
-		if (settings.darken > 0) {
-			this.ctx.globalAlpha = settings.darken;
-			this.ctx.fillStyle = settings.darkenColor;
-			this.ctx.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
-		}
 		this.ctx.restore();
 	}
 }

@@ -33,7 +33,6 @@ Weather.WeatherConditions = (() => {
 	// Sets weather to specified type for at least 1 hour.
 	// After that, it will begin to transition into the normal weather types again.
 	function setWeather(weatherType, instant = false, minutes = 60) {
-		console.log(1);
 		if (minutes <= 0) minutes = 1;
 		const weatherTypeIndex = Weather.Settings.weatherTypes.findIndex(wt => wt.name === weatherType.toLowerFirst());
 		if (weatherTypeIndex === -1 || V.weatherObj.keypointsArr.length < 1) {
@@ -42,18 +41,16 @@ Weather.WeatherConditions = (() => {
 		}
 		delete T.currentWeather;
 
-		console.log(2);
 		const currentTimeStamp = Time.date.timeStamp;
-		const nextTimeStamp = new DateTime(Time.date).addMinutes(minutes).timeStamp;
-		for (let i = V.weatherObj.keypointsArr.length - 1; i >= 0; i--) {
-			const keyPoint = V.weatherObj.keypointsArr[i];
-			if (keyPoint.timestamp > currentTimeStamp && keyPoint.timestamp <= currentTimeStamp + Time.minutesPerHour) {
-				V.weatherObj.keypointsArr.splice(i, 1);
-			}
+		const nextTimeStamp = currentTimeStamp + minutes * Time.secondsPerMinute;
+		// One hour of leeway, in case the next key point is close after the new one
+		const leeway = Time.secondsPerHour;
+
+		// Remove key points that are within the new key point timestamps
+		while (V.weatherObj.keypointsArr.length > 0 && V.weatherObj.keypointsArr[0].timestamp <= nextTimeStamp + leeway) {
+			V.weatherObj.keypointsArr.splice(0, 1);
 		}
 
-		console.log(3, nextTimeStamp, weatherTypeIndex);
-		console.log(4, currentTimeStamp, weatherTypeIndex);
 		V.weatherObj.keypointsArr.unshift({ timestamp: nextTimeStamp, value: weatherTypeIndex });
 		V.weatherObj.keypointsArr.unshift({ timestamp: currentTimeStamp, value: weatherTypeIndex });
 
@@ -84,35 +81,41 @@ Weather.WeatherConditions = (() => {
 
 		currentKeyPoint = currentKeyPoint ?? { timestamp: currentTimeStamp, value: nextKeyPoint.value };
 
-		const currentValue = Weather.Settings.weatherTypes[currentKeyPoint.value].value;
-		const nextValue = Weather.Settings.weatherTypes[nextKeyPoint.value].value;
+		const current = Weather.Settings.weatherTypes[currentKeyPoint.value];
+		const next = Weather.Settings.weatherTypes[nextKeyPoint.value];
 
 		// Calculate the fraction of time passed between the current and next key points
 		const fraction = (currentTimeStamp - currentKeyPoint.timestamp) / (nextKeyPoint.timestamp - currentKeyPoint.timestamp);
 
 		// Interpolate the weather value
-		const interpolatedValue = Math.round(currentValue + (nextValue - currentValue) * fraction);
+		const interpolatedValue = Math.round(current.value + (next.value - current.value) * fraction);
 
-		if (V.weatherObj?.cur !== null) {
-			const currentIndex = V.weatherObj.cur;
-			const currentOvercast = V.weatherObj.overcast;
-			const currentWeatherType = Weather.Settings.weatherTypes[currentIndex];
+		if (V.weatherObj?.name !== null) {
+			const currentWeatherType = Weather.Settings.weatherTypes.find(type => type.name === V.weatherObj.name);
 			if (currentWeatherType.value === interpolatedValue) {
-				return createObjectByIndex(currentIndex, currentOvercast);
+				return createObjectByType(currentWeatherType, V.weatherObj.overcast);
 			}
 		}
+
+		if (current.value === interpolatedValue) {
+			const newObj = createObjectByType(current);
+			V.weatherObj.name = newObj.name;
+			V.weatherObj.overcast = newObj.overcast;
+			return newObj;
+		}
+
 		return findClosestWeatherType(interpolatedValue);
 	}
 
 	function findClosestWeatherType(interpolatedValue) {
 		const closestTypes = Weather.Settings.weatherTypes.reduce(
-			(acc, type, index) => {
+			(acc, type) => {
 				const difference = Math.abs(type.value - interpolatedValue);
 				if (difference < acc.minDifference) {
-					return { minDifference: difference, types: [index] };
+					return { minDifference: difference, types: [type] }; // Store the entire object
 				}
 				if (difference === acc.minDifference) {
-					acc.types.push(index);
+					acc.types.push(type); // Push the entire object
 				}
 				return acc;
 			},
@@ -120,17 +123,16 @@ Weather.WeatherConditions = (() => {
 		).types;
 
 		// Randomly choose one type if there are multiple options with the same int value
-		const chosenIndex = closestTypes[random(0, closestTypes.length - 1)];
-		const newObj = createObjectByIndex(chosenIndex);
+		const chosenType = closestTypes[random(0, closestTypes.length - 1)];
+		const newObj = createObjectByType(chosenType); // Assuming you have a function to create an object by name
 
-		// Saves both the index and overcast variable
-		V.weatherObj.cur = chosenIndex;
+		// Save the name and overcast variable
+		V.weatherObj.name = chosenType.name;
 		V.weatherObj.overcast = newObj.overcast;
 		return newObj;
 	}
 
-	function createObjectByIndex(index, overcast) {
-		const obj = Weather.Settings.weatherTypes[index];
+	function createObjectByType(obj, overcast) {
 		overcast = Time.isBloodMoon() ? false : overcast;
 		return {
 			defines: obj,
@@ -142,7 +144,7 @@ Weather.WeatherConditions = (() => {
 	}
 
 	function generateWeather(currentDate) {
-		const daysToGenerate = Weather.Settings.forecast.daysToGenerate;
+		const daysToGenerate = Math.max(Weather.Settings.forecast.weather.daysToGenerate, 1);
 
 		if (!V.weatherObj.keypointsArr.length) {
 			V.weatherObj.keypointsArr = [];
@@ -173,9 +175,9 @@ Weather.WeatherConditions = (() => {
 	}
 
 	function generateWeatherKeypoints(startDate, daysToGenerate) {
-		const minKeyPointsPerDay = Weather.Settings.forecast.minKeyPointsPerDay;
-		const maxKeyPointsPerDay = Weather.Settings.forecast.maxKeyPointsPerDay;
-		const timeApart = Weather.Settings.forecast.minTimeApartKeyPoints;
+		const timeApart = Math.clamp(Weather.Settings.forecast.weather.minTimeApartKeyPoints, 0, 1400);
+		const maxKeyPointsPerDay = Math.clamp(Weather.Settings.forecast.weather.maxKeyPointsPerDay, 1, Math.floor((24 * 60) / timeApart));
+		const minKeyPointsPerDay = Math.clamp(Weather.Settings.forecast.weather.minKeyPointsPerDay, 1, maxKeyPointsPerDay);
 
 		// Iterate over each day to add weather keypoints
 		for (let dayCount = 0; dayCount < daysToGenerate; dayCount++) {

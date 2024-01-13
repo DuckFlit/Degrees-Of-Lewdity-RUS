@@ -41,8 +41,8 @@ class SkyCanvasCirrus extends SkyCanvasClouds {
 		this.cloudsCanvas = $("<canvas/>")[0];
 	}
 
-	updateWeather(date, instant = false) {
-		instant = super.updateWeather(date, instant);
+	updateWeather(instant = false) {
+		instant = super.updateWeather(instant);
 		if ((!instant && this.currentWeather === Weather.name) || !this.sprites.length) return;
 
 		this.currentWeather = Weather.name;

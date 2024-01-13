@@ -9,6 +9,7 @@
 
 const Weather = (() => {
 	/* Helper functions */
+
 	function generateKeyPoints({ date, minKeys, maxKeys, timeApart, rangeValue, totalSteps }) {
 		const numberOfKeyPoints = random(minKeys - 1, maxKeys - 1);
 		const keyPoints = new Map();
@@ -85,7 +86,7 @@ const Weather = (() => {
 		setAccumulatedSnow,
 		setTemperature: temperature => Weather.Temperature.set(temperature),
 		addTemperature: temperature => Weather.Temperature.add(temperature),
-		set: (weatherType, instant) => Weather.WeatherConditions.setWeather(weatherType, instant),
+		set: (weatherType, instant, minutes) => Weather.WeatherConditions.setWeather(weatherType, instant, minutes),
 		get: date => Weather.WeatherConditions.getWeather(date),
 		is: weatherType => Weather.WeatherConditions.isWeather(weatherType),
 		get Settings() {
@@ -93,6 +94,9 @@ const Weather = (() => {
 		},
 		get SkySettings() {
 			return setup.SkySettings;
+		},
+		get TooltipDescriptions() {
+			return setup.WeatherTooltip;
 		},
 		get current() {
 			return Weather.WeatherConditions.getWeather();
@@ -128,7 +132,15 @@ const Weather = (() => {
 			return Weather.BodyTemperature.get();
 		},
 		get bloodMoon() {
-			return (Time.date.day === Time.date.lastDayOfMonth && Time.date.hour >= 18) || (Time.date.day === 1 && Time.date.hour < 6);
+			const sunRise = Weather.SkySettings.moon.bloodMoonOrbit.riseTime - 1;
+			const sunSet = Weather.SkySettings.moon.bloodMoonOrbit.setTime + 1;
+			return (Time.date.day === Time.date.lastDayOfMonth && Time.date.hour >= sunRise) || (Time.date.day === 1 && Time.date.hour < sunSet);
+		},
+		get dayState() {
+			const sunRise = Weather.Sky.canvasLayers.sun.orbit.riseTime;
+			const sunSet = Weather.Sky.canvasLayers.sun.orbit.setTime;
+			const hour = Time.hour;
+			return hour < sunRise - 1 || hour >= sunSet + 1 ? "night" : hour >= sunSet - 1 ? "dusk" : hour >= sunRise + 1 ? "day" : "dawn";
 		},
 		get fog() {
 			return false;

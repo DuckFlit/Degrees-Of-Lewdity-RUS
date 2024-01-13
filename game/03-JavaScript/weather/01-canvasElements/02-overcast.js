@@ -63,8 +63,8 @@ class SkyCanvasOvercast extends SkyCanvasClouds {
 		}
 	}
 
-	updateWeather(date, instant = false) {
-		instant = super.updateWeather(date, instant);
+	updateWeather(instant = false) {
+		instant = super.updateWeather(instant);
 		if (!instant && this.currentWeather === Weather.name) return;
 		this.createBackground(instant);
 	}

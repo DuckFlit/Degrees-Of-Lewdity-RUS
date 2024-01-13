@@ -887,8 +887,6 @@ function hourPassed(hours) {
 	V.openinghours = Time.hour >= 8 && Time.hour < 21 ? 1 : 0;
 	fragment.append(wikifier("earnAllFeats"));
 
-	temperatureHour();
-
 	if (!V.wolfevent) V.wolfevent = 1;
 	if (V.wolfpatrolsent >= 24) delete V.wolfpatrolsent;
 	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
@@ -979,7 +977,7 @@ function minutePassed(minutes) {
 function noonCheck() {
 	const fragment = document.createDocumentFragment();
 
-	Weather.Sky.setMoonPhase(Time.date);
+	Weather.Sky.setMoonPhase();
 
 	delete V.bartend_info;
 	delete V.bartend_info_other;
@@ -1785,15 +1783,6 @@ function dailyFarmEvents() {
 	delete V.alex_to_bed;
 
 	return fragment;
-}
-
-// To be deprecated next update
-function temperatureHour() {
-	V.chill = V.chill_day;
-	if (Time.dayState === "night") V.chill += !Weather.overcast ? 50 : 30;
-	else if (Time.dayState === "dusk") V.chill = !Weather.overcast ? V.chill - 5 : V.chill + 15;
-	else if (Time.dayState === "day") V.chill = !Weather.overcast ? V.chill - 10 : V.chill + 10;
-	else V.chill += !Weather.overcast ? 20 : 0;
 }
 
 // (Directly converted from passWater widget)

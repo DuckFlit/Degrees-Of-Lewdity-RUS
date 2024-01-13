@@ -4,11 +4,12 @@ class SkyCanvasMoon extends SkyCanvasElement {
 		super(name, settings);
 		this.moonSprite = null;
 		this.blurFactor = 0;
+		this.isBloodMoon = false;
 	}
 
 	loaded() {
 		return super.loaded().then(() => {
-			const canvasSize = Math.max(...Object.values(this.settings.glow).map(glow => glow.size));
+			const canvasSize = Math.max(...Object.values(this.settings.glow).map(e => e.size));
 			this.orbit = this.settings.orbit;
 			this.canvasElement.width = this.sprites[0].img.width + canvasSize * 2;
 			this.canvasElement.height = this.sprites[0].img.height + canvasSize * 2;
@@ -22,9 +23,10 @@ class SkyCanvasMoon extends SkyCanvasElement {
 		});
 	}
 
-	updateCanvas(moonPhaseFraction) {
-		const fraction = Weather.bloodMoon ? 0.5 : moonPhaseFraction;
-		const nightColor = Weather.bloodMoon ? "bloodMoon" : "night";
+	updateCanvas() {
+		this.bloodMoon = Weather.bloodMoon;
+		const fraction = this.bloodMoon ? 0.5 : Time.date.moonPhaseFraction;
+		const nightColor = this.bloodMoon ? "bloodMoon" : "night";
 		const sprite = this.sprites.find(sprite => sprite.type === nightColor).img;
 
 		this.updateShadow(fraction);
@@ -37,7 +39,7 @@ class SkyCanvasMoon extends SkyCanvasElement {
 
 		// Prepare the glow effect
 		moonCtx.fillStyle = this.settings.glow[nightColor].color;
-		moonCtx.globalAlpha = this.settings.glow[nightColor].opacity;
+		moonCtx.globalAlpha = 1;
 		moonCtx.beginPath();
 		moonCtx.arc(this.centerPos, this.centerPos, this.radius - 1, 0, 2 * Math.PI);
 		moonCtx.fill();
@@ -114,9 +116,9 @@ class SkyCanvasMoon extends SkyCanvasElement {
 		shadowCtx.restore();
 	}
 
-	setOrbit(currentTime) {
+	setOrbit() {
 		const orbit = Weather.bloodMoon ? this.settings.bloodMoonOrbit : this.settings.orbit;
-		super.setOrbit(currentTime, orbit);
+		super.setOrbit(Time.secondsSinceMidnight, orbit);
 	}
 
 	setBlur() {
@@ -129,8 +131,9 @@ class SkyCanvasMoon extends SkyCanvasElement {
 	}
 
 	draw(lightFactor) {
+		if (this.isBloodMoon !== Weather.bloodMoon) this.updateCanvas();
 		this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
-		const nightColor = Weather.bloodMoon ? "bloodMoon" : "night";
+		const nightColor = this.bloodMoon ? "bloodMoon" : "night";
 		const sprite = this.sprites.find(sprite => sprite.type === nightColor).img;
 
 		// Set transparency for the whole moon - from settings
@@ -142,7 +145,7 @@ class SkyCanvasMoon extends SkyCanvasElement {
 		// Glow effect only on non-shadow parts
 		this.ctx.shadowBlur = this.settings.glow[nightColor].size;
 		this.ctx.shadowColor = this.settings.glow[nightColor].color;
-		this.ctx.globalAlpha = this.settings.glow[nightColor].opacity;
+		this.ctx.globalAlpha = 1;
 
 		this.ctx.drawImage(this.moonCanvas, 0, 0);
 		this.ctx.globalAlpha = interpolatedTransparency;

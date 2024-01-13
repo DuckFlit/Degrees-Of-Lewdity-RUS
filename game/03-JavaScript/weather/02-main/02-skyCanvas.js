@@ -26,9 +26,9 @@ Weather.Sky = (() => {
 	Promise.all(Object.values(canvasLayers).map(element => element.loaded()))
 		.then(() => {
 			imagesLoaded.value = true;
-			display(Time.date);
+			display();
 		})
-		.catch(error => console.error("Error loading one or more images. Message: ", error));
+		.catch(error => console.error("Error loading one or more images. Image does not exist: ", error.target?.outerHTML ?? error));
 
 	function getDayFactor() {
 		const sunPositionYPercent =
@@ -159,24 +159,24 @@ Weather.Sky = (() => {
 	// 	//elements.skybox.append($("<img>", { id: "location", src: imagePath }));
 	// }
 
-	function updateSun(date) {
-		canvasLayers.sun.setOrbit(Time.getSecondsSinceMidnight(date));
+	function updateSun() {
+		canvasLayers.sun.setOrbit();
 		getDayFactor();
 	}
 
-	function updateMoon(date) {
-		canvasLayers.moon.setOrbit(Time.getSecondsSinceMidnight(date));
+	function updateMoon() {
+		canvasLayers.moon.setOrbit();
 	}
 
-	function updateStarField(date) {
-		const rotation = date.fractionOfDay * 360;
+	function updateStarField() {
+		const rotation = Time.date.fractionOfDay * 360;
 		canvasLayers.stars.updateRotation(rotation);
 	}
 
-	function updateWeather(date, instant) {
-		canvasLayers.overcast.updateWeather(date, instant);
-		canvasLayers.clouds.updateWeather(date, instant);
-		canvasLayers.cirrus.updateWeather(date, instant);
+	function updateWeather(instant) {
+		canvasLayers.overcast.updateWeather(instant);
+		canvasLayers.clouds.updateWeather(instant);
+		canvasLayers.cirrus.updateWeather(instant);
 		canvasLayers.precipitation.updateEffects(canvasLayers.clouds.clouds, dayFactor);
 		canvasLayers.backgroundPrecipitation.updateEffects(dayFactor);
 
@@ -185,32 +185,42 @@ Weather.Sky = (() => {
 		canvasLayers.stars.blurFactor = canvasLayers.overcast.overCastObj.fadeFactor;
 	}
 
-	function redraw(date, instant = false) {
+	function redraw(instant = false) {
 		if (imagesLoaded.value === true) {
-			drawCanvas(date, instant);
+			drawCanvas(instant);
 			return;
 		}
 		imagesLoaded.subscribe(val => {
 			if (!val) return;
-			drawCanvas(date, instant);
+			drawCanvas(instant);
 		});
 	}
 
 	function updateTooltip() {
+		const weatherState = Weather.TooltipDescriptions.type[Weather.name];
+		const weatherDescription = typeof weatherState[Weather.dayState] === "function" ? weatherState[Weather.dayState]() : weatherState[Weather.dayState];
+		const tempDescription = Weather.TooltipDescriptions.temperature();
+		const debug = V.debug
+			? `<br><br><span class="red">DEBUG:</span><br><span class="blue">Weather:</span> <span class="yellow">${Weather.name}</span>
+			<br><span class="blue">Air temperature:</span> <span class="yellow">${Weather.temperature}°C</span>
+			<br><span class="blue">Inside temperature:</span> <span class="yellow">${Weather.insideTemperature}°C</span>
+			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.waterTemperature}°C</span>
+			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.bodyTemperature}°C</span>
+			<br><span class="blue">Fog:</span> <span class="yellow">${Weather.fog}</span>
+			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${Weather.isSnow}</span>`
+			: "";
 		elements.skybox.tooltip({
-			//title: "Weather",
-			message: "The weather is nice",
-			delay: 150,
+			message: `${weatherDescription}<br>${tempDescription}${debug}`,
+			delay: 200,
 			position: "cursor",
 		});
 	}
 
-	function drawCanvas(date, instant) {
-		updateSun(date);
-		updateMoon(date);
-		updateStarField(date);
-		updateWeather(date, instant);
-
+	function drawCanvas(instant) {
+		updateSun();
+		updateMoon();
+		updateStarField();
+		updateWeather(instant);
 		canvasLayers.sun.draw(dayFactor);
 		canvasLayers.moon.draw(dayFactor);
 		canvasLayers.sky.draw(canvasLayers.sun, canvasLayers.moon, dayFactor);
@@ -225,13 +235,13 @@ Weather.Sky = (() => {
 		updateTooltip();
 	}
 
-	function display(date) {
+	function display() {
 		Object.keys(canvasLayers).forEach(elementKey => {
 			elements.skybox.append(canvasLayers[elementKey].canvas);
 		});
 
-		setMoonPhase(date);
-		redraw(date, true);
+		setMoonPhase();
+		redraw(true);
 		updateLocationImage();
 
 		// City glow
@@ -242,8 +252,8 @@ Weather.Sky = (() => {
 		//elements.locationLayer.css("background", glow);
 	}
 
-	function setMoonPhase(date) {
-		canvasLayers.moon.updateCanvas(date.moonPhaseFraction);
+	function setMoonPhase() {
+		canvasLayers.moon.updateCanvas();
 	}
 
 	return {
@@ -275,10 +285,10 @@ Weather.Sky = (() => {
 
 Macro.add("skybox", {
 	handler() {
-		Weather.Sky.elements.skybox.appendTo(this.output);
-		if (Weather.Sky.imagesLoaded) {
-			Weather.Sky.redraw(Time.date);
-			Weather.Sky.updateLocationImage();
-		}
+		// Weather.Sky.elements.skybox.appendTo(this.output);
+		// if (Weather.Sky.imagesLoaded) {
+		// 	Weather.Sky.redraw();
+		// 	Weather.Sky.updateLocationImage();
+		// }
 	},
 });

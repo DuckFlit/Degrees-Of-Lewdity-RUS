@@ -21,20 +21,19 @@ class SkyCanvasClouds extends SkyCanvasElement {
 			updateFade(elapsedTime, dayFactor) {
 				const fadeChange = (1 / this.fadeSpeed) * Math.abs(elapsedTime);
 				const fadeDirection = Math.sign(this.fadeTarget - this.fadeFactor);
-			
+
 				if (fadeDirection !== 0) {
 					this.fadeFactor += fadeChange * fadeDirection;
-					
+
 					// Ensure fadeFactor does not overshoot fadeTarget
-					if ((fadeDirection > 0 && this.fadeFactor > this.fadeTarget) || 
-						(fadeDirection < 0 && this.fadeFactor < this.fadeTarget)) {
+					if ((fadeDirection > 0 && this.fadeFactor > this.fadeTarget) || (fadeDirection < 0 && this.fadeFactor < this.fadeTarget)) {
 						this.fadeFactor = this.fadeTarget;
 					}
-			
+
 					// Clamp fadeFactor to be within 0 to 1
 					this.fadeFactor = Math.clamp(this.fadeFactor, 0, 1);
 				}
-			
+
 				this.cloudCtx.globalAlpha = this.fadeFactor * dayFactor;
 			}
 
@@ -88,10 +87,10 @@ class SkyCanvasClouds extends SkyCanvasElement {
 
 	onLoad() {}
 
-	updateWeather(date, instant) {
-		this.elapsedTime = this.currentDate === 0 ? 0 : this.currentDate.compareWith(date, true) / Time.secondsPerMinute;
+	updateWeather(instant) {
+		this.elapsedTime = this.currentDate === 0 ? 0 : this.currentDate.compareWith(Time.date, true) / Time.secondsPerMinute;
 
-		this.currentDate = new DateTime(date);
+		this.currentDate = new DateTime(Time.date);
 		if (this.elapsedTime > 3 * 60) {
 			instant = true;
 			this.elapsedTime = 0;
@@ -120,12 +119,12 @@ class SkyCanvasClouds extends SkyCanvasElement {
 
 		const nightColor = Weather.bloodMoon ? "bloodMoonColor" : "nightColor";
 		overcastFactor = overcastFactor * (1 - Weather.type.visibility);
+
 		const dayColor =
 			Weather.precipitation === "snow"
 				? this.settings.dayColor
 				: ColourUtils.interpolateColor(this.settings.dayColor, this.settings.overcastColor, overcastFactor);
 		const color = ColourUtils.interpolateColor(this.settings.dawnDuskColor, dayColor, normalise(dayFactor, 1, -1));
-
 		const mask = ColourUtils.interpolateColor(this.settings[nightColor], color, normalise(dayFactor, 1, -1));
 
 		if (Weather.precipitation === "snow") {

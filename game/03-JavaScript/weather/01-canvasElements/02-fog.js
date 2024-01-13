@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 class SkyCanvasFog extends SkyCanvasElement {
 	draw(dayFactor) {
-		if (!Weather.fog && Weather.precipitation !== "snow" && !Weather.bloodMoon) return;
+		if (!Weather.fog && Weather.precipitation !== "snow" && !Time.isBloodMoon()) return;
 
 		const alpha = Weather.precipitation === "snow" ? 0.1 : this.settings.opacity;
 		this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
