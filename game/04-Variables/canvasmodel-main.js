@@ -3814,10 +3814,12 @@ function genlayer_clothing_back_img(slot, overrideOptions) {
 		srcfn(options) {
 			let isAltPosition = options.alt_position &&
 			options["worn_" + slot + "_setup"].altposition !== undefined;
+			let setup = options["worn_" + slot + "_setup"];
 			let path = 'img/clothes/' +
 				slot + '/' +
 				options["worn_" + slot + "_setup"].variable + '/' +
-				(isAltPosition ? 'back_alt' : 'back') + '.png';
+				(isAltPosition ? 'back_alt' : 'back') + 
+				(setup.back_integrity_img ? '_' + options["worn_" + slot + "_integrity"] : '') + '.png';
 			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 		showfn(options) {
