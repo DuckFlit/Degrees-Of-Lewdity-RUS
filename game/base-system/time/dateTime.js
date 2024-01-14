@@ -446,6 +446,17 @@ class DateTime {
 	}
 
 	/**
+	 * Returns 1 during noon, and 0 during midnight, interpolating between. The difference between a fraction is that
+	 * at the dawn and dusk (6 and 18 - the factor is 0.5)
+	 *
+	 * @returns {number} Factor between 0 and 1
+	 */
+	get simplifiedDayFactor() {
+		const timeInHours = this.hour + this.minute / 60;
+		return (Math.sin((Math.PI / 12) * timeInHours - Math.PI / 2) + 1) / 2;
+	}
+
+	/**
 	 * Returns a fraction of the year (0 at the start of the year and 1 at the end) for the current date
 	 *
 	 * @returns {number} The fraction of the year.

@@ -45,7 +45,7 @@ const Weather = (() => {
 		const locationModifier = V.location === "forest" ? 0.2 : 1;
 		const clothingModifier = Object.values(V.worn).filter(item => item.type.includes("shade")).length ? 0.1 : 1;
 		const sunBlockModifier = V.skinColor.sunBlock === true ? 0.1 : 1;
-		const dayFactor = (Time.date.fractionOfDay - 0.5) * 2;
+		const dayFactor = Time.date.simplifiedDayFactor;
 		const result = round(sunIntensity * weatherModifier * locationModifier * clothingModifier * sunBlockModifier * Math.max(dayFactor, 0), 2);
 		return {
 			sun: sunIntensity,
