@@ -4,14 +4,27 @@
 		- canvas
 
 */
-WeatherC.createLayer({
-	name: "fog",
-	zIndex: 1,
-	draw() {
-		console.log("ASD");
-		console.log("this:", this);
-	},
-});
+// WeatherC.Canvas.addLayer({
+// 	name: "fog",
+// 	zIndex: 1,
+// 	draw() {
+// 		if (!Weather.fog && Weather.precipitation !== "snow" && !Time.isBloodMoon()) return;
+// 	},
+// });
+// WeatherC.Canvas.addLayer("layerName", 5);
+// WeatherC.Canvas.removeLayer("layerName");
+// WeatherC.layers.get("layerName").addEffect("effectName");
+// WeatherC.Canvas.addEffect("effectName", "layerName");
+// WeatherC.Canvas.replaceEffect("effectName", "layerName");
+// WeatherC.Canvas.removeEffects("layerName");
+
+// WeatherC.Canvas.Effects.create({
+// 	effect: "fog",
+// 	zIndex: 1,
+// 	draw() {
+// 		if (!Weather.fog && Weather.precipitation !== "snow" && !Time.isBloodMoon()) return;
+// 	},
+//});
 
 // Combat.UI.createElement({
 // 	name: "combat_textOutput",

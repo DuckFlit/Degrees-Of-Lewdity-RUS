@@ -285,10 +285,10 @@ Weather.Sky = (() => {
 
 Macro.add("skybox", {
 	handler() {
-		// Weather.Sky.elements.skybox.appendTo(this.output);
-		// if (Weather.Sky.imagesLoaded) {
-		// 	Weather.Sky.redraw();
-		// 	Weather.Sky.updateLocationImage();
-		// }
+		Weather.Sky.elements.skybox.appendTo(this.output);
+		if (Weather.Sky.imagesLoaded) {
+			Weather.Sky.redraw();
+			Weather.Sky.updateLocationImage();
+		}
 	},
 });
