@@ -1,10 +1,12 @@
 /* eslint-disable no-new */
+// eslint-disable-next-line no-var
+var tooltipRegistry = [];
 
-/* Html tooltips with default settings */
-$(document).on(":passagestart", () => {
-	$("[tooltip]").each(function () {
-		$(this).tooltip("disable");
+$(document).on(":passageinit", () => {
+	tooltipRegistry.forEach(function (tooltipElement) {
+		$(tooltipElement).trigger("mouseleave.tooltip");
 	});
+	tooltipRegistry = [];
 });
 
 $(document).on(":passageend", () => {
@@ -77,10 +79,10 @@ $.fn.tooltip = function (options = {}) {
 		};
 		$(this).data("resizeHandler", resizeHandler);
 		$(window).on("resize", resizeHandler);
+		tooltipRegistry.push(this);
 	};
 
 	const hide = function () {
-		console.log("hide");
 		const settings = this.data("tooltip-settings");
 		const $this = $(this);
 		const tooltip = $this.data("tooltip-instance");
@@ -88,6 +90,10 @@ $.fn.tooltip = function (options = {}) {
 		if (tooltip) {
 			tooltip.remove();
 			$this.removeData("tooltip-instance");
+			const index = tooltipRegistry.indexOf(this);
+			if (index > -1) {
+				tooltipRegistry.splice(index, 1);
+			}
 		}
 		if (settings.position.toLowerCase() === "cursor") {
 			$this.off("mousemove.tooltip");

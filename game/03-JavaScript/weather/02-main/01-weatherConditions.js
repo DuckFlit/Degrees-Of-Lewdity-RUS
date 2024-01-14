@@ -40,6 +40,7 @@ Weather.WeatherConditions = (() => {
 			return;
 		}
 		delete T.currentWeather;
+		delete T.currentTemperature;
 
 		const currentTimeStamp = Time.date.timeStamp;
 		const nextTimeStamp = currentTimeStamp + minutes * Time.secondsPerMinute;

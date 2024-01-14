@@ -208,7 +208,7 @@ Weather.Sky = (() => {
 			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.toSelected(Weather.waterTemperature)}${symbol}</span>
 			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelected(Weather.bodyTemperature)}${symbol}</span>
 			<br><span class="blue">Fog:</span> <span class="yellow">${Weather.fog}</span>
-			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${Weather.isSnow}</span>`
+			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${V.weatherObj.snow}mm</span>`
 			: "";
 		elements.skybox.tooltip({
 			message: `${weatherDescription}<br>${tempDescription}${debug}`,

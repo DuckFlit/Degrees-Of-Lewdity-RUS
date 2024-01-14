@@ -19,7 +19,6 @@ Weather.Temperature = (() => {
 	// To keep a certain temperature for a longer duration without too much interpolation - set the temperature for the day after too by using the optional date parameter.
 	function set(temperature, date) {
 		date = new DateTime(date ?? Time.date);
-		console.log("DATE", date);
 		if (V.weatherObj.monthlyTemperatures.length < 1) return;
 		const modifiers = calculateModifiers(date);
 		V.weatherObj.monthlyTemperatures[0].t[date.day] = temperature - modifiers;
@@ -72,7 +71,12 @@ Weather.Temperature = (() => {
 	function getWaterTemperature() {
 		const date = new DateTime(Time.date);
 		const baseTemperature = getBaseTemperature(date);
-		return round(baseTemperature, 2);
+		const softCap = -2; // Soft-cap for the water temperature
+		const k = 0.1; // Rate of change, adjust as needed
+	
+		// Modified logistic function for smooth transition
+		const waterTemperature = softCap / (1 + Math.exp(-k * (baseTemperature - softCap)));
+		return round(waterTemperature, 2);
 	}
 
 	/*
@@ -113,7 +117,7 @@ Weather.Temperature = (() => {
 	function calculateModifiers(date) {
 		const sunModifier = calculateSunModifier(date.fractionOfDay);
 		const seasonModifier = calculateSeasonModifier(date);
-		const weatherModifier = getWeatherModifier("clear");
+		const weatherModifier = getWeatherModifier(Weather.name);
 		const locationModifier = getLocationModifier();
 		return round(locationModifier + (1.5 * sunModifier + 2 * seasonModifier) * weatherModifier, 2);
 	}

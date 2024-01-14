@@ -42,7 +42,7 @@ class SkyCanvasOvercast extends SkyCanvasClouds {
 					this.cloudCtx.drawImage(this.sprite, this.x + this.sprite.width, 0);
 				}
 
-				this.cloudCtx.fillStyle = Weather.SkySettings.clouds.overCastDayColor;
+				this.cloudCtx.fillStyle = Weather.SkySettings.overcast.overCastDayColor;
 				this.cloudCtx.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
 				ctx.drawImage(this.canvasElement, 0, 0);
