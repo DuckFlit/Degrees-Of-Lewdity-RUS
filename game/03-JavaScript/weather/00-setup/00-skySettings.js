@@ -363,7 +363,8 @@ setup.SkySettings = {
 			verticalOffset: 0,
 			diagonalOffset: 0,
 			fadePosition: 0.5,
-			darken: 0,
+			darkenColorDay: "#00041266", // Darkens the rain during the day - to be more visible
+			darkenColorNight: "#00041200", // No darkening effect during night (00 alpha)
 			fps: 4,
 			scale: 0.7,
 			maskAlpha: 0.9,
