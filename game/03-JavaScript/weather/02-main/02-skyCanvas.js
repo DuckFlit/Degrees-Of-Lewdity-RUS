@@ -200,12 +200,13 @@ Weather.Sky = (() => {
 		const weatherState = Weather.TooltipDescriptions.type[Weather.name];
 		const weatherDescription = typeof weatherState[Weather.dayState] === "function" ? weatherState[Weather.dayState]() : weatherState[Weather.dayState];
 		const tempDescription = Weather.TooltipDescriptions.temperature();
+		const symbol = V.options.fahrenheit ? "°F" : "°C";
 		const debug = V.debug
-			? `<br><br><span class="red">DEBUG:</span><br><span class="blue">Weather:</span> <span class="yellow">${Weather.name}</span>
-			<br><span class="blue">Air temperature:</span> <span class="yellow">${Weather.temperature}°C</span>
-			<br><span class="blue">Inside temperature:</span> <span class="yellow">${Weather.insideTemperature}°C</span>
-			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.waterTemperature}°C</span>
-			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.bodyTemperature}°C</span>
+			? `<br><br><span class="teal">DEBUG:</span><br><span class="blue">Weather:</span> <span class="yellow">${Weather.name}</span>
+			<br><span class="blue">Air temperature:</span> <span class="yellow">${Weather.toSelected(Weather.temperature)}${symbol}</span>
+			<br><span class="blue">Inside temperature:</span> <span class="yellow">${Weather.toSelected(Weather.insideTemperature)}${symbol}</span>
+			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.toSelected(Weather.waterTemperature)}${symbol}</span>
+			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelected(Weather.bodyTemperature)}${symbol}</span>
 			<br><span class="blue">Fog:</span> <span class="yellow">${Weather.fog}</span>
 			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${Weather.isSnow}</span>`
 			: "";

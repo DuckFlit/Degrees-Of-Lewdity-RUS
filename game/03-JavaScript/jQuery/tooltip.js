@@ -1,6 +1,12 @@
 /* eslint-disable no-new */
 
 /* Html tooltips with default settings */
+$(document).on(":passagestart", () => {
+	$("[tooltip]").each(function () {
+		$(this).tooltip("disable");
+	});
+});
+
 $(document).on(":passageend", () => {
 	$("[tooltip]").each(function () {
 		const message = $("<div>");
@@ -74,6 +80,7 @@ $.fn.tooltip = function (options = {}) {
 	};
 
 	const hide = function () {
+		console.log("hide");
 		const settings = this.data("tooltip-settings");
 		const $this = $(this);
 		const tooltip = $this.data("tooltip-instance");

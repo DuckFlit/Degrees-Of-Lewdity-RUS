@@ -201,7 +201,7 @@ setup.SkySettings = {
 		minDarkness: 0.15,
 		dayColor: "#ffe9d300",
 		dawnDuskColor: "#ff8000cc",
-		nightColor: "#000412cc",
+		nightColor: "#000412ee",
 		bloodMoonColor: "#3d0c01dd",
 		overcastColor: "#000412cc",
 		farColor: "#aab7e6aa",
@@ -227,7 +227,7 @@ setup.SkySettings = {
 		minDarkness: 0.15,
 		dayColor: "#ffe9d300",
 		dawnDuskColor: "#ff8000cc",
-		nightColor: "#000412cc",
+		nightColor: "#000412ee",
 		bloodMoonColor: "#570f00cc",
 		overcastColor: "#000412cc",
 		farColor: "#aab7e6aa",
@@ -318,7 +318,8 @@ setup.SkySettings = {
 			fps: 9,
 		},
 		snow: {
-			opacity: 0.8,
+			dayOpacity: 0.8,
+			nightOpacity: 0.3,
 			spriteOverlap: 0,
 			startOffsetX: 0,
 			verticalOffset: -10,
@@ -336,7 +337,7 @@ setup.SkySettings = {
 				frameCount: 8,
 			},
 			snow: {
-				path: "snow_sparse.png",
+				path: "snow.png",
 				frameCount: 16,
 			},
 			mask: {
@@ -357,17 +358,17 @@ setup.SkySettings = {
 			maskAlpha: 1,
 		},
 		snow: {
-			opacity: 0.5,
+			opacity: 0.4,
 			spriteOverlap: 0,
 			startOffsetX: 0,
 			verticalOffset: 0,
 			diagonalOffset: 0,
 			fadePosition: 0.5,
-			darkenColorDay: "#00041266", // Darkens the rain during the day - to be more visible
-			darkenColorNight: "#00041200", // No darkening effect during night (00 alpha)
+			darkenColorDay: "#00041266",
+			darkenColorNight: "#00041266",
 			fps: 4,
 			scale: 0.7,
-			maskAlpha: 0.9,
+			maskAlpha: 1,
 		},
 		//alpha
 		//offsets

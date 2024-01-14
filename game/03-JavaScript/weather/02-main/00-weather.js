@@ -84,6 +84,10 @@ const Weather = (() => {
 		generateKeyPoints,
 		getTanningFactor,
 		setAccumulatedSnow,
+		toFahrenheit: temperature => Weather.Temperature.toFahrenheit(temperature),
+		toSelected: celcius => {
+			return V.options.fahrenheit ? Weather.Temperature.toFahrenheit(celcius) : celcius;
+		},
 		setTemperature: temperature => Weather.Temperature.set(temperature),
 		addTemperature: temperature => Weather.Temperature.add(temperature),
 		set: (weatherType, instant, minutes) => Weather.WeatherConditions.setWeather(weatherType, instant, minutes),
