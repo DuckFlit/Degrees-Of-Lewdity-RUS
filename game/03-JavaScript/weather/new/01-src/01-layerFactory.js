@@ -1,6 +1,11 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-const WeatherC = {};
+const WeatherC = (() => {
+	return {
+		getObjectValues: obj => Object.fromEntries(Object.entries(obj).filter(([key, value]) => typeof value !== "function")),
+	};
+})();
+
 WeatherC.Canvas = (() => {
 	class ErrorList {
 		constructor() {

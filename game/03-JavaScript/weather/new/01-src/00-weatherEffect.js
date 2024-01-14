@@ -9,16 +9,17 @@ class WeatherEffect {
 		this.init = options.init;
 		this.onDraw = options.onDraw;
 
-		if (options.parameters) {
-			Object.entries(options.parameters).forEach(([key, value]) => {
+		if (options.defaultParameters) {
+			Object.entries(options.defaultParameters).forEach(([key, value]) => {
 				this[key] = value;
 			});
 		}
-		this.onInit();
+		//this.onInit();
+		// This should only execute if its been added to a layer
 	}
 
 	onInit() {
-		const { init, draw, ...context } = this;
+		const context = weatherC.getObjectValues(this);
 		try {
 			init.call(context);
 		} catch (e) {
@@ -28,7 +29,7 @@ class WeatherEffect {
 
 	onDraw() {
 		if (!this.enabled) return;
-		const { init, draw, ...context } = this;
+		const context = weatherC.getObjectValues(this);
 		try {
 			this.canvas.clear();
 			draw.call(context);

@@ -2,7 +2,7 @@
 
 WeatherEffects.create({
 	name: "fog",
-	parameters: {
+	defaultParameters: {
 		alpha: 1,
 		colorTop: "#000000",
 		colorMiddle: "#999999",

@@ -5,7 +5,7 @@
 
 const observables = ObservableValue.fromObject({
     location: "",
-	time: "",
+	time: 0,
 	weather: ""
 });
 /* Variable observables */
