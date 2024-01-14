@@ -932,6 +932,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#ff0000" },
 	},
 	{
+		variable: "jewel red",
+		name: "jewel red",
+		name_cap: "Jewel red",
+		csstext: "jewel-red",
+		canvasfilter: { blend: "#d4273b" },
+	},
+	{
 		variable: "green",
 		name: "green",
 		name_cap: "Green",
@@ -1119,6 +1126,13 @@ setup.colours.clothes = [
 		name_cap: "Silver",
 		csstext: "silver",
 		canvasfilter: { blend: "#C0C0C0" },
+	},
+	{
+		variable: "sterling silver",
+		name: "sterling silver",
+		name_cap: "Sterling silver",
+		csstext: "sterling-silver",
+		canvasfilter: { blend: "#8b9fc4" },
 	},
 ];
 /**

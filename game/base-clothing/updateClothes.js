@@ -21,6 +21,8 @@ function updateClothingColours(item, itemRef) {
 		case "round shades":
 		case "shield shades":
 		case "punk shades":
+		case "leather dress":
+		case "long leather gloves":
 		case "witch shoes":
 			if (item.colour === 0) item.colour = "black";
 			break;
@@ -38,6 +40,16 @@ function updateClothingColours(item, itemRef) {
 				item.accessory_colour = "light blue";
 				item.accessory_colour_combat = "light blue";
 			}
+			break;
+		case "brown leather jacket":
+			if (item.colour === 0) item.colour = "brown";
+			break;		
+		case "love locket":
+			if (item.colour === 0) item.colour = "bronze";
+				break;
+		case "black leather jacket":
+			if (item.colour === 0) item.colour = "black";
+			if (item.accessory_colour === 0) item.accessory_colour = "silver";
 			break;
 		default:
 			// Catch-all case if people forget to adjust this widget for whatever clothing item is updated. Can make weird looking clothes if "custom" is selected.
@@ -153,6 +165,20 @@ function updateClothesItem(slot, item, debug) {
 		case "sleeveless jingle-bell dress":
 			if (item.outfitPrimary.lower === "jingle-bell skirt") item.outfitPrimary.lower = "sleeveless jingle-bell skirt";
 			break;
+		case "Rib-knit ankle socks":
+			item.name = "rib-knit ankle socks";
+			break;
+		case "Striped kneehighs":
+			item.name = "striped kneehighs";
+			break;
+		case "brown leather jacket":
+			item.name = "leather jacket";
+			item.name_cap = "Leather jacket";
+			break;
+		case "black leather jacket":
+			item.name = "punk leather jacket";
+			item.name_cap = "Punk leather jacket";
+			break;				
 	}
 	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));
 }

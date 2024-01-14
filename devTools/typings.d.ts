@@ -55,7 +55,7 @@ declare interface ClothesItem {
 	accessory_colour_options: string[];
 	accessory_colour_sidebar: number;
 	/**
-	 * if 1, then accessory files are integrity-dependent "acc_(torn|tattered|frayed|full).png"
+	 * if 1, then accessory files are integrity-dependent "acc_(tattered|torn|frayed|full).png"
 	 */
 	accessory_integrity_img?: 0|1;
 	high_img: 0|1;
