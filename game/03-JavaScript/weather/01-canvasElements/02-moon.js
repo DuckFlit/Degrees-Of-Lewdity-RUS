@@ -24,9 +24,9 @@ class SkyCanvasMoon extends SkyCanvasElement {
 	}
 
 	updateCanvas() {
-		this.bloodMoon = Weather.bloodMoon;
-		const fraction = this.bloodMoon ? 0.5 : Time.date.moonPhaseFraction;
-		const nightColor = this.bloodMoon ? "bloodMoon" : "night";
+		this.isBloodMoon = Weather.bloodMoon;
+		const fraction = this.isBloodMoon ? 0.5 : Time.date.moonPhaseFraction;
+		const nightColor = this.isBloodMoon ? "bloodMoon" : "night";
 		const sprite = this.sprites.find(sprite => sprite.type === nightColor).img;
 
 		this.updateShadow(fraction);
