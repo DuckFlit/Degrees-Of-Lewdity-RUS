@@ -229,10 +229,12 @@ DefineMacroS("tanningGainOutput", tanningGainOutput);
 function tanningPenaltiesOutput(modifiers) {
 	const reasons = [];
 
-	if (modifiers.sun <= 0.3) reasons.push(`Low sun intensity (${Time.monthName})`);
-	else if (modifiers.sun <= 0.7) reasons.push(`Reduced sun intensity (${Time.monthName})`);
+	if (V.outside) {
+		if (modifiers.sun <= 0.3) reasons.push(`Low sun intensity (${Time.monthName})`);
+		else if (modifiers.sun <= 0.7) reasons.push(`Reduced sun intensity (${Time.monthName})`);
 
-	if (modifiers.weather < 1) reasons.push("Light clouds");
+		if (modifiers.weather < 1) reasons.push("Light clouds");
+	}
 	if (modifiers.clothing < 1) reasons.push("Shaded by clothing");
 	if (modifiers.sunBlock < 1) reasons.push("Use of sunblock");
 

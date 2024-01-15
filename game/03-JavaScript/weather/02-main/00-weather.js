@@ -41,11 +41,11 @@ const Weather = (() => {
 	 */
 	function getTanningFactor(customSunIntensity = 0) {
 		const sunIntensity = customSunIntensity || Weather.Settings.months[Time.date.month - 1].sunIntensity;
-		const weatherModifier = Weather.current.tanningModifier;
+		const weatherModifier = V.outside ? Weather.current.tanningModifier : 1;
+		const dayFactor = V.outside ? Time.date.simplifiedDayFactor : 1;
 		const locationModifier = V.location === "forest" ? 0.2 : 1;
 		const clothingModifier = Object.values(V.worn).filter(item => item.type.includes("shade")).length ? 0.1 : 1;
 		const sunBlockModifier = V.skinColor.sunBlock === true ? 0.1 : 1;
-		const dayFactor = Time.date.simplifiedDayFactor;
 		const result = round(sunIntensity * weatherModifier * locationModifier * clothingModifier * sunBlockModifier * Math.max(dayFactor, 0), 2);
 		return {
 			sun: sunIntensity,

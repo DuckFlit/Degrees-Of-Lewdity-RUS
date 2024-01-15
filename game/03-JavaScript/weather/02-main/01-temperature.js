@@ -82,12 +82,13 @@ Weather.Temperature = (() => {
 	/*
 		Modifies the inside-temperature slightly depending on the outside temperature.
 		It uses a logarithmic function to simulate heating / AC being turned on when the temperature varies enough.
+		Lowering the modifierFactor makes the deviation from the target temperature less pronounced. (lower deviation from target)
 	*/
 	function getInsideTemperature() {
 		const date = new DateTime(Time.date);
 		const baseTemperature = getBaseTemperature(date);
 		const targetTemperature = 23;
-		const modifierFactor = 0.5;
+		const modifierFactor = 0.4;
 
 		// Logarithmic function for more effect at extremes (low and high temperatures)
 		const deviation = Math.abs(baseTemperature - targetTemperature);
