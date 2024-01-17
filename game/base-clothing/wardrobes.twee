@@ -694,6 +694,19 @@
 	</div>
 <</widget>>
 
+<<widget "toggleLowerTuck">>
+	<<set _linkOption1 to _args[0] || "Untuck">>
+	<<set _linkOption2 to _args[1] || "Tuck in">>
+	<div class="toggleLowerTuck">
+		<<link `($lowerTucked ? _linkOption1 : _linkOption2)`>>
+			<<set $lowerTucked to +!$lowerTucked>>
+			<<updatesidebarimg>>
+			<<run $(".toggleLowerTuck .link-internal").html($lowerTucked ? _linkOption1 : _linkOption2)>>
+			<<run Links.generateLinkNumbers($(".passage"))>>
+		<</link>>
+	</div>
+<</widget>>
+
 <<widget "toggleLeash">>
 	<<if ["collar", "free use collar", "leather collar", "spiked collar"].includes($worn.neck.name)>>
 		<<link "Attach Leash">>
@@ -715,7 +728,9 @@
 		<<case "upper">>
 			<<switch $worn.upper.variable>>
 				<<case "schoolcardigan">><<set _altLink to ["Tie cardigan around waist", "Wear cardigan normally"]>>
-				<<case "brownleather" "blackleather">><<set _altLink to ["Zip jacket", "Unzip jacket"]>>
+				<<case "brownleather" "blackleather" "leathercropjacket">><<set _altLink to ["Zip jacket", "Unzip jacket"]>>
+				<<case "waistcoat" "waistcoatlapel">><<set _altLink to ["Tuck in shirttails", "Untuck shirttails"]>>
+				<<case "dress">><<set _altLink to ["Unbutton shirt", "Button up shirt"]>>
 				<<default>><<exit>>
 			<</switch>>
 		<<case "neck">>
@@ -775,6 +790,20 @@
 				<</if>>
 		<<default>>
 	<</switch>>
+<</widget>>
+
+<<widget "toggleAltSleeve">>
+	<<set _linkOption1 to _args[0] || "Unroll sleeves">>
+	<<set _linkOption2 to _args[1] || "Roll up sleeves">>
+	<div class="toggleAltSleeve">
+		<<link `($sleevesRolled ? _linkOption1 : _linkOption2)`>>
+			<<set $worn.upper.altsleeve to ($worn.upper.altsleeve is "none" ? "alt" : "none")>>
+			<<set $sleevesRolled to +!$sleevesRolled>>
+			<<updatesidebarimg>>
+			<<run $(".toggleAltSleeve .link-internal").html($sleevesRolled ? _linkOption1 : _linkOption2)>>
+			<<run Links.generateLinkNumbers($(".passage"))>>
+		<</link>>
+	</div>
 <</widget>>
 
 <<widget "toggleFaceLayer">>
@@ -902,8 +931,13 @@
 				<div class="no-numberify"><<toggleHoodLink>></div>
 				<br>
 			<</if>>
-			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItemData.notuck>>
+			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and !_wornItemData.notuck and !$worn.feet.notuck>>
 				<div class="no-numberify"><<toggleUpperTuck>></div>
+			<<elseif _wardrobe_list is "lower" and $worn.feet.name isnot "naked" and !_wornItemData.notuck>>
+				<div class="no-numberify"><<toggleLowerTuck>></div>
+			<</if>>
+			<<if _wardrobe_list is "upper" and $worn.upper.name isnot "naked" and _wornItemData.altsleeve>>
+				<div class="no-numberify toggleAltSleeve"><<toggleAltSleeve>></div>
 			<</if>>
 			<div class="no-numberify toggleAltLink"><<toggleAltLink _wardrobe_list "wardrobe">></div>
 			<<if _wardrobe_list is "neck">>
