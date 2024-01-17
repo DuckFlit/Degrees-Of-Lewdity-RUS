@@ -48,7 +48,6 @@
 
 
 	if (release) {
-		const gameRoot = path.resolve("../..");
 		const keystore = path.resolve(gameRoot, 'keys/dol.keystore');
 		if (release && !fs.existsSync(keystore)) {
 			throw new Error(
