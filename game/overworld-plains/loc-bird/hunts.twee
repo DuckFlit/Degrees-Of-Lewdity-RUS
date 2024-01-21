@@ -43,7 +43,7 @@
 	<<if $monster is 1>>
 		<<bHe>> looks at you for a moment. "No. <<Wife>> is not ready yet." Before you can ask why, <<bhe>> flaps <<bhis>> wings for emphasis. "Can not carry you for hunt. When <<wife>> is ready, we can go together."
 	<<else>>
-		<<bHe>> looks at you for a moment. <<bHe>> flaps his wings at you and shakes <<bhis>> head. <<bHe>> seems to think you're not ready. 
+		<<bHe>> looks at you for a moment. <<bHe>> flaps <<bhis>> wings at you and shakes <<bhis>> head. <<bHe>> seems to think you're not ready. 
 	<</if>>
 	<<bHe>> spreads <<bhis>> wings, and launches from the tower.
 	<br><br>
@@ -85,9 +85,9 @@
 	<<set $bird.hunts.duo to true>>
 	<<set $dateCount.Total++>><<set $dateCount.GreatHawkHunts++>>
 	<<if $monster is 1>>
-		"Would be happy to hunt with wife," <<bhe>> says. <<bHe>> spreads his wings and leaps out of the tower. You follow after <<bhim>>.
+		"Would be happy to hunt with <<wife>>," <<bhe>> says. <<bHe>> spreads <<bhis>> wings and leaps out of the tower. You follow after <<bhim>>.
 	<<else>>
-		<<bHe>> lets out a small squawk and beckons you with his wing. <<bHe>> then spreads <<bhis>> wings and leaps out of the tower. You follow after <<bhim>>.
+		<<bHe>> lets out a small squawk and beckons you with <<bhis>> wing. <<bHe>> then spreads <<bhis>> wings and leaps out of the tower. You follow after <<bhim>>.
 	<</if>>
 	<br><br>
 
@@ -104,7 +104,7 @@
 
 	True to <<bhis>> word, <<bhe>> swoops down like lightning and grabs one in <<bhis>> talons. <<bHe>> barely loses any speed, returning to your side quickly. The creature struggles for a moment before going limp. "Our prey is weak from the sky. Not built for high up. <<Wife>> can hunt too." <<bHe>> begins to circle, waiting for you to grab one as well.
 <<else>>
-	You observe <<bhis>> methods. <<bHe>> makes sure to fly high and wait for a good opportunity. After a moment, <<bhe>> turns his head towards movement in the heather; a scattered group of lurkers. <<bHe>> readies his talons, preparing to strike.
+	You observe <<bhis>> methods. <<bHe>> makes sure to fly high and wait for a good opportunity. After a moment, <<bhe>> turns <<bhis>> head towards movement in the heather; a scattered group of lurkers. <<bHe>> readies <<bhis>> talons, preparing to strike.
 	<br><br>
 
 	<<bHe>> swiftly swoops down and grabs one in <<bhis>> talons. <<bHe>> barely loses any speed, returning to your side quickly. The creature struggles for a moment before going limp. It seems they can't handle the change in altitude. Maybe you could get one too.
@@ -233,23 +233,36 @@ You place your lurker in front of the <<beasttype>>.
 
 :: Bird Hunt Start
 <<effects>>
-
+<<npc "Great Hawk">>
 You stand on the edge of the perch, spreading your wings. You feel for the wind while looking out to the moor. Your focus sharpens.
 <br><br>
 
-<<flight_time_check 30>>
-<<print '<<link [[Hunt alone('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
-<br>
-<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
-	<<if $bird.hunts.injured gt 1>>
-		<span class="red">Your spouse won't be able to hunt with you until <<bhis>> wing heals.</span>
+<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home" and isBloodmoon()>>
+	A large wing unfurls in front of you, blocking you.
+	<<if $monster is 1>>
+		"No, <<wife>>. The sky is hungry tonight. Hunting is too dangerous." <<bHe>> gestures to the red moon.
 	<<else>>
-		<<link [[Hunt together|Bird Hunt Start Ask]]>><<npcincr "Great Hawk" dom 1>><</link>><<gdom>>
+		Your <<beasttype>> caws in warning, staring at the red moon. <<bHes>> worried about you hunting.
 	<</if>>
+	<br><br>
+
+	<<link [[Step away|Bird Tower Perch]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<flight_time_check 30>>
+	<<print '<<link [[Hunt alone('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+	<br>
+	<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+		<<if $bird.hunts.injured gt 1>>
+			<span class="red">Your spouse won't be able to hunt with you until <<bhis>> wing heals.</span>
+		<<else>>
+			<<link [[Hunt together|Bird Hunt Start Ask]]>><<npcincr "Great Hawk" dom 1>><</link>><<gdom>>
+		<</if>>
+		<br>
+	<</if>>
+	<<link [[Step away|Bird Tower Perch]]>><<endevent>><</link>>
 	<br>
 <</if>>
-<<link [[Step away|Bird Tower Perch]]>><<endevent>><</link>>
-<br>
 
 :: Bird Hunt Start Injured
 <<effects>>
@@ -278,7 +291,6 @@ You stand on the edge of the perch, spreading your wings. You feel for the wind 
 
 :: Bird Hunt Start Ask
 <<effects>>
-
 You turn to the <<beasttype>>.
 <<if $speech_attitude is "meek">>
 	"C-can you come with me? I'm still nervous about hunting alone," you say.
@@ -303,10 +315,18 @@ You turn to the <<beasttype>>.
 <<else>>
 	<<set $bird.hunts.duo to true>>
 	<<set $dateCount.Total++>><<set $dateCount.GreatHawkHunts++>>
-	<<if $monster is 1>>
-		"<<Wife>> wants to hunt?" <<bhe>> asks as <<bhe>> gets up. "Then we hunt." 
+	<<if Time.dayState is "night">>
+		<<if $monster is 1>>
+			"Hunting at night time? Difficult. If <<wife>> wants to..."
+		<<else>>
+			<<bHe>> stares up at the night sky, hesitant. After a moment, <<bhe>> hops beside you.
+		<</if>>
 	<<else>>
-		<<bHe>> gets up, then lets out a small affirmative caw.
+		<<if $monster is 1>>
+			"<<Wife>> wants to hunt?" <<bhe>> asks as <<bhe>> gets up. "Then we hunt." 
+		<<else>>
+			<<bHe>> gets up, then lets out a small affirmative caw.
+		<</if>>
 	<</if>>
 <</if>>
 <br><br>
@@ -339,7 +359,11 @@ You turn to the <<beasttype>>.
 	<<else>>
 		You decide to hunt alone. The <<beasttype>> stirs.
 		<<if $monster is 1>>
-			"Have a good hunt, <<wife>>," <<bhe>> says. "Return soon."
+			<<if Time.dayState is "night">>
+				"Hunting at night? Difficult. Good luck, <<wife>>," <<bhe>> says. "Return soon."
+			<<else>>
+				"Have a good hunt, <<wife>>," <<bhe>> says. "Return soon."
+			<</if>>
 		<<else>>
 			<<bHe>> squawks as you approach the edge of the perch, wishing you luck in your hunt.
 		<</if>>
@@ -492,7 +516,23 @@ What will you hunt for?
 <br><br>
 
 <<cleareventpool>>
-<<if _distanceTotal is 0>>
+<<if $stress gte $stressmax or isPlayerNonparasitePregnancyEnding()>>
+	You don't have the strength to keep flying. Your wings limply carry you into a clumsy, rapidly descending glide. You black out.
+	<br><br>
+
+	<<if $bird.hunts.duo is false>>
+		You hear a muffled splash, and your body goes cold.
+		<br><br>
+
+		<<passout_moor>>
+	<<else>>
+		You feel something grab you mid-air, and your ears pop as you begin to ascend again.
+		<br><br>
+		
+		<<link [[Next (?:??)|Bird Hunt Passout]]>><<bird_pass _returnTime>><</link>>
+		<br>
+	<</if>>
+<<elseif _distanceTotal is 0>>
 	You're right above the castle. <span class="blue">You won't find anything until you fly further out.</span>
 	<br><br>
 
@@ -559,8 +599,30 @@ What will you hunt for?
 <<else>>
 
 	<<addinlineevent "bird_hunt_nothing" _flight_hunt_chance.nothing>>
+		<<rng 3>>
 		After some time, you still haven't found anything of interest.
 		<br><br>
+		<<switch $rng>>
+			<<case 1>>
+				<!-- Nothing -->	
+			<<case 2>>
+				<<switch $weather>>
+					<<case "clear">>
+						<<switch Time.dayState>>
+							<<case "dawn">>The morning sun kisses the horizon, making you feel more alert. <<stress -6>><<lstress>>
+							<<case "day">>You take a moment to relish in the sun's warmth as you glide. <<stress -6>><<lstress>>
+							<<case "dusk">>The setting sun casts striking shadows across the moor. <<stress -6>><<lstress>>
+							<<case "night">>The moor is dark and strangely peaceful from up here.  <<stress -6>><<lstress>>
+						<</switch>>
+					<<case "overcast">>A strong gust of wind washes over you, allowing you to glide in place for a few minutes. <<stress -6>><<lstress>>
+					<<case "rain">>The rain batters you. <<stress 6>><<gstress>>
+					<<case "snow">>You glide in a sparkling white void above the earth. The snow makes you feel like you're in an otherworldly bubble. <<stress -6>><<lstress>>
+				<</switch>>
+				<br><br>
+			<<case 3>>			
+				You lose focus for a moment, and enjoy the sensation of flying. <<trauma -3>><<ltrauma>>
+				<br><br>
+		<</switch>>
 
 		<<endevent>>
 		<<set $phase to 2>>
@@ -590,6 +652,74 @@ What will you hunt for?
 		<br>
 		<<if $bird.hunts.ignored lte 2>>
 			<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_hunt_leaves" _flight_hunt_chance.materials>>
+		You see a patch of large leaves on the ground.
+		<<if Time.season is "winter" or Time.season is "autumn">>
+			They stick out against the dead foliage and look high quality.
+		<</if>>
+		They'd fit well in your nest.
+		<br><br>
+
+		<<link [[Land (0:05)|Bird Hunt Leaves]]>><<bird_pass 5>><</link>>
+		<br>
+		<<if $bird.hunts.ignored lte 2>>
+			<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<if $bird.upgrades.tarp is 0 and !$bird.hunts.loot.tarp>>
+		<<addinlineevent "bird_hunt_tarp" _flight_hunt_chance.materials>>
+			You notice a large blue tarp tied between two large rocks, providing shelter from the rain. No one seems to be around. You could take it for yourself.
+			<br><br>
+
+			<<link [[Take the tarp (0:05)|Bird Hunt Tarp]]>><<bird_pass 5>><</link>>
+			<br>
+			<<if $bird.hunts.ignored lte 2>>
+				<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+				<br>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "bird_hunt_lurkers_1" _flight_hunt_chance.lurkers>>
+		<<if $bird.hunts.duo is true>>
+			<<npc "Great Hawk">>
+			The Great Hawk lets out a small screech to get your attention. You see some lurkers in the grass. They appear to be resting. 
+			<<if $monster is 1>>
+				"Prey is unaware. Now is good time to strike."
+			<<else>>
+				<<bHe>> lets out another low screech, indicating <<bhis>> intent to attack.
+			<</if>>
+			<br><br>
+
+			<<link [[Hunt them (0:05)|Bird Hunt Lurkers GH]]>><<bird_pass 5>><</link>>
+			<br>
+		<<else>>
+			You spot some lurkers in the grass. They appear to be resting.
+			<br><br>
+
+			<<link [[Hunt them (0:05)|Bird Hunt Lurkers Alone]]>><<bird_pass 5>><</link>>
+			<br>
+		<</if>>
+		<<if $bird.hunts.ignored lte 2>>
+			<<link [[Ignore them|Bird Hunt Ignore]]>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_hunt_lurkers_2" _flight_hunt_chance.lurkers>>
+		You notice a lone lurker on the move.
+		<br><br>
+
+		<<link [[Hunt it (0:05)|Bird Hunt Lurkers Few]]>><<bird_pass 5>><</link>>
+		<br>
+		<<if $bird.hunts.ignored lte 2>>
+			<<link [[Ignore it|Bird Hunt Ignore]]>><<endevent>><</link>>
 			<br>
 		<</if>>
 	<</addinlineevent>>
@@ -646,9 +776,29 @@ What will you hunt for?
 		<</addinlineevent>>
 	<</if>>
 
+	<<if isBloodmoon()>>
+		<<addinlineevent "bird_hunt_blood" 4>>
+			You feel your stomach twist. The hairs on the back of your neck stand on end.
+			<br><br>
+
+			Everything goes blurry for a moment, and you feel as though you've been flipped upside-down. Your wings are no longer working to keep you in the sky, and are instead trying to push you away from it, as if you were being pulled upwards by gravity instead of downwards.
+			<br><br>
+
+			You try to look up, but can no longer tell which way it is. You desperately try to find the ground.
+			<br><br>
+
+			<span class="red">It's gone.</span>
+			<br><br>
+
+			You're swallowed by the sky. Everything fades to red.
+			<br><br>
+
+			<<link [[Next|Bird Hunt Blood]]>><<bird_pass 60>><</link>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
 
 	<<runeventpool>>
-
 <</if>>
 
 
@@ -663,7 +813,7 @@ What will you hunt for?
 <</if>>
 <br><br>
 
-<<if $bird.materials.tools is false and !$bird.hunts.loot.toolbox and ($rng gte 90 or $dateCount.GreatHawkHunts gte 5)>>
+<<if $bird.upgrades.tools is 0 and !$bird.hunts.loot.toolbox and ($rng gte 90 or $dateCount.GreatHawkHunts gte 5)>>
 	You notice a toolbox on the ground. You look inside it and find a handsaw, hammer and a chisel. These would be useful for improving the tower.
 	<br><br>
 
@@ -690,13 +840,12 @@ What will you hunt for?
 
 	<<link [[Take random pieces|Bird Hunt Camp 2]]>><<set $phase to 4>><</link>>
 	<br>
-	<<link [[Look for higher quality pieces|Bird Hunt Camp 2]]>><<set $phase to 5>><</link>><<housekeepingdifficulty 1 200>><<ghousekeeping 200>>
+	<<link [[Look for higher quality pieces|Bird Hunt Camp 2]]>><<set $phase to 5>><</link>><<housekeepingdifficulty 1 300>><<ghousekeeping 300>>
 	<br>
 <</if>>
 
 :: Bird Hunt Camp 2
 <<effects>>
-
 <<switch $phase>>
 	<<case 1>>
 		You grab the toolbox. It's easy to carry, and light enough for you to fly with it.
@@ -717,7 +866,7 @@ What will you hunt for?
 			<<if $monster is 1>>
 				<<bHe>> takes one in <<bhis>> hand. "Good wood. Strong enough for nest."
 			<<else>>
-				<<bHe>> grabs the other log in his talons.
+				<<bHe>> grabs the other log in <<bhis>> talons.
 			<</if>>
 			<br><br>
 			
@@ -778,15 +927,17 @@ What will you hunt for?
 		You hear the grass rustle behind you. You turn around in time to see something leaping at you!
 		<br><br>
 
-		<<if $deviancy gte 55>>
-			<<link [[Stand still|Bird Hunt Lurker Stand Still]]>><</link>><<deviant4>>
-			<br>
-		<</if>>
 		<<link [[Dodge|Bird Hunt Lurker Dodge]]>><</link>><<dancedifficulty 1 1200>>
 		<br>
-		<<if $farm_stage gte 10>>
-			<<link [[Hurl net|Bird Hunt Lurker Hurl Net]]>><</link>><<dancedifficulty 1 1200>><<athleticsdifficulty 0 1200>>
-			<br>
+		<<if $bestialitydisable is "f" and $lurkerdisable is "f">>
+			<<if $deviancy gte 55>>
+				<<link [[Stand still|Bird Hunt Lurker Stand Still]]>><</link>><<deviant4>>
+				<br>
+			<</if>>
+			<<if $farm_stage gte 10>>
+				<<link [[Hurl net|Bird Hunt Lurker Hurl Net]]>><</link>><<dancedifficulty 1 1200>><<athleticsdifficulty 0 1200>>
+				<br>
+			<</if>>
 		<</if>>
 	<<else>>
 		<<set _athlDiffMin to ($bird.hunts.weight * 50)>>
@@ -859,11 +1010,22 @@ What will you hunt for?
 	<<link [[Try to take two|Bird Hunt Sticks 2]]>><<set $phase to 3>><</link>><<athleticsdifficulty _athlDiffMin _athlDiffMax>>
 	<br>
 <<else>>
-	You try to jump aside, <span class="red">but you fail to move in time, and the lurker lands on your face.</span>
-	<br><br>
+	<<if $bestialitydisable is "f" and $lurkerdisable is "f">>
+		You try to jump aside, <span class="red">but you fail to move in time, and the lurker lands on your face.</span>
+		<br><br>
 
-	<<link [[Next|Bird Hunt Struggle]]>><<set $struggle_start to 1>><</link>>
-	<br>
+		<<link [[Next|Bird Hunt Struggle]]>><<set $struggle_start to 1>><</link>>
+		<br>
+	<<else>>
+		You jump to the side, just barely tumbling out of the way. You flee from the lurker, but don't escape unscathed. <<beastescape>>
+		<br><br>
+
+		You abandon your current hunt in fear of the creature.
+		<br><br>
+
+		<<set _huntFail to 1>>
+		<<flight_hunt_return>>
+	<</if>>
 <</if>>
 
 :: Bird Hunt Lurker Hurl Net
@@ -954,11 +1116,563 @@ You return your attention to the branches. Only two of them look suitable for us
 <<link [[Try to take two|Bird Hunt Sticks 2]]>><<set $phase to 3>><</link>><<athleticsdifficulty _athlDiffMin _athlDiffMax>>
 <br>
 
+:: Bird Hunt Leaves
+<<effects>>
+You land near the leaves.
+<<if $rng gte 90>>
+	<<if $quicksand gte 5>>
+		You notice a pattern. They didn't just fall here. They were placed by someone. Looking closer, you notice that the ground looks unstable. Quicksand.
+		<br><br>
+
+		<<if $bird.hunts.duo is true>>
+			<<npc "Great Hawk">>
+			<<if $monster is 1>>
+				"Good eyes, <<wife>>."
+			<<else>>
+				Your <<beasttype>> squaks in approval at your alertness.
+			<</if>>
+		<</if>>
+
+		You carefully walk around the pit, picking some of the nicer leaves from the surface. Most of them are in good condition.
+		<br><br>
+
+		<<flight_hunt_get "leaves" 2>>
+		<<flight_hunt_return>>
+	<<else>>
+		<<if $bird.hunts.duo is true>>
+			<<npc "Great Hawk">>
+			Your <<beasttype>> suddenly stops.
+			<<if $monster is 1>>
+				"Wait. Ground is bad here." <<bHe>> pokes the ground with <<bhis>> foot, revealing its unstable nature. Quicksand. <<bHe>> carefully prods at the ground, until <<bhe>> finds a safe spot to walk over. "Land itself tries to eat you."
+			<<else>>
+				<<bHe>> taps the ground with <<bhis>> talons, then squawks. <<bHes>> warning you about the ground. It's quicksand. <<bHe>> carefully prods at the ground, until <<bhe>> finds a safe spot to hop over.
+			<</if>>
+			<br><br>
+
+			You carefully cross the pit, picking some of the nicer leaves from the surface. Most of them are in good condition.
+			<br><br>
+
+			<<flight_hunt_get "leaves" 2>>
+			<<flight_hunt_return>>
+		<<else>>
+			As you step closer, you begin to sink. You're in quicksand! Those leaves were likely left here to mark this patch of quicksand, or maybe conceal it.
+			<br><br>
+
+			<<set $quicksand_escape to "bird_hunt">>
+			<<quicksand_actions>>
+		<</if>>
+	<</if>>
+<<elseif $rng gte 20>>
+	Now that you're closer, you see that many of them are torn or eaten through. There's still some good ones left.
+	<br><br>
+
+	You take what you can and leave.
+	<br><br>
+
+	<<flight_hunt_get "leaves" 1>>
+	<<flight_hunt_return>>
+<<else>>
+	Now that you're closer, you see that most of the leaves are in good condition. You take them.
+	<br><br>
+
+	<<flight_hunt_get "leaves" 2>>
+	<<flight_hunt_return>>
+<</if>>
+
+:: Bird Hunt Leaves Escape
+<<effects>>
+Having escaped the sand, you carefully pick leaves from the surface. Most of them are in good condition. You should be able to get a lot of usable ones.
+<br><br>
+
+<<flight_hunt_get "leaves" 3>>
+<<flight_hunt_return>>
+
+:: Bird Hunt Tarp
+<<effects>>
+You land near the rocks and unfurl the tarp. A large portion of it is wedged between the rocks, but a few hefty tugs free it. You untie the remaining parts.
+<br><br>
+
+Its large and unweildy.
+<<if $bird.hunts.duo is true>>
+	<<npc "Great Hawk">><<person1>>
+	The two of you should be able to get it back together.
+	<<if $monster is 1>>
+		The <<beasttype>> looks at the tarp. "Big... sky-coloured thing? If it makes <<wife>> happy, we take it."
+	<<else>>
+		The <<beasttype>> looks at the tarp. <<bHe>> squawks in affirmation.
+	<</if>>
+<</if>>
+<br><br>
+<<flight_hunt_get "tarp" 1>>
+<<flight_hunt_return>>
+
+:: Bird Hunt Lurkers Alone
+<<effects>>
+You start to dive. There's one isolated from the others, and two more that are closer together.
+<br><br>
+
+<<link [[Hunt the isolated one|Bird Hunt Lurkers Alone Single]]>><</link>><<dancedifficulty 1 600>>
+<br>
+<<link [[Hunt the pair|Bird Hunt Lurkers Alone Double]]>><</link>><<dancedifficulty 300 1200>>
+<br>
+
+:: Bird Hunt Lurkers Alone Single
+<<effects>>
+You prepare to grab the isolated lurker. You wait for the right moment before quickening your dive.
+<br><br>
+
+<<if $danceSuccess>>
+	With grace, <span class="green">you smoothly grab it</span> and ascend back to the skies. The lurker is too stunned to even struggle.
+	<<flight_hunt_get "lurkers" 1>>
+<<else>>
+	You reach for the lurker, <span class="red">but fail to coordinate your hands against the wind resistance</span>. It slips through your fingers. You ascend before the others can attack.
+	<<set _huntFail to 1>>
+<</if>>
+<br><br>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Lurkers Alone Double
+<<effects>>
+You arrest your dive and use the momentum to circle the group, looking for the perfect angle to grab two at once. You see an opening, and dive again.
+<br><br>
+
+<<if $danceSuccess>>
+	With impressive dexterity, <span class="green">you manage to snatch both of them</span>. They wriggle around in your arms, but soon fall limp.
+	<br><br>
+
+	<<flight_hunt_get "lurkers" 2>>
+	<<flight_hunt_return>>
+<<else>>
+	With only one hand for each lurker, staying stable is difficult. You grab the first one, but its struggling prevents you from flying true. Your arm collides with the ground as you reach for the second, throwing off your balance and <span class="red">sending you tumbling</span>. <<pain 3>><<gpain>>
+	<br><br>
+
+	<<if $bestialitydisable is "f" and $lurkerdisable is "f">>
+		The first lurker squirms in your grasp as the second pounces at you!
+		<br><br>
+		
+		<<link [[Next|Bird Hunt Lurkers Alone Struggle]]>><<set $struggle_start to 1>><</link>>
+		<br>
+	<<else>>
+		You drop your catch and flee from the lurkers, but don't escape unscathed. <<beastescape>>
+		<br><br>
+
+		You abandon your current hunt in fear of the creatures.
+		<br><br>
+
+		<<set _huntFail to 1>>
+		<<flight_hunt_return>>
+	<</if>>
+<</if>>
+
+:: Bird Hunt Lurkers Alone Struggle
+<<effects>>
+
+<<if $struggle_start is 1>>
+	<<struggle_init>>
+	<<set $struggle.creature to "lurker">>
+	<<struggle_creatures 2 1>>
+	<<set $combat to 1>>
+	<<controlloss>>
+	<<violence 1>>
+	<<molested>>
+	<<set $struggle.mouth.creature to "lurker">>
+	<<set $mouthuse to "struggle">><<set $mouthstate to "struggle">>
+	<<set $rightuse to "struggle">><<set $rightstate to "struggle">>
+	<<set $struggle.enemy[0].location to "mouth">><<set $struggle.mouth.grip to 4>>
+	<<unset $struggle_start>>
+<</if>>
+
+<<struggle>>
+
+<<if $struggle.done gte $struggle.number>>
+	<span id="next"><<link [[Next|Bird Hunt Lurkers Alone Struggle Finish]]>><</link>></span>
+	<br>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Lurkers Alone Struggle]]>><</link>></span>
+	<br>
+<</if>>
+
+:: Bird Hunt Lurkers Alone Struggle Finish
+<<effects>>
+
+The Lurkers dart back into the heather.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<tearful>> you take flight again.
+<<set _huntFail to 1>>
+<br><br>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Lurkers GH
+<<effects>>
+You start to circle the lurkers with the Great Hawk. <<bHe>> locks eyes with you,
+<<if C.npc["Great Hawk"].dom gte 50>>
+	before staring down at one of the lurkers. <<bHes>> declared <<bhis>> target.
+<<else>>
+	waiting for you to pick a target.
+<</if>>
+There's one on its own, and a group of several close together.
+<br><br>
+
+<<link [[Hunt the isolated one|Bird Hunt Lurkers GH Single]]>><</link>><<dancedifficulty 1 400>>
+<br>
+<<link [[Hunt the pair|Bird Hunt Lurkers GH Double]]>><</link>><<dancedifficulty 300 1000>>
+<br>
+<<link [[Hunt the whole group|Bird Hunt Lurkers GH Group]]>><</link>><<dancedifficulty 600 1200>><<tendingdifficulty 1 700>>
+<br>
+
+:: Bird Hunt Lurkers GH Single
+<<effects>>
+You stare down at the loner, and back at your spouse. You each have a target. <<bHe>> dives, and you follow. <<bHe>> grabs one with <<bhis>> talons.
+<br><br>
+
+<<dancedifficulty 1 400 true>>
+<<if $danceSuccess>>
+	The other lurkers jump to flee, <span class="green">but you're able to catch one</span>. With your prizes, you soar up to the skies. <<bHe>> looks at your catch.
+	<br><br>
+
+	<<if $monster is 1>>
+		"<<Wife>> did well."
+	<<else>>
+		<<bHe>> looks happy that you were able to get one as well.
+	<</if>>
+	<<flight_hunt_get "lurkers" 2>>
+<<else>>
+	The other lurkers jump to flee, and your target <span lass="red"dodges your dive</span>, leaving you grabbing the air. You try for a different one, but they've all fled by now. You return to the Great Hawk empty handed.
+	<br><br>
+
+	<<if $monster is 1>>
+		"Slippery prey. Do not feel bad," <<bhe>> says. <<bHis>> words are comforting.
+	<<else>>
+		<<bHe>> lets out a small squawk, comforting you. At least <<bhes>> not disappointed.
+	<</if>>
+	<<set _huntFail to 1>>
+	<<flight_hunt_get "lurkers" 1>>
+<</if>>
+<br><br>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Lurkers GH Double
+<<effects>>
+Wanting to prove your skill, you stare down at the lurker pair. You tilt yourself sideways, indicating that you want to attack first. Your <<beasttype>> looks hesitant about the idea, but does nothing to object.
+<br><br>
+
+You continue to circle from up high, waiting for the perfect moment. You see it, and your instincts kick in. You dive.
+<br><br>
+
+<<dancedifficulty 300 1000 true>>
+<<if $danceSuccess>>
+	You're fast. <span class="green">Fast enough to grab them before they can recover.</span> The other ones jump up to escape, but they're too slow. The Great Hawk catches one out of the air. You ascend to the clouds. Your spouse flies up to you.
+	<<if $monster is 1>>
+		"<<Wife>> is a great hunter. Knew you would be a good mate." You can hear how proud of you <<bhe>> is.
+	<<else>>
+		He nuzzles <<bhis>> wings against you as best as <<bhe>> can. <<bHe>> looks very proud of your skills.
+	<</if>>
+	<<npcincr "Great Hawk" love 1>><<glove>>
+	<<flight_hunt_get "lurkers" 3>>
+<<else>>
+	<span class="red">But you're too slow.</span> The other lurkers jump to intercept you. You're thrown off course and fall on your side. <<pain 3>><<gpain>>
+	<br><br>
+
+	Before the lurkers can jump on you again, another screech pierces the air. The lurkers retreat, their survival instincts taking over. You dust yourself off and take flight again. Your spouse flies up to you. <<bHe>> seems to have lost <<bhis>> catch, too.
+	<<if $monster is 1>>
+		"Was reckless of <<wife>> to try go first." It's almost like <<bhes>> scolding you, though <<bhe>> doesn't seem mad.
+	<<else>>
+		He screeches, expressing annoyance. <<bHe>> doesn't seem mad, though.
+	<</if>>
+	<<set _huntFail to 1>>
+<</if>>
+<br><br>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Lurkers GH Group
+<<effects>>
+Wanting to prove your skill, you stare down at the group. You tilt yourself sideways, indicating that you want to attack first. Your <<beasttype>> looks hesitant about the idea, but does nothing to object.
+<br><br>
+
+You continue to circle from up high, waiting for the perfect moment. You see it, and your instincts kick in. You let out a screech and dive.
+<br><br>
+
+<<dancedifficulty 600 1200 true>><<tendingdifficulty 1 700 true>>
+<<if $danceSuccess and $tendingSuccess>>
+	<span class="green">For a brief moment, terror has an equal.</span> Your shriek paralyses the lurkers. You're fast. Fast enough to grab them before they can recover. Your senses feel sharper than ever before. With a lurker in each hand, you prepare to take back to the sky, but your body moves on its own as you spot another lurker within range. You plant both of your feet directly on it, grabbing it as well. The Great Hawk catches one out of the air. You ascend to the clouds, and your spouse flies up to you.
+	<<if $monster is 1>>
+		"<<Wife>> has sharp instincts. Knew you would be a good mate." You can hear how proud of you <<bhe>> is.
+	<<else>>
+		He nuzzles <<bhis>> wings against you as best as <<bhe>> can. <<bHe>> looks very proud of your skills.
+	<</if>>
+	<<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom -1>><<gglove>><<ldom>>
+	<<flight_hunt_get "lurkers" 4>>
+	<<earnFeat "Feather Trick">>
+<<else>>
+	<span class="red">But you're too slow.</span> The other lurkers jump to intercept you. You're thrown off course and fall on your side. <<pain 3>><<gpain>>
+	<br><br>
+
+	Before the lurkers can jump on you again, another screech pierces the air. The lurkers retreat, their survival instincts taking over. You dust yourself off and take flight again. Your spouse flies up to you. <<bHe>> seems to have lost <<bhis>> catch, too.
+	<<if $monster is 1>>
+		"Was reckless of <<wife>> to try go first." It's almost like <<bhes>> scolding you, though <<bhe>> doesn't seem mad.
+	<<else>>
+		He screeches, expressing annoyance. <<bHe>> doesn't seem mad, though.
+	<</if>>
+	<<set _huntFail to 1>>
+<</if>>
+<br><br>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Lurkers Few
+<<effects>>
+The lurker is moving quite fast, flitting between underbrushes. You don't think you'll be able to catch it while flying.
+<<if $bird.hunts.duo is true and C.npc["Great Hawk"].dom gte 50>>
+	<<npc "Great Hawk">><<person1>>
+	<br><br>
+
+	<<if $monster is 1>>
+		"No need to feel bad, <<wife>>. Will show you how to catch fast prey."
+	<<else>>
+		<<bHe>> lets out a small squawk and extends <<bhis>> talons.
+	<</if>>
+	<<bHe>> prepares to attack the lurker before you can act.
+	<br><br>
+
+	<<bHe>> flies over and aligns himself with the direction the lurker is going. After <<bhes>> ready, <<bhe>> dives at the lurker and catches it with ease. The lurker struggles for a moment before going limp.
+	<br><br>
+
+	<<link [[Praise|Bird Hunt Lurkers Few GH]]>><<npcincr "Great Hawk" dom 1>><<set $phase to 1>><</link>><<gdom>>
+	<br>
+	<<link [[Pout|Bird Hunt Lurkers Few GH]]>><<npcincr "Great Hawk" dom -1>><<set $phase to 2>><</link>><<ldom>>
+	<br>	
+<<else>>
+	You could wait until it stops and ambush it, or you could pursue it on the ground.
+	<br><br>
+
+	<<if $bird.hunts.duo is true>>
+		<<npc "Great Hawk">><<person1>>
+		Your <<beasttype>> waits to see what you'll do.
+		<br><br>
+	<</if>>
+
+	<<set $skulduggerydifficulty to 500>>
+	<<set _athlDiffMin to ($bird.hunts.weight * 50)>>
+	<<set _athlDiffMax to (_athlDiffMin + 500)>>
+	<<link [[Ambush|Bird Hunt Lurkers Few Ambush]]>><</link>><<skulduggerydifficulty>>
+	<br>
+	<<link [[Chase|Bird Hunt Lurkers Few Chase]]>><</link>><<athleticsdifficulty _athlDiffMin _athlDiffMax>>
+	<br>
+<</if>>
+
+:: Bird Hunt Lurkers Few GH
+<<effects>>
+<<if $phase is 1>>
+	You can't deny that <<bhis>> display of hunting prowess was impressive.
+	<<if $speech_attitude is "meek">>
+		"Nice job, I don't think I could have done that," you say.
+	<<elseif $speech_attitude is "bratty">>
+		"You're quick, but don't go taking all the fun catches," you say.
+	<<else>>
+		"You're really good at this," you say.
+	<</if>>
+	<<if $monster is 1>>
+		<<bHe>> blushes at your words.
+	<<else>>
+		<<bHe>> responds with a happy squawk.
+	<</if>>
+<<else>>
+	<<if $speech_attitude is "meek">>
+		"H-hey, I wanted to catch that one," you say with a pout.
+	<<elseif $speech_attitude is "bratty">>
+		"I saw that one first! You owe me a lurker when we get back," you say with a pout.
+	<<else>>
+		"Showoff. I could have gotten that one," you say with a pout.
+	<</if>>
+	<<if $monster is 1>>
+		<<bHe>> frowns, but shoots you a smug grin right after.
+	<<else>>
+		<<bHe>> responds with a smug squawk.
+	<</if>>	
+<</if>>
+<br><br>
+
+<<flight_hunt_get "lurkers" 1>>
+<<flight_hunt_return>>
+
+:: Bid Hunt Lurkers Few Ambush
+<<effects>>
+You wait for the lurker to start resting, then land. Keeping in mind its location, you carefully sneak over to it.
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+	<span class="green">You're able to get right behind it.</span> With the lurker oblivious, you
+	<<if $farm_stage gte 10>>
+		hurl your net at it. It struggles in the net,
+	<<else>>
+		jump at it and grab it. It struggles in your hands,
+	<</if>>
+	but soon gives up.
+	<br><br>
+
+	<<if $bird.hunts.duo is true>>
+		Your <<beasttype>> lands next to you.
+		<<if $monster is 1>>
+			"Attack from ground. Unsafe. But well done."
+			<<if $farm_stage gte 10>>
+				<<bHe>> shoots a wary glare at your net, but says nothing further.
+			<</if>>
+		<<else>>
+			<<if $farm_stage gte 10>>
+				<<bHe>> squawks with pride, but shoots a wary glare at your net.
+			<<else>>
+				<<bHe>> squawks with pride.
+			<</if>>
+		<</if>>
+		<br><br>
+	<</if>>
+	<<flight_hunt_get "lurkers" 1>>
+<<else>>
+	As you reach the spot it was resting in, you lunge <span class="red">at empty space</span>. It must have heard you and fled.
+	<br><br>
+
+	<<if $bird.hunts.duo is true>>
+		Your <<beasttype>> lands next to you.
+		<<if $monster is 1>>
+			"Attacking from the sky is easier. <<Wife>> will learn." <<bHe>> nuzzles you.
+		<<else>>
+			<<bHe>> nuzzles you for reassurance.
+		<</if>>
+		<br><br>
+	<</if>>
+	<<set _huntFail to 1>>
+<</if>>
+<<flight_hunt_return>>
+
+:: Bird Hunt Lurkers Few Chase
+<<effects>>
+You land near it and begin running. The lurker sees you immediately and starts to flee.
+<<if $athleticsSuccess>>
+	<span class="green">You manage to keep up with it.</span> Soon, the creature is within arms reach. You leap on it, catching it in a tight grip. It struggles for a moment, but soon gives up.
+	
+	<<if $bird.hunts.duo is true>>
+		<br><br>
+		Your <<beasttype>> lands and nuzzles you with pride.
+	<</if>>
+	<br><br>
+
+	<<flight_hunt_get "lurkers" 1>>
+	<<flight_hunt_return>>
+<<else>>
+	<<if $bird.hunts.duo is false and $rng gte 81 and $voredisable is "f">>
+		<span class="red">The lurker is simply too fast.</span> It begins skittering away even faster, but you don't give up. You chase the lurker all the way to a large crack in the earth, which it slips into.
+		<br><br>
+
+		You come to a stop at the edge, peering over. It's pitch black inside. <<if Time.dayState is "day" and $weather is "clear">>Despite the sun being directly overhead. <<gtrauma>><<trauma 6>><</if>>
+		<br><br>
+
+		The ground rumbles, and you lose your footing. You don't feel like you're falling. Rather, it feels like the chasm itself moving up to meet you. You quickly understand why.
+		<br><br>
+
+		<span class="red">A gigantic lurker bursts from the darkness, catching you in its mouth.</span>
+		<br><br>
+
+		<<link [[Next|Bird Hunt Giant Lurker Vore]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		<span class="red">The lurker is simply too fast.</span> It begins skittering away even faster, and soon you're left behind feeling disappointed.
+		<<if $bird.hunts.duo is true>>
+			<br><br>
+			Your <<beasttype>> gives you a sympathetic stare when you return to <<bhis>> side.
+		<</if>>
+		<br><br>
+
+		<<set _huntFail to 1>>
+		<<flight_hunt_return>>
+	<</if>>
+<</if>>
+
+:: Bird Hunt Giant Lurker Vore
+<<effects>>
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<set $combat to 1>>
+	<<molested>>
+	<<controlloss>>
+	<<if $tentacledisable is "f" and $hallucinations gte 1>>
+		<<set $enemytype to "tentacles">>
+		<<tentaclestart 2 15>>
+		<<set $voretentacles to 1>>
+	<<else>>
+		<<set $enemytype to "vore">>
+		<<set $voretentacles to 0>>
+	<</if>>
+	<<set $vorestage to 1>>
+	<<set $vorecreature to "giant lurker">>
+	<<set $vorestrength to 1>><<set $position to "doggy">>
+	<<resetLastOptions>>
+	<<getCombatDefaultsType>>
+<</if>>
+
+<<if $tentacledisable is "f" and $hallucinations gte 1 and $enemytype is "tentacles">>
+	<<voreeffects>><<effectstentacles>>
+	<<vore>><<tentacles>>
+	<<statetentacles>>
+	<br><br>
+	<<actionsvorentacles>>
+<<else>>
+	<<voreeffects>>
+	<<vore>>
+	<<voreactions>>
+<</if>>
+
+<<if $stress gte $stressmax>>
+	<span id="next"><<link [[Next|Bird Hunt Giant Lurker Vore Finish]]>><</link>></span><<nexttext>>
+<<elseif $vorestage lte 0>>
+	<span id="next"><<link [[Next|Bird Hunt Giant Lurker Vore Finish]]>><</link>></span><<nexttext>>
+<<elseif $vorestomach gte 5>>
+	<span id="next"><<link [[Next|Bird Hunt Giant Lurker Vore Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Giant Lurker Vore]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Giant Lurker Vore Finish
+<<effects>>
+<<if $stress gte $stressmax or $vorestomach gte 5>>
+	It's all too much for you. You pass out.
+	<br><br>
+	<<if $upperoff isnot 0>>
+		<<upperruined>>
+	<</if>>
+	<<if $loweroff isnot 0>>
+		<<lowerruined>>
+	<</if>>
+	<<if $underloweroff isnot 0>>
+		<<underlowerruined>>
+	<</if>>
+	<<if $underupperoff isnot 0>>
+		<<underupperruined>>
+	<</if>>
+	<<endcombat>>
+	<<passout_moor>>
+<<else>>
+	<<tearful>> you scramble away from the chasm. The giant lurker retreats back into the darkness.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	
+	<<set _huntFail to 1>>
+	<<flight_hunt_return>>
+<</if>>
+
 :: Bird Hunt Tent Steal Alone
 <<effects>>
 You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pounds, thinking of your current exposure.<</if>> As you near their tents, a <<generate1>><<person1>><<person>> exits one and starts walking in your direction.
 <br><br>
 
+<<skulduggerycheck>>
 <<if $skulduggerysuccess is 1>>
 	<span class="green">Thinking quickly, you pick up a rock and throw it behind them.</span> The sound is enough to pull their attention. With the <<person>> distracted, you sneak into the tent they came out of.
 	<<if $skulduggery lte ($skulduggerydifficulty + 100)>>
@@ -975,6 +1689,10 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 	<br>
 	<<link [[Steal valuables|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 2>><<crimeup 10 "thievery">><</link>>
 	<br>
+	<<if $bird.upgrades.tools is 0 and !$bird.hunts.loot.toolbox>>
+		<<link [[Steal tools|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 3>><<crimeup 10 "thievery">><</link>>
+		<br>
+	<</if>>
 <<else>>
 	<<if $exposed gte 2>>
 		You try to keep out of <<his>> sight, <span class="red">but <<he>> spots you</span>. "Well now, what's a <<girl>> like you doing out here naked? Did you lose your clothes somewhere? Don't worry, I'll give you something to wear."
@@ -1060,14 +1778,7 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 	The <<person>> chuckles. "I think the others will like you." <<He>> looks you over for a moment. "Hmm... come to thinkin', the boss would like you even more. Hold still." You can't do anything as <<he>> starts to bind your arms, and your consciousness fades.
 	<br><br>
 
-	<<run delete $bird.hunts.duo>>
-	<<run delete $bird.hunts.goal>>
-	<<run delete $bird.hunts.weight>>
-	<<run delete $bird.hunts.direction>>
-	<<run delete $bird.hunts.distanceNorth>>
-	<<run delete $bird.hunts.distanceEast>>
-	<<run delete $bird.hunts.ignored>>
-	<<run delete $bird.hunts.loot>>
+	<<flight_hunt_end>>
 	<<unset $tentLootAmount>>
 	<<endcombat>>
 
@@ -1145,10 +1856,10 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 		<<link [[Steal|Bird Hunt Tent Steal Clothes]]>><<set $phase to 4>><<flight_hunt_get "cloth" 3>><</link>>
 		<br>		
 	<</if>>
-<<else>>
+<<elseif $phase is 2>>
 	<<if $birdhuntspray isnot 1>>
 		<<set $birdhuntspray to 1>>
-		You search along a wall of pronged poles. They're too heavy for you to fly with, but you find a small cylinder in between a couple of them. It looks like a charge for your pepper spray.
+		You search along a wall of snare rods. You find a small cylinder in between a couple of them. It looks like a charge for your pepper spray.
 		<<gspraymax>><<set $spraymax += 1>><<spray 5>>
 		<br><br>
 		<span class="gold">You've gained an additional pepper spray charge.</span>
@@ -1158,6 +1869,45 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 	<</if>>
 	<br><br>
 
+	<<if $danger gte (9900 - $allure) and $tentLootAmount gte 2>>
+		<<set $daily.huntRemyAlerted to true>><<unset $tentLootAmount>>
+		<span class="red">You hear footsteps.</span> The <<person>> enters the tent and locks eyes with you.
+		<br><br>
+
+		<<link [[Run|Bird Hunt Tent Steal Run]]>><</link>><<athleticsdifficulty 300 800>>
+		<br>
+		<<if $submissive lte 500>>
+			<<link [[Hit|Bird Hunt Tent Steal Hit]]>><<def 1>><</link>><<physiquedifficulty 8000 16000>><<defianttext>>
+			<br>
+		<</if>>
+		<<if $promiscuity gte 15>>
+			<<link [[Seduce|Bird Hunt Tent Steal Seduce]]>><</link>><<promiscuous2>>
+			<br>
+		<</if>>
+	<<elseif $bird.hunts.weight gte 3>>
+		You won't be able to carry any more.
+		<br><br>
+	<<else>>
+		You could look for more, though you don't know when the <<person>> will return.
+		<br><br>
+
+		<<link [[Steal clothes|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 1>><</link>><<dangerousText>>
+		<br>
+		<<link [[Steal valuables|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 2>><</link>><<dangerousText>>
+		<br>
+		<<if $bird.upgrades.tools is 0 and !$bird.hunts.loot.toolbox>>
+			<<link [[Steal tools|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 3>><</link>><<dangerousText>>
+			<br>
+		<</if>>
+	<</if>>
+	<<set $skulduggerydifficulty to ($tentLootAmount * 100)>>
+	<<link [[Leave with your loot|Bird Hunt Tent Steal Alone Leave]]>><</link>>
+	<br>
+<<else>>
+	You spot a toolbox amidst their belongings. It's easy to carry, and light enough for you to fly with it.
+	<br><br>
+		
+	<<flight_hunt_get "toolbox" 1>>
 	<<if $danger gte (9900 - $allure) and $tentLootAmount gte 2>>
 		<<set $daily.huntRemyAlerted to true>><<unset $tentLootAmount>>
 		<span class="red">You hear footsteps.</span> The <<person>> enters the tent and locks eyes with you.
@@ -1226,6 +1976,10 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 	<br>
 	<<link [[Steal valuables|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 2>><</link>><<dangerousText>>
 	<br>
+	<<if $bird.upgrades.tools is 0 and !$bird.hunts.loot.toolbox>>
+		<<link [[Steal tools|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 3>><</link>><<dangerousText>>
+		<br>
+	<</if>>
 <</if>>
 <<set $skulduggerydifficulty to ($tentLootAmount * 100)>>
 <<link [[Leave with your loot|Bird Hunt Tent Steal Alone Leave]]>><</link>>
@@ -1233,7 +1987,7 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 
 :: Bird Hunt Tent Steal Run
 <<effects>>
-You run past him. "Hey! We've got a thief!" You hear stirring and yelling from the other tents. Adrenaline kicks in. You don't want to think about what they'll do to you if they catch you.
+You run past <<him>>. "Hey! We've got a thief!" You hear stirring and yelling from the other tents. Adrenaline kicks in. You don't want to think about what they'll do to you if they catch you.
 <br><br>
 
 <<if $athleticsSuccess>>
@@ -1254,9 +2008,9 @@ You run past him. "Hey! We've got a thief!" You hear stirring and yelling from t
 
 :: Bird Hunt Tent Steal Hit
 <<effects>>
-Without thinking, you grab one of the poles from the wall and swing it at <<him>>.
+Without thinking, you grab one of the snare rods from the wall and swing it at <<him>>.
 <<if $physiqueSuccess>>
-	<span class="green">You get <<him>> right in the side of the head,</span> sending <<him>> to the ground. The pole rings from the impact. <<Hes>> out cold.
+	<span class="green">You get <<him>> right in the side of the head,</span> sending <<him>> to the ground. The rod rings from the impact. <<Hes>> out cold.
 	<br><br>
 
 	Now would be a good time to leave. You flee the tent and the camp, taking flight once you're a good distance away. You're just barely able to hear yelling in the distance behind you. With the group alerted, you won't be able to steal from them again today.
@@ -1343,14 +2097,7 @@ Without thinking, you grab one of the poles from the wall and swing it at <<him>
 	The <<person>> chuckles. "I think the others will like you." <<He>> looks you over for a moment. "Hmm... come to thinkin', the boss would like you even more. Hold still." You can't do anything as <<he>> starts to bind your arms, and your consciousness fades.
 	<br><br>
 
-	<<run delete $bird.hunts.duo>>
-	<<run delete $bird.hunts.goal>>
-	<<run delete $bird.hunts.weight>>
-	<<run delete $bird.hunts.direction>>
-	<<run delete $bird.hunts.distanceNorth>>
-	<<run delete $bird.hunts.distanceEast>>
-	<<run delete $bird.hunts.ignored>>
-	<<run delete $bird.hunts.loot>>
+	<<flight_hunt_end>>
 	<<unset $tentLootAmount>>
 	<<endcombat>>
 
@@ -1379,7 +2126,8 @@ Without thinking, you grab one of the poles from the wall and swing it at <<him>
 You quietly exit the tent. You're almost in the clear.
 <br><br>
 
-<<if $skulduggerysuccess>>
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
 	You hear footsteps from around the side of the tent, and dive out of the way. The <<person>> returns to the inside, unaware of your presence.
 	<br><br>
 
@@ -1463,7 +2211,7 @@ You run as fast as you can. Adrenaline kicks in. You don't want to think about w
 	<<set $enemytrust -= 100>>
 	<<set $enemyanger += 200>>
 	<<npcidlegenitals>>
-	You push away the pole and the <<person1>><<person>> holding it, but the rest are upon you in an instant.
+	You push away the rod and the <<person1>><<person>> holding it, but the rest are upon you in an instant.
 <<elseif $molestationstart is 1>>
 	<<set $molestationstart to 0>>
 	<<generate2>><<generate3>><<generate4>><<generate5>>
@@ -1514,14 +2262,7 @@ You run as fast as you can. Adrenaline kicks in. You don't want to think about w
 	The <<person4>><<person>> chuckles. "<<pShes>> fun. Let's take <<pher>> to the boss." You're still surrounded. You can't do anything as the whole group swarms you. Someone binds your arms, and your consciousness fades.
 	<br><br>
 
-	<<run delete $bird.hunts.duo>>
-	<<run delete $bird.hunts.goal>>
-	<<run delete $bird.hunts.weight>>
-	<<run delete $bird.hunts.direction>>
-	<<run delete $bird.hunts.distanceNorth>>
-	<<run delete $bird.hunts.distanceEast>>
-	<<run delete $bird.hunts.ignored>>
-	<<run delete $bird.hunts.loot>>
+	<<flight_hunt_end>>
 	<<unset $tentLootAmount>>
 	<<endcombat>>
 
@@ -1578,6 +2319,56 @@ You decide that your spouse would make a good distraction while you sneak in to 
 You land away from the campsite, and give <<bhim>> the signal. <<bHe>> lets out a loud screech that pierces the air. Those outside the tents quickly scramble to shelter, and begin shouting orders at each other. You move in, looking for anything left outside in their panic.
 <br><br>
 
+<<if $bird.upgrades.pot is 0 and !$bird.hunts.loot.pot>>
+	They've left their cooking pot unattended.
+	<br><br>
+
+	<<link [[Steal the cooking pot|Bird Hunt Tent Steal Pot]]>><</link>>
+	<br>
+	<<link [[Steal something else|Bird Hunt Tent Steal Other]]>><</link>>
+	<br>
+<<else>>
+	<<set _looted to either("watch", "ring", "necklace", "bracelet")>>
+	<<if currentSkillValue("skulduggery") gte random(200,1000)>>
+		You manage to find two _looted<<if _looted is "watch">>es<<else>>s<</if>>. You grab them. <<flight_hunt_get "valuables" 2 _looted>>
+	<<else>>
+		You only find a _looted. You grab it. <<flight_hunt_get "valuables" 1 _looted>>
+	<</if>>
+	Knowing they won't stay in their tents forever, you flee the camp.
+	<br><br> 
+
+	Regrouping with the Great Hawk in the sky, you show <<bhim>> what you found.
+	<<if $monster is 1>>
+		"<<Wife>> is smart. Good plan," <<bhe>> praises you.
+	<<else>>
+		<<bHe>> lets out another screech, seeming transfixed on the shiny object you've pilfered.
+	<</if>>
+	<br><br>
+
+	<<flight_hunt_return>>
+<</if>>
+
+:: Bird Hunt Steal Pot
+<<effects>>
+You dump out the cooking pot and take it. You could use it to cook your food back at the tower.
+<br><br>
+
+Knowing they won't stay in their tents forever, you flee the camp.
+<br><br> 
+
+Regrouping with the Great Hawk in the sky, you show <<bhim>> what you found.
+<<if $monster is 1>>
+	"<<Wife>> is smart. Good plan," <<bhe>> praises you.
+<<else>>
+	<<bHe>> lets out another screech, seeming transfixed on the shiny object you've pilfered.
+<</if>>
+<br><br>
+
+<<flight_hunt_get "pot" 1>>
+<<flight_hunt_return>>
+
+:: Bird Hunt Steal Other
+<<effects>>
 <<set _looted to either("watch", "ring", "necklace", "bracelet")>>
 <<if currentSkillValue("skulduggery") gte random(200,1000)>>
 	You manage to find two _looted<<if _looted is "watch">>es<<else>>s<</if>>. You grab them and begin to leave. <<flight_hunt_get "valuables" 2 _looted>>
@@ -1587,7 +2378,7 @@ You land away from the campsite, and give <<bhim>> the signal. <<bHe>> lets out 
 Knowing they won't stay in their tents forever, you flee the camp.
 <br><br> 
 
-Regrouping with the Great Hawk in the sky, you show him what you found.
+Regrouping with the Great Hawk in the sky, you show <<bhim>> what you found.
 <<if $monster is 1>>
 	"<<Wife>> is smart. Good plan," <<bhe>> praises you.
 <<else>>
@@ -1763,10 +2554,10 @@ The sight of your <<person1>><<beasttype>> landing is enough to shake the nerve 
 Your spouse lunges ahead in warning. A few of them flinch, and it's all the opening <<bhe>> needs. <<bHe>> dashes ahead, disarming several of them and pushing them away. You follow after <<bhim>>, running as fast your legs let you.
 <br><br>
 
-One of gets close enough to bring a polearm down on you. You manage to step out of the way, but another strike follows. A large wing blocks the impact and piushes back, knocking your assailant away. It's enough time for you to take to the air.
+One of gets close enough to bring a snare rod down on you. You manage to step out of the way, but another strike follows. A large wing blocks the impact and piushes back, knocking your assailant away. It's enough time for you to take to the air.
 <br><br>
 
-The Great Hawk quickly follows. <<bHes>> flying unsteady. He seems injured, but at least he's still able to fly. You were able to escape them.
+The Great Hawk quickly follows. <<bHes>> flying unsteady. <<bHe>> seems injured, but at least he's still able to fly. You were able to escape them.
 <br><br>
 
 <<if $monster is 1>>
@@ -1790,12 +2581,12 @@ It's clear <<bhes>> not well enough to keep hunting, so you fly back to the cast
 <<if $monster is 1>>
 	The <<person1>><<beasttype>> flies over to you. "<<Wife>> isn't hurt?" You cough from the smoke, but confirm that you're fine. "Fire. Too dangerous. Bold plan from <<wife>>. Hard not to worry."
 <<else>>
-	The <<person1>><<beasttype>> flies over to you. He begins inspection all around you, making sure you're not injured. Once done, <<bhe>> squawks.
+	The <<person1>><<beasttype>> flies over to you. <<bHe>> begins inspection all around you, making sure you're not injured. Once done, <<bhe>> squawks.
 <</if>>
 <br><br>
 
-You look behind you. The goons have all started to salvage what they can from the flames and flee, and in minutes, the camp is abandoned and destroyed. The smoke rises high, and will be visible from a great distance. <span class="green">The moor will be safer, if only for today.</span>
-<<set $daily.moorDangerReduced to true>><<set $daily.huntRemyBurnt to true>>
+You look behind you. The goons have all started to salvage what they can from the flames and flee, and in minutes, the camp is abandoned and destroyed. The smoke rises high, and will be visible from a great distance. <span class="green">The moor will be safer, if only for a few days.</span>
+<<set $moorLessDangerAll to 3000>><<set $daily.huntRemyBurnt to true>>
 <br><br>
 
 <<flight_hunt_return>>
@@ -1809,7 +2600,7 @@ You look behind you. The goons have all started to salvage what they can from th
 <</if>>
 <br><br>
 
-You tell the <<beasttype>> that you want to sing loudly with him to scare the campers. <<bHe>> nods. It's time to begin your concert.
+You tell the <<beasttype>> that you want to sing loudly with <<bhim>> to scare the campers. <<bHe>> nods. It's time to begin your concert.
 <br><br>
 
 You let out the loudest bird screech you can manage. That alone is enough to make the campers jump. Then the <<beasttype>> joins in. You circle over them, keeping up your great cacophony of noise.
@@ -1868,7 +2659,7 @@ You won't be able to do anything else to them today, now that they're alerted.
 You see the castle, it's not far anymore. Meanwhile, your <<beasttype>> has started to show a slight limp in <<bhis>> wing. You land on the perch. <<bHe>> slowly walks into the nest and lays down.
 <br><br>
 
-<<bHe>> closes his wings and tries to find a comfortable position. 
+<<bHe>> closes <<bhis>> wings and tries to find a comfortable position. 
 <<if $monster is 1>>
 	"Won't be able to hunt for a while," <<bhe>> says. <<bHe>> lets out various grunts of pain, unable to hide the discomfort <<bhe>> feels.
 <<else>>
@@ -1886,13 +2677,7 @@ You see the castle, it's not far anymore. Meanwhile, your <<beasttype>> has star
 <</if>>
 <br><br>
 
-<<run delete $bird.hunts.duo>>
-<<run delete $bird.hunts.goal>>
-<<run delete $bird.hunts.weight>>
-<<run delete $bird.hunts.direction>>
-<<run delete $bird.hunts.distanceNorth>>
-<<run delete $bird.hunts.distanceEast>>
-<<run delete $bird.hunts.ignored>>
+<<flight_hunt_end>>
 <<set $bird.hunts.injured to 7>>
 <<set $bird.timer to 300>>
 
@@ -1973,18 +2758,68 @@ Soon, you see the castle again.
 <</if>>
 <br><br>
 
-<<run delete $bird.hunts.duo>>
-<<run delete $bird.hunts.goal>>
-<<run delete $bird.hunts.weight>>
-<<run delete $bird.hunts.direction>>
-<<run delete $bird.hunts.distanceNorth>>
-<<run delete $bird.hunts.distanceEast>>
-<<run delete $bird.hunts.ignored>>
+<<flight_hunt_end>>
 
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
 
+:: Bird Hunt Blood
+<<effects>><<water>>
+You hear a splash, and your whole body feels wet. The sky ripples above you.
+<br><br>
 
+You flail, pulling yourself to the surface. It's water. You're in a small lake, which had previously been reflecting the red sky until you crashed into it.
+<br><br>
 
+You sit and take a moment to re-orient yourself. You still feel dizzy. You seem to be in the middle of the moor.
+<br><br>
 
+<<if $bird.hunts.lootAmount gte 1>>
+	<span class="red">Your loot was lost in the lake.</span>
+	<br><br>
+<</if>>
+
+<<flight_hunt_end>>
+<<link [[Next|Bird Tower]]>><<endevent>><<set $moor to 50>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Bird Hunt Passout
+<<effects>>
+<<if isPlayerNonparasitePregnancyEnding>>
+	You're met with the face of the <<beasttype>>.
+	<<if $monster is 1>>
+		<<bHe>> says something to you, but the words sound like gibberish.
+	<<else>>
+		<<bHe>> eyes you with curiosity and concern.
+	<</if>>
+	<br><br>
+
+	<<bHis>> wings start to beat faster. You feel a rise in your stomach. You open your eyes again to see the hospital below you, and feathers in the corner of your vision.
+	You blink, and you're suddenly being lowered. Your feet meet the sidewalk. A rush of air follows, and the <<beasttype>> is gone.
+	<br><br>
+
+	<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+	<br>
+<<else>>
+	The next time you open your eyes, you're back in your tower. The <<beasttype>>'s face comes into view.
+	<<if $monster is 1>>
+		"<<Wife>>! What happened? You just started... falling. Like the sky spit you out."
+	<<else>>
+		<<bHe>> starts to squawk and fuss over you.
+	<</if>>
+	You manage to settle <<bhim>> down after some convincing.
+	<br><br>
+
+	<<if $monster is 1>>
+		"Be more careful. If I wasn't with you..." <<bhe>> trails off.
+	<<else>>
+		<<bHe>> huffs, but leaves you be after several more minutes of prodding.
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Bird Tower]]>><<bird_pass 5>><<endevent>><</link>>
+	<br>
+<</if>>
+
+<<flight_hunt_end>>
 

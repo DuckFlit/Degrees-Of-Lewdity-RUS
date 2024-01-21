@@ -708,6 +708,11 @@ function dayPassed() {
 	if (V.pirate_attack) {
 		delete V.pirate_attack;
 	}
+	if (V.moorLessDangerAll > 1) {
+		V.moorLessDangerAll -= 1000;
+	} else {
+		delete V.moorLessDangerAll;
+	}
 
 	return fragment;
 }

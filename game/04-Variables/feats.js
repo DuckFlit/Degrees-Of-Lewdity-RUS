@@ -469,6 +469,20 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Social"],
 	},
+	"Feather Trick": {
+		title: "Feather Trick",
+		desc: "Catch three lurkers in a single dive while hunting with the Great Hawk.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Social"],
+	},
+	/*"Birds of a Feather": {
+		title: "Birds of a Feather",
+		desc: "Rescue an orphan of another species.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Social"],
+	},*/
 	"Wren the Sly": {
 		title: "Wren the Sly",
 		desc: "You gave your virginity to them.",

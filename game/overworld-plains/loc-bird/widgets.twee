@@ -25,7 +25,14 @@
 		cloth: 0,
 		sticks: 0,
 		leaves: 0,
-		tools: false
+	}>>
+	<<set $bird.upgrades to {
+		mirror: 0,
+		tools: 0,
+		tarp: 0,
+		pot: 0,
+		telescope: 0,
+		wardrobe: 0
 	}>>
 <</widget>>
 
@@ -795,6 +802,9 @@
 	<<if $weather is "rain" or $weather is "snow">>
 		<<set _flight_hunt_chance.nothing++>>
 	<</if>>
+	<<if Time.dayState is "night">>
+		<<set _flight_hunt_chance.nothing++>>
+	<</if>>
 	<<if $bird.hunts.goal is "hawk">>
 		<<set _flight_hunt_chance.nothing to 0>>
 	<</if>>
@@ -833,10 +843,11 @@
 			<<set $bird.hunts.lootAmount += $_amount>>
 		<</if>>
 		<<switch $_looted>>
-			<<case "toolbox">><<set $bird.hunts.weight += 2>>
+			<<case "tarp">><<set $bird.hunts.weight += 5>>
+			<<case "toolbox" "pot">><<set $bird.hunts.weight += 2>>
 			<<case "wood">><<set $bird.hunts.weight += (3 * $_amount)>>
 			<<case "sticks">><<set $bird.hunts.weight += (1.5 * $_amount)>>
-			<<case "valuables">><<set $bird.hunts.weight += (0.5 * $_amount)>>
+			<<case "valuables" "leaves">><<set $bird.hunts.weight += (0.5 * $_amount)>>
 			<<default>><<set $bird.hunts.weight += $_amount>>
 		<</switch>>
 	<</if>>
@@ -852,6 +863,18 @@
 		<<case "cloth">>piece<<if $bird.hunts.lootAmount gt 1>>s<</if>> of cloth.
 	<</switch>>
 	You add <<if $bird.hunts.lootAmount gt 1>>them<<else>>it<</if>> to the pile.
+	<<run delete $bird.hunts.loot>>
+	<<run delete $bird.hunts.lootAmount>>
+<</widget>>
+
+<<widget "flight_hunt_end">>
+	<<run delete $bird.hunts.duo>>
+	<<run delete $bird.hunts.goal>>
+	<<run delete $bird.hunts.weight>>
+	<<run delete $bird.hunts.direction>>
+	<<run delete $bird.hunts.distanceNorth>>
+	<<run delete $bird.hunts.distanceEast>>
+	<<run delete $bird.hunts.ignored>>
 	<<run delete $bird.hunts.loot>>
 	<<run delete $bird.hunts.lootAmount>>
 <</widget>>
