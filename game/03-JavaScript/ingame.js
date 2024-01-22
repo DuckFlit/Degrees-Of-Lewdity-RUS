@@ -1290,6 +1290,9 @@ function currentSkillValue(skill, disableModifiers = 0) {
 			if (V.worn.head.type.includes("maid")) {
 				result = Math.floor(result * 1.05);
 			}
+			if (V.worn.handheld.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
 			break;
 		case "vaginalskill":
 			if (V.earSlime.growth > 100) {
@@ -1434,7 +1437,7 @@ function npcClothes(npc, type) {
 window.npcClothes = npcClothes;
 
 function waterproofCheck(clothing) {
-	return clothing.type.includesAny("swim", "stealthy", "rainproof");
+	return clothing.type.includesAny("swim", "stealthy", "rainproof", "waterproof");
 }
 window.waterproofCheck = waterproofCheck;
 

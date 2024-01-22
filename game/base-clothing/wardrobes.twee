@@ -139,7 +139,7 @@
 			<<if $earSlime.forcedCommando isnot undefined and (_slot is "under_lower" or (_item.outfitPrimary and _item.outfitPrimary.under_lower and !["broken","split"].includes(_item.outfitPrimary.under_lower)))>>
 				<<if _item.type.includes("naked") or (_earSlimeEnableSwimwear and _item.type.includes("swim")) or (_earSlimeEnableDancewear and _item.type.includes("dance"))>>
 				<<elseif $earSlime.forcedCommando gt 0>>
-					<span class="red">You were unable to equip your _item.name as the slime in your ear is forcing you to go commando.</span>
+					<span class="red">You are unable to equip your _item.name, as the slime in your ear is forcing you to go commando.</span>
 					<br>
 					<<continue>>
 				<<else>>
@@ -151,7 +151,7 @@
 				<<continue>>
 			<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
 				<<if $earSlime.forcedDressing.days gt 0>>
-					<span class="red">You were unable to equip your _item.name as the slime in your ear is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
+					<span class="red">You are unable to equip your _item.name, as the slime in your ear is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
 					<br>
 					<<continue>>
 				<<else>>
@@ -729,7 +729,7 @@
 			<<switch $worn.upper.variable>>
 				<<case "schoolcardigan">><<set _altLink to ["Tie cardigan around waist", "Wear cardigan normally"]>>
 				<<case "brownleather" "blackleather" "leathercropjacket">><<set _altLink to ["Zip jacket", "Unzip jacket"]>>
-				<<case "waistcoat" "waistcoatlapel">><<set _altLink to ["Tuck in shirttails", "Untuck shirttails"]>>
+				<<case "waistcoat" "waistcoatlapel">><<set _altLink to ["Tuck in", "Untuck"]>>
 				<<case "dress">><<set _altLink to ["Unbutton shirt", "Button up shirt"]>>
 				<<default>><<exit>>
 			<</switch>>
@@ -793,14 +793,13 @@
 <</widget>>
 
 <<widget "toggleAltSleeve">>
-	<<set _linkOption1 to _args[0] || "Unroll sleeves">>
-	<<set _linkOption2 to _args[1] || "Roll up sleeves">>
+	<<set _inDefaultState to _args[0] || "Roll up sleeves">>
+	<<set _inAltState to _args[1] || "Unroll sleeves">>
 	<div class="toggleAltSleeve">
-		<<link `($sleevesRolled ? _linkOption1 : _linkOption2)`>>
+		<<link `($worn.upper.altsleeve is "none" ? _inDefaultState : _inAltState)`>>
 			<<set $worn.upper.altsleeve to ($worn.upper.altsleeve is "none" ? "alt" : "none")>>
-			<<set $sleevesRolled to +!$sleevesRolled>>
 			<<updatesidebarimg>>
-			<<run $(".toggleAltSleeve .link-internal").html($sleevesRolled ? _linkOption1 : _linkOption2)>>
+			<<run $(".toggleAltSleeve .link-internal").html($worn.upper.altsleeve is "none" ? _inDefaultState : _inAltState)>>
 			<<run Links.generateLinkNumbers($(".passage"))>>
 		<</link>>
 	</div>

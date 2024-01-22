@@ -814,9 +814,9 @@ Renderer.CanvasModels["main"] = {
 			}
 		}
 		if (["f", "a"].includes(options.body_type) && [3, 4].includes(options.breast_size)) {
-			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}-mid.png`;		
+			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}-mid.png`;
 		} else {
-			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}.png`;		
+			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}.png`;
 		}
 		if (options.lower_tucked && !options.worn_lower_setup.notuck && !options.worn_feet_setup.notuck) {
 			options.feet_clip_src = "img/clothes/feet/" + options.worn_feet_setup.variable + "/mask.png";
@@ -851,7 +851,7 @@ Renderer.CanvasModels["main"] = {
 			options.hood_damage = false;
 		}
 
-		if (options.worn_neck_setup.has_collar === 1 && options.worn_upper_setup.has_collar === 1) {
+		if (options.worn_neck_setup.has_collar === 1 && options.worn_upper_setup.has_collar === 1 && !(options.worn_upper_setup.name === "dress shirt" && V.worn.upper.altposition === "alt")) {
 			options.nocollar = true;
 			options.serafuku = false
 		} else if (options.worn_neck_setup.name === "sailor ribbon" && options.worn_upper_setup.name === "serafuku") {
@@ -861,12 +861,12 @@ Renderer.CanvasModels["main"] = {
 			options.nocollar = false;
 			options.serafuku = false
 		}
-		
+
 		if (options.arm_right === "hold" && (["winter jacket", "skimpy lolita dress"].includes(options.worn_upper_setup.name) || ["winter jacket"].includes(options.worn_over_upper_setup.name))) {
 			options.sleeve_over_hold = true;
 		} else {
 			options.sleeve_over_hold = null;
-		}	
+		}
 
 		if (options.worn_head_setup.mask_img === 1 && !(options.hood_down && options.worn_head_setup.hood && options.worn_head_setup.outfitSecondary !== undefined)) {
 			options.hood_mask = true;
@@ -882,13 +882,19 @@ Renderer.CanvasModels["main"] = {
 		}
 
 		/*clothes with alternate positions that do not include alternate sleeve states*/
-		if (["waistcoat", "long waistcoat", "lapelled waistcoat", "long lapelled waistcoat", "punk leather jacket", "leather jacket", "cropped leather jacket"].includes(options["worn_upper_setup"].name)) {
+		if (["waistcoat", "long waistcoat", "lapelled waistcoat", "long lapelled waistcoat", "punk leather jacket", "leather jacket", "cropped leather jacket", "dress shirt"].includes(options.worn_upper_setup.name)) {
 			options.alt_without_sleeves = true;
 		} else {
 			options.alt_without_sleeve = null;
 		}
+		/*clothes whose sleeves cannot be rolled up*/
+		if (options.worn_upper_setup.variable === "schoolcardigan" && options.worn_upper_setup.altposition === "alt") {
+			options.alt_sleeve_state = null;
+		} else {
+			options.alt_sleeve_state = true;
+		}
 		/*clothes with alternate accs, no alternate fulls*/
-		if (["waistcoat", "lapelled waistcoat"].includes(options["worn_upper_setup"].name)) {
+		if (["waistcoat", "lapelled waistcoat"].includes(options.worn_upper_setup.name)) {
 			options.alt_without_full = true;
 		} else {
 			options.alt_without_full = null;
@@ -2853,11 +2859,7 @@ Renderer.CanvasModels["main"] = {
 				let path = 'img/clothes/lower/' +
 					options.worn_lower_setup.variable + '/' +
 					(options.worn_lower_setup.accessory_integrity_img ? 'acc_' + options.worn_lower_integrity : options.worn_upper_setup.name === "school blouse" && ["school pinafore", "plaid school pinafore"].includes(options.worn_lower_setup.name) ? 'acc_under' : 'acc') + '.png';
-					if (["school pinafore", "plaid school pinafore"].includes(options.worn_lower_setup.name)) {
-						return gray_suffix(path, options.filters['worn_lower_acc'])
-					}else {
-						return gray_suffix(path, options.filters['worn_lower_acc'])
-					}
+					return gray_suffix(path, options.filters['worn_lower_acc'])
 				},
 				zfn(options) {
 					return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
@@ -3406,13 +3408,13 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 			zfn(options) {
-				if (options.worn_under_lower_setup.set === options.worn_under_upper_setup.set || 
+				if (options.worn_under_lower_setup.set === options.worn_under_upper_setup.set ||
 					options.worn_under_lower_setup.high_img === 1) {
 					return ZIndices.legs;
 				} else {
 					return ZIndices.legs_high;
-				} 
-			}			
+				}
+			}
 		}),
 		"legs_acc": genlayer_clothing_accessory('legs', {
 			masksrcfn(options) {
@@ -3423,13 +3425,13 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 			zfn(options) {
-				if (options.worn_under_lower_setup.set === options.worn_under_upper_setup.set || 
+				if (options.worn_under_lower_setup.set === options.worn_under_upper_setup.set ||
 					options.worn_under_lower_setup.high_img === 1) {
 					return ZIndices.legs;
 				} else {
 					return ZIndices.legs_high;
-				} 
-			}			
+				}
+			}
 		}),
 		"legs_back_acc": genlayer_clothing_back_img_acc('legs'),
 		"legs_back": genlayer_clothing_back_img('legs'),
@@ -3448,8 +3450,8 @@ Renderer.CanvasModels["main"] = {
 					return ZIndices.lower_tucked_feet;
 				} else {
 					return ZIndices.feet;
-				} 
-			}			
+				}
+			}
 		}),
 		"feet_acc": genlayer_clothing_accessory('feet', {
 			zfn(options) {
@@ -3457,8 +3459,8 @@ Renderer.CanvasModels["main"] = {
 					return ZIndices.lower_tucked_feet;
 				} else {
 					return ZIndices.feet;
-				} 
-			}			
+				}
+			}
 		}),
 		"feet_back_acc": genlayer_clothing_back_img_acc('feet'),
 		"feet_back": genlayer_clothing_back_img('feet'),
@@ -3900,7 +3902,7 @@ function genlayer_clothing_back_img(slot, overrideOptions) {
 			let path = 'img/clothes/' +
 				slot + '/' +
 				options["worn_" + slot + "_setup"].variable + '/' +
-				(isAltPosition ? 'back_alt' : 'back') + 
+				(isAltPosition ? 'back_alt' : 'back') +
 				(setup.back_integrity_img ? '_' + options["worn_" + slot + "_integrity"] : '') + '.png';
 			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
@@ -3980,9 +3982,9 @@ function genlayer_clothing_arm(arm, slot, overrideOptions) {
 		srcfn(options) {
 			let isAltPosition = (options.alt_position &&
 			options["worn_" + slot + "_setup"].altposition !== undefined &&
-			!options.alt_without_sleeves &&			
-			options["worn_" + slot + "_setup"].altsleeve !== "none");
+			!options.alt_without_sleeves);
 			let isAltSleeve = options.alt_sleeve &&
+			options.alt_sleeve_state &&
 			options["worn_" + slot + "_setup"].altsleeve !== undefined;
 			let path = 'img/clothes/' +
 				slot + '/' +
