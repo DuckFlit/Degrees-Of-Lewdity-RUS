@@ -988,6 +988,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#8f09f3" },
 	},
 	{
+		variable: "lilac",
+		name: "lilac",
+		name_cap: "Lilac",
+		csstext: "lilac",
+		canvasfilter: { blend: "#d692fc" },
+	},
+	{
 		variable: "tangerine",
 		name: "tangerine",
 		name_cap: "Tangerine",
@@ -1035,7 +1042,7 @@ setup.colours.clothes = [
 		name_cap: "Soft brown",
 		csstext: "brownish",
 		canvasfilter: { blend: "#6a4225" },
-	},	
+	},
 	{
 		variable: "tan",
 		name: "tan",
@@ -1091,7 +1098,7 @@ setup.colours.clothes = [
 		name_cap: "Denim",
 		csstext: "denim",
 		canvasfilter: { blend: "#4b6e85" },
-	},	
+	},
 	{
 		variable: "olive",
 		name: "olive",

@@ -504,6 +504,7 @@ Renderer.CanvasModels["main"] = {
 			"alt_position": false,
 			"alt_sleeve": false,
 			"alt_position_neck":false,
+			"alt_position_face":false,
 			"acc_layer_under": false,
 			"head_mask_src": "", // generated option
 			"belly_mask_src": "", // generated option
@@ -3325,6 +3326,14 @@ Renderer.CanvasModels["main"] = {
 		 */
 
 		"face": genlayer_clothing_main('face', {
+			srcfn(options) {
+				let isAltPosition = options.alt_position_face &&
+				options.worn_face_setup.altposition !== undefined;
+				let path = 'img/clothes/face/' +
+					options.worn_face_setup.variable + '/' +
+					options.worn_face_integrity + (isAltPosition ? '_alt' : '') + '.png';
+				return gray_suffix(path, options.filters['worn_face']);
+			},
 			zfn(options) {
 				if (options.facewear_layer === "front") {
 					return ZIndices.face - 12.5;
@@ -3334,6 +3343,16 @@ Renderer.CanvasModels["main"] = {
 			},
 		}),
 		"face_acc": genlayer_clothing_accessory('face', {
+			srcfn(options) {
+				let isAltPosition = options.alt_position_face &&
+				options.worn_face_setup.altposition !== undefined;
+				let path = 'img/clothes/face/' +
+				options.worn_face_setup.variable + '/' +
+				'acc' +
+				(setup.accessory_integrity_img ? '_' + options["worn_" + slot + "_integrity"] : '') +
+				(isAltPosition ? '_alt' : '') + '.png';
+				return gray_suffix(path, options.filters['worn_face']);
+			},
 			zfn(options) {
 				if (options.facewear_layer === "front") {
 					return ZIndices.face - 12.5;
