@@ -419,14 +419,14 @@ function bodywritingExposureCheck(overwrite, skipRng) {
 		if (
 			(V.worn.over_lower.exposed >= 1 || V.worn.over_lower.anus_exposed >= 1) &&
 			(V.worn.lower.exposed >= 1 || V.worn.lower.anus_exposed >= 1) &&
-			(V.worn.under_lower.exposed >= 1 || !V.worn.under_lower.type.includes("athletic"))
+			(V.worn.under_lower.exposed >= 1 || !V.worn.under_lower.type.includes("covered"))
 		) {
 			T.visible_areas.push("left_bottom", "right_bottom");
 		}
-		if (V.worn.over_lower.exposed >= 1 && V.worn.lower.exposed >= 1 && (V.worn.under_lower.exposed >= 1 || !V.worn.under_lower.type.includes("athletic"))) {
+		if (V.worn.over_lower.exposed >= 1 && V.worn.lower.exposed >= 1 && (V.worn.under_lower.exposed >= 1 || !V.worn.under_lower.type.includes("covered"))) {
 			T.visible_areas.push("pubic");
 		}
-		if (V.worn.over_lower.vagina_exposed >= 1 && V.worn.lower.vagina_exposed >= 1 && !V.worn.under_lower.type.includes("athletic")) {
+		if (V.worn.over_lower.vagina_exposed >= 1 && V.worn.lower.vagina_exposed >= 1 && !V.worn.under_lower.type.includes("covered")) {
 			T.visible_areas.push("left_thigh", "right_thigh");
 		}
 

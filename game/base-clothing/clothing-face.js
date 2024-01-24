@@ -869,7 +869,7 @@ function initFace() {
 			colour: 0,
 			colour_options: [],
 			colour_combat: 0,
-			type: ["costume", "event", "mask"],
+			type: ["costume", "mask"],
 			gender: "n",
 			warmth: 0,
 			cost: 2500,
