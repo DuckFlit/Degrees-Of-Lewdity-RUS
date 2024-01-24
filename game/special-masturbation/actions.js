@@ -114,6 +114,7 @@ function masturbationActions() {
 			V.masturbationorgasmsemen++;
 		}
 		fragment.append(wikifier("purity", -1));
+		if (V.corruptionMasturbation) V.corruptionMasturbationCount--;
 	}
 	fragment.append(wikifier("pass", 10, "seconds"));
 	V.secondsSpentMasturbating += 10;
