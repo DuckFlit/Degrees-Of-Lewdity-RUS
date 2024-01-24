@@ -233,6 +233,7 @@ function updateClothesItem(slot, item, debug) {
 		case "racing helmet":
 			item.type =  ["costume", "riding"];
 			break;
+		case "scout shorts":
 		case "baseball cap":
 			item.type =  ["normal"];
 			break;

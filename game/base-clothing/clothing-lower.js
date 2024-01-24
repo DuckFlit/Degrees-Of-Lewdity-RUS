@@ -3012,7 +3012,7 @@ function initLower() {
 			vagina_exposed_base: 0,
 			anus_exposed: 0,
 			anus_exposed_base: 0,
-			type: ["normal", "athletic"],
+			type: ["normal"],
 			set: "lower",
 			gender: "m",
 			femininity: -200,
