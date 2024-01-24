@@ -713,7 +713,7 @@ function updatehistorycontrols() {
 	else Config.history.maxSessionStates = V.options.maxSessionStates;
 
 	// option to still record history without showing the controls, for better debugging
-	if (V.options.maxStates === 1 || !V.options.historyControls) {
+	if (V.options.maxStates === 1 || !V.options.historyControls || V.ironmanmode) {
 		// hide nav panel when it's useless or set to not be displayed
 		Config.history.controls = false;
 		jQuery("#ui-bar-history").hide();
