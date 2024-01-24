@@ -81,8 +81,7 @@ function masturbationeffects() {
 		} else {
 			if (V.orgasmdown >= 2) {
 				if (V.corruptionMasturbationCount === undefined || V.corruptionMasturbationCount === null) V.corruptionMasturbationCount = random(2, 6);
-				V.corruptionMasturbationCount--;
-				if (V.corruptionMasturbationCount === 0) {
+				if (V.corruptionMasturbationCount <= 0) {
 					V.corruptionMasturbation = false;
 					delete V.corruptionMasturbationCount;
 					if (V.awareness < 200) {
@@ -130,6 +129,9 @@ function masturbationeffects() {
 		sWikifier("<<dynamicblock id=control-caption>><<controlcaption>><</dynamicblock>>");
 		fragment.append(possessedMasturbation(span, br, sWikifier));
 	}
+
+	// Reset the record of the players current actions
+	V.masturbationActions = {};
 
 	fragment.append(masturbationeffectsVaginaAnus(otherVariables));
 
@@ -255,6 +257,10 @@ function masturbationeffects() {
 	fragment.append(br());
 	fragment.append(br());
 
+	if (V.masturbationAudience) {
+		fragment.append(masturbationAudience());
+	}
+
 	return fragment;
 }
 
@@ -276,6 +282,7 @@ function masturbationeffectsArms(
 	const otherArmAction = otherArm + "action";
 
 	const clearAction = defaultAction => {
+		if (V[armAction] && V[armAction] !== "mrest") V.masturbationActions[armAction] = V[armAction];
 		V[armActionDefault] = defaultAction !== undefined ? defaultAction : V[armAction];
 		V[armAction] = 0;
 		if (doubleAction) {
@@ -1033,11 +1040,10 @@ function masturbationeffectsArms(
 			if (
 				playerIsPregnant() &&
 				playerPregnancyProgress() >= 0.1 &&
-				V.player.penissize === -1 &&
-				random(0, 100) >= 75 &&
-				(!V.daily.chastityParasizeSizeReduction || V.daily.chastityParasizeSizeReduction < 400)
+				V.player.penissize <= -1 &&
+				(!V.daily.chastityParasizeSizeReduction || V.daily.chastityParasizeSizeReduction < 150)
 			) {
-				V.penisgrowthtimer++;
+				V.penisgrowthtimer += 3;
 				V.daily.chastityParasizeSizeReduction = (V.daily.chastityParasizeSizeReduction || 0) + 1;
 			}
 			break;
@@ -2682,6 +2688,7 @@ function masturbationeffectsMouth({
 	};
 
 	const clearAction = defaultAction => {
+		if (V.mouthaction && V.mouthaction !== "mrest") V.masturbationActions.mouthaction = V.mouthaction;
 		V.mouthactiondefault = defaultAction !== undefined ? defaultAction : V.mouthaction;
 		V.mouthaction = 0;
 	};
