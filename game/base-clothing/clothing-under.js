@@ -2091,7 +2091,7 @@ function initUnderLower() {
 			no_aside: 1,
 			type: ["dance", "fetish", "waterproof"],
 			anal_shield: 0,
-			set: "leotard",
+			set: "latexleotard",
 			gender: "n",
 			warmth: 20,
 			cost: 0,

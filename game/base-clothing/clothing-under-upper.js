@@ -1507,7 +1507,7 @@ function initUnderUpper() {
 			exposed: 0,
 			exposed_base: 0,
 			type: ["dance", "fetish", "waterproof"],
-			set: "leotard",
+			set: "latexleotard",
 			gender: "n",
 			warmth: 20,
 			cost: 3000,
