@@ -347,6 +347,7 @@ function weekPassed() {
 		V.robineventnote = 1;
 	}
 	V.robinmoney += 300 + V.robin.moneyModifier;
+	if (V.robinmoney > 4000) V.robinmoney = 4000;
 	V.compoundcentre = 0;
 	if (V.edenfreedom >= 1 && V.edenshopping === 2) V.edenshopping = 0;
 	if (V.loft_kylar) V.loft_spray = 0;
