@@ -772,7 +772,6 @@ function initHead() {
 			reveal: 1,
 			word: "a",
 			plural: 0,
-			mask_img: 1,
 			colour: 0,
 			colour_options: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom"],
 			colour_sidebar: 1,

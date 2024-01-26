@@ -1660,7 +1660,7 @@ function getHalloweenCostume() {
 		return "monk";
 	} else if (upper.name === "padded football shirt" && lower.name === "football shorts") {
 		return "football";
-	} else if (upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") {
+	} else if ((upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") || (upper.name === "harem vest" && lower.name === "harem pants"))  {
 		return "belly dancer";
 	} else if (V.worn.head.name === "cowboy hat" && lower.name === "cowboy chaps" && V.worn.feet.name === "cowboy boots") {
 		return "cowboy";
