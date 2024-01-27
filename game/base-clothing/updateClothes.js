@@ -54,6 +54,9 @@ function updateClothingColours(item, itemRef) {
 		case "jeans":
 			if (item.colour === 0) item.colour = "original";
 			break;
+		case "loose socks":
+			if (item.colour === 0) item.colour = "white";
+			break;
 		default:
 			// Catch-all case if people forget to adjust this widget for whatever clothing item is updated. Can make weird looking clothes if "custom" is selected.
 			if (item.colour === 0) item.colour = itemRef.colour_options.random();
