@@ -195,7 +195,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 					});
 				} else {
 					result.options.push({
-						action: "mchastity",
+						action: "mpenischastity",
 						text:
 							V.player.gender === "f" && V.parasite.clit.name === "parasite" ? "Try to fondle your parasitic penis" : "Try to fondle your penis",
 						colour: "sub",
@@ -218,7 +218,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 					});
 				} else {
 					result.options.push({
-						action: "mchastity",
+						action: "mvaginachastity",
 						text: "Try to fondle your pussy",
 						colour: "sub",
 					});
