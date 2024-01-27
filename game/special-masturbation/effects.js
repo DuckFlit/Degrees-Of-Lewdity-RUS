@@ -544,7 +544,7 @@ function masturbationeffectsArms(
 	// End of Action Corrections
 
 	// Action setup
-	const handsOn = doubleAction ? 2 : 1;
+	let handsOn = doubleAction ? 2 : 1;
 	const altText = {};
 
 	wikifier("ballsize");
@@ -664,12 +664,22 @@ function masturbationeffectsArms(
 			}
 			clearAction(); // Needs to run after any breastfeed widget
 			break;
-		case "mchastity":
-			clearAction();
+		case "mchastity": // Old usage
+		case "mpenischastity":
+		case "mvaginachastity":
+			if (arm === "left" && ["mchastity", "mpenischastity", "mvaginachastity"].includes(V[otherArmAction])) {
+				doubleAction = true;
+				handsOn = 2;
+			}
+			altText.target = "<<genitals 1>>";
+			if (V[armAction] !== "mchastity" && (!doubleAction || V[armAction] === V[otherArmAction])) {
+				altText.target = V[armAction] === "mpenischastity" ? "<<penis>>" : "<<pussy>>";
+			}
 			sWikifier(
-				`You try to dig your fingers beneath your ${V.worn.genitals.name}, but to no avail. Your <<genitals 1>> aches for your touch, but there's nothing you can do.<<gstress>>`
+				`You try to dig your fingers beneath your ${V.worn.genitals.name}, but to no avail. Your ${altText.target} aches for your touch, but there's nothing you can do.<<gstress>>`
 			);
 			wikifier("stress", handsOn);
+			clearAction();
 			break;
 		case "mpenisentrance":
 			clearAction("mpenisglans");
