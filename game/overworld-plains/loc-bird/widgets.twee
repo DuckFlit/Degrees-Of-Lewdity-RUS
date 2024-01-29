@@ -25,6 +25,7 @@
 		cloth: 0,
 		sticks: 0,
 		leaves: 0,
+		junk: 0
 	}>>
 	<<set $bird.upgrades to {
 		mirror: 0,
@@ -208,7 +209,7 @@
 			"Not my best hunt."
 			)>>"
 		<</if>>
-			<<bHe>> drops it at your feet, then looks at you, awaiting your response.
+		<<bHe>> drops it at your feet, then looks at you, awaiting your response.
 		<br><br>
 
 		<<link [[Thank|Bird Tower Trash]]>><<bird_loot trash 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
@@ -721,16 +722,16 @@
 	<<flight_time_check 20 "silent">>
 	<<if $bird.hunts.goal is "hawk">>
 		<<set _directionPool to []>>
-		<<if $bird.hunts.distanceNorth lt 5 and $bird.hunts.distanceNorth isnot -1>>
+		<<if $bird.hunts.distanceNorth lt 5 and !($bird.hunts.distanceNorth is -1 and _distanceEast is 0)>>
 			<<run _directionPool.pushUnique("north")>>
 		<</if>>
-		<<if $bird.hunts.distanceEast lt 5 and $bird.hunts.distanceEast isnot -1>>
+		<<if $bird.hunts.distanceEast lt 5 and !($bird.hunts.distanceEast is -1 and _distanceNorth is 0)>>
 			<<run _directionPool.pushUnique("east")>>
 		<</if>>
-		<<if $bird.hunts.distanceNorth gt -5 and $bird.hunts.distanceNorth isnot 1>>
+		<<if $bird.hunts.distanceNorth gt -5 and !($bird.hunts.distanceNorth is 1 and _distanceEast is 0)>>
 			<<run _directionPool.pushUnique("south")>>
 		<</if>>
-		<<if $bird.hunts.distanceEast gt -5 and $bird.hunts.distanceEast isnot 1>>
+		<<if $bird.hunts.distanceEast gt -5 and !($bird.hunts.distanceEast is 1 and _distanceNorth is 0)>>
 			<<run _directionPool.pushUnique("west")>>
 		<</if>>
 		<<set $bird.hunts.direction to _directionPool.pluck()>>
@@ -751,6 +752,45 @@
 		<<print '<<link [[Ask to return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return Ask]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
 		<br>
 	<<else>>
+		<<if _distanceNorth gte 4 or _distanceEast gte 4>>
+			You can't see the tower from here.
+		<<elseif _distanceNorth is 0 and _distanceEast is 0>>
+			The moor stretches out before you.
+		<<else>>
+			The tower is to the
+			<<if $bird.hunts.distanceNorth lte -1>>north<<elseif $bird.hunts.distanceNorth gte 1>>south<</if>><<if $bird.hunts.distanceEast lte -1>>west<<elseif $bird.hunts.distanceEast gte 1>>east<</if>>.
+		<</if>>
+		<br>
+		<<if $bird.hunts.distanceNorth lte -1 and $bird.hunts.distanceNorth gte -3 and $bird.hunts.distanceEast lte 5 and $bird.hunts.distanceEast gte 3>>
+			<!--
+			There's a tall stone overlooking a small path to the
+			<<if $bird.hunts.distanceNorth lt -2>>north<<elseif $bird.hunts.distanceNorth gt -2>>south<</if>><<if $bird.hunts.distanceEast lt 4>>east<<elseif $bird.hunts.distanceNorth gt 4>>west<</if>>.
+			<br>
+			-->
+		<</if>>
+		<<if between($bird.hunts.distanceNorth, ($daily.huntRemyCampNorth - 1), ($daily.huntRemyCampNorth + 1)) and between($bird.hunts.distanceEast, ($daily.huntRemyCampEast - 1), ($daily.huntRemyCampEast + 1))>>
+			<<if !($bird.hunts.distanceNorth is $daily.huntRemyCampNorth and $bird.hunts.distanceEast is $daily.huntRemyCampEast)>>
+				There's smoke rising to the
+				<<if $bird.hunts.distanceNorth lt $daily.huntRemyCampNorth>>north<<elseif $bird.hunts.distanceNorth gt $daily.huntRemyCampNorth>>south<</if>><<if $bird.hunts.distanceEast lt $daily.huntRemyCampEast>>east<<elseif $bird.hunts.distanceNorth gt $daily.huntRemyCampEast>>west<</if>>.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $bird.hunts.distanceNorth is 5>>
+			The farmlands stretch to the north, marking the end of your territory.
+		<<elseif $bird.hunts.distanceEast is 5>>
+			Going any further east would put you in unfamiliar, dangerous territory.
+		<<elseif distanceNorth is -5>>
+			You feel your sense of direction failing the further south you travel. It would be wise to turn around.
+		<<elseif distanceEast is -5>>
+			<<if $bogProgress gte 1>>
+				The bog stretches to the west, and the forest beyond that.
+			<<else>>
+				The forest stretches to the west.
+			<</if>>
+		<</if>>
+		<br>
+		Which direction will you fly?
+		<br>
 		<<capture _hoursPassed _minutesPassed _fatigueMod _flightTime _fatigueText>>
 			<<if $bird.hunts.distanceNorth lt 5>>
 				<<print '<<link [[North ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "north">><<set $bird.hunts.distanceNorth++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
@@ -826,6 +866,10 @@
 	<<if $bird.hunts.goal is "hawk">>
 		<<set _flight_hunt_chance.nothing to 0>>
 	<</if>>
+	<<if $daily.huntRemyCampNorth is undefined>>
+		<<set $daily.huntRemyCampNorth to random(2,5)>>
+		<<set $daily.huntRemyCampEast to random(-5,5)>>
+	<</if>>
 <</widget>>
 
 <<widget "flight_hunt_get">>
@@ -865,7 +909,8 @@
 			<<case "toolbox" "pot">><<set $bird.hunts.weight += 2>>
 			<<case "wood">><<set $bird.hunts.weight += (3 * $_amount)>>
 			<<case "sticks">><<set $bird.hunts.weight += (1.5 * $_amount)>>
-			<<case "valuables" "leaves">><<set $bird.hunts.weight += (0.5 * $_amount)>>
+			<<case "leaves">><<set $bird.hunts.weight += (0.5 * $_amount)>>
+			<<case "valuables" "junk">><<set $bird.hunts.weight += (0.2 * $_amount)>>
 			<<default>><<set $bird.hunts.weight += $_amount>>
 		<</switch>>
 	<</if>>
