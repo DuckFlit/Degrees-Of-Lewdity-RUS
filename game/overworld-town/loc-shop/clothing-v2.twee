@@ -473,11 +473,13 @@
 	<<if $options.images is 1 and (_args[1] or _args[0] isnot "normal") and _shopLocation isnot "mirrorhair">>
 		<<silently>><<shopTraitDescription _args[0]>><</silently>>
 		<mouse class="tooltip-tiny black"><img @src="'img/misc/icon/clothes/traits/' + _args[0] + '.png'" class="clothing-trait">
-		<<if _args[1] is undefined>><span><<print _clothesTrait>></span><</if>>
+			<<if _args[1] is undefined>>
+				<span class="black"><<print _clothesTrait + " - " + _clothesDesc>><<print _clothesDetails isnot "none" ? " " + _clothesDetails : "">></span>
+			<</if>>
 		</mouse>
 	<<elseif _shopLocation is "mirrorhair">>
 		<<silently>><<shopTraitDescription _args[0]>><</silently>>
-		<<if _args[1] is undefined>><span><<print _hairTrait>></span><</if>>
+		<<if _args[1] is undefined>><span class="black"><<print _hairTrait>></span><</if>>
 	<</if>>
 <</widget>>
 
@@ -765,6 +767,13 @@
 						<div class="try-button div-link"><<toggleFaceLayer "shop">></div>
 						<br>
 					<</if>>
+					<<if ["feet"].includes($clothingShopSlot) and $worn.feet.name isnot "naked" and $worn.lower.name isnot "naked" and !setup.clothes.feet[clothesIndex("feet",$worn.feet)].notuck and !setup.clothes.lower[clothesIndex("lower",$worn.lower)].notuck>>
+						<div class="try-button div-link"><<toggleLowerTuck>></div>
+					<</if>>
+					<<if _temp_choice.variable is $worn[$clothingShopSlot].variable and _temp_choice.altsleeve and !($worn.upper.variable is "schoolcardigan" and $worn.upper.altposition isnot "alt")>>
+						<div class="try-button div-link"><<toggleAltSleeve>></div>
+						<br>
+					<</if>>
 				</div>
 			<</if>>
 		<</if>>
@@ -858,9 +867,13 @@
 					<<capture _buttonName _args[0] _acc $clothingShopSlot>>
 						<<link "">>
 							<<if _buttonName == "random">>
-								<<set $customColors.color[_acc] to random(0, 360)>> /* 0,360 are min/max hue values, representing colours */
-								<<run updateHueSlider($customColors.color[_acc], _acc)>>
-								<<set _colour = "custom">>
+								<<if _temp_choice[_colourType].includes("custom")>>
+									<<set $customColors.color[_acc] to random(0, 360)>> /* 0,360 are min/max hue values, representing colours */
+									<<run updateHueSlider($customColors.color[_acc], _acc)>>
+									<<set _colour = "custom">>
+								<<else>>
+									<<set _colour = (_args[0] == "secondary" ? _temp_choice.accessory_colour_options : _temp_choice.colour_options).filter(x => x !== "random").pluck()>>
+								<</if>>
 							<<else>>
 								<<set _colour = _buttonName>>
 							<</if>>
@@ -1468,7 +1481,7 @@
 								<<else>>
 									<mouse class = "tooltip-small">
 										<<print _clothesTrait>>
-										<span class="black"><<print _clothesDesc>></span>
+										<span class="black"><<print _clothesDesc>><<print _clothesDetails isnot "none" ? " " + _clothesDetails : "">></span>
 									</mouse>
 								<</if>>
 							</label>

@@ -911,6 +911,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#559BC0" },
 	},
 	{
+		variable: "neon blue",
+		name: "neon blue",
+		name_cap: "Neon Blue",
+		csstext: "neon-blue",
+		canvasfilter: { blend: "#00d5ff" },
+	},
+	{
 		variable: "white",
 		name: "white",
 		name_cap: "White",
@@ -981,6 +988,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#8f09f3" },
 	},
 	{
+		variable: "lilac",
+		name: "lilac",
+		name_cap: "Lilac",
+		csstext: "lilac",
+		canvasfilter: { blend: "#d692fc" },
+	},
+	{
 		variable: "tangerine",
 		name: "tangerine",
 		name_cap: "Tangerine",
@@ -1021,6 +1035,13 @@ setup.colours.clothes = [
 		name_cap: "Brown",
 		csstext: "brown",
 		canvasfilter: { blend: "#703000" },
+	},
+	{
+		variable: "soft brown",
+		name: "soft brown",
+		name_cap: "Soft brown",
+		csstext: "brownish",
+		canvasfilter: { blend: "#6a4225" },
 	},
 	{
 		variable: "tan",
@@ -1072,6 +1093,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#16168d" },
 	},
 	{
+		variable: "denim",
+		name: "denim",
+		name_cap: "Denim",
+		csstext: "denim",
+		canvasfilter: { blend: "#4b6e85" },
+	},
+	{
 		variable: "olive",
 		name: "olive",
 		name_cap: "Olive",
@@ -1084,6 +1112,13 @@ setup.colours.clothes = [
 		name_cap: "Wine",
 		csstext: "wine",
 		canvasfilter: { blend: "#65252d" },
+	},
+	{
+		variable: "russet",
+		name: "russet",
+		name_cap: "Russet",
+		csstext: "russet",
+		canvasfilter: { blend: "#9f4033" },
 	},
 	{
 		variable: "apocalypse",

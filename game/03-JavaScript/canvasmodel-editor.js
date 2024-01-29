@@ -822,6 +822,7 @@ Macro.add("canvasModelEditor", {
 						booleanOption("hood_down"),
 						booleanOption("alt_position"),
 						booleanOption("alt_position_neck"),
+						booleanOption("alt_position_face"),
 						booleanOption("alt_sleeve"),
 						selectOption("facewear_layer", ["front", "back"]),
 					]),

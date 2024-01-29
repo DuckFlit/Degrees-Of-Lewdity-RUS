@@ -141,6 +141,8 @@ function initGenitals() {
 				"classic lace panties",
 				"classic briefs",
 				"classic school swimsuit bottom",
+				"denim panties",
+				"denim thong",
 			],
 			altDamage: "metal",
 			iconFile: 0,

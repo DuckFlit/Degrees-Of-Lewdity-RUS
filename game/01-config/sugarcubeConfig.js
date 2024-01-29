@@ -497,6 +497,34 @@ Config.navigation.override = function (dest) {
 			case "Whitney Bully Parasite Event Combat Loss":
 			case "Whitney Bully Parasite Event Combat Victory":
 				return "Bully Parasite Fight Finish";
+
+			case "Robin Kiyoura Start":
+				return "Canteen Robin Whitney";
+
+			case "Robin Kiyoura canteen oral":
+				return "Canteen Robin Whitney Oral";
+
+			case "Robin Kiyoura canteen oral Finish":
+				return "Canteen Robin Whitney Oral Finish";
+
+			case "Robin Kiyoura Back to Robin":
+				return "Canteen Robin Whitney Talk";
+
+			case "Robin Kiyoura canteen fight":
+				return "Canteen Robin Whitney Fight";
+
+			case "Robin Kiyoura after fight":
+				return "Canteen Robin Whitney Fight 2";
+
+			case "Robin Kiyoura weak":
+				return "Canteen Robin Whitney Trauma";
+
+			case "Robin Kiyoura cuddle":
+			case "Robin Kiyoura Secret":
+			case "Robin Kiyoura Didn't want to":
+			case "Robin Kiyoura Enjoyed it":
+				return "Canteen Robin Whitney End";
+
 			default:
 				return false;
 		}

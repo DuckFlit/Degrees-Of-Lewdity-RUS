@@ -43,13 +43,19 @@ function updateClothingColours(item, itemRef) {
 			break;
 		case "brown leather jacket":
 			if (item.colour === 0) item.colour = "brown";
-			break;		
+			break;
 		case "love locket":
 			if (item.colour === 0) item.colour = "bronze";
 				break;
 		case "black leather jacket":
 			if (item.colour === 0) item.colour = "black";
 			if (item.accessory_colour === 0) item.accessory_colour = "silver";
+			break;
+		case "jeans":
+			if (item.colour === 0) item.colour = "original";
+			break;
+		case "loose socks":
+			if (item.colour === 0) item.colour = "white";
 			break;
 		default:
 			// Catch-all case if people forget to adjust this widget for whatever clothing item is updated. Can make weird looking clothes if "custom" is selected.
@@ -153,7 +159,7 @@ function updateClothesItem(slot, item, debug) {
 	if (item.accessory_colour_combat !== undefined && itemRef.colour_options.length === 0) item.accessory_colour = 0;
 	// end of fix
 	if (slot === "genitals") return;
-	// put renamed clothes here
+	// put renamed clothes and updated types here
 	switch (item.name) {
 		case "Crop top":
 			item.name = "crop top";
@@ -178,7 +184,72 @@ function updateClothesItem(slot, item, debug) {
 		case "black leather jacket":
 			item.name = "punk leather jacket";
 			item.name_cap = "Punk leather jacket";
-			break;				
+			break;
+		case "swim shirt":
+			item.type =  ["swim", "school", "chest_bind", "constricting", "covered"];
+			break;
+		case "undershirt":
+		case "long johns":
+			item.type = ["normal","covered"];
+			break;
+		case "unitard bottom":
+		case "leotard bottom":
+		case "skimpy leotard":
+		case "unitard":
+		case "leotard":
+		case "turtleneck leotard":
+		case "skimpy leotard":
+			item.type = ["dance","covered"];
+			break;
+		case "turtleneck leotard bottom":
+		case "skimpy leotard bottom":
+			item.type = ["dance"];
+			break;
+		case "sports bra":
+			item.type = ["normal", "athletic", "covered"];
+			break;
+		case "witch dress":
+		case "scarecrow shirt":
+		case "rag skirt":
+		case "skeleton outfit":
+		case "pom poms":
+		case "futuristic bodysuit":
+		case "witch skirt":
+		case "scarecrow skirt":
+		case "futuristic bodysuit pants":
+		case "skeleton bottoms":
+		case "cheerleader gloves":
+		case "football helmet":
+			item.type =  ["costume"];
+			break;
+		case "rag top":
+		case "vampire jacket":
+			item.type =  ["costume", "bellyShow"];
+			break;
+		case "classy vampire jacket":
+			item.type =  ["costume", "formal"];
+			break;
+		case "skeleton mask":
+			item.type =  ["costume", "mask"];
+			break;
+		case "riding helmet":
+		case "racing helmet":
+			item.type =  ["costume", "riding"];
+			break;
+		case "scout shorts":
+		case "baseball cap":
+			item.type =  ["normal"];
+			break;
+		case "purse":
+		case "backpack":
+		case "messenger bag":
+		case "heart purse":
+			item.type = ["school", "bookbag"];
+			break;
+		case "boy's gym socks":
+		case "girl's gym socks":
+			item.type = ["school", "athletic"];
+			break;
 	}
 	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));
 }
