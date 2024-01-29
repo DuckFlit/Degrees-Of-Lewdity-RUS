@@ -3605,18 +3605,18 @@
 <</widget>>
 
 :: School Vending Machine Widget [widget]
+/**
+	$weekly.theft.vendingMachine {
+		broken: boolean
+		stolen: boolean
+	}
+	$daily.vendingMachine {
+		used: boolean
+	}
+ */
 <<widget "schoolVendingMachine">>
-	<<if $changingRoomGender is "boys">>
-		<<set $currentToiletReturn to "School Boy's Toilets">>
-	<<else>>
-		<<set $currentToiletReturn to "School Girl's Toilets">>
-	<</if>>
-	<<if $weekly.theft.vendingMachine is undefined>>
-		<<set $weekly.theft.vendingMachine to {}>>
-	<</if>>
-	<<if $daily.vendingMachine is undefined>>
-		<<set $daily.vendingMachine to {}>>
-	<</if>>
+	<<set $weekly.theft.vendingMachine to $weekly.theft.vendingMachine || {}>>
+	<<set $daily.vendingMachine to $daily.vendingMachine || {}>>
 	<br>
 	There is a vending machine for condoms. They are subsidised by the Department of Youth.
 	<br>
@@ -3637,30 +3637,30 @@
 			<br><br>
 		<</if>>
 	<</if>>
-	<<if $weekly.theft.vendingMachine[$changingRoomGender]>>
-		The vending machine is broken.
-		<br>
-	<<elseif $daily.vendingMachine[$changingRoomGender]>>
-		A red display reads "Empty".
-		<br>
-		<<if !Time.schoolTime>>
-			<<condomicon "machine">><<link [[Rob|Vending Machine Rob]]>><</link>>
-			<br>
-		<</if>>
+	/* Suggestion:
+		When broken, the machine can be completely inoperable for a week.
+		When stolen, the machine can still be operated normally, but held cash is set to 0:
+		  Each day the machine's stored wealth can be reset, and held cash could be randomly incremented.
+		  If you purchase condoms, you could sneakily regain the cash you spent.
+		  Optional: There could be more than 2 condoms in the machine.
+	*/
+	<<if $weekly.theft.vendingMachine.broken or $weekly.theft.vendingMachine.stolen>>
+		<span class="red">The vending machine is broken.</span>
 	<<else>>
-		<<if $money gte 2000>>
-			<<condomicon "machine">><<link [[Buy condoms (2-pack £20)|Vending Machine Buy]]>><</link>>
-			<br>
+		<<if $daily.vendingMachine.used>>
+			A red display reads "<span class="red">Empty</span>".
 		<<else>>
-			You can't afford them.
-			<br>
+			<<if $money gte 2000>>
+				<<condomicon "machine">><<link [[Buy condoms (2-pack £20)|Vending Machine Buy]]>><</link>>
+			<<else>>
+				You can't afford them.
+			<</if>>
 		<</if>>
 		<<if !Time.schoolTime>>
-			<<condomicon "machine">><<link [[Rob|Vending Machine Rob]]>><</link>>
 			<br>
+			<<condomicon "machine">><<link [[Rob|Vending Machine Rob]]>><</link>>
 		<</if>>
 	<</if>>
-	<br>
 <</widget>>
 
 <<widget "classRoomEarSlime">>
