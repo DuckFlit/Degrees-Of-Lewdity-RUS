@@ -258,9 +258,9 @@
 			You spasm against the bindings.
 			<<if $enemyno gte 2>>
 				<<if $player.penisExist and $orgasmcount lte 23>>
-					The pair's eyes light up as you squirm. "<<pShes>> cumming!" The <<person>> exclaims, stepping back to avoid your discharge while staring in awe.
+					The pair's eyes light up as you squirm. "<<pShes>> cumming!" the <<person>> exclaims, stepping back to avoid your discharge while staring in awe.
 				<<else>>
-					The pair's eyes light up as you squirm. "<<pShes>> cumming!" The <<person>> exclaims.
+					The pair's eyes light up as you squirm. "<<pShes>> cumming!" the <<person>> exclaims.
 				<</if>>
 			<<else>>
 				<<if $player.penisExist and $orgasmcount lte 23>>
@@ -271,9 +271,9 @@
 			You spasm again against the bindings.
 			<<if $enemyno gte 2>>
 				<<if $player.penisExist and $orgasmcount lte 23>>
-					"I didn't know it could happen more than once!" Says the <<person>>.
+					"I didn't know it could happen more than once!" says the <<person>>.
 				<<else>>
-					"I didn't know it could happen more than once!" Says the <<person>>.
+					"I didn't know it could happen more than once!" says the <<person>>.
 				<</if>>
 			<<else>>
 				<<if $player.penisExist and $orgasmcount lte 23>>
@@ -2479,7 +2479,7 @@
 			A <<person>> leans over Robin's desk, grinning. <<His>> friends watch <<him>>. <<He>> asks something, so quiet you can barely make out the words. "Are you still a virgin?"
 			<br><br>
 
-			<<print C.npc.Robin.dom gte 80>>
+			<<if C.npc.Robin.dom gte 80>>
 				"That's none of your business," Robin answers.
 				<br><br>
 			<<else>>
@@ -2905,7 +2905,7 @@
 
 <<widget "eventshistorysleep">>
 	<<cleareventpool>>
-	<<set $_linkSkip to "false">>
+	<<set $_linkSkip to false>>
 
 	<<addinlineevent "historyCaught">>
 		You jump in your seat as a loud smack resounds off the desk. You bolt upright and see Winter standing in front of you, ruler in hand. "I'll not tolerate sleeping in my class. Detention." <<ltiredness>><<detention 2>><<gdelinquency>>
@@ -3008,20 +3008,26 @@
 :: Widgets Events Swimming [widget]
 <<widget "eventsswimming">>
 	<<outfitChecks>>
+	<<cleareventpool>>
+	<<set $_linkSkip to false>>
+	<<set _tf to checkTFparts()>>
 
-	<<if $rng gte 91 and $leftarm is "bound" and $rightarm is "bound">>
-		<<npc Mason>><<person1>>
-		Mason motions for you to come closer. You <<if $feetuse is "bound">>butterfly <</if>>kick your way to the side of the pool.
-		"Why aren't you using your arms?" <<He>> notices your bindings. "Oh! Can you even get those off on your own? I think I have some scissors."
-		<br><br>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<<addinlineevent "swimBound">>
+			<<npc Mason>><<person1>>
+			<<set $_linkSkip to true>>
+			Mason motions for you to come closer. You <<if $feetuse is "bound">>butterfly <</if>>kick your way to the side of the pool.
+			"Why aren't you using your arms?" <<He>> notices your bindings. "Oh! Can you even get those off on your own? I think I have some scissors."
+			<br><br>
 
-		<<link [[Be freed|Events Swimming Freed]]>><<unbind>><</link>>
-		<br>
-		<<link [[Refuse|Events Swimming Freed Refuse]]>><</link>>
-		<br>
+			<<link [[Be freed|Events Swimming Freed]]>><<unbind>><</link>>
+			<br>
+			<<link [[Refuse|Events Swimming Freed Refuse]]>><</link>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
 
-	<<elseif $rng gte 81>>
-
+	<<addinlineevent "swimFight">>
 		<<generates1>><<generates2>>A fight breaks out on the other side of the pool.
 		As Mason swims over to break it up, a <<fullGroup>> swim up to you, and trap you between them.
 		The <<person>> starts fondling your butt from behind while the <<person1>><<person>> speaks.
@@ -3038,9 +3044,9 @@
 			<<link [[Endure it|Events Swimming Endure]]>><<trauma 2>><<stress 2>><<arousal 200 "bottom">><</link>><<gtrauma>><<gstress>><<garousal>>
 			<br>
 		<</if>>
+	<</addinlineevent>>
 
-	<<elseif $rng gte 71>>
-
+	<<addinlineevent "swimDive">>
 		<<rng>>
 		<<npc Mason>><<generates2>><<person2>>
 		<br><br>
@@ -3079,87 +3085,79 @@
 			<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
 			<br>
 		<</if>>
+	<</addinlineevent>>
 
-	<<elseif $rng gte 61 and $worn.lower.type.includes("naked") and !_underOutfit>>
-		<<rng>>
-		<<npc Mason>><<person1>>Mason points at you. "Climb out, I want to see your diving technique."
-		<<if playerBellyVisible()>>
-			Face flushing, you remind <<him>> that you're <<if $exposed gte 1 and $swimall isnot 1>>naked and <</if>>pregnant.
-			<<He>> looks to your belly, embarrassed. "Oh, my mistake..." <<He>> pauses briefly, "Wouldn't want to hurt the baby."
-			<br><br>
-			<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
-		<<elseif $swimall is 1 and $exposed gte 1>>
-			You climb out into the chilly air, and walk to the edge of the diving platform. You dive <<swimmingtext>> into the water.
-			<br><br>
-
-			You come back up to the surface. Mason gives you a thumbs up, then directs <<his>> attention elsewhere.
-			<<gswimming>><<swimmingskilluse>>
-			<br><br>
-
-			<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
-			<br>
-		<<elseif $exposed gte 1>>
-			Face flushing, you remind <<him>> that you're naked beneath the water. <<He>> looks away, embarrassed.
-			"You still need to dive," <<he>> says. "I'll try to distract the other students."
-			<br><br>
-
-			<<He>> stands beside the pool opposite the diving platform. "Everyone, It's time for a demonstration."
-			You wait until everyone is facing away from you, then <<nervously>> climb out.
-
+	<<if $worn.lower.type.includes("naked") and !_underOutfit>>
+		<<addinlineevent "swimNaked">>
 			<<rng>>
-			<<if $rng gte 81>>
-				<<generates2>><<person2>>As you approach the diving platform however, a <<person>> turns.
-				You cover your body as <<he>> shouts to <<his>> friends, attracting more attention. Mason tries to control the situation, but it's no use.
-				The whole class is soon staring at you.
-				<<gtrauma>><<trauma 2>><<gstress>><<stress 2>>
+			<<npc Mason>><<person1>>Mason points at you. "Climb out, I want to see your diving technique."
+			<<if playerBellyVisible()>>
+				Face flushing, you remind <<him>> that you're <<if $exposed gte 1 and $swimall isnot 1>>naked and <</if>>pregnant.
+				<<He>> looks to your belly, embarrassed. "Oh, my mistake..." <<He>> pauses briefly. "Wouldn't want to hurt the baby."
+
+			<<elseif $swimall is 1 and $exposed gte 1>>
+				You climb out into the chilly air and walk to the edge of the diving platform. You dive <<swimmingtext>> into the water.
 				<br><br>
-				<<if $exhibitionism gte 75>>
-					<<ind>><<link [[Flaunt|Events Swimming Flaunt]]>><</link>><<exhibitionist5>>
+
+				You come back up to the surface. Mason gives you a thumbs up, then directs <<his>> attention elsewhere.
+				<<gswimming>><<swimmingskilluse>>
+
+			<<elseif $exposed gte 1>>
+				Face flushing, you remind <<him>> that you're naked beneath the water. <<He>> looks away, embarrassed.
+				"You still need to dive," <<he>> says. "I'll try to distract the other students."
+				<br><br>
+
+				<<He>> stands beside the pool opposite the diving platform. "Everyone, it's time for a demonstration."
+				You wait until the class is facing away from you, then <<nervously>> climb out.
+
+				<<if $rng gte 81>>
+					<<set $_linkSkip to true>>
+					<<generates2>><<person2>>As you approach the diving platform however, a <<person>> turns. You cover your body as <<he>> shouts to <<his>> friends, attracting more attention. Mason tries to control the situation, but it's no use. The whole class is soon staring at you. <<gtrauma>><<trauma 2>><<gstress>><<stress 2>>
+					<br><br>
+					<<if $exhibitionism gte 75>>
+						<<link [[Flaunt|Events Swimming Flaunt]]>><</link>><<exhibitionist5>>
+						<br>
+					<</if>>
+					<<link [[Dive anyway|Events Swimming Lewd Dive]]>><<trauma 2>><<stress 2>><</link>><<gtrauma>><<gstress>>
+					<br>
+					<<link [[Run away|Event Swimming Run]]>><<detention 1>><</link>><<gdelinquency>>
+					<br>
+				<<else>>
+					You glance at the rest of the class, and see their backs still turned. You dive <<swimmingtext>> into the water.
+					<<gstress>><<stress 2>><<gswimming>><<swimmingskilluse>>
+				<</if>>
+
+			<<else>>
+				You climb out into the chilly air and walk to the edge of the diving platform. You dive <<swimmingtext>> into the water.
+				<br><br>
+
+				You come back up to the surface. Mason gives you a thumbs up, then directs <<his>> attention elsewhere.
+				You feel like something is amiss, and then you realise, your <<undies>> <<underlowerplural>> gone!
+				<br><br>
+
+				<<if $school gte 1600 or $rng lt 80>>
+					Seeing your clothes floating several feet away, you quickly swim over and cover up. You glance around the pool. You don't think anybody noticed.
+					<<gstress>><<stress 2>><<gswimming>><<swimmingskilluse>>
+				<<else>>
+					<<set $_linkSkip to true>>
+					<<endevent>><<generates1>><<person1>><<underlowerstrip>>
+					You look around and see your clothes floating in the water. You swim towards them, but a <<person>> beats you to it.
+					<<He>> holds them out of your reach and smiles at you. "Stripping in public? Who'd have known a nerd like you would be so perverted."
+					<<He>> examines your exposed body, then checks if Mason is still distracted.
+					"I wanna have some fun with you. You better do what I want or you'll be spending the rest of the lesson naked."
+					<br><br>
+
+					<<link [[Accept|Events Swimming Molestation Single]]>><<set $molestationstart to 1>><</link>>
+					<br>
+					<<link [[Refuse|Events Swimming Refuse]]>><</link>>
 					<br>
 				<</if>>
-				<<swimicon "dive">><<link [[Dive anyway|Events Swimming Lewd Dive]]>><<trauma 2>><<stress 2>><</link>><<gtrauma>><<gstress>>
-				<br>
-				<<runicon>><<link [[Run away|Event Swimming Run]]>><<detention 1>><</link>><<gdelinquency>>
-				<br>
-			<<else>>
-				You glance at the rest of the class, and see their backs still turned. You dive <<swimmingtext>> into the water.
-				<<gstress>><<stress 2>><<gswimming>><<swimmingskilluse>>
-				<br><br>
-				<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
 			<</if>>
+		<</addinlineevent>>
+	<</if>>
 
-		<<else>>
-			You climb out into the chilly air, and walk to the edge of the diving platform. You dive <<swimmingtext>> into the water.
-			<br><br>
-
-			You come back up to the surface. Mason gives you a thumbs up, then directs <<his>> attention elsewhere.
-			You feel like something is amiss, and then you realise, your <<undies>> <<underlowerplural>> gone!
-			<br><br>
-
-			<<rng>>
-			<<if $school gte 1600 or $rng lt 80>>
-				Seeing your clothes floating several feet away, you quickly swim over and cover up. You glance around the pool, you don't think anybody noticed.
-				<<gstress>><<stress 2>><<gswimming>><<swimmingskilluse>>
-				<br><br>
-
-				<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
-				<br>
-			<<else>>
-
-				<<endevent>><<generates1>><<person1>><<underlowerstrip>>
-				You look around and see your clothes floating in the water. You swim towards them, but a <<person>> beats you to it.
-				<<He>> holds them out of your reach and smiles at you. "Stripping in public? Who'd have known a nerd like you would be so perverted."
-				<<He>> examines your exposed body, then checks if Mason is still distracted.
-				"I wanna have some fun with you. You better do what I want or you'll be spending the rest of the lesson naked."
-				<br><br>
-
-				<<link [[Accept|Events Swimming Molestation Single]]>><<set $molestationstart to 1>><</link>>
-				<br>
-				<<link [[Refuse|Events Swimming Refuse]]>><</link>>
-				<br>
-			<</if>>
-		<</if>>
-	<<elseif $rng gte 41>>
+	<<addinlineevent "swimStalk">>
+		<<set $_linkSkip to true>>
 		<<generates1>><<person1>>A <<person>> seems to be following you around the pool. Whenever you look at <<him>> however, <<he>> averts <<his>> gaze.
 		<br><br>
 
@@ -3167,10 +3165,12 @@
 		<br>
 		<<link [[Ignore|Events Swimming Stalk Ignore]]>><</link>>
 		<br>
+	<</addinlineevent>>
 
-	<<elseif $rng gte 21>>
+	<<addinlineevent "swimHarass">>
+		<<set $_linkSkip to true>>
 		<<generates1>><<generates2>><<generates3>>
-		A <<fullGroup>> start picking on you, following and touching you beneath the water.
+		A <<fullGroup>> start picking on you, following you and touching you beneath the water.
 		You could try to swim away from them, but it might make things worse if you fail.
 		<br><br>
 
@@ -3178,34 +3178,65 @@
 		<br>
 		<<link [[Endure it|Events Swimming Swim Endure]]>><<stress 2>><<trauma 2>><<arousal 100 "bottom">><<arousal 100 "genitals">><</link>><<gtrauma>><<gstress>><<garousal>>
 		<br>
+	<</addinlineevent>>
 
-	<<else>>
-		<<if $worn.lower.type.includes("naked")>>
-			<<pain 5>>
+	<<addinlineevent "swimSkimmer">>
+		<<if $worn.under_lower.type.includes("naked")>>
 			You feel a sharp pain in your butt. You floated too close to a skimmer and were pinched by the flap.
 			You manage to not cry out and attract more attention to yourself.
-			<<gstress>><<stress 2>>
-			<br><br>
-			<<link [[Next|Swimming Lesson]]>><</link>>
+			<<gpain>><<gstress>><<stress 2>><<pain 5>>
 		<<else>>
-			<<set $worn.lower.integrity -= 4>>
-			<<exposure>>
-			Something tugs at your $worn.lower.name. You floated too close to a skimmer and your clothes are caught in its flap.
+			As you tread water, you feel something tug at your $worn.under_lower.name_simple. You floated too close to a skimmer and are caught in its flap. <<set $worn.under_lower.integrity -= 4>>
 			<<integritycheck>>
 			<<exposure>>
-			<<if $worn.lower.type.includes("naked")>>
-				You move away, but as you do so your clothing is cruelly ripped free from your body, disappearing through the skimmer in an instant, leaving you
-				<<if $worn.upper.type.includes("naked")>>
-					completely bare.
-				<<else>>
-					bare from the waist down.
-				<</if>>
+			<<if $worn.under_lower.type.includes("naked")>>
+				You move away, but as you do so, your clothing is cruelly ripped free from your body. It disappears through the skimmer in an instant, leaving you <<= $worn.under_upper.type.includes("naked") ? "completely bare" : "bare from the waist down">>.
 			<<else>>
-				You move away, and your $worn.lower.name <<lowerplural>> torn free of the skimmer, intact but worse for wear.
+				You free yourself from the skimmer, leaving your $worn.under_lower.name_simple intact but worse for wear.
 			<</if>>
-			<br><br>
-			<<link [[Next|Swimming Lesson]]>><</link>>
 		<</if>>
+	<</addinlineevent>>
+
+	<<if _tf.foxTail or _tf.wolfTail or _tf.catTail or _tf.cowTail or _tf.birdTail or _tf.demonTail>>
+		<<addinlineevent "swimTF">>
+			<<set $_linkText to _tf.catTail ? "Hiss" : _tf.cowTail ? "Whack" : _tf.birdTail ? "Splash" : "Growl">>
+			<<set $_tf to _tf.foxTail ? "<<fox>>" : _tf.demonTail ? "<<demon>>" : _tf.catTail ? "<<cat>>" : _tf.cowTail ? "<<cow>>" : _tf.birdTail ? "<<harpy>>" : "<<wolfgirl>>">>
+
+			As you're swimming laps, a <<generates1>><<person1>><<person>> grabs your tail and pulls, causing you to let out an involuntary <<= _tf.foxTail ? "moan" : "yelp">>. <<gstress>><<stress 6>>
+
+			<br><br>
+			"What's this thing on your butt?" <<he>> says with a snicker. <<He>> gives it another tug as <<he>> tries to get a better look at it.
+
+			<<if _tf.foxTail>>
+				<<gggarousal>><<arousal 10000>>
+				<br><br>
+
+				Your thighs tremble with arousal as another jolt of pleasure shoots up your tailbone. The overstimulation is too much to bear. <<orgasm>> You clutch the side of the pool, yipping helplessly through the orgasm. The <<personsimple>> stares at you, as does the rest of the class.
+				<br><br>
+
+				"What's going on over there?" Mason calls out.
+				<br><br>
+
+				"N-nothing!" the <<person>> shouts back. <<He>> drops your tail and swims away, <<his>> face beet-red. Mason looks at you suspiciously, but doesn't pry further.
+			<<else>>
+				<<gpain>><<pain 6>><<set $_linkSkip to true>>
+				 <br><br>
+
+				<<if $submissive lte 850>>
+					<<link [[$_linkText|Events Swimming Tail]]>><<set $phase to $_linkText>><</link>><<lstress>><<print $_tf>>
+				<</if>>
+				<<if>> _tf.demonTail>>
+					<<link [[Wiggle your butt seductively|Events Swimming Tail]]>><<set $phase to "Wiggle">><</link>><<print $_tf>>
+				<</if>>
+				<<link [[Endure|Events Swimming Tail]]>><<set $phase to "Endure">><</link>><<gstress>>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<runeventpool>>
+	<<if $_linkSkip is false>>
+		<br><br>
+		<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
 	<</if>>
 <</widget>>
 
