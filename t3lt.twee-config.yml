@@ -105,7 +105,7 @@ sugarcube-2:
       description: |-
         Adds acceptance to pc's state concerning specific part and applies effects
 
-        `$acceptance_X` are measures of pc overcoming specific insecurities where 0 is not accepting (0-1000)
+        `$acceptance_X` are measures of pc overcoming specific insecurities where 0 is not accepting (0-1,000)
 
         `<<insecurity part change>>`
         - **part**: `string` - part to gain insecurity in
@@ -615,7 +615,9 @@ sugarcube-2:
         - "number |+ number"
       tags: ["text"]
     analdifficulty:
-      name: analdifficulty
+      description: |-
+        Prints color-coded adjective of anal action difficulty in current combat
+      tags: ["text"]
     analdoublestat:
       name: analdoublestat
     analejacstat:
@@ -1484,7 +1486,9 @@ sugarcube-2:
         Does not take into account over_bottom. Consider refactoring
       tags: ["refactor", "text"]
     bottomdifficulty:
-      name: bottomdifficulty
+      description: |-
+        Prints color-coded adjective of bottom action difficulty in current combat
+      tags: ["text"]
     bottomejacstat:
       name: bottomejacstat
     bottoms:
@@ -1499,7 +1503,7 @@ sugarcube-2:
       description: |-
         Adds bottom skill to pc's state
 
-        `$bottomskill` is a measure of pc's proficiency using their buttocks where 0 is awkward (0-1000)
+        `$bottomskill` is a measure of pc's proficiency using their buttocks where 0 is awkward (0-1,000)
 
         `<<bottomskill change>>`
         - **change**: `number` - +/- change to apply
@@ -2058,7 +2062,9 @@ sugarcube-2:
     chestActionsTentacle:
       name: chestActionsTentacle
     chestdifficulty:
-      name: chestdifficulty
+      description: |-
+        Prints color-coded adjective of chest action difficulty in current combat
+      tags: ["text"]
     chestejacstat:
       name: chestejacstat
     chestsimple:
@@ -2067,7 +2073,7 @@ sugarcube-2:
       description: |-
         Adds chest skill to pc's state
 
-        `$chestskill` is a measure of pc's proficiency using their chest where 0 is awkward (0-1000)
+        `$chestskill` is a measure of pc's proficiency using their chest where 0 is awkward (0-1,000)
 
         `<<chestskill change>>`
         - **change**: `number` - +/- change to apply
@@ -2227,9 +2233,22 @@ sugarcube-2:
     clearingedenactions:
       name: clearingedenactions
     clearnpc:
-      name: clearnpc
+      description: |-
+        Clears active npcs, saving persistent npcs if present
+
+        See `<<clearsinglenpc>>` to clear just a single active npc
     clearNPC:
-      name: clearNPC
+      description: |-
+        Fully clears data about a specific persistent npc
+
+        Not to be confused with `<<clearnpc>>`. Consider refactoring
+
+        `<<clearNPC name>>`
+        - **name**: `string` - npc key to clear data from
+          - spaces should be avoided if possible
+      parameters:
+        - 'text'
+      tags: ["refactor"]
     clearPronouns:
       description: |-
         Resets NPC object's `pronouns` property back to empty
@@ -2242,7 +2261,15 @@ sugarcube-2:
     clearSaveMenu:
       name: clearSaveMenu
     clearsinglenpc:
-      name: clearsinglenpc
+      description: |-
+        Clears single active npc
+
+        Does not save persistent npcs when cleared
+
+        `<<clearsinglenpc slot>>`
+        - **slot**: `number` - slot number to clear (zero-based)
+      parameters:
+        - 'number'
     clearToDeleteParasiteFetus:
       name: clearToDeleteParasiteFetus
     clearWraith:
@@ -2828,7 +2855,15 @@ sugarcube-2:
       name: compressionVerifier
       tags: ["unused"]
     compressNPC:
-      name: compressNPC
+      description: |-
+        Puts an active npc in a persistent slot after compressing it
+
+        `<<compressNPC slot name>>`
+        - **slot**: `number` - slot number to put npc data at (zero-based)
+        - **name**: `string` - key to load npc's data from
+          - spaces should be avoided if possible
+      parameters:
+        - 'number &+ string|text'
     compute:
       container: true
       name: compute
@@ -3195,14 +3230,15 @@ sugarcube-2:
       description: |-
         Adds delinquency to pc's state
 
-        `$deliquency` is a historic measurement of how much trouble the pc is considered by the school where 0 is innocent (0-1,000).
+        `$delinquency` is a historic measurement of how much trouble the pc is considered by the school where 0 is innocent (0-1,000).
         `change` is multiplied by 4 here and in `<<detention>>`
 
         See `<<detention>>` to adjust detention at the same time
 
-        `<<detention change bonus?>>`
+        `<<delinquency change modifier?>>`
         - **change**: `number` - +/- change to apply
-        - **bonus** _optional_: `string` - bonus reduction to $delinquency if the player attends class with optional clothes with the school trait.
+        - **modifier** _optional_: `string` - type of modifier to apply
+          - `"bonus"`: additional reduction if pc attends with optional school trait clothes
       parameters:
         - 'number |+ "bonus"'
     demon:
@@ -3816,13 +3852,30 @@ sugarcube-2:
     end_npc_pillory:
       name: end_npc_pillory
     endcombat:
-      name: endcombat
+      description: |-
+        Ends combat by applying pc effects, displaying necessary descriptions of them, and resetting combat variables back to defaults
+
+        `<<endcombat eventType?>>`
+        - **eventType** _optional_: `string` - type of event to end when calling `<<endevent>>`
+          - `"phaseless"`: phase variables will not be reset
+      parameters:
+        - '|+ "phaseless"'
+      tags: ["text"]
     endconfession:
       name: endconfession
     endconfessionself:
       name: endconfessionself
     endevent:
-      name: endevent
+      description: |-
+        Ends ongoing event by resetting all event variables to default
+
+        Superceded by `<<endcombat>>`
+
+        `<<endevent type?>>`
+        - **type** _optional_: `string` - type of event to end
+          - `"phaseless"`: phase variables will not be reset
+      parameters:
+        - '|+ "phaseless"'
     endmasturbation:
       name: endmasturbation
     endnpc:
@@ -4749,7 +4802,9 @@ sugarcube-2:
     feetActionsTentacle:
       name: feetActionsTentacle
     feetdifficulty:
-      name: feetdifficulty
+      description: |-
+        Prints color-coded adjective of feet action difficulty in current combat
+      tags: ["text"]
     feetejacstat:
       name: feetejacstat
     feetgrabnew:
@@ -4790,7 +4845,7 @@ sugarcube-2:
       description: |-
         Adds feet skill to pc's state
 
-        `$feetskill` is a measure of pc's proficiency using their feet where 0 is awkward (0-1000)
+        `$feetskill` is a measure of pc's proficiency using their feet where 0 is awkward (0-1,000)
 
         `<<feetskill change>>`
         - **change**: `number` - +/- change to apply
@@ -7018,7 +7073,9 @@ sugarcube-2:
     hand_section_two:
       name: hand_section_two
     handdifficulty:
-      name: handdifficulty
+      description: |-
+        Prints color-coded adjective of hand action difficulty in current combat
+      tags: ["text"]
     handejacstat:
       name: handejacstat
     handheldon:
@@ -7055,7 +7112,7 @@ sugarcube-2:
       description: |-
         Adds hand skill to pc's state
 
-        `$handskill` is a measure of pc's proficiency using their hands where 0 is awkward (0-1000)
+        `$handskill` is a measure of pc's proficiency using their hands where 0 is awkward (0-1,000)
 
         `<<handskill change>>`
         - **change**: `number` - +/- change to apply
@@ -7585,7 +7642,7 @@ sugarcube-2:
       description: |-
         Adds insecurity to pc's state concerning specific part and applies effects
 
-        `$insecurity_X` are measures of insecure pc is towards specific traumas where 0 is not insecure (0-1000)
+        `$insecurity_X` are measures of insecure pc is towards specific traumas where 0 is not insecure (0-1,000)
 
         `<<insecurity part change>>`
         - **part**: `string` - part to gain insecurity in
@@ -8581,7 +8638,6 @@ sugarcube-2:
       name: loadIronmanSafetyCancel
     loadNPC:
       description: |-
-        Updates named persistent npc with data from given slot
         Loads persistent npc from named slot
 
         See `<<saveNPC>>`, `<<updateNPC>>`, & `<<clearNPC>>`
@@ -8589,9 +8645,9 @@ sugarcube-2:
         `<<loadNPC slot name>>`
         - **slot**: `number` - slot number to put npc data at (zero-based)
         - **name**: `string` - key to load npc's data from
-        - spaces should be avoided if possible
+          - spaces should be avoided if possible
       parameters:
-        - 'number &+ string'
+        - 'number &+ string|text'
     loadShopOptions:
       name: loadShopOptions
     loadTempHairStyle:
@@ -8614,6 +8670,27 @@ sugarcube-2:
 
         Out of date and underutilised. Consider refactoring
       tags: ["text", "refactor"]
+    lock_effect:
+      description: |-
+        Applies effects of incrementally breaking the farm lock
+
+        `$lockGuard` is a measure of how far the farmhand is where 0 is near (0-100)
+      tags: ["text"]
+    lock_effect2:
+      description: |-
+        Unsets farm lock variables
+    lock_guard:
+      description: |-
+        Prints description of farm guard location
+
+        `$lockGuard` is a measure of how far the farmhand is where 0 is near (0-100)
+      tags: ["text"]
+    lock_strength:
+      description: |-
+        Prints description of farm lock strength
+
+        `$lockStrength` is a measure of how damaged the farm lock is where 100 is undamaged (0-100)
+      tags: ["text"]
     locker_suspicion:
       description: |-
         Adds suspicion of being the panty thief to pc's state
@@ -8871,7 +8948,10 @@ sugarcube-2:
     mancombat_strangle:
       name: mancombat_strangle
     manend:
-      name: manend
+      description: |-
+        Clears speech variables related to man combat
+
+        Superceded by `<<endcombat>>`
     maninit:
       name: maninit
     mannequin:
@@ -8888,7 +8968,7 @@ sugarcube-2:
       description: |-
         Adds masochism to pc's state
 
-        `$masochism` is a measure of pc's progression towards being masochistic where 0 is no progress (0-1000)
+        `$masochism` is a measure of pc's progression towards being masochistic where 0 is no progress (0-1,000)
 
         `<<masochism change>>`
         - **change**: `number` - +/- change to apply
@@ -8921,6 +9001,15 @@ sugarcube-2:
       tags: ["text"]
     masturbationactions:
       name: masturbationactions
+    masturbationAudienceIncrement:
+      description: |-
+        Generates new masturbation audience member if less than max
+        
+        `<<masturbationAudienceIncrement type?>>`
+        - **type** _optional_: `string` - type of audience member to generate
+          - `"student"`: audience member is a student
+      parameters:
+        - '|+ "student"'
     masturbationbowl:
       name: masturbationbowl
     masturbationbowlimage:
@@ -9677,13 +9766,12 @@ sugarcube-2:
       name: npcgangstrip
     npcGenitalReaction:
       description: |-
-        description: |-
-          Prints a random player reaction to the sight of a very large or very small NPC penis
+        Prints a random player reaction to the sight of a very large or very small NPC penis
 
-          `<<npcGenitalReaction npcObject>>`
-          - **npcObject**: `object` - npc object to be checked
-        parameters:
-          - 'var|bareword'
+        `<<npcGenitalReaction npcObject>>`
+        - **npcObject**: `object` - npc object to be checked
+      parameters:
+        - 'var|bareword'
     npcGenitals:
       description: |-
         Prints descriptor(s) of active NPC's full genitals
@@ -9988,7 +10076,9 @@ sugarcube-2:
     oral:
       name: oral
     oraldifficulty:
-      name: oraldifficulty
+      description: |-
+        Prints color-coded adjective of oral action difficulty in current combat
+      tags: ["text"]
     oralejacstat:
       name: oralejacstat
     oralnew:
@@ -9999,7 +10089,7 @@ sugarcube-2:
       description: |-
         Adds oral skill to pc's state
 
-        `$oralskill` is a measure of pc's proficiency giving oral where 0 is awkward (0-1000)
+        `$oralskill` is a measure of pc's proficiency giving oral where 0 is awkward (0-1,000)
 
         `<<oralskill change>>`
         - **change**: `number` - +/- change to apply
@@ -10564,14 +10654,16 @@ sugarcube-2:
     penetrationPainCalculate:
       name: penetrationPainCalculate
     peniledifficulty:
-      name: peniledifficulty
+      description: |-
+        Prints color-coded adjective of penile action difficulty in current combat
+      tags: ["text"]
     penileejacstat:
       name: penileejacstat
     penileskill:
       description: |-
         Adds penile skill to pc's state
 
-        `$penileskill` is a measure of pc's proficiency using their penis where 0 is awkward (0-1000)
+        `$penileskill` is a measure of pc's proficiency using their penis where 0 is awkward (0-1,000)
 
         `<<penileskill change>>`
         - **change**: `number` - +/- change to apply
@@ -11767,7 +11859,7 @@ sugarcube-2:
       description: |-
         Adds sadism to pc's state
 
-        `$sadism` is a measure of pc's progression towards being sadistic where 0 is no progress (0-1000)
+        `$sadism` is a measure of pc's progression towards being sadistic where 0 is no progress (0-1,000)
 
         `<<sadism change>>`
         - **change**: `number` - +/- change to apply
@@ -11803,10 +11895,10 @@ sugarcube-2:
 
         `<<saveNPC slot name>>`
         - **slot**: `number` - slot number to pull npc data from (zero-based)
-        - **name**: `string` - key to save npc's data under
-        - spaces should be avoided if possible
+        - **name**: `string` - key to save npc's data to
+          - spaces should be avoided if possible
       parameters:
-        - 'number &+ string'
+        - 'number &+ string|text'
     saves:
       name: saves
     saveTempHairStyle:
@@ -12004,12 +12096,23 @@ sugarcube-2:
     seductioncheck:
       name: seductioncheck
     seductiondifficulty:
-      name: seductiondifficulty
+      description: |-
+        Prints difficulty of seduction in current combat or estimate of difficulty out
+
+        `_text_output` is set to difficulty description for use with `noPrint`
+
+        `noPrint` styles differ depending on combat/ non-combat. Consider refactoring
+        
+        `<<seductiondifficulty noPrint?>>`
+        - **noPrint** _optional_: `bool` - Suppress output and only write to temp (truthy)
+      parameters:
+        - '|+ bool'
+      tags: ["text", "temp", "refactor"]
     seductionskill:
       description: |-
         Adds seduction skill to pc's state
 
-        `$seductionskill` is a measure of pc's proficiency seducing others where 0 is awkward (0-1000)
+        `$seductionskill` is a measure of pc's proficiency seducing others where 0 is awkward (0-1,000)
 
         `<<seductionskill change>>`
         - **change**: `number` - +/- change to apply
@@ -12375,18 +12478,38 @@ sugarcube-2:
       description: |-
         Adds skulduggery skill to pc's state
 
-        `$skulduggery` is a measure of pc's dexterity and guile where 0 is bad (0-1000)
+        `$skulduggery` is a measure of pc's dexterity and guile where 0 is bad (0-1,000)
 
         `<<skulduggery change>>`
         - **change**: `number` - +/- change to apply
       parameters:
         - "number"
     skulduggerycheck:
-      name: skulduggerycheck
+      description: |-
+        Performs an inline skulduggery check
+
+        `$skulduggerydifficulty` is a measure of the action difficulty where 0 is guaranteed (0-1,000)
+
+        `$skulduggerysuccess` is the result of the check where 0 is failed (0|1)
+        
+        `<<skulduggerycheck outputModifier?>>`
+        - **outputModifier** _optional_: `string` - type of modifier to apply
+          - `"silent"`: Does not print results
+      parameters:
+        - '|+ "silent"'
+      tags: ["text"]
     skulduggerydifficulty:
-      name: skulduggerydifficulty
+      description:
+        Prints color-coded adjective of skulduggery difficulty
+
+        Relies on `$skulduggerydifficulty`, see `<<skulduggerycheck>>`
+      tags: ["text"]
     skulduggeryrequired:
-      name: skulduggeryrequired
+      description:
+        Prints minimum skulduggery level required to successfully lockpick
+
+        `$lock` is the minimum skulduggery skill required to unlock where 0 is guaranteed (0-1,000)
+      tags: ["text"]
     skulduggeryskilluse:
       name: skulduggeryskilluse
     skulduggeryuse:
@@ -13041,7 +13164,7 @@ sugarcube-2:
       description: |-
         Adds submissiveness quality to pc's state and applies effects
 
-        `$submissive` is a measure of pc's defiant/ submissive spectrum where 0 is defiant and 1000 is neutral (0-2000)
+        `$submissive` is a measure of pc's defiant/ submissive spectrum where 0 is defiant and 1,000 is neutral (0-2,000)
 
         See `<<def>>`
 
@@ -13420,14 +13543,16 @@ sugarcube-2:
     thighactions:
       name: thighactions
     thighdifficulty:
-      name: thighdifficulty
+      description: |-
+        Prints color-coded adjective of thigh action difficulty in current combat
+      tags: ["text"]
     thighejacstat:
       name: thighejacstat
     thighskill:
       description: |-
         Adds thigh skill to pc's state
 
-        `$thighskill` is a measure of pc's proficiency using their thighs where 0 is awkward (0-1000)
+        `$thighskill` is a measure of pc's proficiency using their thighs where 0 is awkward (0-1,000)
 
         `<<thighskill change>>`
         - **change**: `number` - +/- change to apply
@@ -13519,9 +13644,9 @@ sugarcube-2:
         Creates link that toggles unique clothing between alternate states
 
         `<<toggleAltLink slot location>>`
-        - **slot**: `text` - clothing slot being toggled
+        - **slot**: `string` - clothing slot being toggled
           - %clothesTypesDesc%
-        - **location** _optional_: `text` - location where clothing is being toggled
+        - **location** _optional_: `string` - location where clothing is being toggled
           - `"wardrobe"`
       parameters:
         - '%clothesTypes% |+ "wardrobe"|"shop"'
@@ -13531,7 +13656,7 @@ sugarcube-2:
         Toggles unique clothing between alternate states
 
         `<<toggleAltPosition slot>>`
-        - **slot**: `text` - clothing slot being toggled
+        - **slot**: `string` - clothing slot being toggled
           - "%clothesTypesDesc%"
       parameters:
         - "%clothesTypes%"
@@ -13540,9 +13665,9 @@ sugarcube-2:
         Toggles unique clothing between alternate sleeve states
 
         `<<toggleAltSleeve inDefaultState? inAltState?>>`
-        - **inDefaultState** _optional_: `text` - text to be printed if sleeves are using their default image
+        - **inDefaultState** _optional_: `string` - text to be printed if sleeves are using their default image
           - Defaults to "Roll up sleeves"
-        - **inAltState** _optional_: `text` - text to be printed if sleeves are using their alt image
+        - **inAltState** _optional_: `string` - text to be printed if sleeves are using their alt image
           - Defaults to "Unroll sleeves"
       parameters:
         - "|+ string |+ string"
@@ -13557,7 +13682,7 @@ sugarcube-2:
         First arg is never used. Consider refactoring
 
         `<<toggleFaceLayer location>>`
-        - **location** _optional_: `text` - location where clothing is being toggled
+        - **location** _optional_: `string` - location where clothing is being toggled
           - `"wardrobe"`
       parameters:
         - '|+ "wardrobe"|"shop"'
@@ -13567,7 +13692,7 @@ sugarcube-2:
         Toggles pc's hood state between up and down
 
         `<<toggleHood location>>`
-        - **location** _optional_: `text` - location where hood is being toggled
+        - **location** _optional_: `string` - location where hood is being toggled
           - Only respects "shop"
       parameters:
         - '|+ "shop"'
@@ -13576,7 +13701,7 @@ sugarcube-2:
         Creates link that toggles pc's hood state between up and down
 
         `<<toggleHoodLink location>>`
-        - **location** _optional_: `text` - location where hood is being toggled
+        - **location** _optional_: `string` - location where hood is being toggled
           - Only respects "shop"
       parameters:
         - '|+ "shop"'
@@ -13588,9 +13713,9 @@ sugarcube-2:
         Outputs a link that toggles lower tucked state
 
         `<<toggleLowerTuck untuckText? tuckText?>>`
-        - **untuckText** _optional_: `text` - text to be printed if already tucked
+        - **untuckText** _optional_: `string` - text to be printed if already tucked
           - Defaults to "Untuck"
-        - **tuckText** _optional_: `text` - text to be printed if already untucked
+        - **tuckText** _optional_: `string` - text to be printed if already untucked
           - Defaults to "Tuck in"
       parameters:
         - "|+ string |+ string"
@@ -13604,9 +13729,9 @@ sugarcube-2:
         Outputs a link that toggles upper tucked state
 
         `<<toggleUpperTuck untuckText? tuckText?>>`
-        - **untuckText** _optional_: `text` - text to be printed if already tucked
+        - **untuckText** _optional_: `string` - text to be printed if already tucked
           - Defaults to "Untuck"
-        - **tuckText** _optional_: `text` - text to be printed if already untucked
+        - **tuckText** _optional_: `string` - text to be printed if already untucked
           - Defaults to "Tuck in"
       parameters:
         - "|+ string |+ string"
@@ -13944,27 +14069,53 @@ sugarcube-2:
 
         Currently only updates virginity
 
-        `<<updateNPC slot name>>`
-        - **slot**: `string` - example kind to output
-        - `"generic"` | `"specific"` | `"irrelevant"`
-        - **name**: `number` - times to keep hammering home the example. May need to be done many times
-        - Defaults to `1`
-        -**: `object` - descriptions not sentences
-        - `"somethingAboutEdgecases"`: Doesn't do anything with this value
-        - `0-9`: Doesn't care about these numbers
-        - `Time`: Takes this object and wastes it
+        `<<updateNPC npcObject>>`
+        - **npcObject**: `object` - full npc object to pull update data from
       parameters:
-        - '"generic"|"specific"|"irrelevant" |+ number |+ ...(var|bareword)'
+        - 'var|bareword'
     updateNPCsFirst:
-      name: updateNPCsFirst
-      tags: ["unused"]
+      description: |-
+        Updates all persistent npcs first-order properties to specific value
+
+        See `<<updateNPCsSecond>>` for second-order properties
+
+        Could be made to accept a function as value to increase useability in data migration. Consider refactoring
+
+        `<<updateNPCsFirst key value>>`
+        - **key**: `string` - first-order key to modify
+        - **value**: `any` - value to set 
+      parameters:
+        - 'string &+ var|bareword'
+      tags: ["unused", "refactor"]
     updateNPCsSecond:
-      name: updateNPCsSecond
-      tags: ["unused"]
+      description: |-
+        Updates all persistent npcs second-order properties to specific value
+
+        See `<<updateNPCsFirst>>` for first-order properties
+
+        Could be made to accept a function as value to increase useability in data migration. Consider refactoring
+
+        `<<updateNPCsFirst firstKey secondKey value>>`
+        - **firstKey**: `string` - first-order key to modify
+        - **secondKey**: `string` - second-order key to modify
+        - **value**: `any` - value to set 
+      parameters:
+        - 'string &+ var|bareword'
+      tags: ["unused", "refactor"]
     updateOwned:
       name: updateOwned
     updatePersistentNPCs:
-      name: updatePersistentNPCs
+      description: |-
+        Updates persistent npc characteristics based on player setting changes
+
+        selectiveUpdate accepts `skincolour` but does nothing with it. Consider refactoring
+
+        `<<updatePersistentNPCs selectiveUpdate?>>`
+        - **selectiveUpdate** _optional_: `string` - category to selectively update instead of all
+          - `"genders"` | `"breasts"` | `"penis"` | `"skincolour"`
+      parameters:
+        - '|+ "genders"|"breasts"|"penis"|"skincolour"'
+      tags: ["refactor"]
     updateRecordedSperm:
       name: updateRecordedSperm
     updatesidebardescription:
@@ -14105,7 +14256,9 @@ sugarcube-2:
     vaginainit:
       name: vaginainit
     vaginaldifficulty:
-      name: vaginaldifficulty
+      description: |-
+        Prints color-coded adjective of vaginal action difficulty in current combat
+      tags: ["text"]
     vaginaldoublestat:
       name: vaginaldoublestat
     vaginalejacstat:
@@ -14116,7 +14269,7 @@ sugarcube-2:
       description: |-
         Adds vaginal skill to pc's state
 
-        `$vaginalskill` is a measure of pc's proficiency using their vagina where 0 is awkward (0-1000)
+        `$vaginalskill` is a measure of pc's proficiency using their vagina where 0 is awkward (0-1,000)
 
         `<<vaginalskill change>>`
         - **change**: `number` - +/- change to apply
@@ -14172,7 +14325,7 @@ sugarcube-2:
         ```
 
         `<<voice type>>`
-        - **type**: `string` - type of
+        - **type**: `string` - type of verb
           - `"plead"` | `"moan"` | `"demand"`
       parameters:
         - '"plead"|"moan"|"demand"'
@@ -14337,9 +14490,9 @@ sugarcube-2:
 
         `<<wearProp prop>>`
         - **prop**: `string` - prop to equip
-          - `"milkshake"` | `"cigarette"` | `"popcorn"` | `"gingerbread"` | `"lemonade"` | `"mug"` | `"cocoa"` | `"beer bottle"` | `"beer mug"` | `"shot"` | `"wine"`
+          - `"milkshake"` | `"cigarette"` | `"popcorn"` | `"gingerbread"` | `"lemonade"` | `"cocoa"` | `"mug"` | `"beer bottle"` | `"beer mug"` | `"shot"` | `"wine"`
       parameters:
-        - '"milkshake"|"cigarette"|"popcorn"|"gingerbread"|"lemonade"|"mug"|"cocoa"|"beer bottle"|"beer mug"|"shot"|"wine"'
+        - '"milkshake"|"cigarette"|"popcorn"|"gingerbread"|"lemonade"|"cocoa"|"mug"|"beer bottle"|"beer mug"|"shot"|"wine"'
     weather_select:
       name: weather_select
     weatherdisplay:
@@ -14397,7 +14550,7 @@ sugarcube-2:
       description: |-
         Adds willpower to pc's state
 
-        `$willpower` is a measure of strength of pc's willpower where 0 is not strong (0-1000)
+        `$willpower` is a measure of strength of pc's willpower where 0 is not strong (0-1,000)
 
         `<<willpower change>>`
         - **change**: `number` - +/- change to apply
