@@ -46,7 +46,7 @@ function updateClothingColours(item, itemRef) {
 			break;
 		case "love locket":
 			if (item.colour === 0) item.colour = "bronze";
-				break;
+			break;
 		case "black leather jacket":
 			if (item.colour === 0) item.colour = "black";
 			if (item.accessory_colour === 0) item.accessory_colour = "silver";
@@ -186,20 +186,19 @@ function updateClothesItem(slot, item, debug) {
 			item.name_cap = "Punk leather jacket";
 			break;
 		case "swim shirt":
-			item.type =  ["swim", "school", "chest_bind", "constricting", "covered"];
+			item.type = ["swim", "school", "chest_bind", "constricting", "covered"];
 			break;
 		case "undershirt":
 		case "long johns":
-			item.type = ["normal","covered"];
+			item.type = ["normal", "covered"];
 			break;
 		case "unitard bottom":
 		case "leotard bottom":
-		case "skimpy leotard":
 		case "unitard":
 		case "leotard":
 		case "turtleneck leotard":
 		case "skimpy leotard":
-			item.type = ["dance","covered"];
+			item.type = ["dance", "covered"];
 			break;
 		case "turtleneck leotard bottom":
 		case "skimpy leotard bottom":
@@ -220,25 +219,25 @@ function updateClothesItem(slot, item, debug) {
 		case "skeleton bottoms":
 		case "cheerleader gloves":
 		case "football helmet":
-			item.type =  ["costume"];
+			item.type = ["costume"];
 			break;
 		case "rag top":
 		case "vampire jacket":
-			item.type =  ["costume", "bellyShow"];
+			item.type = ["costume", "bellyShow"];
 			break;
 		case "classy vampire jacket":
-			item.type =  ["costume", "formal"];
+			item.type = ["costume", "formal"];
 			break;
 		case "skeleton mask":
-			item.type =  ["costume", "mask"];
+			item.type = ["costume", "mask"];
 			break;
 		case "riding helmet":
 		case "racing helmet":
-			item.type =  ["costume", "riding"];
+			item.type = ["costume", "riding"];
 			break;
 		case "scout shorts":
 		case "baseball cap":
-			item.type =  ["normal"];
+			item.type = ["normal"];
 			break;
 		case "purse":
 		case "backpack":
