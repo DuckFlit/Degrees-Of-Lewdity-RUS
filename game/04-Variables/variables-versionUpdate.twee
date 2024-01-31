@@ -4276,15 +4276,15 @@
 			const month = Time.monthNames.map(month => month.toLowerCase()).indexOf(V.month) + 1;
 			const date = new DateTime(V.year, month, V.monthday, Math.min(V.hour, 23), Math.min(V.minute, 59), V.seconds);
 			const startDate = new DateTime(date);
-			T.passMinutes = (V.hour > 23 ? (V.hour - 23) * 60 : 0) + (V.minute > 59 ? V.minute - 59 : 0);
-			if (V.real_season) V.real_timeStamp = new DateTime(V.real_year, V.real_month, V.real_monthday, V.real_hour, V.real_minute).timeStamp;
 			Time.startDate = startDate.addDays(-V.days);
+			const passMinutes = (V.hour > 23 ? (V.hour - 23) * 60 : 0) + (V.minute > 59 ? V.minute - 59 : 0);
+			if (V.real_season) V.real_timeStamp = new DateTime(V.real_year, Time.monthNames.indexOf(V.real_month.toUpperFirst()) + 1, V.real_monthday, V.real_hour, V.real_minute).timeStamp - V.startDate;
 			Time.setDate(date);
 			V.weekDayOffset = (V.weekday - Time.weekDay + 6) % 7; /* stay positive */
 			if (V.weekDayOffset === 6) delete V.weekDayOffset; /* and clean the rubbish */
 			["time", "year", "yeardays", "season", "month", "monthday", "weekday", "schoolday", "days", "daystate", "dayname", "hour", "minute", "seconds", "pass", "real_year", "real_season", "real_month", "real_monthday", "real_hour", "real_minute", "real_time"].forEach(v => delete V[v]);
+			Time.set(V.timeStamp + passMinutes * 60);
 		<</script>>
-		<<pass _passMinutes>>
 	<</if>>
 
 	<!-- v0.4 Vrel stuff that he forgot to label -->
@@ -4434,6 +4434,9 @@
 			<!-- V0.4.0.5 Stop any saves in the above situation from being broken upon leaving -->
 			<<if $real_transformationParts and !$real_transformationParts.fox>>
 				<<set $real_transformationParts.fox to {ears:"disabled", tail:"disabled", cheeks:"disabled"}>>
+				<<if !$real_transformationParts.traits>>
+					<<set $real_transformationParts.traits to clone($transformationParts.traits)>>
+				<</if>>
 				<<if $real_transformationParts.traits.mateForLife is undefined or $real_transformationParts.traits.flaunting is undefined>>
 					<<if $fox gte 3 or $harpy gte 3>>
 						<<set $real_transformationParts.traits.mateForLife to "default">>
@@ -4824,4 +4827,195 @@
 	<<if $cycledisable is undefined>>
 		<<set $cycledisable to "f">>
 	<</if>>
+
+	<!-- V0.4.6.0 Vision type events refactor and $real_ variables cleanup -->
+	<<if !$objectVersion.realVarsFix>><<script>>
+		if (V.passage.startsWith('ScarletBook') && !V.scarletExitPassage){
+			V.scarletExitPassage = 'School Library';
+		} else if (V.passage.startsWith('Olive Book ') && V.per_npc.pinch && V.per_npc.pinch.name !== V.per_npc.pinch.fullDescription){
+			V.per_npc.pinch.name = V.per_npc.pinch.fullDescription;
+			V.per_npc.pinch.name_known = 1;
+			if (V.NPCList[0].fullDescription && V.NPCList[0].fullDescription.endsWith('Pinch')) {
+				V.NPCList[0].name = V.NPCList[0].fullDescription;
+				V.NPCList[0].name_known = 1;
+			}
+		}
+
+		let event;
+		if (V.passage.match(/^(Drama|Loveth|ScarletBook([^1-5]|10))/)) {
+			event = 'janet';
+		} else if (V.passage.startsWith('Schism ')) {
+			event = 'wraith';
+		} else if (V.passage.match(/^Olive Book [^1-4]/)) {
+			event = 'pinch';
+		} else if (V.activeNightmare) {
+			event = 'nightmare';
+		} else if (
+			V.passage.match(/^Sydney Temple Corrupt (Sex( Finish)?|End( [^2F]|$))/)
+			|| (V.passage === 'Sydney Temple Corrupt End 2' && !V.sydneySeen.includes("corruptroom"))
+		) {
+			event = 'prayerroom';
+		}
+
+		if (event) {
+			/* $real_ variables are in use */
+			if (!V.frozenValues) {
+				V.statFreeze = true;
+				V.frozenValues = {};
+				const skipKeys = ['replayScene', 'frozenKeys', 'frozenValues', 'statFreeze', 'passage', 'debug'];
+				V.frozenKeys = Object.keys(V);
+				V.frozenKeys.forEach(k => {
+					if (skipKeys.includes(k) || k.startsWith('real_')) return;
+					V.frozenValues[k] = clone(V[k]);
+				});
+				['pinchSpeech', 'pinchArousal', 'pinchPronoun', 'pinchPenile', 'pinchVaginal', 'pinchAnal', 'pinchKiss', 'pinchSong', 'nightmareWake', 'prayerRoom', 'loveDrunk', 'examSafe', 'wraithSkin', 'penisusue', 'saveTransformtaions'].forEach(v => delete V.frozenValues[v]);
+			}
+
+			const realVarsToCopy = [
+				'weather', 'moonstate', 'haircolour', 'hairlength', 'goooutsidecount', 'semenoutsidecount', 'pain', 'arousal', 'tiredness', 'stress', 'trauma', 'control', 'angel', 'fallenangel', 'angelbuild', 'demon', 'wolfgirl', 'cat', 'cow', 'harpy', 'fox', 'sexStats', 'skulduggery', 'purity', 'spray', 'skin', 'parasite', 'hairfringecolour', 'hairColourStyle', 'hairColourGradient', 'hairFringeColourStyle', 'hairFringeColourGradient', 'timeStamp',
+				/* only overwrite the frozen values with variables from the current scene, to avoid restoring outdated values */
+				...(event === 'wraith' ? [
+					'spraymax', 'hairtype', 'fringelength', 'fringetype', 'fringelengthstage', 'submissive', 'awareness', 'awarelevel', 'skinColor', 'condoms',
+				] : [])
+			];
+			const migrateRealVars = (whitelist = realVarsToCopy) => {
+				whitelist.forEach(k => {
+					if (V['real_' + k] !== undefined && V.frozenValues[k] !== undefined) {
+						V.frozenValues[k] = clone(V['real_' + k]);
+					}
+				});
+			};
+
+			const overwriteObjProp = (key, value, obj = V.frozenValues) => {
+				if (value !== undefined) obj[key] = clone(value);
+			};
+
+			const freezeRealClothes = (storeKey) => {
+				const tmpWorn = clone(V.worn);
+				Wikifier.wikifyEval(`<<storeon "${storeKey}">>`);
+				V.frozenValues.worn = V.worn;
+				V.worn = tmpWorn;
+			};
+
+			const freezeRealSexStats = () => {
+				const tmpSexStats = clone(V.sexStats);
+				V.sexStats = V.frozenValues.sexStats;
+				if (V.sexStats.pills.pills === undefined){
+					backCompPillsInventory();
+				}
+				Wikifier.wikifyEval('<<physicalAdjustmentsInit>>');
+				V.sexStats = tmpSexStats;
+			};
+
+			if (event === 'janet') {
+				if (V.frozenValues.scarletExitPassage === undefined) {
+					V.frozenValues.scarletExitPassage = V.scarletExitPassage;
+				}
+				overwriteObjProp('sex', V.real_playersex, V.frozenValues.player);
+				overwriteObjProp('gender', V.real_playergender, V.frozenValues.player);
+				overwriteObjProp('penisExist', V.real_penisexist, V.frozenValues.player);
+				overwriteObjProp('vaginaExist', V.real_vaginaexist, V.frozenValues.player);
+
+				overwriteObjProp('leftEyeColour', V.real_lefteyecolour || V.real_eyecolour);
+				overwriteObjProp('rightEyeColour', V.real_righteyecolour || V.real_eyecolour);
+				overwriteObjProp('eyecolour', V.real_lefteyecolour || V.real_eyecolour);
+
+				overwriteObjProp('breastsize', V.real_breastsize, V.frozenValues.player);
+				overwriteObjProp('ballsExist', V.real_ballsexist, V.frozenValues.player);
+				Object.assign(V.frozenValues.player.bodyliquid, V.player.bodyliquid, V.real_bodyliquid);
+				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
+
+				freezeRealClothes(event);
+
+				overwriteObjProp('genitals', V.real_wornGenitals, V.frozenValues.worn);
+				Object.assign(V.frozenValues.transformationParts, V.saveTransformtaions);
+
+				migrateRealVars();
+				freezeRealSexStats();
+			} else if (event === 'wraith') {
+				overwriteObjProp('sex', V.real_playersex, V.frozenValues.player);
+				overwriteObjProp('gender', V.real_playergender, V.frozenValues.player);
+				overwriteObjProp('penisExist', V.real_penisexist, V.frozenValues.player);
+				overwriteObjProp('vaginaExist', V.real_vaginaexist, V.frozenValues.player);
+
+				overwriteObjProp('leftEyeColour', V.real_lefteyecolour || V.real_eyecolour);
+				overwriteObjProp('rightEyeColour', V.real_righteyecolour || V.real_eyecolour);
+				overwriteObjProp('eyecolour', V.real_lefteyecolour || V.real_eyecolour);
+
+				overwriteObjProp('breastsize', V.real_breastsize, V.frozenValues.player);
+				overwriteObjProp('ballsExist', V.real_ballsexist, V.frozenValues.player);
+				Object.assign(V.frozenValues.player.bodyliquid, V.player.bodyliquid, V.real_bodyliquid);
+				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
+
+				freezeRealClothes(event);
+
+				overwriteObjProp('genitals', V.real_wornGenitals, V.frozenValues.worn);
+				Object.assign(V.frozenValues.transformationParts, V.saveTransformtaions);
+
+				migrateRealVars();
+				freezeRealSexStats();
+
+				overwriteObjProp('hairlengthstage', V.real_hairlenghthstage);
+				overwriteObjProp('state', V.real_wraithState, V.frozenValues.wraith);
+				overwriteObjProp('clothingrebuy', V.real_rebuy);
+				overwriteObjProp('condomLvl', V.real_condomLevel);
+			} else if (event === 'pinch') {
+				overwriteObjProp('location', V.oliveExitPassage === 'School Library' ? 'school' : 'home');
+
+				if (V.passage.match(/^Olive Book (Lew|Pinch) /) || (V.phase === 1 && V.passage.match(/(End|8)$/))) {
+					/* player is currently another character */
+					overwriteObjProp('sex', V.real_playersex, V.frozenValues.player);
+					overwriteObjProp('gender', V.real_playergender, V.frozenValues.player);
+					overwriteObjProp('penisExist', V.real_penisexist, V.frozenValues.player);
+					overwriteObjProp('vaginaExist', V.real_vaginaexist, V.frozenValues.player);
+
+					overwriteObjProp('leftEyeColour', V.real_lefteyecolour || V.real_eyecolour);
+					overwriteObjProp('rightEyeColour', V.real_righteyecolour || V.real_eyecolour);
+					overwriteObjProp('eyecolour', V.real_lefteyecolour || V.real_eyecolour);
+
+					overwriteObjProp('breastsize', V.real_breastsize, V.frozenValues.player);
+					overwriteObjProp('ballsExist', V.real_ballsexist, V.frozenValues.player);
+					Object.assign(V.frozenValues.player.bodyliquid, V.player.bodyliquid, V.real_bodyliquid);
+					overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
+
+					freezeRealClothes(event);
+
+					overwriteObjProp('genitals', V.real_wornGenitals, V.frozenValues.worn);
+					Object.assign(V.frozenValues.transformationParts, V.saveTransformtaions);
+
+					migrateRealVars();
+					freezeRealSexStats();
+
+					overwriteObjProp('penissize', V.real_penissize, V.frozenValues.player);
+				} else {
+					/* do not copy other variables, even if they exist */
+					migrateRealVars(['weather', 'moonstate', 'timeStamp']);
+				}
+			} else if (event === 'nightmare') {
+				Object.assign(V.frozenValues.player.bodyliquid, V.real_bodyliquid);
+				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
+				overwriteObjProp('clothingrebuy', V.real_rebuy);
+
+				migrateRealVars(['weather', 'moonstate', 'timeStamp', 'location', 'parasite', 'pain', 'arousal', 'tiredness', 'trauma', 'control', 'angel', 'angelbuild', 'fallenangel', 'transformationParts', 'purity', 'parasitepregdisable', 'worn', 'skin']);
+			} else if (event === 'prayerroom') {
+				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
+				overwriteObjProp('virginity', V.real_virginity_sydney, V.frozenValues.NPCName[V.NPCNameList.indexOf('Sydney')]);
+
+				migrateRealVars(['angel', 'fallenangel', 'transformationParts', 'purity', 'trauma']);
+			}
+			V.frozenValues.objectVersion.realVarsFix = 1;
+		}
+
+		delete V.saveTransformtaions;
+		delete V.penisusue;
+		/* clean up $real_ variables */
+		const tmpWeather = V.real_weather;
+		Object.keys(V).forEach(k => {
+			if (k.startsWith('real_')) {
+				delete V[k];
+			}
+		});
+		if (tmpWeather && !event) V.real_weather = tmpWeather;
+		V.objectVersion.realVarsFix = 1;
+	<</script>><</if>>
 <</widget>>
