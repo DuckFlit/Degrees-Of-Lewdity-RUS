@@ -27,7 +27,22 @@
 	<br>
 	<<link [[Set up shop and charge £20 (0:10)|School Gloryhole]]>><<pass 10>><<set $school_gloryhole_price to 2000>><<set $phase to 1>><</link>><<promiscuous4>>
 	<br>
-	<<link [[Changed my mind; leave the toilets (0:01)|Hallways]]>><<pass 1>><</link>>
+	<<if $janitor_check_decay gte 1>>
+		<span class="blue">
+		<<switch $janitor_check>>
+			<<case 1>>
+			The janitor is nowhere in sight.
+			<<case 2>>
+			The janitor is busy.
+			<<default>>
+			The janitor is headed your way.
+		<</switch>>
+		</span>
+	<<elseif $janitor_caught is 1>>
+		<<link [[Check for the janitor First|School Gloryhole Check]]>><<pass 10>><<set $skulduggerydifficulty to 0>><</link>><<skulduggerydifficulty>>
+	<</if>>
+	<br>
+	<<link [[Changed my mind; leave the toilets (0:01)|Hallways]]>><<pass 1>><<set $janitor_check_decay to 0>><</link>>
 	<br>
 
 <</if>>
@@ -75,8 +90,19 @@
 <</if>>
 
 <<if _busy gte 1>>
-	<<switch random(3)>>
-	<<case 0>><!-- 25% chance to happen. -->
+	<<set $rng to random(1,100)>>
+	<<set $rngmod to 0.05*$janitor_check*$janitor_check_sd*$janitor_check_decay>>
+	<<if $janitor_caught is undefined>>
+		<<set $rngmod to 0>>
+	<</if>>
+	<!-- base 25% chance to happen, reduced by modifiers -->
+	<<if $rng lte 25*(1-$rngmod)>>
+		<<if $janitor_caught is undefined>>
+			<<set $janitor_caught to 1>>
+		<</if>>
+		<<if $NPCList[0].role isnot "janitor">>
+			<<generateRole 0 0 "janitor">><<npcClothesType $NPCList[0] "worker">><<person1>>
+		<</if>>
 		You hear a sudden commotion outside, then a voice, "What's going on in here?" <span class="pink">The janitor reaches in to haul you out of your spot.</span>
 		<br><br>
 		<<if $historytrait gte 2 and $schooldrainintro is 1>>
@@ -84,7 +110,9 @@
 			<br>
 		<</if>>
 		<<link [[Caught!|School Gloryhole Janitor Catch]]>><<stress 1>><</link>><<gstress>>
-	<<default>>
+		<br>
+		<<link [[Grope the janitor!|School Gloryhole Janitor Seduce]]>><</link>><<promiscuous2>>
+	<<else>>
 		<<if _rnd lte _prob>>
 			<<generatec1>><<person1>>
 			You hear footsteps approach, then giggling. A
@@ -106,7 +134,7 @@
 			<<link [[Sneak out (0:05)|Hallways]]>><<pass 5>><<unset $desperateaction>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<</switch>>
+	<</if>>
 <<else>>
 	It is dead silent as you sit behind the hole.
 	<br><br>
@@ -182,8 +210,6 @@
 
 :: School Gloryhole Janitor Catch
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<generateRole 0 0 "janitor">><<npcClothesType $NPCList[0] "worker">><<person1>>
-
 The <<person>> glares at you. "Look at the mess you're making in my bathrooms, <<girl>>! Do you know how long this will take to clean up all this spunk?"
 <br><br>
 
@@ -218,6 +244,71 @@ The <<person>> glares at you. "Look at the mess you're making in my bathrooms, <
 	<</switch>>
 <</if>>
 
+:: School Gloryhole Janitor Seduce
+<<set $seductiondifficulty to 6000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>>
+	<span class="gold">You feel more confident in your powers of seduction.</span>
+<</if>>
+<<seductionskilluse>>
+Before the janitor grabs you, you reach out and place a firm hand on <<his>> <<if $pronoun is "m">>crotch<<else>>breasts<</if>>. <<promiscuity2>>
+<<if $seductionrating gte $seductionrequired>>
+	The janitor takes a sharp breath of surprise as you grope <<him>>. You whisper in <<his>> ear, "I'm sorry, I've been a bad <<girl>>. Am I going to be punished?
+	<br><br>
+	<<He>> hesitates for just a moment before <<he>> is on top of you. 
+	<br><br>
+	<<link [[Next|Janitor Closet Sex]]>><<set $sexstart to 1>><</link>>
+	<br>
+<<else>>
+	The janitor takes a sharp breath of surprise as you grope <<him>>. "Why are you so angry?" you ask. "I can show you a good time."
+	<br><br>
+	<<He>> clears <<his>> throat before glaring at you. "You've made a big enough mess already. Don't make things worse." <<He>> grabs you by the arm and drags you out. <span class="green">At least you are not in too much trouble this time.</span>
+	<<gdelinquency>>
+	<br><br>
+	<<detention 1>>
+	<br><br>
+	<<link [[Next|Hallways]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: School Gloryhole Check
+
+Before you write up your sign for service, you remember what happened last time. You take a moment to step outside the bathroom and casually cast your eyes up and down the hall looking for the janitor. 
+<br><br>
+<<generateRole 0 0 "janitor">><<npcClothesType $NPCList[0] "worker">><<person1>>
+<<set $janitor_check_decay to 1>>
+<<if $skulduggery gte 1000 >>
+	<<set $janitor_check_sd to 6>>
+<<elseif $skulduggery gte 800>>
+	<<set $janitor_check_sd to 5>>
+<<elseif $skulduggery gte 600>>
+	<<set $janitor_check_sd to 4>>
+<<elseif $skulduggery gte 400>>
+	<<set $janitor_check_sd to 3>>
+<<elseif $skulduggery gte 200>>
+	<<set $janitor_check_sd to 2>>
+<<else>>
+	<<set $janitor_check_sd to 1>>
+<</if>>
+
+<<if $skulduggery lte $skulduggerydifficulty + 100>>
+	<<set $skulduggery += 3>>
+<</if>>
+<<switch random(2)>>
+	<<case 1>>
+	<<set $janitor_check to 1>>
+	You look up and down the hall a few times, but the janitor is nowhere in sight. You have no idea when <<he>> might return, but for the moment, the coast is clear. <<skulduggeryuse>>
+	<<case 2>>
+	<<set $janitor_check to 2>>
+	You see the janitor at the end of the hall. <<He>> appears to be grumbling to <<himself>> as <<he>> scrubs the floor. Apparently something was spilled, keeping <<him>> busy for a while. <<skulduggeryuse>>
+	<<default>>
+	<<set $janitor_check to 0>>
+	You see the janitor pushing a small cart with various cleaners on it. <<He>> is headed in your direction. It is likely <<he>> will notice you, but you could get lucky. <<skulduggeryuse>>
+<</switch>>
+<br><br>
+
+<<link [[Next|School Gloryhole Start]]>><</link>>
 :: Janitor Closet Rape
 
 <<if $molestationstart is 1>>
@@ -263,7 +354,7 @@ The <<person>> glares at you. "Look at the mess you're making in my bathrooms, <
 	<<endcombat>>
 	<<link [[Next|Hallways]]>><</link>>
 <<elseif $enemyhealth lte 0>>
-	<<person1>><<He>> recoils in pain, <span class="green">falling back into pile of mop buckets and brooms.</span> <<tearful>> you use this as your chance to escape, slamming the door behind you.
+	<<person1>><<He>> recoils in pain, <span class="green">falling back into a pile of mop buckets and brooms.</span> <<tearful>> you use this as your chance to escape, slamming the door behind you.
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>
@@ -283,3 +374,72 @@ The <<person>> glares at you. "Look at the mess you're making in my bathrooms, <
 	<<link [[Next|Whitney Rescue 2]]>><<set $whitneyRescueExit to "hallways">><</link>>
 	<br>
 <</if>>
+
+:: Janitor Closet Sex
+
+<<if $sexstart is 1>>
+/*Consensual encounter*/
+    <<set $sexstart to 0>>
+    <<consensual>>
+    <<set $consensual to 1>>
+    <<neutral 1>>
+    <<maninit>>
+    <<set $enemyanger += 100>>
+	<<enableSchoolRescue "Whitney">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+
+<<if _combatend>>
+    <span id="next"><<link [[Next|Janitor Closet Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+    <span id="next"><<link [[Next|Janitor Closet Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Janitor Closet Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+    <<ejaculation>>
+    The janitor straightens <<his>> clothes and clears <<his>> throat. <<He>> tries to give you a stern look as <<he>> escorts you out. "You've made a big mess, and I don't have time to deal with you, so I'll let you off this time with a warning." 
+    <<clotheson>>
+    <<endcombat>>
+
+	<<link [[Next|Hallways]]>><</link>>
+<<elseif $enemyhealth lte 0>>
+	<<person1>><<He>> recoils in pain, <span class="green">falling back into a pile of mop buckets and brooms.</span> <<tearful>> you use this as your chance to escape, slamming the door behind you.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Hallways]]>><</link>>
+
+<<elseif $finish is 1>>
+    The janitor looks dejected as he straightens <<his>> clothes and clears <<his>> throat. <<He>> tries to give you a stern look as <<he>> escorts you out. "You've made a big mess, and I don't have time to deal with you, so I'll let you off this time with a warning." 
+    <br><br>
+
+    <<clotheson>>
+    <<endcombat>>
+
+	<<link [[Next|Hallways]]>><</link>>
+<<elseif $alarm is 1 and $rescue is 1>>
+	<<set $rescued += 1>>
+	The door flies open. The <<persons>> eyes widen in panic. "Shit! I-I can explain!" <<His>> shock subsides, however, when <<he>> sees Whitney stood in the doorway, flanked by <<nnpc_his "Whitney">> friends. "That's a relief. Just some brats."
+	<br><br>
+
+	Whitney responds with a swing at <<his>> face, knocking <<him>> into a shelf. <<nnpc_He "Whitney">> grabs you before the janitor can recover. You're dragged through the halls until <<nnpc_he "Whitney">> finally comes to a stop, panting.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Whitney>><<person1>>
+
+	<<link [[Next|Whitney Rescue 2]]>><<set $whitneyRescueExit to "hallways">><</link>>
+	<br>
+<</if>>
+<br><br>
