@@ -8,11 +8,13 @@
 	<</if>>
 <</widget>>
 
+/* min, current, max, rightMeter */
 <<widget "statbar">>
-	<div @class="(_args[2] is true ? 'rightMeter' : 'meter')">
-		<<if _args[0] is 0>>
+	<div @class="(_args[3] is true ? 'rightMeter' : 'meter')">
+		<<if _args[1] is 0>>
 		<<else>>
-			<<set _percent=Math.floor((_args[0]/_args[1])*100)>>
+			<<set _percent to Math.floor((_args[1]/_args[2])*100)>>
+			<<set _minPercent to Math.clamp(Math.floor((_args[0]/_args[2])*100), 0, _percent)>>
 			<<switch Math.floor(_percent/10)>>
 				<<case 8 9>><<set _statColor to "pinkbar">>
 				<<case 6 7>><<set _statColor to "purplebar">>
@@ -22,6 +24,9 @@
 				<<default>><<set _statColor to "redbar">>
 			<</switch>>
 			<div @class="_statColor" @style="'width:' + _percent + '%'"></div>
+			<<if _minPercent>>
+				<div @class="_statColor + ' meterMin'" @style="'width:' + _minPercent + '%'"></div>
+			<</if>>
 		<</if>>
 	</div>
 <</widget>>
@@ -31,7 +36,7 @@
 	<div @class="(_args[2] is true ? 'rightMeter' : 'meter')">
 		<<if _args[0] is 0>>
 		<<else>>
-			<<set _percent=Math.floor((_args[0]/_args[1])*100)>>
+			<<set _percent to Math.floor((_args[0]/_args[1])*100)>>
 			<<switch Math.floor(_percent/10)>>
 				<<case 8 9>><<set _statColor to "tealbar">>
 				<<case 6 7>><<set _statColor to "lbluebar">>
@@ -1231,7 +1236,7 @@
 
 			<<set $tiredness = Math.clamp($tiredness, 0, C.tiredness.max)>>
 			<<set _showCaptionText to !$options.showCaptionText>>
-			<<statbar $tiredness `C.tiredness.max` _showCaptionText>>
+			<<statbar 0 $tiredness `C.tiredness.max` _showCaptionText>>
 			<div style="clear:both;"></div>
 		</div>
 	<</if>>
@@ -1280,7 +1285,7 @@
 			</div>
 			<<set $stress = Math.clamp($stress, 0, $stressmax)>>
 			<<set _showCaptionText to !$options.showCaptionText>>
-			<<statbar $stress $stressmax _showCaptionText>>
+			<<statbar 0 $stress $stressmax _showCaptionText>>
 			<div style="clear:both;"></div>
 		</div>
 	<</if>>
@@ -1310,7 +1315,7 @@
 				<</if>>
 			</div>
 			<<set _showCaptionText to !$options.showCaptionText>>
-			<<statbar $trauma $traumamax _showCaptionText>>
+			<<statbar 0 $trauma $traumamax _showCaptionText>>
 			<div style="clear:both;"></div>
 		</div>
 	<</if>>
@@ -1416,7 +1421,7 @@
 				<</if>>
 			</div>
 			<<set _showCaptionText to !$options.showCaptionText>>
-			<<statbar $arousal $arousalmax _showCaptionText>>
+			<<statbar `minArousal()` $arousal $arousalmax _showCaptionText>>
 			<div style="clear:both;"></div>
 		</div>
 	<</if>>
@@ -1439,21 +1444,21 @@
 				<</if>>
 			</div>
 			<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
-				<<set $percent=Math.floor(($allure/(8000 * $alluremod))*100)>>
+				<<set _percent=Math.floor(($allure/(8000 * $alluremod))*100)>>
 				<<if $allure gte (6000 * $alluremod)>>
-				<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
+				<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
 				<<elseif $allure gte (4000 * $alluremod)>>
-				<<print '<div class="pinkbar" style="width:' + $percent + '%"></div>'>>
+				<<print '<div class="pinkbar" style="width:' + _percent + '%"></div>'>>
 				<<elseif $allure gte (3000 * $alluremod)>>
-				<<print '<div class="purplebar" style="width:' + $percent + '%"></div>'>>
+				<<print '<div class="purplebar" style="width:' + _percent + '%"></div>'>>
 				<<elseif $allure gte (2000 * $alluremod)>>
-				<<print '<div class="bluebar" style="width:' + $percent + '%"></div>'>>
+				<<print '<div class="bluebar" style="width:' + _percent + '%"></div>'>>
 				<<elseif $allure gte (1500 * $alluremod)>>
-				<<print '<div class="lbluebar" style="width:' + $percent + '%"></div>'>>
+				<<print '<div class="lbluebar" style="width:' + _percent + '%"></div>'>>
 				<<elseif $allure gte (1000 * $alluremod)>>
-				<<print '<div class="tealbar" style="width:' + $percent + '%"></div>'>>
+				<<print '<div class="tealbar" style="width:' + _percent + '%"></div>'>>
 				<<else>>
-				<<print '<div class="greenbar" style="width:' + $percent + '%"></div>'>>
+				<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
 				<</if>>
 			</div>
 
@@ -1612,21 +1617,28 @@
 				<</if>>
 			</div>
 			<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
-				<<set $percent=Math.floor(($pain/100)*100)>>
+				<<set _percent to Math.floor(($pain/100)*100)>>
+				<<set _minPercent to Math.clamp(Math.floor((minPain()/100)*100), 0, _percent)>>
 				<<if $pain gte 100 and $willpowerpain is 0>>
-				<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
+					<<set _statColor to "redbar">>
 				<<elseif $pain gte 80>>
-				<<print '<div class="pinkbar" style="width:' + $percent + '%"></div>'>>
+					<<set _statColor to "pinkbar">>
 				<<elseif $pain gte 60>>
-				<<print '<div class="purplebar" style="width:' + $percent + '%"></div>'>>
+					<<set _statColor to "purplebar">>
 				<<elseif $pain gte 40>>
-				<<print '<div class="bluebar" style="width:' + $percent + '%"></div>'>>
+					<<set _statColor to "bluebar">>
 				<<elseif $pain gte 20>>
-				<<print '<div class="lbluebar" style="width:' + $percent + '%"></div>'>>
+					<<set _statColor to "lbluebar">>
 				<<elseif $pain gte 1>>
-				<<print '<div class="tealbar" style="width:' + $percent + '%"></div>'>>
+					<<set _statColor to "tealbar">>
 				<<else>>
-				<<print '<div class="greenbar" style="width:' + $percent + '%"></div>'>>
+					<<set _statColor to "greenbar">>
+				<</if>>
+				<div @class="_statColor" @style="'width:' + _percent + '%'"></div>
+				<<if minPain()>>
+					<<if _minPercent>>
+						<div @class="_statColor + ' meterMin'" @style="'width:' + _minPercent + '%'"></div>
+					<</if>>
 				<</if>>
 			</div>
 			<div style="clear:both;"></div>
