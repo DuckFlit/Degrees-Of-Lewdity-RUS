@@ -403,19 +403,6 @@ function cheatPregnancyNPCReset() {
 }
 DefineMacro("cheatPregnancyNPCReset", cheatPregnancyNPCReset);
 
-/**
- * Checks if x is equal or higher than min and lower or equal to max
- *
- * @param {number} x
- * @param {any} min
- * @param {any} max
- * @returns {boolean}
- */
-function between(x, min, max) {
-	return typeof x === "number" && x >= min && x <= max;
-}
-window.between = between;
-
 function featsPointsMenuReset() {
 	jQuery(document).on("change", "#listbox--upgradenameid", () => {
 		Wikifier.wikifyEval("<<updateFeatsPointsMenu>>");
@@ -462,38 +449,6 @@ function ordinalSuffixOf(i) {
 	return i + "th";
 }
 window.ordinalSuffixOf = ordinalSuffixOf;
-
-function lerp(percent, start, end) {
-	return Math.clamp(start + (end - start) * percent, start, end);
-}
-window.lerp = lerp;
-
-function inverseLerp(value, start, end) {
-	return Math.clamp((value - start) / (end - start), 0, 1);
-}
-window.inverseLerp = inverseLerp;
-
-function formatDecimals(value, decimalPlaces) {
-	return Number(Math.round(parseFloat(value + "e" + decimalPlaces)) + "e-" + decimalPlaces);
-}
-window.formatDecimals = formatDecimals;
-
-function nCr(n, r) {
-	// https://stackoverflow.com/questions/11809502/which-is-better-way-to-calculate-ncr
-	if (r > n - r) {
-		// because C(n, r) == C(n, n - r)
-		r = n - r;
-	}
-
-	let ans = 1;
-	for (let i = 1; i <= r; ++i) {
-		ans *= n - r + i;
-		ans /= i;
-	}
-
-	return ans;
-}
-window.nCr = nCr;
 
 /**
  * Given there are {deckCount} cards in the deck and {markedCount} of them have been marked by the player,
