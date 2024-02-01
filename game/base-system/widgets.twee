@@ -15,6 +15,7 @@
 		<<else>>
 			<<set _percent to Math.floor((_args[1]/_args[2])*100)>>
 			<<set _minPercent to Math.clamp(Math.floor((_args[0]/_args[2])*100), 0, _percent)>>
+			<<set _pin to Math.clamp(Math.floor((_args[4]/_args[2])*100), 0, _args[2])>>
 			<<switch Math.floor(_percent/10)>>
 				<<case 8 9>><<set _statColor to "pinkbar">>
 				<<case 6 7>><<set _statColor to "purplebar">>
@@ -26,6 +27,8 @@
 			<div @class="_statColor" @style="'width:' + _percent + '%'"></div>
 			<<if _minPercent>>
 				<div @class="_statColor + ' meterMin'" @style="'width:' + _minPercent + '%'"></div>
+			<<elseif _pin>>
+				<div class="meterPin" @style="'width:' + _pin + '%'"></div>
 			<</if>>
 		<</if>>
 	</div>
@@ -45,7 +48,7 @@
 				<<case 0 1>><<set _statColor to "pinkbar">>
 				<<default>><<set _statColor to "greenbar">>
 			<</switch>>
-			<div @class="_statColor" @style="'width:' + _percent + '%'"></div>
+				<div @class="_statColor" @style="'width:' + _percent + '%'"></div>
 		<</if>>
 	</div>
 <</widget>>
@@ -1423,7 +1426,7 @@
 					<<elseif $arousal gte $arousalmax / 5>>
 						<span class="lblue">You feel aroused.</span>
 					<<elseif $arousal gte 1>>
-						<span class="teal">You feel sensual.</span>
+						<span class="teal">You feel stimulated.</span>
 					<<else>>
 						<span class="green">You feel cold.</span>
 					<</if>>
@@ -1431,6 +1434,36 @@
 			</div>
 			<<set _showCaptionText to !$options.showCaptionText>>
 			<<statbar `minArousal()` $arousal $arousalmax _showCaptionText>>
+			<div style="clear:both;"></div>
+		</div>
+	<</if>>
+<</widget>>
+
+<<widget "lewditycaption">>
+	<<if Number.isFinite($lewdity)>>
+		<div id="lewditycaption" @title="'lewdity: ' + $lewdity.toFixed(2)">
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				lewdity:
+				<<if $options.showCaptionText is true>>
+					<<if $lewdity gte $lewditymax>>
+						<span class="red">You shiver with energy.</span>
+					<<elseif $lewdity gte ($lewditymax / 5) * 4>>
+						<span class="pink">You feel a trembling.</span>
+					<<elseif $lewdity gte ($lewditymax / 5) * 3>>
+						<span class="purple">You feel exhilarated.</span>
+					<<elseif $lewdity gte ($lewditymax / 5) * 2>>
+						<span class="blue">You feel sensual.</span>
+					<<elseif $lewdity gte $lewditymax / 5>>
+						<span class="lblue">You feel excited.</span>
+					<<elseif $lewdity gte 1>>
+						<span class="teal">You feel tingly.</span>
+					<<else>>
+						<span class="green">You feel steady.</span>
+					<</if>>
+				<</if>>
+			</div>
+			<<set _showCaptionText to !$options.showCaptionText>>
+			<<statbar 0 $lewdity $lewditymax _showCaptionText `restLewdity)`>>
 			<div style="clear:both;"></div>
 		</div>
 	<</if>>
@@ -3301,7 +3334,16 @@
 			<<if $options.images is 1 and _config.icon>>
 				<img class="characteristic-icon" @src="'img/' + _config.icon + '.png'" />
 			<</if>>
-			<span class="characteristic-title">_config.name<<characteristic-box-modifier `clone(_config.modifier)` `clone(_config.modTypes)` `clone(_config.name)`>></span>
+			<span class="characteristic-title">
+				_config.name<<characteristic-box-modifier `clone(_config.modifier)` `clone(_config.modTypes)` `clone(_config.name)`>>
+				<<if _config.sensitivity gte 4>>
+					<span class="pink">!!!</span>
+				<<elseif _config.sensitivity gte 3>>
+					<span class="purple">!!</span>
+				<<elseif _config.sensitivity gte 2>>
+					<span class="blue">!</span>
+				<</if>>
+			</span>
 			<<if _config.states>>
 				<<if _config.displayType eq "level">>
 					<span @class="'characteristic-level ' + _config.color">

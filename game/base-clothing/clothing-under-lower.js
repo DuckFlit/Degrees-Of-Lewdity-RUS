@@ -927,7 +927,7 @@ function initUnderLower() {
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 15,
-			reveal: 400,
+			reveal: 500,
 			rearresize: 0,
 			word: "n",
 			one_piece: 0,
