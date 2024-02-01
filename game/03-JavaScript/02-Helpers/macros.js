@@ -60,26 +60,6 @@ const ErrorSystem = ((Scripting, Errors) => {
 	});
 
 	/**
-	 * DEPRECATED: Time should no longer be able to desynchronise, so this check is unnecessary.
-	 *
-	 * Jimmy: checkTimeSystem macro to print a message if time desynchronises.
-	 *  	   Potential to place time correction code here instead of in backComp.
-	 */
-	Macro.add("checkTimeSystem", {
-		handler() {
-			if (V.time !== undefined && V.hour !== undefined && V.minute !== undefined) {
-				if (V.time !== V.hour * 60 + V.minute) {
-					const message = `$time: ${V.time} desynchronised from $hour: ${V.hour} and $minute: ${V.minute}. Total: ${V.hour * 60 + V.minute}.`;
-					const source = `Caught in Passage ${this.args[0]}. ${V.passage}, <<checkTimeSystem>>.`;
-					throwError(this.output, message, source);
-				}
-			} else {
-				console.debug(`One of the time variables is not accessible yet: ${V.passage}: ${DOL.Stack}.`);
-			}
-		},
-	});
-
-	/**
 	 * Jimmy: defer Macro, to be used to defer execution of the provided contents until after the passage has been processed.
 	 * 		   For example, let's say you create <div id="myDiv"></div> in a widget. And you want to use $('#myDiv') in that
 	 * 		   same widget, to manipulate your HTML elements... You cannot, as these HTML elements do not actually exist yet.
