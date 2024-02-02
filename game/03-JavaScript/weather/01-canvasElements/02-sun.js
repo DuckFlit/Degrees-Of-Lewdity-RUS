@@ -1,4 +1,8 @@
 /* eslint-disable no-undef */
+/*
+	WARNING: Do not modify this file before the next update.
+	It's getting a major refactor and everything below will be replaced.
+*/
 class SkyCanvasSun extends SkyCanvasElement {
 	constructor(name, settings) {
 		super(name, settings);
@@ -27,7 +31,7 @@ class SkyCanvasSun extends SkyCanvasElement {
 	}
 
 	setOrbit() {
-		const orbit = interpolateObjects(this.settings.orbitSummer, this.settings.orbitWinter, Time.date.seasonFactor);
+		const orbit = interpolateObject(this.settings.orbitSummer, this.settings.orbitWinter, Time.date.seasonFactor);
 		super.setOrbit(Time.secondsSinceMidnight, orbit);
 	}
 
@@ -42,11 +46,12 @@ class SkyCanvasSun extends SkyCanvasElement {
 		const glowRadius = this.radius / 2 + this.settings.glow.radius;
 		const gradient = sunCtx.createRadialGradient(this.centerPos, this.centerPos, 0, this.centerPos, this.centerPos, this.radius + glowRadius);
 		const glow = ColourUtils.interpolateColor(this.settings.glow.nightColor, this.settings.glow.dayColor, Math.max(0, dayFactor));
+		const transparency = ColourUtils.interpolateColor(this.settings.glow.nightTransparancy, this.settings.glow.dayTransparancy, Math.max(0, dayFactor));
 
 		ctx.globalCompositeOperation = "source-over";
 		gradient.addColorStop(0, glow);
 		gradient.addColorStop(0.3, glow);
-		gradient.addColorStop(1, "transparent");
+		gradient.addColorStop(1, transparency);
 
 		sunCtx.fillStyle = gradient;
 		sunCtx.fillRect(0, 0, this.sunCanvas.width, this.sunCanvas.height);

@@ -1,4 +1,8 @@
 /* eslint-disable no-undef */
+/*
+	WARNING: Do not modify this file before the next update.
+	It's getting a major refactor and everything below will be replaced.
+*/
 class SkyCanvasElement {
 	constructor(name) {
 		if (!arguments[0]) return;
@@ -99,17 +103,17 @@ class SkyCanvasElement {
 		timePercent = Math.clamp(timePercent, 0, 1);
 		const adjustedTimePercent = (timePercent - this.expandFactor) / (1 - 2 * this.expandFactor);
 		const x = lerp(Math.clamp(adjustedTimePercent, 0, 1), this.orbit.path.startX, this.orbit.path.endX);
-	
+
 		const bottomY = this.orbit.path.horizon + 100; // 100 pixels below the horizon
 		const peakY = this.orbit.path.peakY;
-	
+
 		// Adjusting amplitude and baseline to make the sun start and end at bottomY
 		const amplitude = (peakY - bottomY) / 2;
 		const baselineY = bottomY + amplitude; // Adjusted baseline to be in the middle of bottomY and peakY
-	
+
 		const factor = 1 - 4 * Math.pow(adjustedTimePercent - 0.5, 2);
 		const y = baselineY + amplitude * factor;
-	
+
 		return { x, y };
 	}
 

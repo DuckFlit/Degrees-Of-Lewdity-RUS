@@ -9,7 +9,7 @@
  * @param {number} factor The interpolation factor (0 to 1).
  * @returns {object} A new object with interpolated number values and other properties from both obj1 and obj2
  */
-function interpolateObjects(obj1, obj2, factor) {
+function interpolateObject(obj1, obj2, factor) {
 	const result = {};
 
 	for (const key in obj1) {
@@ -17,7 +17,7 @@ function interpolateObjects(obj1, obj2, factor) {
 			if (typeof obj1[key] === "number" && Object.hasOwn(obj2, key) && typeof obj2[key] === "number") {
 				result[key] = interpolate(obj1[key], obj2[key], factor);
 			} else if (typeof obj1[key] === "object" && Object.hasOwn(obj2, key) && typeof obj2[key] === "object") {
-				result[key] = interpolateObjects(obj1[key], obj2[key], factor);
+				result[key] = interpolateObject(obj1[key], obj2[key], factor);
 			} else {
 				result[key] = obj1[key];
 			}
@@ -32,7 +32,7 @@ function interpolateObjects(obj1, obj2, factor) {
 	return result;
 }
 
-window.interpolateObjects = interpolateObjects;
+window.interpolateObject = interpolateObject;
 
 /**
  * Linearly interpolates between two values based on a given factor

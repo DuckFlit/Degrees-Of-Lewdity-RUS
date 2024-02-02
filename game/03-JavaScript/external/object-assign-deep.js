@@ -1,124 +1,115 @@
-// https://raw.githubusercontent.com/saikojosh/Object-Assign-Deep/master/objectAssignDeep.js
+// // https://raw.githubusercontent.com/saikojosh/Object-Assign-Deep/master/objectAssignDeep.js
+// // Refactored and optimized by Xao 2024-01-18
 
-/*
- * OBJECT ASSIGN DEEP
- * Allows deep cloning of plain objects that contain primitives, nested plain objects, or nested plain arrays.
- */
+// /*
+//  * OBJECT ASSIGN DEEP
+//  * Allows deep cloning of plain objects that contain primitives, nested plain objects, or nested plain arrays.
+//  */
 
-/*
- * A unified way of returning a string that describes the type of the given variable.
- */
-function getTypeOf(input) {
-	if (input === null) {
-		return "null";
-	} else if (typeof input === "undefined") {
-		return "undefined";
-	} else if (typeof input === "object") {
-		return Array.isArray(input) ? "array" : "object";
-	}
+// /*
+//  * A unified way of returning a string that describes the type of the given variable.
+//  */
+// function getTypeOf(input) {
+//     return Object.prototype.toString.call(input).slice(8, -1).toLowerCase();
+// }
 
-	return typeof input;
-}
+// /*
+//  * Branching logic which calls the correct function to clone the given value base on its type.
+//  */
+// function cloneValue(value, existingValue) {
+//     const type = getTypeOf(value);
 
-/*
- * Branching logic which calls the correct function to clone the given value base on its type.
- */
-function cloneValue(value) {
-	// The value is an object so lets clone it.
-	if (getTypeOf(value) === "object") {
-		return quickCloneObject(value);
-	}
+//     // Only clone if there's an existing value that's an object or array
+//     if (existingValue && (getTypeOf(existingValue) === "object" || getTypeOf(existingValue) === "array")) {
+//         switch (type) {
+//             case 'object': return quickCloneObject(value);
+//             case 'array': return quickCloneArray(value);
+//             case 'date': return new Date(value.getTime());
+//             case 'regexp': return new RegExp(value.source, value.flags);
+//             case 'map': return new Map(value);
+//             case 'set': return new Set(value);
+//             default: return value;
+//         }
+//     }
+//     return value;
+// }
 
-	// The value is an array so lets clone it.
-	else if (getTypeOf(value) === "array") {
-		return quickCloneArray(value);
-	}
+// /*
+//  * Enumerates the given array and returns a new array, with each of its values cloned (i.e. references broken).
+//  */
+// function quickCloneArray(input) {
+// 	return input.map(cloneValue);
+// }
 
-	// Any other value can just be copied.
-	return value;
-}
+// /*
+//  * Enumerates the properties of the given object (ignoring the prototype chain) and returns a new object, with each of
+//  * its values cloned (i.e. references broken).
+//  */
+// function quickCloneObject(input) {
+// 	const output = {};
+// 	for (const key in input) {
+// 		if (!Object.hasOwn(input, key)) {
+// 			continue;
+// 		}
+// 		output[key] = cloneValue(input[key]);
+// 	}
+// 	return output;
+// }
 
-/*
- * Enumerates the given array and returns a new array, with each of its values cloned (i.e. references broken).
- */
-function quickCloneArray(input) {
-	return input.map(cloneValue);
-}
+// function mergeObjects(target, source, options) {
+//     Object.keys(source).forEach(key => {
+//         if (getTypeOf(source[key]) === "object") {
+//             target[key] = mergeObjects(target[key] || {}, source[key], options);
+//         } else {
+//             target[key] = source[key];
+//         }
+//     });
+//     return target;
+// }
 
-/*
- * Enumerates the properties of the given object (ignoring the prototype chain) and returns a new object, with each of
- * its values cloned (i.e. references broken).
- */
-function quickCloneObject(input) {
-	const output = {};
-	for (const key in input) {
-		if (!Object.hasOwn(input, key)) {
-			continue;
-		}
-		output[key] = cloneValue(input[key]);
-	}
-	return output;
-}
+// function mergeArrays(target, source, options) {
+//     if (options.arrayBehaviour === "merge-deduplicate") {
+//         const newArray = target.concat(source);
+//         return newArray.filter((item, index) => newArray.indexOf(item) === index);
+//     }
+//     else if (options.arrayBehaviour === "merge") {
+//         return target.concat(source);
+//     }
+//     return source.slice();
+// }
 
-/*
- * Does the actual deep merging.
- */
-function executeDeepMerge(target, _objects = [], _options = {}) {
-	const options = {
-		arrayBehaviour: _options.arrayBehaviour || "replace", // Can be "merge" or "replace".
-	};
+// function executeDeepMerge(target, objects, options) {
+//     objects.forEach(object => {
+//         Object.keys(object).forEach(key => {
+//             const value = object[key];
+//             const existingValueType = getTypeOf(target[key]);
+//             const valueType = getTypeOf(value);
 
-	// Ensure we have actual objects for each.
-	const objects = _objects.map(object => object || {});
-	const output = target || {};
+//             if (valueType === "object") {
+//                 target[key] = mergeObjects(target[key] || {}, value, options);
+//             } else if (valueType === "array" && existingValueType === "array") {
+//                 target[key] = mergeArrays(target[key], value, options);
+//             } else {
+//                 target[key] = cloneValue(value, target[key]);
+//             }
+//         });
+//     });
+//     return target;
+// }
 
-	// Enumerate the objects and their keys.
-	for (let oindex = 0; oindex < objects.length; oindex++) {
-		const object = objects[oindex];
-		const keys = Object.keys(object);
+// /*
+//  * Merge all the supplied objects into the target object, breaking all references, including those of nested objects
+//  * and arrays, and even objects nested inside arrays. Like Object.assign(), the first parameter is mutated.
+//  * Properties in later objects will always overwrite.
+//  */
+// // Object.prototype.assignDeep = function(...objects) {
+// //     return executeDeepMerge(this, objects);
+// // };
+// function objectAssignDeep(target, ...objects) {
+// 	return executeDeepMerge(target, objects);
+// }
+// window.objectAssignDeep = objectAssignDeep;
 
-		for (let kindex = 0; kindex < keys.length; kindex++) {
-			const key = keys[kindex];
-			const value = object[key];
-			const type = getTypeOf(value);
-			const existingValueType = getTypeOf(output[key]);
-
-			if (type === "object") {
-				if (existingValueType !== "undefined") {
-					const existingValue = existingValueType === "object" ? output[key] : {};
-					output[key] = executeDeepMerge(
-						{},
-						[existingValue, quickCloneObject(value)],
-						options
-					);
-				} else {
-					output[key] = quickCloneObject(value);
-				}
-			} else if (type === "array") {
-				if (existingValueType === "array") {
-					const newValue = quickCloneArray(value);
-					output[key] =
-						options.arrayBehaviour === "merge"
-							? output[key].concat(newValue)
-							: newValue;
-				} else {
-					output[key] = quickCloneArray(value);
-				}
-			} else {
-				output[key] = value;
-			}
-		}
-	}
-
-	return output;
-}
-
-/*
- * Merge all the supplied objects into the target object, breaking all references, including those of nested objects
- * and arrays, and even objects nested inside arrays. Like Object.assign(), the first parameter is mutated.
- * Properties in later objects will always overwrite.
- */
-function objectAssignDeep(target, ...objects) {
-	return executeDeepMerge(target, objects);
-}
-window.objectAssignDeep = objectAssignDeep;
+// Object.prototype.assignDeep = function(...objects) {
+// 	return executeDeepMerge(this, objects);
+// };

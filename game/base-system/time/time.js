@@ -153,11 +153,18 @@ const Time = (() => {
 		if (!hours) return fragment;
 
 		fragment.append(hourPassed(hours));
-		if (!V.statFreeze && currentDate.hour >= 6 && !V.daily.dawnCheck) {
+		if (
+			!V.daily.dawnCheck &&
+			((prevDate.hour < 6 && (currentDate.hour >= 6 || currentDate.day !== prevDate.day)) || (currentDate.day !== prevDate.day && currentDate.hour >= 6))
+		) {
 			V.daily.dawnCheck = true;
 			fragment.append(dawnCheck());
 		}
-		if (!V.statFreeze && currentDate.hour >= 12 && !V.daily.noonCheck) {
+		if (
+			!V.daily.noonCheck &&
+			((prevDate.hour < 12 && (currentDate.hour >= 12 || currentDate.day !== prevDate.day)) ||
+				(currentDate.day !== prevDate.day && currentDate.hour >= 12))
+		) {
 			V.daily.noonCheck = true;
 			fragment.append(noonCheck());
 		}
@@ -977,7 +984,10 @@ function minutePassed(minutes) {
 function noonCheck() {
 	const fragment = document.createDocumentFragment();
 
+	if (V.statFreeze) return fragment;
+
 	Weather.Sky.setMoonPhase();
+	WeatherCanvas.setMoonPhase();
 
 	delete V.bartend_info;
 	delete V.bartend_info_other;
@@ -1002,6 +1012,8 @@ function noonCheck() {
 
 function dawnCheck() {
 	const fragment = document.createDocumentFragment();
+
+	if (V.statFreeze) return fragment;
 
 	V.robinwakeday = 0;
 	V.wolfwake = 0;

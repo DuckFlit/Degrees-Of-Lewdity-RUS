@@ -34,7 +34,7 @@ Weather.WeatherConditions = (() => {
 	// After that, it will begin to transition into the normal weather types again.
 	function setWeather(weatherType, instant = false, minutes = 60) {
 		if (minutes <= 0) minutes = 1;
-		const weatherTypeIndex = Weather.Settings.weatherTypes.findIndex(wt => wt.name === weatherType.toLowerFirst());
+		const weatherTypeIndex = Weather.Settings.weatherTypes.findIndex(wt => wt.name === weatherType.toLowerCase());
 		if (weatherTypeIndex === -1 || V.weatherObj.keypointsArr.length < 1) {
 			console.warn(`Could not set weather. ${weatherType} doesn't exist.`);
 			return;

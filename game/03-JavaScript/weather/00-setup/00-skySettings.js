@@ -1,9 +1,14 @@
+/*
+	WARNING: Do not modify this file before the next update.
+	It's getting a major refactor and everything below will be replaced.
+*/
 /* These settings are for the visual side-bar. They determine the look of all aspects of it.
 NOTE: 	All colors use a hex-value with an added alpha
 		The alpha use the 2 last characters of a 8-character hex-value and range from 0-255 (00-ff)
 		Example: #f7ff4acc (cc determines the alpha (80%))
 
 */
+
 setup.SkySettings = {
 	canvasDimensions: {
 		// Size of the canvas
@@ -46,7 +51,9 @@ setup.SkySettings = {
 			radius: 20, // The radius of the glow
 			innerSize: 3, // How inset the glow is
 			dayColor: "#f2fad7aa",
+			dayTransparancy: "#f2fad700",
 			nightColor: "#f07218ee",
+			nightTransparancy: "#f0721800",
 		},
 		orbitSummer: {
 			// Sunrise, sunset, and height of the orbit can be changed, based on the season

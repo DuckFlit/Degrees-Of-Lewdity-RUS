@@ -5,23 +5,33 @@
 
 const observables = ObservableValue.fromObject({
     location: "",
+	bus: "",
 	time: 0,
 	weather: ""
 });
-/* Variable observables */
+/* State variable observables */
 $(document).on(":passageend", () => {
 	observables.location.value = V.location;
+	observables.bus.value = V.bus;
 	observables.time.value = Time.date.timeStamp;
 	observables.weather.value = Weather.name;
 });
 
 const WeatherObservables = (() => {
-	
+	WeatherCanvas.loaded.subscribe( () => {
+		/* LOCATION */
+		observables.location.subscribe( async () => {
+			await WeatherCanvas.getLayer("location").init();
+			WeatherCanvas.draw();
+		})
+		observables.bus.subscribe( async () => {
+			await WeatherCanvas.getLayer("location").init();
+			WeatherCanvas.draw();
+		})
+	}) 
 
-	/* LOCATION */
-	observables.location.subscribe( (value) => {
-		onLocationUpdate(value);
-	})
+	
+	
 
 
 	function onWeatherUpdate() {
@@ -49,7 +59,7 @@ const WeatherObservables = (() => {
 		// For now, if-else or switch
 		//
 		//In each location that has an effect:
-		//WeatherC.addEffect("fog"
+		//WeatherCanvas.addEffect("fog"
 		return;
 
 		/* Placeholder code */
@@ -128,8 +138,8 @@ const WeatherObservables = (() => {
 				imagePath = `${seasonPath}${location}${dayState}.apng`;
 		}
 
-		WeatherC.addEffect("fog");
-		//WeatherC.
+		WeatherCanvas.addEffect("fog");
+		//WeatherCanvas.
 	}
 
 	return {

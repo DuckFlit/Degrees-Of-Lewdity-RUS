@@ -1,4 +1,8 @@
 /* eslint-disable no-undef */
+/*
+	WARNING: Do not modify this file before the next update.
+	It's getting a major refactor and everything below will be replaced.
+*/
 class SkyCanvasStars extends SkyCanvasElement {
 	constructor(name, settings) {
 		super(name, settings);
@@ -132,7 +136,7 @@ class SkyCanvasStars extends SkyCanvasElement {
 			const rotatedX = cos * relativeX - sin * relativeY + this.canvasElement.width / 2;
 			const rotatedY = sin * relativeX + cos * relativeY + this.canvasElement.height / 2;
 
-			// Cull stars if behind a culling object - like the moo
+			// Cull stars if behind a culling object - like the moon
 			const dx = rotatedX - moonX;
 			const dy = rotatedY - moonY;
 			const distanceFromMoonCenter = Math.sqrt(dx * dx + dy * dy);

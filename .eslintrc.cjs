@@ -78,6 +78,7 @@ module.exports = {
 		StartConfig: "readonly",
 		Utils: "readonly",
 		ZIndices: "readonly",
+		DateTime: "readonly",
 		Time: "readonly",
 		EventSystem: "readonly",
 		Weather: "readonly",

@@ -1,15 +1,19 @@
 /* eslint-disable no-undef */
+/*
+	WARNING: Do not modify this file before the next update.
+	It's getting a major refactor and everything below will be replaced.
+*/
 class SkyCanvasSky extends SkyCanvasElement {
 	draw(sun, moon, dayFactor) {
 		this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 		const sunPosition = {
-			x: (sun.position.adjustedX / this.canvasElement.width) * this.canvasElement.width,
-			y: (sun.position.adjustedY / this.canvasElement.height) * this.canvasElement.height,
+			x: sun.position.adjustedX,
+			y: sun.position.adjustedY,
 		};
 
 		const moonPosition = {
-			x: (moon.position.adjustedX / this.canvasElement.width) * this.canvasElement.width,
-			y: (moon.position.adjustedY / this.canvasElement.height) * this.canvasElement.height,
+			x: moon.position.adjustedX,
+			y: moon.position.adjustedY,
 		};
 
 		// Create radial gradients for the sun glow and the sky background

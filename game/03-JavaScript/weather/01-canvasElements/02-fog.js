@@ -1,4 +1,8 @@
 /* eslint-disable no-undef */
+/*
+	WARNING: Do not modify this file before the next update.
+	It's getting a major refactor and everything below will be replaced.
+*/
 class SkyCanvasFog extends SkyCanvasElement {
 	draw(dayFactor) {
 		if (!Weather.fog && Weather.precipitation !== "snow" && !Time.isBloodMoon()) return;

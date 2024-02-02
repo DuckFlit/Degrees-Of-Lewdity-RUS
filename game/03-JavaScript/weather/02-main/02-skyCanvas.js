@@ -1,5 +1,8 @@
 /* eslint-disable no-undef */
-
+/*
+	WARNING: Do not modify this file before the next update.
+	It's getting a major refactor and everything below will be replaced.
+*/
 Weather.Sky = (() => {
 	const imagesLoaded = new ObservableValue(false);
 	let dayFactor = 0;
@@ -286,10 +289,20 @@ Weather.Sky = (() => {
 
 Macro.add("skybox", {
 	handler() {
-		Weather.Sky.elements.skybox.appendTo(this.output);
-		if (Weather.Sky.imagesLoaded) {
-			Weather.Sky.redraw();
-			Weather.Sky.updateLocationImage();
+		// Weather.Sky.elements.skybox.appendTo(this.output);
+		// if (Weather.Sky.imagesLoaded) {
+		// 	Weather.Sky.redraw();
+		// 	Weather.Sky.updateLocationImage();
+		// }
+		// WeatherCanvas.tempInit();
+		//Weather.Sky.elements.skybox.appendTo(this.output);
+
+		WeatherCanvas.skybox.appendTo(this.output);
+		if (!WeatherCanvas.loaded.value) {
+			WeatherCanvas.initialize();
+			return;
 		}
+
+		WeatherCanvas.draw();
 	},
 });
