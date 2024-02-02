@@ -142,7 +142,7 @@ function processSlot(setupfile,imgdir,varname,hasIntegrity) {
 				if (json.colour_sidebar) {
 					let ifiles = ["full"];
 					if (hasIntegrity) {
-						ifiles.push("frayed", "tattered", "torn");
+						ifiles.push("frayed", "torn", "tattered");
 					}
 					files.push(...ifiles);
 					if (json.hood) {
@@ -172,7 +172,7 @@ function processSlot(setupfile,imgdir,varname,hasIntegrity) {
 				if (json.accessory === 1 && json.accessory_colour_sidebar) {
 					let accfiles = [];
 					if (json.accessory_integrity_img) {
-						accfiles.push("full_acc", "frayed_acc", "tattered_acc", "torn_acc");
+						accfiles.push("full_acc", "frayed_acc", "torn_acc", "tattered_acc");
 					} else {
 						accfiles.push("acc")
 					}

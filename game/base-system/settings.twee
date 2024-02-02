@@ -677,6 +677,11 @@
 	<<run State.display(_settingsExitPassage)>>
 	<<set $saveName to $saveName.replace(/[^a-zA-Z\u4e00-\u9fa5 0-9]+/g,"")>>
 	<<unset $importString>>
+
+	/* Updates the penis max size for females so its never below 1 */
+	<<if $player.gender is "f" && $penissizemax < 0>>
+		<<set $penissizemax to 0>>
+	<</if>>
 <</widget>>
 
 /*complete:{"Vrelnir (Default)":"vrelDefault","Lollipop Scythe":"lollipopScythe","PurityGuy":"purityGuy","Fangi":"fangi"},*/
@@ -2120,29 +2125,31 @@
 		</div>
 		<<if $passage is "Start" or $player.penisExist>>
 			<div class="settingsToggleItem">
+				<!-- Not applicable to the parasite penis -->
 				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">Minimum penis size - if applicable:</span> <mouse class="tooltip linkBlue">(?)<span>Penises already below this size won't automatically grow.</span></mouse>
 				<br>
 				<<set _name to ["Micro","Mini", "Tiny"]>>
 				<<for _i to 0; _i lt _name.length; _i++>>
-					<span data-target="penissizemax" @data-disabledif="_i - 2 + ' > V.penissizemax'">
+					<span data-target="penissizemax" @data-disabledif="_i - 2 + ` > V.penissizemax||V.player.gender==='f'`">
 						<label data-target="player.gender" data-disabledif="V.player.gender==='f'"><<print _name[_i]>> <<radiobutton "$penissizemin" `(_i - 2)` autocheck>></label>
 						<<if _i lt _name.length - 1>>|<</if>>
 					</span>
 				<</for>>
 			</div>
-
-			<div class="settingsToggleItem">
-				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">Maximum penis size - if applicable:</span> <mouse class="tooltip linkBlue">(?)<span>Penises already above this size won't automatically shrink.</span></mouse>
-				<br>
-				<<set _name to ["Micro","Mini", "Tiny", "Small", "Normal", "Large", "Enormous"]>>
-				<<for _i to 0; _i lt _name.length; _i++>>
-					<span data-target='["penissizemin", "player.gender"]' @data-disabledif="_i - 2 + ' < V.penissizemin'||V.player.gender==='f'">
-						<label data-target="player.gender" data-disabledif="V.player.gender==='f'"><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label>
-						<<if _i lt _name.length - 1>>|<</if>>
-					</span>
-				<</for>>
-			</div>
 		<</if>>
+
+		<div class="settingsToggleItem">
+			<!-- Not applicable to females without a parasite penis -->
+			<span class="gold" data-target="player.gender">Maximum penis size - if applicable:</span> <mouse class="tooltip linkBlue">(?)<span>Penises already above this size won't automatically shrink.</span></mouse>
+			<br>
+			<<set _name to ["Micro","Mini", "Tiny", "Small", "Normal", "Large", "Enormous"]>>
+			<<for _i to 0; _i lt _name.length; _i++>>
+				<span data-target='["penissizemin", "player.gender"]' @data-disabledif="_i - 2 + ` < V.penissizemin||(` + _i + `<2&&V.player.gender==='f')`">
+					<label data-target="player.gender" @data-disabledif="`(` + _i + `<2&&V.player.gender==='f')`"><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label>
+					<<if _i lt _name.length - 1>>|<</if>>
+				</span>
+			<</for>>
+		</div>
 	</div>
 <</widget>>
 

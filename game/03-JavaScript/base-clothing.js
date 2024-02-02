@@ -210,8 +210,8 @@ function convertNormalToOver() {
 		"peacoat",
 		"shadbelly coat",
 		"puffer jacket",
-		"brown leather jacket",
-		"black leather jacket",
+		"leather jacket",
+		"punk leather jacket",
 		"vampire jacket",
 	];
 

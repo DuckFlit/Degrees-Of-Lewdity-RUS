@@ -193,7 +193,7 @@ const ColourUtils = (() => {
 	 * @param {string} factor
 	 * @returns {string}
 	 */
-	const interpolateTripleColor = (color1, color2, color3, factor) => {
+	function interpolateTripleColor(color1, color2, color3, factor) {
 		if (factor < 0) {
 			return interpolateColor(color2, color1, Math.abs(factor));
 		} else {

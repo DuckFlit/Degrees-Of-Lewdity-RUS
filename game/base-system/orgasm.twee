@@ -922,11 +922,19 @@
 		<<vaginaWetnessCalculate>>
 	<</if>>
 	<<if $player.penisExist>>
+		<<set $_minimumPenis to 0>>
+		<<if playerRutMinArousal() and numberOfEarSlime() and $earSlime.focus is "impregnation" and $earSlime.growth gte 100>>
+			<<set $_minimumPenis += Math.floor(($earSlime.growth - 100) / 2)>>
+		<</if>>
 		<<set $penisWetness to setup.bodyliquid.combined("penis") * 12>>
-		<<set $penisWetness to Math.clamp($penisWetness, 0, 120)>>
+		<<set $penisWetness to Math.clamp($penisWetness, Math.clamp($_minimumPenis, 0, 45), 120)>>
 	<</if>>
 	<<set $anusWetness to (setup.bodyliquid.combined("anus") + setup.bodyliquid.combined("bottom")) * 6>>
-	<<set $anusWetness to Math.clamp($anusWetness, 0, 120)>>
+	<<set $_minimum to 0>>
+	<<if playerHeatMinArousal() and numberOfEarSlime() and $earSlime.focus is "pregnancy" and $earSlime.growth gte 100 and $player.gender is "m">>
+		<<set $_minimum += Math.floor(($earSlime.growth - 100) / 2)>>
+	<</if>>
+	<<set $anusWetness to Math.clamp($anusWetness, Math.clamp($_minimum, 0, 45), 120)>>
 	<<if $combat is 1>>
 		<<penetrationPainCalculate>>
 	<</if>>
@@ -954,8 +962,13 @@
 		<<set $combatWetBoost to 0>>
 	<</if>>
 
+	<<set $_minimum to 0>>
+	<<if playerHeatMinArousal() and numberOfEarSlime() and $earSlime.focus is "pregnancy" and $earSlime.growth gte 100>>
+		<<set $_minimum += Math.floor(($earSlime.growth - 100) / 2)>>
+	<</if>>
+
 	<<set $vaginaWetness to $vaginaArousalWetness + $combatWetBoost + (setup.bodyliquid.combined("vagina") + setup.bodyliquid.combined("vaginaoutside")) * 6>>
-	<<set $vaginaWetness to Math.clamp($vaginaWetness, 0, 120)>>
+	<<set $vaginaWetness to Math.clamp($vaginaWetness, Math.clamp($_minimum, 0, 45), 120)>>
 <</widget>>
 
 <<widget "penetrationPainCalculate">>

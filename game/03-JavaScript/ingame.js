@@ -1245,6 +1245,9 @@ function currentSkillValue(skill, disableModifiers = 0) {
 			if (V.worn.head.type.includes("maid")) {
 				result = Math.floor(result * 1.05);
 			}
+			if (V.worn.handheld.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
 			break;
 		case "vaginalskill":
 			if (V.earSlime.growth > 100) {
@@ -1389,7 +1392,7 @@ function npcClothes(npc, type) {
 window.npcClothes = npcClothes;
 
 function waterproofCheck(clothing) {
-	return clothing.type.includesAny("swim", "stealthy", "rainproof");
+	return clothing.type.includesAny("swim", "stealthy", "rainproof", "waterproof");
 }
 window.waterproofCheck = waterproofCheck;
 
@@ -1568,7 +1571,7 @@ function getHalloweenCostume() {
 		return "gothic";
 	} else if (upper.name === "nun's habit" && lower.name === "nun's habit skirt") {
 		return "nun";
-	} else if (upper.name.includes("maid") && lower.name.includes("maid")) {
+	} else if (upper.type.includes("maid") && lower.type.includes("maid")) {
 		return "maid";
 	} else if (upper.name.includes("christmas") && lower.name.includes("christmas")) {
 		return "christmas";
@@ -1582,7 +1585,7 @@ function getHalloweenCostume() {
 		return "monk";
 	} else if (upper.name === "padded football shirt" && lower.name === "football shorts") {
 		return "football";
-	} else if (upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") {
+	} else if ((upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") || (upper.name === "harem vest" && lower.name === "harem pants"))  {
 		return "belly dancer";
 	} else if (V.worn.head.name === "cowboy hat" && lower.name === "cowboy chaps" && V.worn.feet.name === "cowboy boots") {
 		return "cowboy";
@@ -1988,3 +1991,34 @@ function earSlimeMakingMundaneRequests(){
 	return true;
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
+
+function minArousal(){
+	let result = playerHeatMinArousal() + playerRutMinArousal();
+
+	result += Object.values(V.worn).reduce((prev, curr) => {
+		if (curr.type.includes("fetish")) return prev + 150;
+		return prev;
+	}, 0)
+
+	return Math.clamp(result, 0, 5000);
+}
+window.minArousal = minArousal;
+
+function minPain(){
+	let result = 0;
+
+	if (V.lactating && V.breastfeedingdisable === "f" && V.milkFullPain > 200) {
+		result += Math.ceil((V.milkFullPain - 200) / 5);
+		if (!V.daily.milkFullPainMessage) {
+			V.milkFullPainMessage = 1;
+			V.effectsmessage = 1;
+		}
+	}
+
+	if (V.earSlime.defyCooldown && (V.worn.genitals.name === "chastity parasite" || V.parasite.penis.name === "parasite" || V.parasite.clit.name === "parasite")) {
+		result += 25
+	}
+
+	return Math.clamp(result,0,50);
+}
+window.minPain = minPain;

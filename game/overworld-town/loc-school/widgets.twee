@@ -95,6 +95,7 @@
 	<</if>>
 	leave the classroom.
 	<br><br>
+	<<delinquency -1 "bonus">>
 
 	<<if _args[0] is "mathsClassroom" and $whitneymaths isnot undefined>>
 		<!-- set whitney's state to "absent" after the lesson ends so that we can use mathsWhitneyAttendChance to put them back in class on the next day -->
@@ -3605,18 +3606,18 @@
 <</widget>>
 
 :: School Vending Machine Widget [widget]
+/**
+	$weekly.theft.vendingMachine {
+		broken: boolean
+		stolen: boolean
+	}
+	$daily.vendingMachine {
+		used: boolean
+	}
+ */
 <<widget "schoolVendingMachine">>
-	<<if $changingRoomGender is "boys">>
-		<<set $currentToiletReturn to "School Boy's Toilets">>
-	<<else>>
-		<<set $currentToiletReturn to "School Girl's Toilets">>
-	<</if>>
-	<<if $weekly.theft.vendingMachine is undefined>>
-		<<set $weekly.theft.vendingMachine to {}>>
-	<</if>>
-	<<if $daily.vendingMachine is undefined>>
-		<<set $daily.vendingMachine to {}>>
-	<</if>>
+	<<set $weekly.theft.vendingMachine to $weekly.theft.vendingMachine || {}>>
+	<<set $daily.vendingMachine to $daily.vendingMachine || {}>>
 	<br>
 	There is a vending machine for condoms. They are subsidised by the Department of Youth.
 	<br>
@@ -3637,30 +3638,30 @@
 			<br><br>
 		<</if>>
 	<</if>>
-	<<if $weekly.theft.vendingMachine[$changingRoomGender]>>
-		The vending machine is broken.
-		<br>
-	<<elseif $daily.vendingMachine[$changingRoomGender]>>
-		A red display reads "Empty".
-		<br>
-		<<if !Time.schoolTime>>
-			<<condomicon "machine">><<link [[Rob|Vending Machine Rob]]>><</link>>
-			<br>
-		<</if>>
+	/* Suggestion:
+		When broken, the machine can be completely inoperable for a week.
+		When stolen, the machine can still be operated normally, but held cash is set to 0:
+		  Each day the machine's stored wealth can be reset, and held cash could be randomly incremented.
+		  If you purchase condoms, you could sneakily regain the cash you spent.
+		  Optional: There could be more than 2 condoms in the machine.
+	*/
+	<<if $weekly.theft.vendingMachine.broken or $weekly.theft.vendingMachine.stolen>>
+		<span class="red">The vending machine is broken.</span>
 	<<else>>
-		<<if $money gte 2000>>
-			<<condomicon "machine">><<link [[Buy condoms (2-pack £20)|Vending Machine Buy]]>><</link>>
-			<br>
+		<<if $daily.vendingMachine.used>>
+			A red display reads "<span class="red">Empty</span>".
 		<<else>>
-			You can't afford them.
-			<br>
+			<<if $money gte 2000>>
+				<<condomicon "machine">><<link [[Buy condoms (2-pack £20)|Vending Machine Buy]]>><</link>>
+			<<else>>
+				You can't afford them.
+			<</if>>
 		<</if>>
 		<<if !Time.schoolTime>>
-			<<condomicon "machine">><<link [[Rob|Vending Machine Rob]]>><</link>>
 			<br>
+			<<condomicon "machine">><<link [[Rob|Vending Machine Rob]]>><</link>>
 		<</if>>
 	<</if>>
-	<br>
 <</widget>>
 
 <<widget "classRoomEarSlime">>
@@ -3689,40 +3690,18 @@
 		<br>
 		<<unset $justEntered>>
 		<<exitAll>>
+	<<elseif $args[0] and !$daily.earSlimeSkipLesson and $args[0] isnot $weekly.earSlimeSkipLesson and numberOfEarSlime() and $justEntered and random(0,100) gte 95 - ($earSlime.growth / 25) and $earSlime.exhibitionism gte 2>>
+		<<if $earSlime.growth gte 200 and $earSlime.promiscuity gte 4>>
+			<span class="lewd">You feel the slime in your head command you to skip class, masturbate in the hallway, and ask to be raped if a crowd gathers.</span> <span class="red">It expects to be obeyed.</span>
+		<<else>>
+			<span class="lewd">You feel the slime in your head command you to skip class and masturbate in the hallway.</span> It promises rewards if you comply, and threatens consequences if you do not.
+		<</if>>
+		<br><br>
+		<<link [[Obey|School Lesson 2 Slime]]>><<set $phase to 0>><<set $lessonPassage to $passage>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<link [[Defy|School Lesson 2 Slime]]>><<set $phase to 1>><<set $lessonPassage to $passage>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<br>
+		<<unset $justEntered>>
+		<<exitAll>>
 	<</if>>
 <</widget>>
-
-:: School Lesson Slime
-<<effects>>
-
-<<if $phase is 2>>
-	<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
-		<<set $earSlime.defyCooldown += 2>>
-		The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to turn around and leave the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
-		<<ggwillpower>><<willpower 1>>
-		<br><br>
-		<<if $daily.earSlimeSkipLesson is "swimming">>
-			<<link [[Next|$lastChangingRoom]]>><<endevent>><</link>>
-		<<else>>
-			<<link [[Next|Hallways]]>><<endevent>><</link>>
-		<</if>>
-	<<else>>
-		You try to ignore the command from the slime and continue on. It tries <span class="green">but fails</span> to force you out of the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
-		<br><br>
-		<<link [[Next|$lessonPassage]]>><<unset $lessonPassage>><<endevent>><</link>>
-		<<set $daily.earSlimeSkipLesson to "failed">>
-	<</if>>
-<<elseif $phase is 1>>
-	You ignore the command from the slime and continue on.
-	<br><br>
-	<<link [[Next|$lessonPassage]]>><<unset $lessonPassage>><<endevent>><</link>>
-	<<set $daily.earSlimeSkipLesson to "ignored">>
-<<else>>
-	You follow the ear slime's command and leave the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
-	<br><br>
-	<<if $daily.earSlimeSkipLesson is "swimming">>
-		<<link [[Next|$lastChangingRoom]]>><<endevent>><</link>>
-	<<else>>
-		<<link [[Next|Hallways]]>><<endevent>><</link>>
-	<</if>>
-<</if>>

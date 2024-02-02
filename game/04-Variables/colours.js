@@ -911,6 +911,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#559BC0" },
 	},
 	{
+		variable: "neon blue",
+		name: "neon blue",
+		name_cap: "Neon Blue",
+		csstext: "neon-blue",
+		canvasfilter: { blend: "#00d5ff" },
+	},
+	{
 		variable: "white",
 		name: "white",
 		name_cap: "White",
@@ -930,6 +937,13 @@ setup.colours.clothes = [
 		name_cap: "Red",
 		csstext: "red",
 		canvasfilter: { blend: "#ff0000" },
+	},
+	{
+		variable: "jewel red",
+		name: "jewel red",
+		name_cap: "Jewel red",
+		csstext: "jewel-red",
+		canvasfilter: { blend: "#d4273b" },
 	},
 	{
 		variable: "green",
@@ -974,6 +988,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#8f09f3" },
 	},
 	{
+		variable: "lilac",
+		name: "lilac",
+		name_cap: "Lilac",
+		csstext: "lilac",
+		canvasfilter: { blend: "#d692fc" },
+	},
+	{
 		variable: "tangerine",
 		name: "tangerine",
 		name_cap: "Tangerine",
@@ -1014,6 +1035,13 @@ setup.colours.clothes = [
 		name_cap: "Brown",
 		csstext: "brown",
 		canvasfilter: { blend: "#703000" },
+	},
+	{
+		variable: "soft brown",
+		name: "soft brown",
+		name_cap: "Soft brown",
+		csstext: "brownish",
+		canvasfilter: { blend: "#6a4225" },
 	},
 	{
 		variable: "tan",
@@ -1065,6 +1093,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#16168d" },
 	},
 	{
+		variable: "denim",
+		name: "denim",
+		name_cap: "Denim",
+		csstext: "denim",
+		canvasfilter: { blend: "#4b6e85" },
+	},
+	{
 		variable: "olive",
 		name: "olive",
 		name_cap: "Olive",
@@ -1077,6 +1112,13 @@ setup.colours.clothes = [
 		name_cap: "Wine",
 		csstext: "wine",
 		canvasfilter: { blend: "#65252d" },
+	},
+	{
+		variable: "russet",
+		name: "russet",
+		name_cap: "Russet",
+		csstext: "russet",
+		canvasfilter: { blend: "#9f4033" },
 	},
 	{
 		variable: "apocalypse",
@@ -1119,6 +1161,13 @@ setup.colours.clothes = [
 		name_cap: "Silver",
 		csstext: "silver",
 		canvasfilter: { blend: "#C0C0C0" },
+	},
+	{
+		variable: "sterling silver",
+		name: "sterling silver",
+		name_cap: "Sterling silver",
+		csstext: "sterling-silver",
+		canvasfilter: { blend: "#8b9fc4" },
 	},
 ];
 /**

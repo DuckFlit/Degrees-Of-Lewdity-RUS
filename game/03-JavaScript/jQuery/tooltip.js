@@ -34,9 +34,9 @@ $.fn.tooltip = function (options = {}) {
 		const defaults = {
 			title: "",
 			message: "",
-			delay: 500,
-			position: "bottom",
-			cursor: null,
+			delay: 150,
+			position: "cursor",
+			cursor: "help",
 			anchorStyle: null,
 			width: null,
 		};

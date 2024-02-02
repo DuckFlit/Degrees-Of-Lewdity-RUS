@@ -145,7 +145,11 @@ Requires prior <<selectmodel "main">>
 	-->
 
 	<<set _modeloptions.hair_sides_length to $hairlengthstage>>
-	<<set _modeloptions.hair_sides_type to $hairtype>>
+	<<set _modeloptions.hair_sides_type to
+		($hairtype is "half-up" and ["bat beanie", "nun veil", "straw hat", "straw flower hat", "newsboy cap", "durag", "fur cap", "raccoon cap"].includes($worn.head.name) ? "all down" :
+		$worn.head.name is "bat beanie" and ["scorpion tails"].includes($hairtype) ? "bubble tails" :
+		$worn.head.name is "bat beanie" and ["curly pigtails", "fluffy ponytail", "loop braid", "ribbon tail", "thick pigtails", "thick ponytail", "thick sidetail", "thick twintails", "sailor buns"].includes($hairtype) ? "shaved" :
+		$hairtype)>>
 	<<set _modeloptions.hair_sides_position to $hairposition>>
 	<<set _modeloptions.hair_fringe_length to $fringelengthstage>>
 	<<set _modeloptions.hair_fringe_type to $fringetype>>
@@ -163,8 +167,8 @@ Requires prior <<selectmodel "main">>
 	<<if $leftarm isnot "bound" and $leftarm isnot "grappled">>
 
 		<<if $dontHide is false and $worn.over_upper.exposed gte 1 and ($worn.upper.exposed gte 1 or $upperwetstage gte 3) and ($worn.lower.covers_top isnot 1) and (($uncomfortable.underwear is true and !$worn.under_upper.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_upper.exposed gte 1 or $underupperwetstage gte 3)))>>
-			
-			<<if ($player.gender_appearance is "m" and $player.perceived_breastsize lte 2) 
+
+			<<if ($player.gender_appearance is "m" and $player.perceived_breastsize lte 2)
 			or (["pool", "lake", "beach"].includes($location) and ($worn.under_upper.exposed lt 1 and $underupperwetstage lt 3))>>
 				<<set _coverBreasts to false>>
 				<<set _modeloptions.arm_left to "idle">>
@@ -172,7 +176,7 @@ Requires prior <<selectmodel "main">>
 				<<set _coverBreasts to true>>
 				<<set _modeloptions.arm_left to "cover">> <!-- might be changed back to "idle" if covering with wings -->
 			<</if>>
-		
+
 		<<else>>
 			<<set _coverBreasts to false>>
 			<<set _modeloptions.arm_left to "idle">>
@@ -184,7 +188,7 @@ Requires prior <<selectmodel "main">>
 	<<if $rightarm isnot "bound" and $rightarm isnot "grappled">>
 		<<if $dontHide is false and $worn.over_lower.exposed gte 1 and ($worn.lower.exposed gte 1 or $lowerwetstage gte 3)
 		and (($uncomfortable.underwear is true and !$worn.under_lower.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_lower.exposed gte 1 or $underlowerwetstage gte 3)))>>
-			
+
 			<<if (["pool", "lake", "beach"].includes($location) and ($worn.under_lower.exposed lt 1 and $underlowerwetstage lt 3))>>
 				<<set _coverCrotch to false>>
 				<<set _modeloptions.arm_right to $worn.handheld.name isnot "naked" ? "hold" : "idle">>
@@ -589,12 +593,18 @@ Set model options & filters for player clothes
 	<</if>>
 
 	<<set _modeloptions.alt_position to $worn.upper.altposition is "alt">>
-	<<set _modeloptions.alt_position_neck to $worn.neck.altposition is "alt">>
-	<<set _modeloptions.alt_sleeve to $worn.upper.altsleeve is "alt">>
+    <<set _modeloptions.alt_position_neck to $worn.neck.altposition is "alt">>
+    <<set _modeloptions.alt_position_face to $worn.face.altposition is "alt">>
+	<<set _modeloptions.alt_sleeve to $worn.upper.altsleeve is "alt" and $worn.upper.name isnot "school cardigan" || $worn.upper.name is "school cardigan" and $worn.upper.position is "alt">>
 
 	<<set _modeloptions.facewear_layer to $facelayer>>
 
 	<<set _modeloptions.upper_tucked to $upperTucked and !setup.clothes.upper[clothesIndex('upper', $worn.upper)].notuck and $worn.upper.outfitPrimary is undefined>>
+	<<if !$worn.feet.notuck and !$worn.lower.notuck and $lowerTucked>>
+		<<set _modeloptions.lower_tucked to true>>
+	<<else>>
+		<<set _modeloptions.lower_tucked to false>>
+	<</if>>
 
 	<<twinescript>>
 		let slots = [

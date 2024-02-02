@@ -24,7 +24,7 @@
 	// update package name for debug and release builds
 	let targetName = configData.getroot().attrib['android-packageName'];
 	if (release && targetName.endsWith("_debug")) targetName = targetName.slice(0, -6);
-	else if (!release && !targetName.endsWith("_debug")) targetName += "debug";
+	else if (!release && !targetName.endsWith("_debug")) targetName += "_debug";
 	configData.getroot().attrib['android-packageName'] = targetName;
 	fs.writeFileSync(configFile, configData.write({indent: 4}), "utf-8");
 	// update android manifest
@@ -48,7 +48,6 @@
 
 
 	if (release) {
-		const gameRoot = path.resolve("../..");
 		const keystore = path.resolve(gameRoot, 'keys/dol.keystore');
 		if (release && !fs.existsSync(keystore)) {
 			throw new Error(
