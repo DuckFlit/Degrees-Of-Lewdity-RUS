@@ -515,13 +515,14 @@ window.nullable = nullable;
  * Files are all in img/misc/icon/
  * Example: <<icon "bed.png">>
  * <<icon "bed.png" "nowhitespace">> does not add a trailing whitespace for formatting.
+ * <<icon "bed.png" "infront">> will cause the icon to layer ontop of the next one
  */
 Macro.add("icon", {
 	handler() {
 		if (!V.options.images) return;
 		const name = typeof this.args[0] === "string" ? this.args[0] : "error";
 		const iconImg = document.createElement("img");
-		iconImg.className = "icon";
+		iconImg.className = "icon" + (this.args.includes("infront") ? " infront" : "");
 		iconImg.src = "img/misc/icon/" + name;
 		this.output.append(iconImg);
 		// append a whitespace for compatibility with old icon behavior
