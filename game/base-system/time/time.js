@@ -185,11 +185,10 @@ const Time = (() => {
 
 	function getNextSchoolTermStartDate(date) {
 		const newDate = new DateTime(date);
-		if (!holidayMonths.includes(newDate.month) && date.day < newDate.getFirstWeekdayOfMonth(2).day) {
-			return newDate.getFirstWeekdayOfMonth(2);
+		while (holidayMonths.includes(newDate.month)) {
+			newDate.addMonths(1);
 		}
 
-		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
 		return newDate.getFirstWeekdayOfMonth(2);
 	}
 
