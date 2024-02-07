@@ -199,7 +199,7 @@ const ColourUtils = (() => {
 		} else {
 			return interpolateColor(color2, color3, factor);
 		}
-	};
+	}
 
 	/* Export module */
 	return Object.seal({

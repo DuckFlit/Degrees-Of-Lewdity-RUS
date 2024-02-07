@@ -1050,7 +1050,7 @@ DefineMacro("washRecordedSperm", washRecordedSperm);
 
 function playerCanBreedWith(npc) {
 	/* This function can accept either a named NPC's name, or an NPC object from either NPCList or NPCName.
-	 * Examples: playerCanBreedWith("Kylar"), or playerCanBreedWith($NPCList[0]) or playerCanBreedWith($NPCName[$NPCNameList.indexOf("Kylar")])
+	 * Examples: playerCanBreedWith("Kylar"), or playerCanBreedWith($NPCList[0]) or playerCanBreedWith(C.npc.Kylar)
 	 * Returns true or false. If you give it garbage, like a totally wrong name, it'll return false, so be careful about silent failures like that.
 	 * Should be used for NPC breeding lines ONLY.
 	 */
