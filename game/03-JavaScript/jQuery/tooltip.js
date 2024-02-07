@@ -10,18 +10,44 @@ $(document).on(":passageinit", () => {
 });
 
 $(document).on(":passageend", () => {
-	$("[tooltip]").each(function () {
-		const message = $("<div>");
-		new Wikifier(message, $(this).attr("tooltip"));
-		// Default settings
-		$(this).tooltip({
-			message,
-			position: "cursor",
-			cursor: "help",
-			delay: 150,
+	initializeTooltips();
+});
+
+function initializeTooltips() {
+	$(".tooltip-popup").remove();
+	$(() => {
+		$("[tooltip]").each(function () {
+			const message = $("<div>");
+			new Wikifier(message, $(this).attr("tooltip"));
+
+			// Default attribute settings
+			const defaultSettings = {
+				title: "",
+				message,
+				anchorStyle: null,
+				position: "cursor",
+				cursor: "help",
+				delay: 150,
+				width: null,
+				maxWidth: 450,
+			};
+
+			$.each(this.attributes, function() {
+                if (this.name.startsWith("tooltip-") && defaultSettings.hasOwnProperty(this.name.substring(8))) {
+                    const key = this.name.substring(8);
+                    let value = this.value;
+                    if (!isNaN(value)) {
+                        value = parseFloat(value);
+                    }
+                    defaultSettings[key] = value;
+                }
+            });
+
+			$(this).tooltip(defaultSettings);
 		});
 	});
-});
+}
+window.initializeTooltips = initializeTooltips;
 
 $.fn.tooltip = function (options = {}) {
 	const initializeSettings = () => {
@@ -39,6 +65,7 @@ $.fn.tooltip = function (options = {}) {
 			cursor: "help",
 			anchorStyle: null,
 			width: null,
+			maxWidth: null,
 		};
 		return $.extend({}, defaults, options);
 	};
@@ -66,6 +93,7 @@ $.fn.tooltip = function (options = {}) {
 			const body = $("<div>").addClass("tooltip-body").html(settings.message);
 			tooltip.append(header, body);
 			if (settings.width) tooltip.css("width", settings.width);
+			if (settings.maxWidth) tooltip.css("maxWidth", settings.maxWidth);
 			$("body").append(tooltip);
 			$this.data("tooltip-instance", tooltip);
 			updatePosition.call($this, tooltip);
@@ -128,7 +156,7 @@ $.fn.tooltip = function (options = {}) {
 		const settings = $(this).data("tooltip-settings");
 
 		const setPosition = (left, top) => {
-			tooltipInstance.css({ left, top });
+			tooltipInstance.css("transform", `translate(${left}px, ${top}px)`);
 		};
 
 		switch (settings.position.toLowerCase()) {
@@ -147,16 +175,16 @@ $.fn.tooltip = function (options = {}) {
 			case "right":
 				setPosition(offset.left + width + distance, offset.top + height / 2 - tooltipInstance.outerHeight() / 2);
 				break;
-			case "bottomright":
+			case "bottomRight":
 				setPosition(offset.left + width + distance, offset.top + height + distance);
 				break;
-			case "bottomleft":
+			case "bottomLeft":
 				setPosition(offset.left - tooltipInstance.outerWidth() - distance, offset.top + height + distance);
 				break;
-			case "topright":
+			case "topRight":
 				setPosition(offset.left + width + distance, offset.top - tooltipInstance.outerHeight() - distance);
 				break;
-			case "topleft":
+			case "topLeft":
 				setPosition(offset.left - tooltipInstance.outerWidth() - distance, offset.top - tooltipInstance.outerHeight() - distance);
 				break;
 		}
