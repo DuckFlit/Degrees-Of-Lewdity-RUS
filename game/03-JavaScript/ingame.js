@@ -601,11 +601,11 @@ window.setRobinLocationOverride = setRobinLocationOverride;
 function getRobinCrossdressingStatus(crossdressLevel) {
 	// Note returns 2 if Robin is crossdressing or 0 if not comfortable enough at that location
 	// Traumatised Robin will not crossdress.
-	if (V.NPCName[V.NPCNameList.indexOf("Robin")].init !== 1) {
+	if (C.npc.Robin.init !== 1) {
 		return;
 	}
 	T.robin_cd = 0;
-	if (V.NPCName[V.NPCNameList.indexOf("Robin")].trauma >= 40) {
+	if (C.npc.Robin.trauma >= 40) {
 		return;
 	}
 	switch (getRobinLocation()) {
@@ -638,14 +638,14 @@ window.getRobinCrossdressingStatus = getRobinCrossdressingStatus;
 function isInPark(name) {
 	switch(name.toLowerCase()) {
 		case "kylar":
-			return V.NPCName[V.NPCNameList.indexOf("Kylar")].state === "active"
+			return C.npc.Kylar.state === "active"
 				&& !["rain", "snow"].includes(V.weather)
 				&& Time.dayState === "day" && V.kylarwatched !== 1;
 		case "robin":
 			return getRobinLocation() === "park";
 		case "whitney":
-			return ["active", "rescued"].includes(V.NPCName[V.NPCNameList.indexOf("Whitney")].state)
-				&& V.NPCName[V.NPCNameList.indexOf("Whitney")].init === 1 && ["snow", "rain"].includes(V.weather)
+			return ["active", "rescued"].includes(C.npc.Whitney.state)
+				&& C.npc.Whitney.init === 1 && ["snow", "rain"].includes(V.weather)
 				&& Time.dayState === "day" && !Time.schoolTime
 				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
 		default:
