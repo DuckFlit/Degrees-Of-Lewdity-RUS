@@ -882,23 +882,18 @@ Renderer.CanvasModels["main"] = {
 			options.high_waist_suspenders = null;
 		}
 
-		/*clothes with alternate positions that do not include alternate sleeve states*/
-		if (["waistcoat", "long waistcoat", "lapelled waistcoat", "long lapelled waistcoat", "punk leather jacket", "leather jacket", "cropped leather jacket", "dress shirt"].includes(options.worn_upper_setup.name)) {
-			options.alt_without_sleeves = true;
-		} else {
-			options.alt_without_sleeve = null;
+		/*clothes whose altposition does not include alternate sleeve/full states*/
+        if (options.worn_upper_setup.altdisabled) {
+			options.worn_upper_setup.altdisabled.includes("sleeves") ? options.alt_without_sleeves = true :
+				options.alt_without_sleeves = null;
+			options.worn_upper_setup.altdisabled.includes("full") ? options.alt_without_full = true :
+				options.alt_without_full = null;
 		}
 		/*clothes whose sleeves cannot be rolled up*/
 		if (options.worn_upper_setup.variable === "schoolcardigan" && options.worn_upper_setup.altposition === "alt") {
 			options.alt_sleeve_state = null;
 		} else {
 			options.alt_sleeve_state = true;
-		}
-		/*clothes with alternate accs, no alternate fulls*/
-		if (["waistcoat", "lapelled waistcoat"].includes(options.worn_upper_setup.name)) {
-			options.alt_without_full = true;
-		} else {
-			options.alt_without_full = null;
 		}
 	},
 	layers: {
