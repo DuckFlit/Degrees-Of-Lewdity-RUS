@@ -141,6 +141,66 @@ const ColourUtils = (() => {
 		return hslToFilter(hsl);
 	}
 
+	/**
+	 * Interpolates between 2 colors, based on a factor
+	 *
+	 * @param {string} color1
+	 * @param {string} color2
+	 * @param {string} factor
+	 * @returns {string}
+	 */
+	function interpolateColor(color1, color2, factor) {
+		factor = Math.max(0, Math.min(factor, 1));
+
+		// Convert hex colors to RGBA
+		const parseColor = color => {
+			const rgb = parseInt(color.slice(1, 7), 16);
+			const r = (rgb >> 16) & 0xff;
+			const g = (rgb >> 8) & 0xff;
+			const b = rgb & 0xff;
+			const a = color.length > 7 ? parseInt(color.slice(7), 16) / 255 : 1; // Normalize alpha to [0, 1]
+			return [r, g, b, a];
+		};
+
+		const [r1, g1, b1, a1] = parseColor(color1);
+		const [r2, g2, b2, a2] = parseColor(color2);
+
+		// Interpolate RGBA
+		const r = Math.round(r1 + (r2 - r1) * factor);
+		const g = Math.round(g1 + (g2 - g1) * factor);
+		const b = Math.round(b1 + (b2 - b1) * factor);
+		const a = Math.round((a1 + (a2 - a1) * factor) * 255); // Denormalize alpha to [0, 255]
+
+		// Convert each component to a two-digit hexadecimal string and concatenate
+		let hex = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+
+		// Append alpha to hex string only if it's less than full opacity
+		if (a < 255) {
+			hex += a.toString(16).padStart(2, "0");
+		}
+
+		return hex;
+	}
+
+	/**
+	 * Interpolates between 3 colors, based on a factor
+	 * - If factor is negative, interpolates between color1 and color2.
+	 * - If factor is positive, interpolates between color2 and color3.
+	 *
+	 * @param {string} color1
+	 * @param {string} color2
+	 * @param {string} color3
+	 * @param {string} factor
+	 * @returns {string}
+	 */
+	function interpolateTripleColor(color1, color2, color3, factor) {
+		if (factor < 0) {
+			return interpolateColor(color2, color1, Math.abs(factor));
+		} else {
+			return interpolateColor(color2, color3, factor);
+		}
+	}
+
 	/* Export module */
 	return Object.seal({
 		partToFilter,
@@ -152,6 +212,8 @@ const ColourUtils = (() => {
 		rgbToHex,
 		intToHex,
 		invertHex,
+		interpolateColor,
+		interpolateTripleColor,
 	});
 })();
 

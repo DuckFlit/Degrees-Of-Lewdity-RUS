@@ -162,7 +162,7 @@ function getClothingCost(item, slot) {
 	cost *= lewdCoef;
 
 	if (V.passage === "School Library Shop") {
-		cost *= 1.4 + ((V.delinquency - 500) / 5000 + (V.NPCName[V.NPCNameList.indexOf("Sydney")].love - 50) / -500);
+		cost *= 1.4 + ((V.delinquency - 500) / 5000 + (C.npc.Sydney.love - 50) / -500);
 	}
 
 	return Math.round(cost);

@@ -11,6 +11,13 @@
 		hasErrored = true;
 		resp += "Destructuring is not supported for your browser.\n";
 	}
+	try {
+		// eslint-disable-next-line no-eval
+		eval("const foo = {}; foo?.bar;");
+	} catch (e) {
+		hasErrored = true;
+		resp += "This browser does not meet the minimum requirements for DoL (ES2020).\n";
+	}
 	if (hasErrored) {
 		/* Calculate how the user should upgrade. */
 		const segments = navigator.userAgent.split(" ");
@@ -18,7 +25,7 @@
 		const chromeTest = segments.findIndex(s => s.startsWith("Chrome"));
 		const firefoxTest = segments.findIndex(s => s.startsWith("Firefox"));
 		if (androidTest >= 0) {
-			resp += "\nUpdate your Android WebView System app.\nVersion: " + segments[androidTest].slice(8);
+			resp += "\nUpdate your Android WebView System app. Requires at least version 80. \nCurrent version: " + segments[androidTest].slice(8);
 		} else if (chromeTest >= 0) {
 			resp += "\nUpdate your Chrome browser.\nVersion: " + segments[chromeTest].slice(7);
 		} else if (firefoxTest >= 0) {
@@ -38,6 +45,7 @@ if (!Object.hasOwn) {
 			if (object == null) {
 				throw new TypeError("Cannot convert undefined or null to object");
 			}
+			// eslint-disable-next-line prefer-object-has-own
 			return Object.prototype.hasOwnProperty.call(Object(object), property);
 		},
 		configurable: true,

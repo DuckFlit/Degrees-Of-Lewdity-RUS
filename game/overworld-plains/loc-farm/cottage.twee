@@ -13,9 +13,23 @@ You are downstairs in Alex's cottage. It's tight, and cozy. There's a kitchen wi
 <br><br>
 
 <!-- Flavor text of Alex coming down, going up, or being upstairs -->
-<<if Time.hour is 21 and $alex_to_bed is undefined>>
-	<<set $alex_to_bed to 1>>
+<<if Time.hour is 21 and ($alex_to_bed is undefined or $farm_end isnot 1)>>
 	<<npc Alex>><<person1>>
+	<<if $farm_end isnot 1>>
+		<<set $farm_end to 1>>
+		/* If it's 21:00 and you go to the cottage, the farm work needs to be stopped. */
+		Alex enters the cottage. "Done for another day," <<he>> says,
+		<<if $exposed gt 0>>
+			blushing. "It'll be getting colder, you might want to wear a little more." <<glust>><<npcincr Alex lust 1>>
+		<<else>>
+			smiling.
+		<</if>>
+		<<if $farm_count gte 1 and $farm_stage lte 6>>
+			"Here's a little extra." <<He>> hands you <<moneyGain $farm.wage>>.
+		<</if>>
+		<br><br>
+	<</if>>
+	<<set $alex_to_bed to 1>>
 	The staircase creaks as Alex climbs to <<his>> room.
 	<<endevent>>
 	<br><br>
@@ -46,10 +60,32 @@ You are downstairs in Alex's cottage. It's tight, and cozy. There's a kitchen wi
 	<br><br>
 	<<link [[Next|Farm Cottage]]>><</link>>
 
+<<elseif isPlayerNonparasitePregnancyEnding()>>
+	<<pcFarmBirth>>
+
+<<elseif npcPregnancyEnding("Alex")>>
+	<<npc "Alex">>
+	"F-fuck..." you hear Alex yell. You rush to <<him>>.
+	<br>
+
+	"What's wrong?" you ask. Approaching <<him>>, you see fluids running down <<his>> thighs.
+	<br>
+
+	"I think it's happening," <<he>> says.
+	<br><br>
+
+	You feel your heart pounding faster than usual. "Should I take you to the hospital?" you ask.<<gstress>><<stress 6>>
+	<br><br>
+
+	"No, it's okay. I don't really like those places. Could you call the local doctor?" <<he>> says. <<He>> pulls <<his>> phone from <<his>> pocket and hands it to you.
+	<br><br>
+
+	<<link [[Next|Farm Alex Birth]]>><</link>>
+
 <<elseif playerIsPregnant() and playerBellyVisible() and !talkedAboutPregnancy("pc","Alex")>>
 	<<npc "Alex">>
 	<<setTalkedAboutPregnancy "pc" "Alex">>
-	<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+	<<if $farm_stage gte 7>>
 		You notice Alex staring at your belly in horror. "You're...you're pregnant?! You didn't tell me anything..."
 
 		<<if getPregnancyObject().potentialFathers.length gte 2 or !getPregnancyObject().potentialFathers.find(s => s.source === "Alex")>>
@@ -79,28 +115,6 @@ You are downstairs in Alex's cottage. It's tight, and cozy. There's a kitchen wi
 		<<link [[Next|Farm Work]]>><<endevent>><</link>>
 
 	<</if>>
-
-<<elseif npcPregnancyEnding("Alex")>>
-	<<npc "Alex">>
-	"F-fuck..." you hear Alex yell. You rush to <<him>>.
-	<br>
-
-	"What's wrong?" you ask. Approaching <<him>>, you see fluids running down <<his>> thighs.
-	<br>
-
-	"I think it's happening," <<he>> says.
-	<br><br>
-
-	You feel your heart pounding faster than usual. "Should I take you to the hospital?" you ask.<<gstress>><<stress 6>>
-	<br><br>
-
-	"No, it's okay. I don't really like those places. Could you call the local doctor?" <<he>> says. <<He>> pulls <<his>> phone from <<his>> pocket and hands it to you.
-	<br><br>
-
-	<<link [[Next|Farm Alex Birth]]>><</link>>
-
-<<elseif isPlayerNonparasitePregnancyEnding() and getPregnancyObject().fetus[0].father is "Alex">>
-	<<pcFarmBirth>>
 
 <<elseif npcIsPregnant("Alex") and !talkedAboutPregnancy("Alex","pc") and npcBellySize("Alex") gte 1>>
 	<<alex_cottage_pregnancy_reveal>>
@@ -164,7 +178,7 @@ You are downstairs in Alex's cottage. It's tight, and cozy. There's a kitchen wi
 	<<if $alex_tea is undefined>>
 		<<set $alex_tea to 1>>
 		<<if Time.days % 2 is 0>>
-			<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte 1>>
+			<<if C.npc.Alex.dom gte 1>>
 				"I fancy a cuppa," <<he>> says. "Would you mind putting the kettle on?"
 				<br><br>
 
@@ -565,7 +579,7 @@ You snuggle under the covers.
 
 :: Farm Alex Climb
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You shuffle away from Alex.
 <<if _alex.dom gte random(1, 50)>>
@@ -598,7 +612,7 @@ You whack Alex's hand, and struggle from the bed. "Suit yourself," <<he>> says. 
 
 :: Farm Alex Allow
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You gyrate your hips, <<bottomtext>> rubbing your <<bottom>> against Alex's <<print (_alex.penis isnot "none" ? "shaft" : "pussy")>> through the fabric, making it
 <<if currentSkillValue("bottomskill") lt 400>>
@@ -618,7 +632,7 @@ You gyrate your hips, <<bottomtext>> rubbing your <<bottom>> against Alex's <<pr
 
 :: Farm Alex Push
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You turn onto your other side, and push Alex away from you.
 <<if _alex.dom gte random(1, 50)>>
@@ -787,7 +801,7 @@ You return to your bed.
 
 :: Farm Bedroom Revenge
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 <<set _chest to (_alex.pronoun is "f" ? _alex.breastsdesc : "muscular chest")>>
 <<set _genitals to (_alex.penis isnot "none" ? _alex.penisdesc : "pussy")>>
 
@@ -817,7 +831,7 @@ It's not long or baggy enough for this, and the fabric pulls taut over <<his>> _
 
 :: Farm Alex Give
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You hold out <<his>> <<print (_alex.pronoun is "f" ? "boyshorts" : "boxers")>>.
 <<He>> hesitates, as if expecting a trick, then snatches them.
@@ -842,7 +856,7 @@ You return to your bed.
 
 :: Farm Alex Tease
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You stand on Alex's sheets, between <<him>> and the wardrobe. <<He>> lunges for <<his>>
 <<print (_alex.pronoun is "f" ? "boyshorts" : "boxers")>>
@@ -891,7 +905,7 @@ You stand on Alex's sheets, between <<him>> and the wardrobe. <<He>> lunges for 
 
 :: Farm Alex Tease Give
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You chuck the <<print (_alex.pronoun is "f" ? "boyshorts" : "boxers")>> at Alex.
 
@@ -915,7 +929,7 @@ You return to your bed.
 
 :: Farm Alex Tease Demand
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 <<set _chest to (_alex.pronoun is "f" ? _alex.breastsdesc : "toned chest")>>
 <<set _genitals to (_alex.penis isnot "none" ? _alex.penisdesc : "pussy")>>
 
@@ -1040,7 +1054,7 @@ You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardro
 
 		<<officeicon>><<link [[Offer help (1:00)|Farm Alex Admin]]>><<pass 60>><<npc Alex>><<person1>><<npcincr Alex love 1>><<stress 6>><</link>><<skill_difficulty `currentSkillValue("maths")` "Maths" 1 1000>><<glove>><<gstress>>
 		<br>
-		<<if $alex_countdown is undefined and $NPCName[$NPCNameList.indexOf("Alex")].love gte 80>>
+		<<if $alex_countdown is undefined and C.npc.Alex.love gte 80>>
 			<<officeicon>><<link [[Cuddle Alex (0:30)|Farm Phone Cuddle]]>><<pass 30>><<npc Alex>><<person1>><<npcincr Alex love 1>><</link>><<glove>>
 			<br>
 		<</if>>
@@ -1073,10 +1087,12 @@ You are in Alex's bedroom. It's similar to yours. Clothes tumble from the wardro
 		<<if $earSlime.alwaysSleepNaked is false>>
 			<<bedicon "yellow">><<link [[Climb in Alex's bed|Farm Alex Bed]]>><</link>>
 		<<else>>
+			<<icon "cross.png" "infront">>
+			<<bedicon "yellow">>
 			<<if $possessed>>
-				<<ind>><span class="purple">The slime is silent.</span>
+				<span class="purple">The slime is silent.</span>
 			<<else>>
-				<<ind>><span class="purple">The slime is not allowing you to sleep with anything on.</span>
+				<span class="purple">The slime is not allowing you to sleep with anything on.</span>
 			<</if>>
 		<</if>>
 		<br>
@@ -1193,7 +1209,7 @@ Alex digs in as soon as <<he>> sits.
 
 :: Farm Breakfast
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 <<if $phase is 1>>
 	You compliment the food.
@@ -1221,7 +1237,7 @@ Alex digs in as soon as <<he>> sits.
 				"I've more eggs than I know what to do with, thanks to you."
 			<<elseif $farm.build_finished.includes("coop 1")>>
 				"Egg surplus. Those chickens multiplied like rabbits. Speaking of...
-				<<if $NPCName[$NPCNameList.indexOf("Alex")].lust gte 20>>
+				<<if C.npc.Alex.lust gte 20>>
 					can't wait 'til we get some time to ourselves." <<He>> winks.
 				<<else>>
 					never mind. Food's getting cold." <<He>> scarfs down the rest of <<his>> plate.
@@ -1392,7 +1408,7 @@ You eat breakfast. You're not feeling talkative, and Alex seems content to focus
 
 :: Farm Breakfast Tea
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You make Alex a cup of tea. No sugar, a little milk, as <<he>> likes it.
 <br><br>
@@ -1464,7 +1480,7 @@ Alex rests <<his>> tea on the table, then reaches for your waist. "Not enough fo
 
 :: Farm Breakfast Tea 2
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You make two cups of tea. No sugar and just a splash of milk for Alex, as <<he>> likes it.
 <br><br>
@@ -1515,7 +1531,7 @@ Alex rests <<his>> tea on the table, then reaches for your waist. "Not enough fo
 
 :: Farm Breakfast Spank
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 "Harder," you say.
 
@@ -1544,7 +1560,7 @@ Alex rests <<his>> tea on the table, then reaches for your waist. "Not enough fo
 
 :: Farm Breakfast Spank 2
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 "H-harder," you say.
 
@@ -1572,7 +1588,7 @@ Alex rests <<his>> tea on the table, then reaches for your waist. "Not enough fo
 
 :: Farm Breakfast Spank 3
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 "Harder!" you scream.
 
@@ -1754,7 +1770,7 @@ You squirm free of Alex's grip. "You've learned your lesson," <<he>> says. <<He>
 You sit in front of the TV as Alex enters the kitchen. You hear the water boil. Alex returns a minute later, carrying two steaming mugs.
 <br><br>
 
-<<if $NPCName[$NPCNameList.indexOf("Alex")].lust gte 20>>
+<<if C.npc.Alex.lust gte 20>>
 	"Anything else I can do?" <<he>> says, bending over to place the mug on the small table beside you.
 	<br><br>
 
@@ -1974,7 +1990,7 @@ Alex slumps onto the chair beside you.
 
 :: Farm Breakfast Cuddle
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 You get comfy beside Alex.
 <<if $daily.alex.spank and $pain gte 20>>
@@ -2088,7 +2104,7 @@ You get comfy beside Alex.
 			<br><br>
 
 			<<He>> wraps an arm around you, and pauses for a moment.
-			<<if (knowsAboutAnyPregnancy("pc", "Alex") and $NPCName[$NPCNameList.indexOf("Alex")].gender is "m") or ($genderknown.includes("Alex") and $player.penisExist and $NPCName[$NPCNameList.indexOf("Alex")].gender is "f") or ($genderknown.includes("Alex") and $player.gender isnot _alex.gender) or (!$genderknown.includes("Alex") and $player.gender_appearance isnot _alex.gender)>>
+			<<if (knowsAboutAnyPregnancy("pc", "Alex") and C.npc.Alex.gender is "m") or ($genderknown.includes("Alex") and $player.penisExist and C.npc.Alex.gender is "f") or ($genderknown.includes("Alex") and $player.gender isnot _alex.gender) or (!$genderknown.includes("Alex") and $player.gender_appearance isnot _alex.gender)>>
 				"Being honest, I didn't consider it. Dunno how I'll manage without booze. But I wouldn't mind. If it makes you happy, I'd be tenfold," <<he>> says, beaming at you.
 			<<else>>
 				"We could adopt. But I heard it's expensive. And we've got our hands full as is. Dunno how I'll manage without booze." <<He>> suddenly grins. "If it makes you happy though, I'd be tenfold."
@@ -2190,7 +2206,7 @@ You get comfy beside Alex.
 
 :: Farm TV Tease
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 <<set $daily.alex.tvTease to true>>
 
 <<if $speech_attitude is "meek">>
@@ -2370,7 +2386,7 @@ You sit beside Alex, and make yourself comfy.
 
 :: Farm Phone Cuddle 2
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 <<switch random(1, 10)>>
 	<<case 1>>
@@ -2508,7 +2524,7 @@ You sit beside Alex, and make yourself comfy.
 
 :: Farm Alex Admin Crawl
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 <<set _genitals to (_alex.penis isnot "none" ? _alex.penisdesc : "pussy")>>
 
 You crawl beneath Alex's desk. You peek between <<his>> knees. <<Hes>> on the phone to a <<if random(1,2) is 1>> supplier. <<else>> customer. <</if>>
@@ -2540,7 +2556,7 @@ You pull aside <<his>> underwear.
 	<<set $enemytrust += 100>>
 <</if>>
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 Alex talks on the phone, trying to keep <<his>> voice steady.
 <<switch random(1, 6)>>
 	<<case 1>>
@@ -2676,7 +2692,7 @@ You throw open the front door. Alex barges past Bailey, and stands beside you."I
 <<effects>>
 
 "We're not giving you a penny," Alex says. "Now get the fuck off
-<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte 20>>
+<<if C.npc.Alex.dom gte 20>>
 	my
 <<else>>
 	our
@@ -2731,7 +2747,7 @@ Alex glares at Bailey, then slams the door.
 <br>
 
 Alex rests a hand on your shoulder. "We won't be blackmailed," <<he>> says. "Get the fuck off
-<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte 20>>
+<<if C.npc.Alex.dom gte 20>>
 	my
 <<else>>
 	our
@@ -2777,7 +2793,7 @@ Alex slams the door.
 <<effects>><<npc "Alex">><<setKnowsAboutPregnancy "Alex" "pc">><<setTalkedAboutPregnancy "Alex" "pc">>
 <<set C.npc.Alex.pregnancy.selfKnowledge to true>>
 
-<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+<<if $farm_stage gte 7>>
 	You sit next to Alex on the sofa. "So, what is it?" you ask.
 
 	<<if npcBellyVisible("Alex")>>
@@ -2851,7 +2867,7 @@ Alex slams the door.
 :: Farm Alex Pregnancy Reveal 2
 <<effects>>
 
-<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+<<if $farm_stage gte 7>>
 	<<He>> releases you and looks at <<his>> belly for a moment. "Gonna have to take a break from the booze.
 
 	<<if pregnancyCountBetweenParents("Alex", "pc") lte 0 or pregnancyCountBetweenParents("pc", "Alex") lte 0>>
@@ -2914,7 +2930,7 @@ Alex slams the door.
 		Your thoughts turn to your <<if childrenCountBetweenParents("Alex", "pc") is 1 or childrenCountBetweenParents("pc", "Alex") is 1>>child that is<<else>>children that are<</if>> still at the orphanage.
 		<br><br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte 30>>
+		<<if C.npc.Alex.dom gte 30>>
 			<<He>> frowns. "If you want to avoid this, you better help me with the farm. I don't really want my children living as orphans."
 
 		<<else>>
@@ -2958,7 +2974,7 @@ Alex slams the door.
 		<br><br>
 		<<if $phase isnot 3>><<set $phase to 4>><</if>>
 	<<elseif C.npc.Alex.pregnancy.test is true>>
-		You hand the paternity test results to Alex. <<He>> freezes in place<<if $farm_stage gte 7 and $alex_countdown is undefined>>, but you can see a smile forming on <<his>> face.<<else>>.<</if>>
+		You hand the paternity test results to Alex. <<He>> freezes in place<<if $farm_stage gte 7>>, but you can see a smile forming on <<his>> face.<<else>>.<</if>>
         <br><br>
 
 	<<else>>
@@ -3094,7 +3110,7 @@ Alex slams the door.
     <</if>>
 
     <<if C.npc.Alex.pregnancy.test is true>>
-		<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+		<<if $farm_stage gte 7>>
 			"Wow," <<he>> says, breaking the silence. "I sure wasn't expecting that."
 			<br>
 
@@ -3223,7 +3239,7 @@ Alex slams the door.
 :: Farm PC Pregnancy Reveal 2
 <<effects>>
 
-<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+<<if $farm_stage gte 7>>
 	<<if C.npc.Alex.dom gte 30>>
 		<<He>> leans in again, pressing you tight against <<his>> body. "This also means that you're mine." <<He>> scowls darkly as <<he>> adds, "And I'm not letting Remy take what's mine."
 		<br><br>
@@ -3297,7 +3313,7 @@ Alex slams the door.
 		Your thoughts turn to your <<if childrenCountBetweenParents("Alex", "pc") is 1 or childrenCountBetweenParents("pc", "Alex") is 1>>child that is<<else>>children that are<</if>> still at the orphanage.
 		<br><br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte 30>>
+		<<if C.npc.Alex.dom gte 30>>
 			<<He>> frowns. "If you want to avoid this, you better help me with the farm. I don't really want my children living as orphans."
 
 		<<else>>
@@ -3319,7 +3335,7 @@ Alex slams the door.
 /*Only for the first non-LI pregnancy reveal*/
 <<effects>>
 
-<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte 30>>
+<<if C.npc.Alex.dom gte 30>>
     <<He>> frowns. "If you want to avoid this, you better help me with the farm. I don't really want my children living as orphans."
 
 <<else>>
@@ -3376,7 +3392,7 @@ Alex is willing to build a Nursery at the cottage, but first <span class="gold">
 
 <</if>>
 
-<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+<<if $farm_stage gte 7>>
 	Alex looks at you in horror. "You...you think?!"
 	<br><br>
 
@@ -3812,30 +3828,41 @@ Tears roll down <<his>> face, but <<he>> does <<his>> best to keep up <<his>> st
 <</if>>
 
 :: Farm PC Birth
-<<effects>><<set $pcBabyCount to getPregnancyObject("pc").fetus.length>>
+<<effects>>
 
-<<He>> grabs <<his>> phone and makes the call, explaining the situation and where the farm is located.
-<br><br>
+<<if !$ambulance>>
+	<<set $pcBabyCount to getPregnancyObject("pc").fetus.length>>
 
-Alex notices your anxiety. "Fancy a fancy cup of tea?" <<he>> asks with a smile on <<his>> face. "I'm sure it will help calm your nerves."
-<br><br>
+	<<He>> grabs <<his>> phone and makes the call, explaining the situation and where the farm is located.
+	<br><br>
 
-<<He>> goes to the kitchen and makes you a cup of tea.
-<br>
+	Alex notices your anxiety. "Fancy a fancy cup of tea?" <<he>> asks with a smile on <<his>> face. "I'm sure it will help calm your nerves."
+	<br><br>
 
-"Here," <<he>> says as <<he>> passes you the mug and takes a seat next to you.
-<br><br>
+	<<He>> goes to the kitchen and makes you a cup of tea.
+	<br>
 
-You take a sip. The taste is sweet, and it makes you feel warm.<<llstress>>
-<br>
+	"Here," <<he>> says as <<he>> passes you the mug and takes a seat next to you.
+	<br><br>
 
-The contractions continue to grow stronger and far more frequent, but you're able to breathe through it. <<gpain>>
-<br><br>
+	You take a sip. The taste is sweet, and it makes you feel warm.<<llstress>>
+	<br>
 
-Alex holds your hand, and you wait for the Doctor's arrival.
-<br><br>
+	The contractions continue to grow stronger and far more frequent, but you're able to breathe through it.<<gpain>><<violence 16>>
+	<br><br>
 
-<<link [[Next|Farm PC Birth 2]]>><</link>>
+	Alex holds your hand, and you wait for the Doctor's arrival.
+	<br><br>
+
+	<<link [[Next|Farm PC Birth 2]]>><</link>>
+
+<<else>>
+	You don't have to wait long before you hear a siren and a honk. Alex helps you stand and brings you closer to the paramedics; they quickly put you in the ambulance and drive to the hospital, but the pain becomes too much for you. You pass out.
+	<br><br>
+
+	<<link [[Next|Pregnancy Birth Hospital]]>><<endevent>><<set $phase to 1>><</link>>
+
+<</if>>
 
 :: Farm PC Birth 2
 <<effects>>
@@ -4175,7 +4202,7 @@ Alex hugs you. "I'm so sorry. This is all my fault, I should've worked harder, b
 <<he>> says, trying to sound confident.
 <br><br>
 
-<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+<<if $farm_stage gte 7>>
 	<<link [[Next|Farm Cottage]]>><<endevent>><</link>>
 
 <<else>>
@@ -4250,7 +4277,7 @@ You keep listening to Alex, not daring to interrupt <<him>>. <<He>> constantly a
 <<He>> stands up and take the empty mugs. "I can't take this responsibility all by myself...I should get back to work now," <<he>> says as <<he>> place the mugs in the kitchen and heads to the farm again
 <br><br>
 
-<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+<<if $farm_stage gte 7>>
 	<span class="gold">Alex is willing to keep <<his>> kids at the farm, but first you should help <<him>> out.</span>
 	<br><br>
 
@@ -4383,7 +4410,7 @@ Alex's mother waves at you two.
 Alex opens the door for you and helps you get in, entering from the other side and taking a seat next to you when you're in.
 <br><br>
 
-"My little <<if $NPCName[$NPCNameList.indexOf("Alex")].pronoun is "f">>girl<<else>>boy<</if>> is finally settling down," she laughs.
+"My little <<if C.npc.Alex.pronoun is "f">>girl<<else>>boy<</if>> is finally settling down," she laughs.
 <br>
 
 Alex blushes and turns <<his>> faces away.

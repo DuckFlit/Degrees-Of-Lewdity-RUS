@@ -56,7 +56,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/bottomReduction.png",
+		icon: "img/misc/icon/pillbottom.png",
+		frontIcon: "img/misc/icon/smalldownarrow.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
@@ -91,7 +92,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/bottomGrowth.png",
+		icon: "img/misc/icon/pillbottom.png",
+		frontIcon: "img/misc/icon/smalluparrow.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
@@ -126,7 +128,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/bottomBlocker.png",
+		icon: "img/misc/icon/pillbottom.png",
+		frontIcon: "img/misc/icon/smallcross.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
@@ -161,7 +164,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/breastReduction.png",
+		icon: "img/misc/icon/pillbreast.png",
+		frontIcon: "img/misc/icon/smalldownarrow.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
@@ -196,7 +200,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/breastGrowth.png",
+		icon: "img/misc/icon/pillbreast.png",
+		frontIcon: "img/misc/icon/smalluparrow.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
@@ -231,7 +236,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/breastBlocker.png",
+		icon: "img/misc/icon/pillbreast.png",
+		frontIcon: "img/misc/icon/smallcross.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
@@ -266,7 +272,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/penisReduction.png",
+		icon: "img/misc/icon/pillpenis.png",
+		frontIcon: "img/misc/icon/smalldownarrow.png",
 		display_condition() {
 			return V.player.penisExist && this.owned() > 0 ? 1 : 0;
 		},
@@ -301,7 +308,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/penisGrowth.png",
+		icon: "img/misc/icon/pillpenis.png",
+		frontIcon: "img/misc/icon/smalluparrow.png",
 		display_condition() {
 			return V.player.penisExist && this.owned() > 0 ? 1 : 0;
 		},
@@ -336,7 +344,8 @@ setup.pills = [
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/penisBlocker.png",
+		icon: "img/misc/icon/pillpenis.png",
+		frontIcon: "img/misc/icon/smallcross.png",
 		display_condition() {
 			return V.player.penisExist && this.owned() > 0 ? 1 : 0;
 		},
@@ -609,18 +618,12 @@ function addElementToGrid(item) {
 			hpiGridContainer.innerHTML +
 			`
 			<div class="hpi_item">
-				<div class="hpi_icon"><img class="icon" src="` +
-			item.icon +
-			`"</img></div>
-				<div class="hpi_name" id="hpi_name_` +
-			itemName +
-			`" >` +
-			itemName +
-			(item.autoTake() === true ? `<span class="hpi_auto_label"> [Auto]</span>` : "") +
-			`</div>
-				<div class="hpi_count" onmouseenter="T.disableGridClick = true" onmouseleave="T.disableGridClick = false">` +
-			item.owned() +
-			`</div>
+				<div class="hpi_icon">${item.frontIcon ? `<img class="icon infront" src="${item.frontIcon}"/>` : ""}<img class="icon" src="${item.icon}"/></div>
+				<div class="hpi_name" id="hpi_name_${itemName}">
+					${itemName}
+					${item.autoTake() === true ? `<span class="hpi_auto_label"> [Auto]</span>` : ""}
+				</div>
+				<div class="hpi_count" onmouseenter="T.disableGridClick = true" onmouseleave="T.disableGridClick = false">${item.owned()}</div>
 			</div>
 			`;
 		hpiGridContainer.lastElementChild.setAttribute("onclick", "window.onHomePillItemClick(" + "`" + item.name + "`" + ")");
@@ -633,40 +636,21 @@ function onHomePillItemClick(itemName) {
 		document.getElementById("homeDescPillContainer").style.display = "grid";
 		for (const item of setup.pills) {
 			if (item.name === itemName) {
-				document.getElementById("hpi_desc").outerHTML =
-					`<div id="hpi_desc">` +
-					item.description +
-					`
-					<div class="hpi_warning_label">` +
-					item.warning_label +
-					`</div>
+				document.getElementById("hpi_desc").outerHTML = `
+				<div id="hpi_desc">
+					${item.description}
+					<div class="hpi_warning_label">${item.warning_label}</div>
 					<div id="hpi_desc_action">
-						<a id="hpi_take_pills" onclick="window.onTakeClick(` +
-					"`" +
-					item.name +
-					"`," +
-					"`" +
-					item.type +
-					"`" +
-					`)" class="hpi_take_pills">Take pill</a>
-						<a id="hpi_take_every_morning" onclick="window.onAutoTakeClick(` +
-					"`" +
-					item.name +
-					"`," +
-					"`" +
-					item.type +
-					"`" +
-					`)">Take every morning</a>
+						<a id="hpi_take_pills" class="hpi_take_pills" onclick="window.onTakeClick('${item.name}', '${item.type}')">Take pill</a>
+						<a id="hpi_take_every_morning" onclick="window.onAutoTakeClick('${item.name}', '${item.type}')">Take every morning</a>
 					</div>
-				</div>
-				`;
+				</div>`;
 				window.initPillContextButtons(item);
 				document.getElementById("hpi_desc_img").innerHTML =
-					`<img` +
-					(item.shape === "galenic" ? ` style="margin-left: 17%;"` : "") +
-					` src="` +
-					item.icon +
-					`"></img>` +
+					(item.frontIcon
+						? `<img${item.shape === "galenic" ? ` style="margin-left: 17%;"` : ""} class="icon infront" src="${item.frontIcon}"/>`
+						: "") +
+					`<img${item.shape === "galenic" ? ` style="margin-left: 17%;"` : ""} src="${item.icon}" />` +
 					`<div id="hpi_indicator" class="hpi_indicator"></div>`;
 				window.addIndicators(item);
 			}

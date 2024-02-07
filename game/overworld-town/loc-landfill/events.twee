@@ -580,22 +580,37 @@ Laughter echoes down the tunnel, followed by a door slamming shut. <<tearful>> y
 <<generate1>><<person1>>"Stop right there," a voice shouts behind you. "This is private property. What the fuck do you think you're doing?"
 <br><br>
 
-Before you can assess your options, you feel an unnatural urge.
-<span class="lewd">Something inside pressures you to give yourself to the <<person>>.</span>
-Somehow you know going along with the urges will feel very good.
+Before you can assess your options,
+<<if numberOfEarSlime() gte 2>>
+	you feel the ear slime's influence. <span class="lewd">It's stronger now, redoubled. It commands you to give yourself to the <<person>>.</span> By now you know how good it will feel to comply.
+<<else>>
+	you feel an unnatural urge<<if $earSlimeDaysStat gte 100>>, one that you're already familiar with<<elseif $earSlimeDaysStat gte 2>>, one that you've felt before<</if>>.
+	<<if $earSlimeDaysStat gte 1>>
+		<span class="lewd">A new ear slime inside pressures you to give yourself to the <<person>>.</span> You know going along with the urges will feel very good.
+	<<else>>
+		<span class="lewd">Something inside pressures you to give yourself to the <<person>>.</span> Somehow you know going along with the urges will feel very good.
+	<</if>>
+<</if>>
 <br><br>
 
 <<if $promiscuity gte 55 and $submissive gte 1900>>
 	<<link [[Submit willingly|Trash Slime Submit willingly]]>>
-		<<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><<set $earSlime.promiscuity to 4>><<set $earSlime.startedThreats to true>>
+		<<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>>
+		<<if $earSlime.promiscuity lt 4>><<set $earSlime.promiscuity to 4>><</if>>
+		<<set $earSlime.startedThreats to true>>
 	<</link>><<promiscuous4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
 	<br>
 <</if>>
 <<link [[Obey|Trash Slime Obey]]>>
-	<<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><<set $earSlime.promiscuity to 2>>
+	<<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>>
+	<<if $earSlime.promiscuity lt 2>><<set $earSlime.promiscuity to 2>><</if>>
 <</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
 <br>
-<<link [[Ignore|Trash Slime Defy]]>><</link>>
+<<if numberOfEarSlime() gte 2 and $earSlime.startedThreats>>
+	<<link [[Defy|Trash Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+<<else>>
+	<<link [[Ignore|Trash Slime Defy]]>><</link>>
+<</if>>
 <br>
 
 
@@ -629,18 +644,60 @@ The <<person>> glances around, a small smile on <<his>> face. "I do tend to have
 :: Trash Slime Defy
 <<set $location to "landfill">><<set $outside to 1>><<effects>>
 
-You turn and run. For a moment your steps falter, remembering that promise it made to you.
-<br><br>
-<<tearful>> you manage to stumble away, where you crouch and hide behind a rundown car, unsure of what you just felt.
-<br><br>
+<<if numberOfEarSlime() gte 2 and $earSlime.startedThreats>>
+	<<if $earSlime.defyCooldown>>
+		<<if $earSlime.growth gte 100>>
+			<<set $earSlime.defyCooldown += 2>>
+			/* Likely unreachable, but included anyway */
+			You turn and run. You feel a jolt of pain as the slime punishes you for defiance, however, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+		<<else>>
+			You turn and run. You feel a jolt of pain as the slime punishes you for defiance, however, <span class="teal">it's still worn out from overpowering you earlier.</span> You feel it try, <span class="green">but fail,</span> to force your steps in the opposite direction.
+		<</if>>
+		<br><br>
+		<<endevent>>
 
-<i>Obeying the slime will provide benefits, but increase your corruption. The slime will become more powerful, and harder to resist, as it's influence grows.</i>
-<br><br>
+		<<link [[Next|Trash]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+		<<if $promiscuity gte 55 and $earSlime.growth lt 100>>
+			<<set $earSlime.defyCooldown += 4>>
+		<<else>>
+			<<set $earSlime.defyCooldown += 8>>
+		<</if>>
+		You turn and run. You feel a jolt of pain as the slime punishes you for defiance. It tries to force you to stay still, <span class="red">and you fail</span> to resist its influence.
+		<<ggwillpower>><<willpower 3>>
+		<br><br>
+		You drop to your knees in front of the <<person>>. "F-fuck," you say. "Fuck me." They're only half your own words.
+		<br><br>
 
-<<endevent>>
+		The <<person>> glances around, a small smile on <<his>> face. "I do tend to have that effect on people," <<he>> says, sauntering over.
+		<br><br>
+		<<link [[Next|Trash Slime Rape]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		You turn and run. You feel a jolt of pain as the slime punishes you for defiance, however, you feel it try, <span class="green">but fail,</span> to force your steps in the opposite direction.
+		<<gwillpower>><<willpower 1>>
+		<br><br>
+		<<endevent>>
 
-<<link [[Next|Trash]]>><<set $eventskip to 1>><</link>>
-<br>
+		<<link [[Next|Trash]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	You turn and run. For a moment your steps falter, remembering that promise it made to you.
+	<br><br>
+	<<tearful>> you manage to stumble away, where you crouch and hide behind a rundown car, unsure of what you just felt.
+	<br><br>
+	<<if numberOfEarSlime() is 1>>
+		<i>Obeying the slime will provide benefits, but increase your corruption. The slime will become more powerful, and harder to resist, as it's influence grows.</i>
+		<br><br>
+	<</if>>
+
+	<<endevent>>
+
+	<<link [[Next|Trash]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
 
 
 :: Trash Slime Rape
@@ -698,9 +755,12 @@ You turn and run. For a moment your steps falter, remembering that promise it ma
 
 <<clotheson>>
 <<endcombat>>
+<<endevent>>
 
-<i>Obeying the slime will provide benefits, but increase your corruption. The slime will become more powerful, and harder to resist, as corruption increases.</i>
-<br><br>
+<<if numberOfEarSlime() is 1>>
+	<i>Obeying the slime will provide benefits, but increase your corruption. The slime will become more powerful, and harder to resist, as corruption increases.</i>
+	<br><br>
+<</if>>
 
 <<link [[Next|Trash]]>><<set $eventskip to 1>><</link>>
 

@@ -15,17 +15,22 @@ You are in the antechamber outside the school toilets.
 	<br><br>
 	<<if $historytrait gte 2 and $schooldrainintro isnot 1>>
 		<<sewericon>><<link [[Secret tunnel to drain system (0:02)|School Drain]]>><<pass 2>><</link>>
-		<br><br>
+		<br>
 	<<elseif $historytrait gte 2>>
 		<<sewericon>><<link [[Secret tunnel to drain system (0:02)|Commercial Drain]]>><<pass 2>><</link>>
-		<br><br>
+		<br>
 	<</if>>
 	<<if $brothel_basement_intro is 1>>
 		<<if $promiscuity gte 55>>
 			<<brothelicon "gloryhole">><<link [[Set up gloryhole in antechamber|School Gloryhole Start]]>><</link>><<promiscuous4>>
-			<br><br>
+			<br>
 		<</if>>
 	<</if>>
+	<<if $condomLvl gte 1>>
+		<<schoolVendingMachine>>
+		<br>
+	<</if>>
+	<br>
 	<<getouticon>><<link [[Leave the toilets (0:01)|Hallways]]>><<pass 1>><</link>>
 	<br>
 <</if>>
@@ -206,7 +211,7 @@ You hiss at the <<beasttype>>. <<bHe>> backs away from you, <<bhis>> ears turned
 <<else>>
 	<<set $rescued += 1>>
 	The <<group>> look up as someone bursts into the room. It's Whitney.
-	<<if ($changingRoomGender is "boys" and $NPCName[$NPCNameList.indexOf("Whitney")].pronoun isnot "m") or ($changingRoomGender is "girls" and $NPCName[$NPCNameList.indexOf("Whitney")].pronoun isnot "f")>>
+	<<if ($changingRoomGender is "boys" and C.npc.Whitney.pronoun isnot "m") or ($changingRoomGender is "girls" and C.npc.Whitney.pronoun isnot "f")>>
 		They startle at the sight of a <<nnpc_gendery "Whitney">> in the $changingRoomGender' toilets, but <<nnpc_he "Whitney">> ignores them. <<nnpc_He "Whitney">> grabs you and drags you outside.
 	<<else>>
 		<<nnpc_He "Whitney">> grabs you and drags you outside before they can react.
@@ -375,9 +380,6 @@ You are in the boy's toilets.
 			<br>
 		<</if>>
 		<<pregnancyTest "School Boy's Toilets">>
-		<<if $condomLvl gte 1>>
-			<<schoolVendingMachine>>
-		<</if>>
 		<<storeon "schoolboys" "check">>
 		<<if _store_check isnot 1>>
 			<<getouticon>><<link [[Leave|Hallways]]>><</link>>
@@ -420,9 +422,6 @@ You are in the girl's toilets.
 			<br>
 		<</if>>
 		<<pregnancyTest "School Girl's Toilets">>
-		<<if $condomLvl gte 1>>
-			<<schoolVendingMachine>>
-		<</if>>
 		<<storeon "schoolgirls" "check">>
 		<<if _store_check isnot 1>>
 			<<getouticon>><<link [[Leave|Hallways]]>><</link>>
@@ -514,17 +513,12 @@ You bend over the sink and rinse out your mouth.
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 You insert the money into the machine and a 2-pack of condoms slides into a drawer.
 <<if Time.schoolTime>>
-	<<if $changingRoomGender is "boys">>
-		<<generatesm1>>
-	<<else>>
-		<<generatesf1>>
-	<</if>>
+	<br><br>
+	<<generate1>>
 	<<if $promiscuity gte 50>>
-		<br><br>
-		A <<person1>><<person>> enters the bathroom. <<He>> stares at you. You take the condoms and put them in your pocket while smiling at <<him>>.
+		A <<person1>><<person>> enters the antechamber. <<He>> stares at you. You take the condoms and put them in your pocket while smiling at <<him>>.
 	<<else>>
-		<br><br>
-		A <<person1>><<person>> enters the bathroom and looks in your direction. You wait until <<he>> has <<his>> back to you, washing <<his>> hands. You quickly take the package and put it in your pocket on the sly.
+		A <<person1>><<person>> enters the antechamber and looks in your direction. You wait until <<he>> has disappeared into the toilets. You quickly take the package and put it in your pocket on the sly. <<gstress>><<stress 1>>
 	<</if>>
 <<else>>
 	You take them.
@@ -532,8 +526,8 @@ You insert the money into the machine and a 2-pack of condoms slides into a draw
 <<set $money -= 2000>>
 <<gcondoms 2>>
 <br><br>
-<<set $daily.vendingMachine[$changingRoomGender] to true>>
-<<link [[Back|$currentToiletReturn]]>><<endevent>><</link>>
+<<set $daily.vendingMachine.used to true>>
+<<link [[Back|School Toilets]]>><<endevent>><</link>>
 
 :: Vending Machine Rob
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
@@ -551,13 +545,13 @@ You examine the vending machine.
 <</if>>
 <<condomicon "machine">><<link [[Smash it (0:10)|Vending Machine Smash]]>><<pass 10>><<crimeUp 5 "destruction">><<crimeUp 5 "petty">><</link>><<physiquedifficulty>> <<crimes "destruction" "petty">>
 <br>
-<<getouticon>><<link [[Back|$currentToiletReturn]]>><</link>>
+<<getouticon>><<link [[Back|School Toilets]]>><</link>>
 
 :: Vending Machine Sneak
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<set $weekly.theft.vendingMachine[$changingRoomGender] to true>>
+<<set $weekly.theft.vendingMachine.stolen to true>>
 <<set $tip to random(1, 3) * 2000>>
-<<set _condomsStolen to $daily.vendingMachine[$changingRoomGender] ? 0 : either(0, 0, 0, 0, 2, 2, 2, 4)>>
+<<set _condomsStolen to $daily.vendingMachine.used ? 0 : either(0, 0, 0, 0, 2, 2, 2, 4)>>
 You deftly open the vending machine and count out the money inside. There's <<printmoney $tip>>.
 <<if _condomsStolen>>There are also _condomsStolen condoms.<</if>>
 <br><br>
@@ -567,15 +561,15 @@ You deftly open the vending machine and count out the money inside. There's <<pr
 	<span class="blue">There's nothing more you can learn from locks this simple.</span>
 <</if>>
 <br><br>
-<<link [[Take them|$currentToiletReturn]]>><<set $money += $tip>><<gcondoms _condomsStolen>><<crimeUp `$tip / 100 + _condomsStolen * 10` "petty">><</link>><<crime "petty">>
+<<link [[Take them|School Toilets]]>><<set $money += $tip>><<gcondoms _condomsStolen>><<crimeUp `$tip / 100 + _condomsStolen * 10` "petty">><</link>><<crime "petty">>
 <br>
-<<link [[Leave them|$currentToiletReturn]]>><</link>>
+<<link [[Leave them|School Toilets]]>><</link>>
 
 :: Vending Machine Smash
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<set $weekly.theft.vendingMachine[$changingRoomGender] to true>>
+<<set $weekly.theft.vendingMachine.broken to true>>
 <<set $tip to random(0, 3) * 2000>>
-<<set _condomsStolen to $daily.vendingMachine[$changingRoomGender] ? 0 : either(0, 0, 0, 0, 2, 2, 2, 4)>>
+<<set _condomsStolen to $daily.vendingMachine.used ? 0 : either(0, 0, 0, 0, 2, 2, 2, 4)>>
 <<if $physiqueSuccess>>
 	<<if $tip is 0>>
 		<<if _condomsStolen is 0>>
@@ -583,15 +577,15 @@ You deftly open the vending machine and count out the money inside. There's <<pr
 		<<else>>
 			You kick the machine until you hear a crack. The lock breaks and the door opens. You look inside. There is no money, but you find _condomsStolen condoms.
 			<br><br>
-			<<link [[Take them and leave|$currentToiletReturn]]>><<gcondoms _condomsStolen>><<crimeUp `$tip / 100 + _condomsStolen * 10` "petty">><</link>><<crime "petty">>
+			<<link [[Take them and leave|School Toilets]]>><<gcondoms _condomsStolen>><<crimeUp `$tip / 100 + _condomsStolen * 10` "petty">><</link>><<crime "petty">>
 		<</if>>
 	<<else>>
 		You kick the machine until you hear a crack. The lock breaks and the door opens. You look inside and find <<printmoney $tip>><<if _condomsStolen>>, plus _condomsStolen condoms<</if>>.
 		<br><br>
-		<<link [[Take them and leave|$currentToiletReturn]]>><<set $money += $tip>><<gcondoms _condomsStolen>><<crimeUp `$tip / 100 + _condomsStolen * 10` "petty">><</link>><<crime "petty">>
+		<<link [[Take them and leave|School Toilets]]>><<set $money += $tip>><<gcondoms _condomsStolen>><<crimeUp `$tip / 100 + _condomsStolen * 10` "petty">><</link>><<crime "petty">>
 	<</if>>
 <<else>>
-	You kick the machine until you hear a crack. You try to open the door, but the lock is stuck. Finally, you give up and decide to try another day.
+	You kick the machine until you hear a crack. You try to open the door, but the lock is stuck. You give up and decide to try another day.
 <</if>>
 <br>
-<<link [[Leave|$currentToiletReturn]]>><</link>>
+<<link [[Leave|School Toilets]]>><</link>>

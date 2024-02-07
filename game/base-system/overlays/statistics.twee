@@ -2,11 +2,11 @@
 <<widget "statistics">>
 	<<foldout false "_virginitiesFoldout">>
 		<span class="gold">Virginities</span>
-		<<if $player.vaginaExist>>
+		<<if $player.vaginaExist or $player.virginity.vaginal isnot true>>
 			Vaginal virginity: <<print ($player.virginity.vaginal is true ? "Present" : "Taken by " + ($player.virginity.vaginal is false ? "unknown" : $player.virginity.vaginal))>>
 			<br>
 		<</if>>
-		<<if $player.penisExist>>
+		<<if $player.penisExist or $player.virginity.penile isnot true>>
 			Penile virginity: <<print ($player.virginity.penile is true ? "Present" : "Taken by " + ($player.virginity.penile is false ? "unknown" : $player.virginity.penile))>>
 			<br>
 		<</if>>
@@ -125,7 +125,7 @@
 			Orgasms while being choked: $chokeorgasm
 			<br>
 		<</if>>
-		<<if $player.penisExist or $toydildodisable is "f">>
+		<<if $player.penisExist or $toydildodisable is "f" or $penilestat>>
 			Penetrated others: $penilestat
 			<br>
 		<</if>>
@@ -133,7 +133,7 @@
 			Penetrated others with a strapon: $straponstat
 			<br>
 		<</if>>
-		<<if $player.penisExist>>
+		<<if $player.penisExist or $penileejacstat>>
 			Ejaculated in others: $penileejacstat
 			<br>
 		<</if>>
@@ -213,7 +213,7 @@
 			Nectar drank: <<print Math.floor($nectar_drank_stat)>> mL
 			<br>
 		<</if>>
-		<<if $player.penisExist>>
+		<<if $player.penisExist or $semen_produced_stat>>
 			Semen produced: <<print Math.floor($semen_produced_stat)>> mL
 			<br>
 		<</if>>
@@ -221,7 +221,7 @@
 			Lewd fluid produced: <<print Math.floor($lube_produced_stat)>> mL
 			<br>
 		<</if>>
-		<<if $player.penisExist or $breastfeedingdisable is "f">>
+		<<if $player.penisExist or $breastfeedingdisable is "f" or $fluid_forced_stat>>
 			Fluid forcibly milked: <<print Math.floor($fluid_forced_stat)>> mL
 			<br>
 		<</if>>
@@ -280,7 +280,7 @@
 			<br>
 			Pepper spray used: $spraystat
 			<br>
-			<<if $NPCName[$NPCNameList.indexOf("Eden")].init>>
+			<<if C.npc.Eden.init>>
 				Practise shots fired with Eden: $stat_shoot
 				<br>
 			<</if>>
@@ -665,8 +665,10 @@
 						<mouse class="tooltip linkBlue">(?)<span>At max size.</span></mouse>
 					<</if>>
 					<br>
-					Penis can shrink: <<print $player.penissize gt $penissizemin and ($player.penissize gte 0 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) lte -20)>>
-					<<if $player.penissize is -1 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) gt -20>>
+					Penis can shrink: <<print $player.penissize gt $penissizemin and ($player.gender isnot "f" or $player.penissize gt 0) and ($player.penissize gte 0 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) lte -20)>>
+					<<if $player.gender is "f" && $player.penissize is 0>>
+						<mouse class="tooltip linkBlue">(?)<span>At min size for the parasite penis.</span></mouse>
+					<<elseif $player.penissize is -1 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) gt -20>>
 						<mouse class="tooltip linkBlue">(?)<span>Need to overdose on shrinking pills or use a slime penis parasite.</span></mouse>
 					<<elseif $player.penissize is $penissizemin>>
 						<mouse class="tooltip linkBlue">(?)<span>At min size.</span></mouse>

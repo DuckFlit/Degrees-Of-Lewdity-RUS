@@ -32,7 +32,7 @@ function statusCheck(name) {
 window.statusCheck = statusCheck;
 
 function sydneyStatusCheck() {
-	const sydney = V.NPCName[V.NPCNameList.indexOf("Sydney")];
+	const sydney = C.npc.Sydney;
 
 	if (sydney.purity >= 50 && sydney.lust >= 60) T.sydneyStatus = "pureLust";
 	else if (sydney.corruption >= 10 && sydney.lust >= 20) T.sydneyStatus = "corruptLust";

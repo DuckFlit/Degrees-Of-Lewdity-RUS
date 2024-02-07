@@ -58,6 +58,50 @@ const Time = (() => {
 	const secondsPerMinute = 60;
 	const standardYearMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 	const leapYearMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	const synodicMonth = 29.53058867;
+	const moonPhases = {
+		new: {
+			start: 0,
+			end: 0.03,
+			endAlt: 1,
+			description: "New Moon",
+		},
+		waxingCrescent: {
+			start: 0.03,
+			end: 0.22,
+			description: "Waxing Crescent",
+		},
+		firstQuarter: {
+			start: 0.22,
+			end: 0.28,
+			description: "First Quarter",
+		},
+		waxingGibbous: {
+			start: 0.28,
+			end: 0.47,
+			description: "Waxing Gibbous",
+		},
+		full: {
+			start: 0.47,
+			end: 0.53,
+			description: "Full Moon",
+		},
+		waningGibbous: {
+			start: 0.53,
+			end: 0.72,
+			description: "Waning Gibbous",
+		},
+		lastQuarter: {
+			start: 0.72,
+			end: 0.78,
+			description: "Last Quarter",
+		},
+		waningCrescent: {
+			start: 0.78,
+			end: 0.97,
+			description: "Waning Crescent",
+		},
+	};
 	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 	const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -66,7 +110,7 @@ const Time = (() => {
 	let currentDate = {};
 
 	function set(timeStamp = V.timeStamp) {
-		currentDate = new DateTime((V.startDate || 0) + timeStamp);
+		currentDate = new DateTime((V.startDate || 0) + (timeStamp || 0));
 		V.timeStamp = timeStamp;
 	}
 	/*
@@ -109,11 +153,18 @@ const Time = (() => {
 		if (!hours) return fragment;
 
 		fragment.append(hourPassed(hours));
-		if (!V.statFreeze && currentDate.hour >= 6 && !V.daily.dawnCheck) {
+		if (
+			!V.daily.dawnCheck &&
+			((prevDate.hour < 6 && (currentDate.hour >= 6 || currentDate.day !== prevDate.day)) || (currentDate.day !== prevDate.day && currentDate.hour >= 6))
+		) {
 			V.daily.dawnCheck = true;
 			fragment.append(dawnCheck());
 		}
-		if (!V.statFreeze && currentDate.hour >= 12 && !V.daily.noonCheck) {
+		if (
+			!V.daily.noonCheck &&
+			((prevDate.hour < 12 && (currentDate.hour >= 12 || currentDate.day !== prevDate.day)) ||
+				(currentDate.day !== prevDate.day && currentDate.hour >= 12))
+		) {
 			V.daily.noonCheck = true;
 			fragment.append(noonCheck());
 		}
@@ -132,7 +183,7 @@ const Time = (() => {
 		return fragment;
 	}
 
-	function nextSchoolTermStartDate(date) {
+	function getNextSchoolTermStartDate(date) {
 		const newDate = new DateTime(date);
 		if (!holidayMonths.includes(newDate.month) && date.day < newDate.getFirstWeekdayOfMonth(2).day) {
 			return newDate.getFirstWeekdayOfMonth(2);
@@ -142,14 +193,16 @@ const Time = (() => {
 		return newDate.getFirstWeekdayOfMonth(2);
 	}
 
-	function nextSchoolTermEndDate(date) {
+	function getNextSchoolTermEndDate(date) {
 		const newDate = new DateTime(date);
 		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month);
 		return newDate.getFirstWeekdayOfMonth(2).addDays(-3).addHours(15);
 	}
 
 	function isSchoolTerm(date) {
-		const termEndDate = nextSchoolTermEndDate(date).addDays(1);
+		let termEndDate = getNextSchoolTermEndDate(date);
+		termEndDate = new DateTime(termEndDate.year, termEndDate.month, termEndDate.day);
+		termEndDate.addDays(1);
 		const firstMonday = date.getFirstWeekdayOfMonth(2);
 		const prevMonth = ((date.month - 2 + 12) % 12) + 1;
 
@@ -166,6 +219,56 @@ const Time = (() => {
 
 	function isSchoolTime(date) {
 		return isSchoolDay(date) && date.hour > 8 && date.hour < 15;
+	}
+
+	function getDayOfYear(date) {
+		const start = new DateTime(date.year, 1, 1);
+		const diff = date.timeStamp - start.timeStamp;
+		return Math.floor(diff / Time.secondsPerDay);
+	}
+
+	function getSecondsSinceMidnight(date) {
+		return date.hour * Time.secondsPerHour + date.minute * Time.secondsPerMinute;
+	}
+
+	// Current moon phase
+	function currentMoonPhase(date) {
+		const phaseFraction = date.moonPhaseFraction;
+		for (const phase in moonPhases) {
+			const range = moonPhases[phase];
+			if ((phaseFraction >= range.start && phaseFraction < range.end) || (range.endAlt && phaseFraction >= 0.97)) {
+				return phase;
+			}
+		}
+	}
+	// Date of previous occurrence of a specific moon phase
+	function previousMoonPhase(targetPhase) {
+		const date = new DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
+		date.setTime(0, 0);
+		do {
+			date.addDays(-1);
+			const currentPhase = currentMoonPhase(date);
+			if (currentPhase === targetPhase) {
+				return date;
+			}
+		} while (true);
+	}
+
+	// Date of next occurrence of a specific moon phase
+	function nextMoonPhase(targetPhase) {
+		const date = new DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
+		do {
+			date.addDays(1);
+			const currentPhase = currentMoonPhase(date);
+			if (currentPhase === targetPhase) {
+				return date;
+			}
+		} while (true);
+	}
+
+	function isBloodMoon(date) {
+		date = date ?? currentDate;
+		return (date.day === date.lastDayOfMonth && date.hour >= 21) || (date.day === 1 && date.hour < 6);
 	}
 
 	return Object.create({
@@ -240,13 +343,22 @@ const Time = (() => {
 			return hour < 6 ? "morning" : hour >= 9 ? "evening" : undefined;
 		},
 		get nextSchoolTermStartDate() {
-			return nextSchoolTermStartDate(currentDate);
+			return getNextSchoolTermStartDate(currentDate);
 		},
 		get nextSchoolTermEndDate() {
-			return nextSchoolTermEndDate(currentDate);
+			return getNextSchoolTermEndDate(currentDate);
 		},
 		get lastDayOfMonth() {
 			return currentDate.lastDayOfMonth;
+		},
+		get dayOfYear() {
+			return getDayOfYear(currentDate);
+		},
+		get secondsSinceMidnight() {
+			return getSecondsSinceMidnight(currentDate);
+		},
+		get currentMoonPhase() {
+			return currentMoonPhase(currentDate);
 		},
 		set,
 		setDate,
@@ -256,17 +368,24 @@ const Time = (() => {
 		isSchoolTerm,
 		isSchoolDay,
 		isSchoolTime,
+		getDayOfYear,
+		getSecondsSinceMidnight,
+		nextMoonPhase,
+		previousMoonPhase,
+		isBloodMoon,
 
 		secondsPerDay,
 		secondsPerHour,
 		secondsPerMinute,
 		standardYearMonths,
 		leapYearMonths,
+		synodicMonth,
+		moonPhases,
 		monthNames,
 		daysOfWeek,
 
-		getNextSchoolTermStartDate: nextSchoolTermStartDate,
-		getNextSchoolTermEndDate: nextSchoolTermEndDate,
+		getNextSchoolTermStartDate,
+		getNextSchoolTermEndDate,
 		getNextWeekdayDate: weekDay => currentDate.getNextWeekdayDate(weekDay),
 		getPreviousWeekdayDate: weekDay => currentDate.getPreviousWeekdayDate(weekDay),
 		isWeekEnd: () => currentDate.weekEnd,
@@ -827,7 +946,14 @@ function minutePassed(minutes) {
 	if (V.player.vaginaExist) fragment.append(passArousalWetness(minutes));
 
 	// Tanning
-	if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade") && !V.worn.handheld.type.includes("shade")) {
+	if (
+		Time.dayState === "day" &&
+		V.weather === "clear" &&
+		V.outside &&
+		V.location !== "forest" &&
+		!V.worn.head.type.includes("shade") &&
+		!V.worn.handheld.type.includes("shade")
+	) {
 		fragment.append(wikifier("tanned", minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2)));
 	}
 
@@ -844,6 +970,8 @@ function minutePassed(minutes) {
 
 function noonCheck() {
 	const fragment = document.createDocumentFragment();
+
+	if (V.statFreeze) return fragment;
 
 	delete V.bartend_info;
 	delete V.bartend_info_other;
@@ -868,6 +996,8 @@ function noonCheck() {
 
 function dawnCheck() {
 	const fragment = document.createDocumentFragment();
+
+	if (V.statFreeze) return fragment;
 
 	V.robinwakeday = 0;
 	V.wolfwake = 0;
@@ -1041,7 +1171,7 @@ function dailyNPCEffects() {
 	// Great Hawk
 	if (C.npc["Great Hawk"].init === 1) {
 		delete V.bird.satisfied;
-		if (V.bird.hunts.injured > 1) V.bird.hunts.injured--;
+		if (V.bird.injured > 1) V.bird.injured--;
 	}
 
 	// Wraith

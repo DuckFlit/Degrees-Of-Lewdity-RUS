@@ -69,42 +69,42 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 
 <<if $farm_stage lt 12>>
 	<<set _clearing to (100 - $farm.clearing)>>
-	<<set $percent=Math.floor((_clearing/100)*100)>>
+	<<set _percent=Math.floor((_clearing/100)*100)>>
 	One of the fields is being cleared,
 	<<if $farm.clearing lte 0>>
 		<span class="green">and is ready for planting!</span>
 		<div class="meter">
-		<<print '<div class="greenbar" style="width:' + $percent + '%"></div>'>>
+		<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
 		</div>
 	<<elseif $farm.clearing lte 20>>
 		<span class="teal">and is almost ready for planting.</span>
 		<div class="meter">
-		<<print '<div class="tealbar" style="width:' + $percent + '%"></div>'>>
+		<<print '<div class="tealbar" style="width:' + _percent + '%"></div>'>>
 		</div>
 	<<elseif $farm.clearing lte 40>>
 		<span class="lblue">and is starting to look civilised.</span>
 		<div class="meter">
-		<<print '<div class="lbluebar" style="width:' + $percent + '%"></div>'>>
+		<<print '<div class="lbluebar" style="width:' + _percent + '%"></div>'>>
 		</div>
 	<<elseif $farm.clearing lte 60>>
 		<span class="blue">and soil has been exposed in places.</span>
 		<div class="meter">
-		<<print '<div class="bluebar" style="width:' + $percent + '%"></div>'>>
+		<<print '<div class="bluebar" style="width:' + _percent + '%"></div>'>>
 		</div>
 	<<elseif $farm.clearing lte 80>>
 		<span class="purple">but the tangle remains defiant.</span>
 		<div class="meter">
-		<<print '<div class="purplebar" style="width:' + $percent + '%"></div>'>>
+		<<print '<div class="purplebar" style="width:' + _percent + '%"></div>'>>
 		</div>
 	<<elseif $farm.clearing lte 99>>
 		<span class="pink">but little progress has been made.</span>
 		<div class="meter">
-		<<print '<div class="pinkbar" style="width:' + $percent + '%"></div>'>>
+		<<print '<div class="pinkbar" style="width:' + _percent + '%"></div>'>>
 		</div>
 	<<else>>
 		<span class="red">but remains a jungle of weeds.</span>
 		<div class="meter">
-		<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
+		<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
 		</div>
 	<</if>>
 	<br>
@@ -121,7 +121,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<</if>>
 <</if>>
 
-<<if isPlayerNonparasitePregnancyEnding() and getPregnancyObject().fetus[0].father is "Alex">>
+<<if isPlayerNonparasitePregnancyEnding()>>
 	<<pcFarmBirth>>
 
 <<elseif $fields_damaged gte 0>>
@@ -204,6 +204,15 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<br>
 	<<getouticon>><<link [[Leave|Farmland]]>><</link>>
 	<br>
+
+<<elseif !npcIsPregnant("Alex") and Time.hour gte 6 and Time.hour lte 7 and !$weekly.alexHungOver and $rng gte 76>>
+	<<set $weekly.AlexHungOver to 1>>
+
+	You notice that Alex isn't in the shower shed, like <<nnpc_he "Alex">> usually is at this hour. The animals are all in their holdings. Alex must still be in the farmhouse.
+	<br><br>
+	
+	<<link [[Next|Farm Alex Hungover]]>><</link>>
+
 <<elseif ($farm_shift gte 360 or $farm.clearing lte 50) and $farm_stage is 2>>
 	<<farmVisitor>>
 <<elseif $farm_stage is 3 and $farm.clearing lte 0>>
@@ -225,7 +234,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<br><br>
 
 	<<link [[Next|Farm Stage 7]]>><<set $farm_countdown to 7>><<set $farm_stage to 7>><<set $alex_countdown to 3>><<set $wardrobes.alexFarm.unlocked to true>><</link>>
-<<elseif $farm_stage gte 7 and $NPCName[$NPCNameList.indexOf("Alex")].love gte 50 and $alex_countdown lte 0>>
+<<elseif $farm_stage gte 7 and C.npc.Alex.love gte 50 and $alex_countdown lte 0>>
 	<<npc Alex>><<person1>>
 	You return to the courtyard in front of the farmhouse. You hear footsteps fast approaching. You turn just in time to see Alex. With a laugh, <<he>> grapples and drags you off your feet.
 	<br><br>
@@ -580,7 +589,32 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 		<br>
 	<</if>>
 <<else>>
-	<<if $farm_work isnot undefined and $farm_work.alex isnot undefined and npcIsPregnant("Alex") and !talkedAboutPregnancy("Alex","pc") and npcBellySize("Alex") gte 1 and !$farm_work.alex.includes("shower","admin","clearing") and between(Time.hour, 6, 21)>>
+	<<if isPlayerNonparasitePregnancyEnding()>>
+		<<pcFarmBirth>>
+
+	<<elseif npcPregnancyEnding("Alex")>>
+		<<npc "Alex">>
+		"F-fuck..." you hear Alex yell. You rush to <<him>>.
+		<br>
+
+		"What's wrong?" you ask. Approaching <<him>>, you see fluids running down <<his>> thighs.
+		<br>
+
+		"I think it's happening," <<he>> says.
+		<br><br>
+
+		You feel your heart pounding faster than usual. "Should I take you to the hospital?" you ask.<<gstress>><<stress 6>>
+		<br><br>
+
+		"No, it's okay. I don't really like those places. Let's just go inside," <<he>> says.
+		<br>
+
+		You help <<him>> to get into the cottage and onto the sofa. "Could you call the local doctor?" <<he>> says while pulling <<his>> phone from <<his>> pocket and giving it to you.
+		<br><br>
+
+		<<link [[Next|Farm Alex Birth]]>><</link>>
+
+	<<elseif $farm_work isnot undefined and $farm_work.alex isnot undefined and npcIsPregnant("Alex") and !talkedAboutPregnancy("Alex","pc") and npcBellySize("Alex") gte 1 and !$farm_work.alex.includes("shower","admin","clearing") and between(Time.hour, 6, 21)>>
 		<<npc "Alex">>
 		Alex approaches you. You can see a nervous expression on <<his>> face.
 		<br><br>
@@ -632,31 +666,6 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 			<<link [[Next|Farm Work]]>><<endevent>><</link>>
 
 		<</if>>
-
-	<<elseif isPlayerNonparasitePregnancyEnding() and getPregnancyObject().fetus[0].father is "Alex">>
-		<<pcFarmBirth>>
-
-	<<elseif npcPregnancyEnding("Alex")>>
-		<<npc "Alex">>
-		"F-fuck..." you hear Alex yell. You rush to <<him>>.
-		<br>
-
-		"What's wrong?" you ask. Approaching <<him>>, you see fluids running down <<his>> thighs.
-		<br>
-
-		"I think it's happening," <<he>> says.
-		<br><br>
-
-		You feel your heart pounding faster than usual. "Should I take you to the hospital?" you ask.<<gstress>><<stress 6>>
-		<br><br>
-
-		"No, it's okay. I don't really like those places. Let's just go inside," <<he>> says.
-		<br>
-
-		You help <<him>> to get into the cottage and onto the sofa. "Could you call the local doctor?" <<he>> says while pulling <<his>> phone from <<his>> pocket and giving it to you.
-		<br><br>
-
-		<<link [[Next|Farm Alex Birth]]>><</link>>
 
 	<<elseif C.npc.Alex.pregnancy.missedBirth is true>>
 		<<npc "Alex">><<run delete C.npc.Alex.pregnancy.missedBirth>>
@@ -712,7 +721,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 		Alex approaches you. You can see a nervous expression on <<his>> face. "Hey."
 		<br><br>
 
-		"I got a call from the hospital saying that you were in labour. <<if C.npc.Alex.pregnancy.pcKnowledge>>Sorry I couldn't be there. I just couldn't leave the farm, not in this state...<<else>> I had no idea I knocked you up; you didn't tell me anything...<</if>>"
+		"<<if !$ambulance>>I got a call from the hospital saying that you were in labour.<</if>> <<if C.npc.Alex.pregnancy.pcKnowledge>>Sorry I couldn't be there. I just couldn't leave the farm, not in this state...<<else>> I had no idea I knocked you up; you didn't tell me anything...<</if>>"
 		<br><br>
 
 		<<He>> looks at your belly with sad eyes. "Look, I can't stand the idea of our kids somewhere out there, livin' as orphans. There's room here at the cottage for them, I'd just need some help with the fields and then with a nursery. It's an option, if you'll consider it."
@@ -724,7 +733,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 		<span class="gold">Alex is willing to keep <<his>> kids at the farm, but first you should help <<him>> out.</span>
 		<br><br>
 
-		<<link [[Next|Farm Work]]>><</link>>
+		<<link [[Next|Farm Work]]>><<run delete C.npc.Alex.pregnancy.pcKnowledge>><<unset $ambulance>><</link>>
 
 
 	<<elseif C.npc.Alex.pregnancy.fee is true>>
@@ -759,7 +768,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 
 	<<elseif $farm_yield_alex gte 1 and not (Time.hour lte 5 or Time.hour gte 22 or (Time.hour is 21 and $farm_end is 1)) and $farm_work.alex isnot "shower">>
 		<<npc Alex>><<person1>>
-		<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+		<<set _alex to C.npc.Alex>>
 		"Hey," shouts Alex, striding towards you. "We've had a better yield than expected lately," <<he>> says, grasping your hand in <<his>> own and pressing something into your palm.
 		<<if _alex.dom gte 30>>
 			<<if $farm_stage gte 7>>
@@ -1055,7 +1064,7 @@ A bundle falls down the stairwell.
 
 <<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 	It's a checkered shirt.<<upperwear 33>>
-	<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte $npcdomhigh and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10>>
+	<<if C.npc.Alex.dom gte $npcdomhigh and C.npc.Alex.lust gte 10>>
 		A smaller bundle follows. A pair of denim shorts.<<lowerwear 31>>
 	<<elseif playerBellySize() gte 8>>
 		Another bundle thumps to the ground in front of you. A pair of sweatpants.<<lowerwear 67>>
@@ -1065,7 +1074,7 @@ A bundle falls down the stairwell.
 <<elseif $worn.upper.type.includes("naked")>>
 	It's a checkered shirt.<<upperwear 33>>
 <<else>>
-	<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte $npcdomhigh and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10>>
+	<<if C.npc.Alex.dom gte $npcdomhigh and C.npc.Alex.lust gte 10>>
 		It's a pair of denim shorts.<<lowerwear 31>>
 	<<elseif playerBellySize() gte 8>>
 		It's a pair of sweatpants.<<lowerwear 67>>
@@ -1082,7 +1091,7 @@ A bundle falls down the stairwell.
 
 You get dressed in the kitchen. You hear Alex come down the stairs. <<He>> asks if you're decent before entering the kitchen.
 
-<<if $NPCName[$NPCNameList.indexOf("Alex")].dom gte $npcdomhigh and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10>>
+<<if C.npc.Alex.dom gte $npcdomhigh and C.npc.Alex.lust gte 10>>
 	<<His>> eyes traverse your body. "A little tight, maybe," <<he>> says. "Come on. We need to get back to work."
 <<else>>
 	"Fits well," <<he>> says. "Come on. We need to get back to work."
@@ -2217,7 +2226,7 @@ You sneak up to the shed, and push the door open.
 		<<if $NPCList[0].penis isnot "none">>
 			Rivulets of water run down <<his>> toned body, flowing over <<his>> <<print $NPCList[0].penisdesc>>.
 		<<else>>
-			Rivulets of water run down <<his>> toned body<<if npcBellyVisible("Alex")>>and <<his>> baby bump<</if>>.
+			Rivulets of water run down <<his>> toned body<<if npcBellyVisible("Alex")>> and <<his>> baby bump<</if>>.
 		<</if>>
 	<</if>>
 
@@ -2491,7 +2500,7 @@ You sneak up to the shed, and push the door open.
 
 :: Farm Rest
 <<effects>>
-<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+<<set _alex to C.npc.Alex>>
 
 <<if $phase is 1>>
 	<<npc Alex>><<person1>>
@@ -2643,7 +2652,7 @@ You sit beside Alex, then procure the milkshake. "Fancy a drink?" you ask simult
 You relax on the hammock next to the stables.
 <<if $weather is "rain" or $weather is "snow">>You're glad to have some cover from the <<print ($weather is "rain"?'rain':'snow')>>.<</if>>
 
-<<if $rng gte 75 and Time.dayState isnot "night" and $NPCName[$NPCNameList.indexOf("Alex")].love gte 80 and $farm_work.alex isnot "still" and $alex_countdown is undefined and $farm_stage gte 7>>
+<<if $rng gte 75 and Time.dayState isnot "night" and C.npc.Alex.love gte 80 and $farm_work.alex isnot "still" and $alex_countdown is undefined and $farm_stage gte 7>>
 	You see Alex approach, waving at you.
 	"Hey, partner," <<nnpc_he "Alex">> smiles and leans across your lap. "Just thought I'd swing by."
 	<br><br>
@@ -3087,3 +3096,334 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 <<He>> turns to leave, but pauses, "As long as the cattle aren't neglected, I don't mind."
 <br><br>
 <<link [[Next|Farm Barn]]>><<clotheson>><<endevent>><</link>>
+
+:: Farm Alex Hungover
+<<effects>>
+<<npc Alex>><<person1>>
+
+You walk up to the farmhouse, knocking on the door a few times. Nothing. You give another few knocks, a bit harder this time. Still nothing.
+<br><br>
+
+<<link [[Call for Alex (0:01)|Farm Alex Hungover Call]]>><<pass 1>><</link>>
+<br>
+
+<<if $farm_stage gte 7>>
+	<<link [[Unlock the door (0:01)|Farm Alex Hungover Keys]]>><<pass 1>><</link>>
+<<else>>
+	<<set $skulduggerydifficulty to 400>>
+	<<link [[Try to unlock the door (0:05)|Farm Alex Hungover Lock]]>><<pass 5>><</link>><<skulduggerydifficulty>>
+<</if>>
+
+:: Farm Alex Hungover Call
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Alex, you ok in there?" you weakly yell. You press your ear to the door to listen for noise.
+<<elseif $speech_attitude is "bratty">>
+	"Don't make me come in there and pick you up off the ground!" Your voice booms with annoyance.
+<<else>>
+	"Hey, are you alright in there?" you yell. You don't hear anything at first. Your patience pays off as you hear footsteps within the cottage.
+<</if>>
+<br><br>
+
+The door finally opens, revealing Alex holding <<his>> head in one hand. <<He>> has large bags under <<his>> eyes.
+<br><br>
+
+<<link [[Next|Farm Alex Hungover Call 2]]>><</link>>
+
+:: Farm Alex Hungover Call 2
+<<effects>>
+
+Alex gives you a tired smile. "<<if C.npc.Alex.dom lte 49>>Hey partner, thanks for checking on me<<else>>Look, the townie is up before me...Thanks for checking on me<</if>>." <<His>> eyes don't meet yours.
+<br><br>
+
+You open your mouth to speak, but before you get the chance,
+
+<<if ($alex_countdown is undefined and $farm_stage gte 7) or C.npc.Alex.love gte 50>>
+	Alex grabs your shoulder, pulling you in for a kiss.
+	<br><br>
+
+	<<link [[Turn cheek|Farm Alex Hungover Call 3]]>><<set $phase to 1>><</link>><<ldom>><<llove>><<npcincr "Alex" dom -1>><<npcincr "Alex" love -1>>
+	<br>
+	<<link [[Stay still|Farm Alex Hungover Call 3]]>><<set $phase to 2>><</link>><<gdom>><<gglove>><<npcincr "Alex" dom 1>><<npcincr "Alex" love 2>><<kissvirginitywarning>>
+
+<<else>>
+	Alex speaks. "Let's get to work. The animals will get rowdy if we keep them waiting." <<He>> already moves past you before <<he>> even finishes speaking.
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+
+<</if>>
+
+:: Farm Alex Hungover Call 3
+<<effects>>
+
+<<if $phase is 1>>
+	You turn your head, and Alex's lips land on your cheek. <<He>> sheepishly looks away. "Let's just get to work then," <<he>> mutters, sounding embarrassed
+	<br><br>
+
+<<else>>
+	<<takeKissVirginity "Alex" `($alex_countdown is undefined?"loveInterest":"loveRape")`>>
+
+	You can taste the alcohol on <<his>> lips.
+	
+	<<if C.npc.Alex.lust gte 20>>
+		You feel <<his>> hand travel down to your ass, giving it a quick squeeze before pulling away.<<garousal>><<arousal 600>>
+
+	<<else>>
+		"<<if $alex_countdown is undefined and $farm_stage gte 7>>
+			He nuzzles your nose with <<his>> 
+		<<else>>
+			It doesn't last long
+		<</if>>."
+
+	<</if>>
+	<br><br>
+
+	"Time to get to work. Don't want to keep the animals waiting any longer." 
+
+<</if>>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+
+:: Farm Alex Hungover Lock
+<<effects>>
+
+<<if $skulduggerysuccess is 1>>
+	The door opens. You find no sign of Alex downstairs. You climb up the stairs and head to <<his>> room.
+	<br><br>
+
+	<<link [[Next|Farm Alex Hungover Keys]]>><</link>>
+
+<<else>>
+	You hear something click as you try to pick the lock, <span class="red">but the door still won't open.</span> You have a feeling you damaged the lock.<<gstress>><<stress 6>>
+	<br><br>
+
+	<<link [[Call for Alex (0:01)|Farm Alex Hungover Call]]>><<pass 1>><</link>>
+
+<</if>>
+
+:: Farm Alex Hungover Keys
+<<effects>>
+
+You enter Alex's room and find <<him>> hanging off <<his>> bed. A few bottles of alcohol litter the floor.
+<br><br>
+
+You walk up to <<him>> and shake <<his>> shoulder. Alex groans and attempts to whack you away. Thankfully, none of <<his>> hits are strong enough to hurt.
+<br><br>
+
+It takes a few minutes, but Alex finally gives up, opening <<his>> eyes to look at you through <<his>> messy fringe.
+<br><br>
+
+<<link [[Next|Farm Alex Hungover Keys 2]]>><</link>>
+
+:: Farm Alex Hungover Keys 2
+<<effects>>
+
+<<if $farm_stage gte 7>>
+	"Mooorning parrtnerrr…I think I drank a little too much last night," Alex slurs, giving you a lazy smile.
+
+<<else>>
+	"Heyyyyy parrtnerrr…How did you get in? Did I leave the door unlocked? Alex slurs, rubbing <<his>> face. You nod.
+
+<</if>>
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	You gently brush  <<his>> fringe from <<his>> eyes before stroking <<his>> head. "I'm just glad you are alright...I was worried something happened."
+	<br><br>
+
+	<<He>> blushes at the gesture.
+
+	<<set _action to "<<He>> runs <<his>> hand over your <<genitals>>">>
+	<<set _dialogue to "How about I make it up to you">>
+
+
+<<elseif $speech_attitude is "bratty">>
+	You scoff, pinching <<his>> cheek before brushing <<his>> fringe out of <<his>> eyes. "Lucky you didn't fall out of bed and bust your ass."
+	<br><br>
+
+	<<He>> sheepishly chuckles and presses <<his>> cheek up against your hand.
+
+	<<set _action to "<<He>> moves <<his>> hand to your <<bottom>>, giving it a squeeze.">>
+
+	<<if C.npc.Alex.penis isnot "none">>
+		<<set _dialogue to "How about I bust your ass instead">>
+	<<else>>
+		<<set _dialogue to "How about bust my ass for me">>
+	<</if>>
+
+<<else>>
+	You sigh before brushing <<his>> bangs out of <<his>> face. "I'm glad you are alright. Just be more careful next time."
+	<br><br>
+
+	<<He>> gives a lazy nod.
+	<<set _action to "<<He>> tries to pull you down into bed with <<him>>">>
+
+<</if>>
+<br><br>
+
+Without sitting up, <<he>> gropes for your face.
+
+<<switch $bodysize>>
+	<<case 0>>
+		<<He>> successfully cups your cheek with <<his>> hand.
+	<<case 1>>
+		<<He>> manages to grab your chin, holding it between <<his>> forefinger and thumb.
+	<<case 2>>
+		<<He>> is unable to reach, so <<he>> attempts to pat your shoulder instead.
+	<<case 3>>
+		<<He>> can't quite reach, so <<he>> settles for grabbing your shoulder.
+<</switch>>
+<br><br>
+
+<<print _action>>
+
+<<if _dialogue isnot undefined>>
+	"<<print _dialogue>>"
+<</if>>
+<<garousal>><<arousal 600>>
+<br><br>
+
+<<link [[Join Alex in bed|Farm Alex Hungover Sex]]>><<set $sexstart to 1>><</link>>
+<br>
+<<link [["Gently remove Alex's hand"|Farm Alex Hungover Keys 3]]>><<set $phase to 4>><</link>>
+
+:: Farm Alex Hungover Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 100>>
+	
+	<<if $speech_attitude is "meek">>
+		<<if C.npc.Alex.penis isnot "none">>
+			Alex lifts up the covers, guiding you to straddle <<his>> lap. You cup <<his>> cheek.
+		<<else>>
+			Alex lifts up the covers, pushing you to the bed and straddling your lap. <<He>> cups your cheek.
+		<</if>>
+	<<elseif $speech_attitude is "bratty">>
+		<<if C.npc.Alex.penis isnot "none">>
+			You waste no time throwing off the covers and straddling Alex's lap. You press your chestti into <<his>> face.
+		<<else>>
+			You waste no time throwing off the covers and Alex quickly straddles your lap. <<He>> press <<his>> chest into your face.
+		<</if>>
+	<<else>>
+		<<if C.npc.Alex.penis isnot "none">>
+			You lift up the covers as Alex guides you to straddle <<his>> lap. You kiss <<his>> forehead.
+		<<else>>
+			You lift up the covers as Alex starts to straddle your lap. <<He>> kiss your forehead.
+		<</if>>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+
+<<actionsman>>
+<<if _combatend>>
+	<span id="next"><<link [[Next|Farm Alex Hungover Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Farm Alex Hungover Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Farm Alex Hungover Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<if $speech_attitude is "meek">>
+		You cling to Alex as <<he>> rides out <<his>> orgasm.
+	<<elseif $speech_attitude is "bratty">>
+		You grind on Alex as <<he>> rides out <<his>> orgasm.
+	<<else>>
+		You hold onto Alex as <<he>> rides out <<his>> orgasm.
+	<</if>>
+
+	<<He>> sits upright, keeping you in <<his>> lap. "I think my hangover is getting better already." Alex places a kiss on your cheek. "Come on now, let's get to work."
+
+<<elseif $enemyhealth lte 0>>
+	You climb off of Alex and move away from the bed. <<He>> stares at you in confusion and rubs <<his>> face. 
+	<br><br>
+
+	"Didn't have to be that rough," Alex groans as <<he>> sits up. "Let's just get to work."
+
+<<else>>
+	Alex looks disappointed as you climb off of <<him>>. <<He>> sits upright. 
+	<br><br>
+	
+	"Don't want to fuck a drunk cow<<if C.npc.Alex.gender is "f">>girl<<else>>boy<</if>>?" Alex sheepishly chuckles as <<he>> stands up from the bed. "I suppose we should get to work then."
+
+<</if>>
+
+<<endcombat>>
+<<endevent>>
+
+<<link [[Next|Farm Alex Hungover Keys 3]]>><</link>>
+
+
+:: Farm Alex Hungover Keys 3
+<<effects>>
+
+<<if $phase is 4>>
+	You take Alex's hand off of you. <<He>> looks disappointed but doesn't say anything.
+
+	<<if $arousal gte 6000>>
+		<<if $speech_attitude is "meek">>
+			"W-we can mess around later," you say
+			<br><br>
+
+			Alex chuckles before sitting up in bed. "Alrighty, partner. Best you keep your word." Alex smirks. "Now let's get going."
+
+		<<elseif $speech_attitude is "bratty">>
+			"Easy there, cow<<if C.npc.Alex.gender is "f">>girl<<else>>boy<</if>>. We've got work to do." You smirk as you pinch Alex's cheek. <<He>> blushes before sitting up in bed.
+			<br><br>
+
+			"Y-yeah. Let's get going."
+
+		<<else>>
+			"We can have a ride later," you say with a smile. Alex flushes before standing up from the bed.
+			<br><br>
+
+			"Alrighty then. Let's get to work."
+
+		<</if>>
+
+	<<else>>
+		<<if $speech_attitude is "meek">>
+			"N-not when you are like this..." you say. Alex sighs.
+			<br><br>
+
+			"Alright partner. Let's get to work then," <<he>> rubs <<his>> face, smiling slightly.
+		<<elseif $speech_attitude is "bratty">>
+			"Don't get your panties in a twist. Get in your mind again and then I'll consider fucking you," you huff, crossing your arms. Alex opens <<his>> mouth to speak before closing. 
+			<br><br>
+
+			<<He>> awkwardly rubs <<his>> neck. "Fine partner. Let's get to work then," Alex gives a small smile.
+		<<else>>
+			"Let's wait till you have a better state of mind," you say as pat <<his>> shoulder. Alex huffs but sighs.
+			<br><br>
+
+			"Alright partner. Let's get to work," Alex smiles as <<he>> pats your shoulder in return.
+		<</if>>
+
+	<</if>>
+	<<glove>><<npcincr "Alex" love 1>>
+
+<<else>>
+	<<npc "Alex">>
+	You help Alex out of bed, making sure <<he>> is steady. You try to let go of <<his>> waist, but suddenly find yourself enveloped in a hug.<<lstress>><<stress -6>>
+	<br><br>
+
+	"Thanks partner. I'm lucky to have you around," Alex whispers into your ear. "Come on now. The animals are gonna be waiting."<<glove>><<npcincr "Alex" love 1>>
+
+<</if>>
+<br><br>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>

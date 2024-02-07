@@ -435,7 +435,13 @@
 
 <<widget "delinquency">>
 	<<if _args[0] and $statFreeze isnot true>>
-		<<set $delinquency += (_args[0] * 4)>>
+		<<if _args[1] is "bonus">>
+			<!-- find how many visible, non-mandatory school clothes are equipped, and add 1 -->
+			<<set $_mult to getVisibleClothesList().reduce((mult, slot) => mult + (slot.type && slot.type.includes("school") && !["upper", "lower"].includes(slot.name)), 1)>>
+			<<set $delinquency += ($_mult gte 1) ? (_args[0] * $_mult) : 0>>
+		<<else>>
+			<<set $delinquency += (_args[0] * 4)>>
+		<</if>>
 		<<set $delinquency to Math.clamp($delinquency, 0, 1000)>>
 	<</if>>
 <</widget>>

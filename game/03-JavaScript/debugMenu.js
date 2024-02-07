@@ -613,7 +613,7 @@ setup.debugMenu.eventList = {
 			widgets: [
 				`<<endcombat>>`,
 				`<<set $syndromeeden to 1>>`,
-				`<<set $NPCName[$NPCNameList.indexOf("Eden")].lust to 0>>`,
+				`<<set C.npc.Eden.lust to 0>>`,
 				`<<set $edenshrooms to 0>>`,
 				`<<set $edengarden to 0>>`,
 				`<<set $edenspring to 0>>`,

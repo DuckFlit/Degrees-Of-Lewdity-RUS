@@ -24,7 +24,6 @@ function skipToOrgasm(modifiers = "") {
 		if (T.corruptionMasturbation) masturbationSlimeControl();
 		masturbationeffects();
 		masturbationActions();
-		/* if (count % 10 === 0) console.log(count, V.arousal); */
 		if (modifiers.includes("timer")) V.timer -= 1;
 
 		// Other scene modifiers
@@ -39,6 +38,8 @@ function skipToOrgasm(modifiers = "") {
 			if (modifiers.includes("officePhase")) V.masturbationPhase++;
 			if (modifiers.includes("detentionPaddle")) masturbationDetentionPaddle();
 			if (modifiers.includes("privateShow")) masturbationPrivateShow();
+			if (modifiers.includes("studentAudience")) masturbationAudienceSkip("student");
+			if (modifiers.includes("audience")) masturbationAudienceSkip();
 		}
 	} while (count < 100 && (V.arousal > startArousal || count <= 6) && V.arousal < V.arousalmax && (V.timer > 0 || !modifiers.includes("timer")));
 }
@@ -48,7 +49,7 @@ function masturbationRobinWatching() {
 	if (V.daily.robin.masturbation) {
 		if (V.timer > 0) V.timer -= 1;
 	} else if (
-		V.NPCName[V.NPCNameList.indexOf("Robin")].init === 1 &&
+		C.npc.Robin.init === 1 &&
 		!V.daily.robin.masturbation &&
 		random(0, 100) >= 91 &&
 		T.robin_location === "orphanage" &&
@@ -95,4 +96,23 @@ function masturbationPrivateShow() {
 	} else {
 		wikifier("arousal", 100);
 	}
+}
+
+function masturbationAudienceCalc() {
+	const rng = random(10, 500);
+	// eslint-disable-next-line prettier/prettier
+	const result = rng < ((V.masturbationAudience * 5) + (V.orgasmcurrent * 10));
+	return result;
+}
+window.masturbationAudienceCalc = masturbationAudienceCalc;
+
+function masturbationAudienceIncrement(type) {
+	V.masturbationAudience++;
+	const generateType = type === "student" ? "generatey" : "generate";
+	if (V.masturbationAudience <= 6) wikifier(generateType + V.masturbationAudience);
+}
+DefineMacro("masturbationAudienceIncrement", masturbationAudienceIncrement);
+
+function masturbationAudienceSkip(type) {
+	if (masturbationAudienceCalc()) masturbationAudienceIncrement(type);
 }

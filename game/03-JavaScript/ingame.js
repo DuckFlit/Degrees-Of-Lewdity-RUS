@@ -34,14 +34,6 @@ function shopClothingFilterToggleTrait(trait) {
 }
 window.shopClothingFilterToggleTrait = shopClothingFilterToggleTrait;
 
-function shopClothingFilterSortOnDescription(traitOne, traitTwo) {
-	const descriptionOne = Wikifier.wikifyEval(`<<shopTraitDescription ${traitOne}>>`).textContent.trim();
-	const descriptionTwo = Wikifier.wikifyEval(`<<shopTraitDescription ${traitTwo}>>`).textContent.trim();
-
-	return descriptionOne > descriptionTwo;
-}
-window.shopClothingFilterSortOnDescription = shopClothingFilterSortOnDescription;
-
 function toggleAllHairTraitsFilter() {
 	const chboxes = $("#hairContainerTraits  input:not(:checked)");
 	if (chboxes.length > 0) chboxes.click();
@@ -403,19 +395,6 @@ function cheatPregnancyNPCReset() {
 }
 DefineMacro("cheatPregnancyNPCReset", cheatPregnancyNPCReset);
 
-/**
- * Checks if x is equal or higher than min and lower or equal to max
- *
- * @param {number} x
- * @param {any} min
- * @param {any} max
- * @returns {boolean}
- */
-function between(x, min, max) {
-	return typeof x === "number" && x >= min && x <= max;
-}
-window.between = between;
-
 function featsPointsMenuReset() {
 	jQuery(document).on("change", "#listbox--upgradenameid", () => {
 		Wikifier.wikifyEval("<<updateFeatsPointsMenu>>");
@@ -462,38 +441,6 @@ function ordinalSuffixOf(i) {
 	return i + "th";
 }
 window.ordinalSuffixOf = ordinalSuffixOf;
-
-function lerp(percent, start, end) {
-	return Math.clamp(start + (end - start) * percent, start, end);
-}
-window.lerp = lerp;
-
-function inverseLerp(value, start, end) {
-	return Math.clamp((value - start) / (end - start), 0, 1);
-}
-window.inverseLerp = inverseLerp;
-
-function formatDecimals(value, decimalPlaces) {
-	return Number(Math.round(parseFloat(value + "e" + decimalPlaces)) + "e-" + decimalPlaces);
-}
-window.formatDecimals = formatDecimals;
-
-function nCr(n, r) {
-	// https://stackoverflow.com/questions/11809502/which-is-better-way-to-calculate-ncr
-	if (r > n - r) {
-		// because C(n, r) == C(n, n - r)
-		r = n - r;
-	}
-
-	let ans = 1;
-	for (let i = 1; i <= r; ++i) {
-		ans *= n - r + i;
-		ans /= i;
-	}
-
-	return ans;
-}
-window.nCr = nCr;
 
 /**
  * Given there are {deckCount} cards in the deck and {markedCount} of them have been marked by the player,
@@ -646,11 +593,11 @@ window.setRobinLocationOverride = setRobinLocationOverride;
 function getRobinCrossdressingStatus(crossdressLevel) {
 	// Note returns 2 if Robin is crossdressing or 0 if not comfortable enough at that location
 	// Traumatised Robin will not crossdress.
-	if (V.NPCName[V.NPCNameList.indexOf("Robin")].init !== 1) {
+	if (C.npc.Robin.init !== 1) {
 		return;
 	}
 	T.robin_cd = 0;
-	if (V.NPCName[V.NPCNameList.indexOf("Robin")].trauma >= 40) {
+	if (C.npc.Robin.trauma >= 40) {
 		return;
 	}
 	switch (getRobinLocation()) {
@@ -683,14 +630,14 @@ window.getRobinCrossdressingStatus = getRobinCrossdressingStatus;
 function isInPark(name) {
 	switch(name.toLowerCase()) {
 		case "kylar":
-			return V.NPCName[V.NPCNameList.indexOf("Kylar")].state === "active"
+			return C.npc.Kylar.state === "active"
 				&& !["rain", "snow"].includes(V.weather)
 				&& Time.dayState === "day" && V.kylarwatched !== 1;
 		case "robin":
 			return getRobinLocation() === "park";
 		case "whitney":
-			return ["active", "rescued"].includes(V.NPCName[V.NPCNameList.indexOf("Whitney")].state)
-				&& V.NPCName[V.NPCNameList.indexOf("Whitney")].init === 1 && ["snow", "rain"].includes(V.weather)
+			return ["active", "rescued"].includes(C.npc.Whitney.state)
+				&& C.npc.Whitney.init === 1 && ["snow", "rain"].includes(V.weather)
 				&& Time.dayState === "day" && !Time.schoolTime
 				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
 		default:
@@ -1290,6 +1237,9 @@ function currentSkillValue(skill, disableModifiers = 0) {
 			if (V.worn.head.type.includes("maid")) {
 				result = Math.floor(result * 1.05);
 			}
+			if (V.worn.handheld.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
 			break;
 		case "vaginalskill":
 			if (V.earSlime.growth > 100) {
@@ -1434,7 +1384,7 @@ function npcClothes(npc, type) {
 window.npcClothes = npcClothes;
 
 function waterproofCheck(clothing) {
-	return clothing.type.includesAny("swim", "stealthy", "rainproof");
+	return clothing.type.includesAny("swim", "stealthy", "rainproof", "waterproof");
 }
 window.waterproofCheck = waterproofCheck;
 
@@ -1643,7 +1593,7 @@ function getHalloweenCostume() {
 		return "gothic";
 	} else if (upper.name === "nun's habit" && lower.name === "nun's habit skirt") {
 		return "nun";
-	} else if (upper.name.includes("maid") && lower.name.includes("maid")) {
+	} else if (upper.type.includes("maid") && lower.type.includes("maid")) {
 		return "maid";
 	} else if (upper.name.includes("christmas") && lower.name.includes("christmas")) {
 		return "christmas";
@@ -1657,7 +1607,7 @@ function getHalloweenCostume() {
 		return "monk";
 	} else if (upper.name === "padded football shirt" && lower.name === "football shorts") {
 		return "football";
-	} else if (upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") {
+	} else if ((upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") || (upper.name === "harem vest" && lower.name === "harem pants"))  {
 		return "belly dancer";
 	} else if (V.worn.head.name === "cowboy hat" && lower.name === "cowboy chaps" && V.worn.feet.name === "cowboy boots") {
 		return "cowboy";
@@ -2063,3 +2013,34 @@ function earSlimeMakingMundaneRequests(){
 	return true;
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
+
+function minArousal(){
+	let result = playerHeatMinArousal() + playerRutMinArousal();
+
+	result += Object.values(V.worn).reduce((prev, curr) => {
+		if (curr.type.includes("fetish")) return prev + 150;
+		return prev;
+	}, 0)
+
+	return Math.clamp(result, 0, 5000);
+}
+window.minArousal = minArousal;
+
+function minPain(){
+	let result = 0;
+
+	if (V.lactating && V.breastfeedingdisable === "f" && V.milkFullPain > 200) {
+		result += Math.ceil((V.milkFullPain - 200) / 5);
+		if (!V.daily.milkFullPainMessage) {
+			V.milkFullPainMessage = 1;
+			V.effectsmessage = 1;
+		}
+	}
+
+	if (V.earSlime.defyCooldown && (V.worn.genitals.name === "chastity parasite" || V.parasite.penis.name === "parasite" || V.parasite.clit.name === "parasite")) {
+		result += 25
+	}
+
+	return Math.clamp(result,0,50);
+}
+window.minPain = minPain;

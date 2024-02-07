@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable jsdoc/require-description-complete-sentence */
 // adjust mousetrap behavior, see mousetrap.js
 Mousetrap.prototype.stopCallback = function (e, element, combo) {
@@ -435,73 +436,40 @@ function mobBtnShow() {
 window.mobBtnShow = mobBtnShow;
 
 /**
- * This function takes a value, and weights it by exponential curve.
+ * Selects a random item from an array of weighted options. Each option is an array with
+ * two elements: the item, and its weight.
+ * Works similar to eventpool, but more generic and lightweight, and works with any data types.
  *
- * Value should be between 0.0 and 1.0 (use normalise to get a percentage of a max).
+ * Options with a higher weight have a higher chance of being chosen.
  *
- * An exponent of 1.0 returns 1 every time.
- *
- * Exponents between 1.0 and 2.0 return a curve favoring higher results (closer to 1)
- *
- * An exponent of 2.0 will return a flat line distribution, and is identical to random()
- *
- * Exponents greater than 2.0 return a curve favoring lower results (closer to 0), reaching to 0 at infinity.
- *
- * For example, see:
- * https://www.desmos.com/calculator/87hhrjfixi
- *
- * @param {number} value Value to be weighted
- * @param {number} exp Exponent used to generate the curve
- * @returns {number} value weighted against exponential curve
+ * @param {Array} options Each option is an array where the first item is a value, and the second item is its weight.
+ * @returns {*} The selected item
+ * @example
+ *     console.log(weightedRandom(["apple", 1], ["banana", 2], ["cherry", 3]));  // Relative probability for these will be: apple: 16.67%, banana: 33.33%, cherry: 50%
  */
-function expCurve(value, exp) {
-	return value ** exp / value;
-}
-window.expCurve = expCurve;
-
-/**
- * This function creates a random float 0.0-1.0, weighted by exponential curve.
- *
- * A value of 1.0 returns 1 every time.
- *
- * Values between 1.0 and 2.0 return a curve favoring higher results (closer to 1)
- *
- * A value of 2.0 will return a flat line distribution, and is identical to random()
- *
- * Values greater than 2.0 return a curve favoring lower results (closer to 0), reaching to 0 at infinity.
- *
- * For example, see:
- * https://www.desmos.com/calculator/87hhrjfixi
- *
- * @param {number} exp Exponent used to generate the curve
- * @returns {number} random number weighted against exponential curve
- */
-function randomExp(exp) {
-	return expCurve(State.random(), exp);
-}
-window.randomExp = randomExp;
-
-/**
- * Normalises value to a decimal number 0.0-1.0, a percentage of the range specified in min and max.
- *
- * @param {number} value The value to be normalised
- * @param {number} max The highest value of the range
- * @param {number} min The lowest value of the range, default 0
- * @returns {number} Normalised value
- */
-function normalise(value, max, min = 0) {
-	const denominator = max - min;
-	if (denominator === 0) {
-		Errors.report("[normalise]: min and max params must be different.", { value, max, min });
-		return 0;
+function weightedRandom(...options) {
+	if (!Array.isArray(options) || options.length === 0) {
+		throw new Error("Options must be a non-empty array.");
 	}
-	if (denominator < 0) {
-		Errors.report("[normalise]: max param must be greater than min param.", { value, max, min });
-		return 0;
+	let totalWeight = 0;
+	const processedOptions = options.map(([value, weight]) => {
+		if (typeof weight !== "number") {
+			throw new Error("Weight must be a number.");
+		}
+		totalWeight += weight;
+		return [value, totalWeight];
+	});
+
+	const random = Math.random() * totalWeight;
+	for (const [value, cumulativeWeight] of processedOptions) {
+		if (cumulativeWeight >= random) {
+			return value;
+		}
 	}
-	return Math.clamp((value - min) / denominator, 0, 1);
+	console.error("weightedRandom: Unreachable code reached. Returning " + options[0][0]);
+	return options[0][0];
 }
-window.normalise = normalise;
+window.weightedRandom = weightedRandom;
 
 /**
  * This macro sets $rng. If the variable $rngOverride is set, $rng will always be set to that.
@@ -547,13 +515,14 @@ window.nullable = nullable;
  * Files are all in img/misc/icon/
  * Example: <<icon "bed.png">>
  * <<icon "bed.png" "nowhitespace">> does not add a trailing whitespace for formatting.
+ * <<icon "bed.png" "infront">> will cause the icon to layer ontop of the next one
  */
 Macro.add("icon", {
 	handler() {
 		if (!V.options.images) return;
 		const name = typeof this.args[0] === "string" ? this.args[0] : "error";
 		const iconImg = document.createElement("img");
-		iconImg.className = "icon";
+		iconImg.className = "icon" + (this.args.includes("infront") ? " infront" : "");
 		iconImg.src = "img/misc/icon/" + name;
 		this.output.append(iconImg);
 		// append a whitespace for compatibility with old icon behavior
