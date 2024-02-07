@@ -22,17 +22,26 @@
 	}>>
 	<<set $bird.materials to {
 		wood: 0,
-		cloth: 0,
+		fabric: 0,
 		sticks: 0,
 		leaves: 0,
-		junk: 0
+		junk: 0,
+		lurkers: 0,
+		leather: 0,
+		valuables: {}
 	}>>
 	<<set $bird.upgrades to {
 		mirror: 0,
 		tools: 0,
 		tarp: 0,
-		pot: 0,
 		telescope: 0,
+		shelter: 1,
+		nest: 0,
+		firepit: 0,
+		pot: 0,
+		rack: 0,
+		snare: 0,
+		decor: 0,
 		wardrobe: 0
 	}>>
 <</widget>>
@@ -64,6 +73,20 @@
 					<<willpower `_args[0] / 10`>>
 				<</if>>
 			<</if>>
+		<</if>>
+		<<if $bird.upgrades.shelter is 1 and ($weather is "rain" or $weather is "snow")>>
+			<<if $birdShelterTimer is undefined>>
+				<<set $birdShelterTimer to 720>>
+			<<else>>
+				<<set $birdShelterTimer -= _args[0]>>
+			<</if>>
+			<<if $birdShelterTimer lte 0>>
+				<<set $bird.upgrades.shelter to 0>>
+			<</if>>
+		<<elseif $bird.upgrades.shelter is 0 and $bird.activty is "build">>
+			<<set $bird.upgrades.shelter to 1>>
+			<<set $birdShelterTimer to 720>>
+			<<set $birdShelterRepair to true>>
 		<</if>>
 	<</if>>
 <</widget>>
@@ -168,6 +191,10 @@
 			<br>
 		<<else>>
 			<<link [[Eat|Bird Tower Lurker]]>><<set $hunger to 1>><<bird_loot lurker 5>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>><<lllhunger>>
+			<br>
+		<</if>>
+		<<if $bird.hunts.lurkers is true>>
+			<<link [[Keep it|Bird Tower Lurker Keep]]>><<bird_loot lurker 5>><<set $bird.matrials.lurkers++>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<br>
 		<</if>>
 		<<link [[Scold|Bird Tower Lurker Scold]]>><<bird_loot lurker -20>><<transform bird 1>><<npcincr "Great Hawk" dom -1>><<def 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<ldom>>
@@ -356,11 +383,24 @@
 		at your feet, then looks at you, awaiting your response.
 		<br><br>
 
-		<<if $worn[_random_slot].name isnot "naked" and _random_clothes isnot "piece of fabric">>
-			<<link [[Wear|Bird Tower Clothes]]>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
-			<span class="blue">Your $worn[_random_slot].name will be replaced.</span><<gfabric>>
-		<<elseif _random_clothes isnot "piece of fabric">>
-			<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+		<<if $bird.upgrades.wardrobe is 1>>
+			<<if $worn[_random_slot].name isnot "naked" and _random_clothes isnot "piece of fabric">>
+				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<span class="blue">Your $worn[_random_slot].name will be put in your wardrobe.</span><<gfabric>>
+			<<elseif _random_clothes isnot "piece of fabric">>
+				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+			<</if>>
+			<<if _random_clothes isnot "piece of fabric">>
+				<br>
+				<<link [[Put it in the wardrobe|Bird Tower Clothes Keep]]>><<generalSend "wardrobe" _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+			<</if>>
+		<<else>>
+			<<if $worn[_random_slot].name isnot "naked" and _random_clothes isnot "piece of fabric">>
+				<<link [[Wear|Bird Tower Clothes]]>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<span class="blue">Your $worn[_random_slot].name will be replaced.</span><<gfabric>>
+			<<elseif _random_clothes isnot "piece of fabric">>
+				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+			<</if>>
 		<</if>>
 		<br>
 		<<link [[Thank|Bird Tower Fabric]]>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>><<gfabric>>
@@ -487,8 +527,8 @@
 		<<unset $birdBask>>
 		<br><br>
 
-		<<if $harpy gte 6 and $syndromebird is 1>>
-			<<if $bird.hunts.unlocked is true>>
+		<<if $syndromebird is 1>>
+			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
 				<<flight_time_check 30 "silent">>
 				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
 				<br>
@@ -917,17 +957,118 @@
 <</widget>>
 
 <<widget "flight_hunt_loot">>
-	You looted
-	
-	
-	<<number $bird.hunts.lootAmount>>
-	<<switch $bird.hunts.loot>>
-		<<case "wood">>piece<<if $bird.hunts.lootAmount gt 1>>s<</if>> of wood.
-		<<case "cloth">>piece<<if $bird.hunts.lootAmount gt 1>>s<</if>> of cloth.
-	<</switch>>
-	You add <<if $bird.hunts.lootAmount gt 1>>them<<else>>it<</if>> to the pile.
-	<<run delete $bird.hunts.loot>>
-	<<run delete $bird.hunts.lootAmount>>
+	<<set $_hordeLoot to 0>><<set $_otherLoot to 0>>
+	You looted:
+	<br>
+	<<for $_lootType range Object.keys($bird.hunts.loot)>>
+		<<set $_tempNum to $bird.hunts.loot[$_lootType]>>
+		<span class="green">- <<number $_tempNum>></span>
+		<<switch $_lootType>>
+			<<case "toolbox">>
+				<<set $_otherLoot++>><<set $bird.upgrades.tools to 1>>
+				box of tools. You place it somewhere safe.
+			<<case "pot">>
+				<<set $_otherLoot++>><<set $bird.upgrades.pot to 1>>
+				cooking pot. You place it near the rainwater pool.
+			<<case "telescope">>
+				<<set $_otherLoot++>><<set $bird.upgrades.telescope to 1>>
+				ornate telescope. You set it up near the precipice.		
+			<<case "wood">>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.wood += 1>>
+				piece<<if $_tempNum gte 2>>s<</if>> of wood.
+			<<case "fabric">>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.fabric += 1>>
+				scrap<<if $_tempNum gte 2>>s<</if>> of fabric.
+			<<case "sticks">>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.sticks += 1>>
+				stick<<if $_tempNum gte 2>>s<</if>>.
+			<<case "leaves">>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.leaves += 1>>
+				large <<if $_tempNum gte 2>>leaves<<else>>leaf<</if>>.
+			<<case "junk">>
+				<<set $_hordeLoot += $_tempNum>><<set $bird.materials.junk += 1>>
+				piece<<if $_tempNum gte 2>>s<</if>> of shiny junk.
+			<<case "lurkers">>
+				<<set $_lurkerLoot += $_tempNum>><<set $bird.materials.lurkers += 1>>
+				lurker<<if $_tempNum gte 2>>s<</if>>.
+			<<case "leather">>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.leather += 1>>
+				piece<<if $_tempNum gte 2>>s<</if>> of treated leather.
+			<<case "tarp">>
+				<<set $_hordeLoot++>><<set $bird.upgrades.tarp to 1>>
+				large tarp.
+			<<case "clothing">>
+				<<set $_matLoot += $_tempNum>>
+				piece<<if $_tempNum gte 2>>s<</if>> of clothing.
+			<<case "valuables">>
+				<<set $_hordeLoot += $_tempNum>>
+				valuable item<<if $_tempNum gte 2>>s<</if>>:
+				<<for $_lootValType range Object.keys($bird.hunts.loot.valuables)>>
+					<<set $_tempNumVal to $bird.hunts.loot.valuabes[$_lootValType]>>
+					<<if $bird.materials.valuabes[$_lootValType] is undefined>>
+						<<run $bird.materials.valuables.pushUnique($_lootValType : 0)>>
+					<</if>>
+					<<set $bird.materials.valuabes[$_lootValType] += $_tempNumVal>>
+					<br>
+					<<ind>><span class="teal">- <<number $_tempNumVal>></span> $_lootValType<<if $_tempNumVal gte 2>>s<</if>>.
+				<</for>>
+			<<default>>
+		<</switch>>
+		<br>
+	<</for>>
+	<<if $_hordeLoot gte 1 and $_matLoot gte 1 and $_otherLoot gte 1>>
+		You sort everything into neat piles.
+	<<elseif $_matLoot gte 2>>
+		You add the fresh materials to the pile.
+	<<elseif $_hordeLoot gte 2>>
+		You pile up your valuables into your horde.
+	<<elseif $_hordeLoot + $_matLoot + $_otherLoot gte 1>>
+		You add them to the pile.
+	<<elseif $_hordeLoot + $_matLoot + $_otherLoot is 1>>
+		You add it to the pile.
+	<</if>>
+	<br><br>
+
+	<<if $_lurkerLoot gte 1>>
+		<<if $bird.hunts.duo is true and $_lurkerLoot gte 2>>
+			Your spouse quickly devours one of the lurkers. <<set $bird.materials.lurkers -=1>>
+			<br><br>
+		<</if>>
+		<<if $bird.hunts.injured gt 1>>
+			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Injured Eat]]>><<set $bird.materials.lurkers -=1>><<set $bird.hunts.injured-->><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[Eat a lurker|Bird Tower Hunt End Eat]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<<link [[Continue|Bird Tower]]>><<endevent>><</link>>
+	<br>
+	<<flight_hunt_end>>
+<</widget>>
+
+<<widget "towerValuables">>
+	<span id="towerVal">
+		<<for $_valuables range Object.keys($bird.materials.valuables)>>
+			<<if $bird.materials.valuables[$_valuables] gte 1>>
+				<<set $_valuablessMessage to true>>
+				<<number $bird.materials.valuables[$_valuables]>> $_valuables<<if $bird.materials.valuables[$_valuables] gte 2>><<if $_valuables is "watch">>es<<else>>s<</if>><</if>>
+				<<capture $_valuables>>
+					<<link "Take one">>
+					<<if $_valuables is "antique bullet">><<set $antiquemoney += 50>><<museumAntiqueStatus "antiquebullet" "found">><<else>><<set $blackmoney += 50>><</if>>
+					<<set $bird.materials.valuables[$_valuables] -= 1>>
+					<<replace "#towerVal">><<towerValuabes>><</replace>>
+					<</link>> |
+					<<link "Take all">>
+					<<if $_valuables is "antique bullet">><<set $antiquemoney += (50 * $bird.materials.valuables[$_valuables])>><<museumAntiqueStatus "antiquebullet" "found">><<else>><<set $blackmoney += (50 * $bird.materials.valuables[$_valuables])>><</if>>
+					<<set $bird.materials.valuables[$_valuables] to 0>>
+					<<replace "#towerVal">><<towerValuabes>><</replace>>
+					<</link>>
+					<br>
+				<</capture>>	
+			<</if>>
+		<</for>>
+	</span>
 <</widget>>
 
 <<widget "flight_hunt_end">>
@@ -940,4 +1081,539 @@
 	<<run delete $bird.hunts.ignored>>
 	<<run delete $bird.hunts.loot>>
 	<<run delete $bird.hunts.lootAmount>>
+<</widget>>
+
+<<widget "towerBuildOption">>
+	<div>
+		<<if _towerUpgrades is undefined>><<set _towerUpgrades to {}>><</if>>
+		<<set _upgrade to _args[0]>>
+		<<set _towerUpgrades[_upgrade] to {}>>
+		<<switch _upgrade>>
+			<<case "shelter">>
+				<<set $_build to true>>
+				<<switch $bird.upgrades.shelter>>
+					<<case 0>>
+						<span class="red">Poor shelter (0)</span>: Rain will leak through.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Shelter 1">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 15>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							fabric: 1,
+							leaves: 5
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
+					<<case 1>>
+						<span class="purple">Makeshift shelter (1)</span>: Protection from rain, but will fall apart.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Shelter 2">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 90>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 2,
+							sticks: 2,
+							leaves: 5,
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1,
+							tarp: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 100>>
+					<<case 2>>
+						<span class="teal">Tarp shelter (2)</span>: Protection from rain.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Shelter 3">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 120>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 4,
+							fabric: 2,
+							sticks: 10,
+							leather: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1,
+							tarp: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].gradeRequired to {
+							science: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 200>>
+					<<case 3>>
+						<<unset $_build>>
+						<span class="green">Advanced Tarp shelter (3)</span>: Ventilated to allow smoke to escape while still keeping rain out.
+				<</switch>>
+			<<case "nest">>
+				<<set $_build to true>>
+				<<switch $bird.upgrades.nest>>
+					<<case 0>>
+						<span class="red">Wood nest (0)</span>: Poor sleep quality. Uncomfortable.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Nest 1">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 30>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							fabric: 2,
+							leaves: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 100>>
+					<<case 1>>
+						<span class="purple">Padded nest (1)</span>: Improves sleep quality a little bit. No splinters.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Nest 2">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 90>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 2,
+							fabric: 6,
+							sticks: 2,
+							leaves: 6,
+						}>>
+						<<set _towerUpgrades[_upgrade].activityRequired to "build">>
+						<<set _towerUpgrades[_upgrade].housekeeping to 300>>
+					<<case 2>>
+						<span class="teal">Cushioned nest (2)</span>: Improves sleep quality. Comfy.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Nest 3">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 120>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							fabric: 10,
+							leaves: 10,
+							junk: 4,
+							leather: 4
+						}>>
+						<<set _towerUpgrades[_upgrade].activityRequired to "build">>
+						<<set _towerUpgrades[_upgrade].housekeeping to 500>>
+					<<case 3>>
+						<<unset $_build>>
+						<span class="green">Luxurious nest (3)</span>: Improves sleep quality a lot. Pleasing to look at.
+				<</switch>>
+			<<case "firepit">>
+				<<set $_build to true>>
+				<<switch $bird.upgrades.firepit>>
+					<<case 0>>
+						<span class="red">No firepit (0)</span>: Dark and cold nights.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Firepit 1">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 2,
+							sticks: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
+					<<case 1>>
+						<span class="purple">Makeshift firepit (1)</span>: Will keep you warm, but burns out quickly. Doesn't produce enough smoke to be of concern. Anything larger will require proper ventilation.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Firepit 2">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 6,
+							sticks: 10,
+							junk: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1,
+							shelter: 3
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
+					<<case 2>>
+						<span class="teal">Robust firepit (2)</span>: Burns longer. Speeds up Lurker drying.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Firepit 3">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 120>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 8,
+							sticks: 12,
+							junk: 4,
+							leather: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1,
+							shelter: 3
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
+					<<case 3>>
+						<<unset $_build>>
+						<span class="green">Bonfire (3)</span>: Burns for a long time. Cooks and dries lurkers very quickly. Cozy.
+				<</switch>>
+			<<case "pot">>
+				<!-- This is set up as intended, I know it looks weird but the upgrade value gets set to 1 when the player finds the cooking pot -->
+				<<set $_build to true>>
+				<<switch $bird.upgrades.pot>>
+					<<case 0>>
+						<span class="red">No cooking pot (0)</span>: Can not cook.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Cooking">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 3,
+							fabric: 3,
+							sticks: 3
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							pot: 1,
+							firepit: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
+					<<case 1>>
+						<span class="purple">Unmounted cooking pot (1)</span>: Will need a mount above a firepit before it can be used.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Cooking">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 3,
+							fabric: 3,
+							sticks: 3
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							pot: 1,
+							firepit: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 100>>	
+					<<case 2>>
+						<span class="teal">Cooking pot (2)</span>: Can cook lurkers. With some ingenuity, you could use it to heat the rainwater bath.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Heating">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 180>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 6,
+							fabric: 8,
+							sticks: 6,
+							junk: 4,
+							leather: 8
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1,
+							firepit: 3
+						}>>
+						<<set _towerUpgrades[_upgrade].gradeRequired to {
+							science: 4
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 300>>
+					<<case 3>>
+						<<unset $_build>>
+						<span class="green">Cooking pot and heating element (3)</span>: Can cook lurkers. Feeding extra wood will heat the rainwater bath to a comfortably warm temperature.
+				<</switch>>
+			<<case "rack">>
+				<<set $_build to true>>
+				<<switch $bird.upgrades.rack>>
+					<<case 0>>
+						<span class="red">No drying rack (0)</span>: Can not dry out lurkers.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Rack 1">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 3,
+							fabric: 3,
+							sticks: 3
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
+					<<case 1>>
+						<span class="purple">Makeshift drying rack (1)</span>: Can dry out lurkers to harvest them for leather. A fire will speed up the process significantly.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Rack 2">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 4,
+							fabric: 4,
+							sticks: 4,
+							junk: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 200>>
+					<<case 2>>
+						<span class="teal">Expanded drying rack (2)</span>: Can dry out more lurkers at a time.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Rack 3">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 120>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 8,
+							sticks: 12,
+							leaves: 4,
+							junk: 4,
+							leather: 4
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1,
+							shelter: 3
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 600>>
+					<<case 3>>
+						<<unset $_build>>
+						<span class="green">Enclosed drying rack (3)</span>: Can dry out many lurkers at once. No harmful fumes will escape.
+				<</switch>>
+			<<case "snare">>
+				<<set $_build to true>>
+				<<switch $bird.upgrades.snare>>
+					<<case 0>>
+						<span class="red">No snare (0)</span>: Build a snare to catch lurkers at the bottom of the tower.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Snare 1">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 120>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 2,
+							fabric: 2,
+							sticks: 1,
+							leaves: 2,
+							junk: 1,
+							leather: 4
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 300>>
+					<<case 1>>
+						<span class="purple">Makeshift snare (1)</span>: Will sometimes catch a lurker at the bottom of the tower.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Snare 2">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 120>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 4,
+							sticks: 6,
+							leaves: 2,
+							junk: 1,
+							leather: 10
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 400>>
+					<<case 2>>
+						<span class="teal">Robust snare (2)</span>: Will regularly catch a lurker at the bottom of the tower.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Snare 3">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 240>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 6,
+							sticks: 10,
+							junk: 1,
+							leather: 16
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 600>>
+					<<case 3>>
+						<<unset $_build>>
+						<span class="green">Advanced Snare (3)</span>: Will often catch lurkers at the bottom of the tower. The Great Hawk will collect them automatically for you.
+				<</switch>>
+			<<case "decor">>
+				<<set $_build to true>>
+				<<switch $bird.upgrades.decor>>
+					<<case 0>>
+						<span class="red">No hunting trophies (0)</span>: No stress reduction after hunting.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Decor 1">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 120>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 2,
+							fabric: 2,
+							sticks: 2,
+							leaves: 2,
+							junk: 4,
+							lurkers: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 200>>
+					<<case 1>>
+						<span class="purple">Simple hunting trophies (1)</span>: Reduces a little stress each time you return from a successful hunt.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Decor 2">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 240>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 3,
+							fabric: 3,
+							sticks: 3,
+							leaves: 3,
+							junk: 6,
+							lurkers: 6
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 400>>
+					<<case 2>>
+						<span class="teal">Pleasing hunting trophies (2)</span>: Reduces stress after each successful hunt.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Decor 3">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 240>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 4,
+							fabric: 4,
+							sticks: 4,
+							leaves: 4,
+							junk: 10,
+							lurkers: 8
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							mirror: 1,
+							tools: 1,
+							shelter: 2,
+							nest: 2
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 600>>
+					<<case 3>>
+						<span class="green">Impressive hunting trophies (3)</span>: Large stress reduction after each successful hunt.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Decor 4">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 240>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							fabric: 10,
+							junk: 40,
+							lurkers: 30
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							mirror: 1,
+							tools: 1,
+							tarp: 1,
+							telescope: 1,
+							shelter: 3,
+							nest: 3,
+							wardrobe: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].activityRequired to "build">>
+						<<set _towerUpgrades[_upgrade].housekeeping to 800>>
+					<<case 4>>
+						<<unset $_build>>
+						<span class="gold">Legendary hunting trophies (4)</span>: Stress is entirely removed after a successful hunt, and some trauma is reduced. Terror has found its equal.
+				<</switch>>
+			<<case "wardrobe">>
+				<<set $_build to true>>
+				<<switch $bird.upgrades.wardrobe>>
+					<<case 0>>
+						<span class="red">No wardrobe</span>: No clothing storage possible.
+						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Wardrobe">>
+						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 20,
+							fabric: 8,
+							sticks: 10,
+							leaves: 10,
+							junk: 6,
+							lurkers: 4,
+							leather: 4
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1
+						}>>
+						<<set _towerUpgrades[_upgrade].housekeeping to 900>>
+					<<case 1>>
+						<<unset $_build>>
+						<span class="green">Wardrobe</span>: Access to clothing.
+				<</switch>>
+			<<default>>
+				<span class="red">Invalid option for: _upgrade</span>
+		<</switch>>
+		<<if $_build and _towerUpgrades[_upgrade].passage>>
+			<<if currentSkillValue('housekeeping') lt _towerUpgrades[_upgrade].housekeeping>>
+				<br>
+				<span class="black">
+					<<switch _towerUpgrades[_upgrade].housekeeping>>
+						<<case 100>><span class="pink">F+</span>
+						<<case 200>><span class="purple">D</span>
+						<<case 300>><span class="purple">D+</span>
+						<<case 400>><span class="blue">C</span>
+						<<case 500>><span class="blue">C+</span>
+						<<case 600>><span class="lblue">B</span>
+						<<case 700>><span class="lblue">B+</span>
+						<<case 800>><span class="teal">A</span>
+						<<case 900>><span class="teal">A+</span>
+						<<case 1000>><span class="green">S</span>
+					<</switch>>
+					housekeeping skill required.
+				</span>
+				<<set $_disableBuild to true>>
+			<</if>>
+			<<if _towerUpgrades[_upgrade].gradeRequired>>
+				<<for $_grade range Object.keys(_towerUpgrades[_upgrade].gradeRequired)>>
+					<<set $_gradeDisplay to $_grade>>
+					<<if $_gradeDisplay is "english">>
+						<<set $_gradeDisplay to $_gradeDisplay.toUpperCase()>>
+					<</if>>
+					<<if _towerUpgrades[_upgrade].gradeRequired[$_grade] lt V[$_grade + "trait"]>>
+						<br>
+						<span class="black">
+						<<switch _towerUpgrades[_upgrade].gradeRequired>>
+							<<case 1>>Passable $_gradeDisplay required
+							<<case 2>>Decent $_gradeDisplay required
+							<<case 3>>Good $_gradeDisplay required
+							<<case 4>>Excellent $_gradeDisplay required
+						<</switch>>
+						</span>
+						<<set $_disableBuild to true>>
+					<<else>>
+						<br>
+						<span class="green">
+						<<switch _towerUpgrades[_upgrade].gradeRequired>>
+							<<case 1>>Passable $_gradeDisplay required
+							<<case 2>>Decent $_gradeDisplay required
+							<<case 3>>Good $_gradeDisplay required
+							<<case 4>>Excellent $_gradeDisplay required
+						<</switch>>
+						</span>
+					<</if>>
+				<</for>>
+			<</if>>
+			<<if _towerUpgrades[_upgrade].activityRequired>>
+				<br>
+				<<if $bird.state isnot "home" or $bird.activity isnot _towerUpgrades[_upgrade].activityRequired>>
+					<span class="red">Requires the Great Hawk to be home and building the nest.</span>
+				<<else>>
+					<span class="green">Requires the Great Hawk to be home and building the nest.</span>
+				<</if>>
+			<</if>>
+			<<if _towerUpgrades[_upgrade].upgradesRequired>>
+				<<for $_upgradesRequired range Object.keys(_towerUpgrades[_upgrade].upgradesRequired)>>
+					<<if _towerUpgrades[_upgrade].upgradesRequired[$_upgradesRequired] lt $bird.upgrades[$_upgradesRequired]>>
+						<br>
+						<span class="black">
+						<<if ["toolbox", "tarp", "pot"].includes($_upgradesRequired)>>
+							<<print $_upgradesRequired.toUpperCase()>> required
+						<<else>>
+							<<print $_upgradesRequired.toUpperCase()>> level <<number $bird.upgrades[$_upgradesRequired]>> required
+						<</if>>
+						</span>
+						<<set $_disableBuild to true>>
+					<<else>>
+						<br>
+						<span class="green">
+						<<if ["toolbox", "tarp", "pot"].includes($_upgradesRequired)>>
+							<<print $_upgradesRequired.toUpperCase()>> required (obtained)
+						<<else>>
+							<<print $_upgradesRequired.toUpperCase()>> level <<number $bird.upgrades[$_upgradesRequired]>> required (obtained)
+						<</if>>
+						</span>
+					<</if>>
+				<</for>>
+			<</if>>
+			<<if _towerUpgrades[_upgrade].materialsUsed>>
+				<<for $_materialDisplay1 range Object.keys(_towerUpgrades[_upgrade].materialsUsed)>>
+					<<if _towerUpgrades[_upgrade].materialsUsed[$_materialDisplay1] gt $bird.materials[$_materialDisplay1]>>
+						<br>
+						<span class="black">More $_materialDisplay1 required.</span> <<bird_materials_required $_materialDisplay1 _towerUpgrades[_upgrade].materialsUsed[$_materialDisplay1]>>
+						<<set $_disableBuild to true>>
+					<</if>>
+				<</for>>
+			<</if>>
+			<<if _towerUpgrades[_upgrade].timeTaken>>
+				<<set _hours to Math.floor(_towerUpgrades[_upgrade].timeTaken / 60)>>
+				<<set _minutes to _towerUpgrades[_upgrade].timeTaken % 60>>
+				<<set _timeString to " (" +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
+			<<else>>
+				<<set _timeString to "">>
+			<</if>>
+			<<if $_disableBuild>>
+			<<elseif $bird.upgrades[_upgrade] is 0>>
+				<br>
+				<<link [["Build" + _timeString|_towerUpgrades[_upgrade].passage]]>>
+					<<set $bird.upgrades[_upgrade]++>>
+					<<if _towerUpgrades[_upgrade].timeTaken>><<bird_pass `_towerUpgrades[_upgrade].timeTaken`>><</if>>
+					<<if _towerUpgrades[_upgrade].materialsUsed>>
+						<<for $_materialsUsed range Object.keys(_towerUpgrades[_upgrade].materialsUsed)>>
+							<<set $bird.materials[$_materialsUsed] -= _towerUpgrades[_upgrade].materialsUsed[$_materialsUsed]>>
+						<</for>>
+					<</if>>
+				<</link>>
+				<<for $_materialDisplay2 range Object.keys(_towerUpgrades[_upgrade].materialsUsed)>>
+					| <<bird_materials_required $_materialDisplay2 _towerUpgrades[_upgrade].materialsUsed[$_materialDisplay2]>>
+				<</for>>
+			<<else>>
+				<br>
+				<<link [["Improve" + _timeString|_towerUpgrades[_upgrade].passage]]>>
+					<<set $bird.upgrades[_upgrade]++>>
+					<<if _towerUpgrades[_upgrade].timeTaken>><<bird_pass `_towerUpgrades[_upgrade].timeTaken`>><</if>>
+					<<if _towerUpgrades[_upgrade].materialsUsed>>
+						<<for $_materialsUsed range Object.keys(_towerUpgrades[_upgrade].materialsUsed)>>
+							<<set $bird.materials[$_materialsUsed] -= _towerUpgrades[_upgrade].materialsUsed[$_materialsUsed]>>
+						<</for>>
+					<</if>>
+				<</link>>
+				<<for $_materialDisplay2 range Object.keys(_towerUpgrades[_upgrade].materialsUsed)>>
+					| <<bird_materials_required $_materialDisplay2 _towerUpgrades[_upgrade].materialsUsed[$_materialDisplay2]>>
+				<</for>>
+			<</if>>
+		<</if>>
+	</div>
+<</widget>>
+
+<<widget "bird_materials_required">> |
+	<<if _args[0] and _args[1]>>
+		<<print _args[0].toUpperCase()>> required: <<number _args[1]>>
+	<<else>>
+		No materials required
+	<</if>>
 <</widget>>

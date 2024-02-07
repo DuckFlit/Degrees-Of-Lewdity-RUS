@@ -245,7 +245,7 @@ The <<beasttype>> flies above the ruins of a castle, and begins a circling desce
 		<<bHe>> ducks <<bhis>> head and lets out a soft trill.
 	<</if>>
 <<else>>
-	<<if ndef $bird>>
+	<<if !$bird.state>>
 		You look around the circular room. Small bones litter the ground. The only exit is through the broken wall.
 		There's a large pool formed from broken masonry on one side of the room, the missing roof above it allowing <<if $weather is "rain">>the rain to fill it<<else>>rainwater to collect within<</if>>. A nest sits on the other side of the room near the precipice, made from small logs and branches. 
 		<br><br>
@@ -256,7 +256,7 @@ The <<beasttype>> flies above the ruins of a castle, and begins a circling desce
 		<<bird_init>>
 		<<set $hunger to 1800>>
 		<<if $monster is 1>>
-			The <<beasttype>> between you and the exit, immense wings stretching from <<bhis>> back. <<bHe>> regards you happily, but with dark eyes.
+			The <<beasttype>> stands between you and the exit, immense wings stretching from <<bhis>> back. <<bHe>> regards you happily, but with dark eyes.
 			<br><br>
 
 			"I am Great Hawk," <<bhe>> says, puffing out <<bhis>> plumes. "I found <<wife>>."
@@ -395,8 +395,8 @@ You step forward, and slam a fist into the <<beasttype>>'s wing. <<bHe>> shrieks
 			<<bHe>> stares from the far side of the tower, watching you warily.
 		<</if>>
 	<</if>>
+	<br><br>
 <</if>>
-<br><br>
 
 <<if $physique gte 15000>>
 	<<pass 15>>
@@ -650,7 +650,7 @@ Moments later, you've arrived. The <<beasttype>> swoops through a broken wall, a
 
 :: Bird Rescue No Syndrome Tower 2
 <<set $outside to 0>><<set $location to "tower">>
-<<if ndef $bird>><<bird_init>><</if>>
+<<if !$bird.state>><<bird_init>><</if>>
 <<effects>>
 <<if $birdescaped gte 1>>
 	You look around the familiar tower. Nothing notable has changed. The <<beasttype>> stands before you, seeming proud of <<bhimself>>.
@@ -921,13 +921,21 @@ The <<beasttype>> looks at you, <<if $monster is 1>>smiling<<elseif understandsB
 <</if>>
 
 :: Bird Tower
-<<set $outside to 0>><<set $location to "tower">><<effects>><<getTarget true>>
 <<if $bird.state is undefined>>
 	<<bird_init>>/*Fixes rare broken save issue*/
 <</if>>
+<<if $bird.upgrades.shelter is 0>><<set $outside to 1>><<else>><<set $outside to 0>><</if>>
+<<set $location to "tower">><<effects>><<getTarget true>>
 <<bird_schedule>>
 
 You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>, deep in the moor.
+<<if $weather is "rain">>
+	<<switch $bird.upgrades.shelter>>
+		<<case 0>>Rain leaks through the eroded stone bricks above. <span class="red">The makeshift leaf shelter has collapsed.</span>
+		<<case 1>>Rain patters against the leaves covering the holes in the roof.
+		<<default>>
+	<</switch>>
+<</if>>
 <<if $syndromebird isnot 1>><<hunger_description>><</if>>
 <br><br>
 
@@ -941,7 +949,12 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<case "groom">>
 		The <<beasttype>> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
 	<<case "build">>
-		The <<beasttype>> is adding to the nest.
+		<<if $birdShelterRepair>>
+			<<unset $birdShelterRepair>>
+			<span class="teal">The <<beasttype>> is covering the holes in the roof with leaves and twigs.</span>
+		<<else>>
+			The <<beasttype>> is adding to the nest.
+		<</if>>
 	<<default>>
 		The <<beasttype>> rests in <<bhis>> nest.
 		<<set $birdSleep to 1>>
@@ -1022,8 +1035,8 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<</if>>
 		<br><br>
 
-		<<if $harpy gte 6 and $syndromebird is 1>>
-			<<if $bird.hunts.unlocked is true>>
+		<<if $syndromebird is 1>>
+			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
 				<<flight_time_check 30 "silent">>
 				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
 				<br>
@@ -1065,8 +1078,8 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<</if>>
 		<br><br>
 
-		<<if $harpy gte 6 and $syndromebird is 1>>
-			<<if $bird.hunts.unlocked is true>>
+		<<if $syndromebird is 1>>
+			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
 				<<flight_time_check 30 "silent">>
 				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
 				<br>
@@ -1166,6 +1179,10 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<<undobindingsicon>><<link [[Undo your bindings (0:10)|Bird Tower Unbind]]>><<bird_pass 10>><<unbind>><</link>>
 			<br><br>
 		<</if>>
+	<</if>>
+	<<if $syndromebird is 1 and $bird.hunts.unlocked and !($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+		<<edenicon "fix">><<link [[Improve the tower|Bird Tower Build]]>><</link>>
+		<br><br>
 	<</if>>
 	<<mooricon "perch">><<link [[Approach the perch|Bird Tower Perch]]>><</link>>
 	<br>
@@ -1733,6 +1750,18 @@ You remain still.
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
 
+:: Bird Tower Lurker Keep
+<<effects>>
+
+You hang up the lurker on the wall for later.
+<br><br>
+
+<i><<bHe>> will be more likely to bring you lurkers in the future, rather than other items.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
 
 :: Bird Tower Trash
 <<effects>>
@@ -1743,6 +1772,9 @@ You remain still.
 	"Nice and shiny," you say, lifting the rubbish. "Thanks, featherhead."
 <<else>>
 	"Thank you," you say, lifting the rubbish.
+<</if>>
+<<if $bird.hunts.valuables is true>>
+	You add it to the pile of valuables.<<set $bird.materials.junk++>>
 <</if>>
 <br><br>
 
@@ -2079,7 +2111,6 @@ You don't move.
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
 
-
 :: Bird Tower Clothes
 <<effects>>
 
@@ -2097,12 +2128,13 @@ You wear the new item.
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
 
-
-
 :: Bird Tower Fabric
 <<effects>>
 
 You thank the <<beasttype>>. You won't wear it, but the material might be useful.
+<<if $bird.hunts.materials is true>>
+	<<set $bird.materials.fabric++>>
+<</if>>
 <br><br>
 
 <<if $monster is 1>>
@@ -2160,6 +2192,23 @@ You don't move.
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
 
+:: Bird Tower Clothes Keep
+<<effects>>
+
+You put it in the wardrobe.
+<<if $monster is 1>>
+	"<<Wife>>'s collection of plumes grows, but <<wife>> always looks pleasing." <<bHe>> gives you a peck on the cheek before walking away.
+<<else>>
+	The <<beasttype>> puffs <<bhis>> plumes, and hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to bring you clothes and fabric in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
 
 :: Bird Tower Bed
 <<effects>>
@@ -2172,11 +2221,6 @@ You don't move.
 <<endevent>>
 <<if $wraith.state and $wraithPrison and $bird.upgrades.mirror is 1 and ($moonstate is "evening" or $moonstate is _nightstate)>>
 	You feel anxious, and your eyes dart over to the mirror.
-<<elseif $harpy gte 6 and $bird.hunts.unlocked is true and $bird.hunts.materials is false>>
-	<<set $bird.hunts.materials to true>>
-	<span class="blue">With your first hunt over, you take a moment to look upon the state of your nest. Your eyes wander around the tower as well, spotting imperfections that nag at your mind. You can make things better. Maybe you should try to look for materials next time you hunt.</span>
-	<br>
-	<span class="gold">You can now hunt for materials.</span>
 <</if>>
 <br><br>
 
@@ -2201,16 +2245,18 @@ You don't move.
 <<effects>>
 You lie in a covered corner of the tower. It's hard to get comfortable.
 <<endevent>>
+<<set $bedGuest to "alone">>
 <br><br>
 
 <<nightmareCheck "Bird Tower Sleep">>
 
 <<generateSleepLinks "Bird Tower Sleep Alone">>
-<<link [[Climb out of bed|Bird Tower]]>><<loadTempHairStyle>><</link>>
+<<link [[Climb out of bed|Bird Tower]]>><<loadTempHairStyle>><<unset $bedGuest>><</link>>
 <br><br>
 
 :: Bird Tower Rainwater Pool
-<<effects>><<set $outside to 0>>
+<<if $bird.upgrades.shelter is 0>><<set $outside to 1>><<else>><<set $outside to 0>><</if>>
+<<effects>>
 You sit by the rainwater pool.
 <<npc "Great Hawk">>
 <<if $bird.state is "home">>
@@ -3583,4 +3629,101 @@ You take your netted lurker and give it to your <<if $monster is 1>><<nnpc_wife 
 After a minute of cuddling, <<bhe>> <<if $monster is 1>>releases<<else>>pulls away from<</if>> you.
 <br><br>
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Build
+<<effects>>
+You look around your tower.
+<<if $bird.hunts.materials is false>>
+	<<set $bird.hunts.materials to true>>
+	You take a moment to look upon the state of your nest. Your eyes wander around the tower as well, spotting imperfections that nag at your mind. You can make things better. <span class="blue">Maybe you should try to look for materials next time you hunt.</span>
+	<br>
+	<span class="gold">You can now hunt for materials.</span>
+<<else>>
+	You should be able to find high-quality wood, sticks, and leaves while hunting to improve the tower. You could also steal tools and supplies from travellers.
+<</if>>
+<br><br>
+
+Materials:
+<<for $_materials range Object.keys($bird.materials)>>
+	<<if $_materials isnot "valuables" and $_materials isnot "junk" and $bird.materials[$_materials] gte 1>>
+		<<set $_materialsMessage to true>>
+		<<number $bird.materials[$_materials]>> $_materials
+		<br>
+	<</if>>
+<</for>>
+<<if !$_materialsMessage>>
+	<span class="black">Nothing</span>
+	<br>
+<</if>>
+<br>
+
+Shiny things:
+<<towerValuables>>
+<<if $bird.materials.junk gte 0>>
+	<<set $_valuablessMessage to true>>
+	<<number $bird.materials.junk>> piece<<if $bird.materials.junk gte 2>>s<</if>> of shiny junk
+	<br>
+<</if>>
+<<if !$_valuablesMessage>>
+	<span class="black">Nothing</span>
+	<br>
+<</if>>
+<br>
+
+<<if $tiredness gte $tirednessmax>>
+	You're too tired to build anything.
+<<elseif $hunger gte 2000>>
+	You're too hungry to focus on anything else.
+<<else>>
+	<div id="towerUpgrades">
+		<<towerBuildOption shelter>>
+		<<towerBuildOption nest>>
+		<<towerBuildOption firepit>>
+		<<towerBuildOption pot>>
+		<<towerBuildOption rack>>
+		<<towerBuildOption snare>>
+		<<towerBuildOption decor>>
+		<<towerBuildOption wardrobe>>
+	</div>
+<</if>>
+<br><br>
+
+<<link [[Back|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Build Shelter 1
+<<effects>>
+
+You use some fabric to bind some large leaves together, and secure them to the roof where rain leaks through. It should last longer than what the Great Hawk was building, but it's still not much.
+<<set $birdShelterTimer to 900>>
+<br><br>
+
+<<link [[Next|Bird Tower Build]]>><</link>>
+<br>
+
+:: Bird Tower Build Shelter 2
+<<effects>>
+You get to work securing the tarp to the roof. You decide to place it under the holes rather than on top of the tower so there's no chance it will blow away. You angle it so water drains into the rainwater pool.
+<br><br>
+
+Having proper tools makes it simple, and with some wood for proper weight distribution, it seems secure. You give it a hefty tug, and it stays in place. You step back and admire your work. <<stress -6>><<lstress>>
+<<unset $birdShelterTimer>><<unset $birdShelterRepair>>
+<br><br>
+
+<<link [[Next|Bird Tower Build]]>><</link>>
+<br>
+
+:: Bird Tower Build Shelter 3
+<<effects>>
+Pulling the tarp back down is a chore, but you manage after a bit of a struggle. 
+<br><br>
+
+You cut a hole in it and bind some leather and fabric around it on the other side. It takes a few attempts, but eventually you get the perfect shape to keep water from flowing through the hole while allowing smoke to escape.
+<br><br>
+
+You re-secure it to the roof, satisfied with your ingenuity. <<trauma -6>><<ltrauma>>
+<br><br>
+
+<<link [[Next|Bird Tower Build]]>><</link>>
 <br>
