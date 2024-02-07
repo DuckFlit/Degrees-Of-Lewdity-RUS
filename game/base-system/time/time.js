@@ -940,7 +940,14 @@ function minutePassed(minutes) {
 	if (V.player.vaginaExist) fragment.append(passArousalWetness(minutes));
 
 	// Tanning
-	if (Time.dayState === "day" && V.weather === "clear" && V.outside && V.location !== "forest" && !V.worn.head.type.includes("shade") && !V.worn.handheld.type.includes("shade")) {
+	if (
+		Time.dayState === "day" &&
+		V.weather === "clear" &&
+		V.outside &&
+		V.location !== "forest" &&
+		!V.worn.head.type.includes("shade") &&
+		!V.worn.handheld.type.includes("shade")
+	) {
 		fragment.append(wikifier("tanned", minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2)));
 	}
 

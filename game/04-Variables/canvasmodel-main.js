@@ -565,7 +565,7 @@ Renderer.CanvasModels["main"] = {
 					console.error("custom " + debugName + " colour not configured");
 					return {};
 				}
-			} else {
+			} else if (key !== "original") {
 				let record = dict[key];
 				if (!record) {
 					console.error("unknown " + debugName + " colour: " + key);
@@ -3351,7 +3351,7 @@ Renderer.CanvasModels["main"] = {
 				'acc' +
 				(setup.accessory_integrity_img ? '_' + options["worn_" + slot + "_integrity"] : '') +
 				(isAltPosition ? '_alt' : '') + '.png';
-				return gray_suffix(path, options.filters['worn_face']);
+				return gray_suffix(path, options.filters['worn_face_acc']);
 			},
 			zfn(options) {
 				if (options.facewear_layer === "front") {
@@ -3398,7 +3398,7 @@ Renderer.CanvasModels["main"] = {
 				'acc' +
 				(setup.accessory_integrity_img ? '_' + options["worn_" + slot + "_integrity"] : '') +
 				(isAltPosition ? '_alt' : '') + '.png';
-				return gray_suffix(path, options.filters['worn_neck']);
+				return gray_suffix(path, options.filters['worn_neck_acc']);
 			},
 			zfn(options) {
 				return (options.worn_head_setup.mask_img === 1 &&
