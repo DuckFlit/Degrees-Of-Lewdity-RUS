@@ -13,12 +13,13 @@
 	<<set $bird.state to "hunting">>
 	<<set $bird.timer to 20>>
 	<<set $bird.syndrome to 0>>
+	<<set $bird.injured to 0>>
+	<<set $bird.fire to 0>>
 	<<set $bird.hunts to {
 		unlocked: false,
 		lurkers: false,
 		materials: false,
-		valuables: false,
-		injured: 0
+		valuables: false
 	}>>
 	<<set $bird.materials to {
 		wood: 0,
@@ -87,6 +88,11 @@
 			<<set $bird.upgrades.shelter to 1>>
 			<<set $birdShelterTimer to 720>>
 			<<set $birdShelterRepair to true>>
+		<</if>>
+		<<if $bird.upgrades.firepit gte 1>>
+			<<if $bird.fire gt 0>>
+				<<set $bird.fire to Math.clamp($bird.fire, 0, ($bird.fire - _args[0]))>>
+			<</if>>
 		<</if>>
 	<</if>>
 <</widget>>
@@ -1083,6 +1089,65 @@
 	<<run delete $bird.hunts.lootAmount>>
 <</widget>>
 
+<<widget "firepit_time">>
+	<<set $_firepitTime to ($weather is "rain" && $bird.upgrades.shelter is 0 ? Math.floor($bird.fire / 2) : $bird.fire)>>
+	Burn time remaining: <<print getTimeString($_firepitTime)>>
+	<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
+		<span class="red">It would burn twice as long with shelter from the rain.</span>
+	<</if>>
+<</widget>>
+
+<<widget "firepit_actions">>
+	Your firepit can burn for up to
+	<<switch $bird.upgrades.firepit>>
+		<<case 1>><<set $_maxTime to 360>>6
+		<<case 2>><<set $_maxTime to 740>>12
+		<<default>><<set $_maxTime to 1480>>24
+	<</switch>>
+	hours.
+	<br>
+	<<if $bird.materials.wood is 0>>
+		<span class="red">No wood to add.</span>
+	<<else>>
+		<<if $weather is "rain" and $bird.upgrades.shelter is 0>><<set $_timeWood1 to 240>><<else>><<set $_timeWood1 to 120>><</if>>
+		<<set $_timeWood1 to Math.clamp($_timeWood1, 0, ($_maxTime - $bird.fire))>>
+		<<link [["Add 1 wood"]]>><<set $bird.materials.wood-->><<set $bird.fire to Math.clamp(($bird.fire + $_timeWood1), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeWood1)" "green">>
+		<br>
+		<<if $bird.materials.wood gte 2>>
+			<<set $_timeWood2 to Math.clamp(($_timeWood1 * 2), 0, ($_maxTime - $bird.fire))>>
+			<<link [["Add 2 wood"]]>><<set $bird.materials.wood -= 2>><<set $bird.fire to Math.clamp(($bird.fire + $_timeWood2), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeWood2)" "green">>
+			<br>
+		<</if>>
+		<<if $bird.materials.wood gte 3>>
+			<<set $_timeWood3 to Math.clamp(($_timeWood1 * 3), 0, ($_maxTime - $bird.fire))>>
+			<<link [["Add 3 wood"]]>><<set $bird.materials.wood -= 3>><<set $bird.fire to Math.clamp(($bird.fire + $_timeWood3), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeWood3)" "green">>
+			<br>
+		<</if>>
+	<</if>>
+	<br>
+	<<if $bird.materials.sticks is 0>>
+		<span class="red">No sticks to add.</span>
+	<<else>>
+		<<if $weather is "rain" and $bird.upgrades.shelter is 0>><<set $_timeSticks1 to 60>><<else>><<set $_timeSticks1 to 30>><</if>>
+		<<set $_timeSticks1 to Math.clamp($_timeSticks1, 0, ($_maxTime - $bird.fire))>>
+		<<link [["Add 1 stick"]]>><<set $bird.materials.sticks-->><<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks1), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeSticks1)" "green">>
+		<br>
+		<<if $bird.materials.sticks gte 3>>
+			<<set $_timeSticks3 to Math.clamp(($_timeSticks1 * 3), 0, ($_maxTime - $bird.fire))>>
+			<<link [["Add 3 sticks"]]>><<set $bird.materials.sticks -= 3>><<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks3), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeSticks3)" "green">>
+			<br>
+		<</if>>
+		<<if $bird.materials.sticks gte 5>>
+			<<set $_timeSticks5 to Math.clamp(($_timeSticks1 * 5), 0, ($_maxTime - $bird.fire))>>
+			<<link [["Add 5 sticks"]]>><<set $bird.materials.sticks -= 5>><<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks5), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeSticks3)" "green">>
+			<br>
+		<</if>>		
+	<</if>>
+	<br>
+	<<link [[Back|Bird Tower]]>><</link>>
+	<br>
+<</widget>>
+
 <<widget "towerBuildOption">>
 	<div>
 		<<if _towerUpgrades is undefined>><<set _towerUpgrades to {}>><</if>>
@@ -1164,12 +1229,17 @@
 					<<case 2>>
 						<span class="teal">Cushioned nest (2)</span>: Improves sleep quality. Comfy.
 						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Nest 3">>
-						<<set _towerUpgrades[_upgrade].timeTaken to 120>>
+						<<set _towerUpgrades[_upgrade].timeTaken to 240>>
 						<<set _towerUpgrades[_upgrade].materialsUsed to {
-							fabric: 10,
+							wood: 8,
+							fabric: 8,
+							sticks: 8,
 							leaves: 10,
 							junk: 4,
 							leather: 4
+						}>>
+						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							tools: 1
 						}>>
 						<<set _towerUpgrades[_upgrade].activityRequired to "build">>
 						<<set _towerUpgrades[_upgrade].housekeeping to 500>>
@@ -1183,7 +1253,11 @@
 					<<case 0>>
 						<span class="red">No firepit (0)</span>: Dark and cold nights.
 						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Firepit 1">>
-						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
+							<<set _towerUpgrades[_upgrade].timeTaken to 60>>
+						<<else>>
+							<<set _towerUpgrades[_upgrade].timeTaken to 15>>
+						<</if>>
 						<<set _towerUpgrades[_upgrade].materialsUsed to {
 							wood: 2,
 							sticks: 2
@@ -1199,7 +1273,6 @@
 							junk: 2
 						}>>
 						<<set _towerUpgrades[_upgrade].upgradesRequired to {
-							tools: 1,
 							shelter: 3
 						}>>
 						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
@@ -1214,7 +1287,6 @@
 							leather: 2
 						}>>
 						<<set _towerUpgrades[_upgrade].upgradesRequired to {
-							tools: 1,
 							shelter: 3
 						}>>
 						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
