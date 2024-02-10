@@ -7269,7 +7269,6 @@ function initUpper() {
 			accessory_colour_sidebar: 0,
 			sleeve_img: 1,
 			sleeve_colour: "primary",
-			altposition: "none",
 			altsleeve: "none",
 			breast_img: 1,
 			has_collar: 1,
