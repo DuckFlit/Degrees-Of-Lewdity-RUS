@@ -41,7 +41,7 @@ setup.feats = {
 	},
 	"It Belongs in a Museum": {
 		title: "It Belongs in a Museum!",
-		desc: "Find all the artifacts",
+		desc: "Find all the artefacts",
 		difficulty: 3,
 		series: "",
 		filter: ["All", "General"],
@@ -1481,7 +1481,7 @@ setup.feats = {
 	},
 	"Field Work": {
 		title: "Field Work",
-		desc: "Built an archeological field office at the lake.",
+		desc: "Built an archaeological field office at the lake.",
 		difficulty: 1,
 		series: "",
 		filter: ["All", "Discoveries"],
