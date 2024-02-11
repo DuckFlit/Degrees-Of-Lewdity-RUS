@@ -830,7 +830,7 @@ Renderer.CanvasModels["main"] = {
 		if (options.worn_handheld_setup.type.includes("rainproof")) {
 			options.handheld_overhead = true;
 			if (options.angel_halo_type === "default") { options.angel_halo_lower = true; }
-		} else if (["balloon", "heart balloon"].includes(options.worn_handheld_setup.name)) {
+		} else if (["balloon", "heart balloon", "paper fan"].includes(options.worn_handheld_setup.name)) {
 			options.handheld_overhead = true;
 			options.angel_halo_lower = false;
 		} else {
@@ -3581,6 +3581,7 @@ function genlayer_clothing_accessory(slot, overrideOptions) {
 		showfn(options) {
 			return options.show_clothes &&
 				options["worn_" + slot] > 0 &&
+				options["worn_" + slot + "_setup"].accImage !== 0 &&
 				options["worn_" + slot + "_setup"].accessory === 1
 		},
 		alphafn(options) {
