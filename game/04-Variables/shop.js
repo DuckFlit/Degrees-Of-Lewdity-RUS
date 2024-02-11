@@ -130,10 +130,10 @@ setup.shopDetails = {
 		get desc() {
 			return V.transformdisable === "f"
 				? "Protects a specific transformation. Transformations progress and decay at midnight."
-				: "There's something peculiar about this object."
+				: "There's something peculiar about this object.";
 		},
 		get details() {
-			return V.transformdisable === "f" ? "Prevents its associated transformation from decaying." : "Enable transformations to make use of this trait."
+			return V.transformdisable === "f" ? "Prevents its associated transformation from decaying." : "Enable transformations to make use of this trait.";
 		},
 	},
 	shade: {
