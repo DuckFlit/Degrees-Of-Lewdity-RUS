@@ -112,7 +112,7 @@ function sexToysInventoryDelete(name, colour) {
 					delete V.worn["butt_plug"];
 				}
 				if (item.worn && item.type.includes("strap-on")) {
-					V.worn.under_lower = setup.clothes.under_lower[0];
+					V.worn.under_lower = clone(setup.clothes.under_lower[0]);
 					setLowerVisibility(true);
 				}
 				V.player.inventory.sextoys[name].splice(foundIndex, 1);
