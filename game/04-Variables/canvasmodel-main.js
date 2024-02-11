@@ -1670,7 +1670,7 @@ Renderer.CanvasModels["main"] = {
 				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? 20 : 0;
 			},
 			zfn(options) {
-				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? ZIndices.back_lower : ZIndices.over_head_back;
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? ZIndices.head_back : ZIndices.over_head_back;
 			},
 			animation: "idle"
 		},
@@ -3271,7 +3271,7 @@ Renderer.CanvasModels["main"] = {
 			},
 		},
 		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld', {
-			z: ZIndices.head_back
+			z: ZIndices.over_head_back
 		}),
 		"handheld_back": genlayer_clothing_back_img('handheld',{
 			z: ZIndices.over_head_back
