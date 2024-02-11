@@ -3994,6 +3994,7 @@ function initUpper() {
 			accessory: 1,
 			accessory_colour: 0,
 			accessory_colour_options: [],
+			accessory_colour_sidebar: "none",
 			sleeve_img: 1,
 			sleeve_acc_img: 1,
 			breast_img: 1,
