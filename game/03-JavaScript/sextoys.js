@@ -77,65 +77,61 @@ function playerHasButtPlug() {
 }
 window.playerHasButtPlug = playerHasButtPlug;
 
-function isExistingInSexToysInventory(name, colour) {
+function existsInSexToyInventory(name, colour) {
 	if (V.player.inventory.sextoys[name] && V.player.inventory.sextoys[name].length > 0) {
-		if (colour && colour !== "any") {
-			for (let item of V.player.inventory.sextoys[name]) {
-				if (item.colour === colour) {
-					return true;
-				}
-			}
-			return false;
-		} else {
+		if (!colour || colour === "any") {
 			return true;
 		}
+		for (let item of V.player.inventory.sextoys[name]) {
+			if (item.colour === colour) {
+				return true;
+			}
+		}
+		return false;
 	}
-
-	return false;
 }
-window.isExistingInSexToysInventory = isExistingInSexToysInventory;
+window.existsInSexToyInventory = existsInSexToyInventory;
 
 function sexToysInventoryDelete(name, colour) {
-	if (isExistingInSexToysInventory(name, colour)) {
-		if (colour && colour !== "any") {
-			let foundIndex = -1;
-			// Find the index of the first item with the specified name and colour
-			for (let i = 0; i < V.player.inventory.sextoys[name].length; i++) {
-				if (V.player.inventory.sextoys[name][i].colour === colour) {
-					foundIndex = i;
-					break;
-				}
-			}
-			if (foundIndex !== -1) {
-				const item = V.player.inventory.sextoys[name][foundIndex];
-				if (item.worn && item.type.includes("anal")) {
-					delete V.worn["butt_plug"];
-				}
-				if (item.worn && item.type.includes("strap-on")) {
-					V.worn.under_lower =  setup.clothes.under_lower[0];
-					setLowerVisibility(true);
-				}
-				V.player.inventory.sextoys[name].splice(foundIndex, 1);
-				console.log(`Deleted ${name} ${colour} from inventory.`);
-			} else {
-				console.log(`Item ${name} ${colour} does not exist in the inventory.`);
-			}
-		} else {
-			// If no specific colour is specified or colour is 'any', then remove the first item with the specified name
-			const item = V.player.inventory.sextoys[name][0];
-			if (item.worn && item.type.includes("anal")) {
-				delete V.worn["butt_plug"];
-			}
-			if (item.worn && item.type.includes("strap-on")) {
-				V.worn.under_lower = setup.clothes.under_lower[0];
-				setLowerVisibility(true);
-			}
-			V.player.inventory.sextoys[name].splice(0, 1);
-			console.log(`Deleted ${name} from inventory.`);
-		}
-	} else {
+	if (!existsInSexToyInventory(name, colour)) {
 		console.log("Item does not exist in the inventory.");
+		return;
 	}
+	if (colour && colour !== "any") {
+		let foundIndex = -1;
+		// Find the index of the first item with the specified name and colour
+		for (let i = 0; i < V.player.inventory.sextoys[name].length; i++) {
+			if (V.player.inventory.sextoys[name][i].colour === colour) {
+				foundIndex = i;
+				break;
+			}
+		}
+		if (foundIndex === -1) {
+			console.log(`Item ${name} ${colour} does not exist in the inventory.`);
+			return;
+		}
+		const item = V.player.inventory.sextoys[name][foundIndex];
+		if (item.worn && item.type.includes("anal")) {
+			delete V.worn.butt_plug;
+		}
+		if (item.worn && item.type.includes("strap-on")) {
+			V.worn.under_lower = clone(setup.clothes.under_lower[0]);
+			setLowerVisibility(true);
+		}
+		V.player.inventory.sextoys[name].splice(foundIndex, 1);
+		console.log(`Deleted ${name} ${colour} from inventory.`);
+		return;
+	}
+	// If no specific colour is specified or colour is 'any', then remove the first item with the specified name
+	const item = V.player.inventory.sextoys[name][0];
+	if (item.worn && item.type.includes("anal")) {
+		delete V.worn.butt_plug;
+	}
+	if (item.worn && item.type.includes("strap-on")) {
+		V.worn.under_lower = clone(setup.clothes.under_lower[0]);
+		setLowerVisibility(true);
+	}
+	V.player.inventory.sextoys[name].splice(0, 1);
+	console.log(`Deleted ${name} from inventory.`);
 }
 window.sexToysInventoryDelete = sexToysInventoryDelete;
-
