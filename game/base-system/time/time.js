@@ -335,11 +335,23 @@ const Time = (() => {
 		},
 		get dayState() {
 			const hour = this.hour;
-			return hour < 6 || hour >= 21 ? "night" : hour >= 18 ? "dusk" : hour >= 9 ? "day" : "dawn";
+			if (hour < 6 || hour >= 21) {
+				return "night";
+			}
+			if (hour >= 18) {
+				return "dusk";
+			}
+			return hour >= 9 ? "day" : "dawn";
 		},
 		get nightState() {
 			const hour = this.hour;
-			return hour < 6 ? "morning" : hour >= 9 ? "evening" : undefined;
+			if (hour < 6) {
+				return "morning";
+			}
+			if (hour >= 9) {
+				return "evening";
+			}
+			return undefined;
 		},
 		get nextSchoolTermStartDate() {
 			return getNextSchoolTermStartDate(currentDate);
@@ -495,7 +507,7 @@ function weekPassed() {
 		if (V.brothelVending.weeksEmpty >= 4) V.brothelVending.status = "sold";
 	}
 
-	fragment.append(wikifier("world_corruption", "soft", V.world_corruption_hard));
+	statChange.worldCorruption("soft", V.world_corruption_hard);
 
 	delete V.weekly;
 	V.weekly = { theft: {}, sewers: {} };
@@ -510,7 +522,6 @@ function dayPassed() {
 	if (V.statFreeze) return fragment;
 
 	fragment.append(wikifier("seenPassageChecks"));
-	fragment.append(wikifier("earnAllFeats", true));
 	fragment.append(wikifier("prison_day"));
 	fragment.append(wikifier("clearNPC", "pharmNurse"));
 	fragment.append(wikifier("weather_select"));
@@ -525,7 +536,7 @@ function dayPassed() {
 		V.promiscuity = Math.max(V.promiscuity - 1, 0);
 		V.deviancy = Math.max(V.deviancy - 1, 0);
 	}
-	if (V.locker_suspicion > 0) fragment.append(wikifier("locker_suspicion", -1));
+	if (V.locker_suspicion > 0) statChange.lockerSuspicion(-1);
 	if (V.whitneyromance || C.npc.Whitney.dom >= 20) {
 		V.bullytimer += 20;
 		V.bullytimeroutside += 10;
@@ -569,7 +580,7 @@ function dayPassed() {
 	if (V.temple_quarters >= 1) V.temple_quarters = Math.clamp(V.temple_quarters - 10, 0, 100);
 	if (V.temple_chastity_timer > 0) V.temple_chastity_timer--;
 	if (V.temple_rank !== "prospective" && V.temple_rank !== "initiate") {
-		if (V.grace >= 1 && !V.daily.graceUp) fragment.append(wikifier("grace", -2));
+		if (V.grace >= 1 && !V.daily.graceUp) statChange.grace(-2);
 	}
 	if (V.temple_evaluation) {
 		V.temple_evaluation--;
@@ -603,8 +614,8 @@ function dayPassed() {
 
 	if (numberOfEarSlime()) {
 		// Daily Corruption
-		if (V.earSlime.growth < 50) fragment.append(wikifier("corruption", -1));
-		fragment.append(wikifier("corruption", numberOfEarSlime(), true));
+		if (V.earSlime.growth < 50) statChange.corruption(-1);
+		statChange.corruption(numberOfEarSlime(), true);
 		earSlimeDaily();
 	}
 
@@ -827,6 +838,9 @@ function dayPassed() {
 		delete V.pirate_attack;
 	}
 
+	/* Set flag to determine Kylar's position at lunch */
+	V.daily.kylar.libraryStalk = rollKylarLibraryStalkFlag();
+
 	return fragment;
 }
 
@@ -837,10 +851,10 @@ function hourPassed(hours) {
 	if (V.statFreeze) return fragment;
 
 	for (let i = 0; i < hours; i++) {
-		if (V.innocencestate === 1 && V.control <= 0) fragment.append(wikifier("awareness", 1));
-		fragment.append(wikifier("control", 1));
+		if (V.innocencestate === 1 && V.control <= 0) statChange.awareness(1);
+		statChange.control(1);
 		fragment.append(wikifier("orgasmHourlyRecovery"));
-		fragment.append(wikifier("arousal", 0, "time"));
+		statChange.arousal(0, "time");
 		fragment.append(wikifier("wetnessCalculate"));
 		fragment.append(wikifier("bimboCheck", "upper"));
 		fragment.append(wikifier("bimboCheck", "lower"));
@@ -848,7 +862,7 @@ function hourPassed(hours) {
 
 		if (V.ejactrait >= 1) V.stress -= (V.goocount + V.semencount) * 10;
 		if (V.kylarwatched) V.kylarwatchedtimer--;
-		if (V.parasite.nipples.name) fragment.append(wikifier("milkvolume", 1));
+		if (V.parasite.nipples.name) statChange.milkvolume(1);
 		if (V.worn.head.name === "hairpin" || V.sexStats.pills.pills["Hair Growth Formula"].doseTaken) {
 			let count = 0 + (V.worn.head.name === "hairpin" && random(0, 100) >= 75 ? 1 : 0);
 			count += V.sexStats.pills.pills["Hair Growth Formula"].doseTaken ? 1 : 0;
@@ -873,7 +887,7 @@ function hourPassed(hours) {
 	}
 
 	V.openinghours = Time.hour >= 8 && Time.hour < 21 ? 1 : 0;
-	fragment.append(wikifier("earnAllFeats"));
+	fragment.append(earnHourlyFeats());
 
 	temperatureHour();
 
@@ -926,15 +940,15 @@ function minutePassed(minutes) {
 	V.stress = Math.min(V.stress, V.stressmax);
 
 	// Effects
-	if (V.drunk > 0) fragment.append(wikifier("alcohol", -minutes));
-	if (V.hallucinogen > 0) fragment.append(wikifier("hallucinogen", -minutes));
-	if (V.drugged > 0) fragment.append(wikifier("drugs", -minutes));
-	if (minutes < 1200) fragment.append(wikifier("tiredness", minutes * (V.drunk > 0 ? 2 : 1), "pass"));
-	fragment.append(wikifier("pain", minutes, -1));
+	if (V.drunk > 0) statChange.alcohol(-minutes);
+	if (V.hallucinogen > 0) hallucinogen.hallucinogen(-minutes);
+	if (V.drugged > 0) statChange.drugs(-minutes);
+	if (minutes < 1200) statChange.tiredness(minutes * (V.drunk > 0 ? 2 : 1), "pass");
+	statChange.pain(minutes, -1);
 
 	// Arousal
 	const arousalMultiplier = V.backgroundTraits.includes("lustful") ? 0.2 * (12 - Math.floor(V.purity / 80)) + 1 + (V.purity <= 50 ? 1 : 0) : -10;
-	fragment.append(wikifier("arousal", minutes * arousalMultiplier + getArousal(minutes)));
+	statChange.arousal(minutes * arousalMultiplier + getArousal(minutes));
 	V.timeSinceArousal = V.arousal < V.arousalmax / 4 ? V.timeSinceArousal + minutes : 1;
 	if (V.player.vaginaExist) fragment.append(passArousalWetness(minutes));
 
@@ -1050,7 +1064,7 @@ function dailyNPCEffects() {
 	if (C.npc.Robin.trauma > 0) fragment.append(wikifier("npcincr", "Robin", "trauma", -1));
 
 	if (V.robindebtevent === 0) V.robinmissing = 0;
-	if (V.robinpaid >= 1) fragment.append(wikifier("trauma", -25));
+	if (V.robinpaid >= 1) statChange.trauma(-25);
 	if (V.robinromance === 1 && C.npc.Robin.dom >= 40) fragment.append(wikifier("npcincr", "Robin", "lust", 1));
 	if (V.robinPilloryFail) {
 		delete V.robinPilloryFail;
@@ -1221,7 +1235,7 @@ function dailyPlayerEffects() {
 	V.hairlength += 3;
 	V.fringelength += 3;
 	fragment.append(wikifier("calchairlengthstage"));
-	fragment.append(wikifier("beauty", 100 - (V.trauma / V.traumamax) * 100));
+	statChange.skill("beauty", 100 - (V.trauma / V.traumamax) * 100);
 	fragment.append(wikifier("bimboUpdate"));
 
 	if (V.orgasmstat >= 1000 && V.orgasmtrait === 0) {
@@ -1296,12 +1310,12 @@ function dailyPlayerEffects() {
 		}
 	}
 
-	fragment.append(wikifier("insecurity", "penis_tiny", -1));
-	fragment.append(wikifier("insecurity", "penis_small", -1));
-	fragment.append(wikifier("insecurity", "penis_big", -1));
-	fragment.append(wikifier("insecurity", "breasts_tiny", -1));
-	fragment.append(wikifier("insecurity", "breasts_small", -1));
-	fragment.append(wikifier("insecurity", "breasts_big", -1));
+	statChange.insecurity("penis_tiny", -1);
+	statChange.insecurity("penis_small", -1);
+	statChange.insecurity("penis_big", -1);
+	statChange.insecurity("breasts_tiny", -1);
+	statChange.insecurity("breasts_small", -1);
+	statChange.insecurity("breasts_big", -1);
 
 	V.insecurity_penis_tiny = Math.clamp(V.insecurity_penis_tiny, 0, 1000);
 	V.insecurity_penis_small = Math.clamp(V.insecurity_penis_small, 0, 1000);
@@ -1347,7 +1361,7 @@ function dailyTransformationEffects() {
 	if (V.featsPurityBoost) dailyPurity += V.featsPurityBoost;
 	if (V.fallenangel >= 2) dailyPurity -= 10;
 	if (V.player.virginity.vaginal === true && V.player.virginity.penile === true) dailyPurity += 2;
-	fragment.append(wikifier("purity", dailyPurity));
+	statChange.purity(dailyPurity);
 
 	if (V.purity >= 1000) fragment.append(wikifier("transform", "angel", 1));
 	else fragment.append(wikifier("transform", "angel", -1));
@@ -1371,7 +1385,7 @@ function dailyLiquidEffects() {
 		let amount = V.player.penissize - 1;
 		if (V.semen_volume <= 24) amount++;
 		amount -= Math.floor(V.semen_volume / 250);
-		fragment.append(wikifier("semenvolume", amount));
+		statChange.semenvolume(amount);
 	} else {
 		V.semen_volume = 0;
 		V.semen_amount = 0;
@@ -1381,11 +1395,11 @@ function dailyLiquidEffects() {
 	if (V.earSlime.growth >= 75 && V.earSlime.focus === "impregnation") pressureReduction -= 2;
 	if (V.earSlime.growth >= 75 && V.earSlime.focus === "pregnancy") pressureReduction += 2;
 	if (pressureReduction < 0) {
-		fragment.append(wikifier("milkvolume", pressureReduction * 2));
-		fragment.append(wikifier("lactation_pressure", pressureReduction));
+		statChange.milkvolume(pressureReduction * 2);
+		statChange.lactationPressure(pressureReduction);
 	}
 
-	if (V.purity + V.semen_volume < 980) fragment.append(wikifier("semenvolume", 3));
+	if (V.purity + V.semen_volume < 980) statChange.semenvolume(3);
 	if (V.purity + V.milk_volume < 1000) V.milk_volume += 10;
 
 	if (V.lactating) {
@@ -1544,11 +1558,11 @@ function dailySchoolEffects() {
 			V.englishPlay = "missed";
 		}
 	}
-	if (V.schooltrait >= 4) fragment.append(wikifier("trauma", -50));
-	else if (V.schooltrait === 3) fragment.append(wikifier("trauma", -40));
-	else if (V.schooltrait === 2) fragment.append(wikifier("trauma", -30));
-	else if (V.schooltrait === 1) fragment.append(wikifier("trauma", -20));
-	else fragment.append(wikifier("trauma", -10));
+	if (V.schooltrait >= 4) statChange.trauma(-50);
+	else if (V.schooltrait === 3) statChange.trauma(-40);
+	else if (V.schooltrait === 2) statChange.trauma(-30);
+	else if (V.schooltrait === 1) statChange.trauma(-20);
+	else statChange.trauma(-10);
 
 	if (Time.isSchoolDay(Time.yesterday) && V.location !== "prison") {
 		const attended = Object.keys(V.daily.school.attended).length;
@@ -1578,7 +1592,7 @@ function dailySchoolEffects() {
 		if (C.npc.Winter.love >= V.npclovehigh) delinquencyDecay++;
 		if (C.npc.Mason.love >= V.npclovehigh) delinquencyDecay++;
 		if (V.lessonmissedtext) delinquencyDecay = Math.floor(delinquencyDecay / 2);
-		fragment.append(wikifier("delinquency", -delinquencyDecay / 4));
+		statChange.delinquency(-delinquencyDecay / 4);
 		if (V.schoolfameblackmail !== undefined) V.schoolfameblackmail++;
 	}
 
@@ -1790,30 +1804,30 @@ function passWater(passMinutes) {
 	const fragment = document.createDocumentFragment();
 
 	if (V.outside && V.weather === "clear") {
-		if (V.upperwet) fragment.append(wikifier("upperwet", -passMinutes * 2));
-		if (V.lowerwet) fragment.append(wikifier("lowerwet", -passMinutes * 2));
-		if (V.underlowerwet) fragment.append(wikifier("underlowerwet", -passMinutes * (V.worn.lower.type.includes("naked") ? 2 : 1)));
-		if (V.underupperwet) fragment.append(wikifier("underupperwet", -passMinutes * (V.worn.upper.type.includes("naked") ? 2 : 1)));
+		if (V.upperwet) statChange.wet("upper", -passMinutes * 2);
+		if (V.lowerwet) statChange.wet("lower", -passMinutes * 2);
+		if (V.underlowerwet) statChange.wet("underlower", -passMinutes * (V.worn.lower.type.includes("naked") ? 2 : 1));
+		if (V.underupperwet) statChange.wet("underupper", -passMinutes * (V.worn.upper.type.includes("naked") ? 2 : 1));
 	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
 		if (!V.worn.upper.type.includes("naked") && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
-			fragment.append(wikifier("upperwet", passMinutes));
+			statChange.wet("upper", passMinutes);
 		}
 		if (!V.worn.lower.type.includes("naked") && !waterproofCheck(V.worn.lower) && !waterproofCheck(V.worn.over_lower)) {
-			fragment.append(wikifier("lowerwet", passMinutes));
+			statChange.wet("lower", passMinutes);
 		}
 		// eslint-disable-next-line prettier/prettier
 		if (!V.worn.under_lower.type.includes("naked") && !waterproofCheck(V.worn.under_lower) && !waterproofCheck(V.worn.lower) && !waterproofCheck(V.worn.over_lower)) {
-			fragment.append(wikifier("underlowerwet", passMinutes));
+			statChange.wet("underlower", passMinutes);
 		}
 		// eslint-disable-next-line prettier/prettier
 		if (!V.worn.under_upper.type.includes("naked") && !waterproofCheck(V.worn.under_upper) && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
-			fragment.append(wikifier("underupperwet", passMinutes));
+			statChange.wet("underupper", passMinutes);
 		}
 	} else {
-		if (V.upperwet) fragment.append(wikifier("upperwet", -passMinutes));
-		if (V.lowerwet) fragment.append(wikifier("lowerwet", -passMinutes));
-		if (V.underlowerwet) fragment.append(wikifier("underlowerwet", -passMinutes));
-		if (V.underupperwet) fragment.append(wikifier("underupperwet", -passMinutes));
+		if (V.upperwet) statChange.wet("upper", -passMinutes);
+		if (V.lowerwet) statChange.wet("lower", -passMinutes);
+		if (V.underlowerwet) statChange.wet("underlower", -passMinutes);
+		if (V.underupperwet) statChange.wet("underupper", -passMinutes);
 	}
 
 	return fragment;
@@ -1850,8 +1864,8 @@ function passArousalWetness(passMinutes) {
 		// Expected rate: between 1 and 2.61, usually around 1.8
 		const change = Math.clamp(1 + Math.log10(V.vaginaArousalWetness - 59), 1, 3);
 		if (!V.worn.under_lower.type.includes("naked") && !V.worn.under_lower.type.includes("swim")) {
-			fragment.append(wikifier("underlowerwet", Math.round(change * passMinutes)));
-			fragment.append(wikifier("underlowerwet", Math.clamp(V.underlowerwet, 0, 100 + passMinutes)));
+			statChange.wet("underlower", Math.round(change * passMinutes));
+			statChange.wet("underlower", Math.clamp(V.underlowerwet, 0, 100 + passMinutes));
 			V.pantiesSoaked = V.underlowerwet >= 100;
 		}
 	}
@@ -1884,9 +1898,9 @@ function getArousal(passMinutes) {
 	if (V.parasite.right_thigh.name) addedArousal += minuteMultiplier;
 	if (V.drugged > 1) addedArousal += minuteMultiplier;
 	if (playerHasButtPlug()) addedArousal += minuteMultiplier;
-	if (V.parasite.left_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
-	if (V.parasite.right_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
-	if (V.earSlime.growth > 100 && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
+	if (V.parasite.left_ear.name === "slime" && random(1, 10) >= 9) statChange.drugs(Math.min(60, passMinutes));
+	if (V.parasite.right_ear.name === "slime" && random(1, 10) >= 9) statChange.drugs(Math.min(60, passMinutes));
+	if (V.earSlime.growth > 100 && random(1, 10) >= 9) statChange.drugs(Math.min(60, passMinutes));
 
 	if (
 		V.worn.genitals.name === "chastity parasite" ||

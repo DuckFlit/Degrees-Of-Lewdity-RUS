@@ -3393,7 +3393,7 @@ function initLower() {
 			gender: "n",
 			warmth: 40,
 			cost: 0,
-			description: "Soft and cozy.",
+			description: "Soft and cosy.",
 			shop: ["clothing"],
 			accessory: 0,
 			accessory_colour: 0,

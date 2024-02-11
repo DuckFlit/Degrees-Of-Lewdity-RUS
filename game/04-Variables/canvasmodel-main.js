@@ -3594,6 +3594,7 @@ function genlayer_clothing_accessory(slot, overrideOptions) {
 		showfn(options) {
 			return options.show_clothes &&
 				options["worn_" + slot] > 0 &&
+				options["worn_" + slot + "_setup"].accImage !== 0 &&
 				options["worn_" + slot + "_setup"].accessory === 1
 		},
 		alphafn(options) {
