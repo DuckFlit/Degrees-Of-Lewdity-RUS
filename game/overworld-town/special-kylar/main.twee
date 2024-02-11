@@ -1344,6 +1344,17 @@ You shake off Kylar's grip and leave. <<He>> watches you with <<his>> fists clen
 <<set _kylar to statusCheck("Kylar")>>
 <<cleareventpool>>
 
+<<if $daily.kylar.libraryInteract is 1>>
+	/* Ensures the event fires once, avoiding repetition for now */
+	<<set $daily.kylar.libraryInteract to 2>>
+
+	<<addevent "kylarLibraryStalkTease1">>
+	<<runeventpool>>
+
+	<br><br>
+	<<kylaroptions "notext">>
+	<<exit>>
+<</if>>
 <<if _kylarStatus.includes("Love")>>
 	<<if $genderknown.includes("Kylar") and !$worn.lower.type.includes("naked")>>
 		<<addevent "kylarFlirtEventClothesPull">> <!-- defined in Widgets Kylar -->
@@ -2492,7 +2503,15 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 <<set $outside to 0>><<effects>><<run statusCheck("Kylar")>>
 <<set $kylar_action to "chat">>
 
-<<if _kylarStatus.includes("Love")>>
+<<if $daily.kylar.libraryInteract is 1>>
+	/* Ensures the event fires once, avoiding repetition for now */
+	<<set $daily.kylar.libraryInteract to 2>>
+
+	<<kylarLibraryStalkChat1>>
+
+	<<kylaroptions "notext">>
+	<<exit>>
+<<elseif _kylarStatus.includes("Love")>>
 	<<bodywritingExposureCheck>>
 	<<if _bodywriting_exposed gte 1 and !$daily.kylar.bodywriting and _bodypart>>
 		<<set $daily.kylar.bodywriting to true>>
@@ -3372,6 +3391,7 @@ You finish the food. "I'm going to wait in the classroom," Robin says when you'r
 :: Canteen Lunch Kylar
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<run statusCheck("Kylar")>>
 <<endevent>><<npc Kylar>><<person1>>
+<<set _kylarlocation to getKylarLocation()>>
 
 You sit beside Kylar and say hello.
 
@@ -3427,12 +3447,12 @@ You sit beside Kylar and say hello.
 	<</if>>
 	<br><br>
 
-	You finish your food. Kylar carries your trays away, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
+	You finish your food. Kylar carries your trays away, then walks in the direction of the <<if _kylarlocation.area is "library">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<endevent>>
 	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
-	<<if $weather is "rain" or $weather is "snow">>
+	<<if _kylarlocation.area is "library">>
 		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 	<<else>>
 		<<schoolicon "courtyard">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
@@ -3450,7 +3470,7 @@ You sit beside Kylar and say hello.
 
 	<<endevent>>
 	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
-	<<if $weather is "rain" or $weather is "snow">>
+	<<if _kylarlocation.area is "library">>
 		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 	<<else>>
 		<<schoolicon "courtyard">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
@@ -3462,6 +3482,7 @@ You sit beside Kylar and say hello.
 
 :: Canteen Kylar Whitney Kiss
 <<effects>>
+
 You close your eyes and kiss back. <<npcincr Whitney love 1>><<glove>>
 <br><br>
 
@@ -3478,6 +3499,7 @@ Whitney pulls away from you at last, brushing a stray hair away from <<person2>>
 
 :: Canteen Kylar Whitney Refuse
 <<effects>>
+
 You push Whitney away. Kylar pulls you closer.
 <<if $speech_attitude is "meek">>
 	You cling tight.
@@ -3492,6 +3514,7 @@ You push Whitney away. Kylar pulls you closer.
 
 :: Canteen Kylar Whitney Slap
 <<effects>>
+<<set _kylarlocation to getKylarLocation()>>
 
 Whitney forces <<his>> tongue into your mouth, so you bite it.
 <br><br>
@@ -3509,7 +3532,7 @@ The other students lose interest. You finish your food beside a relieved Kylar. 
 <br><br>
 <<endevent>>
 <<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
-<<if $weather is "rain" or $weather is "snow">>
+<<if _kylarlocation.area is "library">>
 	<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 <<else>>
 	<<schoolicon "courtyard">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
@@ -3579,7 +3602,9 @@ Excited at the prospect of violence, other students gather around.
 <</if>>
 
 :: Canteen Kylar Whitney Intervene Finish
-<<effects>><<run statusCheck("Kylar")>>
+<<effects>>
+<<run statusCheck("Kylar")>>
+<<set _kylarlocation to getKylarLocation()>>
 
 <<if $enemyhealth lte 0>>
 	You bring Whitney to <<his>> knees, and the crowd cheers for you. <<gcool>><<status 1>>
@@ -3620,7 +3645,7 @@ Excited at the prospect of violence, other students gather around.
 	<br><br>
 
 	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
-	<<if $weather is "rain" or $weather is "snow">>
+	<<if _kylarlocation.area is "library">>
 		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 	<<else>>
 		<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
@@ -3644,7 +3669,7 @@ Excited at the prospect of violence, other students gather around.
 	<br><br>
 
 	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
-	<<if $weather is "rain" or $weather is "snow">>
+	<<if _kylarlocation.area is "library">>
 		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 	<<else>>
 		<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
@@ -3682,7 +3707,7 @@ Excited at the prospect of violence, other students gather around.
 	<br><br>
 
 	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
-	<<if $weather is "rain" or $weather is "snow">>
+	<<if _kylarlocation.area is "library">>
 		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 	<<else>>
 		<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
@@ -3718,7 +3743,7 @@ Excited at the prospect of violence, other students gather around.
 	<br><br>
 
 	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
-	<<if $weather is "rain" or $weather is "snow">>
+	<<if _kylarlocation.area is "library">>
 		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 	<<else>>
 		<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
@@ -3804,6 +3829,7 @@ Whitney regains some composure as <<he>> follows Leighton from the room. <<He>> 
 
 :: Canteen Kylar Cheer 2
 <<effects>>
+<<set _kylarlocation to getKylarLocation()>>
 
 The crowd disperses, leaving a lone, trembling Kylar on the ground. You approach <<person1>><<him>>, <<his>> eyes staring into space. You extend your hand to <<hers>>.
 <br><br>
@@ -3829,7 +3855,7 @@ You continue eating, sat beside a dazed Kylar. <<He>> carries your trays away wh
 <br><br>
 
 <<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
-<<if $weather is "rain" or $weather is "snow">>
+<<if _kylarlocation.area is "library">>
 	<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 <<else>>
 	<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
@@ -3910,11 +3936,30 @@ Kylar stirs on the ground.
 You approach Kylar's desk.
 
 <<if _kylarStatus.includes("Love")>>
-	<<Hes>> sketching a picture of you in <<his>> sketchbook.
+	<<Hes>> sketching a picture of you
+	<<if _kylarStatus.includes("Rage")>>
+		and <<himself>> in <<his>> sketchbook.
+	<<else>>
+		in <<his>> sketchbook.
+	<</if>>
 <<else>>
 	<<He>> hides whatever <<he>> was sketching when <<he>> sees you.
 <</if>>
 <br><br>
+<<kylaroptions>>
+
+:: Kylar Library Jealousy
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<run statusCheck("Kylar")>>
+
+<<npc Kylar>><<person1>>
+You approach Kylar's desk.
+
+You notice <<him>> glaring at Sydney. As <<he>> sees you, <<he>> turns <<his>> attention to you.
+<br><br>
+
+<<if !$daily.kylar.libraryInteract>>
+	<<set $daily.kylar.libraryInteract to 1>>
+<</if>>
 <<kylaroptions>>
 
 :: Kylar Courtyard
