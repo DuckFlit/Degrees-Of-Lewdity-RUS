@@ -335,11 +335,23 @@ const Time = (() => {
 		},
 		get dayState() {
 			const hour = this.hour;
-			return hour < 6 || hour >= 21 ? "night" : hour >= 18 ? "dusk" : hour >= 9 ? "day" : "dawn";
+			if (hour < 6 || hour >= 21) {
+				return "night";
+			}
+			if (hour >= 18) {
+				return "dusk";
+			}
+			return hour >= 9 ? "day" : "dawn";
 		},
 		get nightState() {
 			const hour = this.hour;
-			return hour < 6 ? "morning" : hour >= 9 ? "evening" : undefined;
+			if (hour < 6) {
+				return "morning";
+			}
+			if (hour >= 9) {
+				return "evening";
+			}
+			return undefined;
 		},
 		get nextSchoolTermStartDate() {
 			return getNextSchoolTermStartDate(currentDate);
@@ -825,6 +837,9 @@ function dayPassed() {
 	if (V.pirate_attack) {
 		delete V.pirate_attack;
 	}
+
+	/* Set flag to determine Kylar's position at lunch */
+	V.daily.kylar.libraryStalk = rollKylarLibraryStalkFlag();
 
 	return fragment;
 }
