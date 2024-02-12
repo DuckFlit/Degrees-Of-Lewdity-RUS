@@ -217,7 +217,7 @@ setup.pills = [
 	{
 		name: "breast blocker",
 		description:
-			"A selective estrogen receptor modulator (SERM), blocking the protein receptors responsible for breast growth; supplemented by 269mg of Tetraozealpostigyl.",
+			"A selective oestrogen receptor modulator (SERM), blocking the protein receptors responsible for breast growth; supplemented by 269mg of Tetraozealpostigyl.",
 		onTakeMessage: "You take the pills intended to block your breasts' growth. You hope it will be as effective as advertised.",
 		warning_label:
 			'<span class="hpi_notice_label">Notice: No side effects were determined during the trials for this drug. Taking more than 1 pill per 24 hours is ineffective</span>',
@@ -361,7 +361,7 @@ setup.pills = [
 	{
 		name: "fertility booster",
 		description:
-			"Each pill contains 50mg of clomiphene citrate, a structural analogue of estrogens. It also acts on your hypothalamus which secretes the hormones necessary to trigger ovulation. In some cases effectively inducing your ovary to release eggs.",
+			"Each pill contains 50mg of clomiphene citrate, a structural analogue of oestrogens. It also acts on your hypothalamus which secretes the hormones necessary to trigger ovulation. In some cases effectively inducing your ovary to release eggs.",
 		onTakeMessage: "You take the pills intended to increase your fertility. You hope it will be as effective as advertised.",
 		warning_label:
 			"Warning: Mild side effects may occur with the prescribed dosage, including those that may mimic the signs of early pregnancy. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",
@@ -404,7 +404,7 @@ setup.pills = [
 	{
 		name: "contraceptive",
 		description:
-			"Estroprogestatifs associating 24mg of ethinylestradiol(synthetic estrogen) and 31mg of a synthetic progestin for a near-perfect contraceptive effect.",
+			"Estroprogestatifs associating 24mg of ethinylestradiol(synthetic oestrogen) and 31mg of a synthetic progestin for a near-perfect contraceptive effect.",
 		onTakeMessage: "You take the contraceptive pill. You hope it will be as effective as advertised.",
 		warning_label:
 			"Warning: Mild side effects may occur with the prescribed dosage. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",

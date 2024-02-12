@@ -32,16 +32,17 @@ function initializeTooltips() {
 				maxWidth: 450,
 			};
 
-			$.each(this.attributes, function() {
-                if (this.name.startsWith("tooltip-") && defaultSettings.hasOwnProperty(this.name.substring(8))) {
-                    const key = this.name.substring(8);
-                    let value = this.value;
-                    if (!isNaN(value)) {
-                        value = parseFloat(value);
-                    }
-                    defaultSettings[key] = value;
-                }
-            });
+			$.each(this.attributes, function () {
+				if (!this.name.startsWith("tooltip-")) return;
+				if (!Object.hasOwn(defaultSettings, this.name.substring(8))) return;
+
+				const key = this.name.substring(8);
+				let value = this.value;
+				if (isNaN(value)) return;
+
+				value = parseFloat(value);
+				defaultSettings[key] = value;
+			});
 
 			$(this).tooltip(defaultSettings);
 		});

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /*
 	Key points
 	series: "seriesName", //Will only show the first locked feat in a series to the player
@@ -40,7 +41,7 @@ setup.feats = {
 	},
 	"It Belongs in a Museum": {
 		title: "It Belongs in a Museum!",
-		desc: "Find all the artifacts",
+		desc: "Find all the artefacts",
 		difficulty: 3,
 		series: "",
 		filter: ["All", "General"],
@@ -1504,7 +1505,7 @@ setup.feats = {
 	},
 	"Field Work": {
 		title: "Field Work",
-		desc: "Built an archeological field office at the lake.",
+		desc: "Built an archaeological field office at the lake.",
 		difficulty: 1,
 		series: "",
 		filter: ["All", "Discoveries"],
@@ -1885,3 +1886,199 @@ function featsMerge() {
 	}
 }
 DefineMacro("featsMerge", featsMerge);
+
+// eslint-disable-next-line no-unused-vars
+function earnHourlyFeats() {
+	if (V.feats.locked || V.cheatdisable === "f" || V.debug || V.gamemode === "soft" || V.alluremod < 1 || V.replayScene) return false;
+
+	const fragment = document.createDocumentFragment();
+
+	const earnFeat = featName => {
+		if (!V.feats.currentSave[featName]) fragment.append(wikifier("earnFeat", `"${featName}"`));
+	};
+
+	// Feats that can only be earned after 50 days
+	if (Time.days >= 50) {
+		switch (V.player.gender) {
+			case "m":
+				earnFeat("Being a Boy");
+				break;
+			case "f":
+				earnFeat("Being a Girl");
+				break;
+			case "h":
+				earnFeat("Being a Hermaphrodite");
+				break;
+		}
+
+		if (Time.days >= 150) earnFeat("Being an Orphan");
+
+		if (!V.passoutstat) {
+			earnFeat("Stressful Challenge");
+			if (Time.days >= 150) earnFeat("Long Stressful Challenge");
+		}
+	}
+
+	if (V.awareness >= 500) earnFeat("Most Aware");
+	if (V.awareness <= -199) earnFeat("Most Innocent");
+	if (V.promiscuity >= 100 && V.deviancy >= 100 && V.exhibitionism >= 100) earnFeat("No More Control");
+
+	if (
+		(!V.player.vaginaExist || V.vaginalskill >= 1000) &&
+		(!V.player.penisExist || V.penileskill >= 1000) &&
+		V.oralskill >= 1000 &&
+		(V.analskill >= 1000 || V.analdisable === "t") &&
+		V.handskill >= 1000 &&
+		V.feetskill >= 1000 &&
+		V.bottomskill >= 1000 &&
+		V.thighskill >= 1000 &&
+		V.chestskill >= 1000
+	) {
+		earnFeat("Sex Specialist");
+	}
+
+	if (V.submissive >= 2000) earnFeat("Perfect Sub");
+	if (V.submissive <= 0) earnFeat("Defying the Odds");
+	if (V.museumAntiques.museumCount === V.museumAntiques.maxCount) earnFeat("It Belongs in a Museum");
+
+	// LI Romance
+	const loveCount = (V.robinromance ? 1 : 0) + (V.whitneyromance ? 1 : 0) + (V.kylarenglish ? 1 : 0) + (V.sydneyromance ? 1 : 0);
+	if (loveCount >= 3) earnFeat("Love Triangles");
+	if (loveCount >= 4) earnFeat("Love Trapezoids");
+
+	if (V.cat >= 6) earnFeat("Neko");
+	if (V.wolfgirl >= 6) earnFeat("Wolf");
+	if (V.angel >= 6) earnFeat("Angel");
+	if (V.fallenangel >= 2) earnFeat("Fallen Angel");
+	if (V.demon >= 6) earnFeat("Demon");
+	if (V.cow >= 6) earnFeat("Cattle");
+	if (V.harpy >= 6) earnFeat("Harpy");
+	if (V.fox >= 6) earnFeat("Fox");
+
+	const specialTraits =
+		(V.orgasmtrait >= 1 ? 1 : 0) +
+		(V.ejactrait >= 1 ? 1 : 0) +
+		(V.molesttrait >= 1 ? 1 : 0) +
+		(V.rapetrait >= 1 ? 1 : 0) +
+		(V.bestialitytrait >= 1 ? 1 : 0) +
+		(V.tentacletrait >= 1 ? 1 : 0) +
+		(V.voretrait >= 1 ? 1 : 0) +
+		(V.milkdranktrait >= 1 ? 1 : 0) +
+		(V.choketrait >= 1 ? 1 : 0);
+	if (specialTraits >= 1) earnFeat("A Special Trait");
+	if (specialTraits >= 9) earnFeat("A Special Trait Collector");
+
+	if (V.sexStats.anus.pregnancy.motherStatus >= 2 || V.sexStats.vagina.pregnancy.motherStatus >= 2) earnFeat("Broodmother Host");
+	if (
+		V.pregnancyStats.parasiteTypesSeen &&
+		V.pregnancyStats.parasiteTypesSeen.length >= 14 &&
+		V.pregnancyStats.parasiteVariantsSeen.length >= 2 &&
+		V.pregnancyStats.parasiteBook === 3
+	) {
+		// typesSeen: fish, snake, slime, spider, maggot, worm, eel, wasp, bee, lurker, squid, slug, tentacle, vine
+		// variantsSeen: pale, metal
+		earnFeat("Broodmother Zoologist");
+	}
+
+	if (V.spraymax >= 7) earnFeat("Max Those Shots");
+	if ((V.semen_volume >= 2000 && V.semen_amount >= V.semen_volume) || (V.milk_volume >= 2000 && V.milk_amount >= V.milk_volume)) earnFeat("Feeling Full");
+	if (V.cool >= 400) earnFeat("Social Butterfly");
+	if (V.cool <= 2 && !V.backgroundTraits.includes("nerd")) earnFeat("Anti-Social Moth");
+	if (V.delinquency <= 0) earnFeat("Teachers Pet");
+	if (V.delinquency >= 1000) earnFeat("Teachers Nightmare");
+
+	if (
+		V.skin.forehead.writing &&
+		V.skin.left_cheek.writing &&
+		V.skin.right_cheek.writing &&
+		V.skin.left_shoulder.writing &&
+		V.skin.right_shoulder.writing &&
+		V.skin.breasts.writing &&
+		V.skin.back.writing &&
+		V.skin.pubic.writing &&
+		V.skin.left_thigh.writing &&
+		V.skin.right_thigh.writing
+	) {
+		earnFeat("A Living Canvas");
+	}
+
+	if (V.produce_sold >= 100) earnFeat("Hawker");
+	if (V.produce_sold >= 1000) earnFeat("Vendor");
+	if (V.produce_sold >= 5000) earnFeat("Merchant");
+	if (V.plants_known.length >= 17) earnFeat("Seedy");
+	if (V.daily.ex.road === 1 && V.daily.ex.cream === 1 && V.daily.ex.flyover === 1) earnFeat("A Lewd Adventure");
+	if (V.athletics >= 1000) earnFeat("Swift");
+
+	if (V.farm_stage && V.farm.beasts.horses >= 20 && V.farm.beasts.cattle >= 20 && V.farm.beasts.dogs >= 20 && V.farm.beasts.pigs >= 20) {
+		earnFeat("Animal Tender");
+	}
+
+	if (V.masochism_level >= 4 && V.sadism_level >= 4) earnFeat("Sadomasochist");
+	if (V.masochism_level >= 4) earnFeat("Twisted Desire");
+	if (V.sadism_level >= 4) earnFeat("Served Hot");
+
+	// V.fame.pimp has been excluded, should be added back in if enabled
+	if (
+		V.fame.sex <= 29 &&
+		V.fame.prostitution <= 29 &&
+		V.fame.rape <= 29 &&
+		V.fame.bestiality <= 29 &&
+		V.fame.exhibitionism <= 29 &&
+		V.fame.pregnancy <= 29 &&
+		V.fame.impreg <= 29 &&
+		V.fame.scrap >= 1000 &&
+		V.fame.good >= 1000 &&
+		V.fame.business >= 1000 &&
+		V.fame.social >= 1000 &&
+		V.fame.model >= 1000
+	) {
+		earnFeat("Shining Reputation");
+	}
+
+	if (
+		Object.values(V.children).reduce((prev, curr) => {
+			if (curr.mother === "pc") prev.pushUnique(curr.type);
+			return prev;
+		}, []).length >= Object.keys(pregnancyGenerator).filter(type => setup.pregnancy.typesEnabled.includes(type)).length
+	) {
+		earnFeat("Diversity of Life");
+	}
+
+	if (V.money >= 100000) earnFeat("Pocket Change");
+	if (V.money >= 1000000) earnFeat("Money Maker");
+	if (V.money >= 10000000) earnFeat("Tycoon");
+	if (V.money >= 100000000) earnFeat("Millionaire");
+
+	if (
+		V.liquidoutsidecount >= 100 &&
+		(V.analdisable === "t" || setup.bodyliquid.combined("anus") >= 5) &&
+		(!V.player.vaginaExist || setup.bodyliquid.combined("vagina") >= 5) &&
+		setup.bodyliquid.combined("mouth") >= 5
+	) {
+		earnFeat("Fully Covered");
+	}
+
+	if (V.skulduggery >= 1000) earnFeat("Thief");
+	if (V.danceskill >= 1000) earnFeat("May I have this Dance?");
+	if (V.swimmingskill >= 1000) earnFeat("Aquanaut");
+	if (V.seductionskill >= 1000) earnFeat("Seductress");
+	if (V.tending >= 1000) earnFeat("Green Fingered");
+	if (V.housekeeping >= 1000) earnFeat("Majordomo");
+	if (V.baseAllure >= 7000 && V.outside === 1 && V.moonstate === 0) earnFeat("Alluring");
+	if (V.science >= 1000 && V.maths >= 1000 && V.english >= 1000 && V.history >= 1000) earnFeat("Perfect Record");
+	if (V.earSlime.corruption >= 100) earnFeat("Ear Slime Lover");
+	if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 200) earnFeat("Ear Slime Amalgam");
+
+	// To earn the feat "Curious Attire"
+	fragment.append(wikifier("specialClothesUpdate"));
+
+	// Should be last
+	let currentMax = 0;
+	for (let i = 0; i < Object.keys(setup.feats).length; i++) {
+		currentMax += setup.feats[Object.keys(setup.feats)[i]].difficulty;
+	}
+	if (V.feats.allSaves.points >= Math.floor(currentMax * 0.5)) earnFeat("My Collection of Feats");
+	if (V.feats.allSaves.points >= Math.floor(currentMax * 0.95)) earnFeat("My Timeless Collection of Feats");
+
+	return fragment;
+}

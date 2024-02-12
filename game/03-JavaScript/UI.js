@@ -672,15 +672,7 @@ function updateOptions() {
 		const tmpButtons = T.buttons;
 		const tmpKey = T.key;
 
-		if (Config.history.maxSessionStates < State.history.length) {
-			// update session data to prevent history loss
-			const tmpMaxSessionStates = Config.history.maxSessionStates;
-			Config.history.maxSessionStates = State.history.length;
-			State.setSessionState(State.marshalForSave());
-			Config.history.maxSessionStates = tmpMaxSessionStates;
-		}
-
-		if (!State.restore()) return; // don't do anything if state couldn't be restored
+		if (!State.restore(true)) return; // don't do anything if state couldn't be restored
 		V.options = optionsData;
 		tanned(0, "ignoreCoverage");
 		State.show();
