@@ -256,7 +256,7 @@ The <<beasttype>> flies above the ruins of a castle, and begins a circling desce
 		<<bird_init>>
 		<<set $hunger to 1800>>
 		<<if $monster is 1>>
-			The <<beasttype>> stands between you and the exit, immense wings stretching from <<bhis>> back. <<bHe>> regards you happily, but with dark eyes.
+			The <<beasttype>> stands between you and the exit, immense wings stretching from <<bhis>> back. <<bHe>> regards you with dark eyes.
 			<br><br>
 
 			"I am Great Hawk," <<bhe>> says, puffing out <<bhis>> plumes. "I found <<wife>>."
@@ -278,6 +278,15 @@ The <<beasttype>> flies above the ruins of a castle, and begins a circling desce
 
 <<set $bird.state to "hunting">>
 <<set $bird.timer to 20>>
+			<<set _rackMax to 4>>
+			<<set $bird.dryingLurkers to []>>
+			<<for $_ld to 0; $_ld lt $bird.dryingLurkers.length; $_ld++>>
+				<<if $bird.dryingLurkers[$_ld] lte 0>>
+					TEST 1
+				<<else>>
+					TEST 2
+				<</if>>
+			<</for>>
 
 <<if $birdescaped gte 1>>
 	<<link [[Apologise for escaping|Bird Capture Sorry]]>><<sub 1>><<bird_stockholm 3>><</link>><<ggbirdstockholm>>
@@ -1229,8 +1238,12 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<<else>>
 			<<mirroricon>><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>>
 		<</if>>
+		<<if $bird.upgrades.wardrobe is 1>>
+			<br>
+			<<wardrobeicon>><<link [[Wardrobe|Bird Tower Wardrobe]]>><</link>>
+		<</if>>
 	<</if>>
-		<br>
+	<br>
 	<<if $syndromebird is 1>>
 		<br>
 		<<link [[Settings]]>><<set $settingsExitPassage to "Bird Tower">><</link>>
@@ -1693,7 +1706,7 @@ You kneel beside the trap door. The wood is ancient, but dry and preserved. You 
 <<else>>
 	You close your eyes as you take a bite, and pretend you're eating something more palatable. It's chewy, but doesn't taste of much at all.
 <</if>>
-It fills you with a strange warmth.<<drugs 60>>
+It fills you with a strange warmth.<<drugs 120>><<ggdrugged>>
 <br><br>
 
 <i><<bHe>> will be more likely to bring you lurkers in the future, rather than other items.</i>
@@ -1759,8 +1772,8 @@ You remain still.
 
 :: Bird Tower Lurker Keep
 <<effects>>
-
-You hang up the lurker on the wall for later.
+<!-- Unreachable. Didn't want to allow players to horde lurkers by just sleeping at the tower forever. May change later. -->
+You hang the lurker on the rack for later.
 <br><br>
 
 <i><<bHe>> will be more likely to bring you lurkers in the future, rather than other items.</i>
@@ -2204,7 +2217,7 @@ You don't move.
 
 You put it in the wardrobe.
 <<if $monster is 1>>
-	"<<Wife>>'s collection of plumes grows, but <<wife>> always looks pleasing." <<bHe>> gives you a peck on the cheek before walking away.
+	"<<Wife>>'s collection of plumage grows, but <<wife>> always looks pleasing." <<bHe>> gives you a peck on the cheek before walking away.
 <<else>>
 	The <<beasttype>> puffs <<bhis>> plumes, and hops away.
 <</if>>
@@ -2271,6 +2284,9 @@ You lie in a covered corner of the tower. It's hard to get comfortable.
 <<if $bird.upgrades.shelter is 0>><<set $outside to 1>><<else>><<set $outside to 0>><</if>>
 <<effects>>
 You sit by the rainwater pool.
+<<if $bird.upgrades.pot is 3 and $bird.fire gte 1>>
+		The water is being heated.
+<</if>>
 <<npc "Great Hawk">>
 <<if $bird.state is "home">>
 	<<switch $bird.activity>>
@@ -2310,11 +2326,21 @@ You sit by the rainwater pool.
 <<if $bird.activity is "bathe" and $bird.state is "home">>
 	<<link [[Wash (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><</link>>
 	<br>
+	<<if $daily.birdWash is undefined>>
+		<<if $syndromebird gte 1>>
+			<<link [[Preen your spouse (0:15)|Bird Tower Bathe Preen]]>><<npcincr "Great Hawk" love 1>><<bird_pass 15>><</link>><<glove>><<deviant1>>
+			<br>
+		<<else>>
+			<<link [[Help the Great Hawk preen (0:15)|Bird Tower Bathe Preen]]>><<npcincr "Great Hawk" love 1>><<bird_stockholm 1>><<bird_pass 15>><</link>><<glove>><<gbirdstockholm>><<deviant1>>
+			<br>
+		<</if>>
+	<</if>>
 <<else>>
 	<<link [[Wash (0:30)|Bird Tower Bathe]]>><<bird_pass 30>><</link>>
 	<br>
 <</if>>
 <<link [[Get up|Bird Tower]]>><</link>>
+<br>
 
 :: Bird Tower Sleep
 <<set _autosavehere to true>>
@@ -2625,10 +2651,15 @@ You slowly run your hands down the <<beasttypes>> feathers, towards <<bhis>> <<n
 :: Bird Tower Bathe
 <<effects>>
 
+<<noClothingCheck>>
 <<strip>>
 <<wash>>
-<<noClothingCheck>>
-You <<if _nude is false>>remove your clothing, and <</if>>slip into the water. It's cold, but you get used to it.
+You <<if _nude is false>>remove your clothing, and <</if>>slip into the water.
+<<if $bird.upgrades.pot is 3>>
+	It's pleasently warm. <<stress -6>><<lstress>>
+<<else>>
+	It's cold, but you soon get used to it. <<stress 3>><<gstress>>
+<</if>>
 <br><br>
 
 You're soon squeaky clean.
@@ -2644,10 +2675,15 @@ You're soon squeaky clean.
 <<if $monster is 1 and $phase is 1>>
 	You take the <<beasttypes>> hand, and <<bhe>> leads you to the bathing pool. <<takeHandholdingVirginity "Great Hawk" "romantic">>
 <</if>>
+<<noClothingCheck>>
 <<strip>>
 <<wash>>
-<<noClothingCheck>>
-<<if _nude is false>>You remove your clothing.<</if>> The <<beasttype>> swims to the other side of the pool, making room for you. You slip into the water. It's cold, but you soon get used to it.
+<<if _nude is false>>You remove your clothing.<</if>> The <<beasttype>> swims to the other side of the pool, making room for you. You slip into the water.
+<<if $bird.upgrades.pot is 3>>
+	It's pleasently warm. <<stress -3>><<lstress>>
+<<else>>
+	It's cold, but you soon get used to it. <<stress 3>><<gstress>>
+<</if>>
 <br><br>
 
 <<if $daily.birdWash is undefined>>
@@ -2712,10 +2748,131 @@ You're soon squeaky clean.
 <<link [[Next|Bird Tower]]>><<endevent>><<clotheson>><</link>>
 <br>
 
+:: Bird Tower Bathe Preen
+<<effects>>
+<<npc "Great Hawk">><<person1>>
+<<set $daily.birdWash to 1>>
+You walk around the pool until you're behind the <<beasttype>>. You rub <<bhis>> shoulders and coo into <<bhis>> ear. "Why don't I help you out a bit?"
+<<deviancy1>>
+
+<<bHe>> looks
+<<if C.npc["Great Hawk"].love lte 25>>
+	surprised by your offer.
+<<else>>
+	happy to hear your offer.
+<</if>>
+<<if $monster is 1>>
+	"<<Wife>> does not have to... but I would never say no to you."
+<</if>>
+You bring your hands lower and start combing through <<bhis>> wings with your fingers. You start pulling out any stray twigs or leaves you find. You make sure to be very gentle. Next, you rub down <<bhis>> wings with water. You take your time to make sure you get all of the spots <<bhe>> couldn't.
+<br><br>
+
+After a while, <<bhe>> turns to you.
+<<if $monster is 1>>
+	"Want to help <<wife>> now."
+<<else>>
+	<<if $harpy gte 6>>
+		<<bHe>> taps your wings with <<bhis>> beak.
+	<<else>>
+		<<bHe>> ruffles your hair with <<bhis>> beak.
+	<</if>>
+<</if>>
+<br><br>
+
+<<link [[Allow|Bird Tower Bathe Preen Allow]]>><<stress -3>><<npcincr "Great Hawk" dom 1>><</link>><<lstress>><<gdom>>
+<br>
+<<link [[Push away|Bird Tower Bathe Preen Deny]]>><</link>>
+<br>
+
+:: Bird Tower Bathe Preen Allow
+<<effects>>
+
+<<noClothingCheck>>
+<<strip>>
+<<wash>>
+You <<if _nude is false>>remove your clothing, and <</if>>slip into the water with <<bhim>>.
+<<if $bird.upgrades.pot is 3>>
+	It's pleasently warm. <<stress -6>><<lstress>>
+<<else>>
+	It's cold, but you soon get used to it. <<stress 3>><<gstress>>
+<</if>>
+<<bHe>> steps aside to give you more space, then moves behind you.
+
+<<if ($angel gte 6 and $transformationParts.angel.wings isnot "hidden")
+or ($fallenangel gte 2 and $transformationParts.fallenAngel.wings isnot "hidden")
+or ($demon gte 6 and $transformationParts.demon.wings isnot "hidden")>>
+	<<if $monster is 1>>
+		"<<Wife>> has strange wings. Not like mine, but they are still pretty," <<bhe>> says. After inspecting your wings, <<bhe>> starts cleaning you. <<bHes>> skilled with his hands, making <<bhis>> touch feel pleasant.
+	<<else>>
+		<<bHe>> eyes your wings with curiosity, unsure what to make of them. After inspecting you, <<bHe>> starts cleaning you. <<bHes>> skilled with <<bhis>> beak, making <<bhis>> prodding feel strangely pleasant. 
+	<</if>>
+	After <<bhes>> done with your wings, <<bhe>> moves on to your hair. After that, <<bhe>> cleans the rest of your back. 
+<<elseif $harpy gte 6 and $transformationParts.bird.wings isnot "hidden">>
+	<<if $monster is 1>>
+		<<bHe>> looks at your wings. "<<Wife>> has pretty wings. Healthy and strong." After inspecting your wings, <<bhe>> starts cleaning you. <<bHes>> skilled with <<bhis>> hands, making <<bhis>> touch feel pleasant. 
+	<<else>>
+		<<bHe>> looks at your wings. <<bHe>> seems to like them. After inspecting you, <<bhe>> starts cleaning you. <<bHes>> skilled with <<bhis>> beak, making his prodding feel strangely pleasant. 
+	<</if>>
+	After <<bhes>> done with your wings, <<bhe>> moves on to your hair. After that, <<bhe>> cleans the rest of your back. 
+<<else>>
+	<<if $monster is 1>>
+		<<bHe>> looks at your back. "Don't worry, I'm sure <<wife>> will grow wings soon," <<bhe>> says. <<bHe>> starts cleaning you. <<bHes>> skilled with his hands, making <<bhis>> touch feel pleasant.
+	<<else>>
+		<<bHe>> looks at your wingless back, before nudging your head <<if understandsBirdBehaviour()>> with pity<</if>>. <<bHe>> starts cleaning you. <<bHes>> skilled with <<bhis>> beak, making <<bhis>> prodding feel strangely pleasant. 
+	<</if>>
+	After a moment <<bhe>> moves on to your hair, then the rest of your back. 
+<</if>>
+<br><br>
+
+A few minutes later, <<bhes>> done. You feel refreshed and clean.
+<br><br>
+
+<<link [[Hug|Bird Tower Bathe Preen Hug]]>><<npcincr "Great Hawk" love 1>><<bird_stockholm 1>><</link>><<glove>><<gbirdstockholm>>
+<br>
+<<link [[Get up|Bird Tower]]>><<endevent>><<clotheson>><</link>>
+<br>
+
+:: Bird Tower Bathe Preen Hug
+<<effects>>
+
+You pull <<bhim>> into a hug.
+<<if $syndromebird isnot 1>>
+	This takes <<bhim>> by surprise.
+<<else>>
+	<<bHe>> returns it happily.
+<</if>>
+You thank <<bhim>> for cleaning you.
+<br><br>
+
+<<if $monster is 1>> 
+	Of course. I would be happy to clean <<wife>> every day," <<bhe>> responds.
+<<else>>
+	<<bHe>> gently rubs your cheek with <<bhis>> beak in response.
+<</if>>
+You keep holding <<bhim>> for a moment, before letting go of <<bhim>> and stepping out of the pool.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><<clotheson>><</link>>
+<br>
+
+:: Bird Tower Bathe Preen Deny
+<<effects>>
+You tell <<bhim>> you don't need to bathe.
+<<if $monster is 1>>
+	"I wanted to help <<wife>> too. Maybe next time," <<bhe>> says as <<bhe>> continues to clean <<bhimself>>.
+<<else>>
+	<<bHe>> looks at you with a tilted head, then goes back to cleaning <<bhimself>>.
+<</if>>
+You step away from the pool.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
 
 :: Bird Tower Groom
 <<effects>>
-!!!!!!!!!!!!!
+<!-- Unused -->
 <<npc "Great Hawk">>
 
 <<if $speech_attitude is "meek">>
@@ -3741,7 +3898,7 @@ You lay down some fabric and leaves in your part of the nest. It will prevent an
 
 :: Bird Tower Build Nest 2
 <<effects>>
-
+<<npc "Great Hawk">><<person1>>
 You join the Great Hawk at your nest.
 <<switch $speech_attitude>>
 	<<case "meek">>"C-can we make it softer? It's kind of... rough," you say.
@@ -3764,12 +3921,12 @@ When you're finished, your spouse looks pleased.
 <</if>>
 <br><br>
 
-<<link [[Next|Bird Tower Build]]>><</link>>
+<<link [[Next|Bird Tower Build]]>><<endevent>><</link>>
 <br>
 
 :: Bird Tower Build Nest 3
 <<effects>>
-
+<<npc "Great Hawk">><<person1>>
 You join the Great Hawk at your nest, carrying some materials and the toolbox with you. <<bHe>> looks at you curiously.
 <br><br>
 
@@ -3919,3 +4076,187 @@ You crouch down in front of the
 	<<firepit_actions>>
 </span>
 
+:: Bird Tower Build Cooking
+<<effects>>
+
+You fashion a simple mount for the cooking pot from sticks bound by fabric. You place the pot on top and give it a good push to make sure it holds.
+<br><br>
+
+<span class="blue">You can now cook lurkers.</span>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Lurker Cook
+<<effects>>
+You throw a lurker into the cooking pot.
+<br><br>
+
+You stoke the fire, and keep a close eye on it. When you think it's done, you take a bite. It's strangely sweet. Rather than warmth, you feel a soothing calmness wash over you. <<trauma -18>><<lltrauma>>
+<br><br>
+
+<<link [[Next|Bird Tower Firepit]]>><</link>>
+<br>
+
+:: Bird Tower Build Heating
+<<effects>>
+
+An idea strikes you. You could use a small change in elevation and a couple of tubes to fill the pot with water from the rainwater pool, heating it, before returning it back.
+<br><br>
+
+You fashion some tubes with leather and fabric. It's a bit leaky, but it will do.
+You stick one of the tubes in the pool and apply a bit of suction before dropping it in the pot. Water starts flowing in to be heated. You repeat the process with the other tube, and water begins flowing both ways.
+<br><br>
+
+You're sure this would earn you some praise from Sirris.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Build Rack 1
+<<effects>>
+
+You use sticks and wood, bound with a bit of fabric, to make a simple standing rack to hang lurkers on. You make it wide enough to place it over your pirepit.
+<br><br>
+
+<span class="blue">You can now dry lurkers for leather.</span>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Rack 2
+<<effects>>
+Expanding on the drying rack is simple, especially with the right tools. You use some scrap to make sturdier legs, and make it big enough to hold two separate rods.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Rack 3
+<<effects>>
+With a little more elbow grease, you could vastly improve the design of your drying rack.
+<br><br>
+
+You start from scratch, carving the legs and rods out of sturdy wood capped with a bit of scrap to protect it from the heat.
+You then thatch together side supports with sticks and leather, allowing the whole assembly to fold in and out for easier storage.
+<br><br>
+
+Once that's done, you get to work building a ventilated cover for it. The strange fumes should harmlessly escape the tower, now.
+<br><br>
+
+You wipe your forehead and admire your handiwork. You should be able to dry out plenty of lurkers at once.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Decor 1
+<<effects>>
+You collect some of your finds from hunting. You begin to place them in parts of the tower that look too vacant. A piece of torn up clothing here, a lurker hung there.
+<br><br>
+
+It's simple, but it makes the tower feel more homely. <<stress -6>><<lstress>>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Decor 2
+<<effects>>
+You collect your hunting trophies. You build a small effigy near the broken wall, with firewood as a base. You dress it with a piece of torn clothing, fill it with leaves, and top it with a crown of lurkers. You pile up some shiny things around the base.
+<br><br>
+
+It looks a little uncanny. You're not entirely sure why you built it, but seeing your things collected together like this is pleasing nonetheless. <<stress -6>><<lstress>>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Decor 3
+<<effects>>
+You gather your trophies, and look around the tower for inspiration. There's still plenty of room.
+<br><br>
+
+Your nest looks a little plain. You embed a piece of fabric with some of the shiny junk you've collected, and tie it to the base, hanging over the edge of the tower.
+<br><br>
+
+You build a simple display rack for a particularly empty section of the tower, using fabric and leaves as a pleasing backdrop for some valuables you've stolen.
+<br><br>
+
+You add some more shiny things to the shelter tarp above you, then move to your mirror. You use your tools to carve a new wooden frame for it to slide into, and add some leaves around it for a natural look. You hang some lurkers from the top. You step back and look around the tower again. Being surrounded by little memories like this is liberating. <<stress -24>><<trauma -6>><<lllstress>><<ltrauma>>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Decor 4
+<<effects>>
+<<npc "Great Hawk">><<person1>>
+You pile up your hunting trophies once more. There's a lot to go through.
+<br><br>
+
+You weave together salvaged clothing into a large curtain. The Great Hawk occasionally looks over your shoulder. It takes a long time, but when you're done, it's large enough to cover the entire broken wall. You use a long stick and some wood to fashion a simple opening mechanism. You show your spouse how to open it.
+<br><br>
+
+You're not yet satisfied. Over the course of about an hour, you cover an entire wall with shiny things you've snagged over time. You add some to the base of your nest, around your mirror, and to your wardrobe. Everything has a pleasing glint somewhere on its surface.
+<br><br>
+
+You take a heft piece of firewood and bind lurkers all around it. You sharpen some sticks and use them to display more lurkers. You start to hang them on any surface that will hold them.
+<br><br>
+
+The walls of your tower tell the stories of countless hunts, and tease more to come. Your spouse looks around, seemingly stunned at all you've accomplished.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Wardrobe
+<<effects>>
+You pile up a bunch of wood and prepare your tools. This will be a big project.
+<br><br>
+
+Wood carving takes up the bulk of the time. You need to make sure it has the right shape and structure. Once you have a standing frame, it becomes much easier.
+<br><br>
+
+The walls are next. You use your largest pieces for it, and use a mix of fabric and leather to bind pieces together. You wish you had some glue. You carve notches near the top as even as you can, both to accept a roof piece and for sticks to support hangars.
+<br><br>
+
+The roof piece is a bit heavy, but you lock it in place after a few tries. Finally, you carve sticks and tie bent pieces of junk to the tops to serve as hangars.
+<br><br>
+
+You stand up and admire your work. You swell with pride. <<trauma -12>><<lltrauma>>
+<br><br>
+
+You move your mirror right next to it.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+
+:: Bird Tower Build Snare 1
+<<effects>>
+Not yet implemented.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Snare 2
+<<effects>>
+Not yet implemented.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Snare 3
+<<effects>>
+Not yet implemented.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>

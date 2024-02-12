@@ -94,6 +94,17 @@
 				<<set $bird.fire to Math.clamp($bird.fire, 0, ($bird.fire - _args[0]))>>
 			<</if>>
 		<</if>>
+		<<if $bird.upgrades.rack gte 1 and $bird.dryingLurkers isnot undefined>>
+			<<set $_lurkerTimeDown to ($bird.fire gte 1 ? ($bird.upgrades.firepit + 1) : 1)>>
+			<<for $_lurkerTime to 0; $_lurkerTime lt $bird.dryingLurkers.length; $_lurkerTime++>>
+				<<if $bird.dryingLurkers[$_lurkerTime] gt 0>>
+					<<set $bird.dryingLurkers[$_lurkerTime] to Math.clamp($bird.dryingLurkers[$_lurkerTime], 0, ($bird.dryingLurkers[$_lurkerTime] - ($_lurkerTimeDown * _args[0])))>>
+					<<if $bird.upgrades.rack lt 3 and $bird.fire gte 1>>
+						<<set $_lurkerDrugs to Math.floor(($_lurkerTimeDown * _args[0]) / 4)>><<drugs $_lurkerDrugs>>
+					<</if>>
+				<</if>>
+			<</for>>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -190,6 +201,9 @@
 			<<bHe>> holds <<bhis>> head back as <<bhe>> swallows the meat whole.
 		<</if>>
 		<<bHe>> looks at you, waiting for a response.
+		<<if $bird.hunts.lurkers is true and $bird.upgrades.rack gte 1>>
+			<span class="blue">Its hide is too damaged to use it for anything.</span>
+		<</if>>
 		<br><br>
 
 		<<if $syndromebird is 1>>
@@ -197,10 +211,6 @@
 			<br>
 		<<else>>
 			<<link [[Eat|Bird Tower Lurker]]>><<set $hunger to 1>><<bird_loot lurker 5>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>><<lllhunger>>
-			<br>
-		<</if>>
-		<<if $bird.hunts.lurkers is true>>
-			<<link [[Keep it|Bird Tower Lurker Keep]]>><<bird_loot lurker 5>><<set $bird.matrials.lurkers++>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<br>
 		<</if>>
 		<<link [[Scold|Bird Tower Lurker Scold]]>><<bird_loot lurker -20>><<transform bird 1>><<npcincr "Great Hawk" dom -1>><<def 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<ldom>>
@@ -1040,12 +1050,23 @@
 			Your spouse quickly devours one of the lurkers. <<set $bird.materials.lurkers -=1>>
 			<br><br>
 		<</if>>
-		<<if $bird.injured gt 1>>
+		<<if $bird.injured gt 1 and $bird.state is "home">>
 			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Injured Eat]]>><<set $bird.materials.lurkers -=1>><<set $bird.injured-->><<endevent>><</link>>
 			<br>
 		<<else>>
 			<<link [[Eat a lurker|Bird Tower Hunt End Eat]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
 			<br>
+			<<if $bird.upgrades.pot gte 2>>
+				<<if $bird.fire gt 0>>
+					<<link [[Cook and eat a lurker (0:15)|Bird Tower Hunt End Eat Cook]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><<bird_pass 15>><</link>>
+					<br>
+				<<else>>
+					<span class="red">The fire needs to be lit in order to cook lurkers.</span>
+					<br>
+					<<link [[Go to the firepit|Bird Tower Firepit]]>><<endevent>><</link>>
+					<br>
+				<</if>>
+			<</if>>
 		<</if>>
 	<</if>>
 	<<link [[Continue|Bird Tower]]>><<endevent>><</link>>
@@ -1141,7 +1162,76 @@
 			<<set $_timeSticks5 to Math.clamp(($_timeSticks1 * 5), 0, ($_maxTime - $bird.fire))>>
 			<<link [["Add 5 sticks"]]>><<set $bird.materials.sticks -= 5>><<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks5), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeSticks3)" "green">>
 			<br>
-		<</if>>		
+		<</if>>
+	<</if>>
+	<br>
+	<<if $bird.materials.lurkers is 0 and ($bird.upgrades.rack gte 1 or $bird.upgrades.pot gte 2)>>
+		<<set $_noLurkers to true>>
+		<<if $bird.upgrades.rack gte 1 and $bird.upgrades.pot gte 2>>
+			<span class="red">No lurkers to dry or cook.</span>
+		<<elseif $bird.upgrades.rack gte 1>>
+			<span class="red">No lurkers to dry.</span>
+		<<elseif $bird.upgrades.pot gte 2>>
+			<span class="red">No lurkers to cook.</span>
+		<</if>>
+		<br>
+	<</if>>
+	<<if $bird.upgrades.rack gte 1>>
+		<<if $bird.dryingLurkers is undefined>>
+			<<set $bird.dryingLurkers to []>>
+		<</if>>
+		<<set _rackMax to $bird.upgrades.rack * 2>>
+		<<set $_lurkersReady to 0>><<set $_lurkersDrying to 0>>
+		Your drying rack can hold up to <<number _rackMax>> lurkers.
+		<br>
+		<<for $_ld to 0; $_ld lt $bird.dryingLurkers.length; $_ld++>>
+			<<if $bird.dryingLurkers[$_ld] lte 0>>
+				<<set $_lurkersReady++>>
+			<<else>>
+				<<set $_lurkersDrying++>>
+			<</if>>
+		<</for>>
+		<<if $_lurkersDrying gte 1>>
+			It is currently drying <<number $_lurkersDrying>> lurker<<if $_lurkersDryinggte 2>>s<</if>>.
+			<<if $bird.fire gte 1>>
+				<span class="lewd">Strange fumes are coming from <<if $_lurkersDryinggte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
+			<<else>>
+				A lit firepit would speed up the process.
+			<</if>>
+		<<else>>
+			No lurkers are drying.
+		<</if>>
+		<br>
+		<<if $_lurkersReady gte 1>>
+			<span class="green"><<number $_lurkersReady>> lurker<<if $_lurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
+			<br>
+			<<link [["Take " + $_lurkersReady + " leather"]]>>
+				<<set $bird.materials.leather += $_lurkersReady>>
+				<<for $_lr to 0; $_lr lt $bird.dryingLurkers.length; $_lr++>>
+					<<if $bird.dryingLurkers[$_lr] lte 0>>
+						<<run delete $bird.dryingLurkers[$_lr]>>
+					<</if>>
+				<</for>>
+				<<replace #firepitTime>>
+			<</link>>
+		<<else>>
+			No lurkers are ready.
+		<</if>>
+		<br>
+		<<if $bird.dryingLurkers.length lt _rackMax and !$_noLurkers>>
+			<<link [["Add a lurker to the rack (0:02)"]]>>
+				<<set $bird.materials.lurkers-->>
+				<<run $bird.dryingLurkers.push(1440)>><<bird_pass 2>>
+				<<replace #firepitTime>>
+			<</link>>
+		<<else>>
+			The drying rack is full.
+		<</if>>
+		<br>
+	<</if>>
+	<<if $bird.upgrades.pot gte 2 and !$_noLurkers>>
+		<<link [[Cook a lurker (0:15)|Bird Tower Lurker Cook]]>><<set $bird.materials.lurkers -= 1>><<bird_pass 15>><</link>>
+		<br>
 	<</if>>
 	<br>
 	<<link [[Back|Bird Tower]]>><</link>>
@@ -1292,14 +1382,14 @@
 						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
 					<<case 3>>
 						<<unset $_build>>
-						<span class="green">Bonfire (3)</span>: Burns for a long time. Cooks and dries lurkers very quickly. Cozy.
+						<span class="green">Bonfire (3)</span>: Burns for a long time. Cooks and dries lurkers quickly. Cozy.
 				<</switch>>
 			<<case "pot">>
 				<!-- This is set up as intended, I know it looks weird but the upgrade value gets set to 1 when the player finds the cooking pot -->
 				<<set $_build to true>>
 				<<switch $bird.upgrades.pot>>
 					<<case 0>>
-						<span class="red">No cooking pot (0)</span>: Can not cook.
+						<span class="red">No cooking pot (0)</span>: You'll need to find one from a campsite.
 						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Cooking">>
 						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
 						<<set _towerUpgrades[_upgrade].materialsUsed to {
@@ -1347,7 +1437,7 @@
 						<<set _towerUpgrades[_upgrade].housekeeping to 300>>
 					<<case 3>>
 						<<unset $_build>>
-						<span class="green">Cooking pot and heating element (3)</span>: Can cook lurkers. Feeding extra wood will heat the rainwater bath to a comfortably warm temperature.
+						<span class="green">Cooking pot and heating element (3)</span>: Can cook lurkers. Heats the rainwater bath to a comfortably warm temperature.
 				<</switch>>
 			<<case "rack">>
 				<<set $_build to true>>
@@ -1357,20 +1447,21 @@
 						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Rack 1">>
 						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
 						<<set _towerUpgrades[_upgrade].materialsUsed to {
-							wood: 3,
-							fabric: 3,
-							sticks: 3
+							wood: 1,
+							fabric: 1,
+							sticks: 2
 						}>>
 						<<set _towerUpgrades[_upgrade].housekeeping to 0>>
 					<<case 1>>
-						<span class="purple">Makeshift drying rack (1)</span>: Can dry out lurkers to harvest them for leather. A fire will speed up the process significantly.
+						<span class="purple">Makeshift drying rack (1)</span>: Can dry out lurkers for leather. A lit firepit will speed this up significantly.
 						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Rack 2">>
 						<<set _towerUpgrades[_upgrade].timeTaken to 60>>
 						<<set _towerUpgrades[_upgrade].materialsUsed to {
 							wood: 4,
 							fabric: 4,
 							sticks: 4,
-							junk: 2
+							junk: 2,
+							leather: 4
 						}>>
 						<<set _towerUpgrades[_upgrade].upgradesRequired to {
 							tools: 1
@@ -1385,7 +1476,7 @@
 							sticks: 12,
 							leaves: 4,
 							junk: 4,
-							leather: 4
+							leather: 8
 						}>>
 						<<set _towerUpgrades[_upgrade].upgradesRequired to {
 							tools: 1,
@@ -1397,6 +1488,7 @@
 						<span class="green">Enclosed drying rack (3)</span>: Can dry out many lurkers at once. No harmful fumes will escape.
 				<</switch>>
 			<<case "snare">>
+				/* Disabled for now, until decision is made about player spamming sleep at the tower
 				<<set $_build to true>>
 				<<switch $bird.upgrades.snare>>
 					<<case 0>>
@@ -1448,6 +1540,7 @@
 						<<unset $_build>>
 						<span class="green">Advanced Snare (3)</span>: Will often catch lurkers at the bottom of the tower. The Great Hawk will collect them automatically for you.
 				<</switch>>
+				*/
 			<<case "decor">>
 				<<set $_build to true>>
 				<<switch $bird.upgrades.decor>>
@@ -1504,7 +1597,9 @@
 						<<set _towerUpgrades[_upgrade].passage to "Bird Tower Build Decor 4">>
 						<<set _towerUpgrades[_upgrade].timeTaken to 240>>
 						<<set _towerUpgrades[_upgrade].materialsUsed to {
+							wood: 6,
 							fabric: 10,
+							sticks: 10,
 							junk: 40,
 							lurkers: 30
 						}>>
@@ -1540,6 +1635,7 @@
 							leather: 4
 						}>>
 						<<set _towerUpgrades[_upgrade].upgradesRequired to {
+							mirror: 1,
 							tools: 1
 						}>>
 						<<set _towerUpgrades[_upgrade].housekeeping to 900>>

@@ -476,13 +476,6 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Social"],
 	},
-	/*"Birds of a Feather": {
-		title: "Birds of a Feather",
-		desc: "Rescue an orphan of another species.",
-		difficulty: 2,
-		series: "",
-		filter: ["All", "Social"],
-	},*/
 	"Wren the Sly": {
 		title: "Wren the Sly",
 		desc: "You gave your virginity to them.",
@@ -887,6 +880,23 @@ setup.feats = {
 		filter: ["All", "Discoveries"],
 		hint: "Hint: Lost in the mire.",
 	},
+	/*"Birds of a Feather": {
+		title: "Birds of a Feather",
+		desc: "Flock together.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Rescue an orphan of another species.",
+	},
+	"Terror's Equal": {
+		title: "Terror's Equal",
+		desc: "Filled the tower with impressive hunting trophies.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Vanity befitting a terror of the skies.",
+		softLockable: true,
+	},*/
 	"Head of the Pack": {
 		title: "Head of the Pack",
 		desc: "Be the leader of wolves.",
