@@ -87,8 +87,8 @@ function existsInSexToyInventory(name, colour) {
 				return true;
 			}
 		}
-		return false;
 	}
+	return false;
 }
 window.existsInSexToyInventory = existsInSexToyInventory;
 
