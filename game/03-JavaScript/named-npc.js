@@ -80,5 +80,5 @@ function kylarStatusCheck(kylar) {
 }
 
 function understandsBirdBehaviour() {
-	return V.harpy >= 6 || $tending >= 600;
+	return V.harpy >= 6 || V.tending >= 600;
 }
