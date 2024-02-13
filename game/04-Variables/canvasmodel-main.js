@@ -3201,11 +3201,13 @@ Renderer.CanvasModels["main"] = {
 			},
 			showfn(options) {
 				if (options.arm_right === "cover") {
-					return options.worn_handheld_setup.coverImage !== 0
+					return options.show_clothes &&
+					options.worn_handheld > 0 &&
+					options.worn_handheld_setup.coverImage !== 0;
 				} else {
 					return options.show_clothes &&
 					options.worn_handheld > 0 &&
-					options.arm_right !== "none"
+					options.arm_right !== "none";
 				}
 			},
 			zfn(options) {
@@ -3220,10 +3222,17 @@ Renderer.CanvasModels["main"] = {
 				return gray_suffix(path, options.filters['worn_handheld_acc']);
 			},
 			showfn(options) {
-				return options.show_clothes &&
+				if (options.arm_right === "cover") {
+					return options.show_clothes &&
 					options.worn_handheld > 0 &&
 					options.worn_handheld_setup.accessory === 1 &&
-					options.arm_right !== "none"
+					options.worn_handheld_setup.coverImage !== 0;
+				} else {
+					return options.show_clothes &&
+					options.worn_handheld > 0 &&
+					options.worn_handheld_setup.accessory === 1 &&
+					options.arm_right !== "none";
+				}
 			},
 			zfn(options) {
 				return options.handheld_overhead ? ZIndices.over_upper : ZIndices.handheld;
@@ -3240,13 +3249,13 @@ Renderer.CanvasModels["main"] = {
 				return options.show_clothes &&
 					options.worn_handheld > 0 &&
 					options.worn_handheld_setup.leftImage === 1 &&
-					options.arm_left !== "none"
+					options.arm_left !== "none";
 			},
 			zfn(options) {
 				return options.arm_left === "cover" ? ZIndices.hands : (options.zarms + 0.2);
 			},
 			filtersfn(options) {
-				return ["worn_handheld"]
+				return ["worn_handheld"];
 			},
 		},
 		"handheld_left_acc": {
@@ -3261,7 +3270,7 @@ Renderer.CanvasModels["main"] = {
 					options.worn_handheld > 0 &&
 					options.worn_handheld_setup.leftImage === 1 &&
 					options.worn_handheld_setup.accessory === 1 &&
-					options.arm_left !== "none"
+					options.arm_left !== "none";
 			},
 			zfn(options) {
 				return options.arm_left === "cover" ? ZIndices.hands : (options.zarms + 0.2);
