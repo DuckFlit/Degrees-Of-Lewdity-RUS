@@ -161,7 +161,7 @@
 <</widget>>
 
 <<widget "select_random_clothes_limited">>/*Selects random clothes from shops from a provided pool of slots. Sets _random_clothes to the item name, and _random_index to its index. Ignores forest shop, and secondary parts of outfits. _random_clothes outputs "piece of fabric" when clothes are ignored this way.*/
-	<<for $_slot range _args.length>>
+	<<for $_slot range _args>>
 		<<if !setup.clothingLayer.all.includes($_slot)>>
 			<<run Errors.report("Invalid clothing slot provided of name " + $_slot + ", defaulting to piece of fabric")>>
 			<<set _random_clothes to "piece of fabric">>
@@ -669,6 +669,7 @@
 		<<set _flightTimeBase to 60>>
 	<</if>>
 	<<if $bird.hunts and $bird.hunts.weight>>
+		/* this is not always an integer */
 		<<set _flightTimeBase += $bird.hunts.weight>>
 	<</if>>
 	<<set _flightTime to _flightTimeBase>>
@@ -734,6 +735,8 @@
 	<<if _flightTime lte 0>>
 		<<set _flightTime to 1>>
 	<</if>>
+	/* I put floor here to protect from other modifiers if added later, feel free to add it on the line commented above */
+	<<set _flightTime to Math.floor(_flightTime)>>
 	<<set _hoursPassed to Math.floor(_flightTime / 60)>>
 	<<set _minutesPassed to _flightTime % 60>>
 
@@ -797,15 +800,25 @@
 			<<case "south">><<set _distanceNorth to -1>><<set _distanceEast to 0>>
 			<<case "west">><<set _distanceNorth to 0>><<set _distanceEast to -1>>
 		<</switch>>
-		<<capture _distanceNorth _distanceEast _hoursPassed _minutesPassed _fatigueMod _flightTime _fatigueText>>
-			<<print `<<link [[Continue hunting ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.distanceNorth += _distanceNorth>><<set $bird.hunts.distanceEast += _distanceEast>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>`>><<print _fatigueText>>
-			<br>
+		<<capture _distanceNorth _distanceEast _fatigueMod _flightTime _fatigueText>>
+			<<link [[`Continue hunting (${getTimeString(_hoursPassed, _minutesPassed)})`|Bird Hunt Event]]>>
+				<<set $bird.hunts.distanceNorth += _distanceNorth>>
+				<<set $bird.hunts.distanceEast += _distanceEast>>
+				<<set $fatigueMod to _fatigueMod>>
+				<<set $flightTime to _flightTime>>
+				<<bird_pass _flightTime>>
+			<</link>><<print _fatigueText>>
 		<</capture>>
-		<br>
+		<br><br>
+
 		<<link [[Ask to hunt for something else|Bird Hunt Goal]]>><<endevent>><<set $phase to 1>><</link>>
 		<br>
 		<<flight_time_check _returnTime "silent">>
-		<<print '<<link [[Ask to return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return Ask]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+		<<link [[`Ask to return to the castle (${getTimeString(_hoursPassed, _minutesPassed)})`|Bird Hunt Return Ask]]>>
+			<<set $fatigueMod to _fatigueMod>>
+			<<set $flightTime to _flightTime>>
+			<<bird_pass _flightTime>>
+		<</link>><<print _fatigueText>>
 		<br>
 	<<else>>
 		<<if _distanceNorth gte 4 or _distanceEast gte 4>>
@@ -933,7 +946,7 @@
 		<<run Errors.report("No argument specified for widget flight_hunt_get")>>
 	<<elseif typeof _args[0] isnot "string">>
 		<<run Errors.report("Non-string provided as first argument for widget flight_hunt_get")>>
-	<<elseif !_args[1] or typeof !_args[1] isnot "number">>
+	<<elseif !_args[1] or typeof _args[1] isnot "number">>
 		<<run Errors.report("No number argument specified for widget flight_hunt_get")>>
 	<<else>>
 		<<set $_looted to _args[0]>><<set $_amount to _args[1]>>
@@ -941,10 +954,10 @@
 			<<if _args[2]>>
 				<<set $_info to _args[2]>>
 				<<if $bird.hunts.loot[$_looted] is undefined>>
-					<<run $bird.hunts.loot.pushUnique($_looted : {$_info: 0})>>
+					<<set $bird.hunts.loot[$_looted] to {[$_info]: 0}>>
 				<</if>>
 				<<if $bird.hunts.loot[$_looted][$_info] is undefined>>
-					<<set $bird.hunts.loot[$_looted].pushUnique($_info : 0)>>
+					<<set $bird.hunts.loot[$_looted][$_info] to 0>>
 				<</if>>
 				<<set $bird.hunts.loot[$_looted][$_info] += $_amount>>
 				<<set $bird.hunts.lootAmount += $_amount>>
@@ -955,7 +968,7 @@
 			<<run Errors.report("Invalid loot of type; " + $_looted)>>
 		<<else>>
 			<<if $bird.hunts.loot[$_looted] is undefined>>
-				<<run $bird.hunts.loot.pushUnique($_looted : 0)>>	
+				<<set $bird.hunts.loot[$_looted] to 0>>
 			<</if>>
 			<<set $bird.hunts.loot[$_looted] += $_amount>>
 			<<set $bird.hunts.lootAmount += $_amount>>
@@ -1020,11 +1033,11 @@
 				<<set $_hordeLoot += $_tempNum>>
 				valuable item<<if $_tempNum gte 2>>s<</if>>:
 				<<for $_lootValType range Object.keys($bird.hunts.loot.valuables)>>
-					<<set $_tempNumVal to $bird.hunts.loot.valuabes[$_lootValType]>>
-					<<if $bird.materials.valuabes[$_lootValType] is undefined>>
-						<<run $bird.materials.valuables.pushUnique($_lootValType : 0)>>
+					<<set $_tempNumVal to $bird.hunts.loot.valuables[$_lootValType]>>
+					<<if $bird.materials.valuables[$_lootValType] is undefined>>
+						<<set $bird.materials.valuables[$_lootValType] to 0>>
 					<</if>>
-					<<set $bird.materials.valuabes[$_lootValType] += $_tempNumVal>>
+					<<set $bird.materials.valuables[$_lootValType] += $_tempNumVal>>
 					<br>
 					<<ind>><span class="teal">- <<number $_tempNumVal>></span> $_lootValType<<if $_tempNumVal gte 2>>s<</if>>.
 				<</for>>
@@ -1077,23 +1090,32 @@
 <<widget "towerValuables">>
 	<span id="towerVal">
 		<<for $_valuables range Object.keys($bird.materials.valuables)>>
-			<<if $bird.materials.valuables[$_valuables] gte 1>>
-				<<set $_valuablessMessage to true>>
-				<<number $bird.materials.valuables[$_valuables]>> $_valuables<<if $bird.materials.valuables[$_valuables] gte 2>><<if $_valuables is "watch">>es<<else>>s<</if>><</if>>
-				<<capture $_valuables>>
-					<<link "Take one">>
-					<<if $_valuables is "antique bullet">><<set $antiquemoney += 50>><<museumAntiqueStatus "antiquebullet" "found">><<else>><<set $blackmoney += 50>><</if>>
+			<<if $bird.materials.valuables[$_valuables] lt 1>><<continue>><</if>>
+			<<set $_valuablesMessage to true>>
+			<<number $bird.materials.valuables[$_valuables]>> $_valuables<<if $bird.materials.valuables[$_valuables] gte 2>><<if $_valuables is "watch">>es<<else>>s<</if>><</if>>
+			<<capture $_valuables>>
+				<<link "Take one">>
+					<<if $_valuables is "antique bullet">>
+						<<set $antiquemoney += 50>>
+						<<museumAntiqueStatus "antiquebullet" "found">>
+					<<else>>
+						<<set $blackmoney += 50>>
+					<</if>>
 					<<set $bird.materials.valuables[$_valuables] -= 1>>
-					<<replace "#towerVal">><<towerValuabes>><</replace>>
-					<</link>> |
-					<<link "Take all">>
-					<<if $_valuables is "antique bullet">><<set $antiquemoney += (50 * $bird.materials.valuables[$_valuables])>><<museumAntiqueStatus "antiquebullet" "found">><<else>><<set $blackmoney += (50 * $bird.materials.valuables[$_valuables])>><</if>>
+					<<replace "#towerVal">><<towerValuables>><</replace>>
+				<</link>> |
+				<<link "Take all">>
+					<<if $_valuables is "antique bullet">>
+						<<set $antiquemoney += (50 * $bird.materials.valuables[$_valuables])>>
+						<<museumAntiqueStatus "antiquebullet" "found">>
+					<<else>>
+						<<set $blackmoney += (50 * $bird.materials.valuables[$_valuables])>>
+					<</if>>
 					<<set $bird.materials.valuables[$_valuables] to 0>>
-					<<replace "#towerVal">><<towerValuabes>><</replace>>
-					<</link>>
-					<br>
-				<</capture>>	
-			<</if>>
+					<<replace "#towerVal">><<towerValuables>><</replace>>
+				<</link>>
+				<br>
+			<</capture>>
 		<</for>>
 	</span>
 <</widget>>
@@ -1130,18 +1152,34 @@
 	<<if $bird.materials.wood is 0>>
 		<span class="red">No wood to add.</span>
 	<<else>>
-		<<if $weather is "rain" and $bird.upgrades.shelter is 0>><<set $_timeWood1 to 240>><<else>><<set $_timeWood1 to 120>><</if>>
+		<<set $_timeWood1 to 240>>
+		<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
+			<<set $_timeWood1 /= 2>>
+		<</if>>
 		<<set $_timeWood1 to Math.clamp($_timeWood1, 0, ($_maxTime - $bird.fire))>>
-		<<link [["Add 1 wood"]]>><<set $bird.materials.wood-->><<set $bird.fire to Math.clamp(($bird.fire + $_timeWood1), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeWood1)" "green">>
+
+		<<link [[Add 1 wood]]>>
+			<<set $bird.materials.wood-->>
+			<<set $bird.fire to Math.clamp(($bird.fire + $_timeWood1), 0, $_maxTime)>>
+			<<replace #firepitTime>><</replace>>
+		<</link>><<note `"+ " + getTimeString($_timeWood1)` "green">>
 		<br>
 		<<if $bird.materials.wood gte 2>>
 			<<set $_timeWood2 to Math.clamp(($_timeWood1 * 2), 0, ($_maxTime - $bird.fire))>>
-			<<link [["Add 2 wood"]]>><<set $bird.materials.wood -= 2>><<set $bird.fire to Math.clamp(($bird.fire + $_timeWood2), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeWood2)" "green">>
+			<<link [[Add 2 wood]]>>
+				<<set $bird.materials.wood -= 2>>
+				<<set $bird.fire to Math.clamp(($bird.fire + $_timeWood2), 0, $_maxTime)>>
+				<<replace #firepitTime>><</replace>>
+			<</link>><<note `"+ " + getTimeString($_timeWood2)` "green">>
 			<br>
 		<</if>>
 		<<if $bird.materials.wood gte 3>>
 			<<set $_timeWood3 to Math.clamp(($_timeWood1 * 3), 0, ($_maxTime - $bird.fire))>>
-			<<link [["Add 3 wood"]]>><<set $bird.materials.wood -= 3>><<set $bird.fire to Math.clamp(($bird.fire + $_timeWood3), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeWood3)" "green">>
+			<<link [[Add 3 wood]]>>
+				<<set $bird.materials.wood -= 3>>
+				<<set $bird.fire to Math.clamp(($bird.fire + $_timeWood3), 0, $_maxTime)>>
+				<<replace #firepitTime>><</replace>>
+			<</link>><<note `"+ " + getTimeString($_timeWood3)` "green">>
 			<br>
 		<</if>>
 	<</if>>
@@ -1149,18 +1187,34 @@
 	<<if $bird.materials.sticks is 0>>
 		<span class="red">No sticks to add.</span>
 	<<else>>
-		<<if $weather is "rain" and $bird.upgrades.shelter is 0>><<set $_timeSticks1 to 60>><<else>><<set $_timeSticks1 to 30>><</if>>
+		<<set $_timeSticks1 to 60>>
+		<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
+			<<set $_timeSticks1 /= 2>>
+		<</if>>
 		<<set $_timeSticks1 to Math.clamp($_timeSticks1, 0, ($_maxTime - $bird.fire))>>
-		<<link [["Add 1 stick"]]>><<set $bird.materials.sticks-->><<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks1), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeSticks1)" "green">>
+
+		<<link [[Add 1 stick]]>>
+			<<set $bird.materials.sticks-->>
+			<<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks1), 0, $_maxTime)>>
+			<<replace #firepitTime>><</replace>>
+		<</link>><<note `"+ " + getTimeString($_timeSticks1)` "green">>
 		<br>
 		<<if $bird.materials.sticks gte 3>>
 			<<set $_timeSticks3 to Math.clamp(($_timeSticks1 * 3), 0, ($_maxTime - $bird.fire))>>
-			<<link [["Add 3 sticks"]]>><<set $bird.materials.sticks -= 3>><<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks3), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeSticks3)" "green">>
+			<<link [[Add 3 sticks]]>>
+				<<set $bird.materials.sticks -= 3>>
+				<<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks3), 0, $_maxTime)>>
+				<<replace #firepitTime>><</replace>>
+			<</link>><<note `"+ " + getTimeString($_timeSticks3)` "green">>
 			<br>
 		<</if>>
 		<<if $bird.materials.sticks gte 5>>
 			<<set $_timeSticks5 to Math.clamp(($_timeSticks1 * 5), 0, ($_maxTime - $bird.fire))>>
-			<<link [["Add 5 sticks"]]>><<set $bird.materials.sticks -= 5>><<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks5), 0, $_maxTime)>><<replace #firepitTime>><</link>><<note "+ getTimeString($_timeSticks3)" "green">>
+			<<link [[Add 5 sticks]]>>
+				<<set $bird.materials.sticks -= 5>>
+				<<set $bird.fire to Math.clamp(($bird.fire + $_timeSticks5), 0, $_maxTime)>>
+				<<replace #firepitTime>><</replace>>
+			<</link>><<note `"+ " + getTimeString($_timeSticks5)` "green">>
 			<br>
 		<</if>>
 	<</if>>
@@ -1212,7 +1266,7 @@
 						<<run delete $bird.dryingLurkers[$_lr]>>
 					<</if>>
 				<</for>>
-				<<replace #firepitTime>>
+				<<replace #firepitTime>><</replace>>
 			<</link>>
 		<<else>>
 			No lurkers are ready.
@@ -1222,7 +1276,7 @@
 			<<link [["Add a lurker to the rack (0:02)"]]>>
 				<<set $bird.materials.lurkers-->>
 				<<run $bird.dryingLurkers.push(1440)>><<bird_pass 2>>
-				<<replace #firepitTime>>
+				<<replace #firepitTime>><</replace>>
 			<</link>>
 		<<else>>
 			The drying rack is full.
