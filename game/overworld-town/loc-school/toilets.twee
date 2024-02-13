@@ -20,11 +20,9 @@ You are in the antechamber outside the school toilets.
 		<<sewericon>><<link [[Secret tunnel to drain system (0:02)|Commercial Drain]]>><<pass 2>><</link>>
 		<br>
 	<</if>>
-	<<if $brothel_basement_intro is 1>>
-		<<if $promiscuity gte 55>>
-			<<brothelicon "gloryhole">><<link [[Set up gloryhole in antechamber|School Gloryhole Start]]>><</link>><<promiscuous4>>
-			<br>
-		<</if>>
+	<<if $brothel_basement_intro is 1 and $promiscuity gte 55>>
+		<<brothelicon "gloryhole">><<link [[Set up gloryhole in antechamber|School Gloryhole Start]]>><</link>><<promiscuous4>>
+		<br>
 	<</if>>
 	<<if $condomLvl gte 1>>
 		<<schoolVendingMachine>>
@@ -511,23 +509,43 @@ You bend over the sink and rinse out your mouth.
 
 :: Vending Machine Buy
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<set $daily.vendingMachine.used to true>>
+<<set $money -= 2000>>
 You insert the money into the machine and a 2-pack of condoms slides into a drawer.
+<br><br>
+
+<<cleareventpool>>
+
 <<if Time.schoolTime>>
-	<br><br>
-	<<generate1>>
+	<<addevent "antechamber_vending_proposal_1" 1>>
 	<<if $promiscuity gte 50>>
-		A <<person1>><<person>> enters the antechamber. <<He>> stares at you. You take the condoms and put them in your pocket while smiling at <<him>>.
+		<<addinlineevent "antechamber_vending_prom_1" 3>>
+			<<generate1>><<person1>>
+			A <<person>> enters the antechamber. <<He>> stares at you. You take the condoms and put them in your pocket while smiling at <<him>>.
+			<<gcondoms 2>>
+			<br><br>
+			<<link [[Back|School Toilets]]>><<endevent>><</link>>
+		<</addinlineevent>>
 	<<else>>
-		A <<person1>><<person>> enters the antechamber and looks in your direction. You wait until <<he>> has disappeared into the toilets. You quickly take the package and put it in your pocket on the sly. <<gstress>><<stress 1>>
+		<<addinlineevent "antechamber_vending_1" 3>>
+			<<generate1>><<person1>>
+			A <<person>> enters the antechamber and looks in your direction. You wait until <<he>> has disappeared into the toilets.
+			You quickly take the package and put it in your pocket on the sly. <<gstress>><<stress 1>>
+			<<gcondoms 2>>
+			<br><br>
+			<<link [[Back|School Toilets]]>><<endevent>><</link>>
+		<</addinlineevent>>
 	<</if>>
 <<else>>
 	You take them.
+	<br><br>
+	<<link [[Back|School Toilets]]>><<endevent>><</link>>
 <</if>>
-<<set $money -= 2000>>
-<<gcondoms 2>>
-<br><br>
-<<set $daily.vendingMachine.used to true>>
-<<link [[Back|School Toilets]]>><<endevent>><</link>>
+
+<<runeventpool>>
+
+
 
 :: Vending Machine Rob
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
@@ -589,3 +607,230 @@ You deftly open the vending machine and count out the money inside. There's <<pr
 <</if>>
 <br>
 <<link [[Leave|School Toilets]]>><</link>>
+
+
+
+:: Vending Machine Proposal Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+
+	<<set _npc to $NPCList[0]>>
+	<<set _bathroom to (_npc.gender is "f" ? "girls'" : "boys'") + " bathroom">>
+
+	You follow <<him>> into the _bathroom. You join <<him>> in the far stall.
+
+	<<if $phase is 1>>
+		<!-- Put condom on most likely target -->
+		<<if _npc.penis isnot "none" and !_npc.condom>>
+			<<giveNPCCondom>>
+			<<set $condoms += 1>>
+		<<elseif !$player.condom>>
+			<<equipPlayerCondom>>
+			<<set $condoms += 1>>
+		<</if>>
+	<</if>>
+	<br>
+
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Vending Machine Proposal Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Vending Machine Proposal Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+
+
+:: Vending Machine Proposal Sex Finish
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"Thanks <<girl>>," <<he>> says. <<He>> throws the remaining condom to you. <<gcondoms 1>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you follow suit.
+	<br><br>
+
+	<<link [[Next|School Toilets]]>><</link>>
+<<elseif $enemyhealth lte 0>>
+	You shove <<him>> back against the toilet, giving you the chance to escape.
+	<br><br>
+
+	<<tearful>> you run out of the stall.
+
+	<<set _wrongBathroom to ($player.gender_appearance is "f") isnot ($NPCList[0].gender is "f")>>
+	<<if _wrongBathroom>>
+		A couple <<print $NPCList[0].gender is "f" ? "girls" : "boys">> look askance as you run passed.
+	<</if>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|School Toilets]]>><</link>>
+<<elseif $finish is 1>>
+	"Fucking tease," <<he>> says as <<he>> adjusts <<his>> uniform. "I'll be keeping the condoms, <<bitch>>."
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you both leave the bathroom.
+	<br><br>
+
+	<<link [[Next|School Toilets]]>><</link>>
+<<else>>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you leave the stall.
+	<br><br>
+
+	<<link [[Next|School Toilets]]>><</link>>
+<</if>>
+<<set $phase to 0>>
+
+
+
+:: Vending Machine Gloryhole Sex
+<<if $sexstart is 1>>
+	You slide into the closet, disappearing from <<his>> view. You prepare yourself and position yourself in front of the hole.
+	<br>
+
+	<!-- Put condom on most likely target -->
+	<<set _npc to $NPCList[0]>>
+	<<if _npc.penis isnot "none" and !_npc.condom>>
+		<<giveNPCCondom>>
+		<<set $condoms += 1>>
+	<<elseif !$player.condom>>
+		<<equipPlayerCondom>>
+		<<set $condoms += 1>>
+	<</if>>
+
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<npcgloryhole>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Vending Machine Gloryhole Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Vending Machine Gloryhole Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+
+
+:: Vending Machine Gloryhole Finish
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+<<set $punishmentposition to 0>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<set $gloryholestat += 1>>
+	<<ejaculation>>
+	<<tearful>> you take the condom <<he>> pushes through the hole.
+	"You'll probably need this more than me, you slut," <<he>> chirps as <<he>> walks away. <<gcondoms 1>>
+<<elseif $enemyhealth lte 0>>
+	"What the fuck!? Fucking psycho," <<he>> shouts behind the wall. You hear them walking away.
+	<br><br>
+	<<tearful>> you adjust your position behind the hole.
+<<else>>
+	You hear the <<person>> whining on the other side of the wall.
+	<br><br>
+	<<tearful>> you adjust your position behind the hole.
+<</if>>
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<set $phase to 0>>
+<<link [[Climb out (0:01)|School Toilets]]>><<pass 1>><<unset $desperateaction>><</link>>
+
+
+
+:: Vending Machine Proposal Seduce
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $player.perceived_breastsize gte $player.perceived_bottomsize>>
+	You hold your arms to support your <<breasts>> and arch forward. Giving him full view of your cleavage.
+	"Excuse me," you purr. "I think you have something that belongs to me."
+<<else>>
+	With your back to <<him>>, you part your legs and lean against the vending machine.
+	"Oh no," you tease, "I was really hoping to use them later. Could you be so kind and give them back?"
+<</if>>
+<<promiscuity1>>
+<br>
+
+<<set $seductiondifficulty to 2000>>
+<<seductioncheck>>
+<br><br>
+
+<<if $seductionrating gte $seductionrequired>>
+	<!-- Passed check -->
+	<<He>> pauses, unable to respond. The silence is eventually broken. "E-errm, yeah, here you go." <<He>> hands you back the condoms.
+	<<gcondoms 2>>
+	<br>
+	<<if $promiscuity gte 55>>
+		<br>
+		<<link [[Still accept their offer|Vending Machine Proposal Sex]]>><</link>><<set $sexstart to 1>><<promiscuous3>>
+	<</if>>
+<<else>>
+	<!-- Failed check -->
+	<<He>> laughs, "Yeah, I think I'll keep these. Don't embarrass yourself." <<He>> walks away.
+	<br>
+<</if>>
+
+<br>
+<<set $phase to 0>>
+<<link [[Back|School Toilets]]>><</link>>
+
+
+
+:: Vending Machine Proposal Reject
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $submissive gte 750>>
+	You blush at <<his>> proposition.
+	<br><br>
+<</if>>
+
+<<He>> gives you a dejected frown, "Oh, I see."
+<br><br>
+
+<<if random(4) is 0>>
+	<!-- 20% -->
+	"Well, there's always next time. Here are your condoms back." <<He>> winks, before leaving.
+	<<gcondoms 2>>
+<<else>>
+	<!-- 80% -->
+	"Well suit yourself, <<slut>>," <<he>> mutters as <<he>> leaves. <span class="blue">Taking your condoms with <<him>>.</span>
+<</if>>
+<br><br>
+
+<<set $phase to 0>>
+<<link [[Back|School Toilets]]>><</link>>
