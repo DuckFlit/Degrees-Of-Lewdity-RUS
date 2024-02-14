@@ -814,10 +814,14 @@ Renderer.CanvasModels["main"] = {
 				options.belly_mask_under_clip_src = null;
 			}
 		}
-		if (["f", "a"].includes(options.body_type) && [3, 4].includes(options.breast_size)) {
-			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}-mid.png`;
+		if (["f", "a"].includes(options.body_type) && options.breasts === "cleavage") {
+			if ([3, 4].includes(options.breast_size)) {
+				options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}-mid.png`;
+			} else {
+				options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}.png`;
+			}
 		} else {
-			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}.png`;
+			options.breasts_mask_src = null;
 		}
 		if (options.lower_tucked && !options.worn_lower_setup.notuck && !options.worn_feet_setup.notuck) {
 			options.feet_clip_src = "img/clothes/feet/" + options.worn_feet_setup.variable + "/mask.png";
