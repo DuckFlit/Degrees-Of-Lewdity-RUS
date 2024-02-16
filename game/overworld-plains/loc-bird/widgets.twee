@@ -62,49 +62,52 @@
 <</widget>>
 
 <<widget "bird_pass">>
-	<<if _args[0]>>
-		<<pass _args[0]>>
-		<<if $bird.timer>>
-			<<set $bird.timer -= _args[0]>>
-			<<if $syndromebird isnot 1>>
-				<<hunger _args[0]>>
-				<<if $hunger gte 2000>>
-					<<trauma `_args[0] / 4`>>
-					<<physique_loss `_args[0] / 10`>>
-					<<willpower `_args[0] / 10`>>
-				<</if>>
+	<<if !_args[0]>><<exit>><</if>>
+	<<pass _args[0]>>
+
+	<<if $bird.timer>>
+		<<set $bird.timer -= _args[0]>>
+		<<if $syndromebird isnot 1>>
+			<<hunger _args[0]>>
+			<<if $hunger gte 2000>>
+				<<trauma `_args[0] / 4`>>
+				<<physique_loss `_args[0] / 10`>>
+				<<willpower `_args[0] / 10`>>
 			<</if>>
 		<</if>>
-		<<if $bird.upgrades.shelter is 1 and ($weather is "rain" or $weather is "snow")>>
-			<<if $birdShelterTimer is undefined>>
-				<<set $birdShelterTimer to 720>>
-			<<else>>
-				<<set $birdShelterTimer -= _args[0]>>
-			<</if>>
-			<<if $birdShelterTimer lte 0>>
-				<<set $bird.upgrades.shelter to 0>>
-			<</if>>
-		<<elseif $bird.upgrades.shelter is 0 and $bird.activty is "build">>
-			<<set $bird.upgrades.shelter to 1>>
+	<</if>>
+
+	<<if $bird.upgrades.shelter is 1 and ($weather is "rain" or $weather is "snow")>>
+		<<if $birdShelterTimer is undefined>>
 			<<set $birdShelterTimer to 720>>
-			<<set $birdShelterRepair to true>>
+		<<else>>
+			<<set $birdShelterTimer -= _args[0]>>
 		<</if>>
-		<<if $bird.upgrades.firepit gte 1>>
-			<<if $bird.fire gt 0>>
-				<<set $bird.fire to Math.clamp($bird.fire, 0, ($bird.fire - _args[0]))>>
-			<</if>>
+		<<if $birdShelterTimer lte 0>>
+			<<set $bird.upgrades.shelter to 0>>
 		<</if>>
-		<<if $bird.upgrades.rack gte 1 and $bird.dryingLurkers isnot undefined>>
-			<<set $_lurkerTimeDown to ($bird.fire gte 1 ? ($bird.upgrades.firepit + 1) : 1)>>
-			<<for $_lurkerTime to 0; $_lurkerTime lt $bird.dryingLurkers.length; $_lurkerTime++>>
-				<<if $bird.dryingLurkers[$_lurkerTime] gt 0>>
-					<<set $bird.dryingLurkers[$_lurkerTime] to Math.clamp($bird.dryingLurkers[$_lurkerTime], 0, ($bird.dryingLurkers[$_lurkerTime] - ($_lurkerTimeDown * _args[0])))>>
-					<<if $bird.upgrades.rack lt 3 and $bird.fire gte 1>>
-						<<set $_lurkerDrugs to Math.floor(($_lurkerTimeDown * _args[0]) / 4)>><<drugs $_lurkerDrugs>>
-					<</if>>
+	<<elseif $bird.upgrades.shelter is 0 and $bird.activty is "build">>
+		<<set $bird.upgrades.shelter to 1>>
+		<<set $birdShelterTimer to 720>>
+		<<set $birdShelterRepair to true>>
+	<</if>>
+
+	<<if $bird.upgrades.firepit gte 1>>
+		<<if $bird.fire gt 0>>
+			<<set $bird.fire to Math.clamp($bird.fire, 0, ($bird.fire - _args[0]))>>
+		<</if>>
+	<</if>>
+
+	<<if $bird.upgrades.rack gte 1 and $bird.dryingLurkers isnot undefined>>
+		<<set $_lurkerTimeDown to ($bird.fire gte 1 ? ($bird.upgrades.firepit + 1) : 1)>>
+		<<for $_lurkerTime to 0; $_lurkerTime lt $bird.dryingLurkers.length; $_lurkerTime++>>
+			<<if $bird.dryingLurkers[$_lurkerTime] gt 0>>
+				<<set $bird.dryingLurkers[$_lurkerTime] to Math.clamp($bird.dryingLurkers[$_lurkerTime], 0, ($bird.dryingLurkers[$_lurkerTime] - ($_lurkerTimeDown * _args[0])))>>
+				<<if $bird.upgrades.rack lt 3 and $bird.fire gte 1>>
+					<<set $_lurkerDrugs to Math.floor(($_lurkerTimeDown * _args[0]) / 4)>><<drugs $_lurkerDrugs>>
 				<</if>>
-			<</for>>
-		<</if>>
+			<</if>>
+		<</for>>
 	<</if>>
 <</widget>>
 
@@ -1156,6 +1159,7 @@
 	<</switch>>
 	hours.
 	<br>
+	
 	<<if $bird.materials.wood is 0>>
 		<span class="red">No wood to add.</span>
 	<<else>>
@@ -1191,6 +1195,7 @@
 		<</if>>
 	<</if>>
 	<br>
+	
 	<<if $bird.materials.sticks is 0>>
 		<span class="red">No sticks to add.</span>
 	<<else>>
@@ -1226,6 +1231,7 @@
 		<</if>>
 	<</if>>
 	<br>
+
 	<<if $bird.materials.lurkers is 0 and ($bird.upgrades.rack gte 1 or $bird.upgrades.pot gte 2)>>
 		<<set $_noLurkers to true>>
 		<<if $bird.upgrades.rack gte 1 and $bird.upgrades.pot gte 2>>
@@ -1237,25 +1243,22 @@
 		<</if>>
 		<br>
 	<</if>>
+
 	<<if $bird.upgrades.rack gte 1>>
 		<<if $bird.dryingLurkers is undefined>>
 			<<set $bird.dryingLurkers to []>>
 		<</if>>
 		<<set _rackMax to $bird.upgrades.rack * 2>>
-		<<set $_lurkersReady to 0>><<set $_lurkersDrying to 0>>
+		<<set $_lurkersReady to $bird.dryingLurkers.filter((lTimer) => lTimer <= 0).length>>
+		<<set $_lurkersDrying to $bird.dryingLurkers.length - $_lurkersReady>>
+
 		Your drying rack can hold up to <<number _rackMax>> lurkers.
 		<br>
-		<<for $_ld to 0; $_ld lt $bird.dryingLurkers.length; $_ld++>>
-			<<if $bird.dryingLurkers[$_ld] lte 0>>
-				<<set $_lurkersReady++>>
-			<<else>>
-				<<set $_lurkersDrying++>>
-			<</if>>
-		<</for>>
+
 		<<if $_lurkersDrying gte 1>>
-			It is currently drying <<number $_lurkersDrying>> lurker<<if $_lurkersDryinggte 2>>s<</if>>.
+			It is currently drying <<number $_lurkersDrying>> lurker<<if $_lurkersDrying gte 2>>s<</if>>.
 			<<if $bird.fire gte 1>>
-				<span class="lewd">Strange fumes are coming from <<if $_lurkersDryinggte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
+				<span class="lewd">Strange fumes are coming from <<if $_lurkersDrying gte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
 			<<else>>
 				A lit firepit would speed up the process.
 			<</if>>
@@ -1263,6 +1266,7 @@
 			No lurkers are drying.
 		<</if>>
 		<br>
+		
 		<<if $_lurkersReady gte 1>>
 			<span class="green"><<number $_lurkersReady>> lurker<<if $_lurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
 			<br>
@@ -1279,6 +1283,7 @@
 			No lurkers are ready.
 		<</if>>
 		<br>
+		
 		<<if $bird.dryingLurkers.length lt _rackMax and !$_noLurkers>>
 			<<link [["Add a lurker to the rack (0:02)"]]>>
 				<<set $bird.materials.lurkers-->>
@@ -1290,10 +1295,12 @@
 		<</if>>
 		<br>
 	<</if>>
+
 	<<if $bird.upgrades.pot gte 2 and !$_noLurkers>>
 		<<link [[Cook a lurker (0:15)|Bird Tower Lurker Cook]]>><<set $bird.materials.lurkers -= 1>><<bird_pass 15>><</link>>
 		<br>
 	<</if>>
+	
 	<br>
 	<<link [[Back|Bird Tower]]>><</link>>
 	<br>
