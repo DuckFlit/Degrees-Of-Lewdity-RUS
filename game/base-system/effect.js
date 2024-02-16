@@ -1111,7 +1111,7 @@ function effects() {
 
 	V.menu = 0;
 
-	if (V.combat === 0 && V.ironmanmode === true) ironMan.scheduledSaves();
+	if (V.combat === 0 && V.ironmanmode === true) IronMan.scheduledSaves();
 
 	return fragment;
 }
