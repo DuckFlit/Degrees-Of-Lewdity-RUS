@@ -830,7 +830,7 @@ Renderer.CanvasModels["main"] = {
 		if (options.worn_handheld_setup.type.includes("rainproof")) {
 			options.handheld_overhead = true;
 			if (options.angel_halo_type === "default") { options.angel_halo_lower = true; }
-		} else if (["balloon", "heart balloon", "paper fan"].includes(options.worn_handheld_setup.name)) {
+		} else if (["balloon", "heart balloon", "paper fan", "torch"].includes(options.worn_handheld_setup.name)) {
 			options.handheld_overhead = true;
 			options.angel_halo_lower = false;
 		} else {
@@ -1366,7 +1366,7 @@ Renderer.CanvasModels["main"] = {
 				return !!options.show_hair && !!options.hair_fringe_type
 			},
 			masksrcfn(options) {
-				if (options.worn_over_head_setup.mask_img === 1 || options.worn_head_setup.mask_img === 1 ) {
+				if (options.head_mask_src) {
 					return options.head_mask_src;
 				} else {
 					return options.fringe_mask_src;
@@ -1670,7 +1670,7 @@ Renderer.CanvasModels["main"] = {
 				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? 20 : 0;
 			},
 			zfn(options) {
-				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? ZIndices.back_lower : ZIndices.over_head_back;
+				return options.angel_halo_lower && isPartEnabled(options.angel_halo_type) ? ZIndices.head_back : ZIndices.over_head_back;
 			},
 			animation: "idle"
 		},
@@ -2632,7 +2632,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"upper_main": genlayer_clothing_main('upper', {
 			zfn(options) {
-				return options.zupper
+				return options.worn_upper_setup.name === "cocoon" ? ZIndices.over_head : options.zupper;
 			},
 			masksrcfn(options) {
 				return options.shirt_mask_clip_src;
@@ -3192,15 +3192,21 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"handheld": genlayer_clothing_main('handheld', {
 			srcfn(options) {
+				let torchLevels = [100, 80, 60, 40, 20, 1, 0];
+				let fileFormat = options.worn_handheld_setup.name === "torch" && V.catacombs_torch >= 0 ? `${torchLevels.findIndex(x => V.catacombs_torch >= x) + 1}.png` : ".png";
 				let path = 'img/clothes/handheld/' +
 					options.worn_handheld_setup.variable + '/' +
-					(options.arm_right === "cover" ? "right_cover" : "right") + '.png';
+					(options.arm_right === "cover" ? "right_cover" : "right") +	fileFormat;
 				return gray_suffix(path, options.filters['worn_handheld']);
 			},
 			showfn(options) {
-				return options.show_clothes &&
+				if (options.arm_right === "cover") {
+					return options.worn_handheld_setup.coverImage !== 0
+				} else {
+					return options.show_clothes &&
 					options.worn_handheld > 0 &&
 					options.arm_right !== "none"
+				}
 			},
 			zfn(options) {
 				return options.handheld_overhead ? ZIndices.over_upper : ZIndices.handheld;
@@ -3265,7 +3271,7 @@ Renderer.CanvasModels["main"] = {
 			},
 		},
 		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld', {
-			z: ZIndices.head_back
+			z: ZIndices.over_head_back
 		}),
 		"handheld_back": genlayer_clothing_back_img('handheld',{
 			z: ZIndices.over_head_back
@@ -3285,6 +3291,13 @@ Renderer.CanvasModels["main"] = {
 					options.worn_head_setup.variable + '/' +
 					(options.hood_damage ? options.worn_upper_integrity : options.worn_head_integrity) + '.png';
 				return gray_suffix(path, options.filters['worn_head']);
+			},
+			masksrcfn(options) {
+				if (options.worn_upper_setup.name === "cocoon") {
+					return options.head_mask_src;
+				} else {
+					return "";
+				}
 			},
 		}),
 		"head_acc": genlayer_clothing_accessory('head', {
@@ -3922,7 +3935,7 @@ function genlayer_clothing_back_img(slot, overrideOptions) {
 			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 		showfn(options) {
-			if (!options.show_clothes || (slot === "handheld" && options.arm_right !== "hold")) return false;
+			if (!options.show_clothes || (slot === "handheld" && options.arm_right === "cover" && options.worn_handheld_setup.coverBackImage === 0)) return false;
 			let isHoodDown = options.hood_down &&
 				options["worn_" + slot + "_setup"].hood &&
 				options["worn_" + slot + "_setup"].outfitSecondary !== undefined;
