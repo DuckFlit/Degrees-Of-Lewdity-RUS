@@ -53,12 +53,6 @@
 /* eslint-disable jsdoc/require-description-complete-sentence */
 /* eslint-disable no-undef */
 const Time = (() => {
-	const secondsPerDay = 86400;
-	const secondsPerHour = 3600;
-	const secondsPerMinute = 60;
-	const standardYearMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	const leapYearMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	const synodicMonth = 29.53058867;
 	const moonPhases = {
 		new: {
 			start: 0,
@@ -223,11 +217,11 @@ const Time = (() => {
 	function getDayOfYear(date) {
 		const start = new DateTime(date.year, 1, 1);
 		const diff = date.timeStamp - start.timeStamp;
-		return Math.floor(diff / Time.secondsPerDay);
+		return Math.floor(diff / TimeConstants.secondsPerDay);
 	}
 
 	function getSecondsSinceMidnight(date) {
-		return date.hour * Time.secondsPerHour + date.minute * Time.secondsPerMinute;
+		return date.hour * TimeConstants.secondsPerHour + date.minute * TimeConstants.secondsPerMinute;
 	}
 
 	// Current moon phase
@@ -305,7 +299,7 @@ const Time = (() => {
 			return currentDate.year;
 		},
 		get days() {
-			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / Time.secondsPerDay);
+			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / TimeConstants.secondsPerDay);
 		},
 		get season() {
 			return this.month > 11 || this.month < 3 ? "winter" : this.month > 8 ? "autumn" : this.month > 5 ? "summer" : "spring";
@@ -385,12 +379,6 @@ const Time = (() => {
 		previousMoonPhase,
 		isBloodMoon,
 
-		secondsPerDay,
-		secondsPerHour,
-		secondsPerMinute,
-		standardYearMonths,
-		leapYearMonths,
-		synodicMonth,
 		moonPhases,
 		monthNames,
 		daysOfWeek,
