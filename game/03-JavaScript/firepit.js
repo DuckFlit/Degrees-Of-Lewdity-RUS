@@ -148,7 +148,7 @@ const Firepit = (() => {
 			Math[item.timeBonus >= 0 ? "min" : "max"](elapsedTimeRaw, item.timeBonus) * (cookMult - 1)
 		);
 		const elapsedTime = elapsedTimeRaw + elapsedTimeVirtual;
-		if (elapsedTime >= baseTime + item.timeBonus) return item.timeBonus;
+		if (elapsedTime >= baseTime - item.timeBonus) return item.timeBonus;
 		if (fireTimeLeft == null) {
 			fireTimeLeft = getFireTimeRaw(fp);
 		}
@@ -171,7 +171,7 @@ const Firepit = (() => {
 	 */
 	function getItemsReady(fp) {
 		return fp.items.filter(({ name, startedAt, timeBonus }) => {
-			return V.timeStamp - startedAt >= fp.cookTime[name] + timeBonus;
+			return V.timeStamp - startedAt >= fp.cookTime[name] - timeBonus;
 		});
 	}
 
@@ -183,7 +183,7 @@ const Firepit = (() => {
 	 */
 	function getItemsNotReady(fp) {
 		return fp.items.filter(({ name, startedAt, timeBonus }) => {
-			return V.timeStamp - startedAt < fp.cookTime[name] + timeBonus;
+			return V.timeStamp - startedAt < fp.cookTime[name] - timeBonus;
 		});
 	}
 
