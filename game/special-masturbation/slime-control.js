@@ -70,7 +70,10 @@ function masturbationSlimeControl() {
 		V.mouthaction = "slime";
 	}
 
-	if (alternateForcedActions.includes("selfImpreg")) {
+	if (
+		alternateForcedActions.includes("selfImpreg") ||
+		(V.leftaction === "mdildostop" && V.mouth !== 0 && V.anususe !== 0 && V.vaginause !== 0 && playerToys[V.currentToyRight].type.includes("dildo"))
+	) {
 		// Do nothing
 	} else if (
 		["mdildostop", "mvaginastopdildo", "manusstopdildo", "mpenisstopstroker", "mmouthstopdildo", "mstopbreastpump"].includes(V.leftaction) &&
@@ -80,7 +83,10 @@ function masturbationSlimeControl() {
 		fragment.append(" ");
 		V.leftaction = "slime";
 	}
-	if (alternateForcedActions.includes("selfImpreg")) {
+	if (
+		alternateForcedActions.includes("selfImpreg") ||
+		(V.rightaction === "mdildostop" && V.mouth !== 0 && V.anususe !== 0 && V.vaginause !== 0 && playerToys[V.currentToyRight].type.includes("dildo"))
+	) {
 		// Do nothing
 	} else if (
 		["mdildostop", "mvaginastopdildo", "manusstopdildo", "mpenisstopstroker", "mmouthstopdildo", "mstopbreastpump"].includes(V.rightaction) &&
@@ -251,9 +257,9 @@ function masturbationSlimeControl() {
 						} else if (currentToyType.includes("dildo")) {
 							if (["manusentrancedildofloor", "mvaginaentrancedildofloor"].includes(V[armAction])) {
 								// Do Nothing
-							} else if (V.player.vaginaExist && random(0, 100) >= 75) {
+							} else if (V.player.vaginaExist && V.vaginause === 0 && random(0, 100) >= 75) {
 								V[armAction] = "mvaginaentrancedildo";
-							} else if (random(0, 100) >= 75) {
+							} else if (V.anususe === 0 && random(0, 100) >= 75) {
 								V[armAction] = "manusentrancedildo";
 							} else if (
 								// eslint-disable-next-line no-dupe-else-if
@@ -274,7 +280,7 @@ function masturbationSlimeControl() {
 									}
 								}
 								V[armAction] = actions[random(0, actions.length - 1)];
-							} else {
+							} else if (V.anususe === 0) {
 								// To ensure there is a default action, not a duplicate
 								V[armAction] = "manusentrancedildo";
 							}
