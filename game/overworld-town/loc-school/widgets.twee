@@ -1488,7 +1488,11 @@
 	<<if !$whitneymaths or $whitneymaths is "absent">>
 		<<if C.npc.Whitney.state is "active" and Time.minute lte 40>>
 			<<set _wearingSkirt to (clothingData('lower', $worn.lower, "skirt") is 1)>>
-			<<set _whitneyMadAtSkirt to $whitneyskirtcheck is 1 and $forcedcrossdressingdisable is "f" and (!_wearingSkirt or $worn.lower.reveal lte 200)>>
+			<<set _maleClothes to Object.keys($worn).filter((slot) => {
+				return $worn[slot].gender is "m" and !["genitals", "under_upper", "under_lower"].includes(slot);
+			})>>
+			<<set _whitneyMadAtSkirt to $forcedcrossdressingdisable is "f" and $whitneyskirtcheck gte 1 and (!_wearingSkirt or $worn.lower.reveal lte 200)>>
+			<<set _whitneyMadAtClothes to $forcedcrossdressingdisable is "f" and $whitneyFeminineCheck gte 1 and _maleClothes.length>>
 
 			<<if !$whitneymaths>>
 				<!-- Whitney attending Maths class for the first time during the game -->
@@ -1496,18 +1500,29 @@
 				Whitney swaggers in. "So you decided to show up," River says, pointing at an empty seat at the front. "Tuck your shirt in."
 				<br><br>
 
-				<<set $whitneyskirtmaths to _whitneyMadAtSkirt>>
+				<<set $whitneyskirtmaths to _whitneyMadAtSkirt or _whitneyMadAtClothes>>
 
 				<<if $whitneyromance is 1>>
 					<<set $whitneymaths to "seat">>
-					Whitney rolls <<his>> eyes,
-					<<if _whitneyMadAtSkirt>>only to then glare at you as <<he>> spots your $worn.lower.name,<</if>>
-					and instead takes a seat beside you.
+					Whitney rolls <<his>> eyes, and instead takes a seat beside you.
+					<<if _whitneyMadAtClothes>>
+						<<He>> glares at you as <<he>> spots your
+						<<print $worn[_maleClothes[0]].name>><<if _whitneyMadAtSkirt and _maleClothes[0] isnot "lower">> and lack of a skirt<</if>>.
+					<<elseif _whitneyMadAtSkirt>>
+						<<He>> glares at you as <<he>> spots your $worn.lower.name.
+					<</if>>
 				<<else>>
 					<<set $whitneymaths to "active">>
 					Whitney rolls <<his>> eyes,
-					<<if _whitneyMadAtSkirt>>only to then glare at you as <<he>> spots your $worn.lower.name,<</if>>
-					and instead takes a seat at the back.
+					<<if _whitneyMadAtClothes>>
+						before glaring at you as <<he>> spots your
+						<<print $worn[_maleClothes[0]].name>><<if _whitneyMadAtSkirt and _maleClothes[0] isnot "lower">> and lack of a skirt<</if>>.
+						<<He>> takes a seat at the back.
+					<<elseif _whitneyMadAtSkirt>>
+						before glaring at you as <<he>> spots your $worn.lower.name. <<He>> takes a seat at the back.
+					<<else>>
+						and instead takes a seat at the back.
+					<</if>>
 				<</if>>
 				<<He>> tucks just the front of <<his>> shirt into <<his>> <<npcClothesText $NPCList[0] "lower">> as <<he>> sits.
 				<<endevent>>
@@ -1520,13 +1535,26 @@
 
 				<<if random(1, 100) lte $_whitney_maths_chance>>
 					<<npc Whitney 1>><<person1>>
-					<<set $whitneyskirtmaths to _whitneyMadAtSkirt>>
+					<<set $whitneyskirtmaths to _whitneyMadAtSkirt or _whitneyMadAtClothes>>
 					<<if $whitneyromance is 1>>
 						<<set $whitneymaths to "seat">>
-						Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you<<if _whitneyMadAtSkirt>>, only to then glare at you as <<he>> spots your $worn.lower.name<</if>>.
+						Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you.
+						<<if _whitneyMadAtClothes>>
+							<<He>> glares at you as <<he>> spots your
+							<<print $worn[_maleClothes[0]].name>><<if _whitneyMadAtSkirt and _maleClothes[0] isnot "lower">> and lack of a skirt<</if>>.
+						<<elseif _whitneyMadAtSkirt>>
+							<<He>> glares at you as <<he>> spots your $worn.lower.name.
+						<</if>>
 					<<else>>
 						<<set $whitneymaths to "active">>
-						Whitney enters the class. <<He>> <<if _whitneyMadAtSkirt>>glares at you when <<he>> spots your $worn.lower.name, then<</if>> takes a seat at the back.
+						Whitney enters the class. <<He>>
+						<<if _whitneyMadAtClothes>>
+							glares at you when <<he>> spots your <<print $worn[_maleClothes[0]].name>><<if _whitneyMadAtSkirt and _maleClothes[0] isnot "lower">> and lack of a skirt<</if>>. <<He>> takes a seat at the back.
+						<<elseif _whitneyMadAtSkirt>>
+							glares at you when <<he>> spots your $worn.lower.name. <<He>> takes a seat at the back.
+						<<else>>
+							takes a seat at the back.
+						<</if>>
 					<</if>>
 					<<endevent>>
 					<br><br>
