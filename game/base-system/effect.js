@@ -806,7 +806,6 @@ function effects() {
 			["milk", "Milk Enthusiast", "Milk Addict"],
 			["cum", "Cumoisseur", "Cum Dump"],
 		].forEach(([variable, defiantName, submissiveName]) => {
-			console.log(variable, `${variable}_trait_message`);
 			if (V[`${variable}_trait_message`]) {
 				element("span", `You've gained the "${V.submissive <= 850 ? defiantName : submissiveName}" trait.`, "gold");
 				delete V[`${variable}_trait_message`];

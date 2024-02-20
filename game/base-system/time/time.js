@@ -510,7 +510,7 @@ function weekPassed() {
 	statChange.worldCorruption("soft", V.world_corruption_hard);
 
 	delete V.weekly;
-	V.weekly = { theft: {}, sewers: {} };
+	V.weekly = clone(setup.weeklyObject);
 
 	return fragment;
 }
@@ -796,20 +796,7 @@ function dayPassed() {
 	if (V.pillory_tenant.exists && V.pillory_tenant.endDate < V.timeStamp) fragment.append(wikifier("clear_pillory"));
 
 	delete V.daily;
-	V.daily = {
-		school: { attended: {} },
-		whitney: {},
-		robin: {},
-		kylar: {},
-		morgan: {},
-		eden: {},
-		alex: {},
-		sydney: {},
-		ex: {},
-		pharm: {},
-		prison: {},
-		livestock: {},
-	};
+	V.daily = clone(setup.dailyObject);
 
 	if (Number.isInteger(V.challengetimer)) {
 		V.challengetimer--;
@@ -887,7 +874,8 @@ function hourPassed(hours) {
 	}
 
 	V.openinghours = Time.hour >= 8 && Time.hour < 21 ? 1 : 0;
-	fragment.append(earnHourlyFeats());
+	const feats = earnHourlyFeats();
+	if (feats) fragment.append(feats);
 
 	temperatureHour();
 
@@ -941,7 +929,7 @@ function minutePassed(minutes) {
 
 	// Effects
 	if (V.drunk > 0) statChange.alcohol(-minutes);
-	if (V.hallucinogen > 0) hallucinogen.hallucinogen(-minutes);
+	if (V.hallucinogen > 0) statChange.hallucinogen(-minutes);
 	if (V.drugged > 0) statChange.drugs(-minutes);
 	if (minutes < 1200) statChange.tiredness(minutes * (V.drunk > 0 ? 2 : 1), "pass");
 	statChange.pain(minutes, -1);
