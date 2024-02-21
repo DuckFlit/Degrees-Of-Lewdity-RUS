@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 function timeAfterXHours(hours) {
 	const date = new DateTime(Time.date);
 	date.addSeconds(hours * TimeConstants.secondsPerHour);

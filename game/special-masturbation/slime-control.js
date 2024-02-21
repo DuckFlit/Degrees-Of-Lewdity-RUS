@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 // eslint-disable-next-line no-unused-vars
 function masturbationSlimeControl() {
 	const redText = text => {

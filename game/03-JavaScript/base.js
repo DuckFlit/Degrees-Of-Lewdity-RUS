@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable jsdoc/require-description-complete-sentence */
 // adjust mousetrap behavior, see mousetrap.js
 Mousetrap.prototype.stopCallback = function (e, element, combo) {

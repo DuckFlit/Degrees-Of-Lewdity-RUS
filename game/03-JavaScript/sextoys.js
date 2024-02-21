@@ -82,7 +82,7 @@ function existsInSexToyInventory(name, colour) {
 		if (!colour || colour === "any") {
 			return true;
 		}
-		for (let item of V.player.inventory.sextoys[name]) {
+		for (const item of V.player.inventory.sextoys[name]) {
 			if (item.colour === colour) {
 				return true;
 			}

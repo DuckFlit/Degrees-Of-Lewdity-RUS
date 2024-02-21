@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /**
  * @typedef {object} DolLocation
  * @property {string} area The place they are at.

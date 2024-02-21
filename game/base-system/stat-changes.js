@@ -1,5 +1,4 @@
 /* eslint-disable no-useless-escape */
-/* eslint-disable no-undef */
 
 // eslint-disable-next-line no-var, no-unused-vars
 var statChange = (() => {
