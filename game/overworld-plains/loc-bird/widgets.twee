@@ -62,7 +62,7 @@
 <</widget>>
 
 <<widget "bird_pass">>
-	<<if !_args[0]>><<exit>><</if>>
+	<<if !Number.isInteger(_args[0])>><<exit>><</if>>
 	<<pass _args[0]>>
 
 	<<if $bird.timer>>
@@ -1188,7 +1188,6 @@
 		<</link>><<note `"+ " + getTimeString(_timeWood)` "green">>
 		<br>
 		<<if $bird.materials.wood gte 2>>
-			<<set $_timeWood2 to Math.clamp(($_timeWood1 * 2), 0, ($_maxTime - $bird.fire))>>
 			<<link "Add 2 wood">>
 				<<set $bird.materials.wood -= 2>>
 				<<set $bird.fire += Math.min(_timeWood * 2, _maxTimeAllowed)>>
@@ -1197,7 +1196,6 @@
 			<br>
 		<</if>>
 		<<if $bird.materials.wood gte 3>>
-			<<set $_timeWood3 to Math.clamp(($_timeWood1 * 3), 0, ($_maxTime - $bird.fire))>>
 			<<link "Add 3 wood">>
 				<<set $bird.materials.wood -= 3>>
 				<<set $bird.fire += Math.min(_timeWood * 3, _maxTimeAllowed)>>
@@ -1243,6 +1241,8 @@
 	<</if>>
 	<br>
 
+	<<if !$bird.upgrades.rack and !$bird.upgrades.pot>><<exit>><</if>>
+
 	<<if $bird.materials.lurkers is 0 and ($bird.upgrades.rack gte 1 or $bird.upgrades.pot gte 2)>>
 		<<set $_noLurkers to true>>
 		<<if $bird.upgrades.rack gte 1 and $bird.upgrades.pot gte 2>>
@@ -1260,12 +1260,23 @@
 			<<set $bird.dryingLurkers to []>>
 		<</if>>
 		<<set _rackMax to $bird.upgrades.rack * 2>>
-		<<set _lurkersDrying to $bird.dryingLurkers.filter((lTimer) => lTimer > 0).length>>
+		<<set _lurkersDrying to $bird.dryingLurkers.filter((lTimer) => lTimer > 0)>>
 		<<set $_nLurkersDrying to _lurkersDrying.length>>
 		<<set _nLurkersReady to $bird.dryingLurkers.length - $_nLurkersDrying>>
 
 		Your drying rack can hold up to <<number _rackMax>> lurkers.
 		<br>
+		<<if $bird.dryingLurkers.length is _rackMax>>
+			<i class="blue">The drying rack is full.</i>
+			<br>
+		<<elseif !$_noLurkers>>
+			<<link [[Add a lurker to the rack (0:02)|Bird Tower Firepit]]>>
+				<<set $bird.materials.lurkers-->>
+				<<run $bird.dryingLurkers.push(1440)>>
+				<<bird_pass 2>>
+			<</link>>
+			<br>
+		<</if>>
 
 		<<if $_nLurkersDrying gte 1>>
 			It is currently drying <<number $_nLurkersDrying>> lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
@@ -1285,21 +1296,10 @@
 			<<link `"Take " + _nLurkersReady + " leather"`>>
 				<<set $bird.materials.leather += _nLurkersReady>>
 				<<set $bird.dryingLurkers to _lurkersDrying>>
-				<<replace #firepitTime>><</replace>>
+				<<replace #firepitTime>><<firepit>><</replace>>
 			<</link>>
 		<<else>>
 			No lurkers are ready.
-		<</if>>
-		<br>
-
-		<<if $bird.dryingLurkers.length lt _rackMax and !$_noLurkers>>
-			<<link "Add a lurker to the rack (0:02)">>
-				<<set $bird.materials.lurkers-->>
-				<<run $bird.dryingLurkers.push(1440)>><<bird_pass 2>>
-				<<replace #firepitTime>><</replace>>
-			<</link>>
-		<<else>>
-			The drying rack is full.
 		<</if>>
 		<br>
 	<</if>>
@@ -1308,11 +1308,6 @@
 		<<link [[Cook a lurker (0:15)|Bird Tower Lurker Cook]]>><<set $bird.materials.lurkers -= 1>><<bird_pass 15>><</link>>
 		<br>
 	<</if>>
-
-	<br>
-
-	<<link [[Back|Bird Tower]]>><</link>>
-	<br>
 <</widget>>
 
 <<widget "towerBuildOption">>
@@ -1520,6 +1515,9 @@
 							fabric: 1,
 							sticks: 2
 						}>>
+						<<set $_upgrade.upgradesRequired to {
+							firepit: 1
+						}>>
 						<<set $_upgrade.housekeeping to 0>>
 					<<case 1>>
 						<span class="purple">Makeshift drying rack (1)</span>: Can dry out lurkers for leather. A lit firepit will speed this up significantly.
@@ -1709,14 +1707,14 @@
 				<span class="red">Invalid option for: _upgrade</span>
 		<</switch>>
 
-		<<if !_towerUpgrades[_upgrade].passage>>
+		<<if !$_upgrade.passage>>
 			<<exit>>
 		<</if>>
 
-		<<if currentSkillValue('housekeeping') lt _towerUpgrades[_upgrade].housekeeping>>
+		<<if currentSkillValue('housekeeping') lt $_upgrade.housekeeping>>
 			<br>
 			<span class="black">
-				<<switch _towerUpgrades[_upgrade].housekeeping>>
+				<<switch $_upgrade.housekeeping>>
 					<<case 100>><span class="pink">F+</span>
 					<<case 200>><span class="purple">D</span>
 					<<case 300>><span class="purple">D+</span>
@@ -1733,16 +1731,16 @@
 			<<set $_disableBuild to true>>
 		<</if>>
 
-		<<if _towerUpgrades[_upgrade].gradeRequired>>
-			<<for $_grade range Object.keys(_towerUpgrades[_upgrade].gradeRequired)>>
+		<<if $_upgrade.gradeRequired>>
+			<<for $_grade range Object.keys($_upgrade.gradeRequired)>>
 				<<set $_gradeDisplay to $_grade>>
 				<<if $_gradeDisplay is "english">>
 					<<set $_gradeDisplay to $_gradeDisplay.toUpperCase()>>
 				<</if>>
-				<<if _towerUpgrades[_upgrade].gradeRequired[$_grade] gt V[$_grade + "trait"]>>
-					<br>
+				<br>
+				<<if $_upgrade.gradeRequired[$_grade] gt V[$_grade + "trait"]>>
 					<span class="black">
-					<<switch _towerUpgrades[_upgrade].gradeRequired[$_grade]>>
+					<<switch $_upgrade.gradeRequired[$_grade]>>
 						<<case 1>>Passable $_gradeDisplay required
 						<<case 2>>Decent $_gradeDisplay required
 						<<case 3>>Good $_gradeDisplay required
@@ -1751,9 +1749,8 @@
 					</span>
 					<<set $_disableBuild to true>>
 				<<else>>
-					<br>
 					<span class="green">
-					<<switch _towerUpgrades[_upgrade].gradeRequired>>
+					<<switch $_upgrade.gradeRequired[$_grade]>>
 						<<case 1>>Passable $_gradeDisplay required
 						<<case 2>>Decent $_gradeDisplay required
 						<<case 3>>Good $_gradeDisplay required
@@ -1764,45 +1761,45 @@
 			<</for>>
 		<</if>>
 
-		<<if _towerUpgrades[_upgrade].activityRequired>>
+		<<if $_upgrade.activityRequired>>
 			<br>
-			<<if $bird.state isnot "home" or $bird.activity isnot _towerUpgrades[_upgrade].activityRequired>>
+			<<if $bird.state isnot "home" or $bird.activity isnot $_upgrade.activityRequired>>
 				<span class="red">Requires the Great Hawk to be home and building the nest.</span>
 			<<else>>
 				<span class="green">Requires the Great Hawk to be home and building the nest.</span>
 			<</if>>
 		<</if>>
 
-		<<if _towerUpgrades[_upgrade].upgradesRequired>>
-			<<for $_upgradesRequired range Object.keys(_towerUpgrades[_upgrade].upgradesRequired)>>
-				<<if _towerUpgrades[_upgrade].upgradesRequired[$_upgradesRequired] lt $bird.upgrades[$_upgradesRequired]>>
+		<<if $_upgrade.upgradesRequired>>
+			<<for $_uReq range Object.keys($_upgrade.upgradesRequired)>>
+				<<if $bird.upgrades[$_uReq] lt $_upgrade.upgradesRequired[$_uReq]>>
 					<br>
 					<span class="black">
-					<<if ["toolbox", "tarp", "pot"].includes($_upgradesRequired)>>
-						<<print $_upgradesRequired.toUpperCase()>> required
+					<<if ["toolbox", "tarp", "pot"].includes($_uReq)>>
+						<<print $_uReq.toUpperCase()>> required
 					<<else>>
-						<<print $_upgradesRequired.toUpperCase()>> level <<number $bird.upgrades[$_upgradesRequired]>> required
+						<<print $_uReq.toUpperCase()>> level <<number $_upgrade.upgradesRequired[$_uReq]>> required
 					<</if>>
 					</span>
 					<<set $_disableBuild to true>>
 				<<else>>
 					<br>
 					<span class="green">
-					<<if ["toolbox", "tarp", "pot"].includes($_upgradesRequired)>>
-						<<print $_upgradesRequired.toUpperCase()>> required (obtained)
+					<<if ["toolbox", "tarp", "pot"].includes($_uReq)>>
+						<<print $_uReq.toUpperCase()>> required (obtained)
 					<<else>>
-						<<print $_upgradesRequired.toUpperCase()>> level <<number $bird.upgrades[$_upgradesRequired]>> required (obtained)
+						<<print $_uReq.toUpperCase()>> level <<number $_upgrade.upgradesRequired[$_uReq]>> required (obtained)
 					<</if>>
 					</span>
 				<</if>>
 			<</for>>
 		<</if>>
 
-		<<if _towerUpgrades[_upgrade].materialsUsed>>
-			<<for $_materialRequired, $_amount range _towerUpgrades[_upgrade].materialsUsed>>
-				<<if $_amount gt $bird.materials[$_materialRequired]>>
+		<<if $_upgrade.materialsUsed>>
+			<<for $_material, $_amount range $_upgrade.materialsUsed>>
+				<<if $_amount gt $bird.materials[$_material]>>
 					<br>
-					<span class="black">More $_materialRequired required.</span> <<bird_materials_required $_materialRequired $_amount>>
+					<span class="black">More $_material required.</span> <<bird_materials_required $_material $_amount>>
 					<<set $_disableBuild to true>>
 				<</if>>
 			<</for>>
@@ -1813,8 +1810,8 @@
 		<</if>>
 
 		<<set $_linkText to ($bird.upgrades[_upgrade] is 0 ? "Build" : "Improve")>>
-		<<if _towerUpgrades[_upgrade].timeTaken>>
-			<<set $_linkText += ` (${getTimeString(_towerUpgrades[_upgrade].timeTaken)})`>>
+		<<if $_upgrade.timeTaken>>
+			<<set $_linkText += ` (${getTimeString($_upgrade.timeTaken)})`>>
 		<</if>>
 
 		<br>
@@ -1828,8 +1825,8 @@
 					})>>
 				<</if>>
 			<</link>>
-			<<for $_materialRequired, $_amount range _towerUpgrades[_upgrade].materialsUsed>>
-				<<bird_materials_required $_materialRequired $_amount>>
+			<<for $_material, $_amount range $_upgrade.materialsUsed>>
+				<<bird_materials_required $_material $_amount>>
 			<</for>>
 		<</capture>>
 	</div>
