@@ -303,6 +303,20 @@ When you return to the cave, the pack is delighted to see you both come back.
 		<br><br>
 		You sit down next to <<bhim>>. Even when you're both sitting down, <<if $monster is 1>>your head only reaches <<bhis>> chest<<else>><<bhe>> can look you in the eye<</if>>.
 	<</if>>
+<<elseif $phase is 2>>
+	<<set $phase to 0>>
+	The pack bounds into the forest without you. 
+	<<if playerIsPregnant() and playerBellySize() gte 15>>
+		Black Wolf lets out a huff, and gives your pregnant belly a nudge. You watch the pack leave together.
+	<<elseif $wolfpackleader is 1 and (statusCheck("Black Wolf").love lt 125 or $wolfpackharmony lt 18)>>
+		Black Wolf looks at you questioningly for a moment, but seems to accept your decision. You watch the pack leave together.
+		<<if $wolfpackharmony lt 18>>
+			<<npcincr "Black Wolf" love -1>> <<llove>>
+		<</if>>
+	<<else>>
+		Black Wolf nuzzles against your neck affectionately, before letting out a huff and relaxing, watching the pack leave.
+	<</if>>
+	<<lharmony>>
 <<else>>
 	You sit and rest by the Black Wolf's side.
 	<<switch random(1,8)>>
@@ -417,29 +431,60 @@ When you return to the cave, the pack is delighted to see you both come back.
 
 <<if $wolfevent is 1 and ($wolfstate is "cave" and !["finished","ongoing"].includes($huntstate) and ["dusk", "night"].includes(Time.dayState))>>
 	<<set $huntstate to "ongoing">><<set $wolfpackpoisoned to 0>>
-	<<if npcBellySize("Black Wolf") lte 15>>
-		<<set $wolfstate to "hunt">>
-		The Black Wolf stands up and howls. The rest of the pack joins in.
-		<<if $monster is 1>>
-			"We hunt soon. Be ready."
-		<<else>>
-			They're going hunting.
+	<<switch statusCheck("Black Wolf").gender>>
+	<<case "m">>
+		<<set _BWGender to 1>>
+	<<default>>
+		<<set _BWGender to 0>>
+	<</switch>>
+	<<if (statusCheck("Black Wolf").love gte random(100,200) or $wolfpackleader is 1 or parentFunction.findParent("Black Wolf", _BWGender, true)) and ($wolfpackharmony + $wolfpackferocity gte 20)>>
+		The pack begins to howl in excitement, readying for a hunt. You look to the Black Wolf, expecting <<bhim>> to join them, only to find <<bhim>> looking towards you instead.
+		<<if $wolfpackleader is 1>>
+			<<if $monster is 1>>
+				"We hunt, Alpha?"
+			<<else>>
+				<<bHe>> waits for your guidance.
+			<</if>>
+		<<else>>	
+			<<if $monster is 1>>
+				"Pack hunt well without us this night, I feel."
+			<<else>>
+				<<bHe>> seems hesitant to part.
+			<</if>>
 		<</if>>
-	<<else>>
-		<<set $blackWolfNotHunting to true>>
-		The pack begins to howl and bay as they run through the trees. You sit with the Black Wolf on <<bhis>> rock, watching as <<bhe>> nudges <<bhis>> pregnant belly.
-		<<if $monster is 1>>
-			<br><br>
-			<<bHe>> sighs, laying down and looking on after the pack.
-		<</if>>
-	<</if>>
-	<<endevent>>
-	<br><br>
+		<br><br>
 
-	<<link [[Go with them|Wolf Cave Hunt]]>><</link>>
-	<br>
-	<<link [[Watch them leave|Wolf Cave Hunt Leave]]>><</link>>
-	<br>
+		<<link [[Go with them|Wolf Cave Hunt]]>><<set $wolfstate to "hunt">><<npcincr "Black Wolf" love 1>><<endevent>><</link>><<glove "Black Wolf">>
+		<br>
+		<<link [[Stay with Black Wolf|Wolf Relax]]>><<set $phase to 2>><<set $blackWolfNotHunting to true>><</link>>
+		<br>
+		<<link [[Encourage Black Wolf to go|Wolf Cave Hunt Leave]]>><<set $phase to 1>><<set $wolfstate to "hunt">><</link>>
+		<br>
+	<<else>>
+		<<if npcBellySize("Black Wolf") lte 15>>
+			<<set $wolfstate to "hunt">>
+			The Black Wolf stands up and howls. The rest of the pack joins in.
+			<<if $monster is 1>>
+				"We hunt soon. Be ready."
+			<<else>>
+				They're going hunting.
+			<</if>>
+		<<else>>
+			<<set $blackWolfNotHunting to true>>
+			The pack begins to howl and bay as they run through the trees. You sit with the Black Wolf on <<bhis>> rock, watching as <<bhe>> nudges <<bhis>> pregnant belly.
+			<<if $monster is 1>>
+				<br><br>
+				<<bHe>> sighs, laying down and looking on after the pack.
+			<</if>>
+		<</if>>
+		<<endevent>>
+		<br><br>
+
+		<<link [[Go with them|Wolf Cave Hunt]]>><</link>>
+		<br>
+		<<link [[Watch them leave|Wolf Cave Hunt Leave]]>><</link>>
+		<br>
+	<</if>>
 <<elseif Time.dayState is "night">>
 	The Black Wolf stands up.
 	<<if $monster is 1>>
@@ -448,7 +493,9 @@ When you return to the cave, the pack is delighted to see you both come back.
 		<<bHe>> looks at the night sky, before walking away.
 	<</if>>
 	<br><br>
-	<<link [[Next|Wolf Cave Clearing]]>><<endevent>><</link>>
+	<<link [[Follow to bed|Wolf Cave Bed]]>><<endevent>><</link>>
+	<br>
+	<<link [[Stay|Wolf Cave Clearing]]>><<endevent>><</link>>
 <<else>>
 	<<if _blackWolfHeatEvent and $deviancy gte 75>>
 		<<if playerAwareTheyAreInHeat() and $NPCList[0].penis isnot "none" and (($player.vaginaExist and !playerChastity("vagina")) or (canBeMPregnant() and !playerChastity("anus")))>>
