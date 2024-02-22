@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const DoLSave = ((Story, Save) => {
 	"use strict";
 

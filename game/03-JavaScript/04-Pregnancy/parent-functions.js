@@ -1,5 +1,4 @@
 /* eslint-disable jsdoc/require-returns-type */
-/* eslint-disable no-undef */
 // Format for storing the parents of a child.
 const parentList = {
 	mothers: [{ name: "pc", compressed: "none", births: 0, kids: 0, id: 0 }],

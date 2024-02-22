@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 function displayMonthday() {
 	return ordinalSuffixOf(Time.monthDay);
 }

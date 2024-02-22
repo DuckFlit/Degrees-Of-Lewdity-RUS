@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 // Should a name type for species be setup, say, human/wolf specific names
 function generateBabyName(name, gender, childId) {
 	let result = "";
@@ -339,7 +337,7 @@ function playerEndWaterProgress() {
 	const pregnancy = getPregnancyObject();
 	if (!pregnancy || !pregnancy.type || pregnancy.type === "parasite" || pregnancy.timer < pregnancy.timerEnd || V.statFreeze) {
 		// Fixes an issue when the above "parasite" was "parasites"
-		if (pregnancy && (!pregnancy.type || pregnancy.type === "parasite") && pregnancy.waterBreaking) waterBreaking = false;
+		if (pregnancy && (!pregnancy.type || pregnancy.type === "parasite") && pregnancy.waterBreaking) pregnancy.waterBreaking = false;
 		return null;
 	}
 
@@ -883,7 +881,7 @@ function recordSperm({
 	if (V.disableImpregnation) return false; // To be set at the start of sex scenes, unset with <<endcombat>>
 	if (V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false; // Human player pregnancy disabled
 	if (V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false; // Beast player pregnancy disabled
-	if (V.playerPregnancyEggLayingDisable === "t" && ["hawk", "harpy"].includes(npcType)) return false; // Egg laying player pregnancy disabled
+	if (V.playerPregnancyEggLayingDisable === "t" && ["hawk", "harpy"].includes(spermOwner?.type)) return false; // Egg laying player pregnancy disabled
 	if (V.npcPregnancyDisable === "t" && target !== "pc") return false; // Npc pregnancy disabled
 
 	if (["realistic", "fetish"].includes(V.pregnancytype) && !["anus", "vagina"].includes(genital)) return null;

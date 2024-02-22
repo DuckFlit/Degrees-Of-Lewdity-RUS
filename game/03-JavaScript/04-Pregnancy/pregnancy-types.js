@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 function maxParasites(genital = "anus") {
 	switch (V.sexStats[genital].pregnancy.motherStatus) {
 		case 1:

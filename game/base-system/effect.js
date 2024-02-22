@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 function effectsWater() {
 	DOL.Perflog.logWidgetStart("effectsWaterJs");
 	const fragment = document.createDocumentFragment();
@@ -654,7 +653,7 @@ function effects() {
 						V.wardrobes[location]
 							? ` to the ${V.wardrobes[location].name}`
 							: `. (Likely One-off update error, no need to report unless seen multiple times in the same save) ${
-									Array.isArray($rebuy_success) ? JSON.stringify($rebuy_success) : ""
+									Array.isArray(V.rebuy_success) ? JSON.stringify(V.rebuy_success) : ""
 							  }`
 					}.
 				`,

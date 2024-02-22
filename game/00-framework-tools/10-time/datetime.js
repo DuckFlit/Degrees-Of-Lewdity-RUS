@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 class DateTime {
 	constructor(year = 2020, month = 1, day = 1, hour = 0, minute = 0, second = 1) {
 		if (arguments.length === 1) {

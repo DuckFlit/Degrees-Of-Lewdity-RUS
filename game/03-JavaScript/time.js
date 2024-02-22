@@ -51,7 +51,6 @@
 */
 
 /* eslint-disable jsdoc/require-description-complete-sentence */
-/* eslint-disable no-undef */
 const Time = (() => {
 	const moonPhases = {
 		new: {

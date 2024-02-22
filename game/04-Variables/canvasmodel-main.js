@@ -6,7 +6,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable spaced-comment */
 /* eslint-disable no-useless-return */
-/* eslint-disable no-undef */
 /* eslint-disable prefer-const */
 /* eslint-disable prettier/prettier */
 /* eslint-disable dot-notation */
@@ -3370,7 +3369,7 @@ Renderer.CanvasModels["main"] = {
 				let path = 'img/clothes/face/' +
 				options.worn_face_setup.variable + '/' +
 				'acc' +
-				(setup.accessory_integrity_img ? '_' + options["worn_" + slot + "_integrity"] : '') +
+				(setup.accessory_integrity_img ? '_' + options.worn_face_integrity : '') +
 				(isAltPosition ? '_alt' : '') + '.png';
 				return gray_suffix(path, options.filters['worn_face_acc']);
 			},
@@ -3417,7 +3416,7 @@ Renderer.CanvasModels["main"] = {
 				let path = 'img/clothes/neck/' +
 				options.worn_neck_setup.variable + '/' +
 				'acc' +
-				(setup.accessory_integrity_img ? '_' + options["worn_" + slot + "_integrity"] : '') +
+				(setup.accessory_integrity_img ? '_' + options.worn_neck_integrity : '') +
 				(isAltPosition ? '_alt' : '') + '.png';
 				return gray_suffix(path, options.filters['worn_neck_acc']);
 			},
