@@ -401,6 +401,7 @@ You spread your wings and leap from the tower.
 	<<set $bird.hunts.distanceNorth to 0>>
 	<<set $bird.hunts.distanceEast to 0>>
 	<<set $bird.hunts.ignored to 0>>
+	<<set $moor to 40>>
 <</if>>
 <<if $phase is 1>>
 	<<set $phase to 0>>
@@ -416,7 +417,7 @@ You spread your wings and leap from the tower.
 What will you hunt for?
 <br>
 <<if $bird.hunts.lurkers is true>>
-	<<link [[Food|Bird Hunt Direction]]>><<set $bird.hunts.goal to "lurkers">><</link>>
+	<<link [[Lurkers|Bird Hunt Direction]]>><<set $bird.hunts.goal to "lurkers">><</link>>
 	<br>
 <</if>>
 <<if $bird.hunts.materials is true>>
@@ -607,6 +608,10 @@ What will you hunt for?
 				<<link [[Scare and harass (0:05)|Bird Hunt Tent Scare]]>><<bird_pass 5>><</link>>
 				<br>
 			<</if>>
+			<<if $bird.hunts.loot.lurkers gte 1>>
+				<<link [[Drop a lurker on their heads (0:05)|Bird Hunt Tent Lurker Drop]]>><<bird_pass 5>><</link>>
+				<br>
+			<</if>>
 		<<else>>
 			<span class="red">Crossing them would be very dangerous.</span>
 			<br><br>
@@ -614,6 +619,10 @@ What will you hunt for?
 			<<set $skulduggerydifficulty to 500>>
 			<<link [[Sneak in and steal from them (0:05)|Bird Hunt Tent Steal Alone]]>><<crimeup 10 "trespassing">><<bird_pass 5>><</link>><<skulduggerydifficulty>><<crimes "thievery" "trespassing">>
 			<br>
+			<<if $bird.hunts.loot.lurkers gte 1>>
+				<<link [[Drop a lurker on their heads (0:05)|Bird Hunt Tent Lurker Drop]]>><<bird_pass 5>><</link>>
+				<br>
+			<</if>>
 		<</if>>
 		<<link [[Avoid them|Bird Hunt Ignore]]>><<endevent>><</link>>
 		<br>
@@ -751,6 +760,45 @@ What will you hunt for?
 		<br><br>
 
 		<<link [[Investigate (0:05)|Bird Hunt Shiny]]>><<bird_pass 5>><</link>>
+		<br>
+		<<link [[Ignore it|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_hunt_animals_1" _flight_hunt_chance.other>>
+		<<rng 2>><<set _beastGen to ($rng is 1 ? "cat" : "fox")>><<if _beastGen is "cat">><<beastNEWinit 1 cat>><<else>><<beastNEWinit 1 fox>><</if>>
+		You spot a lone <<beasttype>> below.
+		<<rng 100>>
+		<<if $rng gte 60>>
+			<<set $phase to 1>>
+			<<bHes>> holding something<<if $monster isnot 1>> in <<bhis>> mouth<</if>>.
+		<</if>>
+		<br><br>
+
+		<<link [[Watch (0:05)|Bird Hunt Animal Watch]]>><<trauma -3>><<bird_pass 5>><</link>><<ltrauma>>
+		<br>
+		<<link [[Land (0:05)|Bird Hunt Animal Land]]>><<bird_pass 5>><</link>>
+		<br>
+		<<link [[Screech|Bird Hunt Animal Screech]]>><<stress -3>><</link>><<lstress>>
+		<br>
+		<<link [[Ignore it|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_hunt_animals_2" _flight_hunt_chance.other>>
+		<<beastNEWinit 1 fox>><<beastPARTNERinit 1 fox 0>>
+		You spot a pair of 
+		<<if ($monster isnot 1) or ($NPCList[0].pronoun is "m" and $NPCList[1].pronoun is "m") or ($NPCList[0].pronoun is "f" and $NPCList[1].pronoun is "f")>>
+			<<beastsplural>>
+		<<else>>
+			fox people - one male, and one female -
+		<</if>>
+		below. They're tumbling over each other, but you can't tell if they're playing or fighting from up here.
+		<br><br>
+
+		<<link [[Land for a closer look (0:05)|Bird Hunt Foxes Land]]>><<bird_pass 5>><</link>>
+		<br>
+		<<link [[Screech|Bird Hunt Animal Screech]]>><<stress -3>><<set $phase to 4>><</link>><<lstress>>
 		<br>
 		<<link [[Ignore it|Bird Hunt Ignore]]>><<endevent>><</link>>
 		<br>
@@ -1740,6 +1788,527 @@ You take off<<if $bird.hunts.duo is true>><<npc "Great Hawk">> and rejoin your s
 
 <<flight_hunt_return>>
 
+:: Bird Hunt Animal Watch
+<<effects>>
+You fly lower to the ground and spend some time watching the <<beasttype>> from above.
+<<if $NPCList[0].type.includes("fox")>>
+	<<if $phase is 1>>
+		<<bHe>> stops in a small patch of dirt and starts digging. <<bHe>> drops the object inside and buries it before running off.
+	<<else>>
+		<<bHe>> curls up in a small patch of dirt for a nap.
+	<</if>>
+<<else>>
+	<<if $phase is 1>>
+		<<bHe>> drops the object and starts to bat it around. After a few minutes, <<bhe>> picks it back up and runs off.
+	<<else>>
+		<<bHe>> curls up in a small patch of dirt for a nap.
+	<</if>>	
+<</if>>
+<br><br>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Animal Land
+<<effects>>
+<<if $NPCList[0].type.includes("fox")>>
+	You land in front of the <<beasttype>>, wings spread wide.
+	<<if $NPCList[0].traits.includesAny("cowardly")>>
+		<<bHe>> immediately screams at you, before turning and running away. <<bHe>> dropped something.
+		<<flight_hunt_get_random>>
+		<<if $bird.hunts.duo is true>>
+			<<endevent>><<npc "Great Hawk">><<person1>>
+			<<if $monster is 1>>
+				"Landbound beasts always lose their catches. Good find, <<wife>>."
+			<<else>>
+				Your <<beasttype>> looks pleased.
+			<</if>>
+		<</if>>
+		<br><br>
+
+		<<flight_hunt_return>>
+	<<elseif $NPCList[0].traits.includesAny("friendly", "clumsy", "clever")>>
+		<<bHe>> stops and tilts <<bhis>> head at you.
+		<<if $bird.hunts.duo is true>>
+			<<bHe>> starts to hesitantly approach you, until your spouse lands behind you. <<bHe>> turns and runs.
+			<br><br>
+
+			<<endevent>><<npc "Great Hawk">><<person1>>
+			The Great Hawk tilts <<bhis>> head curiously, as if wondering whether <<bhe>> did something wrong.
+			<<if $monster is 1>>
+				"Cowardly things."
+			<</if>>
+			<br><br>
+
+			<<flight_hunt_return>>
+		<<else>>
+			<<if $monster is 1>>
+				<<if $NPCList[0].traits.includes("clever")>>
+					"I-I didn't steal anything, I swear!"
+					<<if $phase is 1>>
+						<<bHe>> pushes the object behind <<bhim>>, as if to hide it from you.
+					<</if>>
+				<<else>>
+					"Oh, wow, your wings are so big and pretty! You're not going to eat me, are you?"
+				<</if>>
+			<</if>>
+			<<bHis>> tail begins to puff out. <<bHes>> clearly very afraid of you, but seems unable to move as you lock eyes with <<bhim>>.
+			<br><br>
+
+			<<if $phase is 1>>
+				<<link [[Take the object|Bird Hunt Fox Take]]>><</link>>
+				<br>
+			<</if>>
+			<<if $bestialitydisable is "f" and $deviancy gte 35>>
+				<<link [[Push over|Bird Hunt Fox Sex]]>><<set $sexstart to 1>><</link>><<deviant3>>
+				<br>
+			<</if>>
+			<<link [[Pet|Bird Hunt Fox Pet]]>><<stress -3>><</link>><<lstress>>
+			<br>
+		<</if>>
+	<<elseif $NPCList[0].traits.includes("territorial")>>
+		<<bHe>> drops into a defensive posture and growls at you.
+		<<if $monster is 1>>
+			"I'm not afraid of you, damned harpy! Find someone else to screech at!"
+		<</if>>
+		<<bHe>> takes a step forward, prepared to pounce.
+		<br><br>
+
+		<<if $bird.hunts.duo is true>>
+			<<npc "Great Hawk" 2>>
+			Immediately, <<bhes 0>> pressed to the ground from above. 
+			<<person2>>
+			<<if $monster is 1>>
+				"Poor manners. No way to greet a neighbor." Your <<beasttype 1>> smiles from atop the <<person1>><<beasttypes>> back.
+			<<else>>
+				Your <<beasttype 1>> shrieks triumphantly from the <<person1>><<beasttypes>> back.
+			<</if>>
+			<br><br>
+			
+			<<bHe>> struggles.
+			<<if $NPCList[0].monster is "monster">>
+				"Fine. I'll behave. Just get off of me."
+			<</if>>
+			Your spouse loosens the pressure, and the <<beasttype>> takes the chance to dart away.
+			<<if $phase is 1>>
+				<<bHe>> left something behind.
+				<<flight_hunt_get_random>>
+				<<person2>>
+				<<if $monster is 1>>
+					"Landbound beasts always lose their catches. Good find, <<wife>>."
+				<<else>>
+					Your <<beasttype>> looks pleased.
+				<</if>>
+			<<else>>
+				<br><br>
+				<<person2>>
+				<<if $monster is 1>>
+					"Those ones make poor prey. We should hunt smaller."
+				<<else>>
+					The Great Hawk hops over to you and nudges you, eager to resume the hunt.
+				<</if>>
+			<</if>>
+			<br><br>
+
+			<<flight_hunt_return>>
+		<<else>>
+			<<if $bestialitydisable is "f">>
+				You don't have time to flee before <<bhe>> springs forward.
+				<br><br>
+
+				<<link [[Next|Bird Hunt Fox Sex]]>><<set $molestationstart to 1>><</link>>
+				<br>
+			<<else>>
+				You take to the skies to avoid it, but <<bhe>> gets a few hits on you first. <<beastescape>>
+				<br><br>
+
+				<<flight_hunt_return>>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<bHe>> doubles back from you and growls, before darting away.
+		<br><br>
+
+		<<flight_hunt_return>>
+	<</if>>
+<<else>>
+	You prepare to land in front of the <<beasttype>>, but <<bhe>> seems to sense your presence. <<bHe>> suddenly begins to run, before diving into a small alcove out of sight.
+	<br><br>
+
+	<<flight_hunt_return>>
+<</if>>
+
+:: Bird Hunt Animal Screech
+<<effects>>
+You <<if $phase isnot 5>>swoop down and <</if>>let out a piercing screech.
+<<if $bird.hunts.duo is true>>
+	Your spouse matches it.
+	<<if $phase is 1>>
+		The <<beasttype>> drops whatever <<bhe>> was holding and scurries away.
+		<br><br>
+
+		You land and pick it up.
+		<<flight_hunt_get_random>>
+		<<endevent>><<npc "Great Hawk">><<person1>>
+		<<if $monster is 1>>
+			"Landbound beasts always lose their catches. Good find, <<wife>>."
+		<<else>>
+			Your <<beasttype>> looks pleased.
+		<</if>>
+	<<else>>
+		<<if $phase gte 4>>They jump and dart away<<else>>The <<beasttype>> jumps and scurries away<</if>>.
+	<</if>>
+<<else>>
+	<<if $phase gte 4>>They jump and dart away<<else>>The <<beasttype>> jumps and scurries away<</if>>.
+<</if>>
+<br><br>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Fox Take
+<<effects>>
+You hold out your hand, motioning for <<bhim>> to give you whatever <<bhes>> hiding.
+<br><br>
+
+<<if $monster is 1>>
+	<<if $NPCList[0].traits.includes("clever")>>
+		<<bHe>> grumbles under <<bhis>> breath, before producing the item from behind <<bhis>> back.
+	<<else>>
+		"Oh, that's all? Okay." <<bHe>> produces the object from behind <<bhis>> back.
+	<</if>>
+<<else>>
+	<<bHe>> hesitantly pushes it forward from behind <<bhim>>.
+<</if>>
+<<flight_hunt_get_random>>
+<<set $phase to 3>>
+<br><br>
+
+<<if $bestialitydisable is "f" and $deviancy gte 35>>
+	<<link [[Reward|Bird Hunt Fox Sex]]>><<set $sexstart to 1>><</link>><<deviant3>>
+	<br>
+<</if>>
+<<link [[Pet|Bird Hunt Fox Pet]]>><<stress -3>><</link>><<lstress>>
+<br>
+<<link [[Leave|Bird Hunt Fox Leave]]>><</link>>
+<br>
+
+:: Bird Hunt Fox Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	You adopt a mating posture. The <<beasttype>> cocks <<bhis>> head, but quickly accepts your offer. <<deviancy3>>
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $NPCList[0].stance to "top">><<set $enemytrust -= 40>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate '<span class="red"><<bHe>> screams right back in your face, drowning out your own screams.</span>'>>
+<<beast $enemyno>>
+<br><br>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Hunt Fox Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Fox Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Fox Sex Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+
+	<<if $consensual is 1>>
+		<<if $NPCList[0].traits.includes("territorial")>>
+			<<if $monster is 1>>
+				<<bHe>> gets to <<bhis>> feet, and looks at you smugly. "Consider that a gift."
+			<<else>>
+				<<bHe>> huffs in triumph.
+			<</if>>
+		<<elseif $NPCList[0].traits.includes("friendly")>>
+			<<if $monster is 1>>
+				<<bHe>> nuzzles you. "That was fun!"
+			<<else>>
+				<<bHe>> nuzzles your face.
+			<</if>>
+			<<stress -3>><<lstress>><br>
+		<<else>>
+			<<if $monster is 1>>
+				<<bHe>> gets to <<bhis>> feet. "Thank you. Maybe I can find a real partner, now."
+			<<else>>
+				<<bHe>> licks your face.
+			<</if>>
+		<</if>>
+		<<bHe>> slinks away into the underbrush.
+		<<if $phase is 1>>
+			<<bHe>> left something behind for you.
+			<<flight_hunt_get_random>>
+		<</if>>
+	<<else>>
+		<<if $NPCList[0].traits.includes("territorial")>>
+			<<if $monster is 1>>
+				<<bHe>> gets to <<bhis>> feet, and looks at you smugly. "I thought you were supposed to be a terror. You're just a toy." <<bHe>> slinks away into the underbrush.
+			<<else>>
+				<<bHe>> huffs in triumph, before slinking away into the underbrush.
+			<</if>>
+		<</if>>
+	<</if>>
+	<br><br>
+
+	<<tearful>> you rise to your feet.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<flight_hunt_return>>
+<<elseif $enemyhealth lte 0>>
+	<<if $NPCList[0].traits.includes("territorial")>>
+		<<if $monster is 1>>
+			<<bHe>> recoils, baring <<bhis>> teeth at you. "You'll regret this."
+		<<else>>
+			<<bHe>> rolls away from you, and huffs in frustration.
+		<</if>>
+	<<elseif $NPCList[0].traits.includes("friendly")>>
+		<<if $monster is 1>>
+			"Ow! Ow! Stop that!"
+		<<else>>
+			<<bHe>> rolls away from you.
+		<</if>>
+	<<else>>
+		<<if $monster is 1>>
+			<<bHe>> recoils from you. "Maybe I'm not good enough for a mate after all..."
+		<<else>>
+			<<bHe>> rolls away from you.
+		<</if>>
+	<</if>>
+	The <<beasttype>> whines and flees into the underbrush.
+	<<if $phase is 1>>
+		<<bHe>> left something behind.
+		<<flight_hunt_get_random>>
+	<</if>>
+	<br><br>
+
+	<<tearful>> you gather yourself.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<flight_hunt_return>>
+<<else>>
+	The <<beasttype>> turns away from you and slinks into the moor.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<flight_hunt_return>>
+<</if>>
+
+:: Bird Hunt Fox Pet
+<<effects>>
+You reach forward. <<bHe>> flinches, but eases up when you start to scratch behind <<bhis>> ears.
+<<if $monster is 1>>
+	<<bHe>> leans into you while you continue stroking <<bhis>> ears. With your other hand, you reach behind <<bhim>> and gently run your fingers along <<bhis>> tail.
+	<br><br>
+
+	After a few minutes of this, the <<beasttype>> pulls away from you. <<bHes>> blushing. Without a word, <<bhe>> turns and walks off.
+<<else>>
+	The fox purrs appreciatively as you bring a second hand up to stroke <<bhis>> back while you continue rubbing between <<bhis>> ears.
+	<br><br>
+
+	After a few minutes of this, the fox runs off into the bushes, yipping happily.
+<</if>>
+<br><br>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Fox Leave
+<<effects>>
+<<flight_hunt_return>>
+
+:: Bird Hunt Foxes Land
+<<effects>>
+You land a short distance away from the pair.
+<<if $bird.hunts.duo is true>>
+	Your spouse lands right next to you.
+<</if>>
+You approach them low to the ground, unseen, for a closer look.
+<br><br>
+
+<<if $rng gte 60>>
+	<<if $NPCList[0].traits.includes("territorial")>>
+		The larger of the two pounces on the other.
+		<<if $monster is 1>>
+			"Give up yet?" <<bHe 0>> straddles the smaller <<beasttype 1>> smugly.
+			<br><br>
+
+			<<if $NPCList[1].traits.includes("territorial")>>
+				"Never!" The smaller <<beasttype 1>> rolls out from under <<bhim 0>>, and the fight continues as they tumble off into the underbrush.
+			<<else>>
+				"Y-yes. I'm sorry. I'll hunt elsewhere," the smaller <<beasttype 1>> whimpers.
+				<br><br>
+
+				The larger one huffs, dismounting and freeing the smaller one, who darts away. The winner saunters off, seemingly resuming <<bhis 0>> own interrupted hunt.
+			<</if>>
+		<<else>>
+			<<bHe>> barks and yipps at the smaller one,
+			<<if $NPCList[1].traits.includes("territorial")>>
+				who rolls out and makes a punce of their own. They tumble off into the underbrush.
+			<<else>>
+				before releasing <<bhim 1>>. <<bHe 1>> darts off, and the victorious fox saunters away.
+			<</if>>
+		<</if>>
+	<<else>>
+		One of them pounces on the other, growling.
+		<<if $monster is 1>>
+			"You spoiled my catch!" <<bhe 0>> barks.
+			<br>
+			"I saw it first!" the <<beasttype 1>> under <<bhim 0>> barks back. <<bHe 1>> rolls out from under <<bhim 0>> and makes a pounce of <<bhis 1>> own. They chase each other deeper into the moor.
+		<<else>>
+			The two then bark and yipp at each other for a moment, before the fight continues. They chase each other deeper into the moor.
+		<</if>>
+	<</if>>
+	<br><br>
+
+	<<link [[Leave|Bird Hunt Fox Leave]]>><</link>>
+	<br>
+<<elseif $rng gte 30>>
+	<<if $NPCList[0].traits.includes("territorial") or $NPCList[1].traits.includes("territorial")>>
+		The larger of the two pounces on the other.
+		<<if $monster is 1>>
+			<<bHe>> straddles <<bhis>> victim smugly. "Looks like I win. Now, what should I do with you...?" The other <<beasttype 1>> looks nervous as the larger one begins to rub <<bhis 1>> chest and down towards <<bhis 1>> groin.
+		<<else>>
+			<<bHe>> gets into a mounting position.
+		<</if>>
+	<<else>>
+		They tumble over one another, before righting themselves and nuzzling each other. One gets low to the ground and raises its rear.
+	<</if>>
+	<span class="lewd">They're about to mate.</span>
+	<br><br>
+
+	<<link [[Keep watching (0:10)|Bird Hunt Foxes Watch Mate]]>><<bird_pass 10>><</link>><<deviant1>>
+	<br>
+	<<link [[Leave|Bird Hunt Fox Leave]]>><</link>>
+	<br>
+<<else>>
+	They each get low to the ground, before righting themselves and yelling at each other. One jumps forward, tackling the other and nuzzling <<bhim>>. They're just playing.
+	<br><br>
+
+	<<link [[Screech|Bird Hunt Animal Screech]]>><<set $phase to 5>><<stress -3>><</link>><<lstress>>
+	<br>		
+	<<link [[Leave|Bird Hunt Fox Leave]]>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Foxes Watch Mate
+<<effects>>
+You watch the couple with interest.
+<<if $bird.hunts.duo is true>>
+	<<npc "Great Hawk" 3>>
+	The Great Hawk sits next to you.
+	<<if $monster is 1>>
+		"<<Wife>> wants to watch them mate?"
+	<</if>>
+<</if>>
+<<set $phase to 0>>
+<<if ($NPCList[0].penis isnot "none" and $NPCList[1].vagina isnot "none") or ($NPCList[0].vagina isnot "none" and $NPCList[1].penis isnot "none")>>
+	<!-- Penile/Vaginal -->
+	<<set $phase to 1>>
+<<elseif ($NPCList[0].penis isnot "none" or $NPCList[1].penis isnot "none") and $analdisable is "f">>
+	<!-- Penile/Anal -->
+	<<set $phase to 2>>
+<<elseif $NPCList[0].penis isnot "none" or $NPCList[1].penis isnot "none">>
+	<<set $phase to 3>>
+	<!-- Penile/Oral -->
+<<else>>
+	<<set $phase to 4>>
+	<!-- Vaginal/Oral -->
+<</if>>
+<<if $NPCList[0].traits.includes("territorial") or $NPCList[1].traits.includes("territorial")>>
+	<<set _domF to ($NPCList[0].traits.includes("territorial") ? 0 : 1)>>
+<<else>>
+	<<set _domF to 0>>
+<</if>>
+<<set _subF to (_domF is 1 ? 0 : 1)>>
+<<deviancy1>>
+
+<<if $NPCList[0].monster is "monster">>
+	<<if $NPCList[0].traits.includes("territorial") or $NPCList[1].traits.includes("territorial")>>
+		"Maybe I'll eat you instead."
+	<</if>>
+	The larger <<beasttype _domF>> lowers <<bhis _domF>> head to <<bhis _domF>> lover's groin, and begins licking
+	<<if $NPCList[_domF].penis isnot "none">>
+		<<bhis _subF>> pussy.
+	<<else>>
+		up <<bhis _subF>> red shaft.
+	<</if>>
+	<<bHe _subF>> covers <<bhis _subF>> face in embarassment as <<bhe _subF>> softly moans.
+	<br><br>
+
+	<<switch $phase>>
+		<<case 1 2>>
+			<<if $NPCList[_domF].penis isnot "none">>
+				The large <<beasttype _domF>> crawls back up, and gently guides <<bhis _domF>> knotted penis into the smaller <<beasttype _subF>>'s <<if $phase is 1>>pussy<<else>>ass<</if>>.
+				It starts off slow, but before long, the large <<beasttype _domF>> is thrusting into <<bhis _domF>> lover with fervor.
+				<br><br>
+
+				With a final thrust, you <<if $bird.hunts.duo is true>>and your spouse <</if>>watch the <<beasttype _domF>>'s knot slide in. The <<beasttype _subF>> moans as <<bhes _subF>> filled with warm semen. <<arousal 24>><<ggarousal>>
+			<<else>>
+				The large <<beasttype _domF>> crawls back up, and gently guides the smaller <<beasttype _subF>>'s knotted penis into <<bhim _domF>>.
+				It starts off slow, but before long, the large <<beasttype _domF>> is riding <<bhis _domF>> lover with fervor.
+				<br><br>
+
+				With a final thrust, you <<if $bird.hunts.duo is true>>and your spouse <</if>>watch the <<beasttype _subF>>'s knot slide in. They both moan as the <<beasttype _domF>> is filled wih warm semen. <<arousal 24>><<ggarousal>>
+			<</if>>
+		<<case 3>>
+			The large <<beasttype _domF>> slowly takes the smaller <<beasttype _subF>>'s penis into <<bhis _domF>> mouth, and bobs <<bhis _domF>> head up and down.
+			You <<if $bird.hunts.duo is true>>and your spouse <</if>>watch until the <<beasttype _subF>> moans, and fresh semen escapes the large <<beasttype _domF>>'s mouth.
+		<<case 4>>
+			The large <<beasttype _domF>> slowly inserts <<bhis _domF>>'s tounge into the smaller <<beasttype _subF>>'s pussy. <<bHe _domF>> intensifies <<bhis _domF>> assault.
+			You <<if $bird.hunts.duo is true>>and your spouse <</if>>watch until the <<beasttype _subF>> moans and bucks <<bhis _subF>> hips.
+	<</switch>>
+<<else>>
+	<<if $phase is 1 or $phase is 2>>
+		One of the <<beasttype>>s mounts the other, and slowly inserts its knotted penis.
+		You <<if $bird.hunts.duo is true>>and your spouse <</if>>watch them rut until the knot slides in, sealing them together for a few minutes.
+	<<else>>
+		One of the <<beasttype>>s mounts the other, and starts to grind against the other.
+		You <<if $bird.hunts.duo is true>>and your spouse <</if>>watch until they both shudder and collapse.
+	<</if>>
+<</if>>
+<br><br>
+
+You <<if $bird.hunts.duo is true>>both <</if>>watch as the pair disengage from each other.
+<<if $NPCList[0].monster is "monster" and ($NPCList[0].traits.includes("territorial") or $NPCList[1].traits.includes("territorial"))>>
+	"Back to my den. You're gonna clean me up," the larger one commands. The smaller one obediantly nods and follows.
+<<elseif $NPCList[0].monster is "monster">>
+	"L-let's go back to the den," one says. The other nods and follows.
+<<else>>
+	They nuzzle each other and wander off together.
+<</if>>
+<br><br>
+
+<<if $bird.hunts.duo is true>>
+	You look over to your <<beasttype 2>>, and
+	<<if $monster is 1>>
+		see that <<bhes 2>> a bit flustered at the display. "Head home soon, <<wife>>?"
+	<<else>>
+		<<bhe 2>> tilts <<bhis 2>> head at you.
+	<</if>>
+	<br><br>
+<</if>>
+
+<<link [[Leave|Bird Hunt Fox Leave]]>><</link>>
+<br>
+
 :: Bird Hunt Tent Steal Alone
 <<effects>>
 You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pounds, thinking of your current exposure.<</if>> As you near their tents, a <<generate1>><<person1>><<person>> exits one and starts walking in your direction.
@@ -2697,6 +3266,33 @@ You won't be able to do anything else to them today, now that they're alerted.
 
 <<flight_hunt_return>>
 
+:: Bird Hunt Tent Lurker Drop
+<<effects>>
+<<flight_hunt_remove "lurker" 1>>
+You decide that you can spare one of your caught lurkers.
+<<if $bird.hunts.duo is true>>
+	<<generate2>><<person1>>
+	You look to your spouse. "Think you can hit a mark this high up?" You hold up your lurker. <<bHe>> flies close to you, grabbing it.
+	<br><br>
+
+	The two of you circle for a moment as the Great Hawk aims. <<bHe>> drops the lurker, and it lands true, right on the head of a <<person2>><<person>> below.
+<<else>>
+	<<generate1>><<person1>>
+	You circle overhead, trying to find a good target. You spot a <<person>> sitting by a firepit. You drop your lurker, and your aim is true.
+	<br><br>
+
+	It lands right on the head of a <<person2>><<person>> below.
+<</if>>
+The impact knocks <<him>> to the ground, and <<he>> begins screaming as the lurker stirs, now returned to a livable altitude.
+More people rush out from the tents to assist their comrade. You can't help but laugh at the mayhem.
+<br><br>
+
+You won't be able to do anything else to them today, now that they're alerted.
+<<set $daily.huntRemyAlerted to true>>
+<br><br>
+
+<<flight_hunt_return>>
+
 :: Bird Hunt Ignore
 <<effects>><<flight_distance_check>>
 <<if $bird.hunts.goal is "hawk">>
@@ -2732,6 +3328,7 @@ You won't be able to do anything else to them today, now that they're alerted.
 <<npc "Great Hawk">><<person1>>
 <<set $bird.injured to 10>>
 <<set $bird.timer to 300>>
+<<set $moor to 100>>
 You see the castle, it's not far anymore. Meanwhile, your <<beasttype>> has started to show a slight limp in <<bhis>> wing. You land on the perch. <<bHe>> slowly walks into the nest and lays down.
 <br><br>
 
@@ -2789,6 +3386,7 @@ You tell your <<beasttype>> that you want to return to the castle.
 :: Bird Hunt Return
 <<effects>>
 <<npc "Great Hawk">><<person1>>
+<<set $moor to 100>>
 <<if $phase is 1>>
 	<<if $bird.hunts.duo is true>>
 		You signal to the <<beasttype>> to turn back to the castle. <<bHe>> follows.
@@ -2804,7 +3402,7 @@ Soon, you see the castle again.
 <<else>>
 	You
 <</if>>
-land back on the perch<<if $bird.upgrades.decor is 4>> and push the curtain aside<</if>>,
+land back on the perch<<if $bird.upgrades.decor gte 3>> and push the curtain aside<</if>>,
 <<if $bird.hunts.lootAmount is 0>>
 	dejected at your failed hunt. <<trauma 12>><<ggtrauma>>
 	<br><br>

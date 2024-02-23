@@ -105,6 +105,13 @@
 				<</if>>
 			<</for>>
 		<</if>>
+		<<if $bird.upgrades.snare gte 1 and !$birdSnareCaught>>
+			<<set $birdSnareTimer to $birdSnareTimer || 120>>
+			<<set $birdSnareTimer to Math.clamp($birdSnareTimer, 1, ($birdSnareTimer - _args[0]))>>
+			<<if $birdSnareTimer is 1>>
+				<<set $birdSnareCaught to 1>>
+			<</if>>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -985,6 +992,51 @@
 	<</if>>
 <</widget>>
 
+<<widget "flight_hunt_remove">>
+	<<if !_args[0]>>
+		<<run Errors.report("No argument specified for widget flight_hunt_remove")>>
+	<<elseif typeof _args[0] isnot "string">>
+		<<run Errors.report("Non-string provided as first argument for widget flight_hunt_remove")>>
+	<<elseif !_args[1] or typeof _args[1] isnot "number">>
+		<<run Errors.report("No number argument specified for widget flight_hunt_remove")>>
+	<<else>>
+		<<set $_looted to _args[0]>><<set $_amount to _args[1]>>
+		<<if $bird.materials[$_looted] is undefined>>
+			<<run Errors.report("Invalid loot of type; " + $_looted)>>
+		<<elseif $bird.hunts.loot[$_looted] is undefined>>
+			<<run Errors.report("No loot found of type; " + $_looted)>>
+		<<else>>
+			<<set $bird.hunts.loot[$_looted] -= $_amount>>
+			<<set $bird.hunts.lootAmount -= $_amount>>
+		<</if>>
+		<<switch $_looted>>
+			<<case "tarp">><<set $bird.hunts.weight -= 5>>
+			<<case "toolbox" "pot">><<set $bird.hunts.weight -= 2>>
+			<<case "wood">><<set $bird.hunts.weight -= (3 * $_amount)>>
+			<<case "sticks">><<set $bird.hunts.weight -= (1.5 * $_amount)>>
+			<<case "leaves">><<set $bird.hunts.weight -= (0.5 * $_amount)>>
+			<<case "valuables" "junk">><<set $bird.hunts.weight -= (0.2 * $_amount)>>
+			<<default>><<set $bird.hunts.weight -= $_amount>>
+		<</switch>>
+		<<if $bird.hunts.loot[$_looted] lte 0>>
+			<<run delete $bird.hunts.loot[$_looted]>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "flight_hunt_get_random">>
+	<<rng 5>>
+	<<switch $rng>>
+		<<case 1>>It's just a big stick. You take it anyways. <<flight_hunt_get "sticks" 1>>
+		<<case 2>>It's a lurker, freshly caught. You take it. <<flight_hunt_get "lurker" 1>>
+		<<case 3>>It's a piece of torn fabric. You take it. <<flight_hunt_get "fabric" 1>>
+		<<case 4>>It's just a particularly shiny rock. You take it anyways. <<flight_hunt_get "junk" 1>>
+		<<default>>
+			<<set _looted to either("watch", "ring", "necklace", "bracelet")>>
+			It's a _looted, now stolen yet again it seems. <<flight_hunt_get "valuables" 1 _looted>>
+	<</switch>>
+<</widget>>
+
 <<widget "flight_hunt_loot">>
 	<<set $_hordeLoot to 0>><<set $_otherLoot to 0>>
 	You looted:
@@ -1541,7 +1593,6 @@
 						<span class="green">Enclosed drying rack (3)</span>: Can dry out many lurkers at once. No harmful fumes will escape.
 				<</switch>>
 			<<case "snare">>
-				/* Disabled for now, until decision is made about player spamming sleep at the tower
 				<<set $_build to true>>
 				<<switch $bird.upgrades.snare>>
 					<<case 0>>
@@ -1559,41 +1610,11 @@
 						<<set $_upgrade.upgradesRequired to {
 							tools: 1
 						}>>
-						<<set $_upgrade.housekeeping to 300>>
+						<<set $_upgrade.housekeeping to 500>>
 					<<case 1>>
-						<span class="purple">Makeshift snare (1)</span>: Will sometimes catch a lurker at the bottom of the tower.
-						<<set $_upgrade.passage to "Bird Tower Build Snare 2">>
-						<<set $_upgrade.timeTaken to 120>>
-						<<set $_upgrade.materialsUsed to {
-							wood: 4,
-							sticks: 6,
-							leaves: 2,
-							junk: 1,
-							leather: 10
-						}>>
-						<<set $_upgrade.upgradesRequired to {
-							tools: 1
-						}>>
-						<<set $_upgrade.housekeeping to 400>>
-					<<case 2>>
-						<span class="teal">Robust snare (2)</span>: Will regularly catch a lurker at the bottom of the tower.
-						<<set $_upgrade.passage to "Bird Tower Build Snare 3">>
-						<<set $_upgrade.timeTaken to 240>>
-						<<set $_upgrade.materialsUsed to {
-							wood: 6,
-							sticks: 10,
-							junk: 1,
-							leather: 16
-						}>>
-						<<set $_upgrade.upgradesRequired to {
-							tools: 1
-						}>>
-						<<set $_upgrade.housekeeping to 600>>
-					<<case 3>>
 						<<unset $_build>>
-						<span class="green">Advanced Snare (3)</span>: Will often catch lurkers at the bottom of the tower. The Great Hawk will collect them automatically for you.
+						<span class="green">Makeshift snare (1)</span>: Will sometimes catch a lurker at the bottom of the tower.
 				<</switch>>
-				*/
 			<<case "decor">>
 				<<set $_build to true>>
 				<<switch $bird.upgrades.decor>>
@@ -1632,7 +1653,7 @@
 						<<set $_upgrade.timeTaken to 240>>
 						<<set $_upgrade.materialsUsed to {
 							wood: 4,
-							fabric: 4,
+							fabric: 10,
 							sticks: 4,
 							leaves: 4,
 							junk: 10,
@@ -1644,6 +1665,7 @@
 							shelter: 2,
 							nest: 2
 						}>>
+						<<set $_upgrade.activityRequired to "build">>
 						<<set $_upgrade.housekeeping to 600>>
 					<<case 3>>
 						<span class="green">Impressive hunting trophies (3)</span>: Large stress reduction after each successful hunt.
@@ -1651,7 +1673,6 @@
 						<<set $_upgrade.timeTaken to 240>>
 						<<set $_upgrade.materialsUsed to {
 							wood: 6,
-							fabric: 10,
 							sticks: 10,
 							junk: 40,
 							lurkers: 30
