@@ -192,7 +192,6 @@ function getBirdBurnTime() {
 }
 window.getBirdBurnTime = getBirdBurnTime;
 
-/* each firepit would need it's own logic to apply upgrades */
 function upgradeBirdFirepit() {
 	const level = V.bird?.upgrades.firepit;
 	if (!Number.isInteger(level) || level < 1) return;
@@ -215,37 +214,3 @@ function upgradeBirdFirepit() {
 	Firepit.addBurnTime(V.bird.firepit, burnTime);
 }
 window.upgradeBirdFirepit = upgradeBirdFirepit;
-
-/* ========================== PART BELOW GOES AWAY IF THIS IS IMPLEMENTED ========================== */
-
-/*
-	notes:
-	- Firepit.addBurnTime:
-		- allows to put out the fire at any given time, updating the items seemlessly
-	- firepit.cookMult:
-		- if set to a value between 0 and 1, should allow to slow down the progress instead of speeding it up:
-				in theory, the firepit could be used as a fridge that stops items from going bad :D
-		- modifying the getTimeBonus to allow for cookMult === 0 to freeze progress should be pretty simple too
-	- upgrading a firepit's cookMult:
-		- when not holding items, it should be pretty straight forward;
-		- UPGRADING WHEN HOLDING ITEMS: the elapsedTimeVirtual (see getTimeBonus) will get messed up
-			- to avoid this, either disallow upgrading when there are items in the firepit, or set item.startedAt to $timeStamp on upgrade.
-*/
-
-function birdFirepitTest(hour = 9, minute = 0) {
-	Time.setTime(hour, minute);
-	// if this experiment works, $bird would get a firepit property that looks like this
-	const firepit = Firepit.create({
-		lastsUntil: V.timeStamp + 240 * 60, // 4 hours
-		maxItems: 2,
-		cookMult: 2,
-		maxBurnTime: 360 * 60, // 6 hours
-		cookTime: {
-			lurker: 120 * 60, // 2 hours (test value)
-		},
-		items: [],
-	});
-
-	return firepit;
-}
-window.birdFirepitTest = birdFirepitTest;

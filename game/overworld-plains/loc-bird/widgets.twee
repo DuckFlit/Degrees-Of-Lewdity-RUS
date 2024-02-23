@@ -14,7 +14,7 @@
 	<<set $bird.timer to 20>>
 	<<set $bird.syndrome to 0>>
 	<<set $bird.injured to 0>>
-	<<set $bird.fire to 0>>
+	<<set $bird.firepit to Firepit.create({cookTime: {lurker: 1440 * 60}})>>
 	<<set $bird.hunts to {
 		unlocked: false,
 		lurkers: false,
@@ -62,7 +62,7 @@
 <</widget>>
 
 <<widget "bird_pass">>
-	<<if !_args[0]>><<exit>><</if>>
+	<<if !Number.isInteger(_args[0])>><<exit>><</if>>
 	<<pass _args[0]>>
 
 	<<if $bird.timer>>
@@ -92,29 +92,10 @@
 		<<set $birdShelterRepair to true>>
 	<</if>>
 
-	<<if $bird.upgrades.firepit gte 1>>
-		<<if $bird.fire gt 0>>
-			<<set $bird.fire to Math.clamp($bird.fire, 0, ($bird.fire - _args[0]))>>
-		<</if>>
-		<<if $bird.upgrades.snare gte 1 and !$birdSnareCaught>>
-			<<set $birdSnareTimer to $birdSnareTimer || 120>>
-			<<set $birdSnareTimer to Math.clamp($birdSnareTimer, 1, ($birdSnareTimer - _args[0]))>>
-			<<if $birdSnareTimer is 1>>
-				<<set $birdSnareCaught to 1>>
-			<</if>>
-		<</if>>
-	<</if>>
-
-	<<if $bird.upgrades.rack gte 1 and $bird.dryingLurkers isnot undefined>>
-		<<set $_lurkerTimeDown to ($bird.fire gte 1 ? ($bird.upgrades.firepit + 1) : 1)>>
-		<<for $_lurkerTime to 0; $_lurkerTime lt $bird.dryingLurkers.length; $_lurkerTime++>>
-			<<if $bird.dryingLurkers[$_lurkerTime] gt 0>>
-				<<set $bird.dryingLurkers[$_lurkerTime] to Math.clamp($bird.dryingLurkers[$_lurkerTime], 0, ($bird.dryingLurkers[$_lurkerTime] - ($_lurkerTimeDown * _args[0])))>>
-				<<if $bird.upgrades.rack lt 3 and $bird.fire gte 1>>
-					<<set $_lurkerDrugs to Math.floor(($_lurkerTimeDown * _args[0]) / 4)>><<drugs $_lurkerDrugs>>
-				<</if>>
-			<</if>>
-		<</for>>
+	<<if $bird.firepit.items.length and getBirdBurnTime() gt 0 and between($bird.upgrades.rack, 1, 2)>>
+		<<set $_nLurkersDrying to Firepit.getItemsNotReady($bird.firepit).length>>
+		<<set $_lurkerDrugs to $_nLurkersDrying * Math.floor(($bird.firepit.cookMult * _args[0]) / 4)>>
+		<<drugs $_lurkerDrugs>>
 	<</if>>
 <</widget>>
 
@@ -1125,7 +1106,7 @@
 			<<link [[Eat a lurker|Bird Tower Hunt End Eat]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
 			<br>
 			<<if $bird.upgrades.pot gte 2>>
-				<<if $bird.fire gt 0>>
+				<<if getBirdBurnTime() gt 0>>
 					<<link [[Cook and eat a lurker (0:15)|Bird Tower Hunt End Eat Cook]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><<bird_pass 15>><</link>>
 					<br>
 				<<else>>
@@ -1194,39 +1175,33 @@
 	<<run delete $bird.hunts.lootAmount>>
 <</widget>>
 
-<<widget "firepit_time">>
-	<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
-		<<set $_firepitTime to Math.floor($bird.fire / 2)>>
-		<<if $_firepitTime is 0>>
-			<<set $bird.fire to 0>> /* fire went out */
-		<</if>>
-	<<else>>
-		<<set $_firepitTime to $bird.fire>>
-	<</if>>
-
-	Burn time remaining: <<print getTimeString($_firepitTime)>>
+<<widget "firepitTime">>
+	Burn time remaining: <<print getTimeString(getBirdBurnTime())>>
 	<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
 		<span class="red">It would burn twice as long with shelter from the rain.</span>
 	<</if>>
 <</widget>>
 
-<<widget "firepit">>
-	<<firepit_time>>
+<<widget "firepitActions">>
+	<<if !$bird.upgrades.firepit>><<exit>><</if>>
+	<<firepitTime>>
 	<br><br>
 
-	Your firepit can burn for up to
-	<<switch $bird.upgrades.firepit>>
-		<<case 1>><<set $_maxTime to 360>>6
-		<<case 2>><<set $_maxTime to 740>>12
-		<<default>><<set $_maxTime to 1480>>24
-	<</switch>>
-	hours.
+	<<set $_maxTime to Math.floor($bird.firepit.maxBurnTime / 60)>>
+	Your firepit can burn for up to around <<print Math.floor($_maxTime / 60)>> hours.
 	<br>
-	<<set _maxTimeAllowed to Math.clamp($_maxTime - $bird.fire, 0, $_maxTime)>>
+
+	<<set _maxTimeAllowed to Math.clamp($_maxTime - getBirdBurnTime(), 0, $_maxTime)>>
+
+	<<if _maxTimeAllowed is 0>>
+		<span class="green">The fire is already very strong</span>
+		<br>
+	<</if>>
+
 	<<if $bird.materials.wood is 0>>
 		<span class="red">No wood to add.</span>
 		<br>
-	<<else>>
+	<<elseif _maxTimeAllowed gt 0>>
 		<<set _timeWood to 240>>
 		<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
 			<<set _timeWood to Math.floor(_timeWood / 2)>>
@@ -1235,25 +1210,23 @@
 
 		<<link "Add 1 wood">>
 			<<set $bird.materials.wood-->>
-			<<set $bird.fire += _timeWood>>
-			<<replace #firepitTime>><<firepit>><</replace>>
+			<<run Firepit.addBurnTime($bird.firepit, _timeWood * 60)>>
+			<<replace #firepitActions>><<firepitActions>><</replace>>
 		<</link>><<note `"+ " + getTimeString(_timeWood)` "green">>
 		<br>
-		<<if $bird.materials.wood gte 2>>
-			<<set $_timeWood2 to Math.clamp(($_timeWood1 * 2), 0, ($_maxTime - $bird.fire))>>
+		<<if $bird.materials.wood gte 2 and _timeWood lt _maxTimeAllowed>>
 			<<link "Add 2 wood">>
 				<<set $bird.materials.wood -= 2>>
-				<<set $bird.fire += Math.min(_timeWood * 2, _maxTimeAllowed)>>
-				<<replace #firepitTime>><<firepit>><</replace>>
+				<<run Firepit.addBurnTime($bird.firepit, _timeWood * 120)>>
+				<<replace #firepitActions>><<firepitActions>><</replace>>
 			<</link>><<note `"+ " + getTimeString(Math.min(_timeWood * 2, _maxTimeAllowed))` "green">>
 			<br>
 		<</if>>
-		<<if $bird.materials.wood gte 3>>
-			<<set $_timeWood3 to Math.clamp(($_timeWood1 * 3), 0, ($_maxTime - $bird.fire))>>
+		<<if $bird.materials.wood gte 3 and _timeWood * 2 lt _maxTimeAllowed>>
 			<<link "Add 3 wood">>
 				<<set $bird.materials.wood -= 3>>
-				<<set $bird.fire += Math.min(_timeWood * 3, _maxTimeAllowed)>>
-				<<replace #firepitTime>><<firepit>><</replace>>
+				<<run Firepit.addBurnTime($bird.firepit, _timeWood * 180)>>
+				<<replace #firepitActions>><<firepitActions>><</replace>>
 			<</link>><<note `"+ " + getTimeString(Math.min(_timeWood * 3, _maxTimeAllowed))` "green">>
 			<br>
 		<</if>>
@@ -1263,7 +1236,7 @@
 	<<if $bird.materials.sticks is 0>>
 		<span class="red">No sticks to add.</span>
 		<br>
-	<<else>>
+	<<elseif _maxTimeAllowed gt 0>>
 		<<set _timeSticks to 60>>
 		<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
 			<<set _timeSticks to Math.floor(_timeSticks / 2)>>
@@ -1272,28 +1245,30 @@
 
 		<<link "Add 1 stick">>
 			<<set $bird.materials.sticks-->>
-			<<set $bird.fire += _timeSticks>>
-			<<replace #firepitTime>><<firepit>><</replace>>
+			<<run Firepit.addBurnTime($bird.firepit, _timeSticks * 60)>>
+			<<replace #firepitActions>><<firepitActions>><</replace>>
 		<</link>><<note `"+ " + getTimeString(_timeSticks)` "green">>
 		<br>
-		<<if $bird.materials.sticks gte 3>>
+		<<if $bird.materials.sticks gte 3 and _timeSticks lt _maxTimeAllowed>>
 			<<link "Add 3 sticks">>
 				<<set $bird.materials.sticks -= 3>>
-				<<set $bird.fire += Math.min(_timeSticks * 3, _maxTimeAllowed)>>
-				<<replace #firepitTime>><<firepit>><</replace>>
+				<<run Firepit.addBurnTime($bird.firepit, _timeSticks * 180)>>
+				<<replace #firepitActions>><<firepitActions>><</replace>>
 			<</link>><<note `"+ " + getTimeString(Math.min(_timeSticks * 3, _maxTimeAllowed))` "green">>
 			<br>
 		<</if>>
-		<<if $bird.materials.sticks gte 5>>
+		<<if $bird.materials.sticks gte 5 and _timeSticks * 3 lt _maxTimeAllowed>>
 			<<link "Add 5 sticks">>
 				<<set $bird.materials.sticks -= 5>>
-				<<set $bird.fire += Math.min(_timeSticks * 5, _maxTimeAllowed)>>
-				<<replace #firepitTime>><<firepit>><</replace>>
+				<<run Firepit.addBurnTime($bird.firepit, _timeSticks * 300)>>
+				<<replace #firepitActions>><<firepitActions>><</replace>>
 			<</link>><<note `"+ " + getTimeString(Math.min(_timeSticks * 5, _maxTimeAllowed))` "green">>
 			<br>
 		<</if>>
 	<</if>>
 	<br>
+
+	<<if !$bird.upgrades.rack and !$bird.upgrades.pot>><<exit>><</if>>
 
 	<<if $bird.materials.lurkers is 0 and ($bird.upgrades.rack gte 1 or $bird.upgrades.pot gte 2)>>
 		<<set $_noLurkers to true>>
@@ -1308,23 +1283,57 @@
 	<</if>>
 
 	<<if $bird.upgrades.rack gte 1>>
-		<<if $bird.dryingLurkers is undefined>>
-			<<set $bird.dryingLurkers to []>>
-		<</if>>
-		<<set _rackMax to $bird.upgrades.rack * 2>>
-		<<set _lurkersDrying to $bird.dryingLurkers.filter((lTimer) => lTimer > 0).length>>
+		<<set $_rackMax to $bird.firepit.maxItems>>
+		<<set _lurkersDrying to Firepit.getItemsNotReady($bird.firepit)>>
 		<<set $_nLurkersDrying to _lurkersDrying.length>>
-		<<set _nLurkersReady to $bird.dryingLurkers.length - $_nLurkersDrying>>
+		<<set _nLurkersReady to $bird.firepit.items.length - $_nLurkersDrying>>
 
-		Your drying rack can hold up to <<number _rackMax>> lurkers.
+		Your drying rack can hold up to <<number $_rackMax>> lurkers.
 		<br>
+		<<if $bird.firepit.items.length is $_rackMax>>
+			<i class="blue">The drying rack is full.</i>
+			<br>
+		<<elseif !$_noLurkers>>
+			<<link [[Add a lurker to the rack (0:02)|Bird Tower Firepit]]>>
+				<<set $bird.materials.lurkers-->>
+				<<run Firepit.cookItem($bird.firepit, Firepit.createItem($bird.firepit, 'lurker'), true)>>
+				<<bird_pass 2>>
+			<</link>>
+			<br>
+		<</if>>
 
 		<<if $_nLurkersDrying gte 1>>
 			It is currently drying <<number $_nLurkersDrying>> lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
-			<<if $bird.fire gte 1>>
+			<<if getBirdBurnTime() gte 1>>
 				<span class="lewd">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
 			<<else>>
 				A lit firepit would speed up the process.
+			<</if>>
+			<br>
+			<<if $debug is 1>>
+				<span class="gold">DEBUG:</span> Lurker time remaning
+				<br>
+				<<for $_i to 0; $_i lt _lurkersDrying.length; $_i++>>
+					- Lurker <<print $_i + 1>>:
+					<<print getTimeString(Math.floor((
+						($bird.firepit.cookTime.lurker - _lurkersDrying[$_i].timeBonus)
+						- ($timeStamp - _lurkersDrying[$_i].startedAt)
+					) / 60))>>
+					<br>
+				<</for>>
+			<</if>>
+			<<link "Take one lurker out">>
+				/* assumes last item is the most recently added lurker */
+				<<run $bird.firepit.items.pop()>>
+				<<set $bird.materials.lurkers++>>
+				<<replace #firepitActions>><<firepitActions>><</replace>>
+			<</link>>
+			<<if $_nLurkersDrying gte 2>> |
+				<<link "Take all lurkers out">>
+					<<set $bird.materials.lurkers += _lurkersDrying.length>>
+					<<set $bird.firepit.items to Firepit.getItemsReady($bird.firepit)>>
+					<<replace #firepitActions>><<firepitActions>><</replace>>
+				<</link>>
 			<</if>>
 		<<else>>
 			No lurkers are drying.
@@ -1336,22 +1345,11 @@
 			<br>
 			<<link `"Take " + _nLurkersReady + " leather"`>>
 				<<set $bird.materials.leather += _nLurkersReady>>
-				<<set $bird.dryingLurkers to _lurkersDrying>>
-				<<replace #firepitTime>><</replace>>
+				<<set $bird.firepit.items to _lurkersDrying>>
+				<<replace #firepitActions>><<firepitActions>><</replace>>
 			<</link>>
 		<<else>>
 			No lurkers are ready.
-		<</if>>
-		<br>
-
-		<<if $bird.dryingLurkers.length lt _rackMax and !$_noLurkers>>
-			<<link "Add a lurker to the rack (0:02)">>
-				<<set $bird.materials.lurkers-->>
-				<<run $bird.dryingLurkers.push(1440)>><<bird_pass 2>>
-				<<replace #firepitTime>><</replace>>
-			<</link>>
-		<<else>>
-			The drying rack is full.
 		<</if>>
 		<br>
 	<</if>>
@@ -1360,10 +1358,6 @@
 		<<link [[Cook a lurker (0:15)|Bird Tower Lurker Cook]]>><<set $bird.materials.lurkers -= 1>><<bird_pass 15>><</link>>
 		<br>
 	<</if>>
-
-	<br>
-
-	<<link [[Back|Bird Tower]]>><</link>>
 	<br>
 <</widget>>
 
@@ -1572,6 +1566,9 @@
 							fabric: 1,
 							sticks: 2
 						}>>
+						<<set $_upgrade.upgradesRequired to {
+							firepit: 1
+						}>>
 						<<set $_upgrade.housekeeping to 0>>
 					<<case 1>>
 						<span class="purple">Makeshift drying rack (1)</span>: Can dry out lurkers for leather. A lit firepit will speed this up significantly.
@@ -1732,14 +1729,14 @@
 				<span class="red">Invalid option for: _upgrade</span>
 		<</switch>>
 
-		<<if !_towerUpgrades[_upgrade].passage>>
+		<<if !$_upgrade.passage>>
 			<<exit>>
 		<</if>>
 
-		<<if currentSkillValue('housekeeping') lt _towerUpgrades[_upgrade].housekeeping>>
+		<<if currentSkillValue('housekeeping') lt $_upgrade.housekeeping>>
 			<br>
 			<span class="black">
-				<<switch _towerUpgrades[_upgrade].housekeeping>>
+				<<switch $_upgrade.housekeeping>>
 					<<case 100>><span class="pink">F+</span>
 					<<case 200>><span class="purple">D</span>
 					<<case 300>><span class="purple">D+</span>
@@ -1756,79 +1753,78 @@
 			<<set $_disableBuild to true>>
 		<</if>>
 
-		<<if _towerUpgrades[_upgrade].gradeRequired>>
-			<<for $_grade range Object.keys(_towerUpgrades[_upgrade].gradeRequired)>>
-				<<set $_gradeDisplay to $_grade>>
-				<<if $_gradeDisplay is "english">>
-					<<set $_gradeDisplay to $_gradeDisplay.toUpperCase()>>
-				<</if>>
-				<<if _towerUpgrades[_upgrade].gradeRequired[$_grade] gt V[$_grade + "trait"]>>
-					<br>
-					<span class="black">
-					<<switch _towerUpgrades[_upgrade].gradeRequired[$_grade]>>
-						<<case 1>>Passable $_gradeDisplay required
-						<<case 2>>Decent $_gradeDisplay required
-						<<case 3>>Good $_gradeDisplay required
-						<<case 4>>Excellent $_gradeDisplay required
-					<</switch>>
-					</span>
+		<<if $_upgrade.gradeRequired>>
+			<<for $_grade range Object.keys($_upgrade.gradeRequired)>>
+				<<if V[$_grade + "trait"] lt $_upgrade.gradeRequired[$_grade]>>
+					<<set $_spColour to "black">>
 					<<set $_disableBuild to true>>
 				<<else>>
-					<br>
-					<span class="green">
-					<<switch _towerUpgrades[_upgrade].gradeRequired>>
-						<<case 1>>Passable $_gradeDisplay required
-						<<case 2>>Decent $_gradeDisplay required
-						<<case 3>>Good $_gradeDisplay required
-						<<case 4>>Excellent $_gradeDisplay required
-					<</switch>>
-					</span>
+					<<set $_spColour to "green">>
 				<</if>>
+				<<set $_gradeDisplay to $_grade>>
+				<<if $_gradeDisplay is "english">>
+					<<set $_gradeDisplay to $_gradeDisplay.toUpperFirst()>>
+				<</if>>
+				<br>
+				<span @class="$_spColour">
+				<<switch $_upgrade.gradeRequired[$_grade]>>
+					<<case 1>>Passable $_gradeDisplay required
+					<<case 2>>Decent $_gradeDisplay required
+					<<case 3>>Good $_gradeDisplay required
+					<<case 4>>Excellent $_gradeDisplay required
+				<</switch>>
+				</span>
 			<</for>>
 		<</if>>
 
-		<<if _towerUpgrades[_upgrade].activityRequired>>
+		<<if $_upgrade.activityRequired>>
 			<br>
-			<<if $bird.state isnot "home" or $bird.activity isnot _towerUpgrades[_upgrade].activityRequired>>
+			<<if $bird.state isnot "home" or $bird.activity isnot $_upgrade.activityRequired>>
 				<span class="red">Requires the Great Hawk to be home and building the nest.</span>
 			<<else>>
 				<span class="green">Requires the Great Hawk to be home and building the nest.</span>
 			<</if>>
 		<</if>>
 
-		<<if _towerUpgrades[_upgrade].upgradesRequired>>
-			<<for $_upgradesRequired range Object.keys(_towerUpgrades[_upgrade].upgradesRequired)>>
-				<<if _towerUpgrades[_upgrade].upgradesRequired[$_upgradesRequired] lt $bird.upgrades[$_upgradesRequired]>>
-					<br>
-					<span class="black">
-					<<if ["toolbox", "tarp", "pot"].includes($_upgradesRequired)>>
-						<<print $_upgradesRequired.toUpperCase()>> required
-					<<else>>
-						<<print $_upgradesRequired.toUpperCase()>> level <<number $bird.upgrades[$_upgradesRequired]>> required
-					<</if>>
-					</span>
+		<<if $_upgrade.upgradesRequired>>
+			<<for $_uReq range Object.keys($_upgrade.upgradesRequired)>>
+				<<if $bird.upgrades[$_uReq] lt $_upgrade.upgradesRequired[$_uReq]>>
+					<<set $_spColour to "black">>
 					<<set $_disableBuild to true>>
 				<<else>>
-					<br>
-					<span class="green">
-					<<if ["toolbox", "tarp", "pot"].includes($_upgradesRequired)>>
-						<<print $_upgradesRequired.toUpperCase()>> required (obtained)
-					<<else>>
-						<<print $_upgradesRequired.toUpperCase()>> level <<number $bird.upgrades[$_upgradesRequired]>> required (obtained)
-					<</if>>
-					</span>
+					<<set $_spColour to "green">>
 				<</if>>
+				<br>
+				<span @class="$_spColour">
+				<<if ["toolbox", "tarp", "pot"].includes($_uReq)>>
+					<<print $_uReq.toUpperFirst()>> required
+				<<else>>
+					<<print $_uReq.toUpperFirst()>> level <<number $_upgrade.upgradesRequired[$_uReq]>> required
+				<</if>>
+				</span>
 			<</for>>
 		<</if>>
 
-		<<if _towerUpgrades[_upgrade].materialsUsed>>
-			<<for $_materialRequired, $_amount range _towerUpgrades[_upgrade].materialsUsed>>
-				<<if $_amount gt $bird.materials[$_materialRequired]>>
-					<br>
-					<span class="black">More $_materialRequired required.</span> <<bird_materials_required $_materialRequired $_amount>>
+		<<if $_upgrade.materialsUsed>>
+			<<for $_material, $_amtReq range $_upgrade.materialsUsed>>
+				<<if $bird.materials[$_material] lt $_amtReq>>
+					<<set $_spColour to "black">>
 					<<set $_disableBuild to true>>
+				<<else>>
+					<<set $_spColour to "green">>
 				<</if>>
+				<br>
+				<span @class="$_spColour">
+					<<print $_material.toUpperFirst()>> required
+					(<<print $bird.materials[$_material]>>/$_amtReq)
+				</span>
 			<</for>>
+		<</if>>
+
+		<<if _upgrade is "firepit" and $bird.firepit.items.length>>
+			<br>
+			<span class="black">Firepit is currently holding items</span>
+			<<set $_disableBuild to true>>
 		<</if>>
 
 		<<if $_disableBuild>>
@@ -1836,8 +1832,8 @@
 		<</if>>
 
 		<<set $_linkText to ($bird.upgrades[_upgrade] is 0 ? "Build" : "Improve")>>
-		<<if _towerUpgrades[_upgrade].timeTaken>>
-			<<set $_linkText += ` (${getTimeString(_towerUpgrades[_upgrade].timeTaken)})`>>
+		<<if $_upgrade.timeTaken>>
+			<<set $_linkText += ` (${getTimeString($_upgrade.timeTaken)})`>>
 		<</if>>
 
 		<br>
@@ -1851,9 +1847,6 @@
 					})>>
 				<</if>>
 			<</link>>
-			<<for $_materialRequired, $_amount range _towerUpgrades[_upgrade].materialsUsed>>
-				<<bird_materials_required $_materialRequired $_amount>>
-			<</for>>
 		<</capture>>
 	</div>
 <</widget>>
