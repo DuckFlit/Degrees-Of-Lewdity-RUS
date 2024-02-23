@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /*
 	Key points
 	series: "seriesName", //Will only show the first locked feat in a series to the player
@@ -750,7 +749,7 @@ setup.feats = {
 		difficulty: 2,
 		series: "",
 		filter: ["All", "Pregnancy"],
-		hint: "Hint: The Magic that helps creates that what should not be.",
+		hint: "Hint: The Magic that helps create that what should not be.",
 	},
 	"Diversity of Life": {
 		title: "Diversity of Life",

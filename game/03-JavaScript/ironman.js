@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-var */
 var IronMan = (Save => {
 	"use strict";

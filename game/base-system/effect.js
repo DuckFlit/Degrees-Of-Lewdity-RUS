@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 function effectsWater() {
 	DOL.Perflog.logWidgetStart("effectsWaterJs");
 	const fragment = document.createDocumentFragment();
@@ -654,7 +653,7 @@ function effects() {
 						V.wardrobes[location]
 							? ` to the ${V.wardrobes[location].name}`
 							: `. (Likely One-off update error, no need to report unless seen multiple times in the same save) ${
-									Array.isArray($rebuy_success) ? JSON.stringify($rebuy_success) : ""
+									Array.isArray(V.rebuy_success) ? JSON.stringify(V.rebuy_success) : ""
 							  }`
 					}.
 				`,
@@ -806,7 +805,6 @@ function effects() {
 			["milk", "Milk Enthusiast", "Milk Addict"],
 			["cum", "Cumoisseur", "Cum Dump"],
 		].forEach(([variable, defiantName, submissiveName]) => {
-			console.log(variable, `${variable}_trait_message`);
 			if (V[`${variable}_trait_message`]) {
 				element("span", `You've gained the "${V.submissive <= 850 ? defiantName : submissiveName}" trait.`, "gold");
 				delete V[`${variable}_trait_message`];
@@ -1111,7 +1109,7 @@ function effects() {
 
 	V.menu = 0;
 
-	if (V.combat === 0 && V.ironmanmode === true) ironMan.scheduledSaves();
+	if (V.combat === 0 && V.ironmanmode === true) IronMan.scheduledSaves();
 
 	return fragment;
 }

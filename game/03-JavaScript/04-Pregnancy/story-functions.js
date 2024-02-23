@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 function getPregnancyObject(mother = "pc", returnGenital = false) {
 	let pregnancy = {};
 	let genital = "vagina";

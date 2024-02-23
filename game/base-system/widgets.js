@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
 /* eslint-disable jsdoc/require-description-complete-sentence */
-/* eslint-disable no-undef */
+/* global exportable */ // Not really: just a bug in unused code
 function setfemininitymultiplierfromgender(gender) {
 	if (gender === "f") {
 		T.femininity_multiplier = 1;
@@ -74,7 +74,7 @@ const hairStyleCap = {
 	},
 };
 
-window.calculatePenisBulge = () => {
+function calculatePenisBulge() {
 	if (V.worn.under_lower.type.includes("strap-on")) return (V.worn.under_lower.size || 0) * 3;
 	const compressed = V.player.penisExist && V.worn.genitals.type.includes("hidden");
 	if (!V.player.penisExist || compressed) return 0;
@@ -92,7 +92,8 @@ window.calculatePenisBulge = () => {
 		erectionState = 2;
 	}
 	return Math.clamp((V.player.penissize + 1) * erectionState, 0, Infinity);
-};
+}
+window.calculatePenisBulge = calculatePenisBulge;
 
 /** Calculate the player's gender appearance */
 function genderappearancecheck() {

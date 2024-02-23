@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 function fertiliseParasites(genital = "anus") {
 	// Runs whenever someone ejaculates in your `genital`
 	const pregnancy = V.sexStats[genital].pregnancy;

@@ -1,7 +1,5 @@
-/* eslint-disable no-undef */
-
 // eslint-disable-next-line no-unused-vars
-function masturbationeffects() {
+function masturbationEffects() {
 	const fragment = document.createDocumentFragment();
 	const br = () => document.createElement("br");
 	const span = (text, colour) => {
@@ -133,12 +131,12 @@ function masturbationeffects() {
 	// Reset the record of the players current actions
 	V.masturbationActions = {};
 
-	fragment.append(masturbationeffectsVaginaAnus(otherVariables));
+	fragment.append(masturbationEffectsVaginaAnus(otherVariables));
 
-	fragment.append(masturbationeffectsArms("left", V.leftaction === V.rightaction, otherVariables));
-	fragment.append(masturbationeffectsArms("right", false, otherVariables));
+	fragment.append(masturbationEffectsArms("left", V.leftaction === V.rightaction, otherVariables));
+	fragment.append(masturbationEffectsArms("right", false, otherVariables));
 
-	fragment.append(masturbationeffectsMouth(otherVariables));
+	fragment.append(masturbationEffectsMouth(otherVariables));
 
 	if (otherVariables.additionalEffect.hands === "ballplayeffects" && V.worn.genitals.name !== "chastity parasite") {
 		if (V.arousal >= V.arousalmax * (4 / 5) || (V.earSlime.focus === "impregnation" && V.earSlime.growth >= 100)) {
@@ -264,7 +262,7 @@ function masturbationeffects() {
 	return fragment;
 }
 
-function masturbationeffectsArms(
+function masturbationEffectsArms(
 	arm,
 	doubleAction,
 	{ span, otherElement, additionalEffect, selectedToy, toyDisplay, genitalsExposed, breastsExposed, hymenIntact, earSlimeDefy }
@@ -2679,7 +2677,7 @@ function possessedMasturbation(span, br) {
 	return fragment;
 }
 
-function masturbationeffectsMouth({
+function masturbationEffectsMouth({
 	span,
 	otherElement,
 	additionalEffect,
@@ -3222,7 +3220,7 @@ function deepthroateffects(span) {
 	return fragment;
 }
 
-function masturbationeffectsVaginaAnus({ span, otherElement, additionalEffect, selectedToy, toyDisplay, genitalsExposed, breastsExposed, hymenIntact }) {
+function masturbationEffectsVaginaAnus({ span, otherElement, additionalEffect, selectedToy, toyDisplay, genitalsExposed, breastsExposed, hymenIntact }) {
 	const fragment = document.createDocumentFragment();
 
 	const sWikifier = text => {
@@ -3501,7 +3499,7 @@ function masturbationeffectsVaginaAnus({ span, otherElement, additionalEffect, s
 
 Macro.add("masturbationeffects", {
 	handler() {
-		const fragment = masturbationeffects();
+		const fragment = masturbationEffects();
 		this.output.append(fragment);
 	},
 });

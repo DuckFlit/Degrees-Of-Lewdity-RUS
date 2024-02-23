@@ -51,14 +51,7 @@
 */
 
 /* eslint-disable jsdoc/require-description-complete-sentence */
-/* eslint-disable no-undef */
 const Time = (() => {
-	const secondsPerDay = 86400;
-	const secondsPerHour = 3600;
-	const secondsPerMinute = 60;
-	const standardYearMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	const leapYearMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	const synodicMonth = 29.53058867;
 	const moonPhases = {
 		new: {
 			start: 0,
@@ -223,11 +216,11 @@ const Time = (() => {
 	function getDayOfYear(date) {
 		const start = new DateTime(date.year, 1, 1);
 		const diff = date.timeStamp - start.timeStamp;
-		return Math.floor(diff / Time.secondsPerDay);
+		return Math.floor(diff / TimeConstants.secondsPerDay);
 	}
 
 	function getSecondsSinceMidnight(date) {
-		return date.hour * Time.secondsPerHour + date.minute * Time.secondsPerMinute;
+		return date.hour * TimeConstants.secondsPerHour + date.minute * TimeConstants.secondsPerMinute;
 	}
 
 	// Current moon phase
@@ -305,7 +298,7 @@ const Time = (() => {
 			return currentDate.year;
 		},
 		get days() {
-			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / Time.secondsPerDay);
+			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / TimeConstants.secondsPerDay);
 		},
 		get season() {
 			return this.month > 11 || this.month < 3 ? "winter" : this.month > 8 ? "autumn" : this.month > 5 ? "summer" : "spring";
@@ -385,12 +378,6 @@ const Time = (() => {
 		previousMoonPhase,
 		isBloodMoon,
 
-		secondsPerDay,
-		secondsPerHour,
-		secondsPerMinute,
-		standardYearMonths,
-		leapYearMonths,
-		synodicMonth,
 		moonPhases,
 		monthNames,
 		daysOfWeek,
@@ -511,7 +498,7 @@ function weekPassed() {
 	statChange.worldCorruption("soft", V.world_corruption_hard);
 
 	delete V.weekly;
-	V.weekly = { theft: {}, sewers: {} };
+	V.weekly = clone(setup.weeklyObject);
 
 	return fragment;
 }
@@ -797,20 +784,7 @@ function dayPassed() {
 	if (V.pillory_tenant.exists && V.pillory_tenant.endDate < V.timeStamp) fragment.append(wikifier("clear_pillory"));
 
 	delete V.daily;
-	V.daily = {
-		school: { attended: {} },
-		whitney: {},
-		robin: {},
-		kylar: {},
-		morgan: {},
-		eden: {},
-		alex: {},
-		sydney: {},
-		ex: {},
-		pharm: {},
-		prison: {},
-		livestock: {},
-	};
+	V.daily = clone(setup.dailyObject);
 
 	if (Number.isInteger(V.challengetimer)) {
 		V.challengetimer--;
@@ -893,7 +867,8 @@ function hourPassed(hours) {
 	}
 
 	V.openinghours = Time.hour >= 8 && Time.hour < 21 ? 1 : 0;
-	fragment.append(earnHourlyFeats());
+	const feats = earnHourlyFeats();
+	if (feats) fragment.append(feats);
 
 	temperatureHour();
 
@@ -947,7 +922,7 @@ function minutePassed(minutes) {
 
 	// Effects
 	if (V.drunk > 0) statChange.alcohol(-minutes);
-	if (V.hallucinogen > 0) hallucinogen.hallucinogen(-minutes);
+	if (V.hallucinogen > 0) statChange.hallucinogen(-minutes);
 	if (V.drugged > 0) statChange.drugs(-minutes);
 	if (minutes < 1200) statChange.tiredness(minutes * (V.drunk > 0 ? 2 : 1), "pass");
 	statChange.pain(minutes, -1);

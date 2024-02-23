@@ -283,7 +283,7 @@
 					<<unset _randomColour>>
 					<<unset _randomColourAcc>>
 					<<for $_equipIndex, $_wardrobeItem range _selectedWardrobe[$_slot]>>
-						<<if $_incomingItemName isnot $_wardrobeItem.name>>
+						<<if $_incomingItemName isnot $_wardrobeItem.name or ($_wardrobeItem.outfitSecondary and !["broken", "split"].includes($_wardrobeItem.outfitSecondary[1]))>>
 							<<continue>>
 						<</if>>
 						/* Check for saved colors in clothing set */
@@ -536,7 +536,7 @@
 			<<set _resultStrings to {}>>
 			<<set _locationName to ($wardrobes[$wardrobe_location] is undefined ? "wardrobe" : $wardrobe_location)>>
 			<<set _wardrobeName to $wardrobes[_locationName].name + (!$wardrobes[_locationName].name.includes("locker") ? " wardrobe" : "")>>
-			<<run Object.values(_notEquipped).forEach(notEquippedItem => {
+			<<run Object.entries(_notEquipped).forEach(([slot, notEquippedItem]) => {
 				switch (notEquippedItem.reason) {
 					case "not found":
 						if (_resultStrings.notFound === undefined) {
@@ -647,6 +647,7 @@
 						_resultStrings.cursedUnequip.names.push(notEquippedItem.name);
 						break;
 					case "not found piece":
+						if (V.worn[slot].name === notEquippedItem.name) break;
 						if (_resultStrings.notFoundPiece === undefined) {
 							_resultStrings.notFoundPiece = {
 								"start": "You were unable to fully equip your ",

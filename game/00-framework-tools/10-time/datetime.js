@@ -1,16 +1,4 @@
-/* eslint-disable no-undef */
 class DateTime {
-	/* plain static variables are still too new of a feature for a considerable number of old mobiles, they are re-declared in Time object instead
-	static secondsPerDay = 86400;
-	static secondsPerHour = 3600;
-	static secondsPerMinute = 60;
-	static standardYearMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	static leapYearMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	static monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-	static daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	static synodicMonth = 29.53058867;
-	*/
-
 	constructor(year = 2020, month = 1, day = 1, hour = 0, minute = 0, second = 1) {
 		if (arguments.length === 1) {
 			// If the argument is a DateTime object, copy its properties
@@ -60,7 +48,7 @@ class DateTime {
 	 * @returns {Array<number>} Array with number of days in each month for the given year
 	 */
 	static getDaysOfMonthFromYear(year) {
-		return DateTime.isLeapYear(year) ? Time.leapYearMonths : Time.standardYearMonths;
+		return DateTime.isLeapYear(year) ? TimeConstants.leapYearMonths : TimeConstants.standardYearMonths;
 	}
 
 	/**
@@ -90,7 +78,7 @@ class DateTime {
 		if (day < 1 || day > daysInMonth[month - 1]) throw new Error("Invalid date: Day must be between 1-" + daysInMonth[month - 1] + ".");
 
 		const totalDays = DateTime.getTotalDaysSinceStart(year) + daysInMonth.slice(0, month - 1).reduce((a, b) => a + b, 0) + day - 1;
-		const totalSeconds = totalDays * Time.secondsPerDay + hour * Time.secondsPerHour + minute * Time.secondsPerMinute + second;
+		const totalSeconds = totalDays * TimeConstants.secondsPerDay + hour * TimeConstants.secondsPerHour + minute * TimeConstants.secondsPerMinute + second;
 
 		this.timeStamp = totalSeconds;
 		this.year = year;
@@ -110,9 +98,9 @@ class DateTime {
 		// Initialize the year to 1
 		let year = 1;
 		let month = 0;
-		let day = (timestamp / Time.secondsPerDay) | 0;
-		const hour = (timestamp / Time.secondsPerHour) | 0;
-		const minute = (timestamp / Time.secondsPerMinute) | 0;
+		let day = (timestamp / TimeConstants.secondsPerDay) | 0;
+		const hour = (timestamp / TimeConstants.secondsPerHour) | 0;
+		const minute = (timestamp / TimeConstants.secondsPerMinute) | 0;
 		const second = timestamp;
 
 		// Maps the total number of days to the corresponding year and day.
@@ -155,20 +143,20 @@ class DateTime {
 		const sign = Math.sign(diffSeconds);
 		diffSeconds = Math.abs(diffSeconds);
 
-		const years = Math.floor(diffSeconds / (Time.secondsPerDay * 365.25));
-		diffSeconds -= years * Time.secondsPerDay * 365;
+		const years = Math.floor(diffSeconds / (TimeConstants.secondsPerDay * 365.25));
+		diffSeconds -= years * TimeConstants.secondsPerDay * 365;
 
-		const months = Math.floor(diffSeconds / (Time.secondsPerDay * 30));
-		diffSeconds -= months * Time.secondsPerDay * 30;
+		const months = Math.floor(diffSeconds / (TimeConstants.secondsPerDay * 30));
+		diffSeconds -= months * TimeConstants.secondsPerDay * 30;
 
-		const days = Math.floor(diffSeconds / Time.secondsPerDay);
-		diffSeconds -= days * Time.secondsPerDay;
+		const days = Math.floor(diffSeconds / TimeConstants.secondsPerDay);
+		diffSeconds -= days * TimeConstants.secondsPerDay;
 
-		const hours = Math.floor(diffSeconds / Time.secondsPerHour);
-		diffSeconds -= hours * Time.secondsPerHour;
+		const hours = Math.floor(diffSeconds / TimeConstants.secondsPerHour);
+		diffSeconds -= hours * TimeConstants.secondsPerHour;
 
-		const minutes = Math.floor(diffSeconds / Time.secondsPerMinute);
-		diffSeconds -= minutes * Time.secondsPerMinute;
+		const minutes = Math.floor(diffSeconds / TimeConstants.secondsPerMinute);
+		diffSeconds -= minutes * TimeConstants.secondsPerMinute;
 
 		const seconds = diffSeconds;
 
@@ -266,7 +254,7 @@ class DateTime {
 	 */
 	addDays(days) {
 		if (!days) return this;
-		this.fromTimestamp(this.timeStamp + days * Time.secondsPerDay);
+		this.fromTimestamp(this.timeStamp + days * TimeConstants.secondsPerDay);
 		return this;
 	}
 
@@ -279,7 +267,7 @@ class DateTime {
 	 */
 	addHours(hours) {
 		if (!hours) return this;
-		this.timeStamp += hours * Time.secondsPerHour;
+		this.timeStamp += hours * TimeConstants.secondsPerHour;
 		this.fromTimestamp(this.timeStamp);
 		return this;
 	}
@@ -293,7 +281,7 @@ class DateTime {
 	 */
 	addMinutes(minutes) {
 		if (!minutes) return this;
-		this.timeStamp += minutes * Time.secondsPerMinute;
+		this.timeStamp += minutes * TimeConstants.secondsPerMinute;
 		this.fromTimestamp(this.timeStamp);
 		return this;
 	}
@@ -353,7 +341,7 @@ class DateTime {
 	 */
 	get weekDay() {
 		const daysSinceStart = DateTime.getTotalDaysSinceStart(this.year + 1);
-		const daysInMonth = Time.standardYearMonths.slice(0, this.month - 1).reduce((a, b) => a + b, 0);
+		const daysInMonth = TimeConstants.standardYearMonths.slice(0, this.month - 1).reduce((a, b) => a + b, 0);
 		const isLeapYear = DateTime.isLeapYear(this.year) && this.month < 3;
 		const weekDayOffset = V.weekDayOffset !== undefined ? V.weekDayOffset : 6;
 
@@ -418,7 +406,7 @@ class DateTime {
 	get moonPhaseFraction() {
 		// Real new moon (in london) as a reference point
 		const referenceNewMoon = new DateTime(2022, 1, 2, 18, 33);
-		let phaseFraction = ((this.timeStamp - referenceNewMoon.timeStamp) / (Time.synodicMonth * Time.secondsPerDay)) % 1;
+		let phaseFraction = ((this.timeStamp - referenceNewMoon.timeStamp) / (TimeConstants.synodicMonth * TimeConstants.secondsPerDay)) % 1;
 
 		// Adjust in case of negative date (date before the reference date)
 		phaseFraction = (phaseFraction + 1) % 1;

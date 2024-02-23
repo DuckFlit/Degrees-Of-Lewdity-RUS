@@ -1,6 +1,5 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable no-eval */
-/* eslint-disable no-undef */
 /* A standard function to reference to avoid declaring an anonymous function repeatedly. */
 const stayOnPassageFn = function () {
 	return V.passage;

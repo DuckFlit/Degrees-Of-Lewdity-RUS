@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 function getToyName(index, capitalise = false) {
 	const toy = T.playerToys[index];
 	if (toy == null) {
@@ -22,7 +21,7 @@ function skipToOrgasm(modifiers = "") {
 	do {
 		count++;
 		if (T.corruptionMasturbation) masturbationSlimeControl();
-		masturbationeffects();
+		masturbationEffects();
 		masturbationActions();
 		if (modifiers.includes("timer")) V.timer -= 1;
 

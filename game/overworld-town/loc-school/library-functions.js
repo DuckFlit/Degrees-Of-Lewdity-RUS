@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /**
  * Determine Kylar's location,
  * when Kylar has a centralised scheduling system, we could avoid logic specific to Kylar in the library-functions file.

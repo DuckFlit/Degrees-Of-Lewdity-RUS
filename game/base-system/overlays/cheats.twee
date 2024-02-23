@@ -25,9 +25,11 @@
 		<span @id="_id"><<print ($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>></span> |
 		<span @id="_id + 'link'"><<link `($player.virginity[_type] is true ? "Take" : "Restore")`>>
 			<<if $player.virginity[_type] is true>>
-				<<set $player.virginity[_type] to (_virginity[_type] is true ? false : _virginity[_type])>><<set $player.virginity.temple to false>>
+				<<set $player.virginity[_type] to (_virginity[_type] is true ? false : _virginity[_type])>>
+				<<if $player.virginity.temple isnot false and ["penile", "vaginal"].includes(_type)>><<set $player.virginity.temple to "unknown">><</if>>
 			<<else>>
-				<<set $player.virginity[_type] to true>><<set $player.virginity.temple to true>>
+				<<set $player.virginity[_type] to true>>
+				<<if $player.virginity.temple isnot false and ["penile", "vaginal"].includes(_type)>><<set $player.virginity.temple to true>><</if>>
 			<</if>>
 			<<run $(`#${_id}link .link-internal`).html($player.virginity[_type] is true ? "Take" : "Restore")>>
 			<<run $(`#${_id}`).html($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>>
@@ -1069,81 +1071,85 @@
 <<widget "cheats-characterVisual">>
 	<span class="gold">Character Hair</span>
 	<br>
-
-	<<link "<<<">><<set $hairlength -= 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	<<link "<<">><<set $hairlength -= 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	<<link "<">><<set $hairlength -= 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	Hair length: <span id="statshairlength"><<print Math.trunc($hairlength)>></span>
-	| <<link ">">><<set $hairlength += 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	| <<link ">>">><<set $hairlength += 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $hairlength += 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	<br>
-
-	<<link "<<<">><<set $fringelength -= 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	<<link "<<">><<set $fringelength -= 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	<<link "<">><<set $fringelength -= 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	Fringe length: <span id="statsfringelength"><<print Math.trunc($fringelength)>></span>
-	| <<link ">">><<set $fringelength += 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	| <<link ">>">><<set $fringelength += 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $fringelength += 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	<br><br>
-
-	<<if $hairtest is 1 or $debug>>
-		Natural hair colour
+	<<if $passage is "Hairdressers Seat">>
+		Hair cheats are disabled while at the hairdressers.
+		<br><br>
+	<<else>>
+		<<link "<<<">><<set $hairlength -= 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		<<link "<<">><<set $hairlength -= 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		<<link "<">><<set $hairlength -= 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		Hair length: <span id="statshairlength"><<print Math.trunc($hairlength)>></span>
+		| <<link ">">><<set $hairlength += 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		| <<link ">>">><<set $hairlength += 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		| <<link ">>>">><<set $hairlength += 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
 		<br>
-		<<set _bar to false>>
+
+		<<link "<<<">><<set $fringelength -= 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		<<link "<<">><<set $fringelength -= 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		<<link "<">><<set $fringelength -= 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		Fringe length: <span id="statsfringelength"><<print Math.trunc($fringelength)>></span>
+		| <<link ">">><<set $fringelength += 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		| <<link ">>">><<set $fringelength += 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		| <<link ">>>">><<set $fringelength += 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		<br><br>
+
+		<<if $hairtest is 1 or $debug>>
+			Natural hair colour
+			<br>
+			<<set _bar to false>>
+			<<for _i = 0; _i < setup.colours.hair.length; _i++>>
+				<<if setup.colours.hair[_i].natural>>
+					<<if _bar>>|<</if>>
+					<label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$naturalhaircolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
+					<<set _bar to true>>
+				<</if>>
+			<</for>>
+			<br>
+			<br>
+		<</if>>
+
+		Hair dye
+		<br>
+		<label>None <<radiovar "$haircolour" $naturalhaircolour>> <<updatesidebarimg>><</radiovar>></label>
 		<<for _i = 0; _i < setup.colours.hair.length; _i++>>
-			<<if setup.colours.hair[_i].natural>>
-				<<if _bar>>|<</if>>
-				<label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$naturalhaircolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
-				<<set _bar to true>>
+			<<if setup.colours.hair[_i].dye>>
+				| <label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$haircolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
 			<</if>>
 		<</for>>
 		<br>
+		Two-tone:
+		<label>Enable <<radiovar "$hairColourStyle" "gradient">> <<updatesidebarimg>><</radiovar>></label>
+		<label>Disable <<radiovar "$hairColourStyle" "simple">> <<updatesidebarimg>><</radiovar>></label>
 		<br>
+		Two-tone style: <<listbox "$hairColourGradient.style" autoselect>>
+					<<option "Low Ombré" "low-ombre">>
+					<<option "High Ombré" "high-ombre">>
+					<<option "Split" "split">>
+					<<option "Face-framing highlights" "face-frame">>
+				<</listbox>>
+		<br><br>
+
+		Hair fringe dye
+		<br>
+		<label>None <<radiovar "$hairfringecolour" $naturalhaircolour>> <<updatesidebarimg>><</radiovar>></label>
+		<<for _i = 0; _i < setup.colours.hair.length; _i++>>
+			<<if setup.colours.hair[_i].dye>>
+				| <label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$hairfringecolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
+			<</if>>
+		<</for>>
+		<br>
+		Two-tone:
+		<label>Enable <<radiovar "$hairFringeColourStyle" "gradient">> <<updatesidebarimg>><</radiovar>></label>
+		<label>Disable <<radiovar "$hairFringeColourStyle" "simple">> <<updatesidebarimg>><</radiovar>></label>
+		<br>
+		Two-tone style: <<listbox "$hairFringeColourGradient.style" autoselect>>
+					<<option "Low Ombré" "low-ombre">>
+					<<option "High Ombré" "high-ombre">>
+					<<option "Split" "split">>
+					<<option "Face-framing highlights" "face-frame">>
+				<</listbox>>
+		<br><br>
 	<</if>>
-
-	Hair dye
-	<br>
-	<label>None <<radiovar "$haircolour" $naturalhaircolour>> <<updatesidebarimg>><</radiovar>></label>
-	<<for _i = 0; _i < setup.colours.hair.length; _i++>>
-		<<if setup.colours.hair[_i].dye>>
-			| <label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$haircolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
-		<</if>>
-	<</for>>
-	<br>
-	Two-tone:
-	<label>Enable <<radiovar "$hairColourStyle" "gradient">> <<updatesidebarimg>><</radiovar>></label>
-	<label>Disable <<radiovar "$hairColourStyle" "simple">> <<updatesidebarimg>><</radiovar>></label>
-	<br>
-	Two-tone style: <<listbox "$hairColourGradient.style" autoselect>>
-				<<option "Low Ombré" "low-ombre">>
-				<<option "High Ombré" "high-ombre">>
-				<<option "Split" "split">>
-				<<option "Face-framing highlights" "face-frame">>
-			<</listbox>>
-	<br><br>
-
-	Hair fringe dye
-	<br>
-	<label>None <<radiovar "$hairfringecolour" $naturalhaircolour>> <<updatesidebarimg>><</radiovar>></label>
-	<<for _i = 0; _i < setup.colours.hair.length; _i++>>
-		<<if setup.colours.hair[_i].dye>>
-			| <label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$hairfringecolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
-		<</if>>
-	<</for>>
-	<br>
-	Two-tone:
-	<label>Enable <<radiovar "$hairFringeColourStyle" "gradient">> <<updatesidebarimg>><</radiovar>></label>
-	<label>Disable <<radiovar "$hairFringeColourStyle" "simple">> <<updatesidebarimg>><</radiovar>></label>
-	<br>
-	Two-tone style: <<listbox "$hairFringeColourGradient.style" autoselect>>
-				<<option "Low Ombré" "low-ombre">>
-				<<option "High Ombré" "high-ombre">>
-				<<option "Split" "split">>
-				<<option "Face-framing highlights" "face-frame">>
-			<</listbox>>
-	<br><br>
 
 	<span class="gold">Eye Colour</span>
 	<br>
@@ -1787,6 +1793,25 @@
 	| <<link ">>">><<npcincr "Great Hawk" dom 10>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc(C.npc["Great Hawk"].dom)>><</replace>><</link>>
 	| <<link ">>>">><<npcincr "Great Hawk" dom 100>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc(C.npc["Great Hawk"].dom)>><</replace>><</link>> (100 = full)
 	<br><br>
+
+	<<link "<<<">><<npcincr "Black Wolf" love -100>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Black Wolf" love -10>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Black Wolf" love -1>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>> |
+	Black Wolf love: <span id="statsblackwolflove"><<print Math.trunc(C.npc["Black Wolf"].love)>></span>
+	| <<link ">">><<npcincr "Black Wolf" love 1>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Black Wolf" love 10>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Black Wolf" love 100>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>> (150 = full)
+	<br><br>
+
+	/* Commented out until stat is used.
+	<<link "<<<">><<npcincr "Black Wolf" dom -100>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Black Wolf" dom -10>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Black Wolf" dom -1>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>> |
+	Black Wolf dominance: <span id="statsblackwolfdom"><<print Math.trunc(C.npc["Black Wolf"].dom)>></span>
+	| <<link ">">><<npcincr "Black Wolf" dom 1>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Black Wolf" dom 10>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Black Wolf" dom 100>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>> (150 = full)
+	<br><br> */
 
 	<<link "<<<">><<set $wolfpacktrust -= 10>><<set $wolfpacktrust = Math.clamp($wolfpacktrust, 0, 30)>><<replace "#statstrust">><<print Math.trunc($wolfpacktrust)>><</replace>><</link>> |
 	<<link "<<">><<set $wolfpacktrust -= 5>><<set $wolfpacktrust = Math.clamp($wolfpacktrust, 0, 30)>><<replace "#statstrust">><<print Math.trunc($wolfpacktrust)>><</replace>><</link>> |

@@ -1,7 +1,6 @@
-/* eslint-disable no-undef */
 function timeAfterXHours(hours) {
 	const date = new DateTime(Time.date);
-	date.addSeconds(hours * Time.secondsPerHour);
+	date.addSeconds(hours * TimeConstants.secondsPerHour);
 	return ampm(date.hour, date.minute);
 }
 DefineMacroS("timeAfterXHours", timeAfterXHours);
@@ -33,9 +32,9 @@ Macro.add("advancetohour", {
 });
 
 function passTimeUntil(hour, minute = 0) {
-	const currentSeconds = Time.hour * Time.secondsPerHour + Time.minute * Time.secondsPerMinute;
-	const targetSeconds = hour * Time.secondsPerHour + minute * Time.secondsPerMinute;
-	const secondsToPass = (targetSeconds - currentSeconds + Time.secondsPerDay) % Time.secondsPerDay;
+	const currentSeconds = Time.hour * TimeConstants.secondsPerHour + Time.minute * TimeConstants.secondsPerMinute;
+	const targetSeconds = hour * TimeConstants.secondsPerHour + minute * TimeConstants.secondsPerMinute;
+	const secondsToPass = (targetSeconds - currentSeconds + TimeConstants.secondsPerDay) % TimeConstants.secondsPerDay;
 	return passTime(secondsToPass, "sec");
 }
 Macro.add("passTimeUntil", {
@@ -50,16 +49,16 @@ Macro.add("passTimeUntil", {
 const secondsMapper = {
 	sec: 1,
 	seconds: 1,
-	min: Time.secondsPerMinute,
-	mins: Time.secondsPerMinute,
-	minute: Time.secondsPerMinute,
-	minutes: Time.secondsPerMinute,
-	hour: Time.secondsPerHour,
-	hours: Time.secondsPerHour,
-	day: Time.secondsPerDay,
-	days: Time.secondsPerDay,
-	week: Time.secondsPerDay * 7,
-	weeks: Time.secondsPerDay * 7,
+	min: TimeConstants.secondsPerMinute,
+	mins: TimeConstants.secondsPerMinute,
+	minute: TimeConstants.secondsPerMinute,
+	minutes: TimeConstants.secondsPerMinute,
+	hour: TimeConstants.secondsPerHour,
+	hours: TimeConstants.secondsPerHour,
+	day: TimeConstants.secondsPerDay,
+	days: TimeConstants.secondsPerDay,
+	week: TimeConstants.secondsPerDay * 7,
+	weeks: TimeConstants.secondsPerDay * 7,
 };
 
 /**

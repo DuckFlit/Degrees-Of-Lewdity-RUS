@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable jsdoc/require-description-complete-sentence */
 // adjust mousetrap behavior, see mousetrap.js
 Mousetrap.prototype.stopCallback = function (e, element, combo) {
@@ -307,6 +306,7 @@ function outfitChecks() {
 	T.middleOutfit = (V.worn.lower.outfitSecondary && V.worn.lower.outfitSecondary[1] === V.worn.upper.name) || false;
 	T.overOutfit = (V.worn.over_lower.outfitSecondary && V.worn.over_lower.outfitSecondary[1] === V.worn.over_upper.name) || false;
 
+	T.underBottoms = V.worn.lower.name === "naked" && V.worn.under_lower.type.includes("covered");
 	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
 	T.middleNaked = V.worn.lower.name === "naked" && V.worn.upper.name === "naked";
 	T.overNaked = V.worn.over_lower.name === "naked" && V.worn.over_upper.name === "naked";

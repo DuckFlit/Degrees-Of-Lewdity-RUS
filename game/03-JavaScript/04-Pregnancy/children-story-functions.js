@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const setChildFirstWord = (childId, word, playerAbsent = false) => {
 	if (!childId && V.childSelected) childId = V.childSelected.childId;
 	if (!childId && !V.childSelected) return false;
