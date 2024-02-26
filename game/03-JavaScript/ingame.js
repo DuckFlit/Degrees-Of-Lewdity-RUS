@@ -34,14 +34,6 @@ function shopClothingFilterToggleTrait(trait) {
 }
 window.shopClothingFilterToggleTrait = shopClothingFilterToggleTrait;
 
-function shopClothingFilterSortOnDescription(traitOne, traitTwo) {
-	const descriptionOne = Wikifier.wikifyEval(`<<shopTraitDescription ${traitOne}>>`).textContent.trim();
-	const descriptionTwo = Wikifier.wikifyEval(`<<shopTraitDescription ${traitTwo}>>`).textContent.trim();
-
-	return descriptionOne > descriptionTwo;
-}
-window.shopClothingFilterSortOnDescription = shopClothingFilterSortOnDescription;
-
 function toggleAllHairTraitsFilter() {
 	const chboxes = $("#hairContainerTraits  input:not(:checked)");
 	if (chboxes.length > 0) chboxes.click();

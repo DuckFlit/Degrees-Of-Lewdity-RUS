@@ -106,8 +106,6 @@ setup.WeatherSettings = {
 				small: () => random(0, 2),
 				large: () => 0,
 			},
-			// Background-clouds, that are higher in the sky. Typically only in clear weather
-			cirrus: 2,
 			// This is a factor that adjusts temperature based on weather conditions. It generally increases
 			// in clear weather to simulate greater heat from the sun or faster heat loss during clear nights and winters.
 			// Conversely, it decreases under cloudy conditions to reflect the effect of cloud cover on temperature.
@@ -131,13 +129,12 @@ setup.WeatherSettings = {
 				autumn: 0.4,
 			},
 			cloudCount: {
-				small: () => random(1, 2),
+				small: () => random(1, 3),
 				large: () => random(0, 1),
 			},
-			cirrus: 2,
 			temperatureModifier: 1.5,
 			tanningModifier: 0.5,
-			overcast: () => random(0, randomFloat(0, 0.2)),
+			overcast: () => random(0, 1) * randomFloat(0, 0.3),
 			precipitationIntensity: 0,
 			visibility: 1,
 		},
@@ -171,7 +168,7 @@ setup.WeatherSettings = {
 			},
 			cloudCount: {
 				small: () => 0,
-				large: () => random(1, 4),
+				large: () => random(1, 5),
 			},
 			temperatureModifier: 1,
 			tanningModifier: 0.2,
@@ -190,7 +187,7 @@ setup.WeatherSettings = {
 			},
 			cloudCount: {
 				small: () => 0,
-				large: () => random(2, 4),
+				large: () => random(2, 5),
 			},
 			temperatureModifier: 1,
 			tanningModifier: 0.1,
@@ -210,7 +207,7 @@ setup.WeatherSettings = {
 			},
 			cloudCount: {
 				small: () => 0,
-				large: () => random(3, 4),
+				large: () => random(3, 5),
 			},
 			temperatureModifier: 1,
 			tanningModifier: 0,

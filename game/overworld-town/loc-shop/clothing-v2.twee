@@ -460,26 +460,29 @@
 		<!-- Make sure to linkify ONLY this page, otherwise other, already linkified, divs will have two event handlers attached to them and will execute twice per click -->
 		<<run linkifyDivs('#shop-list-pages > .clothing-shop-page.page-' + _page)>>
 	</div>
+	<<run initializeTooltips()>>
 <</widget>>
 
 <<widget "updateclotheslist">>
 	<<set _shop = _args[0] or _shopLocation>>
 	<<set _slot = _args[1] or $clothingShopSlot>>
 	<<set _outf = _args[2] or _outfits>>
-	<<replace "#clothes-list">><<clothingShopv2 _shop _slot _outf>><</replace>>
+	<<replace "#clothes-list">><<run console.log("ASD")>><<clothingShopv2 _shop _slot _outf>><</replace>>
 <</widget>>
 
 <<widget "clothingtrait">>
 	<<if $options.images is 1 and (_args[1] or _args[0] isnot "normal") and _shopLocation isnot "mirrorhair">>
-		<<silently>><<shopTraitDescription _args[0]>><</silently>>
-		<mouse class="tooltip-tiny black"><img @src="'img/misc/icon/clothes/traits/' + _args[0] + '.png'" class="clothing-trait">
-			<<if _args[1] is undefined>>
-				<span class="black"><<print _clothesTrait + " - " + _clothesDesc>><<print _clothesDetails isnot "none" ? " " + _clothesDetails : "">></span>
-			<</if>>
-		</mouse>
+		<<set _traitObj to setup.shopDetails[_args[0]]>>
+		<<set _traitName to _traitObj.name>>
+		<<set _traitDesc to `<span class="black">` + _traitObj.desc + `</span>`>>
+		<<set _traitDetails to `<i class="green normal">` + (_traitObj.details isnot "none" ? " " + _traitObj.details : "") + `</i>`>>
+		<<set $_tooltip to _traitDesc + "<br>" + _traitDetails>>
+		<span @title="_traitName" @tooltip="$_tooltip" tooltip-settings="{delay: 0}">
+			<img @src="'img/misc/icon/clothes/traits/' + _args[0] + '.png'" class="clothing-trait">
+		</span>
 	<<elseif _shopLocation is "mirrorhair">>
-		<<silently>><<shopTraitDescription _args[0]>><</silently>>
-		<<if _args[1] is undefined>><span class="black"><<print _hairTrait>></span><</if>>
+		<<set _traitObj to setup.hairDetails[_args[0]]>>
+		<<if _args[1] is undefined>><span class="black"><<print _traitObj.desc>></span><</if>>
 	<</if>>
 <</widget>>
 
@@ -1470,19 +1473,21 @@
 				<div class="traits-list">
 					<<set _traitsInThisShop = [...new Set(Object.keys(setup.clothes).flatMap(x => setup.clothes[x]).filter(x => x.shop.includes(_shopLocation)).flatMap(x => x.type))]>>
 					<<for _trait range _traitsInThisShop.sort()>>
-						<<silently>><<shopTraitDescription _trait>><</silently>>
+						<<set _traitObj to setup.shopDetails[_trait]>>
 						<div class="filters-trait-row">
 							<label>
 								<<set _checked = $shopClothingFilter.traits.includes(_trait) ? 'checked="checked"' : ''>>
 								<<clothingtrait _trait 'display_normal'>>
 								<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
-								<<if $noTraitDescription>>
-									<<print _clothesTrait>>
+								<<if !_traitObj.desc>>
+									<<print _traitObj.name>>
 								<<else>>
-									<mouse class = "tooltip-small">
-										<<print _clothesTrait>>
-										<span class="black"><<print _clothesDesc>><<print _clothesDetails isnot "none" ? " " + _clothesDetails : "">></span>
-									</mouse>
+									<<set _traitDesc to `<span class="black">` + _traitObj.desc + `</span>`>>
+									<<set _traitDetails to `<i class="green normal">` + (_traitObj.details isnot "none" ? " " + _traitObj.details : "") + `</i>`>>
+									<<set $_tooltip to _traitDesc + "<br>" + _traitDetails>>
+									<div class="tooltip-anchor" @tooltip="$_tooltip">
+										_traitObj.name
+									</div>
 								<</if>>
 							</label>
 						</div>
@@ -1491,6 +1496,7 @@
 			</div>
 		</div>
 	</div>
+	<<run initializeTooltips()>>
 <</widget>>
 
 <<widget "filterreveal">>

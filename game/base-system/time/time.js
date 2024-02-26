@@ -987,7 +987,6 @@ function noonCheck() {
 	if (V.statFreeze) return fragment;
 
 	Weather.Sky.setMoonPhase();
-	WeatherCanvas.setMoonPhase();
 
 	delete V.bartend_info;
 	delete V.bartend_info_other;

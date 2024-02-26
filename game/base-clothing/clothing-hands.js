@@ -1,4 +1,17 @@
-/* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites. */
+/* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites.
+
+Warmth checklist:
+	Base: 0
+	Covers hands: +1
+	Covers arms: +1
+
+	Materials
+	Thin: -1
+	Normal: 0
+	Thick: +1
+
+	Max warmth: 3
+*/
 function initHands() {
 	setup.clothes.hands = [
 		{
@@ -47,7 +60,7 @@ function initHands() {
 			colour_sidebar: 1,
 			type: ["normal"],
 			gender: "n",
-			warmth: 5,
+			warmth: 1,
 			cost: 1000,
 			description: "Fingerless gloves to keep your hands warm.",
 			shop: ["clothing"],
@@ -80,7 +93,7 @@ function initHands() {
 			colour_sidebar: 1,
 			type: ["normal"],
 			gender: "n",
-			warmth: 50,
+			warmth: 2,
 			cost: 400,
 			description: "Isn't shaped for individual fingers, but that shouldn't be a problem.",
 			shop: ["clothing"],
@@ -113,7 +126,7 @@ function initHands() {
 			colour_sidebar: 1,
 			type: ["normal"],
 			gender: "n",
-			warmth: 40,
+			warmth: 2,
 			cost: 1000,
 			description: "Keep your arms warm.",
 			shop: ["clothing"],
@@ -148,7 +161,7 @@ function initHands() {
 			type: ["formal"],
 			gender: "f",
 			femininity: 200,
-			warmth: 5,
+			warmth: 2,
 			cost: 2500,
 			description: "Fashionable.",
 			shop: ["clothing"],
@@ -182,7 +195,7 @@ function initHands() {
 			colour_combat: 0,
 			type: ["normal", "sticky_fingers", "stealthy"],
 			gender: "n",
-			warmth: 10,
+			warmth: 2,
 			cost: 8000,
 			description: "Fashionable and ready to slip into pockets.",
 			shop: ["clothing", "adult"],
@@ -216,7 +229,7 @@ function initHands() {
 			type: ["costume"],
 			gender: "f",
 			femininity: 200,
-			warmth: 15,
+			warmth: 1,
 			cost: 1500,
 			description: "For cheering your team to victory.",
 			shop: ["clothing", "school", "adult"],
@@ -281,7 +294,7 @@ function initHands() {
 			colour_options: [],
 			type: ["costume"],
 			gender: "n",
-			warmth: 20,
+			warmth: 1,
 			cost: 1000,
 			description: "Cute cow print.",
 			shop: ["forest"],
@@ -314,7 +327,7 @@ function initHands() {
 			colour_sidebar: 0,
 			type: ["normal"],
 			gender: "n",
-			warmth: 20,
+			warmth: 2,
 			cost: 1500,
 			description: "For getting your hands dirty.",
 			shop: ["clothing"],
@@ -346,7 +359,7 @@ function initHands() {
 			colour_sidebar: 0,
 			type: ["holy", "costume", "fetish"],
 			gender: "f",
-			warmth: 10,
+			warmth: 1,
 			cost: 3000,
 			description: "Great for rubbing out sin.",
 			shop: ["forest"],
