@@ -939,45 +939,6 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 <<if $syndromebird isnot 1>><<hunger_description>><</if>>
 <br><br>
 
-<<npc "Great Hawk">>
-<<if $bird.state is "home">>
-	<<switch $bird.activity>>
-	<<case "sing">>
-		The <<beasttype>> is singing at the edge of the tower.
-	<<case "bathe">>
-		The <<beasttype>> is bathing in the rainwater pool.
-	<<case "groom">>
-		The <<beasttype>> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
-	<<case "build">>
-		<<if $birdShelterRepair>>
-			<<unset $birdShelterRepair>>
-			<span class="teal">The <<beasttype>> is covering the holes in the roof with leaves and twigs.</span>
-		<<else>>
-			The <<beasttype>> is adding to the nest.
-		<</if>>
-	<<default>>
-		The <<beasttype>> rests in <<bhis>> nest.
-		<<set $birdSleep to 1>>
-	<</switch>>
-<<else>>
-	The <<beasttype>> is out hunting.
-<</if>>
-<<if $exposed gte 1>>
-	<<if $syndromebird is 1>>
-		<<if $arousal gte $arousalmax / 2 and $bird.state isnot "home">>
-			You find yourself craving your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>>'s wings to keep you warm.
-		<</if>>
-	<<else>>
-		<<if $bird.state isnot "home">>
-			You feel relieved to have some privacy in your exposed state.
-		<<else>>
-			You feel embarrassed to be exposed around the <<beasttype>>.
-		<</if>>
-	<</if>>
-<</if>>
-<<endevent>>
-<br><br>
-
 <<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
 	<<pregnancyWatersBrokenPassout "castle">>
 <<elseif $bird.state is "hunting" and $bird.timer lte 0 and !$possessed>>
@@ -1170,6 +1131,42 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<br>
 <<else>>
 	<<npc "Great Hawk">><<person1>>
+	<<if $bird.state is "home">>
+		<<switch $bird.activity>>
+			<<case "sing">>
+				The <<beasttype>> is singing at the edge of the tower.
+			<<case "bathe">>
+				The <<beasttype>> is bathing in the rainwater pool.
+			<<case "groom">>
+				The <<beasttype>> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
+			<<case "build">>
+				<<if $birdShelterRepair>>
+					<<unset $birdShelterRepair>>
+					<span class="teal">The <<beasttype>> is covering the holes in the roof with leaves and twigs.</span>
+				<<else>>
+					The <<beasttype>> is adding to the nest.
+				<</if>>
+			<<default>>
+				The <<beasttype>> rests in <<bhis>> nest.
+				<<set $birdSleep to 1>>
+		<</switch>>
+	<<else>>
+		The <<beasttype>> is out hunting.
+	<</if>>
+	<<if $exposed gte 1>>
+		<<if $syndromebird is 1>>
+			<<if $arousal gte $arousalmax / 2 and $bird.state isnot "home">>
+				You find yourself craving your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>>'s wings to keep you warm.
+			<</if>>
+		<<else>>
+			<<if $bird.state isnot "home">>
+				You feel relieved to have some privacy in your exposed state.
+			<<else>>
+				You feel embarrassed to be exposed around the <<beasttype>>.
+			<</if>>
+		<</if>>
+	<</if>>
+	<br><br>
 	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
 		<<if $possessed>>
 			You stare down at your bindings. You pull, and they fall apart, unable to hold against you.
@@ -1180,7 +1177,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<br><br>
 		<</if>>
 	<</if>>
-	<<if $syndromebird is 1 and $bird.hunts.unlocked and !($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+	<<if $syndromebird is 1 and !($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
 		<<edenicon "fix">><<link [[Improve the tower|Bird Tower Build]]>><</link>>
 		<br>
 		<<if $bird.upgrades.firepit gte 1>>
@@ -2425,10 +2422,8 @@ You sit by the rainwater pool.
 			<br>
 		<</if>>
 	<<else>>
-		<br><br>
-
 		<<link [[Climb from the nest|Bird Tower]]>><</link>>
-		<br><br>
+		<br>
 	<</if>>
 <</if>>
 
@@ -2745,16 +2740,31 @@ You're soon squeaky clean.
 <<effects>>
 <<npc "Great Hawk">><<person1>>
 <<set $daily.birdWash to 1>>
-You walk around the pool until you're behind the <<beasttype>>. You rub <<bhis>> shoulders and coo into <<bhis>> ear. "Why don't I help you out a bit?"
+<<if $syndromebird gte 1>>
+	You walk around the pool until you're behind the <<beasttype>>. You rub <<bhis>> shoulders and coo into <<bhis>> ear. "Why don't I help you out a bit?"
+<<else>>
+	You walk around the pool until you're behind the <<beasttype>>. You carefully start to rub <<bhis>> wings.
+	<<if $speech_attitude is "meek">>
+		"I-I can help," you say.
+	<<elseif $speech_attitude is "bratty">>
+		"You're a mess," you say. "Let me help."
+	<<else>>
+		"Let me help," you say.
+	<</if>>
+<</if>>
 <<deviancy1>>
 
 <<bHe>> looks
-<<if C.npc["Great Hawk"].love lte 25>>
-	surprised by your offer.
+<<if $monster gte 1>>
+	<<if C.npc["Great Hawk"].love lte 25>>
+		surprised by your offer.
+	<<else>>
+		happy to hear your offer.
+	<</if>>
 <<else>>
-	happy to hear your offer.
+	at you, tilting <<bhis>> head.
 <</if>>
-<<if $monster is 1>>
+<<if $monster is 1 and $syndromebird gte 1>>
 	"<<Wife>> does not have to... but I would never say no to you."
 <</if>>
 You bring your hands lower and start combing through <<bhis>> wings with your fingers. You start pulling out any stray twigs or leaves you find. You make sure to be very gentle. Next, you rub down <<bhis>> wings with water. You take your time to make sure you get all of the spots <<bhe>> couldn't.
@@ -2839,7 +2849,7 @@ You thank <<bhim>> for cleaning you.
 <br><br>
 
 <<if $monster is 1>>
-	Of course. I would be happy to clean <<wife>> every day," <<bhe>> responds.
+	"Of course. I would be happy to clean <<wife>> every day," <<bhe>> responds.
 <<else>>
 	<<bHe>> gently rubs your cheek with <<bhis>> beak in response.
 <</if>>
@@ -3838,13 +3848,18 @@ After a minute of cuddling, <<bhe>> <<if $monster is 1>>releases<<else>>pulls aw
 <<else>>
 	You look around your tower.
 <</if>>
-<<if $bird.hunts.materials is false>>
-	<<set $bird.hunts.materials to true>>
-	You take a moment to look upon the state of your nest. Your eyes wander around the tower as well, spotting imperfections that nag at your mind. You can make things better. <span class="blue">Maybe you should try to look for materials next time you hunt.</span>
-	<br>
-	<span class="gold">You can now hunt for materials.</span>
+<<if $bird.hunts.unlocked is true>>
+	<<if $bird.hunts.materials is false>>
+		<<set $bird.hunts.materials to true>>
+		You take a moment to look upon the state of your nest. Your eyes wander around the room, spotting imperfections that nag at your mind. You can make things better. <span class="blue">Maybe you should try to look for materials next time you hunt.</span>
+		<br>
+		<span class="gold">You can now hunt for materials.</span>
+	<<else>>
+		You should be able to find high-quality wood, sticks, and leaves while hunting to improve the tower. You could also steal tools and supplies from travellers.
+	<</if>>
 <<else>>
-	You should be able to find high-quality wood, sticks, and leaves while hunting to improve the tower. You could also steal tools and supplies from travellers.
+	There's plenty of room for improvement, but you don't have the means to bring materials back.
+	<span class="blue">Maybe the Great Hawk could teach you how to hunt.</span>
 <</if>>
 <br><br>
 
@@ -4280,6 +4295,14 @@ You stand up and admire your work. You swell with pride. <<trauma -12>><<lltraum
 <br><br>
 
 You move your mirror right next to it.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Build Snare 1
+<<effects>>
+*Not yet implemented*
 <br><br>
 
 <<link [[Next|Bird Tower]]>><</link>>

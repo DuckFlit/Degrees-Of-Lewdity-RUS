@@ -41,6 +41,7 @@
 		firepit: 0,
 		pot: 0,
 		rack: 0,
+		snare: 0,
 		decor: 0,
 		wardrobe: 0
 	}>>
@@ -85,7 +86,7 @@
 		<<if $birdShelterTimer lte 0>>
 			<<set $bird.upgrades.shelter to 0>>
 		<</if>>
-	<<elseif $bird.upgrades.shelter is 0 and $bird.activty is "build">>
+	<<elseif $bird.upgrades.shelter is 0 and $bird.activity is "build">>
 		<<set $bird.upgrades.shelter to 1>>
 		<<set $birdShelterTimer to 720>>
 		<<set $birdShelterRepair to true>>
@@ -968,7 +969,7 @@
 		<</if>>
 		<<switch $_looted>>
 			<<case "tarp">><<set $bird.hunts.weight += 5>>
-			<<case "toolbox" "pot">><<set $bird.hunts.weight += 2>>
+			<<case "tools" "pot">><<set $bird.hunts.weight += 2>>
 			<<case "wood">><<set $bird.hunts.weight += (3 * $_amount)>>
 			<<case "sticks">><<set $bird.hunts.weight += (1.5 * $_amount)>>
 			<<case "leaves">><<set $bird.hunts.weight += (0.5 * $_amount)>>
@@ -997,7 +998,7 @@
 		<</if>>
 		<<switch $_looted>>
 			<<case "tarp">><<set $bird.hunts.weight -= 5>>
-			<<case "toolbox" "pot">><<set $bird.hunts.weight -= 2>>
+			<<case "tools" "pot">><<set $bird.hunts.weight -= 2>>
 			<<case "wood">><<set $bird.hunts.weight -= (3 * $_amount)>>
 			<<case "sticks">><<set $bird.hunts.weight -= (1.5 * $_amount)>>
 			<<case "leaves">><<set $bird.hunts.weight -= (0.5 * $_amount)>>
@@ -1606,6 +1607,30 @@
 					<<case 3>>
 						<span class="green">Enclosed drying rack (3)</span>: Can dry out many lurkers at once. No harmful fumes will escape.
 				<</switch>>
+			<<case "snare">>
+				<<set $_build to true>>
+				<<switch $bird.upgrades.snare>>
+					<<case 0>>
+						<span class="red">No snare (0)</span>: Build a snare to catch lurkers at the bottom of the tower.
+						<span class="red">NOT YET IMPLEMENTED</span>
+						<<set $_upgrade.passage to "Bird Tower Build Snare 1">>
+						<<set $_upgrade.timeTaken to 120>>
+						<<set $_upgrade.materialsUsed to {
+							wood: 2,
+							fabric: 2,
+							sticks: 1,
+							leaves: 2,
+							junk: 1,
+							leather: 1000
+						}>>
+						<<set $_upgrade.upgradesRequired to {
+							tools: 1
+						}>>
+						<<set $_upgrade.housekeeping to 500>>
+					<<case 1>>
+						<<unset $_build>>
+						<span class="green">Makeshift snare (1)</span>: Will sometimes catch a lurker at the bottom of the tower.
+				<</switch>>
 			<<case "decor">>
 				<<switch $bird.upgrades.decor>>
 					<<case 0>>
@@ -1775,7 +1800,7 @@
 				<</if>>
 				<br>
 				<span @class="$_spColour">
-				<<if ["toolbox", "tarp", "pot"].includes($_uReq)>>
+				<<if ["tools", "tarp", "pot", "mirror"].includes($_uReq)>>
 					<<print $_uReq.toUpperFirst()>> required
 				<<else>>
 					<<print $_uReq.toUpperFirst()>> level <<number $_upgrade.upgradesRequired[$_uReq]>> required
