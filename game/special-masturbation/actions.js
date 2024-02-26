@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 function masturbationActions() {
 	const fragment = document.createDocumentFragment();
 

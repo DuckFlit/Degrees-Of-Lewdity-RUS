@@ -85,7 +85,7 @@ You are in the Ocean Breeze Cafe.
 	"The big one. I'm going to merge the buildings, make one huge cafe. One that can accommodate the numbers we're pulling. I'm giddy just thinking about it!"
 	<br><br>
 	<span class="pink">"We'll need to close for a month,"</span> <<he>> adds.
-	"It's unfortunate, but the changes are so big. We'll have a grand opening event when its done, with you as the star."
+	"It's unfortunate, but the changes are so big. We'll have a grand opening event when it's done, with you as the star."
 	<br><br>
 	"We're closing down in a week. I don't want you to be caught off guard. Drop by when we're finished and we'll discuss the opening event."
 	<br><br>
@@ -164,20 +164,15 @@ You are in the Ocean Breeze Cafe.
 			<<ind>><<link [[Accept job offer|Chef Work Accept]]>><</link>>
 			<br>
 		<<elseif $chef_state gte 1>>
-			<<ind>><<link [[Work as a chef (1:00)|Chef Work]]>><</link>>
+			<<skinicon "chef">><<link [[Work as a chef (1:00)|Chef Work]]>><</link>>
 			<br>
 		<</if>>
 		<<if $chef_state is 3>>
 			<<ind>><<link [["Accept Sam's offer"|Chef Photographer]]>><</link>>
 			<br>
 		<</if>>
-		<<if $player.gender_appearance is "m">>
-			<<ind>><<link [[Work as a waiter (1:00)|Ocean Breeze Work]]>><<set $tablesservedstat += random(10,30)>><</link>>
-			<br>
-		<<else>>
-			<<ind>><<link [[Work as a waitress (1:00)|Ocean Breeze Work]]>><<set $tablesservedstat += random(10,30)>><</link>>
-			<br>
-		<</if>>
+		<<skinicon "waiter">><<link [[`Work as a ${$player.gender_appearance is "m" ? "waiter" : "waitress"} (1:00)`|Ocean Breeze Work]]>><<set $tablesservedstat += random(10,30)>><</link>>
+		<br>
 	<</if>>
 
 <<if $openinghours is 1 and $exposed lt 1 and $daily.cafeEaten isnot 1>>
@@ -325,9 +320,74 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 
 :: Ocean Breeze Work
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
-<<set $NPCName[$NPCNameList.indexOf("Sam")].love = Math.clamp($NPCName[$NPCNameList.indexOf("Sam")].love, -50, 50)>>
-<<rng 111>>
-<<if $rng gte 101>>
+<<set C.npc.Sam.love = Math.clamp(C.npc.Sam.love, -50, 50)>>
+<<rng 121>>
+
+<<if $rng gte 121 and !$weekly.robinCafeVisit and C.npc.Robin.init gte 1 and $robinmissing is 0 and getRobinLocation() isnot "school">>
+	<<set $weekly.robinCafeVisit to 1>>
+	<<npc "Robin">>
+
+	<<if C.npc.Robin.trauma gte 40>>
+		<<generateRole 1 0 "waiter/waitress">>
+
+		You are cleaning off a table after a previous customer when you see a familiar face in the corner of your eye. It's Robin. <<Hes>> sitting at a table all alone, being served by another <<person2>><<personsimple>>.
+		<br><br>
+
+		You overhear their conversation. "Sorry, but you're gonna have to buy something if you want a glass of water. It's company policy. We are running a business after all," the <<personsimple>> says.
+		<br><br>
+
+		Robin looks up at the <<personsimple>>. "I-I'm sorry... I don't think I can eat anything right now." <<person1>><<He>> stands up and walks out the door.<<gstress>><<stress 6>>
+		<br><br>
+
+		The <<person2>><<personsimple>> walks towards you and scoffs. "Bunch of freeloaders around here. They'll try and put on an act to make you feel bad, but don't let em." <<He>> continues walking past you and into the kitchen
+		<br><br>
+
+		Before you can say anything Sam calls you to clean up another table. The rest of the shift passes uneventfully.
+		<br><br>
+
+		<<link [[Next|Ocean Breeze]]>><<pass 60>><<endevent>><</link>>
+
+	<<else>>
+		<<set _beverage to $weather is "winter" ? "eggnog" : "milkshake">>
+		You are cleaning off a table after a previous customer when you see a familiar face in the corner of your eye. It's Robin. <<Hes>> waiting near the front to be seated. You approach <<him>> and he smiles.
+		<br><br>
+
+		<<if $robinromance gte 1>>
+			<<if C.npc.Robin.dom gte 50>>
+				"Hello! How's work? You look really nice today. I hope the customers have been treating you well. If you get the time, we should go see a movie." <<He>> proceeds to tell you about the genres <<hes>> interested in.
+			<<else>>
+				"H-hey! I really wanted to see you and I heard you were working here today! There isn't a lot to do at the orphanage, I hope I'm not too much of a distraction," <<he>> says.
+			<</if>>
+
+		<<else>>
+			"Hello! I didn't know you were working today! I was just stopping by for a drink, it's nice to see you."
+
+		<</if>>
+		<br><br>
+
+		You gleefully chat with Robin for a few minutes before taking <<his>> order. <<He>> orders a  _beverage. You prepare <<his>> beverage and bring it to <<his>> table. <<He>> sips the _beverage and smiles. "It's really good!"
+		<br><br>
+
+		<<He>> finishes <<his>> drink, and then stands up. <<He>> <<if $robinromance gte 1>>kisses<<else>>hugs<</if>> you before leaving.
+		<br><br>
+
+		<<if $robinmoney gte 5>>
+			<<set $tip to 500>>
+			<<set $robinmoney -= 5>>
+			The rest of the shift passes uneventfully. Robin left you a tip.<<tipreceive>>
+
+		<<else>>
+			The rest of the shift passes uneventfully.
+
+		<</if>>
+		<br><br>
+
+		<<link [[Next|Ocean Breeze]]>><<pass 60>><<endevent>><</link>>
+
+	<</if>>
+
+
+<<elseif $rng gte 101>>
 	Sam asks you to bring plates of food out to a large table of customers.
 	<br><br>
 	<<link [[Make multiple trips|Ocean Breeze Plates]]>><<set $phase to 0>><</link>>
@@ -659,7 +719,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 <<elseif $rng gte 11 and $chef_state is undefined>>
 	<<npc Sam>><<person1>>Sam rushes out of the kitchen, looking flustered.
 
-	<<if $NPCName[$NPCNameList.indexOf("Sam")].love gte 10>>
+	<<if C.npc.Sam.love gte 10>>
 		<<He>> glances in your direction, <span class="green">then hastens over.</span>
 		"I'm in a bit of a pickle," <<he>> says.
 		"Our chef's stormed off again. I need someone to fill in. Don't worry, it's not hard, and I'll pay you double. Will you help me out?"
@@ -1465,6 +1525,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 :: Cafe Coffee
 <<endevent>>
 <<set _coffee to ["mocha", "latte", "caramel latte", "white chocolate mocha", "flat white", "caramel iced latte"].pluck()>>
+<<wearProp "coffee">>
 <<if $daily.earSlimeOceanBreezeCafeEat>>
 	You decide that the ear slime is right and
 <<else>>
@@ -1792,6 +1853,7 @@ You feel a little more refreshed with the caffeine in your system.
 
 :: Cafe Pancakes
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
+<<wearProp "pancake">>
 
 <<if $daily.earSlimeOceanBreezeCafeEat>>
 	You decide that the ear slime is right and
@@ -2056,7 +2118,7 @@ The mildly disappointed but clearly quite aroused <<person>> stares at you as yo
 <</widget>>
 
 :: Cafe Cream Bun
-<<set $outside to 0>><<set $location to "cafe">><<effects>>
+<<set $outside to 0>><<set $location to "cafe">><<effects>><<wearProp "creambun">>
 
 <<if $daily.earSlimeOceanBreezeCafeEat>>
 	You decide that the ear slime is right and
@@ -2125,19 +2187,19 @@ You ignore the <<person>> and finish licking the plate clean. You lean back, sat
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 <<switch $phase>>
 	<<case "fruity ale">>
-		<<wearProp "beer mug">><<set _food to "a fruity ale. It arrives quickly, served in a regular beer glass. It's very sweet and light. It's delicious">>
+		<<wearProp "beermug">><<set _food to "a fruity ale. It arrives quickly, served in a regular beer glass. It's very sweet and light. It's delicious">>
 	<<case "winter ale">>
-		<<wearProp "beer mug">><<set _food to "winter ale.	It arrives promptly, served in a beautifully curved glass. It's sweet, rather than bitter. It's delicious">>
+		<<wearProp "beermug">><<set _food to "winter ale.	It arrives promptly, served in a beautifully curved glass. It's sweet, rather than bitter. It's delicious">>
 	<<case "shandy">>
-		<<wearProp "beer mug">><<set _food to "a shandy. It arrives quickly. It's served in a can with a beer glass; you're clearly meant to pour it yourself. It's lemon flavoured and very refreshing">>
+		<<wearProp "beermug">><<set _food to "a shandy. It arrives quickly. It's served in a can with a beer glass; you're clearly meant to pour it yourself. It's lemon flavoured and very refreshing">>
 	<<case "autumn ale">>
-		<<wearProp "beer mug">><<set _food to "an autumn ale. It arrives quickly. It's sweet and has a hint of caramel. It's delicious">>
+		<<wearProp "beermug">><<set _food to "an autumn ale. It arrives quickly. It's sweet and has a hint of caramel. It's delicious">>
 	<<case "fruit salad">>
-		<<set _food to "a fruit salad. It arrives promptly, full of fresh strawberries, blueberries, kiwi, and chunks of pineapple. It's sweet and delicious">>
+		<<wearProp "salad">><<set _food to "a fruit salad. It arrives promptly, full of fresh strawberries, blueberries, kiwi, and chunks of pineapple. It's sweet and delicious">>
 	<<case "gingerbread">>
 		<<wearProp "gingerbread">><<set _food to "a gingerbread man. It arrives promptly, a friendly icing face smiling up at you. It's sweet and delicious, and <<print $christmas is 1 and Time.monthDay is 25 ? `it's the perfect treat for Christmas Day` : `it reminds you of Christmas`>>">>
 	<<default>>
-		<<set _food to "your food. It arrives promptly, and you finish it quickly. It's delicious">>
+		<<wearProp "fork">><<set _food to "your food. It arrives promptly, and you finish it quickly. It's delicious">>
 <</switch>>
 
 <<print $daily.earSlimeOceanBreezeCafeEat ? "You decide that the ear slime is right and" : "You">> take a seat and order _food.

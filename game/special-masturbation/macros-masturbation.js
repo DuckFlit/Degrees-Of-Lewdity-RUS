@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 function getToyName(index, capitalise = false) {
 	const toy = T.playerToys[index];
 	if (toy == null) {
@@ -22,7 +21,7 @@ function skipToOrgasm(modifiers = "") {
 	do {
 		count++;
 		if (T.corruptionMasturbation) masturbationSlimeControl();
-		masturbationeffects();
+		masturbationEffects();
 		masturbationActions();
 		if (modifiers.includes("timer")) V.timer -= 1;
 
@@ -49,7 +48,7 @@ function masturbationRobinWatching() {
 	if (V.daily.robin.masturbation) {
 		if (V.timer > 0) V.timer -= 1;
 	} else if (
-		V.NPCName[V.NPCNameList.indexOf("Robin")].init === 1 &&
+		C.npc.Robin.init === 1 &&
 		!V.daily.robin.masturbation &&
 		random(0, 100) >= 91 &&
 		T.robin_location === "orphanage" &&

@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 // eslint-disable-next-line no-unused-vars
 function masturbationAudience() {
 	const br = () => document.createElement("br");

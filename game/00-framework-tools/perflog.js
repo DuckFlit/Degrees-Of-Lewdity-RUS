@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 // Time in milliseconds, float with microsecond precision if available.
 const millitime =
 	typeof performance === "object" && typeof performance.now === "function"

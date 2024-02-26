@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const DoLSave = ((Story, Save) => {
 	"use strict";
 
@@ -645,7 +644,11 @@ const importSettingsData = function (data) {
 					// eslint-disable-next-line no-var
 					for (let j = 0; j < listKey.length; j++) {
 						// Overwrite to allow for "none" default value in the start passage to allow for rng to decide
-						if (V.passage === "Start" && ["pronoun", "gender"].includes(listKey[j]) && S.npc[V.NPCNameList[i]][listKey[j]] === "none") {
+						if (
+							V.passage === "Start" &&
+							["pronoun", "gender", "skincolour"].includes(listKey[j]) &&
+							S.npc[V.NPCNameList[i]][listKey[j]] === "none"
+						) {
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
 						} else if (validateValue(listObject[listKey[j]], S.npc[V.NPCNameList[i]][listKey[j]])) {
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
@@ -764,7 +767,7 @@ function exportSettings(data, type) {
 		S.npc[V.NPCNameList[i]] = {};
 		for (let j = 0; j < listKey.length; j++) {
 			// Overwrite to allow for "none" default value in the start passage to allow for rng to decide
-			if (V.passage === "Start" && ["pronoun", "gender"].includes(listKey[j]) && V.NPCName[i][listKey[j]] === "none") {
+			if (V.passage === "Start" && ["pronoun", "gender", "skincolour"].includes(listKey[j]) && V.NPCName[i][listKey[j]] === "none") {
 				S.npc[V.NPCNameList[i]][listKey[j]] = V.NPCName[i][listKey[j]];
 			} else if (validateValue(listObject[listKey[j]], V.NPCName[i][listKey[j]])) {
 				S.npc[V.NPCNameList[i]][listKey[j]] = V.NPCName[i][listKey[j]];
@@ -1233,6 +1236,11 @@ function settingsObjects(type) {
 			result = {
 				pronoun: { strings: ["m", "f"], displayName: "Pronoun: ", textMap: { none: "N/A", m: "Male", f: "Female" } },
 				gender: { strings: ["m", "f"], displayName: "Genitalia: ", textMap: { none: "N/A", m: "Penis", f: "Vagina" } },
+				skincolour: {
+					strings: ["white", "black", "ghost"],
+					displayName: "Skin colour: ",
+					textMap: { none: "N/A", white: "Pale", black: "Dark", ghost: "Ghostly Pale" },
+				},
 				penissize: { min: 0, max: 4, decimals: 0, displayName: "Penis size: ", textMap: { 0: "N/A", 1: "Tiny", 2: "Average", 3: "Thick", 4: "Huge" } },
 				breastsize: {
 					min: 0,

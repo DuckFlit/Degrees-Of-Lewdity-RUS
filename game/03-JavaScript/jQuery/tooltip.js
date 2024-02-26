@@ -83,7 +83,6 @@ function initializeTooltips() {
 				title: "",
 				message,
 				anchorStyle: null,
-				style: "teal",
 				position: "cursor",
 				cursor: "help",
 				delay: 150,

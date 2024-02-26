@@ -270,7 +270,7 @@ The black dog lurks on the outskirts of the clearing. The <<wolf_cave_plural>> t
 You sit beside the <<beasttype>>, and chat.
 <<if $monster is 1>>
 	<<if $rng gte 81>>
-		"This my <<if $NPCName[$NPCNameList.indexOf("Black Wolf")].pronoun is "f">>half-sister's<<else>>half-brother's<</if>> pack," <<bhe>> says. "Not welcome here. Not welcome anywhere. I have nowhere else."
+		"This my <<if C.npc["Black Wolf"].pronoun is "f">>half-sister's<<else>>half-brother's<</if>> pack," <<bhe>> says. "Not welcome here. Not welcome anywhere. I have nowhere else."
 	<<elseif $rng gte 61>>
 		"Stay away from big human caves," <<bhe>> says. "Danger."
 	<<elseif $rng gte 41>>
@@ -356,7 +356,21 @@ You rub your binds against a sharp rock and they soon come loose.
 :: Wolf Cave Bed
 
 <<effects>>
-<<if $wolfpackharmony gte 10>>
+<<switch statusCheck("Black Wolf").gender>>
+	<<case "m">>
+		<<set _BWGender to 1>>
+	<<default>>
+		<<set _BWGender to 0>>
+<</switch>>
+<<if lastVisited("Wolf Relax") is 1>>
+	You get up and follow the Black Wolf into the cave to sleep.
+	<br><br>
+<</if>>
+<<if Time.dayState is "night" and $wolfstate is "cave" and (statusCheck("Black Wolf").love gte 100 or $wolfpackleader is 1 or playerIsPregnant() and playerBellySize() gte 15 or parentFunction.findParent("Black Wolf", _BWGender, true))>>
+	<<npc "Black Wolf">> <<set $bedGuest to "Black Wolf">> <<set $blackWolfSleep to true>>
+	You find an empty spot to lie on and close your eyes. After a moment, you feel an enormous mass of fur engulf you. You open your eyes to see the Black Wolf curling up beside you. <<bHe>> regards you for just a moment before laying <<bhis>> head down, facing away towards the mouth of the cave. You rest your head against <<bhim>>.
+	<<lstress>><<ltrauma>><<stress -10>><<trauma -10>>
+<<elseif $wolfpackharmony gte 10>>
 	<<beastNEWinit 1 wolf>>
 	<<if $rng gte 51>>
 		<<if $wolfstate is "hunt">>
@@ -381,7 +395,7 @@ You rub your binds against a sharp rock and they soon come loose.
 <<nightmareCheck "Wolf Cave Sleep">>
 
 <<generateSleepLinks "Wolf Cave Sleep">>
-<<link [[Climb out of bed|Wolf Cave]]>><<set $wolfbed to 0>><<loadTempHairStyle>><</link>>
+<<link [[Climb out of bed|Wolf Cave]]>><<unset $blackWolfSleep>><<unset $bedGuest>><<set $wolfbed to 0>><<loadTempHairStyle>><</link>>
 <br><br>
 
 :: Wolf Cave Settings [exitCheckBypass]
@@ -437,7 +451,11 @@ You sit on the edge and try to lower yourself down, but the rock gives way and y
 		<</if>>
 	<</if>>
 	<<sleepeffects>>
-	<<if _sleepinterrupt>>
+	<<if $blackWolfSleep>>
+		You open your eyes to see the Black Wolf still beside you, already awake. If <<bhe>> even slept, that is. <<bHe>> regards you, but otherwise does not stir while you wake.
+		<br><br>
+		<<link [[Get up|Wolf Cave]]>><<endevent>><<unset $blackWolfSleep>><</link>>
+	<<elseif _sleepinterrupt>>
 		<<beastNEWinit 1 wolf>>
 		You wake up to something mounting you.
 		<br><br>
