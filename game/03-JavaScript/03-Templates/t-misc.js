@@ -51,7 +51,7 @@ Template.add("animal", () =>
 		"salmon",
 		"tuna",
 		"deer",
-		"robin"
+		"oyster"
 	)
 );
 
@@ -108,7 +108,7 @@ Template.add("animals", () =>
 		"salmon",
 		"tuna",
 		"deer",
-		"robins"
+		"oysters"
 	)
 );
 
