@@ -128,7 +128,7 @@ Wikifier.Parser.add({
 		const setFn = Object.hasOwn(markup, "setter") ? Wikifier.helpers.createShadowSetterCallback(Scripting.parse(markup.setter)) : null;
 
 		// Debug view setup.
-		const output = (Config.debug ? new DebugView(w.output, "link-markup", "[[link]]", w.source.slice(w.matchStart, w.nextMatch)) : w).output;
+		const output = (Config.debug ? new DebugView(w.output, "link-markup", "[[Link]]", w.source.slice(w.matchStart, w.nextMatch)) : w).output;
 
 		if (markup.forceInternal || !Wikifier.isExternalLink(link)) {
 			/* Wikifier.createInternalLink(output, link, text, setFn); */
