@@ -152,3 +152,57 @@ Template.add("gwylanItem", () =>
 
 /* ?sin */
 Template.add("sin", () => either("pride", "wrath", "envy", "lust", "gluttony", "greed", "sloth"));
+
+/* ?chatter1 */
+Template.add("chatter1",() => 
+	either(
+		"If you think about it, neither of us are really here.",
+
+		"Hey, listen. You hear that? It's nothing.",
+
+		"Don't knock it 'till you try it. Jazz metal just works.",
+
+		"Winter's actually kinda hot, in a fossil kinda way.",
+
+		"I'd let a wolf knot me, to be honest.",
+
+		"If quizzes are quizzical, then what are tests?",
+
+		"You. Me. That bookshelf. Library dodgeball. You in?",
+
+		"I haven't seen a single recycling bin in this school. Unbelievable.",
+
+		"The canteen food is actually pretty good. It's a guilty pleasure of mine.",
+
+		"Oh, to be a caterpillar, unaware of the woes of the world.", 
+
+		"Someone said they saw a whale that had, like, tentacles, like a squid. Think squids and whales finally put their differences aside and got busy?"
+	)
+);
+
+/* ?chatter2 */
+Template.add("chatter2",() => 
+	either(
+		"Why am I friends with you?",
+
+		"I told you to stop hanging out with me.",
+
+		"What the fuck?",
+
+		"I'm out of here.",
+
+		"Can we please have a normal conversation for once?",
+
+		"...What?",
+
+		"Pretty sure you're not supposed to come to school drunk.",
+
+		"I'm calling the police.",
+
+		"I gotta get that restraining order. For real, this time.",
+
+		"Can I peg you?",
+		
+		"Can you make like a tree and die for the winter?"
+	)
+);
