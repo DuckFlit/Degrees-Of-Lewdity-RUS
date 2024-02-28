@@ -342,63 +342,81 @@
 	<</if>>
 <</widget>>
 
-<<widget "lock_strength">>
-	<<if $lockStrength is 100>>
+<<widget "livestock_lock_desc">>
+	/*Description of the current state of the farm gate lock */
+	<<if $farmLockStr is 100>>
 		<span class="green">Undamaged.</span>
 	
-	<<elseif $lockStrength lte 99 and $lockStrength gt 69>>
+	<<elseif $farmLockStr lte 99 and $farmLockStr gt 69>>
 		<span class="teal">Slighty damaged.</span>
 	
-	<<elseif $lockStrength lte 69 and $lockStrength gt 40>>
+	<<elseif $farmLockStr lte 69 and $farmLockStr gt 40>>
 		<span class="blue">Very damaged.</span>
 
-	<<elseif $lockStrength lte 40 and $lockStrength gt 29>>
+	<<elseif $farmLockStr lte 40 and $farmLockStr gt 29>>
 		<span class="purple">Heavily damaged.</span>
 
-	<<elseif $lockStrength lte 29 and $lockStrength gt 0>>
+	<<elseif $farmLockStr lte 29 and $farmLockStr gt 0>>
 		<span class="pink">Falling apart.</span>
 
-	<<elseif $lockStrength lte 0>>
+	<<elseif $farmLockStr lte 0>>
 		<span class="red">Broken.</span>
 	<</if>>	
 
 <</widget>>
 
-<<widget "lock_guard">>
-	<<if $lockGuard lte 80 and $lockGuard gt 60>>
+<<widget "livestock_patrol">>
+	/*Lock damage based on physique check*/
+	<<if $physiqueSuccess is 1>>
+		<<set $farmLockStr -= 10>>
+		You feel like you've made good progress.
+		<br>
+	<<else>>
+		<<set $farmLockStr -= 5>>
+		It doesn't feel like you've made much progress.
+		<br>
+	<</if>>
+	/*Farm hand catch chance based on your livestock obidence */
+	<<if $livestock_obey lte 100 and $livestock_obey gt 60>>
+		<<set $farmPatrol  -= 20>>
+
+	<<elseif $livestock_obey lte 60 and $livestock_obey gt 20>>
+		<<set $farmPatrol  -= 27>>
+
+	<<elseif $livestock_obey  lte 20>>
+		<<set $farmPatrol  -= 40>>	
+	<</if>>
+	/*Farm hand status while your rocking the gate*/
+	<<if $farmPatrol lte 80 and $farmPatrol gt 60>>
 		<span class="teal">The farmhand is busy with the further stalls of the opposite row</span>
 
-	<<elseif $lockGuard  lte 60 and $lockGuard gt 40>>
+	<<elseif $farmPatrol  lte 60 and $farmPatrol gt 40>>
 		<span class="blue">The farmhand is busy with the further stalls of the opposite row.</span>
 		
-	<<elseif $lockGuard  lte 40 and $lockGuard gt 20>>
+	<<elseif $farmPatrol  lte 40 and $farmPatrol gt 20>>
 		<span class="purple">The farmhand is busy with the nearer stalls of the opposite row.</span>
 
-	<<elseif $lockGuard  lte 20>>
+	<<elseif $farmPatrol  lte 20>>
 		<span class="pink">The farmhand is busy with the nearer stalls of your row.</span>
 	<</if>>
 <</widget>>
 
-<<widget "lock_effect">>
-	<<if $livestock_obey lte 100 and $livestock_obey gt 60>>
-		<<set $lockGuard  -= 20>>
-
-	<<elseif $livestock_obey lte 60 and $livestock_obey gt 20>>
-		<<set $lockGuard  -= 27>>
-
-	<<elseif $livestock_obey  lte 20>>
-		<<set $lockGuard  -= 40>>	
-	<</if>>
+<<widget "livestock_lock_cleanup">>
+	/*Clean up of Livestock lock varaibles*/
+	<<unset $livestockLockSeq>>
+	<<unset $farm_key>>
+	<<unset $farmCellUnlk>>
+	<<unset $farmPatrol>>
+	<<unset $farmGateCD>>
+	<<unset $livestock_lock_intro>>
 <</widget>>
 
-<<widget "lock_effect2">>
-	<<unset $lock_sequence>>
-	<<unset $farm_keys>>
-	<<unset $farm_cell>>
-	<<unset $lockGuard>>
-	<<unset $lockStrength>>
-	<<unset $lock_temp>>
-	<<unset $lock_lock>>
-	<<unset $lock_break>>
-	<<unset $lock_caught>>
+<<widget "farm_var_set">>
+	/*Make sure some farm lock var get unset/set when they need to be */
+	<<if $farmGateCD lte 1>>
+		<<unset $farmGateCD>>
+	<</if>>
+	<<if $farmLockStr lte 0>>
+		<<set $farmLockStr to 99>>
+	<</if>>
 <</widget>>

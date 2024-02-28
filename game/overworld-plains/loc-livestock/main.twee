@@ -2,9 +2,9 @@
 <<set $outside to 0>><<set $location to "farm">><<effects>>
 
 You are in your cell in the barn. There's a bucket of what looks like clean water to drink, and a pile of straw to sleep on.
-<<if $farm_cell is false>>
+<<if $farmCellUnlk is false or $farm_key is true and $farmCellUnlk is undefined>>
 	<span class="teal">  You've hidden a ring of keys in the straw.</span>
-<<elseif $farm_cell is true>>
+<<elseif $farmCellUnlk is true>>
 	<span class="teal"> Your cell door is unlocked. You've hidden a ring of keys in the straw.</span>
 <</if>>
 
@@ -39,9 +39,9 @@ You are in your cell in the barn. There's a bucket of what looks like clean wate
 	Remy and the farmhands circle the barn, opening cells and releasing their occupants. One of them opens yours.
 	<br><br>
 
-	<<getouticon>><<link [[Leave your cell|Livestock Cell Leave]]>><<livestock_obey 1>><<unset $lock_lock>><</link>><<gobey>>
+	<<getouticon>><<link [[Leave your cell|Livestock Cell Leave]]>><<livestock_obey 1>><</link>><<gobey>>
 	<br>
-	<<refuseicon>><<link [[Refuse to leave|Livestock Cell Refuse]]>><<livestock_obey -1>><<unset $lock_lock>><<pain 6>><</link>><<lobey>><<gpain>>
+	<<refuseicon>><<link [[Refuse to leave|Livestock Cell Refuse]]>><<livestock_obey -1>><<pain 6>><</link>><<lobey>><<gpain>>
 	<br>
 <<elseif Time.hour gte 18 and Time.hour lt 21>>
 	/* once every 4 days after pc's been missing for more than they have permissions for, when eden cares strongly enough to leave the forest and go all the way to the farmlands. */
@@ -77,13 +77,13 @@ You are in your cell in the barn. There's a bucket of what looks like clean wate
 	<<if $livestock_lock_intro is undefined >>
 		<<investigateicon>><<link [[Examine your cell|Livestock Lock Examine]]>><</link>>
 
-	<<elseif $farm_keys is true and $farm_cell is undefined>>
-		<<investigateicon>><<link [[Try the keys|Livestock Lock Key]]>><<set $lock_sequence to 1>><</link>>
+	<<elseif $farm_key is true and $farmCellUnlk is undefined and !$farmGateCD is 1>>
+		<<investigateicon>><<link [[Try the keys|Livestock Lock Key]]>><<set $phase to 0>><</link>>
 
-	<<elseif $farm_keys is true and $farm_cell is false>>
-		<<lakeicon "key">><<link [[Unlock your cell|Livestock Lock Key]]>><<set $lock_sequence to 1>><</link>>
+	<<elseif $farm_key is true and $farmCellUnlk is false and !$farmGateCD is 1>>
+		<<lakeicon "key">><<link [[Unlock your cell|Livestock Lock Key]]>><<set $phase to 0>><</link>>
 
-	<<elseif $farm_cell is true>>
+	<<elseif $farmCellUnlk is true>>
 		<<getouticon>><<link [[Leave your cell|Livestock Lock Examine]]>><</link>>
 
 	<<else>>
@@ -1477,7 +1477,7 @@ The farmhands push past Remy in a panicked scramble for the exit. Remy lingers a
 <<effects>>
 
 <<livestock_sleep>>
-
+<<farm_var_set>>
 <<if $phase is 0>>
 	<<if $cow gte 6 or $wolfgirl gte 6 or $cat gte 6 or $fox gte 6>>
 		You curl up on the soft straw, wondering how you ever slept in any other way. You fall asleep within moments.
@@ -1911,8 +1911,8 @@ Satisfied, it turns back toward the farm. It dashes forward, disappearing behind
 <<effects>>
 <<earnFeat "Runaway Cattle">>
 <<set $hunger to 2000>>
-<<lock_effect2>>
-<<if $lock_sequence is 7 >>
+<<livestock_lock_cleanup>>
+<<if $livestockLockSeq is 3 >>
 	You come to a stop at the crest of a hill. You can see the forest and town beneath you.
 <</if>>
 You're not in the clear yet. <<if $exposed gte 2>>You're still naked, for one thing.<<elseif $exposed gte 1>>You're still indecently dressed, for one thing.<</if>> Still, you feel hopeful as creep down the hill. You find a path running into the forest.
@@ -2276,8 +2276,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 
 	<<clotheson>>
 	<<endcombat>>
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2301,8 +2301,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2356,8 +2356,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2375,8 +2375,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2429,8 +2429,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2450,8 +2450,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2507,8 +2507,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2528,8 +2528,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2584,8 +2584,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2604,8 +2604,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2660,8 +2660,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2680,8 +2680,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2736,8 +2736,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2755,8 +2755,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2810,8 +2810,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2829,8 +2829,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2883,8 +2883,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7  >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3  >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2952,8 +2952,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -2972,8 +2972,8 @@ The farmhands form a circle around you. They struggle to hold back the dogs. Rem
 	<<clotheson>>
 	<<endcombat>>
 
-	<<if $lock_sequence is 7 >>
-		<<link [[Next|Livestock Cell]]>><<set $lock_silver +=1>><<set $lock_lock to true>><</link>>
+	<<if $livestockLockSeq is 3 >>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><</link>>
 		<br>
 	<<else>>
 		<<link [[Next|Livestock Field]]>><</link>>
@@ -3007,8 +3007,8 @@ You hear another voice raise in protest. It's Remy. <<He>> gets into an argument
 <<effects>>
 
 <<if $livestock_lock_intro is undefined>>
-	<<if $lockStrength is undefined>>
-		<<set $lockStrength to 100>>
+	<<if $farmLockStr is undefined>>
+		<<set $farmLockStr to 100>>
 		
 		You walk around your cell and look for anything to help you escape. Unfortunately, there is nothing inside besides a bucket and straw. 
 		The iron bars of the cage you were put in look solid. There is no way you could bend them. 
@@ -3016,18 +3016,21 @@ You hear another voice raise in protest. It's Remy. <<He>> gets into an argument
 		<br>
 		The only thing that catches your eye is the lock. Like all the other locks on the other cell gates, it looks old and rusty. 
 		<span class="red"> Perhaps if you applied enough force, you would be able to break it.</span>
+		<br><br>
+		<<ind>><<link [[Rock the gate (1:00)|Livestock Lock Intro]]>><<set $farmLockStr -= 1>><<set $livestock_lock_intro to 1>><</link>><<ggtiredness>>
 		<br>
-		<<ind>><<link [[Rock the gate (1:00)|Livestock Lock Intro]]>><<set $lockStrength -= 1>><<set $livestock_lock_intro to 1>><</link>><<ggtiredness>>
-		<br>
-		<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $lock_sequence to 2>><</link>>
+		<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $livestockLockSeq to 2>><</link>>
 
-	<<elseif $lockStrength isnot undefined and  $livestock_return is true >>
+	<<elseif $farmLockStr isnot undefined and  $livestock_return is true >>
 		<<unset $livestock_return>>
 		<<set $livestock_lock_intro to 1>>
-		<<set $lockStrength to 100>>
+		<<set $farmLockStr to 100>>
+		<<generate1>><<person1>>
+		<<saveNPC 0 "remy_farmhand_1">>
+		<<npc Remy 2>>
 		You check your cell, it's the same as your old one. 
-		<<if $lock_silver gte 2>>
-			<<unset $lock_silver>>
+		<<if $farmLockQty gte 2>>
+			<<unset $farmLockQty>>
 			You sigh with relief, it's an old rusty lock this time.
 		<<else>>
 			It's the same old rusty lock. <span class="red">Should break just like last time.</span>
@@ -3035,64 +3038,78 @@ You hear another voice raise in protest. It's Remy. <<He>> gets into an argument
 		You grab the bars and rock them back and forth. Not wasting any time, you scream and shout. Provoked, the cattle soon begin to make enough noise to wake the dead.
 		A <<person>> barges into the room, drawing out a tranquilliser gun and proceeds to putting <<livestock_cows>> to sleep.
 		<br>
-		<<ind>><<link [[Rock the gate (1:00)|Livestock Cell]]>><<set $lock_sequence to 1>><</link>><<gtiredness>>
+		<<ind>><<link [[Rock the gate (1:00)|Livestock Lock Break]]>><<set $farmPatrol  to 80>><<set $livestockLockSeq to 1>><</link>><<gtiredness>>
 		<br>
-		<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $lock_sequence to 2>><</link>>
+		<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $livestockLockSeq to 2>><</link>>
 	<</if>>
 
-<<elseif $lock_temp is true>>
-	<<unset $lock_temp>>
-	You approach your cell's gate. Like you expected, Remy's henchmen already put a new lock on your cell's gate. 
-	It doesn't seem to be much different from the previous one. It is as old and rusty. The lock hanging outside looks <<lock_strength>>
-	<span class="red"> You still have a chance. </span>
-	<br><br>
-	<<getouticon>><<link [[Step back|Livestock Cell]]>><<set $lock_sequence to 2>><</link>>
+<<elseif $farmGateCD is 0>>
 
-<<elseif $lock_silver gte 2>>
-	You approach your cell's gate. Like you expected, Remy's henchmen already put a new lock on your cell's gate. 
-	This one looks quite different. Not only is it made of steel, but it also looks new. 
-	You don't think you would be able to break it with your bare hands.<<stress 12>><<ggstress>>
-	<br><br>
-	<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $lock_sequence to 3>><</link>>
-
-<<elseif $lock_lock is true>>
 	<span class="red"> You hear the farmhand wheezing outside.</span>
 	You should call it a night and try again tommorow. 
 	<br><br>
 	<<getouticon>><<link [[Step back|Livestock Cell]]>><</link>>
 
-<<elseif $lockStrength lte 0>>
-	<<set $lock_silver to 0>>
-	<<if $lock_sequence is 1>>
+<<elseif $farmGateCD is 1>>
+	<<if $farmCellUnlk is false>>
+		You decide not to try your luck.
+		You should call it a night and try again tommorow. 
+	<<else>>
+		<span class="red">The farmhand is wide awake.</span>
+		You should call it a night and try again tommorow. 
+	<</if>>
+	<br><br>
+	<<getouticon>><<link [[Step back|Livestock Cell]]>><</link>>
+
+<<elseif $farmLockStr lte 0>>
+	<<if $livestockLockSeq is 1>>
+		<<if $farmLockQty is undefined >>
+			<<set $farmLockQty to 0>>
+		<<else>>
+			<<set $farmLockQty += 1>>
+		<</if>>
 		You bide your time until you are certain the <<person>> is asleep.
 		<br><br>
-		The lock is <<lock_strength>>
+		The lock is <<livestock_lock_desc>>
 		You can leave your cage tonight. The breakage will be noticed in the morning once
-		Remy and <<person1>><<his>> henchmen come to herd you to the cattle field.
-
+		Remy and <<person2>><<his>> henchmen come to herd you to the cattle field.
 	<<else>>
-		
+		<<loadNPC 0 "remy_farmhand_1">>
 		You approach your cell's gate.
 		<br><br>
-		The lock is <<lock_strength>>
+		The lock is <<livestock_lock_desc>>
 		You can leave your cage tonight. The breakage will be noticed in the morning.
 	<</if>>
-
 	<br><br>
-	<<sneakicon>><<link [[Sneak out|Livestock Lock Break]]>><<set $lock_break to true>><<set $lock_sequence to 4>><<set $lock_temp to true>><</link>>
+	<<sneakicon>><<link [[Sneak out|Livestock Lock Break]]>><<set $livestockLockSeq to 3>><<set $phase to 1>><</link>>
 	<br>
-	<<getouticon>><<link [[Step back|Livestock Lock Break ]]>><<set $lock_sequence to 6>><<unset $phase>><</link>>
+	<<getouticon>><<link [[Step back|Livestock Lock Break ]]>><<set $livestockLockSeq to 2>><<set $phase to 1>><</link>>
+
+<<elseif $farmLockQty lt 2 and $farmGateCD is undefined>>
+	You approach your cell's gate. Like you expected, Remy's henchmen already put a new lock on your cell's gate. 
+	It doesn't seem to be much different from the previous one. It is as old and rusty. The lock hanging outside looks <<livestock_lock_desc>>
+	<span class="red"> You still have a chance. </span>
+	<br><br>
+	<<getouticon>><<link [[Step back|Livestock Cell]]>><</link>>
+
+<<elseif $farmLockQty gte 2>>
+	You approach your cell's gate. Like you expected, Remy's henchmen already put a new lock on your cell's gate. 
+	This one looks quite different. Not only is it made of steel, but it also looks new. 
+	You don't think you would be able to break it with your bare hands.<<stress 12>><<ggstress>>
+	<br><br>
+	<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $livestockLockSeq to 2>><</link>>
 
 	
 <<else>>
-	<<npc Remy>><<person1>><<generate2>><<person2>>
-
+	<<generate1>>
+	<<saveNPC 0 "remy_farmhand_1">>
+	<<npc Remy 2>>
 	You grab the bars and rock them back and forth. Not wasting any time, you scream and shout. Provoked, the cattle soon begin to make enough noise to wake the dead.
-	A <<person2>><<person>> barges into the room, carrying a tranquilliser gun. <<He>> begins putting the flustered <<livestock_cows>> to sleep.
+	A <<person1>><<person>> barges into the room, carrying a tranquilliser gun. <<He>> begins putting the flustered <<livestock_cows>> to sleep.
 	<br><br>
-	<<ind>><<link [[Rock the gate (1:00)|Livestock Lock Break]]>><<set $lock_sequence to 1>><<set $lockGuard  to 80>><</link>><<gtiredness>>
+	<<ind>><<link [[Rock the gate (1:00)|Livestock Lock Break]]>><<set $livestockLockSeq to 1>><<set $farmPatrol  to 80>><</link>><<gtiredness>>
 	<br>
-	<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $lock_sequence to 2>><</link>>
+	<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $livestockLockSeq to 2>><</link>>
 <</if>>
 
 
@@ -3108,7 +3125,6 @@ You hear another voice raise in protest. It's Remy. <<He>> gets into an argument
 	You continue to rock the gate. Each of your thrusts echoes with a loud clang.
 	You notice several <<livestock_cows>> looking at you with perplexed expressions on their faces.
 	<br><br>
-	<<set $livestock_lock_intro is 3>>
 	<<link [[Continue|Livestock Lock Intro]]>><<set $livestock_lock_intro to 3>><</link>>
 
 <<elseif $livestock_lock_intro is 3>>
@@ -3126,84 +3142,56 @@ You hear another voice raise in protest. It's Remy. <<He>> gets into an argument
 
 <<elseif $livestock_lock_intro is 4>>
 	You patiently wait for the farmhand to leave, but <<he>> never walks back past your cell. Curious, you approach the gate and look outside. 
-	You see <<him>> sitting on a stool with <<his>> arms crossed, snoozing. You look at the lock. Maybe you are just seeing things, but the lock looks <<lock_strength>>! Apparently, you can break it.
+	You see <<him>> sitting on a stool with <<his>> arms crossed, snoozing. You look at the lock. Maybe you are just seeing things, but the lock looks <<livestock_lock_desc>>! Apparently, you can break it.
 	<br><br>
 	You wonder if you could use other cattle as a distraction. You could go full force on the gate while farmhands tranquillise the rampant crowd.
 	Maybe if you prove <span class="red">obedient</span>, they will focus more on other cattle before they turn their attention to you.
 	You see no point in trying to sabotage the lock tonight. You will most likely wake the <<person>> up and get tranquilised if you try to bash the gate.
 	<br><br>
-	<<getouticon>><<link [[Step back|Livestock Cell]]>><<set $livestock_lock_intro to 5>><<set $lock_lock to true>><<tiredness 10>><<endevent>><</link>>
+	<<getouticon>><<link [[Step back|Livestock Cell]]>><<set $livestock_lock_intro to 5>><<set $farmGateCD to 0>><<tiredness 10>><<endevent>><</link>>
 <</if>>
 
 :: Livestock Lock Break 
 <<effects>>
 
-<<if $lock_sequence is 1>>
-	<<physiquedifficulty 5000 12000 no_text>>
-	<<if $physiqueSuccess is 1>>
-		<<set $lockStrength -= 10>>
-		<<lock_effect>>
-		You feel like you've made good progress.
-		<br>
-	
-		<<lock_guard>>
-		<br>
-		The lock hanging outside looks <<lock_strength>>
+<<if $livestockLockSeq is 1>>
+	<<if $farmLockStr lte 0>>
+		You push and the gate finally yields. Hopefully, the farmhand didn't hear the sound in the cacophony of mooing voices. 
+		You close the gate, take a closer look at the lock and see that the shackle is broken in two. 
+		The breakage shouldn't be obvious without a close inspection, but it will get exposed once someone tries to use a key to unlock your cage.
 		<br><br>
-		<<if $lockStrength lte 0>>
-			You push and the gate finally yields. Hopefully, the farmhand didn't hear the sound in the cacophony of mooing voices. 
-			You close the gate, take a closer look at the lock and see that the shackle is broken in two. 
-			The breakage shouldn't be obvious without a close inspection, but it will get exposed once someone tries to use a key to unlock your cage.
-			<br><br>
-			<<link [[Next|Livestock Lock Examine]]>><</link>>
-
-		<<else>>
-			<<if $lockGuard lte 20 >>
-				<<ind>><<link [[Continue|Livestock Lock Caught]]>><<pass 30>><<tiredness 5>><</link>>
-			<<else>>
-				<<ind>><<link [[Continue|Livestock Lock Break]]>><<pass 30>><<tiredness 5>><</link>>
-			<</if>>
-			<br>
-			<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $lock_sequence to 2>><</link>>
-		<</if>>
-		
-		
+		<<link [[Next|Livestock Lock Examine]]>><</link>>
 	<<else>>
-		<<set $lockStrength -= 5>>
-		<<lock_effect>>
-		It doesn't feel like you've made much progress.
+		<<physiquedifficulty 5000 12000 no_text>>
+		<<livestock_patrol>>
 		<br>
-		
-		<<lock_guard>>
-		<br>
-		The lock hanging outside looks <<lock_strength>>
+		The lock hanging outside looks <<livestock_lock_desc>>
 		<br><br>
-		<<if $lockStrength lte 0>>
-			You push and the gate finally yields. Hopefully, the farmhand didn't hear the sound in the cacophony of mooing voices. 
-			You close the gate, take a closer look at the lock and see that the shackle is broken in two. 
-			The breakage shouldn't be obvious without a close inspection, but it will get exposed once someone tries to use a key to unlock your cage.
-			<br><br>
-			<<link [[Next|Livestock Lock Examine]]>><</link>>
+		<<if $farmPatrol lte 20 >>
+			<<set $farmGateCD to 0>>
+			<<ind>><<link [[Continue|Livestock Lock Caught]]>><<pass 30>><<tiredness 5>><</link>>
 		<<else>>
-			<<if $lockGuard lte 20 >>
-				<<ind>><<link [[Continue|Livestock Lock Caught]]>><<pass 30>><<tiredness 5>><</link>>
-			<<else>>
-				<<ind>><<link [[Continue|Livestock Lock Break]]>><<pass 30>><<tiredness 5>><</link>>
-			<</if>>
-			<br>
-			<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $lock_sequence to 2>><</link>>
+			<<ind>><<link [[Continue|Livestock Lock Break]]>><<pass 30>><<tiredness 5>><</link>>
 		<</if>>
+		<br>
+		<<getouticon>><<link [[Step back|Livestock Lock Break]]>><<set $livestockLockSeq to 2>><</link>>
 	<</if>>
-	
 
-
-
-<<elseif $lock_sequence is 2>>
-	<<if $lockStrength is 100>>
+<<elseif $livestockLockSeq is 2>>
+	<<if $farmLockStr is 100>>
 		You decide to conserve your strength for now and step back.
 		<br>
 		<<link [[Next|Livestock Cell]]>><</link>>
-		
+
+	<<elseif $farmLockQty gte 2 and $farm_key isnot true>>
+		Dejected you turn away. <span class="red">Maybe you should try another way</span>
+		<br><br>
+		<<link [[Next|Livestock Cell]]>><</link>>
+	
+	<<elseif $phase is 1>>
+		You decide against venturing outside.
+		<br><br>
+		<<link [[Next|Livestock Cell]]>><<endevent>><</link>>
 	<<else>>
 		You step back from the gate and lie in your pile of straw, feigning sleep. 
 		The <<person>> approaches your cell and looks at you, only to walk past your stall and narcotise the remaining cattle. Soon the barn falls silent.
@@ -3226,90 +3214,75 @@ You hear another voice raise in protest. It's Remy. <<He>> gets into an argument
 		
 		<br><br>
 		You bide your time until you are certain the <<person>> is asleep.
-		The lock is <<lock_strength>>
+		The lock is <<livestock_lock_desc>>
 		It looks like you will need to damage it some more.	
 		You should call it a night and try again tommorow.  
 		<br><br>
-		<<link [[Next|Livestock Cell]]>><<set $lock_lock to true>><<endevent>><</link>>
-		
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 0>><<endevent>><</link>>	
 	<</if>>
 	
-<<elseif $lock_sequence is 3>>
-	Dejected you turn away. <span class="red">Maybe you should try another way</span>
-	<br><br>
-	<<link [[Next|Livestock Cell]]>><</link>>
-	
-<<elseif $lock_sequence is 4>>
-	
-	You gently push the gate open and set foot outside. It feels strange to be outside your cage at night, but it is a good feeling.
-	It is almost as if you are free, even though you realise that you are still far away from it.
-	<br><br>
-	You tiptoe your way towards the barn gate as noiselessly as you can. A sudden realisation flashes in your mind and your heart sinks when you remember that the barn also has a lock on it.
-	However, you quickly calm down when you see that the farmhand forgot to pick up <<person2>><<his>> ring of keys.<<set $farm_keys to true>>
-	<br><br>
-	<<link [[Next|Livestock Lock Break]]>><<set $lock_sequence to 7>><</link>>
-
-<<elseif $lock_sequence is 5>>
-
-	You decide to return to your cell. 
-	You stow the ring of keys in the pile of straw.
-	<br><br>
-	<<link [[Next|Livestock Cell]]>><<set $lock_silver += 1>><<set $farm_cell to false>><</link>>
-
-
-
-<<elseif $lock_sequence is 6>>
-	You decide against venturing outside.
-	<br><br>
-	<<link [[Next|Livestock Cell]]>><</link>>
-
-<<elseif $lock_sequence is 7>>
-	You follow the already familiar path to the great field, alone this time around. You stick to the shadows to reduce the chances of being spotted. 
-	The perimeter is marked by an electric fence. You hear a warm buzz coming from the wires
-	<br><br>
-	<<link [[Next|Livestock Field Night]]>><<endevent>><</link>>
-
-<<elseif $lock_sequence is 8>>
-	You push and the gate finally yields. Hopefully, the farmhand didn't hear the sound in the cacophony of mooing voices. 
-	You close the gate, take a closer look at the lock and see that the shackle is broken in two. 
-	The breakage shouldn't be obvious without a close inspection, but it will get exposed once someone tries to use a key to unlock your cage.
-	<br><br>
-	<<link [[Next|Livestock Lock Examine]]>><<set $lock_sequence to 4>><</link>>
-
+<<elseif $livestockLockSeq is 3>>
+	<<if $phase is 1 >>
+		You gently push the gate open and set foot outside. It feels strange to be outside your cage at night, but it is a good feeling.
+		It is almost as if you are free, even though you realise that you are still far away from it.
+		<br><br>
+		You tiptoe your way towards the barn gate as noiselessly as you can. A sudden realisation flashes in your mind and your heart sinks when you remember that the barn also has a lock on it.
+		However, you quickly calm down when you see that the farmhand forgot to pick up <<person1>><<his>> ring of keys.<<set $farm_key to true>>
+		<br><br>
+		<<link [[Next|Livestock Lock Break]]>><<set $phase += 1>><</link>>
+	<<elseif $phase is 2>>
+		You follow the already familiar path to the great field, alone this time around. You stick to the shadows to reduce the chances of being spotted. 
+		The perimeter is marked by an electric fence. You hear a warm buzz coming from the wires
+		<br><br>
+		<<link [[Next|Livestock Field Night]]>><<endevent>><</link>>
+	<</if>>
 <</if>>
 
 :: Livestock Lock Key
-<<if $lock_sequence is 1>>
-	You fetch the key ring from the straw and try to unlock your cell with each of the keys. It's a slow and methodical process, but finally, one of them fits.
- 	You turn the key and hear a clicking sound. <span class="teal">Your cell is no longer locked.</span> <<set $farm_cell to true>>
-	<br><br>
-	<<sneakicon>><<link [[Sneak out|Livestock Lock Key]]>><<set $lock_break to true>><<set $lock_sequence to 4>><</link>>
-	<br>
-	<<getouticon>><<link [[Step back|Livestock Lock Key]]>><<set $farm_cell to true>><<set $lock_sequence to 2>><<unset $phase>><</link>>
-
-<<elseif $lock_sequence is 2>>
-	You decide against venturing outside.
-	You stow the ring of keys in the pile of straw.
-	<br><br>
-	<<link [[Next|Livestock Cell]]>><<set $farm_cell to true>><</link>>
-
-<<elseif $lock_sequence is 4>>
+<<if $phase is 0>>
+	<<if $farmCellUnlk is undefined and $farmLockQty is gte 2>>
+		You fetch the key ring from the straw. You go to unlock your sell but a new lock greets you. A shiny silver lock.
+		Panic sets as you try the keys. <span class="red">They don't work.</span><<unset $farm_key>>
+		<br>
+		You'll have to grab a new pair.farm
+		<br><br>
+		<<getouticon>><<link [[Step back|Livestock Lock Key]]>><<set $phase += 2>><</link>>
+	<<else>>
+		You fetch the key ring from the straw and try to unlock your cell with each of the keys.
+		It's a slow and methodical process, but finally, one of them fits.
+		You turn the key and hear a clicking sound. <span class="teal">Your cell is no longer locked.</span> <<set $farmCellUnlk to true>>
+		<br><br>
+		<<sneakicon>><<link [[Sneak out|Livestock Lock Key]]>><<set $phase += 1>><</link>>
+		<br>
+		<<getouticon>><<link [[Step back|Livestock Lock Key]]>><<set $phase += 2>><</link>>
+	<</if>>
+<<elseif $phase is 1>>
 	You leave your cell and head towards the barn door. Flipping through the key ring, you discover a large key. It fits.
 	<br><br>
-	<<sneakicon>><<link [[Sneak out|Livestock Lock Key]]>><<set $lock_sequence to 7>><</link>>
-
-<<elseif $lock_sequence is 5>>
-	You decide to return to your cell. 
-	You hide the stolen keys in the pile of straw<<if $farm_cell is true>>once more.<<else>>.<</if>> 
-	<br><br>
-	<<link [[Next|Livestock Cell]]>><<set $farm_cell to false>><</link>>
-
+	<<sneakicon>><<link [[Sneak out|Livestock Lock Break ]]>><<set $livestockLockSeq to 3>><</link>>
+		
+<<elseif $phase is 2>>
+	<<if $farm_key is undefined>>
+		You discard the useless key ring. <<stress 12>><<ggstress>>
+		<<link [[Next|Livestock Cell]]>><<endevent>><</link>>
+	<<else>>
+		You decide to return to your cell. 
+		<<if $farmLockStr lte 0 and $farmGateCD is 0 >>
+			You stow the ring of keys in the pile of straw.
+			<<set $farmLockQty += 1>>
+		<<else>>
+			You use the keys on your cell and stow them in a pile of straw.
+			<<set $farmCellUnlk to false>>
+		<</if>>
+		<br><br>
+		<<link [[Next|Livestock Cell]]>><<set $farmGateCD to 1>><<endevent>><</link>>
+	<</if>>
 <</if>>
 	
 
 :: Livestock Lock Caught
 <<rng 10>>
-<<if $rng is 1>>
+<<if $rng lte 2>>
 	You step back from the gate and lie in your pile of straw, feigning sleep. 
 	The <<person>> approaches your cell and looks at you, only to walk past your stall and narcotise the remaining cattle. Soon the barn falls silent.
 	<<set _guard_speech to random(1,7)>>
@@ -3332,11 +3305,11 @@ You hear another voice raise in protest. It's Remy. <<He>> gets into an argument
 	
 	<br><br>
 	You bide your time until you are certain the <<person>> is asleep.
-	The lock is <<lock_strength>>
+	The lock is <<livestock_lock_desc>>
 	It looks like you will need to damage it some more.	
 	You should call it a night and try again tommorow.
 	<br><br>
-	<<link [[Next|Livestock Cell]]>><<endevent>><<set $lock_lock to true>><</link>>
+	<<link [[Next|Livestock Cell]]>><<endevent>><<set $farmGateCD to 0>><</link>>
 <<else>>
 	The <<person>> looks at you, catching you in the act of shaking your cell's gate with all your might.
 	"Remy won't like to hear this," <<he>> says, pointing <<his>> tranquilliser gun at you. <<livestock_obey -10>><<llobey>>
@@ -3344,5 +3317,5 @@ You hear another voice raise in protest. It's Remy. <<He>> gets into an argument
 	"No, don't..." but before you can utter another word, a dart pierces your thigh. You immediately feel numb and dizzy. 
 	You didn't even feel the sting of the dart penetrating your skin. A black veil covers your eyes, and succumb to the darkness.
 	<br><br>
-	<<link [[Next|Livestock Passout]]>><<set $lock_lock to true>><<set $lock_caught to true>><<set $lock_silver += 1>><<set $lock_temp to true>><<endevent>><</link>>
+	<<link [[Next|Livestock Passout]]>><<endevent>><</link>>
 <</if>>

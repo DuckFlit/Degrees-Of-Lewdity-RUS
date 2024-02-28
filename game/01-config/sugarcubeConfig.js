@@ -8,7 +8,7 @@ Config.history.maxStates = 5;
 /* sneaky will enable the Sneaky notice banner on the opening screen and save display */
 /* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
 window.StartConfig = {
-	debug: false,
+	debug: true,
 	enableImages: true,
 	enableLinkNumberify: true,
 	version: "0.4.5.3",
