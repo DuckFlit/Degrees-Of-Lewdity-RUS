@@ -1188,20 +1188,20 @@ function masturbationEffectsArms(
 					switch (V.ballssize) {
 						case 1:
 						case 2:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}`));
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand.`));
 							break;
 						case 3:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. It fills your palm nicely`));
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand. It fills your palm nicely`));
 							break;
 						case 4:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. You can barely get your hand around it`));
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand. You can barely get your hand around it`));
 							break;
 						default:
-							fragment.append(span(`You easily grab both of your ${balls} with your ${arm}`));
+							fragment.append(span(`You easily grab both of your ${balls} with your ${arm} hand.`));
 							break;
 					}
 				}
-				fragment.append(span(`. You Briefly freeze. `));
+				fragment.append(span(`. You briefly freeze. `));
 				fragment.append(span(`You didn't feel anything.`, "red"));
 			} else {
 				additionalEffect.hands = "ballplayeffects";
@@ -1227,16 +1227,16 @@ function masturbationEffectsArms(
 					switch (V.ballssize) {
 						case 1:
 						case 2:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}.`, "blue"));
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand.`, "blue"));
 							break;
 						case 3:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. It fills your palm nicely.`, "blue"));
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand. It fills your palm nicely.`, "blue"));
 							break;
 						case 4:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm}. You can barely get your hand around it.`, "blue"));
+							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand. You can barely get your hand around it.`, "blue"));
 							break;
 						default:
-							fragment.append(span(`You easily grab both of your ${balls} with your ${arm}`, "blue"));
+							fragment.append(span(`You easily grab both of your ${balls} with your ${arm} hand.`, "blue"));
 							break;
 					}
 				}
