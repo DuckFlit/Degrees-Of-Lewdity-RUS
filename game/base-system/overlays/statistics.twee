@@ -125,8 +125,10 @@
 			Orgasms while being choked: $chokeorgasm
 			<br>
 		<</if>>
-		<<if $player.penisExist or $toydildodisable is "f" or $penilestat>>
+		<<if $player.penisExist or $penilestat>>
 			Penetrated others: $penilestat
+			<br>
+			Last penetrated others: <<statisticsTimeCompare $penileTimeStat>>
 			<br>
 		<</if>>
 		<<if $straponstat>>
@@ -136,17 +138,27 @@
 		<<if $player.penisExist or $penileejacstat>>
 			Ejaculated in others: $penileejacstat
 			<br>
+			Last ejaculated in others: <<statisticsTimeCompare $penileEjacTimeStat>>
+			<br>
 		<</if>>
 		<<if $player.vaginaExist>>
 			Vaginally penetrated: $vaginalstat
 			<br>
+			Last vaginally penetrated: <<statisticsTimeCompare $vaginalTimeStat>>
+			<br>
 			Ejaculated in vaginally: $vaginalejacstat
+			<br>
+			Last ejaculated in vaginally: <<statisticsTimeCompare $vaginalEjacTimeStat>>
 			<br>
 		<</if>>
 		<<if $analdisable is "f">>
 			Anally penetrated: $analstat
 			<br>
+			Last anally penetrate: <<statisticsTimeCompare $analTimeStat>>
+			<br>
 			Ejaculated in anally: $analejacstat
+			<br>
+			Last ejaculated in anally: <<statisticsTimeCompare $analEjacTimeStat>>
 			<br>
 		<</if>>
 		Orally penetrated: $oralstat
@@ -199,7 +211,11 @@
 		<br>
 		Masturbated: $masturbationstat
 		<br>
+		Last masturbated: <<statisticsTimeCompare $masturbationTimeStat>>
+		<br>
 		Masturbated to orgasm: $masturbationorgasmstat
+		<br>
+		Last masturbated to orgasm: <<statisticsTimeCompare $masturbationOrgasmTimeStat>>
 		<br>
 		Minutes spent masturbating: <<print Math.trunc($secondsSpentMasturbating / 60)>>
 		<br>
@@ -253,7 +269,11 @@
 			<span class="gold">Violence</span>
 			Molested: $moleststat
 			<br>
+			Last molested: <<statisticsTimeCompare $molestTimeStat>>
+			<br>
 			Raped: $rapestat
+			<br>
+			Last raped: <<statisticsTimeCompare $rapeTimeStat>>
 			<br>
 			<<if $bestialitydisable is "f">>
 				Raped by animals: $beastrapestat
@@ -426,6 +446,8 @@
 		<br>
 		Passed out: $passoutstat
 		<br>
+		Last passed out: <<statisticsTimeCompare $passoutTimeStat>>
+		<br>
 		Distinctions won: $distinction_stat
 		<br>
 		Hours slept: $sleepStat
@@ -471,6 +493,14 @@
 		<</if>>
 		<<if $whitney_smoke gte 1>>
 			Cigarettes smoked: $whitney_smoke
+			<br>
+		<</if>>
+		Total paid to Bailey: <<printmoney $baileyPaidStat true>>
+		<mouse class="tooltip linkBlue">(?)<span>Not tracked in versions '0.4.5.X' and older</span></mouse>
+		<br>
+		<<if $baileyRefusedToPayTotal>>
+			Total in missed payments to Bailey: <<printmoney $baileyRefusedToPayTotalStat "red">>
+			<mouse class="tooltip linkBlue">(?)<span>Not tracked in versions '0.4.5.X' and older</span></mouse>
 			<br>
 		<</if>>
 		<br>
@@ -1073,4 +1103,40 @@
 		<<case "human">>normal babies.
 		<<case "wolf">>wolf puppies.
 	<</switch>>
+<</widget>>
+
+<<widget "statisticsTimeCompare">><<silently>>
+	<<if $statFreeze is true>>
+		Not avaliable when stats are being frozen
+	<<elseif $args[0]>>
+		<<set _difference to new DateTime($args[0]).compareWith(Time.date)>>
+		<<set $_text_output to "">>
+		<<if _difference.years>>
+			<<set $_text_output += `${_difference.years} year${_difference.years gt 1 ? "s" : ""}`>>
+		<</if>>
+		<<if _difference.months>>
+			<<if $_text_output>><<set $_text_output += ", ">><</if>>
+			<<set $_text_output += `${_difference.months} month${_difference.months gt 1 ? "s" : ""}`>>
+		<</if>>
+		<<if _difference.days>>
+			<<if $_text_output>><<set $_text_output += ", ">><</if>>
+			<<set $_text_output += `${_difference.days} day${_difference.days gt 1 ? "s" : ""}`>>
+		<</if>>
+		<<if _difference.hours>>
+			<<if $_text_output>><<set $_text_output += ", ">><</if>>
+			<<set $_text_output += `${_difference.hours} hour${_difference.hours gt 1 ? "s" : ""}`>>
+		<</if>>
+		<<if _difference.minutes>>
+			<<if $_text_output>><<set $_text_output += ", ">><</if>>
+			<<set $_text_output += `${_difference.minutes} minute${_difference.minutes gt 1 ? "s" : ""}`>>
+		<</if>>
+		<<if !$_text_output>>
+			<<set $_text_output += "recently">>
+		<<else>>
+			<<set $_text_output += " ago">>
+		<</if>>
+	<<else>>
+		<<set $_text_output to "never">>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>
