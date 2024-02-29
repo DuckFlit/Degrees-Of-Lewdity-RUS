@@ -28,9 +28,9 @@ Weather.WeatherConditions = (() => {
 		delete T.currentTemperature;
 
 		const currentTimeStamp = Time.date.timeStamp;
-		const nextTimeStamp = currentTimeStamp + minutes * Time.secondsPerMinute;
+		const nextTimeStamp = currentTimeStamp + minutes * TimeConstants.secondsPerMinute;
 		// One hour of leeway, in case the next key point is close after the new one
-		const leeway = Time.secondsPerHour;
+		const leeway = TimeConstants.secondsPerHour;
 
 		// Remove key points that are within the new key point timestamps
 		while (V.weatherObj.keypointsArr.length > 0 && V.weatherObj.keypointsArr[0].timestamp <= nextTimeStamp + leeway) {
@@ -119,7 +119,6 @@ Weather.WeatherConditions = (() => {
 
 	function createObjectByType(obj, overcast) {
 		overcast = Time.isBloodMoon() ? false : overcast;
-		console.log("ASD", obj.precipitationIntensity);
 		return {
 			defines: obj,
 			name: obj.name,
@@ -141,7 +140,7 @@ Weather.WeatherConditions = (() => {
 		const lastKeypoint = V.weatherObj.keypointsArr[V.weatherObj.keypointsArr.length - 1];
 		const lastDate = new DateTime(lastKeypoint.timestamp);
 		const targetDate = new DateTime(currentDate).addDays(daysToGenerate);
-		const dayDifferenceFromKeypoint = (targetDate.timeStamp - lastDate.timeStamp) / Time.secondsPerDay;
+		const dayDifferenceFromKeypoint = (targetDate.timeStamp - lastDate.timeStamp) / TimeConstants.secondsPerDay;
 
 		// Generate a new keypoints array in case of a "time-jump" more than 'daysToGenerate' number of days
 		if (dayDifferenceFromKeypoint > 20) {

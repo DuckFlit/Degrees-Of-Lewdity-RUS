@@ -59,4 +59,23 @@ setup.WeatherTooltip = {
 			return "It's getting hot.";
 		}
 	},
+	bodyTemperature: () => {
+		if (Weather.bodyTemperature <= 34) {
+			return "You're suffering from hypothermia'."
+		} else if (Weather.bodyTemperature <= 35) {
+			return "You are freezing cold."
+		} else if (Weather.bodyTemperature <= 36) {
+			return "You shiver."
+		} else if (Weather.bodyTemperature <= 36.5) {
+			return "You are chilly."
+		} else if (Weather.bodyTemperature <= 38) {
+			return "You are snug."
+		} else if (Weather.bodyTemperature <= 39) {
+			return "You are warm and sweaty."
+		} else if (Weather.bodyTemperature <= 40) {
+			return "You are hot."
+		} else {
+			return "You're suffering from heatstroke."
+		}
+	}
 };

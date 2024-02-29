@@ -13,6 +13,7 @@
 */
 
 Weather.Temperature = (() => {
+
 	// Sets current temperate (at start of day) to this temperature
 	// However, the actual temperature might vary, since it interpolates to the next day's temperature during the day
 	// After this is set it will still interpolate to the next temperature, which shifts midnight

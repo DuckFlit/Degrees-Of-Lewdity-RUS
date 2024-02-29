@@ -83,7 +83,7 @@ WeatherEffects.create({
 			if (!this.currentDate) {
 				this.currentDate = new DateTime(Time.date);
 			}
-			return this.currentDate?.compareWith(Time.date, true) / Time.secondsPerMinute;
+			return this.currentDate?.compareWith(Time.date, true) / TimeConstants.secondsPerMinute;
 		};
 
 		updateTargetCount();
@@ -183,7 +183,7 @@ WeatherEffects.create({
 			if (!this.currentDate) {
 				this.currentDate = new DateTime(Time.date);
 			}
-			return this.currentDate?.compareWith(Time.date, true) / Time.secondsPerMinute;
+			return this.currentDate?.compareWith(Time.date, true) / TimeConstants.secondsPerMinute;
 		};
 
 		updateTargetCount();
@@ -265,7 +265,7 @@ WeatherEffects.create({
 			if (!this.currentDate) {
 				this.currentDate = new DateTime(Time.date);
 			}
-			return this.currentDate?.compareWith(Time.date, true) / Time.secondsPerMinute;
+			return this.currentDate?.compareWith(Time.date, true) / TimeConstants.secondsPerMinute;
 		};
 		this.x = random(0, this.images.fog.width);
 	},

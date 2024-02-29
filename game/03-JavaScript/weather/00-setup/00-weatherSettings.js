@@ -28,6 +28,10 @@ setup.WeatherSettings = {
 			maxKeyPointsPerMonth: 6, // Maximum number of key points per month.
 		},
 	},
+	thermometer: {
+		base: "img/misc/icon/weather/thermometer.png",
+		fill: "img/misc/icon/weather/thermo_filled.png",
+	},
 	months: [
 		{
 			// Jan

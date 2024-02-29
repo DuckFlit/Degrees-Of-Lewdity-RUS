@@ -26,7 +26,6 @@ WeatherEffects.create({
 	],
 	init() {
 		this.animationFrame = 0;
-		console.log("INIT LOCATIONS");
 	},
 	draw() {
 		// Set this.animations to be accessible from outside
@@ -90,6 +89,7 @@ WeatherEffects.create({
 	},
 	// Make it asyncronous to wait for the image to load before animating without slowing down the main flow
 	async init() {
+		// Update only animations of which its condition states has changed
 		this.updateConditions = () => {
 			const animationsArr = this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
 			this.animations?.forEach(anim => {
@@ -107,9 +107,7 @@ WeatherEffects.create({
 			// Wait for image to load - add animation if it exists, otherwise just use the image
 			return new Promise((resolve, reject) => {
 				const image = new Image();
-				console.log("LOC",loc)
 				const imagePath = typeof loc === "object" && loc.image ? loc.image : this.obj;
-				console.log("imagePath",loc, loc.image, this.obj)
 				image.src = this.fullPath + imagePath;
 				image.onload = () => {
 					const animDetails = {
@@ -135,8 +133,12 @@ WeatherEffects.create({
 							loc.animation.fps,
 							animDetails.numFrames,
 							loc.animation.delay,
-							this.onFrame
+							this.onFrame,
+							loc.animation.delayFirst ?? true
 						);
+						if (loc.animation.startFrame) {
+							animDetails.animationInstance.currentFrame = typeof loc.animation.startFrame === "function" ? loc.animation.startFrame() : loc.animation.startFrame;
+						}
 						animDetails.animationInstance.start();
 						animDetails.isPlaying = () => animDetails.animationInstance.isAnimating.value;
 					}
@@ -177,8 +179,6 @@ WeatherEffects.create({
 			await loadImage(this.obj, this.key);
 		}
 		this.updateConditions();
-		console.log("ALL ANIMATIONS", this.animations);
-		console.log("THIS", this);
 	},
 
 	draw() {
@@ -193,12 +193,10 @@ WeatherEffects.create({
 				const isAnimating = animationsArr.find(val => val.name === anim.waitForAnimation)?.animationInstance.isAnimating;
 				if (isAnimating && isAnimating.value && anim.animationInstance?.enabled) {
 					anim.animationInstance.stop();
-					console.warn("STOP ANIMATION", anim.name);
 					const onAnimationChange = value => {
 						if (value === false) {
 							isAnimating.unsubscribe(onAnimationChange);
 							anim.animationInstance.start();
-							console.warn("RESUME ANIMATION", anim.name);
 						}
 					};
 					isAnimating.subscribe(onAnimationChange);
@@ -226,7 +224,6 @@ WeatherEffects.create({
 });
 /*
 TODO
-- Add emissive to asylum
 	- More effects for when hallucinating
 	- Add snow
 

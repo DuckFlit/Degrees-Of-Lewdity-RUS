@@ -25,7 +25,7 @@ Weather.Sky = (() => {
 	}
 
 	class Animation {
-		constructor(image, fps, numFrames, delay, onFrameDraw) {
+		constructor(image, fps, numFrames, delay, onFrameDraw, delayFirst = true) {
 			this.image = image;
 			this.frameInterval = 1000 / fps;
 			this.numFrames = numFrames;
@@ -35,7 +35,7 @@ Weather.Sky = (() => {
 			} else {
 				this.delay = delay;
 			}
-			this.delayTimer = this.delay;
+			this.delayTimer = delayFirst ? this.delay : 0;
 			this.onFrameDraw = onFrameDraw;
 			this.currentFrame = 0;
 			this.frameTimer = 0;
@@ -141,15 +141,15 @@ Weather.Sky = (() => {
 			const currentTime = Time.getSecondsSinceMidnight(date);
 
 			// Get a percentage of time - modified by the expandFactor
-			const riseTimeInSeconds = this.settings.riseTime * Time.secondsPerHour;
-			const setTimeInSeconds = this.settings.setTime * Time.secondsPerHour;
-			const adjustedSetTime = setTimeInSeconds < riseTimeInSeconds ? setTimeInSeconds + Time.secondsPerDay : setTimeInSeconds;
+			const riseTimeInSeconds = this.settings.riseTime * TimeConstants.secondsPerHour;
+			const setTimeInSeconds = this.settings.setTime * TimeConstants.secondsPerHour;
+			const adjustedSetTime = setTimeInSeconds < riseTimeInSeconds ? setTimeInSeconds + TimeConstants.secondsPerDay : setTimeInSeconds;
 			const expandedDuration = (adjustedSetTime - riseTimeInSeconds) / (1 - 2 * this.expandFactor);
 
 			const elapsed =
 				currentTime < riseTimeInSeconds
-					? (currentTime + Time.secondsPerDay - riseTimeInSeconds + this.expandFactor * expandedDuration) % Time.secondsPerDay
-					: (currentTime - riseTimeInSeconds + this.expandFactor * expandedDuration) % Time.secondsPerDay;
+					? (currentTime + TimeConstants.secondsPerDay - riseTimeInSeconds + this.expandFactor * expandedDuration) % TimeConstants.secondsPerDay
+					: (currentTime - riseTimeInSeconds + this.expandFactor * expandedDuration) % TimeConstants.secondsPerDay;
 
 			const timePercent = Math.clamp(elapsed / expandedDuration, 0, 1);
 			const adjustedTimePercent = (timePercent - this.expandFactor) / (1 - 2 * this.expandFactor);
@@ -186,7 +186,7 @@ Weather.Sky = (() => {
 		}
 
 		setTime(date) {
-			this.elapsedTime = this.currentDate?.compareWith(date, true) / Time.secondsPerMinute;
+			this.elapsedTime = this.currentDate?.compareWith(date, true) / TimeConstants.secondsPerMinute;
 			this.currentDate = new DateTime(date);
 		}
 
@@ -224,15 +224,11 @@ Weather.Sky = (() => {
 
 	function isOverlappingAny(objA, objList, modifier) {
 		if (!objList.length) return false;
-		console.log("OVERLAP LIST", objList);
 		for (const objB of objList) {
-			console.log("OVERLAP?", objA, objB, modifier);
 			if (Weather.Sky.isOverlapping(objA, objB, modifier)) {
-				console.log("TRUE");
 				return true;
 			}
 		}
-		console.log("FALSE");
 		return false;
 	}
 

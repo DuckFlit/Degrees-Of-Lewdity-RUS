@@ -132,7 +132,7 @@ Weather.Sky.Effect = class Effect {
 			this.onDraw();
 			this.canvas.ctx.restore();
 		} catch (e) {
-			console.error("Error during effect draw:", e, this);
+			console.error("Error during effect", this.name, "'draw' function", e, this);
 			return e;
 		}
 	}

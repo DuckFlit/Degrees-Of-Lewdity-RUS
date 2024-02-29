@@ -43,7 +43,7 @@ WeatherEffects.create({
 			if (!this.currentDate) {
 				this.currentDate = new DateTime(Time.date);
 			}
-			return this.currentDate?.compareWith(Time.date, true) / Time.secondsPerMinute;
+			return this.currentDate?.compareWith(Time.date, true) / TimeConstants.secondsPerMinute;
 		};
 
 		if (!this.x || this.elapsedTime() >= 3 * Time.minutesPerHour) {

@@ -98,7 +98,7 @@ var statChange = (() => {
 	DefineMacro("straighttrauma", straighttrauma);
 
 	function updateHallucinations() {
-		if (V.trauma >= (V.traumamax / 10) * 5 || V.awareness >= 400 || V.hallucinogen > 0 || isBloodmoon() || V.worn.face.type.includes("esoteric")) {
+		if (V.trauma >= (V.traumamax / 10) * 5 || V.awareness >= 400 || V.hallucinogen > 0 || Time.isBloodMoon() || V.worn.face.type.includes("esoteric")) {
 			V.hallucinations = 2;
 		} else if (V.trauma >= (V.traumamax / 10) * 3 || V.awareness >= 300) {
 			V.hallucinations = 1;

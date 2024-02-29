@@ -29,11 +29,13 @@
  *     - Heavy exercise (both physique and athletics): 0.7
  */
 Weather.BodyTemperature = (() => {
+	/* Be careful when modifying the factors, as small changes can have big effects */
 	const baseBodyTemperature = 37; // The normal body temperature in degrees Celsius.
-	const baseHeatGeneration = 0.075; // The base rate of heat generation by the body.
-	const activityRate = 0.075; // How much physical activity affects heat generation.
-	const baseDissipation = 0.065; // The base rate of heat dissipation without modifiers.
-	const dissipationRate = 0.0015; // The rate at which heat dissipates based on air temperature.
+	const baseHeatGeneration = 0.08; // The base rate of heat generation by the body.
+	const activityRate = 0.1; // How much physical activity affects heat generation.
+	const baseDissipation = 0.055; // The base rate of heat dissipation without modifiers.
+	const dissipationRate = 0.0012; // The rate at which heat dissipates based on air temperature.
+	const insulationFactor = 0.02; // The effectiveness of clothing warmth
 
 	/**
 	 * Calculates the level of activity based on the current state of the body.
@@ -42,9 +44,9 @@ Weather.BodyTemperature = (() => {
 	 * @returns {number} The current activity level, influencing heat generation.
 	 */
 	function activityLevel() {
-		if (T.bodyActivity.sleep) return 0;
-		if (T.bodyActivity.athletics && T.bodyActivity.physique) return 0.7;
-		if (T.bodyActivity.athletics || T.bodyActivity.physique) return 0.5;
+		if (T.bodyActivity?.sleep) return 0;
+		if (T.bodyActivity?.athletics && T.bodyActivity?.physique) return 0.7;
+		if (T.bodyActivity?.athletics || T.bodyActivity?.physique) return 0.5;
 		return 0.2;
 	}
 
@@ -53,7 +55,7 @@ Weather.BodyTemperature = (() => {
 	 * It takes into account all clothing
 	 */
 	function insulationLevel() {
-		return 0;
+		return 1;
 	}
 
 	/**
@@ -103,16 +105,10 @@ Weather.BodyTemperature = (() => {
 		// To prevent exaggerated changes in large time skips and for performance reasons
 		// we scale down the additional minutes after an hour of time passed at once
 		// Won't affect sleep, since it runs in hourly chunks
-		let scaledMinutes;
-		if (minutes <= 60) {
-			// For up to an hour, use the actual minutes
-			scaledMinutes = minutes;
-		} else {
-			// For longer periods, scale down the additional minutes
-			scaledMinutes = 60 + Math.sqrt(minutes - 60);
-		}
+		const scaledMinutes = Math.min(minutes, 60 + Math.sqrt(Math.max(minutes - 60, 0)));
 
 		const dissipation = calculateHeatDissipation(airTemperature);
+		console.log("HEAT DISSIPATION", dissipation);
 		V.player.bodyTemperature = round(V.player.bodyTemperature + (calculateHeatGeneration() - dissipation) * scaledMinutes, 2);
 		resetActivity();
 	}
@@ -127,18 +123,16 @@ Weather.BodyTemperature = (() => {
 	 * @returns {number} The adjusted insulation factor.
 	 */
 	function calculateHeatDissipation(airTemperature) {
-		const temperatureDifference = V.player.bodyTemperature - airTemperature;
+		const bodyTemperature = V.player.bodyTemperature;
+		const temperatureDifference = bodyTemperature - airTemperature;
+		const insulation = insulationLevel();
 
-		// Determine the insulation level based on clothing, in a 0-1 scale.
-		const insulation = insulationLevel() / 100;
+		const normalizedInsulation = 1 / (1 + insulation * insulationFactor);
+		const dissipationFactor = Math.max(1, temperatureDifference / 10);
+		const baseDissipationValue = dissipationRate * temperatureDifference + baseDissipation;
 
-		// Factor based on the absolute value of the temperature difference.
-		// This factor increases as the temperature difference increases
-		let insulationFactor = 1 / (1 + Math.exp(Math.abs(temperatureDifference) / 10));
-		insulationFactor = Math.clamp(insulation * (1 - insulationFactor), 0, 1);
-
-		// Calculate the heat dissipation from the insulation factor + base dissipation rate + temperature difference
-		return (dissipationRate * temperatureDifference + baseDissipation) * (1 - insulationFactor);
+		// Adjust dissipation based on insulation and temperature difference.
+		return baseDissipationValue * normalizedInsulation * dissipationFactor;
 	}
 
 	/**
@@ -153,9 +147,23 @@ Weather.BodyTemperature = (() => {
 		return baseHeatGeneration + activityHeatGeneration - 0.01 * temperatureDiffFromBase;
 	}
 
+	/* Debug */
+	function getRestingPoint(airTemperature, iterations = 120) {
+		let temp = V.player.bodyTemperature;
+		for (let i = 0; i < iterations; i++) {
+			const dissipation = calculateHeatDissipation(airTemperature);
+			temp = round(temp + (calculateHeatGeneration() - dissipation) * 1, 2);
+		}
+		return temp;
+	}
+
 	return Object.create({
 		addActivity,
 		get,
 		update,
+		activityLevel,
+		calculateHeatDissipation,
+		// Debug
+		getRestingPoint,
 	});
 })();

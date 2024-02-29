@@ -9,29 +9,22 @@ Weather.Observables = (() => {
 			this.updates = new Set();
 			this.scheduled = false;
 		}
-
+	
 		scheduleUpdate(update) {
 			this.updates.add(update);
-
+	
 			if (!this.scheduled) {
 				this.scheduled = true;
 				Promise.resolve().then(() => this.executeUpdates());
 			}
 		}
-
+	
 		executeUpdates() {
-			for (const update of this.updates) {
-				update();
-			}
+			this.updates.forEach(update => update());
 			this.updates.clear();
 			this.scheduled = false;
 		}
 	}
-
-	// Prevents multiple of the same update function to execute at the same time
-	function batchedUpdate(fn) {
-		scheduler.scheduleUpdate(fn);
-	};
 
 	const observables = ObservableValue.fromObject({
 		location: null,
@@ -42,8 +35,11 @@ Weather.Observables = (() => {
 		precipitationIntensity: null,
 		snow: null,
 		bloodMoon: null,
+		//Location conditions
+		dayState: null,
 	});
 
+	// Prevents multiple of the same update function to execute at the same time
 	const scheduler = new UpdateScheduler();
 
 	Weather.Sky.loaded.subscribe( () => {
@@ -58,6 +54,7 @@ Weather.Observables = (() => {
 			observables.precipitationIntensity.value = Weather.precipitationIntensity;
 			observables.snow.value = Weather.isSnow;
 			observables.bloodMoon.value = Weather.bloodMoon;
+			observables.dayState.value = Time.dayState;
 			if (Weather.Sky.loaded.value) Weather.Sky.updateTooltip();
 		});
 		
@@ -87,19 +84,20 @@ Weather.Observables = (() => {
 		};
 		
 		/* LOCATION */
-		observables.location.subscribe(() => batchedUpdate(updateLocation));
-		observables.bus.subscribe(() => batchedUpdate(updateLocation));
-		observables.bloodMoon.subscribe(() => batchedUpdate(updateLocation));
-		observables.bloodMoon.subscribe((val) => console.warn("BVLOOD MOON", val));
-		observables.snow.subscribe(() => batchedUpdate(updateLocation));
+		observables.location.subscribe(() => scheduler.scheduleUpdate(updateLocation));
+		observables.bus.subscribe(() => scheduler.scheduleUpdate(updateLocation));
+		observables.bloodMoon.subscribe(() => scheduler.scheduleUpdate(updateLocation));
+		observables.snow.subscribe(() => scheduler.scheduleUpdate(updateLocation));
+		observables.snow.subscribe(() => scheduler.scheduleUpdate(updateLocation));
+		observables.dayState.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 
 		/* WEATHER */
-		observables.weather.subscribe(() => batchedUpdate(updateWeather));
-		observables.precipitation.subscribe(() => batchedUpdate(updatePrecipitation));
-		observables.precipitationIntensity.subscribe(() => batchedUpdate(updatePrecipitation));
+		observables.weather.subscribe(() => scheduler.scheduleUpdate(updateWeather));
+		observables.precipitation.subscribe(() => scheduler.scheduleUpdate(updatePrecipitation));
+		observables.precipitationIntensity.subscribe(() => scheduler.scheduleUpdate(updatePrecipitation));
 
 		/* TIME */
-		observables.time.subscribe(() => batchedUpdate(drawAll));
+		observables.time.subscribe(() => scheduler.scheduleUpdate(drawAll));
 	});
 
 	return {};

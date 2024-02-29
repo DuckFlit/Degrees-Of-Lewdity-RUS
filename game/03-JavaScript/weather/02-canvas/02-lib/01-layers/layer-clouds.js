@@ -103,7 +103,7 @@ WeatherLayers.add({
 				movement: {
 					speed: 0.2,
 				},
-				baseAlpha: 0.8,
+				baseAlpha: 1,
 			},
 			bindings: {
 				overcastFactor() {
@@ -128,7 +128,7 @@ WeatherLayers.add({
 			},
 			bindings: {
 				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return Weather.Sky.orbitals.sun.factor * interpolate(1, 0.8, Math.max(0, normalise(Weather.Sky.orbitals.sun.factor, 1, 0)));
 				},
 				moonFactor() {
 					return Weather.Sky.moonBrightnessFactor;

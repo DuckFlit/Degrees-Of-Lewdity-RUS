@@ -68,6 +68,7 @@ module.exports = {
 		Constants: "readonly",
 		ConstantsLoader: "readonly",
 		currentlyLoadingMap: "readonly",
+		ColourUtils: "readonly",
 		DateTime: "readonly",
 		DoLHouse: "readonly",
 		DolSettingsExport: "readonly",
@@ -85,13 +86,13 @@ module.exports = {
 		TimeConstants: "readonly",
 		Utils: "readonly",
 		ZIndices: "readonly",
+		Weather: "readonly",
 		// DoL SC2 functions
 		compressionVerifier: "readonly",
 		DefineMacro: "readonly",
 		DefineMacroS: "readonly",
 		DoLCompressorDictionaries: "readonly",
 		DoLSave: "readonly",
-		Weather: "readonly",
 		// DoL functions
 		ampm: "readonly",
 		assignDefaults: "readonly",

@@ -68,12 +68,7 @@ WeatherLayers.add({
 				movement: {
 					speed: 0.5,
 				},
-				baseAlpha: 1,
-			},
-			bindings: {
-				// weather() {
-				// 	return Weather.current;
-				// },
+				baseAlpha: 0.95,
 			},
 		},
 		{
@@ -88,11 +83,6 @@ WeatherLayers.add({
 					speed: 0.5,
 				},
 				baseAlpha: 1,
-			},
-			bindings: {
-				// weather() {
-				// 	return Weather.current;
-				// },
 			},
 		},
 	],
