@@ -1,7 +1,7 @@
 function gainSchoolStar(variable) {
 	if (V.statdisable === "t") return;
 	if (V.options.images === 1) {
-		if (V[variable] + 1 === 3) {
+		if (V[variable] + 1 >= 3) {
 			return `<img class="icon" src="img/ui/gold_star.png">`;
 		} else if (V[variable] + 1 === 2) {
 			return `<img class="icon" src="img/ui/silver_star.png">`;
@@ -9,7 +9,7 @@ function gainSchoolStar(variable) {
 			return `<img class="icon" src="img/ui/bronze_star.png">`;
 		}
 	} else {
-		if (V[variable] + 1 === 3) {
+		if (V[variable] + 1 >= 3) {
 			return `<span class="gold">Gold Star</span>`;
 		} else if (V[variable] + 1 === 2) {
 			return `<span class="platinum">Silver Star</span>`;
@@ -22,7 +22,7 @@ window.gainSchoolStar = gainSchoolStar;
 
 function schoolStar(variable) {
 	if (V.options.images === 1) {
-		if (V[variable] === 3) {
+		if (V[variable] >= 3) {
 			return `<img class="icon" src="img/ui/gold_star.png">`;
 		} else if (V[variable] === 2) {
 			return `<img class="icon" src="img/ui/silver_star.png">`;
