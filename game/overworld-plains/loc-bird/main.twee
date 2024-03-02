@@ -1160,13 +1160,37 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<</if>>
 		<<else>>
 			<<if $bird.state isnot "home">>
-				You feel relieved to have some privacy in your exposed state.
+				<<if $uncomfortable.nude is true>>
+					You feel relieved to have some privacy in your exposed state.
+				<</if>>
 			<<else>>
-				You feel embarrassed to be exposed around the <<beasttype>>.
+				<<if $uncomfortable.nude is true>>
+					You feel embarrassed to be exposed around the <<beasttype>>.
+				<<else>>
+					You feel excited to be exposed around the <<beasttype>>.
+				<</if>>
 			<</if>>
 		<</if>>
 	<</if>>
 	<br><br>
+	<<if $arousal gte $arousalmax>>
+		<<orgasm>>
+		<<if $bird.state isnot "home">>
+			Nothing is around to witness your lewdity.
+		<<else>>
+			<<if $bird.activity is "sleep">>
+				The <<beasttype>> stirs in the nest, but doesn't wake up.
+			<<else>>
+				You feel a warm pair of wings wrap around you, holding you as your spasms subside.
+				<<if $monster is 1>>
+					"<<Wife>> needed release? Should have said something. Will help next time." The <<beasttype>> pecks you on the cheek, before returning to what <<bhe>> was doing.
+				<<else>>
+					The <<beasttype>> pecks you on the cheek before returning to what <<bhe>> was doing.
+				<</if>>
+			<</if>>
+		<</if>>
+		<br><br>
+	<</if>>
 	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
 		<<if $possessed>>
 			You stare down at your bindings. You pull, and they fall apart, unable to hold against you.
@@ -1450,7 +1474,7 @@ You have <<number $bird.fabric>> spare material<<if $bird.fabric gt 1>>s<</if>>.
 	The wind could carry you a long way, if you had a better jumping point. <span class="blue">The perch might be perfect.</span>
 	<br><br>
 <<elseif $angel gte 6 or $demon gte 6 or $fallenangel gte 2>>
-	<<if $pain gte 20>>
+	<<if $pain gte 21>>
 		Your wings should carry you down, <span class="purple">but you're too injured for such a risky jump right now.</span>
 	<<else>>
 		Your wings would carry you down, if you had a better jumping point. <span class="blue">The perch might be perfect.</span>
@@ -1703,6 +1727,7 @@ It fills you with a strange warmth.<<drugs 120>><<ggdrugged>>
 <br><br>
 
 <<if $harpy gte 6 and $bird.hunts.unlocked is true and $bird.hunts.lurkers is false>>
+	<<set $bird.hunts.lurkers to true>>
 	<span class="blue">Feasting on the lurker felt good. You have the urge to catch one yourself.</span> <span class="gold">You can now hunt for lurkers on your own.</span>
 	<br><br>
 <</if>>
@@ -1783,7 +1808,7 @@ You hang the lurker on the rack for later.
 <<else>>
 	"Thank you," you say, lifting the rubbish.
 <</if>>
-<<if $bird.hunts.valuables is true>>
+<<if $syndromebird gte 1>>
 	You add it to the pile of valuables.<<set $bird.materials.junk++>>
 <</if>>
 <br><br>
@@ -2142,7 +2167,7 @@ You wear the new item.
 <<effects>>
 
 You thank the <<beasttype>>. You won't wear it, but the material might be useful.
-<<if $bird.hunts.materials is true>>
+<<if $syndromebird gte 1>>
 	<<set $bird.materials.fabric++>>
 <</if>>
 <br><br>
@@ -3526,7 +3551,11 @@ You lose track of the time as you hold each other. "Landbound displays of affect
 				You throw your head back and sing into the air.
 			<</if>>
 		<<default>>
-			You pick up the <<beasttypes>> song from where <<bhe>> left off.
+			<<if !$birdSingAbsent>>
+				You pick up the <<beasttypes>> song from where <<bhe>> left off.
+			<<else>>
+				The <<beasttype>> picks up the song from where you left off.
+			<</if>>
 	<</switch>>
 	<<if $harpy gte 6 and $syndromebird is 1>>
 		<span class="green"><<print either(
@@ -3877,6 +3906,10 @@ Materials:
 <<unset _material>>
 <<if !_materialsMessage>>
 	<span class="black">Nothing</span>
+	<br>
+<</if>>
+<<if $lurkers_held gte 1>>
+	<<link [[Add your netted lurker to the pile|Bird Tower Build]]>><<set $lurkers_held-->><<set $bird.materials.lurkers++>><</link>>
 	<br>
 <</if>>
 <br>
