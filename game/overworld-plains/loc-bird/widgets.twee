@@ -972,8 +972,9 @@
 			<<else>>
 				<<run Errors.report("Invalid special loot of type; " + $_looted + " " + _args[2])>>
 			<</if>>
-		<<elseif $bird.materials[$_looted] is undefined>>
+		<<elseif $bird.materials[$_looted] is undefined and $bird.upgrades[$_looted] is undefined>>
 			<<run Errors.report("Invalid loot of type; " + $_looted)>>
+			<<exit>>
 		<<else>>
 			<<if $bird.hunts.loot[$_looted] is undefined>>
 				<<set $bird.hunts.loot[$_looted] to 0>>
@@ -1042,11 +1043,13 @@
 	<<set $_hordeLoot to 0>><<set $_otherLoot to 0>>
 	You looted:
 	<br>
-	<<for $_lootType range Object.keys($bird.hunts.loot)>>
-		<<set $_tempNum to $bird.hunts.loot[$_lootType]>>
-		<span class="green">- <<number $_tempNum>></span>
+	<<for $_lootType, $_tempNum range $bird.hunts.loot>>
+		<<if $_lootType is "valuables">>
+			<<set $_tempNum to Object.values($_tempNum).reduce((tot, c) => tot + c)>>
+		<</if>>
+		- <span class="green"><<number $_tempNum>></span>
 		<<switch $_lootType>>
-			<<case "toolbox">>
+			<<case "tools">>
 				<<set $_otherLoot++>><<set $bird.upgrades.tools to 1>>
 				box of tools. You place it somewhere safe.
 			<<case "pot">>
@@ -1085,14 +1088,13 @@
 			<<case "valuables">>
 				<<set $_hordeLoot += $_tempNum>>
 				valuable item<<if $_tempNum gte 2>>s<</if>>:
-				<<for $_lootValType range Object.keys($bird.hunts.loot.valuables)>>
-					<<set $_tempNumVal to $bird.hunts.loot.valuables[$_lootValType]>>
+				<<for $_lootValType, $_tempNumVal range $bird.hunts.loot.valuables>>
 					<<if $bird.materials.valuables[$_lootValType] is undefined>>
 						<<set $bird.materials.valuables[$_lootValType] to 0>>
 					<</if>>
 					<<set $bird.materials.valuables[$_lootValType] += $_tempNumVal>>
 					<br>
-					<<ind>><span class="teal">- <<number $_tempNumVal>></span> $_lootValType<<if $_tempNumVal gte 2>>s<</if>>.
+					<<ind>>- <span class="teal"><<number $_tempNumVal>></span> $_lootValType<<if $_tempNumVal gte 2>>s<</if>>.
 				<</for>>
 			<<default>>
 		<</switch>>
