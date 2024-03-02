@@ -165,6 +165,20 @@ const statDisplay = (() => {
 	DefineMacroS("ggtending", () => statChange("Tending", 2, "green"));
 	DefineMacroS("gggtending", () => statChange("Tending", 3, "green"));
 
+	DefineMacroS("llove", npc => statChange(npc ? `${npc}'s Love` : "Love", -1, "red"));
+	DefineMacroS("lllove", npc => statChange(npc ? `${npc}'s Love` : "Love", -2, "red"));
+	DefineMacroS("llllove", npc => statChange(npc ? `${npc}'s Love` : "Love", -3, "red"));
+	DefineMacroS("glove", npc => statChange(npc ? `${npc}'s Love` : "Love", 1, "green"));
+	DefineMacroS("gglove", npc => statChange(npc ? `${npc}'s Love` : "Love", 2, "green"));
+	DefineMacroS("ggglove", npc => statChange(npc ? `${npc}'s Love` : "Love", 3, "green"));
+
+	DefineMacroS("llust", npc => statChange(npc ? `${npc}'s Lust` : "Lust", -1, "teal"));
+	DefineMacroS("lllust", npc => statChange(npc ? `${npc}'s Lust` : "Lust", -2, "teal"));
+	DefineMacroS("llllust", npc => statChange(npc ? `${npc}'s Lust` : "Lust", -3, "teal"));
+	DefineMacroS("glust", npc => statChange(npc ? `${npc}'s Lust` : "Lust", 1, "lewd"));
+	DefineMacroS("gglust", npc => statChange(npc ? `${npc}'s Lust` : "Lust", 2, "lewd"));
+	DefineMacroS("ggglust", npc => statChange(npc ? `${npc}'s Lust` : "Lust", 3, "lewd"));
+
 	DefineMacroS("lrtrauma", override => statChange("Robin's Trauma", -1, "green", () => C.npc.Robin.trauma > 0 || override));
 	DefineMacroS("llrtrauma", override => statChange("Robin's Trauma", -2, "green", () => C.npc.Robin.trauma > 0 || override));
 	DefineMacroS("lllrtrauma", override => statChange("Robin's Trauma", -3, "green", () => C.npc.Robin.trauma > 0 || override));
