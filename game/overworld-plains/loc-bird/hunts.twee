@@ -259,7 +259,7 @@ You stand on the edge of the perch, spreading your wings. You feel for the wind 
 	<<link [[Step away|Bird Tower Perch]]>><<endevent>><</link>>
 	<br>
 <<else>>
-	<<flight_time_check 30>>
+	<<flight_time_check 30 "silent">>
 	<<print '<<link [[Hunt alone('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
 	<br>
 	<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
@@ -516,7 +516,7 @@ What will you hunt for?
 	<<npc "Great Hawk">>
 <</if>>
 <<if $phase is 2>>
-	You ignore your setback and continue.<<set $phase to 0>>
+	You ignore your setback and continue.
 <</if>>
 <<if $bird.hunts.goal is "hawk">>
 	You follow the <<beasttype>> $bird.hunts.direction, hoping to spot something.
@@ -525,6 +525,7 @@ What will you hunt for?
 <</if>>
 <<if $weather is "rain">>The rain does nothing to help your search.<<elseif $weather is "snow">>The snow does nothing to help your search.<</if>>
 <br><br>
+<<endevent>>
 
 <<cleareventpool>>
 <<if $stress gte $stressmax or isPlayerNonparasitePregnancyEnding()>>
@@ -877,7 +878,7 @@ What will you hunt for?
 		You grab the toolbox. It's easy to carry, and light enough for you to fly with it.
 		<<if $bird.hunts.duo is true>>
 			<<if $monster is 1>>
-				"What does <<wife>> want with metal box?" <<bhe>> asks. You explain that it has useful tools. "If <<wife>> says its useful, we take it."
+				"What does <<wife>> want with metal box?" <<bhe>> asks. You explain that it has useful tools. "If <<wife>> says it's useful, we take it."
 			<<else>>
 				The <<beasttype>> looks at you inquisitively. You explain that the box has useful tools. <<bHe>> doesn't seem to actually understand.
 			<</if>>
@@ -1529,7 +1530,7 @@ The lurker is moving quite fast, flitting between underbrushes. You don't think 
 <<flight_hunt_get "lurkers" 1>>
 <<flight_hunt_return>>
 
-:: Bid Hunt Lurkers Few Ambush
+:: Bird Hunt Lurkers Few Ambush
 <<effects>>
 You wait for the lurker to start resting, then land. Keeping in mind its location, you carefully sneak over to it.
 <<skulduggerycheck>>
@@ -1768,7 +1769,7 @@ You land nearby and begin searching.
 		<<set _huntFail to 1>>
 <</switch>>
 <<if $rng isnot 6>>
-	You take off<<if $bird.hunts.duo is true>><<npc "Great Hawk">> and rejoin your spouse<<if $rng lte 5>>. <<bHe>> looks pleased at your find<<endevent>><</if>><</if>>.
+	You take off<<if $bird.hunts.duo is true>><<npc "Great Hawk">> and rejoin your spouse.<<if $rng lte 5>> <<bHe>> looks pleased at your find.<<endevent>><</if>><<else>>.<</if>>
 	<br><br>
 
 	<<flight_hunt_return>>
@@ -2275,10 +2276,10 @@ You watch the couple with interest.
 	<</switch>>
 <<else>>
 	<<if $phase is 1 or $phase is 2>>
-		One of the <<beasttype>>s mounts the other, and slowly inserts its knotted penis.
+		One of them mounts the other, and slowly inserts its knotted penis.
 		You <<if $bird.hunts.duo is true>>and your spouse <</if>>watch them rut until the knot slides in, sealing them together for a few minutes.
 	<<else>>
-		One of the <<beasttype>>s mounts the other, and starts to grind against the other.
+		One of them mounts the other, and starts to grind against the other.
 		You <<if $bird.hunts.duo is true>>and your spouse <</if>>watch until they both shudder and collapse.
 	<</if>>
 <</if>>
@@ -3297,10 +3298,24 @@ You won't be able to do anything else to them today, now that they're alerted.
 You land atop the rock. There are symbols carved into its face.
 <br><br>
 
-You're able to see quite far around you. Looking at the ground, you notice a small hole in the path, partly obstructed by grass. Seeing this hole gives you an idea. You could disguise the hole and use it as a trap. But if you’re making the trap, you won't be able to see if anyone is coming.
+You're able to see quite far around you. Looking at the ground, you notice a small hole in the path, partly obstructed by grass. You could use it to make a trap.
+<br><br>
 
+<<set _hkMod to Math.floor($housekeeping / 40)>>
+<<set _hkTime to (30 - _hkMod)>>
+<<rng 50>>
+<<set _randomTime to $rng>>
 
+<<link [["Set up a trap (" + getTimeString(_hkTime) + ")"|Bird Hunt Ambush Trap]]>><</link>><<note "Housekeeping" "teal">>
+<br>
+<<link [[Wait in ambush (?:??)|Bird Hunt Ambush Wait]]>><<bird_pass _randomTime>><</link>>
+<br>
 
+:: Bird Hunt Ambush Trap
+<<effects>>
+
+:: Bird Hunt Ambush Wait
+<<effects>>
 
 :: Bird Hunt Ignore
 <<effects>><<flight_distance_check>>
@@ -3448,6 +3463,7 @@ land back on the perch<<if $bird.upgrades.decor gte 3>> and push the curtain asi
 		<<default>>
 	<</switch>>
 	<br>
+	<<set $bird.timer to 90>>
 	<<flight_hunt_loot>>
 <</if>>
 

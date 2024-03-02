@@ -527,7 +527,14 @@
 		<<endevent>>
 		<<npc "Great Hawk">>
 		<<if $monster is 1>>
-			The <<beasttype>><<if $birdBask is 1>> gingerly helps you stand, and<</if>> steps to the edge of the perch.
+			The <<beasttype>>
+			<<if $bird.activity is "build" or $bird.activity is "sleep">>
+				 rises from <<bhis>> nest.
+			<<elseif $bird.activity is "bathe">>
+				 rises from the rainwater pool, and shakes <<bhis>> wings dry.
+			<<else>>
+				<<if $birdBask is 1>>gingerly helps you stand, and <</if>>steps to the edge of the perch.
+			<</if>>
 			"<<print either(
 				"I crave a hunt.",
 				"The wild beckons me.",
@@ -536,7 +543,15 @@
 				"I must stretch my wings."
 			)>> I will return with a gift."
 		<<else>>
-			The <<beasttype>> rises from <<bhis>> nest, looking out over the moor. <<bHis>> gaze is harsh. <<bHe>> seems to be looking to hunt.
+			The <<beasttype>>
+			<<if $bird.activity is "build" or $bird.activity is "sleep">>
+				rises from <<bhis>> nest,
+			<<elseif $bird.activity is "bathe">>
+				rises from the rainwater pool, and steps to the edge of the perch,
+			<<else>>
+				steps to the edge of the perch,
+			<</if>>
+			looking out over the moor. <<bHis>> gaze is harsh. <<bHe>> seems to be looking to hunt.
 		<</if>>
 		<<unset $birdBask>>
 		<br><br>
@@ -624,7 +639,7 @@
 			<br>
 			<<flight_time_check 60>>
 			<<if $bird.hunts.unlocked is true and ($bird.hunts.lurkers is true or $bird.hunts.materials is true or $bird.hunts.valuables is true)>>
-				<<ind>><<link [[Prepare for a hunt|Bird Hunt Start]]>><</link>><<flight_text>><br>
+				<<ind>><<link [[Prepare for a hunt|Bird Hunt Start]]>><<endevent>><</link>><<flight_text>><br>
 				<br>
 			<</if>>
 			<<if $exposed gte 2 and $exhibitionism lt 55>>
@@ -831,13 +846,6 @@
 			<<if $bird.hunts.distanceNorth lte -1>>north<<elseif $bird.hunts.distanceNorth gte 1>>south<</if>><<if $bird.hunts.distanceEast lte -1>>west<<elseif $bird.hunts.distanceEast gte 1>>east<</if>>.
 		<</if>>
 		<br>
-		<<if $bird.hunts.distanceNorth lte -1 and $bird.hunts.distanceNorth gte -3 and $bird.hunts.distanceEast lte 5 and $bird.hunts.distanceEast gte 3>>
-			<!--
-			There's a tall stone overlooking a small path to the
-			<<if $bird.hunts.distanceNorth lt -2>>north<<elseif $bird.hunts.distanceNorth gt -2>>south<</if>><<if $bird.hunts.distanceEast lt 4>>east<<elseif $bird.hunts.distanceNorth gt 4>>west<</if>>.
-			<br>
-			-->
-		<</if>>
 		<<if between($bird.hunts.distanceNorth, ($daily.huntRemyCampNorth - 1), ($daily.huntRemyCampNorth + 1)) and between($bird.hunts.distanceEast, ($daily.huntRemyCampEast - 1), ($daily.huntRemyCampEast + 1))>>
 			<<if !($bird.hunts.distanceNorth is $daily.huntRemyCampNorth and $bird.hunts.distanceEast is $daily.huntRemyCampEast)>>
 				There's smoke rising to the
@@ -856,9 +864,9 @@
 			The farmlands stretch to the north, marking the end of your territory.
 		<<elseif $bird.hunts.distanceEast is 5>>
 			Going any further east would put you in unfamiliar, dangerous territory.
-		<<elseif distanceNorth is -5>>
+		<<elseif $bird.hunts.distanceNorth is -5>>
 			You feel your sense of direction failing the further south you travel. It would be wise to turn around.
-		<<elseif distanceEast is -5>>
+		<<elseif $bird.hunts.distanceEast is -5>>
 			<<if $bogProgress gte 1>>
 				The bog stretches to the west, and the forest beyond that.
 			<<else>>
