@@ -31,6 +31,8 @@ setup.WeatherSettings = {
 	thermometer: {
 		base: "img/misc/icon/weather/thermometer.png",
 		fill: "img/misc/icon/weather/thermo_filled.png",
+		upArrow: "img/misc/icon/weather/arrow_up.png",
+		downArrow: "img/misc/icon/weather/arrow_down.png",
 	},
 	months: [
 		{

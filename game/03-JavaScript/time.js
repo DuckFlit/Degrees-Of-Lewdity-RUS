@@ -921,24 +921,18 @@ function minutePassed(minutes) {
 	}
 
 	// Body temperature
-	// New system - does not affect anything yet - only visual
 	const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
 	Weather.BodyTemperature.update(temperature, minutes);
-
-	// Old system - keep until new system is implemented
-	if (V.body_temperature === "cold") V.stress += minutes * 2;
-	else if (V.body_temperature === "chilly") V.stress += minutes;
-
-	V.stress = Math.min(V.stress, V.stressmax);
-
+	V.stress += Weather.BodyTemperature.stressModifer * minutes;
 	// Snow
 	Weather.setAccumulatedSnow(minutes);
 
 	// Effects
+	V.stress = Math.min(V.stress, V.stressmax);
 	if (V.drunk > 0) statChange.alcohol(-minutes);
 	if (V.hallucinogen > 0) statChange.hallucinogen(-minutes);
 	if (V.drugged > 0) statChange.drugs(-minutes);
-	if (minutes < 1200) statChange.tiredness(minutes * (V.drunk > 0 ? 2 : 1), "pass");
+	if (minutes < 1200) statChange.tiredness((minutes * (V.drunk > 0 ? 2 : 1)) / 15);
 	statChange.pain(minutes, -1);
 
 	// Arousal

@@ -12,10 +12,6 @@ setup.debugMenu = {
 setup.debugMenu.eventList = {
 	Main: [
 		{
-			link: [`test`, `Test`],
-			widgets: [`<<set $molestationstart to 0>>`],
-		},
-		{
 			link: [`CanvasModel Example`, `CanvasModel Example`],
 			widgets: [``],
 		},

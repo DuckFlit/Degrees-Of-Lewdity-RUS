@@ -61,21 +61,43 @@ setup.WeatherTooltip = {
 	},
 	bodyTemperature: () => {
 		if (Weather.bodyTemperature <= 34) {
-			return "You're suffering from hypothermia'."
+			return "You're suffering from severe hypothermia."
 		} else if (Weather.bodyTemperature <= 35) {
-			return "You are freezing cold."
+			return "You feel freezing cold."
+		} else if (Weather.bodyTemperature <= 35.5) {
+			return "You feel very cold and shiver uncontrollably."
 		} else if (Weather.bodyTemperature <= 36) {
 			return "You shiver."
 		} else if (Weather.bodyTemperature <= 36.5) {
-			return "You are chilly."
+			return "You feel chilly."
+		} else if (Weather.bodyTemperature <= 37.5) {
+			return "You feel comfortable."
 		} else if (Weather.bodyTemperature <= 38) {
-			return "You are snug."
+			return "You feel snug."
+		} else if (Weather.bodyTemperature <= 38.5) {
+			return "You feel a slight sweating and discomfort."
 		} else if (Weather.bodyTemperature <= 39) {
-			return "You are warm and sweaty."
+			return "You feel warm and sweaty."
+		} else if (Weather.bodyTemperature <= 39.5) {
+			return "You feel overheated and uncomfortable."
 		} else if (Weather.bodyTemperature <= 40) {
-			return "You are hot."
+			return "You feel hot."
 		} else {
 			return "You're suffering from heatstroke."
+		}
+	},
+	waterTemperature: () => {
+		if (!V.inwater || !V.outside) return "";
+		if (Weather.waterTemperature <= 5) {
+			return "The water feels freezing cold."
+		} else if (Weather.waterTemperature <= 15) {
+			return "The water feels cold."
+		} else if (Weather.waterTemperature <= 25) {
+			return "The water feels cool."
+		} else if (Weather.waterTemperature <= 35) {
+			return "The water feels warm."
+		} else {
+			return "The water feels hot."
 		}
 	}
 };

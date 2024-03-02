@@ -21,11 +21,7 @@ function getRevealInfo(reveal) {
 window.getRevealInfo = getRevealInfo;
 
 function getWarmthInfo(warmth) {
-	if (warmth >= 75) return [5, "warm-4"];
-	if (warmth >= 50) return [4, "warm-3"];
-	if (warmth >= 25) return [3, "warm-2"];
-	if (warmth >= 10) return [2, "warm-1"];
-	return [1, "warm-0"];
+	return [warmth, "warm-" + warmth];
 }
 window.getWarmthInfo = getWarmthInfo;
 

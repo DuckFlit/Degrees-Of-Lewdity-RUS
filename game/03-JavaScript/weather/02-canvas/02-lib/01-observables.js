@@ -61,7 +61,6 @@ Weather.Observables = (() => {
 		const updateLocation = async () => {
 			await Weather.Sky.getLayer("location").init();
 			Weather.Sky.drawLayers("location");
-			console.log("UPDATE LOCATION")
 		};
 
 		const updateWeather = async () => {

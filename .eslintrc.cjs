@@ -79,6 +79,7 @@ module.exports = {
 		IronMan: "readonly",
 		Links: "readonly",
 		playerDoll: "readonly",
+		statDisplay: "readonly",
 		Renderer: "readonly",
 		SexTypes: "readonly",
 		StartConfig: "readonly",

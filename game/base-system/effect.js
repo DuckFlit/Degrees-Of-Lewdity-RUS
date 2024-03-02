@@ -246,7 +246,6 @@ function effects() {
 	sWikifier("<<autoTakePillCheck>>");
 	fragment.append(effectsWater());
 	fragment.append(effectsMakeup());
-	wikifier("temperature");
 
 	V.speechcycle++;
 	if (V.speechcycle >= 7) V.speechcycle = 0;

@@ -4872,7 +4872,7 @@
 			}
 
 			const realVarsToCopy = [
-				'weather', 'moonstate', 'haircolour', 'hairlength', 'goooutsidecount', 'semenoutsidecount', 'pain', 'arousal', 'tiredness', 'stress', 'trauma', 'control', 'angel', 'fallenangel', 'angelbuild', 'demon', 'wolfgirl', 'cat', 'cow', 'harpy', 'fox', 'sexStats', 'skulduggery', 'purity', 'spray', 'skin', 'parasite', 'hairfringecolour', 'hairColourStyle', 'hairColourGradient', 'hairFringeColourStyle', 'hairFringeColourGradient', 'timeStamp',
+				'moonstate', 'haircolour', 'hairlength', 'goooutsidecount', 'semenoutsidecount', 'pain', 'arousal', 'tiredness', 'stress', 'trauma', 'control', 'angel', 'fallenangel', 'angelbuild', 'demon', 'wolfgirl', 'cat', 'cow', 'harpy', 'fox', 'sexStats', 'skulduggery', 'purity', 'spray', 'skin', 'parasite', 'hairfringecolour', 'hairColourStyle', 'hairColourGradient', 'hairFringeColourStyle', 'hairFringeColourGradient', 'timeStamp',
 				/* only overwrite the frozen values with variables from the current scene, to avoid restoring outdated values */
 				...(event === 'wraith' ? [
 					'spraymax', 'hairtype', 'fringelength', 'fringetype', 'fringelengthstage', 'submissive', 'awareness', 'awarelevel', 'skinColor', 'condoms',
@@ -4989,14 +4989,14 @@
 					overwriteObjProp('penissize', V.real_penissize, V.frozenValues.player);
 				} else {
 					/* do not copy other variables, even if they exist */
-					migrateRealVars(['weather', 'moonstate', 'timeStamp']);
+					migrateRealVars(['moonstate', 'timeStamp']);
 				}
 			} else if (event === 'nightmare') {
 				Object.assign(V.frozenValues.player.bodyliquid, V.real_bodyliquid);
 				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
 				overwriteObjProp('clothingrebuy', V.real_rebuy);
 
-				migrateRealVars(['weather', 'moonstate', 'timeStamp', 'location', 'parasite', 'pain', 'arousal', 'tiredness', 'trauma', 'control', 'angel', 'angelbuild', 'fallenangel', 'transformationParts', 'purity', 'parasitepregdisable', 'worn', 'skin']);
+				migrateRealVars(['moonstate', 'timeStamp', 'location', 'parasite', 'pain', 'arousal', 'tiredness', 'trauma', 'control', 'angel', 'angelbuild', 'fallenangel', 'transformationParts', 'purity', 'parasitepregdisable', 'worn', 'skin']);
 			} else if (event === 'prayerroom') {
 				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
 				overwriteObjProp('virginity', V.real_virginity_sydney, V.frozenValues.NPCName[V.NPCNameList.indexOf('Sydney')]);
@@ -5009,13 +5009,11 @@
 		delete V.saveTransformtaions;
 		delete V.penisusue;
 		/* clean up $real_ variables */
-		const tmpWeather = V.real_weather;
 		Object.keys(V).forEach(k => {
 			if (k.startsWith('real_')) {
 				delete V[k];
 			}
 		});
-		if (tmpWeather && !event) V.real_weather = tmpWeather;
 		V.objectVersion.realVarsFix = 1;
 	<</script>><</if>>
 
@@ -5042,4 +5040,22 @@
 	<<unset $speechsextoyshocked>>
 	<<unset $speechsextoyaroused>>
 	<<unset $speechsextoydisappointed>>
+
+	<!-- Weather update -->
+	<<if $weatherObj is undefined>>
+		<<set $weatherObj to {
+			snow: 0,
+			fog: 0,
+			name: "clear",
+			overcast: 0,
+			monthlyTemperatures: [],
+			keypointsArr: []
+		}>>
+		<<set $player.bodyTemperature to 37>>
+		<<set $options.weatherUpdate to false>>
+		<<set $options.fahrenheit to false>>
+		<<unset $warmth>>
+		<<unset $chill>>
+		<<unset $chill_day>>
+	<</if>>
 <</widget>>

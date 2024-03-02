@@ -59,7 +59,6 @@ const Weather = (() => {
 	}
 
 	function setAccumulatedSnow(minutes) {
-		console.log("SET SNOW");
 		const precipitationIntensity = Weather.type.precipitationIntensity;
 		const temperature = Weather.temperature; // Temperature in Celsius
 		const snowfallRate = 0.8; // Snowfall rate in mm per minute per intensity
@@ -139,6 +138,9 @@ const Weather = (() => {
 		},
 		get bodyTemperature() {
 			return Weather.BodyTemperature.get();
+		},
+		get wetness() {
+			return Weather.BodyTemperature.wetness;
 		},
 		get bloodMoon() {
 			const sunRise = Weather.Sky.orbitals.bloodMoon?.settings.riseTime - 1;
