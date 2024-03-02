@@ -525,6 +525,80 @@ Config.navigation.override = function (dest) {
 			case "Robin Kiyoura Enjoyed it":
 				return "Canteen Robin Whitney End";
 
+			case "Livestock Field Centaur Friendly":
+			case "Livestock Field Centaur Firm":
+			case "Livestock Field Friendly":
+			case "Livestock Field Firm":
+				return "Livestock Field Horse Intro";
+			
+			case "Livestock Field Centaur Brush":
+				return "Livestock Field Horse Brush";
+
+			case "Livestock Field Centaur Apples":
+				return "Livestock Field Horse Apples";
+
+			case "Livestock Field Horse Help 2":
+			case "Livestock Field Centaur Help":
+			case "Livestock Field Centaur Help 2":
+				return "Livestock Field Horse Help";
+
+			case "Livestock Field Centaur Female Vagina":
+			case "Livestock Field Centaur Female":
+			case "Livestock Field Centaur Male Vagina":
+			case "Livestock Field Centaur Male":
+			case "Livestock Field Centaur Female Vagina 2":
+			case "Livestock Field Centaur Female 2":
+			case "Livestock Field Centaur Male Vagina 2":
+			case "Livestock Field Centaur Male 2":
+			case "Livestock Field Horse Lewd":
+			case "Livestock Field Horse Lewd Female":
+			case "Livestock Field Horse Lewd 2":
+			case "Livestock Field Horse Lewd Female 2":
+			case "Livestock Field Horse Continue":
+				return "Livestock Field Horse Deviancy";
+
+			case "Livestock Field Centaur Female Vagina 3":
+			case "Livestock Field Centaur Female 3":
+			case "Livestock Field Centaur Male Vagina 3":
+			case "Livestock Field Centaur Male 3":		
+			case "Livestock Field Centaur Male Hand":			
+			case "Livestock Field Centaur Male Hand Vagina":				
+			case "Livestock Field Centaur Female Hand":
+			case "Livestock Field Centaur Female Hand Vagina":
+			case "Livestock Field Horse Lewd 3":
+			case "Livestock Field Horse Lewd Female 3":
+			case "Livestock Field Horse Lewd Hand":
+			case "Livestock Field Horse Lewd Female Hand":
+				return "Livestock Field Horse Deviancy Hand";
+
+			case "Livestock Field Centaur Male Mouth":
+			case "Livestock Field Centaur Male Mouth Vagina":	
+			case "Livestock Field Centaur Female Mouth":	
+			case "Livestock Field Centaur Female Mouth Vagina":
+			case "Livestock Field Horse Lewd Mouth":	
+			case "Livestock Field Horse Lewd Female Mouth":			
+				return "Livestock Field Horse Deviancy Mouth";
+
+			case "Livestock Field Centaur Male Seduce":
+			case "Livestock Field Centaur Male Sex":
+			case "Livestock Field Centaur Male Sex Finish":
+			case "Livestock Field Centaur Male Vagina Seduce":
+			case "Livestock Field Centaur Male Vagina Sex":
+			case "Livestock Field Centaur Male Vagina Sex Finish":
+			case "Livestock Field Centaur Female Vagina Seduce":
+			case "Livestock Field Centaur Female Vagina Sex":
+			case "Livestock Field Centaur Female Vagina Sex Finish":
+			case "Livestock Field Centaur Female Seduce ":
+			case "Livestock Field Centaur Female Sex":
+			case "Livestock Field Centaur Female Sex Finish":
+			case "Livestock Field Horse Lewd Seduce":
+			case "Livestock Field Horse Lewd Female Seduce":
+			case "Livestock Field Horse Lewd Sex":
+			case "Livestock Field Horse Lewd Female Sex":
+			case "Livestock Field Horse Lewd Sex Finish":
+			case "Livestock Field Horse Lewd Female Sex Finish":
+				return "Livestock Field Horse Deviancy Sex";
+
 			default:
 				return false;
 		}
