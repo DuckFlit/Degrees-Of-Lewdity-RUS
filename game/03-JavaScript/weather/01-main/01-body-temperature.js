@@ -178,11 +178,11 @@ Weather.BodyTemperature = (() => {
 	}
 	function temperatureFactor() {
 		if (get() <= temperatureEffects.lowerThresholdEnd) {
-			return -1 - normalise(currentTemp, temperatureEffects.lowerThresholdStart, temperatureEffects.lowerThresholdEnd);
+			return -1 - normalise(V.player.bodyTemperature, temperatureEffects.lowerThresholdStart, temperatureEffects.lowerThresholdEnd);
 		}
 
 		if (get() >= temperatureEffects.upperThresholdStart) {
-			return normalise(currentTemp, temperatureEffects.upperThresholdEnd, temperatureEffects.upperThresholdStart);
+			return normalise(V.player.bodyTemperature, temperatureEffects.upperThresholdEnd, temperatureEffects.upperThresholdStart);
 		}
 		return 0;
 	}

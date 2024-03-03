@@ -208,7 +208,6 @@ window.tanned = tanned;
 function tanningGainOutput(modifier, minutes) {
 	if (V.statdisable !== "f") return "";
 	const factor = modifier * minutes;
-	console.log("factor", factor)
 	let pluses = "";
 	if (factor >= 50) {
 		pluses = "+ + +";
@@ -219,7 +218,6 @@ function tanningGainOutput(modifier, minutes) {
 	} else {
 		return "";
 	}
-	console.log("factor", factor)
 
 	return `| <span class="green">${pluses} Tan</span>`;
 }
@@ -238,7 +236,7 @@ function tanningPenaltiesOutput(modifiers) {
 	if (modifiers.clothing < 1) reasons.push("Shaded by clothing");
 	if (modifiers.sunBlock < 1) reasons.push("Use of sunblock");
 
-	if (reasons.length === 0) return;
+	if (reasons.length === 0) return "";
 	return `<span class="teal">Your tanning gain was reduced due to:</span><br><span color="orange">${reasons.join("<br>")}</span><br>`;
 }
 DefineMacroS("tanningPenaltiesOutput", tanningPenaltiesOutput);
