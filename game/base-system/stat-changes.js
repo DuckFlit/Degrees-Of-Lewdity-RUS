@@ -325,12 +325,12 @@ var statChange = (() => {
 				mod *= 1 - Math.clamp(playerHeatMinArousal() + playerRutMinArousal(), 0, 4000) / 5000;
 			}
 
-			V.arousal += amount * mod * Weather.bodyTemperature.arousalModifier;
+			V.arousal += amount * mod * Weather.BodyTemperature.arousalModifier;
 			wikifier("arousalclamp");
 
 			// Add to the tracker
 			if (amount > 0) {
-				V.trackedArousal[V.trackedArousal.length - 1] += amount * mod;
+				V.trackedArousal[V.trackedArousal.length - 1] += Math.round(amount * mod);
 				V.timeSinceArousal = 0;
 			}
 		}
@@ -343,7 +343,7 @@ var statChange = (() => {
 		if (isNaN(amount)) paramError("tiredness", "amount", amount, "Expected a number.");
 		amount = Number(amount);
 		if (amount) {
-			V.tiredness += amount * Weather.bodyTemperature.fatigueModifier * (amount > 0 ? 15 : 20);
+			V.tiredness += Math.round(amount * Weather.BodyTemperature.fatigueModifier * (amount > 0 ? 15 : 20));
 		}
 	}
 	DefineMacro("tiredness", tiredness);

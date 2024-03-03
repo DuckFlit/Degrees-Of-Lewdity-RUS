@@ -923,12 +923,15 @@ function minutePassed(minutes) {
 	// Body temperature
 	const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
 	Weather.BodyTemperature.update(temperature, minutes);
-	V.stress += Weather.BodyTemperature.stressModifer * minutes;
+	console.log("STRESS", V.stress);
+	V.stress += Math.round(Weather.BodyTemperature.stressModifier * minutes);
+	console.log("STRESS2", V.stress);
 	// Snow
 	Weather.setAccumulatedSnow(minutes);
 
 	// Effects
 	V.stress = Math.min(V.stress, V.stressmax);
+	console.log("STRESS3", V.stress);
 	if (V.drunk > 0) statChange.alcohol(-minutes);
 	if (V.hallucinogen > 0) statChange.hallucinogen(-minutes);
 	if (V.drugged > 0) statChange.drugs(-minutes);
