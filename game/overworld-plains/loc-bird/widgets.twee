@@ -843,7 +843,7 @@
 			The moor stretches out before you.
 		<<else>>
 			The tower is to the
-			<<if $bird.hunts.distanceNorth lte -1>>north<<elseif $bird.hunts.distanceNorth gte 1>>south<</if>><<if $bird.hunts.distanceEast lte -1>>west<<elseif $bird.hunts.distanceEast gte 1>>east<</if>>.
+			<<if $bird.hunts.distanceNorth lte -1>>north<<elseif $bird.hunts.distanceNorth gte 1>>south<</if>><<if $bird.hunts.distanceEast lte -1>>east<<elseif $bird.hunts.distanceEast gte 1>>west<</if>>.
 		<</if>>
 		<br>
 		<<if between($bird.hunts.distanceNorth, ($daily.huntRemyCampNorth - 1), ($daily.huntRemyCampNorth + 1)) and between($bird.hunts.distanceEast, ($daily.huntRemyCampEast - 1), ($daily.huntRemyCampEast + 1))>>
@@ -979,6 +979,7 @@
 				<<set $bird.hunts.lootAmount += $_amount>>
 			<<else>>
 				<<run Errors.report("Invalid special loot of type; " + $_looted + " " + _args[2])>>
+				<<exit>>
 			<</if>>
 		<<elseif $bird.materials[$_looted] is undefined and $bird.upgrades[$_looted] is undefined>>
 			<<run Errors.report("Invalid loot of type; " + $_looted)>>
@@ -1067,25 +1068,25 @@
 				<<set $_otherLoot++>><<set $bird.upgrades.telescope to 1>>
 				ornate telescope. You set it up near the precipice.
 			<<case "wood">>
-				<<set $_matLoot += $_tempNum>><<set $bird.materials.wood += 1>>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.wood += $_tempNum>>
 				piece<<if $_tempNum gte 2>>s<</if>> of wood.
 			<<case "fabric">>
-				<<set $_matLoot += $_tempNum>><<set $bird.materials.fabric += 1>>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.fabric += $_tempNum>>
 				scrap<<if $_tempNum gte 2>>s<</if>> of fabric.
 			<<case "sticks">>
-				<<set $_matLoot += $_tempNum>><<set $bird.materials.sticks += 1>>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.sticks += $_tempNum>>
 				stick<<if $_tempNum gte 2>>s<</if>>.
 			<<case "leaves">>
-				<<set $_matLoot += $_tempNum>><<set $bird.materials.leaves += 1>>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.leaves += $_tempNum>>
 				large <<if $_tempNum gte 2>>leaves<<else>>leaf<</if>>.
 			<<case "junk">>
-				<<set $_hordeLoot += $_tempNum>><<set $bird.materials.junk += 1>>
+				<<set $_hordeLoot += $_tempNum>><<set $bird.materials.junk += $_tempNum>>
 				piece<<if $_tempNum gte 2>>s<</if>> of shiny junk.
 			<<case "lurkers">>
-				<<set $_lurkerLoot += $_tempNum>><<set $bird.materials.lurkers += 1>>
+				<<set $_lurkerLoot += $_tempNum>><<set $bird.materials.lurkers += $_tempNum>>
 				lurker<<if $_tempNum gte 2>>s<</if>>.
 			<<case "leather">>
-				<<set $_matLoot += $_tempNum>><<set $bird.materials.leather += 1>>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.leather += $_tempNum>>
 				piece<<if $_tempNum gte 2>>s<</if>> of treated leather.
 			<<case "tarp">>
 				<<set $_hordeLoot++>><<set $bird.upgrades.tarp to 1>>
@@ -1235,6 +1236,8 @@
 		<</if>>
 		<<set _timeWood to Math.min(_timeWood, _maxTimeAllowed)>>
 
+		You have <<number $bird.materials.wood>> piece<<if $bird.materials.wood gte 2>>s<</if>> of wood.
+		<br>
 		<<link "Add 1 wood">>
 			<<set $bird.materials.wood-->>
 			<<run Firepit.addBurnTime($bird.firepit, _timeWood * 60)>>
@@ -1270,6 +1273,8 @@
 		<</if>>
 		<<set _timeSticks to Math.min(_timeSticks, _maxTimeAllowed)>>
 
+		You have <<number $bird.materials.sticks>> stick<<if $bird.materials.sticks gte 2>>s<</if>>.
+		<br>
 		<<link "Add 1 stick">>
 			<<set $bird.materials.sticks-->>
 			<<run Firepit.addBurnTime($bird.firepit, _timeSticks * 60)>>
@@ -1331,8 +1336,17 @@
 
 		<<if $_nLurkersDrying gte 1>>
 			It is currently drying <<number $_nLurkersDrying>> lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
+<<<<<<< HEAD
 			<<if getBirdBurnTime() gte 1 and $bird.upgrades.rack lt 3>>
 				<span class="lewd">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
+=======
+			<<if getBirdBurnTime() gte 1>>
+				<<if $bird.upgrades.rack lt 3>>
+					<span class="lewd">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
+				<<else>>
+					<span class="teal">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>> and harmlessly leaving the tower.</span>
+				<</if>>
+>>>>>>> knotlikethis/feature/greatHawkExpansion
 			<<else>>
 				A lit firepit would speed up the process.
 			<</if>>
@@ -1368,7 +1382,7 @@
 		<br>
 
 		<<if _nLurkersReady gte 1>>
-			<span class="green"><<number _nLurkersReady>> lurker<<if _nLurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
+			<span class="green"><<Number _nLurkersReady>> lurker<<if _nLurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
 			<br>
 			<<link `"Take " + _nLurkersReady + " leather"`>>
 				<<set $bird.materials.leather += _nLurkersReady>>
@@ -1808,6 +1822,7 @@
 			<br>
 			<<if $bird.state isnot "home" or $bird.activity isnot $_upgrade.activityRequired>>
 				<span class="red">Requires the Great Hawk to be home and building the nest.</span>
+				<<set $_disableBuild to true>>
 			<<else>>
 				<span class="green">Requires the Great Hawk to be home and building the nest.</span>
 			<</if>>
@@ -1850,7 +1865,7 @@
 
 		<<if _upgrade is "firepit" and $bird.firepit.items.length>>
 			<br>
-			<span class="black">Firepit is currently holding items</span>
+			<span class="red">Firepit is currently holding items</span>
 			<<set $_disableBuild to true>>
 		<</if>>
 
