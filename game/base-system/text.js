@@ -1,5 +1,13 @@
 /* eslint-disable no-undef */
 const statDisplay = (() => {
+	function statChange(statType, amount, colorClass, condition = () => true) {
+		amount = Number(amount);
+		if (V.statdisable === "t" || !condition()) return "";
+
+		const prefix = amount < 0 ? "- " : "+ ";
+		return ` | <span class="${colorClass}">${prefix.repeat(Math.abs(amount))}${statType}</span>`;
+	}
+
 	function grace(amount, expectedRank) {
 		amount = Number(amount);
 		if (!amount || V.statdisable === "t") return "";
@@ -37,14 +45,6 @@ const statDisplay = (() => {
 	DefineMacroS("lgrace", expectedRank => grace(-1, expectedRank));
 	DefineMacroS("llgrace", expectedRank => grace(-2, expectedRank));
 	DefineMacroS("lllgrace", expectedRank => grace(-3, expectedRank));
-
-	function statChange(statType, amount, colorClass, condition = () => true) {
-		amount = Number(amount);
-		if (!amount || V.statdisable === "t" || !condition()) return "";
-
-		const prefix = amount < 0 ? "- " : "+ ";
-		return ` | <span class="${colorClass}">${prefix.repeat(Math.abs(amount))}${statType}</span>`;
-	}
 
 	DefineMacroS("lstress", () => statChange("Stress", -1, "green"));
 	DefineMacroS("llstress", () => statChange("Stress", -2, "green"));
@@ -165,6 +165,13 @@ const statDisplay = (() => {
 	DefineMacroS("ggtending", () => statChange("Tending", 2, "green"));
 	DefineMacroS("gggtending", () => statChange("Tending", 3, "green"));
 
+	DefineMacroS("ltreasure", () => statChange("Decreases chance of finding treasure", 0, "purple"));
+	DefineMacroS("gtreasure", () => statChange("Increases chance of finding treasure", 0, "green"));
+
+	DefineMacroS("lharass", () => statChange("Decreases chance of harassment", 0, "teal"));
+	DefineMacroS("gharass", () => statChange("Increases chance of harassment", 0, "pink"));
+	DefineMacroS("noharass", () => statChange("No chance of harassment", 0, "green"));
+
 	DefineMacroS("llove", npc => statChange(npc ? `${npc}'s Love` : "Love", -1, "red"));
 	DefineMacroS("lllove", npc => statChange(npc ? `${npc}'s Love` : "Love", -2, "red"));
 	DefineMacroS("llllove", npc => statChange(npc ? `${npc}'s Love` : "Love", -3, "red"));
@@ -192,6 +199,157 @@ const statDisplay = (() => {
 	DefineMacroS("gattention", loc => statChange("Attention", 1, "lewd", () => !loc || (loc === "prison" && !V.daily.prison.attentionDay)));
 	DefineMacroS("ggattention", loc => statChange("Attention", 2, "lewd", () => !loc || (loc === "prison" && !V.daily.prison.attentionDay)));
 	DefineMacroS("gggattention", loc => statChange("Attention", 3, "lewd", () => !loc || (loc === "prison" && !V.daily.prison.attentionDay)));
+
+	DefineMacroS("laggro", () => statChange("Remy's Encroachment", -1, "green", () => V.farm));
+	DefineMacroS("llaggro", () => statChange("Remy's Encroachment", -2, "green", () => V.farm));
+	DefineMacroS("lllaggro", () => statChange("Remy's Encroachment", -3, "green", () => V.farm));
+	DefineMacroS("gaggro", () => statChange("Remy's Encroachment", 1, "red", () => V.farm));
+	DefineMacroS("ggaggro", () => statChange("Remy's Encroachment", 2, "red", () => V.farm));
+	DefineMacroS("gggaggro", () => statChange("Remy's Encroachment", 3, "red", () => V.farm));
+
+	DefineMacroS("lksuspicion", () => statChange("Jealousy", -1, "green"));
+	DefineMacroS("llksuspicion", () => statChange("Jealousy", -2, "green"));
+	DefineMacroS("lllksuspicion", () => statChange("Jealousy", -3, "green"));
+	DefineMacroS("gksuspicion", () => statChange("Jealousy", 1, "red"));
+	DefineMacroS("ggksuspicion", () => statChange("Jealousy", 2, "red"));
+	DefineMacroS("gggksuspicion", () => statChange("Jealousy", 3, "red"));
+
+	DefineMacroS("lsuspicion", () => statChange("Suspicion", -1, "green"));
+	DefineMacroS("llsuspicion", () => statChange("Suspicion", -2, "green"));
+	DefineMacroS("lllsuspicion", () => statChange("Suspicion", -3, "green"));
+	DefineMacroS("gsuspicion", () => statChange("Suspicion", 1, "red"));
+	DefineMacroS("ggsuspicion", () => statChange("Suspicion", 2, "red"));
+	DefineMacroS("gggsuspicion", () => statChange("Suspicion", 3, "red"));
+
+	DefineMacroS("larage", () => statChange("Rage", -1, "green", () => V.averyragerevealed));
+	DefineMacroS("llarage", () => statChange("Rage", -2, "green", () => V.averyragerevealed));
+	DefineMacroS("lllarage", () => statChange("Rage", -3, "green", () => V.averyragerevealed));
+	DefineMacroS("garage", () => statChange("Rage", 1, "red", () => V.averyragerevealed));
+	DefineMacroS("ggarage", () => statChange("Rage", 2, "red", () => V.averyragerevealed));
+	DefineMacroS("gggarage", () => statChange("Rage", 3, "red", () => V.averyragerevealed));
+
+	DefineMacroS("lendear", () => statChange("Endearment", -1, "pink"));
+	DefineMacroS("llendear", () => statChange("Endearment", -2, "pink"));
+	DefineMacroS("lllendear", () => statChange("Endearment", -3, "pink"));
+	DefineMacroS("gendear", () => statChange("Endearment", 1, "teal"));
+	DefineMacroS("ggendear", () => statChange("Endearment", 2, "teal"));
+	DefineMacroS("gggendear", () => statChange("Endearment", 3, "teal"));
+
+	DefineMacroS("lhope", () => statChange("Hope", -1, "pink"));
+	DefineMacroS("llhope", () => statChange("Hope", -2, "pink"));
+	DefineMacroS("lllhope", () => statChange("Hope", -3, "pink"));
+	DefineMacroS("ghope", () => statChange("Hope", 1, "teal"));
+	DefineMacroS("gghope", () => statChange("Hope", 2, "teal"));
+	DefineMacroS("ggghope", () => statChange("Hope", 3, "teal"));
+
+	DefineMacroS("lreb", () => statChange("Rebelliousness", -1, "blue"));
+	DefineMacroS("llreb", () => statChange("Rebelliousness", -2, "blue"));
+	DefineMacroS("lllreb", () => statChange("Rebelliousness", -3, "blue"));
+	DefineMacroS("greb", () => statChange("Rebelliousness", 1, "def"));
+	DefineMacroS("ggreb", () => statChange("Rebelliousness", 2, "def"));
+	DefineMacroS("gggreb", () => statChange("Rebelliousness", 3, "def"));
+
+	DefineMacroS("ghandskill", () => statChange("Hand skill", 1, "green"));
+	DefineMacroS("goralskill", () => statChange("Oral skill", 1, "green"));
+	DefineMacroS("gthighskill", () => statChange("Thigh skill", 1, "green"));
+	DefineMacroS("gbottomskill", () => statChange("Ass skill", 1, "green"));
+	DefineMacroS("gvaginalskill", () => statChange("Vaginal skill", 1, "green"));
+	DefineMacroS("gpenileskill", () => statChange("Penile skill", 1, "green"));
+	DefineMacroS("ganalskill", () => statChange("Anal skill", 1, "green"));
+	DefineMacroS("gfeetskill", () => statChange("Feet skill", 1, "green"));
+	DefineMacroS("gchestskill", () => statChange("Chest skill", 1, "green"));
+
+	DefineMacroS("lstockholm", () => statChange("Stockholm Syndrome", -1, "lblue"));
+	DefineMacroS("llstockholm", () => statChange("Stockholm Syndrome", -2, "lblue"));
+	DefineMacroS("lllstockholm", () => statChange("Stockholm Syndrome", -3, "lblue"));
+	DefineMacroS("gstockholm", () => statChange("Stockholm Syndrome", 1, "blue"));
+	DefineMacroS("ggstockholm", () => statChange("Stockholm Syndrome", 2, "blue"));
+	DefineMacroS("gggstockholm", () => statChange("Stockholm Syndrome", 3, "blue"));
+
+	DefineMacroS("lshame", () => statChange("Shame", -1, "green"));
+	DefineMacroS("llshame", () => statChange("Shame", -2, "green"));
+	DefineMacroS("lllshame", () => statChange("Shame", -3, "green"));
+	DefineMacroS("gshame", () => statChange("Shame", 1, "red"));
+	DefineMacroS("ggshame", () => statChange("Shame", 2, "red"));
+	DefineMacroS("gggshame", () => statChange("Shame", 3, "red"));
+
+	DefineMacroS("lfarm", () => statChange("Farm yield", -1, "red"));
+	DefineMacroS("llfarm", () => statChange("Farm yield", -2, "red"));
+	DefineMacroS("lllfarm", () => statChange("Farm yield", -3, "red"));
+	DefineMacroS("gfarm", () => statChange("Farm yield", 1, "green"));
+	DefineMacroS("ggfarm", () => statChange("Farm yield", 2, "green"));
+	DefineMacroS("gggfarm", () => statChange("Farm yield", 3, "green"));
+
+	DefineMacroS("gnet", () => statChange("Net proficiency", 1, "green"));
+	DefineMacroS("gbaton", () => statChange("Baton proficiency", 1, "green"));
+	DefineMacroS("ggbaton", () => statChange("Baton proficiency", 2, "green"));
+	DefineMacroS("gggbaton", () => statChange("Baton proficiency", 3, "green"));
+	DefineMacroS("gwhip", () => statChange("Whip proficiency", 1, "green"));
+	DefineMacroS("ggwhip", () => statChange("Whip proficiency", 2, "green"));
+	DefineMacroS("gggwhip", () => statChange("Whip proficiency", 3, "green"));
+
+	DefineMacroS("lsecurity", () => statChange("Security", -1, "green"));
+	DefineMacroS("llsecurity", () => statChange("Security", -2, "green"));
+	DefineMacroS("lllsecurity", () => statChange("Security", -3, "green"));
+	DefineMacroS("gsecurity", () => statChange("Security", 1, "red"));
+	DefineMacroS("ggsecurity", () => statChange("Security", 2, "red"));
+	DefineMacroS("gggsecurity", () => statChange("Security", 3, "red"));
+
+	DefineMacroS("limpatience", () => statChange("Impatience", -1, "green"));
+	DefineMacroS("llimpatience", () => statChange("Impatience", -2, "green"));
+	DefineMacroS("lllimpatience", () => statChange("Impatience", -3, "green"));
+	DefineMacroS("gimpatience", () => statChange("Impatience", 1, "red"));
+	DefineMacroS("ggimpatience", () => statChange("Impatience", 2, "red"));
+	DefineMacroS("gggimpatience", () => statChange("Impatience", 3, "red"));
+
+	DefineMacroS("linterest", () => statChange("Interest", -1, "red"));
+	DefineMacroS("llinterest", () => statChange("Interest", -2, "red"));
+	DefineMacroS("lllinterest", () => statChange("Interest", -3, "red"));
+	DefineMacroS("ginterest", () => statChange("Interest", 1, "green"));
+	DefineMacroS("gginterest", () => statChange("Interest", 2, "green"));
+	DefineMacroS("ggginterest", () => statChange("Interest", 3, "green"));
+
+	DefineMacroS("ldaring", () => statChange("Daring", -1, "red"));
+	DefineMacroS("lldaring", () => statChange("Daring", -2, "red"));
+	DefineMacroS("llldaring", () => statChange("Daring", -3, "red"));
+	DefineMacroS("gdaring", () => statChange("Daring", 1, "green"));
+	DefineMacroS("ggdaring", () => statChange("Daring", 2, "green"));
+	DefineMacroS("gggdaring", () => statChange("Daring", 3, "green"));
+
+	DefineMacroS("gknowledge", () => statChange("Knowledge", 1, "green"));
+	DefineMacroS("gbodywriting", () => statChange("Bodywriting", 1, "purple"));
+	DefineMacroS("ggbodywriting", () => statChange("Bodywriting", 2, "purple"));
+	DefineMacroS("gggbodywriting", () => statChange("Bodywriting", 3, "purple"));
+	DefineMacroS("ghallucinogens", () => statChange("Hallucinogens", 1, "lewd"));
+	DefineMacroS("gghallucinogens", () => statChange("Hallucinogens", 2, "lewd"));
+	DefineMacroS("ggghallucinogens", () => statChange("Hallucinogens", 3, "lewd"));
+
+	DefineMacroS("lobey", () => statChange("Obedience", -1, "red"));
+	DefineMacroS("llobey", () => statChange("Obedience", -2, "red"));
+	DefineMacroS("lllobey", () => statChange("Obedience", -3, "red"));
+	DefineMacroS("gobey", () => statChange("Obedience", 1, "pink"));
+	DefineMacroS("ggobey", () => statChange("Obedience", 2, "pink"));
+	DefineMacroS("gggobey", () => statChange("Obedience", 3, "pink"));
+
+	DefineMacroS("lhunger", () => statChange("Hunger", -1, "green"));
+	DefineMacroS("llhunger", () => statChange("Hunger", -2, "green"));
+	DefineMacroS("lllhunger", () => statChange("Hunger", -3, "green"));
+	DefineMacroS("ghunger", () => statChange("Hunger", 1, "red"));
+	DefineMacroS("gghunger", () => statChange("Hunger", 2, "red"));
+	DefineMacroS("ggghunger", () => statChange("Hunger", 3, "red"));
+
+	DefineMacroS("gacceptance", () => statChange("Acceptance", 1, "green"));
+
+	DefineMacroS("gwillpower", () => statChange("Willpower", 1, "green"));
+	DefineMacroS("ggwillpower", () => statChange("Willpower", 2, "green"));
+	DefineMacroS("gggwillpower", () => statChange("Willpower", 3, "green"));
+
+	DefineMacroS("lphysique", () => statChange("Physique", -1, "red"));
+	DefineMacroS("llphysique", () => statChange("Physique", -2, "red"));
+	DefineMacroS("lllphysique", () => statChange("Physique", -3, "red"));
+	DefineMacroS("gphysique", () => statChange("Physique", 1, "green"));
+	DefineMacroS("ggphysique", () => statChange("Physique", 2, "green"));
+	DefineMacroS("gggphysique", () => statChange("Physique", 3, "green"));
 
 	// Conditions that modify variables like this should preferably not be in the same widget as text output
 	DefineMacroS("lcorruption", threat => {
@@ -412,7 +570,68 @@ const statDisplay = (() => {
 	DefineMacroS("gghousekeeping", amount => statChange("Housekeeping", 2, "green", () => amount !== undefined || V.housekeeping < amount));
 	DefineMacroS("ggghousekeeping", amount => statChange("Housekeeping", 3, "green", () => amount !== undefined || V.housekeeping < amount));
 
+	DefineMacroS("ldom", npc => {
+		let targetName = "NPC";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
+		else if (npc) targetName = npc + "'s";
+		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		return statChange(`${targetName} Dominance`, -1, "lblue");
+	});
+	DefineMacroS("lldom", npc => {
+		let targetName = "NPC";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
+		else if (npc) targetName = npc + "'s";
+		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		return statChange(`${targetName} Dominance`, -2, "lblue");
+	});
+	DefineMacroS("llldom", npc => {
+		let targetName = "NPC";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
+		else if (npc) targetName = npc + "'s";
+		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		return statChange(`${targetName} Dominance`, -3, "lblue");
+	});
+	DefineMacroS("gdom", npc => {
+		let targetName = "NPC";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
+		else if (npc) targetName = npc + "'s";
+		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		return statChange(`${targetName} Dominance`, 1, "purple");
+	});
+	DefineMacroS("ggdom", npc => {
+		let targetName = "NPC";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
+		else if (npc) targetName = npc + "'s";
+		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		return statChange(`${targetName} Dominance`, 2, "purple");
+	});
+	DefineMacroS("gggdom", npc => {
+		let targetName = "NPC";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
+		else if (npc) targetName = npc + "'s";
+		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		return statChange(`${targetName} Dominance`, 3, "purple");
+	});
 
+	DefineMacroS("lrespect", () => statChange("Respect", -1, "red"));
+	DefineMacroS("llrespect", () => statChange("Respect", -2, "red"));
+	DefineMacroS("lllrespect", () => statChange("Respect", -3, "red"));
+	DefineMacroS("grespect", arg =>
+		statChange("Respect", 1, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	);
+	DefineMacroS("ggrespect", arg =>
+		statChange("Respect", 2, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	);
+	DefineMacroS("gggrespect", arg =>
+		statChange("Respect", 3, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	);
+
+	DefineMacroS("ladeviancy", () => statChange("Alex's Deviancy", -1, "green"));
+	DefineMacroS("lladeviancy", () => statChange("Alex's Deviancy", -2, "green"));
+	DefineMacroS("llladeviancy", () => statChange("Alex's Deviancy", -3, "green"));
+	DefineMacroS("gadeviancy", () => statChange("Alex's Deviancy", 1, "red"));
+	DefineMacroS("ggadeviancy", () => statChange("Alex's Deviancy", 2, "red"));
+	DefineMacroS("gggadeviancy", () => statChange("Alex's Deviancy", 3, "red"));
 
 	return {
 		statChange,

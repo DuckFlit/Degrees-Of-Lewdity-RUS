@@ -9,6 +9,7 @@
  * - Heat dissipation:
  *   - Air temperature: Increases as the difference between body and air temperature widens.
  *   - Clothing: Reduces dissipation based on insulation factor.
+ *   - Wetness: Increases heat dissipation
  * - Heat generation:
  *   - Base value: The body's base heat generation, adjusting according to the difference from the base body temperature.
  *   - Activity: Increases with physical activity. Typically 0.2, but varies with sleep or exercise.
