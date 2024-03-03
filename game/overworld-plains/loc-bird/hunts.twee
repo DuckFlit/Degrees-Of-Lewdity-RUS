@@ -398,7 +398,6 @@ You spread your wings and leap from the tower.
 	<<set $bird.hunts.direction to "">>
 	<<set $bird.hunts.distanceNorth to 0>>
 	<<set $bird.hunts.distanceEast to 0>>
-	<<set $bird.hunts.ignored to 0>>
 	<<set $moor to 40>>
 <</if>>
 <<if $phase is 1>>
@@ -665,10 +664,8 @@ What will you hunt for?
 
 		<<link [[Search the area (0:05)|Bird Hunt Camp]]>><<bird_pass 5>><</link>>
 		<br>
-		<<if $bird.hunts.ignored lte 2>>
-			<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
-			<br>
-		<</if>>
+		<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
 	<</addinlineevent>>
 
 	<<addinlineevent "bird_hunt_sticks" _flight_hunt_chance.materials>>
@@ -680,10 +677,8 @@ What will you hunt for?
 
 		<<link [[Land (0:05)|Bird Hunt Sticks]]>><<bird_pass 5>><</link>>
 		<br>
-		<<if $bird.hunts.ignored lte 2>>
-			<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
-			<br>
-		<</if>>
+		<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
 	<</addinlineevent>>
 
 	<<addinlineevent "bird_hunt_leaves" _flight_hunt_chance.materials>>
@@ -696,10 +691,8 @@ What will you hunt for?
 
 		<<link [[Land (0:05)|Bird Hunt Leaves]]>><<bird_pass 5>><</link>>
 		<br>
-		<<if $bird.hunts.ignored lte 2>>
-			<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
-			<br>
-		<</if>>
+		<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
 	<</addinlineevent>>
 
 	<<if $bird.upgrades.tarp is 0 and !$bird.hunts.loot.tarp>>
@@ -709,10 +702,8 @@ What will you hunt for?
 
 			<<link [[Take the tarp (0:05)|Bird Hunt Tarp]]>><<bird_pass 5>><</link>>
 			<br>
-			<<if $bird.hunts.ignored lte 2>>
-				<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
-				<br>
-			<</if>>
+			<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+			<br>
 		<</addinlineevent>>
 	<</if>>
 
@@ -736,10 +727,8 @@ What will you hunt for?
 			<<link [[Hunt them (0:05)|Bird Hunt Lurkers Alone]]>><<bird_pass 5>><</link>>
 			<br>
 		<</if>>
-		<<if $bird.hunts.ignored lte 2>>
-			<<link [[Ignore them|Bird Hunt Ignore]]>><<endevent>><</link>>
-			<br>
-		<</if>>
+		<<link [[Ignore them|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
 	<</addinlineevent>>
 
 	<<addinlineevent "bird_hunt_lurkers_2" _flight_hunt_chance.lurkers>>
@@ -748,10 +737,8 @@ What will you hunt for?
 
 		<<link [[Hunt it (0:05)|Bird Hunt Lurkers Few]]>><<bird_pass 5>><</link>>
 		<br>
-		<<if $bird.hunts.ignored lte 2>>
-			<<link [[Ignore it|Bird Hunt Ignore]]>><<endevent>><</link>>
-			<br>
-		<</if>>
+		<<link [[Ignore it|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
 	<</addinlineevent>>
 
 	<<addinlineevent "bird_hunt_shiny" _flight_hunt_chance.valuables>>
@@ -1769,7 +1756,7 @@ You land nearby and begin searching.
 		<<set _huntFail to 1>>
 <</switch>>
 <<if $rng isnot 6>>
-	You take off<<if $bird.hunts.duo is true>><<npc "Great Hawk">> and rejoin your spouse.<<if $rng lte 5>> <<bHe>> looks pleased at your find.<<endevent>><</if>><<else>>.<</if>>
+	You take off<<if $bird.hunts.duo is true>><<npc "Great Hawk">> and rejoin your spouse.<<if $rng lte 5>> <<bHe>> looks pleased at your find.<</if>><<endevent>><<else>>.<</if>>
 	<br><br>
 
 	<<flight_hunt_return>>
@@ -1782,7 +1769,7 @@ You land nearby and begin searching.
 	<<case 2>>You quickly tear it up for easier transport.
 	<<case 3>>You tuck it under your arm.
 <</switch>>
-You take off<<if $bird.hunts.duo is true>><<npc "Great Hawk">> and rejoin your spouse. <<bHe>> looks pleased at your find<<endevent>><</if>>.
+You take off<<if $bird.hunts.duo is true>><<npc "Great Hawk">> and rejoin your spouse.<<if $rng lte 5>> <<bHe>> looks pleased at your find.<</if>><<endevent>><<else>>.<</if>>
 <br><br>
 
 <<flight_hunt_return>>
@@ -2296,6 +2283,7 @@ You <<if $bird.hunts.duo is true>>both <</if>>watch as the pair disengage from e
 <br><br>
 
 <<if $bird.hunts.duo is true>>
+	<<set $bird.hunts.returnAccept to true>>
 	You look over to your <<beasttype 2>>, and
 	<<if $monster is 1>>
 		see that <<bhes 2>> a bit flustered at the display. "Head home soon, <<wife>>?"
@@ -3320,23 +3308,14 @@ You're able to see quite far around you. Looking at the ground, you notice a sma
 :: Bird Hunt Ignore
 <<effects>><<flight_distance_check>>
 <<if $bird.hunts.goal is "hawk">>
-	<<set $bird.hunts.ignored++>>
 	<<npc "Great Hawk">>
 	You ask the <<beasttype>> to ignore it and look elsewhere.
 	<br><br>
 
-	<<if $bird.hunts.ignored gte 3>>
-		<<if $monster is 1>>
-			"Wasting time," <<bhe>> says. "After this, no more. We catch what we find next."
-		<<else>>
-			<<bHe>> screeches, looking at you intensely. <<bHe>> seems to be getting impatient. You won't be able to keep ignoring things.
-		<</if>>
+	<<if $monster is 1>>
+		"We search again," <<bhe>> says.
 	<<else>>
-		<<if $monster is 1>>
-			"We search again," <<bhe>> says.
-		<<else>>
-			<<bHe>> screeches in response.
-		<</if>>
+		<<bHe>> screeches in response.
 	<</if>>
 <<elseif $bird.hunts.duo is true>>
 	The two of you ignore it and choose to look somewhere else.
@@ -3384,7 +3363,14 @@ You see the castle, it's not far anymore. Meanwhile, your <<beasttype>> has star
 You tell your <<beasttype>> that you want to return to the castle.
 <br><br>
 
-<<if $bird.hunts.lootAmount is 0>>
+<<if $bird.hunts.returnAccept>>
+	<<if $monster is 1>>
+		"We return home," <<bhe>> says.
+	<<else>>
+		<<bHe>> screeches in response.
+	<</if>>
+	You begin your return trip.	
+<<elseif $bird.hunts.lootAmount is 0>>
 	<<if $monster is 1>>
 		"<<Wife>> can go back, but <<wife>> will go alone. Still need to hunt."
 	<<else>>
@@ -3427,7 +3413,13 @@ Soon, you see the castle again.
 	You
 <</if>>
 land back on the perch<<if $bird.upgrades.decor gte 3>> and push the curtain aside<</if>>,
-<<if $bird.hunts.lootAmount is 0>>
+<<if $bird.hunts.duo is true and $bird.hunts.returnAccept is true>>
+	just in time for your spouse to drag you into the nest.
+	<br><br>
+
+	<<link [[Next|Bird Tower Return Sex]]>><<set $sexstart to 1>><</link>>
+	<br>	
+<<elseif $bird.hunts.lootAmount is 0>>
 	dejected at your failed hunt. <<trauma 12>><<ggtrauma>>
 	<br><br>
 
@@ -3463,8 +3455,72 @@ land back on the perch<<if $bird.upgrades.decor gte 3>> and push the curtain asi
 		<<default>>
 	<</switch>>
 	<br>
-	<<set $bird.timer to 90>>
+	<<set $bird.timer to 20>>
 	<<flight_hunt_loot>>
+<</if>>
+
+:: Bird Hunt Return Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $enemytrust += 200>>
+	<<set $enemyhealthmax to 600>>
+	<<set $enemyhealth to 600>>
+	<<if $monster isnot 1>>
+		<<set $position to "doggy">>
+		<<set $NPCList[0].stance to "top">>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Tower Return Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Tower Return Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Tower Return Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<set $bird.satisfied to true>>
+<<elseif $enemyhealth lte 0>>
+	The <<beasttype>> hops back to the far side of the nest. <<if $monster is 1>>"<<Wife>>'s too excited from the hunt."<</if>>
+	<<set $bird.satisfied to true>>
+<</if>>
+<br><br>
+
+<<if $bird.hunts.lootAmount is 0>>
+	Your hunt wasn't successful, but at least something fun came out of it.
+	<br><br>
+
+	<<flight_hunt_end>>
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You rise from the nest and take stock of your finds.
+	<<switch $bird.upgrades.decor>>
+		<<case 1>>The tower feels cozy after such exertion.<<stress -6>><<lstress>>
+		<<case 2>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -12>><<llstress>>
+		<<case 3>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -24>><<lllstress>>
+		<<case 4>>Home at last. <<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
+		<<default>>
+	<</switch>>
+	<br>
+	<<set $bird.timer to 90>>
+	<<flight_hunt_loot>>	
 <</if>>
 
 :: Bird Hunt Blood
