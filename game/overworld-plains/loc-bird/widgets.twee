@@ -843,7 +843,7 @@
 			The moor stretches out before you.
 		<<else>>
 			The tower is to the
-			<<if $bird.hunts.distanceNorth lte -1>>north<<elseif $bird.hunts.distanceNorth gte 1>>south<</if>><<if $bird.hunts.distanceEast lte -1>>west<<elseif $bird.hunts.distanceEast gte 1>>east<</if>>.
+			<<if $bird.hunts.distanceNorth lte -1>>north<<elseif $bird.hunts.distanceNorth gte 1>>south<</if>><<if $bird.hunts.distanceEast lte -1>>east<<elseif $bird.hunts.distanceEast gte 1>>west<</if>>.
 		<</if>>
 		<br>
 		<<if between($bird.hunts.distanceNorth, ($daily.huntRemyCampNorth - 1), ($daily.huntRemyCampNorth + 1)) and between($bird.hunts.distanceEast, ($daily.huntRemyCampEast - 1), ($daily.huntRemyCampEast + 1))>>
@@ -1337,7 +1337,11 @@
 		<<if $_nLurkersDrying gte 1>>
 			It is currently drying <<number $_nLurkersDrying>> lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
 			<<if getBirdBurnTime() gte 1>>
-				<span class="lewd">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
+				<<if $bird.upgrades.rack lt 3>>
+					<span class="lewd">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
+				<<else>>
+					<span class="teal">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>> and harmlessly leaving the tower.</span>
+				<</if>>
 			<<else>>
 				A lit firepit would speed up the process.
 			<</if>>
@@ -1373,7 +1377,7 @@
 		<br>
 
 		<<if _nLurkersReady gte 1>>
-			<span class="green"><<number _nLurkersReady>> lurker<<if _nLurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
+			<span class="green"><<Number _nLurkersReady>> lurker<<if _nLurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
 			<br>
 			<<link `"Take " + _nLurkersReady + " leather"`>>
 				<<set $bird.materials.leather += _nLurkersReady>>
@@ -1813,6 +1817,7 @@
 			<br>
 			<<if $bird.state isnot "home" or $bird.activity isnot $_upgrade.activityRequired>>
 				<span class="red">Requires the Great Hawk to be home and building the nest.</span>
+				<<set $_disableBuild to true>>
 			<<else>>
 				<span class="green">Requires the Great Hawk to be home and building the nest.</span>
 			<</if>>
@@ -1855,7 +1860,7 @@
 
 		<<if _upgrade is "firepit" and $bird.firepit.items.length>>
 			<br>
-			<span class="black">Firepit is currently holding items</span>
+			<span class="red">Firepit is currently holding items</span>
 			<<set $_disableBuild to true>>
 		<</if>>
 
