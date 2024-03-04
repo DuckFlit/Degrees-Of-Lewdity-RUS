@@ -260,7 +260,7 @@ You stand on the edge of the perch, spreading your wings. You feel for the wind 
 	<br>
 <<else>>
 	<<flight_time_check 30 "silent">>
-	<<print '<<link [[Hunt alone('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+	<<print '<<link [[Hunt alone ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
 	<br>
 	<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
 		<<if $bird.injured gt 1>>
@@ -615,7 +615,7 @@ What will you hunt for?
 			<br><br>
 
 			<<set $skulduggerydifficulty to 500>>
-			<<link [[Sneak in and steal from them (0:05)|Bird Hunt Tent Steal Alone]]>><<crimeup 10 "trespassing">><<bird_pass 5>><</link>><<skulduggerydifficulty>><<crimes "thievery" "trespassing">>
+			<<link [[Sneak in and steal from them (0:05)|Bird Hunt Tent Steal Alone]]>><<crimeUp 10 "trespassing">><<bird_pass 5>><</link>><<skulduggerydifficulty>><<crimes "thievery" "trespassing">>
 			<br>
 			<<if $bird.hunts.loot.lurkers gte 1>>
 				<<link [[Drop a lurker on their heads (0:05)|Bird Hunt Tent Lurker Drop]]>><<bird_pass 5>><</link>>
@@ -896,14 +896,14 @@ What will you hunt for?
 		<</if>>
 	<<case 3>>
 		<<if $athleticsSuccess>>
-			You grab a log in both hands. It's hard to fly with this much extra weight, <span class="green">but you manage it</span>.
+			You grab a log in each hand. It's hard to fly with this much extra weight, <span class="green">but you manage it</span>.
 			<br><br>
 			
 			<<flight_hunt_get "wood" 2>>
 			<<flight_hunt_return>>
 		<<else>>
 			<<set _huntFail to 1>>
-			You grab a log in both hands. You attempt to fly, <span class="red">but the weight of the logs quickly wear you down</span>. You're forced to let go, and accidentally drop both. You hear a loud crack as the logs land. You'll have to look for something else. <<stress 6>><<tiredness 2>><<gstress>><<gtiredness>>
+			You grab a log in each hand. You attempt to fly, <span class="red">but the weight of the logs quickly wear you down</span>. You're forced to let go, and accidentally drop both. You hear a loud crack as the logs land. You'll have to look for something else. <<stress 6>><<tiredness 2>><<gstress>><<gtiredness>>
 			<br><br>
 			
 			<<flight_hunt_return>>
@@ -1174,6 +1174,7 @@ You land near the leaves.
 			<br><br>
 
 			<<set $quicksand_escape to "bird_hunt">>
+			<<set $quicksand_depth to 4>>
 			<<quicksand_actions>>
 		<</if>>
 	<</if>>
@@ -1202,12 +1203,45 @@ Having escaped the sand, you carefully pick leaves from the surface. Most of the
 <<flight_hunt_get "leaves" 3>>
 <<flight_hunt_return>>
 
+:: Bird Hunt Quicksand Rescue
+<<set $outside to 1>><<effects>>
+
+The <<person2>><<person>> helps you to your feet,
+
+<<if $exposed gte 1>>
+	and blushes when <<he>> sees your state of dress. <<covered>> <<He>> offers you some towels.
+	<<towelup>>
+<<else>>
+	and offers a towel to wipe off the sand.
+<</if>>
+<br><br>
+
+"You shouldn't wander the moor alone," <<he>> says.
+<<if Time.dayState is "night">>
+	"Not this deep, and especially not at night."
+<<else>>
+	"Not this deep."
+<</if>>
+<br><br>
+
+<<person1>>"We can help you back to civilisation," the <<person>> adds. "If you like."
+<br><br>
+
+You tell them that you appreciate the offer, but are choosing to stay. You wave them off and wait until they're gone.
+<br><br>
+
+Having escaped the sand, you look to pick leaves from the surface, but they've all been ruined.
+<br><br>
+
+<<set _huntFail to 1>>
+<<flight_hunt_return>>
+
 :: Bird Hunt Tarp
 <<effects>>
 You land near the rocks and unfurl the tarp. A large portion of it is wedged between the rocks, but a few hefty tugs free it. You untie the remaining parts.
 <br><br>
 
-Its large and unweildy.
+It's large and unwieldy.
 <<if $bird.hunts.duo is true>>
 	<<npc "Great Hawk">><<person1>>
 	The two of you should be able to get it back together.
@@ -2315,12 +2349,12 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 	It's mercifully empty of other occupants. There's a lot of ground to cover, but you don't know how much time you have.
 	<br><br>
 
-	<<link [[Steal clothes|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 1>><<crimeup 10 "thievery">><</link>>
+	<<link [[Steal clothes|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 1>><<crimeUp 10 "thievery">><</link>>
 	<br>
-	<<link [[Steal valuables|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 2>><<crimeup 10 "thievery">><</link>>
+	<<link [[Steal valuables|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 2>><<crimeUp 10 "thievery">><</link>>
 	<br>
 	<<if $bird.upgrades.tools is 0 and !$bird.hunts.loot.tools>>
-		<<link [[Steal tools|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 3>><<crimeup 10 "thievery">><</link>>
+		<<link [[Steal tools|Bird Hunt Tent Steal Alone 2]]>><<set $phase to 3>><<crimeUp 10 "thievery">><</link>>
 		<br>
 	<</if>>
 <<else>>
@@ -3281,30 +3315,6 @@ You won't be able to do anything else to them today, now that they're alerted.
 
 <<flight_hunt_return>>
 
-:: Bird Hunt Ambush Point
-<<effects>>
-
-You land atop the rock. There are symbols carved into its face.
-<br><br>
-
-You're able to see quite far around you. Looking at the ground, you notice a small hole in the path, partly obstructed by grass. You could use it to make a trap.
-<br><br>
-
-<<set _hkMod to Math.floor($housekeeping / 40)>>
-<<set _hkTime to (30 - _hkMod)>>
-<<rng 50>>
-<<set _randomTime to $rng>>
-
-<<link [["Set up a trap (" + getTimeString(_hkTime) + ")"|Bird Hunt Ambush Trap]]>><</link>><<note "Housekeeping" "teal">>
-<br>
-<<link [[Wait in ambush (?:??)|Bird Hunt Ambush Wait]]>><<bird_pass _randomTime>><</link>>
-<br>
-
-:: Bird Hunt Ambush Trap
-<<effects>>
-
-:: Bird Hunt Ambush Wait
-<<effects>>
 
 :: Bird Hunt Ignore
 <<effects>><<flight_distance_check>>
@@ -3546,6 +3556,7 @@ You sit and take a moment to re-orient yourself. You still feel dizzy. You seem 
 
 :: Bird Hunt Passout
 <<effects>>
+<<npc "Great Hawk">><<person1>>
 <<if isPlayerNonparasitePregnancyEnding>>
 	You're met with the face of the <<beasttype>>.
 	<<if $monster is 1>>
