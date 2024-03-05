@@ -152,6 +152,7 @@ $.fn.tooltip = function (options = {}) {
 		// Optionally delay the tooltip, if a delay is set
 		clearTimeout($this.data("tooltip-timeout"));
 		const timeout = setTimeout(() => {
+			if (!$.contains(document, $this[0])) return;
 			tooltip = $("<div>").addClass("tooltip-popup");
 			const header = $("<div>").addClass("tooltip-header").html(settings.title);
 			const body = $("<div>").addClass("tooltip-body").html(settings.message);
