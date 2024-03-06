@@ -67,6 +67,7 @@ module.exports = {
 		// DoL other namespaces/objects
 		Constants: "readonly",
 		ConstantsLoader: "readonly",
+		Cooker: "readonly",
 		currentlyLoadingMap: "readonly",
 		DateTime: "readonly",
 		DoLHouse: "readonly",
@@ -114,6 +115,7 @@ module.exports = {
 		eSelect: "readonly",
 		getTimeString: "readonly",
 		generateBabyName: "readonly",
+		getBirdBurnTime: "readonly",
 		getCustomClothesColourCanvasFilter: "readonly",
 		getCustomColourRGB: "readonly",
 		getCustomColourStyle: "readonly",
