@@ -3,6 +3,7 @@
 	<<set $bird to {}>>
 	<<set $bird.lock to 1>>
 	<<set $bird.rope to 0>>
+	<<set $bird.clean to 0>>
 	<<set $bird.loot to {}>>
 	<<set $bird.loot.lurker to 100>>
 	<<set $bird.loot.trash to 0>>
@@ -704,14 +705,13 @@
 				<<if !$worn[_active_clothes].type.includes("naked") and !$worn[_active_clothes].type.includes("swim")>>
 					<<switch _active_clothes>>
 						<<case "over_upper" "over_lower">>
-							<<set _flightTime += Math.floor(_flightTimeBase / 6)>>
+							<<set _flightTime += Math.floor(_flightTimeBase / 6)>><<set _slowText to true>>
 						<<case "upper" "lower">>
-							<<set _flightTime += Math.floor(_flightTimeBase / 9)>>
+							<<set _flightTime += Math.floor(_flightTimeBase / 9)>><<set _slowText to true>>
 						<<case "under_upper" "under_lower" "feet">>
-							<<set _flightTime += Math.floor(_flightTimeBase / 18)>>
+							<<set _flightTime += Math.floor(_flightTimeBase / 18)>><<set _slowText to true>>
 						<<default>>
 					<</switch>>
-					<<set _slowText to true>>
 				<</if>>
 			<</for>>
 			<<if _slowText>>
@@ -1876,9 +1876,20 @@
 		<</if>>
 
 		<<if $_upgrade.clothingSlot>>
-			<<if $worn[$_upgrade.clothingSlot].name isnot "naked">>
+			<<if $worn[$_upgrade.clothingSlot].index is $_upgrade.clothingIndex>>
 				<br>
-				<span class="blue">Will replace your $worn[$_upgrade.clothingSlot].name</span>
+				<span class="purple">You're already wearing this!</span>
+				<<set $_disableBuild to true>>
+			<<elseif $_upgrade.clothingIndex is 12 and $bird.duster is true>>
+				<br>
+				<span class="purple">You already have one of these hanging up.</span>	
+				<<set $_disableBuild to true>>
+			<<elseif $bird.upgrades.wardrobe is 1 and getOwnedClothingCount($_upgrade.clothingIndex, $_upgrade.clothingSlot) gte 1>>
+				<br>
+				<span class="blue">You already own <<number getOwnedClothingCount($_upgrade.clothingIndex, $_upgrade.clothingSlot)>> of these.</span>
+			<<elseif $worn[$_upgrade.clothingSlot].name isnot "naked">>
+				<br>
+				<span class="blue">Will replace your <<print $worn[$_upgrade.clothingSlot].name>></span>
 			<</if>>
 		<</if>>
 

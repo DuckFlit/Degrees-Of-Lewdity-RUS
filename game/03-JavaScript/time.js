@@ -689,7 +689,7 @@ function dayPassed() {
 		else V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.95, 0, 100).toFixed(3);
 	}
 
-	if (V.weather === "rain" && V.bird?.upgrades.firepit && !V.bird.upgrades.shelter) {
+	if (V.weather === "rain" && V.bird.upgrades?.firepit && !V.bird.upgrades.shelter) {
 		const burnTime = getBirdBurnTime() * 60; // seconds
 		if (burnTime > 0) {
 			Firepit.addBurnTime(V.bird.firepit, Math.floor(-burnTime / 2) + Time.minute * 30);
@@ -829,6 +829,7 @@ function dayPassed() {
 	} else {
 		delete V.moorLessDangerAll;
 	}
+	if (V.bird.clean >= 1) V.bird.clean = Math.clamp(V.bird.clean - 8, 0, 100);
 
 	/* Set flag to determine Kylar's position at lunch */
 	V.daily.kylar.libraryStalk = rollKylarLibraryStalkFlag();

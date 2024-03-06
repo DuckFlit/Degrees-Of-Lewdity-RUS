@@ -1201,10 +1201,35 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<br><br>
 		<</if>>
 	<</if>>
-	<<if $worn.handheld.name is "feather duster" or $bird.duster is 1>>
-		<<edenicon "broom">><<link [[Dust the tower (0:30)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 200>><<bird_pass 30>><</link>><<ghousekeeping 200>><<if !$daily.birdHousekeepingSyndrome>><<gbirdstockholm>><</if>>
+	<<if $bird.clean gte 100>>
+		<<if $bird.upgrades.decor gte 4>>
+			<span class="green">Your tower is immaculate.</span>
+		<<else>>
+			<span class="green">Your tower is perfectly clean.</span>
+		<</if>>
 	<<else>>
-		<<edenicon "broom">><<link [[Tidy up the tower (1:00)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 100>><<bird_pass 60>><</link>><<ghousekeeping 100>><<if !$daily.birdHousekeepingSyndrome>><<gbirdstockholm>><</if>>
+		<<if $syndromebird gte 1>>
+			<<if $bird.clean gte 80>>
+				The tower is <span class="teal">clean,</span> save for a few bits of dirt in between stone bricks.
+			<<elseif $bird.clean gte 60>>
+				The tower is <span class="lblue">tidy,</span> but you know you can do better.
+			<<elseif $bird.clean gte 40>>
+				The tower is <span class="blue">acceptable.</span> Loose stones and dirt have been thrown from the perch.
+			<<elseif $bird.clean gte 20>>
+				The tower is <span class="purple">a bit messy.</span> Dirt stubbornly sticks to various surfaces.
+			<<elseif $bird.clean gte 10>>
+				The tower is <span class="pink">a mess.</span> It's better than when you first arrived, at least.
+			<<else>>
+				The tower is <span class="red">filthy.</span> Erosion and neglect have left a musty stench in the air.
+			<</if>>
+		<</if>>
+		<br>
+		<<if $worn.handheld.name is "feather duster" or $bird.duster is true or ($bird.upgrades.wardrobe is 1 and getOwnedClothingCount(12, "handheld") gte 1)>>
+			<<edenicon "broom">><<link [[Dust the tower (0:30)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 200>><<bird_pass 30>><</link>><<ghousekeeping 200 "silent">>
+		<<else>>
+			<<edenicon "broom">><<link [[Tidy up the tower (1:00)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 100>><<bird_pass 60>><</link>><<ghousekeeping 100 "silent">>
+		<</if>>
+		<<if !$daily.birdHousekeepingSyndrome>><<gbirdstockholm>><<glove>><<gdom>><</if>>
 	<</if>>
 	<br>
 	<<if $syndromebird is 1 and !($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
@@ -1258,17 +1283,20 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<<else>>
 			<<mirroricon>><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>>
 		<</if>>
-		<<if $bird.upgrades.wardrobe is 1>>
+	<</if>>
+	<<if $bird.upgrades.wardrobe is 1>>
+		<br>
+		<<wardrobeicon>><<link [[Wardrobe|Bird Tower Wardrobe]]>><</link>>
+	<<else>>
+		<<if $bird.duster is true>>
 			<br>
-			<<wardrobeicon>><<link [[Wardrobe|Bird Tower Wardrobe]]>><</link>>
-		<<else>>
-			<<if $bird.duster is true>>
-				<br>
-				<<ind>><<link [[Grab your feather duster|Bird Tower]]>><<generalWear handheld 12>><<run delete $bird.duster>><</link>>
-			<<elseif $worn.handheld.name is "feather duster">>
-				<br>
-				<<ind>><<link [[Hang up your feather duster|Bird Tower]]>><<generalRuined handheld>><<set $bird.duster to true>><</link>>
+			<<ind>><<link [[Grab your feather duster|Bird Tower]]>><<generalWear handheld 12>><<run delete $bird.duster>><</link>>
+			<<if $worn.handheld.name isnot "naked">>
+				<span class="blue">Will replace your $worn.handheld.name</span>
 			<</if>>
+		<<elseif $worn.handheld.name is "feather duster">>
+			<br>
+			<<ind>><<link [[Hang up your feather duster|Bird Tower]]>><<generalRuined handheld>><<set $bird.duster to true>><</link>>
 		<</if>>
 	<</if>>
 	<br>
@@ -1795,6 +1823,12 @@ You remain still.
 
 <i><<bHe>> will be less likely to bring you lurkers in the future.</i>
 <br><br>
+
+<<if $harpy gte 6 and $bird.hunts.unlocked is true and $bird.hunts.lurkers is false>>
+	<<set $bird.hunts.lurkers to true>>
+	<span class="blue">You have the urge to catch one yourself.</span> <span class="gold">You can now hunt for lurkers on your own.</span>
+	<br><br>
+<</if>>
 
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
@@ -2814,7 +2848,12 @@ You bring your hands lower and start combing through <<bhis>> wings with your fi
 
 	<<if $daily.birdSpousePreen is undefined>>
 		<<set $daily.birdSpousePreen to 1>>
-		A couple of <<bhis>> feathers come loose. <span class="teal">You take them.</span> <<set $bird.materials.feathers += random(1,2)>>
+		<<set _featherNum to random(1,2)>>
+		<<switch _featherNum>>
+			<<case 1>>One of <<bhis>> feathers comes loose. <span class="teal">You take it.</span>
+			<<case 2>>A couple of <<bhis>> feathers come loose. <span class="teal">You take them.</span>
+		<</switch>>
+		<<set $bird.materials.feathers += _featherNum>>
 	<</if>>
 <<else>>
 	You're not quite sure what you're doing. You just massage <<bhis>> wings with your wet hands.
@@ -2870,7 +2909,12 @@ or ($demon gte 6 and $transformationParts.demon.wings isnot "hidden")>>
 	After <<bhes>> done with your wings, <<bhe>> moves on to your hair. After that, <<bhe>> cleans the rest of your back.
 	<<if $daily.birdSelfPreen is undefined>>
 		<<set $daily.birdSelfPreen to 1>>
-		A couple of your loose feathers have fallen out. <span class="teal">You take them.</span> <<set $bird.materials.feathers += random(1,2)>>
+		<<set _featherNum to random(1,2)>>
+		<<switch _featherNum>>
+			<<case 1>>One of your loose feathers has fallen out. <span class="teal">You take it.</span>
+			<<case 2>>A couple of your loose feathers have fallen out. <span class="teal">You take them.</span>
+		<</switch>>
+		<<set $bird.materials.feathers += _featherNum>>
 	<</if>>
 <<else>>
 	<<if $monster is 1>>
@@ -2946,14 +2990,24 @@ The <<beasttype>> shakes <<bhis>> feathers, and lets you stroke <<bhis>> wings.
 	You carefully preen <<bhim>>, ensuring <<bhis>> wings look dignified. It's not so different from preening your own wings.
 	<<if $daily.birdSpousePreen is undefined>>
 		<<set $daily.birdSpousePreen to 1>>
-		A few of <<bhis>> feathers come loose. <span class="teal">You take them.</span> <<set $bird.materials.feathers += random(1,2)>>
+		<<set _featherNum to random(1,2)>>
+		<<switch _featherNum>>
+			<<case 1>>One of <<bhis>> feathers comes loose. <span class="teal">You take it.</span>
+			<<case 2>>A couple of <<bhis>> feathers come loose. <span class="teal">You take them.</span>
+		<</switch>>
+		<<set $bird.materials.feathers += _featherNum>>
 	<</if>>
 <<else>>
 	<<if understandsBirdBehaviour()>>
 		You carefully help <<bhim>> preen. You're familiar enough with the structure of wings to do a good job.
 		<<if $daily.birdSpousePreen is undefined>>
 			<<set $daily.birdSpousePreen to 1>>
-			A few of <<bhis>> feathers come loose. <span class="teal">You take them.</span> <<set $bird.materials.feathers += random(1,2)>>
+			<<set _featherNum to random(1,2)>>
+			<<switch _featherNum>>
+				<<case 1>>One of <<bhis>> feathers comes loose. <span class="teal">You take it.</span>
+				<<case 2>>A couple of <<bhis>> feathers come loose. <span class="teal">You take them.</span>
+			<</switch>>
+			<<set $bird.materials.feathers += _featherNum>>
 		<</if>>
 	<<else>>
 		You attempt to help <<bhim>> preen. You're not entirely sure what you're doing, but <<bhe>> seems to appreciate the effort.
@@ -3057,7 +3111,13 @@ You bring your attentive touch down towards <<bhis>> groin.
 
 <<if $daily.birdSelfPreen is undefined>>
 	<<set $daily.birdSelfPreen to 1>>
-	You preen your wings. It's harder doing this alone. A couple of your loose feathers fall out. <span class="teal">You take them.</span> <<set $bird.materials.feathers += random(1,2)>>
+	You preen your wings. It's harder doing this alone. 
+	<<set _featherNum to random(1,2)>>
+	<<switch _featherNum>>
+		<<case 1>>One of your loose feathers has fallen out. <span class="teal">You take it.</span>
+		<<case 2>>A couple of your loose feathers have fallen out. <span class="teal">You take them.</span>
+	<</switch>>
+	<<set $bird.materials.feathers += _featherNum>>
 <<else>>
 	You preen your wings. There's no more loose feathers to remove for now, but it makes you feel better regardless.
 <</if>>
@@ -4377,10 +4437,6 @@ The walls of your tower tell the stories of countless hunts, and tease more to c
 :: Bird Tower Build Wardrobe
 <<effects>>
 <<set $wardrobes.birdTower.unlocked to true>>
-<<if $bird.duster is true>>
-	<<run delete $bird.duster>>
-	<<generalSend "birdTower" handheld 12>>
-<</if>>
 You pile up a bunch of wood and prepare your tools. This will be a big project.
 <br><br>
 
@@ -4390,13 +4446,18 @@ Wood carving takes up the bulk of the time. You need to make sure it has the rig
 The walls are next. You use your largest pieces for it, and use a mix of fabric and leather to bind pieces together. You wish you had some glue. You carve notches near the top as even as you can, both to accept a roof piece and for sticks to support hangars.
 <br><br>
 
-The roof piece is a bit heavy, but you lock it in place after a few tries. Finally, you carve sticks and tie bent pieces of junk to the tops to serve as hangars.
+The roof piece is a bit heavy, but you lock it in place after a few tries. Finally, you carve sticks and tie bent pieces of junk to the tops to serve as hangars. You use lurkers for heavier hangars. Their stiff limbs stay in place when you bend them.
 <br><br>
 
 You stand up and admire your work. You swell with pride. <<trauma -12>><<lltrauma>>
 <br><br>
 
 You move your mirror right next to it.
+<<if $bird.duster is true>>
+	You place your feather duster inside.
+	<<run delete $bird.duster>>
+	<<generalSend "birdTower" handheld 12>>
+<</if>>
 <br><br>
 
 <<link [[Next|Bird Tower]]>><</link>>
@@ -4433,19 +4494,65 @@ It looks cute.
 :: Bird Tower Tidy
 <<effects>>
 <<npc "Great Hawk">><<person1>>
+<<set _cleanIncrease to 0>>
 <<if $syndromebird is 1>>
 	<<if $worn.handheld.name is "feather duster">>
+		<<set _cleanIncrease += 2>>
 		You use your feather duster to clean up the tower. The place looks much better by the time you're done. <<trauma -1>><<ltrauma>>
-	<<elseif $bird.duster is 1>>
-		You grab your feather duster and use it to clean up the tower.
+	<<elseif $bird.duster is true or ($bird.upgrades.wardrobe is 1 and getOwnedClothingCount(12, "handheld") gte 1)>>
+		<<set _cleanIncrease += 2>>
+		<<wearProp "featherduster">>
+		You grab your feather duster
+		<<if $bird.upgrades.wardrobe is 1 and getOwnedClothingCount(12, "handheld") gte 1>>
+			from the wardrobe
+		<<else>>
+			from the wall
+		<</if>>
+		and use it to clean up the tower. The place looks much better by the time you're done. <<trauma -1>><<ltrauma>>
 	<<else>>
 		You do your best to tidy up. Your hands are dirty by the end. It would be easier to do with a feather duster.
 	<</if>>
 <<else>>
 	The tower is caked in dust, and small mounds of dirt are piled up in corners. You do your best to make the place look more presentable.
 <</if>>
+<<if currentSkillValue('housekeeping') gte 1500>>
+	<<set _cleanIncrease += 8>>
+<<elseif currentSkillValue('housekeeping') gte 1200>>
+	<<set _cleanIncrease += 7>>
+<<elseif currentSkillValue('housekeeping') gte 800>>
+	<<set _cleanIncrease += 6>>
+<<elseif currentSkillValue('housekeeping') gte 600>>
+	<<set _cleanIncrease += 5>>
+<<elseif currentSkillValue('housekeeping') gte 400>>
+	<<set _cleanIncrease += 4>>
+<<elseif currentSkillValue('housekeeping') gte 200>>
+	<<set _cleanIncrease += 3>>
+<<else>>
+	<<set _cleanIncrease += 2>>
+<</if>>
+<<set $bird.clean += _cleanIncrease>>
 <br><br>
 
-<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<<if $bird.state is "home" and ["sing", "groom"].includes($bird.activity)>>
+	<<npc "Great Hawk">><<person1>>
+	<<if C.npc["Great Hawk"].love gte 50>>
+		<<if $syndromebird is 1 and $monster is 1>>
+			Your spouse
+		<<else>>
+			The <<beasttype>>
+		<</if>>
+		nuzzles your cheek when you're done.
+	<<else>>
+		<<if $syndromebird is 1 and $monster is 1>>
+			Your spouse
+		<<else>>
+			The <<beasttype>>
+		<</if>>
+		eyes you curiously as you work.
+	<</if>>
+	<br><br>
+<</if>>
+
+<<link [[Next|Bird Tower]]>><<if $propEquipped is 1>><<generalRuined handheld>><</if>><<endevent>><</link>>
 <br>
 
