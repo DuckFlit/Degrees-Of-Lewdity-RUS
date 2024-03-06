@@ -692,7 +692,7 @@ function dayPassed() {
 	if (V.weather === "rain" && V.bird.upgrades?.firepit && !V.bird.upgrades.shelter) {
 		const burnTime = getBirdBurnTime() * 60; // seconds
 		if (burnTime > 0) {
-			Firepit.addBurnTime(V.bird.firepit, Math.floor(-burnTime / 2) + Time.minute * 30);
+			Cooker.addBurnTime(V.bird.firepit, Math.floor(-burnTime / 2) + Time.minute * 30);
 		}
 	}
 
