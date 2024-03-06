@@ -40,11 +40,22 @@
 
 <<if $birdFly isnot 1 or $harpy lte 5>>
 	<!-- Player hasn't learned to fly -->
-	<<if $monster is 1>>
-		<<bHe>> looks at you for a moment. "No. <<Wife>> is not ready yet." Before you can ask why, <<bhe>> flaps <<bhis>> wings for emphasis. "Can not carry you for the hunt. When <<wife>> is ready, we can go together."
+	<<if !$daily.birdHuntAsked>>
+		<<set $daily.birdHuntAsked to true>>
+		<<if $monster is 1>>
+			<<bHe>> looks at you for a moment. "No. <<Wife>> is not ready yet." Before you can ask why, <<bhe>> flaps <<bhis>> wings for emphasis. "Can not carry you for the hunt. When <<wife>> is ready, we can go together."
+		<<else>>
+			<<bHe>> looks at you for a moment. <<bHe>> flaps <<bhis>> wings at you and shakes <<bhis>> head. <<bHe>> seems to think you're not ready. <span class="blue">You'll need to learn to fly first.</span>
+		<</if>>
 	<<else>>
-		<<bHe>> looks at you for a moment. <<bHe>> flaps <<bhis>> wings at you and shakes <<bhis>> head. <<bHe>> seems to think you're not ready. <span class="blue">You'll need to learn to fly first.</span>
+		<<bHe>> cocks <<bhis>> head.
+		<<if $monster is 1>>
+			"<<Wife>> asks again. <<Wife>> really wants to help?" <<bHe>> walks over to you, and nuzzles your cheek. "When <<wife>> can join Great Hawk in the sky, <<wife>> can hunt."
+		<<else>>
+			<<bHe>> walks over to you and nuzzles your cheek, before letting out a low caw.
+		<</if>>		
 	<</if>>
+	<<npcincr "Great Hawk" love 1>><<glove>>
 	<br><br>
 
 	<<link [[Next|Bird Tower No Hunt]]>><</link>>
@@ -625,6 +636,13 @@ What will you hunt for?
 		<<link [[Avoid them|Bird Hunt Ignore]]>><<endevent>><</link>>
 		<br>
 	<</if>>
+<<elseif $bird.hunts.distanceNorth is -3 and $bird.hunts.distanceEast is 3>>
+	There's a large standing stone at the top of a hill nearby. This would be a good place to set up an ambush.
+	<br><br>
+
+	<<link [[Land|Bird Hunt Ambush Point]]>><</link>>
+	<br>
+	<<flight_hunt_options>>
 <<else>>
 
 	<<addinlineevent "bird_hunt_nothing" _flight_hunt_chance.nothing>>
@@ -791,7 +809,7 @@ What will you hunt for?
 	<</addinlineevent>>
 
 	<<if isBloodmoon()>>
-		<<addinlineevent "bird_hunt_blood" 4>>
+		<<addinlineevent "bird_hunt_blood" 40>>
 			You feel your stomach twist. The hairs on the back of your neck stand on end.
 			<br><br>
 
@@ -1777,7 +1795,7 @@ You land nearby and begin searching.
 			<br>
 			<!-- No idea how to send a damaged item to the player's wardrobe -->
 			<<if $bird.wardrobe is 1>>
-				<<link [[Take|Bird Hunt Shiny Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_index>><<generalSend "wardrobe" _random_slot _random_index>><</link>>
+				<<link [[Take|Bird Hunt Shiny Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_index>><<generalSend "birdTower" _random_slot _random_index>><</link>>
 				<br>
 			<</if>>
 		<<else>>
@@ -2512,7 +2530,7 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 		<<link [[Scrap for cloth|Bird Hunt Tent Steal Clothes]]>><<set $phase to 2>><<flight_hunt_get "fabric" 1>><</link>>
 		<br>
 		<<if $bird.wardrobe is 1>>
-			<<link [[Steal it|Bird Hunt Tent Steal Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_index>><<generalSend "wardrobe" _random_slot _random_index>><</link>>
+			<<link [[Steal it|Bird Hunt Tent Steal Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_index>><<generalSend "birdTower" _random_slot _random_index>><</link>>
 			<br>
 		<</if>>
 	<<else>>
@@ -2972,7 +2990,7 @@ You run as fast as you can. Adrenaline kicks in. You don't want to think about w
 
 :: Bird Hunt Tent Steal
 <<effects>>
-
+<<set $daily.huntRemyAlerted to true>>
 You decide that your spouse would make a good distraction while you sneak in to steal from the camp.
 <<if $monster is 1>>
 	"<<Wife>> wants landbound things? Would be happy to help."
@@ -2999,7 +3017,7 @@ You land away from the campsite, and give <<bhim>> the signal. <<bHe>> lets out 
 	<<else>>
 		You only find a _looted. You grab it. <<flight_hunt_get "valuables" 1 _looted>>
 	<</if>>
-	Knowing they won't stay in their tents forever, you flee the camp.
+	Knowing they won't stay in their tents forever, you flee the camp. You won't be able to steal from them again today.
 	<br><br> 
 
 	Regrouping with the Great Hawk in the sky, you show <<bhim>> what you found.
@@ -3040,7 +3058,7 @@ Regrouping with the Great Hawk in the sky, you show <<bhim>> what you found.
 <<else>>
 	You only find a _looted. You grab it and begin to leave. <<flight_hunt_get "valuables" 1 _looted>>
 <</if>>
-Knowing they won't stay in their tents forever, you flee the camp.
+Knowing they won't stay in their tents forever, you flee the camp. You won't be able to steal from them again today.
 <br><br> 
 
 Regrouping with the Great Hawk in the sky, you show <<bhim>> what you found.
@@ -3314,6 +3332,787 @@ You won't be able to do anything else to them today, now that they're alerted.
 <br><br>
 
 <<flight_hunt_return>>
+
+:: Bird Hunt Ambush Point
+<<effects>>
+
+You land atop the rock. There are symbols carved into its face.
+<<if $bird.hunts.duo is true>>
+	Your spouse lands next to you. The rock is large enough to provide cover for both of you.
+<</if>>
+<br><br>
+
+You're able to see quite far around you. Looking at the ground, you notice a small hole in the path, partly obstructed by grass. You could use it to make a trap.
+<br><br>
+
+<<set _hkMod to Math.floor($housekeeping / 40)>>
+<<set $hkTime to (30 - _hkMod)>>
+
+<<link [[`Set up a trap (${getTimeString($hkTime)})`|Bird Hunt Ambush Trap]]>><</link>><<note "Housekeeping" "teal">>
+<br>
+<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><</link>>
+<br>
+
+:: Bird Hunt Ambush Trap
+<<effects>>
+<<if $bird.hunts.duo is true>>
+	<<npc "Great Hawk">><<person1>>
+	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to setup a trap.
+	<br>
+	<<if $monster is 1>>
+		"Wife is smart, making things like this," <<bhe>> says.
+	<<else>>
+		<<bHe>> squawks at you.
+	<</if>>
+	<<endevent>>
+	<br><br>
+<</if>>
+<<rng 2>>
+<<set $ambushTarget to ($rng is 1 ? "human" : "lurker")>>
+You start to make the trap. You scrounge up leaves and sticks to cover the hole.
+<<rng 100>>
+
+<<if ($rng + $hkTime) gte 80>>
+	<<if $bird.hunts.duo is true>>
+		<<npc "Great Hawk">><<person1>>
+		<<if $ambushTarget is "human">>
+			While you're still setting up, <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> flies down to you.
+			<<if $monster is 1>>
+				"Landbound coming. Hide," <<bhe>> says, gesturing for you to follow. You fly back on top of the rock with <<bhim>>.
+			<<else>>
+				<<bHe>> brushes his beak against you, then points <<bhis>> wings at the path. <<bHe>> flies back on top of the rock, and you follow.
+			<</if>>
+			Sure enough, two people come walking by shortly after. With your trap incomplete, you decide against trying to rob them. After making sure they're gone, you return to your trap.
+		<<else>>
+			While you're still setting your trap, you hear <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> let out a screech. You jump up, ready to defend yourself. You see nothing around you. Then you notice some lurkers fleeing. It appears <<bhe>> was just scaring them away from you. You sigh in relief and return to your trap.
+		<</if>>
+		<br><br>
+
+		<<if $hkTime lte 10>>
+			With practised precision, you set them down so that they cover any signs of the hole while being frail enough to cause anyone stepping on them to fall.
+		<<elseif $hkTime lte 15>>
+			You set them down so that they cover any signs of the hole while being frail enough to break when stepped on. It takes some time to set up properly.
+		<<elseif $hkTime lte 20>>
+			You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. After a couple of attempts, your trap is stable enough.
+		<<elseif $hkTime lte 25>>
+			You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. It takes you many attempts, but eventually you're able to make the trap without it collapsing.
+		<<else>>
+			You're not sure how to make a trap using only leaves and sticks, which results in you trying anything you can to make it work. After what feels like an eternity, you manage to set up the trap properly.
+		<</if>>
+		<<housekeeping 1 400>><<ghousekeeping 400>>
+		<br><br>
+
+		You stand up and admire your handiwork. Now it's time to put it to the test. You fly back up onto the rock. All you can do now is wait.
+		<br><br>
+
+		<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $phase to 1>><</link>>
+		<br>
+	<<else>>
+		<<if $hkTime lte 10>>
+			With practised precision, you set them down so that they cover any signs of the hole while being frail enough to cause anyone stepping on them to fall.
+		<<elseif $hkTime lte 15>>
+			You set them down so that they cover any signs of the hole while being frail enough to break when stepped on. It takes some time to set up properly.
+		<<elseif $hkTime lte 20>>
+			You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. After a couple of attempts, your trap is stable enough.
+		<<elseif $hkTime lte 25>>
+			You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. It takes you many attempts, but eventually you're able to make the trap without it collapsing.
+		<<else>>
+			You're not sure how to make a trap using only leaves and sticks, which results in you trying anything you can to make it work. After what feels like an eternity, you manage to set up the trap properly.
+		<</if>>
+		<<housekeeping 1 400>><<ghousekeeping 400>>
+		<br><br>
+
+		<<if $ambushTarget is "human">>
+			<<generate1>><<generate2>>
+			<<if $rng gte 85>>
+				With the trap prepared, you stand up again. You hear something behind you. You turn around and see a <<person1>><<person>> and a <<person2>><<person>> grinning at you.
+				<<if $exposed gte 2>>
+					"Now what're you doing out here? Going for a nude stroll?" the <<person1>><<person>> asks sarcastically. "Wandering out here looking like that is just asking to get raped," the <<person2>><<person>> chimes in, eyes full of lust. <<He>> begins to approach you.
+				<<else>>
+					"Now what's a <<girl>> like you doing out here? Ya know, the moor's not a good place for a picnic," the <<person1>><<person>> says sarcastically. The <<person2>><<person>> chuckles before speaking up. "Out here in the wild, there ain't nowhere you could go if somebody wanted to have their way with ya," <<he>> says, approaching you with a dark grin.
+				<</if>>
+				<br><br>
+
+				You only have a moment to react. The hole is right behind you.
+				<br><br>
+
+				<<link [["Pull " + $NPCList[1].pronouns.him + " into the trap"|Bird Hunt Ambush Caught Pull]]>><</link>><<physiquedifficulty 2000 18000>>
+				<br>
+				<<link [[Stand still|Bird Hunt Ambush Caught Rape]]>><<set $phase to 2>><<set $molestationstart to 1>><</link>>
+				<br>
+			<<else>>
+				<<if $exposed gte 2>>
+					You turn around and notice two people leering at your exposed body from down the path. "Hey... where's your clothes?" asks the <<person1>><<person>>.
+					<br><br>
+
+					<<if $exhibitionism gte 55>>
+						<<link [[Flaunt|Bird Hunt Ambush Caught Flaunt]]>><</link>><<exhibitionist4>>
+					<<else>>
+						<span class="blue">You aren't exhibitionist enough to flaunt your nudity at them.</span>
+					<</if>>
+					<br>
+				<<else>>
+					You turn around and notice two people staring at you a way's down the path. "What are you doing over there?" a <<person1>><<person>> calls out.
+					<br><br>
+				<</if>>
+				<<link [[Hide|Bird Hunt Ambush Caught Hide]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<if $bestialitydisable is "f" and $lurkerdisable is "f">>
+				As you stand up, you notice movement in the grass near you. You turn to face it, but something leaps on your back and lands on your <<bottom>>.
+				<br><br>
+				
+				<<link [[Next|Bird Hunt Ambush Struggle]]>><<set $struggle_start to 1>><</link>>
+				<br>
+			<<else>>
+				As you stand up, you notice movement in the grass near you. A small, leathery creature leaps at you! You manage to take flight, but not unscathed. You abandon the rock and your trap in fear.
+				<<beastescape>>
+				<br><br>
+
+				<<unset $randomTime>>
+				<<unset $hkTime>>
+				<<unset $ambushTarget>>
+				<<set _huntFail to 1>>
+				<<flight_hunt_return>>
+			<</if>>
+		<</if>>
+	<</if>>
+<<else>>
+	<<if $hkTime lte 10>>
+		With practised precision, you set them down so that they cover any signs of the hole while being frail enough to cause anyone stepping on them to fall.
+	<<elseif $hkTime lte 15>>
+		You set them down so that they cover any signs of the hole while being frail enough to break when stepped on. It takes some time to set up properly.
+	<<elseif $hkTime lte 20>>
+		You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. After a couple of attempts, your trap is stable enough.
+	<<elseif $hkTime lte 25>>
+		You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. It takes you many attempts, but eventually you're able to make the trap without it collapsing.
+	<<else>>
+		You're not sure how to make a trap using only leaves and sticks, which results in you trying anything you can to make it work. After what feels like an eternity, you manage to set up the trap properly.
+	<</if>>
+	<<housekeeping 1 400>><<ghousekeeping 400>>
+	<br><br>
+
+	You stand up and admire your handiwork. Now it's time to put it to the test. You fly back up onto the rock. All you can do now is wait.
+	<br><br>
+
+	<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $phase to 1>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Ambush Caught Pull
+<<effects>>
+
+As the <<person2>><<person>> draws close, you suddenly grab his hand and pull.
+<<if $physiqueSuccess>>
+	<span class="green"><<He>>'s unable to pull away.</span> You sidestep the hole, and bring him right to it. "Don't make this hard for-" <<His>> words are interrupted as <<he>> steps on the trap, causing <<him>> to stumble and fall. You take the opportunity to quickly run away. The <<person1>> doesn't chase you, instead opting to laugh at <<his>> misfortunate friend. 
+	<br><br>
+
+	You make sure you're out of sight, then take flight. You fly above them and wait until the two leave, then land up on the rock again. With your trap ruined, you can either leave or try to make an ambush without it.
+	<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Leave|Bird Hunt Ambush Fail]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<span class="red"><<He>> simply grabs you tighter.</span> "Resisting will only make me harder for ya, <<girl>>!" <<He>> grabs your hands and pushes you backwards, making you fall into your own trap. <<pain 10>><<ggpain>>
+	<br><br>
+
+	"That's what happens when ya resist!" <<he>> says. The pair pull you out of the hole, if only so that they can molest you properly. The <<person1>><<person>> holds your arms. "Now be still, don't make this worse for yourself," <<he>> says coldly.
+	<br><br>
+
+	<<link [[Next|Bird Hunt Ambush Caught Rape]]>><<set $phase to 3>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Ambush Caught Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<if $phase is 3>>
+		<<set $enemytrust -= 100>>
+		<<set $enemyanger += 200>>
+		<<set $NPCList[0].lefthand to "arms">>
+		<<set $NPCList[0].righthand to "arms">>
+		<<set $leftarm to "grappled">>
+		<<set $rightarm to "grappled">>
+	<<elseif $phase is 2>>
+		You let the <<person2>><<person>> approach you. "Just be good and this'll be over soon," <<he>> says.
+		<br>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Caught Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Caught Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Ambush Caught Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	The pair let go of you. "Whew, who knew we'd find a slut somewhere out here," says the <<person2>><<person>>.
+	<br>
+	"Yeah, but taking them in the middle of nowhere just ain't as thrilling," responds the <<person1>><<person>>.
+	<<if $phase is 3>>
+		"And what the fuck was that you said before you pushed <<pher>>? 'Resisting will only make me harder for you?' Did you mean 'make <i>this</i> harder for <<pher>>'?"
+	<</if>>
+	<br>
+	"Argh, don't be such a whiner.<<if $phase is 3>> I know what I said.<</if>>" The two delve into conversation, now ignoring you. <<tearful>> you use the opportunity to make your escape.
+
+	<<clotheson>>
+	<<endcombat>>
+	<<set _huntFail to 1>>
+	<<flight_hunt_return>>
+<<else>>
+	You manage to push the <<person1>><<person>> into the <<person2>><<person>>, sending them tumbling to the ground. You take advantage of the opportunity to run.
+	<<set _phaseSaved to $phase>>
+	<<clotheson>>
+	<<endcombat>>
+	<<set $phase to _phaseSaved>>
+
+	You make sure you're out of sight, then take flight. You fly above them and wait until the they leave, then land up on the rock again.
+	<<if $phase is 3>>
+		With your trap ruined, you can either leave or try to make an ambush without it.
+	<<else>>
+		Your trap is still set, meaning you can still use it for your ambush.
+	<</if>>
+	<br><br>
+
+	<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $phase to 1>><</link>>
+	<br>
+	<<if $phase isnot 3>>
+		<<link [[Leave|Bird Hunt Ambush Fail]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Bird Hunt Ambush Fail
+<<effects>>
+You abandon your ambush point.
+<br><br>
+
+<<set _huntFail to 1>>
+<<flight_hunt_return>>
+
+:: Bird Hunt Ambush Caught Flaunt
+<<effects>>
+You use your hands to pronounce your exposure and bend half way over. "Just getting some air," you say. "Don't mind me."
+<<exhibitionism4>>
+
+The two continue down the path, eyes fixed on your body the whole time. You point out your trap when one of them nearly steps on it. Once they're gone, you fly back to the top of the rock. All you can do now is wait.
+<br><br>
+
+<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $phase to 1>><</link>>
+<br>
+
+:: Bird Hunt Ambush Caught Hide
+<<effects>>
+
+<<if $exposed gte 2>>
+	You cover yourself up however you can, before running off into the underbrush. <<arousal 6>><<garousal>>
+<<else>>
+	You run off into the underbrush, out of sight.
+<</if>>
+The two approach casually. "Where'd <<pshe>> run off to?" the <<person1>><<person>> asks.
+<br>
+"Dunno, but the poor <<girl>> looked scared. We should keep an eye out, maybe..." their voices fade as they pass the rock and continue down the path.
+<br><br>
+
+You fly back to the top of the rock once you're sure they're gone. Your trap is ready, now you just have to wait for someone to come.
+<br><br>
+
+<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $phase to 1>><</link>>
+<br>
+
+:: Bird Hunt Ambush Struggle
+<<effects>>
+
+<<if $struggle_start is 1>>
+	<<struggle_init>>
+	<<set $struggle.creature to "lurker">>
+	<<struggle_creatures 1 2>>
+	<<set $combat to 1>>
+	<<controlloss>>
+	<<violence 1>>
+	<<molested>>
+	<<if $analdisable is "f">>
+		<<set $struggle.anus.creature to "lurker">><<set $anususe to "struggle">><<set $anusstate to "struggle">><<set $struggle.enemy[0].location to "anus">>
+	<</if>>
+	<<unset $struggle_start>>
+<</if>>
+
+<<struggle>>
+
+<<if $struggle.done gte $struggle.number>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Struggle End]]>><</link>></span>
+	<br>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Struggle]]>><</link>></span>
+	<br>
+<</if>>
+
+:: Bird Hunt Ambush Struggle End
+<<effects>>
+
+The creatures disappear into the heather.
+<<tearful>> you dust yourself off and fly back up on the rock. Your trap is ready, now you just have to wait for someone to come.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<set $phase to 1>><</link>>
+<br>
+
+:: Bird Hunt Ambush Wait
+<<effects>>
+<<if $bird.hunts.duo is true and $phase isnot 1>>
+	<<npc "Great Hawk">><<person1>>
+	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to set up an ambush.
+	<br>
+	<<if $monster is 1>>
+		"Wife is smart, making good plans," <<bhe>> says.
+	<<else>>
+		<<bHe>> squawks at you.
+	<</if>>
+	<br><br>
+<</if>>
+<<endevent>>
+
+
+
+Hunt event: Ambush 3
+You sit atop the rock, waiting for a potential victim. (Insert random wait dialogue)
+
+(If no event) You keep a vigilant gaze over your surroundings. After 15 minutes of waiting, you still don't see anyone. You could keep waiting, or leave.
+
+Wait (0:15)|Hunt event: Ambush 3
+Leave|Hunt: Ignore
+
+(If humans) <<generate1>> <<generate2>>
+You spot two people walking along the path, a <<person1>> and a <<person2>> . They’re coming your way. (If trap) With your trap set and ready, robbing them will be easier.
+(Else)Without a trap, you’ll have to rely on intimidation and raw strength.
+
+Next|Hunt event: Ambush 4
+
+(If lurkers) You spot three lurkers coming towards you. (If trap) You hope one will fall into your trap.
+(Else) Grabbing moving lurkers will be tough, you can only get one.
+
+Next|Hunt event: Ambush 5
+Hunt event: Ambush 4
+(Trap variation) Soon the two are walking right next to your trap. The <<person1>> takes a step forward, and plummets into the hole. At that moment, you descend from the rock and land right behind them. You let out a loud scream, startling the <<person2>>. “W-What the hell!?” <<he>> yells out in surprise. You spread your wings, attempting to intimidate <<him>>.(Parts exposed and exhibitionism 2 or less) You realise far too late that you’re also flashing <<him>>. The sudden realisation makes you close your wings, feeling shameful. + stress + trauma You do your best to ignore what just happened.
+(Parts exposed and exhibitionism 3 or more) This also makes you flash <<him>> in the process, but you’re too focused on your hunt to care. “Give me your valuables, or there’s going to be trouble!” you yell in response.
+
+(If meek) “Okay! Please don’t hurt us, I’ll give you what you want!” <<he>> says, unable to hide <<his>> fear. The <<person1>> in the hole doesn’t say anything. With shaky hands, the <<person2>> throws his backpack to you. You start searching the backpack. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+Wordlessly, you let go of the backpack. You back away from them, then run out of sight. You fly back up into the air. With your prize in hand, you begin flying back to the tower.
+
+Next(0:10)|Hunt: Return
+
+(If normal) “Alright! C-Calm down, you lunatic!” <<he>> says. “Just take what you want from my backpack and leave us alone.” he says, throwing his backpack towards you. The <<person1>> in the hole protests “Don’t just give <<pher>> what <<pshe>> wants!” “Look, it’s not worth the trouble. I just want to avoid dealing with this nut-job.” the <<person1>> responds. 
+
+Ignoring their conversation, you look through the backpack. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you.
+You stare down the <<person2>>, then turn around and run away. After making sure you’re out of sight, you take flight again. With your new prize in hand, you begin flying back to the tower.
+
+Next(0:10)|Hunt: Return
+
+(If hostile) (Passive combat fame check) (Success) He considers your words for a moment, then relents. “Alright, you’re not worth the trouble anyway.” The <<person1>> is surprised at what <<he>>’s hearing. “What do you mean ‘alright’?! You can’t seriously consider handing over our stuff to some random <<girl>>!” “This ain’t just some girl, I think this is the one called (Underworld Name). Best not risk it now.” The <<person1>> grumbles, but doesn’t say anything else. You indicate for the <<person2>> to throw his backpack over to you. You make a point of showing you’re not dropping your guard as you search the backpack. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you.
+You throw the backpack back to him and calmly walk away. After making sure you’re out of sight, you take flight again. With your new prize in hand, you begin flying back to the tower.
+
+Next(0:10)|Hunt: Return
+
+(Fail) He looks you over. “Oh, I don’t think I will.” <<he>> says, now approaching you angrily. (Beat up encounter)
+(Encounter results)
+(PC Max pain) You keel over, unable to fight back. “That’s what you get, you goddamn brat!” the <<person2>> says. <<He>> stops beating you and goes to help <<his>> friend up. With tears in your eyes, you manage to muster up enough strength to get up and run. + fatigue 
+
+By the time the <<person1>> is out of the hole, you’re gone. You take a moment to recover, then fly up into the sky. You’re way too injured to keep hunting, so you begin flying back to the castle.
+
+Next (0:15)|Hunt: Fail
+
+(Orgasm) As the orgasm runs through his body, you take advantage of <<his>> vulnerable state and push <<him>> toward the hole. <<He>> stumbles over his friend. “F-Fuck… Okay, just take what you want.” <<he>> says. The trapped <<person1>> begins mocking the <<person2>>, but you don’t pay attention to that.
+
+You make a point of showing you’re not dropping your guard as you search the backpack. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+
+You stare down the <<person2>>, then turn around and run away. After making sure you are out of sight, you take flight again. With your new prize in hand, you begin flying back to the tower.
+
+Next (0:10)|Hunt: Return
+
+(Enemy max pain) You overpower the <<person2>> and push them down. “Shit… Fine, just take what you want and leave!” <<he>> yells from the ground, clutching his chest. The trapped <<person1>> begins mocking the <<person2>>, but you don’t pay attention to that.
+
+You make a point of showing you’re not dropping your guard as you search the backpack. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+
+You stare down the <<person2>>, then turn around and run away. After making sure you’re out of sight, you take flight again. With your new prize in hand, you begin flying back to the tower.
+
+Next|Hunt: Return
+
+(No trap variation) With no trap, you’ll have to rely solely on intimidation. You let out a loud scream and drop in front of them. You spread your wings wide, trying to intimidate them. 
+(Parts exposed and exhibitionism 2 or less) You realise far too late that you’re also flashing them. The sudden realisation makes you close your wings, feeling shameful. + stress + trauma You do your best to ignore what just happened.
+(Parts exposed and exhibitionism 3 or more) This also makes you flash them in the process, but you’re too focused on your hunt to care.
+“Give me your valuables, or there’s going to be trouble!” you yell out. For a moment, the pair are too stunned to speak. 
+
+(If meek) The <<person1>> finally speaks up. “W-What the hell!? What kind of lunatic would jump down from there?” “<<pShe>> must be crazy, w-we should just give <<pher>> what <<pshe>> wants so <<pshe>> lets us go.” says the <<person2>>. The <<person1>> looks hesitant, so you let out another loud scream. “O-Okay! Just take what you want and leave us alone!” <<he>> says, throwing you <<his>> backpack. You begin rummaging through it. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+Wordlessly, you let go of the backpack. You back away from them, then run out of sight. You fly back up into the air. With your prize in hand, you begin flying back to the tower.
+
+Next(0:10)|Hunt: Return
+
+(If normal) (Passive physique check) For a moment, they are frozen. They look you over, thinking up a response. (Success) After a long silence the <<person1>> speaks. “Alright, we’re willing to give you something small. But that’s all you’ll get.” The <<person2>> looks displeased, but he doesn’t object. You order them to throw you one of their backpacks, with the promise you won't take much. The <<person1>> throws you his bag. You begin rummaging through it. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+After getting what you want, you drop the backpack. You can hear the <<person1>> whisper some curses. You carefully back away from them, then run out of sight. You fly back up into the air. With your prize in hand, you begin flying back to the tower.
+
+Next(0:10)|Hunt: Return
+
+(Fail) They eye you over. After a moment of silence, the <<person1>> speaks. “There’s no way we're giving anything to you!” “Yeah! We’re not letting you rob us! If you try anything, we’ll mess you up!” the <<person2>> yells out as well.
+
+Your victims aren’t giving up easily. You keep up an intimidating pose as you try to think of something. You notice the <<person1>> is close to the hole. Maybe if you were fast enough, you could push <<him>> in.
+
+Push him (Athletics)|Hunt event: Ambush 4.1
+Give up|Hunt event: Ambush 4.1
+
+(If hostile) (Passive combat fame check) (Success) The <<person1>> chuckles. “Heh, you really picked the wrong people to mess with <<girl>>.” <<he>> says, starting to slowly approach you. But before <<he>> can take another step the <<person2>> stops <<him>>. “Hold on, isn’t that (Underworld name)?” “Huh? <<pher>>? Are you sure?” The two whisper something to each other. “Alright, you can have something of mine, but after that you just leave us alone.” the <<person1>> says, throwing you his backpack. You maintain a cool aura, and begin rummaging through the backpack. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+
+After getting what you want, you drop the backpack. You give them a slight nod, then walk away. You fly back up into the air. With your prize in hand, you begin flying back to the tower.
+
+Next(0:10)|Hunt: Return
+
+(Fail) The <<person1>> chuckles. “Haha, you really picked the wrong people to mess with <<girl>>.” <<he>> says. “We’re gonna show you what happens when you mess with the wrong people.” says the <<person2>>,  cracking <<his>> fists. “We won’t have to hurt ya, if you just comply.” the <<person1>> says. (Molestation start)
+
+(Results)
+(Orgasm) The <<person1>> keeps holding on to you for a moment. “You’re not much of a thief, but you make for a decent cumdump.” <<he>> says. + trauma 
+
+“We don’t have all day. Let’s get moving.” says the <<person2>>. The <<person1>> shoves you down to the ground. You watch from the ground as the pair walk away. You take a moment to recover, then get up. 
+
+Feeling violated, you take flight again. This encounter took a toll on you.  You don’t feel confident about trying to ambush anyone else here. You can search for something else, or return home.
+
+Return to the castle (0:10)|Hunt: Fail
+Keep hunting + fatigue|Hunt: Keep Hunting
+
+(Enemy max pain in 5 turns or less) You push the <<person1>> away, making the fall into the hole. With a solid hit to the gut, the <<person2>> falls down as well. “Shit, <<pshe>>’s a real fighter…” <<he>> gasps. “Alright we made a bit of a mistake, just take what you want and leave us be.” yells the <<person1>>. 
+
+You grab one of their backpacks and rummage through it. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+
+After getting what you want, you drop the backpack. You give them a mean look, then run away. After making sure you weren’t followed, you take flight. With your prize in hand, you begin flying back to the tower.
+
+Next(0:10)|Hunt: Return
+
+(Enemy max pain in 6 turns or more) After a hard struggle, you manage to push away your assailants, giving you just enough time to run away. After making sure you weren’t followed, you take flight.
+
+This encounter took a toll on you.  You don’t feel confident about trying to ambush anyone else here. You can search for something else, or return home.
+
+Return to the castle (0:10)|Hunt: Fail
+Keep hunting + fatigue|Hunt: Keep Hunting
+Hunt event: Ambush 4.1
+(Give up) Realising it’s best to give up now, you turn around and run away. The pair start heckling you, but don’t give chase.
+
+After making sure you weren’t followed, you take flight again. You don’t feel confident about trying to ambush anyone else here. You can search for something else, or return home.
+
+Return to the castle (0:10)|Hunt: Fail
+Keep hunting + fatigue|Hunt: Keep Hunting
+
+(Push) Like the predator you are, you begin slowly circling them. When you notice a good opportunity, you rush to push the <<person1>> into the hole. (Success) You’re simply too fast. The <<person1>> is caught off guard as you suddenly push <<him>>, making <<him>> stumble backwards. <<He>> tries to stop <<his>> fall by grabbing onto the <<person2>>, but this only results in both of them falling when the <<person1>> steps on the hole. In the struggle, one of them dropped their backpack. You let out a warning screech, then pick up the backpack. You quickly rummage through it. (If focus is cloth) You open the main pocket. Inside you find a towel, which looks strong enough for you to use. You take the towel.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+After getting what you want, you throw the backpack at them. Not taking any chances, you bolt away from them. After you’re sure they didn’t follow you, you take flight again. With your prize in hand, you begin flying back to the tower.
+
+Next(0:10)|Hunt: Return
+
+(Fail) You rush over to push the <<person1>>, but <<he>>’s able to react in time. <<He>> grabs your arms, stopping you. The <<person2>> punches your side, making you gasp. + pain “This is what happens when you try to mess with us!” yells the <<person2>>.  (Beat up encounter)
+(Encounter results)
+(PC max pain) As you lose all strength to fight back, the pair finally cease their assault. “That’s what happens when you mess with us!” the <<person1>> says, now exhausted. “I think <<pshe>>s learned <<pher>> lesson.” the <<person2>> says. The <<person1>> kicks some dirt at you, then backs away. The two of them walk away, leaving you to lie on the ground. You take a moment to recover, then get up. 
+
+Feeling hurt, you take flight again. You’re way too injured to keep hunting, so you begin flying back to the castle.
+
+Next (0:15)|Hunt: Fail
+
+(Orgasm) As the two of them shudder in orgasm, you take advantage of the opportunity and run away. 
+
+After making sure you weren’t followed, you take flight again. You don’t feel confident about trying to ambush anyone else here. You can search for something else, or return home.
+
+Return to the castle (0:10)|Hunt: Fail
+Keep hunting + fatigue|Hunt: Keep Hunting
+
+(Enemy max pain) You throw some dirt into the <<person1>>s eyes, then push him into the <<person2>>. You take advantage of the opportunity and run away. 
+
+After making sure you weren’t followed, you take flight again. You don’t feel confident about trying to ambush anyone else here. You can search for something else, or return home.
+
+Return to the castle (0:10)|Hunt: Fail
+Keep hunting + fatigue|Hunt: Keep Hunting
+Hunt event: Ambush 5
+(Trap variation) As the lurkers walk under your position, you hear the sound of your trap activate. The other two lurkers notice their friend fall in, and quickly scatter. You let out a loud screech and land. You walk over to the hole, and firmly grasp the lurker. It makes no move as you grab it. 
+
+With lurker in hand, you ascend to the skies.You begin flying back to the tower.
+
+Next (0:10)|Hunt: Return
+
+(No trap variation) With this passageway being somewhat narrow, catching one of the lurkers should not be too hard. (Dance check) You step near the edge of the stone and scream. Your scream is amplified by the echo, making the lurkers freeze in panic. 
+
+You swoop down and grab one of the lurkers. Seeing what just happened, the other lurkers scatter away. (Success) You recover well from your swoop, easily gaining altitude. With the lurker in hand, you begin flying back to the tower.
+
+Next (0:10)|Hunt: Return
+
+(Fail) You try to go up, but you’re unable to manoeuvre yourself upward. Noticing you are about to fall face first into a rock, you let go of the lurker so you can better coordinate your movement. With free hands, you manage to avoid the collision. 
+
+Unfortunately, the lurker has already escaped. You don’t think any more lurkers will be showing up here any time soon. You can search for something else, or return home.
+
+Return to the castle (0:10)|Hunt: Fail
+Keep hunting + fatigue|Hunt: Keep Hunting
+
+
+
+
+
+
+
+
+Hunt event: Ambush GH 3
+You sit atop the rock, waiting for a potential victim. (Insert random wait dialogue)
+
+(If no event) You keep a vigilant gaze over your surroundings. After 15 minutes of waiting, you still don't see anyone. You could keep waiting, or leave.
+
+Wait (0:15)|Hunt event: Ambush 3
+Leave|Hunt: Ignore
+
+(If humans) <<generate1>> <<generate2>>
+You spot two people walking along the path, a <<person1>> and a <<person2>> . They’re coming your way. (If trap) With Great Hawk by your side and your trap set and ready, robbing them should be easy.
+(Else) You may not have a trap ready, but you do have a great big bird/harpy to help you.
+
+Next|Hunt event: Ambush GH 4
+
+(If lurkers) You spot three lurkers coming towards you. (If trap) With your trap in place, you should be able to get multiple.
+(Else) With the two of you here, you are guaranteed to get at least one.
+
+Next|Hunt event: Ambush GH 5
+Hunt event: Ambush GH 4
+(Trap variation) You tell Great Hawk to wait for you to make the first move. Soon the two are walking right next to your trap. The <<person1>> takes a step forward, and plummets into the hole. At that moment, you descend from the rock and land right behind them. You let out a loud scream, startling the <<person2>>. “W-What the hell!?” <<he>> yells out in surprise. The Great Hawk flies over them, screeching loudly. You point at the <<person2>>. Great Hawk pretends to attack <<him>>, but pulls away at the last moment. “Give us all your valuables, or there’s going to be trouble!” you yell out at <<him>>.
+
+(If meek) The <<person2>> trembles, terrified. “A-Alright! I’ll give you what you want, please don’t hurt us!” <<he>> says, voice quivering. <<He>> throws you <<his>> backpack. You point at the <<person1>> “Give me his backpack too!” you order. The <<person1>> removes his backpack with shaking hands and tosses it over to you. 
+
+You start searching through their backpacks. (If focus is cloth) You open the main pocket of the first backpack. Inside you find a towel, which looks strong enough for you to use. You take it. Then you rummage through the other one. You open the main compartment and find another towel. You grab it.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it. Then you rummage through the other one. You don’t immediately find anything, but buried deep in the main pocket you find a (Valuable). You take it with you.
+
+You drop their backpacks. You squawk at Great Hawk, indicating you are done. The pair are still frozen in fear. You quickly run out of sight, then take flight. Great Hawk flies up to you.
+<<if $monster is 1>> He looks over your new items. “<<Wife>> is really efficient hunter,” he says.
+<<else>> He eyes your new items. He looks happy with what you got.
+With your new items, you begin flying back to the castle with him.
+
+Next(0:10)|Hunt: Return
+
+(If normal) The <<person2>> looks at the hawk circling him. “How the hell did <<pshe>> tame a hawk?!” <<he>> exclaims. You repeat your demands. “Alright! C-Calm down, you lunatic!” <<he>> says. “Just take what you want from my backpack and leave us alone.” <<he>> says, throwing <<his>> backpack towards you. You point at the <<person1>> “Give me his backpack too!” you order. The <<person1>> begrudgingly takes off his backpack and throws it to you. 
+
+You start searching through their backpacks. (If focus is cloth) You open the main pocket of the first backpack. Inside you find a towel, which looks strong enough for you to use. You take it. Then you rummage through the other one. You open the main compartment and find another towel. You grab it.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it. Then you rummage through the other one. You don’t immediately find anything, but buried deep in the main pocket you find a (Valuable). You take it with you.
+
+You drop their backpacks. You squawk at Great Hawk, indicating you are done. The pair having resigned to you taking their things do nothing. You quickly run out of sight, then take flight. Great Hawk flies up to you.
+<<if $monster is 1>> He looks over your new items. “<<Wife>> is really efficient hunter,” he says.
+<<else>> He eyes your new items. He looks happy with what you got.
+With your new items, you begin flying back to the castle with him.
+
+Next(0:10)|Hunt: Return
+
+
+
+
+(If hostile) The person2 stays surprisingly calm. “Alright, I know when the odds are against me. Take what you want <<girl>>.” The person1 gives you a mean face, but remains silent. “Give me both of your backpacks!” you demand. They do as you ask. Being cautious, you take their backpacks and take a couple of steps away. 
+
+You start searching through their backpacks. (If focus is cloth) You open the main pocket of the first backpack. Inside you find a towel, which looks strong enough for you to use. You take it. Then you rummage through the other one. You open the main compartment and find another towel. You grab it.
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it. Then you rummage through the other one. You don’t immediately find anything, but buried deep in the main pocket you find a (Valuable). You take it with you.
+
+You drop their backpacks. You squawk at Great Hawk, indicating you are done. “Alright ‘beastmaster’, are we done here?” says the person2. You ignore his attitude and run out of sight. You take flight again. Great Hawk flies up to you.
+<<if $monster is 1>> He looks over your new items. “<<Wife>> is really efficient hunter,” he says.
+<<else>> He eyes your new items. He looks happy with what you got.
+With your new items, you begin flying back to the castle with him.
+
+Next(0:10)|Hunt: Return
+
+(No trap variation) You tell Great Hawk to wait for you to make the first move. As they walk beneath the rock, you and Great Hawk scream loudly and leap down in front of them. You both land and spread your wings wide in an attempt to intimidate them. (Parts exposed and exhibitionism 2 or less) You realise far too late that you’re also flashing them. The sudden realisation makes you close your wings, feeling shameful. + stress + trauma You do your best to ignore what just happened.
+(Parts exposed and exhibitionism 3 or more) This also makes you flash them in the process, but you’re too focused on your hunt to care. “Give me your valuables, or there’s going to be trouble!” you yell. Great Hawk screams as well. 
+
+(If meek) They’re both frozen in fear. It takes a moment, but finally the <<person1>> manages to speak. “A-Alright! We’ll give you what you want, please don’t hurt us!” <<he>> says, clearly terrified of you, or the great beast/harpy next to you. You order both of them to throw over their backpacks. The<<person1>> is first to take his off, while the <<person2>>  is still trying to take <<his>> off with shaky hands. One at a time, they both toss their backpacks over to you.
+
+You start searching through their backpacks. (If focus is cloth) You open the main pocket of the first backpack. Inside you find a towel, which looks strong enough for you to use. You take it. Then you rummage through the other one. You open the main compartment and find another towel. You grab it (If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it. Then you rummage through the other one. You don’t immediately find anything, but buried deep in the main pocket you find a (Valuable). You take it with you.
+
+You drop their backpacks. You squawk at Great Hawk, indicating you are done. The pair are still frozen in fear. You run away from them. The Great Hawk makes sure you are far enough, then takes to the skies. You make sure you’re far enough, then take flight. Great Hawk flies up to you.
+<<if $monster is 1>> He looks over your new items. “<<Wife>> is really efficient hunter,” he says.
+<<else>> He eyes your new items. He looks happy with what you got.
+With your new items, you begin flying back to the castle with him.
+
+Next(0:10)|Hunt: Return
+
+(If normal) They stare in silence for a moment. Then the person1 speaks. “How the hell did pshe tame a hawk?!” he exclaims. “I don’t know, but I’d rather not get hurt here. You can take what I got, so just leave us alone.” says the person2. He tosses his backpack to you. Getting even one without any problems is a good result.
+
+You start searching through their backpacks. (If focus is cloth) You open the main pocket of the first backpack. Inside you find a towel, which looks strong enough for you to use. You take it with you. (If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you. 
+
+You drop the backpack. You squawk at Great Hawk, indicating you are done. The pair keep observing you, fear turned to curiosity. You run away from them. The Great Hawk makes sure you are far enough, then takes to the skies. You make sure you’re far enough, then take flight. Great Hawk flies up to you. 
+<<if $monster is 1>> He looks at the (Item name). “Nice grab. <<Wife>> did well.” he says.
+<<else>> He eyes your new (Item name). He looks content with what you got.
+With your new possession, you begin flying back to the castle with him.
+
+Next(0:10)|Hunt: Return
+
+(Hostile) They stay calm, assessing their situation. (Passive combat fame check) (Success) They share a glance, then the person1 speaks “Well, I think it would be best if we just do as you want, since you got that big bird with ya.” “How do you think she convinced this thing to obey her?” the person2 asks his friend. You interrupt their conversations by reminding them to hand over their backpack. “Yeah yeah, here.” says the person1, throwing his backpack over to you. Being cautious, you grab the backpack and take a couple steps away. 
+
+You start searching through the backpacks. (If focus is cloth) You open the main pocket of the first backpack. Inside you find a towel, which looks strong enough for you to use. You take it. 
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you.
+
+You drop the backpack. You squawk at Great Hawk, indicating you are done.
+“Alright ‘beastmaster’, are we done here?” says the person2. You run away from them. The Great Hawk makes sure you are far enough, then takes to the skies. You make sure you’re far enough, then take flight. Great Hawk flies up to you. 
+<<if $monster is 1>> He looks at the (Item name). “Nice grab. <<Wife>> did well.” he says.
+<<else>> He eyes your new (Item name). He looks content with what you got.
+With your new possession, you begin flying back to the castle with him.
+
+Next(0:10)|Hunt: Return
+
+(Fail) The pair eye you over for a moment. After a moment of silence, the person1 speaks. “Sorry girl, but we won't just hand over what we got. If you want it, come get it!” he taunts. “If you think one overgrown bird is enough to make us give up, you’re wrong.” says the person2. Fighting them head on like this would be a bad idea. (If player has pepper spray) If you’re able to spray one with an accurate spray, you should be able to succeed. But if you fail, things will not go well.
+
+Try to spray (Sprays skillcheck)|Hunt event: Ambush GH 4.1
+Give up|Hunt event: Ambush GH 4.1
+
+(Else) With no other options, you tell Great Hawk to retreat. “Well, I’m glad we could solve this peacefully.” the person1 says condescendingly. You feel frustrated at not being able to do anything. + stress 
+
+You and the Great Hawk back away, then take flight. 
+<<if $monster is 1>> “Brave humans. Not usually so resistant.” Great Hawk says. His words do little to comfort you.
+<<else>> He lets out a small squawk. His voice does little to comfort you. 
+You don’t feel confident about trying to ambush anyone else here. You can search for something else, or return home.
+
+Return to the castle (0:10)|Hunt: Fail
+Keep hunting + fatigue|Hunt: Keep Hunting
+Hunt event: Ambush GH 4.1
+(Give up) You don’t feel confident enough to try to spray them. With no other options, you tell Great Hawk to retreat. “Well, I’m glad we could solve this peacefully.” the person1 says condescendingly. You feel frustrated at not being able to do anything. + stress 
+
+You and the Great Hawk back away, then take flight. 
+<<if $monster is 1>> “Brave humans. Not usually so resistant.” Great Hawk says. His words do little to comfort you.
+<<else>> He lets out a small squawk. His voice does little to comfort you. 
+You don’t feel confident about trying to ambush anyone else here. You can search for something else, or return home.
+
+Return to the castle (0:10)|Hunt: Fail
+Keep hunting + fatigue|Hunt: Keep Hunting
+
+(Spray) You whisper your plan to Great Hawk. You sneakily pull out your pepper spray. You wait for them to be distracted. You notice the <<person1>> looks distracted, you suddenly rush <<him>>. The <<person1>> tries to put his fists up to block your attack. (Success) With practised precision, you spray around his hands, hitting the <<person1>> in the face. He clutches his face in his hands. “Son of a bitch!” he yells out. The <<person2>> rushes over to attack you, but is knocked down by Great Hawk. You take advantage of <<person1>>s vulnerability and push <<him>> into the hole. The <<person2>> is able to get up, but <<he>> is alone now. <<He>> puts his fists up for a moment, but quickly thinks better of it. “Fuck… Okay, just take my damn backpack.” <<he>> says. <<He>> takes off <<his>> backpack and throws it over to you. Being cautious, you grab the backpack and take a couple steps away. 
+
+You start searching through the backpacks. (If focus is cloth) You open the main pocket of the first backpack. Inside you find a towel, which looks strong enough for you to use. You take it. 
+(If focus is valuable) In one of the smaller pockets, you find a (Valuable) hidden away. You take it with you.
+
+You drop the backpack. You squawk at Great Hawk, indicating you are done.
+“Alright you freak, now leave us alone.” says the <<person2>>, going over to help <<his>> friend. You run away from them. The Great Hawk makes sure you are far enough, then takes to the skies. You make sure you’re far enough, then take flight. Great Hawk flies up to you. 
+<<if $monster is 1>> He looks at the (Item name). “Nice grab. <<Wife>> did well.” he says.
+<<else>> He eyes your new (Item name). He looks content with what you got.
+With your new possession in hand, you and the Great Hawk begin flying back to the castle.
+
+Next(0:10)|Hunt: Return
+
+(Fail) Your spray lands on his hands, leaving him unhurt. He quickly counter attacks with a left hook. + pain The person2 rushes in to aid his friend. But before he can reach you, Great Hawk swoops in and knocks the person1 away from you. As he flies past, the person2 lands a blow on one of his wings. Thankfully, he is able to keep flying. You waste no time and run away from them. After making sure you are far enough, you take flight. You fly up to the Great Hawk. You notice his left wing is not flapping as much. + trauma
+<<if $monster is 1>> He looks at you then speaks. “Rare for humans to be so strong.” It’s clear he wants to say more, but doesn’t. - love
+<<else>> He looks at you. He’s glad to see you are fine, but the hurt look in his eyes betrays his intentions. - love
+
+Great Hawk is too injured to keep hunting now. Wanting to make sure he makes the trip back, you fly back to the tower with him.
+
+Return home (0:10)|Hunt: Return Injury
+Hunt event: Ambush GH 5
+(Trap variation) You and Great Hawk peer over the stone, observing their movement. The lurkers are near your trap (If player has a free net and nets skill is at least D) You get the idea to hoist a net over, hoping to catch a lurker with it. (Nets skill check)  Trying to account for distance and wind, you throw your net. (Success) It glides through the air and lands on one of the lurkers, trapping it. + Nets 
+You watch from the rock as Great Hawk swoops down and grabs another. The third lurker panics and runs right over your trap, triggering it. You rush down to grab the two lurkers before they can escape.
+
+You take flight again, and fly up to your <<npc_wife>>
+<<if $monster is 1>> He looks over at you. You can tell he is overjoyed by your great success. “Wife is great hunter, getting much, much prey.” + + love
+<<else>> He looks over at you, then at the two lurkers you are holding. He screeches in excitement. + + love
+
+With prey in hand, you and Great Hawk begin flying back to the tower.
+
+Next|Hunt: Return
+
+(Fail) You are not used to throwing it so far. Your net lands behind one of the lurkers.+ + Nets
+You watch from the rock as Great Hawk swoops down and grabs one of them. Another one tries to run away, but falls in your trap. The third one manages to escape. You drop down from the rock and pick up the lurker from your trap.
+
+You take flight again, and fly up to your <<npc_wife>>
+<<if $monster is 1>> He looks over at you. You can tell he is happy with your catch. “Wife is good hunter. We get good amount of food.” + love
+<<else>> He looks over at you, then at the lurker you are holding. He squawks in excitement. + love
+
+With prey in hand, you and Great Hawk begin flying back to the tower.
+
+Next|Hunt: Return
+
+(Else) You keep watching over the rock. Great Hawk goes for one. You decide to stay back, not wanting to risk interrupting him. He skillfully grabs one of the lurkers. Another one tries to run away, but falls in your trap. The third one manages to escape. You drop down from the rock and pick up the lurker from your trap.
+
+You take flight again, and fly up to your <<npc_wife>>
+<<if $monster is 1>> He looks over at you. You can tell he is happy with your catch. “Wife is good hunter. We get good amount of food.” + love
+<<else>> He looks over at you, then at the lurker you are holding. He squawks in excitement. + love
+
+With prey in hand, you and Great Hawk begin flying back to the tower.
+
+Next|Hunt: Return
+
+
+
+(No trap variation)You and Great Hawk peer over the stone, observing their movement. With this passageway being somewhat narrow, it may be hard for you to fly in at the same time as the Great Hawk. You and the Great Hawk let out a loud scream, then dive down. (Dance Check) (Success) You manage to fly steadily even with the limited space. The lurkers are frozen in fear, making grabbing them easy. You and the Great Hawk grab a lurker, then ascend to the skies.
+<<if $monster is 1>> He looks over at you and smiles. “Wife is good at catching prey. We get much food.”
+<<else>> He looks over at you happily. He lets out a content squawk.
+
+With the lurkers in hand, you begin flying back to the tower with him.
+
+Next (0:10)|Hunt: Return
+
+
+
+(Fail) 
+You try to go up, but you’re unable to manoeuvre yourself upward. Noticing you are about to collide with a rock, you let go of the lurker so you can better coordinate your movement. With free hands, you manage to avoid the collision. Great Hawk had better luck, managing to easily grab a lurker.
+
+Unfortunately your lurker has already escaped. You fly up to your <<npc_wife>>.
+<<if $monster is 1>> He looks over at you. “<<Wife>> didn’t catch anything? Don’t worry, won’t always succeed.”
+<<else>> He looks over at you. He notices you don’t have a lurker. He lets out a comforting squawk.
+
+You don’t think any more lurkers will be showing up here any time soon. With your one lurker, you begin flying back to the castle.
+
+Next|Hunt: Return
+
+
+
+
+
+
+
+Hunt event: Ambush Alone Idle
+Dialogue for waiting by yourself:
+(If maths is at least D) You pass time by counting the rocks near you.
+(If history is at least B) You pass time by identifying rock formations.
+(If science is at least B) You pass time by trying to identify different rocks.
+(If english is at least C) You pass time by rehearsing what you will say when ambushing someone.
+You take a moment to enjoy the feeling of the wind on your skin. - stress
+You contemplate throwing pebbles to pass time, but decide against it.
+(If high trauma) Waiting around makes you nervous. You start having doubts about your plan. + stress
+The wind carries over sounds. It reminds you of your <<nnpc_wife>>’s singing. - trauma
+Out of the corner of your eye, you think you see movement. You turn around but find nothing. + stress
+You wonder what (Primary love interest) is doing right now. Thinking about them brings you comfort. - stress - trauma
+(Rare dialogue (Can only happen with severe hallucinations)) You think you saw a plant persons vine, but it’s just a stray vine vine. ((Just a small easter egg idea))
+You briefly look up at the clouds, taking a moment to admire them.
+Hunt event: Ambush GH Idle
+Dialogue for waiting with bird husband:
+You cuddle up to Great Hawk and hold each other for a moment. - stress
+You take some time to comb through his feathers with your hands, cleaning him up a bit.
+You take some time to just admire Great Hawk for a moment. He looks at you curiously, but he seems happy. - stress - trauma
+You hum a small tune. Great Hawk does his best to imitate you. - trauma
+You turn your eyes to the sky, taking a moment to look at the clouds.
+(If maths is at least D) You pass time by counting the rocks near you. Great Hawk seems disinterested.
+(If history is at least B) You pass time by identifying rock formations. Great Hawk seems unsure as to what you are doing.
+(If science is at least B) You pass time by trying to identify different rocks. You tell your findings to Great Hawk, to which he just nods along.
+(If english is at least C) You pass time by rehearsing what you will say when ambushing someone. Great Hawk looks excited.
+(Rare dialogue (Can only happen with severe hallucinations)) You think you saw a plant persons vine, but it’s just a stray vine vine. ((Just a small easter egg idea))
+(If high trauma) Waiting around makes you nervous. You start having doubts about your plan. Great Hawk notices this and gently caresses you with his wing.
 
 
 :: Bird Hunt Ignore

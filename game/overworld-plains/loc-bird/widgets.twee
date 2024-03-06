@@ -3,7 +3,6 @@
 	<<set $bird to {}>>
 	<<set $bird.lock to 1>>
 	<<set $bird.rope to 0>>
-	<<set $bird.fabric to 0>>
 	<<set $bird.loot to {}>>
 	<<set $bird.loot.lurker to 100>>
 	<<set $bird.loot.trash to 0>>
@@ -29,6 +28,7 @@
 		junk: 0,
 		lurkers: 0,
 		leather: 0,
+		feathers: 0,
 		valuables: {}
 	}>>
 	<<set $bird.upgrades to {
@@ -77,7 +77,7 @@
 		<</if>>
 	<</if>>
 
-	<<if $bird.upgrades.shelter is 1 and ($weather is "rain" or $weather is "snow")>>
+	<<if $bird.upgrades?.shelter is 1 and ($weather is "rain" or $weather is "snow")>>
 		<<if $birdShelterTimer is undefined>>
 			<<set $birdShelterTimer to 720>>
 		<<else>>
@@ -86,19 +86,19 @@
 		<<if $birdShelterTimer lte 0>>
 			<<set $bird.upgrades.shelter to 0>>
 		<</if>>
-	<<elseif $bird.upgrades.shelter is 0 and $bird.activity is "build">>
+	<<elseif $bird.upgrades?.shelter is 0 and $bird.activity is "build">>
 		<<set $bird.upgrades.shelter to 1>>
 		<<set $birdShelterTimer to 720>>
 		<<set $birdShelterRepair to true>>
 	<</if>>
 
-	<<if $bird.firepit.items.length and getBirdBurnTime() gt 0 and between($bird.upgrades.rack, 1, 2) and $location is "tower">>
+	<<if $bird.firepit?.items.length and getBirdBurnTime() gt 0 and between($bird.upgrades.rack, 1, 2) and $location is "tower">>
 		<<set $_nLurkersDrying to Firepit.getItemsNotReady($bird.firepit).length>>
 		<<set $_lurkerDrugs to $_nLurkersDrying * Math.floor(($bird.firepit.cookMult * _args[0]) / 4)>>
 		<<drugs $_lurkerDrugs>>
 	<</if>>
 
-	<<if $bird.upgrades.snare gte 1 and $bird.lurkerSnareState is "ready">>
+	<<if $bird.upgrades?.snare gte 1 and $bird.lurkerSnareState is "ready">>
 		<<set $_lurkerSnareChance to random(0, 600)>>
 		<<if Math.clamp(_args[0], 0, 120) lte $_lurkerSnareChance>>
 			<<set $bird.lurkerSnareState to "captured">>
@@ -406,22 +406,22 @@
 			<</if>>
 			<<if _random_clothes isnot "piece of fabric">>
 				<br>
-				<<link [[Put it in the wardrobe|Bird Tower Clothes Keep]]>><<generalSend "wardrobe" _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<<link [[Put it in the wardrobe|Bird Tower Clothes Keep]]>><<generalSend "birdTower" _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<</if>>
 		<<else>>
 			<<if $worn[_random_slot].name isnot "naked" and _random_clothes isnot "piece of fabric">>
-				<<link [[Wear|Bird Tower Clothes]]>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<<link [[Wear|Bird Tower Clothes]]>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.materials.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 				<span class="blue">Your $worn[_random_slot].name will be replaced.</span><<gfabric>>
 			<<elseif _random_clothes isnot "piece of fabric">>
 				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<</if>>
 		<</if>>
 		<br>
-		<<link [[Thank|Bird Tower Fabric]]>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>><<gfabric>>
+		<<link [[Thank|Bird Tower Fabric]]>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.materials.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>><<gfabric>>
 		<br>
-		<<link [[Scold|Bird Tower Clothes Scold]]>><<bird_loot clothes -20>><<npcincr "Great Hawk" dom -1>><<transform bird 1>><<def 1>><<set $bird.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<ldom>><<gfabric>>
+		<<link [[Scold|Bird Tower Clothes Scold]]>><<bird_loot clothes -20>><<npcincr "Great Hawk" dom -1>><<transform bird 1>><<def 1>><<set $bird.materials.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<ldom>><<gfabric>>
 		<br>
-		<<link [[Do nothing|Bird Tower Clothes Nothing]]>><<bird_loot clothes -10>><<npcincr "Great Hawk" love -1>><<set $bird.fabric += 1>><</link>><<llove>><<gfabric>>
+		<<link [[Do nothing|Bird Tower Clothes Nothing]]>><<bird_loot clothes -10>><<npcincr "Great Hawk" love -1>><<set $bird.materials.fabric += 1>><</link>><<llove>><<gfabric>>
 		<br>
 	<</switch>>
 <</widget>>
@@ -594,12 +594,12 @@
 		<br>
 		<<link [[Stay up|Bird Tower]]>><<endevent>><</link>>
 		<br>
-	<<elseif $syndromebird is 1 and ($bird.activity is "sing" or $bird.activity is "groom") and $birdBask is undefined and $bird.state is "home">>
-		<<if $daily.birdGroom is undefined>>
-			<<ind>><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
-		<</if>>
+	<<elseif $syndromebird is 1 and ["sing", "groom"].includes($bird.activity) and $birdBask is undefined and $bird.state is "home">>
 		<<baskicon>><<link [[Bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
+		<<if $daily.birdGroom is undefined and $bird.activity is "groom">>
+			<<ind>><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
+		<</if>>
 		<<if $syndromebird and $lurkers_held gte 1 and $bird.state is "home" and ["sing", "groom"].includes($bird.activity)>>
 			<<ind>><<link "Give <<bhim>> the lurker" "Bird Tower Give Captured Lurker">><</link>> <<glove>>
 			<br>
@@ -607,14 +607,17 @@
 		<<getouticon>><<link [[Go back inside|Bird Tower]]>><<unset $birdPerch>><<endevent>><</link>><br>
 		<br>
 		<<bird_fly_options>>
-	<<elseif $birdBask is 1 and ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+	<<elseif $birdBask is 1 and ["sing", "groom"].includes($bird.activity) and $bird.state is "home">>
 		<<baskicon>><<link [[Continue to bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
-		<<ind>><<link [[Get up|Bird Tower Perch]]>><<set $birdBask to 0>><<endevent>><</link>><br>
+		<<ind>><<link [[Get up|Bird Tower Perch]]>><<unset $birdBask>><<endevent>><</link>><br>
 		<<getouticon>><<link [[Leave|Bird Tower Bask Leave]]>><<unset $birdBask>><<unset $birdPerch>><<endevent>><</link>><br>
 	<<else>>
 		<<if $birdSingIntro is 1>>
-			<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<set $birdSingAbsent to 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
+			<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<set $birdSingAbsent to 1>><<bird_pass 30>><<trauma -2>><<endevent>><</link>><<ltrauma>><br>
+		<</if>>
+		<<if $harpy gte 6>>
+			<<ind>><<link [[Preen your wings (0:30)|Bird Tower Preen Self]]>><<bird_pass 30>><<stress -2>><<endevent>><</link>><<lstress>><br>
 		<</if>>
 		<<getouticon>><<link [[Go back inside|Bird Tower]]>><<unset $birdPerch>><<endevent>><</link>><br>
 		<br>
@@ -849,14 +852,14 @@
 		<<if between($bird.hunts.distanceNorth, ($daily.huntRemyCampNorth - 1), ($daily.huntRemyCampNorth + 1)) and between($bird.hunts.distanceEast, ($daily.huntRemyCampEast - 1), ($daily.huntRemyCampEast + 1))>>
 			<<if !($bird.hunts.distanceNorth is $daily.huntRemyCampNorth and $bird.hunts.distanceEast is $daily.huntRemyCampEast)>>
 				There's smoke rising to the
-				<<if $bird.hunts.distanceNorth lt $daily.huntRemyCampNorth>>north<<elseif $bird.hunts.distanceNorth gt $daily.huntRemyCampNorth>>south<</if>><<if $bird.hunts.distanceEast lt $daily.huntRemyCampEast>>east<<elseif $bird.hunts.distanceNorth gt $daily.huntRemyCampEast>>west<</if>>.
+				<<if $bird.hunts.distanceNorth lt $daily.huntRemyCampNorth>>north<<elseif $bird.hunts.distanceNorth gt $daily.huntRemyCampNorth>>south<</if>><<if $bird.hunts.distanceEast lt $daily.huntRemyCampEast>>east<<elseif $bird.hunts.distanceEast gt $daily.huntRemyCampEast>>west<</if>>.
 				<br>
 			<</if>>
 		<</if>>
 		<<if between($bird.hunts.distanceNorth, -2, -4) and between($bird.hunts.distanceEast, 2, 4)>>
 			<<if !($bird.hunts.distanceNorth is -3 and $bird.hunts.distanceEast is 3)>>
 				There's a large stone at the top of a hill to the
-				<<if $bird.hunts.distanceNorth lt -3>>north<<elseif $bird.hunts.distanceNorth gt -3>>south<</if>><<if $bird.hunts.distanceEast lt 3>>east<<elseif $bird.hunts.distanceNorth gt 3>>west<</if>>.
+				<<if $bird.hunts.distanceNorth lt -3>>north<<elseif $bird.hunts.distanceNorth gt -3>>south<</if>><<if $bird.hunts.distanceEast lt 3>>east<<elseif $bird.hunts.distanceEast gt 3>>west<</if>>.
 				<br>
 			<</if>>
 		<</if>>
@@ -935,18 +938,18 @@
 		<<set $_goal to $bird.hunts.goal>>
 	<</if>>
 	<<set _flight_hunt_chance to {
-		nothing: 1,
-		lurkers: random(0.5, 1.5),
-		materials: random(0.5, 1),
-		valuables: random(0, 1),
-		other: 0.5
+		nothing: 10,
+		lurkers: random(5, 15),
+		materials: random(5, 10),
+		valuables: random(0, 10),
+		other: 5
 	}>>
-	<<set _flight_hunt_chance[$_goal] += ($bird.hunts.goal is "hawk" ? 3 : 1 + (currentSkillValue("skulduggery") / 500).toFixed(2))>>
+	<<set _flight_hunt_chance[$_goal] += ($bird.hunts.goal is "hawk" ? 30 : 10 + (currentSkillValue("skulduggery") / 50).toFixed(2))>>
 	<<if $weather is "rain" or $weather is "snow">>
-		<<set _flight_hunt_chance.nothing++>>
+		<<set _flight_hunt_chance.nothing += 10>>
 	<</if>>
 	<<if Time.dayState is "night">>
-		<<set _flight_hunt_chance.nothing++>>
+		<<set _flight_hunt_chance.nothing += 10>>
 	<</if>>
 	<<if $bird.hunts.goal is "hawk">>
 		<<set _flight_hunt_chance.nothing to 0>>
@@ -1154,7 +1157,7 @@
 	<<for _valuable, _amount range $bird.materials.valuables>>
 		<<if _amount lt 1>><<continue>><</if>>
 		<<set $_valuablesMessage to true>>
-		<<number _amount>> _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
+		- <<number _amount>> _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
 		<<capture _valuable _amount>>
 			<<link "Take one">>
 				<<if _valuable is "antique bullet">>
@@ -1389,7 +1392,7 @@
 		<br>
 	<</if>>
 
-	<<if $bird.upgrades.pot gte 2 and !$_noLurkers>>
+	<<if $bird.upgrades.pot gte 2 and !$_noLurkers and getBirdBurnTime() gte 1>>
 		<<link [[Cook a lurker (0:15)|Bird Tower Lurker Cook]]>><<set $bird.materials.lurkers -= 1>><<bird_pass 15>><</link>>
 		<br>
 	<</if>>
@@ -1403,6 +1406,18 @@
 		<<set _towerUpgrades[_upgrade] to {}>>
 		<<set $_upgrade to _towerUpgrades[_upgrade]>>
 		<<switch _upgrade>>
+			<<case "duster">>
+				<span class="teal">Feather duster</span>: Will make it easier to clean the tower.
+				<<set $_upgrade.passage to "Bird Tower Build Duster">>
+				<<set $_upgrade.timeTaken to 10>>
+				<<set $_upgrade.materialsUsed to {
+					sticks: 1,
+					fabric: 1,
+					feathers: 6
+				}>>
+				<<set $_upgrade.housekeeping to 100>>
+				<<set $_upgrade.clothingSlot to "handheld">>
+				<<set $_upgrade.clothingIndex to 12>>
 			<<case "shelter">>
 				<<switch $bird.upgrades.shelter>>
 					<<case 0>>
@@ -1640,7 +1655,6 @@
 						<span class="green">Enclosed drying rack (3)</span>: Can dry out many lurkers at once. No harmful fumes will escape.
 				<</switch>>
 			<<case "snare">>
-				<<set $_build to true>>
 				<<switch $bird.upgrades.snare>>
 					<<case 0>>
 						<span class="red">No snare (0)</span>: Build a snare to catch lurkers in the courtyard.
@@ -1659,7 +1673,6 @@
 						}>>
 						<<set $_upgrade.housekeeping to 500>>
 					<<case 1>>
-						<<unset $_build>>
 						<span class="green">Makeshift snare (1)</span>: Will sometimes catch a lurker in the courtyard.
 				<</switch>>
 			<<case "decor">>
@@ -1674,7 +1687,8 @@
 							sticks: 2,
 							leaves: 2,
 							junk: 4,
-							lurkers: 2
+							lurkers: 2,
+							feathers: 4
 						}>>
 						<<set $_upgrade.housekeeping to 200>>
 					<<case 1>>
@@ -1687,7 +1701,8 @@
 							sticks: 3,
 							leaves: 3,
 							junk: 6,
-							lurkers: 6
+							lurkers: 6,
+							feathers: 6
 						}>>
 						<<set $_upgrade.upgradesRequired to {
 							tools: 1
@@ -1703,7 +1718,8 @@
 							sticks: 4,
 							leaves: 4,
 							junk: 10,
-							lurkers: 8
+							lurkers: 8,
+							feathers: 12
 						}>>
 						<<set $_upgrade.upgradesRequired to {
 							mirror: 1,
@@ -1721,7 +1737,8 @@
 							wood: 6,
 							sticks: 10,
 							junk: 40,
-							lurkers: 30
+							lurkers: 30,
+							feathers: 15
 						}>>
 						<<set $_upgrade.upgradesRequired to {
 							mirror: 1,
@@ -1750,7 +1767,8 @@
 							leaves: 10,
 							junk: 6,
 							lurkers: 4,
-							leather: 4
+							leather: 4,
+							feathers: 6
 						}>>
 						<<set $_upgrade.upgradesRequired to {
 							mirror: 1,
@@ -1857,6 +1875,13 @@
 			<</for>>
 		<</if>>
 
+		<<if $_upgrade.clothingSlot>>
+			<<if $worn[$_upgrade.clothingSlot].name isnot "naked">>
+				<br>
+				<span class="blue">Will replace your $worn[$_upgrade.clothingSlot].name</span>
+			<</if>>
+		<</if>>
+
 		<<if _upgrade is "firepit" and $bird.firepit.items.length>>
 			<br>
 			<span class="red">Firepit is currently holding items</span>
@@ -1867,7 +1892,7 @@
 			<<exit>>
 		<</if>>
 
-		<<set $_linkText to ($bird.upgrades[_upgrade] is 0 ? "Build" : "Improve")>>
+		<<set $_linkText to ($bird.upgrades[_upgrade] is 0 or $bird.upgrades[_upgrade] is undefined ? "Build" : "Improve")>>
 		<<if $_upgrade.timeTaken>>
 			<<set $_linkText += ` (${getTimeString($_upgrade.timeTaken)})`>>
 		<</if>>
@@ -1875,12 +1900,20 @@
 		<br>
 		<<capture _upgrade>>
 			<<link [[$_linkText|_towerUpgrades[_upgrade].passage]]>>
-				<<set $bird.upgrades[_upgrade]++>>
+				<<if _towerUpgrades[_upgrade].clothingSlot>>
+					<<generalWear _towerUpgrades[_upgrade].clothingSlot _towerUpgrades[_upgrade].clothingIndex>>
+				<<else>>
+					<<set $bird.upgrades[_upgrade]++>>
+				<</if>>
 				<<if _towerUpgrades[_upgrade].timeTaken>><<bird_pass _towerUpgrades[_upgrade].timeTaken>><</if>>
 				<<if _towerUpgrades[_upgrade].materialsUsed>>
 					<<run Object.entries(_towerUpgrades[_upgrade].materialsUsed).forEach(([mat, amt]) => {
 						V.bird.materials[mat] -= amt;
 					})>>
+				<</if>>
+				<<if _towerUpgrades[_upgrade].housekeeping gt 0>>
+					<<set _houseKeepingUp to ($bird.upgrades[_upgrade] * 2)>>
+					<<housekeeping _houseKeepingUp>>
 				<</if>>
 			<</link>>
 		<</capture>>
