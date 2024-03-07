@@ -16,21 +16,27 @@ function updateClothingColours(item, itemRef) {
 			if (item.accessory_colour === 0) item.accessory_colour = "tan";
 			break;
 		// eslint-disable-next-line no-fallthrough
-		case "cool shades":
-		case "square shades":
-		case "round shades":
-		case "shield shades":
-		case "punk shades":
-		case "leather dress":
 		case "long leather gloves":
+		case "leather dress":
+		case "round shades":
 		case "witch shoes":
 			if (item.colour === 0) item.colour = "black";
 			break;
+		case "square shades":
+		case "shield shades":
+		case "punk shades":
+			if (item.colour === 0) item.colour = "black";
+			if (item.accessory_colour === 0) item.colour = "black";
+			break;
 		case "aviators":
 			if (item.colour === 0) item.colour = "grey";
+			if (item.accessory_colour === 0) item.colour = "original";
 			break;
 		case "glasses":
 			if (item.colour === 0) item.colour = "silver";
+			break;
+		case "cat eye shades":
+			if (item.accessory_colour === 0) item.colour = "original";
 			break;
 		case "lace choker":
 			if (item.colour === 0) item.colour = "black";
@@ -66,6 +72,10 @@ function updateClothingColours(item, itemRef) {
 			if (item.accessory_colour === 0) {
 				item.accessory_colour = item.colour !== "custom" ? item.colour : "black";
 			}
+			break;
+		case "cowboy hat":
+			if (item.colour === 0) item.colour = "sand";
+			if (item.accessory_colour === 0) item.accessory_colour = "black";
 			break;
 		default:
 			// Catch-all case if people forget to adjust this widget for whatever clothing item is updated. Can make weird looking clothes if "custom" is selected.
@@ -228,7 +238,6 @@ function updateClothesItem(slot, item, debug) {
 		case "futuristic bodysuit pants":
 		case "skeleton bottoms":
 		case "cheerleader gloves":
-		case "football helmet":
 			item.type = ["costume"];
 			break;
 		case "rag top":
@@ -258,6 +267,27 @@ function updateClothesItem(slot, item, debug) {
 		case "boy's gym socks":
 		case "girl's gym socks":
 			item.type = ["school", "athletic"];
+			break;
+		case "padded football shirt":
+			item.name = "foreign football shirt";
+			item.name_cap = "Foreign football shirt";
+			break;
+		case "football shorts":
+			item.name = "foreign football shorts";
+			item.name_cap = "Foreign football shorts";
+			break;
+		case "football helmet":
+			item.name = "foreign football helmet";
+			item.name_cap = "Foreign football helmet";
+			item.type = ["costume"];
+			break;
+		case "soccer shorts":
+			item.name = "football shorts";
+			item.name_cap = "Football shorts";
+			break;
+		case "soccer shirt":
+			item.name = "football shirt";
+			item.name_cap = "Football shirt";
 			break;
 	}
 	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));

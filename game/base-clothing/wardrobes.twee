@@ -739,10 +739,18 @@
 				<<default>><<exit>>
 			<</switch>>
 		<<case "face">>
-			<<switch $worn.face.variable>>
-				<<case "heartsunglasses">><<set _altLink to ["Push on head", "Wear normally"]>>
-				<<default>><<exit>>
-			<</switch>>
+			<<if $worn.face.type.includes("cool") or $worn.face.type.includes("glasses")>>
+				<<switch $worn.face.variable>>
+					<<case "monocle">><<set _altLink to ["Cover left eye", "Cover right eye"]>>
+					<<default>><<set _altLink to ["Push on head", "Wear normally"]>>
+				<</switch>>
+			<<else>>
+				<<switch $worn.face.variable>>
+					<<case "medical eyepatch" "eyepatch">><<set _altLink to ["Cover left eye", "Cover right eye"]>>
+					<<case "swimgoggles">><<set _altLink to ["Push on head", "Wear normally"]>>
+					<<default>><<exit>>
+				<</switch>>
+			<</if>>
 		<<default>><<exit>>
 	<</switch>>
 	<</silently>>
@@ -815,13 +823,13 @@
 	<<set _linkOption1 to "Move hair in front">>
 	<<set _linkOption2 to "Tuck hair behind">>
 	<div class="toggleFaceLayer">
-		<<link `($facelayer is "front" ? _linkOption1 : _linkOption2)`>>
+		<<link `($facelayer is "front" ? _linkOption2 : _linkOption1)`>>
 			<<set $facelayer to ($facelayer is "front" ? "back" : "front")>>
 			<<updatesidebarimg>>
 			<<if _args[0] is "wardrobe">>
 					<<updatewardrobe>>
 			<</if>>
-			<<run $(".toggleFaceLayer .link-internal").html($facelayer is "front" ? _linkOption1 : _linkOption2)>>
+			<<run $(".toggleFaceLayer .link-internal").html($facelayer is "front" ? _linkOption2 : _linkOption1)>>
 			<<run Links.generateLinkNumbers($(".passage"))>>
 		<</link>>
 	</div>

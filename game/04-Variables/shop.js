@@ -57,7 +57,7 @@ setup.shopDetails = {
 	sleep: {
 		name: "Sleep",
 		desc: "Soft and cosy. May improve the quality of your sleep.",
-		details: "Reduces bonus fatigue while sleeping. Sleeping in clothes other than sleepwear, underwear, and eerie items will negate this bonus.",
+		details: "Reduces additional fatigue while sleeping. Sleeping in clothes other than sleepwear, underwear, and eerie items will negate this effect.",
 	},
 	mask: {
 		name: "Mask",
@@ -179,7 +179,7 @@ setup.shopDetails = {
 	},
 	riding: {
 		name: "Riding",
-		desc: "Part of a costume set.",
+		desc: "Suitable for equestrians.",
 		details: "Boosts thigh skill gained from horseback riding lessons.",
 	},
 	maid: {
