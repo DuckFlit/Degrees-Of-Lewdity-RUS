@@ -403,13 +403,14 @@
 		<<if $bird.upgrades.wardrobe is 1>>
 			<<if $worn[_random_slot].name isnot "naked" and _random_clothes isnot "piece of fabric">>
 				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<br>
 				<span class="blue">Your $worn[_random_slot].name will be put in your wardrobe.</span><<gfabric>>
 			<<elseif _random_clothes isnot "piece of fabric">>
 				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<</if>>
 			<<if _random_clothes isnot "piece of fabric">>
 				<br>
-				<<link [[Put it in the wardrobe|Bird Tower Clothes Keep]]>><<generalSend "birdTower" _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<<link [[Put it in the wardrobe|Bird Tower Clothes Keep]]>><<generalSend "wardrobe" _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<</if>>
 		<<else>>
 			<<if $worn[_random_slot].name isnot "naked" and _random_clothes isnot "piece of fabric">>
@@ -971,16 +972,85 @@
 		<<run Errors.report("No number argument specified for widget flight_hunt_get")>>
 	<<else>>
 		<<set $_looted to _args[0]>><<set $_amount to _args[1]>>
-		<<if $_looted is "clothing" or $_looted is "valuables">>
+		<<if $_looted is "valuables">>
 			<<if _args[2]>>
 				<<set $_info to _args[2]>>
-				<<if $bird.hunts.loot[$_looted] is undefined>>
-					<<set $bird.hunts.loot[$_looted] to {[$_info]: 0}>>
+				<<if $bird.hunts.loot.valuables is undefined>>
+					<<set $bird.hunts.loot.valuables to {[$_info]: 0}>>
 				<</if>>
-				<<if $bird.hunts.loot[$_looted][$_info] is undefined>>
-					<<set $bird.hunts.loot[$_looted][$_info] to 0>>
+				<<if $bird.hunts.loot.valuables[$_info] is undefined>>
+					<<set $bird.hunts.loot.valuables[$_info] to 0>>
 				<</if>>
-				<<set $bird.hunts.loot[$_looted][$_info] += $_amount>>
+				<<set $bird.hunts.loot.valuables[$_info] += $_amount>>
+				<<set $bird.hunts.lootAmount += $_amount>>
+			<<else>>
+				<<run Errors.report("Invalid special loot of type; " + $_looted + " " + _args[2])>>
+				<<exit>>
+			<</if>>
+		<<elseif $_looted is "clothing">>
+			<!-- args: 2 = slot, 3 = index, 4 = whether to take the item or wear it, defaults to take, 5 = damaged, 6 = colour, 7 = accessory colour -->
+			<!-- Yes most of this is ripped straight from the equipClothesItemFromDefault widget -->
+			<<if _args[2] and _args[3]>>
+				<<set $_lootClothingSlot to _args[2]>><<set $_lootClothingIndex to _args[3]>>
+				<<set $_item to clone(setup.clothes[$_lootClothingSlot][$_lootClothingIndex])>>
+				<<if $_item.colour_options.length gt 0>>
+					<<if _args[6]>>
+						<<set $_item.colour to _args[5]>>
+						<<if $_item.colour is "custom">>
+							<<set $_item.colourCustom to customColour($customColors.color.primary, $customColors.saturation.primary, $customColors.brightness.primary, $customColors.contrast.primary, $customColors.sepia.primary)>>
+						<</if>>
+					<<else>>
+						<<set _colorOption to clone($_item.colour_options)>>
+						<<run _colorOption.delete("custom")>>
+						<<set $_item.colour to _colorOption.random()>>
+					<</if>>
+				<</if>>
+				<<if $_item.accessory_colour_options.length gt 0 and $_item.accessory is 1>>
+					<<if _args[7]>>
+						<<set $_item.accessory_colour to _args[6]>>
+						<<if $_item.accessory_colour is "custom">>
+							<<set $_item.accessory_colourCustom to customColour($customColors.color.secondary, $customColors.saturation.secondary, $customColors.brightness.secondary, $customColors.contrast.secondary, $customColors.sepia.secondary)>>
+						<</if>>
+					<<else>>
+						<<set _accessoryColorOption to clone($_item.accessory_colour_options)>>
+						<<run _accessoryColorOption.delete("custom")>>
+						<<set $_item.accessory_colour to _accessoryColorOption.random()>>
+					<</if>>
+				<</if>>
+				<<if _args[4] is "wear">>
+					<<generalWear $_lootClothingSlot $_lootClothingIndex _args[6] _args[7]>>
+					<<set $_wear to true>>
+				<</if>>
+				<<if _args[5] is "damaged">>
+					<<if ["upper", "under_upper", "lower", "under_lower"].includes($_lootClothingSlot)>>
+						<<if $_wear is true>>
+							<<set $worn[$_lootClothingSlot].integrity to ($_item.integrity_max - random(40, 80))>><<if $worn[$_lootClothingSlot].integrity is 0>><<set $worn[$_lootClothingSlot].integrity to 10>><</if>>
+						<<else>>
+							<<set $_item.integrity to ($_item.integrity_max - random(40, 80))>><<if $_item.integrity is 0>><<set $_item.integrity to 10>><</if>>
+						<</if>>
+					<</if>>
+				<</if>>
+				<<run clothesDataTrimmer($_item)>>
+				<<set $_fullClothingObj to clothesDataTrimmer($_item)>>
+				<<if $bird.hunts.loot.clothing is undefined>>
+					<<set $bird.hunts.loot.clothing to {
+						[$_item.name]: {
+							amount: 0,
+							wear: $_wear,
+							slot: $_lootClothingSlot,
+							full: $_item
+						}
+					}>>
+				<</if>>
+				<<if $bird.hunts.loot.clothing[$_item.name] is undefined>>
+					<<set $bird.hunts.loot.clothing[$_item.name] to {
+						amount: 0,
+						wear: $_wear,
+						slot: $_lootClothingSlot,
+						full: $_item
+					}>>
+				<</if>>
+				<<set $bird.hunts.loot.clothing[$_item.name].amount += $_amount>>
 				<<set $bird.hunts.lootAmount += $_amount>>
 			<<else>>
 				<<run Errors.report("Invalid special loot of type; " + $_looted + " " + _args[2])>>
@@ -1028,7 +1098,6 @@
 			<<case "tarp">><<set $bird.hunts.weight -= 5>>
 			<<case "tools" "pot">><<set $bird.hunts.weight -= 2>>
 			<<case "wood">><<set $bird.hunts.weight -= (3 * $_amount)>>
-			<<case "sticks">><<set $bird.hunts.weight -= (1.5 * $_amount)>>
 			<<case "leaves">><<set $bird.hunts.weight -= (0.5 * $_amount)>>
 			<<case "valuables" "junk">><<set $bird.hunts.weight -= (0.2 * $_amount)>>
 			<<default>><<set $bird.hunts.weight -= $_amount>>
@@ -1060,7 +1129,16 @@
 		<<if $_lootType is "valuables">>
 			<<set $_tempNum to Object.values($_tempNum).reduce((tot, c) => tot + c)>>
 		<</if>>
-		- <span class="green"><<number $_tempNum>></span>
+		<<if $_lootType is "clothing">>
+			<<set $_tempNum to Object.values($_tempNum).reduce((sum, a) => sum + a.amount, 0)>>
+		<</if>>
+		<<if $_lootType is "valuables">>
+		<<elseif $_lootType is "clothing">>
+			<<shopicon "clothing">>
+		<<else>>
+			<<mooricon $_lootType>>
+		<</if>>
+		<span class="green">$_tempNum</span>
 		<<switch $_lootType>>
 			<<case "tools">>
 				<<set $_otherLoot++>><<set $bird.upgrades.tools to 1>>
@@ -1092,12 +1170,28 @@
 			<<case "leather">>
 				<<set $_matLoot += $_tempNum>><<set $bird.materials.leather += $_tempNum>>
 				piece<<if $_tempNum gte 2>>s<</if>> of treated leather.
+			<<case "feathers">>
+				<<set $_matLoot += $_tempNum>><<set $bird.materials.feathers += $_tempNum>>
+				feather<<if $_tempNum gte 2>>s<</if>>.				
 			<<case "tarp">>
 				<<set $_hordeLoot++>><<set $bird.upgrades.tarp to 1>>
 				large tarp.
 			<<case "clothing">>
 				<<set $_matLoot += $_tempNum>>
-				piece<<if $_tempNum gte 2>>s<</if>> of clothing.
+				piece<<if $_tempNum gte 2>>s<</if>> of clothing:
+				<<for $_lootClothingType, $_tempObjClothing range $bird.hunts.loot.clothing>>
+					<br>
+					<<ind>><<clothingicon $_tempObjClothing.full $_tempObjClothing.slot>> <span class="teal">$_tempObjClothing.amount</span>
+					<<if setup.clothes[$_tempObjClothing.slot][$_tempObjClothing.full.index].word is "n">>pair<<if $_tempObjClothing.amount gte 2>>s<</if>> of<</if>>
+					$_tempObjClothing.full.name<<if setup.clothes[$_tempObjClothing.slot][$_tempObjClothing.full.index].word is "a" and $_tempObjClothing.amount gte 2>>s<</if>>
+					<<if !$_tempObjClothing.wear>>
+						<<if $wardrobe.space - $wardrobe[$_tempObjClothing.slot].length lte 0>>
+							<span class="red">(No space left! Scrapped for fabric.)</span><<set $bird.materials.fabric += 1>>
+						<<else>>
+							<<set $wardrobe[$_tempObjClothing.slot].push(clone($_tempObjClothing.full))>>
+						<</if>>
+					<</if>>
+				<</for>>				
 			<<case "valuables">>
 				<<set $_hordeLoot += $_tempNum>>
 				valuable item<<if $_tempNum gte 2>>s<</if>>:
@@ -1107,7 +1201,7 @@
 					<</if>>
 					<<set $bird.materials.valuables[$_lootValType] += $_tempNumVal>>
 					<br>
-					<<ind>>- <span class="teal"><<number $_tempNumVal>></span> $_lootValType<<if $_tempNumVal gte 2>>s<</if>>.
+					<<ind>>- <span class="teal">$_tempNumVal</span> $_lootValType<<if $_tempNumVal gte 2>>s<</if>>.
 				<</for>>
 			<<default>>
 		<</switch>>
@@ -1159,7 +1253,7 @@
 	<<for _valuable, _amount range $bird.materials.valuables>>
 		<<if _amount lt 1>><<continue>><</if>>
 		<<set $_valuablesMessage to true>>
-		- <<number _amount>> _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
+		- _amount _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
 		<<capture _valuable _amount>>
 			<<link "Take one">>
 				<<if _valuable is "antique bullet">>
@@ -1186,7 +1280,7 @@
 	<</for>>
 	<<if $bird.materials.junk gt 0>>
 		<<set $_valuablesMessage to true>>
-		<<number $bird.materials.junk>> piece<<if $bird.materials.junk gte 2>>s<</if>> of shiny junk
+		<<mooricon "junk">> $bird.materials.junk piece<<if $bird.materials.junk gte 2>>s<</if>> of shiny junk
 		<br>
 	<</if>>
 	<<if !$_valuablesMessage>>
@@ -1240,7 +1334,7 @@
 		<</if>>
 		<<set _timeLteMax to _timeWood lte _maxTimeAllowed>>
 
-		You have <<number $bird.materials.wood>> piece<<if $bird.materials.wood gte 2>>s<</if>> of wood.
+		You have $bird.materials.wood piece<<if $bird.materials.wood gte 2>>s<</if>> of wood.
 		<br>
 		<<link "Add 1 wood">>
 			<<set $bird.materials.wood-->>
@@ -1279,7 +1373,7 @@
 		<</if>>
 		<<set _timeLteMax to _timeSticks lte _maxTimeAllowed>>
 
-		You have <<number $bird.materials.sticks>> stick<<if $bird.materials.sticks gte 2>>s<</if>>.
+		You have $bird.materials.sticks stick<<if $bird.materials.sticks gte 2>>s<</if>>.
 		<br>
 		<<link "Add 1 stick">>
 			<<set $bird.materials.sticks-->>
@@ -1328,7 +1422,7 @@
 		<<set $_nLurkersDrying to _lurkersDrying.length>>
 		<<set _nLurkersReady to $bird.firepit.items.length - $_nLurkersDrying>>
 
-		Your drying rack can hold up to <<number $_rackMax>> lurkers.
+		Your drying rack can hold up to $_rackMax lurkers.
 		<br>
 		<<if $bird.firepit.items.length is $_rackMax>>
 			<i class="blue">The drying rack is full.</i>
@@ -1343,7 +1437,7 @@
 		<</if>>
 
 		<<if $_nLurkersDrying gte 1>>
-			It is currently drying <<number $_nLurkersDrying>> lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
+			It is currently drying $_nLurkersDrying lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
 			<<if getBirdBurnTime() gte 1>>
 				<<if $bird.upgrades.rack lt 3>>
 					<span class="lewd">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
@@ -1385,7 +1479,7 @@
 		<br>
 
 		<<if _nLurkersReady gte 1>>
-			<span class="green"><<Number _nLurkersReady>> lurker<<if _nLurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
+			<span class="green">_nLurkersReady lurker<<if _nLurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
 			<br>
 			<<link `"Take " + _nLurkersReady + " leather"`>>
 				<<set $bird.materials.leather += _nLurkersReady>>
@@ -1855,11 +1949,12 @@
 					<<set $_spColour to "green">>
 				<</if>>
 				<br>
+				<<mooricon $_uReq>>
 				<span @class="$_spColour">
 				<<if ["tools", "tarp", "pot", "mirror"].includes($_uReq)>>
 					<<print $_uReq.toUpperFirst()>> required
 				<<else>>
-					<<print $_uReq.toUpperFirst()>> level <<number $_upgrade.upgradesRequired[$_uReq]>> required
+					<<print $_uReq.toUpperFirst()>> level $_upgrade.upgradesRequired[$_uReq] required
 				<</if>>
 				</span>
 			<</for>>
@@ -1874,6 +1969,7 @@
 					<<set $_spColour to "green">>
 				<</if>>
 				<br>
+				<<mooricon $_material>>
 				<span @class="$_spColour">
 					<<print $_material.toUpperFirst()>> required
 					(<<print $bird.materials[$_material]>>/$_amtReq)
@@ -1892,7 +1988,7 @@
 				<<set $_disableBuild to true>>
 			<<elseif $bird.upgrades.wardrobe is 1 and getOwnedClothingCount($_upgrade.clothingIndex, $_upgrade.clothingSlot) gte 1>>
 				<br>
-				<span class="blue">You already own <<number getOwnedClothingCount($_upgrade.clothingIndex, $_upgrade.clothingSlot)>> of these.</span>
+				<span class="blue">You already own <<print getOwnedClothingCount($_upgrade.clothingIndex, $_upgrade.clothingSlot)>> of these.</span>
 			<<elseif $worn[$_upgrade.clothingSlot].name isnot "naked">>
 				<br>
 				<span class="blue">Will replace your <<print $worn[$_upgrade.clothingSlot].name>></span>
@@ -1937,10 +2033,3 @@
 	</div>
 <</widget>>
 
-<<widget "bird_materials_required">> |
-	<<if _args[0] and _args[1]>>
-		<<print _args[0].toUpperCase()>> required: <<number _args[1]>>
-	<<else>>
-		No materials required
-	<</if>>
-<</widget>>

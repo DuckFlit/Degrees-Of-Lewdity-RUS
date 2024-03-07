@@ -463,7 +463,7 @@ You remain still. The <<beasttype>> watches you a moment longer, then
 		<<set $phase to 1>>
 		<br>
 	<<else>>
-		<<link [[Get out of the way|Bird Rescue No Syndrome Dodge]]>><<unset $phase>><</link>><<willpowerdifficulty (1+(2*$pain)) (300+(2*$pain))>><<athleticsdifficulty (200+(2*$pain)) (400+(2*$pain))>>
+		<<link [[Get out of the way|Bird Rescue No Syndrome Dodge]]>><<unset $phase>><</link>><<willpowerdifficulty `(1+(2*$pain))` `(300+(2*$pain))`>><<athleticsdifficulty `(200+(2*$pain))` `(400+(2*$pain))`>>
 		<<set $phase to 2>>
 		<br>
 	<</if>>
@@ -694,18 +694,18 @@ Moments later, you've arrived. The <<beasttype>> swoops through a broken wall, a
 <br><br>
 
 <<if $phase isnot 4 or $trauma gte ($traumamax / 7) * 3>>
-	<<link [[Hug|Bird Rescue No Syndrome Tower Hug]]>><</link>><<llstress>><<lltrauma>><<gglove>><<ggdom>><<ggstockholm>>
+	<<link [[Hug|Bird Rescue No Syndrome Tower Hug]]>><<stress -12>><<trauma -12>><<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom 3>><<bird_stockholm 3>><</link>><<llstress>><<lltrauma>><<gglove>><<ggdom>><<ggstockholm>>
 	<br>
 <</if>>
-<<link [[Thank|Bird Rescue No Syndrome Tower Thank]]>><</link>><<glove>><<gdom>><<ggstockholm>>
+<<link [[Thank|Bird Rescue No Syndrome Tower Thank]]>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<bird_stockholm 3>><</link>><<glove>><<gdom>><<ggstockholm>>
 <br>
-<<link [[Remain silent|Bird Rescue No Syndrome Tower Silent]]>><</link>><<llove>><<ldom>>
+<<link [[Remain silent|Bird Rescue No Syndrome Tower Silent]]>><<npcincr "Great Hawk" love -1>><<npcincr "Great Hawk" dom -1>><</link>><<llove>><<ldom>>
 <br>
 <<if $phase gte 3>>
-	<<link [[Punch|Bird Rescue No Syndrome Tower Punch]]>><</link>><<lllove>><<llldom>><<llstockholm>>
+	<<link [[Punch|Bird Rescue No Syndrome Tower Punch]]>><<npcincr "Great Hawk" love -3>><<npcincr "Great Hawk" dom -3>><<bird_stockholm -3>><</link>><<lllove>><<llldom>><<llstockholm>>
 	<br>
 <</if>>
-<<link [[Pull Away|Bird Rescue No Syndrome Tower Pull]]>><</link>><<if $phase gte 2>><<llove>><<ldom>><</if>><<lstockholm>>
+<<link [[Pull Away|Bird Rescue No Syndrome Tower Pull]]>><<npcincr "Great Hawk" love -3>><<npcincr "Great Hawk" dom -1>><<bird_stockholm -1>><</link>><<if $phase gte 2>><<llove>><<ldom>><</if>><<lstockholm>>
 <br>
 
 :: Bird Rescue No Syndrome Tower Hug
@@ -718,7 +718,7 @@ Moments later, you've arrived. The <<beasttype>> swoops through a broken wall, a
 <<link [[Let go|Bird Rescue No Syndrome Tower Release]]>><</link>>
 <br>
 <<if $trauma gte ($traumamax / 7) * 4>>
-	<<link [[Break Down|Bird Rescue No Syndrome Tower Cry]]>><</link>><<llstress>><<lltrauma>><<gglove>><<ggdom>><<gggstockholm>>
+	<<link [[Break Down|Bird Rescue No Syndrome Tower Cry]]>><<stress -12>><<trauma -12>><<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom 3>><<bird_stockholm 3>><</link>><<llstress>><<lltrauma>><<gglove>><<ggdom>><<gggstockholm>>
 	<br>
 <</if>>
 
@@ -1134,7 +1134,11 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<if $bird.state is "home">>
 		<<switch $bird.activity>>
 			<<case "sing">>
-				The <<beasttype>> is singing at the edge of the tower.
+				<<if $syndromebird gte 1>>
+					Your spouse is singing at the edge of the tower.
+				<<else>>
+					The <<beasttype>> is singing at the edge of the tower.
+				<</if>>
 			<<case "bathe">>
 				The <<beasttype>> is bathing in the rainwater pool.
 			<<case "groom">>
@@ -1275,28 +1279,31 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<</if>>
 	<<mooricon "nest">><<link [[Sleep in the nest|Bird Tower Bed]]>><</link>>
 	<br>
-	<<bedicon "zzz">><<link [[Sleep elsewhere|Bird Tower Bed Alone]]>><<bird_stockholm -2>><</link>><<if $syndromebird isnot 1>><<lstockholm>><</if>>
-	<<if $bird.upgrades.mirror is 1>>
+	<<if $syndromebird isnot 1>>
+		<<bedicon "zzz">><<link [[Sleep elsewhere|Bird Tower Bed Alone]]>><<bird_stockholm -2>><</link>><<if $syndromebird isnot 1>><<lstockholm>><</if>>
 		<br>
+	<</if>>
+	<<if $bird.upgrades.mirror is 1>>
 		<<if $nextPassageCheck is "Bird Tower Mirror">>
 			<span class="nextLink"><<mirroricon>><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>></span>
 		<<else>>
 			<<mirroricon>><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>>
 		<</if>>
+		<br>
 	<</if>>
 	<<if $bird.upgrades.wardrobe is 1>>
-		<br>
 		<<wardrobeicon>><<link [[Wardrobe|Bird Tower Wardrobe]]>><</link>>
+		<br>
 	<<else>>
 		<<if $bird.duster is true>>
-			<br>
 			<<ind>><<link [[Grab your feather duster|Bird Tower]]>><<generalWear handheld 12>><<run delete $bird.duster>><</link>>
 			<<if $worn.handheld.name isnot "naked">>
 				<span class="blue">Will replace your $worn.handheld.name</span>
 			<</if>>
-		<<elseif $worn.handheld.name is "feather duster">>
 			<br>
+		<<elseif $worn.handheld.name is "feather duster">>
 			<<ind>><<link [[Hang up your feather duster|Bird Tower]]>><<generalRuined handheld>><<set $bird.duster to true>><</link>>
+			<br>
 		<</if>>
 	<</if>>
 	<br>
@@ -2317,7 +2324,7 @@ You put it in the wardrobe.
 	<<link [[Rub lewdly|Bird Tower Nest Rub]]>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -1>><<set $phase to 1>><</link>><<glove>><<npc "Great Hawk">><<person1>><<ldom>><<endevent>><<deviant1>>
 	<br>
 	<<if $deviancy gte 55>>
-		<<link [[Wake for sex|Bird Tower Nest Rub]]>><<transform bird 1>><<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom 1>><<set $phase to 2>><</link>><<gglove>><<gdom "Great Hawk">><<deviant4>>
+		<<link [[Wake for sex|Bird Tower Nest Rub]]>><<transform bird 1>><<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom 1>><<set $phase to 2>><</link>><<gglove>><<gdom>><<deviant4>>
 		<br>
 	<</if>>
 	<br>
@@ -2354,7 +2361,11 @@ You sit by the rainwater pool.
 <<if $bird.state is "home">>
 	<<switch $bird.activity>>
 	<<case "sing">>
-		The <<beasttype>> is singing at the edge of the tower.
+		<<if $syndromebird gte 1>>
+			Your spouse is singing at the edge of the tower.
+		<<else>>
+			The <<beasttype>> is singing at the edge of the tower.
+		<</if>>
 	<<case "bathe">>
 		<<print either(
 			"The <<beasttype>> playfully splashes at you.",
@@ -4008,7 +4019,7 @@ Materials:
 <<for _material range Object.keys($bird.materials)>>
 	<<if _material isnot "valuables" and _material isnot "junk" and $bird.materials[_material] gte 1>>
 		<<set _materialsMessage to true>>
-		- <<number $bird.materials[_material]>>
+		<<mooricon _material>> $bird.materials[_material]
 		<<switch _material>>
 			<<case "sticks">>stick<<if $bird.materials[_material] gte 2>>s<</if>>
 			<<case "leaves">>large <<if $bird.materials[_material] gte 2>>leaves<<else>>leaf<</if>>
@@ -4026,7 +4037,7 @@ Materials:
 <<if $lurkers_held gte 1>>
 	<<link [[Add your netted lurker to the pile|Bird Tower Build]]>><<set $lurkers_held-->><<set $bird.materials.lurkers++>><</link>>
 	<br>
-<<elseif $farm_stage gte 10>>
+<<elseif $farm_stage gte 10 and $bird.materials.lurkers gte 1>>
 	<<link [[Put a lurker in your net|Bird Tower Build]]>><<set $lurkers_held++>><<set $bird.materials.lurkers-->><</link>>
 	<br>	
 <</if>>
@@ -4456,7 +4467,7 @@ You move your mirror right next to it.
 <<if $bird.duster is true>>
 	You place your feather duster inside.
 	<<run delete $bird.duster>>
-	<<generalSend "birdTower" handheld 12>>
+	<<generalSend "wardrobe" handheld 12>>
 <</if>>
 <br><br>
 

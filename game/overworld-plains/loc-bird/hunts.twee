@@ -41,7 +41,7 @@
 <<if $birdFly isnot 1 or $harpy lte 5>>
 	<!-- Player hasn't learned to fly -->
 	<<if !$daily.birdHuntAsked>>
-		<<set $daily.birdHuntAsked to true>>
+		<<set $daily.birdHuntAsked to 1>>
 		<<if $monster is 1>>
 			<<bHe>> looks at you for a moment. "No. <<Wife>> is not ready yet." Before you can ask why, <<bhe>> flaps <<bhis>> wings for emphasis. "Can not carry you for the hunt. When <<wife>> is ready, we can go together."
 		<<else>>
@@ -50,12 +50,15 @@
 	<<else>>
 		<<bHe>> cocks <<bhis>> head.
 		<<if $monster is 1>>
-			"<<Wife>> asks again. <<Wife>> really wants to help?" <<bHe>> walks over to you, and nuzzles your cheek. "When <<wife>> can join Great Hawk in the sky, <<wife>> can hunt."
+			"<<Wife>> asks again. <<Wife>> really wants to help?" <<bHe>> walks over to you, and nuzzles your cheek. "When <<wife>> can join me in the sky, <<wife>> can hunt."
 		<<else>>
 			<<bHe>> walks over to you and nuzzles your cheek, before letting out a low caw.
 		<</if>>		
 	<</if>>
-	<<npcincr "Great Hawk" love 1>><<glove>>
+	<<if $daily.birdHuntAsked is 1>>
+		<<set $daily.birdHuntAsked to 2>>
+		<<npcincr "Great Hawk" love 1>><<glove>>
+	<</if>>
 	<br><br>
 
 	<<link [[Next|Bird Tower No Hunt]]>><</link>>
@@ -1754,11 +1757,13 @@ You land nearby and begin searching.
 	<<case 6>>
 		<<select_random_clothes_limited "upper">>
 		You see it suspended in between some fallen branches. It's
-		<<if setup.clothes[_random_slot][_random_index].type.includes("formal")>>
+		<<if _random_clothes isnot "piece of fabric" and setup.clothes[_random_slot][_random_index].type.includes("formal")>>
 			<<if setup.clothes[_random_slot][_random_index].word is "an">>
 				an
-			<<else>>
+			<<elseif setup.clothes[_random_slot][_random_index].word is "a">>
 				a
+			<<else>>
+				a pair of
 			<</if>>
 			tattered _random_clothes with shiny buttons.
 		<<else>>
@@ -1766,6 +1771,17 @@ You land nearby and begin searching.
 			a ruined uniform with some shiny buttons. It would make for good scrap cloth and shiny junk.
 		<</if>>
 		<<if _random_clothes isnot "piece of fabric">>
+			<<if $worn[_random_slot].cursed is 1>>
+				<<set _cursedPrevent to true>>
+			<</if>>
+			<<set _outfitPrimaryWear to setup.clothes[_random_slot][$worn[_random_slot].index].outfitPrimary>>
+			<<if _outfitPrimaryWear isnot undefined>>
+				<<for _outfitSlot, _value range _outfitPrimaryWear>>
+					<<if $worn[_outfitSlot].cursed is 1>>
+						<<set _cursedPrevent to true>>
+					<</if>>
+				<</for>>
+			<</if>>
 			<<if $bird.wardrobe is 1>>
 				You could tear it up for scrap cloth and shiny junk, or bring it back to the tower.
 			<<else>>
@@ -1773,23 +1789,24 @@ You land nearby and begin searching.
 			<</if>>
 			<br><br>
 
-			<<if $worn[_random_slot].name isnot "naked">>
-				<<if $bird.wardrobe is 1>>
-					<<link [[Wear|Bird Hunt Shiny Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1  _random_index>><<generalWear _random_slot _random_index>><<set $worn[_random_slot].integrity to (setup.clothes[_random_slot][_random_index].integrity_max - random(40, 80))>><<if $worn[_random_slot].integrity is 0>><<set $worn[_random_slot].integrity to 10>><</if>><</link>>
-					<span class="blue">Your $worn[_random_slot].name will be replaced.</span>
+			<<if !_cursedPrevent>>
+				<<if $worn[_random_slot].name isnot "naked">>
+					<<if $bird.wardrobe is 1>>
+						<<link [[Wear|Bird Hunt Shiny Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_slot _random_index "wear" "damaged">><</link>>
+						<span class="blue">Your $worn[_random_slot].name will be replaced.</span>
+					<<else>>
+						<<link [[Wear|Bird Hunt Shiny Clothes]]>><<set $phase to 1>><<generalRuined _random_slot>><<flight_hunt_get "clothing" 1 _random_slot _random_index "wear" "damaged">><<flight_hunt_get "fabric" 1>><</link>>
+						<span class="blue">Your $worn[_random_slot].name will be scrapped.</span>
+					<</if>>
 				<<else>>
-					<<link [[Wear|Bird Hunt Shiny Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_index>><<flight_hunt_get "fabric" 1>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><<set $worn[_random_slot].integrity to (setup.clothes[_random_slot][_random_index].integrity_max - random(40, 80))>><<if $worn[_random_slot].integrity is 0>><<set $worn[_random_slot].integrity to 10>><</if>><</link>>
-					<span class="blue">Your $worn[_random_slot].name will be scrapped.</span>
+					<<link [[Wear|Bird Hunt Shiny Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_slot _random_index "wear" "damaged">><</link>>
 				<</if>>
-			<<else>>
-				<<link [[Wear|Bird Hunt Shiny Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_index>><<generalWear _random_slot _random_index>><<set $worn[_random_slot].integrity to (setup.clothes[_random_slot][_random_index].integrity_max - random(40, 80))>><<if $worn[_random_slot].integrity is 0>><<set $worn[_random_slot].integrity to 10>><</if>><</link>>
 			<</if>>
 			<br>
 			<<link [[Scrap|Bird Hunt Shiny Clothes]]>><<set $phase to 2>><<flight_hunt_get "fabric" 1>><<flight_hunt_get "junk" 1>><</link>>
 			<br>
-			<!-- No idea how to send a damaged item to the player's wardrobe -->
 			<<if $bird.wardrobe is 1>>
-				<<link [[Take|Bird Hunt Shiny Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_index>><<generalSend "birdTower" _random_slot _random_index>><</link>>
+				<<link [[Take|Bird Hunt Shiny Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_slot _random_index "take" "damaged">><</link>>
 				<br>
 			<</if>>
 		<<else>>
@@ -2490,15 +2507,16 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 <<if $phase is 1>>
 	You look around for any spare clothing. You find
 	<<select_random_clothes_limited "upper" "lower" "under_upper" "under_lower" "legs" "hands">>
-	<<if setup.clothes[_random_slot][_random_index].plural isnot 1>>
+	<<if _random_clothes isnot "piece of fabric">>
 		<<if setup.clothes[_random_slot][_random_index].word is "an">>
 			an
-		<<else>>
+		<<elseif setup.clothes[_random_slot][_random_index].word is "a">>
 			a
+		<<else>>
+			a pair of
 		<</if>>
 		_random_clothes.
 	<<else>>
-		<<set _random_clothes to "piece of fabric">>
 		a large pile of ruined uniforms.
 	<</if>>
 	<<if _random_clothes isnot "piece of fabric">>
@@ -2509,22 +2527,36 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 		<</if>>
 		<br><br>
 
-		<<if $worn[_random_slot].name isnot "naked">>
-			<<if $bird.wardrobe is 1>>
-				<<link [[Wear|Bird Hunt Tent Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1  _random_index>><<generalWear _random_slot _random_index>><</link>>
-				<span class="blue">Your $worn[_random_slot].name will be replaced.</span>
+		<<if $worn[_random_slot].cursed is 1>>
+			<<set _cursedPrevent to true>>
+		<</if>>
+		<<set _outfitPrimaryWear to setup.clothes[_random_slot][$worn[_random_slot].index].outfitPrimary>>
+		<<if _outfitPrimaryWear isnot undefined>>
+			<<for _outfitSlot, _value range _outfitPrimaryWear>>
+				<<if $worn[_outfitSlot].cursed is 1>>
+					<<set _cursedPrevent to true>>
+				<</if>>
+			<</for>>
+		<</if>>
+
+		<<if !_cursedPrevent>>
+			<<if $worn[_random_slot].name isnot "naked">>
+				<<if $bird.wardrobe is 1>>
+					<<link [[Wear|Bird Hunt Tent Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_slot _random_index "wear">><</link>>
+					<span class="blue">Your $worn[_random_slot].name will be replaced.</span>
+				<<else>>
+					<<link [[Wear|Bird Hunt Tent Steal Clothes]]>><<set $phase to 1>><<generalRuined _random_slot>><<flight_hunt_get "clothing" 1 _random_slot _random_index "wear">><<flight_hunt_get "fabric" 1>><</link>>
+					<span class="blue">Your $worn[_random_slot].name will be scrapped.</span>
+				<</if>>
 			<<else>>
-				<<link [[Wear|Bird Hunt Tent Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_index>><<flight_hunt_get "fabric" 1>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><</link>>
-				<span class="blue">Your $worn[_random_slot].name will be scrapped.</span>
+				<<link [[Wear|Bird Hunt Tent Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_slot _random_index "wear">><</link>>
 			<</if>>
-		<<else>>
-			<<link [[Wear|Bird Hunt Tent Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_index>><<generalWear _random_slot _random_index>><</link>>
 		<</if>>
 		<br>
 		<<link [[Scrap for cloth|Bird Hunt Tent Steal Clothes]]>><<set $phase to 2>><<flight_hunt_get "fabric" 1>><</link>>
 		<br>
 		<<if $bird.wardrobe is 1>>
-			<<link [[Steal it|Bird Hunt Tent Steal Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_index>><<generalSend "birdTower" _random_slot _random_index>><</link>>
+			<<link [[Steal it|Bird Hunt Tent Steal Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_slot _random_index>><</link>>
 			<br>
 		<</if>>
 	<<else>>
