@@ -415,8 +415,9 @@ You spread your wings and leap from the tower.
 	<<set $moor to 40>>
 <</if>>
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	You choose to hunt for something else. 
+	You choose to hunt for something else.
+<<elseif $phase is 2>>
+	You ask your spouse if you can hunt for something else.
 <<else>>
 	You catch the wind and fly high up into the air.
 	<<if $weather is "rain">>
@@ -439,10 +440,11 @@ What will you hunt for?
 	<<link [[Valuables|Bird Hunt Direction]]>><<set $bird.hunts.goal to "valuables">><</link>>
 	<br>
 <</if>>
-<<if $bird.hunts.duo is true>>
+<<if $bird.hunts.duo is true and $phase isnot 2>>
 	<<link [[Let the Great Hawk decide|Bird Hunt Direction]]>><<set $bird.hunts.goal to "hawk">><<npcincr "Great Hawk" dom 1>><</link>><<gdom>>
 	<br>
 <</if>>
+<<set $phase to 0>>
 
 :: Bird Hunt Direction
 <<effects>>
@@ -831,7 +833,6 @@ What will you hunt for?
 
 
 
-
 :: Bird Hunt Camp
 <<effects>>
 <<if $bird.hunts.duo is true>>
@@ -872,6 +873,9 @@ What will you hunt for?
 	<<link [[Look for higher quality pieces|Bird Hunt Camp 2]]>><<set $phase to 5>><</link>><<housekeepingdifficulty 1 300>><<ghousekeeping 300>>
 	<br>
 <</if>>
+<<link [[Leave|Bird Hunt Exit]]>><<endevent>><</link>>
+<br>
+
 
 :: Bird Hunt Camp 2
 <<effects>>
@@ -1758,14 +1762,7 @@ You land nearby and begin searching.
 		<<select_random_clothes_limited "upper">>
 		You see it suspended in between some fallen branches. It's
 		<<if _random_clothes isnot "piece of fabric" and setup.clothes[_random_slot][_random_index].type.includes("formal")>>
-			<<if setup.clothes[_random_slot][_random_index].word is "an">>
-				an
-			<<elseif setup.clothes[_random_slot][_random_index].word is "a">>
-				a
-			<<else>>
-				a pair of
-			<</if>>
-			tattered _random_clothes with shiny buttons.
+			a tattered _random_clothes with shiny buttons.
 		<<else>>
 			<<set _random_clothes to "piece of fabric">>
 			a ruined uniform with some shiny buttons. It would make for good scrap cloth and shiny junk.
@@ -1782,7 +1779,7 @@ You land nearby and begin searching.
 					<</if>>
 				<</for>>
 			<</if>>
-			<<if $bird.wardrobe is 1>>
+			<<if $bird.upgrades.wardrobe is 1>>
 				You could tear it up for scrap cloth and shiny junk, or bring it back to the tower.
 			<<else>>
 				You have nowhere to store it at the tower. A few hours in the open would reduce it to scrap cloth and shiny junk.
@@ -1791,7 +1788,7 @@ You land nearby and begin searching.
 
 			<<if !_cursedPrevent>>
 				<<if $worn[_random_slot].name isnot "naked">>
-					<<if $bird.wardrobe is 1>>
+					<<if $bird.upgrades.wardrobe is 1>>
 						<<link [[Wear|Bird Hunt Shiny Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_slot _random_index "wear" "damaged">><</link>>
 						<span class="blue">Your $worn[_random_slot].name will be replaced.</span>
 					<<else>>
@@ -1805,7 +1802,7 @@ You land nearby and begin searching.
 			<br>
 			<<link [[Scrap|Bird Hunt Shiny Clothes]]>><<set $phase to 2>><<flight_hunt_get "fabric" 1>><<flight_hunt_get "junk" 1>><</link>>
 			<br>
-			<<if $bird.wardrobe is 1>>
+			<<if $bird.upgrades.wardrobe is 1>>
 				<<link [[Take|Bird Hunt Shiny Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_slot _random_index "take" "damaged">><</link>>
 				<br>
 			<</if>>
@@ -2520,7 +2517,7 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 		a large pile of ruined uniforms.
 	<</if>>
 	<<if _random_clothes isnot "piece of fabric">>
-		<<if $bird.wardrobe is 1>>
+		<<if $bird.upgrades.wardrobe is 1>>
 			You could tear it up for scrap cloth, or bring it back to the tower.
 		<<else>>
 			You have nowhere to store it at the tower. A few hours in the open would reduce it to scrap cloth.
@@ -2541,7 +2538,7 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 
 		<<if !_cursedPrevent>>
 			<<if $worn[_random_slot].name isnot "naked">>
-				<<if $bird.wardrobe is 1>>
+				<<if $bird.upgrades.wardrobe is 1>>
 					<<link [[Wear|Bird Hunt Tent Steal Clothes]]>><<set $phase to 1>><<flight_hunt_get "clothing" 1 _random_slot _random_index "wear">><</link>>
 					<span class="blue">Your $worn[_random_slot].name will be replaced.</span>
 				<<else>>
@@ -2555,7 +2552,7 @@ You land away from their tents and stay low. <<if $exposed gte 2>>Your heart pou
 		<br>
 		<<link [[Scrap for cloth|Bird Hunt Tent Steal Clothes]]>><<set $phase to 2>><<flight_hunt_get "fabric" 1>><</link>>
 		<br>
-		<<if $bird.wardrobe is 1>>
+		<<if $bird.upgrades.wardrobe is 1>>
 			<<link [[Steal it|Bird Hunt Tent Steal Clothes]]>><<set $phase to 3>><<flight_hunt_get "clothing" 1 _random_slot _random_index>><</link>>
 			<br>
 		<</if>>
@@ -3382,6 +3379,12 @@ You won't be able to do anything else to them today, now that they're alerted.
 <<endevent>>
 <<flight_hunt_options>>
 
+:: Bird Hunt Exit
+<<effects>>
+
+<<set _huntFail to 1>>
+<<flight_hunt_return>>
+
 :: Bird Hunt Return Injured
 <<effects>>
 <<npc "Great Hawk">><<person1>>
@@ -3602,7 +3605,7 @@ You sit and take a moment to re-orient yourself. You still feel dizzy. You seem 
 :: Bird Hunt Passout
 <<effects>>
 <<npc "Great Hawk">><<person1>>
-<<if isPlayerNonparasitePregnancyEnding>>
+<<if isPlayerNonparasitePregnancyEnding()>>
 	You're met with the face of the <<beasttype>>.
 	<<if $monster is 1>>
 		<<bHe>> says something to you, but the words sound like gibberish.

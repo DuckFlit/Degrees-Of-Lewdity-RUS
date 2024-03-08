@@ -443,17 +443,17 @@ function wardrobesUpdate() {
 	if (!V.wardrobes.pirate.name) {
 		V.wardrobes.pirate.name = "Pirate Ship";
 	}
-    if (!V.wardrobes.birdTower) {
-        /* Great Hawk's tower */
-        V.wardrobes.birdTower = clone(defWardrobe);
-        V.wardrobes.birdTower.name = "Great Hawk's Tower";
-        V.wardrobes.birdTower.unlocked = false;
-        V.wardrobes.birdTower.space = 15;
-    }
 	if (V.objectVersion.wardrobes < 7) {
 		Object.values(V.wardrobes).forEach(wardrobe => {
 			if (wardrobe && Array.isArray(wardrobe.upper) && !wardrobe.handheld) wardrobe.handheld = [];
 		});
+	}
+	if (!V.wardrobes.birdTower) {
+		/* Great Hawk's tower */
+		V.wardrobes.birdTower = clone(defWardrobe);
+		V.wardrobes.birdTower.name = "Great Hawk's Tower";
+		V.wardrobes.birdTower.unlocked = false;
+		V.wardrobes.birdTower.space = 15;
 	}
 }
 DefineMacro("wardrobesUpdate", wardrobesUpdate);
