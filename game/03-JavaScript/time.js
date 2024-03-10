@@ -834,6 +834,13 @@ function dayPassed() {
 	/* Set flag to determine Kylar's position at lunch */
 	V.daily.kylar.libraryStalk = rollKylarLibraryStalkFlag();
 
+	// daysTillLaying only applies to unfertilised eggs
+	if (V.harpyEggs) V.harpyEggs.daysTillLaying--;
+	if (V.harpyEggsPrevent) {
+		V.harpyEggsPrevent--;
+		if (V.harpyEggsPrevent <= 0) delete V.harpyEggsPrevent;
+	}
+
 	return fragment;
 }
 

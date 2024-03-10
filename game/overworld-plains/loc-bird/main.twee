@@ -941,6 +941,36 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 <<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
 	<<pregnancyWatersBrokenPassout "castle">>
+<<elseif !$possessed and Object.values($children).find(child => (child.type is "hawk" and child.location is "inventory") or (child.location is "tower" and Time.date.timeStamp gte child.eggTimer))>>
+	/* Move hawk eggs that the player has to the nest */
+	<<run Object.values($children).forEach(child => {
+		if (child.type is "hawk" and child.location is "inventory") {
+			T.movedToTower to true;
+			child.location to "tower";
+		}
+		if (child.location is "tower" and Time.date.timeStamp gte child.eggTimer) T.readyToHatch to true;
+	})>>
+	<<if _movedToTower and _readyToHatch>>
+		ToDo: Enable hawk pregnancy: write scene about the player placing eggs in the nest that start hatching, leading to a passage where you can name them
+		<br><br>
+		<<link [[Next|Bird Tower Hatching]]>><</link>>
+	<<elseif _readyToHatch>>
+		ToDo: Enable hawk pregnancy: write scene about eggs in the nest that start hatching, leading to a passage where you can name them
+		<br><br>
+		<<link [[Next|Bird Tower Hatching]]>><</link>>
+	<<else>>
+		ToDo: Enable hawk pregnancy: write scene about the player placing eggs in the nest
+		<br><br>
+		<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<</if>>
+	<br>
+<<elseif npcPregnancyEnding("Great Hawk") and !$possessed and $bird.state is "home">>
+	ToDo: Enable hawk pregnancy: write scene about the Greak Hawk laying their eggs and leaving them in the nest
+
+	<<pregnancyFeats "Great Hawk">>
+	<<endNpcPregnancy "Great Hawk" "tower" "tower">>
+	<br><br>
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <<elseif $bird.state is "hunting" and $bird.timer lte 0 and !$possessed>>
 	<<npc "Great Hawk">>
 	You hear the flap of wings as the <<beasttype>> returns.
@@ -1275,6 +1305,10 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 	<<mooricon "nest">><<link [[Sleep in the nest|Bird Tower Bed]]>><</link>>
 	<br>
+	<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
+		<<ind>><<link [[Check on your children|Childrens Home]]>><<set $exitPassage to $passage>><</link>>
+		<br>
+	<</if>>
 	<<if $syndromebird isnot 1>>
 		<<bedicon "zzz">><<link [[Sleep elsewhere|Bird Tower Bed Alone]]>><<bird_stockholm -2>><</link>><<if $syndromebird isnot 1>><<lstockholm>><</if>>
 		<br>
@@ -1310,7 +1344,6 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<<getouticon "hole">><<link [[Enter the trap door (0:05)|Bird Tower Base Descend]]>><<bird_pass 5>><</link>>
 		<br>
 	<</if>>
-	<br>
 	<<if $syndromebird is 1>>
 		<br>
 		<<link [[Settings]]>><<set $settingsExitPassage to "Bird Tower">><</link>>
@@ -2318,6 +2351,10 @@ You put it in the wardrobe.
 	<<case 2>>It's comfortable enough.
 	<<case 3>>You melt into its softness and warmth.
 <</switch>>
+<<set _eggCount to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
+<<if _eggCount>>
+	<<Number _eggCount>> egg<<print _eggCount !== 1 ? "'s are" : " is">> protected in the nest.
+<</if>>
 <<endevent>>
 <<if $wraith.state and $wraithPrison and $bird.upgrades.mirror is 1 and ($moonstate is "evening" or $moonstate is _nightstate)>>
 	You feel anxious, and your eyes dart over to the mirror.
@@ -4584,3 +4621,16 @@ It looks cute.
 <<link [[Next|Bird Tower]]>><<if $propEquipped is 1>><<handheldruined true>><</if>><<endevent>><</link>>
 <br>
 
+:: Bird Tower Hatching
+<<effects>>
+/* Player can name them here */
+
+<<hatchUi "tower" "Bird Tower Hatching 2" 60>>
+
+:: Bird Tower Hatching 2
+<<effects>>
+
+
+<br><br>
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>

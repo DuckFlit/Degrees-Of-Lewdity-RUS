@@ -111,7 +111,7 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 
 	if (["hawk", "harpy"].includes(spermType) || target === "Great Hawk") {
 		if (!["pc", "Great Hawk"].includes(target)) return false;
-		if ((target === "pc" && !V.harpyEggs) || (target === "Great Hawk" && multi === 1)) return false;
+		if (!forcePregnancy && ((target === "pc" && !V.harpyEggs) || (target === "Great Hawk" && multi < 0.85))) return false;
 		forcePregnancy = true;
 	}
 
@@ -577,6 +577,13 @@ function namedNpcPregnancy(mother, father, fatherSpecies, fatherKnown = false, t
 		case "Black Wolf":
 			if ((V.monsterchance > random(0, 100) && (V.hallucinations >= 1 || V.monsterhallucinations === "f")) || V.blackwolfmonster === 2) {
 				namedNpcType = "wolfgirl";
+			} else {
+				namedNpcType = namedNpc.type;
+			}
+			break;
+		case "Great Hawk":
+			if ((V.monsterchance > random(0, 100) && (V.hallucinations >= 1 || V.monsterhallucinations === "f")) || V.greathawkmonster === 2) {
+				namedNpcType = "harpy";
 			} else {
 				namedNpcType = namedNpc.type;
 			}

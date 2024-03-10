@@ -578,7 +578,7 @@ window.pregnancyGenerator = {
 
 			let count;
 			if (mother === "pc") {
-				count = Math.clamp(V.harpyEggs, 0, 3);
+				count = Math.clamp(V.harpyEggs?.count || random(1, 3), 0, 3);
 			} else {
 				count = random(1, 3);
 			}
