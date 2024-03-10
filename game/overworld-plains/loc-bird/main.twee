@@ -1137,33 +1137,29 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<if $bird.state is "home">>
 		<<switch $bird.activity>>
 			<<case "sing">>
-				<<if $syndromebird gte 1>>
-					Your spouse is singing at the edge of the tower.
-				<<else>>
-					The <<beasttype>> is singing at the edge of the tower.
-				<</if>>
+				<<your_bird_text "cap">> is singing at the edge of the tower.
 			<<case "bathe">>
-				The <<beasttype>> is bathing in the rainwater pool.
+				<<your_bird_text "cap">> is bathing in the rainwater pool.
 			<<case "groom">>
-				The <<beasttype>> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
+				<<your_bird_text "cap">> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
 			<<case "build">>
 				<<if $birdShelterRepair>>
 					<<unset $birdShelterRepair>>
-					<span class="teal">The <<beasttype>> is covering the holes in the roof with leaves and twigs.</span>
+					<span class="teal"><<your_bird_text "cap">> is covering the holes in the roof with leaves and twigs.</span>
 				<<else>>
-					The <<beasttype>> is adding to the nest.
+					<<your_bird_text "cap">> is adding to the nest.
 				<</if>>
 			<<default>>
-				The <<beasttype>> rests in <<bhis>> nest.
+				<<your_bird_text "cap">> rests in <<bhis>> nest.
 				<<set $birdSleep to 1>>
 		<</switch>>
 	<<else>>
-		The <<beasttype>> is out hunting.
+		<<your_bird_text "cap">> is out hunting.
 	<</if>>
 	<<if $exposed gte 1>>
 		<<if $syndromebird is 1>>
 			<<if $arousal gte $arousalmax / 2 and $bird.state isnot "home">>
-				You find yourself craving your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>>'s wings to keep you warm.
+				You find yourself craving your <<your_bird_text "cap">>'s wings to keep you warm.
 			<</if>>
 		<<else>>
 			<<if $bird.state isnot "home">>
@@ -1179,7 +1175,16 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<</if>>
 		<</if>>
 	<</if>>
-	<br><br>
+	<br>
+	<<if $syndromebird and $lurkers_held gte 1 and $bird.state is "home" and $bird.activity is "build">>
+		<<ind>><<link "Give <<bhim>> your captured lurker" "Bird Tower Give Captured Lurker">><</link>><<glove>>
+		<br>
+	<</if>>
+	<<if $estate_fence is "quest" and $syndromebird is 1 and $bird.state is "home" and $bird.activity isnot "sleep">>
+		<<askicon>><<link [[Ask for help breaking into the Remy Estate|Bird Tower Estate]]>><</link>>
+		<br>
+	<</if>>
+	<br>
 	<<if $arousal gte $arousalmax>>
 		<<orgasm>>
 		<<if $bird.state isnot "home">>
@@ -1208,6 +1213,25 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<br><br>
 		<</if>>
 	<</if>>
+
+	<<mooricon "perch">><<link [[Approach the perch|Bird Tower Perch]]>><</link>>
+	<br>
+	<<if $syndromebird isnot 1>>
+		<<crimeicon "mark">><<link [[Look out the tower (0:05)|Bird Tower Look]]>><<bird_pass 5>><</link>>
+		<br>
+		<<investigateicon>><<link [[Search for materials (1:00)|Bird Tower Search]]>><<bird_pass 60>><</link>>
+		<br>
+	<</if>>
+	<<mooricon "rainwater">><<link [[Sit by the rainwater pool|Bird Tower Rainwater Pool]]>><</link>>
+	<br>
+	<<if $syndromebird is 1 and !($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+		<<if $bird.upgrades.firepit gte 1>>
+			<<mooricon "firepit">><<link [[Examine the firepit|Bird Tower Firepit]]>><</link>><<if getBirdBurnTime()>> | <span class="orange"><<firepitTime>></span><</if>>
+			<br>
+		<</if>>
+	<</if>>
+	<br>
+
 	<<if $bird.clean gte 100>>
 		<<if $bird.upgrades.decor gte 4>>
 			<span class="green">Your tower is immaculate.</span>
@@ -1231,60 +1255,44 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<</if>>
 		<</if>>
 		<br>
-		<<if $worn.handheld.name is "feather duster" or $bird.duster is true or ($bird.upgrades.wardrobe is 1 and getOwnedClothingCount(12, "handheld") gte 1)>>
-			<<edenicon "broom">><<link [[Dust the tower (0:30)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 200>><<bird_pass 30>><</link>><<ghousekeeping 200 "silent">>
+		<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+			<span class="red">You're too exhausted to clean the tower.</span>
 		<<else>>
-			<<edenicon "broom">><<link [[Tidy up the tower (1:00)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 100>><<bird_pass 60>><</link>><<ghousekeeping 100 "silent">>
+			<<if $worn.handheld.name is "feather duster" or $bird.duster is true or ($bird.upgrades.wardrobe is 1 and getOwnedClothingCount(12, "handheld") gte 1)>>
+				<<edenicon "broom">><<link [[Dust the tower (0:30)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 200>><<bird_pass 30>><</link>><<ghousekeeping 200 "silent">>
+			<<else>>
+				<<edenicon "broom">><<link [[Tidy up the tower (1:00)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 100>><<bird_pass 60>><</link>><<ghousekeeping 100 "silent">>
+			<</if>>
+			<<if !$daily.birdHousekeepingSyndrome>><<gbirdstockholm>><<glove>><<gdom>><</if>>
 		<</if>>
-		<<if !$daily.birdHousekeepingSyndrome>><<gbirdstockholm>><<glove>><<gdom>><</if>>
 	<</if>>
 	<br>
 	<<if $syndromebird is 1 and !($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
 		<<edenicon "fix">><<link [[Improve the tower|Bird Tower Build]]>><</link>>
 		<br>
-		<<if $bird.upgrades.firepit gte 1>>
-			<<if getBirdBurnTime()>>
-				<<firepitTime>>
-				<br>
-			<</if>>
-			<<mooricon "firepit">><<link [[Examine the firepit|Bird Tower Firepit]]>><</link>>
-			<br>
-		<</if>>
-		<br>
-	<</if>>
-	<<mooricon "perch">><<link [[Approach the perch|Bird Tower Perch]]>><</link>>
-	<br>
-	<<mooricon "rainwater">><<link [[Sit by the rainwater pool|Bird Tower Rainwater Pool]]>><</link>>
-	<br>
-	<<if $syndromebird isnot 1>>
-		<<crimeicon "mark">><<link [[Look out the tower (0:05)|Bird Tower Look]]>><<bird_pass 5>><</link>>
-		<br>
-	<</if>>
-	<<if $bird.lock is 1>>
-		<<investigateicon>><<link [[Examine the trap door (0:05)|Bird Tower Door]]>><<bird_pass 5>><</link>>
-		<br>
-	<<else>>
-		<<getouticon "hole">><<link [[Enter the trap door (0:05)|Bird Tower Base Descend]]>><<bird_pass 5>><</link>>
-		<br>
 	<</if>>
 	<br>
-	<<if $syndromebird isnot 1>>
-		<<investigateicon>><<link [[Search for materials (1:00)|Bird Tower Search]]>><<bird_pass 60>><</link>>
-		<br>
-	<</if>>
-	<<if $syndromebird and $lurkers_held gte 1 and $bird.state is "home" and $bird.activity is "build">>
-		<<ind>><<link "Give <<bhim>> your captured lurker" "Bird Tower Give Captured Lurker">><</link>><<glove>>
-		<br>
-	<</if>>
-	<<if $estate_fence is "quest" and $syndromebird is 1 and $bird.state is "home" and $bird.activity isnot "sleep">>
-		<<askicon>><<link [[Ask for help breaking into the Remy Estate|Bird Tower Estate]]>><</link>>
-		<br>
-	<</if>>
+
 	<<mooricon "nest">><<link [[Sleep in the nest|Bird Tower Bed]]>><</link>>
 	<br>
 	<<if $syndromebird isnot 1>>
 		<<bedicon "zzz">><<link [[Sleep elsewhere|Bird Tower Bed Alone]]>><<bird_stockholm -2>><</link>><<if $syndromebird isnot 1>><<lstockholm>><</if>>
 		<br>
+	<</if>>
+	<<if $bird.upgrades.wardrobe is 1>>
+		<<wardrobeicon>><<link [[Wardrobe|Bird Tower Wardrobe]]>><</link>>
+		<br>
+	<<else>>
+		<<if $bird.duster is true>>
+			<<icon "clothes/feather_duster.png">><<link [[Grab your feather duster|Bird Tower]]>><<generalWear handheld 12>><<run delete $bird.duster>><</link>>
+			<<if $worn.handheld.name isnot "naked">>
+				<span class="blue">Will replace your $worn.handheld.name</span>
+			<</if>>
+			<br>
+		<<elseif $worn.handheld.name is "feather duster">>
+			<<icon "clothes/feather_duster.png">><<link [[Hang up your feather duster|Bird Tower]]>><<handheldruined true>><<set $bird.duster to true>><</link>>
+			<br>
+		<</if>>
 	<</if>>
 	<<if $bird.upgrades.mirror is 1>>
 		<<if $nextPassageCheck is "Bird Tower Mirror">>
@@ -1294,20 +1302,13 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<</if>>
 		<br>
 	<</if>>
-	<<if $bird.upgrades.wardrobe is 1>>
-		<<wardrobeicon>><<link [[Wardrobe|Bird Tower Wardrobe]]>><</link>>
+	<br>
+	<<if $bird.lock is 1>>
+		<<investigateicon>><<link [[Examine the trap door (0:05)|Bird Tower Door]]>><<bird_pass 5>><</link>>
 		<br>
 	<<else>>
-		<<if $bird.duster is true>>
-			<<ind>><<link [[Grab your feather duster|Bird Tower]]>><<generalWear handheld 12>><<run delete $bird.duster>><</link>>
-			<<if $worn.handheld.name isnot "naked">>
-				<span class="blue">Will replace your $worn.handheld.name</span>
-			<</if>>
-			<br>
-		<<elseif $worn.handheld.name is "feather duster">>
-			<<ind>><<link [[Hang up your feather duster|Bird Tower]]>><<generalRuined handheld>><<set $bird.duster to true>><</link>>
-			<br>
-		<</if>>
+		<<getouticon "hole">><<link [[Enter the trap door (0:05)|Bird Tower Base Descend]]>><<bird_pass 5>><</link>>
+		<br>
 	<</if>>
 	<br>
 	<<if $syndromebird is 1>>
@@ -2364,28 +2365,29 @@ You sit by the rainwater pool.
 <<if $bird.state is "home">>
 	<<switch $bird.activity>>
 	<<case "sing">>
-		<<if $syndromebird gte 1>>
-			Your spouse is singing at the edge of the tower.
-		<<else>>
-			The <<beasttype>> is singing at the edge of the tower.
-		<</if>>
+		<<your_bird_text "cap">> is singing at the edge of the tower.
 	<<case "bathe">>
 		<<print either(
-			"The <<beasttype>> playfully splashes at you.",
-			"The <<beasttype>> beckons for you to join <<bhim>>.",
-			"The <<beasttype>> continues bathing.",
-			"The <<beasttype>> shakes <<bhis>> wings off, flinging some water your way.",
+			"<<your_bird_text 'cap'>> playfully splashes at you.",
+			"<<your_bird_text 'cap'>> beckons for you to join <<bhim>>.",
+			"<<your_bird_text 'cap'>> continues bathing.",
+			"<<your_bird_text 'cap'>> shakes <<bhis>> wings off, flinging some water your way.",
 		)>>
 	<<case "groom">>
-		The <<beasttype>> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
+		<<your_bird_text "cap">> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
 	<<case "build">>
-		The <<beasttype>> is adding to the nest.
+		<<if $birdShelterRepair>>
+			<<unset $birdShelterRepair>>
+			<span class="teal"><<your_bird_text "cap">> is covering the holes in the roof with leaves and twigs.</span>
+		<<else>>
+			<<your_bird_text "cap">> is adding to the nest.
+		<</if>>
 	<<default>>
-		The <<beasttype>> rests in <<bhis>> nest.
+		<<your_bird_text "cap">> rests in <<bhis>> nest.
 		<<set $birdSleep to 1>>
 	<</switch>>
 <<else>>
-	The <<beasttype>> is out hunting.
+	<<your_bird_text "cap">>is out hunting.
 <</if>>
 <<if $syndromebird is 1>>
 	<<storeon "birdtower" "check">>
@@ -2731,7 +2733,7 @@ You slowly run your hands down the <<beasttypes>> feathers, towards <<bhis>> <<n
 <<strip>>
 <<wash>>
 You <<if _nude is false>>remove your clothing, and <</if>>slip into the water.
-<<if $bird.upgrades.pot is 3>>
+<<if $bird.upgrades.pot is 3 and getBirdBurnTime() gt 0>>
 	It's pleasently warm. <<stress -6>><<lstress>>
 <<else>>
 	It's cold, but you soon get used to it. <<stress 3>><<gstress>>
@@ -2755,7 +2757,7 @@ You're soon squeaky clean.
 <<strip>>
 <<wash>>
 <<if _nude is false>>You remove your clothing.<</if>> The <<beasttype>> swims to the other side of the pool, making room for you. You slip into the water.
-<<if $bird.upgrades.pot is 3>>
+<<if $bird.upgrades.pot is 3 and getBirdBurnTime() gt 0>>
 	It's pleasently warm. <<stress -3>><<lstress>>
 <<else>>
 	It's cold, but you soon get used to it. <<stress 3>><<gstress>>
@@ -2897,7 +2899,7 @@ After a while, <<bhe>> turns to you.
 <<strip>>
 <<wash>>
 You <<if _nude is false>>remove your clothing, and <</if>>slip into the water with <<bhim>>.
-<<if $bird.upgrades.pot is 3>>
+<<if $bird.upgrades.pot is 3 and getBirdBurnTime() gt 0>>
 	It's pleasently warm. <<stress -6>><<lstress>>
 <<else>>
 	It's cold, but you soon get used to it. <<stress 3>><<gstress>>
@@ -4052,11 +4054,12 @@ Shiny things:
 <<towerValuables>>
 </span>
 <br>
-
-<<if $tiredness gte $tirednessmax>>
-	You're too tired to build anything.
+<<if $bird.clean lte 10>>
+	<span class="pink">The tower is too filthy to improve it.</span>
+<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
+	<span class="red">You're too tired to build anything.</span>
 <<elseif $hunger gte 2000>>
-	You're too hungry to focus on anything else.
+	<span class="red">You're too hungry to focus on anything else.</span>
 <<else>>
 	<div id="towerUpgrades">
 		<<towerBuildOption duster>>
@@ -4180,7 +4183,7 @@ You also add in some random shiny junk. It won't improve the structure, but it's
 Your spouse works on the nest itself, and the two of you lift the base of it onto the frame you've made.
 <br><br>
 
-While <<bhe>> finishes meticulously placing each stick and log, you begin to sew fabric and lurker leather into small sacks and fill them with leaves. It's the closest thing you'll get to a pillow out here.
+While <<bhe>> finishes meticulously placing each stick and log, you begin to sew fabric and lurker leather into small sacks. You fill them with leaves and feathers. It's the closest thing you'll get to a pillow out here.
 <br><br>
 
 You fill the nest with leaves, and throw two sewn sheets of fabric over the top. They're large enough to hang over the edges. Finally, you throw in your makeshift pillows. All that's left is to test it out.
@@ -4470,7 +4473,7 @@ You move your mirror right next to it.
 <<if $bird.duster is true>>
 	You place your feather duster inside.
 	<<run delete $bird.duster>>
-	<<generalSend "wardrobe" handheld 12>>
+	<<generalSend "birdTower" handheld 12>>
 <</if>>
 <br><br>
 
@@ -4544,18 +4547,27 @@ It looks cute.
 <<else>>
 	<<set _cleanIncrease += 2>>
 <</if>>
-<<set $bird.clean += _cleanIncrease>>
 <br><br>
 
 <<if $bird.state is "home" and ["sing", "groom"].includes($bird.activity)>>
 	<<npc "Great Hawk">><<person1>>
-	<<if C.npc["Great Hawk"].love gte 50>>
-		<<if $syndromebird is 1 and $monster is 1>>
-			Your spouse
+	<<if C.npc["Great Hawk"].love gte 15>>
+		<<if C.npc["Great Hawk"].dom gte 50>>
+			<<if $syndromebird is 1 and $monster is 1>>
+				Your spouse walks
+			<<else>>
+				The <<beasttype>> hops
+			<</if>>
+			over and beats <<bhis>> wings heavily, using the air to push your collected dust and dirt out of the tower.
+			<<set _cleanIncrease += 2>>
 		<<else>>
-			The <<beasttype>>
+			<<if $syndromebird is 1 and $monster is 1>>
+				Your spouse
+			<<else>>
+				The <<beasttype>>
+			<</if>>
+			nuzzles your cheek when you're done.
 		<</if>>
-		nuzzles your cheek when you're done.
 	<<else>>
 		<<if $syndromebird is 1 and $monster is 1>>
 			Your spouse
@@ -4567,6 +4579,8 @@ It looks cute.
 	<br><br>
 <</if>>
 
-<<link [[Next|Bird Tower]]>><<if $propEquipped is 1>><<generalRuined handheld>><</if>><<endevent>><</link>>
+<<set $bird.clean += _cleanIncrease>>
+
+<<link [[Next|Bird Tower]]>><<if $propEquipped is 1>><<handheldruined true>><</if>><<endevent>><</link>>
 <br>
 

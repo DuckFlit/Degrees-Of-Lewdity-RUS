@@ -829,7 +829,7 @@ function dayPassed() {
 	} else {
 		delete V.moorLessDangerAll;
 	}
-	if (V.bird.clean >= 1) V.bird.clean = Math.clamp(V.bird.clean - 8, 0, 100);
+	if (V.bird.clean >= 1) V.bird.clean = Math.clamp(V.bird.clean - (10 - V.bird.upgrades.shelter), 0, 100);
 
 	/* Set flag to determine Kylar's position at lunch */
 	V.daily.kylar.libraryStalk = rollKylarLibraryStalkFlag();

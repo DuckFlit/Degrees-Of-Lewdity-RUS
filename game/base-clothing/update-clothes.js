@@ -483,6 +483,7 @@ function wardrobesUpdate() {
 		V.wardrobes.birdTower = clone(defWardrobe);
 		V.wardrobes.birdTower.name = "Great Hawk's Tower";
 		V.wardrobes.birdTower.unlocked = false;
+		V.wardrobes.birdTower.isolated = true;
 		V.wardrobes.birdTower.space = 15;
 	}
 }

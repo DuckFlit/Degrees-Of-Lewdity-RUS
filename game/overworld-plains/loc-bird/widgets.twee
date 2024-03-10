@@ -78,6 +78,10 @@
 		<</if>>
 	<</if>>
 
+	<<if $bird.hunts?.timer>>
+		<<set $bird.hunts.timer += _args[0]>>
+	<</if>>
+
 	<<if $bird.upgrades?.shelter is 1 and ($weather is "rain" or $weather is "snow")>>
 		<<if $birdShelterTimer is undefined>>
 			<<set $birdShelterTimer to 720>>
@@ -410,7 +414,7 @@
 			<</if>>
 			<<if _random_clothes isnot "piece of fabric">>
 				<br>
-				<<link [[Put it in the wardrobe|Bird Tower Clothes Keep]]>><<generalSend "wardrobe" _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<<link [[Put it in the wardrobe|Bird Tower Clothes Keep]]>><<generalSend "birdTower" _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<</if>>
 		<<else>>
 			<<if $worn[_random_slot].name isnot "naked" and _random_clothes isnot "piece of fabric">>
@@ -518,6 +522,22 @@
 		cry.
 	<</if>>
 <</widget>>
+
+<<widget "your_bird_text">><<silently>>
+	<<if $syndromebird is 1>>
+		<<if $monster is 1>>
+			<<beasttype>><<set $_birdText to either("your spouse", "your _text_output")>>
+		<<else>>
+			<<beasttype>><<set $_birdText to "your " + _text_output>>
+		<</if>>
+	<<else>>
+		<<beasttype>>
+		<<set $_birdText to "the " + _text_output>>
+	<</if>>
+	<<if _args[0] is "cap">>
+		<<set $_birdText to $_birdText.toUpperFirst()>>
+	<</if>>
+<</silently>><<print $_birdText>><</widget>>
 
 <<widget "bird_perch_options">>
 	<<if $bird.state is "hunting" and $bird.timer lte 0>>
@@ -921,8 +941,39 @@
 		<<flight_time_check _returnTime "silent">>
 		<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
 		<br>
+	<<elseif $bird.hunts.duo is true and $bird.hunts.timer gte 360>>
+		<<endevent>>
+		<<npc "Great Hawk">><<person1>>
+		<<your_bird_text "cap">> looks very fatigued.
+		<<if $monster is 1>>
+			"Been flying too long. We return home."
+		<<else>>
+			<<bHe>> looks to you and caws. You've been flying for hours, and should return home.
+		<</if>>
+		<<bHe>> turns to fly back to the castle, and you follow.
+		<br><br>
+
+		<<flight_distance_check>>
+		<<flight_time_check _returnTime "silent">>
+		<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<br>	
 	<<else>>
 		You return to the higher skies.
+		<<if $bird.hunts.duo is true and $bird.hunts.timer gte 300>>
+			<<endevent>>
+			<<npc "Great Hawk">><<person1>>
+			<<your_bird_text "cap">> is starting to look fatigued.
+		<<elseif $bird.hunts.duo is true and Time.daystate is "dusk" $bird.hunts.timer gte 120 and !$daily.birdNightWarning>>
+			<<endevent>>
+			<<npc "Great Hawk">><<person1>>
+			<<set $daily.birdNightWarning to true>>
+			<<your_bird_text "cap">> looks to the setting sun.
+			<<if $monster is 1>>
+				"Night time soon. Hunt will be harder."
+			<<else>>
+				<<bHe>> then turns to you and caws. It's getting late. Hunting at night time will be more difficult.
+			<</if>>
+		<</if>>
 		<br><br>
 
 		<<endevent>>
@@ -1068,9 +1119,10 @@
 		<<switch $_looted>>
 			<<case "tarp">><<set $bird.hunts.weight += 5>>
 			<<case "tools" "pot">><<set $bird.hunts.weight += 2>>
-			<<case "wood">><<set $bird.hunts.weight += (3 * $_amount)>>
+			<<case "wood">><<set $bird.hunts.weight += (2 * $_amount)>>
 			<<case "leaves">><<set $bird.hunts.weight += (0.5 * $_amount)>>
 			<<case "valuables" "junk">><<set $bird.hunts.weight += (0.2 * $_amount)>>
+			<<case "feathers">><!-- No weight -->
 			<<default>><<set $bird.hunts.weight += $_amount>>
 		<</switch>>
 	<</if>>
@@ -1301,6 +1353,7 @@
 	<<run delete $bird.hunts.returnAccept>>
 	<<run delete $bird.hunts.loot>>
 	<<run delete $bird.hunts.lootAmount>>
+	<<run delete $bird.hunts.timer>>
 <</widget>>
 
 <<widget "firepitTime">>
@@ -1599,7 +1652,8 @@
 							sticks: 8,
 							leaves: 10,
 							junk: 4,
-							leather: 4
+							leather: 4,
+							feathers: 16
 						}>>
 						<<set $_upgrade.upgradesRequired to {
 							tools: 1
