@@ -132,6 +132,7 @@
 					<<if $_pregnancy.type is "hawk">><<exit>><</if>>
 				<</if>>
 				<<if $cycledisable is "t">>
+					<<if _menstruation.nonCycleRng[0] is 0>><<giveHarpyEggs>><</if>>
 					<<playerPregnancyAttempt `Math.pow(4,_menstruation.nonCycleRng[0])` $_pregLocation>>
 				<<elseif _menstruation.currentDay lt _menstruation.currentDaysMax>>
 					/*Continue the cycle again*/
@@ -170,6 +171,7 @@
 						<<set _menstruation.currentDay += 0.5>>
 						<<set _menstruation.lastDaysMax to _menstruation.currentDaysMax>>
 
+						<<giveHarpyEggs>>
 						/*Check for pregnancy*/
 						<<playerPregnancyAttempt 3 $_pregLocation>>
 					<<else>>
@@ -325,14 +327,14 @@
 		<div id="birthUi">
 			<<for _i to 0; _i lt _pregnancyBirth.fetus.length; _i++>>
 				<<capture _i>>
-					<div @id="'child-' + _i" class="childUi">
-						<<birthChildElement _args[0] _i>>
+					<div @id="'child-' + _pregnancyBirth.fetus[_i].childId" class="childUi">
+						<<birthChildElement _pregnancyBirth.fetus[_i]>>
 					</div>
 				<</capture>>
 			<</for>>
 		</div>
 		<br>
-		<<if _args[3]>>
+		<<if _args[4]>>
 			<<set _hours to Math.floor(_args[4] / 60)>>
 			<<set _minutes to _args[4] % 60>>
 			<<set _timeString to " (" + (_hours lt 10 ? "0": "") +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
@@ -344,85 +346,87 @@
 			<<elseif $NPCNameList.includes(_args[0])>>
 				<<endNpcPregnancy _args[0] _args[1] _args[2]>>
 			<</if>>
+			<<pass _args[4]>>
 		<</link>>
 	<<else>>
-		Error Pregnancy Object not found in the passage '<<print $passage>>'.
+		Error Pregnancy Object not found in the passage '<<print $passage>>'. Please report the error with your save.
 	<</if>>
 <</widget>>
 
-<<widget "pregnancyFeats">>
-	<<if _args[0] is "pc">>
-		<<earnFeat "Miracle of Life">>
-		<<if _pregnancyBirth.potentialFathers.filter(npc => npc.type === T.pregnancyBirth.type).length gte 5>>
-			<<earnFeat "Bicycle Mother">>
+/*args[0] - hatch location, _args[1] - next passage, _args[2] - time passage*/
+<<widget "hatchUi">>
+	<<if Object.values($children).find(child => child.location is _args[0] and Time.date.timeStamp gte child.eggTimer)>>
+		<<set _childrenId to Object.keys($children).filter(id => $children[id].location is _args[0] and Time.date.timeStamp gte $children[id].eggTimer)>>
+		<div id="birthUi">
+			<<for _childId range _childrenId>>
+				<<capture _childId>>
+					<div @id="'child-' + _childId" class="childUi">
+						<<birthChildElement $children[_childId]>>
+					</div>
+				<</capture>>
+			<</for>>
+		</div>
+		<br>
+		<<if _args[2]>>
+			<<set _hours to Math.floor(_args[2] / 60)>>
+			<<set _minutes to _args[2] % 60>>
+			<<set _timeString to " (" + (_hours lt 10 ? "0": "") +_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")">>
 		<</if>>
-		<<if _pregnancyBirth.type is "human" and _pregnancyBirth.fetus.length is 3>>
-			<<earnFeat "Life Comes in Threes">>
-		<</if>>
-		<<if ($player.virginity.anal is true && !$player.vaginaExist) || ($player.virginity.vaginal is true && $player.vaginaExist)>>
-			<<earnFeat "Hail Mary">>
-		<</if>>
-		<<if !$player.vaginaExist>>
-			<<earnFeat "Life begins when you least expect">>
-		<</if>>
-	<</if>>
-	<<if _args[0] isnot "pc">>
-		<<if _pregnancyBirth.fetus[0].mother isnot "pc" && _pregnancyBirth.fetus[0].father is "pc">>
-			<<earnFeat "First Fatherhood">>
-		<</if>>
+		<<link [["Next" + (_args[2] ? _timeString : "")|_args[1]]]>>
+			<<run Object.values($children).forEach(child => {
+				if (child.location is _args[0] and Time.date.timeStamp gte child.eggTimer) {
+					if (!child.name) child.name = generateBabyName(undefined, child.gender);
+					delete child.eggTimer;
+				}
+			})>>
+			<<pass _args[2]>>
+		<</link>>
+	<<else>>
+		Error Children Objects not found in the passage '<<print $passage>>'. Please report the error with your save.
 	<</if>>
 <</widget>>
 
 <<widget "birthChildElement">>
-	<<if _pregnancyBirth>>
+	<<if _args[0]?.childId>>
 		<<capture _args>>
-			<<if _pregnancyBirth.fetus[_args[1]].type isnot "human">>
-				Type: <<print _pregnancyBirth.fetus[_args[1]].type[0].toUpperCase() + _pregnancyBirth.fetus[_args[1]].type.substring(1)>> |
+			<<if _args[0].type isnot "human">>
+				Type: <<print _args[0].type.toUpperFirst()>> |
 			<</if>>
 			Gender:
-			<<switch _pregnancyBirth.fetus[_args[1]].gender>>
+			<<switch _args[0].gender>>
 				<<case "m">>Male
 				<<case "f">>Female
 				<<case "h">>Hermaphrodite
 			<</switch>>
 			<br>
 			Mother:
-			<<if _pregnancyBirth.fetus[_args[1]].motherKnown>>
-				<<print pregnancyNameCorrection(_pregnancyBirth.fetus[_args[1]].mother, true)>>
+			<<if _args[0].motherKnown>>
+				<<print pregnancyNameCorrection(_args[0].mother, true)>>
 			<<else>>
 				????
 			<</if>>
 			| Father:
-			<<if _pregnancyBirth.fetus[_args[1]].fatherKnown>>
-				<<print pregnancyNameCorrection(_pregnancyBirth.fetus[_args[1]].father, true)>>
+			<<if _args[0].fatherKnown>>
+				<<print pregnancyNameCorrection(_args[0].father, true)>>
 			<<else>>
 				????
 			<</if>>
 			<br>
-			Size: <<print _pregnancyBirth.fetus[_args[1]].features.size>> | Hair Colour: <<hairmapcolourtext _pregnancyBirth.fetus[_args[1]].features.hairColour>>
-			<<if _pregnancyBirth.fetus[_args[1]].features.skinColour>>
-				| Skin Colour: <<skinColourName _pregnancyBirth.fetus[_args[1]].features.skinColour>>
+			Size: <<print _args[0].features.size>> | Hair Colour: <<hairmapcolourtext _args[0].features.hairColour>>
+			<<if _args[0].features.skinColour>>
+				| Skin Colour: <<skinColourName _args[0].features.skinColour>>
 			<</if>>
 			<br>
-			<<if _pregnancyBirth.fetus[_args[1]].features.identical>>
-				Identical: <<print _pregnancyBirth.fetus[_args[1]].features.identical>>
+			<<if _args[0].features.identical>>
+				Identical: <<print _args[0].features.identical>>
 				<br>
 			<</if>>
-			<label><<print '<<textbox "_pregnancyBirth.fetus['+_args[1]+'].name" `_pregnancyBirth.fetus['+_args[1]+'].name or ""`>>'>></label>
+			<label><<print '<<textbox "_args[0].name" `_args[0].name or ""`>>'>></label>
 			<br>
 			<span class="no-numberify">
 				<<link "Random Name">>
-					<<if _args[0] is "pc">>
-						<<if $player.vaginaExist>>
-							<<set _pregnancyNaming to $sexStats.vagina.pregnancy>>
-						<<else>>
-							<<set _pregnancyNaming to $sexStats.anus.pregnancy>>
-						<</if>>
-					<<elseif C.npc[_args[0]] and C.npc[_args[0]].pregnancy>>
-						<<set _pregnancyNaming to C.npc[_args[0]].pregnancy>>
-					<</if>>
-					<<set _pregnancyNaming.fetus[_args[1]].name to generateBabyName(undefined, _pregnancyNaming.fetus[_args[1]].gender, _expectedChildId)>>
-					<<replace `"#child-" + _args[1]`>><<birthChildElement _args[0] _args[1]>><</replace>>
+					<<set _args[0].name to generateBabyName(undefined, _args[0].gender)>>
+					<<replace `"#child-" + _args[0].childId`>><<birthChildElement _args[0]>><</replace>>
 				<</link>>
 			</span>
 			<small class="right">
@@ -433,7 +437,32 @@
 			</small>
 		<</capture>>
 	<<else>>
+		Error Children Object not found in the passage '<<print $passage>>'. Please report the error with your save.
+	<</if>>
+<</widget>>
 
+<<widget "pregnancyFeats">>
+	<<if _args[0] is "pc">>
+		<<set $_pregnancy to getPregnancyObject()>>
+		<<earnFeat "Miracle of Life">>
+		<<if $_pregnancy.potentialFathers.filter(npc => npc.type === T.pregnancyBirth.type).length gte 5>>
+			<<earnFeat "Bicycle Mother">>
+		<</if>>
+		<<if $_pregnancy.type is "human" and $_pregnancy.fetus.length is 3>>
+			<<earnFeat "Life Comes in Threes">>
+		<</if>>
+		<<if ($player.virginity.anal is true && !$player.vaginaExist) || ($player.virginity.vaginal is true && $player.vaginaExist)>>
+			<<earnFeat "Hail Mary">>
+		<</if>>
+		<<if !$player.vaginaExist>>
+			<<earnFeat "Life begins when you least expect">>
+		<</if>>
+	<</if>>
+	<<if _args[0] isnot "pc">>
+		<<set $_pregnancy to getPregnancyObject(_args[0])>>
+		<<if $_pregnancy.fetus[0].mother isnot "pc" && $_pregnancy.fetus[0].father is "pc">>
+			<<earnFeat "First Fatherhood">>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -541,6 +570,34 @@
 					<<set $_text_output += `Loosened by your growing belly, your gold chastity belt clatters to the ground once you apply some pressure. <span class="blue">A collector might be interested by it.</span> `>>
 				<</if>>
 				<<set $_text_output += `<br><span class="red">Your pregnant body no longer supports such clothing.</span> <<pain 2>><<gpain>>`>>
+			<<case "eggLaying">>
+				/* ToDo: Enable hawk pregnancy: write text_output and deal with unfertilised eggs */
+				<<if playerIsPregnant() and $_pregnancy.type is "hawk">>
+					<<if $location is "tower">>
+						/* Player lays eggs and leaves them in the nest */
+						<<set $_text_output to `Player laid ${$_pregnancy.fetus.length} fertilised eggs`>>
+						<<pregnancyFeats "pc">>
+						<<endPlayerPregnancy "tower" "tower">>
+						
+						/* Prevents eggs from being set for another 28 days */
+						<<set $harpyEggsPrevent to 28>>
+					<<else>>
+						/* Player lays eggs and carries them with them, transfers them to the nest automatically on entering the tower */
+						<<set $_text_output to `Player laid ${$_pregnancy.fetus.length} fertilised eggs`>>
+
+						/* Might be best changing the location variable here */
+						<<pregnancyFeats "pc">>
+						<<endPlayerPregnancy $location "inventory">>
+
+						/* Prevents eggs from being set for another 28 days */
+						<<set $harpyEggsPrevent to 28>>
+					<</if>>
+				<<elseif !playerIsPregnant() and $harpyEggs>>
+					<<set $_text_output to `Player laid ${$harpyEggs.count} unfertilised eggs`>>
+					<<unset $harpyEggs>>
+					/* Prevents eggs from being set for another 14 days */
+					<<set $harpyEggsPrevent to 14>>
+				<</if>>
 		<</switch>>
 	<</if>>
 	<</silently>><<if $_text_output>><<print $_text_output>><</if>>
@@ -1477,5 +1534,17 @@
 				<<unset _npcIsNowPregnant>>
 			<</if>>
 		</div>
+	<</if>>
+<</widget>>
+
+<<widget "giveHarpyEggs">>
+	<<if !playerIsPregnant() and $harpy gte 6 and !$harpyEggs and !$harpyEggsPrevent>>
+		/* daysTillLaying only applies to unfertilised eggs */
+		<<set $harpyEggs to {
+			count: random(1,3),
+			daysTillLaying: random(2, 3),
+		}>>
+		/* Minimum time to prevents eggs from being set */
+		<<set $harpyEggsPrevent to 14>>
 	<</if>>
 <</widget>>
