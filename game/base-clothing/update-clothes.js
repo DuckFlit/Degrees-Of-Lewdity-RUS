@@ -478,6 +478,13 @@ function wardrobesUpdate() {
 			if (wardrobe && Array.isArray(wardrobe.upper) && !wardrobe.handheld) wardrobe.handheld = [];
 		});
 	}
+
+	if (!V.wardrobes.officeBuilding) {
+		V.wardrobes.officeBuilding = clone(defWardrobe);
+		V.wardrobes.officeBuilding.name = "Office agency changing room";
+		V.wardrobes.officeBuilding.unlocked = (V.officejobintro == 1);
+		V.wardrobes.officeBuilding.space = 5;
+	}
 	if (!V.wardrobes.birdTower) {
 		/* Great Hawk's tower */
 		V.wardrobes.birdTower = clone(defWardrobe);
