@@ -1305,26 +1305,6 @@ function playerIsPenetrated() {
 }
 window.playerIsPenetrated = playerIsPenetrated;
 
-/**
- * Overloads:
- *
- * 	 (minutes)
- * 	getTimeString(hours, minutes)
- * Examples:
- *
- * 	getTimeString(20) returns "0:20"
- * 	getTimeString(1,5) returns "1:05".
- *
- * @param {...any} args
- */
-function getTimeString(...args) {
-	if (args[0] == null) return;
-	const hours = args[1] != null ? args[0] : 0;
-	const minutes = Math.max(args[1] != null ? args[1] : args[0], 0) + hours * 60;
-	return Math.clamp(Math.trunc(minutes / 60), 0, 23) + ":" + ("0" + Math.trunc(minutes % 60)).slice(-2);
-}
-window.getTimeString = getTimeString;
-
 function npcAssignClothesToSet(upper, lower) {
 	return { upper: T.npcClothesItems.upper[upper], lower: T.npcClothesItems.lower[lower] };
 }

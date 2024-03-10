@@ -44,7 +44,7 @@ const Cooker = (() => {
 	 * @returns {number} the time left before the fire goes out, in seconds
 	 */
 	function getBurnTime(c) {
-		if (c?.lastsUntil == null) return Errors.report("No cooker provided to getBurnTime");
+		if (!c || c.lastsUntil == null) return Errors.report("No cooker provided to getBurnTime");
 		return Math.max(c.lastsUntil - V.timeStamp, 0);
 	}
 
@@ -57,7 +57,7 @@ const Cooker = (() => {
 	 * @param {number} time the time to add to `c.lastsUntil`, in seconds
 	 */
 	function addBurnTime(c, time) {
-		if (!c || !Number.isInteger(time)) return;
+		if (!c || c.lastsUntil == null || !Number.isInteger(time)) return;
 		const nowLastsUntil = Math.max(V.timeStamp, c.lastsUntil) + time;
 		updateElapsedBonuses(c);
 		c.lastsUntil = Math.min(nowLastsUntil, V.timeStamp + c.maxBurnTime);
@@ -74,10 +74,10 @@ const Cooker = (() => {
 	 * @returns {void}
 	 */
 	function cookItem(c, item) {
-		if (c.items.length >= c.maxItems || !item) return;
-		if (c.cookTime[item.name] == null) {
-			return Errors.report(`Failed to add item ${item.name} to cooker: item not allowed`);
+		if (!c || !c.items || !item || c.cookTime?.[item.name] == null) {
+			return Errors.report("Failed to add item to cooker: invalid cooker or item");
 		}
+		if (c.items.length >= c.maxItems) return;
 		updateTimeBonus(c, item);
 		c.items.push(item);
 	}
@@ -92,7 +92,7 @@ const Cooker = (() => {
 	 * @returns {CookerItem|undefined} the created item, if successful.
 	 */
 	function createItem(c, itemName, skipBonusCalc = false) {
-		if (c.cookTime[itemName] == null) {
+		if (!c || c.cookTime?.[itemName] == null || !itemName) {
 			return Errors.report(`Failed to create item ${itemName}: item not allowed in provided cooker`);
 		}
 		const newItem = {
@@ -118,12 +118,13 @@ const Cooker = (() => {
 	}
 
 	/**
-	 * Updates `c.updatedAt` and every item's elapsedBonus property at once.
-	 * `item.elapsedBonus` should never be updated outside of this function.
+	 * Updates `c.updatedAt` and every item's bonusElapsed property at once.
+	 * `item.bonusElapsed` should never be updated outside of this function.
 	 *
 	 * @param {CookerType} c
 	 */
 	function updateElapsedBonuses(c) {
+		if (!c || !c.items) return;
 		c.items.forEach(item => {
 			item.bonusElapsed += _getBonusElapsedSinceUpdated(c, item);
 		});
@@ -135,12 +136,14 @@ const Cooker = (() => {
 	 *
 	 * @param {CookerType} c
 	 * @param {CookerItem} item
+	 * @returns {number} the bonus elapsed, in seconds
 	 */
 	function _getBonusElapsedSinceUpdated(c, item) {
-		if (item.timeBonus === 0 || V.timeStamp === c.updatedAt) return 0;
+		if (!item.timeBonus || V.timeStamp === c.updatedAt) return 0;
 		const min = Math.max(item.startedAt, c.updatedAt);
 		const max = Math.clamp(c.lastsUntil, item.startedAt, V.timeStamp);
 		const interval = Math.floor((max - min) * (c.cookMult - 1)); // min <= max
+		if (!interval) return 0;
 		return item.timeBonus < 0 ? Math.max(item.timeBonus, interval) : Math.min(item.timeBonus, interval);
 	}
 
@@ -154,51 +157,54 @@ const Cooker = (() => {
 	 * @returns {number} the total time, in seconds, that the item can still skip from the
 	 *                   value in `c.cookTime`
 	 */
+	// prettier-ignore
 	function getTimeBonus(c, item) {
+		const burnTime = getBurnTime(c);
+		if (!burnTime) return 0;
 		const cookMult = c.cookMult;
-		const baseTime = c.cookTime[item.name];
-		if (!baseTime || cookMult <= 0) {
+		const baseTime = c.cookTime?.[item.name];
+		if (!baseTime || !cookMult || cookMult < 0) {
 			Errors.report("No valid cooker provided for getTimeBonus");
 			return 0;
 		}
 		const timeElapsedRaw = V.timeStamp - item.startedAt;
 		// assumes item.bonusElapsed is up to date
 		const timeLeftRaw = Math.max(baseTime - timeElapsedRaw - item.bonusElapsed, 0);
-		if (timeLeftRaw === 0) return 0;
+		if (!timeLeftRaw) return 0;
 		/*
 		 * bonus is how much time will be ignored from baseTime
 		 * example: if cookMult is 3, ignores 2/3 of the time left
 		 * If there's enough fire, applies the bonus to the whole time left,
 		 * else considers only the time left on fire for the bonus.
 		 */
-		const bonusLeft = (Math.min(timeLeftRaw, getBurnTime(c) * cookMult) * (cookMult - 1)) / cookMult;
+		const bonusLeft = Math.min(timeLeftRaw, burnTime * cookMult) * ((cookMult - 1) / cookMult);
 		return Math.floor(bonusLeft - (bonusLeft % 60)); // truncating possible seconds
 	}
 
 	/**
 	 * Helper function to get all items that are "ready" in the given cooker.
 	 *
-	 * @param {CookerType} fp
+	 * @param {CookerType} c
 	 * @returns {CookerItem[]}
 	 */
-	// prettier-ignore
-	function getItemsReady(fp) {
-		return fp?.items.filter(({ name, startedAt, timeBonus, bonusElapsed }) => {
-			return V.timeStamp - startedAt >= fp.cookTime[name] - timeBonus - bonusElapsed;
-		}) || [];
+	function getItemsReady(c) {
+		if (!c || !c.items) return [];
+		return c.items.filter(({ name, startedAt, timeBonus, bonusElapsed }) => {
+			return V.timeStamp - startedAt >= c.cookTime[name] - timeBonus - bonusElapsed;
+		});
 	}
 
 	/**
 	 * Helper function to get all items that are not "ready" in the given cooker.
 	 *
-	 * @param {CookerType} fp
+	 * @param {CookerType} c
 	 * @returns {CookerItem[]}
 	 */
-	// prettier-ignore
-	function getItemsNotReady(fp) {
-		return fp?.items.filter(({ name, startedAt, timeBonus, bonusElapsed }) => {
-			return V.timeStamp - startedAt < fp.cookTime[name] - timeBonus - bonusElapsed;
-		}) || [];
+	function getItemsNotReady(c) {
+		if (!c || !c.items) return [];
+		return c.items.filter(({ name, startedAt, timeBonus, bonusElapsed }) => {
+			return V.timeStamp - startedAt < c.cookTime[name] - timeBonus - bonusElapsed;
+		});
 	}
 
 	return Object.freeze({
@@ -220,13 +226,13 @@ const Cooker = (() => {
 window.Cooker = Cooker;
 
 function getBirdBurnTime() {
-	if (!V.bird?.firepit) return 0;
+	if (!V.bird.firepit) return 0;
 	return Math.floor(Cooker.getBurnTime(V.bird.firepit) / 60); // minutes
 }
 window.getBirdBurnTime = getBirdBurnTime;
 
 function upgradeBirdFirepit() {
-	const level = V.bird?.upgrades.firepit;
+	const level = V.bird.upgrades?.firepit;
 	if (!Number.isInteger(level) || level < 1) return;
 	let maxBurnTime = 1480 * 60; // 24h40min
 	switch (level) {
