@@ -649,6 +649,19 @@ What will you hunt for?
 		<<link [[Avoid them|Bird Hunt Ignore]]>><<endevent>><</link>>
 		<br>
 	<</if>>
+<<elseif ($bird.hunts.distanceNorth is -3 and $bird.hunts.distanceEast is 3) or ($bird.hunts.distanceNorth is -3 and $bird.hunts.distanceEast is -3)>>
+	There's a tall pillar of stone at the top of a hill nearby. The bottom is completely overgrown, but a path manages to cleave through the underbrush.
+	<<if Time.daystate is "night">>
+		It would make a good ambush point, but it's too dark.
+		<br><br>
+	<<else>>
+		It would be a good place to set up an ambush.
+		<br><br>
+
+		<<link [[Land (0:02)|Bird Hunt Ambush Point]]>><<endevent>><<bird_pass 2>><</link>>
+		<br>
+	<</if>>
+	<<flight_hunt_options>>
 <<else>>
 
 	<<addinlineevent "bird_hunt_nothing" _flight_hunt_chance.nothing>>
@@ -3364,6 +3377,918 @@ You won't be able to do anything else to them today, now that they're alerted.
 
 <<flight_hunt_return>>
 
+:: Bird Hunt Ambush Point
+<<effects>>
+
+You land atop the pillar. There are symbols carved into its face.
+<<if $bird.hunts.duo is true>>
+	Your spouse lands next to you. The pillar is large enough to provide cover for both of you.
+<</if>>
+You're able to see quite far around you. 
+<br><br>
+
+<<if ($bird.hunts.distanceEast is 3 and !$daily.birdAmbushTrapEast) or ($bird.hunts.distanceEast is -3 and !$daily.birdAmbushTrapWest)>>
+	Looking at the ground, you notice a small hole in the path, partly obstructed by grass. You could use it to make a trap.
+	<br><br>
+
+	<<set _hkMod to Math.floor($housekeeping / 40)>>
+	<<set $hkTime to (30 - _hkMod)>>
+	<<link [[`Set up a trap (${getTimeString($hkTime)})`|Bird Hunt Ambush Trap]]>>
+	<<if $bird.hunts.distanceEast is 3>><<set $daily.birdAmbushTrapEast to true>><<else>><<set $daily.birdAmbushTrapWest to true>><</if>>
+	<</link>><<note "Housekeeping" "teal">>
+	<br>
+<<else>>
+	<span class="blue">The hole you used for a trap is fully exposed. You won't be able to make another trap here today.</span>
+	<br>
+<</if>>
+<<link [[Wait in ambush (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><</link>>
+<br>
+
+:: Bird Hunt Ambush Trap
+<<effects>>
+<<if $bird.hunts.duo is true>>
+	<<npc "Great Hawk">><<person1>>
+	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to setup a trap.
+	<br>
+	<<if $monster is 1>>
+		"Wife is smart, making things like this," <<bhe>> says.
+	<<else>>
+		<<bHe>> squawks at you.
+	<</if>>
+	<<endevent>>
+	<br><br>
+<</if>>
+<<set $ambushThreat to ($rng gte 50 ? "human" : "lurker")>>
+You start to make the trap. You scrounge up leaves and sticks to cover the hole.
+
+<<if ($rng + $hkTime) gte 80>>
+	<<if $bird.hunts.duo is true>>
+		<<npc "Great Hawk">><<person1>>
+		<<if $ambushThreat is "human">>
+			While you're still setting up, <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> flies down to you.
+			<<if $monster is 1>>
+				"Landbound coming. Hide," <<bhe>> says, gesturing for you to follow. You fly back on top of the pillar with <<bhim>>.
+			<<else>>
+				<<bHe>> brushes his beak against you, then points <<bhis>> wings at the path. <<bHe>> flies back on top of the pillar, and you follow.
+			<</if>>
+			Sure enough, two people come walking by shortly after. With your trap incomplete, you decide against trying to rob them. After making sure they're gone, you return to your trap.
+		<<else>>
+			While you're still setting your trap, you hear <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> let out a screech. You jump up, ready to defend yourself. You see nothing around you. Then you notice some lurkers fleeing. It appears <<bhe>> was just scaring them away from you. You sigh in relief and return to your trap.
+		<</if>>
+		<br><br>
+
+		<<if $hkTime lte 10>>
+			With practised precision, you set them down so that they cover any signs of the hole while being frail enough to cause anyone stepping on them to fall.
+		<<elseif $hkTime lte 15>>
+			You set them down so that they cover any signs of the hole while being frail enough to break when stepped on. It takes some time to set up properly.
+		<<elseif $hkTime lte 20>>
+			You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. After a couple of attempts, your trap is stable enough.
+		<<elseif $hkTime lte 25>>
+			You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. It takes you many attempts, but eventually you're able to make the trap without it collapsing.
+		<<else>>
+			You're not sure how to make a trap using only leaves and sticks, which results in you trying anything you can to make it work. After what feels like an eternity, you manage to set up the trap properly.
+		<</if>>
+		<<housekeeping 1 400>><<ghousekeeping 400>>
+		<br><br>
+
+		You stand up and admire your handiwork. Now it's time to put it to the test. You fly back up onto the pillar. All you can do now is wait.
+		<br><br>
+
+		<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $birdAmbushTrap to true>><</link>>
+		<br>
+	<<else>>
+		<<if $hkTime lte 10>>
+			With practised precision, you set them down so that they cover any signs of the hole while being frail enough to cause anyone stepping on them to fall.
+		<<elseif $hkTime lte 15>>
+			You set them down so that they cover any signs of the hole while being frail enough to break when stepped on. It takes some time to set up properly.
+		<<elseif $hkTime lte 20>>
+			You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. After a couple of attempts, your trap is stable enough.
+		<<elseif $hkTime lte 25>>
+			You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. It takes you many attempts, but eventually you're able to make the trap without it collapsing.
+		<<else>>
+			You're not sure how to make a trap using only leaves and sticks, which results in you trying anything you can to make it work. After what feels like an eternity, you manage to set up the trap properly.
+		<</if>>
+		<<housekeeping 1 400>><<ghousekeeping 400>>
+		<br><br>
+
+		<<if $ambushThreat is "human">>
+			<<generate1>><<generate2>>
+			<<if $rng gte 85>>
+				With the trap prepared, you stand up again. You hear something behind you. You turn around and see a <<person1>><<person>> and a <<person2>><<person>> grinning at you.
+				<<if $exposed gte 2>>
+					"Now what're you doing out here? Going for a nude stroll?" the <<person1>><<person>> asks sarcastically. "Wandering out here looking like that is just asking to get raped," the <<person2>><<person>> chimes in, eyes full of lust. <<He>> begins to approach you.
+				<<else>>
+					"Now what's a <<girl>> like you doing out here? Ya know, the moor's not a good place for a picnic," the <<person1>><<person>> says sarcastically. The <<person2>><<person>> chuckles before speaking up. "Out here in the wild, there ain't nowhere you could go if somebody wanted to have their way with ya," <<he>> says, approaching you with a dark grin.
+				<</if>>
+				<br><br>
+
+				You only have a moment to react. The hole is right behind you.
+				<br><br>
+
+				<<link [["Pull " + $NPCList[1].pronouns.him + " into the trap"|Bird Hunt Ambush Caught Pull]]>><</link>><<physiquedifficulty 2000 18000>>
+				<br>
+				<<link [[Stand still|Bird Hunt Ambush Caught Rape]]>><<set $phase to 2>><<set $molestationstart to 1>><</link>>
+				<br>
+			<<else>>
+				<<if $exposed gte 2>>
+					You turn around and notice two people leering at your exposed body from down the path. "Hey... where's your clothes?" asks the <<person1>><<person>>.
+					<br><br>
+
+					<<if $exhibitionism gte 55>>
+						<<link [[Flaunt|Bird Hunt Ambush Caught Flaunt]]>><</link>><<exhibitionist4>>
+					<<else>>
+						<span class="blue">You aren't exhibitionist enough to flaunt your nudity at them.</span>
+					<</if>>
+					<br>
+				<<else>>
+					You turn around and notice two people staring at you a way's down the path. "What are you doing over there?" a <<person1>><<person>> calls out.
+					<br><br>
+				<</if>>
+				<<link [[Hide|Bird Hunt Ambush Caught Hide]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<if $bestialitydisable is "f" and $lurkerdisable is "f">>
+				As you stand up, you notice movement in the grass near you. You turn to face it, but something leaps on your back and lands on your <<bottom>>.
+				<br><br>
+				
+				<<link [[Next|Bird Hunt Ambush Struggle]]>><<set $struggle_start to 1>><</link>>
+				<br>
+			<<else>>
+				As you stand up, you notice movement in the grass near you. A small, leathery creature leaps at you! You manage to take flight, but not unscathed. You abandon the pillar and your trap in fear.
+				<<beastescape>>
+				<br><br>
+
+				<<unset $hkTime>>
+				<<unset $ambushThreat>>
+				<<set _huntFail to 1>>
+				<<flight_hunt_return>>
+			<</if>>
+		<</if>>
+	<</if>>
+<<else>>
+	<<if $hkTime lte 10>>
+		With practised precision, you set them down so that they cover any signs of the hole while being frail enough to cause anyone stepping on them to fall.
+	<<elseif $hkTime lte 15>>
+		You set them down so that they cover any signs of the hole while being frail enough to break when stepped on. It takes some time to set up properly.
+	<<elseif $hkTime lte 20>>
+		You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. After a couple of attempts, your trap is stable enough.
+	<<elseif $hkTime lte 25>>
+		You consider how you can make the leaves cover the hole, while also being able to collapse when something walks on them. It takes you many attempts, but eventually you're able to make the trap without it collapsing.
+	<<else>>
+		You're not sure how to make a trap using only leaves and sticks, which results in you trying anything you can to make it work. After what feels like an eternity, you manage to set up the trap properly.
+	<</if>>
+	<<housekeeping 1 400>><<ghousekeeping 400>>
+	<br><br>
+
+	You stand up and admire your handiwork. Now it's time to put it to the test. You fly back up onto the pillar. All you can do now is wait.
+	<br><br>
+
+	<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $birdAmbushTrap to true>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Ambush Caught Pull
+<<effects>>
+
+As the <<person2>><<person>> draws close, you suddenly grab his hand and pull.
+<<if $physiqueSuccess>>
+	<span class="green"><<He>>'s unable to pull away.</span> You sidestep the hole, and bring him right to it. "Don't make this hard for-" <<His>> words are interrupted as <<he>> steps on the trap, causing <<him>> to stumble and fall. You take the opportunity to quickly run away. The <<person1>> doesn't chase you, instead opting to laugh at <<his>> misfortunate friend. 
+	<br><br>
+
+	You make sure you're out of sight, then take flight. You fly above them and wait until the two leave, then land up on the pillar again. With your trap ruined, you can either leave or try to make an ambush without it.
+	<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $birdAmbushTrap to true>><</link>>
+	<br>
+	<<link [[Leave|Bird Hunt Ambush Leave]]>><<endevent>><<set $phase to 2>><</link>>
+	<br>
+<<else>>
+	<span class="red"><<He>> simply grabs you tighter.</span> "Resisting will only make me harder for ya, <<girl>>!" <<He>> grabs your hands and pushes you backwards, making you fall into your own trap. <<pain 10>><<ggpain>>
+	<br><br>
+
+	"That's what happens when ya resist!" <<he>> says. The pair pull you out of the hole, if only so that they can molest you properly. The <<person1>><<person>> holds your arms. "Now be still, don't make this worse for yourself," <<he>> says coldly.
+	<br><br>
+
+	<<link [[Next|Bird Hunt Ambush Caught Rape]]>><<set $phase to 3>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Ambush Caught Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<if $phase is 3>>
+		<<set $enemytrust -= 100>>
+		<<set $enemyanger += 200>>
+		<<set $NPCList[0].lefthand to "arms">>
+		<<set $NPCList[0].righthand to "arms">>
+		<<set $leftarm to "grappled">>
+		<<set $rightarm to "grappled">>
+	<<elseif $phase is 2>>
+		You let the <<person2>><<person>> approach you. "Just be good and this'll be over soon," <<he>> says.
+		<br>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Caught Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Caught Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Ambush Caught Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	The pair let go of you. "Whew, who knew we'd find a slut somewhere out here," says the <<person2>><<person>>.
+	<br>
+	"Yeah, but taking them in the middle of nowhere just ain't as thrilling," responds the <<person1>><<person>>.
+	<<if $phase is 3>>
+		"And what the fuck was that you said before you pushed <<pher>>? 'Resisting will only make me harder for you?' Did you mean 'make <i>this</i> harder for <<pher>>'?"
+	<</if>>
+	<br>
+	"Argh, don't be such a whiner.<<if $phase is 3>> I know what I said.<</if>>" The two delve into conversation, now ignoring you. <<tearful>> you use the opportunity to make your escape.
+
+	<<clotheson>>
+	<<endcombat>>
+	<<set _huntFail to 1>>
+	<<flight_hunt_return>>
+<<else>>
+	You manage to push the <<person1>><<person>> into the <<person2>><<person>>, sending them tumbling to the ground. You take advantage of the opportunity to run.
+	<<set _phaseSaved to $phase>>
+	<<clotheson>>
+	<<endcombat>>
+	<<set $phase to _phaseSaved>>
+
+	You make sure you're out of sight, then take flight. You fly above them and wait until the they leave, then land up on the pillar again.
+	<<if $phase is 3>>
+		Your trap is ruined, but maybe you won't need it.
+	<<else>>
+		Your trap is still set, meaning you can still use it for your ambush.
+	<</if>>
+	<br><br>
+
+	<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<if $phase isnot 3>><<set $birdAmbushTrap to true>><</if>><<endevent>><</link>>
+	<br>
+	<<if $phase is 3>>
+		<<link [[Leave|Bird Hunt Ambush Leave]]>><<endevent>><<set $phase to 2>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Bird Hunt Ambush Leave
+<<effects>>
+<<if $phase is 2>>
+	You abandon your ambush point. <<set _huntFail to 1>>
+	<br><br>
+<</if>>
+
+<<flight_hunt_return>>
+
+:: Bird Hunt Ambush Caught Flaunt
+<<effects>>
+You use your hands to pronounce your exposure and bend half way over. "Just getting some air," you say. "Don't mind me."
+<<exhibitionism4>>
+
+The two continue down the path, eyes fixed on your body the whole time. You point out your trap when one of them nearly steps on it. Once they're gone, you fly back to the top of the pillar. All you can do now is wait.
+<br><br>
+
+<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $birdAmbushTrap to true>><</link>>
+<br>
+
+:: Bird Hunt Ambush Caught Hide
+<<effects>>
+
+<<if $exposed gte 2>>
+	You cover yourself up however you can, before running off into the underbrush. <<arousal 6>><<garousal>>
+<<else>>
+	You run off into the underbrush, out of sight.
+<</if>>
+The two approach casually. "Where'd <<pshe>> run off to?" the <<person1>><<person>> asks.
+<br>
+"Dunno, but the poor <<girl>> looked scared. We should keep an eye out, maybe..." their voices fade as they pass the pillar and continue down the path.
+<br><br>
+
+You fly back to the top of the pillar once you're sure they're gone. Your trap is ready, now you just have to wait for someone to come.
+<br><br>
+
+<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $birdAmbushTrap to true>><</link>>
+<br>
+
+:: Bird Hunt Ambush Struggle
+<<effects>>
+
+<<if $struggle_start is 1>>
+	<<struggle_init>>
+	<<set $struggle.creature to "lurker">>
+	<<struggle_creatures 1 2>>
+	<<set $combat to 1>>
+	<<controlloss>>
+	<<violence 1>>
+	<<molested>>
+	<<if $analdisable is "f">>
+		<<set $struggle.anus.creature to "lurker">><<set $anususe to "struggle">><<set $anusstate to "struggle">><<set $struggle.enemy[0].location to "anus">>
+	<</if>>
+	<<unset $struggle_start>>
+<</if>>
+
+<<struggle>>
+
+<<if $struggle.done gte $struggle.number>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Struggle End]]>><</link>></span>
+	<br>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Struggle]]>><</link>></span>
+	<br>
+<</if>>
+
+:: Bird Hunt Ambush Struggle End
+<<effects>>
+
+The creatures disappear into the heather.
+<<tearful>> you dust yourself off and fly back up on the pillar. Your trap is ready, now you just have to wait for someone to come.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Wait (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<set $birdAmbushTrap to true>><</link>>
+<br>
+
+:: Bird Hunt Ambush Wait
+<<effects>>
+<<if $phase is 2>>
+	You fly back up to your ambush point.
+<<elseif $bird.hunts.duo is true and $phase isnot 1>>
+	<<npc "Great Hawk">><<person1>>
+	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to set up an ambush.
+	<br>
+	<<if $monster is 1>>
+		"Wife is smart, making good plans," <<bhe>> says.
+	<<else>>
+		<<bHe>> squawks at you.
+	<</if>>
+	<br><br>
+<</if>>
+<<endevent>>
+<<unset $hkTime>>
+<<unset $ambushThreat>>
+
+You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is true>> with <<your_bird_text>><</if>>.
+<<rng 8>>
+<<if $bird.hunts.duo is true>>
+	<<npc "Great Hawk">><<person1>>
+	<<switch $rng>>
+		<<case 1>><<if $mathstrait gte 1>>You pass time by counting the rocks near you. <<bHe>> hops down and starts to line them up as you count.<<else>>You briefly look up at the clouds, taking a moment to admire them.<</if>>
+		<<case 2>><<if $sciencetrait gte 3>>You pass time by trying to identify different rocks.<<else>>You briefly look up at the clouds, taking a moment to admire them.<</if>>
+		<<case 3>><<if $englishtrait gte 2>>You pass time by rehearsing what you will say when ambushing someone. <<if $monster is 1>><<bHe>> helps you practise.<<else>><<bHe>> caws at you in response.<</if>><<else>>You briefly look up at the clouds, taking a moment to admire them.<</if>>
+		<<case 4>><<if $trauma gte 50>>Waiting around makes you nervous. You start having doubts about your plan. <<bHe>> seems to notice this, and gently caresses you with <<bhis>> wing.<<else>>You take a moment to enjoy the feeling of the wind on your skin. <<stress -2>><<lstress>><</if>>
+		<<case 5>>You cuddle up to <<bhim>> and hold each other for a moment. <<stress -3>><<lstress>>
+		<<case 6>>You take some time to comb through <<bhis>> feathers with your hands, cleaning him up a bit. One of <<bhis>> feathers comes loose. You keep it. <<flight_hunt_get "feathers" 1>>
+		<<case 7>>You take a moment to just admire the Great Hawk for a moment. <<bHe>> looks at you curiously, but <<bhe>> seems happy. <<npcincr "Great Hawk" love 1>><<glove>>
+		<<case 8>>You hum a small tune. <<bHe>> does <<bhis>> best to imitate you. <<trauma -2>><<ltrauma>>
+	<</switch>>
+<<else>>
+	<<switch $rng>>
+		<<case 1>><<if $mathstrait gte 1>>You pass time by counting the rocks near you.<<else>>You briefly look up at the clouds, taking a moment to admire them.<</if>>
+		<<case 2>><<if $historytrait gte 3>>You pass time by identifying rock formations and landmarks.<<else>>You briefly look up at the clouds, taking a moment to admire them.<</if>>
+		<<case 3>><<if $sciencetrait gte 3>>You pass time by trying to identify different rocks.<<else>>You briefly look up at the clouds, taking a moment to admire them.<</if>>
+		<<case 4>><<if $englishtrait gte 2>>You pass time by rehearsing what you will say when ambushing someone.<<else>>You briefly look up at the clouds, taking a moment to admire them.<</if>>
+		<<case 5>><<if $trauma gte 50>>Waiting around makes you nervous. You start having doubts about your plan. <<stress 2>><<gstress>><<else>>You take a moment to enjoy the feeling of the wind on your skin. <<stress -2>><<lstress>><</if>>
+		<<case 6>>You contemplate throwing pebbles to pass time, but decide against it.
+		<<case 7>><<if $hallucinations gte 1>>Out of the corner of your eye, you think you see movement. You turn to look, but find nothing. <<stress 2>><<gstress>><<else>>You briefly look up at the clouds, taking a moment to admire them.<</if>>
+		<<case 8>>
+			<<if $loveInterest.primary is "Great Hawk">>
+				The wind carries distant sounds. It reminds you of your <<nnpc_wife "Great Hawk">>'s singing. <<trauma -2>><<ltrauma>>
+			<<else>>
+				You wonder what $loveInterest.primary is doing right now. Thinking about <<nnpc_him $loveInterest.primary>> brings you comfort. <<trauma -2>><<ltrauma>>
+			<</if>>
+	<</switch>>
+<</if>>
+<<endevent>>
+<br><br>
+
+<<if Time.hour gte 22 or Time.hour lte 5>>
+	The moor starts to go quiet. It's too dark to see very far down the path. You won't be ambushing anything else here until morning.
+	<br><br>
+
+	<<flight_hunt_return>>
+<<else>>
+	<<flight_hunt_chance>>
+	<<cleareventpool>>
+	<<addinlineevent "bird_ambush_nothing" _flight_hunt_chance.nothing>>
+		You return to watching the path vigilantly. After fifteen minutes, nothing shows up.
+		<br><br>
+
+		<<link [[Keep waiting (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><</link>>
+		<br>
+		<<link [[Leave|Bird Hunt Ambush Leave]]>><<endevent>><<set $phase to 2>><</link>>
+		<br>
+	<</addinlineevent>>
+	<<addinlineevent "bird_ambush_humans" (_flight_hunt_chance.materials + _flight_hunt_chance.valuables)>>
+		<<generate1>><<generate2>>
+		You spot two people walking along the path, a <<person1>><<person>> and a <<person2>><<person>>. They're coming your way.
+		<<if $birdAmbushTrap is true>>
+			<<if $bird.hunts.duo is true>>
+				With <<your_bird_text>> by your side and your trap set, you feel ready. Robbing them should be easy.
+			<<else>>
+				With your trap set and ready, robbing them will be easier.
+			<</if>>
+		<<else>>
+			<<if $bird.hunts.duo is true>>
+				With <<your_bird_text>> by your side, robbing them should be easier.
+			<<else>>
+				Without a trap, you'll have to rely on intimidation and raw strength.
+			<</if>>
+		<</if>>
+		<br><br>
+
+		<<if !$birdAmbushTrap>>
+			<<link [[Let them pass and keep waiting (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><</link>>
+			<br>
+		<</if>>
+		<<link [[Attack|Bird Hunt Ambush Humans]]>><</link>><<gcrime "thievery">>
+		<br>
+	<</addinlineevent>>
+	<<addinlineevent "bird_ambush_lurkers" _flight_hunt_chance.lurkers>>
+		You spot movement in the grass. Lurkers.
+		<<if $birdAmbushTrap is true>>
+			They're headed right for your trap.
+		<</if>>
+		<<if $bird.hunts.duo is true>>
+			<<your_bird_text "cap">> prepares to strike.
+		<</if>>
+		<br><br>
+
+		<<link [[Scare them away and keep waiting (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><</link>>
+		<br>
+		<<link [[Attack|Bird Hunt Ambush Lurkers]]>><</link>>
+		<br>
+	<</addinlineevent>>
+	<<runeventpool>>
+<</if>>
+
+:: Bird Hunt Ambush Humans
+<<effects>>
+
+<<if $birdAmbushTrap is true>>
+	<!-- With trap -->
+	The two are walk right into to your trap. The <<person1>><<person>> takes a step forward, crashing through the flimsy cover and plummeting into the hole. At that moment, you descend from the pillar and land right behind them. You let out a loud screech, startling the <<person2>><<person>>.
+	"W-What the hell!?" <<he>> yells out.
+	<br><br>
+
+	You spread your wings, attempting to intimidate <<him>>.
+	<<if $exposed gte 2>>
+		<span class="lewd">You realise far too late that you're also flashing <<him>>.</span>
+		<<if $exhibitionism lte 34>>
+			<<set $rng -= 10>>
+			The sudden realisation makes you close your wings again. <<stress 6>><<ggstress>>
+			<br>
+		<<else>>
+			<<set $rng += 10>>
+			You take it in stride, making yourself seem more wild and dangerous.
+		<</if>>
+	<</if>>
+	<<switch $speech_attitude>>
+		<<case "meek">>"G-give me your things and I'll let you go!"
+		<<case "bratty">>"Give me everything, or else."
+		<<default>>"Give me your valuables!"
+	<</switch>>
+	<br><br>
+
+	<<if $rng gte 70>>
+		"Okay! Please don't hurt us, I'll give you what you want!" <<he>> says frantically, unable to hide <<his>> fear. The <<person1>><<person>> in the hole doesn't say anything. With shaky hands, the <<person2>><<person>> throws <<his>> backpack to you. You start searching it.
+		<br><br>
+
+		<<flight_hunt_get_ambush>>
+		<br>
+		Wordlessly, you toss the now empty backpack at <<him>>. You stare <<him>> down as <<he>> pulls <<his>> companion from the hole, and the two run off. <<crimeUp 40 "thievery">><<crime "thievery">>
+		<br><br>
+
+		<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+		<br>
+	<<elseif $rng gte 40>>
+		"Alright! C-Calm down, you lunatic!" <<he>> says. "Just take what you want from my backpack and leave us alone." <<He>> throws <<his>> backpack towards you.
+		<br><br>
+
+		The <<person1>><<person>> in the hole yells up. "Don't just give <<pher>> what <<pshe>> wants!"<br>
+		"Look, it's not worth the trouble. I just want to avoid dealing with this nut-job," the <<person2>><<person>> responds.<br>
+		Ignoring their conversation, you look through the backpack.
+		<br><br>
+
+		<<flight_hunt_get_ambush>>
+		<br>
+		Wordlessly, you toss the now empty backpack at <<him>>. You stare <<him>> down as <<he>> pulls <<his>> companion from the hole, and the two run off. <<crimeUp 40 "thievery">><<crime "thievery">>
+		<br><br>
+
+		<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<if $fame.scrap gte random(400, 800)>>
+			<<He>> considers your words for a moment, then relents. "Alright, <span class="green">you're not worth the trouble anyway</span>."<br>
+			The <<person1>><<person>> yells up. "What do you mean 'alright'?! You can't seriously consider handing our stuff to some random <<girl>>!"<br>
+			"This ain't just some <<girl>>, I think this is <span class="pink"><<underworld_nickname>></span>. Best not risk it now."
+			<br><br>
+
+			The <<person1>><<person>> grumbles, but doesn't say anything else. You motion for the <<person2>><<person>> to throw <<his>> backpack over to you. You make a point of showing you're not dropping your guard as you search it.
+			<br><br>
+
+			<<flight_hunt_get_ambush>>
+			<br>
+			Wordlessly, you toss the now empty backpack at <<him>>. You stare <<him>> down as <<he>> pulls <<his>> companion from the hole, and the two run off. <<crimeUp 40 "thievery">><<crime "thievery">>
+			<br><br>
+
+			<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			He looks you over. "You've got some nerve, little birdie," <<he>> says, <span class="red">approaching you angrily</span>.
+			<<saveNPC 0 "bird_ambush_trapped">>
+			<<saveNPC 1 "bird_ambush_fight">>
+			<<endevent>>
+			<<loadNPC 0 "bird_ambush_fight">>
+			<br><br>
+
+			<<link [[Next|Bird Hunt Ambush Fight]]>><<set $fightstart to 1>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+<<else>>
+	<!-- Trapn't -->
+	You let out a loud screech and drop in front of them. You spread your wings wide, trying to intimidate them.
+	<br><br>
+
+	<<if $exposed gte 2>>
+		<span class="lewd">You realise far too late that you're also flashing them.</span>
+		<<if $exhibitionism lte 34>>
+			<<set $rng -= 10>>
+			The sudden realisation makes you close your wings again. <<stress 6>><<ggstress>>
+			<br>
+		<<else>>
+			<<set $rng += 10>>
+			You take it in stride, making yourself seem more wild and dangerous.
+		<</if>>
+	<</if>>
+	<<switch $speech_attitude>>
+		<<case "meek">>"G-give me your things and I'll let you go!"
+		<<case "bratty">>"Give me everything, or else."
+		<<default>>"Give me your valuables!"
+	<</switch>>
+	<br><br>
+
+	For a moment, the pair are too stunned to speak. 
+	<<if $rng gte 70>>
+		The <<person1>><<person>> finally speaks up. "W-What the hell!? What kind of lunatic would jump down from that high up?"<br>
+		"<<pShe>> must be crazy, w-we should just give <<pher>> what <<pshe>> wants," the <<person2>><<person>> says.<br>
+		The <<person1>><<person>> looks hesitant, so you let out another loud scream. "O-Okay! Just take what you want and leave us alone!" <<he>> says, throwing you <<his>> backpack. You begin rummaging through it.
+		<br><br>
+
+		<<flight_hunt_get_ambush>>
+		<br>
+		Wordlessly, you toss the now empty backpack at them. You stare them down as they run off. <<crimeUp 40 "thievery">><<crime "thievery">>
+		<br><br>
+
+		<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+		<br>
+	<<elseif $rng gte 40>>
+		For a moment, they are frozen. They look you over, thinking up a response.
+		<<if $physique gte random (4000, 16000)>>
+			After a long silence, the <<person1>><<person>> speaks. "Alright, <span class="teal">we're willing to give you something small</span>. But that's all you'll get." The <<person2>><<person>> looks displeased, but <<he>> doesn't object. You order them to throw you one of their backpacks, with the promise you won't take much. The <<person1>><<person>> throws you his bag. You begin rummaging through it.
+			<br><br>
+
+			<<flight_hunt_get_ambush 2>>
+			<br>
+			Wordlessly, you toss the now empty backpack at them. You stare them down as they run off. <<crimeUp 40 "thievery">><<crime "thievery">>
+			<br><br>
+
+			<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			After a moment of silence, the <<person1>><<person>> steps forward and yells. "There's no way we're giving anything to you!"<br>
+			"There's two of us and one of you," the <<person2>><<person>> yells out as well.
+			<br><br>
+
+			The <<person1>><<person>> is close to the hole.
+			<br><br>
+
+			<<link "Push <<bhim>>" "Bird Hunt Ambush Push">><</link>><<athleticsdifficulty 100 800>>
+			<br>
+			<<link [[Let them go and keep waiting (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $phase to 2>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<if $fame.scrap gte random(400, 800)>>
+			The <<person1>><<person>> chuckles and starts to approach you. "You picked the wrong people to mess with, <<girl>>. We were just looking for-"<br>
+			Before <<he>> can take another step, the <<person2>><<person>> stops <<him>>. "Hold on, isn't that <span class="pink"><<underworld_nickname>></span>?"<br>
+			"Huh? <<pHer>>? Are you sure?" The two whisper something to each other.<br>
+			"Alright, you can have something of mine if you leave us alone," the <<person1>><<person>> says, throwing you <<his>> backpack. You maintain an aura of control, and begin rummaging through it.
+			<br><br>
+
+			<<flight_hunt_get_ambush 2>>
+			<br>
+			After getting what you want, you toss the backpack. You give them a slight nod, and watch them leave. <<crimeUp 40 "thievery">><<crime "thievery">>
+			<br><br>
+
+			<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+			<br>		
+		<<else>>
+			The <<person1>><<person>> chuckles and starts to approach you. "You picked the wrong people to mess with, <<girl>>." <<He>> cracks <<his>> knuckles and approiaches you. "Hold still."
+			<br><br>
+
+			<<link [[Next|Bird Hunt Ambush Rape]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+<</if>>
+
+:: Bird Hunt Ambush Push
+<<effects>>
+Like a predator, you begin slowly circling them. When you notice a good opportunity, you rush to push the <<person1>><<person>> into the hole.
+<<if $athleticsSuccess>>
+	<span class="green">You're simply too fast.</span> <<Hes>> caught off guard as you ram <<him>>. <<He>> tries to stop <<himself>> by grabbing onto the <<person2>><<person>>, but this only leads to both of them falling when the <<person1>><<person>> stumbles. In the struggle, one of them dropped their backpack. You let out a warning screech and pick it up, quickly rummaging through it.
+	<br><br>
+
+	<<flight_hunt_get_ambush 3>>
+	<br>
+	You don't have time to grab everything. As one of them starts to pull themselves up from the hole, you toss the half-full backpack at <<him>>, causing <<him>> to fall back in.
+	<br><br>
+
+	You run off and hide in the underbrush, waiting for them to recover and leave. You hear their curses sowly fade in the distance.
+	<br><br>
+
+	<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<span class="red">You're just barely too slow.</span> <<He>> grabs your arms, stopping you. The <<person2>> punches your side, making you gasp. <<pain 6>><<ggpain>>
+	<br><br>
+
+	"Stupid little shit. Time to have some fun."
+	<br><br>
+
+	<<link [[Next|Bird Hunt Ambush Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Ambush Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<violence 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Ambush Fight Finish
+<<effects>>
+<<if $pain gte 100 and $willpowerpain is 0>>
+	You keel over, unable to fight back. "That's what you get, you goddamn brat!" <<He>> stops beating you and goes to help <<his>> companion up from the hole.
+	<<tearful>> you run and take flight before they can catch you.
+	<<clearNPC "bird_ambush_trapped">>
+	<<clearNPC "bird_ambush_fight">>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Hunt Ambush Leave]]>><<set $phase to 2>><</link>>
+	<br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<loadNPC 1 "bird_ambush_trapped">>
+	As the orgasm runs through <<his>> body, you take advantage of <<his>> vulnerable state and push <<him>> toward the hole. <<He>> lands on <<his>> friend. "F-Fuck! Okay, just take what you want," <<he>> grumbles. The <<person2>><<person>> begins mocking the <<person1>><<person>> as <<he>> tosses <<his>> backpack up. You search it quickly.
+	<<clearNPC "bird_ambush_trapped">>
+	<<clearNPC "bird_ambush_fight">>	
+	<<clotheson>>
+	<<endcombat>>
+
+	<<flight_hunt_get_ambush>>
+	<br>
+	You toss the now empty backpack down the hole. You hide in the underbrush as they slowly pull themselves up, and wait until they're gone. <<crimeUp 40 "thievery">><<crime "thievery">>
+	<br><br>
+
+	<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<loadNPC 1 "bird_ambush_trapped">>
+	You have <<him>> on the back foot. You beat your wings hard, kicking up sand and dirt from the path. <<He>> brings <<his>> arms up to shield <<himself>>, and you take the chance to rip <<his>> backpack away before pushing <<him>> into the hole. <<He>> lands on <<his>> friend. "F-Fuck! Okay, just take what you want," <<he>> grumbles. The <<person2>><<person>> begins mocking the <<person1>><<person>>.
+	<<clearNPC "bird_ambush_trapped">>
+	<<clearNPC "bird_ambush_fight">>	
+	<<clotheson>>
+	<<endcombat>>
+
+	<<flight_hunt_get_ambush>>
+	<br>
+	You toss the now empty backpack down the hole. You watch as they slowly pull themselves up, and screech at them again to speed up their retreat. <<crimeUp 40 "thievery">><<crime "thievery">>
+	<br><br>
+
+	<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Ambush Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<set $timer to 7>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Ambush Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Ambush Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	The <<person1>><<person>> keeps holding on to you for a moment. "You're not much of a thief, but you make for a decent cumdump," <<he>> says. <<trauma 3>><<gtrauma>>
+	<br><br>
+	
+	"We don't have all day. Let's get moving," the <<person2>><<person>> barks. The <<person1>><<person>> shoves you down to the ground. <<tearful>> you stand and watch them leave.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<if $timer gt 0>>
+		You sweep the <<person1>><<person>> by the leg, knocking <<him>> flat on <<his>> back. With a solid hit to the gut, the <<person2>> falls to a knee, and you kick <<him>> backwards. <<He>> tumbles into the hole.
+		<br><br>
+
+		"Shit, <<pshes>> a real fighter," the <<person1>><<person>> gasps. "Alright. We made a bit of a mistake, just take what you want and leave us be." You grab one of their backpacks and rummage through it.
+		<<clotheson>>
+		<<endcombat>>
+
+		<<flight_hunt_get_ambush>>
+		<br>
+		You drop the now empty backpack. You glare at the <<person1>><<person>> and screech once more, prompting <<him>> to hastily pull <<his>> companion from the hole and run off.
+	<<else>>
+		You push away the <<person1>><<person>>, who stumbles. The <<person2>><<person>> helps <<person1>><<him>> back up. You're all panting, staring each other down, waiting for someone to make the next move.
+		<br><br>
+
+		"Let's... call it even," the <<person1>><<person>> says between breaths. The two start to run down the trail. You're too exasperated to give chase.
+		<<clotheson>>
+		<<endcombat>>
+
+		<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+
+:: Bird Hunt Ambush Lurkers
+<<effects>>
+
+<<if $birdAmbushTrap is true>>
+	As the lurkers walk under your position, you hear your trap crumble. One lurker tumbles into the hole, and the other two quickly scatter. You let out a loud screech and land. The lurker isn't moving. You reach onto the hole and grab it. <<flight_hunt_get "lurkers" 1>>
+<<else>>
+	You wait until the lurkers are directly below you. You step near the edge of the stone and screech. It's amplified by the echo, making the lurkers freeze in panic. You swoop down and grab one, making the others scatter.
+	<<if currentSkillValue("danceskill") gte random(1,1000)>>
+		<span class="green">You recover well from your swoop</span>, easily gaining altitude with the lurker in hand. <<flight_hunt_get "lurkers" 1>>
+	<<else>>
+		You try to regain altitude, but you're off balance. You fumble the recovery, and have to let go of the lurker to avoid crashing face-first into a roc With free hands, you manage to avoid the collision, but the lurker is gone.
+	<</if>>
+<</if>>
+
+<br><br>
+
+<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Hunt Ambush End
+<<effects>>
+<<if ($bird.hunts.weight gte 3 and $bird.hunts.duo is false) or $bird.hunts.weight gte 5>>
+	You won't be able to carry any more. You take off and begin to fly back to the tower.
+	<br><br>
+
+	<<flight_distance_check>>
+	<<flight_time_check _returnTime "silent">>
+	<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<br>
+<<elseif $stress gte $stressmax or isPlayerNonparasitePregnancyEnding()>>
+	You feel lightheaded. Before you can return to the top of the pillar, the groud comes hurtling towards you.
+	<br><br>
+
+	<<if $bird.hunts.duo is false>>
+		Everything fades to black.
+		<br><br>
+
+		<<passout_moor>>
+	<<else>>
+		You feel something catch you, and your ears pop as you begin to ascend again.
+		<br><br>
+		<<flight_distance_check>>
+		<<flight_time_check _returnTime "silent">>		
+		<<link [[Next (?:??)|Bird Hunt Passout]]>><<bird_pass _returnTime>><</link>>
+		<br>
+	<</if>>
+<<elseif $pain gte 90>>
+	<<if $bird.hunts.duo is true>>
+		<<endevent>>
+		<<npc "Great Hawk">><<person1>>
+		<<if $monster is 1>>
+			"You're hurt," <<your_bird_text>> says. "We return home at once."
+		<<else>>
+			<<your_bird_text "cap">> caws at you, and touches <<bhis>> wing against you. You wince in pain. You're too injured to keep hunting. You take off and return home.
+		<</if>>
+	<<else>>
+		You're too injured to keep hunting. You take off and return home.
+	<</if>>
+	<br><br>
+
+	<<flight_distance_check>>
+	<<flight_time_check _returnTime "silent">>
+	<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<br>
+<<elseif $bird.hunts.duo is true and $bird.hunts.timer gte 360>>
+	<<endevent>>
+	<<npc "Great Hawk">><<person1>>
+	<<your_bird_text "cap">> looks very fatigued.
+	<<if $monster is 1>>
+		"Been hunting too long. We return home."
+	<<else>>
+		<<bHe>> looks to you and caws. You've been hunting for hours, and should return home.
+	<</if>>
+	The two of you take off and fly back to the castle.
+	<br><br>
+
+	<<flight_distance_check>>
+	<<flight_time_check _returnTime "silent">>
+	<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<br>
+<<elseif Time.daystate is "night">>
+	The moor starts to go quiet. It's too dark to see very far down the path. You won't be ambushing anything else here until morning.
+	<br><br>
+
+	<<flight_hunt_return>>
+<<else>>
+	Returning to the top of the pillar will take some effort. It's too high to just let the wind do the work.
+	<<if $bird.hunts.duo is true and $bird.hunts.timer gte 300>>
+		<<endevent>>
+		<<npc "Great Hawk">><<person1>>
+		<<your_bird_text "cap">> is starting to look fatigued.
+	<<elseif $bird.hunts.duo is true and Time.daystate is "dusk" $bird.hunts.timer gte 120 and !$daily.birdNightWarning>>
+		<<endevent>>
+		<<npc "Great Hawk">><<person1>>
+		<<set $daily.birdNightWarning to true>>
+		<<your_bird_text "cap">> looks to the setting sun.
+		<<if $monster is 1>>
+			"Night time soon. Hunt will be harder."
+		<<else>>
+			<<bHe>> then turns to you and caws. It's getting late. Hunting at night time will be more difficult.
+		<</if>>
+	<</if>>
+	<br><br>
+
+	<<endevent>>
+	<span class="blue">The hole you used for a trap is fully exposed. You won't be able to make another trap here today.</span>
+	<br>
+	<<link [[Return to the top of the pillar and wait (0:15)|Bird Hunt Ambush Wait]]>><<set $phase to 2>><<bird_pass 15>><<tiredness 5>><</link>><<gtiredness>>
+	<br>
+	<<link [[Leave|Bird Hunt Ambush Leave]]>><</link>>
+	<br>
+<</if>>
+
 
 
 :: Bird Hunt Ignore
@@ -3522,7 +4447,7 @@ land back on the perch<<if $bird.upgrades.decor gte 3>> and push the curtain asi
 		<<default>>
 	<</switch>>
 	<br>
-	<<set $bird.timer to 20>>
+	<<set $bird.timer to 60>>
 	<<flight_hunt_loot>>
 <</if>>
 
@@ -3625,6 +4550,7 @@ You sit and take a moment to re-orient yourself. You still feel dizzy. You seem 
 	<<bHis>> wings start to beat faster. You feel a rise in your stomach. You open your eyes again to see the hospital below you, and feathers in the corner of your vision.
 	You blink, and you're suddenly being lowered. Your feet meet the sidewalk. A rush of air follows, and the <<beasttype>> is gone.
 	<br><br>
+	<<flight_hunt_end>>
 
 	<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 	<br>
@@ -3644,12 +4570,11 @@ You sit and take a moment to re-orient yourself. You still feel dizzy. You seem 
 		<<bHe>> huffs, but leaves you be after several more minutes of prodding.
 	<</if>>
 	<br><br>
+	<<flight_hunt_end>>
 
 	<<link [[Next|Bird Tower]]>><<bird_pass 5>><<endevent>><</link>>
 	<br>
 <</if>>
-
-<<flight_hunt_end>>
 
 
 :: Bird Tower Hunt End Eat

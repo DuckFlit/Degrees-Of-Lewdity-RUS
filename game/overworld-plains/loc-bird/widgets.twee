@@ -625,7 +625,7 @@
 			<<ind>><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
 		<</if>>
 		<<if $syndromebird and $lurkers_held gte 1 and $bird.state is "home" and ["sing", "groom"].includes($bird.activity)>>
-			<<ind>><<link "Give <<bhim>> the lurker" "Bird Tower Give Captured Lurker">><</link>> <<glove>>
+			<<mooricon "lurkers">><<link "Give <<bhim>> the lurker" "Bird Tower Give Captured Lurker">><</link>> <<glove>>
 			<br>
 		<</if>>
 		<<getouticon>><<link [[Go back inside|Bird Tower]]>><<unset $birdPerch>><<endevent>><</link>><br>
@@ -880,10 +880,17 @@
 				<br>
 			<</if>>
 		<</if>>
-		<<if between($bird.hunts.distanceNorth, -2, -4) and between($bird.hunts.distanceEast, 2, 4)>>
+		<<if between($bird.hunts.distanceNorth, -4, -2) and between($bird.hunts.distanceEast, 2, 4)>>
 			<<if !($bird.hunts.distanceNorth is -3 and $bird.hunts.distanceEast is 3)>>
 				There's a large stone at the top of a hill to the
 				<<if $bird.hunts.distanceNorth lt -3>>north<<elseif $bird.hunts.distanceNorth gt -3>>south<</if>><<if $bird.hunts.distanceEast lt 3>>east<<elseif $bird.hunts.distanceEast gt 3>>west<</if>>.
+				<br>
+			<</if>>
+		<</if>>
+		<<if between($bird.hunts.distanceNorth, -4, -2) and between($bird.hunts.distanceEast, -4, -2)>>
+			<<if !($bird.hunts.distanceNorth is -3 and $bird.hunts.distanceEast is -3)>>
+				There's a large stone at the top of a hill to the
+				<<if $bird.hunts.distanceNorth lt -3>>north<<elseif $bird.hunts.distanceNorth gt -3>>south<</if>><<if $bird.hunts.distanceEast lt -3>>east<<elseif $bird.hunts.distanceEast gt -3>>west<</if>>.
 				<br>
 			<</if>>
 		<</if>>
@@ -935,6 +942,42 @@
 <<widget "flight_hunt_return">>
 	<<if ($bird.hunts.weight gte 3 and $bird.hunts.duo is false) or $bird.hunts.weight gte 5>>
 		You won't be able to carry any more. You begin to fly back to the tower.
+		<br><br>
+
+		<<flight_distance_check>>
+		<<flight_time_check _returnTime "silent">>
+		<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<br>
+	<<elseif $stress gte $stressmax or isPlayerNonparasitePregnancyEnding()>>
+		You don't have the strength to keep flying. Your wings limply carry you into a clumsy, rapidly descending glide. You black out.
+		<br><br>
+
+		<<if $bird.hunts.duo is false>>
+			You hear a muffled splash, and your body goes cold.
+			<br><br>
+
+			<<passout_moor>>
+		<<else>>
+			You feel something grab you mid-air, and your ears pop as you begin to ascend again.
+			<br><br>
+
+			<<flight_distance_check>>
+			<<flight_time_check _returnTime "silent">>			
+			<<link [[Next (?:??)|Bird Hunt Passout]]>><<bird_pass _returnTime>><</link>>
+			<br>
+		<</if>>
+	<<elseif $pain gte 90>>
+		<<if $bird.hunts.duo is true>>
+			<<endevent>>
+			<<npc "Great Hawk">><<person1>>
+			<<if $monster is 1>>
+				"You're hurt," <<your_bird_text>> says. "We return home at once."
+			<<else>>
+				<<your_bird_text "cap">> caws at you, and touches <<bhis>> wing against you. You wince in pain. You're too injured to keep hunting. You change course and head home.
+			<</if>>
+		<<else>>
+			You're too injured to keep hunting. You change course and return home.
+		<</if>>
 		<br><br>
 
 		<<flight_distance_check>>
@@ -1148,9 +1191,10 @@
 		<<switch $_looted>>
 			<<case "tarp">><<set $bird.hunts.weight -= 5>>
 			<<case "tools" "pot">><<set $bird.hunts.weight -= 2>>
-			<<case "wood">><<set $bird.hunts.weight -= (3 * $_amount)>>
+			<<case "wood">><<set $bird.hunts.weight -= (2 * $_amount)>>
 			<<case "leaves">><<set $bird.hunts.weight -= (0.5 * $_amount)>>
 			<<case "valuables" "junk">><<set $bird.hunts.weight -= (0.2 * $_amount)>>
+			<<case "feathers">><!-- No change -->
 			<<default>><<set $bird.hunts.weight -= $_amount>>
 		<</switch>>
 		<<if $bird.hunts.loot[$_looted] lte 0>>
@@ -1170,6 +1214,46 @@
 			<<set _looted to either("watch", "ring", "necklace", "bracelet")>>
 			It's a _looted, now stolen yet again it seems. <<flight_hunt_get "valuables" 1 _looted>>
 	<</switch>>
+<</widget>>
+
+<<widget "flight_hunt_get_ambush">>
+	<<set $_ambushLootList to ["towel", "clothing", "clothing", "junk", "firestarter", "wallet", "watch", "money"]>>
+	You find:
+	<<set $_lootAmount to _args[0] || random(3,5)>>
+	<<for $_lootPass to 0; $_lootPass lt $_lootAmount; $_lootPass++>>
+		<br>
+		<<set $_ambushLooted to $_ambushLootList.pluck()>>
+		<<switch $_ambushLooted>>
+			<<case "towel">>- A large towel. It's tough, and could be used as fabric. <<flight_hunt_get "fabric" 2>>
+			<<case "junk">>- Some shiny trinkets. <<flight_hunt_get "junk" 1>>
+			<<case "firestarter">>- A firestarting kit. You can use it as firewood. Luckily, it's much lighter. <<flight_hunt_get "wood" 2>><<set $bird.hunts.weight -= 2>>
+			<<case "wallet">>- A wallet, full of cards and an ID. <<flight_hunt_get "valuables" 1 "wallet">>
+			<<case "watch">>- A nice watch. <<flight_hunt_get "valuables" 1 "watch">>
+			<<case "clothing">>
+				-
+				<<select_random_clothes_limited "upper" "lower" "under_upper" "under_lower" "legs" "hands">>
+				<<if _random_clothes isnot "piece of fabric">>
+					<<if setup.clothes[_random_slot][_random_index].word is "an">>
+						An
+					<<elseif setup.clothes[_random_slot][_random_index].word is "a">>
+						A
+					<<else>>
+						A pair of
+					<</if>>
+					_random_clothes.
+				<<else>>
+					Some torn clothing.
+				<</if>>
+				<<if _random_clothes is "piece of fabric" or $bird.upgrades.wardrobe lt 1>>
+					It will make for good scrap fabric. <<flight_hunt_get "fabric" 1>>
+				<<else>>
+					<<flight_hunt_get "clothing" 1 _random_slot _random_index>>
+				<</if>>
+			<<default>>
+				- <<moneyGain 30 true true>> in cash.
+		<</switch>>
+	<</for>>
+
 <</widget>>
 
 <<widget "flight_hunt_loot">>
@@ -1313,6 +1397,8 @@
 				<<if _valuable is "antique bullet">>
 					<<set $antiquemoney += 50>>
 					<<museumAntiqueStatus "antiquebullet" "found">>
+				<<elseif ["wallet", "necklace"].includes(_valuable)>>
+					<<set $blackmoney += 100>>
 				<<else>>
 					<<set $blackmoney += 50>>
 				<</if>>
@@ -1323,6 +1409,8 @@
 				<<if $_valuable is "antique bullet">>
 					<<set $antiquemoney += (50 * _amount)>>
 					<<museumAntiqueStatus "antiquebullet" "found">>
+				<<elseif ["wallet", "necklace"].includes(_valuable)>>
+					<<set $blackmoney += (100 * _amount)>>
 				<<else>>
 					<<set $blackmoney += (50 * _amount)>>
 				<</if>>
@@ -1354,6 +1442,9 @@
 	<<run delete $bird.hunts.loot>>
 	<<run delete $bird.hunts.lootAmount>>
 	<<run delete $bird.hunts.timer>>
+	<<unset $tentLootAmount>>
+	<<unset $hkTime>>
+	<<unset $ambushTarget>>
 <</widget>>
 
 <<widget "firepitTime">>
@@ -1478,11 +1569,11 @@
 		<<set _nLurkersReady to $bird.firepit.items.length - $_nLurkersDrying>>
 
 		Your drying rack can hold up to $_rackMax lurkers.
-		<br>
 		<<if $bird.firepit.items.length is $_rackMax>>
-			<i class="blue">The drying rack is full.</i>
+			<i class="blue">It is currently full.</i>
 			<br>
 		<<elseif !$_noLurkers>>
+			<br>
 			<<link [[Add a lurker to the rack (0:02)|Bird Tower Firepit]]>>
 				<<set $bird.materials.lurkers-->>
 				<<run Cooker.cookItem($bird.firepit, Cooker.createItem($bird.firepit, 'lurker', true))>>
