@@ -15,6 +15,26 @@ setup.Locations = {
 		if (V.chef_state >= 7) return "cafe_construction";
 		return "cafe";
 	},
+	/*
+	TEMPLE
+	<<case "temple">>
+				<<if Time.year is 361>>
+					<img id="location" @src="_imgLoc + _weather_display + '/temple'+_dayState+'_old.png'">
+				<<else>>
+					<img id="location" @src="_imgLoc + _weather_display + '/temple'+_dayState+'.png'">
+				<</if>>
+	*/
+	/* ADULT SHOP
+	<<case "adult_shop">>
+				<<getadultshopstate>>
+				<<if Time.dayState is "day" and $adultshopstate isnot "closed">>
+					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'_open.gif'">
+				<<elseif Time.dayState is "night" or Time.dayState is "dusk">>
+					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'.gif'">
+				<<else>>
+					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'.png'">
+				<</if>>
+	*/
 	get() {
 		if (typeof this[V.location] === "function") {
 			return this[V.location]();

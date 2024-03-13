@@ -3,7 +3,6 @@
 Weather.Sky.Effect = class Effect {
 	constructor(effect, condition, compositeOperation, params) {
 		this.params = params ?? {};
-		console.log(this.params);
 		this.onInit = effect.init;
 		this.onDraw = effect.draw;
 		this.drawCondition = condition || (() => true);
@@ -19,7 +18,6 @@ Weather.Sky.Effect = class Effect {
 		this.effects = [];
 		if (effect.effects) {
 			effect.effects.forEach(p => {
-				console.log(p.params);
 				this.addEffect(p.effect, p.params, p.bindings, p.drawCondition);
 			});
 		}

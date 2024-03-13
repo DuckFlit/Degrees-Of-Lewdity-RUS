@@ -732,6 +732,7 @@ function updateCaptionTooltip() {
 	const content = $("<div>");
 	const fragment = document.createDocumentFragment();
 	const updateTooltip = () => {
+		if (V.intro) return;
 		fragment.append(wikifier("clothingCaptionText"));
 		content.append(fragment);
 		element.tooltip({

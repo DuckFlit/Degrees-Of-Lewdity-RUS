@@ -227,7 +227,6 @@ Weather.BodyTemperature = (() => {
 		},
 		get fatigueModifier() {
 			const factor = temperatureFactor();
-			console.log("FACTOR", factor);
 			return factor > 0 ? interpolate(1, temperatureEffects.maxFatigueGainMultiplier, factor) : 1;
 		},
 		get arousalModifier() {
@@ -239,7 +238,7 @@ Weather.BodyTemperature = (() => {
 			return factor < 0 ? interpolate(1, temperatureEffects.maxPainGainMultiplier, Math.abs(factor)) : 1;
 		},
 		get stressModifier() {
-			//temporarily disabled
+			// temporarily disabled
 			const factor = temperatureFactor();
 			if (factor > 0) return interpolate(0, temperatureEffects.upperMaxStressGain, factor);
 			return interpolate(0, temperatureEffects.lowerMaxStressGain, Math.abs(factor));

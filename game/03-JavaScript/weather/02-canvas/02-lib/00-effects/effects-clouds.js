@@ -274,9 +274,9 @@ WeatherEffects.create({
 		this.currentDate = new DateTime(Time.date);
 
 		this.x += this.movement.speed * elapsedTime;
-		console.log("x", this.x, this.movement.speed, elapsedTime);
-		//this.x = (this.x + this.images.fog.width) % this.images.fog.width;
-		console.log("x2", this.x);
+		// console.log("x", this.x, this.movement.speed, elapsedTime);
+		// this.x = (this.x + this.images.fog.width) % this.images.fog.width;
+		// console.log("x2", this.x);
 
 		this.canvas.ctx.globalAlpha = this.fogFactor * Math.max(this.factor, this.baseAlpha);
 
@@ -297,6 +297,5 @@ WeatherEffects.create({
 				this.images.fog.height
 			);
 		}
-		console.log("DRAW FOG", this);
 	},
 });

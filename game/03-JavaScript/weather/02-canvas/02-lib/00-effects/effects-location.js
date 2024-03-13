@@ -80,13 +80,10 @@ WeatherEffects.create({
 	async init() {
 		// Update only animations of which its condition states has changed
 		this.updateConditions = () => {
-			console.log("UPDATE CONDITIONS", this)
 			const animationsArr =
 				this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
 			this.animations?.forEach(anim => {
-				console.log("ANIM", anim);
 				if (!anim.condition) return;
-				console.log(anim.condition());
 				if (anim.condition(animationsArr) && !anim.displayed) {
 					anim.displayed = true;
 					if (anim.animationInstance) anim.animationInstance.start();
@@ -94,7 +91,6 @@ WeatherEffects.create({
 					anim.displayed = false;
 					if (anim.animationInstance) anim.animationInstance.stop();
 				}
-				console.log("animcond", anim.displayed);
 			});
 		};
 		const loadImage = async (loc, key) => {
