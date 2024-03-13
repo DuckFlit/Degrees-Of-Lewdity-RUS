@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable no-undef */
 WeatherEffects.create({
 	name: "locationImage",
@@ -37,13 +38,14 @@ WeatherEffects.create({
 
 WeatherEffects.create({
 	name: "locationEmissive",
-	defaultParameters: {
-		defaultColor: "#deae66",
-		defaultSize: 5,
-	},
 	effects: [
 		{
 			effect: "locationImageAnimation",
+			params: {
+				glow: true,
+				defaultColor: "#deae66",
+				defaultSize: 5,
+			},
 			bindings: {
 				location() {
 					return this.location;
@@ -60,24 +62,11 @@ WeatherEffects.create({
 			},
 		},
 	],
-	init() {
-		this.glow = new Weather.Sky.Canvas();
-	},
 	draw() {
 		// Set this.animations to be accessible from outside
 		this.animations = this.effects[0].animations;
 		this.effects[0].draw();
-
-		const color = this.location[this.key]?.color ?? this.defaultColor;
-		const size = this.location[this.key]?.size ?? this.defaultSize;
-
-		this.glow.clear();
-		this.glow.ctx.shadowBlur = size;
-		this.glow.ctx.shadowColor = color;
-		this.glow.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${this.size}px ${color})`;
-		this.glow.drawImage(this.effects[0].canvas.element);
-
-		this.canvas.drawImage(this.glow.element);
+		this.canvas.drawImage(this.effects[0].canvas.element);
 	},
 });
 
@@ -91,9 +80,13 @@ WeatherEffects.create({
 	async init() {
 		// Update only animations of which its condition states has changed
 		this.updateConditions = () => {
-			const animationsArr = this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
+			console.log("UPDATE CONDITIONS", this)
+			const animationsArr =
+				this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
 			this.animations?.forEach(anim => {
+				console.log("ANIM", anim);
 				if (!anim.condition) return;
+				console.log(anim.condition());
 				if (anim.condition(animationsArr) && !anim.displayed) {
 					anim.displayed = true;
 					if (anim.animationInstance) anim.animationInstance.start();
@@ -101,6 +94,7 @@ WeatherEffects.create({
 					anim.displayed = false;
 					if (anim.animationInstance) anim.animationInstance.stop();
 				}
+				console.log("animcond", anim.displayed);
 			});
 		};
 		const loadImage = async (loc, key) => {
@@ -122,6 +116,11 @@ WeatherEffects.create({
 						yPos: this.canvas.element.height - image.height * this.scale,
 						alwaysDrawFirstFrame: loc.alwaysDrawFirstFrame ?? true,
 						waitForAnimation: loc.waitForAnimation,
+						glow: this.glow ? {
+							size: loc.size ?? this.defaultSize ?? 0,
+							color: loc.color ?? this.defaultColor ?? "#ffffff",
+							intensity: loc.intensity ?? this.defaultIntensity ?? 1,
+						} : null,
 						parent: typeof loc.animation === "string" ? loc.animation : undefined,
 					};
 					this.frameWidth = this.width / this.scale;
@@ -137,7 +136,8 @@ WeatherEffects.create({
 							loc.animation.delayFirst ?? true
 						);
 						if (loc.animation.startFrame) {
-							animDetails.animationInstance.currentFrame = typeof loc.animation.startFrame === "function" ? loc.animation.startFrame() : loc.animation.startFrame;
+							animDetails.animationInstance.currentFrame =
+								typeof loc.animation.startFrame === "function" ? loc.animation.startFrame() : loc.animation.startFrame;
 						}
 						animDetails.animationInstance.start();
 						animDetails.isPlaying = () => animDetails.animationInstance.isAnimating.value;
@@ -183,7 +183,8 @@ WeatherEffects.create({
 
 	draw() {
 		this.canvas.ctx.imageSmoothingEnabled = false;
-		const animationsArr = this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
+		const animationsArr =
+			this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
 
 		for (const anim of this.animations) {
 			const shouldDraw = anim.animationInstance ? anim.animationInstance.enabled && anim.displayed : anim.displayed;
@@ -203,10 +204,13 @@ WeatherEffects.create({
 				}
 			}
 
+			if (anim.glow) this.canvas.glow(anim.glow.size, anim.glow.color, anim.glow.intensity);
+			
 			if (anim.animationInstance && shouldDraw) {
 				if (!anim.animationInstance.enabled && !anim.alwaysDrawFirstFrame) continue;
 				anim.animationInstance.draw(this.canvas.ctx, 0, anim.yPos, anim.frameWidth, anim.frameHeight, this.width, anim.height);
-			} else if (shouldDraw || (anim.animationInstance && anim.alwaysDrawFirstFrame)) {
+
+			} else if (shouldDraw || (anim.animationInstance && anim.alwaysDrawFirstFrame && anim.displayed)) {
 				const frame = typeof anim.frame === "function" ? anim.frame() : anim.frame;
 				let frameX = frame ? anim.frameWidth * frame : 0;
 				if (anim.parent) {

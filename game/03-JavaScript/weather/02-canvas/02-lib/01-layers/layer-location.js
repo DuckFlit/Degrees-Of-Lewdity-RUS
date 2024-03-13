@@ -37,14 +37,14 @@ WeatherLayers.add({
 		{
 			effect: "colorOverlay",
 			compositeOperation: "source-atop",
-			// drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.5,
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			params: {
 				color: {
-					nightDark: "#00001ce6",
-					nightBright: "#0d0d26b3",
+					nightDark: "#00001ceb",
+					nightBright: "#0d0d26bf",
 					day: "#00000000",
 					dawnDusk: "#4f3605a5",
-					bloodMoon: "#38010199",
+					bloodMoon: "#380101bf",
 				},
 			},
 			bindings: {
@@ -62,10 +62,7 @@ WeatherLayers.add({
 		{
 			effect: "locationEmissive",
 			drawCondition: () => {
-				return (
-					(Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off) &&
-					(setup.LocationImages[setup.Locations.get()].emissive || setup.LocationImages[setup.Locations.get()].emissive_blood)
-				);
+				return setup.LocationImages[setup.Locations.get()].emissive || setup.LocationImages[setup.Locations.get()].emissive_blood;
 			},
 			params: {
 				path: "img/misc/locations",

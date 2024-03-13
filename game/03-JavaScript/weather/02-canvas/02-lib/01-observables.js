@@ -37,6 +37,8 @@ Weather.Observables = (() => {
 		bloodMoon: null,
 		//Location conditions
 		dayState: null,
+		lightsOn: null,
+
 	});
 
 	// Prevents multiple of the same update function to execute at the same time
@@ -55,6 +57,7 @@ Weather.Observables = (() => {
 			observables.snow.value = Weather.isSnow;
 			observables.bloodMoon.value = Weather.bloodMoon;
 			observables.dayState.value = Time.dayState;
+			observables.lightsOn.value = Weather.lightsOn;
 			if (Weather.Sky.loaded.value) Weather.Sky.updateTooltip();
 		});
 		
@@ -89,6 +92,7 @@ Weather.Observables = (() => {
 		observables.snow.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 		observables.snow.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 		observables.dayState.subscribe(() => scheduler.scheduleUpdate(updateLocation));
+		observables.lightsOn.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 
 		/* WEATHER */
 		observables.weather.subscribe(() => scheduler.scheduleUpdate(updateWeather));

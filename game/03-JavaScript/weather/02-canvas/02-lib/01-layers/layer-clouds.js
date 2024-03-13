@@ -5,6 +5,7 @@ WeatherLayers.add({
 	effects: [
 		{
 			effect: "clouds",
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			params: {
 				images: {
 					cloud0: "img/misc/sky/clouds/0.png",
@@ -64,6 +65,7 @@ WeatherLayers.add({
 		},
 		{
 			effect: "colorOverlay",
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			compositeOperation: "source-atop",
 			params: {
 				color: {
@@ -95,7 +97,7 @@ WeatherLayers.add({
 	effects: [
 		{
 			effect: "overcast",
-			drawCondition: () => !Weather.bloodMoon,
+			drawCondition: () => !Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			params: {
 				images: {
 					overcast: "img/misc/sky/clouds/overcast/0.png",
@@ -116,7 +118,7 @@ WeatherLayers.add({
 		},
 		{
 			effect: "colorOverlay",
-			drawCondition: () => !Weather.bloodMoon,
+			drawCondition: () => !Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			compositeOperation: "source-atop",
 			params: {
 				color: {
@@ -148,6 +150,7 @@ WeatherLayers.add({
 	effects: [
 		{
 			effect: "cirrus",
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			params: {
 				images: {
 					cloud0: "img/misc/sky/clouds/cirrus/0.png",
@@ -182,6 +185,7 @@ WeatherLayers.add({
 		},
 		{
 			effect: "colorOverlay",
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			compositeOperation: "source-atop",
 			params: {
 				color: {

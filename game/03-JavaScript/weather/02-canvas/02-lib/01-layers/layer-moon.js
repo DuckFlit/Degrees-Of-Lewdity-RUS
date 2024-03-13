@@ -10,7 +10,7 @@ WeatherLayers.add({
 		{
 			/* Regular moon */
 			effect: "moonWithPhases",
-			drawCondition: () => !Weather.bloodMoon,
+			drawCondition: () => !Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			params: {
 				opacity: {
 					// Defines the opacity of the whole moon (including shadow part)
@@ -53,7 +53,7 @@ WeatherLayers.add({
 		{
 			/* Blood moon */
 			effect: "skyOrbital",
-			drawCondition: () => Weather.bloodMoon,
+			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			params: {
 				images: { orbital: "img/misc/sky/blood-moon.png" },
 			},
@@ -65,7 +65,7 @@ WeatherLayers.add({
 		},
 		{
 			effect: "innerRadialGlow",
-			drawCondition: () => Weather.bloodMoon,
+			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			params: {
 				innerRadius: 7,
 				colorInside: { min: "#fd634d00", max: "#fd634d00" },
@@ -83,7 +83,7 @@ WeatherLayers.add({
 		},
 		{
 			effect: "outerRadialGlow",
-			drawCondition: () => Weather.bloodMoon,
+			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			params: {
 				innerRadius: 3,
 				outerRadius: 12, // The radius of the outer glow

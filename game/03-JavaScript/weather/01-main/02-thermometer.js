@@ -33,7 +33,7 @@ Weather.Thermometer = (() => {
 			return new Promise((resolve, reject) => {
 				const img = new Image();
 				img.onload = () => {
-					images[key].img = img; // Store the loaded Image object in the same images object
+					images[key].img = img;
 					resolve();
 				};
 				img.onerror = reject;
@@ -41,25 +41,18 @@ Weather.Thermometer = (() => {
 			});
 		});
 
-		Promise.all(loadPromises)
-			.then(() => {
-				loaded.value = true;
-
-				// Now, access the loaded images directly from the images object
-				thermometerCanvas = new Weather.Sky.Canvas(0, 0);
-				const baseImg = images.baseImg.img;
-				size.width = baseImg.width * size.scaleFactor;
-				size.height = baseImg.height * size.scaleFactor;
-				thermometerCanvas.element.width = size.width * 2;
-				thermometerCanvas.element.height = size.height;
-				thermometerCanvas.ctx.imageSmoothingEnabled = false;
-				element.append(thermometerCanvas.canvas);
-
-				update();
-			})
-			.catch(error => {
-				console.error("An error occurred while loading images", error);
-			});
+		Promise.all(loadPromises).then(() => {
+			loaded.value = true;
+			thermometerCanvas = new Weather.Sky.Canvas(0, 0);
+			const baseImg = images.baseImg.img;
+			size.width = baseImg.width * size.scaleFactor;
+			size.height = baseImg.height * size.scaleFactor;
+			thermometerCanvas.element.width = size.width * 2;
+			thermometerCanvas.element.height = size.height;
+			thermometerCanvas.ctx.imageSmoothingEnabled = false;
+			element.append(thermometerCanvas.canvas);
+			update();
+		});
 	}
 
 	function update() {
@@ -118,8 +111,8 @@ Weather.Thermometer = (() => {
 	function updateTooltip() {
 		const tempDescription = Weather.TooltipDescriptions.bodyTemperature();
 		const waterDescription = `<br>${Weather.TooltipDescriptions.waterTemperature()}`;
-		// const fatigueModifier = Math.round(
-		// 	normalise(Weather.BodyTemperature.fatigueModifier, Weather.BodyTemperature.temperatureEffects.maxFatigueGainMultiplier, 1) * 3
+		//  const fatigueModifier = Math.round(
+		//  	normalise(Weather.BodyTemperature.fatigueModifier, Weather.BodyTemperature.temperatureEffects.maxFatigueGainMultiplier, 1) * 3
 		// );
 		// const arousalModifier = Math.round(
 		// 	normalise(Weather.BodyTemperature.arousalModifier, Weather.BodyTemperature.temperatureEffects.maxArousalGainMultiplier, 1) * 3
@@ -136,7 +129,9 @@ Weather.Thermometer = (() => {
 		const debug = V.debug ? `<br><br><span class="teal">DEBUG:</span><br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)} ${direction}</span>
 			<br><span class="blue">Body wetness:</span> <span class="yellow">${Weather.wetness * 100}%</span>
 			<br><span class="blue">Clothing warmth:</span> <span class="yellow">${Weather.BodyTemperature.getTotalWarmth()}</span>
-			<br><span class="blue">Target temperature (current clothing)</span> <span class="yellow">${Weather.toSelectedString(Weather.BodyTemperature.getRestingPoint(6).temp)}</span>`
+			<br><span class="blue">Target temperature (current clothing)</span> <span class="yellow">${Weather.toSelectedString(
+				Weather.BodyTemperature.getRestingPoint(6).temp
+			)}</span>`
 			: "";
 		tooltipElement.tooltip({
 			message: tempDescription + waterDescription + debug,

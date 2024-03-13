@@ -40,7 +40,10 @@ setup.LocationImages = {
 		folder: "alex_cottage",
 		base: "base.png",
 		snow: "snow.png",
-		emissive: "emissive.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+		},
 	},
 	alex_farm: {
 		folder: "alex_farm",
@@ -48,6 +51,7 @@ setup.LocationImages = {
 		snow: "snow.png",
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66",
 			strength: 2,
 		},
@@ -57,9 +61,41 @@ setup.LocationImages = {
 		base: "base.png",
 		snow: "snow.png",
 		emissive: {
-			image: "emissive.png",
-			color: "#deae66",
-			strength: 2,
+			red: {
+				image: "emissive_red.png",
+				color: "#e36c59",
+				size: 2,
+			},
+			yellow: {
+				image: "emissive_yellow.png",
+				condition: () => Weather.lightsOn,
+				color: "#dcdb99cc",
+				size: 2,
+			},
+			green: {
+				image: "emissive_green.png",
+				condition: () => Weather.lightsOn,
+				color: "#4bc248",
+				size: 2,
+			},
+			orange: {
+				image: "emissive_orange.png",
+				condition: () => Weather.lightsOn,
+				color: "#f59442",
+				size: 2,
+			},
+			purple: {
+				image: "emissive_purple.png",
+				condition: () => Weather.lightsOn,
+				color: "#cf51ca",
+				size: 2,
+			},
+			blue: {
+				image: "emissive_blue.png",
+				condition: () => Weather.lightsOn,
+				color: "#4f6edb",
+				size: 2,
+			},
 		},
 	},
 	asylum: {
@@ -137,6 +173,11 @@ setup.LocationImages = {
 				delay: () => 1000,
 			},
 		},
+		emissive_blood: {
+			image: "emissive_blood.png",
+			color: "#e63e3e66",
+			size: 15,
+		},
 	},
 	brothel: {
 		folder: "brothel",
@@ -144,6 +185,7 @@ setup.LocationImages = {
 		snow: "snow.png",
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66",
 			strength: 2,
 		},
@@ -154,6 +196,7 @@ setup.LocationImages = {
 		snow: "snow.png",
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66",
 			strength: 2,
 		},
@@ -181,6 +224,7 @@ setup.LocationImages = {
 		snow: "snow.png",
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66",
 			strength: 2,
 		},
@@ -191,6 +235,7 @@ setup.LocationImages = {
 		snow: "snow.png",
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66",
 			strength: 2,
 		},
@@ -221,7 +266,7 @@ setup.LocationImages = {
 		},
 		snow: "snow.png",
 		base_blood: {
-			image: "bloodmoon.png",
+			image: "blood§n.png",
 			animation: {
 				fps: 6,
 				delay: () => random(10, 60) * 1000,
@@ -229,6 +274,7 @@ setup.LocationImages = {
 		},
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66",
 			strength: 2,
 		},
@@ -353,7 +399,10 @@ setup.LocationImages = {
 		folder: "estate",
 		base: "base.png",
 		snow: "snow.png",
-		emissive: "emissive.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+		},
 	},
 	factory: {
 		folder: "factory",
@@ -400,25 +449,38 @@ setup.LocationImages = {
 		emissive: {
 			lights: {
 				image: "emissive.png",
-				color: "#b91313",
+				condition: () => Weather.lightsOn,
+				size: 3,
+				color: "#e7eb81",
 			},
 			stop_lights: {
 				image: "lights_emissive.png",
 				alwaysDrawFirstFrame: true,
 				animation: "lorry_moving",
-				color: "#b91313",
+				size: 5,
+				color: "#e34d4d",
 			},
 			lorry_lights: {
 				image: "lorry_emissive.png",
+				condition: () => Weather.lightsOn,
 				alwaysDrawFirstFrame: false,
 				animation: "lorry_moving",
+				size: 10,
 				color: "#f7e092",
+			},
+			lorry_back_lights: {
+				image: "lorry_back_emissive.png",
+				alwaysDrawFirstFrame: false,
+				animation: "lorry_moving",
+				size: 4,
+				color: "#e34d4d",
 			},
 			inside_lights: {
 				image: "inside_emissive.png",
+				condition: () => Weather.lightsOn,
 				alwaysDrawFirstFrame: false,
 				animation: "inside",
-				color: "#f7e092",
+				color: "#e6cc77",
 			},
 		},
 	},
@@ -433,6 +495,7 @@ setup.LocationImages = {
 		snow: "snow.png",
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66",
 			strength: 5,
 		},
@@ -517,7 +580,10 @@ setup.LocationImages = {
 		folder: "forest_shop",
 		base: "base.png",
 		snow: "snow.png",
-		emissive: "emissive.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+		},
 	},
 	home: {
 		folder: "home",
@@ -547,13 +613,19 @@ setup.LocationImages = {
 				},
 			},
 		},
-		emissive: "emissive.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+		},
 	},
 	hospital: {
 		folder: "hospital",
 		base: "base.png",
 		snow: "snow.png",
-		emissive: "emissive.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+		},
 	},
 	ind_alley: {
 		folder: "ind_alley",
@@ -573,6 +645,7 @@ setup.LocationImages = {
 		},
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66",
 			strength: 2,
 		},
@@ -628,6 +701,113 @@ setup.LocationImages = {
 			color: "#e63e3e",
 		},
 	},
+	moor: {
+		folder: "moor",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			grass: {
+				image: "grass.png",
+				animation: {
+					fps: 3,
+					delay: () => random(1, 8) * 1000,
+				},
+			},
+			wind: {
+				image: "wind.png",
+				animation: {
+					fps: 12,
+					delay: () => random(5, 15) * 1000,
+				},
+			},
+		},
+		snow: {
+			default: {
+				image: "snow.png",
+			},
+			wind: {
+				image: "wind.png",
+				animation: {
+					fps: 12,
+					delay: () => random(5, 15) * 1000,
+				},
+			},
+		},
+	},
+	night_monster_lair: {
+		folder: "night_monster_lair",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			beast: {
+				image: "beast.png",
+				condition: () => Time.dayState === "morning",
+				animation: {
+					fps: 3,
+					delay: () => random(1, 5) * 1000,
+				},
+			},
+			drip: {
+				image: "drip.png",
+				animation: {
+					fps: 3,
+					delay: () => 4000,
+				},
+			},
+			flies: {
+				image: "drip.png",
+				condition: () => Time.dayState !== "morning",
+				animation: {
+					fps: 3,
+					delay: () => 0,
+				},
+			},
+			rat: {
+				image: "rat.png",
+				animation: {
+					fps: 6,
+					delay: () => random(10, 30) * 1000,
+				},
+			},
+		},
+		snow: {
+			default: {
+				image: "snow.png",
+			},
+			beast: {
+				image: "beast.png",
+				condition: () => Time.dayState === "morning",
+				animation: {
+					fps: 3,
+					delay: () => random(1, 5) * 1000,
+				},
+			},
+			drip: {
+				image: "drip.png",
+				animation: {
+					fps: 3,
+					delay: () => 4000,
+				},
+			},
+			flies: {
+				image: "drip.png",
+				condition: () => Time.dayState !== "morning",
+				animation: {
+					fps: 3,
+					delay: () => 0,
+				},
+			},
+			rat: {
+				image: "rat.png",
+				animation: {
+					fps: 6,
+					delay: () => random(10, 30) * 1000,
+				},
+			},
+		},
+	},
 	park: {
 		folder: "park",
 		base: {
@@ -673,7 +853,25 @@ setup.LocationImages = {
 		},
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			color: "#deae66a5",
+		},
+	},
+	pool: {
+		folder: "pool",
+		base: {
+			image: "base.png",
+			animation: {
+				fps: 4,
+				delay: () => 0,
+			},
+		},
+		snow: {
+			image: "snow.png",
+			animation: {
+				fps: 4,
+				delay: () => 0,
+			},
 		},
 	},
 	pound: {
@@ -705,6 +903,23 @@ setup.LocationImages = {
 			},
 		},
 	},
+	prison: {
+		folder: "prison",
+		base: {
+			image: "base.png",
+			animation: {
+				fps: 6,
+				delay: () => 0,
+			},
+		},
+		snow: {
+			image: "base.png",
+			animation: {
+				fps: 6,
+				delay: () => 0,
+			},
+		},
+	},
 	promenade: {
 		folder: "promenade",
 		base: {
@@ -721,7 +936,10 @@ setup.LocationImages = {
 				delay: () => 5000,
 			},
 		},
-		emissive: "emissive.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+		},
 	},
 	res_alley: {
 		folder: "res_alley",
@@ -739,6 +957,28 @@ setup.LocationImages = {
 				delay: () => random(4, 15) * 1000,
 			},
 		},
+	},
+	riding_school: {
+		folder: "riding_school",
+		base: {
+			image: "base.png",
+			animation: {
+				fps: 6,
+				delay: () => 0,
+			},
+		},
+		snow: {
+			image: "snow.png",
+			animation: {
+				fps: 6,
+				delay: () => 0,
+			},
+		},
+	},
+	school_rear_courtyard: {
+		folder: "school_rear_courtyard",
+		base: "base.png",
+		snow: "snow.png",
 	},
 	sea: {
 		folder: "sea",
@@ -775,8 +1015,132 @@ setup.LocationImages = {
 		},
 		emissive: {
 			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			animation: "base",
 			color: "#deae66",
+		},
+	},
+	sepulchre: {
+		folder: "sepulchre",
+		base: "base.png",
+		snow: "snow.png",
+		emissive: {
+			eyes: {
+				image: "eyes.png",
+				condition: () => Weather.lightsOn,
+				color: "#e15151",
+			},
+			gem: {
+				image: "gem.png",
+				color: "#5b6ee1",
+			},
+		},
+	},
+	shopping_centre: {
+		folder: "shopping_centre",
+		base: "base.png",
+		snow: "snow.png",
+	},
+	spa: {
+		folder: "spa",
+		base: {
+			default: {
+				image: "base.png",
+				animation: {
+					fps: 6,
+					delay: () => 0,
+				},
+			},
+		},
+		snow: {
+			default: {
+				image: "snow.png",
+				animation: {
+					fps: 6,
+					delay: () => 0,
+				},
+			},
+		},
+		emissive: {
+			emissive_dawn: {
+				image: "emissive_dawn.png",
+				condition: () => Time.dayState === "dawn",
+				color: "#e6de57",
+				size: 10,
+			},
+			light: {
+				image: "emissive_lights.png",
+				condition: () => Weather.lightsOn,
+				color: "#e6de57dd",
+				size: 20,
+				animation: {
+					fps: 0.5,
+					delay: () => 2000,
+				},
+			},
+		},
+	},
+	tentworld: {
+		folder: "tentworld",
+		base: {
+			default: {
+				image: "base.png",
+				animation: {
+					fps: 2,
+					delay: () => 0,
+				},
+			},
+			movingtent: {
+				image: "moving_tentacle.png",
+				animation: {
+					fps: 3,
+					delay: () => random(1, 9) * 1000,
+				},
+			},
+		},
+	},
+	tower: {
+		folder: "tower",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			wind: {
+				image: "wind.png",
+				animation: {
+					fps: 12,
+					delay: () => random(5, 15) * 1000,
+				},
+			},
+		},
+		snow: {
+			default: {
+				image: "snow.png",
+			},
+			wind: {
+				image: "wind.png",
+				animation: {
+					fps: 12,
+					delay: () => random(5, 15) * 1000,
+				},
+			},
+		},
+		emissive: {
+			bonfire: {
+				condition: () => true,
+				image: "bonfire.png",
+				animation: {
+					fps: 4,
+					delay: () => random(0, 700),
+				},
+				color: "#deae66",
+				size: 5,
+			},
+		},
+		emissive_blood: {
+			image: "emissive_blood.png",
+			color: "#e63e3e66",
+			size: 5,
 		},
 	},
 	town: {
@@ -829,17 +1193,21 @@ setup.LocationImages = {
 		emissive: {
 			lights: {
 				image: "emissive.png",
+				condition: () => Weather.lightsOn,
 				alwaysDrawFirstFrame: false,
 				animation: "drivingCar",
 				color: "#deae66",
+				size: 4,
 			},
 			flickeringLights: {
 				waitForAnimation: "drivingCar",
+				condition: () => Weather.lightsOn,
 				image: "emissive_flicker.png",
 				alwaysDrawFirstFrame: false,
 				color: "#deae66",
+				size: 4,
 				animation: {
-					fps: 4,
+					fps: 3,
 					delay: () => random(5, 20) * 1000,
 				},
 			},

@@ -6,7 +6,7 @@ WeatherLayers.add({
 		{
 			/* Night sky */
 			effect: "skyGradiant",
-			drawCondition: () => !Weather.bloodMoon,
+			drawCondition: () => !Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			params: {
 				radius: 82,
 			},
@@ -32,7 +32,7 @@ WeatherLayers.add({
 		{
 			/* Blood sky */
 			effect: "skyGradiant",
-			drawCondition: () => Weather.bloodMoon,
+			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			params: {
 				color: {
 					colorMin: { close: "#4d000000", far: "#21070700" },
@@ -53,6 +53,7 @@ WeatherLayers.add({
 		{
 			/* Day sky */
 			effect: "skyGradiant",
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			params: {
 				color: {
 					colorMin: { close: "#14145200", far: "#00001c00" },
@@ -67,6 +68,18 @@ WeatherLayers.add({
 				},
 				factor() {
 					return Weather.Sky.orbitals.sun.factor;
+				},
+			},
+		},
+		{
+			/* Tentacle sky */
+			effect: "gradiantGlow",
+			drawCondition: () => V.location === "tentworld",
+			params: {
+				fadeStartY: 192,
+				color: {
+					glow: "#300c36",
+					dark: "#631582",
 				},
 			},
 		},

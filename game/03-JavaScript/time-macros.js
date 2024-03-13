@@ -121,8 +121,3 @@ function schoolTerm() {
 	return "School term starts on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
 }
 DefineMacroS("schoolterm", schoolTerm);
-
-function displayMonthday() {
-	return ordinalSuffixOf(Time.monthDay);
-}
-DefineMacroS("displayMonthday", displayMonthday);

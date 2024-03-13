@@ -9,7 +9,7 @@ WeatherLayers.add({
 	effects: [
 		{
 			effect: "skyStarField",
-			drawCondition: () => Weather.Sky.orbitals.sun.factor < 0.75,
+			drawCondition: () => Weather.Sky.orbitals.sun.factor < 0.75 && !Weather.Sky.skyDisabled,
 			params: {
 				area: 256,
 				starsConfig: {

@@ -32,9 +32,9 @@ const statDisplay = (() => {
 
 		if (displayGrace) {
 			if (amount > 0) {
-				return ` | <span class="green"> ${"+ ".repeat(amount)} Grace</span>`;
+				return statChange("Grace", amount, "green");
 			} else {
-				return ` | <span class="red"> ${"- ".repeat(-amount)} Grace</span>`;
+				return statChange("Grace", -amount, "red");
 			}
 		}
 		return "";

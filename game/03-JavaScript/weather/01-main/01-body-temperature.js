@@ -29,9 +29,9 @@
 Weather.BodyTemperature = (() => {
 	/* Be careful when modifying the factors, as small changes can have big effects */
 	const baseBodyTemperature = 37; // The normal body temperature in degrees Celsius.
-	const baseHeatGeneration = 0.06; // The base rate of heat generation by the body.
+	const baseHeatGeneration = 0.05; // The base rate of heat generation by the body.
 	const activityRate = 0.08; // How much physical activity affects heat generation.
-	const baseDissipation = 0.049; // The base rate of heat dissipation without modifiers.
+	const baseDissipation = 0.05; // The base rate of heat dissipation without modifiers.
 	const dissipationRate = 0.000001; // The curve at higher temperatures where dissipation levels out
 	const dissipationModifier = 0.07; // Modifies the importance of the temperature difference between current temperature and base temperature.
 	const insulationFactor = 0.007; // The effectiveness of clothing warmth
@@ -164,8 +164,6 @@ Weather.BodyTemperature = (() => {
 		return baseDissipationValue * insulationModifier * wetnessMultiplier;
 	}
 
-	
-
 	/**
 	 * Calculates heat generation based on the current activity level and difference from the base body temperature.
 	 * Increases heat generation if body temperature is below base and decreases if above.
@@ -177,9 +175,10 @@ Weather.BodyTemperature = (() => {
 		const temperatureDifference = V.player.bodyTemperature - baseBodyTemperature;
 		return baseHeatGeneration + activityHeatGeneration - 0.01 * temperatureDifference;
 	}
+
 	function temperatureFactor() {
-		if (get() <= temperatureEffects.lowerThresholdEnd) {
-			return -1 - normalise(V.player.bodyTemperature, temperatureEffects.lowerThresholdStart, temperatureEffects.lowerThresholdEnd);
+		if (get() <= temperatureEffects.lowerThresholdStart) {
+			return 1 - normalise(V.player.bodyTemperature, temperatureEffects.lowerThresholdStart, temperatureEffects.lowerThresholdEnd);
 		}
 
 		if (get() >= temperatureEffects.upperThresholdStart) {
@@ -228,6 +227,7 @@ Weather.BodyTemperature = (() => {
 		},
 		get fatigueModifier() {
 			const factor = temperatureFactor();
+			console.log("FACTOR", factor);
 			return factor > 0 ? interpolate(1, temperatureEffects.maxFatigueGainMultiplier, factor) : 1;
 		},
 		get arousalModifier() {

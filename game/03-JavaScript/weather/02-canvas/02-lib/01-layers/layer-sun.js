@@ -9,7 +9,7 @@ WeatherLayers.add({
 	effects: [
 		{
 			effect: "skyOrbital",
-			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.5,
+			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.5 && !Weather.Sky.skyDisabled,
 			params: {
 				images: { orbital: "img/misc/sky/sun.png" },
 			},
@@ -21,7 +21,7 @@ WeatherLayers.add({
 		},
 		{
 			effect: "outerRadialGlow",
-			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.5,
+			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.5 && !Weather.Sky.skyDisabled,
 			params: {
 				outerRadius: 24, // The radius of the outer glow
 				colorInside: { dark: "#f07218ee", med: "#f07218ee", bright: "#f2fad766" },
@@ -49,7 +49,7 @@ WeatherLayers.add({
 	effects: [
 		{
 			effect: "outerRadialGlow",
-			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.7 && !Weather.overcast,
+			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.7 && !Weather.overcast && !Weather.Sky.skyDisabled,
 			params: {
 				outerRadius: 64, // The radius of the outer glow
 				colorInside: { dark: "#fd634d00", med: "#f7ff4a50", bright: "#fbffdb50" },

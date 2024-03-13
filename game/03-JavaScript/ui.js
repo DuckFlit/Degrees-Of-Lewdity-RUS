@@ -727,6 +727,27 @@ window.loadCharacterViewerDate = () => {
 	}
 };
 
+function updateCaptionTooltip() {
+	const element = $("#characterTooltip");
+	const content = $("<div>");
+	const fragment = document.createDocumentFragment();
+	const updateTooltip = () => {
+		fragment.append(wikifier("clothingCaptionText"));
+		content.append(fragment);
+		element.tooltip({
+			message: content,
+			delay: 200,
+			position: "cursor",
+		});
+	};
+
+	updateTooltip();
+	$(document).off(":passageend", updateCaptionTooltip);
+	$(document).on(":passageend", updateCaptionTooltip);
+}
+$(() => updateCaptionTooltip());
+window.updateCaptionTooltip = updateCaptionTooltip;
+
 function returnTimeFormat() {
 	if (!V || !V.options) return "en-GB";
 	return V.options.dateFormat;

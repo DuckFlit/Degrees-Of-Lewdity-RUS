@@ -10,6 +10,13 @@ Weather.Sky = (() => {
 			this.element.height = height;
 		}
 
+		glow(glowSize, glowColor, glowIntensity) {
+			this.ctx.shadowColor = glowColor;
+			this.ctx.shadowBlur = glowSize;
+			this.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
+			return this;
+		}
+
 		/* Aliases */
 		clear() {
 			this.ctx.clearRect(0, 0, this.element.width, this.element.height);
@@ -120,6 +127,7 @@ Weather.Sky = (() => {
 		draw(ctx, x, y, frameWidth, frameHeight, destWidth, destHeight, frameOffset) {
 			const frameX = (frameOffset || frameWidth) * this.currentFrame;
 			ctx.drawImage(this.image, frameX, 0, frameWidth, frameHeight, x, y, destWidth, destHeight);
+			return frameX;
 		}
 	}
 
@@ -364,6 +372,9 @@ Weather.Sky = (() => {
 		},
 		get blur() {
 			return Weather.fog;
+		},
+		get skyDisabled() {
+			return V.location === "tentworld";
 		},
 		skybox: _skybox,
 		mainLayer: _mainLayer,

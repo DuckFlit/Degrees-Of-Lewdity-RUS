@@ -158,7 +158,11 @@ const Weather = (() => {
 		},
 		set fog(value) {
 			V.weatherObj.fog = value;
-		}
+			Weather.Sky.drawLayers();
+		},
+		get lightsOn() {
+			return Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off
+		},
 	};
 })();
 window.Weather = Weather;
