@@ -1008,13 +1008,45 @@
 				<<default>><<icon "perch.png">>
 			<</switch>>
 		<<case "firepit">>
-			<<if getBirdBurnTime() gt 0>>
-				<<icon "campfire.gif">>
+			<<if $bird.upgrades>>
+				<<set $_firePitImg to "firepit_">>
+				<<switch $bird.upgrades.firepit>>
+					<<case 1>><<set $_firePitImg += "makeshift_">>
+					<<case 2>><<set $_firePitImg += "robust_">>
+					<<case 3>><<set $_firePitImg += "bonfire_">>
+				<</switch>>
+				<<set $_firePitTime to getBirdBurnTime()>>
+				<<if $_firePitTime lte 0>>
+					<<set $_firePitImg += "0.gif">>
+				<<elseif $_firePitTime lte 120>>
+					<<set $_firePitImg += "1.gif">>
+				<<elseif $_firePitTime lte 480>>
+					<<set $_firePitImg += "2.gif">>
+				<<elseif $_firePitTime lte 960>>
+					<<set $_firePitImg += "3.gif">>
+				<<else>>
+					<<set $_firePitImg += "4.gif">>
+				<</if>>
+				<<icon $_firePitImg>>
 			<<else>>
-				<<icon "campfire_out.gif">>
+				<<icon "campfire.gif">>
 			<</if>>
+		<<case "rainwater">>
+			<<if $bird.upgrades?.pot is 3 and getBirdBurnTime() gte 1>>
+				<<icon "rain_pool_heated.gif">>
+			<<else>>
+				<<icon "rain_pool.gif">>
+			<</if>>
+		<<case "rack">>
+			<<switch $bird.upgrades.rack>>
+				<<case 0 1>><<icon "drying_rack_makeshift.png">>
+				<<case 2>><<icon "drying_rack_expanded.png">>
+				<<case 3>><<icon "drying_rack_enclosed.png">>
+			<</switch>>
+		<<case "snare">><<icon "snare_no_bait.png">>
+		<<case "snare_bait">><<icon "snare_bait.png">>
+		<<case "snare_lurker">><<icon "snare_lurker.gif">>
 		<<case "sing">><<icon "sing.png">>
-		<<case "rainwater">><<icon "rain_pool.gif">>
 		<<case "remy">><<icon "estate.png">>
 		<<case "remy cottage">><<icon "remy_cottage.png">>
 		<<case "tower">><<icon "tower.png">>
@@ -1027,11 +1059,17 @@
 		<<case "leaves">><<icon "leaf.png">>
 		<<case "junk">><<icon "junk.png">>
 		<<case "lurkers">><<icon "lurker_dead.png">>
+		<<case "lurkers_netted">><<icon "lurker_netted.png">>
 		<<case "leather">><<icon "lurker_leather.png">>
 		<<case "feathers">><<icon "feather.png">>
 		<<case "tarp" "shelter">><<icon "tarp.png">>
-		<<case "mirror">><<icon "mirror.png">>
-		<<case "wardrobe">><<icon "wardrobe.png">>
+		<<case "mirror">>
+			<<if $bird.upgrades?.decor gte 3>>
+				<<icon "mirror_tower_decor.png">>
+			<<else>>
+				<<icon "mirror_tower.png">>
+			<</if>>
+		<<case "wardrobe">><<icon "wardrobe_tower.png">>
 		<<default>><<icon "moor.png">>
 	<</switch>>
 <</widget>>
@@ -1216,7 +1254,7 @@
 
 <<widget "lakeicon">>
 	<<switch _args[0]>>
-		<<case "campfire">><<icon "campfire.gif">>
+		<<case "campfire">><<icon "firepit_robust_3.gif">>
 		<<case "dock">><<icon "dock.png">>
 		<<case "field office">><<icon "field_office.png">>
 		<<case "fishing">><<icon "fishing.png">>

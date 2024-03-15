@@ -1207,7 +1207,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<</if>>
 	<br>
 	<<if $syndromebird and $lurkers_held gte 1 and $bird.state is "home" and $bird.activity is "build">>
-		<<mooricon "lurkers">><<link "Give <<bhim>> your captured lurker" "Bird Tower Give Captured Lurker">><</link>><<glove>>
+		<<mooricon "lurkers_netted">><<link "Give <<bhim>> your captured lurker" "Bird Tower Give Captured Lurker">><</link>><<glove>>
 		<br>
 	<</if>>
 	<<if $estate_fence is "quest" and $syndromebird is 1 and $bird.state is "home" and $bird.activity isnot "sleep">>
@@ -1289,9 +1289,9 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<span class="red">You're too exhausted to clean the tower.</span>
 		<<else>>
 			<<if $worn.handheld.name is "feather duster" or $bird.duster is true or ($bird.upgrades.wardrobe is 1 and getOwnedClothingCount(12, "handheld") gte 1)>>
-				<<edenicon "broom">><<link [[Dust the tower (0:30)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 200>><<bird_pass 30>><</link>><<ghousekeeping 200 "silent">>
+				<<edenicon "broom">><<link [[Dust the tower (0:30)|Bird Tower Tidy]]>><<tiredness 4>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 200>><<bird_pass 30>><</link>><<gtiredness>><<ghousekeeping 200 "silent">>
 			<<else>>
-				<<edenicon "broom">><<link [[Tidy up the tower (1:00)|Bird Tower Tidy]]>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 100>><<bird_pass 60>><</link>><<ghousekeeping 100 "silent">>
+				<<edenicon "broom">><<link [[Tidy up the tower (1:00)|Bird Tower Tidy]]>><<tiredness 8>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 100>><<bird_pass 60>><</link>><<ggtiredness>><<ghousekeeping 100 "silent">>
 			<</if>>
 			<<if !$daily.birdHousekeepingSyndrome>><<gbirdstockholm>><<glove>><<gdom>><</if>>
 		<</if>>
@@ -1330,9 +1330,9 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<</if>>
 	<<if $bird.upgrades.mirror is 1>>
 		<<if $nextPassageCheck is "Bird Tower Mirror">>
-			<span class="nextLink"><<mirroricon>><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>></span>
+			<span class="nextLink"><<mooricon "mirror">><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>></span>
 		<<else>>
-			<<mirroricon>><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>>
+			<<mooricon "mirror">><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>>
 		<</if>>
 		<br>
 	<</if>>
@@ -1386,6 +1386,10 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 <<effects>>
 
 You rifle through the wood and detritus, searching for anything that could help you escape.
+<<if $bird.clean lte 9>>
+	The tower is filthy, and your searching kicks up dust and debris. You cough. <<stress 6>><<gstress>>
+	<br><br>
+<</if>>
 
 <<if $rng gte 66>>
 	You find a torn but strong piece of fabric. It could be used for a rope. <<set $bird.materials.fabric += 1>><<gfabric>>
@@ -4077,10 +4081,10 @@ Materials:
 	<br>
 <</if>>
 <<if $lurkers_held gte 1>>
-	<<link [[Add your netted lurker to the pile|Bird Tower Build]]>><<set $lurkers_held-->><<set $bird.materials.lurkers++>><</link>>
+	<<mooricon "lurkers_netted">><<link [[Add your netted lurker to the pile|Bird Tower Build]]>><<set $lurkers_held-->><<set $bird.materials.lurkers++>><</link>>
 	<br>
 <<elseif $farm_stage gte 10 and $bird.materials.lurkers gte 1>>
-	<<link [[Put a lurker in your net|Bird Tower Build]]>><<set $lurkers_held++>><<set $bird.materials.lurkers-->><</link>>
+	<<mooricon "lurkers_netted">><<link [[Put a lurker in your net|Bird Tower Build]]>><<set $lurkers_held++>><<set $bird.materials.lurkers-->><</link>>
 	<br>	
 <</if>>
 <br>
@@ -4091,7 +4095,7 @@ Shiny things:
 <<towerValuables>>
 </span>
 <br>
-<<if $bird.clean lte 10>>
+<<if $bird.clean lte 9>>
 	<span class="pink">The tower is too filthy to improve it.</span>
 <<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
 	<span class="red">You're too tired to build anything.</span>
@@ -4617,6 +4621,9 @@ It looks cute.
 <</if>>
 
 <<set $bird.clean += _cleanIncrease>>
+<<if !$syndromebird>>
+	<<set $bird.clean to Math.clamp($bird.clean, 0, 20)>>
+<</if>>
 
 <<link [[Next|Bird Tower]]>><<if $propEquipped is 1>><<handheldruined true>><</if>><<endevent>><</link>>
 <br>
