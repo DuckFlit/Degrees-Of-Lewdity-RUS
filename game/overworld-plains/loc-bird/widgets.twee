@@ -95,6 +95,8 @@
 		<<set $bird.upgrades.shelter to 1>>
 		<<set $birdShelterTimer to 720>>
 		<<set $birdShelterRepair to true>>
+	<<elseif $bird.upgrades?.shelter is 2 and $birdShelterTimer>>
+		<<set $birdShelterTimer -= _args[0]>>
 	<</if>>
 	<<if $bird.wardrobe_timer>>
 		<<set $bird.wardrobe_timer -= _args[0]>>
@@ -586,12 +588,20 @@
 		<<if $syndromebird is 1>>
 			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
 				<<flight_time_check 30 "silent">>
-				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<</if>>
 				<br>
 				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
 				<br>
 			<<else>>
-				<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<</if>>
 				<br>
 				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
 				<br>
@@ -627,8 +637,15 @@
 		<<if $daily.birdGroom is undefined and $bird.activity is "groom">>
 			<<ind>><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
 		<</if>>
-		<<if !$daily.birdCasualFlight and $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and $weather isnot "rain">>
-			<<ind>><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>><br>
+		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1>>
+			<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+				<span class="red">You're too exhausted to go on a casual flight.</span>
+			<<elseif $weather is "rain">>
+				<span class="purple">It's too rainy to go flying casually.</span>
+			<<else>>
+				<<ind>><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>>
+			<</if>>
+			<br>
 		<</if>>
 		<<if $syndromebird and $lurkers_held gte 1 and $bird.state is "home" and ["sing", "groom"].includes($bird.activity)>>
 			<<mooricon "lurkers_netted">><<link "Give <<bhim>> the netted lurker" "Bird Tower Give Captured Lurker">><</link>><<glove>><br>
@@ -642,8 +659,15 @@
 	<<elseif $birdBask is 1 and ["sing", "groom"].includes($bird.activity) and $bird.state is "home">>
 		<<baskicon>><<link [[Continue to bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
-		<<if !$daily.birdCasualFlight and $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and $weather isnot "rain">>
-			<<ind>><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>><br>
+		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1>>
+			<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+				<span class="red">You're too exhausted to go on a casual flight.</span>
+			<<elseif $weather is "rain">>
+				<span class="purple">It's too rainy to go flying casually.</span>
+			<<else>>
+				<<ind>><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>>
+			<</if>>
+			<br>
 		<</if>>
 		<<ind>><<link [[Get up|Bird Tower Perch]]>><<unset $birdBask>><<endevent>><</link>><br>
 		<<getouticon>><<link [[Leave|Bird Tower Bask Leave]]>><<unset $birdBask>><<unset $birdPerch>><<endevent>><</link>><br>
@@ -662,6 +686,92 @@
 		<<bird_fly_options>>
 	<</if>>
 	<<unset $birdSingAbsent>>
+<</widget>>
+
+<<widget "bird_telescope_options">>
+	<<if $bird.state is "hunting" and $bird.timer lte 0>>
+		<<endevent>>
+		<<npc "Great Hawk">>
+		You hear the flap of wings as the <<beasttype>> returns.
+
+		<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
+		<<bird_hunt_return>>
+	<<elseif $bird.state is "home" and $bird.activity isnot "sleep" and $bird.activity isnot "sing" and $bird.activity isnot "groom" and $bird.timer lte 0 and $bird.injured is 0>>
+		<<endevent>>
+		<<npc "Great Hawk">>
+		<<if $monster is 1>>
+			The <<beasttype>>
+			<<if $bird.activity is "build" or $bird.activity is "sleep">>
+				rises from <<bhis>> nest.
+			<<elseif $bird.activity is "bathe">>
+				rises from the rainwater pool, and shakes <<bhis>> wings dry.
+			<<else>>
+				<<if $birdBask is 1>>gingerly helps you stand, and <</if>>steps to the edge of the perch.
+			<</if>>
+			"<<print either(
+				"I crave a hunt.",
+				"The wild beckons me.",
+				"My talons itch for prey.",
+				"The winds call me.",
+				"I must stretch my wings."
+			)>> I will return with a gift."
+		<<else>>
+			The <<beasttype>>
+			<<if $bird.activity is "build" or $bird.activity is "sleep">>
+				rises from <<bhis>> nest,
+			<<elseif $bird.activity is "bathe">>
+				rises from the rainwater pool, and steps to the edge of the perch,
+			<<else>>
+				steps to the edge of the perch,
+			<</if>>
+			looking out over the moor. <<bHis>> gaze is harsh. <<bHe>> seems to be looking to hunt.
+		<</if>>
+		<br><br>
+
+		<<if $syndromebird is 1>>
+			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
+				<<flight_time_check 30 "silent">>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<</if>>
+				<br>
+				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<<else>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<</if>>
+				<br>
+				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<bHe>> spreads <<bhis>> wings and launches from the tower.
+			<br><br>
+			<<set $bird.timer to random(30, 60)>>
+			<<set $bird.state to "hunting">>
+			<<unset $birdPerch>>
+			<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<if $time.dayState is "night">>
+			<<if $daily.telescopeBlood and isBloodmoon()>>
+				<span class="red">You don't want to look at the sky right now.</span>
+			<<else>>
+				<<link [[Watch the sky (1:00)|Bird Tower Telescope Sky]]>><<bird_pass 60>><</link>>
+			<</if>>
+			<br>
+		<</if>>
+		<<link [[Watch the moor (0:20)|Bird Tower Telescope Moor]]>><<bird_pass 20>><</link>>
+		<br>
+		<<link [[Step away|Bird Tower Perch]]>><</link>>
+		<br>
+	<</if>>
 <</widget>>
 
 <<widget "bird_fly_options">>
@@ -1221,7 +1331,7 @@
 	<<rng 5>>
 	<<switch $rng>>
 		<<case 1>>It's just a big stick. You take it anyways. <<flight_hunt_get "sticks" 1>>
-		<<case 2>>It's a lurker, freshly caught. You take it. <<flight_hunt_get "lurker" 1>>
+		<<case 2>>It's a lurker, freshly caught. You take it. <<flight_hunt_get "lurkers" 1>>
 		<<case 3>>It's a piece of torn fabric. You take it. <<flight_hunt_get "fabric" 1>>
 		<<case 4>>It's just a particularly shiny rock. You take it anyways. <<flight_hunt_get "junk" 1>>
 		<<default>>
@@ -2116,7 +2226,7 @@
 				<br>
 				<<mooricon $_uReq>>
 				<span @class="$_spColour">
-				<<if ["tools", "tarp", "pot", "mirror", "wardrobe"].includes($_uReq)>>
+				<<if ["tools", "telescope", "tarp", "pot", "mirror", "wardrobe"].includes($_uReq)>>
 					<<print $_uReq.toUpperFirst()>> required
 				<<else>>
 					<<print $_uReq.toUpperFirst()>> level $_upgrade.upgradesRequired[$_uReq] required

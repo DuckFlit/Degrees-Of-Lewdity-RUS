@@ -1029,12 +1029,20 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<<if $syndromebird is 1>>
 			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
 				<<flight_time_check 30 "silent">>
-				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<</if>>
 				<br>
 				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
 				<br>
 			<<else>>
-				<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<</if>>
 				<br>
 				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
 				<br>
@@ -1072,12 +1080,20 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<<if $syndromebird is 1>>
 			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
 				<<flight_time_check 30 "silent">>
-				<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<</if>>
 				<br>
 				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
 				<br>
 			<<else>>
-				<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<</if>>
 				<br>
 				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
 				<br>
@@ -1135,6 +1151,27 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
 	<br>
+<<elseif $bird.state is "home" and $bird.activity is "build" and $bird.upgrades.shelter gte 2 and $birdShelterTimer and $birdShelterTimer lte 0>>
+	<<npc "Great Hawk">>
+	You see the <<beasttype>> carrying some sticks and leaves to repair the shelter. <<bHe>> stops when <<bhe>> sees what you've built in the old shelter's place.
+	<br><br>
+
+	<<if $monster is 1>>
+		"<<Wife>> did this?" <<bHe>> gives the tarp a hefty tug, and looks impressed when it holds. <<bHe>> smiles wide, before walking up to you and hugging you.
+		"Had to fix the old one so many times. Many soggy, sleepless nights. Thank you." <<bHe>> looks at you with adoration.
+	<<else>>
+		<<bHe>> pokes and prods at the tarp, pulling at it to test it. You're about to stop <<bhim>>, but <<bhe>> looks to you and starts chirping.
+		<<bHe>> puffs out <<bhis>> plumage and starts bobbing <<bhis>> head. <<bHe>> seems to be happy with what you've done.
+	<</if>>
+	<<npcincr "Great Hawk" love 6>><<ggglove>>
+	<br><br>
+
+	<span class="teal">You save the sticks and leaves <<bhe>> was carrying for later.</span> <<set $bird.materials.sticks += 2>><<set $bird.materials.leaves += 2>>
+	<br><br>
+	<<unset $birdShelterTimer>>
+
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
 <<elseif $bird.upgrades.wardrobe is 1 and $bird.wardrobe_timer lte 1 and $bird.state is "home" and !$possessed>>
 	<<run delete $bird.wardrobe_timer>>
 	<<npc "Great Hawk">>
@@ -1154,7 +1191,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<if $monster is 1>>
 		<<bHes>> holding a torn piece of fabric. It looks like <<bhe>> was trying to hang it up. "Still don't understand landbound plumage. Sorry." <<bHe>> hands it to you apologetically before walking away.
 	<<else>>
-		<<bHe>> holds a torn piece of fabric in <<bhis>> beak. It looks like <<bHe>> was trying to put it in your wardrobe. <<bHe>> drops it at your feet apologetically before hopping away.
+		<<bHe>> holds a torn piece of fabric in <<bhis>> beak. It looks like <<bhe>> was trying to put it in your wardrobe. <<bHe>> drops it at your feet apologetically before hopping away.
 	<</if>>
 	<<set $bird.materials.fabric ++>>
 	<br><br>
@@ -2454,7 +2491,7 @@ You sit by the rainwater pool.
 		<<set $birdSleep to 1>>
 	<</switch>>
 <<else>>
-	<<your_bird_text "cap">>is out hunting.
+	<<your_bird_text "cap">> is out hunting.
 <</if>>
 <<if $syndromebird is 1>>
 	<<storeon "birdtower" "check">>
@@ -3294,7 +3331,7 @@ You bring your attentive touch down towards <<bhis>> groin.
 	<br><br>
 	<<bird_perch_options>>
 <<elseif $rng gte 71>>
-<<run statusCheck("Kylar")>>
+	<<run statusCheck("Kylar")>>
 	Your thoughts turn to
 	<<if random(1,2) is 1>>
 		<<switch $loveInterest.primary>>
@@ -3434,8 +3471,12 @@ You bring your attentive touch down towards <<bhis>> groin.
 	<<else>>
 		<<bHe>> must see something.
 	<</if>>
-	<<if $transformationParts.traits.sharpEyes isnot "disabled">>
-		Thanks to your superior eyesight, you see it too.
+	<<if $transformationParts.traits.sharpEyes isnot "disabled" or $bird.upgrades.telescope is 1>>
+		<<if $transformationParts.traits.sharpEyes isnot "disabled">>
+			Thanks to your superior eyesight, you see it too.
+		<<else>>
+			You look through the telescope, and see it too.
+		<</if>>
 		<<switch random(1,6)>>
 			<<case 1>>
 				<<endevent>><<beastNEWinit 3 fox>>
@@ -4164,7 +4205,7 @@ You get to work securing the tarp to the roof. You decide to place it under the 
 <br><br>
 
 Having tools makes it simple, and with some wood for proper weight distribution, it seems secure. You give it a hefty tug, and it stays in place. You step back and admire your work. <<stress -6>><<lstress>>
-<<unset $birdShelterTimer>><<unset $birdShelterRepair>>
+<<unset $birdShelterRepair>>
 <br><br>
 
 <<link [[Next|Bird Tower Build]]>><</link>>
@@ -4655,7 +4696,7 @@ It looks cute.
 	<<set $bird.clean to Math.clamp($bird.clean, 0, 20)>>
 <</if>>
 
-<<link [[Next|Bird Tower]]>><<if $propEquipped is 1>><<handheldruined true>><</if>><<endevent>><</link>>
+<<link [[Next|Bird Tower]]>><<if $propEquipped is 1>><<handheldruined true>><<set $propEquipped to 0>><</if>><<endevent>><</link>>
 <br>
 
 :: Bird Tower Casual Flight
@@ -4676,7 +4717,7 @@ You ask your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>spouse<</if>>
 	<<if $monster is 1>>
 		<<bHe>> considers it for a moment, then speaks. "We go."
 	<<else>>
-		<<bHe>> retracts <<bhis>> talons. <<bHe>> tilts <<bhis>> head to the side, before hopping over to the perch.
+		<<bHe>> retracts <<bhis>> talons and tilts <<bhis>> head to the side, before hopping over to the perch.
 	<</if>> 
 <<elseif $dateCount.GreatHawkCasual lte 7>>
 	<<if $monster is 1>>
@@ -5481,6 +5522,247 @@ The Great Hawk dives directly towards you, talons extended.
 
 :: Bird Tower Telescope
 <<effects>>
+You look through your telescope.
+<<if $time.dayState isnot "night">>
+	It's too early to look at the sky.
+<<elseif $weather isnot "clear">>
+	The weather isn't clear enough to see anything in the sky.
+<</if>>
+<br><br>
+
+<<bird_telescope_options>>
+
+:: Bird Tower Telescope Moor
+<<effects>>
+
+<<cleareventpool>>
+
+<<if $bird.state is "home" and ["sing", "groom"].includes($bird.activity)>>
+	<<addinlineevent "telescope_bird_home_moor" 1>>
+		<<npc "Great Hawk">>
+		You look around the moor. Your vision is suddenly filled with a gigantic eye. You move your face away. <<your_bird_text "cap">> is looking through the opposite end of the telescope at you.
+		<<if $monster is 1>>
+			"Strange thing. You look so small through this."
+		<<else>>
+			<<bHe>> chirps at you.
+		<</if>>
+		You laugh and pat <<bhim>> on the head. <<stress -12>><<llstress>>
+	<</addinlineevent>>
+<</if>>
+
+<<if $bird.state is "hunting" and !$daily.birdTelescopeHunt>>
+	<<addinlineevent "telescope_bird_hunt" 1>>
+		<<npc "Great Hawk">><<set $daily.birdTelescopeHunt to true>>
+		You look around the moor. You see a shape dive from the air. It takes a bit for you to track it, but once you do, you realise that it's <<your_bird_text>>. You lose <<bhim>> as <<bhe>> dives again. You wonder what <<bhe>> just caught. <<stress -12>><<llstress>>
+	<</addinlineevent>>
+<</if>>
+
+<<if !$daily.huntRemyCamp>>
+	<<addinlineevent "telescope_remy_camp" 3>>
+		<<if $daily.huntRemyCampNorth is undefined>>
+			<<set $daily.huntRemyCampNorth to random(2,5)>>
+			<<set $daily.huntRemyCampEast to random(-5,5)>>
+		<</if>>
+		<<set $daily.huntRemyCamp to true>>
+		<<if Time.dayState is "night">>
+			It's too dark to see much of anything, but you see a cluster of lights in the distance.
+		<<else>>
+			You see a group of campfires.
+		<</if>>
+		They're surrounded by tents, which are themselves surrounded by supplies and makeshift barriers. The occupants are dressed in matching uniforms.
+		<<if $remy_seen is "farm" or $remy_seen is "livestock" or $livestock_intro isnot undefined>>
+			You recognise them. <span class="red">Remy's goons.</span>
+		<<else>>
+			They look dangerous.
+		<</if>>
+		<br><br>
+
+		It's
+		<<switch $daily.huntRemyCampNorth>>
+			<<case 2>>only a short distance from the tower,
+			<<case 3>>not too far from the tower,
+			<<case 4>>a good distance from the tower,
+			<<case 5>>at the very edge of the moor,
+		<</switch>>
+		<<switch $daily.huntRemyCampEast>>
+			<<case -5 -4 -3>>to the northwest.
+			<<case -2 -1>>to the north and slightly west.
+			<<case 0>>directly to the north.
+			<<case 1 2>>to the north and slightly east.
+			<<case 3 4 5>>to the northeast.
+		<</switch>>
+	<</addinlineevent>>
+<</if>>
+
+<<if Time.dayState is "night">>
+	<<if isBloodmoon()>>
+		<<addinlineevent "telescope_blood_1" 3>>
+			The red fields before you seem to stretch on forever. <<awareness 1>><<trauma 12>><<gawareness>><<ggtrauma>>
+		<</addinlineevent>>
+		<<addinlineevent "telescope_blood_2" 3>>
+			The moor is lit up well by the moon, but it seems unusually still. Yet, when you lose focus, it feels as though the lens of the telescope has become liquid. Your view writhes for a brief moment until you focus again. <<gtrauma>><<trauma 6>>
+		<</addinlineevent>>
+	<<else>>
+		<<addinlineevent "telescope_dark_nothing" 3>>
+			It's too dark to see much of anything.
+		<</addinlineevent>>
+		<<addinlineevent "telescope_dark_camp_1" 1>>
+			It's too dark to see much of anything, but you see a single light in the distance. A campfire. A group of tents sit near, and a small crowd sits around the fire, laughing. You wonder what they're talking about. <<stress -3>><<lstress>>
+		<</addinlineevent>>
+		<<addinlineevent "telescope_dark_camp_2" 1>>
+			It's too dark to see much of anything, but you see a single light in the distance. A campfire. A single tent sits near. Through backlit silhouettes, you see a figure bouncing up and down. A pair of arms pulls them back down. <<arousal 8>><<garousal>>
+		<</addinlineevent>>
+	<</if>>
+<<else>>
+	<<if $bogProgress gte 1>>
+		<<addinlineevent "telescope_bog_person" 0.5>>
+			You spot a figure in black robes far to the west. You watch them for some time, until they disappear into the bog.
+		<</addinlineevent>>		
+	<<else>>
+		<<addinlineevent "telescope_bog_discover" 3>>
+			<<set $bogProgress to 1>>
+			You look to the west, towards the forest. You're just barely able to see the endpoint of a wooden boardwalk. Behind it, the moor ends and stagnant water begins.
+			<br><br>
+
+			A wall of drenched leaves obscures anything further, but you know that the forest must lie beyond. It could make for a one-way shortcut from the forest to the deeper parts of the moor.
+			<br><br>
+
+			<span class="gold">You've discovered the bog.</span>
+		<</addinlineevent>>
+	<</if>>
+	<<if Time.season is "winter" and $weather is "clear">>
+		<<addinlineevent "telescope_snowblind" 1>>
+			The sun's reflection on the snow is blinding, making it difficult to see much of anything. 
+		<</addinlineevent>>
+	<</if>>
+	<<addinlineevent "telescope_nothing" 1>>
+		You don't see anything in particular, but the gentle swaying of the grasses and bushes is soothing. <<stress -2>><<lstress>>
+	<</addinlineevent>>
+	<<addinlineevent "telescope_person" 1>>
+		You spot someone walking near the edge of the moor. They look like a hiker, but they're too far away for you to see any details. You watch them for a while. <<stress -2>><<lstress>>
+	<</addinlineevent>>
+	<<addinlineevent "telescope_people_normal" 1>>
+		You spot a group of hikers in the middle of the moor. They seem to be looking for something. Eventually, one of them appears to call out to the others, and they disappear over a hill. <<stress -2>><<lstress>>
+	<</addinlineevent>>
+	<<addinlineevent "telescope_people_lewd" 1>>
+		<<generate1>><<generatep2>>
+		You spot a <<person>> and a <<person2>><<person>> in the middle of the moor. They're laughing about something. Suddenly, the <<person1>><<person>> pushes <<himself>> against the <<person2>><<person>>, who responds by pulling <<person1>><<him>> to the ground.
+		<br><br>
+
+		They start to remove each other's clothes. <<if $weather is "rain">>They both get covered in mud pretty quickly, but neither seem to mind.<</if>> They begin to grind against each other, and it isn't long before they're having intercourse out in the open. <<arousal 50>><<garousal>>
+	<</addinlineevent>>
+	<<addinlineevent "telescope_people_rape" 1>>
+		<<generate1>><<generatev2>>
+		You spot a <<person>> and a <<person2>><<person>> in the middle of the moor. The <<person>> is struggling in the <<person1>><<persons>> grasp. Suddenly, the <<person1>><<person>> pushes <<person2>><<him>> down and rips away <<his>> clothing.
+		<br><br>
+
+		<<if $weather is "rain">>They both get covered in mud.<</if>> The <<person1>><<person>> begins to have <<his>> way with <<his>> victim. There's nothing you could hope to do in time. <<trauma 3>><<arousal 50>><<gtrauma>><<garousal>>
+	<</addinlineevent>>
+	<<addinlineevent "telescope_animals_1" 1>>
+		<<beastNEWinit 3 fox>>
+		A trio of <<beastsplural>> fight over a lurker in the distance. <<stress -2>><<lstress>>
+	<</addinlineevent>>
+	<<if $hallucinations gte 2>>
+		<<addinlineevent "telescope_tentacles_1" 1>>
+			You notice a bush swaying in the opposite direction of the wind. Its branches writhe in unnatural ways. <<awareness 1>><<stress 2>><<gawareness>><<gstress>>
+		<</addinlineevent>>
+		<<addinlineevent "telescope_tentacles_1" 1>>
+			You see a person wearing all black piling up small stones. They disappear the instant you look away. <<awareness 1>><<stress 2>><<gawareness>><<gstress>>
+		<</addinlineevent>>
+	<</if>>
+<</if>>
+
+<<runeventpool>>
+<<endevent>>
+<br><br>
+
+<<bird_telescope_options>>
+
+:: Bird Tower Telescope Sky
+<<effects>>
+You look up to the sky.
+<br><br>
+
+<<cleareventpool>>
+
+<<if isBloodmoon()>>
+	<<addinlineevent "telescope_sky_blood" 2>>
+		<<set $daily.telescopeBlood to true>>
+		A few translucent clouds pass the bottom crest of the moon.
+		<br><br>
+
+		One of the clouds looks at you.
+		<br><br>
+
+		You cover the lens of the telescope. <<stress 12>><<awareness 3>><<ggstress>><<ggawareness>>
+	<</addinlineevent>>
+<</if>>
+
+<<addinlineevent "telescope_sky_stars" 1>>
+	<<switch ($historytrait + $sciencetrait)>>
+		<<case 0 1 2>>You can't recognise any of the constellations, so you just admire some of the brighter stars. <<stress -6>><<llstress>>
+		<<case 3 4>>You start trying to name a few of the constellations. You're pretty sure you got some of them right. <<trauma -4>><<ltrauma>>
+		<<case 5 6>>You spend some time naming constellations to yourself. <<trauma -8>><<lltrauma>>
+		<<case 7 8>>
+			<<if $hallucinations gte 1 and $rng lte 6>>
+				<<if $rng lte 2 or $worn.neck.name is "dark pendant">>
+					<<if Time.season is "winter">>
+						A particular constellation catches your eye. It's bright and vibrant.
+					<<else>>
+						A particular constellation catches your eye. It's dim and distant, but you're just able to make out the shape.
+					<</if>>
+					A burning chariot, pulled by some indistinct beast.
+					<<if $temple_confessor_intro>>
+						The name is on the tip of your tongue, but your body refuses to utter it. As if the word was a curse.
+					<<else>>
+						You think of its name. You suddenly feel ill.
+					<</if>>
+					<br><br>
+					
+					<<if $world_corruption_soft gte 50>>
+						The antlers on the head of the charioteer begin to split as you watch. Phantasmal lines connect them to other stars, adding them to a profane whole. Antlers sprout antlers.
+					<<else>>
+						You swear that the head of the charioteer turns to look at you.
+					<</if>>
+					You look away, your heart racing. <<awareness 7>><<willpower 4>><<stress 36>><<ggawareness>><<ggwillpower>><<gggstress>>
+				<<elseif $rng lte 4 or $worn.neck.name is "holy pendant">>
+					A particular constellation catches your eye.
+					<<if Time.season is "spring">>
+						A particular constellation catches your eye. It's bright and vibrant.
+					<<else>>
+						A particular constellation catches your eye. It's a bit dim, but you make out the shape regardless.
+					<</if>>					
+					It roughly matches one of the more well-known ones. A figure standing tall, holding something in each hand. But there's something off about it.
+					<br><br>
+
+					<<if $world_corruption_soft gte 50>>
+						Your mind is telling you that the pattern is all wrong. It's upside down, and skewed.
+					<<else>>
+						It seems too detailed. Stars you don't recognise have added themselves to the whole.
+					<</if>>
+					Looking at it makes you feel like there's someone whispering reassurances and comforting lies in your ear. Looking at it too long makes your eyes hurt. <<control 10>><<trauma -24>><<stress -24>><<awareness 4>><<ggcontrol>><<lltrauma>><<llstress>><<gawareness>>
+				<<elseif $rng lte 6 or $worn.neck.name is "stone pendant">>
+					You spot a shape you aren't familiar with. It doesn't match any constellations you know, but there's unmistakably a pattern present.
+					It feels as though someone has made a horrible mistake, and something has been moved from its intended position. You feel dizzy, yet warm.
+					<br><br>
+
+					When you try to focus again, the pattern is gone. <<arousal 200>><<awareness 7>><<ggarousal>><<ggawareness>>
+				<</if>>
+			<<else>>
+				<<if $rng gte 50>>
+					You're easily able to recognise many of the constellations thanks to your science and history lessons. You wish you had some paper to sketch on.
+				<<else>>
+					You spot and recognise some planets and other celestial bodies. It makes you feel tiny, but smart. 
+				<</if>>
+				<<trauma -12>><<llltrauma>>
+			<</if>>
+	<</switch>>
+<</addinlineevent>>
+
+<<runeventpool>>
+<br><br>
+
+<<bird_telescope_options>>
 
 
 :: Bird Tower Hatching

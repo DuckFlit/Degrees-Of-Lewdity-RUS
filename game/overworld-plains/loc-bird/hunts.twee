@@ -961,7 +961,7 @@ What will you hunt for?
 			Despite your best efforts, you're unable to find much intact cloth. You take the little that you did find.
 			<<flight_hunt_get "fabric" 1>>
 		<</if>>
-		<<ghousekeeping 1 300>>
+		<<housekeeping 1 300>><<ghousekeeping 300>>
 		<br><br>
 
 		<<flight_hunt_return>>
@@ -3352,7 +3352,7 @@ You won't be able to do anything else to them today, now that they're alerted.
 
 :: Bird Hunt Tent Lurker Drop
 <<effects>>
-<<flight_hunt_remove "lurker" 1>>
+<<flight_hunt_remove "lurkers" 1>>
 You decide that you can spare one of your caught lurkers.
 <<if $bird.hunts.duo is true>>
 	<<generate2>><<person1>>
@@ -3409,7 +3409,6 @@ You're able to see quite far around you.
 <<if $bird.hunts.duo is true>>
 	<<npc "Great Hawk">><<person1>>
 	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to setup a trap.
-	<br>
 	<<if $monster is 1>>
 		"Wife is smart, making things like this," <<bhe>> says.
 	<<else>>
@@ -3732,7 +3731,7 @@ The creatures disappear into the heather.
 	<<if $bird.hunts.duo is true>>
 		<<npc "Great Hawk">><<person1>>
 	<</if>>
-<<elseif $bird.hunts.duo is true and $phase isnot 1>>
+<<elseif $bird.hunts.duo is true and !$birdAmbushTrap>>
 	<<npc "Great Hawk">><<person1>>
 	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to set up an ambush.
 	<br>
@@ -3814,10 +3813,8 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 		<</if>>
 		<br><br>
 
-		<<if !$birdAmbushTrap>>
-			<<link [[Let them pass and keep waiting (0:15)|Bird Hunt Ambush Wait]]>><<endevent>><<bird_pass 15>><</link>>
-			<br>
-		<</if>>
+		<<link [[Let them pass and keep waiting (0:15)|Bird Hunt Ambush Humans Pass]]>><<bird_pass 15>><</link>>
+		<br>
 		<<link [[Attack|Bird Hunt Ambush Humans]]>><</link>><<gcrime "thievery">>
 		<br>
 	<</addinlineevent>>
@@ -3840,11 +3837,29 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 	<<runeventpool>>
 <</if>>
 
+:: Bird Hunt Ambush Humans Pass
+<<effects>>
+<<if $birdAmbushTrap>>
+	You stay on the pillar as they pass. One of them steps on your trap and tumbles into the hole. You giggle upon hearing <<person1>><<his>> cursing. <<His>> companion pulls <<him>> rom the hole and they move on.
+	<<unset $birdAmbushTrap>>
+	<br><br>
+
+	As you continue to wait, you notice that something got left behind in the hole. It must have fallen out of <<his>> pack.
+	<br>
+	<<flight_hunt_get_ambush 2>>
+<<else>>
+	You let them pass without incident.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Hunt Ambush Wait]]>><<endevent>><</link>>
+<br>
+
 :: Bird Hunt Ambush Humans
 <<effects>>
 <<if $bird.hunts.duo is true>>
 	<<npc "Great Hawk" 3>>
-	You tell <<your_bird_text>> to wait for you to make the first move.
+	You tell your spouse to wait for you to make the first move.
 	<br><br>
 <</if>>
 
@@ -3913,7 +3928,7 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 			"Alright! C-Calm down, you lunatic!" <<he>> says. "Just take what you want from my backpack and leave us alone." <<He>> throws <<his>> backpack towards you.
 			<br><br>
 
-			The <<person1>><<person>> in the hole yells up. "I'm so sick of this shit." <<he>> tosses up <<his>> backpack.
+			The <<person1>><<person>> in the hole yells up. "I'm so sick of this shit." <<He>> tosses up <<his>> backpack.
 			<br><br>
 
 			<<flight_hunt_get_ambush 6>>
@@ -4052,7 +4067,7 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 		<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
 		<br>
 	<<elseif $rng gte 40>>
-		For a moment, they are frozen. They look you over, thinking up a response.
+		They look you over, thinking up a response.
 		<<if $bird.hunts.duo is true>>
 			"How the hell did <<pshe>> tame a hawk?" <<he>> asks the other. <<person1>><<He>> simply shrugs. You repeat your demands.
 			"Alright, fine," <<person2>><<he>> says. "Just take what you want from my backpack and leave us alone." <<He>> throws <<his>> backpack towards you.
@@ -4081,14 +4096,14 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 			<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
 			<br>
 		<<else>>
-			After a moment of silence, the <<person1>><<person>> steps forward and yells. "There's no way we're giving anything to you!"<br>
+			Once <<person1>><<he>> snaps out of it, the <<person>> steps forward and yells. "There's no way we're giving anything to you!"<br>
 			"There's two of us and one of you," the <<person2>><<person>> yells out as well.
 			<br><br>
 
 			The <<person1>><<person>> is close to the hole.
 			<br><br>
 
-			<<link "Push <<bhim>>" "Bird Hunt Ambush Push">><</link>><<athleticsdifficulty 100 800>>
+			<<link "Push <<him>>" "Bird Hunt Ambush Push">><</link>><<athleticsdifficulty 100 800>>
 			<br>
 			<<link [[Let them go and keep waiting (0:15)|Bird Hunt Ambush Wait]]>><<bird_pass 15>><<endevent>><<set $phase to 2>><</link>>
 			<br>
