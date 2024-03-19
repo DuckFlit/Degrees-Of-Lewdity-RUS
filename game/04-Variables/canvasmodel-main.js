@@ -2718,7 +2718,7 @@ Renderer.CanvasModels["main"] = {
 					if (options.belly >= 22) {
 						return 12;
 					} else {
-						return 10;
+						return 8;
 					}
 				} else {
 					return 0;
@@ -2744,7 +2744,7 @@ Renderer.CanvasModels["main"] = {
 					if (options.belly >= 22) {
 						return 14;
 					} else {
-						return 12;
+						return 10;
 					}
 				} else {
 					return 0;
@@ -2770,7 +2770,7 @@ Renderer.CanvasModels["main"] = {
 					if (options.belly >= 22) {
 						return 14;
 					} else {
-						return 12;
+						return 10;
 					}
 				} else {
 					return 0;
@@ -2803,7 +2803,7 @@ Renderer.CanvasModels["main"] = {
 					if (options.belly >= 22) {
 						return 16;
 					} else {
-						return 14;
+						return 12;
 					}
 				} else {
 					return 0;
