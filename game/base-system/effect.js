@@ -252,7 +252,7 @@ function effects() {
 	if (V.speechcycle >= 7) V.speechcycle = 0;
 
 	if (!V.inwater && V.squidcount) {
-		element("span", `The squidV.${V.squidcount > 1 ? "s" : ""} drop off you, seeking water.`, "blue");
+		element("span", `The squid${V.squidcount > 1 ? "s" : ""} drop${V.squidcount > 1 ? "" : "s"} off you, seeking water.`, "blue");
 		V.squidcount = 0;
 	}
 	V.inwater = 0;
