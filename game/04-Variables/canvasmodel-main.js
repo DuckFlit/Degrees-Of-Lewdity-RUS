@@ -3775,7 +3775,7 @@ Renderer.CanvasModels["main"] = {
 			zfn(options) {
 				let isAltPosition = options.alt_position_face &&
 				options.worn_face_setup.altposition !== undefined;
-				if (isAltPosition && options.worn_face_setup.type.includes("cool")) {
+				if (isAltPosition && options.worn_face_setup.type.includes("cool") || options.worn_face_setup.type.includes("glasses")) {
 					return ZIndices.over_head;
 				} else if (options.facewear_layer === "front") {
 					return ZIndices.face - 12.5;
@@ -3798,7 +3798,7 @@ Renderer.CanvasModels["main"] = {
 			zfn(options) {
 				let isAltPosition = options.alt_position_face &&
 				options.worn_face_setup.altposition !== undefined;
-				if (isAltPosition && options.worn_face_setup.type.includes("cool")) {
+				if (isAltPosition && options.worn_face_setup.type.includes("cool") || options.worn_face_setup.type.includes("glasses")) {
 					return ZIndices.over_head;
 				} else if (options.facewear_layer === "front") {
 					return ZIndices.face - 12.5;
