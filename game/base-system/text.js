@@ -413,7 +413,7 @@ const statDisplay = (() => {
 			result = statChange("Sydney's Corruption", 1, "purple");
 		}
 		if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-			result += glust();
+			result += statChange("Lust", 1, "lewd");
 		}
 		T.warnstate = -1;
 		return result;
@@ -426,7 +426,7 @@ const statDisplay = (() => {
 			result = statChange("Sydney's Corruption", 2, "purple");
 		}
 		if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-			result += glust();
+			result += statChange("Lust", 1, "lewd");
 		}
 		T.warnstate = -2;
 		return result;
@@ -439,7 +439,7 @@ const statDisplay = (() => {
 			result = statChange("Sydney's Corruption", 3, "purple");
 		}
 		if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-			result += glust();
+			result += statChange("Lust", 1, "lewd");
 		}
 		T.warnstate = -3;
 		return result;
