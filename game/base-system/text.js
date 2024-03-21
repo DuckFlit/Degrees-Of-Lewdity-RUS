@@ -571,47 +571,53 @@ const statDisplay = (() => {
 	DefineMacroS("ggghousekeeping", amount => statChange("Housekeeping", 3, "green", () => amount !== undefined || V.housekeeping < amount));
 
 	DefineMacroS("ldom", npc => {
-		let targetName = "NPC";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
-		else if (npc) targetName = npc + "'s";
-		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		let targetName = "";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+			return statChange("Robin's Confidence", -1, "lblue");
+		} else if (npc) targetName = npc + "'s";
+		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -1, "lblue");
 	});
 	DefineMacroS("lldom", npc => {
-		let targetName = "NPC";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
-		else if (npc) targetName = npc + "'s";
-		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		let targetName = "";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+			return statChange("Robin's Confidence", -2, "lblue");
+		} else if (npc) targetName = npc + "'s";
+		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -2, "lblue");
 	});
 	DefineMacroS("llldom", npc => {
-		let targetName = "NPC";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
-		else if (npc) targetName = npc + "'s";
-		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		let targetName = "";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+			return statChange("Robin's Confidence", -3, "lblue");
+		} else if (npc) targetName = npc + "'s";
+		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -3, "lblue");
 	});
 	DefineMacroS("gdom", npc => {
-		let targetName = "NPC";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
-		else if (npc) targetName = npc + "'s";
-		else if (V.npc.length) targetName = V.npc[0] + "'s";
+		let targetName = "";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		  return statChange("Robin's Confidence", 1, "purple");
+		} else if (npc) targetName = npc + "'s";
+		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, 1, "purple");
-	});
-	DefineMacroS("ggdom", npc => {
-		let targetName = "NPC";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
-		else if (npc) targetName = npc + "'s";
-		else if (V.npc.length) targetName = V.npc[0] + "'s";
+	  });
+	  DefineMacroS("ggdom", npc => {
+		let targetName = "";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		  return statChange("Robin's Confidence", 2, "purple");
+		} else if (npc) targetName = npc + "'s";
+		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, 2, "purple");
-	});
-	DefineMacroS("gggdom", npc => {
-		let targetName = "NPC";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") targetName = "Robin's";
-		else if (npc) targetName = npc + "'s";
-		else if (V.npc.length) targetName = V.npc[0] + "'s";
+	  });
+	  DefineMacroS("gggdom", npc => {
+		let targetName = "";
+		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		  return statChange("Robin's Confidence", 3, "purple");
+		} else if (npc) targetName = npc + "'s";
+		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, 3, "purple");
-	});
+	  });
 
 	DefineMacroS("lrespect", () => statChange("Respect", -1, "red"));
 	DefineMacroS("llrespect", () => statChange("Respect", -2, "red"));
