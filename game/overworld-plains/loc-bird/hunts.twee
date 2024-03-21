@@ -732,6 +732,26 @@ What will you hunt for?
 		<br>
 	<</addinlineevent>>
 
+	<<addinlineevent "bird_hunt_underbrush" (_flight_hunt_chance.materials - Math.floor($bird.hunts.distanceEast / 2))>>
+		You spot a cluster of dying foliage. It should be easy to take materials from.
+		<br><br>
+
+		<<link [[Land (0:05)|Bird Hunt Underbrush]]>><<bird_pass 5>><</link>>
+		<br>
+		<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_hunt_flowers" (_flight_hunt_chance.materials + Math.floor($bird.hunts.distanceEast / 2))>>
+		You spot a patch of brightly coloured flowers.
+		<br><br>
+
+		<<link [[Land (0:05)|Bird Hunt Flowers]]>><<bird_pass 5>><</link>>
+		<br>
+		<<link [[Ignore|Bird Hunt Ignore]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
 	<<if $bird.upgrades.tarp is 0 and !$bird.hunts.loot.tarp>>
 		<<addinlineevent "bird_hunt_tarp" _flight_hunt_chance.materials>>
 			You notice a large blue tarp tied between two large rocks, providing shelter from the rain. No one seems to be around. You could take it for yourself.
@@ -1184,7 +1204,7 @@ You land near the leaves.
 			<<if $monster is 1>>
 				"Good eyes, <<wife>>."
 			<<else>>
-				Your <<beasttype>> squaks in approval at your alertness.
+				Your <<beasttype>> squawks in approval at your alertness.
 			<</if>>
 		<</if>>
 
@@ -1274,6 +1294,425 @@ Having escaped the sand, you look to pick leaves from the surface, but they've a
 <br><br>
 
 <<set _huntFail to 1>>
+<<flight_hunt_return>>
+
+:: Bird Hunt Underbrush
+<<effects>>
+You land near the dying plants. They look fragile. You'll have to choose which parts are most important to take.
+<br><br>
+
+<<link [[Take wood|Bird Hunt Underbrush 2]]>><<set $phase to 0>><</link>>
+<br>
+<<link [[Take sticks|Bird Hunt Underbrush 2]]>><<set $phase to 1>><</link>>
+<br>
+<<link [[Take leaves|Bird Hunt Underbrush 2]]>><<set $phase to 2>><</link>>
+<br>
+
+:: Bird Hunt Underbrush 2
+<<effects>>
+<<switch $phase>>
+	<<case 0>>You focus on larger pieces of wood on small dead trees. <<flight_hunt_get "wood" 1>>
+	<<case 1>>You snap off branches from the dead bushes and small trees. <<flight_hunt_get "sticks" 2>>
+	<<case 2>>You pluck away the few living leaves. <<flight_hunt_get "leaves" 2>>
+<</switch>>
+<br><br>
+
+<<set $danger to random(1, 10000)>>
+<<if $danger gte (9000 - $allure)>>
+	<<endevent>>
+	<<if $rng gte 50>><<beastNEWinit 1 fox>><<else>><<beastNEWinit 1 cat>><</if>>
+	You hear a low growl from inside the tangle. Two glowing eyes stare at you.
+	<<if $bird.hunts.duo is true>>
+		They flick between you and your spouse, before slowly backing away. <<stress 12>><<ggstress>>
+		<br><br>
+
+		<<flight_hunt_return>>
+	<<else>>
+		A <<beasttype>> pounces!
+		<<if $bestialitydisable is "f">>
+			<br><br>
+
+			<<link [[Next|Bird Hunt Underbrush Rape]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<else>>
+			You take flight to escape. <<beastescape>>
+			<br><br>
+
+			<<flight_hunt_return>>
+		<<if>>
+	<</if>>
+<<else>>
+	<<if $bird.hunts.duo is true>>
+		<<npc "Great Hawk">>
+		<<your_bird_text "cap">> looks at what you've taken.
+		<<if $monster is 1>>
+			"Good nest material."
+		<<else>>
+			<<bHe>> seems to approve.
+		<</if>>
+		<br><br>
+	<</if>>
+	<<flight_hunt_return>>
+<</if>>
+
+:: Bird Hunt Underbrush Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $NPCList[0].stance to "top">><<set $enemytrust -= 40>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<if $NPCList[0].type.includes("fox")>>
+	<<alarmstate '<span class="red"><<bHe>> screams right back in your face, drowning out your own screams.</span>'>>
+<</if>>
+<<beast $enemyno>>
+<br><br>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Hunt Underbrush Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Underbrush Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Underbrush Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	
+	<<bHe>> huffs in triumph, before slinking away into the underbrush.
+	<br><br>
+
+	<<tearful>> you rise to your feet.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<flight_hunt_return>>
+<<elseif $enemyhealth lte 0>>
+	<<bHe>> rolls away from you, and flees into the underbrush.
+	<br><br>
+
+	<<tearful>> you gather yourself.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<flight_hunt_return>>
+<<else>>
+	The <<beasttype>> turns away from you and slinks into the moor.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<flight_hunt_return>>
+<</if>>
+
+:: Bird Hunt Flowers
+<<effects>>
+You land amidst the flowers.
+<<if $bird.hunts.duo is true>>
+	<<npc "Great Hawk">>
+	Your spouse lands behind you.
+<</if>>
+<br><br>
+
+<<if $rng gte 80>>
+	<<if $plants_known.includes "strange_flower">>
+		<span class="purple">You recognise them.</span> Strange flowers.
+	<<else>>
+		You don't recognise the flowers, but they smell sweet.
+	<</if>>
+	You suddenly feel very dizzy.
+	<<if $bird.hunts.duo is true>>
+		<<run delete $bird.satisfied>>
+		<<if $monster is 1>>
+			<<your_bird_text "cap">> sways a bit. "<<Wife>>... this place feels wrong."
+		<<else>>
+			<<your_bird_text "cap">> is clearly feeling the effects too.
+		<</if>>
+	<</if>>
+	<<drugs 50>><<gdrugged>>
+	<br><br>
+
+	<<link [[Relax in the flowers for a while (0:15)|Bird Hunt Flowers Relax]]>><<set $phase to 4>><<bird_pass 15>><<stress -6>><<tiredness -2>><<arousal 1000>><<drugged 100>><</link>><<lstress>><<ltiredness>><<ggarousal>><<gggdrugged>>
+	<br>
+	<<if $plants_known.includes "strange_flower">>
+		<<link [[Take some (0:05)|Bird Hunt Flowers Take]]>><<bird_pass 5>><<drugs 50>><</link>><<gdrugged>><<tendingdifficulty 600 900>>
+		<br>
+	<</if>>
+	<<link [[Leave|Bird Hunt Flowers Leave]]>><<set $phase to 2>><</link>>
+	<br>
+<<else>>
+	There's nothing particularly useful here, but it's certainly pretty.
+	<br><br>
+
+	<<link [[Relax in the flowers for a while (0:15)|Bird Hunt Flowers Relax]]>><<set $phase to 1>><<bird_pass 15>><<stress -6>><<tiredness -2>><</link>><<lstress>><<ltiredness>>
+	<br>
+	<<if $bird.hunts.duo is true and !$daily.birdFlowerCrown>>
+		<<link [[Make a crown of flowers for your spouse (0:25)|Bird Hunt Flowers Relax]]>><<set $phase to 2>><<bird_pass 25>><</link>><<tendingdifficulty 1 200>>
+		<br>
+	<</if>>
+	<<if $worn.head.name isnot "flower crown">>
+		<<link [[Make yourself a crown of flowers (0:25)|Bird Hunt Flowers Relax]]>><<set $phase to 3>><<bird_pass 25>><</link>><<tendingdifficulty 1 200>>
+		<br>
+	<</if>>
+	<<link [[Leave|Bird Hunt Flowers Leave]]>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Flowers Relax
+<<effects>>
+<<switch $phase>>
+	<<case 1>>
+		You lay back in the flowers.
+		<<if $bird.hunts.duo>>
+			<<your_bird_text "cap">> looks down at you curiously, before
+			<<if $monster is 1>>
+				laying on <<bhis>> back next to you.
+			<<else>>
+				sitting down next to you.
+			<</if>>
+			You enjoy relaxing with <<bhim>> for a while.
+			<<npcincr "Great Hawk" love 1>><<glove>>
+		<<else>>
+			It's nice to let go for a while.
+		<</if>>
+		<br><br>
+
+		You decide not to linger too long.
+		<br><br>
+
+		<<flight_hunt_return>>
+	<<case 2>>
+		You start picking the prettiest flowers you can find, winding them together into a headpiece. You hold it up to <<your_bird_text>>, trying to measure out the exact size.
+		<<if $monster is 1>>
+			<<bHe>> eyes you curiously.
+		<<else>>
+			As you do, <<bhe>> grabs the unfinished crown in <<bhis>> beak. You gently flick <<bhim>> on the forehead to take it back.
+		<</if>>
+		<br><br>
+
+		You finish the crown and motion for <<bhim>> to lower <<bhis>> head.
+		<<if $tendingSuccess>>
+			<<set $daily.birdFlowerCrown to true>>
+			<span class="green">It fits, and stays together.</span>
+			<<if $monster is 1>>
+				<<bHe>> touches it with <<bhis>> hands. "I don't understand what this is. But <<wife>> made it, so I like it."
+			<<else>>
+				<<bHe>> shakes <<bhis>> head a few times, but quickly gets used to it. <<bHe>> headbutts you gently. <<bHe>> seems to like it.
+			<</if>>
+			<<trauma -8>><<lltrauma>>
+		<<else>>
+			It fits, but <span class="red">quickly falls apart.</span>
+			<<if $monster is 1>>
+				<<bHe>> picks up the fallen petals. "I don't understand what <<wife>> was doing. But it was pretty. Come back and try again some time?"
+			<<else>>
+				<<bHe>> tilts <<bhis>> head at you.
+			<</if>>
+		<</if>>
+		<<tending 1>><<npcincr "Great Hawk" love 1>><<glove>><<gtending>>
+		<br><br>
+
+		You decide not to linger much longer.
+		<br><br>
+
+		<<flight_hunt_return>>
+	<<case 3>>
+		You start picking the prettiest flowers you can find, winding them together into a headpiece. After a few minutes, you try on your crown.
+		<br><br>
+
+		<<if $tendingSuccess>>
+			<<if isConnectedToHood("head")>>
+				<<toggleHood>>
+			<</if>>
+			<<headwear 14>>
+			<<set $daily.birdFlowerCrown to true>>
+			<span class="green">It stays together.</span>
+			<<if $bird.hunts.duo is true>>
+				<<if $monster is 1>>
+					<<your_bird_text "cap">> touches it with <<bhis>> hands. "New plumage. It's pretty."
+				<<else>>
+					<<your_bird_text "cap">> tries to grab it from your head with <<bhis>> beak. <<bHe>> seems to like it.
+				<</if>>
+			<</if>>
+			<<trauma -8>><<lltrauma>>
+		<<else>>
+			It <span class="red">quickly falls apart.</span>
+			<<if $monster is 1>>
+				<<your_bird_text "cap">> picks up the fallen petals for you. "I don't understand what <<wife>> was doing. But it was pretty."
+			<<else>>
+				<<your_bird_text "cap">> tilts <<bhis>> head at you.
+			<</if>>
+		<</if>>
+		<<tending 1>><<gtending>>
+		<br><br>
+
+		You decide not to linger much longer.
+		<br><br>
+
+		<<flight_hunt_return>>
+	<<case 4>>
+		You lay back in the strange flowers. Your head spins.
+		<<if $bird.hunts.duo is true>>
+			<<your_bird_text "cap">> snuggles up next to you, gripping onto you tightly.
+			<br><br>
+
+			After some time, you move to get up, but <<bhe>> doesn't let go. <<bHis>> eyes are empty.
+			<<if $monster is 1>>
+				"<<Wife>>... I need you..."
+			<<else>>
+				<<bHe>> lets out a shaky chirp.
+			<</if>>
+			<br><br>
+
+			<span class="red"><<bHe>> pushes you to the ground.</span>
+			<br><br>
+
+			<<link [[Next|Bird Hunt Flowers Sex]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<else>>
+			Eventually, you start to feel nauseous. You pull yourself from the flower patch and take some time to recover before leaving.
+			<br><br>
+
+			<<link [[Get your bearings and leave (0:10)|Bird Hunt Flowers Leave]]>><<bird_pass 10>><</link>>
+			<br>
+		<</if>>
+<</switch>>
+
+:: Bird Hunt Flowers Take
+<<effects>>
+<<if $tendingSuccess>>
+	You're careful not to disturb the flowers too much, and cover your nose and mouth to minimise your exposure. <<tending_pick strange_flower 5 15>>
+	<br><br>
+
+	<<link [[Leave|Bird Hunt Flowers Leave]]>><<set $phase to 2>><</link>>
+	<br>
+<<else>>
+	You attempt to pick some of the flowers, but your head is spinning too much. Each flower you disturb makes the overpowering sweet smell stronger, which makes you more and more clumsy.<<drugs 50>><<gdrugged>>
+	<br><br>
+
+	<<if $bird.hunts.duo is true>>
+		You pull yourself from the flower patch. You look back, and see <<your_bird_text>> standing in the middle still. <<bHe>> turns to you, <span class="red"><<bhis>> eyes vacant.</span>
+		<br><br>
+
+		<<if $monster is 1>>
+			"<<Wife>>... I need you..."
+		<<else>>
+			<<bHe>> lets out a shaky chirp.
+		<</if>>
+		In an instant, <<bhe>> beats <<bhis>> wings, and comes hurtling towards you. <<bHe>> collides with you, pushing you both to the ground.
+		<br><br>
+
+		<<link [[Next|Bird Hunt Flowers Sex]]>><<set $molestationstart to 1>><</link>>
+		<br>		
+	<<else>>
+		You pull yourself away from the flower patch before it's too late, and take some time to recover. It would be too dangerous to fly without getting your bearings first.
+		<br><br>
+
+		<<link [[Get your bearings and leave (0:10)|Bird Hunt Flowers Leave]]>><<bird_pass 10>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Bird Hunt Flowers Sex
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $NPCList[0].stance to "top">>
+	<<set $enemyhealthmax to 600>>
+	<<set $enemyhealth to 600>>
+	<<if $monster isnot 1>>
+		<<set $position to "doggy">>
+		<<set $NPCList[0].stance to "top">>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Hunt Flowers Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Flowers Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Flowers Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<br><br>
+
+	Colour returns to <<bhis>> eyes.
+	<<if $monster is 1>>
+		Terrible realisation fills <<bhis>> face. "<<Wife>>? Did I do this? I... I'm so sorry."
+	<<else>>
+		<<bHe>> starts to make various dustressed noises, seemingly realising what <<bhes>> done.
+	<</if>>
+	<<bHe>> nuzzles into you and wraps you up with <<bhis>> wings.
+	<br><br>
+
+	<<tearful>> you return <<bhis>> feathery embrace, and pull yourself from the flower patch. You both take some time to get your bearings before leaving.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Get your bearings and leave (0:10)|Bird Hunt Flowers Leave]]>><<bird_pass 10>><</link>>
+	<br>
+<<else>>
+	You yank <<bhim>> away from the flower patch and knock <<bhim>> to the ground. Your legs refuse to support you any longer and you collapse on top of <<bhim>>.
+	<br><br>
+
+	You flick <<bhim>> on the forehead. "Naughty bird." Colour slowly returns to <<bhis>> eyes.
+	<<if $monster is 1>>
+		Terrible realisation fills <<bhis>> face. "<<Wife>>? Did I do this? I... I'm so sorry."
+	<<else>>
+		<<bHe>> starts to make various dustressed noises, seemingly realising what <<bhes>> done.
+	<</if>>
+	<<bHe>> nuzzles into you and wraps you up with <<bhis>> wings.
+	<br><br>
+
+	<<tearful>> you return <<bhis>> feathery embrace. You both take some time to get your bearings before leaving.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Get your bearings and leave (0:10)|Bird Hunt Flowers Leave]]>><<set $phase to 2>><<bird_pass 10>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Flowers Leave
+<<effects>>
+<<if $phase is 2 and $bird.hunts.duo is true>>
+	<<set $bird.hunts.returnAccept to true>>
+	<<your_bird_text "cap">> seems flustered.
+	<<if $monster is 1>>
+		"Return home soon, <<wife>>?"
+	<<else>>
+		<<bHe>> keeps looking back in the direction of the tower.
+	<</if>>
+	<br><br>
+
+<</if>>
 <<flight_hunt_return>>
 
 :: Bird Hunt Tarp
@@ -2356,7 +2795,7 @@ You watch the couple with interest.
 
 You <<if $bird.hunts.duo is true>>both <</if>>watch as the pair disengage from each other.
 <<if $NPCList[0].monster is "monster" and ($NPCList[0].traits.includes("territorial") or $NPCList[1].traits.includes("territorial"))>>
-	"Back to my den. You're gonna clean me up," the larger one commands. The smaller one obediantly nods and follows.
+	"Back to my den. You're gonna clean me up," the larger one commands. The smaller one obediently nods and follows.
 <<elseif $NPCList[0].monster is "monster">>
 	"L-let's go back to the den," one says. The other nods and follows.
 <<else>>
@@ -2370,7 +2809,7 @@ You <<if $bird.hunts.duo is true>>both <</if>>watch as the pair disengage from e
 	<<if $monster is 1>>
 		see that <<bhes 2>> a bit flustered at the display. "Head home soon, <<wife>>?"
 	<<else>>
-		<<bhe 2>> tilts <<bhis 2>> head at you.
+		<<bhe 2>> tilts <<bhis 2>> head at you. <<bHe 2>>rubs up against you for a moment, a bit closer than usual.
 	<</if>>
 	<br><br>
 <</if>>
@@ -2723,7 +3162,7 @@ You run past <<him>>. "Hey! We've got a thief!" You hear stirring and yelling fr
 
 	<<flight_hunt_return>>
 <<else>>
-	Unfortunately, you're about to find out. <span class="red">You're tackled to the ground.</span>. <<gpain>><<pain 3>>
+	Unfortunately, you're about to find out. <span class="red">You're tackled to the ground.</span> <<gpain>><<pain 3>>
 	<br><br>
 
 	The group towers over you.
@@ -2745,10 +3184,10 @@ Without thinking, you grab one of the snare rods from the wall and swing it at <
 
 	<<flight_hunt_return>>
 <<else>>
-	<span class="red"><<He>> catches it easily,</span> using it to pull you in. <<He>> turns it to the side and pushes you to the ground with it. "We've got a thief, and a fiesty one at that!"
+	<span class="red"><<He>> catches it easily,</span> using it to pull you in. <<He>> turns it to the side and pushes you to the ground with it. "We've got a thief, and a feisty one at that!"
 	<br><br>
 
-	<<He>> holds you down, and a group enters the tent. They bear down on you. "Let's teach <<pher>> a lesson."
+	<<He>> holds you down, and a group enters the tent. They bear down on you. "Let's teach <<phim>> a lesson."
 	<br><br>
 
 	<<link [[Next|Bird Hunt Tent Steal Group Fight]]>><<set $fightstart to 2>><</link>>
@@ -2764,7 +3203,7 @@ Without thinking, you grab one of the snare rods from the wall and swing it at <
 <<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><br><br><</if>><<seductionskilluse>>
 
 <<if $speech_attitude is "meek">>
-	"I-I'm sorry! I got lost and I saw this camp and I was loking for... I'm sorry! Let... let me make it up to you," you say.
+	"I-I'm sorry! I got lost and I saw this camp and I was looking for... I'm sorry! Let... let me make it up to you," you say.
 <<elseif $speech_attitude is "bratty">>
 	"Oh, there you are. I was waiting for someone to punish me for this," you say, flaunting.
 <<else>>
@@ -2986,7 +3425,7 @@ You run as fast as you can. Adrenaline kicks in. You don't want to think about w
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
 
-	The <<person4>><<person>> chuckles. "<<pShes>> fun. Let's take <<pher>> to the boss." You're still surrounded. You can't do anything as the whole group swarms you. Someone binds your arms, and your consciousness fades.
+	The <<person4>><<person>> chuckles. "<<pShes>> fun. Let's take <<phim>> to the boss." You're still surrounded. You can't do anything as the whole group swarms you. Someone binds your arms, and your consciousness fades.
 	<br><br>
 
 	<<flight_hunt_end>>
@@ -3193,7 +3632,7 @@ You land away from the campsite, and give <<bhim>> the signal. <<bHe>> lets out 
 :: Bird Hunt Tent Flee
 <<effects>>
 <<set $daily.huntRemyAlerted to true>>
-Having been spotted, you make haste away from the camp. The <<person>> seems to consider chasing after you, but one glance at the <<person1>><<beastype>> swooping down at <<person2>><<him>> is enough to make <<him>> reconsider.
+Having been spotted, you make haste away from the camp. The <<person>> seems to consider chasing after you, but one glance at the <<person1>><<beasttype 0>> swooping down at <<person2>><<him>> is enough to make <<him>> reconsider.
 <br><br>
 
 You're able to get away, and take off once you get enough ground speed. You regroup with your spouse.
@@ -3281,7 +3720,7 @@ The sight of your <<person1>><<beasttype>> landing is enough to shake the nerve 
 Your spouse lunges ahead in warning. A few of them flinch, and it's all the opening <<bhe>> needs. <<bHe>> dashes ahead, disarming several of them and pushing them away. You follow after <<bhim>>, running as fast your legs let you.
 <br><br>
 
-One of gets close enough to bring a snare rod down on you. You manage to step out of the way, but another strike follows. A large wing blocks the impact and piushes back, knocking your assailant away. It's enough time for you to take to the air.
+One of gets close enough to bring a snare rod down on you. You manage to step out of the way, but another strike follows. A large wing blocks the impact and pushes back, knocking your assailant away. It's enough time for you to take to the air.
 <br><br>
 
 The Great Hawk quickly follows. <<bHes>> flying unsteady. <<bHe>> seems injured, but at least he's still able to fly. You were able to escape them.
@@ -3368,7 +3807,7 @@ You decide that you can spare one of your caught lurkers.
 	It lands right on the head of a <<person2>><<person>> below.
 <</if>>
 The impact knocks <<him>> to the ground, and <<he>> begins screaming as the lurker stirs, now returned to a livable altitude.
-More people rush out from the tents to assist their comrade. You can't help but laugh at the mayhem.
+More people rush out from the tents to assist their comrade. You can't help but laugh at the mayhem. <<stress -6>><<trauma -3>><<lstress>><<ltrauma>>
 <br><br>
 
 You won't be able to do anything else to them today, now that they're alerted.
@@ -3408,7 +3847,7 @@ You're able to see quite far around you.
 <<effects>>
 <<if $bird.hunts.duo is true>>
 	<<npc "Great Hawk">><<person1>>
-	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to setup a trap.
+	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to set up a trap.
 	<<if $monster is 1>>
 		"Wife is smart, making things like this," <<bhe>> says.
 	<<else>>
@@ -3613,7 +4052,7 @@ As the <<person2>><<person>> draws close, you suddenly grab <<his>> hand and pul
 	<br>
 	"Yeah, but taking them in the middle of nowhere just ain't as thrilling," responds the <<person1>><<person>>.
 	<<if $phase is 3>>
-		"And what the fuck was that you said before you pushed <<phim>>? 'Resisting will only make me harder for you'? Did you mean 'make <i>this</i> harder for <<pher>>'?"
+		"And what the fuck was that you said before you pushed <<phim>>? 'Resisting will only make me harder for you'? Did you mean 'make <i>this</i> harder for <<phim>>'?"
 	<</if>>
 	<br>
 	"Argh, don't be such a whiner.<<if $phase is 3>> I know what I said.<</if>>" The two delve into conversation, now ignoring you. <<tearful>> you use the opportunity to make your escape.
@@ -3726,13 +4165,12 @@ The creatures disappear into the heather.
 
 :: Bird Hunt Ambush Wait
 <<effects>>
+<<if $bird.hunts.duo is true>>
+	<<npc "Great Hawk">><<person1>>
+<</if>>
 <<if $phase is 2>>
 	You fly back up to your ambush point.
-	<<if $bird.hunts.duo is true>>
-		<<npc "Great Hawk">><<person1>>
-	<</if>>
 <<elseif $bird.hunts.duo is true and !$birdAmbushTrap>>
-	<<npc "Great Hawk">><<person1>>
 	You tell <<if $monster is 1>>your <<nnpc_wife "Great Hawk">><<else>>the Great Hawk<</if>> about your plan to set up an ambush.
 	<br>
 	<<if $monster is 1>>
@@ -3840,7 +4278,7 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 :: Bird Hunt Ambush Humans Pass
 <<effects>>
 <<if $birdAmbushTrap>>
-	You stay on the pillar as they pass. One of them steps on your trap and tumbles into the hole. You giggle upon hearing <<person1>><<his>> cursing. <<His>> companion pulls <<him>> rom the hole and they move on.
+	You stay on the pillar as they pass. One of them steps on your trap and tumbles into the hole. You giggle upon hearing <<person1>><<his>> cursing. <<His>> companion pulls <<him>> from the hole and they move on.
 	<<unset $birdAmbushTrap>>
 	<br><br>
 
@@ -3943,7 +4381,7 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 			"Alright! C-Calm down, you lunatic!" <<he>> says. "Just take what you want from my backpack and leave us alone." <<He>> throws <<his>> backpack towards you.
 			<br><br>
 
-			The <<person1>><<person>> in the hole yells up. "Don't just give <<pher>> what <<pshe>> wants!"<br>
+			The <<person1>><<person>> in the hole yells up. "Don't just give <<phim>> what <<pshe>> wants!"<br>
 			"Look, it's not worth the trouble. I just want to avoid dealing with this nut-job," the <<person2>><<person>> responds.<br>
 			Ignoring their conversation, you look through the backpack.
 			<br><br>
@@ -4053,7 +4491,7 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 			<</if>>
 		<<else>>
 			The <<person1>><<person>> finally speaks up. "W-What the hell!? What kind of lunatic would jump down from that high up?"<br>
-			"<<pShe>> must be crazy, w-we should just give <<pher>> what <<pshe>> wants," the <<person2>><<person>> says.<br>
+			"<<pShe>> must be crazy, w-we should just give <<phim>> what <<pshe>> wants," the <<person2>><<person>> says.<br>
 			The <<person1>><<person>> looks hesitant, so you let out another loud scream. "O-Okay! Just take what you want and leave us alone!" <<he>> says, throwing you <<his>> backpack. You begin rummaging through it.
 			<br><br>
 
@@ -4188,7 +4626,6 @@ Like a predator, you begin slowly circling them. When you notice a good opportun
 <<effects>>
 <<effectsman>>
 <<man>>
-<<audience>>
 <<stateman>>
 <br><br>
 <<actionsman>>
@@ -4720,20 +5157,52 @@ You sit and take a moment to re-orient yourself. You still feel dizzy. You seem 
 	<<else>>
 		<<bHe>> starts to squawk and fuss over you.
 	<</if>>
-	You manage to settle <<bhim>> down after some convincing.
-	<br><br>
-
-	<<if $monster is 1>>
-		"Be more careful. If I wasn't with you..." <<bhe>> trails off.
-	<<else>>
-		<<bHe>> huffs, but leaves you be after several more minutes of prodding.
-	<</if>>
-	<br><br>
+	You assure him you're alright now.
+	<<if $monster is 1>>"Are you sure?" <<bhe>> asks, still concerned.
+	<<else>><<bHe>> looks slightly relieved, yet still worried.
+	<</if>> 
 	<<flight_hunt_end>>
+	<br><br>
 
-	<<link [[Next|Bird Tower]]>><<bird_pass 5>><<endevent>><</link>>
+	<<link "Reassure <<bhim>>" "Bird Hunt Passout 2">><<set $phase to 0>><<npcincr "Great Hawk" dom 1>><</link>><<gdom>>
+	<br>
+	<<link "Ignore <<bhim>>" "Bird Hunt Passout 2">><<set $phase to 1>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>>
 	<br>
 <</if>>
+
+:: Bird Hunt Passout 2
+<<effects>>
+<<if $phase is 0>>
+	<<if $speech_attitude is "meek">>"You don't need to worry, I'm fine," you say, fluttering your wings at <<bhim>>.
+	<<elseif $speech_attitude is "bratty">>"I really am fine. If you don't believe me, see for yourself," you say, spreading your wings wide.
+	<<else>>"I'm fine, see," you say as you turn around to show your wings. "Not a scratch anywhere."
+	<</if>>
+	<br><br>
+
+	<<bHe>> looks at your wings for a moment.
+	<<if $monster is 1>>
+		"Your wings do look healthy. Still, <<wife>> should try to be more careful," <<bhe>> says. "If I wasn't with you..."
+	<<else>>
+		<<bHe>> chirps, glad to see that they look fine.
+	<</if>>
+	You pat <<bhim>> on the head and tell <<bhim>> not to worry too much. <<bHe>> nods, finally assured of your wellbeing.
+<<else>> 
+	<<if $speech_attitude is "meek">>"I d-don't need help," you respond meekly.
+	<<elseif $speech_attitude is "bratty">>"Like I said, I'm fine," you respond.
+	<<else>>"I'm alright, really," you respond.
+	<</if>>
+	<br><br>
+	<<if $monster is 1>>
+		"Are you sure?" <<bhe>> asks again. You repeat your answer. <<bHe>> does not sound satisfied with it.
+	<<else>>
+		<<bHe>> looks unsatisfied by your answer.
+	<</if>>
+	While <<bhe>> still seems somewhat concerned, you at least get <<bhim>> to stop fussing over you.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<bird_pass 5>><<endevent>><</link>>
+<br>
 
 
 :: Bird Tower Hunt End Eat

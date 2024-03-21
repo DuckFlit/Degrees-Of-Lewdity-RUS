@@ -637,11 +637,11 @@
 		<<if $daily.birdGroom is undefined and $bird.activity is "groom">>
 			<<ind>><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
 		<</if>>
-		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1>>
-			<<if $tiredness gte (C.tiredness.max / 5) * 4>>
-				<span class="red">You're too exhausted to go on a casual flight.</span>
-			<<elseif $weather is "rain">>
+		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
+			<<if $weather is "rain">>
 				<span class="purple">It's too rainy to go flying casually.</span>
+			<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
+				<span class="red">You're too exhausted to go on a casual flight.</span>
 			<<else>>
 				<<ind>><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>>
 			<</if>>
@@ -659,11 +659,11 @@
 	<<elseif $birdBask is 1 and ["sing", "groom"].includes($bird.activity) and $bird.state is "home">>
 		<<baskicon>><<link [[Continue to bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
-		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1>>
-			<<if $tiredness gte (C.tiredness.max / 5) * 4>>
-				<span class="red">You're too exhausted to go on a casual flight.</span>
-			<<elseif $weather is "rain">>
+		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
+			<<if $weather is "rain">>
 				<span class="purple">It's too rainy to go flying casually.</span>
+			<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
+				<span class="red">You're too exhausted to go on a casual flight.</span>
 			<<else>>
 				<<ind>><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>>
 			<</if>>
@@ -1381,7 +1381,7 @@
 <</widget>>
 
 <<widget "flight_hunt_loot">>
-	<<set $_hordeLoot to 0>><<set $_otherLoot to 0>>
+	<<set $_hordeLoot to 0>><<set $_lurkerLoot to 0>><<set $_otherLoot to 0>>
 	You looted:
 	<br>
 	<<for $_lootType, $_tempNum range $bird.hunts.loot>>
@@ -1471,16 +1471,20 @@
 	<</for>>
 	<<if $_hordeLoot gte 1 and $_matLoot gte 1 and $_otherLoot gte 1>>
 		You sort everything into neat piles.
+		<br><br>
 	<<elseif $_matLoot gte 2>>
 		You add the fresh materials to the pile.
+		<br><br>
 	<<elseif $_hordeLoot gte 2>>
 		You pile up your valuables into your horde.
+		<br><br>
 	<<elseif $_hordeLoot + $_matLoot + $_otherLoot gte 1>>
 		You add them to the pile.
+		<br><br>
 	<<elseif $_hordeLoot + $_matLoot + $_otherLoot is 1>>
 		You add it to the pile.
+		<br><br>
 	<</if>>
-	<br><br>
 
 	<<if $_lurkerLoot gte 1>>
 		<<if $bird.hunts.duo is true and $_lurkerLoot gte 2>>
