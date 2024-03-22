@@ -618,7 +618,7 @@ function initUnderLower() {
 			state_base: "waist",
 			plural: 0,
 			colour: 0,
-			colour_options: ["black", "blue", "brown", "green", "pink", "purple", "red", "white", "yellow", "tan", "fleshy"],
+			colour_options: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "tan", "fleshy"],
 			colour_sidebar: 1,
 			colour_combat: 0,
 			exposed: 0,
