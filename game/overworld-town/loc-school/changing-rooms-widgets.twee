@@ -4,8 +4,8 @@
 	<<unset $lastChangingRoom>>
 	<<set _studentsKnow to ($schoolrep.crossdress gte 4 and $changingroomstate is "own") or ($schoolrep.crossdress gte 5 and $changingroomstate isnot "empty")>>
 	<<set _changingRoomGenderType to ($changingRoomGender is "girls" ? "f" : "m")>>
-	<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to random(100,1000)>><</if>>
-	<<if _changingRoomGenderType is "f" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible())>>
+	<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to $player.gender_appearience is "m" ? random(500, 1500) : random(200, 1000)>><</if>>
+	<<if _changingRoomGenderType is "f" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible() or ($forcedcrossdressingdisable is "f" and $whitneyCrossdressSwimwear gte 1 and $player.gender_appearance is "f"))>>
 		<<set _seenGender to "f">>
 	<<else>>
 		<<set _seenGender to (_studentsKnow ? $player.gender : $player.gender_appearance)>> <!-- If they know you crossdress, then they won't judge you by appearance -->
@@ -30,8 +30,20 @@
 				<<eventsSchoolChangingRoomsBoys>>
 			<</if>>
 			<<if !_nomessage>>
-				<<if $player.gender is "m" and $changingRoomGender is "girls" and playerBellyVisible()>>
-					No one gives you a second glance, not realising you're a <<gender>> due to your <<print playerAwareTheyArePregnant() ? "pregnancy" : "pregnant looking belly">>. <<if $NudeGenderDC isnot -1 and !_uncomfortable>>You feel naughty.<</if>>
+				<<if $changingRoomGender is "girls" and
+					($player.gender is "m" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible()) or
+					($player.gender isnot "m" and $player.gender_appearance is "m" and $fame.pregnancy gte $daily.changingRoomPregnancyFame))>>
+					<<if playerBellyVisible()>>
+						No one gives you a second glance, not realising you're a <<gender>> due to your <<print playerAwareTheyArePregnant() ? "pregnancy" : "pregnant looking belly">>.
+					<<else>>
+						<<if $player.gender_appearance is "m">>
+							Some of the $changingRoomGender look at you with a conflicted expression before ignoring you
+						<<else>>
+							No one gives you a second glance, not realising you're a <<gender>>
+						<</if>>
+						due to all the gossip about your last pregnancy.
+					<</if>>
+					<<if $NudeGenderDC isnot -1 and !_uncomfortable>>You feel naughty.<</if>>
 				<<elseif $changingRoomGender is "boys" and playerBellyVisible()>>
 					Some of the $changingRoomGender look at you uncomfortably, mostly to your <<print playerAwareTheyArePregnant() ? "pregnant belly" : "pregnant looking belly">>. It's clearly making them think you're a girl.<<gstress>>
 				<<elseif $player.penisExist and $player.vaginaExist>>
@@ -46,7 +58,9 @@
 					<</switch>>
 					<<endevent>>
 				<<elseif $player.gender isnot $player.gender_appearance and $NudeGenderDC isnot -1>>
-					<<if $schoolrep.crossdress is 3>>
+					<<if $schoolrep.crossdress gte 3 and $forcedcrossdressingdisable is "f" and $whitneyCrossdressSwimwear gte 1>>
+						Some of the $changingRoomGender snigger at you. <span class="red">They clearly know that you're being forced to change in here.</span> <<gstress>>
+					<<elseif $schoolrep.crossdress is 3>>
 						Some of the $changingRoomGender look at you uncomfortably. A few keep their eyes glued on you as you head to your locker. <span class="pink">They suspect the rumours of you crossdressing are true.</span> <<gstress>>
 					<<elseif $schoolrep.crossdress lt 3>>
 						No one gives you a second glance, not realising you're a <<gender>>.
@@ -177,7 +191,9 @@
 	<<elseif $exposed gte 1>>
 		<<getouticon>><<link [[Leave|School Pool Entrance Exhibitionism]]>><</link>>
 	<<else>>
-		<<getouticon>><<link [[Leave|School Pool Entrance]]>><</link>>
+		<<getouticon>><<link [[Leave|School Pool Entrance]]>>
+			<<if $daily.whitney.whitneyCrossdressSwimwear>><<run $daily.whitney.whitneyCrossdressSwimwear.push(`${$changingRoomGender} exit`)>><</if>>
+		<</link>>
 	<</if>>
 	<<schoolpoolclothes _store_location>>
 	<<lockericon>><<link [[Locker|School Pool Wardrobe]]>><<set $wardrobe_location to "schoolBoys">><</link>>
