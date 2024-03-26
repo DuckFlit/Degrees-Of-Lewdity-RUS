@@ -235,6 +235,19 @@ var statChange = (() => {
 	}
 	DefineMacro("stress", stress);
 
+	function sensitivity(amount, key) {
+		if (isNaN(amount)) paramError("sensitivity", "amount", amount, "Expected a number.");
+		const sens = V[key + "sensitivity"];
+		if (!sens) paramError("sensitivity", "key", key + "sensitivity", "Expected an existing sensitivity.");
+
+		V[key + "sensitivity"] = Math.clamp(sens + amount, 1, 4);
+	}
+
+	DefineMacro("breast_sensitivity", amount => sensitivity(amount, "breast"));
+	DefineMacro("mouth_sensitivity", amount => sensitivity(amount, "mouth"));
+	DefineMacro("genital_sensitivity", amount => sensitivity(amount, "genital"));
+	DefineMacro("bottom_sensitivity", amount => sensitivity(amount, "bottom"));
+
 	function arousal(amount, source) {
 		if (isNaN(amount)) paramError("arousal", "amount", amount, "Expected a number.");
 		amount = Number(amount);
