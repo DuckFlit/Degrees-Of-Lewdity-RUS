@@ -449,21 +449,21 @@ const statDisplay = (() => {
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 1, "teal");
 		}
-		return statChange("Sydney's Corruption", -1, "purple");
+		return statChange("Sydney's Corruption", -1, "teal");
 	});
 	DefineMacroS("ggspurity", () => {
 		T.warnstate = 2;
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 2, "teal");
 		}
-		return statChange("Sydney's Corruption", -2, "purple");
+		return statChange("Sydney's Corruption", -2, "teal");
 	});
 	DefineMacroS("gggspurity", () => {
 		T.warnstate = 3;
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 3, "teal");
 		}
-		return statChange("Sydney's Corruption", -3, "purple");
+		return statChange("Sydney's Corruption", -3, "teal");
 	});
 
 	DefineMacroS("lslust", () => {
