@@ -820,6 +820,10 @@ function dayPassed() {
 	/* Set flag to determine Kylar's position at lunch */
 	V.daily.kylar.libraryStalk = rollKylarLibraryStalkFlag();
 
+	if (V.whitney_roof) {
+		delete V.whitney_roof;
+	}
+
 	return fragment;
 }
 
