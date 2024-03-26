@@ -115,8 +115,9 @@ WeatherLayers.add({
 					"hospital",
 					"kylar_manor",
 					"landfill",
+					"market",
 					"museum",
-					"office_building",
+					"office",
 					"park",
 					"police_station",
 					"pool",
@@ -125,6 +126,7 @@ WeatherLayers.add({
 					"sewers",
 					"shopping_centre",
 					"spa",
+					"studio",
 					"strip_club",
 					"temple",
 					"town",
@@ -133,7 +135,7 @@ WeatherLayers.add({
 			},
 			params: {
 				color: {
-					glow: "#c9ba76cc",
+					glow: "#c9ba76d0",
 					dark: "#c9ba7600",
 				},
 			},

@@ -50,7 +50,7 @@ setup.WeatherTooltip = {
 		} else if (Weather.temperature <= 10) {
 			return Weather.isSnow ? "The leftover snow quickly melts." : "It's cold, with a gentle breeze.";
 		} else if (Weather.temperature <= 15) {
-			return "The temperature is cool, but tolerable";
+			return "The temperature is cool, but tolerable.";
 		} else if (Weather.temperature <= 20) {
 			return "The air is mild.";
 		} else if (Weather.temperature <= 25) {

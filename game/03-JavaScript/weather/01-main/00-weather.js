@@ -161,7 +161,7 @@ const Weather = (() => {
 			Weather.Sky.drawLayers();
 		},
 		get lightsOn() {
-			return Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off
+			return Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off;
 		},
 	};
 })();

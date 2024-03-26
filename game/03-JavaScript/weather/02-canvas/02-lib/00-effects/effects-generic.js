@@ -10,8 +10,8 @@ WeatherEffects.create({
 
 		// Simple ease-out for a better gradient fade
 		for (let i = 0; i <= 1; i += 0.02) {
-			const easedOut = i * (2 - i);
-			const color = ColourUtils.interpolateColor(this.color.glow, this.color.dark, easedOut);
+			const easeOut = i * (2 - i);
+			const color = ColourUtils.interpolateColor(this.color.glow, this.color.dark, easeOut);
 			this.gradient.addColorStop(i, color);
 		}
 	},

@@ -721,6 +721,11 @@ setup.LocationImages = {
 			color: "#e63e3e",
 		},
 	},
+	market: {
+		folder: "market",
+		base: "base.png",
+		snow: "snow.png",
+	},
 	moor: {
 		folder: "moor",
 		base: {
@@ -824,6 +829,30 @@ setup.LocationImages = {
 				animation: {
 					fps: 6,
 					delay: () => random(10, 30) * 1000,
+				},
+			},
+		},
+	},
+	office: {
+		folder: "office",
+		base: "base.png",
+		snow: "snow.png",
+		emissive: {
+			default: {
+				image: "emissive.png",
+				condition: () => Weather.lightsOn,
+			},
+			evening: {
+				image: "emissive_evening.png",
+				condition: () => Weather.lightsOn && Time.dayState === "dusk",
+			},
+			redBlinkingLight: {
+				image: "red.png",
+				color: "#ff5058",
+				size: 3,
+				animation: {
+					fps: 1,
+					delay: () => 1000,
 				},
 			},
 		},
@@ -1097,6 +1126,81 @@ setup.LocationImages = {
 					fps: 0.5,
 					delay: () => 2000,
 				},
+			},
+		},
+	},
+	strip_club: {
+		folder: "strip_club",
+		base: "base.png",
+		snow: "snow.png",
+		emissive: {
+			windows: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_windows.png",
+				size: 2,
+			},
+			green: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_green.png",
+				color: "#74ff9099",
+				size: 2,
+			},
+			pink1: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_pink1.png",
+				color: "#ff4fd6",
+				size: 0,
+			},
+			pink2: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_pink.png",
+				color: "#fe99ff99",
+				size: 4,
+			},
+			purple: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_purple.png",
+				color: "#a91dff",
+				size: 0,
+			},
+			red: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_red.png",
+				color: "#ff1d2f",
+				size: 0,
+			},
+			blue: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_blue.png",
+				color: "#a6f8ff",
+				size: 0,
+			},
+			lady: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_lady_pose.png",
+				animation: {
+					fps: 1,
+					delay: () => 1000,
+				},
+				color: "#ff60a099",
+				size: 3,
+			},
+			hair: {
+				condition: () => Time.dayState === "dusk" || Time.dayState === "night",
+				image: "emissive_lady_hair.png",
+				color: "#d8294899",
+				size: 3,
+			},
+		},
+	},
+	studio: {
+		folder: "studio",
+		base: "base.png",
+		snow: "snow.png",
+		emissive: {
+			default: {
+				image: "emissive.png",
+				condition: () => Weather.lightsOn && between(Time.hour, 18, 23),
 			},
 		},
 	},
