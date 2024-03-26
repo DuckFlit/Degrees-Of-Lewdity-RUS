@@ -1640,6 +1640,21 @@ Renderer.CanvasModels["main"] = {
 			},
 			animation: "idle"
 		},
+		"angel_wings_right_front": {
+			srcfn(options) {
+				return `img/transformations/angel/rightwing/${options.angel_wings_type}.png`;
+			},
+			showfn(options) {
+				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wing_right === "idle" && options.angel_wings_type === "default" && options.hair_sides_position !== "front" && options.angel_wings_layer !== "back";
+			},
+			masksrcfn(options) {
+				return `img/transformations/angel/rightwing/${options.angel_wings_type}_mask.png`;
+			},
+			zfn(options) {
+				return ZIndices.over_head
+			},
+			animation: "idle"
+		},
 		"angel_wings_rightcover": {
 			srcfn(options) {
 				return `img/transformations/angel/rightcover/${options.angel_wings_type}.png`;
@@ -1663,6 +1678,21 @@ Renderer.CanvasModels["main"] = {
 				} else {
 					return ZIndices.backhair
 				}
+			},
+			animation: "idle"
+		},
+		"angel_wings_left_front": {
+			srcfn(options) {
+				return `img/transformations/angel/leftwing/${options.angel_wings_type}.png`;
+			},
+			showfn(options) {
+				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wing_left === "idle" && options.angel_wings_type === "default" && options.hair_sides_position !== "front" && options.angel_wings_layer !== "back";
+			},
+			masksrcfn(options) {
+				return `img/transformations/angel/leftwing/${options.angel_wings_type}_mask.png`;
+			},
+			zfn(options) {
+				return ZIndices.over_head
 			},
 			animation: "idle"
 		},
@@ -1732,6 +1762,21 @@ Renderer.CanvasModels["main"] = {
 			},
 			animation: "idle"
 		},
+		"fallen_wings_right_front": {
+			srcfn(options) {
+				return `img/transformations/fallen/rightwing/${options.fallen_wings_type}.png`;
+			},
+			showfn(options) {
+				return options.show_tf && isPartEnabled(options.fallen_wings_type) && options.fallen_wing_right === "idle" && ["default", "fallenplus"].includes(options.fallen_wings_type) && options.hair_sides_position !== "front" && options.fallen_wings_layer !== "back";
+			},
+			masksrcfn(options) {
+				return `img/transformations/fallen/rightwing/${options.fallen_wings_type}_mask.png`;
+			},
+			zfn(options) {
+				return ZIndices.over_head;
+			},
+			animation: "idle"
+		},
 		"fallen_wings_rightcover": {
 			srcfn(options) {
 				return `img/transformations/fallen/rightcover/${options.fallen_wings_type}.png`;
@@ -1755,6 +1800,21 @@ Renderer.CanvasModels["main"] = {
 				} else {
 					return ZIndices.backhair
 				}
+			},
+			animation: "idle"
+		},
+		"fallen_wings_left_front": {
+			srcfn(options) {
+				return `img/transformations/fallen/leftwing/${options.fallen_wings_type}.png`;
+			},
+			showfn(options) {
+				return options.show_tf && isPartEnabled(options.fallen_wings_type) && options.fallen_wing_left === "idle" && ["default", "fallenplus"].includes(options.fallen_wings_type) && options.hair_sides_position !== "front" && options.fallen_wings_layer !== "back";
+			},
+			masksrcfn(options) {
+				return `img/transformations/fallen/leftwing/${options.fallen_wings_type}_mask.png`;
+			},
+			zfn(options) {
+				return ZIndices.over_head;
 			},
 			animation: "idle"
 		},
@@ -3632,7 +3692,7 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 			zfn(options) {
-				return options.handheld_overhead ? ZIndices.over_upper : ZIndices.handheld;
+				return options.handheld_overhead || options.worn_handheld_setup.type.includes("prop") ? ZIndices.over_upper : ZIndices.handheld;
 			},
 		}),
 		"handheld_acc": genlayer_clothing_accessory('handheld', {
@@ -3656,7 +3716,7 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 			zfn(options) {
-				return options.handheld_overhead ? ZIndices.over_upper : ZIndices.handheld;
+				return options.handheld_overhead || options.worn_handheld_setup.type.includes("prop") ? ZIndices.over_upper : ZIndices.handheld;
 			},
 		}),
 		"handheld_left": {
