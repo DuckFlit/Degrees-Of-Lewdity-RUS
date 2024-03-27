@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // Should a name type for species be setup, say, human/wolf specific names
 function generateBabyName(name, gender, childId) {
 	let result = "";
@@ -915,6 +916,11 @@ function recordSperm({
 	}
 	if (setup.pregnancy.infertile.includes(spermOwnerName) || setup.pregnancy.infertile.includes(target)) return null;
 
+	// Tracking for unsafe sex
+	if (target === "pc" || spermOwner === "pc") {
+		unsafeSexTracking(genital, target, spermOwnerName);
+	}
+
 	const forcePregnancy =
 		(target === "pc" &&
 			((V.vaginaaction === "forceImpregnation" && genital === "vagina") || (V.anusaction === "forceImpregnation" && genital === "anus"))) ||
@@ -1052,6 +1058,17 @@ function washRecordedSperm(genital, target) {
 	}
 }
 DefineMacro("washRecordedSperm", washRecordedSperm);
+
+function unsafeSexTracking(genital, mother, father) {
+	console.log("unsafeSexTracking", genital, mother, father);
+	if (mother === "pc" && !playerIsPregnant() && (V.player.vaginaExist || canBeMPregnant() || true)) {
+		if (V.NPCNameList.includes(father) || father === "pc") {
+			V.unsafeSexTimeStat[father] = Time.date.timeStamp;
+		}
+	} else if (genital === "vagina" && V.NPCNameList.includes(mother) && !npcIsPregnant(mother)) {
+		V.unsafeSexTimeStat[mother] = Time.date.timeStamp;
+	}
+}
 
 function playerCanBreedWith(npc) {
 	/* This function can accept either a named NPC's name, or an NPC object from either NPCList or NPCName.

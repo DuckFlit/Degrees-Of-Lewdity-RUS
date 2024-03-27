@@ -614,7 +614,7 @@ Macro.add("canvasModelEditor", {
 			);
 			return;
 		}
-		const bodyWritings = ["", ...Object.keys(setup.bodywriting)];
+		const bodyWritings = ["", ...Object.keys()];
 
 		const hairColourOptions = [...Object.keys(setup.colours.hair_map), "custom"];
 		const xhairColourOptions = ["", ...Object.keys(setup.colours.hair_map), "custom"];
