@@ -449,21 +449,21 @@ const statDisplay = (() => {
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 1, "teal");
 		}
-		return statChange("Sydney's Corruption", -1, "purple");
+		return statChange("Sydney's Corruption", -1, "teal");
 	});
 	DefineMacroS("ggspurity", () => {
 		T.warnstate = 2;
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 2, "teal");
 		}
-		return statChange("Sydney's Corruption", -2, "purple");
+		return statChange("Sydney's Corruption", -2, "teal");
 	});
 	DefineMacroS("gggspurity", () => {
 		T.warnstate = 3;
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 3, "teal");
 		}
-		return statChange("Sydney's Corruption", -3, "purple");
+		return statChange("Sydney's Corruption", -3, "teal");
 	});
 
 	DefineMacroS("lslust", () => {
@@ -493,68 +493,56 @@ const statDisplay = (() => {
 
 	DefineMacroS("lscience", () => statChange("Science", -1, "red"));
 	DefineMacroS("gscience", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("Science", 1, "green");
 		return `${result} ${gainSchoolStar("science_star")}`;
 	});
 	DefineMacroS("ggscience", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("Science", 2, "green");
 		return `${result} ${gainSchoolStar("science_star")}`;
 	});
 	DefineMacroS("gggscience", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("Science", 3, "green");
 		return `${result} ${gainSchoolStar("science_star")}`;
 	});
 
 	DefineMacroS("lmaths", () => statChange("Maths", -1, "red"));
 	DefineMacroS("gmaths", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("Maths", 1, "green");
 		return `${result} ${gainSchoolStar("maths_star")}`;
 	});
 	DefineMacroS("ggmaths", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("Maths", 2, "green");
 		return `${result} ${gainSchoolStar("maths_star")}`;
 	});
 	DefineMacroS("gggmaths", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("Maths", 3, "green");
 		return `${result} ${gainSchoolStar("maths_star")}`;
 	});
 
 	DefineMacroS("lenglish", () => statChange("English", -1, "red"));
 	DefineMacroS("genglish", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("English", 1, "green");
 		return `${result} ${gainSchoolStar("english_star")}`;
 	});
 	DefineMacroS("ggenglish", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("English", 2, "green");
 		return `${result} ${gainSchoolStar("english_star")}`;
 	});
 	DefineMacroS("gggenglish", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("English", 3, "green");
 		return `${result} ${gainSchoolStar("english_star")}`;
 	});
 
 	DefineMacroS("lhistory", () => statChange("History", -1, "red"));
 	DefineMacroS("ghistory", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("History", 1, "green");
 		return `${result} ${gainSchoolStar("history_star")}`;
 	});
 	DefineMacroS("gghistory", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("History", 2, "green");
 		return `${result} ${gainSchoolStar("history_star")}`;
 	});
 	DefineMacroS("ggghistory", () => {
-		T.lustincrdisplay = 1;
 		const result = statChange("History", 3, "green");
 		return `${result} ${gainSchoolStar("history_star")}`;
 	});
@@ -573,28 +561,28 @@ const statDisplay = (() => {
 	DefineMacroS("ldom", npc => {
 		let targetName = "";
 		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-				return statChange("Robin's Confidence", -1, "lblue");
+			return statChange("Robin's Confidence", -1, "lblue");
 		} else if (npc) targetName = npc + "'s";
 		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -1, "lblue");
-});
-DefineMacroS("lldom", npc => {
+	});
+	DefineMacroS("lldom", npc => {
 		let targetName = "";
 		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-				return statChange("Robin's Confidence", -2, "lblue");
+			return statChange("Robin's Confidence", -2, "lblue");
 		} else if (npc) targetName = npc + "'s";
 		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -2, "lblue");
-});
-DefineMacroS("llldom", npc => {
+	});
+	DefineMacroS("llldom", npc => {
 		let targetName = "";
 		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-				return statChange("Robin's Confidence", -3, "lblue");
+			return statChange("Robin's Confidence", -3, "lblue");
 		} else if (npc) targetName = npc + "'s";
 		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -3, "lblue");
-});
-DefineMacroS("gdom", npc => {
+	});
+	DefineMacroS("gdom", npc => {
 		let targetName = "";
 		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
 			return statChange("Robin's Confidence", 1, "purple");
