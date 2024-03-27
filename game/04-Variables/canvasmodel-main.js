@@ -3067,6 +3067,8 @@ Renderer.CanvasModels["main"] = {
 			zfn(options) {
 				if (options.arm_right === "hold" && options.sleeve_over_hold) {
 					return ZIndices.lower_high;
+				} else if (options.worn_upper_setup.breasts_under_acc === 1) {
+					return options.zupper + 1;
 				} else {
 					return options.zupper;
 				}
