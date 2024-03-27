@@ -133,7 +133,7 @@ var statChange = (() => {
 			V.earSlime.corruption += amount;
 			V.earSlime.corruption = Math.clamp(V.earSlime.corruption, V.earSlime.growth / 2, 100);
 
-			if (amount > 0 && V.earSlime.growth > 50 && !dailyIncrease) wikifier("sub", 1);
+			if (amount > 0 && V.earSlime.growth > 50 && !dailyIncrease) submissive(1);
 
 			if (V.earSlime.corruption >= 60 && !V.earSlime.startedThreats) V.earSlime.startedThreats = true;
 		}
@@ -147,7 +147,9 @@ var statChange = (() => {
 			amount *= 3;
 			if (V.cow >= 6) amount *= 2;
 
+			/* Prevents those who can only have "female climax" increase their cum volume */
 			if (V.player.penissize > -2 || amount <= 0) V.semen_volume += amount;
+
 			V.semen_volume = Math.clamp(V.semen_volume, 0, V.semen_max);
 		}
 	}
@@ -251,7 +253,7 @@ var statChange = (() => {
 	function arousal(amount, source) {
 		if (isNaN(amount)) paramError("arousal", "amount", amount, "Expected a number.");
 		amount = Number(amount);
-		if (Number.isFinite(amount)) {
+		if (amount) {
 			let mod = 1;
 
 			// Trait checks & effects
@@ -640,7 +642,7 @@ var statChange = (() => {
 		if (isNaN(amount)) paramError("insecurity", "amount", amount, "Expected a number.");
 		if (!["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"].includes(type)) {
 			paramError(
-				"wet",
+				"insecurity",
 				"type",
 				type,
 				'Expected values include "penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"'
@@ -650,7 +652,7 @@ var statChange = (() => {
 		amount = Number(amount);
 		if (amount) {
 			const insecurityPossible = {
-				penis_tiny: V.player.penisExist && V.player.penissize < 0,
+				penis_tiny: V.player.penisExist && V.player.penissize <= 0,
 				penis_small: V.player.penisExist && V.player.penissize === 1,
 				penis_big: V.player.penisExist && V.player.penissize >= 4,
 				breasts_tiny: V.gender !== "m",
@@ -702,7 +704,7 @@ var statChange = (() => {
 		if (isNaN(amount)) paramError("acceptance", "amount", amount, "Expected a number.");
 		if (!["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"].includes(type)) {
 			paramError(
-				"wet",
+				"acceptance",
 				"type",
 				type,
 				'Expected values include "penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"'
@@ -749,7 +751,7 @@ var statChange = (() => {
 		if (isNaN(amount)) paramError("willpower", "amount", amount, "Expected a number.");
 		amount = Number(amount);
 		if (amount) {
-			V.willpower = Math.clamp(V.willpower + amount, 0, V.willpowermax);
+			V.willpower = Math.clamp(V.willpower + amount * 2, 0, V.willpowermax);
 		}
 	}
 	DefineMacro("willpower", willpower);
@@ -759,7 +761,7 @@ var statChange = (() => {
 		if (isNaN(amount)) paramError("hope", "amount", amount, "Expected a number.");
 		amount = Number(amount);
 		if (amount) {
-			V.orphan_hope = Math.clamp(V.orphan_hope + amount, -50, 50);
+			V.orphan_hope = Math.clamp(V.orphan_hope + amount * 2, -50, 50);
 		}
 	}
 	DefineMacro("hope", hope);
@@ -769,7 +771,7 @@ var statChange = (() => {
 		if (isNaN(amount)) paramError("reb", "amount", amount, "Expected a number.");
 		amount = Number(amount);
 		if (amount) {
-			V.orphan_reb = Math.clamp(V.orphan_reb + amount, -50, 50);
+			V.orphan_reb = Math.clamp(V.orphan_reb + amount * 2, -50, 50);
 		}
 	}
 	DefineMacro("reb", reb);
@@ -854,7 +856,7 @@ var statChange = (() => {
 			].includes(type)
 		) {
 			paramError(
-				"wet",
+				"skill",
 				"type",
 				type,
 				'Expected values include "oralskill", "vaginalskill", "penileskill", "handskill", "analskill", "feetskill", "bottomskill", "thighskill", "chestskill", "beauty", "seductionskill" and "skulduggery"'
