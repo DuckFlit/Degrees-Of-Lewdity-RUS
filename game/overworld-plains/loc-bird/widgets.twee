@@ -78,6 +78,18 @@
 		<</if>>
 	<</if>>
 
+	<<if $bird.override>>
+		<<if $bird.overrideTimer is undefined>>
+			<<set $bird.overrideTimer to 120>>
+		<<else>>
+			<<set $bird.overrideTimer -= _args[0]>>
+			<<if $bird.overrideTimer lte 0>>
+				<<run delete $bird.overrideTimer>>
+				<<run delete $bird.override>>
+			<</if>>
+		<</if>>
+	<</if>>
+
 	<<if $bird.hunts?.timer>>
 		<<set $bird.hunts.timer += _args[0]>>
 	<</if>>
@@ -451,8 +463,40 @@
 	<</if>>
 <</widget>>
 
+<<widget "ggbirdstockholm">>
+	<<if $syndromebird isnot 1>>
+		<<ggstockholm>>
+	<</if>>
+<</widget>>
+
+<<widget "gggbirdstockholm">>
+	<<if $syndromebird isnot 1>>
+		<<gggstockholm>>
+	<</if>>
+<</widget>>
+
+<<widget "lbirdstockholm">>
+	<<if $syndromebird isnot 1>>
+		<<lstockholm>>
+	<</if>>
+<</widget>>
+
+<<widget "llbirdstockholm">>
+	<<if $syndromebird isnot 1>>
+		<<llstockholm>>
+	<</if>>
+<</widget>>
+
+<<widget "lllbirdstockholm">>
+	<<if $syndromebird isnot 1>>
+		<<lllstockholm>>
+	<</if>>
+<</widget>>
+
 <<widget "bird_schedule">>
-	<<if Time.hour gte 21 or Time.hour lte 5>>
+	<<if $bird.override>>
+		<<set $bird.activity to $bird.override>>
+	<<elseif Time.hour gte 21 or Time.hour lte 5>>
 		<<set $bird.activity to "sleep">>
 	<<elseif Time.hour lte 9>>
 		<<set $bird.activity to "sing">>
@@ -461,7 +505,11 @@
 	<<elseif Time.hour lte 15>>
 		<<set $bird.activity to "build">>
 	<<elseif Time.hour lte 17>>
-		<<set $bird.activity to "groom">>
+		<<if $bird.injured gt 1>>
+			<<set $bird.activity to "rest">>
+		<<else>>
+			<<set $bird.activity to "groom">>
+		<</if>>
 	<<else>>
 		<<set $bird.activity to "sing">>
 	<</if>>
@@ -1064,7 +1112,25 @@
 <</widget>>
 
 <<widget "flight_hunt_return">>
-	<<if ($bird.hunts.weight gte 3 and $bird.hunts.duo is false) or $bird.hunts.weight gte 5>>
+	<<if $bird.hunts.duo is true and birdEggsReady("Great Hawk")>>
+		<<endevent>><<set $bird.hunts.duo to false>><<set $bird.state to "home">>
+		<<npc "Great Hawk">><<person1>>
+		<<your_bird_text "cap">> suddenly goes pale, and <<bhis>> flying becomes slightly erratic.
+		<br><br>
+
+		<<if $monster is 1>>
+			"<<Wife>>. We need to return home. Now."
+		<</if>>
+		Before you can ask <<bhim>> what's wrong, <<bhe>> starts to fly faster. Towards the castle. <<bHe>> quickly outpaces you.
+		<br><br>
+
+		<<flight_distance_check>>
+		<<flight_time_check _returnTime "silent">>
+		<<print '<<link [[Follow ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<br>
+		<<link [[Keep hunting|Bird Hunt Exit]]>><<endevent>><</link>>
+		<br>
+	<<elseif ($bird.hunts.weight gte 3 and $bird.hunts.duo is false) or $bird.hunts.weight gte 5>>
 		You won't be able to carry any more. You begin to fly back to the tower.
 		<br><br>
 
@@ -2310,5 +2376,106 @@
 			<</link>>
 		<</capture>>
 	</div>
+<</widget>>
+
+<<widget "birdEggLayEvent">>
+	<<npc "Great Hawk">>
+	<<if _args[0] isnot undefined and typeof _args[0] is "string">>
+		<<set $birdEggContext to _args[0]>>
+	<</if>>
+	<<if $birdEggContext is "sleep">>
+		You wake up to see <<your_bird_text>> sitting at the side of the nest,
+	<<elseif $birdEggContext is "perch">>
+		<<your_bird_text "cap">> suddenly looks uncomfortable. <<bHe>> <<if $birdBask>>releases you and <</if>>shakily stands before <<if $monster is 1>>shambling<<else>>hopping<</if>> over to the nest.
+		<br><br>
+
+		<<unset $birdBask>><<unset $birdPerch>>
+		<<bHe>> half-collapses into it and starts
+	<<else>>
+		You see <<your_bird_text>> sitting in the nest,
+	<</if>>
+	<<if $monster is 1>>
+		breathing heavily. <<bHe>> notices you watching, and <<bhis>> face flushes. <<if $syndromebird is 1>>You don't see signs of embarassment from <<bhim>> often.<</if>>
+		<br><br>
+
+		"<<Wife>>... <span class="lewd">eggs...</span>" <<bhe>> barely manages before <<bhis>> face contorts into an expression of pain.
+	<<else>>
+		bobbing from side to side. <<bHe>> lets out a low, pained cry. <span class="lewd"><<bHes>> laying eggs.</span>
+	<</if>>
+	<br><br>
+
+	<<link [[Look away|Bird Tower Great Hawk Egg Laying]]>><<set $phase to 0>><<npcincr "Great Hawk" dom 1>><</link>><<gdom>>
+	<br>
+	<<link [[Watch|Bird Tower Great Hawk Egg Laying]]>><<set $phase to 1>><</link>>
+	<br>
+	<<if birdEggsReady("Great Hawk") is "fertilised">>
+		<<link [[Comfort|Bird Tower Great Hawk Egg Laying]]>><<set $phase to 2>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -1>><<bird_stockholm 3>><</link>><<glove>><<ldom>><<ggbirdstockholm>><<deviant1>>
+		<br>
+		<<if $deviancy gte 35 and ($sciencetrait gte 2 or $harpy gte 6)>>
+			<<link [[Help|Bird Tower Great Hawk Egg Laying]]>><<set $phase to 3>><<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom -5>><<bird_stockholm 5>><</link>><<gglove>><<llldom>><<gggbirdstockholm>><<deviant3>>
+		<<elseif $sciencetrait lt 2 and $harpy lte 5>>
+			<span class="red">You don't know how to help <<bhim>> pass <<bhis>> eggs.</span>
+		<<else>>
+			<span class="blue">You aren't deviant enough to help <<bhim>> pass <<bhis>> eggs.</span>
+		<</if>>
+	<<else>>
+		<<link [[Comfort|Bird Tower Great Hawk Egg Laying]]>><<set $phase to 2>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -1>><<bird_stockholm 1>><</link>><<glove>><<ldom>><<gbirdstockholm>><<deviant1>>
+		<br>
+		<<if $deviancy gte 35 and ($sciencetrait gte 2 or understandsBirdBehaviour())>>
+			<<link [[Help|Bird Tower Great Hawk Egg Laying]]>><<set $phase to 3>><<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom -5>><<bird_stockholm 3>><</link>><<gglove>><<llldom>><<ggbirdstockholm>><<deviant3>>
+		<<elseif $sciencetrait lt 2 and !understandsBirdBehaviour()>>
+			<span class="red">You don't know how to help <<bhim>> pass <<bhis>> eggs.</span>
+		<<else>>
+			<span class="blue">You aren't deviant enough to help <<bhim>> pass <<bhis>> eggs.</span>
+		<</if>>
+	<</if>>
+	<br>
+<</widget>>
+
+<<widget "endBirdEggLaying">>
+	<<set $bird.override to "rest">>
+	<<set $bird.overrideTimer to 240>>
+	<<set $bird.timer to 240>>
+	<<unset $eggLayNumber>>
+	<<unset $eggLayText>>
+	<<unset $birdEggContext>>
+<</widget>>
+
+<<widget "playerEggLayEvent">>
+	<<set $_eggnant to getPregnancyObject()>>
+	<<if $passage is "Bird Tower Sleep" and ($bedGuest is "Great Hawk" or $bird.state? is "home")>>
+		<<set _eggLayingWake to true>>
+	<<elseif ($passage is "Robin Sleep" or $passage is "Sleep") and $robinbed>>
+		<<set _eggLayingWake to true>>
+	<<else>>
+		<<if playerIsPregnant() and $_eggnant.type is "hawk">>
+			<<if $location is "tower">>
+				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your cervix and land in your nest<<else>><span class="lewd">a fertilised bird egg</span> passes through your cervix and lands in your nest<</if>>.
+				<br><br>
+
+				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+				<<set $bird.eggReact to true>>
+				<<pregnancyFeats "pc">>
+				<<endPlayerPregnancy "tower" "tower">>
+				<<set $harpyEggsPrevent to 28>>
+			<<else>>
+				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your cervix and land on your bed<<else>><span class="lewd">a fertilised bird egg</span> passes through your cervix and lands on your bed<</if>>.
+				<br><br>
+
+				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s<</if>>.
+				/* Might be best changing the location variable here */
+				<<pregnancyFeats "pc">>
+				<<endPlayerPregnancy $location "inventory">>
+				<<set $harpyEggsPrevent to 28>>
+			<</if>>
+		<<elseif !playerIsPregnant() and $harpyEggs>>
+			You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $harpyEggs.count gte 2>><span class="lewd">$harpyEggs.count bird eggs</span> pass through your cervix and land on your bed<<else>><span class="lewd">a bird egg</span> passes through your cervix and lands on your bed<</if>>.
+			<br><br>
+			You're filled with a sense of maternal bliss, <span class="blue">but you know <<if $harpyEggs.count gte 2>>they're<<else>>it's<</if>> unfertilised.</span> <<tending_pick bird_egg $harpyEggs.count $harpyEggs.count>>
+			<<unset $harpyEggs>>
+			<<set $harpyEggsPrevent to 14>>
+		<</if>>
+		<br><br>
+	<</if>>
 <</widget>>
 

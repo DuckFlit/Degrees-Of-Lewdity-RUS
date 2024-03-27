@@ -401,8 +401,6 @@ function endPlayerPregnancy(birthLocation, location) {
 	if (pregnancy.fetus[0].childId) {
 		giveBirthToChildren("pc", birthLocation, location);
 		validBirth = true;
-	} else if (pregnancy.type === "hawk") {
-		// ToDo: Perfect place to give the player unfertilized eggs?
 	}
 
 	switch (pregnancy.type) {
@@ -535,6 +533,7 @@ function npcPregnancyCycle() {
 			} else {
 				pregnancy.nonCycleRng.push(random(0, 4));
 				pregnancy.nonCycleRng.deleteAt(0);
+				if (npcName === "Great Hawk" && pregnancy.nonCycleRng[0] === 0) pregnancy.nonCycleRngHasEggs = true;
 			}
 		}
 		updateRecordedSperm("vagina", npcName, 1);
@@ -666,7 +665,8 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 
 	// Handled by Baileys Orphanage event and when naming them, this is backup for other situations
 	if (pregnancy.fetus[0].childId && location !== "home" && pregnancy.fetus[0].mother !== "pc" && pregnancy.fetus[0].father === "pc") {
-		document.getElementById("passages").children[0].append(Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>'));
+		/* ToDo: Enable hawk pregnancy: Figure out why this breaks on passage refresh when GH lays eggs*/
+		/*document.getElementById("passages").children[0].append(Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>'));*/
 	}
 	let validBirth;
 	if (pregnancy.fetus[0].childId) {

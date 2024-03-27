@@ -289,7 +289,7 @@ The <<beasttype>> flies above the ruins of a castle, and begins a circling desce
 	<<link [[Punch|Bird Capture Punch]]>><<def 1>>
 		<<if C.npc["Great Hawk"].love gte 50>><<npcincr "Great Hawk" love -3>><<npcincr "Great Hawk" dom -3>><<else>><<npcincr "Great Hawk" love -1>><<npcincr "Great Hawk" dom -1>><</if>><<bird_stockholm -5>>
 	<</link>>
-	<<if C.npc["Great Hawk"].love gte 50>><<lldom>><<lllove>><<else>><<ldom>><<llove>><</if>><<lstockholm>>
+	<<if C.npc["Great Hawk"].love gte 50>><<lldom>><<lllove>><<else>><<ldom>><<llove>><</if>><<lbirdstockholm>>
 	<br>
 <</if>>
 <<link [[Wait|Bird Capture Wait]]>><</link>>
@@ -702,10 +702,10 @@ Moments later, you've arrived. The <<beasttype>> swoops through a broken wall, a
 <<link [[Remain silent|Bird Rescue No Syndrome Tower Silent]]>><<npcincr "Great Hawk" love -1>><<npcincr "Great Hawk" dom -1>><</link>><<llove>><<ldom>>
 <br>
 <<if $phase gte 3>>
-	<<link [[Punch|Bird Rescue No Syndrome Tower Punch]]>><<npcincr "Great Hawk" love -3>><<npcincr "Great Hawk" dom -3>><<bird_stockholm -3>><</link>><<lllove>><<llldom>><<llstockholm>>
+	<<link [[Punch|Bird Rescue No Syndrome Tower Punch]]>><<npcincr "Great Hawk" love -3>><<npcincr "Great Hawk" dom -3>><<bird_stockholm -3>><</link>><<lllove>><<llldom>><<llbirdstockholm>>
 	<br>
 <</if>>
-<<link [[Pull Away|Bird Rescue No Syndrome Tower Pull]]>><<npcincr "Great Hawk" love -3>><<npcincr "Great Hawk" dom -1>><<bird_stockholm -1>><</link>><<if $phase gte 2>><<llove>><<ldom>><</if>><<lstockholm>>
+<<link [[Pull Away|Bird Rescue No Syndrome Tower Pull]]>><<npcincr "Great Hawk" love -3>><<npcincr "Great Hawk" dom -1>><<bird_stockholm -1>><</link>><<if $phase gte 2>><<llove>><<ldom>><</if>><<lbirdstockholm>>
 <br>
 
 :: Bird Rescue No Syndrome Tower Hug
@@ -950,10 +950,12 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<br>
 <<elseif !$possessed and Object.values($children).find(child => (child.type is "hawk" and child.location is "inventory") or (child.location is "tower" and Time.date.timeStamp gte child.eggTimer))>>
 	/* Move hawk eggs that the player has to the nest */
+	<<set _eggsMovedToNest to 0>>
 	<<run Object.values($children).forEach(child => {
 		if (child.type is "hawk" and child.location is "inventory") {
 			T.movedToTower to true;
 			child.location to "tower";
+			T.eggsMovedToNest++;
 		}
 		if (child.location is "tower" and Time.date.timeStamp gte child.eggTimer) T.readyToHatch to true;
 	})>>
@@ -966,18 +968,14 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<br><br>
 		<<link [[Next|Bird Tower Hatching]]>><</link>>
 	<<else>>
-		ToDo: Enable hawk pregnancy: write scene about the player placing eggs in the nest
+		<span class="blue">You gently place your egg<<if _eggsMovedToNest gte 2>>s<</if>> in your nest.</span> You feel a sense of relief at seeing <<if _eggsMovedToNest gte 2>>them<<else>>it<</if>> safe. <<Number _eggsMovedToNest>> <<mooricon "eggs_heart">> fertilised bird egg<<if _eggsMovedToNest gte 2>>s have<<else>> has<</if>> been moved to the nest.
+		<<set $bird.eggReact to true>>
 		<br><br>
 		<<link [[Next|Bird Tower]]>><<endevent>><</link>>
 	<</if>>
 	<br>
-<<elseif npcPregnancyEnding("Great Hawk") and !$possessed and $bird.state is "home">>
-	ToDo: Enable hawk pregnancy: write scene about the Greak Hawk laying their eggs and leaving them in the nest
-
-	<<pregnancyFeats "Great Hawk">>
-	<<endNpcPregnancy "Great Hawk" "tower" "tower">>
-	<br><br>
-	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<<elseif $bird.state is "home" and birdEggsReady("Great Hawk") and !$possessed>>
+	<<birdEggLayEvent>>
 <<elseif $bird.state is "hunting" and $bird.timer lte 0 and !$possessed>>
 	<<npc "Great Hawk">>
 	You hear the flap of wings as the <<beasttype>> returns.
@@ -1117,7 +1115,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 <<elseif $bird.state is "home" and $bird.lock is 1 and $syndromebird is 1 and !$possessed>>
 	<<npc "Great Hawk">>
 	The <<beasttype>> <<if $monster is 1>>walks<<else>>hops<</if>> deeper into the room. <<bHe>> pauses beside the trap door, and holds the rusted lock between <<bhis>> talons. <<bHe>> crushes it in one swift movement, grasps the remaining metal, and throws open the door.
-	<<if $bird.clean lte 40>>
+	<<if $bird.clean lte 10>>
 		<<bHe>> jumps away from the cloud of dust.
 	<</if>>
 	<br><br>
@@ -1259,6 +1257,8 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 				<<your_bird_text "cap">> is bathing in the rainwater pool.
 			<<case "groom">>
 				<<your_bird_text "cap">> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
+			<<case "rest">>
+				<<your_bird_text "cap">> lays in the nest, recovering.
 			<<case "build">>
 				<<if $birdShelterRepair>>
 					<<unset $birdShelterRepair>>
@@ -1397,7 +1397,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<br>
 	<</if>>
 	<<if $syndromebird isnot 1>>
-		<<bedicon "zzz">><<link [[Sleep elsewhere|Bird Tower Bed Alone]]>><<bird_stockholm -2>><</link>><<if $syndromebird isnot 1>><<lstockholm>><</if>>
+		<<bedicon "zzz">><<link [[Sleep elsewhere|Bird Tower Bed Alone]]>><<bird_stockholm -2>><</link>><<if $syndromebird isnot 1>><<lbirdstockholm>><</if>>
 		<br>
 	<</if>>
 	<<if $bird.upgrades.wardrobe is 1>>
@@ -1508,7 +1508,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 		<<link [[Stay still|Bird Tower Passout No Syndrome]]>><<set $phase to 0>><<bird_stockholm 3>><</link>><<ggbirdstockholm>>
 		<br>
-		<<link [[Push yourself away|Bird Tower Passout No Syndrome]]>><<set $phase to 1>><<bird_stockholm -3>><</link>><<llstockholm>>
+		<<link [[Push yourself away|Bird Tower Passout No Syndrome]]>><<set $phase to 1>><<bird_stockholm -3>><</link>><<llbirdstockholm>>
 		<br>
 	<</if>>
 <</if>>
@@ -1517,7 +1517,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 <<effects>>
 
 <<if $phase is 0>>
-	You let the <<beasttype>> get close to you. He starts touching you with his <<if $monster is 1>>hands<<else>>beak<</if>>, inspecting your body for signs of injury. <<bHis>> touch feels very gentle. <<bHe>> keeps touching you for a while.
+	You let the <<beasttype>> get close to you. <<bHe>> starts touching you with <<bhis>> <<if $monster is 1>>hands<<else>>beak<</if>>, inspecting your body for signs of injury. <<bHis>> touch feels very gentle. <<bHe>> keeps touching you for a while.
 	<br><br>
 
 	Just as you start to enjoy <<bhis>> caress, <<bhe>> pulls away.
@@ -1647,7 +1647,7 @@ You're still unable to move, which allows the <<beasttype>> to keep comforting y
 	You get up and hug him. 
 	<<if $speech_attitude is "meek">>"Thank you for caring about me so much. But I'm alright," you say.
 	<<elseif $speech_attitude is "bratty">> "You don't have to be so worried, silly," you say.
-	<<else>>"I really am fine. Thanks for making sure though,"" you say.
+	<<else>>"I really am fine. Thanks for making sure though," you say.
 	<</if>>
 	<br><br>
 
@@ -2676,7 +2676,7 @@ You put it in the wardrobe.
 <<effects>>
 
 <<if $syndromebird is 1 or $harpy gte 6>>
-	You lie in the nest<<if $bird.activity is "sleep" and $bird.state is "home">><<npc "Great Hawk">><<set $bedGuest to "Great Hawk">> with <<if $syndromebird is 1>>your<<else>>the<</if>> <<beasttype>><</if>>.
+	You lie in the nest<<if ["sleep", "rest"].includes($bird.activity) and $bird.state is "home">><<npc "Great Hawk">><<set $bedGuest to "Great Hawk">> with <<if $syndromebird is 1>>your<<else>>the<</if>> <<beasttype>><</if>>.
 <<else>>
 	You lie on the nest.
 <</if>>
@@ -2747,6 +2747,8 @@ You sit by the rainwater pool.
 		)>>
 	<<case "groom">>
 		<<your_bird_text "cap">> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
+	<<case "rest">>
+		<<your_bird_text "cap">> lays in the nest, recovering.
 	<<case "build">>
 		<<if $birdShelterRepair>>
 			<<unset $birdShelterRepair>>
@@ -2839,7 +2841,33 @@ You sit by the rainwater pool.
 
 	<<sleepeffects>>
 
-	<<if $bird.syndrome gte 15 and $syndromebird isnot 1>>
+	<<if $bird.state is "home" and birdEggsReady("Great Hawk")>>
+		<<birdEggLayEvent "sleep">>
+	<<elseif _eggLayingWake is true>>
+		<<npc "Great Hawk">>
+		<<set _eggnant to getPregnancyObject()>>
+		<<if playerIsPregnant() and _eggnant.type is "hawk">>
+			<<set $eggLayNumber to _eggnant.fetus.length>>
+		<<else>>
+			<<set $eggLayNumber to $harpyEggs.count>>
+		<</if>>
+
+		You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees.
+		<br><br>
+
+		<<your_bird_text "cap">> notices you stir.
+		<<if $monster is 1>>
+			<<bHis>> eyes go wide for a moment, and <<bhe>> rushes to your side. "<<Wife>> has eggs!" <<bHe>> gently places a hand over your belly.
+		<<else>>
+			<<bHe>> quickly hops to your side. <<bHe>> gently starts podding your belly with <<bhis>> beak.
+		<</if>>
+		<br><br>
+
+		<<link "Let <<bhim>> help" "Bird Tower Player Egg Laying">><<set $phase to 0>><<npcincr "Great Hawk" love -1>><<bird_stockholm -1>><</link>><<llove>><<lbirdstockholm>>
+		<br>
+		<<link "Push <<bhim>> away" "Bird Tower Player Egg Laying">><<set $phase to 1>><<npcincr "Great Hawk" love 3>><<bird_stockholm 3>><</link>><<ggove>><<ggbirdstockholm>>
+		<br>
+	<<elseif $bird.syndrome gte 15 and $syndromebird isnot 1>>
 		<<npc "Great Hawk">>
 		You awaken, warm and comfy. The <<beasttype>> lays beside you, eyes closed, shielding you from the elements with <<bhis>> wing. <<bHis>> presence makes you feel safe and comfortable. 
 		<br><br>
@@ -3453,7 +3481,9 @@ You bring your attentive touch down towards <<bhis>> groin.
 :: Bird Tower Perch
 <<effects>><<npc "Great Hawk">>
 <<bird_schedule>>
-<<if $bird.activity is "bathe" and $bird.state is "home" and $birdPerch isnot undefined>>
+<<if $bird.state is "home" and ["groom","sing","bathe"].includes($bird.activity) and birdEggsReady("Great Hawk") and $birdPerch isnot undefined>>
+	<<birdEggLayEvent "perch">>
+<<elseif $bird.activity is "bathe" and $bird.state is "home" and $birdPerch isnot undefined>>
 	<<unset $birdPerch>>
 	<<if $monster is 1>>
 		The <<beasttype>> begins to stand, offering <<bhis>> hand to you. "Must get clean. Come."
@@ -3535,7 +3565,9 @@ You bring your attentive touch down towards <<bhis>> groin.
 	<</if>>
 <</if>>
 <<bird_schedule>>
-<<if $bird.activity is "bathe" and $bird.state is "home">>
+<<if $bird.state is "home" and ["groom","sing","bathe"].includes($bird.activity) and birdEggsReady("Great Hawk")>>
+	<<birdEggLayEvent "perch">>
+<<elseif $bird.activity is "bathe" and $bird.state is "home">>
 	<<unset $birdBask>><<unset $birdPerch>>
 	<<if $monster is 1>>
 		The <<beasttype>> begins to stand, offering <<bhis>> hand to you. "Must get clean. Come."
@@ -3851,16 +3883,15 @@ You bring your attentive touch down towards <<bhis>> groin.
 			"You are perfect.",
 			"Mine."
 		)>>"
-		<br><br>
-		<<if $bird.activity is "sing" or $bird.activity is "groom">>
-			<<link [[Kiss|Bird Perch Monster Kiss]]>><<npcincr "Great Hawk" love 1>><</link>><<glove>><<kissvirginitywarning>><<NPCvirginitywarning "Great Hawk" "kiss">><br>
-		<</if>>
-		<<bird_perch_options>>
 	<<else>>
 		rests <<bhis>> head on your shoulder.
-		<br><br>
-		<<bird_perch_options>>
 	<</if>>
+	<br><br>
+
+	<<if $bird.activity is "sing" or $bird.activity is "groom">>
+		<<link [[Kiss|Bird Perch Monster Kiss]]>><<npcincr "Great Hawk" love 1>><</link>><<glove>><<kissvirginitywarning>><<NPCvirginitywarning "Great Hawk" "kiss">><br>
+	<</if>>
+	<<bird_perch_options>>
 <<elseif $rng gte 31>>
 	The <<beasttype>>'s voice greets the moor, as a hearty <<if Time.dayState is "dawn">>good morning<<elseif Time.dayState is "dusk">>good evening<<else>>greeting<</if>> call to all of its denizens. Or maybe <<bhe>>'s just bragging about you.
 	<br><br>
@@ -4018,9 +4049,18 @@ You push your wings back into <<bhis>> face, and <<bhe>> releases them.
 
 :: Bird Perch Monster Kiss
 <<effects>>
-You bring <<bhis>> head close to yours, and turn to kiss <<bhim>>. <<takeKissVirginity "Great Hawk" `($syndromebird is 1?"loveInterest":"romantic")`>>
-<br><br>
-You lose track of the time as you hold each other. "Landbound displays of affection, so strange," <<bhe>> says suddenly. "Would only accept it from <<wife>>." <<glove>>
+<<if $monster is 1>>
+	You bring <<bhis>> head close to yours, and turn to kiss <<bhim>>. <<takeKissVirginity "Great Hawk" `($syndromebird is 1?"loveInterest":"romantic")`>>
+	<br><br>
+
+	You lose track of the time as you hold each other. "Landbound displays of affection, so strange," <<bhe>> says suddenly. "Would only accept it from <<wife>>." <<glove>>
+<<else>>
+	You turn your head and give <<bhim>> a kiss on the side of <<bhis>> beak. <<bHe>> perks up, then begins <<if understandsBirdBehaviour()>>preening<<else>>running <<bhis>> beak through<</if>> <<if $transformationParts.bird.plumage isnot "disabled">>the feathers around your neck<<else>>your hair<</if>>.
+	You <<if $speech_attitude is "meek">>giggle<<elseif $speech_attitude is "bratty">>chuckle<<else>>laugh<</if>> at the sensation, then return the favour, gently combing your fingers through your partner's plumage, and softly kissing <<bhis>> cheeks and the side of <<bhis>> beak.
+	<<takeKissVirginity "Great Hawk" `($syndromebird is 1?"loveInterest":"romantic")`>>
+	<br><br>
+	You lose track of time as you preen each other. Eventually you pull apart, and <<bhe>> trills <<if understandsBirdBehaviour()>>contentedly<<else>>softly<</if>>.
+<</if>>
 <br><br>
 <<bird_perch_options>>
 
@@ -5514,7 +5554,7 @@ You both land back on the perch.
 The <<beasttype>> returns to <<bhis>> usual spot on the perch.
 <br><br>
 
-<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
+<<link [[Next|Bird Tower Perch]]>><<set $bird.timer to 30>><<endevent>><</link>>
 <br>
 
 :: Bird Tower Mating Ritual Start
@@ -6038,6 +6078,435 @@ You look up to the sky.
 <br><br>
 
 <<bird_telescope_options>>
+
+:: Bird Tower Great Hawk Egg Laying
+<<effects>>
+<<set _hawkPregnancy to getPregnancyObject("Great Hawk")>>
+<<if birdEggsReady("Great Hawk") is "fertilised">>
+	<<set $eggLayNumber to _hawkPregnancy.fetus.length>>
+<<else>>
+	<<set $eggLayNumber to random(2,3)>>
+<</if>>
+<<switch $eggLayNumber>>
+	<<case 1>><<set $eggLayText to `<span class="lewd">An egg pops out.</span>`>>
+	<<case 2>><<set $eggLayText to `<span class="lewd">An egg pops out, followed shortly by another.</span>`>>
+	<<default>><<set $eggLayText to `<span class="lewd">One by one, <<number $eggLayNumber>> eggs pop out.</span>`>>
+<</switch>>
+<<switch $phase>>
+	<<case 0>>
+		You avert your eyes until you hear <<your_bird_text>> stand up.
+		<<if $eggLayNumber is 1>>
+			<span class="lewd">There's an egg in the nest.</span>
+		<<else>>
+			<span class="lewd">There are <<number $eggLayNumber>> eggs in the nest.</span>
+		<</if>>
+	<<case 1>>
+		You watch as <<your_bird_text>>
+		<<if $monster is 1>>
+			grips the edges of the nest and <<bhe>> grits <<bhis>> teeth. <<bHis>> hole opens. $eggLayText <<bHe>> sighs in relief.
+		<<else>>
+			struggles. <<bHis>> hole opens. $eggLayText <<bHe>> stands up and shakes.
+		<</if>>
+	<<case 2>>
+		You rush to <<your_bird_text>>'s side and position yourself behind <<bhim>>. You place both of your hands on <<bhis>> lower abdomen and gently rub it.
+		<<bHis>> body shakes at your touch, more sensitive than usual.
+		<<if $syndromebird gte 1>>
+			You <<if $harpy gte 6>>coo<<else>>whisper<</if>> softly into <<bhis>> ear to comfort <<bhim>>.
+		<<else>>
+			You're not sure what else to do.
+		<</if>>
+		<<if $monster is 1>>
+			<<bHis>> breathing slows, but only for a moment.
+		<</if>>
+		<<bHis>> talons bite into the
+		<<if $bird.upgrades.nest gte 2>>
+			fabric of the nest, leaving small holes.
+		<<else>>
+			nest, crushing twigs and sticks.
+		<</if>>
+		<<deviancy1>>
+
+		You feel <<bhis>> abdomen throb. $eggLayText
+		<<if $monster is 1>>
+			<<bHe>> lets out a long, relieved sigh. "Thank you, <<wife>>."
+		<<else>>
+			<<bHe>> lets out a sound a bit like a huff, and nuzzles your cheek with <<bhis>> beak.
+		<</if>>
+	<<case 3>>
+		<<set $bird.satisfied to true>>
+		You rush to <<your_bird_text>>'s side and position yourself behind <<bhim>>.
+		<<if $harpy gte 6>>
+			You let your instincts take over, knowing how to help <<bhim>> pass <<bhis>> eggs.
+		<<else>>
+			You know just enough about birds to help <<bhim>>.
+		<</if>>
+		You place your hands on <<bhis>> abdomen and start to apply gentle pressure.
+		<<if $monster is 1>>
+			You approximate the location of <<bhis>> ovaries, assuming they must be somewhat similar to those of a human. Your gentle pushing seems to be easing <<bhis>> pain. You press a little harder, causing <<bhim>> to moan lightly.
+		<<else>>
+			You feel around for <<bhis>> oviduct. Your gentle pushing seems to be easing <<bhis>> pain.
+		<</if>>
+		<br><br>
+
+		After a moment, <span class="teal">you feel some resistance inside <<bhim>></span>. Knowing where the eggs are, you start to gently massage <<bhis>> abdomen in small circles, slowly working your way down. You can feel the eggs inside <<bhim>> moving.
+		<<if $monster is 1>>
+			<<bHis>> breathing starts to get faster, but less strained. <<bHis>> head falls back, and <<bhe>> looks at you lovingly.
+		<</if>>
+		You remove one of your hands from <<bhis>> abdomen and place it near <<bhis>> opening. It's already started to crown. You rub it, causing <<bhim>> to lean into you.
+		<<deviancy3>>
+
+		The opening is already slick, so you easily manage to slip two fingers in, which makes <<bhim>> <<if $monster is 1>>gasp<<else>>coo<</if>>. You massage <<bhis>> abdomen from outside and <<bhis>> passage from inside.
+		<<bHis>> talons bite into the
+		<<if $bird.upgrades.nest gte 2>>
+			fabric of the nest, leaving small holes.
+		<<else>>
+			nest, crushing twigs and sticks.
+		<</if>>		
+		<<if $monster is 1>>
+			<<bHe>> grips your arm hard. "<<if $player.gender_appearance is "m">>H...husband...<<else>>W...wife...<</if>>" <<bHe>> can't finish <<bhis>> words. <<bHe>> arches <<bhis>> back and coats your fingers with <<bhis>> juices, reaching a peak of both pleasure and pain.
+		<</if>>
+		With one final push, you feel something hard hit your fingers. $eggLayText
+		<<if $monster is 1>>
+			<<your_bird_text "cap">> pants, still gripping you. It takes <<bhim>> a moment to get <<bhis>> bearings.
+		<</if>>
+<</switch>>
+<br><br>
+
+<<link [[Next|Bird Tower Great Hawk Egg Laying 2]]>><</link>>
+<br>
+
+:: Bird Tower Great Hawk Egg Laying 2
+<<effects>>
+<<set _hawkPregnancy to getPregnancyObject("Great Hawk")>>
+<<if birdEggsReady("Great Hawk") is "unfertilised">>
+	<<if $monster is 1>>
+		<<bHe>> gently picks up <<if $eggLayNumber gt 1>>one of the eggs<<else>>the egg<</if>>.
+		<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
+			"Don't worry, <<wife>>. No more children yet, not from <<if $eggLayNumber gt 1>>these eggs<<else>>this egg<</if>>."
+		<<else>>
+			<<if playerCanBreedWith("Great Hawk")>>
+				<<set _optionReassure to true>>
+				"No life in <<if $eggLayNumber gt 1>>them<<else>>it<</if>>," <<bhe>> says with a hint of sadness.
+				<<if $syndromebird is 1>>
+					"We... keep trying?"
+				<<else>>
+					"Maybe some day."
+				<</if>>
+			<<else>>
+				"S-sorry. Can not help it. No life in <<if $eggLayNumber gt 1>>these eggs<<else>>this egg<</if>>."
+			<</if>>
+		<</if>>
+	<<else>>
+		<<bHe>> prods at them, and lets out a flat caw. It seems <<if $eggLayNumber gt 1>>they're<<else>>it's<</if>> not fertilised.
+	<</if>>
+	<<if $phase gte 2>>
+		You help <<bhim>> get settled in to rest after <<bhis>> ordeal.
+	<</if>>
+	<br><br>
+
+	<<set $daily.hawkUnfertilisedEggs to true>>
+	<<run delete _hawkPregnancy.nonCycleRngHasEggs>>
+
+	<<if _optionReassure>>
+		<<link [[Reassure|Bird Tower Eggs Reassure]]>><<npcincr "Great Hawk" love 1>><<bird_stockholm 3>><</link>><<glove>><<ggbirdstockholm>>
+		<br>
+	<</if>>
+	<<if $eggLayNumber gt 1>>
+		<<link [[Take the eggs|Bird Tower Eggs Take]]>><</link>>
+	<<else>>
+		<<link [[Take the egg|Bird Tower Eggs Take]]>><</link>>
+	<</if>>
+	<br>
+	<<if $birdEggContext is "huntReturn">>
+		<<link [[Continue|Bird Tower Great Hawk Egg Laying Hunt Finish]]>><<endBirdEggLaying>><</link>>
+	<<else>>
+		<<link [[Continue|Bird Tower]]>><<endevent>><<endBirdEggLaying>><</link>>
+	<</if>>
+	<br>
+<<else>>
+	<<if $monster is 1>>
+		<<bHe>> gently picks up <<if $eggLayNumber gt 1>>one of the eggs<<else>>the egg<</if>> and smells it. <<bHis>> eyes light up.
+		<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
+			"I'm so happy, <<wife>>. <span class="lewd">We have more children</span>!" <<bHe>> tries to sweep you up in a hug, but seems too weak at the moment.
+		<<else>>
+			"Alive... <span class="lewd">Great Hawk and <<wife>> have children</span>..." a tear runs down <<bhis>> cheek. <<bHe>> turns to you and hugs you tightly.
+		<</if>>
+		<<if $syndromebird gte 1>>
+			You can't help but return the embrace. You're flooded with emotion. <<trauma -12>><<lltrauma>>
+			<br><br>
+		<</if>>
+	<<else>>
+		<<bHe>> prods at <<if $eggLayNumber gt 1>>them<<else>>it<</if>>, before quickly looking up. <<bHe>> spreads <<bhis>> wings wide, letting out a triumphant shriek into the air. <<bHe>> bobs <<bhis>> head and puffs out <<bhis>> plumage. <span class="lewd"><<if $eggLayNumber gt 1>>They're<<else>>It's<</if>> fertilised.</span>
+		<br><br>
+
+		<<bHe>> continues blustering, before flopping over in the nest. <<bHe>> must be exhausted.
+	<</if>>
+	<<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+	<br><br>
+
+	<<if $phase gte 2>>
+		You help <<bhim>> get settled in to rest after <<bhis>> ordeal.
+		<<if $bird.syndrome gte 15 and $syndromebird isnot 1>>
+			Your eyes wander down to the egg<<if $eggLayNumber gte 2>>s<</if>>. <<bHis>> child<<if $eggLayNumber gte 2>>ren<</if>>. <i>Your child<<if $eggLayNumber gte 2>>ren<</if>>,</i> you think. You rest your head on <<bhis>> shoulder. <<bHis>> plumage is so soft. Staying here with <<bhim>> doesn't seem so bad anymore.
+			<span class="red">It's not <<bhis>> fault. <<bHe>> only wants a mate.
+			<br>
+			You've gained the Stockholm Syndrome: Great Hawk trait.</span>
+			<br><br>
+			<<if $loveInterest.primary is "None">>
+				<<set $loveInterest.primary to "Great Hawk">>
+				<span class = "gold">The Great Hawk is now your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.</span>
+			<<else>>
+				<span class = "gold">The Great Hawk can now be claimed as your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.<br>You can change your love interest in the "Attitudes" menu.</span>
+			<</if>>
+			<<set $syndromebird to 1>>
+			<<unset $birdescaped>>
+			<<run delete $bird.syndrome>>		
+		<</if>>
+		<br><br>
+	<</if>>
+	<<pregnancyFeats "Great Hawk">>
+	<<endNpcPregnancy "Great Hawk" "tower" "tower">>
+	<<if $birdEggContext is "huntReturn">>
+		<<link [[Next|Bird Tower Great Hawk Egg Laying Hunt Finish]]>><<endBirdEggLaying>><</link>>
+	<<else>>
+		<<link [[Next|Bird Tower]]>><<endevent>><<endBirdEggLaying>><</link>>
+	<</if>>
+<</if>>
+
+:: Bird Tower Eggs Reassure
+<<effects>>
+<<if $syndromebird gte 1>>
+	<<switch $speech_attitude>>
+		<<case "meek">>"W-we can always try again," you say.
+		<<case "bratty">>"Don't be such a downer, just means we have to try harder," you say.
+		<<default>>"Don't be upset, we can always try again," you say.
+	<</switch>>
+	<br><br>
+
+	<<bHe>> smiles warmly at you. "You make me so happy, <<wife>>."
+<<elseif $phase gte 2 and $bird.syndrome gte 15 and $syndromebird isnot 1>>
+	You open your mouth to speak, but the words catch in your throat. You just continue to hold <<bhim>>.
+	<br><br>
+	
+	Would children of your own be so bad? You wonder if <<bhe>> only started producing eggs after finding what <<bhe>> considers to be a mate. You. You rest your head on the <<beasttypes>> shoulder. <i>Your <<beasttype>>,</i> you think. <<bHis>> plumage is so soft.
+	<span class="red">It's not <<bhis>> fault. <<bHe>> only wants a mate.
+	<br>
+	You've gained the Stockholm Syndrome: Great Hawk trait.</span>
+	<br><br>
+	<<if $loveInterest.primary is "None">>
+		<<set $loveInterest.primary to "Great Hawk">>
+		<span class = "gold">The Great Hawk is now your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.</span>
+	<<else>>
+		<span class = "gold">The Great Hawk can now be claimed as your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.<br>You can change your love interest in the "Attitudes" menu.</span>
+	<</if>>
+	<<set $syndromebird to 1>>
+	<<unset $birdescaped>>
+	<<run delete $bird.syndrome>>
+<<else>>
+	<<switch $speech_attitude>>
+		<<case "meek">>"I-I'm sure you'll have children one day," you say.
+		<<case "bratty">>"You're lucky, you get to try a lot more often than humans do," you say.
+		<<default>>"I'm sure you'll have children of your own some day," you say.
+	<</switch>>
+	<br><br>
+
+	<<bHe>> gives you a bittersweet smile and looks as though <<bhe>> wants to say something, but stays silent.
+<</if>>
+<br><br>
+
+<<if $eggLayNumber gt 1>>
+	<<link [[Take the eggs|Bird Tower Eggs Take]]>><</link>>
+<<else>>
+	<<link [[Take the egg|Bird Tower Eggs Take]]>><</link>>
+<</if>>
+<br>
+<<if $birdEggContext is "huntReturn">>
+	<<link [[Continue|Bird Tower Great Hawk Egg Laying Hunt Finish]]>><<endBirdEggLaying>><</link>>
+<<else>>
+	<<link [[Continue|Bird Tower]]>><<endevent>><<endBirdEggLaying>><</link>>
+<</if>>
+<br>
+
+:: Bird Tower Eggs Take
+<<effects>>
+
+You take the unfertilised egg<<if $eggLayNumber gt 1>>s<</if>> from the nest. <<your_bird_text "cap">> doesn't seem to mind. <<tending_pick bird_egg $eggLayNumber $eggLayNumber>>
+<br><br>
+
+<<if $birdEggContext is "huntReturn">>
+	<<link [[Next|Bird Tower Great Hawk Egg Laying Hunt Finish]]>><<endBirdEggLaying>><</link>>
+<<else>>
+	<<link [[Next|Bird Tower]]>><<endevent>><<endBirdEggLaying>><</link>>
+<</if>>
+<br>
+
+:: Bird Tower Great Hawk Egg Laying Hunt Finish
+<<effects>>
+<<set $bird.hunts.duo to false>>
+<<if $bird.hunts.lootAmount is 0>>
+	You take a deep breath. Your hunt wasn't successful, but you're glad you made it home in time.
+	<br><br>
+
+	<<flight_hunt_end>>
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You take a deep breath. With that situation handled, you take stock of your loot.
+	<<switch $bird.upgrades.decor>>
+		<<case 1>>The tower feels cozy after such exertion.<<stress -6>><<lstress>>
+		<<case 2>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -12>><<llstress>>
+		<<case 3>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -24>><<lllstress>>
+		<<case 4>>Home at last. <<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
+		<<default>>
+	<</switch>>
+	<br>
+	<<flight_hunt_loot>>
+<</if>>
+
+:: Bird Tower Player Egg Laying
+<<effects>>
+<<if $phase is 0>>
+	You spread your legs and put your hands aside, letting <<your_bird_text>> help.
+	<br><br>
+
+	<<bHe>> starts to gently push on your tummy, feeling for the eggs inside of you. You involuntarily moan as <<bhe>> pushes right on your oviduct. <<bHe>> continues gently pushing down your abdomen, helping the eggs along. <<arousal 200>><<ggarousal>>
+<<else>>
+	You push <<bhim>> away, and start to breathe heavily.
+<</if>>
+<br><br>
+<<set _eggnant to getPregnancyObject()>>
+
+You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd">$eggLayNumber eggs</span> pass through your cervix and land in your nest<<else>><span class="lewd">an egg</span> pass through your cervix and land in your nest<</if>>. You're filled with a sense of maternal bliss.
+<br><br>
+
+<<if $monster is 1>>
+	<<your_bird_text "cap">> gently picks up <<if $eggLayNumber gte 2>>one of the eggs<<else>>the egg<</if>> and smells it.
+<<else>>
+	<<your_bird_text "cap">> sniffs <<if $eggLayNumber gte 2>>one of the eggs<<else>>the egg<</if>>.
+<</if>>
+<<if playerIsPregnant() and _eggnant.type is "hawk">>
+	<<if $monster is 1>>
+		<<bHe>> gently picks up <<if $eggLayNumber gt 1>>one of the eggs<<else>>the egg<</if>> and smells it. <<bHis>> eyes light up.
+		<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
+			"I'm so happy, <<wife>>. <span class="lewd">We have more children</span>!" <<bHe>> sweeps you up in a hug, <<if $syndromebird gte 1>>which you can't help but return<<else>>which you're too disoriented to resist<</if>>.
+		<<else>>
+			"Alive! <span class="lewd">Great Hawk and <<wife>> have children</span>!" <<bHe>> sweeps you up in a hug, <<if $syndromebird gte 1>>which you can't help but return<<else>>which you're too disoriented to resist<</if>>.
+		<</if>>
+	<<else>>
+		<<bHe>> prods at <<if $eggLayNumber gt 1>>them<<else>>it<</if>>, before quickly looking up. <<bHe>> spreads <<bhis>> wings wide, letting out a triumphant shriek into the air. <<bHe>> bobs <<bhis>> head and puffs out <<bhis>> plumage. <span class="lewd"><<if $eggLayNumber gt 1>>They're<<else>>It's<</if>> fertilised.</span>
+		<br><br>
+
+		<<bHe>> continues blustering, before repeatedly headbutting you. <<bHe>> seems excited.
+	<</if>>
+	<<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+	<<if $syndromebird gte 1>>
+		You're flooded with emotion. <<trauma -12>><<lltrauma>>
+	<</if>>
+	<br><br>
+
+	<<if $syndromebird isnot 1 and $bird.syndrome gte 15>>
+		Your eyes wander down to the egg<<if $eggLayNumber gte 2>>s<</if>>. Your child<<if $eggLayNumber gte 2>>ren<</if>>. Your mind fills with instinctual purpose. You rest your head on <<bhis>> shoulder. <<bHis>> plumage is so soft. Staying here with <<bhim>> doesn't seem so bad anymore.
+		<span class="red">It's not <<bhis>> fault. <<bHe>> only wants a mate.
+		<br>
+		You've gained the Stockholm Syndrome: Great Hawk trait.</span>
+		<br><br>
+		<<if $loveInterest.primary is "None">>
+			<<set $loveInterest.primary to "Great Hawk">>
+			<span class = "gold">The Great Hawk is now your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.</span>
+		<<else>>
+			<span class = "gold">The Great Hawk can now be claimed as your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.<br>You can change your love interest in the "Attitudes" menu.</span>
+		<</if>>
+		<<set $syndromebird to 1>>
+		<<unset $birdescaped>>
+		<<run delete $bird.syndrome>>	
+		<br><br>
+	<</if>>
+	<<pregnancyFeats "pc">>
+	<<endPlayerPregnancy "tower" "tower">>
+	<<set $harpyEggsPrevent to 28>>
+<<else>>
+	<<if $monster is 1>>
+		<<bHe>> gently picks up <<if $eggLayNumber gt 1>>one of the eggs<<else>>the egg<</if>>.
+		<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
+			"Don't worry, <<wife>>. No more children yet, not from <<if $eggLayNumber gt 1>>these eggs<<else>>this egg<</if>>."
+		<<else>>
+			<<if playerCanBreedWith("Great Hawk")>>
+				<<set _optionReassure to true>>
+				"No life in <<if $eggLayNumber gt 1>>them<<else>>it<</if>>," <<bhe>> says with a hint of sadness.
+				<<if $syndromebird is 1>>
+					"We... keep trying?"
+				<<else>>
+					"Maybe some day."
+				<</if>>
+			<<else>>
+				"Healthy process, don't worry. <<Wife>> will lay many more."
+			<</if>>
+		<</if>>
+	<<else>>
+		<<if playerCanBreedWith("Great Hawk")>>
+			<<bHe>> prods at them, and lets out a flat caw. It seems <<if $eggLayNumber gt 1>>they're<<else>>it's<</if>> not fertilised.
+		<<else>>
+			<<bHe>> prods at them, before looking to you. They're unfertilised, of course.
+		<</if>>
+	<</if>>
+	<<tending_pick bird_egg $eggLayNumber $eggLayNumber>>
+	<<unset $harpyEggs>>
+	<<set $harpyEggsPrevent to 14>>
+	<br><br>
+
+	<<if _optionReassure>>
+		<<link [[Reassure|Bird Tower Player Eggs Reassure]]>><<npcincr "Great Hawk" love 1>><<bird_stockholm 3>><</link>><<glove>><<ggbirdstockholm>>
+		<br>
+	<</if>>
+	<<link [[Continue|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+<<unset $eggLayNumber>>
+
+:: Bird Tower Player Eggs Reassure
+<<effects>>
+<<if $syndromebird gte 1>>
+	<<switch $speech_attitude>>
+		<<case "meek">>"W-we can always try again," you say.
+		<<case "bratty">>"Don't be such a downer, just means we have to try harder," you say.
+		<<default>>"Don't be upset, we can always try again," you say.
+	<</switch>>
+	<br><br>
+
+	<<bHe>> smiles warmly at you. "You make me so happy, <<wife>>."
+<<elseif $phase is 0 and $bird.syndrome gte 15 and $syndromebird isnot 1>>
+	You open your mouth to speak, but the words catch in your throat. You just continue to let <<bhim>> hold you.
+	<br><br>
+	
+	Would children of your own be so bad? You wonder if you only started producing eggs after finding a mate. <<bHim>>. You rest your head on the <<beasttypes>> shoulder. <i>Your <<beasttype>>,</i> you think. <<bHis>> plumage is so soft.
+	<span class="red">It's not <<bhis>> fault. <<bHe>> only wants a mate.
+	<br>
+	You've gained the Stockholm Syndrome: Great Hawk trait.</span>
+	<br><br>
+	<<if $loveInterest.primary is "None">>
+		<<set $loveInterest.primary to "Great Hawk">>
+		<span class = "gold">The Great Hawk is now your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.</span>
+	<<else>>
+		<span class = "gold">The Great Hawk can now be claimed as your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.<br>You can change your love interest in the "Attitudes" menu.</span>
+	<</if>>
+	<<set $syndromebird to 1>>
+	<<unset $birdescaped>>
+	<<run delete $bird.syndrome>>
+<<else>>
+	<<switch $speech_attitude>>
+		<<case "meek">>"I-I'm sure you'll have children one day," you say.
+		<<case "bratty">>"You're lucky, birds get to try a lot more often than humans do," you say.
+		<<default>>"I'm sure you'll have children of your own some day," you say.
+	<</switch>>
+	<br><br>
+
+	<<bHe>> gives you a bittersweet smile and looks as though <<bhe>> wants to say something, but stays silent.
+<</if>>
+<br><br>
+
+<<link [[Continue|Bird Tower]]>><<endevent>><</link>>
+<br>
 
 
 :: Bird Tower Hatching

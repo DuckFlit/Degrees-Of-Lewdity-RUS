@@ -571,33 +571,7 @@
 				<</if>>
 				<<set $_text_output += `<br><span class="red">Your pregnant body no longer supports such clothing.</span> <<pain 2>><<gpain>>`>>
 			<<case "eggLaying">>
-				/* ToDo: Enable hawk pregnancy: write text_output and deal with unfertilised eggs */
-				<<if playerIsPregnant() and $_pregnancy.type is "hawk">>
-					<<if $location is "tower">>
-						/* Player lays eggs and leaves them in the nest */
-						<<set $_text_output to `Player laid ${$_pregnancy.fetus.length} fertilised eggs`>>
-						<<pregnancyFeats "pc">>
-						<<endPlayerPregnancy "tower" "tower">>
-						
-						/* Prevents eggs from being set for another 28 days */
-						<<set $harpyEggsPrevent to 28>>
-					<<else>>
-						/* Player lays eggs and carries them with them, transfers them to the nest automatically on entering the tower */
-						<<set $_text_output to `Player laid ${$_pregnancy.fetus.length} fertilised eggs`>>
-
-						/* Might be best changing the location variable here */
-						<<pregnancyFeats "pc">>
-						<<endPlayerPregnancy $location "inventory">>
-
-						/* Prevents eggs from being set for another 28 days */
-						<<set $harpyEggsPrevent to 28>>
-					<</if>>
-				<<elseif !playerIsPregnant() and $harpyEggs>>
-					<<set $_text_output to `Player laid ${$harpyEggs.count} unfertilised eggs`>>
-					<<unset $harpyEggs>>
-					/* Prevents eggs from being set for another 14 days */
-					<<set $harpyEggsPrevent to 14>>
-				<</if>>
+				<<set $_text_output to `<<playerEggLayEvent>>`>>
 		<</switch>>
 	<</if>>
 	<</silently>><<if $_text_output>><<print $_text_output>><</if>>
@@ -1431,7 +1405,7 @@
 		<</if>>
 		<<set $_pregnancy to C.npc[$_name].pregnancy>>
 		<<if !setup.pregnancy.infertile.includes($_name) and setup.pregnancy.typesEnabled.includes(C.npc[$_name].type) and
-		(($incompletePregnancyDisable is "f" and C.npc[$_name].pregnancy.enabled is undefined and !setup.pregnancy.ignoresIncompeteCheck.includes($_name)) or
+		(($incompletePregnancyDisable is "f" and C.npc[$_name].pregnancy.enabled is undefined and !setup.pregnancy.ignoresIncompleteCheck.includes($_name)) or
 		(setup.pregnancy.canBePregnant.includes($_name) and C.npc[$_name].pregnancy.enabled is undefined))>>
 			<<set $_pregnancy.fetus to []>>
 			<<set $_pregnancy.givenBirth to 0>>

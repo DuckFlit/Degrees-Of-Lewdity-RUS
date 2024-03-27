@@ -127,6 +127,15 @@ function npcPregnancyEnding(npc) {
 }
 window.npcPregnancyEnding = npcPregnancyEnding;
 
+function birdEggsReady(npc) {
+	if (V.playerPregnancyEggLayingDisable === "t") return undefined;
+	const pregnancy = C.npc[npc].pregnancy;
+	if (npcPregnancyEnding(npc)) return 'fertilised';
+	if (npc === 'Great Hawk' && V.daily.hawkUnfertilisedEggs) return undefined;
+	if (!npcIsPregnant(npc) && ((V.cycledisable === "f" && pregnancy.cycleDay === pregnancy.cycleDangerousDay + 2) || (V.cycledisable !== "f" && pregnancy.nonCycleRng[0] >= 1 && pregnancy.nonCycleRngHasEggs))) return 'unfertilised';
+}
+window.birdEggsReady = birdEggsReady;
+
 function playerIsPregnant() {
 	return (
 		(V.sexStats.vagina.pregnancy.type !== null && V.sexStats.vagina.pregnancy.type !== "parasite") ||
@@ -199,7 +208,7 @@ function wakingPregnancyEvent() {
 		["genitals", "under_upper", "upper", "under_lower", "lower"].find(slot => V.worn[slot].type.includes("constricting"))
 	) {
 		return "clothesRemoval";
-	} else if ((pregnancy.type === "hawk" && pregnancyStage >= 1) || V.harpyEggs?.daysTillLaying <= 0) {
+	} else if (V.playerPregnancyEggLayingDisable === "f" && ((pregnancy.type === "hawk" && pregnancyStage >= 1) || V.harpyEggs?.daysTillLaying <= 0)) {
 		return "eggLaying";
 	} else if (normalPregnancyEvents && between(pregnancyStage, 0.9, 1)) {
 		wakingEffects = "nearBirthEvent";
