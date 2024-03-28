@@ -236,18 +236,12 @@ const playerPregnancy = (npc, npcType, fatherKnown = false, genital = "vagina", 
 			backupSpermType = "wolf";
 			break;
 		case "hawk":
-			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
-			if (V.pregnancyTesting) {
-				newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, false);
-				backupSpermType = "hawk";
-			}
+			newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, false);
+			backupSpermType = "hawk";
 			break;
 		case "harpy":
-			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
-			if (V.pregnancyTesting) {
-				newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, true);
-				backupSpermType = "hawk";
-			}
+			newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, true);
+			backupSpermType = "hawk";
 			break;
 	}
 	if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String) && newPregnancy.fetus.length) {
@@ -621,22 +615,16 @@ function namedNpcPregnancy(mother, father, fatherSpecies, fatherKnown = false, t
 		case "humanhawk":
 		case "hawkhuman":
 		case "hawkhawk":
-			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
-			if (V.pregnancyTesting) {
-				newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", false);
-				backupSpermType = "hawk";
-			}
+			newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", false);
+			backupSpermType = "hawk";
 			break;
 		case "humanharpy":
 		case "harpyhuman":
 		case "harpyhawk":
 		case "hawkharpy":
 		case "harpyharpy":
-			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
-			if (V.pregnancyTesting) {
-				newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", true);
-				backupSpermType = "hawk";
-			}
+			newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", true);
+			backupSpermType = "hawk";
 			break;
 	}
 	if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String) && newPregnancy.fetus.length) {
@@ -666,8 +654,7 @@ function endNpcPregnancy(npcName, birthLocation, location) {
 
 	// Handled by Baileys Orphanage event and when naming them, this is backup for other situations
 	if (pregnancy.fetus[0].childId && location !== "home" && pregnancy.fetus[0].mother !== "pc" && pregnancy.fetus[0].father === "pc") {
-		/* ToDo: Enable hawk pregnancy: Figure out why this breaks on passage refresh when GH lays eggs*/
-		/*document.getElementById("passages").children[0].append(Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>'));*/
+		document.getElementById("passages").children[0].append(Wikifier.wikifyEval('<<earnFeat "First Fatherhood">>'));
 	}
 	let validBirth;
 	if (pregnancy.fetus[0].childId) {
