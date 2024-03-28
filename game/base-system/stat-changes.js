@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-useless-escape */
 
 // eslint-disable-next-line no-var, no-unused-vars
@@ -239,6 +240,7 @@ var statChange = (() => {
 
 	function sensitivity(amount, key) {
 		if (isNaN(amount)) paramError("sensitivity", "amount", amount, "Expected a number.");
+		amount = Number(amount);
 		const sens = V[key + "sensitivity"];
 		if (!sens) paramError("sensitivity", "key", key + "sensitivity", "Expected an existing sensitivity.");
 
@@ -557,12 +559,10 @@ var statChange = (() => {
 		amount = Number(amount);
 		if (amount) {
 			V.wolfpackferocity = (V.wolfpackferocity || 0) + amount;
-			if (V.statdisable === "f") {
-				if (amount > 0) {
-					return '| <span class="blue">+ Ferocity</span>';
-				} else if (amount < 0) {
-					return '| <span class="purple">- Ferocity</span>';
-				}
+			if (amount > 0) {
+				return statDisplay.statChange("Ferocity", Math.clamp(amount, 1, 3), "blue");
+			} else if (amount < 0) {
+				return statDisplay.statChange("Ferocity", Math.clamp(amount, -3, -1), "purple");
 			}
 		}
 		return "";
@@ -575,12 +575,10 @@ var statChange = (() => {
 		amount = Number(amount);
 		if (amount) {
 			V.wolfpackharmony = (V.wolfpackharmony || 0) + amount;
-			if (V.statdisable === "f") {
-				if (amount > 0) {
-					return '| <span class="lblue">+ Harmony</span>';
-				} else if (amount < 0) {
-					return '| <span class="pink">- Harmony</span>';
-				}
+			if (amount > 0) {
+				return statDisplay.statChange("Harmony", Math.clamp(amount, 1, 3), "lblue");
+			} else if (amount < 0) {
+				return statDisplay.statChange("Harmony", Math.clamp(amount, -3, -1), "pink");
 			}
 		}
 		return "";
@@ -616,6 +614,7 @@ var statChange = (() => {
 	DefineMacro("sub_check", subCheck);
 
 	function gainPenisInsecurity(amount = 10) {
+		if (V.statFreeze) return "";
 		if (isNaN(amount)) paramError("gainPenisInsecurity", "amount", amount, "Expected a number.");
 		amount = Number(amount);
 		if (amount) {
@@ -633,6 +632,7 @@ var statChange = (() => {
 					return '<<ginsecurity "penis_tiny">>';
 			}
 		}
+		return "";
 	}
 	DefineMacroS("incgpenisinsecurity", amount => gainPenisInsecurity(amount));
 	DefineMacroS("incggpenisinsecurity", () => gainPenisInsecurity(20));
@@ -719,7 +719,7 @@ var statChange = (() => {
 	DefineMacro("acceptance", acceptance);
 
 	function gainPenisAcceptance(amount) {
-		if (V.statFreeze) return;
+		if (V.statFreeze) return "";
 		if (isNaN(amount)) paramError("gainPenisAcceptance", "amount", amount, "Expected a number.");
 		amount = Number(amount);
 		if (amount > 0) {
@@ -743,6 +743,7 @@ var statChange = (() => {
 				return "<<gacceptance>>";
 			}
 		}
+		return "";
 	}
 	DefineMacroS("gpenisacceptance", gainPenisAcceptance);
 
@@ -887,7 +888,7 @@ var statChange = (() => {
 		if (isNaN(amount)) paramError("prof", "amount", amount, "Expected a number.");
 		amount = Number(amount);
 		if (amount) {
-			V.prof[skill] = Math.clamp((V.prof[skill] || 0) + amount, 0, 1000);
+			V.prof[skill] = Math.clamp((V.prof[skill] || 0) + amount * 5, 0, 1000);
 		}
 	}
 	DefineMacro("prof", prof);
@@ -993,6 +994,7 @@ var statChange = (() => {
 		milkAmount,
 		lactationPressure,
 		stress,
+		sensitivity,
 		arousal,
 		tiredness,
 		pain,
