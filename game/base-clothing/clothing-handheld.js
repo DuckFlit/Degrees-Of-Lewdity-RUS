@@ -158,6 +158,7 @@ function initHandheld() {
 				"teal",
 				"white",
 				"yellow",
+				"neon blue",
 				"custom",
 			],
 			colour_sidebar: 1,

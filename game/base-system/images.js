@@ -1,5 +1,5 @@
 function gainSchoolStar(variable) {
-	if (V.statdisable === "t") return;
+	if (V.statdisable === "t") return "";
 	if (V.options.images === 1) {
 		if (V[variable] + 1 === 3) {
 			return `<img class="icon" src="img/ui/gold_star.png">`;

@@ -1047,7 +1047,6 @@ function washRecordedSperm(genital, target) {
 DefineMacro("washRecordedSperm", washRecordedSperm);
 
 function unsafeSexTracking(genital, mother, father) {
-	console.log("unsafeSexTracking", genital, mother, father);
 	if (mother === "pc" && !playerIsPregnant() && (V.player.vaginaExist || canBeMPregnant() || true)) {
 		if (V.NPCNameList.includes(father) || father === "pc") {
 			V.unsafeSexTimeStat[father] = Time.date.timeStamp;

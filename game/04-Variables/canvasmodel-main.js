@@ -3063,24 +3063,6 @@ Renderer.CanvasModels["main"] = {
 				}
 			},
 		}),
-		"upper_acc": genlayer_clothing_accessory("upper", {
-			zfn(options) {
-				if (options.arm_right === "hold" && options.sleeve_over_hold) {
-					return ZIndices.lower_high;
-				} else if (options.worn_upper_setup.breasts_under_acc === 1) {
-					return options.zupper + 1;
-				} else {
-					return options.zupper;
-				}
-			},
-			masksrcfn(options) {
-				if (options.belly >= 19 && options.worn_upper_setup.pregType == "split") {
-					return options.shirt_mask_clip_src;
-				} else {
-					return options.shirt_fitted_clip_src;
-				}
-			}
-		}),
 		"upper_fitted_left_acc": genlayer_clothing_fitted_left_acc("upper", {
 			zfn(options) {
 				return options.zupper
@@ -3113,6 +3095,22 @@ Renderer.CanvasModels["main"] = {
 			},
 			masksrcfn(options) {
 				return options.shirt_mask_breasts_src;
+			}
+		}),
+		"upper_acc": genlayer_clothing_accessory("upper", {
+			zfn(options) {
+				if (options.arm_right === "hold" && options.sleeve_over_hold) {
+					return ZIndices.lower_high;
+				} else {
+					return options.zupper;
+				}
+			},
+			masksrcfn(options) {
+				if (options.belly >= 19 && options.worn_upper_setup.pregType == "split") {
+					return options.shirt_mask_clip_src;
+				} else {
+					return options.shirt_fitted_clip_src;
+				}
 			}
 		}),
 		"upper_breasts_acc": genlayer_clothing_breasts_acc("upper", {
