@@ -2715,7 +2715,7 @@ Renderer.CanvasModels["main"] = {
 				if (options.belly >= 7) {
 					return options.shirt_mask_clip_src;
 				} else {
-					return options.shirt_fitted_clip_src;
+					return options.worn_upper_setup.formfitting && options.shirt_fitted_clip_src;
 				}
 			}
 		}),
