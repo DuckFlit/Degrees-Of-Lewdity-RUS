@@ -1928,7 +1928,7 @@ function initHead() {
 		{
 			index: 58,
 			name: "kittycat hat",
-			name_cap: "kittycat hat",
+			name_cap: "Kittycat hat",
 			variable: "cattail",
 			integrity: 100,
 			integrity_max: 100,
