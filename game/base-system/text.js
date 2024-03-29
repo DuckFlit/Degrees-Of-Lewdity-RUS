@@ -456,21 +456,21 @@ statDisplay.create("gspurity", () => {
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 1, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -1, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -1, "teal");
 });
 statDisplay.create("ggspurity", () => {
 	T.warnstate = 2;
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 2, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -2, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -2, "teal");
 });
 statDisplay.create("gggspurity", () => {
 	T.warnstate = 3;
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 3, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -3, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -3, "teal");
 });
 
 statDisplay.create("lslust", () => {
