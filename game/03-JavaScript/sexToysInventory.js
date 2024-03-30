@@ -102,7 +102,7 @@ function sexToysInventoryOnCarryClick(index, category) {
 	// if player chose "Put back in the cupboard", also unwear the item
 	if (!toy.carried) toy.worn = false;
 	document.getElementById("stiWearButton").textContent = toy.worn ? "Take off" : "Wear it"; // update button text value
-	document.getElementById("stiCarryButton").textContent = toy.carried ? "Carry it" : "Put back in the cupboard"; // update button text value
+	document.getElementById("stiCarryButton").textContent = toy.carried ? "Put back in the cupboard" : "Carry it"; // update button text value
 	// update worn/carried tag on cell
 	document.getElementById("sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index).textContent = toy.worn ? "worn" : toy.carried ? "carried" : "";
 
