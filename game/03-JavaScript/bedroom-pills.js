@@ -636,13 +636,15 @@ function onHomePillItemClick(itemName) {
 		document.getElementById("homeDescPillContainer").style.display = "grid";
 		for (const item of setup.pills) {
 			if (item.name === itemName) {
+				const itemName = "`" + item.name + "`";
+				const itemType = "`" + item.type + "`";
 				document.getElementById("hpi_desc").outerHTML = `
 				<div id="hpi_desc">
 					${item.description}
 					<div class="hpi_warning_label">${item.warning_label}</div>
 					<div id="hpi_desc_action">
-						<a id="hpi_take_pills" class="hpi_take_pills" onclick="window.onTakeClick('${item.name}', '${item.type}')">Take pill</a>
-						<a id="hpi_take_every_morning" onclick="window.onAutoTakeClick('${item.name}', '${item.type}')">Take every morning</a>
+						<a id="hpi_take_pills" class="hpi_take_pills" onclick="window.onTakeClick(${itemName}, ${itemType})">Take pill</a>
+						<a id="hpi_take_every_morning" onclick="window.onAutoTakeClick(${itemName}, ${itemType})">Take every morning</a>
 					</div>
 				</div>`;
 				window.initPillContextButtons(item);

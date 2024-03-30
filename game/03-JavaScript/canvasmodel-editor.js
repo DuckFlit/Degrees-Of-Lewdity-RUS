@@ -478,6 +478,9 @@ Macro.add("canvasModelEditor", {
 		const options = model.options;
 
 		function redraw() {
+			let options = model.options;
+			model.reset();
+			model.options = options;
 			model.redraw();
 		}
 
@@ -614,7 +617,7 @@ Macro.add("canvasModelEditor", {
 			);
 			return;
 		}
-		const bodyWritings = ["", ...Object.keys()];
+		const bodyWritings = ["", ...Object.keys(setup.bodywriting)];
 
 		const hairColourOptions = [...Object.keys(setup.colours.hair_map), "custom"];
 		const xhairColourOptions = ["", ...Object.keys(setup.colours.hair_map), "custom"];
