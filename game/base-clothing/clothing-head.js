@@ -588,7 +588,7 @@ function initHead() {
 			colour: 0,
 			colour_options: [],
 			colour_combat: 0,
-			type: ["normal"],
+			type: ["normal", "shade"],
 			gender: "f",
 			femininity: 100,
 			warmth: 0,
