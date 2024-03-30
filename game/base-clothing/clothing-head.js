@@ -605,8 +605,8 @@ function initHead() {
 			head_type: "hat",
 			cursed: 0,
 			location: 0,
-			iconFile: 0,
-			accIcon: 0,
+			iconFile: "straw_hat.png",
+			accIcon: "straw_hat_acc.png",
 		},
 
 		{

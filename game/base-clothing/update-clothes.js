@@ -57,6 +57,10 @@ function updateClothingColours(item, itemRef) {
 			if (item.colour === 0) item.colour = "black";
 			if (item.accessory_colour === 0) item.accessory_colour = "silver";
 			break;
+		case "ballgown":
+		case "ballgown skirt":
+			if (item.accessory_colour === 0) item.accessory_colour = item.colour;
+			break;
 		case "overall bottoms":
 		case "overalls":
 			if (item.colour === 0 || item.colour === "original") item.colour = "denim";
