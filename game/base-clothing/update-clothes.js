@@ -59,6 +59,8 @@ function updateClothingColours(item, itemRef) {
 			break;
 		case "ballgown":
 		case "ballgown skirt":
+		case "short ballgown":
+		case "short ballgown skirt":
 			if (item.accessory_colour === 0) item.accessory_colour = item.colour;
 			break;
 		case "overall bottoms":

@@ -3307,7 +3307,7 @@ Renderer.CanvasModels["main"] = {
 					return gray_suffix(path, options.filters['worn_lower_acc'])
 				},
 				zfn(options) {
-					if (options.worn_lower_setup.name === "ballgown skirt") {
+					if (["ballgown skirt", "short ballgown skirt"].includes(options.worn_lower_setup.name)) {
 						return ZIndices.upper_top;
 					} else if (options.worn_lower_setup.high_img) {
 						return ZIndices.lower_high;
