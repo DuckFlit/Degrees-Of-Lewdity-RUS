@@ -1681,12 +1681,24 @@ Renderer.CanvasModels["main"] = {
 			},
 			animation: "idle"
 		},
+		"angel_wings_left_back": {
+			srcfn(options) {
+				return `img/transformations/angel/leftwing/${options.angel_wings_type}_back.png`;
+			},
+			showfn(options) {
+				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wing_left === "idle";
+			},
+			zfn(options) {
+				return ZIndices.head_back;
+			},
+			animation: "idle"
+		},
 		"angel_wings_left_front": {
 			srcfn(options) {
 				return `img/transformations/angel/leftwing/${options.angel_wings_type}.png`;
 			},
 			showfn(options) {
-				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wing_left === "idle" && options.angel_wings_type === "default" && options.hair_sides_position !== "front" && options.angel_wings_layer !== "back";
+				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wing_left === "idle" && options.angel_wings_type === "default" && options.angel_wings_layer !== "back";
 			},
 			masksrcfn(options) {
 				return `img/transformations/angel/leftwing/${options.angel_wings_type}_mask.png`;
