@@ -494,6 +494,7 @@
 <</widget>>
 
 <<widget "bird_schedule">>
+	<<set $_eggCount to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
 	<<if $bird.override>>
 		<<set $bird.activity to $bird.override>>
 	<<elseif Time.hour gte 21 or Time.hour lte 5>>
@@ -503,7 +504,13 @@
 	<<elseif Time.hour lte 12>>
 		<<set $bird.activity to "bathe">>
 	<<elseif Time.hour lte 15>>
-		<<set $bird.activity to "build">>
+		<<if $bird.injured gt 1>>
+			<<set $bird.activity to "rest">>
+		<<elseif $_eggCount>>
+			<<set $bird.activity to "brood">>
+		<<else>>
+			<<set $bird.activity to "build">>
+		<</if>>
 	<<elseif Time.hour lte 17>>
 		<<if $bird.injured gt 1>>
 			<<set $bird.activity to "rest">>
@@ -605,7 +612,7 @@
 		<<npc "Great Hawk">>
 		<<if $monster is 1>>
 			The <<beasttype>>
-			<<if $bird.activity is "build" or $bird.activity is "sleep">>
+			<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
 				rises from <<bhis>> nest.
 			<<elseif $bird.activity is "bathe">>
 				rises from the rainwater pool, and shakes <<bhis>> wings dry.
@@ -621,7 +628,7 @@
 			)>> I will return with a gift."
 		<<else>>
 			The <<beasttype>>
-			<<if $bird.activity is "build" or $bird.activity is "sleep">>
+			<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
 				rises from <<bhis>> nest,
 			<<elseif $bird.activity is "bathe">>
 				rises from the rainwater pool, and steps to the edge of the perch,
@@ -749,7 +756,7 @@
 		<<npc "Great Hawk">>
 		<<if $monster is 1>>
 			The <<beasttype>>
-			<<if $bird.activity is "build" or $bird.activity is "sleep">>
+			<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
 				rises from <<bhis>> nest.
 			<<elseif $bird.activity is "bathe">>
 				rises from the rainwater pool, and shakes <<bhis>> wings dry.
@@ -765,7 +772,7 @@
 			)>> I will return with a gift."
 		<<else>>
 			The <<beasttype>>
-			<<if $bird.activity is "build" or $bird.activity is "sleep">>
+			<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
 				rises from <<bhis>> nest,
 			<<elseif $bird.activity is "bathe">>
 				rises from the rainwater pool, and steps to the edge of the perch,

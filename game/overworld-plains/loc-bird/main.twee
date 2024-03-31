@@ -1002,7 +1002,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<<your_bird_text "cap">>
 			<<switch $bird.activity>>
 				<<case "sleep" "rest">>stirs awake,
-				<<case "build">>looks to you,
+				<<case "build" "brood">>looks to you,
 				<<case "bathe">>hops out of the rainwater pool and quickly <<if $monster is 1>>runs<<else>>hops<</if>> over,
 				<<default>>quickly hops over,
 			<</switch>>
@@ -1098,7 +1098,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<npc "Great Hawk">>
 	<<if $bird.injured gt 1>>
 		The <<beasttype>> slowly rises from
-		<<if $bird.activity is "build" or $bird.activity is "sleep">>
+		<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
 			<<bhis>> nest.
 		<<elseif $bird.activity is "bathe">>
 			the rainwater pool, and shakes <<bhis>> uninjured wing dry.
@@ -1128,7 +1128,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<elseif $bird.injured is 1>>
 		<<set $bird.injured to 0>>
 		The <<beasttype>> rises from
-		<<if $bird.activity is "build" or $bird.activity is "sleep">>
+		<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
 			<<bhis>> nest.
 		<<elseif $bird.activity is "bathe">>
 			the rainwater pool, and shakes <<bhis>> wings dry.
@@ -1174,7 +1174,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<</if>>
 	<<else>>
 		The <<beasttype>> rises from
-		<<if $bird.activity is "build" or $bird.activity is "sleep">>
+		<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
 			<<bhis>> nest.
 		<<elseif $bird.activity is "bathe">>
 			the rainwater pool, and shakes <<bhis>> wings dry.
@@ -1378,6 +1378,8 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 				<<else>>
 					<<your_bird_text "cap">> is adding to the nest.
 				<</if>>
+			<<case "brood">>
+				<<your_bird_text "cap">> sits in the nest, brooding on the eggs.
 			<<default>>
 				<<your_bird_text "cap">> rests in <<bhis>> nest.
 				<<set $birdSleep to 1>>
@@ -2788,7 +2790,7 @@ You put it in the wardrobe.
 <<effects>>
 
 <<if $syndromebird is 1 or $harpy gte 6>>
-	You lie in the nest<<if ["sleep", "rest"].includes($bird.activity) and $bird.state is "home">><<npc "Great Hawk">><<set $bedGuest to "Great Hawk">> with <<if $syndromebird is 1>>your<<else>>the<</if>> <<beasttype>><</if>>.
+	You lie in the nest<<if ["sleep", "rest", "brood"].includes($bird.activity) and $bird.state is "home">><<npc "Great Hawk">><<set $bedGuest to "Great Hawk">> with <<if $syndromebird is 1>>your<<else>>the<</if>> <<beasttype>><</if>>.
 <<else>>
 	You lie in the nest.
 <</if>>
@@ -2800,7 +2802,7 @@ You put it in the wardrobe.
 <</switch>>
 <<set _eggCount to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
 <<if _eggCount>>
-	<<Number _eggCount>> egg<<print _eggCount !== 1 ? "'s are" : " is">> protected in the nest.
+	<<Number _eggCount>> egg<<print _eggCount !== 1 ? "s are" : " is">> protected in the nest. You bring <<if _eggCount gte 2>>them<<else>>it<</if>> close for safekeeping.
 <</if>>
 <<endevent>>
 <<if $wraith.state and $wraithPrison and $bird.upgrades.mirror is 1 and ($moonstate is "evening" or $moonstate is _nightstate)>>
@@ -2868,6 +2870,8 @@ You sit by the rainwater pool.
 		<<else>>
 			<<your_bird_text "cap">> is adding to the nest.
 		<</if>>
+	<<case "brood">>
+		<<your_bird_text "cap">> sits in the nest, brooding on the eggs.
 	<<default>>
 		<<your_bird_text "cap">> rests in <<bhis>> nest.
 		<<set $birdSleep to 1>>
