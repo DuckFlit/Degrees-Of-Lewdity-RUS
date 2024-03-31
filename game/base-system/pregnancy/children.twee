@@ -481,26 +481,56 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
+/*args[0] - child object*/
+<<widget "childTypeDisplay">><<silently>>
+	<<if _args[0] and _args[0].childId>>
+		<<if _args[0].type isnot "human">>
+			<<if _args[0].features.monster>>
+				<<switch _args[0].type>>
+					<<case "wolf">>
+						<<set $_text_output to "Wolf">>
+						<<switch _args[0].gender>>
+							<<case "m">><<set $_text_output += "boy">>
+							<<case "f">><<set $_text_output += "girl">>
+							<<default>><<set $_text_output += "kid">>
+						<</switch>>
+					<<case "hawk">>
+						<<set $_text_output to "Harpy">>
+				<</switch>>
+			<<else>>
+				<<set $_text_output to _args[0].type.toUpperFirst()>>
+			<</if>>
+		<<else>>
+			<<set $_text_output to "Human<<if _args[0].features.beastTransform or _args[0].features.divineTransform>> (<<childTransform _args[0]>>)<</if>>">>
+		<</if>>
+	<</if>>
+<</silently>><<if $_text_output>>Type: <<print $_text_output>> |<</if>>
+<</widget>>
+
 <<widget "childTransform">><<silently>>
-	<<if _args[0] isnot undefined>>
+	<<if _args[0] and _args[0].childId>>
+		<<set $_child to _args[0]>>
+	<<elseif _args[0] isnot undefined>>
 		<<set $_id to _args[0]>>
+		<<set $_child to $children[$_id]>>
 	<<elseif $childSelected isnot undefined>>
 		<<set $_id to $childSelected.childId>>
+		<<set $_child to $children[$_id]>>
 	<</if>>
-	<<if $_id isnot undefined>>
+	<<if $_child isnot undefined>>
 		<<set $_text_output to "">>
-		<<switch $children[$_id].features.divineTransform>>
+		<<switch $_child.features.divineTransform>>
 			<<case "angel">><<set $_text_output += "Angelic">>
 			<<case "demon">><<set $_text_output += "Demonic">>
 			<<case "fallen">><<set $_text_output += "Fallen">>
 		<</switch>>
-		<<if $children[$_id].features.divineTransform and $children[$_id].features.beastTransform>><<set $_text_output += " ">><</if>>
-		<<switch $children[$_id].features.beastTransform>>
-			<<case "cat">><<set $_text_output += "Cat" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
-			<<case "cow">><<set $_text_output += "Cow" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
-			<<case "wolf">><<set $_text_output += "Wolf" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
-			<<case "bird">><<set $_text_output += "Bird" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
-			<<case "fox">><<set $_text_output += "Fox" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
+		<<if $_child.features.divineTransform and $_child.features.beastTransform>><<set $_text_output += " ">><</if>>
+		<<switch $_child.features.beastTransform>>
+			<<case "cat">><<set $_text_output += "Cat" + ($_child.gender === "m" ? "boy" : "girl")>>
+			<<case "cow">><<set $_text_output += "Cow" + ($_child.gender === "m" ? "boy" : "girl")>>
+			<<case "wolf">><<set $_text_output += "Wolf" + ($_child.gender === "m" ? "boy" : "girl")>>
+			<<case "bird">><<set $_text_output += "Bird" + ($_child.gender === "m" ? "boy" : "girl")>>
+			<<case "fox">><<set $_text_output += "Fox" + ($_child.gender === "m" ? "boy" : "girl")>>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -622,11 +652,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<set _children to {}>>
 	<</if>>
 	<<capture _args>>
-		<<if $children[_args[0]].type isnot "human">>
-			Type: <<print $children[_args[0]].type[0].toUpperCase() + $children[_args[0]].type.substring(1)>> |
-		<<else>>
-			Type: Human<<if $children[_args[0]].features.beastTransform or $children[_args[0]].features.divineTransform>> (<<childTransform _args[0]>>)<</if>> |
-		<</if>>
+		<<childTypeDisplay $children[_args[0]]>>
 		Gender:
 		<<switch $children[_args[0]].gender>>
 			<<case "m">>Male
@@ -657,7 +683,12 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				????
 			<</if>>
 			<br>
-			Born: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
+			<<if $children[_args[0]].laid>>
+				Laid: <<print $children[_args[0]].laid.day + " " + $children[_args[0]].laid.month + " " + $children[_args[0]].laid.year>> |
+				Hatched: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
+			<<else>>
+				Born: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
+			<</if>>
 			Age: <<childAge _args[0] "full">>
 			<br>
 			Size: <<print $children[_args[0]].features.size>> | Hair Colour: <<hairmapcolourtext $children[_args[0]].features.hairColour>>
