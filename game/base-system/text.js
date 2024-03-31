@@ -13,7 +13,14 @@ const statDisplay = (() => {
 		if (!amount || V.statdisable === "t") return "";
 
 		let displayGrace = true;
+		if (!amount || V.statdisable === "t") return "";
 
+		let displayGrace = true;
+
+		// Optional second variable is the rank of the NPC giving the order, or when the player is expected to meet a higher standard. Grace changes won't apply if the player's rank equals or exceeds the expected rank
+		const ranks = ["prospective", "initiate", "monk", "priest", "bishop"];
+		const playerRankValue = ranks.indexOf(V.temple_rank);
+		const expectedRankValue = ranks.indexOf(expectedRank);
 		// Optional second variable is the rank of the NPC giving the order, or when the player is expected to meet a higher standard. Grace changes won't apply if the player's rank equals or exceeds the expected rank
 		const ranks = ["prospective", "initiate", "monk", "priest", "bishop"];
 		const playerRankValue = ranks.indexOf(V.temple_rank);
@@ -21,7 +28,12 @@ const statDisplay = (() => {
 
 		if (expectedRankValue > 1) {
 			if (playerRankValue >= expectedRankValue) displayGrace = false;
+		if (expectedRankValue > 1) {
+			if (playerRankValue >= expectedRankValue) displayGrace = false;
 
+			// Below might be a more interesting way to handle it, remove the above line and uncomment the below to enable. Lollipop Scythe
+			// Allows the player to gain grace in events only if they are below a certain rank
+			// if (amount > 0 && playerRankValue >= expectedRankValue) displayGrace = false;
 			// Below might be a more interesting way to handle it, remove the above line and uncomment the below to enable. Lollipop Scythe
 			// Allows the player to gain grace in events only if they are below a certain rank
 			// if (amount > 0 && playerRankValue >= expectedRankValue) displayGrace = false;
@@ -449,21 +461,21 @@ const statDisplay = (() => {
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 1, "teal");
 		}
-		return statChange("Sydney's Corruption", -1, "teal");
+		return statChange("Sydney's Corruption", -1, "purple");
 	});
 	DefineMacroS("ggspurity", () => {
 		T.warnstate = 2;
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 2, "teal");
 		}
-		return statChange("Sydney's Corruption", -2, "teal");
+		return statChange("Sydney's Corruption", -2, "purple");
 	});
 	DefineMacroS("gggspurity", () => {
 		T.warnstate = 3;
 		if (C.npc.Sydney.purity >= 1) {
 			return statChange("Sydney's Purity", 3, "teal");
 		}
-		return statChange("Sydney's Corruption", -3, "teal");
+		return statChange("Sydney's Corruption", -3, "purple");
 	});
 
 	DefineMacroS("lslust", () => {
@@ -493,56 +505,68 @@ const statDisplay = (() => {
 
 	DefineMacroS("lscience", () => statChange("Science", -1, "red"));
 	DefineMacroS("gscience", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("Science", 1, "green");
 		return `${result} ${gainSchoolStar("science_star")}`;
 	});
 	DefineMacroS("ggscience", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("Science", 2, "green");
 		return `${result} ${gainSchoolStar("science_star")}`;
 	});
 	DefineMacroS("gggscience", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("Science", 3, "green");
 		return `${result} ${gainSchoolStar("science_star")}`;
 	});
 
 	DefineMacroS("lmaths", () => statChange("Maths", -1, "red"));
 	DefineMacroS("gmaths", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("Maths", 1, "green");
 		return `${result} ${gainSchoolStar("maths_star")}`;
 	});
 	DefineMacroS("ggmaths", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("Maths", 2, "green");
 		return `${result} ${gainSchoolStar("maths_star")}`;
 	});
 	DefineMacroS("gggmaths", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("Maths", 3, "green");
 		return `${result} ${gainSchoolStar("maths_star")}`;
 	});
 
 	DefineMacroS("lenglish", () => statChange("English", -1, "red"));
 	DefineMacroS("genglish", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("English", 1, "green");
 		return `${result} ${gainSchoolStar("english_star")}`;
 	});
 	DefineMacroS("ggenglish", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("English", 2, "green");
 		return `${result} ${gainSchoolStar("english_star")}`;
 	});
 	DefineMacroS("gggenglish", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("English", 3, "green");
 		return `${result} ${gainSchoolStar("english_star")}`;
 	});
 
 	DefineMacroS("lhistory", () => statChange("History", -1, "red"));
 	DefineMacroS("ghistory", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("History", 1, "green");
 		return `${result} ${gainSchoolStar("history_star")}`;
 	});
 	DefineMacroS("gghistory", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("History", 2, "green");
 		return `${result} ${gainSchoolStar("history_star")}`;
 	});
 	DefineMacroS("ggghistory", () => {
+		T.lustincrdisplay = 1;
 		const result = statChange("History", 3, "green");
 		return `${result} ${gainSchoolStar("history_star")}`;
 	});
@@ -561,28 +585,28 @@ const statDisplay = (() => {
 	DefineMacroS("ldom", npc => {
 		let targetName = "";
 		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", -1, "lblue");
+				return statChange("Robin's Confidence", -1, "lblue");
 		} else if (npc) targetName = npc + "'s";
 		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -1, "lblue");
-	});
-	DefineMacroS("lldom", npc => {
+});
+DefineMacroS("lldom", npc => {
 		let targetName = "";
 		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", -2, "lblue");
+				return statChange("Robin's Confidence", -2, "lblue");
 		} else if (npc) targetName = npc + "'s";
 		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -2, "lblue");
-	});
-	DefineMacroS("llldom", npc => {
+});
+DefineMacroS("llldom", npc => {
 		let targetName = "";
 		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", -3, "lblue");
+				return statChange("Robin's Confidence", -3, "lblue");
 		} else if (npc) targetName = npc + "'s";
 		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
 		return statChange(`${targetName} Dominance`, -3, "lblue");
-	});
-	DefineMacroS("gdom", npc => {
+});
+DefineMacroS("gdom", npc => {
 		let targetName = "";
 		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
 			return statChange("Robin's Confidence", 1, "purple");

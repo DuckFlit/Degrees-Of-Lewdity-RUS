@@ -334,6 +334,26 @@
 	<div class="wardrobe-action">
 		<<link "Configure random">><<toggleclass "#randomClothingConfigure" "hidden">><</link>>
 	</div> |
+	<<if $options.images and ($uncomfortable.underwear or $uncomfortable.nude)>>
+		<div class="wardrobe-action">
+			<span id="wardrobe-cover" @class="$dontHide ? '' : 'hidden'">
+				<<link "Cover yourself">>
+					<<dontHideRevert>>
+					<<toggleclass "#wardrobe-cover" "hidden">>
+					<<toggleclass "#wardrobe-dontCover" "hidden">>
+					<<updatesidebarimg>>
+				<</link>>
+				</span>
+			<span id="wardrobe-dontCover" @class="$dontHide ? 'hidden' : ''">
+				<<link "Don't cover yourself">>
+					<<dontHideForNow>>
+					<<toggleclass "#wardrobe-cover" "hidden">>
+					<<toggleclass "#wardrobe-dontCover" "hidden">>
+					<<updatesidebarimg>>
+				<</link>>
+			</span>
+		</div> |
+	<</if>>
 	<div id="randomClothingConfigure" class="hidden">
 		<<if $randomEquipConfigure is undefined>>
 			<<set $randomEquipConfigure to {face: true, feet: true, head: true, hands: true, legs: true, lower: true, neck: true, under_lower: true, under_upper: true, upper: true}>>
@@ -738,10 +758,18 @@
 				<<default>><<exit>>
 			<</switch>>
 		<<case "face">>
-			<<switch $worn.face.variable>>
-				<<case "heartsunglasses">><<set _altLink to ["Push on head", "Wear normally"]>>
-				<<default>><<exit>>
-			<</switch>>
+			<<if $worn.face.type.includes("cool") or $worn.face.type.includes("glasses")>>
+				<<switch $worn.face.variable>>
+					<<case "monocle">><<set _altLink to ["Cover left eye", "Cover right eye"]>>
+					<<default>><<set _altLink to ["Push on head", "Wear normally"]>>
+				<</switch>>
+			<<else>>
+				<<switch $worn.face.variable>>
+					<<case "medical eyepatch" "eyepatch">><<set _altLink to ["Cover left eye", "Cover right eye"]>>
+					<<case "swimgoggles">><<set _altLink to ["Push on head", "Wear normally"]>>
+					<<default>><<exit>>
+				<</switch>>
+			<</if>>
 		<<default>><<exit>>
 	<</switch>>
 	<</silently>>
@@ -814,13 +842,13 @@
 	<<set _linkOption1 to "Move hair in front">>
 	<<set _linkOption2 to "Tuck hair behind">>
 	<div class="toggleFaceLayer">
-		<<link `($facelayer is "front" ? _linkOption1 : _linkOption2)`>>
+		<<link `($facelayer is "front" ? _linkOption2 : _linkOption1)`>>
 			<<set $facelayer to ($facelayer is "front" ? "back" : "front")>>
 			<<updatesidebarimg>>
 			<<if _args[0] is "wardrobe">>
 					<<updatewardrobe>>
 			<</if>>
-			<<run $(".toggleFaceLayer .link-internal").html($facelayer is "front" ? _linkOption1 : _linkOption2)>>
+			<<run $(".toggleFaceLayer .link-internal").html($facelayer is "front" ? _linkOption2 : _linkOption1)>>
 			<<run Links.generateLinkNumbers($(".passage"))>>
 		<</link>>
 	</div>
@@ -1497,7 +1525,7 @@
 <</widget>>
 
 <<widget "cleanupOnWardrobeExit">>
-	<<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>>
+	<<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><<set $dontHide to false>>
 <</widget>>
 
 <<widget "wardrobeExits">>
@@ -1510,7 +1538,7 @@
 			<<if $exposed lte 1>>
 				<<getouticon>><<link [[Leave|Beach]]>><<cleanupOnWardrobeExit>><</link>>
 			<<elseif $exhibitionism gte 75>>
-				<<sneakicon>><<link [[Sneak outside|Beach Changing Room Sneak]]>><</link>><<exhibitionist5>>
+				<<sneakicon>><<link [[Sneak outside|Beach Changing Room Sneak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist5>>
 			<<else>>
 				You can't go out like this!
 			<</if>>
@@ -1584,6 +1612,14 @@
 			<<link [[Close|Temple Bunk]]>><<cleanupOnWardrobeExit>><</link>>
 		<<case "Pirate Wardrobe">>
 			<<link [[Close|Pirate Bed]]>><<cleanupOnWardrobeExit>><</link>>
+		<<case "Office Agency Changing Room">>
+			<<if $exposed lte 1>>
+				<<getouticon>><<link [[Leave|Office Agency]]>><<cleanupOnWardrobeExit>><</link>>
+			<<elseif $exhibitionism gte 55>>
+				<<sneakicon>><<link [[Sneak outside|Office Agency Streak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist4>>
+			<<else>>
+				You can't go out like this!
+			<</if>>
 	<</switch>>
 	<br><br>
 <</widget>>
@@ -1707,6 +1743,16 @@ You look through the cupboard containing your clothes.
 <div id="wardrobewear"><<wardrobewear>></div>
 <div id="wardrobeExits"><<wardrobeExits>></div>
 
+<<wardrobe>>
+
+:: Office Agency Changing Room [exitCheckBypass]
+<<effects>><<location "officeBuilding">>
+<<set $wardrobe_location to "officeBuilding">>
+<<wardrobeSelection>>
+You are in the small storage room sanctioned for temps to use for changing.
+<br><br>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
 <<wardrobe>>
 
 :: Wardrobe Sale Crate

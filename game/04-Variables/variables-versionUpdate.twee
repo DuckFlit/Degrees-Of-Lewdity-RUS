@@ -3573,7 +3573,7 @@
 	/* Code that should not be moved into a check like above */
 	<<set $runWardrobeSanityChecker to true>>
 
-	<<if $objectVersion.updateClothes lt 46 or $objectVersion.updateClothes is undefined>>
+	<<if $objectVersion.updateClothes lt 47 or $objectVersion.updateClothes is undefined>>
 		<<updateClothes>>
 		<<if $objectVersion.updateClothes lt 38>>
 			<!-- V0.4.0.7 return items stuck in $store without proper .location -->
@@ -3584,20 +3584,20 @@
 			<!--Should'nt need to re-run that often-->
 			<<run clothesDataTrimmerLoop()>>
 		<</if>>
-		<<set $objectVersion.updateClothes to 46>>
+		<<set $objectVersion.updateClothes to 47>>
 		<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 		Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
 	<</if>>
 
-	<<if $objectVersion.specialClothes lt 14 or $objectVersion.specialClothes is undefined>>
+	<<if $objectVersion.specialClothes lt 15 or $objectVersion.specialClothes is undefined>>
 		<<specialClothesSetup>>
 		<<specialClothesUpdate>>
-		<<set $objectVersion.specialClothes to 14>>
+		<<set $objectVersion.specialClothes to 15>>
 	<</if>>
 
-	<<if $objectVersion.wardrobes lt 8 or $objectVersion.wardrobes is undefined>>
+	<<if $objectVersion.wardrobes lt 9 or $objectVersion.wardrobes is undefined>>
 		<<wardrobesUpdate>>
-		<<set $objectVersion.wardrobes to 8>>
+		<<set $objectVersion.wardrobes to 9>>
 	<</if>>
 
 	<<if $objectVersion.museumAntiques lte 14 and $museumAntiques.antiques.antiquewhitescrystal isnot undefined>>
@@ -4823,9 +4823,17 @@
 		/*fix weeksEmpty increasing even when the player hasn't started the vending machine questline. reset vending machine questline if vending machines were sold despite never having started the questline*/
 	<</if>>
 
-	/* To fix cases where the value could be delete after starting the game */
+	/* To fix cases where the value could be deleted after starting the game */
 	<<if $cycledisable is undefined>>
 		<<set $cycledisable to "f">>
+	<</if>>
+
+	/*0.4.6.0 Adding arrays for photos and videos taken of the PC that they'll be able to find online*/
+	<<if $internet is undefined>>
+		<<set $internet to {
+			photos: [],
+			videos: []
+		}>>
 	<</if>>
 
 	<!-- V0.4.6.0 Vision type events refactor and $real_ variables cleanup -->
@@ -5040,27 +5048,4 @@
 	<<unset $speechsextoyshocked>>
 	<<unset $speechsextoyaroused>>
 	<<unset $speechsextoydisappointed>>
-
-	<!-- Weather update -->
-	<<if $options.clothingCaption is undefined>>
-		<<set $options.clothingCaption to true>>
-	<</if>>
-	<<if $weatherObj is undefined>>
-		<<set $weatherObj to {
-			snow: 0,
-			fog: 0,
-			name: "clear",
-			overcast: 0,
-			monthlyTemperatures: [],
-			keypointsArr: []
-		}>>
-		<<set $player.bodyTemperature to 37>>
-		<<set $options.weatherUpdate to false>>
-		<<set $options.fahrenheit to false>>
-		<<unset $warmth>>
-		<<unset $chill>>
-		<<unset $chill_day>>
-		<!-- Failsafe if changing options immediately after load -->
-		<<run Engine.play($passage)>>
-	<</if>>
 <</widget>>
