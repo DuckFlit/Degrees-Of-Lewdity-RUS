@@ -40,22 +40,26 @@ const Weather = (() => {
 	 * @param {number} customSunIntensity If this is set - the calculations replaces the sun intensity with a specified one.
 	 */
 	function getTanningFactor(customSunIntensity = 0) {
-		const sunIntensity = customSunIntensity || Weather.Settings.months[Time.date.month - 1].sunIntensity;
-		const weatherModifier = V.outside ? Weather.current.tanningModifier : 1;
-		const dayFactor = V.outside ? Time.date.simplifiedDayFactor : 1;
-		const locationModifier = V.location === "forest" ? 0.2 : 1;
+		const sunIntensity = customSunIntensity || getSunIntensity();
 		const clothingModifier = Object.values(V.worn).filter(item => item.type.includes("shade")).length ? 0.1 : 1;
 		const sunBlockModifier = V.skinColor.sunBlock === true ? 0.1 : 1;
-		const result = round(sunIntensity * weatherModifier * locationModifier * clothingModifier * sunBlockModifier * Math.max(dayFactor, 0), 2);
+		const result = round(sunIntensity * clothingModifier * sunBlockModifier, 2);
 		return {
 			sun: sunIntensity,
-			weather: weatherModifier,
-			location: locationModifier,
+			weather: V.outside ? Weather.current.tanningModifier : 1,
+			location: V.location === "forest" ? 0.2 : 1,
+			dayFactor: V.outside ? Time.date.simplifiedDayFactor : 1,
 			clothing: clothingModifier,
 			sunBlock: sunBlockModifier,
 			result,
-			dayFactor,
 		};
+	}
+
+	function getSunIntensity() {
+		const sunIntensity = Weather.Settings.months[Time.date.month - 1].sunIntensity * Weather.Sky.dayFactor;
+		const weatherModifier = V.outside ? Weather.current.tanningModifier : 0;
+		const locationModifier = V.location === "forest" ? 0.2 : 1;
+		return V.outside ? sunIntensity * weatherModifier * locationModifier : 0;
 	}
 
 	function setAccumulatedSnow(minutes) {
@@ -84,6 +88,7 @@ const Weather = (() => {
 		generateKeyPoints,
 		getTanningFactor,
 		setAccumulatedSnow,
+		getSunIntensity,
 		toFahrenheit: temperature => Weather.Temperature.toFahrenheit(temperature),
 		toSelected: celsius => {
 			return V.options.fahrenheit ? Weather.Temperature.toFahrenheit(celsius) : celsius;
@@ -114,6 +119,9 @@ const Weather = (() => {
 		get overcast() {
 			return Weather.WeatherConditions.getWeather().overcast > 0.5;
 		},
+		get sunIntensity() {
+			return getSunIntensity();
+		},
 		get precipitation() {
 			if (Weather.WeatherConditions.getWeather().precipitationIntensity === 0) return "none";
 			return Weather.isFreezing ? "snow" : "rain";
@@ -137,7 +145,7 @@ const Weather = (() => {
 			return Weather.Temperature.getWaterTemperature();
 		},
 		get bodyTemperature() {
-			return Weather.BodyTemperature.get();
+			return Weather.BodyTemperature.current;
 		},
 		get wetness() {
 			return Weather.BodyTemperature.wetness;

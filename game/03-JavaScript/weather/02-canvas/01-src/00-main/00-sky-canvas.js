@@ -268,7 +268,6 @@ Weather.Sky = (() => {
 		initFadables();
 		await initEffects();
 		drawLayers();
-		loaded.value = true;
 	}
 
 	//todo initOrbits doesn't run every day - should run weekly or daily? (run at midday to update moon, run at midnight to update sun)
@@ -306,7 +305,7 @@ Weather.Sky = (() => {
 		for (const layer of WeatherLayers.layers.values()) {
 			if (layerNames.length === 0 || layerNames.includes(layer.name)) {
 				try {
-					const errors = await layer.drawEffects();
+					const errors = await layer.drawEffects(tempCanvas);
 					if (errors && errors.length > 0) {
 						console.error(`Errors drawing layer '${layer.name}':`, errors);
 					}
@@ -348,7 +347,8 @@ Weather.Sky = (() => {
 			<br><span class="blue">Inside temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.insideTemperature)}</span>
 			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.waterTemperature)}</span>
 			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)}</span>
-			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(_fadables.overcast.factor, 2) * 100}%</span>
+			<br><span class="blue">Overcast amount:</span> <span class="yellow">${Weather.sunIntensity * 100}%</span>
+			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(_fadables.overcast.factor, 2) * 100}%</span>
 			<br><span class="blue">Fog amount:</span> <span class="yellow">${round(Weather.fog, 2) * 100}%</span>
 			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${V.weatherObj.snow}mm</span>`
 			: "";
@@ -400,6 +400,7 @@ Macro.add("skybox", {
 	handler() {
 		Weather.Sky.skybox.appendTo(this.output);
 		if (!Weather.Sky.loaded.value) {
+			Weather.Sky.loaded.value = true;
 			Weather.Sky.initialize();
 		}
 	},

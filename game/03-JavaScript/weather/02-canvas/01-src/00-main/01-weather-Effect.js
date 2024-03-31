@@ -121,16 +121,17 @@ Weather.Sky.Effect = class Effect {
 	 * Draws the effect onto its canvas.
 	 * It will wait for the init to complete before drawing - to assure any images loaded in init will be drawn
 	 *
+	 * @param canvas Global context
 	 */
-	draw() {
+	draw(canvas, layerCanvas) {
 		this.canvas.clear();
 		if (!this.drawCondition()) return;
 		try {
 			this.canvas.ctx.save();
-			this.onDraw();
+			this.onDraw(canvas, layerCanvas);
 			this.canvas.ctx.restore();
 		} catch (e) {
-			console.error("Error during effect", this.name, "'draw' function", e, this);
+			console.error("Error during effect 'draw' function", e, this);
 			return e;
 		}
 	}

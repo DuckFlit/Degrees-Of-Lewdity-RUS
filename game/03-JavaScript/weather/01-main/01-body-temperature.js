@@ -95,15 +95,6 @@ Weather.BodyTemperature = (() => {
 	}
 
 	/**
-	 * Retrieves the current body temperature
-	 *
-	 * @returns {number} The current body temperature.
-	 */
-	function get() {
-		return V.player.bodyTemperature;
-	}
-
-	/**
 	 * Updates the body temperature based on air temperature and time elapsed.
 	 * Called from time.js
 	 *
@@ -191,11 +182,11 @@ Weather.BodyTemperature = (() => {
 	}
 
 	function temperatureFactor() {
-		if (get() <= temperatureEffects.lowerThresholdStart) {
+		if (V.player.bodyTemperature <= temperatureEffects.lowerThresholdStart) {
 			return 1 - normalise(V.player.bodyTemperature, temperatureEffects.lowerThresholdStart, temperatureEffects.lowerThresholdEnd);
 		}
 
-		if (get() >= temperatureEffects.upperThresholdStart) {
+		if (V.player.bodyTemperature >= temperatureEffects.upperThresholdStart) {
 			return normalise(V.player.bodyTemperature, temperatureEffects.upperThresholdEnd, temperatureEffects.upperThresholdStart);
 		}
 		return 0;
@@ -229,14 +220,14 @@ Weather.BodyTemperature = (() => {
 			return calculateWetness();
 		},
 		get direction() {
-			return Math.sign(getRestingPoint(1).temp - get());
+			return Math.sign(getRestingPoint(1).temp - V.player.bodyTemperature);
 		},
-		// For compatibility with combat system - since I don't want to touch it
+		// For compatibility with /base-combat/ - since I don't want to touch it
 		get state() {
-			if (get() < 35) return "cold";
-			if (get() < 36.5) return "chilly";
-			if (get() < 37.5) return "comfy";
-			if (get() < 39) return "warm";
+			if (V.player.bodyTemperature < 35) return "cold";
+			if (V.player.bodyTemperature < 36.5) return "chilly";
+			if (V.player.bodyTemperature < 37.5) return "comfy";
+			if (V.player.bodyTemperature < 39) return "warm";
 			return "hot";
 		},
 		get fatigueModifier() {
@@ -258,7 +249,9 @@ Weather.BodyTemperature = (() => {
 			return interpolate(0, temperatureEffects.lowerMaxStressGain, Math.abs(factor));
 		},
 		addActivity,
-		get,
+		get current() {
+			return V.player.bodyTemperature;
+		},
 		update,
 		activityLevel,
 		calculateHeatDissipation,

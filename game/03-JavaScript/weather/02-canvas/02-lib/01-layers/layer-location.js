@@ -87,6 +87,33 @@ WeatherLayers.add({
 				},
 			},
 		},
+		{
+			effect: "locationReflective",
+			drawCondition: () => {
+				return !!setup.LocationImages[setup.Locations.get()].reflective;
+			},
+			params: {
+				path: "img/misc/locations",
+			},
+			bindings: {
+				location() {
+					const location = setup.Locations.get();
+					return setup.LocationImages[location];
+				},
+				key() {
+					return "reflective";
+				},
+				// Only applicable if animation is set to "parent"
+				otherEffects() {
+					return Weather.Sky.getLayer("location").effects[0];
+				},
+				onFrame() {
+					return () => {
+						Weather.Sky.drawLayers("location");
+					};
+				},
+			},
+		},
 	],
 });
 

@@ -90,7 +90,6 @@ Weather.Observables = (() => {
 		observables.bus.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 		observables.bloodMoon.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 		observables.snow.subscribe(() => scheduler.scheduleUpdate(updateLocation));
-		observables.snow.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 		observables.dayState.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 		observables.lightsOn.subscribe(() => scheduler.scheduleUpdate(updateLocation));
 

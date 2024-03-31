@@ -64,7 +64,7 @@ Weather.Sky.Layer = class Layer {
 		canvas.drawImage(this.canvas.element);
 	}
 
-	async drawEffects() {
+	async drawEffects(canvas) {
 		const errors = [];
 		if (this.effects.length === 0) {
 			errors.push(new Error(`Could not draw layer '${this.name}'. It contains no effects.`));
@@ -75,7 +75,7 @@ Weather.Sky.Layer = class Layer {
 		this.canvas.ctx.filter = this.setBlur();
 		for (const effect of this.effects) {
 			try {
-				effect.draw();
+				effect.draw(canvas, this.canvas);
 				this.canvas.ctx.globalAlpha = effect.alpha;
 				this.canvas.ctx.globalCompositeOperation = effect.compositeOperation;
 				this.canvas.drawImage(effect.canvas.element);

@@ -772,10 +772,10 @@ function dayPassed() {
 	fragment.append(wikifier("physicalAdjustments"));
 
 	fragment.append(dailyPlayerEffects());
-	fragment.append(dailyMasochismSadismEffects());
+	dailyMasochismSadismEffects();
 	fragment.append(dailySchoolEffects());
 	fragment.append(dailyFarmEvents());
-	fragment.append(dailyLiquidEffects());
+	dailyLiquidEffects();
 	fragment.append(dailyTransformationEffects());
 	fragment.append(dailyNPCEffects());
 	fragment.append(yearlyEventChecks());
@@ -946,8 +946,7 @@ function minutePassed(minutes) {
 	V.timeSinceArousal = V.arousal < V.arousalmax / 4 ? V.timeSinceArousal + minutes : 1;
 	if (V.player.vaginaExist) fragment.append(passArousalWetness(minutes));
 
-	const waterFragment = passWater(minutes);
-	fragment.append(waterFragment);
+	passWater(minutes);
 
 	if (V["ob" + "j" + "ec" + "tVe" + "rs" + "ion"]["t" + "e" + "st"] !== undefined || V["ch" + "ea" + "td" + "isa" + "" + "bl" + "e"] === "f") {
 		V["f" + "ea" + "" + "t" + "s"]["lo" + "ck" + "ed"] = true;
@@ -1363,8 +1362,6 @@ function dailyTransformationEffects() {
 }
 
 function dailyLiquidEffects() {
-	const fragment = document.createDocumentFragment();
-
 	if (V.player.penisExist) {
 		let amount = V.player.penissize - 1;
 		if (V.semen_volume <= 24) amount++;
@@ -1420,8 +1417,6 @@ function dailyLiquidEffects() {
 			V.nectar_timer = 21;
 		}
 	}
-
-	return fragment;
 }
 
 function yearlyEventChecks() {
@@ -1650,8 +1645,6 @@ function dailySchoolEffects() {
 }
 
 function dailyMasochismSadismEffects() {
-	const fragment = document.createDocumentFragment();
-
 	const effects = (level, stat) => {
 		switch (level) {
 			case 0:
@@ -1690,8 +1683,6 @@ function dailyMasochismSadismEffects() {
 		V.sadism_message = sadism.message;
 		V.effectsmessage = 1;
 	}
-
-	return fragment;
 }
 
 function dailyFarmEvents() {
@@ -1772,15 +1763,19 @@ function dailyFarmEvents() {
 	return fragment;
 }
 
-// (Directly converted from passWater widget)
 function passWater(passMinutes) {
-	const fragment = document.createDocumentFragment();
-
-	if (V.outside && V.weather === "clear") {
-		if (V.upperwet) statChange.wet("upper", -passMinutes * 2);
-		if (V.lowerwet) statChange.wet("lower", -passMinutes * 2);
-		if (V.underlowerwet) statChange.wet("underlower", -passMinutes * (V.worn.lower.type.includes("naked") ? 2 : 1));
-		if (V.underupperwet) statChange.wet("underupper", -passMinutes * (V.worn.upper.type.includes("naked") ? 2 : 1));
+	/* To be reworked */
+	/* Tie wetness to clothing items - can dry differently depending on their warmth
+	   dryingFactor, sun/no sun, temperature
+	   change wetness to 0-1 (0-100%)
+	*/
+	if (!V.outside || (V.outside && Weather.precipitation === "none")) {
+		const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
+		const dryingFactor = 0.1 + (temperature / 25) * ((1 + Weather.sunIntensity) * 2);
+		if (V.upperwet) statChange.wet("upper", -passMinutes * dryingFactor);
+		if (V.lowerwet) statChange.wet("lower", -passMinutes * dryingFactor);
+		if (V.underlowerwet) statChange.wet("underlower", -passMinutes * (V.worn.lower.type.includes("naked") ? dryingFactor : dryingFactor * 0.5));
+		if (V.underupperwet) statChange.wet("underupper", -passMinutes * (V.worn.upper.type.includes("naked") ? dryingFactor : dryingFactor * 0.5));
 	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
 		if (!V.worn.upper.type.includes("naked") && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
 			statChange.wet("upper", passMinutes);
@@ -1796,14 +1791,7 @@ function passWater(passMinutes) {
 		if (!V.worn.under_upper.type.includes("naked") && !waterproofCheck(V.worn.under_upper) && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
 			statChange.wet("underupper", passMinutes);
 		}
-	} else {
-		if (V.upperwet) statChange.wet("upper", -passMinutes);
-		if (V.lowerwet) statChange.wet("lower", -passMinutes);
-		if (V.underlowerwet) statChange.wet("underlower", -passMinutes);
-		if (V.underupperwet) statChange.wet("underupper", -passMinutes);
 	}
-
-	return fragment;
 }
 
 // (Directly converted from passArousalWetness widget - included comments)

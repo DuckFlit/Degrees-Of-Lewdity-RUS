@@ -71,6 +71,67 @@ WeatherEffects.create({
 });
 
 WeatherEffects.create({
+	name: "locationReflective",
+	defaultParameters: {
+		horizon: 112,
+		blur: 0.6,
+		reflectionAlpha: 0.8,
+		contrast: 0.9,
+	},
+	effects: [
+		{
+			effect: "locationImageAnimation",
+			bindings: {
+				location() {
+					return this.location;
+				},
+				key() {
+					return this.key;
+				},
+				otherEffects() {
+					return this.otherEffects;
+				},
+				onFrame() {
+					return this.onFrame;
+				},
+			},
+		},
+	],
+	init() {
+		this.reflectionCanvas = new Weather.Sky.Canvas(); 
+		this.locationCanvas = new Weather.Sky.Canvas(); 
+	},
+	draw(canvas, layerCanvas) {
+		this.reflectionCanvas.clear();
+		this.locationCanvas.clear();
+
+		const horizon = this.effects[0].obj?.horizon ?? this.horizon;
+		const alpha = this.effects[0].obj?.alpha ?? this.reflectionAlpha;
+		const blur = this.effects[0].obj?.blur ?? this.blur;
+		const backgroundOnly = this.effects[0].obj?.backgroundOnly ?? false;
+
+		// Draw the mask
+		this.effects[0].draw();
+		this.reflectionCanvas.drawImage(this.effects[0].canvas.element);
+
+		// Draw the background into a canvas
+		this.locationCanvas.drawImage(canvas.element);
+		if (!backgroundOnly) this.locationCanvas.drawImage(layerCanvas.element);
+
+		// Transform the background, making it appear upside down, then only apply it to the mask
+		this.reflectionCanvas.ctx.save();
+		this.reflectionCanvas.ctx.globalCompositeOperation = 'source-in';
+		this.reflectionCanvas.ctx.scale(1, -1);
+		this.reflectionCanvas.ctx.globalAlpha = alpha;
+		this.reflectionCanvas.ctx.drawImage(this.locationCanvas.element, 0, -canvas.element.height + (horizon * -1), this.reflectionCanvas.element.width, this.reflectionCanvas.element.height);
+		this.reflectionCanvas.ctx.restore();
+
+		this.canvas.ctx.filter = `blur(${blur}px) contrast(${this.contrast})`;
+		this.canvas.drawImage(this.reflectionCanvas.element);
+	},
+});
+
+WeatherEffects.create({
 	name: "locationImageAnimation",
 	defaultParameters: {
 		width: 64,

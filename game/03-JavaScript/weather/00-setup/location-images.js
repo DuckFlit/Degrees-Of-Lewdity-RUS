@@ -163,10 +163,18 @@ setup.LocationImages = {
 	beach: {
 		folder: "beach",
 		base: {
-			image: "base.png",
-			animation: {
-				fps: 4,
-				delay: () => 2000,
+			default: {
+				image: "base.png",
+			},
+			water: {
+				image: "water.png",
+			},
+			tree: {
+				image: "tree.png",
+				animation: {
+					fps: 4,
+					delay: () => 2000,
+				},
 			},
 		},
 		snow: {
@@ -175,6 +183,12 @@ setup.LocationImages = {
 				fps: 4,
 				delay: () => 2000,
 			},
+		},
+		reflective: {
+			image: "reflective.png",
+			backgroundOnly: true,
+			animation: "tree",
+			blur: 0,
 		},
 	},
 	bog: {
@@ -224,18 +238,31 @@ setup.LocationImages = {
 	canal: {
 		folder: "canal",
 		base: {
-			image: "base.png",
-			animation: {
-				fps: 1,
-				delay: () => 0,
+			default: {
+				image: "base.png",
+			},
+			water: {
+				image: "water.png",
+				animation: {
+					fps: 1,
+					delay: () => 0,
+				},
 			},
 		},
 		snow: {
-			image: "snow.png",
-			animation: {
-				fps: 5,
-				delay: () => random(5, 10) * 1000,
+			default: {
+				image: "snow.png",
 			},
+			drip: {
+				image: "drip.png",
+				animation: {
+					fps: 6,
+					delay: () => random(5, 15) * 1000,
+				},
+			},
+		},
+		reflective: {
+			image: "reflective.png",
 		},
 	},
 	cafe: {
@@ -248,6 +275,9 @@ setup.LocationImages = {
 			color: "#deae66",
 			strength: 2,
 		},
+		reflective: {
+			image: "reflective.png",
+		},
 	},
 	cafe_construction: {
 		folder: "cafe_construction",
@@ -259,11 +289,17 @@ setup.LocationImages = {
 			color: "#deae66",
 			strength: 2,
 		},
+		reflective: {
+			image: "reflective.png",
+		},
 	},
 	cafe_renovated: {
 		folder: "cafe_renovated",
 		base: "base.png",
 		snow: "snow.png",
+		reflective: {
+			image: "reflective.png",
+		},
 	},
 	churchyard: {
 		folder: "churchyard",
@@ -344,6 +380,9 @@ setup.LocationImages = {
 			default: {
 				image: "base.png",
 			},
+			water: {
+				image: "water.png",
+			},
 			boat: {
 				// Not at same time as cruiser
 				waitForAnimation: "cruiser",
@@ -371,6 +410,9 @@ setup.LocationImages = {
 			default: {
 				image: "snow.png",
 			},
+			water: {
+				image: "water.png",
+			},
 			boat: {
 				// Not at same time as cruiser
 				waitForAnimation: "cruiser",
@@ -390,6 +432,10 @@ setup.LocationImages = {
 					delay: () => random(10, 100) * 1000,
 				},
 			},
+		},
+		reflective: {
+			image: "reflective.png",
+			alpha: 0.6,
 		},
 	},
 	drain: {
@@ -413,6 +459,10 @@ setup.LocationImages = {
 					delay: () => 2000,
 				},
 			},
+		},
+		reflective: {
+			image: "reflective.png",
+			alpha: 0.6,
 		},
 	},
 	estate: {
@@ -511,13 +561,40 @@ setup.LocationImages = {
 	},
 	flats: {
 		folder: "flats",
-		base: "base.png",
-		snow: "snow.png",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			water: {
+				image: "water.png",
+			},
+		},
+		snow: {
+			default: {
+				image: "snow.png",
+			},
+			water: {
+				image: "water.png",
+			},
+		},
 		emissive: {
-			image: "emissive.png",
-			condition: () => Weather.lightsOn,
-			color: "#deae66",
-			strength: 5,
+			lights: {
+				image: "emissive.png",
+				condition: () => Weather.lightsOn,
+				alwaysDrawFirstFrame: false,
+				color: "#deae66",
+				size: 4,
+			},
+			spotLight: {
+				waitForAnimation: "drivingCar",
+				condition: () => Weather.lightsOn,
+				image: "spotlight.png",
+				color: "#9cabff",
+				size: 4,
+			},
+		},
+		reflective: {
+			image: "reflective.png",
 		},
 	},
 	forest: {
@@ -673,11 +750,23 @@ setup.LocationImages = {
 	island: {
 		folder: "island",
 		base: {
-			image: "base.png",
-			animation: {
-				fps: 2,
-				delay: () => 500,
+			default: {
+				image: "base.png",
 			},
+			water: {
+				image: "water.png",
+				animation: {
+					fps: 2,
+					delay: () => 500,
+				},
+			}
+		},
+		reflective: {
+			image: "reflective.png",
+			animation: "water",
+			horizon: 122,
+			alpha: 0.25,
+			blur: 0.8,
 		},
 	},
 	kylar_manor: {
@@ -685,21 +774,103 @@ setup.LocationImages = {
 		base: "base.png",
 		snow: "snow.png",
 	},
-	lake_ruin: {
-		folder: "lake_ruin",
+	lake: {
+		folder: "lake",
 		base: {
-			image: "base.png",
-			animation: {
-				fps: 0.6,
-				delay: () => 0,
+			default: {
+				image: "base.png",
+			},
+			water: {
+				image: "water.png",
+				animation: {
+					fps: 1,
+					delay: () => 0,
+				},
+			},
+			deer: {
+				condition: () => Time.dayState === "dawn",
+				image: "deer.png",
+				animation: {
+					fps: 6,
+					delay: () => 12000,
+				},
 			},
 		},
 		snow: {
 			image: "snow.png",
+		},
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 			animation: {
-				fps: 0.6,
+				fps: 4,
 				delay: () => 0,
 			},
+			color: "#deae66",
+			strength: 2,
+		},
+		emissive_blood: {
+			blood0: {
+				image: "blood0.png",
+				animation: {
+					fps: 5,
+					delay: () => random(2, 7) * 1000,
+				},
+			},
+			blood1: {
+				image: "blood1.png",
+				animation: {
+					fps: 0.5,
+					delay: () => random(4, 10) * 1000,
+				},
+			},
+			blood2: {
+				image: "blood2.png",
+				animation: {
+					fps: 5,
+					delay: () => random(4, 11) * 1000,
+				},
+			},
+			color: "#e63e3e",
+		},
+		reflective: {
+			image: "reflective.png",
+			horizon: 156,
+		},
+	},
+	lake_ruin: {
+		folder: "lake_ruin",
+		base: {
+			default: {
+				image: "base.png",
+				animation: {
+					fps: 0.3,
+					delay: () => 5000,
+				},
+			},
+			water: {
+				image: "water.png",
+				animation: {
+					fps: 1,
+					delay: () => 0,
+				},
+			}
+		},
+		snow: {
+			default: {
+				image: "snow.png",
+				animation: {
+					fps: 0.3,
+					delay: () => 5000,
+				},
+			},
+			water: {
+				image: "water.png",
+				animation: {
+					fps: 1,
+					delay: () => 0,
+				},
+			}
 		},
 		bloodmoon: {
 			image: "bloodmoon.png",
@@ -719,6 +890,17 @@ setup.LocationImages = {
 			image: "emissive_blood.png",
 			animation: "bloodmoon",
 			color: "#e63e3e",
+		},
+		reflective: {
+			default: {
+				condition: () => !Weather.bloodMoon,
+				image: "reflective.png",
+			},
+			bloodMoon: {
+				condition: () => Weather.bloodMoon,
+				image: "reflective_blood.png",
+			},
+			horizon: 112,
 		},
 	},
 	market: {
@@ -758,6 +940,10 @@ setup.LocationImages = {
 					delay: () => random(5, 15) * 1000,
 				},
 			},
+		},
+		reflective: {
+			image: "reflective.png",
+			horizon: 112,
 		},
 	},
 	night_monster_lair: {
@@ -1034,16 +1220,13 @@ setup.LocationImages = {
 		base: {
 			image: "base.png",
 			animation: {
-				fps: 6,
-				delay: () => 5000,
+				fps: 3,
+				delay: () => 0,
 			},
 		},
-		snow: {
-			image: "base.png",
-			animation: {
-				fps: 6,
-				delay: () => 5000,
-			},
+		reflective: {
+			image: "reflective.png",
+			alpha: 0.8,
 		},
 	},
 	sea_pirates: {

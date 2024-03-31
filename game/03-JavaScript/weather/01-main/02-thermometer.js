@@ -42,7 +42,6 @@ Weather.Thermometer = (() => {
 		});
 
 		Promise.all(loadPromises).then(() => {
-			loaded.value = true;
 			thermometerCanvas = new Weather.Sky.Canvas(0, 0);
 			const baseImg = images.baseImg.img;
 			size.width = baseImg.width * size.scaleFactor;
@@ -155,6 +154,7 @@ Macro.add("thermometer", {
 		Weather.Thermometer.element.appendTo(this.output);
 		Weather.Thermometer.tooltipElement.appendTo(this.output);
 		if (!Weather.Thermometer.loaded.value) {
+			Weather.Thermometer.loaded.value = true;
 			Weather.Thermometer.load();
 			return;
 		}
