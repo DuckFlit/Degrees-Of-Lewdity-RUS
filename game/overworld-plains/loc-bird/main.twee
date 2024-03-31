@@ -1227,7 +1227,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 <<elseif $bird.state is "home" and $bird.lock is 1 and $syndromebird is 1 and !$possessed>>
 	<<npc "Great Hawk">>
 	The <<beasttype>> <<if $monster is 1>>walks<<else>>hops<</if>> deeper into the room. <<bHe>> pauses beside the trap door, and holds the rusted lock between <<bhis>> talons. <<bHe>> crushes it in one swift movement, grasps the remaining metal, and throws open the door.
-	<<if $bird.clean lte 10>>
+	<<if $bird.clean lte 15>>
 		<<bHe>> jumps away from the cloud of dust.
 	<</if>>
 	<br><br>
@@ -2790,7 +2790,7 @@ You put it in the wardrobe.
 <<if $syndromebird is 1 or $harpy gte 6>>
 	You lie in the nest<<if ["sleep", "rest"].includes($bird.activity) and $bird.state is "home">><<npc "Great Hawk">><<set $bedGuest to "Great Hawk">> with <<if $syndromebird is 1>>your<<else>>the<</if>> <<beasttype>><</if>>.
 <<else>>
-	You lie on the nest.
+	You lie in the nest.
 <</if>>
 <<switch $bird.upgrades.nest>>
 	<<case 0>>It's hard to get comfortable.
@@ -5071,19 +5071,19 @@ It looks cute.
 	The tower is caked in dust, and small mounds of dirt are piled up in corners. You do your best to make the place look more presentable.
 <</if>>
 <<if currentSkillValue('housekeeping') gte 1500>>
-	<<set _cleanIncrease += 8>>
-<<elseif currentSkillValue('housekeeping') gte 1200>>
 	<<set _cleanIncrease += 7>>
-<<elseif currentSkillValue('housekeeping') gte 800>>
+<<elseif currentSkillValue('housekeeping') gte 1200>>
 	<<set _cleanIncrease += 6>>
-<<elseif currentSkillValue('housekeeping') gte 600>>
+<<elseif currentSkillValue('housekeeping') gte 800>>
 	<<set _cleanIncrease += 5>>
-<<elseif currentSkillValue('housekeeping') gte 400>>
+<<elseif currentSkillValue('housekeeping') gte 600>>
 	<<set _cleanIncrease += 4>>
-<<elseif currentSkillValue('housekeeping') gte 200>>
+<<elseif currentSkillValue('housekeeping') gte 400>>
 	<<set _cleanIncrease += 3>>
-<<else>>
+<<elseif currentSkillValue('housekeeping') gte 200>>
 	<<set _cleanIncrease += 2>>
+<<else>>
+	<<set _cleanIncrease += 1>>
 <</if>>
 <br><br>
 
@@ -5119,10 +5119,37 @@ It looks cute.
 
 <<set $bird.clean += _cleanIncrease>>
 <<if !$syndromebird>>
-	<<set $bird.clean to Math.clamp($bird.clean, 0, 20)>>
+	<<set $bird.clean to Math.clamp($bird.clean, 0, 30)>>
+<<else>>
+	<<set $bird.clean to Math.clamp($bird.clean, 0, 110)>>
 <</if>>
 
+<<if $bird.upgrades.telescope is 0 and $bird.clean gte 75>>
+	You take a step back and admire how much cleaner the tower is. As you do, a glint catches your eye near the far corner.
+	<br><br>
+
+	<<link [[Investigate (0:10)|Bird Tower Telescope Get]]>><<bird_pass 10>><</link>>
+	<br>
+<</if>>
 <<link [[Next|Bird Tower]]>><<if $propEquipped is 1>><<handheldruined true>><<set $propEquipped to 0>><</if>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Telescope Get
+<<effects>>
+<<set $bird.upgrades.telescope to 1>>
+You kneel down in the corner. A small hint of something shiny peeks out of the wall. You touch it, and what you first thought to be a solid brick crumbles at your touch. The brick must have been knocked loose a long time ago, and the hole was filled over centuries with compacted dust.
+<br><br>
+
+You tug on the shiny bit, and a large cylindrical object escapes the dust. It catches on the edge of the hole. After a bit of tugging, you get it free.
+<br><br>
+
+<span class="gold">It's an ornate telescope.</span> It's in remarkably good condition, seemingly preserved by its dusty tomb. Even the stand is still attached!
+<br><br>
+
+You dust it off, and set it up near the perch.
+<br><br>
+
+<<link [[Next|Bird Tower Perch]]>><<if $propEquipped is 1>><<handheldruined true>><<set $propEquipped to 0>><</if>><<endevent>><</link>>
 <br>
 
 :: Bird Tower Casual Flight
@@ -6487,8 +6514,9 @@ You take the unfertilised egg<<if $eggLayNumber gt 1>>s<</if>> from the nest. <<
 <</if>>
 <br><br>
 <<set [_eggnant, _eggnantGenital] to getPregnancyObject("pc", true)>>
+<<set _eggnantGenital to _eggnantGenital is "vagina" ? "cervix" : "ass">>
 
-You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd">$eggLayNumber eggs</span> pass through your <<if _eggnantGenital is "vagina">>cervix<<else>>ass<</if>> and land in your nest<<else>><span class="lewd">an egg</span> pass through your <<if _eggnantGenital is "vagina">>cervix<<else>>ass<</if>> and land in your nest<</if>>. You're filled with a sense of maternal bliss.
+You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd">$eggLayNumber eggs</span> pass through your _eggnantGenital and land in your nest<<else>><span class="lewd">an egg</span> passes through your _eggnantGenital and land in your nest<</if>>. You're filled with a sense of maternal bliss.
 <br><br>
 
 <<if $monster is 1>>
@@ -6570,9 +6598,9 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 		<<link [[Reassure|Bird Tower Player Eggs Reassure]]>><<npcincr "Great Hawk" love 1>><<bird_stockholm 3>><</link>><<glove>><<ggbirdstockholm>>
 		<br>
 	<</if>>
-	<<link [[Continue|Bird Tower]]>><<endevent>><</link>>
-	<br>
 <</if>>
+<<link [[Continue|Bird Tower Bed]]>><<endevent>><</link>>
+<br>
 
 <<unset $eggLayNumber>>
 
@@ -6617,7 +6645,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 <</if>>
 <br><br>
 
-<<link [[Continue|Bird Tower]]>><<endevent>><</link>>
+<<link [[Next|Bird Tower Bed]]>><<endevent>><</link>>
 <br>
 
 
