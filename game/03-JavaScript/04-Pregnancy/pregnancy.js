@@ -478,6 +478,9 @@ function npcPregnancyCycle() {
 				pregnancy.npcAwareOf = true;
 			}
 			if (pregnancy.timer > pregnancy.timerEnd) {
+				// Disabled automatic ending of pregnancy for the great hawk, remove if an event is added to support it
+				if (pregnancy.type === "hawk") continue;
+
 				if (pregnancy.timer >= pregnancy.timerEnd + 14 * multiplier) {
 					/* Player has not seen the npc recently, sort out the pregnancy in another way */
 					let birthLocation = "";
@@ -490,6 +493,7 @@ function npcPregnancyCycle() {
 						case "Great Hawk":
 							birthLocation = "tower";
 							location = "tower";
+							wikifier("<<endBirdEggLaying>>");
 							break;
 						case "Alex":
 							if (!C.npc.Alex.pregnancy.missedBirth) {
@@ -844,6 +848,9 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 				break;
 			case "hawk":
 				V.pregnancyStats.hawkChildren++;
+				// Hawk's born time should be replaced later with the day they hatch
+				V.children[childObject.childId].laid = { day: clone(Time.monthDay), month: clone(Time.monthName), year: clone(Time.year) };
+				V.children[childObject.childId].laidLocation = birthLocation;
 				break;
 		}
 	});

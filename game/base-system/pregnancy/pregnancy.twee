@@ -357,8 +357,11 @@
 <<widget "hatchUi">>
 	<<if Object.values($children).find(child => child.location is _args[0] and Time.date.timeStamp gte child.eggTimer)>>
 		<<set _childrenId to Object.keys($children).filter(id => $children[id].location is _args[0] and Time.date.timeStamp gte $children[id].eggTimer)>>
+		<<set $_date to { day: Time.monthDay, month: Time.monthName, year: Time.year }>>
 		<div id="birthUi">
 			<<for _childId range _childrenId>>
+				<<set $children[_childId].born to clone($_date)>>
+				<<set $children[_childId].birthLocation to $location>>
 				<<capture _childId>>
 					<div @id="'child-' + _childId" class="childUi">
 						<<birthChildElement $children[_childId]>>
@@ -390,7 +393,7 @@
 	<<if _args[0]?.childId>>
 		<<capture _args>>
 			<<if _args[0].type isnot "human">>
-				Type: <<print _args[0].type.toUpperFirst()>> |
+				<<childTypeDisplay _args[0]>>
 			<</if>>
 			Gender:
 			<<switch _args[0].gender>>
@@ -445,7 +448,7 @@
 	<<if _args[0] is "pc">>
 		<<set $_pregnancy to getPregnancyObject()>>
 		<<earnFeat "Miracle of Life">>
-		<<if $_pregnancy.potentialFathers.filter(npc => npc.type === T.pregnancyBirth.type).length gte 5>>
+		<<if $_pregnancy.potentialFathers.filter(npc => npc.type === $_pregnancy.type).length gte 5>>
 			<<earnFeat "Bicycle Mother">>
 		<</if>>
 		<<if $_pregnancy.type is "human" and $_pregnancy.fetus.length is 3>>
