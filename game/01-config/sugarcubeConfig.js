@@ -11,7 +11,7 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.6.4",
+	version: "0.4.6.5",
 	versionName: "",
 	sneaky: false,
 };
