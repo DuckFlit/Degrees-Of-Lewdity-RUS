@@ -4611,7 +4611,7 @@ function genlayer_clothing_back_img(slot, overrideOptions) {
 			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 		showfn(options) {
-			if (!options.show_clothes || (slot === "handheld" && options.arm_right === "cover" && options.worn_handheld_setup.coverBackImage === 0)) return false;
+			if (!options.show_clothes || (slot === "handheld" && ["none", "cover"].includes(options.arm_right) && options.worn_handheld_setup.coverBackImage === 0)) return false;
 			let isHoodDown = options.hood_down &&
 				options["worn_" + slot + "_setup"].hood &&
 				options["worn_" + slot + "_setup"].outfitSecondary !== undefined;
