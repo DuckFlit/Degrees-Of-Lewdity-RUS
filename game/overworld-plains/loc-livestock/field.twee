@@ -28,7 +28,7 @@ A river runs through one corner. The cattle stay almost as far away from the chu
 	<<pregnancyWatersBrokenPassout "remy">>
 <<elseif $stress gte $stressmax>>
 	<<passoutremy>>
-<<elseif Time.hour gte 18>>
+<<elseif Time.hour gte 19>>
 	<<npc Remy>><<person1>>
 	The gate rattles as two farmhands push it open. Remy strides in, mounts a <<livestock_horse>>, and spurs it around the field. <<He>> circles the cattle, rounding them together and pushing them towards the exit.
 	<br><br>
@@ -44,7 +44,7 @@ A river runs through one corner. The cattle stay almost as far away from the chu
 	<<elseif $hunger gte 800>>
 		<span class="blue">You're a bit peckish,</span> but that's tolerable given the situation.
 	<<elseif $hunger gte 400>>
-		You wish you had something nice to eat, <span class="lblue">but at least you're not hungry</span>
+		You wish you had something nice to eat, <span class="lblue">but at least you're not hungry.</span>
 		<<lstress>><<stress -6>>
 	<<elseif $hunger gte 1>>
 		<span class="teal">You feel satiated.</span> At least hunger pangs won't be keeping you awake.
@@ -208,7 +208,7 @@ A river runs through one corner. The cattle stay almost as far away from the chu
 			<<getouticon "dig">><<link [[Approach the tunnel under the fence|Livestock Tunnel]]>><</link>><<small_text>>
 			<br>
 		<<else>>
-			<<getouticon "dig">><<link [[Dig beneath the fence (1:00)|Livestock Field Dig]]>><<pass 60>><<tiredness 6>><<set $livestock_dig += 1>><</link>><<gtiredness>>
+			<<getouticon "dig">><<link [[Dig beneath the fence (1:00)|Livestock Field Dig]]>><<tiredness 6>><</link>><<gtiredness>>
 			<br>
 		<</if>>
 		<<if $livestock_river is 1>>
@@ -477,13 +477,10 @@ You stand on the riverbank, and peer into the churning water. You can't see the 
 
 You could wash here if you were careful.
 <br><br>
-<<if $livestockLockSeq is 3>>
-	<<link [[Next|Livestock Field River]]>><</link>>
-	<br>
-<<else>>
-	<<link [[Next|Livestock Field]]>><</link>>
-	<br>
-<</if>>
+
+<<link [[Next|Livestock Field River]]>><</link>>
+<br>
+
 
 
 :: Livestock Field River
@@ -519,7 +516,7 @@ The river glimmers with your reflection,
 	<<swimicon "down">><<link [[Swim downstream|Livestock Field River Downstream]]>><</link>>
 	<br><br>
 <</if>>
-<<if $livestockLockSeq is 3>>
+<<if Time.dayState is "night">>
 	<<getouticon>><<link [[Leave|Livestock Field Night]]>><</link>>
 <<else>>
 	<<getouticon>><<link [[Leave|Livestock Field]]>><</link>>
@@ -547,20 +544,24 @@ You wash your body in the shallows. The water is clean, at least. You're careful
 <<water>><<effects>>
 
 <<if $swimmingSuccess>>
-	<<set $livestock_escape to "river">>
-	<<if $livestockLockSeq is 3 >>
+	<<if Time.dayState is "night">>
+		<<set $livestock_escape to "night">>
 		You dive into the water, and struggle against the current. The water is fierce, but you manage to swim against it. The water doesn't relent as you enter the tunnel, but you keep pushing until you're clear on the other side.
 		<br><br>
+
 		You climb onto the bank, and look up at the perimeter fence. You made it.
 		<br><br>
+
 		You run away from the farm, up a small hill and down the other side. You shouldn't be visible from the field.
 		<br><br>
+
 		You don’t know how much time you have until your absence is noticed, so you don’t stop to take a breather.
 		<br><br>
 
 		<<link [[Next|Livestock Escape Town]]>><</link>>
 
 	<<else>>
+		<<set $livestock_escape to "river">>
 		You dive into the water, and struggle against the current. The water is fierce, <span class="green">but you manage to swim against it.</span> The water doesn't relent as you enter the tunnel, but you keep pushing until you're clear on the other side.
 		<br><br>
 
@@ -612,7 +613,7 @@ Something grasps your collar from above. You are pulled into a dry but gloomy in
 
 <<generate1>><<generate2>><<generate3>><<generate4>><<person1>>
 
-<<if $livestockLockSeq is 3 >>
+<<if Time.dayState is "night">>
 	<<set $farmGateCD to 1>>
 	“I’ll be damned,” says the hand's owner as <<person1>><<he>> releases you. “An escapee at such an hour? Good thing we decided to stay up and play some cards.”
 	<br>
@@ -669,12 +670,15 @@ Something grasps your collar from above. You are pulled into a dry but gloomy in
 <<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
-<<if $farmCellUnlk is true >>
+	<<if $farmCellUnlk is true >>
 		<<if $farmGateCD is 1>>
 			<<set $farmGateCD to 0>>
+			<<unset $farmCellUnlk>>
+
 			Once the farmhands are done toying with you, the <<person1>><<person>> brings you back to your cell. The sleeping farmhand is nowhere to be seen.
 			"You should be grateful we didn't take you to the boss. But don't expect us to remain silent about your little escape." <<llobey>><<livestock_obey -10>>
 			<br><br>
+
 			The <<person1>><<person>> opens your cell.
 			"What the hell?" <<He>> looks at the broken lock while holding you by your forearm. You feel <<his>> hand squeezing tighter.<<pain 2>><<gpain>> "You fucking brat. Do you think this is funny? Hey! Gimme a hand here! Our new friend broke the lock. We'll need to put another one on!"
 			<<tearful>> you spend the following half an hour sitting in the neighbouring cell and watching the goons replace the lock. Once they finish their work, they shove you inside and leave.
@@ -691,6 +695,7 @@ Something grasps your collar from above. You are pulled into a dry but gloomy in
 		<<endcombat>>
 		<<link [[Next|Livestock Cell]]>><<unset $livestockLockSeq>><<pass 30>><</link>>
 		<br>
+
 	<<else>>
 		The <<person1>><<person>> keeps a firm grip on your collar. "Right then," <<he>> says, tugging you towards the door. "Time to return you to your herd. Don't think Remy won't hear about this, either. You're lucky 'twas us that found you."
 		<<llobey>><<livestock_obey -10>>
@@ -705,9 +710,13 @@ Something grasps your collar from above. You are pulled into a dry but gloomy in
 		<br>
 	<</if>>
 
-
 <<else>>
-	<<set $livestock_escape to "combat">>
+	<<if Time.dayState is "night">>
+		<<set $livestock_escape to "night">>
+	<<else>>
+		<<set $livestock_escape to "combat">>
+	<</if>>
+
 	The <<person1>><<person>> slips on the wet stone, and tumbles into the river below. The <<person2>><<person>> rushes over to help while the others remain still and unsure.
 	<br><br>
 	<<tearful>> you seize the chance. You run through the only door and up a flight of stairs. You emerge from a shed behind the barn. You turn and run in the opposite direction.
@@ -724,7 +733,7 @@ Something grasps your collar from above. You are pulled into a dry but gloomy in
 
 :: Livestock Field Fence
 <<effects>>
-<<if $livestockLockSeq is 3 >>
+<<if Time.dayState is "night">>
 	You examine the fence but find no breaches in it. You wonder if you could dig a tunnel underneath it.
 	<br><br>
 
@@ -746,8 +755,9 @@ Something grasps your collar from above. You are pulled into a dry but gloomy in
 
 :: Livestock Field Dig
 <<effects>>
-<<if $livestockLockSeq is 3 >>
-	<<if $livestock_dig gte 0 and $livestock_dig lte 20>>
+<<if Time.dayState is "night">>
+
+	<<if $livestock_dig gte 0 and $livestock_dig lte 24 or $livestock_dig is undefined>>
 		You examine the fence but find no breaches in it. You already started digging a tunnel, but there is still work to be done before you can reach the other side.
 		<br><br>
 		You should probably continue digging <span class="teal"> once the sun rises.</span>
@@ -763,72 +773,82 @@ Something grasps your collar from above. You are pulled into a dry but gloomy in
 		<br>
 	<</if>>
 <<else>>
-	<<if $livestock_dig gte 25 or $livestock_dig gte 24 and $physiquesize lte 12000 or $livestock_dig gte 23 and $physiquesize lte 10000 or $livestock_dig gte 22 and $physiquesize lte 6000>>
-		You crawl inside your tunnel, and get to digging. You pull free a large stone, and earth collapses on your head. You brush it aside, and glimpse daylight above.
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">Can't dig when your arms are bound.</span>
 		<br><br>
+		<<link [[Next|Livestock Field]]>><</link>>
+		<br>
 
-		You peek your head out. You're on the other side of the fence. You could escape, though you'll still be in the middle of the countryside, and Remy will soon notice your absence. It could be dangerous.
-
-	<<elseif $livestock_dig gte 20>>
-		You crawl inside your tunnel, and get to digging. You think the far end may be beneath the other side of the fence, and start to curve upwards.
-	<<elseif $livestock_dig gte 12>>
-		The hole is more like a tunnel now. You drop inside and get to digging, emerging to scatter earth amongst the grass. You're careful not to be seen.
-	<<elseif $livestock_dig gte 6>>
-		You kneel in the grass and lean into the hole, now deep enough to fit half your body. You remove more earth, curving it toward the fence.
-	<<elseif $livestock_dig gte 1>>
-		You crouch in the grass and get to work. You hope it looks like you're just grazing. You deepen and widen the hole.
 	<<else>>
-		Farmhands sometimes patrol the perimeter, so you choose a spot a little way away from the fence where the tall grass should conceal your mischief. You start digging. The ground is hard. It's tiring and slow with only your hands as digging implements, but bit by bit you move the earth aside.
-		<br><br>
 
-		An hour passes. You've made a hole. It's too thin and far too shallow, but with effort this will work.
-
-	<</if>>
-
-
-	<br><br>
-
-	<<if $livestock_dig gte 25>>
-		<<getouticon "hole">><<link [[Escape|Livestock Dig Escape]]>><</link>>
-		<br>
-		<<refuseicon>><<link [[Wait|Livestock Field]]>><</link>>
-		<br>
-	<<elseif $livestock_dig gte 24 and $physiquesize lte 12000 or $livestock_dig gte 23 and $physiquesize lte 10000 or $livestock_dig gte 22 and $physiquesize lte 6000>>
-		<<getouticon "hole">><<link [[Escape|Livestock Dig Escape]]>><</link>><<small_text>>
-		<br>
-		<<refuseicon>><<link [[Wait|Livestock Field]]>><</link>>
-		<br>
-	<<else>>
-		<<if $rng gte 51>>
-			<<livestock_overhear>>
-
-			<<link [[Next|Livestock Field]]>><</link>>
-			<br>
-		<<elseif $rng gte 31>>
-			<<generate1>><<person1>>
-			"What you up to down there?" says a voice from the fence.
+		<<if $livestock_dig gte 25 or $livestock_dig gte 24 and $physiquesize lte 12000 or $livestock_dig gte 23 and $physiquesize lte 10000 or $livestock_dig gte 22 and $physiquesize lte 6000>>
+			You crawl inside your tunnel, and get to digging. You pull free a large stone, and earth collapses on your head. You brush it aside, and glimpse daylight above.
 			<br><br>
 
-			<<if $cow gte 6>>
-				<<link [[Moo|Livestock Field Dig Moo]]>><<livestock_obey 1>><<transform cow 1>><</link>><<gobey>>
-				<br>
-			<<else>>
-				<<link [[Pretend to moo|Livestock Field Dig Moo]]>><<livestock_obey 1>><<transform cow 1>><</link>><<gobey>>
-				<br>
-			<</if>>
-			<<link [[Distract|Livestock Field Dig Distract]]>><</link>><<exhibitionist1>>
+			You peek your head out. You're on the other side of the fence. You could escape, though you'll still be in the middle of the countryside, and Remy will soon notice your absence. It could be dangerous.
+
+		<<elseif $livestock_dig gte 20>>
+			You crawl inside your tunnel, and get to digging. You think the far end may be beneath the other side of the fence, and start to curve upwards.
+		<<elseif $livestock_dig gte 12>>
+			The hole is more like a tunnel now. You drop inside and get to digging, emerging to scatter earth amongst the grass. You're careful not to be seen.
+		<<elseif $livestock_dig gte 6>>
+			You kneel in the grass and lean into the hole, now deep enough to fit half your body. You remove more earth, curving it toward the fence.
+		<<elseif $livestock_dig gte 1>>
+			You crouch in the grass and get to work. You hope it looks like you're just grazing. You deepen and widen the hole.
+		<<else>>
+			Farmhands sometimes patrol the perimeter, so you choose a spot a little way away from the fence where the tall grass should conceal your mischief. You start digging. The ground is hard. It's tiring and slow with only your hands as digging implements, but bit by bit you move the earth aside.
+			<br><br>
+
+			An hour passes. You've made a hole. It's too thin and far too shallow, but with effort this will work.
+
+		<</if>>
+		<br><br>
+
+		<<if $livestock_dig gte 25>>
+			<<getouticon "hole">><<link [[Escape|Livestock Dig Escape]]>><</link>>
 			<br>
-			<<link [[Insult|Livestock Field Dig Insult]]>><<livestock_obey -1>><<stress -6>><</link>><<lobey>><<lstress>>
+			<<refuseicon>><<link [[Wait|Livestock Field]]>><</link>>
 			<br>
-			<<link [[Just keep digging|Livestock Field Dig Keep]]>><<livestock_obey -1>><</link>><<lobey>>
+		<<elseif $livestock_dig gte 24 and $physiquesize lte 12000 or $livestock_dig gte 23 and $physiquesize lte 10000 or $livestock_dig gte 22 and $physiquesize lte 6000>>
+			<<getouticon "hole">><<link [[Escape|Livestock Dig Escape]]>><</link>><<small_text>>
+			<br>
+			<<refuseicon>><<link [[Wait|Livestock Field]]>><</link>>
 			<br>
 		<<else>>
+			<<pass 60>>
+			<<set $livestock_dig += 1>>
+			<<if $rng gte 51>>
+				<<livestock_overhear>>
 
-			<<link [[Next|Livestock Field]]>><</link>>
-			<br>
+				<<link [[Next|Livestock Field]]>><</link>>
+				<br>
+			<<elseif $rng gte 31>>
+				<<generate1>><<person1>>
+				"What you up to down there?" says a voice from the fence.
+				<br><br>
+
+				<<if $cow gte 6>>
+					<<link [[Moo|Livestock Field Dig Moo]]>><<livestock_obey 1>><<transform cow 1>><</link>><<gobey>>
+					<br>
+				<<else>>
+					<<link [[Pretend to moo|Livestock Field Dig Moo]]>><<livestock_obey 1>><<transform cow 1>><</link>><<gobey>>
+					<br>
+				<</if>>
+				<<link [[Distract|Livestock Field Dig Distract]]>><</link>><<exhibitionist1>>
+				<br>
+				<<link [[Insult|Livestock Field Dig Insult]]>><<livestock_obey -1>><<stress -6>><</link>><<lobey>><<lstress>>
+				<br>
+				<<link [[Just keep digging|Livestock Field Dig Keep]]>><<livestock_obey -1>><</link>><<lobey>>
+				<br>
+			<<else>>
+
+				<<link [[Next|Livestock Field]]>><</link>>
+				<br>
+			<</if>>
 		<</if>>
 	<</if>>
 <</if>>
+
 :: Livestock Field Dig Moo
 <<effects>>
 
@@ -884,8 +904,8 @@ You hide low within the grass and continue digging.
 
 :: Livestock Dig Escape
 <<effects>>
-<<if $livestockLockSeq is 3 >>
-	<<set $livestock_escape to "hole">>
+<<if Time.dayState is "night">>
+	<<set $livestock_escape to "night">>
 	You pull yourself from the hole, and run. You climb a small hill, and down the other side. You should no longer be visible from the field.
 	<br><br>
 	You don’t know how much time you have until your absence is noticed, so you keep moving.
@@ -990,17 +1010,18 @@ You approach Remy's steeds.
 	<br>
 	<<link [[Walk away|Livestock Field]]>><</link>>
 	<br>
-<<elseif  Time.hour gte 18 and Time.hour lte 20>>
+<<elseif  Time.hour gte 19 and Time.hour lte 20>>
 	It seems Remy is looking for you, <span class="red">you should head out.</span>
 	<br><br>
 	<<getouticon>><<link [[Leave|Livestock Field]]>><</link>>
 	<br>
 <<else>>
-	<<ind>><<link [[Brush their hair (1:00)|Livestock Field Horse Brush]]>><<pass 60>><<tending 6>><<lstress>><</link>><<gtending>><<lstress>>
+	<<ind>><<link [[Brush their hair (1:00)|Livestock Field Horse Brush]]>><<pass 60>><<tending 6>><<stress -6>><</link>><<gtending>><<lstress>>
 	<br>
 
 	<!-- Modified for Monster People -->
 	<<if $awareness gte 200 and $horsedisable is "f" and $bestialitydisable is "f">>
+		<br>
 		<<beastNEWinit 1 horse>>
 		One <<beasttype>> seems frustrated in the back. <<bHe>> stomps at the others,
 		<<if $monster is 1>>
@@ -1132,7 +1153,13 @@ You approach Remy's steeds.
 				<<link [[Ignore|Livestock Field Horse]]>><<endevent>><</link>>
 				<br>
 			<<else>>
-				<<loadNPC 0 "grumpyHorse">>
+				<<if !$per_npc.grumpyHorse>>
+					<<beastNEWinit 1 horse>>
+					<<saveNPC 0 "grumpyHorse">>
+				<<else>>
+					<<loadNPC 0 "grumpyHorse">>
+				<</if>>
+
 
 				<span class="green">The old <<beasttype>> you helped gallops by, making the most of <<bhis>> healed leg.</span>
 				<<if $monster is 1>>
