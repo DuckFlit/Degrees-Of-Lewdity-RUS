@@ -6050,8 +6050,8 @@ Thanks to bsmith for the following fixes:
 
 Thanks to Khau for the following fixes:
 
--   Fixed an issue that caused the town’s image to show when rescued by Eden.
--   Fixed an issue that caused the asylum’s image to show when back at Eden's cabin after their rescue.
+-   Fixed an issue that caused the town's image to show when rescued by Eden.
+-   Fixed an issue that caused the asylum's image to show when back at Eden's cabin after their rescue.
 -   Fixed an issue that prevented the buying of Eden's Christmas gift.
 -   You can no longer scream for Eden to save you from Eden.
 -   Encounters with Eden will no longer raise combat, rape or exhibitionism fame.

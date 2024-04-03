@@ -404,7 +404,7 @@ setup.pills = [
 	{
 		name: "contraceptive",
 		description:
-			"Estroprogestatifs associating 24mg of ethinylestradiol(synthetic oestrogen) and 31mg of a synthetic progestin for a near-perfect contraceptive effect.",
+			"Estroprogestatifs associating 24mg of ethinylestradiol (synthetic oestrogen) and 31mg of a synthetic progestin for a near-perfect contraceptive effect.",
 		onTakeMessage: "You take the contraceptive pill. You hope it will be as effective as advertised.",
 		warning_label:
 			"Warning: Mild side effects may occur with the prescribed dosage. Severe complications may occur if exceeding the maximum doses per day. If in doubt, please consult your doctor.",
