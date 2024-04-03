@@ -565,8 +565,8 @@ statDisplay.create("ggghistory", () => {
 	return `${result} ${gainSchoolStar("history_star")}`;
 });
 
-statDisplay.create("ghousekeeping", amount => {
-	if (V.statsdisable === "f") return "";
+statDisplay.create("ghousekeeping", (amount, silent) => {
+	if (V.statsdisable === "f" || silent) return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
 	} else if (V.housekeeping >= amount) {

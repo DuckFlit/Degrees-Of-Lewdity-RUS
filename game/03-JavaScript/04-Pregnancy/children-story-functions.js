@@ -51,6 +51,9 @@ function updateChildActivity(childId) {
 			case "wolfgirl":
 				wolfChildActivity(childId);
 				break;
+			case "hawk":
+				hawkChildActivity(childId);
+				break;				
 			default:
 				return null;
 		}
@@ -192,7 +195,7 @@ function wolfChildActivity(childId) {
 				"watchingCurious",
 				"watchingLonging",
 				"staringOutside",
-				"hungeryWolf",
+				"hungryWolf",
 				"grumpyWolf",
 				"gnawing",
 			]);
@@ -213,9 +216,56 @@ function wolfChildActivity(childId) {
 				"playFighting",
 				"staringOutside",
 				"staringOutside",
-				"hungeryWolf",
+				"hungryWolf",
 				"grumpyWolf",
 				"gnawing",
+			]);
+		}
+	}
+
+	if (activity.length) {
+		child.localVariables.activity = activity[random(0, activity.length - 1)];
+		child.localVariables.event = true;
+	} else {
+		child.localVariables.activity = "noEvent";
+		child.localVariables.event = true;
+	}
+}
+
+function hawkChildActivity(childId) {
+	const child = V.children[childId];
+	if (!child) return null;
+
+	const toySets = [];
+	const toyNames = [];
+	if (V.storedChildrenToys && V.storedChildrenToys[V.location]) {
+		V.storedChildrenToys[V.location].forEach(toy => {
+			toySets.pushUnique(toy.set);
+			toyNames.pushUnique(toy.name);
+		});
+	}
+	let activity = [];
+
+	if (between(T.childTotalDays, 0, 100)) {
+		if (Time.dayState === "night" && ["sleep", "rest", "brood"].includes(V.bird.activity)) {
+			activity = activity.concat(["sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleeping"]);
+		} else {
+			activity = activity.concat([
+				"sleeping",
+				"sleeping",
+				"sleeping",
+				"crying",
+			]);
+		}
+	} else if (between(T.childTotalDays, 100, 200)) {
+		if (Time.dayState === "night" && ["sleep", "rest", "brood"].includes(V.bird.activity)) {
+			activity = activity.concat(["sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleeping"]);
+		} else {
+			activity = activity.concat([
+				"sleeping",
+				"sleeping",
+				"sleeping",
+				"crying",				
 			]);
 		}
 	}
