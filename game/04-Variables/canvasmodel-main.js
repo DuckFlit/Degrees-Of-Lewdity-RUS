@@ -1686,7 +1686,7 @@ Renderer.CanvasModels["main"] = {
 				return `img/transformations/angel/leftwing/${options.angel_wings_type}_back.png`;
 			},
 			showfn(options) {
-				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wing_left === "idle";
+				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wings_type === "default" && options.angel_wing_left === "idle";
 			},
 			zfn(options) {
 				return ZIndices.head_back;

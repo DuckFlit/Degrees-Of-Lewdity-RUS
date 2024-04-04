@@ -863,7 +863,7 @@ function effects() {
 		}
 
 		if (V.toy_message) {
-			element("span", "Sex toys are becoming more popular throughout town.", "pruple");
+			element("span", "Sex toys are becoming more popular throughout town.", "purple");
 			delete V.toy_message;
 		}
 
@@ -964,7 +964,7 @@ function effects() {
 			element(
 				"span",
 				V.penisslimecagemessage === 1 ? "A new chastity parasite forms around your penis." : "Your chastity parasite looks brand new again.",
-				"pruple"
+				"purple"
 			);
 			delete V.penisslimecagemessage;
 		}

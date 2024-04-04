@@ -5006,6 +5006,7 @@
 
 				migrateRealVars(['weather', 'moonstate', 'timeStamp', 'location', 'parasite', 'pain', 'arousal', 'tiredness', 'trauma', 'control', 'angel', 'angelbuild', 'fallenangel', 'transformationParts', 'purity', 'parasitepregdisable', 'worn', 'skin']);
 			} else if (event === 'prayerroom') {
+				/* DO NOT MODIFY FURTHER, SEE 'Fix to freezePlayerStats being used in the Corrupt Temple scene' */
 				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
 				overwriteObjProp('virginity', V.real_virginity_sydney, V.frozenValues.NPCName[V.NPCNameList.indexOf('Sydney')]);
 
@@ -5076,6 +5077,25 @@
 		<<unset $livestockEscape>>
 	<</if>>
 
+	/* Fix to freezePlayerStats being used in the Corrupt Temple scene, modification of '$real_ variables cleanup' related to this even shouldnt be modified any longer */
+	<<if !$replayScene and $statFreeze and $frozenValues and ($passage.match(/^Sydney Temple Corrupt (Sex( Finish)?|End( [^2F]|$))/)
+		|| ($passage === 'Sydney Temple Corrupt End 2' && !$sydneySeen.includes("corruptroom"))) and !$defileSacredGroundStore and !$objectVersion.defileSacredGroundStore>>
+		<<set $defileSacredGroundStore to {
+			playerVirginity: clone($frozenValues.player.virginity),
+			sydneyVirginity: clone($frozenValues.NPCName[$NPCNameList.indexOf("Sydney")].virginity),
+			angel: $frozenValues.angel,
+			angelbuild: $frozenValues.angelbuild,
+			fallenangel: $frozenValues.fallenangel,
+			transformationParts: $frozenValues.transformationParts,
+			purity: $frozenValues.purity,
+			trauma: $frozenValues.trauma,
+		}>>
+		<<unset $frozenValues>>
+		<<unset $frozenKeys>>
+		<<unset $statFreeze>>
+		<<set $objectVersion.defileSacredGroundStore to 1>>
+	<</if>>
+
 	<!--V0.4.7.0 Great Hawk expansion -->
 	<<if $playerPregnancyEggLayingDisable is undefined>>
 		<<set $playerPregnancyEggLayingDisable to $playerPregnancyBeastDisable>>
@@ -5139,5 +5159,5 @@
 	<<if $bird.state and !$bird.clean>>
 		<<set $bird.clean to 0>>
 	<</if>>
-	
+
 <</widget>>
