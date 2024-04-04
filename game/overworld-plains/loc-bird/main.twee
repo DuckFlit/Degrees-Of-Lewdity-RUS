@@ -3674,6 +3674,7 @@ You bring your attentive touch down towards <<bhis>> groin.
 <!-- This passage is only accessible to a player that already has stockholm syndrome. -->
 <<effects>><<rng>>
 <<npc "Great Hawk">>
+<<cleareventpool>>
 <<if $birdBask is undefined>>
 	<<set $birdBask to 1>>
 	<<if $monster is 1>>
@@ -3695,351 +3696,480 @@ You bring your attentive touch down towards <<bhis>> groin.
 	<br><br>
 	<<link [[Follow (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><<endevent>><<set $phase to 1>><</link>><<if $monster is 1>><<handholdingvirginitywarning>><<NPCvirginitywarning "Great Hawk" "handholding">><</if>><br>
 	<<link [[Stay|Bird Tower Perch]]>><<endevent>><</link>><br>
-<<elseif $rng gte 91>>
-	<<if $harpy gte 6>>
-		The <<beasttype>> pauses <<bhis>> song for a moment, and <<bhe>> begins to gently groom your wings.
-		<<if $monster is 1>>
-			<<bHis>> touch is delicate but deliberate, and the feeling of <<bhis>> hands running through your feathers sends waves of pleasure through your body. <<arousal 1000>><<garousal>>
-		<<else>>
-			<<bHe>> gently runs <<bhis>> beak through your feathers, sending waves of pleasure through your body. <<arousal 1000>><<garousal>>
-		<</if>>
-		<<transform bird 1>>
-		<<if $arousal gte $arousalmax>>
-			<<orgasm>>
+<<else>>
+	<<addinlineevent "bird_bask_wings">>
+		<<if $harpy gte 6>>
+			The <<beasttype>> pauses <<bhis>> song for a moment, and <<bhe>> begins to gently groom your wings.
 			<<if $monster is 1>>
-				You arch your back in <<bhis>> arms, letting out a cry of pleasure into the <<if Time.dayState is "dawn">>morning air<<elseif Time.dayState is "dusk">>evening air<<else>>wind<</if>>. <<bHe>> holds you closely. "Your mating song is pleasing. We will clean together soon."
-				You lightly tremble, and <<bhe>> begins cooing quietly to you.
+				<<bHis>> touch is delicate but deliberate, and the feeling of <<bhis>> hands running through your feathers sends waves of pleasure through your body. <<arousal 1000>><<garousal>>
 			<<else>>
-				You arch your back, causing <<bhim>> to wrap <<bhis>> wings around you to keep you from falling. <<bHe>> coos quietly to you.
+				<<bHe>> gently runs <<bhis>> beak through your feathers, sending waves of pleasure through your body. <<arousal 1000>><<garousal>>
 			<</if>>
-			<<npcincr "Great Hawk" dom 5>><<ggdom>>
+			<<transform bird 1>>
+			<<if $arousal gte $arousalmax>>
+				<<orgasm>>
+				<<if $monster is 1>>
+					You arch your back in <<bhis>> arms, letting out a cry of pleasure into the <<if Time.dayState is "dawn">>morning air<<elseif Time.dayState is "dusk">>evening air<<else>>wind<</if>>. <<bHe>> holds you closely. "Your mating song is pleasing. We will clean together soon."
+					You lightly tremble, and <<bhe>> begins cooing quietly to you.
+				<<else>>
+					You arch your back, causing <<bhim>> to wrap <<bhis>> wings around you to keep you from falling. <<bHe>> coos quietly to you.
+				<</if>>
+				<<npcincr "Great Hawk" dom 5>><<ggdom>>
+				<br><br>
+				<<if $bird.activity is "sing" or $bird.activity is "groom">>
+					<<link [[Reward|Bird Tower Perch Sex]]>><<set $sexstart to 1>><<set $phase to 1>><<transform bird 1>><<npcincr "Great Hawk" love 1>><</link>><<deviant1>><<glove>><br>
+				<</if>>
+				<<bird_perch_options>>
+			<<else>>
+				<br><br>
+
+				<<link [[Enjoy it (0:05)|Bird Tower Bask Groom]]>><<bird_pass 5>><<stress -3>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><</link>><<lstress>><<glove>><<gdom>><br>
+				<<link [[Push away|Bird Tower Bask Groom Push]]>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>><br>
+			<</if>>
+		<<elseif $angel gte 6 or $demon gte 6 or $fallenangel gte 2>>
+			The <<beasttype>> pauses <<bhis>> song for a moment, inspecting your wings.
+			<<if $monster is 1>>
+				"So strange. Not like mine. But they belong to you, so they're still beautiful."
+			<<else>>
+				<<bHe>> looks at them ponderously, occasionally prodding them. <<bHe>> is likely wondering why they don't look like <<bhis>> own.
+			<</if>>
+			<<bHe>> resumes <<bhis>> song after some time.
 			<br><br>
-			<<if $bird.activity is "sing" or $bird.activity is "groom">>
-				<<link [[Reward|Bird Tower Perch Sex]]>><<set $sexstart to 1>><<set $phase to 1>><<transform bird 1>><<npcincr "Great Hawk" love 1>><</link>><<deviant1>><<glove>><br>
-			<</if>>
 			<<bird_perch_options>>
 		<<else>>
+			The <<beasttype>> stares down at your back. <<bHe>> rubs it with <<bhis>> wing.
+			<<if $monster is 1>>
+				"Don't worry. I'm sure yours will grow in soon. Then we can fly together." <<if C.npc["Great Hawk"].love gte 50>>You turn your head to face <<bhim>>. "I'll be happy. The sky is so empty without you in it."<</if>>
+			<</if>>
+				<<bHe>> resumes <<bhis>> song after some time.
+			<br><br>
+			<<bird_perch_options>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_weather">>
+		<<switch $weather>>
+			<<case "clear">>
+				The <<if Time.dayState is "dawn">>rising<<elseif Time.dayState is "dusk">>setting<</if>> sun's radiance warms your face as you sit in the <<beasttypes>> embrace. You feel serene. <<stress -12>><<trauma -3>><<lstress>><<ltrauma>>
+			<<case "overcast">>
+				The grey skies above almost seem to call out to you, begging you to join them. <<stress -3>><<lstress>>
+			<<case "rain">>
+				The faint smell of damp grass, and the chorus of raindrops on the stone mixed with the <<beasttypes>> song briefly lull you to sleep. <<tiredness -20>><<ltiredness>>
+			<<case "snow">>
+				Despite the frigid air and the shine of distant fresh snow, you feel completely warm in the <<beasttypes>> embrace. <<stress -6>><<trauma -3>><<lstress>><<ltrauma>>
+			<<default>>
+				You sit snugly in the <<beasttypes>> embrace.
+		<</switch>>
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_love_interest">>
+		<<run statusCheck("Kylar")>>
+		Your thoughts turn to
+		<<if random(1,2) is 1>>
+			<<switch $loveInterest.primary>>
+				<<case "Robin">>
+					Robin.
+					<<if C.npc.Robin.trauma gte 50>>
+						Your heart sinks as you remember how you left <<nnpc_him "Robin">>. <<stress 12>><<ggstress>>
+					<<elseif C.npc.Robin.dom gte 50>>
+						You wonder if <<nnpc_he "Robin">> will come looking for you.
+					<<else>>
+						You feel a brief sting of guilt as you wonder how <<nnpc_he "Robin">>'s doing.
+					<</if>>
+				<<case "Kylar">>
+					Kylar.
+					<<if _kylarStatus.includes("Rage")>>
+						You wonder if <<nnpc_he "Kylar">> will come looking for you. After mulling it over, you realise that "if" should be replaced with "when". <<stress 3>><<gstress>>
+					<<else>>
+						You hope <<nnpc_he "Kylar">> isn't being bullied in your absence.
+					<</if>>
+				<<case "Whitney">>
+					Whitney. You can only imagine what <<nnpc_he "Whitney">> would do if <<nnpc_he "Whitney">> found out about all this.
+				<<case "Sydney">>
+					Sydney.
+					<<if Time.weekDay is 1>>
+						<<nnpc_He "Sydney">>'s probably hard at work at the temple right now.
+					<<else>>
+						The thought of <<nnpc_his "Sydney">> smile makes you feel warm.
+					<</if>>
+				<<case "Eden">>
+					Eden. <<nnpc_He "Eden">> would probably hunt the Great Hawk for sport, especially if <<nnpc_he "Eden">> found out about what you've been doing.
+				<<case "Avery">>
+					Avery.
+					<<if Time.weekDay is 7 and $averyseen isnot 1>>
+						<<nnpc_He "Avery">>'s probably looking for you at this very moment, to ask you on another date.
+					<<elseif $averydate is 1>>
+						You have a date later, after all.
+					<<elseif C.npc.Avery.rage gte 20 and $averyragerevealed is 1>>
+						You're glad to be so far away, at least until <<nnpc_he "Avery">> calms down.
+					<<else>>
+						You laugh, picturing <<nnpc_him "Avery">> trying to save face explaining your current situation.
+					<</if>>
+				<<case "Alex">>
+					Alex, and the farm.
+					<<if $farm.aggro gte 60>>
+						You hope Remy's not causing <<nnpc_him "Alex">> too much trouble.
+					<<elseif $farm.tower_guard_unpaid gte 1>>
+						$farm.tower_guard hasn't been paid yet. You hope it's not a dealbreaker.
+					<<else>>
+						You hope the harvest is good.
+					<</if>>
+				<<case "Black Wolf">>
+					the forest, and your pack. You wonder if they miss you.
+				<<default>>
+					all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
+					<<if $monster is 1>>
+						<<nnpc_wife "Great Hawk">>
+					<<else>>
+						Great Hawk,
+					<</if>>
+					you feel untouchable. <<trauma -10>><<lltrauma>>
+			<</switch>>
+		<<elseif $loveInterest.secondary isnot "None">>
+			<<switch $loveInterest.secondary>>
+				<<case "Robin">>
+					Robin.
+					<<if C.npc.Robin.trauma gte 50>>
+						Your heart sinks as you remember how you left <<nnpc_him "Robin">>. <<stress 12>><<ggstress>>
+					<<elseif C.npc.Robin.dom gte 50>>
+						You wonder if <<nnpc_he "Robin">> will come looking for you.
+					<<else>>
+						You feel a brief sting of guilt as you wonder how <<nnpc_he "Robin">>'s doing.
+					<</if>>
+				<<case "Kylar">>
+					Kylar.
+					<<if _kylarStatus.includes("Rage")>>
+						You wonder if <<nnpc_he "Kylar">> will come looking for you. After mulling it over, you realise that "if" should be replaced with "when". <<stress 3>><<gstress>>
+					<<else>>
+						You hope <<nnpc_he "Kylar">> isn't being bullied in your absence.
+					<</if>>
+				<<case "Whitney">>
+					Whitney. You can only imagine what <<nnpc_he "Whitney">> would do if <<nnpc_he "Whitney">> found out about all this.
+				<<case "Sydney">>
+					Sydney.
+					<<if Time.weekDay is 1>>
+						<<nnpc_He "Sydney">>'s probably hard at work at the temple right now.
+					<<else>>
+						The thought of <<nnpc_his "Sydney">> smile makes you feel warm.
+					<</if>>
+				<<case "Eden">>
+					Eden. <<nnpc_He "Eden">> would probably hunt the Great Hawk for sport, especially if <<nnpc_he "Eden">> found out about what you've been doing.
+				<<case "Avery">>
+					Avery.
+					<<if Time.weekDay is 7 and $averyseen isnot 1>>
+						<<nnpc_He "Avery">>'s probably looking for you at this very moment, to ask you on another date.
+					<<elseif $averydate is 1>>
+						You have a date later, after all.
+					<<elseif C.npc.Avery.rage gte 20 and $averyragerevealed is 1>>
+						You're glad to be so far away, at least until <<nnpc_he "Avery">> calms down.
+					<<else>>
+						You laugh, picturing <<nnpc_him "Avery">> trying to save face explaining your current situation.
+					<</if>>
+				<<case "Alex">>
+					Alex, and the farm.
+					<<if $farm.aggro gte 60>>
+						You hope Remy's not causing <<nnpc_him "Alex">> too much trouble.
+					<<elseif $farm.tower_guard_unpaid gte 1>>
+						$farm.tower_guard hasn't been paid yet. You hope it's not a dealbreaker.
+					<<else>>
+						You hope the harvest is good.
+					<</if>>
+				<<case "Black Wolf">>
+					the forest, and your pack. You wonder if they miss you.
+				<<default>>
+					all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
+					<<if $monster is 1>>
+						<<nnpc_wife "Great Hawk">>,
+					<<else>>
+						Great Hawk,
+					<</if>>
+					you feel untouchable. <<trauma -10>><<lltrauma>>
+			<</switch>>
+		<<else>>
+			all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
+			<<if $monster is 1>>
+				<<nnpc_wife "Great Hawk">>,
+			<<else>>
+				Great Hawk,
+			<</if>>
+			you feel untouchable. <<trauma -10>><<lltrauma>>
+		<</if>>
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+
+	<<addinlineevent "bird_bask_see">>
+		The <<beasttype>> stops singing and rapidly turns <<bhis>> head, fixing <<bhis>> gaze on something out in the moor.
+		<<if $monster is 1>>
+			"See something. There." <<bHe>> points to something in the distance.
+		<<else>>
+			<<bHe>> must see something.
+		<</if>>
+		<<if $transformationParts.traits.sharpEyes isnot "disabled" or $bird.upgrades.telescope is 1>>
+			<<if $transformationParts.traits.sharpEyes isnot "disabled">>
+				Thanks to your superior eyesight, you see it too.
+			<<else>>
+				You look through your telescope, and see it too.
+			<</if>>
+			<<switch random(1,6)>>
+				<<case 1>>
+					<<endevent>><<beastNEWinit 3 fox>>
+					A trio of <<beastsplural>> tumble over and wrestle with each other on top of a hillock.
+					<<endevent>><<npc "Great Hawk">>
+					<<if $monster is 1>>
+						The <<beasttype>> lets out a small chuckle,
+					<<else>>
+						The <<beasttype>> shakes <<bhis>> head,
+					<</if>>
+					and returns to singing.
+				<<case 2>>
+					A large group of people are just barely visible on the horizon, headed towards the direction of the town.
+					<<if $monster is 1>>
+						"Wingless like groups. I prefer just <<wife>>," <<bhe>> says,
+					<<else>>
+						<<bHe>> nuzzles your cheek,
+					<</if>>
+					and returns to singing.
+				<<case 3>>
+					<<if $hallucinations gte 2 and $tentacledisable is "f">>
+						A small, purple tentacle slithers from the ground a great distance away. Just as quickly as it showed up, it disappears back into the earth.
+						<<if $monster is 1>>
+							"Don't like those. Make vision all fuzzy."
+						<<else>>
+							The <<beasttype>> lets out a brief screech.
+						<</if>>
+						<<bHe>> goes back to singing after a few minutes.
+					<<else>>
+						At least, you thought you did. You swear something was there, but you must have just missed it.
+						<<if $monster is 1>>
+							"Did you see it? Small, purple slimy thing. I hate them." <<bHe>> holds you a little tighter,
+						<<else>>
+							The <<beasttype>> lets out a brief screech,
+						<</if>>
+						and goes back to singing after a few minutes.
+					<</if>>
+				<<case 4>>
+					You see a shifty-looking person wearing all black with a hood, waiting behind a hillock. You blink a few times, and aren't sure when they disappeared. The <<beasttype>> resumes <<bhis>> song.
+				<<case 5>>
+					You see a glint in the distance, something very shiny. After a moment, you realise it's a reflective piece of rubbish.
+					<<if $monster is 1>>
+						"Want to go get it," <<bHe>> says, before ruffling <<bhis>> own feathers. "But I'm comfortable."
+					<<else>>
+						The <<beasttype>> shrieks,
+					<</if>>
+					but resumes <<bhis>> song anyways.
+				<<case 6>>
+					You see a person in the distance, completely naked.
+					<<if $tentacledisable is "f" and $plantdisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+						<<Plant_details>> are scattered throughout their hair, and writhing vines surround them. At first, you think they're being attacked, but they seem to be in control of them.
+						<br><br>
+						<<if $monster is 1>>
+							"Odd creatures," the <<beasttype>> says. "As much moor as they are wingless."
+						<<else>>
+							The <<beasttype>> shakes <<bhis>> head quizzically.
+						<</if>>
+					<<else>>
+						They don't seem bothered by their exposure<<if $weather is "rain" or $weather is "snow">>, nor the $weather<</if>>.
+						<<if $monster is 1>>
+							"Odd wingless," the <<beasttype>> says. "Most prefer covering with second plumage."
+						<<else>>
+							The <<beasttype>> shakes <<bhis>> head quizzically.
+						<</if>>
+					<</if>>
+					<<bHe>> resumes <<his>> song after a few seconds.
+				<<default>>
+			<</switch>>
+		<<else>>
+			You can't quite make out whatever it is. After some time, <<bhe>> calms down, and resumes <<bhis>> song.
+		<</if>>
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_cough">>
+		The <<beasttype>> continues singing, taking pauses every few minutes.
+		<<if $rng is 51>>
+			At one point, <<bhe>> seems to have trouble starting again.
+			<<if $monster is 1>>
+				<<bHe>> coughs briefly to clear <<bhis>> throat, and resumes without any further issue.
+			<<else>>
+				<<bHe>> starts moving <<bhis>> head back and forth, and disgorges what appears to be a small bone from <<bhis>> throat. <<bHe>> resumes singing without any further issues.
+			<</if>>
+		<</if>>
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_hug">>
+		The <<beasttype>> stops singing, and
+		<<if $monster is 1>>
+			wraps <<bhis>> arms around you.
+			"<<print either(
+				"I love you.",
+				"Thank you for staying with me.",
+				"Used to be afraid of being alone. Never have to fear again.",
+				"You are perfect.",
+				"Mine."
+			)>>"
+		<<else>>
+			rests <<bhis>> head on your shoulder.
+		<</if>>
+		<br><br>
+
+		<<if $bird.activity is "sing" or $bird.activity is "groom">>
+			<<link [[Kiss|Bird Perch Monster Kiss]]>><<npcincr "Great Hawk" love 1>><</link>><<glove>><<kissvirginitywarning>><<NPCvirginitywarning "Great Hawk" "kiss">><br>
+		<</if>>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_sing">>
+		The <<beasttype>>'s voice greets the moor, as a hearty <<if Time.dayState is "dawn">>good morning<<elseif Time.dayState is "dusk">>good evening<<else>>greeting<</if>> call to all of its denizens. Or maybe <<bhe>>'s just bragging about you.
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_bird_to_bird_communication">>
+		The <<beasttype>>'s song continues. From a great distance, <<bhe>> receives a reply song. The two sing back and forth to each other, until the other voice goes silent.
+		<<if $monster is 1>>
+			"<<print either(
+				"Shared knowledge of the skies and clouds. Always valuable.",
+				"Had to tell them I was already taken.",
+				"Told tales of our best hunts.",
+				"Stories from others, they always excite me.",
+				"Searching for their mate. We should look out."
+			)>>"
+		<</if>>
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_silent">>
+		The moor lies silent, with only the <<beasttypes>> song breaking through.
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_rest">>
+		The <<beasttype>> rests <<bhis>> voice.
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<addinlineevent "bird_bask_familiar" 0.01>>
+		<span class="teal">There's something familiar about the <<beasttypes>> melody,</span> but you can't quite put your <<if $harpy gte 6>>wing<<else>>finger<</if>> on it.
+		<br><br>
+		<<bird_perch_options>>
+	<</addinlineevent>>
+
+	<<if !$daily.birdBodyWriting>>
+		<<bodywritingExposureCheck>>
+		<<if _bodywriting_exposed gte 1 and _bodypart>>
+			<<addinlineevent "bird_bask_bodywriting">>
+				<<set $daily.birdBodyWriting to true>>
+				The <<beasttype>> lets <<bhis>> song come to a stop. You feel a persistent but careful prodding against the <<tattoo _bodypart>> on your <<bodypart _bodypart>>. 
+				<br><br>
+
+				<<if $monster is 1>>
+					The <<beasttype>> stops touching you when <<bhe>> notices the ink won't come off. "<<Wife>> needs preening? Don't worry, I will help," <<bhe>> says. <<bHe>> licks <<bhis>> fingertip, and starts rubbing your skin again, with greater pressure this time.
+				<<else>>
+					The <<beasttype>> stops touching you. <<bHe>> licks your skin, and starts rubbing <<bhis>> beak against it again, with greater pressure this time.
+				<</if>>
+				<<if ["marker","tattoo","brand","magic"].includes($skin[_bodypart].pen)>>
+					No matter what <<bhe>> does, the ink won't come off.
+				<</if>>
+				<br><br>
+
+				<<capture _bodypart>>
+					<<link [[Allow it|Bird Tower Tattoo Preen]]>><<set $phase to 0>><</link>>
+					<br>
+					<<if ["marker","tattoo","brand","magic"].includes($skin[_bodypart].pen)>>
+						<<link [[Try to explain|Bird Tower Tattoo Preen]]>><<set $phase to 1>><</link>>
+					<<else>>
+						<<link [[Push away|Bird Tower Tattoo Preen]]>><<set $phase to 2>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>>
+					<</if>>
+					<br>
+				<</capture>>
+			<</addinlineevent>>
+		<</if>>
+	<</if>>
+<</if>>
+
+:: Bird Tower Tattoo Preen
+<<effects>>
+<<if $phase is 0>>
+	<<if ["marker","tattoo","brand","magic"].includes($skin[_bodypart].pen)>>
+		Despite it being impossible, you allow the <<beasttype>> to try and groom the ink from your skin anyways.
+		<<if $monster is 1>>
+			Eventually, <<bhe>> gives up trying to preen you. "Strange new kind of dirt," <<bhe>> comments. "Must try to get it off with water later."
+		<<else>>
+			Eventually, <<bhe>> gives up trying to preen you. <<bHe>> squawks, as if annoyed by this.
+		<</if>>
+		Your skin feels a little tender from the forceful rubbing. <<pain 4>><<gpain>>
+	<<else>>
+		You allow <<bhim>> to continue, and eventually, the writing is gone. <<bodywriting_clear _bodypart>><<npcincr "Great Hawk" dom 1>><<gdom>>
+	<</if>>
+<<elseif $phase is 1>>
+	<<if $monster is 1>>
+		<<if $speech_attitude is "meek">>
+			"It's something called a tattoo. Sorry, you can't clean it off, no matter how hard you try," you say.
+		<<elseif $speech_attitude is "bratty">>
+			"It's a thing called a tattoo, and it won't come off," you say. "Ever."
+		<<else>>
+			"It's called a tattoo, and it's permanent," you say.
+		<</if>>
+		<br><br>
+		
+		"Really?" the <<beasttype>> asks as <<bhe>> stops preening you to inspect your <<tattoo _bodypart>>. "<<Wife>> should be more careful. Don't let more... tat twos get on you."
+
+		<<if $skin[_bodypart].special is "Great Hawk">>
 			<br><br>
 
-			<<link [[Enjoy it (0:05)|Bird Tower Bask Groom]]>><<bird_pass 5>><<stress -3>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><</link>><<lstress>><<glove>><<gdom>><br>
-			<<link [[Push away|Bird Tower Bask Groom Push]]>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>><br>
-		<</if>>
-	<<elseif $angel gte 6 or $demon gte 6 or $fallenangel gte 2>>
-		The <<beasttype>> pauses <<bhis>> song for a moment, inspecting your wings.
-		<<if $monster is 1>>
-			"So strange. Not like mine. But they belong to you, so they're still beautiful."
-		<<else>>
-			<<bHe>> looks at them ponderously, occasionally prodding them. <<bHe>> is likely wondering why they don't look like <<bhis>> own.
-		<</if>>
-		<<bHe>> resumes <<bhis>> song after some time.
-		<br><br>
-		<<bird_perch_options>>
-	<<else>>
-		The <<beasttype>> stares down at your back. <<bHe>> rubs it with <<bhis>> wing.
-		<<if $monster is 1>>
-			"Don't worry. I'm sure yours will grow in soon. Then we can fly together." <<if C.npc["Great Hawk"].love gte 50>>You turn your head to face <<bhim>>. "I'll be happy. The sky is so empty without you in it."<</if>>
-		<</if>>
-			<<bHe>> resumes <<bhis>> song after some time.
-		<br><br>
-		<<bird_perch_options>>
-	<</if>>
-<<elseif $rng gte 81>>
-	<<switch $weather>>
-		<<case "clear">>
-			The <<if Time.dayState is "dawn">>rising<<elseif Time.dayState is "dusk">>setting<</if>> sun's radiance warms your face as you sit in the <<beasttypes>> embrace. You feel serene. <<stress -12>><<trauma -3>><<lstress>><<ltrauma>>
-		<<case "overcast">>
-			The grey skies above almost seem to call out to you, begging you to join them. <<stress -3>><<lstress>>
-		<<case "rain">>
-			The faint smell of damp grass, and the chorus of raindrops on the stone mixed with the <<beasttypes>> song briefly lull you to sleep. <<tiredness -20>><<ltiredness>>
-		<<case "snow">>
-			Despite the frigid air and the shine of distant fresh snow, you feel completely warm in the <<beasttypes>> embrace. <<stress -6>><<trauma -3>><<lstress>><<ltrauma>>
-		<<default>>
-			You sit snugly in the <<beasttypes>> embrace.
-	<</switch>>
-	<br><br>
-	<<bird_perch_options>>
-<<elseif $rng gte 71>>
-	<<run statusCheck("Kylar")>>
-	Your thoughts turn to
-	<<if random(1,2) is 1>>
-		<<switch $loveInterest.primary>>
-			<<case "Robin">>
-				Robin.
-				<<if C.npc.Robin.trauma gte 50>>
-					Your heart sinks as you remember how you left <<nnpc_him "Robin">>. <<stress 12>><<ggstress>>
-				<<elseif C.npc.Robin.dom gte 50>>
-					You wonder if <<nnpc_he "Robin">> will come looking for you.
-				<<else>>
-					You feel a brief sting of guilt as you wonder how <<nnpc_he "Robin">>'s doing.
-				<</if>>
-			<<case "Kylar">>
-				Kylar.
-				<<if _kylarStatus.includes("Rage")>>
-					You wonder if <<nnpc_he "Kylar">> will come looking for you. After mulling it over, you realise that "if" should be replaced with "when". <<stress 3>><<gstress>>
-				<<else>>
-					You hope <<nnpc_he "Kylar">> isn't being bullied in your absence.
-				<</if>>
-			<<case "Whitney">>
-				Whitney. You can only imagine what <<nnpc_he "Whitney">> would do if <<nnpc_he "Whitney">> found out about all this.
-			<<case "Sydney">>
-				Sydney.
-				<<if Time.weekDay is 1>>
-					<<nnpc_He "Sydney">>'s probably hard at work at the temple right now.
-				<<else>>
-					The thought of <<nnpc_his "Sydney">> smile makes you feel warm.
-				<</if>>
-			<<case "Eden">>
-				Eden. <<nnpc_He "Eden">> would probably hunt the Great Hawk for sport, especially if <<nnpc_he "Eden">> found out about what you've been doing.
-			<<case "Avery">>
-				Avery.
-				<<if Time.weekDay is 7 and $averyseen isnot 1>>
-					<<nnpc_He "Avery">>'s probably looking for you at this very moment, to ask you on another date.
-				<<elseif $averydate is 1>>
-					You have a date later, after all.
-				<<elseif C.npc.Avery.rage gte 20 and $averyragerevealed is 1>>
-					You're glad to be so far away, at least until <<nnpc_he "Avery">> calms down.
-				<<else>>
-					You laugh, picturing <<nnpc_him "Avery">> trying to save face explaining your current situation.
-				<</if>>
-			<<case "Alex">>
-				Alex, and the farm.
-				<<if $farm.aggro gte 60>>
-					You hope Remy's not causing <<nnpc_him "Alex">> too much trouble.
-				<<elseif $farm.tower_guard_unpaid gte 1>>
-					$farm.tower_guard hasn't been paid yet. You hope it's not a dealbreaker.
-				<<else>>
-					You hope the harvest is good.
-				<</if>>
-			<<case "Black Wolf">>
-				the forest, and your pack. You wonder if they miss you.
-			<<default>>
-				all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
-				<<if $monster is 1>>
-					<<nnpc_wife "Great Hawk">>
-				<<else>>
-					Great Hawk,
-				<</if>>
-				you feel untouchable. <<trauma -10>><<lltrauma>>
-		<</switch>>
-	<<elseif $loveInterest.secondary isnot "None">>
-		<<switch $loveInterest.secondary>>
-			<<case "Robin">>
-				Robin.
-				<<if C.npc.Robin.trauma gte 50>>
-					Your heart sinks as you remember how you left <<nnpc_him "Robin">>. <<stress 12>><<ggstress>>
-				<<elseif C.npc.Robin.dom gte 50>>
-					You wonder if <<nnpc_he "Robin">> will come looking for you.
-				<<else>>
-					You feel a brief sting of guilt as you wonder how <<nnpc_he "Robin">>'s doing.
-				<</if>>
-			<<case "Kylar">>
-				Kylar.
-				<<if _kylarStatus.includes("Rage")>>
-					You wonder if <<nnpc_he "Kylar">> will come looking for you. After mulling it over, you realise that "if" should be replaced with "when". <<stress 3>><<gstress>>
-				<<else>>
-					You hope <<nnpc_he "Kylar">> isn't being bullied in your absence.
-				<</if>>
-			<<case "Whitney">>
-				Whitney. You can only imagine what <<nnpc_he "Whitney">> would do if <<nnpc_he "Whitney">> found out about all this.
-			<<case "Sydney">>
-				Sydney.
-				<<if Time.weekDay is 1>>
-					<<nnpc_He "Sydney">>'s probably hard at work at the temple right now.
-				<<else>>
-					The thought of <<nnpc_his "Sydney">> smile makes you feel warm.
-				<</if>>
-			<<case "Eden">>
-				Eden. <<nnpc_He "Eden">> would probably hunt the Great Hawk for sport, especially if <<nnpc_he "Eden">> found out about what you've been doing.
-			<<case "Avery">>
-				Avery.
-				<<if Time.weekDay is 7 and $averyseen isnot 1>>
-					<<nnpc_He "Avery">>'s probably looking for you at this very moment, to ask you on another date.
-				<<elseif $averydate is 1>>
-					You have a date later, after all.
-				<<elseif C.npc.Avery.rage gte 20 and $averyragerevealed is 1>>
-					You're glad to be so far away, at least until <<nnpc_he "Avery">> calms down.
-				<<else>>
-					You laugh, picturing <<nnpc_him "Avery">> trying to save face explaining your current situation.
-				<</if>>
-			<<case "Alex">>
-				Alex, and the farm.
-				<<if $farm.aggro gte 60>>
-					You hope Remy's not causing <<nnpc_him "Alex">> too much trouble.
-				<<elseif $farm.tower_guard_unpaid gte 1>>
-					$farm.tower_guard hasn't been paid yet. You hope it's not a dealbreaker.
-				<<else>>
-					You hope the harvest is good.
-				<</if>>
-			<<case "Black Wolf">>
-				the forest, and your pack. You wonder if they miss you.
-			<<default>>
-				all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
-				<<if $monster is 1>>
-					<<nnpc_wife "Great Hawk">>,
-				<<else>>
-					Great Hawk,
-				<</if>>
-				you feel untouchable. <<trauma -10>><<lltrauma>>
-		<</switch>>
-	<<else>>
-		all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
-		<<if $monster is 1>>
-			<<nnpc_wife "Great Hawk">>,
-		<<else>>
-			Great Hawk,
-		<</if>>
-		you feel untouchable. <<trauma -10>><<lltrauma>>
-	<</if>>
-	<br><br>
-	<<bird_perch_options>>
-<<elseif $rng gte 61>>
-	The <<beasttype>> stops singing and rapidly turns <<bhis>> head, fixing <<bhis>> gaze on something out in the moor.
-	<<if $monster is 1>>
-		"See something. There." <<bHe>> points to something in the distance.
-	<<else>>
-		<<bHe>> must see something.
-	<</if>>
-	<<if $transformationParts.traits.sharpEyes isnot "disabled" or $bird.upgrades.telescope is 1>>
-		<<if $transformationParts.traits.sharpEyes isnot "disabled">>
-			Thanks to your superior eyesight, you see it too.
-		<<else>>
-			You look through your telescope, and see it too.
-		<</if>>
-		<<switch random(1,6)>>
-			<<case 1>>
-				<<endevent>><<beastNEWinit 3 fox>>
-				A trio of <<beastsplural>> tumble over and wrestle with each other on top of a hillock.
-				<<endevent>><<npc "Great Hawk">>
-				<<if $monster is 1>>
-					The <<beasttype>> lets out a small chuckle,
-				<<else>>
-					The <<beasttype>> shakes <<bhis>> head,
-				<</if>>
-				and returns to singing.
-			<<case 2>>
-				A large group of people are just barely visible on the horizon, headed towards the direction of the town.
-				<<if $monster is 1>>
-					"Wingless like groups. I prefer just <<wife>>," <<bhe>> says,
-				<<else>>
-					<<bHe>> nuzzles your cheek,
-				<</if>>
-				and returns to singing.
-			<<case 3>>
-				<<if $hallucinations gte 2 and $tentacledisable is "f">>
-					A small, purple tentacle slithers from the ground a great distance away. Just as quickly as it showed up, it disappears back into the earth.
-					<<if $monster is 1>>
-						"Don't like those. Make vision all fuzzy."
-					<<else>>
-						The <<beasttype>> lets out a brief screech.
-					<</if>>
-					<<bHe>> goes back to singing after a few minutes.
-				<<else>>
-					At least, you thought you did. You swear something was there, but you must have just missed it.
-					<<if $monster is 1>>
-						"Did you see it? Small, purple slimy thing. I hate them." <<bHe>> holds you a little tighter,
-					<<else>>
-						The <<beasttype>> lets out a brief screech,
-					<</if>>
-					and goes back to singing after a few minutes.
-				<</if>>
-			<<case 4>>
-				You see a shifty-looking person wearing all black with a hood, waiting behind a hillock. You blink a few times, and aren't sure when they disappeared. The <<beasttype>> resumes <<bhis>> song.
-			<<case 5>>
-				You see a glint in the distance, something very shiny. After a moment, you realise it's a reflective piece of rubbish.
-				<<if $monster is 1>>
-					"Want to go get it," <<bHe>> says, before ruffling <<bhis>> own feathers. "But I'm comfortable."
-				<<else>>
-					The <<beasttype>> shrieks,
-				<</if>>
-				but resumes <<bhis>> song anyways.
-			<<case 6>>
-				You see a person in the distance, completely naked.
-				<<if $tentacledisable is "f" and $plantdisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
-					<<Plant_details>> are scattered throughout their hair, and writhing vines surround them. At first, you think they're being attacked, but they seem to be in control of them.
-					<br><br>
-					<<if $monster is 1>>
-						"Odd creatures," the <<beasttype>> says. "As much moor as they are wingless."
-					<<else>>
-						The <<beasttype>> shakes <<bhis>> head quizzically.
-					<</if>>
-				<<else>>
-					They don't seem bothered by their exposure<<if $weather is "rain" or $weather is "snow">>, nor the $weather<</if>>.
-					<<if $monster is 1>>
-						"Odd wingless," the <<beasttype>> says. "Most prefer covering with second plumage."
-					<<else>>
-						The <<beasttype>> shakes <<bhis>> head quizzically.
-					<</if>>
-				<</if>>
-				<<bHe>> resumes <<his>> song after a few seconds.
-			<<default>>
-		<</switch>>
-	<<else>>
-		You can't quite make out whatever it is. After some time, <<bhe>> calms down, and resumes <<bhis>> song.
-	<</if>>
-	<br><br>
-	<<bird_perch_options>>
-<<elseif $rng gte 51>>
-	The <<beasttype>> continues singing, taking pauses every few minutes.
-	<<if $rng is 51>>
-		At one point, <<bhe>> seems to have trouble starting again.
-		<<if $monster is 1>>
-			<<bHe>> coughs briefly to clear <<bhis>> throat, and resumes without any further issue.
-		<<else>>
-			<<bHe>> starts moving <<bhis>> head back and forth, and disgorges what appears to be a small bone from <<bhis>> throat. <<bHe>> resumes singing without any further issues.
-		<</if>>
-	<</if>>
-	<br><br>
-	<<bird_perch_options>>
-<<elseif $rng gte 41>>
-	The <<beasttype>> stops singing, and
-	<<if $monster is 1>>
-		wraps <<bhis>> arms around you.
-		"<<print either(
-			"I love you.",
-			"Thank you for staying with me.",
-			"Used to be afraid of being alone. Never have to fear again.",
-			"You are perfect.",
-			"Mine."
-		)>>"
-	<<else>>
-		rests <<bhis>> head on your shoulder.
-	<</if>>
-	<br><br>
+			You point to the tattoo and try to explain what it means.
+			<<if $speech_attitude is "meek">>
+				"It's sort of special," you say. "It means I'm yours."
+			<<elseif $speech_attitude is "bratty">>
+				"Can you even read it?" you ask. "It says something about you." 
+			<<else>>
+				"This tattoo is special. I got it because of you," you explain.
+			<</if>>
+			<br><br>
 
-	<<if $bird.activity is "sing" or $bird.activity is "groom">>
-		<<link [[Kiss|Bird Perch Monster Kiss]]>><<npcincr "Great Hawk" love 1>><</link>><<glove>><<kissvirginitywarning>><<NPCvirginitywarning "Great Hawk" "kiss">><br>
+			The <<beasttype>> listens to your explanation, head tilted to the side in curiosity. "Don't quite understand the meaning. But I trust <<wife>>."
+		<</if>>
+	<<else>>
+		You try to explain to the <<beasttype>> why trying to groom the ink from your skin won't work. The <<beasttype>> stops preening you while you speak, listening to the sound of your voice, but you doubt <<bhe>> understood a word.
 	<</if>>
-	<<bird_perch_options>>
-<<elseif $rng gte 31>>
-	The <<beasttype>>'s voice greets the moor, as a hearty <<if Time.dayState is "dawn">>good morning<<elseif Time.dayState is "dusk">>good evening<<else>>greeting<</if>> call to all of its denizens. Or maybe <<bhe>>'s just bragging about you.
-	<br><br>
-	<<bird_perch_options>>
-<<elseif $rng gte 21>>
-	The <<beasttype>>'s song continues. From a great distance, <<bhe>> receives a reply song. The two sing back and forth to each other, until the other voice goes silent.
-	<<if $monster is 1>>
-		"<<print either(
-			"Shared knowledge of the skies and clouds. Always valuable.",
-			"Had to tell them I was already taken.",
-			"Told tales of our best hunts.",
-			"Stories from others, they always excite me.",
-			"Searching for their mate. We should look out."
-		)>>"
-	<</if>>
-	<br><br>
-	<<bird_perch_options>>
-<<elseif $rng gte 11>>
-	The moor lies silent, with only the <<beasttypes>> song breaking through.
-	<br><br>
-	<<bird_perch_options>>
-<<elseif $rng gte 1>>
-	The <<beasttype>> rests <<bhis>> voice.
-	<br><br>
-	<<bird_perch_options>>
+	<<bHe>> returns to <<bhis>> song, and so you return to basking.
 <<else>>
-	<span class="teal">There's something familiar about the <<beasttypes>> melody,</span> but you can't quite put your <<if $harpy gte 6>>wing<<else>>finger<</if>> on it.
-	<br><br>
-	<<bird_perch_options>>
+	You flick <<bhim>> on the head.
+	<<if $skin[_bodypart].special is "Great Hawk">>
+		<<if $monster is 1>>
+			<<if $speech_attitude is "meek">>
+				"Sorry, but this one's special. It means I'm yours," you say.
+			<<elseif $speech_attitude is "bratty">>
+				"Can you even read it?" you ask. "It says something about you." 
+			<<else>>
+				"This one is special. It's about you," you explain.
+			<</if>>
+			<br><br>
+
+			The <<beasttype>> listens to your explanation, head tilted to the side in curiosity. "Don't quite understand the meaning. But I trust <<wife>>."
+		<<else>>
+			You try to explain to the <<beasttype>> that the writing is about <<bhim>>. <<bHe>> stops preening you while you speak, listening to the sound of your voice, but you doubt <<bhe>> understood a word.
+		<</if>>
+	<<else>>
+		<<if $monster is 1>>
+			"Sorry, didn't know it was a sensitive spot," <<bhe>> says while rubbing <<bhis>> forehead.
+		<<else>>
+			<<bHe>> shakes it, before returning to <<bhis>> song.
+		<</if>>
+	<</if>>
 <</if>>
+<br><br>
+<<bird_perch_options>>
 
 :: Bird Tower Bask Leave
 <<effects>>
