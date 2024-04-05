@@ -3772,10 +3772,10 @@ Renderer.CanvasModels["main"] = {
 				return ["worn_handheld_acc"]
 			},
 		},
-		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld', {
+		"handheld_back": genlayer_clothing_back_img('handheld',{
 			z: ZIndices.over_head_back
 		}),
-		"handheld_back": genlayer_clothing_back_img('handheld',{
+		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld', {
 			z: ZIndices.over_head_back
 		}),
 		/***
