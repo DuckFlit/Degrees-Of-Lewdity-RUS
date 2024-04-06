@@ -1094,7 +1094,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 	<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 	<<bird_hunt_return>>
-<<elseif $bird.state is "home" and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
+<<elseif $bird.state is "home" and !["rest","brood","sleep"].includes($bird.activity) and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
 	<<npc "Great Hawk">>
 	<<if $bird.injured gt 1>>
 		The <<beasttype>> slowly rises from
@@ -1491,9 +1491,9 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<span class="red">You're too exhausted to clean the tower.</span>
 		<<else>>
 			<<if $worn.handheld.name is "feather duster" or $bird.duster is true or ($bird.upgrades.wardrobe is 1 and getOwnedClothingCount(12, "handheld") gte 1)>>
-				<<edenicon "broom">><<link [[Dust the tower (0:30)|Bird Tower Tidy]]>><<tiredness 4>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 200>><<bird_pass 30>><</link>><<gtiredness>><<ghousekeeping 200 "silent">>
+				<<edenicon "broom">><<link [[Dust the tower (0:30)|Bird Tower Tidy]]>><<tiredness 3>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 2 200>><<bird_pass 30>><</link>><<gtiredness>><<ghousekeeping 200 "silent">>
 			<<else>>
-				<<edenicon "broom">><<link [[Tidy up the tower (1:00)|Bird Tower Tidy]]>><<tiredness 8>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 1 100>><<bird_pass 60>><</link>><<ggtiredness>><<ghousekeeping 100 "silent">>
+				<<edenicon "broom">><<link [[Tidy up the tower (1:00)|Bird Tower Tidy]]>><<tiredness 6>><<if !$daily.birdHousekeepingSyndrome>><<bird_stockholm 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<set $daily.birdHousekeepingSyndrome to true>><</if>><<housekeeping 2 100>><<bird_pass 60>><</link>><<ggtiredness>><<ghousekeeping 100 "silent">>
 			<</if>>
 			<<if !$daily.birdHousekeepingSyndrome>><<gbirdstockholm>><<glove>><<gdom>><</if>>
 		<</if>>
@@ -1507,6 +1507,10 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 	<<mooricon "nest">><<link [[Sleep in the nest|Bird Tower Bed]]>><</link>>
 	<br>
+	<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer))>>
+		<<mooricon "eggs_heart">><<link [[Brood on your eggs (0:30)|Bird Tower Brood]]>><<set $phase to 1>><<bird_pass 30>><<transform bird 1>><<trauma -3>><</link>><<ltrauma>>
+		<br>
+	<</if>>
 	<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
 		<<ind>><<link [[Check on your children|Childrens Home]]>><<set $exitPassage to $passage>><</link>>
 		<br>
@@ -1832,7 +1836,7 @@ You're still unable to move, which allows the <<beasttype>> to keep comforting y
 <<effects>>
 
 You rifle through the wood and detritus, searching for anything that could help you escape.
-<<if $bird.clean lte 9>>
+<<if $bird.clean lte 5>>
 	The tower is filthy, and your searching kicks up dust and debris. You cough. <<stress 6>><<gstress>>
 	<br><br>
 <</if>>
@@ -3586,11 +3590,12 @@ You bring your attentive touch down towards <<bhis>> groin.
 <<deviancy1>>
 
 <<if $deviancy gte 15>>
-	<<link [[Take it further|Bird Tower Perch Sex]]>><<set $birdPerch to 1>><<set $sexstart to 1>><<set $phase to 2>><<transform bird 1>><<npcincr "Great Hawk" love 1>><</link>><<deviant2>><<glove>><br>
+	<<link [[Take it further|Bird Tower Perch Sex]]>><<set $birdPerch to 1>><<set $sexstart to 1>><<set $phase to 2>><<transform bird 1>><<npcincr "Great Hawk" love 1>><</link>><<deviant2>><<glove>>
+	<br>
 <<else>>
 	<span class="blue">You aren't deviant enough to take things further.</span>
+	<br>
 <</if>>
-<br>
 <<link [[Stay on the perch|Bird Tower Perch]]>><<endevent>><</link>>
 <br>
 <<link [[Go back inside|Bird Tower]]>><<endevent>><</link>>
@@ -5109,7 +5114,7 @@ You add some more shiny things to the shelter tarp above you, then move to your 
 <br>
 
 :: Bird Tower Build Decor 4
-<<effects>>
+<<effects>><<earnFeat "Terror's Equal">>
 <<npc "Great Hawk">><<person1>>
 You pile up your hunting trophies once more. There's a lot to go through.
 <br><br>
@@ -5225,7 +5230,7 @@ It looks cute.
 <</if>>
 <br><br>
 
-<<if $bird.state is "home" and ["sing", "groom"].includes($bird.activity)>>
+<<if $bird.state is "home" and ["sing", "groom", "brood"].includes($bird.activity)>>
 	<<npc "Great Hawk">><<person1>>
 	<<if C.npc["Great Hawk"].love gte 15>>
 		<<if C.npc["Great Hawk"].dom gte 50>>
@@ -5831,7 +5836,7 @@ You both land back on the perch.
 The <<beasttype>> returns to <<bhis>> usual spot on the perch.
 <br><br>
 
-<<link [[Next|Bird Tower Perch]]>><<set $bird.timer to 30>><<endevent>><</link>>
+<<link [[Next|Bird Tower Perch]]>><<set $bird.timer to 60>><<endevent>><</link>>
 <br>
 
 :: Bird Tower Mating Ritual Start
@@ -6201,7 +6206,7 @@ You look through your telescope.
 			It's too dark to see much of anything, but you see a single light in the distance. A campfire. A group of tents sit near, and a small crowd sits around the fire, laughing. You wonder what they're talking about. <<stress -3>><<lstress>>
 		<</addinlineevent>>
 		<<addinlineevent "telescope_dark_camp_2" 1>>
-			It's too dark to see much of anything, but you see a single light in the distance. A campfire. A single tent sits near. Through backlit silhouettes, you see a figure bouncing up and down. A pair of arms pull them back down. <<arousal 8>><<garousal>>
+			It's too dark to see much of anything, but you see a single light in the distance. A campfire. A single tent sits near. Through backlit silhouettes, you see a figure bouncing up and down. A pair of arms pull them back down. <<arousal 500>><<garousal>>
 		<</addinlineevent>>
 	<</if>>
 <<else>>
@@ -6240,14 +6245,14 @@ You look through your telescope.
 		You spot a <<person>> and a <<person2>><<person>> in the middle of the moor. They're laughing about something. Suddenly, the <<person1>><<person>> pushes <<himself>> against the <<person2>><<person>>, who responds by pulling <<person1>><<him>> to the ground.
 		<br><br>
 
-		They start to remove each other's clothes. <<if $weather is "rain">>They both get covered in mud pretty quickly, but neither seem to mind.<</if>> They begin to grind against each other, and it isn't long before they're having intercourse out in the open. <<arousal 50>><<garousal>>
+		They start to remove each other's clothes. <<if $weather is "rain">>They both get covered in mud pretty quickly, but neither seem to mind.<</if>> They begin to grind against each other, and it isn't long before they're having intercourse out in the open. <<arousal 500>><<garousal>>
 	<</addinlineevent>>
 	<<addinlineevent "telescope_people_rape" 1>>
 		<<generate1>><<generatev2>>
 		You spot a <<person>> and a <<person2>><<person>> in the middle of the moor. The <<person>> is struggling in the <<person1>><<persons>> grasp. Suddenly, the <<person1>><<person>> pushes <<person2>><<him>> down and rips away <<his>> clothing.
 		<br><br>
 
-		<<if $weather is "rain">>They both get covered in mud.<</if>> The <<person1>><<person>> begins to have <<his>> way with <<his>> victim. There's nothing you could hope to do in time. <<trauma 3>><<arousal 50>><<gtrauma>><<garousal>>
+		<<if $weather is "rain">>They both get covered in mud.<</if>> The <<person1>><<person>> begins to have <<his>> way with <<his>> victim. There's nothing you could hope to do in time. <<trauma 3>><<arousal 500>><<gtrauma>><<garousal>>
 	<</addinlineevent>>
 	<<addinlineevent "telescope_animals_1" 1>>
 		<<beastNEWinit 3 fox>>
@@ -6337,7 +6342,7 @@ You look up to the sky.
 					It feels as though someone has made a horrible mistake, and something has been moved from its intended position. You feel dizzy, yet warm.
 					<br><br>
 
-					When you try to focus again, the pattern is gone. <<arousal 200>><<awareness 7>><<ggarousal>><<ggawareness>>
+					When you try to focus again, the pattern is gone. <<arousal 2000>><<awareness 7>><<ggarousal>><<ggawareness>>
 				<</if>>
 			<<else>>
 				<<if $rng gte 50>>
@@ -6646,7 +6651,7 @@ You take the unfertilised egg<<if $eggLayNumber gt 1>>s<</if>> from the nest. <<
 	You spread your legs and put your hands aside, letting <<your_bird_text>> help.
 	<br><br>
 
-	<<bHe>> starts to gently push on your tummy, feeling for the eggs inside of you. You involuntarily moan as <<bhe>> pushes right on your oviduct. <<bHe>> continues gently pushing down your abdomen, helping the eggs along. <<arousal 200>><<ggarousal>>
+	<<bHe>> starts to gently push on your tummy, feeling for the eggs inside of you. You involuntarily moan as <<bhe>> pushes right on your oviduct. <<bHe>> continues gently pushing down your abdomen, helping the eggs along. <<arousal 8000>><<gggarousal>>
 <<else>>
 	You push <<bhim>> away, and start to breathe heavily.
 <</if>>
@@ -6654,6 +6659,9 @@ You take the unfertilised egg<<if $eggLayNumber gt 1>>s<</if>> from the nest. <<
 <<set [_eggnant, _eggnantGenital] to getPregnancyObject("pc", true)>>
 <<set _eggnantGenital to _eggnantGenital is "vagina" ? "cervix" : "ass">>
 
+<<if $arousal gte $arousalmax>>
+	<<orgasm>>
+<</if>>
 You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd">$eggLayNumber eggs</span> pass through your _eggnantGenital and land in your nest<<else>><span class="lewd">an egg</span> pass through your _eggnantGenital and land in your nest<</if>>. You're filled with a sense of maternal bliss.
 <br><br>
 
@@ -6664,7 +6672,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 <</if>>
 <<if playerIsPregnant() and _eggnant.type is "hawk">>
 	<<if $monster is 1>>
-		<<bHe>> gently picks up <<if $eggLayNumber gt 1>>one of the eggs<<else>>the egg<</if>> and smells it. <<bHis>> eyes light up.
+		<<bHis>> eyes light up.
 		<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
 			"I'm so happy, <<wife>>. <span class="lewd">We have more children</span>!" <<bHe>> sweeps you up in a hug, <<if $syndromebird gte 1>>which you can't help but return<<else>>which you're too disoriented to resist<</if>>.
 		<<else>>
@@ -6677,6 +6685,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 		<<bHe>> continues blustering, before repeatedly headbutting you. <<bHe>> seems excited.
 	<</if>>
 	<<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+	<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 	<<if $syndromebird gte 1>>
 		You're flooded with emotion. <<trauma -12>><<lltrauma>>
 	<</if>>
@@ -6704,7 +6713,6 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<set $harpyEggsPrevent to 28>>
 <<else>>
 	<<if $monster is 1>>
-		<<bHe>> gently picks up <<if $eggLayNumber gt 1>>one of the eggs<<else>>the egg<</if>>.
 		<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
 			"Don't worry, <<wife>>. No more children yet, not from <<if $eggLayNumber gt 1>>these eggs<<else>>this egg<</if>>."
 		<<else>>
@@ -6786,6 +6794,147 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 <<link [[Next|Bird Tower Bed]]>><<endevent>><</link>>
 <br>
 
+:: Bird Tower Brood
+<<effects>>
+<<npc "Great Hawk">>
+<<set _eggCount to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
+<<if $phase is 1>>
+	<<if ["rest","brood","sleep"].includes($bird.activity)>>
+		<<set $birdBrood to true>>
+		You climb into the nest next to <<your_bird_text>>.
+		<<if $bird.activity is "brood">>
+			<<bHe>> opens one eye, and <<if $monster is 1>>smiles at you before <<bhe>> <</if>>makes room. The two of you huddle around your egg<<if _eggCount gte 2>>s<</if>>.
+		<<else>>
+			<<bHe>> stirs lightly.
+		<</if>>
+	<<else>>
+		You climb into the nest and sit cross-legged, carefully placing
+		<<switch _eggCount>>
+			<<case 1>>your egg
+			<<case 2>>both of your eggs
+			<<default>>all <<number _eggCount>> of your eggs
+		<</switch>>
+		in the gap.
+	<</if>>
+<<else>>
+	You continue brooding with your egg<<if _eggCount gte 2>>s<</if>>.
+<</if>>
+<<if $bird.state is "home" and ["rest","brood","sleep"].includes($bird.activity) and !$birdBrood>>
+	<<set $birdBrood to true>>
+	After a short while, <<your_bird_text>> hops into the nest next to you.
+	<<switch $bird.activity>>
+		<<case "rest">><<bHe>> snuggles up next to you to rest.
+		<<case "brood">><<bHe>> huddles around the egg<<if _eggCount gte 2>>s<</if>> with you.
+		<<case "sleep">><<bHe>> curls up next to you and starts to drift off to sleep.
+	<</switch>>
+<</if>>
+<br><br>
+
+<<set _eggsNearHatching to 0>>
+<<set _eggsCloseHatching to 0>>
+<<set _eggsHalfHatching to 0>>
+<<set _eggsFarHatching to 0>>
+<<run Object.values($children).forEach(child => {
+	const hatchTime = new DateTime(child.eggTimer);
+	if (child.location === "tower" && Time.date.timeStamp >= child.eggTimer) {
+		if (!V.eggsHatched) V.eggsHatched = []
+		V.eggsHatched.push(child.childId);
+		T.readyToHatch to true;
+	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 1) {
+		T.eggsNearHatching ++;
+	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 6) {
+		T.eggsCloseHatching ++;
+	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 11) {
+		T.eggsOverHalfHatching ++;
+	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 14) {
+		T.eggsHalfHatching ++;
+	} else if (child.location === "tower") {
+		T.eggsFarHatching ++;
+	}
+})>>
+<<if _eggsNearHatching>>
+	<<if _eggCount gte 2>>
+		<span class="teal"><<Number _eggsNearHatching>> of your eggs <<if _eggsNearHatching gte 2>>are<<else>>is<</if>> very close to hatching!</span>
+	<<else>>
+		<span class="teal">Your egg is very close to hatching!</span>
+	<</if>>
+<</if>>
+<<if _eggsCloseHatching>>
+	<<if _eggCount gte 2>>
+		<span class="blue"><<Number _eggsCloseHatching>> of your eggs will hatch in a matter of days.</span>
+	<<else>>
+		<span class="blue">Your egg is will hatch in a matter of days.</span>
+	<</if>>
+<</if>>
+<<if _eggsOverHalfHatching>>
+	<<if _eggCount gte 2>>
+		<span class="pink"><<Number _eggsOverHalfHatching>> of your eggs <<if _eggsOverHalfHatching gte 2>>are<<else>>is<</if>> over half way to their expected hatching time.</span>
+	<<else>>
+		<span class="pink">Your egg is over half way to its expected hatching time.</span>
+	<</if>>
+<</if>>
+<<if _eggsHalfHatching>>
+	<<if _eggCount gte 2>>
+		<span class="purple"><<Number _eggsHalfHatching>> of your eggs <<if _eggsHalfHatching gte 2>>are<<else>>is<</if>> about half way ready to hatch.</span>
+	<<else>>
+		<span class="purple">Your egg is about half way ready to hatch.</span>
+	<</if>>
+<</if>>
+<<if _eggsFarHatching>>
+	<<if _eggCount gte 2>>
+		<span class="red"><<Number _eggsFarHatching>> of your eggs will still take a long time to hatch.</span>
+	<<else>>
+		<span class="red">Your egg will still take a long time to hatch.</span>
+	<</if>>
+<</if>>
+<br><br>
+
+<<if _readyToHatch>>
+	You hear a tiny crackle from
+	<<if _eggCount gte 2>>
+		<<if V.eggsHatched.length gte 2>>
+			<<number V.eggsHatched.length>> of your eggs. <span class="green">They're hatching!</span>
+		<<else>>
+			one of your eggs. <span class="green">It's hatching!</span>
+		<</if>>
+	<<else>>
+		your egg. <span class="green">It's hatching!</span>
+	<</if>>
+	<br><br>
+
+	<<link [[Next (0:30)|Bird Tower Hatching]]>><<bird_pass 30>><<set $phase to 1>><</link>>
+	<br>
+<<elseif $bird.state is "hunting" and $bird.timer lte 0 and !$possessed>>
+	<<endevent>>
+	<<npc "Great Hawk">>
+	You hear the flap of wings as the <<beasttype>> returns.
+
+	<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
+	<<unset $birdBrood>>
+	<<bird_hunt_return>>
+<<else>>
+	<<endevent>>
+	<<if $bird.state is "home" and !["rest","brood","sleep"].includes($bird.activity) and !$birdBrood and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
+		<<npc "Great Hawk">>
+		<<if $bird.injured gt 1>>
+			<<set $bird.timer to 600>>
+			You see <<your_bird_text>> sitting at the edge of the perch, looking out at the moor wistfully. It seems <<bhe>> wants to hunt, but <<bhis>> injury is still stopping <<bhim>>.
+		<<elseif $bird.injured is 1>>
+			<<set $bird.timer to random(30, 60)>>
+			<<set $bird.state to "hunting">>
+			You watch <<your_bird_text>> leap from the perch. It seems <<bhe>> wants to hunt, but didn't want to disturb you. <span class="green"><<bHis>> wing must be fully healed.</span>
+		<<else>>
+			<<set $bird.timer to random(30, 60)>>
+			<<set $bird.state to "hunting">>
+			You watch <<your_bird_text>> leap from the perch. It seems <<bhe>> wants to hunt, but didn't want to disturb you.
+		<</if>>
+		<br><br>
+	<</if>>
+	<<link [[Keep brooding (0:30)|Bird Tower Brood]]>><<bird_pass 30>><<transform bird 1>><<trauma -3>><</link>><<ltrauma>>
+	<br>
+	<<link [[Get up|Bird Tower]]>><<unset $birdBrood>><</link>>
+	<br>
+<</if>>
 
 :: Bird Tower Hatching
 <<effects>>
@@ -6799,8 +6948,10 @@ You watch as the egg<<if $eggsHatched.length gte 2>>s continue<<else>> continues
 		<</if>>
 	<<else>>
 		<<switch $bird.activity>>
+			<<case "brood">>
+				<<your_bird_text "cap">> gives the egg<<if $eggsHatched.length gte 2>>s<</if>> some room, but looks like <<bhes>> barely managing to contain <<bhis>> excitement.
 			<<case "sleep" "rest">>
-				<<your_bird_text "cap">> stirs, <<bhis>> eyes slowly opening. <<bHe>> barely has time to process what's happening, but quickly stands up and looks over the eggs with excitement.
+				<<your_bird_text "cap">> stirs, <<bhis>> eyes slowly opening. <<bHe>> barely has time to process what's happening, but quickly stands up and looks over the egg<<if $eggsHatched.length gte 2>>s<</if>> with excitement.
 			<<case "bathe">>
 				<<your_bird_text "cap">> leaps from the rainwater pool and rushes over. <<bHe>> barely has time to process what's happening.
 			<<default>>

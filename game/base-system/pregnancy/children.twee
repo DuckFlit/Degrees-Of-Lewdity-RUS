@@ -584,7 +584,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 
 /*args[0] - location*/
 <<widget "childSelectRandom">>
-    <<set $childSelected to Object.values($children).filter(child => !_args[0] or child.location === _args[0]).random()>>
+	<<set $childSelected to Object.values($children).filter(child => !_args[0] or child.location === _args[0]).random()>>
 <</widget>>
 
 <<widget "childViewerDisplay">>
@@ -1095,8 +1095,17 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				<<childHe>>'s sound asleep while cuddled up against <<your_bird_text>>.
 				<<if $children[_args[0]].localVariables.event>>
 					<br>
-					<<link [[Cuddle up to (0:30)|Children Activity Events]]>><<pass 30>><<set $childActivityEvent to {event:"cuddleAndNapHawk", childid:_args[0]}>><</link>> |
+					<<link [[Cuddle up to (0:30)|Children Activity Events]]>>
+						<<set _otherChildrenIds to []>>
+						<<run Object.values($children).forEach(child => {
+							if (child.location is $location and child.localVariables.activity is "sleepingWithGreatHawk" and child.childId isnot T.args[0]) {
+								T.otherChildrenIds.push(child.childId);
+							}
+						})>>
+						<<pass 30>><<set $childActivityEvent to {event:"cuddleAndNapHawk", childid:_args[0], otherChildrenIds:_otherChildrenIds}>>
+					<</link>> |
 				<</if>>
+				<<endevent>>
 			<<case "crying">>
 				<<childHe>>'s distressed and <<childcry>>.
 				<<if $children[_args[0]].localVariables.event>>

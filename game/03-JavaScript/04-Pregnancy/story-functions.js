@@ -46,7 +46,7 @@ function playerBellySize(pregnancyOnly = false) {
 				if (!vpregnancy.gaveBirth) maxSize += 20 + Math.clamp(vpregnancy.fetus.length / 2, 1, 4);
 				break;
 			case "hawk":
-				if (!vpregnancy.gaveBirth) maxSize += 7 + Math.clamp(vpregnancy.fetus.length, 1, 3);
+				if (!vpregnancy.gaveBirth) maxSize += 12 + Math.clamp(vpregnancy.fetus.length, 1, 3);
 				break;
 		}
 		switch (apregnancy.type) {
@@ -60,7 +60,7 @@ function playerBellySize(pregnancyOnly = false) {
 				if (!apregnancy.gaveBirth) maxSize += 20 + Math.clamp(apregnancy.fetus.length / 2, 1, 4);
 				break;
 			case "hawk":
-				if (!apregnancy.gaveBirth) maxSize += 7 + Math.clamp(apregnancy.fetus.length, 1, 3);
+				if (!apregnancy.gaveBirth) maxSize += 12 + Math.clamp(apregnancy.fetus.length, 1, 3);
 				break;
 		}
 		// The '+ 5' inflates the pregnancy belly size, meaning that the early stages of pregnancy will have no belly size increase due to it being reduced by the '- 5'

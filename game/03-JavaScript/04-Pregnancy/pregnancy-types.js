@@ -587,6 +587,8 @@ window.pregnancyGenerator = {
 
 			const featherColour = ["white", "brown"];
 
+			const eggTimer = new DateTime(Time.date).addHours(random(24 * 23, 24 * 30)).timeStamp;
+
 			for (let i = 0; i < count; i++) {
 				// Hard coded limit
 				if (limit + result.fetus.length >= 1000) return;
@@ -610,7 +612,7 @@ window.pregnancyGenerator = {
 					hairColour: featherColour[random(0, featherColour.length - 1)],
 				});
 				// Hours
-				baby.eggTimer = new DateTime(Time.date).addHours(random(24 * 26, 24 * 32)).timeStamp;
+				baby.eggTimer = eggTimer
 				result.fetus.push(baby);
 				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
 			}

@@ -201,7 +201,11 @@
 
 <<widget "bird_hunt_return">>
 	<<bird_loot_select>>
-	<<set $bird.timer to random(30, 90)>>
+	<<if $syndromebird isnot 1>>
+		<<set $bird.timer to random(30, 90)>>
+	<<else>>
+		<<set $bird.timer to random(45, 120)>>
+	<</if>>
 	<<set $bird.state to "home">>
 	<<switch _bird_loot_select>>
 	<<case "lurker">>
@@ -501,7 +505,7 @@
 		<<set $bird.activity to "sleep">>
 	<<elseif Time.hour lte 9>>
 		<<set $bird.activity to "sing">>
-	<<elseif Time.hour lte 12>>
+	<<elseif Time.hour lte 12 and !$daily.birdWash>>
 		<<set $bird.activity to "bathe">>
 	<<elseif Time.hour lte 15>>
 		<<if $bird.injured gt 1>>
@@ -607,7 +611,7 @@
 
 		<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 		<<bird_hunt_return>>
-	<<elseif $bird.state is "home" and $bird.activity isnot "sleep" and $bird.activity isnot "sing" and $bird.activity isnot "groom" and $bird.timer lte 0 and $bird.injured is 0>>
+	<<elseif $bird.state is "home" and !["rest","brood","sleep","sing","groom"].includes($bird.activity) and $bird.timer lte 0 and $bird.injured is 0>>
 		<<endevent>>
 		<<npc "Great Hawk">>
 		<<if $monster is 1>>
@@ -751,7 +755,7 @@
 
 		<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 		<<bird_hunt_return>>
-	<<elseif $bird.state is "home" and $bird.activity isnot "sleep" and $bird.activity isnot "sing" and $bird.activity isnot "groom" and $bird.timer lte 0 and $bird.injured is 0>>
+	<<elseif $bird.state is "home" and !["rest","brood","sleep","sing","groom"].includes($bird.activity) and $bird.timer lte 0 and $bird.injured is 0>>
 		<<endevent>>
 		<<npc "Great Hawk">>
 		<<if $monster is 1>>
@@ -1589,7 +1593,7 @@
 	<<for _valuable, _amount range $bird.materials.valuables>>
 		<<if _amount lt 1>><<continue>><</if>>
 		<<set $_valuablesMessage to true>>
-		- _amount _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
+		<<ind>> _amount _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
 		<<capture _valuable _amount>>
 			<<link "Take one">>
 				<<if _valuable is "antique bullet">>
@@ -2459,6 +2463,7 @@
 				<br><br>
 
 				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+				<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 				<<set $bird.eggReact to $eggLayNumber>>
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy "tower" "tower">>
@@ -2468,6 +2473,7 @@
 				<br><br>
 
 				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s<</if>>.
+				<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 				/* Might be best changing the location variable here */
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy $location "inventory">>

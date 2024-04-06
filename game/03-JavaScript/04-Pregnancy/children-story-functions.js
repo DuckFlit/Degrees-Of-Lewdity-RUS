@@ -265,7 +265,7 @@ function hawkChildActivity(childId) {
 				"sleeping",
 				"sleeping",
 				"sleeping",
-				"crying",				
+				"crying",
 			]);
 		}
 	}

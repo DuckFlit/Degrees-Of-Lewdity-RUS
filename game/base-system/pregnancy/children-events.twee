@@ -681,7 +681,7 @@ You leave behind $donatedMilk bottles of milk for your children with one of Bail
 		You sit next to <<childname>> and grab ahold of the $pupToy. <<childHe>> growls as you gently pull on the makeshift toy and tugs it back. You continue tugging the $pupToy back and forth before finally letting <<childhim>> win. <<childname>> yips joyfully as <<childhe>> claims <<childhis>> prize and resumes playing with it, tail wagging with excitement.
 		<br><br>
 		Another pup, noticing your game, approaches <<childname>> and attempts to grab the $pupToy. You keep a close eye on the two of them, but thankfully,  <<childname>>'s playmate doesn't seem interested in actually stealing the toy from <<childhim>>. You smile as the pups play tug-of-war together before standing up and leaving them to their own devices.
-        <<set $children[$childActivityEvent.childid].localVariables.activity to "playing">>
+		<<set $children[$childActivityEvent.childid].localVariables.activity to "playing">>
 	/*Hawk Specific*/
 	<<case "sleepingStrokeHawk">>
 		You climb into the nest with the slumbering <<childtype>>, and stroke <<childhis>>
@@ -692,7 +692,32 @@ You leave behind $donatedMilk bottles of milk for your children with one of Bail
 		<</if>>
 		<<childHe>> trills and pushes into your caressing hand. You spend a few moments together before rising to your feet. <<lstress>><<stress -5>>
 	<<case "cuddleAndNapHawk">>
-		<<your_bird_text "cap">> nuzzles you as you lie down beside <<bhim>> and <<childname>>. The pair adjust to make room for you, and you're soon snuggled close together. You enjoy this comfortable moment for a while, before rising to your feet. <<ltiredness>><<tiredness -6>><<lstress>><<stress -5>>
+		<<npc "Great Hawk">>
+		<<if $childActivityEvent.otherChildrenIds.length>>
+			<<for _otherChildId range $childActivityEvent.otherChildrenIds>>
+				<<childInteratedWith _otherChildId>>
+				<<set $children[_otherChildId].localVariables.event to false>>
+			<</for>>
+			<<set _otherChildren to $childActivityEvent.otherChildrenIds.length>>
+		<</if>>
+		<<your_bird_text "cap">> nuzzles you as you lie down beside 
+		<<if _otherChildren gte 2>>
+			<<bhim>>, <<childname>>, <<childrenNames $childActivityEvent.otherChildrenIds>>
+		<<elseif _otherChildren>>
+			<<bhim>>, <<childname>> and <<childname $childActivityEvent.otherChildrenIds[0]>>.
+		<<else>>
+			<<bhim>> and <<childname>>.
+		<</if>>
+		
+		<<if _otherChildren gte 2>>
+			You're somehow able to fit within the large number of small bodies, and you're soon snuggled close together. 
+		<<elseif _otherChildren>>
+			The trio adjust to make room for you, and you're soon snuggled close together.
+		<<else>>
+			The pair adjust to make room for you, and you're soon snuggled close together.
+		<</if>>
+
+		You enjoy this comfortable moment for a while, before rising to your feet. <<ltiredness>><<tiredness -6>><<lstress>><<stress -5>>
 	<<case "cryingHawk">>
 		You sit by the <<childcry>> <<childtype>>, and pull <<childhim>> into your lap. You hum, soothe, and stroke the <<childtype>>'s
 		<<if _childTotalDayslte 14>>
