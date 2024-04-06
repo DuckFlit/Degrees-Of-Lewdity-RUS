@@ -1173,7 +1173,7 @@ function initLegs() {
 			colour_sidebar: 1,
 			type: ["normal"],
 			gender: "n",
-			warmth: 20,
+			warmth: 2,
 			cost: 2000,
 			description: "Exotic.",
 			shop: ["clothing", "adult"],
