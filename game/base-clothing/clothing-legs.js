@@ -1016,7 +1016,7 @@ function initLegs() {
 			warmth: 25,
 			cost: 3500,
 			description: "Tight.",
-			shop: ["clothing"],
+			shop: [],
 			accessory: 0,
 			accessory_colour: 0,
 			accessory_colour_options: [],
