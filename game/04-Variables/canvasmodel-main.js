@@ -3257,7 +3257,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"lower": genlayer_clothing_main('lower', {
 			zfn(options) {
-				return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.type.includes("covered") ? ZIndices.lower_cover : ZIndices.lower;
 			},
 			masksrcfn(options) {
 				if (between(options.belly, 15, 24)) {
@@ -3307,7 +3307,7 @@ Renderer.CanvasModels["main"] = {
 					return gray_suffix(path, options.filters['worn_lower_acc'])
 				},
 				zfn(options) {
-					return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
+					return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.type.includes("covered") ? ZIndices.lower_cover : ZIndices.lower;
 				},
 				masksrcfn(options) {
 					if (between(options.belly, 15, 24)) {
