@@ -111,13 +111,14 @@
 
 	<div id="shop-list-pages" class="shop-list-pages">
 		<!-- Generate current page immediately -->
-		<<generateshoppage $shopPage>>
+		<<set _startingShopPage to $shopPage>>
+		<<generateshoppage _startingShopPage>>
 
 		<!-- Generate other pages in background after a delay, so that shop can be displayed sooner -->
 		<!-- Having all pages loaded allows for very fast shop catalogue navigation -->
 		<!-- Generate via <<repeat>> one by one to not cause a lag spike -->
 		<<timed 0.2s>>
-			<<set _ppre = $shopPage - 1>>
+			<<set _ppre = _startingShopPage - 1>>
 			<<repeat 0.1s>>
 			 	<<if document.getElementById("shop-list-pages") eq null or _ppre lt 0>>
             		<<stop>>
@@ -129,7 +130,7 @@
 				<<set _ppre-->>
 			<</repeat>>
 			<!-- Append pages after the current page -->
-			<<set _papp = $shopPage + 1>>
+			<<set _papp = _startingShopPage + 1>>
 			<<repeat 0.1s>>
 				<<if document.getElementById("shop-list-pages") eq null or _papp gte _maxPage>>
             		<<stop>>

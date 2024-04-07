@@ -2056,6 +2056,10 @@
 	<<if $location is "dance_studio" and $worn.under_lower.type.includes("dance") and $worn.under_upper.type.includes("dance")>>
 		<<set $libertine to 1>>
 	<</if>>
+	<!-- In safe locations, while alone, the player won't cover up. Love interest check is likely not hitting everywhere it should be due to NPCs generating after this check. -->
+	<<if ["Bedroom", "Sleep", "Bird Tower", "Bird Hunt"].some(keyword => V.passage.includes(keyword)) and !($NPCList.some(obj => Object.hasOwn(obj, "type")) and !$NPCList.find(({fullDescription:fd}) => fd && Object.values($loveInterest).includes(fd)))>>
+		<<set $libertine to 2>>
+	<</if>>
 
 	<<set $worn.over_upper.exposedcarry to $worn.over_upper.exposed>>
 	<<set $worn.over_lower.exposedcarry to $worn.over_lower.exposed>>
@@ -2099,7 +2103,7 @@
 		<<set $topless to 0>>
 	<</if>>
 	<<if $worn.lower.exposed gte 1 and $worn.over_lower.exposed gte 1>>
-		<<if $libertine gte 1 or $possessed or $worn.under_lower.type.includes("covered")>>
+		<<if $libertine gte 1 or $possessed or $worn.under_lower.type.includes("covered") or $worn.legs.type.includes("covered")>>
 		<<else>>
 			<<set $exposed to 1>>
 		<</if>>
@@ -2107,9 +2111,9 @@
 
 	<<if $worn.lower.exposed gte 2 and $worn.over_lower.exposed gte 2>>
 		<<if $possessed>>
-		<<elseif $worn.under_lower.exposed gte 1>>
+		<<elseif $worn.under_lower.exposed gte 1 and !$worn.legs.type.includes("covered")>>
 			<<set $exposed to 2>>
-		<<elseif $libertine gte 1 or $worn.under_lower.type.includes("covered")>>
+		<<elseif $libertine gte 1 or $worn.under_lower.type.includes("covered") or $worn.legs.type.includes("covered")>>
 		<<else>>
 			<<set $exposed to 1>>
 		<</if>>
@@ -2693,12 +2697,12 @@
 		<<removeparasite bottom>>
 	<</if>>
 
-<<for _active_bodypart range setup.bodyparts>>
-	<<if $skin[_active_bodypart].pen is "pen" or $skin[_active_bodypart].pen is "lipstick" or $skin[_active_bodypart].pen is "mud">>
-		<<bodywriting_clear _active_bodypart>>
-	<</if>>
-<</for>>
-<<washmakeup>>
+	<<for _active_bodypart range setup.bodyparts>>
+		<<if $skin[_active_bodypart].pen is "pen" or $skin[_active_bodypart].pen is "lipstick" or $skin[_active_bodypart].pen is "mud">>
+			<<bodywriting_clear _active_bodypart>>
+		<</if>>
+	<</for>>
+	<<washmakeup>>
 <</widget>>
 
 <<widget "wash_face">>

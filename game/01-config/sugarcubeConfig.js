@@ -11,9 +11,9 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.6.0",
+	version: "0.4.6.6",
 	versionName: "",
-	sneaky: true,
+	sneaky: false,
 };
 
 State.prng.init();
@@ -555,7 +555,7 @@ Config.navigation.override = function (dest) {
 			case "Livestock Field Horse Lewd 2":
 			case "Livestock Field Horse Lewd Female 2":
 			case "Livestock Field Horse Continue":
-				return "Livestock Field Horse Deviancy";
+				return "Livestock Field Deviancy";
 
 			case "Livestock Field Centaur Female Vagina 3":
 			case "Livestock Field Centaur Female 3":
@@ -569,7 +569,7 @@ Config.navigation.override = function (dest) {
 			case "Livestock Field Horse Lewd Female 3":
 			case "Livestock Field Horse Lewd Hand":
 			case "Livestock Field Horse Lewd Female Hand":
-				return "Livestock Field Horse Deviancy Hand";
+				return "Livestock Field Deviancy Hand";
 
 			case "Livestock Field Centaur Male Mouth":
 			case "Livestock Field Centaur Male Mouth Vagina":
@@ -577,7 +577,7 @@ Config.navigation.override = function (dest) {
 			case "Livestock Field Centaur Female Mouth Vagina":
 			case "Livestock Field Horse Lewd Mouth":
 			case "Livestock Field Horse Lewd Female Mouth":
-				return "Livestock Field Horse Deviancy Mouth";
+				return "Livestock Field Deviancy Mouth";
 
 			case "Livestock Field Centaur Male Seduce":
 			case "Livestock Field Centaur Male Sex":
@@ -597,7 +597,7 @@ Config.navigation.override = function (dest) {
 			case "Livestock Field Horse Lewd Female Sex":
 			case "Livestock Field Horse Lewd Sex Finish":
 			case "Livestock Field Horse Lewd Female Sex Finish":
-				return "Livestock Field Horse Deviancy Sex";
+				return "Livestock Field Deviancy Sex";
 
 			default:
 				return false;

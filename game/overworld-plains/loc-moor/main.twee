@@ -122,7 +122,7 @@
 		<br><br>
 	<</if>>
 	<<if $moor gte 80 and $moor lte 90 and $bogProgress gte 1>>
-		<<foresticon "bog">><<link [[Enter the bog (0:15)|Bog]]>><<pass 15>><<set $bogdepth to 1>><<set $bogwater to 0>><</link>>
+		<<foresticon "bog">><<link [[Enter the bog (0:15)|Bog]]>><<set $moor_hunt to 0>><<pass 15>><<set $bogdepth to 1>><<set $bogwater to 0>><</link>>
 		<br><br>
 	<</if>>
 	<<if $moor gte 51>>
@@ -233,8 +233,40 @@ You are in the courtyard of a ruined castle. Even derelict and half-sunk, the ru
 	<<getouticon "dig">><<link [[Dig for treasure (2:00)|Castle Treasure]]>><<pass 120>><<unset $treasure_map>><<tiredness 6>><</link>><<gtiredness>>
 	<br>
 <</if>>
+<<if $bird and $bird.upgrades and $bird.upgrades.snare gte 1>>
+	Your snare is here.
+	<<if $bird.lurkerSnareState is "captured">>
+		<span class="green">A lurker struggles in the rope.</span>
+		<br>
+		<<mooricon "snare_lurker">><<link [[Take|Castle]]>><<set $bird.materials.lurkers++>><<set $bird.lurkerSnareState to "empty">><</link>>
+		<br>
+	<<elseif $bird.lurkerSnareState is "empty">>
+		<span class="purple">It's empty.</span> <<mooricon "snare">>
+		<br>
+		<<if $bird.materials.junk gte 1>>
+			<<mooricon "junk">><<link [[Use shiny junk as bait (0:02)|Castle]]>><<pass 2>><<set $bird.materials.junk-->><<set $bird.lurkerSnareState to "ready">><</link>>
+			<br>
+		<</if>>
+		<<for _valuable, _amount range $bird.materials.valuables>>
+			<<if _amount lt 1 or _valuable is "wallet">><<continue>><</if>>
+			<<set _shiny to true>>
+			<<capture _valuable>>
+				<<ind>><<link [["Use " + _valuable + " as bait (0:02)"|Castle]]>><<pass 2>><<set $bird.materials.valuables[_valuable]-->><<set $bird.lurkerSnareState to "ready">><</link>>
+				<br>
+			<</capture>>
+		<</for>>
+		<<if $bird.materials.junk is 0 and !_shiny>>
+			<span class="red">You don't have anything shiny to use as bait.</span>
+			<br>
+		<</if>>
+	<<else>>
+		<span class="blue">It's baited.</span> <<mooricon "snare_bait">>
+		<br>
+	<</if>>
+	<br>
+<</if>>
 <<if $harpy gte 6 and $syndromebird is 1 and $birdFly gte 1>>
-	<<glideicon>><<link [[Fly to the tallest tower (0:02)|Castle Fly]]>><</link>><<flight_text>>
+	<<glideicon>><<link [[Fly to the tallest tower (0:02)|Castle Fly]]>><<bird_pass 2>><</link>><<flight_text>>
 	<br>
 <<elseif $syndromebird is 1>>
 	<<npc "Great Hawk">>
@@ -262,8 +294,6 @@ You fly to the top of the tower, and land beside the nest.
 	The <<beasttype>> isn't home.
 <</if>>
 <br><br>
-
-
 
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>

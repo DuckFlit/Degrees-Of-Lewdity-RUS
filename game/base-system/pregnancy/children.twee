@@ -99,7 +99,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<set _date2 to Time.monthDay + " " + Time.monthName + " " + Time.year>>
 		<<set $_calc to Math.abs(Date.parse(_date2) - Date.parse(_date1))>>
 		<<switch  $children[_args[0]].type>>
-			<<case "human" "wolf">><<set _childTotalDaysCap to 200>>
+			<<case "human" "wolf" "hawk">><<set _childTotalDaysCap to 200>>
 			<<default>><<set _childTotalDaysCap to 0>>
 		<</switch>>
 		<<set _childTotalDays to Math.clamp(Math.ceil($_calc / (1000 * 60 * 60 * 24)), 0, _childTotalDaysCap)>>
@@ -334,6 +334,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[$_id].type>>
 			<<case "human">><<set $_text_output to "hand">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "paw">>
+			<<case "hawk">><<set $_text_output to "talon">>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -349,6 +350,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[$_id].type>>
 			<<case "human">><<set $_text_output to "hands">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "paws">>
+			<<case "hawk">><<set $_text_output to "talons">>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -364,6 +366,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[_id].type>>
 			<<case "human">><<set $_text_output to "giggles">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "wags <<childhis _id>> tail">>
+			<<case "hawk">><<set $_text_output to "ruffles <<childhis _id>> feathers">>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -379,6 +382,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[$_id].type>>
 			<<case "human">><<set $_text_output to "hair">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "fur">>
+			<<case "hawk">><<set $_text_output to "feathers">>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -411,6 +415,13 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 					<<case 3>><<set $_text_output to "crying">>
 					<<case 4>><<set $_text_output to "howling">>
 				<</switch>>
+			<<case "hawk">>
+				<<switch $_cry>>
+					<<case 1>><<set $_text_output to "chirping">>
+					<<case 2>><<set $_text_output to "warbling">>
+					<<case 3>><<set $_text_output to "trilling">>
+					<<case 4>><<set $_text_output to "lilting">>
+				<</switch>>		
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -443,6 +454,13 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 					<<case 3>><<set $_text_output to "Crying">>
 					<<case 4>><<set $_text_output to "Howling">>
 				<</switch>>
+			<<case "hawk">>
+				<<switch $_cry>>
+					<<case 1>><<set $_text_output to "Chirping">>
+					<<case 2>><<set $_text_output to "Warbling">>
+					<<case 3>><<set $_text_output to "Trilling">>
+					<<case 4>><<set $_text_output to "Lilting">>
+				<</switch>>				
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -458,30 +476,61 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[$_id].type>>
 			<<case "human">><<set $_text_output to "child">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "pup">>
+			<<case "hawk">><<set $_text_output to "chick">>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
+/*args[0] - child object*/
+<<widget "childTypeDisplay">><<silently>>
+	<<if _args[0] and _args[0].childId>>
+		<<if _args[0].type isnot "human">>
+			<<if _args[0].features.monster>>
+				<<switch _args[0].type>>
+					<<case "wolf">>
+						<<set $_text_output to "Wolf">>
+						<<switch _args[0].gender>>
+							<<case "m">><<set $_text_output += "boy">>
+							<<case "f">><<set $_text_output += "girl">>
+							<<default>><<set $_text_output += "kid">>
+						<</switch>>
+					<<case "hawk">>
+						<<set $_text_output to "Harpy">>
+				<</switch>>
+			<<else>>
+				<<set $_text_output to _args[0].type.toUpperFirst()>>
+			<</if>>
+		<<else>>
+			<<set $_text_output to "Human<<if _args[0].features.beastTransform or _args[0].features.divineTransform>> (<<childTransform _args[0]>>)<</if>>">>
+		<</if>>
+	<</if>>
+<</silently>><<if $_text_output>>Type: <<print $_text_output>> |<</if>>
+<</widget>>
+
 <<widget "childTransform">><<silently>>
-	<<if _args[0] isnot undefined>>
+	<<if _args[0] and _args[0].childId>>
+		<<set $_child to _args[0]>>
+	<<elseif _args[0] isnot undefined>>
 		<<set $_id to _args[0]>>
+		<<set $_child to $children[$_id]>>
 	<<elseif $childSelected isnot undefined>>
 		<<set $_id to $childSelected.childId>>
+		<<set $_child to $children[$_id]>>
 	<</if>>
-	<<if $_id isnot undefined>>
+	<<if $_child isnot undefined>>
 		<<set $_text_output to "">>
-		<<switch $children[$_id].features.divineTransform>>
+		<<switch $_child.features.divineTransform>>
 			<<case "angel">><<set $_text_output += "Angelic">>
 			<<case "demon">><<set $_text_output += "Demonic">>
 			<<case "fallen">><<set $_text_output += "Fallen">>
 		<</switch>>
-		<<if $children[$_id].features.divineTransform and $children[$_id].features.beastTransform>><<set $_text_output += " ">><</if>>
-		<<switch $children[$_id].features.beastTransform>>
-			<<case "cat">><<set $_text_output += "Cat" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
-			<<case "cow">><<set $_text_output += "Cow" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
-			<<case "wolf">><<set $_text_output += "Wolf" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
-			<<case "bird">><<set $_text_output += "Bird" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
-			<<case "fox">><<set $_text_output += "Fox" + ($children[$_id].gender === "m" ? "boy" : "girl")>>
+		<<if $_child.features.divineTransform and $_child.features.beastTransform>><<set $_text_output += " ">><</if>>
+		<<switch $_child.features.beastTransform>>
+			<<case "cat">><<set $_text_output += "Cat" + ($_child.gender === "m" ? "boy" : "girl")>>
+			<<case "cow">><<set $_text_output += "Cow" + ($_child.gender === "m" ? "boy" : "girl")>>
+			<<case "wolf">><<set $_text_output += "Wolf" + ($_child.gender === "m" ? "boy" : "girl")>>
+			<<case "bird">><<set $_text_output += "Bird" + ($_child.gender === "m" ? "boy" : "girl")>>
+			<<case "fox">><<set $_text_output += "Fox" + ($_child.gender === "m" ? "boy" : "girl")>>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -535,7 +584,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 
 /*args[0] - location*/
 <<widget "childSelectRandom">>
-    <<set $childSelected to Object.values($children).filter(child => !_args[0] or child.location === _args[0]).random()>>
+	<<set $childSelected to Object.values($children).filter(child => !_args[0] or child.location === _args[0]).random()>>
 <</widget>>
 
 <<widget "childViewerDisplay">>
@@ -603,11 +652,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<set _children to {}>>
 	<</if>>
 	<<capture _args>>
-		<<if $children[_args[0]].type isnot "human">>
-			Type: <<print $children[_args[0]].type[0].toUpperCase() + $children[_args[0]].type.substring(1)>> |
-		<<else>>
-			Type: Human<<if $children[_args[0]].features.beastTransform or $children[_args[0]].features.divineTransform>> (<<childTransform _args[0]>>)<</if>> |
-		<</if>>
+		<<childTypeDisplay $children[_args[0]]>>
 		Gender:
 		<<switch $children[_args[0]].gender>>
 			<<case "m">>Male
@@ -638,7 +683,12 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				????
 			<</if>>
 			<br>
-			Born: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
+			<<if $children[_args[0]].laid>>
+				Laid: <<print $children[_args[0]].laid.day + " " + $children[_args[0]].laid.month + " " + $children[_args[0]].laid.year>> |
+				Hatched: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
+			<<else>>
+				Born: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
+			<</if>>
 			Age: <<childAge _args[0] "full">>
 			<br>
 			Size: <<print $children[_args[0]].features.size>> | Hair Colour: <<hairmapcolourtext $children[_args[0]].features.hairColour>>
@@ -693,6 +743,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[_args[0]].type>>
 			<<case "human">><<humanChildActivity _args[0]>>
 			<<case "wolf" "wolfboy" "wolfgirl">><<wolfChildActivity _args[0]>>
+			<<case "hawk">><<hawkChildActivity _args[0]>>
 		<</switch>>
 		<span class="no-numberify">
 			<<link "Extra Details">><<childViewerHiddenElementsUnhide _args[0]>><</link>>
@@ -1003,11 +1054,11 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 					<br>
 					<<link [[Cheer up (0:15)|Children Activity Events]]>><<pass 15>><<set $childActivityEvent to {event:"grumpyWolf", childid:_args[0]}>><</link>> |
 				<</if>>
-			<<case "hungeryWolf">>
+			<<case "hungryWolf">>
 				<<childHe>>'s <<childcry>> in front of an overcrowded female <<wolf_cave_singular "f">>.
 				<<if $children[_args[0]].localVariables.event>>
 					<br>
-					<<link [[Help finding a nipple (0:15)|Children Activity Events]]>><<pass 15>><<set $childActivityEvent to {event:"hungeryWolf", childid:_args[0]}>><</link>> |
+					<<link [[Help finding a nipple (0:15)|Children Activity Events]]>><<pass 15>><<set $childActivityEvent to {event:"hungryWolf", childid:_args[0]}>><</link>> |
 				<</if>>
 			<<case "gnawing">>
 				<<childHe>>'s gnawing on
@@ -1020,6 +1071,46 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				<<if $children[_args[0]].localVariables.event>>
 					<br>
 					<<link [[Play tug of war (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"gnawing", childid:_args[0]}>><</link>> |
+				<</if>>
+			<<default>>
+				<<childHe>>'s has figured out that they're in a video game (This is an error, please report).
+				<<print $children[_args[0]].localVariables.activity>>
+		<</switch>>
+	</span>
+<</widget>>
+
+<<widget "hawkChildActivity">>
+	<span class="no-numberify">
+		<<switch $children[_args[0]].localVariables.activity>>
+			<<case "noEvent">>
+				<<childHe>>'s sleeping soundly.
+			<<case "sleeping">>
+				<<childHe>>'s sleeping on <<childhis>> own.
+				<<if $children[_args[0]].localVariables.event>>
+					<br>
+					<<link [[Stroke head (0:10)|Children Activity Events]]>><<pass 10>><<set $childActivityEvent to {event:"sleepingStrokeHawk", childid:_args[0]}>><</link>> |
+				<</if>>
+			<<case "sleepingWithGreatHawk">>
+				<<npc "Great Hawk">>
+				<<childHe>>'s sound asleep while cuddled up against <<your_bird_text>>.
+				<<if $children[_args[0]].localVariables.event>>
+					<br>
+					<<link [[Cuddle up to (0:30)|Children Activity Events]]>>
+						<<set _otherChildrenIds to []>>
+						<<run Object.values($children).forEach(child => {
+							if (child.location is $location and child.localVariables.activity is "sleepingWithGreatHawk" and child.childId isnot T.args[0]) {
+								T.otherChildrenIds.push(child.childId);
+							}
+						})>>
+						<<pass 30>><<set $childActivityEvent to {event:"cuddleAndNapHawk", childid:_args[0], otherChildrenIds:_otherChildrenIds}>>
+					<</link>> |
+				<</if>>
+				<<endevent>>
+			<<case "crying">>
+				<<childHe>>'s distressed and <<childcry>>.
+				<<if $children[_args[0]].localVariables.event>>
+					<br>
+					<<link [[Comfort them (0:15)|Children Activity Events]]>><<pass 15>><<set $childActivityEvent to {event:"cryingHawk", childid:_args[0]}>><</link>> |
 				<</if>>
 			<<default>>
 				<<childHe>>'s has figured out that they're in a video game (This is an error, please report).

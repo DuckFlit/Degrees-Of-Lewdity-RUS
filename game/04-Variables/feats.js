@@ -469,6 +469,13 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Social"],
 	},
+	"Feather Trick": {
+		title: "Feather Trick",
+		desc: "Catch three lurkers in a single dive while hunting with the Great Hawk.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Social"],
+	},
 	"Wren the Sly": {
 		title: "Wren the Sly",
 		desc: "You gave your virginity to them.",
@@ -872,6 +879,23 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Discoveries"],
 		hint: "Hint: Lost in the mire.",
+	},
+	/*"Birds of a Feather": {
+		title: "Birds of a Feather",
+		desc: "Flock together.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Rescue an orphan of another species.",
+	},*/
+	"Terror's Equal": {
+		title: "Terror's Equal",
+		desc: "Filled the tower with impressive hunting trophies.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Vanity befitting a terror of the skies.",
+		softLockable: true,
 	},
 	"Head of the Pack": {
 		title: "Head of the Pack",
@@ -1984,7 +2008,7 @@ function earnHourlyFeats() {
 	if (V.daily.ex.road === 1 && V.daily.ex.cream === 1 && V.daily.ex.flyover === 1) earnFeat("A Lewd Adventure");
 	if (V.athletics >= 1000) earnFeat("Swift");
 
-	if (V.farm_stage && V.farm.beasts.horses >= 20 && V.farm.beasts.cattle >= 20 && V.farm.beasts.dogs >= 20 && V.farm.beasts.pigs >= 20) {
+	if (V.farm_stage >= 2 && V.farm.beasts.horses >= 20 && V.farm.beasts.cattle >= 20 && V.farm.beasts.dogs >= 20 && V.farm.beasts.pigs >= 20) {
 		earnFeat("Animal Tender");
 	}
 

@@ -158,6 +158,7 @@ function initHandheld() {
 				"teal",
 				"white",
 				"yellow",
+				"neon blue",
 				"custom",
 			],
 			colour_sidebar: 1,
@@ -815,6 +816,7 @@ function initHandheld() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
+			coverImage: 0,
 		},
 		{
 			index: 28,
@@ -834,6 +836,7 @@ function initHandheld() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
+			coverImage: 0,
 		},
 		{
 			index: 29,
@@ -853,6 +856,7 @@ function initHandheld() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
+			coverImage: 0,
 		},
 		{
 			index: 30,
@@ -872,6 +876,7 @@ function initHandheld() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
+			coverImage: 0,
 		},
 		{
 			index: 31,
@@ -891,6 +896,7 @@ function initHandheld() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
+			coverImage: 0,
 		},
 		{
 			index: 32,
@@ -910,6 +916,7 @@ function initHandheld() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
+			coverImage: 0,
 		},
 		{
 			index: 33,
@@ -929,6 +936,7 @@ function initHandheld() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
+			coverImage: 0,
 		},
 		{
 			index: 34,
@@ -948,6 +956,7 @@ function initHandheld() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
+			coverImage: 0,
 		},
 	];
 

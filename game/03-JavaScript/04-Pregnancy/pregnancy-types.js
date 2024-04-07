@@ -578,7 +578,7 @@ window.pregnancyGenerator = {
 
 			let count;
 			if (mother === "pc") {
-				count = Math.clamp(V.harpyEggs, 0, 3);
+				count = Math.clamp(V.harpyEggs?.count || random(1, 3), 0, 3);
 			} else {
 				count = random(1, 3);
 			}
@@ -586,6 +586,8 @@ window.pregnancyGenerator = {
 			if (fertility || magicTattoo) count++;
 
 			const featherColour = ["white", "brown"];
+
+			const eggTimer = new DateTime(Time.date).addHours(random(24 * 23, 24 * 30)).timeStamp;
 
 			for (let i = 0; i < count; i++) {
 				// Hard coded limit
@@ -610,7 +612,7 @@ window.pregnancyGenerator = {
 					hairColour: featherColour[random(0, featherColour.length - 1)],
 				});
 				// Hours
-				baby.eggTimer = new DateTime(Time.date).addHours(random(24 * 26, 24 * 32)).timeStamp;
+				baby.eggTimer = eggTimer
 				result.fetus.push(baby);
 				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
 			}

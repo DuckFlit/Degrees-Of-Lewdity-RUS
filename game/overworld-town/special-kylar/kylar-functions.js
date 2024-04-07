@@ -76,7 +76,7 @@ window.getKylarSchoolLocation = getKylarSchoolLocation;
 
 /** @returns {DolLocation} Kylar's location in school lunchtime */
 function getKylarLocationInLunchtime() {
-	if (V.daily.school.lunchEaten === undefined) {
+	if (!V.daily.school.lunchEaten) {
 		return { area: "canteen", state: "lunch" };
 	}
 	if (!["rain", "snow"].contains(V.weather)) {
