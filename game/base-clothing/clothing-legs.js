@@ -9,6 +9,7 @@ Warmth checklist:
 	Thin: -1
 	Normal: 0
 	Thick: +1
+	Very thick: +2
 
 	Max warmth: 4
 */

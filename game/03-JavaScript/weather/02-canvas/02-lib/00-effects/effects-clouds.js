@@ -9,6 +9,10 @@ WeatherEffects.create({
 		overlapLimit: 0.4,
 	},
 	init() {
+		const bottomY = this.bottomY * setup.SkySettings.scale;
+		const movementSpeed = this.movement.baseSpeed * setup.SkySettings.scale;
+		const leaveSpeed = this.movement.leaveSpeed * setup.SkySettings.scale;
+
 		const updateTargetCount = () => {
 			if (this.currentWeather === this.weather.name) return;
 			this.currentWeather = this.weather.name;
@@ -29,7 +33,7 @@ WeatherEffects.create({
 
 			// Reset movement speed of all clouds
 			allClouds.forEach(cloud => {
-				cloud.movementSpeed = this.movement.baseSpeed;
+				cloud.movementSpeed = movementSpeed;
 			});
 
 			Object.entries(this.targetCloudCount).forEach(([type, targetCount]) => {
@@ -42,7 +46,7 @@ WeatherEffects.create({
 						// Increase movement for excessive clouds to make them leave the canvas faster
 						// in case of a weather change
 						allCloudsOfType.slice(-cloudsNeeded).forEach(cloud => {
-							cloud.movementSpeed = this.movement.leaveSpeed;
+							cloud.movementSpeed = leaveSpeed;
 						});
 					}
 					return;
@@ -68,8 +72,10 @@ WeatherEffects.create({
 						if (offScreen && randomPosition) {
 							x -= random(0, this.canvas.element.width / 2);
 						}
-						const y = random(layerSettings.height.min, Math.min(layerSettings.height.max, this.bottomY - sprite.height));
-						const movementSpeed = this.movement.baseSpeed;
+						const y = random(
+							layerSettings.height.min * setup.SkySettings.scale,
+							Math.min(layerSettings.height.max * setup.SkySettings.scale, bottomY - sprite.height)
+						);
 						cloud = { sprite, type, x, y, z: layerIndex, movementSpeed, width: sprite.width, height: sprite.height };
 						attempts++;
 					} while (attempts < 5 && Weather.Sky.isOverlappingAny(cloud, this.clouds[layerIndex], this.overlapLimit));
@@ -144,6 +150,7 @@ WeatherEffects.create({
 		overlapLimit: 0.3,
 	},
 	init() {
+		const movementSpeed = this.movement.speed * setup.SkySettings.scale;
 		const updateTargetCount = () => {
 			if (this.currentWeather === this.weather.name) return;
 			this.currentWeather = this.weather.name;
@@ -169,8 +176,7 @@ WeatherEffects.create({
 					if (offScreen && randomPosition) {
 						x -= random(0, this.canvas.element.width / 2);
 					}
-					const y = random(this.height.min, this.height.max);
-					const movementSpeed = this.movement.speed;
+					const y = random(this.height.min * setup.SkySettings.scale, this.height.max * setup.SkySettings.scale);
 					cloud = { sprite, x, y, movementSpeed, width: sprite.width, height: sprite.height };
 					attempts++;
 				} while (attempts < 5 && Weather.Sky.isOverlappingAny(cloud, this.clouds, this.overlapLimit));
@@ -270,14 +276,11 @@ WeatherEffects.create({
 		this.x = random(0, this.images.fog.width);
 	},
 	draw() {
+		const movementSpeed = this.movement.speed * setup.SkySettings.scale;
 		const elapsedTime = this.elapsedTime();
 		this.currentDate = new DateTime(Time.date);
 
-		this.x += this.movement.speed * elapsedTime;
-		// console.log("x", this.x, this.movement.speed, elapsedTime);
-		// this.x = (this.x + this.images.fog.width) % this.images.fog.width;
-		// console.log("x2", this.x);
-
+		this.x += movementSpeed * elapsedTime;
 		this.canvas.ctx.globalAlpha = this.fogFactor * Math.max(this.factor, this.baseAlpha);
 
 		this.canvas.ctx.drawImage(

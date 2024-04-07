@@ -12,33 +12,18 @@ setup.debugMenu = {
 setup.debugMenu.eventList = {
 	Main: [
 		{
-			link: [`CanvasModel Example`, `CanvasModel Example`],
-			widgets: [``],
+			link: [`Freeze stats`, stayOnPassageFn],
+			widgets: [`<<set $statFreeze to true>>`],
+			condition() {
+				return !V.statFreeze;
+			},
 		},
 		{
-			link: [`Home`, `Bedroom`],
-			widgets: [`<<endcombat>>`],
-		},
-		{
-			link: [`Wardrobe`, `Wardrobe`],
-			widgets: [``],
-		},
-		{
-			link: [`Strip`, stayOnPassageFn],
-			widgets: [`<<undressclothes "wardrobe">>`],
-		},
-		{
-			link: [`Strip to undies`, stayOnPassageFn],
-			widgets: [
-				`<<generalUndress wardrobe over_upper>>`,
-				`<<generalUndress wardrobe over_lower>>`,
-				`<<generalUndress wardrobe upper>>`,
-				`<<generalUndress wardrobe lower>>`,
-			],
-		},
-		{
-			link: [`Strip all`, stayOnPassageFn],
-			widgets: [`<<undress "wardrobe">>`],
+			link: [`Unfreeze stats`, stayOnPassageFn],
+			widgets: [`<<set $statFreeze to false>>`],
+			condition() {
+				return V.statFreeze;
+			},
 		},
 		{
 			link: [`Pass 1 minute`, stayOnPassageFn],
@@ -79,6 +64,35 @@ setup.debugMenu.eventList = {
 		{
 			link: [`Pass 24 hours`, stayOnPassageFn],
 			widgets: [`<<pass 24 hours>>`],
+		},
+		{
+			link: [`Home`, `Bedroom`],
+			widgets: [`<<endcombat>>`],
+		},
+		{
+			link: [`Wardrobe`, `Wardrobe`],
+			widgets: [``],
+		},
+		{
+			link: [`Strip`, stayOnPassageFn],
+			widgets: [`<<undressclothes "wardrobe">>`],
+		},
+		{
+			link: [`Strip to undies`, stayOnPassageFn],
+			widgets: [
+				`<<generalUndress wardrobe over_upper>>`,
+				`<<generalUndress wardrobe over_lower>>`,
+				`<<generalUndress wardrobe upper>>`,
+				`<<generalUndress wardrobe lower>>`,
+			],
+		},
+		{
+			link: [`Strip all`, stayOnPassageFn],
+			widgets: [`<<undress "wardrobe">>`],
+		},
+		{
+			link: [`CanvasModel Example`, `CanvasModel Example`],
+			widgets: [``],
 		},
 		{
 			link: [`Enemy Trust +++`, stayOnPassageFn],

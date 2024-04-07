@@ -2,10 +2,6 @@
 /* eslint-disable no-undef */
 WeatherEffects.create({
 	name: "locationImage",
-	defaultParameters: {
-		width: 64,
-		scale: 2, // Images are scaled from 32 to 64 to fill out the canvas width
-	},
 	effects: [
 		{
 			effect: "locationImageAnimation",
@@ -105,7 +101,7 @@ WeatherEffects.create({
 		this.reflectionCanvas.clear();
 		this.locationCanvas.clear();
 
-		const horizon = this.effects[0].obj?.horizon ?? this.horizon;
+		const horizon = (this.effects[0].obj?.horizon ?? this.horizon) * setup.SkySettings.scale;
 		const alpha = this.effects[0].obj?.alpha ?? this.reflectionAlpha;
 		const blur = this.effects[0].obj?.blur ?? this.blur;
 		const backgroundOnly = this.effects[0].obj?.backgroundOnly ?? false;
@@ -135,10 +131,10 @@ WeatherEffects.create({
 	name: "locationImageAnimation",
 	defaultParameters: {
 		width: 64,
-		scale: 2, // Images are scaled from 32 to 64 to fill out the canvas width
 	},
 	// Make it asyncronous to wait for the image to load before animating without slowing down the main flow
 	async init() {
+		this.scaledWidth = this.width * setup.SkySettings.scale;
 		// Update only animations of which its condition states has changed
 		this.updateConditions = () => {
 			const animationsArr =
@@ -167,10 +163,10 @@ WeatherEffects.create({
 						image,
 						condition: loc.condition,
 						frame: loc.frame,
-						height: image.height * this.scale,
-						frameWidth: this.width / this.scale,
+						height: image.height,
+						frameWidth: this.scaledWidth,
 						frameHeight: image.height,
-						yPos: this.canvas.element.height - image.height * this.scale,
+						yPos: this.canvas.element.height - image.height,
 						alwaysDrawFirstFrame: loc.alwaysDrawFirstFrame ?? true,
 						waitForAnimation: loc.waitForAnimation,
 						glow: this.glow ? {
@@ -180,7 +176,7 @@ WeatherEffects.create({
 						} : null,
 						parent: typeof loc.animation === "string" ? loc.animation : undefined,
 					};
-					this.frameWidth = this.width / this.scale;
+					this.frameWidth = this.scaledWidth;
 					this.frameHeight = image.height;
 					if (typeof loc === "object" && loc.animation?.fps > 0) {
 						animDetails.numFrames = image.width / animDetails.frameWidth;
@@ -239,7 +235,6 @@ WeatherEffects.create({
 	},
 
 	draw() {
-		this.canvas.ctx.imageSmoothingEnabled = false;
 		const animationsArr =
 			this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
 
@@ -265,7 +260,7 @@ WeatherEffects.create({
 			
 			if (anim.animationInstance && shouldDraw) {
 				if (!anim.animationInstance.enabled && !anim.alwaysDrawFirstFrame) continue;
-				anim.animationInstance.draw(this.canvas.ctx, 0, anim.yPos, anim.frameWidth, anim.frameHeight, this.width, anim.height);
+				anim.animationInstance.draw(this.canvas.ctx, 0, anim.yPos, anim.frameWidth, anim.frameHeight, this.scaledWidth, anim.height);
 
 			} else if (shouldDraw || (anim.animationInstance && anim.alwaysDrawFirstFrame && anim.displayed)) {
 				const frame = typeof anim.frame === "function" ? anim.frame() : anim.frame;
@@ -278,7 +273,7 @@ WeatherEffects.create({
 					const parentAnimationFrame = anim.parent.animationInstance?.currentFrame;
 					frameX = parentAnimationFrame ? this.frameWidth * parentAnimationFrame : 0;
 				}
-				this.canvas.ctx.drawImage(anim.image, frameX, 0, anim.frameWidth, anim.frameHeight, 0, anim.yPos, this.width, anim.height);
+				this.canvas.ctx.drawImage(anim.image, frameX, 0, anim.frameWidth, anim.frameHeight, 0, anim.yPos, this.scaledWidth, anim.height);
 			}
 		}
 	},

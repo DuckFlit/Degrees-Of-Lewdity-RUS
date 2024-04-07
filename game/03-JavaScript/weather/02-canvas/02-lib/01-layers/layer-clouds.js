@@ -156,7 +156,6 @@ WeatherLayers.add({
 					cloud0: "img/misc/sky/clouds/cirrus/0.png",
 					cloud1: "img/misc/sky/clouds/cirrus/1.png",
 				},
-				bottomY: 152, // Don't generate clouds below this point (horizon)
 				height: {
 					min: -12,
 					max: 48,

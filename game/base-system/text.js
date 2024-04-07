@@ -12,30 +12,18 @@ const statDisplay = {
 		if (!amount || V.statdisable === "t") return "";
 
 		let displayGrace = true;
-		if (!amount || V.statdisable === "t") return "";
-
-		let displayGrace = true;
 
 		// Optional second variable is the rank of the NPC giving the order, or when the player is expected to meet a higher standard. Grace changes won't apply if the player's rank equals or exceeds the expected rank
 		const ranks = ["prospective", "initiate", "monk", "priest", "bishop"];
 		const playerRankValue = ranks.indexOf(V.temple_rank);
 		const expectedRankValue = ranks.indexOf(expectedRank);
-		// Optional second variable is the rank of the NPC giving the order, or when the player is expected to meet a higher standard. Grace changes won't apply if the player's rank equals or exceeds the expected rank
-		const ranks = ["prospective", "initiate", "monk", "priest", "bishop"];
-		const playerRankValue = ranks.indexOf(V.temple_rank);
-		const expectedRankValue = ranks.indexOf(expectedRank);
 
-		if (expectedRankValue > 1) {
-			if (playerRankValue >= expectedRankValue) displayGrace = false;
 		if (expectedRankValue > 1) {
 			if (playerRankValue >= expectedRankValue) displayGrace = false;
 
 			// Below might be a more interesting way to handle it, remove the above line and uncomment the below to enable. Lollipop Scythe
 			// Allows the player to gain grace in events only if they are below a certain rank
 			// if (amount > 0 && playerRankValue >= expectedRankValue) displayGrace = false;
-
-			// Allows the player to lose grace in events only if they are at or above a certain rank
-			// if (amount < 0 && playerRankValue < expectedRankValue) displayGrace = false;
 		}
 
 		if (displayGrace) {
@@ -468,23 +456,22 @@ statDisplay.create("gspurity", () => {
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 1, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -1, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -1, "teal");
 });
 statDisplay.create("ggspurity", () => {
 	T.warnstate = 2;
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 2, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -2, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -2, "teal");
 });
 statDisplay.create("gggspurity", () => {
 	T.warnstate = 3;
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 3, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -3, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -3, "teal");
 });
-
 statDisplay.create("lslust", () => {
 	T.lustincrdisplay = 1;
 	return statDisplay.statChange("Sydney's Lust", -1, "teal");
@@ -510,61 +497,73 @@ statDisplay.create("gggslust", () => {
 	return statDisplay.statChange("Sydney's Lust", 3, "lewd");
 });
 
-	DefineMacroS("lscience", () => statChange("Science", -1, "red"));
-	DefineMacroS("gscience", () => {
-		const result = statChange("Science", 1, "green");
-		return `${result} ${gainSchoolStar("science_star")}`;
-	});
-	DefineMacroS("ggscience", () => {
-		const result = statChange("Science", 2, "green");
-		return `${result} ${gainSchoolStar("science_star")}`;
-	});
-	DefineMacroS("gggscience", () => {
-		const result = statChange("Science", 3, "green");
-		return `${result} ${gainSchoolStar("science_star")}`;
-	});
+statDisplay.create("lscience", () => statDisplay.statChange("Science", -1, "red"));
+statDisplay.create("gscience", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("Science", 1, "green");
+	return `${result} ${gainSchoolStar("science_star")}`;
+});
+statDisplay.create("ggscience", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("Science", 2, "green");
+	return `${result} ${gainSchoolStar("science_star")}`;
+});
+statDisplay.create("gggscience", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("Science", 3, "green");
+	return `${result} ${gainSchoolStar("science_star")}`;
+});
 
-	DefineMacroS("lmaths", () => statChange("Maths", -1, "red"));
-	DefineMacroS("gmaths", () => {
-		const result = statChange("Maths", 1, "green");
-		return `${result} ${gainSchoolStar("maths_star")}`;
-	});
-	DefineMacroS("ggmaths", () => {
-		const result = statChange("Maths", 2, "green");
-		return `${result} ${gainSchoolStar("maths_star")}`;
-	});
-	DefineMacroS("gggmaths", () => {
-		const result = statChange("Maths", 3, "green");
-		return `${result} ${gainSchoolStar("maths_star")}`;
-	});
+statDisplay.create("lmaths", () => statDisplay.statChange("Maths", -1, "red"));
+statDisplay.create("gmaths", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("Maths", 1, "green");
+	return `${result} ${gainSchoolStar("maths_star")}`;
+});
+statDisplay.create("ggmaths", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("Maths", 2, "green");
+	return `${result} ${gainSchoolStar("maths_star")}`;
+});
+statDisplay.create("gggmaths", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("Maths", 3, "green");
+	return `${result} ${gainSchoolStar("maths_star")}`;
+});
 
-	DefineMacroS("lenglish", () => statChange("English", -1, "red"));
-	DefineMacroS("genglish", () => {
-		const result = statChange("English", 1, "green");
-		return `${result} ${gainSchoolStar("english_star")}`;
-	});
-	DefineMacroS("ggenglish", () => {
-		const result = statChange("English", 2, "green");
-		return `${result} ${gainSchoolStar("english_star")}`;
-	});
-	DefineMacroS("gggenglish", () => {
-		const result = statChange("English", 3, "green");
-		return `${result} ${gainSchoolStar("english_star")}`;
-	});
+statDisplay.create("lenglish", () => statDisplay.statChange("English", -1, "red"));
+statDisplay.create("genglish", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("English", 1, "green");
+	return `${result} ${gainSchoolStar("english_star")}`;
+});
+statDisplay.create("ggenglish", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("English", 2, "green");
+	return `${result} ${gainSchoolStar("english_star")}`;
+});
+statDisplay.create("gggenglish", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("English", 3, "green");
+	return `${result} ${gainSchoolStar("english_star")}`;
+});
 
-	DefineMacroS("lhistory", () => statChange("History", -1, "red"));
-	DefineMacroS("ghistory", () => {
-		const result = statChange("History", 1, "green");
-		return `${result} ${gainSchoolStar("history_star")}`;
-	});
-	DefineMacroS("gghistory", () => {
-		const result = statChange("History", 2, "green");
-		return `${result} ${gainSchoolStar("history_star")}`;
-	});
-	DefineMacroS("ggghistory", () => {
-		const result = statChange("History", 3, "green");
-		return `${result} ${gainSchoolStar("history_star")}`;
-	});
+statDisplay.create("lhistory", () => statDisplay.statChange("History", -1, "red"));
+statDisplay.create("ghistory", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("History", 1, "green");
+	return `${result} ${gainSchoolStar("history_star")}`;
+});
+statDisplay.create("gghistory", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("History", 2, "green");
+	return `${result} ${gainSchoolStar("history_star")}`;
+});
+statDisplay.create("ggghistory", () => {
+	T.lustincrdisplay = 1;
+	const result = statDisplay.statChange("History", 3, "green");
+	return `${result} ${gainSchoolStar("history_star")}`;
+});
 
 statDisplay.create("ghousekeeping", amount => {
 	if (V.statsdisable === "f") return "";
@@ -578,54 +577,54 @@ statDisplay.create("ghousekeeping", amount => {
 statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount !== undefined || V.housekeeping < amount));
 statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount !== undefined || V.housekeeping < amount));
 
-	DefineMacroS("ldom", npc => {
-		let targetName = "";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", -1, "lblue");
-		} else if (npc) targetName = npc + "'s";
-		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
-		return statChange(`${targetName} Dominance`, -1, "lblue");
-	});
-	DefineMacroS("lldom", npc => {
-		let targetName = "";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", -2, "lblue");
-		} else if (npc) targetName = npc + "'s";
-		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
-		return statChange(`${targetName} Dominance`, -2, "lblue");
-	});
-	DefineMacroS("llldom", npc => {
-		let targetName = "";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", -3, "lblue");
-		} else if (npc) targetName = npc + "'s";
-		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
-		return statChange(`${targetName} Dominance`, -3, "lblue");
-	});
-	DefineMacroS("gdom", npc => {
-		let targetName = "";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", 1, "purple");
-		} else if (npc) targetName = npc + "'s";
-		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
-		return statChange(`${targetName} Dominance`, 1, "purple");
-	});
-	DefineMacroS("ggdom", npc => {
-		let targetName = "";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", 2, "purple");
-		} else if (npc) targetName = npc + "'s";
-		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
-		return statChange(`${targetName} Dominance`, 2, "purple");
-	});
-	DefineMacroS("gggdom", npc => {
-		let targetName = "";
-		if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
-			return statChange("Robin's Confidence", 3, "purple");
-		} else if (npc) targetName = npc + "'s";
-		else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
-		return statChange(`${targetName} Dominance`, 3, "purple");
-	});
+statDisplay.create("ldom", npc => {
+	let targetName = "";
+	if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		return statDisplay.statChange("Robin's Confidence", -1, "lblue");
+	} else if (npc) targetName = npc + "'s";
+	else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
+	return statDisplay.statChange(`${targetName} Dominance`, -1, "lblue");
+});
+statDisplay.create("lldom", npc => {
+	let targetName = "";
+	if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		return statDisplay.statChange("Robin's Confidence", -2, "lblue");
+	} else if (npc) targetName = npc + "'s";
+	else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
+	return statDisplay.statChange(`${targetName} Dominance`, -2, "lblue");
+});
+statDisplay.create("llldom", npc => {
+	let targetName = "";
+	if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		return statDisplay.statChange("Robin's Confidence", -3, "lblue");
+	} else if (npc) targetName = npc + "'s";
+	else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
+	return statDisplay.statChange(`${targetName} Dominance`, -3, "lblue");
+});
+statDisplay.create("gdom", npc => {
+	let targetName = "";
+	if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		return statDisplay.statChange("Robin's Confidence", 1, "purple");
+	} else if (npc) targetName = npc + "'s";
+	else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
+	return statDisplay.statChange(`${targetName} Dominance`, 1, "purple");
+});
+statDisplay.create("ggdom", npc => {
+	let targetName = "";
+	if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		return statDisplay.statChange("Robin's Confidence", 2, "purple");
+	} else if (npc) targetName = npc + "'s";
+	else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
+	return statDisplay.statChange(`${targetName} Dominance`, 2, "purple");
+});
+statDisplay.create("gggdom", npc => {
+	let targetName = "";
+	if ((V.npc.includes("Robin") && !npc) || npc === "Robin") {
+		return statDisplay.statChange("Robin's Confidence", 3, "purple");
+	} else if (npc) targetName = npc + "'s";
+	else if (V.npc.length >= 2) targetName = V.npc[0] + "'s";
+	return statDisplay.statChange(`${targetName} Dominance`, 3, "purple");
+});
 
 statDisplay.create("lrespect", () => statDisplay.statChange("Respect", -1, "red"));
 statDisplay.create("llrespect", () => statDisplay.statChange("Respect", -2, "red"));

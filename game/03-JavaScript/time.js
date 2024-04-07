@@ -959,9 +959,9 @@ function minutePassed(minutes) {
 function noonCheck() {
 	const fragment = document.createDocumentFragment();
 
-	if (V.statFreeze) return fragment;
-
 	Weather.Sky.setMoonPhase();
+
+	if (V.statFreeze) return fragment;
 
 	delete V.bartend_info;
 	delete V.bartend_info_other;

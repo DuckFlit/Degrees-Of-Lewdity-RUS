@@ -20,7 +20,7 @@ WeatherLayers.add({
 				},
 				glow: {
 					colorDay: "#ffffff00",
-					colorNight: "#ffffffbb",
+					colorNight: "#ffffff75",
 					size: 9,
 				},
 				shadow: {
@@ -85,7 +85,6 @@ WeatherLayers.add({
 			effect: "outerRadialGlow",
 			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
 			params: {
-				innerRadius: 3,
 				outerRadius: 45, // The radius of the outer glow
 				colorInside: { dark: "#ad3a2133", med: "#ad3a2133", bright: "#ad3a2133" },
 				colorOutside: { dark: "#ad3a2100", med: "#ad3a2100", bright: "#ad3a2100" },

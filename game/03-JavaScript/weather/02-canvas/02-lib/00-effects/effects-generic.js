@@ -5,7 +5,7 @@ WeatherEffects.create({
 		fadeStartY: 96,
 	},
 	init() {
-		const fadeStartHeight = this.canvas.element.height - this.fadeStartY;
+		const fadeStartHeight = this.canvas.element.height - this.fadeStartY * setup.SkySettings.scale;
 		this.gradient = this.canvas.ctx.createLinearGradient(0, this.canvas.element.height, 0, fadeStartHeight);
 
 		// Simple ease-out for a better gradient fade
@@ -74,18 +74,18 @@ WeatherEffects.create({
 WeatherEffects.create({
 	name: "outerRadialGlow",
 	defaultParameters: {
-		innerRadius: 3, // Inset the glow into the circle to look more natural
 		cutCenter: true,
 	},
 	init() {
+		this.scaledOuterRadius = this.outerRadius * setup.SkySettings.scale;
 		this.radius = this.diameter / 2;
-		this.colorStopMiddle = this.radius / (this.radius + this.outerRadius);
-		this.glowRadius = this.radius / 2 + this.outerRadius;
+		this.colorStopMiddle = this.radius / (this.radius + this.scaledOuterRadius);
+		this.glowRadius = this.radius / 2 + this.scaledOuterRadius;
 	},
 	draw() {
 		const { x, y } = this.position;
 
-		const gradient = this.canvas.ctx.createRadialGradient(x, y, 0, x, y, this.radius + this.outerRadius);
+		const gradient = this.canvas.ctx.createRadialGradient(x, y, 0, x, y, this.radius + this.scaledOuterRadius);
 		const color1 = ColourUtils.interpolateTripleColor(this.colorInside.dark, this.colorInside.med, this.colorInside.bright, this.factor);
 		const color2 = ColourUtils.interpolateTripleColor(this.colorOutside.dark, this.colorOutside.med, this.colorOutside.bright, this.factor);
 
@@ -114,7 +114,7 @@ WeatherEffects.create({
 	init() {
 		this.radius = this.diameter / 2 - 1;
 		// Calculate where the inner glow is most prominent
-		this.glowStart = (this.radius - this.innerRadius) / this.radius;
+		this.glowStart = (this.radius - this.innerRadius * setup.SkySettings.scale) / this.radius;
 	},
 	draw() {
 		const { x, y } = this.position;

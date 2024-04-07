@@ -1,24 +1,16 @@
 /* eslint-disable no-undef */
 /**
  * Sky gradient effect, simulating transitions between different times of day
- *
- * @param {number} radius The radius of the radial gradient in pixels. Determines how far the gradient extends from the center position.
- *
- * Dynamic parameters (bindings):
- * @param {object} color Object containing color scheme for the gradient. It has three properties,
- * 	each representing a different time of day with two sub-properties for gradient colors:
- *   colorMin: { close: "color", far: "color" } - Represents the night-time color scheme.
- *   colorMed: { close: "color", far: "color" } - Represents dawn/dusk color scheme.
- *   colorMax: { close: "color", far: "color" } - Represents the daytime color scheme.
- * @param {object} position An object { x, y } indicating the center of the radial gradient on the canvas.
- * @param {number} factor Numeric value between -1 and 1 that determines the blend between the three color schemes.
- * 	A factor of -1 corresponds to "colorMin", 0 to "colorMed", and 1 to "colorMax",
  */
 WeatherEffects.create({
 	name: "skyGradiant",
+	init() {
+		console.log("RUNNING SKY GRADIANET", this.position, this)
+		this.scaledRadius = this.radius * setup.SkySettings.scale;
+	},
 	draw() {
 		const { x, y } = this.position;
-		const sunGradient = this.canvas.ctx.createRadialGradient(x, y, 0, x, y, this.radius);
+		const sunGradient = this.canvas.ctx.createRadialGradient(x, y, 0, x, y, this.scaledRadius);
 
 		// Interpolate between night - dawn/dusk - day
 		const color1 = ColourUtils.interpolateTripleColor(this.color.colorMin.close, this.color.colorMed.close, this.color.colorMax.close, this.factor);
@@ -35,32 +27,18 @@ WeatherEffects.create({
 /**
  * Generates a random star-field on init() based on the starsConfig parameters.
  * Rotates the starfield on draw() based on the rotation binding.
- *
- * @param {number} area Diameter of the starfield canvas.
- *   @param {number} starsConfig.minDistance Minimum distance between stars in pixels to avoid overlap.
- *   @param {number} starsConfig.count Total number of stars to generate within the area.
- *   @param {string[]} starsConfig.colorRange Array of colors for randomly assigning star colors. It interpolates between any of the first colours to the last colour in the array.
- * @param {object} pivot The { x, y } pivot point around which the starfield rotates.
- * @param {boolean} rotationClockwise Determines the direction of star field rotation. true for clockwise, false for anti-clockwise.
- *   @param {number} opacity.night Opacity of stars during night.
- *   @param {number} opacity.day Opacity of stars during day.
- *   @param {number} opacity.bloodMoon Opacity of stars during blood moon.
- * @param {object} spriteOptions Properties of different star types - keys must equal to the below images keys
- *     - {number} weight: The likelihood of this star type being chosen relative to others.
- *     - {number} glowSize: The size of the glow effect around the star.
- *     - {string} glowColor: Color for the glow effect (optional).
- *     - {boolean} randomColor: default false - If false, the star's color will not be randomized and will use the base color of the sprite.
- * @param {object} images Star sprite images
- *
- * Dynamic parameters (bindings):
- * @param {number} alpha Global alpha applied to the entire star field.
- * @param {number} rotation The angle of rotation for the star field in degrees.
- * @param {object} moonPosition The { x, y } position of the simulated moon within the canvas.
- * @param {number} moonDiameter Diameter of the simulated moon used to cull stars that are "behind" the moon.
  */
 WeatherEffects.create({
 	name: "skyStarField",
+	defaultParameters: {
+		starSize: 2,
+	},
 	init() {
+		this.scaledArea = this.area * setup.SkySettings.scale;
+		this.scaledStarSize = this.starSize * setup.SkySettings.scale;
+		this.scaledMinDistance = this.starsConfig.minDistance * setup.SkySettings.scale;
+		this.scaledPivotX = this.pivot.x * setup.SkySettings.scale;
+		this.scaledPivotY = this.pivot.y * setup.SkySettings.scale;
 		// Returns a random star based on the weights from spriteOptions
 		const getRandomStar = () => {
 			const options = Object.entries(this.spriteOptions).map(([key, value]) => {
@@ -88,7 +66,7 @@ WeatherEffects.create({
 			return ColourUtils.interpolateColor(either(interpolateFrom), interpolateTo, Math.random());
 		};
 
-		const radius = this.area / 2;
+		const radius = this.scaledArea / 2;
 		this.stars = [];
 
 		// Create all the stars
@@ -105,11 +83,11 @@ WeatherEffects.create({
 
 				// Since we are generating in a circular area we have to convert the radius/distance to x/y coordinates
 				newStar = {
-					x: this.pivot.x + distance * Math.cos(angle),
-					y: this.pivot.y + distance * Math.sin(angle),
+					x: this.scaledPivotX + distance * Math.cos(angle),
+					y: this.scaledPivotY + distance * Math.sin(angle),
 					sprite: spriteKey === "square" ? null : this.images[spriteKey],
 					color: getRandomStarColor(spriteKey),
-					glowSize: this.spriteOptions[spriteKey].glowSize,
+					glowSize: this.spriteOptions[spriteKey].glowSize * setup.SkySettings.scale,
 					glowColor: this.spriteOptions[spriteKey].glowColor,
 				};
 
@@ -119,7 +97,7 @@ WeatherEffects.create({
 					const dy = newStar.y - star.y;
 					const distance = Math.sqrt(dx * dx + dy * dy);
 
-					if (distance < this.starsConfig.minDistance) {
+					if (distance < this.scaledMinDistance) {
 						tooClose = true;
 						break;
 					}
@@ -146,10 +124,10 @@ WeatherEffects.create({
 
 		// Rotate the stars around the pivot point
 		this.stars.forEach(star => {
-			const relativeX = star.x - this.pivot.x;
-			const relativeY = star.y - this.pivot.y;
-			const rotatedX = cos * relativeX - sin * relativeY + this.pivot.x;
-			const rotatedY = sin * relativeX + cos * relativeY + this.pivot.y;
+			const relativeX = star.x - this.scaledPivotX;
+			const relativeY = star.y - this.scaledPivotY;
+			const rotatedX = Math.round(cos * relativeX - sin * relativeY + this.scaledPivotX);
+			const rotatedY = Math.round(sin * relativeX + cos * relativeY + this.scaledPivotY);
 
 			// Cull stars that are behind the moon - since the moon shadow is transparent
 			const dx = rotatedX - this.moonPosition.x;
@@ -175,7 +153,7 @@ WeatherEffects.create({
 				}
 			} else {
 				this.canvas.ctx.fillStyle = star.color;
-				this.canvas.ctx.fillRect(rotatedX, rotatedY, 2, 2);
+				this.canvas.ctx.fillRect(rotatedX, rotatedY, this.scaledStarSize, this.scaledStarSize);
 			}
 			this.canvas.ctx.restore();
 		});

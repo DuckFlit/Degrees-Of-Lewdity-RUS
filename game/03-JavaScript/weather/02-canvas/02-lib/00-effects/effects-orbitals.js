@@ -2,12 +2,6 @@
 /**
  * Renders an orbital object, such as the sun or moon, at a specified position.
  * Changes position on draw() based on the position binding.
- *
- * @param {object} images.orbital The image path for the orbital object
- *
- * Dynamic parameters (bindings):
- * @param {object} position The { x, y } coordinates specifying where the center of the orbital is positioned.
- * 	Positions of all orbitals is taken from SkyCanvas.orbitals.
  */
 WeatherEffects.create({
 	name: "skyOrbital",
@@ -23,23 +17,6 @@ WeatherEffects.create({
  * The moon, including the moon shadow effects, and glow.
  * init() generates the effects - usually once per day.
  * draw() simply positions it in the canvas, with the right glow color (based on dayFactor)
- *
- * @param {object} opacity Overall opacity of the moon, including its shadowed parts.
- * @param {number} opacity.min Minimum opacity of the moon (dayFactor is -1).
- * @param {number} opacity.max Maximum opacity of the moon (dayFactor is 1).
- * @param {string} glow.colorDay Color of the glow during the day.
- * @param {string} glow.colorNight Color of the glow during the night.
- * @param {number} glow.size Size of the glow effect.
- * @param {number} shadow.opacity.min Minimum shadow opacity (dayFactor is -1).
- * @param {number} shadow.opacity.max Maximum shadow opacity (dayFactor is 1).
- * @param {number} shadow.angle Angle of the moon shadow generation.
- * @param {string} images.orbital Path to the moon texture.
- *
- * Dynamic parameters (bindings):
- * @param {object} position Current position of the moon.
- * @param {number} factor Factor between -1 and 1 which affects the glow color.
- * @param {number} dayFactor Factor between -1 and 1 which affects the glow color and opacity.
- * @param {number} moonPhaseFraction Current phase fraction of the moon, affecting the moon shadow.
  */
 WeatherEffects.create({
 	name: "moonWithPhases",
@@ -60,12 +37,15 @@ WeatherEffects.create({
 			},
 		},
 	],
+	init() {
+		this.scaledGlow = this.glow.size * setup.SkySettings.scale;
+	},
 	draw() {
 		const x = this.position.x - this.images.orbital.width / 2;
 		const y = this.position.y - this.images.orbital.height / 2;
 
 		// Outer glow
-		this.canvas.ctx.shadowBlur = this.glow.size;
+		this.canvas.ctx.shadowBlur = this.scaledGlow;
 		this.canvas.ctx.shadowColor = ColourUtils.interpolateColor(this.glow.colorNight, this.glow.colorDay, this.dayFactor);
 
 		// Shadow opacity
@@ -85,11 +65,6 @@ WeatherEffects.create({
 
 /**
  * Adds the moon texture, shadow and glow together
- *
- * @param {string} images.orbital Path to the moon texture.
- *
- * Dynamic parameters (bindings):
- * @param {object} position The { x, y } position of the parent orbital (moon).
  */
 WeatherEffects.create({
 	name: "moonPhase",
@@ -149,13 +124,6 @@ WeatherEffects.create({
  * Simulates the moon shadow, based on the moon-phase.
  * init() creates the moon shadow effect - usually once per day.
  * draw() simply draws it to the canvas at the right position.
- *
- * @param {number} shadow.angle The angle of the shadow generation.
- *
- * Dynamic parameters (bindings):
- * @param {object} position The { x, y } position of the parent orbital (moon).
- * @param {number} diameter The diameter of the moon used to calculate the radius of the shadow.
- * @param {number} moonPhaseFraction A value between 0 and 1 representing the current phase of the moon.
  */
 WeatherEffects.create({
 	name: "moonShadow",

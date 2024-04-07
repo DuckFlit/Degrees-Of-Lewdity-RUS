@@ -13,9 +13,9 @@ WeatherEffects.create({
 		this.stopAnimation = () => this.animation?.stop();
 		this.startAnimation = () => this.animation?.start();
 
-		const scaledFrameWidth = this.originalFrameWidth * this.scale;
-		const scaledFrameHeight = this.images.precipitation.height * this.scale;
-		const numFrames = this.images.precipitation.width / this.originalFrameWidth;
+		const scaledFrameWidth = this.frameWidth * setup.SkySettings.scale;
+		const scaledFrameHeight = this.images.precipitation.height;
+		const numFrames = this.images.precipitation.width / scaledFrameWidth;
 
 		const spriteRows = Math.max(1, Math.ceil(this.canvas.element.height / scaledFrameHeight));
 
@@ -24,23 +24,23 @@ WeatherEffects.create({
 
 		const precipitationSheet = new Weather.Sky.Canvas(scaledFrameWidth * numFrames * spriteColumns, scaledFrameHeight * spriteRows);
 		const precipitationFrame = new Weather.Sky.Canvas(scaledFrameWidth * spriteColumns, scaledFrameHeight * spriteRows);
-		precipitationFrame.ctx.imageSmoothingEnabled = false;
+
 
 		for (let i = 0; i < numFrames; i++) {
 			precipitationFrame.clear();
 
 			for (let r = 0; r < spriteRows; r++) {
-				const rowOffset = r * this.position.diagonalOffset * this.scale;
+				const rowOffset = r * this.position.diagonalOffset;
 				const adjustedColumns = spriteColumns + (rowOffset < 0 ? Math.ceil(Math.abs(rowOffset) / effectiveFrameWidth) : 0);
 
 				const y = r * scaledFrameHeight;
 				for (let c = 0; c < adjustedColumns; c++) {
 					// Apply this.offset to the x-coordinate calculation
 					const x = c * effectiveFrameWidth + rowOffset + this.position.offset;
-					const frameX = i * this.originalFrameWidth;
+					const frameX = i * scaledFrameWidth;
 
 					if (x + scaledFrameWidth > 0 && x < precipitationFrame.element.width) {
-						precipitationFrame.ctx.drawImage(this.images.precipitation, frameX, 0, this.originalFrameWidth, this.images.precipitation.height, x, y, scaledFrameWidth, scaledFrameHeight);
+						precipitationFrame.ctx.drawImage(this.images.precipitation, frameX, 0, scaledFrameWidth, this.images.precipitation.height, x, y, scaledFrameWidth, scaledFrameHeight);
 					}
 				}
 			}

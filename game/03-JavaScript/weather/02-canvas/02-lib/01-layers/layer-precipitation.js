@@ -8,8 +8,7 @@ WeatherLayers.add({
 			effect: "precipitation",
 			drawCondition: () => !Weather.Sky.skyDisabled && Weather.overcast > 0.5 && Weather.precipitationIntensity >= 1 && Weather.precipitation === "rain",
 			params: {
-				originalFrameWidth: 21,
-				scale: 2,
+				frameWidth: 42,
 				images: {
 					precipitation: "img/misc/sky/effects/rain.png",
 				},
@@ -35,8 +34,7 @@ WeatherLayers.add({
 			effect: "precipitation",
 			drawCondition: () => !Weather.Sky.skyDisabled && Weather.precipitationIntensity >= 1 && Weather.precipitation === "snow",
 			params: {
-				originalFrameWidth: 16,
-				scale: 2,
+				frameWidth: 32,
 				images: {
 					precipitation: "img/misc/sky/effects/snow.png",
 				},
@@ -68,7 +66,7 @@ WeatherLayers.add({
 				movement: {
 					speed: 0.5,
 				},
-				baseAlpha: 0.95,
+				baseAlpha: 1,
 			},
 		},
 		{

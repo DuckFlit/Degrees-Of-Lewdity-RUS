@@ -2,12 +2,16 @@
 /* eslint-disable no-unused-vars */
 Weather.Sky = (() => {
 	class Canvas {
-		constructor(width = setup.SkySettings.canvasSize[0], height = setup.SkySettings.canvasSize[1]) {
+		constructor(width, height) {
 			this.canvas = $("<canvas/>");
 			this.element = this.canvas[0];
 			this.ctx = this.element.getContext("2d");
-			this.element.width = width;
-			this.element.height = height;
+
+			const scale = setup.SkySettings.scale;
+			const scaledWidth = width ?? setup.SkySettings.canvasSize[0] * scale;
+			const scaledHeight = height ?? setup.SkySettings.canvasSize[1] * scale;
+			this.element.width = scaledWidth;
+			this.element.height = scaledHeight;
 		}
 
 		glow(glowSize, glowColor, glowIntensity) {
@@ -15,6 +19,11 @@ Weather.Sky = (() => {
 			this.ctx.shadowBlur = glowSize;
 			this.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
 			return this;
+		}
+
+		scale(width, height) {
+			this.element.width = width;
+			this.element.height = height;
 		}
 
 		/* Aliases */
@@ -163,25 +172,30 @@ Weather.Sky = (() => {
 			const adjustedTimePercent = (timePercent - this.expandFactor) / (1 - 2 * this.expandFactor);
 
 			// Calculate the arc
-			const bottomY = this.settings.path.horizon + this.bottomOffset;
-			const amplitude = (this.settings.path.peakY - bottomY) / 2;
+			const horizon = this.settings.path.horizon * setup.SkySettings.scale;
+			const bottomY = horizon + this.bottomOffset;
+			const peakY = this.settings.path.peakY * setup.SkySettings.scale;
+			const startX = this.settings.path.startX * setup.SkySettings.scale;
+			const endX = this.settings.path.endX * setup.SkySettings.scale;
+			const amplitude = (peakY - bottomY) / 2;
 			const baselineY = bottomY + amplitude;
 			const factor = 1 - 4 * Math.pow(adjustedTimePercent - 0.5, 2);
 
 			// Use a simple lerp for the x position while y uses a parabolic function for a simplified arc
 			this.position = {
-				x: lerp(adjustedTimePercent, this.settings.path.startX, this.settings.path.endX),
+				x: lerp(adjustedTimePercent, startX, endX),
 				y: baselineY + amplitude * factor,
 				bottom: bottomY + amplitude,
 			};
 
 			const steepness = 5;
-			const scalingFactor = 1;
-			this.setFactor(steepness, scalingFactor);
+			this.setFactor(steepness, setup.SkySettings.scale);
 		}
 
 		setFactor(steepness, amplitude) {
-			const x = (this.position.y - this.settings.path.horizon) / (this.settings.path.peakY - this.settings.path.horizon);
+			const horizon = this.settings.path.horizon * setup.SkySettings.scale;
+			const peakY = this.settings.path.peakY * setup.SkySettings.scale;
+			const x = (this.position.y - horizon) / (peakY - horizon);
 			this.factor = 2 * Math.pow(1 / (1 + Math.exp(-steepness * x)), amplitude) - 1;
 		}
 	}
@@ -268,6 +282,7 @@ Weather.Sky = (() => {
 		initFadables();
 		await initEffects();
 		drawLayers();
+		loaded.value = true;
 	}
 
 	//todo initOrbits doesn't run every day - should run weekly or daily? (run at midday to update moon, run at midnight to update sun)
@@ -317,7 +332,10 @@ Weather.Sky = (() => {
 		}
 
 		_mainLayer.clear();
-		_mainLayer.drawImage(tempCanvas.element);
+		_mainLayer.element.width = setup.SkySettings.canvasSize[0];
+		_mainLayer.element.height = setup.SkySettings.canvasSize[1];
+		_mainLayer.ctx.imageSmoothingEnabled = false;
+		_mainLayer.ctx.drawImage(tempCanvas.element, 0, 0, setup.SkySettings.canvasSize[0], setup.SkySettings.canvasSize[1]);
 	}
 
 	function updateOrbits() {
@@ -400,7 +418,6 @@ Macro.add("skybox", {
 	handler() {
 		Weather.Sky.skybox.appendTo(this.output);
 		if (!Weather.Sky.loaded.value) {
-			Weather.Sky.loaded.value = true;
 			Weather.Sky.initialize();
 		}
 	},
