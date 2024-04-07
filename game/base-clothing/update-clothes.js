@@ -487,11 +487,20 @@ function wardrobesUpdate() {
 			if (wardrobe && Array.isArray(wardrobe.upper) && !wardrobe.handheld) wardrobe.handheld = [];
 		});
 	}
+
 	if (!V.wardrobes.officeBuilding) {
 		V.wardrobes.officeBuilding = clone(defWardrobe);
 		V.wardrobes.officeBuilding.name = "Office agency changing room";
 		V.wardrobes.officeBuilding.unlocked = V.officejobintro === 1;
 		V.wardrobes.officeBuilding.space = 5;
+	}
+	if (!V.wardrobes.birdTower) {
+		/* Great Hawk's tower */
+		V.wardrobes.birdTower = clone(defWardrobe);
+		V.wardrobes.birdTower.name = "Great Hawk's Tower";
+		V.wardrobes.birdTower.unlocked = false;
+		V.wardrobes.birdTower.isolated = true;
+		V.wardrobes.birdTower.space = 15;
 	}
 }
 DefineMacro("wardrobesUpdate", wardrobesUpdate);

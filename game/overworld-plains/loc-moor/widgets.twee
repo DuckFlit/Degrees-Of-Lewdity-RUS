@@ -1,6 +1,9 @@
 :: Moor Widgets [widget]
 <<widget "eventsmoorlow">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $moorLessDangerAll>>
+		<<set $danger -= $moorLessDangerAll>>
+	<</if>>
 	<<if random(1, 8) is 8 or ($moormove is "quick_search" or $moormove is "normal_search" or $moormove is "careful_search" or $moormove is "fly_search") and random(1, 4) is 4>>
 		<<rng 3>>
 		<<if $rng is 3>>
@@ -257,6 +260,9 @@
 
 <<widget "eventsmoormid">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $moorLessDangerAll>>
+		<<set $danger -= $moorLessDangerAll>>
+	<</if>>
 	<<if random(1, 8) is 8 or ($moormove is "quick_search" or $moormove is "normal_search" or $moormove is "careful_search" or $moormove is "fly_search") and random(1, 4) is 4>>
 		<<rng 2>>
 		<<if $rng is 2>>
@@ -417,7 +423,11 @@
 			<<link [[Ignore|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
 		<<case 9>>
-			<<moor_hunt_start>>
+			<<if $bird and $bird.injured gt 1>>
+				<<moor_fox>>
+			<<else>>
+				<<moor_hunt_start>>
+			<</if>>
 		<<case 10>>
 			<<moor_fox>>
 		<</switch>>
@@ -550,6 +560,9 @@
 
 <<widget "eventsmoorhigh">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $moorLessDangerAll>>
+		<<set $danger -= $moorLessDangerAll>>
+	<</if>>
 	<<if random(1, 8) is 8 or ($moormove is "quick_search" or $moormove is "normal_search" or $moormove is "careful_search" or $moormove is "fly_search") and random(1, 4) is 4>>
 		<<rng 2>>
 		<<if $rng is 2>>
@@ -700,7 +713,11 @@
 				<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
 			<</if>>
 		<<case 8>>
-			<<moor_hunt_start>>
+			<<if $bird and $bird.injured gt 1>>
+				<<moor_fox>>
+			<<else>>
+				<<moor_hunt_start>>
+			<</if>>
 		<<case 9>>
 			<<moor_fox>>
 		<</switch>>
@@ -809,6 +826,7 @@
 	<<unset $quicksand_depth>>
 	<<unset $quicksand_learn>>
 	<<unset $quicksandWraith>>
+	<<unset $quicksand_escape>>
 <</widget>>
 
 <<widget "quicksand_pull">>
@@ -877,6 +895,9 @@
 			<<ambulance>>
 		<</if>>
 	<</if>>
+	<<if $bird.hunts>>
+		<<flight_hunt_end>>
+	<</if>>
 <</widget>>
 
 <<widget "end_moor_captive">>
@@ -941,7 +962,7 @@
 	<<if $weather is "clear">>
 		A shadow passes over you.
 	<<else>>
-		You hear a terrible shriek.
+		You hear a <<hawkScreechDesc>>.
 	<</if>>
 	<<if $syndromebird is 1>>
 		<<npc "Great Hawk">>
@@ -956,12 +977,20 @@
 		<<link [[Continue|Moor]]>><<set $eventskip to 1>><</link>>
 		<br>
 	<<else>>
-		Terror circles overhead.
+		<<if $birdescaped gte 1>>
+			<<npc "Great Hawk">>
+			A familiar <<beasttype>> circles overhead.
+			<<endevent>>
+		<<else>>
+			Terror circles overhead.
+		<</if>>
 		<<if $moor_hunt is undefined>>
 			<span class="red">You are being hunted.</span><<ggstress>><<stress 12>>
 			<<set $moor_hunt to 1>>
+		<<else>>
+			<span class="red">Your pursuer approaches rapidly.</span><<gstress>><<stress 6>>
+			<<set $moor_hunt += 3>>
 		<</if>>
-
 		<br><br>
 
 		<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
@@ -971,15 +1000,26 @@
 
 <<widget "moor_hunt">>
 	<<npc "Great Hawk">>
-	<span class="red">You hear another screech.</span> This one from behind you. It's close.
-	<<if $monster is 1>>
-		You turn, and see a winged <<nnpc_gendery "Great Hawk">> with claws instead of feet. <<bHe>> swoops towards you, talons outstretched.
+	<span class="red">You hear another screech.</span> This one from behind you. It's close. You turn, and see
+	<<if $birdescaped gte 1>>
+		the <<beasttype>>
+	<<elseif $monster is 1>>
+		a feathered <<nnpc_gendery "Great Hawk">> with wings that dwarf <<bhis>> body and talons in place of feet
 	<<else>>
-		You turn, and see a colossal hawk swooping towards you, talons outstretched.
+		a colossal <<beasttype>>
 	<</if>>
-	<<bHis>> eyes pierce yours. Terror roots you to the spot.
+	swooping down through the air towards you, talons extended to grab you.
+	<<if $birdescaped gte 1>>
+		Your eyes meet <<bhis>>, and terror seizes your limbs.
+		<<if $monster is 1 or understandsBirdBehaviour()>>
+			Despite the intensity of <<bhis>> gaze, you can see concern underneath.
+		<</if>>
+	<<else>>
+		<<bHis>> gaze roots you to the spot in terror.
+	<</if>>
 	<br><br>
-	<<link [[Stay still|Moor Bird Still]]>><</link>>
+
+	<<link [[Stay still|Moor Bird Still]]>><<sub 1>><<unset $phase>><</link>>
 	<br>
 	<<link [[Resist|Moor Bird Resist]]>><</link>><<willpowerdifficulty 1 300>>
 	<br>

@@ -565,17 +565,17 @@ statDisplay.create("ggghistory", () => {
 	return `${result} ${gainSchoolStar("history_star")}`;
 });
 
-statDisplay.create("ghousekeeping", amount => {
+statDisplay.create("ghousekeeping", (amount, silent) => {
 	if (V.statsdisable === "f") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
-	} else if (V.housekeeping >= amount) {
+	} else if (V.housekeeping >= amount && !silent) {
 		return "You're too skilled for this to improve your housekeeping.";
 	}
 	return "";
 });
-statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount !== undefined || V.housekeeping < amount));
-statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount !== undefined || V.housekeeping < amount));
+statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount === undefined || V.housekeeping < amount));
+statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount === undefined || V.housekeeping < amount));
 
 statDisplay.create("ldom", npc => {
 	let targetName = "";

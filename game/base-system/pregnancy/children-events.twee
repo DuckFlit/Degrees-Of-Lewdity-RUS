@@ -228,7 +228,7 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 
 :: Childrens Home
 <<effects>>
-<<getChildrenIds `{location: $location}`>>
+<<getChildrenIds `{location: $location, eggTimer: undefined}`>>
 <<switch $location>>
 	<<case "home">>
 		You are in the orphanage nursery. There are a few cradles and cots scattered around.
@@ -267,7 +267,8 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 <br><br>
 <<childViewerDisplay _childrenIds>>
 <br><br>
-<<if $player.inventory.childrenToys>>
+<<if $location is "tower">>
+<<elseif $player.inventory.childrenToys>>
 	<<if !$storedChildrenToys[$location]>><<set $storedChildrenToys[$location] to []>><</if>>
 	<<link [[Store children toys|Childrens Home Toys]]>><</link>>
 	<br>
@@ -626,13 +627,13 @@ You leave behind $donatedMilk bottles of milk for your children with one of Bail
 			However, the pale figure's expression is calm. Serene, even. It holds <<childname>> tenderly and hums a soothing melody. It floats over to you, pressing its forehead to yours. A hand caresses your cheek. You look down at <<childname>>. <<childHe>> happily coos, reaching for you and smiling.
 			<br><br>
 
-			"Beautiful... So, so beautiful," it whispers, stroking <<childname>>'s hair.
+			"<span class="wraith">Beautiful... So, so beautiful,</span>" it whispers, stroking <<childname>>'s hair.
 			<<if $wraith.state is "haunt">>
-				"An omen." <<lobsession 1>>
+				"<span class="wraith">An omen.</span>" <<lobsession 1>>
 			<<elseif $wraith.state is "despair">>
-				"A beacon of salvation amidst drowning despair." <<npcincr "Ivory Wraith" love 1>><<glove>><<gobsession 1>>
+				"<span class="wraith">A beacon of salvation amidst drowning despair.</span>" <<npcincr "Ivory Wraith" love 1>><<glove>><<gobsession 1>>
 			<<else>>
-				"A blessing." <<npcincr "Ivory Wraith" love 1>><<glove>>
+				"<span class="wraith">A blessing.</span>" <<npcincr "Ivory Wraith" love 1>><<glove>>
 			<</if>>
 			<br><br>
 
@@ -671,7 +672,7 @@ You leave behind $donatedMilk bottles of milk for your children with one of Bail
 	<<case "grumpyWolf">>
 		<<childname>> growls at your approach. You flip the grumpy <<childtype>> on <<childhis>> back and rub <<childhis>> belly. The <<childtype>> resists at first, but soon gives in, panting and yipping happily. You leave <<childname>> more cheerful than you found <<childhim>>.<<lstress>><<stress -6>>
 		<<set $children[$childActivityEvent.childid].localVariables.activity to "playing">>
-	<<case "hungeryWolf">>
+	<<case "hungryWolf">>
 		You approach <<childname>>. <<childHe>>'s trying to find a way through the other pups, trying to reach the female <<wolf_cave_singular "f">>'s nipples to feed.
 		<br><br>
 		You pick <<childhim>> up and pet <<childhim>>, keeping the <<childcry>> <<childtype>>'s attention off <<childhis>> hunger. Soon enough, several feeding pups finish, making room. The <<childtype>> latches on, eager and greedy.<<lstress>><<stress -6>>
@@ -680,7 +681,52 @@ You leave behind $donatedMilk bottles of milk for your children with one of Bail
 		You sit next to <<childname>> and grab ahold of the $pupToy. <<childHe>> growls as you gently pull on the makeshift toy and tugs it back. You continue tugging the $pupToy back and forth before finally letting <<childhim>> win. <<childname>> yips joyfully as <<childhe>> claims <<childhis>> prize and resumes playing with it, tail wagging with excitement.
 		<br><br>
 		Another pup, noticing your game, approaches <<childname>> and attempts to grab the $pupToy. You keep a close eye on the two of them, but thankfully,  <<childname>>'s playmate doesn't seem interested in actually stealing the toy from <<childhim>>. You smile as the pups play tug-of-war together before standing up and leaving them to their own devices.
-        <<set $children[$childActivityEvent.childid].localVariables.activity to "playing">>
+		<<set $children[$childActivityEvent.childid].localVariables.activity to "playing">>
+	/*Hawk Specific*/
+	<<case "sleepingStrokeHawk">>
+		You climb into the nest with the slumbering <<childtype>>, and stroke <<childhis>>
+		<<if _childTotalDayslte 14>>
+			tiny, pinkish feathers.
+		<<else>>
+			feathers.
+		<</if>>
+		<<childHe>> trills and pushes into your caressing hand. You spend a few moments together before rising to your feet. <<lstress>><<stress -5>>
+	<<case "cuddleAndNapHawk">>
+		<<npc "Great Hawk">>
+		<<if $childActivityEvent.otherChildrenIds.length>>
+			<<for _otherChildId range $childActivityEvent.otherChildrenIds>>
+				<<childInteratedWith _otherChildId>>
+				<<set $children[_otherChildId].localVariables.event to false>>
+			<</for>>
+			<<set _otherChildren to $childActivityEvent.otherChildrenIds.length>>
+		<</if>>
+		<<your_bird_text "cap">> nuzzles you as you lie down beside 
+		<<if _otherChildren gte 2>>
+			<<bhim>>, <<childname>>, <<childrenNames $childActivityEvent.otherChildrenIds>>
+		<<elseif _otherChildren>>
+			<<bhim>>, <<childname>> and <<childname $childActivityEvent.otherChildrenIds[0]>>.
+		<<else>>
+			<<bhim>> and <<childname>>.
+		<</if>>
+		
+		<<if _otherChildren gte 2>>
+			You're somehow able to fit within the large number of small bodies, and you're soon snuggled close together. 
+		<<elseif _otherChildren>>
+			The trio adjust to make room for you, and you're soon snuggled close together.
+		<<else>>
+			The pair adjust to make room for you, and you're soon snuggled close together.
+		<</if>>
+
+		You enjoy this comfortable moment for a while, before rising to your feet. <<ltiredness>><<tiredness -6>><<lstress>><<stress -5>>
+	<<case "cryingHawk">>
+		You sit by the <<childcry>> <<childtype>>, and pull <<childhim>> into your lap. You hum, soothe, and stroke the <<childtype>>'s
+		<<if _childTotalDayslte 14>>
+			tiny, pinkish feathers.
+		<<else>>
+			feathers.
+		<</if>>
+		<<childname>> calms, and begins to doze under your gentle attention. You gingerly place the sleeping <<childtype>> down and stand again.
+		<<set $children[$childActivityEvent.childid].localVariables.activity to "sleeping">>	
 	<<default>>
 		The event could not be found.<br>
 		Event: $childActivityEvent.event

@@ -665,6 +665,15 @@ setup.debugMenu.eventList = {
 			],
 		},
 		{
+			link: [`Great Hawk Hunt Capture`, `Moor`],
+			widgets: [
+				`<<set $moor to 50>>`,
+				`<<set $eventskip to 1>>`,
+				`<<moor_hunt_start>>`,
+				`<<set $moor_hunt to 10>>`,
+			],
+		},
+		{
 			link: [`Police Pillory Start`, `Police Pillory Start`],
 			widgets: [`<<crimeUpFlat 5000 "thievery">>`, `<<generate1>>`, `<<person1>>`],
 		},

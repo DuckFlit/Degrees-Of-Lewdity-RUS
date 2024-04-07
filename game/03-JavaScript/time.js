@@ -464,6 +464,7 @@ function weekPassed() {
 		V.robineventnote = 1;
 	}
 	V.robinmoney += 300 + V.robin.moneyModifier;
+	if (V.robinmoney > 4000) V.robinmoney = 4000;
 	V.compoundcentre = 0;
 	if (V.edenfreedom >= 1 && V.edenshopping === 2) V.edenshopping = 0;
 	if (V.loft_kylar) V.loft_spray = 0;
@@ -688,6 +689,13 @@ function dayPassed() {
 		else V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.95, 0, 100).toFixed(3);
 	}
 
+	if (V.weather === "rain" && V.bird.upgrades?.firepit && !V.bird.upgrades.shelter) {
+		const burnTime = getBirdBurnTime() * 60; // seconds
+		if (burnTime > 0) {
+			Cooker.addBurnTime(V.bird.firepit, Math.floor(-burnTime / 2) + Time.minute * 30);
+		}
+	}
+
 	if (V.moorLuck > 0) V.moorLuck--;
 	if (V.officejobintro === 1) V.officelastcomplaintday++;
 
@@ -816,12 +824,25 @@ function dayPassed() {
 	if (V.pirate_attack) {
 		delete V.pirate_attack;
 	}
+	if (V.moorLessDangerAll > 1) {
+		V.moorLessDangerAll -= 1000;
+	} else {
+		delete V.moorLessDangerAll;
+	}
+	if (V.bird.clean >= 1) V.bird.clean = Math.clamp(V.bird.clean - (10 - V.bird.upgrades.shelter), 0, 100);
 
 	/* Set flag to determine Kylar's position at lunch */
 	V.daily.kylar.libraryStalk = rollKylarLibraryStalkFlag();
 
 	if (V.whitney_roof) {
 		delete V.whitney_roof;
+	}
+
+	// daysTillLaying only applies to unfertilised eggs
+	if (V.harpyEggs) V.harpyEggs.daysTillLaying--;
+	if (V.harpyEggsPrevent) {
+		V.harpyEggsPrevent--;
+		if (V.harpyEggsPrevent <= 0) delete V.harpyEggsPrevent;
 	}
 
 	return fragment;
@@ -1018,7 +1039,6 @@ function dawnCheck() {
 function dailyNPCEffects() {
 	const fragment = document.createDocumentFragment();
 
-	delete V.bird.satisfied;
 	delete V.robinlocationoverride;
 
 	// Winter
@@ -1158,6 +1178,12 @@ function dailyNPCEffects() {
 			C.npc.Sydney.chastity.anus = "";
 			V.sydneyAnalShieldComment = true;
 		}
+	}
+
+	// Great Hawk
+	if (C.npc["Great Hawk"].init === 1) {
+		delete V.bird.satisfied;
+		if (V.bird.injured > 1) V.bird.injured--;
 	}
 
 	// Wraith
@@ -2014,3 +2040,23 @@ function earSlimeDaily(passageEffects = false) {
 	}
 }
 DefineMacro("earSlimeDaily", earSlimeDaily);
+
+/**
+ * Overloads:
+ *
+ * 	 (minutes)
+ * 	getTimeString(hours, minutes)
+ * Examples:
+ *
+ * 	getTimeString(20) returns "0:20"
+ * 	getTimeString(1,5) returns "1:05".
+ *
+ * @param {...any} args
+ */
+function getTimeString(...args) {
+	if (args[0] == null) return;
+	const hours = args[1] != null ? args[0] : 0;
+	const minutes = Math.max(args[1] != null ? args[1] : args[0], 0) + hours * 60;
+	return Math.trunc(minutes / 60) + ":" + ("0" + Math.trunc(minutes % 60)).slice(-2);
+}
+window.getTimeString = getTimeString;

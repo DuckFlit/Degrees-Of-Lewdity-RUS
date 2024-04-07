@@ -112,7 +112,7 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 
 	if (["hawk", "harpy"].includes(spermType) || target === "Great Hawk") {
 		if (!["pc", "Great Hawk"].includes(target)) return false;
-		if ((target === "pc" && !V.harpyEggs) || (target === "Great Hawk" && multi === 1)) return false;
+		if (!forcePregnancy && ((target === "pc" && !V.harpyEggs) || (target === "Great Hawk" && multi < 0.85))) return false;
 		forcePregnancy = true;
 	}
 
@@ -236,18 +236,12 @@ const playerPregnancy = (npc, npcType, fatherKnown = false, genital = "vagina", 
 			backupSpermType = "wolf";
 			break;
 		case "hawk":
-			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
-			if (V.pregnancyTesting) {
-				newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, false);
-				backupSpermType = "hawk";
-			}
+			newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, false);
+			backupSpermType = "hawk";
 			break;
 		case "harpy":
-			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
-			if (V.pregnancyTesting) {
-				newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, true);
-				backupSpermType = "hawk";
-			}
+			newPregnancy = pregnancyGenerator.hawk("pc", npc, fatherKnown, genital, true);
+			backupSpermType = "hawk";
 			break;
 	}
 	if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String) && newPregnancy.fetus.length) {
@@ -402,8 +396,6 @@ function endPlayerPregnancy(birthLocation, location) {
 	if (pregnancy.fetus[0].childId) {
 		giveBirthToChildren("pc", birthLocation, location);
 		validBirth = true;
-	} else if (pregnancy.type === "hawk") {
-		// ToDo: Perfect place to give the player unfertilized eggs?
 	}
 
 	switch (pregnancy.type) {
@@ -486,6 +478,9 @@ function npcPregnancyCycle() {
 				pregnancy.npcAwareOf = true;
 			}
 			if (pregnancy.timer > pregnancy.timerEnd) {
+				// Disabled automatic ending of pregnancy for the great hawk, remove if an event is added to support it
+				if (pregnancy.type === "hawk") continue;
+
 				if (pregnancy.timer >= pregnancy.timerEnd + 14 * multiplier) {
 					/* Player has not seen the npc recently, sort out the pregnancy in another way */
 					let birthLocation = "";
@@ -498,6 +493,7 @@ function npcPregnancyCycle() {
 						case "Great Hawk":
 							birthLocation = "tower";
 							location = "tower";
+							wikifier("<<endBirdEggLaying>>");
 							break;
 						case "Alex":
 							if (!C.npc.Alex.pregnancy.missedBirth) {
@@ -536,6 +532,7 @@ function npcPregnancyCycle() {
 			} else {
 				pregnancy.nonCycleRng.push(random(0, 4));
 				pregnancy.nonCycleRng.deleteAt(0);
+				if (npcName === "Great Hawk" && pregnancy.nonCycleRng[0] === 0) pregnancy.nonCycleRngHasEggs = true;
 			}
 		}
 		updateRecordedSperm("vagina", npcName, 1);
@@ -582,6 +579,13 @@ function namedNpcPregnancy(mother, father, fatherSpecies, fatherKnown = false, t
 				namedNpcType = namedNpc.type;
 			}
 			break;
+		case "Great Hawk":
+			if ((V.monsterchance > random(0, 100) && (V.hallucinations >= 1 || V.monsterhallucinations === "f")) || V.greathawkmonster === 2) {
+				namedNpcType = "harpy";
+			} else {
+				namedNpcType = namedNpc.type;
+			}
+			break;
 		default:
 			namedNpcType = namedNpc.type;
 			break;
@@ -615,22 +619,16 @@ function namedNpcPregnancy(mother, father, fatherSpecies, fatherKnown = false, t
 		case "humanhawk":
 		case "hawkhuman":
 		case "hawkhawk":
-			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
-			if (V.pregnancyTesting) {
-				newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", false);
-				backupSpermType = "hawk";
-			}
+			newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", false);
+			backupSpermType = "hawk";
 			break;
 		case "humanharpy":
 		case "harpyhuman":
 		case "harpyhawk":
 		case "hawkharpy":
 		case "harpyharpy":
-			/* ToDo: Enable hawk pregnancy: Remove pregnancyTesting check */
-			if (V.pregnancyTesting) {
-				newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", true);
-				backupSpermType = "hawk";
-			}
+			newPregnancy = pregnancyGenerator.hawk(mother, father, fatherKnown, "vagina", true);
+			backupSpermType = "hawk";
 			break;
 	}
 	if (newPregnancy && !(typeof newPregnancy === "string" || newPregnancy instanceof String) && newPregnancy.fetus.length) {
@@ -850,6 +848,9 @@ function giveBirthToChildren(mother, birthLocation, location, pregnancyOverride)
 				break;
 			case "hawk":
 				V.pregnancyStats.hawkChildren++;
+				// Hawk's born time should be replaced later with the day they hatch
+				V.children[childObject.childId].laid = { day: clone(Time.monthDay), month: clone(Time.monthName), year: clone(Time.year) };
+				V.children[childObject.childId].laidLocation = birthLocation;
 				break;
 		}
 	});
