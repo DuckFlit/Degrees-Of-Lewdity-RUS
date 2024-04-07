@@ -77,7 +77,7 @@
 	<br>
 <<elseif $bird.hunts.unlocked is false>>
 	<!-- First hunt, can't happen during poor flying weather -->
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		<<if $monster is 1>>
 			<<bHe>> looks at you for a moment, clearly surprised. "Would love to hunt with <<wife>>. But now is not a good time for you to learn," <<bhe>> says apologetically, gesturing to the rainy skies.
 		<<else>>
@@ -414,7 +414,7 @@ You spread your wings and leap from the tower.
 <<if !$bird.hunts.loot>>
 	<<set $bird.hunts.loot to {}>>
 	<<set $bird.hunts.lootAmount to 0>>
-	<<set $bird.hunts.weight to ($weather is "rain" ? 1 : 0)>>
+	<<set $bird.hunts.weight to (Weather.precipitation is "rain" ? 1 : 0)>>
 	<<set $bird.hunts.goal to "">>
 	<<set $bird.hunts.direction to "">>
 	<<set $bird.hunts.distanceNorth to 0>>
@@ -428,7 +428,7 @@ You spread your wings and leap from the tower.
 	You ask your spouse if you can hunt for something else.
 <<else>>
 	You catch the wind and fly high up into the air.
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		The rain hinders your flight, but you persist. <<gtiredness>><<tiredness 2>>
 	<</if>>
 <</if>>
@@ -546,7 +546,7 @@ What will you hunt for?
 <<else>>
 	You <<if $bird.hunts.duo is true>>both <</if>>fly $bird.hunts.direction, hoping to spot something.
 <</if>>
-<<if $weather is "rain">>The rain does nothing to help your search.<<elseif $weather is "snow">>The snow does nothing to help your search.<</if>>
+<<if Weather.precipitation is "rain">>The rain does nothing to help your search.<<elseif Weather.precipitation is "snow">>The snow does nothing to help your search.<</if>>
 <br><br>
 <<endevent>>
 
@@ -672,15 +672,18 @@ What will you hunt for?
 			<<case 1>>
 				<!-- Nothing -->
 			<<case 2>>
-				<<switch $weather>>
-					<<case "clear">>
-						<<switch Time.dayState>>
-							<<case "dawn">>The morning sun kisses the horizon, making you feel more alert. <<stress -6>><<lstress>>
-							<<case "day">>You take a moment to relish in the sun's warmth as you glide. <<stress -6>><<lstress>>
-							<<case "dusk">>The setting sun casts striking shadows across the moor. <<stress -6>><<lstress>>
-							<<case "night">>The moor is dark, and seems strangely peaceful from up here.  <<stress -6>><<lstress>>
-						<</switch>>
-					<<case "overcast">>A strong gust of wind washes over you, allowing you to glide in place for a few minutes. <<stress -6>><<lstress>>
+				<<switch Weather.precipitation>>
+					<<case "none">>
+						<<if !Weather.overcast>>
+							<<switch Time.dayState>>
+								<<case "dawn">>The morning sun kisses the horizon, making you feel more alert. <<stress -6>><<lstress>>
+								<<case "day">>You take a moment to relish in the sun's warmth as you glide. <<stress -6>><<lstress>>
+								<<case "dusk">>The setting sun casts striking shadows across the moor. <<stress -6>><<lstress>>
+								<<case "night">>The moor is dark, and seems strangely peaceful from up here.  <<stress -6>><<lstress>>
+							<</switch>>
+						<<else>>
+							A strong gust of wind washes over you, allowing you to glide in place for a few minutes. <<stress -6>><<lstress>>
+						<</if>>
 					<<case "rain">>The rain batters you. <<stress 6>><<gstress>>
 					<<case "snow">>You glide in a sparkling white void above the earth. The snow makes you feel like you're in an otherworldly bubble. <<stress -6>><<trauma -3>><<lstress>><<ltrauma>>
 				<</switch>>
@@ -2098,7 +2101,7 @@ You land near it and begin running. The lurker sees you immediately and starts t
 		<span class="red">The lurker is simply too fast.</span> It begins skittering away even faster, but you don't give up. You chase the lurker all the way to a large crack in the earth, which it slips into.
 		<br><br>
 
-		You come to a stop at the edge, peering over. It's pitch black inside. <<if Time.dayState is "day" and $weather is "clear">>Despite the sun being directly overhead. <<gtrauma>><<trauma 6>><</if>>
+		You come to a stop at the edge, peering over. It's pitch black inside. <<if Time.dayState is "day" and !Weather.overcast>>Despite the sun being directly overhead. <<gtrauma>><<trauma 6>><</if>>
 		<br><br>
 
 		The ground rumbles, and you lose your footing. You don't feel like you're falling. Rather, it feels like the chasm itself moving up to meet you. You quickly understand why.
@@ -3570,7 +3573,7 @@ Those supplies will burn easily.
 	You could teach Remy a thing or two about torching someone's hard work.
 <</if>>
 The Great Hawk could distract them, buying you enough time to throw as much as you can onto the fire.
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	The rain will make it harder to pull off, though.
 <</if>>
 Alternatively, you could simply scare them away.
@@ -3579,7 +3582,7 @@ Alternatively, you could simply scare them away.
 Your spouse awaits your decision.
 <br><br>
 
-<<link [[Burn their supplies|Bird Hunt Tent Sabotage 2]]>><</link>><<if $farm.aggro>><<laggro>><</if>><<if $weather is "rain">><<athleticsdifficulty 400 800>><<else>><<athleticsdifficulty 200 600>><</if>><<crime "destruction">>
+<<link [[Burn their supplies|Bird Hunt Tent Sabotage 2]]>><</link>><<if $farm.aggro>><<laggro>><</if>><<if Weather.precipitation is "rain">><<athleticsdifficulty 400 800>><<else>><<athleticsdifficulty 200 600>><</if>><<crime "destruction">>
 <br>
 <<link [[Just scare them off|Bird Hunt Tent Scare]]>><</link>>
 <br>
@@ -3610,7 +3613,7 @@ You land away from the campsite, and give <<bhim>> the signal. <<bHe>> lets out 
 	<span class="red">A terrible idea strikes you.</span> Those tents look flammable, too.
 	<br><br>
 
-	<<link [[Burn their tents|Bird Hunt Tent Burn]]>><</link>><<if $farm.aggro>><<llaggro>><</if>><<if $weather is "rain">><<athleticsdifficulty 500 1000>><<dancedifficulty 500 1000>><<else>><<athleticsdifficulty 300 1000>><<dancedifficulty 300 1000>><</if>><<dangerousText>>
+	<<link [[Burn their tents|Bird Hunt Tent Burn]]>><</link>><<if $farm.aggro>><<llaggro>><</if>><<if Weather.precipitation is "rain">><<athleticsdifficulty 500 1000>><<dancedifficulty 500 1000>><<else>><<athleticsdifficulty 300 1000>><<dancedifficulty 300 1000>><</if>><<dangerousText>>
 	<br>
 	<<link [[Leave while you can|Bird Hunt Tent Flee]]>><</link>>
 	<br>
