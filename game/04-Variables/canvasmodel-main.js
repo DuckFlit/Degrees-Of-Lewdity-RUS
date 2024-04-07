@@ -1967,6 +1967,13 @@ Renderer.CanvasModels["main"] = {
 					return ZIndices.horns
 				}
 			},
+			masksrcfn(options){
+				if (options.demon_horns_layer !== "front") {
+					return options.head_mask_src
+				} else {
+					return null
+				}
+			},
 			z: ZIndices.horns,
 			filters: ["demon_horns"],
 			animation: "idle"
@@ -2130,6 +2137,13 @@ Renderer.CanvasModels["main"] = {
 					return ZIndices.over_head
 				} else {
 					return ZIndices.horns
+				}
+			},
+			masksrcfn(options){
+				if (options.cow_horns_layer !== "front") {
+					return options.head_mask_src
+				} else {
+					return null
 				}
 			},
 			animation: "idle"
