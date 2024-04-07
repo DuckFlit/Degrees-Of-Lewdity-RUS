@@ -880,6 +880,14 @@ setup.feats = {
 		filter: ["All", "Discoveries"],
 		hint: "Hint: Lost in the mire.",
 	},
+	/*"Birds of a Feather": {
+		title: "Birds of a Feather",
+		desc: "Flock together.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Rescue an orphan of another species.",
+	},*/
 	"Terror's Equal": {
 		title: "Terror's Equal",
 		desc: "Filled the tower with impressive hunting trophies.",
