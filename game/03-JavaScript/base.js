@@ -307,10 +307,12 @@ function outfitChecks() {
 	T.overOutfit = (V.worn.over_lower.outfitSecondary && V.worn.over_lower.outfitSecondary[1] === V.worn.over_upper.name) || false;
 
 	T.underBottoms = V.worn.lower.name === "naked" && V.worn.under_lower.type.includes("covered");
+	T.underTop = V.worn.upper.name === "naked" && V.worn.under_upper.type.includes("covered");
 	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
 	T.middleNaked = V.worn.lower.name === "naked" && V.worn.upper.name === "naked";
 	T.overNaked = V.worn.over_lower.name === "naked" && V.worn.over_upper.name === "naked";
-	T.topless = V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && V.worn.lower.covers_top !== 1;
+	T.topless =
+		V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && !V.worn.lower.type.includes("covered");
 	T.bottomless = V.worn.over_lower.name === "naked" && V.worn.lower.name === "naked" && V.worn.under_lower.name === "naked";
 	T.fullyNaked = T.topless && T.bottomless;
 }
