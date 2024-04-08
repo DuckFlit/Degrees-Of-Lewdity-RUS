@@ -147,7 +147,7 @@ Weather.Sky = (() => {
 		constructor(settings, date, expandFactor = 0.1) {
 			this.settings = settings;
 			this.expandFactor = expandFactor;
-			this.bottomOffset = 100; // Pixels below the horizon which is the max Y value
+			this.bottomOffset = 100 * setup.SkySettings.scale;
 			this.setPosition(date);
 		}
 
@@ -157,7 +157,6 @@ Weather.Sky = (() => {
 		setPosition(date) {
 			const currentTime = Time.getSecondsSinceMidnight(date);
 
-			// Get a percentage of time - modified by the expandFactor
 			const riseTimeInSeconds = this.settings.riseTime * TimeConstants.secondsPerHour;
 			const setTimeInSeconds = this.settings.setTime * TimeConstants.secondsPerHour;
 			const adjustedSetTime = setTimeInSeconds < riseTimeInSeconds ? setTimeInSeconds + TimeConstants.secondsPerDay : setTimeInSeconds;
@@ -171,12 +170,12 @@ Weather.Sky = (() => {
 			const timePercent = Math.clamp(elapsed / expandedDuration, 0, 1);
 			const adjustedTimePercent = (timePercent - this.expandFactor) / (1 - 2 * this.expandFactor);
 
-			// Calculate the arc
+			// Adjust these values based on the scale
 			const horizon = this.settings.path.horizon * setup.SkySettings.scale;
-			const bottomY = horizon + this.bottomOffset;
-			const peakY = this.settings.path.peakY * setup.SkySettings.scale;
 			const startX = this.settings.path.startX * setup.SkySettings.scale;
+			const bottomY = horizon + this.bottomOffset;
 			const endX = this.settings.path.endX * setup.SkySettings.scale;
+			const peakY = this.settings.path.peakY * setup.SkySettings.scale;
 			const amplitude = (peakY - bottomY) / 2;
 			const baselineY = bottomY + amplitude;
 			const factor = 1 - 4 * Math.pow(adjustedTimePercent - 0.5, 2);
@@ -185,14 +184,15 @@ Weather.Sky = (() => {
 			this.position = {
 				x: lerp(adjustedTimePercent, startX, endX),
 				y: baselineY + amplitude * factor,
-				bottom: bottomY + amplitude,
+				bottom: bottomY + amplitude, // Consider if scaling is needed here based on your canvas logic
 			};
 
 			const steepness = 5;
-			this.setFactor(steepness, setup.SkySettings.scale);
+			this.setFactor(steepness, 1);
 		}
 
 		setFactor(steepness, amplitude) {
+			// Adjust based on scale
 			const horizon = this.settings.path.horizon * setup.SkySettings.scale;
 			const peakY = this.settings.path.peakY * setup.SkySettings.scale;
 			const x = (this.position.y - horizon) / (peakY - horizon);

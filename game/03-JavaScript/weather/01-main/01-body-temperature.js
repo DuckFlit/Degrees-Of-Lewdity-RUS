@@ -29,18 +29,27 @@
 
 Weather.BodyTemperature = (() => {
 	/* Be careful when modifying the factors, as small changes can have big effects */
+
+	// General
 	const baseBodyTemperature = 37; // The normal body temperature in degrees Celsius.
-	const baseHeatGeneration = 0.05; // The base rate of heat generation by the body.
+	const tempApproachRate = 0.013; // Will nudge the temperature towards the base temperature by this rate (per degree celcius)
 
-
-
-
-
+	// Heat generation
+	const baseHeatGeneration = 0.07; // The base rate of heat generation by the body.
 	const activityRate = 0.08; // How much physical activity affects heat generation.
-	const baseDissipation = 0.05; // The base rate of heat dissipation without modifiers.
-	const dissipationRate = 0.0022; // The curve at higher temperatures where dissipation levels out
-	const insulationCap = 60; // Target warmth cap where its effectiveness is reduced
-	const insulationMultiplier = 1.5; // The effectiveness of clothing warmth
+
+	// Heat dissipation
+	const baseDissipation = 0.04; // The base rate of heat dissipation without modifiers.
+	const dissipationRate = 0.0035; // The curve at higher temperatures where dissipation levels out
+
+	// Clothing
+	const baseInsulation = 5;
+	const insulationCap = 70; // Target warmth cap where its effectiveness is reduced
+	const insulationMultiplier = 1; // The effectiveness of clothing warmth
+
+	// Wetness
+	const maxWetness = 200;
+	const maxClothingFactor = 0.8; // Max wetness outside of water (80%)
 	const wetnessFactor = 0.5; // 50% increase in dissipation at full wetness
 
 	// Effects from temperature
@@ -98,14 +107,14 @@ Weather.BodyTemperature = (() => {
 	 * Updates the body temperature based on air temperature and time elapsed.
 	 * Called from time.js
 	 *
-	 * @param {number} outsideTemperature The current air temperature.
+	 * @param {number} temperature The current air temperature.
 	 * @param {number} minutes The time elapsed in minutes.
 	 */
-	function update(outsideTemperature, minutes) {
+	function update(temperature, minutes) {
 		if (T.bodyActivity === undefined) resetActivity();
 
 		if (V.inwater && V.outside) {
-			outsideTemperature = Weather.waterTemperature;
+			temperature = Weather.waterTemperature;
 		}
 
 		// To prevent exaggerated changes in large time skips and for performance reasons
@@ -113,10 +122,13 @@ Weather.BodyTemperature = (() => {
 		// Won't affect sleep, since it runs in hourly chunks
 		const scaledMinutes = Math.min(minutes, 60 + Math.sqrt(Math.max(minutes - 60, 0)));
 
-		const dissipation = calculateHeatDissipation(outsideTemperature);
-		console.log("DISSIPATION", dissipation);
-		V.player.bodyTemperature = round(V.player.bodyTemperature + (calculateHeatGeneration() - dissipation) * scaledMinutes, 2);
-		console.log("GENERATION", calculateHeatGeneration());
+		const generation = calculateHeatGeneration(V.player.bodyTemperature);
+		const dissipation = calculateHeatDissipation(temperature);
+		const newTemperature = round(V.player.bodyTemperature + (generation - dissipation) * scaledMinutes, 2);
+
+		// Nudge the temperature slowly towards the base temperature
+		const baseDifference = newTemperature - baseBodyTemperature;
+		V.player.bodyTemperature = newTemperature + baseDifference * -tempApproachRate * scaledMinutes;
 		resetActivity();
 	}
 
@@ -128,8 +140,6 @@ Weather.BodyTemperature = (() => {
 	 */
 	function calculateWetness() {
 		if (V.inwater) return 1; // 100% wet if in water
-		const maxWetness = 200;
-		const maxClothingFactor = 0.8; // Max 80%  outside of water
 		const upper = (Math.max(V.overupperwet, V.upperwet, V.underupperwet) / maxWetness) * (maxClothingFactor / 2);
 		const lower = (Math.max(V.overlowerwet, V.lowerwet, V.underlowerwet) / maxWetness) * (maxClothingFactor / 2);
 		return Math.min(upper + lower, maxClothingFactor);
@@ -144,23 +154,19 @@ Weather.BodyTemperature = (() => {
 	 * @param {number} outsideTemperature The current air temperature.
 	 * @returns {number} The adjusted insulation factor.
 	 */
-	function calculateHeatDissipation(outsideTemperature, body, warmth2) {
-		const bodyTemperature = body ?? V.player.bodyTemperature;
-		const temperatureDifference = Math.max(0, bodyTemperature - outsideTemperature);
+	function calculateHeatDissipation(temperature, warmth2) {
+		const temperatureDifference = Math.max(0, V.player.bodyTemperature - temperature);
 
 		// Base dissipation
-
 		const dissipation = temperatureDifference * dissipationRate;
 		const totalDissipation = baseDissipation + dissipation;
 
 		// Insulation reduces dissipation
 		const warmth = warmth2 ?? getTotalWarmth();
 		const insulationModifier = Math.exp((-warmth * insulationMultiplier) / insulationCap);
-		console.log("ins", (-warmth * insulationMultiplier) / insulationCap, "exp", Math.exp(-warmth / insulationCap));
 
 		// Wetness increases dissipation
 		const wetnessMultiplier = 1 + calculateWetness() * wetnessFactor;
-		console.log("totalDissipation", totalDissipation, "insulationModifier", insulationModifier, "wetnessMultiplier", wetnessMultiplier);
 
 		// Adjust dissipation based on insulation and temperature difference.
 		return totalDissipation * insulationModifier * wetnessMultiplier;
@@ -169,15 +175,10 @@ Weather.BodyTemperature = (() => {
 	/**
 	 * Calculates heat generation based on the current activity level and difference from the base body temperature.
 	 * Increases heat generation if body temperature is below base and decreases if above.
-	 *
-	 * @returns {number} The calculated heat generation value.
 	 */
-	function calculateHeatGeneration(temp) {
-		const temperature = temp ?? V.player.bodyTemperature;
+	function calculateHeatGeneration(bodyTemperature) {
 		const activityHeatGeneration = activityRate * activityLevel();
-		console.log("activity rate", activityRate, activityHeatGeneration);
-		const temperatureDifference = temperature - baseBodyTemperature;
-		console.log("temperature", temperature, "difference:", temperatureDifference);
+		const temperatureDifference = bodyTemperature - baseBodyTemperature;
 		return baseHeatGeneration + activityHeatGeneration - 0.01 * temperatureDifference;
 	}
 
@@ -193,23 +194,30 @@ Weather.BodyTemperature = (() => {
 	}
 
 	function getTotalWarmth() {
-		return Object.values(V.worn).reduce((acc, item) => {
-			return acc + (item.warmth || 0);
-		}, 0);
+		return (
+			baseInsulation +
+			Object.values(V.worn).reduce((acc, item) => {
+				return acc + (item.warmth || 0);
+			}, 0)
+		);
 	}
 
 	/* Debug */
-	function getRestingPoint(iterations = 120, naked = undefined, outsideTemperature) {
-		outsideTemperature = outsideTemperature ?? (V.outside ? Weather.temperature : Weather.insideTemperature);
+	function getRestingPoint(iterations = 120, warmth = undefined, temperature) {
+		temperature = temperature ?? (V.outside ? Weather.temperature : Weather.insideTemperature);
 		let temp = V.player.bodyTemperature;
 		if (V.inwater && V.outside) {
-			outsideTemperature = Weather.waterTemperature;
+			temperature = Weather.waterTemperature;
 		}
 		let dissipation, generation;
 		for (let i = 0; i < iterations; i++) {
-			dissipation = calculateHeatDissipation(outsideTemperature, naked);
-			generation = calculateHeatGeneration();
+			generation = calculateHeatGeneration(temp);
+			dissipation = calculateHeatDissipation(temperature, warmth);
 			temp = round(temp + (generation - dissipation) * 15, 2);
+
+			const baseDifference = temp - baseBodyTemperature;
+			temp = temp + baseDifference * -tempApproachRate * 15;
+
 		}
 		return { temp, dissipation, generation };
 	}

@@ -15,6 +15,10 @@ setup.Locations = {
 		if (V.chef_state >= 7) return "cafe_construction";
 		return "cafe";
 	},
+	// Override the pool location
+	pool: () => {
+		return "school";
+	},
 	/*
 	TEMPLE
 	<<case "temple">>
@@ -1209,6 +1213,18 @@ setup.LocationImages = {
 				delay: () => 0,
 			},
 		},
+	},
+	school: {
+		folder: "school",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			autumn: {
+				image: "autumn.png",
+			},
+		},
+		snow: "snow.png",
 	},
 	school_rear_courtyard: {
 		folder: "school_rear_courtyard",
