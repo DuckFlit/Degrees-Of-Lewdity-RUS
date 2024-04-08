@@ -78,7 +78,7 @@ function masturbationEffects() {
 			delete V.corruptionMasturbationCount;
 		} else {
 			if (V.orgasmdown >= 2) {
-				if (V.corruptionMasturbationCount === undefined || V.corruptionMasturbationCount === null) V.corruptionMasturbationCount = random(2, 6);
+				if (isNaN(V.corruptionMasturbationCount)) V.corruptionMasturbationCount = random(2, 6);
 				if (V.corruptionMasturbationCount <= 0) {
 					V.corruptionMasturbation = false;
 					delete V.corruptionMasturbationCount;
