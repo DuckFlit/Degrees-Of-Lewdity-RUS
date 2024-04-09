@@ -58,7 +58,6 @@ Weather.Thermometer = (() => {
 			update();
 		});
 	}
-	
 
 	function update() {
 		if (!allImagesLoaded) return;
