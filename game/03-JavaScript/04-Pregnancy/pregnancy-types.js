@@ -587,7 +587,7 @@ window.pregnancyGenerator = {
 
 			const featherColour = ["white", "brown"];
 
-			const eggTimer = new DateTime(Time.date).addHours(random(24 * 23, 24 * 30)).timeStamp;
+			const eggTimer = new DateTime(Time.date).addDays(random(23, 30)).timeStamp;
 
 			for (let i = 0; i < count; i++) {
 				// Hard coded limit
