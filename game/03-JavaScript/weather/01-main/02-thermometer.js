@@ -55,10 +55,10 @@ Weather.Thermometer = (() => {
 			thermometerCanvas.ctx.imageSmoothingEnabled = false;
 			element.append(thermometerCanvas.canvas);
 			allImagesLoaded = true;
-
 			update();
 		});
 	}
+	
 
 	function update() {
 		if (!allImagesLoaded) return;
