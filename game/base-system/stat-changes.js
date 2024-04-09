@@ -697,7 +697,7 @@ var statChange = (() => {
 		}
 		amount = Number(amount);
 		if (amount) {
-			V["acceptance_" + type] = Math.clamp(V["acceptance_" + type] + amount, 0, 1000);
+			V["acceptance_" + type] = Math.clamp(V["acceptance_" + type] + amount * 6, 0, 1000);
 		}
 	}
 	DefineMacro("acceptance", acceptance);

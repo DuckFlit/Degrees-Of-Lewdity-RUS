@@ -818,7 +818,7 @@
 			<br>
 		<</if>>
 	<<else>>
-		<<if $time.dayState is "night">>
+		<<if Time.dayState is "night">>
 			<<if $daily.telescopeBlood and isBloodmoon()>>
 				<span class="red">You don't want to look at the sky right now.</span>
 			<<else>>
@@ -1079,18 +1079,21 @@
 		<</if>>
 		<<if $bird.hunts.distanceNorth is 5>>
 			The farmlands stretch to the north, marking the end of your territory.
+			<br>
 		<<elseif $bird.hunts.distanceEast is 5>>
 			Going any further east would put you in unfamiliar, dangerous territory.
+			<br>
 		<<elseif $bird.hunts.distanceNorth is -5>>
 			You feel your sense of direction failing the further south you travel. It would be wise to turn around.
+			<br>
 		<<elseif $bird.hunts.distanceEast is -5>>
 			<<if $bogProgress gte 1>>
 				The bog stretches to the west, and the forest beyond that.
 			<<else>>
 				The forest stretches to the west.
 			<</if>>
+			<br>
 		<</if>>
-		<br>
 		Which direction will you fly?
 		<br>
 		<<capture _hoursPassed _minutesPassed _fatigueMod _flightTime _fatigueText>>
@@ -1277,6 +1280,7 @@
 				<</if>>
 				<<set $bird.hunts.loot.valuables[$_info] += $_amount>>
 				<<set $bird.hunts.lootAmount += $_amount>>
+				<span class="green">$_amount $_info<<if $_amount gte 2>><<if $_info is "watch">>es<<else>>s<</if>><</if>> added.</span>
 			<<else>>
 				<<run Errors.report("Invalid special loot of type; " + $_looted + " " + _args[2])>>
 				<<exit>>
@@ -1346,6 +1350,7 @@
 				<</if>>
 				<<set $bird.hunts.loot.clothing[$_item.name].amount += $_amount>>
 				<<set $bird.hunts.lootAmount += $_amount>>
+				<span class="green"><<clothingicon $_fullClothingObj $_lootClothingSlot>> $_item.name added.</span>
 			<<else>>
 				<<run Errors.report("Invalid special loot of type; " + $_looted + " " + _args[2])>>
 				<<exit>>
@@ -1359,6 +1364,22 @@
 			<</if>>
 			<<set $bird.hunts.loot[$_looted] += $_amount>>
 			<<set $bird.hunts.lootAmount += $_amount>>
+			<span class="green"><<mooricon $_looted>> $_amount
+		<<switch $_looted>>
+			<<case "tools">>
+				toolbox
+			<<case "sticks">>
+				stick<<if $_amount gte 2>>s<</if>>
+			<<case "leaves">>
+				<<if $_amount gte 2>>leaves<<else>>leaf<</if>>
+			<<case "lurkers">>
+				lurker<<if $_amount gte 2>>s<</if>>
+			<<case "feathers">>
+				feather<<if $_amount gte 2>>s<</if>>
+			<<default>>
+				$_looted 
+			<</switch>>
+			added.</span>
 		<</if>>
 		<<switch $_looted>>
 			<<case "tarp">><<set $bird.hunts.weight += 5>>
@@ -1505,7 +1526,7 @@
 				piece<<if $_tempNum gte 2>>s<</if>> of treated leather.
 			<<case "feathers">>
 				<<set $_matLoot += $_tempNum>><<set $bird.materials.feathers += $_tempNum>>
-				feather<<if $_tempNum gte 2>>s<</if>>.				
+				feather<<if $_tempNum gte 2>>s<</if>>.
 			<<case "tarp">>
 				<<set $_hordeLoot++>><<set $bird.upgrades.tarp to 1>>
 				large tarp.
@@ -1673,9 +1694,8 @@
 		<br>
 	<</if>>
 
-	<<mooricon "wood">>
 	<<if $bird.materials.wood is 0>>
-		<span class="red">No wood to add.</span>
+		<<mooricon "wood">><span class="red">No wood to add.</span>
 		<br>
 	<<elseif _maxTimeAllowed gt 0>>
 		<<set _timeWood to 240>>
@@ -1684,7 +1704,7 @@
 		<</if>>
 		<<set _timeLteMax to _timeWood lte _maxTimeAllowed>>
 
-		You have $bird.materials.wood piece<<if $bird.materials.wood gte 2>>s<</if>> of wood.
+		<<mooricon "wood">>You have $bird.materials.wood piece<<if $bird.materials.wood gte 2>>s<</if>> of wood.
 		<br>
 		<<link "Add 1 wood">>
 			<<set $bird.materials.wood-->>
@@ -1713,9 +1733,8 @@
 	<</if>>
 	<br>
 
-	<<mooricon "sticks">>
 	<<if $bird.materials.sticks is 0>>
-		<span class="red">No sticks to add.</span>
+		<<mooricon "sticks">><span class="red">No sticks to add.</span>
 		<br>
 	<<elseif _maxTimeAllowed gt 0>>
 		<<set _timeSticks to 60>>
@@ -1724,7 +1743,7 @@
 		<</if>>
 		<<set _timeLteMax to _timeSticks lte _maxTimeAllowed>>
 
-		You have $bird.materials.sticks stick<<if $bird.materials.sticks gte 2>>s<</if>>.
+		<<mooricon "sticks">>You have $bird.materials.sticks stick<<if $bird.materials.sticks gte 2>>s<</if>>.
 		<br>
 		<<link "Add 1 stick">>
 			<<set $bird.materials.sticks-->>
@@ -1753,7 +1772,7 @@
 	<</if>>
 	<br>
 
-	<<if !$bird.upgrades.rack and !$bird.upgrades.pot>><<exit>><</if>>
+	<<if !$bird.upgrades.rack and $bird.upgrades.pot lt 2>><<exit>><</if>>
 
 	<<mooricon "lurkers">>
 	<<if $bird.materials.lurkers is 0 and ($bird.upgrades.rack gte 1 or $bird.upgrades.pot gte 2)>>
@@ -1765,6 +1784,9 @@
 		<<elseif $bird.upgrades.pot gte 2>>
 			<span class="red">No lurkers to cook.</span>
 		<</if>>
+		<br>
+	<<elseif $bird.materials.lurkers gte 1>>
+		You have $bird.materials.lurkers lurker<<if $bird.materials.lurkers gte 2>>s<</if>>.
 		<br>
 	<</if>>
 
@@ -1937,7 +1959,7 @@
 							sticks: 2,
 							leaves: 6,
 						}>>
-						<<set $_upgrade.activityRequired to "build">>
+						<<set $_upgrade.activityRequired to ["build","brood","rest","sleep"]>>
 						<<set $_upgrade.housekeeping to 300>>
 					<<case 2>>
 						<span class="teal">Cushioned nest (2)</span>: Improves sleep quality. Comfy.
@@ -1955,7 +1977,7 @@
 						<<set $_upgrade.upgradesRequired to {
 							tools: 1
 						}>>
-						<<set $_upgrade.activityRequired to "build">>
+						<<set $_upgrade.activityRequired to ["build","brood","rest","sleep"]>>
 						<<set $_upgrade.housekeeping to 500>>
 					<<case 3>>
 						<span class="green">Luxurious nest (3)</span>: Improves sleep quality a lot. Pleasing to look at.
@@ -2180,7 +2202,7 @@
 							shelter: 2,
 							nest: 2
 						}>>
-						<<set $_upgrade.activityRequired to "build">>
+						<<set $_upgrade.activityRequired to ["build","brood","rest","sleep"]>>
 						<<set $_upgrade.housekeeping to 600>>
 					<<case 3>>
 						<span class="green">Impressive hunting trophies (3)</span>: Large stress reduction after each successful hunt.
@@ -2202,7 +2224,7 @@
 							nest: 3,
 							wardrobe: 1
 						}>>
-						<<set $_upgrade.activityRequired to "build">>
+						<<set $_upgrade.activityRequired to ["build","brood","rest","sleep"]>>
 						<<set $_upgrade.housekeeping to 800>>
 					<<case 4>>
 						<span class="gold">Legendary hunting trophies (4)</span>: Stress is entirely removed after a successful hunt, and some trauma is reduced. Terror has found its equal.
@@ -2285,11 +2307,11 @@
 
 		<<if $_upgrade.activityRequired>>
 			<br>
-			<<if $bird.state isnot "home" or $bird.activity isnot $_upgrade.activityRequired>>
-				<span class="red">Requires the Great Hawk to be home and building the nest.</span>
+			<<if $bird.state isnot "home" or !$_upgrade.activityRequired.includes($bird.activity)>>
+				<span class="red">Requires the Great Hawk to be home and at the nest.</span>
 				<<set $_disableBuild to true>>
 			<<else>>
-				<span class="green">Requires the Great Hawk to be home and building the nest.</span>
+				<span class="green">Requires the Great Hawk to be home and at the nest.</span>
 			<</if>>
 		<</if>>
 
@@ -2378,7 +2400,7 @@
 					})>>
 				<</if>>
 				<<if _towerUpgrades[_upgrade].housekeeping gt 0>>
-					<<set _houseKeepingUp to ($bird.upgrades[_upgrade] * 2)>>
+					<<set _houseKeepingUp to ($bird.upgrades[_upgrade] * 4)>>
 					<<housekeeping _houseKeepingUp>>
 				<</if>>
 			<</link>>
