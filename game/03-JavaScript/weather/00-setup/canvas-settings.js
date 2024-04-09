@@ -1,6 +1,6 @@
 setup.SkySettings = {
 	canvasSize: [64, 192],
-	scale: 0.5, // Renders the canvas in half the resolution, then scales up - set to 1 to render in the original resolution
+	scale: 0.5, // Renders the canvas in half the resolution, then scales up - set it to 1 to render in the original resolution
 	lightsTime: {
 		on: 19,
 		off: 7,

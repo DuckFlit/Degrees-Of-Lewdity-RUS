@@ -29,6 +29,8 @@ Weather.Thermometer = (() => {
 	const loaded = new ObservableValue(false);
 
 	function load() {
+		thermometerCanvas = new Weather.Sky.Canvas(0, 0);
+
 		const loadPromises = Object.entries(images).map(([key, imageInfo]) => {
 			return new Promise((resolve, reject) => {
 				const img = new Image();
@@ -42,7 +44,6 @@ Weather.Thermometer = (() => {
 		});
 
 		Promise.all(loadPromises).then(() => {
-			thermometerCanvas = new Weather.Sky.Canvas(0, 0);
 			const baseImg = images.baseImg.img;
 			size.width = baseImg.width * size.scaleFactor;
 			size.height = baseImg.height * size.scaleFactor;
