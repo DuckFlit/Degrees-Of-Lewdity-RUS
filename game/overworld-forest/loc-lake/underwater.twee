@@ -8,50 +8,50 @@
 <<elseif wraithCanHunt() and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
 	<<wHunt "lake">>
 <<else>>
-	<<if Time.season is "winter">>
+	<<if Weather.isFreezing>>
 		You are beneath the lake. You swim beneath a crystal ceiling, between tall weeds.
 		<<if Time.dayState is "night">>
-			<<if $weather is "snow">>
+			<<if Weather.isSnow>>
 				The ice is pitch black.
-			<<elseif $weather is "clear">>
-				Pale moonlight spills through.
-			<<else>>
+			<<elseif Weather.is("heavyClouds")>>
 				The ice is black.
+			<<else>>
+				Pale moonlight spills through.
 			<</if>>
 		<<else>>
-			<<if $weather is "snow">>
+			<<if Weather.isSnow>>
 				The ice is white.
-			<<elseif $weather is "clear">>
-				Sunlight pierces through.
-			<<else>>
+			<<elseif Weather.is("heavyClouds")>>
 				The ice is a dull grey.
+			<<else>>
+				Sunlight pierces through.
 			<</if>>
 		<</if>>
 	<<else>>
 		You are beneath the lake. You swim over dark silt and between tall weeds.
 		<<if Time.dayState is "night">>
-			<<if $weather is "rain">>
+			<<if Weather.precipitation is "rain">>
 				The water is black. It dulls the sound of the rain above.
-			<<elseif $weather is "clear">>
-				The plants glisten in moonlight.
-			<<else>>
+			<<elseif Weather.is("heavyClouds")>>
 				The water is black.
+			<<else>>
+				The plants glisten in moonlight.
 			<</if>>
 		<<else>>
-			<<if $weather is "rain">>
+			<<if Weather.precipitation is "rain">>
 				The water is dark. It dulls the sound of the rain above.
-			<<elseif $weather is "clear">>
-				Sunlight pierces the gloom.
-			<<else>>
+			<<elseif Weather.is("heavyClouds")>>
 				The water is dark.
+			<<else>>
+				Sunlight pierces the gloom.
 			<</if>>
 		<</if>>
 	<</if>>
-	<<if !Time.schoolDay and $weather is "snow" and Time.dayState is "day" and $mason_ice_lake gte 1>>
+	<<if !Time.schoolDay and Weather.isSnow and Time.dayState is "day" and $mason_ice_lake gte 1>>
 		You glimpse Mason through the plants.
 	<</if>>
 	<br><br>
-	<<if !Time.schoolDay and $weather is "snow" and Time.dayState is "day" and $mason_ice_lake is undefined>>
+	<<if !Time.schoolDay and Weather.isSnow and Time.dayState is "day" and $mason_ice_lake is undefined>>
 		<<set $mason_ice_lake to 1>>
 		<<npc Mason>><<person1>>
 		A shape looms from the dark. Strong arms clutch you, pressing you against a sleek muscular body as you are carried back towards the light.
@@ -75,7 +75,7 @@
 		<br>
 		<<link [[Get angry|Lake Mason Angry]]>><<def 1>><<npcincr Mason love -1>><</link>><<llove>>
 		<br>
-	<<elseif !Time.schoolDay and $weather is "snow" and Time.dayState is "day" and $mason_ice_lake is 1 and random(1, 5) is 5>>
+	<<elseif !Time.schoolDay and Weather.isSnow and Time.dayState is "day" and $mason_ice_lake is 1 and random(1, 5) is 5>>
 		<<npc Mason>><<person1>>
 		Mason spots you, and speeds in your direction. <<He>> scoops you up in <<his>> arms, and kicks towards the light. You're pushed onto the ice.
 		<br><br>
@@ -102,10 +102,10 @@
 			<<swimicon>><<link [[Swim inside ruin|Lake Ruin]]>><<wateraction>><</link>><<loxygen>>
 		<</if>>
 		<br><br>
-		<<if !Time.schoolDay and $weather is "snow" and Time.dayState is "day">>
+		<<if !Time.schoolDay and Weather.isSnow and Time.dayState is "day">>
 			<<set $lake_ice_broken to 1>>
 		<</if>>
-		<<if Time.season is "winter">>
+		<<if Weather.isFreezing>>
 			<<if $lake_ice_broken is undefined>>
 				<<swimicon "up">><<link [[Surface|Lake Underwater Ice]]>><</link>>
 				<br>
@@ -366,7 +366,7 @@ You are deep in the lake ruin, in a small room with a plinth.
 	An ivory necklace sits atop it. It's studded with blue jewels.
 <</if>>
 <<set _leave to 1>>
-<<set _bmoon to isBloodmoon()>>
+<<set _bmoon to Time.isBloodMoon()>>
 <<set _parasite to !!numberOfEarSlime()>>
 <<if _bmoon>>
 	/* Display these on every blood moon entry */
@@ -430,7 +430,7 @@ You lift the necklace from the plinth. The craftsmanship is masterful, and you g
 <<if C.npc["Ivory Wraith"].init is 1>>
 	<<set C.npc["Ivory Wraith"].lust to 20>>
 <</if>>
-<<if isBloodmoon()>>
+<<if Time.isBloodMoon()>>
 	You suddenly hear pounding on the walls all around you. <<if $wraith.seen gte 1>>A familiar<<else>>An unfamiliar<</if>> voice cries out, and it feels like something's grabbing at your arms and legs. You instinctively flail and push yourself backwards through the water. <<trauma 12>><<ggtrauma>>
 	<br><br>
 	It dies down after a few moments, leaving you shaken.
@@ -833,7 +833,7 @@ A warmth spreads through your fingers, up your arm and into the rest of your bod
 		Several more pairs of arms creep around you.
 	<</if>>
 	<br><br>
-	<<if $wraith.state is "haunt" and isBloodmoon()>>
+	<<if $wraith.state is "haunt" and Time.isBloodMoon()>>
 		<<link [[Next|Wraith Caught]]>><<set $wraith.exit to "lake_ruin">><</link>>
 	<<else>>
 		<<link [[Next|Wraith Underwater Rape]]>><<set $molestationstart to 1>><</link>>
@@ -957,7 +957,7 @@ The creature recoils from you and disappears into darkness. <<tearful>> you turn
 	<<set $combat to 1>>
 
 	<<set $enemytype to "swarm">>
-	<<if $slimedisable is "f" and isBloodmoon()>>
+	<<if $slimedisable is "f" and Time.isBloodMoon()>>
 		<<swarminit "pale slimes" "slime mass" "moving towards you" "encircle you" "fend off" 8 0>>
 	<<else>>
 		<<swarminit "fish" "swarm" "moving towards you" "encircle you" "fend off" 1 7>>
@@ -1004,7 +1004,7 @@ The creature recoils from you and disappears into darkness. <<tearful>> you turn
 	<<endcombat>>
 	<<passoutlake>>
 <<else>>
-	<<tearful>> you escape the swarms of <<if $slimedisable is "f" and isBloodmoon()>>pale slimes<<else>>fish<</if>>. They don't pursue.
+	<<tearful>> you escape the swarms of <<if $slimedisable is "f" and Time.isBloodMoon()>>pale slimes<<else>>fish<</if>>. They don't pursue.
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>

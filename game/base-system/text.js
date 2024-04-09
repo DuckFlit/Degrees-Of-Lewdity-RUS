@@ -192,9 +192,9 @@ statDisplay.create("ggglust", npc => statDisplay.statChange(npc ? `${npc}'s Lust
 statDisplay.create("lrtrauma", override => statDisplay.statChange("Robin's Trauma", -1, "green", () => C.npc.Robin.trauma > 0 || override));
 statDisplay.create("llrtrauma", override => statDisplay.statChange("Robin's Trauma", -2, "green", () => C.npc.Robin.trauma > 0 || override));
 statDisplay.create("lllrtrauma", override => statDisplay.statChange("Robin's Trauma", -3, "green", () => C.npc.Robin.trauma > 0 || override));
-statDisplay.create("grtrauma", override => statDisplay.statChange("Robin's Trauma", 1, "red", () => C.npc.Robin.trauma >= 20 || override));
-statDisplay.create("ggrtrauma", override => statDisplay.statChange("Robin's Trauma", 2, "red", () => C.npc.Robin.trauma >= 20 || override));
-statDisplay.create("gggrtrauma", override => statDisplay.statChange("Robin's Trauma", 3, "red", () => C.npc.Robin.trauma >= 20 || override));
+statDisplay.create("grtrauma", override => statDisplay.statChange("Robin's Trauma", 1, "green", () => C.npc.Robin.trauma >= 20 || override));
+statDisplay.create("ggrtrauma", override => statDisplay.statChange("Robin's Trauma", 2, "green", () => C.npc.Robin.trauma >= 20 || override));
+statDisplay.create("gggrtrauma", override => statDisplay.statChange("Robin's Trauma", 3, "green", () => C.npc.Robin.trauma >= 20 || override));
 
 statDisplay.create("lattention", () => statDisplay.statChange("Attention", -1, "lewd"));
 statDisplay.create("llattention", () => statDisplay.statChange("Attention", -2, "lewd"));
@@ -565,17 +565,17 @@ statDisplay.create("ggghistory", () => {
 	return `${result} ${gainSchoolStar("history_star")}`;
 });
 
-statDisplay.create("ghousekeeping", (amount, silent) => {
+statDisplay.create("ghousekeeping", amount => {
 	if (V.statsdisable === "f") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
-	} else if (V.housekeeping >= amount && !silent) {
+	} else if (V.housekeeping >= amount) {
 		return "You're too skilled for this to improve your housekeeping.";
 	}
 	return "";
 });
-statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount === undefined || V.housekeeping < amount));
-statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount === undefined || V.housekeeping < amount));
+statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount !== undefined || V.housekeeping < amount));
+statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount !== undefined || V.housekeeping < amount));
 
 statDisplay.create("ldom", npc => {
 	let targetName = "";

@@ -4267,7 +4267,7 @@
 		<<unset $swimmingmissed>>
 	<</if>>
 
-
+	
 	<!-- v0.4 Time refactor -->
 	<<if $time isnot undefined and !$timeStamp>>
 		<<script>>
@@ -4880,7 +4880,7 @@
 			}
 
 			const realVarsToCopy = [
-				'weather', 'moonstate', 'haircolour', 'hairlength', 'goooutsidecount', 'semenoutsidecount', 'pain', 'arousal', 'tiredness', 'stress', 'trauma', 'control', 'angel', 'fallenangel', 'angelbuild', 'demon', 'wolfgirl', 'cat', 'cow', 'harpy', 'fox', 'sexStats', 'skulduggery', 'purity', 'spray', 'skin', 'parasite', 'hairfringecolour', 'hairColourStyle', 'hairColourGradient', 'hairFringeColourStyle', 'hairFringeColourGradient', 'timeStamp',
+				'moonstate', 'haircolour', 'hairlength', 'goooutsidecount', 'semenoutsidecount', 'pain', 'arousal', 'tiredness', 'stress', 'trauma', 'control', 'angel', 'fallenangel', 'angelbuild', 'demon', 'wolfgirl', 'cat', 'cow', 'harpy', 'fox', 'sexStats', 'skulduggery', 'purity', 'spray', 'skin', 'parasite', 'hairfringecolour', 'hairColourStyle', 'hairColourGradient', 'hairFringeColourStyle', 'hairFringeColourGradient', 'timeStamp',
 				/* only overwrite the frozen values with variables from the current scene, to avoid restoring outdated values */
 				...(event === 'wraith' ? [
 					'spraymax', 'hairtype', 'fringelength', 'fringetype', 'fringelengthstage', 'submissive', 'awareness', 'awarelevel', 'skinColor', 'condoms',
@@ -4997,14 +4997,14 @@
 					overwriteObjProp('penissize', V.real_penissize, V.frozenValues.player);
 				} else {
 					/* do not copy other variables, even if they exist */
-					migrateRealVars(['weather', 'moonstate', 'timeStamp']);
+					migrateRealVars(['moonstate', 'timeStamp']);
 				}
 			} else if (event === 'nightmare') {
 				Object.assign(V.frozenValues.player.bodyliquid, V.real_bodyliquid);
 				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
 				overwriteObjProp('clothingrebuy', V.real_rebuy);
 
-				migrateRealVars(['weather', 'moonstate', 'timeStamp', 'location', 'parasite', 'pain', 'arousal', 'tiredness', 'trauma', 'control', 'angel', 'angelbuild', 'fallenangel', 'transformationParts', 'purity', 'parasitepregdisable', 'worn', 'skin']);
+				migrateRealVars(['moonstate', 'timeStamp', 'location', 'parasite', 'pain', 'arousal', 'tiredness', 'trauma', 'control', 'angel', 'angelbuild', 'fallenangel', 'transformationParts', 'purity', 'parasitepregdisable', 'worn', 'skin']);
 			} else if (event === 'prayerroom') {
 				/* DO NOT MODIFY FURTHER, SEE 'Fix to freezePlayerStats being used in the Corrupt Temple scene' */
 				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
@@ -5018,13 +5018,11 @@
 		delete V.saveTransformtaions;
 		delete V.penisusue;
 		/* clean up $real_ variables */
-		const tmpWeather = V.real_weather;
 		Object.keys(V).forEach(k => {
 			if (k.startsWith('real_')) {
 				delete V[k];
 			}
 		});
-		if (tmpWeather && !event) V.real_weather = tmpWeather;
 		V.objectVersion.realVarsFix = 1;
 	<</script>><</if>>
 
@@ -5052,24 +5050,32 @@
 	<<unset $speechsextoyaroused>>
 	<<unset $speechsextoydisappointed>>
 
-	/*Added npc generation and pronoun widgets to the livestock horse passages*/
 	<<if $livestock_horse_rescued is $pronoun >>
 		<<set $livestock_horse_rescued to true>>
 	<</if>>
 
-	/*Adds Gift Variable for Office Manager for old saves*/
-	<<if $managerGift is undefined>>
-		<<set $managerGift to 1>>
+	<!-- Weather update -->
+	<<if $options.clothingCaption is undefined>>
+		<<set $options.clothingCaption to true>>
 	<</if>>
 
-	/* Stat tracking for unsafe sex */
-	<<if $unsafeSexTimeStat is undefined>>
-		<<set $unsafeSexTimeStat to {}>>
-	<</if>>
-
-	<!-- V0.4.6.0 Draggletail fix -->
-	<<if $hairtype is "draggletail">>
-		<<set $hairtype to "messy ponytail">>
+	<<if $weatherObj is undefined>>
+		<<set $weatherObj to {
+			snow: 0,
+			fog: 0,
+			name: "clear",
+			overcast: 0,
+			monthlyTemperatures: [],
+			keypointsArr: []
+		}>>
+		<<set $player.bodyTemperature to 37>>
+		<<set $options.weatherUpdate to false>>
+		<<set $options.fahrenheit to false>>
+		<<unset $warmth>>
+		<<unset $chill>>
+		<<unset $chill_day>>
+		<!-- Failsafe if changing options immediately after load -->
+		<<run Engine.play($passage)>>
 	<</if>>
 
 	<<if $livestockEscape is "birth">>

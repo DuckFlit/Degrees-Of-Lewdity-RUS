@@ -632,14 +632,14 @@ function isInPark(name) {
 		case "kylar":
 			// prettier-ignore
 			return C.npc.Kylar.state === "active"
-				&& !["rain", "snow"].includes(V.weather)
+				&& Weather.precipitation === "none"
 				&& Time.dayState === "day" && V.kylarwatched !== 1;
 		case "robin":
 			return getRobinLocation() === "park";
 		case "whitney":
 			// prettier-ignore
 			return ["active", "rescued"].includes(C.npc.Whitney.state)
-				&& C.npc.Whitney.init === 1 && ["snow", "rain"].includes(V.weather)
+				&& C.npc.Whitney.init === 1 && Weather.precipitation !== "none"
 				&& Time.dayState === "day" && !Time.schoolTime
 				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
 		default:
@@ -1393,39 +1393,8 @@ function isLoveInterest(name) {
 }
 window.isLoveInterest = isLoveInterest;
 
-/** This function will determine if the date is right for a blood moon, and which part of the night it will happen in. */
-function getTodaysMoonState() {
-	const todaysMoonState = 0;
-	if (Time.monthDay === Time.lastDayOfMonth) {
-		// blood moon happens on the last night of the month
-		T.todaysMoonState = "evening";
-	} else if (Time.monthDay === 1) {
-		// blood moon happens on the first morning of the month
-		T.todaysMoonState = "morning";
-	}
-	return todaysMoonState;
-}
-
-function getMoonState() {
-	let moonstate = 0;
-	T.todaysMoonState = getTodaysMoonState();
-
-	if (Time.nightState === T.todaysMoonState) {
-		// if the current time of night matches the time a blood moon will happen, set moonstate
-		moonstate = T.todaysMoonState;
-	}
-	// V.moonstate = moonstate; //commenting this out to make sure this function doesn't modify save variables
-	return moonstate;
-}
-window.getMoonState = getMoonState;
-
-function isBloodmoon() {
-	return Time.dayState === "night" && V.moonstate === Time.nightState; // it's only a blood moon if it's night, and the current moon state matches the current night state
-}
-window.isBloodmoon = isBloodmoon;
-
 function wraithCanHunt() {
-	return isBloodmoon() && Time.hour !== 5; // wraith events can't start at 5 AM.
+	return Time.isBloodMoon() && Time.hour !== 5; // wraith events can't start at 5 AM.
 }
 window.wraithCanHunt = wraithCanHunt;
 

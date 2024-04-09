@@ -120,5 +120,4 @@ function schoolTerm() {
 	const date = Time.nextSchoolTermStartDate;
 	return "School term starts on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
 }
-
 DefineMacroS("schoolterm", schoolTerm);

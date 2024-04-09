@@ -178,10 +178,12 @@ const Time = (() => {
 
 	function getNextSchoolTermStartDate(date) {
 		const newDate = new DateTime(date);
-		while (holidayMonths.includes(newDate.month)) {
-			newDate.addMonths(1);
+		if (!holidayMonths.includes(newDate.month) && date.day < newDate.getFirstWeekdayOfMonth(2).day) {
+			return newDate.getFirstWeekdayOfMonth(2);
 		}
 
+		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
+		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
 		return newDate.getFirstWeekdayOfMonth(2);
 	}
 
@@ -512,7 +514,6 @@ function dayPassed() {
 	fragment.append(wikifier("seenPassageChecks"));
 	fragment.append(wikifier("prison_day"));
 	fragment.append(wikifier("clearNPC", "pharmNurse"));
-	fragment.append(wikifier("weather_select"));
 
 	V.physiquechange = 1;
 	V.home_event_timer--;
@@ -779,14 +780,15 @@ function dayPassed() {
 	fragment.append(wikifier("physicalAdjustments"));
 
 	fragment.append(dailyPlayerEffects());
-	fragment.append(dailyMasochismSadismEffects());
+	dailyMasochismSadismEffects();
 	fragment.append(dailySchoolEffects());
 	fragment.append(dailyFarmEvents());
-	fragment.append(dailyLiquidEffects());
+	dailyLiquidEffects();
 	fragment.append(dailyTransformationEffects());
 	fragment.append(dailyNPCEffects());
 	fragment.append(yearlyEventChecks());
-	fragment.append(moonState());
+
+	moonState();
 
 	parasiteProgressDay();
 	parasiteProgressDay("vagina");
@@ -894,8 +896,6 @@ function hourPassed(hours) {
 	const feats = earnHourlyFeats();
 	if (feats) fragment.append(feats);
 
-	temperatureHour();
-
 	if (!V.wolfevent) V.wolfevent = 1;
 	if (V.wolfpatrolsent >= 24) delete V.wolfpatrolsent;
 	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
@@ -924,6 +924,7 @@ function hourPassed(hours) {
 
 function minutePassed(minutes) {
 	const fragment = document.createDocumentFragment();
+
 	// Stress
 	// decay/rise and crossdresser trait
 	const isCrossdresser = V.backgroundTraits.includes("crossdresser");
@@ -939,16 +940,25 @@ function minutePassed(minutes) {
 		V.stress += Math.floor(minutes * 40);
 	}
 
-	if (V.body_temperature === "cold") V.stress += minutes * 2;
-	else if (V.body_temperature === "chilly") V.stress += minutes;
+	// Tanning
+	if (V.outside) {
+		tanned(Weather.getTanningFactor().result, "tanLines");
+	}
 
-	V.stress = Math.min(V.stress, V.stressmax);
+	// Body temperature
+	const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
+	Weather.BodyTemperature.update(temperature, minutes);
+	V.stress += Math.round(Weather.BodyTemperature.stressModifier * minutes);
+
+	// Snow
+	Weather.setAccumulatedSnow(minutes);
 
 	// Effects
+	V.stress = Math.min(V.stress, V.stressmax);
 	if (V.drunk > 0) statChange.alcohol(-minutes);
 	if (V.hallucinogen > 0) statChange.hallucinogen(-minutes);
 	if (V.drugged > 0) statChange.drugs(-minutes);
-	if (minutes < 1200) statChange.tiredness(minutes * (V.drunk > 0 ? 2 : 1), "pass");
+	if (minutes < 1200) statChange.tiredness((minutes * (V.drunk > 0 ? 2 : 1)) / 15);
 	statChange.pain(minutes, -1);
 
 	// Arousal
@@ -957,20 +967,7 @@ function minutePassed(minutes) {
 	V.timeSinceArousal = V.arousal < V.arousalmax / 4 ? V.timeSinceArousal + minutes : 1;
 	if (V.player.vaginaExist) fragment.append(passArousalWetness(minutes));
 
-	// Tanning
-	if (
-		Time.dayState === "day" &&
-		V.weather === "clear" &&
-		V.outside &&
-		V.location !== "forest" &&
-		!V.worn.head.type.includes("shade") &&
-		!V.worn.handheld.type.includes("shade")
-	) {
-		fragment.append(wikifier("tanned", minutes / (Time.season === "winter" ? 4 : Time.season === "summer" ? 1 : 2)));
-	}
-
-	const waterFragment = passWater(minutes);
-	fragment.append(waterFragment);
+	passWater(minutes);
 
 	if (V["ob" + "j" + "ec" + "tVe" + "rs" + "ion"]["t" + "e" + "st"] !== undefined || V["ch" + "ea" + "td" + "isa" + "" + "bl" + "e"] === "f") {
 		V["f" + "ea" + "" + "t" + "s"]["lo" + "ck" + "ed"] = true;
@@ -982,6 +979,8 @@ function minutePassed(minutes) {
 
 function noonCheck() {
 	const fragment = document.createDocumentFragment();
+
+	Weather.Sky.setMoonPhase();
 
 	if (V.statFreeze) return fragment;
 
@@ -1080,7 +1079,7 @@ function dailyNPCEffects() {
 
 	// Mason
 	if (V.mason_pond === 3) {
-		if (V.weather !== "rain" && V.weather !== "snow") V.mason_pond_timer--;
+		if (Weather.precipitation === "none") V.mason_pond_timer--;
 		if (V.mason_pond_timer < 1) {
 			delete V.mason_pond_timer;
 			V.mason_pond = 4;
@@ -1238,8 +1237,8 @@ function dailyPlayerEffects() {
 		else V.physique = V.physique - V.physique / 2500;
 	}
 
-	/* PC loses 60 minutes of tanning every day */
-	fragment.append(wikifier("tanned", -60, true));
+	/* PC loses 40 minutes of tanning every day */
+	tanned(-40, true);
 	V.skinColor.sunBlock = false;
 
 	V.hairlength += 3;
@@ -1389,8 +1388,6 @@ function dailyTransformationEffects() {
 }
 
 function dailyLiquidEffects() {
-	const fragment = document.createDocumentFragment();
-
 	if (V.player.penisExist) {
 		let amount = V.player.penissize - 1;
 		if (V.semen_volume <= 24) amount++;
@@ -1446,8 +1443,6 @@ function dailyLiquidEffects() {
 			V.nectar_timer = 21;
 		}
 	}
-
-	return fragment;
 }
 
 function yearlyEventChecks() {
@@ -1516,24 +1511,21 @@ function yearlyEventChecks() {
 }
 
 function moonState() {
-	const fragment = document.createDocumentFragment();
-
 	if (Time.monthDay === Time.lastDayOfMonth) {
 		V.moonstate = "evening";
 		V.moonEvent = true;
-		fragment.append(wikifier("checkWraith", true));
+		wikifier("checkWraith", true);
 	} else if (Time.monthDay === 1) {
 		V.moonstate = "morning";
-		fragment.append(wikifier("checkWraith", true));
+		wikifier("checkWraith", true);
 	} else if (V.moonstate !== 0) {
 		V.moonstate = 0;
 		delete V.moonEvent;
-		fragment.append(wikifier("clearWraith"));
+		wikifier("clearWraith");
 		delete V.noEarSlime;
 	}
-
-	return fragment;
 }
+window.moonState = moonState;
 
 function dailySchoolEffects() {
 	const fragment = document.createDocumentFragment();
@@ -1679,8 +1671,6 @@ function dailySchoolEffects() {
 }
 
 function dailyMasochismSadismEffects() {
-	const fragment = document.createDocumentFragment();
-
 	const effects = (level, stat) => {
 		switch (level) {
 			case 0:
@@ -1719,15 +1709,13 @@ function dailyMasochismSadismEffects() {
 		V.sadism_message = sadism.message;
 		V.effectsmessage = 1;
 	}
-
-	return fragment;
 }
 
 function dailyFarmEvents() {
 	const fragment = document.createDocumentFragment();
 
 	if (V.alex_greenhouse === 1) {
-		if (V.weather !== "rain" && V.weather !== "snow") V.alex_greenhouse_timer--;
+		if (Weather.precipitation === "none") V.alex_greenhouse_timer--;
 		if (V.alex_greenhouse_timer < 1) {
 			delete V.alex_greenhouse_timer;
 			V.alex_greenhouse = 2;
@@ -1801,23 +1789,19 @@ function dailyFarmEvents() {
 	return fragment;
 }
 
-function temperatureHour() {
-	V.chill = V.chill_day;
-	if (Time.dayState === "night") V.chill += V.weather === "clear" ? 50 : 30;
-	else if (Time.dayState === "dusk") V.chill = V.weather === "clear" ? V.chill - 5 : V.chill + 15;
-	else if (Time.dayState === "day") V.chill = V.weather === "clear" ? V.chill - 10 : V.chill + 10;
-	else V.chill += V.weather === "clear" ? 20 : 0;
-}
-
-// (Directly converted from passWater widget)
 function passWater(passMinutes) {
-	const fragment = document.createDocumentFragment();
-
-	if (V.outside && V.weather === "clear") {
-		if (V.upperwet) statChange.wet("upper", -passMinutes * 2);
-		if (V.lowerwet) statChange.wet("lower", -passMinutes * 2);
-		if (V.underlowerwet) statChange.wet("underlower", -passMinutes * (V.worn.lower.type.includes("naked") ? 2 : 1));
-		if (V.underupperwet) statChange.wet("underupper", -passMinutes * (V.worn.upper.type.includes("naked") ? 2 : 1));
+	/* To be reworked */
+	/* Tie wetness to clothing items - can dry differently depending on their warmth
+	   dryingFactor, sun/no sun, temperature
+	   change wetness to 0-1 (0-100%)
+	*/
+	if (!V.outside || (V.outside && Weather.precipitation === "none")) {
+		const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
+		const dryingFactor = 0.1 + (temperature / 25) * ((1 + Weather.sunIntensity) * 2);
+		if (V.upperwet) statChange.wet("upper", -passMinutes * dryingFactor);
+		if (V.lowerwet) statChange.wet("lower", -passMinutes * dryingFactor);
+		if (V.underlowerwet) statChange.wet("underlower", -passMinutes * (V.worn.lower.type.includes("naked") ? dryingFactor : dryingFactor * 0.5));
+		if (V.underupperwet) statChange.wet("underupper", -passMinutes * (V.worn.upper.type.includes("naked") ? dryingFactor : dryingFactor * 0.5));
 	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
 		if (!V.worn.upper.type.includes("naked") && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
 			statChange.wet("upper", passMinutes);
@@ -1833,14 +1817,7 @@ function passWater(passMinutes) {
 		if (!V.worn.under_upper.type.includes("naked") && !waterproofCheck(V.worn.under_upper) && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
 			statChange.wet("underupper", passMinutes);
 		}
-	} else {
-		if (V.upperwet) statChange.wet("upper", -passMinutes);
-		if (V.lowerwet) statChange.wet("lower", -passMinutes);
-		if (V.underlowerwet) statChange.wet("underlower", -passMinutes);
-		if (V.underupperwet) statChange.wet("underupper", -passMinutes);
 	}
-
-	return fragment;
 }
 
 // (Directly converted from passArousalWetness widget - included comments)

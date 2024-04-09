@@ -10,9 +10,6 @@ const UnknownLocation = { area: "unknown", state: "unknown" };
 /** @type {DolLocation} */
 const InactiveLocation = { area: "inactive", state: "inactive" };
 
-/** @returns {boolean} */
-const isRaining = () => ["rain", "snow"].contains(V.weather);
-
 /**
  * Simple location function for figuring out where Kylar is at school.
  *
@@ -47,7 +44,7 @@ function getKylarActiveLocation() {
 			return { area: "english", state: "dual_rehearsal" };
 		}
 		if (V.englishPlayRoles.KylarKnown) {
-			if (isRaining()) {
+			if (Weather.precipitation !== "none") {
 				return { area: "library", state: "library" };
 			}
 			return { area: "rear_courtyard", state: "stump" };
@@ -103,7 +100,7 @@ function getKylarPersonalLocation() {
 	}
 	// 9:00 AM to 5:59 PM
 	if (Time.hour >= 9 && Time.hour < 18) {
-		if (isRaining()) {
+		if (Weather.precipitation !== "none") {
 			return { area: "arcade", state: "playing" };
 		}
 		const parkState = V.kylar.fountain === 1 ? "fountain" : "bench";

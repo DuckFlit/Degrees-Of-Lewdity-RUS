@@ -106,3 +106,46 @@ Object.defineProperty(Object.prototype, "deepMerge", {
 		return ObjectAssignDeep.executeDeepMerge(this, objects, arrayBehaviour, filterFn);
 	},
 });
+
+/**
+ * Searches for a value in a nested object
+ * Works similar to Array find() method, but for nested objects
+ *
+ * @param {Function} callbackFn Criteria it needs to match
+ * @returns {*} The value of the first element in the object that matches the above criteria
+ * @example
+ * const myObject = {
+ *   level1: {
+ *     level2: {
+ *       level3: "value1"
+ *     },
+ *     anotherKey: {
+ *       level3: "value2"
+ *     }
+ *   }
+ * };
+ *
+ * const foundValue = myObject.find((key, value) => key === 'level2');
+ * Returns Object { level3: "value1" }
+ * 
+ * const foundValue = myObject.find((key, value) => value.level3 === "value2");
+ * Returns Object { level3: "value2" }
+ */
+Object.defineProperty(Object.prototype, "find", {
+	configurable: true,
+	writable: true,
+	value(callbackFn) {
+		const search = obj => {
+			for (const [key, value] of Object.entries(obj)) {
+				if (callbackFn(key, value)) {
+					return value;
+				}
+				if (typeof value === "object" && value !== null) {
+					const result = search(value);
+					if (result) return result;
+				}
+			}
+		};
+		return search(this);
+	},
+});

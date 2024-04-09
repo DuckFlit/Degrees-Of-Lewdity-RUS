@@ -69,6 +69,7 @@ module.exports = {
 		ConstantsLoader: "readonly",
 		Cooker: "readonly",
 		currentlyLoadingMap: "readonly",
+		ColourUtils: "readonly",
 		DateTime: "readonly",
 		DoLHouse: "readonly",
 		DolSettingsExport: "readonly",
@@ -79,6 +80,7 @@ module.exports = {
 		IronMan: "readonly",
 		Links: "readonly",
 		playerDoll: "readonly",
+		statDisplay: "readonly",
 		Renderer: "readonly",
 		SexTypes: "readonly",
 		StartConfig: "readonly",
@@ -86,6 +88,7 @@ module.exports = {
 		TimeConstants: "readonly",
 		Utils: "readonly",
 		ZIndices: "readonly",
+		Weather: "readonly",
 		// DoL SC2 functions
 		compressionVerifier: "readonly",
 		DefineMacro: "readonly",
@@ -278,6 +281,12 @@ module.exports = {
 
 		// SugarCube extends native objects and we follow it
 		"no-extend-native": "off",
+
+		/* hasOwn */
+		// No need for this, since we're overriding hasOwn for older browers (01-compatibility.js)
+		// Warn for the hasOwnProperty instead
+		"es-x/no-object-hasown": "off",
+		"prefer-object-has-own": "warn",
 
 		/* eslint-plugin-jsdoc */
 
