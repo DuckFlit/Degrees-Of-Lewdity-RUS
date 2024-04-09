@@ -94,7 +94,7 @@
 		<<set $bird.hunts.timer += _args[0]>>
 	<</if>>
 
-	<<if $bird.upgrades?.shelter is 1 and ($weather is "rain" or $weather is "snow")>>
+	<<if $bird.upgrades?.shelter is 1 and (Weather.precipitation isnot "none")>>
 		<<if $birdShelterTimer is undefined>>
 			<<set $birdShelterTimer to 720>>
 		<<else>>
@@ -566,7 +566,7 @@
 <</widget>>
 
 <<widget "hawkRescueApproachSentence">>
-	<<if $syndromebird is 1>>Salvation<<else>>Terror<</if>> <<print ["circles above", "approaches", "descends", "shadows you"][random($weather is "clear" ? 3 : 2)]>>.
+	<<if $syndromebird is 1>>Salvation<<else>>Terror<</if>> <<print ["circles above", "approaches", "descends", "shadows you"][random(!Weather.overcast ? 3 : 2)]>>.
 <</widget>>
 
 <<widget "hawkCaughtYouSpeech">>
@@ -697,7 +697,7 @@
 			<<ind>><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
 		<</if>>
 		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
-			<<if $weather is "rain">>
+			<<if Weather.precipitation is "rain">>
 				<span class="purple">It's too rainy to go flying casually.</span>
 			<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
 				<span class="red">You're too exhausted to go on a casual flight.</span>
@@ -719,7 +719,7 @@
 		<<baskicon>><<link [[Continue to bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
 		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
-			<<if $weather is "rain">>
+			<<if Weather.precipitation is "rain">>
 				<span class="purple">It's too rainy to go flying casually.</span>
 			<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
 				<span class="red">You're too exhausted to go on a casual flight.</span>
@@ -856,12 +856,12 @@
 				<span class="red">You aren't lewd enough to fly exposed towards the town or farmlands.</span>
 				<br>
 			<<else>>
-				<<farmicon>><<print '<<link [[Fly to the farmlands ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Farmlands]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>><<if $exposed gte 2>><<exhibitionist4>><</if>>
+				<<farmicon>><<print '<<link [[Fly to the farmlands ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Farmlands]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>><<if $exposed gte 2>><<exhibitionist4>><</if>>
 				<br>
-				<<entertownicon>><<print '<<link [[Fly to town ('+_hoursPassedLong+':'+ (_minutesPassedLong lt 10 ? "0" : "") + _minutesPassedLong + ')|Bird Tower Town]]>><<set $fatigueMod to (_fatigueMod + 1)>><<set $flightTime to _flightTimeLong>><<unset $birdPerch>><<bird_pass _flightTimeLong>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>><<if $exposed gte 2>><<exhibitionist4>><</if>>
+				<<entertownicon>><<print '<<link [[Fly to town ('+_hoursPassedLong+':'+ (_minutesPassedLong lt 10 ? "0" : "") + _minutesPassedLong + ')|Bird Tower Town]]>><<set $fatigueMod to (_fatigueMod + 1)>><<set $flightTime to _flightTimeLong>><<unset $birdPerch>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>><<if $exposed gte 2>><<exhibitionist4>><</if>>
 				<br>
 			<</if>>
-			<<foresticon>><<print '<<link [[Fly to the forest ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Forest]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass 30>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>>
+			<<foresticon>><<print '<<link [[Fly to the forest ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Forest]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>>
 			<br>
 		<</if>>
 	<<elseif $angel gte 6 or $demon gte 6 or $fallenangel gte 2>>
@@ -899,13 +899,13 @@
 		<<set _flightTimeBase += $bird.hunts.weight>>
 	<</if>>
 	<<set _flightTime to _flightTimeBase>>
-	<<switch $weather>>
-		<<case "overcast">>
+	<<switch Weather.name>>
+		<<case "heavyClouds">>
 			<<set _flightTime -= Math.floor(_flightTimeBase / 3)>>
 			<<set _fatigueText to "<<gtiredness>>">>
 			<<set _fatigueMod to 0.5>>
-			<<if _args[1] isnot "silent">><span class="gold">The strong winds will make flight easy and fast.</span><</if>>
-		<<case "rain">>
+			<span class="gold">The strong winds will make flight easy and fast.</span>
+		<<case "lightPrecipitation" "heavyPrecipitation" "thunderStorm">>
 			<<set _flightTime += 1>>
 			<<for _active_clothes range Object.keys($worn)>>
 				<<if !$worn[_active_clothes].type.includes("naked") and !$worn[_active_clothes].type.includes("swim")>>
@@ -975,7 +975,7 @@
 <</widget>>
 
 <<widget "flight_effects">>
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
 			<<set $upperwet += Math.floor($flightTime * 4)>>
 		<</if>>
@@ -1248,7 +1248,7 @@
 		other: 1
 	}>>
 	<<set _flight_hunt_chance[$_goal] += ($bird.hunts.goal is "hawk" ? 3 : 1 + Math.floor(currentSkillValue("skulduggery") / 500))>>
-	<<if $weather is "rain" or $weather is "snow">>
+	<<if Weather.precipitation isnot "none">>
 		<<set _flight_hunt_chance.nothing += 2>>
 	<</if>>
 	<<if Time.dayState is "night">>
@@ -1673,7 +1673,7 @@
 
 <<widget "firepitTime">>
 	Burn time remaining: <<print getTimeString(getBirdBurnTime())>>
-	<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
+	<<if Weather.precipitation is "rain" and $bird.upgrades.shelter is 0>>
 		<span class="red">It would burn twice as long with shelter from the rain.</span>
 	<</if>>
 <</widget>>
@@ -1699,7 +1699,7 @@
 		<br>
 	<<elseif _maxTimeAllowed gt 0>>
 		<<set _timeWood to 240>>
-		<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
+		<<if Weather.precipitation is "rain" and $bird.upgrades.shelter is 0>>
 			<<set _timeWood to Math.floor(_timeWood / 2)>>
 		<</if>>
 		<<set _timeLteMax to _timeWood lte _maxTimeAllowed>>
@@ -1738,7 +1738,7 @@
 		<br>
 	<<elseif _maxTimeAllowed gt 0>>
 		<<set _timeSticks to 60>>
-		<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
+		<<if Weather.precipitation is "rain" and $bird.upgrades.shelter is 0>>
 			<<set _timeSticks to Math.floor(_timeSticks / 2)>>
 		<</if>>
 		<<set _timeLteMax to _timeSticks lte _maxTimeAllowed>>
@@ -1987,7 +1987,7 @@
 					<<case 0>>
 						<span class="red">No firepit (0)</span>: Dark and cold nights.
 						<<set $_upgrade.passage to "Bird Tower Build Firepit 1">>
-						<<if $weather is "rain" and $bird.upgrades.shelter is 0>>
+						<<if Weather.precipitation is "rain" and $bird.upgrades.shelter is 0>>
 							<<set $_upgrade.timeTaken to 60>>
 						<<else>>
 							<<set $_upgrade.timeTaken to 15>>

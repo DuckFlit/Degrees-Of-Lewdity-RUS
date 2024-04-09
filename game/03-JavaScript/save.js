@@ -1158,6 +1158,7 @@ function settingsObjects(type) {
 				options: {
 					neverNudeMenus: { bool: true, displayName: "Hide player nudity in menus:" },
 					showCaptionText: { bool: true, displayName: "Show caption text in sidebar:" },
+					clothingCaption: { bool: true, displayName: "Show clothing description in sidebar:" },
 					sidebarStats: { strings: ["disabled", "limited", "all"], displayName: "Closed sidebar stats:" },
 					sidebarTime: { strings: ["disabled", "top", "bottom"], displayName: "Closed sidebar time:" },
 					combatControls: { strings: ["radio", "columnRadio", "lists", "limitedLists"], displayName: "Combat controls:" },
