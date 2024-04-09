@@ -612,7 +612,7 @@ window.pregnancyGenerator = {
 					hairColour: featherColour[random(0, featherColour.length - 1)],
 				});
 				// Hours
-				baby.eggTimer = eggTimer
+				baby.eggTimer = eggTimer;
 				result.fetus.push(baby);
 				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
 			}
