@@ -27,12 +27,12 @@ Weather.Thermometer = (() => {
 	const element = $("<div />", { id: "characterTemperature" });
 	const tooltipElement = $("<div />", { id: "characterTemperatureTooltip" });
 	const loaded = new ObservableValue(false);
+	const loadPromises = [];
+	let allImagesLoaded = false;
 
 	function load() {
-		thermometerCanvas = new Weather.Sky.Canvas(0, 0);
-
-		const loadPromises = Object.entries(images).map(([key, imageInfo]) => {
-			return new Promise((resolve, reject) => {
+		Object.entries(images).map(([key, imageInfo]) => {
+			const promise = new Promise((resolve, reject) => {
 				const img = new Image();
 				img.onload = () => {
 					images[key].img = img;
@@ -41,9 +41,12 @@ Weather.Thermometer = (() => {
 				img.onerror = reject;
 				img.src = imageInfo.src;
 			});
+			loadPromises.push(promise);
+			return 0;
 		});
 
 		Promise.all(loadPromises).then(() => {
+			thermometerCanvas = new Weather.Sky.Canvas(0, 0);
 			const baseImg = images.baseImg.img;
 			size.width = baseImg.width * size.scaleFactor;
 			size.height = baseImg.height * size.scaleFactor;
@@ -51,11 +54,13 @@ Weather.Thermometer = (() => {
 			thermometerCanvas.element.height = size.height;
 			thermometerCanvas.ctx.imageSmoothingEnabled = false;
 			element.append(thermometerCanvas.canvas);
+			allImagesLoaded = true;
 			update();
 		});
 	}
 
 	function update() {
+		if (!allImagesLoaded) return;
 		const normalisedTemperature = normalise(Weather.bodyTemperature, temperature.max, temperature.min);
 		const usableHeight = size.height - clippingArea.min - clippingArea.max;
 		const fillHeight = interpolate(clippingArea.min, usableHeight + clippingArea.min, normalisedTemperature);
