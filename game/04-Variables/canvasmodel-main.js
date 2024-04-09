@@ -1967,6 +1967,13 @@ Renderer.CanvasModels["main"] = {
 					return ZIndices.horns
 				}
 			},
+			masksrcfn(options){
+				if (options.demon_horns_layer !== "front") {
+					return options.head_mask_src
+				} else {
+					return null
+				}
+			},
 			z: ZIndices.horns,
 			filters: ["demon_horns"],
 			animation: "idle"
@@ -2130,6 +2137,13 @@ Renderer.CanvasModels["main"] = {
 					return ZIndices.over_head
 				} else {
 					return ZIndices.horns
+				}
+			},
+			masksrcfn(options){
+				if (options.cow_horns_layer !== "front") {
+					return options.head_mask_src
+				} else {
+					return null
 				}
 			},
 			animation: "idle"
@@ -3257,7 +3271,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"lower": genlayer_clothing_main('lower', {
 			zfn(options) {
-				return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.type.includes("covered") ? ZIndices.lower_cover : ZIndices.lower;
 			},
 			masksrcfn(options) {
 				if (between(options.belly, 15, 24)) {
@@ -3307,7 +3321,7 @@ Renderer.CanvasModels["main"] = {
 					return gray_suffix(path, options.filters['worn_lower_acc'])
 				},
 				zfn(options) {
-					return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.covers_top ? ZIndices.lower_cover : ZIndices.lower;
+					return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.type.includes("covered") ? ZIndices.lower_cover : ZIndices.lower;
 				},
 				masksrcfn(options) {
 					if (between(options.belly, 15, 24)) {
@@ -3772,10 +3786,10 @@ Renderer.CanvasModels["main"] = {
 				return ["worn_handheld_acc"]
 			},
 		},
-		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld', {
+		"handheld_back": genlayer_clothing_back_img('handheld',{
 			z: ZIndices.over_head_back
 		}),
-		"handheld_back": genlayer_clothing_back_img('handheld',{
+		"handheld_back_acc": genlayer_clothing_back_img_acc('handheld', {
 			z: ZIndices.over_head_back
 		}),
 		/***

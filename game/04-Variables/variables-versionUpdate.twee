@@ -3573,7 +3573,7 @@
 	/* Code that should not be moved into a check like above */
 	<<set $runWardrobeSanityChecker to true>>
 
-	<<if $objectVersion.updateClothes lt 48 or $objectVersion.updateClothes is undefined>>
+	<<if $objectVersion.updateClothes lt 49 or $objectVersion.updateClothes is undefined>>
 		<<updateClothes>>
 		<<if $objectVersion.updateClothes lt 38>>
 			<!-- V0.4.0.7 return items stuck in $store without proper .location -->
@@ -3584,7 +3584,7 @@
 			<!--Should'nt need to re-run that often-->
 			<<run clothesDataTrimmerLoop()>>
 		<</if>>
-		<<set $objectVersion.updateClothes to 48>>
+		<<set $objectVersion.updateClothes to 49>>
 		<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 		Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
 	<</if>>
@@ -5102,6 +5102,25 @@
 		<<set $objectVersion.defileSacredGroundStore to 1>>
 	<</if>>
 
+	/* Fix to statFreeze being left from the previous fix, be aware of this fix when using statFreeze outside of freezePlayerStats */
+	<<if (!$objectVersion.defileSacredGroundStore or $objectVersion.defileSacredGroundStore lt 2) and !$replayScene and $statFreeze and !$frozenValues>>
+		<<unset $statFreeze>>
+		<<set $objectVersion.defileSacredGroundStore to 2>>
+	<</if>>
+	/* Docks dog-related scenes refactor*/
+	<<if $dock_dog isnot undefined>>
+		<<beastNEWinit 1 dog>>
+		<<set $dock_dog to clone($NPCList[0])>>
+	<</if>>
+	/* Kill the leather leggings with fire */
+	/*  Disabled as there may be a problem with convertLegstoUnder - Vrel
+	<<if !$objectVersion.itemFix lt 1 or $objectVersion.itemnFix is undefined>>
+		<<if $worn.under_lower.name isnot "naked" and $worn.legs.name is "leather leggings">><<generalUndress "wardrobe" "under_lower">><</if>>
+		<<run convertLegstoUnder()>>
+		<<set $objectVersion.itemFix to 1>>
+	<</if>>
+	*/
+
 	<!--V0.4.7.0 Great Hawk expansion -->
 	<<if $playerPregnancyEggLayingDisable is undefined>>
 		<<set $playerPregnancyEggLayingDisable to $playerPregnancyBeastDisable>>
@@ -5165,5 +5184,5 @@
 	<<if $bird.state and !$bird.clean>>
 		<<set $bird.clean to 0>>
 	<</if>>
-
+	
 <</widget>>

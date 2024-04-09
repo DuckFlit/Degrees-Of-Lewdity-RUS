@@ -332,6 +332,76 @@ function convertNormalToOver() {
 }
 window.convertNormalToOver = convertNormalToOver;
 
+/* Quick and dirty fix. Yes this code is stupid. It's being replaced soon anyway. */
+function convertLegstoUnder() {
+	const clothesToConvert = ["leather leggings"];
+
+	// function that converts a clothing item
+	const convertItem = item => {
+		console.log("converting " + item.name);
+		item.set = "under_lower";
+
+		return item;
+	};
+
+	for (const index in clothesToConvert) {
+		const itemName = clothesToConvert[index];
+
+		// convert clothing sets
+		V.outfit.forEach(outf => {
+			if (outf.legs === itemName) {
+				outf.legs = "naked";
+				outf.under_lower = itemName;
+				if (outf.colors) {
+					outf.colors.under_lower = outf.colors.legs;
+					outf.colors.legs = [0, 0];
+				}
+			}
+		});
+
+		// convert clothes in wardrobe
+		for (let i = V.wardrobe.legs.length - 1; i >= 0; i--) {
+			if (V.wardrobe.legs[i].name === itemName) {
+				V.wardrobe.under_lower.push(convertItem(V.wardrobe.legs[i]));
+				V.wardrobe.legs.splice(i, 1);
+			}
+		}
+
+		// convert worn clothes
+		if (V.worn.legs.name === itemName) {
+			V.worn.under_lower = convertItem(V.worn.legs);
+			V.worn.legs = clone(setup.clothes.legs[0]);
+		}
+
+		// convert carried clothes
+		if (V.carried.legs.name === itemName) {
+			V.carried.under_lower = convertItem(V.carried.legs);
+			V.carried.legs = clone(setup.clothes.legs[0]);
+		}
+
+		// convert stripped stored clothes
+		for (let i = V.store.legs.length - 1; i >= 0; i--) {
+			if (V.store.legs[i].name === itemName) {
+				V.store.under_lower.push(convertItem(V.store.legs[i]));
+				V.store.legs.splice(i, 1);
+			}
+		}
+
+		// convert try on stored
+		if (V.tryOn.ownedStored.legs.name === itemName) {
+			V.tryOn.ownedStored.under_lower = convertItem(V.tryOn.ownedStored.legs);
+			V.tryOn.ownedStored.legs = clone(setup.clothes.legs[0]);
+		}
+
+		// convert try on equipped
+		if (V.tryOn.tryingOn.legs && V.tryOn.tryingOn.legs.name === itemName) {
+			V.tryOn.tryingOn.under_lower = convertItem(V.tryOn.tryingOn.legs);
+			V.tryOn.tryingOn.legs = null;
+		}
+	}
+}
+window.convertLegstoUnder = convertLegstoUnder;
+
 function getVisibleClothesList() {
 	const visibleClothes = [
 		V.worn.over_upper,
