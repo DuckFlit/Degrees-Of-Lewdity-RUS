@@ -1884,16 +1884,30 @@
 			if (!Weather.Sky.loaded.value) {
 				Weather.Sky.initialize();
 			}
+			const path = "img/misc/locations/";
 			const location = setup.Locations.get();
 			const loc = setup.LocationImages[location];
-			const seasonKey = Weather.isSnow && loc.snow ? "snow" : "base";
-			const bloodMoonKey = Weather.isSnow && loc.bloodmoon_snow ? "bloodmoon_snow" : "bloodmoon";
-			const key = Weather.bloodMoon && loc[bloodMoonKey] ? bloodMoonKey : seasonKey;
-			const img = typeof loc[key] === "string" ? loc[key] : (loc[key].image ?? loc[key].default.image);
-			T.imgPath = `img/misc/locations/${loc.folder ? loc.folder + "/" : ""}${img}`;
+			const season = Weather.isSnow && loc.snow ? "snow" : "base";
+			T.images = [];
+
+			if (typeof loc[season] === 'string') {
+				T.images.push(`${path}${loc.folder}/${loc[season]}`);
+			} else {
+				Object.values(loc[season]).forEach(item => {
+					const imagePath = typeof item === 'string' ? item : item.image;
+					if (imagePath) {
+						console.log(`true`);
+						T.images.push(`${path}${loc.folder}/${imagePath}`);
+					}
+				});
+			}
 		<</script>>
 
-		<div id="oldlocation"><img id="oldlocationimg" @src="_imgPath"></div>
+		<div id="oldlocation">
+			<<for _img range _images>>
+				<img id="oldlocationimg" @src="_img">
+			<</for>>
+		</div>
 
 	<<else>>
 		<<switch Time.dayState>>
