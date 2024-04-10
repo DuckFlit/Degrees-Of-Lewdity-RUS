@@ -728,8 +728,10 @@ window.loadCharacterViewerDate = () => {
 };
 
 function updateCaptionTooltip() {
-	const element = $("#characterTooltip");
+	const elementId = "#characterTooltip";
+	const element = $(elementId);
 	const content = $("<div>");
+	const canvas = $("#img canvas");
 	const fragment = document.createDocumentFragment();
 	const updateTooltip = () => {
 		if (V.intro) return;
@@ -742,9 +744,40 @@ function updateCaptionTooltip() {
 		});
 	};
 
+	let isMouseOverElement = false;
+
+	// Workaround for trickle-through on the canvas
+	// So that the contextmenu works while having tooltips in an element below it (to define the area where tooltip shows up)
+	const checkMousePosition = e => {
+		const isCurrentlyOverElement = $(document.elementsFromPoint(e.clientX, e.clientY)).is("#characterTooltip");
+
+		// Only trigger events if the status has changed
+		if (isCurrentlyOverElement && !isMouseOverElement) {
+			element.trigger("mouseenter");
+			canvas.css("cursor", "help");
+			isMouseOverElement = true;
+		} else if (!isCurrentlyOverElement && isMouseOverElement) {
+			element.trigger("mouseleave");
+			$(".tooltip-popup").remove();
+			canvas.css("cursor", "");
+			isMouseOverElement = false;
+		}
+
+		// If the mouse is currently over the element, trigger mousemove as well
+		if (isCurrentlyOverElement) {
+			element.trigger({
+				type: "mousemove",
+				pageX: e.pageX,
+				pageY: e.pageY,
+			});
+		}
+	};
+
 	updateTooltip();
 	$(document).off(":passageend", updateCaptionTooltip);
 	$(document).on(":passageend", updateCaptionTooltip);
+	$(document).on("mousemove", checkMousePosition);
+	// document.addEventListener("mousemove", checkMousePosition);
 }
 $(() => updateCaptionTooltip());
 window.updateCaptionTooltip = updateCaptionTooltip;
