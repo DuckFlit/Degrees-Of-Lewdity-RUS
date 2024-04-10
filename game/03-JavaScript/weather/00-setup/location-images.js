@@ -15,10 +15,6 @@ setup.Locations = {
 		if (V.chef_state >= 7) return "cafe_construction";
 		return "cafe";
 	},
-	// Override the pool location
-	pool: () => {
-		return "school";
-	},
 	/*
 	TEMPLE
 	<<case "temple">>
@@ -1450,7 +1446,7 @@ setup.LocationImages = {
 		},
 		emissive: {
 			bonfire: {
-				condition: () => true,
+				condition: () => getBirdBurnTime() > 0,
 				image: "bonfire.png",
 				animation: {
 					fps: 4,
