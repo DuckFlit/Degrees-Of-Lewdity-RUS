@@ -1635,7 +1635,7 @@ Renderer.CanvasModels["main"] = {
 			},
 			zfn(options) {
 				if (options.angel_wings_layer === "back") {
-					return ZIndices.head_back
+					return ZIndices.over_head_back
 				} else {
 					return ZIndices.backhair
 				}
@@ -1647,7 +1647,7 @@ Renderer.CanvasModels["main"] = {
 				return `img/transformations/angel/rightwing/${options.angel_wings_type}.png`;
 			},
 			showfn(options) {
-				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wing_right === "idle" && options.angel_wings_type === "default" && options.hair_sides_position !== "front" && options.angel_wings_layer !== "back";
+				return options.show_tf && isPartEnabled(options.angel_wings_type) && options.angel_wing_right === "idle" && options.angel_wings_type === "default" && options.angel_wings_layer !== "back";
 			},
 			masksrcfn(options) {
 				return `img/transformations/angel/rightwing/${options.angel_wings_type}_mask.png`;
@@ -4272,7 +4272,7 @@ function genlayer_clothing_breasts(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
 			let isAltPosition = options.alt_position &&
-				(options["worn_" + slot + "_setup"].altposition !== undefined && 
+				(options["worn_" + slot + "_setup"].altposition !== undefined &&
 				!options.alt_without_breasts);
 			let path = 'img/clothes/' +
 				slot + '/' +
@@ -4563,6 +4563,7 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 				&& !options.belly_hides_lower
 				&& options["worn_" + slot] > 0
 				&& options["worn_" + slot + "_setup"].accessory === 1
+				&& options["worn_" + slot + "_setup"].mainImage !== 0
 			} else if (slot.includes("upper")){
 				return options.belly > 7
 				&& options.show_clothes
@@ -4570,11 +4571,13 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 				&& !options.shirt_mask_clip_src
 				&& options["worn_" + slot] > 0
 				&& options["worn_" + slot + "_setup"].accessory === 1
+				&& options["worn_" + slot + "_setup"].mainImage !== 0
 			} else {
 			return options.belly > 7
 				&& options.show_clothes
 				&& options["worn_" + slot] > 0
 				&& options["worn_" + slot + "_setup"].accessory === 1
+				&& options["worn_" + slot + "_setup"].mainImage !== 0
 			}
 		},
 		alphafn(options) {
