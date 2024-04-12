@@ -749,6 +749,9 @@ function updateCaptionTooltip() {
 	// Workaround for trickle-through on the canvas
 	// So that the contextmenu works while having tooltips in an element below it (to define the area where tooltip shows up)
 	const checkMousePosition = e => {
+		if (!e || typeof e.clientX !== "number" || typeof e.clientY !== "number") {
+			return;
+		}
 		const isCurrentlyOverElement = $(document.elementsFromPoint(e.clientX, e.clientY)).is("#characterTooltip");
 
 		// Only trigger events if the status has changed
