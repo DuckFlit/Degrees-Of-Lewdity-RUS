@@ -285,7 +285,7 @@ Weather.Sky = (() => {
 		loaded.value = true;
 	}
 
-	//todo initOrbits doesn't run every day - should run weekly or daily? (run at midday to update moon, run at midnight to update sun)
+	// todo initOrbits doesn't run every day - should run weekly or daily? (run at midday to update moon, run at midnight to update sun)
 	function initOrbits() {
 		const sunOrbitSettings = setup.SkySettings.orbits.sun;
 		_orbitals.sun = new Orbit(interpolateObject(sunOrbitSettings.summer, sunOrbitSettings.winter, Time.date.seasonFactor), Time.date);
@@ -382,7 +382,7 @@ Weather.Sky = (() => {
 		Canvas,
 		Animation,
 		get dayFactor() {
-			return _orbitals.sun.factor;
+			return _orbitals.sun?.factor ?? 0;
 		},
 		// Returns 1 when moon is fully lit - and 0 when its fully dark
 		get moonBrightnessFactor() {
