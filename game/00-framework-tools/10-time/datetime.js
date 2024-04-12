@@ -171,6 +171,18 @@ class DateTime {
 	}
 
 	/**
+	 * Compares this DateTime object with another DateTime object and returns the integral number of days between them.
+	 *
+	 * @param {DateTime} otherDateTime The DateTime object to compare with.
+	 * @returns {number} The number of days between the two objects
+	 */
+	dayDifference(otherDateTime) {
+		const startOfDay = this.timeStamp - (this.hour * TimeConstants.secondsPerHour) - (this.minute * TimeConstants.secondsPerMinute) - this.second;
+		const startOfOtherDay = otherDateTime.timeStamp - (otherDateTime.hour * TimeConstants.secondsPerHour) - (otherDateTime.minute * TimeConstants.secondsPerMinute) - otherDateTime.second;
+		return (startOfOtherDay - startOfDay) / TimeConstants.secondsPerDay;
+	}
+
+	/**
 	 * Returns the first occurrence of a specified weekday in the current month
 	 *
 	 * @param {number} weekDay The day of the week (1-7 for Sun-Sat)
