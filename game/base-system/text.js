@@ -192,9 +192,9 @@ statDisplay.create("ggglust", npc => statDisplay.statChange(npc ? `${npc}'s Lust
 statDisplay.create("lrtrauma", override => statDisplay.statChange("Robin's Trauma", -1, "green", () => C.npc.Robin.trauma > 0 || override));
 statDisplay.create("llrtrauma", override => statDisplay.statChange("Robin's Trauma", -2, "green", () => C.npc.Robin.trauma > 0 || override));
 statDisplay.create("lllrtrauma", override => statDisplay.statChange("Robin's Trauma", -3, "green", () => C.npc.Robin.trauma > 0 || override));
-statDisplay.create("grtrauma", override => statDisplay.statChange("Robin's Trauma", 1, "green", () => C.npc.Robin.trauma >= 20 || override));
-statDisplay.create("ggrtrauma", override => statDisplay.statChange("Robin's Trauma", 2, "green", () => C.npc.Robin.trauma >= 20 || override));
-statDisplay.create("gggrtrauma", override => statDisplay.statChange("Robin's Trauma", 3, "green", () => C.npc.Robin.trauma >= 20 || override));
+statDisplay.create("grtrauma", override => statDisplay.statChange("Robin's Trauma", 1, "red", () => C.npc.Robin.trauma >= 20 || override));
+statDisplay.create("ggrtrauma", override => statDisplay.statChange("Robin's Trauma", 2, "red", () => C.npc.Robin.trauma >= 20 || override));
+statDisplay.create("gggrtrauma", override => statDisplay.statChange("Robin's Trauma", 3, "red", () => C.npc.Robin.trauma >= 20 || override));
 
 statDisplay.create("lattention", () => statDisplay.statChange("Attention", -1, "lewd"));
 statDisplay.create("llattention", () => statDisplay.statChange("Attention", -2, "lewd"));
@@ -456,23 +456,22 @@ statDisplay.create("gspurity", () => {
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 1, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -1, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -1, "teal");
 });
 statDisplay.create("ggspurity", () => {
 	T.warnstate = 2;
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 2, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -2, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -2, "teal");
 });
 statDisplay.create("gggspurity", () => {
 	T.warnstate = 3;
 	if (C.npc.Sydney.purity >= 1) {
 		return statDisplay.statChange("Sydney's Purity", 3, "teal");
 	}
-	return statDisplay.statChange("Sydney's Corruption", -3, "purple");
+	return statDisplay.statChange("Sydney's Corruption", -3, "teal");
 });
-
 statDisplay.create("lslust", () => {
 	T.lustincrdisplay = 1;
 	return statDisplay.statChange("Sydney's Lust", -1, "teal");

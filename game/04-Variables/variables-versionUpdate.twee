@@ -5006,6 +5006,7 @@
 
 				migrateRealVars(['weather', 'moonstate', 'timeStamp', 'location', 'parasite', 'pain', 'arousal', 'tiredness', 'trauma', 'control', 'angel', 'angelbuild', 'fallenangel', 'transformationParts', 'purity', 'parasitepregdisable', 'worn', 'skin']);
 			} else if (event === 'prayerroom') {
+				/* DO NOT MODIFY FURTHER, SEE 'Fix to freezePlayerStats being used in the Corrupt Temple scene' */
 				overwriteObjProp('virginity', V.real_virginity, V.frozenValues.player);
 				overwriteObjProp('virginity', V.real_virginity_sydney, V.frozenValues.NPCName[V.NPCNameList.indexOf('Sydney')]);
 
@@ -5070,4 +5071,49 @@
 	<<if $hairtype is "draggletail">>
 		<<set $hairtype to "messy ponytail">>
 	<</if>>
+
+	/*Fix inconsistent naming for ufarm escape variable*/
+	<<if $livestockEscape is "birth">>
+		<<set $livestock_escape to "birth">>
+		<<unset $livestockEscape>>
+	<</if>>
+
+	/* Fix to freezePlayerStats being used in the Corrupt Temple scene, modification of '$real_ variables cleanup' related to this even shouldnt be modified any longer */
+	<<if !$replayScene and $statFreeze and $frozenValues and ($passage.match(/^Sydney Temple Corrupt (Sex( Finish)?|End( [^2F]|$))/)
+		|| ($passage === 'Sydney Temple Corrupt End 2' && !$sydneySeen.includes("corruptroom"))) and !$defileSacredGroundStore and !$objectVersion.defileSacredGroundStore>>
+		<<set $defileSacredGroundStore to {
+			playerVirginity: clone($frozenValues.player.virginity),
+			sydneyVirginity: clone($frozenValues.NPCName[$NPCNameList.indexOf("Sydney")].virginity),
+			angel: $frozenValues.angel,
+			angelbuild: $frozenValues.angelbuild,
+			fallenangel: $frozenValues.fallenangel,
+			transformationParts: $frozenValues.transformationParts,
+			purity: $frozenValues.purity,
+			trauma: $frozenValues.trauma,
+		}>>
+		<<unset $frozenValues>>
+		<<unset $frozenKeys>>
+		<<unset $statFreeze>>
+		<<set $objectVersion.defileSacredGroundStore to 1>>
+	<</if>>
+	/* Fix to statFreeze being left from the previous fix, be aware of this fix when using statFreeze outside of freezePlayerStats */
+	<<if (!$objectVersion.defileSacredGroundStore or $objectVersion.defileSacredGroundStore lt 2) and !$replayScene and $statFreeze and !$frozenValues>>
+		<<unset $statFreeze>>
+		<<set $objectVersion.defileSacredGroundStore to 2>>
+	<</if>>
+	/* Docks dog-related scenes refactor*/
+	<<if $dock_dog isnot undefined>>
+		<<beastNEWinit 1 dog>>
+		<<set $dock_dog to clone($NPCList[0])>>
+	<</if>>
+	/* Kill the leather leggings with fire */
+	/*  Disabled as there may be a problem with convertLegstoUnder - Vrel
+	<<if !$objectVersion.itemFix lt 1 or $objectVersion.itemnFix is undefined>>
+		<<if $worn.under_lower.name isnot "naked" and $worn.legs.name is "leather leggings">><<generalUndress "wardrobe" "under_lower">><</if>>
+		<<run convertLegstoUnder()>>
+		<<set $objectVersion.itemFix to 1>>
+	<</if>>
+	*/
 <</widget>>
+
+

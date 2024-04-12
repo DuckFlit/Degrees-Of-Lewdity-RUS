@@ -165,7 +165,7 @@ setup.shopDetails = {
 		name: "Covered",
 		desc: "Protects various body parts.",
 		details:
-			"Concealed skin cannot be written on. Facewear with this trait protects your mouth against kissing, penetration, and oral activities. Underwear with this trait will not be considered lewd when exposed. Legwear with this trait will cover your undergarments. Lowerwear with this trait will cover your upper half, allowing you to wear them with nothing on top.",
+			"Concealed skin cannot be written on. Facewear with this trait protects your mouth against kissing, penetration, and oral activities. Underwear with this trait will not be considered lewd when exposed. Lowerwear with this trait will cover your upper half, allowing you to wear them with nothing on top.",
 	},
 	naked: {
 		name: "Naked",

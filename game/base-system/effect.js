@@ -863,7 +863,7 @@ function effects() {
 		}
 
 		if (V.toy_message) {
-			element("span", "Sex toys are becoming more popular throughout town.", "pruple");
+			element("span", "Sex toys are becoming more popular throughout town.", "purple");
 			delete V.toy_message;
 		}
 
@@ -934,7 +934,7 @@ function effects() {
 						? ` and clit. It ${looks} like you have your own penis now`
 						: `A new parasite forms around the base of your clit, it ${looks} similar to a penis`;
 				}
-				element("span", `A satisfied warmth fills you. ${parasiteMessage}`, "blue");
+				sWikifier(`<span class="blue">A satisfied warmth fills you. ${parasiteMessage}</span>`);
 				element("span", `You can tell that ${parasiteCount > 1 ? "they are" : "it's"} from the slimes in your ears.`);
 				if (V.earSlimePenisParasite && V.earSlimePenisParasite !== 1) {
 					element("span", `The previous ${V.earSlimePenisParasite} falls off shortly after it finishes growing.`, "red");
@@ -964,7 +964,7 @@ function effects() {
 			element(
 				"span",
 				V.penisslimecagemessage === 1 ? "A new chastity parasite forms around your penis." : "Your chastity parasite looks brand new again.",
-				"pruple"
+				"purple"
 			);
 			delete V.penisslimecagemessage;
 		}

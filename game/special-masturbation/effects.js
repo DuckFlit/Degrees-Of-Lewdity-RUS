@@ -78,7 +78,7 @@ function masturbationEffects() {
 			delete V.corruptionMasturbationCount;
 		} else {
 			if (V.orgasmdown >= 2) {
-				if (V.corruptionMasturbationCount === undefined || V.corruptionMasturbationCount === null) V.corruptionMasturbationCount = random(2, 6);
+				if (isNaN(V.corruptionMasturbationCount)) V.corruptionMasturbationCount = random(2, 6);
 				if (V.corruptionMasturbationCount <= 0) {
 					V.corruptionMasturbation = false;
 					delete V.corruptionMasturbationCount;
@@ -1084,7 +1084,6 @@ function masturbationEffectsArms(
 				sWikifier(`Your forced to roughtly grope your ${balls} to feel anything.`);
 			} else {
 				wikifier("arousal", 100 * handsOn, "masturbationPenis");
-				additionalEffect.hands = "ballplayeffects";
 				if (handsOn === 2) {
 					if (V.arousal >= V.arousalmax * (4 / 5)) {
 						fragment.append(
@@ -1113,6 +1112,7 @@ function masturbationEffectsArms(
 						fragment.append(span(`You stroke ${altText.oneOfYour} with your ${arm}.`));
 					}
 				}
+				additionalEffect.hands = "ballplayeffects";
 			}
 			break;
 		case "mballssqueeze":
@@ -1124,7 +1124,6 @@ function masturbationEffectsArms(
 				sWikifier(`Your forced to roughtly squeeze your ${balls} to feel anything.`);
 			} else {
 				wikifier("arousal", 200 * handsOn, "masturbationPenis");
-				additionalEffect.hands = "ballplayeffects";
 				altText.gently = V.arousal >= V.arousalmax * (4 / 5) ? "urgently" : V.arousal >= V.arousalmax * (3 / 5) ? "" : "gently";
 				if (handsOn === 2) {
 					switch (V.ballssize) {
@@ -1160,6 +1159,7 @@ function masturbationEffectsArms(
 							break;
 					}
 				}
+				additionalEffect.hands = "ballplayeffects";
 			}
 			break;
 		case "mballsentrance":
@@ -1204,7 +1204,6 @@ function masturbationEffectsArms(
 				fragment.append(span(`. You briefly freeze. `));
 				fragment.append(span(`You didn't feel anything.`, "red"));
 			} else {
-				additionalEffect.hands = "ballplayeffects";
 				wikifier("arousal", 100 * handsOn, "masturbationPenis");
 				if (handsOn === 2) {
 					switch (V.ballssize) {
@@ -1240,6 +1239,7 @@ function masturbationEffectsArms(
 							break;
 					}
 				}
+				additionalEffect.hands = "ballplayeffects";
 			}
 			break;
 		case "mpenisW":
