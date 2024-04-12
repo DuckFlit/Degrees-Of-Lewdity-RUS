@@ -602,7 +602,7 @@ function initHead() {
 			colour: 0,
 			colour_options: [],
 			colour_combat: 0,
-			type: ["normal"],
+			type: ["normal", "shade"],
 			gender: "f",
 			femininity: 100,
 			warmth: 1,
@@ -619,8 +619,8 @@ function initHead() {
 			head_type: "hat",
 			cursed: 0,
 			location: 0,
-			iconFile: 0,
-			accIcon: 0,
+			iconFile: "straw_hat.png",
+			accIcon: "straw_hat_acc.png",
 		},
 
 		{

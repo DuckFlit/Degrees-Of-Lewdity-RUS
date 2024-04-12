@@ -905,6 +905,8 @@ Renderer.CanvasModels["main"] = {
 				options.alt_without_sleeves = null;
 			options.worn_upper_setup.altdisabled.includes("full") ? options.alt_without_full = true :
 				options.alt_without_full = null;
+			options.worn_upper_setup.altdisabled.includes("breasts") ? options.alt_without_breasts = true :
+				options.alt_without_breasts = null;
 		}
 		/*clothes whose sleeves cannot be rolled up*/
 		if (options.worn_upper_setup.variable === "schoolcardigan" && options.worn_upper_setup.altposition === "alt") {
@@ -3321,8 +3323,17 @@ Renderer.CanvasModels["main"] = {
 					return gray_suffix(path, options.filters['worn_lower_acc'])
 				},
 				zfn(options) {
-					return options.worn_lower_setup.high_img ? ZIndices.lower_high : options.worn_lower_setup.type.includes("covered") ? ZIndices.lower_cover : ZIndices.lower;
+					if (["ballgown skirt", "short ballgown skirt"].includes(options.worn_lower_setup.name)) {
+						return ZIndices.upper_top;
+					} else if (options.worn_lower_setup.high_img) {
+						return ZIndices.lower_high;
+					} else if (options.worn_lower_setup.covers_top) {
+						return ZIndices.lower_cover;
+					} else {
+						return ZIndices.lower;
+					}
 				},
+
 				masksrcfn(options) {
 					if (between(options.belly, 15, 24)) {
 						return options.belly_mask_clip_src;
@@ -4261,8 +4272,8 @@ function genlayer_clothing_breasts(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
 			let isAltPosition = options.alt_position &&
-				(options["worn_" + slot + "_setup"].altposition !== undefined &&
-				["dress shirt"].includes(options["worn_" + slot + "_setup"].name));
+				(options["worn_" + slot + "_setup"].altposition !== undefined && 
+				!options.alt_without_breasts);
 			let path = 'img/clothes/' +
 				slot + '/' +
 				options["worn_" + slot + "_setup"].variable + '/' +

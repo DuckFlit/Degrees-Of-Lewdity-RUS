@@ -13,12 +13,12 @@ function handleTouchStart(ev) {
 
 function handleTouchMove(ev) {
 	if (!xDown || !yDown) return;
+	// don't interfere with sliders and other inputs
+	if (ev.target.tagName === "INPUT") return;
 
 	// Activate the swipe only when finger is over the UI Bar
 	const stowedWidth = 60; // appx. width of stowed UI Bar in px
 	const unstowedWidth = 300; // same for unstowed UI Bar
-	// actually, let's just use a threshold instead
-	// if (UIBar.isStowed() && xDown > stowedWidth || xDown > unstowedWidth) return;
 
 	const xUp = ev.touches[0].clientX;
 	const yUp = ev.touches[0].clientY;
