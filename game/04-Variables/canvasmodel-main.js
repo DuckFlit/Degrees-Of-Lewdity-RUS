@@ -905,6 +905,8 @@ Renderer.CanvasModels["main"] = {
 				options.alt_without_sleeves = null;
 			options.worn_upper_setup.altdisabled.includes("full") ? options.alt_without_full = true :
 				options.alt_without_full = null;
+			options.worn_upper_setup.altdisabled.includes("breasts") ? options.alt_without_breasts = true :
+				options.alt_without_breasts = null;
 		}
 		/*clothes whose sleeves cannot be rolled up*/
 		if (options.worn_upper_setup.variable === "schoolcardigan" && options.worn_upper_setup.altposition === "alt") {
@@ -4270,8 +4272,8 @@ function genlayer_clothing_breasts(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
 			let isAltPosition = options.alt_position &&
-				(options["worn_" + slot + "_setup"].altposition !== undefined &&
-				["dress shirt"].includes(options["worn_" + slot + "_setup"].name));
+				(options["worn_" + slot + "_setup"].altposition !== undefined && 
+				!options.alt_without_breasts);
 			let path = 'img/clothes/' +
 				slot + '/' +
 				options["worn_" + slot + "_setup"].variable + '/' +
