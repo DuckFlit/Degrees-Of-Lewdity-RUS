@@ -60,6 +60,7 @@ Weather.Temperature = (() => {
 		Returns outside temperature
 	*/
 	function getCelsius() {
+		if (T.temperatureOverride?.outside) return T.temperatureOverride.outside;
 		if (T.currentTemperature === undefined) {
 			const date = new DateTime(Time.date);
 			const baseTemperature = getBaseTemperature(date);
@@ -73,6 +74,7 @@ Weather.Temperature = (() => {
 		The water temperature uses the base temperature, without modifiers
 	*/
 	function getWaterTemperature() {
+		if (T.temperatureOverride?.water) return T.temperatureOverride.water;
 		const date = new DateTime(Time.date);
 		const baseTemperature = getBaseTemperature(date);
 		const lowerLimit = -1;
@@ -94,6 +96,7 @@ Weather.Temperature = (() => {
 		Lowering the modifierFactor makes the deviation from the target temperature less pronounced. (lower deviation from target)
 	*/
 	function getInsideTemperature() {
+		if (T.temperatureOverride?.inside) return T.temperatureOverride.inside;
 		const date = new DateTime(Time.date);
 		const baseTemperature = getBaseTemperature(date);
 		const targetTemperature = 23;
@@ -257,5 +260,25 @@ Weather.Temperature = (() => {
 		toCelsius,
 		set,
 		add,
+		override: {
+			get outside() {
+				return T.temperatureOverride?.outside;
+			},
+			set outside(value) {
+				T.temperatureOverride = { outside: value };
+			},
+			get inside() {
+				return T.temperatureOverride?.inside;
+			},
+			set inside(value) {
+				T.temperatureOverride = { inside: value };
+			},
+			get water() {
+				return T.temperatureOverride?.water;
+			},
+			set water(value) {
+				T.temperatureOverride = { water: value };
+			},
+		},
 	});
 })();
