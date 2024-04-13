@@ -14,7 +14,7 @@ Weather.Sky = (() => {
 			this.element.height = scaledHeight;
 		}
 
-		glow(glowSize, glowColor, glowIntensity) {
+		glow(glowSize, glowColor) {
 			this.ctx.shadowColor = glowColor;
 			this.ctx.shadowBlur = glowSize;
 			this.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;

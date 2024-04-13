@@ -41,6 +41,7 @@ WeatherEffects.create({
 				glow: true,
 				defaultColor: "#deae66",
 				defaultSize: 5,
+				defaultAlpha: 1,
 			},
 			bindings: {
 				location() {
@@ -170,9 +171,9 @@ WeatherEffects.create({
 						alwaysDrawFirstFrame: loc.alwaysDrawFirstFrame ?? true,
 						waitForAnimation: loc.waitForAnimation,
 						glow: this.glow ? {
-							size: loc.size ?? this.defaultSize ?? 0,
-							color: loc.color ?? this.defaultColor ?? "#ffffff",
-							intensity: loc.intensity ?? this.defaultIntensity ?? 1,
+							size: typeof loc.size === "function" ? loc.size() : loc.size ?? this.defaultSize ?? 0,
+							color: typeof loc.color === "function" ? loc.color() : loc.color ?? this.defaultColor ?? "#ffffff",
+							alpha: typeof loc.alpha === "function" ? loc.alpha() : loc.alpha ?? this.defaultAlpha ?? 1,
 						} : null,
 						parent: typeof loc.animation === "string" ? loc.animation : undefined,
 					};
@@ -256,7 +257,10 @@ WeatherEffects.create({
 				}
 			}
 
-			if (anim.glow) this.canvas.glow(anim.glow.size, anim.glow.color, anim.glow.intensity);
+			if (anim.glow) {
+				this.canvas.glow(anim.glow.size, anim.glow.color);
+				this.canvas.globalAlpha = anim.glow.alpha;
+			}
 			
 			if (anim.animationInstance && shouldDraw) {
 				if (!anim.animationInstance.enabled && !anim.alwaysDrawFirstFrame) continue;
