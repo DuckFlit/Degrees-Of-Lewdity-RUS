@@ -779,8 +779,21 @@ function updateCaptionTooltip() {
 	updateTooltip();
 	$(document).off(":passageend", updateCaptionTooltip);
 	$(document).on(":passageend", updateCaptionTooltip);
-	$(document).on("mousemove", checkMousePosition);
-	// document.addEventListener("mousemove", checkMousePosition);
+	// Add event listeners only when the mouse is over the canvas
+	canvas.on("mouseenter", () => {
+		$(document).on("mousemove", checkMousePosition);
+	});
+
+	canvas.on("mouseleave", () => {
+		$(document).off("mousemove", checkMousePosition);
+		if (isMouseOverElement) {
+			// Cleanup if mouse leaves the canvas while over the tooltip element
+			element.trigger("mouseleave");
+			$(".tooltip-popup").remove();
+			canvas.css("cursor", "");
+			isMouseOverElement = false;
+		}
+	});
 }
 $(() => updateCaptionTooltip());
 window.updateCaptionTooltip = updateCaptionTooltip;
