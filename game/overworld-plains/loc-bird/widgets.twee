@@ -1898,6 +1898,22 @@
 				<<set $_upgrade.housekeeping to 100>>
 				<<set $_upgrade.clothingSlot to "handheld">>
 				<<set $_upgrade.clothingIndex to 12>>
+			<<case "clip">>
+				<span class="teal">Feathered Hair Clip</span>: Makes you feel flighty.
+				<<set $_upgrade.passage to "Bird Tower Build Clip">>
+				<<set $_upgrade.timeTaken to 10>>
+				<<set $_upgrade.materialsUsed to {
+					fabric: 1,
+					junk: 1,
+					feathers: 3
+				}>>
+				<<set $_upgrade.upgradesRequired to {
+					tools: 1
+				}>>
+				<<set $_upgrade.housekeeping to 200>>
+				<<set $_upgrade.clothingSlot to "head">>
+				<<set $_upgrade.clothingIndex to 31>>
+				<<set _colourSelectNeeded to true>>
 			<<case "shelter">>
 				<<switch $bird.upgrades.shelter>>
 					<<case 0>>
@@ -2395,7 +2411,9 @@
 		<<capture _upgrade>>
 			<<link [[$_linkText|_towerUpgrades[_upgrade].passage]]>>
 				<<if _towerUpgrades[_upgrade].clothingSlot>>
-					<<generalWear _towerUpgrades[_upgrade].clothingSlot _towerUpgrades[_upgrade].clothingIndex>>
+					<<if !_colourSelectNeeded>>
+						<<generalWear _towerUpgrades[_upgrade].clothingSlot _towerUpgrades[_upgrade].clothingIndex>>
+					<</if>>
 				<<else>>
 					<<set $bird.upgrades[_upgrade]++>>
 				<</if>>
@@ -2515,6 +2533,21 @@
 			<<set $harpyEggsPrevent to 14>>
 		<</if>>
 		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "setTowerTemp">>
+	<<if $bird.upgrades.shelter is 0>>
+		<<set $outside to 1>>
+	<<else>>
+		<<set $outside to 0>>
+	<</if>>
+	<<set $_tempUp to Math.clamp((30 * Math.log(0.034 * (30 - Weather.temperature) + 1)), 1, 40)>>
+	<<if getBirdBurnTime() gt 0>>
+		<<set Weather.Temperature.override[$outside ? "outside" : "inside"] = Weather.temperature + $_tempUp>>
+		<<if _args[0] is "water" and $bird.upgrades.pot gte 3>>
+			<<set Weather.Temperature.override.water = Weather.temperature + ($_tempUp + 8)>>
+		<</if>>
 	<</if>>
 <</widget>>
 
