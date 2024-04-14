@@ -13,6 +13,7 @@ WeatherEffects.create({
 		this.stopAnimation = () => this.animation?.stop();
 		this.startAnimation = () => this.animation?.start();
 
+		this.stopAnimation();
 		const scaledFrameWidth = this.frameWidth * setup.SkySettings.scale;
 		const scaledFrameHeight = this.images.precipitation.height;
 		const numFrames = this.images.precipitation.width / scaledFrameWidth;
@@ -24,7 +25,6 @@ WeatherEffects.create({
 
 		const precipitationSheet = new Weather.Sky.Canvas(scaledFrameWidth * numFrames * spriteColumns, scaledFrameHeight * spriteRows);
 		const precipitationFrame = new Weather.Sky.Canvas(scaledFrameWidth * spriteColumns, scaledFrameHeight * spriteRows);
-
 
 		for (let i = 0; i < numFrames; i++) {
 			precipitationFrame.clear();
@@ -40,13 +40,33 @@ WeatherEffects.create({
 					const frameX = i * scaledFrameWidth;
 
 					if (x + scaledFrameWidth > 0 && x < precipitationFrame.element.width) {
-						precipitationFrame.ctx.drawImage(this.images.precipitation, frameX, 0, scaledFrameWidth, this.images.precipitation.height, x, y, scaledFrameWidth, scaledFrameHeight);
+						precipitationFrame.ctx.drawImage(
+							this.images.precipitation,
+							frameX,
+							0,
+							scaledFrameWidth,
+							this.images.precipitation.height,
+							x,
+							y,
+							scaledFrameWidth,
+							scaledFrameHeight
+						);
 					}
 				}
 			}
 
 			const destX = i * scaledFrameWidth * spriteColumns;
-			precipitationSheet.ctx.drawImage(precipitationFrame.element, 0, 0, precipitationFrame.element.width, precipitationFrame.element.height, destX, 0, precipitationFrame.element.width, precipitationFrame.element.height);
+			precipitationSheet.ctx.drawImage(
+				precipitationFrame.element,
+				0,
+				0,
+				precipitationFrame.element.width,
+				precipitationFrame.element.height,
+				destX,
+				0,
+				precipitationFrame.element.width,
+				precipitationFrame.element.height
+			);
 		}
 
 		this.frameTotalWidth = precipitationSheet.element.width / numFrames;
@@ -56,6 +76,15 @@ WeatherEffects.create({
 	draw() {
 		if (!this.animation.enabled) this.startAnimation();
 		this.canvas.ctx.globalAlpha = this.alpha;
-		this.animation.draw(this.canvas.ctx, 0, 0, this.canvas.element.width, this.canvas.element.height, this.canvas.element.width, this.canvas.element.height, this.frameTotalWidth);
+		this.animation.draw(
+			this.canvas.ctx,
+			0,
+			0,
+			this.canvas.element.width,
+			this.canvas.element.height,
+			this.canvas.element.width,
+			this.canvas.element.height,
+			this.frameTotalWidth
+		);
 	},
 });
