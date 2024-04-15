@@ -948,15 +948,9 @@ Renderer.CanvasModels["main"] = {
 		},
 		"breasts": {
 			srcfn(options) {
-				if (options.mannequin) {
-					return "img/body/mannequin/breasts/" +
-						(options.breast_size - 1) +
-						(options.breasts === "cleavage" && options.breast_size >= 4 ? "_clothed" : "") + ".png"
-				} else {
-					if (options.breast_size <= 0) return "";
-					let fn = "breasts" + options.breast_size + (options.breasts === "cleavage" && options.breast_size >= 3 ? "_clothed" : "") + ".png";
-					return "img/body/breasts/" + fn;
-				}
+				if (options.breast_size <= 0) return "";
+				let fn = "breasts" + options.breast_size + (options.breasts === "cleavage" && options.breast_size >= 3 ? "_clothed" : "") + ".png";
+				return `img/body${options.mannequin ? "/mannequin/" : "/"}breasts/${fn}`;
 			},
 			masksrcfn(options) {
 				return options.breasts_mask_src;
