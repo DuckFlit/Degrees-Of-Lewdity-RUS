@@ -1,5 +1,6 @@
 Weather.Observables = (() => {
 	// Schedules the updates so that the same layers don't update multiple times by different bindings
+	// Uses promises since scheduled code is sometimes asyncronous
 	class UpdateScheduler {
 		constructor() {
 			this.updates = new Map();
@@ -15,16 +16,25 @@ Weather.Observables = (() => {
 		}
 
 		executeUpdates() {
-			// Always cause "all" updates to execute last
-			const allUpdate = this.updates.get("all");
-			this.updates.delete("all");
+			const promises = [];
 
-			this.updates.forEach(update => update());
-			this.updates.clear();
+			this.updates.forEach((update, key) => {
+				if (key !== "all") {
+					const updatePromise = Promise.resolve().then(() => update(!!this.updates.get("all")));
+					promises.push(updatePromise);
+					this.updates.delete(key);
+				}
+			});
 
-			if (allUpdate) allUpdate();
-
-			this.scheduled = false;
+			// Wait for all layer updates to complete before executing "all" update
+			Promise.all(promises).then(() => {
+				const allUpdate = this.updates.get("all");
+				if (allUpdate) {
+					allUpdate();
+				}
+				this.updates.clear();
+				this.scheduled = false;
+			});
 		}
 	}
 
@@ -54,9 +64,9 @@ Weather.Observables = (() => {
 					});
 				} else {
 					config.layers.forEach(layer => {
-						scheduler.scheduleUpdate(layer, async () => {
+						scheduler.scheduleUpdate(layer, async draw => {
 							await Weather.Sky.getLayer(layer).init();
-							Weather.Sky.drawLayers(layer);
+							if (!draw) Weather.Sky.drawLayers(layer);
 						});
 					});
 				}
