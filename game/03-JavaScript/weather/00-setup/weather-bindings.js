@@ -45,7 +45,10 @@ setup.WeatherBindings = {
 		layers: ["location"],
 	},
 	fireOn: {
-		variable: () => T.birdBurnTime,
+		variable: () => {
+			const step = (V.bird.firepit.maxBurnTime / 60) / 5; // (max value / parts)
+			return Math.round(getBirdBurnTime() / step) * step;
+		  },
 		layers: ["location"],
 	},
 };
