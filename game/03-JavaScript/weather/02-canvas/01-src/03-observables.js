@@ -2,13 +2,12 @@ Weather.Observables = (() => {
 	// Schedules the updates so that the same layers don't update multiple times by different bindings
 	class UpdateScheduler {
 		constructor() {
-			this.updates = new Set();
+			this.updates = new Map();
 			this.scheduled = false;
 		}
 
-		scheduleUpdate(update) {
-			this.updates.add(update);
-
+		scheduleUpdate(layerKey, update) {
+			this.updates.set(layerKey, update);
 			if (!this.scheduled) {
 				this.scheduled = true;
 				Promise.resolve().then(() => this.executeUpdates());
@@ -16,8 +15,15 @@ Weather.Observables = (() => {
 		}
 
 		executeUpdates() {
+			// Always cause "all" updates to execute last
+			const allUpdate = this.updates.get("all");
+			this.updates.delete("all");
+
 			this.updates.forEach(update => update());
 			this.updates.clear();
+
+			if (allUpdate) allUpdate();
+
 			this.scheduled = false;
 		}
 	}
@@ -25,40 +31,46 @@ Weather.Observables = (() => {
 	const scheduler = new UpdateScheduler();
 	const observables = {};
 
-	Object.entries(setup.WeatherBindings).forEach(([key, config]) => {
-		const observable = new ObservableValue(null);
-		observables[key] = observable;
+	Object.keys(setup.WeatherBindings).forEach(key => (observables[key] = new ObservableValue(null)));
 
-		observable.subscribe(value => {
-			if (value === undefined) return;
-			if (config.layers.includes("all")) {
-				scheduler.scheduleUpdate(() => {
-					Weather.Sky.updateOrbits();
-					Weather.Sky.updateFade();
-					Weather.Sky.updateTooltip();
-					Weather.Sky.drawLayers();
-				});
-			} else {
-				scheduler.scheduleUpdate(async () => {
-					for (const layer of config.layers) {
-						await Weather.Sky.getLayer(layer).init();
-					}
-					Weather.Sky.drawLayers(...config.layers);
-				});
-			}
+	const setBindings = () => {
+		if (Weather.Sky.loaded.value) Weather.Sky.updateTooltip();
+		Object.entries(setup.WeatherBindings).forEach(([key, config]) => {
+			const value = config.variable();
+			observables[key].value = value;
 		});
-	});
+	};
+
+	const subscribeToUpdates = () => {
+		Object.entries(setup.WeatherBindings).forEach(([key, config]) => {
+			observables[key].subscribe(value => {
+				if (value === undefined) return;
+				if (config.layers.includes("all")) {
+					scheduler.scheduleUpdate("all", async () => {
+						Weather.Sky.updateTooltip();
+						Weather.Sky.updateOrbits();
+						Weather.Sky.updateFade();
+						Weather.Sky.drawLayers();
+					});
+				} else {
+					config.layers.forEach(layer => {
+						scheduler.scheduleUpdate(layer, async () => {
+							await Weather.Sky.getLayer(layer).init();
+							Weather.Sky.drawLayers(layer);
+						});
+					});
+				}
+			});
+		});
+	};
 
 	Weather.Sky.loaded.subscribe(() => {
-		Weather.Sky.updateTooltip();
-
-		$(document).on(":passageend", () => {
-			Object.keys(observables).forEach(key => {
-				observables[key].value = setup.WeatherBindings[key].variable();
-			});
-			if (Weather.Sky.loaded.value) Weather.Sky.updateTooltip();
-		});
+		setBindings();
+		subscribeToUpdates();
+		$(document).on(":passageend", setBindings);
 	});
 
-	return {};
+	return {
+		checkForUpdate: setBindings,
+	};
 })();
