@@ -3121,9 +3121,6 @@ Renderer.CanvasModels["main"] = {
                     return options.zupper
 				}
 			},
-			masksrcfn(options) {
-				return options.shirt_mask_breasts_src;
-			}
 		}),
 		"upper_acc": genlayer_clothing_accessory("upper", {
 			zfn(options) {
@@ -4280,7 +4277,17 @@ function genlayer_clothing_breasts(slot, overrideOptions) {
 				(Math.min(options.breast_size, 6)) + (isAltPosition ? '_alt' : '') + '.png';
 			return gray_suffix(path, options.filters['worn_' + slot]);
 		},
-		z: ZIndices[slot],
+		masksrcfn(options) {
+			if (options.belly >= 19) {
+				return options.shirt_mask_breasts_src
+			} else if (options["worn_" + slot + "_setup"].mask_img === 1) {
+				let item = options["worn_" + slot + "_setup"].variable;
+				let integrity = options["worn_" + slot + "_integrity"];
+				return `img/clothes/${slot}/${item}/mask_${integrity}.png`;
+			} else {
+				return null;
+			}
+		},
 		showfn(options) {
 			return options.show_clothes &&
 				options["worn_" + slot] > 0 &&
@@ -4289,6 +4296,7 @@ function genlayer_clothing_breasts(slot, overrideOptions) {
 		alphafn(options) {
 			return options["worn_" + slot + "_alpha"]
 		},
+		z: ZIndices[slot],
 		filters: ["worn_" + slot],
 		animation: "idle"
 	}, overrideOptions)
