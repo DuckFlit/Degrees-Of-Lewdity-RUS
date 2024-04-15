@@ -259,7 +259,7 @@ WeatherEffects.create({
 
 			if (anim.glow) {
 				this.canvas.glow(anim.glow.size, anim.glow.color);
-				this.canvas.globalAlpha = anim.glow.alpha;
+				this.canvas.ctx.globalAlpha = anim.glow.alpha;
 			}
 			
 			if (anim.animationInstance && shouldDraw) {
