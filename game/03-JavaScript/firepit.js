@@ -227,7 +227,9 @@ window.Cooker = Cooker;
 
 function getBirdBurnTime() {
 	if (!V.bird.firepit) return 0;
-	return Math.floor(Cooker.getBurnTime(V.bird.firepit) / 60); // minutes
+	T.birdBurnTime = Math.floor(Cooker.getBurnTime(V.bird.firepit) / 60); // minutes
+	T.birdBurnAlpha = (T.birdBurnTime / 1440)
+	return T.birdBurnTime;
 }
 window.getBirdBurnTime = getBirdBurnTime;
 

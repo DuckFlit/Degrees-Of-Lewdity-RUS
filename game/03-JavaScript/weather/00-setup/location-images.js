@@ -1454,6 +1454,7 @@ setup.LocationImages = {
 				},
 				color: "#deae66",
 				size: 5,
+				alpha: T.birdBurnAlpha,
 			},
 		},
 		emissive_blood: {

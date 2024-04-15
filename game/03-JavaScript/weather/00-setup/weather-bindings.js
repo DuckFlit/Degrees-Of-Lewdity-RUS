@@ -44,4 +44,8 @@ setup.WeatherBindings = {
 		variable: () => Weather.lightsOn,
 		layers: ["location"],
 	},
+	fireOn: {
+		variable: () => T.birdBurnTime,
+		layers: ["location"],
+	},
 };

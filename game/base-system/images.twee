@@ -1003,10 +1003,31 @@
 	<<switch _args[0]>>
 		<<case "nest">><<icon "birdTower/nest.png">>
 		<<case "perch">>
+			<<set $_perchImg to "birdTower/perch">>
 			<<switch Time.dayState>>
-				<<case "night">><<icon "birdTower/perch_night.png">>
-				<<default>><<icon "birdTower/perch.png">>
+				<<case "night">>
+					<<if Time.isBloodMoon()>>
+						<<set $_perchImg += "_blood">>
+					<<else>>
+						<<set $_perchImg += "_night">>
+					<</if>>
+				<<default>>
+					<<switch Weather.name>>
+						<<case "lightPrecipitation" "heavyPrecipitation" "thunderStorm">><<set $_perchImg += "_rain">>
+						<<case "snow">><<set $_perchImg += "_snow">>
+						<<default>><<set $_perchImg += ("_" + Time.dayState)>>
+					<</switch>>
 			<</switch>>
+			<<if $bird.upgrades?.decor gte 3>>
+				<<set $_perchImg += "_decor">>
+			<</if>>
+			<<set $_perchImg += ".png">>
+			<<icon $_perchImg>>
+		<<case "perch_up">>
+			<<icon "birdTower/perch_get_up.png">>
+		<<case "hunt">>
+			<<set $_huntImg to "birdTower/prepare_hunt_" + Time.dayState + ".gif">>
+			<<icon $_huntImg>>
 		<<case "firepit">>
 			<<if $bird.upgrades>>
 				<<set $_firePitImg to "birdTower/firepit_">>
@@ -1052,6 +1073,12 @@
 		<<case "tower">><<icon "birdTower/tower.png">>
 		<<case "tools">><<icon "birdTower/toolbox.png">>
 		<<case "pot">><<icon "birdTower/cooking_pot.png">>
+		<<case "pot_cook">>
+			<<if getBirdBurnTime() gt 0>>
+				<<icon "birdTower/cooking_pot_boil.png">>
+			<<else>>
+				<<icon "birdTower/cooking_pot.png">>
+			<</if>>
 		<<case "telescope">><<icon "birdTower/ornate_telescope.png">>
 		<<case "wood">><<icon "birdTower/wood.png">>
 		<<case "fabric">><<icon "birdTower/fabric.png">>
@@ -1069,9 +1096,11 @@
 			<<else>>
 				<<icon "birdTower/mirror_tower.png">>
 			<</if>>
-		<<case "wardrobe">><<icon "birdTower/wardrobe_tower.png">>
+		<<case "wardrobe">><<if $bird.upgrades?.decor gte 4>><<icon "birdTower/wardrobe_tower_decor.png">><<else>><<icon "birdTower/wardrobe_tower.png">><</if>>
 		<<case "eggs">><<icon "tending/bird_egg.png">>
 		<<case "eggs_heart">><<icon "tending/bird_egg_fert.png">>
+		<<case "kiss">><<if $monster is 1>><<icon "birdTower/kiss_greathawk_monster.png">><<else>><<icon "birdTower/kiss_greathawk_beast.png">><</if>>
+		<<case "ask">><<icon "birdTower/socialise_question.png">>
 		<<default>><<icon "moor.png">>
 	<</switch>>
 <</widget>>
