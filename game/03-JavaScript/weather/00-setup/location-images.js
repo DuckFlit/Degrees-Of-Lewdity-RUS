@@ -15,15 +15,6 @@ setup.Locations = {
 		if (V.chef_state >= 7) return "cafe_construction";
 		return "cafe";
 	},
-	/*
-	TEMPLE
-	<<case "temple">>
-				<<if Time.year is 361>>
-					<img id="location" @src="_imgLoc + _weather_display + '/temple'+_dayState+'_old.png'">
-				<<else>>
-					<img id="location" @src="_imgLoc + _weather_display + '/temple'+_dayState+'.png'">
-				<</if>>
-	*/
 	/* ADULT SHOP
 	<<case "adult_shop">>
 				<<getadultshopstate>>
@@ -759,7 +750,7 @@ setup.LocationImages = {
 					fps: 2,
 					delay: () => 500,
 				},
-			}
+			},
 		},
 		reflective: {
 			image: "reflective.png",
@@ -854,7 +845,7 @@ setup.LocationImages = {
 					fps: 1,
 					delay: () => 0,
 				},
-			}
+			},
 		},
 		snow: {
 			default: {
@@ -870,7 +861,7 @@ setup.LocationImages = {
 					fps: 1,
 					delay: () => 0,
 				},
-			}
+			},
 		},
 		bloodmoon: {
 			image: "bloodmoon.png",
@@ -1041,6 +1032,17 @@ setup.LocationImages = {
 					delay: () => 1000,
 				},
 			},
+		},
+	},
+	old_temple: {
+		folder: "old_temple",
+		base: "base.png",
+		snow: "snow.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+			color: "#ff633f",
+			size: 4,
 		},
 	},
 	park: {
@@ -1396,6 +1398,43 @@ setup.LocationImages = {
 			default: {
 				image: "emissive.png",
 				condition: () => Weather.lightsOn && between(Time.hour, 18, 23),
+			},
+		},
+	},
+	temple: {
+		folder: "temple",
+		base: "base.png",
+		snow: "snow.png",
+		emissive: {
+			window_blue: {
+				image: "emissive_blue_window.png",
+				condition: () => Weather.lightsOn,
+				size: 0,
+				alpha: 0.7,
+			},
+			window_orange: {
+				image: "emissive_orange_window.png",
+				condition: () => Weather.lightsOn,
+				size: 0,
+				alpha: 0.7,
+			},
+			orange: {
+				image: "emissive_orange.png",
+				condition: () => Weather.lightsOn,
+				color: "#dfaf70ee",
+				size: 4,
+			},
+			blue: {
+				image: "emissive_blue.png",
+				condition: () => Weather.lightsOn,
+				color: "#7d98e9",
+				size: 2,
+			},
+			grey: {
+				image: "emissive_grey.png",
+				condition: () => Weather.lightsOn,
+				color: "#dbe4b9",
+				size: 4,
 			},
 		},
 	},
