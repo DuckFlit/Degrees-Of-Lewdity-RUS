@@ -2025,37 +2025,3 @@ function earSlimeMakingMundaneRequests() {
 	return true;
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
-
-function minArousal() {
-	let result = playerHeatMinArousal() + playerRutMinArousal();
-
-	result += Object.values(V.worn).reduce((prev, curr) => {
-		if (curr.type.includes("fetish")) return prev + 150;
-		return prev;
-	}, 0);
-
-	return Math.clamp(result, 0, 5000);
-}
-window.minArousal = minArousal;
-
-function minPain() {
-	let result = 0;
-
-	if (V.lactating && V.breastfeedingdisable === "f" && V.milkFullPain > 200) {
-		result += Math.ceil((V.milkFullPain - 200) / 5);
-		if (!V.daily.milkFullPainMessage) {
-			V.milkFullPainMessage = 1;
-			V.effectsmessage = 1;
-		}
-	}
-
-	if (
-		V.earSlime.defyCooldown &&
-		(V.worn.genitals.name === "chastity parasite" || V.parasite.penis.name === "parasite" || V.parasite.clit.name === "parasite")
-	) {
-		result += 25;
-	}
-
-	return Math.clamp(result, 0, 50);
-}
-window.minPain = minPain;
