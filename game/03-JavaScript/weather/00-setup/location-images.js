@@ -764,6 +764,13 @@ setup.LocationImages = {
 		folder: "kylar_manor",
 		base: "base.png",
 		snow: "snow.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+			color: "#fbff86dd",
+			size: 4,
+			alpha: 0.8,
+		},
 	},
 	lake: {
 		folder: "lake",
@@ -936,6 +943,11 @@ setup.LocationImages = {
 			image: "reflective.png",
 			horizon: 112,
 		},
+	},
+	museum: {
+		folder: "museum",
+		base: "base.png",
+		snow: "snow.png",
 	},
 	night_monster_lair: {
 		folder: "night_monster_lair",
