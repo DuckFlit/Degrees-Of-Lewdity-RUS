@@ -1231,7 +1231,8 @@ setup.LocationImages = {
 				image: "base.png",
 			},
 			autumn: {
-				image: "autumn.png",
+				image: "grass_autumn.png",
+				condition: () => Time.season === "autumn",
 			},
 		},
 		snow: "snow.png",
