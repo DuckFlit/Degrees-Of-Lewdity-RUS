@@ -945,20 +945,21 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	/* Move hawk eggs that the player has to the nest */
 	<<run Object.values($children).forEach(child => {
 		if (child.type is "hawk" and child.location is "inventory") {
-			if (!V.eggsMoved) V.eggsMoved = []
+			if (!V.eggsMoved) V.eggsMoved = [];
 			V.eggsMoved.push(child.childId);
 			T.movedToTower to true;
 			child.location to "tower";
 		}
 		if (child.location is "tower" and Time.date.timeStamp gte child.eggTimer) {
-			if (!V.eggsHatched) V.eggsHatched = []
+			if (!V.eggsHatched) V.eggsHatched = [];
 			V.eggsHatched.push(child.childId);
 			T.readyToHatch to true;
 		}
 	})>>
 	<<npc "Great Hawk">>
 	<<if _movedToTower and _readyToHatch>>
-		<span class="blue">You gently place your egg<<if $eggsMoved.length gte 2>>s<</if>> in your nest.</span> You feel a sense of relief at seeing <<if $eggsMoved.length gte 2>>them<<else>>it<</if>> safe. <<if $bird.upgrades.nest gte 2>>You bunch up the fabric to keep <<if $eggsMoved.length gte 2>>them<<else>>it<</if>> cozy.<</if>> <<Number $eggsMoved.length>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggsMoved.length gte 2>>s have<<else>> has<</if>> been moved to the nest.
+		<<set _eggIcon to $eggsMoved.length>>
+		<span class="blue">You gently place your egg<<if $eggsMoved.length gte 2>>s<</if>> in your nest.</span> You feel a sense of relief at seeing <<if $eggsMoved.length gte 2>>them<<else>>it<</if>> safe. <<if $bird.upgrades.nest gte 2>>You bunch up the fabric to keep <<if $eggsMoved.length gte 2>>them<<else>>it<</if>> cozy.<</if>> <<Number $eggsMoved.length>> <<mooricon "eggs">> fertilised bird egg<<if $eggsMoved.length gte 2>>s have<<else>> has<</if>> been moved to the nest.
 		<br><br>
 
 		<<if $eggsMoved.includesAny($eggsHatched)>>
@@ -994,7 +995,8 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		
 		<<link [[Next (0:30)|Bird Tower Hatching]]>><<bird_pass 30>><</link>>
 	<<else>>
-		<span class="blue">You gently place your egg<<if $eggsMoved.length gte 2>>s<</if>> in your nest.</span> You feel a sense of relief at seeing <<if $eggsMoved.length gte 2>>them<<else>>it<</if>> safe. <<if $bird.upgrades.nest gte 2>>You bunch up the fabric to keep them cozy.<</if>> <<Number $eggsMoved.length>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggsMoved.length gte 2>>s have<<else>> has<</if>> been moved to the nest. <<bird_stockholm 3>><<ggbirdstockholm>>
+		<<set _eggIcon to $eggsMoved.length>>
+		<span class="blue">You gently place your egg<<if $eggsMoved.length gte 2>>s<</if>> in your nest.</span> You feel a sense of relief at seeing <<if $eggsMoved.length gte 2>>them<<else>>it<</if>> safe. <<if $bird.upgrades.nest gte 2>>You bunch up the fabric to keep them cozy.<</if>> <<Number $eggsMoved.length>> <<mooricon "eggs">> fertilised bird egg<<if $eggsMoved.length gte 2>>s have<<else>> has<</if>> been moved to the nest. <<bird_stockholm 3>><<ggbirdstockholm>>
 		<br><br>
 
 		<<if $bird.state is "home">>
@@ -1507,11 +1509,22 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<mooricon "nest">><<link [[Sleep in the nest|Bird Tower Bed]]>><</link>>
 	<br>
 	<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer))>>
-		<<mooricon "eggs_heart">><<link [[Brood on your eggs (0:30)|Bird Tower Brood]]>><<set $phase to 1>><<bird_pass 30>><<transform bird 1>><<trauma -3>><</link>><<ltrauma>>
-		<br>
+		<<set _eggIcon to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
+		<<if _eggIcon gte 2>>
+			<<mooricon "eggs">><<link [[Brood on your eggs (0:30)|Bird Tower Brood]]>><<set $phase to 1>><<transform bird 1>><<trauma -3>><</link>><<ltrauma>>
+			<br>
+		<<else>>
+			<<mooricon "eggs">><<link [[Brood on your egg (0:30)|Bird Tower Brood]]>><<set $phase to 1>><<transform bird 1>><<trauma -3>><</link>><<ltrauma>>
+			<br>
+		<</if>>
 	<</if>>
 	<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
-		<<ind>><<link [[Check on your children|Childrens Home]]>><<set $exitPassage to $passage>><</link>>
+		<<set _childrenTotal to Object.values($children).filter(child => child.location is "tower" and child.eggTimer is undefined).length>>
+		<<if _childrenTotal gte 2>>
+			<<mooricon "children">><<link [[Check on your children|Childrens Home]]>><<set $exitPassage to $passage>><</link>>
+		<<else>>
+			<<mooricon "children">><<link [[Check on your child|Childrens Home]]>><<set $exitPassage to $passage>><</link>>
+		<</if>>
 		<br>
 	<</if>>
 	<<if $syndromebird isnot 1>>
@@ -1543,10 +1556,10 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<</if>>
 	<br>
 	<<if $bird.lock is 1>>
-		<<investigateicon>><<link [[Examine the trap door (0:05)|Bird Tower Door]]>><<bird_pass 5>><</link>>
+		<<mooricon "trapdoor">><<link [[Examine the trap door (0:05)|Bird Tower Door]]>><<bird_pass 5>><</link>>
 		<br>
 	<<else>>
-		<<getouticon "hole">><<link [[Enter the trap door (0:05)|Bird Tower Base Descend]]>><<bird_pass 5>><</link>>
+		<<mooricon "trapdoor">><<link [[Enter the trap door (0:05)|Bird Tower Base Descend]]>><<bird_pass 5>><</link>>
 		<br>
 	<</if>>
 	<<if $syndromebird is 1>>
@@ -2898,7 +2911,7 @@ You sit by the rainwater pool.
 <</if>>
 <<endevent>>
 <<if $bird.activity is "bathe" and $bird.state is "home">>
-	<<link [[Wash (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><</link>>
+	<<skinicon "wash">><<link [[Wash (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><</link>>
 	<br>
 	<<if $daily.birdWash is undefined>>
 		<<if $syndromebird gte 1>>
@@ -2910,7 +2923,7 @@ You sit by the rainwater pool.
 		<</if>>
 	<</if>>
 <<else>>
-	<<link [[Wash (0:30)|Bird Tower Bathe]]>><<bird_pass 30>><</link>>
+	<<skinicon "wash">><<link [[Wash (0:30)|Bird Tower Bathe]]>><<bird_pass 30>><</link>>
 	<br>
 <</if>>
 <<link [[Get up|Bird Tower]]>><</link>>
@@ -6585,7 +6598,8 @@ You look up to the sky.
 
 		<<bHe>> continues blustering, before flopping over in the nest. <<bHe>> must be exhausted.
 	<</if>>
-	<<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+	<<set _eggIcon to $eggLayNumber>>
+	<<Number $eggLayNumber>> <<mooricon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
 	<br><br>
 
 	<<if $phase gte 2>>
@@ -6746,7 +6760,8 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 
 		<<bHe>> continues blustering, before repeatedly headbutting you. <<bHe>> seems excited.
 	<</if>>
-	<<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+	<<set _eggIcon to $eggLayNumber>>
+	<<Number $eggLayNumber>> <<mooricon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
 	<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 	<<if $syndromebird gte 1>>
 		You're flooded with emotion. <<trauma -12>><<lltrauma>>
@@ -6893,6 +6908,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 <</if>>
 <br><br>
 
+<<bird_pass 30>>
 <<set _eggsNearHatching to 0>>
 <<set _eggsCloseHatching to 0>>
 <<set _eggsHalfHatching to 0>>
@@ -6900,7 +6916,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 <<run Object.values($children).forEach(child => {
 	const hatchTime = new DateTime(child.eggTimer);
 	if (child.location === "tower" && Time.date.timeStamp >= child.eggTimer) {
-		if (!V.eggsHatched) V.eggsHatched = []
+		if (!V.eggsHatched) V.eggsHatched = [];
 		V.eggsHatched.push(child.childId);
 		T.readyToHatch to true;
 	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 1) {
@@ -6921,13 +6937,15 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="teal">Your egg is very close to hatching!</span>
 	<</if>>
+	<br><br>
 <</if>>
 <<if _eggsCloseHatching>>
 	<<if _eggCount gte 2>>
 		<span class="blue"><<Number _eggsCloseHatching>> of your eggs will hatch in a matter of days.</span>
 	<<else>>
-		<span class="blue">Your egg is will hatch in a matter of days.</span>
+		<span class="blue">Your egg will hatch in a matter of days.</span>
 	<</if>>
+	<br><br>
 <</if>>
 <<if _eggsOverHalfHatching>>
 	<<if _eggCount gte 2>>
@@ -6935,6 +6953,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="pink">Your egg is over half way to its expected hatching time.</span>
 	<</if>>
+	<br><br>
 <</if>>
 <<if _eggsHalfHatching>>
 	<<if _eggCount gte 2>>
@@ -6942,6 +6961,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="purple">Your egg is about half way ready to hatch.</span>
 	<</if>>
+	<br><br>
 <</if>>
 <<if _eggsFarHatching>>
 	<<if _eggCount gte 2>>
@@ -6949,14 +6969,14 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="red">Your egg will still take a long time to hatch.</span>
 	<</if>>
+	<br><br>
 <</if>>
-<br><br>
 
 <<if _readyToHatch>>
 	You hear a tiny crackle from
 	<<if _eggCount gte 2>>
-		<<if V.eggsHatched.length gte 2>>
-			<<number V.eggsHatched.length>> of your eggs. <span class="green">They're hatching!</span>
+		<<if $eggsHatched.length gte 2>>
+			<<number $eggsHatched.length>> of your eggs. <span class="green">They're hatching!</span>
 		<<else>>
 			one of your eggs. <span class="green">It's hatching!</span>
 		<</if>>
@@ -6993,7 +7013,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 		<</if>>
 		<br><br>
 	<</if>>
-	<<link [[Keep brooding (0:30)|Bird Tower Brood]]>><<bird_pass 30>><<transform bird 1>><<trauma -3>><</link>><<ltrauma>>
+	<<link [[Keep brooding (0:30)|Bird Tower Brood]]>><<transform bird 1>><<trauma -3>><</link>><<ltrauma>>
 	<br>
 	<<link [[Get up|Bird Tower]]>><<unset $birdBrood>><</link>>
 	<br>
@@ -7005,6 +7025,7 @@ You watch as the egg<<if $eggsHatched.length gte 2>>s continue<<else>> continues
 <br><br>
 <<if $phase is 1>>
 	<<if $bird.state is "hunting">>
+		<<set $bird.state to "home">><<set $bird.timer to random(45, 120)>>
 		After a few minutes, <<your_bird_text>> flies in through the open wall, <<if $bird.upgrades.decor gte 3>>pushing the curtain aside and <</if>>landing beside you.
 		<<if $monster is 1>>
 			<<bHis>> eyes widen. "Glad I made it in time!"

@@ -694,7 +694,7 @@
 		<<baskicon>><<link [[Bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
 		<<if $daily.birdGroom is undefined and $bird.activity is "groom">>
-			<<ind>><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
+			<<mooricon "preen">><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
 		<</if>>
 		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
 			<<if Weather.precipitation is "rain">>
@@ -735,7 +735,7 @@
 			<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<set $birdSingAbsent to 1>><<bird_pass 30>><<trauma -2>><<endevent>><</link>><<ltrauma>><br>
 		<</if>>
 		<<if $harpy gte 6>>
-			<<ind>><<link [[Preen your wings (0:30)|Bird Tower Preen Self]]>><<bird_pass 30>><<stress -2>><<endevent>><</link>><<lstress>><br>
+			<<mooricon "preen_self">><<link [[Preen your wings (0:30)|Bird Tower Preen Self]]>><<bird_pass 30>><<stress -2>><<endevent>><</link>><<lstress>><br>
 		<</if>>
 		<<if $bird.upgrades.telescope is 1>>
 			<<mooricon "telescope">><<link [[Use your telescope|Bird Tower Telescope]]>><<endevent>><</link>><br>
@@ -841,7 +841,7 @@
 			<br><br>
 		<<else>>
 			<br>
-			<<mooricon "tower">><<link [[Glide to the base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>><br>
+			<<mooricon "fly_down">><<link [[Glide to the base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>><br>
 		<</if>>
 		<<if $birdFly isnot 1 and ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
 			<<askicon>><<link [[Ask the Great Hawk to teach you to fly|Bird Tower Fly Intro]]>><</link>><<flight_text>><br>
@@ -1558,7 +1558,7 @@
 					<</if>>
 					<<set $bird.materials.valuables[$_lootValType] += $_tempNumVal>>
 					<br>
-					<<ind>>- <span class="teal">$_tempNumVal</span> $_lootValType<<if $_lootValType is "watch" and $_tempNumVal gte 2>>es<<elseif $_tempNumVal gte 2>>s<</if>>.
+					<<mooricon $_lootValType>>- <span class="teal">$_tempNumVal</span> $_lootValType<<if $_lootValType is "watch" and $_tempNumVal gte 2>>es<<elseif $_tempNumVal gte 2>>s<</if>>.
 				<</for>>
 			<<default>>
 		<</switch>>
@@ -1614,7 +1614,7 @@
 	<<for _valuable, _amount range $bird.materials.valuables>>
 		<<if _amount lt 1>><<continue>><</if>>
 		<<set $_valuablesMessage to true>>
-		<<ind>> _amount _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
+		<<mooricon _valuable>> _amount _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
 		<<capture _valuable _amount>>
 			<<link "Take one">>
 				<<if _valuable is "antique bullet">>
@@ -2376,7 +2376,11 @@
 		<</if>>
 
 		<<if $_upgrade.clothingSlot>>
-			<<if $worn[$_upgrade.clothingSlot].index is $_upgrade.clothingIndex>>
+			<<if $worn[$_upgrade.clothingSlot].cursed is 1>>
+				<br>
+				<span class="red">You can't remove your $worn[$_upgrade.clothingSlot].name!</span>
+				<<set $_disableBuild to true>>
+			<<elseif $worn[$_upgrade.clothingSlot].index is $_upgrade.clothingIndex>>
 				<br>
 				<span class="purple">You're already <<if $_upgrade.clothingSlot is "handheld">>holding<<else>>wearing<</if>> this!</span>
 				<<set $_disableBuild to true>>
@@ -2506,20 +2510,22 @@
 	<<else>>
 		<<if playerIsPregnant() and $_eggnant.type is "hawk">>
 			<<if $location is "tower">>
+				<<set _eggIcon to $eggLayNumber>>
 				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital and land in your nest<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital and lands in your nest<</if>>.
 				<br><br>
 
-				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $eggLayNumber>> <<mooricon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
 				<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 				<<set $bird.eggReact to $eggLayNumber>>
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy "tower" "tower">>
 				<<set $harpyEggsPrevent to 28>>
 			<<else>>
+				<<set _eggIcon to $eggLayNumber>>
 				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital and land on your bed<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital and lands on your bed<</if>>.
 				<br><br>
 
-				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s<</if>>.
+				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $eggLayNumber>> <<mooricon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s<</if>>.
 				<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 				/* Might be best changing the location variable here */
 				<<pregnancyFeats "pc">>

@@ -46,6 +46,7 @@ setup.WeatherBindings = {
 	},
 	fireOn: {
 		variable: () => {
+			if (V.location !== "tower" || V.bird.firepit === undefined) return null;
 			const step = (V.bird.firepit.maxBurnTime / 60) / 5; // (max value / parts)
 			return Math.round(getBirdBurnTime() / step) * step;
 		  },
