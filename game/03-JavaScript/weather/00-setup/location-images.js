@@ -15,6 +15,9 @@ setup.Locations = {
 		if (V.chef_state >= 7) return "cafe_construction";
 		return "cafe";
 	},
+	castle: () => {
+		return "tower";
+	},
 	/* ADULT SHOP
 	<<case "adult_shop">>
 				<<getadultshopstate>>
