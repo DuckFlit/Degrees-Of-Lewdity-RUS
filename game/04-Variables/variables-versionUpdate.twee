@@ -5114,30 +5114,6 @@
 	<</if>>
 	*/
 
-	<!-- Weather update -->
-	<<if $options.clothingCaption is undefined>>
-		<<set $options.clothingCaption to true>>
-	<</if>>
-
-	<<if $weatherObj is undefined>>
-		<<set $weatherObj to {
-			snow: 0,
-			fog: 0,
-			name: "clear",
-			overcast: 0,
-			monthlyTemperatures: [],
-			keypointsArr: []
-		}>>
-		<<set $player.bodyTemperature to 37>>
-		<<set $options.weatherUpdate to false>>
-		<<set $options.fahrenheit to false>>
-		<<unset $warmth>>
-		<<unset $chill>>
-		<<unset $chill_day>>
-		<!-- Failsafe if changing options immediately after load -->
-		<<run Engine.play($passage)>>
-	<</if>>
-
 	<!--V0.4.7.0 Great Hawk expansion -->
 	<<if $playerPregnancyEggLayingDisable is undefined>>
 		<<set $playerPregnancyEggLayingDisable to $playerPregnancyBeastDisable>>
@@ -5202,4 +5178,44 @@
 		<<set $bird.clean to 0>>
 	<</if>>
 
+	<!-- 0.4.7 Weather update -->
+	<<if $options.clothingCaption is undefined>>
+		<<set $options.clothingCaption to true>>
+	<</if>>
+
+	<<if Time.year is 361 and $location is "temple">>
+		<<set $location to "old_temple">>
+	<</if>>
+
+	<<if $weatherObj is undefined>>
+		<<switch $weather>>
+			<<case "rain" "snow">>
+				<<set _weather to "heavyPrecipitation">>
+			<<case "overcast">>
+				<<set _weather to "heavyClouds">>
+			<<default>>
+				<<set _weather to "lightClouds">>
+		<</switch>>
+		<<set $weatherObj to {
+			snow: 0,
+			fog: 0,
+			name: _weather,
+			overcast: 0,
+			monthlyTemperatures: [],
+			keypointsArr: []
+		}>>
+		<<set $player.bodyTemperature to 37>>
+		<<set $options.weatherUpdate to false>>
+		<<set $options.reflections to true>>
+		<<set $options.reflectionAnimations to true>>
+		<<set $options.fahrenheit to false>>
+		<<unset $weather>>
+		<<unset $warmth>>
+		<<unset $chill>>
+		<<unset $chill_day>>
+		<<unset $skyHidden>>
+		<!-- Failsafe if changing options immediately after load -->
+		<<run Engine.play($passage)>>
+	<</if>>
+	
 <</widget>>
