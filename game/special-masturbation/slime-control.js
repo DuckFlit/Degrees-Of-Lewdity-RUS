@@ -1,3 +1,7 @@
+/*
+	Old version can be found at https://gitgud.io/Vrelnir/degrees-of-lewdity/-/blob/master/game/special-masturbation/slimeControl.twee?ref_type=a2cb7190
+*/
+
 // eslint-disable-next-line no-unused-vars
 function masturbationSlimeControl() {
 	const redText = text => {
