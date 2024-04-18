@@ -1778,15 +1778,39 @@ You journey to Mer Street. When you arrive Whitney steps up to the edge of the p
 
 	<<set $whitPierPhase to 0>>
 	<<if _whitney.penis isnot "none" and $player.vaginaExist>>
-		<<set $whitPierSex to "vaginal">>
+		<<switch random(2)>>
+			<<case 0>>
+				<<set $whitPierSex to "vaginal">>
+			<<case 1>>
+				<<set $whitPierSex to "anal">>
+			<<case 2>>
+				<<set $whitPierSex to "fingering">>
+		<</switch>>
 	<<elseif _whitney.vagina isnot "none" and $player.penisExist>>
-		<<set $whitPierSex to "penile">>
+		<<switch random(1)>>
+			<<case 0>>
+				<<set $whitPierSex to "penile">>
+			<<case 1>>
+				<<set $whitPierSex to "handjob">>
+		<</switch>>
 	<<elseif _whitney.penis isnot "none" and $analdisable is "f">>
-		<<set $whitPierSex to "anal">>
+		<<switch random(1)>>
+			<<case 0>>
+				<<set $whitPierSex to "anal">>
+			<<case 1>>
+				<<set $whitPierSex to "handjob">>
+		<</switch>>
 	<<elseif $player.penisExist>>
 		<<set $whitPierSex to "handjob">>
 	<<else>>
-		<<set $whitPierSex to "fingering">>
+		<<switch random(3)>>
+		<<case 0>>
+			<<set $whitPierSex to "vaginal">>
+		<<case 1>>
+			<<set $whitPierSex to "fingering">>
+		<<case 2>>
+			<<set $whitPierSex to "penile">>
+		<</switch>>
 	<</if>>
 
 	As soon as you're within arm's reach, <<he>> grabs you and
@@ -1806,9 +1830,19 @@ You journey to Mer Street. When you arrive Whitney steps up to the edge of the p
 	"No sluts to play with out there."
 	<<switch $whitPierSex>>
 		<<case "vaginal">>
-			<<He>> grinds <<his>> hips against you. <span class="lewd">The tip of <<his>> <<print $NPCList[0].penisdesc>> pokes your <<pussy>>.</span>
+			<<He>> grinds <<his>> hips against you.
+			<<if _whitney.penis isnot "none">>
+				<span class="lewd">The tip of <<his>> <<print $NPCList[0].penisdesc>> pokes your <<pussy>>.</span>
+			<<else>>
+				<span class="lewd"><<His>> crotch is pressing against your <<pussy>>.</span>
+			<</if>>
 		<<case "penile">>
-			<<He>> grinds <<his>> hips against you, <span class="lewd">pointing your <<penis>> towards <<his>> crotch.</span>
+			<<He>> grinds <<his>> hips against you,
+			<<if _whitney.penis isnot "none">>
+				<span class="lewd">pointing your <<penis>> towards <<his>> crotch.</span>
+			<<else>>
+				<span class="lewd">pressing <<his>> crotch against your <<pussy>>.</span>
+			<</if>>
 		<<case "anal">>
 			<<He>> grinds <<his>> hips against you. <span class="lewd">The length of <<his>> <<print $NPCList[0].penisdesc>> presses into your <<bottom>>.</span>
 		<<default>>
@@ -1830,7 +1864,7 @@ You journey to Mer Street. When you arrive Whitney steps up to the edge of the p
 	<</if>>
 	<<link [[Comply reluctantly|Bully Pier Sex]]>><<set $molestationstart to 1>><<set $phase to 0>><<npcincr Whitney dom 1>><</link>><<gdom>>
 	<br>
-	<<if _whitney.lust gte random(1, 100)>>
+	<<if _whitney.lust gte random(1, 100) and !_whitney.dom lt 10 >>
 		<<link [[Refuse|Bully Pier Sex]]>><<set $molestationstart to 1>><<set $phase to 1>><<npcincr Whitney love -1>><</link>><<llove>>
 		<br>
 	<<else>>
@@ -1982,14 +2016,23 @@ You soon arrive back at the pier. Whitney wraps an arm around your neck and brin
 <</if>>
 
 <<if _start>>
+	<<set _whitney to C.npc.Whitney>>
 	<<switch $whitPierSex>>
 		<<case "vaginal">>
 			<<set $position to "doggy">><<set $position_lock to 1>>
-			<<set $vaginause to "penis">><<set $NPCList[0].penis to "vaginaentrance">><<set $vaginastate to "entrance">><<set $vaginatarget to 0>>
+			<<if _whitney.penis isnot "none" and $player.vaginaExist>>
+				<<set $vaginause to "penis">><<set $NPCList[0].penis to "vaginaentrance">><<set $vaginastate to "entrance">><<set $vaginatarget to 0>>
+			<<else>>
+				<<set $vaginause to "othervagina">><<set $NPCList[0].vagina to "vaginaentrance">><<set $vaginastate to "othervagina">><<set $vaginatarget to 0>>
+			<</if>>
 			<<set $NPCList[0].location.genitals = "genitals">>
 		<<case "penile">>
 			<<set $position to "missionary">><<set $position_lock to 1>>
-			<<set $penisuse to "othervagina">><<set $NPCList[0].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $penistarget to 0>>
+			<<if _whitney.vagina isnot "none" and $player.penisExist>>
+				<<set $penisuse to "othervagina">><<set $NPCList[0].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $penistarget to 0>>
+			<<else>>
+				<<set $vaginause to "othervagina">><<set $NPCList[0].vagina to "vaginaentrance">><<set $vaginastate to "othervagina">><<set $vaginatarget to 0>>
+			<</if>>
 			<<set $NPCList[0].location.genitals = "genitals">>
 		<<case "anal">>
 			<<set $position to "doggy">><<set $position_lock to 1>>
