@@ -1,0 +1,152 @@
+/* Add new hairstyles here to indicate how styles will be ruffled */
+setup.hair = {
+	hairtype: [
+		{
+			name: "default",
+			list: [
+				"default",
+				"all down",
+				"bedhead",
+				"curl",
+				"curly side up",
+				"defined curl",
+				"drill ringlets",
+				"half-up",
+				"heart braid",
+				"loose",
+				"messy bun",
+				"neat",
+				"ruffled",
+				"sidecut",
+				"sleek",
+				"space buns",
+				"straight",
+				"swept left",
+			],
+			devolve: ["ruffled", "bedhead"],
+		},
+		{
+			name: "single tail",
+			list: [
+				"flat ponytail", 
+				"fluffy ponytail",
+				"messy bun",	
+				"ponytail", 
+				"ribbon tail",
+				"side tail left", 
+				"side tail right", 
+				"thick ponytail", 
+				"thick sidetail",
+			],
+			devolve: ["messy ponytail"],
+		},
+		{
+			name: "double tail",
+			list: [
+				"curly pigtails",
+				"drill ringlets",
+				"loop braid",
+				"low tails",
+				"pigtails", 
+				"sailor buns",
+				"scorpion tails",
+				"thick pigtails",
+				"thick twintails",
+				"twintails",],
+			devolve: ["twintails"],
+		},
+		{
+			name: "single braid",
+			list: ["braid left", "braid right", "left fishtail", "right fishtail", "sidetail left", "sidetail right"],
+			devolve: ["braid left"],
+		},
+		{
+			name: "double bun",
+			list: ["sailor buns", "space buns"],
+			devolve: ["sailor buns"],
+		},		
+		{
+			name: "double braid",
+			list: [ "bubble tails", "twin braids", "twin fishtails"],
+			devolve: ["twin braids"],
+		},
+		{
+			name: "short",
+			list: ["french bob", "layered bob", "messy", "short", "short spiky"],
+			devolve: ["messy", "bedhead"],
+		},
+		{
+			name: "fro",
+			list: ["fro", "afro puffs", "afro pouf"],
+			devolve: ["fro"],
+		},
+		{
+			/* immune to being ruined (because devolve list is empty) */
+			name: "special",
+			list: ["dreads","shaved"],
+			devolve: [],
+		},
+	],
+	fringetype: [
+		{
+			name: "default",
+			list: [
+				"default",
+				"blunt locks",
+				"bowl cut",
+				"buzzcut",
+				"curtain",
+				"drill ringlets",
+				"emo",
+				"emo left",
+				"emo right",
+				"flat",
+				"framed",
+				"front braids",
+				"hime",
+				"loose",
+				"messy",
+				"mohawk",
+				"overgrown",
+				"parted",
+				"quiff",
+				"ringlet curls",
+				"ruffled",
+				"sectioned",
+				"sidecut",
+				"side braid",
+				"side-pinned",
+				"short air vents",
+				"sleek",
+				"split",
+				"straight",
+				"straight curls",
+				"swept back",
+				"swept left",
+				"thin flaps",
+				"tied back",
+				"trident",
+				"wide flaps"
+			],
+			devolve: ["messy", "trident", "thin flaps", "ruffled", "bedhead"],
+		},
+		{
+			/* immune to being ruined (because devolve list is empty) */
+			name: "special",
+			list: ["fro", "dreads", "dread bun"],
+			devolve: [],
+		},
+	],
+};
+
+function hairLengthStringToNumber(hairLength) {
+	return {
+		short: 0,
+		shoulder: 200,
+		chest: 400,
+		navel: 600,
+		thighs: 700,
+		feet: 900,
+	}[hairLength];
+}
+window.hairLengthStringToNumber = hairLengthStringToNumber;

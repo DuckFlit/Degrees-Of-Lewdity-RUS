@@ -1,0 +1,3886 @@
+:: Widgets School [widget]
+<<widget "schooleffects">>
+	<<if Time.schoolDay>>
+		<<if Time.hour lte 6>>
+			<<set $schoolstate to "early">><<set $schoollesson to 0>>
+		<<elseif Time.hour lte 8>>
+			<<set $schoolstate to "morning">><<set $schoollesson to 0>>
+		<<elseif Time.hour is 9>>
+			<<set $schoolstate to "first">><<set $schoollesson to 1>>
+		<<elseif Time.hour is 10>>
+			<<set $schoolstate to "second">><<set $schoollesson to 1>>
+		<<elseif Time.hour is 11>>
+			<<set $schoolstate to "third">><<set $schoollesson to 1>>
+		<<elseif Time.hour is 12>>
+			<<set $schoolstate to "lunch">><<set $schoollesson to 0>>
+		<<elseif Time.hour is 13>>
+			<<set $schoolstate to "fourth">><<set $schoollesson to 1>>
+		<<elseif Time.hour is 14>>
+			<<set $schoolstate to "fifth">><<set $schoollesson to 1>>
+		<<elseif Time.hour lte 16>>
+			<<set $schoolstate to "afternoon">><<set $schoollesson to 0>>
+		<<elseif Time.hour gte 17>>
+			<<set $schoolstate to "late">><<set $schoollesson to 0>>
+		<</if>>
+
+		<!-- changing room is in use a bit longer than school is in session. also include changing times before first, after fifth and during midday break -->
+		<<set $changingroomstate to "empty">>
+		<<if (Time.hour gt 8 or Time.hour is 8 and Time.minute gte 58) and (Time.hour lt 15 or Time.hour is 15 and Time.minute lte 4)>>
+			<<if Time.minute lte 4 or Time.minute gte 58>>
+				<<if Time.hour gte 14 and Time.minute gte 58>>
+					<<set $changingroomstate to "own">>
+				<<else>>
+					<<set $changingroomstate to "other">>
+				<</if>>
+			<</if>>
+		<</if>>
+
+		<<if $schoolpoolundress isnot undefined>>
+			<span class="yellow">Your clothes were moved to the <<print $schoolpoolundress is "wardrobe" ? "wardrobe" : $schoolpoolundress + " changing room">>.</span>
+			<br>
+			<<unset $schoolpoolundress>>
+		<</if>>
+
+		<!-- pool room itself is in use during $schoolstate only -->
+		<<if $schoolstate is "fifth">>
+			<<set $poolroomstate to "own">>
+		<<elseif $schoollesson is 1>>
+			<<set $poolroomstate to "other">>
+		<<else>>
+			<<set $poolroomstate to "empty">>
+		<</if>>
+	<<else>>
+		<<if Time.hour lte 6>>
+			<<set $schoolstate to "earlynoschool">><<set $schoollesson to 0>>
+		<<elseif Time.hour gte 17>>
+			<<set $schoolstate to "daynoschool">><<set $schoollesson to 0>>
+		<<else>>
+			<<set $schoolstate to "latenoschool">><<set $schoollesson to 0>>
+		<</if>>
+		<<set $changingroomstate to "empty">>
+		<<set $poolroomstate to "empty">>
+	<</if>>
+<</widget>>
+
+<<widget "advancelesson">><!-- advances time during a lesson and sets $phase to 1 if the lesson has ended -->
+	<<set _time_left to 59 - Time.minute>>
+	<!-- the lesson ends at 59th minute to give time to walk to the next class -->
+	<<set _state to $schoolstate>>
+	<<schooleffects>>
+
+	<<if _state isnot $schoolstate>>
+		<!-- only happens if we somehow jumped into another lesson, abort! -->
+		<<set $phase to 1>>
+	<<elseif _time_left gte 23>>
+		<!-- make sure that there's at least a couple of minutes left for the next phase of a lesson -->
+		<<pass 20>>
+	<<else>>
+	<!-- end of the lesson -->
+		<<set $phase to 1>>
+		<<pass _time_left>>
+	<</if>>
+	<<schooleffects>>
+	<!-- an extra variable for use in adding learning points, stress, etc.
+		1 point per 5 minutes + 1 for being present at the end of the lesson -->
+	<<set _lesson_progress to (_time_left gte 20 ? 4 : Math.trunc(_time_left / 5)) + $phase>>
+<</widget>>
+
+<<widget "lessonEnd">>
+	<<endevent>>
+	The bell rings, <<print _args[1] is "sleep" ? "startling you awake. You blearily" : "signifying the end of the lesson. You">>
+	<<storeon _args[0] "check">>
+	<<if _store_check is 1>>
+		<<storeon _args[0]>>
+		grab your coat and
+	<</if>>
+	leave the classroom.
+	<br><br>
+	<<delinquency -1 "bonus">>
+
+	<<if _args[0] is "mathsClassroom" and $whitneymaths isnot undefined>>
+		<!-- set whitney's state to "absent" after the lesson ends so that we can use mathsWhitneyAttendChance to put them back in class on the next day -->
+		<!-- Note: if you want to know whether or not Whitney attended maths class, but class has already ended, you'll need to change how this system works. -->
+		<<set $whitneymaths to "absent">>
+	<</if>>
+	<<if _args[0] is "historyClassroom" and $robinhistory isnot "missing" and $robinReunionScene isnot undefined>>
+		<<link [[Next|Robin After Class]]>><</link>>
+	<<else>>
+		<<link [[Next|Hallways]]>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "lessonEvents">>
+	<<set $_mod to _args[1] or 1>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (8900 - ($allure * $_mod))>> <!-- $_mod multiplies the effect that allure has on your odds of getting an unsafe event -->
+		<<switch _args[0]>>
+			<<case "maths">><<eventsmaths>>
+			<<case "science">><<eventsscience>>
+			<<case "history">><<eventshistory>>
+			<<case "english">><<eventsenglish>>
+		<</switch>>
+	<<else>>
+		<<switch _args[0]>>
+			<<case "maths">><<eventsmathssafe>>
+			<<case "science">><<eventssciencesafe>>
+			<<case "history">><<eventshistorysafe>>
+			<<case "english">><<eventsenglishsafe>>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+
+<<widget "schoolperiod">>
+	<<if $exposed lte 0>>
+		<<if $schoolstate is "morning" or ($schoolstate is "first" and Time.minute lte 58)>>
+			<<scienceicon>><<link [[Go to your science lesson (0:01)|Science Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
+			<br><br>
+		<<elseif $schoolstate is "first" or ($schoolstate is "second" and Time.minute lte 58)>>
+			<<mathicon>><<link [[Go to your maths lesson (0:01)|Maths Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
+			<br><br>
+		<<elseif $schoolstate is "second" or ($schoolstate is "third" and Time.minute lte 58)>>
+			<<englishicon>><<link [[Go to your English lesson (0:01)|English Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
+			<br><br>
+		<<elseif $schoolstate is "third" or ($schoolstate is "lunch" and Time.minute lte 58)>>
+			<<foodicon "eat">><<link [[Join the masses in the canteen (0:01)|Canteen]]>><<pass 1>><</link>>
+			<br>
+			<<historyicon>><<link [[Wait in the history classroom (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
+			<br><br>
+		<<elseif $schoolstate is "lunch" or ($schoolstate is "fourth" and Time.minute lte 58)>>
+			<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>>
+			<br><br>
+		<<elseif $schoolstate is "fourth" or ($schoolstate is "fifth" and Time.minute lte 58)>>
+			<<swimmingicon>><<link [[Go to your swimming lesson (0:01)|School Pool Entrance]]>><<set $justEntered to true>><<pass 1>><</link>>
+			<br><br>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "schoolperiodtext">>
+	<<if $schoolstate is "morning">>
+		Your science lesson starts at <<ampm 9 00>>.
+		<br><br>
+	<<elseif $schoolstate is "first" and Time.minute lte 58>>
+		Your science lesson started at <<ampm 9 00>>!
+		<br><br>
+	<<elseif $schoolstate is "first">>
+		Your maths lesson starts at <<ampm 10 00>>.
+		<br><br>
+	<<elseif $schoolstate is "second" and Time.minute lte 58>>
+		Your maths lesson started at <<ampm 10 00>>!
+		<br><br>
+	<<elseif $schoolstate is "second">>
+		Your English lesson starts at <<ampm 11 00>>.
+		<br><br>
+	<<elseif $schoolstate is "third" and Time.minute lte 58>>
+		Your English lesson started at <<ampm 11 00>>!
+		<br><br>
+	<<elseif $schoolstate is "lunch">>
+		Your history lesson starts at <<ampm 13 00>>.
+		<br><br>
+	<<elseif $schoolstate is "fourth" and Time.minute lte 58>>
+		Your history lesson started at <<ampm 13 00>>!
+		<br><br>
+	<<elseif $schoolstate is "fourth">>
+		Your swimming lesson starts at <<ampm 14 00>>.
+		<br><br>
+	<<elseif $schoolstate is "fifth">>
+		Your swimming lesson started at <<ampm 14 00>>!
+		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "classgrades">>
+	<<if $schoolstate is "morning" or ($schoolstate is "first" and Time.minute lte 58)>>
+		<<if $sciencetrait gte 4>>
+					Your current science grade is <span class="green">A*</span>. There is nothing more you can learn from this class.
+				<<elseif $sciencetrait gte 3>>
+					Your current science grade is <span class="teal">A</span>. You're one of the best but you can still achieve more.
+				<<elseif $sciencetrait gte 2>>
+					Your current science grade is <span class="lblue">B</span>. Your grade isn't the best, but it's not the worst either.
+				<<elseif $sciencetrait gte 1>>
+					Your current science grade is <span class="blue">C</span>. You've made some progress but still need to study more.
+				<<elseif $sciencetrait gte 0>>
+					Your current science grade is <span class="purple">D</span>. You still have a long way to go.
+				<<else>>
+					Your current science grade is <span class="red">F</span>. You're the worst student in your class.
+			<</if>>
+		<<elseif $schoolstate is "first" or ($schoolstate is "second" and Time.minute lte 58)>>
+		<<if $mathstrait gte 4>>
+					Your current maths grade is <span class="green">A*</span>. There is nothing more you can learn from this class.
+				<<elseif $mathstrait gte 3>>
+					Your current maths grade is <span class="teal">A</span>. You're one of the best but you can still achieve more.
+				<<elseif $mathstrait gte 2>>
+					Your current maths grade is <span class="lblue">B</span>. Your grade isn't the best, but it's not the worst either.
+				<<elseif $mathstrait gte 1>>
+					Your current maths grade is <span class="blue">C</span>. You've made some progress but still need to study more.
+				<<elseif $mathstrait gte 0>>
+					Your current maths grade is <span class="purple">D</span>. You still have a long way to go.
+				<<else>>
+					Your current maths grade is <span class="red">F</span>. You're the worst student in your class.
+			<</if>>
+		<<elseif $schoolstate is "second" or ($schoolstate is "third" and Time.minute lte 58)>>
+		<<if $englishtrait gte 4>>
+					Your current english grade is <span class="green">A*</span>. There is nothing more you can learn from this class.
+				<<elseif $englishtrait gte 3>>
+					Your current english grade is <span class="teal">A</span>. You're one of the best but you can still achieve more.
+				<<elseif $englishtrait gte 2>>
+					Your current english grade is <span class="lblue">B</span>. Your grade isn't the best, but it's not the worst either.
+				<<elseif $englishtrait gte 1>>
+					Your current english grade is <span class="blue">C</span>. You've made some progress but still need to study more.
+				<<elseif $englishtrait gte 0>>
+					Your current english grade is <span class="purple">D</span>. You still have a long way to go.
+				<<else>>
+					Your current english grade is <span class="red">F</span>. You're the worst student in your class.
+			<</if>>
+		<<elseif $schoolstate is "lunch" or ($schoolstate is "fourth" and Time.minute lte 58)>>
+		<<if $historytrait gte 4>>
+					Your current history grade is <span class="green">A*</span>. There is nothing more you can learn from this class.
+				<<elseif $historytrait gte 3>>
+					Your current history grade is <span class="teal">A</span>. You're one of the best but you can still achieve more.
+				<<elseif $historytrait gte 2>>
+					Your current history grade is <span class="lblue">B</span>. Your grade isn't the best, but it's not the worst either.
+				<<elseif $historytrait gte 1>>
+					Your current history grade is <span class="blue">C</span>. You've made some progress but still need to study more.
+				<<elseif $historytrait gte 0>>
+					Your current history grade is <span class="purple">D</span>. You still have a long way to go.
+				<<else>>
+					Your current history grade is <span class="red">F</span>. You're the worst student in your class.
+		<</if>>
+	<</if>>
+		<br><br>
+<</widget>>
+
+<<widget "exhibitorgasm">>
+	<<if $orgasmdown gte 1>><<set $orgasmdown to 0>>
+		<<if $orgasmcurrent lte 0>>
+		<<elseif $orgasmcurrent lte 1>>
+			You spasm against the bindings.
+			<<if $enemyno gte 2>>
+				<<if $player.penisExist and $orgasmcount lte 23>>
+					The pair's eyes light up as you squirm. "<<pShes>> cumming!" the <<person>> exclaims, stepping back to avoid your discharge while staring in awe.
+				<<else>>
+					The pair's eyes light up as you squirm. "<<pShes>> cumming!" the <<person>> exclaims.
+				<</if>>
+			<<else>>
+				<<if $player.penisExist and $orgasmcount lte 23>>
+				<<else>>
+				<</if>>
+			<</if>>
+		<<elseif $orgasmcurrent is 2>>
+			You spasm again against the bindings.
+			<<if $enemyno gte 2>>
+				<<if $player.penisExist and $orgasmcount lte 23>>
+					"I didn't know it could happen more than once!" says the <<person>>.
+				<<else>>
+					"I didn't know it could happen more than once!" says the <<person>>.
+				<</if>>
+			<<else>>
+				<<if $player.penisExist and $orgasmcount lte 23>>
+				<<else>>
+				<</if>>
+			<</if>>
+		<<else>>
+		<</if>>
+		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "changingrooms">>
+	<<if $exposed gte 2>>
+		<<if $player.gender_appearance is "m">>
+			<<if $exhibitionism gte 75>>
+				<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><</link>><<exhibitionist5>>
+				<br>
+			<</if>>
+			<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><</link>>
+			<br>
+		<<else>>
+			<<if $exhibitionism gte 75>>
+				<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><</link>><<exhibitionist5>>
+				<br>
+			<</if>>
+			<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><</link>>
+		<br>
+		<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+:: Widgets Events Science [widget]
+<<widget "eventsscience">>
+	<<cleareventpool>>
+
+	<<if ($player.gender_appearance is "m" and $worn.legs.gender is "f" or $player.gender_appearance is "f" and $worn.legs.gender is "m")>>
+		<<addinlineevent "scienceSocks" 1>>
+			A <<generates1>><<person1>><<person>> looks at your feet.
+			<<if $worn.legs.name is "girl's gym socks">>
+				"Why are you wearing girl's socks?" <<he>> asks loudly. "Do they make you feel pretty?"
+			<<else>>
+				"Why are you wearing boy's socks?" <<he>> asks loudly. "Do you think they'll make people forget you're a slut?"
+			<</if>>
+			<<His>> friends start laughing.
+			<br><br>
+
+			<<link [[Kick|Science Kick]]>><<stress -12>><<trauma -6>><<detention 3>><</link>><<gdelinquency>><<ltrauma>><<lstress>>
+			<br>
+			<<link [[Ignore|Science Lesson]]>><<stress 6>><<trauma 6>><<endevent>><</link>><<gtrauma>><<gstress>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "scienceChemicals" 1>>
+		The class conducts an experiment with chemicals.
+		<br><br>
+
+		A <<generates1>><<person1>><<person>> splashes your clothes with acid!
+		"Sorry, I slipped," <<he>> says, <<print either("smirking","smirking","smirking","gasping","panicking")>>.
+		<br><br>
+
+		<<set $worn.upper.integrity -= 20>>
+		<<set $worn.lower.integrity -= 20>>
+		<<set $worn.under_lower.integrity -= 20>>
+
+		<<integritycheck no_text>>
+		<<exposure>>
+
+		<<if !$worn.upper.type.includes("naked") and !$worn.lower.type.includes("naked")>>
+			It's not a very potent acid, but it does leave your clothing worse for wear.
+		<<else>>
+			The acid eats through your clothes, and you soon find yourself exposed in front of the entire class! You do your best to conceal your <<lewdness>> as Sirris rushes over with some towels.
+			<<if $exhibitionismaction is "excited">>
+				You let the class have a good look at your <<nudity>>.
+			<<else>>
+				You cover up and try to hide your exposed parts, but not before the rest of the class get a good look.
+			<</if>>
+			<<if $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")>>
+				<<schoolrep_naked>>
+			<</if>>
+			<<towelup>>
+
+		<</if>>
+		<br><br>
+
+		<<link [[Next|Science Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceFront" 2>>
+		<<npc Sirris>><<person1>>Sirris asks you to come to the front of the class.
+		<br><br>
+
+		<<link [[Next|Science Event3]]>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceTerrarium" 2>>
+		The class arrange themselves around the terrariums lining the edge of the room. You observe the plants contained within and try to identify the species.
+		<br><br>
+
+		<<link [[Next|Science Terrarium]]>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceDelinquents" 2>>
+		A group of delinquents decide to pick on you.
+		<br><br>
+
+		<<link [[Ask the teacher for help|Science Pick]]>><<status -10>><</link>><<lcool>>
+		<br>
+		<<link [[Endure it|Science Pick]]>><<set $phase to 1>><<stress 2>><<trauma 2>><</link>><<gtrauma>><<gstress>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceGroup" 2>>
+		Sirris asks everyone to group up into pairs.
+		<br><br>
+		<<rng>>
+
+		<<if $cool gte 80>>
+			You find a partner and together dissect <<print either("a sheep's eye","an insect","a worm","a frog")>>.
+			<br><br>
+
+			<<link [[Just focus on the dissection|Science Dissection]]>><<scienceskill>><</link>><<gscience>>
+			<br>
+			<<link [[Joke around with your partner|Science Dissection]]>><<trauma -1>><<stress -2>><<status 1>><<set $phase to 1>><</link>><<ltrauma>><<lstress>><<gcool>>
+			<br>
+		<<else>>
+			The other students avoid you, and you find yourself unable to find a partner. Sirris carries in a plastic box, but stops to speak to you when <<nnpc_he "Sirris">> sees that you're alone.
+			<br><br>
+
+			"I have a special job for you. There's another box like this one in the shed just next to the school entrance. Could you bring it here?"
+			<br><br>
+
+			You walk to the shed, which is unlocked, and find the box just inside. It's really heavy! You can barely lift it, but manage to carry it back into the school.
+			<<physique>>
+			<br><br>
+			<<if $rng gte 21>>
+				You arrive back at the classroom, where the rest of the class is busy dissecting frogs. Lacking a partner, you get one all to yourself.
+				<<gscience>><<scienceskill>>
+				<br><br>
+
+				<<link [[Next|Science Lesson]]>><<endevent>><</link>>
+				<br>
+			<<else>>
+				<<generatey1>><<generatey2>><<generatey3>>
+				You walk past three delinquents smoking in a corridor. You didn't see them coming due to the box blocking your view. They start hounding you down the hall.
+
+				<<person1>>The <<person>> grabs the hem of your $worn.lower.name and tries to tug them down!
+
+				<<if $worn.under_lower.type.includes("naked")>>
+					<span class="lewd">You shiver as you realise you aren't wearing any underwear!</span>
+				<</if>>
+				<br><br>
+
+				"Let's see what <<pshes>> got on under this," the <<person2>><<person>> and <<person3>><<person>> move closer, intending to join in.
+				<br><br>
+
+				You're unable to protect yourself while your arms are occupied by the box. You'll have to bend over to put the box down without breaking anything inside, but you feel that doing so would make you even more vulnerable.
+				<br><br>
+
+				<<link [[Drop the box and protect yourself|Science Dissection]]>><<set $phase to 2>><<detention 2>><</link>><<gdelinquency>>
+				<br>
+				<<link [[Just endure it|Science Dissection]]>><<set $phase to 3>><<stress 2>><<trauma 2>><</link>><<gtrauma>><<gstress>>
+				<br>
+				<<link [[Bend over and put the box down gently|Science Dissection]]>><<set $phase to 4>><</link>>
+			<</if>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<runeventpool>>
+<</widget>>
+
+<<widget "eventssciencesafe">>
+	<<if $condomLvl isnot 0 and !$scienceCondomIntro>>
+		<<scienceCondomIntro>>
+		<<exit>>
+	<</if>>
+	<<if $scienceproject is "none" and Time.days gte 2 and $mathsprojectdays isnot (21 + (7 - Time.weekDay))>>
+		<<scienceProject>>
+		<<exit>>
+	<</if>>
+	<<cleareventpool>>
+	<<set $_linkSkip to false>>
+
+	<<addinlineevent "scienceBook" 2>>
+		<<npc Sirris>><<person1>>
+		Sirris asks the class to turn to page $rng of their textbook.
+		<<if $worn.handheld.name isnot "naked" and !$worn.handheld.type.includes("bookbag")>>
+			You realise too late that you forgot your bookbag.
+			<<if C.npc.Sirris.love gte 10>>
+			Sirris gently chides you, but passes you a spare copy of the textbook. "I'll excuse it this time, but please be more prepared in the future."
+			<<else>>
+				Sirris shakes <<his>> head. "I'm sorry, but I need you to be more prepared next time," <<he>> admonishes as <<he>> hands you a spare copy of the textbook. <<detention 1>><<gdelinquency>>
+			<</if>>
+		<<else>>
+			The classroom has a laid-back atmosphere; most of the students spend more time chatting than reading.
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceVideo" 1>>
+		Sirris puts on a short video about <<print either("nature","space","magnetic fields","electrons","chemical bonds","Einstein","the pioneers of the scientific method","Isaac Newton","nuclear fusion","the role of enzymes","DNA")>>. The classroom has a laid-back atmosphere. Most students watch, but many carry on chatting.
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceExperiment" 1>>
+		<<generates1>><<person1>>
+		<<switch random(1,4)>>
+			<<case 1 2>>
+				The class conducts an experiment with chemicals. You're careful not to spill any.
+			<<case 3>>
+				The class conducts an experiment with chemicals. A <<person>> accidentally spills chemicals down <<his>> clothes. The panicking <<personsimple>> flees from the class as <<his>> clothes start to dissolve.
+			<<case 4>>
+				A <<person>> <<print (random(1,5) is 1 ? "accidentally" : "'accidentally'")>> spills chemicals all over a <<generates2>><<person2>><<persons>> clothes. The panicking <<personsimple>> flees from the class as <<his>> clothes start to dissolve.
+		<</switch>>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceDelinquents" 1>>
+		Some delinquents pick on one of the nerdy students. Sirris has the offenders move to the other side of the classroom.
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceSexTape" 1>>
+		Sirris puts on a video about human reproduction.
+		<<if Time.days gte 25 and $rng % 3 is 0>>/*1 in 3 chance, and won't happen too early*/
+			<br><br>
+			It doesn't seem like an educational film at all - it's graphic. Very graphic. Primarily just a 14 minute home-sex-tape. The only 'educational' input comes from Sirris periodically freezing the video to quiz students on which body parts are being licked, stroked, sucked, bitten or penetrated.
+			While the video never shows faces, you start to suspect that one of the participants is Sirris.
+			<br>
+			The entire class watches with rapt attention right up to the couple's panting orgasm.
+			<<garousal>><<arousal 200>>
+			<br><br>
+			"I know that was quite explicit," Sirris says. "But good scientists aren't squeamish. Humans are animals. And this is simply observing animal behaviour. And as well as knowing the facts and terminology, it's important that you understand what real sex is and what it looks like."
+			<<awarenessup 200 1>>
+		<<else>>
+			It has a strong educational focus, talking extensively about sexual health, STIs, <<if $pregnancyspeechdisable is "f">>pregnancy, <</if>>contraception and consent.
+			It goes into the basic mechanics of sex with some simple diagrams labelling the body parts and cell types involved.
+			<<awarenessup 100 1>>
+			<br><br>
+			The classroom has a laid-back atmosphere. Some students watch, but few with any real interest and many carry on chatting throughout.
+			<<if playerBellyVisible() and $pregnancyspeechdisable is "f">>You're constantly reminded of the situation you're currently in, and the precious life inside of you.<<lstress>><<stress -10>><</if>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceQuestion" 1>>
+		<<npc Sirris>><<person1>>
+		Sirris asks the class a question. You think you know the answer.
+		<<set $_linkSkip to true>>
+		<br><br>
+		<<link [[Put your hand up|Science Event1]]>><<set $phase to 1>><<stress 1>><<scienceskill 1>><</link>><<gstress>><<gscience>>
+		<br>
+		<<link [[Keep your head down|Science Event1]]>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceAnatomy" 1>>
+		<<if $player.gender_appearance is "m">><<generatesf1>><<else>><<generatesm1>><</if>>
+		Sirris looks around the room, glancing at you for a moment before asking a <<person1>><<personsimple>> to come to the front of the class.
+		<br><br>
+		Sirris smiles at the <<person>>.
+		<<rng>>
+		<<if $scienceprogression gte 2>>
+			<<He>> looks nervous. "This part of the lesson is on human anatomy. I need you to remove your clothing, all of it. Don't be embarrassed, this is important for the lesson."
+			<br><br>
+			<<if $rng lte 35>>
+				<<set $_studentLeaves to true>>
+			<<else>>
+				The <<personsimple>> <<print either("excitedly agrees", "cheerfully agrees", "casually agrees", "reluctantly agrees", "looks like <<he>> wants to cry, but nods meekly", "tearfully agrees")>>.
+				<<He>> strips, which immediately gets the entire class's full attention. The <<person>> stands naked at the front as the teacher points out numerous parts of <<his>> anatomy.
+				<<if $scienceprogression gte 3>>
+					Sirris then instructs <<him>> to climb on the desk and spread <<his>> legs. Sirris <<if $NPCList[0].penis isnot "none">>holds up the <<personsimple>>'s penis<<else>>uses a speculum<</if>> to give the excited class a clearer view.
+					<<if $scienceprogression gte 4>>
+						Things finally get a little out of control. The <<person>> squeals as some students get a bit 'handsy.' Finally regaining control,
+					<</if>>
+				<</if>>
+				Sirris brings the show to an end, inviting the <<person>> to dress and sit back down.
+				<br><br>
+
+				While you feel bad for the <<person>>, it definitely made the session more interesting and you think you learned something.
+				<<gscience>><<scienceskill>>
+			<</if>>
+		<<elseif $scienceprogression gte 1>>
+			"I need you to undress for this part. Don't worry, you can keep your underwear on."
+			<br><br>
+			<<if $rng lte 25>>
+				<<set $_studentLeaves to true>>
+			<<elseif $rng lte 35>>
+				<<set $_studentNotWearingUnderwear to true>>
+			<<else>>
+				The <<personsimple>> <<print either("excitedly agrees", "cheerfully agrees", "casually agrees", "reluctantly agrees", "looks like <<he>> wants to cry, but nods meekly", "tearfully agrees")>>.
+				<<He>> strips to <<his>> underwear, which immediately grabs the class's attention.
+				Sirris continues with the lesson, pointing to parts of the <<persons>> body and explaining various functions.
+				Sirris soon finishes the demonstration, inviting the <<person>> to dress, sit down and rejoin the class.
+				<br><br>
+
+				While you feel a little bad for the <<person>>, it definitely made the session more interesting and you think you learned something.
+				<<gscience>><<scienceskill>>
+			<</if>>
+		<<else>>
+			"Don't worry, we're not going to do anything invasive."
+			<br><br>
+			Over the next few minutes, Sirris talks about various bones and organs, pointing to parts of the <<persons>> body to demonstrate location. It's interesting.
+			<<gscience>><<scienceskill>>
+		<</if>>
+
+		<<if $_studentNotWearingUnderwear>>
+			The <<personsimple>> whispers something to Sirris.
+			<br><br>
+			Sirris turns bright red and quickly asks the <<person>> to sit back down. "On second thought, class, ah... We'll use the anatomy charts," Sirris says. "They're... clearer."
+		<<elseif $_studentLeaves>>
+			<<print either(
+				"The <<personsimple>> runs straight out of the room and does not return.",
+				"The <<personsimple>> adopts a neutral expression and wordlessly leaves the room.",
+				"The <<personsimple>> adopts a worried expression and asks to use the bathroom, then collects <<his>> things from <<his>> desk and leaves. <<He>> doesn't return."
+			)>>
+			<br><br>
+			"I suppose we'll have to make do with the old anatomy charts then," Sirris says. "Sorry class."
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceHelp" 1>>
+		<<set $_linkSkip to true>>
+		<<if $dissociation gte 1>>
+			<<npc Sirris>><<person1>>Sirris approaches you. "Is everything okay?" <<he>> asks. "You don't look... well."
+			<br><br>
+
+			<<link [[I'm fine|Science Event2]]>><</link>>
+			<br>
+			<<link [[Break down|Science Event2]]>><<set $phase to 1>><</link>>
+			<br>
+		<<else>>
+			Sirris approaches you. "Is there anything I can help clarify for you?"
+			<br><br>
+
+			<<link [[Yes|Science Event2]]>><<set $phase to 2>><<scienceskill 1>><</link>><<gscience>>
+			<br>
+			<<link [[No|Science Event2]]>><<set $phase to 3>><</link>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<runeventpool>>
+
+	<<if $_linkSkip is false>>
+		<br><br>
+		<<link [[Next|Science Lesson]]>><<endevent>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "eventssciencesleep">>
+	<<cleareventpool>>
+	<<set $_linkSkip to false>>
+
+	<<addinlineevent "scienceCaught">>
+		<<npc Sirris>><<person1>>
+		There is a sharp tapping at your desk. You bolt upright, startled by the sound. You meet Sirris' stern gaze. <<He>> lets out a sigh. "Detention." <<ltiredness>><<detention 2>><<gdelinquency>>
+	<</addinlineevent>>
+
+	<<addinlineevent "scienceNotCaught">>
+		<<npc Sirris>><<person1>>
+		Your eyes snap open. You must have fallen asleep. You casually lift your head and stifle a yawn, pretending nothing happened. Sirris is still talking, none the wiser. <<ltiredness>>
+	<</addinlineevent>>
+
+	<<if random(1, 400) gte $cool and $worn.upper.name isnot "naked">>
+		<<addinlineevent "scienceIce">>
+			Something frigid trickles down your back, jerking you awake. <<willpowerdifficulty 1 300 no_text>>
+
+			<<if $willpowerSuccess>>
+				<span class="green">You manage to stifle a scream and remain calm</span>. After fishing discreetly in your $worn.upper.name, you find an extra ice cube from today's experiment. A <<generates1>><<person1>><<person>> behind you watches with disappointment at your placid reaction. You place the melting cube on the desk, and the lesson continues without further interruptions.
+				<<ltiredness>><<stress 6>><<gstress>>
+			<<else>>
+				<span class="red">You jump up from your desk and let out a scream</span>. An extra ice cube from today's experiment falls out of your $worn.upper.name. <<gstress>><<stress 6>>
+				<br><br>
+
+				A <<generates1>><<person1>><<person>> bursts out laughing.
+				<<if $submissive gte 1150>>
+					You hastily sit back down, red with embarrassment as the class stares at you.
+				<<elseif $submissive lte 850>>
+					You glare at <<him>> before sitting back down. The rest of the class stares at you.
+				<<else>>
+					You sit back down and try to ignore the stares from the rest of the class.
+				<</if>>
+				<br><br>
+
+				Sirris rushes over, looking concerned. "What happened?"
+				<br><br>
+
+				You and the <<person>> point at each other in unison. <br>
+				"<<pShe>> was sleeping in class!" <br>
+				"<<He>> put an ice cube down my back!"
+				<br><br>
+
+				<<if $delinquency gte 400>>
+					Sirris addresses you. "Is this true?"
+					<br><br>
+					"Yes, but..."
+					<br><br>
+					"No 'buts'. There will be no sleeping in my class," Sirris says before giving you detention and walking back to the front of the class. <<detention 6>><<gdelinquency>>
+
+				<<elseif $delinquency gte 200>>
+					Sirris silences you both with a frown. "Enough. You'll both have time to think about it in detention." <<nnpc_He Sirris>> gives you both detention and returns to the front of the class.
+					<<detention 4>><<gdelinquency>>
+
+				<<else>>
+					Sirris addresses the <<person>>. "Is this true?"
+					<br><br>
+					"Yeah, but..."
+					<br><br>
+					"No 'buts.' I'll have none of your antics in this class. That is how accidents happen," Sirris says sternly. <<nnpc_He Sirris>> gives the <<personsimple>> detention and returns to the front of the class.
+
+				<</if>>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if random(1, 400) gte $cool>>
+		<<addinlineevent "scienceTattletale">>
+			<<npc Sirris>><<person1>>
+			"<<Sir>>," says a <<generates2>><<person2>><<person>>. "<<pShes>> sleeping in class!"
+			<br><br>
+			The voice of the <<personsimple>> wakes you. You raise your head from the desk and see the teacher looking back at you. Sirris shakes <<person1>><<his>> head. "Detention."
+			<br><br>
+			<<person2>>
+			<<if $submissive gte 1150>>
+				You bow your head in embarrassment while the <<person>> smiles, all too happy to get you in trouble.
+			<<elseif $submissive lte 850>>
+				You glare at the <<person>>. <<His>> smile falters under your withering gaze, as <<he>> realises telling the teacher might not have been the smartest idea.
+			<<else>>
+				You frown at the <<person>>. <<He>> smiles back, all too happy to get you in trouble.
+			<</if>>
+			<<ltiredness>><<detention 2>><<gdelinquency>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $watersportsdisable is "f">>
+		<<addinlineevent "sciencePiss">>
+			You feel a warmth spread from your crotch and down your leg. Your head bolts upright. The sudden movement and distinct dripping sound are more than enough to get the attention of the whole class.<<set $underlowerwet to 200>><<set $lowerwet to 200>>
+			<br><br>
+
+			A <<generates1>><<person1>><<person>> points at the puddle beneath your feet. "Oh my god, <<pshe>> wet <<pherself>>!" The class erupts in a roar of laughter at your incontinence.
+			<br><br>
+
+			You lift your hand from a glass of warm water, but the damage is done. A <<generates2>><<person2>><<person>> next to you elbows <<his>> friend. "Told you it would work."
+			<br><br>
+
+			Sirris rushes over with a towel to help hide your indecency and clean up the mess. <<nnpc_He Sirris>> attempts to quell the situation by issuing immediate detention to the <<person>>, but that does not stop the laughter, nor the gossip that's sure to follow. <<ltiredness>><<lcool>><<status -15>><<gtrauma>><<trauma 6>><<gstress>><<stress 6>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $sydneyScience is 1>>
+		<<addinlineevent "scienceSydneyWake">>
+			<<npc Sydney>><<person1>>
+			<<run statusCheck("Sydney")>>
+			<<if _sydneyStatus.includes("corrupt")>>
+				You feel a gentle pressure on your skin. It feels like someone is writing on you. You open your eyes and yawn just as it stops. Sirris is still lecturing and has not noticed.
+				<br><br>
+
+				Sydney smiles and waves to you, a pen in <<his>> hand.
+				<<if $bodywritingLvl gte 2>>
+					<<sydneyBodywritingLocation>>
+					<<if _writingFail isnot 1>>
+						"Good to see you're awake."
+						<br><br>
+						You glance down to find that your <<bodypart _bodypart>> now reads: <<sydneyBodywriting sleepyhead>>
+						<br><br>
+					<<else>>
+						"Good to see you're awake. Shame there wasn't enough room for me to write anything."
+					<</if>>
+				<<else>>
+					"Good to see you're awake. Too bad my pen ran out of ink.
+				<</if>>
+			<<else>>
+				Something probes your arm. You open your eyes to find Sydney casually poking you with a pen. <<He>> stops and gives you a smile when <<he>> sees you awake.
+				<br><br>
+
+				You casually lift your head and stifle a yawn, pretending nothing happened. You nod your gratitude to Sydney. Sirris is still talking, none the wiser.
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $drunk gte 1>>
+		<<addinlineevent "scienceDrunk">>
+			<<npc Sirris>><<person1>>
+			There is a sharp tapping at your desk. You groan in protest as each tap sends sharp pangs through you. <<gpain>><<pain 6>> You lift your head and gaze up at Sirris. <<He>> is not pleased with your inebriation.
+			<br><br>
+
+			"Have you learned nothing in class? If you are going to go out drinking, at least be responsible. Consider yourself fortunate I'm not removing you from class."
+			<br><br>
+
+			Sirris shakes <<his>> head in disappointment and returns to the front of the class.
+		<</addinlineevent>>
+	<</if>>
+
+	<<runeventpool>>
+
+	<<if $_linkSkip is false>>
+		<br><br>
+		<<link [[Next|Science Lesson]]>><<endevent>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "scienceCondomIntro">>
+	<<set $scienceCondomIntro to true>>
+	<<npc Sirris>><<person1>>
+	Sirris carries a large stack of small boxes to the front of the class. "I know for sure that some of your parents still haven't given you the talk. Or, some of you are like my <<if C.npc.Sydney.pronoun is "m">>son<<else>>daughter<</if>>, and think you'll be abstinent your whole life."
+	<<He>> starts passing the tiny boxes to the students in front, who begin passing them back in sequence. You hear a few students giggle as they inspect their boxes, while others show signs of intense embarrassment.
+	<br><br>
+
+	"These are condoms. You're in the primes of your lives and your hormones are raging, so you'll want to keep some of these around at all times. Not only will they make it less likely for you to have an unplanned kid on your hands, but they'll keep you clean." Sirris produces a large, conspicuously-shaped fruit from under <<his>> desk.
+	<br><br>
+
+	"They're very simple to put on. Tear the wrapper here, place against the tip, and roll down. Don't push this part down, though. That's called a reservoir tip, and it will prevent any fluid from leaking out." The motion of Sirris putting the condom on the fruit seems to have left some of the students flushed. <<arousal 200>><<garousal>>
+	<br><br>
+
+	"I don't expect any of you to stay abstinent, but I do expect you to stay safe. Please be sure to use these when the time comes. I paid for them out-of-pocket, so I better not see any of them in the trash unopened. If you run out, <span class="gold">you can buy more from the vending machines in the school toilets. The hospital's pharmacy on Nightingale Street also stocks condoms and other contraceptives</span>." You look down at the box of condoms. <<awarenessup 200 5>><<gcondoms 3>>
+	<br><br>
+
+	<i>Condoms will stop lewd fluids, preventing unintended insemination and keeping you clean, both inside and out. This will also help mitigate loss of purity, and lower arousal gains. However, they have a small chance to break, especially during intense sex. Combine with birth control for best results.</i>
+	<br><br>
+	<<link [[Next|Science Lesson]]>><<endevent>><</link>>
+<</widget>>
+
+<<widget "scienceProject">>
+	<<set $scienceproject to "ongoing">><<set $scienceprojectdays to (21 + (7 - Time.weekDay))>>
+	<<scienceprojectstart>>
+	"The science fair will be held in a few weeks," Sirris announces. "Taking part is optional, but it's a good opportunity to learn in a more practical way. The theme is local wildlife. I have a project idea for each of you, but you can come up with your own if you like."
+	<br><br>
+	Sirris asks the class to turn to page $rng of their textbook, then walks around the room handing out small cards. Yours reads: "Lichen grows in many places around town. What impact does the local environment have on the species that thrive?" It continues on to some variables you could test, and ends with: "Remember to ask permission before entering private property!"
+	<<set $sciencelichenknown to 1>>
+	<br><br>
+	Sirris arrives back at the front. "The fair will be held on a Saturday, at the town hall. I hope you'll be there even if you don't bring a project."
+	<br><br>
+	<span class="gold">Science project added to journal.</span>
+
+	<<if $sciencephallusknown isnot 1 and $promiscuity gte 35>>
+		<br><br>
+		<<set $sciencephallusknown to 1>>
+		A lewd thought comes to you as the other students discuss ideas. <span class="gold">You've conceived the "local phalli" science project.</span>
+	<</if>>
+	<br><br>
+	<<link [[Next|Science Lesson]]>><<endevent>><</link>>
+<</widget>>
+
+:: Widgets Events Maths [widget]
+<<widget "eventsmaths">>
+	<<cleareventpool>>
+
+	<<if (($wolfgirl gte 4 and $transformationParts.wolf.ears isnot "hidden") or ($cat gte 4 and $transformationParts.cat.ears isnot "hidden") or ($fox gte 4 and $transformationParts.fox.ears isnot "hidden"))>>
+		<<addinlineevent "mathsTFears">>
+			<<npc River>><<person1>>River marches up and down the class. <<He>> stops beside you.
+			<<if $riverbite isnot 1>>
+				<<set $riverbite to 1>>
+				"That headband is against school regulations," <<he>> says, grabbing one of your <<if $wolfgirl gte 4>>wolf<<elseif $fox gte 4>>fox<<else>>cat<</if>> ears.
+			<<else>>
+				"You're still wearing that silly headband?" <<he>> says. "I thought I made myself clear." <<He>> grabs one of your <<if $wolfgirl gte 4>>wolf<<elseif $fox gte 4>>fox<<else>>cat<</if>> ears.
+			<</if>>
+			<<He>> tugs painfully.<<gpain>><<gstress>><<pain 2>><<stress 1>>
+			<br><br>
+
+			<<link [[Bite|Maths Event Bite]]>><<npcincr River dom -1>><<npcincr River love -1>><<detention 6>><<stress -12>><<trauma -6>><<def 3>><</link>><<ggdelinquency>><<ltrauma>><<lstress>>
+			<br>
+			<<link [[Endure|Maths Event Endure]]>><<npcincr River dom 1>><<stress 6>><<trauma 6>><<pain 5>><<sub 2>><</link>><<gpain>><<gtrauma>><<gstress>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $fame.exhibitionism gte 500 and $delinquency gte 500 and $mathrulerin is 0 and $worn.genitals.name isnot "chastity belt">>
+		<<addinlineevent "mathsTheRulerScene" 0>>
+			<!-- Note: This event is effectively in quarantine and cannot be reached in-game. Don't make it reachable and don't edit the event or its associated passages. -->
+			<<npc River>><<person1>>
+			You hear River's phone buzzing and without even checking it <<he>> suddenly says <<he>> needs to leave the classroom and will be back in a few minutes.
+			<br>
+			<<He>> gives the class some equations to solve while <<he>> is away.
+			<br><br>
+			After you don't hear <<his>> footsteps anymore a girl stands up and picks up a ruler from her desk.
+			<br>
+			"Hey you." She looks at you.
+			<br>
+			"I've heard you like to show yourself. How about a little something now?" she says. "In front of the whole class of course."
+			<br>
+			"I bet you to insert this ruler in your <<if $player.gender_appearance is "m">>asshole<<else>>pussy<</if>>.I'll give you £40 if you do."
+			<br><br>
+
+			<<link [[Accept the bet|Maths Ruler]]>><<set $phase to 1>><<status 10>><<if $player.gender_appearance is "m">><<arousal 1500 "anus">><<else>><<arousal 1500 "pussy">><</if>><<set $mathrulerin to 1>><</link>><<exhibitionist5>><<fameexhibitionism 3>><<garousal>>
+			<br>
+			<<link [[Refuse|Maths Ruler]]>><<stress 2>><<set $phase to 2>><<status -10>><<set $mathrulerin to 1>><</link>><<gstress>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $whitneymaths is "active" or $whitneymaths is "seat">>
+		<<addinlineevent "mathsWhitneyShirt">>
+			<<npc Whitney>><<person1>>
+			"It's too hot," Whitney insists, pulling <<his>> shirt over <<his>> head,
+			<<if $pronoun is "f">>
+				leaving <<him>> with just a white bra covering <<his>> $NPCList[0].breastsdesc.
+			<<else>>
+				leaving <<him>> bare chested.
+			<</if>>
+			"Much better." Someone giggles.
+			<br><br>
+
+			<<if !$worn.upper.type.includes("naked") and $whitneymaths is "seat">>
+				<<He>> turns to face you, and grasps the hem of your $worn.upper.name. "Let me help you," <<he>> says, trying to pull it up.
+				<br><br>
+
+				<<if $player.gender isnot "m" or $player.gender_appearance isnot "m">>
+					You blush. <<if $worn.under_upper.type.includes("naked")>>You're not wearing anything underneath!<</if>>
+					<br><br>
+
+					<<if !$worn.under_upper.type.includes("naked") or $exhibitionism gte 15>>
+						<<link [[Allow|Maths Whitney Shirt Allow]]>><<npcincr Whitney love 1>><<npcincr Whitney dom 1>><<npcincr Whitney lust 1>><<detention 4>><</link>><<exhibitionist `($worn.under_upper.type.includes("naked") ? 3 : 1)`>><<gdelinquency>><<glove>><<gdom>><<glust>>
+						<br>
+					<</if>>
+				<<else>>
+					<<link [[Allow|Maths Whitney Shirt Allow]]>><<npcincr Whitney love 1>><<npcincr Whitney dom 1>><<npcincr Whitney lust 1>><<detention 4>><</link>><<gdelinquency>><<glove>><<gdom>><<glust>>
+					<br>
+				<</if>>
+				<<link [[Resist|Maths Whitney Shirt Resist]]>><<stress 6>><</link>><<gstress>>
+				<br>
+				<<if $promiscuity gte 15>>
+					<<set $skulduggerydifficulty to 300>>
+					<<link [[`Expose ${$NPCList[0].pronouns.him} further`|Maths Whitney Shirt Expose]]>><<def 1>><<npcincr Whitney lust 5>><<npcincr Whitney dom -1>><</link>><<skulduggerydifficulty>><<promiscuous2>><<ldom>><<glust>>
+					<br>
+				<</if>>
+			<<else>>
+				<<npc River 2>><<person2>>
+				River turns to investigate the source of the giggles. <<He>> almost swoons when <<he>> sees Whitney without a school shirt, and steadies <<himself>> against <<his>> desk. "O-out," <<he>> manages. "And put your shirt on."
+				<br><br>
+
+				Whitney rolls <<person1>><<his>> eyes, but rises to <<his>> feet. <<He>> doesn't wear the shirt, instead slinging it over <<his>> shoulder as <<he>> swaggers from the room.
+				<br><br>
+
+				<<set $whitneymaths to "sent">>
+
+				<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+				<br>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $whitneymaths is "active">>
+		<<addinlineevent "mathsWhitneyPen">>
+			<<npc Whitney>><<person1>><<generateyv2>>
+			A pen bounces off your head. It's Whitney. <<He>> reclines in <<his>> seat, rummaging through a neighbouring <<person2>><<persons>> pencil case for more stationery to chuck at you. The <<person>> is too cowed to stop <<person1>><<him>>.
+			<br><br>
+
+			<<link [[Tolerate it|Maths Whitney Tolerate]]>><<stress 6>><</link>><<gstress>>
+			<br>
+			<<link [[Notify River|Maths Whitney River]]>><<npcincr Whitney love -1>><<status -10>><</link>><<lcool>><<llove "Whitney">>
+			<br>
+			<<link [[Retaliate|Maths Whitney Retaliate]]>><<def 1>><<detention 1>><<trauma -6>><</link>><<gdelinquency>><<ltrauma>>
+			<br>
+		<</addinlineevent>>
+
+		<<addinlineevent "mathsWhitneyProtractor">>
+			River is demonstrating equations on the whiteboard. Whitney uses the opportunity to force a <<generatey1>><<person1>><<person>> behind you to relocate, before taking <<his>> seat.
+			<br><br>
+
+			<<endevent>><<npc Whitney>><<person1>>
+
+			Something jabs your waist. Whitney sits with an innocent smile and a protractor compass in <<his>> hand. You turn back to the front, and <<he>> jabs you again.<<gpain>><<pain 6>>
+			<br><br>
+
+			<<link [[Endure|Maths Whitney Protractor Endure]]>><<stress 6>><<pain 6>><</link>><<gstress>><<gpain>>
+			<br>
+			<<link [[Tell River|Maths Whitney Protractor Tell]]>><<status -10>><<mathsskill 6>><<npcincr Whitney love -1>><</link>><<llove>><<lcool>><<gmaths>>
+			<br>
+			<<link [[Retaliate|Maths Whitney Protractor Retaliate]]>><<detention 4>><<status 1>><<npcincr Whitney dom -1>><</link>><<gdelinquency>><<ldom>><<gcool>>
+			<br>
+		<</addinlineevent>>
+
+		<<addinlineevent "mathsWhitneyPaperBall">>
+			River gives the class some equations to solve while <<nnpc_he "River">> manages paperwork.
+			<br><br>
+
+			<<npc Whitney>><<person1>>
+			A crumpled ball of paper bounces off your head. You turn and see Whitney grinning at you along with a couple of other delinquents.
+			<br><br>
+
+			<<link [[Read it|Maths Whitney Read]]>><</link>>
+			<br>
+			<<link [[Throw it back|Maths Whitney Throw]]>><<def 1>><</link>>
+			<br>
+			<<link [[Throw it in the bin|Maths Whitney Bin]]>><</link>>
+			<br>
+		<</addinlineevent>>
+	<<elseif $whitneymaths is "seat">>
+		<<addinlineevent "mathsWhitneyOral">>
+			<<npc Whitney>><<person1>>
+			Whitney leans close, <<his>> breath tickling your ear as <<he>> speaks.
+			"My <<print C.npc.Whitney.penis isnot "none" ? "cock" : "pussy">> needs your mouth," <<he>> whispers. "Be a good <<girlfriend>> and get under the desk."
+			<br><br>
+
+			<<link [[Comply grudgingly|Maths Whitney Oral]]>><<set $phase to 0>><<trauma 6>><<stress 6>><<npcincr Whitney dom 1>><<sub 1>><<set $molestationstart to 1>><</link>><<gtrauma>><<gstress>><<gdom>>
+			<br>
+			<<if $promiscuity gte 55>>
+				<<link [[Comply enthusiastically|Maths Whitney Oral]]>><<set $phase to 1>><<npcincr Whitney dom 1>><<sub 1>><<set $sexstart to 1>><</link>><<promiscuous4>><<gdom>>
+				<br>
+			<</if>>
+			<<if $whitneyromance is 1>>
+				<<link [[Comply lovingly|Maths Whitney Oral]]>><<set $phase to 2>><<trauma 6>><<npcincr Whitney dom 1>><<npcincr Whitney love 1>><<sub 1>><<set $sexstart to 1>><</link>><<promiscuous1>><<gtrauma>><<glove>><<gdom>>
+				<br>
+			<</if>>
+			<<link [[Refuse|Maths Whitney Oral Refuse]]>><<stress 6>><<npcincr Whitney dom -1>><</link>><<gstress>><<ldom>>
+		<</addinlineevent>>
+
+		<<addinlineevent "mathsWhitneyJealous">>
+			You hear shouting outside the class. River leaves to investigate.
+			<br><br>
+
+			<<npc Whitney>><<generatey2>>
+			"You looking at my <<girlfriend>>?" Whitney says to your side. <<person1>><<Hes>> glaring at a <<person2>><<person>> behind you.
+			<br><br>
+
+			"N-no," the <<person>> replies. Whitney isn't impressed. <<person1>><<He>> jumps to <<his>> feet and lunges over the <<person2>><<persons>> desk, grasping <<him>> by the collar.
+			<br><br>
+
+			"<<pShes>> mine, <<person2>><<print $pronoun is "m" ? "pervert" : "slut">>," <<person1>><<he>> hisses. "Now I'm gonna make sure you remember it."
+			<br><br>
+
+			The <<person2>><<person>> looks <<print either("terrified","defiant","angry","scared","confused")>>.
+			<br><br>
+
+			<<link [[Watch|Maths Whitney Watch]]>><<npcincr Whitney dom 1>><</link>><<gdom>>
+			<br>
+			<<link [[Intervene|Maths Whitney Intervene]]>><<famegood 10>><<npcincr Whitney dom -1>><<trauma -6>><</link>><<ldom>><<ltrauma>>
+			<br>
+			<<link [[Encourage|Maths Whitney Encourage]]>><<npcincr Whitney love 1>><<detention 3>><</link>><<glove>><<gdelinquency>>
+			<br>
+		<</addinlineevent>>
+
+		<<addinlineevent "mathsWhitneyMakeout">>
+			River gives the class some equations to solve while <<nnpc_he "River">> manages paperwork.
+			<br><br>
+
+			<<npc Whitney>><<person1>>
+			Whitney leans back in <<his>> seat, looking bored. <<He>> reaches up to your head and twirls your hair between <<his>> fingers.
+			<br><br>
+
+			<<link [[Make out|Maths Whitney Makeout]]>><<npcincr Whitney love 1>><</link>><<glove>>
+			<br>
+			<<link [[Keep working|Maths Whitney Work]]>><<mathsskill 1>><</link>><<gmaths>>
+			<br>
+		<</addinlineevent>>
+
+		<<if $arousal gte 8000 and $daily.whitney.mathsGrope isnot 1>>
+			<<addinlineevent "mathsWhitneyGrope" 5>>
+				<<set $daily.whitney.mathsGrope to 1>>
+				<<npc Whitney>><<npc River 2>>
+				River begins explaining several mathematical concepts, demonstrating equations on the whiteboard as <<person2>><<he>> does so.
+				<br><br>
+
+				Whitney leans in close to you while River's back is turned. "Hey, slut, you look a little pent up," <<person1>><<he>> whispers. <<He>> gropes you through your $worn.lower.name. "Bet I can make you moan in the middle of class." <<arousal 300 "genitals">><<garousal>>
+				<br><br>
+
+				<<link [[Let it happen|Maths Whitney Grope Allow]]>><</link>><<gggarousal>>
+				<br>
+				<<link [[Deny|Maths Whitney Grope Deny]]>><<stress 6>><<npcincr Whitney love -1>><</link>><<gstress>><<llove>>
+				<br>
+				<<if $speech_attitude is "bratty">>
+					<<link [[Retaliate|Maths Whitney Grope Retaliate]]>><<npcincr Whitney dom -1>><</link>><<ldom>><<skill_difficulty `currentSkillValue("handskill")` "Hand Skill" 1 600>>
+					<br>
+				<</if>>
+			<</addinlineevent>>
+		<</if>>
+	<<else>>
+		<<addinlineevent "mathsEvent1">>
+			River gives the class some equations to solve while <<nnpc_he "River">> manages paperwork.
+			<br><br>
+
+			A few delinquents use the opportunity to harass you.
+			<br><br>
+
+			<<link [[Tell them to stop|Maths Event1]]>><<detention 2>><</link>><<gdelinquency>>
+			<br>
+			<<link [[Endure it|Maths Event1]]>><<stress 2>><<set $phase to 1>><</link>><<gstress>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "mathsLowerLiftTease">>
+		<<npc River>><<generates2>>
+		River has you come to the front of the class to solve an equation on the whiteboard.
+
+		<<set $_skirt to setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt>>
+		As you write on the board, a <<person2>><<person>> reaches over with a ruler and <<print $_skirt is 1 ? "lifts up your skirt" : "tugs down your $worn.lower.name">>!
+		<br><br>
+		<<if $worn.under_lower.type.includes("naked")>>
+			A cheer erupts from the class as they see you're not wearing underwear.
+			<<if $_skirt is 1 and $panicattacks gte 1 and random(1, 2) is 2 and $controlled is 0>>
+				You need to respond, to whack the ruler away, <span class="red">but your body freezes in mortified panic.</span>
+				Thoughts dart half-formed as you wonder what horrible things the class have in store for you.
+				<br><br>
+				You hear them chatter, but you can't comprehend the words, only the clicks of phone cameras pointed at your <<bottom>> and <<if $player.penisExist>>hardening<</if>> <<genitals>>.
+				<br><br>
+
+				River turns to the class, and opens <<person1>><<his>> mouth to chide but is interrupted. "But <<sir>>, <<pshes>> not wearing any underwear!"
+				<br><br>
+
+				The class erupt in laughter as River looks at you. <<He>> steadies <<himself>> against the desk.
+				"That's against school rules," <<he>> says. "Back to your seat. And cover yourself. Now!"
+				<br><br>
+				It's enough to break your paralysis. You straighten your $worn.lower.name, and return to your seat.
+				<<gtrauma>><<gstress>><<gdelinquency>><<gcool>><<trauma 6>><<stress 6>><<detention 4>><<status 1>>
+			<<else>>
+				You brush the ruler away and fix your $worn.lower.name as your face heats up. River turns to the class to see what's causing the commotion.
+				Seeing the <<person>> holding the ruler, <<person1>><<he>> opens <<his>> mouth to chide but is interrupted. "But <<sir>>, <<pshes>> not wearing any underwear!"
+				<br><br>
+
+				The class erupts into another cheer as River looks at you. "Is this true? That's against school rules. Sit down."
+				<<gtrauma>><<gstress>><<gdelinquency>><<gcool>><<trauma 2>><<stress `($_skirt is 1 ? 2 : 4)`>><<detention 2>><<status 1>>
+
+				<<if $whitneymaths is "active" or $whitneymaths is "seat">>
+					<br><br>
+
+					Whitney smirks.
+				<</if>>
+			<</if>>
+		<<else>>
+			You brush the ruler away and fix your $worn.lower.name, but not before the class gets a good look at your <<print ($worn.under_lower.anus_exposed is 1 ? "bare ass" : $worn.under_lower.name)>>.
+			<<gtrauma>><<gstress>><<trauma 1>><<stress `($_skirt is 1 ? 1 : 2)`>>
+
+			<<if $whitneymaths is "active" and ($whitneypantiescheck is 1 or ($whitneypantiescheck is 2 and $worn.under_lower.gender isnot "f"))>>
+				<br><br>
+
+				Whitney glares at you, but doesn't say anything. This won't be the end of it.
+				<<set $whitneypantiesmaths to "seen">>
+			<</if>>
+		<</if>>
+		<br><br>
+
+		<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+	<</addinlineevent>><<addinlineevent "mathsMessageDelivery">>
+		<<rng>>
+		<<npc River>><<person1>>
+
+		River stands beside your table. "I need you to deliver a message for me. To the head." <<He>> hands you a sealed envelope.
+		<br><br>
+
+		You leave the classroom.
+		<br><br>
+		<<endevent>>
+		<<link [[Open the envelope|Maths Note]]>><<detention 6>><<set $phase to 1>><</link>><<ggdelinquency>>
+		<br>
+		<<link [[Just deliver it|Maths Note]]>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsPartnerStudy">>
+		<<rng>>
+		<<if currentSkillValue('maths') lte 499>>
+			<<generates1>><<person1>>
+			River has a studious <<person>> help you with the material.
+			<<if $cool gte (($coolmax / 5) * 2)>>
+				<<He>> is happy to help, and your understanding of the material improves.<<lstress>><<stress -4>><<gmaths>><<mathsskill>>
+			<<elseif $cool gte ($coolmax / 5)>>
+				<<He>> doesn't seem particularly happy with the arrangement, but you do learn something.<<gmaths>><<mathsskill>>
+			<<else>>
+				<<He>> is clearly embarrassed to be seen with you; <<he>> never looks at you, and rarely speaks. You don't learn anything.
+			<</if>>
+			<br><br>
+
+			<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<generates1>>
+			As you are doing well in this class, River has you sit with a <<person1>><<person>> who isn't doing so well, and instructs you to help them.
+			<<if $rng gt 40>>
+				The <<person>> is not at all happy with the arrangement. After a few minutes of trying to explain the material to them, you feel a hand grope your butt.
+				<br><br>
+
+				<<if $eventsmaths4 is 1 and $rng gte 71>>
+					<<link [[Ignore it|Maths Event3]]>><<trauma 2>><<stress 2>><<arousal 200 "bottom">><<set $phase to 3>><</link>><<gtrauma>><<gstress>><<garousal>>
+				<<else>>
+					<<set $eventsmaths4 to 1>>
+					<<link [[Ignore it|Maths Event3]]>><<trauma 2>><<stress 2>><<arousal 200 "bottom">><<set $phase to 2>><</link>><<gtrauma>><<gstress>><<garousal>>
+				<</if>>
+				<br>
+				<<link [[Move away|Maths Event3]]>><<detention 2>><<set $phase to 1>><</link>><<gdelinquency>>
+				<br>
+				<<if $whitneymaths is "seat">>
+					<<link [[Tell Whitney|Maths Event3 Whitney]]>><<npcincr Whitney dom 1>><</link>><<gdom "Whitney">>
+					<br>
+				<</if>>
+			<<else>>
+				The <<person>> is not at all happy with the arrangement, but they listen to you without incident.
+				<br><br>
+
+				<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsPenThrow">>
+		<<npc River>><<person1>><<generates2>>
+		While River's back is turned, someone throws a pen at <<his>> back. <<He>> stops speaking, and slowly turns to face the class. <<person2>>The <<person>> sat behind you points at you. "<<pShe>> did it!"
+		<br><br>
+		<<if $delinquency gte 400>>
+			<<if $whitneymaths is "seat">>
+				River looks at you. "I should have known it would be you. Wait outside." You know arguing won't help, so you stand to leave.<<gstress>><<stress 2>>
+				<br><br>
+
+				Whitney stands beside you. "Sit down," River says. Whitney ignores <<person1>><<him>> and leaves the class behind you.
+			<<else>>
+				River looks at you. "I should have known it would be you. Wait outside." You know arguing won't help, so you stand and leave.<<gstress>><<stress 2>>
+			<</if>>
+			<br><br>
+
+			<<link [[Next|Maths Event4]]>><<endevent>><</link>>
+		<<else>>
+			River is not fooled by the <<person2>><<person>>, and sends them out.
+			<br><br>
+
+			<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<runeventpool>>
+<</widget>>
+
+<<widget "eventsmathssafe">>
+	<<if $mathsproject is "none" and Time.days gte 23 and $scienceprojectdays isnot (21 + (7 - Time.weekDay))>>
+		<<set $mathsproject to "ongoing">><<set $mathsprojectdays to (21 + (7 - Time.weekDay))>>
+		<<mathsprojectstart>>
+		<<npc River>><<person1>><<generatey2>>"Everyone listen," River announces. <<He>> knocks on <<his>> desk. "That includes you at the back. I have something special for you today. We hold an annual competition for students in your year." This grabs a <<person2>><<person>> at the front's attention. <<He>> sits upright.
+		<<if $whitneymaths is "active" or $whitneymaths is "seat">>
+			Whitney is less impressed, and reclines in <<nnpc_his "Whitney">> seat with an open textbook resting on <<nnpc_his "Whitney">> face.
+		<</if>>
+		<br><br>
+
+		"You have a few weeks to solve it," River continues as <<person1>><<he>> hands out booklets. "Whoever provides the most intelligent answer wins. We don't expect anyone to find the solution. That's not the point." <<He>> places a black and white booklet in front of you. You open it. It's incomprehensible.
+		<br><br>
+
+		The <<person2>><<persons>> arm shoots up. "Yes?" River asks.
+		<br><br>
+
+		"You haven't covered this," the <<person>> says. <<His>> voice quivers. You're relieved that you're not alone.
+		<br><br>
+
+		River smiles. "Well observed," <<person1>><<he>> says. "You're all on equal footing. Even if you haven't paid attention in the past. Participation is optional. There's a reward for the winner, but don't prioritise it over your school work."
+		<br><br>
+
+		<<He>> hands out the last of the booklets. "The problem was made for this competition, so don't think you can find the answer somewhere. And don't ask your parents for help," <<he>> adds. <<He>> avoids looking in your direction. "We can always tell. The competition will be held at the town hall, where you will be judged. Good luck."
+		<br><br>
+
+		<span class="gold">Maths competition added to journal.</span>
+		<br><br>
+
+		<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+		<<exit>>
+	<</if>>
+
+	<<cleareventpool>>
+
+	<<set $_linkSkip to false>>
+	<<addinlineevent "mathsSafe1">>
+		<<npc River>><<person1>>
+		River gives the class some equations to solve while <<he>> manages paperwork.
+
+		<<if $whitneymaths is "seat" or $whitneymaths is "active">>
+			Even Whitney keeps quiet, though <<nnpc_he "Whitney">> might just be asleep.
+		<<else>>
+			Even the delinquents keep quiet, careful to avoid River's attention.
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe2">>
+		<<generates1>><<generates2>><<person1>><<set _coinflip to random(0,1)>>
+		River assigns a high-performing student, a <<person>>, to support one of the struggling delinquents near you.
+		<br><br>
+		<<rng>>
+		<<if $rng % 3 is 0>>
+			It goes well. Both students get along and seem to benefit from the arrangement.
+		<<else>>
+			It is a disaster. The delinquent, a <<person2>><<person>>, resents the <<person1>><<persons>> help, and soon starts bullying <<him>>. Out of the corner of your eye you watch as things escalate out of control.
+			<<if _coinflip>>
+				River calls an end to the session before things go too far.
+			<<else>>
+				River investigates when the <<person1>><<person>> screams.
+				<<if $rng % 2>>
+					River sends out the perpetrator.
+				<<else>>
+					Somehow the <<person1>><<person>> ends up being blamed and is given detention.
+				<</if>>
+			<</if>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe3">>
+		River demonstrates equations on a whiteboard and occasionally asks questions, picking on students <<nnpc_he "River">> thinks aren't paying attention.
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe4">>
+		<<if $whitneymaths is "seat" or $whitneymaths is "active">>
+			Whitney goads a <<generatey1>><<person1>><<person>> into flinging a pen at River's back. The <<person>> is sent out of the room after some argument.
+		<<else>>
+			Someone across the class flings a pen at River's back. After some argument, the perpetrator is sent out of the room and class resumes.
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe5">>
+		<<npc River>><<person1>>
+		River demonstrates equations on a whiteboard and occasionally asks questions, picking on students <<he>> thinks aren't paying attention. This time, <<he>> picks you.
+		<br><br>
+
+		<<if currentSkillValue('maths') gte 500>>
+			You know the answer, but answering such a tough question correctly will make the other students think you're strange.
+			<br><br>
+
+			<<set $_linkSkip to true>>
+			<<link [[Answer|Maths Event2]]>><<status -10>><</link>><<lcool>>
+			<br>
+			<<link [[Pretend you don't know|Maths Event2]]>><<detention 2>><<stress 2>><<set $phase to 1>><</link>><<gstress>><<gdelinquency>>
+		<<else>>
+			The question is quite difficult and beyond you, so you tell <<him>> you don't know.
+			<br><br>
+
+			"Of course you don't." Fortunately <<he>> doesn't belabour the point, and continues lecturing.
+			<<stress 20>><<ggstress>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe6">>
+		You're called up to the front to answer a question. You walk up and write your answer on the board. River seems satisfied. You sit back down, but feel a sharp pain. Standing up and reaching back, you feel a tack stuck in your <<bottom>>.
+		<<pain 2>><<stress 6>><<gpain>><<gstress>>
+		<br><br>
+
+		You remove it and sit back down.
+		<<if $whitneymaths is "active">>
+			You hear Whitney laugh behind you.
+		<<elseif $whitneymaths is "seat">>
+			Whitney wears an innocent smile.
+		<<else>>
+			You hear a couple of delinquents laughing behind you.
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe7">>
+		The class studies trigonometry, filling worksheets while River paces the room.
+		<<if $whitneymaths is "seat">>
+			Whitney starts a covert war with another student. They stab each other with compass points.
+		<<elseif $whitneymaths is "active">>
+			Whitney and the other delinquents covertly stab each other with compass points.
+		<<else>>
+			Some students covertly stab each other with compass points.
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe8">>
+		The class studies geometry, filling worksheets while River paces around the room, looking over shoulders and pointing out every little mistake.
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe9">>
+		<<generates1>><<generates2>>
+		A <<person1>><<person>> is called to the front of the class to solve an equation on the board. As <<he>> is writing, a <<person2>><<person>> leans forward and uses a ruler to flash the unwitting <<person1>><<personsimple>>'s underwear to the class.
+		<<if ($rng % 4) is 0>>
+			However it turns out the <<person>> isn't wearing any, leading to lots of cheering, and a detention for both the humiliated <<personsimple>> and the <<person2>><<person>> with the ruler.
+		<<else>>
+			The <<personsimple>> slaps away the ruler, and River fixes the <<person2>><<person>> with a glare.
+			<br><br>
+			The class goes on.
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsSafe10">>
+		River demonstrates equations on a whiteboard before handing out worksheets for the class to complete.
+	<</addinlineevent>>
+
+	<<runeventpool>>
+
+	<<if !$_linkSkip>>
+		<br><br>
+		<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "eventsmathssleep">>
+	<<cleareventpool>>
+
+	<<addinlineevent "mathsCaught">>
+		<<npc River>><<person1>>
+		"Excuse me, young <<lady>>. What do you think you are doing?" You bolt upright to find River next to your desk, frowning in disapproval. You fumble for a response, but <<hes>> having none of it. "Sleeping in class? That's detention for you." <<ltiredness>><<detention 2>><<gdelinquency>>
+		<br><br>
+		<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsNotCaught">>
+		<<npc River>><<person1>>
+		Your eyes snap open. You must have fallen asleep. You casually lift your head and stifle a yawn, pretending nothing happened. River has just called on another student to solve the equation on the board. You're grateful <<he>> didn't call on you. <<ltiredness>>
+		<br><br>
+		<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+	<</addinlineevent>>
+
+	<<if random(1, 400) gte $cool>>
+		<<addinlineevent "mathsTattletale">>
+			<<npc River>><<person1>>
+			"<<Sir>>," says a <<generates2>><<person2>><<person>>. "<<pShes>> sleeping in class!"
+			<br><br>
+			The voice of the <<personsimple>> wakes you. You raise your head from the desk and see the teacher looking back at you. "Sleeping in class is an automatic detention," River says, staring long enough to make you uncomfortable.
+			<br><br>
+			<<if $submissive gte 1150>>
+				You bow your head in embarrassment while the <<person>> smiles, all too happy to get you in trouble.
+			<<elseif $submissive lte 850>>
+				You glare at the <<person>>. <<His>> smile falters under your withering gaze, as <<he>> realises telling the teacher might not have been the smartest idea.
+			<<else>>
+				You frown at the <<person>>. <<He>> smiles back, all too happy to get you in trouble.
+			<</if>>
+			<<ltiredness>><<detention 2>><<gdelinquency>>
+			<br><br>
+			<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "mathsLearn">>
+		<<npc River>><<person1>>
+		You doze off to the sound of River's voice. <<His>> voice breaks through your slumber at odd intervals, narrating your dreams. Your eyes open minutes later. You lift your head and stifle a yawn. Despite the nap, the complex diagrams on the board make sense. You actually learned something while you slept. <<ltiredness>><<gmaths>><<mathsskill>>
+		<br><br>
+		<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+	<</addinlineevent>>
+
+	<<addinlineevent "mathsLewdPhoto">>
+		Your eyes snap open. You must have fallen asleep. You casually lift your head and stifle a yawn, pretending nothing happened.
+		<br><br>
+
+		You turn your head when you hear a <<generates1>><<person1>><<person>> snickering. <<He>> stops when you look at <<him>>. With a quick glance over at the teacher to make sure no one's watching, <<he>> gives you a wicked grin and shows you <<his>> phone.
+		<br><br>
+
+		It takes a moment for you to tell what you're looking at. <<Hes>> managed to take a <<print $NPCList[0].penis isnot "none" ? "dick" : "tit">> pic of <<himself>> with you in it while you slept.
+		<br><br>
+
+		"Already sent that to all my friends," <<he>> whispers. <<lcool>><<status -1>><<ltiredness>>
+		<br><br>
+		<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+	<</addinlineevent>>
+
+	<<if $worn.face.type.includes("glasses")>>
+		<<addinlineevent "mathsGlasses">>
+			Your eyes snap open, but the world looks more blurred than it should. It only takes you a moment to notice your glasses are gone. You look around to see if they fell off while you slept,
+			<<if random(1, 10) gte 3>>
+				and you find them under your chair. You pick them up and put them back on.
+			<<else>>
+				but they are nowhere to be found. Someone must have taken them, but no one around you looks suspicious. <<faceruined>>
+			<</if>>
+			River continues to lecture without noticing.
+			<<ltiredness>>
+			<br><br>
+			<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if ["seat","active"].includes($whitneymaths)>>
+		<<addinlineevent "mathsWhitneyWake">>
+			<<npc Whitney>><<person1>>
+			<<set _cum to C.npc.Whitney.penis is "none" ? "juices" : "cum">>
+			<<if C.npc.Whitney.dom lte 15>>
+				You feel something hit the back of your head. A moment later, you feel it again. You open your eyes and lift your head. Running your fingers through your hair, you find a spitball. You notice Whitney looking at you with a smirk. <<ltiredness>><<gdom>><<npcincr Whitney dom 1>>
+				<br><br>
+				<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+			<<else>>
+				Your eyes snap open as you feel something hot and wet on your hand. Whitney suppresses a moan as <<he>> <<print C.npc.Whitney.penis is "none" ? "grinds <<his>> clit against the heel of your palm" : "curls your fingers around <<his>> cock and jerks <<himself>> off">>. <<He>> releases your hand and slumps back in <<his>> seat, panting as <<he>> comes down from <<his>> orgasm. Your hand is covered in <<his>> _cum. River continues to elaborate on complex formulas and has not noticed anything.
+				<br><br>
+				<<if $promiscuity gte 35>>
+					<<link [[Lick your fingers|Whitney Maths Wake]]>><<set $phase to 0>><</link>><<glust>><<promiscuous3>>
+					<br>
+				<</if>>
+				<<link [[Wipe your hand on your clothes|Whitney Maths Wake]]>><<set $phase to 1>><</link>>
+				<br>
+				<<if $submissive lte 500>>
+					<<link [[Wipe your hand on Whitney's clothes|Whitney Maths Wake]]>><<set $phase to 2>><</link>><<ldom>>
+				<</if>>
+			<</if>>
+		<</addinlineevent>>
+
+		<<addinlineevent "mathsWhitneyOral">>
+			<<npc Whitney>><<person1>>
+			Your eyes snap open. Whitney sits on your desk. <<His>> <<= $pronoun is "m" ? "fly is unzipped" : "skirt is flipped up">>, exposing <<his>> <<= npcHasStrapon(0) ? $NPCList[0].penisdesc : $NPCList[0].penis isnot "none" ? "stiff cock" : "slick pussy">>.
+			<br><br>
+
+			"River had to step out for a bit," <<he>> says with a grin. "Least you can do is keep me entertained in the meantime."
+			<br><br>
+
+			Before you get a chance to respond, <<he>> places <<his>> hands on the back of your head and forces it down.
+			<br><br>
+			<<link [[Lick grudgingly|Whitney Maths Oral]]>><<set $phase to 0>><<trauma 6>><<stress 6>><<npcincr Whitney dom 1>><<sub 1>><<set $molestationstart to 1>><</link>><<gtrauma>><<gstress>><<gdom>>
+			<br>
+			<<if $promiscuity gte 55>>
+				<<link [[Lick enthusiastically|Whitney Maths Oral]]>><<set $phase to 1>><<npcincr Whitney dom 1>><<sub 1>><<set $sexstart to 1>><</link>><<promiscuous4>><<gdom>>
+				<br>
+			<</if>>
+			<<if $whitneyromance is 1>>
+				<<link [[Lick lovingly|Whitney Maths Oral]]>><<set $phase to 2>><<trauma 6>><<npcincr Whitney dom 1>><<npcincr Whitney love 1>><<sub 1>><<set $sexstart to 1>><</link>><<promiscuous1>><<gtrauma>><<glove>><<gdom>>
+				<br>
+			<</if>>
+			<<link [[Refuse|Whitney Maths Oral]]>><<set $phase to 3>><<set $molestationstart to 1>><<def 1>><<stress 6>><<npcincr Whitney dom -1>><</link>><<gstress>><<ldom>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $drunk gte 1>>
+		<<addinlineevent "mathsDrunk">>
+			<<npc River>><<person1>>
+			"Excuse me, young <<lady>>. What do you think you are doing?" You groan as you lift your head and look up at River, stood next to your desk.
+			<br><br>
+
+			"Are you... intoxi-" River cannot bring <<himself>> to say it. <<He>> shakes <<his>> head in deep disapproval, looking scandalised. "Detention." <<ltiredness>><<detention 6>><<ggdelinquency>>
+			<br><br>
+			<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<runeventpool>>
+<</widget>>
+
+<<widget "mathsWhitneyAttendChance">>
+	<<if !$whitneymaths or $whitneymaths is "absent">>
+		<<if C.npc.Whitney.state is "active" and Time.minute lte 40>>
+			<<set _wearingSkirt to (clothingData('lower', $worn.lower, "skirt") is 1)>>
+			<<set _maleClothes to Object.keys($worn).filter((slot) => {
+				return $worn[slot].gender is "m" and !["genitals", "under_upper", "under_lower"].includes(slot);
+			})>>
+			<<set _whitneyMadAtSkirt to $forcedcrossdressingdisable is "f" and $whitneyskirtcheck gte 1 and (!_wearingSkirt or $worn.lower.reveal lte 200)>>
+			<<set _whitneyMadAtClothes to $forcedcrossdressingdisable is "f" and $whitneyCrossdressSchool gte 1 and _maleClothes.length>>
+
+			<<if !$whitneymaths>>
+				<!-- Whitney attending Maths class for the first time during the game -->
+				<<npc Whitney 1>><<person1>>
+				Whitney swaggers in. "So you decided to show up," River says, pointing at an empty seat at the front. "Tuck your shirt in."
+				<br><br>
+
+				<<set $whitneyskirtmaths to _whitneyMadAtSkirt or _whitneyMadAtClothes>>
+
+				<<if $whitneyromance is 1>>
+					<<set $whitneymaths to "seat">>
+					Whitney rolls <<his>> eyes, and instead takes a seat beside you.
+					<<if _whitneyMadAtClothes>>
+						<<He>> glares at you as <<he>> spots your
+						<<print $worn[_maleClothes[0]].name>><<if _whitneyMadAtSkirt and _maleClothes[0] isnot "lower">> and lack of a skirt<</if>>.
+					<<elseif _whitneyMadAtSkirt>>
+						<<He>> glares at you as <<he>> spots your $worn.lower.name.
+					<</if>>
+				<<else>>
+					<<set $whitneymaths to "active">>
+					Whitney rolls <<his>> eyes,
+					<<if _whitneyMadAtClothes>>
+						before glaring at you as <<he>> spots your
+						<<print $worn[_maleClothes[0]].name>><<if _whitneyMadAtSkirt and _maleClothes[0] isnot "lower">> and lack of a skirt<</if>>.
+						<<He>> takes a seat at the back.
+					<<elseif _whitneyMadAtSkirt>>
+						before glaring at you as <<he>> spots your $worn.lower.name. <<He>> takes a seat at the back.
+					<<else>>
+						and instead takes a seat at the back.
+					<</if>>
+				<</if>>
+				<<He>> tucks just the front of <<his>> shirt into <<his>> <<npcClothesText $NPCList[0] "lower">> as <<he>> sits.
+				<<endevent>>
+				<br><br>
+			<<else>>
+				<<set $_whitney_maths_chance to ((C.npc.Whitney.love / 3) + (C.npc.Whitney.dom * 3) + (C.npc.Whitney.lust / 3))>>
+				<<set $_whitney_tardy_modifier to (Time.minute lte 20 ? Time.minute : -Time.minute + 40) - 10>>
+				<!-- whitney_tardy_modifier starts out negative, becomes positive at 10 minutes late, peaks at 20 minutes late, and hits negative again at 30 minutes late -->
+				<<set $_whitney_maths_chance += $_whitney_tardy_modifier>>
+
+				<<if random(1, 100) lte $_whitney_maths_chance>>
+					<<npc Whitney 1>><<person1>>
+					<<set $whitneyskirtmaths to _whitneyMadAtSkirt or _whitneyMadAtClothes>>
+					<<if $whitneyromance is 1>>
+						<<set $whitneymaths to "seat">>
+						Whitney enters the class. <<He>> shoves past a <<generatey2>><<person2>><<person>> and sits beside you.
+						<<if _whitneyMadAtClothes>>
+							<<He>> glares at you as <<he>> spots your
+							<<print $worn[_maleClothes[0]].name>><<if _whitneyMadAtSkirt and _maleClothes[0] isnot "lower">> and lack of a skirt<</if>>.
+						<<elseif _whitneyMadAtSkirt>>
+							<<He>> glares at you as <<he>> spots your $worn.lower.name.
+						<</if>>
+					<<else>>
+						<<set $whitneymaths to "active">>
+						Whitney enters the class. <<He>>
+						<<if _whitneyMadAtClothes>>
+							glares at you when <<he>> spots your <<print $worn[_maleClothes[0]].name>><<if _whitneyMadAtSkirt and _maleClothes[0] isnot "lower">> and lack of a skirt<</if>>. <<He>> takes a seat at the back.
+						<<elseif _whitneyMadAtSkirt>>
+							glares at you when <<he>> spots your $worn.lower.name. <<He>> takes a seat at the back.
+						<<else>>
+							takes a seat at the back.
+						<</if>>
+					<</if>>
+					<<endevent>>
+					<br><br>
+				<<elseif $whitneymaths isnot undefined>>
+					<!-- if whitney HAS attended class before, but is not present now -->
+					<<set $whitneymaths to "absent">>
+				<</if>>
+			<</if>>
+		<<elseif $whitneymaths isnot undefined>>
+			<!-- if whitney HAS attended class before, but is unable to attend -->
+			<<set $whitneymaths to "absent">>
+		<</if>>
+	<</if>>
+<</widget>>
+
+:: Widgets Events English [widget]
+<<widget "eventsenglish">>
+	<<if $halloween is 1 and $kylarenglishstate is "active" and $halloween_kylar is undefined>>
+		<<npc Kylar>><<person1>>
+		<<if Time.monthDay is 31>>
+			Kylar leans closer. "There's something I want to show you tonight," <<he>> whispers. "Meet me in the park, after <span class="gold"><<ampm 21 00>>.</span>"
+		<<else>>
+			Kylar leans closer. "There's something I want to show you on Halloween," <<he>> whispers. "Meet me in the park, after <span class="gold"><<ampm 21 00>>.</span>"
+		<</if>>
+		<br><br>
+
+		<<He>> wears a small smile for the rest of the lesson.
+		<<set $halloween_kylar to 1>>
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+		<<exit>>
+	<</if>>
+
+	<<cleareventpool>>
+
+	<<if $goocount + $semencount gte Math.max(10, $nectarcount)>>
+		<<addinlineevent "englishSemen" 1>>
+			<<npc Doren>><<person1>>
+			Doren stops beside your desk. "You smell... odd," <<he>> says. "Almost like..."
+			<br><br>
+
+			<<generates2>><<person2>>A <<person>> cuts <<person1>><<him>> off. "<<pShe>> smells like cum <<sir>>." Giggling erupts around the class.
+			<br><br>
+			<<person1>>
+
+			<<if $promiscuity gte 35>>
+				<<link [[Own it|English Events Own]]>><</link>><<promiscuous3>>
+				<br>
+			<</if>>
+			<<link [[Stare down in shame|English Events Stare]]>><<trauma 6>><<stress 6>><<status -10>><<npcincr Doren love 1>><</link>><<gtrauma>><<gstress>><<lcool>>
+			<br>
+		<</addinlineevent>>
+	<<elseif $nectarcount gte 5>>
+		/* This event was previously inaccessable when the above event was */
+		<<addinlineevent "englishNectar" 1>>
+			<<npc Doren>><<person1>>
+			Doren stops beside your desk. "You smell... odd," <<he>> says. "Is that perfume? Cologne?"
+			<br><br>
+
+			<<generates2>><<person2>>A <<person>> cuts <<person1>><<him>> off. "<<pShe>> smells sweet, <<sir>>. Really sweet." Some of the students sniff the air and chatter to themselves.
+			<br><br>
+
+			<<person1>>Doren shakes <<his>> head. "The fads you lot get into..." <<He>> goes back to teaching <<his>> lessons. Some students inch their desks slightly closer to yours, either to smell the nectar on your body or simply to appease their curiosity.
+			<<if $kylarenglishstate is "active">>
+				Kylar looks annoyed at them, but <<nnpc_he "Kylar">> clearly enjoys your smell too.<<npcincr Kylar lust 1>><<npcincr Kylar rage 1>><<glust>><<gksuspicion>>
+			<</if>>
+			<<status 1>><<gcool>>
+			<br><br>
+
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "englishGlue" 1>>
+		<<set $_genitals_exposed to ($worn.under_lower.type.includes("naked") and !playerChastity("hidden"))>>
+		<<set $_seat_glued to ($cool lt 40)>>
+		As you stand to hand your work in,
+		<<if $_seat_glued>>
+			<<set $worn.lower.integrity -= 30>>
+			<<if $worn.lower.integrity lte 0>>
+				your $worn.lower.name <<print ($worn.lower.plural ? "tear" : "tears")>> clean off of your body!
+				You look down in horror and see the remains attached to the chair. Someone put glue on your seat!
+			<<else>>
+				your $worn.lower.name <<print ($worn.lower.plural ? "tear" : "tears")>>. Someone put glue on your seat!
+				Fortunately, your $worn.lower.name survived, though certainly worse for wear.
+			<</if>>
+		<<else>>
+			<<set $worn.lower.integrity -= 10>>
+			<<if $worn.lower.integrity lte 0>>
+				your $worn.lower.name <<print ($worn.lower.plural ? "catch" : "catches")>> on the corner of your desk and <<print ($worn.lower.plural ? "tear" : "tears")>> clean off of your body!
+				You look down in horror and see the remains hanging from the desk.
+			<<else>>
+				your $worn.lower.name <<print ($worn.lower.plural ? "catch" : "catches")>> on the corner of your desk and <<print ($worn.lower.plural ? "tear" : "tears")>>.
+				Fortunately, your $worn.lower.name survived, though a bit worse for wear.
+			<</if>>
+		<</if>>
+
+		<<if $worn.lower.integrity lte 0>>
+			You cover your exposed <<undies>> as soon as you can, but for a moment you were completely exposed.
+			Doren rushes over with a towel, while your face flushes with humiliation.
+
+			<<if $_genitals_exposed>>
+				<<stress 12>><<trauma 12>><<ggstress>><<ggtrauma>>
+
+				<<if $player.gender isnot $player.gender_appearance and $NudeGenderDC gt 0>>
+					<br><br>
+					<<if $schoolrep.crossdress gte 3 or $schoolrep.herm gte 3>>
+						The other students <<print ($_seat_glued ? "look almost satisfied by" : "giggle at")>> your plight.
+						You overhear a few whispers while Doren is busy helping you,
+						and can make out something about <<print ($player.penisExist and $player.vaginaExist ? "your genitals" : "you crossdressing")>>. They saw, and they know the rumours are true.
+					<<else>>
+						The other students gasp, and the classroom fills with hushed whispers while Doren is busy helping you.
+						You can make out something about <<print ($player.penisExist and $player.vaginaExist ? "your genitals" : "you crossdressing")>>. They saw.
+					<</if>>
+					<<schoolrep_naked>>
+				<</if>>
+
+				<<set $genderknown.pushUnique("Doren")>>
+			<<else>>
+				<!-- Nothing happens if the player's genitals aren't exposed -->
+				<<stress 6>><<trauma 6>><<gstress>><<gtrauma>>
+			<</if>>
+
+			<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">>
+				<br><br>
+
+				Kylar blushes and looks away, but <<nnpc_he "Kylar">> clearly saw.<<npcincr Kylar lust 1>><<glust>>
+				<<if $_genitals_exposed>>
+					<<set $genderknown.pushUnique("Kylar")>>
+				<</if>>
+			<</if>>
+		<</if>>
+		<br><br>
+		<<integritycheck>>
+		<<link [[Next|English Lesson]]>><<towelup>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<if $kylarenglishstate is "active">>
+		<<addinlineevent "englishKylarPoem" 1>>
+			<<npc Kylar>><<person1>>Doren calls Kylar up to the front of the class to recite <<his>> poem. It's a love poem, about you. <<He>> looks overjoyed to be sharing it.
+			<<status -10>><<lcool>>
+			<br><br>
+
+			<<if $player.penisExist and $genderknown.includes("Kylar")>>
+				Part of it makes bold claims about the prodigious girth of your penis. Your face heats up.<<status 1>><<gcool>>
+				<br><br>
+			<</if>>
+
+			Several students giggle and stare. A <<generates2>><<person2>><<person>> shunts <<his>> seat to put distance between you.
+			<br><br>
+			<<person1>>
+
+			Kylar sits back down and smiles, oblivious to the embarrassment <<he>> caused.
+			<br><br>
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "englishNote" 1>>
+		<<if currentSkillValue('english') gte 500>>
+			<<npc Doren>><<person1>>Doren approaches your desk. "I think you've sussed this material, so while the rest of the class works, I've got a message I need delivered to the caretaker's outbuilding." <<He>> hands you a note containing a list of theatre props. "Just slip it beneath the door."
+			<br><br>
+			<<endevent>>
+
+			<<if $outbuildingvisited is 1>>
+				You arrive at the outbuilding where the <<print $outbuildingBeast>> attacked you. Were you to take your time and be careful, you could avoid another such encounter. You would miss some of the lesson though.
+				<br><br>
+
+				<<link [[Be careful|English Outbuilding]]>><<set $phase to 0>><<detention 1>><</link>><<gdelinquency>>
+				<br>
+				<<link [[Risk it|English Outbuilding]]>><<set $phase to 1>><</link>>
+				<br>
+			<<else>>
+				<<set $outbuildingvisited to 1>>
+				<<beastNEWinit 1 dog>><<set $outbuildingBeast to $NPCList[0].type>>
+				You head to the outbuilding behind the school and slip the note beneath the door as instructed. As you turn however, you find a <<beasttype>> baring its teeth and advancing on you.
+				<br><br>
+
+				<<if $monster is 1 or $bestialitydisable is "f">>
+					<<link [[Next|English Outbuilding Molestation]]>><<set $molestationstart to 1>><</link>>
+					<br>
+				<<else>>
+					You manage to flee back to the classroom, though not unscathed.<<beastescape>>
+					<br><br>
+					<<integritycheck>><<towelup>>
+
+					<<link [[Next|English Lesson]]>><<endevent>><</link>>
+				<</if>>
+				<!-- Modified for Beast People -->
+			<</if>>
+
+		<<else>>
+			Doren takes a special interest in your progress, and doesn't give you a chance to relax.
+			<<gstress>><<genglish>><<stress 2>><<englishskill>>
+			<br><br>
+
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishRead" 1>>
+		<<npc Doren>><<person1>>Doren has the class reading the current study-text out loud. Each student needs to read a passage from the book. Doren sits at the front, listening and choosing the next reader.
+		A student near you finishes reading a passage. Now Doren points to you.
+		<br><br>
+
+		<<if $worn.handheld.name isnot "naked" and !$worn.handheld.type.includes("bookbag")>>
+			<<if $trauma gte (($traumamax / 5) * 3)>>
+				But due to the stress you've been under, you forgot your bookbag! <<gstress>><<stress 4>>
+			<<elseif $delinquency gte 666>>
+				Does <<he>> seriously expect you to read like these nerds? You haven't even brought your book.
+			<<elseif $tiredness gte (C.tiredness.max / 5) * 3>>
+				But you're so tired, you left your book in your locker.
+			<<else>>
+				But you forgot your bookbag today.
+			<</if>>
+			<br><br>
+
+			<<link [[Tell Doren you don't have your book|English Read Passage]]>><<set $phase to 0>><</link>>
+			<br>
+			<<link [[Look to classmates for help|English Read Passage]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Try to make something up|English Read Passage]]>><<set $phase to 2>><</link>>
+			<br>
+			<<if $speech_attitude is "bratty" or $delinquency gte 400>><<link [[Refuse to read|English Read Passage]]>><<set $phase to 3>><</link>><br><</if>>
+		<<else>>
+			You turn the page and begin reciting the passage aloud.
+
+			<<if $englishtrait gte 4>>
+				You add a dramatic flair to your reading, and the class hangs on every word. Doren compliments your diction. "You have a mighty fine gift there, <<lass>>.
+				<<if $englishPlay is "ongoing" and $englishPlayRoles.Player isnot "none">>
+					I'm looking forward to seeing you shine onstage."
+				<<elseif $englishPlay is "ongoing">>
+					It's a shame you didn't sign up for the play.
+					<<if $englishPlayLate>>There's still time, you know!<</if>>"
+				<<else>>
+					Have you ever considered a career in theatre?"
+				<</if>> <<npcincr Doren love 1>>
+			<<elseif $englishtrait is 3>>
+				Your voice is strong and clear as you breeze through the text. Doren gives you a nod of approval and moves on to the next student.
+			<<elseif $englishtrait is 2>>
+				You stutter when you reach some foreign phrases, but you manage to get through the reading decently enough.
+			<<elseif $englishtrait is 1>>
+				The text is too erudite for you, and you falter as you read. Doren corrects your mispronunciation of an unfamiliar word, and someone in the back of the room titters. <<lcool>><<status -1>>
+			<<else>>
+				You try to make it through the passage, but it's beyond your comprehension. Your classmates openly snicker as you fumble over the words. Doren reprimands the class but takes pity on you by moving on to the next person. You sink into your seat and console yourself with the knowledge that you at least remembered to bring your book to class. <<lcool>><<status -3>>
+			<</if>>
+			<br><br>
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishMolest" 1>>
+		<<if $delinquency gte 400>>
+			<<npc Doren>><<person1>>In a bid to keep the classroom ruckus down, Doren has the less controllable students separated, including you<<if $kylarenglishstate is "active">> and Kylar<</if>>. <<He>><<endevent>> seats you next to a quiet <<generates1>><<person1>><<person>> who never causes any trouble.
+			<br><br>
+
+			After a few minutes the <<persons>> pen rolls on the floor. <<He>> reaches down to pick it up, rests a hand on your thigh and leans in close. "No one will believe you." <<His>> hand travels up your thigh.
+
+			<<if $kylarenglishstate is "active">>
+				Until Kylar grabs <<his>> wrist and tugs <<him>> closer.
+				<br><br>
+				<<endevent>>
+				<<npc Kylar>><<person1>>"Mine," Kylar whispers. <<He>> flashes the knife in <<his>> pocket. There are no arguments.
+				<br><br>
+				<<link [[Next|English Lesson]]>><<endevent>><</link>>
+
+			<<else>>
+				<<He>> sits back down, but continues to molest you.
+				<br><br>
+
+				<<link [[Call for help|English Event2]]>><<detention 1>><</link>><<gdelinquency>>
+				<br>
+				<<link [[Endure it|English Event2 Molest]]>><<stress 4>><<trauma 4>><</link>><<gstress>><<gtrauma>>
+				<br>
+			<</if>>
+		<<elseif $kylarenglishstate is "active">>
+			Some delinquents take an interest in you. One tries to grope, but is cowed by a look from Kylar.
+			<br><br>
+
+			<<link [[Next|English Lesson]]>><</link>>
+			<br>
+		<<else>>
+			Some delinquents take an interest in you, and sneak gropes and fondles while the teacher isn't looking.
+			<<gtrauma>><<gstress>><<trauma 2>><<stress 2>>
+			<br><br>
+
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishTrip" 2>>
+		Doren asks you to demonstrate your grammar on the whiteboard. As you walk to the front of the classroom, a foot protrudes into your path and trips you up.
+		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+			<<if $worn.under_lower.name is "naked" or $worn.under_lower.anus_exposed is 1>>
+				Your skirt flares up as you fall to your knees, revealing your bare butt to the whole class. You struggle to your feet, face turning red, as the class whistles and jeers.
+				<<stress 3>><<trauma 3>><<gstress>><<gtrauma>>
+				<br><br>
+			<<else>>
+				Your skirt flares up as you fall to your knees, revealing your $worn.under_lower.name to the whole class. You struggle to your feet, face turning red, as the class whistles and jeers.
+				<<stress 1>><<trauma 1>><<gstress>><<gtrauma>>
+				<br><br>
+			<</if>>
+		<<else>>
+			You fall forward onto your knees, and the class laughs as you struggle back to your feet.<<stress 1>><<gstress>>
+			<br><br>
+		<</if>>
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishBreeze" 2>>
+		<<generates1>><<person1>>A breeze blows through the classroom, rustling hair and lifting a <<person1>><<persons>> paper off <<his>> desk. It lands on the floor next to you. <<He>> walks over and bends to pick it up, almost sticking <<his>> butt in your face.
+		<br><br>
+		<<if $promiscuity gte 15>>
+			<<link [[Pinch|English Events Pinch]]>><</link>><<promiscuous2>>
+			<br>
+		<</if>>
+		<<link [[Avert your eyes|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<runeventpool>>
+<</widget>>
+
+<<widget "eventsenglishsafe">>
+	<<if $englishPlay is "none" and Time.monthName is "November" and Time.monthDay gte 7 and C.npc.Kylar.init is 1 and C.npc.Sydney.init is 1>>
+		<<set $englishPlay to "ongoing">><<set $englishPlayDays to (14 + (7 - Time.weekDay))>>
+		<<englishplaystart>>
+
+		<<npc Doren>><<person1>>
+		"Right everyone, look and listen," Doren speaks, <<his>> voice commanding all students to keep quiet.
+		<br><br>
+
+		"As you all know, Christmas is right around the corner, and we'd like to celebrate the occasion by setting up a little show to end the semester and put everyone in a festive mood. I've been in contact with a theatre company I used to work with, and our <<nnpc_Title "Leighton">> has given us the green light to set up a series of plays you can perform."
+		<br><br>
+
+		"Participation is not mandatory, but highly encouraged. Besides, I'm sure your parents would love to see it," <<he>> giggles. "If anyone's interested in giving acting a try, come over here and write your name down on this paper here."  <<He>> places a form down on <<his>> desk.
+		<br><br>
+
+		<<if $kylarenglishstate is "watching">>
+			Kylar watches you intently, as if waiting to see your reaction to Doren's announcement.
+			<br><br>
+		<<elseif $kylarenglishstate is "active">>
+			Kylar places <<nnpc_his "Kylar">> hand on your back. "It sounds fun," <<nnpc_he "Kylar">> whispers. "Could we give it a try?"
+			<br><br>
+		<</if>>
+
+		<<link [[Approach Doren's desk|English Play Intro Accept]]>><</link>>
+		<br>
+		<<link [[Stay seated|English Play Intro Ignore]]>><</link>>
+		<br>
+		<<exit>>
+	<</if>>
+
+	<<if $halloween is 1 and $kylarenglishstate is "active" and $halloween_kylar is undefined>>
+		<<npc Kylar>><<person1>>
+		<<if Time.monthDay is 31>>
+			Kylar leans closer. "There's something I want to show you tonight," <<he>> whispers. "Meet me in the park, after <span class="gold"><<ampm 21 00>>.</span>"
+		<<else>>
+			Kylar leans closer. "There's something I want to show you on Halloween," <<he>> whispers. "Meet me in the park, after <span class="gold"><<ampm 21 00>>.</span>"
+		<</if>>
+		<br><br>
+
+		<<He>> wears a small smile for the rest of the lesson.
+		<<set $halloween_kylar to 1>>
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+		<<exit>>
+	<</if>>
+
+	<<cleareventpool>>
+
+	<<addinlineevent "englishTopic" 1>>
+		<<npc Doren>><<person1>>
+		Doren gets the class's attention.<br><br>
+		<<if Time.days % 42 gte 39>> /* every 6 weeks: day 39-41, 80-83, ... */
+			"We're almost done with this <<print either("topic","text","book","play")>> now," <<he>> says. "Time to finish it off. It will be on the exam."
+			<br><br>
+			The class break into small groups to review the topic, while Doren moves between the groups asking and answering questions.
+			<<if currentSkillValue('english') lte 300>><br><br>Your group are struggling, so Doren spends extra time with you.<<genglish>><<englishskill>><br><br>
+			<<elseif currentSkillValue('english') gte 700>>Doren listens to your group for a little while, nods and smiles.<br><br>"Excellent work! Carry on." <<lstress>><<stress -6>><br><br>
+			<</if>>
+		<<elseif Time.days % 42 lte 2>> /* every 6 weeks: day 1-2, 42-44, ... */
+			"Listen up," <<he>> says. "We're starting a new topic. <<print either("This one's fun. I think you're going to like it.","This module is one of my favourites. I really hope you like it too.","This one is tough - I'm not gonna lie - but it's worth the work. You can learn so much from it.")>>"
+			<br><br>
+			Doren outlines the upcoming content.
+			<<if currentSkillValue('english') lte 200>><<print either("It looks tough.","You barely understand a word.","You try to listen, but nothing goes in.")>><<gstress>><<stress 6>>
+			<br><br>
+			<<elseif currentSkillValue('english') gte 600>>It looks <<print either("interesting.","fun.","different, but in a good way.")>><<lstress>><<stress -6>><br><br>
+			<<else>>It looks okay.
+			<</if>>
+		<<else>>
+			<<generates2>><<generateyp3>>
+			<<if $rng % 3 == 0>>
+				<<set _has_feelings_towards to either("clearly has a crush on","is clearly into","obviously has the hots for","is obviously horny for","openly flirts with")>>
+				<<set _causing_a_consequence to either("making the scene rather awkward.","making the scene rather cute.","giving the scene sexual overtones.")>>
+				<<set _hilarity_ensues to either('A student coughs, "Get a room!"','Some students jeer and tease them.')>>
+			<<elseif $rng % 3 == 1>>
+				<<set _has_feelings_towards to either("openly despises","clearly can't stand","hates")>>
+				<<set _causing_a_consequence to either("making the scene very uncomfortable to watch.","making the scene far more tense.","making the whole scene quite confusing.")>>
+				<<set _hilarity_ensues to either('The audience watch in awkward silence.','Several students find this hilarious.','An awkward silence hangs over the room.')>>
+			<<else>>
+				<<set _has_feelings_towards to "works well with">>
+				<<set _causing_a_consequence to "and together they perform a faithful rendition of the scene.">>
+				<<set _hilarity_ensues to either("Most of the class pay attention.","The class watch with interest.","Most students watch, but a few doodle in their books.")>>
+			<</if>>
+			Under Doren's direction, a <<person2>><<person>> and a <<person3>><<person>> are asked to act out an important scene from the text you are studying.
+			The <<person>> _has_feelings_towards the <<person2>><<person>>, _causing_a_consequence<br>
+			_hilarity_ensues
+		<</if>>
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishRecite" 1>>
+		<<npc Doren>><<person1>>
+		<<if $rng % 3 == 0>>
+			The students take turns reciting verses of a poem. Doren sometimes recites a verse personally, <<his>> resounding voice commanding the class's attention.
+		<<elseif $rng % 3 == 1>>
+			The students take turns acting out scenes of a play. Doren encourages students to really commit to the role, occasionally giving <<his>> own booming rendition of an important line.
+		<<else>>
+			Doren plays the chief villain from the current study-book. The class need to play police interviewers, and take turns asking questions which Doren answers in character.
+		<</if>>
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishNature" 1>>
+		<<if Time.season is "summer" and $weather isnot "rain">>
+			<<npc Doren>><<person1>>
+			A student squeals as a wasp flies in a window and lands on their book. Doren holds up a calming hand.<br>
+			"Ignore it," <<he>> says. "It'll be gone soon enough."<br>
+			It <<if $rng % 2 == 0>>stings someone<<else>>starts to fly around the room<</if>> and the class falls into chaos.
+			<<if $kylarenglishstate is "active">>One time, it comes toward you and Kylar leaps to your defence. <</if>>
+			<br><br>
+			Finally Doren chases it away, and the lesson can resume.
+		<<elseif Time.season is "summer">>
+			<<npc Doren>><<person1>>
+			"Poetry," Doren says. "Finds inspiration in the natural world."
+			<br>
+			"Look at that storm outside," <<he>> says. "Those brooding clouds. The growling thunder. Take a moment to reflect on what you see. What you feel. See that?"<br>
+			A few seconds pass, then a rumble of thunder.<br>
+			"The raw, animal fury of nature," Doren grins widely. "Now capture it. Adjectives, obviously, but don't neglect verbs."<br>
+			You write.
+		<<elseif Time.season is "winter">>
+			<<if $rng % 3 == 0>>
+				<<generates1>><<person1>>
+				A window won't close and is letting in a cold wind from outside. One student's fingers have turned blue.<br>
+				Doren sends a <<person>> to find the caretaker.
+				<br><br>
+				Students shiver as the lesson continues.
+			<<else>>
+				<<generates1>><<person1>>
+				The heating is set far too high and the room is incredibly hot. One student complains of feeling faint.<br>
+				Doren sends a <<person>> to find the caretaker.
+				<br><br>
+				The class sweat and fan themselves with books as Doren's lesson continues.
+			<</if>>
+		<<else>>
+			<<npc Doren>><<person1>>
+			"Poetry," Doren says. "Finds inspiration in the natural world."
+			<br>
+			<<if Time.season is "spring">>
+				<<He>> brings around some blossoms from the park. One student starts sneezing.
+			<<elseif Time.season is "autumn">>
+				<<He>> brings around some fallen leaves from the park in all different colours.
+			<</if>>
+			<br><br>
+
+			"Look at these," <<he>> says. "Take a moment to reflect on what you see. What you think. What you feel. And then write."<br>
+			You write.
+		<</if>>
+		<br><br>
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishGroups">>
+		Doren has the class split into small groups.
+
+		<<if $kylarenglishstate is "active">>
+			No one wants to group up with Kylar, so the pair of you work alone.<<endevent>><<npc Kylar>><<person1>> <<He>> is overjoyed.
+			<<glove>><<npcincr Kylar love 1>>
+		<<elseif $cool gte 160>>
+			People gravitate to you, wanting to be part of your group.
+			<<lstress>><<ltrauma>><<stress -4>><<trauma -2>>
+		<<elseif $cool lt 40>>
+			No one wants to group up with you, so you sit alone in the corner. Doren gives you extra attention as a result.
+			<<gtrauma>><<gstress>><<genglish>><<trauma 2>><<stress 2>><<englishskill>>
+		<<else>>
+			You join a group and work together on a small activity.
+		<</if>>
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<if $kylarenglishstate is "active" and $rng % 5 == 0>> /* If Kylar is active, Kylar event will win 80% of the time. */
+		<<addinlineevent "kylarMove" 2>>
+			<<npc Doren>><<person1>> Doren approaches your table. "You okay there, <<lass>>?" <<he>> asks you. <<He>> glances at Kylar, who's absorbed in a sketch of you in <<nnpc_his "Kylar">> sketchbook.
+			<br><br>
+
+			<<link [[Shake your head|English Kylar Moved]]>><</link>>
+			<br>
+			<<link [[Nod|English Kylar Nod]]>><</link>>
+			<br>
+		<</addinlineevent>>
+	<<elseif Time.minute lte 40>> /* first session only, mostly only runs when Kylar inactive */
+		<<addinlineevent "englishCloset" 1>>
+			Doren goes to collect something from the supply closet at the back and is surprised to find
+			<<generates1>><<generateyp2>>a <<person1>><<person>> and a <<person2>><<person>>
+			<<if $awarelevel gte 1>>
+				<<if $purity gte ((1000/7) * 5)>>
+					<<print either("fooling around together","getting intimate with each other","doing some heavy petting")>>
+				<<else>>
+					<<print either("pawing at each other","doing the nasty","knocking boots","getting off with each other")>>
+				<</if>> in there.
+			<<else>>
+				<<if $rng%2 == 0>>
+					playing in there.
+					<br><br>
+
+					How odd. What kind of game they could possibly play in such a small space? Maybe they were fighting - they both look sweaty and disheveled.
+					<br><br>
+				<<else>>
+					hiding in there.
+					<br><br>
+
+					How odd. Why would anyone hide in a supply closet? They both look sweaty and disheveled. Maybe they were arguing.
+					<br><br>
+				<</if>>
+			<</if>>
+			Doren orders them to their seats. Someone whistles.
+			<br><br>
+
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "englishHelp" 1>>
+		<<npc Doren>><<person1>> Doren approaches your table and asks how you're getting on.
+		<br><br>
+
+		<<link [[Ask for help|English Event1]]>><<set $phase to 1>><<stress 2>><<englishskill>><</link>><<gstress>><<genglish>>
+		<br>
+		<<link [[Say you're fine|English Event1]]>><<set $phase to 0>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishAct" 1>>
+		<<npc Doren>><<person1>>
+		Doren asks a couple of students to act out a scene from the play you are studying.<br>
+		<<if $rng gte 38>>
+			They mostly clown around, playing for laughs and making the characters sound funny. Doren rolls <<his>> eyes, but laughs along.<br>
+			It's pretty funny. <<lstress>>
+		<<elseif $rng gte 34>>
+			They act it out excellently, really bringing the scene to life.<br>
+			<<if currentSkillValue('english') lt 700>>You learned something from it.<<genglish>><<englishskill>><<else>>You enjoyed it a lot.<</if>>
+		<<else>>
+			They flatly read out lines from the book.<br>
+			Doren tactfully moves the lesson forward before things start to drag.
+		<</if>>
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishExplain" 1>>
+		Doren explains and demonstrates
+		<<if $rng % 5 == 0>>
+			grammatical rules using the whiteboard.
+		<<elseif $rng % 5 == 1>>
+			rhetoric and persuasive language.
+		<<elseif $rng % 5 == 2>>
+			different vocabulary and diction - showing how skillful word use can add real power to your communication.
+		<<elseif $rng % 5 == 3>>
+			body language and voice techniques.<br>
+			"Sometimes it's less what you say, more how you say it."
+		<<else>>
+			different techniques of humour - giving examples where humour is used to diffuse tense situations, to undermine debate opponents, or just for comic effect.
+		<</if>>
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishWrite" 2>>
+		<<npc Doren>><<person1>>
+		<<if $rng % 2 == 0>>
+			Doren hands out worksheets for the class to complete. <<He>> doesn't mind the class talking amongst themselves while they work, resulting in a lively atmosphere.
+		<<else>>
+			Doren gives everyone 10 minutes to write a limerick.
+			<<if currentSkillValue('english') gte 400>>
+				<<if $promiscuity gte 65>>
+					You write a shockingly <<print either("filthy","dirty","blue","lewd")>> limerick about a sly <<girl>> from <<print either("Inchbare.","Glenridding.","Knutsford.")>><br>
+					Several students laugh when you read the final line. Doren winces, and quickly moves on to the next student.
+					<<gcool>><<status 1>>
+				<<elseif $promiscuity gte 35>>
+					You write a <<print either("rude","sexy","lewd")>>
+					<<if $exhibitionism gte 33>>
+						limerick about a <<girl>> who's allergic to clothes.
+					<<elseif $masochism_level gte 2>>
+						limerick about a mischievous <<girl>> from Bank (who desperately needed a spank).
+					<<elseif $arousal gte (($arousalmax / 5) * 3)>>
+						limerick about a <<girl>> from Wick.
+					<<elseif $skulduggery gte 500>>
+						limerick about a lusty young thief from Kilmarnock.
+					<<else>>
+						limerick.
+					<</if>><br>
+					Several students laugh when you read it out.
+				<<else>>
+					You write a
+					<<if $skulduggery gte 500>>
+						limerick about a thief who stole a gem.
+					<<elseif $exhibitionism gte 33>>
+						limerick about a <<girl>> who lost <<pher>> clothes.
+					<<elseif $money lte 50000>>
+						limerick about an orphan <<girl>> who won lots of money.<br>
+						You wish it was you.
+					<<else>>
+						passable limerick.
+					<</if>><br>
+					<<if currentSkillValue('english') gte 600>>
+						Doren <<print either("smiles","nods")>>  approvingly and moves along to the next student.
+					<<else>>
+						Doren nods and moves along to the next student.
+					<</if>>
+				<</if>>
+			<<else>>
+				You struggle and do not manage to finish.<br>
+				Some of the other students made funny limericks.
+			<</if>>
+		<</if>>
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<runeventpool>>
+<</widget>>
+
+<<widget "eventsenglishsleep">>
+	<<cleareventpool>>
+	<<pantsable>>
+
+	<<addinlineevent "englishCaught">>
+		<<npc Doren>><<person1>>
+		A gentle but firm tap on the head wakes you. You bolt upright and see Doren standing in front of you. <<His>> arms are crossed, but <<he>> doesn't say anything before moving back to the front of the class. There is a detention slip on your desk. <<ltiredness>><<detention 2>><<gdelinquency>>
+		<br><br>
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+	<</addinlineevent>>
+
+	<<addinlineevent "englishNotCaught">>
+		<<npc Doren>><<person1>>
+		Your eyes snap open. You must have fallen asleep. You casually lift your head and stifle a yawn, pretending nothing happened. Doren asks the student next to you to read a passage.
+		<<if $worn.handheld.name isnot "naked" and !$worn.handheld.type.includes("bookbag")>>
+			Doren calls on you next, but you don't have your book with you. Doren shakes <<his>> head and moves on to the next student. <<detention 1>><<gdelinquency>>
+		<<else>>
+			You just manage to find your place as Doren calls on you next.
+		<</if>>
+		<br><br>
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+	<</addinlineevent>>
+
+	<<if random(1, 400) gte $cool>>
+		<<addinlineevent "englishTattletale">>
+			<<npc Doren>><<person1>>
+			"<<Sir>>," says a <<generates2>><<person2>><<person>>. "<<pShes>> sleeping in class!"
+			<br><br>
+			The voice of the <<personsimple>> wakes you. You raise your head from the desk and see the teacher looking back at you. Doren doesn't say anything as <<person1>><<he>> drops a pink detention slip on your desk.
+			<br><br>
+			<<person2>>
+			<<if $submissive gte 1150>>
+				You bow your head in embarrassment while the <<person>> smiles, all too happy to get you in trouble.
+			<<elseif $submissive lte 850>>
+				You glare at the <<person>>. <<His>> smile falters under your withering gaze, as <<he>> realises telling the teacher might not have been the smartest idea.
+			<<else>>
+				You frown at the <<person>>. <<He>> smiles back, all too happy to get you in trouble.
+			<</if>>
+			<<ltiredness>><<detention 2>><<gdelinquency>>
+			<br><br>
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if _pantsable is 1 or _upskirt is 1>>
+		<<addinlineevent "englishPantsing">>
+			Your eyes snap open to the sound of laughter. It only takes you an instant to realise what happened. Your $worn.lower.name <<lowerhas>> been <<print _upskirt is 1 ? "flipped up" : "pulled down">>, <span class="lewd">exposing your <<undies 2>></span>. <<lowerstrip>>
+			<br><br>
+
+			<<link [[Cover yourself|English Pantsing]]>><<set $phase to "cover">><</link>><br>
+			<<if $worn.under_lower.type.includes("naked") and $exhibitionism gte 75>>
+				<<link [[Show off|English Pantsing]]>><<set $phase to "flaunt">><</link>><<exhibitionist5>>
+			<<elseif !$worn.under_lower.type.includes("naked") and $exhibitionism gte 55>>
+				<<link [[Show off|English Pantsing]]>><<set $phase to "flaunt">><</link>><<exhibitionist3>>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $trauma gte (($traumamax / 5) * 3)>>
+		<<addinlineevent "englishTrauma">>
+			<<link [[Next|English Dream]]>><<endevent>><</link>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $kylarenglishstate is "active">>
+		<<addinlineevent "englishKylarWake">>
+			<<npc Kylar>><<person1>>
+			<<if C.npc.Kylar.rage gte 80>>
+				You wake with a start as something cold presses against you. The flat side of Kylar's knife is pressed against your cheek, and you're instantly awake. <<ltiredness>><<gstress>><<stress 6>> "You're awake, <<kylar_pet_name>>!" Kylar whispers, eyes bright and intense as <<he>> stares at you. <<He>> turns the knife and tenderly runs the sharp edge of it down your jawline. "Were you dreaming of me?"
+				<br><br>
+
+				You stay perfectly still, but your eyes dart to the front of the room. Kylar withdraws the knife, hiding it under <<his>> desk before Doren can notice anything. "I dream of you every night. We're going to-"
+				<br><br>
+
+				You're saved from engaging further when Doren calls on Kylar to read a passage aloud. You don't know whether <<nnpc_he Doren>> saw anything, but you're grateful nonetheless.
+
+			<<elseif C.npc.Kylar.rage gte 40>>
+				You wake with a start as you feel someone tugging at your <<bottoms>>. Kylar quickly pulls away from you. You catch a glimpse of a scrap of fabric in <<his>> hand, which <<he>> surreptitiously slips into <<his>> pocket.
+				<br><br>
+				<<set $worn.lower.integrity -= 10>>
+				<<if $worn.lower.integrity lte 0>>
+					You feel a breeze on your crotch, and you look down in horror to see the tattered remains of your <<bottoms>>. The remaining fabric falls to the floor, drawing the attention of your classmates. "Oh my god!" the student next to you shouts, and all heads swivel to look at you.
+					<<endevent>>
+					<br><br>
+					<<englishNudeReactions>>
+					<br><br>
+					Doren rushes over with a towel. "How did this happen? Never mind. Let's just get you covered," <<nnpc_he Doren>> says. The towel covers little, but will get you through the rest of the class. Despite Doren's presence, your classmates continue whispering about you.
+					<<towelup>>
+				<<else>>
+					Your <<bottoms>> <<lowerhas>> been cut. Despite looking worse for the wear, <<lowerit>> <<print $worn.lower.plural ? "remain" : "remains">> mercifully intact.
+				<</if>>
+				<<stress 6>><<gstress>><<npcincr Kylar lust 3>><<glust>>
+			<<elseif C.npc.Kylar.love gte 50>>
+				"M-<<kylar_pet_name>>?" You wake with a start to find Kylar staring at you. "You looked so <<print $player.gender_appearance is "m" ? "handsome" : "beautiful">> while you slept, I didn't want to wake you, but..." <<he>> whispers.
+				<br><br>
+
+				You nod your gratitude to Kylar and casually sit up straight, pretending nothing happened. Doren is still talking, none the wiser. Kylar smiles.
+			<<else>>
+				You wake with a start as you feel someone tugging at your <<bottoms>>. Kylar watches you intently.
+				<br><br>
+				You casually lift your head and stifle a yawn, pretending nothing happened. Kylar removes <<his>> hand when you sit up. Doren is still talking, none the wiser.
+			<</if>>
+			<br><br>
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $drunk gte 1>>
+		<<addinlineevent "englishDrunk">>
+			<<npc Doren>><<person1>>
+			A gentle but firm tap on the head wakes you. You groan in protest as each tap sends sharp pangs through you. <<gpain>><<pain 3>> When you rouse yourself, Doren's standing before you, <<his>> arms crossed. <<His>> expression softens when <<he>> notices your inebriation.
+			<br><br>
+
+			<<if $dorenintro gte 1>>
+				"I don't know what is going on with you, but I can't allow this." <<He>> gives you a concerned look, but gives you detention all the same.
+			<<else>>
+				"Have things really gotten that bad?" <<he>> asks in a soft voice. "I'm still going to have to give you detention, but remember, you can always come talk to me."
+			<</if>>
+			<<ltiredness>><<detention 6>><<ggdelinquency>>
+
+			<br><br>
+			<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<runeventpool>>
+<</widget>>
+
+<<widget "englishstart">>
+	<<endevent>>
+	<<set $_kylarLocation to getKylarLocation()>>
+	<<set $_isStalking to $_kylarLocation.area is "stalking">>
+	<<if $_kylarLocation.area is "english" or $_isStalking>>
+		<<npc Kylar>><<person1>>
+		<<set _kylar to statusCheck("Kylar")>>
+		<<if $kylarenglish is 0>>
+			<<set $kylarenglishstate to "watching">>
+			<<if $_isStalking>>
+				You take your seat. You see Kylar staring at you as they enter the room. <<He>> looks away immediately.
+			<<else>>
+				You feel Kylar stare at you as you take your seat, but <<he>> looks away whenever you glance at <<him>>.
+			<</if>>
+			<br><br>
+
+			<<if _kylar.love gte 30>>
+				Chair legs scrape across the ground. Kylar shuffles through the room, books clutched to <<his>> chest and eyes fixed on the empty seat beside you. <<He>> almost makes it. Then a <<generatey2>><<person2>><<person>> shoves <<person1>><<him>> aside and takes the seat for <<person2>><<himself>>.
+				<<if _kylar.love lt 60>>
+					Kylar glares at the <<person>>, but returns to <<person1>><<his>> original seat without a word.
+					<br><br>
+				<<else>>
+					<<He>> doesn't give Kylar a single glance.
+					<br><br>
+
+					Someone screams. <<person1>>Kylar remains stood, a <span class="red">knife</span> in <<his>> hand. <<He>> glares at the <<person2>><<person>> through <<person1>><<his>> dark fringe. The <<person2>><<person>> scrambles backwards over the desk, knocking it over and tumbling to the ground. The other students fall over each other trying to reach the door.
+					<br><br>
+
+					<<npc Doren 3>><<person3>>
+					Doren leaps onto <<his>> table and roars. The screams stop. The scrambling stops. Kylar drops the knife. Everyone stares at Doren, who climbs down and scoops up the weapon. <<He>> grips Kylar's arm. "You're being a right pain," <<he>> says. "Come on, let's not delay the class long." Kylar hangs <<person1>><<his>> head as <<hes>> pulled from the room.
+					<br><br>
+
+					The class breaks into nervous laughter as the door shuts. Doren soon returns, without Kylar. Students pester <<person3>><<him>> for information, but <<he>> won't say a word.
+					<br><br>
+					<<if $loveInterest.primary is "None">>
+						<<set $loveInterest.primary to "Kylar">>
+						<span class="gold">Kylar is now your love interest! You aren't sure if you agreed to this.</span>
+						<br><br>
+					<<else>>
+						<span class="gold">Kylar can now be claimed as your love interest! You aren't sure if you agreed to this. <br>You can change your love interest in the "Attitudes" menu.</span>
+						<br><br>
+					<</if>>
+
+					<<set $kylarenglish to 1>>
+					<<set $kylarenglishstate to "absent">>
+				<</if>>
+			<</if>>
+		<<elseif $kylarenglish is 1>>
+			<<if _kylar.love gte 60>>
+				<<set $kylarenglish to 2>><<set $kylarenglishstate to "active">>
+
+				<<if $_isStalking>>
+					You take your seat. You see Kylar staring at you as they enter the room.
+				<<else>>
+					You feel Kylar stare at you as you take your seat.
+				<</if>>
+				<<He>> stands and walks across the classroom, eyes fixed on the desk beside you.
+
+				No one stops <<him>>.
+				<<His>> breathing is heavy as <<he>> sits.
+				<br><br>
+
+				<<set $_specialOptions to true>>
+				<<link [[Sit somewhere else|English Kylar Move]]>><<npcincr Kylar love -5>><</link>><<lllove>>
+				<br>
+				<<link [[Stay seated|English Lesson]]>><<endevent>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><</link>><<glove>><<lksuspicion>>
+				<br>
+			<<else>>
+				<<set $kylarenglishstate to "absent">>
+			<</if>>
+
+		<<elseif $kylarenglish is 2>>
+			<<if _kylar.love gte 60>>
+				<<set $kylarenglishstate to "active">>
+
+				<<if $_isStalking>>
+					You take your seat. You see Kylar staring at you as they enter the room.
+				<<else>>
+					You feel Kylar stare at you as you take your seat.
+				<</if>>
+				<<He>> stands and walks across the classroom, eyes fixed on the desk beside you. <<His>> breathing is heavy as <<he>> sits.
+				<br><br>
+
+				<<set $_specialOptions to true>>
+				<<link [[Sit somewhere else|English Kylar Move]]>><<npcincr Kylar love -5>><</link>><<lllove>>
+				<br>
+				<<link [[Stay seated|English Lesson]]>><<endevent>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><</link>><<glove>><<lksuspicion>>
+				<br>
+
+			<<else>>
+				<<set $kylarenglishstate to "watching">>
+
+				<<if $_isStalking>>
+					You take your seat. You see Kylar staring at you as they enter the room. <<He>> looks away immediately.
+				<<else>>
+					You feel Kylar stare at you as you take your seat, but <<he>> looks away whenever you glance at <<him>>.
+				<</if>>
+				<br><br>
+			<</if>>
+		<<else>>
+			<<set $kylarenglish to 0>><<set $kylarenglishstate to "watching">>
+			You spot Kylar sat alone in the back corner. <<nnpc_He "Kylar">> meets your gaze, blushes and looks away.
+			<br><br>
+		<</if>>
+	<<else>>
+		<<set $kylarenglishstate to "absent">>
+	<</if>>
+
+	<<if !$_specialOptions>>
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "englishNudeReactions">>
+	<<generates1>><<generates2>><<person1>>
+	<<if playerChastity() and $worn.under_lower.type.includes("naked")>>
+		"What the fuck is <<pshe>> wearing? <<print $worn.genitals.name is "chastity parasite" ? "Is that a parasite?" : "Is <<pshe>> seriously so horny that <<pshe>> needs to be locked up? What a perv,">>" a <<person>> comments. <<He>> looks both fascinated and weirded out as <<he>> stares at your crotch.
+
+	<<elseif $worn.under_lower.type.includes("naked")>>
+		<<if $player.penisExist and $player.vaginaExist>>
+			"<<pShes>> got a dick and a cunt? <<print $schoolrep.herm gte 3 ? "I guess the rumours are true." : "What a freak!">>" A <<person>> snickers. <<He>> nudges <<his>> friend and points at you.
+
+		<<elseif $player.gender isnot $player.gender_appearance and $NudeGenderDC gt 0>>
+			"Is that a <<genitals 2>>? <<pShe>>'s actually a
+			<<genderswapPlayer>>
+				<<girl>>!" a <<person>> says. "<<print $schoolrep.crossdress gte 3 ? "I guess the rumours were true after all." : "I had no idea <<pshe>> was a crossdresser!">>"
+			<<genderswapPlayer>>
+
+		<<else>>
+			"<<pShes>> not wearing any underwear!" a <<person>> says. "What a perv."
+			<<if $player.penisExist and ($player.penissize gte 4 or $player.penissize lte 1)>>
+				<br><br>
+				<<Penisremarkquote>> a <<person2>><<person>> adds with a giggle.<<incggpenisinsecurity>>
+			<<elseif $vaginaWetness gte 75>>
+				<br><br>
+				"<<pShes>> dripping wet," a <<person2>><<person>> adds with a smirk. "Think <<pshes>> getting off on this?"
+			<<elseif setup.bodyliquid.combined("vagina") gte 2>>
+				<br><br>
+				"Is that cum leaking out of <<pher>> cunt?" a <<person2>><<person>> adds, looking <<print either("revolted", "queasy", "aroused in spite of <<himself>>", "intrigued")>>.
+				<<if playerBellyVisible()>>
+					"No wonder she got pregnant."
+				<<elseif $pregnancyspeechdisable is "f">>
+					"That <<bitch>> is gonna get knocked up, if <<pshes>> not already."
+				<<else>>
+					"What a slut."
+				<</if>>
+			<<elseif setup.bodyliquid.combined("anus") gte 2>>
+				<br><br>
+				"Is that cum leaking out of <<pher>> asshole?" a <<person2>><<person>> adds, looking <<print either("revolted", "queasy", "aroused in spite of <<himself>>", "intrigued")>>. "What a slut."
+			<</if>>
+		<</if>>
+		<<if ["watching","active"].includes($kylarenglishstate)>>
+			<br><br>
+			Kylar manages to tear <<nnpc_his "Kylar">> eyes away from you long enough to glower at the other students.
+			<<set $genderknown.pushUnique("Kylar")>>
+		<</if>>
+		<<schoolrep_naked>>
+	<<else>>
+		"Cute <<undies 2>>," a <<person>> says.
+	<</if>>
+<</widget>>
+
+:: Widgets Events History [widget]
+<<widget "eventshistory">>
+	<<cleareventpool>>
+
+	<<addinlineevent "historyCritique">>
+		<<npc Winter>><<person1>>
+		<<if currentSkillValue("history") gte 600>>
+			"Good," <<he>> nods, reading over your shoulder. "Good work."<<stress -2>><<lstress>>
+			<br><br>
+
+			<<link [[Next|History Lesson]]>><<endevent>><</link>>
+		<<else>>
+			You sense <<him>> reading over your shoulder.
+			<br>
+			<<He>> tuts loudly. "I guess we need to go over that part again."
+			<br><br>
+			Someone nearby snickers.
+			<<stress 2>><<gstress>>
+			<br><br>
+
+			<<link [[Next|History Lesson]]>><<endevent>><</link>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<if $worn.neck.collared is 1>>
+		<<addinlineevent "historyCollar" 1>>
+			<<npc Winter>><<person1>>Winter stops beside your desk. "What is that around your neck?" <<he>> asks.
+			<br><br>
+
+			<<link [[Answer|History Lesson Collar]]>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
+			<br>
+			<<link [[Conceal it|History Lesson Conceal]]>><<detention 3>><</link>><<gdelinquency>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if ($cat gte 6 and $transformationParts.cat.ears isnot "hidden") or ($wolfgirl gte 4 and $transformationParts.wolf.ears isnot "hidden") or ($fox gte 4 and $transformationParts.fox.ears isnot "hidden") or ($demon gte 6 and $transformationParts.demon.horns isnot "hidden")>>
+		<<addinlineevent "historyTF" 1>>
+			<<npc Winter>><<person1>>Winter stops beside your desk. "What are these on your head?" <<he>> asks.
+			<br><br>
+
+			<<if $demon gte 6>>
+				<<link [[Answer honestly|History Lesson Horns]]>><</link>>
+			<<else>>
+				<<link [[Answer honestly|History Lesson Ears]]>><</link>>
+			<</if>>
+			<br>
+			<<link [[Make excuse|History Lesson Excuse]]>><</link>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $robinhistory is "seat">>
+		<<addinlineevent "historyRobin" 1>>
+			<<npc Robin>><<generatey2>><<person2>>
+			A paper airplane flies across the room, hitting Winter in the back.
+			<br><br>
+			<<person1>>"It was <<him>>," says a <<person2>><<person>>, pointing at Robin.
+			<br><br>
+			<<if random(1, 2) is 2>>
+				Winter glares at Robin. "Out. Now."
+				<br><br>
+				Robin freezes. "B-but I-I-"
+				<br><br>
+				"I won't tolerate that kind of behaviour in my classroom." Robin hangs <<person1>><<his>> head, and pushes <<his>> chair away from the desk.
+				<br><br>
+
+				<<link [[Defend Robin|History Robin Defend]]>><<npcincr Robin love 1>><<detention 1>><</link>><<gdelinquency>><<glove>>
+				<br>
+				<<link [[Stay quiet|History Robin Quiet]]>><<npcincr Robin dom -1>><</link>><<ldom>>
+				<br>
+			<<else>>
+				Winter glares at the <<person>>. "Out. Now." Thwarted, the <<person>> rises from <<his>> seat and leaves the room.
+				<br><br>
+				<<link [[Next|History Lesson]]>><<endevent>><</link>>
+				<br>
+			<</if>>
+		<</addinlineevent>>
+
+		<<addinlineevent "historyRobinAsk" 1>>
+			<<npc Robin>><<generatey2>><<person2>>
+			A <<person>> leans over Robin's desk, grinning. <<His>> friends watch <<him>>. <<He>> asks something, so quiet you can barely make out the words. "Are you still a virgin?"
+			<br><br>
+
+			<<if C.npc.Robin.dom gte 80>>
+				"That's none of your business," Robin answers.
+				<br><br>
+			<<else>>
+				Robin looks uncomfortable, and doesn't answer.
+				<br><br>
+			<</if>>
+
+			The <<person>> returns to <<his>> friends. "I wonder who took it," one says aloud. <<person1>>"Doesn't <<he>> seem so innocent?"
+			<br>
+			<<if $robinromance is 1>>
+				One of them whispers and points at you.
+			<<else>>
+				"Was it someone in this class?" another whispers.
+			<</if>>
+			<br>
+			More furtive whispering. You make out some. "I don't have a crush on <<him>>!"
+			<br>
+			<<rng 4>>
+			<<if $rng is 4>>
+				"I bet <<hes>> a great kisser."
+			<<elseif $rng is 3>>
+				"Liar."
+			<<elseif $rng is 2>>
+				"You should ask <<him>> out."
+			<<else>>
+				"<<Hes>> so cute. Especially when <<he>> blushes."
+			<</if>>
+			<br><br>
+			They continue to fawn as Robin sinks into <<his>> chair.
+			<br><br>
+
+			<<link [[Next|History Lesson]]>><<endevent>><</link>>
+			<br>
+		<</addinlineevent>>
+
+		<<addinlineevent "historyRobinGarment" 1>>
+			<<npc Robin 1>>
+			<<npc Winter 2>><<person2>>
+			Winter asks Robin to come to the front of the class. "I have some historical garments I need modelled. They're in your size."
+			<br><br>
+
+			<<if C.npc.Robin.trauma gte 20>>
+				Robin stares at the window, forcing Winter to repeat <<himself>>. Robin shuffles from <<person1>><<his>> seat and disappears behind the screen.
+				<br><br>
+
+				<<He>> reappears a few moments later, wearing a <<print either("dress", "soldier's uniform")>>. <<He>> stares at the carpet, and doesn't say a word.
+				<br><br>
+
+				Winter begins discussing the outfit, but Robin's demeanor makes the class uncomfortable. You included. Winter cuts the demonstration short.
+				<br><br>
+
+				"Please change and come with me," Winter says in a soft voice. Robin does as instructed, and follows Winter outside.
+				<br><br>
+
+				Winter returns without Robin a few minutes later. The lesson continues.
+				<br><br>
+				<<set $robinhistory to "missing">>
+			<<else>>
+				Robin nods, and walks behind the screen at the corner of the classroom.
+
+				<<if random(1, 2) is 2>>
+					<<person1>><<He>> reappears wearing a <<nnpc_gendery "Robin">>'s traditional outfit, and a genuine smile. The segment proves to be interesting.
+					Winter asks Robin to perform a small show to demonstrate the outfit's historical significance, acting appropriately per <<his>> attire.
+					<br><br>
+
+					Robin changes back, and sits beside you, still smiling.
+				<<else>>
+					Winter asks Robin to hurry up. Robin's head peeks around the screen for a moment.
+					<br><br>
+					"I-I don't know if I can wear this," <<person1>><<he>> replies. "It's for <<print ($pronoun is "m" ? "girls" : "boys")>>."
+					<br><br>
+
+					"Don't be bashful," Winter says. "We have a lot to cover."
+					<br><br>
+
+					Robin steps out, wearing an old
+					<<if $pronoun is "m">>
+						dress. The skirt is quite short.
+					<<else>>
+						soldier's uniform. It leaves a lot of <<his>> chest exposed.
+					<</if>>
+					<br><br>
+
+					The segment proves interesting, though Robin is uncomfortable.
+					Winter asks <<him>> to perform a small show to demonstrate the outfit's historical significance, acting appropriately per <<his>> attire.
+					Robin plays along, but is careful not to let the skimpy garment reveal too much.
+					<br><br>
+
+					Robin changes back, and sits beside you, looking relieved.
+				<</if>>
+			<</if>>
+			<br><br>
+			<<link [[Next|History Lesson]]>><<endevent>><</link>>
+		<</addinlineevent>>
+
+		<<addinlineevent "historyRobinAsk" 1>>
+			<<npc Robin>><<generatey2>><<person2>>
+			A <<person>> leans between you and Robin. "You two make such a cute couple," <<he>> teases with a grin. "Are you dating?"
+			<br><br>
+
+			<<if C.npc.Robin.trauma gte 20>>
+				Robin doesn't react. <<person1>><<He>> just stares down at <<his>> desk. <<He>> doesn't need this right now. You shoo the <<person2>><<person>> away.
+				<br><br>
+
+				<<link [[Next|History Lesson]]>><<endevent>><</link>>
+				<br>
+			<<else>>
+				<<if $robinromance is 1>>
+					<<link [[Say yes|History Robin Yes]]>><</link>>
+					<br>
+					<<link [[Say no|History Robin No Lie]]>><<npcincr Robin love -3>><<npcincr Robin dom -1>><</link>><<lllove>><<ldom>>
+					<br>
+				<<else>>
+					<<link [[Say yes|History Robin Yes Lie]]>><</link>>
+					<br>
+					<<link [[Say no|History Robin No]]>><</link>>
+					<br>
+				<</if>>
+				<<link [[Stay silent|History Robin Silent]]>><</link>>
+				<br>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "historyTease" 1>>
+		<<generates1>><<person1>>You catch a normally shy <<person>> checking you out from across the room.
+		<br><br>
+		<<if $exhibitionism gte 35 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and !$worn.under_lower.type.includes("naked")>>
+			<<link [[Flash|History Flash]]>><</link>><<exhibitionist2>>
+			<br>
+		<<elseif $exhibitionism gte 55 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+			<<link [[Flash|History Flash]]>><</link>><<exhibitionist4>>
+			<br>
+		<<else>>
+			<<link [[Tease|History Tease]]>><</link>><<exhibitionist1>>
+			<br>
+		<</if>>
+
+		<<link [[Ignore|History Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyReference" 1>>
+		Winter has the class practise sourcing information from the various bookshelves around the edge of the room. As you move between the shelves, you feel a tug on your $worn.lower.name and hear them tear. In the bustle of the classroom, someone must have closed a cupboard on <<if $worn.lower.plural is 1>>them<<else>>it<</if>> without you noticing.
+		<<set $worn.lower.integrity -= 10>>
+		<<integritycheck>>
+		<<exposure>>
+
+		<<if !$worn.lower.type.includes("naked")>>
+			<<gstress>><<stress 2>>
+			<br><br>
+		<<else>>
+			<br><br>
+			However, things are worse than you first assumed. You look down to find your <<undies>> completely exposed, much to the amusement of your classmates. You hasten to find a towel to cover yourself with, before your humiliation becomes too much to bear.
+			<<trauma 2>><<gtrauma>><<stress 2>><<gstress>>
+			<br><br>
+			<<towelup>>
+		<</if>>
+		<<link [[Next|History Lesson]]>><<endevent>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyModel" 1>>
+		<<npc Winter>><<person1>>Winter asks you to come to the front of the class. "I have some historical garments I need modelled, they're in your size."
+		<<He>> gestures to the screen at the corner of the room.
+		<br><br>
+
+		<<if $delinquency gte 400>>
+			Behind the screen you find a revealing traditional outfit. You hold it up for a closer look.
+			It won't leave much to the imagination; there's barely enough fabric to conceal your <<breasts>> and crotch.
+			It looks like it'll barely fit you, and the fabric is so taut you'll need to undress before putting it on.
+			<br><br>
+
+			<<link [[Put it on|History Events Revealing Dress]]>><<stress 6>><<trauma 6>><</link>><<gstress>><<gtrauma>>
+			<br>
+			<<link [[Refuse to wear it|History Events Refusal]]>><<detention 2>><</link>><<gdelinquency>>
+			<br>
+
+		<<elseif $delinquency gte 200>>
+			<<if $player.gender_appearance is "m">>
+				Behind the screen you find a traditional girl's outfit.
+				<<if $player.gender isnot "m">>
+					The class thinks you're a boy, so if you wear this in front of them, they'll think you're crossdressing.
+				<</if>>
+				It looks like it'll barely fit you, and the fabric is taut so you'll need to undress before putting it on.
+				<br><br>
+
+				<<link [[Put it on|History Events Dress]]>><<stress 2>><<trauma 2>><</link>><<gstress>><<gtrauma>>
+				<br>
+				<<link [[Refuse to wear it|History Events Refusal]]>><<detention 1>><</link>><<gdelinquency>>
+				<br>
+			<<elseif $player.gender_appearance is "f">>
+				Behind the screen you find a traditional boy's outfit.
+				<<if $player.gender isnot "f">>
+					The class thinks you're a girl, so if you wear this in front of them, they'll think you're crossdressing.
+				<</if>>
+				It looks like it'll barely fit you, and the fabric is taut so you'll need to undress before putting it on.
+				<br><br>
+
+				<<link [[Put it on|History Events Dress]]>><<stress 2>><<trauma 2>><</link>><<gstress>><<gtrauma>>
+				<br>
+				<<link [[Refuse to wear it|History Events Refusal]]>><<detention 1>><</link>><<gdelinquency>>
+				<br>
+			<</if>>
+		<<else>>
+			Behind the screen you find
+			<<if currentSkillValue('history') gte 500>>
+				<<print either("a 19th century American merchant's outfit","a 17th century Caribbean privateer outfit","some late Victorian merchant's garb","a replica WWI officer's uniform")>>.
+			<<elseif currentSkillValue('history') gte 300>>
+				<<print either("a bright, old-fashioned outfit","a pirate costume","clothes like people wear in old photos","a soldier costume")>>.
+			<<else>>
+				some <<print either("old outfit","traditional outfit","old-style clothes")>>.
+			<</if>>
+			<<if $cool lt 119 and $rng lte 33>>
+				Baggy, but not baggy enough to fit over your normal clothes. You quickly change.
+				It's an interesting segment, and you feel like you learned something. Winter has you change back before you get too warm.
+				<<ghistory>><<historyskill 1>>
+				<br><br>
+				As you take a seat, you feel itchy. It quickly rises to an irresistible need to scratch, but scratching only makes it worse and soon your whole body
+				feels like it's burning. You hear some students at the desk in the corner by the screen whispering and snickering, you see them watching you and smiling.
+				<br><br>
+				They put something in your clothes. Itching powder.
+				<br><br>
+				<<link [[Endure it|History Cleanup]]>><<endevent>><<pain 3>><<stress 20>><<set $phase to 3>><</link>><<gpain>><<ggstress>>
+				<br>
+				<<link [[Rush to toilet to clean off (0:10)|History Cleanup]]>><<endevent>><<detention 2>><<set $phase to 0>><<stress 10>><</link>><<gdelinquency>>
+				<br>
+				<<link [[Tell teacher and ask to go clean off (0:10)|History Cleanup]]>><<endevent>><<status -10>><<set $phase to 1>><</link>><<lcool>>
+				<br>
+				<<if $exhibitionism gte 35>>
+					<<link [[Strip and clean off there|History Cleanup]]>><<endevent>><<set $phase to 2>><</link>><<exhibitionist3>>
+					<<if $worn.under_lower.type.includes("naked") or ($worn.under_upper.type.includes("naked") and $player.breastsize gte 1)>><<gdelinquency>><</if>>
+					<br>
+				<</if>>
+			<<else>>
+				Baggy enough to easily fit over your other clothing. It's an interesting segment, and you feel like you learned something. Winter has you remove the outfit before you get too warm.<<ghistory>><<historyskill 1>>
+				<br><br>
+
+				<<link [[Next|History Lesson]]>><<endevent>><</link>>
+			<</if>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyTextbook" 1>>
+		<<generates1>><<person1>>Winter leaves a <<person>> to hand out textbooks while leaving the class on an errand. When the <<person>> gets to you, <<he>> pauses, <<his>> face curling in a smirk.
+		<br><br>
+
+		Rather than placing your book on your desk, <<he>> drops it on the floor beside you. "Oops, how clumsy of me. You'd better pick it up before the teacher gets back." The rest of the class turns to watch.
+		<br><br>
+		<<if currentSkillValue('skulduggery') gte 100>><<set $skulduggerydifficulty to 400>>
+			<<link [[Trick them|History Events Trick]]>><</link>><<skulduggerydifficulty>>
+			<br>
+		<</if>>
+		<<link [[Pick it up|History Events Pick]]>><<trauma 2>><<stress 2>><<status -10>><</link>><<gtrauma>><<gstress>><<lcool>>
+		<br>
+		<<link [[Leave it|History Events Leave]]>><<stress 2>><<detention 2>><</link>><<gdelinquency>><<gstress>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyPillory" 1>>
+		<<npc Winter>><<person1>>Winter gives the class a thin smile as <<he>> unveils the pillory in the corner of the room. "We're fortunate to have such a rare antique! I'll need somebody to help me demonstrate its use." <<He>> looks around the room. "Any volunteers?"
+		<br><br>
+		<<if currentSkillValue('history') gte 800>>
+			No one volunteers, of course. Winter looks at you. "To the front of the class, please."
+			<br><br>
+			<<link [[Refuse|History Lesson]]>><<detention 1>><<endevent>><</link>><<gdelinquency>>
+			<br>
+			<<link [[Go to the front of the class|History Lesson Pillory]]>><<historyskill>><<stress 2>><</link>><<ghistory>><<gstress>>
+			<br>
+
+		<<elseif currentSkillValue('history') gte 600>>
+			No one volunteers, of course. Winter looks at you. "To the front of the class, please."
+			<br><br>
+			<<link [[Refuse|History Lesson]]>><<endevent>><<detention 1>><</link>><<gdelinquency>>
+			<br>
+			<<link [[Go to the front of the class|History Lesson Pillory]]>><<historyskill>><<stress 2>><</link>><<ghistory>><<gstress>>
+			<br>
+
+		<<else>>
+			<<link [[Keep your head down|History Lesson]]>><<endevent>><</link>>
+			<br>
+			<<link [[Volunteer|History Lesson Pillory]]>><<historyskill>><<stress 2>><</link>><<ghistory>><<gstress>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<runeventpool>>
+<</widget>>
+
+<<widget "eventshistorysafe">>
+	<<if $halloween is 1 and !$halloween_winter_key>>
+		<<set $halloween_winter_key to 1>>
+		<<npc Winter>><<person1>>Winter lectures to the class in <<his>> droning voice, but seems distracted. <<He>> looks in each of the room's cupboards, as if searching for something.
+		<br><br>
+
+		<<link [[Next|History Lesson]]>><<endevent>><</link>>
+		<br>
+		<<exit>>
+	<</if>>
+
+	<<cleareventpool>>
+	<<set $_linkSkip to false>>
+
+	<<addinlineevent "historyQuiet" 2>>
+		<<npc Winter>><<person1>>Winter has the class read in silence, and glares whenever <<he>> hears furtive whispering.
+	<</addinlineevent>>
+
+	<<addinlineevent "historyClothes" 1>>
+		<<generates1>><<person1>><<set _coinflip to random(0,1)>>
+		Winter calls a <<person>> to the front of the class and asks <<him>> to model some historical clothes.
+		<<if currentSkillValue('history') gte 700>>
+			The clothes look like <<print either("early-medieval servant's garb,", "Tudor-era court clothes for a noble family, possibly the St. Clairs,", "those worn by a medieval 'runner' or courier,", "a pre-industrial Naval uniform,", "stable-boy garb,")>> unless you are mistaken.
+			<<if $rng % 2>>However, judging by the <<print either("stitching,","colouring","hems","cut","'Made in Indonesia' label")>> these are only replicas.<<else>>As far as you can tell, these are genuine historical garments.<</if>>
+		<<elseif currentSkillValue('history') gte 300>>
+			They look like the stuff from <<print either("those plays you do in English where people say 'Hark!'","that TV show about posh old people in a huge house.","that TV show with all the beards and axes.","those old War photos.","those Roman things where everyone wears sheets.")>>
+			Winter gets unusually excited discussing the context of the clothes.
+		<<else>>
+			The clothes look really old-fashioned and Winter tells some great stories that really bring them to life.
+		<</if>>
+		<br><br>
+		Overall it is a fun, enjoyable and educational session.
+		<<ghistory>><<historyskill>><<lstress>><<stress -1>>
+		<br><br>
+		<<if _coinflip>>
+			The <<person>> seems to enjoy being the centre of attention and plays along enthusiastically with Winter's tales.
+		<<else>>
+			The <<person>>, however, seems uncomfortable with being the centre of attention. <<He>> looks like <<he>> would rather be somewhere else.
+		<</if>>
+	<</addinlineevent>>
+
+	<<if $robinhistory is "seat">>
+		<<addinlineevent "historyRobinAnswer" 1>>
+			<<npc Robin>><<person1>>
+			Winter calls upon the class to ask a tough question. No one knows the answer, so <<nnpc_he Winter>> picks on Robin.
+			<br><br>
+
+			<<if random(1, 2) is 2>>
+				"Correct," Winter says in response to Robin's answer. <<nnpc_He Winter>> sounds impressed.<<gdom>><<npcincr Robin dom 1>>
+			<<else>>
+				"Incorrect," Winter says. "Please pay more attention."<<ldom>><<npcincr Robin dom -1>>
+				<br><br>
+				Someone snickers. "As if you could do better," Winter snaps, silencing them.
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "historyAnswer" 1>>
+		Winter asks the class a question.
+		<<if currentSkillValue('history') gte 400>>
+			<<set $_linkSkip to true>>
+			You think you know the answer.
+			<br><br>
+			<<link [[Raise your hand|History Lesson Answer]]>><<stress 2>><<historyskill>><</link>><<ghistory>><<gstress>>
+			<br>
+			<<link [[Remain silent|History Lesson]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			You don't know the answer.
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "historySleeby" 1>>
+		<<generates1>><<person1>><<set _coinflip to random(0,1)>>
+		A <<person>> near you falls asleep in class.
+		<<if $rng % 2>>
+			<<He>> quietly dozes for a few minutes, waking up sharply when <<print either("Winter drops a pen.", "a girl's chair scrapes.","the class door opens.","a boy falls off his chair.","another student walks past.","the student behind gives a gentle nudge.")>>
+			<<He>> looks around in panic for a moment. You give <<him>> a subtle thumbs up, mouthing 'It's okay.'
+			<br>
+			<<He>> nods back in thanks.
+			<<gcool>><<status 1>>
+		<<else>>
+			Everything is fine until <<his>> head rolls back and <<he>> starts loudly snoring. Winter stops talking, glaring at the <<person>>.
+			<br>
+			"Wake <<him>> up," Winter commands.
+			<br>
+			<<if _coinflip>>Another student wakes<<else>>You wake<</if>> the <<personsimple>> up.
+			<br><br>
+			"Thank you for joining us," Winter smiles. "Perhaps you can tell the head what has you so tired in detention."
+			<br>
+			<<His>> cheeks flush.
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyLecture" 1>>
+		<<npc Winter>><<person1>>
+		Winter lectures to the class in <<his>> droning voice.
+		<<set $_linkSkip to true>>
+		<<if $tiredness lt 2000>>
+			It's a job to stay awake.
+			<br><br>
+			<<link [[Next|History Lesson]]>><<endevent>><<historyskill>><</link>><<ghistory>>
+			<br>
+		<<else>>
+			You do your best to stay awake, but you're so tired. You awaken several minutes later, fortunately Winter seems not to have noticed.
+			<br><br>
+			<<link [[Next|History Lesson]]>><<endevent>><<set $tiredness -= 200>><</link>><<ltiredness>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyMovie" 1>>
+		Winter shows the class some excerpts from a historical movie.
+		<<if $rng % 2>>
+			It's a boring old film that everyone has seen. It's educational, but even Winter seems uninspired by this.
+		<<else>>
+			It's a brand new film with some amazing effects. Winter highlights some of the good history in the film, along with a few amusing inaccuracies.
+			<br>
+			It's a fun session.
+			<<ghistory>><<historyskill>><<lstress>><<stress -1>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyBookshelf" 1>>
+		Winter has the class practise sourcing information from the various bookshelves around the edge of the room.
+	<</addinlineevent>>
+
+	<<addinlineevent "historyAncient" 1>>
+		Winter goes off on a tangent about the school, park and hospital being on the site of an ancient fortress. They mention rumours of underground lairs, murky dungeons and hidden escape tunnels.
+	<</addinlineevent>>
+
+	<<addinlineevent "historyTangent" 1>>
+		Winter goes off on a tangent about the history of the local transportation system. You don't know if you've ever listened to anything so boring.
+	<</addinlineevent>>
+
+	<<runeventpool>>
+
+	<<if $_linkSkip is false>>
+		<br><br>
+		<<link [[Next|History Lesson]]>><<endevent>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "eventshistorysleep">>
+	<<cleareventpool>>
+	<<set $_linkSkip to false>>
+
+	<<addinlineevent "historyCaught">>
+		You jump in your seat as a loud smack resounds off the desk. You bolt upright and see Winter standing in front of you, ruler in hand. "I'll not tolerate sleeping in my class. Detention." <<ltiredness>><<detention 2>><<gdelinquency>>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyNotCaught">>
+		Your eyes snap open. You must have fallen asleep. You casually lift your head and stifle a yawn, pretending nothing happened. Winter is helping a student with period garments and has not noticed you. <<ltiredness>>
+	<</addinlineevent>>
+
+	<<addinlineevent "historyLewd">>
+		Your eyes snap open. You must have fallen asleep. You lift your head carefully to avoid attracting attention to your little nap. Winter is still talking and has not noticed anything.
+		<br><br>
+		<<if $awarelevel gte 1>>
+			Your hand feels sticky. Upon inspection, you find that it's covered in <<print maleChance() gt 0 or $dgchance gt 0 ? "cum.<<bodyliquid 'right arm' 'semen'>>" : "lewd fluid.<<bodyliquid 'right arm' 'goo'>>">> Did someone use your hand to get themselves off? You wipe your hand on your clothes and look around for the culprit, but no one seems to notice.
+		<<else>>
+			Your hand feels sticky. Upon inspection, you find that it's covered in <<print maleChance() gt 0 or $dgchance gt 0 ? "white<<bodyliquid 'right arm' 'semen'>>" : "clear fluid<<bodyliquid 'right arm' 'goo'>>">> fluid. What happened while you slept? You wipe the stuff off onto your clothes.
+		<</if>>
+		<<ltiredness>><<stress 6>><<gstress>>
+	<</addinlineevent>>
+
+	<<if random(1, 400) gte $cool>>
+		<<addinlineevent "historyHomework">>
+			<<npc Winter>><<person1>>
+			Your eyes snap open. You must have fallen asleep. You casually lift your head and stifle a yawn, pretending nothing happened. Winter is walking between desks and collecting homework.
+			<br><br>
+
+			You look down in dismay at your homework. Someone has scribbled on it. Winter reaches your desk and holds out <<his>> hand. You have no choice but to turn in the edited homework. A few minutes later, <<he>> gives you a disapproving look as <<he>> shuffles through the papers. A <<generates2>><<person2>><<person>> next to you snickers under <<his>> breath. <<ltiredness>><<gstress>><<gtrauma>><<stress 6>><<trauma 6>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if random(1, 400) gte $cool>>
+		<<addinlineevent "historyTattletale">>
+			<<npc Winter>><<person1>>
+			"<<Sir>>," says a <<generates2>><<person2>><<person>>. "<<pShes>> sleeping in class!"
+			<br><br>
+			The voice of the <<personsimple>> wakes you. You raise your head from the desk and see the teacher looking back at you. Winter frowns. "I'll not tolerate sleeping in this class. You're welcome to think about that in detention."
+			<br><br>
+			<<if $submissive gte 1150>>
+				You bow your head in embarrassment while the <<person>> smiles, all too happy to get you in trouble.
+			<<elseif $submissive lte 850>>
+				You glare at the <<person>>. <<His>> smile falters under your withering gaze, as <<he>> realises telling the teacher might not have been the smartest idea.
+			<<else>>
+				You frown at the <<person>>. <<He>> smiles back, all too happy to get you in trouble.
+			<</if>>
+			<<ltiredness>><<detention 2>><<gdelinquency>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].strap is 1>>
+		<<addinlineevent "historyBra">>
+			Your eyes snap open. You must have fallen asleep. You sit up with discomfort. Your bra is out of place. You attempt to adjust it and discover it has been undone.
+			<br><br>
+			The <<generates1>><<person1>><<person>> behind you snickers. You try to ignore <<him>> and attempt to clasp your bra shut. It is not easy to be discreet.
+			<br><br>
+			You are mostly successful, but your efforts attract the attention of students nearby.
+			<<ltiredness>><<gtrauma>><<gstress>><<stress 6>><<trauma 6>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if ["active","seat"].includes($robinhistory)>>
+		<<addinlineevent "historyRobinWake">>
+			<<npc Robin>>
+			<<if C.npc.Robin.dom gte 50>>
+				You feel a gentle tug on your hair. It soothes you into a deeper sleep. When it stops, you open your eyes and sit up. You stifle a yawn and look around. Winter has not noticed you sleeping. <<ltiredness>>
+				<br><br>
+				Robin smiles and pats your hair. "About time you woke up, sleepyhead."
+				<br><br>
+				<<if $hairlength gte 500>>
+					<<set $hairtype to either("braid left","braid right","left fishtail","right fishtail","twin braids","twin fishtails")>>
+					You run your hands through your neatly braided hair.
+				<<else>>
+					You run your hands through your neatly combed hair.
+				<</if>>
+				<<lstress>><<ltrauma>><<gdom "Robin">><<trauma -6>><<stress -6>><<npcincr Robin dom 1>>
+			<<else>>
+				"Psst...psst...psst..." Your eyes snap open, and you see Robin trying to get your attention. <<He>> mouths, "Wake up."
+				<br><br>
+				You casually lift your head and stifle a yawn, pretending nothing happened. You nod your gratitude to Robin. Winter is still talking, none the wiser. <<ltiredness>>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $drunk gte 1>>
+		<<addinlineevent "historyDrunk">>
+			You jump in your seat as a loud smack resounds off the desk. Pain shoots through your muddled head as you bolt upright. <<gpain>><<pain 6>>
+			<br><br>
+			Winter stands in front of you with a ruler in hand. "Unbelievable. I'll not tolerate sleeping in my class, or intoxication for that matter. Detention."
+			<<ltiredness>><<detention 6>><<ggdelinquency>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<runeventpool>>
+
+	<<if $_linkSkip is false>>
+		<br><br>
+		<<link [[Next|History Lesson]]>><<endevent>><</link>>
+	<</if>>
+<</widget>>
+
+:: Widgets Events Swimming [widget]
+<<widget "eventsswimming">>
+	<<outfitChecks>>
+	<<cleareventpool>>
+	<<set $_linkSkip to false>>
+	<<set _tf to checkTFparts()>>
+
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<<addinlineevent "swimBound" 1>>
+			<<set $_linkSkip to true>>
+			<<npc Mason>><<person1>>
+			Mason motions for you to come closer. You <<if $feetuse is "bound">>butterfly <</if>>kick your way to the side of the pool.
+			"Why aren't you using your arms?" <<He>> notices your bindings. "Oh! Can you even get those off on your own? I think I have some scissors."
+			<br><br>
+
+			<<link [[Be freed|Events Swimming Freed]]>><<unbind>><</link>>
+			<br>
+			<<link [[Refuse|Events Swimming Freed Refuse]]>><</link>>
+			<br>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "swimFight" 1>>
+		<<set $_linkSkip to true>>
+		<<generates1>><<generates2>>A fight breaks out on the other side of the pool.
+		As Mason swims over to break it up, a <<fullGroup>> swim up to you, and trap you between them.
+		The <<person1>><<person>> starts fondling your butt from behind while the <<person2>><<person>> speaks.
+		"You look lonely, <<bitch>>. Don't worry, we're here to keep you company."
+		<br><br>
+
+		<<link [[Shove them away|Swimming Lesson Shove]]>><</link>>
+		<br>
+
+		<<if $cool lt 80>>
+			<<link [[Endure it|Events Swimming Molestation]]>><<set $molestationstart to 1>><</link>><<gtrauma>><<gstress>><<garousal>>
+			<br>
+		<<else>>
+			<<link [[Endure it|Events Swimming Endure]]>><<trauma 2>><<stress 2>><<arousal 200 "bottom">><</link>><<gtrauma>><<gstress>><<garousal>>
+			<br>
+		<</if>>
+	<</addinlineevent>>
+
+	<<addinlineevent "swimDive" 1>>
+		<<set $_linkSkip to true>>
+		<<rng>>
+		<<npc Mason>><<generates2>><<person2>>
+		<br><br>
+		Mason points at a <<person>> near you. "You. Climb out, I want to see your diving technique."
+		<br><br>
+
+		<<if $rng % 5 == 0 and $swimnudecounter gte 3>>/*1 in 5 chance*/
+			The <<person>> swims to the edge and climbs out. <<He>> goes to the diving board. A number of people stop to watch.
+			<br><br>
+
+			<<link [[Next|Events Swimming NPC Dive]]>><<set $phase to 3>><</link>>
+		<<elseif $rng % 5 == 0>>
+			The <<person>> swims to the edge and whispers something to Mason. Mason flushes, says something back, and leaves. The <<person>> carries on swimming.
+			A few moments later you hear a loud whistle. Mason calls everyone to the edge.
+			<br><br>
+
+			"Class! Everyone here! It's time for a demonstration."
+			<br><br>
+
+			<<link [[Next|Events Swimming NPC Dive]]>><<set $phase to 2>><</link>>
+		<<elseif $rng % 10>>/*9 in 10 chance*/
+			The <<person>> swims to the edge and climbs out. <<He>> goes to the diving board. A number of people stop to watch.
+			<br><br>
+
+			<<link [[Next|Events Swimming NPC Dive]]>><<set $phase to 1>><</link>>
+		<<else>>
+			<<set $_linkSkip to false>>
+			The <<person>> refuses. Mason tries to persuade <<him>> and finally threatens <<him>> with detention, but <<he>> will not dive.
+		<</if>>
+	<</addinlineevent>>
+
+	<<if $worn.lower.type.includes("naked") and !_underOutfit>>
+		<<addinlineevent "swimNaked" 1>>
+			<<rng>>
+			<<npc Mason>><<person1>>Mason points at you. "Climb out, I want to see your diving technique."
+			<<if playerBellyVisible()>>
+				Face flushing, you remind <<him>> that you're <<if $exposed gte 1 and $swimall isnot 1>>naked and <</if>>pregnant.
+				<<He>> looks to your belly, embarrassed. "Oh, my mistake..." <<He>> pauses briefly. "Wouldn't want to hurt the baby."
+
+			<<elseif $swimall is 1 and $exposed gte 1>>
+				You climb out into the chilly air and walk to the edge of the diving platform. You dive <<swimmingtext>> into the water.
+				<br><br>
+
+				You come back up to the surface. Mason gives you a thumbs up, then directs <<his>> attention elsewhere.
+				<<gswimming>><<swimmingskilluse>>
+
+			<<elseif $exposed gte 1>>
+				Face flushing, you remind <<him>> that you're naked beneath the water. <<He>> looks away, embarrassed.
+				"You still need to dive," <<he>> says. "I'll try to distract the other students."
+				<br><br>
+
+				<<He>> stands beside the pool opposite the diving platform. "Everyone, it's time for a demonstration."
+				You wait until the class is facing away from you, then <<nervously>> climb out.
+
+				<<if $rng gte 81>>
+					<<set $_linkSkip to true>>
+					<<generates2>><<person2>>As you approach the diving platform however, a <<person>> turns. You cover your body as <<he>> shouts to <<his>> friends, attracting more attention. Mason tries to control the situation, but it's no use. The whole class is soon staring at you. <<gtrauma>><<trauma 2>><<gstress>><<stress 2>>
+					<br><br>
+					<<if $exhibitionism gte 75>>
+						<<link [[Flaunt|Events Swimming Flaunt]]>><</link>><<exhibitionist5>>
+						<br>
+					<</if>>
+					<<link [[Dive anyway|Events Swimming Lewd Dive]]>><<trauma 2>><<stress 2>><</link>><<gtrauma>><<gstress>>
+					<br>
+					<<link [[Run away|Event Swimming Run]]>><<detention 1>><</link>><<gdelinquency>>
+					<br>
+				<<else>>
+					You glance at the rest of the class, and see their backs still turned. You dive <<swimmingtext>> into the water.
+					<<gstress>><<stress 2>><<gswimming>><<swimmingskilluse>>
+				<</if>>
+
+			<<else>>
+				You climb out into the chilly air and walk to the edge of the diving platform. You dive <<swimmingtext>> into the water.
+				<br><br>
+
+				You come back up to the surface. Mason gives you a thumbs up, then directs <<his>> attention elsewhere.
+				You feel like something is amiss, and then you realise, your <<undies>> <<underlowerplural>> gone!
+				<br><br>
+
+				<<if $school gte 1600 or $rng lt 80>>
+					Seeing your clothes floating several feet away, you quickly swim over and cover up. You glance around the pool. You don't think anybody noticed.
+					<<gstress>><<stress 2>><<gswimming>><<swimmingskilluse>>
+				<<else>>
+					<<set $_linkSkip to true>>
+					<<endevent>><<generates1>><<person1>><<underlowerstrip>>
+					You look around and see your clothes floating in the water. You swim towards them, but a <<person>> beats you to it.
+					<<He>> holds them out of your reach and smiles at you. "Stripping in public? Who'd have known a nerd like you would be so perverted."
+					<<He>> examines your exposed body, then checks if Mason is still distracted.
+					"I wanna have some fun with you. You better do what I want or you'll be spending the rest of the lesson naked."
+					<br><br>
+
+					<<link [[Accept|Events Swimming Molestation Single]]>><<set $molestationstart to 1>><</link>>
+					<br>
+					<<link [[Refuse|Events Swimming Refuse]]>><</link>>
+					<br>
+				<</if>>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "swimStalk" 2>>
+		<<set $_linkSkip to true>>
+		<<generates1>><<person1>>A <<person>> seems to be following you around the pool. Whenever you look at <<him>> however, <<he>> averts <<his>> gaze.
+		<br><br>
+
+		<<link [[Confront|Events Swimming Stalk Confront]]>><<detention 1>><</link>><<gdelinquency>>
+		<br>
+		<<link [[Ignore|Events Swimming Stalk Ignore]]>><</link>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "swimHarass" 2>>
+		<<set $_linkSkip to true>>
+		<<generates1>><<generates2>><<generates3>>
+		A <<fullGroup>> start picking on you, following you and touching you beneath the water.
+		You could try to swim away from them, but it might make things worse if you fail.
+		<br><br>
+
+		<<link [[Swim away|Events Swimming Swim Away]]>><</link>><<swimmingdifficulty 1 800>>
+		<br>
+		<<link [[Endure it|Events Swimming Swim Endure]]>><<stress 2>><<trauma 2>><<arousal 100 "bottom">><<arousal 100 "genitals">><</link>><<gtrauma>><<gstress>><<garousal>>
+		<br>
+	<</addinlineevent>>
+
+	<<addinlineevent "swimSkimmer" 2>>
+		<<if $worn.under_lower.type.includes("naked")>>
+			You feel a sharp pain in your butt. You floated too close to a skimmer and were pinched by the flap.
+			You manage to not cry out and attract more attention to yourself.
+			<<gpain>><<gstress>><<stress 2>><<pain 5>>
+		<<else>>
+			As you tread water, you feel something tug at your $worn.under_lower.name_simple. You floated too close to a skimmer and are caught in its flap. <<set $worn.under_lower.integrity -= 4>>
+			<<integritycheck>>
+			<<exposure>>
+			<<if $worn.under_lower.type.includes("naked")>>
+				You move away, but as you do so, your clothing is cruelly ripped free from your body. It disappears through the skimmer in an instant, leaving you <<= $worn.under_upper.type.includes("naked") ? "completely bare" : "bare from the waist down">>.
+			<<else>>
+				You free yourself from the skimmer, leaving your $worn.under_lower.name_simple intact but worse for wear.
+			<</if>>
+		<</if>>
+	<</addinlineevent>>
+
+	<<if _tf.foxTail or _tf.wolfTail or _tf.catTail or _tf.cowTail or _tf.birdTail or _tf.demonTail>>
+		<<addinlineevent "swimTF" 1>>
+			<<set _linkText to _tf.catTail ? "Hiss" : _tf.cowTail ? "Whack" : _tf.birdTail ? "Splash" : "Growl">>
+			<<set _tftail to _tf.foxTail ? "<<fox>>" : _tf.demonTail ? "<<demon>>" : _tf.catTail ? "<<cat>>" : _tf.cowTail ? "<<cow>>" : _tf.birdTail ? "<<harpy>>" : "<<wolfgirl>>">>
+
+			As you're swimming laps, a <<generates1>><<person1>><<person>> grabs your tail and pulls, causing you to let out an involuntary <<= _tf.foxTail ? "moan" : "yelp">>. <<gstress>><<stress 6>>
+
+			<br><br>
+			"What's this thing on your butt?" <<he>> says with a snicker. <<He>> gives it another tug as <<he>> tries to get a better look at it.
+
+			<<if _tf.foxTail>>
+				<<gggarousal>><<arousal 10000>>
+				<br><br>
+
+				Your thighs tremble with arousal as another jolt of pleasure shoots up your tailbone. The overstimulation is too much to bear. <<orgasm>> You clutch the side of the pool, yipping helplessly through the orgasm. The <<personsimple>> stares at you, as does the rest of the class.
+				<br><br>
+
+				"What's going on over there?" Mason calls out.
+				<br><br>
+
+				"N-nothing!" the <<person>> shouts back. <<He>> drops your tail and swims away, <<his>> face beet-red. Mason looks at you suspiciously, but doesn't pry further.
+			<<else>>
+				<<set $_linkSkip to true>>
+				<<gpain>><<pain 6>>
+				 <br><br>
+
+				<<if $submissive lte 850>>
+					<<link [[_linkText|Events Swimming Tail]]>><<set $phase to _linkText>><</link>><<lstress>><<print _tftail>>
+					<br>
+				<</if>>
+				<<if _tf.demonTail>>
+					<<link [[Wiggle your butt seductively|Events Swimming Tail]]>><<set $phase to "Wiggle">><</link>><<print _tftail>>
+					<br>
+				<</if>>
+				<<link [[Endure|Events Swimming Tail]]>><<set $phase to "Endure">><</link>><<gstress>>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<runeventpool>>
+	<<if $_linkSkip is false>>
+		<br><br>
+		<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "eventsswimmingsafe">>
+	<<npc Mason>><<person1>>
+	<<if $rng gte 21>>
+		Mason has the class practise <<print either("the front crawl", "the breaststroke", "the backstroke", "the butterfly stroke")>>.
+		<<He>> patrols the outskirts of the pool, giving pointers to those who seem to be struggling.
+		<br><br>
+	<<else>>
+		Mason has the class practise diving.
+		<<He>> watches from the outskirts of the pool, giving pointers to those who seem to be struggling.
+		<br><br>
+	<</if>>
+
+	<<if currentSkillValue('swimmingskill') lte 100>>
+		You're not very good at swimming, and struggle to even stay above the surface of the water.
+	<<elseif currentSkillValue('swimmingskill') lte 300>>
+		You're not a very fast swimmer, and need to take frequent breaks due to the strain on your muscles.
+	<<elseif currentSkillValue('swimmingskill') lte 500>>
+		You're not a bad swimmer, but you've a long way to go.
+	<<elseif currentSkillValue('swimmingskill') lte 900>>
+		You're a pretty good swimmer, among the best in the class.
+	<<else>>
+		You're a very good swimmer, easily the best in the class.
+	<</if>>
+	<br><br>
+	<<link [[Next|Swimming Lesson]]>><<endevent>><</link>>
+	<br>
+<</widget>>
+
+<<widget "schoolpoolexposed">>
+	<<if $schoolstate is "fifth" and $swimnudecounter gte 1>>
+		You step into the pool room. <<covered>>
+		<<schoolpoolmasoncheck>>
+		<<if _masonCanUnlock>>
+			<<include "Mason Chastity Prompt">>
+		<</if>>
+		<br><br>
+	<<else>>
+		<<npc Mason>><<generatey2>><<generatey3>>You take a deep breath, and walk into the pool room with your <<lewdness>> on display.
+		A <<person2>><<person>> sees you first. <<He>> clutches <<his>> hands to <<his>> face and squeals.
+		The rest of the class follow suit, with varying reactions ranging from glee to embarrassment and amusement to displeasure in the case of the more prudish students.
+		<<if $player.penisExist>>
+			<<if $player.penissize is 4>>
+				<<if maleChance() lt 100>>
+					The girls' eyes seem glued to your <<genitals>>, and a few start exchanging excited whispers with each other.
+					A few of the boys are clearly less than gleeful at your naked presence. <<if maleChance() gt 0>>Others seem interested.<</if>>
+				<<else>>
+					The boys stare your <<genitals>>, and a few start exchanging excited whispers with each other.
+				<</if>>
+				<<incgpenisinsecurity>>
+				<<status 10>><<gcool>>
+			<<elseif $player.penissize lte 1>>
+				A few of the girls exchange whispers and start giggling to themselves, and some of the boys are sporting rather smug expressions.
+				<<incgpenisinsecurity>>
+			<</if>>
+		<</if>>
+		<br><br>
+		<<person1>>Mason has <<his>> back to you. <<He>> turns, then quickly averts <<his>> eyes. "Your swimsuit," <<he>> manages. "Go get it."
+		<<detention 6>>
+		<br><br>
+		"Oh?" you say. You lift one hand to your brow, as if scanning the horizon. "I wonder where I left it." The class erupts into laughter.
+		<br><br>
+		Mason refuses to look at you. <<Hes>> blushing. "Get back in the changing room. P-please."
+		<br><br>
+	<</if>>
+	<<if !_masonCanUnlock or $schoolstate isnot "fifth">>
+		<<maleicon>><<link [[Boy's changing room|School Boy Changing Room]]>><<endevent>><</link>>
+		<br>
+		<<femaleicon>><<link [[Girl's changing room|School Girl Changing Room]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "schoolpoolmasoncheck">>
+	<<set _anyBound to $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
+	<<if _anyBound>>
+		Mason instantly notices your bound <<boundBodyParts>>.
+		<<print [
+			`"It wouldn't be safe to let you swim like that."`,
+			`"T-that's a little too much."`,
+			`"Well... obviously it wouldn't be safe to let you swim like that."`,
+			`"I can't let you swim like that."`
+		].random()>>
+		<br><br>
+		<<He>> moves behind you and <span class="green">you feel your limbs fall free.</span><<unbind>>
+	<</if>>
+	<<if !C.npc.Mason.chastityKeyCarried and playerChastity() and $worn.genitals.origin is "Winter" and (C.npc.Mason.love gte 5 or C.npc.Mason.lust gte 10)
+		and getVisibleClothesList().find(o => o === V.worn.genitals)>>
+		<<if _anyBound>><<He>>
+		<<else>>Mason<</if>> cannot help but notice and stare at the $worn.genitals.name.
+		<<He>> stares hard enough that it briefly becomes uncomfortable before <<he>> catches <<himself>> and turns away with a blush.
+		<<set C.npc.Mason.chastityKeyCarried to 1>><<set $daily.masonChastityRemovalDeclined to 1>>
+	<</if>>
+<</widget>>
+
+:: Lesson Effects Widget [widget]
+
+<<widget "swimminglessoneffects">>
+	<<advancelesson>>
+	<<stress _lesson_progress>>
+	<<tiredness _lesson_progress>>
+
+	<<if $phase is 1>>
+		<<set $phase to 0>>
+		<<if $exposed gte 1 and $swimall isnot 1>>
+			The bell rings, signifying the end of the lesson. You wait as the other students leave. Some students linger, doubtlessly hoping to get a nice view when you climb out, but Mason herds them away, giving you some privacy. You climb out of the pool<<if playerBellyVisible()>> once Mason gives the go ahead, and <<nnpc_he "Mason">> sticks close by to assist you<</if>>.
+			<br><br>
+
+		<<elseif $exposed lte 0>>
+			The bell rings, signifying the end of the lesson. You climb out of the pool<<if playerBellyVisible()>> once Mason gives the go ahead, and <<nnpc_he "Mason">> sticks close by to assist you<</if>>.
+			<br><br>
+
+		<</if>>
+
+		<<if $exposed lte 0 or $swimall is 1>>
+			<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><</link>>
+			<br>
+			<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><</link>>
+			<br><br>
+
+		<</if>>
+
+		<<if $exposed gte 1>>
+			<<link [[Grab some towels and enter the boy's changing room|School Boy Changing Room]]>><<towelupm>><</link>>
+			<br>
+			<<link [[Grab some towels and enter the girl's changing room|School Girl Changing Room]]>><<towelup>><</link>>
+			<br><br>
+
+		<</if>>
+	<<else>>
+		<<if $exposed gte 1>>
+			<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+			<<if $danger gte (8900 - $allure)>>
+				<<eventsswimming>>
+			<<else>>
+				<<eventsswimmingsafe>>
+			<</if>>
+		<<elseif $exposed lte 0>>
+			<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+			<<if $danger gte (8900 - ($allure / 5))>>
+				<<eventsswimming>>
+			<<else>>
+				<<eventsswimmingsafe>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "bookRentalOptions">>
+	<<if $studyBooks is undefined>>
+		<<set $studyBooks to {}>>
+		<<set $studyBooks.rented to "none">>
+		<<set $studyBooks.stolen to "none">>
+	<</if>>
+	<<if (!Time.schoolDay or $schoolstate is "early" or $schoolstate is "late")>>
+		The library is eerily quiet.
+	<<else>>
+		There are a number of textbooks available for rental.
+		<<if $studyBooks.rented isnot "none">>
+			You must return your rented book before checking out another. Your current rental is <<if $book_rent_timer gt 0>>due back in <span class="gold">$book_rent_timer day<<if $book_rent_timer gt 1>>s<</if>>.</span><<elseif $book_rent_timer is 0>><span class="blue">due today.</span><<else>><span class="red">overdue.</span><</if>>
+		<<else>>
+			You have no rented books to return.
+		<</if>>
+	<</if>>
+	<br>
+	<<switch $studyBooks.rented>>
+		<<case "science" "maths" "English" "history">>
+			<<schoolicon "library">><<link [[`Return your ${$studyBooks.rented} textbook`|Book Rental]]>><<set $bookRent to "return">><</link>>
+			<br>
+		<<case "Raul and Janet">>
+			<<schoolicon "library">><<link [[Return "Raul and Janet"|Book Rental]]>><<set $phase to 5>><<set $bookRent to "return">><</link>>
+			<br>
+		<<case "Pinch">>
+			<<schoolicon "library">><<link [[Return the olive-coloured book|Book Rental]]>><<set $phase to 6>><<set $bookRent to "return">><</link>>
+			<br>
+		<<default>>
+	<</switch>>
+	<<switch $studyBooks.stolen>>
+		<<case "science" "maths" "English" "history">>
+			<<schoolicon "library">><<link [[`Return your stolen ${$studyBooks.stolen} textbook`|Book Rental Return Stolen]]>><</link>>
+			<br>
+		<<case "Raul and Janet">>
+			<<schoolicon "library">><<link [[Return your stolen copy of "Raul and Janet"|Book Rental Return Stolen]]>><<set $phase to 5>><</link>>
+			<br>
+		<<case "Pinch">>
+			<<schoolicon "library">><<link [[Return the olive-coloured book|Book Rental Return Stolen]]>><<set $phase to 6>><</link>>
+			<br>
+		<<default>>
+	<</switch>>
+	<<sydneySchedule>>
+	<<if _sydney_location is "library">>
+		<<if $money gte 2000>>
+			<<if $studyBooks.rented is "none">>
+				<<if $studyBooks.stolen isnot "science">>
+					<<scienceicon>><<link [[Rent a science textbook (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 1>><<set $studyBooks.rented to "science">><</link>><<note "+ Passive Science" "green">>
+					<br>
+				<</if>>
+				<<if $studyBooks.stolen isnot "maths">>
+					<<mathicon>><<link [[Rent a maths textbook (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 2>><<set $studyBooks.rented to "maths">><</link>><<note "+ Passive Maths" "green">>
+					<br>
+				<</if>>
+				<<if $studyBooks.stolen isnot "English">>
+					<<englishicon>><<link [[Rent an English textbook (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 3>><<set $studyBooks.rented to "English">><</link>><<note "+ Passive English" "green">>
+					<br>
+				<</if>>
+				<<if $studyBooks.stolen isnot "history">>
+					<<historyicon>><<link [[Rent a history textbook (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 4>><<set $studyBooks.rented to "history">><</link>><<note "+ Passive History" "green">>
+					<br>
+				<</if>>
+				<<if currentSkillValue('english') gte 300 and $studyBooks.stolen isnot "Raul and Janet">>
+					<<scarleticon>><<link [[Rent "Raul and Janet" (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 5>><<set $studyBooks.rented to "Raul and Janet">><</link>>
+					<br>
+				<</if>>
+				<<if ((Time.monthName is "November" and Time.monthDay gte 24) or Time.monthName is "December") and $studyBooks.stolen isnot "Pinch">>
+					<<oliveicon>><<link [[Rent the olive-coloured book (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 6>><<set $studyBooks.rented to "Pinch">><</link>>
+					<br>
+				<</if>>
+			<<else>>
+				<<if $money gte 1500 and $book_rent_timer lte 13 and $book_rent_timer gt 0>>
+					<<highicon>><<link [[Renew your book rental (£15)|Book Rental]]>><<set $money -= 1500>><<set $bookRent to "renew">><</link>>
+					<br>
+				<<elseif $money lt 1500>>
+					<span class=purple>You can't afford to renew your rental.</span>
+					<br>
+				<<else>>
+				<</if>>
+			<</if>>
+		<<else>>
+			<span class=purple>You can't afford to rent a textbook.</span>
+			<br>
+		<</if>>
+	<<else>>
+		<<if (!Time.schoolDay or $schoolstate is "early" or $schoolstate is "late")>>
+			<<if $studyBooks.stolen is "none">>
+				<<if $studyBooks.rented isnot "science">>
+					<<scienceicon>><<link [[Steal a science textbook|Book Rental]]>><<set $bookRent to "steal">><<set $studyBooks.stolen to "science">><</link>><<crime "thievery">><<note "+ Passive Science" "green">>
+					<br>
+				<</if>>
+				<<if $studyBooks.rented isnot "maths">>
+					<<mathicon>><<link [[Steal a maths textbook|Book Rental]]>><<set $bookRent to "steal">><<set $studyBooks.stolen to "maths">><</link>><<crime "thievery">><<note "+ Passive Maths" "green">>
+					<br>
+				<</if>>
+				<<if $studyBooks.rented isnot "English">>
+					<<englishicon>><<link [[Steal an English textbook|Book Rental]]>><<set $bookRent to "steal">><<set $studyBooks.stolen to "English">><</link>><<crime "thievery">><<note "+ Passive English" "green">>
+					<br>
+				<</if>>
+				<<if $studyBooks.rented isnot "history">>
+					<<historyicon>><<link [[Steal a history textbook|Book Rental]]>><<set $bookRent to "steal">><<set $studyBooks.stolen to "history">><</link>><<crime "thievery">><<note "+ Passive History" "green">>
+					<br>
+				<</if>>
+				<<if currentSkillValue('english') gte 300 and $studyBooks.rented isnot "Raul and Janet">>
+					<<scarleticon>><<link [[Steal "Raul and Janet"|Book Rental]]>><<set $phase to 5>><<set $bookRent to "steal">><<set $studyBooks.stolen to "Raul and Janet">><</link>><<crime "thievery">>
+					<br>
+				<</if>>
+				<<if ((Time.monthName is "November" and Time.monthDay gte 24) or Time.monthName is "December") and $studyBooks.stolen isnot "Pinch">>
+					<<oliveicon>><<link [[Steal the olive-coloured book|Book Rental]]>><<set $phase to 6>><<set $bookRent to "steal">><<set $studyBooks.stolen to "Pinch">><</link>><<crime "thievery">>
+					<br>
+				<</if>>
+			<<else>>
+				You can only carry one stolen book at a time.
+				<br>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "homeStudyOptions">>
+	<<if $studyBooks isnot undefined>>
+		<<switch $studyBooks.rented>>
+			<<case "science">>
+				/*<<link [[Study science (0:20)|$passage]]>><<set $study to 1>><<pass 20>><<set $phase to 1>><</link>><<gscience>>
+				<br>*/
+			<<case "maths">>
+				/*<<link [[Study maths (0:20)|$passage]]>><<set $study to 1>><<pass 20>><<set $phase to 2>><</link>><<gmaths>>
+				<br>*/
+			<<case "English">>
+				/*<<link [[Study English (0:20)|$passage]]>><<set $study to 1>><<pass 20>><<set $phase to 3>><</link>><<genglish>>
+				<br>*/
+			<<case "history">>
+				/*<<link [[Study history (0:20)|$passage]]>><<set $study to 1>><<pass 20>><<set $phase to 4>><</link>><<ghistory>>
+				<br>*/
+			<<case "Raul and Janet">>
+				<<scarleticon>><<link [[Read "Raul and Janet" (0:01)|ScarletBook1]]>><<pass 1>><<set $scarletExitPassage to $passage>><</link>>
+				<br>
+			<<case "Pinch">>
+				<<oliveicon>><<link [[Read the olive-coloured book (0:01)|Olive Book 1]]>><<pass 1>><<set $oliveExitPassage to $passage>><</link>>
+				<br>
+			<<default>>
+		<</switch>>
+		<<switch $studyBooks.stolen>>
+			<<case "science">>
+				/*<<link [[Study science (0:20)|$passage]]>><<set $study to 1>><<pass 20>><<set $phase to 1>><</link>><<gscience>>
+				<br>*/
+			<<case "maths">>
+				/*<<link [[Study maths (0:20)|$passage]]>><<set $study to 1>><<pass 20>><<set $phase to 2>><</link>><<gmaths>>
+				<br>*/
+			<<case "English">>
+				/*<<link [[Study English (0:20)|$passage]]>><<set $study to 1>><<pass 20>><<set $phase to 3>><</link>><<genglish>>
+				<br>*/
+			<<case "history">>
+				/*<<link [[Study history (0:20)|$passage]]>><<set $study to 1>><<pass 20>><<set $phase to 4>><</link>><<ghistory>>
+				<br>*/
+			<<case "Raul and Janet">>
+				<<scarleticon>><<link [[Read "Raul and Janet" (0:01)|ScarletBook1]]>><<pass 1>><<set $scarletExitPassage to $passage>><</link>>
+				<br>
+			<<case "Pinch">>
+				<<oliveicon>><<link [[Read the olive-coloured book (0:01)|Olive Book 1]]>><<pass 1>><<set $oliveExitPassage to $passage>><</link>>
+				<br>
+			<<default>>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<!-- "upperruined" doesn't take sets into account, so use "strip" and destroy the carried towel parts -->
+<<widget "droptowel">>
+	<<if _toweldrop is "both">>
+		<<generalStrip "upper">>
+		<<generalStrip "lower">>
+	<<elseif _toweldrop is "lower">>
+		<<generalStrip "lower">>
+	<<elseif _toweldrop is "upper">>
+		<<generalStrip "upper">>
+	<</if>>
+<</widget>>
+
+<!-- Will check if the pc can drop a towel to expose themselves. Returns its result in "_exlevel" and "_toweldrop".-->
+<<widget "checkdroptowel">>
+	<<set _bottom to "nothing">>
+	<<set _top to "nothing">>
+	<<if $exhibitionism gte 55>>
+		<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.over_lower.exposed gte 2>>
+			<<if $worn.under_lower.exposed lt 1 or $exhibitionism gte 75>>
+				<<set _bottom to "strip">>
+			<</if>>
+		<</if>>
+		<<if ($worn.upper.name is "towel top" or $worn.upper.name is "large towel") and $worn.over_upper.exposed gte 2>>
+			<<if $worn.upper.one_piece isnot 1 or _bottom is "strip">>
+				<<set _top to "strip">>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if _bottom is "strip" and _top is "strip">>
+		<<set _exlevel to ($worn.under_lower.exposed lt 1 ? 1 : 2)>>
+		<<set _toweldrop to "both">>
+	<<elseif _bottom is "strip">>
+		<<set _exlevel to ($worn.under_lower.exposed lt 1 ? 1 : 2)>>
+		<<set _toweldrop to "lower">>
+	<<elseif _top is "strip">>
+		<<set _exlevel to 1>>
+		<<set _toweldrop to "upper">>
+	<<else>>
+		<<set _exlevel to 0>>
+		<<set _toweldrop to "none">>
+	<</if>>
+<</widget>>
+
+<<widget "school_infirmary_options">>
+	<<if $passage isnot "School Infirmary Ask Painkiller">>
+		<<schoolicon "infirmary">><<link [[Ask for a painkiller|School Infirmary Ask Painkiller]]>><</link>>
+		<br>
+	<</if>>
+	<<if $passage isnot "School Infirmary Ask Bed">>
+		<<bedroomicon>><<link [[Ask to use one of the beds|School Infirmary Ask Bed]]>><</link>>
+		<br>
+	<</if>>
+	<<if $passage isnot "School Infirmary Cabinet">>
+		<<pillicon>><<link [[Look inside a cabinet|School Infirmary Cabinet]]>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<getouticon>><<link [[Leave|Hallways]]>><<endevent>><</link>>
+	<br>
+<</widget>>
+
+<<widget "infirmary_excused">>
+	<<switch $schoolstate>>
+		<<case "first">>
+			<<set $daily.school.scienceExcused to true>>
+		<<case "second">>
+			<<set $daily.school.mathsExcused to true>>
+		<<case "third">>
+			<<set $daily.school.englishExcused to true>>
+		<<case "fourth">>
+			<<set $daily.school.historyExcused to true>>
+		<<case "fifth">>
+			<<set $daily.school.swimmingExcused to true>>
+	<</switch>>
+<</widget>>
+
+<<widget "enableSchoolRescue">>
+	/* Call with all applicable conditions for a rescue in any order. ex: <<enableSchoolRescue "Whitney" "delinquency">> for scenes where Whitney or low delinquency can save you, or <<enableSchoolRescue "Leighton">> for scenes where just Leighton can save you. */
+	/* Shouldn't be called without any arguments; just use the standard "enable_rescue" widget for those cases. */
+	<<if $drugged lte 0>>
+		<<set $_rescue to []>>
+
+		<<if _args.includes("Whitney") and C.npc.Whitney.dom gte random(10, 25) and C.npc.Whitney.state is "active" and $whitneyromance is 1>>
+			<<set $_rescue.push("Whitney")>>
+		<</if>>
+
+		/* There are no cases where Leighton being present and low delinquency are separate conditions for rescue, but there are some where both are required. ex: "Maths Note Molestation" */
+		<<if _args.includesAll("delinquency", "Leighton") and $delinquency lt 400 and $pillory_tenant.special.name isnot "Leighton">>
+			<<set $_rescue.push("Leighton")>>
+		<<elseif _args.includes("delinquency") and $delinquency lt 400>>
+			<<set $_rescue.push("delinquency")>>
+		<<elseif _args.includes("Leighton") and $pillory_tenant.special.name isnot "Leighton">>
+			<<set $_rescue.push("Leighton")>>
+		<</if>>
+
+		<<if $_rescue.includes("Whitney") and $_rescue.includes("delinquency", "Leighton")>>
+			/* Safe Whitney rescue */
+			<<set $rescue to 3>>
+		<<elseif $_rescue.includes("Whitney")>>
+			/* Lone Whitney rescue */
+			<<set $rescue to 2>>
+		<<elseif $_rescue.length gt 0 or !_args[0]>>
+			/* Safe rescue */
+			<<set $rescue to 1>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+:: School Vending Machine Widget [widget]
+/**
+	$weekly.theft.vendingMachine {
+		broken: boolean
+		stolen: boolean
+	}
+	$daily.vendingMachine {
+		used: boolean
+	}
+ */
+<<widget "schoolVendingMachine">>
+	<<set $weekly.theft.vendingMachine to $weekly.theft.vendingMachine || {}>>
+	<<set $daily.vendingMachine to $daily.vendingMachine || {}>>
+	<br>
+	There is a vending machine for condoms. They are subsidised by the Department of Youth.
+	<br>
+	<<if !$brothelVending>>
+		<<if $brotheljob and $fame.business gte 100>>
+			<<set $brothelVending to {status: "idea", products: 0, condoms: 0, lube: 0, condomsSold: 0, lubeSold: 0, condomsToRefill: 0, lubeToRefill: 0, weeksRent: 0, weeksEmpty: 0}>>
+			/* $brothelVending.status
+			idea - 1 PC has had the idea but not talked to Briar
+			asked - 2 Talked with Briar But not bought the machine
+			bought 2 - 4 Bought the vending machine but not installed it
+			sold - Briar sold the machine since it was empty for so long
+			set 3 - 8 Installed the vending machine
+			BITS of $brothelVending.products
+			bit 0 - 1 Talked to the pharmacy nurse about reselling condoms
+			bit 1 - 2 Talked to Sirris about selling lube */
+			<br>
+			Seeing the vending machine, <span class="pink">an idea strikes you</span>. You think it might be a good idea to set up a vending machine in the brothel's dressing room, so the staff can buy condoms or other useful items for their work. <span class="gold">You decide you'll talk to Briar about it.</span>
+			<br><br>
+		<</if>>
+	<</if>>
+	/* Suggestion:
+		When broken, the machine can be completely inoperable for a week.
+		When stolen, the machine can still be operated normally, but held cash is set to 0:
+		  Each day the machine's stored wealth can be reset, and held cash could be randomly incremented.
+		  If you purchase condoms, you could sneakily regain the cash you spent.
+		  Optional: There could be more than 2 condoms in the machine.
+	*/
+	<<if $weekly.theft.vendingMachine.broken or $weekly.theft.vendingMachine.stolen>>
+		<span class="red">The vending machine is broken.</span>
+	<<else>>
+		<<if $daily.vendingMachine.used>>
+			A red display reads "<span class="red">Empty</span>".
+		<<else>>
+			<<if $money gte 2000>>
+				<<condomicon "machine">><<link [[Buy condoms (2-pack £20)|Vending Machine Buy]]>><</link>>
+			<<else>>
+				You can't afford them.
+			<</if>>
+		<</if>>
+		<<if !Time.schoolTime>>
+			<br>
+			<<condomicon "machine">><<link [[Rob|Vending Machine Rob]]>><</link>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "classRoomEarSlime">>
+	<<if _args[0] is $daily.earSlimeSkipLesson and $justEntered>>
+		You try to ignore the slime's command, but find yourself unable to enter the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
+		<br><br>
+		<<if $daily.earSlimeSkipLesson is "swimming">>
+			<<link [[Next|$lastChangingRoom]]>><<endevent>><</link>>
+		<<else>>
+			<<link [[Next|Hallways]]>><<endevent>><</link>>
+		<</if>>
+		<<unset $justEntered>>
+		<<exitAll>>
+	<<elseif _args[0] and !$daily.earSlimeSkipLesson and _args[0] isnot $weekly.earSlimeSkipLesson and numberOfEarSlime() and earSlimeMakingMundaneRequests() and $justEntered and random(0,200) gte 175 - $earSlime.corruption>>
+		<<set $daily.earSlimeSkipLesson to _args[0]>>
+		<<set $weekly.earSlimeSkipLesson to _args[0]>>
+		<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to skip the _args[0] lesson.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+		<br><br>
+		<<link [[Obey|School Lesson Slime]]>><<set $phase to 0>><<set $lessonPassage to $passage>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<if $earSlime.startedThreats>>
+			<<link [[Defy|School Lesson Slime]]>><<set $phase to 2>><<set $lessonPassage to $passage>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<<else>>
+			<<link [[Ignore|School Lesson Slime]]>><<set $phase to 1>><<set $lessonPassage to $passage>><</link>>
+		<</if>>
+		<br>
+		<<unset $justEntered>>
+		<<exitAll>>
+	<<elseif _args[0] and !$daily.earSlimeSkipLesson and _args[0] isnot $weekly.earSlimeSkipLesson and numberOfEarSlime() and $justEntered and random(0,100) gte 95 - ($earSlime.growth / 25) and $earSlime.exhibitionism gte 2>>
+		<<if $earSlime.growth gte 200 and $earSlime.promiscuity gte 4>>
+			<span class="lewd">You feel the slime in your head command you to skip class, masturbate in the hallway, and ask to be raped if a crowd gathers.</span> <span class="red">It expects to be obeyed.</span>
+		<<else>>
+			<span class="lewd">You feel the slime in your head command you to skip class and masturbate in the hallway.</span> It promises rewards if you comply, and threatens consequences if you do not.
+		<</if>>
+		<br><br>
+		<<link [[Obey|School Lesson 2 Slime]]>><<set $phase to 0>><<set $lessonPassage to $passage>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<link [[Defy|School Lesson 2 Slime]]>><<set $phase to 1>><<set $lessonPassage to $passage>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<br>
+		<<unset $justEntered>>
+		<<exitAll>>
+	<</if>>
+<</widget>>

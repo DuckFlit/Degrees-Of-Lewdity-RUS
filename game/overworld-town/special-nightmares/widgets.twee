@@ -1,0 +1,73 @@
+:: Widgets Nightmares [widget]
+
+<<widget "nightmareCheck">>
+	<!-- _args[0] should always be the *next* passage; ex, if the current passage is "Eden Cabin Bed" _args[0] should be "Cabin Sleep" -->
+    <<if $nightmares gt 0 and $controlled is 0 and !$nightmareTimer>>
+		<<set $_possibleNightmares to []>>
+
+		<<if _args[0] is "Cabin Sleep" and isLoveInterest("Eden") and C.npc.Eden.love gt 140>>
+			<<set $_possibleNightmares.push("Nightmare Eden")>>
+		<</if>>
+
+		<<if _args[0].includes("Bird Tower Sleep") and $syndromebird is 1>>
+			<<set $_possibleNightmares.push("Nightmare Bird")>>
+		<</if>>
+
+		<<if $location isnot "asylum" and $asylumstatus isnot undefined>>
+			<<set $_possibleNightmares.push("Nightmare Harper")>>
+		<</if>>
+
+		<<if $wraithPrison and $wraithPrison.vision>>
+			<<set $_possibleNightmares.push("Nightmare Wraith")>>
+		<</if>>
+
+		<<if $_possibleNightmares.length gte 1>>
+			<<set $nightmareNext to $_possibleNightmares.random()>>
+			<<set $nightmareRedirect to _args[0]>>
+			<<set $nightmareExit to $passage>>
+
+			<<run General.linkOverride({ [$nightmareRedirect]: $nightmareNext })>>
+        <</if>>
+    <</if>>
+<</widget>>
+
+<<widget "nightmareStart">>
+	<<if !$nightmaresSeen>><<set $nightmaresSeen to []>><</if>>
+	<<set $activeNightmare to _args[0]>>
+	<<set $nightmareTimer to 4>>
+	<<if !$frozenValues>>
+		<<freezePlayerStats>>
+	<</if>>
+	<<set $nightmareWake to 1>>
+
+	<<set $clothingrebuy to 0>>
+	/*Note: Normal Pregnancy is disabled by directly checking for $activeNightmare*/
+	<<set $parasitepregdisable to "t">>
+<</widget>>
+
+<<widget "nightmareEnd">>
+	<<if !$activeNightmare>>
+		<<exit>>
+	<</if>>
+	<<if !$replayScene>>
+		<<set $_wraithDefeated to $wraith.defeated>>
+		<<unfreezePlayerStats>>
+		<<endcombat>> /* legacy support for old saves updated in the event mid combat */
+		<<set $wraith.defeated to $_wraithDefeated>>
+	<</if>>
+	<<set $nightmaresSeen.pushUnique($activeNightmare)>>
+	<<unset $nightmareNext>>
+	<<unset $activeNightmare>>
+	<<unset $nightmareRedirect>>
+
+	<<set $sleephour to random(1, $sleephour)>>
+	<<sleep true>>
+<</widget>>
+
+<<widget "nightmareWakeDifficulty">>
+	<<switch $nightmareWake>>
+		<<case 3>><<willpowerdifficulty 1 800>>
+		<<case 2>><<willpowerdifficulty 200 1000>>
+		<<default>><<willpowerdifficulty 400 1200>>
+	<</switch>>
+<</widget>>
