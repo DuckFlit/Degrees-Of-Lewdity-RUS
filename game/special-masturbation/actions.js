@@ -1,3 +1,6 @@
+/*
+	Old version can be found at https://gitgud.io/Vrelnir/degrees-of-lewdity/-/blob/master/game/special-masturbation/actions.twee?ref_type=0c2b0126
+*/
 function masturbationActions() {
 	const fragment = document.createDocumentFragment();
 

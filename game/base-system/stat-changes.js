@@ -1,8 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-useless-escape */
 
-// eslint-disable-next-line no-var, no-unused-vars
-var statChange = (() => {
+const statChange = (() => {
 	function paramError(functionName = "", param = "", value, expectedValues = "") {
 		if (typeof value === "object") value = JSON.stringify(value);
 		throw new Error(
@@ -52,7 +51,7 @@ var statChange = (() => {
 			V.panicattacks = 0;
 		}
 
-		wikifier("updateHallucinations");
+		updateHallucinations();
 
 		if (V.trauma >= V.traumamax) {
 			V.dissociation = 2;
@@ -62,7 +61,7 @@ var statChange = (() => {
 			V.dissociation = 0;
 		}
 
-		wikifier("traumaclamp");
+		traumaClamp();
 	}
 	DefineMacro("trauma", trauma);
 
@@ -83,7 +82,7 @@ var statChange = (() => {
 				// eslint-disable-next-line prettier/prettier
 				V.trauma += Math.trunc((amount * 1) + ((amount * 0.5) * (V.control / V.controlmax)));
 			}
-			wikifier("traumaclamp");
+			traumaClamp();
 		}
 	}
 	DefineMacro("combattrauma", combattrauma);
@@ -93,10 +92,20 @@ var statChange = (() => {
 		amount = Number(amount);
 		if (amount) {
 			V.trauma += amount;
-			wikifier("traumaclamp");
+			traumaClamp();
 		}
 	}
 	DefineMacro("straighttrauma", straighttrauma);
+
+	function traumaClamp() {
+		if (V.trauma >= V.traumamax) V.beauty -= (V.trauma - V.traumamax) / 5;
+		if (V.innocencestate === 1 && V.trauma > 0) {
+			V.innocencetrauma += V.trauma;
+			V.trauma = 0;
+		}
+		V.trauma = Math.clamp(V.trauma, 0, V.traumamax);
+	}
+	DefineMacro("traumaclamp", traumaClamp);
 
 	function updateHallucinations() {
 		if (V.trauma >= (V.traumamax / 10) * 5 || V.awareness >= 400 || V.hallucinogen > 0 || isBloodmoon() || V.worn.face.type.includes("esoteric")) {
@@ -349,7 +358,7 @@ var statChange = (() => {
 			}
 
 			V.arousal += amount * mod;
-			wikifier("arousalclamp");
+			arousalClamp();
 
 			// Add to the tracker
 			if (amount > 0) {
@@ -361,6 +370,22 @@ var statChange = (() => {
 	DefineMacro("arousal", arousal);
 	DefineMacro("breastarousal", amount => arousal(amount, "breasts"));
 	DefineMacro("genitalarousal", amount => arousal(amount, "genitals"));
+
+	function arousalClamp() {
+		V.arousal = Math.clamp(V.arousal, minArousal(), V.arousalmax);
+	}
+	DefineMacro("arousalclamp", arousalClamp);
+
+	function minArousal() {
+		let result = playerHeatMinArousal() + playerRutMinArousal();
+
+		result += Object.values(V.worn).reduce((prev, curr) => {
+			if (curr.type.includes("fetish")) return prev + 150;
+			return prev;
+		}, 0);
+
+		return Math.clamp(result, 0, 5000);
+	}
 
 	function tiredness(amount, source) {
 		if (isNaN(amount)) paramError("tiredness", "amount", amount, "Expected a number.");
@@ -402,7 +427,7 @@ var statChange = (() => {
 
 			V.pain += pain;
 		}
-		wikifier("painclamp");
+		painClamp();
 	}
 	DefineMacro("pain", pain);
 
@@ -412,10 +437,40 @@ var statChange = (() => {
 		if (amount) {
 			V.pain += amount * (1 - V.masochism / 1200) * 4;
 			arousal(amount * (0 + V.masochism / 18) * 4);
-			wikifier("painclamp");
+			painClamp();
 		}
 	}
 	DefineMacro("masopain", masopain);
+
+	function painClamp() {
+		if (V.gamemode === "soft") {
+			V.pain = 0;
+		} else {
+			V.pain = Math.clamp(V.pain, minPain(), 200);
+		}
+	}
+	DefineMacro("painclamp", painClamp);
+
+	function minPain() {
+		let result = 0;
+
+		if (V.lactating && V.breastfeedingdisable === "f" && V.milkFullPain > 200) {
+			result += Math.ceil((V.milkFullPain - 200) / 5);
+			if (!V.daily.milkFullPainMessage) {
+				V.milkFullPainMessage = 1;
+				V.effectsmessage = 1;
+			}
+		}
+
+		if (
+			V.earSlime.defyCooldown &&
+			(V.worn.genitals.name === "chastity parasite" || V.parasite.penis.name === "parasite" || V.parasite.clit.name === "parasite")
+		) {
+			result += 25;
+		}
+
+		return Math.clamp(result, 0, 50);
+	}
 
 	function detention(amount) {
 		if (V.statFreeze) return;
@@ -542,17 +597,13 @@ var statChange = (() => {
 
 	function wolfpacktrust() {
 		V.wolfpacktrust++;
-		if (V.statdisable === "f") return '<span class="green">The pack trusts you a little more.</span>';
-		return "";
+		return statDisplay.statChange("The pack trusts you a little more.", 0, "green");
 	}
-	DefineMacroS("wolfpacktrust", wolfpacktrust);
 
 	function wolfpackfear() {
 		V.wolfpackfear++;
-		if (V.statdisable === "f") return '<span class="green">The pack fears you a little more.</span>';
-		return "";
+		return statDisplay.statChange("The pack fears you a little more.", 0, "green");
 	}
-	DefineMacroS("wolfpackfear", wolfpackfear);
 
 	function ferocity(amount) {
 		if (isNaN(amount)) paramError("ferocity", "amount", amount, "Expected a number.");
@@ -567,8 +618,6 @@ var statChange = (() => {
 		}
 		return "";
 	}
-	DefineMacroS("gferocity", (amount = 1) => ferocity(amount));
-	DefineMacroS("lferocity", (amount = 1) => ferocity(-amount));
 
 	function harmony(amount = 1) {
 		if (isNaN(amount)) paramError("harmony", "amount", amount, "Expected a number.");
@@ -583,8 +632,6 @@ var statChange = (() => {
 		}
 		return "";
 	}
-	DefineMacroS("gharmony", (amount = 1) => harmony(amount));
-	DefineMacroS("lharmony", (amount = 1) => harmony(-amount));
 
 	function submissive(amount, modifier = 4) {
 		if (V.statFreeze) return;
@@ -621,21 +668,19 @@ var statChange = (() => {
 			switch (V.player.penissize) {
 				case 4:
 					insecurity("penis_big", amount);
-					return '<<ginsecurity "penis_big">>';
+					return statDisplay.gacceptance("penis_big");
 				case 1:
 					insecurity("penis_small", amount);
-					return '<<ginsecurity "penis_small">>';
+					return statDisplay.gacceptance("penis_small");
 				case 0:
 				case -1:
 				case -2:
 					insecurity("penis_tiny", amount);
-					return '<<ginsecurity "penis_tiny">>';
+					return statDisplay.gacceptance("penis_tiny");
 			}
 		}
 		return "";
 	}
-	DefineMacroS("incgpenisinsecurity", amount => gainPenisInsecurity(amount));
-	DefineMacroS("incggpenisinsecurity", () => gainPenisInsecurity(20));
 
 	function insecurity(type, amount) {
 		if (V.statFreeze) return;
@@ -740,12 +785,11 @@ var statChange = (() => {
 			if (type && V["insecurity_" + type] > 0 && V["acceptance_" + type] < 1000) {
 				acceptance(type, amount);
 				if (V["acceptance_" + type] >= 1000) T.acceptanceAchieved = type;
-				return "<<gacceptance>>";
+				return statDisplay.gacceptance();
 			}
 		}
 		return "";
 	}
-	DefineMacroS("gpenisacceptance", gainPenisAcceptance);
 
 	function willpower(amount) {
 		if (V.statFreeze) return;
@@ -985,6 +1029,7 @@ var statChange = (() => {
 		trauma,
 		combattrauma,
 		straighttrauma,
+		traumaClamp,
 		updateHallucinations,
 		control,
 		corruption,
@@ -996,9 +1041,13 @@ var statChange = (() => {
 		stress,
 		sensitivity,
 		arousal,
+		arousalClamp,
+		minArousal,
 		tiredness,
 		pain,
 		masopain,
+		painClamp,
+		minPain,
 		detention,
 		delinquency,
 		status,
@@ -1035,3 +1084,4 @@ var statChange = (() => {
 		worldCorruption,
 	};
 })();
+window.statChange = statChange;

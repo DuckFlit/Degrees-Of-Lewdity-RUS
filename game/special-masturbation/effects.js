@@ -1,4 +1,6 @@
-// eslint-disable-next-line no-unused-vars
+/*
+	Old version can be found at https://gitgud.io/Vrelnir/degrees-of-lewdity/-/blob/master/game/special-masturbation/effects.twee?ref_type=7f47147b
+*/
 function masturbationEffects() {
 	const fragment = document.createDocumentFragment();
 	const br = () => document.createElement("br");
