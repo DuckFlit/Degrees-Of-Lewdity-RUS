@@ -1,0 +1,15 @@
+cordova apk builder for primarily DoL
+
+dependencies: (in parentheses are versions at the moment of writing)
+- nodejs stable (20.10.0), with npm and npx installed
+- gradle latest (8.5)
+- openjdk 17 (Temurin-17.0.8.1+1)
+- commandlinetools latest (10406996_latest) https://developer.android.com/studio#cmdline-tools scroll to the bottom of the page
+
+to create a building environment, install nodejs, gradle and openjdk with your favorite package manager, then unzip and place `bin/`, `lib/`, and `source.properties` from commandlinetools archive into `androidsdk/cmdline-tools/latest`, then run ./setup_deps.sh. this only needs to be done once per repository.
+
+debug builds are set up so they can be installed in parallel with release builds. to run debug build, run `./build_app_debug.sh`. compiled apk will be sent to the `../../dist/` directory.
+
+release builds require official dol.keystore to sign the resulting apk. using any other keystore will make the app incompatible with official release.
+in vast majority of cases, you'll be better off with a debug build, but if you're a mod dev and you really want your apk signed, then you can use the release build. first, you need to change `android-packageName` in `config.xml`, so it won't conflict with official app. second, generate a new keystore by running `keytool -genkey -v -keystore dol.keystore -alias dol -keyalg RSA -keysize 2048 -deststoretype pkcs12 -validity 9999` command, included with jdk. once done, place generated `dol.keystore` into `../../keys`.
+after that, you can run `./build_app_release.sh`. it will ask for password to keystore. once the build is successful, you can uncomment the line in `./build_app_release.sh` to stop it from further asking for passwords. like with debug builds, compiled apks are sent to `../../dist`.
