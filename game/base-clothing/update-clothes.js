@@ -505,7 +505,6 @@ function wardrobesUpdate() {
 			if (wardrobe && Array.isArray(wardrobe.upper) && !wardrobe.handheld) wardrobe.handheld = [];
 		});
 	}
-
 	if (!V.wardrobes.officeBuilding) {
 		V.wardrobes.officeBuilding = clone(defWardrobe);
 		V.wardrobes.officeBuilding.name = "Office agency changing room";

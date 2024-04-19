@@ -935,7 +935,6 @@ function hourPassed(hours) {
 
 function minutePassed(minutes) {
 	const fragment = document.createDocumentFragment();
-
 	// Stress
 	// decay/rise and crossdresser trait
 	const isCrossdresser = V.backgroundTraits.includes("crossdresser");
