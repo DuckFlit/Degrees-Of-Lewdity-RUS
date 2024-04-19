@@ -579,14 +579,14 @@ const Furniture = (() => {
 				if (decoration !== null && decoration.id === "owlplushie") {
 					furnitureSet("owlplushie", Categories.owlplushie, {
 						name: "owl plushie",
-						nameCap: "Owl plushie",
+						nameCap: "Плюшевая сова",
 					});
 					furnitureDelete(Categories.decoration);
 				}
 				if ([2, 4, 7].includes(V.kylar_camera)) {
 					furnitureSet("owlplushie", Categories.owlplushie, {
 						name: "owl plushie",
-						nameCap: "Owl plushie",
+						nameCap: "Плюшевая сова",
 					});
 				}
 				versions.furniture = 3;
