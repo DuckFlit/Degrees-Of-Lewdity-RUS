@@ -11,7 +11,7 @@ function sexToysInventoryInit() {
 			V.player.inventory.sextoys[category].forEach((item, index) => {
 				if (setupItem) {
 					const itemClassName = category.replace(/\s/g, "_") + "_" + index;
-					const itemStatus = item.worn ? "worn" : item.carried ? "carried" : "";
+					const itemStatus = item.worn ? "носится" : item.carried ? "взято" : "";
 					const itemColour = setupItem.colour === 1 ? "clothes-" + item.colour : "";
 					mainGrid.innerHTML += `<div id="sti_item_${itemClassName}" class="sti_cell sti_full" onclick="window.sexToysInventoryOnItemClick(${index},\`${category}\`)" class="">
 							<div style="position:relative;z-index: 1;">
@@ -63,15 +63,15 @@ function sexToysInventoryOnItemClick(index, category) {
 			<span style="color:#bcbcbc">${item.description}</span>
 			<div id="sti_desc_action">
 				<br><a id="stiCarryButton" onclick="window.sexToysInventoryOnCarryClick(${index},'${category}')" class="sti_carry_button">
-					${invItem.carried ? "Put it back" : "Carry it"}
+					${invItem.carried ? "Положить на место" : "Нести с собой"}
 				</a>
 				${setup.sextoys[invItem.index].wearable === 1 ? "<br>" : ""}
 				<a style="${setup.sextoys[invItem.index].wearable === 1 ? "" : "display: none;"}" id="stiWearButton"
 					onclick="window.sexToysInventoryOnWearClick(${index},'${category}')" class="sti_wear_button">
-						${invItem.worn ? "Take it off" : "Wear it"}
+						${invItem.worn ? "Снять" : "Надеть"}
 				</a>
 				<br><a id="stiThrowButton" onclick="window.sexToysInventoryOnThrowClick(${index},'${category}')" class="sti_throw_button">
-					Throw it away
+					Выбросить
 				</a>
 			</div>
 		</div>
@@ -109,10 +109,10 @@ function sexToysInventoryOnCarryClick(index, category) {
 		}
 	}
 
-	document.getElementById("stiWearButton").textContent = toy.worn ? "Take off" : "Wear it"; // update button text value
-	document.getElementById("stiCarryButton").textContent = toy.carried ? "Put back in the cupboard" : "Carry it"; // update button text value
+	document.getElementById("stiWearButton").textContent = toy.worn ? "Снять" : "Надеть"; // update button text value
+	document.getElementById("stiCarryButton").textContent = toy.carried ? "Положить обратно в шкаф" : "Нести с собой"; // update button text value
 	// update worn/carried tag on cell
-	document.getElementById("sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index).textContent = toy.worn ? "worn" : toy.carried ? "carried" : "";
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index).textContent = toy.worn ? "носится" : toy.carried ? "Взято" : "";
 
 	updateCarryCountUI();
 	greyButtonsIfCarryLimitReached(index, category);
@@ -178,16 +178,16 @@ function sexToysInventoryOnWearClick(index, category) {
 	toy.worn = !toy.worn;
 	if (setupCategory !== "strap-on") {
 		V.worn[setupCategory] = toy;
-		V.worn[setupCategory].state = "worn";
+		V.worn[setupCategory].state = "носится";
 	}
 	toy.carried = true; // also carry the item if not done alreadys
-	document.getElementById("stiWearButton").textContent = toy.worn ? "Take off" : "Wear it"; // update button text value
-	document.getElementById("stiCarryButton").textContent = !toy.carried ? "Carry it" : "Put back in the cupboard"; // update button text value
-	document.getElementById("sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index).textContent = toy.worn ? "worn" : toy.carried ? "carried" : "";
+	document.getElementById("stiWearButton").textContent = toy.worn ? "Снять" : "Надеть"; // update button text value
+	document.getElementById("stiCarryButton").textContent = !toy.carried ? "Нести с собой" : "Положить обратно в шкаф"; // update button text value
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index).textContent = toy.worn ? "носится" : toy.carried ? "взято" : "";
 	$("[id*='sti_already_owned_']").each(function (i, element) {
 		const c = element.getAttribute("data-category");
 		const ind = element.getAttribute("data-index");
-		element.textContent = V.player.inventory.sextoys[c][ind].worn ? "worn" : V.player.inventory.sextoys[c][ind].carried ? "carried" : "";
+		element.textContent = V.player.inventory.sextoys[c][ind].worn ? "носится" : V.player.inventory.sextoys[c][ind].carried ? "взято" : "";
 	});
 	// this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
 	if (setupCategory === "strap-on") {
@@ -359,7 +359,7 @@ window.countCarriedSextoys = countCarriedSextoys;
 function updateCarryCountUI() {
 	const colour = countCarriedSextoys() >= maxCarried ? "red" : "";
 	document.getElementById("carryCount").outerHTML = `<div id="carryCount" class="sti_grid_carried_count">
-		Items carried: <span class="${colour}">${countCarriedSextoys()}/${maxCarried}</span>
+		Предметов взято: <span class="${colour}">${countCarriedSextoys()}/${maxCarried}</span>
 	</div>`;
 }
 window.updateCarryCountUI = updateCarryCountUI;
@@ -399,7 +399,7 @@ function setLowerVisibility(desiredVisibility) {
 	}
 
 	const elem = document.querySelector("#stiShowUnderwear > .link-internal");
-	if (elem !== null) elem.text = !T.lowerVisible ? "Show lower clothing" : "Hide lower clothing";
+	if (elem !== null) elem.text = !T.lowerVisible ? "Показать нижнюю одежду" : "Спрятать нижнюю одежду";
 
 	Links.generateLinkNumbers($(".passage"));
 }
