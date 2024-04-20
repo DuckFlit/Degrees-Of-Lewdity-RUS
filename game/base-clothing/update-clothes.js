@@ -191,6 +191,10 @@ function updateClothesItem(slot, item, debug) {
 		(item.accessory_colour === 0 && itemRef.accessory_colour_options.length > 0)
 	)
 		updateClothingColours(item, itemRef);
+
+	// Clothing warmth
+	if (item.warmth !== itemRef.warmth) item.warmth = itemRef.warmth;
+
 	// Fix for 0.2.21.x issue
 	if (item.colour_combat !== undefined && itemRef.colour_options.length === 0) item.colour = 0;
 	if (item.accessory_colour_combat !== undefined && itemRef.colour_options.length === 0) item.accessory_colour = 0;
