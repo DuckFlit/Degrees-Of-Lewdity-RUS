@@ -30,6 +30,13 @@
 					<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
 					/*<<addevent "wolfCaveMultiple _args">>*/
 				<</if>>
+			<<case "tower">>
+				<<if _singleEvents is true and (_multipleEvents is false or random(0,100) gt 40)>>
+					<<addevent `"hawkSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
+				<<elseif _multipleEvents is true>>
+					<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
+					/*<<addevent "hawkMultiple _args">>*/
+				<</if>>
 		<</switch>>
 	<</if>>
 <</widget>>
@@ -87,6 +94,26 @@
 					<<link [[Breast feed (0:30)|childBreastFeed]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
 					<br>
 				<</if>>
+				<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+				<br>
+				<<link [[Talk (0:30)|childTalk]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+				<br>
+				<<link [[Play (0:30)|childPlay]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+		<</switch>>
+	<</if>>
+	<br>
+<</widget>>
+
+<<widget "hawkSingles">>
+	<<if _args[0]>>
+		<<childSelect _args[0]>>
+		<<switch random(0,0)>>
+			<<case 0>>
+				You spot your <<childtype>> <<childname>> lying in the nest, looking at you with their <<childhands>> stretched towards you.
+				<br><br>
+				Picking <<childhim>> up, <<childhe>> <<childgiggles>> while rubbing your face.
+				<br><br>
+
 				<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
 				<br>
 				<<link [[Talk (0:30)|childTalk]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
@@ -262,6 +289,8 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 				Silence fills the room.
 
 		<</switch>>
+	
+	<<case "tower">>
 
 <</switch>>
 <br><br>
@@ -685,7 +714,7 @@ You leave behind $donatedMilk bottles of milk for your children with one of Bail
 	/*Hawk Specific*/
 	<<case "sleepingStrokeHawk">>
 		You climb into the nest with the slumbering <<childtype>>, and stroke <<childhis>>
-		<<if _childTotalDayslte 14>>
+		<<if _childTotalDays lt 14>>
 			tiny, pinkish feathers.
 		<<else>>
 			feathers.
@@ -716,17 +745,102 @@ You leave behind $donatedMilk bottles of milk for your children with one of Bail
 		<<else>>
 			The pair adjust to make room for you, and you're soon snuggled close together.
 		<</if>>
+		<br><br>
 
 		You enjoy this comfortable moment for a while, before rising to your feet. <<ltiredness>><<tiredness -6>><<lstress>><<stress -5>>
 	<<case "cryingHawk">>
 		You sit by the <<childcry>> <<childtype>>, and pull <<childhim>> into your lap. You hum, soothe, and stroke the <<childtype>>'s
-		<<if _childTotalDayslte 14>>
+		<<if _childTotalDays lt 14>>
 			tiny, pinkish feathers.
 		<<else>>
 			feathers.
 		<</if>>
 		<<childname>> calms, and begins to doze under your gentle attention. You gingerly place the sleeping <<childtype>> down and stand again.
-		<<set $children[$childActivityEvent.childid].localVariables.activity to "sleeping">>	
+		<<set $children[$childActivityEvent.childid].localVariables.activity to "sleeping">>
+	<<case "pickUpHawk">>
+		You scoop up the <<childtype>> and hold <<childhim>> close to your chest. The corners of your lips curve up into a dopey smile when you hear <<childhis>> <<if $children[$childActivityEvent.childid].features.monster is "monster">>giggles<<else>>tiny peeps and chirps<</if>>.
+		<<if _childTotalDays lt 14>>
+			<<childname>>'s sweet sounds make your heart flutter as you hold <<childhim>> close.
+		<<else>>
+			<<childname>>'s feathers tickle you as you hold <<childhim>> close.
+		<</if>>
+	<<case "pretendFly">>
+		You hold <<childname>> with both hands and gleefully hoist <<childhim>> up high above your head. <<childname>> looks down at you with sparkling eyes, letting <<childhis>> tiny wings take him on what might as well be a journey and a half in your secure grasp. You smile happily as the <<childtype>> flaps <<childhis>> wings<<if $children[$childActivityEvent.childid].features.monster is "monster">> and arms<</if>>.
+		<br><br>
+
+		One day, you recall, <<childhe>> will leave your nest and fly free. The thought makes you feel giddy and bittersweet. You hold <<childname>> close and stroke <<childhis>> small body. <<trauma -6>><<ltrauma>>
+		<<set $children[$childActivityEvent.childid].localVariables.activity to "sleeping">>
+	<<case "preen">>
+		<<childname>> seems to be unable to reach feathers that have yet to separate. You take notice and scoop the <<childtype>> up. <<childname>> lets out a small chirp as you run your fingers through <<childhis>> feathers. You begin to tidy up <<childhis>> plumage, twisting interlocked tufts in your fingers to reveal soft, newly grown feathers. <<childname>> looks up at you happily, moving to poke at an idle strand of your hair with <<childhis>> <<childhand>>. You reckon this is <<childhis>> idea of grooming you. <<stress -6>><<lstress>>
+		<<set $children[$childActivityEvent.childid].localVariables.activity to "sleeping">>
+	<<case "perch">>
+		You approach <<childname>>, noticing a discontented expression on <<childhis>> face. <<childHis>> eyes are locked on the tower's ledge. You're able to put two and two together, realising <<childname>> wants to go outside and hear you sing.
+		<br><br>
+
+		You pick <<childname>> up and make your way over to look down at the <<if Weather.isSnow>>moor, blanketed by snow.<<else>>green moor.<</if>>
+		<<if $bird.state is "home" and ["sing","groom"].includes($bird.activity)>>
+			<<npc "Great Hawk">>
+			You take a seat next to <<your_bird_text>>, who looks to you and <<childname>> with surprise. A grin crosses your face as <<childname>> snuggles into your embrace.
+			<br><br>
+
+			You take a deep breath and begin to sing. A note leaves your mouth, and then another. You sing a lullaby, which your spouse joins in on. You hold <<childname>> close as you sing, each note growing more and more quiet when you see <<his>> eyes growing heavy. As you reach the end of your song, you hear a small <<if $children[$childActivityEvent.childid].features.monster is "monster">>"Wah!"<<else>>peep<</if>>.
+			<br><br>
+
+			<<childname>> <<if $children[$childActivityEvent.childid].features.monster is "monster">>sings<<else>>trills<</if>> a quiet mimic of your lullaby, nuzzling into your chest. The song doesn't last long before <<childhe>> has fallen asleep. You yearn for the day you'll be able to hear your child's true voice.
+			<br><br>
+
+			<<if $monster is 1>>
+				"<<childname>> takes after us quickly," <<your_bird_text>> says with a hint of pride.
+				<br><br>
+			<</if>>
+			<<set $children[$childActivityEvent.childid].localVariables.activity to "sleeping">>
+		<<else>>
+			You take a seat right next to the most scenic overlook of the meadow below, a grin crossing your face as <<childname>> snuggles into your embrace.
+			<br><br>
+
+			You take a deep breath and begin to sing. A note leaves your mouth, and then another. You sing a lullaby of longing, the melody carried by the breeze to the world below. You hold <<childname>> close as you sing, each note growing more and more quiet when you see <<his>> eyes growing heavy. As you reach the end of your song, you hear a small <<if $children[$childActivityEvent.childid].features.monster is "monster">>"Wah!"<<else>>peep<</if>>.
+			<br><br>
+
+			<<childname>> <<if $children[$childActivityEvent.childid].features.monster is "monster">>sings<<else>>trills<</if>> a quiet mimic of your lullaby, nuzzling into your chest. The song doesn't last long before <<childhe>> has fallen asleep. You yearn for the day you'll be able to hear your child's true voice.
+		<</if>>
+	<<case "bathe">>
+		You notice with your sharp eyes that <<childname>> is in need of bathing. You scoop the <<childtype>> into your arms despite <<childhis>> chirps of protest, walking in the direction of the rainwater pool.
+		<br><br>
+
+		<<if $bird.upgrades.pot is 3 and getBirdBurnTime() gt 0>>
+			You set <<childname>> down gently and playfully splash some water onto <<childhis>> body. <<childHe>> fusses for a moment, but the warm water quickly calms <<childhim>> down.
+			<br><br>
+
+			<<childHe>> cooperates surprisingly well, letting you scrub the day's dirt and grime from <<childhis>>
+			<<if _childTotalDays lt 14>>
+				tiny pink feathers. Many of them are still stuck together. You take a piece of scrap fabric and dry <<childhim>>.
+			<<else>>
+				feathers. You take a piece of scrap fabric and dry <<childhim>>. <<childHis>> feathers immediately poof out. You can't help but giggle. <<stress -3>><<lstress>>
+			<</if>>
+		<<else>>
+			You set <<childname>> down gently and playfully splash some water onto <<childhis>> body. <<childHe>> shoots you a glare and begins to thrash around in the bath. Rivulets of water splatter over you. <<stress 3>><<gstress>>
+			<br><br>
+
+			You sigh and begin to stroke <<childhis>> plumage with one hand while you shake your other free of water. <<childname>> looks up at you, having calmed down with the gentle motion of your hand against <<childhis>> small feathers. You smile and wash <<childhim>> clean of the day's dirt and grime.
+			<br><br>
+
+			When you're done, <<childname>> is squeaky clean, albeit wet and cold. You take some scrap fabric and wrap <<childname>> into a swaddle. You hold <<childhim>> gently in your arms. <<childHe>> seems content, happy to be done with such a hectic bath. Mission accomplished.
+		<</if>>
+		<<set $children[$childActivityEvent.childid].localVariables.activity to "sleeping">>
+	<<case "batheHelp">>
+		You spot <<childname>> dipping <<childhis>> legs into the rainwater pool. You walk over and lift <<childhim>> up, gently placing him all the way into the water. <<childHe>> happily lets you scrub <<childhis>> feathers.
+		<br><br>
+
+		<<childHe>> starts to splash at the water's surface with <<childhis>> <<childhands>> and <<childgiggles>>. You can't help but crack a smile. <<stress -3>><<lstress>>
+		<br><br>
+
+		You pull <<childhim>> from the pool.
+		<<if $bird.upgrades.pot is 3 and getBirdBurnTime() gt 0>>
+			<<childHe>> <<if $children[$childActivityEvent.childid].features.monster is "monster">>hugs<<else>>nuzzles<</if>> you, happy with <<childhis>> warm bath.
+		<<else>>
+			<<childHe>> shivers, so you waste no time drying <<childhim>> off.
+		<</if>>
+		<<set $children[$childActivityEvent.childid].localVariables.activity to "sleeping">>
 	<<default>>
 		The event could not be found.<br>
 		Event: $childActivityEvent.event

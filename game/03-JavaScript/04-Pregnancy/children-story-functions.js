@@ -255,6 +255,11 @@ function hawkChildActivity(childId) {
 				"sleeping",
 				"sleeping",
 				"crying",
+				"reaching",
+				"flap",
+				"flap",
+				"perch",
+				"bathe",
 			]);
 		}
 	} else if (between(T.childTotalDays, 100, 200)) {
@@ -264,10 +269,16 @@ function hawkChildActivity(childId) {
 			activity = activity.concat([
 				"sleeping",
 				"sleeping",
-				"sleeping",
 				"crying",
+				"reaching",
+				"flap",
+				"perch",
+				"batheSelf",
 			]);
 		}
+	}
+	if (T.childTotalDays >= 14) {
+		activity.push("preen");
 	}
 
 	if (activity.length) {
