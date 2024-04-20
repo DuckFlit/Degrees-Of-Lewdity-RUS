@@ -59,7 +59,7 @@ const Weather = (() => {
 		const sunIntensity = Weather.Settings.months[Time.date.month - 1].sunIntensity * Weather.Sky.dayFactor;
 		const weatherModifier = V.outside ? Weather.current.tanningModifier : 0;
 		const locationModifier = V.location === "forest" ? 0.2 : 1;
-		return V.outside ? sunIntensity * weatherModifier * locationModifier : 0;
+		return V.outside ? Math.max(sunIntensity * weatherModifier * locationModifier, 0) : 0;
 	}
 
 	function setAccumulatedSnow(minutes) {
