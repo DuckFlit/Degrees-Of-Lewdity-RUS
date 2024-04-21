@@ -1059,7 +1059,7 @@ function initLegs() {
 			type: ["normal"],
 			gender: "m",
 			femininity: -200,
-			0,
+			warmth: 0,
 			cost: 4000,
 			description: "Sexy and functional.",
 			shop: ["clothing", "adult"],

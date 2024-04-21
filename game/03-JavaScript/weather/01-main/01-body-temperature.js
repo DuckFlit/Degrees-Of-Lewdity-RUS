@@ -113,7 +113,7 @@ Weather.BodyTemperature = (() => {
 	function update(temperature, minutes) {
 		if (T.bodyActivity === undefined) resetActivity();
 
-		if (V.inwater && V.outside) {
+		if (T.inWater && V.outside) {
 			temperature = Weather.waterTemperature;
 		}
 
@@ -139,10 +139,11 @@ Weather.BodyTemperature = (() => {
 	 * Max wetness is 80% outside of water
 	 */
 	function calculateWetness() {
-		if (V.inwater) return 1; // 100% wet if in water
+		if (T.inWater) return 1; // 100% wet if in water
+		if (V.outside && Weather.precipitation === "rain" && T.bottomless && T.topless) return 0.7;
 		const upper = (Math.max(V.overupperwet, V.upperwet, V.underupperwet) / maxWetness) * (maxClothingFactor / 2);
 		const lower = (Math.max(V.overlowerwet, V.lowerwet, V.underlowerwet) / maxWetness) * (maxClothingFactor / 2);
-		return Math.min(upper + lower, maxClothingFactor);
+		return Math.min(upper + lower, maxClothingFactor));
 	}
 
 	/**
@@ -206,7 +207,7 @@ Weather.BodyTemperature = (() => {
 	function getRestingPoint(iterations = 120, warmth = undefined, temperature) {
 		temperature = temperature ?? (V.outside ? Weather.temperature : Weather.insideTemperature);
 		let temp = V.player.bodyTemperature;
-		if (V.inwater && V.outside) {
+		if (T.inWater && V.outside) {
 			temperature = Weather.waterTemperature;
 		}
 		let dissipation, generation;

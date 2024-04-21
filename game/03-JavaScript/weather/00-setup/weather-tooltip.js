@@ -87,7 +87,7 @@ setup.WeatherTooltip = {
 		}
 	},
 	waterTemperature: () => {
-		if (!V.inwater || !V.outside) return "";
+		if (!T.inWater || !V.outside) return "";
 		if (Weather.waterTemperature <= 5) {
 			return "The water feels freezing cold."
 		} else if (Weather.waterTemperature <= 15) {
