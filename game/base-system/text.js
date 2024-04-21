@@ -2,10 +2,18 @@
 const statDisplay = {
 	statChange(statType, amount, colorClass, condition = () => true) {
 		amount = Number(amount);
-		if (V.statdisable === "t" || !condition()) return "";
+		if (V.statdisable === "t" || !condition()) return document.createDocumentFragment();
 
+		const fragment = document.createDocumentFragment();
+		const span = document.createElement("span");
+		span.className = colorClass;
 		const prefix = amount < 0 ? "- " : "+ ";
-		return ` | <span class="${colorClass}">${prefix.repeat(Math.abs(amount))}${statType}</span>`;
+
+		span.textContent = `${prefix.repeat(Math.abs(amount))}${statType}`;
+		fragment.appendChild(document.createTextNode(" | "));
+		fragment.appendChild(span);
+
+		return fragment;
 	},
 	grace(amount, expectedRank) {
 		amount = Number(amount);
@@ -33,7 +41,9 @@ const statDisplay = {
 	},
 	create(name, fn) {
 		if (this[name] === undefined && !Macro.get(name)) {
-			DefineMacroS(name, fn);
+			DefineMacro(name, function () {
+				this.output.append(fn(...this.args));
+			});
 			this[name] = fn;
 		} else {
 			console.error(`A function with the name "${name}" already exists in statDisplay.`);
@@ -342,6 +352,11 @@ statDisplay.create("gghunger", () => statDisplay.statChange("Hunger", 2, "red"))
 statDisplay.create("ggghunger", () => statDisplay.statChange("Hunger", 3, "red"));
 
 statDisplay.create("gacceptance", () => statDisplay.statChange("Acceptance", 1, "green"));
+statDisplay.create("ginsecurity", type => {
+	if (type === "breasts_tiny" && V.player.gender === "f") return "";
+	if (V["acceptance_" + type] <= 999) return statDisplay.statChange("Insecurity", 1, "red");
+	return "";
+});
 
 statDisplay.create("gwillpower", () => statDisplay.statChange("Willpower", 1, "green"));
 statDisplay.create("ggwillpower", () => statDisplay.statChange("Willpower", 2, "green"));
@@ -501,68 +516,92 @@ statDisplay.create("lscience", () => statDisplay.statChange("Science", -1, "red"
 statDisplay.create("gscience", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Science", 1, "green");
-	return `${result} ${gainSchoolStar("science_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("science_star"));
+	return result;
 });
 statDisplay.create("ggscience", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Science", 2, "green");
-	return `${result} ${gainSchoolStar("science_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("science_star"));
+	return result;
 });
 statDisplay.create("gggscience", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Science", 3, "green");
-	return `${result} ${gainSchoolStar("science_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("science_star"));
+	return result;
 });
 
 statDisplay.create("lmaths", () => statDisplay.statChange("Maths", -1, "red"));
 statDisplay.create("gmaths", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Maths", 1, "green");
-	return `${result} ${gainSchoolStar("maths_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("maths_star"));
+	return result;
 });
 statDisplay.create("ggmaths", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Maths", 2, "green");
-	return `${result} ${gainSchoolStar("maths_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("maths_star"));
+	return result;
 });
 statDisplay.create("gggmaths", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Maths", 3, "green");
-	return `${result} ${gainSchoolStar("maths_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("maths_star"));
+	return result;
 });
 
 statDisplay.create("lenglish", () => statDisplay.statChange("English", -1, "red"));
 statDisplay.create("genglish", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("English", 1, "green");
-	return `${result} ${gainSchoolStar("english_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("english_star"));
+	return result;
 });
 statDisplay.create("ggenglish", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("English", 2, "green");
-	return `${result} ${gainSchoolStar("english_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("english_star"));
+	return result;
 });
 statDisplay.create("gggenglish", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("English", 3, "green");
-	return `${result} ${gainSchoolStar("english_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("english_star"));
+	return result;
 });
 
 statDisplay.create("lhistory", () => statDisplay.statChange("History", -1, "red"));
 statDisplay.create("ghistory", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("History", 1, "green");
-	return `${result} ${gainSchoolStar("history_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("history_star"));
+	return result;
 });
 statDisplay.create("gghistory", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("History", 2, "green");
-	return `${result} ${gainSchoolStar("history_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("history_star"));
+	return result;
 });
 statDisplay.create("ggghistory", () => {
 	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("History", 3, "green");
-	return `${result} ${gainSchoolStar("history_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("history_star"));
+	return result;
 });
 
 statDisplay.create("ghousekeeping", (amount, silent) => {
@@ -645,3 +684,14 @@ statDisplay.create("llladeviancy", () => statDisplay.statChange("Alex's Deviancy
 statDisplay.create("gadeviancy", () => statDisplay.statChange("Alex's Deviancy", 1, "red"));
 statDisplay.create("ggadeviancy", () => statDisplay.statChange("Alex's Deviancy", 2, "red"));
 statDisplay.create("gggadeviancy", () => statDisplay.statChange("Alex's Deviancy", 3, "red"));
+
+// These rely on the 'statChange' function in 'stat-changes.js'
+statDisplay.create("gharmony", (amount = 1) => statChange.harmony(amount));
+statDisplay.create("lharmony", (amount = 1) => statChange.harmony(-amount));
+statDisplay.create("gferocity", (amount = 1) => statChange.ferocity(amount));
+statDisplay.create("lferocity", (amount = 1) => statChange.ferocity(-amount));
+statDisplay.create("incgpenisinsecurity", amount => statChange.gainPenisInsecurity(amount));
+statDisplay.create("incggpenisinsecurity", () => statChange.gainPenisInsecurity(20));
+statDisplay.create("gpenisacceptance", statChange.gainPenisAcceptance);
+statDisplay.create("wolfpacktrust", statChange.wolfpacktrust);
+statDisplay.create("wolfpackfear", statChange.wolfpackfear);

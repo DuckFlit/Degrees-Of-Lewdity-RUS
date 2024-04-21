@@ -470,6 +470,7 @@ window.pregnancyGenerator = {
 					size: bodySizeCalc(V.bodysize),
 					eyeColour: [eyeColourCalc(motherObject.name), eyeColourCalc(fatherObject.name)][random(0, 1)],
 					hairColour: furColour[random(0, furColour.length - 1)],
+					skinColour: [skinColourCalc(motherObject.skinColour), skinColourCalc(fatherObject.skinColour)][random(0, 1)],
 				});
 				result.fetus.push(baby);
 				parentFunction.increaseKids(motherObject.parentId.id, 0, fatherObject.parentId.id);
@@ -610,6 +611,7 @@ window.pregnancyGenerator = {
 					size: bodySizeCalc(V.bodysize),
 					eyeColour: [eyeColourCalc(motherObject.name), eyeColourCalc(fatherObject.name)][random(0, 1)],
 					hairColour: featherColour[random(0, featherColour.length - 1)],
+					skinColour: [skinColourCalc(motherObject.skinColour), skinColourCalc(fatherObject.skinColour)][random(0, 1)],
 				});
 				// Hours
 				baby.eggTimer = eggTimer;

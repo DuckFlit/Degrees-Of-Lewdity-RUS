@@ -334,7 +334,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[$_id].type>>
 			<<case "human">><<set $_text_output to "hand">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "paw">>
-			<<case "hawk">><<set $_text_output to "talon">>
+			<<case "hawk">><<set $_text_output to ($children[$_id].features.monster is "monster" ? "hand" : "wing")>>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -350,7 +350,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[$_id].type>>
 			<<case "human">><<set $_text_output to "hands">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "paws">>
-			<<case "hawk">><<set $_text_output to "talons">>
+			<<case "hawk">><<set $_text_output to ($children[$_id].features.monster is "monster" ? "hands" : "wings")>>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -366,7 +366,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[_id].type>>
 			<<case "human">><<set $_text_output to "giggles">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "wags <<childhis _id>> tail">>
-			<<case "hawk">><<set $_text_output to "ruffles <<childhis _id>> feathers">>
+			<<case "hawk">><<set $_text_output to ($children[_id].features.monster is "monster" ? "giggles" : "ruffles <<childhis _id>> feathers")>>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -476,7 +476,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 		<<switch $children[$_id].type>>
 			<<case "human">><<set $_text_output to "child">>
 			<<case "wolf" "wolfboy" "wolfgirl">><<set $_text_output to "pup">>
-			<<case "hawk">><<set $_text_output to "chick">>
+			<<case "hawk">><<set $_text_output to ($children[$_id].features.monster is "monster" ? "nestling" : "chick")>>
 		<</switch>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
@@ -1110,8 +1110,32 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				<<childHe>>'s distressed and <<childcry>>.
 				<<if $children[_args[0]].localVariables.event>>
 					<br>
-					<<link [[Comfort them (0:15)|Children Activity Events]]>><<pass 15>><<set $childActivityEvent to {event:"cryingHawk", childid:_args[0]}>><</link>> |
+					<<link "Comfort <<childim>> (0:15)" "Children Activity Events">><<pass 15>><<set $childActivityEvent to {event:"cryingHawk", childid:_args[0]}>><</link>> |
 				<</if>>
+			<<case "reaching">>
+				<<childHe>>'s reaching for you.
+				<br>
+				<<link "Pick <<childhim>> up (0:15)" "Children Activity Events">><<pass 15>><<set $childActivityEvent to {event:"pickUpHawk", childid:_args[0]}>><</link>> |
+			<<case "flap">>
+				<<childHe>>'s flapping <<childhis>> little wings in short bursts.
+				<br>
+				<<link "Help <<childhim>> pretend to fly (0:15)" "Children Activity Events">><<pass 15>><<set $childActivityEvent to {event:"pretendFly", childid:_args[0]}>><</link>> |
+			<<case "preen">>
+				<<childHe>> seems agitated and pecks at <<childhis>> wings.
+				<br>
+				<<link "Help <<childhim>> preen (0:15)" "Children Activity Events">><<pass 15>><<set $childActivityEvent to {event:"preen", childid:_args[0]}>><</link>> |
+			<<case "perch">>
+				<<childHe>> stares out at the perch.
+				<br>
+				<<link "Take <<childhim>> to the perch (0:15)" "Children Activity Events">><<pass 15>><<set $childActivityEvent to {event:"perch", childid:_args[0]}>><</link>> |
+			<<case "bathe">>
+				<<childHe>> looks like <<childhe>> needs a bath.
+				<br>
+				<<link "Bathe <<childhim>> (0:15)" "Children Activity Events">><<pass 15>><<set $childActivityEvent to {event:"bathe", childid:_args[0]}>><</link>> |				
+			<<case "batheSelf">>
+				<<childHe>>'s dipping <<childhis>> legs in the rainwater pool.
+				<br>
+				<<link "Help <<childhim>> bathe (0:15)" "Children Activity Events">><<pass 15>><<set $childActivityEvent to {event:"batheHelp", childid:_args[0]}>><</link>> |
 			<<default>>
 				<<childHe>>'s has figured out that they're in a video game (This is an error, please report).
 				<<print $children[_args[0]].localVariables.activity>>

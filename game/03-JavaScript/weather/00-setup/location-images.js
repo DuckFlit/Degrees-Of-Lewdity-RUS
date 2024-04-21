@@ -15,6 +15,9 @@ setup.Locations = {
 		if (V.chef_state >= 7) return "cafe_construction";
 		return "cafe";
 	},
+	castle: () => {
+		return "tower";
+	},
 	/* ADULT SHOP
 	<<case "adult_shop">>
 				<<getadultshopstate>>
@@ -1202,13 +1205,13 @@ setup.LocationImages = {
 		folder: "prison",
 		base: {
 			default: {
-			image: "base.png",
+				image: "base.png",
 			},
 			water: {
 				image: "water.png",
-			animation: {
-				fps: 6,
-				delay: () => 0,
+				animation: {
+					fps: 6,
+					delay: () => 0,
 				},
 			},
 		},
@@ -1218,9 +1221,9 @@ setup.LocationImages = {
 			},
 			water: {
 				image: "water.png",
-			animation: {
-				fps: 6,
-				delay: () => 0,
+				animation: {
+					fps: 6,
+					delay: () => 0,
 				},
 			},
 		},
@@ -1581,6 +1584,7 @@ setup.LocationImages = {
 				},
 				color: "#deae66",
 				size: 5,
+				alpha: () => getBirdBurnTime() / 720,
 			},
 		},
 		emissive_blood: {

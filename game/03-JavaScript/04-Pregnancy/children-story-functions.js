@@ -53,7 +53,7 @@ function updateChildActivity(childId) {
 				break;
 			case "hawk":
 				hawkChildActivity(childId);
-				break;				
+				break;
 			default:
 				return null;
 		}
@@ -250,24 +250,17 @@ function hawkChildActivity(childId) {
 		if (Time.dayState === "night" && ["sleep", "rest", "brood"].includes(V.bird.activity)) {
 			activity = activity.concat(["sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleeping"]);
 		} else {
-			activity = activity.concat([
-				"sleeping",
-				"sleeping",
-				"sleeping",
-				"crying",
-			]);
+			activity = activity.concat(["sleeping", "sleeping", "sleeping", "crying", "reaching", "flap", "flap", "perch", "bathe"]);
 		}
 	} else if (between(T.childTotalDays, 100, 200)) {
 		if (Time.dayState === "night" && ["sleep", "rest", "brood"].includes(V.bird.activity)) {
 			activity = activity.concat(["sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleeping"]);
 		} else {
-			activity = activity.concat([
-				"sleeping",
-				"sleeping",
-				"sleeping",
-				"crying",
-			]);
+			activity = activity.concat(["sleeping", "sleeping", "crying", "reaching", "flap", "perch", "batheSelf"]);
 		}
+	}
+	if (T.childTotalDays >= 14) {
+		activity.push("preen");
 	}
 
 	if (activity.length) {

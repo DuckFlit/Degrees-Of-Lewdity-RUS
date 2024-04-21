@@ -499,6 +499,12 @@
 
 <<widget "bird_schedule">>
 	<<set $_eggCount to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
+	<<if $syndromebird gte 1 and !$daily.birdNightFlightCheck and !$weekly.birdNightFlight and !Time.isBloodMoon()>>
+		<<set $daily.birdNightFlightCheck to true>>
+		<<if $rng lte C.npc["Great Hawk"].love>>
+			<<set $daily.birdNightFlightTrigger to true>>
+		<</if>>
+	<</if>>
 	<<if $bird.override>>
 		<<set $bird.activity to $bird.override>>
 	<<elseif Time.hour gte 21 or Time.hour lte 5>>
@@ -675,26 +681,57 @@
 			<br>
 		<</if>>
 	<<elseif $bird.activity is "sleep" and $birdSleep is undefined and $bird.state is "home">>
-		<<set $birdSleep to 1>><<unset $birdPerch>><<unset $birdBask>>
+		<<if $daily.birdNightFlightTrigger and !$weekly.birdNightFlight and ["clear","lightClouds"].includes(Weather.name) and !Time.isBloodMoon()>>
+			<<endevent>>
+			<<npc "Great Hawk">>
+			<<set $weekly.birdNightFlight to true>>
+			<<unset $birdPerch>><<unset $birdBask>>
+			<<your_bird_text "cap">> stands from the perch. Moonlight bathes <<bhim>> in a silvery glow.
+			<br><br>
+
+			<<if $monster is 1>>
+				"Come, <<wife>>. Fly with me." <<bHis>> voice carries a tender plea as <<he>>
+				<<if $harpy gte 6 and $birdFly is 1>>
+					extends <<his>> massive talon toward you.
+				<<else>>
+					crouches down, making room for you to climb onto <<bhis>> back.
+				<</if>>
+			<<else>>
+				<<bHe>> lets out a low trill, nodding out to the moor. <<bHe>> wants you to fly with <<bhim>>.
+				<<if $harpy lt 6 or $birdFly isnot 1>>
+					<<bHe>> gets low to the ground, motioning for you to climb onto <<bhis>> back.
+				<</if>>
+			<</if>>
+			<br><br>
+
+			<<link [[Go|Bird Tower Night Flight]]>><<bird_pass 30>><<npcincr "Great Hawk" love 1>><</link>><<glove>>
+			<br>
+			<<link [[Stay|Bird Tower Night Flight Stay]]>><</link>>
+			<br>
+		<<else>>
+			<<set $birdSleep to 1>><<unset $birdPerch>><<unset $birdBask>>
+			<<endevent>>
+			<<npc "Great Hawk">>
+			<<if $monster gte 1>>
+				The <<beasttype>> scoops you in <<bhis>> arms. "Night has come," <<bhe>> says. "Let me take you to bed."
+				<br><br>
+			<<else>>
+				The <<beasttype>> hops from the perch, towards the nest. <<bHe>> glances at you.
+				<br><br>
+			<</if>>
+
+			<<link [[Nest|Bird Tower Perch Nest]]>><</link>>
+			<br>
+			<<link [[Stay up|Bird Tower]]>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<<elseif $syndromebird is 1 and ["sing", "groom"].includes($bird.activity) and $birdBask is undefined and $bird.state is "home">>
 		<<endevent>>
 		<<npc "Great Hawk">>
-		<<if $monster gte 1>>
-			The <<beasttype>> scoops you in <<bhis>> arms. "Night has come," <<bhe>> says. "Let me take you to bed."
-			<br><br>
-		<<else>>
-			The <<beasttype>> hops from the perch, towards the nest. <<bHe>> glances at you.
-			<br><br>
-		<</if>>
-
-		<<link [[Nest|Bird Tower Perch Nest]]>><</link>>
-		<br>
-		<<link [[Stay up|Bird Tower]]>><<endevent>><</link>>
-		<br>
-	<<elseif $syndromebird is 1 and ["sing", "groom"].includes($bird.activity) and $birdBask is undefined and $bird.state is "home">>
 		<<baskicon>><<link [[Bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
 		<<if $daily.birdGroom is undefined and $bird.activity is "groom">>
-			<<ind>><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
+			<<mooricon "preen">><<link [[Groom (0:15)|Bird Tower Groom]]>><<bird_pass 15>><<trauma -6>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<ltrauma>><<glove>><br>
 		<</if>>
 		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
 			<<if Weather.precipitation is "rain">>
@@ -702,7 +739,7 @@
 			<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
 				<span class="red">You're too exhausted to go on a casual flight.</span>
 			<<else>>
-				<<ind>><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>>
+				<<mooricon "ask">><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>>
 			<</if>>
 			<br>
 		<</if>>
@@ -716,6 +753,8 @@
 		<br><br>
 		<<bird_fly_options>>
 	<<elseif $birdBask is 1 and ["sing", "groom"].includes($bird.activity) and $bird.state is "home">>
+		<<endevent>>
+		<<npc "Great Hawk">>
 		<<baskicon>><<link [[Continue to bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
 		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
@@ -724,18 +763,18 @@
 			<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
 				<span class="red">You're too exhausted to go on a casual flight.</span>
 			<<else>>
-				<<ind>><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>>
+				<<mooricon "ask">><<link [[Ask to go flying together (1:00)|Bird Tower Casual Flight]]>><<set $daily.birdCasualFlight to true>><<tiredness 3>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<endevent>><</link>><<gtiredness>><<glove>>
 			<</if>>
 			<br>
 		<</if>>
-		<<ind>><<link [[Get up|Bird Tower Perch]]>><<unset $birdBask>><<endevent>><</link>><br>
+		<<mooricon "perch_up">><<link [[Get up|Bird Tower Perch]]>><<unset $birdBask>><<endevent>><</link>><br>
 		<<getouticon>><<link [[Leave|Bird Tower Bask Leave]]>><<unset $birdBask>><<unset $birdPerch>><<endevent>><</link>><br>
 	<<else>>
 		<<if $birdSingIntro is 1>>
 			<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<set $birdSingAbsent to 1>><<bird_pass 30>><<trauma -2>><<endevent>><</link>><<ltrauma>><br>
 		<</if>>
 		<<if $harpy gte 6>>
-			<<ind>><<link [[Preen your wings (0:30)|Bird Tower Preen Self]]>><<bird_pass 30>><<stress -2>><<endevent>><</link>><<lstress>><br>
+			<<mooricon "preen_self">><<link [[Preen your wings (0:30)|Bird Tower Preen Self]]>><<bird_pass 30>><<stress -2>><<endevent>><</link>><<lstress>><br>
 		<</if>>
 		<<if $bird.upgrades.telescope is 1>>
 			<<mooricon "telescope">><<link [[Use your telescope|Bird Tower Telescope]]>><<endevent>><</link>><br>
@@ -841,15 +880,15 @@
 			<br><br>
 		<<else>>
 			<br>
-			<<mooricon "tower">><<link [[Glide to the base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>><br>
+			<<mooricon "fly_down">><<link [[Glide to the base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>><br>
 		<</if>>
 		<<if $birdFly isnot 1 and ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
-			<<askicon>><<link [[Ask the Great Hawk to teach you to fly|Bird Tower Fly Intro]]>><</link>><<flight_text>><br>
+			<<askicon>><<link [[Ask the Great Hawk to teach you to fly|Bird Tower Fly Intro]]>><<endevent>><</link>><<flight_text>><br>
 		<<elseif $birdFly is 1>>
 			<br>
 			<<flight_time_check 60>>
 			<<if $bird.hunts.unlocked is true and ($bird.hunts.lurkers is true or $bird.hunts.materials is true or $bird.hunts.valuables is true)>>
-				<<ind>><<link [[Prepare for a hunt|Bird Hunt Start]]>><<endevent>><</link>><<flight_text>><br>
+				<<mooricon "hunt">><<link [[Prepare for a hunt|Bird Hunt Start]]>><<endevent>><</link>><<flight_text>><br>
 				<br>
 			<</if>>
 			<<if $exposed gte 2 and $exhibitionism lt 55>>
@@ -1063,6 +1102,13 @@
 				<br>
 			<</if>>
 		<</if>>
+		<<if $daily.emptyCamp and between($bird.hunts.distanceNorth, ($daily.emptyCampNorth - 1), ($daily.emptyCampNorth + 1)) and between($bird.hunts.distanceEast, ($daily.emptyCampEast - 1), ($daily.emptyCampEast + 1))>>
+			<<if !($bird.hunts.distanceNorth is $daily.emptyCampNorth and $bird.hunts.distanceEast is $daily.emptyCampEast)>>
+				There's an abandoned camp to the
+				<<if $bird.hunts.distanceNorth lt $daily.emptyCampNorth>>north<<elseif $bird.hunts.distanceNorth gt $daily.emptyCampNorth>>south<</if>><<if $bird.hunts.distanceEast lt $daily.emptyCampEast>>east<<elseif $bird.hunts.distanceEast gt $daily.emptyCampEast>>west<</if>>.
+				<br>
+			<</if>>
+		<</if>>
 		<<if between($bird.hunts.distanceNorth, -4, -2) and between($bird.hunts.distanceEast, 2, 4)>>
 			<<if !($bird.hunts.distanceNorth is -3 and $bird.hunts.distanceEast is 3)>>
 				There's a large stone at the top of a hill to the
@@ -1258,6 +1304,18 @@
 		<<set $daily.huntRemyCampNorth to random(2,5)>>
 		<<set $daily.huntRemyCampEast to random(-5,5)>>
 	<</if>>
+	<<if $daily.emptyCampNorth is undefined>>
+		<<set $daily.emptyCampNorth to random(2,5)>>
+		<<set $daily.emptyCampEast to random(-5,5)>>
+		<<if $daily.emptyCampNorth is $daily.huntRemyCampNorth and $daily.emptyCampEast is $daily.huntRemyCampEast>>
+			<<if $daily.emptyCampNorth is 5>>
+				<<set $daily.emptyCampNorth -= 1>>
+			<<else>>
+				<<set $daily.emptyCampNorth += 1>>
+			<</if>>
+			<<set $daily.emptyCampEast to random(-5,5)>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "flight_hunt_get">>
@@ -1280,7 +1338,7 @@
 				<</if>>
 				<<set $bird.hunts.loot.valuables[$_info] += $_amount>>
 				<<set $bird.hunts.lootAmount += $_amount>>
-				<span class="green">$_amount $_info<<if $_amount gte 2>><<if $_info is "watch">>es<<else>>s<</if>><</if>> added.</span>
+				<<mooricon $_info>><span class="green">$_amount $_info<<if $_amount gte 2>><<if $_info is "watch">>es<<else>>s<</if>><</if>> added.</span>
 			<<else>>
 				<<run Errors.report("Invalid special loot of type; " + $_looted + " " + _args[2])>>
 				<<exit>>
@@ -1329,7 +1387,6 @@
 					<</if>>
 				<</if>>
 				<<run clothesDataTrimmer($_item)>>
-				<<set $_fullClothingObj to clothesDataTrimmer($_item)>>
 				<<if $bird.hunts.loot.clothing is undefined>>
 					<<set $bird.hunts.loot.clothing to {
 						[$_item.name]: {
@@ -1350,7 +1407,7 @@
 				<</if>>
 				<<set $bird.hunts.loot.clothing[$_item.name].amount += $_amount>>
 				<<set $bird.hunts.lootAmount += $_amount>>
-				<span class="green"><<clothingicon $_fullClothingObj $_lootClothingSlot>> $_item.name added.</span>
+				<span class="green"><<clothingicon $_item $_lootClothingSlot>> $_item.name added.</span>
 			<<else>>
 				<<run Errors.report("Invalid special loot of type; " + $_looted + " " + _args[2])>>
 				<<exit>>
@@ -1558,7 +1615,7 @@
 					<</if>>
 					<<set $bird.materials.valuables[$_lootValType] += $_tempNumVal>>
 					<br>
-					<<ind>>- <span class="teal">$_tempNumVal</span> $_lootValType<<if $_lootValType is "watch" and $_tempNumVal gte 2>>es<<elseif $_tempNumVal gte 2>>s<</if>>.
+					<<mooricon $_lootValType>><span class="teal">$_tempNumVal</span> $_lootValType<<if $_lootValType is "watch" and $_tempNumVal gte 2>>es<<elseif $_tempNumVal gte 2>>s<</if>>.
 				<</for>>
 			<<default>>
 		<</switch>>
@@ -1614,7 +1671,7 @@
 	<<for _valuable, _amount range $bird.materials.valuables>>
 		<<if _amount lt 1>><<continue>><</if>>
 		<<set $_valuablesMessage to true>>
-		<<ind>> _amount _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
+		<<mooricon _valuable>> _amount _valuable<<if _amount gte 2>><<if _valuable is "watch">>es<<else>>s<</if>><</if>>
 		<<capture _valuable _amount>>
 			<<link "Take one">>
 				<<if _valuable is "antique bullet">>
@@ -1690,7 +1747,7 @@
 	<<set _maxTimeAllowed to Math.clamp($_maxTime - getBirdBurnTime(), 0, $_maxTime)>>
 
 	<<if _maxTimeAllowed is 0>>
-		<span class="green">The fire is already very strong</span>
+		<span class="green">The fire is already very strong.</span>
 		<br>
 	<</if>>
 
@@ -1704,32 +1761,32 @@
 		<</if>>
 		<<set _timeLteMax to _timeWood lte _maxTimeAllowed>>
 
-		<<mooricon "wood">>You have $bird.materials.wood piece<<if $bird.materials.wood gte 2>>s<</if>> of wood.
+		You have $bird.materials.wood piece<<if $bird.materials.wood gte 2>>s<</if>> of wood.
 		<br>
-		<<link "Add 1 wood">>
+		<<mooricon "wood">><<link "Add 1 wood">>
 			<<set $bird.materials.wood-->>
 			<<run Cooker.addBurnTime($bird.firepit, _timeWood * 60)>>
 			<<replace #firepitActions>><<firepitActions>><</replace>>
-			<<run Weather.Sky.getLayer("location").init()>>
+			<<run Weather.Observables.checkForUpdate()>>
 		<</link>><<note `"+ " + getTimeString(Math.min(_timeWood, _maxTimeAllowed))` `_timeLteMax ? "green" : "orange"`>>
 		<br>
 		<<if $bird.materials.wood gte 2 and _timeWood lt _maxTimeAllowed>>
 			<<set _timeLteMax to _timeWood * 2 lte _maxTimeAllowed>>
-			<<link "Add 2 wood">>
+			<<mooricon "wood">><<link "Add 2 wood">>
 				<<set $bird.materials.wood -= 2>>
 				<<run Cooker.addBurnTime($bird.firepit, _timeWood * 120)>>
 				<<replace #firepitActions>><<firepitActions>><</replace>>
-				<<run Weather.Sky.getLayer("location").init()>>
+				<<run Weather.Observables.checkForUpdate()>>
 			<</link>><<note `"+ " + getTimeString(Math.min(_timeWood * 2, _maxTimeAllowed))` `_timeLteMax ? "green" : "orange"`>>
 			<br>
 		<</if>>
 		<<if $bird.materials.wood gte 3 and _timeWood * 2 lt _maxTimeAllowed>>
 			<<set _timeLteMax to _timeWood * 3 lte _maxTimeAllowed>>
-			<<link "Add 3 wood">>
+			<<mooricon "wood">><<link "Add 3 wood">>
 				<<set $bird.materials.wood -= 3>>
 				<<run Cooker.addBurnTime($bird.firepit, _timeWood * 180)>>
 				<<replace #firepitActions>><<firepitActions>><</replace>>
-				<<run Weather.Sky.getLayer("location").init()>>
+				<<run Weather.Observables.checkForUpdate()>>
 			<</link>><<note `"+ " + getTimeString(Math.min(_timeWood * 3, _maxTimeAllowed))` `_timeLteMax ? "green" : "orange"`>>
 			<br>
 		<</if>>
@@ -1746,56 +1803,45 @@
 		<</if>>
 		<<set _timeLteMax to _timeSticks lte _maxTimeAllowed>>
 
-		<<mooricon "sticks">>You have $bird.materials.sticks stick<<if $bird.materials.sticks gte 2>>s<</if>>.
+		You have $bird.materials.sticks stick<<if $bird.materials.sticks gte 2>>s<</if>>.
 		<br>
-		<<link "Add 1 stick">>
+		<<mooricon "sticks">><<link "Add 1 stick">>
 			<<set $bird.materials.sticks-->>
 			<<run Cooker.addBurnTime($bird.firepit, _timeSticks * 60)>>
 			<<replace #firepitActions>><<firepitActions>><</replace>>
-			<<run Weather.Sky.getLayer("location").init()>>
+			<<run Weather.Observables.checkForUpdate()>>
 		<</link>><<note `"+ " + getTimeString(Math.min(_timeSticks, _maxTimeAllowed))` `_timeLteMax ? "green" : "orange"`>>
 		<br>
 		<<if $bird.materials.sticks gte 3 and _timeSticks lt _maxTimeAllowed>>
 			<<set _timeLteMax to _timeSticks * 3 lte _maxTimeAllowed>>
-			<<link "Add 3 sticks">>
+			<<mooricon "sticks">><<link "Add 3 sticks">>
 				<<set $bird.materials.sticks -= 3>>
 				<<run Cooker.addBurnTime($bird.firepit, _timeSticks * 180)>>
 				<<replace #firepitActions>><<firepitActions>><</replace>>
-				<<run Weather.Sky.getLayer("location").init()>>
+				<<run Weather.Observables.checkForUpdate()>>
 			<</link>><<note `"+ " + getTimeString(Math.min(_timeSticks * 3, _maxTimeAllowed))` `_timeLteMax ? "green" : "orange"`>>
 			<br>
 		<</if>>
 		<<if $bird.materials.sticks gte 5 and _timeSticks * 3 lt _maxTimeAllowed>>
 			<<set _timeLteMax to _timeSticks * 5 lte _maxTimeAllowed>>
-			<<link "Add 5 sticks">>
+			<<mooricon "sticks">><<link "Add 5 sticks">>
 				<<set $bird.materials.sticks -= 5>>
 				<<run Cooker.addBurnTime($bird.firepit, _timeSticks * 300)>>
 				<<replace #firepitActions>><<firepitActions>><</replace>>
-				<<run Weather.Sky.getLayer("location").init()>>
+				<<run Weather.Observables.checkForUpdate()>>
 			<</link>><<note `"+ " + getTimeString(Math.min(_timeSticks * 5, _maxTimeAllowed))` `_timeLteMax ? "green" : "orange"`>>
 			<br>
 		<</if>>
 	<</if>>
 	<br>
 
-	<<if !$bird.upgrades.rack and $bird.upgrades.pot lt 2>><<exit>><</if>>
-
-	<<mooricon "lurkers">>
-	<<if $bird.materials.lurkers is 0 and ($bird.upgrades.rack gte 1 or $bird.upgrades.pot gte 2)>>
+	<<if $bird.materials.lurkers is 0>>
 		<<set $_noLurkers to true>>
-		<<if $bird.upgrades.rack gte 1 and $bird.upgrades.pot gte 2>>
-			<span class="red">No lurkers to dry or cook.</span>
-		<<elseif $bird.upgrades.rack gte 1>>
-			<span class="red">No lurkers to dry.</span>
-		<<elseif $bird.upgrades.pot gte 2>>
-			<span class="red">No lurkers to cook.</span>
-		<</if>>
-		<br>
+		<span class="red">You have 0 lurkers.</span>
 	<<elseif $bird.materials.lurkers gte 1>>
 		You have $bird.materials.lurkers lurker<<if $bird.materials.lurkers gte 2>>s<</if>>.
-		<br>
 	<</if>>
-
+	<br>
 	<<if $bird.upgrades.rack gte 1>>
 		<<set $_rackMax to $bird.firepit.maxItems>>
 		<<set _lurkersDrying to Cooker.getItemsNotReady($bird.firepit)>>
@@ -1803,33 +1849,26 @@
 		<<set _nLurkersReady to $bird.firepit.items.length - $_nLurkersDrying>>
 
 		<<mooricon "rack">>Your drying rack can hold up to $_rackMax lurkers.
-		<<if $bird.firepit.items.length is $_rackMax>>
-			<i class="blue">It is currently full.</i>
-			<br>
-		<<elseif !$_noLurkers>>
-			<br>
-			<<link [[Add a lurker to the rack (0:02)|Bird Tower Firepit]]>>
-				<<set $bird.materials.lurkers-->>
-				<<run Cooker.cookItem($bird.firepit, Cooker.createItem($bird.firepit, 'lurker', true))>>
-				<<bird_pass 2>>
-			<</link>>
-			<br>
-		<</if>>
-
+		<br>
 		<<if $_nLurkersDrying gte 1>>
-			It is currently drying $_nLurkersDrying lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
-			<<if getBirdBurnTime() gte 1>>
+			<<mooricon "lurkers">>
+			<<if $bird.firepit.items.length is $_rackMax>>
+				<i class="blue">It is currently full,</i> drying $_nLurkersDrying lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
+			<<else>>
+				It is currently drying $_nLurkersDrying lurker<<if $_nLurkersDrying gte 2>>s<</if>>.
+			<</if>>
+			<<if getBirdBurnTime() gt 0>>
 				<<if $bird.upgrades.rack lt 3>>
 					<span class="lewd">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>>.</span> <<gdrugged>>
 				<<else>>
 					<span class="teal">Strange fumes are coming from <<if $_nLurkersDrying gte 2>>them<<else>>it<</if>> and harmlessly leaving the tower.</span>
 				<</if>>
 			<<else>>
-				A lit firepit would speed up the process.
+				<span class="pink">A lit firepit would speed up the process.</span>
 			<</if>>
 			<br>
 			<<if $debug is 1>>
-				<span class="gold">DEBUG:</span> Lurker time remaning
+				<span class="gold">DEBUG:</span> Lurker time remaining
 				<br>
 				<<for $_i to 0; $_i lt _lurkersDrying.length; $_i++>>
 					- Lurker <<print $_i + 1>>:
@@ -1840,6 +1879,21 @@
 					<br>
 				<</for>>
 			<</if>>
+		<<else>>
+			<<mooricon "lurkers">>No lurkers are drying.
+			<br>
+		<</if>>
+		<<if $bird.firepit.items.length is $_rackMax or $_noLurkers>>
+		<<else>>
+			<<mooricon "rack">><<link [[Add a lurker to the rack (0:02)|Bird Tower Firepit]]>>
+				<<set $bird.materials.lurkers-->>
+				<<run Cooker.cookItem($bird.firepit, Cooker.createItem($bird.firepit, 'lurker', true))>>
+				<<bird_pass 2>>
+			<</link>>
+			<br>
+		<</if>>
+		<<if $_nLurkersDrying gte 1>>
+			<<mooricon "rack">>
 			<<link "Take one lurker out">>
 				/* assumes last item is the most recently added lurker */
 				<<run $bird.firepit.items.pop()>>
@@ -1853,27 +1907,25 @@
 					<<replace #firepitActions>><<firepitActions>><</replace>>
 				<</link>>
 			<</if>>
-		<<else>>
-			No lurkers are drying.
-		<</if>>
-		<br>
-
-		<<if _nLurkersReady gte 1>>
-			<span class="green">_nLurkersReady lurker<<if _nLurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
 			<br>
-			<<link `"Take " + _nLurkersReady + " leather"`>>
+		<</if>>
+		<<if _nLurkersReady gte 1>>
+			<<mooricon "lurkers">><span class="green">_nLurkersReady lurker<<if _nLurkersReady gte 2>>s are<<else>> is<</if>> ready.</span>
+			<br>
+			<<mooricon "leather">><<link `"Take " + _nLurkersReady + " leather"`>>
 				<<set $bird.materials.leather += _nLurkersReady>>
 				<<set $bird.firepit.items to _lurkersDrying>>
 				<<replace #firepitActions>><<firepitActions>><</replace>>
 			<</link>>
 		<<else>>
-			No lurkers are ready.
+			<<mooricon "lurkers">>No lurkers are ready.
 		<</if>>
 		<br>
 	<</if>>
+	<br>
 
-	<<if $bird.upgrades.pot gte 2 and !$_noLurkers and getBirdBurnTime() gte 1>>
-		<<link [[Cook a lurker (0:15)|Bird Tower Lurker Cook]]>><<set $bird.materials.lurkers -= 1>><<bird_pass 15>><</link>>
+	<<if $bird.upgrades.pot gte 2 and !$_noLurkers and getBirdBurnTime() gt 0>>
+		<<mooricon "pot_cook">><<link [[Cook a lurker (0:15)|Bird Tower Lurker Cook]]>><<set $bird.materials.lurkers -= 1>><<bird_pass 15>><</link>>
 		<br>
 	<</if>>
 	<br>
@@ -1913,7 +1965,7 @@
 				<<set $_upgrade.housekeeping to 200>>
 				<<set $_upgrade.clothingSlot to "head">>
 				<<set $_upgrade.clothingIndex to 31>>
-				<<set _colourSelectNeeded to true>>
+				<<set $_upgrade.colourSelectNeeded to true>>
 			<<case "shelter">>
 				<<switch $bird.upgrades.shelter>>
 					<<case 0>>
@@ -2375,7 +2427,11 @@
 		<</if>>
 
 		<<if $_upgrade.clothingSlot>>
-			<<if $worn[$_upgrade.clothingSlot].index is $_upgrade.clothingIndex>>
+			<<if $worn[$_upgrade.clothingSlot].cursed is 1>>
+				<br>
+				<span class="red">You can't remove your $worn[$_upgrade.clothingSlot].name!</span>
+				<<set $_disableBuild to true>>
+			<<elseif $worn[$_upgrade.clothingSlot].index is $_upgrade.clothingIndex>>
 				<br>
 				<span class="purple">You're already <<if $_upgrade.clothingSlot is "handheld">>holding<<else>>wearing<</if>> this!</span>
 				<<set $_disableBuild to true>>
@@ -2411,7 +2467,7 @@
 		<<capture _upgrade>>
 			<<link [[$_linkText|_towerUpgrades[_upgrade].passage]]>>
 				<<if _towerUpgrades[_upgrade].clothingSlot>>
-					<<if !_colourSelectNeeded>>
+					<<if !_towerUpgrades[_upgrade].colourSelectNeeded>>
 						<<generalWear _towerUpgrades[_upgrade].clothingSlot _towerUpgrades[_upgrade].clothingIndex>>
 					<</if>>
 				<<else>>
@@ -2433,7 +2489,6 @@
 <</widget>>
 
 <<widget "birdEggLayEvent">>
-	<<npc "Great Hawk">>
 	<<if _args[0] isnot undefined and typeof _args[0] is "string">>
 		<<set $birdEggContext to _args[0]>>
 	<</if>>
@@ -2505,20 +2560,22 @@
 	<<else>>
 		<<if playerIsPregnant() and $_eggnant.type is "hawk">>
 			<<if $location is "tower">>
+				<<set _eggIcon to $eggLayNumber>>
 				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital and land in your nest<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital and lands in your nest<</if>>.
 				<br><br>
 
-				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
+				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $eggLayNumber>> <<mooricon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
 				<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 				<<set $bird.eggReact to $eggLayNumber>>
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy "tower" "tower">>
 				<<set $harpyEggsPrevent to 28>>
 			<<else>>
+				<<set _eggIcon to $eggLayNumber>>
 				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital and land on your bed<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital and lands on your bed<</if>>.
 				<br><br>
 
-				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $eggLayNumber>> <<mooricon "eggs_heart">> fertilised bird egg<<if $eggLayNumber gte 2>>s<</if>>.
+				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $eggLayNumber>> <<mooricon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s<</if>>.
 				<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 				/* Might be best changing the location variable here */
 				<<pregnancyFeats "pc">>
@@ -2549,5 +2606,21 @@
 			<<set Weather.Temperature.override.water = Weather.temperature + ($_tempUp + 8)>>
 		<</if>>
 	<</if>>
+<</widget>>
+
+<<widget "hairToFeatherColour">>
+	<<switch $haircolour>>
+		<<case "red" "crimson">><<set _colourConverted to "red">>
+		<<case "jetblack" "black">><<set _colourConverted to "black">>
+		<<case "blond" "softblond" "platinumblond" "golden" "ashyblond" "strawberryblond">><<set _colourConverted to "yellow">>
+		<<case "darkbrown" "brown" "softbrown" "lightbrown">><<set _colourConverted to "brown">>
+		<<case "burntorange" "ginger" "bloodorange">><<set _colourConverted to "tangerine">>
+		<<case "blue" "deepblue" "neonblue">><<set _colourConverted to "blue">>
+		<<case "green" "darklime" "toxicgreen" "teal">><<set _colourConverted to "green">>
+		<<case "pink" "brightpink" "hotpink" "softpink">><<set _colourConverted to "pink">>
+		<<case "purple" "mediumpurple" "brightpurple">><<set _colourConverted to "purple">>
+		<<case "white" "snowwhite">><<set _colourConverted to "white">>
+		<<default>><<set _colourConverted to "red">>
+	<</switch>>
 <</widget>>
 
