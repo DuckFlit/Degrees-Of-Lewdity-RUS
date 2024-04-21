@@ -46,6 +46,7 @@ const Weather = (() => {
 		const result = round(sunIntensity * clothingModifier * sunBlockModifier, 2);
 		return {
 			sun: sunIntensity,
+			month: Weather.Settings.months[Time.date.month - 1].sunIntensity,
 			weather: V.outside ? Weather.current.tanningModifier : 1,
 			location: V.location === "forest" ? 0.2 : 1,
 			dayFactor: V.outside ? Time.date.simplifiedDayFactor : 1,
