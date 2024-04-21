@@ -14,6 +14,15 @@
  *   - Base value: The body's base heat generation, adjusting according to the difference from the base body temperature.
  *   - Activity: Increases with physical activity. Typically 0.2, but varies with sleep or exercise.
  *
+ * Effects from low temperatures:
+ *   - Lowered arousal gains
+ *   - Higher pain gains
+ *   - Stress increase every minute
+ *
+ * Effects from high temperatures:
+ *   - Higher fatigue gains
+ *   - Slight stress increase every minute
+ *
  * Limitations:
  * - The current implementation of heat generation from exercise is only based on the duration of the exercise.
  *   It does not account for the intensity of the activity beyond the addition of physique and athletics.
@@ -32,11 +41,11 @@ Weather.BodyTemperature = (() => {
 
 	// General
 	const baseBodyTemperature = 37; // The normal body temperature in degrees Celsius.
-	const tempApproachRate = 0.013; // Will nudge the temperature towards the base temperature by this rate (per degree celcius)
+	const tempApproachRate = 0.0125; // Will nudge the temperature towards the base temperature by this rate (per degree celcius)
 
 	// Heat generation
 	const baseHeatGeneration = 0.07; // The base rate of heat generation by the body.
-	const activityRate = 0.08; // How much physical activity affects heat generation.
+	const activityRate = 0.086; // How much physical activity affects heat generation.
 
 	// Heat dissipation
 	const baseDissipation = 0.04; // The base rate of heat dissipation without modifiers.
@@ -50,7 +59,7 @@ Weather.BodyTemperature = (() => {
 	// Wetness
 	const maxWetness = 200;
 	const maxClothingFactor = 0.8; // Max wetness outside of water (80%)
-	const wetnessFactor = 0.5; // 50% increase in dissipation at full wetness
+	const wetnessFactor = 0.6; // 60% increase in dissipation at full wetness
 
 	// Effects from temperature
 	const temperatureEffects = {
@@ -241,21 +250,21 @@ Weather.BodyTemperature = (() => {
 		},
 		get fatigueModifier() {
 			const factor = temperatureFactor();
-			return factor > 0 ? interpolate(1, temperatureEffects.maxFatigueGainMultiplier, factor) : 1;
+			return V.player.bodyTemperature > baseBodyTemperature ? interpolate(1, temperatureEffects.maxFatigueGainMultiplier, factor) : 1;
 		},
 		get arousalModifier() {
 			const factor = temperatureFactor();
-			return factor < 0 ? interpolate(1, temperatureEffects.maxArousalGainMultiplier, Math.abs(factor)) : 1;
+			return V.player.bodyTemperature < baseBodyTemperature ? interpolate(1, temperatureEffects.maxArousalGainMultiplier, factor) : 1;
 		},
 		get painModifier() {
 			const factor = temperatureFactor();
-			return factor < 0 ? interpolate(1, temperatureEffects.maxPainGainMultiplier, Math.abs(factor)) : 1;
+			return V.player.bodyTemperature < baseBodyTemperature ? interpolate(1, temperatureEffects.maxPainGainMultiplier, factor) : 1;
 		},
 		get stressModifier() {
 			// temporarily disabled
 			const factor = temperatureFactor();
-			if (factor > 0) return interpolate(0, temperatureEffects.upperMaxStressGain, factor);
-			return interpolate(0, temperatureEffects.lowerMaxStressGain, Math.abs(factor));
+			if (V.player.bodyTemperature > baseBodyTemperature) return interpolate(0, temperatureEffects.upperMaxStressGain, factor);
+			return interpolate(0, temperatureEffects.lowerMaxStressGain, factor);
 		},
 		addActivity,
 		get current() {

@@ -173,3 +173,20 @@ function round(number, decimals) {
 	return Math.round(number * multiplier) / multiplier;
 }
 window.round = round;
+
+/**
+ * Categorizes a value into a specified number of categories based on its position within a given range.
+ * The function automatically handles both ascending (min < max) and descending (min > max) ranges.
+ *
+ * @param {number} value The value to be categorized.
+ * @param {number} min The start of the range.
+ * @param {number} max The end of the range.
+ * @param {number} parts The number of categories into which the range should be divided.
+ * @returns {number} Returns the category index, ranging from 0 to parts-1.
+ */
+function categorise(value, min, max, parts) {
+	const normalised = normalise(value, Math.max(min, max), Math.min(min, max));
+	const category = Math.floor(normalised * parts);
+	return Math.clamp(min > max ? parts - 1 - category : category, 0, parts - 1);
+}
+window.categorise = categorise;
