@@ -143,7 +143,7 @@ Weather.BodyTemperature = (() => {
 		if (V.outside && Weather.precipitation === "rain" && T.bottomless && T.topless) return 0.7;
 		const upper = (Math.max(V.overupperwet, V.upperwet, V.underupperwet) / maxWetness) * (maxClothingFactor / 2);
 		const lower = (Math.max(V.overlowerwet, V.lowerwet, V.underlowerwet) / maxWetness) * (maxClothingFactor / 2);
-		return Math.min(upper + lower, maxClothingFactor));
+		return Math.min(upper + lower, maxClothingFactor);
 	}
 
 	/**
