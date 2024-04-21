@@ -137,13 +137,17 @@ Weather.WeatherConditions = (() => {
 		}
 
 		// Check if more keypoints are needed
-		const lastKeypoint = V.weatherObj.keypointsArr[V.weatherObj.keypointsArr.length - 1];
-		const lastDate = new DateTime(lastKeypoint.timestamp);
+		const firstDate = new DateTime(V.weatherObj.keypointsArr[0].timestamp);
+		const lastDate = new DateTime(V.weatherObj.keypointsArr[V.weatherObj.keypointsArr.length - 1].timestamp);
 		const targetDate = new DateTime(currentDate).addDays(daysToGenerate);
-		const dayDifferenceFromKeypoint = (targetDate.timeStamp - lastDate.timeStamp) / TimeConstants.secondsPerDay;
+		const dayDifferenceFromFirstKeypoint = Math.abs((targetDate.timeStamp - firstDate.timeStamp) / TimeConstants.secondsPerDay);
+		const dayDifferenceFromLastKeypoint = Math.abs((targetDate.timeStamp - lastDate.timeStamp) / TimeConstants.secondsPerDay);
 
 		// Generate a new keypoints array in case of a "time-jump" more than 'daysToGenerate' number of days
-		if (dayDifferenceFromKeypoint > 20) {
+		if (dayDifferenceFromLastKeypoint > 20) {
+			if (dayDifferenceFromFirstKeypoint > 20) {
+				V.weatherObj.keypointsArr = [];
+			}
 			generateWeatherKeypoints(currentDate, daysToGenerate);
 			return;
 		}
@@ -154,8 +158,8 @@ Weather.WeatherConditions = (() => {
 		}
 
 		// Generate new keypoints so that it always saves 'daysToGenerate' number of days
-		if (dayDifferenceFromKeypoint > 0) {
-			generateWeatherKeypoints(lastDate.addDays(1), dayDifferenceFromKeypoint);
+		if (dayDifferenceFromLastKeypoint > 0) {
+			generateWeatherKeypoints(lastDate.addDays(1), dayDifferenceFromLastKeypoint);
 		}
 	}
 
