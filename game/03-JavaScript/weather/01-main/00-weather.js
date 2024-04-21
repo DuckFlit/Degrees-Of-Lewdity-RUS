@@ -106,7 +106,7 @@ const Weather = (() => {
 			return setup.WeatherSettings;
 		},
 		get TooltipDescriptions() {
-			return setup.WeatherTooltip;
+			return setup.WeatherDescriptions;
 		},
 		get current() {
 			return Weather.WeatherConditions.getWeather();

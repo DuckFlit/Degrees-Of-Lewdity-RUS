@@ -98,6 +98,7 @@ Weather.Thermometer = (() => {
 		thermometerCanvas.ctx.fillRect(0, 0, size.width, size.height);
 		thermometerCanvas.ctx.restore();
 
+		// Add the up or down arrows
 		if (Weather.BodyTemperature.direction !== 0) {
 			const img = Weather.BodyTemperature.direction > 0 ? images.upImg.img : images.downImg.img;
 			thermometerCanvas.ctx.drawImage(img, 13, 2, img.width, img.height);
@@ -121,11 +122,11 @@ Weather.Thermometer = (() => {
 		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, Weather.BodyTemperature.temperatureEffects.maxPainGainMultiplier, 4);
 		const stressModifier = categorise(Weather.BodyTemperature.stressModifier, 0, Weather.BodyTemperature.temperatureEffects.lowerMaxStressGain, 4);
 
-		const fatigueOutput = fatigueModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(fatigueModifier))}Fatigue gains</span><br>` : "";
 		const arousalOutput = arousalModifier > 0 ? `<span class="teal">${"+ ".repeat(Math.abs(arousalModifier))}Arousal penalties</span><br>` : "";
+		const fatigueOutput = fatigueModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(fatigueModifier))}Fatigue gains</span><br>` : "";
 		const painOutput = painModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(painModifier))}Pain gains</span><br>` : "";
 		const stressOutput = stressModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(stressModifier))}Stress gains</span><br>` : "";
-		const modifiers = fatigueOutput + arousalOutput + painOutput + stressOutput;
+		const modifiers = arousalOutput + fatigueOutput + painOutput + stressOutput;
 
 		const direction = Weather.BodyTemperature.direction > 0 ? "(increasing)" : Weather.BodyTemperature.direction < 0 ? "(decreasing)" : "";
 		// eslint-disable-next-line prettier/prettier

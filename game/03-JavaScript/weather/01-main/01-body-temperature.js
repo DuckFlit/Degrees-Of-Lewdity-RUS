@@ -53,7 +53,7 @@ Weather.BodyTemperature = (() => {
 
 	// Clothing
 	const baseInsulation = 5;
-	const insulationCap = 70; // Target warmth cap where its effectiveness is reduced
+	const insulationCap = 55; // Target warmth cap where its effectiveness is reduced
 	const insulationMultiplier = 1; // The effectiveness of clothing warmth
 
 	// Wetness
@@ -126,19 +126,33 @@ Weather.BodyTemperature = (() => {
 			temperature = Weather.waterTemperature;
 		}
 
-		// To prevent exaggerated changes in large time skips and for performance reasons
-		// we scale down the additional minutes after an hour of time passed at once
-		// Won't affect sleep, since it runs in hourly chunks
 		const scaledMinutes = Math.min(minutes, 60 + Math.sqrt(Math.max(minutes - 60, 0)));
+		V.player.bodyTemperature = calculateTemperatureChange(V.player.bodyTemperature, temperature, scaledMinutes, getTotalWarmth());
+		resetActivity();
+	}
 
-		const generation = calculateHeatGeneration(V.player.bodyTemperature);
-		const dissipation = calculateHeatDissipation(temperature);
-		const newTemperature = round(V.player.bodyTemperature + (generation - dissipation) * scaledMinutes, 2);
+	function getRestingPoint(iterations = 6, warmth = undefined, bodyTemperature, outside) {
+		let temperature = outside || V.outside ? Weather.temperature : Weather.insideTemperature;
+		if (T.inWater && V.outside) {
+			temperature = Weather.waterTemperature;
+		}
+		let temp = bodyTemperature ?? V.player.bodyTemperature;
+
+		for (let i = 0; i < iterations; i++) {
+			temp = calculateTemperatureChange(temp, temperature, 15, warmth);
+		}
+
+		return temp;
+	}
+
+	function calculateTemperatureChange(currentTemperature, airTemperature, minutes, warmth) {
+		const generation = calculateHeatGeneration(currentTemperature);
+		const dissipation = calculateHeatDissipation(airTemperature, warmth);
+		const newTemperature = currentTemperature + (generation - dissipation) * minutes;
+		const baseDifference = newTemperature - baseBodyTemperature;
 
 		// Nudge the temperature slowly towards the base temperature
-		const baseDifference = newTemperature - baseBodyTemperature;
-		V.player.bodyTemperature = newTemperature + baseDifference * -tempApproachRate * scaledMinutes;
-		resetActivity();
+		return newTemperature + baseDifference * -tempApproachRate * minutes;
 	}
 
 	/**
@@ -212,26 +226,6 @@ Weather.BodyTemperature = (() => {
 		);
 	}
 
-	/* Debug */
-	function getRestingPoint(iterations = 120, warmth = undefined, temperature) {
-		temperature = temperature ?? (V.outside ? Weather.temperature : Weather.insideTemperature);
-		let temp = V.player.bodyTemperature;
-		if (T.inWater && V.outside) {
-			temperature = Weather.waterTemperature;
-		}
-		let dissipation, generation;
-		for (let i = 0; i < iterations; i++) {
-			generation = calculateHeatGeneration(temp);
-			dissipation = calculateHeatDissipation(temperature, warmth);
-			temp = round(temp + (generation - dissipation) * 15, 2);
-
-			const baseDifference = temp - baseBodyTemperature;
-			temp = temp + baseDifference * -tempApproachRate * 15;
-
-		}
-		return { temp, dissipation, generation };
-	}
-
 	return Object.create({
 		temperatureEffects,
 		get wetness() {
@@ -272,10 +266,9 @@ Weather.BodyTemperature = (() => {
 		},
 		update,
 		activityLevel,
+		calculateHeatGeneration,
 		calculateHeatDissipation,
 		getTotalWarmth,
-		// Debug
 		getRestingPoint,
-		calculateHeatGeneration,
 	});
 })();
