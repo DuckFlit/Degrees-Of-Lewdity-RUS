@@ -1109,7 +1109,7 @@ function initUpper() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			sleeve_img: 1,
-			breast_img: { 0: null, 1: null, 2: 2, 3: 3, 4: 4, 5: 5, 6: 5 },
+			breast_img: { 0: null, 1: null, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6 },
 			cursed: 0,
 			location: 0,
 			iconFile: "turtleneck.png",

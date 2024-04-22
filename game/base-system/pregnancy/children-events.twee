@@ -15,26 +15,25 @@
 		<<set _keys to Object.keys(_birthChildrenIds)>>
 		<<set $childPassageExit to _args[1]>>
 		<<switch _args[0]>>
-			<<case "test">>
-				/*Examples of how to add events*/
+			<<case "home">>
 				<<if _singleEvents is true and (_multipleEvents is false or random(0,100) gt 40)>>
-					<<addevent `"testSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
+					<<addevent `"homeSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
 				<<elseif _multipleEvents is true>>
-					<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
-					<<addevent "testMultiple _args">>
+					<<set $childrenIds to _birthChildrenIds[_keys.random()]>>
+					<<addevent `"homeMultiples " + _args`>>
 				<</if>>
 			<<case "wolf_cave">>
 				<<if _singleEvents is true and (_multipleEvents is false or random(0,100) gt 40)>>
 					<<addevent `"wolfCaveSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
 				<<elseif _multipleEvents is true>>
-					<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
+					<<set $childrenIds to _birthChildrenIds[_keys.random()]>>
 					/*<<addevent "wolfCaveMultiple _args">>*/
 				<</if>>
 		<</switch>>
 	<</if>>
 <</widget>>
 
-<<widget "testSingles">>
+<<widget "homeSingles">>
 	<<if _args[0]>>
 		<<childSelect _args[0]>>
 		<<switch random(0,0)>>
@@ -49,7 +48,7 @@
 				<</if>>
 				<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
 				<br>
-				<<link [[Talk (0:30)|childTalk]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+				<<link [[Talk (0:15)|childTalk]]>><<pass 15>><</link>><<lstress>><<ltrauma>>
 				<br>
 				<<link [[Play (0:30)|childPlay]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
 				<br>
@@ -59,9 +58,8 @@
 	<br>
 <</widget>>
 
-<<widget "testMultiple">>
-	<<if _args[0]>>
-		<<set $childrenIds to _args[0]>>
+<<widget "homeMultiples">>
+	<<if $childrenIds>>
 		<<switch random(0,0)>>
 			<<case 0>>
 				You spot your children <<childrenNames $childrenIds>> sleeping together in their cot with a peaceful look on each face.
@@ -71,7 +69,6 @@
 				<<link [[Have a nap (0:30)|childCotWatch]]>><<pass 30>><<set $phase to 2>><</link>><<lstress>><<ltiredness>>
 		<</switch>>
 	<</if>>
-	<br>
 <</widget>>
 
 <<widget "wolfCaveSingles">>
@@ -89,7 +86,7 @@
 				<</if>>
 				<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
 				<br>
-				<<link [[Talk (0:30)|childTalk]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+				<<link [[Talk (0:15)|childTalk]]>><<pass 15>><</link>><<lstress>><<ltrauma>>
 				<br>
 				<<link [[Play (0:30)|childPlay]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
 		<</switch>>
@@ -142,30 +139,29 @@
 <<link [[Next|$childPassageExit]]>><<unset $childPassageExit>><<endevent>><</link>>
 
 :: childCotWatch
+<<childSelect `$childrenIds[random(0,$childrenIds.length - 1)]`>>
 <<if $phase is 1>>
-	You stand over <<childname>>, and watch <<childhim>> sleep.
+	You stand over <<childrenNames $childrenIds>>, and watch them sleep.
 	<<set _rng to random(1, 4)>>
 	<<switch _rng>>
 		<<case 1>>
-			You're transfixed by <<childhis>> chest, rising and fallen with gentle breaths.
+			You're transfixed by <<childname>>'s chest, rising and fallen with gentle breaths.
 		<<case 2>>
-			You find yourself stroking <<childhis>> head.
+			You find yourself stroking each of their heads.
 		<<case 3>>
-			<<childHe>> opens <<childhis>> mouth in a big yawn, and stretches.<<lstress>><<stress -6>>
+			<<childname>> opens <<childhis>> mouth in a big yawn, and stretches.<<lstress>><<stress -6>>
 		<<default>>
-			<<childHe>> murmurs and scrunches <<childhis>> features, as if having a bad dream.<<gstress>><<stress 6>>
+			<<childname>> murmurs and scrunches <<childhis>> features, as if having a bad dream.<<gstress>><<stress 6>>
 	<</switch>>
 	<br><br>
 <<elseif $phase is 2>>
-	<<childSelect `$childrenIds[random(0,$childrenIds.length - 1)]`>>
 	You decide to have a nap and lie in the bed next to your children.
 	<br><br>
 	You wake up sometime later with something wrapped round your finger. While still asleep, it seems that <<childname>>'s <<childhand>> was able to reach you.
 	<br><br>
 <</if>>
 
-
-<<link [[Next|$childPassageExit]]>><<unset $childPassageExit>><<endevent>><</link>>
+<<link [[Next|$childPassageExit]]>><<unset $childrenIds>><<unset $childPassageExit>><<endevent>><</link>>
 
 :: childTalk
 <<set _rng to random(1, 4)>>
@@ -233,7 +229,6 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 	<<case "home">>
 		You are in the orphanage nursery. There are a few cradles and cots scattered around.
 	<<case "wolf_cave">>
-
 		<<switch Time.dayState>>
 			<<case "dawn">>
 				Many of the pups are still asleep.
@@ -244,26 +239,32 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 			<<case "night">>
 				The pups are all asleep, and the den is silent.
 		<</switch>>
-
 	<<case "alex_cottage">>
 		You are in the cottage nursery.
-
 		<<switch Time.dayState>>
 			<<case "dawn">>
 				The sound of birds singing early in the morning soothes the room.
-
 			<<case "day">>
 				Sounds from the farm can be heard through the cottage.
-
 			<<case "dusk">>
 				A calm breeze flows through the curtain.
-
 			<<case "night">>
 				Silence fills the room.
-
 		<</switch>>
-
 <</switch>>
+<<if Time.dayState isnot "night" and (!$daily.childrenHomeEvent or !$daily.childrenHomeEvent.includes($location)) and random(1) is 1>>
+	<<if !$daily.childrenHomeEvent>>
+		<<set $daily.childrenHomeEvent to [$location]>>
+	<<else>>
+		<<run $daily.childrenHomeEvent.push($location)>>
+	<</if>>
+	<<cleareventpool>>
+	<<childrenEvents $location $passage>>
+	<<if _eventpool.length>>
+		<<runeventpool>>
+		<<exit>>
+	<</if>>
+<</if>>
 <br><br>
 <<childViewerDisplay _childrenIds>>
 <br><br>
