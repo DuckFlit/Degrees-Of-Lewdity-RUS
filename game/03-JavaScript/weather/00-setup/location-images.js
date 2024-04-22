@@ -18,6 +18,9 @@ setup.Locations = {
 	castle: () => {
 		return "tower";
 	},
+	chalets: () => {
+		return "beach";
+	},
 	/* ADULT SHOP
 	<<case "adult_shop">>
 				<<getadultshopstate>>
