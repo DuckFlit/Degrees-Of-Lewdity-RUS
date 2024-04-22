@@ -1334,8 +1334,8 @@ setup.LocationImages = {
 			alpha: 0.8,
 		},
 	},
-	sea_pirates: {
-		folder: "sea_pirates",
+	pirate_ship: {
+		folder: "pirate_ship",
 		base: {
 			image: "base.png",
 			animation: {

@@ -24,6 +24,10 @@ setup.WeatherBindings = {
 		variable: () => V.location,
 		layers: ["location"],
 	},
+	tentworld: {
+		variable: () => V.location === "tentworld",
+		layers: ["all"],
+	},
 	bus: {
 		variable: () => V.bus,
 		layers: ["location"],

@@ -562,8 +562,8 @@ window.filterShopGroup = filterShopGroup;
 
 function clothingWarmthScale(element, value) {
 	$(() => {
-		const minValue = 33;
-		const maxValue = 41;
+		const minValue = 34;
+		const maxValue = 40;
 
 		const positionPercent = normalise(value, maxValue, minValue) * 100;
 		element.css("left", `${positionPercent}%`);
