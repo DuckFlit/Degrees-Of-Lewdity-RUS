@@ -428,40 +428,40 @@ statDisplay.create("gggawareness", () => {
 });
 
 statDisplay.create("lspurity", () => {
-	let result;
+	const result = document.createDocumentFragment();
 	if (C.npc.Sydney.purity >= 1) {
-		result = statDisplay.statChange("Sydney's Purity", -1, "purple");
+		result.append(statDisplay.statChange("Sydney's Purity", -1, "purple"));
 	} else {
-		result = statDisplay.statChange("Sydney's Corruption", 1, "purple");
+		result.append(statDisplay.statChange("Sydney's Corruption", 1, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-		result += statDisplay.statChange("Lust", 1, "lewd");
+		result.append(statDisplay.statChange("Lust", 1, "lewd"));
 	}
 	T.warnstate = -1;
 	return result;
 });
 statDisplay.create("llspurity", () => {
-	let result;
+	const result = document.createDocumentFragment();
 	if (C.npc.Sydney.purity >= 1) {
-		result = statDisplay.statChange("Sydney's Purity", -2, "purple");
+		result.append(statDisplay.statChange("Sydney's Purity", -2, "purple"));
 	} else {
-		result = statDisplay.statChange("Sydney's Corruption", 2, "purple");
+		result.append(statDisplay.statChange("Sydney's Corruption", 2, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-		result += statDisplay.statChange("Lust", 1, "lewd");
+		result.append(statDisplay.statChange("Lust", 1, "lewd"));
 	}
 	T.warnstate = -2;
 	return result;
 });
 statDisplay.create("lllspurity", () => {
-	let result;
+	const result = document.createDocumentFragment();
 	if (C.npc.Sydney.purity >= 1) {
-		result = statDisplay.statChange("Sydney's Purity", -3, "purple");
+		result.append(statDisplay.statChange("Sydney's Purity", -3, "purple"));
 	} else {
-		result = statDisplay.statChange("Sydney's Corruption", 3, "purple");
+		result.append(statDisplay.statChange("Sydney's Purity", 3, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-		result += statDisplay.statChange("Lust", 1, "lewd");
+		result.append(statDisplay.statChange("Lust", 1, "lewd"));
 	}
 	T.warnstate = -3;
 	return result;
