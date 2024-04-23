@@ -1269,7 +1269,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
 	<br>
-<<elseif $bird.state is "home" and $bird.activity is "build" and $bird.upgrades.shelter gte 2 and $birdShelterTimer and $birdShelterTimer lte 0>>
+<<elseif $bird.state is "home" and $bird.activity is "build" and $bird.upgrades.shelter gte 2 and $birdShelterTimer and $birdShelterTimer lte 0 and !$possessed>>
 	<<npc "Great Hawk">>
 	You see the <<beasttype>> carrying some sticks and leaves to repair the shelter. <<bHe>> stops when <<bhe>> sees what you've built in the old shelter's place.
 	<br><br>
@@ -1289,6 +1289,73 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<unset $birdShelterTimer>>
 
 	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<elseif $bird.state is "home" and $bird.activity is "bathe" and $bird.upgrades.pot gte 3 and getBirdBurnTime() gte 1 and $bird.heat_unknown and !$possessed>>
+	<<run delete $bird.heat_unknown>>
+	<<npc "Great Hawk">>
+	You see your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> walk to the rainwater pool. <<bHe>> stops in front of it, noticing the steam coming out of it.
+	<br><br>
+
+	<<if $monster is 1>>
+		<<bHe>> turns to look at you. "Did <<wife>> do something to the water? It's warm now," <<bhe>> says. You tell <<bhim>> you found a way to heat the water. <<bHe>> looks surprised. "<<Wife>> can do that? Incredible." <<bHe>> marvels at your feat of ingenuity.
+	<<else>>
+		<<bHe>> looks at you and tilts his head. You tell <<bhim>> you found a way to heat the water. The <<beasttype>> stares at you in awe, likely wondering how it's possible.
+	<</if>> 
+	<br><br>
+
+	<<bHe>> steps into the water and shudders, likely feeling hot water for the first time. <<bHe>> seems a bit tense at first, but quickly warms up to the idea of a warm bath.
+	<<if $monster is 1>>
+		"This feels good, thank you for this, <<wife>>."
+	<<else>>
+		<<bHe>> chirps gleefully, happy to have warm water.
+	<</if>>
+	You leave <<bhim>> to enjoy the water. <<npcincr "Great Hawk" love 1>><<glove>>
+	<br><br>
+
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>> 
+	<br>
+<<elseif $bird.state is "home" and $bird.activity is "bathe" and $bird.upgrades.pot gte 3 and getBirdBurnTime() is 0 and !$bird.heat_unknown and !$daily.birdHeatRequest and Weather.temperature lte 15 and !$possessed>>
+	<<set $daily.birdHeatRequest to true>>
+	<<npc "Great Hawk">>
+	Your <<beasttype>> approaches you.
+	<<if $monster is 1>>
+		"Could <<wife>> make the water warm again?" <<bhe>> asks.
+	<<else>>
+		<<bHe>> motions towards the bathing pool and squawks. <<bHe>> is asking you to heat the water again.
+	<</if>>
+	<br><br>
+
+	<<mooricon "wood">>
+	<<if $bird.materials.wood is 0>>
+		<span class="red">No wood to add.</span>
+	<<else>>
+		<<set _timeWood to 240>>
+		<<if Weather.precipitation is "rain" and $bird.upgrades.shelter is 0>>
+			<<set _timeWood to Math.floor(_timeWood / 2)>>
+		<</if>>
+		<<link [[Add wood|Bird Tower Warm Bath]]>>
+			<<set $phase to 1>><<npcincr "Great Hawk" love 1>><<set $bird.materials.wood-->>
+			<<run Cooker.addBurnTime($bird.firepit, _timeWood * 60)>>
+			<<run Weather.Observables.checkForUpdate()>>
+		<</link>><<glove>><<note `"+ " + getTimeString(240)` `"green"`>>
+	<</if>>
+	<br>
+	<<mooricon "sticks">>
+	<<if $bird.materials.sticks is 0>>
+		<span class="red">No sticks to add.</span>
+	<<else>>
+		<<set _timeSticks to 60>>
+		<<if Weather.precipitation is "rain" and $bird.upgrades.shelter is 0>>
+			<<set _timeSticks to Math.floor(_timeSticks / 2)>>
+		<</if>>
+		<<link [[Add sticks|Bird Tower Warm Bath]]>>
+		<<set $phase to 1>><<npcincr "Great Hawk" love 1>><<set $bird.materials.sticks-->>
+		<<run Cooker.addBurnTime($bird.firepit, _timeSticks * 60)>>
+		<<run Weather.Observables.checkForUpdate()>>
+		<</link>><<glove>><<note `"+ " + getTimeString(60)` `"green"`>>
+	<</if>>
+	<br>
+	<<getouticon>><<link [[Refuse|Bird Tower Warm Bath]]>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>>
 	<br>
 <<elseif $bird.upgrades.wardrobe is 1 and $bird.wardrobe_timer lte 1 and $bird.state is "home" and !$possessed>>
 	<<run delete $bird.wardrobe_timer>>
@@ -1922,12 +1989,12 @@ You are in the base of the ruined tower, deep in the moor. There's a slit in the
 	<<if $bird.mirror_unknown is 1>>
 		A mirror stands in the middle of the room, covered by a dusty sheet.
 		<br><br>
-		<<link [[Carry the mirror upstairs (0:15)|Bird Tower Base Carry]]>><<set $bird.upgrades.mirror to 1>><<bird_pass 15>><<tiredness 3>><</link>>
+		<<mooricon "mirror">><<link [[Carry the mirror upstairs (0:15)|Bird Tower Base Carry]]>><<set $bird.upgrades.mirror to 1>><<bird_pass 15>><<tiredness 3>><</link>>
 		<br>
 	<<else>>
 		A tall piece of furniture stands in the middle of the room, covered by a dusty sheet.
 		<br><br>
-		<<link [[Examine the furniture|Bird Tower Base Mirror]]>><<set $bird.mirror_unknown to 1>><</link>>
+		<<investigateicon>><<link [[Examine the furniture|Bird Tower Base Mirror]]>><<set $bird.mirror_unknown to 1>><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -5141,6 +5208,7 @@ You slowly run your hands down the <<beasttypes>> feathers, towards <<bhis>> <<n
 
 :: Bird Tower Build Firepit 1
 <<setTowerTemp>><<effects>>
+<<set $bird.fire_1 to true>>
 You grab a few stray blocks of stone and arrange them in a circle. You set up a bit of firewood and kindling, before trying to start a fire.
 <br><br>
 
@@ -5181,6 +5249,7 @@ With the fire properly sheltered and ventilated, it should last much longer.
 
 :: Bird Tower Build Firepit 3
 <<setTowerTemp>><<effects>>
+<<set $bird.fire_2 to true>>
 You move the stone blocks out further, and stack more wood. You make a more robust fire poker from scrap and a bit of leather for a safer handle.
 <br><br>
 
@@ -5201,16 +5270,101 @@ You crouch down in front of the
 	firepit.
 <</if>>
 
-<span id="firepitActions">
-	<<firepitActions>>
-</span>
+<<if $bird.state is "home" and $bird.activity isnot "sleep" and $bird.upgrades.pot gte 2 and $bird.cook_unknown>>
+	<br><br>
+	<<run delete $bird.cook_unknown>>
+	<<npc "Great Hawk">>
+	Your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> walks over to your newly set up cooking pot.
+	
+	<<if $monster is 1>>
+		"What has <<wife>> made?" <<bhe>> asks, looking over the pot.
+		<br><br>
+		
+		You explain you'll be able to cook lurkers with the pot. "Cook? Heat makes meat unpleasant, but if <<wife>> wants to, then <<wife>> can."
+	<<else>>
+		<<bHe>> pokes the pot with his beak, trying to figure out what it does. You explain you'll be able to cook lurkers with the pot. <<bHe>> peeks inside the pot, then squawks dismissively. <<bHe>> does not seem to want <<bhis>> lurkers cooked.
+	<</if>>
+	Content with your explanation, <<bhe>> returns to <<bhis>> perch.
+	<br><br>
 
-<<getouticon>><<link [[Back|Bird Tower]]>><</link>>
+	<<link [[Next|Bird Tower Firepit]]>><<endevent>><</link>> 
+	<br>
+<<elseif $bird.state is "home" and $bird.activity isnot "sleep" and $bird.upgrades.firepit gte 1 and getBirdBurnTime() gte 1 and $bird.fire_1>>
+	<br><br>
+	<<run delete $bird.fire_1>>
+	<<npc "Great Hawk">>
+	Your <<beasttype>> warily approaches the burning firepit.
+	<<if $monster is 1>>
+		"Is <<wife>> sure we should have a fire so close to us?" <<bhe>> asks.
+	<<else>>
+		<<bHe>> looks at you, concerned about having a fire in here.
+	<</if>>
+	You tell <<bhim>> the fire is contained, so <<bhe>> doesn't need to worry. <<bHe>> still looks uncertain, but does not seem so afraid anymore.
+	<br><br>
+
+	After inspecting the fire a little longer, <<bhe>> eventually calms down and returns to what <<bhe>>was doing.
+	<br><br>
+
+	<<link [[Next|Bird Tower Firepit]]>><<endevent>><</link>>
+	<br>
+<<elseif $bird.state is "home" and $bird.activity isnot "sleep" and $bird.upgrades.firepit gte 3 and getBirdBurnTime() gte 720 and $bird.fire_2 and !$bird.fire_1>>
+	<br><br>
+	<<run delete $bird.fire_2>>
+	<<npc "Great Hawk">>
+	Your <<beasttype>> walks over to the fire.
+	<<if $monster is 1>>
+		"<<Wife>> has really made the fire big," <<bhe>> says. You ask if <<bhes>> still worried about it. "Not anymore, <<wife>> is keeping the fire safe."
+	<<else>>
+		<<bHe>> marvels at the big fire you've managed to create. Thankfully, <<bhe>> does not seem worried anymore.
+	<</if>> 
+	<br><br>
+	<<bHe>> gets even closer to the fire and spreads his wings, taking in the warmth.
+	<br><br>
+
+	<<link "Join <<bhim>> (0:10)" "Bird Tower Firepit Cuddle">><<bird_pass 10>><<set $phase to 1>><<npcincr "Great Hawk" love 1>><</link>><<glove>>
+	<br>
+	<<link [[Leave|Bird Tower Firepit Cuddle]]>><</link>>
+	<br>
+<<else>>
+	<<if $bird.state is "home" and ["groom","sing"].includes($bird.activity) and $bird.upgrades.firepit gte 3 and getBirdBurnTime() gte 720 and !$daily.birdFire>>
+		<<set $daily.birdFire to true>>
+		<<npc "Great Hawk">>
+		Your <<beasttype>> comes and sits down next to you. <<bHe>> nuzzles against you for a moment, enjoying the warmth. After a moment, <<bhe>> gets up and returns to the perch. <<stress -6>><<llstress>>
+		<<endevent>>
+		<br><br>
+	<</if>>
+	<span id="firepitActions">
+		<<firepitActions>>
+	</span>
+
+	<<getouticon>><<link [[Back|Bird Tower]]>><</link>>
+	<br>
+<</if>>
+
+:: Bird Tower Firepit Cuddle
+<<setTowerTemp>><<effects>>
+<<if $phase is 1>>
+	You join your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> around the fire. <<bHe>> wraps a wing around you. You spend some time basking near the fire together. 
+	<br><br>
+
+	Many minutes pass until the Great Hawk backs away from the fire. The wing wrapped around you feels warmer now.
+	<<if $monster is 1>>
+		"I'm glad you made this, it makes me warm. Just like being with <<wife>>," <<bhe>> says.
+	<<else>>
+		<<bHe>> nuzzles <<bhis>> beak against you affectionatly. You can tell <<bhes>> happy to have you here with <<bhim>>.
+	<</if>>
+	<<bHe>> lets go and leaves you to enjoy the fire.
+<<else>>
+	You leave your <<beasttype>> to enjoy the fire by <<bhimself>>. <<bHe>> only stays near it briefly, then returns to what <<bhe>> was doing.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Tower Firepit]]>><<endevent>><</link>>
 <br>
 
 :: Bird Tower Build Cooking
 <<setTowerTemp>><<effects>>
-
+<<set $bird.cook_unknown to true>>
 You fashion a simple mount for the cooking pot from sticks bound by fabric. You place the pot on top and give it a good push to make sure it holds.
 <br><br>
 
@@ -5233,7 +5387,7 @@ You stoke the fire, and keep a close eye on it. When you think it's done, you ta
 
 :: Bird Tower Build Heating
 <<setTowerTemp>><<effects>>
-
+<<set $bird.heat_unknown to true>>
 An idea strikes you. You could use a small change in elevation and a couple of tubes to fill the pot with water from the rainwater pool, heating it, before returning it back.
 <br><br>
 
@@ -5246,6 +5400,35 @@ You're sure this would earn you some praise from Sirris.
 
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
+
+:: Bird Tower Warm Bath
+<<effects>>
+<<if $phase is 1>>
+	You agree and heat up the fire for <<bhim>>.
+	<<if $monster is 1>>
+		"<<Wife>> makes everything better, even cleaning," <<bhe>> says. "Does <<wife>> want to clean up now too?" <<bhe>> asks, offering <<bhis>> hand to you.
+	<<else>>
+		<<bHe>> nuzzles <<bhis>> beak against you in thanks. <<bHe>> turns to move to the water pool.
+	<</if>>
+	<br><br>
+
+	<<link [[Follow (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><<endevent>><<set $phase to 1>><</link>><<if $monster is 1>><<handholdingvirginitywarning>><<NPCvirginitywarning "Great Hawk" "handholding">><</if>>
+	<br>
+	<<link [[Stay|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You tell <<bhim>> you can't do it right now.
+	<<if $monster is 1>>
+		"Bad time right now? Alright," <<bhe>> says, sounding disappointed.
+	<<else>>
+		<<bHe>> keeps looking at you pleadingly, but soon gives up.
+	<</if>>
+	<<bHe>> walks to the rainwater pool.
+	<br><br>
+
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<</if>>
 
 :: Bird Tower Build Rack 1
 <<setTowerTemp>><<effects>>
