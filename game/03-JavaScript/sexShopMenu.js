@@ -167,10 +167,10 @@ setup.sextoys = [
 		unCarry: setup.sextoyFunctions.unCarry,
 		display_condition: () => 1,
 	},
-	{
+{
 		index: 6,
 		name: "strap-on horse cock",
-		namecap: "Страпон в виде лошадиного члена",
+		namecap: "Страпон-конский член",
 		name_underscore: "strap-on_horse_cock",
 		clothes_index: 34,
 		description: "Новинка - фаллос лошади. Одевается на бедра. Используется для секса с проникновением.",
@@ -193,7 +193,7 @@ setup.sextoys = [
 	{
 		index: 7,
 		name: "strap-on knotted cock",
-		namecap: "Страпон в виде члена собаки",
+		namecap: "Страпон-собачий член",
 		name_underscore: "strap-on_knotted_cock",
 		clothes_index: 35,
 		description: "Новинка - собачий фаллос. Одевается на бедра. Используется для секса с проникновением.",
