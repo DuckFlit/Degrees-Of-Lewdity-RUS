@@ -46,6 +46,7 @@ const Weather = (() => {
 		const result = round(sunIntensity * clothingModifier * sunBlockModifier, 2);
 		return {
 			sun: sunIntensity,
+			month: Weather.Settings.months[Time.date.month - 1].sunIntensity,
 			weather: V.outside ? Weather.current.tanningModifier : 1,
 			location: V.location === "forest" ? 0.2 : 1,
 			dayFactor: V.outside ? Time.date.simplifiedDayFactor : 1,
@@ -59,7 +60,7 @@ const Weather = (() => {
 		const sunIntensity = Weather.Settings.months[Time.date.month - 1].sunIntensity * Weather.Sky.dayFactor;
 		const weatherModifier = V.outside ? Weather.current.tanningModifier : 0;
 		const locationModifier = V.location === "forest" ? 0.2 : 1;
-		return V.outside ? sunIntensity * weatherModifier * locationModifier : 0;
+		return V.outside ? Math.max(sunIntensity * weatherModifier * locationModifier, 0) : 0;
 	}
 
 	function setAccumulatedSnow(minutes) {
@@ -105,7 +106,7 @@ const Weather = (() => {
 			return setup.WeatherSettings;
 		},
 		get TooltipDescriptions() {
-			return setup.WeatherTooltip;
+			return setup.WeatherDescriptions;
 		},
 		get current() {
 			return Weather.WeatherConditions.getWeather();

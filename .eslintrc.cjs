@@ -201,6 +201,7 @@ module.exports = {
 		// DoL math functions
 		round: "readonly",
 		normalise: "readonly",
+		categorise: "readonly",
 		randomExp: "readonly",
 		expCurve: "readonly",
 		between: "readonly",

@@ -42,37 +42,37 @@ setup.WeatherSettings = {
 		},
 		{
 			// Feb
-			temperatureRange: [-5, 9],
+			temperatureRange: [-15, 7],
 			sunIntensity: 0.2,
 		},
 		{
 			// Mar
-			temperatureRange: [4, 12],
+			temperatureRange: [-5, 13],
 			sunIntensity: 0.3,
 		},
 		{
 			// Apr
-			temperatureRange: [6, 16],
+			temperatureRange: [0, 18],
 			sunIntensity: 0.5,
 		},
 		{
 			// May
-			temperatureRange: [9, 18],
+			temperatureRange: [8, 19],
 			sunIntensity: 0.7,
 		},
 		{
 			// Jun
-			temperatureRange: [12, 21],
+			temperatureRange: [12, 22],
 			sunIntensity: 1,
 		},
 		{
 			// Jul
-			temperatureRange: [14, 24],
+			temperatureRange: [14, 27],
 			sunIntensity: 1,
 		},
 		{
 			// Aug
-			temperatureRange: [14, 22],
+			temperatureRange: [14, 24],
 			sunIntensity: 0.8,
 		},
 		{
@@ -82,17 +82,17 @@ setup.WeatherSettings = {
 		},
 		{
 			// Oct
-			temperatureRange: [9, 16],
+			temperatureRange: [5, 16],
 			sunIntensity: 0.5,
 		},
 		{
 			// Nov
-			temperatureRange: [-1, 10],
+			temperatureRange: [-5, 10],
 			sunIntensity: 0.3,
 		},
 		{
 			// Dec
-			temperatureRange: [-4, 7],
+			temperatureRange: [-12, 5],
 			sunIntensity: 0.1,
 		},
 	],

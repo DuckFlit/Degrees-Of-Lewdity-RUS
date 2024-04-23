@@ -208,28 +208,25 @@ window.tanned = tanned;
 function tanningGainOutput(modifier, minutes) {
 	if (V.statdisable !== "f") return "";
 	const factor = modifier * minutes;
-	let pluses = "";
-	if (factor >= 50) {
-		pluses = "+ + +";
-	} else if (factor >= 20) {
-		pluses = "+ +";
-	} else if (factor >= 0) {
-		pluses = "+";
-	} else {
+	if (factor === 0) {
 		return "";
 	}
-
-	return `| <span class="green">${pluses} Tan</span>`;
+	return statDisplay.statChange("Tan", factor >= 50 ? 3 : factor >= 20 ? 2 : 1, "green");
 }
 window.tanningGainOutput = tanningGainOutput;
-DefineMacroS("tanningGainOutput", tanningGainOutput);
+DefineMacro("tanningGainOutput", function () {
+	this.output.append(tanningGainOutput(...this.args));
+});
 
 function tanningPenaltiesOutput(modifiers) {
 	const reasons = [];
 
 	if (V.outside) {
-		if (modifiers.sun <= 0.3) reasons.push(`Low sun intensity (${Time.monthName})`);
-		else if (modifiers.sun <= 0.7) reasons.push(`Reduced sun intensity (${Time.monthName})`);
+		const month = modifiers.month <= 0.6;
+		const dayState = Weather.Sky.dayFactor <= 0.6;
+		const output = month ? Time.monthName : dayState ? "Sun is low" : "weather";
+		if (modifiers.sun <= 0.3) reasons.push(`Low sun intensity (${output})`);
+		else if (modifiers.sun <= 0.7) reasons.push(`Reduced sun intensity (${output})`);
 
 		if (modifiers.weather < 1) reasons.push("Light clouds");
 	}
@@ -237,7 +234,7 @@ function tanningPenaltiesOutput(modifiers) {
 	if (modifiers.sunBlock < 1) reasons.push("Use of sunblock");
 
 	if (reasons.length === 0) return "";
-	return `<span class="teal">Your tanning gain was reduced due to:</span><br><span color="orange">${reasons.join("<br>")}</span><br>`;
+	return `<span class="teal">Your tanning gain was reduced due to:</span><br><span class="orange">${reasons.join("<br>")}</span><br>`;
 }
 DefineMacroS("tanningPenaltiesOutput", tanningPenaltiesOutput);
 window.tanningPenaltiesOutput = tanningPenaltiesOutput;

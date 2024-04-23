@@ -365,8 +365,8 @@ Weather.Sky = (() => {
 			<br><span class="blue">Inside temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.insideTemperature)}</span>
 			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.waterTemperature)}</span>
 			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)}</span>
-			<br><span class="blue">Overcast amount:</span> <span class="yellow">${Weather.sunIntensity * 100}%</span>
-			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(_fadables.overcast.factor, 2) * 100}%</span>
+			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(Weather.sunIntensity, 2) * 100}%</span>
+			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(_fadables.overcast.factor, 2) * 100}%</span>
 			<br><span class="blue">Fog amount:</span> <span class="yellow">${round(Weather.fog, 2) * 100}%</span>
 			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${V.weatherObj.snow}mm</span>`
 			: "";

@@ -154,7 +154,12 @@ $.fn.tooltip = function (options = {}) {
 			if (!$.contains(document, $this[0])) return;
 			tooltip = $("<div>").addClass("tooltip-popup");
 			const header = $("<div>").addClass("tooltip-header").html(settings.title);
-			const body = $("<div>").addClass("tooltip-body").html(settings.message);
+			const body = $("<div>").addClass("tooltip-body");
+			if (settings.message instanceof DocumentFragment) {
+				body.append(settings.message);
+			} else {
+				body.html(settings.message);
+			}
 			if (settings.style) body.addClass(settings.style);
 			tooltip.append(header, body);
 			if (settings.width) tooltip.css("width", settings.width);

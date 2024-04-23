@@ -98,6 +98,7 @@ Weather.Thermometer = (() => {
 		thermometerCanvas.ctx.fillRect(0, 0, size.width, size.height);
 		thermometerCanvas.ctx.restore();
 
+		// Add the up or down arrows
 		if (Weather.BodyTemperature.direction !== 0) {
 			const img = Weather.BodyTemperature.direction > 0 ? images.upImg.img : images.downImg.img;
 			thermometerCanvas.ctx.drawImage(img, 13, 2, img.width, img.height);
@@ -116,30 +117,28 @@ Weather.Thermometer = (() => {
 	function updateTooltip() {
 		const tempDescription = Weather.TooltipDescriptions.bodyTemperature();
 		const waterDescription = `<br>${Weather.TooltipDescriptions.waterTemperature()}`;
-		//  const fatigueModifier = Math.round(
-		//  	normalise(Weather.BodyTemperature.fatigueModifier, Weather.BodyTemperature.temperatureEffects.maxFatigueGainMultiplier, 1) * 3
-		// );
-		// const arousalModifier = Math.round(
-		// 	normalise(Weather.BodyTemperature.arousalModifier, Weather.BodyTemperature.temperatureEffects.maxArousalGainMultiplier, 1) * 3
-		// );
-		// const painModifier = Math.round(
-		// 	normalise(Weather.BodyTemperature.painModifier, Weather.BodyTemperature.temperatureEffects.maxPainGainMultiplier, 1) * 3
-		// );
-		// const stressModifier = Math.round(
-		// 	normalise(Weather.BodyTemperature.stressModifier, Weather.BodyTemperature.temperatureEffects.maxStressGainMultiplier, 0) * 3
-		// );
-		const modifiers = `<br>${Weather.TooltipDescriptions.waterTemperature()}`;
+		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, Weather.BodyTemperature.temperatureEffects.maxFatigueGainMultiplier, 4);
+		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, Weather.BodyTemperature.temperatureEffects.maxArousalGainMultiplier, 4);
+		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, Weather.BodyTemperature.temperatureEffects.maxPainGainMultiplier, 4);
+		const stressModifier = categorise(Weather.BodyTemperature.stressModifier, 0, Weather.BodyTemperature.temperatureEffects.lowerMaxStressGain, 4);
+
+		const arousalOutput = arousalModifier > 0 ? `<span class="teal">${"+ ".repeat(Math.abs(arousalModifier))}Arousal penalties</span><br>` : "";
+		const fatigueOutput = fatigueModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(fatigueModifier))}Fatigue gains</span><br>` : "";
+		const painOutput = painModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(painModifier))}Pain gains</span><br>` : "";
+		const stressOutput = stressModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(stressModifier))}Stress gains</span><br>` : "";
+		const modifiers = arousalOutput + fatigueOutput + painOutput + stressOutput;
+
 		const direction = Weather.BodyTemperature.direction > 0 ? "(increasing)" : Weather.BodyTemperature.direction < 0 ? "(decreasing)" : "";
 		// eslint-disable-next-line prettier/prettier
 		const debug = V.debug ? `<br><br><span class="teal">DEBUG:</span><br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)} ${direction}</span>
-			<br><span class="blue">Body wetness:</span> <span class="yellow">${Weather.wetness * 100}%</span>
+			<br><span class="blue">Body wetness:</span> <span class="yellow">${Math.round(Weather.wetness * 100)}%</span>
 			<br><span class="blue">Clothing warmth:</span> <span class="yellow">${Weather.BodyTemperature.getTotalWarmth()}</span>
 			<br><span class="blue">Target temperature (current clothing)</span> <span class="yellow">${Weather.toSelectedString(
-				Weather.BodyTemperature.getRestingPoint(6).temp
+				Weather.BodyTemperature.getRestingPoint(6)
 			)}</span>`
 			: "";
 		tooltipElement.tooltip({
-			message: tempDescription + waterDescription + debug,
+			message: tempDescription + waterDescription + modifiers + debug,
 			delay: 200,
 			position: "cursor",
 		});

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-setup.WeatherTooltip = {
+setup.WeatherDescriptions = {
 	type: {
 		clear: {
 			dawn: "A bright orange hue fills the sky.",
@@ -87,7 +87,7 @@ setup.WeatherTooltip = {
 		}
 	},
 	waterTemperature: () => {
-		if (!V.inwater || !V.outside) return "";
+		if (!T.inWater || !V.outside) return "";
 		if (Weather.waterTemperature <= 5) {
 			return "The water feels freezing cold."
 		} else if (Weather.waterTemperature <= 15) {
@@ -99,5 +99,18 @@ setup.WeatherTooltip = {
 		} else {
 			return "The water feels hot."
 		}
-	}
+	},
+	shop: () => {
+		if (Weather.temperature <= -5) {
+			return "<span class='blue'>It's extremely cold outside.</span>";
+		} else if (Weather.temperature <= 5) {
+			return "<span class='purple'>It's very cold outside.</span>";
+		} else if (Weather.temperature <= 15) {
+			return "<span class='teal'>It's cold outside.</span>";
+		} else if (Weather.temperature <= 25) {
+			return "<span class='green'>It's a comfortable temperature outside.</span>";
+		} else {
+			return "<span class='orange'>It's hot outside.</span>";
+		}
+	},
 };

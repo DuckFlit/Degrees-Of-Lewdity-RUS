@@ -2152,7 +2152,7 @@ function initUnderLower() {
 			type: ["normal", "covered"],
 			set: "under_lower",
 			gender: "n",
-			warmth: 25,
+			warmth: 0,
 			cost: 3500,
 			description: "Tight.",
 			shop: ["clothing"],

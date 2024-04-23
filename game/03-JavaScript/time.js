@@ -401,6 +401,9 @@ function yearPassed() {
 	V.mathsproject = "none";
 	V.englishPlay = "none";
 
+	delete V.yearly;
+	V.yearly = clone(setup.weeklyObject);
+
 	return fragment;
 }
 
@@ -688,7 +691,7 @@ function dayPassed() {
 		else V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.95, 0, 100).toFixed(3);
 	}
 
-	if (V.weather === "rain" && V.bird.upgrades?.firepit && !V.bird.upgrades.shelter) {
+	if (Weather.precipitation === "rain" && V.bird.upgrades?.firepit && !V.bird.upgrades.shelter) {
 		const burnTime = getBirdBurnTime() * 60; // seconds
 		if (burnTime > 0) {
 			Cooker.addBurnTime(V.bird.firepit, Math.floor(-burnTime / 2) + Time.minute * 30);
@@ -1800,7 +1803,7 @@ function passWater(passMinutes) {
 		if (V.lowerwet) statChange.wet("lower", -passMinutes * dryingFactor);
 		if (V.underlowerwet) statChange.wet("underlower", -passMinutes * (V.worn.lower.type.includes("naked") ? dryingFactor : dryingFactor * 0.5));
 		if (V.underupperwet) statChange.wet("underupper", -passMinutes * (V.worn.upper.type.includes("naked") ? dryingFactor : dryingFactor * 0.5));
-	} else if (V.outside && V.weather === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
+	} else if (V.outside && Weather.precipitation === "rain" && !V.worn.head.type.includes("rainproof") && !V.worn.handheld.type.includes("rainproof")) {
 		if (!V.worn.upper.type.includes("naked") && !waterproofCheck(V.worn.upper) && !waterproofCheck(V.worn.over_upper)) {
 			statChange.wet("upper", passMinutes);
 		}

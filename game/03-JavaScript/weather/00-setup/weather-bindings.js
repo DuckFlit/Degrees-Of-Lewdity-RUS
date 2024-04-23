@@ -24,6 +24,10 @@ setup.WeatherBindings = {
 		variable: () => V.location,
 		layers: ["location"],
 	},
+	tentworld: {
+		variable: () => V.location === "tentworld",
+		layers: ["all"],
+	},
 	bus: {
 		variable: () => V.bus,
 		layers: ["location"],
@@ -47,9 +51,9 @@ setup.WeatherBindings = {
 	fireOn: {
 		variable: () => {
 			if (V.bird.firepit === undefined) return null;
-			const step = (V.bird.firepit.maxBurnTime / 60) / 5; // (max value / parts)
+			const step = V.bird.firepit.maxBurnTime / 60 / 5; // (max value / parts)
 			return Math.round(getBirdBurnTime() / step) * step;
-		  },
+		},
 		layers: ["location"],
 	},
 };

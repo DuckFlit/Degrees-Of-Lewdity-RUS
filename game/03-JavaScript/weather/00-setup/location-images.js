@@ -18,6 +18,9 @@ setup.Locations = {
 	castle: () => {
 		return "tower";
 	},
+	chalets: () => {
+		return "beach";
+	},
 	/* ADULT SHOP
 	<<case "adult_shop">>
 				<<getadultshopstate>>
@@ -949,7 +952,15 @@ setup.LocationImages = {
 	},
 	museum: {
 		folder: "museum",
-		base: "base.png",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			grass: {
+				image: "grass_autumn.png",
+				condition: () => Time.season === "autumn",
+			},
+		},
 		snow: "snow.png",
 	},
 	night_monster_lair: {
@@ -1025,9 +1036,22 @@ setup.LocationImages = {
 			},
 		},
 	},
+	oak: {
+		folder: "oak",
+		base: "base.png",
+		snow: "snow.png",
+	},
 	office: {
 		folder: "office",
-		base: "base.png",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			grass: {
+				image: "grass_autumn.png",
+				condition: () => Time.season === "autumn",
+			},
+		},
 		snow: "snow.png",
 		emissive: {
 			default: {
@@ -1109,6 +1133,31 @@ setup.LocationImages = {
 			color: "#deae66a5",
 		},
 	},
+	police_station: {
+		folder: "police_station",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			grass: {
+				image: "grass_autumn.png",
+				condition: () => Time.season === "autumn",
+			},
+			car: {
+				image: "car.png",
+				condition: () => Time.dayState === "night" || (Time.hour > 11 && Time.hour < 14),
+			},
+		},
+		snow: {
+			default: {
+				image: "snow.png",
+			},
+			car: {
+				image: "car.png",
+				condition: () => Time.dayState === "night" || (Time.hour > 11 && Time.hour < 14),
+			},
+		},
+	},
 	pool: {
 		folder: "pool",
 		base: {
@@ -1158,17 +1207,27 @@ setup.LocationImages = {
 	prison: {
 		folder: "prison",
 		base: {
-			image: "base.png",
-			animation: {
-				fps: 6,
-				delay: () => 0,
+			default: {
+				image: "base.png",
+			},
+			water: {
+				image: "water.png",
+				animation: {
+					fps: 6,
+					delay: () => 0,
+				},
 			},
 		},
 		snow: {
-			image: "base.png",
-			animation: {
-				fps: 6,
-				delay: () => 0,
+			default: {
+				image: "snow.png",
+			},
+			water: {
+				image: "water.png",
+				animation: {
+					fps: 6,
+					delay: () => 0,
+				},
 			},
 		},
 	},
@@ -1191,6 +1250,17 @@ setup.LocationImages = {
 		emissive: {
 			image: "emissive.png",
 			condition: () => Weather.lightsOn,
+		},
+	},
+	pub: {
+		folder: "pub",
+		base: "base.png",
+		snow: "snow.png",
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+			color: "#deae66",
+			strength: 5,
 		},
 	},
 	res_alley: {
@@ -1242,7 +1312,15 @@ setup.LocationImages = {
 	},
 	school_rear_courtyard: {
 		folder: "school_rear_courtyard",
-		base: "base.png",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			summer: {
+				image: "summer.png",
+				condition: () => Time.season === "summer",
+			},
+		},
 		snow: "snow.png",
 	},
 	sea: {
@@ -1259,8 +1337,8 @@ setup.LocationImages = {
 			alpha: 0.8,
 		},
 	},
-	sea_pirates: {
-		folder: "sea_pirates",
+	pirate_ship: {
+		folder: "pirate_ship",
 		base: {
 			image: "base.png",
 			animation: {
@@ -1509,7 +1587,7 @@ setup.LocationImages = {
 				},
 				color: "#deae66",
 				size: 5,
-				alpha: () => (getBirdBurnTime() / 720),
+				alpha: () => getBirdBurnTime() / 720,
 			},
 		},
 		emissive_blood: {

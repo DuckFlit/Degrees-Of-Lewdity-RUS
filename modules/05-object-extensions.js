@@ -9,10 +9,10 @@
  *
  *  * Examples:
  * // Use optional arrayBehaviour
- * obj1.mergeDeep(obj2, { arrayBehaviour: 'merge-deduplicate' });
+ * obj1.mergeDeep(obj2, "merge-deduplicate" });
  *
  * // Use filter to exclude number properties
- * obj1.mergeDeep(obj2, (key, value) => typeof value !== 'number');
+ * obj1.mergeDeep(obj2, (key, value) => typeof value !== "number");
  */
 
 const ObjectAssignDeep = (function () {

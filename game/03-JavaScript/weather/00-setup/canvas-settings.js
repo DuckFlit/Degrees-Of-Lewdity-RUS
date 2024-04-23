@@ -25,7 +25,7 @@ setup.SkySettings = {
 				path: {
 					startX: -14, // Start offscreen
 					endX: 64 + 14, // End offscreen
-					peakY: 40,
+					peakY: 70,
 					horizon: 162,
 				},
 			},
@@ -37,7 +37,7 @@ setup.SkySettings = {
 				path: {
 					startX: -12, // Start offscreen
 					endX: 64 + 12, // End offscreen
-					peakY: 40, // The y value of the top of the orbit arc
+					peakY: 50, // The y value of the top of the orbit arc
 					horizon: 162, // The y value of the horizon
 				},
 			},
