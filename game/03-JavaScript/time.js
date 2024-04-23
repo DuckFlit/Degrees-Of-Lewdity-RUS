@@ -401,6 +401,9 @@ function yearPassed() {
 	V.mathsproject = "none";
 	V.englishPlay = "none";
 
+	delete V.yearly;
+	V.yearly = clone(setup.weeklyObject);
+
 	return fragment;
 }
 
