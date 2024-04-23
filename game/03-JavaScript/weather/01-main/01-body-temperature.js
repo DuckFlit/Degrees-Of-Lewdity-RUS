@@ -41,7 +41,7 @@ Weather.BodyTemperature = (() => {
 
 	// General
 	const baseBodyTemperature = 37; // The normal body temperature in degrees Celsius.
-	const tempApproachRate = 0.0125; // Will nudge the temperature towards the base temperature by this rate (per degree celcius)
+	const tempApproachRate = 0.0123; // Will nudge the temperature towards the base temperature by this rate (per degree celcius)
 
 	// Heat generation
 	const baseHeatGeneration = 0.07; // The base rate of heat generation by the body.
