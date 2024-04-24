@@ -963,7 +963,7 @@ function initHandheld() {
 			name: "ornate telescope",
 			name_cap: "Ornate telescope",
 			variable: "ornatetelescope",
-			word: "a",
+			word: "an",
 			plural: 0,
 			colour: 0,
 			colour_options: [],
