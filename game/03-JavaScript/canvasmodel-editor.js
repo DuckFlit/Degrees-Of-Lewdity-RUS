@@ -618,6 +618,7 @@ Macro.add("canvasModelEditor", {
 			return;
 		}
 		const bodyWritings = ["", ...Object.keys(setup.bodywriting)];
+		const bodyPiercings = ["", ...Object.keys(setup.piercing)];
 
 		const hairColourOptions = [...Object.keys(setup.colours.hair_map), "custom"];
 		const xhairColourOptions = ["", ...Object.keys(setup.colours.hair_map), "custom"];
@@ -889,6 +890,19 @@ Macro.add("canvasModelEditor", {
 						selectOption("writing_pubic", bodyWritings),
 						selectOption("writing_left_thigh", bodyWritings),
 						selectOption("writing_right_thigh", bodyWritings),
+
+						optionCategory("Body piercings"),
+						selectOption("piercing_septum", bodyPiercings),
+						selectOption("piercing_nose", bodyPiercings),
+						selectOption("piercing_ear", bodyPiercings),
+						selectOption("piercing_navel", bodyPiercings),
+						selectOption("piercing_nipples_l", bodyPiercings),
+						selectOption("piercing_areolas_l", bodyPiercings),
+						selectOption("piercing_genitals", bodyPiercings),
+						selectOption("piercing_nipples_r", bodyPiercings),
+						selectOption("piercing_areolas_r", bodyPiercings),
+						selectOption("piercing_genitals_a", bodyPiercings),
+
 
 						optionCategory("Dripping fluids"),
 						selectOption("drip_vaginal", ["", "Start", "VerySlow", "Slow", "Fast", "VeryFast"]),

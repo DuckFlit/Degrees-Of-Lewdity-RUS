@@ -443,6 +443,40 @@ function bodywritingExposureCheck(overwrite, skipRng) {
 }
 DefineMacro("bodywritingExposureCheck", bodywritingExposureCheck);
 
+
+
+
+function piercingExposureCheck(overwrite, skipRng) {
+	//TODO - finetune this ifs
+	if (!T.pierc_array || overwrite) {
+		T.pierc_array = ["septum", "ear"];
+		T.piercing_exposed = 0;
+
+		if (!V.worn.face.type.includes("mask")) T.pierc_array.push("nose");
+		if (V.worn.over_upper.exposed >= 1 && V.worn.upper.exposed >= 1 && V.worn.under_upper.exposed >= 1) {
+			T.pierc_array.push("nipples_l", "areolas_r", "nipples_r", "areolas_l");
+		}
+		if (
+			(V.worn.over_upper.exposed >= 1 || V.worn.over_upper.state !== "waist") &&
+			(V.worn.upper.exposed >= 1 || V.worn.upper.state !== "waist") &&
+			(V.worn.under_upper.exposed >= 1 || V.worn.under_upper.state !== "waist")
+		) {
+			T.pierc_array.push("navel");
+		}
+		if (V.worn.over_lower.exposed >= 1 && V.worn.lower.exposed >= 1 && (V.worn.under_lower.exposed >= 1 || !V.worn.under_lower.type.includes("athletic"))) {
+			T.pierc_array.push("genitals,  genitals_a");
+		}
+
+
+
+		if (T.pierc_array.length >= 1) T.piercing_exposed = 1;
+	}
+	if (!skipRng) T.bodypart = T.pierc_array.random();
+}
+DefineMacro("piercingExposureCheck", piercingExposureCheck);
+
+
+
 /**
  * Jimmy: A potential improvement is to not wikify the hints that are appended to the ends of the links,
  *         I chose to keep this format for now to keep <<promiscuous>>, <<exhibitionist>> and <<deviant>> centralised.
