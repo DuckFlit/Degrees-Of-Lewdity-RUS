@@ -971,17 +971,17 @@ You lie still on the floor. They open the back of the van and shove the crying W
 :: Bully Pat
 <<effects>>
 
-You let <<him>> continue. 
+You let <<him>> continue.
 <<if $cat gte 6>>
 	<<He>> pats your head, <<his>> other hand sliding down to rub your chin. You melt into <<his>> touch and purr.
 <<elseif $wolf gte 6>>
 	<<He>> adds <<his>> other hand and starts rubbing your ears. You feel the need to kick, but you hold back. Your tail wags eagerly without you noticing.
 <<elseif $fox gte 6>>
-	As soon as <<his>> hand touches your ears, you shiver in delight and swish your tail. <<He>> glances down and takes it into <<his>> hand. <<He>> strokes your tail. 
+	As soon as <<his>> hand touches your ears, you shiver in delight and swish your tail. <<He>> glances down and takes it into <<his>> hand. <<He>> strokes your tail.
 <<elseif $cow gte 6>>
 	<<He>> scratches the back of your ears. You suppress the urge to moo, but otherwise lean into <<his>> touch.
 <<elseif $harpy gte 6>>
-	You lower your head, allowing <<him>> to massage your scalp. Your feathers stand on end and ruffle in pleasure.   
+	You lower your head, allowing <<him>> to massage your scalp. Your feathers stand on end and ruffle in pleasure.
 <<else>>
 	<<He>> adds <<his>> other hand and starts massaging your scalp. Your body reacts of its own accord, and you shiver with pleasure.
 <</if>>
@@ -1771,22 +1771,22 @@ You're dragged by the arm through the school gates. "The breeze from the sea is 
 
 You journey to Mer Street. When you arrive Whitney steps up to the edge of the pier. "This is nice," <<he>> says.
 
-<<if $whitneyromance is 1 and _whitney.dom lt 10>>
+<<if $whitneyromance is 1 and _whitney.dom lt 10 or $whitneyromance is 1 and _whitney.lust gte 50 and $rng is 50>>
 	<<set $dateCount.Total++>><<set $dateCount.Whitney++>>
 	<<He>> strolls out to the end, overlooking the ocean. Reclining against the guardrail, <<he>> beckons you over. You <<if $speech_attitude is "meek">>anxiously<<elseif $speech_attitude is "bratty">>cautiously<<else>>hesitantly<</if>> approach.
 	<br><br>
 
 	<<set $whitPierPhase to 0>>
 	<<if _whitney.penis isnot "none" and $player.vaginaExist>>
-		<<set $whitPierSex to "vaginal">>
+		<<set $whitPierSex to either("anal", "fingering", "vaginal")>>
 	<<elseif _whitney.vagina isnot "none" and $player.penisExist>>
-		<<set $whitPierSex to "penile">>
+		<<set $whitPierSex to either("penile", "handjob")>>
 	<<elseif _whitney.penis isnot "none" and $analdisable is "f">>
-		<<set $whitPierSex to "anal">>
+		<<set $whitPierSex to either("anal", "handjob")>>
 	<<elseif $player.penisExist>>
 		<<set $whitPierSex to "handjob">>
 	<<else>>
-		<<set $whitPierSex to "fingering">>
+		<<set $whitPierSex to either("penile", "fingering", "vaginal")>>
 	<</if>>
 
 	As soon as you're within arm's reach, <<he>> grabs you and
@@ -1806,9 +1806,19 @@ You journey to Mer Street. When you arrive Whitney steps up to the edge of the p
 	"No sluts to play with out there."
 	<<switch $whitPierSex>>
 		<<case "vaginal">>
-			<<He>> grinds <<his>> hips against you. <span class="lewd">The tip of <<his>> <<print $NPCList[0].penisdesc>> pokes your <<pussy>>.</span>
+			<<He>> grinds <<his>> hips against you.
+			<<if _whitney.penis isnot "none">>
+				<span class="lewd">The tip of <<his>> <<print $NPCList[0].penisdesc>> pokes your <<pussy>>.</span>
+			<<else>>
+				<span class="lewd"><<His>> crotch is pressing against your <<pussy>>.</span>
+			<</if>>
 		<<case "penile">>
-			<<He>> grinds <<his>> hips against you, <span class="lewd">pointing your <<penis>> towards <<his>> crotch.</span>
+			<<He>> grinds <<his>> hips against you,
+			<<if _whitney.penis isnot "none">>
+				<span class="lewd">pointing your <<penis>> towards <<his>> crotch.</span>
+			<<else>>
+				<span class="lewd">pressing <<his>> crotch against your <<pussy>>.</span>
+			<</if>>
 		<<case "anal">>
 			<<He>> grinds <<his>> hips against you. <span class="lewd">The length of <<his>> <<print $NPCList[0].penisdesc>> presses into your <<bottom>>.</span>
 		<<default>>
@@ -1830,7 +1840,7 @@ You journey to Mer Street. When you arrive Whitney steps up to the edge of the p
 	<</if>>
 	<<link [[Comply reluctantly|Bully Pier Sex]]>><<set $molestationstart to 1>><<set $phase to 0>><<npcincr Whitney dom 1>><</link>><<gdom>>
 	<br>
-	<<if _whitney.lust gte random(1, 100)>>
+	<<if _whitney.lust gte random(1, 100) and _whitney.dom gte 10>>
 		<<link [[Refuse|Bully Pier Sex]]>><<set $molestationstart to 1>><<set $phase to 1>><<npcincr Whitney love -1>><</link>><<llove>>
 		<br>
 	<<else>>
@@ -1982,14 +1992,23 @@ You soon arrive back at the pier. Whitney wraps an arm around your neck and brin
 <</if>>
 
 <<if _start>>
+	<<set _whitney to C.npc.Whitney>>
 	<<switch $whitPierSex>>
 		<<case "vaginal">>
 			<<set $position to "doggy">><<set $position_lock to 1>>
-			<<set $vaginause to "penis">><<set $NPCList[0].penis to "vaginaentrance">><<set $vaginastate to "entrance">><<set $vaginatarget to 0>>
+			<<if _whitney.penis isnot "none" and $player.vaginaExist>>
+				<<set $vaginause to "penis">><<set $NPCList[0].penis to "vaginaentrance">><<set $vaginastate to "entrance">><<set $vaginatarget to 0>>
+			<<else>>
+				<<set $vaginause to "othervagina">><<set $NPCList[0].vagina to "vaginaentrance">><<set $vaginastate to "othervagina">><<set $vaginatarget to 0>>
+			<</if>>
 			<<set $NPCList[0].location.genitals = "genitals">>
 		<<case "penile">>
 			<<set $position to "missionary">><<set $position_lock to 1>>
-			<<set $penisuse to "othervagina">><<set $NPCList[0].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $penistarget to 0>>
+			<<if _whitney.vagina isnot "none" and $player.penisExist>>
+				<<set $penisuse to "othervagina">><<set $NPCList[0].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $penistarget to 0>>
+			<<else>>
+				<<set $vaginause to "othervagina">><<set $NPCList[0].vagina to "vaginaentrance">><<set $vaginastate to "othervagina">><<set $vaginatarget to 0>>
+			<</if>>
 			<<set $NPCList[0].location.genitals = "genitals">>
 		<<case "anal">>
 			<<set $position to "doggy">><<set $position_lock to 1>>
@@ -3621,7 +3640,7 @@ Whitney's friends jostle to peek over the cubicle door.
 		<br><br>
 		Whitney's friends then
 	<<else>>
-		Whitney's friends 
+		Whitney's friends
 	<</if>>
 	surround you and deliver blows with their feet. You curl up to protect yourself, until the bullies grow bored.
 	<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
@@ -3717,7 +3736,7 @@ Not waiting for your response, <<he>> and <<his>> friends continue down the hall
 		<br><br>
 		Whitney's friends then
 	<<else>>
-		Whitney's friends 
+		Whitney's friends
 	<</if>>
 	surround you and deliver blows with their feet. You curl up to protect yourself, until the bullies grow bored.
 	<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
@@ -4440,7 +4459,7 @@ You approach Whitney, and take shelter from the $weather under the tree.
 	<br><br>
 	Whitney turns to you, mouth open like <<hes>> about to say something. You dip your head towards <<his>> before <<he>> can get the words out, and <<he>> smirks, leaning in to meet your lips.
 	<br><br>
-	You exhale the smoke before <<he>> can complete the kiss. <<He>> makes a noise of surprise but reacts quickly and inhales. <<ldom "Whitney">> 
+	You exhale the smoke before <<he>> can complete the kiss. <<He>> makes a noise of surprise but reacts quickly and inhales. <<ldom "Whitney">>
 	<br><br>
 	You seal the remaining distance, brushing your lips against <<his>>. <<takeKissVirginity "Whitney" "loveInterest">>
 	<br><br>
