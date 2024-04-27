@@ -609,7 +609,7 @@ statDisplay.create("ghousekeeping", amount => {
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
 	} else if (V.housekeeping >= amount) {
-		return "You're too skilled for this to improve your housekeeping.";
+		return " You're too skilled for this to improve your housekeeping.";
 	}
 	return "";
 });
