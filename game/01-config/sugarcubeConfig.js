@@ -599,6 +599,13 @@ Config.navigation.override = function (dest) {
 			case "Livestock Field Horse Lewd Female Sex Finish":
 				return "Livestock Field Deviancy Sex";
 
+			case "Beach Cave Tentacle Under Top":
+				return "Beach Cave Tentacle Top";
+
+			case "Beach Cave Rope Under Top":
+			case "Beach Cave Rope Over Top":
+				return "Beach Cave Rope Top";
+
 			default:
 				return false;
 		}
