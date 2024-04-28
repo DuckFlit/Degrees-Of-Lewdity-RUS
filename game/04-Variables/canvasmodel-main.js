@@ -180,7 +180,7 @@ replace (?<!["'\w])_(?=\w) with T.
  * MISC OPTIONS:
  * -------------
  * "upper_tucked":boolean - $worn.upper tucked in $worn.lower
-* "lower_tucked":boolean - $worn.lower tucked in $worn.feet
+ * "lower_tucked":boolean - $worn.lower tucked in $worn.feet
  * "hood_down":boolean - hood is pulled down
  * "alt_position":boolean - sprite has alternate position (e.g. cardigan tied around waist)
  * "facewear_layer": "front"|"back"
@@ -382,16 +382,6 @@ Renderer.CanvasModels["main"] = {
 			"fox_ears_type": "disabled",
 			"fox_cheeks_type": "disabled",
 			// body writings
-			"piercing_septum": "",
-			"piercing_nose": "",
-			"piercing_ear": "",
-			"piercing_navel": "",
-			"piercing_nipples_l": "",
-			"piercing_areolas_l": "",
-			"piercing_genitals": "",
-			"piercing_nipples_r": "",
-			"piercing_areolas_r": "",
-			"piercing_genitals_a": "",
 			"writing_forehead": "",
 			"writing_left_cheek": "",
 			"writing_right_cheek": "",
@@ -2313,7 +2303,7 @@ Renderer.CanvasModels["main"] = {
 				return `img/transformations/bird/pubes/${options.bird_pubes_type}.png`;
 			},
 			showfn(options) {
-				return options.show_tf 
+				return options.show_tf
 				&& isPartEnabled(options.bird_pubes_type)
 				&& !options.belly_hides_under_lower;
 			},
@@ -2372,217 +2362,6 @@ Renderer.CanvasModels["main"] = {
 			z: ZIndices.lower,
 			animation: "idle"
 		},
-
-		/***
-		 *   
-		 *   
-		 *   piercings i suppose
-		 *   
-		 *   
-		 *
-		 *
-		 */
-
-
-		
-		"piercing_septum": {
-			srcfn(options) {
-				let piercing = setup.piercing[options.piercing_septum];
-				if (piercing.type === "object") {
-					return 'img/piercing/sidebar/' + piercing.writing + '/septum' + '.png'
-				} else {
-					return '';
-				}
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_septum;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_nose": {
-			srcfn(options) {
-				let piercing = setup.piercing[options.piercing_nose];
-				if (piercing.type === "object") {
-					return 'img/piercing/sidebar/' + piercing.writing + '/nose' + '.png'
-				} else {
-					return '';
-				}
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_nose;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_ear": {
-			srcfn(options) {
-				let piercing = setup.piercing[options.piercing_ear];
-				if (piercing.type === "object") {
-					return 'img/piercing/sidebar/' + piercing.writing + '/ear' + '.png'
-				} else {
-					return '';
-				}
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_ear;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_navel": {
-			srcfn(options) {
-				let piercing = setup.piercing[options.piercing_navel];
-				if (piercing.type === "object") {
-					return 'img/piercing/sidebar/' + piercing.writing + '/navel' + '.png'
-				} else {
-					return '';
-				}
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_navel;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_nipples_r": {
-			srcfn(options) {
-				let piercing = setup.piercing[options.piercing_nipples_r];
-				let fn;
-				if (piercing.type === "object") {
-					if (options["worn_upper_setup"].breast_img === 0 || options["worn_under_upper_setup"].breast_img === 0){
-						fn = "" + options.breast_size + ".png";
-						if (fn === "1.png") fn = "2.png";
-					} else {
-						fn = "" + options.breast_size + (options.breasts === "cleavage" && options.breast_size >= 3 ? "_clothed" : "") + ".png";
-						if (fn === "5_clothed.png") fn = "6_clothed.png";
-					}
-						return 'img/piercing/sidebar/' + piercing.writing + '/nipples_r_'  + fn
-				} else {
-					return '';
-				}
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_nipples_r;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_areolas_r": {
-			srcfn(options) {
-				let piercing = setup.piercing[options.piercing_areolas_r];
-				let fn;
-				if (piercing.type === "object") {
-					if (options["worn_upper_setup"].breast_img === 0 || options["worn_under_upper_setup"].breast_img === 0){
-						fn = "" + options.breast_size + ".png";
-						if (fn === "1.png") fn = "2.png";
-					} else {
-						fn = "" + options.breast_size + (options.breasts === "cleavage" && options.breast_size >= 3 ? "_clothed" : "") + ".png";
-						if (fn === "5_clothed.png") fn = "6_clothed.png";
-					}
-					return 'img/piercing/sidebar/' + piercing.writing + '/areolas_r_' + fn
-				} else {
-					return '';
-				}
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_areolas_r;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_genitals": {
-			srcfn(options) {
-				if (options.genitals_chastity) {
-					if (!options.worn_genitals_setup.name.includes("cage")) return "";
-					let piercing = setup.piercing[options.piercing_genitals];
-					if (piercing.type === "object") {
-						if (options.penis != "") {
-							return 'img/piercing/sidebar/' + piercing.writing + '/genitalspenis' + options.penis_size + '.png'
-						} else {
-							return 'img/piercing/sidebar/' + piercing.writing + '/genitalsvagina.png'
-						}
-
-					} else return "";
-			} else  return '';
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_genitals;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_nipples_l": {
-			srcfn(options) {
-				let piercing = setup.piercing[options.piercing_nipples_l];
-				let fn;
-				if (piercing.type === "object") {
-					if (options["worn_upper_setup"].breast_img === 0 || options["worn_under_upper_setup"].breast_img === 0){
-						fn = "" + options.breast_size + ".png";
-						if (fn === "1.png") fn = "2.png";
-					} else {
-						fn = "" + options.breast_size + (options.breasts === "cleavage" && options.breast_size >= 3 ? "_clothed" : "") + ".png";
-						if (fn === "5_clothed.png") fn = "6_clothed.png";
-					}
-					return 'img/piercing/sidebar/' + piercing.writing + '/nipples_l_' + fn
-				} else {
-					return '';
-				}
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_nipples_l;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_areolas_l": {
-			srcfn(options) {
-				let piercing = setup.piercing[options.piercing_areolas_l];
-				let fn;
-				if (piercing.type === "object") {
-					if (options["worn_upper_setup"].breast_img === 0 || options["worn_under_upper_setup"].breast_img === 0){
-						fn = "" + options.breast_size + ".png";
-					if (fn === "1.png") fn = "2.png";
-					} else {
-						fn = "" + options.breast_size + (options.breasts === "cleavage" && options.breast_size >= 3 ? "_clothed" : "") + ".png";
-						if (fn === "5_clothed.png") fn = "6_clothed.png";
-					}
-					return 'img/piercing/sidebar/' + piercing.writing + '/areolas_l_' + fn
-				} else {
-					return '';
-				}
-			},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_areolas_l;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-		"piercing_genitals_a": {
-			srcfn(options) {
-				if (options.genitals_chastity) {
-					if (!options.worn_genitals_setup.name.includes("cage")) return "";
-					let piercing = setup.piercing[options.piercing_genitals_a];
-					if (piercing.type === "object") {
-						if (options.penis != "") {let genitals = "penis"
-						} else {
-							let genitals = "vagina"
-						}
-						return 'img/piercing/sidebar/' + piercing.writing + '/genitals' + genitals + '.png'
-					} else {
-						return '';
-					}
-			} else {
-				return '';
-			}},
-			showfn(options) {
-				return options.show_writings && !!options.piercing_genitals_a;
-			},
-			z: ZIndices.piercing,
-			animation: "idle"
-		},
-
-
 
 
 		/***
