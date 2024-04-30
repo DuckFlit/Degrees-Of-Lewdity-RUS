@@ -514,21 +514,18 @@ statDisplay.create("gggslust", () => {
 
 statDisplay.create("lscience", () => statDisplay.statChange("Science", -1, "red"));
 statDisplay.create("gscience", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Science", 1, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("science_star"));
 	return result;
 });
 statDisplay.create("ggscience", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Science", 2, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("science_star"));
 	return result;
 });
 statDisplay.create("gggscience", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Science", 3, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("science_star"));
@@ -537,21 +534,18 @@ statDisplay.create("gggscience", () => {
 
 statDisplay.create("lmaths", () => statDisplay.statChange("Maths", -1, "red"));
 statDisplay.create("gmaths", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Maths", 1, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("maths_star"));
 	return result;
 });
 statDisplay.create("ggmaths", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Maths", 2, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("maths_star"));
 	return result;
 });
 statDisplay.create("gggmaths", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("Maths", 3, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("maths_star"));
@@ -560,21 +554,18 @@ statDisplay.create("gggmaths", () => {
 
 statDisplay.create("lenglish", () => statDisplay.statChange("English", -1, "red"));
 statDisplay.create("genglish", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("English", 1, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("english_star"));
 	return result;
 });
 statDisplay.create("ggenglish", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("English", 2, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("english_star"));
 	return result;
 });
 statDisplay.create("gggenglish", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("English", 3, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("english_star"));
@@ -583,33 +574,30 @@ statDisplay.create("gggenglish", () => {
 
 statDisplay.create("lhistory", () => statDisplay.statChange("History", -1, "red"));
 statDisplay.create("ghistory", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("History", 1, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("history_star"));
 	return result;
 });
 statDisplay.create("gghistory", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("History", 2, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("history_star"));
 	return result;
 });
 statDisplay.create("ggghistory", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("History", 3, "green");
 	result.append(" ");
 	result.appendChild(gainSchoolStar("history_star"));
 	return result;
 });
 
-statDisplay.create("ghousekeeping", (amount, silent) => {
-	if (V.statsdisable === "f") return "";
+statDisplay.create("ghousekeeping", amount => {
+	if (V.statsdisable === "t") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
-	} else if (V.housekeeping >= amount && !silent) {
-		return "You're too skilled for this to improve your housekeeping.";
+	} else if (V.housekeeping >= amount) {
+		return " You're too skilled for this to improve your housekeeping.";
 	}
 	return "";
 });

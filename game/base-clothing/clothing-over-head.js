@@ -56,7 +56,7 @@ function initOverHead() {
 			accessory: 0,
 			accessory_colour: 0,
 			accessory_colour_options: [],
-			back_img: 0,
+			back_img: 1,
 			cursed: 0,
 			location: 0,
 			outfitSecondary: ["over_upper", "froggy coat"],

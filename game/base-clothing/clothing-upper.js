@@ -5479,7 +5479,7 @@ function initUpper() {
 			colour_sidebar: 1,
 			exposed: 0,
 			exposed_base: 0,
-			type: ["formal"],
+			type: ["formal", "school"],
 			gender: "n",
 			femininity: 0,
 			warmth: 7,
