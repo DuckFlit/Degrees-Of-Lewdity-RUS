@@ -117,10 +117,10 @@ Weather.Thermometer = (() => {
 	function updateTooltip() {
 		const tempDescription = Weather.TooltipDescriptions.bodyTemperature();
 		const waterDescription = `<br>${Weather.TooltipDescriptions.waterTemperature()}`;
-		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, Weather.BodyTemperature.temperatureEffects.maxFatigueGainMultiplier, 4);
-		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, Weather.BodyTemperature.temperatureEffects.maxArousalGainMultiplier, 4);
-		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, Weather.BodyTemperature.temperatureEffects.maxPainGainMultiplier, 4);
-		const stressModifier = categorise(Weather.BodyTemperature.stressModifier, 0, Weather.BodyTemperature.temperatureEffects.lowerMaxStressGain, 4);
+		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, setup.WeatherSettings.temperature.effects.maxFatigueGainMultiplier, 4);
+		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, setup.WeatherSettings.temperature.effects.maxArousalGainMultiplier, 4);
+		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, setup.WeatherSettings.temperature.effects.maxPainGainMultiplier, 4);
+		const stressModifier = categorise(Weather.BodyTemperature.stressModifier, 0, setup.WeatherSettings.temperature.effects.lowerMaxStressGain, 4);
 
 		const arousalOutput = arousalModifier > 0 ? `<span class="teal">${"+ ".repeat(Math.abs(arousalModifier))}Arousal penalties</span><br>` : "";
 		const fatigueOutput = fatigueModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(fatigueModifier))}Fatigue gains</span><br>` : "";

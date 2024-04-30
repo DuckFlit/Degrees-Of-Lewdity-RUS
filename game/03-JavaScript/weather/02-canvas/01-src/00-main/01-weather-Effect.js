@@ -109,7 +109,7 @@ Weather.Sky.Effect = class Effect {
 						await result;
 					}
 				} catch (e) {
-					console.error("Error during effect init:", e, this);
+					console.error("Error during effect init:", e);
 				}
 			}
 		})();
@@ -131,7 +131,7 @@ Weather.Sky.Effect = class Effect {
 			this.onDraw(canvas, layerCanvas);
 			this.canvas.ctx.restore();
 		} catch (e) {
-			console.error("Error during effect 'draw' function", e, this);
+			console.error("Error during effect 'draw' function:", e);
 			return e;
 		}
 	}

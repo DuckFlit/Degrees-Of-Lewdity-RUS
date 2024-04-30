@@ -28,6 +28,45 @@ setup.WeatherSettings = {
 			maxKeyPointsPerMonth: 6, // Maximum number of key points per month.
 		},
 	},
+	temperature: {
+		/* Be careful when modifying the factors, as small changes can have big effects */
+		// General
+		baseBodyTemperature: 37, // The normal body temperature in degrees Celsius.
+		minTemperature: 33, // Below this point will result in player passing out from hypothermia
+		maxTemperature: 41, // Above this point will result in player passing out from hyperthermia
+		tempApproachRate: 0.012, // Will nudge the temperature towards the base temperature by this rate (per degree celcius)
+
+		// Heat generation
+		baseHeatGeneration: 0.07, // The base rate of heat generation by the body.
+		activityRate: 0.087, // How much physical activity affects heat generation.
+
+		// Heat dissipation
+		baseDissipation: 0.04, // The base rate of heat dissipation without modifiers.
+		dissipationRate: 0.0035, // The curve at higher temperatures where dissipation levels out
+
+		// Clothing
+		baseInsulation: 0,
+		insulationCap: 55, // Target warmth cap where its effectiveness is reduced
+		insulationMultiplier: 1.05, // The effectiveness of clothing warmth
+
+		// Wetness
+		maxWetness: 200,
+		maxClothingFactor: 0.8, // Max wetness outside of water (80%)
+		wetnessFactor: 0.6, // 60% increase in dissipation at full wetness
+
+		// Effects from temperature
+		effects: {
+			lowerThresholdStart: 36,
+			lowerThresholdEnd: 33,
+			upperThresholdStart: 38,
+			upperThresholdEnd: 41,
+			lowerMaxStressGain: 3,
+			upperMaxStressGain: 2,
+			maxFatigueGainMultiplier: 3,
+			maxPainGainMultiplier: 1.5,
+			maxArousalGainMultiplier: 0.3,
+		},
+	},
 	thermometer: {
 		base: "img/misc/icon/weather/thermometer.png",
 		fill: "img/misc/icon/weather/thermo_filled.png",
