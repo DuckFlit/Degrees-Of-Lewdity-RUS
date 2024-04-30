@@ -33,6 +33,7 @@ WeatherLayers.add({
 		{
 			effect: "precipitation",
 			drawCondition: () => !Weather.Sky.skyDisabled && Weather.precipitationIntensity >= 1 && Weather.precipitation === "snow",
+			drawCondition: () => !Weather.Sky.skyDisabled && Weather.overcast > 0.5 && Weather.precipitationIntensity > 1 && Weather.precipitation === "snow",
 			params: {
 				frameWidth: 32,
 				images: {
