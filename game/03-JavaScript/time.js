@@ -948,7 +948,7 @@ function minutePassed(minutes) {
 
 	// Body temperature
 	const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
-	Weather.BodyTemperature.update(temperature, minutes);
+	if (!V.possessed) Weather.BodyTemperature.update(temperature, minutes);
 	V.stress += Math.round(Weather.BodyTemperature.stressModifier * minutes);
 
 	// Snow
