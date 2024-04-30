@@ -160,7 +160,7 @@ const Weather = (() => {
 			const sunRise = Weather.Sky.orbitals.sun.settings.riseTime;
 			const sunSet = Weather.Sky.orbitals.sun.settings.setTime;
 			const hour = Time.hour;
-			return hour < sunRise - 1 || hour >= sunSet + 1 ? "night" : hour >= sunSet - 1 ? "dusk" : hour >= sunRise + 1 ? "day" : "dawn";
+			return hour < sunRise - 0.75 || hour >= sunSet + 0.75 ? "night" : hour >= sunSet - 0.5 ? "dusk" : hour >= sunRise + 1 ? "day" : "dawn";
 		},
 		get fog() {
 			return V.weatherObj.fog;

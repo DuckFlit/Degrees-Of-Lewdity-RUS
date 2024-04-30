@@ -98,6 +98,8 @@ Weather.BodyTemperature = (() => {
 			V.passout = "cold";
 		} else if (V.player.bodyTemperature > setup.WeatherSettings.temperature.maxTemperature) {
 			V.passout = "heat";
+		} else {
+			delete V.passout;
 		}
 	}
 
