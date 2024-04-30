@@ -52,7 +52,7 @@ setup.WeatherSettings = {
 		// Wetness
 		maxWetness: 200,
 		maxClothingFactor: 0.8, // Max wetness outside of water (80%)
-		wetnessFactor: 0.6, // 60% increase in dissipation at full wetness
+		wetnessFactor: 0.65, // 65% increase in dissipation at full wetness
 
 		// Effects from temperature
 		effects: {
