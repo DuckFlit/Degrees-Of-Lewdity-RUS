@@ -130,7 +130,9 @@ Weather.Thermometer = (() => {
 
 		const direction = Weather.BodyTemperature.direction > 0 ? "(increasing)" : Weather.BodyTemperature.direction < 0 ? "(decreasing)" : "";
 		// eslint-disable-next-line prettier/prettier
-		const debug = V.debug ? `<br><br><span class="teal">DEBUG:</span><br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)} ${direction}</span>
+		const debug = V.debug ? `<br><br><span class="teal">DEBUG:</span><br><span class="blue">Passage:</span> <span class="yellow">${V.passage}</span>
+			<br><span class="blue">Time:</span> <span class="yellow">${ampm()}</span>
+			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)} ${direction}</span>
 			<br><span class="blue">Body wetness:</span> <span class="yellow">${Math.round(Weather.wetness * 100)}%</span>
 			<br><span class="blue">Clothing warmth:</span> <span class="yellow">${Weather.BodyTemperature.getTotalWarmth()}</span>
 			<br><span class="blue">Target temperature (current clothing)</span> <span class="yellow">${Weather.toSelectedString(

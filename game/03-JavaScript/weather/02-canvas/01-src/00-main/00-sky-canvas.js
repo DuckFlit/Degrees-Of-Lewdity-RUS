@@ -360,7 +360,10 @@ Weather.Sky = (() => {
 		const weatherDescription = typeof weatherState[Weather.dayState] === "function" ? weatherState[Weather.dayState]() : weatherState[Weather.dayState];
 		const tempDescription = Weather.TooltipDescriptions.temperature();
 		const debug = V.debug
-			? `<br><br><span class="teal">DEBUG:</span><br><span class="blue">Weather:</span> <span class="yellow">${Weather.name}</span>
+			? `<br><br><span class="teal">DEBUG:</span>
+			<br><span class="blue">Passage:</span> <span class="yellow">${V.passage}</span>
+			<br><span class="blue">Time:</span> <span class="yellow">${ampm()}</span>
+			<br><span class="blue">Weather:</span> <span class="yellow">${Weather.name}</span>
 			<br><span class="blue">Outside temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.temperature)}</span>
 			<br><span class="blue">Inside temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.insideTemperature)}</span>
 			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.waterTemperature)}</span>
