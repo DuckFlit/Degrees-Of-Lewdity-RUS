@@ -662,7 +662,7 @@ Renderer.CanvasModels["main"] = {
 			options.filters.mascara = Renderer.emptyLayerFilter();
 		}
 		if (options.condom_colour) options.filters.condom = lookupColour(setup.colours.condom_map, options.condom_colour, "condom", "condom_custom", "condom");
-		
+
 		if (options.breasts_parasite === "parasite") {
 			options.filters.breasts_parasite = lookupColour(setup.colours.clothes_map, "red", "breasts_parasite");
 		}
@@ -2312,13 +2312,13 @@ Renderer.CanvasModels["main"] = {
 			animation: "idle"
 		},
 		/***
-		 *    ███████  ██████  ██   ██ 
-		 *    ██      ██    ██  ██ ██  
-		 *    █████   ██    ██   ███   
-		 *    ██      ██    ██  ██ ██  
-		 *    ██       ██████  ██   ██ 
-		 *                             
-		 *                             
+		 *    ███████  ██████  ██   ██
+		 *    ██      ██    ██  ██ ██
+		 *    █████   ██    ██   ███
+		 *    ██      ██    ██  ██ ██
+		 *    ██       ██████  ██   ██
+		 *
+		 *
 		 */
 		"fox_tail": {
 			srcfn(options) {
@@ -3312,14 +3312,12 @@ Renderer.CanvasModels["main"] = {
 			srcfn(options) {
 				let path = 'img/clothes/lower/' +
 					options.worn_lower_setup.variable + '/' +
-					(options.worn_lower_setup.accessory_integrity_img ? 'acc_' + options.worn_lower_integrity : options.worn_upper_setup.name === "school blouse" && ["school pinafore", "plaid school pinafore"].includes(options.worn_lower_setup.name) ? 'acc_under' : 'acc') + '.png';
+					(options.worn_lower_setup.accessory_integrity_img ? 'acc_' + options.worn_lower_integrity : options.worn_upper_setup.name === "school blouse" && options.worn_lower_setup.name.includes("pinafore") ? 'acc_under' : 'acc') + '.png';
 					return gray_suffix(path, options.filters['worn_lower_acc'])
 				},
 				zfn(options) {
-					if (["ballgown skirt", "short ballgown skirt"].includes(options.worn_lower_setup.name)) {
+					if (options.worn_lower_setup.name.includes("ballgown") || options.worn_lower_setup.name.includes("pinafore")) {
 						return ZIndices.upper_top;
-					} else if (options.worn_lower_setup.high_img) {
-						return ZIndices.lower_high;
 					} else if (options.worn_lower_setup.covers_top) {
 						return ZIndices.lower_cover;
 					} else {
