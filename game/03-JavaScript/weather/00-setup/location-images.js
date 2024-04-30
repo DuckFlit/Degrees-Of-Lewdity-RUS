@@ -907,6 +907,11 @@ setup.LocationImages = {
 			horizon: 112,
 		},
 	},
+	landfill: {
+		folder: "landfill",
+		base: "base.png",
+		snow: "snow.png",
+	},
 	market: {
 		folder: "market",
 		base: "base.png",
