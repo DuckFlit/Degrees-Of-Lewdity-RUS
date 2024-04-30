@@ -61,44 +61,63 @@ setup.WeatherDescriptions = {
 	},
 	bodyTemperature: () => {
 		if (Weather.bodyTemperature <= 34) {
-			return "You're suffering from severe hypothermia."
+			return "You're suffering from severe hypothermia.";
 		} else if (Weather.bodyTemperature <= 35) {
-			return "You feel freezing cold."
+			return "You feel freezing cold.";
 		} else if (Weather.bodyTemperature <= 35.5) {
-			return "You feel very cold and shiver uncontrollably."
+			return "You feel very cold and shiver uncontrollably.";
 		} else if (Weather.bodyTemperature <= 36) {
-			return "You shiver."
+			return "You shiver.";
 		} else if (Weather.bodyTemperature <= 36.5) {
-			return "You feel chilly."
+			return "You feel chilly.";
 		} else if (Weather.bodyTemperature <= 37.5) {
-			return "You feel comfortable."
+			return "You feel comfortable.";
 		} else if (Weather.bodyTemperature <= 38) {
-			return "You feel snug."
+			return "You feel snug.";
 		} else if (Weather.bodyTemperature <= 38.5) {
-			return "You feel a slight sweating and discomfort."
+			return "You feel a slight sweating and discomfort.";
 		} else if (Weather.bodyTemperature <= 39) {
-			return "You feel warm and sweaty."
+			return "You feel warm and sweaty.";
 		} else if (Weather.bodyTemperature <= 39.5) {
-			return "You feel overheated and uncomfortable."
+			return "You feel overheated and uncomfortable.";
 		} else if (Weather.bodyTemperature <= 40) {
-			return "You feel hot."
+			return "You feel hot.";
 		} else {
-			return "You're suffering from heatstroke."
+			return "You're suffering from heatstroke.";
 		}
 	},
 	waterTemperature: () => {
 		if (!T.inWater || !V.outside) return "";
 		if (Weather.waterTemperature <= 5) {
-			return "The water feels freezing cold."
+			return "The water feels freezing cold.";
 		} else if (Weather.waterTemperature <= 15) {
-			return "The water feels cold."
+			return "The water feels cold.";
 		} else if (Weather.waterTemperature <= 25) {
-			return "The water feels cool."
+			return "The water feels cool.";
 		} else if (Weather.waterTemperature <= 35) {
-			return "The water feels warm."
+			return "The water feels warm.";
 		} else {
-			return "The water feels hot."
+			return "The water feels hot.";
 		}
+	},
+	clothingWarmth: warmth => {
+		let output = "";
+		if (warmth > 6) {
+			output = "Very warm.";
+		}
+		else if (warmth > 4) {
+			output = "Warm and snug.";
+		}
+		else if (warmth > 2) {
+			output = "Should help keep the chill off.";
+		}
+		else if (warmth > 0) {
+			output = "Light and cool.";
+		}
+		else {
+			output = "No effect on warmth.";
+		}
+		return V.options.images ? output + ` (<span class="cold-resist-icon noDivider">${warmth}</span>)` : output;
 	},
 	shop: () => {
 		if (Weather.temperature <= -5) {
