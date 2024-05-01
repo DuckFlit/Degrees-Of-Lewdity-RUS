@@ -73,7 +73,7 @@ function initOverUpper() {
 			set: "froggy",
 			gender: "n",
 			femininity: 0,
-			warmth: 0,
+			warmth: 7,
 			cost: 4500,
 			description: "Protects you from the rain.",
 			shop: ["clothing"],
