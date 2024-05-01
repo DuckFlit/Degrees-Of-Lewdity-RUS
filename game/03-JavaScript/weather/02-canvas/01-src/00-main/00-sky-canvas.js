@@ -371,7 +371,8 @@ Weather.Sky = (() => {
 			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(Weather.sunIntensity, 2) * 100}%</span>
 			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(_fadables.overcast.factor, 2) * 100}%</span>
 			<br><span class="blue">Fog amount:</span> <span class="yellow">${round(Weather.fog, 2) * 100}%</span>
-			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${V.weatherObj.snow}mm</span>`
+			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${V.weatherObj.snow}mm</span>
+			<br><span class="blue">Lake ice thickness:</span> <span class="yellow">${V.weatherObj.ice["lake"]}mm</span>`
 			: "";
 		_skybox.tooltip({
 			message: `${weatherDescription}<br>${tempDescription}${debug}`,

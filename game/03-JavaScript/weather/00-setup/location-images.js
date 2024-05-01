@@ -785,11 +785,16 @@ setup.LocationImages = {
 				image: "base.png",
 			},
 			water: {
+				condition: () => !Weather.isFrozen("lake"),
 				image: "water.png",
 				animation: {
 					fps: 1,
 					delay: () => 0,
 				},
+			},
+			ice: {
+				condition: () => Weather.isFrozen("lake"),
+				image: "ice.png",
 			},
 			deer: {
 				condition: () => Time.dayState === "dawn",
@@ -1097,6 +1102,7 @@ setup.LocationImages = {
 			},
 			fountain: {
 				image: "fountain.png",
+				condition: () => !Weather.isFrozen("fountain"),
 				animation: {
 					fps: 5,
 					delay: () => 0,
@@ -1129,6 +1135,7 @@ setup.LocationImages = {
 			},
 			fountain: {
 				image: "fountain.png",
+				condition: () => !Weather.isFrozen("fountain"),
 				frame: 0,
 			},
 		},
