@@ -662,7 +662,7 @@ Renderer.CanvasModels["main"] = {
 			options.filters.mascara = Renderer.emptyLayerFilter();
 		}
 		if (options.condom_colour) options.filters.condom = lookupColour(setup.colours.condom_map, options.condom_colour, "condom", "condom_custom", "condom");
-
+		
 		if (options.breasts_parasite === "parasite") {
 			options.filters.breasts_parasite = lookupColour(setup.colours.clothes_map, "red", "breasts_parasite");
 		}
@@ -2312,13 +2312,13 @@ Renderer.CanvasModels["main"] = {
 			animation: "idle"
 		},
 		/***
-		 *    ███████  ██████  ██   ██
-		 *    ██      ██    ██  ██ ██
-		 *    █████   ██    ██   ███
-		 *    ██      ██    ██  ██ ██
-		 *    ██       ██████  ██   ██
-		 *
-		 *
+		 *    ███████  ██████  ██   ██ 
+		 *    ██      ██    ██  ██ ██  
+		 *    █████   ██    ██   ███   
+		 *    ██      ██    ██  ██ ██  
+		 *    ██       ██████  ██   ██ 
+		 *                             
+		 *                             
 		 */
 		"fox_tail": {
 			srcfn(options) {
@@ -2362,6 +2362,8 @@ Renderer.CanvasModels["main"] = {
 			z: ZIndices.lower,
 			animation: "idle"
 		},
+
+
 		/***
 		 *    ██     ██ ██████  ██ ████████ ██ ███    ██  ██████  ███████
 		 *    ██     ██ ██   ██ ██    ██    ██ ████   ██ ██       ██

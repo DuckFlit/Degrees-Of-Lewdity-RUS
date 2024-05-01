@@ -194,7 +194,7 @@ You are on Alex's farm. A rustic farmhouse overlooks a yard and chicken coop. Ot
 	<</if>>
 	<<if $farm_work.alex isnot undefined and $farm_work.alex isnot "shower" and Time.hour gte 6 and Time.hour lte 20 and $slimeFarmNakedStored is undefined>>
 		<<outfitChecks>>
-		<<if ($worn.upper.exposed gte 2 and !_underTop) or ($worn.lower.exposed gte 2 and !_underBottoms)>>
+		<<if (_shirtless and $player.gender_appearance is "f") or _bottomExposed>>
 			<<shopicon "clothing">><<link [[Ask Alex for clothes (0:05)|Farm Alex Clothes]]>><<pass 5>><<farm_yield -1>><<npcincr Alex dom 1>><<npcincr Alex lust 1>><</link>><<exhibitionist1>><<lfarm>><<gdom "Alex">><<glust>>
 			<br>
 		<<else>>
@@ -1227,18 +1227,19 @@ You release the chickens from their coop, then enter to clean up. It's large eno
 
 :: Farm Chickens Feed
 <<effects>>
+<<outfitChecks>>
 
 The chickens follow as you retrieve a sack of grain from the shed beside the yard.
 
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure) and $exposed lte 0>>
-	<<if $worn.lower.outfitSecondary is undefined>>
+	<<if _bottom.outfitSecondary is undefined>>
 		<<set _broken to true>>
-	<<elseif $worn.lower.outfitSecondary[1] is "broken" or $worn.lower.outfitSecondary[1] is "split">>
+	<<elseif _bottom.outfitSecondary[1] is "broken" or _bottom.outfitSecondary[1] is "split">>
 		<<set _broken to true>>
 	<</if>>
 	<<if _broken>>
-		One jumps and latches onto your $worn.lower.name with its beak, <span class="purple">tugging it down your legs and revealing your <<undies>>.</span> You lean down to grab it, but this puts the heavy sack in range of the birds. Yet other chickens start pulling at your $worn.lower.name. You hear the fabric tear.<<gstress>><<stress 6>>
+		One jumps and latches onto your _bottom.name with its beak, <span class="purple">tugging it down your legs and revealing your <<undies>>.</span> You lean down to grab it, but this puts the heavy sack in range of the birds. Yet other chickens start pulling at your _bottom.name. You hear the fabric tear.<<gstress>><<stress 6>>
 		<br><br>
 		<<lowerstrip>>
 		<<link [[Risk the sack and retrieve your bottoms|Farm Chickens Retrieve]]>><</link>><<difficulty 50>>
@@ -1251,9 +1252,9 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 			<br>
 		<</if>>
 	<<else>>
-		<<set $worn.lower.integrity -= 15>>
-		<<if $worn.lower.integrity lte 0>>
-			One jumps and latches onto your $worn.lower.name with its beak. It hangs there for a moment, until gravity tears it free, your <span class="pink">$worn.lower.name still in its grasp.</span>
+		<<set _bottom.integrity -= 15>>
+		<<if _bottom.integrity lte 0>>
+			One jumps and latches onto your _bottom.name with its beak. It hangs there for a moment, until gravity tears it free, your <span class="pink">_bottom.name still in its grasp.</span>
 			<<integritycheck>><<exposure>><<gstress>><<stress 6>>
 			<br>
 			You almost drop the sack in your haste to cover your <<lewdness>>, but there's no one else around.
@@ -1268,7 +1269,7 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 			<<link [[Find something to cover with (0:10)|Farm Chickens Cover]]>><<pass 10>><<farm_count 10>><</link>>
 			<br>
 		<<else>>
-			One jumps and latches onto your $worn.lower.name with its beak. You hear the fabric tear as you shake it free.
+			One jumps and latches onto your _bottom.name with its beak. You hear the fabric tear as you shake it free.
 			<br><br>
 
 			You finish feeding the chickens, and return the sack to the shed.
@@ -1286,9 +1287,6 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 	<br>
 <</if>>
 
-
-
-
 :: Farm Chickens In
 <<effects>>
 
@@ -1302,10 +1300,10 @@ You herd the chickens into their coop, then perform a head count to make sure yo
 	<<link [[Look for it (0:10)|Farm Chickens Look]]>><<pass 10>><<farm_count 10>><</link>>
 	<br>
 	<<if $cat gte 6>>
-		<<link [[Hunt it|Farm Chickens Hunt]]>><</link>><<cat>>
+		<<link [[Hunt it|Farm Chickens Hunt]]>><<set $catbuild += 1>><</link>><<cat>>
 		<br>
 	<</if>>
-	<<link [[It'll be fine|Farm Chickens Fine]]>><<set $catbuild += 1>><<farm_yield -1>><</link>><<lfarm>>
+	<<link [[It'll be fine|Farm Chickens Fine]]>><<farm_yield -1>><</link>><<lfarm>>
 	<br>
 <<else>>
 	Satisfied, you shut and lock the door.
@@ -1423,16 +1421,12 @@ You empty the buckets in the troughs.
 	<span class="blue">The <<farm_text_many pig>> devour the feed. Seems they're still hungry.</span>
 <</if>>
 <br><br>
-
+<<outfitChecks>>
 <<set $danger to random(1, 10000)>>
-<<if $danger gte (9900 - $allure) and $worn.lower.name isnot "naked" and ($bestialitydisable is "f" or $farm_work.pig.monster is true)>>
+<<if $danger gte (9900 - $allure) and _bottom and ($bestialitydisable is "f" or $farm_work.pig.monster is true)>>
 <!-- Modified for Monster People -->
 	<<if $farm.beasts.pigs lte -20 and $rng gte 51>>
-		<<if $farm_work.pig.monster is true>>
-			Something catches your hair as you turn away from the trough. One of the <<farm_text pig>>s has reached over the fence. "You're not finished here," <<farm_he pig>> says. <<farm_He pig>> tries to pull you inside.
-		<<else>>
-			Something catches your hair as you turn away from the trough. One of the <<farm_text pig>>s has reached over the fence. It tries to pull you inside.
-		<</if>>
+		Something catches your hair as you turn away from the trough. One of the <<farm_text pig>>s has reached over the fence. <<if $farm_work.pig.monster is true>>"You're not finished here," <<farm_he pig>> says. <</if>><<farm_He pig>> tries to pull you inside.
 		<br><br>
 
 		<<link [[Scold|Farm Pigs Feed Extreme Scold]]>><</link>><<tendingdifficulty 1 1100>>
@@ -1440,11 +1434,7 @@ You empty the buckets in the troughs.
 		<<link [[Call for help|Farm Pigs Feed Extreme Help]]>><<npcincr Alex dom 1>><<farm_pigs -1>><</link>><<gdom "Alex">><<lrespect>>
 		<br>
 	<<else>>
-		<<if $farm_work.pig.monster is true>>
-			Something catches your $worn.lower.name as you turn away from the trough. One of the <<farm_text pig>>s has stuck its head through the fence, and grasps your clothing in its mouth.
-		<<else>>
-			Something catches your $worn.lower.name as you turn away from the trough. One of the <<farm_text pig>>s has stuck its snout through the fence, and grasps your clothing in its mouth.
-		<</if>>
+		Something catches your _bottom.name as you turn away from the trough. One of the <<farm_text pig>>s has stuck <<farm_his pig>> <<= $farm_work.pig.monster is true ? "head" : "snout">> through the fence, and grasps your clothing in <<farm_his pig>> mouth.
 		<br><br>
 
 		<<link [[Scold|Farm Pigs Feed Scold]]>><</link>><<tendingdifficulty 1 600>>
@@ -1456,7 +1446,6 @@ You empty the buckets in the troughs.
 
 	<<link [[Next|Farm Work]]>><</link>>
 	<br>
-
 <</if>>
 
 
@@ -1466,42 +1455,26 @@ You empty the buckets in the troughs.
 You herd the <<farm_text_many pig>> back into the sty. Some of them seem reluctant to move, and need cajoling.
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure) and ($bestialitydisable is "f" or $farm_work.pig.monster is true)>>
-<!-- Modified for Monster People -->
-		<<if $farm_work.pig.monster is true>>
-			You manage to get the last to stand. You're leading <<farm_him pig>> inside when <<farm_he pig>> grasps your arms and tries to force you to the ground.
-		<<else>>
-			You manage to get the last to stand. You're leading it inside when it rears on its hind legs and tries to force you to the ground.
-		<</if>>
-		<br><br>
+	You manage to get the last to stand. You're leading <<farm_him pig>> inside when <<farm_he pig>> <<= $farm_work.pig.monster is true ? "grasps your arms" : "rears on its hind legs">> and tries to force you to the ground.
+	<br><br>
 
-		<<link [[Scold|Farm Pigs Scold]]>><</link>><<tendingdifficulty 1 600>>
+	<<link [[Scold|Farm Pigs Scold]]>><</link>><<tendingdifficulty 1 600>>
+	<br>
+	<<link [[Shove it away|Farm Pigs Shove]]>><</link>><<physiquedifficulty 1 12000>>
+	<br>
+	<<link [[Endure|Farm Pigs Endure]]>><<trauma 6>><<stress 6>><<farm_pigs -1>><</link>><<lrespect>>
+	<br>
+	<<if $deviancy gte 35>>
+		<<link [[Give it a hand|Farm Pigs Hand]]>><<set $sexstart to 1>><</link>><<deviant3>>
 		<br>
-		<<link [[Shove it away|Farm Pigs Shove]]>><</link>><<physiquedifficulty 1 12000>>
-		<br>
-		<<link [[Endure|Farm Pigs Endure]]>><<trauma 6>><<stress 6>><<farm_pigs -1>><</link>><<lrespect>>
-		<br>
-		<<if $deviancy gte 35>>
-			<<link [[Give it a hand|Farm Pigs Hand]]>><<set $sexstart to 1>><</link>><<deviant3>>
-			<br>
-		<</if>>
-		<!-- The <<farm_text_many pig>> seems agitated. It's a little scary.<<gstress>><<stress 6>> -->
-		<!-- <br><br> -->
-
-		<!-- <<link [[Next|Farm Work]]>><</link>> -->
-		<!-- <br> -->
-<<else>>
-	<<if $farm_work.pig.monster is true>>
-		You manage to get the last to stand, and lead <<farm_him pig>> inside.
-	<<else>>
-		You manage to get the last to stand, and lead it inside.
 	<</if>>
+<<else>>
+	You manage to get the last to stand, and lead <<farm_him pig>> inside.
 	<br><br>
 
 	<<link [[Next|Farm Work]]>><</link>>
 	<br>
 <</if>>
-
-
 
 
 :: Farm Horses Out
@@ -1874,12 +1847,13 @@ You call the <<farm_text_many horse>>, and lead them from the field. They seem h
 
 You open the barn doors, and release the <<farm_text_many cattle>> from their pens. They trot to the field without prompting.
 <br><br>
+<<outfitChecks>>
 
 <<set $danger to random(1, 10000)>>
-<<if $danger gte (9900 - $allure) and $worn.over_upper.name isnot "naked">>
-	<<set $worn.over_upper.integrity -= 10>>
-	<<if $worn.over_upper.integrity lte 0>>
-		One snags your $worn.over_upper.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, <span class="pink">tearing it from your body.</span>
+<<if $danger gte (9900 - $allure) and _top>>
+	<<set _top.integrity -= 10>>
+	<<if _top.integrity lte 0>>
+		One snags your _top.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, <span class="pink">tearing it from your body.</span>
 		<<integritycheck no_text>><<exposure>>
 		<<covered>> The <<farm_text cattle>> continues with the tattered remains dangling over <<farm_his cattle>> face.
 		<br><br>
@@ -1887,24 +1861,7 @@ You open the barn doors, and release the <<farm_text_many cattle>> from their pe
 		<<link [[Next|Farm Work]]>><</link>>
 		<br>
 	<<else>>
-		One snags your $worn.over_upper.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, leaving it worse for wear.
-		<br><br>
-
-		<<link [[Next|Farm Work]]>><</link>>
-		<br>
-	<</if>>
-<<elseif $danger gte (9900 - $allure) and $worn.upper.name isnot "naked">>
-	<<set $worn.upper.integrity -= 10>>
-	<<if $worn.upper.integrity lte 0>>
-		One snags your $worn.upper.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, <span class="pink">tearing it from your body.</span>
-		<<integritycheck no_text>><<exposure>>
-		<<covered>> The <<farm_text cattle>> continues with the tattered remains dangling over <<farm_his cattle>> face.
-		<br><br>
-
-		<<link [[Next|Farm Work]]>><</link>>
-		<br>
-	<<else>>
-		One snags your $worn.upper.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, leaving it worse for wear.
+		One snags your _top.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, leaving it worse for wear.
 		<br><br>
 
 		<<link [[Next|Farm Work]]>><</link>>
@@ -1918,7 +1875,6 @@ You open the barn doors, and release the <<farm_text_many cattle>> from their pe
 :: Farm Cattle Milk
 <<effects>>
 
-
 You enter the cattle barn.
 <<if $farm.barn gte 1>>
 	A large, glowing milking machine sits in the middle.
@@ -1928,18 +1884,13 @@ You enter the cattle barn.
 The <<farm_text_many cattle>> prefer to be milked by hand, but the machine can milk six at once.
 <br><br>
 
-
 <<farm_milk_actions>>
-
-
 
 
 :: Farm Cattle Milk Machine
 <<effects>>
 
 You lead the <<farm_text_many cattle>> into the barn, and strap them into the machine.
-
-<!-- Modified for Monster People -->
 
 <<if $bestialitydisable is "f" or $farm_work.cattle.monster is true>>
 	<<if $cattle_milked lte 6>>
@@ -2028,8 +1979,6 @@ You lead the <<farm_text_many cattle>> into the barn, and strap them into the ma
 <br><br>
 The milking machine works fast, and soon finishes gathering fluid. You release the <<farm_text_many cattle>>, and they trot away.
 <br><br>
-
-
 
 <<farm_milk_actions>>
 
@@ -2659,7 +2608,6 @@ You sit beside Alex, then procure the milkshake. "Fancy a drink?" you ask simult
 
 :: Farm Stables Rest
 <<set $outside to 0>><<effects>>
-
 You relax on the hammock next to the stables.
 <<if Weather.precipitation isnot "none">>You're glad to have some cover from the <<print Weather.precipitation>>.<</if>>
 
@@ -2671,11 +2619,15 @@ You relax on the hammock next to the stables.
 	You recline with <<nnpc_him "Alex">>, swayed by the occasional breeze. <<nnpc_He "Alex">> reluctantly gets up at one point with a sigh.
 	"I should get back to work. But I couldn't resist being with you."
 <<elseif Time.dayState is "night">>
-	With the horses sleeping, you're able to enjoy the peace and quiet.
+	With the <<farm_text_many "horse">> sleeping, you're able to enjoy the peace and quiet.
+
 <<elseif $farm_work.horses_out is 1>>
-	With the horses out running in the fields, you're able to enjoy the peace and quiet.
+	With the <<farm_text_many "horse">> out running in the fields, you're able to enjoy the peace and quiet.
+
 <<else>>
-	The horses are inside. You hear them move around.
+
+	The <<farm_text_many "horse">> are inside. You hear them move around.
+
 <</if>>
 <br><br>
 
@@ -2826,19 +2778,12 @@ You are in the barn. The <<farm_text_many cattle>> sleep sound.
 	<<transform cow 1>>
 <</if>>
 <<milkvolume 5>>
+<<outfitChecks>>
 
-<<if $worn.upper.name isnot "naked">>
-	<<if $worn.under_upper.name isnot "naked">>
-		You remove your $worn.upper.name and $worn.under_upper.name, and drop to all fours in front of the machine.<<upperstrip>><<underupperstrip>>
-	<<else>>
-		You remove your $worn.upper.name, and drop to all fours in front of the machine.<<upperstrip>>
-	<</if>>
+<<if _top>>
+	You remove your <<allTopsUnderwear>> and drop to all fours in front of the machine. <<overupperstrip>><<upperstrip>><<underupperstrip>>
 <<else>>
-	<<if $worn.under_upper.name isnot "naked">>
-		You remove your $worn.under_upper.name, and drop to all fours in front of the machine.<<underupperstrip>>
-	<<else>>
-		You drop to all fours in front of the machine.
-	<</if>>
+	You drop to all fours in front of the machine.
 <</if>>
 You take two of the suction tubes, and attach them to your <<breasts>>.
 <br><br>
@@ -2849,7 +2794,6 @@ You take two of the suction tubes, and attach them to your <<breasts>>.
 	The machine comes alive, and sucks your chest. You <<if $cow gte 6>>moo<<else>>gasp<</if>> at the sensation, causing one of the <<farm_text cattle>> to turn their head in your direction<<if $cow gte 6>> and moo back<</if>>.<<gggarousal>><<arousal 2000 "breasts">>
 	<br><br>
 <</if>>
-
 
 <<link [[Next|Farm Barn Breasts 2]]>><</link>>
 <br>
@@ -2862,8 +2806,6 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 <<orgasm>>
 <br>
 <<if $lactating is 1>>
-
-
 	Milk leaks from your buds as your body shakes. Your fluid is sucked into the machine, where it drips into a glass tank.
 	<br><br>
 
@@ -2947,19 +2889,11 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 <<if $cow gte 6>>
 	<<transform cow 1>>
 <</if>>
-
-<<if $worn.lower.name isnot "naked">>
-	<<if $worn.under_lower.name isnot "naked">>
-		You remove your <<bottoms>> and <<underbottoms>>, and drop to all fours in front of the machine.<<lowerstrip>><<underlowerstrip>>
-	<<else>>
-		You remove your <<bottoms>>, and drop to all fours in front of the machine.<<lowerstrip>>
-	<</if>>
+<<outfitChecks>>
+<<if _bottom>>
+	You remove your <<allBottomsUnderwear>> and drop to all fours in front of the machine.<<overlowerstrip>><<lowerstrip>><<underlowerstrip>>
 <<else>>
-	<<if $worn.under_lower.name isnot "naked">>
-		You remove your <<underbottoms>>, and drop to all fours in front of the machine.<<underlowerstrip>>
-	<<else>>
-		You drop to all fours in front of the machine.
-	<</if>>
+	You drop to all fours in front of the machine.
 <</if>>
 You take one of the suction tubes, and attach it to your <<penis>>.
 <br><br>
@@ -2974,7 +2908,6 @@ You take one of the suction tubes, and attach it to your <<penis>>.
 
 <<link [[Next|Farm Barn Penis 2]]>><</link>>
 <br>
-
 
 
 :: Farm Barn Penis 2
@@ -3104,7 +3037,7 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 <br><br>
 "So that's where all the extra milk is coming from," <<he>> says, blushing, "I know I asked for your help, I just didn't expect you to go this far." <<npcincr Alex love 1>><<glove>><<npcincr Alex lust 1>><<glust>>
 <br><br>
-<<He>> turns to leave, but pauses, "As long as the cattle aren't neglected, I don't mind."
+<<He>> turns to leave, but pauses. "As long as the cattle aren't neglected, I don't mind."
 <br><br>
 <<link [[Next|Farm Barn]]>><<clotheson>><<endevent>><</link>>
 
@@ -3230,10 +3163,10 @@ It takes a few minutes, but Alex finally gives up, opening <<his>> eyes to look 
 <<effects>>
 
 <<if $farm_stage gte 7>>
-	"Mooorning parrtnerrr…I think I drank a little too much last night," Alex slurs, giving you a lazy smile.
+	"Mooorning parrtnerrr... I think I drank a little too much last night," Alex slurs, giving you a lazy smile.
 
 <<else>>
-	"Heyyyyy parrtnerrr…How did you get in? Did I leave the door unlocked? Alex slurs, rubbing <<his>> face. You nod.
+	"Heyyyyy parrtnerrr... How did you get in? Did I leave the door unlocked? Alex slurs, rubbing <<his>> face. You nod.
 
 <</if>>
 <br><br>

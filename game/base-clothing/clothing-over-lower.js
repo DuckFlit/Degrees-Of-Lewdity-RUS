@@ -74,7 +74,7 @@ function initOverLower() {
 			set: "froggy",
 			gender: "n",
 			femininity: 0,
-			warmth: 0,
+			warmth: 4,
 			cost: 0,
 			description: "Protects you from rain.",
 			shop: ["clothing"],

@@ -1441,10 +1441,11 @@ You step away from the edge. Sydney looks over, before getting drenched as the w
 <<effects>><<run statusCheck("Sydney")>>
 You brace yourself for the wave's impact. Sydney looks over to you, and you're both drenched as it crashes into the promenade.
 <<print $worn.handheld.type.includes("rainproof") ? "Your umbrellas offer" : "Sydney's umbrella offers">> no protection from the deluge, and <<his>><<if $exit is "library">> school clothes<<else>> temple robes<</if>> get soaked through.
-<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
+<<outfitChecks>>
+<<if _top and !waterproofCheck(_top)>>
 	<<set $upperwet to 200>>
 <</if>>
-<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+<<if _bottom and !waterproofCheck(_bottom)>>
 	<<set $lowerwet to 200>>
 <</if>>
 <<effectswater>> <<exhibitionism3>>
@@ -1616,7 +1617,8 @@ You emerge from the changing room and wait for Sydney.
 		<</if>>
 <</switch>>
 <br><br>
-<<if $worn.under_lower.type.includes("swim") and ($worn.under_upper.type.includes("swim") or $worn.under_upper.type.includes("naked")) and ($worn.upper.type.includes("swim") or $worn.upper.type.includes("naked")) and ($worn.lower.type.includes("swim") or $worn.lower.type.includes("naked"))>>
+<<outfitChecks>>
+<<if _swimwear>>
 	/* Say Nothing */
 	<<if $sydney.swim is "crossdress" and $genderknown.includes("Sydney") and $player.gender isnot $player.gender_appearance>>
 		<<He>> notices your own choice of clothes. "At least I'm not doing it alone." <<npcincr Sydney love 1>><<glove>>
@@ -1642,7 +1644,7 @@ You are on the beach with Sydney.
 		The clouds have driven away most would-be visitors, but there are still people strolling along the water's edge.
 	<</if>>
 	<br><br>
-	<<if $worn.under_lower.type.includes("swim") and ($worn.under_upper.type.includes("swim") or $worn.under_upper.type.includes("naked")) or ($worn.upper.type.includes("swim") or $worn.upper.type.includes("naked")) and ($worn.lower.type.includes("swim") or $worn.lower.type.includes("naked"))>>
+	<<if getVisibleClothesList().some(item => item.type.includes("swim"))>>
 		<<link [[Go for a swim (0:20)|Sydney Beach Swim]]>><<pass 20>><</link>>
 		<br>
 		<<link [[Tan on the beach (1:00)|Sydney Beach Tanning]]>><<npcincr Sydney love 1>><</link>><<llstress>><<glove>>
@@ -1979,13 +1981,10 @@ The students are happy to have two more players, particularly the <<person2>><<p
 <br><br>
 <<physique 3>>
 <<set $eventcheck to random(1, 10000)>>
+<<outfitChecks>>
 <<if $eventcheck gte (9900 - ($allure))>>
 	<<if $rng gte 51>>
-		<<if $worn.lower.type.includes("naked")>>
-			You are so focused on the opposing team you do not notice one of your own sneak up on you. A pair of hands grasp the rim of your $worn.under_lower.name.
-		<<else>>
-			You are so focused on the opposing team you do not notice one of your own sneak up on you. A pair of hands grasp the rim of your $worn.lower.name.
-		<</if>>
+		You are so focused on the opposing team you do not notice one of your own sneak up on you. A pair of hands grasp the rim of your _bottom.name.
 		<<if $sydneyromance is 1 and ((($worn.under_lower.name is "naked" or $worn.lower.name is "naked") and $uncomfortable.nude is true) or $uncomfortable.underwear is true)>>
 			However, <<his>> arms are caught in a vice grip by Sydney. <<person1>><<He>> manages to pull the <<person2>><<person>>'s hands away despite the clear gap in physique between the two of them.
 			<br><br>
@@ -2001,12 +2000,12 @@ The students are happy to have two more players, particularly the <<person2>><<p
 				Sydney seems to be taken aback at being called a <<sydneyBeachGender>>, but shakes it off.
 			<</if>>
 		<<else>>
-			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 0 and $worn.lower.set isnot $worn.upper.set>>
-				Before you can react, the <<person2>><<person>> has pulled them all the way to your knees,
-			<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 0 and $worn.lower.set is $worn.upper.set>>
-				Before you can react, the <<person2>><<person>> has pulled it aside,
+			<<if _bottomIsSkirt>>
+				Before you can react, the <<person2>><<person>> has lifted <<lowerit>>,
+			<<elseif _bottom?.set isnot _top?.set>>
+				Before you can react, the <<person2>><<person>> has pulled <<lowerit>> all the way to your knees,
 			<<else>>
-				Before you can react, the <<person2>><<person>> has lifted it,
+				Before you can react, the <<person2>><<person>> has pulled <<lowerit>> aside,
 			<</if>>
 			<<if $worn.under_lower.name is "naked" or $worn.lower.name is "naked">>
 				<<if $uncomfortable.nude is false>>
@@ -2020,10 +2019,10 @@ The students are happy to have two more players, particularly the <<person2>><<p
 				<</if>>
 			<<else>>
 				<<if $uncomfortable.underwear is false>>
-					exposing your $worn.under_lower.name. Laughter erupts from both teams, <<if _sydneyStatus.includes("corrupt")>>including you and Sydney<<else>>including you. Sydney covers <<person1>><<his>> eyes at first, but uncovers them as <<he>> realises that everyone else seems fine with it<</if>>. It's just a $worn.under_lower.name, you're not embarrassed.
+					exposing your $worn.under_lower.name. Laughter erupts from both teams, <<if _sydneyStatus.includes("corrupt")>>including you and Sydney<<else>>including you. Sydney covers <<person1>><<his>> eyes at first, but uncovers them as <<he>> realises that everyone else seems fine with it<</if>>. It's just your $worn.under_lower.name_simple; you're not embarrassed.
 					<<gcool>><<status 5>><<garousal>><<gstress>><<npcincr Sydney lust 1>><<glust>>
 				<<else>>
-					exposing your $worn.under_lower.name. Laughter erupts from both teams and you hasten to protect your dignity. Sydney helps you cover yourself, shooting glares all around.
+					exposing your $worn.under_lower.name. Laughter erupts from both teams, and you hasten to protect your dignity. Sydney helps you cover yourself, shooting glares all around.
 					<<lcool>><<status -10>><<garousal>><<gstress>><<gtrauma>><<arousal 100>><<stress 1>><<trauma 1>><<npcincr Sydney lust 1>><<glust>>
 				<</if>>
 			<</if>>
