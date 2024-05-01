@@ -89,24 +89,20 @@ const Weather = (() => {
 		const temperature = Weather.temperature; // Temperature in Celsius
 		const freezingRate = setup.WeatherSettings.ice.freezingRate;
 		const meltingRate = setup.WeatherSettings.ice.meltingRate;
-		const maxAccumulation = setup.WeatherSettings.ice.maxAccumulation;
-
-		const iceThickness = V.weatherObj.ice || {};
-
-		for (const body of Object.keys(maxAccumulation)) {
-			iceThickness[body] = iceThickness[body] || 0;
-
+		const maxThickness = setup.WeatherSettings.ice.maxThickness;
+		console.log(V.weatherObj.ice, maxThickness);
+		for (const body of Object.keys(maxThickness)) {
+			console.log(V.weatherObj.ice, body);
+			V.weatherObj.ice[body] = V.weatherObj.ice[body] || 0;
 			if (Weather.isFreezing) {
-				iceThickness[body] += minutes * freezingRate * Math.abs(temperature);
-				iceThickness[body] = Math.min(iceThickness[body], maxAccumulation[body]);
+				V.weatherObj.ice[body] += minutes * freezingRate * Math.abs(temperature);
+				V.weatherObj.ice[body] = Math.min(V.weatherObj.ice[body], maxThickness[body]);
 			} else if (temperature > 0) {
-				iceThickness[body] -= minutes * meltingRate * temperature;
-				iceThickness[body] = Math.max(iceThickness[body], 0);
+				V.weatherObj.ice[body] -= minutes * meltingRate * temperature;
+				V.weatherObj.ice[body] = Math.max(V.weatherObj.ice[body], 0);
 			}
-			iceThickness[body] = Math.round(iceThickness[body]);
+			V.weatherObj.ice[body] = Math.round(V.weatherObj.ice[body]);
 		}
-
-		V.weatherObj.ice = iceThickness;
 	}
 
 	return {
