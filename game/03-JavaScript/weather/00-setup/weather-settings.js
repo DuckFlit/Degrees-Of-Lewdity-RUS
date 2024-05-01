@@ -13,6 +13,24 @@
  * Explanation for each variable will follow, once per variable type.
  */
 setup.WeatherSettings = {
+	snow: {
+		minAccumulation: 15, // Min 15 mm for it to be considered snow on the ground
+		maxAccumulation: 500, // max 500 mm of accumulated snow on the ground
+		snowfallRate: 0.8, // mm per minute while snowing (snowfallRate * precipitationIntensity)
+		meltingRate: 0.04, // base mm per minute when above freezing (meltingRate * temperature)
+	},
+	ice: {
+		minThickness: {
+			lake: 40, // min 40 mm for it to be considered walkable
+			fountain: 5,
+		},
+		maxThickness: {
+			lake: 500, // max 500 mm of accumulated ice on the lake
+			fountain: 50,
+		},
+		freezingRate: 0.5, // mm per minute while freezing (freezingRate * temperature)
+		meltingRate: 0.04, // base mm per minute when above freezing (meltingRate * temperature)
+	},
 	forecast: {
 		weather: {
 			/* Will generate random number of key points between the min and max value */
@@ -28,7 +46,7 @@ setup.WeatherSettings = {
 			maxKeyPointsPerMonth: 6, // Maximum number of key points per month.
 		},
 	},
-	temperature: {
+	temperature: { // Body temperature
 		/* Be careful when modifying the factors, as small changes can have big effects */
 		// General
 		baseBodyTemperature: 37, // The normal body temperature in degrees Celsius.

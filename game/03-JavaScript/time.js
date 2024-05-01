@@ -951,8 +951,9 @@ function minutePassed(minutes) {
 	if (!V.possessed) Weather.BodyTemperature.update(temperature, minutes);
 	V.stress += Math.round(Weather.BodyTemperature.stressModifier * minutes);
 
-	// Snow
+	// Snow & ice
 	Weather.setAccumulatedSnow(minutes);
+	Weather.setIceThickness(minutes);
 
 	// Effects
 	V.stress = Math.min(V.stress, V.stressmax);
