@@ -262,15 +262,16 @@ Weather.Sky = (() => {
 		return false;
 	}
 
-	function preInitialize() {
-		initOrbits();
-	}
-
 	/**
 	 * Executes once - when page is loaded
 	 */
-	async function initialize() {
-		const loadPromises = Array.from(WeatherLayers.layers.values()).flatMap(layer => layer.loadPromises);
+	function initialize() {
+		initOrbits();
+		setupCanvas();
+	}
+
+	async function setupCanvas() {
+		const loadPromises = Array.from(Weather.Sky.Layers.layers.values()).flatMap(layer => layer.loadPromises);
 
 		// Sequentially await each promise in loadPromises
 		for (const loadPromise of loadPromises) {
@@ -405,13 +406,11 @@ Weather.Sky = (() => {
 		mainLayer: _mainLayer,
 		orbitals: _orbitals,
 		fadables: _fadables,
-		loaded,
 		loaded: _loaded,
 		isOverlapping,
 		isOverlappingAny,
 		updateOrbits,
 		updateFade,
-		preInitialize,
 		initialize,
 		drawLayers,
 		getLayer,
@@ -424,7 +423,7 @@ Weather.Sky = (() => {
 window.Weather.Sky = Weather.Sky;
 
 $(document).one(":passagestart", () => {
-	Weather.Sky.preInitialize();
+	if (!V.weatherObj) return;
 	Weather.Sky.initialize();
 });
 

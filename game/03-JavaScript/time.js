@@ -102,8 +102,11 @@ const Time = (() => {
 
 	let currentDate = {};
 
-	function set(timeStamp = V.timeStamp) {
-		currentDate = new DateTime((V.startDate || 0) + (timeStamp || 0));
+	function set(timeStamp) {
+		if (!V.startDate) V.startDate = new DateTime();
+		if (!V.timeStamp) V.timeStamp = 0;
+
+		currentDate = new DateTime(V.startDate + (timeStamp || V.timeStamp));
 		V.timeStamp = timeStamp;
 	}
 	/*
