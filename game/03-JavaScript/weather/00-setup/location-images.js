@@ -810,7 +810,7 @@ setup.LocationImages = {
 		},
 		emissive: {
 			image: "emissive.png",
-			condition: () => Weather.lightsOn,
+			condition: () => Weather.lightsOn && Time.season !== "winter" && Time.season !== "autumn",
 			animation: {
 				fps: 4,
 				delay: () => 0,

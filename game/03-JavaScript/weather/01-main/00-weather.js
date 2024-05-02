@@ -90,7 +90,6 @@ const Weather = (() => {
 		const freezingRate = setup.WeatherSettings.ice.freezingRate;
 		const meltingRate = setup.WeatherSettings.ice.meltingRate;
 		const maxThickness = setup.WeatherSettings.ice.maxThickness;
-		console.log(V.weatherObj.ice, maxThickness);
 		for (const body of Object.keys(maxThickness)) {
 			console.log(V.weatherObj.ice, body);
 			V.weatherObj.ice[body] = V.weatherObj.ice[body] || 0;
