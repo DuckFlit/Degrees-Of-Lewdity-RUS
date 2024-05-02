@@ -391,6 +391,11 @@ const Time = (() => {
 })();
 window.Time = Time;
 
+$(document).one(":passageinit", () => {
+	/* Set current time */
+	Time.set();
+});
+
 /* Local functions */
 
 // Replaces <<year>>

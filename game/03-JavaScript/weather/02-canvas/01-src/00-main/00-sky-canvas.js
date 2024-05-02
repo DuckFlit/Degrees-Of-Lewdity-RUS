@@ -423,7 +423,7 @@ Weather.Sky = (() => {
 })();
 window.Weather.Sky = Weather.Sky;
 
-$(document).one(":passagerender", () => {
+$(document).one(":passagestart", () => {
 	Weather.Sky.preInitialize();
 	Weather.Sky.initialize();
 });
