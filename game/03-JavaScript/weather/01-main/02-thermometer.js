@@ -26,7 +26,6 @@ Weather.Thermometer = (() => {
 	};
 	const element = $("<div />", { id: "characterTemperature" });
 	const tooltipElement = $("<div />", { id: "characterTemperatureTooltip" });
-	const loaded = new ObservableValue(false);
 	const loadPromises = [];
 	let allImagesLoaded = false;
 
@@ -150,7 +149,6 @@ Weather.Thermometer = (() => {
 	return Object.create({
 		element,
 		tooltipElement,
-		loaded,
 		load,
 		update,
 		updateTooltip,
@@ -161,11 +159,10 @@ Macro.add("thermometer", {
 	handler() {
 		Weather.Thermometer.element.appendTo(this.output);
 		Weather.Thermometer.tooltipElement.appendTo(this.output);
-		if (!Weather.Thermometer.loaded.value) {
-			Weather.Thermometer.loaded.value = true;
-			Weather.Thermometer.load();
-			return;
-		}
 		Weather.Thermometer.update();
 	},
+});
+
+$(document).one(":passagerender", () => {
+	Weather.Thermometer.load();
 });

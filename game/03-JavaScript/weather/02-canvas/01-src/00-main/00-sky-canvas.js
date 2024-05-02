@@ -229,6 +229,14 @@ Weather.Sky = (() => {
 		}
 	}
 
+	const _skybox = $("<div />", { id: "canvasSkybox" });
+	const _mainLayer = new Canvas();
+	const _orbitals = {};
+	const _fadables = {};
+
+	_skybox.append(_mainLayer.canvas);
+	const _loaded = new ObservableValue(false);
+
 	/**
 	 * @param {object} objA Position object {x, y, width, height}
 	 * @param {object} objB Position object {x, y, width, height}
@@ -254,13 +262,9 @@ Weather.Sky = (() => {
 		return false;
 	}
 
-	const _skybox = $("<div />", { id: "canvasSkybox" });
-	const _mainLayer = new Canvas();
-	const _orbitals = {};
-	const _fadables = {};
-
-	_skybox.append(_mainLayer.canvas);
-	const loaded = new ObservableValue(false);
+	function preInitialize() {
+		initOrbits();
+	}
 
 	/**
 	 * Executes once - when page is loaded
@@ -278,11 +282,10 @@ Weather.Sky = (() => {
 		}
 
 		WeatherLayers.sortByZIndex();
-		initOrbits();
 		initFadables();
 		await initEffects();
 		drawLayers();
-		loaded.value = true;
+		_loaded.value = true;
 	}
 
 	// todo initOrbits doesn't run every day - should run weekly or daily? (run at midday to update moon, run at midnight to update sun)
@@ -368,9 +371,9 @@ Weather.Sky = (() => {
 			<br><span class="blue">Inside temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.insideTemperature)}</span>
 			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.waterTemperature)}</span>
 			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)}</span>
-			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(Weather.sunIntensity, 2) * 100}% (${V.outside ? "outside" : "inside"})</span>
-			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(_fadables.overcast.factor, 2) * 100}%</span>
-			<br><span class="blue">Fog amount:</span> <span class="yellow">${round(Weather.fog, 2) * 100}%</span>
+			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(Weather.sunIntensity * 100, 2)}% (${V.outside ? "outside" : "inside"})</span>
+			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(_fadables.overcast.factor * 100, 2)}%</span>
+			<br><span class="blue">Fog amount:</span> <span class="yellow">${round(Weather.fog * 100, 2)}%</span>
 			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${V.weatherObj.snow}mm</span>
 			<br><span class="blue">Lake ice thickness:</span> <span class="yellow">${V.weatherObj.ice.lake ?? 0}mm</span>`
 			: "";
@@ -403,10 +406,12 @@ Weather.Sky = (() => {
 		orbitals: _orbitals,
 		fadables: _fadables,
 		loaded,
+		loaded: _loaded,
 		isOverlapping,
 		isOverlappingAny,
 		updateOrbits,
 		updateFade,
+		preInitialize,
 		initialize,
 		drawLayers,
 		getLayer,
@@ -418,11 +423,13 @@ Weather.Sky = (() => {
 })();
 window.Weather.Sky = Weather.Sky;
 
+$(document).one(":passagerender", () => {
+	Weather.Sky.preInitialize();
+	Weather.Sky.initialize();
+});
+
 Macro.add("skybox", {
 	handler() {
 		Weather.Sky.skybox.appendTo(this.output);
-		if (!Weather.Sky.loaded.value) {
-			Weather.Sky.initialize();
-		}
 	},
 });
