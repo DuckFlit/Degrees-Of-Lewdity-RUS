@@ -1542,7 +1542,6 @@ const DoLCompressorDictionaries = (() => {
 		"showGoldLink",
 		"showUnderEquip",
 		"sidebarAnimations",
-		"sidebarRenderer",
 		"sidebarStats",
 		"sidebarTime",
 		"silhouetteEnabled",
