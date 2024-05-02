@@ -193,7 +193,7 @@ const Weather = (() => {
 			Weather.Sky.drawLayers();
 		},
 		get lightsOn() {
-			return Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off;
+			return !Weather.bloodMoon && (Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off);
 		},
 	};
 })();
