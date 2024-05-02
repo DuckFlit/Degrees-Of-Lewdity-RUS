@@ -105,6 +105,7 @@ const Time = (() => {
 	function set(timeStamp) {
 		if (!V.startDate) V.startDate = new DateTime();
 		if (!V.timeStamp) V.timeStamp = 0;
+		if (!timeStamp) timeStamp = V.timeStamp;
 
 		currentDate = new DateTime(V.startDate + (timeStamp || V.timeStamp));
 		V.timeStamp = timeStamp;
