@@ -1,7 +1,7 @@
 /**
  * @typedef {object} DolLocation
  * @property {string} area The place they are at.
- * @property {string} state The state they are in within the area.
+ * @property {string | "stalking"} state The state they are in within the area.
  */
 
 /** @type {DolLocation} */
@@ -11,7 +11,9 @@ const UnknownLocation = { area: "unknown", state: "unknown" };
 const InactiveLocation = { area: "inactive", state: "inactive" };
 
 /** @returns {boolean} */
-const isRaining = () => ["rain", "snow"].contains(V.weather);
+const isRaining = () => ["rain", "snow"].includes(V.weather);
+
+const importantStates = ["rehearsal", "dual_rehearsal"];
 
 /**
  * Simple location function for figuring out where Kylar is at school.
@@ -22,16 +24,28 @@ const isRaining = () => ["rain", "snow"].contains(V.weather);
  */
 function getKylarLocation() {
 	const state = C.npc.Kylar.state;
+	let location = UnknownLocation;
 	switch (state) {
 		case "active":
-			return getKylarActiveLocation();
+			location = getKylarActiveLocation();
+			if (!importantStates.includes(location.state) && V.kylarwatched) {
+				location.state = "stalking";
+			}
+			break;
 		case "prison":
-			return getKylarPrisonLocation();
+			location = getKylarPrisonLocation();
+			if (!importantStates.includes(location.state) && V.kylarwatched) {
+				location.state = "stalking";
+			}
+			break;
 		case "":
-			return InactiveLocation;
+			location = InactiveLocation;
+			break;
 		default:
-			return UnknownLocation;
+			location = UnknownLocation;
+			break;
 	}
+	return location;
 }
 window.getKylarLocation = getKylarLocation;
 
@@ -53,9 +67,6 @@ function getKylarActiveLocation() {
 			return { area: "rear_courtyard", state: "stump" };
 		}
 		return { area: "english", state: "rehearsal" };
-	}
-	if (V.kylarwatched) {
-		return { area: "stalking", state: "player" };
 	}
 	if (Time.schoolTime) {
 		return getKylarSchoolLocation();
