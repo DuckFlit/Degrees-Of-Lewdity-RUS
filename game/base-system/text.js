@@ -657,13 +657,13 @@ statDisplay.create("lrespect", () => statDisplay.statChange("Respect", -1, "red"
 statDisplay.create("llrespect", () => statDisplay.statChange("Respect", -2, "red"));
 statDisplay.create("lllrespect", () => statDisplay.statChange("Respect", -3, "red"));
 statDisplay.create("grespect", arg =>
-	statDisplay.statChange("Respect", 1, "green", () => (arg === undefined || arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("Respect", 1, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 statDisplay.create("ggrespect", arg =>
-	statDisplay.statChange("Respect", 2, "green", () => (arg === undefined || arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("Respect", 2, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 statDisplay.create("gggrespect", arg =>
-	statDisplay.statChange("Respect", 3, "green", () => (arg === undefined || arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("Respect", 3, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 
 statDisplay.create("ladeviancy", () => statDisplay.statChange("Alex's Deviancy", -1, "green"));
