@@ -592,8 +592,8 @@ statDisplay.create("ggghistory", () => {
 	return result;
 });
 
-statDisplay.create("ghousekeeping", amount => {
-	if (V.statsdisable === "t") return "";
+statDisplay.create("ghousekeeping", (amount, silent = false) => {
+	if (V.statsdisable === "t" || silent === "silent") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
 	} else if (V.housekeeping >= amount) {
