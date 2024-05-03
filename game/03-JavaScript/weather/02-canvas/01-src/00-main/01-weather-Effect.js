@@ -122,6 +122,7 @@ Weather.Sky.Effect = class Effect {
 	 * It will wait for the init to complete before drawing - to assure any images loaded in init will be drawn
 	 *
 	 * @param canvas Global context
+	 * @param layerCanvas
 	 */
 	draw(canvas, layerCanvas) {
 		this.canvas.clear();

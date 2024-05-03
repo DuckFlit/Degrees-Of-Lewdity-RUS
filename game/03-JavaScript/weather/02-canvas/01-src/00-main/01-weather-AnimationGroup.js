@@ -51,12 +51,10 @@ Weather.Sky.AnimationGroup = class AnimationGroup {
 			if (!animation.parentAnimation) {
 				if (animation.canUpdate(this) && animation.update(deltaTime)) {
 					updatedEffects.add(key);
-					//console.log("UPDATE ANIMATION", animation);
 				}
 			}
 		});
 
-		//console.log("UPDATE ANIMATIONS TIMER", this.animations, updatedEffects);
 		if (updatedEffects.size > 0) {
 			this.onUpdate();
 		}
@@ -71,7 +69,6 @@ Weather.Sky.AnimationGroup = class AnimationGroup {
 		if (this.animationFrameId) {
 			cancelAnimationFrame(this.animationFrameId);
 			this.animationFrameId = null;
-			//console.log("ANIMATIONS STOPPED");
 		}
 	}
 };
