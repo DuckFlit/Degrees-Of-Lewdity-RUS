@@ -52,12 +52,12 @@ const statDisplay = {
 };
 window.statDisplay = statDisplay;
 
-statDisplay.create("ggrace", expectedRank => statDisplay.grace(1, expectedRank));
-statDisplay.create("gggrace", expectedRank => statDisplay.grace(2, expectedRank));
-statDisplay.create("ggggrace", expectedRank => statDisplay.grace(3, expectedRank));
 statDisplay.create("lgrace", expectedRank => statDisplay.grace(-1, expectedRank));
 statDisplay.create("llgrace", expectedRank => statDisplay.grace(-2, expectedRank));
 statDisplay.create("lllgrace", expectedRank => statDisplay.grace(-3, expectedRank));
+statDisplay.create("ggrace", expectedRank => statDisplay.grace(1, expectedRank));
+statDisplay.create("gggrace", expectedRank => statDisplay.grace(2, expectedRank));
+statDisplay.create("ggggrace", expectedRank => statDisplay.grace(3, expectedRank));
 
 statDisplay.create("lstress", () => statDisplay.statChange("Stress", -1, "green"));
 statDisplay.create("llstress", () => statDisplay.statChange("Stress", -2, "green"));
@@ -657,13 +657,13 @@ statDisplay.create("lrespect", () => statDisplay.statChange("Respect", -1, "red"
 statDisplay.create("llrespect", () => statDisplay.statChange("Respect", -2, "red"));
 statDisplay.create("lllrespect", () => statDisplay.statChange("Respect", -3, "red"));
 statDisplay.create("grespect", arg =>
-	statDisplay.statChange("Respect", 1, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("Respect", 1, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 statDisplay.create("ggrespect", arg =>
-	statDisplay.statChange("Respect", 2, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("Respect", 2, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 statDisplay.create("gggrespect", arg =>
-	statDisplay.statChange("Respect", 3, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("Respect", 3, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 
 statDisplay.create("ladeviancy", () => statDisplay.statChange("Alex's Deviancy", -1, "green"));

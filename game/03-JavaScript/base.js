@@ -344,6 +344,10 @@ function outfitChecks() {
 				return V.worn[item].name !== "naked" && ((T.bottomUnderIsSkirt = setup.clothes[item][clothesIndex(item, V.worn[item])].skirt), true);
 			})
 		];
+	T.swimwear =
+		((V.worn.under_lower.type.includes("swim") && V.worn.lower.type.includes("naked")) || V.worn.lower.type.includes("swim")) &&
+		(V.worn.under_upper.type.includes("swim") || V.worn.under_upper.type.includes("naked")) &&
+		(V.worn.upper.type.includes("swim") || V.worn.upper.type.includes("naked"));
 }
 window.outfitChecks = outfitChecks;
 DefineMacro("outfitChecks", outfitChecks);
