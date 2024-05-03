@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "fog",
 	zIndex: 11,
 	blur: false,
 	effects: [
 		{
 			effect: "fog",
-			drawCondition: () => Weather.fog > 0,
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			params: {
 				images: {
 					fog: "img/misc/sky/clouds/fog/0.png",
@@ -14,20 +14,19 @@ WeatherLayers.add({
 				movement: {
 					speed: 0.4,
 				},
-				baseAlpha: 0.8,
+				baseAlpha: 0.9,
 			},
 			bindings: {
 				fogFactor() {
 					return Weather.fog;
 				},
-				factor() {
-					return 1 - interpolate(0, 1, normalise(Math.min(Weather.Sky.orbitals.sun.factor, 0), 0, -0.7));
+				weather() {
+					return Weather.current;
 				},
 			},
 		},
 		{
 			effect: "colorOverlay",
-			drawCondition: () => !Weather.bloodMoon,
 			compositeOperation: "source-atop",
 			params: {
 				color: {
@@ -35,6 +34,7 @@ WeatherLayers.add({
 					nightBright: "#000412dd",
 					day: "#97a9e8e5",
 					dawnDusk: "#7a511895",
+					bloodMoon: "#4a0505ee",
 				},
 			},
 			bindings: {
@@ -43,6 +43,9 @@ WeatherLayers.add({
 				},
 				moonFactor() {
 					return Weather.Sky.moonBrightnessFactor;
+				},
+				bloodMoon() {
+					return Weather.bloodMoon;
 				},
 			},
 		},

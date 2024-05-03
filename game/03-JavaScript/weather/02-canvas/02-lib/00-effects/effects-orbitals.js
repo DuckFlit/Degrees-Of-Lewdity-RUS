@@ -3,7 +3,7 @@
  * Renders an orbital object, such as the sun or moon, at a specified position.
  * Changes position on draw() based on the position binding.
  */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "skyOrbital",
 	images: { orbital: "img/misc/sky/sun.png" },
 	draw() {
@@ -18,7 +18,7 @@ WeatherEffects.create({
  * init() generates the effects - usually once per day.
  * draw() simply positions it in the canvas, with the right glow color (based on dayFactor)
  */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "moonWithPhases",
 	images: { orbital: "img/misc/sky/moon.png" },
 	effects: [
@@ -66,7 +66,7 @@ WeatherEffects.create({
 /**
  * Adds the moon texture, shadow and glow together
  */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "moonPhase",
 	effects: [
 		{
@@ -125,7 +125,7 @@ WeatherEffects.create({
  * init() creates the moon shadow effect - usually once per day.
  * draw() simply draws it to the canvas at the right position.
  */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "moonShadow",
 	init() {
 		// Need an offscreen canvas

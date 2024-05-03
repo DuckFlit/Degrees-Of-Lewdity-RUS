@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-undef */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "locationImage",
 	effects: [
 		{
@@ -12,11 +12,11 @@ WeatherEffects.create({
 				key() {
 					return this.key;
 				},
-				otherEffects() {
-					return this.otherEffects;
+				parentLayer() {
+					return this.parentLayer;
 				},
-				onFrame() {
-					return this.onFrame;
+				fullPath() {
+					return `${this.path}/` + (this.location.folder ? `${this.location.folder}/` : "");
 				},
 			},
 		},
@@ -25,24 +25,22 @@ WeatherEffects.create({
 		this.animationFrame = 0;
 	},
 	draw() {
-		// Set this.animations to be accessible from outside
-		this.animations = this.effects[0].animations;
 		this.effects[0].draw();
 		this.canvas.drawImage(this.effects[0].canvas.element);
+		
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "locationEmissive",
+	defaultParameters: {
+		defaultColor: "#deae66",
+		defaultSize: 3,
+		defaultAlpha: 1,
+	},
 	effects: [
 		{
 			effect: "locationImageAnimation",
-			params: {
-				glow: true,
-				defaultColor: "#deae66",
-				defaultSize: 5,
-				defaultAlpha: 1,
-			},
 			bindings: {
 				location() {
 					return this.location;
@@ -50,24 +48,29 @@ WeatherEffects.create({
 				key() {
 					return this.key;
 				},
-				otherEffects() {
-					return this.otherEffects;
+				parentLayer() {
+					return this.parentLayer;
 				},
-				onFrame() {
-					return this.onFrame;
+				fullPath() {
+					return `${this.path}/` + (this.location.folder ? `${this.location.folder}/` : "");
 				},
 			},
 		},
 	],
 	draw() {
-		// Set this.animations to be accessible from outside
-		this.animations = this.effects[0].animations;
-		this.effects[0].draw();
+		this.effects[0].draw((drawCanvas, obj) => {
+			const glowSize = obj.size ?? this.defaultSize;
+			const glowColor = obj.color ?? this.defaultColor;
+			drawCanvas.ctx.shadowColor = glowColor;
+			drawCanvas.ctx.shadowBlur = glowSize;
+			drawCanvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
+			return drawCanvas;
+		});
 		this.canvas.drawImage(this.effects[0].canvas.element);
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "locationReflective",
 	defaultParameters: {
 		horizon: 112,
@@ -85,19 +88,16 @@ WeatherEffects.create({
 				key() {
 					return this.key;
 				},
-				otherEffects() {
-					return this.otherEffects;
-				},
-				onFrame() {
-					return this.onFrame;
-				},
+				parentLayer() {
+					return this.parentLayer;
+				}
 			},
 		},
 	],
 	init() {
-		this.reflectionCanvas = new Weather.Sky.Canvas(); 
-		this.locationCanvas = new Weather.Sky.Canvas(); 
-
+		this.reflectionCanvas = new Weather.Sky.Canvas();
+		this.locationCanvas = new Weather.Sky.Canvas();
+		
 	},
 	draw(canvas, layerCanvas) {
 		// Temporarily disable reflections until next update
@@ -106,94 +106,65 @@ WeatherEffects.create({
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "locationImageAnimation",
-	defaultParameters: {
-		width: 64,
-	},
 	// Make it asyncronous to wait for the image to load before animating without slowing down the main flow
-	async init() {
-		this.scaledWidth = this.width * setup.SkySettings.scale;
-		// Update only animations of which its condition states has changed
-		this.updateConditions = () => {
-			const animationsArr =
-				this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
-			this.animations?.forEach(anim => {
-				if (!anim.condition) return;
-				if (anim.condition(animationsArr) && !anim.displayed) {
-					anim.displayed = true;
-					if (anim.animationInstance) anim.animationInstance.start();
-				} else if (!anim.condition(animationsArr) && anim.displayed) {
-					anim.displayed = false;
-					if (anim.animationInstance) anim.animationInstance.stop();
+	async init() {		
+		const loadImage = async (key, obj) => {
+			return new Promise((resolve, reject) => {
+				let image = new Image();
+				const imagePath = typeof obj === "object" && obj.image ? obj.image : this.obj;
+
+				const handleLoadedImage = () => {
+					if (typeof obj !== "object") obj = {};
+					
+					if (obj.animation) {
+						const animationOptions = {
+							image,
+							canvas: this.canvas,
+							alwaysDisplay: obj.alwaysDisplay,
+							waitForAnimation: obj.waitForAnimation,
+							frameDelay: obj.animation.frameDelay, // Will never be lower than the layer updateRate
+							cycleDelay: obj.animation.cycleDelay,
+							startDelay: obj.animation.startDelay,
+							startY: this.canvas.element.height - image.height,
+							numFrames: image.width / this.canvas.element.width,
+							currentFrame: obj.animation.startFrame,
+							condition: obj.condition,
+						};
+						if (typeof obj.animation !== "object") {
+							obj.parentAnimation = obj.animation;
+						}
+						animationOptions.parentAnimation = obj.parentAnimation;
+						obj.animation = new Weather.Sky.Animation(animationOptions);
+						obj.animation.enable();
+						this.parentLayer.animationGroup.add(key, obj.animation);
+					}
+					else {
+						obj.image = image;
+					}
+					this.animations.set(key, obj);
+					resolve();
+				};
+		
+				// Only load image if it isn't loaded already
+				if (imagePath instanceof Image) {
+					image = obj.image;
+					handleLoadedImage();
+				} else {
+					image = new Image();
+					image.src = this.fullPath + imagePath;
+					image.onload = handleLoadedImage;
+					image.onerror = reject;
 				}
 			});
 		};
-		const loadImage = async (loc, key) => {
-			// Wait for image to load - add animation if it exists, otherwise just use the image
-			return new Promise((resolve, reject) => {
-				const image = new Image();
-				const imagePath = typeof loc === "object" && loc.image ? loc.image : this.obj;
-				image.src = this.fullPath + imagePath;
-				image.onload = () => {
-					const animDetails = {
-						name: key,
-						displayed: true,
-						image,
-						condition: loc.condition,
-						frame: loc.frame,
-						height: image.height,
-						frameWidth: this.scaledWidth,
-						frameHeight: image.height,
-						yPos: this.canvas.element.height - image.height,
-						alwaysDrawFirstFrame: loc.alwaysDrawFirstFrame ?? true,
-						waitForAnimation: loc.waitForAnimation,
-						glow: this.glow ? {
-							size: typeof loc.size === "function" ? loc.size() : loc.size ?? this.defaultSize ?? 0,
-							color: typeof loc.color === "function" ? loc.color() : loc.color ?? this.defaultColor ?? "#ffffff",
-							alpha: typeof loc.alpha === "function" ? loc.alpha() : loc.alpha ?? this.defaultAlpha ?? 1,
-						} : null,
-						parent: typeof loc.animation === "string" ? loc.animation : undefined,
-					};
-					this.frameWidth = this.scaledWidth;
-					this.frameHeight = image.height;
-					if (typeof loc === "object" && loc.animation?.fps > 0) {
-						animDetails.numFrames = image.width / animDetails.frameWidth;
-						animDetails.animationInstance = new Weather.Sky.Animation(
-							image,
-							loc.animation.fps,
-							animDetails.numFrames,
-							loc.animation.delay,
-							this.onFrame,
-							loc.animation.delayFirst ?? true
-						);
-						if (loc.animation.startFrame) {
-							animDetails.animationInstance.currentFrame =
-								typeof loc.animation.startFrame === "function" ? loc.animation.startFrame() : loc.animation.startFrame;
-						}
-						animDetails.animationInstance.start();
-						animDetails.isPlaying = () => animDetails.animationInstance.isAnimating.value;
-					}
-					this.animations.push(animDetails);
-					resolve();
-				};
-				image.onerror = reject;
-			});
-		};
 
-		this.animations?.forEach(anim => {
-			if (anim.animationInstance instanceof Weather.Sky.Animation) {
-				anim.animationInstance.stop();
-			}
-		});
-		this.animations = [];
-
+		this.animations = new Map();
 		if (this.location?.[this.key] === undefined) return;
 		this.obj = this.location[this.key];
-		this.fullPath = `${this.path}/` + (this.location.folder ? `${this.location.folder}/` : "");
-
 		// Check if there are sub-animations
-		// In that case we'd want a separate animation for each of them
+		// In that case we want a separate animation for each of them
 		if (
 			Object.keys(this.obj).some(key => {
 				const value = this.obj[key];
@@ -204,58 +175,28 @@ WeatherEffects.create({
 			})
 		) {
 			for (const key in this.obj) {
-				const loc = this.obj[key];
-				await loadImage(loc, key);
+				const obj = this.obj[key];
+				await loadImage(key, obj);
 			}
 		} else {
-			await loadImage(this.obj, this.key);
+			await loadImage(this.key, this.obj);
 		}
-		this.updateConditions();
+	console.log("THIS ANIMASTIDKSAN",this.animations);
 	},
 
-	draw() {
-		const animationsArr =
-			this.otherEffects && Array.isArray(this.otherEffects.animations) ? [...this.otherEffects.animations, ...this.animations] : this.animations;
+	draw(onDraw) {
+		for (const obj of this.animations.values()) {
+			if (onDraw) onDraw(this.canvas, obj);
+			if (obj.animation) {
+				obj.animation.draw();
+			} else if (!obj.condition || obj.condition && obj.condition()) {
+				const yPosition = this.canvas.element.height - obj.image.height;
 
-		for (const anim of this.animations) {
-			const shouldDraw = anim.animationInstance ? anim.animationInstance.enabled && anim.displayed : anim.displayed;
-
-			// Pause the current animation timers if a specified animation is playing
-			if (anim.waitForAnimation) {
-				const isAnimating = animationsArr.find(val => val.name === anim.waitForAnimation)?.animationInstance.isAnimating;
-				if (isAnimating && isAnimating.value && anim.animationInstance?.enabled) {
-					anim.animationInstance.stop();
-					const onAnimationChange = value => {
-						if (value === false) {
-							isAnimating.unsubscribe(onAnimationChange);
-							anim.animationInstance.start();
-						}
-					};
-					isAnimating.subscribe(onAnimationChange);
-				}
-			}
-
-			if (anim.glow) {
-				this.canvas.glow(anim.glow.size, anim.glow.color);
-				this.canvas.ctx.globalAlpha = anim.glow.alpha;
-			}
-			
-			if (anim.animationInstance && shouldDraw) {
-				if (!anim.animationInstance.enabled && !anim.alwaysDrawFirstFrame) continue;
-				anim.animationInstance.draw(this.canvas.ctx, 0, anim.yPos, anim.frameWidth, anim.frameHeight, this.scaledWidth, anim.height);
-
-			} else if (shouldDraw || (anim.animationInstance && anim.alwaysDrawFirstFrame && anim.displayed)) {
-				const frame = typeof anim.frame === "function" ? anim.frame() : anim.frame;
-				let frameX = frame ? anim.frameWidth * frame : 0;
-				if (anim.parent) {
-					if (typeof anim.parent === "string") {
-						anim.parent = animationsArr.find(value => value.name === anim.parent);
-					}
-					if (!anim.parent.isPlaying() && !anim.alwaysDrawFirstFrame) continue;
-					const parentAnimationFrame = anim.parent.animationInstance?.currentFrame;
-					frameX = parentAnimationFrame ? this.frameWidth * parentAnimationFrame : 0;
-				}
-				this.canvas.ctx.drawImage(anim.image, frameX, 0, anim.frameWidth, anim.frameHeight, 0, anim.yPos, this.scaledWidth, anim.height);
+				// If it's a spritesheet, we can choose which frame to draw, if we don't want an animation
+				const frame = typeof obj.frame === "function" ? obj.frame() : obj.frame;
+				const frameX = Math.clamp((frame ?? 0) * this.canvas.element.width, 0, obj.image.width - this.canvas.element.width);
+				
+				this.canvas.ctx.drawImage(obj.image, frameX, 0, this.canvas.element.width, this.canvas.element.height, 0, yPosition, this.canvas.element.width, this.canvas.element.height);
 			}
 		}
 	},

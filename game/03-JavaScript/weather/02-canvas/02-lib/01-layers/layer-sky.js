@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "sky",
 	zIndex: 0,
 	effects: [

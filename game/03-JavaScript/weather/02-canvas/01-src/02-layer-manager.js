@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 
-const WeatherLayers = (() => {
+Weather.Sky.Layers = (() => {
 	const _layers = new Map();
 
 	function addLayer(params) {
@@ -18,7 +18,7 @@ const WeatherLayers = (() => {
 			return;
 		}
 
-		const layer = new Weather.Sky.Layer(params.name, params.blur, params.zIndex);
+		const layer = new Weather.Sky.Layer(params.name, params.blur, params.zIndex, params.animation);
 		params.effects.map(p => layer.addEffect(p.effect, p.params, p.bindings, p.drawCondition, p.compositeOperation));
 
 		_layers.set(params.name, layer);
@@ -39,4 +39,4 @@ const WeatherLayers = (() => {
 		layers: _layers,
 	};
 })();
-window.WeatherLayers = WeatherLayers;
+//window.Layers = Layers;

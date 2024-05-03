@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "clouds",
 	defaultParameters: {
 		clouds: [],
@@ -141,7 +141,7 @@ WeatherEffects.create({
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "cirrus",
 	defaultParameters: {
 		clouds: [],
@@ -230,11 +230,8 @@ WeatherEffects.create({
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "overcast",
-	defaultParameters: {
-		currentWeather: null,
-	},
 	effects: [
 		{
 			effect: "imageOverlay",
@@ -243,9 +240,6 @@ WeatherEffects.create({
 					return {
 						overlay: this.images.overcast,
 					};
-				},
-				weather() {
-					return Weather.current;
 				},
 				factor() {
 					return this.overcastFactor;
@@ -264,41 +258,28 @@ WeatherEffects.create({
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "fog",
+	effects: [
+		{
+			effect: "imageOverlay",
+			bindings: {
+				images() {
+					return {
+						overlay: this.images.fog,
+					};
+				},
+				factor() {
+					return this.fogFactor;
+				},
+			},
+		},
+	],
 	init() {
-		this.elapsedTime = () => {
-			if (!this.currentDate) {
-				this.currentDate = new DateTime(Time.date);
-			}
-			return this.currentDate?.compareWith(Time.date, true) / TimeConstants.secondsPerMinute;
-		};
-		this.x = random(0, this.images.fog.width);
+		this.effects[0].init();
 	},
 	draw() {
-		const movementSpeed = this.movement.speed * setup.SkySettings.scale;
-		const elapsedTime = this.elapsedTime();
-		this.currentDate = new DateTime(Time.date);
-
-		this.x += movementSpeed * elapsedTime;
-		this.canvas.ctx.globalAlpha = this.fogFactor * Math.max(this.factor, this.baseAlpha);
-
-		this.canvas.ctx.drawImage(
-			this.images.fog,
-			((this.x + this.images.fog.width) % this.images.fog.width) - this.images.fog.width,
-			0,
-			this.images.fog.width,
-			this.images.fog.height
-		);
-
-		if (this.x > this.canvas.element.width - this.images.fog.width) {
-			this.canvas.ctx.drawImage(
-				this.images.fog,
-				(this.x + this.images.fog.width) % this.images.fog.width,
-				0,
-				this.images.fog.width,
-				this.images.fog.height
-			);
-		}
+		this.effects[0].draw();
+		this.canvas.drawImage(this.effects[0].canvas.element);
 	},
 });

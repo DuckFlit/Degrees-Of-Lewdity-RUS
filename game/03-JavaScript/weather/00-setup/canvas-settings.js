@@ -70,6 +70,6 @@ setup.SkySettings = {
 	},
 	blur: {
 		minFactorToBlur: 0.4,
-		fogMaxBlurValue: 2,
+		fogMaxBlurValue: 1,
 	},
 };

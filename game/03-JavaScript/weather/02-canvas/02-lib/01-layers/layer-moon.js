@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "moon",
 	zIndex: 3, // zIndex value
 	blur: {
-		max: 3,
-		factor: () => (!Weather.bloodMoon ? Weather.Sky.fadables.overcast.factor : 0),
+		max: () => (Weather.bloodMoon ? 3 : 3),
+		factor: () => Weather.Sky.fadables.overcast.factor,
 	},
 	effects: [
 		{

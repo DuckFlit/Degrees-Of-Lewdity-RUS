@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "gradiantGlow",
 	defaultParameters: {
 		fadeStartY: 96,
@@ -21,7 +21,7 @@ WeatherEffects.create({
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "colorOverlay",
 	draw() {
 		// Color based on the moon state and phase
@@ -33,7 +33,7 @@ WeatherEffects.create({
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "imageOverlay",
 	defaultParameters: {
 		factor: 1,
@@ -60,7 +60,6 @@ WeatherEffects.create({
 		this.x = (this.x + this.images.overlay.width) % this.images.overlay.width;
 
 		this.canvas.ctx.globalAlpha = this.factor * this.baseAlpha;
-		this.canvas.ctx.imageSmoothingEnabled = false;
 		this.canvas.ctx.drawImage(this.images.overlay, Math.round(this.x - this.images.overlay.width * this.scaleFactor), 0, this.images.overlay.width * this.scaleFactor, this.images.overlay.height * this.scaleFactor
 		);
 
@@ -71,7 +70,7 @@ WeatherEffects.create({
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "outerRadialGlow",
 	defaultParameters: {
 		cutCenter: true,
@@ -106,7 +105,7 @@ WeatherEffects.create({
 	},
 });
 
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "innerRadialGlow",
 	defaultParameters: {
 		innerRadius: 5,

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 
-const WeatherEffects = (() => {
+Weather.Sky.Effects = (() => {
 	const _effects = new Map();
 
 	function createEffect(params) {
@@ -23,4 +23,3 @@ const WeatherEffects = (() => {
 		create: createEffect,
 	};
 })();
-window.WeatherEffects = WeatherEffects;

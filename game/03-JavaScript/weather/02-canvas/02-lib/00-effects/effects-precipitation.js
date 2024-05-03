@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "precipitation",
 	defaultParameters: {
 		animationFrames: [],
@@ -10,10 +10,6 @@ WeatherEffects.create({
 		},
 	},
 	init() {
-		this.stopAnimation = () => this.animation?.stop();
-		this.startAnimation = () => this.animation?.start();
-
-		this.stopAnimation();
 		const scaledFrameWidth = this.frameWidth * setup.SkySettings.scale;
 		const scaledFrameHeight = this.images.precipitation.height;
 		const numFrames = this.images.precipitation.width / scaledFrameWidth;
@@ -26,6 +22,7 @@ WeatherEffects.create({
 		const precipitationSheet = new Weather.Sky.Canvas(scaledFrameWidth * numFrames * spriteColumns, scaledFrameHeight * spriteRows);
 		const precipitationFrame = new Weather.Sky.Canvas(scaledFrameWidth * spriteColumns, scaledFrameHeight * spriteRows);
 
+		// Fills the canvas with looping sprites - then repeat it for every frame of the animation and draw it into a new canvas
 		for (let i = 0; i < numFrames; i++) {
 			precipitationFrame.clear();
 
@@ -69,22 +66,25 @@ WeatherEffects.create({
 			);
 		}
 
+		const frameTotalWidth = precipitationSheet.element.width / numFrames;
 		this.frameTotalWidth = precipitationSheet.element.width / numFrames;
-		this.animation = new Weather.Sky.Animation(precipitationSheet.element, this.fps, numFrames, 0, this.onFrame);
+
+		const animationOptions = {
+			image: precipitationSheet.element,
+			canvas: this.canvas,
+			frameDelay: this.frameDelay, // Will never be lower than the layer updateRate
+			numFrames,
+			cycleDelay: 0,
+			offset: frameTotalWidth,
+		};
+
+		this.animation = new Weather.Sky.Animation(animationOptions);
+		this.parentLayer.animationGroup.add(this.imagePaths.precipitation, this.animation);
+		this.animation.enable();
 	},
 
 	draw() {
-		if (!this.animation.enabled) this.startAnimation();
 		this.canvas.ctx.globalAlpha = this.alpha;
-		this.animation.draw(
-			this.canvas.ctx,
-			0,
-			0,
-			this.canvas.element.width,
-			this.canvas.element.height,
-			this.canvas.element.width,
-			this.canvas.element.height,
-			this.frameTotalWidth
-		);
+		this.animation.draw();
 	},
 });

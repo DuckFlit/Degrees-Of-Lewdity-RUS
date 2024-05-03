@@ -1,7 +1,9 @@
-/* eslint-disable no-undef */
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "location",
 	zIndex: 9,
+	animation: {
+		updateRate: 50, // Updates every 50ms
+	},
 	// blur: {
 	// 	max: 2,
 	// 	factor: () => Weather.Sky.fadables.overcast.factor,
@@ -19,18 +21,7 @@ WeatherLayers.add({
 					return setup.LocationImages[location];
 				},
 				key() {
-					const location = setup.Locations.get();
-					const seasonKey = Weather.isSnow && setup.LocationImages[location].snow ? "snow" : "base";
-					const bloodMoonKey = Weather.isSnow && setup.LocationImages[location].bloodmoon_snow ? "bloodmoon_snow" : "bloodmoon";
-					return Weather.bloodMoon && setup.LocationImages[location][bloodMoonKey] ? bloodMoonKey : seasonKey;
-				},
-				otherEffects() {
-					return Weather.Sky.getLayer("location").effects[2];
-				},
-				onFrame() {
-					return () => {
-						Weather.Sky.drawLayers("location");
-					};
+					return "base";
 				},
 			},
 		},
@@ -62,7 +53,7 @@ WeatherLayers.add({
 		{
 			effect: "locationEmissive",
 			drawCondition: () => {
-				return setup.LocationImages[setup.Locations.get()].emissive || setup.LocationImages[setup.Locations.get()].emissive_blood;
+				return setup.LocationImages[setup.Locations.get()].emissive;
 			},
 			params: {
 				path: "img/misc/locations",
@@ -73,51 +64,32 @@ WeatherLayers.add({
 					return setup.LocationImages[location];
 				},
 				key() {
-					return Weather.bloodMoon ? "emissive_blood" : "emissive";
-				},
-				// Only applicable if animation is set to "parent"
-				otherEffects() {
-					return Weather.Sky.getLayer("location").effects[0];
-				},
-				// Only applicable if the emissive effect has its own animation
-				onFrame() {
-					return () => {
-						Weather.Sky.drawLayers("location");
-					};
+					return "emissive";
 				},
 			},
 		},
-		{
-			effect: "locationReflective",
-			drawCondition: () => {
-				return !!setup.LocationImages[setup.Locations.get()].reflective;
-			},
-			params: {
-				path: "img/misc/locations",
-			},
-			bindings: {
-				location() {
-					const location = setup.Locations.get();
-					return setup.LocationImages[location];
-				},
-				key() {
-					return "reflective";
-				},
-				// Only applicable if animation is set to "parent"
-				otherEffects() {
-					return Weather.Sky.getLayer("location").effects[0];
-				},
-				onFrame() {
-					return () => {
-						Weather.Sky.drawLayers("location");
-					};
-				},
-			},
-		},
+		// {
+		// 	effect: "locationReflective",
+		// 	drawCondition: () => {
+		// 		return false;//!!setup.LocationImages[setup.Locations.get()].reflective;
+		// 	},
+		// 	params: {
+		// 		path: "img/misc/locations",
+		// 	},
+		// 	bindings: {
+		// 		location() {
+		// 			const location = setup.Locations.get();
+		// 			return setup.LocationImages[location];
+		// 		},
+		// 		key() {
+		// 			return "reflective";
+		// 		},
+		// 	},
+		// },
 	],
 });
 
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "horizonGlow",
 	zIndex: 8,
 	effects: [

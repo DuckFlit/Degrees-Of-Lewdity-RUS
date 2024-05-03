@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "sun",
 	zIndex: 2,
 	blur: {
@@ -43,7 +43,7 @@ WeatherLayers.add({
 	],
 });
 
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "sunGlow",
 	zIndex: 11,
 	effects: [

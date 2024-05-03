@@ -71,7 +71,7 @@ Weather.Sky.Effect = class Effect {
 	 * @param {Function} condition Condition function for the sub-effect
 	 */
 	addEffect(effectName, params, bindings, condition) {
-		const effectConfig = WeatherEffects.effects.get(effectName);
+		const effectConfig = Weather.Sky.Effects.effects.get(effectName);
 		if (!effectConfig) {
 			console.error(new Error(`Could not add effect '${effectName}'.`));
 			return;
@@ -109,7 +109,7 @@ Weather.Sky.Effect = class Effect {
 						await result;
 					}
 				} catch (e) {
-					console.error("Error during effect init:", e);
+					console.error("Error during effect init:", e.target);
 				}
 			}
 		})();
