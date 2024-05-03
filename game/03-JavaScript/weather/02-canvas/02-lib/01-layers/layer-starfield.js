@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "starField",
 	zIndex: 1,
 	blur: {

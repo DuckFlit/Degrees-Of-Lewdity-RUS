@@ -25,11 +25,11 @@ setup.WeatherSettings = {
 			fountain: 5,
 		},
 		maxThickness: {
-			lake: 500, // max 500 mm of accumulated ice on the lake
+			lake: 450, // max 500 mm of accumulated ice on the lake
 			fountain: 50,
 		},
-		freezingRate: 0.5, // mm per minute while freezing (freezingRate * temperature)
-		meltingRate: 0.04, // base mm per minute when above freezing (meltingRate * temperature)
+		freezingRate: 0.3, // mm per minute while freezing (freezingRate * temperature)
+		meltingRate: 0.03, // base mm per minute when above freezing (meltingRate * temperature)
 	},
 	forecast: {
 		weather: {

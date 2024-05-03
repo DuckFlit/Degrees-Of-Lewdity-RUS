@@ -40,106 +40,6 @@ Weather.Sky = (() => {
 		}
 	}
 
-	class Animation {
-		constructor(image, fps, numFrames, delay, onFrameDraw, delayFirst = true) {
-			this.image = image;
-			this.frameInterval = 1000 / fps;
-			this.numFrames = numFrames;
-			if (typeof delay === "function") {
-				this.delayFunc = delay;
-				this.delay = delay();
-			} else {
-				this.delay = delay;
-			}
-			this.delayTimer = delayFirst ? this.delay : 0;
-			this.onFrameDraw = onFrameDraw;
-			this.currentFrame = 0;
-			this.frameTimer = 0;
-			this.enabled = false;
-
-			this.isAnimating = new ObservableValue(false);
-
-			// Bind it once
-			this.animate = this.animate.bind(this);
-			this.animationFrameId = null;
-		}
-
-		// isAnimating() {
-		// 	return this.enabled && this.delayTimer <= 0;
-		// }
-
-		start() {
-			if (!this.enabled) {
-				this.enabled = true;
-				this.lastRenderTime = performance.now();
-				this.animate();
-			}
-		}
-
-		stop() {
-			this.enabled = false;
-			this.isAnimating.value = false;
-			this.currentFrame = 0;
-			if (this.animationFrameId !== null) {
-				cancelAnimationFrame(this.animationFrameId);
-				this.animationFrameId = null;
-			}
-		}
-
-		animate(currentTime = performance.now()) {
-			if (!this.enabled) return;
-
-			let elapsedTime = currentTime - this.lastRenderTime;
-			this.lastRenderTime = currentTime;
-
-			// Prevent requestAnimationFrame from catching up after alt-tab
-			elapsedTime = Math.min(elapsedTime, this.frameInterval);
-
-			const frameUpdated = this.update(elapsedTime);
-			if (frameUpdated && typeof this.onFrameDraw === "function") {
-				this.onFrameDraw();
-			}
-
-			this.animationFrameId = requestAnimationFrame(this.animate);
-		}
-
-		update(elapsedTime) {
-			// Wait for delay timer
-			if (this.delayTimer > 0) {
-				this.delayTimer -= elapsedTime;
-				if (this.delayTimer <= 0) {
-					this.delayTimer = 0;
-					this.currentFrame = 0;
-				}
-				return false;
-			}
-			this.isAnimating.value = true;
-
-			this.frameTimer += elapsedTime;
-			if (this.frameTimer < this.frameInterval) {
-				return false;
-			}
-
-			this.frameTimer -= this.frameInterval;
-			this.currentFrame = (this.currentFrame + 1) % this.numFrames;
-
-			// Start delay timer if it's the end of the animation
-			if (this.currentFrame === 0 && this.delay > 0) {
-				this.delay = this.delayFunc ? this.delayFunc() : this.delay;
-				this.delayTimer = this.delay;
-				this.isAnimating.value = false;
-			}
-
-			return true;
-		}
-
-		draw(ctx, x, y, frameWidth, frameHeight, destWidth, destHeight, frameOffset) {
-			const frameX = (frameOffset || frameWidth) * this.currentFrame;
-			ctx.drawImage(this.image, frameX, 0, frameWidth, frameHeight, x, y, destWidth, destHeight);
-			return frameX;
-		}
-	}
-
 	/**
 	 * expandFactor is used to contract or expand the duration between sunrise and sunset
 	 */
@@ -229,6 +129,14 @@ Weather.Sky = (() => {
 		}
 	}
 
+	const _skybox = $("<div />", { id: "canvasSkybox" });
+	const _mainLayer = new Canvas();
+	const _orbitals = {};
+	const _fadables = {};
+
+	_skybox.append(_mainLayer.canvas);
+	const _loaded = new ObservableValue(false);
+
 	/**
 	 * @param {object} objA Position object {x, y, width, height}
 	 * @param {object} objB Position object {x, y, width, height}
@@ -254,19 +162,16 @@ Weather.Sky = (() => {
 		return false;
 	}
 
-	const _skybox = $("<div />", { id: "canvasSkybox" });
-	const _mainLayer = new Canvas();
-	const _orbitals = {};
-	const _fadables = {};
-
-	_skybox.append(_mainLayer.canvas);
-	const loaded = new ObservableValue(false);
-
 	/**
 	 * Executes once - when page is loaded
 	 */
-	async function initialize() {
-		const loadPromises = Array.from(WeatherLayers.layers.values()).flatMap(layer => layer.loadPromises);
+	function initialize() {
+		initOrbits();
+		setupCanvas();
+	}
+
+	async function setupCanvas() {
+		const loadPromises = Array.from(Weather.Sky.Layers.layers.values()).flatMap(layer => layer.loadPromises);
 
 		// Sequentially await each promise in loadPromises
 		for (const loadPromise of loadPromises) {
@@ -277,12 +182,11 @@ Weather.Sky = (() => {
 			}
 		}
 
-		WeatherLayers.sortByZIndex();
-		initOrbits();
+		Weather.Sky.Layers.sortByZIndex();
 		initFadables();
 		await initEffects();
 		drawLayers();
-		loaded.value = true;
+		_loaded.value = true;
 	}
 
 	// todo initOrbits doesn't run every day - should run weekly or daily? (run at midday to update moon, run at midnight to update sun)
@@ -299,11 +203,12 @@ Weather.Sky = (() => {
 
 	function initFadables() {
 		const overcastSettings = setup.SkySettings.fade.overcast;
-		_fadables.overcast = new Fadable(overcastSettings, Time.date, Weather.current.overcast);
+		const maxOvercast = Weather.bloodMoon ? 0.7 : Weather.current.overcast;
+		_fadables.overcast = new Fadable(overcastSettings, Time.date, maxOvercast);
 	}
 
 	async function initEffects() {
-		for (const layer of WeatherLayers.layers.values()) {
+		for (const layer of Weather.Sky.Layers.layers.values()) {
 			await layer.init();
 		}
 	}
@@ -313,12 +218,12 @@ Weather.Sky = (() => {
 	 * All other layers redraw their previous canvas
 	 * If no layerName is specified - recalculate draw functions for all layers
 	 *
-	 * @param {string} layerNames
+	 * @param {string} args
 	 */
-	async function drawLayers(...layerNames) {
+	async function drawLayers(...args) {
 		const tempCanvas = new Canvas();
-		for (const layer of WeatherLayers.layers.values()) {
-			if (layerNames.length === 0 || layerNames.includes(layer.name)) {
+		for (const layer of Weather.Sky.Layers.layers.values()) {
+			if (args.length === 0 || args.includes(layer.name)) {
 				try {
 					const errors = await layer.drawEffects(tempCanvas);
 					if (errors && errors.length > 0) {
@@ -331,10 +236,10 @@ Weather.Sky = (() => {
 			layer.drawLayer(tempCanvas);
 		}
 
-		_mainLayer.clear();
 		_mainLayer.element.width = setup.SkySettings.canvasSize[0];
 		_mainLayer.element.height = setup.SkySettings.canvasSize[1];
 		_mainLayer.ctx.imageSmoothingEnabled = false;
+		_mainLayer.clear();
 		_mainLayer.ctx.drawImage(tempCanvas.element, 0, 0, setup.SkySettings.canvasSize[0], setup.SkySettings.canvasSize[1]);
 	}
 
@@ -352,7 +257,7 @@ Weather.Sky = (() => {
 	}
 
 	function getLayer(name) {
-		return WeatherLayers.layers.get(name);
+		return Weather.Sky.Layers.layers.get(name);
 	}
 
 	function updateTooltip() {
@@ -368,11 +273,11 @@ Weather.Sky = (() => {
 			<br><span class="blue">Inside temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.insideTemperature)}</span>
 			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.waterTemperature)}</span>
 			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)}</span>
-			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(Weather.sunIntensity, 2) * 100}%</span>
-			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(_fadables.overcast.factor, 2) * 100}%</span>
-			<br><span class="blue">Fog amount:</span> <span class="yellow">${round(Weather.fog, 2) * 100}%</span>
+			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(Weather.sunIntensity * 100, 2)}% (${V.outside ? "outside" : "inside"})</span>
+			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(_fadables.overcast.factor * 100, 2)}%</span>
+			<br><span class="blue">Fog amount:</span> <span class="yellow">${round(Weather.fog * 100, 2)}%</span>
 			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${V.weatherObj.snow}mm</span>
-			<br><span class="blue">Lake ice thickness:</span> <span class="yellow">${V.weatherObj.ice["lake"]}mm</span>`
+			<br><span class="blue">Lake ice thickness:</span> <span class="yellow">${V.weatherObj.ice.lake ?? 0}mm</span>`
 			: "";
 		_skybox.tooltip({
 			message: `${weatherDescription}<br>${tempDescription}${debug}`,
@@ -384,7 +289,6 @@ Weather.Sky = (() => {
 	// Make properties readonly
 	return {
 		Canvas,
-		Animation,
 		get dayFactor() {
 			return _orbitals.sun?.factor ?? 0;
 		},
@@ -402,7 +306,7 @@ Weather.Sky = (() => {
 		mainLayer: _mainLayer,
 		orbitals: _orbitals,
 		fadables: _fadables,
-		loaded,
+		loaded: _loaded,
 		isOverlapping,
 		isOverlappingAny,
 		updateOrbits,
@@ -418,11 +322,13 @@ Weather.Sky = (() => {
 })();
 window.Weather.Sky = Weather.Sky;
 
+$(document).one(":passagestart", () => {
+	if (!V.weatherObj) return;
+	Weather.Sky.initialize();
+});
+
 Macro.add("skybox", {
 	handler() {
 		Weather.Sky.skybox.appendTo(this.output);
-		if (!Weather.Sky.loaded.value) {
-			Weather.Sky.initialize();
-		}
 	},
 });

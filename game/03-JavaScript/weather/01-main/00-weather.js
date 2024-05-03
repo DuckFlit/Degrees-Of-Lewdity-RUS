@@ -36,10 +36,11 @@ const Weather = (() => {
 	 * sunBlockModifier (based on used sun block)
 	 * dayFactor (based on sun position in the sky) - always 0 at night
 	 *
-	 * @param {number} minutes
+	 * @param {bool} outside Forces outside check
 	 * @param {number} customSunIntensity If this is set - the calculations replaces the sun intensity with a specified one.
 	 */
-	function getTanningFactor(customSunIntensity = 0) {
+	function getTanningFactor(outside, customSunIntensity = 0) {
+		outside = outside ?? V.outside;
 		const sunIntensity = customSunIntensity || getSunIntensity();
 		const clothingModifier = Object.values(V.worn).filter(item => item.type.includes("shade")).length ? 0.1 : 1;
 		const sunBlockModifier = V.skinColor.sunBlock === true ? 0.1 : 1;
@@ -47,9 +48,9 @@ const Weather = (() => {
 		return {
 			sun: sunIntensity,
 			month: Weather.Settings.months[Time.date.month - 1].sunIntensity,
-			weather: V.outside ? Weather.current.tanningModifier : 1,
+			weather: outside ? Weather.current.tanningModifier : 1,
 			location: V.location === "forest" ? 0.2 : 1,
-			dayFactor: V.outside ? Time.date.simplifiedDayFactor : 1,
+			dayFactor: outside ? Time.date.simplifiedDayFactor : 1,
 			clothing: clothingModifier,
 			sunBlock: sunBlockModifier,
 			result,
@@ -90,7 +91,6 @@ const Weather = (() => {
 		const freezingRate = setup.WeatherSettings.ice.freezingRate;
 		const meltingRate = setup.WeatherSettings.ice.meltingRate;
 		const maxThickness = setup.WeatherSettings.ice.maxThickness;
-		console.log(V.weatherObj.ice, maxThickness);
 		for (const body of Object.keys(maxThickness)) {
 			console.log(V.weatherObj.ice, body);
 			V.weatherObj.ice[body] = V.weatherObj.ice[body] || 0;
@@ -194,7 +194,7 @@ const Weather = (() => {
 			Weather.Sky.drawLayers();
 		},
 		get lightsOn() {
-			return Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off;
+			return !Weather.bloodMoon && (Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off);
 		},
 	};
 })();

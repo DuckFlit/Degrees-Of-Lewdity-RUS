@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "clouds",
 	zIndex: 6,
+	blur: 1.5,
 	effects: [
 		{
 			effect: "clouds",
@@ -91,13 +92,13 @@ WeatherLayers.add({
 	],
 });
 
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "overcastClouds",
 	zIndex: 5,
 	effects: [
 		{
 			effect: "overcast",
-			drawCondition: () => !Weather.bloodMoon && !Weather.Sky.skyDisabled,
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			params: {
 				images: {
 					overcast: "img/misc/sky/clouds/overcast/0.png",
@@ -118,7 +119,7 @@ WeatherLayers.add({
 		},
 		{
 			effect: "colorOverlay",
-			drawCondition: () => !Weather.bloodMoon && !Weather.Sky.skyDisabled,
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			compositeOperation: "source-atop",
 			params: {
 				color: {
@@ -126,6 +127,7 @@ WeatherLayers.add({
 					nightBright: "#000412dd",
 					day: "#97a9e8aa",
 					dawnDusk: "#7a511895",
+					bloodMoon: "#380101e5",
 				},
 			},
 			bindings: {
@@ -135,12 +137,15 @@ WeatherLayers.add({
 				moonFactor() {
 					return Weather.Sky.moonBrightnessFactor;
 				},
+				bloodMoon() {
+					return Weather.bloodMoon;
+				},
 			},
 		},
 	],
 });
 
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "cirrusClouds",
 	zIndex: 4,
 	blur: {

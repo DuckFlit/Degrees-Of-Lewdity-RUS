@@ -102,8 +102,12 @@ const Time = (() => {
 
 	let currentDate = {};
 
-	function set(timeStamp = V.timeStamp) {
-		currentDate = new DateTime((V.startDate || 0) + (timeStamp || 0));
+	function set(timeStamp) {
+		if (!V.startDate) V.startDate = new DateTime();
+		if (!V.timeStamp) V.timeStamp = 0;
+		if (!timeStamp) timeStamp = V.timeStamp;
+
+		currentDate = new DateTime(V.startDate + (timeStamp || V.timeStamp));
 		V.timeStamp = timeStamp;
 	}
 	/*
@@ -390,6 +394,11 @@ const Time = (() => {
 	});
 })();
 window.Time = Time;
+
+$(document).one(":passageinit", () => {
+	/* Set current time */
+	Time.set();
+});
 
 /* Local functions */
 
@@ -796,11 +805,6 @@ function dayPassed() {
 	fragment.append(wikifier("tending_day"));
 	fragment.append(wikifier("creatureContainersProgressDay"));
 
-	if (V.pillory_tenant.exists && V.pillory_tenant.endDate < V.timeStamp) fragment.append(wikifier("clear_pillory"));
-
-	delete V.daily;
-	V.daily = clone(setup.dailyObject);
-
 	if (Number.isInteger(V.challengetimer)) {
 		V.challengetimer--;
 		if (V.challengetimer < 0) delete V.challengetimer;
@@ -847,6 +851,9 @@ function dayPassed() {
 		V.harpyEggsPrevent--;
 		if (V.harpyEggsPrevent <= 0) delete V.harpyEggsPrevent;
 	}
+
+	delete V.daily;
+	V.daily = clone(setup.dailyObject);
 
 	return fragment;
 }
@@ -900,8 +907,10 @@ function hourPassed(hours) {
 	if (!V.wolfevent) V.wolfevent = 1;
 	if (V.wolfpatrolsent >= 24) delete V.wolfpatrolsent;
 	else if (V.wolfpatrolsent >= 1) V.wolfpatrolsent++;
+
 	if (V.robinPillory && V.robinPillory.danger !== undefined) fragment.append(wikifier("robinPilloryHour"));
-	if (V.pillory_tenant.exists && V.pillory_tenant.endDate < V.timeStamp) fragment.append(wikifier("clear_pillory"));
+	if (V.pillory_tenant.exists && V.pillory_tenant.endTime < V.timeStamp) fragment.append(wikifier("clear_pillory"));
+
 	if (C.npc.Sydney.init === 1) {
 		fragment.append(wikifier("sydneySchedule"));
 		if (T.sydney_location === "temple" && V.temple_rank !== undefined && V.temple_rank !== "prospective") {

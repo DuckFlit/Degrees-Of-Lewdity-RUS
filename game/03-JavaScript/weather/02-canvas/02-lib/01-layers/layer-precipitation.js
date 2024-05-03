@@ -1,12 +1,15 @@
 /* eslint-disable no-undef */
-WeatherLayers.add({
+Weather.Sky.Layers.add({
 	name: "precipitation",
 	zIndex: 10,
+	animation: {
+		updateRate: 100, // Updates every 100ms
+	},
 	effects: [
 		/* Rain */
 		{
 			effect: "precipitation",
-			drawCondition: () => !Weather.Sky.skyDisabled && Weather.overcast > 0.5 && Weather.precipitationIntensity >= 1 && Weather.precipitation === "rain",
+			drawCondition: () => !Weather.Sky.skyDisabled && Weather.overcast && Weather.precipitationIntensity > 1 && Weather.precipitation === "rain",
 			params: {
 				frameWidth: 42,
 				images: {
@@ -16,7 +19,38 @@ WeatherLayers.add({
 					diagonalOffset: -8,
 					offset: -8,
 				},
-				fps: 9,
+				frameDelay: 100,
+			},
+			bindings: {
+				onFrame() {
+					return () => {
+						Weather.Sky.drawLayers("precipitation");
+					};
+				},
+				alpha() {
+					return Math.clamp(Weather.Sky.orbitals.sun.factor + 1, 0.7, 1);
+				},
+			},
+		},
+		/* Sparse rain */
+		{
+			effect: "precipitation",
+			drawCondition: () =>
+				!Weather.Sky.skyDisabled &&
+				Weather.WeatherConditions.getWeather().overcast > 0.25 &&
+				Weather.precipitationIntensity > 0 &&
+				Weather.precipitationIntensity <= 1 &&
+				Weather.precipitation === "rain",
+			params: {
+				frameWidth: 42,
+				images: {
+					precipitation: "img/misc/sky/effects/rain_sparse.png",
+				},
+				position: {
+					diagonalOffset: -8,
+					offset: -8,
+				},
+				frameDelay: 100,
 			},
 			bindings: {
 				onFrame() {
@@ -32,8 +66,7 @@ WeatherLayers.add({
 		/* Snow */
 		{
 			effect: "precipitation",
-			drawCondition: () => !Weather.Sky.skyDisabled && Weather.precipitationIntensity >= 1 && Weather.precipitation === "snow",
-			drawCondition: () => !Weather.Sky.skyDisabled && Weather.overcast > 0.5 && Weather.precipitationIntensity > 1 && Weather.precipitation === "snow",
+			drawCondition: () => !Weather.Sky.skyDisabled && Weather.overcast && Weather.precipitationIntensity > 1 && Weather.precipitation === "snow",
 			params: {
 				frameWidth: 32,
 				images: {
@@ -43,7 +76,7 @@ WeatherLayers.add({
 					diagonalOffset: 0,
 					offset: 0,
 				},
-				fps: 6,
+				frameDelay: 100,
 			},
 			bindings: {
 				onFrame() {
@@ -53,6 +86,62 @@ WeatherLayers.add({
 				},
 				alpha() {
 					return Math.clamp(Weather.Sky.orbitals.sun.factor + 1, 0.6, 1);
+				},
+			},
+		},
+		/* Sparse Snow */
+		{
+			effect: "precipitation",
+			drawCondition: () =>
+				!Weather.Sky.skyDisabled &&
+				Weather.WeatherConditions.getWeather().overcast > 0.25 &&
+				Weather.precipitationIntensity > 0 &&
+				Weather.precipitationIntensity <= 1 &&
+				Weather.precipitation === "snow",
+			params: {
+				frameWidth: 32,
+				images: {
+					precipitation: "img/misc/sky/effects/snow.png",
+				},
+				position: {
+					diagonalOffset: 0,
+					offset: 0,
+				},
+				frameDelay: 100,
+			},
+			bindings: {
+				onFrame() {
+					return () => {
+						Weather.Sky.drawLayers("precipitation");
+					};
+				},
+				alpha() {
+					return Math.clamp(Weather.Sky.orbitals.sun.factor + 1, 0.6, 1);
+				},
+			},
+		},
+		{
+			effect: "colorOverlay",
+			drawCondition: () => !Weather.Sky.skyDisabled && Weather.bloodMoon,
+			compositeOperation: "source-atop",
+			params: {
+				color: {
+					nightDark: "#000412ee",
+					nightBright: "#000412dd",
+					day: "#97a9e8aa",
+					dawnDusk: "#7a511895",
+					bloodMoon: "#c70000cc",
+				},
+			},
+			bindings: {
+				sunFactor() {
+					return Weather.Sky.orbitals.sun.factor * interpolate(1, 0.8, Math.max(0, normalise(Weather.Sky.orbitals.sun.factor, 1, 0)));
+				},
+				moonFactor() {
+					return Weather.Sky.moonBrightnessFactor;
+				},
+				bloodMoon() {
+					return Weather.bloodMoon;
 				},
 			},
 		},

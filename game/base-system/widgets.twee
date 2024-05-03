@@ -3899,26 +3899,27 @@
 <</widget>>
 
 <<widget "setup_pillory">>
-	<<set $pillory_tenant to {person : clone($baseNPC), exists : 0, duration : 0, served : 0, startday: 0, starthour : 0, endDate : 0, endhour : 0,
-								crowd : 0, wet : 0, upperexposed : 0 , lowerexposed : 0, fruit : 0, fruitstock: 0, face : 0, ass : 0, genital : 0, broken : 0,
-								lastviewed : { day : 0, hour: 0}, special : {name : "", desc : ""}}>>
+	<<set $pillory_tenant to {person : clone($baseNPC), exists : 0, duration : 0, served : 0, startTime: 0, endTime : 0,
+		crowd : 0, wet : 0, upperexposed : 0 , lowerexposed : 0, fruit : 0, fruitstock: 0, face : 0, ass : 0, genital : 0, broken : 0,
+		lastviewed : 0, special : {name : "", desc : ""}}>>
 <</widget>>
 
 <<widget "new_npc_pillory">>
 	<<if not _args[0]>>
 		<<if $rng gte 20>><<generate1>><<else>><<generatey1>><</if>>
-		<<set _already_served to random(0,2)>>
+		<<set $_already_served to random(0,2)>>
 	<<else>>
-		<<set _already_served to 0>>
+		<<set $_already_served to 0>>
 	<</if>>
 	<<set $pillory_tenant.exists to 1>>
 	<<set $pillory_tenant.person to clone($NPCList[0])>>
 	<<set $pillory_tenant.duration to random(4,27)>>
-	<<set $pillory_tenant.startday to Time.days>>
-	<<set $pillory_tenant.starthour to (Time.hour - _already_served)>>
-	/*set $endDate to timestamp and compare to $timeStamp*/
-	<<set $pillory_tenant.endDate to ($pillory_tenant.startday * TimeConstants.secondsPerDay + ($pillory_tenant.starthour + $pillory_tenant.duration - 7) * TimeConstants.secondsPerHour)>>
-	<<set $pillory_tenant.endhour to (($pillory_tenant.endDate % TimeConstants.secondsPerDay) / TimeConstants.secondsPerHour)>>
+
+	<<set $_duration to random(4,27)>>
+	<<set $_endTime to new DateTime(Time.date).addHours($_duration)>>
+	<<set $pillory_tenant.startTime to Time.date.timeStamp>>
+	<<set $pillory_tenant.endTime to $_endTime.timeStamp>>
+
 	<<set $pillory_tenant.crowd to 1>>
 	<<set $pillory_tenant.wet to 0>>
 	<<set $pillory_tenant.upperexposed to 0>>
@@ -3930,12 +3931,11 @@
 	<<set $pillory_tenant.ass to 0>>
 	<<set $pillory_tenant.genital to 0>>
 	<<set $pillory_tenant.broken to 0>>
-	<<set $pillory_tenant.lastviewed.day to Time.days>>
-	<<set $pillory_tenant.lastviewed.hour to Time.hour>>
+	<<set $pillory_tenant.lastViewed to Time.date.timeStamp>>
 
 	<<person1>>
 	<<if $pillory_tenant.special.name is "">>
-		A <<person>> <<if _already_served is 0>>is currently being locked into the pillory.<<else>>has recently been locked in the pillory.<</if>>
+		A <<person>> <<if $_already_served is 0>>is currently being locked into the pillory.<<else>>has recently been locked in the pillory.<</if>>
 		<<endevent>>
 		<<npc_pillory_release_schedule>>
 		<br><br>
@@ -4133,49 +4133,57 @@
 <</widget>>
 
 <<widget "update_npc_pillory_appearance">>
-	<<if ($pillory_tenant.lastviewed.day isnot Time.days) or (Time.hour gte $pillory_tenant.lastviewed.hour + 2)>>
+	<<set $_lastViewed to new DateTime($pillory_tenant.lastViewed)>>
+	<<set $_timeLeft to Time.date.compareWith($_lastViewed, true)>>
+	<<if $_timeLeft / TimeConstants.secondsPerHour lte -2>>
 		/* last viewed time tracked to avoid this firing on every viewing */
-		<<set $pillory_tenant.lastviewed.day to Time.days>>
-		<<set $pillory_tenant.lastviewed.hour to Time.hour>>
+		<<set $pillory_tenant.lastViewed to Time.date.timeStamp>>
 
 		/*Weather effects*/
-		<<if Weather.precipitation is "rain">><<set $pillory_tenant.wet to 2>>
-		<<elseif $pillory_tenant.wet is 2>><<set $pillory_tenant.wet to 1>>
-		<<else>><<set $pillory_tenant.wet to 0>>
+		<<if Weather.precipitation is "rain">>
+			<<set $pillory_tenant.wet to 2>>
+		<<elseif $pillory_tenant.wet is 2>>
+			<<set $pillory_tenant.wet to 1>>
+		<<else>>
+			<<set $pillory_tenant.wet to 0>>
 		<</if>>
 
 		/*Chance of abuse based on crowd and time passed*/
-		<<if Time.days - $pillory_tenant.startday is 2>><<set _chance to 24>>
-		<<elseif Time.days - $pillory_tenant.startday is 1>><<set _chance to 12>>
-		<<else>><<set _chance to (Time.hour - $pillory_tenant.starthour)>>
-		<</if>>
-		<<set _chance *= $pillory_tenant.crowd>>
+		<<set _totalSeconds to Time.date.compareWith(new DateTime($pillory_tenant.startTime), true) / TimeConstants.secondsPerHour>>
+		<<set $_chance to Math.clamp(_totalSeconds / TimeConstants.secondsPerHour, 0, 24)>>
+		<<set $_chance *= $pillory_tenant.crowd>>
+
 		/*increased by spectacle*/
-		<<set _factor to ($pillory_tenant.upperexposed + $pillory_tenant.lowerexposed + $pillory_tenant.fruit
-							+ $pillory_tenant.spank + $pillory_tenant.face + $pillory_tenant.ass + $pillory_tenant.genital)>>
-		<<if Time.dayState is "night">><<set _factor += 3>><</if>>
-		<<if $pillory_tenant.wet is 2>><<set _factor += 4>><</if>>
-		<<set _prob to (_chance * _factor)>>
+		<<set $_factor to ($pillory_tenant.upperexposed + $pillory_tenant.lowerexposed + $pillory_tenant.fruit
+			+ $pillory_tenant.spank + $pillory_tenant.face + $pillory_tenant.ass + $pillory_tenant.genital)>>
+
+		<<if Time.dayState is "night">>
+			<<set $_factor += 3>>
+		<</if>>
+		<<if $pillory_tenant.wet is 2>>
+			<<set $_factor += 4>>
+		<</if>>
+		<<set $_prob to ($_chance * $_factor)>>
 
 		/*Out of sight changes to tenant */
 		<<rng>>
-		<<if $rng gte (40 - _prob)>><<set $pillory_tenant.fruit += 1>><</if>>
+		<<if $rng gte (40 - $_prob)>><<set $pillory_tenant.fruit += 1>><</if>>
 		<<rng>>
-		<<if $rng gte (60 - _prob)>><<set $pillory_tenant.crowd += 2>><</if>>
+		<<if $rng gte (60 - $_prob)>><<set $pillory_tenant.crowd += 2>><</if>>
 		<<rng>>
-		<<if $rng gte (60 - _prob)>><<set $pillory_tenant.upperexposed += 1>><</if>>
+		<<if $rng gte (60 - $_prob)>><<set $pillory_tenant.upperexposed += 1>><</if>>
 		<<rng>>
-		<<if $rng gte (80 - _prob)>><<set $pillory_tenant.lowerexposed += 1>><</if>>
+		<<if $rng gte (80 - $_prob)>><<set $pillory_tenant.lowerexposed += 1>><</if>>
 		<<rng>>
-		<<if $rng gte (100 - _prob)>><<set $pillory_tenant.crowd += 2>><</if>>
+		<<if $rng gte (100 - $_prob)>><<set $pillory_tenant.crowd += 2>><</if>>
 		<<rng>>
-		<<if $rng gte (100 - _prob)>><<set $pillory_tenant.fruit += 2>><<set $pillory_tenant.face += 1>><</if>>
+		<<if $rng gte (100 - $_prob)>><<set $pillory_tenant.fruit += 2>><<set $pillory_tenant.face += 1>><</if>>
 		<<rng>>
-		<<if $rng gte (100 - _prob) and $pillory_tenant.lowerexposed gte 2>><<set $pillory_tenant.spank += 2>><<else>><<set $pillory_tenant.spank += 1>><</if>>
+		<<if $rng gte (100 - $_prob) and $pillory_tenant.lowerexposed gte 2>><<set $pillory_tenant.spank += 2>><<else>><<set $pillory_tenant.spank += 1>><</if>>
 		<<rng>>
-		<<if $rng gte (100 - _prob) and $pillory_tenant.lowerexposed gte 2>><<set $pillory_tenant.genital += 1>><</if>>
+		<<if $rng gte (100 - $_prob) and $pillory_tenant.lowerexposed gte 2>><<set $pillory_tenant.genital += 1>><</if>>
 		<<rng>>
-		<<if $rng gte (100 - _prob) and $pillory_tenant.lowerexposed gte 2>><<set $pillory_tenant.ass += 1>><</if>>
+		<<if $rng gte (100 - $_prob) and $pillory_tenant.lowerexposed gte 2>><<set $pillory_tenant.ass += 1>><</if>>
 
 		/*lock down exposure and replenish fruit */
 		<<if $pillory_tenant.upperexposed gte 3>><<if $pillory_tenant.person.gender is "f" or $pillory_tenant.person.pronoun is "f">><<set $pillory_tenant.upperexposed to 3>><<else>><<set $pillory_tenant.upperexposed to 2>><</if>><</if>>
@@ -4186,11 +4194,12 @@
 <</widget>>
 
 <<widget "npc_pillory_abuse">>
-	<br>
-	<<if ($pillory_tenant.lastviewed.day isnot Time.days) or (Time.hour gte $pillory_tenant.lastviewed.hour + 1)>>
-		<<set $pillory_tenant.lastviewed.hour to Time.hour>>
+	<<set $_lastViewed to new DateTime($pillory_tenant.lastViewed)>>
+	<<set $_timeLeft to Time.date.compareWith($_lastViewed, true)>>
+	<<if $_timeLeft / TimeConstants.secondsPerHour lte -2>>
+		<<set $pillory_tenant.lastViewed to Time.date.timeStamp>>
 		<<rng>><<generate2>><<person2>>
-		<<set _ly to either("violently","openly","angrily","furiously","cheekily","repeatedly","clumsily","roughly","theatrically","dutifully","merrily","gleefully","drunkenly","ineptly")>>
+		<<set $_ly to either("violently","openly","angrily","furiously","cheekily","repeatedly","clumsily","roughly","theatrically","dutifully","merrily","gleefully","drunkenly","ineptly")>>
 		<<if Time.dayState isnot "night">>
 			<<if $rng gte 56>> /* 45% chance of jeer and shout only, 55% chance of something active */
 				A number of people, led by a <<person>> jeer and shout abuse at the prisoner.
@@ -4318,14 +4327,14 @@
 			<<elseif $rng gte 26>> /* 10% */
 				A <<person>> throws fruit at the <<pillory_type>> but misses completely.
 			<<elseif $rng gte 16>> /* 10% */
-				A <<person>> walks up to the pillory and _ly fondles the <<pillory_type>>'s <<if $pronoun is "f">>breasts.<<else>>balls.<</if>>
+				A <<person>> walks up to the pillory and $_ly fondles the <<pillory_type>>'s <<if $pronoun is "f">>breasts.<<else>>balls.<</if>>
 			<<elseif $rng gte 11 and $pillory_tenant.upperexposed lt 3>>/* 5% */
 				A <<person>> walks up to the <<pillory_type>> and
 				<<if $pillory_tenant.upperexposed is 2>>
 					<<if $pronoun is "f">>
-					_ly removes <<his>> bra, fully exposing <<his>> $pillory_tenant.person.breastsdesc to a jeering crowd.
+					$_ly removes <<his>> bra, fully exposing <<his>> $pillory_tenant.person.breastsdesc to a jeering crowd.
 					<<else>>
-					_ly twists <<his>> nipples.
+					$_ly twists <<his>> nipples.
 					<<set $pillory_tenant.spank += 1>>
 					<</if>>
 				<<elseif $pillory_tenant.upperexposed is 1>>
@@ -4377,7 +4386,7 @@
 				<</if>>is not interested.
 			<<elseif $rng gte 58>> /* 8% */
 				<<set $pillory_tenant.spank += 1>>
-				A <<person>> sneaks up behind the pillory and _ly slaps the <<pillory_type>>'s exposed <<if $pillory_tenant.person.gender is "f">>cunt.<<else>>balls.<</if>> The crowd jeer and laugh as <<he>> howls in pain.
+				A <<person>> sneaks up behind the pillory and $_ly slaps the <<pillory_type>>'s exposed <<if $pillory_tenant.person.gender is "f">>cunt.<<else>>balls.<</if>> The crowd jeer and laugh as <<he>> howls in pain.
 			<<elseif $rng gte 51>> /* 7% */
 				<<set $pillory_tenant.spank += 2>><br>
 				Some teacher you've seen around the school but never had classes with, walks drunkenly toward the pillory.
@@ -4396,16 +4405,16 @@
 				<<He>> spanks the <<pillory_type>>'s ass until <<person2>><<his>> arm tires. The crowd jeer and laugh as the <<person1>><<person>> howls in pain.
 			<<elseif $rng gte 41>> /* 10% */
 				<<set $pillory_tenant.face += 1>>
-				A <<person>> walks in front of the pillory and _ly masturbates in front of the <<pillory_type>>.
+				A <<person>> walks in front of the pillory and $_ly masturbates in front of the <<pillory_type>>.
 				<<person2>><<if $pronoun is "m">>Cum soon splatters across <<the_pillory_person>>'s face.
 				<<else>><<He>> grinds <<his>> cunt against <<the_pillory_person>>'s<<person2>> face as <<he>> orgasms.
 				<</if>> The crowd cheer and laugh.
 			<<elseif $rng gte 31>> /* 10% */
 				<<set $pillory_tenant.ass += 1>>
-				A <<person>> walks behind the pillory and _ly <<if $pronoun is "m">>rapes<<else>>fingers<</if>> the <<pillory_type>>'s asshole. The crowd cheer <<person2>><<him>> on.
+				A <<person>> walks behind the pillory and $_ly <<if $pronoun is "m">>rapes<<else>>fingers<</if>> the <<pillory_type>>'s asshole. The crowd cheer <<person2>><<him>> on.
 			<<elseif $rng gte 21>> /* 10% */
 				<<set $pillory_tenant.genital += 1>>
-				A <<person>> walks behind the pillory and _ly rapes <<if $pronoun is "m">><<the_pillory_person>>.<<else>><<the_pillory_person>> with a strap-on.<</if>><<person2>> The crowd take pictures and cheer <<him>> on.
+				A <<person>> walks behind the pillory and $_ly rapes <<if $pronoun is "m">><<the_pillory_person>>.<<else>><<the_pillory_person>> with a strap-on.<</if>><<person2>> The crowd take pictures and cheer <<him>> on.
 			<<elseif $rng gte 11>> /* 10% */
 				<<set $pillory_tenant.genital += 1>><<set $pillory_tenant.ass += 1>>
 				The crowd watch and photograph as a stray dog rapes <<the_pillory_person>>. A <<person2>><<person>> rewards the dog with a <<print either("biscuit.","pat on the head.","sweet.","cream bun.")>>
@@ -4414,11 +4423,11 @@
 			<<elseif $rng gte 6 and maleChance() gt 0 and (maleChance() lt 100 or $pillory_tenant.person.gender isnot "m")>> /* 5% - with men allowed */
 				<<set $pillory_tenant.ass += 1>><<set $pillory_tenant.face += 1>>
 				<<if $rng % 3 is 0>>A couple of off-duty policemen approach. They make a <<person>> record as they<<else>>Two men approach. Together they<</if>>
-				<<if $pillory_tenant.person.gender is "m">>anally-<<else>>_ly <</if>>spit-roast <<the_pillory_person>>. The crowd enjoys the spectacle.
+				<<if $pillory_tenant.person.gender is "m">>anally-<<else>>$_ly <</if>>spit-roast <<the_pillory_person>>. The crowd enjoys the spectacle.
 			<<elseif $rng gte 6 and maleChance() lt 100 and (maleChance() gt 0 or $pillory_tenant.person.gender isnot "f")>> /* 5% - with women allowed */
 				<<set $pillory_tenant.ass += 1>><<set $pillory_tenant.face += 1>>
 				<<if $rng % 3 is 0>>A couple of off-duty policewomen approach. They make a <<person>> record as they<<else>>Two women approach. Together they<</if>>
-				<<if $pillory_tenant.person.gender is "m">>anally-<<else>>_ly <</if>>spit-roast <<the_pillory_person>> with strap-ons. The crowd enjoys the spectacle.
+				<<if $pillory_tenant.person.gender is "m">>anally-<<else>>$_ly <</if>>spit-roast <<the_pillory_person>> with strap-ons. The crowd enjoys the spectacle.
 			<<else>> /* 5% */
 				<<set $pillory_tenant.spank += 1>>
 				A <<person>> walks up to the <<pillory_type>> and spanks <<him>> hard on the ass. The thwack echoes across the street.
@@ -4465,19 +4474,21 @@
 <<widget "npc_pillory_release_schedule">>
 	<<get_pillory_npc>>
 	<br>
-	<<if ($pillory_tenant.endDate - $timeStamp) lte TimeConstants.secondsPerDay>>
-	<<set _a_few to Math.floor(($pillory_tenant.endDate - $timeStamp) / TimeConstants.secondsPerHour)>>
+	<<set $_endTime to new DateTime($pillory_tenant.endTime)>>
+	<<set $_timeLeft to Time.date.compareWith($_endTime)>>
+	<<if $_timeLeft.days lt 1>>
 		<<He>> will be released
-		<<if _a_few gt 0>>in _a_few hours.
-		<<else>>imminently.
+		<<if $_timeLeft.hours gt 0>>
+			in $_timeLeft.hours hours.
+		<<else>>
+			imminently.
 		<</if>>
 	<<else>>
-		<<set _days_left to Math.floor(($pillory_tenant.endDate - $timeStamp) / TimeConstants.secondsPerDay)>>
-		<<He>> is scheduled for release <<if _days_left is 1>>tomorrow<<else>>in two days<</if>> at
-		<<switch $pillory_tenant.endhour>>
+		<<He>> is scheduled for release <<if $_timeLeft.days is 1>>tomorrow<<else>>in two days<</if>> at
+		<<switch $_endTime.hour>>
 			<<case 0>>midnight.
 			<<case 12>>noon.
-			<<default>><<ampm $pillory_tenant.endhour>>.
+			<<default>><<ampm $_endTime.hour>>.
 		<</switch>>
 	<</if>>
 	<<endevent>>
@@ -4494,7 +4505,9 @@
 	<<else>>
 		<<The_pillory_person>> was released and has left. A couple of civil servants clean the pillory.
 	<</if>>
-	<<set $rng += $pillory_tenant.duration>>
+	<<set _totalSeconds to Time.date.compareWith(new DateTime($pillory_tenant.startTime), true) / TimeConstants.secondsPerHour>>
+	<<set $_hours to _totalSeconds / TimeConstants.secondsPerHour>>
+	<<set $rng += $_hours>>
 	<<if $rng gte 67 or $rng gte 33 and Weather.precipitation is "rain">>A large crowd jeers and shouts.<</if>>
 	<br><br>
 	<<clear_pillory>>

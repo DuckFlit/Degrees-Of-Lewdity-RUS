@@ -2,7 +2,7 @@
 /**
  * Sky gradient effect, simulating transitions between different times of day
  */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "skyGradiant",
 	init() {
 		console.log("RUNNING SKY GRADIANET", this.position, this)
@@ -28,7 +28,7 @@ WeatherEffects.create({
  * Generates a random star-field on init() based on the starsConfig parameters.
  * Rotates the starfield on draw() based on the rotation binding.
  */
-WeatherEffects.create({
+Weather.Sky.Effects.create({
 	name: "skyStarField",
 	defaultParameters: {
 		starSize: 2,
