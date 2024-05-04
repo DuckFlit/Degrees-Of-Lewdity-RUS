@@ -488,7 +488,7 @@ function initUpper() {
 			cost: 42000,
 			description: "Extravagant.",
 			shop: ["clothing"],
-			accessory: 0,
+			accessory: 1,
 			accessory_colour: 0,
 			accessory_colour_options: [
 				"black",
@@ -4648,7 +4648,7 @@ function initUpper() {
 			cost: 48000,
 			description: "Scandalously short.",
 			shop: ["clothing"],
-			accessory: 0,
+			accessory: 1,
 			accessory_colour: 0,
 			accessory_colour_options: [
 				"black",

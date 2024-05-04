@@ -329,7 +329,7 @@ function outfitChecks() {
 
 	/* Temporary $worn[slot] variables. Generally called as _bottom.integrity or _top.name */
 	const topLayers = [V.worn.over_upper, V.worn.upper, V.worn.under_upper];
-	const bottomLayers = ["over_lower", "lower", "under_lower", "genitals"];
+	const bottomLayers = ["over_lower", "lower", "under_lower"];
 	T.top = topLayers.find(item => item.name !== "naked" && (!V.worn.lower || item !== V.worn.lower || item.type.includes("covered"))) || null;
 	T.topUnder = topLayers.slice(topLayers.indexOf(T.top) - 1).find(item => V.worn[item] && V.worn[item].name !== "naked") || null;
 	T.bottom =
