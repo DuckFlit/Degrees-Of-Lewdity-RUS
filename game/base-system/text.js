@@ -593,9 +593,11 @@ statDisplay.create("ggghistory", () => {
 });
 
 statDisplay.create("ghousekeeping", (amount, silent = false) => {
-	if (V.statsdisable === "t" || silent === "silent") return "";
+	if (V.statsdisable === "t") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
+	} else if (silent === "silent") {
+		return "";
 	} else if (V.housekeeping >= amount) {
 		return " You're too skilled for this to improve your housekeeping.";
 	}
