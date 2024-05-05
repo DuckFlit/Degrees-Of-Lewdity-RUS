@@ -207,6 +207,9 @@
 		<<set $bird.timer to random(45, 120)>>
 	<</if>>
 	<<set $bird.state to "home">>
+	<<if $bird.eggIntro is 1>>
+		<<set _bird_loot_select to "rocks">>
+	<</if>>
 	<<switch _bird_loot_select>>
 	<<case "lurker">>
 		<<bHe>> carries a strange, leathery and many-limbed creature in <<bhis>> <<if $monster is 1>>talons<<else>>mouth<</if>>. <<bHe>> dumps it at your feet, then tears out a chunk of flesh.
@@ -392,6 +395,21 @@
 		<<link [[Scold|Bird Tower Food Scold]]>><<bird_loot food -20>><<npcincr "Great Hawk" dom -1>><<transform bird 1>><<def 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<ldom>>
 		<br>
 		<<link [[Do nothing|Bird Tower Food Nothing]]>><<bird_loot food -10>><<npcincr "Great Hawk" love -1>><</link>><<llove>>
+		<br>
+	<<case "rocks">>
+		<<set $bird.eggIntro to 2>>
+		<<bHe>> carries a pair of smooth stones. They're almost egg shaped.
+		<br><br>
+
+		<<if $monster is 1>>
+			"Poor <<if $harpy lte 5>>landbound <</if>><<wife>> has never raised egg before. Not to worry. I will help teach!"
+		<</if>>
+		<<bHe>> delicately brings the stones to the nest and demonstrates how to keep them warm. After a few moments, <<bhe>> hops off the rock and makes room for you to take over.
+		<br><br>
+
+		<<link [[Warm the "egg"|Bird Tower Stone Warm]]>><<set $phase to 1>><<npcincr "Great Hawk" dom 1>><<npcincr "Great Hawk" love 5>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<gdom>><<gglove>>
+		<br>
+		<<link [[Ignore the "egg"|Bird Tower Stone Warm]]>><<set $phase to 0>><<npcincr "Great Hawk" dom -1>><<npcincr "Great Hawk" love -10>><</link>><<ldom>><<llllove>>
 		<br>
 	<<default>>
 		<<bHe>> carries
@@ -617,7 +635,7 @@
 
 		<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 		<<bird_hunt_return>>
-	<<elseif $bird.state is "home" and !["rest","brood","sleep","sing","groom"].includes($bird.activity) and $bird.timer lte 0 and $bird.injured is 0>>
+	<<elseif $bird.state is "home" and !["rest","brood","sleep","sing","groom"].includes($bird.activity) and !$bird.override and $bird.timer lte 0 and $bird.injured is 0>>
 		<<endevent>>
 		<<npc "Great Hawk">>
 		<<if $monster is 1>>
@@ -757,6 +775,9 @@
 		<<npc "Great Hawk">>
 		<<baskicon>><<link [[Continue to bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<mooricon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
+		<<if npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc")>>
+			<<ind>><<link "Rub <<bhis>> pregnant belly (0:30)" "Bird Tower Pregnant Belly Rub">><<transform bird 1>><<bird_pass 30>><<stress -6>><<trauma -6>><<endevent>><</link>><<llstress>><<lltrauma>><br>
+		<</if>>
 		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
 			<<if Weather.precipitation is "rain">>
 				<span class="purple">It's too rainy to go flying casually.</span>
@@ -794,7 +815,7 @@
 
 		<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 		<<bird_hunt_return>>
-	<<elseif $bird.state is "home" and !["rest","brood","sleep","sing","groom"].includes($bird.activity) and $bird.timer lte 0 and $bird.injured is 0>>
+	<<elseif $bird.state is "home" and !["rest","brood","sleep","sing","groom"].includes($bird.activity) and !$bird.override and $bird.timer lte 0 and $bird.injured is 0>>
 		<<endevent>>
 		<<npc "Great Hawk">>
 		<<if $monster is 1>>

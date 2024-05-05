@@ -576,15 +576,16 @@ window.pregnancyGenerator = {
 
 		if (pregnancy) {
 			const result = { fetus: [], type: "hawk", timer: 0, timerEnd: random(3, 6) };
-
+			const eggBoost = 20 * fertility + 20 * magicTattoo;
 			let count;
+			
 			if (mother === "pc") {
 				count = Math.clamp(V.harpyEggs?.count || random(1, 3), 0, 3);
 			} else {
-				count = random(1, 3);
+				count = random(1, 4);
 			}
 			if (!count) return false;
-			if (fertility || magicTattoo) count++;
+			if (random(0, 100) > 94 - eggBoost) count++;
 
 			const featherColour = ["white", "brown"];
 

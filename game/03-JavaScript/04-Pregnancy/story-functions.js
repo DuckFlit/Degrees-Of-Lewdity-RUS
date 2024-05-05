@@ -46,7 +46,7 @@ function playerBellySize(pregnancyOnly = false) {
 				if (!vpregnancy.gaveBirth) maxSize += 20 + Math.clamp(vpregnancy.fetus.length / 2, 1, 4);
 				break;
 			case "hawk":
-				if (!vpregnancy.gaveBirth) maxSize += 12 + Math.clamp(vpregnancy.fetus.length, 1, 3);
+				if (!vpregnancy.gaveBirth) maxSize += 17 + Math.clamp(vpregnancy.fetus.length, 1, 4);
 				break;
 		}
 		switch (apregnancy.type) {
@@ -60,7 +60,7 @@ function playerBellySize(pregnancyOnly = false) {
 				if (!apregnancy.gaveBirth) maxSize += 20 + Math.clamp(apregnancy.fetus.length / 2, 1, 4);
 				break;
 			case "hawk":
-				if (!apregnancy.gaveBirth) maxSize += 12 + Math.clamp(apregnancy.fetus.length, 1, 3);
+				if (!apregnancy.gaveBirth) maxSize += 17 + Math.clamp(apregnancy.fetus.length, 1, 4);
 				break;
 		}
 		// The '+ 5' inflates the pregnancy belly size, meaning that the early stages of pregnancy will have no belly size increase due to it being reduced by the '- 5'
@@ -97,7 +97,7 @@ function npcBellySize(npc) {
 				maxSize += 20 + Math.clamp(pregnancy.fetus.length / 2, 1, 4);
 				break;
 			case "hawk":
-				maxSize += 8 + Math.clamp(pregnancy.fetus.length, 1, 3);
+				maxSize += 19 + Math.clamp(pregnancy.fetus.length, 1, 5);
 				break;
 		}
 		// The '+ 5' inflates the pregnancy belly size, meaning that the early stages of pregnancy will have no belly size increase due to it being reduced by the '- 5'
@@ -840,7 +840,7 @@ function talkedAboutPregnancy(mother, whoToCheck, existingId) {
 	} else if (C.npc[mother] && npcIsPregnant(mother)) {
 		birthId = mother + getPregnancyObject(mother).fetus[0].birthId;
 	}
-
+	console.log(birthId);
 	if (birthId && talkedAbout[birthId] && talkedAbout[birthId][whoToCheckConverted]) return talkedAbout[birthId][whoToCheckConverted];
 
 	return 0;

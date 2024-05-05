@@ -1123,7 +1123,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 	<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 	<<bird_hunt_return>>
-<<elseif $bird.state is "home" and !["rest","brood","sleep"].includes($bird.activity) and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
+<<elseif $bird.state is "home" and !["rest","brood","sleep"].includes($bird.activity) and !$bird.override and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
 	<<npc "Great Hawk">>
 	<<if $bird.injured gt 1>>
 		The <<beasttype>> slowly rises from
@@ -1491,7 +1491,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 			<<case "groom">>
 				<<your_bird_text "cap">> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
 			<<case "rest">>
-				<<your_bird_text "cap">> lays in the nest, recovering.
+				<<your_bird_text "cap">> rests in the nest.
 			<<case "build">>
 				<<if $birdShelterRepair>>
 					<<unset $birdShelterRepair>>
@@ -3004,7 +3004,7 @@ You sit by the rainwater pool.
 	<<case "groom">>
 		<<your_bird_text "cap">> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
 	<<case "rest">>
-		<<your_bird_text "cap">> lays in the nest, recovering.
+		<<your_bird_text "cap">> rests in the nest.
 	<<case "build">>
 		<<if $birdShelterRepair>>
 			<<unset $birdShelterRepair>>
@@ -3116,7 +3116,7 @@ You sit by the rainwater pool.
 
 		<<your_bird_text "cap">> notices you stir.
 		<<if $monster is 1>>
-			<<bHis>> eyes go wide for a moment, and <<bhe>> rushes to your side. "<<Wife>> has eggs!" <<bHe>> gently places a hand over your belly.
+			<<bHis>> eyes go wide for a moment, and <<bhe>> rushes to your side. "<<Wife>>'s eggs are coming!" <<bHe>> gently places a hand over your belly.
 		<<else>>
 			<<bHe>> quickly hops to your side and starts gently prodding your belly with <<bhis>> beak.
 		<</if>>
@@ -3154,6 +3154,74 @@ You sit by the rainwater pool.
 		<<set $syndromebird to 1>>
 		<<unset $birdescaped>>
 		<<run delete $bird.syndrome>>
+		<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+		<br>
+	<<elseif $bird.state is "home" and playerIsPregnant() and getPregnancyObject().fetus[0].type is "hawk" and playerBellyVisible() and !talkedAboutPregnancy("pc","Great Hawk")>>
+		<<setKnowsAboutPregnancy "pc" "Great Hawk">><<setTalkedAboutPregnancy "pc" "Great Hawk">>
+		<<npc "Great Hawk">>
+		You awaken to a light pressure on your belly.
+		<<if $monster is 1>>
+			<<your_bird_text "cap">> has <<bhis>> hands wrapped around you, stroking your tummy. "<<Wife>> has eggs!"
+		<<else>>
+			<<your_bird_text "cap">> lightly headbutts you. <<bHe>> caws proudly, poking at your tummy. <<bHe>> seems to know that you're pregnant.
+		<</if>>
+		<br><br>
+
+		<<set _eggCount to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
+		<<if _eggCount gte 1>>
+			<<bHe>> starts to fuss over the nest, making room for more eggs.
+		<<else>>
+			<<bHe>> starts to fuss over the nest,
+			<<switch $bird.upgrades.nest>>
+				<<case 2>>folding some of the fabric to make a cozy spot for eggs.
+				<<case 3>>moving some of the pillows to make a cozy spot for eggs.
+				<<default>>moving twigs and sticks around to make a small pit for eggs.
+			<</switch>>
+		<</if>>
+		<<if $bird.eggIntro is undefined>>
+			<<set $bird.eggIntro to 1>>
+			<<if $monster is 1>>
+				"<<Wife>> will need to learn to care for eggs soon."
+			<</if>>
+		<</if>>
+		<<set $bird.override to "build">>
+		<<set $bird.overrideTimer to 120>>
+		<br><br>
+
+		<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+		<br>
+	<<elseif $bird.state is "home" and npcIsPregnant("Great Hawk") and npcBellyVisible("Great Hawk") and !talkedAboutPregnancy("Great Hawk","pc")>>
+		<<setKnowsAboutPregnancy "Great Hawk" "pc">><<setTalkedAboutPregnancy "Great Hawk" "pc">>
+		<<npc "Great Hawk">>
+		You awaken to see <<your_bird_text>> fussing over the nest.
+		<<set _eggCount to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
+		<<if _eggCount gte 1>>
+			<<bHe>> seems to be making room for something.
+		<<else>>
+			<<switch $bird.upgrades.nest>>
+				<<case 2>><<bHes>> folding some of the fabric.
+				<<case 3>><<bHes>> moving some of the pillows.
+				<<default>><<bHes>>moving twigs and sticks around to make a small pit.
+			<</switch>>
+		<</if>>
+		<br><br>
+
+		<<bHe>> brightens as <<bhe>> notices you watching.
+		<<if $monster is 1>>
+			"<<Wife>>! I will have eggs soon," <<bhe>> declares happily. <<bHe>> places <<bhis>> hands on <<bhis>> tummy. "Feels bigger than normal eggs already." You look closer, <span class="lewd">and you can see the beginnings of a baby bump</span>. <<bHe>> returns to <<bhis>> spot, extending the nest a bit more and settling in the gap, satisfied.
+		<<else>>
+			<<bHe>> turns aside and brushes <<bhis>> misection with a wing. You notice a small bump starting to form. <span class="lewd"><<bHe>> has eggs.</span> <<bHe>> returns to <<bhis>> spot, extending the nest a bit more and settling in the gap, satisfied.
+		<</if>>
+		<<if $bird.eggIntro is undefined>>
+			<<set $bird.eggIntro to 1>>
+			<<if $monster is 1>>
+				"<<Wife>> will need to learn to care for eggs soon."
+			<</if>>
+		<</if>>
+		<<set $bird.override to "rest">>
+		<<set $bird.overrideTimer to 120>>
+		<br><br>
+
 		<<link [[Next|Bird Tower]]>><<endevent>><</link>>
 		<br>
 	<<elseif _sleepinterrupt>>
@@ -4575,6 +4643,38 @@ You push your wings back into <<bhis>> face, and <<bhe>> releases them.
 	<br><br>
 	<<bird_perch_options>>
 <</if>>
+
+:: Bird Tower Pregnant Belly Rub
+<<setTowerTemp>><<effects>>
+<<npc "Great Hawk">>
+<<if $monster is 1>>
+	<<if !$daily.birdPreggyRub>>
+		You gently place your hands on the <<beasttype>>'s belly.
+		<<your_bird_text "cap">> cocks <<bhis>> head to one side. "<<Wife>> may touch, but baby harpies do not kick as wingless unborn do."
+		<br><br>
+
+		You touch <<bhis>> baby bump anyway, stroking the downy feathers. Though the chick doesn't shift, you feel a warm glow thinking of the new life under your hands.
+	<<else>>
+		You lower your head down to the <<beasttype>>'s bare tummy, pressing your cheek against <<bhis>> baby bump. <<bHe>> places <<bhis>> hands on your head, relaxing into your loving embrace.
+		<br><br>
+
+		The feeling of <<bhis>> warm skin and feathers, combined with the gentle rhythm of <<bhis>> breathing and heartbeat, lulls you into a state of pure bliss.
+	<</if>>
+<<else>>
+	<<if !$daily.birdPreggyRub>>
+		You gently place your hands on the <<beasttype>>'s belly.
+		Great Hawk cocks <<bhis>> head to one side, but <<bhe>> lifts <<bhis>> wings, exposing <<bhis>> egg bump.
+		<br><br>
+
+		You stroke the down feathers. Though the chick doesn't shift, you feel a warm glow thinking of the new life under your hands.
+	<<else>>
+		You lower your head down to the <<beasttype>>'s swelling midsection, pressing your cheek against <<bhim>>. The feeling of <<bhis>> warm feathers is relaxing.
+	<</if>>
+<</if>>
+<<set $daily.birdPreggyRub to true>>
+
+<br><br>
+<<bird_perch_options>>
 
 :: Bird Tower Fly Intro
 <<setTowerTemp>><<effects>>
@@ -7346,6 +7446,30 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 <<link [[Next|Bird Tower Bed]]>><<endevent>><</link>>
 <br>
 
+:: Bird Tower Stone Warm
+<<setTowerTemp>><<effects>>
+<<if $phase is 1>>
+	You <<if $anxiety gte 1>>nervously <</if>> settle on top of the egg-shaped stones. It's still warm.
+	<<if $sciencetrait gte 3>>
+		While the Great Hawk is much larger than you, <<bhe>> surely has hollow bones like other birds. You worry that you'll be too heavy to safely warm a real egg.
+	<<else>>
+		It seems fairly straightforward, although the <<beasttype>> is much largely and fluffier than you are.
+	<</if>>
+	<br><br>
+
+	<<if $monster is 1>>
+		"<<Wife>> will do well," <<bhe>> chirps happily.
+	<<else>>
+		<<bHe>> caws at you happily. 
+	<</if>>
+<<else>>
+	You turn away from the stone, and the Great Hawk rolls it in front of you again to demonstrate warming it. <<bHe>> tries a few more times to get your attention before giving up, visibly disappointed.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
 :: Bird Tower Brood
 <<setTowerTemp>><<effects>>
 <<npc "Great Hawk">>
@@ -7472,7 +7596,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<bird_hunt_return>>
 <<else>>
 	<<endevent>>
-	<<if $bird.state is "home" and !["rest","brood","sleep"].includes($bird.activity) and !$birdBrood and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
+	<<if $bird.state is "home" and !["rest","brood","sleep"].includes($bird.activity) and !$bird.override and !$birdBrood and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
 		<<npc "Great Hawk">>
 		<<if $bird.injured gt 1>>
 			<<set $bird.timer to 600>>
@@ -7486,6 +7610,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 			<<set $bird.state to "hunting">>
 			You watch <<your_bird_text>> leap from the perch. It seems <<bhe>> wants to hunt, but didn't want to disturb you.
 		<</if>>
+		<<endevent>>
 		<br><br>
 	<</if>>
 	<<link [[Keep brooding (0:30)|Bird Tower Brood]]>><<transform bird 1>><<trauma -3>><</link>><<ltrauma>>
