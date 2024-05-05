@@ -110,7 +110,9 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 
 	if (!forcePregnancy && contraceptive && (random(0, 100) >= 10 || contraceptive > 1)) return "contraceptive fail";
 
-	if (["hawk", "harpy"].includes(spermType) || target === "Great Hawk") {
+	if (["hawk", "harpy"].includes(spermType) && target === "pc" && V.harpy < 4) {
+		// Do nothing so that standard pregnancy chances apply to the player getting pregnant
+	} else if (["hawk", "harpy"].includes(spermType) || target === "Great Hawk") {
 		if (!["pc", "Great Hawk"].includes(target)) return false;
 		if (!forcePregnancy && ((target === "pc" && !V.harpyEggs) || (target === "Great Hawk" && multi < 0.85))) return false;
 		forcePregnancy = true;
@@ -121,6 +123,9 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 
 		if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") chance *= 2;
 		if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") chance /= 2;
+
+		// Reduce the chance for standard impregnation of great hawk children
+		if (["hawk", "harpy"].includes(spermType)) chance /= 4;
 
 		if (!forcePregnancy && chance * quantity * (rngModifier / 100) * (1 + fertility + magicTattoo) * multi < random(1, 100)) return false;
 
@@ -176,6 +181,9 @@ function playerPregnancyAttempt(baseMulti = 1, genital = "vagina") {
 	/* When spermArray[rng] is undefined, the player failed to get pregnant */
 	if (spermArray[rng]) {
 		const fatherKnown = Object.keys(trackedNPCs).length === 1;
+
+		// Reduce the chance for standard impregnation of great hawk children
+		if (["hawk", "harpy"].includes(spermArray[rng].type) && !random(0, 3)) return false;
 
 		// Player becomes pregnant
 		return playerPregnancy(spermArray[rng].source, spermArray[rng].type, fatherKnown, genital, trackedNPCs);
