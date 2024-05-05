@@ -840,7 +840,6 @@ function talkedAboutPregnancy(mother, whoToCheck, existingId) {
 	} else if (C.npc[mother] && npcIsPregnant(mother)) {
 		birthId = mother + getPregnancyObject(mother).fetus[0].birthId;
 	}
-	console.log(birthId);
 	if (birthId && talkedAbout[birthId] && talkedAbout[birthId][whoToCheckConverted]) return talkedAbout[birthId][whoToCheckConverted];
 
 	return 0;
