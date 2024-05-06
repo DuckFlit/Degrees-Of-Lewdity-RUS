@@ -1874,20 +1874,14 @@
 			const path = "img/misc/locations/";
 			const location = setup.Locations.get();
 			const loc = setup.LocationImages[location];
-			const season = Weather.isSnow && loc.snow ? "snow" : "base";
 			T.images = [];
 
-			if (typeof loc[season] === 'string') {
-				T.images.push(`${path}${loc.folder}/${loc[season]}`);
-			} else {
-				Object.values(loc[season]).forEach(item => {
-					const imagePath = typeof item === 'string' ? item : item.image;
-					if (imagePath) {
-						console.log(`true`);
-						T.images.push(`${path}${loc.folder}/${imagePath}`);
-					}
-				});
-			}
+			Object.values(loc.base).forEach(item => {
+				if (!(item.condition && item.condition())) return;
+
+				const imagePath = typeof item === "string" ? item : item.image;
+				T.images.push(imagePath instanceof Image ? imagePath.src : `${path}${loc.folder}/${imagePath}`);
+			});
 		<</script>>
 
 		<div id="oldlocation">

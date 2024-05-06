@@ -395,14 +395,13 @@ const Time = (() => {
 })();
 window.Time = Time;
 
-$(document).one(":passageinit", () => {
+$(document).on(":passageinit", () => {
 	/* Set current time */
 	Time.set();
 });
 
 /* Local functions */
 
-// Replaces <<year>>
 function yearPassed() {
 	const fragment = document.createDocumentFragment();
 
@@ -416,7 +415,6 @@ function yearPassed() {
 	return fragment;
 }
 
-// Replaces <<week>>
 function weekPassed() {
 	const fragment = document.createDocumentFragment();
 
@@ -515,7 +513,6 @@ function weekPassed() {
 	return fragment;
 }
 
-// Replaces <<day>>
 function dayPassed() {
 	const fragment = document.createDocumentFragment();
 
@@ -858,7 +855,6 @@ function dayPassed() {
 	return fragment;
 }
 
-// Replaces <<hour>>
 function hourPassed(hours) {
 	const fragment = document.createDocumentFragment();
 
