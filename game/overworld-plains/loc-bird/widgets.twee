@@ -199,6 +199,189 @@
 	<</if>>
 <</widget>>
 
+<<widget "bird_hunt_start">>
+	<<if $bird.injured gt 1>>
+		The <<beasttype>> slowly
+		<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
+			rises from <<bhis>> nest.
+		<<elseif $bird.activity is "bathe">>
+			rises from the rainwater pool, and shakes <<bhis>> uninjured wing dry.
+		<<else>>
+			<<if $birdBask is 1>>
+				moves away from you.
+			<<else>>
+				rises from <<bhis>> spot on the perch.
+			<</if>>
+		<</if>>
+		<<if $monster is 1>>
+			"<<print either(
+				"I crave a hunt. My wing remains limp.",
+				"The wild beckons me, and I can only sing in response.",
+				"My talons itch for prey, yet they feel dull.",
+				"The winds call me, and I cannot answer.",
+				"I must stretch my wings, but... painful."
+			)>>" <<bHe>> gazes wistfully out to the moor, then down to <<bhis>> injured wing.
+		<<else>>
+			<<bHe>> looks out over the moor with a wistful gaze. <<bHe>> seems to be looking to hunt, but <<bhis>> injury won't allow it.
+		<</if>>
+		<<set $bird.timer to 600>>
+		<br><br>
+		<<if $harpy gte 6 and $syndromebird is 1 and $bird.hunts.lurkers is true>>
+			<<flight_time_check 30 "silent">>
+			<<print '<<link [[Hunt for your spouse ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -3>><</link>>'>><<glove>><<lldom>><<print _fatigueText>>
+			<br>
+		<</if>>
+		<<if $birdPerch is 1>>
+			<<link [[Do nothing|Bird Tower Perch]]>><<endevent>><</link>>
+		<<else>>
+			<<link [[Do nothing|Bird Tower]]>><<endevent>><</link>>
+		<</if>>
+		<br>
+	<<elseif $syndromebird is 1 and npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc") and npcBellySize("Great Hawk") gte 14 and $bird.hunts.unlocked is true and $harpy gte 6>>
+		<<set $bird.timer to 600>>
+		<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
+			The <<beasttype>> sits in the nest,
+		<<elseif $bird.activity is "bathe">>
+			The <<beasttype>> sits in the rainwater pool,
+		<<else>>
+			The <<beasttype>> sits on the perch,
+		<</if>>
+		looking out to the moor.
+		<<if $monster is 1>>
+			<<bHe>> places <<bhis>> hands on <<bhis>> <<bellyDescription "Great Hawk">>.
+			<br><br>
+
+			"<<Wife>>... if it's not too much trouble," <<bhe>> starts. <<bHe>> makes eye contact with you, looking slightly ashamed. "Could... could <<wife>> hunt for me?"
+		<<else>>
+			<<bHe>> brushes <<bhis>> wing against <<bhis>> swelling belly. <<bHe>> looks to you and chirps. It seems <<bhe>> wants you to hunt for <<bhim>>.
+		<</if>>
+		<br><br>
+
+		<<flight_time_check 30 "silent">>
+		<<print '<<link [[Hunt for your spouse ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -3>><</link>>'>><<glove>><<lldom>><<print _fatigueText>>
+		<br>
+		<<if $birdPerch is 1>>
+			<<link [[Do not|Bird Tower Perch]]>><<npcincr "Great Hawk" love -1>><<npcincr "Great Hawk" dom 1>><<endevent>><</link>><<llove>><<gdom>>
+		<<else>>
+			<<link [[Do not|Bird Tower]]>><<npcincr "Great Hawk" love -1>><<npcincr "Great Hawk" dom 1>><<endevent>><</link>><<llove>><<gdom>>
+		<</if>>
+		<br>		
+	<<elseif $bird.injured is 1>>
+		<<set $bird.injured to 0>>
+		The <<beasttype>> rises from
+		<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
+			<<bhis>> nest.
+		<<elseif $bird.activity is "bathe">>
+			the rainwater pool, and shakes <<bhis>> wings dry.
+		<<else>>
+			<<bhis>> spot on the perch.
+		<</if>>
+		<<bHe>> stretches out <<bhis>> injured wing, <span class="green">showing no signs of strain. It's healed.</span>
+		<<if $monster is 1>>
+			"Finally. I return to the skies."
+		<<else>>
+			<<bHe>> looks out over the moor with a harsh gaze. <<bHe>> seems to be eager to hunt again.
+		<</if>>
+		<br><br>
+
+		<<if $syndromebird is 1>>
+			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
+				<<flight_time_check 30 "silent">>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<</if>>
+				<br>
+				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<<else>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<</if>>
+				<br>
+				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<bHe>> spreads <<bhis>> wings and launches from the tower.
+			<br><br>
+			<<set $bird.timer to random(30, 60)>>
+			<<set $bird.state to "hunting">>
+			<<if $birdPerch is 1>>
+				<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
+			<<else>>
+				<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+			<</if>>
+			<<unset $birdPerch>>
+			<br>
+		<</if>>
+	<<else>>
+		The <<beasttype>>
+		<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
+			rises from <<bhis>> nest.
+		<<elseif $bird.activity is "bathe">>
+			rises from the rainwater pool, and shakes <<bhis>> wings dry.
+		<<else>>
+			<<if $birdBask is 1 and $monster is 1>>
+				gingerly helps you stand, and steps to the edge of the perch.
+			<<else>>
+				<<bhis>> spot on the perch.
+			<</if>>
+			<<unset $birdBask>>
+		<</if>>
+		<<if $monster is 1>>
+			"<<print either(
+				"I crave a hunt.",
+				"The wild beckons me.",
+				"My talons itch for prey.",
+				"The winds call me.",
+				"I must stretch my wings."
+			)>> I will return with a gift."
+		<<else>>
+			<<bHe>> looks out over the moor with a harsh gaze. <<bHe>> seems to be looking to hunt.
+		<</if>>
+		<br><br>
+
+		<<if $syndromebird is 1>>
+			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
+				<<flight_time_check 30 "silent">>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+				<</if>>
+				<br>
+				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<<else>>
+				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
+					<span class="red">You're too exhausted to join the hunt.</span>
+				<<else>>
+					<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
+				<</if>>
+				<br>
+				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<bHe>> spreads <<bhis>> wings and launches from the tower.
+			<br><br>
+			<<set $bird.timer to random(30, 60)>>
+			<<set $bird.state to "hunting">>
+			<<if $birdPerch is 1>>
+				<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
+			<<else>>
+				<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+			<</if>>
+			<<unset $birdPerch>>
+			<br>
+		<</if>>
+	<</if>>
+<</widget>>
+
 <<widget "bird_hunt_return">>
 	<<bird_loot_select>>
 	<<if $syndromebird isnot 1>>
@@ -648,69 +831,10 @@
 
 		<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 		<<bird_hunt_return>>
-	<<elseif $bird.state is "home" and !["rest","brood","sleep","sing","groom"].includes($bird.activity) and !$bird.override and $bird.timer lte 0 and $bird.injured is 0>>
+	<<elseif $bird.state is "home" and !["brood","sleep","sing","groom"].includes($bird.activity) and !$bird.override and Time.dayState isnot "night" and $bird.timer lte 0>>
 		<<endevent>>
 		<<npc "Great Hawk">>
-		<<if $monster is 1>>
-			The <<beasttype>>
-			<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
-				rises from <<bhis>> nest.
-			<<elseif $bird.activity is "bathe">>
-				rises from the rainwater pool, and shakes <<bhis>> wings dry.
-			<<else>>
-				<<if $birdBask is 1>>gingerly helps you stand, and <</if>>steps to the edge of the perch.
-			<</if>>
-			"<<print either(
-				"I crave a hunt.",
-				"The wild beckons me.",
-				"My talons itch for prey.",
-				"The winds call me.",
-				"I must stretch my wings."
-			)>> I will return with a gift."
-		<<else>>
-			The <<beasttype>>
-			<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
-				rises from <<bhis>> nest,
-			<<elseif $bird.activity is "bathe">>
-				rises from the rainwater pool, and steps to the edge of the perch,
-			<<else>>
-				steps to the edge of the perch,
-			<</if>>
-			looking out over the moor. <<bHis>> gaze is harsh. <<bHe>> seems to be looking to hunt.
-		<</if>>
-		<<unset $birdBask>>
-		<br><br>
-
-		<<if $syndromebird is 1>>
-			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
-				<<flight_time_check 30 "silent">>
-				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
-					<span class="red">You're too exhausted to join the hunt.</span>
-				<<else>>
-					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
-				<</if>>
-				<br>
-				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
-				<br>
-			<<else>>
-				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
-					<span class="red">You're too exhausted to join the hunt.</span>
-				<<else>>
-					<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
-				<</if>>
-				<br>
-				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
-				<br>
-			<</if>>
-		<<else>>
-			<<bHe>> spreads <<bhis>> wings and launches from the tower.
-			<br><br>
-			<<set $bird.timer to random(30, 60)>>
-			<<set $bird.state to "hunting">>
-			<<unset $birdPerch>>
-			<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
-			<br>
-		<</if>>
+		<<bird_hunt_start>>
 	<<elseif $bird.activity is "sleep" and $birdSleep is undefined and $bird.state is "home">>
 		<<if $daily.birdNightFlightTrigger and !$weekly.birdNightFlight and ["clear","lightClouds"].includes(Weather.name) and !Time.isBloodMoon()>>
 			<<endevent>>
@@ -828,68 +952,10 @@
 
 		<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
 		<<bird_hunt_return>>
-	<<elseif $bird.state is "home" and !["rest","brood","sleep","sing","groom"].includes($bird.activity) and !$bird.override and $bird.timer lte 0 and $bird.injured is 0>>
+	<<elseif $bird.state is "home" and !["brood","sleep"].includes($bird.activity) and !$bird.override and Time.dayState isnot "night" and $bird.timer lte 0>>
 		<<endevent>>
 		<<npc "Great Hawk">>
-		<<if $monster is 1>>
-			The <<beasttype>>
-			<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
-				rises from <<bhis>> nest.
-			<<elseif $bird.activity is "bathe">>
-				rises from the rainwater pool, and shakes <<bhis>> wings dry.
-			<<else>>
-				<<if $birdBask is 1>>gingerly helps you stand, and <</if>>steps to the edge of the perch.
-			<</if>>
-			"<<print either(
-				"I crave a hunt.",
-				"The wild beckons me.",
-				"My talons itch for prey.",
-				"The winds call me.",
-				"I must stretch my wings."
-			)>> I will return with a gift."
-		<<else>>
-			The <<beasttype>>
-			<<if ["build","brood","sleep","rest"].includes($bird.activity)>>
-				rises from <<bhis>> nest,
-			<<elseif $bird.activity is "bathe">>
-				rises from the rainwater pool, and steps to the edge of the perch,
-			<<else>>
-				steps to the edge of the perch,
-			<</if>>
-			looking out over the moor. <<bHis>> gaze is harsh. <<bHe>> seems to be looking to hunt.
-		<</if>>
-		<br><br>
-
-		<<if $syndromebird is 1>>
-			<<if $harpy gte 6 and $bird.hunts.unlocked is true>>
-				<<flight_time_check 30 "silent">>
-				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
-					<span class="red">You're too exhausted to join the hunt.</span>
-				<<else>>
-					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
-				<</if>>
-				<br>
-				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
-				<br>
-			<<else>>
-				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
-					<span class="red">You're too exhausted to join the hunt.</span>
-				<<else>>
-					<<link [[Ask to join the hunt|Bird Tower Hunt Ask]]>><</link>>
-				<</if>>
-				<br>
-				<<link [[Say nothing|Bird Tower No Hunt]]>><</link>>
-				<br>
-			<</if>>
-		<<else>>
-			<<bHe>> spreads <<bhis>> wings and launches from the tower.
-			<br><br>
-			<<set $bird.timer to random(30, 60)>>
-			<<set $bird.state to "hunting">>
-			<<unset $birdPerch>>
-			<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
-			<br>
-		<</if>>
+		<<bird_hunt_start>>
 	<<else>>
 		<<if Time.dayState is "night">>
 			<<if $daily.telescopeBlood and Time.isBloodMoon()>>
@@ -1680,6 +1746,9 @@
 		<<if $bird.injured gt 1 and $bird.state is "home">>
 			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Injured Eat]]>><<set $bird.materials.lurkers -=1>><<set $bird.injured-->><<endevent>><</link>>
 			<br>
+		<<elseif npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc")>>
+			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Preggy Eat]]>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
+			<br>			
 		<<else>>
 			<<link [[Eat a lurker|Bird Tower Hunt End Eat]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
 			<br>
