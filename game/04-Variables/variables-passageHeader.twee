@@ -1,12 +1,14 @@
 :: PassageHeader
-<<set $passagePrev to $passage ? $passage : "none">>
+<<if !$cheatReload>>
+	<<set $passagePrev to $passage ? $passage : "none">>
+<</if>>
 <<set $passage to $passageOverride ? $passageOverride : passage()>>
 <<set $tags to tags()>>
 <<set l10nStrings.errorTitle = StartConfig.version + " Error" + ($passage ? ` (:: ${$passage})` : "")>>
 
 <<if !["Start", "Start2", "Clothes Testing", "Renderer Test Page", "Tips"].includes($passage) && !$bypassHeader>>
 	<<doVersionCheck>>
-	<<if !$passage.includes(" Settings")>>
+	<<if !$passage.includes(" Settings") and !$cheatReload>>
 		<<if $passagePrev isnot $passage>>
 			<<set $passageChangesCount to ($passageChangesCount || 0) + 1>>
 		<</if>>
@@ -16,6 +18,7 @@
 
 <<unset $passageOverride>>
 <<unset $bypassHeader>>
+<<unset $cheatReload>>
 
 :: Widgets VersionCheck [widget]
 <<widget "doVersionCheck">>

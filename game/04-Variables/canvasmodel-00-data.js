@@ -96,5 +96,7 @@ const ZIndices = {
 
 	tailPenisCover: 165,
 	tailPenisCoverOverlay: 166,
+
+	old_over_upper: 171,
 };
 window.ZIndices = ZIndices;

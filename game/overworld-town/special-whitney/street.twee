@@ -1,6 +1,7 @@
 :: Widgets Whitney Street [widget]
 <<widget "eventsWhitneyStreet">>
 	<<npc Whitney>><<person1>>
+	<<outfitChecks>>
 	<<rng>>
 	<<if $whitneyReunionScene>><<unset $whitneyReunionScene>>
 		You round a corner when Whitney steps in front of your path. <<His>> goons flank you, preventing escape. "There you are, bitch," Whitney says, looking aggravated. "What? You didn't think I'd notice when my favourite slut goes missing?" You're unable to respond as <<he>> presses <<his>> lips against your mouth, kissing you.<<takeKissVirginity "Whitney" "loveInterest">>
@@ -185,14 +186,13 @@
 					<<link [[Squirm free|Street Bully Makeout]]>><<set $phase to 0>><<def 1>><<npcincr Whitney love -1>><<npcincr Whitney dom -1>><</link>><<llove>><<ldom>>
 					<br>
 				<<else>>
-					a pair of hands worm their way into your <<print $worn.lower.name>>.
+					a pair of hands worm their way <<= `into your ${_outfit ? _top?.name : _bottom?.name}` || "down to your <<genitals>>">>.
 					<br><br>
-
-					<<if !$worn.under_lower.type.includes("naked")>>
+					<<if !$worn.under_lower.type.includes("naked") and !$worn.under_lower.type.includes("covered")>>
 						"You're in my turf again." It's Whitney. <<His>> friends circle around you. "Let's make sure the lesson sticks this time."
 						<br><br>
 
-						<<His>> hands slide deeper, in search of your <<print $worn.under_lower.name>>.
+						<<His>> hands slide deeper, in search of your <<undies 1>>.
 						<br><br>
 
 						<<link [[Let it happen|Street Bully Undies]]>><<set $phase to 1>><<sub 1>><<trauma 6>><<stress 6>><<pain 6>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<gpain>><<gdom>>
@@ -200,9 +200,9 @@
 						<<link [[Fight|Street Bully Fight]]>><<def 1>><<set $fightstart to 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
 						<br>
 					<<else>>
-						"Real bold of you to come around my turf." It's Whitney. <<He>> lets <<his>> hands wander through your <<print $worn.lower.name>>, <span class="lewd">fingers brushing against your <<genitals>>.</span>
+						"Real bold of you to come around my turf." It's Whitney. <<He>> lets <<his>> hands wander <<= _outfit ? "down your _top.name" : _bottom ? "through your _bottom.name" : "over your crotch">>, <span class="lewd">fingers brushing against your <<genitals>>.</span>
 						<<if $whitneypantiescheck is 1>>
-							"No <<if $pronoun is "m">>undies<<else>>panties<</if>>? We're not even in school." <<He>> leans in close. "Or do you dress like this for fun?"
+							"No panties? We're not even in school." <<He>> leans in close. "Or do you dress like this for fun?"
 						<<elseif $whitneypantiescheck is 2>>
 							"No undies? We're not even in school." <<He>> leans in close. "Or do you dress like this for fun?"
 						<<else>>
@@ -1154,7 +1154,7 @@ A sudden, sharp pain shocks your <<genitals>> as the fabric of your <<print $wor
 		Whitney explodes into hysterics when <<he>> sees you. "Real smooth, loser." <<He>> wipes a tear from <<his>> eye as <<he>> leaves.<<npcincr Whitney lust 10>><<gglust>>
 	<</if>>
 <<else>>
-	You shut your eyes and brace for impact. You hear a splash. Your clothes feel cold and heavy. Your heart skips a beat. <span class="lewd">Your <<print $worn.lower.name>> has completely soaked through.</span>
+	You shut your eyes and brace for impact. You hear a splash. Your clothes feel cold and heavy. Your heart skips a beat. <span class="lewd">Your <<allBottoms>> <<lowerhas>> completely soaked through.</span>
 	<<water waist>><<if $uncomfortable.nude is true>><<trauma 6>><<stress 6>><<gtrauma>><<gstress>><<else>><<arousal 500>><<garousal>><</if>>
 	<br><br>
 
@@ -1545,8 +1545,8 @@ that you fail to notice <<his>> friends stepping out of line behind you. They sn
 <<stateman>>
 <br><br>
 <<actionsman>>
-
-<<if _combatend or ($worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked"))>>
+<<outfitChecks>>
+<<if _combatend or (_fullyNaked)>>
 	<span id="next"><<link [[Next|Street Bully Strip Forced Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Street Bully Strip Forced]]>><</link>></span><<nexttext>>
@@ -2374,6 +2374,7 @@ Over <<his>> shoulder, you spy Whitney hiding under a parked car. <<nnpc_He "Whi
 
 :: Street Bully Flash 2
 <<set $outside to 1>><<effects>>
+<<outfitChecks>>
 
 True to Whitney's word, it's not long before
 <<if Time.dayState is "night">>
@@ -2383,18 +2384,18 @@ True to Whitney's word, it's not long before
 <</if>>
 signals an oncoming vehicle. You get into position,
 <<if $phase is 3>>
-	arching your back and grasping the hem of your <<print $worn.upper.name>>.
+	arching your back and grasping the hem of your _top.name.
 <<elseif $phase is 2>>
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		<<if !$worn.under_lower.type.includes("naked")>>
-			sliding your <<print $worn.under_lower.name>> down to your ankles and
+	<<if _bottomIsSkirt>>
+		<<if _bottomUnder and !_bottomUnderIsSkirt>>
+			sliding your _bottomUnder.name <<if _bottomUnder is $worn.lower and !$worn.under_lower.type.includes("naked")>>and $worn.under_lower.name <</if>>down to your ankles and
 		<</if>>
-		grasping the hem of your <<print $worn.lower.name>>.
+		grasping the hem of your _bottom.name.
 	<<else>>
-		hooking your thumbs into the waist of your <<print $worn.lower.name>><<if !$worn.under_lower.type.includes("naked")>> and <<print $worn.under_lower.name>><</if>>.
+		hooking your thumbs into the waist of your <<allBottomsUnderwear>>.
 	<</if>>
 <<else>>
-	spinning around and bending over, fingers curled around the <<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>hem<<else>>waist<</if>> of your <<print $worn.lower.name>>.
+	spinning around and bending over, fingers curled around the <<if _bottomIsSkirt>>hem<<else>>waist<</if>> of your _bottom.name.
 <</if>>
 <br><br>
 
@@ -2426,9 +2427,9 @@ signals an oncoming vehicle. You get into position,
 <<else>>
 	The vehicle's in sight. You <<nervously>>
 	<<if $phase is 3>>
-		lift your <<print $worn.upper.name>><<if !$worn.under_upper.type.includes("naked")>> and displace your <<print $worn.under_upper.name>><</if>>,
+		lift your <<allTopsUnderwear>>,
 	<<else>>
-		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>flick up your skirt<<else>>pull down your <<print $worn.lower.name>><</if>>,
+		<<= _bottomIsSkirt ? "flick up your _bottom.name" : "pull down your <<allBottomsUnderwear>>">>.
 	<</if>>
 	to the cheers of Whitney's friends.
 	<br><br>
@@ -2625,10 +2626,11 @@ signals an oncoming vehicle. You get into position,
 :: Street Bully Flash Forced
 <<set $outside to 1>><<effects>>
 <<set _whitney to C.npc.Whitney>>
+<<outfitChecks>>
 You're helpless to stop Whitney as <<he>> drags you out of the alley.
 <<switch $phase>>
 	<<case 3>>
-		<<He>> twists your arms behind your back with one hand, and grasps the hem of your <<print $worn.upper.name>> in the other.
+		<<He>> twists your arms behind your back with one hand, and grasps the hem of your <<allTops>> in the other.
 		<br><br>
 
 		"What're you so shy about?" <<he>> laughs, squeezing your <<breasts>>.
@@ -2645,7 +2647,7 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 			<<insecurity "breasts_big" 5>><<ginsecurity "breasts_big">>
 		<</if>>
 	<<case 2>>
-		<<He>> twists your arms behind your back with one hand, and slides the other down to your <<print $worn.lower.name>>.
+		<<He>> twists your arms behind your back with one hand, and slides the other down to your _bottom.name.
 		<br><br>
 
 		<<if $player.gender isnot $player.gender_appearance and !$genderknown.includes("Whitney")>>
@@ -2658,10 +2660,10 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 				<<if _whitney.penis isnot "none" and _whitney.vagina isnot "none">> /* whitney is also a herm */
 					"Well, well, well." <<He>> sounds pleasantly surprised, but not confused. "Next perv who shows up is in for quite a show."
 				<<else>>
-					"Whatever's going on down here," <<he>> chuckles. "Some perv's in for a show."
+					"Whatever's going on down here," <<he>> chuckles, "some perv's in for a show."
 				<</if>>
 			<<elseif $player.penisExist>>
-				squeezes your shaft through your <<print $worn.lower.name>>, chuckling.
+				squeezes your shaft through your _bottom.name, chuckling.
 				<br><br>
 
 				<<if $player.penissize gte 4>>
@@ -2674,7 +2676,7 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 					<<insecurity "penis_tiny" 1>><<ginsecurity "penis_tiny">>
 				<</if>>
 			<<else>>
-				prods your entrance through your <<print $worn.lower.name>>, chuckling.
+				prods your entrance through your _bottom.name, chuckling.
 				<br><br>
 
 				"This supposed to be a secret?" <<he>> sneers. "Won't be for long."
@@ -2685,7 +2687,7 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 			<<print ($player.penisExist ? (!$player.vaginaExist ? "dick" : _hermText) : "cunt")>> and there's nothing you can do about it."
 		<</if>>
 	<<case 1>>
-		<<He>> grabs you by the waist and bends you over, your <<bottom>> facing the street. <<He>> hooks <<his>> thumb into your <<print $worn.lower.name>>.
+		<<He>> grabs you by the waist and bends you over, your <<bottom>> facing the street. <<He>> curls <<his>> fingers around the <<if _bottomIsSkirt>>hem<<else>>waist<</if>> of your _bottom.name.
 		<br><br>
 
 		"Don't be shy," <<he>> laughs. "This ass was made to be seen." <<He>> gives you a spank.
@@ -2694,12 +2696,12 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 
 You can only clench your eyes shut as Whitney
 <<if $phase is 3>>
-	yanks your <<print $worn.upper.name>> up<<if !$worn.under_upper.type.includes("naked")>> and <<print $worn.under_upper.name>> down<</if>>,
+	yanks up your <<allTopsUnderwear>>,
 <<else>>
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		yanks your <<if !$worn.under_lower.type.includes("naked")>><<print $worn.under_lower.name>> down and<</if>> skirt up,
+	<<if _bottomIsSkirt>>
+		flips up the hem of your <<allBottoms>><<if !$worn.under_lower.type.includes("naked")>>and yanks down your $worn.under_lower.name<</if>>,
 	<<else>>
-		yanks your <<print $worn.lower.name>> <<if !$worn.under_lower.type.includes("naked")>>and <<print $worn.under_lower.name>><</if>> down,
+		yanks down your <<allBottomsUnderwear>>,
 	<</if>>
 <</if>>
 <<switch $phase>>
@@ -3075,13 +3077,14 @@ You run until you're sure Whitney and <<nnpc_his "Whitney">> friends won't follo
 
 :: Street Bully Roof
 <<effects>>
+<<outfitChecks>>
 
 "There's something I want you to show me," Whitney says, gesturing at the ladder. "At the top. Get climbing."
 <br><br>
 
-<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+<<if _bottomIsSkirt and _skirtExposed and !_bottomUnder?.type.includes("covered")>>
 	<<if $worn.under_lower.exposed gte 1>>
-		You just know Whitney will look up your $worn.lower.name, <span class="pink">and you're wearing nothing beneath.</span> <<His>> friends crowd around as well. They'll all see.
+		You just know Whitney will look up your <<= _outfit ? _top.name : _bottom.name>>, <span class="pink">and you're wearing nothing beneath.</span> <<His>> friends crowd around as well. They'll all see.
 		<br><br>
 
 		<<if $exhibitionism gte 75>>
@@ -3089,7 +3092,7 @@ You run until you're sure Whitney and <<nnpc_his "Whitney">> friends won't follo
 			<br>
 		<</if>>
 	<<else>>
-		You just know Whitney will look up your $worn.lower.name. <<His>> friends crowd around as well. They'll all see your $worn.under_lower.name.
+		You just know Whitney will look up your <<= _outfit ? _top.name : _bottom.name>>. <<His>> friends crowd around as well. They'll all see your $worn.under_lower.name.
 		<br><br>
 
 		<<link [[Climb normally|Street Bully Roof Undies]]>><</link>><<exhibitionist1>>
@@ -3113,8 +3116,9 @@ You climb the ladder. It shakes as Whitney steps on the bottom rung. "You lot wa
 
 :: Street Bully Roof Hold
 <<effects>>
+<<outfitChecks>>
 
-You push a hand between your legs, keeping the fabric of your $worn.lower.name pressed to your <<undies>>. It makes it awkward to climb, but at least no one will peek.
+You push a hand between your legs, keeping the fabric of your <<= _outfit ? _top.name : _bottom.name>> pressed to your <<undies 1>>. It makes it awkward to climb, but at least no one will peek.
 <br><br>
 
 That is until your thighs reach eye level with the onlookers. <span class="pink">Whitney flips up the back,</span> baring your <<bottom>> to everyone.<<gstress>>
@@ -3160,8 +3164,9 @@ Whitney releases it, then bows to <<his>> friends. They applaud as you continue 
 
 :: Street Bully Roof Kick
 <<effects>>
+<<outfitChecks>>
 
-You kick at Whitney. <<He>> predicts your attack and steps aside, but is forced to release your <<print $worn.lower.name>>, at least. <<His>> friends laugh, and Whitney bows as you continue to climb.
+You kick at Whitney. <<He>> predicts your attack and steps aside, but is forced to release your <<= _outfit ? _top.name : _bottom.name>>, at least. <<His>> friends laugh, and Whitney bows as you continue to climb.
 <br><br>
 
 The ladder shakes as Whitney steps on the bottom rung. "You lot wait here," <<he>> says. "This won't take long."
