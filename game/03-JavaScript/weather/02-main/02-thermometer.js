@@ -19,10 +19,10 @@ Weather.Thermometer = (() => {
 
 	let thermometerCanvas = null;
 	const images = {
-		baseImg: { src: setup.WeatherSettings.thermometer.base },
-		fillImg: { src: setup.WeatherSettings.thermometer.fill },
-		upImg: { src: setup.WeatherSettings.thermometer.upArrow },
-		downImg: { src: setup.WeatherSettings.thermometer.downArrow },
+		baseImg: { src: Weather.tempSettings.thermometer.base },
+		fillImg: { src: Weather.tempSettings.thermometer.fill },
+		upImg: { src: Weather.tempSettings.thermometer.upArrow },
+		downImg: { src: Weather.tempSettings.thermometer.downArrow },
 	};
 	const element = $("<div />", { id: "characterTemperature" });
 	const tooltipElement = $("<div />", { id: "characterTemperatureTooltip" });
@@ -117,10 +117,10 @@ Weather.Thermometer = (() => {
 	function updateTooltip() {
 		const tempDescription = Weather.TooltipDescriptions.bodyTemperature();
 		const waterDescription = `<br>${Weather.TooltipDescriptions.waterTemperature()}`;
-		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, setup.WeatherSettings.temperature.effects.maxFatigueGainMultiplier, 4);
-		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, setup.WeatherSettings.temperature.effects.maxArousalGainMultiplier, 4);
-		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, setup.WeatherSettings.temperature.effects.maxPainGainMultiplier, 4);
-		const stressModifier = categorise(Weather.BodyTemperature.stressModifier, 0, setup.WeatherSettings.temperature.effects.lowerMaxStressGain, 4);
+		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, Weather.tempSettings.effects.maxFatigueGainMultiplier, 4);
+		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, Weather.tempSettings.effects.maxArousalGainMultiplier, 4);
+		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, Weather.tempSettings.effects.maxPainGainMultiplier, 4);
+		const stressModifier = categorise(Weather.BodyTemperature.stressModifier, 0, Weather.tempSettings.effects.lowerMaxStressGain, 4);
 
 		const arousalOutput = arousalModifier > 0 ? `<span class="teal">${"- ".repeat(Math.abs(arousalModifier))}Arousal gains</span><br>` : "";
 		const fatigueOutput = fatigueModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(fatigueModifier))}Fatigue gains</span><br>` : "";

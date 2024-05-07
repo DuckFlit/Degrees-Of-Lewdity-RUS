@@ -19,7 +19,7 @@ Weather.WeatherConditions = (() => {
 	// After that, it will begin to transition into the normal weather types again.
 	function setWeather(weatherType, instant = false, minutes = 60) {
 		if (minutes <= 0) minutes = 1;
-		const weatherTypeIndex = Weather.Settings.weatherTypes.findIndex(wt => wt.name.toLowerCase() === weatherType.toLowerCase());
+		const weatherTypeIndex = Weather.genSettings.weatherTypes.findIndex(wt => wt.name.toLowerCase() === weatherType.toLowerCase());
 		if (weatherTypeIndex === -1 || V.weatherObj.keypointsArr.length < 1) {
 			console.warn(`Could not set weather. ${weatherType} doesn't exist.`);
 			return;
@@ -66,8 +66,8 @@ Weather.WeatherConditions = (() => {
 
 		currentKeyPoint = currentKeyPoint ?? { timestamp: currentTimeStamp, value: nextKeyPoint.value };
 
-		const current = Weather.Settings.weatherTypes[currentKeyPoint.value];
-		const next = Weather.Settings.weatherTypes[nextKeyPoint.value];
+		const current = Weather.genSettings.weatherTypes[currentKeyPoint.value];
+		const next = Weather.genSettings.weatherTypes[nextKeyPoint.value];
 
 		// Calculate the fraction of time passed between the current and next key points
 		const fraction = (currentTimeStamp - currentKeyPoint.timestamp) / (nextKeyPoint.timestamp - currentKeyPoint.timestamp);
@@ -76,7 +76,7 @@ Weather.WeatherConditions = (() => {
 		const interpolatedValue = Math.round(current.value + (next.value - current.value) * fraction);
 
 		if (V.weatherObj?.name !== null) {
-			const currentWeatherType = Weather.Settings.weatherTypes.find(type => type.name === V.weatherObj.name);
+			const currentWeatherType = Weather.genSettings.weatherTypes.find(type => type.name === V.weatherObj.name);
 			if (currentWeatherType.value === interpolatedValue) {
 				return createObjectByType(currentWeatherType, V.weatherObj.overcast);
 			}
@@ -93,14 +93,14 @@ Weather.WeatherConditions = (() => {
 	}
 
 	function findClosestWeatherType(interpolatedValue) {
-		const closestTypes = Weather.Settings.weatherTypes.reduce(
+		const closestTypes = Weather.genSettings.weatherTypes.reduce(
 			(acc, type) => {
 				const difference = Math.abs(type.value - interpolatedValue);
 				if (difference < acc.minDifference) {
-					return { minDifference: difference, types: [type] }; // Store the entire object
+					return { minDifference: difference, types: [type] };
 				}
 				if (difference === acc.minDifference) {
-					acc.types.push(type); // Push the entire object
+					acc.types.push(type);
 				}
 				return acc;
 			},
@@ -129,67 +129,99 @@ Weather.WeatherConditions = (() => {
 	}
 
 	function generateWeather(currentDate) {
-		const daysToGenerate = Math.max(Weather.Settings.forecast.weather.daysToGenerate, 1);
+		const daysToGenerate = Math.max(Weather.genSettings.forecast.weather.daysToGenerate, 1);
 
-		if (!V.weatherObj.keypointsArr.length) {
-			V.weatherObj.keypointsArr = [];
-			generateWeatherKeypoints(currentDate, daysToGenerate);
-		}
+		if (V.weatherObj.keypointsArr.length > 0) {
+			const firstKeyPoint = new DateTime(V.weatherObj.keypointsArr[0].timestamp);
+			const firstKeyPointDifference = (firstKeyPoint.timeStamp - currentDate.timeStamp) / TimeConstants.secondsPerDay;
 
-		// Check if more keypoints are needed
-		const firstDate = new DateTime(V.weatherObj.keypointsArr[0].timestamp);
-		const lastDate = new DateTime(V.weatherObj.keypointsArr[V.weatherObj.keypointsArr.length - 1].timestamp);
-		const targetDate = new DateTime(currentDate).addDays(daysToGenerate);
-		const dayDifferenceFromFirstKeypoint = Math.abs((targetDate.timeStamp - firstDate.timeStamp) / TimeConstants.secondsPerDay);
-		const dayDifferenceFromLastKeypoint = Math.abs((targetDate.timeStamp - lastDate.timeStamp) / TimeConstants.secondsPerDay);
-
-		// Generate a new keypoints array in case of a "time-jump" more than 'daysToGenerate' number of days
-		if (dayDifferenceFromLastKeypoint > 20) {
-			if (dayDifferenceFromFirstKeypoint > 20) {
+			// Regenerate all keys if the first keypoint is too far in the future
+			if (firstKeyPointDifference > daysToGenerate) {
 				V.weatherObj.keypointsArr = [];
 			}
+		}
+
+		// If there are no keypoints, generate them
+		if (V.weatherObj.keypointsArr.length === 0) {
 			generateWeatherKeypoints(currentDate, daysToGenerate);
 			return;
 		}
 
-		// Trim old keypoints
-		while (V.weatherObj.keypointsArr.length > 1 && V.weatherObj.keypointsArr[1].timestamp <= currentDate.timeStamp) {
-			V.weatherObj.keypointsArr.shift();
+		// Check if additional keypoints need to be generated
+		const lastKeypoint = V.weatherObj.keypointsArr[V.weatherObj.keypointsArr.length - 1];
+		const lastDate = new DateTime(lastKeypoint.timestamp);
+		const dayDifference = (new DateTime(currentDate).addDays(daysToGenerate).timeStamp - lastDate.timeStamp) / TimeConstants.secondsPerDay;
+
+		// Generate new keypoints if the time difference is significant
+		if (dayDifference > 0) {
+			generateWeatherKeypoints(lastDate.addDays(1), dayDifference);
 		}
 
-		// Generate new keypoints so that it always saves 'daysToGenerate' number of days
-		if (dayDifferenceFromLastKeypoint > 0) {
-			generateWeatherKeypoints(lastDate.addDays(1), dayDifferenceFromLastKeypoint);
+		// Trim old keypoints that are past the current date
+		while (V.weatherObj.keypointsArr.length > 1 && V.weatherObj.keypointsArr[1].timestamp <= currentDate.timeStamp) {
+			V.weatherObj.keypointsArr.shift();
 		}
 	}
 
 	function generateWeatherKeypoints(startDate, daysToGenerate) {
-		const timeApart = Math.clamp(Weather.Settings.forecast.weather.minTimeApartKeyPoints, 0, 1400);
-		const maxKeyPointsPerDay = Math.clamp(Weather.Settings.forecast.weather.maxKeyPointsPerDay, 1, Math.floor((24 * 60) / timeApart));
-		const minKeyPointsPerDay = Math.clamp(Weather.Settings.forecast.weather.minKeyPointsPerDay, 1, maxKeyPointsPerDay);
+		const timeApart = Math.clamp(Weather.genSettings.forecast.weather.minTimeApartKeyPoints, 0, 1400);
+		const maxKeyPointsPerDay = Math.clamp(Weather.genSettings.forecast.weather.maxKeyPointsPerDay, 1, Math.floor((24 * 60) / timeApart));
+		const minKeyPointsPerDay = Math.clamp(Weather.genSettings.forecast.weather.minKeyPointsPerDay, 1, maxKeyPointsPerDay);
 
 		// Iterate over each day to add weather keypoints
 		for (let dayCount = 0; dayCount < daysToGenerate; dayCount++) {
 			const date = new DateTime(startDate).addDays(dayCount);
-			const numKeyPoints = random(minKeyPointsPerDay, maxKeyPointsPerDay);
-			let lastTime = -timeApart;
-			// Create numKeyPoints number of keypoints for each day
-			for (let i = 0; i < numKeyPoints; i++) {
-				const timeWindow = 24 * 60 - lastTime - timeApart;
-				// Randomly determine the keypoint time within the available time slot
-				const time = lastTime + timeApart + random(1, timeWindow / (numKeyPoints - i));
-				const value = getRandomWeatherValue();
 
-				const timestamp = new DateTime(date.year, date.month, date.day, Math.floor(time / 60), time % 60).timeStamp;
-				V.weatherObj.keypointsArr.push({ timestamp, value });
-				lastTime = time;
+			// Only add exceptions for current day
+			const exceptions = setup.WeatherExceptions.filter(exception => {
+				const exceptionDate = exception.date;
+				if (!exceptionDate || typeof exceptionDate !== "function") {
+					throw new Error("Could not read date from setup.WeatherExceptions");
+				}
+				return exceptionDate().dayDifference(date) === 0;
+			});
+
+			const numKeyPoints = random(Math.max(minKeyPointsPerDay - exceptions.length, 0), Math.max(maxKeyPointsPerDay - exceptions.length, 0));
+			const dayKeypoints = [];
+
+			// Add two keypoints. One for start and one for after the duration
+			exceptions.forEach(exception => {
+				const start = exception.date();
+				const end = new DateTime(start).addHours(exception.duration);
+				const weatherTypeIndex = Weather.genSettings.weatherTypes.findIndex(wt => wt.name === exception.weatherType);
+
+				dayKeypoints.push({ timestamp: start.timeStamp, value: weatherTypeIndex });
+				dayKeypoints.push({ timestamp: end.timeStamp, value: weatherTypeIndex });
+			});
+
+			// Generate random keypoints, ensuring they do not overlap with exceptions
+			for (let i = 0; i < numKeyPoints; i++) {
+				let isValid = false;
+				let timestamp, time;
+
+				while (!isValid) {
+					const timeWindow = 24 * 60 - timeApart;
+					time = random(timeApart, timeWindow);
+					timestamp = new DateTime(date.year, date.month, date.day, Math.floor(time / 60), time % 60).timeStamp;
+
+					isValid = !dayKeypoints.some(rt => rt.timestamp <= timestamp && timestamp <= rt.timestamp);
+				}
+
+				if (isValid) {
+					const value = getRandomWeatherValue();
+					dayKeypoints.push({ timestamp, value });
+				}
 			}
+
+			// Sort it in case of keypoints being generated out of order
+			dayKeypoints.sort((a, b) => a.timestamp - b.timestamp);
+			V.weatherObj.keypointsArr.push(...dayKeypoints);
 		}
 	}
 
 	function getRandomWeatherValue() {
 		const currentSeason = Time.season;
-		const options = Weather.Settings.weatherTypes.map((weatherType, index) => {
+		const options = Weather.genSettings.weatherTypes.map((weatherType, index) => {
 			const weight = weatherType.probability?.[currentSeason] ?? 0;
 			return [index, weight];
 		});
@@ -202,7 +234,7 @@ Weather.WeatherConditions = (() => {
 			const arr = V.weatherObj.keypointsArr;
 			return arr.map(item => {
 				const date = new DateTime(item.timestamp);
-				const weatherName = Weather.Settings.weatherTypes[item.value].name;
+				const weatherName = Weather.genSettings.weatherTypes[item.value].name;
 				return {
 					type: weatherName,
 					date: `${date.day}/${date.month} ${ampm(date.hour, date.minute)}`,

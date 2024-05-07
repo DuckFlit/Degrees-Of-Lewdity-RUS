@@ -37,7 +37,7 @@
  */
 
 Weather.BodyTemperature = (() => {
-	const settings = setup.WeatherSettings.temperature;
+	const settings = Weather.tempSettings;
 	/**
 	 * Calculates the level of activity based on the current state of the body.
 	 * Determines the heat generation rate by considering activities like sleeping, exercising, and normal activity.
@@ -94,9 +94,9 @@ Weather.BodyTemperature = (() => {
 		V.player.bodyTemperature = calculateTemperatureChange(V.player.bodyTemperature, temperature, scaledMinutes, getTotalWarmth());
 		resetActivity();
 
-		if (V.player.bodyTemperature < setup.WeatherSettings.temperature.minTemperature) {
+		if (V.player.bodyTemperature < Weather.tempSettings.minTemperature) {
 			V.passout = "cold";
-		} else if (V.player.bodyTemperature > setup.WeatherSettings.temperature.maxTemperature) {
+		} else if (V.player.bodyTemperature > Weather.tempSettings.maxTemperature) {
 			V.passout = "heat";
 		} else {
 			delete V.passout;
