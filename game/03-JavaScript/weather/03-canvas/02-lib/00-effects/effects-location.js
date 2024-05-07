@@ -120,7 +120,7 @@ Weather.Sky.Effects.create({
 				const handleLoadedImage = () => {
 					if (typeof obj !== "object") obj = {};
 					
-					if (obj.animation) {
+					if (V.options.locationAnimations && obj.animation) {
 						const animationOptions = {
 							image,
 							canvas: this.canvas,
@@ -193,11 +193,11 @@ Weather.Sky.Effects.create({
 			}
 			
 			// Check conditions
-			if (obj.condition && !obj.condition(this.parentLayer.animationGroup)) {
+			if (V.options.locationAnimations && obj.condition && !obj.condition(this.parentLayer.animationGroup)) {
 				continue;
 			}
 
-			if (obj.animation) { // If animation, let the animation object draw the right frame
+			if (V.options.locationAnimations && obj.animation) { // If animation, let the animation object draw the right frame
 				obj.animation.draw();
 			} else { // If static image
 				const yPosition = this.canvas.element.height - obj.image.height;
