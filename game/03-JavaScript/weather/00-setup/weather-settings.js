@@ -46,12 +46,13 @@ setup.WeatherSettings = {
 			maxKeyPointsPerMonth: 6, // Maximum number of key points per month.
 		},
 	},
-	temperature: { // Body temperature
+	temperature: {
+		// Body temperature
 		/* Be careful when modifying the factors, as small changes can have big effects */
 		// General
 		baseBodyTemperature: 37, // The normal body temperature in degrees Celsius.
 		minTemperature: 33, // Below this point will result in player passing out from hypothermia
-		maxTemperature: 41, // Above this point will result in player passing out from hyperthermia
+		maxTemperature: 40, // Above this point will result in player passing out from hyperthermia
 		tempApproachRate: 0.012, // Will nudge the temperature towards the base temperature by this rate (per degree celcius)
 
 		// Heat generation
@@ -263,10 +264,10 @@ setup.WeatherSettings = {
 			value: 4,
 			probability: {
 				// Disabled for now since it's not implemented yet
-				summer: 0, //0.02,
-				winter: 0, //0.005,
-				spring: 0, //0.015,
-				autumn: 0, //0.01,
+				summer: 0, // 0.02,
+				winter: 0, // 0.005,
+				spring: 0, // 0.015,
+				autumn: 0, // 0.01,
 			},
 			cloudCount: {
 				small: () => 0,
