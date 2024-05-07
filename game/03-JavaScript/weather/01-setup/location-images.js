@@ -54,10 +54,8 @@ setup.Locations = {
 	(such as 50, 100, 150, 200, 1000, 5000, etc.)
 	If we want smoother animations (than 20 fps):
 		- Change the updateRate in layer-location.js
- 
-	PROPERTIES:
-	* {object} folder: The subfolder of 
  */
+
 /** @type {LocationImages} */
 setup.LocationImages = {
 	alex_cottage: {
@@ -1848,10 +1846,7 @@ setup.LocationImages = {
 		emissive: {
 			lights: {
 				image: "emissive.png",
-				condition: grp => {
-					console.log(grp);
-					return Weather.lightsOn;
-				},
+				condition: () => Weather.lightsOn,
 				alwaysDisplay: false,
 				animation: "drivingCar",
 				color: "#deae66",
