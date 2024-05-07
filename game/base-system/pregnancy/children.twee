@@ -124,6 +124,11 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 <<widget "childSelect">>
 	<<if _args[0] isnot undefined>>
 		<<set $childSelected to $children[_args[0]]>>
+		<<if $children[_args[0]].type isnot "human" and $children[_args[0]].features.monster is "monster">>
+			<<set $cmonster to 1>>
+		<<else>>
+			<<set $cmonster to 0>>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -320,6 +325,114 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 			<<case "f" "h">><<set $_text_output to "herself">>
 			<<case "h">><<set $_text_output to "themself">>
 		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
+
+/*args[0] - childId*/
+<<widget "childsibling">><<silently>>
+	<<if _args[0] isnot undefined>>
+		<<set $_id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set $_id to $childSelected.childId>>
+	<</if>>
+	<<if $_id isnot undefined>>
+		<<switch $children[$_id].gender>>
+			<<case "m">><<set $_text_output to "brother">>
+			<<case "f">><<set $_text_output to "sister">>
+			<<case "h">><<set $_text_output to "sibling">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
+
+/*args - childId for each argument, OR one array argument with childIds */
+<<widget "childsiblings">><<silently>>
+	<<if _args[0] isnot undefined>>
+		<<set $_brothers to 0>><<set $_sisters to 0>>
+		<<if typeof _args[0] is "object">>
+			<<for $_i to 0; $_i lt _args[0].length; $_i++>>
+				<<switch $children[_args[0][$_i]].gender>>
+					<<case "m">><<set $_brothers++>>
+					<<case "f" "h">><<set $_sisters++>>
+				<</switch>>
+			<</for>>
+		<<else>>
+			<<for $_i to 0; $_i lt _args.length; $_i++>>
+				<<switch $children[_args[$_i]].gender>>
+					<<case "m">><<set $_brothers++>>
+					<<case "f" "h">><<set $_sisters++>>
+				<</switch>>
+			<</for>>
+		<</if>>
+		<<set $_text_output to "">>
+		<<if $_brothers gte 1>>
+			<<set $_text_output += "brother">>
+			<<if $_brothers gte 2>>
+				<<set $_text_output += "s">>
+			<</if>>
+		<</if>>
+		<<if $_brothers gte 1 and $_sisters gte 1>>
+			<<set $_text_output += " and ">>
+		<</if>>
+		<<if $_sisters gte 1>>
+			<<set $_text_output += "sister">>
+			<<if $_sisters gte 2>>
+				<<set $_text_output += "s">>
+			<</if>>
+		<</if>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
+
+/*args[0] - childId*/
+<<widget "childson">><<silently>>
+	<<if _args[0] isnot undefined>>
+		<<set $_id to _args[0]>>
+	<<elseif $childSelected isnot undefined>>
+		<<set $_id to $childSelected.childId>>
+	<</if>>
+	<<if $_id isnot undefined>>
+		<<switch $children[$_id].gender>>
+			<<case "m">><<set $_text_output to "son">>
+			<<case "f">><<set $_text_output to "daughter">>
+			<<case "h">><<set $_text_output to "child">>
+		<</switch>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
+
+/*args - childId for each argument, OR one array argument with childIds */
+<<widget "childsons">><<silently>>
+	<<if _args[0] isnot undefined>>
+		<<set $_sons to 0>><<set $_daughters to 0>>
+		<<if typeof _args[0] is "object">>
+			<<for $_i to 0; $_i lt _args[0].length; $_i++>>
+				<<switch $children[_args[0][$_i]].gender>>
+					<<case "m">><<set $_sons++>>
+					<<case "f" "h">><<set $_daughters++>>
+				<</switch>>
+			<</for>>
+		<<else>>
+			<<for $_i to 0; $_i lt _args.length; $_i++>>
+				<<switch $children[_args[$_i]].gender>>
+					<<case "m">><<set $_sons++>>
+					<<case "f" "h">><<set $_daughters++>>
+				<</switch>>
+			<</for>>
+		<</if>>
+		<<set $_text_output to "">>
+		<<if $_sons gte 1>>
+			<<set $_text_output += "son">>
+			<<if $_sons gte 2>>
+				<<set $_text_output += "s">>
+			<</if>>
+		<</if>>
+		<<if $_sons gte 1 and $_daughters gte 1>>
+			<<set $_text_output += " and ">>
+		<</if>>
+		<<if $_daughters gte 1>>
+			<<set $_text_output += "daughter">>
+			<<if $_daughters gte 2>>
+				<<set $_text_output += "s">>
+			<</if>>
+		<</if>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><</widget>>
 
@@ -686,6 +799,7 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 			<<if $children[_args[0]].laid>>
 				Laid: <<print $children[_args[0]].laid.day + " " + $children[_args[0]].laid.month + " " + $children[_args[0]].laid.year>> |
 				Hatched: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
+				<br>
 			<<else>>
 				Born: <<print $children[_args[0]].born.day + " " + $children[_args[0]].born.month + " " + $children[_args[0]].born.year>> |
 			<</if>>
@@ -1136,6 +1250,21 @@ args[3] - "both" to include unrelated children or "only" to exclude the player c
 				<<childHe>>'s dipping <<childhis>> legs in the rainwater pool.
 				<br>
 				<<link "Help <<childhim>> bathe (0:15)" "Children Activity Events">><<pass 15>><<set $childActivityEvent to {event:"batheHelp", childid:_args[0]}>><</link>> |
+			<<case "lurkerEat">>
+				<<childHe>>'s
+				<<if _childDays lte 180>>
+					<<if $cmonster>>
+						gumming on a piece of lurker meat.
+					<<else>>
+						pecking at a piece of lurker meat.
+					<</if>>
+				<<else>>
+					<<if $cmonster>>
+						chewing on a lurker.
+					<<else>>
+						pecking at a lurker.
+					<</if>>
+				<</if>>
 			<<default>>
 				<<childHe>>'s has figured out that they're in a video game (This is an error, please report).
 				<<print $children[_args[0]].localVariables.activity>>
