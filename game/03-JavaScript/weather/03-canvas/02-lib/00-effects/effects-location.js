@@ -61,9 +61,11 @@ Weather.Sky.Effects.create({
 		this.effects[0].draw((drawCanvas, obj) => {
 			const glowSize = obj.size ?? this.defaultSize;
 			const glowColor = obj.color ?? this.defaultColor;
+			const glowAlpha = obj.alpha ?? this.defaultAlpha;
 			drawCanvas.ctx.shadowColor = glowColor;
 			drawCanvas.ctx.shadowBlur = glowSize;
 			drawCanvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
+			drawCanvas.globalAlpha = glowAlpha;
 			return drawCanvas;
 		});
 		this.canvas.drawImage(this.effects[0].canvas.element);
@@ -118,7 +120,7 @@ Weather.Sky.Effects.create({
 				const handleLoadedImage = () => {
 					if (typeof obj !== "object") obj = {};
 					
-					if (obj.animation) {
+					if (V.options.locationAnimations && obj.animation) {
 						const animationOptions = {
 							image,
 							canvas: this.canvas,
@@ -181,18 +183,26 @@ Weather.Sky.Effects.create({
 		} else {
 			await loadImage(this.key, this.obj);
 		}
-	console.log("THIS ANIMASTIDKSAN",this.animations);
 	},
 
 	draw(onDraw) {
 		for (const obj of this.animations.values()) {
-			if (onDraw) onDraw(this.canvas, obj);
-			if (obj.animation) {
-				obj.animation.draw();
-			} else if (!obj.condition || obj.condition && obj.condition()) {
-				const yPosition = this.canvas.element.height - obj.image.height;
+			// Preprocess based on effect
+			if (onDraw) {
+				onDraw(this.canvas, obj);
+			}
+			
+			// Check conditions
+			if (V.options.locationAnimations && obj.condition && !obj.condition(this.parentLayer.animationGroup)) {
+				continue;
+			}
 
-				// If it's a spritesheet, we can choose which frame to draw, if we don't want an animation
+			if (V.options.locationAnimations && obj.animation) { // If animation, let the animation object draw the right frame
+				obj.animation.draw();
+			} else { // If static image
+				const yPosition = this.canvas.element.height - obj.image.height;
+				
+				// If it's a spritesheet, we can choose which frame to draw
 				const frame = typeof obj.frame === "function" ? obj.frame() : obj.frame;
 				const frameX = Math.clamp((frame ?? 0) * this.canvas.element.width, 0, obj.image.width - this.canvas.element.width);
 				

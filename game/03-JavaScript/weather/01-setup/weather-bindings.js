@@ -48,6 +48,10 @@ setup.WeatherBindings = {
 		variable: () => Weather.lightsOn,
 		layers: ["location"],
 	},
+	locationAnimations: {
+		variable: () => V.options.locationAnimations,
+		layers: ["location"],
+	},
 	fireOn: {
 		variable: () => {
 			if (V.bird.firepit === undefined) return null;

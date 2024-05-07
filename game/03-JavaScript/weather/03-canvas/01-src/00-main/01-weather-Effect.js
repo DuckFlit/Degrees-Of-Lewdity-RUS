@@ -109,7 +109,7 @@ Weather.Sky.Effect = class Effect {
 						await result;
 					}
 				} catch (e) {
-					console.error("Error during effect init:", e.target);
+					console.error("Error during effect init:", e.target ?? e);
 				}
 			}
 		})();

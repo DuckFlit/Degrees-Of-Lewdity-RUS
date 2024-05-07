@@ -145,7 +145,7 @@ Weather.Temperature = (() => {
 	}
 
 	function getWeatherModifier(weatherCondition) {
-		return Weather.Settings.weatherTypes.find(type => type.name === weatherCondition)?.temperatureModifier ?? 1.0;
+		return Weather.genSettings.weatherTypes.find(type => type.name === weatherCondition)?.temperatureModifier ?? 1.0;
 	}
 
 	function getLocationModifier() {
@@ -202,15 +202,15 @@ Weather.Temperature = (() => {
 	}
 
 	function generateTemperatureKeyPoints(date) {
-		const timeApart = Math.clamp(Weather.Settings.forecast.temperature.minTimeApartKeyPoints, 0, 27);
-		const maxDays = Math.clamp(Weather.Settings.forecast.temperature.maxKeyPointsPerMonth, 1, Math.floor(28 / timeApart));
-		const minDays = Math.clamp(Weather.Settings.forecast.temperature.minKeyPointsPerMonth, 1, maxDays);
+		const timeApart = Math.clamp(Weather.genSettings.forecast.temperature.minTimeApartKeyPoints, 0, 27);
+		const maxDays = Math.clamp(Weather.genSettings.forecast.temperature.maxKeyPointsPerMonth, 1, Math.floor(28 / timeApart));
+		const minDays = Math.clamp(Weather.genSettings.forecast.temperature.minKeyPointsPerMonth, 1, maxDays);
 
 		const daysInMonth = DateTime.getDaysOfMonthFromYear(date.year)[date.month - 1];
 		const numberOfKeyPoints = random(minDays - 1, maxDays - 1);
 		const keyPoints = new Map();
 
-		const temperatureRange = Weather.Settings.months[date.month - 1].temperatureRange;
+		const temperatureRange = Weather.genSettings.months[date.month - 1].temperatureRange;
 		while (keyPoints.size < numberOfKeyPoints) {
 			const randomDay = random(timeApart + 1, daysInMonth - timeApart);
 

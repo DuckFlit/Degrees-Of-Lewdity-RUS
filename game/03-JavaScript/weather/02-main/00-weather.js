@@ -47,7 +47,7 @@ const Weather = (() => {
 		const result = round(sunIntensity * clothingModifier * sunBlockModifier, 2);
 		return {
 			sun: sunIntensity,
-			month: Weather.Settings.months[Time.date.month - 1].sunIntensity,
+			month: Weather.genSettings.months[Time.date.month - 1].sunIntensity,
 			weather: outside ? Weather.current.tanningModifier : 1,
 			location: V.location === "forest" ? 0.2 : 1,
 			dayFactor: outside ? Time.date.simplifiedDayFactor : 1,
@@ -58,7 +58,7 @@ const Weather = (() => {
 	}
 
 	function getSunIntensity() {
-		const sunIntensity = Weather.Settings.months[Time.date.month - 1].sunIntensity * Weather.Sky.dayFactor;
+		const sunIntensity = Weather.genSettings.months[Time.date.month - 1].sunIntensity * Weather.Sky.dayFactor;
 		const weatherModifier = V.outside ? Weather.current.tanningModifier : 0;
 		const locationModifier = V.location === "forest" ? 0.2 : 1;
 		return V.outside ? Math.max(sunIntensity * weatherModifier * locationModifier, 0) : 0;
@@ -67,9 +67,9 @@ const Weather = (() => {
 	function setAccumulatedSnow(minutes) {
 		const precipitationIntensity = Weather.type.precipitationIntensity;
 		const temperature = Weather.temperature; // Temperature in Celsius
-		const snowfallRate = setup.WeatherSettings.snow.snowfallRate;
-		const meltingRate = setup.WeatherSettings.snow.meltingRate;
-		const maxSnow = setup.WeatherSettings.snow.maxAccumulation;
+		const snowfallRate = Weather.tempSettings.snow.snowfallRate;
+		const meltingRate = Weather.tempSettings.snow.meltingRate;
+		const maxSnow = Weather.tempSettings.snow.maxAccumulation;
 
 		let accumulatedSnow = V.weatherObj.snow || 0;
 
@@ -88,9 +88,9 @@ const Weather = (() => {
 
 	function setIceThickness(minutes) {
 		const temperature = Weather.temperature; // Temperature in Celsius
-		const freezingRate = setup.WeatherSettings.ice.freezingRate;
-		const meltingRate = setup.WeatherSettings.ice.meltingRate;
-		const maxThickness = setup.WeatherSettings.ice.maxThickness;
+		const freezingRate = Weather.tempSettings.ice.freezingRate;
+		const meltingRate = Weather.tempSettings.ice.meltingRate;
+		const maxThickness = Weather.tempSettings.ice.maxThickness;
 		for (const body of Object.keys(maxThickness)) {
 			console.log(V.weatherObj.ice, body);
 			V.weatherObj.ice[body] = V.weatherObj.ice[body] || 0;
@@ -124,10 +124,13 @@ const Weather = (() => {
 		get: date => Weather.WeatherConditions.getWeather(date),
 		is: weatherType => Weather.WeatherConditions.isWeather(weatherType),
 		isFrozen(key) {
-			return V.weatherObj.ice[key] > setup.WeatherSettings.ice.minThickness[key];
+			return V.weatherObj.ice[key] > Weather.tempSettings.ice.minThickness[key];
 		},
-		get Settings() {
-			return setup.WeatherSettings;
+		get genSettings() {
+			return setup.WeatherGeneration;
+		},
+		get tempSettings() {
+			return setup.WeatherTemperature;
 		},
 		get TooltipDescriptions() {
 			return setup.WeatherDescriptions;
@@ -161,7 +164,7 @@ const Weather = (() => {
 			return Weather.Temperature.isFreezing();
 		},
 		get isSnow() {
-			return V.weatherObj.snow > setup.WeatherSettings.snow.minAccumulation;
+			return V.weatherObj.snow > setup.WeatherTemperature.snow.minAccumulation;
 		},
 		get insideTemperature() {
 			return Weather.Temperature.getInsideTemperature();

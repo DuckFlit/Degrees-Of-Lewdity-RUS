@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
 	Temporary until we have a better system for locations
 	Exceptions are defined here
@@ -47,12 +49,14 @@ setup.Locations = {
 	},
 };
 
-/*
+/**
 	NOTE: When adding animation frameDelay - use multiples of 50 millseconds only
 	(such as 50, 100, 150, 200, 1000, 5000, etc.)
 	If we want smoother animations (than 20 fps):
 		- Change the updateRate in layer-location.js
-*/
+ */
+
+/** @type {LocationImages} */
 setup.LocationImages = {
 	alex_cottage: {
 		folder: "alex_cottage",
@@ -1514,14 +1518,18 @@ setup.LocationImages = {
 			default: {
 				condition: () => !Weather.isSnow,
 				image: "base.png",
-				frameDelay: 200,
-				cycleDelay: () => 5000,
+				animation: {
+					frameDelay: 200,
+					cycleDelay: () => 5000,
+				},
 			},
 			snow: {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
-				frameDelay: 200,
-				cycleDelay: () => 5000,
+				animation: {
+					frameDelay: 200,
+					cycleDelay: () => 5000,
+				},
 			},
 		},
 		emissive: {
@@ -1793,11 +1801,12 @@ setup.LocationImages = {
 				size: 5,
 				alpha: () => getBirdBurnTime() / 720,
 			},
-		},
-		emissive_blood: {
-			image: "emissive_blood.png",
-			color: "#e63e3e66",
-			size: 5,
+			emissive_blood: {
+				condition: () => Weather.bloodMoon,
+				image: "emissive_blood.png",
+				color: "#e63e3e66",
+				size: 5,
+			},
 		},
 	},
 	town: {
@@ -1815,6 +1824,7 @@ setup.LocationImages = {
 				condition: () => !Weather.bloodMoon,
 				image: "drivingcar.png",
 				waitForAnimation: "flickeringLights",
+				alwaysDisplay: false,
 				animation: {
 					frameDelay: 150,
 					cycleDelay: () => random(5, 15) * 1000,
@@ -1827,7 +1837,6 @@ setup.LocationImages = {
 			cat: {
 				condition: () => Time.dayState === "night",
 				image: "cat.png",
-				alwaysDisplay: false,
 				animation: {
 					frameDelay: 300,
 					cycleDelay: () => random(3, 9) * 1000,
@@ -1838,20 +1847,23 @@ setup.LocationImages = {
 			lights: {
 				image: "emissive.png",
 				condition: () => Weather.lightsOn,
+				alwaysDisplay: false,
 				animation: "drivingCar",
 				color: "#deae66",
 				size: 4,
 			},
 			flickeringLights: {
 				waitForAnimation: "drivingCar",
-				condition: () => Weather.lightsOn,
+				condition: grp => {
+					// Do not draw if car animation is running
+					return Weather.lightsOn && !grp.animations.get("drivingCar").inCycle;
+				},
 				image: "emissive_flicker.png",
-				alwaysDisplay: false,
 				color: "#deae66",
 				size: 4,
 				animation: {
 					frameDelay: 250,
-					cycleDelay: () => random(5, 20) * 1000,
+					cycleDelay: () => random(2, 20) * 1000,
 				},
 			},
 		},
