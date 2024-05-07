@@ -61,9 +61,11 @@ Weather.Sky.Effects.create({
 		this.effects[0].draw((drawCanvas, obj) => {
 			const glowSize = obj.size ?? this.defaultSize;
 			const glowColor = obj.color ?? this.defaultColor;
+			const glowAlpha = obj.alpha ?? this.defaultAlpha;
 			drawCanvas.ctx.shadowColor = glowColor;
 			drawCanvas.ctx.shadowBlur = glowSize;
 			drawCanvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
+			drawCanvas.globalAlpha = glowAlpha;
 			return drawCanvas;
 		});
 		this.canvas.drawImage(this.effects[0].canvas.element);
