@@ -10,7 +10,7 @@ Weather.Sky.AnimationGroup = class AnimationGroup {
 	}
 
 	/**
-	 * Add child-animations if possible
+	 * Add child-animations if eligible
 	 */
 	init() {
 		this.animations.forEach(animation => {

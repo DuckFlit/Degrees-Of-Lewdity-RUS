@@ -27,6 +27,7 @@ Weather.Thermometer = (() => {
 	const element = $("<div />", { id: "characterTemperature" });
 	const tooltipElement = $("<div />", { id: "characterTemperatureTooltip" });
 	const loadPromises = [];
+	const enabled = true;
 	let allImagesLoaded = false;
 
 	function load() {
@@ -149,6 +150,7 @@ Weather.Thermometer = (() => {
 	return Object.create({
 		element,
 		tooltipElement,
+		enabled,
 		load,
 		update,
 		updateTooltip,

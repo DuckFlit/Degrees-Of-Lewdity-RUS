@@ -181,18 +181,26 @@ Weather.Sky.Effects.create({
 		} else {
 			await loadImage(this.key, this.obj);
 		}
-	console.log("THIS ANIMASTIDKSAN",this.animations);
 	},
 
 	draw(onDraw) {
 		for (const obj of this.animations.values()) {
-			if (onDraw) onDraw(this.canvas, obj);
-			if (obj.animation) {
-				obj.animation.draw();
-			} else if (!obj.condition || obj.condition && obj.condition()) {
-				const yPosition = this.canvas.element.height - obj.image.height;
+			// Preprocess based on effect
+			if (onDraw) {
+				onDraw(this.canvas, obj);
+			}
+			
+			// Check conditions
+			if (obj.condition && !obj.condition(this.parentLayer.animationGroup)) {
+				continue;
+			}
 
-				// If it's a spritesheet, we can choose which frame to draw, if we don't want an animation
+			if (obj.animation) { // If animation, let the animation object draw the right frame
+				obj.animation.draw();
+			} else { // If static image
+				const yPosition = this.canvas.element.height - obj.image.height;
+				
+				// If it's a spritesheet, we can choose which frame to draw
 				const frame = typeof obj.frame === "function" ? obj.frame() : obj.frame;
 				const frameX = Math.clamp((frame ?? 0) * this.canvas.element.width, 0, obj.image.width - this.canvas.element.width);
 				

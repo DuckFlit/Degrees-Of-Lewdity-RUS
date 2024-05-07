@@ -5,7 +5,6 @@
 Weather.Sky.Effects.create({
 	name: "skyGradiant",
 	init() {
-		console.log("RUNNING SKY GRADIANET", this.position, this)
 		this.scaledRadius = this.radius * setup.SkySettings.scale;
 	},
 	draw() {
