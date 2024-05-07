@@ -23,9 +23,8 @@ Weather.Sky.Animation = class Animation {
 
 		this.timeSinceLastFrame = 0;
 		this.timeSinceCycleEnd = 0;
-		this.inCycle = true;
+		this.inCycle = false;
 		this.enabled = false;
-		this.canDraw = true;
 
 		// Initialize the start delay if any
 		this.startDelayRemaining = this.startDelay;
@@ -40,13 +39,11 @@ Weather.Sky.Animation = class Animation {
 	}
 
 	canUpdate(parentAnimationGroup) {
-		this.canDraw = true;
 		if (this.waitForAnimation && parentAnimationGroup.isAnimationRunning(this.waitForAnimation)) {
-			if (!this.alwaysDisplay) this.canDraw = false;
 			return false;
 		}
 		if (this.condition) {
-			return this.condition();
+			return this.condition(parentAnimationGroup);
 		}
 		return true;
 	}
@@ -92,6 +89,10 @@ Weather.Sky.Animation = class Animation {
 		this.timeSinceLastFrame += deltaTime;
 		if (this.timeSinceLastFrame >= this.frameDelay) {
 			this.currentFrame = (this.currentFrame + 1) % this.numFrames;
+			// Also set frame for child animations
+			this.childAnimations.forEach(animation => {
+				animation.currentFrame = this.currentFrame;
+			});
 			this.timeSinceLastFrame -= this.frameDelay; // Compensate for frame delay overshoot
 			if (this.currentFrame === 0) {
 				this.inCycle = false;
@@ -103,11 +104,7 @@ Weather.Sky.Animation = class Animation {
 	}
 
 	draw() {
-		if (this.condition && !this.condition()) {
-			return;
-		}
-
-		if (!this.parentAnimation && !this.alwaysDisplay && !this.canDraw) {
+		if (!this.alwaysDisplay && this.currentFrame === 0) {
 			return;
 		}
 
@@ -115,10 +112,5 @@ Weather.Sky.Animation = class Animation {
 		const width = this.targetCanvas.element.width;
 		const height = this.image.height;
 		this.targetCanvas.ctx.drawImage(this.image, frameX, 0, width, height, this.startX, this.startY, width, height);
-
-		// Also draw child animations
-		this.childAnimations.forEach(animation => {
-			animation.currentFrame = this.currentFrame;
-		});
 	}
 };

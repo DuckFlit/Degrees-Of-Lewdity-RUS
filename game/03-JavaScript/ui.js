@@ -683,6 +683,7 @@ function updateOptions() {
 		if (T.key !== "options") {
 			T.buttons.setActive(T.buttons.activeTab);
 		}
+		Weather.Observables.checkForUpdate();
 	}
 }
 window.updateOptions = updateOptions;

@@ -63,6 +63,29 @@ function updateChildActivity(childId) {
 }
 DefineMacro("updateChildActivity", updateChildActivity);
 
+function getChildDays(childId) {
+	const child = V.children[childId];
+	if (!child) return null;
+
+	const date1 = child.born.day + " " + child.born.month + " " + child.born.year;
+	const date2 = Time.monthDay + " " + Time.monthName + " " + Time.year;
+	const calc = Math.abs(Date.parse(date2) - Date.parse(date1));
+	let childTotalDaysCap = 0;
+	switch (child.type) {
+		case "human":
+		case "wolf":
+		case "hawk":
+			childTotalDaysCap = 200;
+			break;
+		default:
+			childTotalDaysCap = 0;
+			break;
+	}
+	const childTotalDays = Math.clamp(Math.ceil(calc / (1000 * 60 * 60 * 24)), 0, childTotalDaysCap);
+	return childTotalDays;
+}
+window.getChildDays = getChildDays;
+
 function humanChildActivity(childId) {
 	const child = V.children[childId];
 	if (!child) return null;
@@ -247,13 +270,13 @@ function hawkChildActivity(childId) {
 	let activity = [];
 
 	if (between(T.childTotalDays, 0, 100)) {
-		if (Time.dayState === "night" && ["sleep", "rest", "brood"].includes(V.bird.activity)) {
+		if (Time.dayState === "night" && V.bird.state === "home" && ["sleep", "rest", "brood"].includes(V.bird.activity)) {
 			activity = activity.concat(["sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleeping"]);
 		} else {
 			activity = activity.concat(["sleeping", "sleeping", "sleeping", "crying", "reaching", "flap", "flap", "perch", "bathe"]);
 		}
 	} else if (between(T.childTotalDays, 100, 200)) {
-		if (Time.dayState === "night" && ["sleep", "rest", "brood"].includes(V.bird.activity)) {
+		if (Time.dayState === "night" && V.bird.state === "home" && ["sleep", "rest", "brood"].includes(V.bird.activity)) {
 			activity = activity.concat(["sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleepingWithGreatHawk", "sleeping"]);
 		} else {
 			activity = activity.concat(["sleeping", "sleeping", "crying", "reaching", "flap", "perch", "batheSelf"]);

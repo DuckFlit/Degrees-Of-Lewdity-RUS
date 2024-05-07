@@ -76,6 +76,7 @@ Weather.Sky.Effects.create({
 			numFrames,
 			cycleDelay: 0,
 			offset: frameTotalWidth,
+			condition: this.drawCondition,
 		};
 
 		this.animation = new Weather.Sky.Animation(animationOptions);
