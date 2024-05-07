@@ -60,11 +60,21 @@ Weather.Sky.Effects.create({
 		this.x = (this.x + this.images.overlay.width) % this.images.overlay.width;
 
 		this.canvas.ctx.globalAlpha = this.factor * this.baseAlpha;
-		this.canvas.ctx.drawImage(this.images.overlay, Math.round(this.x - this.images.overlay.width * this.scaleFactor), 0, this.images.overlay.width * this.scaleFactor, this.images.overlay.height * this.scaleFactor
+		this.canvas.ctx.drawImage(
+			this.images.overlay,
+			Math.round(this.x - this.images.overlay.width * this.scaleFactor),
+			0,
+			this.images.overlay.width * this.scaleFactor,
+			this.images.overlay.height * this.scaleFactor
 		);
 
 		if (this.x > this.canvas.element.width - this.images.overlay.width * this.scaleFactor) {
-			this.canvas.ctx.drawImage(this.images.overlay, Math.round(this.x), 0, this.images.overlay.width * this.scaleFactor, this.images.overlay.height * this.scaleFactor
+			this.canvas.ctx.drawImage(
+				this.images.overlay,
+				Math.round(this.x),
+				0,
+				this.images.overlay.width * this.scaleFactor,
+				this.images.overlay.height * this.scaleFactor
 			);
 		}
 	},

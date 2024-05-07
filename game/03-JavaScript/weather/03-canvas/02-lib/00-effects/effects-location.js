@@ -103,7 +103,7 @@ Weather.Sky.Effects.create({
 	},
 	draw(canvas, layerCanvas) {
 		// Temporarily disable reflections until next update
-		return;
+		
 
 	},
 });

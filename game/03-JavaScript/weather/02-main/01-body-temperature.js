@@ -148,6 +148,8 @@ Weather.BodyTemperature = (() => {
 	 * This is to not penalise the player too much from wearing a lot of clothes, especially in room temperature
 	 *
 	 * @param {number} outsideTemperature The current air temperature.
+	 * @param temperature
+	 * @param warmth2
 	 * @returns {number} The adjusted insulation factor.
 	 */
 	function calculateHeatDissipation(temperature, warmth2) {
@@ -171,6 +173,8 @@ Weather.BodyTemperature = (() => {
 	/**
 	 * Calculates heat generation based on the current activity level and difference from the base body temperature.
 	 * Increases heat generation if body temperature is below base and decreases if above.
+	 *
+	 * @param bodyTemperature
 	 */
 	function calculateHeatGeneration(bodyTemperature) {
 		const activityHeatGeneration = settings.activityRate * activityLevel();

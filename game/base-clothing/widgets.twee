@@ -1815,6 +1815,39 @@
 	<</if>>
 <</widget>>
 
+<<widget "getDressedList">>
+	<<set _slots to []>>
+	<<for _slot range setup.clothes_all_slots>>
+		<<if $carried[_slot].name isnot "naked">>
+			<<if $carried[_slot].outfitSecondary>>
+				<<if $carried[_slot].outfitSecondary[0].name is $carried[_slot].outfitSecondary[1]>>
+					<<set _slots.pushUnique(_slot)>>
+				<</if>>
+			<<else>>
+				<<set _slots.pushUnique(_slot)>>
+			<</if>>
+		<</if>>
+	<</for>>
+
+	<<for _item range _slots>>
+		<<capture _item, _slots>>
+			<<link [[`Put on your ${$carried[_item].name}`|$passage]]>>
+				<<if $worn.upper.outfitSecondary and $worn.upper.outfitSecondary[0] is $worn.upper.outfitSecondary[1] and _item is "upper" or _item is "lower">>
+					<<upperruined>>
+				<</if>>
+				<<run _slots.delete(_item)>>
+				<<generalOn _item $carried[_item].index>>
+			<</link>>
+		<</capture>>
+		<br>
+	<</for>>
+	<br>
+	<<if _slots.length gt 1>>
+		<<link [[Get fully dressed|$passage]]>><<clotheson>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
 <<widget "peppersprays">>
 	<<if $options.pepperSprayDisplay isnot "none">>
 		<div tooltip="<span class='def'>Pepper sprays: $spray / $spraymax</span>" id="pepper-sprays" class="pepper-sprays">

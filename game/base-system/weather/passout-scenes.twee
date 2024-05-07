@@ -2,36 +2,105 @@
 /* This widget is run on its own after passout */
 <<widget "passouttemperature">>
 	<<cleareventpool>>
+	<<outfitChecks>>
 	/* FROSTBITE */
 	<<if _passout is "cold">>
 		<<set V.player.bodyTemperature to Weather.tempSettings.minTemperature>>
 		You pass out from the cold.
 		<br><br>
 		<<switch $location>>
-			<<case "">>
+			<<case "asylum">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Passout Asylum]]>><</link>>
+				<</addinlineevent>>
+			<<case "farm">>
+				<<if $bus.includes("farm")>>/* If not the Underground Farm */
+					<<addinlineevent "molest" 1>>
+						<<link [[Everything fades to black...|Passout Hypothermia Molest]]>><<set $molestationstart to 1>><</link>>
+					<</addinlineevent>>
+				<<else>>
+					<<addinlineevent "livestock" 1>>
+						<<link [[Everything fades to black...|Livestock Hypothermia]]>><</link>>
+					<</addinlineevent>>
+				<</if>>
+			<<case "prison">>
+					<<addinlineevent "default" 1>>
+						<<link [[Everything fades to black...|Passout Prison 2]]>><</link>>
+					<</addinlineevent>>
+			<<case "sea">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Passout Sea]]>><</link>>
+				<</addinlineevent>>
+			<<case "tentworld">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Passout Tentacle World]]>><</link>>
+				<</addinlineevent>>
+			<<case "tower">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Moor Bird Wake]]>><</link>>
+				<</addinlineevent>>
 			<<default>>
 				/* Generic events */
 				<<addinlineevent "ambulance" 0.1>>
-					<<link [[Everything fades to black...|Ambulance rescue]]>><</link>>
+					<<link [[Everything fades to black...|Ambulance rescue]]>><<set $passoutReason to "hypothermia">><</link>>
 				<</addinlineevent>>
-				<<addinlineevent "generic" 1>>
-					<<link [[Everything fades to black...|Passout Hypothermia]]>><</link>>
+				<<addinlineevent "molest" 1>>
+					<<link [[Everything fades to black...|Passout Hypothermia Molest]]>><<set $molestationstart to 1>><</link>>
 				<</addinlineevent>>
 		<</switch>>
 	/* HEATSTROKE */
 	<<elseif _passout is "heat">>
-	<<set V.player.bodyTemperature to Weather.tempSettings.maxTemperature>>
+		<<set V.player.bodyTemperature to Weather.tempSettings.maxTemperature>>
 		You pass out from the heat.
 		<br><br>
 		<<switch $location>>
-			<<case "">>
+			<<case "asylum">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Passout Asylum]]>><</link>>
+				<</addinlineevent>>
+			<<case "farm">>
+				<<if $bus.includes("farm")>>/* If not the Underground Farm */
+					<<addinlineevent "generic" 1>>
+						<<link [[Everything fades to black...|Passout Heatstroke]]>><</link>>
+					<</addinlineevent>>
+					<<if !_fullyNaked>>
+						<<addinlineevent "strip" 1>>
+							<<link [[Everything fades to black...|Passout Heatstroke Strip]]>><<set $molestationstart to 1>><</link>>
+						<</addinlineevent>>
+					<</if>>
+				<<else>>
+					<<addinlineevent "livestock" 1>>
+						<<link [[Everything fades to black...|Livestock Heatstroke]]>><</link>>
+					<</addinlineevent>>
+				<</if>>
+			<<case "prison">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Passout Prison 2]]>><</link>>
+				<</addinlineevent>>
+			<<case "sea">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Passout Sea]]>><</link>>
+				<</addinlineevent>>
+			<<case "tentworld">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Passout Tentacle World]]>><</link>>
+				<</addinlineevent>>
+			<<case "tower">>
+				<<addinlineevent "default" 1>>
+					<<link [[Everything fades to black...|Moor Bird Wake]]>><</link>>
+				<</addinlineevent>>
 			<<default>>
 				/* Generic events */
 				<<addinlineevent "ambulance" 0.1>>
-					<<link [[Everything fades to black...|Ambulance rescue]]>><</link>>
+					<<link [[Everything fades to black...|Ambulance rescue]]>><<set $passoutReason to "hyperthermia">><</link>>
 				<</addinlineevent>>
+				<<if !_fullyNaked>>
+					<<addinlineevent "strip" 1>>
+						<<link [[Everything fades to black...|Passout Heatstroke Strip]]>><<set $molestationstart to 1>><</link>>
+					<</addinlineevent>>
+				<</if>>
 				<<addinlineevent "generic" 1>>
-					<<link [[Everything fades to black...|Passout Hyperthermia]]>><</link>>
+					<<link [[Everything fades to black...|Passout Heatstroke]]>><</link>>
 				<</addinlineevent>>
 		<</switch>>
 	<</if>>
@@ -42,14 +111,351 @@
 To get the previous major area passage, use: $safePassage (for links in the last passage, unless we want to link the player elsewhere)
 */
 
- /* Generic frostbite passout */
-:: Passout Hypothermia
-Hypothermia placeholder passage
+ /* Generic frostbite passout: dangerous */
+:: Passout Hypothermia Molest
+<<generate1>><<person1>>
+
+<<effects>>
+<<if $molestationstart is 1>>
+	You awaken to find a <<generate1>><<person1>><<person>> on top of you. "Hey there, baby," <<he>> croons. "You were shivering something awful, so I figured I'd help you warm up. I know a good way to generate some body heat..." <<He>> leers down at you, rubbing lewdly against your body.
+	<br><br>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $enemyanger to 0>>
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Passout Hypothermia Molest Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Passout Hypothermia Molest]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Passout Hypothermia Molest Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	The <<person>> pushes <<himself>> off you with a satisfied groan, grinning at you. "There, all warmed up. You're lucky a good Samaritan like me was here to help." <<He>> gives your cheek a condescending pat before walking off with a chuckle. <<tearful>> you stand up and rub your hands together, teeth chattering.
+
+	<<endcombat>>
+	<<clotheson>>
+<<elseif $enemyhealth lte 0>>
+	The <<person>> grunts as you manage to push <<him>> off of you with one last <<= $submissive lte 850 ? "vicious" : "desperate">> shove. "You fuckin' <<bitch>>!" <<he>> shouts after you as you scramble away. "If you didn't want someone to help you warm up, you shouldn't've been walking around like that!" <<tearful>> you sprint away from <<him>>. The exercise gets your blood pumping and distracts you from the cold, at least.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+
+<<link [[Next|$safePassage]]>><</link>>
+
+
+ /* Generic heatstroke passout: dangerous */
+:: Passout Heatstroke Strip
+
+<<if $molestationstart is 1>>
+	You awaken to find a <<generate1>><<person1>><<person>> on top of you. "Hey there, hot stuff," <<he>> purrs. "Heatstroke got to you, huh? Let me give you a hand with that." <<He>> starts tugging at your clothes.
+	<br><br>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<molested>>
+	<<set $enemyno to 1>><<set $enemynomax to 1>>
+	<<maninit>>
+	<<npcstripall>>
+	<<npcidlegenitals>>
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+<br><br>
+<<stateman>>
+<<actionsman>>
+
+<<outfitChecks>>
+<<if _fullyNaked or $enemyarousal gte $enemyarousalmax or $enemyhealth lte 0>>
+	<span id="next"><<link [[Next|Passout Heatstroke Strip Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Passout Heatstroke Strip]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Passout Heatstroke Strip Finish
+<<effects>>
+<<outfitChecks>>
+
+<<if _fullyNaked>>
+	With one last tug, the <<person>> rips the last of your clothes off. <<He>> rakes <<his>> eyes down your nude body. "Nice," <<he>> says appreciatively. <<He>> climbs to <<his>> feet, tucking your clothes under <<his>> arm. "There, you should be plenty cool now."
+	<br><br>
+
+	<<tearful>> you struggle to sit up, still weak and overheated. You give <<him>> a <<= $submissive lte 850 ? "dirty" : "pleading">> look.
+	<br><br>
+
+	"What, no thank you?" The <<person>> clucks <<his>> tongue and shakes <<his>> head. "Well, I guess I'll just have to keep these as compensation for my good deed. Stay cool, <<girl>>."
+	<<if $beauty gte ($beautymax / 7) * 4>>
+		<<He>> pauses. "If you can, anyway. That might be hard to do, you <i>are</i> pretty hot." <<He>> leaves, chuckling at <<his>> own pun.
+	<<else>>
+		<<He>> winks at you. "Cute <<girls>> like you shouldn't be walking around with clothes on, anyway."
+	<</if>>
+	<<set $stealtextskip to 1>>
+	<<stealclothes>>
+
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	The <<person>> falters as <<he>> convulses in orgasmic bliss, and you take advantage of the opportunity to tug free from <<his>> grasp. "Fine, alright, keep your clothes," <<he>> pants. "But don't go crying if the next person to help your overheated arse isn't as kind as me."
+
+<<elseif $enemyhealth lte 0>>
+	The <<person>> grunts as you manage to push <<him>> off of you with one last <<= $submissive lte 850 ? "vicious" : "desperate">> shove. "You fuckin' <<bitch>>!" <<he>> shouts after you as you scramble away. "I was just trying to help you cool down!"
+<</if>>
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|$safePassage]]>><</link>>
+
+
+ /* Generic heatstroke passout */
+:: Passout Heatstroke
+<<effects>>
+<<generate1>><<person1>>
+<<set _exposed to $exposed gte 2>>
+<<returnCarried>>
+<<strip>>
+<<upperwear 14 "white">>/* replace with a thin sheet, should a spriter make a proper bedsheet */
+You wake up, feeling a little better than you remember. A thin towel covers your body, keeping you modest but cool. You <<if $player.perceived_breastsize gte 2 or $player.gender_appearance is "f">>hold it to your chest as you <</if>>sit up and get a look at your surroundings. It looks like you're in
+<<switch $bus>>
+	<<case "domus" "danube" "barb" "residential" "wolf">>a living room.
+	<<case "high" "commercial">>some sort of breakroom.
+	<<case "farm">>a barn.
+	<<case "forest">>an unfamiliar cabin.
+	<<default>>
+		<<if $bus.includes("lake")>>
+			a shady area near the lake.
+		<<else>>
+			the backseat of a stranger's car.
+		<</if>>
+<</switch>>
+<br><br>
+
+"You're awake! I'm so glad, I was about to call an ambulance!" a <<person>> cries, rushing to your side. <<He>> offers you a bottle of water, which you take <<if $trauma gte ($traumamax / 5) * 2>>with some hesitation <</if>>and pop open to drink. You find it gone much faster than you expected.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"Did you...save me? Thank you..."
+<<elseif $speech_attitude is "bratty">>
+	"<<if !_exposed>>Where are my clothes? <</if>>What did you do to me?"
+<<else>>
+	"Thank you! I don't even remember what happened..."
+<</if>>
+<br><br>
+
+<<He>> takes the empty bottle and <<= _exposed ? "smiles at you" : "fetches your clothes">>.
+<<if _exposed>>
+	"It seems like you collapsed from the heat. An impressive feat, given your state of undress.
+	<<switch Time.season>>
+		<<case "summer">>
+			I don't blame you for stripping down this time of the year though. Just be careful, it's not safe for <<girls>> like you to be so exposed around here."<<if $molesttrait gte 1 or $rapetrait gte 1>> <<He>> doesn't even know the half of it.<</if>>
+		<<case "autumn">>
+			The weather's getting cooler, but that's no excuse to overexert yourself. Even with no clothes on."
+		<<case "winter">>
+			I don't think that should even be possible in the winter. <span class="red">Maybe you should report this to the developers</span>?"
+		<<default>>
+			It feels like every year gets hotter sooner, doesn't it? But you should probably be more careful walking around like that."
+	<</switch>>
+<<else>>
+	"Sorry about stripping you. It seemed like you collapsed from the heat, so I thought it'd be a good idea to take everything off to help you out." <<He>> offers the bundle of clothing to you. "You may want to choose what you put on a little more carefully.
+	<<switch Time.season>>
+		<<case "summer">>
+			The heat is killer this time of year." <<He>> grimaces sympathetically.
+		<<case "autumn">>
+			The weather's cooling down, but you don't need to bundle up quite so much yet!" <<He>> chuckles lightly.
+		<<case "winter">>
+			I'm not sure how you managed to get heatstroke in the winter, but a few less layers may do you some good." <<He>> gives you a wry smile.
+		<<default>>
+			The weather's warming up, after all." <<He>> smiles.
+	<</switch>>
+<</if>>
+<br><br>
+
+The <<person>> backs away. "I'll give you some <<= _exposed ? "space" : "privacy">>."
+<br><br>
+
+<<if $promiscuity gte 35>>
+	<<link [[`Offer to thank ${$NPCList[0].pronouns.him} with your body`|Heatstroke Rescue Thank]]>><</link>><<promiscuous3>>
+	<br>
+<</if>>
+<<if !_exposed>>
+	<<link [[Get dressed|Heatstroke Rescue Dress]]>><<set $phase to 1>><</link>>
+<<else>>
+	<<link [[Wear the towel|Heatstroke Rescue End]]>><</link>>
+<</if>>
+
+:: Heatstroke Rescue Thank
+<<effects>>
+
+You put a hand on the <<persons>> thigh.
+<<if $speech_attitude is "meek">>
+	"Th-that was really...<i>really</i> sweet of you to help me... Is there s-some way I can return the favor...?"
+<<elseif $speech_attitude is "bratty">>
+	"You really got me out of a bad situation. I don't wanna owe you anything, so how about you let me thank you properly?"
+<<else>>
+	"You really saved <<if $cow gte 6>>my hide<<else>>me<</if>>. There must be some way I could thank you."
+<</if>>
+<br><br>
+
+<<set $seductiondifficulty to 6000>>
+<<seductioncheck>>
+<br><br>
+<<seductionskilluptext>>
+<<seductionskilluse>>
+
+<<if $seductionrating gte $seductionrequired>>
+	The <<person>> is caught off-guard for a moment, but soon laughs and returns to your side. "Well, someone's got <<pher>> energy back! I wouldn't say no to a little appreciation..."
+	<br><br>
+	<<link [[Next|Heatstroke Rescue Thank Sex]]>><<set $sexstart to 1>><</link>>
+<<else>>
+	The <<person>> gives an awkward laugh. "I, uh, appreciate your offer. But I don't think that would be a good idea, especially while you're recovering."
+	<br><br>
+
+	<<He>> smiles and walks out of sight, giving you space to <<= _exposed ? "collect yourself" : "get dressed">>.
+	<br><br>
+
+	<<if !_exposed>>
+		<<link [[Get dressed|Heatstroke Rescue Dress]]>><<set $phase to 1>><</link>>
+	<<else>>
+		<<link [[Wear the towel|Heatstroke Rescue End]]>><</link>>
+	<</if>>
+<</if>>
+:: Heatstroke Rescue Thank Sex
+
+<<if $sexstart is 1>>
+    <<set $sexstart to 0>>
+    <<consensual>>
+    <<set $consensual to 1>>
+    <<neutral 1>>
+    <<maninit>>
+    <<set $enemytrust += 100>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+<span id="next"><<link [[Next|Heatstroke Rescue Thank Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+<span id="next"><<link [[Next|Heatstroke Rescue Thank Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Heatstroke Rescue Thank Sex Finish
+<<set $outside to 1>><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<He>> laughs again as <<he>> fans himself, face flushed. "Now <i>I'm</i> feeling a little hot! Glad to see you've healed so much, <<girl>>. Take as much time as you need, alright?"
+	<br><br>
+
+	The <<person>> pulls away from you, giving you some space.
+	<br><br>
+
+<<elseif $enemyhealth lte ($enemyhealthmax / 2)>>
+	The <<person>> pulls away from you, hands up. "Woah, woah, take it easy! If you didn't want it you shouldn't've offered in the first place! Hurry up and get yourself together."
+	<br><br>
+
+	<<tearful>> you pull yourself together. <<He>> gives you some space.
+	<br><br>
+
+<<else>>
+	The <<person>> pulls away from you, hands up. "Alright. Take as much time as you need."
+	<br><br>
+<</if>>
+
+<<if !_exposed>>
+	<<link [[Get dressed|Heatstroke Rescue Dress]]>><<set $phase to 1>><</link>>
+<<else>>
+	<<link [[Wear the towel|Heatstroke Rescue End]]>><</link>>
+<</if>>
+
+:: Heatstroke Rescue Dress
+<<effects>>
+
+It occurs to you that it might be best to put on fewer clothes for right now. Anything else can be sent to your wardrobe.
+<br>
+
+<<getDressedList>>
+
+<<link [[Just wear the towel|Heatstroke Rescue End]]>><<strip>><<returnCarried>><<if $worn.upper.name isnot "large towel">><<upperwear 14 "white">><</if>><</link>>
+<br>
+<<link [[Finish dressing|Heatstroke Rescue End]]>><</link>>
+
+:: Heatstroke Rescue End
+<<effects>>
+
+You thank your rescuer, and <<he>> nods. "Try and be more mindful of the heat from now on," <<he>> replies with a wave. You wave back and resume your journey.
+
 <br><br>
 <<link [[Next|$safePassage]]>><</link>>
 
- /* Generic heatstroke passout */
-:: Passout Hyperthermia
-Hyperthermia placeholder passage
+
+:: Livestock Heatstroke
+<<effects>>
+<<npc Remy>><<generate2>><<generate3>>
+<<set _cow to $player.gender_appearance is "m" ? "bull" : "cow">>
+
+You awaken in a dingy windowless room, the stone walls lit only by a flaming torch held by a <<person2>><<person>>. <<He>> and a <<person3>><<person>> stand, looking down at you. You're lying on a bed of straw.
 <br><br>
-<<link [[Next|$safePassage]]>><</link>>
+
+<<person1>>"Awake I see," says a voice. It's Remy. <<He>> walks down a set of stone steps leading into the room, and kneels beside you.
+<br><br>
+
+"We found you passed out. You caused quite the worry, but my examination found no problems. You simply overheated." <<He>> strokes your hair. "<<= $farmGateCD is 0 ? "One of my men said you were acting up tonight. Maybe next time you'll be a good _cow and behave, hmm?" : "I'm proud you're being such a hard worker, but we can't have such a valuable member of our herd fainting, now can we?">> All that exercise must have gotten to you. Here, <<girl>>."
+<br><br>
+
+Remy holds up a bowl of water, and you realise just how parched you are. He lifts the bowl to your lips, and you gulp down the cool water greedily. Your desperation to slake your thirst causes some to spill on your <<chest>> and <<he>> chuckles. When the last drop of water is gone, you sigh with relief.
+<br><br>
+
+Remy sets down the bowl and <<= $cow gte 2 and $transformationParts.cow.horns isnot "hidden" ? "rubs the base of your horns" : "pets your head">>. "That's a good <<girl>>. You'll take care next time, won't you?"
+<br><br>
+
+<<link [[Listen|Livestock Passout 2]]>><<set $phase to 0>><<livestock_obey 1>><<transform cow 1>><</link>><<gobey>>
+<br>
+<<link [[Push away|Livestock Passout 2]]>><<set $phase to 1>><<livestock_obey -1>><<trauma -6>><</link>><<lobey>><<ltrauma>>
+
+
+:: Livestock Hypothermia
+<<effects>>
+
+You awaken in a dingy windowless room, the stone walls lit only by a flaming torch held by a <<person2>><<person>>. <<He>> and a <<person3>><<person>> stand, looking down at you. You're lying on a bed of straw.
+<br><br>
+
+<<person1>>"Awake I see," says a voice. It's Remy. <<He>> walks down a set of stone steps leading into the room, and kneels beside you.
+<br><br>
+
+"We found you passed out and shivering. You caused quite the worry, but my examination found no problems. You simply got too cold." <<He>> strokes your hair.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"Um... maybe if I had some clothes, that would help?" you whisper.
+<<elseif $speech_attitude is "bratty">>
+	"Yeah, well, maybe I wouldn't freeze to death if you'd give me some clothes," you say.
+<<else>>
+	"Can I get some clothes?" you ask. "It's too cold to go around naked like this."
+<</if>>
+<br><br>
+
+Remy purses <<his>> lips. "Now, now, <<girl>>, don't be silly. Cattle don't wear clothes." <<He>> strokes your hair. "You just need to get your blood pumping, that's all. I'm sure we can find a job that'll keep you plenty active. You'll warm right up, you'll see."
+<br><br>
+
+<<link [[Listen|Livestock Passout 2]]>><<set $phase to 0>><<livestock_obey 1>><<transform cow 1>><</link>><<gobey>>
+<br>
+<<link [[Push away|Livestock Passout 2]]>><<set $phase to 1>><<livestock_obey -1>><<trauma -6>><</link>><<lobey>><<ltrauma>>

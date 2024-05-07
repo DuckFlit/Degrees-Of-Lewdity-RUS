@@ -199,10 +199,10 @@ setup.WeatherGeneration = {
 			value: 4,
 			probability: {
 				// Disabled for now since it's not implemented yet
-				summer: 0, //0.02,
-				winter: 0, //0.005,
-				spring: 0, //0.015,
-				autumn: 0, //0.01,
+				summer: 0, // 0.02,
+				winter: 0, // 0.005,
+				spring: 0, // 0.015,
+				autumn: 0, // 0.01,
 			},
 			cloudCount: {
 				small: () => 0,

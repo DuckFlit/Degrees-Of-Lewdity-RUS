@@ -69,7 +69,7 @@ function getChildDays(childId) {
 
 	const date1 = child.born.day + " " + child.born.month + " " + child.born.year;
 	const date2 = Time.monthDay + " " + Time.monthName + " " + Time.year;
-	let calc = Math.abs(Date.parse(date2) - Date.parse(date1));
+	const calc = Math.abs(Date.parse(date2) - Date.parse(date1));
 	let childTotalDaysCap = 0;
 	switch (child.type) {
 		case "human":
@@ -81,7 +81,7 @@ function getChildDays(childId) {
 			childTotalDaysCap = 0;
 			break;
 	}
-	let childTotalDays = Math.clamp(Math.ceil(calc / (1000 * 60 * 60 * 24)), 0, childTotalDaysCap);
+	const childTotalDays = Math.clamp(Math.ceil(calc / (1000 * 60 * 60 * 24)), 0, childTotalDaysCap);
 	return childTotalDays;
 }
 window.getChildDays = getChildDays;

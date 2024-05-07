@@ -3,46 +3,44 @@
 <<set _earSlimeEnableSwimwear to true>>
 <<set $forest to 30>><<set $bus to "lakeshore">><<wearoutfit>>
 
-<<if Weather.isSnow>>
-	<<if $laketeenspresent is 1>>
-	You are at the shore of the frozen lake. Students hang out nearby, while others practise ice skating.
-	<<elseif Weather.dayState is "night">>
-		<<if Time.isWeekEnd()>>
-		You are at the shore of the frozen lake. You can see faint light from a fire at the campsite across the water.
-		<<else>>
-		You are at the shore of the frozen lake. Dark waters ripple unseen beneath the surface.
-		<</if>>
-	<<elseif Weather.dayState is "dusk" or Weather.dayState is "dawn">>
-		You are at the shore of the frozen lake. The sun reflects off the ice.
+You are at the shore of the <<= Weather.isFrozen("lake") ? "frozen lake" : "lake">>.
+
+<<if Time.hour gte 15 and $halloween is 1 and Time.monthDay is 31 and $halloween_lake is 1>>
+	 There are several people hanging out for the Halloween party.
+<<elseif $laketeenspresent is 1>>
+	<<if Weather.isFrozen("lake")>>
+		Students hang out nearby, while others practise ice skating.
 	<<else>>
-		You are at the shore of the frozen lake. You can see your reflection in its surface. You could walk out to the swimmers docks if you wanted.
+		<<if Time.season isnot "winter">>There are several people playing in the water. <</if>>You can see the swimmers dock with a few students sitting on it.
 	<</if>>
-	<<if Weather.precipitation is "snow">>
-		Snow settles on its surface.
+<<elseif Time.dayState is "night">>
+	<<if Time.isWeekEnd()>>
+		You can see faint light from a fire at the campsite across the water.
 	<<else>>
-		The ice is serene.
+		Dark water ripples unseen.
+	<</if>>
+<<elseif Time.dayState is "dusk" or Time.dayState is "dawn">>
+	<<if Weather.isFrozen("lake")>>
+		The sun reflects off the ice.
+	<<else>>
+		Undulating waves splash against the sand and rocks. A bear eats fish on the opposite bank.
 	<</if>>
 <<else>>
-	<<if Time.hour gte 15 and $halloween is 1 and Time.monthDay is 31 and $halloween_lake is 1>>
-		You are at the shore of the lake. There are several people hanging out for the Halloween party.
-	<<elseif $laketeenspresent is 1>>
-		You are at the shore of the lake. There are several people playing in the water. You can see the Swimmers Dock with a few students sitting on it.
-	<<elseif Weather.dayState is "night">>
-		<<if Time.isWeekEnd()>>
-			You are at the shore of the lake. You can see faint light from a fire at the campsite across the water.
-		<<else>>
-			You are at the shore of the lake. Dark water ripples unseen.
-		<</if>>
-	<<elseif Weather.dayState is "dusk" or Weather.dayState is "dawn">>
-		You are at the shore of the lake. Undulating waves splash against the sand and rocks. A bear eats fish on the opposite bank.
+	You can see your reflection in its surface.
+	<<if Weather.isFrozen("lake")>>
+		You could walk out to the swimmers dock if you wanted.
 	<<else>>
-		You are at the shore of the lake. You can see your reflection in its surface. The Swimmers Dock sits idle out on the water.
+		The swimmers dock sits idle out on the water.
 	<</if>>
-	<<if Weather.precipitation is "rain">>
-		The water is alive with motion as rain breaks its surface.
-	<<else>>
-		The water is calm.
-	<</if>>
+<</if>>
+<<if Weather.precipitation is "rain">>
+	The <<= Weather.isFrozen("lake") ? "ice" : "water">> is alive with motion as rain <<= Weather.isFrozen("lake") ? "bounces off" : "breaks">> its surface.
+<<elseif Weather.precipitation is "snow">>
+	Snow <<= Weather.isFrozen("lake") ? "settles on the ice" : "drifts into the frigid water">>.
+<<elseif Weather.isFrozen("lake")>>
+	The ice is serene.
+<<else>>
+	The water is calm.
 <</if>>
 <br><br>
 
@@ -167,7 +165,7 @@
 			<<socialiseicon>><<link [[Hang out (0:30)|Lake Hang]]>><<pass 30>><<stress -6>><<status 1>><</link>><<gcool>><<lstress>>
 			<br>
 		<</if>>
-		<<if Weather.isSnow>>
+		<<if Weather.isFrozen("lake")>>
 			<<if $nextPassageCheck is "Lake Shallows Ice">>
 				<span class="nextLink"><<lakeicon>><<link [[Walk.|Lake Shallows Ice]]>><<pass 2>><</link>></span>
 			<<else>>
@@ -190,7 +188,7 @@
 			<</if>>
 			<br>
 		<</if>>
-		<<if !Weather.isSnow and !Time.isBloodMoon()>>
+		<<if !Weather.isFrozen("lake") and !Time.isBloodMoon()>>
 			<<if $exposed gte 2>>
 				<<if $exhibitionism gte 75 and $laketeenspresent is 1>>
 					<<walkicon>><<link [[Take a stroll (1:00)|Lake Stroll]]>><<pass 60>><<stress -6>><<arousal 1000>><<rng>><<set $phase to 2>><</link>><<exhibitionist5>><<garousal>><<lstress>>
@@ -495,30 +493,26 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
 <<set $forest to 40>><<set $bus to "lakewaterfall">>
-<<if Weather.isSnow>>
-	<<if Time.dayState is "night">>
-		You are at the waterfall. A curtain of silver in the moonlight.
-	<<else>>
-		You are at the waterfall. It feeds the lake through a gap in the ice.
-	<</if>>
-	<<if Weather.precipitation is "snow">>
-		Snow settles on its surface.
-	<<else>>
-		The ice is serene.
-	<</if>>
+
+You are at the waterfall.
+
+<<if Weather.isFrozen("lake")>>
+	It feeds the lake through a gap in the ice.
+<<elseif $laketeenspresent is 1>>
+	<<set _in to Time.season is "winter" ? "near" : "in">>
+	Some of the students are playing _in the falling water. Others sit _in the pond above.
+<<elseif Time.dayState is "night">>
+	It's a curtain of silver in the moonlight.
 <<else>>
-	<<if $laketeenspresent is 1>>
-		You are at the waterfall. Some of the students are playing in the falling water. Others sit in the pond above.
-	<<elseif Time.dayState is "night">>
-		You are at the waterfall. A curtain of silver in the moonlight.
-	<<else>>
-		You are at the waterfall. Water is flowing down from the pond up on the rocks. A refreshing mist rolls out.
-	<</if>>
-	<<if Weather.precipitation is "rain">>
-		The water is alive with motion as rain breaks its surface.
-	<<else>>
-		The water is calm.
-	<</if>>
+	Water is flowing down from the pond up on the rocks. A refreshing mist rolls out.
+<</if>>
+
+<<if Weather.precipitation is "snow">>
+	Snow <<= Weather.isFrozen("lake") ? "settles on its surface" : "drifts into the frigid water">>.
+<<elseif Weather.isFrozen("lake")>>
+	The ice is <<= Weather.precipitation is "rain" ? "pelted with frigid rain" : "serene">>.
+<<else>>
+	The water is <<= Weather.precipitation is "rain" ? "alive with motion as rain breaks its surface" : "calm">>.
 <</if>>
 
 <br><br>
@@ -557,7 +551,7 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 	<<if $pregnancyStats.parasiteDoctorEvents gte 2>>
 		<<investigateicon>><<containersLink>>
 	<</if>>
-	<<if $mason_count gte 2 and !Weather.isSnow>>
+	<<if $mason_count gte 2 and !Weather.isFrozen("lake")>>
 		<<lakeicon "pond">><<link [[Mason's pond (0:05)|Mason Pond]]>><<pass 5>><</link>>
 		<br>
 	<</if>>
@@ -591,36 +585,20 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
 <<set $forest to 50>><<set $bus to "lakefishingrock">>
-<<if Weather.isSnow>>
-	<<if $laketeenspresent is 1>>
-		You are on the Fishing Rock. You see people on the other side of the frozen lake.
-	<<elseif Weather.dayState is "night">>
-		You are on the Fishing Rock. Dark water ripples unseen beneath the ice.
-	<<elseif Weather.dayState is "dusk" or Weather.dayState is "dawn">>
-		You are on the Fishing Rock. It's peaceful, though the nearby trees are foreboding.
-	<<else>>
-		You are on the Fishing Rock. From here you have a clear view of the entire lake.
-	<</if>>
-	<<if Weather.precipitation is "snow">>
-		Snow settles on the ice.
-	<<else>>
-		The ice is serene.
-	<</if>>
+You are on the Fishing Rock.
+<<if $laketeenspresent is 1>>
+	You see people on the other side of the <<= Weather.isFrozen("lake") ? "frozen lake" : "lake. Fish splash up to eat insects. It's peaceful, though the nearby trees are foreboding">>.
+<<elseif Time.dayState is "night">>
+	Dark water ripples unseen beneath the <<= Weather.isFrozen("lake") ? "ice" : "lake surface">>.
+<<elseif Time.dayState is "dusk" or Time.dayState is "dawn">>
+	<<= Weather.isFrozen("lake") ? "The lake ice sparkles in the dim light" : "Fish splash up to eat insects">>. It's peaceful, though the nearby trees are foreboding.
 <<else>>
-	<<if $laketeenspresent is 1>>
-		You are on the Fishing Rock. You see people on the other side of the lake. Fish splash up to eat insects. It's peaceful, though the nearby trees are foreboding.
-	<<elseif Weather.dayState is "night">>
-		You are on the Fishing Rock. Dark water ripples unseen.
-	<<elseif Weather.dayState is "dusk" or Weather.dayState is "dawn">>
-		You are on the Fishing Rock. Fish splash up to eat insects. It's peaceful, though the nearby trees are foreboding.
-	<<else>>
-		You are on the Fishing Rock. From here you have a clear view of the entire lake. You see fish swimming in the water.
-	<</if>>
-	<<if Weather.precipitation is "rain">>
-		The water is alive with motion as rain breaks its surface.
-	<<else>>
-		The water is calm.
-	<</if>>
+	From here you have a clear view of the entire lake. You see fish swimming <<= Weather.isFrozen("lake") ? "beneath the ice" : "in the water">>.
+<</if>>
+<<if Weather.isFrozen("lake")>>
+	<<= Weather.precipitation is "snow" ? "Snow settles on the ice" : "The ice is serene">>.
+<<else>>
+	The water is <<= Weather.precipitation is "rain" ? "alive with motion as rain breaks its surface" : "calm">>.
 <</if>>
 <br><br>
 
@@ -667,44 +645,23 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
 <<set $forest to 30>><<set $bus to "lakefirepit">>
-<<if Weather.isSnow>>
-	<<if $laketeenspresent is 1>>
-		You are at the Firepit. Several students sit on a circle of stone benches. Others try to skate on the nearby ice.
-	<<elseif Weather.dayState is "night">>
-		<<if $laketeensfire is 1>>
-			You are at the Firepit. People are sitting around the fire as it burns, talking and drinking. The reflection of the fire on the lake's surface is almost mesmerising.
-		<<else>>
-			You are at the Firepit. Dark water ripples unseen beneath the ice.
-		<</if>>
-	<<elseif Weather.dayState is "dusk" or Weather.dayState is "dawn">>
-		You are at the Firepit. There are stone benches circling the pit.
+
+You are at the Firepit.
+<<if $laketeenspresent is 1>>
+	Several students sit on a circle of stone benches. <<= Weather.isFrozen("lake") ? "Others try to skate on the nearby ice" : "You can see several people splashing in the water down on the shore">>.
+<<elseif Time.dayState is "night">>
+	<<if $laketeensfire is 1>>
+		People are sitting around the fire as it burns, talking and drinking. The reflection of the fire on the lake's <<= Weather.isFrozen("lake") ? "ice" : "surface">> is almost mesmerising.
 	<<else>>
-		You are at the Firepit. There are stone benches circling the pit.
-	<</if>>
-	<<if Weather.precipitation is "snow">>
-		Snow settles on the ice below.
-	<<else>>
-		The ice is serene.
+		Dark water ripples unseen beneath the lake's <<= Weather.isFrozen("lake") ? "ice" : "surface">>.
 	<</if>>
 <<else>>
-	<<if $laketeenspresent is 1>>
-		You are at the Firepit. Several students sit on a circle of stone benches. You can see several people splashing in the water down on the shore.
-	<<elseif Weather.dayState is "night">>
-		<<if $laketeensfire is 1>>
-			You are at the Firepit. People are sitting around the fire as it burns, talking and drinking. The reflection of the fire on the lake's surface is almost mesmerising.
-		<<else>>
-			You are at the Firepit. Dark water ripples unseen.
-		<</if>>
-	<<elseif Weather.dayState is "dusk" or Weather.dayState is "dawn">>
-		You are at the Firepit. There are stone benches circling the pit.
-	<<else>>
-		You are at the Firepit. There are stone benches circling the pit.
-	<</if>>
-	<<if Weather.precipitation is "rain">>
-		The water is alive with motion as rain breaks its surface.
-	<<else>>
-		The water is calm.
-	<</if>>
+	There are stone benches circling the pit.
+<</if>>
+<<if Weather.isFrozen("lake")>>
+	<<= Weather.precipitation is "snow" ? "Snow settles on the ice below" : "The ice is serene">>.
+<<else>>
+	The water is <<= Weather.precipitation is "rain" ? "alive with motion as rain breaks its surface" : "calm">>.
 <</if>>
 <br><br>
 
@@ -746,34 +703,20 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
 <<set $forest to 50>><<set $bus to "lakecampsite">>
-<<if Weather.isSnow>>
-	<<if Weather.dayState is "night">>
-		<<if Weather.precipitation is "none" and Time.hour gte 18 and $daily.lakeCouple isnot 1>>
-			You are at the Campsite. A couple cuddle beside a small fire. There is a tent set up nearby.
-		<<elseif Weather.precipitation isnot "snow" and Time.hour lte 18>>
-			You are at the Campsite. Embers burn beside a tent.
-		<<else>>
-			You are at the Campsite. An unlit fireplace sits in the centre of the clearing. <<if Weather.isSnow>>The snow may have driven off campers.<</if>>
-		<</if>>
-	<<elseif Weather.dayState is "dawn">>
-		You are at the Campsite. It looks like it was used recently.
+
+You are at the Campsite.
+<<if Time.dayState is "night">>
+	<<if Weather.precipitation is "none" and Time.hour gte 18 and $daily.lakeCouple isnot 1>>
+		A couple cuddles beside a small fire. There is a tent set up nearby.
+	<<elseif Weather.precipitation is "rain" or Weather.precipitation is "snow">>
+		An unlit fireplace sits in the centre of the clearing. The <<= Weather.precipitation>> may have driven off campers.
 	<<else>>
-		You are at the Campsite. An unlit fireplace sits in the centre of the clearing.
+		 Embers burn beside a tent.
 	<</if>>
+<<elseif Time.dayState is "dawn">>
+	It looks like it was used recently.
 <<else>>
-	<<if Weather.dayState is "night">>
-		<<if Weather.precipitation is "none" and Time.hour gte 18 and $daily.lakeCouple isnot 1>>
-			You are at the Campsite. A couple cuddle beside a small fire. There is a tent set up nearby.
-		<<elseif Weather.precipitation isnot "rain" and Time.hour lte 18>>
-			You are at the Campsite. Embers burn beside a tent.
-		<<else>>
-			You are at the Campsite. An unlit fireplace sits in the centre of the clearing. The rain may have driven off campers.
-		<</if>>
-	<<elseif Weather.dayState is "dawn">>
-		You are at the Campsite. It looks like it was used recently.
-	<<else>>
-		You are at the Campsite. An unlit fireplace sits in the centre of the clearing.
-	<</if>>
+	An unlit fireplace sits in the centre of the clearing.
 <</if>>
 <br><br>
 
@@ -823,7 +766,7 @@ You are at the bus stop beside the lake. The road from town terminates here, end
 
 <<set $outside to 1>><<set $location to "lake">><<set $bus to "lakeshallows">><<water>><<effects>><<lakeeffects>>
 <<if $laketeenspresent is 1>>
-	You are swimming in the lake near the shore. The beach is alive with activity. People play in the sand and water.
+	You are swimming in the lake near the shore. The beach is alive with activity. <<if Time.season isnot "winter">>People play in the sand and water.<</if>>
 <<else>>
 	<<if Weather.precipitation is "rain">>
 		You are swimming in the lake near the shore. The rain drowns out the sounds of the forest.
@@ -1207,27 +1150,22 @@ You free the lotus flowers from the ice, gathering the seeds. <span class="gold"
 <<set $lakesurface to 0>>
 
 :: Lake Depths Ice
-
 <<set $outside to 1>><<set $location to "lake">><<set $bus to "lakedepths">><<effects>><<lakeeffects>>
-<<if $laketeenspresent is 1>>
-	You are in the middle of the frozen lake, near the swimming dock.
-<<else>>
-	<<if Weather.precipitation === "snow">>
-		You are in the middle of the frozen lake, near the swimming dock. Thick snow makes it difficult to see the surrounding forest.
-	<<else>>
-		You are in the middle of the frozen lake, near the swimming dock.
-	<</if>>
+
+You are in the middle of the frozen lake, near the swimming dock.
+<<if Weather.precipitation === "snow">>
+	Thick snow makes it difficult to see the surrounding forest.
 <</if>>
 <br><br>
 
-<<if !Weather.isSnow>>
+<<if !Weather.isFrozen("lake")>>
 	As the temperature increases, the ice suddenly gives way. You plunge into icy water.<<ggstress>><<stress 18>>
 	<br><br>
 	<<link [[Next|Lake Underwater]]>><</link>>
 	<<exit>>
 <</if>>
 
-<<if !Time.schoolDay and Weather.isSnow and Time.dayState is "day">>
+<<if !Time.schoolDay and Weather.isFrozen("lake") and Time.dayState is "day">>
 	Someone's dug through the ice beside the swimming dock.
 <<else>>
 	<<if $lake_ice_broken is undefined>>
@@ -1356,7 +1294,7 @@ You lift the shovel, and thrust it into the ice. It's hard work, but you manage 
 
 	<<if $awareness gte 400>>
 		<br><br>
-		The <<if Weather.isSnow>>ice<<else>>water<</if>> parts, revealing a gaping abyss. Terror shivers up your spine, and breaks your concentration.
+		The <<if Weather.isFrozen("lake")>>ice<<else>>water<</if>> parts, revealing a gaping abyss. Terror shivers up your spine, and breaks your concentration.
 		<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 	<</if>>
 <<elseif $phase is 4>>

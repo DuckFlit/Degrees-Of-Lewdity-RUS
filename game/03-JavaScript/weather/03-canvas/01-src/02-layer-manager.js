@@ -39,4 +39,4 @@ Weather.Sky.Layers = (() => {
 		layers: _layers,
 	};
 })();
-//window.Layers = Layers;
+// window.Layers = Layers;
