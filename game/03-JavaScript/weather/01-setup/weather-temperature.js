@@ -32,7 +32,7 @@ setup.WeatherTemperature = {
 
 	// Heat generation
 	baseHeatGeneration: 0.07, // The base rate of heat generation by the body.
-	activityRate: 0.087, // How much physical activity affects heat generation.
+	activityRate: 0.09, // How much physical activity affects heat generation.
 
 	// Heat dissipation
 	baseDissipation: 0.04, // The base rate of heat dissipation without modifiers.
@@ -41,7 +41,7 @@ setup.WeatherTemperature = {
 	// Clothing
 	baseInsulation: 0,
 	insulationCap: 55, // Target warmth cap where its effectiveness is reduced
-	insulationMultiplier: 1.05, // The effectiveness of clothing warmth
+	insulationMultiplier: 1.1, // The effectiveness of clothing warmth
 
 	// Wetness
 	maxWetness: 200,
