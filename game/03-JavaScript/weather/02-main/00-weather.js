@@ -92,7 +92,6 @@ const Weather = (() => {
 		const meltingRate = Weather.tempSettings.ice.meltingRate;
 		const maxThickness = Weather.tempSettings.ice.maxThickness;
 		for (const body of Object.keys(maxThickness)) {
-			console.log(V.weatherObj.ice, body);
 			V.weatherObj.ice[body] = V.weatherObj.ice[body] || 0;
 			if (Weather.isFreezing) {
 				V.weatherObj.ice[body] += minutes * freezingRate * Math.abs(temperature);
@@ -120,9 +119,9 @@ const Weather = (() => {
 		},
 		setTemperature: temperature => Weather.Temperature.set(temperature),
 		addTemperature: temperature => Weather.Temperature.add(temperature),
-		set: (weatherType, instant, minutes) => Weather.WeatherConditions.setWeather(weatherType, instant, minutes),
-		get: date => Weather.WeatherConditions.getWeather(date),
-		is: weatherType => Weather.WeatherConditions.isWeather(weatherType),
+		set: (weatherType, instant, minutes) => Weather.WeatherGeneration.setWeather(weatherType, instant, minutes),
+		get: date => Weather.WeatherGeneration.getWeather(date),
+		is: weatherType => Weather.WeatherGeneration.isWeather(weatherType),
 		isFrozen(key) {
 			return V.weatherObj.ice[key] > Weather.tempSettings.ice.minThickness[key];
 		},
@@ -136,26 +135,26 @@ const Weather = (() => {
 			return setup.WeatherDescriptions;
 		},
 		get current() {
-			return Weather.WeatherConditions.getWeather();
+			return Weather.WeatherGeneration.getWeather();
 		},
 		get name() {
-			return Weather.WeatherConditions.getWeather().name;
+			return Weather.WeatherGeneration.getWeather().name;
 		},
 		get type() {
-			return Weather.WeatherConditions.getWeather().defines;
+			return Weather.WeatherGeneration.getWeather().defines;
 		},
 		get overcast() {
-			return Weather.WeatherConditions.getWeather().overcast > 0.5;
+			return Weather.WeatherGeneration.getWeather().overcast > 0.5;
 		},
 		get sunIntensity() {
 			return getSunIntensity();
 		},
 		get precipitation() {
-			if (Weather.WeatherConditions.getWeather().precipitationIntensity === 0) return "none";
+			if (Weather.WeatherGeneration.getWeather().precipitationIntensity === 0) return "none";
 			return Weather.isFreezing ? "snow" : "rain";
 		},
 		get precipitationIntensity() {
-			return Weather.WeatherConditions.getWeather().precipitationIntensity;
+			return Weather.WeatherGeneration.getWeather().precipitationIntensity;
 		},
 		get temperature() {
 			return Weather.Temperature.getCelsius();

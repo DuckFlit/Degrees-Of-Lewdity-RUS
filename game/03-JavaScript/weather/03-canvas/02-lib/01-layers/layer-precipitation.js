@@ -37,7 +37,7 @@ Weather.Sky.Layers.add({
 			effect: "precipitation",
 			drawCondition: () =>
 				!Weather.Sky.skyDisabled &&
-				Weather.WeatherConditions.getWeather().overcast > 0.25 &&
+				Weather.WeatherGeneration.getWeather().overcast > 0.25 &&
 				Weather.precipitationIntensity > 0 &&
 				Weather.precipitationIntensity <= 1 &&
 				Weather.precipitation === "rain",
@@ -94,7 +94,7 @@ Weather.Sky.Layers.add({
 			effect: "precipitation",
 			drawCondition: () =>
 				!Weather.Sky.skyDisabled &&
-				Weather.WeatherConditions.getWeather().overcast > 0.25 &&
+				Weather.WeatherGeneration.getWeather().overcast > 0.25 &&
 				Weather.precipitationIntensity > 0 &&
 				Weather.precipitationIntensity <= 1 &&
 				Weather.precipitation === "snow",

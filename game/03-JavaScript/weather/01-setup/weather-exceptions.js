@@ -3,10 +3,11 @@
  */
 setup.WeatherExceptions = [
 	{
-		// (almost) always snow on christmas day
+		// Always snow on christmas day
 		date: () => new DateTime(Time.year, 12, 25, 10),
-		duration: 3, // Minimum duration in hours
+		duration: 3, // Minimum duration in hours - only for weatherType. Temperature is changed for the whole day.
 		weatherType: "heavyPrecipitation",
+		temperature: -5, // Average temperature below zero for the whole day to ensure snow
 	},
 	{
 		// Base weather will be "clear" on blood moons - can still override the type manually

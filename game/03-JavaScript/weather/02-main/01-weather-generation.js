@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 
-Weather.WeatherConditions = (() => {
+Weather.WeatherGeneration = (() => {
 	function isWeather(weatherType) {
 		return weatherType.toLowerCase() === getWeather().name.toLowerCase();
 	}
