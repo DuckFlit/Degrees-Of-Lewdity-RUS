@@ -25,67 +25,116 @@ setup.WeatherGeneration = {
 			minTimeApartKeyPoints: 3, // Minimum time between each keypoint, in days
 			minKeyPointsPerMonth: 4, // Minimum number of key points per month. Must be at least 1
 			maxKeyPointsPerMonth: 6, // Maximum number of key points per month.
+			extremeMaxKeyPointsPerMonth: 2,
 		},
 	},
 	months: [
 		{
 			// Jan
-			temperatureRange: [-8, 7], // Range of temperature for a specific month. A range of [5, 15] means that it will generate temperatures between that range for that specific month.
+			temperatureRange: {
+				average: [-9, 7], // Range of temperature for a specific month. A range of [5, 15] means that it will generate temperatures between that range for that specific month.
+				extreme: [-26, 11],
+			},
+			extremeChance: 0.6,
 			sunIntensity: 0.1, // Modifies tanning changes from sun exposure
 		},
 		{
 			// Feb
-			temperatureRange: [-15, 7],
+			temperatureRange: {
+				average: [-8, 8],
+				extreme: [-22, 15],
+			},
+			extremeChance: 0.5,
 			sunIntensity: 0.2,
 		},
 		{
 			// Mar
-			temperatureRange: [-5, 13],
+			temperatureRange: {
+				average: [-3, 11],
+				extreme: [-19, 19],
+			},
+			extremeChance: 0.4,
 			sunIntensity: 0.3,
 		},
 		{
 			// Apr
-			temperatureRange: [0, 18],
+			temperatureRange: {
+				average: [0, 15],
+				extreme: [-11, 28],
+			},
+			extremeChance: 0.5,
 			sunIntensity: 0.5,
 		},
 		{
 			// May
-			temperatureRange: [8, 19],
+			temperatureRange: {
+				average: [7, 19],
+				extreme: [-1, 32],
+			},
+			extremeChance: 0.6,
 			sunIntensity: 0.7,
 		},
 		{
 			// Jun
-			temperatureRange: [12, 22],
+			temperatureRange: {
+				average: [11, 23],
+				extreme: [3, 35],
+			},
+			extremeChance: 0.7,
 			sunIntensity: 1,
 		},
 		{
 			// Jul
-			temperatureRange: [14, 27],
+			temperatureRange: {
+				average: [14, 27],
+				extreme: [8, 40],
+			},
+			extremeChance: 0.8,
 			sunIntensity: 1,
 		},
 		{
 			// Aug
-			temperatureRange: [14, 24],
+			temperatureRange: {
+				average: [14, 24],
+				extreme: [6, 38],
+			},
+			extremeChance: 0.7,
 			sunIntensity: 0.8,
 		},
 		{
 			// Sep
-			temperatureRange: [11, 20],
+			temperatureRange: {
+				average: [11, 20],
+				extreme: [0, 35],
+			},
+			extremeChance: 0.6,
 			sunIntensity: 0.7,
 		},
 		{
 			// Oct
-			temperatureRange: [5, 16],
+			temperatureRange: {
+				average: [5, 16],
+				extreme: [-5, 29],
+			},
+			extremeChance: 0.5,
 			sunIntensity: 0.5,
 		},
 		{
 			// Nov
-			temperatureRange: [-5, 10],
+			temperatureRange: {
+				average: [-5, 10],
+				extreme: [-11, 19],
+			},
+			extremeChance: 0.4,
 			sunIntensity: 0.3,
 		},
 		{
 			// Dec
-			temperatureRange: [-12, 5],
+			temperatureRange: {
+				average: [-8, 6],
+				extreme: [-20, 13],
+			},
+			extremeChance: 0.5,
 			sunIntensity: 0.1,
 		},
 	],

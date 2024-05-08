@@ -65,7 +65,7 @@ Weather.Sky.Effects.create({
 			drawCanvas.ctx.shadowColor = glowColor;
 			drawCanvas.ctx.shadowBlur = glowSize;
 			drawCanvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
-			drawCanvas.globalAlpha = glowAlpha;
+			drawCanvas.ctx.globalAlpha = glowAlpha;
 			return drawCanvas;
 		});
 		this.canvas.drawImage(this.effects[0].canvas.element);
@@ -157,7 +157,10 @@ Weather.Sky.Effects.create({
 					image = new Image();
 					image.src = this.fullPath + imagePath;
 					image.onload = handleLoadedImage;
-					image.onerror = reject;
+					image.onerror = () => {
+						console.error("Could not load image", image.src);
+						resolve();
+					};
 				}
 			});
 		};

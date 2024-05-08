@@ -211,6 +211,8 @@ module.exports = {
 		lerp: "readonly",
 		interpolate: "readonly",
 		interpolateObject: "readonly",
+		boundedRandom: "readonly",
+		calculateBinomial: "readonly",
 		// DoL object functions
 		formatList: "readonly",
 		stringFrom: "readonly",

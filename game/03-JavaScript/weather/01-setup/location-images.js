@@ -674,7 +674,10 @@ setup.LocationImages = {
 				image: "snow.png",
 			},
 			water: {
-				image: "water.png",
+				image: "sea.png",
+			},
+			power: {
+				image: "powerlines.png",
 			},
 		},
 		emissive: {
@@ -683,19 +686,27 @@ setup.LocationImages = {
 				condition: () => Weather.lightsOn,
 				alwaysDisplay: false,
 				color: "#deae66",
-				size: 4,
+				alpha: 0.8,
+				size: 2,
 			},
-			spotLight: {
-				waitForAnimation: "drivingCar",
+			streetLight: {
 				condition: () => Weather.lightsOn,
-				image: "spotlight.png",
-				color: "#9cabff",
+				image: "streetlight.png",
+				alpha: 1,
+				color: "#e8d39d",
 				size: 4,
 			},
+			streetGlow: {
+				condition: () => Weather.lightsOn,
+				image: "streetglow.png",
+				alpha: 0.5,
+				color: "#deae6655",
+				size: 2,
+			},
 		},
-		reflective: {
-			image: "reflective.png",
-		},
+		// reflective: {
+		// 	image: "reflective.png",
+		// },
 	},
 	forest: {
 		folder: "forest",

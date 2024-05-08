@@ -40,6 +40,8 @@ setup.WeatherDescriptions = {
 	},
 	temperature: () => {
 		if (Weather.temperature <= -15) {
+			return `<span class="blue">It's extremely cold outside.</span>`;
+		} else if (Weather.temperature <= -10) {
 			return Weather.isSnow ? "The heavy snow adds to the biting cold." : "The cold air is biting.";
 		} else if (Weather.temperature <= -5) {
 			return Weather.isSnow ? "The air is cold and the ground is snow-packed." : "The air is freezing, feeling sharp and dry.";
@@ -55,8 +57,10 @@ setup.WeatherDescriptions = {
 			return "The air is mild.";
 		} else if (Weather.temperature <= 25) {
 			return "The outside temperature is warm and comfortable.";
-		} else {
+		} else if (Weather.temperature <= 30) {
 			return "It's getting hot.";
+		} else {
+			return `<span class="red">It's extremely hot outside.</span>`;
 		}
 	},
 	bodyTemperature: () => {
