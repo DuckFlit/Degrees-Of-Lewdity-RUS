@@ -1,15 +1,4 @@
 /* eslint-disable no-unmodified-loop-condition */
-/*
-
-- Add function:
-	- setWeather: Should replace current weather, but then smoothly transition to a new weather after a while.
-
-	- Only use winter-images after it has snowed once
-	- if it melts (at least 5 hours of warm temperature) back to normal images until it snow again
-
-
-	Change variable names - use object - then use getters in Weather namespace 
-*/
 
 Weather.Temperature = (() => {
 	// Sets current temperate (at start of day) to this temperature
@@ -295,7 +284,6 @@ Weather.Temperature = (() => {
 						(extremeDirection <= 0 && extremeTemp >= temperatureRange.average[0]) ||
 						(extremeDirection >= 0 && extremeTemp <= temperatureRange.average[1])
 					);
-					console.log("GENERATED 1 EXTREME KEY POINT", extremeTemp, randomDay);
 					keyPoints.set(randomDay, extremeTemp);
 					continue;
 				}
