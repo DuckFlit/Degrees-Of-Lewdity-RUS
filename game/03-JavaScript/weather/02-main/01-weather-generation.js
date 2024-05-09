@@ -245,5 +245,6 @@ Weather.WeatherGeneration = (() => {
 		getWeather,
 		setWeather,
 		isWeather,
+		generate: generateWeather,
 	});
 })();
