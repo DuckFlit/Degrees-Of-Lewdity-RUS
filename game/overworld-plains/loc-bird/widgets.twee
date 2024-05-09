@@ -384,11 +384,7 @@
 
 <<widget "bird_hunt_return">>
 	<<bird_loot_select>>
-	<<if $syndromebird isnot 1>>
-		<<set $bird.timer to random(30, 90)>>
-	<<else>>
-		<<set $bird.timer to random(45, 120)>>
-	<</if>>
+	<<bird_hunt_timer>>
 	<<set $bird.state to "home">>
 	<<if $bird.eggIntro is 1>>
 		<<set _bird_loot_select to "rocks">>
@@ -927,6 +923,16 @@
 	<</switch>>
 <</widget>>
 
+<<widget "bird_hunt_timer">>
+	<<if $syndromebird isnot 1>>
+		<<set $bird.timer to random(30, 90)>>
+	<<elseif !$bird.hunts.unlocked>>
+		<<set $bird.timer to random(45, 120)>>
+	<<else>>
+		<<set $bird.timer to random(60, 120)>>
+	<</if>>
+<</widget>>
+
 <<widget "bird_stockholm">>
 	<<if _args[0] and $bird.syndrome isnot undefined>>
 		<<set $bird.syndrome += _args[0]>>
@@ -988,13 +994,19 @@
 	<<elseif Time.hour lte 15>>
 		<<if $bird.injured gt 1>>
 			<<set $bird.activity to "rest">>
-		<<elseif $_eggCount>>
+		<<elseif $_eggCount and $rng gte 50>>
 			<<set $bird.activity to "brood">>
+			<<set $bird.override to "brood">>
+			<<set $bird.overrideTimer to 60>>
+		<<elseif npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk", "pc") and $rng gte 50>>
+			<<set $bird.activity to "rest">>
+			<<set $bird.override to "rest">>
+			<<set $bird.overrideTimer to 60>>
 		<<else>>
 			<<set $bird.activity to "build">>
 		<</if>>
 	<<elseif Time.hour lte 17>>
-		<<if $bird.injured gt 1>>
+		<<if $bird.injured gt 1 or npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk", "pc")>>
 			<<set $bird.activity to "rest">>
 		<<else>>
 			<<set $bird.activity to "groom">>
