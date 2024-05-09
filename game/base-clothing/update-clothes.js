@@ -517,5 +517,8 @@ function wardrobesUpdate() {
 		V.wardrobes.birdTower.isolated = true;
 		V.wardrobes.birdTower.space = 15;
 	}
+    if (!V.wardrobes.birdTower.locationRequirement) {
+        V.wardrobes.birdTower.locationRequirement = ["tower", "moor"];
+    }
 }
 DefineMacro("wardrobesUpdate", wardrobesUpdate);
