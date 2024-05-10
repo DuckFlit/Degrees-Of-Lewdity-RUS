@@ -3,7 +3,7 @@ Weather.Sky.Layers.add({
 	name: "precipitation",
 	zIndex: 10,
 	animation: {
-		updateRate: 100, // Updates every 100ms
+		updateRate: 50, // Updates every 100ms
 	},
 	effects: [
 		/* Rain */
@@ -50,7 +50,7 @@ Weather.Sky.Layers.add({
 					diagonalOffset: -8,
 					offset: -8,
 				},
-				frameDelay: 100,
+				frameDelay: 150,
 			},
 			bindings: {
 				onFrame() {
@@ -76,7 +76,7 @@ Weather.Sky.Layers.add({
 					diagonalOffset: 0,
 					offset: 0,
 				},
-				frameDelay: 100,
+				frameDelay: 150,
 			},
 			bindings: {
 				onFrame() {
@@ -101,13 +101,13 @@ Weather.Sky.Layers.add({
 			params: {
 				frameWidth: 32,
 				images: {
-					precipitation: "img/misc/sky/effects/snow.png",
+					precipitation: "img/misc/sky/effects/snow_sparse.png",
 				},
 				position: {
 					diagonalOffset: 0,
 					offset: 0,
 				},
-				frameDelay: 100,
+				frameDelay: 200,
 			},
 			bindings: {
 				onFrame() {
@@ -122,7 +122,7 @@ Weather.Sky.Layers.add({
 		},
 		{
 			effect: "colorOverlay",
-			drawCondition: () => !Weather.Sky.skyDisabled && Weather.bloodMoon,
+			drawCondition: () => !Weather.Sky.skyDisabled,
 			compositeOperation: "source-atop",
 			params: {
 				color: {
