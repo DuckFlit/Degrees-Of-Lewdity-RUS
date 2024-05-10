@@ -163,7 +163,7 @@ const Weather = (() => {
 			return Weather.Temperature.isFreezing();
 		},
 		get isSnow() {
-			return V.weatherObj.snow > setup.WeatherTemperature.snow.minAccumulation;
+			return !Weather.skyDisabled && V.weatherObj.snow > setup.WeatherTemperature.snow.minAccumulation;
 		},
 		get insideTemperature() {
 			return Weather.Temperature.getInsideTemperature();
