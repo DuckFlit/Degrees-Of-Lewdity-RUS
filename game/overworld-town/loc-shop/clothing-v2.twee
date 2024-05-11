@@ -403,37 +403,43 @@
 						<span class="clothing-price"><<printmoney `getClothingCost(_item, $_realSlot)` true>></span>
 						<!-- Integrity, Reveal and Warmth indicators -->
 						<<if !$shopDefaults.compactMode>>
-							<div class="clothing-integrity">
+							<<set $_intInf = getIntegrityInfo(_item.integrity_max)>>
+							<<set $_tooltip to `<span class="black">Clothing durability:</span> <i class="${$_intInf[1]} normal">${_item.integrity_max}</i>`>>
+							<div class="clothing-integrity" @tooltip="$_tooltip">
 								<<if $options.images is 1>>
 									<img class="clothing-stats-icon" src="img/misc/icon/integrity.png">
 								<<else>>
 									<span class="clothing-stats-text">I.</span>
 								<</if>>
-								<<set _intInf = getIntegrityInfo(_item.integrity_max)>>
+								
 								<<for _i = 0; _i lt 7; _i++>>
-									<span @class="'stats-ball ' + (_i < _intInf[0] ? 'bg-' + _intInf[1] : '')">&nbsp;</span>
+									<span @class="'stats-ball ' + (_i < $_intInf[0] ? 'bg-' + $_intInf[1] : '')">&nbsp;</span>
 								<</for>>
 							</div>
-							<div class="clothing-reveal">
+							<<set $_revInf = getRevealInfo(_item.reveal)>>
+							<<set $_tooltip to `<span class="black">Clothing exposure:</span> <i class="${$_revInf[1]} normal">${_item.reveal}</i>`>>
+							<div class="clothing-reveal" @tooltip="$_tooltip">
 								<<if $options.images is 1>>
 									<img class="clothing-stats-icon" src="img/misc/icon/reveal.png">
 								<<else>>
 									<span class="clothing-stats-text">R.</span>
 								<</if>>
-								<<set _revInf = getRevealInfo(_item.reveal)>>
+								
 								<<for _i = 0; _i lt 7; _i++>>
-									<span @class="'stats-ball ' + (_i < _revInf[0] ? 'bg-' + _revInf[1] : '')">&nbsp;</span>
+									<span @class="'stats-ball ' + (_i < $_revInf[0] ? 'bg-' + $_revInf[1] : '')">&nbsp;</span>
 								<</for>>
 							</div>
-							<div class="clothing-warmth">
+							<<set $_warmth = getTrueWarmth(_item)>>
+							<<set $_warInf = getWarmthInfo($_warmth * 0.5)>>
+							<<set $_tooltip to `<span class="black">Clothing warmth:</span> <i class="orange normal">${$_warmth}</i>`>>
+							<div class="clothing-warmth" @tooltip="$_tooltip">
 								<<if $options.images is 1>>
 									<img class="clothing-stats-icon" src="img/misc/icon/warmth.png">
 								<<else>>
 									<span class="clothing-stats-text">W.</span>
 								<</if>>
-								<<set _warInf = getWarmthInfo(getTrueWarmth(_item))>>
 								<<for _i = 0; _i lt 7; _i++>>
-									<span @class="'stats-ball ' + (_i < _warInf[0] ? _warInf[1] : '')">&nbsp;</span>
+									<span class="stats-ball" @style="(_i < $_warmth * 0.5 ? $_warInf : '')">&nbsp;</span>
 								<</for>>
 							</div>
 						<</if>>
