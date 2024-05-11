@@ -259,8 +259,15 @@ Weather.Sky = (() => {
 	}
 
 	function updateTooltip() {
-		const weatherState = Weather.TooltipDescriptions.type[Weather.name];
-		const weatherDescription = typeof weatherState[Weather.dayState] === "function" ? weatherState[Weather.dayState]() : weatherState[Weather.dayState];
+		// Maybe not hardcode this here
+		const key = V.location === "tentworld" ? "tentaclePlains" : Weather.name;
+		const weatherState = Weather.TooltipDescriptions.type[key];
+		const weatherDescription =
+			typeof weatherState === "string"
+				? weatherState
+				: typeof weatherState[Weather.skyState] === "function"
+				? weatherState[Weather.skyState]()
+				: weatherState[Weather.skyState];
 		const tempDescription = Weather.TooltipDescriptions.temperature();
 		const debug = V.debug
 			? `<br><br><span class="teal">DEBUG:</span>

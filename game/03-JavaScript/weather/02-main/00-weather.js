@@ -134,6 +134,10 @@ const Weather = (() => {
 		get TooltipDescriptions() {
 			return setup.WeatherDescriptions;
 		},
+		get weatherType() {
+			if (Weather.bloodMoon) return "bloodMoon";
+			return Weather.current;
+		},
 		get current() {
 			return Weather.WeatherGeneration.getWeather();
 		},
@@ -187,6 +191,10 @@ const Weather = (() => {
 			const sunSet = Weather.Sky.orbitals.sun.settings.setTime;
 			const hour = Time.hour;
 			return hour < sunRise - 0.75 || hour >= sunSet + 0.75 ? "night" : hour >= sunSet - 0.5 ? "dusk" : hour >= sunRise + 1 ? "day" : "dawn";
+		},
+		get skyState() {
+			if (Weather.bloodMoon) return "bloodMoon";
+			return this.dayState;
 		},
 		get fog() {
 			return V.weatherObj.fog;
