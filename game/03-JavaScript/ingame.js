@@ -1970,6 +1970,32 @@ function beastMaleChance(override) {
 }
 window.beastMaleChance = beastMaleChance;
 
+function penisNames(override) {
+	const names = [];
+	const ignore = override !== undefined;
+
+	if (!ignore || override >= 0) names.push("penis");
+	if (V.player.penissize < 0 && !ignore) return names;
+
+	if ((V.awareness >= 100 && !ignore) || override >= 1) names.push("dick");
+	if ((V.awareness >= 200 && V.purity < 900 && !ignore) || override >= 2) names.push("cock");
+
+	return names;
+}
+window.penisNames = penisNames;
+
+function pussyNames(override) {
+	const names = ["vagina"];
+	const ignore = override !== undefined;
+
+	if ((V.awareness >= 100 && !ignore) || override >= 1) names.push("pussy");
+	if ((V.awareness >= 200 && V.purity < 900 && !ignore) || override >= 2) names.push("quim");
+	if ((V.awareness >= 300 && V.purity < 100 && !ignore) || override >= 3) names.push("slit");
+
+	return names;
+}
+window.pussyNames = pussyNames;
+
 const crimeSum = (prop, ...crimeTypes) => {
 	if (crimeTypes.length === 0) {
 		crimeTypes = Object.keys(setup.crimeNames);
