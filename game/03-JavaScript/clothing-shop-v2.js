@@ -21,7 +21,9 @@ function getRevealInfo(reveal) {
 window.getRevealInfo = getRevealInfo;
 
 function getWarmthInfo(warmth) {
-	return [warmth, "warm-" + warmth];
+	// Factor is 1-10. warmth of 7-9 will all have 7 dots, but different colours
+	const factor = (warmth - 5.5) / 4.5;
+	return "background-color:" + ColourUtils.interpolateTripleColor("#62c6ff", "#ffee3b", "#ff481b", factor);
 }
 window.getWarmthInfo = getWarmthInfo;
 

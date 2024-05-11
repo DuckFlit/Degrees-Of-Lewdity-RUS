@@ -421,7 +421,6 @@ const DoLCompressorDictionaries = (() => {
 		"clothingGender",
 		"clothingShop",
 		"clothingShopSlot",
-		"clothing_number",
 		"clothing_update",
 		"clothingselector",
 		"collared",

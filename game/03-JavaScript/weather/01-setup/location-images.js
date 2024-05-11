@@ -202,9 +202,17 @@ setup.LocationImages = {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
 			},
-			water: {
+		},
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				alpha: 0.7,
+			},
+			overlay: {
 				image: "water.png",
 			},
+		},
+		layerTop: {
 			tree: {
 				image: "tree.png",
 				animation: {
@@ -212,13 +220,7 @@ setup.LocationImages = {
 					cycleDelay: () => 2500,
 				},
 			},
-		},
-		reflective: {
-			image: "reflective.png",
-			backgroundOnly: true,
-			animation: "tree",
-			blur: 0,
-		},
+		}
 	},
 	bog: {
 		folder: "bog",
@@ -314,9 +316,9 @@ setup.LocationImages = {
 			color: "#deae66",
 			strength: 2,
 		},
-		reflective: {
-			image: "reflective.png",
-		},
+		// reflective: {
+		// 	image: "reflective.png",
+		// },
 	},
 	cafe_construction: {
 		folder: "cafe_construction",
@@ -336,9 +338,9 @@ setup.LocationImages = {
 			color: "#deae66",
 			strength: 2,
 		},
-		reflective: {
-			image: "reflective.png",
-		},
+		// reflective: {
+		// 	image: "reflective.png",
+		// },
 	},
 	cafe_renovated: {
 		folder: "cafe_renovated",
@@ -352,9 +354,9 @@ setup.LocationImages = {
 				image: "snow.png",
 			},
 		},
-		reflective: {
-			image: "reflective.png",
-		},
+		// reflective: {
+		// 	image: "reflective.png",
+		// },
 	},
 	canal: {
 		folder: "canal",
@@ -384,9 +386,9 @@ setup.LocationImages = {
 				},
 			},
 		},
-		reflective: {
-			image: "reflective.png",
-		},
+		// reflective: {
+		// 	image: "reflective.png",
+		// },
 	},
 	churchyard: {
 		folder: "churchyard",
@@ -495,9 +497,6 @@ setup.LocationImages = {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
 			},
-			water: {
-				image: "water.png",
-			},
 			boat: {
 				// Not at same time as cruiser
 				waitForAnimation: "cruiser",
@@ -521,8 +520,14 @@ setup.LocationImages = {
 			},
 		},
 		reflective: {
-			image: "reflective.png",
-			alpha: 0.6,
+			mask: {
+				image: "reflective.png",
+				alpha: 0.2,
+				waveShiftFactor: 0.004, // default is 0.006
+			},
+			overlay: {
+				image: "water.png",
+			},
 		},
 	},
 	drain: {
@@ -547,10 +552,18 @@ setup.LocationImages = {
 				},
 			},
 		},
-		reflective: {
-			image: "reflective.png",
-			alpha: 0.6,
-		},
+		// reflective: {
+		// 	mask: {
+		// 		image: "reflective.png",
+		// 	},
+		// 	water: {
+		// 		image: "water.png",
+		// 		animation: {
+		// 			frameDelay: 1000,
+		// 			cycleDelay: () => 2000,
+		// 		},
+		// 	},
+		// },
 	},
 	estate: {
 		folder: "estate",
@@ -804,7 +817,7 @@ setup.LocationImages = {
 				image: "snow.png",
 			},
 			smoke: {
-				condition: () => !Time.bloodMoon,
+				condition: () => !Weather.bloodMoon,
 				image: "smoke.png",
 				animation: {
 					frameDelay: 200,
@@ -868,21 +881,19 @@ setup.LocationImages = {
 			default: {
 				image: "base.png",
 			},
-			water: {
-				image: "water.png",
-				animation: {
-					frameDelay: 500,
-					cycleDelay: () => 500,
-				},
-			},
 		},
-		reflective: {
-			image: "reflective.png",
-			animation: "water",
-			horizon: 122,
-			alpha: 0.25,
-			blur: 0.8,
-		},
+		// reflective: {
+		// 	mask: {
+		// 		image: "reflective.png",
+		// 	},
+		// 	overlay: {
+		// 		image: "water.png",
+		// 		animation: {
+		// 			frameDelay: 500,
+		// 			cycleDelay: () => 500,
+		// 		},
+		// 	},
+		// },
 	},
 	kylar_manor: {
 		folder: "kylar_manor",
@@ -914,18 +925,6 @@ setup.LocationImages = {
 			snow: {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
-			},
-			water: {
-				condition: () => !Weather.isFrozen("lake"),
-				image: "water.png",
-				animation: {
-					frameDelay: 1000,
-					cycleDelay: () => 0,
-				},
-			},
-			ice: {
-				condition: () => Weather.isFrozen("lake"),
-				image: "ice.png",
 			},
 			deer: {
 				condition: () => !Weather.isSnow && Time.dayState === "dawn",
@@ -976,8 +975,25 @@ setup.LocationImages = {
 			},
 		},
 		reflective: {
-			image: "reflective.png",
-			horizon: 156,
+			mask: {
+				image: "reflective.png",
+				alpha: () => (!Weather.isFrozen("lake") ? 0.8 : 0.35),
+				horizon: 18,
+				waveShiftFactor: 0.009,
+				animationCondition: () => !Weather.isFrozen("lake"),
+			},
+			water: {
+				condition: () => !Weather.isFrozen("lake"),
+				image: "water.png",
+				animation: {
+					frameDelay: 1050,
+					cycleDelay: () => 0,
+				},
+			},
+			ice: {
+				condition: () => Weather.isFrozen("lake"),
+				image: "ice.png",
+			},
 		},
 	},
 	lake_ruin: {
@@ -1032,17 +1048,17 @@ setup.LocationImages = {
 				color: "#e63e3e",
 			},
 		},
-		reflective: {
-			default: {
-				condition: () => !Weather.bloodMoon,
-				image: "reflective.png",
-			},
-			bloodMoon: {
-				condition: () => Weather.bloodMoon,
-				image: "reflective_blood.png",
-			},
-			horizon: 112,
-		},
+		// reflective: {
+		// 	default: {
+		// 		condition: () => !Weather.bloodMoon,
+		// 		image: "reflective.png",
+		// 	},
+		// 	bloodMoon: {
+		// 		condition: () => Weather.bloodMoon,
+		// 		image: "reflective_blood.png",
+		// 	},
+		// 	horizon: 112,
+		// },
 	},
 	landfill: {
 		folder: "landfill",
@@ -1127,10 +1143,10 @@ setup.LocationImages = {
 				},
 			},
 		},
-		reflective: {
-			image: "reflective.png",
-			horizon: 112,
-		},
+		// reflective: {
+		// 	image: "reflective.png",
+		// 	horizon: 112,
+		// },
 	},
 	museum: {
 		folder: "museum",
@@ -1511,16 +1527,14 @@ setup.LocationImages = {
 	},
 	sea: {
 		folder: "sea",
-		base: {
-			image: "base.png",
-			animation: {
-				frameDelay: 300,
-				cycleDelay: () => 0,
-			},
-		},
 		reflective: {
-			image: "reflective.png",
-			alpha: 0.8,
+			mask: {
+				image: "reflective.png",
+				alpha: 0.7,
+			},
+			overlay: {
+				image: "water.png",
+			},
 		},
 	},
 	pirate_ship: {

@@ -12,18 +12,8 @@ setup.debugMenu = {
 setup.debugMenu.eventList = {
 	Main: [
 		{
-			link: [`Freeze stats`, stayOnPassageFn],
-			widgets: [`<<set $statFreeze to true>>`],
-			condition() {
-				return !V.statFreeze;
-			},
-		},
-		{
-			link: [`Unfreeze stats`, stayOnPassageFn],
-			widgets: [`<<set $statFreeze to false>>`],
-			condition() {
-				return V.statFreeze;
-			},
+			link: [`Home`, `Bedroom`],
+			widgets: [`<<endcombat>>`],
 		},
 		{
 			link: [`Pass 1 minute`, stayOnPassageFn],
@@ -64,10 +54,6 @@ setup.debugMenu.eventList = {
 		{
 			link: [`Pass 24 hours`, stayOnPassageFn],
 			widgets: [`<<pass 24 hours>>`],
-		},
-		{
-			link: [`Home`, `Bedroom`],
-			widgets: [`<<endcombat>>`],
 		},
 		{
 			link: [`Wardrobe`, `Wardrobe`],

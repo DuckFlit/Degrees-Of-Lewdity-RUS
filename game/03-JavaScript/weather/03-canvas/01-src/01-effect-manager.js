@@ -11,7 +11,7 @@ Weather.Sky.Effects = (() => {
 		params = { ...optionalParams, ...params };
 
 		if (_effects.has(params.name)) {
-			Weather.Sky.errors.add("Effects", `Effect with name '${params.name}', already exists, and will be overwritten.`);
+			console.error("Effects", `Effect with name '${params.name}', already exists, and will be overwritten.`);
 		}
 
 		const { name, ...context } = params;

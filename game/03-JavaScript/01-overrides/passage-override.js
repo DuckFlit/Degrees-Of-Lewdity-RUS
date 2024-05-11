@@ -2,7 +2,7 @@ Config.passages.onProcess = function (passage) {
 	/* Current passage */
 	if (passage.title === State.passage) {
 		/* Major areas only */
-		if (setup.majorAreas.includes(passage.title)) {
+		if (setup.passOutAreas.includes(passage.title)) {
 			/* Passout from temperature extremes */
 			if (V.passout) {
 				T.passout = V.passout;
