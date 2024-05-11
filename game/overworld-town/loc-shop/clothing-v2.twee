@@ -16,6 +16,7 @@
 	args[2] should be "outfits" or missing. Combination of "over_upper", "upper" or "under_upper" in args[1] with "outfits" provides respective outfits category
 */
 <<widget "clothingShopv2">>
+	<br>
 	<<exitclothingshop>>
 	<<if _args[0]>>
 		<<set _shopLocation to _args[0]>>
@@ -110,13 +111,14 @@
 
 	<div id="shop-list-pages" class="shop-list-pages">
 		<!-- Generate current page immediately -->
-		<<generateshoppage $shopPage>>
+		<<set _startingShopPage to $shopPage>>
+		<<generateshoppage _startingShopPage>>
 
 		<!-- Generate other pages in background after a delay, so that shop can be displayed sooner -->
 		<!-- Having all pages loaded allows for very fast shop catalogue navigation -->
 		<!-- Generate via <<repeat>> one by one to not cause a lag spike -->
 		<<timed 0.2s>>
-			<<set _ppre = $shopPage - 1>>
+			<<set _ppre = _startingShopPage - 1>>
 			<<repeat 0.1s>>
 			 	<<if document.getElementById("shop-list-pages") eq null or _ppre lt 0>>
             		<<stop>>
@@ -128,7 +130,7 @@
 				<<set _ppre-->>
 			<</repeat>>
 			<!-- Append pages after the current page -->
-			<<set _papp = $shopPage + 1>>
+			<<set _papp = _startingShopPage + 1>>
 			<<repeat 0.1s>>
 				<<if document.getElementById("shop-list-pages") eq null or _papp gte _maxPage>>
             		<<stop>>
@@ -460,6 +462,7 @@
 		<!-- Make sure to linkify ONLY this page, otherwise other, already linkified, divs will have two event handlers attached to them and will execute twice per click -->
 		<<run linkifyDivs('#shop-list-pages > .clothing-shop-page.page-' + _page)>>
 	</div>
+	<<run initializeTooltips()>>
 <</widget>>
 
 <<widget "updateclotheslist">>
@@ -471,13 +474,18 @@
 
 <<widget "clothingtrait">>
 	<<if $options.images is 1 and (_args[1] or _args[0] isnot "normal") and _shopLocation isnot "mirrorhair">>
-		<<silently>><<shopTraitDescription _args[0]>><</silently>>
-		<mouse class="tooltip-tiny black"><img @src="'img/misc/icon/clothes/traits/' + _args[0] + '.png'" class="clothing-trait">
-		<<if _args[1] is undefined>><span><<print _clothesTrait>></span><</if>>
-		</mouse>
+		<<set _traitObj to setup.shopDetails[_args[0]]>>
+		<<set _traitName to _traitObj.name>>
+		<<set _traitDesc to `<span class="black">` + _traitObj.desc + `</span>`>>
+		<<set _traitDetails to `<i class="green normal">` + (_traitObj.details isnot "none" ? " " + _traitObj.details : "") + `</i>`>>
+		<<set $_tooltip to _traitDesc + "<br>" + _traitDetails>>
+		<span @tooltip-title="_traitName" @tooltip="$_tooltip" tooltip-settings="{delay: 0}">
+			<img @src="'img/misc/icon/clothes/traits/' + _args[0] + '.png'" class="clothing-trait">
+		</span>
 	<<elseif _shopLocation is "mirrorhair">>
-		<<silently>><<shopTraitDescription _args[0]>><</silently>>
-		<<if _args[1] is undefined>><span><<print _hairTrait>></span><</if>>
+		<<set _traitObj to setup.hairDetails[_args[0]]>>
+		<<set _traitObj.name to T.args[0].toUpperFirst()>>
+		<<if _args[1] is undefined>><span class="black"><<print _traitObj.desc>></span><</if>>
 	<</if>>
 <</widget>>
 
@@ -495,7 +503,7 @@
 		<<if $specialClothes[_temp_choice.name.replace(/[- ]/g,"")] is "unlocked">>
 			<<specialClothesHint>>
 			<div class="unlocked-hint">
-				<span class="gold">Unlocked | </span><span class="grey"><<print _specialClothesHint[_temp_choice.name.replace(/ /g,"")]>></span>
+				<span class="gold">Unlocked | </span><span class="grey"><<print _specialClothesHint[_temp_choice.name.replace(/[- ]/g,"")]>></span>
 			</div>
 			<br>
 		<</if>>
@@ -762,7 +770,14 @@
 						<br>
 					<</if>>
 					<<if ["face"].includes($clothingShopSlot) and $worn[$clothingShopSlot].name is _temp_choice.name>>
-						<div class="try-button div-link"><<toggleFaceLayer $clothingShopSlot "shop">></div>
+						<div class="try-button div-link"><<toggleFaceLayer "shop">></div>
+						<br>
+					<</if>>
+					<<if ["feet"].includes($clothingShopSlot) and $worn.feet.name isnot "naked" and $worn.lower.name isnot "naked" and !setup.clothes.feet[clothesIndex("feet",$worn.feet)].notuck and !setup.clothes.lower[clothesIndex("lower",$worn.lower)].notuck>>
+						<div class="try-button div-link"><<toggleLowerTuck>></div>
+					<</if>>
+					<<if _temp_choice.variable is $worn[$clothingShopSlot].variable and _temp_choice.altsleeve and !($worn.upper.variable is "schoolcardigan" and $worn.upper.altposition isnot "alt")>>
+						<div class="try-button div-link"><<toggleAltSleeve>></div>
 						<br>
 					<</if>>
 				</div>
@@ -858,9 +873,13 @@
 					<<capture _buttonName _args[0] _acc $clothingShopSlot>>
 						<<link "">>
 							<<if _buttonName == "random">>
-								<<set $customColors.color[_acc] to random(0, 360)>> /* 0,360 are min/max hue values, representing colours */
-								<<run updateHueSlider($customColors.color[_acc], _acc)>>
-								<<set _colour = "custom">>
+								<<if _temp_choice[_colourType].includes("custom")>>
+									<<set $customColors.color[_acc] to random(0, 360)>> /* 0,360 are min/max hue values, representing colours */
+									<<run updateHueSlider($customColors.color[_acc], _acc)>>
+									<<set _colour = "custom">>
+								<<else>>
+									<<set _colour = (_args[0] == "secondary" ? _temp_choice.accessory_colour_options : _temp_choice.colour_options).filter(x => x !== "random").pluck()>>
+								<</if>>
 							<<else>>
 								<<set _colour = _buttonName>>
 							<</if>>
@@ -1457,19 +1476,21 @@
 				<div class="traits-list">
 					<<set _traitsInThisShop = [...new Set(Object.keys(setup.clothes).flatMap(x => setup.clothes[x]).filter(x => x.shop.includes(_shopLocation)).flatMap(x => x.type))]>>
 					<<for _trait range _traitsInThisShop.sort()>>
-						<<silently>><<shopTraitDescription _trait>><</silently>>
+						<<set _traitObj to setup.shopDetails[_trait]>>
 						<div class="filters-trait-row">
 							<label>
 								<<set _checked = $shopClothingFilter.traits.includes(_trait) ? 'checked="checked"' : ''>>
 								<<clothingtrait _trait 'display_normal'>>
 								<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
-								<<if $noTraitDescription>>
-									<<print _clothesTrait>>
+								<<if !_traitObj.desc>>
+									<<print _traitObj.name>>
 								<<else>>
-									<mouse class = "tooltip-small">
-										<<print _clothesTrait>>
-										<span class="black"><<print _clothesDesc>></span>
-									</mouse>
+									<<set _traitDesc to `<span class="black">` + _traitObj.desc + `</span>`>>
+									<<set _traitDetails to `<i class="green normal">` + (_traitObj.details isnot "none" ? " " + _traitObj.details : "") + `</i>`>>
+									<<set $_tooltip to _traitDesc + "<br>" + _traitDetails>>
+									<div class="tooltip-anchor" @tooltip="$_tooltip">
+										_traitObj.name
+									</div>
 								<</if>>
 							</label>
 						</div>
@@ -1478,6 +1499,7 @@
 			</div>
 		</div>
 	</div>
+	<<run initializeTooltips()>>
 <</widget>>
 
 <<widget "filterreveal">>
@@ -1508,7 +1530,7 @@
 			</div>
 		</div>
 		<div class="options-body">
-			<<set _colorOptions to ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"]>>
+			<<set _colorOptions to ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "silver", "gold", "bronze", "custom", "random"]>>
 
 			<br>
 			Default primary colour:

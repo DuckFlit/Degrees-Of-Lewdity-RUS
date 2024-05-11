@@ -381,6 +381,13 @@ The museum is closed. There's a sign on the door.
 
 	<<link [[Next|Museum]]>><<endevent>><</link>>
 	<br>
+<<elseif $museumfamoushorseintro is undefined and ($feats.currentSave["Pain Rider"] isnot undefined) and ((fameSum('business', 'good', 'social', 'model')/8000) gte 0.25)>>
+	<<set $museumfamoushorseintro to 0>>
+	<<npc Winter>><<person1>>You enter the museum. Winter is chatting with a few visitors when <<he>> meets your gaze and quickly rushes over to you. "The museum is getting more traffic than ever before. Your demonstration drew a lot of attention!" <<he>> says. "I think it's at a point where we could start charging for admission. If you're okay with it, I would like to make it into a bigger event. It would be a great opportunity to help educate the townsfolk, and I would give you a share of the profit, of course. Take a moment to think about it and let me know what you think."
+	<br><br>
+	Winter moves on to another group of guests looking over a classical theater mask, giving you a chance to consider your options.
+	<br><br>
+	<<link [[Next|Museum]]>><<endevent>><</link>>
 <<else>>
 	You are inside the museum. Items of historic value cover the walls and perch on pedestals.
 	<<if $museuminterest gte 100>>
@@ -398,17 +405,24 @@ The museum is closed. There's a sign on the door.
 	<br><br>
 
 	<<if $museumhorseintro is 0>>
-		<<link [[Agree to wood horse demonstration|Museum Horse Agree]]>><<set $museumhorseintro to 1>><</link>>
+		<<ind>><<link [[Agree to wood horse demonstration|Museum Horse Agree]]>><<set $museumhorseintro to 1>><</link>>
 		<br>
 	<<elseif $museumhorseintro is 1 and $museumhorse isnot 1>>
-		<<link [[Demonstrate wooden horse (1:00)|Museum Horse]]>><<pass 60>><<set $museumhorse to 1>><</link>><<gpain>><<exhibitionist1>>
+		<<ind>><<link [[Demonstrate wooden horse (1:00)|Museum Horse]]>><<pass 60>><<set $museumhorse to 1>><</link>><<gpain>><<exhibitionist1>>
+		<br>
+	<</if>>
+	<<if $museumfamoushorseintro is 0 and $museumhorse isnot 1>>
+		<<ind>><<link [[Agree to paid wood horse demonstration|Museum Famous Horse Agree]]>><<set $museumfamoushorseintro to 1>><</link>>
+		<br>
+	<<elseif $museumfamoushorseintro is 1 and $museumhorse isnot 1>>
+		<<ind>><<link [[Demonstrate wooden horse for money (1:30)|Museum Famous Horse]]>><<pass 90>><<set $museumhorse to 1>><</link>><<exhibitionist1>>
 		<br>
 	<</if>>
 	<<if $museumduckintro is 0>>
-		<<link [[Agree to ducking stool demonstration|Museum Duck Agree]]>><<set $museumduckintro to 1>><</link>>
+		<<ind>><<link [[Agree to ducking stool demonstration|Museum Duck Agree]]>><<set $museumduckintro to 1>><</link>>
 		<br>
 	<<elseif $museumduckintro is 1 and $museumduck isnot 1>>
-		<<link [[Demonstrate ducking stool (1:00)|Museum Duck]]>><<pass 60>><<set $museumduck to 1>><</link>><<exhibitionist1>>
+		<<ind>><<link [[Demonstrate ducking stool (1:00)|Museum Duck]]>><<pass 60>><<set $museumduck to 1>><</link>><<exhibitionist1>>
 		<br>
 	<</if>>
 	<<if $museumAntiqueJournalHints is undefined>>
@@ -416,22 +430,22 @@ The museum is closed. There's a sign on the door.
 	<</if>>
 	<<museumtalk>>
 	<<if $worn.feet.type.includes("shackle")>>
-		<<link [[Ask to have your shackles removed (0:10)|Museum Shackle]]>><<pass 10>><</link>>
+		<<ind>><<link [[Ask to have your shackles removed (0:10)|Museum Shackle]]>><<pass 10>><</link>>
 		<br>
 	<</if>>
 	<<if $temple_spear_mission is 1 and !$temple_spear_mission_winter>>
-		<<link [[Ask about the artifact spear|Museum Spear]]>><</link>>
+		<<ind>><<link [[Ask about the artefact spear|Museum Spear]]>><</link>>
 		<br>
 	<</if>>
 	<<if $museumAntiques.antiques.antiqueforestgem is "museum" and $daily.museumGreenGemTouch isnot 1>>
-		<<link [[Touch green gem|Museum Green Gem Touch]]>><<stress -9>><<set $daily.museumGreenGemTouch to 1>><</link>><<lstress>>
+		<<ind>><<link [[Touch green gem|Museum Green Gem Touch]]>><<stress -9>><<set $daily.museumGreenGemTouch to 1>><</link>><<lstress>>
 		<br>
 	<</if>>
 	<<if $antiquemoney gt 0>>
-		<<link [[Sell antiques|Museum Sell]]>><<if $museumAntiques.antiques.antiquesilvermask is "found">><<set $phase to 1>><<else>><<set $phase to 0>><</if>><<if $museumAntiques.antiques.antiqueivorynecklace is "found">><<world_corruption "hard" 2>><</if>><<museumdonate>><</link>>
+		<<ind>><<link [[Sell antiques|Museum Sell]]>><<if $museumAntiques.antiques.antiquesilvermask is "found">><<set $phase to 1>><<else>><<set $phase to 0>><</if>><<if $museumAntiques.antiques.antiqueivorynecklace is "found">><<world_corruption "hard" 2>><</if>><<museumdonate>><</link>>
 		<br>
 	<</if>>
-	<<link [[Look around the museum|Museum Look around]]>><</link>>
+	<<ind>><<link [[Look around the museum|Museum Look around]]>><</link>>
 	<br><br>
 
 	<<oxfordicon>><<link [[Leave|Oxford Street]]>><</link>>
@@ -755,7 +769,7 @@ You pick up the bell, and hold it steady.
 You awaken to the sight of a concerned face. "Here," Winter says, offering you a glass of water. You sit up. <<He>> sounds relieved.<<gcontrol>><<control 10>>
 <br><br>
 
-You're in a small, old fashioned room. It could be one of the backrooms at the museum, if not for the bed. "A Doctor checked you out. A young <<if $NPCName[$NPCNameList.indexOf("Harper")].pronoun is "f">>blonde lady<<else>>blond fellow<</if>>. Said you'd be up soon, and there was no need to worry. Wanted to keep an eye on you, though."
+You're in a small, old fashioned room. It could be one of the backrooms at the museum, if not for the bed. "A doctor checked you out. A young <<if C.npc.Harper.pronoun is "f">>blonde lady<<else>>blond fellow<</if>>. Said you'd be up soon, and there was no need to worry. Wanted to keep an eye on you, though."
 <br><br>
 
 <<He>> leans back. "Forgive me," <<he>> says. "This is my home. It was here or your orphanage. This was more convenient."
@@ -900,7 +914,7 @@ Winter dons a pair of gloves and appraises the goods. Without a word, <<he>> pla
 <<run $museumAntiqueJournalHints.delete("antiquegoldnecklace")>>
 <</if>>
 
-<<npc Winter>><<person1>>Winter turns the gold necklace in <<his>> palm. "This is magnificent," <<he>> says. "Worn by someone of note I imagine. Where did you find it?"
+<<npc Winter>><<person1>>Winter turns the gold necklace in <<his>> palm. "This is magnificent," <<he>> says. "Worn by someone of note, I imagine. Where did you find it?"
 <br><br>
 
 <<link [[Tell|Museum Tell]]>><<set $winterlakeknown to 1>><</link>>
@@ -1612,9 +1626,9 @@ Winter goes off on a tangent, but you remain polite, and nod along.
 <<effects>>
 <<set $temple_spear_mission_winter to 1>>
 <<npc Winter>><<person1>>
-"You're the second person to ask about that," Winter says. "A young <<if $NPCName[$NPCNameList.indexOf("Jordan")].pronoun is "m">>monk<<else>>nun<</if>>, visited, not so long ago. They were very polite. I fear I had nothing useful to tell them, but I resolved to investigate."
+"You're the second person to ask about that," Winter says. "A young <<if C.npc.Jordan.pronoun is "m">>monk<<else>>nun<</if>>, visited, not so long ago. They were very polite. I fear I had nothing useful to tell them, but I resolved to investigate."
 <br><br>
-<<He>> clears <<his>> throat. "As it would happen, someone brought in a very old, very peculiar antique. They insisted it came from such an island. They seemed something of a rascal, and I'd have pegged them as a liar if not for the <<if $NPCName[$NPCNameList.indexOf("Jordan")].pronoun is "m">>monk<<else>>nun<</if>>."
+<<He>> clears <<his>> throat. "As it would happen, someone brought in a very old, very peculiar antique. They insisted it came from such an island. They seemed something of a rascal, and I'd have pegged them as a liar if not for the <<if C.npc.Jordan.pronoun is "m">>monk<<else>>nun<</if>>."
 <br><br>
 
 <<link [[Next|Museum Spear 2]]>><</link>>
@@ -1700,6 +1714,7 @@ Winter goes off on a tangent, but you remain polite, and nod along.
 <</if>>
 
 <<npc Winter>><<person1>>"This matches the descriptions I've read," Winter says, peering into the figurine's eyes. "A curious thing. I can't place the culture that produced it." <<He>> puts it down. "Maybe just a local and eccentric cottage industry."
+<br><br> A figurine from an undetermined culture. Maybe just a local and eccentric cottage industry.
 <br><br>
 
 <<link [[Next|Museum]]>><<endevent>><</link>>

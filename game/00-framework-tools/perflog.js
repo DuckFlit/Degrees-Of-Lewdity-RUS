@@ -117,9 +117,9 @@ function niceround(x) {
 	if (Math.floor(x) === x) return x; // Integers
 	if (x > -1 && x < 1) {
 		// Small number, round to 0.001 instead
-		return Math.round(x * 1000) / 1000;
+		return round(x, 3);
 	}
-	return Math.round(x * 10) / 10;
+	return round(x, 1);
 }
 /**
  * Return performance report. Can be viewed by DevTools table() function.

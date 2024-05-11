@@ -185,19 +185,34 @@ It brings the slime down to your
 <br><br>
 You shake in the figure's grasp. You feel unnaturally aroused, especially with it straddling you like this. It's a small feeling at first. Then it grows, until <span class="lewd">an overwhelming desire for lewdity overtakes you.</span> It looks pleased. <<lobsession>>
 <br><br>
-<<if !$earSlime.corruption>>
+<<if numberOfEarSlime() is 1>>
 	<i>A corruption bar has appeared in the Characteristics tab.</i>
 	<br><br>
 <</if>>
-Its grip on you loosens<<if $wraith.state is "haunt">>, and you gasp for breath<</if>>. You hear whispers all around you. <span class="lewd">Something inside pressures you to give yourself to the pale figure.</span> Somehow, you know going along with the urges will feel good, and disobeying will be painful.
+Its grip on you loosens<<if $wraith.state is "haunt">>, and you gasp for breath<</if>>. You hear whispers all around you.
+
+<<if numberOfEarSlime() gte 2>>
+	<span class="lewd">The ear slimes stronger now, redoubled. It commands you to give give yourself to the pale figure.</span> By now you know how good it will feel to comply.
+<<else>>
+	<span class="lewd">Something inside pressures you to give yourself to the pale figure.</span> Somehow, you know going along with the urges will feel good, and disobeying will be painful.
+<</if>>
 <<initWraith "abomination">>
 <<startWraith>>
 <br><br>
 <<if $promiscuity gte 55 and $submissive gte 1900>>
-	<<link [[Submit|Lake Prison Intro Fight]]>><<set $sexstart to 1>><<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><<set $earSlime.promiscuity to 4>><<set $earSlime.deviancy to 4>><</link>><<promiscuous4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
+	<<link [[Submit|Lake Prison Intro Fight]]>>
+		<<set $sexstart to 1>><<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>>
+		<<if $earSlime.promiscuity lt 4>><<set $earSlime.promiscuity to 4>><</if>>
+		<<if $earSlime.deviancy lt 4>><<set $earSlime.deviancy to 4>><</if>>
+		<<set $earSlime.startedThreats to true>>
+	<</link>><<promiscuous4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
 	<br>
 <</if>>
-<<link [[Obey|Lake Prison Intro Fight]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><<set $earSlime.promiscuity to 2>><<set $earSlime.deviancy to 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+<<link [[Obey|Lake Prison Intro Fight]]>>
+	<<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>>
+	<<if $earSlime.promiscuity lt 2>><<set $earSlime.promiscuity to 2>><</if>>
+	<<if $earSlime.deviancy lt 2>><<set $earSlime.deviancy to 2>><</if>>
+<</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
 <br>
 <<link [[Defy|Lake Prison Intro Fight]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 <br>
@@ -334,7 +349,7 @@ Its grip on you loosens<<if $wraith.state is "haunt">>, and you gasp for breath<
 				"<span class="wraith">Help me find it. See what I've seen. Stay.</span>"
 			<<else>>
 				"<span class="wraith">Again. Again. Descending. Where is it?</span>"
-			<</if>>			
+			<</if>>
 		<</if>>
 		<<if $worn.neck.cursed is 1>>
 			It rests a hand against your $worn.neck.name. There's a flash of light, a deep groaning sound, and the metal is no more.
@@ -356,6 +371,36 @@ Its grip on you loosens<<if $wraith.state is "haunt">>, and you gasp for breath<
 		<<link [[Next|Lake Prison Intro Fight]]>><</link>>
 		<br>
 	<</if>>
+<<else>>
+	It suddenly lifts you, and begins to carry you. You're helpless to resist.
+	You're placed in a decrepit cage, right next to the centre of the lichen colony. There's no door.
+	<<if $wraith.state is "haunt">>
+		<<if !$wraithPrison.vision>>
+			"<span class="wraith">I will break open your mind, and then I will show you. And then you will. Give. It. Back.</span>"
+		<<else>>
+			"<span class="wraith">The descent begins again. Isn't it beautiful?</span>"
+		<</if>>
+	<<elseif $wraith.state is "despair">>
+		<<if !$wraithPrison.vision>>
+			"<span class="wraith">Help me find it. See what I've seen. Stay.</span>"
+		<<else>>
+			"<span class="wraith">Again. Again. Descending. Where is it?</span>"
+		<</if>>
+	<</if>>
+	<<if $worn.neck.cursed is 1>>
+		It rests a hand against your $worn.neck.name. There's a flash of light, a deep groaning sound, and the metal is no more.
+		<<set $worn.neck.type.push("broken")>>
+		<<neckruined>>
+	<</if>>
+	It floats away from the cell, out of sight. <<tearful>> you look around, trying to think of a way out. The figure is nowhere to be seen.
+	<<set $wraithPrison.timer to 60>>
+	<<set $wraithPrison.state to "recovering">>
+	<<clotheson>>
+	<<endcombat>>
+	<<endWraith>>
+	<br><br>
+	<<link [[Next|Lake Ruin Prison]]>><<unset $wraithParasite>><</link>>
+	<br>
 <</if>>
 
 :: Lake Ruin Prison
@@ -423,7 +468,7 @@ You are in a submerged prison. Pink mist swirls in the air. <<ghallucinogens>>
 			"<span class="wraith">You've seen it. Have you seen it? Will you help me? You will help me.</span>" <<lobsession>>
 			<br><br>
 			It floats backwards, away from you. The rune at the bottom of the stairs glows again.
-		<</if>>		
+		<</if>>
 	<<else>>
 		"<span class="wraith">My time comes to an end. You will return, next moon.</span>"
 		<<if numberOfEarSlime()>>
@@ -445,7 +490,7 @@ You are in a submerged prison. Pink mist swirls in the air. <<ghallucinogens>>
 <<if _wraithEvent is true>>
 	<<if ["haunt", "despair"].includes($wraith.state) and $trauma gte ($traumamax / 10) * 4 and $wraithPrison.timePassed gte 140>>
 		The pale figure emerges from the ground. You feel your energy being sapped away already. You're pushed into one of the cells and onto a bed of lichen by an unseen force.
-		<br><br>		
+		<br><br>
 		<<if $wraith.state is "haunt">>
 			It looks you over with a cold gaze, and grabs your cheeks with a clawed hand.
 			<<if !$wraithPrison.vision>>
@@ -499,7 +544,7 @@ You are in a submerged prison. Pink mist swirls in the air. <<ghallucinogens>>
 				"We must suffer together.",
 				"<<pcPetname \"Wraith\">>.",
 				"You are everything I have."
-			)>></span>"			
+			)>></span>"
 		<<else>>
 			"<span class="wraith"><<print either(
 				"Do not resist.",
@@ -1039,7 +1084,7 @@ Your body is unnaturally warm. <<arousal 600>><<garousal>>
 		<<set $wraithPrison.timer to 30>>
 		<<set $wraithPrison.state to "recovering">>
 		<br><br>
-		<<link [[Next|Lake Ruin Prison]]>><</link>>		
+		<<link [[Next|Lake Ruin Prison]]>><</link>>
 	<<else>>
 		The pale figure looks down at you and frowns. "<span class="wraith">Unimaginable pleasure, beyond any you've felt thus far... is that not what you desire?</span>" It almost sounds disappointed.
 		<br><br>
@@ -1074,7 +1119,7 @@ Your body is unnaturally warm. <<arousal 600>><<garousal>>
 		<<if $parasite.penis.name and $parasite.penis.name isnot "parasite">>
 			Semen sprays out of your <<penis>> into the parasite latched to it.
 		<<elseif $worn.genitals.name isnot "chastity parasite">>
-			Semen sprays out of your <<penis>> into your chastity parasite, briefly enlarging it beyond it's normal size.
+			Semen sprays out of your <<penis>> into your chastity parasite, briefly enlarging it beyond its normal size.
 		<<else>>
 			Semen sprays out of your <<penis>> in a fountain, pulsing and throbbing but never slowing down.
 		<</if>>
@@ -1112,17 +1157,17 @@ When it finally ends, you collapse to the ground like a puppet with cut strings,
 	<<if $player.penisExist and ($lactating and $breastfeedingdisable is "f") and !$femaleclimax>>
 		semen and milk,
 		<<set $fluid_forced_stat += $semen_amount + $milk_amount>>
-		<<set $breastsensitivity += 0.5>><<set $genitalsensitivity += 0.5>>
+		<<breast_sensitivity 0.5>><<genital_sensitivity 0.5>>
 		<<semenvolume _semenLoss>><<milkvolume _milkLoss>><<set $semen_amount to 0>><<set $milk_amount to 0>>
 	<<elseif $player.penisExist and !$femaleclimax>>
 		semen,
 		<<set $fluid_forced_stat += $semen_amount>>
-		<<set $genitalsensitivity += 0.5>>
+		<<genital_sensitivity 0.5>>
 		<<semenvolume _semenLoss>><<set $semen_amount to 0>>
 	<<else>>
 		milk,
 		<<set $fluid_forced_stat += $milk_amount>>
-		<<set $breastsensitivity += 0.5>>
+		<<breast_sensitivity 0.5>>
 		<<milkvolume _milkLoss>><<set $milk_amount to 0>>
 	<</if>>
 	<<if $player.penisExist and $femaleclimax>>
@@ -1132,10 +1177,10 @@ When it finally ends, you collapse to the ground like a puppet with cut strings,
 	and has lowered your maximum capacity.</span>
 <<else>>
 	Like a rag wrung dry, you feel your spirit trickling out.
-	<<set $genitalsensitivity += 0.5>>
+	<<genital_sensitivity 0.5>>
 <</if>>
 <span class="purple">You can't think straight, and you feel like you're more sensitive than you were before.</span>
-<<tiredness 20>><<purity -20>><<trauma 24>><<drugs 1000>><<ggtrauma>><<gtiredness>><<llpurity>><<gggdrugged>>
+<<tiredness 20>><<purity -20>><<trauma 24>><<drugs 1000>><<ggtrauma>><<gggtiredness>><<llpurity>><<gggdrugged>>
 <br>
 <<if $orgasmtrait is 1>>
 	You barely manage to form a dopey smile. That was the best damn orgasm of your life.

@@ -1,6 +1,8 @@
 :: Widgets Whitney Street [widget]
 <<widget "eventsWhitneyStreet">>
 	<<npc Whitney>><<person1>>
+	<<outfitChecks>>
+	<<rng>>
 	<<if $whitneyReunionScene>><<unset $whitneyReunionScene>>
 		You round a corner when Whitney steps in front of your path. <<His>> goons flank you, preventing escape. "There you are, bitch," Whitney says, looking aggravated. "What? You didn't think I'd notice when my favourite slut goes missing?" You're unable to respond as <<he>> presses <<his>> lips against your mouth, kissing you.<<takeKissVirginity "Whitney" "loveInterest">>
 		<br><br>
@@ -45,9 +47,9 @@
 
 		<<endevent>>
 		<<destinationeventend>>
-	<<elseif $NPCName[$NPCNameList.indexOf("Whitney")].love gte 20 and $whitneyromance isnot 1>>
+	<<elseif C.npc.Whitney.love gte 20 and $whitneyromance isnot 1>>
 		<<set $whitneyromance to 1>>
-		Whitney approaches you. <<He>> looks angrier than usual. You take a cautionary step back, and nearly tumble into a pile of rubbish. <<He>> grabs you by the <<if $worn.upper.name is "naked">>arm<<else>>collar<</if>> at the last second.
+		Whitney approaches you. <<He>> looks angrier than usual. You take a cautionary step back, and nearly tumble into a pile of rubbish. <<He>> grabs you by the <<if $worn.upper.name is "naked" and $worn.over_upper.name is "naked">>arm<<else>>collar<</if>> at the last second.
 		<br><br>
 
 		"Stupid slut," <<he>> says. <<He>> pulls you upright and shoves you against a wall. "You've been asking for this, don't try to deny it." <<He>> kisses you with surprising tenderness. <<takeKissVirginity "Whitney" "loveInterest">>
@@ -71,6 +73,29 @@
 
 		<<endevent>>
 		<<destinationeventend>>
+	<<elseif $trauma gte (($traumamax / 5) * 3) and $rng gte 61>>
+		You stumble forward. As you approach the corner, you hear someone running towards you. You fail to dodge. Someone crashes into you, knocking you both to the ground. <<gpain>><<pain 6>>
+		<br><br>
+		There is a dull ache in your head, but you just sit numbly. Your vision slowly clears, and you see a furious face in front of you. <<if C.npc.Whitney.love gte 12>><span class="green">It's Whitney</span>.<<else>><span class="red">It's Whitney</span>.<</if>> "Bloody hell, you fucking idi-" You can barely hear <<his>> voice echoing in the alley.
+		<br><br>
+
+		<<if $whitneyromance is 1 and C.npc.Whitney.love gte 12>>
+			The weight of everything is too much for you. You pounce on <<him>>, cutting <<his>> words off. You wrap your arms around <<him>> and bury your head into <<his>> chest. You try to speak, but all you can manage are a few faint sobs.
+			<br><br>
+			<<link [[Next|Whitney Alleyway Breakdown]]>><</link>>
+		<<else>>
+			The weight of everything is too much for you, and tears begin to leak out of your eyes. You try to speak, but all you can manage are a few faint sobs.
+			<br><br>
+
+			Whitney grabs your shoulder and uses it for leverage as <<he>> stands up. <<He>> looks down at you. "What the fuck is your problem?" <<he>> says, clearly uncomfortable with your behaviour. "Crybaby bitch." <<He>> shakes <<his>> head and leaves.
+			<br><br>
+
+			<<tearful>> you collect yourself.
+			<br><br>
+
+			<<endevent>>
+			<<destinationeventend>>
+		<</if>>
 	<<else>>
 		<<switch $bullyeventstreet>>
 			<<case 1>><<set $bullyeventstreet += 1>>
@@ -161,14 +186,13 @@
 					<<link [[Squirm free|Street Bully Makeout]]>><<set $phase to 0>><<def 1>><<npcincr Whitney love -1>><<npcincr Whitney dom -1>><</link>><<llove>><<ldom>>
 					<br>
 				<<else>>
-					a pair of hands worm their way into your <<print $worn.lower.name>>.
+					a pair of hands worm their way <<= `into your ${_outfit ? _top?.name : _bottom?.name}` || "down to your <<genitals>>">>.
 					<br><br>
-
-					<<if !$worn.under_lower.type.includes("naked")>>
+					<<if !$worn.under_lower.type.includes("naked") and !$worn.under_lower.type.includes("covered")>>
 						"You're in my turf again." It's Whitney. <<His>> friends circle around you. "Let's make sure the lesson sticks this time."
 						<br><br>
 
-						<<His>> hands slide deeper, in search of your <<print $worn.under_lower.name>>.
+						<<His>> hands slide deeper, in search of your <<undies 1>>.
 						<br><br>
 
 						<<link [[Let it happen|Street Bully Undies]]>><<set $phase to 1>><<sub 1>><<trauma 6>><<stress 6>><<pain 6>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<gpain>><<gdom>>
@@ -176,9 +200,9 @@
 						<<link [[Fight|Street Bully Fight]]>><<def 1>><<set $fightstart to 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
 						<br>
 					<<else>>
-						"Real bold of you to come around my turf." It's Whitney. <<He>> lets <<his>> hands wander through your <<print $worn.lower.name>>, <span class="lewd">fingers brushing against your <<genitals>>.</span>
+						"Real bold of you to come around my turf." It's Whitney. <<He>> lets <<his>> hands wander <<= _outfit ? "down your _top.name" : _bottom ? "through your _bottom.name" : "over your crotch">>, <span class="lewd">fingers brushing against your <<genitals>>.</span>
 						<<if $whitneypantiescheck is 1>>
-							"No <<if $pronoun is "m">>undies<<else>>panties<</if>>? We're not even in school." <<He>> leans in close. "Or do you dress like this for fun?"
+							"No panties? We're not even in school." <<He>> leans in close. "Or do you dress like this for fun?"
 						<<elseif $whitneypantiescheck is 2>>
 							"No undies? We're not even in school." <<He>> leans in close. "Or do you dress like this for fun?"
 						<<else>>
@@ -447,7 +471,7 @@
 					<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 						<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
 					<<else>>
-						<<link [[Drink|Street Bully Drunk]]>><<set $phase to 1>><<trauma -6>><<stress -12>><<alcohol 240>><<if $phase2 is 1>><<arousal 2000>><<drugs 120>><</if>><</link>><<ltrauma>><<lstress>><<galcohol>>
+						<<link [[Drink|Street Bully Drunk]]>><<set $phase to 1>><<wearProp "beerbottle">><<trauma -6>><<stress -12>><<alcohol 240>><<if $phase2 is 1>><<arousal 2000>><<drugs 120>><</if>><</link>><<ltrauma>><<lstress>><<galcohol>>
 					<</if>>
 					<br>
 					<<link [[Leave it|Street Bully Drunk]]>><<set $phase to 0>><</link>>
@@ -471,8 +495,8 @@
 					<<link [[Fight|Street Bully Fight]]>><<def 1>><<set $fightstart to 1>><<set $phase to 0>><<npcincr Whitney dom -1>><</link>><<ldom>>
 					<br>
 				<</if>>
-
-			<<case 14>><<set $bullyeventstreet to 1>>
+			<!--Failsafe/temporary bugfix, as case 15 is not currently accessible except for the bugtester(s) who triggered the bug. Replace with case 14 and code in the 15th bullyeventstreet as normal, whenever that's added.-->
+			<<case 14 15>><<set $bullyeventstreet to 1>>
 				You spot Whitney round the corner just ahead. <<He>> spots you as well.
 				<<if $whitneyromance is 1>>
 					"Just the slut I was looking for," <<he>> says, "Come on. I'm visiting your home. The orphanage." <<He>> flicks a fresh cigarette butt into the gutter, and takes your arm in <<his>> own.
@@ -580,7 +604,7 @@
 		<<case 5>>
 			<<link [[Next|Street Bully Undies]]>><<set $phase to 0>><<trauma 6>><<stress 6>><<pain 6>><</link>>
 			<br>
-		<<case 13>>
+		<<case 14>>
 			<<link [[Next|Street Bully Roof]]>><</link>>
 			<br>
 		<<default>>
@@ -600,9 +624,9 @@
 
 	<<maninit>>
 	<<if $phase is 0>>
-		<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15>>
+		<<if C.npc.Whitney.dom gte 15>>
 			<<set $position to "missionary">>
-			<<He>> kicks you onto your back and <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower" "self">>, <<npcRevealText $NPCList[0] "lower">>. <<He>> smirks.
+			<<He>> kicks you onto your back and <<npcUndressText `C.npc.Whitney` "lower" "self">>, <<npcRevealText $NPCList[0] "lower">>. <<He>> smirks.
 			<<if $NPCList[0].penis isnot "none">>
 				"Right where you belong."
 				<br><br>
@@ -626,7 +650,7 @@
 			<</if>>
 			<<violence 4>>
 		<<else>>
-			<<He>> forces you to your knees and <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower" "self">>, <<npcRevealText $NPCList[0] "lower">>.
+			<<He>> forces you to your knees and <<npcUndressText `C.npc.Whitney` "lower" "self">>, <<npcRevealText $NPCList[0] "lower">>.
 			"Open wide," <<he>> says. <<His>> friends cheer <<him>> on.
 			<<npcoral>>
 		<</if>>
@@ -644,9 +668,9 @@
 	<<if $phase is 2>>
 		<<promiscuity1>>
 	<<elseif $phase is 0>>
-		<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15>>
+		<<if C.npc.Whitney.dom gte 15>>
 			<<set $position to "missionary">>
-			<<He>> kicks you onto your back and <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower" "self">>, <<npcRevealText $NPCList[0] "lower">>. <<He>> smirks.
+			<<He>> kicks you onto your back and <<npcUndressText `C.npc.Whitney` "lower" "self">>, <<npcRevealText $NPCList[0] "lower">>. <<He>> smirks.
 			<<if $NPCList[0].penis isnot "none">>
 				"Right where you belong."
 				<br><br>
@@ -669,7 +693,7 @@
 			<</if>>
 			<<violence 4>>
 		<<else>>
-			<<He>> forces you to your knees and <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower" "self">>, <<npcRevealText $NPCList[0] "lower">>.
+			<<He>> forces you to your knees and <<npcUndressText `C.npc.Whitney` "lower" "self">>, <<npcRevealText $NPCList[0] "lower">>.
 			"Open wide," <<he>> says. <<His>> friends cheer <<him>> on.
 			<<npcoral>>
 		<</if>>
@@ -829,7 +853,7 @@
 	<</if>>
 	<<promiscuity1>>
 
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].lust gte random(1, 100)>>
+	<<if C.npc.Whitney.lust gte random(1, 100)>>
 		<<He>> looks thoughtful for a moment, then kicks off the dumpster and marches towards you. <<His>> friends follow behind.
 		<br><br>
 
@@ -939,7 +963,7 @@ Held by the ankles, you're forced over the edge of the dumpster. Your fall is cu
 <<ruffleHair>>
 <br><br>
 
-<<if _wratihEvent>>
+<<if _wraithEvent>>
 	You hear rustling beneath you. Suddenly, pale hands burst from below to grab you. Not one pair, but several.
 	<<if $wraith.state is "haunt">>
 		Fingernails dig deep into your flesh, dragging along your skin. They leave painful welts in their wake.
@@ -960,7 +984,7 @@ Held by the ankles, you're forced over the edge of the dumpster. Your fall is cu
 	<</if>>
 	You collapse onto the pavement, chest heaving. Whitney and <<his>> friends are nowhere to be found.
 <<else>>
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15>>
+	<<if C.npc.Whitney.dom gte 15>>
 		You wait a moment before pushing the lid up. It doesn't budge. You hear Whitney and <<his>> friends laugh. <<Hes>> sat above you, trapping you inside. Unable to do much else, you <<if $speech_attitude is "meek">>curl up in a ball<<elseif $speech_attitude is "bratty">>sigh in frustration<<else>>lie back down<</if>> and wait for them to leave.
 		<<pass 10>><<trauma 6>><<stress 6>><<gtrauma>><<gstress>>
 		<br><br>
@@ -985,9 +1009,9 @@ Held by the ankles, you're forced over the edge of the dumpster. Your fall is cu
 	<<promiscuity1>>
 
 	<<He>> doesn't miss a beat,
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 10>>
+	<<if C.npc.Whitney.dom gte 10>>
 		grabbing your shoulders and throwing you on your back in turn. You grapple with each other for control, until
-		<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15 and !playerBellyVisible(true)>>
+		<<if C.npc.Whitney.dom gte 15 and !playerBellyVisible(true)>>
 			<<he>> sits on your stomach, pinning you down.<<arousal 1000>><<garousal>>
 			<br><br>
 
@@ -1130,7 +1154,7 @@ A sudden, sharp pain shocks your <<genitals>> as the fabric of your <<print $wor
 		Whitney explodes into hysterics when <<he>> sees you. "Real smooth, loser." <<He>> wipes a tear from <<his>> eye as <<he>> leaves.<<npcincr Whitney lust 10>><<gglust>>
 	<</if>>
 <<else>>
-	You shut your eyes and brace for impact. You hear a splash. Your clothes feel cold and heavy. Your heart skips a beat. <span class="lewd">Your <<print $worn.lower.name>> has completely soaked through.</span>
+	You shut your eyes and brace for impact. You hear a splash. Your clothes feel cold and heavy. Your heart skips a beat. <span class="lewd">Your <<allBottoms>> <<lowerhas>> completely soaked through.</span>
 	<<water waist>><<if $uncomfortable.nude is true>><<trauma 6>><<stress 6>><<gtrauma>><<gstress>><<else>><<arousal 500>><<garousal>><</if>>
 	<br><br>
 
@@ -1198,7 +1222,7 @@ A sudden, sharp pain shocks your <<genitals>> as the fabric of your <<print $wor
 	<<maninit>>
 	<<stalk_init>>
 	<<set $combatgoal to "confront">>
-	<<set $NPCList[0].bold to (($allure / 10) + ($NPCName[$NPCNameList.indexOf("Whitney")].lust * 2) + ($NPCName[$NPCNameList.indexOf("Whitney")].dom * 20) + ($NPCName[$NPCNameList.indexOf("Whitney")].love * 10))>>
+	<<set $NPCList[0].bold to (($allure / 10) + (C.npc.Whitney.lust * 2) + (C.npc.Whitney.dom * 20) + (C.npc.Whitney.love * 10))>>
 <</if>>
 
 <<effects>>
@@ -1234,7 +1258,7 @@ A sudden, sharp pain shocks your <<genitals>> as the fabric of your <<print $wor
 	<<silently>><<endcombat>><</silently>>
 	<<npc Whitney>><<person1>>
 
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15>>
+	<<if C.npc.Whitney.dom gte 15>>
 		<<He>> snaps <<his>> fingers and points down.
 	<<else>>
 		<<He>> puts a hand on your head and pushes down.
@@ -1286,7 +1310,7 @@ A sudden, sharp pain shocks your <<genitals>> as the fabric of your <<print $wor
 <</if>>
 <<promiscuity1>>
 
-<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15>>
+<<if C.npc.Whitney.dom gte 15>>
 	<<He>> smiles. <span class="red">"Nice try, slut."</span> <<He>> forces you down.
 	<br><br>
 
@@ -1433,7 +1457,7 @@ You give the can a shake, then
 	Once you're done, Whitney steps up to admire your handiwork. <<He>> gives a low whistle.
 	<br><br>
 
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].love gte 25>>
+	<<if C.npc.Whitney.love gte 25>>
 		"That's some choice language. Do you..." <<He>> stops short, shaking <<his>> head. "I mean, it's not bad."<<trauma -4>><<ltrauma>>
 	<<else>>
 		"That's some choice language. You kiss your mum with that mouth?" <<He>> covers <<his>> mouth, feigning remorse. "Oh, right. You don't."<<lcontrol>><<control -10>>
@@ -1450,7 +1474,7 @@ You give the can a shake, then
 <br><br>
 
 Once <<hes>> through with <<his>> critique, Whitney shoves you along.
-<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15>>
+<<if C.npc.Whitney.dom gte 15>>
 	"You run off and let the big <<peopley>> play," <<he>> says. "I can't have any fun with you in jail."
 <<else>>
 	"Later, <<if $whitneyromance is 1>><<girl>><<else>>slut<</if>>," <<he>> calls after you. "Don't have too much fun without me."
@@ -1521,8 +1545,8 @@ that you fail to notice <<his>> friends stepping out of line behind you. They sn
 <<stateman>>
 <br><br>
 <<actionsman>>
-
-<<if _combatend or ($worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked"))>>
+<<outfitChecks>>
+<<if _combatend or (_fullyNaked)>>
 	<span id="next"><<link [[Next|Street Bully Strip Forced Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[Next|Street Bully Strip Forced]]>><</link>></span><<nexttext>>
@@ -1673,7 +1697,7 @@ that you fail to notice <<his>> friends stepping out of line behind you. They sn
 	<</if>>
 	<br><br>
 
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 18>>
+	<<if C.npc.Whitney.dom gte 18>>
 		<<He>> reaches around and grabs you. "Don't be shy," <<he>> smiles. "Let <<person2>><<him>> see that pretty face." <span class="red">You're pulled by the arm, back into the open.</span> With your arms held behind your back, you can't even cover up.<<trauma 6>><<stress 6>><<gtrauma>><<gstress>>
 		<br><br>
 
@@ -1881,7 +1905,7 @@ You'll have to cross traffic to reach <<him>>.
 		<<fameexhibitionism 10>>
 		<br><br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15 and $whitneyromance is 1>>
+		<<if C.npc.Whitney.dom gte 15 and $whitneyromance is 1>>
 			Whitney shoves <<his>> way through the crowd. <<He>> grabs you and drags you towards the alley. You keep your head down and stumble after <<him>>.
 			<br><br>
 
@@ -1916,7 +1940,7 @@ You'll have to cross traffic to reach <<him>>.
 		<<fameexhibitionism 10>>
 		<br><br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15 and $whitneyromance is 1>>
+		<<if C.npc.Whitney.dom gte 15 and $whitneyromance is 1>>
 			Whitney shoves <<his>> way through the crowd. <<He>> grabs you and drags you towards the alley. You keep your head down and stumble after <<him>>.
 			<br><br>
 
@@ -1965,7 +1989,7 @@ You'll have to cross traffic to reach <<him>>.
 	<br><br>
 
 	You reach for your clothes.
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 10>>
+	<<if C.npc.Whitney.dom gte 10>>
 		Whitney holds them overhead, smirking. <<His>> friends laugh as you
 		<<if $bodysize lte 1>>
 			stand on tiptoe, straining to reach them. <<He>> eventually grows bored of this torment and dumps them on top of you.<<stress 2>><<npcincr Whitney lust 5>><<gstress>><<glust>>
@@ -2078,7 +2102,7 @@ Over <<his>> shoulder, you spy Whitney hiding under a parked car. <<nnpc_He "Whi
 	<<npc Whitney>><<person1>>
 
 	Whitney saunters up to you, slinging an arm over your shoulder.
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 10>>
+	<<if C.npc.Whitney.dom gte 10>>
 		"You're a scrappy little shit," <<he>> admits, grinning. "Doesn't change nothing between us."
 	<<else>>
 		"Good to know you're not a pain in the ass just for me," <<he>> says. "You're an all-around bitch."
@@ -2100,7 +2124,7 @@ Over <<his>> shoulder, you spy Whitney hiding under a parked car. <<nnpc_He "Whi
 	<</if>>
 <<else>>
 	You fall to the floor, too hurt to continue.
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 10 and $whitneyromance is 1>>
+	<<if C.npc.Whitney.dom gte 10 and $whitneyromance is 1>>
 		"Fucking brat," the <<person>> snarls. "That's what you get for-"
 		<br><br>
 
@@ -2150,7 +2174,7 @@ Over <<his>> shoulder, you spy Whitney hiding under a parked car. <<nnpc_He "Whi
 	<</if>>
 	<<promiscuity1>>
 
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15>>
+	<<if C.npc.Whitney.dom gte 15>>
 		<<His>> hands retract from your body, but <<he>> doesn't pull away. <<He>> lets them dip lower, towards your <<bottom>>.
 		<br><br>
 
@@ -2244,7 +2268,7 @@ Over <<his>> shoulder, you spy Whitney hiding under a parked car. <<nnpc_He "Whi
 	<br><br>
 	<<npcspank>>
 	<<set $enemyanger += 200>>
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 10 and $whitneyromance is 1>>
+	<<if C.npc.Whitney.dom gte 10 and $whitneyromance is 1>>
 		<<enable_rescue>>
 	<</if>>
 <</if>>
@@ -2317,7 +2341,7 @@ Over <<his>> shoulder, you spy Whitney hiding under a parked car. <<nnpc_He "Whi
 	<</switch>>
 
 	<<He>> turns to <<his>> friends, grinning. "See? Poor <<girl>> thinks everyone's as horny as <<phim>>." <<He>> takes another look at you. Your expression tells <<him>> you're serious. <<He>> turns away with a bark of laughter.
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15>>
+	<<if C.npc.Whitney.dom gte 15>>
 		<<Hes>> blushing.
 	<<else>>
 		<<He>> tilts <<his>> head.
@@ -2350,6 +2374,7 @@ Over <<his>> shoulder, you spy Whitney hiding under a parked car. <<nnpc_He "Whi
 
 :: Street Bully Flash 2
 <<set $outside to 1>><<effects>>
+<<outfitChecks>>
 
 True to Whitney's word, it's not long before
 <<if Time.dayState is "night">>
@@ -2359,24 +2384,24 @@ True to Whitney's word, it's not long before
 <</if>>
 signals an oncoming vehicle. You get into position,
 <<if $phase is 3>>
-	arching your back and grasping the hem of your <<print $worn.upper.name>>.
+	arching your back and grasping the hem of your _top.name.
 <<elseif $phase is 2>>
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		<<if !$worn.under_lower.type.includes("naked")>>
-			sliding your <<print $worn.under_lower.name>> down to your ankles and
+	<<if _bottomIsSkirt>>
+		<<if _bottomUnder and !_bottomUnderIsSkirt>>
+			sliding your _bottomUnder.name <<if _bottomUnder is $worn.lower and !$worn.under_lower.type.includes("naked")>>and $worn.under_lower.name <</if>>down to your ankles and
 		<</if>>
-		grasping the hem of your <<print $worn.lower.name>>.
+		grasping the hem of your _bottom.name.
 	<<else>>
-		hooking your thumbs into the waist of your <<print $worn.lower.name>><<if !$worn.under_lower.type.includes("naked")>> and <<print $worn.under_lower.name>><</if>>.
+		hooking your thumbs into the waist of your <<allBottomsUnderwear>>.
 	<</if>>
 <<else>>
-	spinning around and bending over, fingers curled around the <<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>hem<<else>>waist<</if>> of your <<print $worn.lower.name>>.
+	spinning around and bending over, fingers curled around the <<if _bottomIsSkirt>>hem<<else>>waist<</if>> of your _bottom.name.
 <</if>>
 <br><br>
 
-<<if $phase2 is 2 and $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 18>>
+<<if $phase2 is 2 and C.npc.Whitney.dom gte 18>>
 	You hear footsteps <<if $phase isnot 1>>from behind<</if>> before you can go through with it. Whitney marches towards you.
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].lust gte 50>>
+	<<if C.npc.Whitney.lust gte 50>>
 		<<set $whitStreetNude to true>>
 		<span class="lewd"><<Hes>> stark naked.</span> <<His>> friends gawk behind <<him>>, but <<he>> gives them no acknowledgement.
 		<<arousal 200>><<garousal>>
@@ -2402,9 +2427,9 @@ signals an oncoming vehicle. You get into position,
 <<else>>
 	The vehicle's in sight. You <<nervously>>
 	<<if $phase is 3>>
-		lift your <<print $worn.upper.name>><<if !$worn.under_upper.type.includes("naked")>> and displace your <<print $worn.under_upper.name>><</if>>,
+		lift your <<allTopsUnderwear>>,
 	<<else>>
-		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>flick up your skirt<<else>>pull down your <<print $worn.lower.name>><</if>>,
+		<<= _bottomIsSkirt ? "flick up your _bottom.name" : "pull down your <<allBottomsUnderwear>>">>.
 	<</if>>
 	to the cheers of Whitney's friends.
 	<br><br>
@@ -2438,7 +2463,7 @@ signals an oncoming vehicle. You get into position,
 			<<if $whitStreetNude>>
 				Whitney feigns a yawn and stretches <<his>> arms overhead, <<his>> <<print $NPCList[0].breastsdesc>> fully on display.
 			<<else>>
-				Whitney <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "upper" "self">> to do the same.
+				Whitney <<npcUndressText `C.npc.Whitney` "upper" "self">> to do the same.
 			<</if>>
 		<<case 2>>
 			<span class="lewd">spreading your legs to give the <<person>> a good look at your <<genitals>>.</span>
@@ -2451,7 +2476,7 @@ signals an oncoming vehicle. You get into position,
 					<<his>> wet pussy glistening <<if Time.dayState is "night">>under the glow of a streetlamp<<else>>in the sunlight<</if>>.
 				<</if>>
 			<<else>>
-				Whitney <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower" "self">> to do the same.
+				Whitney <<npcUndressText `C.npc.Whitney` "lower" "self">> to do the same.
 			<</if>>
 		<<case 1>>
 			<span class="lewd">pointing your <<bottom>> in the air and giving it a little shake for the <<person>>.</span>
@@ -2459,7 +2484,7 @@ signals an oncoming vehicle. You get into position,
 			<<if $whitStreetNude>>
 				Whitney spins on <<his>> heel and bends over, hands on <<his>> knees.
 			<<else>>
-				Whitney <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower" "self">> to do the same.
+				Whitney <<npcUndressText `C.npc.Whitney` "lower" "self">> to do the same.
 			<</if>>
 	<</switch>>
 	<br><br>
@@ -2475,7 +2500,7 @@ signals an oncoming vehicle. You get into position,
 	<br>
 <<elseif $phase2 is 2>>
 	As you fix your clothes, a hand claps your shoulder from behind. It's Whitney.
-	<<if $NPCName[$NPCNameList.indexOf("Whitney")].lust gte 50>>
+	<<if C.npc.Whitney.lust gte 50>>
 		<<set $whitStreetNude to true>>
 		<span class="lewd"><<Hes>> stark naked.</span>
 		<<switch random(1, 3)>>
@@ -2518,9 +2543,9 @@ signals an oncoming vehicle. You get into position,
 		<<He>> reclines against the wall, baring everything as a <<generate3>><<person3>><<person>> drives by. Whitney smiles and waves, only averting <<person1>><<his>> gaze to shoot you a wink over <<his>> shoulder.
 	<<else>>
 		<<switch $phase>>
-			<<case 3>>Whitney winks over <<his>> shoulder as <<he>> <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "upper" "self">>, flashing <<his>> <<print $NPCList[0].breastsdesc>> to a passing <<generate3>><<person3>><<person>>.
-			<<case 2>>Whitney winks over <<his>> shoulder as <<he>> <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower" "self">>, flashing <<his>> <<if $NPCList[0].penis isnot "none">>dick<<else>>pussy<</if>> to a passing <<generate3>><<person3>><<person>>.
-			<<case 1>>Whitney grins right at you as <<he>> <<npcUndressText $NPCName[$NPCNameList.indexOf("Whitney")] "lower" "self">>, baring <<his>> ass to a passing <<generate3>><<person3>><<person>>.
+			<<case 3>>Whitney winks over <<his>> shoulder as <<he>> <<npcUndressText `C.npc.Whitney` "upper" "self">>, flashing <<his>> <<print $NPCList[0].breastsdesc>> to a passing <<generate3>><<person3>><<person>>.
+			<<case 2>>Whitney winks over <<his>> shoulder as <<he>> <<npcUndressText `C.npc.Whitney` "lower" "self">>, flashing <<his>> <<if $NPCList[0].penis isnot "none">>dick<<else>>pussy<</if>> to a passing <<generate3>><<person3>><<person>>.
+			<<case 1>>Whitney grins right at you as <<he>> <<npcUndressText `C.npc.Whitney` "lower" "self">>, baring <<his>> ass to a passing <<generate3>><<person3>><<person>>.
 		<</switch>>
 	<</if>>
 	The sound of <<print either("screeching tires", "enraged shouting", "a cheer", "a crash")>> spurs Whitney back into the alley, sporting a huge grin.
@@ -2600,11 +2625,12 @@ signals an oncoming vehicle. You get into position,
 
 :: Street Bully Flash Forced
 <<set $outside to 1>><<effects>>
-<<set _whitney to $NPCName[$NPCNameList.indexOf("Whitney")]>>
+<<set _whitney to C.npc.Whitney>>
+<<outfitChecks>>
 You're helpless to stop Whitney as <<he>> drags you out of the alley.
 <<switch $phase>>
 	<<case 3>>
-		<<He>> twists your arms behind your back with one hand, and grasps the hem of your <<print $worn.upper.name>> in the other.
+		<<He>> twists your arms behind your back with one hand, and grasps the hem of your <<allTops>> in the other.
 		<br><br>
 
 		"What're you so shy about?" <<he>> laughs, squeezing your <<breasts>>.
@@ -2621,7 +2647,7 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 			<<insecurity "breasts_big" 5>><<ginsecurity "breasts_big">>
 		<</if>>
 	<<case 2>>
-		<<He>> twists your arms behind your back with one hand, and slides the other down to your <<print $worn.lower.name>>.
+		<<He>> twists your arms behind your back with one hand, and slides the other down to your _bottom.name.
 		<br><br>
 
 		<<if $player.gender isnot $player.gender_appearance and !$genderknown.includes("Whitney")>>
@@ -2634,10 +2660,10 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 				<<if _whitney.penis isnot "none" and _whitney.vagina isnot "none">> /* whitney is also a herm */
 					"Well, well, well." <<He>> sounds pleasantly surprised, but not confused. "Next perv who shows up is in for quite a show."
 				<<else>>
-					"Whatever's going on down here," <<he>> chuckles. "Some perv's in for a show."
+					"Whatever's going on down here," <<he>> chuckles, "some perv's in for a show."
 				<</if>>
 			<<elseif $player.penisExist>>
-				squeezes your shaft through your <<print $worn.lower.name>>, chuckling.
+				squeezes your shaft through your _bottom.name, chuckling.
 				<br><br>
 
 				<<if $player.penissize gte 4>>
@@ -2650,7 +2676,7 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 					<<insecurity "penis_tiny" 1>><<ginsecurity "penis_tiny">>
 				<</if>>
 			<<else>>
-				prods your entrance through your <<print $worn.lower.name>>, chuckling.
+				prods your entrance through your _bottom.name, chuckling.
 				<br><br>
 
 				"This supposed to be a secret?" <<he>> sneers. "Won't be for long."
@@ -2661,7 +2687,7 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 			<<print ($player.penisExist ? (!$player.vaginaExist ? "dick" : _hermText) : "cunt")>> and there's nothing you can do about it."
 		<</if>>
 	<<case 1>>
-		<<He>> grabs you by the waist and bends you over, your <<bottom>> facing the street. <<He>> hooks <<his>> thumb into your <<print $worn.lower.name>>.
+		<<He>> grabs you by the waist and bends you over, your <<bottom>> facing the street. <<He>> curls <<his>> fingers around the <<if _bottomIsSkirt>>hem<<else>>waist<</if>> of your _bottom.name.
 		<br><br>
 
 		"Don't be shy," <<he>> laughs. "This ass was made to be seen." <<He>> gives you a spank.
@@ -2670,12 +2696,12 @@ You're helpless to stop Whitney as <<he>> drags you out of the alley.
 
 You can only clench your eyes shut as Whitney
 <<if $phase is 3>>
-	yanks your <<print $worn.upper.name>> up<<if !$worn.under_upper.type.includes("naked")>> and <<print $worn.under_upper.name>> down<</if>>,
+	yanks up your <<allTopsUnderwear>>,
 <<else>>
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		yanks your <<if !$worn.under_lower.type.includes("naked")>><<print $worn.under_lower.name>> down and<</if>> skirt up,
+	<<if _bottomIsSkirt>>
+		flips up the hem of your <<allBottoms>><<if !$worn.under_lower.type.includes("naked")>>and yanks down your $worn.under_lower.name<</if>>,
 	<<else>>
-		yanks your <<print $worn.lower.name>> <<if !$worn.under_lower.type.includes("naked")>>and <<print $worn.under_lower.name>><</if>> down,
+		yanks down your <<allBottomsUnderwear>>,
 	<</if>>
 <</if>>
 <<switch $phase>>
@@ -2743,7 +2769,7 @@ A <<generate2>><<person2>><<person>> drives by, honking <<his>> horn as <<he>> l
 	<</if>>
 	<<promiscuity3>>
 
-	<<set $seductiondifficulty to 4000 - ($NPCName[$NPCNameList.indexOf("Whitney")].lust * 50)>>
+	<<set $seductiondifficulty to 4000 - (C.npc.Whitney.lust * 50)>>
 	<<seductioncheck>>
 	<br><br>
 	<<if $seductionskill lt 1000>>
@@ -3051,13 +3077,14 @@ You run until you're sure Whitney and <<nnpc_his "Whitney">> friends won't follo
 
 :: Street Bully Roof
 <<effects>>
+<<outfitChecks>>
 
 "There's something I want you to show me," Whitney says, gesturing at the ladder. "At the top. Get climbing."
 <br><br>
 
-<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+<<if _bottomIsSkirt and _skirtExposed and !_bottomUnder?.type.includes("covered")>>
 	<<if $worn.under_lower.exposed gte 1>>
-		You just know Whitney will look up your $worn.lower.name, <span class="pink">and you're wearing nothing beneath.</span> <<His>> friends crowd around as well. They'll all see.
+		You just know Whitney will look up your <<= _outfit ? _top.name : _bottom.name>>, <span class="pink">and you're wearing nothing beneath.</span> <<His>> friends crowd around as well. They'll all see.
 		<br><br>
 
 		<<if $exhibitionism gte 75>>
@@ -3065,7 +3092,7 @@ You run until you're sure Whitney and <<nnpc_his "Whitney">> friends won't follo
 			<br>
 		<</if>>
 	<<else>>
-		You just know Whitney will look up your $worn.lower.name. <<His>> friends crowd around as well. They'll all see your $worn.under_lower.name.
+		You just know Whitney will look up your <<= _outfit ? _top.name : _bottom.name>>. <<His>> friends crowd around as well. They'll all see your $worn.under_lower.name.
 		<br><br>
 
 		<<link [[Climb normally|Street Bully Roof Undies]]>><</link>><<exhibitionist1>>
@@ -3089,8 +3116,9 @@ You climb the ladder. It shakes as Whitney steps on the bottom rung. "You lot wa
 
 :: Street Bully Roof Hold
 <<effects>>
+<<outfitChecks>>
 
-You push a hand between your legs, keeping the fabric of your $worn.lower.name pressed to your <<undies>>. It makes it awkward to climb, but at least no one will peek.
+You push a hand between your legs, keeping the fabric of your <<= _outfit ? _top.name : _bottom.name>> pressed to your <<undies 1>>. It makes it awkward to climb, but at least no one will peek.
 <br><br>
 
 That is until your thighs reach eye level with the onlookers. <span class="pink">Whitney flips up the back,</span> baring your <<bottom>> to everyone.<<gstress>>
@@ -3136,8 +3164,9 @@ Whitney releases it, then bows to <<his>> friends. They applaud as you continue 
 
 :: Street Bully Roof Kick
 <<effects>>
+<<outfitChecks>>
 
-You kick at Whitney. <<He>> predicts your attack and steps aside, but is forced to release your <<print $worn.lower.name>>, at least. <<His>> friends laugh, and Whitney bows as you continue to climb.
+You kick at Whitney. <<He>> predicts your attack and steps aside, but is forced to release your <<= _outfit ? _top.name : _bottom.name>>, at least. <<His>> friends laugh, and Whitney bows as you continue to climb.
 <br><br>
 
 The ladder shakes as Whitney steps on the bottom rung. "You lot wait here," <<he>> says. "This won't take long."
@@ -3607,7 +3636,7 @@ You climb atop Whitney, and lean in for a kiss. <<He>> leans forward to meet you
 :: Street Bully Orphanage Oral
 <<effects>>
 
-You kneel beside the sofa, and displace Whitney's <<npcClothesText $NPCName[$NPCNameList.indexOf("Whitney")] "lower">>, revealing <<his>>
+You kneel beside the sofa, and displace Whitney's <<npcClothesText `C.npc.Whitney` "lower">>, revealing <<his>>
 <<if $NPCList[0].penis isnot "none">>
 	<<print $NPCList[0].penisdesc>>.
 <<else>>
@@ -3684,7 +3713,7 @@ You kneel beside the sofa, and displace Whitney's <<npcClothesText $NPCName[$NPC
 <</if>>
 
 <<if $kylar_camera is 3>>
-	<<if !$syndromekylar and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+	<<if !$syndromekylar and C.npc.Kylar.state is "active">>
 		A dreadful shiver passes through you. <span class="blue">Something is watching you.</span><<set $kylar_mad to 1>>
 	<<else>>
 		The owl plushie watches you, judging you from its perch.<<gggksuspicion>><<npcincr Kylar rage 10>>
@@ -3693,3 +3722,35 @@ You kneel beside the sofa, and displace Whitney's <<npcClothesText $NPCName[$NPC
 <</if>>
 
 <<link [[Next|Orphanage]]>><</link>>
+
+:: Whitney Alleyway Breakdown
+
+<<set $outside to 0>><<effects>>
+Finally, Whitney reacts. <<He>> grabs your wrist and pulls you away. You can't read <<his>> expression. <<His>> gaze lands on your tear-stained face.
+<br><br>
+
+"You desperate slut," <<he>> says with something you don't understand in <<his>> tone. <<He>> seems about to say something else, but eventually just pinches your cheek and pulls you into a kiss.
+<br><br>
+
+It's different from any kiss you've ever had with <<him>>, not quite gentle, but strong enough. <<Hes>> not so passionate with <<his>> tongue anymore, just sucking on your lips one at a time. His fringe skims over your nose, tickling you.
+<br><br>
+
+<<link [[Next|Whitney Alleyway Break3]]>><</link>>
+
+:: Whitney Alleyway Break3
+<<set $outside to 0>><<effects>>
+
+You curl up in Whitney's arms, wrapping your arms around <<his>> waist and resting your head against <<his>> chest. You can hear <<his>> steady, strong heartbeat, and it makes you feel a strange sense of security. <<llltrauma>><<trauma -24>>
+<br><br>
+
+You stay in each other's arms for a long time. The sobbing gradually stops, and your breath calms.
+<br><br>
+
+Whitney pushes you away. "You look like shit. Go clean the snot off your face." <<He>> stands up. "I have other things to do. You've wasted enough of my time already."
+<br><br>
+
+You watch as <<he>> turns into the alleyway, and leaves without looking back.
+<br><br>
+
+<<endevent>>
+<<destinationeventend>>

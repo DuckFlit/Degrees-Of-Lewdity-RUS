@@ -478,6 +478,9 @@ Macro.add("canvasModelEditor", {
 		const options = model.options;
 
 		function redraw() {
+			let options = model.options;
+			model.reset();
+			model.options = options;
 			model.redraw();
 		}
 
@@ -789,7 +792,7 @@ Macro.add("canvasModelEditor", {
 							"short air vents",
 							"side-pinned",
 							"ruffled",
-							"bowl"
+							"bowl",
 						]),
 						selectOption("hair_fringe_length", ["short", "shoulder", "chest", "navel", "thighs", "feet"]),
 						selectOption("brows_colour", xhairColourOptions),
@@ -822,6 +825,7 @@ Macro.add("canvasModelEditor", {
 						booleanOption("hood_down"),
 						booleanOption("alt_position"),
 						booleanOption("alt_position_neck"),
+						booleanOption("alt_position_face"),
 						booleanOption("alt_sleeve"),
 						selectOption("facewear_layer", ["front", "back"]),
 					]),

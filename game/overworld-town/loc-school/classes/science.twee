@@ -6,16 +6,17 @@
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
-		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're naked underneath.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim"))>>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're only wearing swimwear underneath.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
-			As you go to hang your <<if _middleOutfit>>$worn.over_upper.name<<else>>$worn.over_upper.name and $worn.over_lower.name<</if>>, you remember that you're only wearing underwear underneath.
+		<<if $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
+			<<set _naked to ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim")) ? "only wearing swimwear" : "only wearing underwear">>
+		<<else>>
+			<<set _naked to "not wearing anything">>
+		<</if>>
+		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked">>
+			As you go to hang your <<print _middleOutfit ? "$worn.over_upper.name" : "$worn.over_upper.name and $worn.over_lower.name">>, you remember that you're _naked underneath.
 		<</if>>
 		<br><br>
 		<<npc Sirris>><<person1>>
-		Sirris looks at you while you stand there. "What are you staring into space for? You can't just be wearing nothing under that coat can you? The head might have some spares if you need them."
+		Sirris looks at you while you stand there. "What are you staring into space for? You can't just be wearing nothing under that coat, can you?" You don't say anything, and Sirris lowers <<his>> voice. "The head might have a spare uniform if you need one."
 		<br><br>
 		<!--<<link [[Hang up coat|]]>><<endevent>><</link>>
 		<br><br> good starting point for when you can go to class naked-->
@@ -112,7 +113,8 @@
 
 	<<classgrades>>
 	<<schoolperiodtext>>
-	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
+	<<outfitChecks>>
+	<<if _overNaked and _middleNaked>>
 		<!-- Should be changed once naked classes are a thing -->
 		You don't think you should study while not being properly dressed.
 		<br>
@@ -138,7 +140,7 @@
 
 		<<npc Sirris>><<person1>>You open the door to the science classroom. Sirris cuts off mid-sentence as you enter, looking surprised. "Can I help you?" It seems you've interrupted the lesson.
 		<br><br>
-		<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
+		<<if C.npc.Sydney.init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
 			You spot Sydney right at the front of the class. <<nnpc_He "Sydney">> looks to you with confusion.
 			<br><br>
 		<</if>>
@@ -184,7 +186,7 @@ Embarrassed, you apologise and leave.
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 You mock the teacher. "A white lab coat is a good idea <<sir>>, it'll hide the stains." Laughter erupts among the seated students.
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
+<<if C.npc.Sydney.init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
 	<<run statusCheck("Sydney")>>
 	<<if _sydneyStatus.includes("corrupt")>>
 		Even Sydney struggles to not burst into laughter.
@@ -358,7 +360,7 @@ Sirris looks exasperated. "Right. I'll have to inform the head of your behaviour
 		<br><br>
 		<<classgrades>>
 	<<else>>
-		The science lesson continues, how do you want to conduct yourself?
+		The science lesson continues. How do you want to conduct yourself?
 		<br><br>
 	<</if>>
 	<<if $arousal gte $arousalmax>>
@@ -372,6 +374,10 @@ Sirris looks exasperated. "Right. I'll have to inform the head of your behaviour
 	<br>
 	<<daydreamicon>><<link [[Daydream|Science Lesson Daydream]]>><</link>><<lstress>> <<lharass>>
 	<br>
+	<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+		<<bedicon "zzz">><<link [[Sleep at your desk|Science Lesson Sleep]]>><</link>><<ltiredness>>
+		<br>
+	<</if>>
 	<<if $exhibitionism gte 55>>
 		<<ind>><<link [[Masturbate|Science Lesson Masturbate]]>><<set $masturbationstart to 1>><</link>><<exhibitionist4>>
 		<br>
@@ -401,25 +407,9 @@ Sirris looks exasperated. "Right. I'll have to inform the head of your behaviour
 <<trauma _trauma>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "scienceClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "scienceClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><<endevent>><</link>>
+	<<lessonEnd "scienceClassroom">>
 <<else>>
-
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure * 2))>>
-		<<eventsscience>>
-	<<else>>
-		<<eventssciencesafe>>
-	<</if>>
+	<<lessonEvents "science">>
 <</if>>
 
 :: Science Lesson Daydream
@@ -441,24 +431,9 @@ Sirris looks exasperated. "Right. I'll have to inform the head of your behaviour
 <<stress _stress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "scienceClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "scienceClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><<endevent>><</link>>
+	<<lessonEnd "scienceClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure / 2))>>
-		<<eventsscience>>
-	<<else>>
-		<<eventssciencesafe>>
-	<</if>>
+	<<lessonEvents "science">>
 <</if>>
 
 :: Science Lesson Focus
@@ -474,22 +449,22 @@ You focus on listening to the teacher and studying the material. It's hard going
 <<stress _lesson_progress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	The bell rings, signifying the end of the lesson. You
-	<<storeon "scienceClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "scienceClassroom">>
-		grab your coat and
-	<</if>>
-	leave the classroom.
-	<br><br>
-
-	<<link [[Next|Hallways]]>><<endevent>><</link>>
+	<<lessonEnd "scienceClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - $allure)>>
-		<<eventsscience>>
-	<<else>>
-		<<eventssciencesafe>>
-	<</if>>
+	<<lessonEvents "science">>
+<</if>>
+
+:: Science Lesson Sleep
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+You rest your head on the desk while Sirris <<print either("lectures about anatomy", "puts on a video about human reproduction", "enthusiastically talks about nature", "calls a student up to the front of the room")>>. Your eyes soon close, just for a moment, before you open them again. You struggle to stay awake, but the desk is just too comfy.
+<br><br>
+<<towelup>>
+<<tiredness -12>>
+<<advancelesson>>
+
+<<if $phase is 1>>
+	<<lessonEnd "scienceClassroom" "sleep">>
+<<else>>
+	<<eventssciencesleep>>
 <</if>>

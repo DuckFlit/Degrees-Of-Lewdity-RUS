@@ -98,7 +98,7 @@ You could go for a swim, but make sure to dress appropriately.
 			<<unset $robinReunionScene>>
 			You see Robin stood behind <<his>> lemonade stand.
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				<<He>> stares at you in disbelief.
 				<br><br>
 
@@ -114,7 +114,7 @@ You could go for a swim, but make sure to dress appropriately.
 			You shake your head, telling <<him>> that they weren't going to help you, so you "checked" out early. Robin seems confused, but <<he>> nods regardless. <<He>> gives you a hug.
 			<br>
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				"Well, I'm glad you're free," <<he>> mumbles, holding you tight.
 			<<else>>
 				"Well, I'm happy to see you again! I hope you're feeling better."
@@ -122,7 +122,7 @@ You could go for a swim, but make sure to dress appropriately.
 			<br>
 			The two of you make small talk for a bit. Eventually, Robin says <<he>> needs to get back to <<his>> stand.
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				<<He>> slowly shuffles away, <<his>> gaze glued to the floor.
 			<<else>>
 				<<He>> smiles and waves goodbye.
@@ -138,7 +138,7 @@ You could go for a swim, but make sure to dress appropriately.
 			<<link [[Next|Beach]]>><<set $eventskip to 1>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and Time.season isnot "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0>>
+	<<elseif C.npc.Robin.init is 0 and Time.season isnot "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0>>
 		<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 		<<npc Robin>><<person1>>You see someone familiar working at a stand on the beach. <<He>> notices you at the same time. "Hey!" It's Robin. <<Hes>> another resident at the orphanage. <<Hes>> always looked up to you, despite being about the same age. <<He>> motions you over while cleaning a glass pitcher. <<He>> puts it down and hugs you when you approach.
 		<br><br>
@@ -151,7 +151,7 @@ You could go for a swim, but make sure to dress appropriately.
 		<<endevent>>
 		<<link [[Next|Beach]]>><<set $eventskip to 1>><</link>>
 		<br>
-	<<elseif Time.season is "summer" and Time.hour gt 9 and Time.hour lt 17 and $weather isnot "rain" and $balloonStand.open is false>>
+	<<elseif Time.season is "summer" and Time.hour gt 9 and Time.hour lt 17 and $weather isnot "rain" and $balloonStand.open is false and $exposed lte 0>>
 		<<generate1>><<saveNPC 0 stall_owner>><<npc Robin 2>>
 		Someone is setting up a new stall on the beach<<if _robin_location is "beach">>, directly across from Robin's lemonade stand. Robin looks somewhat worried<</if>>. The <<person1>><<person>> ties a bunch of colourful balloons to the stall, where they bob invitingly in the air.
 		<br><br>
@@ -179,7 +179,8 @@ You could go for a swim, but make sure to dress appropriately.
 			<br>
 		<</if>>
 		<<if Time.dayState is "day" and $weather is "clear">>
-			<<if $worn.under_lower.type.includes("swim") and ($worn.under_upper.type.includes("swim") or $worn.under_upper.type.includes("naked")) and ($worn.upper.type.includes("swim") or $worn.upper.type.includes("naked")) and ($worn.lower.type.includes("swim") or $worn.lower.type.includes("naked"))>>
+			<<outfitChecks>>
+			<<if _swimwear and !$worn.upper.name isnot "diving suit">>
 				<<baskicon>><<link [[Tan on the beach (1:00)|Tanning]]>><<pass 60>><</link>><<lstress>>
 				<br>
 			<</if>>
@@ -230,12 +231,12 @@ You could go for a swim, but make sure to dress appropriately.
 			<<socialiseicon "volleyball">><<link [[Volleyball|Beach Volleyball]]>><</link>>
 			<<if $exhibitionism gte 75 and $daily.beachStrip isnot 1>>
 				<br>
-				<<stripicon>><<link [[Strip (0:20)|Beach Strip]]>><<pass 20>><</link>><<exhibitionist5>>
+				<<skinicon "strip">><<link [[Strip (0:20)|Beach Strip]]>><<pass 20>><</link>><<exhibitionist5>>
 			<</if>>
 		<</if>>
 		<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
 			<br>
-			<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+			<span class="red">The slime in your ear refuses to allow you to leave with <<underwearTypeText>> on.</span>
 		<<elseif $exposed gte 1 and Time.dayState isnot "night">>
 		<<else>>
 			<<add_link "Travel<br>">><<hideDisplay>>
@@ -406,7 +407,7 @@ The students are happy to have a sixth player, particularly the <<person1>><<per
 			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 				<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
 			<<else>>
-				<<link [[Drink (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
+				<<link [[Drink (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><<wearProp "beerbottle">><</link>><<gcool>><<lstress>>
 			<</if>>
 			<br>
 			<<link [[Just talk (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
@@ -427,7 +428,7 @@ The students are happy to have a sixth player, particularly the <<person1>><<per
 		<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 			<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
 		<<else>>
-			<<link [[Drink (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
+			<<link [[Drink (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><<if $propEquipped isnot 1>><<wearProp "beerbottle">><</if>><</link>><<gcool>><<lstress>>
 		<</if>>
 		<br>
 		<<link [[Just talk (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
@@ -1134,7 +1135,7 @@ The <<person1>><<person>> shrugs and returns to <<his>> party. You continue enjo
 "Sure!" you say. The <<person>> smiles, and you follow him back to the party.
 <br><br>
 
-You feel everyone's eyes on your body as you walk onto the dry sand and into the campsite. You are soon surrounded by two dozen people your own age. You quickly become the center of attention.
+You feel everyone's eyes on your body as you walk onto the dry sand and into the campsite. You are soon surrounded by two dozen people your own age. You quickly become the centre of attention.
 <br><br>
 
 <<if playerBellyVisible()>>
@@ -1308,7 +1309,7 @@ You are already attracting attention and stares. You decide to turn around and r
 	<br>
 <<else>>
 
-	You think you are about to catch <<him>>, but outside the arcade, he slips into a crowd of people and disappears. You run past the crowd, trying to find <<him>>, but you see no sign of him or your clothes.
+	You think you are about to catch <<him>>, but outside the arcade, <<he>> slips into a crowd of people and disappears. You run past the crowd, trying to find <<him>>, but you see no sign of him or your clothes.
 	<br><br>
 
 	You spend a minute trying desperately to find out which direction the thief went, but you can no longer make <<him>> out amongst the many people milling about. Meanwhile, everyone can see your fully exposed <<genitals>>, <<if $player.breastssize gte 3>><<breasts>>,<</if>> and <<bottom>>. Hundreds of pictures must have been taken of you, and even more people are showing up and pulling out their phones. You try to find a way to escape.

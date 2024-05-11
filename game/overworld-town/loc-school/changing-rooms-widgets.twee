@@ -4,8 +4,8 @@
 	<<unset $lastChangingRoom>>
 	<<set _studentsKnow to ($schoolrep.crossdress gte 4 and $changingroomstate is "own") or ($schoolrep.crossdress gte 5 and $changingroomstate isnot "empty")>>
 	<<set _changingRoomGenderType to ($changingRoomGender is "girls" ? "f" : "m")>>
-	<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to random(100,1000)>><</if>>
-	<<if _changingRoomGenderType is "f" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible())>>
+	<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to $player.gender_appearience is "m" ? random(500, 1500) : random(200, 1000)>><</if>>
+	<<if _changingRoomGenderType is "f" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible() or ($forcedcrossdressingdisable is "f" and $whitneyCrossdressSwimwear gte 1 and $player.gender_appearance is "f"))>>
 		<<set _seenGender to "f">>
 	<<else>>
 		<<set _seenGender to (_studentsKnow ? $player.gender : $player.gender_appearance)>> <!-- If they know you crossdress, then they won't judge you by appearance -->
@@ -30,15 +30,27 @@
 				<<eventsSchoolChangingRoomsBoys>>
 			<</if>>
 			<<if !_nomessage>>
-				<<if $player.gender is "m" and $changingRoomGender is "girls" and playerBellyVisible()>>
-					No one gives you a second glance, not realising you're a <<gender>> due to your <<print playerAwareTheyArePregnant() ? "pregnancy" : "pregnant looking belly">>. <<if $NudeGenderDC isnot -1 and !_uncomfortable>>You feel naughty.<</if>>
+				<<if $changingRoomGender is "girls" and
+					($player.gender is "m" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible()) or
+					($player.gender isnot "m" and $player.gender_appearance is "m" and $fame.pregnancy gte $daily.changingRoomPregnancyFame))>>
+					<<if playerBellyVisible()>>
+						No one gives you a second glance, not realising you're a <<gender>> due to your <<print playerAwareTheyArePregnant() ? "pregnancy" : "pregnant looking belly">>.
+					<<else>>
+						<<if $player.gender_appearance is "m">>
+							Some of the $changingRoomGender look at you with a conflicted expression before ignoring you
+						<<else>>
+							No one gives you a second glance, not realising you're a <<gender>>
+						<</if>>
+						due to all the gossip about your last pregnancy.
+					<</if>>
+					<<changingRoomFeelings>>
 				<<elseif $changingRoomGender is "boys" and playerBellyVisible()>>
 					Some of the $changingRoomGender look at you uncomfortably, mostly to your <<print playerAwareTheyArePregnant() ? "pregnant belly" : "pregnant looking belly">>. It's clearly making them think you're a girl.<<gstress>>
 				<<elseif $player.penisExist and $player.vaginaExist>>
 					<<if $changingRoomGender is "boys">><<generatesm1>><<else>><<generatesf1>><</if>><<person1>>
 					<<switch $schoolrep.herm>>
 						<<case 0>> No one gives you a second glance, unaware of your hermaphroditism.
-						<<case 1>> A <<person>> glances at your crotch. <<He>> whispers something to <<his>> friend, who shakes <<his>> head<<print either (", unconvinced", " skeptically", " doubtfully", " and rolls <<his>> eyes", " and laughs")>>. <span class="purple">Rumours about your genitalia are beginning to spread.</span>
+						<<case 1>> A <<person>> glances at your crotch. <<He>> whispers something to <<his>> friend, who shakes <<his>> head<<print either (", unconvinced", " sceptically", " doubtfully", " and rolls <<his>> eyes", " and laughs")>>. <span class="purple">Rumours about your genitalia are beginning to spread.</span>
 						<<case 2>> A <<person>> glances at your crotch. <<He>> whispers something to <<his>> friend, who <<print either ("shakes <<his>> head, unconvinced", "appears convinced", "nods thoughtfully", "eyes you warily", "snickers")>>. <span class="purple">Rumours about your genitalia are beginning to spread.</span>
 						<<case 3>> Some glance at your crotch. A few <<print either("point at you and whisper to their friends", "make rude gestures", "stare for an uncomfortably long period of time", "look as though they're going to say something, but remain quiet", "ask intrusive questions about what's in your pants")>>. <span class="pink">They've heard the rumours.</span>
 						<<case 4>> Some glance at your crotch. A <<person>> points at you and <<print either("laughs", "cracks a rude joke", "elbows <<his>> friend", "mocks you")>> as you head to your locker. <span class="pink">They've heard the rumours.</span>
@@ -46,19 +58,12 @@
 					<</switch>>
 					<<endevent>>
 				<<elseif $player.gender isnot $player.gender_appearance and $NudeGenderDC isnot -1>>
-					<<if $schoolrep.crossdress is 3>>
+					<<if $schoolrep.crossdress gte 3 and $forcedcrossdressingdisable is "f" and $whitneyCrossdressSwimwear gte 1>>
+						Some of the $changingRoomGender snigger at you. <span class="red">They clearly know that you're being forced to change in here.</span> <<gstress>>
+					<<elseif $schoolrep.crossdress is 3>>
 						Some of the $changingRoomGender look at you uncomfortably. A few keep their eyes glued on you as you head to your locker. <span class="pink">They suspect the rumours of you crossdressing are true.</span> <<gstress>>
 					<<elseif $schoolrep.crossdress lt 3>>
-						No one gives you a second glance, not realising you're a <<gender>>.
-						<<if $backgroundTraits.includes("crossdresser") and $player.gender isnot _changingRoomGenderType>>
-							<<if !$daily.school.changingRoomStressRelief>>
-								<span class="green">You feel good about that.</span><<lstress>><<stress -3>><<set $daily.school.changingRoomStressRelief to true>>
-							<<else>>
-								You feel good about that.
-							<</if>>
-						<<elseif !_uncomfortable>>
-							You feel naughty.
-						<</if>>
+							No one gives you a second glance, not realising you're a <<gender>>. <<changingRoomFeelings>>
 					<</if>>
 				<</if>>
 				<<changingRoomFeelings 0>>
@@ -97,7 +102,7 @@
 			<<elseif _topless and $changingRoomGender is "girls" and $player.breastsize lte 2>>
 				You overhear some of the $changingRoomGender whisper about your exposed <<breasts>>. One of them addresses you directly.
 				"Damn, I've <<print either("seen boys with", "had boyfriends with", "slept with boys that had", "fucked boys with")>> bigger tits than you."
-				They don't realize you really are a <<girl>>.
+				They don't realise you really are a <<girl>>.
 			<<else>>
 				One of the $changingRoomGender looks at you <<print either("quizzically", "curiously", "strangely", "contemplatively")>>.
 				"Wow, you <<print either("really", "kinda", "almost", "")>> look like a <<girl>> wearing that."
@@ -120,7 +125,7 @@
 					<<ind>><<link [[Enter (0:05)|School Changing Room Exhibitionism]]>><<pass 5>><<detention 3>><</link>><<gdelinquency>><<exhibitionist5>>
 					<br>
 				<</if>>
-				<<ind>><<link [[Leave|School Pool Entrance]]>><</link>>
+				<<getouticon>><<link [[Leave|School Pool Entrance]]>><</link>>
 			<<elseif $daily.school.changingRoomEntered is Time.hour and _chance isnot 0>>
 				<<if $changingRoomGender is "boys">><<generatesm1>><<else>><<generatesf1>><</if>><<person1>>
 				<<if $player.gender_appearance isnot _changingRoomGenderType and $NudeGenderDC isnot -1>>
@@ -130,11 +135,11 @@
 				<</if>>
 				<<detention 3>><<gdelinquency>>
 				<br><br>
-				<<ind>><<link [[Try to escape|School Changing Room Escape]]>><</link>><<physiquedifficulty 4000 14000>>
+				<<link [[Try to escape|School Changing Room Escape]]>><</link>><<physiquedifficulty 4000 14000>>
 				<br>
-				<<ind>><<link [[Flirt|School Changing Room Flirt]]>><</link>><<promiscuous1>>
+				<<link [[Flirt|School Changing Room Flirt]]>><</link>><<promiscuous1>>
 				<br>
-				<<ind>><<link [[Apologise|School Changing Room Apologise]]>><</link>>
+				<<link [[Apologise|School Changing Room Apologise]]>><</link>>
 			<<else>>
 				<<set $daily.school.changingRoomEntered to Time.hour>>
 				<<if $player.gender_appearance isnot _changingRoomGenderType and $NudeGenderDC isnot -1>>
@@ -144,7 +149,7 @@
 				<</if>>
 				<<detention 3>><<gdelinquency>>
 				<br><br>
-				<<ind>><<link [[Next|School Pool Entrance]]>><</link>>
+				<<link [[Next|School Pool Entrance]]>><</link>>
 			<</if>>
 		<<elseif $poolroomstate isnot "empty">>
 			It's currently empty, though you can hear activity in the pool proper. <<if $poolroomstate is "own">>Your lesson is in session.<</if>>
@@ -171,13 +176,15 @@
 	<</if>>
 	<br>
 	<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
-		<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+		<span class="red">The slime in your ear refuses to allow you to leave with <<underwearTypeText>> on.</span>
 	<<elseif $exhibitionism lte 75 and $exposed gte 1>>
 		<span class="pink">You can't go out while so exposed!</span>
 	<<elseif $exposed gte 1>>
 		<<getouticon>><<link [[Leave|School Pool Entrance Exhibitionism]]>><</link>>
 	<<else>>
-		<<getouticon>><<link [[Leave|School Pool Entrance]]>><</link>>
+		<<getouticon>><<link [[Leave|School Pool Entrance]]>>
+			<<if $daily.whitney.whitneyCrossdressSwimwear>><<run $daily.whitney.whitneyCrossdressSwimwear.push(`${$changingRoomGender} exit`)>><</if>>
+		<</link>>
 	<</if>>
 	<<schoolpoolclothes _store_location>>
 	<<lockericon>><<link [[Locker|School Pool Wardrobe]]>><<set $wardrobe_location to "schoolBoys">><</link>>
@@ -192,7 +199,18 @@
 <</widget>>
 
 <<widget "changingRoomFeelings">>
-	<<if _uncomfortable>>
+
+	<<if $schoolrep.crossdress lt 3 and _args[0] is undefined>>
+		<<if $backgroundTraits.includes("crossdresser") and $player.gender isnot _changingRoomGenderType>>
+			<<if !$daily.school.changingRoomStressRelief>>
+				<span class="green">You feel good about that.</span><<lstress>><<stress -3>><<set $daily.school.changingRoomStressRelief to true>>
+			<<else>>
+			You feel good about that.
+			<</if>>
+		<<elseif $NudeGenderDC isnot -1 and !_uncomfortable>>
+			You feel naughty.
+		<</if>>
+	<<elseif _uncomfortable>>
 		<br><br>
 		<<switch _args[0]>>
 			<<case 1>>Even alone, being in the $changingRoomGender' changing room makes you <span class="red">uncomfortable.</span>
@@ -287,7 +305,7 @@
 			<span class="blue">Mason keeps poking <<nnpc_his Mason>> head in. You won't be able to raid any more lockers today.</span>
 			<br>
 		<<elseif Time.minute lte 47>>
-			<<ind>><<link [[Raid a locker (0:10)|School Changing Room Locker]]>><<pass 10>><<arousal 600>><</link>><<garousal>>
+			<span class="clothes-white"><<icon "clothes/thong.png">></span><<link [[Raid a locker (0:10)|School Changing Room Locker]]>><<pass 10>><<arousal 600>><</link>><<garousal>>
 			<br>
 		<<else>>
 			<span class="blue">The lesson will be over soon. There's no time to raid a locker.</span>

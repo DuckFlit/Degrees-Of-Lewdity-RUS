@@ -183,6 +183,11 @@
 	<<unset $currentToyVagina>>
 	<<unset $currentToyAnus>>
 	<<unset $bottledMilk>>
+	<<unset $masturbationAudience>>
+	<<unset $masturbationAudienceReactions>>
+	<<unset $masturbationActions>>
+	<<unset $masturbationAudience>>
+	<<unset $masturbationAudienceMutualAllowed>>
 <</widget>>
 
 <<widget "masturbationstart">>
@@ -200,17 +205,16 @@
 	<<set $mouth to 0>>
 	<<set $mouthactiondefault to "mrest">>
 	<<set $mouthaction to 0>>
-	<<switch $player.gender>>
-		<<case "f">>
-			<<set $vaginause to 0>>
-			<<set $penisuse to "none">>
-		<<case "m">>
-			<<set $penisuse to 0>>
-			<<set $vaginause to "none">>
-		<<case "h">>
-			<<set $vaginause to 0>>
-			<<set $penisuse to 0>>
-	<</switch>>
+	<<if $player.penisExist>>
+		<<set $penisuse to 0>>
+	<<else>>
+		<<set $penisuse to "none">>
+	<</if>>
+	<<if $player.vaginaExist>>
+		<<set $vaginause to 0>>
+	<<else>>
+		<<set $vaginause to "none">>
+	<</if>>
 	<<set $vaginaactiondefault to "mrest">>
 	<<set $vaginaaction to 0>>
 	<<set $anusactiondefault to "mrest">>
@@ -222,6 +226,9 @@
 	<<set $masturbation_milk to 0>>
 	<<set $masturbation_vaginaFluid to 0>>
 	<<set $masturbationRuinedOrgasm to 0>>
+	<<set $masturbationAudience to 0>>
+
+	<<set $masturbationTimeStat to Time.date.timeStamp>>
 
 	<<set $fingersInVagina to 0>>
 	<<if $player.virginity.vaginal is true and $sexStats.vagina.pregnancy.totalBirthEvents is 0>>
@@ -359,14 +366,7 @@
 		<span class="red">The slime in your ear will not allow you to stop.</span>
 	<</if>>
 	<div id="masturbationButtons">
-		<<if $timer lte 0 and _args[0] and _args[0].includes("timer")>>
-			<div id="next"><<link [[Continue|$_passage + " Finish"]]>><</link>><<nexttext>></div>
-			<<if !$possessed>>
-				<div id="skip">
-					<<link [[To Orgasm|$_passage + " Finish"]]>><</link>>
-				</div>
-			<</if>>
-		<<elseif $orgasmcurrent and _args[0] and _args[0].includes("orgasmcurrent")>>
+		<<if _args[0] and ((_args[0].includes("timer") and $timer lte 0) or (_args[0].includes("orgasmcurrent") and $orgasmcurrent) or (_args[0].includes("corruptionMasturbation") and $corruptionMasturbationCount lte 0))>>
 			<div id="next"><<link [[Continue|$_passage + " Finish"]]>><</link>><<nexttext>></div>
 			<<if !$possessed>>
 				<div id="skip">

@@ -2,7 +2,7 @@
 <<widget "cheats">>
 	<h3>Cheats</h3>
 	<br>
-	<<link [[Confirm|$passage]]>><</link>>
+	<<link [[Confirm|$passage]]>><<set $cheatReload to true>><</link>>
 	<br>
 	Can cause problems if confirmed during events, or with NPCs around.
 	<br><br>
@@ -25,9 +25,11 @@
 		<span @id="_id"><<print ($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>></span> |
 		<span @id="_id + 'link'"><<link `($player.virginity[_type] is true ? "Take" : "Restore")`>>
 			<<if $player.virginity[_type] is true>>
-				<<set $player.virginity[_type] to (_virginity[_type] is true ? false : _virginity[_type])>><<set $player.virginity.temple to false>>
+				<<set $player.virginity[_type] to (_virginity[_type] is true ? false : _virginity[_type])>>
+				<<if $player.virginity.temple isnot false and ["penile", "vaginal"].includes(_type)>><<set $player.virginity.temple to "unknown">><</if>>
 			<<else>>
-				<<set $player.virginity[_type] to true>><<set $player.virginity.temple to true>>
+				<<set $player.virginity[_type] to true>>
+				<<if $player.virginity.temple isnot false and ["penile", "vaginal"].includes(_type)>><<set $player.virginity.temple to true>><</if>>
 			<</if>>
 			<<run $(`#${_id}link .link-internal`).html($player.virginity[_type] is true ? "Take" : "Restore")>>
 			<<run $(`#${_id}`).html($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>>
@@ -39,6 +41,7 @@
 	<<set _bodypart to _args[0]>>
 	<<set _id to `stats${_bodypart}parasite`>>
 	<<capture _bodypart _id>>
+		<<set $_currentType to $parasite[_bodypart].name or "none">>
 		<<print _bodypart.toUpperFirst().replace("_", " ")>> parasite: <span @id="_id" class="gold"><<print $_currentType>></span>
 		<<if ["left_ear", "right_ear"].includes(_bodypart) and !$player.vaginaExist and ["pregnancy", "mixed"].includes($earSlime.focus) and playerIsPregnant()>>
 			<span class="red">Unable to change while a pregnant male</span>
@@ -252,11 +255,11 @@
 	<br><br>
 
 	<<set _virginity to clone($player.virginity)>>
-	<<if $player.vaginaExist>>
+	<<if $player.vaginaExist or $player.virginity.vaginal isnot true>>
 		Vaginal virginity: <<cheatVirginityToggle "vaginal">>
 		<br>
 	<</if>>
-	<<if $player.penisExist>>
+	<<if $player.penisExist or $player.virginity.penile isnot true>>
 		Penile virginity: <<cheatVirginityToggle "penile">>
 		<br>
 	<</if>>
@@ -310,7 +313,6 @@
 	| <<link ">>">><<arousal 100>><<clamp>><<replace "#statsarousal">><<print Math.trunc($arousal)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>>">><<arousal 1000>><<clamp>><<replace "#statsarousal">><<print Math.trunc($arousal)>><</replace>> <<updatesidebarimg>><</link>>
 	<br>
-
 	<<link "<<<">><<set $tiredness -= 1000>><<clamp>><<replace "#statstiredness">><<print Math.trunc($tiredness)>><</replace>> <<updatesidebarimg>><</link>> |
 	<<link "<<">><<set $tiredness -= 100>><<clamp>><<replace "#statstiredness">><<print Math.trunc($tiredness)>><</replace>> <<updatesidebarimg>><</link>> |
 	<<link "<">><<set $tiredness -= 10>><<clamp>><<replace "#statstiredness">><<print Math.trunc($tiredness)>><</replace>> <<updatesidebarimg>><</link>> |
@@ -1068,81 +1070,85 @@
 <<widget "cheats-characterVisual">>
 	<span class="gold">Character Hair</span>
 	<br>
-
-	<<link "<<<">><<set $hairlength -= 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	<<link "<<">><<set $hairlength -= 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	<<link "<">><<set $hairlength -= 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	Hair length: <span id="statshairlength"><<print Math.trunc($hairlength)>></span>
-	| <<link ">">><<set $hairlength += 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	| <<link ">>">><<set $hairlength += 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $hairlength += 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	<br>
-
-	<<link "<<<">><<set $fringelength -= 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	<<link "<<">><<set $fringelength -= 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	<<link "<">><<set $fringelength -= 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
-	Fringe length: <span id="statsfringelength"><<print Math.trunc($fringelength)>></span>
-	| <<link ">">><<set $fringelength += 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	| <<link ">>">><<set $fringelength += 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $fringelength += 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
-	<br><br>
-
-	<<if $hairtest is 1 or $debug>>
-		Natural hair colour
+	<<if $passage is "Hairdressers Seat">>
+		Hair cheats are disabled while at the hairdressers.
+		<br><br>
+	<<else>>
+		<<link "<<<">><<set $hairlength -= 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		<<link "<<">><<set $hairlength -= 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		<<link "<">><<set $hairlength -= 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		Hair length: <span id="statshairlength"><<print Math.trunc($hairlength)>></span>
+		| <<link ">">><<set $hairlength += 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		| <<link ">>">><<set $hairlength += 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		| <<link ">>>">><<set $hairlength += 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
 		<br>
-		<<set _bar to false>>
+
+		<<link "<<<">><<set $fringelength -= 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		<<link "<<">><<set $fringelength -= 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		<<link "<">><<set $fringelength -= 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>> |
+		Fringe length: <span id="statsfringelength"><<print Math.trunc($fringelength)>></span>
+		| <<link ">">><<set $fringelength += 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		| <<link ">>">><<set $fringelength += 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		| <<link ">>>">><<set $fringelength += 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><<calchairlengthstage>> <<updatesidebarimg>><</link>>
+		<br><br>
+
+		<<if $hairtest is 1 or $debug>>
+			Natural hair colour
+			<br>
+			<<set _bar to false>>
+			<<for _i = 0; _i < setup.colours.hair.length; _i++>>
+				<<if setup.colours.hair[_i].natural>>
+					<<if _bar>>|<</if>>
+					<label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$naturalhaircolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
+					<<set _bar to true>>
+				<</if>>
+			<</for>>
+			<br>
+			<br>
+		<</if>>
+
+		Hair dye
+		<br>
+		<label>None <<radiovar "$haircolour" $naturalhaircolour>> <<updatesidebarimg>><</radiovar>></label>
 		<<for _i = 0; _i < setup.colours.hair.length; _i++>>
-			<<if setup.colours.hair[_i].natural>>
-				<<if _bar>>|<</if>>
-				<label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$naturalhaircolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
-				<<set _bar to true>>
+			<<if setup.colours.hair[_i].dye>>
+				| <label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$haircolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
 			<</if>>
 		<</for>>
 		<br>
+		Two-tone:
+		<label>Enable <<radiovar "$hairColourStyle" "gradient">> <<updatesidebarimg>><</radiovar>></label>
+		<label>Disable <<radiovar "$hairColourStyle" "simple">> <<updatesidebarimg>><</radiovar>></label>
 		<br>
+		Two-tone style: <<listbox "$hairColourGradient.style" autoselect>>
+					<<option "Low Ombré" "low-ombre">>
+					<<option "High Ombré" "high-ombre">>
+					<<option "Split" "split">>
+					<<option "Face-framing highlights" "face-frame">>
+				<</listbox>>
+		<br><br>
+
+		Hair fringe dye
+		<br>
+		<label>None <<radiovar "$hairfringecolour" $naturalhaircolour>> <<updatesidebarimg>><</radiovar>></label>
+		<<for _i = 0; _i < setup.colours.hair.length; _i++>>
+			<<if setup.colours.hair[_i].dye>>
+				| <label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$hairfringecolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
+			<</if>>
+		<</for>>
+		<br>
+		Two-tone:
+		<label>Enable <<radiovar "$hairFringeColourStyle" "gradient">> <<updatesidebarimg>><</radiovar>></label>
+		<label>Disable <<radiovar "$hairFringeColourStyle" "simple">> <<updatesidebarimg>><</radiovar>></label>
+		<br>
+		Two-tone style: <<listbox "$hairFringeColourGradient.style" autoselect>>
+					<<option "Low Ombré" "low-ombre">>
+					<<option "High Ombré" "high-ombre">>
+					<<option "Split" "split">>
+					<<option "Face-framing highlights" "face-frame">>
+				<</listbox>>
+		<br><br>
 	<</if>>
-
-	Hair dye
-	<br>
-	<label>None <<radiovar "$haircolour" $naturalhaircolour>> <<updatesidebarimg>><</radiovar>></label>
-	<<for _i = 0; _i < setup.colours.hair.length; _i++>>
-		<<if setup.colours.hair[_i].dye>>
-			| <label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$haircolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
-		<</if>>
-	<</for>>
-	<br>
-	Two-tone:
-	<label>Enable <<radiovar "$hairColourStyle" "gradient">> <<updatesidebarimg>><</radiovar>></label>
-	<label>Disable <<radiovar "$hairColourStyle" "simple">> <<updatesidebarimg>><</radiovar>></label>
-	<br>
-	Two-tone style: <<listbox "$hairColourGradient.style" autoselect>>
-				<<option "Low Ombré" "low-ombre">>
-				<<option "High Ombré" "high-ombre">>
-				<<option "Split" "split">>
-				<<option "Face-framing highlights" "face-frame">>
-			<</listbox>>
-	<br><br>
-
-	Hair fringe dye
-	<br>
-	<label>None <<radiovar "$hairfringecolour" $naturalhaircolour>> <<updatesidebarimg>><</radiovar>></label>
-	<<for _i = 0; _i < setup.colours.hair.length; _i++>>
-		<<if setup.colours.hair[_i].dye>>
-			| <label><span @class="setup.colours.hair[_i].csstext"><<print setup.colours.hair[_i].name_cap>></span> <<radiovar "$hairfringecolour" setup.colours.hair[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
-		<</if>>
-	<</for>>
-	<br>
-	Two-tone:
-	<label>Enable <<radiovar "$hairFringeColourStyle" "gradient">> <<updatesidebarimg>><</radiovar>></label>
-	<label>Disable <<radiovar "$hairFringeColourStyle" "simple">> <<updatesidebarimg>><</radiovar>></label>
-	<br>
-	Two-tone style: <<listbox "$hairFringeColourGradient.style" autoselect>>
-				<<option "Low Ombré" "low-ombre">>
-				<<option "High Ombré" "high-ombre">>
-				<<option "Split" "split">>
-				<<option "Face-framing highlights" "face-frame">>
-			<</listbox>>
-	<br><br>
 
 	<span class="gold">Eye Colour</span>
 	<br>
@@ -1484,7 +1490,7 @@
 	<<link "Confirm">>
 		<<initNNPCVirginity $NPCNameList.indexOf(_npcId)>>
 		<<if $npc.includes(_npcId)>>
-			<<set $NPCList[$npcrow[$npc.indexOf(_npcId)]].virginity to $NPCName[$NPCNameList.indexOf(_npcId)].virginity>>
+			<<set $NPCList[$npcrow[$npc.indexOf(_npcId)]].virginity to C.npc[_npcId].virginity>>
 		<</if>>
 		<<for _virginType, _virginList range $virginTaken>>
 			<<run _virginList.delete(_npcId)>>
@@ -1496,121 +1502,121 @@
 	<br>
 	<span class="description">Numbers may not appear until the NPC has been met.</span>
 	<br>
-	<<link "<<<">><<npcincr Robin love -100>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Robin love -10>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Robin love -1>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].love)>><</replace>><</link>> |
-	Robin love: <span id="statsrobinlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].love)>></span>
-	| <<link ">">><<npcincr Robin love 1>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Robin love 10>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Robin love 100>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].love)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Robin love -100>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc(C.npc.Robin.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Robin love -10>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc(C.npc.Robin.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Robin love -1>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc(C.npc.Robin.love)>><</replace>><</link>> |
+	Robin love: <span id="statsrobinlove"><<print Math.trunc(C.npc.Robin.love)>></span>
+	| <<link ">">><<npcincr Robin love 1>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc(C.npc.Robin.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Robin love 10>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc(C.npc.Robin.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Robin love 100>><<clamp>><<replace "#statsrobinlove">><<print Math.trunc(C.npc.Robin.love)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Robin lust -100>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].lust)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Robin lust -10>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].lust)>><</replace>><</link>> |
-	<<link "<">><<npcincr Robin lust -1>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].lust)>><</replace>><</link>> |
-	Robin lust: <span id="statsrobinlust"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].lust)>></span>
-	| <<link ">">><<npcincr Robin lust 1>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].lust)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Robin lust 10>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].lust)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Robin lust 100>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].lust)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Robin lust -100>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc(C.npc.Robin.lust)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Robin lust -10>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc(C.npc.Robin.lust)>><</replace>><</link>> |
+	<<link "<">><<npcincr Robin lust -1>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc(C.npc.Robin.lust)>><</replace>><</link>> |
+	Robin lust: <span id="statsrobinlust"><<print Math.trunc(C.npc.Robin.lust)>></span>
+	| <<link ">">><<npcincr Robin lust 1>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc(C.npc.Robin.lust)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Robin lust 10>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc(C.npc.Robin.lust)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Robin lust 100>><<clamp>><<replace "#statsrobinlust">><<print Math.trunc(C.npc.Robin.lust)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Robin dom -100>><<clamp>><<replace "#statsrobindom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].dom)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Robin dom -10>><<clamp>><<replace "#statsrobindom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].dom)>><</replace>><</link>> |
-	<<link "<">><<npcincr Robin dom -1>><<clamp>><<replace "#statsrobindom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].dom)>><</replace>><</link>> |
-	Robin confidence: <span id="statsrobindom"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].dom)>></span>
-	| <<link ">">><<npcincr Robin dom 1>><<clamp>><<replace "#statsrobindom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].dom)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Robin dom 10>><<clamp>><<replace "#statsrobindom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].dom)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Robin dom 100>><<clamp>><<replace "#statsrobindom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].dom)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Robin dom -100>><<clamp>><<replace "#statsrobindom">><<print Math.trunc(C.npc.Robin.dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Robin dom -10>><<clamp>><<replace "#statsrobindom">><<print Math.trunc(C.npc.Robin.dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr Robin dom -1>><<clamp>><<replace "#statsrobindom">><<print Math.trunc(C.npc.Robin.dom)>><</replace>><</link>> |
+	Robin confidence: <span id="statsrobindom"><<print Math.trunc(C.npc.Robin.dom)>></span>
+	| <<link ">">><<npcincr Robin dom 1>><<clamp>><<replace "#statsrobindom">><<print Math.trunc(C.npc.Robin.dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Robin dom 10>><<clamp>><<replace "#statsrobindom">><<print Math.trunc(C.npc.Robin.dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Robin dom 100>><<clamp>><<replace "#statsrobindom">><<print Math.trunc(C.npc.Robin.dom)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Robin trauma -100>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].trauma)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Robin trauma -10>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].trauma)>><</replace>><</link>> |
-	<<link "<">><<npcincr Robin trauma -1>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].trauma)>><</replace>><</link>> |
-	Robin trauma: <span id="statsrobintrauma"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].trauma)>></span>
-	| <<link ">">><<npcincr Robin trauma 1>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].trauma)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Robin trauma 10>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].trauma)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Robin trauma 100>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Robin")].trauma)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Robin trauma -100>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc(C.npc.Robin.trauma)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Robin trauma -10>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc(C.npc.Robin.trauma)>><</replace>><</link>> |
+	<<link "<">><<npcincr Robin trauma -1>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc(C.npc.Robin.trauma)>><</replace>><</link>> |
+	Robin trauma: <span id="statsrobintrauma"><<print Math.trunc(C.npc.Robin.trauma)>></span>
+	| <<link ">">><<npcincr Robin trauma 1>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc(C.npc.Robin.trauma)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Robin trauma 10>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc(C.npc.Robin.trauma)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Robin trauma 100>><<clamp>><<replace "#statsrobintrauma">><<print Math.trunc(C.npc.Robin.trauma)>><</replace>><</link>> (100 = full)
 	<br><br>
 
-	<<link "<<<">><<npcincr Whitney love -10>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Whitney love -3>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Whitney love -1>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].love)>><</replace>><</link>> |
-	Whitney love: <span id="statswhitneylove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].love)>></span>
-	| <<link ">">><<npcincr Whitney love 1>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Whitney love 3>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Whitney love 10>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].love)>><</replace>><</link>> (30 = full)
+	<<link "<<<">><<npcincr Whitney love -10>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc(C.npc.Whitney.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Whitney love -3>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc(C.npc.Whitney.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Whitney love -1>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc(C.npc.Whitney.love)>><</replace>><</link>> |
+	Whitney love: <span id="statswhitneylove"><<print Math.trunc(C.npc.Whitney.love)>></span>
+	| <<link ">">><<npcincr Whitney love 1>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc(C.npc.Whitney.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Whitney love 3>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc(C.npc.Whitney.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Whitney love 10>><<clamp>><<replace "#statswhitneylove">><<print Math.trunc(C.npc.Whitney.love)>><</replace>><</link>> (30 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Whitney dom -10>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].dom)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Whitney dom -5>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].dom)>><</replace>><</link>> |
-	<<link "<">><<npcincr Whitney dom -1>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].dom)>><</replace>><</link>> |
-	Whitney dominance: <span id="statswhitneydom"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].dom)>></span>
-	| <<link ">">><<npcincr Whitney dom 1>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].dom)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Whitney dom 5>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].dom)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Whitney dom 10>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].dom)>><</replace>><</link>> (20 = full)
+	<<link "<<<">><<npcincr Whitney dom -10>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc(C.npc.Whitney.dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Whitney dom -5>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc(C.npc.Whitney.dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr Whitney dom -1>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc(C.npc.Whitney.dom)>><</replace>><</link>> |
+	Whitney dominance: <span id="statswhitneydom"><<print Math.trunc(C.npc.Whitney.dom)>></span>
+	| <<link ">">><<npcincr Whitney dom 1>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc(C.npc.Whitney.dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Whitney dom 5>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc(C.npc.Whitney.dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Whitney dom 10>><<clamp>><<replace "#statswhitneydom">><<print Math.trunc(C.npc.Whitney.dom)>><</replace>><</link>> (20 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Whitney lust -100>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].lust)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Whitney lust -10>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].lust)>><</replace>><</link>> |
-	<<link "<">><<npcincr Whitney lust -1>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].lust)>><</replace>><</link>> |
-	Whitney lust: <span id="statswhitneylust"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].lust)>></span>
-	| <<link ">">><<npcincr Whitney lust 1>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].lust)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Whitney lust 10>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].lust)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Whitney lust 100>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Whitney")].lust)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Whitney lust -100>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc(C.npc.Whitney.lust)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Whitney lust -10>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc(C.npc.Whitney.lust)>><</replace>><</link>> |
+	<<link "<">><<npcincr Whitney lust -1>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc(C.npc.Whitney.lust)>><</replace>><</link>> |
+	Whitney lust: <span id="statswhitneylust"><<print Math.trunc(C.npc.Whitney.lust)>></span>
+	| <<link ">">><<npcincr Whitney lust 1>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc(C.npc.Whitney.lust)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Whitney lust 10>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc(C.npc.Whitney.lust)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Whitney lust 100>><<clamp>><<replace "#statswhitneylust">><<print Math.trunc(C.npc.Whitney.lust)>><</replace>><</link>> (100 = full)
 	<br><br>
 
-	<<link "<<<">><<npcincr Eden love -100>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Eden love -10>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Eden love -1>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>> |
-	Eden love: <span id="statsedenlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>></span>
-	| <<link ">">><<npcincr Eden love 1>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Eden love 10>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Eden love 100>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>> (200 = full)
+	<<link "<<<">><<npcincr Eden love -100>><<clamp>><<replace "#statsedenlove">><<print Math.trunc(C.npc.Eden.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Eden love -10>><<clamp>><<replace "#statsedenlove">><<print Math.trunc(C.npc.Eden.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Eden love -1>><<clamp>><<replace "#statsedenlove">><<print Math.trunc(C.npc.Eden.love)>><</replace>><</link>> |
+	Eden love: <span id="statsedenlove"><<print Math.trunc(C.npc.Eden.love)>></span>
+	| <<link ">">><<npcincr Eden love 1>><<clamp>><<replace "#statsedenlove">><<print Math.trunc(C.npc.Eden.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Eden love 10>><<clamp>><<replace "#statsedenlove">><<print Math.trunc(C.npc.Eden.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Eden love 100>><<clamp>><<replace "#statsedenlove">><<print Math.trunc(C.npc.Eden.love)>><</replace>><</link>> (200 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Eden dom -100>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Eden dom -10>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>> |
-	<<link "<">><<npcincr Eden dom -1>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>> |
-	Eden dominance: <span id="statsedendom"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>></span>
-	| <<link ">">><<npcincr Eden dom 1>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Eden dom 10>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Eden dom 100>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>> (150 = full)
+	<<link "<<<">><<npcincr Eden dom -100>><<clamp>><<replace "#statsedendom">><<print Math.trunc(C.npc.Eden.dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Eden dom -10>><<clamp>><<replace "#statsedendom">><<print Math.trunc(C.npc.Eden.dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr Eden dom -1>><<clamp>><<replace "#statsedendom">><<print Math.trunc(C.npc.Eden.dom)>><</replace>><</link>> |
+	Eden dominance: <span id="statsedendom"><<print Math.trunc(C.npc.Eden.dom)>></span>
+	| <<link ">">><<npcincr Eden dom 1>><<clamp>><<replace "#statsedendom">><<print Math.trunc(C.npc.Eden.dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Eden dom 10>><<clamp>><<replace "#statsedendom">><<print Math.trunc(C.npc.Eden.dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Eden dom 100>><<clamp>><<replace "#statsedendom">><<print Math.trunc(C.npc.Eden.dom)>><</replace>><</link>> (150 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Eden lust -100>><<clamp>><<replace "#statsedenlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].lust)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Eden lust -10>><<clamp>><<replace "#statsedenlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].lust)>><</replace>><</link>> |
-	<<link "<">><<npcincr Eden lust -1>><<clamp>><<replace "#statsedenlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].lust)>><</replace>><</link>> |
-	Eden lust: <span id="statsedenlust"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].lust)>></span>
-	| <<link ">">><<npcincr Eden lust 1>><<clamp>><<replace "#statsedenlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].lust)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Eden lust 10>><<clamp>><<replace "#statsedenlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].lust)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Eden lust 100>><<clamp>><<replace "#statsedenlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].lust)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Eden lust -100>><<clamp>><<replace "#statsedenlust">><<print Math.trunc(C.npc.Eden.lust)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Eden lust -10>><<clamp>><<replace "#statsedenlust">><<print Math.trunc(C.npc.Eden.lust)>><</replace>><</link>> |
+	<<link "<">><<npcincr Eden lust -1>><<clamp>><<replace "#statsedenlust">><<print Math.trunc(C.npc.Eden.lust)>><</replace>><</link>> |
+	Eden lust: <span id="statsedenlust"><<print Math.trunc(C.npc.Eden.lust)>></span>
+	| <<link ">">><<npcincr Eden lust 1>><<clamp>><<replace "#statsedenlust">><<print Math.trunc(C.npc.Eden.lust)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Eden lust 10>><<clamp>><<replace "#statsedenlust">><<print Math.trunc(C.npc.Eden.lust)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Eden lust 100>><<clamp>><<replace "#statsedenlust">><<print Math.trunc(C.npc.Eden.lust)>><</replace>><</link>> (100 = full)
 	<br><br>
 
-	<<link "<<<">><<npcincr Kylar love -100>><<clamp>><<replace "#statskylarlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Kylar love -10>><<clamp>><<replace "#statskylarlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Kylar love -1>><<clamp>><<replace "#statskylarlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].love)>><</replace>><</link>> |
-	Kylar love: <span id="statskylarlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].love)>></span>
-	| <<link ">">><<npcincr Kylar love 1>><<clamp>><<replace "#statskylarlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Kylar love 10>><<clamp>><<replace "#statskylarlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Kylar love 100>><<clamp>><<replace "#statskylarlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].love)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Kylar love -100>><<clamp>><<replace "#statskylarlove">><<print Math.trunc(C.npc.Kylar.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Kylar love -10>><<clamp>><<replace "#statskylarlove">><<print Math.trunc(C.npc.Kylar.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Kylar love -1>><<clamp>><<replace "#statskylarlove">><<print Math.trunc(C.npc.Kylar.love)>><</replace>><</link>> |
+	Kylar love: <span id="statskylarlove"><<print Math.trunc(C.npc.Kylar.love)>></span>
+	| <<link ">">><<npcincr Kylar love 1>><<clamp>><<replace "#statskylarlove">><<print Math.trunc(C.npc.Kylar.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Kylar love 10>><<clamp>><<replace "#statskylarlove">><<print Math.trunc(C.npc.Kylar.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Kylar love 100>><<clamp>><<replace "#statskylarlove">><<print Math.trunc(C.npc.Kylar.love)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Kylar lust -100>><<clamp>><<replace "#statskylarlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].lust)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Kylar lust -10>><<clamp>><<replace "#statskylarlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].lust)>><</replace>><</link>> |
-	<<link "<">><<npcincr Kylar lust -1>><<clamp>><<replace "#statskylarlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].lust)>><</replace>><</link>> |
-	Kylar lust: <span id="statskylarlust"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].lust)>></span>
-	| <<link ">">><<npcincr Kylar lust 1>><<clamp>><<replace "#statskylarlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].lust)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Kylar lust 10>><<clamp>><<replace "#statskylarlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].lust)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Kylar lust 100>><<clamp>><<replace "#statskylarlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].lust)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Kylar lust -100>><<clamp>><<replace "#statskylarlust">><<print Math.trunc(C.npc.Kylar.lust)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Kylar lust -10>><<clamp>><<replace "#statskylarlust">><<print Math.trunc(C.npc.Kylar.lust)>><</replace>><</link>> |
+	<<link "<">><<npcincr Kylar lust -1>><<clamp>><<replace "#statskylarlust">><<print Math.trunc(C.npc.Kylar.lust)>><</replace>><</link>> |
+	Kylar lust: <span id="statskylarlust"><<print Math.trunc(C.npc.Kylar.lust)>></span>
+	| <<link ">">><<npcincr Kylar lust 1>><<clamp>><<replace "#statskylarlust">><<print Math.trunc(C.npc.Kylar.lust)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Kylar lust 10>><<clamp>><<replace "#statskylarlust">><<print Math.trunc(C.npc.Kylar.lust)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Kylar lust 100>><<clamp>><<replace "#statskylarlust">><<print Math.trunc(C.npc.Kylar.lust)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Kylar rage -100>><<clamp>><<replace "#statskylarsus">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].rage)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Kylar rage -10>><<clamp>><<replace "#statskylarsus">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].rage)>><</replace>><</link>> |
-	<<link "<">><<npcincr Kylar rage -1>><<clamp>><<replace "#statskylarsus">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].rage)>><</replace>><</link>> |
-	Kylar jealousy: <span id="statskylarsus"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].rage)>></span>
-	| <<link ">">><<npcincr Kylar rage 1>><<clamp>><<replace "#statskylarsus">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].rage)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Kylar rage 10>><<clamp>><<replace "#statskylarsus">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].rage)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Kylar rage 100>><<clamp>><<replace "#statskylarsus">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Kylar")].rage)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Kylar rage -100>><<clamp>><<replace "#statskylarsus">><<print Math.trunc(C.npc.Kylar.rage)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Kylar rage -10>><<clamp>><<replace "#statskylarsus">><<print Math.trunc(C.npc.Kylar.rage)>><</replace>><</link>> |
+	<<link "<">><<npcincr Kylar rage -1>><<clamp>><<replace "#statskylarsus">><<print Math.trunc(C.npc.Kylar.rage)>><</replace>><</link>> |
+	Kylar jealousy: <span id="statskylarsus"><<print Math.trunc(C.npc.Kylar.rage)>></span>
+	| <<link ">">><<npcincr Kylar rage 1>><<clamp>><<replace "#statskylarsus">><<print Math.trunc(C.npc.Kylar.rage)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Kylar rage 10>><<clamp>><<replace "#statskylarsus">><<print Math.trunc(C.npc.Kylar.rage)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Kylar rage 100>><<clamp>><<replace "#statskylarsus">><<print Math.trunc(C.npc.Kylar.rage)>><</replace>><</link>> (100 = full)
 	<br><br>
 
 	<<link "<<<">><<npcincr Avery love -100>><<clamp>><<replace "#statsaverylove">><<print Math.trunc($NPCName[0].love)>><</replace>><</link>> |
@@ -1631,170 +1637,189 @@
 	| <<link ">>>">><<npcincr Avery rage 100>><<clamp>><<replace "#statsaveryrage">><<print Math.trunc($NPCName[0].rage)>><</replace>><</link>> (100 = full)
 	<br><br>
 
-	<<link "<<<">><<npcincr Sydney love -100>><<clamp>><<replace "#statssydneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Sydney love -10>><<clamp>><<replace "#statssydneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Sydney love -1>><<clamp>><<replace "#statssydneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].love)>><</replace>><</link>> |
-	Sydney love: <span id="statssydneylove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].love)>></span>
-	| <<link ">">><<npcincr Sydney love 1>><<clamp>><<replace "#statssydneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Sydney love 10>><<clamp>><<replace "#statssydneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Sydney love 100>><<clamp>><<replace "#statssydneylove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].love)>><</replace>><</link>> (150 = full)
+	<<link "<<<">><<npcincr Sydney love -100>><<clamp>><<replace "#statssydneylove">><<print Math.trunc(C.npc.Sydney.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Sydney love -10>><<clamp>><<replace "#statssydneylove">><<print Math.trunc(C.npc.Sydney.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Sydney love -1>><<clamp>><<replace "#statssydneylove">><<print Math.trunc(C.npc.Sydney.love)>><</replace>><</link>> |
+	Sydney love: <span id="statssydneylove"><<print Math.trunc(C.npc.Sydney.love)>></span>
+	| <<link ">">><<npcincr Sydney love 1>><<clamp>><<replace "#statssydneylove">><<print Math.trunc(C.npc.Sydney.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Sydney love 10>><<clamp>><<replace "#statssydneylove">><<print Math.trunc(C.npc.Sydney.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Sydney love 100>><<clamp>><<replace "#statssydneylove">><<print Math.trunc(C.npc.Sydney.love)>><</replace>><</link>> (150 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Sydney lust -100>><<clamp>><<replace "#statssydneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].lust)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Sydney lust -10>><<clamp>><<replace "#statssydneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].lust)>><</replace>><</link>> |
-	<<link "<">><<npcincr Sydney lust -1>><<clamp>><<replace "#statssydneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].lust)>><</replace>><</link>> |
-	Sydney lust: <span id="statssydneylust"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].lust)>></span>
-	| <<link ">">><<npcincr Sydney lust 1 true>><<clamp>><<replace "#statssydneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].lust)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Sydney lust 10 true>><<clamp>><<replace "#statssydneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].lust)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Sydney lust 100 true>><<clamp>><<replace "#statssydneylust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].lust)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Sydney lust -100>><<clamp>><<replace "#statssydneylust">><<print Math.trunc(C.npc.Sydney.lust)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Sydney lust -10>><<clamp>><<replace "#statssydneylust">><<print Math.trunc(C.npc.Sydney.lust)>><</replace>><</link>> |
+	<<link "<">><<npcincr Sydney lust -1>><<clamp>><<replace "#statssydneylust">><<print Math.trunc(C.npc.Sydney.lust)>><</replace>><</link>> |
+	Sydney lust: <span id="statssydneylust"><<print Math.trunc(C.npc.Sydney.lust)>></span>
+	| <<link ">">><<npcincr Sydney lust 1 true>><<clamp>><<replace "#statssydneylust">><<print Math.trunc(C.npc.Sydney.lust)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Sydney lust 10 true>><<clamp>><<replace "#statssydneylust">><<print Math.trunc(C.npc.Sydney.lust)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Sydney lust 100 true>><<clamp>><<replace "#statssydneylust">><<print Math.trunc(C.npc.Sydney.lust)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity -100>><<clamp>><<replace "#statssydneypure">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].purity)>><<else>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>> |
-	<<link "<<">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity -10>><<clamp>><<replace "#statssydneypure">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].purity)>><<else>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>> |
-	<<link "<">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity -1>><<clamp>><<replace "#statssydneypure">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].purity)>><<else>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>> |
-	Sydney <span id="sydneypuretext"><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>></span> <span id="statssydneypure"><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].purity)>><<else>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].corruption)>><</if>></span>
-	| <<link ">">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity 1>><<clamp>><<replace "#statssydneypure">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].purity)>><<else>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>>
-	| <<link ">>">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity 10>><<clamp>><<replace "#statssydneypure">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].purity)>><<else>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>>
-	| <<link ">>>">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity 100>><<clamp>><<replace "#statssydneypure">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].purity)>><<else>><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sydney")].corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>> (100 = full, below 0 will switch to corruption.)
+	<<link "<<<">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity -100>><<clamp>><<replace "#statssydneypure">><<if C.npc.Sydney.purity gt 0>><<print Math.trunc(C.npc.Sydney.purity)>><<else>><<print Math.trunc(C.npc.Sydney.corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if C.npc.Sydney.purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>> |
+	<<link "<<">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity -10>><<clamp>><<replace "#statssydneypure">><<if C.npc.Sydney.purity gt 0>><<print Math.trunc(C.npc.Sydney.purity)>><<else>><<print Math.trunc(C.npc.Sydney.corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if C.npc.Sydney.purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>> |
+	<<link "<">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity -1>><<clamp>><<replace "#statssydneypure">><<if C.npc.Sydney.purity gt 0>><<print Math.trunc(C.npc.Sydney.purity)>><<else>><<print Math.trunc(C.npc.Sydney.corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if C.npc.Sydney.purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>> |
+	Sydney <span id="sydneypuretext"><<if C.npc.Sydney.purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>></span> <span id="statssydneypure"><<if C.npc.Sydney.purity gt 0>><<print Math.trunc(C.npc.Sydney.purity)>><<else>><<print Math.trunc(C.npc.Sydney.corruption)>><</if>></span>
+	| <<link ">">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity 1>><<clamp>><<replace "#statssydneypure">><<if C.npc.Sydney.purity gt 0>><<print Math.trunc(C.npc.Sydney.purity)>><<else>><<print Math.trunc(C.npc.Sydney.corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if C.npc.Sydney.purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>>
+	| <<link ">>">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity 10>><<clamp>><<replace "#statssydneypure">><<if C.npc.Sydney.purity gt 0>><<print Math.trunc(C.npc.Sydney.purity)>><<else>><<print Math.trunc(C.npc.Sydney.corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if C.npc.Sydney.purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>>
+	| <<link ">>>">><<set $purityEvent to 1>><<set $corruptionEvent to 1>><<npcincr Sydney purity 100>><<clamp>><<replace "#statssydneypure">><<if C.npc.Sydney.purity gt 0>><<print Math.trunc(C.npc.Sydney.purity)>><<else>><<print Math.trunc(C.npc.Sydney.corruption)>><</if>><</replace>><<replace "#sydneypuretext">><<if C.npc.Sydney.purity gt 0>><<print "purity:">><<else>><<print "corruption:">><</if>><</replace>><</link>> (100 = full, below 0 will switch to corruption.)
 	<br><br>
 
-	<<link "<<<">><<npcincr Mason love -100>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Mason love -10>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Mason love -1>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].love)>><</replace>><</link>> |
-	Mason love: <span id="statsmasonlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].love)>></span>
-	| <<link ">">><<npcincr Mason love 1>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Mason love 10>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Mason love 100>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].love)>><</replace>><</link>> (50 = full)
+	<<link "<<<">><<npcincr Mason love -100>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc(C.npc.Mason.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Mason love -10>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc(C.npc.Mason.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Mason love -1>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc(C.npc.Mason.love)>><</replace>><</link>> |
+	Mason love: <span id="statsmasonlove"><<print Math.trunc(C.npc.Mason.love)>></span>
+	| <<link ">">><<npcincr Mason love 1>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc(C.npc.Mason.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Mason love 10>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc(C.npc.Mason.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Mason love 100>><<clamp>><<replace "#statsmasonlove">><<print Math.trunc(C.npc.Mason.love)>><</replace>><</link>> (50 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Mason lust -100>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].lust)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Mason lust -10>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].lust)>><</replace>><</link>> |
-	<<link "<">><<npcincr Mason lust -1>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].lust)>><</replace>><</link>> |
-	Mason lust: <span id="statsmasonlust"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].lust)>></span>
-	| <<link ">">><<npcincr Mason lust 1>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].lust)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Mason lust 10>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].lust)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Mason lust 100>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Mason")].lust)>><</replace>><</link>> (50 = full)
+	<<link "<<<">><<npcincr Mason lust -100>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc(C.npc.Mason.lust)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Mason lust -10>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc(C.npc.Mason.lust)>><</replace>><</link>> |
+	<<link "<">><<npcincr Mason lust -1>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc(C.npc.Mason.lust)>><</replace>><</link>> |
+	Mason lust: <span id="statsmasonlust"><<print Math.trunc(C.npc.Mason.lust)>></span>
+	| <<link ">">><<npcincr Mason lust 1>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc(C.npc.Mason.lust)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Mason lust 10>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc(C.npc.Mason.lust)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Mason lust 100>><<clamp>><<replace "#statsmasonlust">><<print Math.trunc(C.npc.Mason.lust)>><</replace>><</link>> (50 = full)
 	<br><br>
 
-	<<link "<<<">><<npcincr Alex love -100>><<clamp>><<replace "#statsalexlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Alex love -10>><<clamp>><<replace "#statsalexlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Alex love -1>><<clamp>><<replace "#statsalexlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].love)>><</replace>><</link>> |
-	Alex love: <span id="statsalexlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].love)>></span>
-	| <<link ">">><<npcincr Alex love 1>><<clamp>><<replace "#statsalexlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Alex love 10>><<clamp>><<replace "#statsalexlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Alex love 100>><<clamp>><<replace "#statsalexlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].love)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Alex love -100>><<clamp>><<replace "#statsalexlove">><<print Math.trunc(C.npc.Alex.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Alex love -10>><<clamp>><<replace "#statsalexlove">><<print Math.trunc(C.npc.Alex.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Alex love -1>><<clamp>><<replace "#statsalexlove">><<print Math.trunc(C.npc.Alex.love)>><</replace>><</link>> |
+	Alex love: <span id="statsalexlove"><<print Math.trunc(C.npc.Alex.love)>></span>
+	| <<link ">">><<npcincr Alex love 1>><<clamp>><<replace "#statsalexlove">><<print Math.trunc(C.npc.Alex.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Alex love 10>><<clamp>><<replace "#statsalexlove">><<print Math.trunc(C.npc.Alex.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Alex love 100>><<clamp>><<replace "#statsalexlove">><<print Math.trunc(C.npc.Alex.love)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Alex dom -100>><<clamp>><<replace "#statsalexdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].dom)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Alex dom -10>><<clamp>><<replace "#statsalexdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].dom)>><</replace>><</link>> |
-	<<link "<">><<npcincr Alex dom -1>><<clamp>><<replace "#statsalexdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].dom)>><</replace>><</link>> |
-	Alex dominance: <span id="statsalexdom"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].dom)>></span>
-	| <<link ">">><<npcincr Alex dom 1>><<clamp>><<replace "#statsalexdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].dom)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Alex dom 10>><<clamp>><<replace "#statsalexdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].dom)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Alex dom 100>><<clamp>><<replace "#statsalexdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].dom)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Alex dom -100>><<clamp>><<replace "#statsalexdom">><<print Math.trunc(C.npc.Alex.dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Alex dom -10>><<clamp>><<replace "#statsalexdom">><<print Math.trunc(C.npc.Alex.dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr Alex dom -1>><<clamp>><<replace "#statsalexdom">><<print Math.trunc(C.npc.Alex.dom)>><</replace>><</link>> |
+	Alex dominance: <span id="statsalexdom"><<print Math.trunc(C.npc.Alex.dom)>></span>
+	| <<link ">">><<npcincr Alex dom 1>><<clamp>><<replace "#statsalexdom">><<print Math.trunc(C.npc.Alex.dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Alex dom 10>><<clamp>><<replace "#statsalexdom">><<print Math.trunc(C.npc.Alex.dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Alex dom 100>><<clamp>><<replace "#statsalexdom">><<print Math.trunc(C.npc.Alex.dom)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Alex lust -100>><<clamp>><<replace "#statsalexlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].lust)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Alex lust -10>><<clamp>><<replace "#statsalexlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].lust)>><</replace>><</link>> |
-	<<link "<">><<npcincr Alex lust -1>><<clamp>><<replace "#statsalexlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].lust)>><</replace>><</link>> |
-	Alex lust: <span id="statsalexlust"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].lust)>></span>
-	| <<link ">">><<npcincr Alex lust 1>><<clamp>><<replace "#statsalexlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].lust)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Alex lust 10>><<clamp>><<replace "#statsalexlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].lust)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Alex lust 100>><<clamp>><<replace "#statsalexlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Alex")].lust)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr Alex lust -100>><<clamp>><<replace "#statsalexlust">><<print Math.trunc(C.npc.Alex.lust)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Alex lust -10>><<clamp>><<replace "#statsalexlust">><<print Math.trunc(C.npc.Alex.lust)>><</replace>><</link>> |
+	<<link "<">><<npcincr Alex lust -1>><<clamp>><<replace "#statsalexlust">><<print Math.trunc(C.npc.Alex.lust)>><</replace>><</link>> |
+	Alex lust: <span id="statsalexlust"><<print Math.trunc(C.npc.Alex.lust)>></span>
+	| <<link ">">><<npcincr Alex lust 1>><<clamp>><<replace "#statsalexlust">><<print Math.trunc(C.npc.Alex.lust)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Alex lust 10>><<clamp>><<replace "#statsalexlust">><<print Math.trunc(C.npc.Alex.lust)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Alex lust 100>><<clamp>><<replace "#statsalexlust">><<print Math.trunc(C.npc.Alex.lust)>><</replace>><</link>> (100 = full)
 	<br><br>
 
 
-	<<link "<<<">><<npcincr Darryl love -100>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Darryl")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Darryl love -10>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Darryl")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Darryl love -1>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Darryl")].love)>><</replace>><</link>> |
-	Darryl love: <span id="statsdarryllove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Darryl")].love)>></span>
-	| <<link ">">><<npcincr Darryl love 1>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Darryl")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Darryl love 10>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Darryl")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Darryl love 100>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Darryl")].love)>><</replace>><</link>> (50 = full)
+	<<link "<<<">><<npcincr Darryl love -100>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc(C.npc.Darryl.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Darryl love -10>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc(C.npc.Darryl.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Darryl love -1>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc(C.npc.Darryl.love)>><</replace>><</link>> |
+	Darryl love: <span id="statsdarryllove"><<print Math.trunc(C.npc.Darryl.love)>></span>
+	| <<link ">">><<npcincr Darryl love 1>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc(C.npc.Darryl.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Darryl love 10>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc(C.npc.Darryl.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Darryl love 100>><<clamp>><<replace "#statsdarryllove">><<print Math.trunc(C.npc.Darryl.love)>><</replace>><</link>> (50 = full)
 	<br>
 
-	<<link "<<<">><<npcincr River love -100>><<clamp>><<replace "#statsriverlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("River")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr River love -10>><<clamp>><<replace "#statsriverlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("River")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr River love -1>><<clamp>><<replace "#statsriverlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("River")].love)>><</replace>><</link>> |
-	River love: <span id="statsriverlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("River")].love)>></span>
-	| <<link ">">><<npcincr River love 1>><<clamp>><<replace "#statsriverlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("River")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr River love 10>><<clamp>><<replace "#statsriverlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("River")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr River love 100>><<clamp>><<replace "#statsriverlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("River")].love)>><</replace>><</link>> (50 = full)
+	<<link "<<<">><<npcincr River love -100>><<clamp>><<replace "#statsriverlove">><<print Math.trunc(C.npc.River.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr River love -10>><<clamp>><<replace "#statsriverlove">><<print Math.trunc(C.npc.River.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr River love -1>><<clamp>><<replace "#statsriverlove">><<print Math.trunc(C.npc.River.love)>><</replace>><</link>> |
+	River love: <span id="statsriverlove"><<print Math.trunc(C.npc.River.love)>></span>
+	| <<link ">">><<npcincr River love 1>><<clamp>><<replace "#statsriverlove">><<print Math.trunc(C.npc.River.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr River love 10>><<clamp>><<replace "#statsriverlove">><<print Math.trunc(C.npc.River.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr River love 100>><<clamp>><<replace "#statsriverlove">><<print Math.trunc(C.npc.River.love)>><</replace>><</link>> (50 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Sam love -100>><<clamp>><<replace "#statssamlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sam")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Sam love -10>><<clamp>><<replace "#statssamlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sam")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Sam love -1>><<clamp>><<replace "#statssamlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sam")].love)>><</replace>><</link>> |
-	Sam love: <span id="statssamlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sam")].love)>></span>
-	| <<link ">">><<npcincr Sam love 1>><<clamp>><<replace "#statssamlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sam")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Sam love 10>><<clamp>><<replace "#statssamlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sam")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Sam love 100>><<clamp>><<replace "#statssamlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sam")].love)>><</replace>><</link>> (50 = full)
+	<<link "<<<">><<npcincr Sam love -100>><<clamp>><<replace "#statssamlove">><<print Math.trunc(C.npc.Sam.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Sam love -10>><<clamp>><<replace "#statssamlove">><<print Math.trunc(C.npc.Sam.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Sam love -1>><<clamp>><<replace "#statssamlove">><<print Math.trunc(C.npc.Sam.love)>><</replace>><</link>> |
+	Sam love: <span id="statssamlove"><<print Math.trunc(C.npc.Sam.love)>></span>
+	| <<link ">">><<npcincr Sam love 1>><<clamp>><<replace "#statssamlove">><<print Math.trunc(C.npc.Sam.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Sam love 10>><<clamp>><<replace "#statssamlove">><<print Math.trunc(C.npc.Sam.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Sam love 100>><<clamp>><<replace "#statssamlove">><<print Math.trunc(C.npc.Sam.love)>><</replace>><</link>> (50 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Wren love -100>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Wren love -10>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Wren love -1>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>> |
-	Wren love: <span id="statswrenlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>></span>
-	| <<link ">">><<npcincr Wren love 1>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Wren love 10>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Wren love 100>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>> (50 = full)
-	<br>
-	
-	<<link "<<<">><<npcincr Sirris love -100>><<clamp>><<replace "#statssirrislove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sirris")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Sirris love -10>><<clamp>><<replace "#statssirrislove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sirris")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Sirris love -1>><<clamp>><<replace "#statssirrislove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sirris")].love)>><</replace>><</link>> |
-	Sirris love: <span id="statssirrislove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sirris")].love)>></span>
-	| <<link ">">><<npcincr Sirris love 1>><<clamp>><<replace "#statssirrislove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sirris")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Sirris love 10>><<clamp>><<replace "#statssirrislove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sirris")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Sirris love 100>><<clamp>><<replace "#statssirrislove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Sirris")].love)>><</replace>><</link>> (50 = full)
+	<<link "<<<">><<npcincr Wren love -100>><<clamp>><<replace "#statswrenlove">><<print Math.trunc(C.npc.Wren.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Wren love -10>><<clamp>><<replace "#statswrenlove">><<print Math.trunc(C.npc.Wren.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Wren love -1>><<clamp>><<replace "#statswrenlove">><<print Math.trunc(C.npc.Wren.love)>><</replace>><</link>> |
+	Wren love: <span id="statswrenlove"><<print Math.trunc(C.npc.Wren.love)>></span>
+	| <<link ">">><<npcincr Wren love 1>><<clamp>><<replace "#statswrenlove">><<print Math.trunc(C.npc.Wren.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Wren love 10>><<clamp>><<replace "#statswrenlove">><<print Math.trunc(C.npc.Wren.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Wren love 100>><<clamp>><<replace "#statswrenlove">><<print Math.trunc(C.npc.Wren.love)>><</replace>><</link>> (50 = full)
 	<br>
 
-	<<link "<<<">><<npcincr Charlie love -100>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr Charlie love -10>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr Charlie love -1>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> |
-	Charlie love: <span id="statscharlielove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>></span>
-	| <<link ">">><<npcincr Charlie love 1>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr Charlie love 10>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr Charlie love 100>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> (50 = full)
+	<<link "<<<">><<npcincr Sirris love -100>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Sirris love -10>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Sirris love -1>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>> |
+	Sirris love: <span id="statssirrislove"><<print Math.trunc(C.npc.Sirris.love)>></span>
+	| <<link ">">><<npcincr Sirris love 1>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Sirris love 10>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Sirris love 100>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>> (50 = full)
+	<br>
+
+	<<link "<<<">><<npcincr Charlie love -100>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Charlie love -10>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Charlie love -1>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>> |
+	Charlie love: <span id="statscharlielove"><<print Math.trunc(C.npc.Charlie.love)>></span>
+	| <<link ">">><<npcincr Charlie love 1>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Charlie love 10>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Charlie love 100>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>> (50 = full)
 	<br><br>
 
-	<<link "<<<">><<npcincr "Zephyr" love -100>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr "Zephyr" love -10>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr "Zephyr" love -1>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>> |
-	Zephyr love: <span id="statszephyrlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>></span>
-	| <<link ">">><<npcincr "Zephyr" love 1>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr "Zephyr" love 10>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr "Zephyr" love 100>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr "Zephyr" love -100>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc(C.npc.Zephyr.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Zephyr" love -10>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc(C.npc.Zephyr.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Zephyr" love -1>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc(C.npc.Zephyr.love)>><</replace>><</link>> |
+	Zephyr love: <span id="statszephyrlove"><<print Math.trunc(C.npc.Zephyr.love)>></span>
+	| <<link ">">><<npcincr "Zephyr" love 1>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc(C.npc.Zephyr.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Zephyr" love 10>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc(C.npc.Zephyr.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Zephyr" love 100>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc(C.npc.Zephyr.love)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr "Zephyr" dom -100>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>> |
-	<<link "<<">><<npcincr "Zephyr" dom -10>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>> |
-	<<link "<">><<npcincr "Zephyr" dom -1>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>> |
-	Zephyr dominance: <span id="statszephyrdom"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>></span>
-	| <<link ">">><<npcincr "Zephyr" dom 1>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>>
-	| <<link ">>">><<npcincr "Zephyr" dom 10>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr "Zephyr" dom 100>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>> (50 = full)
+	<<link "<<<">><<npcincr "Zephyr" dom -100>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc(C.npc.Zephyr.dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Zephyr" dom -10>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc(C.npc.Zephyr.dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Zephyr" dom -1>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc(C.npc.Zephyr.dom)>><</replace>><</link>> |
+	Zephyr dominance: <span id="statszephyrdom"><<print Math.trunc(C.npc.Zephyr.dom)>></span>
+	| <<link ">">><<npcincr "Zephyr" dom 1>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc(C.npc.Zephyr.dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Zephyr" dom 10>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc(C.npc.Zephyr.dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Zephyr" dom 100>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc(C.npc.Zephyr.dom)>><</replace>><</link>> (50 = full)
 	<br>
 
 	<br>
 
-	<<link "<<<">><<npcincr "Great Hawk" love -100>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].love)>><</replace>><</link>> |
-	<<link "<<">><<npcincr "Great Hawk" love -10>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].love)>><</replace>><</link>> |
-	<<link "<">><<npcincr "Great Hawk" love -1>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].love)>><</replace>><</link>> |
-	Great Hawk love: <span id="statsgreathawklove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].love)>></span>
-	| <<link ">">><<npcincr "Great Hawk" love 1>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].love)>><</replace>><</link>>
-	| <<link ">>">><<npcincr "Great Hawk" love 10>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].love)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr "Great Hawk" love 100>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].love)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr "Great Hawk" love -100>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc(C.npc["Great Hawk"].love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Great Hawk" love -10>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc(C.npc["Great Hawk"].love)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Great Hawk" love -1>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc(C.npc["Great Hawk"].love)>><</replace>><</link>> |
+	Great Hawk love: <span id="statsgreathawklove"><<print Math.trunc(C.npc["Great Hawk"].love)>></span>
+	| <<link ">">><<npcincr "Great Hawk" love 1>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc(C.npc["Great Hawk"].love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Great Hawk" love 10>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc(C.npc["Great Hawk"].love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Great Hawk" love 100>><<clamp>><<replace "#statsgreathawklove">><<print Math.trunc(C.npc["Great Hawk"].love)>><</replace>><</link>> (100 = full)
 	<br>
 
-	<<link "<<<">><<npcincr "Great Hawk" dom -100>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>><</replace>><</link>> |
-	<<link "<<">><<npcincr "Great Hawk" dom -10>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>><</replace>><</link>> |
-	<<link "<">><<npcincr "Great Hawk" dom -1>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>><</replace>><</link>> |
-	Great Hawk dominance: <span id="statsgreathawkdom"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>></span>
-	| <<link ">">><<npcincr "Great Hawk" dom 1>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>><</replace>><</link>>
-	| <<link ">>">><<npcincr "Great Hawk" dom 10>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>><</replace>><</link>>
-	| <<link ">>>">><<npcincr "Great Hawk" dom 100>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>><</replace>><</link>> (100 = full)
+	<<link "<<<">><<npcincr "Great Hawk" dom -100>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc(C.npc["Great Hawk"].dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Great Hawk" dom -10>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc(C.npc["Great Hawk"].dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Great Hawk" dom -1>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc(C.npc["Great Hawk"].dom)>><</replace>><</link>> |
+	Great Hawk dominance: <span id="statsgreathawkdom"><<print Math.trunc(C.npc["Great Hawk"].dom)>></span>
+	| <<link ">">><<npcincr "Great Hawk" dom 1>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc(C.npc["Great Hawk"].dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Great Hawk" dom 10>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc(C.npc["Great Hawk"].dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Great Hawk" dom 100>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc(C.npc["Great Hawk"].dom)>><</replace>><</link>> (100 = full)
 	<br><br>
+
+	<<link "<<<">><<npcincr "Black Wolf" love -100>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Black Wolf" love -10>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Black Wolf" love -1>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>> |
+	Black Wolf love: <span id="statsblackwolflove"><<print Math.trunc(C.npc["Black Wolf"].love)>></span>
+	| <<link ">">><<npcincr "Black Wolf" love 1>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Black Wolf" love 10>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Black Wolf" love 100>><<clamp>><<replace "#statsblackwolflove">><<print Math.trunc(C.npc["Black Wolf"].love)>><</replace>><</link>> (150 = full)
+	<br><br>
+
+	/* Commented out until stat is used.
+	<<link "<<<">><<npcincr "Black Wolf" dom -100>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Black Wolf" dom -10>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Black Wolf" dom -1>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>> |
+	Black Wolf dominance: <span id="statsblackwolfdom"><<print Math.trunc(C.npc["Black Wolf"].dom)>></span>
+	| <<link ">">><<npcincr "Black Wolf" dom 1>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Black Wolf" dom 10>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Black Wolf" dom 100>><<clamp>><<replace "#statsblackwolfdom">><<print Math.trunc(C.npc["Black Wolf"].dom)>><</replace>><</link>> (150 = full)
+	<br><br> */
 
 	<<link "<<<">><<set $wolfpacktrust -= 10>><<set $wolfpacktrust = Math.clamp($wolfpacktrust, 0, 30)>><<replace "#statstrust">><<print Math.trunc($wolfpacktrust)>><</replace>><</link>> |
 	<<link "<<">><<set $wolfpacktrust -= 5>><<set $wolfpacktrust = Math.clamp($wolfpacktrust, 0, 30)>><<replace "#statstrust">><<print Math.trunc($wolfpacktrust)>><</replace>><</link>> |
@@ -2300,33 +2325,33 @@
 		<br>
 		<<if $_pregnancy.fetus.length lt maxParasites(_args[0])>>
 			Get Pregnant with a |
-			<<link "eel">><<impregnateParasite "eels" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "slime">><<impregnateParasite "slimes" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Eel">><<impregnateParasite "eels" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Slime">><<impregnateParasite "slimes" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "Fish">><<impregnateParasite "fish" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "Snake">><<impregnateParasite "snake" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "worm">><<impregnateParasite "worms" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "tentacle">><<impregnateParasite "tentacle" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "lurker">><<impregnateParasite "lurker" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "wasp">><<impregnateParasite "wasp" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "bee">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "squid">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "vine">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "slug">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "Worm">><<impregnateParasite "worms" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Tentacle">><<impregnateParasite "tentacle" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Lurker">><<impregnateParasite "lurker" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Wasp">><<impregnateParasite "wasp" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Bee">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Squid">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Vine">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "Slug">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 			<br>
 			<<if $_pregnancy.motherStatus lt 2>>
 				Get Pregnant with a Hermaphrodite |
-				<<link "eel">><<impregnateParasite "eels" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "slime">><<impregnateParasite "slimes" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Eel">><<impregnateParasite "eels" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Slime">><<impregnateParasite "slimes" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "Fish">><<impregnateParasite "fish" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "Snake">><<impregnateParasite "snake" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "worm">><<impregnateParasite "worms" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "tentacle">><<impregnateParasite "tentacle" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "lurker">><<impregnateParasite "lurker" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "wasp">><<impregnateParasite "wasp" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "bee">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "squid">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "vine">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
-				<<link "slug">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Worm">><<impregnateParasite "worms" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Tentacle">><<impregnateParasite "tentacle" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Lurker">><<impregnateParasite "lurker" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Wasp">><<impregnateParasite "wasp" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Bee">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Squid">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Vine">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "Slug">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 			<<else>>
 				Can only have one Hermaphrodite at a time.
 			<</if>>
@@ -2402,22 +2427,26 @@
 				<<set _pregnancyTimer to getPregnancyObject()>>
 				<<set _pregnancyTimer.timer to Math.clamp(_pregnancyTimer.timer - _pregnancyTimer.timerEnd * 0.05, 0, _pregnancyTimer.timerEnd)>>
 				<<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyTimer.timer / _pregnancyTimer.timerEnd * 100, 0, 100))>>%<</replace>>
+				<<updatesidebarimg>>
 			<</link>> |
 			<<link "<">>
 				<<set _pregnancyTimer to getPregnancyObject()>>
 				<<set _pregnancyTimer.timer to Math.clamp(_pregnancyTimer.timer - _pregnancyTimer.timerEnd * 0.01, 0, _pregnancyTimer.timerEnd)>>
 				<<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyTimer.timer / _pregnancyTimer.timerEnd * 100, 0, 100))>>%<</replace>>
+				<<updatesidebarimg>>
 			<</link>> |
 			Pregnancy progress: <span id="cheatPregnancyProgress"><<print Math.round(Math.clamp($_pregnancy.timer / $_pregnancy.timerEnd * 100, 0, 100))>>%</span>
 			| <<link ">">>
 				<<set _pregnancyTimer to getPregnancyObject()>>
 				<<set _pregnancyTimer.timer to Math.clamp(_pregnancyTimer.timer + _pregnancyTimer.timerEnd * 0.01, 0, _pregnancyTimer.timerEnd * .99)>>
 				<<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyTimer.timer / _pregnancyTimer.timerEnd * 100, 0, 100))>>%<</replace>>
+				<<updatesidebarimg>>
 			<</link>>
 			| <<link ">>">>
 				<<set _pregnancyTimer to getPregnancyObject()>>
 				<<set _pregnancyTimer.timer to Math.clamp(_pregnancyTimer.timer + _pregnancyTimer.timerEnd * 0.05, 0, _pregnancyTimer.timerEnd * .99)>>
 				<<replace "#cheatPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyTimer.timer / _pregnancyTimer.timerEnd * 100, 0, 100))>>%<</replace>>
+				<<updatesidebarimg>>
 			<</link>>
 			<br><br>
 			<<link [[Clear current pregnancy|$passage]]>>
@@ -2659,14 +2688,14 @@
 		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .7>>
 		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
 	<</link>> -
-	<<link "end of pregnancy">>
+	<<link "End of pregnancy">>
 		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd>>
 		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
 	<</link>>
 	<br><br>
 
 	<<if _pregnantNPCId is 25>>
-		<<link [[clear pregnancy|$passage]]>>
+		<<link [[Clear pregnancy|$passage]]>>
 			<<set _pregnancyNPC.type to null>>
 			<<set _pregnancyNPC.fetus to []>>
 			<<set _pregnancyNPC.waterBreaking to false>>
@@ -2681,7 +2710,7 @@
 		<</link>>
 
 	<<else>>
-		<<link [[clear pregnancy|$passage]]>>
+		<<link [[Clear pregnancy|$passage]]>>
 			<<set _pregnancyNPC.type to null>>
 			<<set _pregnancyNPC.fetus to []>>
 			<<set _pregnancyNPC.waterBreaking to false>>

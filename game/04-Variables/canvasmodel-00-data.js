@@ -33,7 +33,6 @@ const ZIndices = {
 	tears: 55,
 	hair: 60,
 	penis_chastity: 64,
-	legs: 66.6, // above underParasite but below under_lower
 	pbhair: 64,
 	penisunderclothes: 64.3,
 	pbhairballsunderclothes: 64.6,
@@ -42,7 +41,9 @@ const ZIndices = {
 	pbhairballs: 104.3, // when exposed
 	parasite: 104.6, // when exposed
 	underParasite: 66,
+	legs: 66.6,
 	under_lower: 67,
+	legs_high: 67.6,
 	under_lower_top: 68,
 	under_upper: 70,
 	under_upper_top: 72,
@@ -54,6 +55,7 @@ const ZIndices = {
 	under: 75,
 	feet: 85,
 	lower: 90,
+	lower_tucked_feet: 95,
 	lower_top: 92,
 	upper_arms: 94,
 	lower_belly: 94.5,
@@ -68,11 +70,16 @@ const ZIndices = {
 	collar: 103,
 	neck: 103,
 
+	over_lower: 103.3,
+	over_upper: 103.6,
+	over_upper_arm: 103.9,
+
 	handheld: 104,
 	arms_cover: 105,
 	under_upper_arms_cover: 109,
 	hands: 110,
 	upper_arms_cover: 112,
+	over_upper_arms_cover: 113,
 	lower_high: 115,
 	lower_top_high: 117,
 
@@ -90,9 +97,6 @@ const ZIndices = {
 	tailPenisCover: 165,
 	tailPenisCoverOverlay: 166,
 
-	over_lower: 170,
-	over_upper: 171,
-	over_upper_arm: 170,
-	over_upper_arms_cover: 174,
+	old_over_upper: 171,
 };
 window.ZIndices = ZIndices;

@@ -101,11 +101,17 @@
 			<</if>>
 		<</for>>
 	<<elseif $outfit.find(outfitSet => outfitSet.type.includes("sleep"))>>
+		<<icon "cross.png" "infront">>
+		<<if _passage is "Bed">>
+			<<furnitureicon _bed.iconFile>>
+		<<else>>
+			<<bedicon>>
+		<</if>>
 		<<if $possessed>>
-			<<ind>><span class="purple">The slime in your head is silent.</span>
+			<span class="purple">The slime in your head is silent.</span>
 			<br>
 		<<else>>
-			<<ind>><span class="purple">The slime is not allowing you to sleep with anything on.</span>
+			<span class="purple">The slime is not allowing you to sleep with anything on.</span>
 			<br>
 		<</if>>
 	<</if>>
@@ -277,7 +283,7 @@
 					<<unset _randomColour>>
 					<<unset _randomColourAcc>>
 					<<for $_equipIndex, $_wardrobeItem range _selectedWardrobe[$_slot]>>
-						<<if $_incomingItemName isnot $_wardrobeItem.name>>
+						<<if $_incomingItemName isnot $_wardrobeItem.name or ($_wardrobeItem.outfitSecondary and !["broken", "split"].includes($_wardrobeItem.outfitSecondary[1]))>>
 							<<continue>>
 						<</if>>
 						/* Check for saved colors in clothing set */
@@ -530,7 +536,7 @@
 			<<set _resultStrings to {}>>
 			<<set _locationName to ($wardrobes[$wardrobe_location] is undefined ? "wardrobe" : $wardrobe_location)>>
 			<<set _wardrobeName to $wardrobes[_locationName].name + (!$wardrobes[_locationName].name.includes("locker") ? " wardrobe" : "")>>
-			<<run Object.values(_notEquipped).forEach(notEquippedItem => {
+			<<run Object.entries(_notEquipped).forEach(([slot, notEquippedItem]) => {
 				switch (notEquippedItem.reason) {
 					case "not found":
 						if (_resultStrings.notFound === undefined) {
@@ -609,7 +615,7 @@
 							_resultStrings.corruption_slime_deny_forcedDressing = {
 								"start": "You were unable to equip your ",
 								"joiner": "and",
-								"end": ` as the slime in your ear is is only permitting more ${$earSlime.forcedDressing.type is "f" ? "feminine" : "masculine"} clothing.`,
+								"end": ` as the slime in your ear is only permitting more ${$earSlime.forcedDressing.type is "f" ? "feminine" : "masculine"} clothing.`,
 								"names": [],
 								"color": "red"
 							}
@@ -641,6 +647,7 @@
 						_resultStrings.cursedUnequip.names.push(notEquippedItem.name);
 						break;
 					case "not found piece":
+						if (V.worn[slot].name === notEquippedItem.name) break;
 						if (_resultStrings.notFoundPiece === undefined) {
 							_resultStrings.notFoundPiece = {
 								"start": "You were unable to fully equip your ",

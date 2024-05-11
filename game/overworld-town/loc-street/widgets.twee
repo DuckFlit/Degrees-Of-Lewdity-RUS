@@ -359,6 +359,7 @@
 <</widget>>
 
 <<widget "streetrocks">>
+	<<outfitChecks>>
 	<<if $worn.feet.type.includes("naked")>>
 		Your bare foot steps on something sharp. It's a loose rock.
 		<<gpain>><<pain 4>>
@@ -371,21 +372,11 @@
 			<span class="red">You stumble to your knees.</span>
 			<<gpain>><<gstress>><<pain 4>><<stress 6>>
 			<br><br>
-			<<if !$worn.over_lower.type.includes("naked")>>
-				Your $worn.over_lower.name scrape<<if $worn.over_lower.plural isnot 1>>s<</if>> against the ground. You hear a tear.
-				<<set $worn.over_lower.integrity -= 10>>
+			<<if _bottom>>
+				Your _bottom.name scrape<<if _bottom.plural isnot 1>>s<</if>> against the ground. You hear a tear.
+				<<set _bottom.integrity -= 10>>
 				<br><br>
-				<<if $worn.over_lower.integrity lte 0>>
-					<<integritycheck>><<exposure>>
-
-					You try to hold the fabric together, but it's no use.
-					<br><br>
-				<</if>>
-			<<elseif !$worn.lower.type.includes("naked")>>
-				Your $worn.lower.name scrape<<if $worn.lower.plural isnot 1>>s<</if>> against the ground. You hear a tear.
-				<<set $worn.lower.integrity -= 10>>
-				<br><br>
-				<<if $worn.lower.integrity lte 0>>
+				<<if _bottom.integrity lte 0>>
 					<<integritycheck>><<exposure>>
 
 					You try to hold the fabric together, but it's no use.
@@ -402,21 +393,11 @@
 			You trip on a loose rock, and <span class="red">stumble to your knees.</span>
 			<<gpain>><<gstress>><<pain 4>><<stress 6>>
 			<br><br>
-			<<if !$worn.over_lower.type.includes("naked")>>
-				Your $worn.over_lower.name scrape<<if $worn.over_lower.plural isnot 1>>s<</if>> against the ground. You hear a tear.
-				<<set $worn.over_lower.integrity -= 10>>
+			<<if _bottom>>
+				Your _bottom.name scrape<<if _bottom.plural isnot 1>>s<</if>> against the ground. You hear a tear.
+				<<set _bottom.integrity -= 10>>
 				<br><br>
-				<<if $worn.over_lower.integrity lte 0>>
-					<<integritycheck>><<exposure>>
-
-					You try to hold the fabric together, but it's no use.
-					<br><br>
-				<</if>>
-			<<elseif !$worn.lower.type.includes("naked")>>
-				Your $worn.lower.name scrape<<if $worn.lower.plural isnot 1>>s<</if>> against the ground. You hear a tear.
-				<<set $worn.lower.integrity -= 10>>
-				<br><br>
-				<<if $worn.lower.integrity lte 0>>
+				<<if _bottom.integrity lte 0>>
 					<<integritycheck>><<exposure>>
 
 					You try to hold the fabric together, but it's no use.
@@ -614,7 +595,8 @@
 			<<link [[Ignore|Catcall Ignore]]>><</link>><<gstress>><<gtrauma>>
 			<br>
 		<</if>>
-		<<if (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.name is "naked") or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.name is "naked")>>
+		<<outfitChecks>>
+		<<if _skirtExposed>>
 			<<if $exhibitionism gte 75 and $worn.under_lower.type.includes("naked")>>
 				<<link [[Give them a show|Catcall Skirt]]>><</link>><<exhibitionist5>><<lstress>><<garousal>>
 				<br><br>
@@ -711,6 +693,10 @@
 				You will not be able to do this while wearing a $worn.under_upper.name.
 				<br><br>
 			<<else>>
+				<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 2>>
+					<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
+					<<set _slimeNoExit to true>>
+				<</if>>
 				<<if $worn.under_lower.name is "naked">>
 					<<link [["Say you're not wearing any"|Street Panties]]>><<set $phase to 2>><</link>><<exhibitionist2>>
 					<br>
@@ -723,9 +709,7 @@
 			<</if>>
 			<br>
 		<</if>>
-		<<if $earSlime.growth gte 200 and $worn.under_lower.name is "naked" and $earSlime.exhibitionism gte 2>>
-			<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
-		<<else>>
+		<<if !_slimeNoExit>>
 			<<link [[Refuse|Street Panties]]>><<set $phase to 3>><</link>><<gstress>>
 		<</if>>
 		<br>
@@ -783,63 +767,27 @@
 <</widget>>
 
 <<widget "street6">>
-	<<if setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
-		Your $worn.over_lower.name snag<<if $worn.over_lower.plural isnot 1>>s<</if>> on a passing car, <<set $worn.over_lower.integrity -= 10>>
-		<<if $worn.over_lower.integrity lte 0>>
-			<<overlowerruined>><<clothesruinstat>><<if $worn.lower.exposed gte 1>><<set $loweroff to 0>><</if>>
-			<span class="lewd">and is torn clean from your body</span><<if $worn.lower.exposed gte 1>>, leaving your <<lewdness>> displayed in the middle of the street<</if>>.
-		<<else>>
-			tearing it and leaving it worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.over_upper.type.includes("naked")>>
-		Your $worn.over_upper.name snag<<if $worn.over_upper.plural isnot 1>>s<</if>> on a passing car, <<set $worn.over_upper.integrity -= 10>>
-		<<if $worn.over_upper.integrity lte 0>>
-			<<overupperruined>><<clothesruinstat>><<if $worn.upper.exposed gte 1>><<set $upperoff to 0>><</if>>
-			<span class="lewd">and is torn clean from your body</span><<if $worn.upper.exposed gte 1>>, leaving your <<lewdness>> displayed in the middle of the street<</if>>.
-		<<else>>
-			tearing it and leaving it worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		Your $worn.lower.name snag<<if $worn.lower.plural isnot 1>>s<</if>> on a passing car, <<set $worn.lower.integrity -= 10>>
-		<<if $worn.lower.integrity lte 0>>
-			<<lowerruined>><<clothesruinstat>><<set $loweroff to 0>>
-			<span class="lewd">and is torn clean from your body,</span> leaving your <<lewdness>> displayed in the middle of the street.
-		<<else>>
-			tearing it and leaving it worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.upper.type.includes("naked")>>
-		Your $worn.upper.name snag<<if $worn.upper.plural isnot 1>>s<</if>> on a passing car, <<set $worn.upper.integrity -= 10>>
-		<<if $worn.upper.integrity lte 0>>
-			<<upperruined>><<clothesruinstat>><<set $upperoff to 0>>
-			<span class="lewd">and is torn clean from your body,</span> leaving your <<lewdness>> displayed in the middle of the street.
-		<<else>>
-			tearing it and leaving it worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.under_upper.type.includes("naked")>>
-		Your $worn.under_upper.name snag<<if $worn.under_upper.plural isnot 1>>s<</if>> on a passing car, <<set $worn.under_upper.integrity -= 10>>
-		<<if $worn.under_upper.integrity lte 0>>
-			<<underupperruined>><<clothesruinstat>><<set $underupperoff to 0>>
-			<span class="lewd">and is torn clean from your body,</span> leaving your <<lewdness>> displayed in the middle of the street.
-		<<else>>
-			tearing it and leaving it worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<else>>
+	<<outfitChecks>>
+	<<set $_tornItem to _bottomIsSkirt ? _bottom : !_shirtless ? _top : "none">>
+	<<if $_tornItem is "none">>
 		<<generate1>><<person1>>A <<person>> shouts at you from a passing car while leering at your exposed chest. "Thanks for the show." You feel self-conscious.
 		<<gtrauma>><<gstress>><<garousal>><<trauma 1>><<stress 1>><<arousal 100>>
 		<br><br>
 		<<endevent>>
 		<<destinationeventend>>
+	<<else>>
+		Your $_tornItem.name <<= $_tornItem.plural is 1 ? "snag" : "snags">> on a passing car, <<set $_tornItem.integrity -= 10>>
+		<<if $_tornItem.integrity lte 0>>
+			<<integritycheck no_text>>
+			<<clothesruinstat>>
+			<<if $worn.lower.exposed gte 1>><<set $loweroff to 0>><<elseif $worn.upper.exposed gte 1>><<set $upperoff to 0>><</if>>
+			<span class="lewd">and <<= $_tornItem.plural is 1 ? "are" : "is">> torn clean from your body</span><<outfitChecks>><<if _bottomExposed or _shirtless>>, leaving your <<lewdness>> displayed in the middle of the street<</if>>.
+		<<else>>
+			tearing <<= $_tornItem.plural is 1 ? "them" : "it">> and leaving <<= $_tornItem.plural is 1 ? "them" : "it">> worse for wear.
+		<</if>>
 	<</if>>
+	<br><br>
+	<<destinationeventend>>
 <</widget>>
 
 <<widget "street7">>
@@ -1080,7 +1028,7 @@
 
 	<<if $pain gte 20>>
 		You try to reassure <<him>> that you're okay, but <<he>> can't miss the tears.
-		"Are you hurt? Let me take a look"
+		"Are you hurt? Let me take a look."
 		<br><br>
 		<<He>> checks you over, noting your bruises. You're not sure you can show <<him>> everything here on the street, though.
 		<br><br>
@@ -1105,7 +1053,7 @@
 		<<link [[Refuse|Street Eden Worried Refuse Cabin]]>><<npcincr Eden love -2>><<npcincr Eden dom -1>><</link>><<llove>>
 		<br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Eden")].love gte 80>>
+		<<if C.npc.Eden.love gte 80>>
 			<<link [[Suggest a walk in the park (1:00)|Street Eden Worried Suggest Park]]>><<npcincr Eden love 1>><</link>><<glove>>
 		<<else>>
 			<br>
@@ -1119,7 +1067,7 @@
 		<<link [[Refuse|Street Eden Worried Refuse Cabin]]>><<npcincr Eden love -2>><<npcincr Eden dom -1>><</link>><<llove>>
 		<br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Eden")].love gte 80>>
+		<<if C.npc.Eden.love gte 80>>
 			<<link [[Suggest a walk in the park (1:00)|Street Eden Worried Suggest Park]]>><<npcincr Eden love 1>><</link>><<glove>>
 
 			<<if Time.hour gte 6 and Time.hour lte 20 and $edenshopping is 0>>
@@ -1456,14 +1404,15 @@
 <<widget "streettentacle">>
 	<<set $phase to 0>>
 	<<set _target to 'none'>>
+	<<outfitChecks>>
 
 	You feel something touch your thigh. You look down to see a slimy tentacle extending from an open manhole. It worms around your leg and
 
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+	<<if _bottomIsSkirt and _skirtExposed>>
 		<<if !playerChastity() and !$worn.under_lower.type.includes("naked")>>
-			up your $worn.lower.name. It tangles in your $worn.under_lower.name.
+			up your _bottom.name. It tangles in your $worn.under_lower.name.
 		<<elseif $worn.under_lower.type.includes("naked")>>
-			up your $worn.lower.name. It winds around inside the fabric until it touches your
+			up your _bottom.name. It winds around inside the fabric until it touches your
 			<<set $phase to 1>>
 			<<rng>>
 			<<if $analdisable is "f" and $rng gte 60>>
@@ -1483,7 +1432,7 @@
 			<</if>>
 			You feel an excited tremble running through the tentacle.
 		<<else>>
-			up your $worn.lower.name. It bunches up and winds around the fabric.
+			up your _bottom.name. It bunches up and winds around the fabric.
 		<</if>>
 	<<elseif $worn.lower.type.includes("naked")>>
 		<<if !playerChastity() and !$worn.under_lower.type.includes("naked")>>
@@ -1493,7 +1442,7 @@
 			<<set $phase to 2>>
 		<</if>>
 	<<else>>
-	tangles in your $worn.lower.name.
+		tangles in your _bottom.name.
 	<</if>>
 	<br><br>
 
@@ -1607,7 +1556,7 @@
 
 				<<destinationeventend>>
 			<</if>>
-		<<else>>
+		<<elseif $worn.lower.name isnot "naked">>
 			You feel a tug on your $worn.lower.name,
 			<<set $lowercoloursaved to $worn.lower.colour>><<set $worn.lower.integrity -= 30>>
 			<<if $worn.lower.integrity lte 0>>
@@ -1625,6 +1574,8 @@
 
 				<<destinationeventend>>
 			<</if>>
+		<<else>>
+			<<destinationeventend>>
 		<</if>>
 
 	<<elseif _kylarStatus.includesAll("Love","Lust")>>
@@ -1657,76 +1608,58 @@
 <<widget "streetsexfame">>
 	<<rng>>
 	<<if $rng gte 81>>
-	<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, the town bicycle." The <<person2>><<person>> looks at you and laughs. You blush.
-
+		<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, the town bicycle." The <<person2>><<person>> looks at you and laughs. You blush.
 	<<elseif $rng gte 61>>
-	<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, you fucked all my friends. When's my turn?" It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
-
+		<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, you fucked all my friends. When's my turn?" It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
 	<<elseif $rng gte 41>>
-	<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that slut everyone's talking about." You blush and walk faster.
-
+		<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that slut everyone's talking about." You blush and walk faster.
 	<<elseif $rng gte 21>>
-	<<generatey1>><<person1>>A group of <<personsimple>>s smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "easy" and "slut". You blush.
-
+		<<generatey1>><<person1>>A group of <<personsimple>>s smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "easy" and "slut". You blush.
 	<<else>>
-	<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that slut I was telling you about." You blush.
-
+		<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that slut I was telling you about." You blush.
 	<</if>>
-<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
-<br><br>
-<<endevent>>
-
-<<destinationeventend>>
+	<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
+	<br><br>
+	<<endevent>>
+	<<destinationeventend>>
 <</widget>>
 
 <<widget "streetprostitutionfame">>
 	<<rng>>
 	<<if $rng gte 81>>
-	<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, <<pshe>> will do anything for money. Anything." The <<person2>><<person>> looks at you and laughs. You blush.
-
+		<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, <<pshe>> will do anything for money. Anything." The <<person2>><<person>> looks at you and laughs. You blush.
 	<<elseif $rng gte 61>>
-	<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, you fucked all my friends. How much for oral?" It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
-
+		<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, you fucked all my friends. How much for oral?" It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
 	<<elseif $rng gte 41>>
-	<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that whore everyone's talking about." You blush and walk faster.
-
+		<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that whore everyone's talking about." You blush and walk faster.
 	<<elseif $rng gte 21>>
-	<<generatey1>><<person1>>A group of <<personsimple>> smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "whore" and "slut". You blush.
-
+		<<generatey1>><<person1>>A group of <<personsimple>>s smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "whore" and "slut". You blush.
 	<<else>>
-	<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that whore I was telling you about." You blush.
-
+		<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that whore I was telling you about." You blush.
 	<</if>>
-<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
-<br><br>
-<<endevent>>
-
-<<destinationeventend>>
+	<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
+	<br><br>
+	<<endevent>>
+	<<destinationeventend>>
 <</widget>>
 
 <<widget "streetrapefame">>
 	<<rng>>
 	<<if $rng gte 81>>
-	<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, the town's public fucktoy." The <<person2>><<person>> looks at you and laughs. You blush.
-
+		<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, the town's public fucktoy." The <<person2>><<person>> looks at you and laughs. You blush.
 	<<elseif $rng gte 61>>
-	<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, all my friends fucked you. I'll come get my share soon." It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
-
+		<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, all my friends fucked you. I'll come get my share soon." It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
 	<<elseif $rng gte 41>>
-	<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that fuckmeat everyone's talking about." You blush and walk faster.
-
+		<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that fuckmeat everyone's talking about." You blush and walk faster.
 	<<elseif $rng gte 21>>
-	<<generatey1>><<person1>>A group of <<personsimple>>s smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "fucktoy" and "trash". You blush.
-
+		<<generatey1>><<person1>>A group of <<personsimple>>s smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "fucktoy" and "trash". You blush.
 	<<else>>
-	<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that fucktoy I was telling you about." You blush.
-
+		<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that fucktoy I was telling you about." You blush.
 	<</if>>
-<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
-<br><br>
-<<endevent>>
-
-<<destinationeventend>>
+	<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
+	<br><br>
+	<<endevent>>
+	<<destinationeventend>>
 <</widget>>
 
 <<widget "streetbestialityfame">>
@@ -1750,35 +1683,19 @@
 
 <<widget "streetpregnancyfame">>
 	<<rng>>
-	<<if playerBellyVisible()>>
-		<<if $rng gte 81>>
-			<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, the one who always seems to be knocked up." The <<person2>><<person>> looks at you and laughs. You blush.
-		<<elseif $rng gte 61>>
-			<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, how many of my friends have gotten you knocked up? I'll come get my share in a couple of months." It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
-		<<elseif $rng gte 41>>
-			<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that one that everyone's talking about, saying how you always wants to be knocked up. How are your children doing?" You blush and walk faster.
-		<<elseif $rng gte 21>>
-			<<generate1>><<person1>>A group of <<if $pronoun is "m">>boys<<else>>girls<</if>> smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "broodmother" and "slut". You blush.
-		<<else>>
-			<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that slut I was telling you about. The fucktoy that's always knocked up." You blush.
-		<</if>>
-		<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
-		<br><br>
+	<<if $rng gte 81>>
+		<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, the one who always seems to be knocked up.<<if playerBellyVisible()>> Do you need another sperm donor?<</if>>" The <<person2>><<person>> looks at you and laughs. You blush.
+	<<elseif $rng gte 61>>
+		<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, how many of my friends have gotten you knocked up? I'll come get my share <<if playerBellyVisible()>>in a couple of months<<else>>soon<</if>>." It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
+	<<elseif $rng gte 41>>
+		<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that one that everyone's talking about, saying how you always want to be knocked up. How are your children doing?" You blush and walk faster.
+	<<elseif $rng gte 21>>
+		<<generatey1>><<person1>>A group of <<personsimple>>s smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "broodmother" and "slut". You blush.
 	<<else>>
-		<<if $rng gte 81>>
-			<<generate1>><<generate2>><<person1>>A <<person>> and <<person2>><<person>> walk past you. The <<person1>><<person>> looks back at you and leans toward <<his>> friend, "I recognise <<phim>>, the one who always seems to be knocked up. Do you need another sperm donor?" The <<person2>><<person>> looks at you and laughs. You blush.
-		<<elseif $rng gte 61>>
-			<<generate1>><<person1>>A <<person>> shouts at you from across the street, "Hey, how many of my friends have gotten you knocked up? I'll come get my share soon." It attracts attention, people look at you and whisper amongst themselves. You blush and walk faster.
-		<<elseif $rng gte 41>>
-			<<generate1>><<person1>>A <<person>> grabs your arm as <<he>> passes by. "I know you," <<he>> says as you break free from <<his>> grip. "You're that one that everyone's talking about, saying how you always wants to be knocked up. How are your children doing?" You blush and walk faster.
-		<<elseif $rng gte 21>>
-			<<generate1>><<person1>>A group of <<if $pronoun is "m">>boys<<else>>girls<</if>> smile at you as they walk past. They keep looking back at you and whisper to each other. You make out the words "broodmother" and "slut". You blush.
-		<<else>>
-			<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that slut I was telling you about. The fucktoy that wants to be knocked up." You blush.
-		<</if>>
-		<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
-		<br><br>
+		<<generate1>><<generate2>>A <<person1>><<person>> points at you across the road and turns to <<his>> friend. "That's the one," <<he>> says, "that slut I was telling you about. The fucktoy that<<if playerBellyVisible()>>'s always knocked up<<else>> wants to be knocked up<</if>>." You blush.
 	<</if>>
+	<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
+	<br><br>
 	<<endevent>>
 	<<destinationeventend>>
 <</widget>>
@@ -1826,7 +1743,7 @@
 	<<if $exhibitionism gte 55 and ($uncomfortable.underwear is false or $uncomfortable.nude is false)>>
 		<<run _avaliableActions.push("flaunt")>>
 	<</if>>
-	<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+	<<if _skirtExposed>>
 		<<if $exhibitionism gte 75 and $worn.under_lower.type.includes("naked") and $uncomfortable.nude is false>>
 			<<run _avaliableActions.push("flashSkirt1")>>
 		<<elseif $exhibitionism gte 35 and playerChastity() and $uncomfortable.nude is false>>
@@ -2368,7 +2285,7 @@
 				You can already see that <<hes>> sweating. "Of... uh... the virtues of abstinence."
 			<<elseif $demon gte 2 and $transformationParts.demon.horns isnot "hidden">>
 				<<He>> seems to hesitate for a moment as <<he>> gets closer. <<He>> looks at your horns, but shakes <<his>> head, as if making up <<his>> mind.
-				"Hello there. May I offer you a pamphlet? You don't need to be a believer, we just want to enlighten people about the dangers of... improper sexual behaviors."
+				"Hello there. May I offer you a pamphlet? You don't need to be a believer, we just want to enlighten people about the dangers of... improper sexual behaviours."
 			<<else>>
 				"Hello there. May I offer you a pamphlet? You don't need to be a believer, we just want to enlighten people about the virtues of abstinence."
 			<</if>>
@@ -3052,7 +2969,7 @@
 			You pass by a stall where a beggar seems to be asking for alms. The seller, however, is not having it, finally screaming for the beggar to get lost.<<gstress>><<stress 6>>
 
 		<<case 5>>
-			You stop by a stall to get a look at the products. There is a plate nearby with some apple slices as free samples. You take one. It's sweet and savory.<<lstress>><<stress -6>>
+			You stop by a stall to get a look at the products. There is a plate nearby with some apple slices as free samples. You take one. It's sweet and savoury.<<lstress>><<stress -6>>
 
 		<<case 6>>
 			You stop by a stall to get a look at the products. Suddenly, you feel someone grabbing your ass. You turn to say something, but the person has already gone.<<gstress>><<stress 6>>
@@ -3061,7 +2978,7 @@
 			As you walk around the market, you notice a bank note on the ground. You bend over and pick it up. It's a <<printmoney 500>> bill.<<lstress>><<stress -6>>
 
 		<<case 8>>
-			As you walk around the market, you notice of a bank note on the ground. You bend over to pick it up, only to realize that it is fake. Someone slaps your ass, and you turn to spot the culprit running away.<<gstress>><<stress 6>>
+			As you walk around the market, you notice of a bank note on the ground. You bend over to pick it up, only to realise that it is fake. Someone slaps your ass, and you turn to spot the culprit running away.<<gstress>><<stress 6>>
 
 		<<case 9>>
 			<<generate1>><<person1>>
@@ -3090,7 +3007,7 @@
 	<<else>>
 		<<switch random(1,5)>>
 			<<case 1>>
-				You stop by a stall selling various gardening equipment. Nothing catches your eyes at first, but you then notice a single bag of fertilizer hidden under some other products. It's priced at <<printmoney 100000>>.
+				You stop by a stall selling various gardening equipment. Nothing catches your eyes at first, but you then notice a single bag of fertiliser hidden under some other products. It's priced at <<printmoney 100000>>.
 				<br><br>
 
 				<<if $money gte 100000>>
@@ -3132,7 +3049,7 @@
 				<br><br>
 
 				<<if $money gte 500>>
-					<<shopicon "tailor">><<link [[Buy the Straw Hat (£5)|Connudatus Street]]>><<headwear 17>><<set $money -= 500>><<pass 15>><<endevent>><</link>>
+					<<icon "clothes/straw_hat_acc.png" "infront">><<icon "clothes/straw_hat.png">><<link [[Buy the Straw Hat (£5)|Connudatus Street]]>><<headwear 17>><<set $money -= 500>><<pass 15>><<endevent>><</link>>
 					<br>
 
 
@@ -3143,7 +3060,7 @@
 						<<ind>><span class="red">The slime in your ear refuses to allow you to try on or buy the Gingham Dress as it is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
 						<br>
 					<<elseif $money gte 1500>>
-						<<shopicon "tailor">><<link [[Buy the Gingham Dress (£15)|Connudatus Street]]>><<upperwear 38>><<set $money -= 1500>><<pass 15>><<endevent>><</link>>
+							<<icon "clothes/gingham_dress_acc.png" "infront">><<icon "clothes/gingham_dress.png">><<link [[Buy the Gingham Dress (£15)|Connudatus Street]]>><<upperwear 38>><<set $money -= 1500>><<pass 15>><<endevent>><</link>>
 						<br>
 					<<else>>
 						<<ind>><span class="blue">You can't afford to buy the Gingham Dress.</span>
@@ -3157,7 +3074,7 @@
 						<<ind>><span class="red">The slime in your ear refuses to allow you to try on or buy the Checkered Shirt as it is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
 						<br>
 					<<elseif $money gte 3000>>
-						<<shopicon "tailor">><<link [[Buy the Checkered Shirt (£30)|Connudatus Street]]>><<upperwear 33>><<set $money -= 3000>><<pass 15>><<endevent>><</link>>
+							<<icon "clothes/checkered_shirt.png">><<link [[Buy the Checkered Shirt (£30)|Connudatus Street]]>><<upperwear 33>><<set $money -= 3000>><<pass 15>><<endevent>><</link>>
 						<br>
 					<<else>>
 						<<ind>><span class="blue">You can't afford to buy the Checkered Shirt.</span>
@@ -3305,7 +3222,7 @@
 					<<eventsstreetnight>>
 				<</if>>
 			<<elseif $dangerevent lte 18>>
-				<<if $NPCName[$NPCNameList.indexOf("Whitney")].state is "dungeon" and $whitneyposter isnot 1>>
+				<<if C.npc.Whitney.state is "dungeon" and $whitneyposter isnot 1>>
 					<<whitneyposter>>
 				<<else>>
 					<<eventsstreetnight>>
@@ -3356,7 +3273,7 @@
 				<<if $syndromeeden is 1 and (($edenfreedom isnot 2 or $edenCagedEscape) and $edendays gte 7) or ($edenfreedom gte 2 and $edendays gte 21)>>
 					<<streetedenrage>>
 				<<elseif !$edenCagedEscape and ($edenfreedom is 1 and $edendays gte 2) or ($edenfreedom gte 2 and $edendays gte 8)>>
-					<<if $edenfreedom gte 2 and $NPCName[$NPCNameList.indexOf("Eden")].love gte 60>>
+					<<if $edenfreedom gte 2 and C.npc.Eden.love gte 60>>
 						<<streetedenworried>>
 					<<else>>
 						<<streetedenangry>>
@@ -3451,7 +3368,7 @@
 				<</if>>
 			<</if>>
 
-		<<elseif $NPCName[$NPCNameList.indexOf("Avery")].state isnot "dismissed" and $averyseen isnot 1 and Time.weekDay is 7 and Time.dayState is "day" and ($scienceproject is "won" or $scienceproject is "done" or $NPCName[$NPCNameList.indexOf("Avery")].init is 1)>>
+		<<elseif C.npc.Avery.state isnot "dismissed" and $averyseen isnot 1 and Time.weekDay is 7 and Time.dayState is "day" and ($scienceproject is "won" or $scienceproject is "done" or C.npc.Avery.init is 1)>>
 			<<set $averyseen to 1>>
 			<<streetavery>>
 		<<elseif fameTotal() gte 3000 and $photo_known is undefined>>
@@ -3473,7 +3390,7 @@
 					<<eventsstreetday>>
 				<</if>>
 			<<elseif $dangerevent lte 18>>
-				<<if $NPCName[$NPCNameList.indexOf("Whitney")].state is "dungeon" and $whitneyposter isnot 1>>
+				<<if C.npc.Whitney.state is "dungeon" and $whitneyposter isnot 1>>
 					<<whitneyposter>>
 				<<else>>
 					<<eventsstreetday>>
@@ -3524,7 +3441,7 @@
 				<<if $syndromeeden is 1 and (($edenfreedom isnot 2 or $edenCagedEscape) and $edendays gte 7) or ($edenfreedom gte 2 and $edendays gte 21)>>
 					<<streetedenrage>>
 				<<elseif ($edenfreedom is 1 and $edendays gte 2) or ($edenfreedom gte 2 and $edendays gte 8)>>
-					<<if $edenfreedom gte 2 and $NPCName[$NPCNameList.indexOf("Eden")].love gte 60>>
+					<<if $edenfreedom gte 2 and C.npc.Eden.love gte 60>>
 						<<streetedenworried>>
 					<<else>>
 						<<streetedenangry>>
@@ -3643,6 +3560,144 @@
 <</if>>
 <</widget>>
 
+<<widget "whitneyShoppingCentre">>
+	<<npc Whitney>><<person1>>
+	Suddenly you hear Whitney's voice. "Hey slut! Stay right there!"
+	<br><br>
+	You turn around to see Whitney walking up to you, a mischievous look in <<his>> eyes. You brace yourself for whatever <<he>> has planned. "Come with me."
+	<br><br>
+	<<He>> reaches <<his>> hands towards your own.
+	<br><br>
+	<<link [[Remain still|Whitney Shopping Centre]]>><<trauma 6>><<stress 6>><<sub 1>><<npcincr Whitney dom 1>><<set $phase to 0>><</link>><<gstress>><<gtrauma>><<gdom>><<handholdingvirginitywarning>>
+	<br>
+	<<link [[Back away|Whitney Shopping Centre Refuse]]>><<def 1>><<npcincr Whitney dom -1>><<set $phase to 0>><</link>><<ldom>>
+<</widget>>
+
+<<widget "whitneyShoppingData">>
+	<<set _chosenCommentSchool to "Hope you enjoy wearing it to school.">>
+	<<set _rejectedCommentSchool to "Something wrong with it? Would be perfect for school.">>
+	<<set _chosenCommentSwimClass to "Hope you enjoy wearing it to swim class.">>
+	<<set _rejectedCommentSwimClass to "Something wrong with it? Would be perfect for swim class.">>
+
+	<<set _chosenCommentOutside to "Hope to see you wearing it out of school.">>
+
+	<<set _chosenCommentBeach to "Hope you enjoy wearing it on the beach.">>
+	<<set _rejectedCommentBeach to "Something wrong with it? Would be perfect for the beach.">>
+	<<set _extraCommentBeach to " Perfect for a slut like you on the beach.">>
+
+	<<set _rejectedCommentBed to "Hope you enjoy wearing it to bed.">>
+	<<set _extraCommentBed to " Would be perfect to sleep in.">>
+
+	<<set _rejectedCommentLewd to "Didn't like it? Was it too lewd for you?">>
+	<<set _extraCommentLewd to " Perfect for a slut like you.">>
+
+	<<set _rejectedCommentGeneric to "Something wrong with it?">>
+
+	<<if $whitneyClothesGender is "f">>
+		<<set $_set1 to ["pink", "purple", "tangerine", "yellow"]>>
+		<<set $_colour1 to $_set1.random()>>
+		<<set $_colour2 to ["light pink", "lilac", "brown", "tan"][$_set1.indexOf($_colour1)]>>
+		<<set $_denim to ["denim", "light blue", "black", "blue steel", "grey"].random()>>
+		<<set _whitneyClothingChoices to [
+			{index: 0, items:{
+				upper: [113, "white"], lower: [106, $_colour1, $_colour1], legs: [3], feet: [[33, 34].random(), $_colour2, "silver"]
+			}, chosenComment: _chosenCommentSchool, rejectedComment: _rejectedCommentSchool, schoolItems: true},
+			{index: 1, items:{
+				upper: [112, $_colour1, "white"], lower: [27, "black"], legs: [3], feet: [[33, 34].random(), $_colour2, "silver"]
+			}, chosenComment: _chosenCommentSchool, rejectedComment: _rejectedCommentSchool, schoolItems: true},
+			{index: 2,items:{
+				upper: [5, "white", $_colour1], lower: [56, $_colour1], legs: [3], feet: [[33, 34].random(), $_colour2, "silver"]
+			}, chosenComment: _chosenCommentSchool, rejectedComment: _rejectedCommentSchool, schoolItems: true},
+			{index: 3, items:{under_upper: [[2, 6].random(), $_colour1]},
+				chosenComment: _chosenCommentSwimClass, rejectedComment: _rejectedCommentSwimClass, swimItems: true},
+			{index: 4, items:{under_upper: [24, $_colour1], under_lower: [31, $_colour1]},
+				chosenComment: _chosenCommentSwimClass, rejectedComment: _rejectedCommentSwimClass, swimItems: true},
+			{index: 5, items:{upper: [109]}, exposed: true,
+				chosenComment: _rejectedCommentBed, rejectedComment: _rejectedCommentLewd, extraComment: _extraCommentBed, sleepItems: true},
+			{index: 6, items:{upper: [[17, 18].random(), $_colour1]}, exposed: true,
+				chosenComment: _rejectedCommentBed, rejectedComment: _rejectedCommentLewd, extraComment: _extraCommentBed, sleepItems: true},
+			{index: 7, items:{upper: [21, $_colour1], lower: [76, $_denim], legs: [[1, 4].random()], feet: [[10, 12].random(), $_colour1]}, normalItems: true,
+				chosenComment: _chosenCommentOutside, rejectedComment: _rejectedCommentLewd, extraComment: _extraCommentLewd},
+			{index: 8, items:{upper: [21, $_colour1], lower: [25, $_colour1], legs: [12, $_colour1, "white"], feet: [[10, 12].random(), $_colour1]}, normalItems: true,
+				chosenComment: _chosenCommentOutside, rejectedComment: _rejectedCommentLewd, extraComment: _extraCommentLewd},
+			{index: 9, items:{upper: [19, $_colour1], lower: [114, $_denim], legs: [[1, 4].random()], feet: [[10, 12].random(), $_colour1]}, normalItems: true,
+				chosenComment: _chosenCommentOutside, rejectedComment: _rejectedCommentLewd, extraComment: _extraCommentLewd},
+			{index: 10, items:{upper: [29], legs: [27, "white"], feet: [[10, 12].random(), "purple"]}, normalItems: true,
+				chosenComment: _chosenCommentOutside, rejectedComment: _rejectedCommentLewd, extraComment: _extraCommentLewd},
+			{index: 11, items:{under_upper: [[1, 35].random(), $_colour1], under_lower: [[18, 41].random(), $_colour1]},
+				chosenComment: _chosenCommentBeach, rejectedComment: _rejectedCommentBeach, extraComment: _extraCommentBeach},
+		]>>
+	<<else>>
+		/* Picking out males clothes is a pain */
+		<<set $_set1 to ["blue", "red", "green", "teal"]>>
+		<<set $_colour1 to $_set1.random()>>
+		<<set $_blackOrWhite to ["black", "white"].random()>>
+		<<set $_leather to ["black", "brown", "blue steel", "tan", "olive", "wine"].random()>>
+		<<set $_metal to ["grey", "steel", "blue steel", "bronze", "gold", "silver"].random()>>
+		<<set _whitneyClothingChoices to [
+			{index: 0, items:{head: [2, $_colour1], upper: [62, $_colour1], lower: [[28, 104].random(), $_colour1], legs: [2], feet: [1]},
+			chosenComment: _chosenCommentSchool, rejectedComment: _rejectedCommentSchool},
+			{index: 1, items:{face: [15, $_metal], upper: [149, ["white", "brown", "navy blue", "tan"].random()], lower: [[6, 60, 105].random(), "black"], legs: [2], feet: [1]},
+			chosenComment: _chosenCommentSchool, rejectedComment: _rejectedCommentSchool},
+			{index: 2, items:{under_upper: [21, $_colour1], under_lower: [7, $_colour1]},
+				chosenComment: _chosenCommentSwimClass, rejectedComment: _rejectedCommentSwimClass},
+			{index: 3, items:{under_lower: [7, $_colour1]}, breastExposed: true,
+				chosenComment: _chosenCommentSwimClass, rejectedComment: _rejectedCommentSwimClass},
+			{index: 4, items:{upper: [119, "black", $_colour1], lower: [137, ["black", "navy", "olive", "brown"].random()], feet: [30, $_colour1]},
+				chosenComment: _chosenCommentOutside, rejectedComment: _rejectedCommentGeneric},
+			{index: 5, items:{upper: [8, $_blackOrWhite, $_colour1], lower: [[127, 132].random(), $_colour1], legs: [[20, 27].random(), $_blackOrWhite, $_colour1], feet: [6, $_blackOrWhite , $_colour1]},
+				chosenComment: _chosenCommentOutside, rejectedComment: _rejectedCommentGeneric},
+			{index: 6, items:{upper: [[40, 41].random(), $_leather], lower: [23, $_blackOrWhite], feet: [21]}, breastExposed: true,
+				chosenComment: _chosenCommentOutside, rejectedComment: _rejectedCommentGeneric},
+			{index: 7, items:{under_lower: [19, $_colour1]}, breastExposed: true,
+				chosenComment: _chosenCommentBeach, rejectedComment: _rejectedCommentBeach, extraComment: _extraCommentBeach},
+		]>>
+	<</if>>
+<</widget>>
+
+<<widget "whitneyShoppingPicker">>
+	/* When still picking out items */
+	<<if $whitneyClothingChoice is undefined>><<set $whitneyClothingChoice to []>><</if>>
+	<<set _whitneyChoice to _whitneyClothingChoices.filter(choice => !$whitneyClothingChoice.includes(choice.index) and !($player.breastsize gte 3 and choice.breastExposed)).random()>>
+	<<run $whitneyClothingChoice.push(_whitneyChoice.index)>>
+	<<headruined true>>
+	<<faceruined true>>
+	<<upperruined true>>
+	<<lowerruined true>>
+	<<underupperruined true>>
+	<<underlowerruined true>>
+	<<legsruined true>>
+	<<feetruined true>>
+	<<run Object.entries(_whitneyClothingChoices[$whitneyClothingChoice.last()].items).forEach(([slot, item]) => {
+		wikifier("generalWear", slot, item[0], item[1] ? `"${item[1]}"` : undefined, item[2] ? `"${item[2]}"` : undefined);
+	})>>
+<</widget>>
+
+<<widget "whitneyShoppingPickerChoice">>
+	<<if !$whitneyClothingChoice>>
+		<<exit>>
+	<</if>>
+	<<set $changeBack to $worn.upper.type.includes("naked") or $worn.lower.type.includes("naked") or _whitneyClothingChoices[$whitneyClothingChoice.last()].exposed>>
+	<<if $changeBack>>
+		<<undress "wardrobe">>
+		<<storeon "whitneyShopping">>
+	<<else>>
+		<<headruined true>>
+		<<faceruined true>>
+		<<upperruined true>>
+		<<lowerruined true>>
+		<<underupperruined true>>
+		<<underlowerruined true>>
+		<<legsruined true>>
+		<<legsruined true>>
+		<<feetruined true>>
+		<<storeon "whitneyShopping">>
+		<<run Object.entries(_whitneyClothingChoices[$whitneyClothingChoice.last()].items).forEach(([slot, item]) => {
+			wikifier("generalWear", slot, item[0], item[1] ? `"${item[1]}"` : undefined, item[2] ? `"${item[2]}"` : undefined);
+		})>>
+	<</if>>
+<</widget>>
+
 <<widget "street_alley_detour">>
 	You walk along the street when you see the familiar blue flashing lights of the police up ahead.
 	<br><br>
@@ -3702,7 +3757,11 @@
 		<<eventsWhitneyStreet>>
 	<<elseif !Time.schoolDay and $bullytimer gte $rng and C.npc.Whitney.init is 1 and !["dungeon", "pillory"].includes(C.npc.Whitney.state) and $bus is "high" and $dangerevent lte 30 and C.npc.Whitney.dom gte 10>>
 		<<set $bullytimer to 0>>
-		<<pantsdownscene>>
+		<<if random(0, 100) gte 50 and Time.dayState is "day" and ($whitneyromance is 1 or ($whitneyskirtcheck gte 1 and $forcedcrossdressingdisable is "f" and C.npc.Whitney.dom gte 18)) and !$daily.whitney.shoppingCentre and !($weekly.whitneyShoppingCentre gte 2)>>
+			<<whitneyShoppingCentre>>
+		<<else>>
+			<<pantsdownscene>>
+		<</if>>
 	<<elseif $rng lte 10 and $worn.feet.type.includes("heels") and currentSkillValue("feetskill") lt $worn.feet.reveal>>
 		<<streetheeltrip>>
 	<<elseif $rng gte 91>>
@@ -3830,12 +3889,12 @@
 			<<wHunt "town">>
 		<<elseif $wraith.hunt>>
 			<<wHunt "town">>
-		<<elseif $kylar and $kylar.timer.street gte ($rng + 65) and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and $kylarwatched isnot 1 and $exposed lte 0>>
+		<<elseif $kylar and $kylar.timer.street gte ($rng + 65) and C.npc.Kylar.state is "active" and $kylarwatched isnot 1 and $exposed lte 0>>
 			<<set $kylar.timer.street to 0>><<set $kylarwatchedtimer to 2>>
 			You shiver, a warning from some primal instinct. <span class="blue">Something is watching you.</span>
 			<<set $kylarwatched to 1>><<set $eventskip to 1>>
 		<<elseif $kylarwatched is 1>>
-			<<if $exposed gte 1 or $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "active" or $kylarwatchedtimer lte 0>>
+			<<if $exposed gte 1 or C.npc.Kylar.state isnot "active" or $kylarwatchedtimer lte 0>>
 				<<set $kylarwatched to 0>>
 			<<else>>
 				<span class="blue">Something is watching you.</span>

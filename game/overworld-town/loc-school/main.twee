@@ -148,19 +148,15 @@
 			<<fenceicon>><<link [[Climb over the fence to the industrial district (0:02)|School Rear Fence Exit]]>><<pass 2>><</link>>
 			<br>
 		<<else>>
-			<<if $exposed lte 0 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and $weather isnot "rain" and $weather isnot "snow" and $schoolstate is "lunch">>
-				Kylar sits on a stump and stares at the ground.
-				<br>
-				<<schoolicon "stump">><<link [[Approach|Kylar Courtyard]]>><<set $kylar_text_trigger to true>><</link>>
-				<br><br>
-			<<elseif $englishPlay is "ongoing" and $englishPlayRoles.Kylar isnot "none" and $englishPlayRoles.KylarKnown and $exposed lte 0 and $weather isnot "rain" and $weather isnot "snow" and $schoolstate is "afternoon">>
-				<<if $englishPlayReadiness gte 56 and $englishPlayRoles.SydneyKnown and !$englishPlayDoubleRehearsal>>
-					Kylar isn't here. You look around, and catch a glimpse of <<nnpc_him "Kylar">> through one of the school's windows. <span class="gold">It looks like <<nnpc_hes "Kylar">> in the English classroom.</span>
-					<br><br>
-				<<else>>
+			<<if $exposed lte 0>>
+				<<set _kylarLocation to getKylarLocation()>>
+				<<if _kylarLocation.area is "rear_courtyard">>
 					Kylar sits on a stump and stares at the ground.
 					<br>
 					<<schoolicon "stump">><<link [[Approach|Kylar Courtyard]]>><<set $kylar_text_trigger to true>><</link>>
+					<br><br>
+				<<elseif _kylarLocation.area is "english">>
+					Kylar isn't here. You look around, and catch a glimpse of <<nnpc_him "Kylar">> through one of the school's windows. <span class="gold">It looks like <<nnpc_hes "Kylar">> in the English classroom.</span>
 					<br><br>
 				<</if>>
 			<</if>>
@@ -419,7 +415,7 @@ The school gate is shut and sealed by a sturdy padlock.
 <<unset $changingRoomGender>>
 
 <<set _studentsKnow to ($schoolrep.crossdress gte 4 and $changingroomstate is "own") or ($schoolrep.crossdress gte 5 and $changingroomstate isnot "empty")>>
-<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to random(100,1000)>><</if>>
+<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to $player.gender_appearience is "m" ? random(500, 1500) : random(200, 1000)>><</if>>
 <<if $player.gender_appearance is "f" and $fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible()>>
 	<<set _studentsKnow to false>>
 <</if>>
@@ -430,7 +426,38 @@ The school gate is shut and sealed by a sturdy padlock.
 <<if _delinquentGender is "m" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible())>>
 	<<set _delinquentGender to false>>
 <</if>>
-<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to random(100,1000)>><</if>>
+
+<<if $forcedcrossdressingdisable is "t">>
+<<elseif $whitneyCrossdressSwimwear and $daily.school.attended.swimming and $daily.whitney.whitneyCrossdressSwimwear>>
+	/* Always has a 10% chance of occuring, but it can only occur right after ending the lesson */
+	<<if $daily.whitney.whitneyCrossdressSwimwear.includesAny("boys entrance", "boys swimwear", "boys exit") and C.npc.Whitney.dom gte 18 and Math.max(10, $bullytimer) gte $rng and !["dungeon", "pillory"].includes(C.npc.Whitney.state) and _cameFrom>>
+		<<set $bullytimer to 0>>
+		<<npc Whitney>><<person1>>
+		You bump into Whitney.
+		<<if $daily.whitney.whitneyCrossdressSwimwear.includes("boys exit")>>
+			<<His>> expression darkens. "I just caught you leaving the boys' changing room when I clearly told you to use the girls' one," <<he>> says.
+		<<else>>
+			<<He>> frowns at you. "A certain someone told me that you broke one of my rules. Was there something wrong with
+			<<if $daily.whitney.whitneyCrossdressSwimwear.includesAll("boys swimwear", "boys entrance")>>
+				changing in the girls' changing room or wearing girl's swimwear?" <<he>> asks.
+			<<elseif $daily.whitney.whitneyCrossdressSwimwear.includes("boys swimwear")>>
+				wearing girl's swimwear?" <<he>> asks.
+			<<else>>
+				changing in the girls changing room?" <<he>> asks.
+			<</if>>
+		<</if>>
+		"I guess I'll have to beat it into you."
+		<br><br>
+		<<His>> friends block the exit.
+		<br><br>
+		<<link [[Next|Bully Changing Room Fight]]>><<set $fightstart to 1>><</link>>
+		<br><br>
+		<<exit>>
+	<</if>>
+	<<run delete $daily.whitney.whitneyCrossdressSwimwear>>
+<<elseif $whitneyCrossdressSwimwear and !$daily.school.attended.swimming>>
+	<<set $daily.whitney.whitneyCrossdressSwimwear to []>>
+<</if>>
 
 <<if $changingroomstate is "empty">>
 	You are outside the school changing rooms. You need to pass through them to access the pool.
@@ -460,9 +487,13 @@ The school gate is shut and sealed by a sturdy padlock.
 	<br><br>
 <</if>>
 
-<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>><</link>><<if _uncomfortableGender is "m">><<gstress>><</if>><<if _delinquentGender is "f">><<gdelinquency>><</if>>
+<<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>>
+	<<if $daily.whitney.whitneyCrossdressSwimwear>><<run $daily.whitney.whitneyCrossdressSwimwear.push("boys entrance")>><</if>>
+<</link>><<if _uncomfortableGender is "m">><<gstress>><</if>><<if _delinquentGender is "f">><<gdelinquency>><</if>>
 <br>
-<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>><</link>><<if _uncomfortableGender is "f">><<gstress>><</if>><<if _delinquentGender is "m">><<gdelinquency>><</if>>
+<<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>>
+	<<if $daily.whitney.whitneyCrossdressSwimwear>><<run $daily.whitney.whitneyCrossdressSwimwear.push("girls entrance")>><</if>>
+<</link>><<if _uncomfortableGender is "f">><<gstress>><</if>><<if _delinquentGender is "m">><<gdelinquency>><</if>>
 <br><br>
 
 <<if $changingroomstate isnot "empty" and $player.gender_appearance isnot $player.gender>>
@@ -849,7 +880,7 @@ You haul yourself over the fence and drop down on the other side.
 <<sydneySchedule>>
 <<if isPlayerNonparasitePregnancyEnding()>>
 	<<pregnancyWatersBrokenPassout "school">>
-<<elseif _sydney_location is "library" and ($NPCName[$NPCNameList.indexOf("Sydney")].init isnot 1 or ($sydneySeen and !$sydneySeen.includes("libRescue")) or $rng gte 20)>>
+<<elseif _sydney_location is "library" and (C.npc.Sydney.init isnot 1 or ($sydneySeen and !$sydneySeen.includes("libRescue")) or $rng gte 20)>>
 	<<pass 1 hour>>
 	You remain unconscious for a time. You hear a short gasp, and feel yourself being lifted before slipping back into unconsciousness.
 	<br><br>
@@ -877,7 +908,7 @@ You haul yourself over the fence and drop down on the other side.
 		<</if>>
 		<<trauma 6>><<set $stress -= 2000>>
 	<<else>>
-		<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 96 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+		<<if C.npc.Kylar.rage gte 96 and C.npc.Kylar.state is "active">>
 			<<link [[Wake up|Kylar Basement]]>><<pass 1 hour>><</link>>
 			<br>
 		<<elseif Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late">>
@@ -1695,7 +1726,7 @@ You walk over to the <<person1>><<person>>, and sit beside <<him>>.
 
 	<<He>> climbs to <<his>> feet and tries to laugh it off, but is too embarrassed to look at you.
 <<else>>
-	<<He>> nods at <<his>> lap while turning a deeper shade of red. You try to bring <<him>> out of <<his>> shell, but <<hes>> too shy. <<His>> friend finds <<his>> awkwardness humorous.
+	<<He>> nods at <<his>> lap while turning a deeper shade of red. You try to bring <<him>> out of <<his>> shell, but <<hes>> too shy. <<His>> friend finds <<his>> awkwardness humourous.
 <</if>>
 <br><br>
 

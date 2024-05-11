@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 function getHe() {
 	switch (V.pronoun) {
 		case "m":

@@ -640,7 +640,7 @@ You play fight with the young <<beasttype>>. <<bHe>> bites your arm and tries to
 
 	<<clotheson>>
 	<<endcombat>>
- 1>><<set $rescued += 1>>
+<<elseif $rescue is 1 and $alarm is 1>><<set $rescued += 1>>
 	The other <<beastsplural>> growl at the <<beasttype>> assaulting you. <<bHe>> growls back at first, but then backs down and leaves you alone.
 	<<lharmony>>
 	<br><br>
@@ -850,7 +850,7 @@ One of the hunters, a <<beasttype>>,
 	<br>
 	<<link [[Win by stamina|Wolf Cave Spar 2]]>><<set $phase to 1>><</link>><<athleticsdifficulty 200 1000>>
 	<br>
-	<<link [["Outmaneuver " + $NPCList[0].pronouns.him|Wolf Cave Spar 2]]>><<set $phase to 2>><</link>><<dancedifficulty 200 1000>>
+	<<link [["Outmanoeuvre " + $NPCList[0].pronouns.him|Wolf Cave Spar 2]]>><<set $phase to 2>><</link>><<dancedifficulty 200 1000>>
 	<br>
 <</if>>
 
@@ -1041,5 +1041,222 @@ You clamber atop the Black Wolf's rock, high enough that it can hear you speak.	
 You leave them to their staring contest.
 <<gferocity>>
 <br><br>
+
+<<destinationwolfcave>>
+
+:: Wolf Cave Baby Bunny
+<<effects>>
+
+The situation is funny enough that it makes you laugh. Some of the tension aggravating you melts away.<<lltrauma>><<llstress>><<trauma -24>><<stress -24>>
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"It's very cute," you say. "I'm glad you showed me."
+<<elseif $speech_attitude is "bratty">>
+	"You're so weird." You laugh. "Good <<if C.npc["Black Wolf"].gender is "m">>boy<<else>>girl<</if>>."
+<<else>>
+	"Thanks," you say. "That's kind of you."
+<</if>>
+<br><br>
+
+<<if $monster is 1>>
+	<<if C.npc["Black Wolf"].love gte 10>>
+		"Pack feels happier when you're happy," <<bhe>> states while wagging <<bhis>> tail.
+	<<else>>
+		"Pack is stronger when everyone's happy," <<bhe>> states with a nod.
+	<</if>>
+
+<<else>>
+	<<if C.npc["Black Wolf"].love gte 10>>
+		Emboldened by your display of gratitude, the wolf walks over you to nuzzle against your face. You laugh while protecting the baby rabbit from <<bhis>> clumsy paws with your hands.
+	<<else>>
+		The wolf simply watches you intensely before breaking eye contact.
+	<</if>>
+
+<</if>>
+<br><br>
+
+You tentatively pet the rabbit. It shivers under your touch but does not recoil. You spend some time with your gift before asking the Black Wolf to take it back. Sadly, you do not think taking in a rabbit pet among a wolf pack could end without tragedy. It's better to set it free.<<ltrauma>><<trauma -4>>
+<br><br>
+
+<<link [[Next|Wolf Cave Clearing]]>><<endevent>><</link>>
+
+:: Wolf Cave Bear
+<<effects>>
+<<if $outside>>
+	You are in the wolf cave. The ceiling hangs low. There's a breeze blowing from the back.
+<<else>>
+	You are in the clearing outside the wolf cave. A stream runs by.
+<</if>>
+Most of the pack is out hunting. Younger members of the pack growl and snap at each other, practising their fighting.
+<br><br>
+
+An alarmed yelp <<if $outside>>outside<<else>>from the treeline<</if>> attracts your attention.
+<br><br>
+
+<<link [[Investigate|Wolf Cave Bear 2]]>><<set $phase to 0>><</link>><br>
+<<link [[Ignore|Wolf Cave Bear 2]]>><<set $phase to 1>><</link>><br>
+
+:: Wolf Cave Bear 2
+<<effects>>
+<<beastNEWinit 1 bear>><<person1>>
+
+<<if $phase is 1>>
+	The <<wolf_cave_plural>> are probably just play-fighting. You decide to ignore the noise and continue with what you were doing. This doesn't last long. A large shadow falls over you, and the yelping and growling gets louder. The owner of the shadow bumps into you and groans.
+	<br><br>
+
+	You turn to find yourself face-to-face with a <<beasttype>>. The creature has been backed up into you by the <<wolf_cave_plural>> trying to drive it away. <<bHe>> focuses <<bhis>> attention on you and growls.
+
+	<<if $wolfpackleader gte 1>>
+		<br><br>
+		<<if $monsterchance gt 0 and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
+			You hear <<wolf_cave_plural>> calling out for you to deal with <<bhim>><<if $monsterchance lt 100>>, alongside whines and growls of encouragement<</if>>.
+		<<else>>
+			You hear whines and growls of encouragement.
+		<</if>>
+		The pack wants you to fight.
+	<</if>>
+<<else>>
+	Curious as to the cause of the commotion,
+	<<if $outside is 1>>
+		you make your way over to a group of pups by the trees and
+	<<else>>
+		you leave the cave and
+	<</if>>
+	immediately spot a group of agitated young <<wolf_cave_plural>>. You jog over.
+	<br><br>
+
+	<<set $outside to 1>>
+
+	As you draw close, you make out the hulking form that has the group snarling. A <<beasttype>> growls and swipes at one of the <<wolf_cave_plural>> that surround <<bhim>>.
+
+	<<if $monster is 1>>
+		<br><br>
+		"Loud <<wolf_cave_plural>>," the <<beasttype>> huffs out, "disturb my sleep when hunting. Should teach you all to stay quiet."
+	<</if>>
+
+	<<if $wolfpackleader gte 1>>
+		<br><br>
+		<<generateBEAST 2 wolf>><<person2>>
+		A <<beasttype 1>> backs up to where you stand.
+		<<if $NPCList[1].monster is "monster">>
+			"Do something!"
+		<<else>>
+			<<bHe>> looks up at you with pleading eyes.
+		<</if>>
+		The pack wants you to fight.
+		<<person1>><<clearsinglenpc 2>>
+	<</if>>
+<</if>>
+<br><br>
+
+<<set $bus to "wolfcaveclearing">> /* when event is resolved, player will be deposited in the clearing regardless of where they started */
+<<link [["Try to calm the " + $NPCList[0].type|Wolf Cave Bear Calm]]>><</link>><<tendingdifficulty 600 1200>><br>
+<<if $monster or (!$monster and $bestialitydisable is "f")>>
+	<<link [[Fight|Wolf Cave Bear Fight]]>><<set $phase to 0>><<set $molestationstart to 1>><</link>><br>
+<<else>>
+	<<link [[Fight|Wolf Cave Bear Fight Finish]]>><<set $phase to 1>><</link>><br> /* autoresolve */
+<</if>>
+
+:: Wolf Cave Bear Calm
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"D-did we upset you somehow? That isn't very g-good of us. Please, let us make it up to you." You pick a bone up off the ground, a remnant from the wolves' last hunt, and show it to the bear. "S-some of our next hunt, maybe?"
+<<elseif $speech_attitude is "bratty">>
+	"Hey man, calm down! You don't think that we can come to a deal?" You pick a bone up off the ground, a remnant from the wolves' last hunt, and wave it in the air. "If we give you a cut of our next hunt, will that make you happy? Think about it, a big juicy cut of meat. Sounds good, big <<if $NPCList[0].pronoun is "m">>guy<<else>>gal<</if>>?"
+<<else>>
+	"I'm sorry that you're upset," you begin. "Are you sure we can't find a way to make you happy?" You pick a bone up off the ground, a remnant from the wolves' last hunt, and hold it up in the air. "Maybe we can give you a big cut of our next hunt?"
+<</if>>
+<br><br>
+
+<<if $tendingSuccess>>
+	<<if $monster is 1>>
+		The bear considers the picked-over bone. "Good deal," <<bhe>> huffs out. "Food is good. Make me plump for winter."
+	<<else>>
+		The bear sniffs the picked-over bone and huffs in agreement. <<bHe>> seems to accept your deal.
+	<</if>>
+	<br><br>
+
+	You hold your breath until the bear leaves. You hope that <<bhe>> won't return. The tension vanishes as the pack resumes play-fighting. <<gharmony>>
+	<br><br>
+	
+	<<destinationwolfcave>>
+<<else>>
+	Your words only seem to enrage <<bhim>> further. With a snarl, the bear leaps forwards, intent on taking <<bhis>> anger out on you.
+	<br><br>
+
+	<<if $monster or (!$monster and $bestialitydisable is "f")>>
+		<<link [[Fight|Wolf Cave Bear Fight]]>><<set $phase to 0>><<set $molestationstart to 1>><</link>><br>
+	<<else>>
+		<<link [[Fight|Wolf Cave Bear Finish]]>><<set $phase to 1>><</link>><br> /* autoresolve */
+	<</if>>
+<</if>>
+
+:: Wolf Cave Bear Fight
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<npcidlegenitals>>
+
+	<<set $enemyanger to 200>>
+	<<set $enemytrust -= 40>>
+
+	Letting out a loud yell, you pounce forwards, intent on defending your home.
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate '<span class="red">The <<wolf_cave_plural>> aren\'t willing to join the fray.</span>'>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Wolf Cave Bear Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Bear Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Bear Fight Finish
+<<effects>>
+
+<<if $enemyhealth lte 0 or $phase is 1>>
+	With a scream, you kick out at the <<beasttype>>'s face, landing a strong hit. <<bHe>> lets out an equally loud <<if $monster is 1>>yell<<else>>roar<</if>> as <<bhe>> rears back. The pack snarls in delight at your victory.
+	<<if $phase is 1>> /* autoresolve */
+		However, the exertion leaves you worse for wear. <<beastescape>>
+	<</if>>
+	<br><br>
+
+	Cautious and wounded, the <<beasttype>> backs away from you and the wolves who circle around you, growing more confident and aggressive. 
+	<<if $monster is 1>>
+		"Too strong. Stronger than thought," <<bhe>> breathes out,
+	<<else>>
+		<<bHe>> lets out a scared growl
+	<</if>>
+	before turning tail and fleeing. <<gferocity>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+
+	The <<beasttype>> lets out a satisfied noise and pulls away from you.
+	<<if $monster>>
+		"Noises forgotten. I will go home now."
+	<</if>>
+	<<bHe>> nuzzles at your face before turning and lumbering off, leaving you on the ground.
+	<br><br>
+
+	The <<wolf_cave_plural>> seem disappointed, but relieved that no one got hurt.
+<</if>>
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
 
 <<destinationwolfcave>>

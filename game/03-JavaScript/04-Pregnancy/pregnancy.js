@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-
 // Should a name type for species be setup, say, human/wolf specific names
 function generateBabyName(name, gender, childId) {
 	let result = "";
@@ -81,7 +80,7 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 	if (["hand", "kiss"].includes(genital)) genital = target === "pc" && !V.player.vaginaExist ? "anus" : "vagina";
 
 	const motherObject = npcPregObject(target, true);
-	const [pregnancy, fertility, magicTattoo] = pregPrep({ motherObject, genital });
+	const [pregnancy, fertility, magicTattoo, contraceptive] = pregPrep({ motherObject, genital });
 
 	// Check the cycle settings
 	let multi = 1;
@@ -108,6 +107,9 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 			multi = 1 / Math.pow(4, C.npc[target].pregnancy.nonCycleRng[0]);
 		}
 	}
+
+	if (!forcePregnancy && contraceptive && (random(0, 100) >= 10 || contraceptive > 1)) return "contraceptive fail";
+
 	if (["hawk", "harpy"].includes(spermType) || target === "Great Hawk") {
 		if (!["pc", "Great Hawk"].includes(target)) return false;
 		if ((target === "pc" && !V.harpyEggs) || (target === "Great Hawk" && multi === 1)) return false;
@@ -138,7 +140,6 @@ function fetishPregnancy({ genital = "vagina", target = null, spermOwner = null,
 	}
 	return false;
 }
-window.fetishPregnancy = fetishPregnancy;
 
 /* Player pregnancy starts here */
 /* V.pregnancytype === "realistic" uses this function */
@@ -163,8 +164,8 @@ function playerPregnancyAttempt(baseMulti = 1, genital = "vagina") {
 	/* The lower basePenalty is, the easier it is for the player to get pregnant */
 	let basePenalty = Math.floor((100 - V.basePlayerPregnancyChance) * Math.clamp(fertilityBoost, 0.1, 1) * baseMulti);
 
-	if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") basePenalty = Math.floor(basePenalty * 2);
-	if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") basePenalty = Math.floor(basePenalty / 2);
+	if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy") basePenalty = Math.floor(basePenalty / 2);
+	if (V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") basePenalty = Math.floor(basePenalty * 2);
 
 	/*
 		When spermArray.length - 1 is lower than basePenalty, it uses basePenalty to determin if the pregnancy should occur or not
@@ -337,7 +338,7 @@ function playerEndWaterProgress() {
 	const pregnancy = getPregnancyObject();
 	if (!pregnancy || !pregnancy.type || pregnancy.type === "parasite" || pregnancy.timer < pregnancy.timerEnd || V.statFreeze) {
 		// Fixes an issue when the above "parasite" was "parasites"
-		if (pregnancy && (!pregnancy.type || pregnancy.type === "parasite") && pregnancy.waterBreaking) waterBreaking = false;
+		if (pregnancy && (!pregnancy.type || pregnancy.type === "parasite") && pregnancy.waterBreaking) pregnancy.waterBreaking = false;
 		return null;
 	}
 
@@ -881,7 +882,7 @@ function recordSperm({
 	if (V.disableImpregnation) return false; // To be set at the start of sex scenes, unset with <<endcombat>>
 	if (V.playerPregnancyHumanDisable === "t" && spermType === "human" && target === "pc") return false; // Human player pregnancy disabled
 	if (V.playerPregnancyBeastDisable === "t" && spermType !== "human" && target === "pc") return false; // Beast player pregnancy disabled
-	if (V.playerPregnancyEggLayingDisable === "t" && ["hawk", "harpy"].includes(npcType)) return false; // Egg laying player pregnancy disabled
+	if (V.playerPregnancyEggLayingDisable === "t" && ["hawk", "harpy"].includes(spermOwner?.type)) return false; // Egg laying player pregnancy disabled
 	if (V.npcPregnancyDisable === "t" && target !== "pc") return false; // Npc pregnancy disabled
 
 	if (["realistic", "fetish"].includes(V.pregnancytype) && !["anus", "vagina"].includes(genital)) return null;
@@ -907,6 +908,11 @@ function recordSperm({
 		}
 	}
 	if (setup.pregnancy.infertile.includes(spermOwnerName) || setup.pregnancy.infertile.includes(target)) return null;
+
+	// Tracking for unsafe sex
+	if (target === "pc" || spermOwner === "pc") {
+		unsafeSexTracking(genital, target, spermOwnerName);
+	}
 
 	const forcePregnancy =
 		(target === "pc" &&
@@ -1046,9 +1052,19 @@ function washRecordedSperm(genital, target) {
 }
 DefineMacro("washRecordedSperm", washRecordedSperm);
 
+function unsafeSexTracking(genital, mother, father) {
+	if (mother === "pc" && !playerIsPregnant() && (V.player.vaginaExist || canBeMPregnant() || true)) {
+		if (V.NPCNameList.includes(father) || father === "pc") {
+			V.unsafeSexTimeStat[father] = Time.date.timeStamp;
+		}
+	} else if (genital === "vagina" && V.NPCNameList.includes(mother) && !npcIsPregnant(mother)) {
+		V.unsafeSexTimeStat[mother] = Time.date.timeStamp;
+	}
+}
+
 function playerCanBreedWith(npc) {
 	/* This function can accept either a named NPC's name, or an NPC object from either NPCList or NPCName.
-	 * Examples: playerCanBreedWith("Kylar"), or playerCanBreedWith($NPCList[0]) or playerCanBreedWith($NPCName[$NPCNameList.indexOf("Kylar")])
+	 * Examples: playerCanBreedWith("Kylar"), or playerCanBreedWith($NPCList[0]) or playerCanBreedWith(C.npc.Kylar)
 	 * Returns true or false. If you give it garbage, like a totally wrong name, it'll return false, so be careful about silent failures like that.
 	 * Should be used for NPC breeding lines ONLY.
 	 */

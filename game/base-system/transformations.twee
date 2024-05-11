@@ -150,7 +150,7 @@
 			<<case "demon">> <<set $demonbuild = Math.clamp($demonbuild + _args[1], 0, 100)>>
 		<</switch>>
 	<</if>>
-	<<if _args[0] isnot "angel" and _args[0] isnot "demon" and _args[1] gte 1>>
+	<<if !["angel", "fallen", "demon"].includes(_args[0]) and _args[1] gte 1>>
 		<<if _args[0] isnot "wolf" and $worn.neck.name isnot "spiked collar" and $worn.neck.name isnot "spiked collar with leash">>
 			<<set $wolfbuild = Math.clamp($wolfbuild - _args[1], 0, 100)>>
 		<</if>>
@@ -278,7 +278,7 @@
 
 /* Used to temporarily hide all transformation parts, such as when needing to turn the player into Janet. showTransformations will bring back all parts this widget hid. */
 <<widget "hideTransformations">>
-	<<set $saveTransformtaions to clone($transformationParts)>>
+	<<set $saveTransformations to clone($transformationParts)>>
 	<<for _transformation, _parts range $transformationParts>>
 		<<for _part, _value range _parts>>
 			<<if _value isnot "disabled" and _value isnot "hidden">>
@@ -289,9 +289,9 @@
 <</widget>>
 
 <<widget "showTransformations">>
-	<<if $saveTransformtaions isnot undefined>>
-		<<set $transformationParts to clone($saveTransformtaions)>>
-		<<unset $saveTransformtaions>>
+	<<if $saveTransformations isnot undefined>>
+		<<set $transformationParts to clone($saveTransformations)>>
+		<<unset $saveTransformations>>
 	<</if>>
 <</widget>>
 
@@ -301,7 +301,7 @@
 		<<set $trauma to $traumamax>>
 		<<set $fallenangel to 2>>
 		<<set $transformationParts.fallenAngel.halo to ($transformationParts.angel.halo is "hidden" ? "default" : $transformationParts.angel.halo)>>
-		<<set $transformationParts.fallenAngel.wings to "default">>
+		<<set $transformationParts.fallenAngel.wings to ($transformationParts.angel.wings is "classic" ? "classic" : "default")>>
 		<<earnFeat "Fallen Angel">>
 	<<elseif $angel gte 4>>
 		<span class="red">Your halo shatters and fades.</span>

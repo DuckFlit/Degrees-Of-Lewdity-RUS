@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 Config.history.controls = false;
 Config.saves.slots = 9;
-Config.history.maxStates = 1;
+Config.history.maxStates = 5;
 
 /* LinkNumberify and images will enable or disable the feature completely */
 /* debug will enable or disable the feature only for new games */
@@ -11,7 +11,7 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.5.3",
+	version: "0.4.7.5",
 	versionName: "",
 	sneaky: false,
 };
@@ -26,7 +26,7 @@ let pageLoading = false;
 Config.saves.isAllowed = () => {
 	if (tags().includes("nosave") || V.replayScene) return false;
 	return true;
-}
+};
 
 idb.footerHTML = `
 	<div class="savesListRow">
@@ -42,7 +42,7 @@ idb.footerHTML = `
 		<div class="saveButton">
 			<input type="button" class="saveMenuButton right" value="Delete All" onclick="idb.saveList('confirm clear')">
 		</div>
-	</div>`
+	</div>`;
 
 function onLoad(save) {
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
@@ -55,6 +55,9 @@ function onLoad(save) {
 
 	// decompression should be the FIRST save modification
 	DoLSave.decompressIfNeeded(save);
+
+	// ironman is not currently supported with idb
+	if (save.state.history[save.state.index].variables.ironmanmode) idb.active = false;
 
 	// cache current date before assigning it to every frame in history
 	const date = new Date();
@@ -483,17 +486,126 @@ Config.navigation.override = function (dest) {
 				return "Chalets Work One Sex";
 			case "Chalets Work One Rape Finish":
 				return "Chalets Work One Sex Finish";
-			
+
 			case "Whitney Bully Parasite Event Submit":
 			case "Whitney Bully Parasite Event Escape Attempt":
 				return "Bully Parasite";
-			
+
 			case "Whitney Bully Parasite Event Combat":
 				return "Bully Parasite Fight";
 
 			case "Whitney Bully Parasite Event Combat Loss":
 			case "Whitney Bully Parasite Event Combat Victory":
 				return "Bully Parasite Fight Finish";
+
+			case "Robin Kiyoura Start":
+				return "Canteen Robin Whitney";
+
+			case "Robin Kiyoura canteen oral":
+				return "Canteen Robin Whitney Oral";
+
+			case "Robin Kiyoura canteen oral Finish":
+				return "Canteen Robin Whitney Oral Finish";
+
+			case "Robin Kiyoura Back to Robin":
+				return "Canteen Robin Whitney Talk";
+
+			case "Robin Kiyoura canteen fight":
+				return "Canteen Robin Whitney Fight";
+
+			case "Robin Kiyoura after fight":
+				return "Canteen Robin Whitney Fight 2";
+
+			case "Robin Kiyoura weak":
+				return "Canteen Robin Whitney Trauma";
+
+			case "Robin Kiyoura cuddle":
+			case "Robin Kiyoura Secret":
+			case "Robin Kiyoura Didn't want to":
+			case "Robin Kiyoura Enjoyed it":
+				return "Canteen Robin Whitney End";
+
+			case "Livestock Field Centaur Friendly":
+			case "Livestock Field Centaur Firm":
+			case "Livestock Field Friendly":
+			case "Livestock Field Firm":
+				return "Livestock Field Horse Intro";
+
+			case "Livestock Field Centaur Brush":
+				return "Livestock Field Horse Brush";
+
+			case "Livestock Field Centaur Apples":
+				return "Livestock Field Horse Apples";
+
+			case "Livestock Field Horse Help 2":
+			case "Livestock Field Centaur Help":
+			case "Livestock Field Centaur Help 2":
+				return "Livestock Field Horse Help";
+
+			case "Livestock Field Centaur Female Vagina":
+			case "Livestock Field Centaur Female":
+			case "Livestock Field Centaur Male Vagina":
+			case "Livestock Field Centaur Male":
+			case "Livestock Field Centaur Female Vagina 2":
+			case "Livestock Field Centaur Female 2":
+			case "Livestock Field Centaur Male Vagina 2":
+			case "Livestock Field Centaur Male 2":
+			case "Livestock Field Horse Lewd":
+			case "Livestock Field Horse Lewd Female":
+			case "Livestock Field Horse Lewd 2":
+			case "Livestock Field Horse Lewd Female 2":
+			case "Livestock Field Horse Continue":
+				return "Livestock Field Deviancy";
+
+			case "Livestock Field Centaur Female Vagina 3":
+			case "Livestock Field Centaur Female 3":
+			case "Livestock Field Centaur Male Vagina 3":
+			case "Livestock Field Centaur Male 3":
+			case "Livestock Field Centaur Male Hand":
+			case "Livestock Field Centaur Male Hand Vagina":
+			case "Livestock Field Centaur Female Hand":
+			case "Livestock Field Centaur Female Hand Vagina":
+			case "Livestock Field Horse Lewd 3":
+			case "Livestock Field Horse Lewd Female 3":
+			case "Livestock Field Horse Lewd Hand":
+			case "Livestock Field Horse Lewd Female Hand":
+				return "Livestock Field Deviancy Hand";
+
+			case "Livestock Field Centaur Male Mouth":
+			case "Livestock Field Centaur Male Mouth Vagina":
+			case "Livestock Field Centaur Female Mouth":
+			case "Livestock Field Centaur Female Mouth Vagina":
+			case "Livestock Field Horse Lewd Mouth":
+			case "Livestock Field Horse Lewd Female Mouth":
+				return "Livestock Field Deviancy Mouth";
+
+			case "Livestock Field Centaur Male Seduce":
+			case "Livestock Field Centaur Male Sex":
+			case "Livestock Field Centaur Male Sex Finish":
+			case "Livestock Field Centaur Male Vagina Seduce":
+			case "Livestock Field Centaur Male Vagina Sex":
+			case "Livestock Field Centaur Male Vagina Sex Finish":
+			case "Livestock Field Centaur Female Vagina Seduce":
+			case "Livestock Field Centaur Female Vagina Sex":
+			case "Livestock Field Centaur Female Vagina Sex Finish":
+			case "Livestock Field Centaur Female Seduce ":
+			case "Livestock Field Centaur Female Sex":
+			case "Livestock Field Centaur Female Sex Finish":
+			case "Livestock Field Horse Lewd Seduce":
+			case "Livestock Field Horse Lewd Female Seduce":
+			case "Livestock Field Horse Lewd Sex":
+			case "Livestock Field Horse Lewd Female Sex":
+			case "Livestock Field Horse Lewd Sex Finish":
+			case "Livestock Field Horse Lewd Female Sex Finish":
+				return "Livestock Field Deviancy Sex";
+
+			case "Beach Cave Tentacle Under Top":
+				return "Beach Cave Tentacle Top";
+
+			case "Beach Cave Rope Under Top":
+			case "Beach Cave Rope Over Top":
+				return "Beach Cave Rope Top";
+
 			default:
 				return false;
 		}

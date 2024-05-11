@@ -2,50 +2,50 @@
 
 <<widget "landryoptions">>
 	<<if $blackmoney gte 1>>
-		<<link [[Sell stolen goods|Pub Sell]]>><</link>>
+		<<highicon>><<link [[Sell stolen goods|Pub Sell]]>><</link>>
 		<br>
 	<</if>>
 	<<if $spray lt $spraymax and $money gte 250000>>
-		<<link [[Buy pepper spray charge (£2500)|Pub Spray]]>><<spray 1>><<set $money -= 250000>><</link>>
+		<<peppersprayicon>><<link [[Buy pepper spray charge (£2500)|Pub Spray]]>><<spray 1>><<set $money -= 250000>><</link>>
 		<br>
 	<</if>>
 	<<if crimeSumCurrent() gte 500 and !$pubtask>>
-		<<link [[Ask for help covering your tracks|Pub Task]]>><</link>>
+		<<askicon>><<link [[Ask for help covering your tracks|Pub Task]]>><</link>>
 		<br>
 	<</if>>
 	<<if $police_hack is 1>>
-		<<link [[Ask for help breaking into the police computer|Pub Hack]]>><</link>>
+		<<policeicon>><<link [[Ask for help breaking into the police computer|Pub Hack]]>><</link>>
 		<br>
 	<<elseif $police_hack is 4 and $money gte 30000>>
-		<<link [[Ask for updated police password (£300)|Pub Hack]]>><<set $money -= 30000>><</link>>
+		<<policeicon>><<link [[Ask for updated police password (£300)|Pub Hack]]>><<set $money -= 30000>><</link>>
 		<br>
 	<<elseif $pub_hack_job is 3 and $hacker_tasks.length gte 2>>
-		<<link [["Pass on the hacker's message"|Pub Hack]]>><<set $pub_hack_job to 4>><</link>>
+		<<socialiseicon>><<link [["Pass on the hacker's message"|Pub Hack]]>><<set $pub_hack_job to 4>><</link>>
 		<br>
 	<</if>>
 	<<if $pubtask2 is 1>>
-		<<link [[Hand over the black box|Pub Box]]>><<set $pub_task_stat++>><</link>>
+		<<crimeicon "black box">><<link [[Hand over the black box|Pub Box]]>><<set $pub_task_stat++>><</link>>
 		<br>
 	<</if>>
 	<<if $estate_fence is "quest" and _estate_asked isnot true>>
-		<<link [[Ask about breaking into the Remy Estate|Pub Estate]]>><</link>>
+		<<mooricon "remy">><<link [[Ask about breaking into the Remy Estate|Pub Estate]]>><</link>>
 		<br>
 	<</if>>
 	<<if $pubfame>>
 		<<if $pubfame.status is "ready">>
-			<<link [[Ask for help with your fame|Pub Fame]]>><<set $phase to 0>><</link>>
+			<<askicon>><<link [[Ask for help with your fame|Pub Fame]]>><<set $phase to 0>><</link>>
 			<br>
 		<<elseif $pubfame.status is "hiding">>
-			<<link [[Ask for help with your fame|Pub Fame Hiding]]>><</link>>
+			<<askicon>><<link [[Ask for help with your fame|Pub Fame Hiding]]>><</link>>
 			<br>
 		<<elseif $pubfame.status is "accepted">>
-			<<link [[Talk to Mickey about your favour|Pub Fame]]>><<set $phase to 0>><</link>>
+			<<socialiseicon>><<link [[Talk to Mickey about your favour|Pub Fame]]>><<set $phase to 0>><</link>>
 			<br>
 		<<elseif $pubfame.status is "done">>
-			<<link [[Report your completed favour to Mickey|Pub Fame]]>><<set $phase to 0>><</link>>
+			<<socialiseicon>><<link [[Report your completed favour to Mickey|Pub Fame]]>><<set $phase to 0>><</link>>
 			<br>
 		<<elseif $pubfame.intro and $hacker_tasks.length gte 2>>
-			<<link [[Ask for help with your fame|Pub Fame Return]]>><</link>>
+			<<askicon>><<link [[Ask for help with your fame|Pub Fame Return]]>><</link>>
 			<br>
 		<</if>>
 	<</if>>
@@ -65,9 +65,11 @@
 	<br>
 <<else>>
 	<<if $pubbooze is "herbal">>
+		<<wearProp "beermug">>
 		<<set $pubbooze to 0>>
 		The bartender pours a glass of a locally produced spirit. The pub seems more colourful after drinking it.
 	<<elseif $pubbooze is "booze">>
+		<<wearProp "beermug">>
 		<<set $pubbooze to 0>>
 		The bartender pours a glass of a cheap and popular beverage.
 	<<else>>
@@ -146,9 +148,17 @@
 			<</if>>
 		<</if>>
 		<br>
+		<<if !($weekly.theft.pub || $weekly.pubMusic)>>
+			<<if !$per_npc.pubMusic>>
+				<<generate2>><<person2>><<saveNPC 1 pubMusic>>
+			<</if>>
+			You see a <<loadNPC 1 pubMusic>><<person2>><<person>> playing music in the corner.<br>
+			<<mooricon "sing">><<link [[Approach|Pub Music]]>><<handheldon>><<set $pubdrink to 0>><</link>>
+			<br><br>
+		<</if>>
 		<<generate1>><<person1>>You see a <<person>> sitting alone.
 		<br>
-		<<brothelicon>><<link [[Flirt (0:05)|Pub Flirt]]>><<pass 5>><<set $pubdrink to 0>><</link>><<promiscuous1>>
+		<<brothelicon>><<link [[Flirt (0:05)|Pub Flirt]]>><<handheldon>><<if !($weekly.theft.pub || $weekly.pubMusic)>><<clearsinglenpc 1>><</if>><<pass 5>><<set $pubdrink to 0>><</link>><<promiscuous1>>
 		<br>
 		<<investigateicon>><<link [[Look for someone else (0:01)|Pub]]>><<endevent>><<pass 1>><</link>>
 		<br>
@@ -160,7 +170,7 @@
 				<span class="purple">You shouldn't provoke them further.</span>
 			<<else>>
 				You spot Whitney among them.
-				<<if $NPCName[$NPCNameList.indexOf("Whitney")].love gte 10>>
+				<<if C.npc.Whitney.love gte 10>>
 					<span class="teal"><<nnpc_He "Whitney">> eyes you from <<nnpc_his "Whitney">> seat.</span>
 				<<else>>
 					<span class="blue">If <<nnpc_he "Whitney">> notices you, <<nnpc_he "Whitney">> doesn't show it.</span>
@@ -243,7 +253,7 @@ You put the money on the table. Landry swaps it with a small canister.
 	<br><br>
 <</if>>
 <<landryoptions>>
-<<link [[Leave|Pub]]>><<endevent>><</link>>
+<<getouticon>><<link [[Leave|Pub]]>><<endevent>><</link>>
 <br>
 
 :: Pub Sell
@@ -428,7 +438,7 @@ Landry glances around the corner when you mention the estate. <<He>> waits until
 <br>
 
 <<landryoptions>>
-<<link [[Leave|Pub]]>><<endevent>><</link>>
+<<getouticon>><<link [[Leave|Pub]]>><<endevent>><</link>>
 <br>
 
 
@@ -446,7 +456,7 @@ You push the money across the table.
 <br><br>
 
 <<landryoptions>>
-<<link [[Leave|Pub]]>><<endevent>><</link>>
+<<getouticon>><<link [[Leave|Pub]]>><<endevent>><</link>>
 <br>
 
 :: Pub Guard
@@ -753,3 +763,125 @@ You continue your scan over the room. Before you can find anything suitable, <sp
 
 <<link [[Next|Pub Exposed Kitchen]]>><</link>>
 <br>
+
+:: Pub Music
+<<set $outside to 0>><<set $location to "pub">><<effects>>
+The <<person2>><<person>> is playing <<print either("an old wooden guitar", "a weathered keyboard","a tambourine")>>. You listen to <<him>> play, absentmindedly tapping your foot to the beat.
+<br><br>
+
+There's a half-filled tip jar on the table next to <<him>>.
+<br><br>
+
+<<set $skulduggerydifficulty to 400>>
+<<if $money gte 100>>
+	<<highicon>><<link [[Give a small tip (£1)|Pub Music Tip]]>><<set $phase to 6>><<set $money -= 100>><</link>><br>
+<</if>>
+<<if $money gte 500>>
+	<<highicon>><<link [[Give a reasonable tip (£5)|Pub Music Tip]]>><<set $phase to 12>><<set $money -= 500>><</link>><br>
+<</if>>
+<<if $money gte 3000>>
+	<<highicon>><<link [[Give a generous tip (£30)|Pub Music Tip]]>><<set $phase to 24>><<set $money -= 3000>><</link>><br>
+<</if>>
+<<crimeicon "mark">><<link [[`Steal when ${$NPCList[1].pronouns.he}'s not looking`|Pub Music Steal]]>><</link>><<skulduggerydifficulty>><br>
+<<getouticon>><<link [[Leave|Pub]]>><<endevent>><</link>>
+
+:: Pub Music Tip
+<<set $outside to 0>><<set $location to "pub">><<effects>>
+<<set $weekly.pubMusic to true>>
+
+<<set _money to $phase is 6 ? "some change" : $phase is 12 ? "a few bills" : "a wad of cash">>
+<<set _reacts to $phase is 6 ? "gives you a curt nod" : $phase is 12 ? "gives you a slight smile" : "looks shocked and thanks you profusely. A warm glow of pride fills you">>
+
+You pull out _money and put it into the jar. The <<person>> _reacts. <<= $phase is 24 ? "<<llstress>><<lltrauma>>" : "<<lstress>><<ltrauma>>">><<trauma `-$phase`>><<stress `-$phase`>><<famegood $phase/3>>
+<<clearNPC pubMusic>>
+<br><br>
+<<link [[Leave|Pub]]>><<endevent>><</link>>
+
+:: Pub Music Steal
+<<set $outside to 0>><<set $location to "pub">><<effects>>
+<<set $weekly.theft.pub to true>>
+
+<<silently>><<skulduggerycheck>><</silently>>
+<<if $skulduggerysuccess is 1>>
+	You wait for an opportune moment, then slip your hand into the jar. You quickly pull out <<set $_tip to random(5,100)>><<moneyGain $_tip true true>> and shove it into your pocket. The <<person>> doesn't notice a thing.<<crime "thievery">>
+	<br><br>
+	<<skulduggeryuse>>
+	<<link [[Leave|Pub]]>><<endevent>><</link>>
+<<else>>
+	"Hey!" The music abruptly stops as the <<person>> scowls at you. "The fuck do you think you're doing? Put that back!"
+	<br><br>
+	<<link [[Try to bluff your way out|Pub Music Bluff]]>><</link>><<englishdifficulty 1 1000>>
+<</if>>
+
+:: Pub Music Bluff
+<<set $outside to 0>><<set $location to "pub">><<effects>>
+
+You withdraw your hand and give <<him>> a scandalised look.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"I'm just trying to give you a tip?" you say. "Please don't treat me like that." You give <<him>> a baleful look.
+<<elseif $speech_attitude is "bratty">>
+	"If that's how you treat everyone who gives you a tip, I'm not surprised you're not making much." You sneer at <<him>>. "I'll keep my money to myself, then."
+<<else>>
+	"I'm just trying to give you a tip," you say. "Why are you treating me like this?"
+<</if>>
+<br><br>
+
+<<if $englishsuccess>>
+	The <<person>> looks at you and stutters. "S-sorry, then."  <<He>> goes back to playing, but <<he>> keeps <<his>> eye on the jar.
+	<<clearNPC pubMusic>>
+	<br><br>
+	<<link [[Next|Pub]]>><</link>>
+<<else>>
+	The <<person>>'s scowl deepens. "Don't lie to me, you dirty thief." <<He>> puts down <<his>> instrument, grabs you by the arm, and pulls you over <<his>> lap. "Looks like someone has to put you in your place.
+	<<endevent>><<loadNPC 0 pubMusic>>
+	<br><br>
+	<<link [[Next|Pub Music Spank]]>><<set $molestationstart to 1>><</link>>
+<</if>>
+
+:: Pub Music Spank
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>><<npcspank>><<npcidlegenitals>>
+	<<set $enemyanger += 150>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or $enemyanger lte 0>>
+	<span id="next"><<link [[Next|Pub Music Spank Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Pub Music Spank]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Pub Music Spank Finish
+<<set $outside to 0>><<set $location to "pub">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	The <<person>> shudders in pleasure, a wet spot forming on <<his>> trousers. The crowd snaps pictures as you wrest yourself free from <<his>> grip. <<tearful>> you flee through the back door.
+
+<<elseif $enemyhealth lte 0>>
+	The <<person>> loses his grip on you as <<he>> yells out in pain. The crowd moves out of your way as you grab the jar from <<him>>. <<tearful>> you flee through the back door.
+	<br><br>
+
+	You count the tips in the jar. You make <<set $_tip to random(5,100)>><<moneyGain $_tip true true>>. <<crime "thievery">>
+
+<<else>>
+	The <<person>> lands one last slap on your stinging cheek. "And that, ladies and gentlemen, is what happens to brats who try to steal from good people who are just trying to make an honest living." The crowd cheers. Several shoot you dirty looks as you stand back up. You skulk out the back to avoid the judgemental stares. <<famegood -10>><<famesocial -5>>
+<</if>>
+<<silently>><<clotheson>><</silently>>
+<<endcombat>>
+<<clearNPC pubMusic>>
+<br><br>
+<<link [[Next|Industrial alleyways]]>><<endevent>><</link>>

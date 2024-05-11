@@ -49,7 +49,7 @@ You are in the brothel. Several stages dot the crowded room. The staff look flus
 	<<link [[Refuse|Brothel Pay Refuse]]>><<npcincr Briar dom -1>><<def 1>><</link>>
 	<br>
 
-<<elseif $NPCName[$NPCNameList.indexOf("Leighton")].init is 1 and $leightonbrothel is undefined and $brotheljob is 1 and Time.weekDay gte 6 and $pillory_tenant.special.name isnot "Leighton">><<set $leightonbrothel to 1>>
+<<elseif C.npc.Leighton.init is 1 and $leightonbrothel is undefined and $brotheljob is 1 and Time.weekDay gte 6 and $pillory_tenant.special.name isnot "Leighton">><<set $leightonbrothel to 1>>
 	<<npc Leighton>><<person1>>
 	"You look like one of my students," says an amused voice from your right. It's Leighton.
 	<<if playerBellyVisible()>>
@@ -137,14 +137,26 @@ You are in the brothel. Several stages dot the crowded room. The staff look flus
 You are in the brothel's dressing room. There are a few mirrors, currently occupied by staff fixing their hair and makeup.
 <br><br>
 
+<<if $unbind is 1>>
+	<<unset $unbind>>
+	<<if $possessed>>
+		You stare down at your bindings. You pull, and they fall apart, unable to hold against you.
+		<br><br>
+	<<else>>
+		<span class="green">You rub your bindings against the corner of a table.</span> It takes some effort, but eventually the material yields, freeing your limbs.
+		<br><br>
+	<</if>>
+	<<unbind>>
+<</if>>
+
 <<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
-	<<undobindingsicon>><<link [[Undo your bindings (0:10)|Brothel Dressing Room]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
+	<<undobindingsicon>><<link [[Undo your bindings (0:10)|Brothel Dressing Room]]>><<set $unbind to 1>><<pass 10>><</link>>
 	<br><br>
 <</if>>
 
 <<if $brothelVending>>
 	<<if $brothelVending.status is "asked" or ($brothelVending.status is "sold" and $brothelVending.weeksEmpty lt 4)>>
-		<<condomicon "machine">><span class="gold">You can buy a vending machine at the shopping center to set up here.</span>
+		<<condomicon "machine">><span class="gold">You can buy a vending machine at the shopping centre to set up here.</span>
 		<br><br>
 	<<elseif $brothelVending.status is "sold" and $brothelVending.weeksEmpty gte 4>>
 		<<condomicon "machine">><span class="gold">Your vending machine has been sold. You should talk to Briar.</span>
@@ -159,7 +171,9 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 			<<set _buyMore to []>>
 			<<set _productsAvailable to []>>
 			<<set _productsToPurchase to []>>
-			<<if $brothelVending.condoms lt 200>><<run _buyMore.push(`condoms at the <span class="gold">pharmacy</span>`)>><</if>>
+			<<if $brothelVending.condoms lt 200 and $condomLvl gte 1>>
+				<<run _buyMore.push(`condoms at the <span class="gold">pharmacy</span>`)>>
+			<</if>>
 			<<if $brothelVending.lube lt 200>><<run _buyMore.push(`lube at the <span class="gold">adult shop</span>`)>><</if>>
 
 			<<if $brothelVending.condoms is 0>>
@@ -181,10 +195,10 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 
 			<<condomicon "machine">> You check the stock of your vending machine.
 			<<if _full.length gte 1>>
-				The <<print _full.join(" and ")>> <<print _full.length gte 2 ? " are " : " is ">><span class="green">full.</span>.
+				The <<print _full.join(" and ")>> <<print _full.length gte 2 ? " are " : " is ">><span class="green">full</span>.
 			<</if>>
 			<<if _outOfStock.length gte 1>>
-				The <<print _outOfStock.join(" and ")>><<print _outOfStock.length gte 2 ? " are " : " is ">><span class="red">empty.</span>.
+				The <<print _outOfStock.join(" and ")>><<print _outOfStock.length gte 2 ? " are " : " is ">><span class="red">empty</span>. <<if _outOfStock.includes("condom dispenser") and $condomLvl lt 1>><mouse class="tooltip linkBlue">(?)<span>Your current settings are preventing you from purchasing condoms. Change your Pregnancy Settings so that you, or others, can use condoms.</span></mouse><</if>>
 			<</if>>
 			<<if _productsAvailable.length gte 1>>
 				There <<print $brothelVending.condoms is 1 or ($brothelVending.condoms is 0 and $brothelVending.lube is 1) or ($brothelVending.condoms is 200 and $brothelVending.lube is 1) ? "is" : "are">> <<print _productsAvailable.join(" and ")>> inside the machine. There is room for <<print _productsToPurchase.join(" and ")>>.
@@ -195,14 +209,23 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 			You have <<print $weekly.brothelVMCollect ? "already" : "not">> collected this week's earnings.
 			<br>
 			<<if $brothelVending.products % 2 and $brothelVending.condoms gte 1>>
-				<<condomicon>><<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the 3-condom packs to £80, while in the pharmacy, they cost £60. <i class="green">It'd be more cost-efficient for you buy them at the pharmacy.</i></span></mouse>
+				<<condomicon>><<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the 3-condom packs to £80, while in the pharmacy, they cost £60. <i class="green">It'd be more cost-efficient for you to buy them at the pharmacy.</i></span></mouse>
 				<br>
 			<</if>>
 			<<if $brothelVending.products gte 2 and $brothelVending.lube gte 1>>
-				<<sextoysicon "lube">><<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the lube to £30, while in the adult shop, it costs £20. <i class="green">It'd be more cost-efficient for you buy them at the adult shop.</i></span></mouse>
+				<<sextoysicon "lube">><<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the lube to £30, while in the adult shop, it costs £20. <i class="green">It'd be more cost-efficient for you to buy them at the adult shop.</i></span></mouse>
 				<br>
 			<</if>>
 			<br>
+		<<else>>
+			Your vending machine is installed.
+			<<if $brothelVending and $brothelVending.status is "set" and $condomLvl gte 1 and !($brothelVending.products % 2)>>
+				You should talk to the <span class="gold">pharmacy</span> about buying condoms in bulk.
+			<</if>>
+			<<if $brothelVending.products lt 2>>
+				<<= $adultshopunlocked is undefined ? "Once the adult shop opens, " : "">><span class="gold">Sirris</span> might be able to sell you lube at a discount.
+			<</if>>
+			<br><br>
 		<</if>>
 	<</if>>
 <</if>>
@@ -225,7 +248,7 @@ You are in the brothel's dressing room. There are a few mirrors, currently occup
 
 <<getouticon>><<link [[Return to the club (0:01)|Brothel]]>><<pass 1>><</link>>
 <br><br>
-<<link [[Settings]]>><<set $settingsExitPassage to "Brothel Dressing Room">><</link>>
+<<link [[Gameplay Settings|Settings]]>><<set $settingsExitPassage to "Brothel Dressing Room">><</link>>
 <br>
 <<attitudesControlCheck>>
 <<if $attitudesControl.showGoldLink is true>>
@@ -511,7 +534,7 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 	<<ind>><<link [[Yes|"Briar's Office"]]>><<endevent>><<set $brotheljob to 1>><<set $phase to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
 	<br>
 	<<if $id is 0>>
-		<<askicon>><<link [[Inquire about ID card|"Briar's Office ID"]]>><</link>>
+		<<askicon>><<link [[Enquire about ID card|"Briar's Office ID"]]>><</link>>
 		<br>
 	<</if>>
 	<<getouticon>><<link [[Leave|Brothel]]>><<endevent>><</link>>
@@ -580,7 +603,7 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 		<</if>>
 	<</if>>
 	<<if $id is 0>>
-		<<askicon>><<link [[Inquire about ID card|"Briar's Office ID"]]>><</link>>
+		<<askicon>><<link [[Enquire about ID card|"Briar's Office ID"]]>><</link>>
 		<br>
 	<</if>>
 	<<if $brothel_machine_repair is 1>>
@@ -1736,7 +1759,6 @@ You wash until you're squeaky clean.<<wash>>
 <<set $enemyhealth to ($enemyhealthmax / 5) * 4>><<set $enemyanger to ($enemyangermax / 5) * 2>>
 <<if $options.images is 1 and $options.combatImages is 1>>
 	<<timed 100ms>>
-		<br><br><br>
 		<<combatimg>>
 		<br>
 	<</timed>>
@@ -2412,8 +2434,11 @@ You ask Briar if <<he>> has already checked your vending machine's stock and col
 	<<set $brothelVending.lubeSold to 0>>
 	<<set $brothelVending.weeksRent to 0>>
 	<<set $weekly.brothelVMCollect to true>>
+<<else>>
+	And there wasn't anything there. Again. Your machine's been empty for $brothelVending.weeksEmpty weeks now. <span class="red">Keep it up, and I'm selling the damn thing off</span>." Briar reclines on the sofa. "I am a <<= $pronoun is "m" ? "man" : "woman">> of my word, after all. Now go buy some products."
 <</if>>
 <br><br>
+<<endevent>>
 <<link [[Next|"Briar's Office"]]>><</link>>
 
 :: Brothel VM ask
@@ -2785,7 +2810,7 @@ The <<person1>><<person>> grabs you by the chin and lifts your head to get a goo
 <<effects>>
 
 <<if $phase is 1>>
-	You meet <<his>> gaze with a lewd look. "P-please, give me more..." you say. <<He>> is clearly excited from your submissive behavior.
+	You meet <<his>> gaze with a lewd look. "P-please, give me more..." you say. <<He>> is clearly excited from your submissive behaviour.
 	<br><br>
 
 	"One day I will come and buy you!" <<he>> exclaims.
@@ -2959,7 +2984,7 @@ With a smile <<he>> hands you another <<moneyGain 200>>.
 <<if $enemyhealth lte 0 or $enemyarousal gte $enemyarousalmax>>
 
 	<<if $enemyarousal gte $enemyarousalmax>>
-		<<ejaculate>>
+		<<ejaculation>>
 	<</if>>
 
 	You can push the two off for a moment, giving you enough room to make a mad dash for the exit.
@@ -2976,7 +3001,7 @@ With a smile <<he>> hands you another <<moneyGain 200>>.
 	You fall down to the ground, too bruised and battered to resist.
 	<br><br>
 
-	"You'll not ruin this party you ungrateful bitch," the <<person2>> spits in anger.
+	"You'll not ruin this party you ungrateful bitch," the <<person2>><<person>> spits in anger.
 	<br><br>
 
 	They start to rip the clothes off your body and shove you to the middle of the room.

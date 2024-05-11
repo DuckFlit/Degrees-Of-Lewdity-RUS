@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-undef */
 function mapMove(moveTo) {
 	const currentPassage = V.passage;
 	const destinationTable = [];
@@ -34,14 +32,6 @@ function shopClothingFilterToggleTrait(trait) {
 }
 window.shopClothingFilterToggleTrait = shopClothingFilterToggleTrait;
 
-function shopClothingFilterSortOnDescription(traitOne, traitTwo) {
-	const descriptionOne = Wikifier.wikifyEval(`<<shopTraitDescription ${traitOne}>>`).textContent.trim();
-	const descriptionTwo = Wikifier.wikifyEval(`<<shopTraitDescription ${traitTwo}>>`).textContent.trim();
-
-	return descriptionOne > descriptionTwo;
-}
-window.shopClothingFilterSortOnDescription = shopClothingFilterSortOnDescription;
-
 function toggleAllHairTraitsFilter() {
 	const chboxes = $("#hairContainerTraits  input:not(:checked)");
 	if (chboxes.length > 0) chboxes.click();
@@ -53,7 +43,7 @@ window.toggleAllHairTraitsFilter = toggleAllHairTraitsFilter;
 function wikifier(widget, ...args) {
 	if (widget == null) return document.createDocumentFragment();
 	return Wikifier.wikifyEval("<<" + widget + (args.length ? " " + args.join(" ") : "") + ">>");
-};
+}
 window.wikifier = wikifier;
 
 function actionsreplace(bodypart) {
@@ -76,6 +66,7 @@ function actionsreplace(bodypart) {
 }
 window.actionsreplace = actionsreplace;
 
+// prettier-ignore
 const combatActionColours = {
 	Default: {
 		brat: [
@@ -330,11 +321,12 @@ DefineMacroS("combatDefaults", combatDefaults);
  *
  * @param {string} skillname Simple skill name, "anus" "hand" "feet" etc.
  * @param {number} targetid The targetted NPC's id.
+ * @param {number} npc The chosen NPC's fullDescription, used solely for check that determine if encounters remain consensual
  * @param {number} basedifficulty Difficulty of the check, default 1000.
  * @param {number} multiplier Multiplier on enemy arousal, default 100.
  * @returns {boolean}
  */
-function combatSkillCheck(skillname, targetid = 0, basedifficulty = 1000, multiplier = 100) {
+function combatSkillCheck(skillname, targetid = 0, npc = "", basedifficulty = 1000, multiplier = 100) {
 	const skill = currentSkillValue(skillname + "skill");
 	const rng = V.rng * 10;
 	const arousalfactor = V.enemyarousalmax / (V.enemyarousal + 1);
@@ -342,6 +334,8 @@ function combatSkillCheck(skillname, targetid = 0, basedifficulty = 1000, multip
 	const anger = V.enemyanger;
 
 	if (arousalfactor * multiplier + skill + trust + rng >= basedifficulty + anger) {
+		return true;
+	} else if (["Alex", "Robin"].includes(npc) || (npc === "Sydney" && !V.loveDrunk) || (npc === "Great Hawk" && V.syndromebird) || V.consensualGuaranteed) {
 		return true;
 	} else {
 		return false;
@@ -353,7 +347,7 @@ function hairdressersReset() {
 	$(() =>
 		$("#hairDressers").on("change", ".macro-listbox, .macro-radiobutton, .macro-checkbox", function (e) {
 			Wikifier.wikifyEval("<<replace #hairDressers>><<hairDressersOptions>><</replace>>");
-			Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>><<numberify \"#passages > .passage\">>");
+			Wikifier.wikifyEval('<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>><<numberify "#passages > .passage">>');
 		})
 	);
 }
@@ -363,7 +357,7 @@ function hairdressersResetAlt() {
 	$(() =>
 		$("#hairDressersSydney").on("click", ".macro-cycle", function (e) {
 			Wikifier.wikifyEval("<<replace #hairDressersSydney>><<hairDressersOptionsSydney>><</replace>>");
-			Wikifier.wikifyEval("<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>><<numberify \"#passages > .passage\">>");
+			Wikifier.wikifyEval('<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>><<numberify "#passages > .passage">>');
 		})
 	);
 }
@@ -399,19 +393,6 @@ function cheatPregnancyNPCReset() {
 	});
 }
 DefineMacro("cheatPregnancyNPCReset", cheatPregnancyNPCReset);
-
-/**
- * Checks if x is equal or higher than min and lower or equal to max
- *
- * @param {number} x
- * @param {any} min
- * @param {any} max
- * @returns {boolean}
- */
-function between(x, min, max) {
-	return typeof x === "number" && x >= min && x <= max;
-}
-window.between = between;
 
 function featsPointsMenuReset() {
 	jQuery(document).on("change", "#listbox--upgradenameid", () => {
@@ -459,38 +440,6 @@ function ordinalSuffixOf(i) {
 	return i + "th";
 }
 window.ordinalSuffixOf = ordinalSuffixOf;
-
-function lerp(percent, start, end) {
-	return Math.clamp(start + (end - start) * percent, start, end);
-}
-window.lerp = lerp;
-
-function inverseLerp(value, start, end) {
-	return Math.clamp((value - start) / (end - start), 0, 1);
-}
-window.inverseLerp = inverseLerp;
-
-function formatDecimals(value, decimalPlaces) {
-	return Number(Math.round(parseFloat(value + "e" + decimalPlaces)) + "e-" + decimalPlaces);
-}
-window.formatDecimals = formatDecimals;
-
-function nCr(n, r) {
-	// https://stackoverflow.com/questions/11809502/which-is-better-way-to-calculate-ncr
-	if (r > n - r) {
-		// because C(n, r) == C(n, n - r)
-		r = n - r;
-	}
-
-	let ans = 1;
-	for (let i = 1; i <= r; ++i) {
-		ans *= n - r + i;
-		ans /= i;
-	}
-
-	return ans;
-}
-window.nCr = nCr;
 
 /**
  * Given there are {deckCount} cards in the deck and {markedCount} of them have been marked by the player,
@@ -558,6 +507,7 @@ function calculateMarkedChance(deckCount, markedCount, depth, atLeast, doLog = f
 window.calculateMarkedChance = calculateMarkedChance;
 
 function shuffle(o) {
+	// prettier-ignore
 	for (
 		let j, x, i = o.length;
 		i;
@@ -617,7 +567,7 @@ function getRobinLocation() {
 		}
 	} else if (V.halloween === 1 && between(Time.hour, 16, 18) && Time.monthDay === 31) {
 		T.robin_location = "halloween";
-	} else if ((Time.isWeekEnd()) && between(Time.hour, 9, 16) && C.npc.Robin.trauma < 80) {
+	} else if (Time.isWeekEnd() && between(Time.hour, 9, 16) && C.npc.Robin.trauma < 80) {
 		T.robin_location = Time.season === "winter" ? "park" : "beach";
 	} else if (V.englishPlay === "ongoing" && V.englishPlayDays === 0 && Time.hour >= 17 && Time.hour < 21) {
 		T.robin_location = "englishPlay";
@@ -643,11 +593,11 @@ window.setRobinLocationOverride = setRobinLocationOverride;
 function getRobinCrossdressingStatus(crossdressLevel) {
 	// Note returns 2 if Robin is crossdressing or 0 if not comfortable enough at that location
 	// Traumatised Robin will not crossdress.
-	if (V.NPCName[V.NPCNameList.indexOf("Robin")].init !== 1) {
+	if (C.npc.Robin.init !== 1) {
 		return;
 	}
 	T.robin_cd = 0;
-	if (V.NPCName[V.NPCNameList.indexOf("Robin")].trauma >= 40) {
+	if (C.npc.Robin.trauma >= 40) {
 		return;
 	}
 	switch (getRobinLocation()) {
@@ -672,22 +622,24 @@ function getRobinCrossdressingStatus(crossdressLevel) {
 }
 window.getRobinCrossdressingStatus = getRobinCrossdressingStatus;
 
-/* 
+/*
 	TEMPORARY - remove once obsolete
 	Temporary function until location framework is in place - to detect if a NPC is in the park
 	Uses same checks as other Park NPC checks
  */
 function isInPark(name) {
-	switch(name.toLowerCase()) {
+	switch (name.toLowerCase()) {
 		case "kylar":
-			return V.NPCName[V.NPCNameList.indexOf("Kylar")].state === "active" 
-				&& !["rain", "snow"].includes(V.weather) 
+			// prettier-ignore
+			return C.npc.Kylar.state === "active"
+				&& !["rain", "snow"].includes(V.weather)
 				&& Time.dayState === "day" && V.kylarwatched !== 1;
 		case "robin":
 			return getRobinLocation() === "park";
 		case "whitney":
-			return ["active", "rescued"].includes(V.NPCName[V.NPCNameList.indexOf("Whitney")].state)
-				&& V.NPCName[V.NPCNameList.indexOf("Whitney")].init === 1 && ["snow", "rain"].includes(V.weather)
+			// prettier-ignore
+			return ["active", "rescued"].includes(C.npc.Whitney.state)
+				&& C.npc.Whitney.init === 1 && ["snow", "rain"].includes(V.weather)
 				&& Time.dayState === "day" && !Time.schoolTime
 				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
 		default:
@@ -883,7 +835,7 @@ window.DefaultActions = {
 };
 
 function selectWardrobe(targetLocation = V.wardrobe_location) {
-	return (!targetLocation || targetLocation === "wardrobe" || !V.wardrobes[targetLocation]) ? V.wardrobe : V.wardrobes[targetLocation];
+	return !targetLocation || targetLocation === "wardrobe" || !V.wardrobes[targetLocation] ? V.wardrobe : V.wardrobes[targetLocation];
 }
 window.selectWardrobe = selectWardrobe;
 
@@ -1015,6 +967,7 @@ function clothesReturnLocation(item, type) {
 	if (!V.multipleWardrobes) return "wardrobe";
 	const isolated = ["asylum", "prison"];
 	let lastTaken = item.lastTaken;
+	// prettier-ignore
 	if (
 		!lastTaken ||
 		(V.multipleWardrobes !== "all" && !isolated.includes(lastTaken)) ||
@@ -1100,7 +1053,11 @@ function isConnectedToHood(slot) {
 	}
 	if (
 		V.worn[slot].hoodposition &&
-		(V.worn[slot].hoodposition === "down" || (V.worn[slot].hoodposition === "up" && V.worn[slot].outfitPrimary.head !== "broken" && V.worn[slot].outfitPrimary.head !== "split" && V.worn.head.hood === 1))
+		(V.worn[slot].hoodposition === "down" ||
+			(V.worn[slot].hoodposition === "up" &&
+				V.worn[slot].outfitPrimary.head !== "broken" &&
+				V.worn[slot].outfitPrimary.head !== "split" &&
+				V.worn.head.hood === 1))
 	) {
 		return true;
 	}
@@ -1127,7 +1084,11 @@ function clothesIndex(slot, itemToIndex) {
 		let matches = setup.clothes[slot].filter(item => item.variable === itemToIndex.variable);
 		if (matches.length === 0) {
 			/* try to find and item that had its variable changed */
-			matches = setup.clothes[slot].filter(item => Array.isArray(item.oldVariable) && item.oldVariable.find(oldVariableItem => oldVariableItem.name === itemToIndex.name && oldVariableItem.variable === itemToIndex.variable));
+			matches = setup.clothes[slot].filter(
+				item =>
+					Array.isArray(item.oldVariable) &&
+					item.oldVariable.find(oldVariableItem => oldVariableItem.name === itemToIndex.name && oldVariableItem.variable === itemToIndex.variable)
+			);
 			oldVariable = true;
 		}
 		if (matches.length === 1) {
@@ -1140,17 +1101,18 @@ function clothesIndex(slot, itemToIndex) {
 				itemToIndex.variable = recovery.variable;
 				itemToIndex.set = recovery.set;
 				itemToIndex.iconFile = recovery.iconFile;
-				if(recovery.outfitPrimary) {
+				if (recovery.outfitPrimary) {
 					Object.entries(recovery.outfitPrimary).forEach(([key, value]) => {
-						if(itemToIndex.outfitPrimary && (itemToIndex.outfitPrimary[key] === "broken" || itemToIndex.outfitPrimary[key] === "split")){
+						if (itemToIndex.outfitPrimary && (itemToIndex.outfitPrimary[key] === "broken" || itemToIndex.outfitPrimary[key] === "split")) {
 							// Do Nothing
 						} else {
 							itemToIndex.outfitPrimary[key] = value;
 						}
-					})
+					});
 					itemToIndex.outfitPrimary = recovery.outfitPrimary;
 				}
-				if(recovery.outfitSecondary && itemToIndex.outfitSecondary[1] !== "broken" && itemToIndex.outfitSecondary[1] !== "split") itemToIndex.outfitSecondary[1] = recovery.outfitSecondary[1];
+				if (recovery.outfitSecondary && itemToIndex.outfitSecondary[1] !== "broken" && itemToIndex.outfitSecondary[1] !== "split")
+					itemToIndex.outfitSecondary[1] = recovery.outfitSecondary[1];
 			}
 			console.log(`attempting to recover the mismatch, new index is '${recovery.index}'`);
 			return recovery.index;
@@ -1176,8 +1138,10 @@ function currentSkillValue(skill, disableModifiers = 0) {
 	// Prevents infinate loops, any call to `currentSkillValue` in this function should be written like 'currentSkillValue("skillName", disableModifiers + 1)'
 	if (disableModifiers >= 2) return result;
 	if (
+		// prettier-ignore
 		[
-			"skulduggery", "physique", "danceskill", "swimmingskill", "athletics", "willpower", "tending", "science", "maths", "english", "history", "housekeeping"].includes(skill) &&
+			"skulduggery", "physique", "danceskill", "swimmingskill", "athletics", "willpower", "tending", "science", "maths", "english", "history", "housekeeping"
+		].includes(skill) &&
 		V.moorLuck > 0
 	) {
 		result = Math.floor(result * (1 + V.moorLuck / 100));
@@ -1193,10 +1157,13 @@ function currentSkillValue(skill, disableModifiers = 0) {
 			case 2:
 				T.pregnancyModifier = 60;
 				break;
-			case 3: case 4: case 5:
+			case 3:
+			case 4:
+			case 5:
 				T.pregnancyModifier = 78;
 				break;
-			case 6: case 7:
+			case 6:
+			case 7:
 				T.pregnancyModifier = 96;
 				break;
 			default:
@@ -1287,42 +1254,45 @@ function currentSkillValue(skill, disableModifiers = 0) {
 			if (V.worn.head.type.includes("maid")) {
 				result = Math.floor(result * 1.05);
 			}
+			if (V.worn.handheld.type.includes("maid")) {
+				result = Math.floor(result * 1.05);
+			}
 			break;
 		case "vaginalskill":
 			if (V.earSlime.growth > 100) {
 				if (V.earSlime.focus === "pregnancy") {
-					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
+					result = Math.floor(result * (1 + (V.earSlime.growth - 100) / 500));
 				} else if (V.earSlime.focus === "impregnation") {
-					result = Math.floor(result * (1 - ((V.earSlime.growth - 100) / 400)));
+					result = Math.floor(result * (1 - (V.earSlime.growth - 100) / 400));
 				}
 			}
 			if (playerHeatMinArousal()) {
-				result = Math.floor(result * (1 + (Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000)));
+				result = Math.floor(result * (1 + Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000));
 			}
 			break;
 		case "penileskill":
 			if (V.earSlime.growth > 100) {
 				if (V.earSlime.focus === "impregnation") {
-					result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
+					result = Math.floor(result * (1 + (V.earSlime.growth - 100) / 500));
 				} else if (V.earSlime.focus === "pregnancy") {
-					result = Math.floor(result * (1 - ((V.earSlime.growth - 100) / 400)));
+					result = Math.floor(result * (1 - (V.earSlime.growth - 100) / 400));
 				}
 			}
 			if (playerRutMinArousal()) {
-				result = Math.floor(result * (1 + (Math.clamp(playerRutMinArousal(), 0, 4000) / 20000)));
+				result = Math.floor(result * (1 + Math.clamp(playerRutMinArousal(), 0, 4000) / 20000));
 			}
 			break;
 		case "analskill":
 			if (V.earSlime.growth > 100 && !V.player.vaginaExist && V.earSlime.focus === "pregnancy") {
-				result = Math.floor(result * (1 + ((V.earSlime.growth - 100) / 500)));
+				result = Math.floor(result * (1 + (V.earSlime.growth - 100) / 500));
 			}
 			if (playerHeatMinArousal() && canBeMPregnant()) {
-				result = Math.floor(result * (1 + (Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000)));
+				result = Math.floor(result * (1 + Math.clamp(playerHeatMinArousal(), 0, 4000) / 20000));
 			}
 			break;
 		case "seductionskill":
 			if (V.earSlime.growth > 50 && !V.earSlime.defyCooldown) {
-				result = Math.floor(result * (1 + ((V.earSlime.growth - 50) / 600)));
+				result = Math.floor(result * (1 + (V.earSlime.growth - 50) / 600));
 			}
 			break;
 	}
@@ -1337,18 +1307,20 @@ window.playerIsPenetrated = playerIsPenetrated;
 
 /**
  * Overloads:
+ *
  * 	 (minutes)
  * 	getTimeString(hours, minutes)
  * Examples:
+ *
  * 	getTimeString(20) returns "0:20"
  * 	getTimeString(1,5) returns "1:05".
  *
  * @param {...any} args
  */
 function getTimeString(...args) {
-	if(args[0] == null) return;
+	if (args[0] == null) return;
 	const hours = args[1] != null ? args[0] : 0;
-	const minutes = Math.max(args[1] != null ? args[1] : args[0], 0) + (hours * 60);
+	const minutes = Math.max(args[1] != null ? args[1] : args[0], 0) + hours * 60;
 	return Math.clamp(Math.trunc(minutes / 60), 0, 23) + ":" + ("0" + Math.trunc(minutes % 60)).slice(-2);
 }
 window.getTimeString = getTimeString;
@@ -1431,7 +1403,7 @@ function npcClothes(npc, type) {
 window.npcClothes = npcClothes;
 
 function waterproofCheck(clothing) {
-	return clothing.type.includesAny("swim", "stealthy", "rainproof");
+	return clothing.type.includesAny("swim", "stealthy", "rainproof", "waterproof");
 }
 window.waterproofCheck = waterproofCheck;
 
@@ -1458,7 +1430,8 @@ function getMoonState() {
 	let moonstate = 0;
 	T.todaysMoonState = getTodaysMoonState();
 
-	if (Time.nightState === T.todaysMoonState) { // if the current time of night matches the time a blood moon will happen, set moonstate
+	if (Time.nightState === T.todaysMoonState) {
+		// if the current time of night matches the time a blood moon will happen, set moonstate
 		moonstate = T.todaysMoonState;
 	}
 	// V.moonstate = moonstate; //commenting this out to make sure this function doesn't modify save variables
@@ -1513,6 +1486,7 @@ function checkTFparts() {
 }
 window.checkTFparts = checkTFparts;
 
+// prettier-ignore
 function getSexesFromRandomGroup() {
 	if (maleChance() <= 0) { /* Only females. */
 		if (V.dgchance <= 0) return SexTypes.ALL_FEMALES;		/* All females, no dickgirls. Always vaginal. */
@@ -1640,7 +1614,7 @@ function getHalloweenCostume() {
 		return "gothic";
 	} else if (upper.name === "nun's habit" && lower.name === "nun's habit skirt") {
 		return "nun";
-	} else if (upper.name.includes("maid") && lower.name.includes("maid")) {
+	} else if (upper.type.includes("maid") && lower.type.includes("maid")) {
 		return "maid";
 	} else if (upper.name.includes("christmas") && lower.name.includes("christmas")) {
 		return "christmas";
@@ -1654,7 +1628,10 @@ function getHalloweenCostume() {
 		return "monk";
 	} else if (upper.name === "padded football shirt" && lower.name === "football shorts") {
 		return "football";
-	} else if (upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") {
+	} else if (
+		(upper.name === "belly dancer's top" && lower.name === "belly dancer's bottoms") ||
+		(upper.name === "harem vest" && lower.name === "harem pants")
+	) {
 		return "belly dancer";
 	} else if (V.worn.head.name === "cowboy hat" && lower.name === "cowboy chaps" && V.worn.feet.name === "cowboy boots") {
 		return "cowboy";
@@ -1671,7 +1648,7 @@ function getHalloweenCostume() {
 	} else if (upper.name === "futuristic bodysuit" && lower.name === "futuristic bodysuit pants") {
 		return "futuresuit";
 	} else if (upper.name.includes("nurse") && lower.name.includes("nurse")) {
-	 	return "nurse";
+		return "nurse";
 	} else if (face.name === "eyepatch") {
 		return "eyepatch";
 	} else if (face.name === "medical eyepatch") {
@@ -1681,7 +1658,7 @@ function getHalloweenCostume() {
 	} else if (upper.name === "rag top" && lower.name === "rag skirt") {
 		return "rags";
 
-	/* Transformations */
+		/* Transformations */
 	} else if (T.tf.angelHalo && T.tf.angelWings) {
 		return "angel TF";
 	} else if (T.tf.wolfEars && T.tf.wolfTail) {
@@ -1699,7 +1676,7 @@ function getHalloweenCostume() {
 	} else if (T.tf.foxEars && T.tf.foxTail) {
 		return "fox TF";
 
-	/* Misc outcomes */
+		/* Misc outcomes */
 	} else if (
 		V.worn.upper.type.includes("costume") ||
 		V.worn.lower.type.includes("costume") ||
@@ -1917,90 +1894,79 @@ function dailyConvert() {
 }
 window.dailyConvert = dailyConvert;
 
-function convertHairLengthToStage(hair, length){
-	if (!hair || !length)
-		throw new Error(`Hair AND Length must be provided to be converted: ${hair} / ${length}`);
+function convertHairLengthToStage(hair, length) {
+	if (!hair || !length) throw new Error(`Hair AND Length must be provided to be converted: ${hair} / ${length}`);
 	if (hair === "fringe") {
-		if (length >= 900)
-			return "feet";
-		else if (length >= 700)
-			return "thighs";
-		else if (length >= 600)
-			return "navel";
-		else if (length >= 400)
-			return "chest";
-		else if (length >= 200)
-			return "shoulder";
-		else
-			return "short";
-	}
-	else if (hair === "sides") {
-		if (length >= 900)
-			return "feet";
-		else if (length >= 700)
-			return "thighs";
-		else if (length >= 600)
-			return "navel";
-		else if (length >= 400)
-			return "chest";
-		else if (length >= 200)
-			return "shoulder";
-		else
-			return "short";
+		if (length >= 900) return "feet";
+		else if (length >= 700) return "thighs";
+		else if (length >= 600) return "navel";
+		else if (length >= 400) return "chest";
+		else if (length >= 200) return "shoulder";
+		else return "short";
+	} else if (hair === "sides") {
+		if (length >= 900) return "feet";
+		else if (length >= 700) return "thighs";
+		else if (length >= 600) return "navel";
+		else if (length >= 400) return "chest";
+		else if (length >= 200) return "shoulder";
+		else return "short";
 	}
 }
 
 window.convertHairLengthToStage = convertHairLengthToStage;
 
-function calculateSemenReleased(){
-	if(T.deniedOrgasm) return 0;
+function calculateSemenReleased() {
+	if (T.deniedOrgasm) return 0;
 	let released = 30;
 
-	released += (V.semen_volume / 30);
+	released += V.semen_volume / 30;
 
-	if(V.femaleclimax === 1) released /= 30;
-	if(V.orgasmtrait >= 1) released *= 2.5;
-	if(V.cow >= 6) released *= 2;
+	if (V.femaleclimax === 1) released /= 30;
+	if (V.orgasmtrait >= 1) released *= 2.5;
+	if (V.cow >= 6) released *= 2;
 
 	/* if the player doesn't have enough semen, set $_semen_released to whatever they have left */
-	if(V.semen_amount < released) released = V.semen_amount;
-	if(parseFloat(released.toFixed(1)) === 0 && V.semen_amount < 0.1) V.semen_amount = 0; // Prevents really low floating numbers
+	if (V.semen_amount < released) released = V.semen_amount;
+	if (parseFloat(released.toFixed(1)) === 0 && V.semen_amount < 0.1) V.semen_amount = 0; // Prevents really low floating numbers
 
 	return parseFloat(released.toFixed(1));
 }
 window.calculateSemenReleased = calculateSemenReleased;
 
-function npcSemenMod(penisSize){
-	switch(penisSize) {
-		case 4: return "large";
-		case 1: return "tiny";
-		default: return "";
+function npcSemenMod(penisSize) {
+	switch (penisSize) {
+		case 4:
+			return "large";
+		case 1:
+			return "tiny";
+		default:
+			return "";
 	}
 }
 window.npcSemenMod = npcSemenMod;
 
-function maleChance(override){
+function maleChance(override) {
 	if (V.maleChanceSplit === "f") return V.malechance;
 	const appearence = override || V.player.gender_appearance;
 	if (appearence === "m") return V.maleChanceMale;
 	if (appearence === "f") return V.maleChanceFemale;
-	return 50;	
+	return 50;
 }
 window.maleChance = maleChance;
 
 // gender of the npc, rng (between 1 and 100) of their generation
-function attractedToBothChance(gender, rng){
+function attractedToBothChance(gender, rng) {
 	if (gender === "m") return maleChance("m") >= rng && maleChance("f") >= rng;
 	return maleChance("m") < rng && maleChance("f") < rng;
 }
 window.attractedToBothChance = attractedToBothChance;
 
-function beastMaleChance(override){
+function beastMaleChance(override) {
 	if (V.beastMaleChanceSplit === "f") return V.beastmalechance;
 	const appearence = override || V.player.gender_appearance;
 	if (appearence === "m") return V.beastMaleChanceMale;
 	if (appearence === "f") return V.beastMaleChanceFemale;
-	return 50;	
+	return 50;
 }
 window.beastMaleChance = beastMaleChance;
 
@@ -2008,7 +1974,7 @@ const crimeSum = (prop, ...crimeTypes) => {
 	if (crimeTypes.length === 0) {
 		crimeTypes = Object.keys(setup.crimeNames);
 	}
-	
+
 	return crimeTypes.reduce((result, crimeType) => result + V.crime[crimeType][prop], 0);
 };
 
@@ -2026,7 +1992,7 @@ window.crimeSumCountHistory = (...args) => crimeSum("countHistory", ...args);
  */
 function onBrowserTabClose(event) {
 	event.preventDefault();
-	event.returnValue = 'Are you sure you want to leave?'; // the string here isn't important, it's mostly not considered by the browser.
+	event.returnValue = "Are you sure you want to leave?"; // the string here isn't important, it's mostly not considered by the browser.
 }
 
 /**
@@ -2034,18 +2000,17 @@ function onBrowserTabClose(event) {
  *
  * @returns {void}
  */
-function toggleConfirmDialogUponTabClose(){
+function toggleConfirmDialogUponTabClose() {
 	if (V.options.confirmDialogUponTabClose === true) {
-		window.addEventListener('beforeunload', onBrowserTabClose);
-	}
-	else if (V.options.confirmDialogUponTabClose === false) {
-		window.removeEventListener('beforeunload', onBrowserTabClose);
+		window.addEventListener("beforeunload", onBrowserTabClose);
+	} else if (V.options.confirmDialogUponTabClose === false) {
+		window.removeEventListener("beforeunload", onBrowserTabClose);
 	}
 }
 
 window.toggleConfirmDialogUponTabClose = toggleConfirmDialogUponTabClose;
 
-function numberOfEarSlime(){
+function numberOfEarSlime() {
 	let result = 0;
 	if (V.parasite.left_ear.name === "slime") result++;
 	if (V.parasite.right_ear.name === "slime") result++;
@@ -2053,10 +2018,10 @@ function numberOfEarSlime(){
 }
 window.numberOfEarSlime = numberOfEarSlime;
 
-function earSlimeMakingMundaneRequests(){
+function earSlimeMakingMundaneRequests() {
 	if (!numberOfEarSlime()) return false;
 	// First rape requests
-	if (V.earSlime.growth + (V.earSlime.promiscuity * 10) >= 80) return false;
+	if (V.earSlime.growth + V.earSlime.promiscuity * 10 >= 80) return false;
 	return true;
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;

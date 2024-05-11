@@ -1,12 +1,12 @@
 :: Widgets Sleep [widget]
 
 <<widget "sleep">>
-	<<if numberOfEarSlime() gte 2 and $earSlime.corruption is 100 and $earSlime.growth gte 50 and $earSlime.focus is "none" and !$statFreeze and !$args[0]>>
+	<<if numberOfEarSlime() gte 2 and $earSlime.corruption is 100 and $earSlime.growth gte 50 and $earSlime.focus is "none" and !$statFreeze and !_args[0]>>
 		/* Doing events this way, means that npc's may still be loaded, so endevent or loading new npc's should not be done */
 		<<earSlimeFocusChoice>>
 	<</if>>
 	<<sleephour>>
-	<<if _wakeEvent and !$args[0]>>
+	<<if _wakeEvent and !_args[0]>>
 		<<sleep_clamp>>
 		<<switch _wakeEvent>>
 			<<case "slimeWakeAlleyway">><<slimeWakeAlleyway>>
@@ -62,12 +62,12 @@
 				<<if $sleepWraith>>
 					<!-- Do nothing. Wraith mimicking Robin guarantees an uninterrupted sleep -->
 
-				<<elseif $kylarenglish is 1 and _kylarStatus.includes("Love") and _kylarStatus.includes("Lust") and Time.dayState is "night" and $kylarbed is undefined and $robinbed is undefined and $rng gte 96 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+				<<elseif $kylarenglish gte 1 and _kylarStatus.includes("Love") and _kylarStatus.includes("Lust") and Time.dayState is "night" and $kylarbed is undefined and $robinbed is undefined and $rng gte 96 and C.npc.Kylar.state is "active">>
 					<<set _sleepinterrupt to 1>>
 					<<set _kylarWake to 1>>
 					<<set $kylarSleepEvent to 1>>
 
-				<<elseif ($kylarenglish isnot 1 or $syndromekylar isnot 1) and !playerIsPregnant() and C.npc.Kylar.love lte 49 and C.npc.Kylar.rage gte 70 and Time.dayState is "night" and $kylarbed is undefined and $robinbed is undefined and $weekly.kylarCreep isnot 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+				<<elseif ($kylarenglish isnot 1 or $syndromekylar isnot 1) and !playerIsPregnant() and C.npc.Kylar.love lte 49 and C.npc.Kylar.rage gte 70 and Time.dayState is "night" and $kylarbed is undefined and $robinbed is undefined and $weekly.kylarCreep isnot 1 and C.npc.Kylar.state is "active">>
 					<<set $weekly.kylarCreep to 1>>
 					<<set _sleepinterrupt to 1>>
 					<<set _kylarWake to 2>>
@@ -90,7 +90,7 @@
 				<<elseif $baileydefeatedchain gte 1 and ($rng * 100) gte (9900 - ($allure / 5))>>
 					<<set _sleepinterrupt to 1>>
 					<<set $baileyrapewake to 1>>
-				<<elseif $christmas is 1 and Time.monthDay is 25 and Time.hour lte 6 and $christmas_kylar is undefined and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+				<<elseif $christmas is 1 and Time.monthDay is 25 and Time.hour lte 6 and $christmas_kylar is undefined and C.npc.Kylar.state is "active">>
 					<<set _sleepinterrupt to 1>>
 					<<set $christmas_kylar to 1>>
 				<<elseif Time.schoolDay and Time.hour is 7 and !$daily.baileyWake>>
@@ -135,7 +135,7 @@
 			<<case "alex_cottage">>
 				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
-				<<elseif (Time.hour gte 21 or Time.hour lte 5) and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and $alexwake isnot 1>>
+				<<elseif (Time.hour gte 21 or Time.hour lte 5) and C.npc.Alex.lust gte 10 and $alexwake isnot 1>>
 					<<set $alexwake to 1>>
 					<<set _sleepinterrupt to 1>>
 				<<elseif $farm_attack_timer is 0 and Time.hour gte 21>>
@@ -154,7 +154,7 @@
 			<<case "cabin">>
 				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
-				<<elseif Time.hour lte 6 and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and $edenwake isnot 1>>
+				<<elseif Time.hour lte 6 and C.npc.Eden.lust gte 26 and $edenwake isnot 1>>
 					<<set $edenwake to 1>>
 					<<set _sleepinterrupt to 1>>
 				<</if>>
@@ -180,7 +180,7 @@
 			<<case "wolf_cave">>
 				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
-				<<elseif $wolfpackferocity gte 10 and $wolfwake isnot 1 and random(1,10) is 10>>
+				<<elseif $wolfpackferocity gte 10 and $wolfwake isnot 1 and random(1,10) is 10 and $bedGuest isnot "Black Wolf">>
 					<<set _sleepinterrupt to 1>>
 					<<set $wolfwake to 1>>
 				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte (currentSkillValue('willpower') / 7) and random(0,100) lt 4 and $leftarm isnot "bound" and $rightarm isnot "bound">>
@@ -306,7 +306,7 @@
 		<br><br>
 	<</if>>
 	<<if !$sleepWraith and $bedGuest and $transformationParts.traits.mateForLife isnot "disabled" and isLoveInterest($bedGuest)>>
-		<span class="green">Sleeping with your chosen partner fulfills an instinctual desire.</span> <<lstress>><<ltrauma>><<garousal>>
+		<span class="green">Sleeping with your chosen partner fulfils an instinctual desire.</span> <<lstress>><<ltrauma>><<garousal>>
 		<br><br>
 	<</if>>
 	<<if $scienceproject is "ongoing" and $sciencephallusknown isnot 1 and $promiscuity gte 35>>
@@ -415,7 +415,7 @@
 			<</if>>
 		<</if>>
 		<<if ["pregnancy", "mixed"].includes($earSlime.focus) and ($player.vaginaExist or $analdisable is "f") and !playerIsPregnant()>>
-			<<if maleChance() gt 0 or beastMaleChance() gt 0>>
+			<<if maleChance() gt 0 or beastMaleChance() gt 0 or $dgchance gt 0>>
 				<<set _task to `get sperm into your ${$player.vaginaExist ? "vagina" : "anus"}`>>
 				<<run _eventsList.push(_task)>>
 				<<run _eventsList.push(_task)>>
@@ -437,13 +437,13 @@
 			<</if>>
 		<</if>>
 		<<if $player.penisExist and ["impregnation", "mixed"].includes($earSlime.focus)>>
-			<<if maleChance() lt 100 or beastMaleChance() lt 100>>
-				<<run _eventsList.push("ejaculate into someones vagina")>>
-				<<run _eventsList.push("ejaculate into someones vagina")>>
+			<<if maleChance() lt 100 or beastMaleChance() lt 100 or $cbchance gt 0>>
+				<<run _eventsList.push("ejaculate into someone's vagina")>>
+				<<run _eventsList.push("ejaculate into someone's vagina")>>
 				<<if random(0,100) gte 50>>
-					<<run _eventsList.push("ejaculate into someones vagina")>>
-					<<run _eventsList.push("ejaculate into someones vagina")>>
-					<<run _eventsList.push("ejaculate into someones vagina")>>
+					<<run _eventsList.push("ejaculate into someone's vagina")>>
+					<<run _eventsList.push("ejaculate into someone's vagina")>>
+					<<run _eventsList.push("ejaculate into someone's vagina")>>
 				<</if>>
 			<</if>>
 		<</if>>
@@ -547,6 +547,8 @@
 		<<switch $slimeBedExit>>
 			<<case "Bed">><<storeon "bed" "return">>
 			<<case "Farm Bed">><<storeon "farm bed" "return">>
+			<<case "Farm Alex Bed">><<storeon "farm alex bed" "return">>
+			<<case "Temple Bunk Bed">><<storeon "Temple Bunk Bed" "return">>
 		<</switch>>
 		<br><br>
 		<<link [[Next|$slimeBedroomExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
@@ -629,14 +631,14 @@
 			You feel like they are becoming less frequent the more you reject it.
 		<</if>>
 		<br><br>
-		Once again, three blurred figures appear in front of you. It reminds you that it is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you should <span class="lewd">should reach towards one of them</span> to become your true self.
+		Once again, three blurred figures appear in front of you. It reminds you that it is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you <span class="lewd">should reach towards one of them</span> to become your true self.
 		<<if $earSlime.dreamRejected gte 10>>
 			The voice seems more desperate in its attempts to get you to do what it asks.
 		<</if>>
 	<<else>>
 		You seem to wake in the tentacle plains, though with the knowledge that what you look at isn't real, and you won't remember it outside the dream.
 		<br><br>
-		All at once, 3 blurred figures appear in front of you. Something tells you that this is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you should <span class="lewd">should reach towards one of them</span> to become your true self.
+		All at once, 3 blurred figures appear in front of you. Something tells you that this is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you <span class="lewd">should reach towards one of them</span> to become your true self.
 	<</if>>
 	<br><br>
 	The first thing you notice about one on the left,
@@ -686,7 +688,7 @@
 	<br>
 	<<link [[Reach for the middle one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "mixed">><<set $earSlime.growth++>><</link>>
 	<br>
-	<<link [[Reach for the right one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "impregnation">><<set $earSlime.growth++>><</link>>
+	<<link [[Reach for the right one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "impregnation">><<set $earSlime.growth++>><</link>><<if $whitneypantiescheck is 2>><<note "Not recommended without disabling 'forced crossdressing'">><</if>>
 	<br>
 	<<link [[Do nothing|$passage]]>><<set $location to _prevLocation>><<set $earSlime.growth -= 5 + Math.clamp($earSlime.dreamRejected, 0, 20)>><<set $earSlime.dreamRejected++>><</link>>
 
