@@ -49,67 +49,9 @@ Weather.Sky.Effects.create({
 		this.animationFrame = 0;
 	},
 	draw() {
-		// Add the overlay to the effect itself
-		this.effects[0].draw();
-		this.effects[1].draw();
-		this.canvas.drawImage(this.effects[0].canvas.element);
-		this.canvas.ctx.globalCompositeOperation = "source-atop";
-		this.canvas.drawImage(this.effects[1].canvas.element);
 		
-	},
-});
-
-// Fallback only if reflections are disabled
-Weather.Sky.Effects.create({
-	name: "locationWater",
-	effects: [
-		{
-			effect: "locationImageAnimation",
-			bindings: {
-				location() {
-					return this.location;
-				},
-				key() {
-					return this.key;
-				},
-				parentLayer() {
-					return this.parentLayer;
-				},
-				fullPath() {
-					return `${this.path}/` + (this.location.folder ? `${this.location.folder}/` : "");
-				},
-			},
-		},
-		{
-			effect: "colorOverlay",
-			drawCondition: () => !Weather.Sky.skyDisabled,
-			params: {
-				color: {
-					nightDark: "#00001ceb",
-					nightBright: "#0d0d26bf",
-					day: "#00000000",
-					dawnDusk: "#4f3605a5",
-					bloodMoon: "#380101bf",
-				},
-			},
-			bindings: {
-				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor;
-				},
-				moonFactor() {
-					return Weather.Sky.moonBrightnessFactor;
-				},
-				bloodMoon() {
-					return Weather.bloodMoon;
-				},
-			},
-		},
-	],
-	init() {
-		this.animationFrame = 0;
-	},
-	draw() {
-		// Ignore mask
+		// Add the overlay to the effect itself
+		// Fallback if reflections are turned off: Ignore mask
 		this.effects[0].draw({ start: key => {
 			if (this.key === "reflective" && key === "mask") {
 				return false;

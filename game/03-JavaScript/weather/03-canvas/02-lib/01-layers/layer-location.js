@@ -63,7 +63,7 @@ Weather.Sky.Layers.add({
 		},
 		// Fallback only if reflections are disabled
 		{
-			effect: "locationWater",
+			effect: "locationImage",
 			drawCondition: () => {
 				return !V.options.reflections && !!setup.LocationImages[setup.Locations.get()].reflective;
 			},
