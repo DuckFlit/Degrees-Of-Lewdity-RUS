@@ -473,7 +473,7 @@ function weekPassed() {
 		fragment.append(wikifier("robinPunishment", "docks"));
 		V.robineventnote = 1;
 	}
-	V.robinmoney += 300 + V.robin.moneyModifier;
+	V.robinmoney += (V.robin.stayup >= 1 ? 250 : 300) + V.robin.moneyModifier;
 	if (V.robinmoney > 4000) V.robinmoney = 4000;
 	V.compoundcentre = 0;
 	if (V.edenfreedom >= 1 && V.edenshopping === 2) V.edenshopping = 0;
@@ -607,7 +607,9 @@ function dayPassed() {
 	if (V.robin.timer.customer >= 1) V.robin.timer.customer--;
 	if (V.robin.timer.hurt >= 1) V.robin.timer.hurt--;
 	if (V.robin.timer.hurt === 0) V.robin.hurtReason = "nothing";
-
+	
+	V.robin.stayup = (V.robin.stayup == 1) ? 2 : 0;
+	
 	if (numberOfEarSlime()) {
 		// Daily Corruption
 		if (V.earSlime.growth < 50) statChange.corruption(-1);

@@ -509,6 +509,7 @@ function wardrobesUpdate() {
 		V.wardrobes.officeBuilding.unlocked = V.officejobintro === 1;
 		V.wardrobes.officeBuilding.space = 5;
 	}
+
 	if (!V.wardrobes.birdTower) {
 		/* Great Hawk's tower */
 		V.wardrobes.birdTower = clone(defWardrobe);
@@ -520,5 +521,9 @@ function wardrobesUpdate() {
     if (!V.wardrobes.birdTower.locationRequirement) {
         V.wardrobes.birdTower.locationRequirement = ["tower", "moor"];
     }
+
+	if (!V.wardrobes.prison.locationRequirement) {
+		V.wardrobes.prison.locationRequirement = ["prison"];
+	}
 }
 DefineMacro("wardrobesUpdate", wardrobesUpdate);
