@@ -196,6 +196,7 @@
 					You take note of <<his>> <<npcClothesText _robin "upper">>.
 				<</if>>
 			<</if>>
+			<br><br>
 
 		<<elseif $robinconsole is 0>>
 			You knock on the door. <<robinOpen>> <<He>> sits on the bed and stares at the spot <<his>> console used to fill.
@@ -365,6 +366,8 @@
 		Robin looks at the clock on the wall.
 		<<if $robin.timer.hurt gte 1>>
 			"<<print _robin.trauma lte 30 ? "It's past my bed time," : "I-I should probably go to sleep,">>" <<he>> says. "<<print $robin.timer.hurt gte 1 ? "I'd rather sleep alone tonight, if you don't mind" : "You should get some sleep too">>."
+		<<elseif $robin.stayup is 1>>
+			"It's late," <<he>> says. <<He>> hugs you. "You should get some sleep." <<He>> closes the door somewhat anxiously, as if <<he>> has something else to do.
 		<<elseif _robin.trauma lte 30>>
 			"It's past my bed time," <<he>> says. <<He>> hugs you. "Goodnight."
 		<<elseif _robin.trauma lte 60>>
@@ -378,7 +381,7 @@
 		<br><br>
 		<<if _robinrequest is 1>>
 			<<bedroomicon>><<link [[Stay with Robin|Robin Room Bed Intro]]>><<npcincr Robin trauma -3>><<npcincr Robin love 1>><<handheldon 1>><</link>><<glove>><<lrtrauma>>
-		<<elseif $robin.timer.hurt is 0 and ($robinromance or _robin.trauma gt 30)>>
+		<<elseif $robin.timer.hurt is 0 and $robin.stayup isnot 1 and ($robinromance or _robin.trauma gt 30)>>
 			<<bedroomicon>><<link [[Ask to stay|Robin Room Bed Intro]]>><<handheldon 1>><</link>>
 		<</if>>
 		<br>
@@ -388,6 +391,17 @@
 			<<getouticon>><<link [[Leave|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
 		<</if>>
 		<br>
+	<<elseif Time.hour is 17 and C.npc.Robin.trauma lte 60 and $daily.robin.studycompany isnot 1 and $robin.stayup isnot 1>>
+		Robin looks at the clock on the wall.
+		<br><br>
+		"I should work on Winter's assignment now," <<he>> says. <<if C.npc.Robin.trauma gte 20>><<He>> looks weary at the idea. <</if>>"Would you like to join me?"
+		<br><br>
+		<<if C.npc.Robin.trauma gte 20>>
+			<<link[[Help Robin study|Robin Study]]>><<set $study_inside to 1>><<stress 3>><<npcincr Robin love 1>><<npcincr Robin trauma -3>><<npcincr Robin dom -1>><</link>><<gstress>><<glove>><<lrtrauma>><<ldom>><br>
+		<<else>>
+			<<link[[Agree|Robin Study]]>><<npcincr Robin love 1>><<set $study_inside to 1>><</link>><<glove>><br>
+		<</if>>
+		<<getouticon>><<link[[Leave|Orphanage]]>><<endevent>><</link>>
 	<<elseif $englishPlay is "ongoing" and $englishPlayDays is 0 and ((Time.hour gte 16 and Time.minute gte 40) or Time.hour gte 17)>>
 		Robin looks at the clock on the wall.
 		"It's almost time for the school plays," <<he>> says. <<if $exposed lte 0>>"Would you like to walk with me?"<</if>>
@@ -652,6 +666,7 @@
 <<widget "robinhug">>
 	<<if $robin.timer.hurt gte 1>>
 		Robin lets you hug <<him>> for a moment before gently untangling <<himself>> from you. "I'm sorry," <<he>> says. "I'm still a little upset with you. I need some space."
+		<br><br>
 	<<else>>
 		<<if $daily.robin.hugCry isnot 1 and $robinpaid isnot 1 and $trauma gte ($traumamax / 7) * 2>>
 			<<link [[Cry (0:05)|Robin Hug Cry]]>><<pass 5>><<set $daily.robin.hugCry to 1>><<stress -12>><<trauma -6>><<tearup>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<lstress>><<ltrauma>><<glove>><<gdom>>
