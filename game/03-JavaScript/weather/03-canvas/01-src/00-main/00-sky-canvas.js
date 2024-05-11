@@ -19,6 +19,11 @@ Weather.Sky = (() => {
 			this.element.height = height;
 		}
 
+		reset() {
+			this.clear();
+			this.ctx.reset();
+		}
+
 		/* Aliases */
 		clear() {
 			this.ctx.clearRect(0, 0, this.element.width, this.element.height);

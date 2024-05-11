@@ -81,6 +81,7 @@ Weather.Observables = (() => {
 	});
 
 	return {
+		objects: observables,
 		checkForUpdate: setBindings,
 	};
 })();

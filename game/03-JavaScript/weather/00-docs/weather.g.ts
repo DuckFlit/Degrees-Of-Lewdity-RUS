@@ -1,8 +1,9 @@
 interface ImageLocation {
     folder: string;
-    base: ImageSetting | { [key: string]: ImageSetting };
+    base?: ImageSetting | { [key: string]: ImageSetting };
     emissive?: EmissiveSetting | { [key: string]: EmissiveSetting };
-    reflective?: ReflectiveSetting };
+    reflective?: ReflectiveSetting;
+    layerTop?: ImageSetting | { [key: string]: ImageSetting };
 }
 
 interface AnimationSetting {
@@ -34,14 +35,20 @@ interface EmissiveSetting {
 }
 
 interface ReflectiveSetting {
+	/**
+     * The primary mask setting used to define the basic masking properties of a reflection.
+     * This should be the first property defined for clarity when setting up reflective properties.
+     */
     mask: MaskSetting;
-    [key: string]: ImageSetting;
+    [key: string]: ImageSetting | any;
 }
 
 interface MaskSetting {
     image: string;
-    alpha?: number;
-	horizon?: number;
+    alpha?: number | (() => number);
+	horizon?: number | (() => number);
+	waveShiftFactor?: number | (() => number);
+	animationCondition?: boolean | (() => boolean);
 }
 
 declare global {

@@ -26,31 +26,6 @@ Weather.Sky.Layers.add({
 			},
 		},
 		{
-			effect: "colorOverlay",
-			compositeOperation: "source-atop",
-			drawCondition: () => !Weather.Sky.skyDisabled,
-			params: {
-				color: {
-					nightDark: "#00001ceb",
-					nightBright: "#0d0d26bf",
-					day: "#00000000",
-					dawnDusk: "#4f3605a5",
-					bloodMoon: "#380101bf",
-				},
-			},
-			bindings: {
-				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor;
-				},
-				moonFactor() {
-					return Weather.Sky.moonBrightnessFactor;
-				},
-				bloodMoon() {
-					return Weather.bloodMoon;
-				},
-			},
-		},
-		{
 			effect: "locationEmissive",
 			drawCondition: () => {
 				return setup.LocationImages[setup.Locations.get()].emissive;
@@ -68,24 +43,59 @@ Weather.Sky.Layers.add({
 				},
 			},
 		},
-		// {
-		// 	effect: "locationReflective",
-		// 	drawCondition: () => {
-		// 		return false;//!!setup.LocationImages[setup.Locations.get()].reflective;
-		// 	},
-		// 	params: {
-		// 		path: "img/misc/locations",
-		// 	},
-		// 	bindings: {
-		// 		location() {
-		// 			const location = setup.Locations.get();
-		// 			return setup.LocationImages[location];
-		// 		},
-		// 		key() {
-		// 			return "reflective";
-		// 		},
-		// 	},
-		// },
+		{
+			effect: "locationReflective",
+			drawCondition: () => {
+				return V.options.reflections && !!setup.LocationImages[setup.Locations.get()].reflective;
+			},
+			params: {
+				path: "img/misc/locations",
+			},
+			bindings: {
+				location() {
+					const location = setup.Locations.get();
+					return setup.LocationImages[location];
+				},
+				key() {
+					return "reflective";
+				},
+			},
+		},
+		// Fallback only if reflections are disabled
+		{
+			effect: "locationWater",
+			drawCondition: () => {
+				return !V.options.reflections && !!setup.LocationImages[setup.Locations.get()].reflective;
+			},
+			params: {
+				path: "img/misc/locations",
+			},
+			bindings: {
+				location() {
+					const location = setup.Locations.get();
+					return setup.LocationImages[location];
+				},
+				key() {
+					return "reflective";
+				},
+			},
+		},
+		// Draw on top
+		{
+			effect: "locationImage",
+			params: {
+				path: "img/misc/locations",
+			},
+			bindings: {
+				location() {
+					const location = setup.Locations.get();
+					return setup.LocationImages[location];
+				},
+				key() {
+					return "layerTop";
+				},
+			},
+		},
 	],
 });
 
