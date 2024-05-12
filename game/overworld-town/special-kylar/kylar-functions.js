@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * @typedef {object} DolLocation
  * @property {string} area The place they are at.
