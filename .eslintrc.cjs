@@ -289,6 +289,13 @@ module.exports = {
 		"jsdoc/require-returns-description": "off",
 		"jsdoc/require-returns": "off",
 
+		"jsdoc/no-undefined-types": [
+			1,
+			{
+				definedTypes: ["EventNpc"],
+			},
+		],
+
 		/* eslint-plugin-prettier */
 
 		"prettier/prettier": "warn",
