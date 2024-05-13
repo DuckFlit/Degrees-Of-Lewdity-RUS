@@ -1,5 +1,4 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-useless-escape */
+/* global statDisplay */
 
 const statChange = (() => {
 	function paramError(functionName = "", param = "", value, expectedValues = "") {
@@ -700,7 +699,7 @@ const statChange = (() => {
 				penis_tiny: V.player.penisExist && V.player.penissize <= 0,
 				penis_small: V.player.penisExist && V.player.penissize === 1,
 				penis_big: V.player.penisExist && V.player.penissize >= 4,
-				breasts_tiny: V.gender !== "m",
+				breasts_tiny: V.player.gender !== "m",
 				breasts_small: true,
 				breasts_big: true,
 				pregnancy: playerBellySize() >= 8,

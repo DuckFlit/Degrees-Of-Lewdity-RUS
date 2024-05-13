@@ -4,6 +4,8 @@ declare module "twine-sugarcube" {
 			school: {
 				lunchEaten: boolean;
 			};
+			milkFullPainMessage: boolean;
+			graceUp: boolean;
 		};
 	}
 }

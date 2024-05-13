@@ -1,6 +1,9 @@
 declare module "twine-sugarcube" {
 	export interface SugarCubeStoryVariables {
 		NPCList: [Npc, Npc, Npc, Npc, Npc, Npc];
+
+		enemytype: string;
+
 		kylarwatched: boolean;
 		kylar: {
 			fountain: 0 | 1;

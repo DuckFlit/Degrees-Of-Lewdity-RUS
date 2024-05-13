@@ -50,7 +50,6 @@
 
 */
 
-/* eslint-disable jsdoc/require-description-complete-sentence */
 const Time = (() => {
 	const moonPhases = {
 		new: {
@@ -484,7 +483,7 @@ function weekPassed() {
 		if (V.photo.silly === "paid") V.photo.silly = 0;
 		V.photo.shoot = 0;
 	}
-	if (V.nightmareTimer > 0) {
+	if (V.nightmareTimer && V.nightmareTimer > 0) {
 		V.nightmareTimer--;
 		if (V.nightmareTimer <= 0) delete V.nightmareTimer;
 	}
@@ -496,7 +495,6 @@ function weekPassed() {
 
 	statChange.worldCorruption("soft", V.world_corruption_hard);
 
-	delete V.weekly;
 	V.weekly = clone(setup.weeklyObject);
 
 	return fragment;
@@ -598,9 +596,9 @@ function dayPassed() {
 	if (V.robin.timer.customer >= 1) V.robin.timer.customer--;
 	if (V.robin.timer.hurt >= 1) V.robin.timer.hurt--;
 	if (V.robin.timer.hurt === 0) V.robin.hurtReason = "nothing";
-	
-	V.robin.stayup = (V.robin.stayup == 1) ? 2 : 0;
-	
+
+	V.robin.stayup = V.robin.stayup === 1 ? 2 : 0;
+
 	if (numberOfEarSlime()) {
 		// Daily Corruption
 		if (V.earSlime.growth < 50) statChange.corruption(-1);

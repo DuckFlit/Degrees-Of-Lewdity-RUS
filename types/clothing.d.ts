@@ -1,4 +1,4 @@
-type ClothesSlots = "clothes_all_slots" | ClothedSlots;
+type ClothesSlots = "all" | ClothedSlots;
 
 type ClothedSlots =
 	| "over_upper"
@@ -18,16 +18,64 @@ type ClothedSlots =
 	| "genitals";
 
 declare module "twine-sugarcube" {
-	export interface SugarCubeSetupObject {
-		clothes: {
-			[x in ClothesSlots]: ClothesItem[];
-		};
-	}
-
 	export interface SugarCubeStoryVariables {
 		worn: {
 			[x in ClothedSlots]: ClothesItem;
 		};
+		store: {
+			[x in ClothedSlots]: ClothesItem[];
+		};
+		tryOn: {
+			autoReset: boolean;
+			ownedStored: {
+				[x in ClothedSlots]: ClothesItem?;
+			};
+			tryingOn: {
+				[x in ClothedSlots]: ClothesItem?;
+			};
+			showEquip: {
+				[x: string]: any;
+			};
+			showUnderEquip: {
+				[x: string]: any;
+			};
+			type: any;
+			value: number;
+		};
+		carried: {
+			[x in ClothedSlots]: ClothesItem;
+		};
+		wardrobe: {
+			[x in ClothedSlots]: ClothesItem;
+		};
+		wardrobes: {
+			shopReturn: string;
+			wardrobe: {
+				NOTE: string;
+				unlocked: boolean;
+				shopSend: boolean;
+				name: string;
+			};
+			changingRoom: Wardrobe;
+			edensCabin: Wardrobe;
+			asylum: Wardrobe;
+			alexFarm: Wardrobe;
+			stripClub: Wardrobe;
+			brothel: Wardrobe;
+			schoolBoys: Wardrobe;
+			schoolGirls: Wardrobe;
+			prison: Wardrobe;
+		};
+		outfit: {
+			[x in ClothedSlots]: string;
+		}[];
+	}
+
+	export interface SugarCubeSetupObject {
+		clothes: {
+			[x in ClothesSlots]: ClothesItem[];
+		};
+		clothes_all_slots: ClothedSlots;
 	}
 }
 
@@ -143,6 +191,30 @@ declare global {
 		 */
 		mask_img?: number;
 		// TODO list and document other options
+	}
+
+	export interface Wardrobe {
+		over_upper: ClothesItem[];
+		over_lower: ClothesItem[];
+		upper: ClothesItem[];
+		lower: ClothesItem[];
+		under_upper: ClothesItem[];
+		under_lower: ClothesItem[];
+		over_head: ClothesItem[];
+		head: ClothesItem[];
+		face: ClothesItem[];
+		neck: ClothesItem[];
+		hands: ClothesItem[];
+		handheld: ClothesItem[];
+		legs: ClothesItem[];
+		feet: ClothesItem[];
+		genitals: ClothesItem[];
+		space: number;
+		isolated: boolean;
+		locationRequirement: any[];
+		shopSend: boolean;
+		transfer: boolean;
+		unlocked: boolean;
 	}
 }
 
