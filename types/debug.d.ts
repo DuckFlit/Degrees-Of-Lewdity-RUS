@@ -9,20 +9,10 @@ declare module "twine-sugarcube" {
 		eventslot?: number;
 		/** @deprecated */
 		eventtime?: number;
-		options: DolSettingsOptions;
-		passage: string;
-		phase: number | string;
-		rng: number;
-		danger: number;
-		index: number;
 	}
 }
 
 declare global {
-	export interface DolSettingsOptions {
-		debugdisable: "f" | "t";
-	}
-
 	export interface Window {
 		EventSystem: EventData;
 	}

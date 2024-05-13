@@ -94,8 +94,8 @@ window.rangeIterate = rangeIterate;
  *
  * @param {string} macroName
  * @param {Function} macroFunction
- * @param {object} tags
- * @param {boolean} skipArgs
+ * @param {object=} tags
+ * @param {boolean=} skipArgs
  */
 function DefineMacro(macroName, macroFunction, tags, skipArgs) {
 	Macro.add(macroName, {
@@ -127,9 +127,9 @@ function DefineMacro(macroName, macroFunction, tags, skipArgs) {
  *
  * @param {string} macroName
  * @param {Function} macroFunction
- * @param {object} tags
- * @param {boolean} skipArgs
- * @param {boolean} maintainContext
+ * @param {object=} tags
+ * @param {boolean=} skipArgs
+ * @param {boolean=} maintainContext
  */
 function DefineMacroS(macroName, macroFunction, tags, skipArgs, maintainContext) {
 	DefineMacro(

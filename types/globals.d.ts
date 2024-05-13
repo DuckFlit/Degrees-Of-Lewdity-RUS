@@ -55,6 +55,8 @@ declare global {
 	const L10n: any;
 
 	let throwError: Function;
+
+	let DefineMacro: Function;
 }
 
 export {};
