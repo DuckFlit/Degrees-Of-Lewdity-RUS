@@ -349,6 +349,7 @@ function outfitChecks() {
 		(V.worn.under_upper.type.includes("swim") || V.worn.under_upper.type.includes("naked")) &&
 		(V.worn.upper.type.includes("swim") || V.worn.upper.type.includes("naked"));
 	T.outfit = (T.bottom?.outfitSecondary && T.bottom?.outfitSecondary[1] === T.top?.name) || null;
+	if (!T.top && !T.shirtless) T.top = T.bottom;
 }
 window.outfitChecks = outfitChecks;
 DefineMacro("outfitChecks", outfitChecks);

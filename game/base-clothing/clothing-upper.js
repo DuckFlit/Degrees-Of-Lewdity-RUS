@@ -5090,6 +5090,8 @@ function initUpper() {
 			sleeve_img: 1,
 			sleeve_acc_img: 1,
 			breast_img: { 0: null, 1: null, 2: null, 3: 3, 4: 4, 5: 4, 6: 6 },
+			altposition: "none",
+			altdisabled: ["sleeves", "acc"],
 			cursed: 0,
 			location: 0,
 			iconFile: "winter_jacket.png",
@@ -5522,6 +5524,8 @@ function initUpper() {
 			accessory_colour_sidebar: 1,
 			accessory_integrity_img: 1,
 			sleeve_img: 1,
+			altposition: "none",
+			altdisabled: [],
 			altsleeve: "none",
 			breast_img: { 0: null, 1: null, 2: 2, 3: 3, 4: 4, 5: 5, 6: 5 },
 			back_img: 1,
@@ -5533,7 +5537,6 @@ function initUpper() {
 			accIcon: "cardigan_acc.png",
 			notuck: "tie",
 			pregType: "min",
-			altposition: "none",
 		},
 
 		{
