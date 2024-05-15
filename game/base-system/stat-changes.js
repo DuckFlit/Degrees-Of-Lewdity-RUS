@@ -667,15 +667,15 @@ const statChange = (() => {
 			switch (V.player.penissize) {
 				case 4:
 					insecurity("penis_big", amount);
-					return statDisplay.gacceptance("penis_big");
+					return statDisplay.ginsecurity("penis_big");
 				case 1:
 					insecurity("penis_small", amount);
-					return statDisplay.gacceptance("penis_small");
+					return statDisplay.ginsecurity("penis_small");
 				case 0:
 				case -1:
 				case -2:
 					insecurity("penis_tiny", amount);
-					return statDisplay.gacceptance("penis_tiny");
+					return statDisplay.ginsecurity("penis_tiny");
 			}
 		}
 		return "";

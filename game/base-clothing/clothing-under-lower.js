@@ -2112,6 +2112,7 @@ function initUnderLower() {
 			index: 46,
 			name: "leather leggings",
 			name_cap: "Leather leggings",
+			name_simple: "leggings",
 			variable: "leatherleggings",
 			integrity: 100,
 			integrity_max: 100,

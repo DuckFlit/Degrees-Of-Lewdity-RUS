@@ -353,7 +353,7 @@ statDisplay.create("ggghunger", () => statDisplay.statChange("Hunger", 3, "red")
 
 statDisplay.create("gacceptance", () => statDisplay.statChange("Acceptance", 1, "green"));
 statDisplay.create("ginsecurity", type => {
-	if (type === "breasts_tiny" && V.player.gender === "f") return "";
+	if (type === "breasts_tiny" && V.player.gender === "m") return "";
 	if (V["acceptance_" + type] <= 999) return statDisplay.statChange("Insecurity", 1, "red");
 	return "";
 });
