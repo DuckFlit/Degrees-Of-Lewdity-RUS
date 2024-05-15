@@ -2468,9 +2468,13 @@ Sydney leaves first, peeking to make sure no one will see you both leave. Once t
 	When you regain consciousness, you find yourself lying on a bench in a small booth. You recognise the ceiling of the library above you.
 	There's a curtain covering the entrance.
 	<<if $exposed gte 1>>
-		A towel has been wrapped around you.
+		A towel has been wrapped around you. <<if $passoutReason>>A small <<= $passoutReason is "hypothermia" ? "heater" : "fan">> is blowing <<= $passoutReason is "hypothermia" ? "hot" : "cool">> air onto you.<</if>>
 		<<towelup>>
 		<<set $exposedTemp to 1>>
+	<<elseif $passoutReason and $worn.over_upper.name isnot "naked" and $passoutReason is "hyperthermia">>
+		A small fan is blowing cool air on you. Your $worn.over_upper.name has been removed and neatly folded beside you. <<overupperstrip>><<overlowerstrip>>
+	<<elseif $passoutReason>>
+		A small <<= $passoutReason is "hypothermia" ? "heater" : "fan">> is placed next to you, and <<= $passoutReason is "hypothermia" ? "you're covered with a warm blanket" : "there's an ice pack on your forehead">>.
 	<</if>>
 	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
 		Your bindings have been removed.
@@ -2494,11 +2498,15 @@ Sydney leaves first, peeking to make sure no one will see you both leave. Once t
 	<<if $exposedTemp is 1>>
 		and you were exposed,
 	<</if>>
+	<<if $passoutReason>>
+		and your body was <<= $passoutReason is "hypothermia" ? "freezing cold" : "burning up">>,
+	<</if>>
 	<<if _boundTemp is 1>>
 		and you were tied up,
 	<</if>>
 	and, and..." <<he>> pauses to catch <<his>> breath. "I brought you in here, I didn't know what else to do. Are you alright?"
 	<br><br>
+	<<unset $passoutReason>>
 	<<link [[Thank|Sydney Library Rescue Intro 2]]>><<set $phase to 1>><<npcincr Sydney love 1>><</link>><<glove>>
 	<br>
 	<<link [[Flirt|Sydney Library Rescue Intro 2]]>><<set $phase to 2>><<npcincr Sydney purity -2>><</link>><<lspurity>><<promiscuous1>>
@@ -2523,9 +2531,15 @@ Sydney leaves first, peeking to make sure no one will see you both leave. Once t
 			"You really know how to scare the shit out of me." There's a crack in <<his>> voice as <<he>> looks down to you. "What would I do with myself if you got hurt?"
 		<<else>>
 			<<if $exposed gte 1>>
-				A towel has been wrapped around you.
+				A towel has been wrapped around you. <<if $passoutReason>>A small <<= $passoutReason is "hypothermia" ? "heater" : "fan">> is blowing <<= $passoutReason is "hypothermia" ? "hot" : "cool">> air onto you.<</if>>
 				<<towelup>>
 				<<set $exposedTemp to 1>>
+			<<elseif $passoutReason>>
+				<<if $worn.over_upper.name isnot "naked" and $passoutReason is "hyperthermia">>
+					A small fan is blowing cool air on you. Your $worn.over_upper.name has been removed and neatly folded beside you. <<overupperstrip>><<overlowerstrip>>
+				<<else>>
+					A small <<= $passoutReason is "hypothermia" ? "heater" : "fan">> is placed next to you, and <<= $passoutReason is "hypothermia" ? "you're covered with a warm blanket" : "there's an ice pack on your forehead">>.
+				<</if>>
 			<</if>>
 			You feel something on your shoulder. You look down, and see <<npcHairColour "Sydney">> hair. Sydney rests against you. <<stress -12>><<llstress>>
 			<br><br>
@@ -2536,9 +2550,15 @@ Sydney leaves first, peeking to make sure no one will see you both leave. Once t
 		<br><br>
 	<<else>>
 		<<if $exposed gte 1>>
-			A towel has been wrapped around you.
+			A towel has been wrapped around you. <<if $passoutReason>>A small <<= $passoutReason is "hypothermia" ? "heater" : "fan">> is blowing <<= $passoutReason is "hypothermia" ? "hot" : "cool">> air onto you.<</if>>
 			<<towelup>>
 			<<set $exposedTemp to 1>>
+		<<elseif $passoutReason>>
+			<<if $worn.over_upper.name isnot "naked" and $passoutReason is "hyperthermia">>
+				A small fan is blowing cool air on you. Your $worn.over_upper.name has been removed and neatly folded beside you. <<overupperstrip>><<overlowerstrip>>
+			<<else>>
+				A small <<= $passoutReason is "hypothermia" ? "heater" : "fan">> is placed next to you, and <<= $passoutReason is "hypothermia" ? "you're covered with a warm blanket" : "there's an ice pack on your forehead">>.
+			<</if>>
 		<</if>>
 		You hear Sydney's voice outside. "N...no, the changing room is occupied at the moment. No, you can't check! Because it's occupied!" After a moment, the curtain shifts aside as <<he>> backs into the booth.
 		<<He>> turns around, and jumps when <<he>> realises you're awake.
@@ -2547,12 +2567,16 @@ Sydney leaves first, peeking to make sure no one will see you both leave. Once t
 		<<if $exposedTemp is 1>>
 			and you were exposed,
 		<</if>>
+		<<if $passoutReason>>
+			and your body was <<= $passoutReason is "hypothermia" ? "freezing cold" : "burning up">>,
+		<</if>>
 		<<if _boundTemp is 1>>
 			and you were tied up,
 		<</if>>
 		and, and..." <<he>> pauses to catch <<his>> breath. "I brought you in here, I didn't know what else to do. Are you alright?"
 		<br><br>
 	<</if>>
+	<<unset $passoutReason>>
 	<<link [[Thank Sydney|Sydney Library Rescue 2]]>><<set $phase to 1>><<npcincr Sydney love 1>><</link>><<glove>>
 	<br>
 	<<if $sydneyromance is 1>>
@@ -3217,7 +3241,12 @@ Sydney stretches and yawns.
 				<br>
 			<</if>>
 		<<else>>
-			Sydney finishes <<his>> food. You chat with <<him>>, and <<hes>> happy to stay and listen for a while. "I need to get back to the library now. Thank you for keeping me company." <<He>> gathers <<his>> books and speedwalks out of the canteen<<if $sydneyromance is 1>>, blowing you a kiss on the way out<</if>>.
+			<<if random(1,6) is 1>>
+				Sydney looks more tired than usual, and <<he>> nearly nods off into <<his>> food. It occurs to you that <<he>> could likely use some caffeine. After finishing <<his>> lunch, <<he>> stifles another yawn as <<he>> listens to you chat. "I'm not bored, just tired," <<he>> assures you. "I should get back to the library now, though. Thank you for keeping me company." <<set $daily.sydney.coffee to true>>
+			<<else>>
+				Sydney finishes <<his>> food. You chat with <<him>>, and <<hes>> happy to stay and listen for a while. "I need to get back to the library now. Thank you for keeping me company."
+			<</if>>
+			<<He>> gathers <<his>> books and <<= !$daily.sydney.coffee ? "speedwalks" : "walks">> out of the canteen<<if $sydneyromance is 1>>, blowing you a kiss on the way out<</if>>.
 			<br><br>
 			<<if C.npc.Kylar.state is "active">>
 				Kylar watches from across the canteen.
@@ -3225,6 +3254,14 @@ Sydney stretches and yawns.
 				<br><br>
 			<</if>>
 			<<endevent>>
+			<<if $daily.sydney.coffee>>
+				<<if $money gte 200>>
+					<<foodicon "coffee">><<link [[Buy Sydney a coffee (0:25 £2)|Sydney Coffee Purchase]]>><<pass 25>><<set $money -200>><</link>>
+				<<else>>
+					<span class="blue">You can't afford a coffee for Sydney.</span>
+				<</if>>
+				<br>
+			<</if>>
 			<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
 			<<schoolicon "library">><<link [[Follow Sydney to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
 			<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
@@ -4217,3 +4254,24 @@ You help Sydney <<print either("manage customers","replenish merchandise","with 
 	<br><br>
 	<<link [[Next|Temple]]>><<endevent>><</link>>
 <</if>>
+
+:: Sydney Coffee Purchase
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+<<npc "Sydney">><<person1>>
+
+You spend <<= $schoolstate is "lunch" ? "a portion" : "the remainder">> of your lunch break on a jaunt down to the cafe. You purchase a large coffee and bring it back to the library. Sydney's sleepily organising a stack of returned books.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	You place the coffee cup on the counter and push it over to <<him>>. "You always look so tired. I thought you might like some coffee."
+<<elseif $speech_attitude is "bratty">>
+	You slide the coffee across <<his>> desk. "I bought you some coffee. You need more sleep."
+<<else>>
+	You offer the coffee cup to <<him>>. "I bought some coffee for you. You should get some rest after school."
+<</if>>
+<br><br>
+
+Sydney looks momentarily startled, then smiles. <<He>> brings the cup to <<his>> face, enjoying the warm aroma before taking a sip. <<He>> is quiet for a moment, then lets out a content sigh. "I really should get more sleep. Thanks so much, I needed that," he says, <<= $sydneyromance gte 1 ? "leaning over to kiss your cheek" : "reaching over to squeeze your hand">>. <<glove>><<npcincr Sydney love 2>>
+
+<br><br>
+<<link [[Next|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
