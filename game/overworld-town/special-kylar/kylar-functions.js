@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * @typedef {object} DolLocation
  * @property {string} area The place they are at.
@@ -11,7 +13,7 @@ const UnknownLocation = { area: "unknown", state: "unknown" };
 const InactiveLocation = { area: "inactive", state: "inactive" };
 
 /** @returns {boolean} */
-const isRaining = () => Weather.precipitation !== "none";
+const isRaining = () => Weather.precipitation !== "none"; // eslint-disable-line no-unused-vars
 
 const importantStates = ["rehearsal", "dual_rehearsal"];
 

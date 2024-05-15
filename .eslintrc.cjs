@@ -288,7 +288,7 @@ module.exports = {
 		/* hasOwn */
 		// No need for this, since we're overriding hasOwn for older browers (01-compatibility.js)
 		// Warn for the hasOwnProperty instead
-		"es-x/no-object-hasown": "off",
+		"es-x/no-object-hasown": "off", // eslint-disable-line
 		"prefer-object-has-own": "warn",
 
 		/* eslint-plugin-jsdoc */
@@ -302,6 +302,13 @@ module.exports = {
 		"jsdoc/require-property-description": "off",
 		"jsdoc/require-returns-description": "off",
 		"jsdoc/require-returns": "off",
+
+		"jsdoc/no-undefined-types": [
+			1,
+			{
+				definedTypes: ["EventNpc"],
+			},
+		],
 
 		/* eslint-plugin-prettier */
 
