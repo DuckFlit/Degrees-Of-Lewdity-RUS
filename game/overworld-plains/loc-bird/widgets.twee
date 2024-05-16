@@ -769,7 +769,7 @@
 			<<set $bird.activity to "brood">>
 			<<set $bird.override to "brood">>
 			<<set $bird.overrideTimer to 60>>
-		<<elseif npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk", "pc") and $rng gte 50>>
+		<<elseif npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk", "pc") and npcBellySize("Great Hawk") gte 12 and $rng gte 50>>
 			<<set $bird.activity to "rest">>
 			<<set $bird.override to "rest">>
 			<<set $bird.overrideTimer to 60>>
@@ -777,7 +777,7 @@
 			<<set $bird.activity to "build">>
 		<</if>>
 	<<elseif Time.hour lte 17>>
-		<<if $bird.injured gt 1 or npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk", "pc")>>
+		<<if $bird.injured gt 1 or npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk", "pc") and npcBellySize("Great Hawk") gte 12>>
 			<<set $bird.activity to "rest">>
 		<<else>>
 			<<set $bird.activity to "groom">>
@@ -1387,6 +1387,22 @@
 			<<bHe>> looks to you and caws. You've been flying for hours, and should return home.
 		<</if>>
 		<<bHe>> turns to fly back to the castle, and you follow.
+		<br><br>
+
+		<<flight_distance_check>>
+		<<flight_time_check _returnTime "silent">>
+		<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<br>
+	<<elseif $bird.hunts.duo is true and npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc") and $bird.hunts.timer gte (360 - (npcBellySize("Great Hawk") * 10))>>
+		<<endevent>>
+		<<npc "Great Hawk">><<person1>>
+		<<your_bird_text "cap">> looks very fatigued.
+		<<if $monster is 1>>
+			"Been flying too long. We return home." <<bHe>> puts <<bhis>> hands on <<bhis>> <<bellyDescription "Great Hawk">>.
+		<<else>>
+			<<bHe>> looks to you and caws, looking fatigued.
+		<</if>>
+		<<bHis>> pregnancy must make hunting more taxing than normal. <<bHe>> turns to fly back to the castle, and you follow.
 		<br><br>
 
 		<<flight_distance_check>>

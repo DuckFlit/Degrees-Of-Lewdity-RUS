@@ -34,7 +34,7 @@
 					<<addevent `"hawkSingles " + _childrenIds[random(0,_childrenIds.length - 1)]`>>
 				<<elseif _multipleEvents is true>>
 					<<set _args to _birthChildrenIds[_keys[random(0,_keys.length - 1)]]>>
-					/*<<addevent "hawkMultiple _args">>*/
+					<<addevent "hawkMultiple _args">>
 				<</if>>
 		<</switch>>
 	<</if>>
@@ -45,7 +45,7 @@
 		<<childSelect _args[0]>>
 		<<switch random(0,0)>>
 			<<case 0>>
-				You spot your child <<childname>> on their back, looking at you with their <<childhands>> stretched towards you.
+				You spot your child <<childname>> on <<childhis>> back, looking at you with <<childhis>> <<childhands>> stretched towards you.
 				<br><br>
 				Picking <<childhim>> up, <<childhe>> <<childgiggles>> while rubbing your face.
 				<br><br>
@@ -69,7 +69,7 @@
 	<<if $childrenIds>>
 		<<switch random(0,0)>>
 			<<case 0>>
-				You spot your children <<childrenNames $childrenIds>> sleeping together in their cot with a peaceful look on each face.
+				You spot your children <<childrenNames $childrenIds>> sleeping together in their cot with a peaceful look on their faces.
 				<br><br>
 				<<link [[Watch (0:30)|childCotWatch]]>><<pass 30>><<set $phase to 1>><</link>><<lstress>><<ltrauma>>
 				<br>
@@ -83,7 +83,7 @@
 		<<childSelect _args[0]>>
 		<<switch random(0,0)>>
 			<<case 0>>
-				You spot your <<childtype>> <<childname>> lying on a sleeping <<wolf_cave_singular>>, looking at you with their <<childhands>> stretched towards you.
+				You spot your <<childtype>> <<childname>> lying on a sleeping <<wolf_cave_singular>>, looking at you with <<childhis>> <<childhands>> stretched towards you.
 				<br><br>
 				Picking <<childhim>> up, <<childhe>> <<childgiggles>> while rubbing your face.
 				<br><br>
@@ -104,25 +104,50 @@
 <<widget "hawkSingles">>
 	<<if _args[0]>>
 		<<childSelect _args[0]>>
-		<<switch random(0,0)>>
-			<<case 0>>
-				You spot your <<childtype>> <<childname>> lying in the nest, looking at you with their <<childhands>> stretched towards you.
+		<<switch random(0,2)>>
+			<<case 0 1>>
+				You spot your <<childtype>> <<childname>> lying in the nest, looking at you with <<childhis>> <<childhands>> stretched towards you.
 				<br><br>
-				Picking <<childhim>> up, <<childhe>> <<childgiggles>> while rubbing your face.
+				Picking <<childhim>> up, <<childhe>> <<childgiggles>> and flails about.
 				<br><br>
 
+				<<if $cmonster is 1 and $lactating is 1 and $breastfeedingdisable is "f" and $milk_amount gte 1>>
+					<<link [[Breast feed (0:30)|childBreastFeed]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+					<br>
+				<</if>>
 				<<link [[Cuddle (0:30)|childCuddle]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
 				<br>
 				<<link [[Talk (0:30)|childTalk]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
 				<br>
 				<<link [[Play (0:30)|childPlay]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+			<<case 2>>
+				You see <<childname>> rolling around in the nest. As soon as <<childhe>> spots you, <<childhe>> rights <<childhimself>> and <<childgiggles>>. <<childHe>> seems happy to see you! <<stress -12>><<llstress>>
+				<br><br>
+
+				<<link [[Next|$childPassageExit]]>><<unset $childPassageExit>><<endevent>><</link>>
+				<br>
 		<</switch>>
 	<</if>>
 	<br>
 <</widget>>
 
-:: childBreastFeed
+<<widget "hawkMultiples">>
+	<<if $childrenIds>>
+		<<switch random(0,0)>>
+			<<case 0>>
+				You spot <<childrenNames $childrenIds>> tumbling over one another.
+				<<set _child1 to _childrenIds.pluck()>>
+				<<set _child2 to _childrenIds.pluck()>>				
+				Every now and again they stop to stare at each other. After a moment, <<childname _child1>> moves behind <<childselect _child2>><<childname>> and starts to groom <<childhim>>.
+				<br><br>
 
+				<<link [[Next|$childPassageExit]]>><<unset $childrenIds>><<unset $childPassageExit>><<endevent>><</link>>
+				<br>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+:: childBreastFeed
 <<set $pregnancyStats.childBreastfedInteractions++>>
 <<if $worn.over_upper.name isnot "naked" or $worn.upper.name isnot "naked" or $worn.upper.name isnot "naked">>
 	You adjust your clothes to give <<childhim>> access to your <<breasts>>.
@@ -146,20 +171,75 @@
 <<link [[Next|$childPassageExit]]>><<unset $childPassageExit>><<endevent>><</link>>
 
 :: childCuddle
-
 <<set _rng to random(1, 5)>>
-<br>
-<<switch _rng>>
-	<<case 1>>
-		<<childHe>> seems to realise your intent, and wraps <<childhis>> <<childhands>> around your neck while leaning on your shoulder.
-	<<case 2>>
-		You hum a melodic lullaby, rubbing <<childname>>'s back as you gently sway to the tune. The familiarity of your voice seems to soothe <<childhis>> mood. <<childHe>> coos at you.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
-	<<case 3>>
-		You place a soft kiss on <<childhis>> forehead, and give <<childhim>> as much skin-to-skin contact as you can. The action encourages <<childhim>> to lift <<childhis>> head and reward you with a smile.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
-	<<case 4>>
-		You give <<childname>> a few different objects to look at. You explain the colours, shapes, and textures of things that you see around you. <<childHe>> reaches out to touch, curious to explore <<childhis>> environment. You make sure <<childhe>> doesn't try to grasp anything too heavy or awkward.<<gstress>><<stress 6>>
+<<switch $children[$childSelected.childId].type>>
+	<<case "human">>
+		<<switch _rng>>
+			<<case 1>>
+				<<childHe>> seems to realise your intent, and wraps <<childhis>> <<childhands>> around your neck while leaning on your shoulder.
+			<<case 2>>
+				You hum a melodic lullaby, rubbing <<childname>>'s back as you gently sway to the tune. The familiarity of your voice seems to soothe <<childhis>> mood. <<childHe>> coos at you.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+			<<case 3>>
+				You place a soft kiss on <<childhis>> forehead, and give <<childhim>> as much skin-to-skin contact as you can. The action encourages <<childhim>> to lift <<childhis>> head and reward you with a smile.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+			<<case 4>>
+				You give <<childname>> a few different objects to look at. You explain the colours, shapes, and textures of things that you see around you. <<childHe>> reaches out to touch, curious to explore <<childhis>> environment. You make sure <<childhe>> doesn't try to grasp anything too heavy or awkward.<<gstress>><<stress 6>>
+			<<default>>
+				<<childHe>> revolts against being carried, and <<childhis>> kicks <<childhis>> legs. The longer you hold <<childhim>>, the more intense <<childhis>> cries become. Some of <<childhis>> kicks connect.<<gpain>><<gstress>><<pain 4>><<stress 6>>
+		<</switch>>
+	<<case "wolf" "wolfboy" "wolfgirl">>
+		<<switch _rng>>
+			<<case 1>>
+				<<if $cmonster is 1>>
+					<<childHe>> seems to realise your intent, and wraps <<childhis>> <<childhands>> around your neck while leaning on your shoulder.
+				<<else>>
+					<<childHe>> seems to realise your intent, and settles into the crook of your neck.
+				<</if>>
+			<<case 2>>
+				You hum a melodic lullaby, rubbing <<childname>>'s back as you gently sway to the tune. The familiarity of your voice seems to soothe <<childhis>> mood. <<childHe>> coos at you.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+			<<case 3>>
+				<<if $cmonster is 1>>
+					You place a soft kiss on <<childhis>> forehead, and give <<childhim>> as much skin-to-skin contact as you can. The action encourages <<childhim>> to lift <<childhis>> head and reward you with a smile.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+				<<else>>
+					You place a soft kiss on <<childhis>> forehead, and give <<childhim>> as much skin-to-fur contact as you can. The action encourages <<childhim>> to lift <<childhis>> head and stick <<childhis>> tongue out at you.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+				<</if>>
+			<<case 4>>
+				You give <<childname>> a few different objects to look at. You explain the colours, shapes, and textures of things that you see around you. <<childHe>> picks a stick up in <<childhis>> mouth and starts to shake it around. You make sure <<childhe>> doesn't try to grasp anything else too heavy or awkward.<<gstress>><<stress 6>>
+			<<default>>
+				<<childHe>> revolts against being carried, and <<childhis>> kicks <<childhis>> legs. The longer you hold <<childhim>>, the more intense <<childhis>> cries become. Some of <<childhis>> kicks connect.<<gpain>><<gstress>><<pain 4>><<stress 6>>
+		<</switch>>
+	<<case "hawk">>
+		<<switch _rng>>
+			<<case 1>>
+				<<if $cmonster is 1>>
+					<<childHe>> seems to realise your intent, and wraps <<childhis>> <<childhands>> around your neck while leaning on your shoulder.
+				<<else>>
+					<<childHe>> seems to realise your intent, and settles into the crook of your neck.
+				<</if>>
+			<<case 2>>
+				You hum a melodic lullaby, rubbing <<childname>>'s back as you gently sway to the tune. The familiarity of your voice seems to soothe <<childhis>> mood. <<childHe>> coos at you.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+			<<case 3>>
+				<<if $cmonster is 1>>
+					You place a soft kiss on <<childhis>> forehead, and give <<childhim>> as much skin-to-skin contact as you can. The action encourages <<childhim>> to lift <<childhis>> head and reward you with a smile.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+				<<else>>
+					You place a soft kiss on <<childhis>> forehead, and give <<childhim>> as much skin-to-feather contact as you can. The action encourages <<childhim>> to lift <<childhis>> head and chirp at you.<<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+				<</if>>
+			<<case 4>>
+				You give <<childname>> a few different materials to look at. You explain the colours, shapes, and textures of things that you see around you.
+				<<if $cmonster is 1>>
+					<<childHe>> reaches out to touch, curious to explore <<childhis>> environment. <<childHe>> grabs onto a piece of cloth
+				<<else>>
+					<<childHe>> reaches out to peck at a piece of cloth that you're showing <<childhim>>. <<childHe>> manages to get it away from you,
+				<</if>>
+				and starts to shake it about. <<childHe>> <<childgiggles>>, but you make sure <<childhe>> doesn't try to grab anything else. <<gstress>><<stress 6>>
+			<<default>>
+				<<if $cmonster is 1>>
+					<<childHe>> revolts against being carried, and <<childhis>> kicks <<childhis>> legs. The longer you hold <<childhim>>, the more intense <<childhis>> cries become. Some of <<childhis>> kicks connect.<<gpain>><<gstress>><<pain 4>><<stress 6>>
+				<<else>>
+					<<childHe>> revolts against being carried, and manages to slip your grasp. <<childHe>> falls harmlessly into the nest, but the act gives you quite the start. <<ggstress>><<stress 12>>
+				<</if>>
+		<</switch>>
 	<<default>>
-		<<childHe>> revolts against being carried, and <<childhis>> kicks <<childhis>> legs. The longer you hold <<childhim>>, the more intense <<childhis>> cries become. Some of <<childhis>> kicks connect.<<gpain>><<gstress>><<pain 4>><<stress 6>>
+		<span class="red">Childtype $children[$childSelected.childId].type not found. This is a bug.</span>
 <</switch>>
 <br><br>
 
@@ -192,16 +272,52 @@
 
 :: childTalk
 <<set _rng to random(1, 4)>>
-<br>
-<<switch _rng>>
-	<<case 1>>
-		You recite a few nursery rhymes you remember from long ago. <<childHe>> looks alert as <<childhe>> listens to your voice. You make a few different tones and wait for <<childhis>> reaction. It seems to you like <<childhe>> recognises certain sounds and changes <<childhis>> expression accordingly. After a few more moments, <<childhe>> breaks eye contact and sucks on <<childhis>> thumb.
-	<<case 2>>
-		You gently cup <<childname>>'s right foot and count <<childhis>> toes, wriggling them before moving on to <<childhis>> next foot. <<childHe>> quiets, watching you with wide eyes as you move your finger from one toe to the next.
-	<<case 3>>
-		You chat to <<childname>>, sharing your thoughts and waiting for a response. <<childHe>> doesn't seem to be paying much attention however.<<gstress>><<stress 6>>
+<<switch $children[$childSelected.childId].type>>
+	<<case "human">>
+		<<switch _rng>>
+			<<case 1>>
+				You recite a few nursery rhymes you remember from long ago. <<childHe>> looks alert as <<childhe>> listens to your voice. You make a few different tones and wait for <<childhis>> reaction. It seems to you like <<childhe>> recognises certain sounds and changes <<childhis>> expression accordingly. After a few more moments, <<childhe>> breaks eye contact and sucks on <<childhis>> thumb.
+			<<case 2>>
+				You gently cup <<childname>>'s right foot and count <<childhis>> toes, wriggling them before moving on to <<childhis>> next foot. <<childHe>> quiets, watching you with wide eyes as you move your finger from one toe to the next.
+			<<case 3>>
+				You chat to <<childname>>, sharing your thoughts and waiting for a response. <<childHe>> doesn't seem to be paying much attention however.<<gstress>><<stress 6>>
+			<<default>>
+				You speak to <<childname>>, but <<childhis>> cries drown your words. <<childHis>> face turns a deeper shade of red with every minute you spend trying to talk to <<childhim>>.<<gstress>><<stress 6>>
+		<</switch>>
+	<<case "wolf" "wolfboy" "wolfgirl">>
+		<<switch _rng>>
+			<<case 1>>
+				You recite a few nursery rhymes you remember from long ago. <<childHe>> looks alert as <<childhe>> listens to your voice. You make a few different tones and wait for <<childhis>> reaction. It seems to you like <<childhe>> recognises certain sounds and changes <<childhis>> expression accordingly. After a few more moments, tilts <<childhis>> head at you.
+			<<case 2>>
+				You gently cup <<childname>>'s
+				<<if $cmonster is 1>>
+					right foot and count <<childhis>> toes, wriggling them before moving on to <<childhis>> next foot. <<childHe>> quiets, watching you with wide eyes as you move your finger from one toe to the next.
+				<<else>>
+					front right paw and count <<childhis>> toes, wriggling them before moving on to <<childhis>> next paw. <<childHe>> quiets, watching you with wide eyes as you move your finger from one toe to the next.
+				<</if>>
+			<<case 3>>
+				You chat to <<childname>>, sharing your thoughts and waiting for a response. <<childHe>> doesn't seem to be paying much attention however.<<gstress>><<stress 6>>
+			<<default>>
+				You speak to <<childname>>, but <<childhe>> softly barks at you every time you open your mouth. <<childhe>> headbutts your leg, then turns away.
+		<</switch>>
+	<<case "hawk">>
+		<<switch _rng>>
+			<<case 1>>
+				You recite a few nursery rhymes you remember from long ago. <<childHe>> looks alert as <<childhe>> listens to your voice. You make a few different tones and wait for <<childhis>> reaction. It seems to you like <<childhe>> recognises certain sounds. After a few more moments, tilts <<childhis>> head at you.
+			<<case 2>>
+				You gently cup <<childname>>'s
+				<<if $cmonster is 1>>
+					right foot and count <<childhis>> toes, wriggling them before moving on to <<childhis>> next foot. <<childHe>> quiets, watching you with wide eyes as you move your finger from one toe to the next.
+				<<else>>
+					right leg and count <<childhis>> talons, wriggling them before moving on to <<childhis>> next leg. <<childHe>> quiets, watching you as you move your finger from one talon to the next.
+				<</if>>
+			<<case 3>>
+				You chat to <<childname>>, sharing your thoughts and waiting for a response. <<childHe>> doesn't seem to be paying much attention however.<<gstress>><<stress 6>>
+			<<default>>
+				You speak to <<childname>>, but <<childhe>> softly chirps at you every time you open your mouth. <<childhe>> headbutts your leg, then turns away.
+		<</switch>>
 	<<default>>
-		You speak to your baby, but <<childhis>> cries drown your words. <<childHis>> face turns a deeper shade of red with every minute you spend trying to talk to <<childhim>>.<<gstress>><<stress 6>>
+		<span class="red">Childtype $children[$childSelected.childId].type not found. This is a bug.</span>	
 <</switch>>
 <br><br>
 
@@ -209,16 +325,15 @@
 
 :: childPlay
 <<set _rng to random(1, 6)>>
-<br>
 <<switch _rng>>
 	<<case 1>>
 		You smile down at <<childname>>. You wave your hands and stick your tongue out, making several different faces in an attempt to catch <<childhis>> attention. <<childHe>> studies your expressions with curiosity. <<childHe>> is trying to imitate you, but you're unsure if it's just a reflex.
 	<<case 2>>
-		You bring <<childname>>'s feet to <<childhis>> hands, moving them around and occasionally clapping them together. You give <<childhis>> body a gentle massage, from <<childhis>> toes, to <<childhis>> back, then all the way to <<childhis>> fingertips. You shower <<childhis>> frame in affectionate touches. <<childHe>> smiles in response to your broad grin.
+		You bring <<childname>>'s <<childfeet>> to <<childhis>> <<childhands>>, moving them around and occasionally clapping them together. You give <<childhis>> body a gentle massage, from <<childhis>> <<childtoes>>, to <<childhis>> back, then all the way to <<childhis>> <<childfinger>>tips. You shower <<childhis>> frame in affectionate touches. <<childHe>> smiles in response to your broad grin.
 	<<case 3>>
 		You cover your face with both hands, then uncover it a few seconds later. <<childname>> peers up at you. <<childHe>> smiles when your eyes meet.<<lstress>><<stress -6>>
 	<<case 4>>
-		You tickle <<childname>> and blow raspberries on <<childhis>> stomach. <<childHe>> responds by interrupting <<childhis>> cries, and laughs instead, flapping <<childhis>> arms and legs in joy.<<lstress>><<stress -6>>
+		You tickle <<childname>> and blow raspberries on <<childhis>> stomach. <<childHe>> responds by interrupting <<childhis>> cries, and <<childgiggles>> instead, flapping <<childhis>> arms and legs in joy.<<lstress>><<stress -6>>
 	<<case 5>>
 		You tickle <<childname>> and blow raspberries on <<childhis>> stomach. <<childHis>> cries become louder as <<childhe>> turns <<childhis>> head from side to side and squirms away. <<childHe>> seems upset over the treatment.<<gstress>><<stress 6>>
 	<<default>>
@@ -229,7 +344,6 @@
 <<link [[Next|$childPassageExit]]>><<unset $childPassageExit>><<endevent>><</link>>
 
 :: childBathe
-
 You fill a small tub with warm water, and prepare the towels and a new nappy beforehand. You take <<childname>> in your arms gently, and carry <<childhim>> to the bathtub, making sure to put <<childhim>> in a safe position.
 <<set _rng to random(1, 5)>>
 <<switch _rng>>
@@ -278,6 +392,8 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 			<<case "night">>
 				Silence fills the room.
 		<</switch>>
+	<<case "tower">>
+		You are in the tower. You look around for your <<if _childrenIds.length gte 2>>children<<else>>child<</if>>.
 <</switch>>
 <<if Time.dayState isnot "night" and (!$daily.childrenHomeEvent or !$daily.childrenHomeEvent.includes($location)) and random(1) is 1>>
 	<<if !$daily.childrenHomeEvent>>
@@ -295,8 +411,7 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 <br><br>
 <<childViewerDisplay _childrenIds>>
 <br><br>
-<<if $location is "tower">>
-<<elseif $player.inventory.childrenToys>>
+<<if $player.inventory.childrenToys>>
 	<<if !$storedChildrenToys[$location]>><<set $storedChildrenToys[$location] to []>><</if>>
 	<<link [[Store children toys|Childrens Home Toys]]>><</link>>
 	<br>
