@@ -951,7 +951,7 @@ function effects() {
 		if (V.penisslimebrokenchastitymessage) {
 			element(
 				"span",
-				`The parasite at the base of your genitals frees you from the${
+				`The parasite at the base of your genitals frees you from the ${V.penisslimebrokenchastitymessage}${
 					V.penisslimecagemessage === 1 ? ", and almost just as quickly, a new chastity parasite forms around your penis" : ""
 				}.`,
 				"purple"
