@@ -237,9 +237,13 @@ const Time = (() => {
 		}
 	}
 	// Date of previous occurrence of a specific moon phase
+	// Example: Time.previousMoonPhase("full")
 	function previousMoonPhase(targetPhase) {
+		if (!(targetPhase in moonPhases)) {
+			throw new Error(`Invalid moon phase: ${targetPhase}`);
+		}
+
 		const date = new DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
-		date.setTime(0, 0);
 		do {
 			date.addDays(-1);
 			const currentPhase = currentMoonPhase(date);
@@ -250,7 +254,12 @@ const Time = (() => {
 	}
 
 	// Date of next occurrence of a specific moon phase
+	// Example: Time.nextMoonPhase("full")
 	function nextMoonPhase(targetPhase) {
+		if (!(targetPhase in moonPhases)) {
+			throw new Error(`Invalid moon phase: ${targetPhase}`);
+		}
+
 		const date = new DateTime(currentDate.year, currentDate.month, currentDate.day, 0, 0);
 		do {
 			date.addDays(1);

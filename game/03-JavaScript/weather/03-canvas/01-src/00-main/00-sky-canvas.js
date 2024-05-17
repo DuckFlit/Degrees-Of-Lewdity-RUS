@@ -262,12 +262,12 @@ Weather.Sky = (() => {
 		// Maybe not hardcode this here
 		const key = V.location === "tentworld" ? "tentaclePlains" : Weather.name;
 		const weatherState = Weather.TooltipDescriptions.type[key];
-		const weatherDescription =
-			typeof weatherState === "string"
-				? weatherState
-				: typeof weatherState[Weather.skyState] === "function"
-				? weatherState[Weather.skyState]()
-				: weatherState[Weather.skyState];
+
+		if (!weatherState) return;
+		const transition = weatherState.transition ? weatherState.transition() : null;
+		console.log("transition", weatherState, transition);
+		const weatherDescription = transition || (typeof weatherState === "string" ? weatherState : resolveValue(weatherState[Weather.skyState], ""));
+
 		const tempDescription = Weather.TooltipDescriptions.temperature();
 		const debug = V.debug
 			? `<br><br><span class="teal">DEBUG:</span>

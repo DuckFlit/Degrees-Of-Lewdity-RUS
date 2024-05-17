@@ -147,8 +147,11 @@ const Weather = (() => {
 		get type() {
 			return Weather.WeatherGeneration.getWeather().defines;
 		},
+		get isOvercast() {
+			return round(Weather.Sky.fadables.overcast.factor * 100, 2) > 0.5;
+		},
 		get overcast() {
-			return Weather.WeatherGeneration.getWeather().overcast > 0.5;
+			return round(Weather.Sky.fadables.overcast.factor * 100, 2);
 		},
 		get sunIntensity() {
 			return getSunIntensity();
