@@ -1,3 +1,4 @@
+/* global weightedRandom */
 function maxParasites(genital = "anus") {
 	switch (V.sexStats[genital].pregnancy.motherStatus) {
 		case 1:
@@ -575,14 +576,14 @@ window.pregnancyGenerator = {
 		if (typeof pregnancy === "string" || pregnancy instanceof String) return pregnancy;
 
 		if (pregnancy) {
-			const result = { fetus: [], type: "hawk", timer: 0, timerEnd: random(3, 6) };
+			const result = { fetus: [], type: "hawk", timer: 0, timerEnd: random(14, 28) };
 			const eggBoost = 20 * fertility + 20 * magicTattoo;
 			let count;
 
 			if (mother === "pc") {
-				count = Math.clamp(V.harpyEggs?.count || random(1, 3), 0, 3);
+				count = Math.clamp(V.harpyEggs?.count || weightedRandom([1, 1], [2, 2], [3, 1]), 0, 4);
 			} else {
-				count = random(1, 4);
+				count = weightedRandom([1, 1], [2, 4], [3, 4], [4, 1]);
 			}
 			if (!count) return false;
 			if (random(0, 100) > 94 - eggBoost) count++;
