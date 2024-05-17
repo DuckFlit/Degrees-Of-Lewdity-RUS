@@ -52,8 +52,8 @@ Weather.Sky.Layers.add({
 			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.7 && !Weather.isOvercast && !Weather.Sky.skyDisabled,
 			params: {
 				outerRadius: 64, // The radius of the outer glow
-				colorInside: { dark: "#fd634d00", med: "#f7ff4a07", bright: "#fbffdb55" },
-				colorOutside: { dark: "#fd634d00", med: "#f7ff4a00", bright: "#fbffdb00" },
+				colorInside: { dark: "#fd634d00", med: "#faff8710", bright: "#fbffdb55" },
+				colorOutside: { dark: "#fd634d00", med: "#faff8700", bright: "#fbffdb00" },
 				cutCenter: false,
 				diameter: 28,
 			},
