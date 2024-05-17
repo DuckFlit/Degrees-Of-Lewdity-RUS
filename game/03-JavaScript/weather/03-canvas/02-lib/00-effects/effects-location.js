@@ -71,7 +71,7 @@ Weather.Sky.Effects.create({
 	defaultParameters: {
 		defaultColor: "#deae66",
 		defaultSize: 3,
-		defaultAlpha: 1,
+		defaultIntensity: 1,
 	},
 	effects: [
 		{
@@ -94,17 +94,24 @@ Weather.Sky.Effects.create({
 	],
 	draw() {
 		// Set the blur
-		this.effects[0].draw({ start: (key, obj, drawCanvas) => {
-			const glowSize = obj.size ?? this.defaultSize;
-			const glowColor = obj.color ?? this.defaultColor;
-			const glowAlpha = obj.alpha ?? this.defaultAlpha;
-			drawCanvas.ctx.shadowColor = glowColor;
-			drawCanvas.ctx.shadowBlur = glowSize;
-			drawCanvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
-			drawCanvas.ctx.globalAlpha = glowAlpha;
-			return true;
+		this.effects[0].draw({ end: (_, obj, drawCanvas) => {
+			const glowSize = resolveValue(obj.size, this.defaultSize);
+			const glowColor = resolveValue(obj.color, this.defaultColor);
+			const glowIntensity = Math.min(10, resolveValue(obj.intensity, this.defaultIntensity));
+			
+			let remainingIntensity = glowIntensity;
+			while (remainingIntensity > 0) {
+				const currentAlpha = remainingIntensity >= 1 ? 1 : remainingIntensity;
+				this.canvas.ctx.shadowColor = glowColor;
+				this.canvas.ctx.shadowBlur = glowSize;
+				this.canvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
+				this.canvas.ctx.globalAlpha = currentAlpha;
+
+				remainingIntensity -= 1;
+				this.canvas.drawImage(drawCanvas.element);
+			}
+			this.canvas.ctx.globalAlpha = 1;
 		}});
-		this.canvas.drawImage(this.effects[0].canvas.element);
 	},
 });
 

@@ -698,20 +698,19 @@ setup.LocationImages = {
 				condition: () => Weather.lightsOn,
 				alwaysDisplay: false,
 				color: "#deae66",
-				alpha: 0.8,
+				intensity: 0.8,
 				size: 2,
 			},
 			streetLight: {
 				condition: () => Weather.lightsOn,
 				image: "streetlight.png",
-				alpha: 1,
 				color: "#e8d39d",
 				size: 4,
 			},
 			streetGlow: {
 				condition: () => Weather.lightsOn,
 				image: "streetglow.png",
-				alpha: 0.5,
+				intensity: 0.5,
 				color: "#deae6655",
 				size: 2,
 			},
@@ -911,7 +910,7 @@ setup.LocationImages = {
 			condition: () => Weather.lightsOn,
 			color: "#fbff86dd",
 			size: 4,
-			alpha: 0.8,
+			intensity: 0.8,
 		},
 	},
 	lake: {
@@ -975,18 +974,16 @@ setup.LocationImages = {
 		},
 		reflective: {
 			mask: {
-				image: "reflective.png",
-				alpha: () => (!Weather.isFrozen("lake") ? 0.8 : 0.35),
-				horizon: 18,
-				waveShiftFactor: 0.009,
 				animationCondition: () => !Weather.isFrozen("lake"),
+				image: "reflective.png",
+				alpha: () => (!Weather.isFrozen("lake") ? 0.7 : 0.35),
+				horizon: 20,
 			},
 			water: {
 				condition: () => !Weather.isFrozen("lake"),
 				image: "water.png",
 				animation: {
 					frameDelay: 1050,
-					cycleDelay: () => 0,
 				},
 			},
 			ice: {
@@ -1747,13 +1744,13 @@ setup.LocationImages = {
 				image: "emissive_blue_window.png",
 				condition: () => Weather.lightsOn,
 				size: 0,
-				alpha: 0.7,
+				intensity: 0.7,
 			},
 			window_orange: {
 				image: "emissive_orange_window.png",
 				condition: () => Weather.lightsOn,
 				size: 0,
-				alpha: 0.7,
+				intensity: 0.7,
 			},
 			orange: {
 				image: "emissive_orange.png",

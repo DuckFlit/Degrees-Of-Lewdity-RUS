@@ -31,7 +31,7 @@ interface EmissiveSetting {
     color?: string;
     size?: number;
     strength?: number;
-    alpha?: number | (() => number);
+    intensity?: number | (() => number);
 }
 
 interface ReflectiveSetting {
