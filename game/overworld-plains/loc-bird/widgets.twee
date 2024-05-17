@@ -4,6 +4,7 @@
 	<<set $bird.lock to 1>>
 	<<set $bird.rope to 0>>
 	<<set $bird.clean to 0>>
+	<<set $bird.lurkersEaten to 0>>
 	<<set $bird.loot to {}>>
 	<<set $bird.loot.lurker to 100>>
 	<<set $bird.loot.trash to 0>>
@@ -1691,7 +1692,6 @@
 				- <<moneyGain 30 true true>> in cash.
 		<</switch>>
 	<</for>>
-
 <</widget>>
 
 <<widget "flight_hunt_loot">>
@@ -1908,6 +1908,21 @@
 	<<unset $hkTime>>
 	<<unset $ambushTarget>>
 	<<unset $birdAmbushTrap>>
+<</widget>>
+
+<<widget "eatLurker">>
+	<<set $bird.lurkersEaten++>>
+	<<if $harpyEggsPrevent>>
+		<<set $harpyEggsPrevent-->>
+		<span class="lewd">You feel your body recover from laying eggs a little faster.</span>
+	<<elseif $harpyEggs.daysTillLaying gt 0>>
+		<<set $harpyEggs.daysTillLaying-->>
+		<<if playerIsPregnant() and getPregnancyObject().fetus[0].type is "hawk" and playerAwareTheyArePregnant()>>
+			<span class="lewd">Your eggs are nourished. They'll be ready for laying sooner.</span>
+		<<else>>
+			<span class="lewd">Your feel something inside you settle.</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "firepitTime">>
@@ -2745,7 +2760,14 @@
 		<<if playerIsPregnant() and $_eggnant.type is "hawk">>
 			<<if $location is "tower">>
 				<<set _eggIcon to $eggLayNumber>>
-				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital and land in your nest<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital and lands in your nest<</if>>.
+				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees.
+				Something big is moving around inside of you, sending waves of both pain and pleasure as it rubs against your walls. <<arousal 4000>><<gggarousal>>
+				<br><br>
+
+				<<if $arousal gte $arousalmax>>
+					<<orgasm>>
+				<</if>>
+				You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing in your nest<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest<</if>>.
 				<br><br>
 
 				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $eggLayNumber>> <<birdicon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
@@ -2753,10 +2775,17 @@
 				<<set $bird.eggReact to $eggLayNumber>>
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy "tower" "tower">>
-				<<set $harpyEggsPrevent to 28>>
+				<<set $harpyEggsPrevent to 21>>
 			<<else>>
 				<<set _eggIcon to $eggLayNumber>>
-				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital and land on your bed<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital and lands on your bed<</if>>.
+				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees.
+				Something big is moving around inside of you, sending waves of both pain and pleasure through you as it rubs against your walls. <<arousal 4000>><<garousal>>
+				<br><br>
+
+				<<if $arousal gte $arousalmax>>
+					<<orgasm>>
+				<</if>>
+				You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing on your bed<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing on your bed<</if>>.
 				<br><br>
 
 				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $eggLayNumber>> <<birdicon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s<</if>>.
@@ -2764,11 +2793,19 @@
 				/* Might be best changing the location variable here */
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy $location "inventory">>
-				<<set $harpyEggsPrevent to 28>>
+				<<set $harpyEggsPrevent to 21>>
 			<</if>>
 		<<elseif !playerIsPregnant() and $harpyEggs>>
-			You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees. You gasp lightly as <<if $harpyEggs.count gte 2>><span class="lewd">$harpyEggs.count bird eggs</span> pass through your cervix and land on your bed<<else>><span class="lewd">a bird egg</span> passes through your cervix and lands on your bed<</if>>.
+			You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees.
+			Something is moving around inside of you, sending waves of pleasure through you as it rubs against your walls. <<arousal 2000>><<garousal>>
 			<br><br>
+
+			<<if $arousal gte $arousalmax>>
+				<<orgasm>>
+			<</if>>
+			You gasp lightly as <<if $harpyEggs.count gte 2>><span class="lewd">$harpyEggs.count bird eggs</span> pass through your cervix, each one slowly spreading your entrance before plopping out and landing on your bed<<else>><span class="lewd">a bird egg</span> passes through your cervix, slowly spreading your entrance before plopping out and landing on your bed<</if>>.
+			<br><br>
+
 			You're filled with a sense of maternal bliss, <span class="blue">but you know <<if $harpyEggs.count gte 2>>they're<<else>>it's<</if>> unfertilised.</span> <<tending_pick bird_egg $harpyEggs.count $harpyEggs.count>>
 			<<unset $harpyEggs>>
 			<<set $harpyEggsPrevent to 14>>
