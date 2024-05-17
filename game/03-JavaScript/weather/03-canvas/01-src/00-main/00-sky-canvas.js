@@ -165,6 +165,7 @@ Weather.Sky = (() => {
 	 */
 	function initialize() {
 		initOrbits();
+		initFadables();
 		setupCanvas();
 	}
 
@@ -181,7 +182,6 @@ Weather.Sky = (() => {
 		}
 
 		Weather.Sky.Layers.sortByZIndex();
-		initFadables();
 		await initEffects();
 		drawLayers();
 		_loaded.value = true;
