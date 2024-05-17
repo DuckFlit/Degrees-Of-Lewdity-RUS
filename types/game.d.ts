@@ -138,6 +138,8 @@ declare module "twine-sugarcube" {
 
 	export interface SugarCubeSetupObject {
 		feats: FeatsSetupVariables;
+		LocationImages: LocationImages;
+		Locations: any;
 	}
 }
 

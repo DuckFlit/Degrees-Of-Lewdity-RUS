@@ -9,7 +9,7 @@ Weather.Sky.Layers.add({
 		/* Rain */
 		{
 			effect: "precipitation",
-			drawCondition: () => !Weather.Sky.skyDisabled && Weather.overcast && Weather.precipitationIntensity > 1 && Weather.precipitation === "rain",
+			drawCondition: () => !Weather.Sky.skyDisabled && Weather.isOvercast && Weather.precipitationIntensity > 1 && Weather.precipitation === "rain",
 			params: {
 				frameWidth: 42,
 				images: {
@@ -37,7 +37,7 @@ Weather.Sky.Layers.add({
 			effect: "precipitation",
 			drawCondition: () =>
 				!Weather.Sky.skyDisabled &&
-				Weather.WeatherGeneration.getWeather().overcast > 0.25 &&
+				Weather.overcast > 0.25 &&
 				Weather.precipitationIntensity > 0 &&
 				Weather.precipitationIntensity <= 1 &&
 				Weather.precipitation === "rain",
@@ -66,7 +66,7 @@ Weather.Sky.Layers.add({
 		/* Snow */
 		{
 			effect: "precipitation",
-			drawCondition: () => !Weather.Sky.skyDisabled && Weather.overcast && Weather.precipitationIntensity > 1 && Weather.precipitation === "snow",
+			drawCondition: () => !Weather.Sky.skyDisabled && Weather.isOvercast && Weather.precipitationIntensity > 1 && Weather.precipitation === "snow",
 			params: {
 				frameWidth: 32,
 				images: {
@@ -94,7 +94,7 @@ Weather.Sky.Layers.add({
 			effect: "precipitation",
 			drawCondition: () =>
 				!Weather.Sky.skyDisabled &&
-				Weather.WeatherGeneration.getWeather().overcast > 0.25 &&
+				Weather.overcast > 0.25 &&
 				Weather.precipitationIntensity > 0 &&
 				Weather.precipitationIntensity <= 1 &&
 				Weather.precipitation === "snow",

@@ -514,10 +514,10 @@ window.weightedRandom = weightedRandom;
  * If the value is a function, the function is invoked and its result is returned.
  * If it is not a function, the value itself is returned.
  * If the value is undefined, a specified default value is returned instead.
- *
- * @param {Function|number} value The value to resolve, which can be a function or a direct number.
- * @param {number} defaultValue The default value to use if the provided value is undefined.
- * @returns {number} The resolved value, either from the function call or directly.
+ * 
+ * @param {Function|any} value The value to resolve, which can be a function or any value
+ * @param {number} defaultValue The default value to use if the provided value is undefined
+ * @returns {number} The resolved value, either from the function call or directly
  */
 function resolveValue(value, defaultValue) {
 	if (typeof value === "function") {

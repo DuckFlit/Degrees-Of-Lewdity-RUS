@@ -42,11 +42,12 @@ setup.WeatherTemperature = {
 	baseInsulation: 0,
 	insulationCap: 55, // Target warmth cap where its effectiveness is reduced
 	insulationMultiplier: 1.1, // The effectiveness of clothing warmth
+	warmthHeatModifier: 0.0005, // Modifier at higher temperatures
 
 	// Wetness
 	maxWetness: 200,
-	maxClothingFactor: 0.8, // Max wetness outside of water (80%)
-	wetnessFactor: 0.65, // 65% increase in dissipation at full wetness
+	maxClothingFactor: 0.75, // Max wetness outside of water (75%)
+	wetnessFactor: 0.9, // 90% increase in dissipation at full wetness
 
 	// Effects from temperature, in celcius
 	effects: {

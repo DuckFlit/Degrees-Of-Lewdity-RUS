@@ -118,11 +118,11 @@ Weather.BodyTemperature = (() => {
 	}
 
 	function calculateTemperatureChange(currentTemperature, airTemperature, minutes, warmth) {
-		const generation = calculateHeatGeneration(currentTemperature);
+		const generation = calculateHeatGeneration(currentTemperature, airTemperature);
 		const dissipation = calculateHeatDissipation(airTemperature, warmth);
 		const newTemperature = currentTemperature + (generation - dissipation) * minutes;
 		const baseDifference = newTemperature - settings.baseBodyTemperature;
-
+		console.log("GENERATION", generation, "DISSIPATION", dissipation);
 		// Nudge the temperature slowly towards the base temperature
 		return newTemperature + baseDifference * -settings.tempApproachRate * minutes;
 	}
@@ -175,11 +175,16 @@ Weather.BodyTemperature = (() => {
 	 * Increases heat generation if body temperature is below base and decreases if above.
 	 *
 	 * @param bodyTemperature
+	 * @param outsideTemperature
 	 */
-	function calculateHeatGeneration(bodyTemperature) {
+	function calculateHeatGeneration(bodyTemperature, outsideTemperature) {
+		const outsideTemperatureDifference = Math.max(0, outsideTemperature - V.player.bodyTemperature);
+		const baseGeneration = settings.baseHeatGeneration + outsideTemperatureDifference * (getTotalWarmth() * settings.warmthHeatModifier);
 		const activityHeatGeneration = settings.activityRate * activityLevel();
-		const temperatureDifference = bodyTemperature - settings.baseBodyTemperature;
-		return settings.baseHeatGeneration + activityHeatGeneration - 0.01 * temperatureDifference;
+		const bodyTemperatureDifference = bodyTemperature - settings.baseBodyTemperature;
+		console.log("TEMP DIFF", bodyTemperatureDifference);
+		console.log("settings.baseHeatGeneration", baseGeneration, "activityHeatGeneration", activityHeatGeneration);
+		return baseGeneration + activityHeatGeneration - 0.01 * bodyTemperatureDifference;
 	}
 
 	function temperatureFactor() {
@@ -207,7 +212,7 @@ Weather.BodyTemperature = (() => {
 			return calculateWetness();
 		},
 		get direction() {
-			return Math.sign(getRestingPoint(1).temp - V.player.bodyTemperature);
+			return Math.sign(getRestingPoint(1) - V.player.bodyTemperature);
 		},
 		// For compatibility with /base-combat/ - since I don't want to touch it
 		get state() {
