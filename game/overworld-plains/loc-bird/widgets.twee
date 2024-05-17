@@ -1806,20 +1806,17 @@
 				Your spouse brings one of the lurkers to the nest. <<set $bird.materials.lurkers -=1>>
 				<<bird_hunt_children_events>>
 			<<else>>
-				Your spouse quickly devours one of the lurkers. <<set $bird.materials.lurkers -=1>>
+				Your spouse quickly devours one of the lurkers. <<set $bird.materials.lurkers -=1>><<feedLurker>>
 			<</if>>
 			<br><br>
-		<</if>>
-		<<if $bird.injured gt 1 and $bird.state is "home">>
-			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Injured Eat]]>><<set $bird.materials.lurkers -=1>><<set $bird.injured-->><<endevent>><</link>>
+		<<elseif $bird.injured gt 1 and $bird.state is "home">>
+			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Injured Eat]]>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
 			<br>
-		<<elseif npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc")>>
+		<<elseif npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc") and $bird.state is "home">>
 			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Preggy Eat]]>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
 			<br>
-		<<else>>
-			<<link [[Eat a lurker|Bird Tower Hunt End Eat]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
-			<br>
 		<</if>>
+
 		<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined)) and !$daily.birdBabyFeed>>
 			<<getChildrenIds `{location:"tower", eggTimer:undefined}`>>
 			<<set _childrenTotal to _childrenIds.length>>
@@ -1912,16 +1909,32 @@
 
 <<widget "eatLurker">>
 	<<set $bird.lurkersEaten++>>
-	<<if $harpyEggsPrevent>>
+	<<if $harpyEggsPrevent and !$harpyEggs and !playerIsPregnant()>>
 		<<set $harpyEggsPrevent-->>
 		<span class="lewd">You feel your body recover from laying eggs a little faster.</span>
-	<<elseif $harpyEggs.daysTillLaying gt 0>>
-		<<set $harpyEggs.daysTillLaying-->>
-		<<if playerIsPregnant() and getPregnancyObject().fetus[0].type is "hawk" and playerAwareTheyArePregnant()>>
+	<<elseif playerIsPregnant() and getPregnancyObject().fetus[0].type is "hawk">>
+		<<set [$_eggnant, $_eggnantGenital] to getPregnancyObject("pc", true)>>
+		<<set $sexStats[$_eggnantGenital].pregnancy.timer += 0.25>>
+		<<for $_b to 0; $_b lt $sexStats[$_eggnantGenital].pregnancy.fetus.length; $_b++>>
+			<<set $sexStats[$_eggnantGenital].pregnancy.fetus[$_b].eggTimer -= (6 * TimeConstants.secondsPerHour)>>
+		<</for>>
+		<<if playerAwareTheyArePregnant()>>
 			<span class="lewd">Your eggs are nourished. They'll be ready for laying sooner.</span>
 		<<else>>
 			<span class="lewd">Your feel something inside you settle.</span>
 		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "feedLurker">>
+	<<if $bird.injured gt 1>>
+		<<set $bird.injured-->>
+	<</if>>
+	<<if npcIsPregnant("Great Hawk")>>
+		<<set C.npc["Great Hawk"].pregnancy.timer += 0.25>>
+		<<for $_b to 0; $_b lt C.npc["Great Hawk"].pregnancy.fetus.length; $_b++>>
+			<<set C.npc["Great Hawk"].pregnancy.fetus[$_b].eggTimer -= (6 * TimeConstants.secondsPerHour)>>
+		<</for>>
 	<</if>>
 <</widget>>
 
@@ -2775,7 +2788,7 @@
 				<<set $bird.eggReact to $eggLayNumber>>
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy "tower" "tower">>
-				<<set $harpyEggsPrevent to 21>>
+				<<set $harpyEggsPrevent to 28>>
 			<<else>>
 				<<set _eggIcon to $eggLayNumber>>
 				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees.
@@ -2793,7 +2806,7 @@
 				/* Might be best changing the location variable here */
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy $location "inventory">>
-				<<set $harpyEggsPrevent to 21>>
+				<<set $harpyEggsPrevent to 28>>
 			<</if>>
 		<<elseif !playerIsPregnant() and $harpyEggs>>
 			You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees.

@@ -4767,7 +4767,7 @@ You take your netted lurker and give it to your <<if $monster is 1>><<nnpc_wife 
 <</if>>
 <br><br>
 <<set $lurkers_held to 0>>
-<<if $bird.injured gt 1>><<set $bird.injured-->><</if>>
+<<feedLurker>>
 <<link "Accept <<bhis>> offer" "Bird Tower Give Captured Lurker Accept">><<transform bird 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<stress -16>><</link>><<llstress>><<glove>><<gdom>>
 <br>
 <<link [[Decline|Bird Tower Give Captured Lurker Refuse]]>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>>
@@ -7269,7 +7269,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<</if>>
 	<<pregnancyFeats "pc">>
 	<<endPlayerPregnancy "tower" "tower">>
-	<<set $harpyEggsPrevent to 21>>
+	<<set $harpyEggsPrevent to 28>>
 <<else>>
 	<<if $monster is 1>>
 		<<if Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined))>>
@@ -7400,6 +7400,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 		<</switch>>
 		in the gap.
 	<</if>>
+	<span class="blue"><i>Brooding will gradually make your eggs hatch faster.</i></span>
 <<else>>
 	You continue brooding with your egg<<if _eggCount gte 2>>s<</if>><<if $birdBrood is true>> and <<your_bird_text>><</if>>.
 <</if>>
@@ -7420,21 +7421,24 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 <<set _eggsHalfHatching to 0>>
 <<set _eggsFarHatching to 0>>
 <<run Object.values($children).forEach(child => {
-	const hatchTime = new DateTime(child.eggTimer);
-	if (child.location === "tower" && Time.date.timeStamp >= child.eggTimer) {
-		if (!V.eggsHatched) V.eggsHatched = [];
-		V.eggsHatched.push(child.childId);
-		T.readyToHatch to true;
-	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 1) {
-		T.eggsNearHatching ++;
-	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 6) {
-		T.eggsCloseHatching ++;
-	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 11) {
-		T.eggsOverHalfHatching ++;
-	} else if (child.location === "tower" && Time.date.compareWith(hatchTime).days <= 14) {
-		T.eggsHalfHatching ++;
-	} else if (child.location === "tower") {
-		T.eggsFarHatching ++;
+	if (child.location === "tower" && child.eggTimer) {
+		child.eggTimer -= (2 * TimeConstants.secondsPerHour);
+		const hatchTime = new DateTime(child.eggTimer);
+		if (Time.date.timeStamp >= child.eggTimer) {
+			if (!V.eggsHatched) V.eggsHatched = [];
+			V.eggsHatched.push(child.childId);
+			T.readyToHatch to true;
+		} else if (Time.date.compareWith(hatchTime).days <= 1) {
+			T.eggsNearHatching ++;
+		} else if (Time.date.compareWith(hatchTime).days <= 6) {
+			T.eggsCloseHatching ++;
+		} else if (Time.date.compareWith(hatchTime).days <= 11) {
+			T.eggsOverHalfHatching ++;
+		} else if (Time.date.compareWith(hatchTime).days <= 14) {
+			T.eggsHalfHatching ++;
+		} else {
+			T.eggsFarHatching ++;
+		}
 	}
 })>>
 <<if _eggsNearHatching>>
@@ -7443,7 +7447,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="teal">Your egg is very close to hatching!</span>
 	<</if>>
-	<br><br>
+	<br>
 <</if>>
 <<if _eggsCloseHatching>>
 	<<if _eggCount gte 2>>
@@ -7451,7 +7455,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="blue">Your egg will hatch in a matter of days.</span>
 	<</if>>
-	<br><br>
+	<br>
 <</if>>
 <<if _eggsOverHalfHatching>>
 	<<if _eggCount gte 2>>
@@ -7459,7 +7463,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="pink">Your egg is over half way to its expected hatching time.</span>
 	<</if>>
-	<br><br>
+	<br>
 <</if>>
 <<if _eggsHalfHatching>>
 	<<if _eggCount gte 2>>
@@ -7467,7 +7471,7 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="purple">Your egg is about half way ready to hatch.</span>
 	<</if>>
-	<br><br>
+	<br>
 <</if>>
 <<if _eggsFarHatching>>
 	<<if _eggCount gte 2>>
@@ -7475,8 +7479,9 @@ You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd
 	<<else>>
 		<span class="red">Your egg will still take a long time to hatch.</span>
 	<</if>>
-	<br><br>
+	<br>
 <</if>>
+<br>
 
 <<if _readyToHatch>>
 	You hear a tiny crackle from

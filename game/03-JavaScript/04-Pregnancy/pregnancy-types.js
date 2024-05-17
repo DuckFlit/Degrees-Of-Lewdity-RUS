@@ -576,7 +576,7 @@ window.pregnancyGenerator = {
 		if (typeof pregnancy === "string" || pregnancy instanceof String) return pregnancy;
 
 		if (pregnancy) {
-			const result = { fetus: [], type: "hawk", timer: 0, timerEnd: random(3, 6) };
+			const result = { fetus: [], type: "hawk", timer: 0, timerEnd: random(14, 28) };
 			const eggBoost = 20 * fertility + 20 * magicTattoo;
 			let count;
 
