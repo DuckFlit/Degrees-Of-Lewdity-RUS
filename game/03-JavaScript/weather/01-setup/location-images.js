@@ -56,7 +56,6 @@ setup.Locations = {
 		- Change the updateRate in layer-location.js
  */
 
-/** @type {LocationImages} */
 setup.LocationImages = {
 	alex_cottage: {
 		folder: "alex_cottage",
