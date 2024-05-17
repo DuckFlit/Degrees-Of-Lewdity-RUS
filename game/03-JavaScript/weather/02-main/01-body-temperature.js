@@ -207,7 +207,7 @@ Weather.BodyTemperature = (() => {
 			return calculateWetness();
 		},
 		get direction() {
-			return Math.sign(getRestingPoint(1).temp - V.player.bodyTemperature);
+			return Math.sign(getRestingPoint(1) - V.player.bodyTemperature);
 		},
 		// For compatibility with /base-combat/ - since I don't want to touch it
 		get state() {
