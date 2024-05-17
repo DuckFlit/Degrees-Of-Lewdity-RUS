@@ -9,7 +9,7 @@
 	/* FROSTBITE */
 	<<if _passout is "cold">>
 		<<set V.player.bodyTemperature to Weather.tempSettings.minTemperature>>
-		<<if !["moor", "sea", "forest", "beach"].includes($location)>>
+		<<if !["beach", "forest", "moor", "sea"].includes($location)>>
 			You pass out from the cold.
 			<br><br>
 		<</if>>
@@ -31,7 +31,7 @@
 				<br><br>
 
 				<<if getRobinLocation() is "beach">>
-					<<addinlineevent "beach" 1.5>>
+					<<addinlineevent "beach" 1.25>>
 						<<link [[Everything fades to black...|Passout Beach Hypothermia Robin]]>><</link>>
 					<</addinlineevent>>
 				<</if>>
@@ -84,7 +84,6 @@
 				<<addinlineevent "rescue" 1>>
 					<<link [[Everything fades to black...|Passout Hypothermia Rescue]]>><</link>>
 				<</addinlineevent>>
-
 			<<case "moor">>
 				<<addinlineevent "birdRescue" 1.5>>
 					<<if $syndromebird gte 1>>
@@ -123,17 +122,6 @@
 					<<addinlineevent "default" 1>>
 						<<link [[Everything fades to black...|Passout Prison 2]]>><</link>>
 					<</addinlineevent>>
-			<<case "sea">>
-				The cold water robs you of the last of your body heat. Your limbs become too heavy to keep swimming, and you pass out as your body starts to sink.
-				<br><br>
-
-				<<addinlineevent "pirates" 1>>
-					<<link [[Everything fades to black...|Passout Pirates Hot Cold]]>><<set $passoutReason to "hypothermia">><</link>>
-				<</addinlineevent>>
-			<<case "school">>
-				<<addinlineevent "default" 1>>
-					<<link [[Everything fades to black...|School Passout]]>><<set $passoutReason to "hypothermia">><</link>>
-				<</addinlineevent>>
 			<<case "lake">>
 				/* Lake events needed - adding default ones now to prevent empty passages */
 				<<addinlineevent "rescue" 1.1>>
@@ -142,6 +130,13 @@
 			<<case "school">>
 				<<addinlineevent "default" 1>>
 					<<link [[Everything fades to black...|School Passout]]>><<set $passoutReason to "hypothermia">><</link>>
+				<</addinlineevent>>
+			<<case "sea">>
+				The cold water robs you of the last of your body heat. Your limbs become too heavy to keep swimming, and you pass out as your body starts to sink.
+				<br><br>
+
+				<<addinlineevent "pirates" 1>>
+					<<link [[Everything fades to black...|Passout Pirates Hot Cold]]>><<set $passoutReason to "hypothermia">><</link>>
 				<</addinlineevent>>
 			<<case "tentworld">>
 				<<addinlineevent "default" 1>>
@@ -174,7 +169,7 @@
 	/* HEATSTROKE */
 	<<elseif _passout is "heat">>
 		<<set V.player.bodyTemperature to Weather.tempSettings.maxTemperature>>
-		<<if !["moor", "sea"].includes($location)>>
+		<<if !["beach", "forest", "moor", "sea"].includes($location)>>
 			You pass out from the heat.
 			<br><br>
 		<</if>>
@@ -203,6 +198,32 @@
 				<<addinlineevent "default" 1>>
 					<<link [[Everything fades to black...|Passout Asylum]]>><</link>>
 				<</addinlineevent>>
+			<<case "beach" "seabeach">>
+				<<if $location is "seabeach">>
+					Even in the cold water, the heat has still caught up with you. You feel dizzy, and you collapse, falling to your knees in the shallow water. Your body feels tired. You close your eyes.
+				<<else>>
+					You collapse on the hot sand, chest heaving. The heat is too much, and your vision grows dark.
+				<</if>>
+				<br><br>
+				<<addinlineevent "waves" 1>>
+					<<link [[Everything fades to black...|Passout Beach Heatstroke]]>><</link>>
+				<</addinlineevent>>
+
+				<<if getRobinLocation() is "beach" and $location isnot "seabeach" and !$daily.robin.passout and $robin.timer.hurt lt 1>>
+					<<addinlineevent "lemonade" 1.25>>
+						<<link [[Everything fades to black...|Passout Beach Heatstroke Lemonade]]>><</link>>
+					<</addinlineevent>>
+				<</if>>
+
+				<<if $danger gte (9900 - ($allure)) and !Weather.overcast>>
+					<<addinlineevent "students" 1>>
+						<<link [[Everything fades to black...|Passout Beach Heatstroke Students]]>><</link>>
+					<</addinlineevent>>
+				<<else>>
+					<<addinlineevent "rescue" 1>>
+						<<link [[Everything fades to black...|Passout Beach Heatstroke Rescue]]>><</link>>
+					<</addinlineevent>>
+				<</if>>
 			<<case "farm">>
 				<<if $bus.includes("farm")>>/* If not the Underground Farm */
 					<<addinlineevent "generic" 1>>
@@ -239,6 +260,11 @@
 				<</addinlineevent>>
 
 				<<addinlineevent "rescue" 1>>
+					<<link [[Everything fades to black...|Passout Heatstroke Rescue]]>><</link>>
+				<</addinlineevent>>
+			<<case "lake">>
+				/* Lake events needed - adding default ones now to prevent empty passages */
+				<<addinlineevent "rescue" 1.1>>
 					<<link [[Everything fades to black...|Passout Heatstroke Rescue]]>><</link>>
 				<</addinlineevent>>
 			<<case "moor">>
@@ -284,15 +310,6 @@
 
 				<<addinlineevent "pirates" 1>>
 					<<link [[Everything fades to black...|Passout Pirates Hot Cold]]>><<set $passoutReason to "hyperthermia">><</link>>
-				<</addinlineevent>>
-			<<case "school">>
-				<<addinlineevent "default" 1>>
-					<<link [[Everything fades to black...|School Passout]]>><<set $passoutReason to "hyperthermia">><</link>>
-				<</addinlineevent>>
-			<<case "lake">>
-				/* Lake events needed - adding default ones now to prevent empty passages */
-				<<addinlineevent "rescue" 1.1>>
-					<<link [[Everything fades to black...|Passout Heatstroke Rescue]]>><</link>>
 				<</addinlineevent>>
 			<<case "school">>
 				<<addinlineevent "default" 1>>
@@ -452,7 +469,7 @@ To get the previous major area passage, use: $safePassage (for links in the last
 <</if>>
 <br><br>
 
-<<link [[Next|$safePassage]]>><<endevent>><</link>>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 
 /* Generic heatstroke passout: dangerous */
@@ -515,7 +532,7 @@ To get the previous major area passage, use: $safePassage (for links in the last
 <<clotheson>>
 <<endcombat>>
 
-<<link [[Next|$safePassage]]>><<endevent>><</link>>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 
 /* Generic frostbite passout: safe */
@@ -565,7 +582,7 @@ You wake up, feeling a little better than you remember. <<if _clothes.length gte
 The <<person>> smiles at you. "It's the least I can do. You go careful now, love." <<= _wet ? "You gather up your clothes" : "You bid <<him>> farewell">> and continue on your way.
 
 <br><br>
-<<link [[Next|$safePassage]]>><<endevent>><</link>>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 
 /* Generic heatstroke passout: safe */
@@ -752,7 +769,7 @@ It occurs to you that it might be best to put on fewer clothes for right now. An
 You thank your rescuer, and <<he>> nods. "Try and be more mindful of the heat from now on," <<he>> replies with a wave. You wave back and resume your journey.
 
 <br><br>
-<<link [[Next|$safePassage]]>><<endevent>><</link>>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 /* Location passouts */
 :: Passout Livestock Hot Cold
@@ -839,7 +856,209 @@ You awaken in a dingy windowless room, the stone walls lit only by a flaming tor
 
 
 :: Passout Beach Heatstroke
+<<effects>><<outfitChecks>>
+You sit straight up, coughing water out of your lungs as the ocean waves surge over your prone body. It looks like the tide has come in. <<if !_fullyNaked and !_swimwear>>
+	<span class="red">Your clothes are soaked.</span> <<= $exhibitionism gte 75 ? "You shiver with excitement, your <<lewdness>> on full display" : "You quickly cover up and look for the nearest changing room">>. <<gstress>><<stress 6>>
+	<<silently>><<water>><</silently>>
+	<br><br>
+	<<link [[Changing room|Changing Room]]>><<endevent>><</link>>
+<<else>>
+	<br><br>
+	You remain seated in the surf, letting the water rush over your legs until you feel cool enough to stand up.
+	<r><br>
+	<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
+<</if>>
+
+:: Passout Beach Heatstroke Lemonade
+<<effects>><<npc Robin>><<person1>>
+You feel a pair of hands on your body, trying to shake you awake. "Wake up!" a familiar voice says. There's a splash of cold water on your face, and you blink, looking around. Your vision is fuzzy, but you can make out most of the features of the person standing in front of you. It's Robin.
+<br><br>
+
+You give <<him>> a smile, and manage to mumble a thank you. <<He>> sighs, shaking <<his>> head. "You could've been seriously hurt. Why didn't you just go in the water?" <<he>> asks. You don't have a good response for <<him>>.
+<br><br>
+
+<<He>> stands up, then runs back to <<his>> lemonade stand, where <<he>> fiddles with the pitcher of lemonade. "Here. You should drink some. It'll help you cool down." <<He>> holds out a cup of lemonade.
+<br><br>
+
+<<link [[Take the lemonade|Passout Beach Heatstroke Lemonade Take]]>><</link>>
+<br>
+<<link [[Ask for help|Passout Beach Heatstroke Lemonade Help]]>><</link>>
+
+:: Passout Beach Heatstroke Lemonade Take
 <<effects>>
+You grab the lemonade from Robin's hands and bring it to your lips. It tastes slightly salty, and your nose wrinkles at the unfamiliar taste.
+<br><br>
+"Sorry, I know it tastes kinda gross. But you need electrolytes," <<he>> says, sitting next to you. You down the lemonade as quickly as you can. "The ice, too," Robin adds.
+<br><br>
+You take a few small cubes into your mouth and let them sit on your tongue. It feels nice, and it takes your attention away from the rest of your body.
+<br><br>
+<<if C.npc.Robin.trauma gte 40>>
+	<<He>> sighs. You can tell <<he>> was worried for you. You wrap an arm around <<his>> shoulder and lean your head against <<him>>.
+<<elseif C.npc.Robin.dom gte 50>>
+	<<He>> sighs and leans <<his>> head against your shoulder. "You should be more careful. Next time,<<= Weather.temperature gte 20 ? "take some layers off or" : $bus isnot "seabeach" ? "go in the water or" : "">> go inside. Don't neglect yourself," <<he>> says, brushing <<his>> hand against your knee.
+<<else>>
+	<<He>> sighs. "You're lucky. You should be more careful. Next time, I might not be here to help you... And we both know what this town can be like. Take care of yourself," <<he>> tells you, resting a hand on your knee.
+<</if>>
+<br><br>
+<<if $speech_attitude is "meek">>
+	"I'm sorry I made you nervous. I'll be safer, I promise," you tell <<him>>.
+<<elseif $speech_attitude is "bratty">>
+	"Well, I ended up okay, right? That's what really matters," you say, patting <<his>> shoulder.
+<<else>>
+	"I'll be more careful. Don't worry about me," you reassure <<him>>.
+<</if>>
+<br><br>
+<<He>> takes the cup from your hands and smiles at you, but <<he>> still looks concerned.
+<br><br>
+<<link [[Next|Passout Beach Heatstroke Lemonade End]]>><</link>>
+
+:: Passout Beach Heatstroke Lemonade Help
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Can you help me?" you ask, trying and failing to move your arms.
+<<elseif $speech_attitude is "bratty">>
+	"My arms aren't working right now. Lend me a hand?" you ask.
+<<else>>
+	"I don't think my body wants to move," you say with a weak laugh.
+<</if>>
+<<He>> looks confused for a moment, then blushes.
+<br><br>
+
+<<if C.npc.Robin.trauma gte 40>>
+	<<He>> presses the cup against your lips, <<his>> hands shaking. Slowly, <<he>> tilts the cup back, and you sip from it. It tastes salty. <<He>> keeps the cup pressed to your lips, and some of it spills on you. You drink until it's gone, and Robin finally takes the cup back. You gasp, taking a moment to catch your breath. "Oh... I didn't realize you couldn't breathe well. Sorry," <<he>> mumbles.
+<<elseif C.npc.Robin.dom gte 50>>
+	<<He>> pushes the cup to your lips, and you nod to signal that you're ready. <<He>> tilts the cup back, and you choke on the drink. "Oh. I added some salt for some electrolytes. Sorry that it tastes gross," <<he>> says with a small laugh.
+	<br><br>
+	You laugh as well before dutifully opening your mouth for more of the weird lemonade. When you finish, <<he>> pulls it away from your mouth.
+<<else>>
+	<<He>> brings the cup to your lips, holding it gently. You nod, and <<he>> begins to tilt it back, letting you slowly drink the lemonade. You sputter when it first touches your tongue. "Oh, sorry. I added salt for some electrolytes. I know it tastes gross, but I know you can drink it," <<he>> says.
+	<br><br>
+	You take a deep breath, preparing for more of the weird lemonade. When you finish, <<he>> pulls it away from your mouth.
+<</if>>
+
+<br><br>
+<<link [[Next|Robin Lemonade Help End]]>><</link>>
+
+
+:: Passout Beach Heatstroke Lemonade End
+<<effects>>
+Robin stands up. "I should get back to my stand now," <<he>> says, glancing over at it. <<= $balloonStand.robin.status is "helped" ? "A customer munches on popcorn while waiting patiently for Robin to return." : "No one is there. It doesn't look like <<he>> missed any customers while taking care of you.">> "Be safe. I'll see you around, okay?" <<He>> rubs your shoulder, and you watch <<him>> head back to the lemonade stand.
+<<set $daily.robin.passout to 1>>
+<br><br>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
+
+:: Passout Beach Heatstroke Students
+<<effects>>
+<<generateRole 0 "popular" "boy/girl">>
+
+You feel a pair of arms hook under you and lift you off the sand.
+<<if $cool gte 240>>
+	Someone splashes water over your face. Some of your friends are standing over you, a concerned look on their faces. "We found you on the sand. What happened?" one of them asks.
+	<br><br>
+	"Hot..." you mumble, feeling ready to go back to sleep. They pull you closer to the surf, dragging you across the rough sand. The cool water laps over your feet.
+	<br><br>
+	"Stay in the water for a while, okay?" one of them says, patting your shoulder. You nod and allow yourself to enjoy the sensation of water on your skin. They soon leave you alone, and you occupy yourself with watching the waves.
+	<br><br>
+	<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
+<<else>>
+	They heave you up. You feel as if you're floating, and it's almost pleasant, until they unceremoniously throw you into the water. Your eyes snap open, and you thrash about, disoriented. <<water>>
+	<br><br>
+	You hear laughter, and look to find a <<person1>><<person>> from school, as well as some of <<his>> friends. <<He>> smirks at you. "You should count yourself lucky that I found you. Care to pay me back for my kindness?" <<he>> asks. <<He>> makes a lewd gesture, and <<his>> friends snicker.
+	<br><br>
+	<<if $promiscuity gte 55>>
+		<<link [[Comply|Passout Beach Heatstroke Students Sex]]>><<set $phase to 1>><<set $sexstart to 1>><</link>><<promiscuous4>>
+		<br>
+	<</if>>
+	<<if $promiscuity lte 34 and $uncomfortable.prostituting is false>>
+		<<link [[Reluctantly comply|Passout Beach Heatstroke Students Sex]]>><<set $desperateaction to 2>><<set $phase to 1>><<set $sexstart to 1>><</link>>
+		<br>
+	<</if>>
+	<<link [[Refuse|Passout Beach Heatstroke Students Sex]]>><<set $phase to 0>><<set $molestationstart to 1>><</link>>
+<</if>>
+
+
+:: Passout Beach Heatstroke Students Sex
+<<location "beach">><<effects>>
+
+<<if $phase is 0>>
+
+	<<if $molestationstart is 1>>
+		<<set $molestationstart to 0>>
+		<<controlloss>>
+		<<violence 1>>
+		<<neutral 1>>
+		<<molested>>
+		<<maninit>><<npcoral>>
+	<</if>>
+
+	<<effects>>
+	<<effectsman>>
+	<<man>>
+	<<stateman>>
+	<br><br>
+	<<actionsman>>
+
+	<<if _combatend>>
+		<span id="next"><<link [[Next|Passout Beach Heatstroke Students End]]>><</link>></span><<nexttext>>
+	<<else>>
+		<span id="next"><<link [[Next|Passout Beach Heatstroke Students Sex]]>><</link>></span><<nexttext>>
+	<</if>>
+
+<<elseif $phase is 1>>
+
+	<<if $sexstart is 1>>
+		<<set $sexstart to 0>>
+		<<consensual>>
+		<<set $consensual to 1>>
+		<<neutral 1>>
+
+		<<maninit>><<npcoral>>
+		<<set $enemytrust -= 40>>
+	<</if>>
+
+	<<effects>>
+	<<effectsman>>
+	<<man>>
+	<<stateman>>
+	<br><br>
+	<<actionsman>>
+	<<if _combatend>>
+		<span id="next"><<link [[Next|Passout Beach Heatstroke Students End]]>><</link>></span><<nexttext>>
+	<<else>>
+		<span id="next"><<link [[Next|Passout Beach Heatstroke Students Sex]]>><</link>></span><<nexttext>>
+	<</if>>
+<</if>>
+
+:: Passout Beach Heatstroke Students End
+
+<<if $enemyhealth lte 0>>
+	The <<person>> stumbles back, glaring at you. "That's how you show gratitude? What a <<bitch>>," <<he>> spits. One of <<his>> friends kicks you in the <<= playerBellyVisible() ? "shin" : "stomach">> before leaving. <<gpain>><<pain 6>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	The <<person>> leans back, letting a moan escape <<his>> lips. "Not half bad, <<girl>>. Maybe I'll rescue you more often. Thanks for the fuck," <<he>> says before leaving.
+<<elseif $finish is 1>>
+	"Not even a 'thank you'? Unbelievable," the <<person>> mutters, standing up. <<He>> kicks you kicks you in the <<= playerBellyVisible() ? "shin" : "stomach">> as <<he>> leaves with <<his>> friends. <<gpain>><<pain 6>>
+<</if>>
+<br><br>
+<<tearful>> you collect yourself, sitting in the water until you feel comfortable enough to stand.
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
+
+:: Passout Beach Heatstroke Rescue
+<<effects>>
+<<generate1>><<person1>>
+You feel someone's hands on your skin. You want to squirm, but your body doesn't move.
+<br><br>
+You feel someone's hands on your skin. You want to squirm, but your body doesn't move. "God, your skin is blistering hot!" <<he>> gasps. <<He>> hoists you from the sand and hurries you to the water. Your entire body is dunked under, then pulled up. <<silently>><<water>><</silently>>
+<br><br>
+You cough, and your eyes flutter open to see a <<person1>><<person>> in front of you. When <<he>> makes eye contact with you, <<he>> exhales in relief.
+<br><br>
+<<He>> stands up, letting you rest in the water. "It's dangerous to be outside in this. You should be careful," <<he>> says, running a hand through <<his>> hair. <<He>> stays with you for a few more minutes before sighing. "I should head back to my kids. Stay safe," <<he>> says. You wave a goodbye, and <<he>> leaves to a more crowded section of the beach.
+<br><br>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
+
 :: Passout Beach Hypothermia
 <<effects>>
 <<generate1>> <<person1>>
@@ -961,12 +1180,9 @@ The last thing you hear is a <<personsimple>>'s voice. "Wait, I know that face..
 	<<clotheson>>
 	<<endcombat>>
 
-	<<link [[Next|$safePassage]]>><<endevent>><</link>>
+	<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
 <</if>>
 <br><br>
-
-
-
 
 :: Passout Beach Hypothermia Robin
 <<effects>>
@@ -1056,7 +1272,7 @@ You stay like this for some time, then <<he>> stands back up.
 <</if>>
 <br><br>
 
-<<link [[Next|$safePassage]]>><<endevent>><</link>>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 :: Passout Bird Heatstroke
 <<set $location to "tower">><<setTowerTemp>><<effects>>
@@ -1378,7 +1594,7 @@ You wake up to cold water drenching your face. Whitney stands above you, holding
 
 	You hastily <<= C.npc.Whitney.lust gte 60 ? "put your clothes back on" : "wipe off what you can of the drink">>. Maybe you should find something better to wear.
 <</if>>
-<<link [[Next|$safePassage]]>><<endevent>><</link>>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 :: Passout Gwylan Hot Cold
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>><<outfitChecks>>
@@ -1603,7 +1819,7 @@ A <<beasttype>> looks down at you, <<bhis>> eyes <<= Time.dayState is "night" ? 
 		<<bHe>> bounds off into the woods without another word.
 	<</if>>
 	<br><br>
-	<<link [[Next|$safePassage]]>><<endevent>><</link>>
+	<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 <<elseif $syndromewolves is 1 and $wolfpacktrust gte 24 and ($monster is 1 or $bestialitydisable is "f")>>
 	<<if $monster is 1>>
@@ -1743,4 +1959,4 @@ The <<person1>><<person>> takes out an informational pamphlet meant for tourists
 <br><br>
 Soaked in sweat and still somewhat weak, you climb to your feet. Maybe you should try finding a way to cool down.
 <br><br>
-<<link [[Next|$safePassage]]>><<endevent>><</link>>
+<<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
