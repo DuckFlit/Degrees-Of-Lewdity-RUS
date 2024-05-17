@@ -2064,6 +2064,12 @@
 <</widget>>
 
 <<widget "exposure">>
+	<!-- In safe locations, while alone, the player won't cover up. Love interest check is likely not hitting everywhere it should be due to NPCs generating after this check. -->
+	<<if ["Bedroom", "Sleep", "Bird Tower", "Bird Hunt"].some(keyword => V.passage.includes(keyword)) and !($NPCList.some(obj => Object.hasOwn(obj, "type")) and !$NPCList.find(({fullDescription:fd}) => fd && Object.values($loveInterest).includes(fd)))>>
+		<<set $libertine to 2>>
+	<<else>>
+		<<set $libertine to 0>>
+	<</if>>
 	<<if !["beach","pool","sea","lake","lake_ruin"].includes($location)>>
 		<<set $libertine to 0>>
 	<<else>>
@@ -2071,10 +2077,6 @@
 	<</if>>
 	<<if $location is "dance_studio" and $worn.under_lower.type.includes("dance") and $worn.under_upper.type.includes("dance")>>
 		<<set $libertine to 1>>
-	<</if>>
-	<!-- In safe locations, while alone, the player won't cover up. Love interest check is likely not hitting everywhere it should be due to NPCs generating after this check. -->
-	<<if ["Bedroom", "Sleep", "Bird Tower", "Bird Hunt"].some(keyword => V.passage.includes(keyword)) and !($NPCList.some(obj => Object.hasOwn(obj, "type")) and !$NPCList.find(({fullDescription:fd}) => fd && Object.values($loveInterest).includes(fd)))>>
-		<<set $libertine to 2>>
 	<</if>>
 
 	<<set $worn.over_upper.exposedcarry to $worn.over_upper.exposed>>
@@ -2127,7 +2129,7 @@
 
 	<<if $worn.lower.exposed gte 2 and $worn.over_lower.exposed gte 2>>
 		<<if $possessed>>
-		<<elseif $worn.under_lower.exposed gte 1 and !$worn.legs.type.includes("covered")>>
+		<<elseif $worn.under_lower.exposed gte 1>>
 			<<set $exposed to 2>>
 		<<elseif $libertine gte 1 or $worn.under_lower.type.includes("covered")>>
 		<<else>>
@@ -2149,7 +2151,7 @@
 		<<if $worn.over_upper.integrity lte 0>>
 			<<set $worn.over_upper.type.push("broken")>>
 			<<if _args[0] isnot "no_text">>
-				<span class="lewd">Your $worn.over_upper.name <<upperplural>> ripped into scraps<<if $worn.upper.exposed gte 2>>, exposing your <<undertop>><</if>>.</span>
+				<span class="lewd">Your $worn.over_upper.name <<overupperplural>> ripped into scraps<<if $worn.upper.exposed gte 2>>, exposing your <<undertop>><</if>>.</span>
 				<br>
 			<</if>>
 		<<overupperruined>><<clothesruinstat>><<if $worn.upper.exposed gte 2>><<set $upperoff to 0>><</if>>
@@ -2354,6 +2356,9 @@
 
 <<widget "water">>
 	<<set _inWater to true>>
+	<<if !waterproofCheck($worn.over_upper) and !$worn.over_upper.type.includes("naked") and _args[0] isnot "waist">>
+		<<set $upperwet to 200>>
+	<</if>>
 	<<if !waterproofCheck($worn.upper) and !$worn.upper.type.includes("naked") and _args[0] isnot "waist">>
 		<<set $upperwet to 200>>
 	<</if>>

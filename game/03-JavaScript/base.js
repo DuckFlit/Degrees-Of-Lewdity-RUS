@@ -94,8 +94,8 @@ window.rangeIterate = rangeIterate;
  *
  * @param {string} macroName
  * @param {Function} macroFunction
- * @param {object} tags
- * @param {boolean} skipArgs
+ * @param {object=} tags
+ * @param {boolean=} skipArgs
  */
 function DefineMacro(macroName, macroFunction, tags, skipArgs) {
 	Macro.add(macroName, {
@@ -127,9 +127,9 @@ function DefineMacro(macroName, macroFunction, tags, skipArgs) {
  *
  * @param {string} macroName
  * @param {Function} macroFunction
- * @param {object} tags
- * @param {boolean} skipArgs
- * @param {boolean} maintainContext
+ * @param {object=} tags
+ * @param {boolean=} skipArgs
+ * @param {boolean=} maintainContext
  */
 function DefineMacroS(macroName, macroFunction, tags, skipArgs, maintainContext) {
 	DefineMacro(
@@ -349,6 +349,8 @@ function outfitChecks() {
 		(V.worn.under_upper.type.includes("swim") || V.worn.under_upper.type.includes("naked")) &&
 		(V.worn.upper.type.includes("swim") || V.worn.upper.type.includes("naked"));
 	T.outfit = (T.bottom?.outfitSecondary && T.bottom?.outfitSecondary[1] === T.top?.name) || null;
+	if (!T.top && !T.shirtless) T.top = T.bottom;
+	if (T.outfit) T.bottom = T.top;
 }
 window.outfitChecks = outfitChecks;
 DefineMacro("outfitChecks", outfitChecks);
@@ -512,7 +514,7 @@ window.weightedRandom = weightedRandom;
  * If the value is a function, the function is invoked and its result is returned.
  * If it is not a function, the value itself is returned.
  * If the value is undefined, a specified default value is returned instead.
- * 
+ *
  * @param {Function|number} value The value to resolve, which can be a function or a direct number.
  * @param {number} defaultValue The default value to use if the provided value is undefined.
  * @returns {number} The resolved value, either from the function call or directly.

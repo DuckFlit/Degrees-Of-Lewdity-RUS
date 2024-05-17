@@ -353,7 +353,7 @@ statDisplay.create("ggghunger", () => statDisplay.statChange("Hunger", 3, "red")
 
 statDisplay.create("gacceptance", () => statDisplay.statChange("Acceptance", 1, "green"));
 statDisplay.create("ginsecurity", type => {
-	if (type === "breasts_tiny" && V.player.gender === "f") return "";
+	if (type === "breasts_tiny" && V.player.gender === "m") return "";
 	if (V["acceptance_" + type] <= 999) return statDisplay.statChange("Insecurity", 1, "red");
 	return "";
 });
@@ -458,7 +458,7 @@ statDisplay.create("lllspurity", () => {
 	if (C.npc.Sydney.purity >= 1) {
 		result.append(statDisplay.statChange("Sydney's Purity", -3, "purple"));
 	} else {
-		result.append(statDisplay.statChange("Sydney's Purity", 3, "purple"));
+		result.append(statDisplay.statChange("Sydney's Corruption", 3, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
 		result.append(statDisplay.statChange("Lust", 1, "lewd"));

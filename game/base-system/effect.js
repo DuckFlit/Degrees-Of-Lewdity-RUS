@@ -255,7 +255,6 @@ function effects() {
 		V.squidcount = 0;
 	}
 
-
 	if (V.scienceproject === "ongoing" && V.scienceprojectdays === 0 && !V.scienceprojectwarning) {
 		V.scienceprojectwarning = 1;
 		element("span", `The science fair is being held in the town hall on Cliff Street today from ${ampm(9, 0)} until ${ampm(18, 0)}.`, "gold");
@@ -950,7 +949,7 @@ function effects() {
 		if (V.penisslimebrokenchastitymessage) {
 			element(
 				"span",
-				`The parasite at the base of your genitals frees you from the${
+				`The parasite at the base of your genitals frees you from the ${V.penisslimebrokenchastitymessage}${
 					V.penisslimecagemessage === 1 ? ", and almost just as quickly, a new chastity parasite forms around your penis" : ""
 				}.`,
 				"purple"
