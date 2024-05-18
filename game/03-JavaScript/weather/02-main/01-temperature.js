@@ -255,7 +255,7 @@ Weather.Temperature = (() => {
 		const lowerDiff = temperatureRange.average[0] - temperatureRange.extreme[0];
 		const upperDiff = temperatureRange.extreme[1] - temperatureRange.average[1];
 		const chanceBelow = lowerDiff / (lowerDiff + upperDiff);
-		const extremeDirection = Math.random() < chanceBelow ? -1 : 1;
+		const extremeDirection = State.random() < chanceBelow ? -1 : 1;
 
 		// Add exceptions to the key points
 		setup.WeatherExceptions.filter(exception => {

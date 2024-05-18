@@ -44,7 +44,7 @@ Weather.Sky.Effects.create({
 				return { key, weight: value.weight };
 			});
 			const totalWeight = options.reduce((sum, { weight }) => sum + weight, 0);
-			let choice = Math.random() * totalWeight;
+			let choice = State.random() * totalWeight;
 			for (const { key, weight } of options) {
 				if ((choice -= weight) < 0) {
 					return key;
@@ -62,7 +62,7 @@ Weather.Sky.Effects.create({
 			const interpolateTo = interpolateFrom.slice(0, -1)[0];
 
 			if (!interpolateFrom.length) return interpolateTo;
-			return ColourUtils.interpolateColor(either(interpolateFrom), interpolateTo, Math.random());
+			return ColourUtils.interpolateColor(either(interpolateFrom), interpolateTo, State.random());
 		};
 
 		const radius = this.scaledArea / 2;
@@ -75,8 +75,8 @@ Weather.Sky.Effects.create({
 			let newStar;
 			// Make sure it doesn't generate stars too close to other stars
 			do {
-				const distance = Math.random() * radius; // Random radius
-				const angle = Math.random() * Math.PI * 2; // Random angle
+				const distance = State.random() * radius; // Random radius
+				const angle = State.random() * Math.PI * 2; // Random angle
 
 				const spriteKey = getRandomStar();
 

@@ -231,7 +231,7 @@ window.boundedRandom = boundedRandom;
 function calculateBinomial(chance, max) {
 	let result = 0;
 	for (let i = 0; i < max; i++) {
-		if (Math.random() < chance) {
+		if (State.random() < chance) {
 			result++;
 		}
 	}
