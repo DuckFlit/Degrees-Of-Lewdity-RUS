@@ -337,7 +337,6 @@ Weather.Sky.Effects.create({
 Weather.Sky.Effects.create({
 	name: "locationImageAnimation",
 	async init() {
-		this.name = this.name ?? this.key;
 		const loadImage = async (key, obj) => {
 			// Make it asyncronous to wait for the image to load before animating without slowing down the main flow
 			return new Promise((resolve, reject) => {
@@ -350,7 +349,7 @@ Weather.Sky.Effects.create({
 					// If it's an animation, add it to the animation group
 					if (obj.animation) {
 						const animationOptions = {
-							name: `${this.name}_${key}`,
+							name: (this.name ? this.name + "_" : "") + key,
 							canvas: this.canvas,
 							alwaysDisplay: obj.alwaysDisplay,
 							waitForAnimation: obj.waitForAnimation,
@@ -421,7 +420,8 @@ Weather.Sky.Effects.create({
 		if (this.location?.[this.key] === undefined) return;
 
 		// Need to create a deep copy in case of other effects using the same object
-		this.obj = this.location[this.key].deepCopy();
+		this.obj = this.location[this.key];
+		//this.obj = this.location[this.key].deepCopy();
 
 		// Check if there are sub-animations
 		// In that case we want a separate animation for each of them
