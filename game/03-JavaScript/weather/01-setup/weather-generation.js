@@ -240,7 +240,7 @@ setup.WeatherGeneration = {
 			temperatureModifier: 1,
 			tanningModifier: 0.1,
 			overcast: () => 1,
-			precipitationIntensity: 2,
+			precipitationIntensity: 1.5,
 			visibility: 0.4,
 		},
 		{
@@ -260,7 +260,7 @@ setup.WeatherGeneration = {
 			temperatureModifier: 1,
 			tanningModifier: 0,
 			overcast: () => 1,
-			precipitationIntensity: 3,
+			precipitationIntensity: 2,
 			visibility: 0.3,
 		},
 	],
