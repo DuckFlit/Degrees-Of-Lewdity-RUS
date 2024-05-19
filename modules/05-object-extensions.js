@@ -108,6 +108,18 @@ Object.defineProperty(Object.prototype, "deepMerge", {
 });
 
 /**
+ * Alias to deepMerge, but with no arguments, and returns the copied object
+ * Usage: const newObj = objToCopy.deepCopy();
+ */
+Object.defineProperty(Object.prototype, "deepCopy", {
+	configurable: true,
+	writable: true,
+	value(object) {
+		return ObjectAssignDeep.executeDeepMerge({}, [this], "replace", null);
+	},
+});
+
+/**
  * Searches for a value in a nested object
  * Works similar to Array find() method, but for nested objects
  *

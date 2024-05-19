@@ -978,6 +978,8 @@ setup.LocationImages = {
 				image: "reflective.png",
 				alpha: () => (!Weather.isFrozen("lake") ? 0.7 : 0.35),
 				horizon: 20,
+				maxAmplitude: 4,
+				waveFrequency: 4,
 			},
 			water: {
 				condition: () => !Weather.isFrozen("lake"),
@@ -1526,10 +1528,28 @@ setup.LocationImages = {
 		reflective: {
 			mask: {
 				image: "reflective.png",
-				alpha: 0.7,
 			},
 			overlay: {
 				image: "water.png",
+				compositeOperation: "overlay",
+				alpha: 0.5,
+				animation: {
+					slider: () => V.options.reflections,
+					frames: 300,
+					frameDelay: 300,
+				},
+			},
+			glimmer: {
+				condition: () => V.options.reflections,
+				image: "glimmer.png",
+				compositeOperation: "overlay",
+				alpha: 1,
+				mask: "gradient",
+				animation: {
+					slider: true,
+					frames: 150,
+					frameDelay: 150,
+				},
 			},
 		},
 	},

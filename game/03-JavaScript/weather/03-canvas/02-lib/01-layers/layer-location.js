@@ -14,14 +14,12 @@ Weather.Sky.Layers.add({
 			effect: "locationImage",
 			params: {
 				path: "img/misc/locations",
+				key: "base",
 			},
 			bindings: {
 				location() {
 					const location = setup.Locations.get();
 					return setup.LocationImages[location];
-				},
-				key() {
-					return "base";
 				},
 			},
 		},
@@ -32,14 +30,12 @@ Weather.Sky.Layers.add({
 			},
 			params: {
 				path: "img/misc/locations",
+				key: "emissive",
 			},
 			bindings: {
 				location() {
 					const location = setup.Locations.get();
 					return setup.LocationImages[location];
-				},
-				key() {
-					return "emissive";
 				},
 			},
 		},
@@ -49,15 +45,16 @@ Weather.Sky.Layers.add({
 				return V.options.reflections && !!setup.LocationImages[setup.Locations.get()].reflective;
 			},
 			params: {
+				images: {
+					mask: "img/misc/sky/effects/masks/gradient.png",
+				},
 				path: "img/misc/locations",
+				key: "reflective",
 			},
 			bindings: {
 				location() {
 					const location = setup.Locations.get();
 					return setup.LocationImages[location];
-				},
-				key() {
-					return "reflective";
 				},
 			},
 		},
@@ -68,21 +65,23 @@ Weather.Sky.Layers.add({
 				return !V.options.reflections && !!setup.LocationImages[setup.Locations.get()].reflective;
 			},
 			params: {
+				name: "fallback",
 				path: "img/misc/locations",
+				key: "reflective",
 			},
 			bindings: {
 				location() {
 					const location = setup.Locations.get();
 					return setup.LocationImages[location];
 				},
-				key() {
-					return "reflective";
-				},
 			},
 		},
 		// Draw on top
 		{
 			effect: "locationImage",
+			drawCondition: () => {
+				return setup.LocationImages[setup.Locations.get()].layerTop;
+			},
 			params: {
 				path: "img/misc/locations",
 			},

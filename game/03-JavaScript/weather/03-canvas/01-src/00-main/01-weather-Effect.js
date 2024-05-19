@@ -3,8 +3,11 @@
 Weather.Sky.Effect = class Effect {
 	constructor(effect, condition, compositeOperation, params) {
 		this.params = params ?? {};
+		this.id = params.id;
 		this.onInit = effect.init;
 		this.onDraw = effect.draw;
+		this.onEnable = effect.onEnable;
+		this.onDisable = effect.onDisable;
 		this.drawCondition = condition || (() => true);
 		this.compositeOperation = compositeOperation || "source-over";
 		this.images = {};
@@ -13,12 +16,16 @@ Weather.Sky.Effect = class Effect {
 		this.initPromise = null;
 		this.alpha = this.params.alpha ?? 1;
 		this.deepMerge(effect.defaultParameters, this.params);
+		this.previousDrawCondition = false;
 
 		// Add sub-effects
 		this.effects = [];
 		if (effect.effects) {
+			let id = 1;
 			effect.effects.forEach(p => {
-				this.addEffect(p.effect, p.params, p.bindings, p.drawCondition);
+				const childId = [...this.id, id];
+				this.addEffect(p.effect, p.params, p.bindings, p.drawCondition, childId);
+				id++;
 			});
 		}
 	}
@@ -26,8 +33,8 @@ Weather.Sky.Effect = class Effect {
 	/**
 	 * Binds a getter function to a property on the effect.
 	 *
-	 * @param {Function} getter The getter function.
-	 * @param {string} prop The property name to bind the getter to.
+	 * @param {Function} getter Getter function
+	 * @param {string} prop Property name
 	 */
 	bind(getter, prop) {
 		Object.defineProperty(this, prop, {
@@ -69,8 +76,9 @@ Weather.Sky.Effect = class Effect {
 	 * @param {object} params Parameters for the sub-effect
 	 * @param {object} bindings Bindings for the sub-effect
 	 * @param {Function} condition Condition function for the sub-effect
+	 * @param {Array} parentIdArray The ID array of the parent effect
 	 */
-	addEffect(effectName, params, bindings, condition) {
+	addEffect(effectName, params, bindings, condition, parentIdArray) {
 		const effectConfig = Weather.Sky.Effects.effects.get(effectName);
 		if (!effectConfig) {
 			console.error(new Error(`Could not add effect '${effectName}'.`));
@@ -80,6 +88,7 @@ Weather.Sky.Effect = class Effect {
 		// Don't override any of the functions
 		params = params ?? {};
 		params.deepMerge(this.params, (_, value) => typeof value !== "function");
+		params.id = [...parentIdArray];
 		const newEffect = new Weather.Sky.Effect(effectConfig, condition, null, params);
 		this.effects.push(newEffect);
 
@@ -98,10 +107,6 @@ Weather.Sky.Effect = class Effect {
 	 */
 	async init() {
 		this.initPromise = (async () => {
-			for (const subEffect of this.effects) {
-				await subEffect.init();
-			}
-
 			if (this.onInit) {
 				try {
 					const result = this.onInit();
@@ -112,6 +117,11 @@ Weather.Sky.Effect = class Effect {
 					console.error("Error during effect init:", e.target ?? e);
 				}
 			}
+
+			// Run subEffect init after the main init
+			for (const subEffect of this.effects) {
+				await subEffect.init();
+			}
 		})();
 
 		return this.initPromise;
@@ -121,12 +131,22 @@ Weather.Sky.Effect = class Effect {
 	 * Draws the effect onto its canvas.
 	 * It will wait for the init to complete before drawing - to assure any images loaded in init will be drawn
 	 *
-	 * @param canvas Global context
+	 * @param canvas
 	 * @param layerCanvas
 	 */
 	draw(canvas, layerCanvas) {
 		this.canvas.clear();
-		if (!this.drawCondition()) return;
+		const currentDrawCondition = this.drawCondition();
+		if (currentDrawCondition && !this.previousDrawCondition) {
+			this.onEnable?.();
+		} else if (!currentDrawCondition && this.previousDrawCondition) {
+			this.onDisable?.();
+		}
+		this.previousDrawCondition = currentDrawCondition;
+
+		if (!currentDrawCondition) {
+			return;
+		}
 		try {
 			this.canvas.ctx.save();
 			this.onDraw(canvas, layerCanvas);

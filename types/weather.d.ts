@@ -11,6 +11,7 @@ interface AnimationSetting {
     cycleDelay?: number | (() => number);
     startDelay?: number | (() => number);
     startFrame?: number | (() => number);
+    slider?: boolean | (() => boolean);
 }
 
 interface ImageSetting {
@@ -35,7 +36,7 @@ interface EmissiveSetting {
 }
 
 interface ReflectiveSetting {
-    mask: MaskSetting;
+    mask?: MaskSetting;
     [key: string]: ImageSetting | any;
 }
 
@@ -45,6 +46,14 @@ interface MaskSetting {
 	horizon?: number | (() => number);
 	waveShiftFactor?: number | (() => number);
 	animationCondition?: boolean | (() => boolean);
+}
+
+interface ReflectiveProperty {
+    image: string;
+    alpha?: number | (() => number);
+    mask?: string | (() => string);
+	compositeOperation?: number | (() => number);
+	animation?: string | AnimationSetting;
 }
 declare global {
 	export interface LocationImages {

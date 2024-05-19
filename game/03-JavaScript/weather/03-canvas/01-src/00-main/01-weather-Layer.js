@@ -24,6 +24,7 @@ Weather.Sky.Layer = class Layer {
 
 		// Set index for a consistent order - since it loads asyncronously
 		const currentIndex = (this.effectIndex = (this.effectIndex ?? 0) + 1);
+		params.id = [currentIndex];
 		const effect = new Weather.Sky.Effect(effectConfig, condition, compositeOperation, params);
 		effect.parentLayer = this;
 

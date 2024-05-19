@@ -4,6 +4,10 @@
 
 */
 setup.WeatherBindings = {
+	options: {
+		variable: () => V.options.weatherUpdate,
+		layers: ["all"],
+	},
 	save: {
 		variable: () => T.saveLoaded,
 		layers: ["all"],
