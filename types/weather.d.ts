@@ -12,6 +12,7 @@ interface AnimationSetting {
     startDelay?: number | (() => number);
     startFrame?: number | (() => number);
     slider?: boolean | (() => boolean);
+    frames?: number | (() => number);
 }
 
 interface ImageSetting {
@@ -25,7 +26,7 @@ interface ImageSetting {
 
 interface EmissiveSetting {
     image: string;
-    condition?: () => boolean;
+    condition?: boolean | (() => boolean);
     waitForAnimation?: string;
     alwaysDisplay?: boolean;
     animation?: string | AnimationSetting;
@@ -37,7 +38,7 @@ interface EmissiveSetting {
 
 interface ReflectiveSetting {
     mask?: MaskSetting;
-    [key: string]: ImageSetting | any;
+    [key: string]: ReflectiveProperty;
 }
 
 interface MaskSetting {
@@ -50,9 +51,10 @@ interface MaskSetting {
 
 interface ReflectiveProperty {
     image: string;
+	condition?: boolean | (() => boolean);
     alpha?: number | (() => number);
-    mask?: string | (() => string);
-	compositeOperation?: number | (() => number);
+    gradientMask?: boolean | (() => boolean);
+	compositeOperation?: string | (() => string);
 	animation?: string | AnimationSetting;
 }
 declare global {

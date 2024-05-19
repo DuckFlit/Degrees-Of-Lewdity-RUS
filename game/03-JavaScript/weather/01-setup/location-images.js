@@ -1544,9 +1544,9 @@ setup.LocationImages = {
 				image: "glimmer.png",
 				compositeOperation: "overlay",
 				alpha: 1,
-				mask: "gradient",
+				gradientMask: true,
 				animation: {
-					slider: true,
+					slider: false,
 					frames: 150,
 					frameDelay: 150,
 				},
