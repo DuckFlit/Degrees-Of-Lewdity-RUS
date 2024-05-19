@@ -16,7 +16,7 @@ Weather.Sky.Effect = class Effect {
 		this.initPromise = null;
 		this.alpha = this.params.alpha ?? 1;
 		this.deepMerge(effect.defaultParameters, this.params);
-		this.previousDrawCondition = false;
+		this.previousDrawCondition = true;
 
 		// Add sub-effects
 		this.effects = [];

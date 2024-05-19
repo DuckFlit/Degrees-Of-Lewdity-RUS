@@ -285,7 +285,7 @@ Weather.Sky.Effects.create({
 					return;
 				}
 
-				if (obj.mask) {
+				if (obj.gradientMask) {
 					drawCanvas.ctx.globalAlpha = 1;
 					drawCanvas.ctx.globalCompositeOperation = "destination-out";
 					drawCanvas.drawImage(this.images.mask);
@@ -355,8 +355,8 @@ Weather.Sky.Effects.create({
 							alwaysDisplay: obj.alwaysDisplay,
 							waitForAnimation: obj.waitForAnimation,
 							frameDelay: obj.animation.frameDelay,
-							cycleDelay: 0,
-							startDelay: 0,
+							cycleDelay: obj.animation.cycleDelay,
+							startDelay: obj.animation.startDelay,
 							startY: this.canvas.element.height - image.height,
 							currentFrame: obj.animation.startFrame ?? 0,
 							condition: obj.condition,
@@ -391,6 +391,7 @@ Weather.Sky.Effects.create({
 						}
 
 						obj.animationObj = new Weather.Sky.Animation(animationOptions);
+						obj.animationObj.enable();
 						this.parentLayer.animationGroup.add(animationOptions.name, obj.animationObj);
 					} else {
 						// If it's a static image
