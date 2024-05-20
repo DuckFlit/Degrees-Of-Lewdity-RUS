@@ -976,14 +976,24 @@ setup.LocationImages = {
 			mask: {
 				animationCondition: () => !Weather.isFrozen("lake"),
 				image: "reflective.png",
-				alpha: () => (!Weather.isFrozen("lake") ? 0.7 : 0.35),
-				horizon: 20,
+				horizon: 18,
+				blur: 0.4,
 			},
 			water: {
 				condition: () => !Weather.isFrozen("lake"),
 				image: "water.png",
+				alpha: () => (!Weather.isFrozen("lake") ? 0.35 : 0.8),
+			},
+			glimmer: {
+				condition: () => V.options.reflections && !Weather.isFrozen("lake"),
+				image: "glimmer.png",
+				compositeOperation: "overlay",
+				alpha: 0.5,
+				gradientMask: true,
 				animation: {
-					frameDelay: 1050,
+					slider: true,
+					frames: 150,
+					frameDelay: 150,
 				},
 			},
 			ice: {
@@ -1526,10 +1536,28 @@ setup.LocationImages = {
 		reflective: {
 			mask: {
 				image: "reflective.png",
-				alpha: 0.7,
 			},
 			overlay: {
 				image: "water.png",
+				compositeOperation: "overlay",
+				alpha: 0.5,
+				animation: {
+					slider: () => V.options.reflections,
+					frames: 300,
+					frameDelay: 300,
+				},
+			},
+			glimmer: {
+				condition: () => V.options.reflections,
+				image: "glimmer.png",
+				compositeOperation: "overlay",
+				alpha: 1,
+				gradientMask: true,
+				animation: {
+					slider: true,
+					frames: 150,
+					frameDelay: 150,
+				},
 			},
 		},
 	},
@@ -1877,7 +1905,7 @@ setup.LocationImages = {
 				waitForAnimation: "drivingCar",
 				condition: grp => {
 					// Do not draw if car animation is running
-					return Weather.lightsOn && !grp.animations.get("drivingCar").inCycle;
+					return Weather.lightsOn && !grp?.animations.get("drivingCar").inCycle;
 				},
 				image: "emissive_flicker.png",
 				color: "#deae66",

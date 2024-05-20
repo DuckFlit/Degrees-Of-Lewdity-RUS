@@ -11,6 +11,8 @@ interface AnimationSetting {
     cycleDelay?: number | (() => number);
     startDelay?: number | (() => number);
     startFrame?: number | (() => number);
+    slider?: boolean | (() => boolean);
+    frames?: number | (() => number);
 }
 
 interface ImageSetting {
@@ -24,7 +26,7 @@ interface ImageSetting {
 
 interface EmissiveSetting {
     image: string;
-    condition?: () => boolean;
+    condition?: boolean | (() => boolean);
     waitForAnimation?: string;
     alwaysDisplay?: boolean;
     animation?: string | AnimationSetting;
@@ -35,8 +37,8 @@ interface EmissiveSetting {
 }
 
 interface ReflectiveSetting {
-    mask: MaskSetting;
-    [key: string]: ImageSetting | any;
+    mask?: MaskSetting;
+    [key: string]: ReflectiveProperty;
 }
 
 interface MaskSetting {
@@ -45,6 +47,15 @@ interface MaskSetting {
 	horizon?: number | (() => number);
 	waveShiftFactor?: number | (() => number);
 	animationCondition?: boolean | (() => boolean);
+}
+
+interface ReflectiveProperty {
+    image: string;
+	condition?: boolean | (() => boolean);
+    alpha?: number | (() => number);
+    gradientMask?: boolean | (() => boolean);
+	compositeOperation?: string | (() => string);
+	animation?: string | AnimationSetting;
 }
 declare global {
 	export interface LocationImages {

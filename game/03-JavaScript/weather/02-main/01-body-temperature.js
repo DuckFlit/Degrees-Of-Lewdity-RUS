@@ -122,7 +122,6 @@ Weather.BodyTemperature = (() => {
 		const dissipation = calculateHeatDissipation(airTemperature, warmth);
 		const newTemperature = currentTemperature + (generation - dissipation) * minutes;
 		const baseDifference = newTemperature - settings.baseBodyTemperature;
-		console.log("GENERATION", generation, "DISSIPATION", dissipation);
 		// Nudge the temperature slowly towards the base temperature
 		return newTemperature + baseDifference * -settings.tempApproachRate * minutes;
 	}
@@ -182,8 +181,7 @@ Weather.BodyTemperature = (() => {
 		const baseGeneration = settings.baseHeatGeneration + outsideTemperatureDifference * (getTotalWarmth() * settings.warmthHeatModifier);
 		const activityHeatGeneration = settings.activityRate * activityLevel();
 		const bodyTemperatureDifference = bodyTemperature - settings.baseBodyTemperature;
-		console.log("TEMP DIFF", bodyTemperatureDifference);
-		console.log("settings.baseHeatGeneration", baseGeneration, "activityHeatGeneration", activityHeatGeneration);
+
 		return baseGeneration + activityHeatGeneration - 0.01 * bodyTemperatureDifference;
 	}
 

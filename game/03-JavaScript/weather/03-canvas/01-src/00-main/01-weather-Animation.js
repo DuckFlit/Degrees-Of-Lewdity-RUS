@@ -3,6 +3,7 @@
 Weather.Sky.Animation = class Animation {
 	constructor(options) {
 		this.image = options.image;
+		this.name = options.name;
 		this.targetCanvas = options.canvas;
 
 		this.numFrames = resolveValue(options.numFrames, 0);

@@ -16,7 +16,7 @@ Weather.Sky.Effects.create({
 
 		const spriteRows = Math.max(1, Math.ceil(this.canvas.element.height / scaledFrameHeight));
 
-		const effectiveFrameWidth = scaledFrameWidth + this.position.offset; // New effective frame width considering the offset
+		const effectiveFrameWidth = scaledFrameWidth + this.position.offset;
 		const spriteColumns = Math.max(1, Math.ceil((this.canvas.element.width - this.position.offset) / effectiveFrameWidth));
 
 		const precipitationSheet = new Weather.Sky.Canvas(scaledFrameWidth * numFrames * spriteColumns, scaledFrameHeight * spriteRows);

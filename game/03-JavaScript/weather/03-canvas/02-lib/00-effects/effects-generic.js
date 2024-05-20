@@ -56,7 +56,7 @@ Weather.Sky.Effects.create({
 		const elapsedTime = this.elapsedTime();
 		this.currentDate = new DateTime(Time.date);
 
-		this.x += this.movement.speed * elapsedTime;
+		if (this.movement.speed > 0) this.x += this.movement.speed * elapsedTime;
 		this.x = (this.x + this.images.overlay.width) % this.images.overlay.width;
 
 		this.canvas.ctx.globalAlpha = this.factor * this.baseAlpha;

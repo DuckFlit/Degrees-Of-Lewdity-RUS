@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable no-undef */
 Weather.Sky.Effects.create({
 	name: "locationImage",
@@ -49,20 +48,21 @@ Weather.Sky.Effects.create({
 		this.animationFrame = 0;
 	},
 	draw() {
-		
 		// Add the overlay to the effect itself
 		// Fallback if reflections are turned off: Ignore mask
-		this.effects[0].draw({ start: key => {
-			if (this.key === "reflective" && key === "mask") {
-				return false;
-			}
-			return true;
-		}});
+		this.effects[0].draw({
+			start: key => {
+				if (this.key === "reflective" && key === "mask") {
+					return false;
+				}
+				return true;
+			},
+		});
+
 		this.effects[1].draw();
 		this.canvas.drawImage(this.effects[0].canvas.element);
 		this.canvas.ctx.globalCompositeOperation = "source-atop";
 		this.canvas.drawImage(this.effects[1].canvas.element);
-		
 	},
 });
 
@@ -94,24 +94,26 @@ Weather.Sky.Effects.create({
 	],
 	draw() {
 		// Set the blur
-		this.effects[0].draw({ end: (_, obj, drawCanvas) => {
-			const glowSize = resolveValue(obj.size, this.defaultSize);
-			const glowColor = resolveValue(obj.color, this.defaultColor);
-			const glowIntensity = Math.min(10, resolveValue(obj.intensity, this.defaultIntensity));
-			
-			let remainingIntensity = glowIntensity;
-			while (remainingIntensity > 0) {
-				const currentAlpha = remainingIntensity >= 1 ? 1 : remainingIntensity;
-				this.canvas.ctx.shadowColor = glowColor;
-				this.canvas.ctx.shadowBlur = glowSize;
-				this.canvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
-				this.canvas.ctx.globalAlpha = currentAlpha;
+		this.effects[0].draw({
+			end: (_, obj, drawCanvas) => {
+				const glowSize = resolveValue(obj.size, this.defaultSize);
+				const glowColor = resolveValue(obj.color, this.defaultColor);
+				const glowIntensity = Math.min(10, resolveValue(obj.intensity, this.defaultIntensity));
 
-				remainingIntensity -= 1;
-				this.canvas.drawImage(drawCanvas.element);
-			}
-			this.canvas.ctx.globalAlpha = 1;
-		}});
+				let remainingIntensity = glowIntensity;
+				while (remainingIntensity > 0) {
+					const currentAlpha = remainingIntensity >= 1 ? 1 : remainingIntensity;
+					this.canvas.ctx.shadowColor = glowColor;
+					this.canvas.ctx.shadowBlur = glowSize;
+					this.canvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
+					this.canvas.ctx.globalAlpha = currentAlpha;
+
+					remainingIntensity -= 1;
+					this.canvas.drawImage(drawCanvas.element);
+				}
+				this.canvas.ctx.globalAlpha = 1;
+			},
+		});
 	},
 });
 
@@ -121,11 +123,12 @@ Weather.Sky.Effects.create({
 		defaultHorizon: 40,
 		defaultBlur: 0.7,
 		defaultAlpha: 0.7,
+		defaultCompositeOperation: "source-over",
 		defaultContrast: 0.9,
-		minAmplitude: 1,
-		maxAmplitude: 6,
-		waveFrequency: 10,
 		defaultWaveShiftFactor: 0.006,
+		defaultWaveFrequency: 10,
+		defaultMinAmplitude: 1,
+		defaultMaxAmplitude: 6,
 	},
 	effects: [
 		{
@@ -168,11 +171,29 @@ Weather.Sky.Effects.create({
 				},
 			},
 		},
+		{
+			effect: "imageOverlay",
+			params: {
+				movement: {
+					speed: 0,
+				},
+			},
+			bindings: {
+				images() {
+					return {
+						overlay: this.images.mask,
+					};
+				},
+				factor() {
+					return 1;
+				},
+			},
+		},
 	],
 	init() {
 		if (this.location?.[this.key] === undefined) return;
 		const obj = this.location[this.key].mask;
-		if (obj === undefined) throw new Error("Property 'mask' is not defined in reflective property.")
+		if (obj === undefined) throw new Error("Property 'mask' is not defined in reflective property.");
 
 		this.reflectionCanvas = new Weather.Sky.Canvas();
 		this.locationCanvas = new Weather.Sky.Canvas();
@@ -184,16 +205,19 @@ Weather.Sky.Effects.create({
 		this.blur = resolveValue(obj.blur, this.defaultBlur);
 		this.contrast = resolveValue(obj.contrast, this.defaultContrast);
 		this.waveShiftFactor = resolveValue(obj.waveShiftFactor, this.defaultWaveShiftFactor);
+		this.waveFrequency = resolveValue(obj.waveFrequency, this.defaultWaveFrequency);
+		this.minAmplitude = resolveValue(obj.minAmplitude, this.defaultMinAmplitude);
+		this.maxAmplitude = resolveValue(obj.maxAmplitude, this.defaultMaxAmplitude);
 		this.animationCondition = resolveValue(obj.animationCondition, true);
 
 		// Precalculate the sine curve for multiple frames
 		this.sineFrames = [];
 		const numFrames = 24;
-		
-		// Perform a full cycle to look fluent
-    	const phaseShiftPerFrame = (2 * Math.PI) / numFrames;
 
-		this.startY = 2 + this.locationCanvas.element.height - ((this.locationCanvas.element.height - this.horizon) * setup.SkySettings.scale);
+		// Perform a full cycle to look fluent
+		const phaseShiftPerFrame = (2 * Math.PI) / numFrames;
+
+		this.startY = 2 + this.locationCanvas.element.height - (this.locationCanvas.element.height - this.horizon) * setup.SkySettings.scale;
 		for (let frame = 0; frame < numFrames; frame++) {
 			const sines = [];
 			for (let y = 0; y < this.distortionCanvas.element.height; y++) {
@@ -217,11 +241,8 @@ Weather.Sky.Effects.create({
 			startDelay: 0,
 			currentFrame: 0,
 			alwaysDisplay: true,
-			condition: () => typeof this.animationCondition === "function" ? this.animationCondition() : this.animationCondition,
+			condition: () => (typeof this.animationCondition === "function" ? this.animationCondition() : this.animationCondition),
 		};
-
-		// Only try to draw overlay if there is one
-		this.drawOverlay = this.effects[0].animations.size > 0 && [...this.effects[0].animations.keys()].some(key => key !== "mask");
 
 		this.animation = new Weather.Sky.Animation(animationOptions);
 		this.parentLayer.animationGroup.add("distortionAnimation", this.animation);
@@ -238,12 +259,12 @@ Weather.Sky.Effects.create({
 		this.locationCanvas.drawImage(locationLayer.element);
 		this.reflectionCanvas.ctx.save();
 		this.reflectionCanvas.ctx.filter = `blur(${this.blur}px) contrast(${this.contrast})`;
-		this.reflectionCanvas.ctx.globalCompositeOperation = 'source-over';
+		this.reflectionCanvas.ctx.globalCompositeOperation = "source-over";
 		this.reflectionCanvas.ctx.scale(1, -1);
 		this.reflectionCanvas.ctx.drawImage(
 			this.locationCanvas.element,
 			0,
-			canvas.element.height - (this.horizon * 2),
+			canvas.element.height - this.horizon * 2,
 			this.reflectionCanvas.element.width,
 			this.horizon,
 			0,
@@ -253,25 +274,33 @@ Weather.Sky.Effects.create({
 		);
 		this.reflectionCanvas.ctx.restore();
 
-		// Save the mask separately from the other water sprites
-		this.effects[0].draw({ end: (key, obj, drawCanvas) => {
-			if (key === "mask") {
-				this.distortionMask.drawImage(drawCanvas.element);
-				drawCanvas.clear();
-			}
-			return true;
-		}});
+		this.effects[2].draw();
+		this.effects[1].draw();
+		this.effects[0].draw({
+			end: (key, obj, drawCanvas) => {
+				// Save the mask separately from the other water sprites
+				if (key === "mask") {
+					this.distortionMask.drawImage(drawCanvas.element);
+					drawCanvas.clear();
+					return;
+				}
 
-		// Overlay sky only on the water effects
-		if (this.drawOverlay) {
-			this.effects[1].draw();
-			this.effects[0].canvas.ctx.globalCompositeOperation = "source-atop";
-			this.effects[0].canvas.drawImage(this.effects[1].canvas.element);
-			
-			// Add the rest of the water effects here
-			this.reflectionCanvas.ctx.globalAlpha = 1 - this.overlayAlpha;
-			this.reflectionCanvas.drawImage(this.effects[0].canvas.element);
-		}
+				if (obj.gradientMask) {
+					drawCanvas.ctx.globalAlpha = 1;
+					drawCanvas.ctx.globalCompositeOperation = "destination-out";
+					drawCanvas.drawImage(this.images.mask);
+				}
+
+				// Overlay sky only on the water effects and not the mask
+				drawCanvas.ctx.globalCompositeOperation = "source-atop";
+				drawCanvas.drawImage(this.effects[1].canvas.element);
+
+				// Add the rest of the water sprites
+				this.reflectionCanvas.ctx.globalAlpha = resolveValue(obj.alpha, this.defaultAlpha);
+				this.reflectionCanvas.ctx.globalCompositeOperation = resolveValue(obj.compositeOperation, this.defaultCompositeOperation);
+				this.reflectionCanvas.drawImage(drawCanvas.element);
+			},
+		});
 
 		// Draw the reflection below the distortion first, in case of transparent pixels
 		this.distortionCanvas.drawImage(this.reflectionCanvas.element);
@@ -282,12 +311,22 @@ Weather.Sky.Effects.create({
 		for (let y = 0; y < this.distortionCanvas.element.height; y++) {
 			const shiftX = sines[y] * this.waveShiftFactor;
 			this.distortionCanvas.ctx.setTransform(1, 0, shiftX, 1, 0, 0);
-			this.distortionCanvas.ctx.drawImage(this.reflectionCanvas.element, 0, y + this.startY, this.distortionCanvas.element.width, 1, 0, y + this.startY, this.distortionCanvas.element.width, 1);
+			this.distortionCanvas.ctx.drawImage(
+				this.reflectionCanvas.element,
+				0,
+				y + this.startY,
+				this.distortionCanvas.element.width,
+				1,
+				0,
+				y + this.startY,
+				this.distortionCanvas.element.width,
+				1
+			);
 		}
 		this.distortionCanvas.ctx.setTransform(1, 0, 0, 1, 0, 0);
-		
+
 		// Remove any distortions that are outside of the water mask
-		this.distortionCanvas.ctx.globalCompositeOperation = 'destination-in';
+		this.distortionCanvas.ctx.globalCompositeOperation = "destination-in";
 		this.distortionCanvas.drawImage(this.distortionMask.element);
 
 		// Draw the final frame
@@ -297,7 +336,7 @@ Weather.Sky.Effects.create({
 
 Weather.Sky.Effects.create({
 	name: "locationImageAnimation",
-	async init() {		
+	async init() {
 		const loadImage = async (key, obj) => {
 			// Make it asyncronous to wait for the image to load before animating without slowing down the main flow
 			return new Promise((resolve, reject) => {
@@ -306,11 +345,11 @@ Weather.Sky.Effects.create({
 
 				const handleLoadedImage = () => {
 					if (typeof obj !== "object") obj = {};
-					
+
 					// If it's an animation, add it to the animation group
 					if (obj.animation) {
 						const animationOptions = {
-							image,
+							name: (this.name ? this.name + "_" : "") + key,
 							canvas: this.canvas,
 							alwaysDisplay: obj.alwaysDisplay,
 							waitForAnimation: obj.waitForAnimation,
@@ -318,25 +357,49 @@ Weather.Sky.Effects.create({
 							cycleDelay: obj.animation.cycleDelay,
 							startDelay: obj.animation.startDelay,
 							startY: this.canvas.element.height - image.height,
-							numFrames: image.width / this.canvas.element.width,
-							currentFrame: obj.animation.startFrame,
+							currentFrame: obj.animation.startFrame ?? 0,
 							condition: obj.condition,
 						};
-						if (typeof obj.animation !== "object") {
-							obj.parentAnimation = obj.animation;
+
+						if (resolveValue(obj.animation.slider, false)) {
+							const sliderFrames = resolveValue(obj.animation.frames, 24);
+							const sliderDirection = resolveValue(obj.animation.direction, "right");
+							const direction = sliderDirection === "right" ? 1 : -1;
+							const sliderMovementPerFrame = image.width / sliderFrames;
+
+							const slider = new Weather.Sky.Canvas(image.width * sliderFrames, image.height);
+
+							for (let i = 0; i < sliderFrames; i++) {
+								const offsetX = round(direction * sliderMovementPerFrame * i, 0);
+
+								slider.clear();
+								slider.drawImage(image, offsetX, 0);
+								slider.drawImage(image, direction === 1 ? round(offsetX - image.width, 0) : round(offsetX + image.width, 0), 0);
+							}
+
+							animationOptions.image = slider.element;
+							animationOptions.numFrames = sliderFrames;
+							animationOptions.offset = direction * sliderMovementPerFrame;
+						} else {
+							animationOptions.image = image;
+							animationOptions.numFrames = image.width / this.canvas.element.width;
+							if (typeof obj.animation !== "object") {
+								obj.parentAnimation = obj.animation;
+							}
+							animationOptions.parentAnimation = obj.parentAnimation;
 						}
-						animationOptions.parentAnimation = obj.parentAnimation;
-						obj.animation = new Weather.Sky.Animation(animationOptions);
-						obj.animation.enable();
-						this.parentLayer.animationGroup.add(key, obj.animation);
-					}
-					else { // If it's a static image
+
+						obj.animationObj = new Weather.Sky.Animation(animationOptions);
+						obj.animationObj.enable();
+						this.parentLayer.animationGroup.add(animationOptions.name, obj.animationObj);
+					} else {
+						// If it's a static image
 						obj.image = image;
 					}
 					this.animations.set(key, obj);
 					resolve();
 				};
-		
+
 				// Only load image if it isn't loaded already
 				if (imagePath instanceof Image) {
 					image = obj.image;
@@ -355,7 +418,11 @@ Weather.Sky.Effects.create({
 
 		this.animations = new Map();
 		if (this.location?.[this.key] === undefined) return;
+
+		// Need to create a deep copy in case of other effects using the same object
 		this.obj = this.location[this.key];
+		//this.obj = this.location[this.key].deepCopy();
+
 		// Check if there are sub-animations
 		// In that case we want a separate animation for each of them
 		if (
@@ -375,32 +442,54 @@ Weather.Sky.Effects.create({
 			await loadImage(this.key, this.obj);
 		}
 	},
-
+	onEnable() {
+		for (const obj of this.animations.values()) {
+			obj.animationObj?.enable();
+		}
+	},
+	onDisable() {
+		for (const obj of this.animations.values()) {
+			obj.animationObj?.disable();
+		}
+	},
 	draw(onDraw = {}) {
 		this.canvas.ctx.reset();
 		for (const [key, obj] of this.animations.entries()) {
-			// Preprocess based on effect
+			// Preprocess
 			if (onDraw.start) {
 				if (!onDraw.start(key, obj, this.canvas)) continue;
 			}
-			
+
 			// Check conditions
 			if (obj.condition && !obj.condition(this.parentLayer.animationGroup)) {
 				continue;
 			}
 
-			if (obj.animation) { // If animation, let the animation object draw the right frame
-				obj.animation.draw();
-			} else { // If static image
+			if (obj.animationObj) {
+				// If animation, let the animation object itself draw the right frame
+				obj.animationObj.draw();
+			} else {
+				// If static image
 				const yPosition = this.canvas.element.height - obj.image.height;
-				
+
 				// If it's a spritesheet, we can choose which frame to draw
-				const frame = typeof obj.frame === "function" ? obj.frame() : obj.frame;
-				const frameX = Math.clamp((frame ?? 0) * this.canvas.element.width, 0, obj.image.width - this.canvas.element.width);
-				
-				this.canvas.ctx.drawImage(obj.image, frameX, 0, this.canvas.element.width, this.canvas.element.height, 0, yPosition, this.canvas.element.width, this.canvas.element.height);
+				const frame = resolveValue(obj.frame, 0);
+				const frameX = Math.clamp(frame * this.canvas.element.width, 0, obj.image.width - this.canvas.element.width);
+
+				this.canvas.ctx.drawImage(
+					obj.image,
+					frameX,
+					0,
+					this.canvas.element.width,
+					this.canvas.element.height,
+					0,
+					yPosition,
+					this.canvas.element.width,
+					this.canvas.element.height
+				);
 			}
 
+			// Postprocess
 			if (onDraw.end) {
 				onDraw.end(key, obj, this.canvas);
 			}
