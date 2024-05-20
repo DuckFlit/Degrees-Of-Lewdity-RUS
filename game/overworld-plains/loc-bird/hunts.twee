@@ -963,6 +963,35 @@ What will you hunt for?
 		<</addinlineevent>>
 	<</if>>
 
+	<<if !$bird.trespasser and $bird.hunts.duo is true and $dateCount.GreatHawkHunts gte 20 and $bird.hunts.timer gte 45>>
+		<<addinlineevent "bird_hunt_trespasser" 3>>
+			<<beastNEWinit 1 hawk>><<npc "Great Hawk" 2>><<person2>>
+			<<if $NPCList[1].monster is "monster">>
+				<<set $monster to 1>>
+				<<set $NPCList[0].monster to "monster">>
+				<<set $NPCList[0].type to "harpy">>
+			<<else>>
+				<<set $monster to 0>>
+				<<set $NPCList[0].monster to "">>
+				<<set $NPCList[0].type to "hawk">>
+			<</if>>
+			<<your_bird_text "cap">> suddenly looks agitated. Some of <<bhis 1>> plumage stands on end.
+			<br><br>
+			<<if $monster is 1>>
+				"Outsider. Can smell-" a horrible screech cuts <<bhim 1>> off. Something's hurtling towards the two of you. It's in the sky, with you!
+			<<else>>
+				<<bHe 1>> lets out a shriek, but not like the ones you've heard before. This one sounds like a warning, or perhaps a challenge. <<bHe>> gets an answer immediately, as you hear another screech nearby. It rapidly gets closer, and you spot something hurtling through the air towards you!
+			<</if>>
+			<br><br>
+
+			It's big, and you feel its whole weight crash right into you. Your ears ring as it drags you out of the sky. <<ggpain>><<pain 8>>
+			<br><br>
+
+			<<link [[Next|Bird Hunt Trespasser]]>><</link>>
+			<br>			
+		<</addinlineevent>>
+	<</if>>
+
 	<<if Time.isBloodMoon()>>
 		<<addinlineevent "bird_hunt_blood" 8>>
 			You feel your stomach twist. The hairs on the back of your neck stand on end.
@@ -4309,7 +4338,7 @@ The Great Hawk quickly follows. <<bHes>> flying unsteady. <<bHe>> seems injured,
 <<else>>
 	<<bHis>> injury becomes more obvious as you continue flying. You try to apologise for acting so recklessly, but <<bhe>> simply ignores your words.
 <</if>>
-<<npcincr "Great Hawk" love -3>><<llove>>
+<<set $bird.injured to 16>><<npcincr "Great Hawk" love -3>><<llove>>
 <br><br>
 
 It's clear <<bhes>> not well enough to keep hunting, so you fly back to the castle.
@@ -5862,10 +5891,16 @@ Your stomach rises as you plummet. You try to get your bearings, and your attack
 <</if>>
 <br><br>
 
+<<switch $bodysize>>
+	<<case 0>><<set _physiqueMin to 3000>><<set _physiqueMax to 6000>>
+	<<case 1>><<set _physiqueMin to 5000>><<set _physiqueMax to 10000>>
+	<<case 2>><<set _physiqueMin to 6000>><<set _physiqueMax to 12000>>
+	<<case 3>><<set _physiqueMin to 8000>><<set _physiqueMax to 16000>>
+<</switch>>
 <<your_bird_text "cap">> dives after the two of you. <<bHe 1>> starts to catch up fast.
 <br><br>
 
-<<link [[Try to fight back|Bird Hunt Trespasser 2]]>><<set $phase to 0>><</link>><<physiquedifficulty 8000 16000>>
+<<link [[Try to fight back|Bird Hunt Trespasser 2]]>><<set $phase to 0>><</link>><<physiquedifficulty _physiqueMin _physiqueMax>>
 <br>
 <<link [[Hold on|Bird Hunt Trespasser 2]]>><<set $phase to 1>><</link>>
 <br>
@@ -5874,9 +5909,129 @@ Your stomach rises as you plummet. You try to get your bearings, and your attack
 <<effects>>
 <<if $phase is 0>>
 	<<if $physiqueSuccess>>
+		<<if $bodysize lte 1>>
+			You tuck your wings in as tightly as you can, disrupting <<bhis 0>> grip. <span class="green"><<bHe 0>> fumbles you thanks to your small size, and you escape <<bhis 0>> grasp.</span> Your maneuver throws <<bhim 0>> off balance.
+			<br><br>
+
+			You take the chance to turn the grab around, preventing <<bhim 0>> from using <<bhis 0>> wings entirely. Once you're confident you can escape, you release <<bhim 0>>, letting the air resistance keep you far above <<bhim 0>>.
+		<<else>>
+			You flare your wings out as hard and wide as you can, giving you air resistance to work with. <span class="green">Your wings break from <<bhis 0>> grasp, and it slows the <<beasttype>> down considerably,</span> throwing <<bhim 0>> off balance.
+			<br><br>
+
+			You take the chance to turn the grab around, preventing <<bhim 0>> from using <<bhis 0>> wings entirely. Once you're confident you can escape, you release <<bhim 0>>, letting the air resistance keep you far above <<bhim 0>>.
+		<</if>>
+		<br><br>
+
+		<<your_bird_text "cap">> soars past you, grabbing the other <<beasttype>> <<bhimself 1>> and diving to the ground, where <<bhe 1>> subdues <<bhim 0>> easily thanks to the opening you made. You land nearby, watching the end of the scuffle as you approach.
 	<<else>>
+		<<set _birdInjury to true>>
+		You try to flare your wings out to give yourself some air resistance to work with, <span class="red">but the <<beasttypes>> grip is too strong.</span> <<bHis 0>> talons dig into your wings. <<pain 20>><<gggpain>>
+		<br><br>
+
+		<<your_bird_text "cap">> finally catches up, but the other <<beasttype>> is ready for <<bhim 1>>. <<bHe 1>> releases you, and the two <<beastsplural>> begin to fight viciously in the air. You're left tumbling, and only just manage to right yourself before hitting the ground. <<stress 12>><<ggstress>>
+		<br><br>
+
+		A flurry of feathers escape them as talons bite into flesh and wings take hit after hit. You rush to the Great Hawk's side, just as <<bhe 1>> gets the upper hand and subdues the outsider.
 	<</if>>
 <<else>>
+	<<set _birdInjury to true>>
+	You hold on to the <<beasttype>>, afraid <<bhe 0>> will drop you and send you tumbling.
+	<br><br>
+
+	<<your_bird_text "cap">> finally catches up, but the other <<beasttype>> is ready for <<bhim 1>>. You realise too late that you're not <<bhis 0>> real target. <<bHe 0>> releases you, and the two <<beastsplural>> begin to fight viciously in the air. You only just manage to right yourself before hitting the ground. <<stress 12>><<ggstress>>
+	<br><br>
+
+	A flurry of feathers escape them as talons bite into flesh and wings take hit after hit. You rush to the Great Hawk's side, just as <<bhe 1>> gets the upper hand and subdues the outsider.
+<</if>>
+
+<<if $monster is 1>>
+	"You keep the tower for yourself, a loner as always," the outsider spits.
+	<br><br>
+
+	The Great Hawk adjusts <<bhis 1>> grip on the outsider painfully. "Great Hawk is not alone anymore. Great Hawk finally has family." <<bHe 1>> looks to you with a smile, and the outsider's gaze follows <<bhis 1>>.
+	<br>
+	"Breeding with a landbound? You've sunken low-" <<bhe 0>>'s interrupted as the Great Hawk's talon pushes <<bhis 0>> head into the dirt.
+	<br>
+	"Begone. You have your own home," <<bhe 1>> says with the slightest hint of sadness. <<bHe>> releases the other <<beasttype>>, who flies off quickly without another word.
+<<else>>
+	The two screech at each other, until the trespasser fully submits. The Great Hawk lets out a cry of victory, before pushing the outsider away, who flies off quickly.
+<</if>>
+<<if !_birdInjury>>
+	<<bHis 0>> flight is shaky and uneven thanks to the beating <<bhe 0>> recieved.
+<<else>>
+	<<set $bird.injured to 30>>
+<</if>>
+<br><br>
+
+<<link [[Check your spouse for injuries|Bird Hunt Trespasser 3]]>><<set $phase to 0>><</link>><<tendingdifficulty 400 800>>
+<br>
+<<link [[Ask what that was about|Bird Hunt Trespasser 3]]>><<set $phase to 1>><</link>>
+<br>
+
+:: Bird Hunt Trespasser 3
+<<effects>>
+<<if $phase is 0>>
+	<<switch $speech_attitude>>
+		<<case "meek">>"A-are you okay?!"
+		<<case "bratty">>"Hold still a minute," you say, concealing your worry.
+		<<default>>"Are you alright? Let me check you over," you say.
+	<</switch>>
+	You rush to <<bhis 1>> side, and start to check <<bhim 1>> for injuries.
+	<<if $bird.injured is 0>>
+		After a quick inspection, <span class="green">you can tell the outsider got the worst of it</span>. <<your_bird_text "cap">> only has a few scratches. <<if $monster is 1>>"<<Wife>> did well."<</if>> <<npcincr "Great Hawk" love 3>><<gglove>>
+	<<elseif $tendingSuccess>>
+		It only takes you a few moments to realise that <<your_bird_text>> is hurt. Badly. <<bHes 1>> putting on a tough front, but <span class="red"><<bhes 1>> covered in deep cuts, and one of <<bhis 1>> wings had some flesh torn away.</span> <<bHis>> feathers are slowly being matted by fresh blood.
+		<<if $bird.hunts.loot.fabric gte 1>>
+			You waste no time, using some of the fabric you have on-hand to patch up the worst of <<bhis 1>> wounds. <<bHe 1>> winces in pain, but nuzzles you affectionately when you're done. <<if $monster is 1>>"Thank you, <<wife>>. Will be fine, just need rest."<</if>> <span class="green"><<bHe 1>>'ll recover faster thanks to your swift care.</span> <<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom -3>><<gglove>><<lldom>><<set $bird.injured -= 5>><<flight_hunt_remove "fabric" 1>>
+		<<elseif $bird.hunts.loot.leaves gte 2>>
+			You waste no time, using some of the leaves you have on-hand to patch up the worst of <<bhis 1>> wounds. <<bHe 1>> winces in pain, but nuzzles you affectionately when you're done. <<if $monster is 1>>"Thank you, <<wife>>. Will be fine, just need rest."<</if>> <span class="green"><<bHe 1>>'ll recover faster thanks to your swift care.</span> <<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom -3>><<gglove>><<lldom>><<set $bird.injured -= 5>><<flight_hunt_remove "leaves" 2>>
+		<<elseif $bird.hunts.loot.sticks gte 2>>
+			You waste no time, using some of the sticks you have on-hand to make a makeshift splint, binding it together with grass. <<bHe 1>> winces in pain, but nuzzles you affectionately when you're done. <<if $monster is 1>>"Thank you, <<wife>>. Will be fine, just need rest."<</if>> <span class="green"><<bHe 1>>'ll recover faster thanks to your swift care.</span> <<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom -3>><<gglove>><<lldom>><<set $bird.injured -= 5>><<flight_hunt_remove "sticks" 2>>
+		<<else>>
+			Without any materials on hand, there isn't much you can do for <<bhim 1>>, but you do your best to keep the affected areas clean. <<npcincr "Great Hawk" love 1>><<glove>><<set $bird.injured -= 1>>
+		<</if>>
+	<<else>>
+		You're quickly overwhelmed by what you see. <span class="red"><<bHes 1>> bleeding. A lot. You can't even tell where the wounds are, as <<bhis 1>> feathers begin to soak with blood.</span> You start to panic, but <<bhe 1>> nuzzles you in reassurance. <<if $monster is 1>>"Will be fine, just need rest."<</if>> <<npcincr "Great Hawk" dom 1>><<gdom>>
+	<</if>>
+	<br><br>
+<</if>>
+<<switch $speech_attitude>>
+	<<case "meek">>"Wh-what was that all about?" you ask. "Why was that <<beasttype>> so violent?"
+	<<case "bratty">>"I'm glad I ran into you back then, not <<bhim 0>>," you say. "Don't get along with your own?"
+	<<default>>"I haven't seen any other <<beastsplural>> out here," you say. "Are all of the other ones so nasty?"
+<</switch>>
+<br><br>
+
+<<bHis>> gaze turns southward, in the direction the outsider flew.
+<<if $monster is 1>>
+	<<bHe 1>> looks down in shame. "Great Hawk had to find <<bhis 1>> own home. Wasn't welcome." <<bHe 1>> continues. "Hawks always wanted the big tower. Perfect place for a nest. Tall. Open. Food everywhere. But no hawk could hold it alone, they always had to share, and they would end up fighting over it. Other hawks don't like that I have it alone. Makes me dangerous." <<bHe>> swells with pride for a moment, before looking back up to you. "But Great Hawk isn't alone anymore."
+<<else>>
+	<<bHis 1>> eyes shimmer, and <<bhe 1>> then looks back to the tower and caws. The castle must be in high-demand. You can guess why; it's tall, open, and has virtually unlimited food in the surrounding moor. The perfect place for a nest. The outsider might have been trying to make a territory grab.
+<</if>>
+<<if $bird.injured gt 1>>
+	<<bHe 1>>
+	<<if $monster is 1>>
+		winces in pain, <<bhis 1>> injuries rapidly catching up to <<bhim 1>> as the adrenaline wears off. "We should head home."
+	<<else>>
+		squawks in pain, <<bhis 1>> injuries rapidly catching up to <<bhim 1>>. It'd be best to head home.
+	<</if>>
+	<br><br>
+
+	<<flight_distance_check>>
+	<<flight_time_check _returnTime "silent">>
+	<<print '<<link [[Return home ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<br>
+<<else>>
+	<<bHe 1>>
+	<<if $monster is 1>>
+		stands up straight and stretches, seemingly ready to continue hunting.
+	<<else>>
+		stretches <<bhis 1>> wings, seemingly ready to continue hunting.
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Bird Hunt Exit]]>><<endevent>><</link>>
+	<br>
 <</if>>
 
 
@@ -5910,7 +6065,6 @@ Your stomach rises as you plummet. You try to get your bearings, and your attack
 :: Bird Hunt Return Injured
 <<effects>>
 <<npc "Great Hawk">><<person1>>
-<<set $bird.injured to 10>>
 <<set $bird.timer to 300>>
 <<set $moor to 100>>
 You see the castle, it's not far anymore. Meanwhile, your <<beasttype>> has started to show a slight limp in <<bhis>> wing. You land on the perch. <<bHe>> slowly walks into the nest and lays down.

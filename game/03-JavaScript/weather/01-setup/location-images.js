@@ -23,21 +23,6 @@ setup.Locations = {
 	chalets: () => {
 		return "beach";
 	},
-	// adult_shop: () => {
-	// 	if (V.adultshopstate !== "closed") return "adult_shop";
-	// 	if (V.adultshopstate === "closed") return "adult_shop_closed"; // missing
-	// },
-	/* ADULT SHOP
-	<<case "adult_shop">>
-				<<getadultshopstate>>
-				<<if Time.dayState is "day" and $adultshopstate isnot "closed">>
-					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'_open.gif'">
-				<<elseif Time.dayState is "night" or Time.dayState is "dusk">>
-					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'.gif'">
-				<<else>>
-					<img id="location" @src="_imgLoc + _weather_display + '/sex_shop'+_dayState+'.png'">
-				<</if>>
-	*/
 	get() {
 		if (typeof this[V.location] === "function") {
 			return this[V.location]();
@@ -57,6 +42,44 @@ setup.Locations = {
  */
 
 setup.LocationImages = {
+	adult_shop: {
+		folder: "adult_shop",
+		base: {
+			default: {
+				condition: () => !Weather.isSnow,
+				image: "base.png",
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+			},
+		},
+		emissive: {
+			windows: {
+				condition: () => V.adultshopstate !== "closed" && (Time.dayState === "dusk" || Time.dayState === "night"),
+				image: "emissive_windows.png",
+				color: "#cf51ca",
+				size: 2,
+				intensity: 1.5,
+			},
+			heart: {
+				condition: () => V.adultshopstate !== "closed" && (Time.dayState === "dusk" || Time.dayState === "night"),
+				image: "emissive_heart.png",
+				color: "#ff4fd6",
+				animation: {
+					frameDelay: 800,
+					cycleDelay: () => 600,
+				},
+				size: 1,
+			},
+			red: {
+				condition: () => V.adultshopstate !== "closed" && (Time.dayState === "dusk" || Time.dayState === "night"),
+				image: "emissive_red.png",
+				color: "#ff1d2f",
+				size: 1,
+			},
+		},
+	},
 	alex_cottage: {
 		folder: "alex_cottage",
 		base: {
@@ -219,7 +242,7 @@ setup.LocationImages = {
 					cycleDelay: () => 2500,
 				},
 			},
-		}
+		},
 	},
 	bog: {
 		folder: "bog",
@@ -1347,6 +1370,10 @@ setup.LocationImages = {
 				image: "car.png",
 				condition: () => Time.dayState === "night" || (Time.hour > 11 && Time.hour < 14),
 			},
+		},
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
 		},
 	},
 	pool: {
