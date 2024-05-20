@@ -344,6 +344,9 @@
 		<<else>>
 			<<bHe>> looks out over the moor with a harsh gaze. <<bHe>> seems to be looking to hunt.
 		<</if>>
+		<<if npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc") and npcBellySize("Great Hawk") gte 12>>
+			<<bHis>> pregnancy will likely slow <<bhim>> down, but <<bhe>> doesn't seem to mind.
+		<</if>>
 		<br><br>
 
 		<<if $syndromebird is 1>>
@@ -396,7 +399,7 @@
 	<<case "lurker">>
 		<<bHe>> carries a <<if $bird.hunts.lurkers is true>>lurker<<else>>strange, leathery and many-limbed creature<</if>> in <<bhis>> <<if $monster is 1>>talons<<else>>mouth<</if>>.
 		<<if $monster is 1>>
-			<<if playerIsPregnant() and getPregnancyObject().fetus[0].type is "hawk" and playerBellyVisible() and talkedAboutPregnancy("pc","Great Hawk") and !$daily.birdPregFeed>>
+			<<if playerIsPregnant() and getPregnancyObject().fetus[0].type is "hawk" and talkedAboutPregnancy("pc","Great Hawk") and !$daily.birdPregFeed>>
 				<<set $daily.birdPregFeed to true>>
 				<<bHe>> doesn't take a bite for <<bhimself>>, instead offering the whole thing to you.
 				"<<print either(
@@ -828,7 +831,7 @@
 <</widget>>
 
 <<widget "hawkRescueApproachSentence">>
-	<<if $syndromebird is 1>>Salvation<<else>>Terror<</if>> <<print ["circles above", "approaches", "descends", "shadows you"][random(!Weather.isOvercast ? 3 : 2)]>>.
+	<<if $syndromebird is 1>>Salvation<<else>>Terror<</if>> <<print ["circles above", "approaches", "descends", "shadows you"][random(!Weather.overcast ? 3 : 2)]>>.
 <</widget>>
 
 <<widget "hawkCaughtYouSpeech">>
@@ -1016,18 +1019,20 @@
 
 <<widget "bird_fly_options">>
 	<<if $harpy gte 6>>
-		The wind could carry you a long way<<if $birdFly isnot 1>>, <span class="red">but you don't know how to fly.</span> Your wings should at least carry you down safely<</if>>.
-		<<if $syndromebird isnot 1 and ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
-			<span class="red">However, you won't be getting far with the Great Hawk watching you.</span>
-			<br><br>
-		<<else>>
+		<<if $birdFly isnot 1>>
+			The wind could carry you a long way, <span class="red">but you don't know how to fly.</span> Your wings should at least carry you down safely.
 			<br>
-			<<birdicon "fly_down">><<link [[Glide to the base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>><br>
-		<</if>>
-		<<if $birdFly isnot 1 and ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
-			<<askicon>><<link [[Ask the Great Hawk to teach you to fly|Bird Tower Fly Intro]]>><<endevent>><</link>><<flight_text>><br>
+			<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+				<<askicon>><<link [[Ask the Great Hawk to teach you to fly|Bird Tower Fly Intro]]>><<endevent>><</link>><<flight_text>><br>
+				<<if $syndromebird isnot 1>>
+					<span class="red">You won't be able to glide down with the Great Hawk watching you.</span><br>
+				<<else>>
+					<<birdicon "fly_down">><<link [[Glide to the base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>><br>
+				<</if>>
+			<<else>>
+				<<birdicon "fly_down">><<link [[Glide to the base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>><br>
+			<</if>>
 		<<elseif $birdFly is 1>>
-			<br>
 			<<flight_time_check 60>>
 			<<if $bird.hunts.unlocked is true and ($bird.hunts.lurkers is true or $bird.hunts.materials is true or $bird.hunts.valuables is true)>>
 				<<birdicon "hunt">><<link [[Prepare for a hunt|Bird Hunt Start]]>><<endevent>><</link>><<flight_text>><br>
@@ -1045,6 +1050,8 @@
 				<br>
 			<</if>>
 			<<foresticon>><<print '<<link [[Forest ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Forest]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>>
+			<br>
+			<<birdicon "fly_down">><<link [[Base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>>
 			<br>
 		<</if>>
 	<<elseif $angel gte 6 or $demon gte 6 or $fallenangel gte 2>>

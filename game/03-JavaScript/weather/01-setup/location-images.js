@@ -1820,7 +1820,7 @@ setup.LocationImages = {
 				},
 				color: "#deae66",
 				size: 5,
-				alpha: () => getBirdBurnTime() / 720,
+				intensity: () => getBirdBurnTime() / 360,
 			},
 			emissive_blood: {
 				condition: () => Weather.bloodMoon,
