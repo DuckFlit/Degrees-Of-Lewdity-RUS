@@ -9,10 +9,10 @@
  *
  *  * Examples:
  * // Use optional arrayBehaviour
- * obj1.mergeDeep(obj2, "merge-deduplicate" });
+ * obj1.deepMerge(obj2, "merge-deduplicate" });
  *
  * // Use filter to exclude number properties
- * obj1.mergeDeep(obj2, (key, value) => typeof value !== "number");
+ * obj1.deepMerge(obj2, (key, value) => typeof value !== "number");
  */
 
 const ObjectAssignDeep = (function () {
@@ -40,6 +40,8 @@ const ObjectAssignDeep = (function () {
 				return new Map(value);
 			case "set":
 				return new Set(value);
+			case "function":
+				return value.bind({});
 			default:
 				return value;
 		}
@@ -56,9 +58,10 @@ const ObjectAssignDeep = (function () {
 		}, {});
 	}
 
-	function mergeObjects(target, source, options) {
+	function mergeObjects(target, source, options, filterFn, depth) {
 		return Object.keys(source).reduce((obj, key) => {
-			obj[key] = getTypeOf(source[key]) === "object" ? mergeObjects(target[key] || {}, source[key], options) : source[key];
+			if (filterFn && !filterFn(key, source[key], depth)) return obj;
+			obj[key] = getTypeOf(source[key]) === "object" ? mergeObjects(target[key] || {}, source[key], options, filterFn, depth + 1) : source[key];
 			return obj;
 		}, target);
 	}
@@ -74,14 +77,14 @@ const ObjectAssignDeep = (function () {
 		}
 	}
 
-	function executeDeepMerge(target, objects, arrayBehaviour, filterFn) {
+	function executeDeepMerge(target, objects, arrayBehaviour, filterFn, depth = 1) {
 		objects.forEach(object => {
 			Object.keys(object).forEach(key => {
-				if (filterFn && !filterFn(key, object[key])) return;
+				if (filterFn && !filterFn(key, object[key], depth)) return;
 
 				const valueType = getTypeOf(object[key]);
 				if (valueType === "object") {
-					target[key] = mergeObjects(target[key] || {}, object[key], { arrayBehaviour });
+					target[key] = mergeObjects(target[key] || {}, object[key], { arrayBehaviour }, filterFn, depth + 1);
 				} else if (valueType === "array" && getTypeOf(target[key]) === "array") {
 					target[key] = mergeArrays(target[key], object[key], { arrayBehaviour });
 				} else {
@@ -160,4 +163,46 @@ Object.defineProperty(Object.prototype, "find", {
 		};
 		return search(this);
 	},
+});
+
+/**
+ * Recursively clears non-object properties from an object
+ * Works on objects nested at any depth
+ *
+ * @example
+ *  V.daily = {
+ *	   	school: { attended: { var1: 1 } },
+ *	   	whitney: { var1: 1 },
+ *	   	robin: { var1: 1 },
+ *		kylar: { var1: 1 },
+ *		morgan: { var1: 1 },
+ *		eden: { var1: 1 },
+ *		alex: { var1: 1 },
+ *		sydney: { var1: 1 },
+ *		ex: { var1: 1 },
+ *		pharm: { var1: 1 },
+ *		prison: { var1: 1 },
+ *		livestock: { var1: 1 },
+ *  }
+ *
+ * V.daily.clearProperties();
+ * // Will clear all properties recursively but keep the objects intact
+ */
+Object.defineProperty(Object.prototype, "clearProperties", {
+	configurable: true,
+	writable: true,
+	value() {
+		const clearProperties = obj => {
+			for (const key in obj) {
+				if (Object.hasOwn(obj, key)) {
+					if (typeof obj[key] === "object" && obj[key] !== null) {
+						clearProperties(obj[key]);
+					} else if (typeof obj[key] !== "object") {
+						delete obj[key];
+					}
+				}
+			}
+		};
+		clearProperties(this);
+	}
 });

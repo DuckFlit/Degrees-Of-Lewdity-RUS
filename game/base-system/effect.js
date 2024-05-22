@@ -250,6 +250,14 @@ function effects() {
 	V.speechcycle++;
 	if (V.speechcycle >= 7) V.speechcycle = 0;
 
+	if (Weather.bodyTemperature < setup.WeatherTemperature.minTemperature + 1) {
+		element("span", `You're very cold, and about to get hypothermia!`, "red");
+		br();
+	} else if (Weather.bodyTemperature > setup.WeatherTemperature.maxTemperature - 1) {
+		element("span", `You're extremely hot, and about to get heatstroke!`, "red");
+		br();
+	}
+
 	if (!T.inWater && V.squidcount) {
 		element("span", `The squid${V.squidcount > 1 ? "s" : ""} drop${V.squidcount > 1 ? "" : "s"} off you, seeking water.`, "blue");
 		V.squidcount = 0;

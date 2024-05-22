@@ -41,6 +41,7 @@ Weather.WeatherGeneration = (() => {
 		V.weatherObj.keypointsArr.unshift({ timestamp: currentTimeStamp, value: weatherTypeIndex });
 
 		getWeather();
+		Weather.Observables.checkForUpdate();
 	}
 
 	function interpolateWeather(date) {

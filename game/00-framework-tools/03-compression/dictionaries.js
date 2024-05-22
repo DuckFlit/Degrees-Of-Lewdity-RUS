@@ -1112,7 +1112,6 @@ const DoLCompressorDictionaries = (() => {
 		"newDeckTimer",
 		"newLife",
 		"newWardrobeStyle",
-		"nextWeather",
 		"nightmare",
 		"nightmares",
 		"nightmod",
