@@ -58,7 +58,7 @@ Weather.Sky.Layers.add({
 				color: {
 					colorMin: { close: "#14145200", far: "#00001c00" },
 					colorMed: { close: "#d47d12", far: "#6c6d94" },
-					colorMax: { close: "#ccccff", far: "#408aca" },
+					colorMax: { close: "#d4d7ff", far: "#4692d4" },
 				},
 				radius: 128,
 			},

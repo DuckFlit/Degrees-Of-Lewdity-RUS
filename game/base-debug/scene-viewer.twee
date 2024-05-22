@@ -656,37 +656,29 @@ End of '<<print $replayScene.name>>' scene.
 <</widget>>
 
 <<widget "freezePlayerStats">>
-	<<set $statFreeze to true>>
-	<<set $frozenValues to {}>>
-	<<set _skipKeys to ["replayScene","frozenKeys","frozenValues","statFreeze","passage","debug"]>>
-	<<set $frozenKeys to Object.keys(V)>>
-	<<run $frozenKeys.forEach(function(key){
-		if(!_skipKeys.includes(key) && key.indexOf("real_") !== 0){
-			V.frozenValues[key] = clone(V[key]);
-		}
-	})>>
+	<<script>>
+		V.statFreeze = true;
+		const skipKeys = ["replayScene", "frozenValues", "statFreeze", "passage", "debug", "options"];
+		V.frozenValues = {};
+
+		V.frozenValues.deepMerge(V, (key, value, depth) => {
+			if ((depth === 1 && skipKeys.includes(key)) || typeof value === "function") {
+				return false;
+			}
+			return true;
+		});
+	<</script>>
 <</widget>>
 
 <<widget "unfreezePlayerStats">>
-	<<unset $statFreeze>>
-	<<if $frozenValues>>
-		<<run Object.keys(V.frozenValues).forEach(function(key){
-			V[key] = clone(V.frozenValues[key]);
-		})>>
-	<</if>>
-	<<if $frozenKeys>>
-		<<set _skipKeys to ["replayScene","frozenKeys","frozenValues","statFreeze","passage","debug"]>>
-		<<run Object.keys(V).forEach(function(key){
-			if(!_skipKeys.includes(key) && key.indexOf("real_") !== 0){
-				if(!V.frozenKeys.includes(key)){
-					delete V[key];
-				}
-			}
-		})>>
-	<</if>>
-	<<unset $frozenValues>>
-	<<unset $frozenKeys>>
-	<<run Time.set()>>
+	<<script>>
+		delete V.statFreeze;
+		if (V.frozenValues) {
+			V.deepMerge(V.frozenValues);
+			delete V.frozenValues;
+			Time.set();
+		}
+	<</script>>
 	<<doVersionCheck>>
 <</widget>>
 

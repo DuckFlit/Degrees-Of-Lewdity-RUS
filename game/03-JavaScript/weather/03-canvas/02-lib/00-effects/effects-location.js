@@ -27,7 +27,7 @@ Weather.Sky.Effects.create({
 					nightDark: "#00001ceb",
 					nightBright: "#0d0d26bf",
 					day: "#00000000",
-					dawnDusk: "#4f3605a5",
+					dawnDusk: "#5e410885",
 					bloodMoon: "#380101bf",
 				},
 			},

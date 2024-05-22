@@ -326,7 +326,7 @@ Weather.Sky = (() => {
 })();
 window.Weather.Sky = Weather.Sky;
 
-$(document).one(":passagestart", () => {
+$(document).one(":passageend", () => {
 	if (!V.weatherObj) return;
 	Weather.Sky.initialize();
 });
