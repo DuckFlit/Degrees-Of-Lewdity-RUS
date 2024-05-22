@@ -94,14 +94,12 @@ window.getTimeNumber = getTimeNumber;
 
 function extendStats() {
 	V.extendedStats = !V.extendedStats;
-	const captionDiv = document.getElementById("storyCaptionDiv");
-	if (captionDiv === null) return;
-	if (V.extendedStats === true) {
-		captionDiv.classList.add("statsExtended");
-	} else {
-		captionDiv.classList.remove("statsExtended");
-	}
+	const $captionDiv = $("#storyCaptionDiv");
+	if ($captionDiv.length === 0) return;
+
+	$captionDiv.toggleClass("statsExtended", V.extendedStats);
 	Wikifier.wikifyEval("<<replace #stats>><<statsCaption>><</replace>>");
+	initializeTooltips();
 }
 window.extendStats = extendStats;
 
