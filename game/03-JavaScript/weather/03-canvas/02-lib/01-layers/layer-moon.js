@@ -4,7 +4,7 @@ Weather.Sky.Layers.add({
 	zIndex: 3, // zIndex value
 	blur: {
 		max: () => (Weather.bloodMoon ? 3 : 3),
-		factor: () => Weather.Sky.fadables.overcast.factor,
+		factor: () => (Weather.overcast > 0.4 ? (Weather.overcast - 0.4) / 0.6 : 0),
 	},
 	effects: [
 		{

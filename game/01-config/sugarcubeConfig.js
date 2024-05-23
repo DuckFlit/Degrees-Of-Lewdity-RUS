@@ -168,20 +168,6 @@ l10nStrings.errorTitle = StartConfig.version + " Error";
 Wikifier.Parser.delete("lineBreak");
 Wikifier.Parser.delete("emdash");
 
-/* ToDo: implement the dolls system, uncomment during and when its setup
-importScripts([
-	"img/dolls/NameValueMaps.js",
-	"img/dolls/dollUpdater.js",
-	"img/dolls/dollLoader.js",
-	"img/dolls/DollHouse.js",
-	"img/dolls/FDoll.js",
-]).then(function () {
-	console.log("Dolls scripts running");
-})
-.catch(function (err) {
-	console.log(err);
-}); */
-
 // Runs before a passage load, returning a string redirects to the new passage name.
 Config.navigation.override = function (dest) {
 	const checkPassages = dest => {

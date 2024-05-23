@@ -79,14 +79,14 @@ Weather.WeatherGeneration = (() => {
 		if (V.weatherObj?.name !== null) {
 			const currentWeatherType = Weather.genSettings.weatherTypes.find(type => type.name === V.weatherObj.name);
 			if (currentWeatherType.value === interpolatedValue) {
-				return createObjectByType(currentWeatherType, V.weatherObj.overcast);
+				return createObjectByType(currentWeatherType);
 			}
 		}
 
 		if (current.value === interpolatedValue) {
 			const newObj = createObjectByType(current);
 			V.weatherObj.name = newObj.name;
-			V.weatherObj.overcast = newObj.overcast;
+			V.weatherObj.targetOvercast = resolveValue(Weather.genSettings.weatherTypes.find(type => type.name === Weather.name).overcast);
 			return newObj;
 		}
 
@@ -112,18 +112,15 @@ Weather.WeatherGeneration = (() => {
 		const chosenType = closestTypes[random(0, closestTypes.length - 1)];
 		const newObj = createObjectByType(chosenType);
 
-		// Only save the weather type and overcast
+		// Only save the weather type
 		V.weatherObj.name = chosenType.name;
-		V.weatherObj.overcast = newObj.overcast;
 		return newObj;
 	}
 
-	function createObjectByType(obj, overcast) {
-		overcast = Time.isBloodMoon() ? false : overcast;
+	function createObjectByType(obj) {
 		return {
 			defines: obj,
 			name: obj.name,
-			overcast: overcast ?? obj.overcast(),
 			tanningModifier: obj.tanningModifier,
 			precipitationIntensity: obj.precipitationIntensity,
 		};

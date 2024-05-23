@@ -110,7 +110,7 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				overcastFactor() {
-					return Weather.Sky.fadables.overcast.factor;
+					return Weather.overcast;
 				},
 				weather() {
 					return Weather.current;
@@ -150,7 +150,7 @@ Weather.Sky.Layers.add({
 	zIndex: 4,
 	blur: {
 		max: 2,
-		factor: () => Weather.Sky.fadables.overcast.factor,
+		factor: () => Weather.overcast,
 	},
 	effects: [
 		{

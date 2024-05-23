@@ -519,7 +519,7 @@ window.weightedRandom = weightedRandom;
  * @param {number} defaultValue The default value to use if the provided value is undefined
  * @returns {number} The resolved value, either from the function call or directly
  */
-function resolveValue(value, defaultValue) {
+function resolveValue(value, defaultValue = undefined) {
 	if (typeof value === "function") {
 		return value();
 	}
