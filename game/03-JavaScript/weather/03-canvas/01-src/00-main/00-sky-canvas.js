@@ -170,6 +170,7 @@ Weather.Sky = (() => {
 	function initialize() {
 		initOrbits();
 		initFadables();
+		setupCanvas();
 	}
 
 	async function setupCanvas() {
@@ -331,10 +332,9 @@ Weather.Sky = (() => {
 })();
 window.Weather.Sky = Weather.Sky;
 
-$(document).one(":passageend", () => {
+$(document).one(":passagestart", () => {
 	if (!V.weatherObj) return;
 	Weather.Sky.initialize();
-	Weather.Sky.setupCanvas();
 });
 
 Macro.add("skybox", {
