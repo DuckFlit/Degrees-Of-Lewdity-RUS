@@ -4,7 +4,7 @@ Weather.Sky.Layers.add({
 	zIndex: 2,
 	blur: {
 		max: 5,
-		factor: () => normalise(Weather.overcast, 1, 0.4),
+		factor: () => normalise(Weather.overcast, 1, 0.1),
 	},
 	effects: [
 		{

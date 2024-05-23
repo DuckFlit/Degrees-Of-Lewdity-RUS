@@ -119,8 +119,9 @@ Weather.WeatherGeneration = (() => {
 		const chosenType = closestTypes[random(0, closestTypes.length - 1)];
 		const newObj = createObjectByType(chosenType);
 
-		// Only save the weather type
 		V.weatherObj.name = chosenType.name;
+		const targetOvercast = resolveValue(Weather.genSettings.weatherTypes.find(type => type.name === Weather.name).overcast);
+		V.weatherObj.targetOvercast = targetOvercast * (Weather.bloodMoon ? setup.SkySettings.fade.overcast.bloodMoonMaxValue : 1);
 		return newObj;
 	}
 
