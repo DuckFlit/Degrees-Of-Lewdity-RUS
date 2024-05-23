@@ -110,8 +110,12 @@ Weather.Sky = (() => {
 			this.currentDate = new DateTime(date);
 		}
 
-		setFadeFactor(date, fadeTarget) {
+		setFadeFactor(date, fadeTarget, instant = false) {
 			this.setTime(date);
+			if (instant) {
+				this.factor = fadeTarget;
+				return;
+			}
 			const fadeChange = (1 / this.settings.timeToFade) * this.elapsedTime;
 			const fadeDirection = Math.sign(fadeTarget - this.factor);
 
@@ -248,9 +252,9 @@ Weather.Sky = (() => {
 		}
 	}
 
-	function updateFade() {
+	function updateFade(instant = false) {
 		const overcastTarget = V.weatherObj.targetOvercast ?? 0;
-		_fadables.overcast.setFadeFactor(Time.date, overcastTarget);
+		_fadables.overcast.setFadeFactor(Time.date, overcastTarget, instant);
 		V.weatherObj.overcast = round(_fadables.overcast.factor, 2);
 	}
 

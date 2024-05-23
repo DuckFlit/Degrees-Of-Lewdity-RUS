@@ -4,7 +4,7 @@ Weather.Sky.Layers.add({
 	zIndex: 3, // zIndex value
 	blur: {
 		max: () => (Weather.bloodMoon ? 3 : 3),
-		factor: () => (Weather.overcast > 0.4 ? (Weather.overcast - 0.4) / 0.6 : 0),
+		factor: () => normalise(Weather.overcast, 1, 0.4),
 	},
 	effects: [
 		{
@@ -99,6 +99,31 @@ Weather.Sky.Layers.add({
 				diameter() {
 					// Reference this layer and above effect image
 					return Weather.Sky.getLayer("moon").effects[1].images.orbital.width;
+				},
+			},
+		},
+	],
+});
+
+Weather.Sky.Layers.add({
+	name: "bloodGlow",
+	zIndex: 11,
+	effects: [
+		{
+			effect: "outerRadialGlow",
+			drawCondition: () => Weather.bloodMoon,
+			params: {
+				outerRadius: 16, // The radius of the outer glow
+				colorInside: { dark: "#b0131365", med: "#b0131365", bright: "#b0131365" },
+				colorOutside: { dark: "#ad3a2100", med: "#ad3a2100", bright: "#ad3a2100" },
+				diameter: 6,
+			},
+			bindings: {
+				position() {
+					return Weather.Sky.orbitals.bloodMoon.position;
+				},
+				factor() {
+					return Math.min(Weather.overcast - (1 - Weather.Sky.orbitals.bloodMoon.factor), 0);
 				},
 			},
 		},

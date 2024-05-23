@@ -41,6 +41,12 @@ Weather.WeatherGeneration = (() => {
 		V.weatherObj.keypointsArr.unshift({ timestamp: currentTimeStamp, value: weatherTypeIndex });
 
 		getWeather();
+
+		if (instant) {
+			Weather.Sky.getLayer("clouds").effects[0].reset();
+			Weather.Sky.updateFade(true);
+		}
+
 		Weather.Observables.checkForUpdate();
 	}
 
@@ -86,7 +92,8 @@ Weather.WeatherGeneration = (() => {
 		if (current.value === interpolatedValue) {
 			const newObj = createObjectByType(current);
 			V.weatherObj.name = newObj.name;
-			V.weatherObj.targetOvercast = resolveValue(Weather.genSettings.weatherTypes.find(type => type.name === Weather.name).overcast);
+			const targetOvercast = resolveValue(Weather.genSettings.weatherTypes.find(type => type.name === Weather.name).overcast);
+			V.weatherObj.targetOvercast = targetOvercast * (Weather.bloodMoon ? setup.SkySettings.fade.overcast.bloodMoonMaxValue : 1);
 			return newObj;
 		}
 

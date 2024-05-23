@@ -18,7 +18,7 @@ setup.WeatherBindings = {
 	},
 	weather: {
 		variable: () => Weather.name,
-		layers: ["clouds", "cirrusClouds", "overcastClouds"],
+		layers: ["clouds", "cirrusClouds", "overcastClouds", "all"],
 	},
 	precipitation: {
 		variable: () => Weather.name,

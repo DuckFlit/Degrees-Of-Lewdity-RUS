@@ -93,6 +93,10 @@ Weather.Sky.Effects.create({
 			return this.currentDate?.compareWith(Time.date, true) / TimeConstants.secondsPerMinute;
 		};
 
+		this.reset = () => {
+			this.clouds = [];
+		};
+
 		updateTargetCount();
 		if (!this.clouds.length || this.elapsedTime() >= 3 * Time.minutesPerHour) {
 			for (let i = 0; i < this.layers.length; i++) {

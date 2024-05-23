@@ -66,6 +66,7 @@ setup.SkySettings = {
 	fade: {
 		overcast: {
 			timeToFade: 60,
+			bloodMoonMaxValue: 0.85,
 		},
 	},
 	blur: {
