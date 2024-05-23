@@ -288,6 +288,7 @@ Renderer.CanvasModels["main"] = {
 			"skin_tone_swimsuitBottom": -0.01,
 			"skin_tone_bikiniTop": -0.01,
 			"skin_tone_bikiniBottom": -0.01,
+			"skin_scars":false,
 			// Hair
 			"hair_colour": "red",
 			"hair_colour_gradient": {
@@ -1328,6 +1329,15 @@ Renderer.CanvasModels["main"] = {
 			},
 			filters: ["toast"],
 			z: ZIndices.toast
+		},
+		"scars": {
+			srcfn(options) {
+				return 'img/body/wraith_scars.png'
+			},
+			showfn(options) {
+				return options.show_face && options.scars
+			},
+			z: ZIndices.neck
 		},
 		/***
 		 *    ██   ██  █████  ██ ██████
