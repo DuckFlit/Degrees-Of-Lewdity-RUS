@@ -331,13 +331,9 @@ Weather.Sky = (() => {
 })();
 window.Weather.Sky = Weather.Sky;
 
-$(document).one(":passagestart", () => {
-	if (!V.weatherObj) return;
-	Weather.Sky.initialize();
-});
-
 $(document).one(":passageend", () => {
 	if (!V.weatherObj) return;
+	Weather.Sky.initialize();
 	Weather.Sky.setupCanvas();
 });
 
