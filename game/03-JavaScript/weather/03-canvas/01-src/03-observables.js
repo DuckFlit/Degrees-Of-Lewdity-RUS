@@ -40,6 +40,7 @@ Weather.Observables = (() => {
 
 	const scheduler = new UpdateScheduler();
 	const observables = {};
+	const changedKeys = new Map();
 
 	Object.keys(setup.WeatherBindings).forEach(key => (observables[key] = new ObservableValue(null)));
 
@@ -73,9 +74,23 @@ Weather.Observables = (() => {
 		});
 	};
 
+	$(document).on(":passageend", () => {
+		setBindings();
+		Object.keys(observables).forEach(key => {
+			changedKeys.set(key, observables[key].value);
+		});
+	});
+
 	Weather.Sky.loaded.subscribe(() => {
 		setBindings();
 		subscribeToUpdates();
+
+		// Check if values were changed between page load and Weather.Sky finished loading
+		Object.keys(observables).forEach(key => {
+			if (changedKeys.get(key) === observables[key].value) {
+				observables[key]._notifyListeners(observables[key].value, changedKeys.get(key));
+			}
+		});
 		$(document).on(":passageend", setBindings);
 	});
 

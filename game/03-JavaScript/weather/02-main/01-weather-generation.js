@@ -42,7 +42,7 @@ Weather.WeatherGeneration = (() => {
 
 		getWeather();
 
-		if (instant) {
+		if (instant && Weather.Sky.loaded.value) {
 			Weather.Sky.getLayer("clouds").effects[0].reset();
 			Weather.Sky.updateFade(true);
 		}
