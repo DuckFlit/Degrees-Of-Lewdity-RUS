@@ -198,6 +198,7 @@ module.exports = {
 		updateSavesCount: "readonly",
 		validateValue: "readonly",
 		waterproofCheck: "readonly",
+		initializeTooltips: "readonly",
 		// DoL math functions
 		round: "readonly",
 		normalise: "readonly",
