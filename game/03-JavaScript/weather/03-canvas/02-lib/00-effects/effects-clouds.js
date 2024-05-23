@@ -9,6 +9,7 @@ Weather.Sky.Effects.create({
 		overlapLimit: 0.4,
 	},
 	init() {
+		if (!this.weatherType) return;
 		const bottomY = this.bottomY * setup.SkySettings.scale;
 		const movementSpeed = this.movement.baseSpeed * setup.SkySettings.scale;
 		const leaveSpeed = this.movement.leaveSpeed * setup.SkySettings.scale;

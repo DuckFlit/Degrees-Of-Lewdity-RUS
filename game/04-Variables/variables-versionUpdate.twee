@@ -5204,9 +5204,27 @@
 		<<unset $body_temperature>>
 		<<unset $body_temperature_outside>>
 		<<unset $skyHidden>>
+
+		<!-- Also reset the frozenValues (statFreeze) -->
+		<<if $statFreeze>>
+			<<unset $frozenValues.weather>>
+			<<unset $frozenValues.nextWeather>>
+			<<unset $frozenValues.warmth>>
+			<<unset $frozenValues.chill>>
+			<<unset $frozenValues.chill_day>>
+			<<unset $frozenValues.body_temperature>>
+			<<unset $frozenValues.body_temperature_outside>>
+			<<unset $frozenValues.skyHidden>>
+		<</if>>
+
 		<!-- Failsafe if changing options immediately after load -->
 		<<run Weather.WeatherGeneration.generate(Time.date)>>
 		<<run Engine.play($passage)>>
+	<</if>>
+
+	<!-- Remove before final push, only for active testers -->
+	<<if $weatherObj.ice is undefined>>
+		<<set $weatherObj.ice to {}>>
 	<</if>>
 
 	<<if $options.clothingCaption is undefined>>
@@ -5216,19 +5234,14 @@
 	<<if $frozenKeys isnot undefined>>
 		<<unset $frozenKeys>>
 	<</if>>
-	
-	<!-- Remove before final push, only for active testers -->
-	<<if $weatherObj.ice is undefined>>
-		<<set $weatherObj.ice to {}>>
-	<</if>>
 
 	<<if $clothing_number isnot undefined>>
 		<<unset $clothing_number>>
 	<</if>>
 
-	/* Remove old character renderer remnants */
+	<!-- Remove old character renderer remnants -->
 	<<if $options.sidebarRenderer isnot undefined>>
-		<<run delete $options.sidebarRenderer>>
+		<<unset $options.sidebarRenderer>>
 	<</if>>
 
 <</widget>>
