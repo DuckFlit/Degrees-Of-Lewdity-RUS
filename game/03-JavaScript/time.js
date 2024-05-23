@@ -102,11 +102,11 @@ const Time = (() => {
 	let currentDate = {};
 
 	function set(timeStamp) {
-		if (!V.startDate) V.startDate = new DateTime().timeStamp;
-		if (!V.timeStamp) V.timeStamp = 0;
-		if (!timeStamp) timeStamp = V.timeStamp;
+		V.startDate = V.startDate ?? new DateTime().timeStamp;
+		V.timeStamp = V.timeStamp ?? 0;
+		timeStamp = timeStamp ?? V.timeStamp;
 
-		currentDate = new DateTime(V.startDate + V.timeStamp);
+		currentDate = new DateTime(V.startDate + timeStamp);
 		V.timeStamp = timeStamp;
 	}
 	/*
@@ -966,6 +966,10 @@ function minutePassed(minutes) {
 	// Snow & ice
 	Weather.setAccumulatedSnow(minutes);
 	Weather.setIceThickness(minutes);
+
+	// Overcast
+	Weather.Sky.updateFade();
+	V.weatherObj.overcast = round(Weather.Sky.fadables.overcast.factor, 2);
 
 	// Effects
 	V.stress = Math.min(V.stress, V.stressmax);

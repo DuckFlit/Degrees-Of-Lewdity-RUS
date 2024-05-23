@@ -59,7 +59,6 @@ Weather.Observables = (() => {
 					scheduler.scheduleUpdate("all", async () => {
 						Weather.Sky.updateTooltip();
 						Weather.Sky.updateOrbits();
-						Weather.Sky.updateFade();
 						Weather.Sky.drawLayers();
 					});
 				} else {

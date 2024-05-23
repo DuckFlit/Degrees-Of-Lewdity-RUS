@@ -6,7 +6,7 @@ Weather.Sky.Layers.add({
 	},
 	// blur: {
 	// 	max: 2,
-	// 	factor: () => Weather.Sky.fadables.overcast.factor,
+	// 	factor: () => Weather.overcast,
 	// },
 	blur: 1.5,
 	effects: [

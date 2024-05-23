@@ -112,7 +112,7 @@ Weather.Sky = (() => {
 
 		setFadeFactor(date, fadeTarget) {
 			this.setTime(date);
-			const fadeChange = (1 / this.settings.timeToFade) * Math.abs(this.elapsedTime);
+			const fadeChange = (1 / this.settings.timeToFade) * this.elapsedTime;
 			const fadeDirection = Math.sign(fadeTarget - this.factor);
 
 			if (fadeDirection !== 0) {
@@ -166,7 +166,6 @@ Weather.Sky = (() => {
 	function initialize() {
 		initOrbits();
 		initFadables();
-		setupCanvas();
 	}
 
 	async function setupCanvas() {
@@ -201,8 +200,7 @@ Weather.Sky = (() => {
 
 	function initFadables() {
 		const overcastSettings = setup.SkySettings.fade.overcast;
-		const maxOvercast = Weather.bloodMoon ? 0.7 : Weather.current.overcast;
-		_fadables.overcast = new Fadable(overcastSettings, Time.date, maxOvercast);
+		_fadables.overcast = new Fadable(overcastSettings, Time.date, V.weatherObj.overcast);
 	}
 
 	async function initEffects() {
@@ -251,7 +249,9 @@ Weather.Sky = (() => {
 	}
 
 	function updateFade() {
-		_fadables.overcast.setFadeFactor(Time.date, Weather.current.overcast);
+		const overcastTarget = V.weatherObj.targetOvercast ?? 0;
+		_fadables.overcast.setFadeFactor(Time.date, overcastTarget);
+		V.weatherObj.overcast = round(_fadables.overcast.factor, 2);
 	}
 
 	function getLayer(name) {
@@ -278,7 +278,7 @@ Weather.Sky = (() => {
 			<br><span class="blue">Water temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.waterTemperature)}</span>
 			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)}</span>
 			<br><span class="blue">Sun intensity:</span> <span class="yellow">${round(Weather.sunIntensity * 100, 2)}% (${V.outside ? "outside" : "inside"})</span>
-			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(_fadables.overcast.factor * 100, 2)}%</span>
+			<br><span class="blue">Overcast amount:</span> <span class="yellow">${round(Weather.overcast * 100, 2)}%</span>
 			<br><span class="blue">Fog amount:</span> <span class="yellow">${round(Weather.fog * 100, 2)}%</span>
 			<br><span class="blue">Snow ground accumulation:</span> <span class="yellow">${V.weatherObj.snow}mm</span>
 			<br><span class="blue">Lake ice thickness:</span> <span class="yellow">${V.weatherObj.ice.lake ?? 0}mm</span>`
@@ -316,6 +316,7 @@ Weather.Sky = (() => {
 		updateOrbits,
 		updateFade,
 		initialize,
+		setupCanvas,
 		drawLayers,
 		getLayer,
 		updateTooltip,
@@ -326,9 +327,14 @@ Weather.Sky = (() => {
 })();
 window.Weather.Sky = Weather.Sky;
 
-$(document).one(":passageend", () => {
+$(document).one(":passagestart", () => {
 	if (!V.weatherObj) return;
 	Weather.Sky.initialize();
+});
+
+$(document).one(":passageend", () => {
+	if (!V.weatherObj) return;
+	Weather.Sky.setupCanvas();
 });
 
 Macro.add("skybox", {

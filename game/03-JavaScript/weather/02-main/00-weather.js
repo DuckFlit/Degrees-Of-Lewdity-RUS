@@ -148,10 +148,10 @@ const Weather = (() => {
 			return Weather.WeatherGeneration.getWeather().defines;
 		},
 		get isOvercast() {
-			return round(Weather.Sky.fadables.overcast.factor * 100, 2) > 0.5;
+			return V.weatherObj.overcast > 0.5;
 		},
 		get overcast() {
-			return round(Weather.Sky.fadables.overcast.factor * 100, 2);
+			return V.weatherObj.overcast;
 		},
 		get sunIntensity() {
 			return getSunIntensity();

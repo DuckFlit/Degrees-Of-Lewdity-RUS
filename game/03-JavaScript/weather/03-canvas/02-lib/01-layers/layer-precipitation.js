@@ -126,8 +126,8 @@ Weather.Sky.Layers.add({
 			compositeOperation: "source-atop",
 			params: {
 				color: {
-					nightDark: "#000412ee",
-					nightBright: "#000412dd",
+					nightDark: "#000412bb",
+					nightBright: "#00041299",
 					day: "#97a9e8aa",
 					dawnDusk: "#7a511895",
 					bloodMoon: "#c70000cc",
