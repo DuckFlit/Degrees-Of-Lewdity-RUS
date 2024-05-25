@@ -80,6 +80,25 @@ declare module "twine-sugarcube" {
 }
 
 declare global {
+		export type ClothesSlots = "clothes_all_slots" | ClothedSlots;
+
+		export type ClothedSlots =
+		| "over_upper"
+		| "over_lower"
+		| "upper"
+		| "lower"
+		| "under_upper"
+		| "under_lower"
+		| "over_head"
+		| "head"
+		| "face"
+		| "neck"
+		| "hands"
+		| "handheld"
+		| "legs"
+		| "feet"
+		| "genitals";
+		
 	export interface ClothesItem {
 		index: number;
 		name: string;
