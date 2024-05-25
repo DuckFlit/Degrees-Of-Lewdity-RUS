@@ -338,12 +338,14 @@ function outfitChecks() {
 				return V.worn[item].name !== "naked" && ((T.bottomIsSkirt = setup.clothes[item][clothesIndex(item, V.worn[item])].skirt), true);
 			})
 		];
-	T.bottomUnder =
-		V.worn[
-			bottomLayers.slice(bottomLayers.indexOf(T.bottom)).find(item => {
-				return V.worn[item].name !== "naked" && ((T.bottomUnderIsSkirt = setup.clothes[item][clothesIndex(item, V.worn[item])].skirt), true);
-			})
-		];
+	if (T.bottom !== V.worn.under_lower) {
+		T.bottomUnder =
+			V.worn[
+				bottomLayers.slice(bottomLayers.indexOf(T.bottom)).find(item => {
+					return V.worn[item].name !== "naked" && ((T.bottomUnderIsSkirt = setup.clothes[item][clothesIndex(item, V.worn[item])].skirt), true);
+				})
+			];
+	}
 	T.swimwear =
 		((V.worn.under_lower.type.includes("swim") && V.worn.lower.type.includes("naked")) || V.worn.lower.type.includes("swim")) &&
 		(V.worn.under_upper.type.includes("swim") || V.worn.under_upper.type.includes("naked")) &&
