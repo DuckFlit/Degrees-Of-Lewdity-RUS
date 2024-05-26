@@ -3836,7 +3836,8 @@ Renderer.CanvasModels["main"] = {
 			showfn(options) {
 				return options.show_clothes &&
 				options.worn_head > 0 &&
-				options.worn_head_setup.mainImage !== 0 &&
+				options.worn_head_setup.accImage !== 0 &&
+				options.worn_head_setup.accessory === 1 &&
 				!options.hideAll
 			},
 		}),
