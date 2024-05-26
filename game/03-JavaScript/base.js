@@ -630,3 +630,25 @@ Macro.add("foldout", {
 		e.appendTo(this.output);
 	},
 });
+
+/* global ClothedSlots */
+
+/**
+ * @param {ClothedSlots} slot
+ */
+function carriedClear(slot) {
+	const slotFound = slot in V.carried;
+	if (!slotFound) {
+		return;
+	}
+
+	V.carried[slot] = clone(setup.clothes[slot][0]);
+}
+window.carriedClear = carriedClear;
+
+Macro.add("carriedClear", {
+	handler() {
+		console.log("Carried clear called", this.args);
+		carriedClear(this.args[0]);
+	},
+});
