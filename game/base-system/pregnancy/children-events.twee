@@ -4,7 +4,11 @@
 /*args[0] - location, args[1] - passageExit*/
 <<widget "childrenEvents">>
 	<<if _args[0]>>
-		<<getChildrenIds `{location: _args[0]}`>>
+		<<if _args[0] is "tower">>
+			<<getChildrenIds `{location: _args[0], eggTimer: undefined}` "both">>
+		<<else>>
+			<<getChildrenIds `{location: _args[0]}`>>
+		<</if>>
 		<<if _childrenIds.length gt 0>>
 			<<set _singleEvents to true>>
 		<</if>>
@@ -138,7 +142,7 @@
 				You spot <<childrenNames $childrenIds>> tumbling over one another.
 				<<set _child1 to _childrenIds.pluck()>>
 				<<set _child2 to _childrenIds.pluck()>>				
-				Every now and again they stop to stare at each other. After a moment, <<childname _child1>> moves behind <<childselect _child2>><<childname>> and starts to groom <<childhim>>.
+				Every now and again they stop to stare at each other. After a moment, <<childname _child1>> moves behind <<childSelect _child2>><<childname>> and starts to groom <<childhim>>.
 				<br><br>
 
 				<<link [[Next|$childPassageExit]]>><<unset $childrenIds>><<unset $childPassageExit>><<endevent>><</link>>
@@ -365,7 +369,7 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 
 :: Childrens Home
 <<effects>>
-<<getChildrenIds `{location: $location, eggTimer: undefined}`>>
+<<getChildrenIds `{location: $location}`>>
 <<switch $location>>
 	<<case "home">>
 		You are in the orphanage nursery. There are a few cradles and cots scattered around.
@@ -393,6 +397,7 @@ When you're done bathing <<childHim>>, you lay <<childHim>> on a towel and gentl
 				Silence fills the room.
 		<</switch>>
 	<<case "tower">>
+		<<getChildrenIds `{location: $location, eggTimer: undefined}` "both">>
 		You are in the tower. You look around for your <<if _childrenIds.length gte 2>>children<<else>>child<</if>>.
 <</switch>>
 <<if Time.dayState isnot "night" and (!$daily.childrenHomeEvent or !$daily.childrenHomeEvent.includes($location)) and random(1) is 1>>
