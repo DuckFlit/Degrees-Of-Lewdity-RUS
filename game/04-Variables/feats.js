@@ -883,11 +883,19 @@ setup.feats = {
 	"Terror's Equal": {
 		title: "Terror's Equal",
 		desc: "Filled the tower with impressive hunting trophies.",
-		difficulty: 2,
+		difficulty: 3,
 		series: "",
 		filter: ["All", "Discoveries"],
 		hint: "Hint: Vanity befitting a terror of the skies.",
 		softLockable: true,
+	},
+	"Birds of a Feather": {
+		title: "Birds of a Feather...",
+		desc: "...flock together.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Rescue an orphan of another species.",
 	},
 	"Head of the Pack": {
 		title: "Head of the Pack",
