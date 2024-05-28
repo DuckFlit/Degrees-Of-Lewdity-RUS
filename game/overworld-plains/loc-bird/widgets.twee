@@ -1186,9 +1186,9 @@
 <</widget>>
 
 <<widget "flight_distance_check">>
-	<<set _distanceNorth to Math.abs($bird.hunts.distanceNorth)>>
-	<<set _distanceEast to Math.abs($bird.hunts.distanceEast)>>
-	<<set _distanceTotal to (_distanceNorth + _distanceEast)>>
+	<<set _distanceNorthSouth to Math.abs($bird.hunts.distanceNorth)>>
+	<<set _distanceEastWest to Math.abs($bird.hunts.distanceEast)>>
+	<<set _distanceTotal to (_distanceNorthSouth + _distanceEastWest)>>
 	<<set _returnTime to 0>>
 	<<set _returnTime to (5 * _distanceTotal)>>
 <</widget>>
@@ -1197,29 +1197,29 @@
 	<<flight_time_check 20 "silent">>
 	<<if $bird.hunts.goal is "hawk">>
 		<<set _directionPool to []>>
-		<<if $bird.hunts.distanceNorth lt 5 and !($bird.hunts.distanceNorth is -1 and _distanceEast is 0)>>
+		<<if $bird.hunts.distanceNorth lt 5 and !($bird.hunts.distanceNorth is -1 and _distanceEastWest is 0)>>
 			<<run _directionPool.pushUnique("north")>>
 		<</if>>
-		<<if $bird.hunts.distanceEast lt 5 and !($bird.hunts.distanceEast is -1 and _distanceNorth is 0)>>
+		<<if $bird.hunts.distanceEast lt 5 and !($bird.hunts.distanceEast is -1 and _distanceNorthSouth is 0)>>
 			<<run _directionPool.pushUnique("east")>>
 		<</if>>
-		<<if $bird.hunts.distanceNorth gt -5 and !($bird.hunts.distanceNorth is 1 and _distanceEast is 0)>>
+		<<if $bird.hunts.distanceNorth gt -5 and !($bird.hunts.distanceNorth is 1 and _distanceEastWest is 0)>>
 			<<run _directionPool.pushUnique("south")>>
 		<</if>>
-		<<if $bird.hunts.distanceEast gt -5 and !($bird.hunts.distanceEast is 1 and _distanceNorth is 0)>>
+		<<if $bird.hunts.distanceEast gt -5 and !($bird.hunts.distanceEast is 1 and _distanceNorthSouth is 0)>>
 			<<run _directionPool.pushUnique("west")>>
 		<</if>>
 		<<set $bird.hunts.direction to _directionPool.pluck()>>
 		<<switch $bird.hunts.direction>>
-			<<case "north">><<set _distanceNorth to 1>><<set _distanceEast to 0>>
-			<<case "east">><<set _distanceNorth to 0>><<set _distanceEast to 1>>
-			<<case "south">><<set _distanceNorth to -1>><<set _distanceEast to 0>>
-			<<case "west">><<set _distanceNorth to 0>><<set _distanceEast to -1>>
+			<<case "north">><<set _distanceNorthSouth to 1>><<set _distanceEastWest to 0>>
+			<<case "east">><<set _distanceNorthSouth to 0>><<set _distanceEastWest to 1>>
+			<<case "south">><<set _distanceNorthSouth to -1>><<set _distanceEastWest to 0>>
+			<<case "west">><<set _distanceNorthSouth to 0>><<set _distanceEastWest to -1>>
 		<</switch>>
-		<<capture _distanceNorth _distanceEast _fatigueMod _flightTime _fatigueText>>
+		<<capture _distanceNorthSouth _distanceEastWest _fatigueMod _flightTime _fatigueText>>
 			<<link [[`Continue hunting (${getTimeString(_hoursPassed, _minutesPassed)})`|Bird Hunt Event]]>>
-				<<set $bird.hunts.distanceNorth += _distanceNorth>>
-				<<set $bird.hunts.distanceEast += _distanceEast>>
+				<<set $bird.hunts.distanceNorth += _distanceNorthSouth>>
+				<<set $bird.hunts.distanceEast += _distanceEastWest>>
 				<<set $fatigueMod to _fatigueMod>>
 				<<set $flightTime to _flightTime>>
 				<<bird_pass _flightTime>>
@@ -1237,9 +1237,9 @@
 		<</link>><<print _fatigueText>>
 		<br>
 	<<else>>
-		<<if _distanceNorth gte 4 or _distanceEast gte 4>>
+		<<if _distanceNorthSouth gte 4 or _distanceEastWest gte 4>>
 			You can't see the tower from here.
-		<<elseif _distanceNorth is 0 and _distanceEast is 0>>
+		<<elseif _distanceNorthSouth is 0 and _distanceEastWest is 0>>
 			The moor stretches out before you.
 		<<else>>
 			The tower is to the
