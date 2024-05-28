@@ -1,12 +1,14 @@
 /* eslint-disable no-undef */
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "fog",
-	zIndex: 11,
+	zIndex: 13,
 	blur: false,
 	effects: [
 		{
 			effect: "fog",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			params: {
 				images: {
 					fog: "img/misc/sky/clouds/fog/0.png",
@@ -39,10 +41,10 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 				moonFactor() {
-					return Weather.Sky.moonBrightnessFactor;
+					return this.renderInstance.moonBrightnessFactor;
 				},
 				bloodMoon() {
 					return Weather.bloodMoon;

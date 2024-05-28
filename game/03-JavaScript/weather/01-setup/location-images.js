@@ -213,6 +213,75 @@ setup.LocationImages = {
 			},
 		},
 	},
+	banner: {
+		folder: "banner",
+		base: {
+			default: {
+				condition: () => !Weather.bloodMoon,
+				image: "banner_text.png",
+			},
+			bloodmoon: {
+				condition: () => Weather.bloodMoon,
+				image: "banner_text_bloodmoon.png",
+			},
+		},
+		emissive: {
+			night: {
+				image: "banner_text.png",
+				condition: () => !Weather.bloodMoon && Weather.banner.orbitals.sun.factor < 0,
+				color: "#ffffff40",
+				size: 4,
+				blur: 0,
+				intensity: 0.6,
+			},
+			bloodmoon: {
+				image: "banner_text_bloodmoon.png",
+				condition: () => Weather.bloodMoon && Weather.banner.orbitals.sun.factor < 0,
+				color: "#ffffff40",
+				size: 4,
+				blur: 0,
+				intensity: 0.4,
+			},
+			snow: {
+				condition: () => !Weather.bloodMoon && Weather.isSnow,
+				image: "banner_snow.png",
+				color: "#c8d5ff50",
+				blur: 0,
+				size: 4,
+				intensity: 0.9,
+			},
+			snow_blood: {
+				condition: () => Weather.bloodMoon && Weather.isSnow,
+				image: "banner_snow_blood.png",
+				color: "#b80d2c99",
+				blur: 0,
+				size: 6,
+				intensity: 0.9,
+			},
+		},
+		reflective: {
+			mask: {
+				image: "reflective.png",
+			},
+			ice: {
+				condition: () => Weather.isSnow,
+				image: "ice.png",
+				alpha: 0.8,
+			},
+			overlay: {
+				image: "water.png",
+				compositeOperation: () => (Weather.isSnow ? "screen" : "overlay"),
+				alpha: () => (V.weatherObj.snow > 400 ? 0.5 : 0.4),
+			},
+			
+		},
+		layerTop: {
+			snow: {
+				condition: () => V.weatherObj.snow > 400,
+				image: "snow.png",
+			},
+		},
+	},
 	beach: {
 		folder: "beach",
 		base: {
@@ -545,7 +614,6 @@ setup.LocationImages = {
 			mask: {
 				image: "reflective.png",
 				alpha: 0.2,
-				waveShiftFactor: 0.004, // default is 0.006
 			},
 			overlay: {
 				image: "water.png",
@@ -1567,7 +1635,7 @@ setup.LocationImages = {
 			overlay: {
 				image: "water.png",
 				compositeOperation: "overlay",
-				alpha: 0.5,
+				alpha: 0.4,
 				animation: {
 					slider: () => V.options.reflections,
 					frames: 300,
@@ -1577,7 +1645,7 @@ setup.LocationImages = {
 			glimmer: {
 				condition: () => V.options.reflections,
 				image: "glimmer.png",
-				compositeOperation: "overlay",
+				compositeOperation: "soft-light",
 				alpha: 1,
 				gradientMask: true,
 				animation: {

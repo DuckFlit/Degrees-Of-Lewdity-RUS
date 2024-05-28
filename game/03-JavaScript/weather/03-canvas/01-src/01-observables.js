@@ -45,7 +45,7 @@ Weather.Observables = (() => {
 	Object.keys(setup.WeatherBindings).forEach(key => (observables[key] = new ObservableValue(null)));
 
 	const setBindings = () => {
-		if (Weather.Sky.loaded.value) Weather.Sky.updateTooltip();
+		if (Weather.sky?.loaded.value) Weather.sky.updateTooltip();
 		Object.entries(setup.WeatherBindings).forEach(([key, config]) => {
 			const value = config.variable();
 			observables[key].value = value;
@@ -58,15 +58,15 @@ Weather.Observables = (() => {
 				if (value === undefined) return;
 				if (config.layers.includes("all")) {
 					scheduler.scheduleUpdate("all", async () => {
-						Weather.Sky.updateTooltip();
-						Weather.Sky.updateOrbits();
-						Weather.Sky.drawLayers();
+						Weather.sky.updateTooltip();
+						Weather.sky.updateOrbits();
+						Weather.sky.drawLayers();
 					});
 				} else {
 					config.layers.forEach(layer => {
 						scheduler.scheduleUpdate(layer, async draw => {
-							await Weather.Sky.getLayer(layer).init();
-							if (!draw) Weather.Sky.drawLayers(layer);
+							await Weather.sky.layers.get(layer).init();
+							if (!draw) Weather.sky.drawLayers(layer);
 						});
 					});
 				}
@@ -74,18 +74,18 @@ Weather.Observables = (() => {
 		});
 	};
 
-	$(document).on(":passageend", () => {
+	$(document).on(":passageend", () => { // todo one
 		setBindings();
 		Object.keys(observables).forEach(key => {
 			changedKeys.set(key, observables[key].value);
 		});
 	});
 
-	Weather.Sky.loaded.subscribe(() => {
+	Weather.sky?.loaded.subscribe(() => {
 		setBindings();
 		subscribeToUpdates();
 
-		// Check if values were changed between page load and Weather.Sky finished loading
+		// Check if values were changed between page load and Weather.sky finished loading
 		Object.keys(observables).forEach(key => {
 			if (changedKeys.get(key) === observables[key].value) {
 				observables[key]._notifyListeners(observables[key].value, changedKeys.get(key));

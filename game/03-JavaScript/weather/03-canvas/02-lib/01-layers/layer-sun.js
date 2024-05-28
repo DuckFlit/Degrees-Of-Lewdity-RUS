@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "sun",
 	zIndex: 2,
 	blur: {
@@ -9,19 +9,23 @@ Weather.Sky.Layers.add({
 	effects: [
 		{
 			effect: "skyOrbital",
-			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.5 && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return this.renderInstance.orbitals.sun.factor > -0.5 && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				images: { orbital: "img/misc/sky/sun.png" },
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.sun.position;
+					return this.renderInstance.orbitals.sun.position;
 				},
 			},
 		},
 		{
 			effect: "outerRadialGlow",
-			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.5 && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return this.renderInstance.orbitals.sun.factor > -0.5 && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				outerRadius: 24, // The radius of the outer glow
 				colorInside: { dark: "#f07218ee", med: "#f07218ee", bright: "#f2fad766" },
@@ -29,27 +33,29 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.sun.position;
+					return this.renderInstance.orbitals.sun.position;
 				},
 				factor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 				diameter() {
 					// Reference this layer and above effect image
-					return Weather.Sky.getLayer("sun").effects[0].images.orbital.width;
+					return this.renderInstance.layers.get("sun").effects[0].images.orbital.width;
 				},
 			},
 		},
 	],
 });
 
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "sunGlow",
-	zIndex: 11,
+	zIndex: 12,
 	effects: [
 		{
 			effect: "outerRadialGlow",
-			drawCondition: () => Weather.Sky.orbitals.sun.factor > -0.7 && !Weather.isOvercast && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return this.renderInstance.orbitals.sun.factor > -0.7 && !Weather.isOvercast && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				outerRadius: 64, // The radius of the outer glow
 				colorInside: { dark: "#fd634d00", med: "#faff8710", bright: "#fbffdb55" },
@@ -59,10 +65,10 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.sun.position;
+					return this.renderInstance.orbitals.sun.position;
 				},
 				factor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 			},
 		},

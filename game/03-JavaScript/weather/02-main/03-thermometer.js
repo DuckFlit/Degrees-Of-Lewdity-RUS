@@ -46,7 +46,7 @@ Weather.Thermometer = (() => {
 		});
 
 		Promise.all(loadPromises).then(() => {
-			thermometerCanvas = new Weather.Sky.Canvas(0, 0);
+			thermometerCanvas = new BaseCanvas(0, 0, 0.5); //todo move to after img size is set
 			const baseImg = images.baseImg.img;
 			size.width = baseImg.width * size.scaleFactor;
 			size.height = baseImg.height * size.scaleFactor;

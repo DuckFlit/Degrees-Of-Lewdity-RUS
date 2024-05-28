@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-Weather.Sky.Effect = class Effect {
+Weather.Renderer.Effect = class Effect {
 	constructor(effect, condition, compositeOperation, params) {
 		this.params = params ?? {};
 		this.id = params.id;
@@ -8,11 +8,11 @@ Weather.Sky.Effect = class Effect {
 		this.onDraw = effect.draw;
 		this.onEnable = effect.onEnable;
 		this.onDisable = effect.onDisable;
+		this.parentLayer = effect.parentLayer;
 		this.drawCondition = condition || (() => true);
 		this.compositeOperation = compositeOperation || "source-over";
 		this.images = {};
 		this.imagePaths = this.params.images || effect.images;
-		this.canvas = new Weather.Sky.Canvas();
 		this.initPromise = null;
 		this.alpha = this.params.alpha ?? 1;
 		this.deepMerge(effect.defaultParameters, this.params);
@@ -27,6 +27,19 @@ Weather.Sky.Effect = class Effect {
 				this.addEffect(p.effect, p.params, p.bindings, p.drawCondition, childId);
 				id++;
 			});
+		}
+	}
+
+	/**
+	 * Set the renderer only after the effect has been added
+	 *
+	 * @param {Weather.Renderer.Sky} renderer Sky renderer instance
+	 */
+	setRenderer(renderer) {
+		this.renderInstance = renderer;
+		this.canvas = new this.renderInstance.Canvas();
+		for (const effect of this.effects) {
+			effect.setRenderer(renderer);
 		}
 	}
 
@@ -79,17 +92,18 @@ Weather.Sky.Effect = class Effect {
 	 * @param {Array} parentIdArray The ID array of the parent effect
 	 */
 	addEffect(effectName, params, bindings, condition, parentIdArray) {
-		const effectConfig = Weather.Sky.Effects.effects.get(effectName);
+		const effectConfig = Weather.Renderer.Effects.effects.get(effectName);
 		if (!effectConfig) {
 			console.error(new Error(`Could not add effect '${effectName}'.`));
 			return;
 		}
+		effectConfig.parentLayer = this.parentLayer;
 
 		// Don't override any of the functions
 		params = params ?? {};
 		params.deepMerge(this.params, (_, value) => typeof value !== "function");
 		params.id = [...parentIdArray];
-		const newEffect = new Weather.Sky.Effect(effectConfig, condition, null, params);
+		const newEffect = new Weather.Renderer.Effect(effectConfig, condition, null, params);
 		this.effects.push(newEffect);
 
 		if (bindings) {
@@ -114,6 +128,7 @@ Weather.Sky.Effect = class Effect {
 						await result;
 					}
 				} catch (e) {
+					console.log("p1", this);
 					console.error("Error during effect '", this.parentLayer.name, "' init function. Error:", e.target ?? e);
 				}
 			}
@@ -147,6 +162,7 @@ Weather.Sky.Effect = class Effect {
 		if (!currentDrawCondition) {
 			return;
 		}
+
 		try {
 			this.canvas.ctx.save();
 			this.onDraw(canvas, layerCanvas);

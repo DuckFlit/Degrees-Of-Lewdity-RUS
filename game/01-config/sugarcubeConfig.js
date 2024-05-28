@@ -45,6 +45,8 @@ idb.footerHTML = `
 	</div>`;
 
 function onLoad(save) {
+	$.event.trigger(":onloadsave", { save });
+
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
 	pageLoading = true;
 	window.onLoadUpdateCheck = true;
@@ -126,6 +128,10 @@ function onSave(save, details) {
 		session.history.forEach(s => incSavesCount(s.variables, type, date));
 		State.setSessionState(session);
 	}
+
+	// Save time and weather to localStorage
+	localStorage.setItem("weather", Packer.packWeatherData());
+	localStorage.setItem("time", Time.date.timeStamp.toString(36));
 
 	// * legacy code for old saves system * //
 	if (!(window.idb && window.idb.active)) {

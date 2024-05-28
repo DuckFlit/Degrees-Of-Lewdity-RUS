@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "locationImage",
 	effects: [
 		{
@@ -12,7 +12,7 @@ Weather.Sky.Effects.create({
 					return this.key;
 				},
 				parentLayer() {
-					return this.parentLayer;
+					return this.parentLayer; // todo remove
 				},
 				fullPath() {
 					return `${this.path}/` + (this.location.folder ? `${this.location.folder}/` : "");
@@ -21,7 +21,9 @@ Weather.Sky.Effects.create({
 		},
 		{
 			effect: "colorOverlay",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			params: {
 				color: {
 					nightDark: "#00001ceb",
@@ -33,10 +35,10 @@ Weather.Sky.Effects.create({
 			},
 			bindings: {
 				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 				moonFactor() {
-					return Weather.Sky.moonBrightnessFactor;
+					return this.renderInstance.moonBrightnessFactor;
 				},
 				bloodMoon() {
 					return Weather.bloodMoon;
@@ -66,12 +68,13 @@ Weather.Sky.Effects.create({
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "locationEmissive",
 	defaultParameters: {
 		defaultColor: "#deae66",
 		defaultSize: 3,
 		defaultIntensity: 1,
+		defaultBlur: 0.5,
 	},
 	effects: [
 		{
@@ -93,11 +96,12 @@ Weather.Sky.Effects.create({
 		},
 	],
 	draw() {
-		// Set the blur
+		// Set the glow
 		this.effects[0].draw({
 			end: (_, obj, drawCanvas) => {
 				const glowSize = resolveValue(obj.size, this.defaultSize);
 				const glowColor = resolveValue(obj.color, this.defaultColor);
+				const blur = resolveValue(obj.blur, this.defaultBlur);
 				const glowIntensity = Math.min(10, resolveValue(obj.intensity, this.defaultIntensity));
 
 				let remainingIntensity = glowIntensity;
@@ -105,19 +109,20 @@ Weather.Sky.Effects.create({
 					const currentAlpha = remainingIntensity >= 1 ? 1 : remainingIntensity;
 					this.canvas.ctx.shadowColor = glowColor;
 					this.canvas.ctx.shadowBlur = glowSize;
-					this.canvas.ctx.filter = `blur(0.5px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
+					this.canvas.ctx.filter = `blur(${blur}px) drop-shadow(0px 0px ${glowSize}px ${glowColor})`;
 					this.canvas.ctx.globalAlpha = currentAlpha;
 
 					remainingIntensity -= 1;
 					this.canvas.drawImage(drawCanvas.element);
 				}
 				this.canvas.ctx.globalAlpha = 1;
+				drawCanvas.clear();
 			},
 		});
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "locationReflective",
 	defaultParameters: {
 		defaultHorizon: 40,
@@ -125,10 +130,12 @@ Weather.Sky.Effects.create({
 		defaultAlpha: 0.7,
 		defaultCompositeOperation: "source-over",
 		defaultContrast: 0.9,
-		defaultWaveShiftFactor: 0.006,
-		defaultWaveFrequency: 10,
-		defaultMinAmplitude: 1,
-		defaultMaxAmplitude: 6,
+		defaultWaveShiftFactor: 0.06,
+		defaultWaveFrequency: 2,
+		defaultAmplitude: 40,
+		defaultVerticalSpeed: 0.08, // Speed of vertical movement
+		defaultVerticalDirection: -1, // Direction of vertical movement (1 for upwards, -1 for downwards)
+		defaultVerticalFactor: 5,
 	},
 	effects: [
 		{
@@ -161,10 +168,10 @@ Weather.Sky.Effects.create({
 			},
 			bindings: {
 				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 				moonFactor() {
-					return Weather.Sky.moonBrightnessFactor;
+					return this.renderInstance.moonBrightnessFactor;
 				},
 				bloodMoon() {
 					return Weather.bloodMoon;
@@ -195,37 +202,41 @@ Weather.Sky.Effects.create({
 		const obj = this.location[this.key].mask;
 		if (obj === undefined) throw new Error("Property 'mask' is not defined in reflective property.");
 
-		this.reflectionCanvas = new Weather.Sky.Canvas();
-		this.locationCanvas = new Weather.Sky.Canvas();
-		this.distortionMask = new Weather.Sky.Canvas();
-		this.distortionCanvas = new Weather.Sky.Canvas(this.canvas.element.width, this.canvas.element.height);
+		this.reflectionCanvas = new this.renderInstance.Canvas();
+		this.locationCanvas = new this.renderInstance.Canvas();
+		this.distortionMask = new this.renderInstance.Canvas();
+		this.distortionCanvas = new BaseCanvas(this.canvas.element.width, this.canvas.element.height);
 
-		this.horizon = resolveValue(obj.horizon, this.defaultHorizon) * setup.SkySettings.scale;
+		this.horizon = resolveValue(obj.horizon, this.defaultHorizon) * this.renderInstance.settings.scale;
 		this.overlayAlpha = resolveValue(obj.alpha, this.defaultAlpha);
 		this.blur = resolveValue(obj.blur, this.defaultBlur);
 		this.contrast = resolveValue(obj.contrast, this.defaultContrast);
 		this.waveShiftFactor = resolveValue(obj.waveShiftFactor, this.defaultWaveShiftFactor);
 		this.waveFrequency = resolveValue(obj.waveFrequency, this.defaultWaveFrequency);
-		this.minAmplitude = resolveValue(obj.minAmplitude, this.defaultMinAmplitude);
-		this.maxAmplitude = resolveValue(obj.maxAmplitude, this.defaultMaxAmplitude);
+		this.amplitude = resolveValue(obj.amplitude, this.defaultAmplitude);
 		this.animationCondition = resolveValue(obj.animationCondition, true);
+		this.verticalSpeed = resolveValue(obj.verticalSpeed, this.defaultVerticalSpeed);
+		this.verticalDirection = resolveValue(obj.verticalDirection, this.defaultVerticalDirection);
+		this.verticalFactor = resolveValue(obj.verticalFactor, this.defaultVerticalFactor);
 
 		// Precalculate the sine curve for multiple frames
 		this.sineFrames = [];
-		const numFrames = 24;
+		const numFrames = Math.ceil((2 * Math.PI) / (this.verticalSpeed * this.waveFrequency));
 
-		// Perform a full cycle to look fluent
-		const phaseShiftPerFrame = (2 * Math.PI) / numFrames;
-
-		this.startY = 2 + this.locationCanvas.element.height - (this.locationCanvas.element.height - this.horizon) * setup.SkySettings.scale;
+		this.startY = 2 + this.locationCanvas.element.height - (this.locationCanvas.element.height - this.horizon) * this.renderInstance.settings.scale;
 		for (let frame = 0; frame < numFrames; frame++) {
 			const sines = [];
 			for (let y = 0; y < this.distortionCanvas.element.height; y++) {
-				// Linear interpolation for amplitude based on y position
-				const amplitude = this.minAmplitude + (this.maxAmplitude - this.minAmplitude) * (y / this.distortionCanvas.element.height);
-				const basePhase = (y + this.startY) * this.waveFrequency;
-				const animPhase = basePhase + frame * phaseShiftPerFrame;
-				const totalSineValue = Math.sin(basePhase) * amplitude + Math.sin(animPhase) * amplitude * 0.5;
+				// Exponential interpolation for amplitude based on y position
+				const exponentialFactor = Math.pow(y / this.distortionCanvas.element.height, this.verticalFactor); // More pronounced exponential factor for amplitude
+				const adjustedFrequency = this.waveFrequency * (1 - exponentialFactor);
+				const amplitude = this.amplitude * exponentialFactor; // Amplitude increases exponentially
+		
+				// Introduce a vertical shift for the animation effect
+				const verticalShift = (frame * this.verticalSpeed * this.verticalDirection) % this.distortionCanvas.element.height;
+		
+				const basePhase = ((y + verticalShift) * adjustedFrequency) % (2 * Math.PI);
+				const totalSineValue = Math.sin(basePhase) * amplitude;
 				sines.push(totalSineValue);
 			}
 			this.sineFrames.push(sines);
@@ -236,7 +247,7 @@ Weather.Sky.Effects.create({
 			image: this.distortionCanvas.element,
 			canvas: this.canvas,
 			numFrames,
-			frameDelay: 150, // milliseconds per frame
+			frameDelay: 100, // milliseconds per frame
 			cycleDelay: 0, // No delay between cycles
 			startDelay: 0,
 			currentFrame: 0,
@@ -244,7 +255,7 @@ Weather.Sky.Effects.create({
 			condition: () => (typeof this.animationCondition === "function" ? this.animationCondition() : this.animationCondition),
 		};
 
-		this.animation = new Weather.Sky.Animation(animationOptions);
+		this.animation = new Weather.Renderer.Animation(animationOptions);
 		this.parentLayer.animationGroup.add("distortionAnimation", this.animation);
 		this.animation.enable();
 	},
@@ -284,7 +295,7 @@ Weather.Sky.Effects.create({
 					drawCanvas.clear();
 					return;
 				}
-
+				drawCanvas.ctx.save();
 				if (obj.gradientMask) {
 					drawCanvas.ctx.globalAlpha = 1;
 					drawCanvas.ctx.globalCompositeOperation = "destination-out";
@@ -299,6 +310,7 @@ Weather.Sky.Effects.create({
 				this.reflectionCanvas.ctx.globalAlpha = resolveValue(obj.alpha, this.defaultAlpha);
 				this.reflectionCanvas.ctx.globalCompositeOperation = resolveValue(obj.compositeOperation, this.defaultCompositeOperation);
 				this.reflectionCanvas.drawImage(drawCanvas.element);
+				drawCanvas.ctx.restore();
 			},
 		});
 
@@ -329,12 +341,12 @@ Weather.Sky.Effects.create({
 		this.distortionCanvas.ctx.globalCompositeOperation = "destination-in";
 		this.distortionCanvas.drawImage(this.distortionMask.element);
 
-		// Draw the final frame
+		// Draw the final layer
 		this.canvas.drawImage(this.distortionCanvas.element);
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "locationImageAnimation",
 	async init() {
 		const loadImage = async (key, obj) => {
@@ -367,7 +379,7 @@ Weather.Sky.Effects.create({
 							const direction = sliderDirection === "right" ? 1 : -1;
 							const sliderMovementPerFrame = image.width / sliderFrames;
 
-							const slider = new Weather.Sky.Canvas(image.width * sliderFrames, image.height);
+							const slider = new BaseCanvas(image.width * sliderFrames, image.height);
 
 							for (let i = 0; i < sliderFrames; i++) {
 								const offsetX = round(direction * sliderMovementPerFrame * i, 0);
@@ -389,7 +401,7 @@ Weather.Sky.Effects.create({
 							animationOptions.parentAnimation = obj.parentAnimation;
 						}
 
-						obj.animationObj = new Weather.Sky.Animation(animationOptions);
+						obj.animationObj = new Weather.Renderer.Animation(animationOptions);
 						obj.animationObj.enable();
 						this.parentLayer.animationGroup.add(animationOptions.name, obj.animationObj);
 					} else {
@@ -420,8 +432,7 @@ Weather.Sky.Effects.create({
 		if (this.location?.[this.key] === undefined) return;
 
 		// Need to create a deep copy in case of other effects using the same object
-		this.obj = this.location[this.key];
-		//this.obj = this.location[this.key].deepCopy();
+		this.obj = this.location[this.key].deepCopy();
 
 		// Check if there are sub-animations
 		// In that case we want a separate animation for each of them

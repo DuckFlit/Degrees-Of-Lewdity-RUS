@@ -1,12 +1,14 @@
 /* eslint-disable no-undef */
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "clouds",
 	zIndex: 6,
 	blur: 1.5,
 	effects: [
 		{
 			effect: "clouds",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			params: {
 				images: {
 					cloud0: "img/misc/sky/clouds/0.png",
@@ -66,7 +68,9 @@ Weather.Sky.Layers.add({
 		},
 		{
 			effect: "colorOverlay",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			compositeOperation: "source-atop",
 			params: {
 				color: {
@@ -79,10 +83,10 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 				moonFactor() {
-					return Weather.Sky.moonBrightnessFactor;
+					return this.renderInstance.moonBrightnessFactor;
 				},
 				bloodMoon() {
 					return Weather.bloodMoon;
@@ -92,13 +96,15 @@ Weather.Sky.Layers.add({
 	],
 });
 
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "overcastClouds",
 	zIndex: 5,
 	effects: [
 		{
 			effect: "overcast",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			params: {
 				images: {
 					overcast: "img/misc/sky/clouds/overcast/0.png",
@@ -119,7 +125,9 @@ Weather.Sky.Layers.add({
 		},
 		{
 			effect: "colorOverlay",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			compositeOperation: "source-atop",
 			params: {
 				color: {
@@ -132,10 +140,10 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor * interpolate(1, 0.8, Math.max(0, normalise(Weather.Sky.orbitals.sun.factor, 1, 0)));
+					return this.renderInstance.orbitals.sun.factor * interpolate(1, 0.8, Math.max(0, normalise(this.renderInstance.orbitals.sun.factor, 1, 0)));
 				},
 				moonFactor() {
-					return Weather.Sky.moonBrightnessFactor;
+					return this.renderInstance.moonBrightnessFactor;
 				},
 				bloodMoon() {
 					return Weather.bloodMoon;
@@ -145,7 +153,7 @@ Weather.Sky.Layers.add({
 	],
 });
 
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "cirrusClouds",
 	zIndex: 4,
 	blur: {
@@ -155,15 +163,18 @@ Weather.Sky.Layers.add({
 	effects: [
 		{
 			effect: "cirrus",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			params: {
 				images: {
 					cloud0: "img/misc/sky/clouds/cirrus/0.png",
 					cloud1: "img/misc/sky/clouds/cirrus/1.png",
+					cloud2: "img/misc/sky/clouds/cirrus/2.png",
 				},
 				height: {
 					min: -12,
-					max: 48,
+					max: 42,
 				},
 				count: {
 					min: 1,
@@ -183,13 +194,15 @@ Weather.Sky.Layers.add({
 					return Weather.type;
 				},
 				factor() {
-					return interpolate(this.minAlpha, 1, normalise(Math.min(Weather.Sky.orbitals.sun.factor, 0), 0, -1));
+					return interpolate(this.minAlpha, 1, normalise(Math.min(this.renderInstance.orbitals.sun.factor, 0), 0, -1));
 				},
 			},
 		},
 		{
 			effect: "colorOverlay",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			compositeOperation: "source-atop",
 			params: {
 				color: {
@@ -202,10 +215,10 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				sunFactor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 				moonFactor() {
-					return Weather.Sky.moonBrightnessFactor;
+					return this.renderInstance.moonBrightnessFactor;
 				},
 				bloodMoon() {
 					return Weather.bloodMoon;

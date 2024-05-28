@@ -1,4 +1,4 @@
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "location",
 	zIndex: 9,
 	animation: {
@@ -25,7 +25,7 @@ Weather.Sky.Layers.add({
 		},
 		{
 			effect: "locationEmissive",
-			drawCondition: () => {
+			drawCondition() {
 				return setup.LocationImages[setup.Locations.get()].emissive;
 			},
 			params: {
@@ -41,7 +41,7 @@ Weather.Sky.Layers.add({
 		},
 		{
 			effect: "locationReflective",
-			drawCondition: () => {
+			drawCondition() {
 				return V.options.reflections && !!setup.LocationImages[setup.Locations.get()].reflective;
 			},
 			params: {
@@ -61,7 +61,7 @@ Weather.Sky.Layers.add({
 		// Fallback only if reflections are disabled
 		{
 			effect: "locationImage",
-			drawCondition: () => {
+			drawCondition() {
 				return !V.options.reflections && !!setup.LocationImages[setup.Locations.get()].reflective;
 			},
 			params: {
@@ -79,7 +79,7 @@ Weather.Sky.Layers.add({
 		// Draw on top
 		{
 			effect: "locationImage",
-			drawCondition: () => {
+			drawCondition() {
 				return setup.LocationImages[setup.Locations.get()].layerTop;
 			},
 			params: {
@@ -98,14 +98,14 @@ Weather.Sky.Layers.add({
 	],
 });
 
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "horizonGlow",
 	zIndex: 8,
 	effects: [
 		// City glow
 		{
 			effect: "gradiantGlow",
-			drawCondition: () => {
+			drawCondition() {
 				if (Weather.bloodMoon || !(Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off)) {
 					return false;
 				}
@@ -151,7 +151,9 @@ Weather.Sky.Layers.add({
 		// Blood moon glow
 		{
 			effect: "gradiantGlow",
-			drawCondition: () => (Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off) && Weather.bloodMoon,
+			drawCondition() {
+				return (Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off) && Weather.bloodMoon;
+			},
 			params: {
 				color: {
 					glow: "#eb3b2fee",

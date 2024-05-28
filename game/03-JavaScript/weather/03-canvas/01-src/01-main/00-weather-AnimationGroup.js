@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-Weather.Sky.AnimationGroup = class AnimationGroup {
+Weather.Renderer.AnimationGroup = class AnimationGroup {
 	constructor(options, onUpdate) {
 		this.lastUpdateTime = 0;
 		this.updateRate = options.updateRate;
@@ -24,7 +24,7 @@ Weather.Sky.AnimationGroup = class AnimationGroup {
 	}
 
 	add(key, animation) {
-		if (!(animation instanceof Weather.Sky.Animation)) {
+		if (!(animation instanceof Weather.Renderer.Animation)) {
 			console.error("Error adding animation to group: Expected Animation instance as argument, but received ", animation);
 			return;
 		}

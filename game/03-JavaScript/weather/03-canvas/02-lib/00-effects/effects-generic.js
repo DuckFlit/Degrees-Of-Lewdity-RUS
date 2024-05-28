@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "gradiantGlow",
 	defaultParameters: {
 		fadeStartY: 96,
 	},
 	init() {
-		const fadeStartHeight = this.canvas.element.height - this.fadeStartY * setup.SkySettings.scale;
+		const fadeStartHeight = this.canvas.element.height - this.fadeStartY * this.renderInstance.settings.scale;
 		this.gradient = this.canvas.ctx.createLinearGradient(0, this.canvas.element.height, 0, fadeStartHeight);
 
 		// Simple ease-out for a better gradient fade
@@ -21,19 +21,18 @@ Weather.Sky.Effects.create({
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "colorOverlay",
 	draw() {
 		// Color based on the moon state and phase
 		const nightColor = this.bloodMoon ? this.color.bloodMoon : ColourUtils.interpolateColor(this.color.nightDark, this.color.nightBright, this.moonFactor);
 		const color = ColourUtils.interpolateTripleColor(nightColor, this.color.dawnDusk, this.color.day, this.sunFactor);
-
 		this.canvas.ctx.fillStyle = color;
 		this.canvas.fillRect();
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "imageOverlay",
 	defaultParameters: {
 		factor: 1,
@@ -80,13 +79,13 @@ Weather.Sky.Effects.create({
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "outerRadialGlow",
 	defaultParameters: {
 		cutCenter: true,
 	},
 	init() {
-		this.scaledOuterRadius = this.outerRadius * setup.SkySettings.scale;
+		this.scaledOuterRadius = this.outerRadius * this.renderInstance.settings.scale;
 		this.radius = this.diameter / 2;
 		this.colorStopMiddle = this.radius / (this.radius + this.scaledOuterRadius);
 		this.glowRadius = this.radius / 2 + this.scaledOuterRadius;
@@ -115,7 +114,7 @@ Weather.Sky.Effects.create({
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "innerRadialGlow",
 	defaultParameters: {
 		innerRadius: 5,
@@ -123,7 +122,7 @@ Weather.Sky.Effects.create({
 	init() {
 		this.radius = this.diameter / 2 - 1;
 		// Calculate where the inner glow is most prominent
-		this.glowStart = (this.radius - this.innerRadius * setup.SkySettings.scale) / this.radius;
+		this.glowStart = (this.radius - this.innerRadius * this.renderInstance.settings.scale) / this.radius;
 	},
 	draw() {
 		const { x, y } = this.position;

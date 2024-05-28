@@ -101,13 +101,16 @@ const Time = (() => {
 
 	let currentDate = {};
 
-	function set(timeStamp) {
-		V.startDate = V.startDate ?? new DateTime().timeStamp;
-		V.timeStamp = V.timeStamp ?? 0;
-		timeStamp = timeStamp ?? V.timeStamp;
+	function set(time = V.timeStamp) {
+		V.startDate = V.startDate ?? new DateTime(2022, 9, 4, 7).timeStamp;
 
-		currentDate = new DateTime(V.startDate + timeStamp);
-		V.timeStamp = timeStamp;
+		if (time instanceof DateTime) {
+			currentDate = time;
+			V.timeStamp = time.timeStamp - V.startDate;
+		} else {
+			currentDate = new DateTime(V.startDate + time);
+			V.timeStamp = time;
+		}
 	}
 	/*
 	 * Changes date without "passing time"
@@ -968,8 +971,8 @@ function minutePassed(minutes) {
 	Weather.setIceThickness(minutes);
 
 	// Overcast
-	Weather.Sky.updateFade();
-	V.weatherObj.overcast = round(Weather.Sky.fadables.overcast.factor, 2);
+	Weather.sky.updateFade();
+	V.weatherObj.overcast = round(Weather.sky.fadables.overcast.factor, 2);
 
 	// Effects
 	V.stress = Math.min(V.stress, V.stressmax);
@@ -998,7 +1001,7 @@ function minutePassed(minutes) {
 function noonCheck() {
 	const fragment = document.createDocumentFragment();
 
-	Weather.Sky.setMoonPhase();
+	Weather.sky.setMoonPhase();
 
 	if (V.statFreeze) return fragment;
 

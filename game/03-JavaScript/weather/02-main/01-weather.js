@@ -8,6 +8,7 @@
 */
 
 const Weather = (() => {
+	const _activeRenderer = {};
 	/* Helper functions */
 
 	function generateKeyPoints({ date, minKeys, maxKeys, timeApart, rangeValue, totalSteps }) {
@@ -58,7 +59,7 @@ const Weather = (() => {
 	}
 
 	function getSunIntensity() {
-		const sunIntensity = Weather.genSettings.months[Time.date.month - 1].sunIntensity * Weather.Sky.dayFactor;
+		const sunIntensity = Weather.genSettings.months[Time.date.month - 1].sunIntensity * Weather.activeRenderer.dayFactor;
 		const weatherModifier = V.outside ? Weather.current.tanningModifier : 0;
 		const locationModifier = V.location === "forest" ? 0.2 : 1;
 		return V.outside ? Math.max(sunIntensity * weatherModifier * locationModifier, 0) : 0;
@@ -185,13 +186,13 @@ const Weather = (() => {
 			return Weather.BodyTemperature.wetness;
 		},
 		get bloodMoon() {
-			const sunRise = Weather.Sky.orbitals.bloodMoon?.settings.riseTime - 1;
-			const sunSet = Weather.Sky.orbitals.bloodMoon?.settings.setTime + 1;
+			const sunRise = Weather.activeRenderer.orbitals.bloodMoon?.settings.riseTime - 1;
+			const sunSet = Weather.activeRenderer.orbitals.bloodMoon?.settings.setTime + 1;
 			return (Time.date.day === Time.date.lastDayOfMonth && Time.date.hour >= sunRise) || (Time.date.day === 1 && Time.date.hour < sunSet);
 		},
 		get dayState() {
-			const sunRise = Weather.Sky.orbitals.sun.settings.riseTime;
-			const sunSet = Weather.Sky.orbitals.sun.settings.setTime;
+			const sunRise = Weather.activeRenderer.orbitals.sun.settings.riseTime;
+			const sunSet = Weather.activeRenderer.orbitals.sun.settings.setTime;
 			const hour = Time.hour;
 			return hour < sunRise - 0.75 || hour >= sunSet + 0.75 ? "night" : hour >= sunSet - 0.5 ? "dusk" : hour >= sunRise + 1 ? "day" : "dawn";
 		},
@@ -204,11 +205,18 @@ const Weather = (() => {
 		},
 		set fog(value) {
 			V.weatherObj.fog = value;
-			Weather.Sky.drawLayers();
+			Weather.activeRenderer.drawLayers();
 		},
 		get lightsOn() {
 			return !Weather.bloodMoon && (Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off);
 		},
+		get activeRenderer() {
+			return this._activeRenderer;
+		},
+		set activeRenderer(value) {
+			this._activeRenderer = value;
+		},
+		Renderer: {},
 	};
 })();
 window.Weather = Weather;

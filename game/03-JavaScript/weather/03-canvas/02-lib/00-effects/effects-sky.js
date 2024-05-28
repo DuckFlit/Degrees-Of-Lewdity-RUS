@@ -2,10 +2,10 @@
 /**
  * Sky gradient effect, simulating transitions between different times of day
  */
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "skyGradiant",
 	init() {
-		this.scaledRadius = this.radius * setup.SkySettings.scale;
+		this.scaledRadius = this.radius * this.renderInstance.settings.scale;
 	},
 	draw() {
 		const { x, y } = this.position;
@@ -27,17 +27,17 @@ Weather.Sky.Effects.create({
  * Generates a random star-field on init() based on the starsConfig parameters.
  * Rotates the starfield on draw() based on the rotation binding.
  */
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "skyStarField",
 	defaultParameters: {
 		starSize: 2,
 	},
 	init() {
-		this.scaledArea = this.area * setup.SkySettings.scale;
-		this.scaledStarSize = this.starSize * setup.SkySettings.scale;
-		this.scaledMinDistance = this.starsConfig.minDistance * setup.SkySettings.scale;
-		this.scaledPivotX = this.pivot.x * setup.SkySettings.scale;
-		this.scaledPivotY = this.pivot.y * setup.SkySettings.scale;
+		this.scaledArea = this.area * this.renderInstance.settings.scale;
+		this.scaledStarSize = this.starSize * this.renderInstance.settings.scale;
+		this.scaledMinDistance = this.starsConfig.minDistance * this.renderInstance.settings.scale;
+		this.scaledPivotX = this.pivot.x * this.renderInstance.settings.scale;
+		this.scaledPivotY = this.pivot.y * this.renderInstance.settings.scale;
 		// Returns a random star based on the weights from spriteOptions
 		const getRandomStar = () => {
 			const options = Object.entries(this.spriteOptions).map(([key, value]) => {
@@ -86,7 +86,7 @@ Weather.Sky.Effects.create({
 					y: this.scaledPivotY + distance * Math.sin(angle),
 					sprite: spriteKey === "square" ? null : this.images[spriteKey],
 					color: getRandomStarColor(spriteKey),
-					glowSize: this.spriteOptions[spriteKey].glowSize * setup.SkySettings.scale,
+					glowSize: this.spriteOptions[spriteKey].glowSize * this.renderInstance.settings.scale,
 					glowColor: this.spriteOptions[spriteKey].glowColor,
 				};
 

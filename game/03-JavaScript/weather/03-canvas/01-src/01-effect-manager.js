@@ -1,25 +1,20 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
+Weather.Renderer.Effects = (() => {
+	const effects = new Map();
 
-Weather.Sky.Effects = (() => {
-	const _effects = new Map();
-
-	function createEffect(params) {
+	function addEffect(params) {
 		const optionalParams = {
 			defaultParameters: {},
 		};
 		params = { ...optionalParams, ...params };
 
-		if (_effects.has(params.name)) {
+		if (effects.has(params.name)) {
 			console.error("Effects", `Effect with name '${params.name}', already exists, and will be overwritten.`);
 		}
-
-		const { name, ...context } = params;
-		_effects.set(name, context);
+		effects.set(params.name, params);
 	}
 
 	return {
-		effects: _effects,
-		create: createEffect,
+		effects,
+		add: addEffect,
 	};
 })();

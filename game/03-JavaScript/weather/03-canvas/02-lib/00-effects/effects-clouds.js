@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "clouds",
 	defaultParameters: {
 		clouds: [],
@@ -10,9 +10,9 @@ Weather.Sky.Effects.create({
 	},
 	init() {
 		if (!this.weatherType) return;
-		const bottomY = this.bottomY * setup.SkySettings.scale;
-		const movementSpeed = this.movement.baseSpeed * setup.SkySettings.scale;
-		const leaveSpeed = this.movement.leaveSpeed * setup.SkySettings.scale;
+		const bottomY = this.bottomY * this.renderInstance.settings.scale;
+		const movementSpeed = this.movement.baseSpeed * this.renderInstance.settings.scale;
+		const leaveSpeed = this.movement.leaveSpeed * this.renderInstance.settings.scale;
 
 		const updateTargetCount = () => {
 			if (this.currentWeather === this.weather.name) return;
@@ -74,12 +74,12 @@ Weather.Sky.Effects.create({
 							x -= random(0, this.canvas.element.width / 2);
 						}
 						const y = random(
-							layerSettings.height.min * setup.SkySettings.scale,
-							Math.min(layerSettings.height.max * setup.SkySettings.scale, bottomY - sprite.height)
+							layerSettings.height.min * this.renderInstance.settings.scale,
+							Math.min(layerSettings.height.max * this.renderInstance.settings.scale, bottomY - sprite.height)
 						);
 						cloud = { sprite, type, x, y, z: layerIndex, movementSpeed, width: sprite.width, height: sprite.height };
 						attempts++;
-					} while (attempts < 5 && Weather.Sky.isOverlappingAny(cloud, this.clouds[layerIndex], this.overlapLimit));
+					} while (attempts < 5 && Weather.Renderer.Sky.isOverlappingAny(cloud, this.clouds[layerIndex], this.overlapLimit));
 
 					this.clouds[layerIndex].push(cloud);
 				}
@@ -118,7 +118,7 @@ Weather.Sky.Effects.create({
 			if (!cloudLayer || cloudLayer.length === 0) {
 				continue;
 			}
-			const cloudCanvas = new Weather.Sky.Canvas();
+			const cloudCanvas = new this.renderInstance.Canvas();
 			const layerSettings = this.layers[layerIndex];
 			let i = 0;
 			while (cloudLayer[i]) {
@@ -146,7 +146,7 @@ Weather.Sky.Effects.create({
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "cirrus",
 	defaultParameters: {
 		clouds: [],
@@ -155,7 +155,7 @@ Weather.Sky.Effects.create({
 		overlapLimit: 0.3,
 	},
 	init() {
-		const movementSpeed = this.movement.speed * setup.SkySettings.scale;
+		const movementSpeed = this.movement.speed * this.renderInstance.settings.scale;
 		const updateTargetCount = () => {
 			if (this.currentWeather === this.weather.name) return;
 			this.currentWeather = this.weather.name;
@@ -181,10 +181,10 @@ Weather.Sky.Effects.create({
 					if (offScreen && randomPosition) {
 						x -= random(0, this.canvas.element.width / 2);
 					}
-					const y = random(this.height.min * setup.SkySettings.scale, this.height.max * setup.SkySettings.scale);
+					const y = random(this.height.min * this.renderInstance.settings.scale, this.height.max * this.renderInstance.settings.scale);
 					cloud = { sprite, x, y, movementSpeed, width: sprite.width, height: sprite.height };
 					attempts++;
-				} while (attempts < 5 && Weather.Sky.isOverlappingAny(cloud, this.clouds, this.overlapLimit));
+				} while (attempts < 5 && Weather.Renderer.Sky.isOverlappingAny(cloud, this.clouds, this.overlapLimit));
 
 				this.clouds.push(cloud);
 			}
@@ -235,7 +235,7 @@ Weather.Sky.Effects.create({
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "overcast",
 	effects: [
 		{
@@ -263,7 +263,7 @@ Weather.Sky.Effects.create({
 	},
 });
 
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "fog",
 	effects: [
 		{

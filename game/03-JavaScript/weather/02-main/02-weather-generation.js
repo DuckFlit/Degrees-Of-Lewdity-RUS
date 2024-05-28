@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-
 Weather.WeatherGeneration = (() => {
 	function isWeather(weatherType) {
 		return weatherType.toLowerCase() === getWeather().name.toLowerCase();
@@ -42,9 +39,9 @@ Weather.WeatherGeneration = (() => {
 
 		getWeather();
 
-		if (instant && Weather.Sky.loaded.value) {
-			Weather.Sky.getLayer("clouds").effects[0].reset();
-			Weather.Sky.updateFade(true);
+		if (instant && Weather.sky.loaded.value) {
+			Weather.sky.layers.get("clouds").effects[0].reset();
+			Weather.sky.updateFade(true);
 		}
 
 		Weather.Observables.checkForUpdate();
@@ -67,8 +64,8 @@ Weather.WeatherGeneration = (() => {
 		}
 
 		// Failsafe if no next key point is found for the day, assume weather stays the same
-		if (!nextKeyPoint) {
-			return currentKeyPoint ? currentKeyPoint.value : "clear";
+		if (!nextKeyPoint && currentKeyPoint) {
+			return currentKeyPoint.value;
 		}
 
 		currentKeyPoint = currentKeyPoint ?? { timestamp: currentTimeStamp, value: nextKeyPoint.value };

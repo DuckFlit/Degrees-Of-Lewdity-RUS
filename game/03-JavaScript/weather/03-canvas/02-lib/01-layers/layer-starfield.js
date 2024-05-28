@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "starField",
 	zIndex: 1,
 	blur: {
@@ -9,7 +9,9 @@ Weather.Sky.Layers.add({
 	effects: [
 		{
 			effect: "skyStarField",
-			drawCondition: () => Weather.Sky.orbitals.sun.factor < 0.75 && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return this.renderInstance.orbitals.sun.factor < 0.75 && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				area: 256,
 				starsConfig: {
@@ -63,7 +65,7 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				alpha() {
-					const factor = Weather.Sky.orbitals.sun.factor;
+					const factor = this.renderInstance.orbitals.sun.factor;
 					const nightAlpha = Weather.bloodMoon ? this.opacity.bloodMoon : this.opacity.night;
 					return interpolate(nightAlpha, this.opacity.day, Math.max(0, factor));
 				},
@@ -71,10 +73,10 @@ Weather.Sky.Layers.add({
 					return Time.date.fractionOfDay * 360;
 				},
 				moonPosition() {
-					return Weather.Sky.orbitals.moon.position;
+					return this.renderInstance.orbitals.moon.position;
 				},
 				moonDiameter() {
-					return Weather.Sky.getLayer("moon").effects[0].images.orbital.width;
+					return this.renderInstance.layers.get("moon").effects[0].images.orbital.width;
 				},
 			},
 		},

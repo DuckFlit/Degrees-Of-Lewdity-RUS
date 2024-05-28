@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-Weather.Sky.Effects.create({
+Weather.Renderer.Effects.add({
 	name: "precipitation",
 	defaultParameters: {
 		animationFrames: [],
@@ -10,7 +10,7 @@ Weather.Sky.Effects.create({
 		},
 	},
 	init() {
-		const scaledFrameWidth = this.frameWidth * setup.SkySettings.scale;
+		const scaledFrameWidth = this.frameWidth * this.renderInstance.settings.scale;
 		const scaledFrameHeight = this.images.precipitation.height;
 		const numFrames = this.images.precipitation.width / scaledFrameWidth;
 
@@ -19,8 +19,8 @@ Weather.Sky.Effects.create({
 		const effectiveFrameWidth = scaledFrameWidth + this.position.offset;
 		const spriteColumns = Math.max(1, Math.ceil((this.canvas.element.width - this.position.offset) / effectiveFrameWidth));
 
-		const precipitationSheet = new Weather.Sky.Canvas(scaledFrameWidth * numFrames * spriteColumns, scaledFrameHeight * spriteRows);
-		const precipitationFrame = new Weather.Sky.Canvas(scaledFrameWidth * spriteColumns, scaledFrameHeight * spriteRows);
+		const precipitationSheet = new BaseCanvas(scaledFrameWidth * numFrames * spriteColumns, scaledFrameHeight * spriteRows);
+		const precipitationFrame = new BaseCanvas(scaledFrameWidth * spriteColumns, scaledFrameHeight * spriteRows);
 
 		// Fills the canvas with looping sprites - then repeat it for every frame of the animation and draw it into a new canvas
 		for (let i = 0; i < numFrames; i++) {
@@ -76,15 +76,20 @@ Weather.Sky.Effects.create({
 			numFrames,
 			cycleDelay: 0,
 			offset: frameTotalWidth,
-			condition: this.drawCondition,
 		};
 
-		this.animation = new Weather.Sky.Animation(animationOptions);
+		this.animation = new Weather.Renderer.Animation(animationOptions);
 		this.parentLayer.animationGroup.add(this.imagePaths.precipitation, this.animation);
 		this.animation.enable();
 	},
-
+	onEnable() {
+		this.animation?.enable();
+	},
+	onDisable() {
+		this.animation?.disable();
+	},
 	draw() {
+		if (!this.animation) return;
 		this.canvas.ctx.globalAlpha = this.alpha;
 		this.animation.draw();
 	},

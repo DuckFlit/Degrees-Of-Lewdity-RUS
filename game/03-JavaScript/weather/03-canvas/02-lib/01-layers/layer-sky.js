@@ -1,20 +1,22 @@
 /* eslint-disable no-undef */
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "sky",
 	zIndex: 0,
 	effects: [
 		{
 			/* Night sky */
 			effect: "skyGradiant",
-			drawCondition: () => !Weather.bloodMoon && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !Weather.bloodMoon && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				radius: 82,
 			},
 			bindings: {
 				color() {
 					// Make it brighter when moon is lit
-					const colorCloseMin = ColourUtils.interpolateColor("#00001c00", "#1c1c6100", Weather.Sky.moonBrightnessFactor);
-					const colorClose = ColourUtils.interpolateColor("#00001c", "#1c1c61", Weather.Sky.moonBrightnessFactor);
+					const colorCloseMin = ColourUtils.interpolateColor("#00001c00", "#1c1c6100", this.renderInstance.moonBrightnessFactor);
+					const colorClose = ColourUtils.interpolateColor("#00001c", "#1c1c61", this.renderInstance.moonBrightnessFactor);
 					return {
 						colorMin: { close: colorCloseMin, far: "#00001c00" },
 						colorMed: { close: colorClose, far: "#00001c" },
@@ -22,17 +24,19 @@ Weather.Sky.Layers.add({
 					};
 				},
 				position() {
-					return Weather.Sky.orbitals.moon.position;
+					return this.renderInstance.orbitals.moon.position;
 				},
 				factor() {
-					return Weather.Sky.orbitals.moon.factor;
+					return this.renderInstance.orbitals.moon.factor;
 				},
 			},
 		},
 		{
 			/* Blood sky */
 			effect: "skyGradiant",
-			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return Weather.bloodMoon && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				color: {
 					colorMin: { close: "#4d000000", far: "#21070700" },
@@ -43,17 +47,19 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.bloodMoon.position;
+					return this.renderInstance.orbitals.bloodMoon.position;
 				},
 				factor() {
-					return Weather.Sky.orbitals.bloodMoon.factor;
+					return this.renderInstance.orbitals.bloodMoon.factor;
 				},
 			},
 		},
 		{
 			/* Day sky */
 			effect: "skyGradiant",
-			drawCondition: () => !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !this.renderInstance.skyDisabled;
+			},
 			params: {
 				color: {
 					colorMin: { close: "#14145200", far: "#00001c00" },
@@ -64,17 +70,19 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.sun.position;
+					return this.renderInstance.orbitals.sun.position;
 				},
 				factor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 			},
 		},
 		{
 			/* Tentacle sky */
 			effect: "gradiantGlow",
-			drawCondition: () => V.location === "tentworld",
+			drawCondition() {
+				return V.location === "tentworld";
+			},
 			params: {
 				fadeStartY: 192,
 				color: {

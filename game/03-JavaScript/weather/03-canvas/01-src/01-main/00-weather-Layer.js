@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-Weather.Sky.Layer = class Layer {
+Weather.Renderer.Layer = class Layer {
 	constructor(name, blur, zIndex = 0, animation = undefined) {
 		this.name = name;
 		this.blur = blur;
@@ -8,25 +8,39 @@ Weather.Sky.Layer = class Layer {
 		this.loadPromises = [];
 		this.loading = false;
 		if (animation) {
-			this.animationGroup = new Weather.Sky.AnimationGroup(animation, () => {
-				Weather.Sky.drawLayers(this.name);
+			this.animationGroup = new Weather.Renderer.AnimationGroup(animation, () => {
+				if (this.renderInstance) {
+					this.renderInstance.drawLayers(this.name);
+				}
 			});
 		}
 	}
 
+	/**
+	 * Set the renderer only after the layer has been added
+	 *
+	 * @param {Weather.Renderer.Sky} renderer Sky renderer instance
+	 */
+	setRenderer(renderer) {
+		this.renderInstance = renderer;
+		for (const effect of this.effects) {
+			effect.setRenderer(renderer);
+		}
+	}
+
 	addEffect(effectName, params, bindings, condition, compositeOperation) {
-		const effectConfig = Weather.Sky.Effects.effects.get(effectName);
+		const effectConfig = Weather.Renderer.Effects.effects.get(effectName);
 		if (!effectConfig) {
 			const errorPromise = Promise.reject(new Error(`Could not add effect '${effectName}' to layer ${this.name}. That effect does not exist.`));
 			this.loadPromises.push(errorPromise);
 			return errorPromise;
 		}
+		effectConfig.parentLayer = this;
 
 		// Set index for a consistent order - since it loads asyncronously
 		const currentIndex = (this.effectIndex = (this.effectIndex ?? 0) + 1);
 		params.id = [currentIndex];
-		const effect = new Weather.Sky.Effect(effectConfig, condition, compositeOperation, params);
-		effect.parentLayer = this;
+		const effect = new Weather.Renderer.Effect(effectConfig, condition, compositeOperation, params);
 
 		const loadPromise = effect.loadImages().then(() => {
 			if (bindings) {
@@ -42,7 +56,7 @@ Weather.Sky.Layer = class Layer {
 
 	async init() {
 		this.loading = true;
-		this.canvas = new Weather.Sky.Canvas();
+		this.canvas = new this.renderInstance.Canvas();
 
 		// Reset animations on that layer
 		this.animationGroup?.stop();
@@ -63,7 +77,7 @@ Weather.Sky.Layer = class Layer {
 			return "none";
 		}
 
-		let blurValue = Weather.Sky.blur * setup.SkySettings.blur.fogMaxBlurValue;
+		let blurValue = Weather.fog * setup.SkySettings.blur.fogMaxBlurValue;
 		if (typeof this.blur === "number" && this.blur < blurValue) {
 			blurValue = this.blur;
 		} else if (typeof this.blur?.factor === "function") {
@@ -96,7 +110,7 @@ Weather.Sky.Layer = class Layer {
 				this.canvas.ctx.globalCompositeOperation = effect.compositeOperation;
 				this.canvas.drawImage(effect.canvas.element);
 			} catch (e) {
-				console.error(`Error drawing effect in layer '${this.name}':`, e);
+				console.error(this, `Error drawing effect in layer '${this.name}':`, e);
 				errors.push(e);
 			}
 		}

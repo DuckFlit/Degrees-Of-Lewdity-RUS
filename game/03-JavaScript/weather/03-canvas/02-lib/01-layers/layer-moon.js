@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "moon",
 	zIndex: 3, // zIndex value
 	blur: {
@@ -10,7 +10,9 @@ Weather.Sky.Layers.add({
 		{
 			/* Regular moon */
 			effect: "moonWithPhases",
-			drawCondition: () => !Weather.bloodMoon && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return !Weather.bloodMoon && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				opacity: {
 					// Defines the opacity of the whole moon (including shadow part)
@@ -37,13 +39,13 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.moon.position;
+					return this.renderInstance.orbitals.moon.position;
 				},
 				factor() {
-					return Weather.Sky.orbitals.moon.factor;
+					return this.renderInstance.orbitals.moon.factor;
 				},
 				dayFactor() {
-					return Weather.Sky.orbitals.sun.factor;
+					return this.renderInstance.orbitals.sun.factor;
 				},
 				moonPhaseFraction() {
 					return Time.date.moonPhaseFraction;
@@ -53,19 +55,23 @@ Weather.Sky.Layers.add({
 		{
 			/* Blood moon */
 			effect: "skyOrbital",
-			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return Weather.bloodMoon && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				images: { orbital: "img/misc/sky/blood-moon.png" },
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.bloodMoon.position;
+					return this.renderInstance.orbitals.bloodMoon.position;
 				},
 			},
 		},
 		{
 			effect: "innerRadialGlow",
-			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return Weather.bloodMoon && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				innerRadius: 7,
 				colorInside: { min: "#fd634d00", max: "#fd634d00" },
@@ -74,16 +80,18 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.bloodMoon.position;
+					return this.renderInstance.orbitals.bloodMoon.position;
 				},
 				diameter() {
-					return Weather.Sky.getLayer("moon").effects[1].images.orbital.width;
+					return this.renderInstance.layers.get("moon").effects[1].images.orbital.width;
 				},
 			},
 		},
 		{
 			effect: "outerRadialGlow",
-			drawCondition: () => Weather.bloodMoon && !Weather.Sky.skyDisabled,
+			drawCondition() {
+				return Weather.bloodMoon && !this.renderInstance.skyDisabled;
+			},
 			params: {
 				outerRadius: 45, // The radius of the outer glow
 				colorInside: { dark: "#ad3a2133", med: "#ad3a2133", bright: "#ad3a2133" },
@@ -91,27 +99,29 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.bloodMoon.position;
+					return this.renderInstance.orbitals.bloodMoon.position;
 				},
 				factor() {
-					return Weather.Sky.orbitals.bloodMoon.factor;
+					return this.renderInstance.orbitals.bloodMoon.factor;
 				},
 				diameter() {
 					// Reference this layer and above effect image
-					return Weather.Sky.getLayer("moon").effects[1].images.orbital.width;
+					return this.renderInstance.layers.get("moon").effects[1].images.orbital.width;
 				},
 			},
 		},
 	],
 });
 
-Weather.Sky.Layers.add({
+Weather.Renderer.Layers.add({
 	name: "bloodGlow",
 	zIndex: 11,
 	effects: [
 		{
 			effect: "outerRadialGlow",
-			drawCondition: () => Weather.bloodMoon,
+			drawCondition() {
+				return Weather.bloodMoon;
+			},
 			params: {
 				outerRadius: 16, // The radius of the outer glow
 				colorInside: { dark: "#b0131365", med: "#b0131365", bright: "#b0131365" },
@@ -120,10 +130,10 @@ Weather.Sky.Layers.add({
 			},
 			bindings: {
 				position() {
-					return Weather.Sky.orbitals.bloodMoon.position;
+					return this.renderInstance.orbitals.bloodMoon.position;
 				},
 				factor() {
-					return Math.min(Weather.overcast - (1 - Weather.Sky.orbitals.bloodMoon.factor), 0);
+					return Math.min(Weather.overcast - (1 - this.renderInstance.orbitals.bloodMoon.factor), 0);
 				},
 			},
 		},

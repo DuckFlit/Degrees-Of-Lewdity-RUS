@@ -49,7 +49,7 @@ module.exports = {
 		visited: "readonly",
 		visitedTags: "readonly",
 		throwError: "writeable",
-		// Dol shortcuts
+		// DoL shortcuts
 		C: "readonly",
 		DeserializeGame: "readonly",
 		globals: "readonly",
@@ -71,7 +71,6 @@ module.exports = {
 		currentlyLoadingMap: "readonly",
 		ColourUtils: "readonly",
 		DateTime: "readonly",
-		DoLHouse: "readonly",
 		DolSettingsExport: "readonly",
 		Dynamic: "readonly",
 		EventSystem: "readonly",
@@ -88,7 +87,11 @@ module.exports = {
 		TimeConstants: "readonly",
 		Utils: "readonly",
 		ZIndices: "readonly",
+		Packer: "readonly",
 		Weather: "readonly",
+		BaseCanvas: "readonly",
+		Orbital: "readonly",
+		Fadable: "readonly",
 		// DoL SC2 functions
 		compressionVerifier: "readonly",
 		DefineMacro: "readonly",
@@ -214,15 +217,15 @@ module.exports = {
 		interpolateObject: "readonly",
 		boundedRandom: "readonly",
 		calculateBinomial: "readonly",
+		weightedRandom: "readonly",
 		// DoL object functions
 		formatList: "readonly",
 		stringFrom: "readonly",
 		toTitleCase: "readonly",
+		resolveValue: "readonly",
 		// DoL classes
 		ObservableValue: "readonly",
 		CanvasModel: "readonly",
-		DollHouse: "readonly",
-		FDoll: "readonly",
 		// Third-party
 		define: "readonly",
 		iro: "readonly",
