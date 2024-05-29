@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 Weather.Renderer.Layers.add({
 	name: "precipitation",
 	zIndex: 10,

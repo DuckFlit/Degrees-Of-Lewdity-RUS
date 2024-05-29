@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 Weather.Renderer.Effect = class Effect {
 	constructor(effect, condition, compositeOperation, params) {
 		this.params = params ?? {};

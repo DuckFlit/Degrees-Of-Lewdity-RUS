@@ -141,6 +141,7 @@ setup.WeatherGeneration = {
 	weatherTypes: [
 		{
 			name: "clear",
+			iconType: "clear", // Determines which icon to use for the minimised sidebar
 			value: 0, // Value determines how to interpolate between different weather types. It always interpolates to a adjacent value first.
 			probability: {
 				// Weighted probabilities per month - there are compared to the other weather types, and not to the other seasons.
@@ -169,6 +170,7 @@ setup.WeatherGeneration = {
 		},
 		{
 			name: "lightClouds",
+			iconType: "clouds",
 			value: 1,
 			probability: {
 				summer: 0.5,
@@ -188,6 +190,7 @@ setup.WeatherGeneration = {
 		},
 		{
 			name: "heavyClouds",
+			iconType: "clouds",
 			value: 2,
 			probability: {
 				summer: 0.1,
@@ -207,6 +210,7 @@ setup.WeatherGeneration = {
 		},
 		{
 			name: "lightPrecipitation",
+			iconType: () => "light_" + Weather.precipitation,
 			value: 3,
 			probability: {
 				summer: 0.05,
@@ -226,6 +230,7 @@ setup.WeatherGeneration = {
 		},
 		{
 			name: "heavyPrecipitation",
+			iconType: () => "heavy_" + Weather.precipitation,
 			value: 4,
 			probability: {
 				summer: 0.05,

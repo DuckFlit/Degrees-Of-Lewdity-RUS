@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 Weather.Renderer.AnimationGroup = class AnimationGroup {
 	constructor(options, onUpdate) {
 		this.lastUpdateTime = 0;

@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-
 /**
  * Manages the body temperature of the player in the game.
  * Simulates the body's regulation of heat generation to maintain the base body temperature

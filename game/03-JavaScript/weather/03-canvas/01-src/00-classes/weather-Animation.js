@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 Weather.Renderer.Animation = class Animation {
 	constructor(options) {
 		this.image = options.image;

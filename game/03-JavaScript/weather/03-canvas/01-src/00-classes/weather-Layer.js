@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 Weather.Renderer.Layer = class Layer {
 	constructor(name, blur, zIndex = 0, animation = undefined) {
 		this.name = name;

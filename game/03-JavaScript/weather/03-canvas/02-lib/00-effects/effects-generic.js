@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 Weather.Renderer.Effects.add({
 	name: "gradiantGlow",
 	defaultParameters: {

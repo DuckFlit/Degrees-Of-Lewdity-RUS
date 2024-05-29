@@ -278,6 +278,10 @@ const Time = (() => {
 		return (date.day === date.lastDayOfMonth && date.hour >= 21) || (date.day === 1 && date.hour < 6);
 	}
 
+	function getSeason(date) {
+		return date.month > 11 || date.month < 3 ? "winter" : date.month > 8 ? "autumn" : date.month > 5 ? "summer" : "spring";
+	}
+
 	return Object.create({
 		get date() {
 			return currentDate;
@@ -313,10 +317,10 @@ const Time = (() => {
 			return currentDate.year;
 		},
 		get days() {
-			return Math.floor((currentDate.timeStamp - this.startDate.timeStamp) / TimeConstants.secondsPerDay);
+			return Math.floor((currentDate.timeStamp - Time.startDate.timeStamp) / TimeConstants.secondsPerDay);
 		},
 		get season() {
-			return this.month > 11 || this.month < 3 ? "winter" : this.month > 8 ? "autumn" : this.month > 5 ? "summer" : "spring";
+			return getSeason(currentDate);
 		},
 		set startDate(value) {
 			V.startDate = value.timeStamp;
@@ -342,7 +346,7 @@ const Time = (() => {
 			return isSchoolTime(currentDate);
 		},
 		get dayState() {
-			const hour = this.hour;
+			const hour = currentDate.hour;
 			if (hour < 6 || hour >= 21) {
 				return "night";
 			}
@@ -350,16 +354,6 @@ const Time = (() => {
 				return "dusk";
 			}
 			return hour >= 9 ? "day" : "dawn";
-		},
-		get nightState() {
-			const hour = this.hour;
-			if (hour < 6) {
-				return "morning";
-			}
-			if (hour >= 9) {
-				return "evening";
-			}
-			return undefined;
 		},
 		get nextSchoolTermStartDate() {
 			return getNextSchoolTermStartDate(currentDate);
@@ -392,13 +386,12 @@ const Time = (() => {
 		nextMoonPhase,
 		previousMoonPhase,
 		isBloodMoon,
-
+		getSeason,
+		getNextSchoolTermStartDate,
+		getNextSchoolTermEndDate,
 		moonPhases,
 		monthNames,
 		daysOfWeek,
-
-		getNextSchoolTermStartDate,
-		getNextSchoolTermEndDate,
 		getNextWeekdayDate: weekDay => currentDate.getNextWeekdayDate(weekDay),
 		getPreviousWeekdayDate: weekDay => currentDate.getPreviousWeekdayDate(weekDay),
 		isWeekEnd: () => currentDate.weekEnd,

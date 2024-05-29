@@ -1,4 +1,3 @@
-/* eslint-disable no-new */
 Weather.Thermometer = (() => {
 	const temperature = {
 		min: 34,
@@ -46,7 +45,7 @@ Weather.Thermometer = (() => {
 		});
 
 		Promise.all(loadPromises).then(() => {
-			thermometerCanvas = new BaseCanvas(0, 0, 0.5); //todo move to after img size is set
+			thermometerCanvas = new BaseCanvas(0, 0, 0.5);
 			const baseImg = images.baseImg.img;
 			size.width = baseImg.width * size.scaleFactor;
 			size.height = baseImg.height * size.scaleFactor;
@@ -111,40 +110,7 @@ Weather.Thermometer = (() => {
 			thermometerCanvas.ctx.fillRect(13, 2, img.width, img.height);
 		}
 
-		updateTooltip();
-	}
-
-	function updateTooltip() {
-		const tempDescription = Weather.TooltipDescriptions.bodyTemperature();
-		const waterDescription = `<br>${Weather.TooltipDescriptions.waterTemperature()}`;
-		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, Weather.tempSettings.effects.maxFatigueGainMultiplier, 4);
-		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, Weather.tempSettings.effects.maxArousalGainMultiplier, 4);
-		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, Weather.tempSettings.effects.maxPainGainMultiplier, 4);
-		const stressModifier = categorise(Weather.BodyTemperature.stressModifier, 0, Weather.tempSettings.effects.lowerMaxStressGain, 4);
-
-		const arousalOutput = arousalModifier > 0 ? `<span class="teal">${"- ".repeat(Math.abs(arousalModifier))}Arousal gains</span><br>` : "";
-		const fatigueOutput = fatigueModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(fatigueModifier))}Fatigue gains</span><br>` : "";
-		const painOutput = painModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(painModifier))}Pain gains</span><br>` : "";
-		const stressOutput = stressModifier > 0 ? `<span class="red">${"+ ".repeat(Math.abs(stressModifier))}Stress gains</span><br>` : "";
-		const modifiers =
-			arousalOutput || fatigueOutput || painOutput || stressOutput ? "<br>" + arousalOutput + fatigueOutput + painOutput + stressOutput : "";
-
-		const direction = Weather.BodyTemperature.direction > 0 ? "(increasing)" : Weather.BodyTemperature.direction < 0 ? "(decreasing)" : "";
-		// eslint-disable-next-line prettier/prettier
-		const debug = V.debug ? `<br><br><span class="teal">DEBUG:</span><br><span class="blue">Passage:</span> <span class="yellow">${V.passage}</span>
-			<br><span class="blue">Time:</span> <span class="yellow">${ampm()}</span>
-			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)} ${direction}</span>
-			<br><span class="blue">Body wetness:</span> <span class="yellow">${Math.round(Weather.wetness * 100)}%</span>
-			<br><span class="blue">Clothing warmth:</span> <span class="yellow">${Weather.BodyTemperature.getTotalWarmth()}</span>
-			<br><span class="blue">Target temperature (current clothing)</span> <span class="yellow">${Weather.toSelectedString(
-				Weather.BodyTemperature.getRestingPoint(6)
-			)}</span>`
-			: "";
-		tooltipElement.tooltip({
-			message: tempDescription + waterDescription + modifiers + debug,
-			delay: 200,
-			position: "cursor",
-		});
+		Weather.Tooltips.thermometer();
 	}
 
 	return Object.create({
@@ -153,18 +119,5 @@ Weather.Thermometer = (() => {
 		enabled,
 		load,
 		update,
-		updateTooltip,
 	});
 })();
-
-Macro.add("thermometer", {
-	handler() {
-		Weather.Thermometer.element.appendTo(this.output);
-		Weather.Thermometer.tooltipElement.appendTo(this.output);
-		Weather.Thermometer.update();
-	},
-});
-
-$(document).one(":passagerender", () => {
-	Weather.Thermometer.load();
-});
